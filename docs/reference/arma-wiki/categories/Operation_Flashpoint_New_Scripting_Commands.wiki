@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_New_Scripting_Commands
+// revision: 219111 (2021-01-21T17:12:58Z)
+// export sha1: tcx44i04ivm2l6fa7x7cd3mqbsyz4yf
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|ofp|Scripting Commands}}

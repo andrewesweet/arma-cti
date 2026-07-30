@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/menuAction
+// revision: 378323 (2026-04-02T16:28:16Z)
+// export sha1: spthncbk5qlq5br31kbzajr8xwzse7i
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= GUI Control - Menu
+
+|descr= Returns action stored in item on given path in [[CT_MENU_STRIP]] control.
+
+|s1= [[menuAction]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|r1= [[String]] - action
+
+|s2= control [[menuAction]] path
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|r2= [[String]] - action
+
+|x1= <sqf>menuAction [120, [1, 0]];</sqf>
+
+|x2= <sqf>findDisplay 313 displayCtrl 120 menuAction [1, 0];</sqf>
+
+|seealso= [[menuSetAction]]
+}}

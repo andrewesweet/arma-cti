@@ -1,0 +1,274 @@
+// source: https://community.bistudio.com/wiki/CSLA_Iron_Curtain_Insignias
+// revision: 337256 (2023-01-11T10:53:27Z)
+// export sha1: l565omb2nto012rwu9g03e9hjj6yfw1
+// categories: Category:CSLA: Iron Curtain
+// Vendored snapshot. Do not edit — re-export instead.
+
+This page contains the list of various flags, signs and insignias used in CSLA Iron Curtain. These can placed on an asset via [[setObjectTexture]] command or via attribues in 3den editor.
+
+=== EMBLEMS ===
+[[File:csla_emblem.jpg|none|150px|thumb|Vehicle emblem]]
+Aspect ratio - 1:1
+
+'''Iron Curtain 1.0'''
+<code style="display: block">\csla_misc\signs\emblems\logo\blackhawk_blk_ca.paa
+\csla_misc\signs\emblems\logo\blackhawk_wht_ca.paa
+\csla_misc\signs\emblems\logo\fia_blk_ca.paa
+\csla_misc\signs\emblems\logo\fia_wht_ca.paa
+\csla_misc\signs\emblems\logo\horse_blk_ca.paa
+\csla_misc\signs\emblems\logo\horse_wht_ca.paa
+\csla_misc\signs\emblems\logo\indian_blk_ca.paa
+\csla_misc\signs\emblems\logo\indian_wht_ca.paa
+\csla_misc\signs\emblems\logo\skull_blk_ca.paa
+\csla_misc\signs\emblems\logo\skull_wht_ca.paa
+\csla_misc\signs\emblems\logo\spartan_blk_ca.paa
+\csla_misc\signs\emblems\logo\spartan_wht_ca.paa
+\csla_misc\signs\emblems\logo\trojan_blk_ca.paa
+\csla_misc\signs\emblems\logo\trojan_wht_ca.paa
+\csla_misc\signs\emblems\logo\wolf_blk_ca.paa
+\csla_misc\signs\emblems\logo\wolf_wht_ca.paa
+\csla_misc\signs\emblems\logo\5star_blk_ca.paa
+\csla_misc\signs\emblems\logo\5star_v2_blk_ca.paa
+\csla_misc\signs\emblems\logo\5star_v2_wht_ca.paa
+\csla_misc\signs\emblems\logo\5star_wht_ca.paa
+\csla_misc\signs\emblems\logo\airborne_blk_ca.paa
+\csla_misc\signs\emblems\logo\airborne_wht_ca.paa
+\csla_misc\signs\emblems\logo\bishop_blk_ca.paa
+\csla_misc\signs\emblems\logo\bishop_wht_ca.paa
+\csla_misc\signs\emblems\logo\US85_logo.paa
+\csla_misc\signs\emblems\logo\afmc_logo.paa
+\csla_misc\signs\emblems\logo\CSLA_logo_white.paa
+\csla_misc\signs\emblems\logo\csla_logo_white_shadow_ca.paa
+</code>
+
+'''Iron Curtain 1.1'''
+<code style="display: block">\csla_misc\signs\emblems\logo\mi24v_char1_ca.paa
+</code>
+
+=== TEXT ===
+[[File:csla_text.jpg|none|150px|thumb|Vehicle text label]]
+Aspect ratio - 8:1
+Used on US tank cannon, M113 turret, UH-60
+
+'''Iron Curtain 1.0'''
+<code style="display: block">\csla_misc\signs\emblems\text\text_patton_ca.paa
+\csla_misc\signs\emblems\text\text_razorcrest_ca.paa
+\csla_misc\signs\emblems\text\text_us_army_ca.paa
+\csla_misc\signs\emblems\text\text_winter_ca.paa
+\csla_misc\signs\emblems\text\text_wolf_ca.paa
+\csla_misc\signs\emblems\text\text_abrams_ca.paa
+\csla_misc\signs\emblems\text\text_dentist_ca.paa
+\csla_misc\signs\emblems\text\text_dropped_ca.paa
+\csla_misc\signs\emblems\text\text_express_ca.paa
+\csla_misc\signs\emblems\text\text_opener_ca.paa
+\csla_misc\signs\emblems\text\text_papa_ca.paa
+</code>
+
+=== FLAGS ===
+Aspect ratio - 2:1, Arma standard, flags have to be stretched
+
+'''Iron Curtain 1.0'''
+<code style="display: block">\csla_misc\signs\flags\flag_afmc_co.paa
+\csla_misc\signs\flags\flag_alb_co.paa
+\csla_misc\signs\flags\flag_aus_co.paa
+\csla_misc\signs\flags\flag_aut_co.paa
+\csla_misc\signs\flags\flag_bel_co.paa
+\csla_misc\signs\flags\flag_bgr_co.paa
+\csla_misc\signs\flags\flag_bih_co.paa
+\csla_misc\signs\flags\flag_can_co.paa
+\csla_misc\signs\flags\flag_cub_co.paa
+\csla_misc\signs\flags\flag_czk_co.paa
+\csla_misc\signs\flags\flag_ddr_co.paa
+\csla_misc\signs\flags\flag_dnk_co.paa
+\csla_misc\signs\flags\flag_esp_co.paa
+\csla_misc\signs\flags\flag_est_co.paa
+\csla_misc\signs\flags\flag_fia_co.paa
+\csla_misc\signs\flags\flag_fin_co.paa
+\csla_misc\signs\flags\flag_fra_co.paa
+\csla_misc\signs\flags\flag_ger_co.paa
+\csla_misc\signs\flags\flag_grc_co.paa
+\csla_misc\signs\flags\flag_hrv_co.paa
+\csla_misc\signs\flags\flag_hun_co.paa
+\csla_misc\signs\flags\flag_ita_co.paa
+\csla_misc\signs\flags\flag_ltu_co.paa
+\csla_misc\signs\flags\flag_lux_co.paa
+\csla_misc\signs\flags\flag_mkd_co.paa
+\csla_misc\signs\flags\flag_mne_co.paa
+\csla_misc\signs\flags\flag_nld_co.paa
+\csla_misc\signs\flags\flag_nor_co.paa
+\csla_misc\signs\flags\flag_pol_co.paa
+\csla_misc\signs\flags\flag_prt_co.paa
+\csla_misc\signs\flags\flag_rcrystal_co.paa
+\csla_misc\signs\flags\flag_rou_co.paa
+\csla_misc\signs\flags\flag_rou2_co.paa
+\csla_misc\signs\flags\flag_rus_co.paa
+\csla_misc\signs\flags\flag_sov_co.paa
+\csla_misc\signs\flags\flag_srb_co.paa
+\csla_misc\signs\flags\flag_svk_co.paa
+\csla_misc\signs\flags\flag_svn_co.paa
+\csla_misc\signs\flags\flag_swe_co.paa
+\csla_misc\signs\flags\flag_tur_co.paa
+\csla_misc\signs\flags\flag_uk_co.paa
+\csla_misc\signs\flags\flag_uno_co.paa
+\csla_misc\signs\flags\flag_us_co.paa
+\csla_misc\signs\flags\flag_white_co.paa
+\csla_misc\signs\flags\flag_yug_co.paa
+</code>
+
+'''Iron Curtain 1.1'''
+<code style="display: block">\csla_misc\signs\flags\flag_arm_co.paa
+\csla_misc\signs\flags\flag_aze_co.paa
+\csla_misc\signs\flags\flag_blr_co.paa
+\csla_misc\signs\flags\flag_geo_co.paa
+\csla_misc\signs\flags\flag_kaz_co.paa
+\csla_misc\signs\flags\flag_kgz_co.paa
+\csla_misc\signs\flags\flag_lva_co.paa
+\csla_misc\signs\flags\flag_mda_co.paa
+\csla_misc\signs\flags\flag_tjk_co.paa
+\csla_misc\signs\flags\flag_tkm_co.paa
+\csla_misc\signs\flags\flag_ukr_co.paa
+\csla_misc\signs\flags\flag_uzb_co.paa
+\csla_misc\signs\flags\flag_wbw_co.paa"
+</code>
+
+=== SLEEVE INSIGNIA ===
+[[File:csla_sleeve.jpg|none|150px|thumb|Character sleeve insignia]]
+Aspect ratio - 1:1
+
+'''Iron Curtain 1.0'''
+<code style="display: block">\csla_misc\signs\insignia\LION_logo.paa
+\csla_misc\signs\insignia\US85_logo_white.paa
+\csla_misc\signs\insignia\CSLA_logo_white.paa
+\csla_misc\signs\insignia\CSLA_para_black.paa
+\csla_misc\signs\insignia\CSLA_para_blue.paa
+\csla_misc\signs\insignia\CSLA_para_brown.paa
+\csla_misc\signs\insignia\CSLA_para_green.paa
+\csla_misc\signs\insignia\CSLA_para_red.paa
+\csla_misc\signs\insignia\CSLA_para_yellow.paa
+\csla_misc\signs\insignia\CSLA_sleeve_logo.paa
+\csla_misc\signs\insignia\Dragon_logo.paa
+\csla_misc\signs\emblems\logo\afmc_logo.paa
+\csla_afmc_misc\signs\insignia\18th_airborne.paa
+\csla_afmc_misc\signs\insignia\82nd_airborne.paa
+\csla_afmc_misc\signs\insignia\101st_airborne.paa
+</code>
+
+=== NATIONAL ===
+[[File:csla_national.jpg|none|150px|thumb|Vehicle national roundel/emblem]]
+Aspect ratio - 2:1, two mirrored emblems, one on each half<br>
+These come in three sizes. Paths are the same with name of the last folder being \small, \medium, \big<br>
+
+'''Iron Curtain 1.0'''
+<code style="display: block">\csla_misc\signs\national\small\czk_rond_w_ca.paa
+\csla_misc\signs\national\small\ddr_dia_ca.paa
+\csla_misc\signs\national\small\ddr_rond_ca.paa
+\csla_misc\signs\national\small\fia_logo.paa
+\csla_misc\signs\national\small\fin_rond_ca.paa
+\csla_misc\signs\national\small\ger_cross_ca.paa
+\csla_misc\signs\national\small\hun_tria_ca.paa
+\csla_misc\signs\national\small\pol_dia_ca.paa
+\csla_misc\signs\national\small\pol_square_ca.paa
+\csla_misc\signs\national\small\rou_rond_ca.paa
+\csla_misc\signs\national\small\sov_rond_gf_ca.paa
+\csla_misc\signs\national\small\sov_star_com_ca.paa
+\csla_misc\signs\national\small\sov_star_red_ca.paa
+\csla_misc\signs\national\small\svk_shield_ca.paa
+\csla_misc\signs\national\small\svk_square_ca.paa
+\csla_misc\signs\national\small\us_flag_ca.paa
+\csla_misc\signs\national\small\us_star_ca.paa
+\csla_misc\signs\national\small\yug_rond_ca.paa
+\csla_misc\signs\national\small\bgr_rond_ca.paa
+\csla_misc\signs\national\small\bgr_star_ca.paa
+\csla_misc\signs\national\small\czk_rond_ca.paa
+</code>
+
+'''Iron Curtain 1.1'''
+<code style="display: block">\csla_misc\signs\national\small\ukr_cross_afu_ca.paa
+\csla_misc\signs\national\small\ukr_cross_gf_ca.paa
+\csla_misc\signs\national\small\ukr_rond_ca.paa
+\csla_misc\signs\national\small\ukr_shield_ca.paa
+\csla_misc\signs\national\small\afmc_rond_ca.paa
+\csla_misc\signs\national\small\ukr_cross_af_ca.paa
+</code>
+
+=== CSLA VEHICLE NUMBER COMPLEMENTARY TACTICAL SIGN ===
+[[File:csla_delta.jpg|none|150px|thumb|CSLA vehicle tactical sign]]
+Aspect ratio - 1:2
+
+'''Iron Curtain 1.0'''
+<code style="display: block">\csla_misc\signs\tacSigns\delta.paa
+\csla_misc\signs\tacSigns\p.paa
+</code>
+
+===US VEHICLE TACTICAL SIGN (lambdas)===
+[[File:csla_lambda.jpg|none|150px|thumb|Vehicle tactical sign]]
+Aspect ratio - 1:1<br>
+_wht textures are white, otherwise black.<br>
+_ver1 uses squares<br>
+_ver2 uses dots<br>
+
+'''Iron Curtain 1.0'''
+<code style="display: block">\csla_misc\signs\units\armor\lambda_down_ca.paa
+\csla_misc\signs\units\armor\lambda_down_wht_ca.paa
+\csla_misc\signs\units\armor\lambda_up_ca.paa
+\csla_misc\signs\units\armor\lambda_up_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_down_1_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_down_1_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_down_2_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_down_2_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_down_3_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_down_3_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_left_1_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_left_1_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_left_2_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_left_2_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_left_3_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_left_3_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_right_1_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_right_1_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_right_2_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_right_2_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_right_3_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_right_3_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_up_1_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_up_1_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_up_2_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_up_2_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_up_3_ca.paa
+\csla_misc\signs\units\armor\unit_ver1_up_3_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_down_1_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_down_1_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_down_2_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_down_2_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_down_3_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_down_3_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_left_1_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_left_1_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_left_2_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_left_2_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_left_3_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_left_3_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_right_1_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_right_1_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_right_2_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_right_2_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_right_3_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_right_3_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_up_1_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_up_1_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_up_2_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_up_2_wht_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_up_3_ca.paa
+\csla_misc\signs\units\armor\unit_ver2_up_3_wht_ca.paa
+</code>
+
+=== MAPS ===
+
+Gabreta and Polanek maps in 2k resolution to be used ingame on map stand etc.
+
+'''Iron Curtain 1.1'''
+<code style="display: block">"\csla_misc\signs\maps\map_gabreta2k_co.paa
+"\csla_misc\signs\maps\map_polanek2k_co.paa
+</code>
+
+[[Category:CSLA: Iron Curtain]]

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Pilot_Camera
+// revision: 160385 (2020-09-24T12:34:43Z)
+// export sha1: qup7yxa0o244dnulwskix47mza5vcl9
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to control a vehicles [[A3_Targeting_config_reference#class_pilotCamera|pilotCamera]].
+
+[[Category:Scripting Commands by Functionality]]

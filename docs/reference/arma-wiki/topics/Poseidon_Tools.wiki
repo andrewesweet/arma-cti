@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/Poseidon_Tools
+// revision: 353528 (2024-03-19T12:01:23Z)
+// export sha1: lxhugip015sk5094kphqgps3xj80avq
+// categories: Category:Community Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[user:Tom_48_97|Tom_48_97]]
+
+|DOWNLOAD= {{Link|link= https://forums.bistudio.com/topic/155514-poseidon-advanced-text-editor-for-scripts-configs/|text= See forum post}}
+|COMPATIBILITY= {{GameCategory|arma2|link= y}}, {{GameCategory|arma3|link= y}}
+|DESCRIPTION= [[File:Poseidon_Tools_1.jpg|300px|thumb||Full workspace]]Complete script tool suite Bohemia Interactive's game engine used in ARMA II and ARMA 3. [[Poseidon Tools]] supports all text files (Scripts & configs) used by the [[Real Virtuality]]. It includes:
+* Poseidon Tools
+* [[FSM Editor]]
+* [[TexView 2]]
+* TM4 Indenter
+* Tail for Win32
+<br>
+''Initially, this project was named "BI PTE" (BI Plain Text Editor) and was renamed [[Poseidon Tools]] when it was publicly released, in august 2013. So, the name, [[Poseidon Tools]], is a tribute to the very first version of the [[Real Virtuality]] engine, "[[Poseidon]]", which is the base of all the Arma series.''
+==== Features ====
+* Project management
+* Instant Project Switch
+* Distraction Free Mode and full screen
+* Split Editing (Can display up to four file on the same screen)
+* Auto Completion (based on commands and existing text in the file)
+* Current and parent brackets highlight
+* Persistent sessions
+* Snippets (eg: file header, control structures, game functions etc…)
+* Syntax highlighter (for SQF (from {{ofp}} to arma 3), SQM, HPP, CPP, EXT…)
+* Full support of SQF & SQS, XML, Cpp, CFG, RPT
+* Can open RPT from the menu (Arma 3, Arma 3 diagnostic, Arma 2…)
+* Can open SQM, BIEDI with Arma 3
+* Magic key F8
+* File diff
+* Support of Mikero Tools
+* Support of Arma 3 Tools
+* Refresh the opened files everytime you get back to it
+* Macro creation
+* Documentation link
+* and so on...
+==== Notes ====
+* Some features require [[:Category:Arma_3:_Official_Tools|Arma 3 Tools]] installed;
+* Some other features require Mikero Tools installed;
+* Every new release require a full clean install;
+* This is not an official tool, '''use at your own risks''';
+* Documentation is here: http://tom4897.info/projects/poseidon-tools/
+* I urge you to read the documentation and especially the shortcuts list
+|COMMAND=
+    Poseidon.exe<br>
+|LICENSING= -
+
+|SEEALSO= {{Link|http://tom4897.info/projects/poseidon-tools/|Documentation}}, {{Link|link= http://forums.bistudio.com/showthread.php?164908-Poseidon-advanced-text-editor-for-Scripts-amp-Configs|text= Forum}}, {{Link|http://tom4897.info/projects/poseidon-tools/changelog/|Change log}}
+}}
+
+
+[[Category:Community Tools]]

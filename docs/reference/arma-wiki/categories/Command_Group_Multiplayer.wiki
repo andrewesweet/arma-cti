@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Multiplayer
+// revision: 338883 (2023-04-13T10:17:26Z)
+// export sha1: kdyng5g321zt1h6vpvjtqj6n1b65tr5
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands that are specific to Multiplayer games. See also [[Multiplayer Scripting]].
+
+
+[[Category:Scripting Commands by Functionality]]

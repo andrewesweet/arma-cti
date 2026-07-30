@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_formatCuratorChallengeObjects
+// revision: 348646 (2023-11-08T13:48:23Z)
+// export sha1: s7j5mgpbhpc6mq0ao81uprfumsllt5v
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: CuratorChallenges | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= CuratorChallenges
+
+|descr= Format the list of objects compatible with curator challenge to be displayed in the task descriptipon.
+
+|s1= classes call [[BIS_fnc_formatCuratorChallengeObjects]]
+
+|p1=classes: [[Array]] of [[String]]s - CfgVehicle classes
+
+|r1= [[String]]
+
+|x1= <sqf>["class_1","class_2"] call BIS_fnc_formatCuratorChallengeObjects;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[BIS_fnc_manageCuratorChallenges]] [[BIS_fnc_finishCuratorChallenge]] [[BIS_fnc_addCuratorChallenge]]
+}}

@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Village_Pump_(proposals)
+// revision: 115055 (2019-01-01T23:30:46Z)
+// export sha1: cn4kkzm0ml37cddjunjr7qimttjpzjw
+// categories: Category:Village Pump
+// Vendored snapshot. Do not edit — re-export instead.
+
+<noinclude>''Discuss new proposals regarding the Wiki that are not policy related.''</noinclude>
+<noinclude>{{villagepumpmenu}}</noinclude>
+[[Category:Village Pump]]

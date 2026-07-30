@@ -1,0 +1,62 @@
+// source: https://community.bistudio.com/wiki/drawLine3D
+// revision: 377395 (2026-01-02T06:44:42Z)
+// export sha1: 16f0jkf7pni2p4k0jwmnyurbts4b2i0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Interaction
+
+|eff= local
+
+|descr= Draws a line of a given colour between two 3D positions in the current frame. To be used mostly in a [[Arma 3: Mission Event Handlers#Draw3D|"Draw3D"]] [[addMissionEventHandler|mission event handler]].
+
+|s1= [[drawLine3D]] [start, end, color, width]
+
+|p1= start: [[Position#PositionAGL|PositionAGL]]
+
+|p2= end: [[Position#PositionAGL|PositionAGL]]
+
+|p3= color: [[Color|Color (RGBA)]]
+
+|p4= width: [[Number]] - (Optional, default 3)
+|p4since= arma3 2.18
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+onEachFrame {
+	drawLine3D [getPos player, getPos cursorTarget, [1,1,1,1]];
+};
+</sqf>
+
+|seealso= [[drawIcon3D]] [[ASLToAGL]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20130831092700
+|text= As the command syntax indicates, this command expects starting and ending position in format [[Position#PositionAGL|PositionAGL]] meaning that over the land it expects [[Position#PositionATL|PositionATL]] and over the sea [[Position#PositionASLW|PositionASLW]]. Use additional [[ASLToAGL]] and [[AGLToASL]] commands wherever is necessary. 
+
+<sqf>
+addMissionEventHandler ["Draw3D", {
+	drawLine3D [ASLToAGL eyePos soldier1, ASLToAGL eyePos soldier2, [1,0,0,1]];
+}];
+</sqf>
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20150218021000
+|text= Visible through fog and past draw distance.
+}}
+
+{{Note
+|user= fusselwurm
+|timestamp= 20211125213710
+|text= Caveat: lines invisible through MH-9 helicopter windows, see https://feedback.bistudio.com/T66225
+}}

@@ -1,0 +1,76 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Assets
+// revision: 368731 (2024-08-10T11:16:58Z)
+// export sha1: jg5us9alt0w8u1zswj5rlufz610r5nb
+// categories: Category:Arma 3: Reference Lists | Category:CfgVehicles
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+__NOEDITSECTION__
+<div style="text-align:center;">
+[[File:arma3-o_mbt_02_cannon_f.jpg|200px]]
+[[File:arma3-i_mrap_03_hmg_f.jpg|200px]]
+[[File:arma3-b_heli_attack_01_f.jpg|200px]]
+[[File:arma3-c_boat_civil_01_f.jpg|200px]]
+[[File:arma3-land_cargo_hq_v1_f.jpg|200px]]
+<br>
+[[File:arma3-icon_arifle_ak12_arid_f_ca.png|200px]]
+[[File:arma3-gear_uav_controller_rgr_ca.png|200px]]
+[[File:arma3-icon_u_c_arttshirt_01_v3_f_ca.png|200px]]
+[[File:arma3-icon_v_bandollier_blk_ca.png|200px]]
+[[File:arma3-icon_h_beret02_ca.png|200px]]
+</div>
+
+{| style="width: 100%"
+|
+== Objects ==
+<big>
+* [[Arma 3: CfgPatches CfgVehicles|By addons]]
+* By side:
+** [[Arma 3: CfgVehicles WEST|BLUFOR]]
+** [[Arma 3: CfgVehicles EAST|OPFOR]]
+** [[Arma 3: CfgVehicles GUER|Independent]]
+** [[Arma 3: CfgVehicles CIV|Civilian]]
+** [[Arma 3: CfgVehicles EMPTY|Empty]]
+</big>
+|
+== Items ==
+<big>
+* [[Arma 3: CfgPatches CfgWeapons|By addons]]
+* By type:
+** [[Arma 3: CfgWeapons Weapons|Weapons]]
+** [[Arma 3: CfgWeapons Vehicle Weapons|Vehicle Weapons]]
+** [[Arma 3: CfgMagazines|Magazines]]
+** [[Arma 3: CfgWeapons Items|Items]]
+** [[Arma 3: CfgWeapons Equipment|Equipment]]
+</big>
+|}
+
+{{Navbox/A3Assets}}
+
+
+== Audio Tracks ==
+* [[Arma 3: CfgMusic|Music]]
+
+
+== Creator DLC Classes ==
+
+* '''[[Global Mobilization|Global Mobilization - Cold War Germany]]'''
+** [[Global Mobilization Characters|Characters, Items and Equipments]]
+** [[Global Mobilization Vehicles|Vehicles]]
+** [[Global Mobilization Weapons|Weapons and Vehicle Weapons]]
+
+* '''[[Spearhead 1944]]'''
+** [[Spearhead 1944 CfgVehicles WEST]]
+** [[Spearhead 1944 CfgVehicles GUER]]
+** [[Spearhead 1944 CfgVehicles Backpacks]]
+** [[Spearhead 1944 CfgVehicles Modules]]
+** [[Spearhead 1944 CfgVehicles Other]]
+** [[Spearhead 1944 CfgWeapons Equipment]]
+** [[Spearhead 1944 CfgWeapons Items]]
+** [[Spearhead 1944 CfgWeapons Vehicle Weapons]]
+** [[Spearhead 1944 CfgWeapons Weapons]]
+** [[Spearhead 1944 CfgGroups]]
+** [[Spearhead 1944 CfgMagazines]]
+
+[[Category:CfgVehicles]]
+{{GameCategory|arma3|Reference Lists}}

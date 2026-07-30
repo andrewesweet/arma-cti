@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/flagTexture
+// revision: 349339 (2023-11-08T14:53:29Z)
+// export sha1: d32k4r4rg5bq1qemj6bf6ezj3pz4nbb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Flags | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|arg= global
+
+|eff= local
+
+|gr1= Flags
+
+|descr= Returns texture of the [[Multiplayer Scripting#Locality|local]] instance of the flag. A getter for [[setFlagTexture]]. It will not return flag textures applied using [[forceFlagTexture]], use [[getForcedFlagTexture]] for that.
+
+|s1= [[flagTexture]] flagCarrier
+
+|p1= flagCarrier: [[Object]] - vehicle, unit or flag pole
+
+|r1= [[String]]
+
+|x1= <sqf>_flagTexture = flagTexture _flag1;</sqf>
+
+|seealso= [[setFlagTexture]] [[Arma 3: Flag Textures]]
+}}

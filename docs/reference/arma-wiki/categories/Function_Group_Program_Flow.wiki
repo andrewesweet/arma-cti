@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Program_Flow
+// revision: 167835 (2020-10-12T14:36:34Z)
+// export sha1: 3x3zeg7436j50hsaqbumz327f4ga043
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions used to execute scripts or handle their flow.
+
+[[Category:Functions by Functionality]]

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/simulWeatherSync
+// revision: 363572 (2024-04-07T08:45:59Z)
+// export sha1: t29dsvzjv3x7bteauoakxalgpvp9o86
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|descr= Synchronizes Simul Weather with {{arma}} weather, generates all keyframes.
+
+|s1= [[simulWeatherSync]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>simulWeatherSync;</sqf>
+
+|seealso= [[forceWeatherChange]]
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20160504222400
+|text= The behavior of this command is similar to [[forceWeatherChange]], however it leaves current weather transitions intact.
+Its main purpose would be to refresh the cloud cover to properly reflect current [[overcast]], as they can sometime get out of sync, especially when using [[setTimeMultiplier]] and [[setAccTime]].
+}}

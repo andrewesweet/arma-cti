@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/OAC:HowToContribute
+// revision: 349824 (2023-11-20T22:10:27Z)
+// export sha1: q3n3sgikd2enypfsuqg4gqn0lbv1lij
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Banner biki.jpg]]
+
+=# V. How to contribute=
+
+Examples:
+
+* Helps to improve the wiki page.
+* Makes screenshots or videos to promote the project.
+* Helps maintaining the infrastructure of the project (source repository, build process, YAS server, issue tracker).
+* Supports the project with infrastructure.
+
+Basically any help besides play-testing and development.
+
+Check [[OAC:Project#Project_team|contact]] if you feel like contributing!
+
+= Back to OAC Home =
+
+[[OAC:Project#Subpage_link_overview|The seven roads to OAC - subpage link overview]]

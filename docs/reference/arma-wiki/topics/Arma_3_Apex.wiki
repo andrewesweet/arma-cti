@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Apex
+// revision: 339484 (2023-04-28T14:09:01Z)
+// export sha1: av63p7wls753v1ut7qxslf4b450e9t7
+// categories: Category:Arma 3: DLCs & Expansions | Category:Introduced with Arma 3 version 1.60
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image = arma3_apex_logo.png
+|game= arma3
+|version= 1.60
+|releasedate= 2016-06-11
+|intro= '''Arma 3 Apex''' is an {{arma3}} expansion and requires the base game.
+
+Enlist for active duty with Arma 3 Apex and be deployed to a brand new warzone. With its distinct geographical features, the South Pacific island archipelago of Tanoa introduces fresh opportunities for all types of combat operations. Engage in Arma 3’s tactical gameplay, where movement, shooting, and teamwork truly matter, and make use of new vehicles, weapons and gear to overcome the challenges of a hostile foreign terrain. The Apex expansion represents the pinnacle of over 15 years of Arma development. Enjoy one of the most meaningful gaming experiences on PC; feel the adrenaline-rush of a hard-earned victory, discover a continuously evolving platform packed with official and player-created content, and join one of thousands Arma community groups to meet new people from across the world. Authentic, open, and diverse - this is the PC’s premier military game at its finest. Welcome to Arma 3 Apex!
+|premfeature1= [[Tanoa]] - Home to lush tropical vegetation, unique landmarks, a rich history, and imposing man-made feats of modern engineering, this 100 km² South Pacific archipelago is built to bolster authentic combat on a massive scale. Tanoa’s varied locations, such as the rainforests, volcano, shanty towns, sugar cane factory, and industrial port, cater to all scenario types. Whether it’s to conduct an all-out assault, a small-scale covert op, jungle warfare, or anything else suited to a South Pacific setting - Tanoa is the destination of choice. Your next adventure awaits.
+
+|premfeature2= '''New Faction, 13 New Weapons, New Uniforms & Gear''' - While looking to increase their strategic influence in the South Pacific, NATO and CSAT face resistance from a local criminal organization with deep roots on Tanoa. Consisting of armed thugs and ex-paramilitaries, this new faction, Syndikat, is involved in many illicit operations throughout the region, carrying familiar contemporary firearms like the AKS-74U, AKM, and AK-12 Assault Rifles, LIM-85 Light Machine Gun, RPG-7 Launcher, and the PM 9 mm pistol. NATO and CSAT, on the other hand, send in highly trained operators with state-of-the-art weaponry, such as the modular SPAR-16 Assault Rifle, the Chinese-designed CAR-95 family of weapons, Type 115 Assault Rifle, CMR-76 and SPAR-17 Marksman Rifles, and new thermal-masking uniforms, headgear, backpacks, NVGs (Night Vision Goggles), ERCO weapon optics, and more.
+
+|premfeature3= '''Ten New Vehicles''' - The Apex expansion enables more gameplay opportunities by introducing new vehicle classes to Arma 3. Take advantage of the flexibility provided by the V-44 X Blackfish and Y-32 Xi’an VTOL (Vertical Take-Off and Landing) aircraft, which combine the strengths of fixed- and rotor-wing transportation. Need to move quickly on the ground? Navigate the rugged terrain of Tanoa with the fast and flexible Prowler or Qilin LSVs (Light Strike Vehicles). To complete objectives with minimal losses, Arma 3's arsenal is also reinforced by two new UCAV (Unmanned Combat Aerial Vehicle) drones: KH-3A Fenghuang and MQ-12 Falcon. Plus, as could be expected in a tropical island setting, Arma 3 Apex includes suitable new civilian vehicles in the form of the MB 4WD Offroad Car, Caesar BTT Propeller Airplane, RHIB (Rigid Hull Inflatable Boat), and Water Scooter.
+
+|premfeature4= '''Co-op Campaign & End Game Multiplayer''' - Take on the role of a NATO CTRG special operator in the 1-4 player "Apex Protocol" co-op campaign. Connected to the events in the original Arma 3 "The East Wind" campaign, your team is sent to Tanoa in order to prevent a humanitarian disaster, but quickly find themselves facing a far bigger threat than they bargained for. The co-op campaign consists of highly replayable missions, featuring a drop-in/drop-out multiplayer structure, and the difficulty scales up or down based on the number of players. In addition to the co-op campaign, Arma 3 Apex adds two brand new End Game multiplayer scenarios on Tanoa, as well as a new singleplayer Showcase End Game scenario to familiarize players with the mode's objectives and rules.
+
+|premfeature5= '''"Old Man" Singleplayer Scenario''' - In this open-world singleplayer scenario, which was released as a free bonus addition in April 2020, you step into the shoes of a retired Legionnaire living on the island of Tanoa. When a new strain of malaria causes yet another humanitarian crisis, and local authorities fail to distribute an effective vaccine to the civilian population, you are tipped off about a possible plot and set out to uncover the truth.
+
+|freefeature1= '''Additional Apex Content''' - The Apex expansion is complemented by a wide range of additional content. This includes: Gendarmerie faction (Tanoa local law enforcement agency) armed with a new Protector 9 mm Sub-Machine Gun, NATO and CSAT faction reinforcements in the form of special forces and Pacific expeditionary units, a selection of existing Arma 3 weapons and vehicles repainted in a South Pacific camo pattern, new character appearances: Tanoan and Chinese, new radio protocols: French, French-English, and Chinese, new environment assets and props for content creators, a Tanoa Zeus Game Master scenario, 13 new Steam Achievements, and the Arma 3 Apex official soundtrack.
+
+|freefeature2= '''Free Platform Updates'''
+** '''Nexus Update''' - End Game, Spectator, Personal Protective Equipment, Stamina, Launcher Mod Dependencies
+** '''Eden Update''' - Eden Editor, Combat Audio, Launcher-Based Server Browser, Fonts
+** '''Visual Upgrade - overhauled lighting configuration, water reflections, fog improvements
+** '''Environmental Audio''' - extended ambient configuration, positional ambient sounds
+** '''Controls Presets''' - play using the new default "Arma 3 Apex" preset, or stick to the setup you're used to via "Arma 3"
+** '''Weapon Switching''' - on-the-move, mappable actions, action menu streamlining
+** '''Difficulty Overhaul''' - useful presets, consolidated options, explanatory texts and images
+** '''Tasks Overhaul''' - updated 2D and 3D visualization, improved diary UX, better map interaction
+** '''Targeting Improvements''' - commanding visualizations, crew communication, weapon systems and indicators, virtual targeting pods
+** '''Respawn Menu''' - improved presentation of information, role selection UX
+** '''Squad Communications''' - Line Drawing, Squad Radar*, Tactical Ping*, VON Improvements
+** '''Vehicle-in-Vehicle Transport''' - transport suitable vehicles across large distances inside larger vehicles
+** '''Limping''' - a more immersive representation of injured character legs
+** '''Eden Editor Enhancements''' - compositions, bindable camera controls, Comment entities, drag & scale area entities, foliage toggle, environment preview, asset previews
+** '''Launcher Upgrade''' - enhanced server browsing, better mod handling
+** '''Quick Play''' - conveniently join a multiplayer session of your choice with limited user input
+** '''Campaign Unification''' - the 3 "The East Wind" episodes were merged into one
+** '''Optimizations''' - rendering, clutter drawing, scripted functions, Revive, and more
+** '''Arma 3 Units''' - Launcher & Game integration*, Bohemia Account connections, member management
+** '''Community''' - modding support, tools & samples updates, script commands, documentation
+|gallery1= Image:arma3_exp_apex_screenshot_01.jpg
+|gallery2= Image:arma3_exp_apex_screenshot_02.jpg
+|gallery3= Image:arma3_exp_apex_screenshot_03.jpg
+|gallery4= Image:arma3_exp_apex_screenshot_04.jpg
+|trailer= EwAxJC9AR_A
+|start1= {{Link|https://arma3.com/apex|Official Homepage}}
+|start2= {{Link|link= https://dev.arma3.com/post/spotrep-00058|text= SPOTREP}}
+|isDLC= y
+}}
+
+{{GameCategory|arma3|DLCs &amp; Expansions}}

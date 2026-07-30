@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/ctrlSetPositionY
+// revision: 349336 (2023-11-08T14:53:28Z)
+// export sha1: c0wze00vnyxzza5ggvch5y8yxij9k36
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.92
+
+|gr1= GUI Control - Positioning
+
+|descr= Sets vertical position (y) of a 2D control. [[ctrlCommit]] is required to complete the operation.
+
+|s1= control [[ctrlSetPositionY]] y
+
+|p1= control: [[Control]] - 2D control
+
+|p2= y: [[Number]] - vertical position of the control
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_ctrl ctrlSetPositionY 0.5;
+_ctrl ctrlCommit 1;
+</sqf>
+
+|seealso= [[ctrlSetPosition]] [[ctrlSetPositionX]] [[ctrlSetPositionW]] [[ctrlSetPositionH]]
+}}

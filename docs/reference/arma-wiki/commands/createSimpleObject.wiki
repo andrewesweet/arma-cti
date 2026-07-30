@@ -1,0 +1,167 @@
+// source: https://community.bistudio.com/wiki/createSimpleObject
+// revision: 377446 (2026-01-02T06:47:00Z)
+// export sha1: c8gzxn78k66hpel37fx0zhx0mjg9lcm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Create object with given shape defined as path to .p3d model. Supported [[LOD]]s include [[LOD#Geometry|Geometry]], [[LOD#Fire_Geometry|Fire Geometry]], [[LOD#Roadway|Roadway]], [[LOD#ViewGeometry|View Geometry]] and [[LOD#ShadowVolume|ShadowVolume]]. Supported features include collision, texturing, animation, penetration, AI spotting occlusion, and surface specific sounds (like footsteps). Unsupported features include PhysX, damage, AI pathfinding (causes walking through walls), and built-in lights.<br><br>
+
+Given the simulation limitations, global decorative objects can be created with very little network traffic. Objects that could be exclusively created with this command are: trees, bushes, rocks, bridges, roads, vehicle wrecks, custom models in mission, and other objects without a class in config. The height of the placement position might need to be adjusted experimentally.<br>
+{{Feature|informative|
+* See [[Arma 3: Simple Objects]] to learn more about simple objects.
+* See [[Arma 3: createSimpleObject/objects]] for a p3d models' list.
+* See [[Arma 3: Livonia Props]] for [[Livonia]] furniture.
+
+
+Please note that:
+* [[addAction]] does not work with simple objects.
+* objects created with {{Link|#Syntax 1}} cannot be textured. Some objects may also have inverted default direction. 
+* objects created with {{Link|#Syntax 2}} can be textured. The default direction should match the direction of the object if it was created with [[createVehicle]].
+* only as of {{GVI|arma3|1.68}} do simple objects support [[getVariable]] and [[setVariable]].
+}}
+
+|s1= [[createSimpleObject]] [shapeName, positionWorld, local]
+
+|p1= shapeName: [[String]] - path to the 3d model (can be obtained with [[getModelInfo]] command)
+
+|p2= positionWorld: [[Position#PositionASL|PositionASL]] - placement position by the '''model centre'''<nowiki/>'s position (see [[getPosWorld]])
+
+|p3= local: [[Boolean]] - (Optional, default [[false]]) [[true]] to create a local instance only
+|p3since= arma3 1.96
+
+|r1= [[Object]] - created simple object
+
+|s2= [[createSimpleObject]] [className, positionASL, local]
+
+|p21= className: [[String]] - [[CfgVehicles]] class name
+
+|p22= positionASL: [[Position#PositionASL|PositionASL]] - placement position
+
+|p23= local: [[Boolean]] - (Optional, default [[false]]) [[true]] to create a local instance only
+|p23since= arma3 1.96
+
+|r2= [[Object]] - created simple object
+
+|x1= <sqf>
+private _pos = player getRelPos [10, 0];
+private _tank = createSimpleObject ["a3\armor_f_beta\apc_tracked_01\apc_tracked_01_rcws_f.p3d", _pos];
+_tank setPos (_pos vectorAdd (getPosWorld _tank vectorDiff (_tank modelToWorld [0,0,0])));
+
+_tank hideSelection ["zasleh", true];
+_tank hideSelection ["zasleh2", true];
+_tank hideSelection ["clan", true];
+ 
+_tank animate ["Wheel_podkoloL3", 0.5, true];
+_tank animate ["Wheel_podkoloL6", 0.5, true];
+</sqf>
+
+|x2= <sqf>
+private _pos = player getRelPos [10, 0];
+private _tank = createSimpleObject ["B_APC_Tracked_01_CRV_F", AGLToASL _pos];
+_tank setObjectTexture [0, "#(rgb,8,8,3)color(0,1,0,0.01)"];
+
+_tank hideSelection ["zasleh", true];
+_tank hideSelection ["zasleh2", true];
+_tank hideSelection ["clan", true];
+  
+_tank animate ["Wheel_podkoloL3", 0.5, true];
+_tank animate ["Wheel_podkoloL6", 0.5, true];
+</sqf>
+
+|x3= Create a pond:
+<sqf>
+private _waterTileModel = "a3\structures_f_enoch\Water\pond_big_01.p3d"; // visual only - this pond is a hard surface
+private _tileSize = 18; // width & height
+private _tileX = 10;
+private _tileY = 5;
+private _bottomLeftCorner = getPosWorld player;
+private _tilePos = -1;
+private _tiles = [];
+private _tile = objNull;
+for "_y" from 0 to (_tileY - 1) do
+{
+	for "_x" from 0 to (_tileX - 1) do
+	{
+		_tilePos = _bottomLeftCorner vectorAdd [_x * _tileSize, _y * _tileSize, 0];
+		_tile = createSimpleObject [_waterTileModel, _tilePos];
+		_tiles pushBack _tile;
+	};
+};
+sleep 10;
+{ deleteVehicle _x } forEach _tiles;
+</sqf>
+
+|seealso= [[isSimpleObject]] [[hideSelection]] [[selectionPosition]] [[getModelInfo]] [[getObjectType]] [[cursorObject]] [[selectionNames]] [[animationNames]] [[createVehicle]] [[enableSimulation]] [[hideObject]] [[getMissionPath]] [[allLODs]] [[Arma 3: Simple Objects]] [[Arma 3: createSimpleObject/objects]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20160418200300
+|text= The easiest way to correctly place simple object is to create normal object of the same shape from class (if possible), then copy [[getPosWorld]], [[vectorDir]] and [[vectorUp]] from it. Then create the simple object and apply copied values to it, this will position simple object exactly as normal object was positioned:
+<sqf>
+private _heli = "B_Heli_Light_01_F" createVehicleLocal (player getRelPos [10, 0]);
+private _position = getPosWorld _heli;
+private _vectorDirUp = [vectorDir _heli, vectorUp _heli];
+private _model = getModelInfo _heli select 1;
+deleteVehicle _heli;
+private _simpleHeli = createSimpleObject [_model, _position];
+_simpleHeli setVectorDirAndUp _vectorDirUp;
+</sqf>
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20160428181000
+|text= Models from within the mission file/folder can be created, but full system path is needed. See [[getMissionPath]]
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20160511012800
+|text= [[simulationEnabled]] returns false.
+}}
+
+{{Note
+|user= Warka
+|timestamp= 20160905151000
+|text= There is a section in function library dedicated to simple object creation and interaction. It's purpose is to simplify the operations:
+* [[BIS_fnc_createSimpleObject]]
+** creates simple object according to the supplied data
+** you can supply p3d path, class name or data you get from scanning a non-simple object
+
+* [[BIS_fnc_simpleObjectData]]
+** gathers and returns data about the non-simple object
+** data can be then used to create simple object
+
+* [[BIS_fnc_replaceWithSimpleObject]]
+** replaces non-simple object with simple object on the scene
+** do not use it in large scale in MP missions as it is not network efficient
+
+* [[BIS_fnc_adjustSimpleObject]]
+** adjusts simple object to looks as close to the non-simple object as possible
+** function is internally called from the 'BIS_fnc_createSimpleObject', you won't probably need to call this function directly
+
+Check the function headers for more info about the input parameters and possibilities.
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20240127232310
+|text= Before circa Arma 3 2.07: The path must '''not''' start with a backslash:
+{{{!}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{hl|"'''\'''a3\armor_f_beta...}}
+{{!}}-
+{{!}} {{Icon|checked}} 
+{{!}} {{hl|"a3\armor_f_beta...}}
+{{!}}}
+}}

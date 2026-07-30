@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/allCutLayers
+// revision: 377004 (2026-01-01T08:15:37Z)
+// export sha1: pgjeyorwrzx8usxp4p3kx6pyhu5bnop
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= GUI Control
+
+|descr= Returns all named layers used by [[cutRsc]], [[cutText]], [[cutObj]] or [[cutFadeOut]].
+The layer normally would be added on the first use of any of the aforementioned commands, however if a layer needs to be reserved it could be done like so:
+<sqf>private _layerNum = "TAG_myLayerName" cutFadeOut 0;</sqf>
+
+|s1= [[allCutLayers]]
+
+|r1= [[Array]] of [[String]]s - The index of the layer name in the array corresponds to the layer number the cut effect will be displayed on. If no layers were defined, the return is <sqf inline>[""]</sqf>, because layer 0 is reserved for usage in cut commands without layer param or when the provided layer name is empty {{hl|""}}.
+
+|x1= <sqf>private _allLayers = allCutLayers;</sqf>
+
+|seealso= [[cutRsc]] [[cutText]] [[cutObj]] [[cutFadeOut]] [[allActiveTitleEffects]] [[activeTitleEffectParams]]
+}}

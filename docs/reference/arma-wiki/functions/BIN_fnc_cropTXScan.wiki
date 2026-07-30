@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_cropTXScan
+// revision: 309491 (2022-05-05T12:06:22Z)
+// export sha1: 14yqwdefyanri97l4dwv0y5khvks7wp
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: TXScan | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= TXScan 
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Crops given scan
+
+	Parameter(s):
+		0: STRING - scan name
+		1: NUMBER - crop rectangle center X
+		2: NUMBER - crop rectangle center Y
+		3: NUMBER - crop rectangle center W
+		4: NUMBER - crop rectangle center H
+
+	Returns:
+		ARRAY - crop rectangle corners
+		
+	Example:
+		["MyScan", 100, 100, 1000, 500] call BIN_fnc_cropTXScan
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_cropTXScan]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_cropTXScan;</sqf> -->
+
+|seealso=
+}}

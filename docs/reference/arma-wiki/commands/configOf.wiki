@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/configOf
+// revision: 309234 (2022-05-04T10:23:40Z)
+// export sha1: iofzzmq5a9bvzutal10d39tzgfio8fh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|arg= global
+
+|gr1= Config
+
+|descr= Returns config path of the provided object.
+
+|s1= [[configOf]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Config]]
+
+|x1= <sqf>configOf player; // returns bin\config.bin/CfgVehicles/B_W_Soldier_TL_F</sqf>
+
+|seealso= [[typeOf]]
+}}

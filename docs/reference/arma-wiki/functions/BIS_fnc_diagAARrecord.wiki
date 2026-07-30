@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagAARrecord
+// revision: 329377 (2022-07-27T13:08:54Z)
+// export sha1: 3p2ein48aoa3yy7jgwa748j8k8eqd8a
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Starts recording units position and events for an '''AAR''' (After Action Review).<br>
+The following keys must be added to [[Description.ext]] for AAR to work properly:
+<syntaxhighlight lang="cpp">
+diagAAR = 1;		// to enable diag AAR
+diagAARauthor = 1;	// if description.ext/dev == profileName, allows the creator to debug himself
+diagAARunits = 2;	// which units to record:
+						// 1 = units player
+						// 2 = allunits + alldead
+						// any other value = player
+diagAARdelay = 3;	// delay between recording steps
+</syntaxhighlight>
+The data can be accessed with <sqf inline>profileNamespace getVariable "BIS_fnc_diagAAR_data"</sqf>.
+
+|s1= call [[BIS_fnc_diagAARrecord]]
+
+|r1= [[Number]] - the FSM handle (see [[execFSM]])
+
+|x1= <sqf>call BIS_fnc_diagAARrecord;</sqf>
+
+|seealso= [[BIS_fnc_diagAAR]]
+}}

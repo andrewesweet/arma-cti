@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/to
+// revision: 311163 (2022-05-12T09:48:15Z)
+// export sha1: hs36fagvo35m14l8ts66xvydq95gsjx
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Program Flow
+
+|descr= Continue sequence of [[for]] construct. It sets the end value of the index variable.
+
+|s1= forType [[to]] b
+
+|p1= forType: [[For Type]]
+
+|p2= b: [[Number]]
+
+|r1= [[For Type]]
+
+|x1= <sqf>
+for "_i" from 10 to 20 do
+{
+	hint str _i; // will hint from 10 to 20, spaced by 1 second
+	sleep 1;
+};
+</sqf>
+
+|seealso= [[Control Structures]] [[for]] [[from]] [[step]]
+}}

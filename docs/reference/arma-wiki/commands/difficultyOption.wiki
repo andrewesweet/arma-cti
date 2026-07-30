@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/difficultyOption
+// revision: 369140 (2024-09-03T10:34:36Z)
+// export sha1: 2325tz1hqxd79qmvu7es8xjbexmihfo
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Difficulty | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Difficulty
+
+|descr= Checks specific difficulty settings of the current user.
+Difficulty flag names can be found in the {{hl|CfgDifficultyPresets}} config class or in [[server.armaprofile|ArmA profile]] file under class {{hl|DifficultyPresets/xxx/Options}} (xxx being Recruit, Regular or Veteran).
+This command replaces [[difficultyEnabled]] as many options have multiple values and former command only provided [[Boolean]] return.
+
+|s1= [[difficultyOption]] optionName
+
+|p1= optionName: [[String]] - difficulty option name; one of:
+{{Columns|5|
+* reducedDamage
+* groupIndicators
+* friendlyTags
+* enemyTags
+* detectedMines
+* commands
+* waypoints
+* weaponInfo
+* stanceIndicator
+* staminaBar
+* weaponCrosshair
+* visionAid
+* thirdPersonView
+* cameraShake
+* scoreTable
+* deathMessages
+* vonID
+* mapContent
+* autoReport
+* multipleSaves
+}}
+
+|r1= [[Number]]
+
+|s2= [[difficultyOption]] array
+|s2since= arma3 2.14
+
+|p21= array: [[Array]] - any array, could be empty array []
+|r2= [[Array]] - array of all options and current values in format <nowiki>[</nowiki>["Option1", value1], ...["OptionN", valueN]]
+
+|x1= <sqf>hint str (difficultyOption "friendlyTags");</sqf>
+
+|x2= Remember last [[cameraView]] per vehicle:
+<sqf>
+player addEventHandler ["GetOutMan", {
+	params ["_unit", "", "_vehicle"];
+	_unit setVariable [_vehicle call BIS_fnc_netId, cameraView];
+}];
+player addEventHandler ["GetInMan", {
+	if (difficultyOption "thirdPersonView" == 2) then {
+		params ["_unit", "", "_vehicle"];
+		_unit switchCamera (_unit getVariable [_vehicle call BIS_fnc_netId, "INTERNAL"]);
+	};
+}];
+</sqf>
+
+|seealso= [[difficulty]] [[difficultyEnabledRTD]] [[Arma 3: Difficulty Settings]] [[missionDifficulty]]
+}}

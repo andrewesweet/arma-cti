@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/lnbSetTextRight
+// revision: 321491 (2022-05-16T14:16:31Z)
+// export sha1: ip1ft00emequn7r81iy0u330uaohasd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI Control - ListNBox
+
+|descr= Sets cell's right-aligned text. Does not replace [[lnbText|cell's text]].
+
+|s1= [[lnbSetTextRight]] [idc, [row, column], text]
+
+|p1= idc: [[Number]]
+
+|p2= row: [[Number]] - 0-based index (first row is 0, second is 1, etc)
+
+|p3= column: [[Number]] - 0-based index (first column is 0, second is 1, etc)
+
+|p4= text: [[String]]
+
+|r1= [[Nothing]]
+
+|s2= ctrl [[lnbSetTextRight]] [<nowiki/>[row, column], text]
+
+|p21= ctrl: [[Control]]
+
+|p22= row: [[Number]] - 0-based index (first row is 0, second is 1, etc)
+
+|p23= column: [[Number]] - 0-based index (first column is 0, second is 1, etc)
+
+|p24= text: [[String]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lnbSetTextRight [1492, [1,0], "right text"];</sqf>
+
+|x2= <sqf>_ctrl lnbSetTextRight [[0, 3], "right text"];</sqf>
+
+|seealso= [[lnbTextRight]] [[lnbSetColorRight]] [[lnbColorRight]] [[lnbText]]
+}}

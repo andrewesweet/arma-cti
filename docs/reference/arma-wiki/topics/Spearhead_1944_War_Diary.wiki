@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_War_Diary
+// revision: 368931 (2024-08-13T17:02:01Z)
+// export sha1: tcqr9xd7tdtep77q98uk1s1ydxrlp02
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+
+{| class="wikitable"
+|+ '''<big>Operation Lüttich</big>'''
+|-
+! Date !! Diary Entry !! Photo
+|-
+| August 7th, 1944
+| ''On this day, 80 years ago, small-arms fire could be heard around 01:00.<br />What was thought to be a local skirmish, turns out to be the start of a German counter-attack, named Operation Lüttich. Not all Allied forces are notified, and 700 men on Hill 314 are now cut off.''
+| [[File:spe_war_diary_aug_7th.jpg|500px]]
+|-
+| August 8th, 1944 || ''On this day, 80 years ago, the town of Mortain fell to German forces.<br />The Germans tried to break through the US lines near the Abbaye Blanche, Saint-Barthélemy and Bellefontaine, achieving mixed results. Fighting was fierce, and both sides were well aware of what was at stake.''
+| [[File:spe_war_diary_aug_8th.jpg|500px]]
+|-
+| August 9th, 1944 || ''German counter-attack stalled. The defenders of Hill 314, supported by US artillery and allied aircraft, proved to be costly for the Germans.<br />Intense artillery fire from both sides lasted throughout the day. The Germans prepared for the final push.''
+| [[File:spe_war_diary_aug_9th.jpg|500px]]
+|-
+| August 10th, 1944 || ''Today, 80 years ago, the Germans made their final push. Only able to attack for six hours, they had to give up as soon as the morning fog started clearing up.<br />Operation Lüttich has failed. German command must now decide whether to stand their ground, or retreat.''
+| [[File:spe_war_diary_aug_10th.jpg|500px]]
+|-
+| August 11th, 1944 || ''Today, 80 years ago, the Germans started to retreat from Mortain.<br />With allied tanks only 30 km from Paris and the success of Operation Totalize, the Germans are pushed back to Falaise.<br />The fate of the German 7th army was sealed and the liberation of France well underway.''
+| [[File:spe_war_diary_aug_11th.jpg|500px]]
+|-
+| August 12th, 1944 || ''Defenders of Hill 314 are still holding on. After 6 days of fighting, they are left with one radio and very little supplies.<br />Their spotters proved essential in stopping German advances throughout the battle. Out of 700 men, only 400 would survive.''
+| [[File:spe_war_diary_aug_12th.jpg|500px]]
+|-
+| August 13th, 1944 || ''Operation Lüttich is over. The once beautiful town of Mortain lies in ruins, scattered with wrecks and bodies.<br />The Germans paid a heavy price for their offensive. All that's left of the panzer divisions are empty markings on the map.''
+| [[File:spe_war_diary_aug_13th.jpg|500px]]
+|}
+
+[[Category: Spearhead 1944]]

@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_AAN
+// revision: 328448 (2022-07-13T16:04:00Z)
+// export sha1: ghix9ii5chtwtjj3zgadrikzpa1yr2t
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= GUI
+
+|descr= Add an AAN overlay to the screen, with one headline and a rolling text on the bottom.
+
+|s1= [headline, rollingText] spawn [[BIS_fnc_AAN]]
+
+|p1= headline: [[Structured Text]] - main title, shown in bigger size
+
+|p2= rollingText: [[Structured Text]] - bottom text under ''headline'' scrolling right to left
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+[
+	parseText "<t size='2'>AAN live in Takistan</t>",
+	parseText "Weather coming up hot and steamy - Takistan shelled again from border area"
+] spawn BIS_fnc_AAN;
+</sqf>
+
+|exec= spawn
+
+|seealso= [[parseText]] [[BIS_fnc_showAANArticle]]
+}}
+
+{{Note
+|user= Triteyker-
+|timestamp= 20140928194200
+|text= Maximum size (added with <t size='x'></t> parameters) for the headline is 2 if you want another, size 1 text under it. Size 2.5 to 3 seems to be the max size for the headline if you don't want it to disappear.<br>
+Rolling text size has to be 1 or else it disappears entirely. Time in the bottom right is ingame time (see [[setDate]]). Do note that this function cannot center on an object, and additional camera work is required to achieve such effects. It merely adds an overlay to the screen, and the player retains control even with the overlay active.
+}}
+
+{{Note
+|user= Jaffa
+|timestamp= 20150805223800
+|text= To remove the overlay you must close the display from the BIS_AAN UI Namespace variable. 
+i.e. <sqf>(uiNamespace getVariable "BIS_AAN") closeDisplay 1;</sqf>
+}}

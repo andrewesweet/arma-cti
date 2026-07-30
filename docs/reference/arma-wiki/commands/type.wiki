@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/type
+// revision: 319936 (2022-05-13T09:25:45Z)
+// export sha1: 4i9i2ov67v1j57gx0lzvulijdk6tk0a
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Command Group: Locations | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Locations
+
+|gr2= Briefing
+
+|descr= Returns a string of a [[Location]]'s class name or [[Task]]'s name (same as [[taskName]]).
+
+|s1= [[type]] location
+
+|p1= location: [[Location]]
+
+|r1= [[String]]
+
+|s2= [[type]] task
+
+|p21= task: [[Task]]
+
+|r2= [[String]] - the type of the task
+
+|x1= <sqf>_locationType = type myLocation;</sqf>
+|x2= <sqf>_taskName = type myTask;</sqf>
+
+|seealso= [[setType]]
+}}

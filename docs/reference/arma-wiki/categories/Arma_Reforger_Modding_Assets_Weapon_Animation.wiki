@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Assets/Weapon_Animation
+// revision: 371040 (2025-02-26T12:33:55Z)
+// export sha1: hd9qb39pt8qv9rpl4t12rzqd2ca6ayq
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding|Assets|Weapon Animation}}

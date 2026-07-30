@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_fadeEffect
+// revision: 324311 (2022-07-01T12:00:44Z)
+// export sha1: g9ybqbco5n0eedspzhpiq58qsgr4i4e
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|eff= local
+
+|gr1= GUI
+
+|exec= spawn
+
+|descr= Easily carry out complex fading. Default values will be used if parameters are not defined or set to nil.
+
+|s1= [fadeInOrOut, blackOrWhite, duration, blur, music, ending, success] spawn [[BIS_fnc_fadeEffect]]
+
+|p1= fadeInOrOut: [[Number]] - (Optional, default 1) 0 to fade out, 1 to fade in
+
+|p2= fadeColor: [[String]] - (Optional, default "BLACK") '''case-sensitive''' can be "BLACK" or "WHITE"
+
+|p3= duration: [[Number]] - (Optional, default 3) fade duration in seconds
+
+|p4= blur: [[Number]] - (Optional, default 0) 0 to not blur, 1 to blur (blur-in for fade-in, blur-out for fade-out)
+
+|p5= music: [[String]] - (Optional, default "") '''only for fade-out''' music class name defined in [[Description.ext#CfgMusic|CfgMusic]]
+
+|p6= ending: [[String]] - (Optional, default "") "" to not end the mission, else a value compatible with [[endMission]] or [[failMission]]. '''Will end mission only for the local player'''
+
+|p7= success: [[Number]] - (Optional, default 1) '''if ''ending'' != ""''' 1 to end mission with success, 0 to fail mission
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[1, "WHITE", 5, 1] spawn BIS_fnc_fadeEffect;</sqf>
+
+|seealso= [[endMission]] [[failMission]] [[BIS_fnc_endMission]] [[BIS_fnc_endMissionServer]] [[titleCut]]
+}}

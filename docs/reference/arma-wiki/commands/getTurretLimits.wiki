@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/getTurretLimits
+// revision: 377851 (2026-01-03T11:52:28Z)
+// export sha1: o4jzlpox8628floz61835024mxszwfy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|arg= global
+
+|descr= Returns the rotation and elevation limits for the given turret.
+
+|gr1= Turrets
+
+|s1= vehicle [[getTurretLimits]] turret
+
+|p1= vehicle: [[Object]] - vehicle the turret belongs to
+
+|p2= turret: [[Turret Path]]
+
+|r1= [[Array]] with [minTurn, maxTurn, minElev, maxElev, overridden]
+* minTurn: [[Number]] - from 0 to -angle in degrees (left)
+* maxTurn: [[Number]] - from 0 to +angle in degrees (right)
+* minElev: [[Number]] - from 0 to -angle in degrees (down)
+* maxElev: [[Number]] - from 0 to +angle in degrees (up)
+* overridden: [[Boolean]] - if custom limits were applied
+
+|x1= <sqf>
+private _turretLimits = m2 getTurretLimits [0];
+_turretLimits params ["_minTurn", "_maxTurn", "_minElev", "_maxElev", "_overridden"];
+</sqf>
+
+|seealso= [[setTurretLimits]] [[setTurretOpticsMode]] [[turretLocal]] [[selectWeaponTurret]]
+}}

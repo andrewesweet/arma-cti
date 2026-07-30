@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/ctrlTextSelection
+// revision: 377654 (2026-01-02T09:02:02Z)
+// export sha1: lg7mu5jfeg035vsbby8vd7ws29f1q7y
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= GUI Control
+
+|descr=Returns edit control text selection in format [start, length, selectedText]. 
+{{Feature|informative|''length'' can be negative if text selection is made from right to left. Use [[abs]] with ''length'' or [[count]] with {{hl|selectedText}} if string length is required. ''start'' always indicates at what position in text the selection is started. The cursor position will always be at the end of the selection. So if selection is made from right to left the cursor position will be at the left end of the selection. In order to find cursor position add ''start'' and ''length'' together (see {{Link|#Example 3}}).}}
+
+|s1= [[ctrlTextSelection]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Array]] with [start, length, selectedText]
+* start: [[Number]] - position in text selection started
+* length: [[Number]] - number of the highlighted characters (this number could be negative, see description)
+* selectedText: [[String]] - selected text
+
+|x1= Selection is made from left to right:
+<sqf>ctrlTextSelection _control; //[0, 11, "Hello World"];</sqf>
+
+|x2= Selection is made from right to left:
+<sqf>ctrlTextSelection _control; //[11, -11, "Hello World"];</sqf>
+
+|x3= Find cursor position:
+<sqf>
+ctrlTextSelection _control params ["_start", "_length"];
+private _cursorPos = _start + _length;
+</sqf>
+
+|seealso= [[ctrlSetTextSelection]]
+}}

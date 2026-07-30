@@ -1,0 +1,21 @@
+// source: https://community.bistudio.com/wiki/ECL
+// revision: 350007 (2023-11-20T22:11:50Z)
+// export sha1: jxcz8uiod44jwdfj8noi6smnfqokbf7
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:eclbanner.jpg|European Combat League]]
+
+=== Our mission ===
+{{Link|http://www.european-combat-league.com|European Combat League}} (or ECL) 's mission is to provide hassle free, quality games in a friendly yet competitive atmosphere. We're aiming to be the main league for the type of maps and ladders we have to offer, dedicated fully to Armed Assault.
+
+=== ECL's history ===
+ECL was founded as the European Flashpoint League in March 2002. The name change to European Combat League came in 2004. ECL have been active as an OFP league until summer 2006, and we have gone in hibernation, preparing for ArmA until now. We've had many of the well know OFP teams in the past, and we're looking forward to getting the ArmA teams back in!
+
+=== ECL's organisation ===
+We pride ourselves in having a mature staff which has several years of experience in running a league. All squad reps are able to join the squad rep council, which is able to influence the league's direction and decide on matters regarding disputes etc. 
+
+=== Ladder types ===
+We are planning on two main ladders: The Battle Ladder, a free-for-all ladder which is open for all teams to join. You can play as many matches as you want, and the ladder position is based on the number of victories and draws you've had. Also there will be the War Ladder, for which teams that apply will be admitted by the squad rep council on basis of a set of criteria like proven sportsmanship, players' connection quality (to prevent lag as much as possible), dependability and responsiveness of the team's squad rep etc. The War Ladder will be based on a Football style ladder, with a fixed schedule according which matches can be sceduled on a weekly basis. We have also had various other ladders like a 1 vs 1 and a 4 vs 4 (T)DM ladder. We are organising regular inter-season tournaments on different themes like a winter tournament, a C&H tournament etc.
+
+=== Map types ===
+We have several map types to offer: C&H, CTF and Combi, ranging from smaller CQB to mid sized all-armor. Our maps all have a spawn protection system in place,  gear is chosen by role (e.g. AT man, grenadier, engineer etc). All maps are based on our templates, which has been developed and improved over the years, and now ported from OFP to Armed Assault. Maps are made both by our mapping staff and by the community with a consistent quality due to the availability of the templates.

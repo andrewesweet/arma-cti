@@ -1,0 +1,75 @@
+// source: https://community.bistudio.com/wiki/serverCommand
+// revision: 377886 (2026-01-04T16:30:46Z)
+// export sha1: 4nhaoblttnw5eccg6ewams34q7goflz
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 2 version 1.05 | Category:Introduced with Arma 3 version 1.40 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.05
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Multiplayer
+
+|descr= Executes the given [[Multiplayer_Server_Commands|server command]]. Requires you to be '''logged-in''' [[admin]] as client to execute on a client, or provide the '''serverCommandPassword''' with the serverCommand execution as client/server to basically also get logged in [[admin]] permissions.
+
+{{Feature|informative|
+* Available commands for execution can be found with [[serverCommandAvailable]]
+* Commands that can be executed can be found with [[serverCommandExecutable]]
+}}
+
+{{Feature|important|If [[serverCommand]] is executed on a client, it must be executed from [[isUIContext|UI context]], such as [[User Interface Event Handlers#onButtonDown|"onButtonDown"]] or similar events (see [[User Interface Event Handlers]]).}}
+
+|s1= [[serverCommand]] command
+
+|p1= command: [[String]]
+
+|r1= [[Boolean]] - [[false]] if a non valid command is used ("#blah"), false otherwise (was always [[true]] before {{GVI|arma3|1.40|size= 0.75}})
+
+|s2= password [[serverCommand]] command
+|s2exec= server
+
+|s2since= arma3 1.40
+
+|p21= password: [[String]] - case-sensitive password defined in [[Arma 3: Server Config File|server config]] with {{hl|serverCommandPassword}} param
+
+|p22= command: [[String]] - server command
+
+|r2= [[Boolean]] - [[false]] if command failed at some stage. [[true]] doesn't mean that command succeeded.
+
+|x1= <sqf>serverCommand "#logout";</sqf>
+
+|x2= Create button on the main map which will show userlist to anyone who clicks on it:
+<sqf>
+with uiNamespace do 
+{
+	private _ctrl = findDisplay 12 ctrlCreate ["RscButton", -1];
+	_ctrl ctrlSetPosition [0,0,0.5,0.1];
+	_ctrl ctrlSetText "USERLIST";
+	_ctrl ctrlCommit 0;
+	_ctrl ctrlAddEventHandler ["ButtonDown", 
+	{
+		serverCommand "#userlist";
+	}];
+};
+</sqf>
+
+|x3= <sqf>serverCommand format ["#kick %1",_name];</sqf>
+
+|x4= <sqf>private _passwordWasOK = "MyServerCommandPassword" serverCommand "#lock";</sqf>
+
+|seealso= [[serverCommandAvailable]] [[serverCommandExecutable]] [[admin]] [[isUIContext]]
+}}
+
+
+[[Category:Scripting Commands: Server Execution]]
+[[Category:Introduced with Arma 3 version 1.40]]

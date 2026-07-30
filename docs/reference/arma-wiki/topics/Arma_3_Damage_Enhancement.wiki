@@ -1,0 +1,186 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Damage_Enhancement
+// revision: 363301 (2024-03-26T11:19:31Z)
+// export sha1: nf4y10h7vsj3ua6r91g283jzuv4hstb
+// categories: Category:Arma 3: Tutorials | Category:Arma 3: Vehicle Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Arma 3 Tanks]] brought with it an overhaul, or rather enhancement of the vehicle damage model as part of the free platform upgrade.
+The aim is to decrease the flaws of the current damage model and make it easier to configure.
+However, due to the backwards compatibility it is still based on the old one, and for more knowledge regarding that, there's already an [[Arma 3 Damage Description|existing guide]].
+This guide will describe the changes which will the platform update for Tanks DLC bring.
+
+
+== Component system ==
+
+One of the enhancements brought by this platform update is the component system, which allows to use a named selection in the FireGeometry for the hit detection. The sphere system in [[Arma 3 Damage Description|this damage guide]] might have been efficient for calculating explosive damage, however not as much for the penetration, seeing the spheres cannot cover the area efficiently. Because of that they started overlapping etc., which was bringing side effects - size and density of the spheres were affecting damage done.
+
+Component system can be connected by adding ''armorComponent'' parameter to the hitpoint as in the example below:
+
+<syntaxhighlight lang="cpp">
+// config.cpp
+// ...
+class HitPoints : HitPoints
+{
+	class HitSLAT_Left_1
+	{
+		simulation = "Armor_SLAT";
+		armorComponent = "cage_left_1";
+		name = "cage_left_1_point";
+		armor = -200;
+		minimalHit = 0.3;
+		passThrough = 0;
+		visual = "-";
+		explosionShielding = 2;
+		radius = 0.25;
+	};
+};
+// ...
+</syntaxhighlight>
+
+'''Parameters:'''
+* '''simulation''' - will be explained below, allows to define type of armor. The value is an entry from ''CfgArmorSimulations''.
+* '''name''' - name of the selection in ''Hitpoint LOD'', used for calculation of explosive damage.
+* '''armorComponent''' - name of the selection in ''FireGeometry LOD'', used for calculation of penetration.
+* '''passThrough''' - value defining the amount of damage which will get transferred to total damage. '''Its functionality is different after the update'''.
+** in case ''armorComponent'' '''is not''' defined, it works as it used to and is affected by ''armorStructural''.
+** in case ''armorComponent'' '''is''' defined, it works more intuitively and the value defined gets transferred to total damage regardless on ''armorStructural''.
+
+More detailed description about the hitpoint parameters can be found in [[Arma 3 Jets Hitpoint Configuration|this guide]].
+
+
+== CfgArmorSimulations ==
+
+A feature, which will allow distinguish between different ammo and armor types.
+In the platform update, there will be pre-configured three armor types and four ammo types, but none of these are hardcoded in the engine and therefore, can be expanded upon nearly infinitely.
+
+Configuring such thing however needs an entry on three different places:
+* '''CfgArmorSimulation''' - its entries can be viewed as a table defining interactions between armor and ammo types. Classes there represent armor types (Armor_ERA_Heavy as seen in example) and it is subclasses ammo types (AP, HE, HEAT...)
+* '''Hitpoint config''' - parameter ''simulation'' needs to be added to the particular hitpoint to define the type of the armor, its value is name of class in CfgArmorSimulations (such as Armor_ERA_Heavy)
+* '''Ammo config''' - parameter ''WarheadName'' needs to be added to the ammo config to define its type, its value is name of the subclass in CfgArmorSimulations (HE, HEAT, TandemHeat...)
+
+<syntaxhighlight lang="cpp">
+class CfgArmorSimulations
+{
+	/*
+		Values:
+		{ a, b }
+		{ { a1, a2 }, b }
+		{ a, { b1, b2 } }
+		{ { a1, a2 }, { b1, b2 } }
+		a - multiplier for when armor is undamaged
+		b - multiplier for when armor is destroyed
+		a1, a2 - lowest and highest value for randomization pool when armor is undamaged
+		b1, b2 - lowest and highest value for randomization pool when armor is destroyed
+	*/
+
+	class Armor_ERA_Heavy
+	{
+		class Default // when hit by ammunition without warHeadName
+		{
+			hit[] = { 1 };
+			speed[] = { 1 };
+		};
+
+		// warheads
+		class AP
+		{
+			hit[] = { 1 };
+			speed[] = { 0.65, 1 };
+		};
+
+		class HE
+		{
+			hit[] = { 0.1, 1 };
+			speed[] = { 1 };
+		};
+
+		class HEAT
+		{
+			hit[] = { 1 };
+			speed[] = { 0.25, 1 };
+		};
+
+		class TandemHEAT
+		{
+			hit[] = { 1 };
+			speed[] = { 0.65, 1 };
+		};
+	};
+};
+</syntaxhighlight>
+
+Please note that how the ammo will interact with the armor type is ''entirely'' dependent on the warheadName parameter, not on configuration of the ammo.
+This parameter can be passed as a '''formal label'''. Creating a new simulation means defining it is interaction with all available ammo types (or type ''Default'' as shown in the example above, of none is applicable)
+
+'''Parameters:'''
+* '''Hit''' - defines the modifier, which will be applied to the damage for particular projectile type for that hitzone. For example, if both AP and HE would have hit on 200, but hit an undamaged component with Armor_ERA_Heavy with configuration above... AP will hit with full force (modifier 1) while HE only for 20 (modifier 0.1)
+* '''Speed''' - defines the modifier, which will be applied to the speed for particular projectile type for that hitzone. For example, if both HE and HEAT would have speed on 500, but hit an undamaged component with Armor_ERA_Heavy with configuration above... speed of HE will remain unchanged, while HEAT will slow down by 75% when passing that component in ''FireGeometry''.
+
+'''Configuration:'''
+In the example above there is a short use case, which is applicable for both ''Hit'' and ''Speed'' parameters.
+* Value of parameters is array, where first value defines modifier for '''undamaged''' hitzone and the last for '''destroyed''' hitzone. Thanks to this, the simulation can change based on the hitzone's health and defense less efficient as the armor gets damaged
+* Each of those values can be an array - such array becomes a pool of randomization for the modifiers. hit[] = {{0.1,0.3},1}; would pick random values between 0.1 and 0.3 for undamaged hitzone
+* Correlation between undamaged and destroyed values is '''linear'''
+* If there is only one value, the modifier will be a constant regardless of damage
+
+
+== Quality-of-life configuration upgrades ==
+
+* '''negative armor''' - the possibility of configuring an absolute armor value instead of a modifier (hitzone armor * vehicle base armor)
+** armor = -200;
+* '''visual''' - the possibility of visual not doing anything instead of defaulting on zbytek selection or a random value
+** visual = "-";
+* '''passThrough''' - more intuitive use of ''passThrough'' when the ''armorComponent'' is defined in the hitpoint - instead of being divided by ''armorStructural'' or other constants, it will pass the correct amount of damage to Total.
+* '''HitTurret and HitGun''' - previously, those hitpoints could only be named like this, which in case of gunner turret and commander turret cause two hitpoints being named the same. It was causing problems with script damaging and it was also affecting it is functionality in the wrong way (both turrets have been affected instead of one. Now, they can be named freely, as two parameters have been added:
+** '''isTurret''' - setting it to true will mean this hitpoint represents turret part of the weapon
+** '''isGun''' - setting it to true will mean this hitpoint represents gun part of the weapon
+<syntaxhighlight lang="cpp">
+class HitPoints
+{
+	class HitComTurret	{ armor = 0.1; material = -1; armorComponent = "hit_com_turret";	name = "hit_com_turret_point";	visual="";	passThrough = 0; minimalHit = 0.1; explosionShielding = 1; radius = 0.15; isTurret = true; };
+	class HitComGun		{ armor = 0.1; material = -1; armorComponent = "hit_com_gun";		name = "hit_com_gun_point";		visual="";	passThrough = 0; minimalHit = 0.1; explosionShielding = 1; radius = 0.15; isGun = true; };
+};
+</syntaxhighlight>
+* '''Two new parameters for hitpoint destruction effects''' - destruction effects for the hitpoints were used very rarely and it is an artifact from the previous games. For hitpoints such as ERA plates we need to use it again, therefore it needs modifications to override the engine function:
+** '''effectRadius''' - numeric value, will be needed if that hitpoint has ''armorComponent''
+** '''ignoreFuel''' - true/false, it is an artifact from previous games, because the destruction effects were used mainly on fuel explosions. It used to take random amount of fuel, which is undesirable in most cases (like ERA plates)
+
+<syntaxhighlight lang="cpp">
+class HitPoints : HitPoints
+{
+	class HitERA_Front
+	{
+		type = "ARMOR_ERA"; // cannot be isTurret or isGun
+		// ...
+
+		class DestructionEffects
+		{
+			ammoExplosionEffect = "";
+
+			// 2 new parameters to override engine function
+			effectRadius = 1; // needed when hitpoint with convexComponentNewArmor
+			ignoreFuel = true;
+
+			class Explo
+			{
+				simulation = "particles";
+				type = "MineExplosionParticles";
+				position = "Hit_ERA_front_01_mem";
+				intensity = 1;
+				interval = 1;
+				lifeTime = 0.01;
+			};
+
+			class Smoke : Explo
+			{
+				type = "ERASmoke";
+				lifeTime = 0.1;
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Tutorials}}
+{{GameCategory|arma3|Vehicle Configuration}}

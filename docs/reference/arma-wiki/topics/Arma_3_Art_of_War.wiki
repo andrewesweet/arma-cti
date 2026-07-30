@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Art_of_War
+// revision: 339393 (2023-04-28T14:08:40Z)
+// export sha1: 323w58wcoei8s84wdmk5vvdbf9eqlqp
+// categories: Category:Arma 3: DLCs & Expansions | Category:Introduced with Arma 3 version 2.02
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= arma3 artofwar logo.png
+|game= arma3
+|version= 2.02
+|releasedate= 23rd February 2021
+|size= 300
+|intro= '''Arma 3 Art of War''' is a charity DLC for {{arma3}} made in collaboration with participating community members. Admire splendid community artwork and recover priceless cultural property in the Arma 3 Art of War DLC.<br><br>
+'''Charity'''<br>
+100% of Bohemia Interactive's proceeds after tax from the Arma 3 Art of War charity DLC will be donated to the International Committee of the Red Cross (ICRC). After the initial fundraising period, this DLC will eventually become free to all owners of Arma 3. The total amount raised will be announced on {{Link|link= https://www.bohemia.net|text= www.bohemia.net}}.
+|premfeature1= '''Showcase Cultural Property''' - Experience International Humanitarian Law in action and help protect a valuable work of art in a new singleplayer scenario.
+|premfeature2= '''Formal Suit''' - Don several color combination outfits for the sharpest of dressers.
+|premfeature3= '''Parade Uniform''' - Equip faction-specific dress wear for formal military occasions.
+|premfeature4= '''Parade Cap''' - Wear matching faction-specific headgear.
+|premfeature5= '''Civilian Backpack''' - Carry a range of sports and everyday backpacks.
+|supportfeature1= '''Showcase Art of War''' - Visit an exhibition on war and art, featuring impressive and award-winning community artwork.
+|supportfeature2= '''Art T-Shirts''' - Show off new casual themed clothing featuring a variety of designs.
+|supportfeature3= '''Art Gallery Objects''' - Place frames and canvases in several shapes and sizes, set up your easel, or create your very own in-game dioramas.
+|supportfeature4= '''Memorial Objects''' - Use coffins, photo portraits, folded flags, and more to pay tribute to the fallen.
+|supportfeature5= '''Achievements''' - Unlock a set of extra Steam Achievements.
+|gallery1= arma3 dlc artofwar screenshot 01.jpg
+|gallery2= arma3 dlc artofwar screenshot 02.jpg
+|gallery3= arma3 dlc artofwar screenshot 03.jpg
+|gallery4= arma3 dlc artofwar screenshot 04.jpg
+|trailer= mjz6K5vypmk
+|start1=|text= {{Link|link= https://arma3.com/dlc/artofwar|text= Official Site}}
+|start2= {{Link|link= https://store.steampowered.com/app/1325500/|text= Art of War DLC on Steam}}
+|start3= {{Link|https://arma3.com/artofwar|Art of War contest official website}}
+|start4= [[Arma 3: Art of War Artwork Textures|Art of War Artwork Textures]]
+|isDLC= y
+}}
+
+{{GameCategory|arma3|DLCs & Expansions}}

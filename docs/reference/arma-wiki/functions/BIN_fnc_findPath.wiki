@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_findPath
+// revision: 309455 (2022-05-05T12:06:03Z)
+// export sha1: 6ox3l079pvp8kus8z9a7lrcr0tkqxbd
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Movement | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Movement 
+
+|descr= <pre>/*
+
+	Description:
+	A* search algorithm.
+	Uses hard-coded Manhattan distance to measure distance.
+
+	Parameter(s):
+		0: ARRAY of ARRAYs in format:
+			0: NUMBER - node cost
+			1: ARRAY - array of neighbor indexes
+			2: ARRAY - XYZ position of the node, used to measure distance from end pos
+		1: NUMBER - index of starting point
+		2: NUMBER - index of ending point
+
+	Returns:
+	ARRAY of NUMBERs - indexes of nodes which are traversed on the way to the ending point
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_findPath]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_findPath;</sqf> -->
+
+|seealso=
+}}

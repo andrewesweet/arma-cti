@@ -1,0 +1,103 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_displayColorGet
+// revision: 349349 (2023-11-08T14:53:31Z)
+// export sha1: g6gjy29ajmkyb5q8uojiuhhyfkfpupr
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= Loads custom [[User Interface Colors|color settings]] from CfgUIDefault.
+
+If variables are not stored in [[profileNamespace]] yet, the function will declare them.
+
+{{{!}}
+{{!}} style="vertical-align: top; width: 50%" {{!}}
+<!-- A3 -->
+{{{!}} class="wikitable"
+{{!}}+ {{arma3}} v1.99
+! Tag !! Variable !! Description
+{{!}}-
+! rowspan="5" {{!}} "IGUI"
+{{!}}"BCG_RGB" {{!}}{{!}} Backgrounds
+{{!}}-
+{{!}} "TEXT_RGB" {{!}}{{!}} Active Elements
+{{!}}-
+{{!}} "WARNING_RGB" {{!}}{{!}} Warnings
+{{!}}-
+{{!}} "ERROR_RGB" {{!}}{{!}} Errors
+{{!}}-
+{{!}} "TACTPING_RGB" {{!}}{{!}} Tactical Ping
+{{!}}-
+! rowspan="2" {{!}} "GUI"
+{{!}} "BCG_RGB" {{!}}{{!}} Backgrounds
+{{!}}-
+{{!}} "TITLETEXT_RGB" {{!}}{{!}} Title Text
+{{!}}-
+! rowspan="5" {{!}} "Map"
+{{!}} "BLUFOR" {{!}}{{!}} BLUFOR
+{{!}}-
+{{!}} "OPFOR" {{!}}{{!}} OPFOR
+{{!}}-
+{{!}} "Independent" {{!}}{{!}} Independent
+{{!}}-
+{{!}} "Civilian" {{!}}{{!}} Civilian
+{{!}}-
+{{!}} "Unknown" {{!}}{{!}} Unknown
+{{!}}-
+! rowspan="2" {{!}} "Subtitles"
+{{!}} "Background" {{!}}{{!}} Subtitle background
+{{!}}-
+{{!}} "Text" {{!}}{{!}} Subtitle text
+{{!}}}
+
+{{!}} style="vertical-align: top; width: 50%" {{!}}
+<!-- TKOH -->
+{{{!}} class="wikitable"
+{{!}}+ {{tkoh}} v1.00
+! Tag !! Variable !! Description
+{{!}}-
+! rowspan="2" {{!}} "IGUI"
+{{!}}"IGUI_TEXT_RGB" {{!}}{{!}} HUD color '''RGB'''
+{{!}}-
+{{!}} "IGUI_TEXT_COLOR" {{!}}{{!}} HUD color '''RGBA'''
+{{!}}-
+! rowspan="5" {{!}} "GUI"
+{{!}} "BCG_RGB" {{!}}{{!}} menu background '''RGB'''
+{{!}}-
+{{!}} "GUI_BCG_COLOR" {{!}}{{!}} menu background '''RGBA'''
+{{!}}-
+{{!}} "GUI_BCG_MEDIUM_RGB" {{!}}{{!}} button background '''RGB''' (darker version of GUI_BCG_RGB)
+{{!}}-
+{{!}} "GUI_BCG_MEDIUM_COLOR" {{!}}{{!}} button background '''RGBA'''
+{{!}}-
+{{!}} "GUI_BCG_ACTIVE_RGB" {{!}}{{!}} active button background color (e.g. focused buttons) '''RGB'''
+{{!}}}
+
+{{!}}}
+
+|s1= [tag, variable] call [[BIS_fnc_displayColorGet]]
+
+|p1= tag: [[String]] - tag defined in [[User Interface Colors|CfgUIDefault]]
+
+|p2= variable: [[String]] - variable defined in "CfgUIColors" >> Variables
+
+|r1= [[Array]] - in format [[Color|Color (RGBA)]]
+
+|s2=  init call [[BIS_fnc_displayColorGet]]
+
+|p21= init: [[Boolean]] - when used, function will initialize all color presets
+
+|r2= [[Nothing]]
+
+|x1= <sqf>["GUI", "BCG_RGB"] call BIS_fnc_displayColorGet;//Returns menu color</sqf>
+
+|seealso= [[Color|Color (RGBA)]] [[BIS_fnc_colorRGBtoHTML]] [[BIS_fnc_colorRGBAtoHTML]] [[BIS_fnc_colorRGBAtoTexture]]
+}}

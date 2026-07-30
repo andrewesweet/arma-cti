@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/Template:ic
+// revision: 363596 (2024-04-07T18:55:00Z)
+// export sha1: 6uzinn9tvnwibommuk9mpaj5dduns1g
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><code style="display: inline">{{{1|{{{code|-No code provided-{{TemplateCase||[[Category:ic template usage error]]}}}}}}}}</code></includeonly><noinclude>{{Doc/Template
+|descr= This template displays '''i'''nline '''c'''ode. It also adds the page to the [[:Category:ic template usage error|ic template usage error]] category on usage error.
+|param1= code
+|descr1= the code to display.<br>If it contains an equal sign {{hl|c= =}}:
+** replace it with {{hl|c= <nowiki>{{=}}</nowiki>}}
+** use {{hl|c= code=}} (see example 4)
+** use the MediaWiki trick {{hl|c= 1=}} (see example 5)
+|example1= <nowiki>{{ic}}</nowiki>
+|result1= {{ic}}
+|example2= <nowiki>{{ic|[[player]] [[setDamage]] 1;}}</nowiki>
+|result2= {{ic|[[player]] [[setDamage]] 1;}}
+|example3= <nowiki>{{ic|_fog {{=}} [[fog]];}}</nowiki>
+|result3= {{ic|_fog {{=}} [[fog]];}}
+|example4= <nowiki>{{ic|code= _fog = [[fog]];}}</nowiki>
+|result4= {{ic|code= _fog = [[fog]];}}
+|example5= <nowiki>{{ic|1= _fog = [[fog]];}}</nowiki>
+|result5= {{ic|1= _fog = [[fog]];}}
+|historical= y
+}}</noinclude>

@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/getBackpackCargo
+// revision: 378356 (2026-04-02T16:38:51Z)
+// export sha1: c8hy85peybz4vij75tzz5ia8pbc3nfc
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Containers
+
+|descr= Returns all backpack types and count from the cargo space.
+
+|s1= [[getBackpackCargo]] object
+
+|p1= object: [[Object]] - object to check
+
+|r1= [[Array]] with [classes, counts]
+* classes: [[Array]] of [[String]]s - Backpack class names
+* counts: [[Array]] of [[Number]]s - Backpack counts
+
+|x1= <sqf>
+getBackpackCargo cursorTarget;
+/*
+	returns e.g
+	[
+        ["5BackpackA", "10BackpackB"]
+        [5, 10]
+	]
+*/
+</sqf>
+
+|x2= <sqf>_content = getBackpackCargo carName;</sqf>
+
+|x3= <sqf>_content = getBackpackCargo ammoBoxName;</sqf>
+
+|seealso= [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]]
+}}

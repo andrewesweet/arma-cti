@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_keyHold
+// revision: 341362 (2023-05-24T12:59:06Z)
+// export sha1: nzuvo99f3yb7ul268f704u4j6k19iyr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interaction | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Interaction
+
+|eff= local
+
+|descr= Allows for hold button interactions. Hold action is started by pressing {{Controls|Space}}.
+
+|s1= [description, duration, condition, arguments, loaded] spawn [[BIS_fnc_keyHold]]
+
+|p1= description: [[String]] - description of the performed action, displayed inside the progress bar.
+
+|p2= duration: [[Number]] - (Optional, default 2) action duration
+
+|p3= condition: [[Code]] or [[String]] - (Optional, default <sqf inline>{ true }</sqf>) condition that must be met for the action to display
+
+|p4= arguments: [[Array]] - (Optional, default <sqf inline>[]</sqf>) arguments passed to the condition
+
+|p5= loaded: [[Boolean]] - (Optional, default [[false]]) defines if function is already loaded. This is handled by the function
+
+|r1=
+* [[spawn]]: [[Script Handle]]
+* [[call]]: [[true]] if action was successful or [[false]] if it was interrupted.
+
+|x1= <sqf>["Hold that key!", 2, { alive player }] spawn BIS_fnc_keyHold;</sqf>
+
+|x2= Function can be called in [[Scheduler#Scheduled_Environment|scheduled environment]] to return values and be used for further code execution.
+<sqf>
+0 spawn {
+	private _success = ["Hold that key!", 2, { alive player }] call BIS_fnc_keyHold;
+	if (_success) then { hint "Function executed" } else { hint "Function interrupted" };
+};
+</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_holdActionAdd]] [[BIS_fnc_holdKey]]
+}}

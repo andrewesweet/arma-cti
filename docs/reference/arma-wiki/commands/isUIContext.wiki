@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/isUIContext
+// revision: 310464 (2022-05-06T10:49:54Z)
+// export sha1: 35xs3gkethnfn0wtc33fxuajer9myoa
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Command Group: Program Flow | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= GUI Control
+
+|gr2= Program Flow
+
+|descr= Returns [[true]] if the script originated from some UI control event, for example from "onButtonDown" EH. Exists within parent scope and immediate child scopes.
+
+|s1= [[isUIContext]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (isUIContext) then { hint "UI control event" };</sqf>
+
+|x2= <sqf>_button ctrlSetEventHandler ["ButtonDown", "call { diag_log isUIContext }"]; // outputs true</sqf>
+
+|x3= <sqf>_button ctrlSetEventHandler ["ButtonDown", "0 spawn { diag_log isUIContext }"]; // outputs false</sqf>
+
+|seealso= [[canSuspend]] [[isRemoteExecuted]] [[isRemoteExecutedJIP]] [[isGamePaused]] [[isGameFocused]] [[serverCommand]]
+}}

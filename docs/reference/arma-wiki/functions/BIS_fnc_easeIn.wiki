@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_easeIn
+// revision: 348777 (2023-11-08T14:33:15Z)
+// export sha1: plnh230wolohmb763natuowh39wx896
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interpolation | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Interpolation
+
+|descr= Wraps [[BIS_fnc_lerp]].
+
+|s1= [a, b, alpha, exp] call [[BIS_fnc_easeIn]]
+
+|p1= a: [[Number]] - (Optional, default 0) first point (start)
+
+|p2= b: [[Number]] - (Optional, default 0) second point (end)
+
+|p3= alpha: [[Number]] - (Optional, default 0) original interpolation speed
+
+|p4= exp: [[Number]] - (Optional, default 2) power applied to alpha
+
+|r1= [[Number]] - interpolated value
+
+|x1= <sqf>[] call BIS_fnc_easeIn; // returns 0</sqf>
+
+|x2= <sqf>[0, 2, 0.5] call BIS_fnc_easeIn; // returns 0.5</sqf>
+
+|x3= <sqf>([0, 2, 0.5] call BIS_fnc_lerp) == ([0, 2, 0.5, 1] call BIS_fnc_easeIn); // returns true</sqf>
+
+|seealso= [[BIS_fnc_lerp]] [[:Category:Function Group: Interpolation|Function Group: Interpolation]]
+}}

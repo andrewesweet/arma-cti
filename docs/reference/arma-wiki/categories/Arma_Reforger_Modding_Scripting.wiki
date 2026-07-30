@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Scripting
+// revision: 371058 (2025-02-26T12:38:47Z)
+// export sha1: d3r9ocny7gvyo5c5gv4osxts3j2ytki
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding}}

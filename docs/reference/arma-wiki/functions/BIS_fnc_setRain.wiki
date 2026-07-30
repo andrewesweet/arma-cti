@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setRain
+// revision: 370247 (2024-11-14T17:13:01Z)
+// export sha1: gp96octu6ay2bsnu6pbbkcypswpcmk8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Environment | Category:Functions | Category:Functions: Global Effect | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= Environment
+
+|eff= global
+
+|serverExec= server
+
+|descr= A helper function for setting [[rainParams]] in multiplayer. The call to the function could be placed in [[Event Scripts#init.sqf|init.sqf]] to sync [[rainParams]] between all clients and JIP. Alternatively execute on server.
+
+|s1= rainParams [[call]] [[BIS_fnc_setRain]]
+
+|p1= rainParams: [[Array]] or [[Config]] - custom [[Arma_3:_CfgWorlds_Config_Reference#class_RainParticles | RainParticles]] params, see [[rainParams]]. Use empty array [] or [[configNull]] to reset to default values
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+0 setOvercast 1;
+0 setRain 1;
+0 setFog 0.1;		// snow affects visibility at distance
+setHumidity 0.9;	// don't want to see dust clouds
+enableEnvironment [false, true];	// don't want to see snakes and butterflies either
+forceWeatherChange;
+[
+	"a3\data_f\snowflake4_ca.paa",	// rainDropTexture - 4 means it has 4 flakes in it. Other available textures: snowflake8_ca.paa, snowflake16_ca.paa
+	4,				// texDropCount - 4 because we are using texture with 4 flakes. Change to 8 or 16 in accordance with other textures used
+	0.01,			// minRainDensity
+	25,				// effectRadius
+	0.05,			// windCoef
+	2.5,			// dropSpeed
+	0.5,			// rndSpeed
+	0.5,			// rndDir
+	0.07,			// dropWidth
+	0.07,			// dropHeight
+	[1, 1, 1, 0.5],	// dropColor
+	0.0,			// lumSunFront
+	0.2,			// lumSunBack
+	0.5,			// refractCoef
+	0.5,			// refractSaturation
+	true,			// snow
+	false			// dropColorStrong
+]
+call BIS_fnc_setRain;
+</sqf>
+
+|seealso= [[rainParams]] [[setRain]]
+}}

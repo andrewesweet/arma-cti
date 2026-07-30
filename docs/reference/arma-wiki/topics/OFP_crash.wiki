@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/OFP-crash
+// revision: 182550 (2021-01-04T13:03:00Z)
+// export sha1: asqplr1cipg6cf45p1c3ltpytq8w9an
+// categories: Category:OFP: Windows Error Reporting
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:OFP: Windows Error Reporting]]
+
+Please, follow [[Operation Flashpoint: Troubleshooting]] for troubleshooting tips which might help you preventing this crash.
+
+You may be also interested in trying [[ArmA: Demo]], which, being a more recent game, is better compatible with recent hardware.

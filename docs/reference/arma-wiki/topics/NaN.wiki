@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/NaN
+// revision: 245383 (2021-02-11T19:08:30Z)
+// export sha1: 251etgl43ozdcgm0i8pmaw4b0ef3vgb
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Description:'''<br>
+A dummy data type to trigger errors.
+
+Introduced with {{arma3}}.
+
+[[Category: Data Types]]

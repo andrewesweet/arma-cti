@@ -1,0 +1,99 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Targeting
+// revision: 378121 (2026-02-20T18:23:58Z)
+// export sha1: 77rc7g78tugjpwm83630vy53rbdn7zk
+// categories: Category:Arma 3
+// Vendored snapshot. Do not edit — re-export instead.
+
+Targeting systems and aids in {{arma3}}:
+{| class="wikitable valign-top"
+! Forums and OPREP
+! Wiki
+|-
+|
+* '''{{Link|https://forums.bohemia.net/forums/topic/189734-targeting-improvements/|Targeting forum thread}}'''
+* '''{{Link|https://forums.bohemia.net/forums/topic/200467-jets-sensor-overhaul-radars-irs-lazors-pgms/|Sensors forum thread}}'''
+* '''{{Link|https://dev.arma3.com/post/oprep-sensor-overhaul|text= Sensor Overhaul OPREP}}'''
+|
+* {{Link|A3 Targeting config reference|Targeting-related configuration}}
+* {{Link|Arma 3: Custom Info|Custom panels (Sensor Display, GPS, ...)}}
+* {{Link|Arma 3: Sensors|Sensors (Radar, IR, Laser spot tracking, ...)}}
+|}
+
+
+== Features ==
+
+=== Target Acquisition and Tracking (Sensors) ===
+
+Some vehicles can be equipped with [[Arma_3_Sensors|sensors]] that can detect, identify and track various types of targets.
+Different types of sensors loosely reflect the systems that exist in real life (Radars, EOST, IRST, LST) and are only able to acquire respective types of targets.
+See {{Link|Arma 3: Sensors#Mechanics}} for more details on which target can be detected and tracked by what.
+
+==== Actions (default) ====
+{| class="wikitable"
+! Key
+! Action
+! Description
+|-
+| {{Controls|R}} || Weapons/Next target (in vehicle) || Select next target (targets are prioritized according to the currently selected weapon and the target threat)
+|-
+| {{Controls|T}} || Weapons/Lock target || Select target under the cursor / center of view
+|-
+| {{Controls|T}} || Weapons/Lase Range || Measure distance (and speed) of the target or ground. Some vehicles automatically adjust the weapons zeroing (RCWS) or zeroing and lead on the target (Tank and APC cannon).
+|-
+| {{Controls|Ctrl|R}} || Weapons/Radar on/off || Toggle radar on/off
+|-
+| {{Controls|Ctrl|RMB}} || Common/Targeting camera || Switch to targeting camera full screen view
+|-
+| {{Controls|Ctrl|T}} || Weapons/Stabilize turret || Locks the camera to area (ground) or point (target) track. 
+|-
+| {{Controls|Num1}}..{{Controls|Num9}} || View/Look || Slew the camera
+|-
+| {{Controls|Num5}} || View/Center look || Recenter camera to boresight /or/ to currently selected target (in stabilized mode)
+|-
+| {{Controls|F}} || Next Weapon || ATGM toggle Direct Attack (default) or Top Attack
+|-
+|}
+See the {{Link|Arma 3: Custom Info|Custom panels}} page for more info about controlling the Sensor display.
+
+
+== Indication ==
+
+<gallery mode="packed" heights="150">
+File:Arma3_Targeting_Marked.jpg | A marked target, tracked and visible, is indicated by square brackets.
+File:Arma3_Targeting_NoLOS.png | Once the marked target moves out of the sensor's line-of-sight or gets masked the indication changes into a dashed square and the target's actual position is only an estimate.
+File:Arma3_Targeting_Lockable.jpg | A full square indicates that the currently selected weapon is able to acquire a lock and be guided on the target.
+File:Arma3_Targeting_Friendly.jpeg | A crossed square indicates a friendly unit.
+</gallery>
+
+
+== Engagement ==
+
+=== Fire Control Systems ===
+
+Some weapon systems can help the gunner find better firing solution when using standard ballistic munitions.
+There are currently 3 types of aids available.
+Target Lead Indication (used in jets and AAAs) and Automatic Lead/Range (RCWS, tank cannons), which provide solution for a marked target, and Predicted Impact Point (or CCIP) that show where the projectile will land if fired at that moment.
+
+==== Indication ====
+[[File:ballisticsComputer.jpg|Different types of fire control and ballistic aids]]
+* AUTO - Full green square indicates that firing the weapon now will most probably result in a hit. Lead and zeroing are shifted automatically according to the target's distance, speed and direction, so player only has to make sure the crosshair is on target when pulling the trigger. '''(no longer used in vanilla assets)'''
+* TLI - A line with a circle on its end indicates where the player has to aim to hit the target. Weapon crosshair needs to be placed on the small circle when pulling the trigger.
+* PIP - A small crosshair with a dot in the center indicates where a projectile will land. Pipper needs to be placed on the target when pulling the trigger.
+
+=== Precision-guided Munition ===
+
+* A diamond indicates the lock acquisition. Once a dot appears in the center it means that the lock has been acquired and weapon can be launched. If there is no dot the locking is still in progress.<br>[[File:Arma3_Targeting_Locked.jpg|frameless]]
+
+
+== Crew coordination and awareness ==
+
+General turret directions are shown on the radar or compass on the top of the screen. Crew positions where tight cooperation is required have an additional, precise indication in 3D where their partner is looking or aiming.
+
+==== Indication ====
+[[File:showCrewAim.jpg|Different types of precise indication where a crewmate is looking or aiming]]
+* An X indicates where the gunner is aiming when he's operating his weapon autonomously
+* A cross indicates where the gunner is aiming. Once the gunner aimed at target a circle appears in the middle of the cross.
+* Curved brackets indicate where the commander is looking
+
+
+{{GameCategory|arma3}}

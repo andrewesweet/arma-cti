@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/setSimpleTaskAlwaysVisible
+// revision: 304127 (2022-01-20T16:59:47Z)
+// export sha1: pm4rvw9tx11priq1l42bvsbt8zr8qvb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|eff= local
+
+|gr1= Briefing
+
+|descr= Sets task's visibility.
+
+|s1= taskID [[setSimpleTaskAlwaysVisible]] state
+
+|p1= taskID: [[Task]]
+
+|p2= state: [[Boolean]] - [[true]] for always visible, [[false]] for fade out
+
+|r1= [[Nothing]]
+
+|x1= [[currentTask]] [[player]] [[setSimpleTaskAlwaysVisible]] [[true]];
+
+|seealso= [[taskAlwaysVisible]] [[createSimpleTask]]
+}}

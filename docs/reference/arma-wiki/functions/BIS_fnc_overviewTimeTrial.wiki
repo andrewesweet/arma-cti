@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_overviewTimeTrial
+// revision: 377975 (2026-01-19T18:41:20Z)
+// export sha1: 67wtsw2bx5qhycpre0wb4tjjjru1o57
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= Returns the dynamically composed overview text for Time Trial scenarios.
+
+|s1= class call [[BIS_fnc_overviewTimeTrial]]
+
+|p1= class: [[String]] - scenario class name
+
+|r1= [[String]] - overview (structured text)
+
+|x1= <sqf>"BIS_someTimeTrial" call BIS_fnc_overviewTimeTrial;</sqf>
+
+|seealso= [[BIS_fnc_overviewMission]]
+}}

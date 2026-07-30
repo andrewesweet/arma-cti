@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/isAbleToBreathe
+// revision: 378057 (2026-02-02T20:53:32Z)
+// export sha1: b333lgs7pgx46m57mfb5te603tt540u
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Object Manipulation
+
+|descr= If unit is diving and doesn't have a rebreather, it returns [[false]].
+Diving means the unit's head is underwater. If unit is underwater and has a rebreather, the command returns [[true]].
+
+|s1= [[isAbleToBreathe]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_canBreath = isAbleToBreathe player;</sqf>
+
+|seealso= [[underwater]]
+}}
+
+{{Note
+|user= Vabene1111
+|timestamp= 20190506194300
+|text= Might return false if player enters a vehicle while underwater.
+}}

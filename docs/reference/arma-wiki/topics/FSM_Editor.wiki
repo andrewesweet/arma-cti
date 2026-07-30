@@ -1,0 +1,99 @@
+// source: https://community.bistudio.com/wiki/FSM_Editor
+// revision: 370524 (2025-01-01T22:49:45Z)
+// export sha1: oaqdci5s2r6f59a5gr1lf4dov8dvfvf
+// categories: Category:ArmA: Armed Assault: Official Tools | Category:Arma 2: Official Tools | Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION= 1.3.3.18
+
+|COMPATIBILITY= {{GameCategory|arma1|text= {{arma1}}}}, {{GameCategory|arma2|link= y}} and {{GameCategory|arma3|link= y}}
+
+|DOWNLOAD= Version 1.2.1.2 included in [[BI Tools]], [[BI Tools 2]], [[BI Tools 2.5]] and newer versions included in [[Poseidon Tools]] and {{Link|http://store.steampowered.com/app/233800/|part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= GUI application for creating and editing [[FSM]] files.
+
+|NOTES= The most recent version is only available from the Arma 3 Tools package on Steam.
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= [[FSM Editor Manual]]
+
+}}
+
+=== Additional information ===
+
+==== Shortcuts ====
+{| class="valign-top" style="min-width: 80em"
+|
+
+{|
+| style="min-width: 15em" | {{Controls|Ctrl|N}}
+| New file
+|-
+| {{Controls|Ctrl|O}} / {{Controls|Ctrl|L}}
+| Open file
+|-
+| {{Controls|Ctrl|S}}
+| Save the current file
+|-
+| {{Controls|Ctrl|E}}
+| Save the current file as EMF
+|-
+| {{Controls|Ctrl|D}}
+| Duplicate the selection
+|-
+| {{Controls|Ctrl|G}}
+| Group or ungroup the selection
+|-
+| {{Controls|Ctrl|PageUp}}
+| Bring the current node to the front
+|-
+| {{Controls|Ctrl|PageDown}}
+| Bring the current node to the back
+|}
+
+|
+
+{|
+| style="min-width: 15em" | {{Controls|Shift|F3}}
+| Find previous occurrence
+|-
+| {{Controls|Ctrl|F3}}
+| Find next occurrence
+|-
+| {{Controls|Ctrl|A}}
+| Select all
+|-
+| {{Controls|F1}}
+| Insert mode
+|-
+| {{Controls|Ctrl|F2}}
+| Design mode
+|-
+| {{Controls|Ctrl|F3}}
+| Link mode
+|-
+| {{Controls|Ctrl|F4}}
+| (over a link) Change the shape of the link
+|-
+| {{Controls|Ctrl|F8}}
+| Reset zoom
+|-
+| {{Controls|Ctrl|C}}
+| Change color
+|-
+| {{Controls|Ctrl|K}}
+| (over a link) Reproduce last link's customisation
+|}
+
+|}
+
+
+{{GameCategory|arma1|Official Tools}}
+{{GameCategory|arma2|Official Tools}}
+{{GameCategory|arma3|Official Tools}}
+<!-- {{GameCategory|tkoh|Official Tools}} -->

@@ -1,0 +1,117 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Vehicle_Components
+// revision: 369928 (2024-10-20T14:30:07Z)
+// export sha1: g6fkohdgvtrna4vfylk7nogwaqdk8v3
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+== Advanced Tank Damage System ==
+
+Spearhead 1944 introduces a bunch of unique systems that will make vehicle combat more realistic and immersive. With realistic penetration and armor values applied to all of our assets, you will have to aim precisely when dealing with enemy armor. On top of that, deflection and ricochets play a bigger role. This means that angling your vehicle can increase your survivability in battle. 
+
+In Spearhead 1944, each round, depending on the gun caliber, and type of ammunition used, has its own unique fragmentation pattern. This means that every round behaves differently after breaking through the enemy’s armor. 
+
+No tank is the exact same, knowing where your enemy’s weak spot(s) are, can make a big difference on the battlefield. Each armored vehicle has a unique setup of components, based on the actual location of their real-life counterparts. These components can be damaged or destroyed, which can change the performance of your vehicle, or disable it altogether. Spearhead 1944 introduces a unique damage system which will make an enemy vehicle more challenging to destroy. A well aimed shot at the ammo-storage of an enemy tank can lead to a rapid disassembly of your opponent’s vehicle. 
+
+Neutralizing an enemy vehicle can be achieved in many different ways. You don’t always have to try to turn your opponent into a fireball to take them out of the fight. For example, neutralizing your opponent’s crew members will achieve similar results, sometimes more easily. Critically damaging your opponent can lead to a variety of destruction effects, all with their own unique set of visual and audio effects.
+
+To visualize all of this information, the images shown below show the location and different components of the tanks in Spearhead 1944. 
+
+To help you become the ultimate tank commander in Spearhead 1944, have a look at the SPE Gameplay features tab in the field manual. 
+
+== Tank Components ==
+
+{| class="wikitable"
+|+ Key
+|-
+! style= "width:50px" | Color !! Meaning
+|-
+| style="background-color: rgb(236, 39, 33);" | || Engine
+|-
+| style="background-color: rgb(87, 220, 33);" | || Fuel
+|-
+| style="background-color: rgb(151, 42, 100);" | || Ammunition
+|-
+| style="background-color: rgb(65, 165, 219);" | || Turret
+|-
+|}
+
+{| class="wikitable sortable"
+|+ Caption text
+|-
+! Vehicle !! class="unsortable"| Side View !! class="unsortable"| Top View !! Side
+|-
+| M10 Tank Destroyer
+| [[File:spe_components_m10.jpg|350px]]
+| [[File:spe_components_m10_top.jpg|350px]]
+| Independent
+|-
+| M18 Hellcat
+| [[File:spe_components_m18.jpg|350px]]
+| [[File:spe_components_m18_top.jpg|350px]]
+| Independent
+|-
+| M4A1 Sherman
+| [[File:spe_components_m4a1.jpg|350px]]
+| [[File:spe_components_m4a1_top.jpg|350px]]
+| Independent
+|-
+| M4A3(76)W Sherman
+| [[File:spe_components_m4a3_76.jpg|350px]]
+| [[File:spe_components_m4a3_76_top.jpg|350px]]
+| Independent
+|-
+| M4A3(105) Sherman
+| [[File:spe_components_m4a3_105.jpg|350px]]
+| [[File:spe_components_m4a3_105_top.jpg|350px]]
+| Independent
+|-
+| M8 Armored Car
+| [[File:spe_components_m8.jpg|350px]]
+| [[File:spe_components_m8_top.jpg|350px]]
+| Independent
+|-
+| Sd.Kfz. 164 Nashorn
+| [[File:spe_components_nashorn.jpg|350px]]
+| [[File:spe_components_nashorn_top.jpg|350px]]
+| BLUFOR
+|-
+| PzKpfw V Ausf.G Panther
+| [[File:spe_components_panther.jpg|350px]]
+| [[File:spe_components_panther_top.jpg|350px]]
+| BLUFOR
+|-
+| Sd.Kfz. 173 Jagdpanther 
+| [[File:spe_components_jagdpanther.jpg|350px]]
+| [[File:spe_components_jagdpanther_top.jpg|350px]] 
+| BLUFOR
+|-
+| PzKpfw III Ausf.J
+| [[File:spe_components_pziiij.jpg|350px]]
+| [[File:spe_components_pziiij_top.jpg|350px]]
+| BLUFOR
+|-
+| PzKpfw III Ausf.M
+| [[File:spe_components_pziiilm.jpg|350px]]
+| [[File:spe_components_pziiilm_top.jpg|350px]]
+| BLUFOR
+|-
+| PzKpfw IV Ausf.G
+| [[File:spe_components_pziv.jpg|350px]]
+| [[File:spe_components_pziv_top.jpg|350px]]
+| BLUFOR
+|-
+| Sd.Kfz. 142/1 StuG III G (Early)
+| [[File:spe_components_stugiii.jpg|350px]]
+| [[File:spe_components_stugiii_top.jpg|350px]]
+| BLUFOR
+|-
+| PzKpfw VI Ausf.H1 Tiger
+| [[File:spe_components_tiger.jpg|350px]]
+| [[File:spe_components_tiger_top.jpg|350px]]
+| BLUFOR
+|-
+|}
+
+[[Category: Spearhead 1944]]

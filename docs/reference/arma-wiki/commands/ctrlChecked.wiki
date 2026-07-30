@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/ctrlChecked
+// revision: 353343 (2024-03-15T17:11:52Z)
+// export sha1: pxcemarzbze4wwgbbsvlkqjmooypj3u
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= GUI Control
+
+|descr= Returns the current state of given [[CT_CHECKBOXES]] control. Since Arma 3 v1.72 it is possible to query multiple checkboxes by providing checkbox index. For more information see [[CT_CHECKBOXES]].{{Feature|informative|The {{hl|"CheckBoxesSelChanged"}} control EH returns the control, index of changed checkbox and its current checked state. The checked state however is not a [[Boolean]] but [[Number]] 0 or 1. To convert [[ctrlChecked]] command output into number as well, use [[parseNumber]] command}}
+
+|s1= [[ctrlChecked]] control
+
+|p1= control: [[Control]] - [[CT_CHECKBOXES]] control. If control contain multiple checkboxes, only checkbox with index 0 is queried.
+
+|r1= [[Boolean]] - [[true]] checked, [[false]] unchecked
+
+|s2= control [[ctrlChecked]]  index
+
+|s2since= arma3 1.72
+
+|p21= control: [[Control]] - [[CT_CHECKBOXES]] control
+|p22= index: [[Number]] - checkbox index
+
+|r2= [[Boolean]] - [[true]] checked, [[false]] unchecked
+
+|x1= <sqf>ctrlChecked _control;</sqf>
+
+|x2= <sqf>_control ctrlChecked 3;</sqf>
+
+|seealso= [[ctrlSetChecked]] [[cbChecked]] [[cbSetChecked]]
+}}

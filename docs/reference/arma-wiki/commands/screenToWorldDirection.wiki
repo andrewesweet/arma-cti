@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/screenToWorldDirection
+// revision: 378361 (2026-04-03T16:05:32Z)
+// export sha1: dnbrh4nviiold5rhgkcpbnhtfmao08y
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Positions
+
+|descr= Returns the 3D vector in world corresponding to the given point on the screen (in UI coordinates), as if the vector was aiming from the camera to the screen position. 
+
+|s1= [[screenToWorldDirection]] screen
+
+|p1= screen: [[Array]] - screen position [x,y] (see [[SafeZone]] for more info)
+
+|r1= [[Vector3D]] - world vector
+
+|s2= camera [[screenToWorldDirection]] position
+
+|p21= camera: [[Object]] - camera object
+
+|p22= position: [[Array]] - screen position [x,y] (see [[SafeZone]] for more info)
+
+|r2= [[Vector3D]] - world vector
+
+|x1= <sqf>private _vec = screenToWorldDirection [0.5, 0.5]; // a vector pointing to the front of the camera</sqf>
+
+|seealso= [[SafeZone]] [[worldToScreen]] [[screenToWorld]]
+}}

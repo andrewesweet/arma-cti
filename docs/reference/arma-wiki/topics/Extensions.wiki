@@ -1,0 +1,1374 @@
+// source: https://community.bistudio.com/wiki/Extensions
+// revision: 378446 (2026-04-14T17:11:35Z)
+// export sha1: 3607hzzs9s27d5wz55k1hkhf2xxwh00
+// categories: Category:Arma 2: Editing | Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|warning|If you came here because you have been told to install an extension, be warned! Extensions are just like executables. They may contain viruses etc. More on that, in the {{Link|#FAQ}} section.}}
+
+
+= Historical =
+
+* {{GVI|arma2|1.61}} The first stable version of this functionality arrived.
+* {{GVI|arma3|1.18}} Linux (server) support was introduced.
+* {{GVI|arma3|1.68}} The ability to pass multiple arguments to [[callExtension]] and the interface {{hl|RVExtensionArgs}} got added.
+* {{GVI|arma3|1.70}} {{hl|RVExtensionVersion}} became available. It is called when the extension loads. Will be printed into the RPT log.
+* {{GVI|arma3|1.96}} {{Link|#Callback}}s became available.
+* {{GVI|arma3|2.12}} {{Link|#Context}} became available.
+* {{GVI|arma3|2.18}} {{hl|{{Link|#Feature Flags|RVExtensionFeatureFlags}}}} and {{Link|#Game Functions}} became available.
+* {{GVI|arma3|2.20}} {{hl|{{Link|Extension_UI|Extension UI}}}} became available.
+* {{GVI|arma3|2.22}} {{hl|{{Link|Extension_Texture_Source|Extension Texture Source}}}} became available.
+
+
+
+= FAQ =
+
+==== How to use Extensions? ====
+Extensions can be accessed using [[callExtension]].
+
+{{Feature|informative|The exact way about how to use an extension is up to the developer of said extension.}}
+
+==== Where to put Extensions? ====
+{{arma3}} will look at the following places to find your extension files:
+* In all loaded mods root folders (for example: {{hl|..\arma3\@ModXYZ\yourextension.dll}}).
+* In your {{arma3}} installation folder (for example: {{hl|..\arma3\yourextension.dll}}).
+
+At best, you place your extensions inside some mod folder and load it.<br>
+At worst, you just throw it where the {{arma3}} executable is located.
+
+''Extensions may require other libraries and runtimes to be installed on the computer it is to run on.''
+Consult the authors installation manual if it exists.
+
+==== What are Extensions? ====
+Extensions are ''Dynamic Link Library'' (DLL) files written in, for example, C.
+
+Linux systems use a different file type: ''Shared Object'' (SO).
+
+==== What do I have to look out for? ====
+Extensions fall under the same rules as executable files.
+They may require additional runtime libraries or cause the game to crash.
+{{Feature|warning|
+Extensions can contain malicious code!
+Be sure to only use extensions from reliable developers, obtained through reliable sources!
+}}
+
+==== How to know which extensions can be trusted? ====
+Theoretically, never trust anything! Including {{arma}} and your OS itself.
+Technically however, this would make a boring experience, as all you would be left with is an expensive heater.
+
+Thus a better rule is: If the are sources freely available, you probably can trust the extension.
+Even if you cannot read the source code, chances are that somebody out there can and would find something odd.
+That will not protect you!
+Developers might add malicious code that is not exposed in the available source files, they not even need to be aware of this.
+They may be infected already and the virus is just writing itself into the compiled extension.
+
+==== When I call the extension method, {{arma}} freezes. ====
+This is most likely caused by the extension taking too much time.
+Due to the low-level nature of extensions, an extension cannot be suspended like [[Scheduler|scheduled]] scripts can be.
+You should notify the developer of said extension about this freezing issue or use the extension less extensively.
+
+==== Can I join BattlEye protected servers with my extension? ====
+If the extension is whitelisted by BattlEye, it will be allowed to load - see {{Link|#Getting your extension whitelisted by BattlEye}}.
+If it is not, it just will be blocked causing any [[callExtension]] attempt to fail.
+
+Generally speaking, joining BattlEye-protected servers should be no problem with or without extensions.
+
+If in doubt, ask the extension's author.
+
+==== Can I use extensions in my mission? ====
+Yes, you can use extensions in your missions, but you should consider if it is worth it.
+Using extensions requires that all hosts (servers and clients) which use the extension have it installed. Extensions are not packed into the mission pbo.
+{{Feature|informative|If only the server is using the extension, the clients do not need it.}}
+
+==== What do i have to look out for when deploying my extension? ====
+Extensions have to be provided for 32bit and 64bit {{arma}}.
+When you deploy your extension, you thus have to build it twice.
+Once for the 32bit support and once for the 64bit support.
+
+After you are done, copy both output files to some location and add a {{hl|_x64.dll}} suffix to the 64bit file.
+
+Example:
+* Windows:
+** {{hl|MyExtension.dll}} (32bit)
+** {{hl|MyExtension_x64.dll}} (64bit)
+* Linux:
+** {{hl|MyExtension.so}} (32bit)
+** {{hl|MyExtension_x64.so}} (64bit)
+
+
+= Creating Extensions =
+
+
+== Preamble ==
+
+Before we start, ask yourself the following questions:
+* is SQF unable to fulfill your needs?
+* Making an extension requires knowledge of a programming language. Are you capable of performing that programming task?
+* Why should a user trust you and use your extension?
+* Is it worth adding an extension for the feature you want to implement?
+
+If the answer to any question was no, you probably should not proceed to create an extension but rather use plain SQF.
+
+
+== Getting Started ==
+
+At first, we have to choose what language we want to use.
+
+<!-- If you plan on adding another language, make sure you can provide code snippets for ALL examples required! -->
+This wiki currently covers the following: '''C''', '''C++''', '''C#'''
+
+=== Preparations ===
+
+==== C/C++ ====
+Create a new library project in the IDE of your choice.
+
+==== C# ====
+C# requires you to install additional dependencies to work out of the box.
+The snippets in here all are using {{Link|https://www.nuget.org/packages/UnmanagedExports|DllExport}} ({{Link|https://github.com/3F/DllExport|sources}}) which can be installed using NuGet.
+
+Create a new Class Library project in the IDE of your choice.
+
+
+== Available Interfaces ==
+
+The Extension is required to contain at least the entry point in a form of a method named RVExtension or RVExtensionArgs.
+Everything else is optional.
+
+The actual exports need to look like this (Windows only):
+
+'''32-bit requires usage of {{Link|https://docs.microsoft.com/en-us/cpp/build/reference/decorated-names?view{{=}}vs-2019|decorated names}} following the {{hl|__stdcall}} convention'''
+* {{hl|_RVExtension@12}}
+* {{hl|_RVExtensionArgs@20}}
+* {{hl|_RVExtensionVersion@8}}
+
+'''64-bit'''
+* {{hl|RVExtension}}
+* {{hl|RVExtensionArgs}}
+* {{hl|RVExtensionVersion}}
+
+If you use the Visual C++ compiler, this should work out of the box. But other compilers might require some manual work.
+
+=== C/C++ ===
+
+==== Visual C++ ====
+<syntaxhighlight lang="c">
+	//--- Called by Engine on extension load
+	__declspec (dllexport) void __stdcall RVExtensionVersion(char *output, unsigned int outputSize);
+	//--- STRING callExtension STRING
+	__declspec (dllexport) void __stdcall RVExtension(char *output, unsigned int outputSize, const char *function);
+	//--- STRING callExtension ARRAY
+	__declspec (dllexport) int __stdcall RVExtensionArgs(char *output, unsigned int outputSize, const char *function, const char **argv, unsigned int argc);
+	//--- Extension Callback
+	__declspec (dllexport) void __stdcall RVExtensionRegisterCallback(int(*callbackProc)(char const *name, char const *function, char const *data));
+	//--- Engine passed context [steamID, fileSource, missionSourceName, serverName] since Arma 3 v2.12
+	__declspec (dllexport) void __stdcall RVExtensionContext(const char **argv, unsigned int argc);
+	//--- Request creation of UI element
+	__declspec (dllexport) bool __stdcall RVExtensionRequestUI(const char *uiClass, void *interfaceStruct);
+	//--- Request filling in a Extension Texture Source
+	__declspec (dllexport) void __stdcall RVExtensionFillTextureSource(const char* uniqueName, uint16_t width, uint16_t height, uint16_t pitch, uint8_t mipLevel, uint32_t format, void* buffer);
+	//--- Check if a animated Extension Texture Source should be updated
+	__declspec (dllexport) bool __stdcall RVExtensionHasTextureSourceUpdate(const char* uniqueName);
+</syntaxhighlight>
+
+==== GCC ====
+<syntaxhighlight lang="c">
+	//--- Called by Engine on extension load
+	__attribute__((dllexport)) void RVExtensionVersion(char *output, unsigned int outputSize);
+	//--- STRING callExtension STRING
+	__attribute__((dllexport)) void RVExtension(char *output, unsigned int outputSize, const char *function);
+	//--- STRING callExtension ARRAY
+	__attribute__((dllexport)) int RVExtensionArgs(char *output, unsigned int outputSize, const char *function, const char **argv, unsigned int argc);
+	//--- Extension Callback
+	__attribute__((dllexport)) void RVExtensionRegisterCallback(int(*callbackProc)(char const *name, char const *function, char const *data));
+	//--- Engine passed context [steamID, fileSource, missionSourceName, serverName] since Arma 3 v2.12
+	__attribute__((dllexport)) void RVExtensionContext(const char **argv, unsigned int argc);
+</syntaxhighlight>
+
+See GCC documentation on {{Link|https://gcc.gnu.org/wiki/Visibility|"How to use the new C++ visibility support"}}
+
+=== C# ===
+
+{{Feature|informative|
+You might need to install {{Link|https://www.nuget.org/packages/UnmanagedExports|UnmanagedExports}}. You might also need to additionally set {{hl|WIN64}} and {{hl|WIN32}} in project properties.
+Go to: {{hl|Project->Properties->Build tab->Conditional compilation symbols}}, add {{hl|WIN32}} for your {{hl|x86}} platform and {{hl|WIN64}} for your {{hl|x64}} platform. Save.
+Rename resulting {{hl|WIN64}} {{hl|dllname.dll}} to {{hl|dllname_x64.dll}}.
+}}
+{{Feature|informative|
+If you intend to use .NET instead of .NET Framework, the '''UnmanagedExports''' package above might not work properly. Use {{Link|https://github.com/3F/DllExport|DllExport}} instead
+}}
+<syntaxhighlight lang="c#">
+		/// <summary>
+		/// Gets called when Arma starts up and loads all extension.
+		/// It's perfect to load in static objects in a separate thread so that the extension doesn't needs any separate initalization
+		/// </summary>
+		/// <param name="output">The string builder object that contains the result of the function</param>
+		/// <param name="outputSize">The maximum size of bytes that can be returned</param>
+#if WIN64
+		[DllExport("RVExtensionVersion", CallingConvention = CallingConvention.Winapi)]
+#else
+		[DllExport("_RVExtensionVersion@8", CallingConvention = CallingConvention.Winapi)]
+#endif
+		public static void RvExtensionVersion(StringBuilder output, unsigned int outputSize) { }
+
+		/// <summary>
+		/// The entry point for the default callExtension command.
+		/// </summary>
+		/// <param name="output">The string builder object that contains the result of the function</param>
+		/// <param name="outputSize">The maximum size of bytes that can be returned</param>
+		/// <param name="function">The string argument that is used along with callExtension</param>
+#if WIN64
+		[DllExport("RVExtension", CallingConvention = CallingConvention.Winapi)]
+#else
+		[DllExport("_RVExtension@12", CallingConvention = CallingConvention.Winapi)]
+#endif
+		public static void RvExtension(StringBuilder output, unsigned int outputSize,
+			[MarshalAs(UnmanagedType.LPStr)] string function) { }
+
+		/// <summary>
+		/// The entry point for the callExtensionArgs command.
+		/// </summary>
+		/// <param name="output">The string builder object that contains the result of the function</param>
+		/// <param name="outputSize">The maximum size of bytes that can be returned</param>
+		/// <param name="function">The string argument that is used along with callExtension</param>
+		/// <param name="args">The args passed to callExtension as a string array</param>
+		/// <param name="argsCount">The size of the string array args</param>
+		/// <returns>The result code</returns>
+#if WIN64
+		[DllExport("RVExtensionArgs", CallingConvention = CallingConvention.Winapi)]
+#else
+		[DllExport("_RVExtensionArgs@20", CallingConvention = CallingConvention.Winapi)]
+#endif
+		public static int RvExtensionArgs(StringBuilder output, unsigned int outputSize,
+			[MarshalAs(UnmanagedType.LPStr)] string function,
+			[MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 4)] string[] args, unsigned int argCount) { }
+</syntaxhighlight>
+
+
+{{ArgTitle|2|Getting your extension whitelisted by BattlEye|{{GVI|arma3|1.46}}}}
+
+Since {{GVI|arma3|1.46}}, client extensions need to be whitelisted in order to get loaded.
+
+The {{Link|https://dev.arma3.com/post/sitrep-00109|SITREP #00109}} said the following on that topic:
+ The enhanced BattlEye protection in 1.46 will require extensions to be '''white-listed''', or their access to the game's processes will be blocked.
+ In order to get your extension white-listed, please contact BattlEye support via {{Link|http://www.battleye.com/contact/|its web form}} or support[at]battleye.com.
+ Be sure to include the file name, a description and possibly a download link.
+
+This boils down to the following tasks to get your extension whitelisted:
+# Upload the extension in question somewhere.
+# Open the {{Link|http://www.battleye.com/contact/|BattlEye Contact Page}}.
+# Pick the topic {{hl|Other requests}} (may change in future, select the most appropriate).
+# Fill in your Name and E-Mail.
+# Set the subject to something like {{hl|{{arma}} extension whitelisting}}.
+# Add link to your extension from step 1 (you may include other information too) into the Message.
+
+After a certain time, your extension should be whitelisted.
+
+
+== Deploying extensions ==
+
+To correctly deploy your extensions, you have to make sure to have a 32bit and a 64bit variant of your extension.
+The reason for this is because 64bit {{arma}} cannot load 32bit extensions and vice versa.
+
+You also should create an addon package (even if you only deploy the actual extension binaries) + add the documentation for your extension.
+
+An example might be structured like this:
+* {{hl|/@MyExtension/}}
+** {{hl|/MyExtension.dll}}
+** {{hl|/MyExtension_x64.dll}}
+** {{hl|/docs/}}
+*** {{hl|/MyExtension_Documentation.txt}}
+
+You may also want to provide convenience SQF functions to access your extension.
+
+
+== Minimum Viable Example ==
+
+The following examples will copy the input into the output. They are provided to show some practical example.
+
+{{TabView
+|title1= C (Visual C++)
+|content1=
+<syntaxhighlight lang="c">
+__declspec(dllexport) void __stdcall RVExtension(char *output, unsigned int outputSize, const char *function);
+__declspec(dllexport) int __stdcall RVExtensionArgs(char *output, unsigned int outputSize, const char *function, const char **argv, unsigned int argc);
+__declspec(dllexport) void __stdcall RVExtensionVersion(char *output, unsigned int outputSize);
+
+int strncpy_safe(char *output, const char *src, int size)
+{
+	int i;
+	size--;
+	for (i = 0; i < size && src[i] != '\0'; i++)
+	{
+		output[i] = src[i];
+	}
+	output[i] = '\0';
+	return i;
+}
+
+void __stdcall RVExtension(char *output, unsigned int outputSize, const char *function)
+{
+	strncpy_safe(output, function, outputSize);
+}
+
+int __stdcall RVExtensionArgs(char *output, unsigned int outputSize, const char *function, const char **argv, unsigned int argc)
+{
+	int index = 0;
+	for (int i = 0; i < argc && index < outputSize; i++)
+	{
+		index += strncpy_safe(output + index, argv[i], outputSize - 1 - index);
+	}
+	return 0;
+}
+
+void __stdcall RVExtensionVersion(char *output, unsigned int outputSize)
+{
+	strncpy_safe(output, "Test-Extension v1.0", outputSize);
+}
+</syntaxhighlight>
+
+|title2= C (GCC)
+|content2=
+<syntaxhighlight lang="c">
+__attribute__((dllexport)) void RVExtension(char *output, unsigned int outputSize, const char *function);
+__attribute__((dllexport)) int RVExtensionArgs(char *output, unsigned int outputSize, const char *function, const char **argv, unsigned int argc);
+__attribute__((dllexport)) void RVExtensionVersion(char *output, unsigned int outputSize);
+
+int strncpy_safe(char *output, const char *src, int size)
+{
+	int i;
+	size--;
+	for (i = 0; i < size && src[i] != '\0'; i++)
+	{
+		output[i] = src[i];
+	}
+	output[i] = '\0';
+	return i;
+}
+
+void RVExtension(char *output, unsigned int outputSize, const char *function)
+{
+	strncpy_safe(output, function, outputSize);
+}
+
+int RVExtensionArgs(char *output, unsigned int outputSize, const char *function, const char **argv, unsigned int argc)
+{
+	int index = 0;
+	for (int i = 0; i < argc && index < outputSize; i++)
+	{
+		index += strncpy_safe(output + index, argv[i], outputSize - 1 - index);
+	}
+	return 0;
+}
+
+void RVExtensionVersion(char *output, unsigned int outputSize)
+{
+	strncpy_safe(output, "Test-Extension v1.0", outputSize);
+}
+</syntaxhighlight>
+
+|title3= C++ (Visual C++)
+|content3=
+<syntaxhighlight lang="cpp">
+#include <string>
+#include <cstring>
+#include <sstream>
+extern "C"
+{
+	__declspec(dllexport) void __stdcall RVExtension(char *output, unsigned int outputSize, const char *function);
+	__declspec(dllexport) int __stdcall RVExtensionArgs(char *output, unsigned int outputSize, const char *function, const char **argv, unsigned int argc);
+	__declspec(dllexport) void __stdcall RVExtensionVersion(char *output, unsigned int outputSize);
+}
+void __stdcall RVExtension(char *output, unsigned int outputSize, const char *function)
+{
+	std::strncpy(output, function, outputSize - 1);
+}
+
+int __stdcall RVExtensionArgs(char *output, unsigned int outputSize, const char *function, const char **argv, unsigned int argc)
+{
+	std::stringstream sstream;
+	for (int i = 0; i < argc; i++)
+	{
+		sstream << argv[i];
+	}
+	std::strncpy(output, sstream.str().c_str(), outputSize - 1);
+	return 0;
+}
+
+void __stdcall RVExtensionVersion(char *output, unsigned int outputSize)
+{
+	std::strncpy(output, "Test-Extension v1.0", outputSize - 1);
+}
+</syntaxhighlight>
+
+|title4= C++ (GCC)
+|content4=
+<syntaxhighlight lang="cpp">
+#include <string>
+#include <cstring>
+#include <sstream>
+extern "C"
+{
+	__attribute__((dllexport)) void RVExtension(char *output, unsigned int outputSize, const char *function);
+	__attribute__((dllexport)) int RVExtensionArgs(char *output, unsigned int outputSize, const char *function, const char **argv, unsigned int argc);
+	__attribute__((dllexport)) void RVExtensionVersion(char *output, unsigned int outputSize);
+}
+void RVExtension(char *output, unsigned int outputSize, const char *function)
+{
+	std::strncpy(output, function, outputSize - 1);
+}
+
+int RVExtensionArgs(char *output, unsigned int outputSize, const char *function, const char **argv, unsigned int argc)
+{
+	std::stringstream sstream;
+	for (int i = 0; i < argc; i++)
+	{
+		sstream << argv[i];
+	}
+	std::strncpy(output, sstream.str().c_str(), outputSize - 1);
+	return 0;
+}
+
+void RVExtensionVersion(char *output, unsigned int outputSize)
+{
+	std::strncpy(output, "Test-Extension v1.0", outputSize - 1);
+}
+</syntaxhighlight>
+
+|title5= C#
+|content5=
+<syntaxhighlight lang="c#">
+using System.Text;
+using System.Runtime.InteropServices;
+using RGiesecke.DllExport;
+
+class MyExtension {
+
+#if WIN64
+		[DllExport("RVExtensionVersion", CallingConvention = CallingConvention.Winapi)]
+#else
+		[DllExport("_RVExtensionVersion@8", CallingConvention = CallingConvention.Winapi)]
+#endif
+		public static void RvExtensionVersion(StringBuilder output, unsigned int outputSize)
+		{
+			output.Append("Test-Extension v1.0");
+		}
+
+#if WIN64
+		[DllExport("RVExtension", CallingConvention = CallingConvention.Winapi)]
+#else
+		[DllExport("_RVExtension@12", CallingConvention = CallingConvention.Winapi)]
+#endif
+		public static void RvExtension(StringBuilder output, unsigned int outputSize,
+			[MarshalAs(UnmanagedType.LPStr)] string function)
+		{
+			output.Append(function);
+		}
+
+#if WIN64
+		[DllExport("RVExtensionArgs", CallingConvention = CallingConvention.Winapi)]
+#else
+		[DllExport("_RVExtensionArgs@20", CallingConvention = CallingConvention.Winapi)]
+#endif
+		public static int RvExtensionArgs(StringBuilder output, unsigned int outputSize,
+			[MarshalAs(UnmanagedType.LPStr)] string function,
+			[MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 4)] string[] args, unsigned int argCount)
+		{
+			foreach(var arg in args)
+			{
+				output.Append(arg);
+			}
+			return 0;
+		}
+}
+</syntaxhighlight>
+
+|title6= C# (w/ callback)
+|content6=
+<syntaxhighlight lang="c#">
+using System.Text;
+using System.Runtime.InteropServices;
+using RGiesecke.DllExport;
+
+class MyExtension {
+
+	public static ExtensionCallback callback;
+	public delegate int ExtensionCallback([MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string function, [MarshalAs(UnmanagedType.LPStr)] string data);
+
+#if WIN64
+		[DllExport("RVExtensionRegisterCallback", CallingConvention = CallingConvention.Winapi)]
+#else
+		[DllExport("_RVExtensionRegisterCallback@4", CallingConvention = CallingConvention.Winapi)]
+#endif
+		public static void RVExtensionRegisterCallback([MarshalAs(UnmanagedType.FunctionPtr)] ExtensionCallback func)
+		{
+			callback = func;
+		}
+
+#if WIN64
+		[DllExport("RVExtensionVersion", CallingConvention = CallingConvention.Winapi)]
+#else
+		[DllExport("_RVExtensionVersion@8", CallingConvention = CallingConvention.Winapi)]
+#endif
+		public static void RvExtensionVersion(StringBuilder output, unsigned int outputSize)
+		{
+			output.Append("Test-Extension v1.0");
+		}
+
+#if WIN64
+		[DllExport("RVExtension", CallingConvention = CallingConvention.Winapi)]
+#else
+		[DllExport("_RVExtension@12", CallingConvention = CallingConvention.Winapi)]
+#endif
+		public static void RvExtension(StringBuilder output, unsigned int outputSize,
+			[MarshalAs(UnmanagedType.LPStr)] string function)
+		{
+			output.Append(function);
+		}
+
+#if WIN64
+		[DllExport("RVExtensionArgs", CallingConvention = CallingConvention.Winapi)]
+#else
+		[DllExport("_RVExtensionArgs@20", CallingConvention = CallingConvention.Winapi)]
+#endif
+		public static int RvExtensionArgs(StringBuilder output, unsigned int outputSize,
+			[MarshalAs(UnmanagedType.LPStr)] string function,
+			[MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 4)] string[] args, unsigned int argCount)
+		{
+			foreach(var arg in args)
+			{
+				output.Append(arg);
+			}
+			return 0;
+		}
+}
+</syntaxhighlight>
+}}
+
+
+== Other Languages ==
+
+This section contains other languages which may or may not work. Finding out requirements etc. is up to you.
+{{Feature|informative|Help Wanted!}}
+If you know any of the following languages, consider editing this page to add the language to the upper list properly.
+
+{{TabView
+|title1= Delphi/Pascal
+|content1=
+<syntaxhighlight lang="delphi">
+library dllTest;
+
+uses
+  SysUtils;
+
+{Return value is not used.}
+procedure RVExtension(toArma: PAnsiChar; outputSize: Integer; fromArma: PAnsiChar); stdcall; export;
+begin
+  StrCopy(toArma, fromArma);
+end;
+
+exports
+  { 32-bit }
+  RVExtension name '_RVExtension@12';
+  { 64-bit }
+  RVExtension name 'RVExtension';
+begin
+end;
+</syntaxhighlight>
+
+|title2= D
+|content2=
+<syntaxhighlight lang="d">
+import std.c.windows.windows;
+import core.sys.windows.dll;
+
+__gshared HINSTANCE g_hInst;
+
+extern (Windows) BOOL DllMain(HINSTANCE hInstance, ULONG ulReason, LPVOID pvReserved) {
+	final switch (ulReason) {
+		case DLL_PROCESS_ATTACH:
+			g_hInst = hInstance;
+			dll_process_attach(hInstance, true);
+			break;
+
+		case DLL_PROCESS_DETACH:
+			dll_process_detach(hInstance, true);
+			break;
+
+		case DLL_THREAD_ATTACH:
+			dll_thread_attach(true, true);
+			break;
+
+		case DLL_THREAD_DETACH:
+			dll_thread_detach(true, true);
+			break;
+	}
+
+	return true;
+}
+
+import std.conv;
+import std.exception;
+
+export extern (Windows) void RVExtension(char* output, int output_size, const char* cinput) {
+	auto dinput = to!string(cinput);
+	auto doutput = output[0 .. output_size];
+	string result;
+
+	// ...
+
+	enforce(result.length <= output_size, "Output length too long");
+	doutput[0 .. result.length] = result[];
+	doutput[result.length] = '\0';
+}
+</syntaxhighlight>
+}}
+
+
+== Utility Header ==
+
+This C++ header file can be used to define most of the Extension interface. It works on Windows and Linux.<br>
+It will be used in the following examples to keep them shorter. It also contains useful definitions for [[#Feature_Flags|Feature Flags]] and {{Link|#Context}} -
+Its name is RVExtensionUtils.hpp
+
+<spoiler>
+<syntaxhighlight lang="cpp">
+#pragma once
+#include <cstdint>
+#ifdef _WIN32
+#include <windows.h> // GetModuleHandle, GetProcAddress
+#else // Linux
+#include <dlfcn.h> // dlopen, dlclose, dlsym
+#endif
+
+// bitset
+enum DllExtensionFeatureFlags : uint64_t
+{
+	RVFeature_ContextArgumentsVoidPtr = 1 << 0,
+	RVFeature_ContextStackTrace = 1 << 1,
+	RVFeature_ContextNoDefaultCall = 1 << 2,
+	RVFeature_ArgumentNoEscapeString = 1 << 3,
+};
+
+struct RVContext_StackTrace
+{
+	struct StackTraceLine
+	{
+		// Line number in file (before preprocessing if preprocessed with line numbers)
+		uint32_t lineNumber;
+		// File offset in bytes from the start of the file (after preprocessing)
+		uint32_t fileOffset;
+		// Filepath to the source file
+		const char* sourceFile;
+		// scopeName set on that level
+		const char* scopeName;
+		// Complete fileContent of the sourceFile (after preprocessing, can be combined with fileOffset to find exact location)
+		const char* fileContent;
+	};
+
+	StackTraceLine* lines = nullptr;
+	uint32_t lineCount = 0;
+};
+
+struct ProjectionViewTransform
+{
+	typedef float M4x4[4][4];
+
+	M4x4 projection;
+	M4x4 view;
+};
+
+struct CExtensionControlInterface
+{
+	CExtensionControlInterface()
+	{
+		memset(this, 0, sizeof(CExtensionControlInterface));
+	}
+
+	uint32_t size = sizeof(CExtensionControlInterface);
+
+	enum Flags : uint32_t
+	{
+		None = 0,
+		DynamicTexture = 1 << 0, // If set we do not set render target, and instead pass a texture that can be mapped with D3D11_MAP_WRITE_DISCARD
+		TextureFormatBGRA = 1 << 1 // If set the texture is BGRA, if not set its ARGB
+	};
+	Flags flags = Flags::None;
+
+	// This is passed to every callback
+	void* context;
+
+	// [required]
+	// Render into currently active target
+	// target is a ID3D11RenderTargetView if Flags::DynamicTexture is not set
+	// target is a ID3D11Texture2D if Flags::DynamicTexture is set
+	void (*OnDraw)(void* context, float alpha, void* target);
+	// [required]
+	// Called after "Unload" display EH and "Destroy" control EH
+	// This is the last call before the control is destroyed. Release all your resources
+	void (*OnDestroy)(void* context, int code);
+
+	// optional
+	// Called before OnDraw, if the control (including backing render target) size has changed
+	void (*OnSizeChanged)(void* context, unsigned int width, unsigned int height);
+
+	// Interactions
+	// Optional all of these
+
+	// Return if you accept the focus
+	bool (*OnSetFocus)(void* context, bool focus);
+
+	void (*OnLButtonDown)(void* context, float x, float y);
+	void (*OnLButtonUp)(void* context, float x, float y);
+	void (*OnLButtonClick)(void* context, float x, float y);
+	void (*OnLButtonDblClick)(void* context, float x, float y);
+	void (*OnRButtonDown)(void* context, float x, float y);
+	void (*OnRButtonUp)(void* context, float x, float y);
+	void (*OnRButtonClick)(void* context, float x, float y);
+	void (*OnMouseMove)(void* context, float x, float y);
+	// Return if the input was handled, if not it will be passed to the parent controlsgroup/display
+	bool (*OnMouseZChanged)(void* context, float dz);
+
+	void (*OnMouseEnter)(void* context, float x, float y);
+	void (*OnMouseExit)(void* context, float x, float y);
+
+	// Return if the key was handled, if not it will be passed to the parent controlsgroup/display
+	bool (*OnKeyDown)(void* context, int dikCode);
+	bool (*OnKeyUp)(void* context, int dikCode);
+	bool (*OnChar)(void* context, unsigned nChar, unsigned nRepCnt, unsigned nFlags);
+};
+
+#ifdef _D3D11_CONSTANTS // Only available with d3d11.h header
+struct RVExtensionRenderInfo
+{
+	ID3D11Device*            d3dDevice;
+	ID3D11DeviceContext*     d3dDeviceContext;
+};
+
+struct RVExtensionGraphicsLockGuard
+{
+	//! Call this when done with the lock, forgetting to call this will freeze the game.
+	virtual void ReleaseLock() const = 0;
+	virtual ~RVExtensionGraphicsLockGuard() = default;
+};
+#endif
+
+enum TextureFormat : uint32_t
+{
+	PacAI88 = 1,
+	PacARGB8888 = 5
+};
+
+#ifdef _WIN32
+#define DLLEXPORT __declspec (dllexport)
+#define CALL_CONVENTION __stdcall
+#else // Linux
+#if __GNUC__ >= 4
+#define DLLEXPORT __attribute__ ((visibility ("default")))
+#else
+#define DLLEXPORT __attribute__((dllexport))
+#endif
+
+#define CALL_CONVENTION
+#endif
+
+extern "C"
+{
+	typedef int (CALL_CONVENTION RVExtensionCallbackProc)(char const* name, char const* function, char const* data);
+	typedef void CALL_CONVENTION RVExtensionRequestContextProc();
+    typedef void (CALL_CONVENTION RVGetProjectionViewTransformProc)(ProjectionViewTransform& pvTransform);
+
+#ifdef _D3D11_CONSTANTS // Only available with d3d11.h header
+	typedef RVExtensionGraphicsLockGuard* (CALL_CONVENTION RVExtensionGLockProc)();
+	typedef void (CALL_CONVENTION RVExtensionGSetWHkProc)(bool (CALL_CONVENTION *newHook)(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam));
+#endif
+
+	//--- Called by Engine on extension load
+	DLLEXPORT void CALL_CONVENTION RVExtensionVersion(char* output, unsigned int outputSize);
+	//--- STRING callExtension STRING
+	DLLEXPORT void CALL_CONVENTION RVExtension(char* output, unsigned int outputSize, const char* function);
+	//--- STRING callExtension ARRAY
+	DLLEXPORT int CALL_CONVENTION RVExtensionArgs(char* output, unsigned int outputSize, const char* function, const char** argv, unsigned int argc);
+	//--- Called by Engine on extension load to pass RVExtensionCallbackProc to it
+	DLLEXPORT void CALL_CONVENTION RVExtensionRegisterCallback(RVExtensionCallbackProc* callbackProc);
+	//--- Request creation of UI element
+	DLLEXPORT bool CALL_CONVENTION RVExtensionRequestUI(const char* uiClass, CExtensionControlInterface* interfaceStruct);
+	//--- Request filling in a Extension Texture Source
+	DLLEXPORT void CALL_CONVENTION RVExtensionFillTextureSource(const char* uniqueName, uint16_t width, uint16_t height, uint16_t pitch, uint8_t mipLevel, TextureFormat format, void* buffer);
+	DLLEXPORT bool CALL_CONVENTION RVExtensionHasTextureSourceUpdate(const char* uniqueName);
+}
+
+//--- Finds a game exported function by its name
+inline const void* FindRVFunction(const char* name)
+{
+#ifdef _WIN32
+	return reinterpret_cast<void*>(GetProcAddress(GetModuleHandle(nullptr), name));
+#else // Linux
+	auto armaHandle = dlopen(nullptr, RTLD_LAZY | RTLD_NOLOAD);
+	auto result = dlsym(armaHandle, name);
+	dlclose(armaHandle);
+	return result;
+#endif
+}
+</syntaxhighlight>
+</spoiler>
+
+
+{{ArgTitle|2|Feature Flags|{{GVI|arma3|2.18}}}}
+
+Feature flags can change the behavior of the Extension.
+Their main purpose is to only enable certain features when they are needed, so that Extensions that don't need them don't have to pay the cost for it.
+Multiple flags can be combined.
+To set no flags, either 0 must be specified or the RVExtensionFeatureFlags variable must be omitted.
+
+Flags are checked before every RVExtension/RVExtensionArgs execution. They can be changed at runtime between executions, but make sure that the effects of changed flags are handled correctly.
+
+Existing flags
+* {{hl|RVFeature_ContextArgumentsVoidPtr}} - RVExtensionContext takes {{hl|const void**}} as argument, instead of the default {{hl|const char**}}, and arguments will be passed in their custom types - see {{Link|#Context Arguments}}.
+* {{hl|RVFeature_ContextStackTrace}} - RVExtensionContext will retrieve a full Stacktrace - see {{Link|#Context}}.
+* {{hl|RVFeature_ContextNoDefaultCall}} - RVExtensionContext will not be called automatically. It must be manually requested via RVExtensionRequestContext (This improves performance when context is not needed).
+* {{GVI|arma3|2.22}} {{hl|RVFeature_ArgumentNoEscapeString}} - RVExtensionArgs string arguments will not be escaped (double-quoted) and instead passed directly. Provides significant performance advantage, and removes the need to un-escape the strings after receiving them.
+
+Setting Flags
+
+Example Visual C++
+<syntaxhighlight lang="cpp">
+#include <cstdint>
+#include "RVExtensionUtil.hpp"
+
+extern "C"
+{
+	__declspec(dllexport) uint64_t RVExtensionFeatureFlags = RVFeature_ContextStackTrace | RVFeature_ContextNoDefaultCall;
+}
+</syntaxhighlight>
+
+
+{{ArgTitle|2|Game Functions|{{GVI|arma3|2.18}}}}
+
+The Game exports some functions that can be retrieved, in order to call back into Game functionality.
+The [[#Utility_Header|Utility Header]] defines a function called {{hl|FindRVFunction}} that can be used to retrieve their addresses.
+{| class="wikitable"
+|+ Available Game Functions
+|-
+! Name !! Type !! Description
+|-
+| RVExtensionCallback || <syntaxhighlight lang="cpp">typedef int (CALL_CONVENTION RVExtensionCallbackProc)(char const* name, char const* function, char const* data);</syntaxhighlight> || Adds a callback, see #TODO
+|-
+| RVExtensionRequestContext || <syntaxhighlight lang="cpp">typedef void CALL_CONVENTION RVExtensionRequestContextProc();</syntaxhighlight> || Requests execution of [[#Context|{{hl|RVExtensionContext}}]]
+|-
+| RVExtensionGData || <syntaxhighlight lang="cpp">struct RVExtensionRenderInfo
+{
+	ID3D11Device*            d3dDevice;
+	ID3D11DeviceContext*     d3dDeviceContext;
+};
+
+const RVExtensionRenderInfo* const *
+</syntaxhighlight> || Acquires pointers to the DirectX 11 device and device context.
+|-
+| RVExtensionGLock || <syntaxhighlight lang="cpp">
+struct RVExtensionGraphicsLockGuard
+{
+	//! Call this when done with the lock, forgetting to call this will freeze the game.
+	virtual void ReleaseLock() const = 0;
+	virtual ~RVExtensionGraphicsLockGuard() = default;
+};
+
+typedef RVExtensionGraphicsLockGuard* (CALL_CONVENTION RVExtensionGLockProc)();</syntaxhighlight> || Acquires a DirectX lock, required to access DirectX functions.
+|-
+| RVGetProjectionViewTransform || <syntaxhighlight lang="cpp">
+struct ProjectionViewTransform
+{
+	typedef float M4x4[4][4];
+    M4x4 projection;
+    M4x4 view;
+};
+
+typedef void (CALL_CONVENTION RVGetProjectionViewTransformProc)(ProjectionViewTransform& pvTransform);</syntaxhighlight> || Returns the projection and camera view (i.e. "look at") matrices for drawing 3D content. The matrices are row-major. The camera view matrix is left-handed.
+|-
+| RVExtensionGSetWHk || <syntaxhighlight lang="cpp">typedef void (CALL_CONVENTION RVExtensionGSetWHkProc)(bool (CALL_CONVENTION *newHook)(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam));</syntaxhighlight> || Sets a WNDPROC hook to handle mouse/key inputs when rendering external UI.
+|-
+| RVExtensionGSetResetHook || <syntaxhighlight lang="cpp">typedef void (CALL_CONVENTION RVExtensionGSetResetHook)(void (CALL_CONVENTION *newHook)());</syntaxhighlight> || Sets a hook that gets called when the game 3D engine is shut down. At this point the extension must destroy its D3D resources and release the pointers to the D3D device/context.
+|-
+| RVExtensionGGetR2TTexture {{GVI|arma3|2.22}} || <syntaxhighlight lang="cpp">typedef void (CALL_CONVENTION RVExtensionGGetR2TTexture)(const char* name, void (CALLCONVENTION *onResult)(ID3D11Texture2D* texture, ID3D11ShaderResourceView* resView, ID3D11RenderTargetView* rtView, uint32_t width, uint32_t height, uint32_t lastSeenFrameID, const char* name));</syntaxhighlight> || Retrieves R2T texture's by name, name can be nullptr, in which case all textures are returned via the callback.
+|}
+
+
+{{ArgTitle|2|Callback|{{GVI|arma3|1.96}}}}
+
+It is possible to call the game directly from the extension via function pointer provided when extension is called for the first time.
+Since {{GVI|arma3|2.18}} it can also be requested when needed, see {{Link|#Game Functions}}.<br>
+The function pointer passed over to {{hl|RVExtensionRegisterCallback}} method is of the following signature:
+<syntaxhighlight lang="cpp">int(*callbackProc)(char const *name, char const *function, char const *data)</syntaxhighlight>
+
+Calling this function pointer from extension will trigger {{Link|Arma 3: Mission Event Handlers#ExtensionCallback|"ExtensionCallback"}} mission event handler with three user-supplied
+params. The params are:
+* {{hl|name}} - make it unique name, for example the extension name, so that other modders can quickly filter out calls from own extensions
+* {{hl|function}} - make it name of the function the extension sends the result to. (Note: The returned function is just a STRING! So [[compile]] is needed, before using [[call]] or [[spawn]], to execute it)
+* {{hl|data}} - make it the actual result. You can also format it as an array so it could be parsed by [[parseSimpleArray]]
+Calling function pointer returns an {{hl|int}}. This is the number of available slots in the input buffer left for this frame after your call and can range from 99 to -1.<br>
+The buffer is processed and cleared every frame and the maximum number of slots that can be filled per frame is 100.
+If you are planning to call back with more than 100 results per frame, make sure your extension retries if it receives negative {{hl|int}}, which means the buffer was full and your call did not succeed.
+Ideally suited for callbacks from different threads, but if callback is initiated from the calling thread, the EH will fire on the next frame of game simulation.<br>
+The "ExtensionCallback" event handler needs to exist before any callbacks, otherwise the data will just stay in the buffer. Removing all "ExtensionCallback" EHs clears the buffer as well as mission restart.
+
+Usage Example:
+<sqf>
+fncToExecute_1 = { hint format ["Extension Result 1: %1", _this] };
+fncToExecute_2 = { hint format ["Extension Result 2: %1", _this] };
+fncToExecute_3 = { hint format ["Extension Result 3: %1", _this] };
+
+addMissionEventHandler ["ExtensionCallback",
+{
+	params ["_name", "_function", "_data"];
+	if (_name isEqualTo "test_callback") then
+	{
+		parseSimpleArray _data call (missionNamespace getVariable [_function,
+		{
+			hint "Function does not exist!";
+		}]);
+	};
+}];
+
+"test_callback" callExtension str "test data";
+</sqf>
+
+Here is a minimal example of an extension using {{Link|Arma 3: Mission Event Handlers#ExtensionCallback|extension callback}} (do not actually do it like this for a real extension).
+''fncToExecute_X'' function is called from "ExtensionCallback" event handler when it is triggered after 2 seconds of the extension call.
+
+<spoiler>
+<syntaxhighlight lang="cpp">
+#include <thread>
+#include <string>
+#include <chrono>
+
+#include "RVExtensionUtil.hpp"
+
+RVExtensionCallbackProc* callbackPtr = nullptr;
+
+void CALL_CONVENTION RVExtensionRegisterCallback(RVExtensionCallbackProc* callbackProc)
+{
+	callbackPtr = callbackProc;
+}
+
+void CALL_CONVENTION RVExtension(char *output, unsigned int outputSize, const char *function)
+{
+	if (!callbackPtr)
+		return;
+
+	std::thread ([](std::string fnc)
+	{
+		using namespace std::chrono_literals;
+		fnc = "[1,2,3," + fnc + "]";
+
+		for (int i = 1; i < 4; ++i) // run 3 times
+		{
+			std::this_thread::sleep_for(2s); // sleep for 2 seconds
+			callbackPtr("test_callback", ("fncToExecute_" + std::to_string(i)).c_str(), fnc.c_str());
+		}
+
+	}, function).detach();
+}
+</syntaxhighlight>
+</spoiler>
+
+
+{{ArgTitle|2|Context|{{GVI|arma3|2.12}}}}
+
+RVExtensionContext is called before every RVExtension/RVExtensionArgs execution, providing context about where the call came from.
+Using {{Link|#Feature Flags}} can change the number of elements passed, but it does not change their order.
+
+=== Context Arguments ===
+
+By default (due to backwards compatability) context receives an array of char*. Every value will be converted to a string.
+However with the {{hl|RVFeature_ContextArgumentsVoidPtr}} {{Link|#Feature Flags}}, it can be switched to an array of void*, where the specific datatype per entry is defined per context element.
+
+It will pass the following data in this order:
+
+{| class="wikitable"
+|+ Caption text
+|-
+! Name !! Description !! String content !! Custom datatype with {{hl|RVFeature_ContextArgumentsVoidPtr}}
+|-
+| steamId || Steam 64bit userID of the local machine, same as [[getPlayerUID]] || "0", number as string, no extra quotes || {{hl|const uint64_t*}} the UID
+|-
+| fileSource || file from which the extension was executed or "" if unavailable || X || {{hl|const char*}}
+|-
+| missionName || [[missionNameSource]] || X || {{hl|const char*}}
+|-
+| serverName || [[serverName]] || X || {{hl|const char*}}
+|-
+| remoteExecutedOwner || [[remoteExecutedOwner]] || "0", number as string, no extra quotes || {{hl|const int16_t*}}
+|-
+| stackTrace || Stacktrace of the script that executed [[callExtension]]. [[diag_stacktrace]] || In format {{hl|LineNumber;SourceFile;ScopeName\n}} for each stack level. || {{hl|const RVContext_StackTrace*}}
+<syntaxhighlight lang="cpp">
+struct RVContext_StackTrace
+{
+	struct StackTraceLine
+	{
+		// Line number in file (before preprocessing if preprocessed with line numbers)
+		uint32_t lineNumber;
+		// File offset in bytes from the start of the file (after preprocessing)
+		uint32_t fileOffset;
+		// Filepath to the source file
+		const char* sourceFile;
+		// scopeName set on that level
+		const char* scopeName;
+		// Complete fileContent of the sourceFile (after preprocessing, can be combined with fileOffset to find exact location)
+		const char* fileContent;
+	};
+
+	StackTraceLine* lines = nullptr;
+	uint32_t lineCount = 0;
+};
+</syntaxhighlight>
+|}
+
+Here is a minimal example:
+<spoiler>
+<syntaxhighlight lang="cpp">
+#include <string>
+#include <vector>
+#include <iterator>
+#include <sstream>
+#include <iomanip>
+#include "RVExtensionUtil.hpp"
+
+std::vector<std::string> contextInfo;
+
+extern "C"
+{
+	//--- Engine passed context
+	__declspec (dllexport) void __stdcall RVExtensionContext(const char **args, unsigned int argsCnt);
+}
+
+//--- name callExtension function
+void CALL_CONVENTION RVExtension(char *output, unsigned int outputSize, const char *function)
+{
+	//--- Not used here
+	(void)function;
+
+	if (!contextInfo.empty())
+	{
+		std::ostringstream oss;
+		const char qt = '"';
+
+		for (auto it = contextInfo.begin(); it != contextInfo.end() - 1; ++it)
+			oss << std::quoted(*it, qt, qt) << ",";
+		oss << std::quoted(contextInfo.back(), qt, qt);
+
+		//--- Send context info back
+		strncpy_s(output, outputSize, ("[" + oss.str() + "]").c_str(), _TRUNCATE);
+	}
+}
+
+//--- Context is executed first, copy it
+void CALL_CONVENTION RVExtensionContext(const char **args, unsigned int argsCnt)
+{
+	contextInfo.assign(args, std::next(args, argsCnt));
+}
+</syntaxhighlight>
+</spoiler>
+
+Here is a example using {{hl|RVFeature_ContextArgumentsVoidPtr}} combined with {{hl|RVFeature_ContextStackTrace}}:
+<spoiler>
+<syntaxhighlight lang="cpp">
+#include <string>
+#include <vector>
+#include <iterator>
+#include <sstream>
+#include <iomanip>
+
+#include "RVExtensionUtil.hpp"
+
+struct CallContext
+{
+	uint64_t steamId;
+	std::string fileSource;
+	std::string missionName;
+	std::string serverName;
+	int16_t remoteExecutedOwner;
+
+	struct StackTraceLine
+	{
+		// Line number in file (before preprocessing if preprocessed with line numbers)
+		uint32_t lineNumber;
+		// File offset in bytes from the start of the file (after preprocessing)
+		uint32_t fileOffset;
+		// Filepath to the source file
+		std::string sourceFile;
+		// scopeName set on that level
+		std::string scopeName;
+		// Complete fileContent of the sourceFile (after preprocessing, can be combined with fileOffset to find exact location)
+		std::string fileContent;
+	};
+
+	std::vector<StackTraceLine> stackTrace;
+} contextInfo;
+
+extern "C"
+{
+	//--- Engine passed context
+	__declspec (dllexport) void __stdcall RVExtensionContext(const void **args, unsigned int argsCnt);
+
+	__declspec(dllexport) uint64_t RVExtensionFeatureFlags = RVFeature_ContextArgumentsVoidPtr | RVFeature_ContextStackTrace;
+}
+
+//--- name callExtension function
+void CALL_CONVENTION RVExtension(char *output, unsigned int outputSize, const char *function)
+{
+	//--- Not used here
+	(void)function;
+
+	{
+		std::ostringstream oss;
+		const char qt = '"';
+
+		oss << qt << contextInfo.steamId << qt << ",";
+		oss << std::quoted(contextInfo.fileSource, qt, qt) << ",";
+		oss << std::quoted(contextInfo.missionName, qt, qt) << ",";
+		oss << std::quoted(contextInfo.serverName, qt, qt) << ",";
+		oss << contextInfo.remoteExecutedOwner << ",";
+
+		//--- Send context info back
+		strncpy_s(output, outputSize, ("[" + oss.str() + "]").c_str(), _TRUNCATE);
+	}
+}
+
+//--- Context is executed before RVExtension is called, and its values are only valid while inside RVExtensionContext function, so we need to copy them to use them later
+void CALL_CONVENTION RVExtensionContext(const void **args, unsigned int argsCnt)
+{
+	size_t index = 0;
+	contextInfo.steamId = *static_cast<const uint64_t*>(args[index++]);
+	contextInfo.fileSource = static_cast<const char*>(args[index++]);
+	contextInfo.missionName = static_cast<const char*>(args[index++]);
+	contextInfo.serverName = static_cast<const char*>(args[index++]);
+	contextInfo.remoteExecutedOwner = *static_cast<const int16_t*>(args[index++]);
+
+	if (RVExtensionFeatureFlags & RVFeature_ContextStackTrace) {
+		auto stackTrace = static_cast<const RVContext_StackTrace*>(argv[index++]);
+
+		std::transform(stackTrace->lines, stackTrace->lines + stackTrace->lineCount, std::back_inserter(contextInfo.stackTrace),
+			[](const RVContext_StackTrace::StackTraceLine& line)
+			{
+					return CallContext::StackTraceLine
+					{
+						line.lineNumber,
+						line.fileOffset,
+						line.sourceFile,
+						line.scopeName,
+						line.fileContent // File content is large and expensive to copy
+					};
+			});
+	}
+}
+</syntaxhighlight>
+</spoiler>
+
+=== Manually Request Context ===
+
+Having RVExtensionContext be called every time before every extension execution can be a waste of performance if the context is not required every time.
+This automatic call can be disabled with the {{hl|RVFeature_ContextNoDefaultCall}} [[#Feature_Flags|Feature Flag]]. When the flag is set, the context must be requested.
+
+The Game is exporting a function called {{hl|RVExtensionRequestContext}} that can be used to request it, it will then call {{hl|RVExtensionContext}}.
+The {{hl|RVExtensionContext}} execution will be completed when {{hl|RVExtensionRequestContext}} returns.
+If the {{hl|RVExtensionContext}} exported function is not defined, requesting context will have no effect.
+The {{hl|RVExtensionContext}} call will respect the currently set {{hl|RVExtensionFeatureFlags}}, {{hl|RVExtensionContext}} can also be called multiple times, with different feature flags.
+
+Here is a example on how to fetch the RequestContext function, and how to use it:
+<spoiler>
+<syntaxhighlight lang="cpp">
+#include <string>
+#include <vector>
+#include <iterator>
+#include <sstream>
+#include <iomanip>
+
+#include "RVExtensionUtil.hpp"
+
+struct CallContext
+{
+	uint64_t steamId;
+	std::string fileSource;
+	std::string missionName;
+	std::string serverName;
+	int16_t remoteExecutedOwner;
+} contextInfo;
+
+extern "C"
+{
+	//--- Engine passed context
+	__declspec (dllexport) void __stdcall RVExtensionContext(const void **args, unsigned int argsCnt);
+
+	__declspec(dllexport) uint64_t RVExtensionFeatureFlags = RVFeature_ContextArgumentsVoidPtr | RVFeature_ContextStackTrace | RVFeature_ContextNoDefaultCall;
+}
+
+RVExtensionRequestContextProc* requestContext;
+
+void CALL_CONVENTION RVExtensionVersion(char *output, unsigned int outputSize)
+{
+	requestContext = reinterpret_cast<RVExtensionRequestContextProc*>(FindRVFunction("RVExtensionRequestContext"));
+	std::strncpy(output, "Test-Extension v1.0", outputSize - 1);
+}
+
+//--- name callExtension function
+void CALL_CONVENTION RVExtension(char *output, unsigned int outputSize, const char *function)
+{
+	//--- Not used here
+	(void)function;
+
+	requestContext(); // Request the context dynamically when we need it
+
+	{
+		std::ostringstream oss;
+		const char qt = '"';
+
+		oss << qt << contextInfo.steamId << qt << ",";
+		oss << std::quoted(contextInfo.fileSource, qt, qt) << ",";
+		oss << std::quoted(contextInfo.missionName, qt, qt) << ",";
+		oss << std::quoted(contextInfo.serverName, qt, qt) << ",";
+		oss << contextInfo.remoteExecutedOwner << ",";
+
+		//--- Send context info back
+		strncpy_s(output, outputSize, ("[" + oss.str() + "]").c_str(), _TRUNCATE);
+	}
+}
+
+//--- Its values are only valid while inside RVExtensionContext function, so we need to copy them to use them later
+void CALL_CONVENTION RVExtensionContext(const void **args, unsigned int argsCnt)
+{
+	size_t index = 0;
+	contextInfo.steamId = *static_cast<const uint64_t*>(args[index++]);
+	contextInfo.fileSource = static_cast<const char*>(args[index++]);
+	contextInfo.missionName = static_cast<const char*>(args[index++]);
+	contextInfo.serverName = static_cast<const char*>(args[index++]);
+	contextInfo.remoteExecutedOwner = *static_cast<const int16_t*>(args[index++]);
+}
+</syntaxhighlight>
+</spoiler>
+
+{{ArgTitle|2|Extension UI|{{GVI|arma3|2.20}}}}
+
+{{Feature|warning|This is a experimental feature currently available for testing on Development-Branch. It is not yet decided whether this will become available in Stable branch.}}
+
+Using RVExtensionRequestUI and [[CT_EXTENSION]], Extensions can implement their own UI Controls.<br>
+<br>
+{{hl|RVExtensionRequestUI}} receives a "uiClass" name that is defined in the UI Control's config, based on that the Extension should decide what UI to create internally.<br>
+It then has to fill out the passed {{hl|CExtensionControlInterface}} structure.<br>
+Verify that the {{hl|size}} member of the passed structure, matches the expected size of the structure. If it does not, then a Game Update has changed the structure and additional code for backwards compatibility might be needed.<br>
+<br>
+A sample is available at https://github.com/arma3/RVExtensionImGui/blob/main/dllmain.cpp#L38<br>
+<br>
+{{hl|OnSizeChanged}} will be called before the first {{hl|OnDraw}} call. And every time that the control's size is changed via [[ctrlSetScale]], [[ctrlSetPosition]] or others.
+The passed size, will also be the size of the RenderTarget/Texture, used in {{hl|OnDraw}}.<br>
+<br>
+Inside OnDraw, DirectX functions must be used to draw into the RenderTarget/Texture. DirectX device and context are available via "RVExtensionGData", see {{Link|#Game Functions}}.<br>
+<br>
+There are two methods for drawing.<br>
+
+The default is a RenderTarget, the Game will set the active RenderTarget before the call to "OnDraw", and every DirectX render command will render into it.<br>
+The alternative is setting {{hl|CExtensionControlInterface::Flags::DynamicTexture}} into the "flags" member of the interface structure. Then the Game will provide a texture allocated with {{hl|D3D11_USAGE_DYNAMIC}}, which can be mapped using {{hl|d3dDeviceContext->Map}} and the {{hl|D3D11_MAP_WRITE_DISCARD}} MapType, and the CPU can then write data into the mapped memory.
+
+{{ArgTitle|2|Extension Texture Source|{{GVI|arma3|2.22}}}}
+
+Procedural texture source (#TODO link to the wiki page, and also document it there)
+
+#(rgb,width,height,nMips)extension("RVExtensionName","UniqueName", isAnimated, textureType)
+
+RVExtensionFillTextureSource will be called whenever the engine needs to fill the texture.
+The Texture will be stored in video memory. It may be deleted from Video memory at any time, and when its visible on screen again it will be re-fetched from extension.
+The extension fetch is done on a separate texture loading thread.
+
+In video/animated mode, the texture is re-loaded/re-requested from the extension, every frame that the texture is visible on-screen. Be mindful of performance.
+
+When using animated textures that do not have to update every frame, it is recommended to implement RVExtensionHasTextureSourceUpdate.
+That function will be called every frame to check if an update is required, and provides a performance advantage over updating the texture anyway even though it didn't change.
+Textures are only checked for updates, if it is visible on screen and considered for rendering.
+
+{{ArgTitle|2|Extension Signatures|{{GVI|arma3|2.22}}}}
+
+DLLs can be signed on windows with SignTool [https://learn.microsoft.com/en-us/windows/win32/appxpkg/how-to-sign-a-package-using-signtool "How to sign an app package using SignTool"]
+Self signed certificates are possible!
+
+[[allExtensions]] and "ExtensionLoaded" eventhandler provide signature information.
+Important is the "status" field.
+"badDigest" means the signature does not match the file, likely the file was modified after it was signed, the signature cannot be trusted.
+"expired" means the signature is now expired, but it might still have been valid when the signature was created.
+"revoked" means the signature was revoked after the file was signed, likely because the certificate is compromised, it might not be trustworthy.
+"partialChain" means the full certificate chain could not be verified, while the known certificate is valid, it might have been created by a invalid authority, it might not be trustworthy.
+"ok" is set if there were no errors with the validation (Certificate is valid and matches the file, but we ignore expiry date, ignore self signed certificates ), it is better to check individual status values than just relying on this.
+
+The recommended method to check is to make sure that "badDigest" is not set (The file was actually really signed by the certificate, and not modified afterwards), and that the certificate's public key matches the expected one (It was signed by the intended certificate, and not a self-signed certificate someone else created).
+
+
+Signature verification script can be set in config
+<syntaxhighlight lang="cpp">
+class CfgExtensions {
+  class MyModName {
+    extensions[] = {"extension1", "extension2"}; // Whitelist, which extension names to run this check on (so its not ran on unrelated extensions we don't care about)
+    onCheckLoad = "call MyMod_fnc_checkExtensionLoad";
+    publicKey = "308201...E4EA81730203010001"; // The handler has access to the config class, so we can store some properties here)
+  }
+}
+</syntaxhighlight>
+
+
+<sqf>
+MyMod_fnc_checkExtensionLoad = {
+
+  if !("signatures" in _this) exitWith { true; }; // This must be linux, it doesn't have signature reading. We'll just skip validation here
+
+  // must have signature, so signatures can't be empty
+  if ((_this get "signatures") isNotEqualTo []) exitWith { false; };
+
+  // Find a signature that is..
+  _validSignatureFound = (_this get "signatures"]) findIf {
+    (_x get "publicKey") == getText((_this get "config") >> "publicKey") // Signed by my key (Easy access to config that added the handler, so can store the key there)
+    &&
+    !("expired" in (_x get "status")) // Not expired
+    &&
+    !("badDigest" in (_x get "status")) // The signature actually matches the binary (it was not edited after signing)
+  };
+
+  _validSignatureFound != -1 // If signature found we load, otherwise we block
+}
+</sqf>
+
+
+
+
+
+= External References =
+
+<!-- This is supposed to be filled by people who want to provide further examples which do not fit in here due to their complexity etc. -->
+<!-- It was requested that such a place would exist for stuff that does not fit in here. -->
+The {{Link|https://github.com/arma3/RV-Extension-Examples|Community-Lead Examples Repository}} can be used for further examples which go more into detail.
+To get your example on there, just fork the repository and create a Pull-Request afterwards.
+
+==== C/C++ ====
+[[User:Killzone_Kid|Killzone_Kid]]'s "How To Make an {{arma}} Extension" tutorials:<br>
+:   {{Link|http://killzonekid.com/arma-scripting-tutorials-how-to-make-arma-extension-part-1/|Part 1}}<!--
+--> {{Link|http://killzonekid.com/arma-scripting-tutorials-how-to-make-arma-extension-part-2/|Part 2}}<!--
+--> {{Link|http://killzonekid.com/arma-scripting-tutorials-how-to-make-arma-extension-part-3/|Part 3}}<!--
+--> {{Link|http://killzonekid.com/arma-scripting-tutorials-how-to-make-arma-extension-part-4/|Part 4}}
+
+==== C# ====
+* {{Link|http://maca134.co.uk/tutorial/write-an-arma-extension-in-c-sharp-dot-net/|Write An {{arma}} Extension In C#/.NET}}
+
+==== Python ====
+* {{Link|https://github.com/overfl0/Pythia|Pythia - an {{arma3}} extension that lets you write Python extensions for the game}}
+
+==== Rust ====
+* {{Link|https://github.com/BrettMayson/arma-rs|arma-rs - Crate for easily and quickly building powerful extensions}}
+
+==== Golang ====
+* {{Link|https://github.com/indig0fox/a3go|a3go}}, an {{arma}} Go library by IndigoFox - for Go '''1.20'''
+* {{Link|https://github.com/code34/armago_x64/|Armago}}, an {{arma}} template extension - for Go '''''1.16'''''
+
+==== External Applications ====
+* {{Link|http://killzonekid.com/arma-3-extension-tester-callextension-exe-callextension_x64-exe/|KK's {{arma3}} Extension Tester}}
+* {{Link|http://killzonekid.com/callextension-v2-0/|KK's {{arma3}} Extension Tester v2.0 with callback}}
+* {{Link|https://github.com/SQFvm/vm/releases|SQF-VM - Community implementation of SQF}}
+
+
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}

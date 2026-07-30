@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/diag_dynamicSimulationEnd
+// revision: 347048 (2023-08-28T22:05:05Z)
+// export sha1: afndc55se6oxevr2fml3vzn05cos2ev
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Command Group: Dynamic Simulation | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|branch= diag
+
+|eff= local
+
+|gr1= Diagnostic
+
+|gr2= Dynamic Simulation
+
+|descr= Ends dynamic simulation data gathering and writes collected data into given (txt) file. The file is saved in the {{arma3}} installation folder.
+<syntaxhighlight lang="cpp">
+// Example output
+Enabled time (in % of collection time)       Subject name
+  1.$                                          O Bravo 1-5
+  1.$                                          O Bravo 1-6
+  1.$                                          extraction_bike (B_Quadbike_01_F) - [3151,9662,59]
+  .....                                          ..................................
+  -1.$                                         O Bravo 1-4
+  -1.$                                         target_1 (O_SAM_System_04_F) - [3571,9878,70]
+  -1.$                                         O Alpha 3-4
+Collection took 0.0s
+</syntaxhighlight>
+
+|s1= [[diag_dynamicSimulationEnd]] file
+
+|p1= file: [[String]] - file name without extension
+
+|r1= [[Nothing]]
+
+|x1= <sqf>diag_dynamicSimulationEnd "dynSimDebugData"; // creates a file called "dynSimDebugData_runtimelog.txt"</sqf>
+
+|seealso= [[Arma 3: Dynamic Simulation]] [[diag_dynamicSimulationStart]]
+}}

@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/hasCustomFace
+// revision: 369746 (2024-10-08T15:07:09Z)
+// export sha1: 5pp9655cbfewakos74aqzgiq8n49d7p
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Identity | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|arg= global
+
+|gr1= Unit Identity
+
+|descr= Get whether or not a player has an available custom face file.
+{{Feature|informative|To check if this custom face is currently being used, use [[face]] (returns "Custom" in that case).}}
+
+|s1= [[hasCustomFace]] person
+
+|p1= person: [[Object]]
+
+|r1= [[Boolean]] - [[true]] if player has a {{hl|face.paa/jpg}} file in their current profile and it is usable
+
+|x1= <sqf>
+if (isPlayer _thisUnit && hasCustomFace _thisUnit && face _thisUnit != "Custom") then
+{
+	[_thisUnit, "Custom"] remoteExec ["setFace", 0, true];
+};
+</sqf>
+
+|seealso= [[face]] [[setFace]] [[setIdentity]] [[setSpeaker]]
+}}

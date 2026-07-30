@@ -1,0 +1,446 @@
+// source: https://community.bistudio.com/wiki/Operation_Flashpoint:_FAQ:_Campaigns:_1985_Cold_War_Crisis
+// revision: 364042 (2024-04-30T11:25:19Z)
+// export sha1: 9imnsrjepc9f0iffnkar0xqd88ipf35
+// Vendored snapshot. Do not edit — re-export instead.
+
+== How many campaign missions are there? ==
+
+There are over 40 missions in the 1985 Campaign. Here's a list of them all:
+
+{{Columns|4|
+# Training
+# Flashpoint
+# Combined Arms
+# Camping
+# Alert
+# Montignac Must Fall
+# After Montignac
+# Strange Meeting
+# Rescue
+# Undercover
+# Night Patrol
+# Hold Malden
+# Defender
+# Tank Training
+# Battle at Houdan
+# Interdiction
+# Spearhead
+# Pathfinder
+# Tank Rally
+# Unfinished Business
+# Taking Command
+# Scouting
+# Turning the Tide
+# Saboteur
+# Guardian
+# Return to Eden
+# Hind Attack
+# Rolling Thunder
+# Airborne
+# Air Superiority
+# Recon
+# Killdozer
+# Air Assault
+# Wake Up Call
+# Planes Start
+# Maverick
+# Counter Strike
+# Escaping From Prison
+# Incursion
+# Search And Destroy
+# Red Dawn
+# Status Quo
+}}
+
+Some of these missions are bonus missions for a job well done.
+If your campaign book doesn't show one of the missions mentioned above, you might want to consider reverting back to the mission before the skipped mission and play it again in the hopes of earning a higher score and a chance to play the bonus mission.
+
+
+== I must have two left feet! Why am I failing the obstacle course in the Training mission? ==
+
+Well you could be one heck of a klutz, or you're not doing it correctly or it might be a mission bug. Let's first make sure you know what to do:
+
+# Run through the maze.
+# Run over the wooden plank bridge.
+# Go prone and crawl under the wires.
+# Run behind the two stone markers and return back between them to your commander.
+
+Sounds easy enough, no? Well here are a few more tips from Ondřej Španěl, BIS' lead programmer:
+
+# Listen to what your commander says. Sometimes he yells at you various remarks.
+# There should be a confirmation hint, "Passed", displayed in the top left screen corner each time you pass each obstacle in the course. Do not proceed to the next obstacle unless you passed the previous one.
+# If everything else fails, retry the Training mission again. Some users reported the scripting in this mission is not behaving correctly in certain situations and if you don't pass the obstacles fast enough, the mission scripting may may incorrectly cause you to remain stuck and never let you pass the mission. This should not be very common, but it might happen.
+
+War is hell!
+
+
+== I successfully finish a mission, yet I get chewed out by Colonel Blake. Why? ==
+
+Each mission has its own internal definitions of what constitutes a minimum, average and maximum score. If you've fought well, the Colonel may even compliment you. If not, you'll likely get a well deserved reprimand.
+
+
+== Why should I care about what Colonel Blake says? ==
+
+Because if you've previously been reprimanded 3 times, on the 4th one you will be booted out of the army by the Colonel. Not very pleasant, is it?
+
+Yet, there's a way to avoid this but you'll have to edit an internal OFP file to do it. The name of the file is 1985.SQC. You'll find it in the following location:
+
+ <OperationFlashpoint>\Users\<your_player_name>\Saved\Tmp
+
+If you have not played the campaign with OFP: Resistance version 1.75 or greater, you can use any text editor to update the 1985.SQC file. If, however, you have played the campaign with OFP: Resistance or greater, BIS has changed the internal format of campaign SQC files so that they are no longer editable.
+
+Before editing the file, make a backup copy. Search for the last occurrence of the word "penalties". If you find this:
+
+ penalties[]={};
+
+then you have not been chewed out and you need make no changes. If, however, you find something like this:
+
+<syntaxhighlight lang="cpp">
+penalties[] =
+{
+	"Penalty01" // (you may see "Penalty02" and "Penalty03" as well)
+};
+</syntaxhighlight>
+
+then replace the above lines with:
+
+<syntaxhighlight lang="cpp">
+penalties[] = {};
+</syntaxhighlight>
+
+and save the modifications. If you're pestered by the Colonel again in the future, you may want to repeat this procedure to avoid ever being booted from the army.
+
+
+== I successfully finish a mission, get my score, and when I click on CONTINUE, I get bounced back to OFP's main menu. When I click on CAMPAIGNS again, I don't see the next mission listed. I can only replay the same mission over (and over) again. Ah!!!!! ==
+
+You are not alone! Thousands have suffered the same fate before you. This is one of the well known bug that the game comes with. It can occur randomly for any mission. Here's what [http://www.codemasters.com/support/faqs.php?gameid{{=}}14 CodeMaster's OFP FAQ] page has to say about this:
+
+: '''Problem''': When playing a mission in the campaign, the campaign does not continue, the game just goes back to the main menu. This is even after the mission was successfully completed.
+
+: '''Solution''': Replaying a campaign mission will result in replaying that mission as a single mission. You should use the 'Revert' option when replaying a mission from the campaign. If this option is not available, you will have to select 'Revert' on a previous mission. If you have received a debriefing from Colonel Blake, this means that you have failed the campaign. You will need to revert from an earlier mission and get a higher individual score on the missions.
+
+: If the problem persists, despite having tried the revert solution, do the following:
+# Load up Windows Explorer
+# Go to the folder [install directory]\OperationFlashpoint\users\[username]\saved\campaigns\1985. (The default install directory is C:\Program files\Codemasters and the [username] folder will be the user name you are playing with.
+# If there are subfolders from the 1985 folder (e.g. ..\missions\00Training.Abel) you should copy all the *.fps files to the 1985 folder.
+# You should now be able to proceed in the campaign.
+
+If you've tried that and you still cannot continue in the campaign or you simply do not want to revert to the last campaign mission you played and do it all over again, you can replace your copy of {{Link|http://kronzky.info/theofpfaq/downloads/OFP_1985.SQC.ZIP|OFP's 1985.SQC file}}.
+
+
+== The truck gets stuck in "Montignac Must Fall". What do I do? ==
+
+Yep. This is OFP AI driving at its worst. Sometimes, after you've seized Montignac and a truck comes to pick your squad up, the AI driver decides to drive between two building in town and get stuck there.
+
+I see two choices here. You could get out of the truck, kill the driver and try to un-wedge the truck yourself or you can simply restart the mission.
+
+
+== I completed the "Montignac Must Fall" mission but the next mission is not the same as others are playing. ==
+
+There is a possibility of playing one of two missions after the "Montignac Must Fall" mission.
+
+If you succeeded in taking Montignac, then you will go on to play "After Montignac". If you were forced to retreat from Montignac, the next mission will be "Rescue".
+
+
+== I'm playing the "After Montignac" campaign mission. I'm alone in the forest and I can't pass this mission for my life! ==
+
+Different people have different problems tackling this mission. Click on one from this list that describes your problem.
+
+: [[#I successfully complete the mission, yet I get thrown back to OFP's main menu and cannot advance further in the campaign.|I successfully complete the mission, yet I get thrown back to OFP's main menu and cannot advance further in the campaign.]]
+
+: [[#I reached the evacuation point in Morton but the mission didn't end.|I reached the evacuation point in Morton but the mission didn't end.]]
+
+: [[#I'm just about to reach the secondary evacuation point, when, all of a sudden, I get captured by the Ruskies.|I'm just about to reach the secondary evacuation point, when, all of a sudden, I get captured by the Ruskies.]]
+
+: [[#I'm lame! I want a complete spoiler to get me through this mission.|I'm lame! I want a complete spoiler to get me through this mission.]]
+
+: [[#I refuse to play this mission again! I have no self-respect. I want to move on.|I refuse to play this mission again! I have no self-respect. I want to move on.]]
+
+: [[#After playing the mission for a while, all of a sudden the graphics look washed out and faint. I can hardly see in front of my nose.|After playing the mission for a while, all of a sudden the graphics look washed out and faint. I can hardly see in front of my nose.]]
+
+: [[#None of the above.|None of the above.]]
+
+=== I successfully complete the mission, yet I get thrown back to OFP's main menu and cannot advance further in the campaign. ===
+
+Welcome to the club! Go [[#I successfully finish a mission, get my score, and when I click on CONTINUE, I get bounced back to OFP's main menu. When I click on CAMPAIGNS again, I don't see the next mission listed. I can only replay the same mission over (and over) again. Ah!!!!!|here]].
+
+=== I reached the evacuation point in Morton but the mission didn't end. ===
+
+Somewhere during the first 15 minutes of mission gameplay, a radio message is issued stating that the evacuation point has been changed. Whether you arrived in Morton before or after that message transmission makes no difference. You must reach the secondary evacuation point in order to complete the mission.
+
+=== I'm just about to reach the secondary evacuation point, when, all of a sudden, I get captured by the Ruskies. ===
+
+That's good! That's what's supposed to happen, according to the script. Let the video cut-scene play out till you find yourself in a tent guarded by armed Ruskies. Then you'll simply have to escape.
+
+=== I'm lame! I want a complete spoiler to get me through this mission. ===
+
+Heh! Search the [[Operation_Flashpoint:_FAQ:_General#Are_there_any_OFP_discussion_forums.3F|forums]] for existing threads about the "After Montignac" mission. There are dozens of threads on them discussing various strategies on completing this mission successfully. Here's an example from a thread containing a spoiler for this mission.
+
+Here's my own spoiler, based on how I completed the mission:
+
+: I have had the honor of finally meeting Slava!
+
+: First of all, I was definitely frustrated till I finished this mission but in a good way. Lots of challenge and it was never the same every time I played. This is an unbelievable game!
+
+: When the mission starts, there are 2 dead buddies about 20 meters to your right, at a 45 degree angle from you. Hurry (someone is coming) and take the binocs and laws from the one on the right.
+
+: Quickly turn due north and run fast (always fast) about halfway through the forest. Then turn NE and keep running till the eastern end of the forest.
+
+: At the forest edge, there might be Ruskies waiting depending where you came out. There are some blind spots there when you can run due east across the open field for a couple of hundred meters, till you reach the road. You might have to retry till you find the right place to exit the forest.
+
+: Cross the road and follow it in parallel heading south. You will eventually see the town of Provins up ahead. This is where the previous mission ended. Approach the extreme NE house in town. behind it is an ammo supply. Take some hand grenades. Save the game at this point.
+
+: On your belly, crawl to the very near corner (NE) of the house. In the distance due east you'll see a UAZ and there might be some Ruskie helmets popping up near it. To the UAZ's right and behind some trees is a BMP on a lunch break.
+
+: Take out the BMP with a LAW. The soldiers around the UAZ will start running your way. You should be able to bowl them down with a nade or 2.
+
+: Get into the UAZ and turn a little to the right to go on the close road heading south. Look at your map. You'll have to pass through the next town, Figari. Once through, about 200 meters after the town there's a left turnoff from the road.
+
+: Don't take the left but at this juncture head due south over the open field. You are approaching the niche in the forest straight ahead that was designated the secondary evac point.
+
+: Drive the UAZ fast (always fast) along the tree line and zigzag just a bit so that the T80 and the Hind (ouch!) don't get you. At some mission trigger point here, near the area marked as the new evac point, you will be taken captive.
+
+: Let the storyline run till you're in a tent being guarded by the enemy. Resistance will start attacking the Russians. Get down and stay down. Crawl outside the tent entrance, grab an AK47, if you insist, and sprint ahead and left of the tent where you should see some resistance fighters finishing off their job and making a retreat. Follow them. You should then get the mission's ending movie where you're introduced to Slava.
+
+: War stories you'll be able to tell your grandchildren about!
+
+=== I refuse to play this mission again! I have no self-respect. I want to move on. ===
+
+OK, lamer, look here '''(NEEDS LINK)'''.
+
+=== After playing the mission for a while, all of a sudden the graphics look washed out and faint. I can hardly see in front of my nose. ===
+
+The mission is defined to have foggy weather start rolling in late on in the mission. If it looks like fog, that's because it is fog. By the way, fog impedes the enemy's view of you as well.
+
+=== None of the above. ===
+
+Hmm..... That doesn't leave us much choice but to refer you to the [[Operation_Flashpoint:_FAQ:_General#Are_there_any_OFP_discussion_forums.3F|forums]].
+
+
+== Is there a bug with the medic in the "Strange Meeting" campaign mission? ==
+
+According to FAQ fan John C., there is:
+
+: I'm noticing a bug with the [[Operation_Flashpoint:_FAQ:_General#What.27s_all_this_talk_about_a_US_version_and_a_European_version.3F|US version]] of OFP - during the mission "Strange Meeting" (the one that you get if you fail the "Montignac Must Fall" mission), if the medic survives the initial encounter (the one immediately after disembarking the truck), he will not run into the woods with the rest of your squad. He will just wait on the edge of the forest. When everyone else in the squad dies, he will become the leader and the game will essentially be stuck. It cannot progress any further with him alive. The jeep in the village will not be drivable and you will not be able to get to the second evacuation point on foot ( I tried both). The only way around this is to kill the medic yourself, at which point, the mission will be winnable again.
+
+: On top of that, if the leader survives the encounter in the woods but is injured, he will go back to the medic and also become stuck. There is no need to kill him too, just the medic, at which point, the leader will proceed on. Needless to say, killing the medic doesn't help your mission score too much.
+
+: I have duplicated this 3 times on my home computer.
+
+
+== In "Hold Malden" I get killed every time I listen to my commander to man the machine gun! ==
+
+Don't listen to your commander.
+
+
+== I've destroyed the two Shilkas and killed all the enemy in the Pathfinder mission, so why doesn't the mission end?! ==
+
+Frustrating, ain't it? Don't fret. It seems there's a bug in the mission's design. But just to be sure you're as good as you think you are, here's what you should have done by now:
+
+After the helos have flown in and done maximum damage to enemy ground forces and armor in and around Chapoi, make sure there are no enemies left on the outskirts of town. Once you're sure, you'll have to head into town and eliminate any remaining forces. You'll most probably find one or two Russians left there.
+
+Now, if after doing all that nothing seems to move, you've most probably come across the mission bug I originally mentioned. What should happen is that a US M113 APC should be coming into town from the north to help you mop up. Once you approach it, the mission should end.
+
+It seems however, that the trigger to get the M113 started and driving into Chapoi isn't working. So, if you don't see an M113 heading into town, walk along the road leading east out of Chapoi and head towards an area marked on your map in green as friendly forces. You should find the M113 just sitting there doing nothing. Wake up the driver by lobbing two grenades or by firing some rounds at the vehicle and then wait around for about a half a minute. The M113 should then start heading into Chapoi and the mission should end successfully.
+
+
+== In "Pathfinder", the chopper support never arrives after continuing the mission from the last save point. ==
+
+OFP player Lucky reported this problem:
+
+: I've found an additional bug with the Pathfinder mission. If you take out the second Shilka on the edge of Chapoi and save the game or OFP automatically updates your retry position before the choppers start to make their pass, you're in a world of hurt. I have found upon continuing the mission from this save point that the helicopters won't show up. Your squad inevitably gets chewed to pieces by two T80s, a T72, a BMP and about a platoon plus of reserve enemy infantry.
+
+: I thought it was a one time bug, but I've replayed the mission from the start two more times and have reproduced the same error. The first time, I manually saved the mission's retry point . The next two time, OFP automatically updated the mission's retry position. If you attempt to load the saved mission from this point, you're done for without those Cobras!
+
+: Oh Well! Probably get fixed in a patch!
+
+I've since forwarded this bug report to BIS support.
+
+
+== I can't find the base in the "Hind Attack" mission. ==
+
+Here's my spoiler (To the tune of "Go West"):
+
+Go NORTH!
+There losta Ruskies there.
+
+Go NORTH!
+The Hinds are everywhere.
+
+Go NORTH!
+I think that's what I'd do.
+
+Go NORTH!
+That's enough hints for you.
+
+
+== In "Air Superiority", why is my gunner dying just as he gets out of the jeep? ==
+
+It's a bug, first sighted in OFP version 1.26 beta but still being reported for OFP version 1.30.
+
+To bypass the bug, stop the jeep before reaching the heliport base, order your gunner to disembark from the jeep and walk over to your chopper.
+
+
+== In the "Recon" mission, the Shilka that's supposed to be at map coordinates EA75 is not there! ==
+
+You or your team may have frightened it off. Search the vicinity, use your binocs and keep your ears open for nearby armor motor sounds. They don't call this mission "recon" for nothing, ya know!
+
+
+== Hey! How come I don't get to play the last mission, "Status Quo"? ==
+
+In order to be eligible to play the "Status Quo" campaign mission, you've got to achieve two goals in the previous mission, "Red Dawn": stop Guba and prevent the launch of the scud.
+
+
+== I want more campaign mission spoilers. Where can I find them? ==
+
+The [[Operation_Flashpoint:_FAQ:_General#Are_there_any_OFP_discussion_forums.3F|forums]] are all full of existing threads with spoilers for practically all of the campaign missions. Just search the forums for the name of the campaign mission you're interested in.
+
+{{Link|http://www.gamespot.com|Gamespot}} has a very comprehensive {{Link|http://gamespot.com/gamespot/guides/pc/operation_flashpoint/|OFP game guide}}, with a walk-through and much more. Check out the free downloadable game guide, in PDF format while you're there.
+
+Of course, if you've bought OFP Gold or the OFP Gold Upgrade, you'll have a copy of Prima's Official Strategy Guide, by Michael Night.
+
+
+== How can I play any campaign mission in any order I want? ==
+
+There are two ways you can do this. The first method is to download the {{Link|http://kronzky.info/theofpfaq/1985/1985sqc.htm|1985.SQC file}} for the 1985 Cold War Crisis Campaign or the {{Link|http://kronzky.info/theofpfaq/downloads/OFP_REDHAMMER.SQC.ZIP|REDHAMMER.SQC file}} for the Red Hammer Campaign.
+
+The second method is to use a cheat leaked out by Codemasters. While playing any campaign mission, press your keyboard's left SHIFT key along with the minus sign key ("-") on your keyboard's numeric key pad, let go and just type the word "campaign" without the quotes (no text box will appear - that's OK) and press the ENTER key. The words "CAMPAIGN ACTIVATED" should now appear on the upper left screen corner. Escape from the mission and go back to the campaign book and you should see all the campaign missions listed and be able to select any of them to play.
+
+
+== Can I play the "1985 - Cold War Crisis" campaign as coop multiplayer missions? ==
+
+Yes. A mirrored copy of the mission pack is available at {{Link|http://files.filefront.com/OFP+MPMissionPack+1985Coop/;3242297;/fileinfo.html|Filefront}}.
+
+
+== I've finished the campaign. Are there more campaigns available? ==
+
+Most certainly, look [[Operation_Flashpoint:_FAQ:_Campaigns|here]]
+
+
+== Sometimes trucks, jeeps or armored vehicles don't budge and I can't continue a mission. ==
+
+This is a known bug. An common example of this occurs for many players in the [[Operation_Flashpoint:_FAQ:_Campaigns:_1985_Cold_War_Crisis#I.27ve_destroyed_the_two_Shilkas_and_killed_all_the_enemy_in_the_Pathfinder_mission.2C_so_why_doesn.27t_the_mission_end.3F.21|Pathfinder]] campaign mission. The solution is to fire one or several (sometimes many, such as for armored vehicles) shots at the vehicle. Don't shoot at the tires or they'll go flat and don't shoot at the driver or boarded passengers.
+
+
+== What's the highest rank I can achieve? ==
+
+In the campaign, you'll eventually be assigned the rank of colonel. However, it is not really achieved, other than your successfully making it to play that particular mission. In that sense, rank doesn't really count for anything much in OFP.
+
+
+== Campaign missions crash to desktop upon completion! ==
+
+This has been reported for both the 1985 Cold War Crisis and the Red Hammer campaigns. Before you read on, have you check your system's available memory and Windows virtual swap file size? Read about that [[Operation_Flashpoint:_FAQ:_Troubleshooting#Why_is_OFP_crashing_every_time_I_save_a_mission_or_when_OFP_auto-saves_a_mission_or_when_a_mission_is_completed.3F|over here]].
+
+OFP player MonkeyGoat tried every previous solution mentioned for CTDs (crash-to-desktop) here in The FAQ and elsewhere but nothing seemed to work. Then he mysteriously tried uninstalling the CloneCD utility from his system and - presto - the problem disappeared. Since making this discovery, other players have had similar success.
+
+On the other hand, player MaxDamage had the same problem but he had NeroBurn installed on his computer - not CloneCD. He completely uninstalled NeroBurn but that didn't help. Then he installed (yes - installed!) CloneCD and the problem disappeared. Go figure!
+
+Do you have the same CTD problem but don't have CloneCD installed on your computer? Maybe another CD burner software utility is causing the problem. If you discover another product that, when uninstalled, resolves CTDs at mission completion in Red Hammer, please update this article for the benefit of everybody.
+
+It is hard to understand what connection there is between CloneCD and Red Hammer missions completing? A connection between CloneCD and OFP startup, installation or upgrading would be understandable - these are all processes where OFP accesses the CD.
+
+
+== Can I skip to the next campaign mission without completing the current one? ==
+
+One of OFP's built-in cheats will let you do this but at a price. While in the campaign mission, hold down your keyboard's left SHIFT key and then the numeric keypad's minus ("-") key, release them and type the word ENDMISSION. This will allow you to progress to the next campaign mission should you get stuck, begin to pull your hair out and want to move on.
+
+So what's the price? By using the ENDMISSION cheat, OFP will add a penalty to your stellar record. In the 1985 Cold War Crisis Campaign, this could eventually lead to your [[#I successfully finish a mission, yet I get chewed out by Colonel Blake. Why?|dishonorable discharge by Colonel Blake]].
+
+For an alternative solution, look [[#How can I play any campaign mission in any order I want?|here]] to see how you can play any mission within the campaign.
+
+
+== What do the initials "FIA" on resistance's vehicle stand for? ==
+
+Excellent question!
+
+In the ending cutscene in the 1985 Cold War Crisis campaign's "After Montignac" mission , after Corporal David Armstrong is captured by the resistance, one of his captors (Radim or Tomas) says to him "The Everon Freedom Alliance has no quarrel with NATO".
+
+Now, how you get from EFA (Everon Freedom Alliance) to FIA is beyond me. OFP player Asger Wille-Jørgensen postulates that it stands for "Free Island Alliance". My theory is that the vehicles are serviced by the local FIAT garage.
+
+
+== Can someone translate the Russian dialogue in mission Escape from Prison? ==
+
+I can't but OFP player Tovarish can:
+
+Here it is, boys and girls. I've just replayed Escape from Prison and here is the transcript:
+
+[Officer when you begin]
+
+“What is it you plan to do? Don’t fall out of line, or you will see…”
+
+[Soldier if you don’t get in right away]
+
+“Sit down in the chopper! We don’t have time!”
+
+[Soldiers talking in chopper] – this is hard to make out because of the chopper’s noise, but two of them seem to be talking about a hot new chick at the base, probably a nurse. Then another one says something like “Yep, we’re getting drunk soon”
+
+[SpetzNatz when you land]
+
+“You’re here! Little American, we’ve been expecting you. Follow me, and don’t even try anything stupid”
+
+(If you don’t follow)
+
+“What is it you plan to do?”
+
+(At the tent)
+
+“Go in the tent, Little American”
+
+(When you go in)
+
+“Rest, Little American, you can doze here”
+
+[SpetzNatz to guard]
+
+“Watch him, he can’t be allowed to escape”
+
+(If you step out)
+
+[guards overlapping]
+
+“What’s Happening?! Get back now!!”
+
+“Hey! Get back!”
+
+(if you keep going)
+
+“Fire! The bastard is escaping!”
+
+OR if you wait for the UAZ
+
+[SpetzNatz]
+
+“Get up! Follow us!”
+
+(they drive you to the beach)
+
+“This, Little American, is your last minute. You have one minute to pray, if you’re the praying sort.” [BANG]
+
+
+== Guba and his sidekick, Angelina, are invisible! ==
+
+This seems to be happening to players with OFP: Resistance version 1.75, who are going back and player the 1985 Cold War Crisis campaign.
+
+According to OFP player, Ralph Wiggum ("here's looking at glue, kid!"), this is caused by OFP: Resistance's changes in rendering objects inside of buildings. In other words, it is a bug. This problem still exists as of OFP: Resistance version 1.91. Hopefully, the good folks at BIS are well aware of it and will incorporate a fix in an upcoming upgrade patch.
+
+
+== 1985 Cold War Crisis winter version for OFP: Resistance ==
+
+I've taken Flashpoint Conversion's '''(NEEDS LINK)''' winterized version of the 1985 Cold War Crisis campaign and converted it for use with Kegetys' Winter Nogojev Island '''(NEEDS LINK)''' addon for OFP: Resistance version 1.85 and above.
+
+You can download the campaign (62.1MB) from one of the following sites:
+
+{{Link|http://www.filefront.com/?filepath{{=}}/theofpfaq/campaigns/OFPR_Campaign_1985%20Winter%20(OFPR).zip|FileFront.com}}
+
+Addons required:
+
+* Winter Malden v1.0
+* Winter Everon v1.2
+* Winter Nogojev v1.1
+* STERangers2_10+STTMKey1_10
+* Snowstorm
+* TJP Pavehawk Snow
+* LRD Cobra
+* SEB Delta Force V2.00
+
+If you have problems downloading the above addons, they're also available from AtWar's Addons Archive and other fine OFP addon download sites. Make sure you read the campaign and addon's readme files.

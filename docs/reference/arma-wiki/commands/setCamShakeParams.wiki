@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/setCamShakeParams
+// revision: 364174 (2024-05-05T10:46:45Z)
+// export sha1: lk9qf7axwez0w2e8ggyw213u9g0g83n
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Camera Control
+
+|eff= local
+
+|descr= Sets camera shake parameters. Will not have any effect until shake is started via [[addCamShake]].
+
+|s1= [[setCamShakeParams]] [posCoef, vertCoef, horzCoef, bankCoef, interpolation]
+
+|p1= posCoef: [[Number]] - strength of positional movement (how far the whole position can change in X,Y&Z). Should not be bigger than '''0.1''' to prevent the camera from moving into or behind the player
+
+|p2= vertCoef: [[Number]] - strength of vertical camera pan (up/down), practical range: 0..10
+
+|p3= horzCoef: [[Number]] - strength of horizontal camera pan (left/right), practical range: 0..10
+
+|p4= bankCoef: [[Number]] - strength of camera tilt/bank, practical range: 0..20
+
+|p5= interpolation: [[Boolean]] - if [[true]], then transitions in the different shaking directions will be smoother
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setCamShakeParams [0.1, 1, 1, 1, true];</sqf>
+
+|seealso= [[setCamShakeDefParams]] [[addCamShake]] [[enableCamShake]] [[resetCamShake]]
+}}

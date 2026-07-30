@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleMPTypeGroundSupport
+// revision: 309745 (2022-05-05T12:09:48Z)
+// export sha1: 0us0x0i2gs99mo9slec0khcdql1x2k6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|descr= <pre>// Debug log
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_moduleMPTypeGroundSupport]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_moduleMPTypeGroundSupport;</sqf> -->
+
+|seealso=
+}}

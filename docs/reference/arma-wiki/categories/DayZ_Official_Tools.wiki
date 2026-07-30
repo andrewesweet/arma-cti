@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/Category:DayZ:_Official_Tools
+// revision: 201195 (2021-01-17T15:04:40Z)
+// export sha1: jk7s9t3u1yz0thm7pvvtasvoacqu90d
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category contains '''''official tools''''' created by [[BI|Bohemia Interactive]]. These tools are provided to the community under the terms that allow free use of the tools for any '''non commercial''' purposes. Any commercial use of the tools is <u>strictly prohibited</u> without permission from [[BI]]. 
+
+If you want Bohemia Interactive's proprietary tools and technology for commercial purposes (including but not limited to using it for military training) you're not allowed to use these tools.
+
+You must agree to the terms of [[DayZ:End User License Agreement for DayZ Tools]] before using any of the tools.
+
+{{GameCategory|dayz|Editing}} 
+[[Category: Official Tools]]

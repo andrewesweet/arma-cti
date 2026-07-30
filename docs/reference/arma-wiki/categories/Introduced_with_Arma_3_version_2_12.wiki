@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_2.12
+// revision: 365072 (2024-07-16T19:04:33Z)
+// export sha1: hziuz6j3pbt8vzndqwlgkmtvvlle1d2
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with {{arma3}} version 2.12 may be recognised by the appearance of this icon: {{GVI|arma3|2.12}}
+Release date: February 28th, 2023<br>
+{{Link|https://dev.arma3.com/post/spotrep-00109|SPOTREP 00109}}<br>
+{{Link|https://dev.arma3.com/post/spotrep-00110|SPOTREP 00110 (CDLC support)}}
+
+[[Category:Introduced with {{arma3}}|2.12]]

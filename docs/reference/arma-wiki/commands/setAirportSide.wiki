@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/setAirportSide
+// revision: 322975 (2022-06-28T21:42:54Z)
+// export sha1: ga1qe4ler3xkedi3p5z83cxtmkij4ci
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Roads and Airports | Category:Command Group: Sides | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Roads and Airports
+
+|gr2= Sides
+
+|descr= Set owning side of the airport. [[Arma: Airport IDs|ID]] is the number to identify which airport on the island you want to check.
+
+|s1= id [[setAirportSide]] side
+
+|p1= id: [[Number]]
+
+|p2= side: [[Side]]
+
+|r1= [[Nothing]]
+
+|s2= target [[setAirportSide]] side
+
+|s2since= arma3 1.68
+
+|p21= target: [[Object]]
+
+|p22= side: [[Side]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>0 setAirportSide east;</sqf>
+
+|seealso= [[airportSide]] [[landAt]] [[land]] [[assignToAirport]] [[allAirports]] [[Arma: Airport IDs]]
+}}

@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/unassignTeam
+// revision: 309954 (2022-05-05T12:17:00Z)
+// export sha1: d8e9x44phjbhthocrg991wqpeac80ze
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Groups
+
+|arg= local
+
+|descr= Unassigns the unit (in the case of a vehicle its commander unit) from his team. This is equal to unit [[assignTeam]] "MAIN".
+
+|s1= [[unassignTeam]] vehicleName
+
+|p1= vehicleName: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>unassignTeam _soldier2;</sqf>
+
+|seealso= [[assignTeam]] [[dissolveTeam]]
+}}

@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/stop
+// revision: 369977 (2024-10-22T13:04:51Z)
+// export sha1: pd2pbkj6129h4omoipypb2y2scxamf9
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Control
+
+|descr= Stop an AI unit from turning or moving, preventing it to follow a watched object or engage an enemy properly - although if properly aligned, the unit -will- shoot the enemy. In essense, this is a scripted flag to suppress some of the AI procedures (to check the flag use [[stopped]]).
+It may still change the stance if deemed appropriate (e.g. under fire). Use [[disableAI]] to disable specific AI capabilities.
+
+|s1= unitName [[stop]] toggle
+
+|p1= unitName: [[Object]]
+
+|p2= toggle: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>loon1 stop true;</sqf>
+
+|seealso= [[stopped]] [[doStop]] [[commandStop]]
+}}

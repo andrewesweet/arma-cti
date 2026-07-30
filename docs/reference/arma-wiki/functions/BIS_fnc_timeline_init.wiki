@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_timeline_init
+// revision: 348102 (2023-11-08T11:31:57Z)
+// export sha1: eqhipjbkxuq9nb7pq68rv2ksqgdi6x9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Timeline | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Timeline
+
+|descr= Initialized a timeline.
+
+|s1= [timeline, initPosition, length, playRate, loop] call [[BIS_fnc_timeline_init]]
+
+|p1= timeline: [[Object]] - the timeline object
+
+|p2= initPosition: [[Number]] - (Optional, default <sqf inline>_timeline getVariable ["Pos", 0.0]</sqf>) initial position
+
+|p3= length: [[Number]] - (Optional, default 	<sqf inline>_timeline getVariable ["Length", 10.0]</sqf>) length
+
+|p4= playRate: [[Number]] - (Optional, default <sqf inline>_timeline getVariable ["PlayRate", 1.0]</sqf>) play rate
+
+|p5= loop: [[Boolean]] - (Optional, default <sqf inline>_timeline getVariable ["Loop", false]</sqf>) [[true]] - loop enabled, [[false]] - loop disabled
+
+|p6= reverse: [[Boolean]] - (Optional, default <sqf inline>_timeline getVariable ["Reverse", false]</sqf>) [[true]] - reverse, [[false]] - Do not reverse
+
+|p7= playOnStart: [[Boolean]] - (Optional, default <sqf inline>_timeline getVariable ["PlayFromStart", false]</sqf>) [[true]] - play at scenario start, [[false]] - Do not play at scenario start
+
+|p8= destroyWhenFinished: [[Boolean]] - (Optional, default <sqf inline>_timeline getVariable ["DestroyWhenFinished", false]</sqf>) [[true]] - Destroy when done, [[false]] - Do not destroy when done
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[timeline] call BIS_fnc_timeline_init;</sqf>
+
+|seealso= [[BIS_fnc_timeline_deleted]] [[BIS_fnc_timeline_cleanup]] [[BIS_fnc_timeline_finish]] [[:Category:Function Group: Timeline]]
+}}

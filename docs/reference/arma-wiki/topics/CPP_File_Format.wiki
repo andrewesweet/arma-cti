@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/CPP_File_Format
+// revision: 373452 (2025-05-08T11:44:17Z)
+// export sha1: cogozln7nna89yaaztctvoaezry58ia
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+The {{hl|.cpp}} file extension is a generic identifier that ''indicates'' the contents contain pre-raPified text and ''can'' be raPified (binarised).
+This is by convention only - the actual content could be binarised already and the engine would load it without failure.
+
+{{Feature|informative|The binarised (raPified) equivalent of {{hl|.cpp}} file is {{hl|.bin}} - see {{Link|Config.cpp/bin File Format}}.}}
+
+There are currently several cpp/bin files used by {{Name|bi}}:
+
+* [[Config.cpp/bin File Format|Config.cpp/bin]]
+* [[Mod.cpp/bin File Format|Mod.cpp/bin]]
+* [[Product.cpp/bin File Format|Product.cpp/bin]]
+* [[Resource.cpp/bin]] - {{ofp}} only
+
+
+== Syntax ==
+
+Values are set in the following format: {{hl|1= valueName = value;}} - a semicolon always ends the line.
+They can be present at the root of the file but more frequently than not will be defined in a '''class''' - note that '''classes are also ended by a semicolon'''.
+
+<syntaxhighlight lang="cpp">
+class MyConfigClass
+{
+	intValue = 42;
+	floatValue = 66.6;
+	stringValue = "text";
+	translatedValue = "$STR_MyStringtableKey"; // quotes are good practice
+	arrayValueColour[] = { 1, 0, 0, 1 };
+	arrayValueRandom[] = { "ValuesCanBeMixed", 1, 42.0, { 0, 1, 0, 1 } };
+
+	class MySubConfigClass // subclasses are possible
+	{
+		subValue = 123456;
+	};
+}; // a semicolon ALWAYS closes a class
+</syntaxhighlight>
+
+
+There are '''no boolean value''' in config; you can define them for ease of use/readability using {{hl|#define}}, usually in the first lines:
+<syntaxhighlight lang="cpp">
+#define true 1
+#define false 0
+
+class MyConfigClass
+{
+	// ...
+	useTexture = true; // would have otherwise to be useTexture = 1;
+	// ...
+};
+</syntaxhighlight>
+
+A commonly-edited config file is [[Description.ext]], a file storing scenario settings - the file extension differs but the syntax remains the same.
+
+
+[[Category:Real Virtuality File Formats]]

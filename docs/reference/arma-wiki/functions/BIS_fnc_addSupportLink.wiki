@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addSupportLink
+// revision: 321248 (2022-05-13T18:41:13Z)
+// export sha1: pm6htaixy3jxxapes3dehioyacclar8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Supports | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Supports
+
+|descr= Adds support types during a mission.
+
+|s1= [requesterUnit, requesterMod, providerMod] call [[BIS_fnc_addSupportLink]]
+
+|p1= requesterUnit: [[Object]] - requester unit
+
+|p2= requesterMod: [[Object]] - requester module
+
+|p3= providerMod: [[Object]] - provider module
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player, BIS_requesterMod, BIS_providerMod] call BIS_fnc_addSupportLink;</sqf>
+
+|seealso= [[BIS_fnc_removeSupportLink]]
+}}

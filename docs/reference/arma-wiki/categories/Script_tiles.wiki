@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Script_tiles
+// revision: 115500 (2019-01-03T10:47:10Z)
+// export sha1: le87yonc5jecpedrcm5px6dvq0wlov7
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Visual Scripting]]

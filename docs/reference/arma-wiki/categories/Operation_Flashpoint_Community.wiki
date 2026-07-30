@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Community
+// revision: 181920 (2021-01-03T13:08:37Z)
+// export sha1: 8td18uos97f7zrvsw3vc58wxoz17ft2
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|ofp}}

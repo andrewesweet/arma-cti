@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_curatorAttachObject
+// revision: 348595 (2023-11-08T13:44:38Z)
+// export sha1: scrrwfsqpkcjog405e0yrqtr24e8e02
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Attach an object on another one under cursor.
+
+|s1= [object] call [[BIS_fnc_curatorAttachObject]]
+
+|p1= object: [[Object]] - some object
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[BIS_vehicle] call BIS_fnc_curatorAttachObject;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

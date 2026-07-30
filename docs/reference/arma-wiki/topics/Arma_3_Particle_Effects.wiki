@@ -1,0 +1,297 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Particle_Effects
+// revision: 376915 (2025-12-28T02:08:29Z)
+// export sha1: bc4vcxwmfda5dazoe1aozgqb4vc8r5n
+// categories: Category:Particle System
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side|0.86}}
+== Definition of effect ==
+
+There are two ways how to define particle effect in {{arma3}} - script and config. Pros and cons of config-defined effects:
+{| class="wikitable valign-top"
+! {{Icon|checked}} Pros
+! {{Icon|unchecked}} Cons
+|-
+|
+* more parameters (some advanced parameters are present only in config)
+* better performance (this is not true for each effect)
+* calling of an effect can be used in a specific engine-supported parameter
+|
+* difficult editing (every change in any parameter requires restart of the game)
+* possibility to change the effect outside of the effect's definition is limited
+|}
+
+{{Feature|informative|
+'''Scripted Effects''' technology (which is possible to create and edit on-the-fly) is older and already documentated (see the {{Link|#See also}} part).
+}}
+
+=== Config ===
+
+Each '''C'''omplex '''E'''ffect (CE) is created by '''P'''art-'''E'''ffects (PE) (defined in {{hl|CfgCloudlets}}) and light (defined in {{#Link|Arma 3: CfgLights|CfgLights}}).
+
+==== Definition of complex effect ====
+Class of CE is defined directly in configFile and consists of classes that link PE (or light) to the parent effect.
+<syntaxhighlight lang="cpp">
+class ComplexEffect
+{
+	class Example1
+	{
+		simulation = "particles";	// type of simulation - particles or light
+		type = "Default";			// name of PE's class defined in CfgCloudlets or light's class defined in CfgLights
+		position[] = { 0, 0, 0 };	// position related to the default position or memorypoint
+		lifeTime = 0.05;			// life time of emitter
+
+		qualityLevel = -1;			// effect is only used when the the particle quality option [[particlesQuality]] in user settings matches this qualityLevel.
+									// -1 play everytime, 0 play only on low, 1 play only on normal, 2 play only on high. Default: -1
+
+		start = 1;					// is used only if the lifeTime parameter is defined, if value is changed from negative to positive then the effect is triggered
+		enabled = 1;				// 1 effect is enabled, -1 effect is disabled
+	};
+};
+</syntaxhighlight>
+{{Feature|informative|
+Parameters simulation, type, qualityLevel, enabled, smokeGenMinDist, smokeGenMaxDist, smokeSizeCoef and smokeIntervalCoef are used everytime.
+Using other parameters depends on calling of the effect (see [[Arma 3: Particle Effects#Calling_of_effect|Calling of effect]]).
+}}
+
+==== Definition of part-effect ====
+Class of PE must be in configFile class CfgCloudlets.
+<syntaxhighlight lang="cpp">
+#define true 1
+#define false 0
+
+class SomeClass
+{
+	interval = "0.5 * speedSize + 0.5";	// interval of particle's creation
+	circleRadius = 0;					// radius around emitter where particles are created
+	circleVelocity[] = { 0, 0, 0 };		// direction and speed of movement of particle's circle
+
+	particleShape = "\A3\data_f\ParticleEffects\Universal\Universal";	// path and name of file
+	particleFSNtieth = 16;				// How many rows there are in the texture. For example Universal is 16x16, so particleFSNtieth is 16. Default: 1
+	particleFSIndex = 12;				// Row index 0 based, so particleFSIndex 12 will mean 13th row from the top. Default: 0
+	particleFSFrameCount = 8;			// How many frames from the start of the chosen row to animate (particleFSFrameCount 8 means animate frames 1,2,3,4,5,6 and 7 in sequence). Default: 1
+	particleFSLoop = 1;					// Whether or not to repeat from the beginning when all frames got played (0 - false, 1 - true). If particleFSLoop is 0 animation sequence is played only once. Default: 1
+	animationSpeed[] = { 3, 2, 1 };		// interpolated speed of animation in animation cycles per second.
+										// e.g if particleFSFrameCount is 8 and animationSpeed at the time is 0.4 result in 8 * 0.5 = 4 frame changes per second.
+										// Value 1000 is a special value but only when combined with particleFSLoop 0;
+										// this will instruct the engine to play only the last frame of the given count, so if particleFSFrameCount is 5, animationSpeed[] is {1000} and particleFSLoop is 0 only 5th frame will be played.
+
+	angle = 0;							// angle of particle
+	angleVar = 0;						// variability in angle of particle
+	animationName = "";
+	particleType = "Billboard";			// type of animation (Billboard (2D), Spaceobject (3D))
+	timerPeriod = 1;					// interval of timer (how often is called script defined in parameter onTimerScript)
+	lifeTime = 1;						// life time of particle in seconds
+	moveVelocity[] = { 0, 0, 0 };		// direction and speed of movement of particle [x,z,y]
+	rotationVelocity = 0;				// direction and speed of rotation of particle [x,z,y]
+	weight = 1;							// weight of particle (kg)
+	volume = 1;							// volume of particle (m3)
+	rubbing = 0.05;						// how much is particle affected by wind/air resistance
+	size[] = { 1, 1 };					// size of particle during the life
+	color[] = { { 1, 1, 1, 1 }, { 1, 1, 1, 0 } };	// color of particle during the life (r,g,b,a)
+	randomDirectionPeriod = 0;			// interval of random speed change
+	randomDirectionIntensity = 0;		// intensity of random speed change
+	onTimerScript = "";					// script triggered by timer (in variable "this" is stored position of particle)
+	beforeDestroyScript = "";			// script triggered before destroying of particle (in variable "this" is stored position of particle)
+	lifeTimeVar = 0;					// variability in lifetime of particle
+	position[] = { 0, 0, 0 };				// defines position of effect
+	positionVar[] = { 0, 0, 0 };			// variability in position of particle (each part of vector has it is own variability)
+	positionVarConst[] = { 0, 0, 0 };		// variability in position of particle (variablity of all parts of vector is the same)
+	moveVelocityVar[] = { 0, 0, 0 };		// variability in direction and speed of particle (each part of vector has it is own variability)
+	moveVelocityVarConst[] = { 0, 0, 0 };	// variability in direction and speed of particle (variablity of all parts of vector is the same)
+	rotationVelocityVar = 0;			// variability in rotation of particle
+	sizeVar = 0;						// variability in size of particle
+	colorVar[] = { 0, 0, 0, 0 };		// variability in color of particle
+	randomDirectionPeriodVar = 0;		// variability in interval of random speed change
+	randomDirectionIntensityVar = 0;	// variability in intensity of random speed change
+	sizeCoef = 1;						// size of particle = size parameter value * this coef (works only in some effects)
+	colorCoef[] = { 1, 1, 1, 1 };		// color of particle = color parameter value * this coef (works only in some effects)
+	animationSpeedCoef = 1;				// animation speed of particle = animationSpeed parameter value * this coef (works only in some effects)
+
+	destroyOnWaterSurface = 0;			// particle can exist - only underwater (-1), only above the water (1), everywhere (0)
+	destroyOnWaterSurfaceOffset = 0;	// offset of water surface in destroyOnWaterSurface parameter
+	destroyAfterCrossing = false;		// if true, destroy when the whole particle is on the other side of the water surface. Only when _destroyOnWaterSurfaceOffset is enabled
+	onSurface = true;					// placing of particle on (water) surface on start of it is existence, default value is true, works only if circleRadius > 0
+	keepOnSurface = false;				// true for particle is stay on water surface - see notes below
+	surfaceOffset = 0;					// offset of water surface in keepOnSurface parameter
+	bounceOnSurface = 0.6;				// coef of speed's loosing in collision with ground, 0-1 for collisions, -1 disable collision
+	bounceOnSurfaceVar = 0.0;			// variability in speed's loosing in collision with ground
+	postEffects = "IEDMineFlame";				// effect triggered before destroying of particle
+	particleEffects = "ExplosionShardsFire";	// emitter of effect defined in this parameter is attached to each particle
+	ignoreWind = false;							// if true, wind will not be applied on the particle
+	blockAIVisibility = true;					// sets if particles are in the AI visibility tests (default true) - false for better performance but AI is able to see through particles
+	emissiveColor[] = { { 30, 30, 30, 0}, { 0, 0, 0, 0 } };	// sets emissivity of particle, 4th number has no meaning for now
+
+	// --- fire damage related parameters (optional)
+	damageType = "Fire";				// damage type, only available option is "Fire" so far
+	coreIntensity = 1.25;				// damage coeficient in the center of fire
+	coreDistance = 3.0;					// how far can unit get damage
+	damageTime = 0.1;					// how often is unit getting damage
+
+	// --- override of global particle quality params
+	// --- current values are in, for example:
+	// --- getNumber (((configFile >> "CfgVideoOptions" >> "Particles") select particlesQuality) >> "smokeGenMinDist");
+	smokeGenMinDist = 100;				// for more info see "Changes dependent on distance"
+	smokeGenMaxDist = 500;				// for more info see "Changes dependent on distance"
+	smokeSizeCoef = 2.0;				// for more info see "Changes dependent on distance"
+	smokeIntervalCoef = 4.0;			// for more info see "Changes dependent on distance"
+};
+</syntaxhighlight>
+
+{{Feature|informative|
+* Ascent/descent of a particle is affected by ratio between particle's density ('''weight'''/'''volume''') and density of air (it's 1.275 kg/m<sup>3</sup> in {{arma2}}/{{arma3}}).
+* Parameters ending with "Coef" are used only in some effects, see info about [[Arma 3: Particle Effects#Config_parameters|Config parameters]].
+* Only 3D particles (<syntaxhighlight lang="cpp" inline>particleType = "SpaceObject"</syntaxhighlight>) can use materials.
+* You can use single frame in middle of line on texture as texture of particle. Just set <syntaxhighlight lang="cpp" inline>particleFSLoop = 0</syntaxhighlight> and <syntaxhighlight lang="cpp" inline>animationSpeed[] = { 1000 }</syntaxhighlight>, then parameter '''particleFSFrameCount''' is number of frame in given line.
+}}
+{{Feature|important|All [x,y,z] values have y and z swapped and are {x,z,y} when used in config.}}
+
+==== Evaluation in definition of part-effect ====
+There can be inserted string instead of number in most of parameters used in definition of part-effect.
+This string is evaluated and in this string can be used engine-defined variables from [[Arma 3: Particle Effects: Config Parameters|this list]].
+
+{{Feature|informative|
+'''Operators which can be used in evaluated strings''': {{Link|Simple Expression}}.
+
+
+'''Parameters which do not support this type of evaluation:'''
+{{Columns|3|
+* particleShape
+* particleFSNtieth
+* particleFSIndex
+* particleFSFrameCount
+* particleFSLoop
+* angleVar
+* animationName
+* particleType
+* color
+* onTimerScript
+* beforeDestroyScript
+* sizeVar
+* destroyOnWaterSurface
+* destroyOnWaterSurfaceOffset
+* onSurface
+* keepOnSurface
+* surfaceOffset
+* bounceOnSurface
+* bounceOnSurfaceVar
+* postEffects
+* particleEffects
+}}
+}}
+
+
+== Behaviour of particles ==
+
+=== Speed of rotation depends on ===
+
+* initial rotation speed (parameters ''rotationVelocity'' and ''rotationVelocityVar'')
+* air friction (rotation is slowed more with bigger value of ''rubbing'', rotation is slowed less with bigger value of ''weight'')
+
+=== Speed and direction of movement depends on ===
+
+* initial speed of movement (parameters ''moveVelocity'', ''moveVelocityVar'' and ''moveVelocityVarConst'')
+* wind/air friction (particle is more affected with bigger ''rubbing'' value, particle is less affected with bigger ''weight'' value)
+* buoyancy (ratio between density of air and particle - density of particle = ''weight'' / ''volume'')
+* randomDirection parameters (''randomDirectionPeriod'', ''randomDirectionPeriodVar'', ''randomDirectionIntensity'' and ''randomDirectionIntensityVar'')
+* collisions
+
+=== Changes dependent on distance ===
+
+Particles are simplified with bigger distance between particles and observer.
+Particles have a significant impact on performance and this helps to get better performance, so be careful with any change in the parameters below.
+
+'''Parameters:'''
+* smokeGenMinDist - ''defined in [[Arma 3: Particle Effects#Definition of complex effect|Definition of complex effect]], default values in config class CfgDefaultSettings''
+* smokeGenMaxDist - ''defined in [[Arma 3: Particle Effects#Definition of complex effect|Definition of complex effect]], default values in config class CfgDefaultSettings''
+* smokeSizeCoef - ''defined in [[Arma 3: Particle Effects#Definition of complex effect|Definition of complex effect]], default values in config class CfgDefaultSettings''
+* smokeIntervalCoef - ''defined in [[Arma 3: Particle Effects#Definition of complex effect|Definition of complex effect]], default values in config class CfgDefaultSettings''
+* dist - ''distance between camera and particle emitter, cut to interval <smokeGenMinDist, smokeGenMaxDist>''
+* currentZoom - ''zoom currently used''
+* smokeZoomCoef - ''defined in config class CfgDefaultSettings''
+
+'''Calculations:'''
+* distCoef = (dist - smokeGenMinDist) / (smokeGenMaxDist - smokeGenMinDist)
+* coef = distCoef * currentZoom * smokeZoomCoef
+** coef is cut to interval <0,1>
+* sizeCoef = 1.0 + coef * (smokeSizeCoef - 1.0)
+* intervalCoef = 1.0 + coef * (smokeIntervalCoef - 1.0)
+
+'''Changes in particles are made according to these coef values:'''
+* sizeCoef - size of particle is multiplied by this value
+** value is cut to interval <1, smokeSizeCoef>
+* IntervalCoef - interval (how often is particle created by emitter) is multiplied by this value
+** value is cut to interval <1, smokeIntervalCoef>
+
+
+== Calling of effect ==
+
+There are two ways how to call a particle effect defined in config.
+You can use script or one of the engine-provided config parameters.
+Using of a config parameter (if there is one you can use) is usually recommended,
+because of better performance and an efficient use of engine-provided variables in PE definitions (see the list below).
+
+=== Script ===
+
+There is script command [[setParticleClass]]. This command can use only a class of PE.
+Example:
+<sqf>
+_source01 = "#particlesource" createVehicleLocal _pos01;
+_source01 setParticleClass "ObjectDestructionFire1Smallx";
+_source01 attachTo [_object, [0,0,0]];
+</sqf>
+
+{{Feature|informative|
+You can use this way of particle definition and then overwrite some parameters by script command [[setParticleParams]].
+This way you can get some pros of config-defined (access to parameters which are not present in [[ParticleArray]]) and scripted (dynamic changes of parameters in script) effects at once.
+}}
+
+=== Config parameters ===
+
+These engine-provided parameters have already set conditions for using of particle effect.
+For example parameter for exhaust effect is triggered when the engine of vehicle is running.
+Each parameter has engine-provided variables which can be used in some parts of definition of particle effect.
+
+There are two types of emitter when you call an effect via config parameter.
+The type of emitter is specified in the engine for each parameter and behaviour of each emitter type is different:
+* '''constant emitter''' (CE)
+** variables used in [[Arma 3: Particle Effects#Definition of part-effect|definition of part-effect]] are evaluated when the emitter is created - they are the same during its entire life
+** parameters ending with "Coef" in [[Arma 3: Particle Effects#Definition of part-effect|definition of part-effect]] are NOT evaluated
+* '''real-time emitter''' (RE)
+** variables in [[Arma 3: Particle Effects#Definition of part-effect|definition of part-effect]] are evaluated for each single particle<!--
+-->{{Feature|informative|If more than one particle are created in a single frame, variables are the same for all these particles.}}
+** parameters ending with "Coef" in [[Arma 3: Particle Effects#Definition of part-effect|definition of part-effect]] ARE evaluated
+
+See the [[Arma 3: Particle Effects: Config Parameters|list of config parameters]] for more information.
+
+
+== Specials ==
+
+=== Refraction (heat) effect ===
+
+You can create refraction effect which simulates movement of hot air (around exhausts, fires, etc.). There is special texture for this purpose.
+How to create refract effect:
+* in config-defined particle effect set:<syntaxhighlight lang="cpp">
+particleShape = "\A3\data_f\ParticleEffects\Universal\Refract";
+particleFSNtieth = 1;
+particleFSIndex = 0;
+particleFSFrameCount = 1;
+particleFSLoop = 0;
+</syntaxhighlight>
+* in scripted particle effect set the first item in the [[ParticleArray]] (used by script command [[setParticleParams]] or [[drop]]) to: <sqf>["\A3\data_f\ParticleEffects\Universal\Refract", 1, 0, 1]</sqf>
+
+{{Feature|important|
+* First three items (RGB) in color array have no meaning with refract effect, last item (alpha) defines refraction index (basically visibility of effect).
+* All other parameters have the same meaning as in any other particle effect.
+}}
+
+
+== See also ==
+
+Definition of an effect in a script:
+* [[ParticleArray]]
+* [[Particles Tutorial]] ({{arma2}} & {{arma3}})
+* [[ParticleTemplates]] ({{arma1}})
+
+
+[[Category: Particle System]]

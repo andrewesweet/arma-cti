@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/screenToWorld
+// revision: 377892 (2026-01-05T17:38:23Z)
+// export sha1: i5bz3eb3nro0oigbxzvvihnzf945w9y
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Positions
+
+|descr= Returns the position on landscape ([[Position#PositionAGL|PositionAGL]]) corresponding to the given point on screen (in UI coordinates). 
+{{Feature|informative|
+This command performs an intersection with the ground/water surface, from the camera position along the [[screenToWorldDirection]] vector up to {{hl|viewDistance}} for terrain intersection and {{hl|2 * viewDistance}} for water intersection. In other words, it is similar to doing: 
+<sqf>
+private _p1 = AGLToASL positionCameraToWorld [0, 0, 0];					// camera position ASL
+private _vector = screenToWorldDirection _screenPos;					// "aim" vector
+private _p2 = _p1 vectorAdd (_vector vectorMultiply viewDistance * 2);	// the ray does not go beyond 2 * view distance
+ASLToAGL terrainIntersectAtASL [_p1, _p2]
+</sqf>
+}}
+
+|s1= [[screenToWorld]] screen
+
+|p1= screen: [[Array]] with [x, y] - screen position, see [[SafeZone]] for more information
+* x: [[Number]]
+* y: [[Number]]
+
+|r1= [[Position#PositionAGL|PositionAGL]], world position on surface [x, y, 0]
+
+|s2= camera [[screenToWorld]] position
+
+|s2since= arma3 2.18
+
+|p21= camera: [[Object]] - camera object
+
+|p22= screen: [[Array]] with [x, y] - screen position, see [[SafeZone]] for more information
+* x: [[Number]]
+* y: [[Number]]
+
+|r2= [[Position#PositionAGL|PositionAGL]], world position on surface [x,y,0]
+
+|x1= <sqf>private _wPos = screenToWorld [0.5, 0.5];</sqf>
+
+|x2= <sqf>private _wPos = _myCamera screenToWorld [0.5, 0.5]; // since {{arma3}} 2.18</sqf>
+
+|seealso= [[SafeZone]] [[worldToScreen]] [[screenToWorldDirection]]
+}}

@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:GVI_template_usage_error
+// revision: 346838 (2023-08-06T15:43:38Z)
+// export sha1: b2q4v0nbo1soc0fp0epkjbv59nb2vwv
+// Vendored snapshot. Do not edit — re-export instead.
+
+__HIDDENCAT__
+[[Category:Template usage error]]

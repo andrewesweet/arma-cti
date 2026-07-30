@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/preloadTitleRsc
+// revision: 322925 (2022-06-28T21:42:39Z)
+// export sha1: m2n6tewcdccku82bxmzzlqhmxq169qi
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= GUI Control
+
+|descr= Resource title - preload data. The resource can be defined in the [[Description.ext]] file.
+
+|s1= [[preloadTitleRsc]] [name, type, speed, showInMap]
+
+|p1= name: [[String]] - defined in [[Description.ext]] for the mission
+
+|p2= type: [[String]] - e.g "PLAIN"
+
+|p3= speed: [[Number]] - (Optional) ignored
+
+|p4= showInMap: [[Boolean]] - (Optional)
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_ok = preloadTitleRsc ["BIS", "PLAIN"];</sqf>
+
+|seealso=
+}}

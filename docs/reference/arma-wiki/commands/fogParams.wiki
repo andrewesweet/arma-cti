@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/fogParams
+// revision: 353028 (2024-03-12T11:39:48Z)
+// export sha1: 0cpip3gz7jv90w86w9dfbirpyqebvrg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Environment
+
+|descr= A getter for [[setFog]] (Alt Syntax). Returns extended params for the fog
+
+|s1= [[fogParams]]
+
+|r1= [[Array]] of [[Number]]s - in [[setFog]] format: [fogValue, fogDecay, fogBase]
+
+|x1= <sqf>private _fog = fogParams;</sqf>
+
+|seealso= [[setFog]] [[fog]] [[fogForecast]] [[rainParams]]
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20230923065153
+|text= To return a position (ASL Height)'s approx. fog level
+<sqf>
+private _getFogPowerASL = {
+	fogParams params ["_fogPower","_fogDecay","_fogHeight"] ;
+	private _height = _this - _fogHeight;
+	(_fogPower * 0.5 ^ (_height * _fogDecay / 2.45) max 0)
+};
+
+(AGLToASL (positionCameraToWorld [0,0,0]) # 2) call _getFogPowerASL;
+</sqf>
+Note that, this could return >1 value if fogDecay is not 0.
+}}

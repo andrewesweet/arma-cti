@@ -1,0 +1,693 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgMarkers
+// revision: 351555 (2023-12-07T13:36:19Z)
+// export sha1: l4rwwb916l9fqzld2coambg4q1d2l8r
+// categories: Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:A3 MarkerTypes.png|right|500px|thumb|All marker icons]]
+== Example Class ==
+
+<syntaxhighlight lang="cpp">
+class respawn_plane : Flag
+{
+	scope = 1;						// accessibility: 0 = private, 1 = protected, 2 = public
+	name = "Plane Respawn";			// name used in the Editor and other UIs
+	icon = "\A3\ui_f\data\map\markers\nato\respawn_plane_ca.paa";		// marker icon
+	texture = "\A3\ui_f\data\map\markers\nato\respawn_plane_ca.paa";	// ?
+	color[] = { 0, 0, 0, 1 };		// Color used for the icon and text
+	shadow = 0;						// 1 = shadow, 0 = no shadow
+	markerClass = "NATO_Respawn";	// ?
+	side = 1;						// side ID (0 = OPFOR, 1 = BLUFOR, 2 = INDFOR etc)
+	size = 32;						// default icon size
+	showEditorMarkerColor = 1;		// whether to show icon color in the editor
+};
+</syntaxhighlight>
+
+
+== Marker Classes ==
+
+{| class="wikitable sortable align-center-col-5 align-center-col-6 align-center-col-7"
+|-
+! No. !! Class !! Name !! Icon Path !! Shadow !! Scope !! Added with
+|-
+| 1. || {{hl|b_air}} || Helicopter || {{hl|\A3\ui_f\data\map\markers\nato\b_air.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 2. || {{hl|b_antiair}} || Anti-Air || {{hl|\A3\ui_f\data\map\markers\nato\b_antiair.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 3. || {{hl|b_armor}} || Armor || {{hl|\A3\ui_f\data\map\markers\nato\b_armor.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 4. || {{hl|b_art}} || Artillery || {{hl|\A3\ui_f\data\map\markers\nato\b_art.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 5. || {{hl|b_hq}} || HQ || {{hl|\A3\ui_f\data\map\markers\nato\b_hq.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 6. || {{hl|b_inf}} || Infantry || {{hl|\A3\ui_f\data\map\markers\nato\b_inf.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 7. || {{hl|b_installation}} || Installation || {{hl|\A3\ui_f\data\map\markers\nato\b_installation.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 8. || {{hl|b_maint}} || Maintenance || {{hl|\A3\ui_f\data\map\markers\nato\b_maint.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 9. || {{hl|b_mech_inf}} || Mechanized || {{hl|\A3\ui_f\data\map\markers\nato\b_mech_inf.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 10. || {{hl|b_med}} || Medical || {{hl|\A3\ui_f\data\map\markers\nato\b_med.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 11. || {{hl|b_mortar}} || Mortar || {{hl|\A3\ui_f\data\map\markers\nato\b_mortar.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 12. || {{hl|b_motor_inf}} || Motorized || {{hl|\A3\ui_f\data\map\markers\nato\b_motor_inf.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 13. || {{hl|b_naval}} || Naval || {{hl|\A3\ui_f\data\map\markers\nato\b_naval.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 14. || {{hl|b_Ordnance}} || Ordnance || {{hl|\a3\UI_F_Orange\Data\CfgMarkers\b_Ordnance_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3lawsofwar|24}}
+|-
+| 15. || {{hl|b_plane}} || Plane || {{hl|\A3\ui_f\data\map\markers\nato\b_plane.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 16. || {{hl|b_recon}} || Recon || {{hl|\A3\ui_f\data\map\markers\nato\b_recon.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 17. || {{hl|b_service}} || Service || {{hl|\A3\ui_f\data\map\markers\nato\b_service.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 18. || {{hl|b_support}} || Support || {{hl|\A3\ui_f\data\map\markers\nato\b_support.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 19. || {{hl|b_uav}} || UAV || {{hl|\A3\ui_f\data\map\markers\nato\b_uav.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 20. || {{hl|b_unknown}} || Unknown || {{hl|\A3\ui_f\data\map\markers\nato\b_unknown.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 21. || {{hl|c_air}} || Helicopter || {{hl|\A3\ui_f\data\map\markers\nato\c_air.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 22. || {{hl|c_car}} || Car || {{hl|\A3\ui_f\data\map\markers\nato\c_car.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 23. || {{hl|c_plane}} || Plane || {{hl|\A3\ui_f\data\map\markers\nato\c_plane.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 24. || {{hl|c_ship}} || Ship || {{hl|\A3\ui_f\data\map\markers\nato\c_ship.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 25. || {{hl|c_unknown}} || Unknown || {{hl|\A3\ui_f\data\map\markers\nato\c_unknown.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 26. || {{hl|Contact_arrow1}} || arrow1 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\arrow1_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 27. || {{hl|Contact_arrow2}} || arrow2 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\arrow2_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 28. || {{hl|Contact_arrow3}} || arrow3 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\arrow3_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 29. || {{hl|Contact_arrowLeft}} || arrowLeft || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\arrowLeft_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 30. || {{hl|Contact_arrowRight}} || arrowRight || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\arrowRight_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 31. || {{hl|Contact_arrowSmall1}} || arrowSmall1 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\arrowSmall1_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 32. || {{hl|Contact_arrowSmall2}} || arrowSmall2 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\arrowSmall2_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 33. || {{hl|Contact_art1}} || art1 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\art1_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 34. || {{hl|Contact_art2}} || art2 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\art2_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 35. || {{hl|Contact_circle1}} || circle1 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\circle1_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 36. || {{hl|Contact_circle2}} || circle2 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\circle2_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 37. || {{hl|Contact_circle3}} || circle3 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\circle3_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 38. || {{hl|Contact_circle4}} || circle4 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\circle4_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 39. || {{hl|Contact_dashedLine1}} || dashedLine1 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\dashedLine1_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 40. || {{hl|Contact_dashedLine2}} || dashedLine2 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\dashedLine2_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 41. || {{hl|Contact_dashedLine3}} || dashedLine3 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\dashedLine3_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 42. || {{hl|Contact_defenseLine}} || defenseLine || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\defenseLine_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 43. || {{hl|Contact_defenseLineOver}} || defenseLineOver || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\defenseLineOver_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 44. || {{hl|Contact_dot1}} || dot1 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\dot1_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 45. || {{hl|Contact_dot2}} || dot2 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\dot2_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 46. || {{hl|Contact_dot3}} || dot3 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\dot3_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 47. || {{hl|Contact_dot4}} || dot4 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\dot4_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 48. || {{hl|Contact_dot5}} || dot5 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\dot5_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 49. || {{hl|Contact_pencilCircle1}} || pencilCircle1 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\pencilCircle1_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 50. || {{hl|Contact_pencilCircle2}} || pencilCircle2 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\pencilCircle2_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 51. || {{hl|Contact_pencilCircle3}} || pencilCircle3 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\pencilCircle3_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 52. || {{hl|Contact_pencilDoodle1}} || pencilDoodle1 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\pencilDoodle1_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 53. || {{hl|Contact_pencilDoodle2}} || pencilDoodle2 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\pencilDoodle2_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 54. || {{hl|Contact_pencilDoodle3}} || pencilDoodle3 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\pencilDoodle3_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 55. || {{hl|Contact_pencilDot1}} || pencilDot1 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\pencilDot1_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 56. || {{hl|Contact_pencilDot2}} || pencilDot2 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\pencilDot2_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 57. || {{hl|Contact_pencilDot3}} || pencilDot3 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\pencilDot3_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 58. || {{hl|Contact_pencilTask1}} || pencilTask1 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\pencilTask1_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 59. || {{hl|Contact_pencilTask2}} || pencilTask2 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\pencilTask2_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 60. || {{hl|Contact_pencilTask3}} || pencilTask3 || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\pencilTask3_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3contact|24}}
+|-
+| 61. || {{hl|Empty}} || Empty || {{hl|\A3\ui_f\data\map\markers\system\empty_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 62. || {{hl|EmptyIcon}} || Flag || {{hl|#(argb,8,8,3)color(0,0,0,0)}} || {{Icon|checked}} || 0 ||
+|-
+| 63. || {{hl|Flag}} || Flag || {{hl|\A3\ui_f\data\map\markers\military\mission_CA.paa}} || {{Icon|unchecked}} || 0 ||
+|-
+| 64. || {{hl|flag_AAF}} || Altis Armed Forces || {{hl|\A3\ui_f\data\map\markers\flags\AAF_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 65. || {{hl|flag_Altis}} || Altis || {{hl|\A3\ui_f\data\map\markers\flags\Altis_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 66. || {{hl|flag_AltisColonial}} || Altis (Colonial) || {{hl|\A3\ui_f\data\map\markers\flags\AltisColonial_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 67. || {{hl|flag_Astra}} || Astra || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\Astra_CA.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3contact|24}}
+|-
+| 68. || {{hl|flag_Belgium}} || Belgium || {{hl|\A3\ui_f\data\map\markers\flags\Belgium_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 69. || {{hl|flag_Canada}} || Canada || {{hl|\A3\ui_f\data\map\markers\flags\Canada_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 70. || {{hl|flag_Catalonia}} || Catalonia || {{hl|\A3\ui_f\data\map\markers\flags\Catalonia_ca.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 71. || {{hl|flag_Croatia}} || Croatia || {{hl|\A3\ui_f\data\map\markers\flags\Croatia_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 72. || {{hl|flag_CSAT}} || CSAT || {{hl|\A3\ui_f\data\map\markers\flags\CSAT_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 73. || {{hl|flag_CTRG}} || CTRG || {{hl|\A3\Ui_f\data\Map\Markers\Flags\ctrg_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3apex|24}}
+|-
+| 74. || {{hl|flag_CzechRepublic}} || Czech Republic || {{hl|\A3\ui_f\data\map\markers\flags\CzechRepublic_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 75. || {{hl|flag_Denmark}} || Denmark || {{hl|\A3\ui_f\data\map\markers\flags\Denmark_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 76. || {{hl|flag_EAF}} || Livonian Defense Force || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\LDF_CA.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3contact|24}}
+|-
+| 77. || {{hl|flag_Enoch}} || Livonia || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\Livonia_CA.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3contact|24}}
+|-
+| 78. || {{hl|flag_EnochLooters}} || Livonian Looters || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\LivoniaLooters_CA.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3contact|24}}
+|-
+| 79. || {{hl|flag_EU}} || European Union || {{hl|\A3\ui_f\data\map\markers\flags\EU_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 80. || {{hl|flag_FIA}} || FIA || {{hl|\A3\ui_f\data\map\markers\flags\FIA_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 81. || {{hl|flag_France}} || France || {{hl|\A3\ui_f\data\map\markers\flags\France_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 82. || {{hl|flag_Georgia}} || Georgia || {{hl|\A3\ui_f\data\map\markers\flags\Georgia_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 83. || {{hl|flag_Germany}} || Germany || {{hl|\A3\ui_f\data\map\markers\flags\Germany_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 84. || {{hl|flag_Greece}} || Greece || {{hl|\A3\ui_f\data\map\markers\flags\Greece_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 85. || {{hl|flag_Hungary}} || Hungary || {{hl|\A3\ui_f\data\map\markers\flags\Hungary_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 86. || {{hl|flag_Iceland}} || Iceland || {{hl|\A3\ui_f\data\map\markers\flags\Iceland_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 87. || {{hl|flag_IDAP}} || International Development & Aid Project || {{hl|\A3\ui_f_orange\data\cfgmarkers\IDAP_ca.paa}} || {{Icon|unchecked}} || 1 || {{Icon|arma3lawsofwar|24}}
+|-
+| 88. || {{hl|flag_Italy}} || Italy || {{hl|\A3\ui_f\data\map\markers\flags\Italy_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 89. || {{hl|flag_Luxembourg}} || Luxembourg || {{hl|\A3\ui_f\data\map\markers\flags\Luxembourg_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 90. || {{hl|flag_NATO}} || NATO || {{hl|\A3\ui_f\data\map\markers\flags\nato_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 91. || {{hl|flag_Netherlands}} || Netherlands || {{hl|\A3\ui_f\data\map\markers\flags\Netherlands_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 92. || {{hl|flag_Norway}} || Norway || {{hl|\A3\ui_f\data\map\markers\flags\Norway_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 93. || {{hl|flag_Poland}} || Poland || {{hl|\A3\ui_f\data\map\markers\flags\Poland_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 94. || {{hl|flag_Portugal}} || Portugal || {{hl|\A3\ui_f\data\map\markers\flags\Portugal_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 95. || {{hl|flag_Russia}} || Russia || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\Russia_CA.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3contact|24}}
+|-
+| 96. || {{hl|flag_Slovakia}} || Slovakia || {{hl|\A3\ui_f\data\map\markers\flags\Slovakia_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 97. || {{hl|flag_Slovenia}} || Slovenia || {{hl|\A3\ui_f\data\map\markers\flags\Slovenia_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 98. || {{hl|flag_Spain}} || Spain || {{hl|\A3\ui_f\data\map\markers\flags\Spain_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 99. || {{hl|flag_Spetsnaz}} || Spetsnaz || {{hl|\a3\UI_F_Enoch\Data\CfgMarkers\Spetsnaz_CA.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3contact|24}}
+|-
+| 100. || {{hl|flag_Syndicat}} || Syndikat || {{hl|\A3\Ui_f\data\Map\Markers\Flags\syndicat_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3apex|24}}
+|-
+| 101. || {{hl|flag_Tanoa}} || Tanoa || {{hl|\A3\Ui_f\data\Map\Markers\Flags\tanoa_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3apex|24}}
+|-
+| 102. || {{hl|flag_TanoaGendarmerie}} || Gendarmerie || {{hl|\A3\Ui_f\data\Map\Markers\Flags\tanoaGendarmerie_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3apex|24}}
+|-
+| 103. || {{hl|flag_UK}} || UK || {{hl|\A3\ui_f\data\map\markers\flags\UK_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 104. || {{hl|flag_UN}} || United Nations || {{hl|\A3\ui_f\data\map\markers\flags\UN_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 105. || {{hl|flag_USA}} || USA || {{hl|\A3\ui_f\data\map\markers\flags\USA_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 106. || {{hl|flag_Viper}} || Viper || {{hl|\A3\Ui_f\data\Map\Markers\Flags\viper_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3apex|24}}
+|-
+| 107. || {{hl|GroundSupport_ARTY_EAST}} || GroundSupport_ARTY_EAST || {{hl|\a3\Modules_F_Curator\Data\iconOrdnance_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3helicopters|24}}
+|-
+| 108. || {{hl|GroundSupport_ARTY_RESISTANCE}} || GroundSupport_ARTY_RESISTANCE || {{hl|\a3\Modules_F_Curator\Data\iconOrdnance_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3helicopters|24}}
+|-
+| 109. || {{hl|GroundSupport_ARTY_WEST}} || GroundSupport_ARTY_WEST || {{hl|\a3\Modules_F_Curator\Data\iconOrdnance_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3helicopters|24}}
+|-
+| 110. || {{hl|GroundSupport_CAS_EAST}} || GroundSupport_CAS_EAST || {{hl|\a3\Modules_F_Curator\Data\portraitCASGunMissile_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3helicopters|24}}
+|-
+| 111. || {{hl|GroundSupport_CAS_RESISTANCE}} || GroundSupport_CAS_RESISTANCE || {{hl|\a3\Modules_F_Curator\Data\portraitCASGunMissile_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3helicopters|24}}
+|-
+| 112. || {{hl|GroundSupport_CAS_WEST}} || GroundSupport_CAS_WEST || {{hl|\a3\Modules_F_Curator\Data\portraitCASGunMissile_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3helicopters|24}}
+|-
+| 113. || {{hl|group_0}} || Fire Team || {{hl|\A3\ui_f\data\map\markers\nato\group_0.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 114. || {{hl|group_1}} || Squad || {{hl|\A3\ui_f\data\map\markers\nato\group_1.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 115. || {{hl|group_10}} || Army || {{hl|\A3\ui_f\data\map\markers\nato\group_10.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 116. || {{hl|group_11}} || Army Group || {{hl|\A3\ui_f\data\map\markers\nato\group_11.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 117. || {{hl|group_2}} || Section || {{hl|\A3\ui_f\data\map\markers\nato\group_2.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 118. || {{hl|group_3}} || Platoon || {{hl|\A3\ui_f\data\map\markers\nato\group_3.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 119. || {{hl|group_4}} || Company || {{hl|\A3\ui_f\data\map\markers\nato\group_4.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 120. || {{hl|group_5}} || Battalion || {{hl|\A3\ui_f\data\map\markers\nato\group_5.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 121. || {{hl|group_6}} || Regiment || {{hl|\A3\ui_f\data\map\markers\nato\group_6.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 122. || {{hl|group_7}} || Brigade || {{hl|\A3\ui_f\data\map\markers\nato\group_7.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 123. || {{hl|group_8}} || Division || {{hl|\A3\ui_f\data\map\markers\nato\group_8.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 124. || {{hl|group_9}} || Corps || {{hl|\A3\ui_f\data\map\markers\nato\group_9.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 125. || {{hl|hd_ambush}} || Ambush || {{hl|\A3\ui_f\data\map\markers\handdrawn\ambush_CA.paa}} || {{Icon|unchecked}} || 2 ||
+|-
+| 126. || {{hl|hd_ambush_noShadow}} || Ambush || {{hl|\A3\ui_f\data\map\markers\handdrawn\ambush_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 127. || {{hl|hd_arrow}} || Arrow || {{hl|\A3\ui_f\data\map\markers\handdrawn\arrow_CA.paa}} || {{Icon|unchecked}} || 2 ||
+|-
+| 128. || {{hl|hd_arrow_noShadow}} || Arrow || {{hl|\A3\ui_f\data\map\markers\handdrawn\arrow_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 129. || {{hl|hd_destroy}} || Destroy || {{hl|\A3\ui_f\data\map\markers\handdrawn\destroy_CA.paa}} || {{Icon|unchecked}} || 2 ||
+|-
+| 130. || {{hl|hd_destroy_noShadow}} || Destroy || {{hl|\A3\ui_f\data\map\markers\handdrawn\destroy_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 131. || {{hl|hd_dot}} || Dot || {{hl|\A3\ui_f\data\map\markers\handdrawn\dot_CA.paa}} || {{Icon|unchecked}} || 2 ||
+|-
+| 132. || {{hl|hd_dot_noShadow}} || Dot || {{hl|\A3\ui_f\data\map\markers\handdrawn\dot_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 133. || {{hl|hd_end}} || End || {{hl|\A3\ui_f\data\map\markers\handdrawn\end_CA.paa}} || {{Icon|unchecked}} || 2 ||
+|-
+| 134. || {{hl|hd_end_noShadow}} || End || {{hl|\A3\ui_f\data\map\markers\handdrawn\end_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 135. || {{hl|hd_flag}} || Flag || {{hl|\A3\ui_f\data\map\markers\handdrawn\flag_CA.paa}} || {{Icon|unchecked}} || 2 ||
+|-
+| 136. || {{hl|hd_flag_noShadow}} || Flag || {{hl|\A3\ui_f\data\map\markers\handdrawn\flag_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 137. || {{hl|hd_join}} || Join || {{hl|\A3\ui_f\data\map\markers\handdrawn\join_CA.paa}} || {{Icon|unchecked}} || 2 ||
+|-
+| 138. || {{hl|hd_join_noShadow}} || Join || {{hl|\A3\ui_f\data\map\markers\handdrawn\join_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 139. || {{hl|hd_objective}} || Objective || {{hl|\A3\ui_f\data\map\markers\handdrawn\objective_CA.paa}} || {{Icon|unchecked}} || 2 ||
+|-
+| 140. || {{hl|hd_objective_noShadow}} || Objective || {{hl|\A3\ui_f\data\map\markers\handdrawn\objective_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 141. || {{hl|hd_pickup}} || Pick Up || {{hl|\A3\ui_f\data\map\markers\handdrawn\pickup_CA.paa}} || {{Icon|unchecked}} || 2 ||
+|-
+| 142. || {{hl|hd_pickup_noShadow}} || Pick Up || {{hl|\A3\ui_f\data\map\markers\handdrawn\pickup_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 143. || {{hl|hd_start}} || Start || {{hl|\A3\ui_f\data\map\markers\handdrawn\start_CA.paa}} || {{Icon|unchecked}} || 2 ||
+|-
+| 144. || {{hl|hd_start_noShadow}} || Start || {{hl|\A3\ui_f\data\map\markers\handdrawn\start_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 145. || {{hl|hd_unknown}} || Unknown || {{hl|\A3\ui_f\data\map\markers\handdrawn\unknown_CA.paa}} || {{Icon|unchecked}} || 2 ||
+|-
+| 146. || {{hl|hd_unknown_noShadow}} || Unknown || {{hl|\A3\ui_f\data\map\markers\handdrawn\unknown_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 147. || {{hl|hd_warning}} || Warning || {{hl|\A3\ui_f\data\map\markers\handdrawn\warning_CA.paa}} || {{Icon|unchecked}} || 2 ||
+|-
+| 148. || {{hl|hd_warning_noShadow}} || Warning || {{hl|\A3\ui_f\data\map\markers\handdrawn\warning_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 149. || {{hl|KIA}} || KIA || {{hl|\a3\Ui_F_Curator\Data\CfgMarkers\kia_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3zeus|24}}
+|-
+| 150. || {{hl|loc_Ambush}} || Ambush || {{hl|\A3\Ui_f\data\Map\Markers\Military\ambush_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 151. || {{hl|loc_Attack}} || Attack || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\attack_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 152. || {{hl|loc_boat}} || Boat || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\Boat_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 153. || {{hl|loc_Box}} || Box || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\box_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 154. || {{hl|loc_Bunker}} || Bunker || {{hl|\A3\ui_f\data\map\mapcontrol\Bunker_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 155. || {{hl|loc_Bush}} || Bush || {{hl|\A3\ui_f\data\map\mapcontrol\Bush_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 156. || {{hl|loc_BusStop}} || Bus Stop || {{hl|\A3\ui_f\data\map\mapcontrol\BusStop_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 157. || {{hl|loc_car}} || Car || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\car_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 158. || {{hl|loc_Chapel}} || Chapel || {{hl|\A3\ui_f\data\map\mapcontrol\Chapel_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 159. || {{hl|loc_Church}} || Church || {{hl|\A3\ui_f\data\map\mapcontrol\Church_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 160. || {{hl|loc_CivilDefense}} || Civil Defense || {{hl|\A3\ui_f_orange\data\cfgmarkers\civildefense.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3lawsofwar|24}}
+|-
+| 161. || {{hl|loc_container}} || container || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\Container_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 162. || {{hl|loc_Cross}} || Cross || {{hl|\A3\ui_f\data\map\mapcontrol\Cross_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 163. || {{hl|loc_CulturalProperty}} || Cultural Property || {{hl|\A3\ui_f_orange\data\cfgmarkers\culturalproperty_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3lawsofwar|24}}
+|-
+| 164. || {{hl|loc_DangerousForces}} || Dangerous Forces || {{hl|\A3\ui_f_orange\data\cfgmarkers\dangerousforces_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3lawsofwar|24}}
+|-
+| 165. || {{hl|loc_defend}} || Defend || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\defend_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 166. || {{hl|loc_destroy}} || Destroy || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\destroy_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 167. || {{hl|loc_download}} || Download || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\Download_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 168. || {{hl|loc_Fortress}} || Bunker || {{hl|\A3\ui_f\data\map\mapcontrol\Bunker_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 169. || {{hl|loc_Fountain}} || Fountain || {{hl|\A3\ui_f\data\map\mapcontrol\Fountain_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 170. || {{hl|loc_Frame}} || Frame || {{hl|\a3\Ui_f\data\GUI\Rsc\RscDisplayArsenal\icon_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 171. || {{hl|loc_Fuelstation}} || Fuel Station || {{hl|\A3\ui_f\data\map\mapcontrol\Fuelstation_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 172. || {{hl|loc_heal}} || Heal || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\Heal_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 173. || {{hl|loc_heli}} || Heli || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\Heli_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 174. || {{hl|loc_help}} || Help || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\help_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 175. || {{hl|loc_Hospital}} || Hospital || {{hl|\A3\ui_f\data\map\mapcontrol\Hospital_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 176. || {{hl|loc_interact}} || Interact || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\interact_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 177. || {{hl|loc_LetterA}} || LetterA || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\a_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 178. || {{hl|loc_LetterB}} || LetterB || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\b_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 179. || {{hl|loc_LetterC}} || LetterC || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\c_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 180. || {{hl|loc_LetterD}} || LetterD || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\d_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 181. || {{hl|loc_LetterE}} || LetterE || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\e_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 182. || {{hl|loc_LetterF}} || LetterF || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\f_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 183. || {{hl|loc_LetterG}} || LetterG || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\g_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 184. || {{hl|loc_LetterH}} || LetterH || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\h_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 185. || {{hl|loc_LetterI}} || LetterI || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\i_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 186. || {{hl|loc_LetterJ}} || LetterJ || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\j_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 187. || {{hl|loc_LetterK}} || LetterK || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\k_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 188. || {{hl|loc_LetterL}} || LetterL || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\l_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 189. || {{hl|loc_LetterM}} || LetterM || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\m_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 190. || {{hl|loc_LetterN}} || LetterN || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\n_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 191. || {{hl|loc_LetterO}} || LetterO || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\o_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 192. || {{hl|loc_LetterP}} || LetterP || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\p_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 193. || {{hl|loc_LetterQ}} || LetterQ || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\q_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 194. || {{hl|loc_LetterR}} || LetterR || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\r_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 195. || {{hl|loc_LetterS}} || LetterS || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\s_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 196. || {{hl|loc_LetterT}} || LetterT || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\t_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 197. || {{hl|loc_LetterU}} || LetterU || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\u_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 198. || {{hl|loc_LetterV}} || LetterV || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\v_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 199. || {{hl|loc_LetterW}} || LetterW || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\w_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 200. || {{hl|loc_LetterX}} || LetterX || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\x_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 201. || {{hl|loc_LetterY}} || LetterY || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\y_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 202. || {{hl|loc_LetterZ}} || LetterZ || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\letters\z_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 203. || {{hl|loc_Lighthouse}} || Lighthouse || {{hl|\A3\ui_f\data\map\mapcontrol\Lighthouse_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 204. || {{hl|loc_meet}} || Meet || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\meet_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 205. || {{hl|loc_mine}} || Mine || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\mine_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 206. || {{hl|loc_move}} || Move || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\move_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 207. || {{hl|loc_Pick}} || Pick || {{hl|\a3\Ui_f\data\IGUI\Cfg\Actions\take_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 208. || {{hl|loc_plane}} || Plane || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\Plane_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 209. || {{hl|loc_Power}} || Power Plant || {{hl|\A3\ui_f\data\map\mapcontrol\Power_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 210. || {{hl|loc_PowerSolar}} || Solar Power Plant || {{hl|\A3\ui_f\data\map\mapcontrol\PowerSolar_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 211. || {{hl|loc_PowerWave}} || Wave Power Plant || {{hl|\A3\ui_f\data\map\mapcontrol\PowerWave_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 212. || {{hl|loc_PowerWind}} || Wind Power Plant || {{hl|\A3\ui_f\data\map\mapcontrol\PowerWind_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 213. || {{hl|loc_Quay}} || Pier || {{hl|\A3\ui_f\data\map\mapcontrol\Quay_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 214. || {{hl|loc_radio}} || Radio || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\Radio_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 215. || {{hl|loc_rearm}} || Rearm || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\rearm_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 216. || {{hl|loc_refuel}} || Refuel || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\refuel_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 217. || {{hl|loc_repair}} || Repair || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\repair_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 218. || {{hl|loc_Rifle}} || Rifle || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\rifle_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 219. || {{hl|loc_Rock}} || Rock || {{hl|\A3\ui_f\data\map\mapcontrol\Rock_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 220. || {{hl|loc_Ruin}} || Ruin || {{hl|\A3\ui_f\data\map\mapcontrol\Ruin_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 221. || {{hl|loc_SafetyZone}} || Safety Zone || {{hl|\A3\ui_f_orange\data\cfgmarkers\safetyzone_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3lawsofwar|24}}
+|-
+| 222. || {{hl|loc_save}} || Save || {{hl|\a3\Ui_f\data\GUI\Rsc\RscDisplayArcadeMap\icon_saveas_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 223. || {{hl|loc_sdv}} || SDV || {{hl|\a3\ui_f\data\gui\cfg\hints\SDV_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 224. || {{hl|loc_search}} || Search || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\search_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 225. || {{hl|loc_SmallTree}} || Small Tree || {{hl|\A3\ui_f\data\map\mapcontrol\SmallTree_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 226. || {{hl|loc_Stack}} || Chimney Stack || {{hl|\A3\ui_f\data\map\mapcontrol\Stack_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 227. || {{hl|loc_talk}} || Talk || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\Talk_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 228. || {{hl|loc_Tourism}} || Hotel || {{hl|\A3\ui_f\data\map\mapcontrol\Tourism_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 229. || {{hl|loc_Transmitter}} || Radio Tower || {{hl|\A3\ui_f\data\map\mapcontrol\Transmitter_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 230. || {{hl|loc_Tree}} || Tree || {{hl|\A3\ui_f\data\map\mapcontrol\tree_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 231. || {{hl|loc_Truck}} || Truck || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\truck_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 232. || {{hl|loc_use}} || Use || {{hl|\a3\ui_f\data\igui\cfg\simpletasks\types\Use_ca.paa}} || {{Icon|unchecked}} || 0 || {{Icon|arma3apex|24}}
+|-
+| 233. || {{hl|loc_ViewTower}} || View Tower || {{hl|\A3\ui_f\data\map\mapcontrol\ViewTower_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 234. || {{hl|loc_WaterTower}} || Water Tower || {{hl|\A3\ui_f\data\map\mapcontrol\WaterTower_CA.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 235. || {{hl|MemoryFragment}} || Flag || {{hl|\A3\ui_f_orange\data\cfgmarkers\memoryFragment_ca.paa}} || {{Icon|checked}} || 0 || {{Icon|arma3lawsofwar|24}}
+|-
+| 236. || {{hl|mil_ambush}} || Ambush || {{hl|\A3\ui_f\data\map\markers\military\ambush_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 237. || {{hl|mil_ambush_noShadow}} || Ambush || {{hl|\A3\ui_f\data\map\markers\military\ambush_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 238. || {{hl|mil_arrow}} || Arrow || {{hl|\A3\ui_f\data\map\markers\military\arrow_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 239. || {{hl|mil_arrow2}} || Arrow (filled) || {{hl|\A3\ui_f\data\map\markers\military\arrow2_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 240. || {{hl|mil_arrow2_noShadow}} || Arrow (filled) || {{hl|\A3\ui_f\data\map\markers\military\arrow2_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 241. || {{hl|mil_arrow_noShadow}} || Arrow || {{hl|\A3\ui_f\data\map\markers\military\arrow_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 242. || {{hl|mil_box}} || Square || {{hl|\A3\ui_f\data\map\markers\military\box_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 243. || {{hl|mil_box_noShadow}} || Square || {{hl|\A3\ui_f\data\map\markers\military\box_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 244. || {{hl|mil_circle}} || Circle || {{hl|\A3\ui_f\data\map\markers\military\circle_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 245. || {{hl|mil_circle_noShadow}} || Circle || {{hl|\A3\ui_f\data\map\markers\military\circle_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 246. || {{hl|mil_destroy}} || Destroy || {{hl|\A3\ui_f\data\map\markers\military\destroy_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 247. || {{hl|mil_destroy_noShadow}} || Destroy || {{hl|\A3\ui_f\data\map\markers\military\destroy_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 248. || {{hl|mil_dot}} || Dot || {{hl|\A3\ui_f\data\map\markers\military\dot_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 249. || {{hl|mil_dot_noShadow}} || Dot || {{hl|\A3\ui_f\data\map\markers\military\dot_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 250. || {{hl|mil_end}} || End || {{hl|\A3\ui_f\data\map\markers\military\end_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 251. || {{hl|mil_end_noShadow}} || End || {{hl|\A3\ui_f\data\map\markers\military\end_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 252. || {{hl|mil_flag}} || Flag || {{hl|\A3\ui_f\data\map\markers\military\flag_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 253. || {{hl|mil_flag_noShadow}} || Flag || {{hl|\A3\ui_f\data\map\markers\military\flag_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 254. || {{hl|mil_join}} || Join || {{hl|\A3\ui_f\data\map\markers\military\join_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 255. || {{hl|mil_join_noShadow}} || Join || {{hl|\A3\ui_f\data\map\markers\military\join_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 256. || {{hl|mil_marker}} || Marker || {{hl|\A3\ui_f\data\map\markers\military\marker_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 257. || {{hl|mil_marker_noShadow}} || Marker || {{hl|\A3\ui_f\data\map\markers\military\marker_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 258. || {{hl|mil_objective}} || Objective || {{hl|\A3\ui_f\data\map\markers\military\objective_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 259. || {{hl|mil_objective_noShadow}} || Objective || {{hl|\A3\ui_f\data\map\markers\military\objective_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 260. || {{hl|mil_pickup}} || Pick Up || {{hl|\A3\ui_f\data\map\markers\military\pickup_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 261. || {{hl|mil_pickup_noShadow}} || Pick Up || {{hl|\A3\ui_f\data\map\markers\military\pickup_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 262. || {{hl|mil_start}} || Start || {{hl|\A3\ui_f\data\map\markers\military\start_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 263. || {{hl|mil_start_noShadow}} || Start || {{hl|\A3\ui_f\data\map\markers\military\start_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 264. || {{hl|mil_triangle}} || Triangle || {{hl|\A3\ui_f\data\map\markers\military\triangle_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 265. || {{hl|mil_triangle_noShadow}} || Triangle || {{hl|\A3\ui_f\data\map\markers\military\triangle_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 266. || {{hl|mil_unknown}} || Unknown || {{hl|\A3\ui_f\data\map\markers\military\unknown_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 267. || {{hl|mil_unknown_noShadow}} || Unknown || {{hl|\A3\ui_f\data\map\markers\military\unknown_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 268. || {{hl|mil_warning}} || Warning || {{hl|\A3\ui_f\data\map\markers\military\warning_CA.paa}} || {{Icon|unchecked}} || 1 ||
+|-
+| 269. || {{hl|mil_warning_noShadow}} || Warning || {{hl|\A3\ui_f\data\map\markers\military\warning_CA.paa}} || {{Icon|checked}} || 0 ||
+|-
+| 270. || {{hl|Minefield}} || Minefield || {{hl|\a3\Ui_F_Curator\Data\CfgMarkers\minefield_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3zeus|24}}
+|-
+| 271. || {{hl|MinefieldAP}} || Minefield (AP) || {{hl|\a3\Ui_F_Curator\Data\CfgMarkers\minefieldAP_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3zeus|24}}
+|-
+| 272. || {{hl|n_air}} || Helicopter || {{hl|\A3\ui_f\data\map\markers\nato\n_air.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 273. || {{hl|n_antiair}} || Anti-Air || {{hl|\A3\ui_f\data\map\markers\nato\n_antiair.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 274. || {{hl|n_armor}} || Armor || {{hl|\A3\ui_f\data\map\markers\nato\n_armor.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 275. || {{hl|n_art}} || Artillery || {{hl|\A3\ui_f\data\map\markers\nato\n_art.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 276. || {{hl|n_hq}} || HQ || {{hl|\A3\ui_f\data\map\markers\nato\n_hq.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 277. || {{hl|n_inf}} || Infantry || {{hl|\A3\ui_f\data\map\markers\nato\n_inf.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 278. || {{hl|n_installation}} || Installation || {{hl|\A3\ui_f\data\map\markers\nato\n_installation.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 279. || {{hl|n_maint}} || Maintenance || {{hl|\A3\ui_f\data\map\markers\nato\n_maint.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 280. || {{hl|n_mech_inf}} || Mechanized || {{hl|\A3\ui_f\data\map\markers\nato\n_mech_inf.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 281. || {{hl|n_med}} || Medical || {{hl|\A3\ui_f\data\map\markers\nato\n_med.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 282. || {{hl|n_mortar}} || Mortar || {{hl|\A3\ui_f\data\map\markers\nato\n_mortar.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 283. || {{hl|n_motor_inf}} || Motorized || {{hl|\A3\ui_f\data\map\markers\nato\n_motor_inf.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 284. || {{hl|n_naval}} || Naval || {{hl|\A3\ui_f\data\map\markers\nato\n_naval.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 285. || {{hl|n_Ordnance}} || Ordnance || {{hl|\a3\UI_F_Orange\Data\CfgMarkers\n_Ordnance_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3lawsofwar|24}}
+|-
+| 286. || {{hl|n_plane}} || Plane || {{hl|\A3\ui_f\data\map\markers\nato\n_plane.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 287. || {{hl|n_recon}} || Recon || {{hl|\A3\ui_f\data\map\markers\nato\n_recon.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 288. || {{hl|n_service}} || Service || {{hl|\A3\ui_f\data\map\markers\nato\n_service.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 289. || {{hl|n_support}} || Support || {{hl|\A3\ui_f\data\map\markers\nato\n_support.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 290. || {{hl|n_uav}} || UAV || {{hl|\A3\ui_f\data\map\markers\nato\n_uav.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 291. || {{hl|n_unknown}} || Unknown || {{hl|\A3\ui_f\data\map\markers\nato\n_unknown.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 292. || {{hl|o_air}} || Helicopter || {{hl|\A3\ui_f\data\map\markers\nato\o_air.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 293. || {{hl|o_antiair}} || Anti-Air || {{hl|\A3\ui_f\data\map\markers\nato\o_antiair.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 294. || {{hl|o_armor}} || Armor || {{hl|\A3\ui_f\data\map\markers\nato\o_armor.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 295. || {{hl|o_art}} || Artillery || {{hl|\A3\ui_f\data\map\markers\nato\o_art.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 296. || {{hl|o_hq}} || HQ || {{hl|\A3\ui_f\data\map\markers\nato\o_hq.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 297. || {{hl|o_inf}} || Infantry || {{hl|\A3\ui_f\data\map\markers\nato\o_inf.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 298. || {{hl|o_installation}} || Installation || {{hl|\A3\ui_f\data\map\markers\nato\o_installation.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 299. || {{hl|o_maint}} || Maintenance || {{hl|\A3\ui_f\data\map\markers\nato\o_maint.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 300. || {{hl|o_mech_inf}} || Mechanized || {{hl|\A3\ui_f\data\map\markers\nato\o_mech_inf.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 301. || {{hl|o_med}} || Medical || {{hl|\A3\ui_f\data\map\markers\nato\o_med.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 302. || {{hl|o_mortar}} || Mortar || {{hl|\A3\ui_f\data\map\markers\nato\o_mortar.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 303. || {{hl|o_motor_inf}} || Motorized || {{hl|\A3\ui_f\data\map\markers\nato\o_motor_inf.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 304. || {{hl|o_naval}} || Naval || {{hl|\A3\ui_f\data\map\markers\nato\o_naval.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 305. || {{hl|o_Ordnance}} || Ordnance || {{hl|\a3\UI_F_Orange\Data\CfgMarkers\o_Ordnance_ca.paa}} || {{Icon|checked}} || 1 || {{Icon|arma3lawsofwar|24}}
+|-
+| 306. || {{hl|o_plane}} || Plane || {{hl|\A3\ui_f\data\map\markers\nato\o_plane.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 307. || {{hl|o_recon}} || Recon || {{hl|\A3\ui_f\data\map\markers\nato\o_recon.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 308. || {{hl|o_service}} || Service || {{hl|\A3\ui_f\data\map\markers\nato\o_service.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 309. || {{hl|o_support}} || Support || {{hl|\A3\ui_f\data\map\markers\nato\o_support.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 310. || {{hl|o_uav}} || UAV || {{hl|\A3\ui_f\data\map\markers\nato\o_uav.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 311. || {{hl|o_unknown}} || Unknown || {{hl|\A3\ui_f\data\map\markers\nato\o_unknown.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 312. || {{hl|RedCrystal}} || Red Crystal || {{hl|\A3\ui_f_orange\data\cfgmarkers\redcrystal_ca.paa}} || {{Icon|unchecked}} || 2 || {{Icon|arma3lawsofwar|24}}
+|-
+| 313. || {{hl|respawn_air}} || Helicopter Respawn || {{hl|\A3\ui_f\data\map\markers\nato\respawn_air_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 314. || {{hl|respawn_armor}} || Armor Respawn || {{hl|\A3\ui_f\data\map\markers\nato\respawn_armor_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 315. || {{hl|respawn_inf}} || Infantry Respawn || {{hl|\A3\ui_f\data\map\markers\nato\respawn_inf_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 316. || {{hl|respawn_motor}} || Car Respawn || {{hl|\A3\ui_f\data\map\markers\nato\respawn_motor_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 317. || {{hl|respawn_naval}} || Naval Respawn || {{hl|\A3\ui_f\data\map\markers\nato\respawn_naval_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 318. || {{hl|respawn_para}} || Airborne Respawn || {{hl|\A3\ui_f\data\map\markers\nato\respawn_para_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 319. || {{hl|respawn_plane}} || Plane Respawn || {{hl|\A3\ui_f\data\map\markers\nato\respawn_plane_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 320. || {{hl|respawn_unknown}} || Respawn || {{hl|\A3\ui_f\data\map\markers\nato\respawn_unknown_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 321. || {{hl|Select}} || Select || {{hl|\A3\ui_f\data\igui\cfg\islandmap\iconplayer_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 322. || {{hl|selector_selectable}} || Selector - Selectable || {{hl|\A3\ui_f\data\map\groupicons\selector_selectable_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 323. || {{hl|selector_selectedEnemy}} || Selector - Selected Enemy || {{hl|\A3\ui_f\data\map\groupicons\selector_selectedEnemy_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 324. || {{hl|selector_selectedFriendly}} || Selector - Selected Friendly || {{hl|\A3\ui_f\data\map\groupicons\selector_selectedFriendly_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 325. || {{hl|selector_selectedMission}} || Selector - Selected Mission || {{hl|\A3\ui_f\data\map\groupicons\selector_selectedMission_ca.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 326. || {{hl|u_installation}} || Installation || {{hl|\A3\ui_f\data\map\markers\nato\u_installation.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 327. || {{hl|waypoint}} || Waypoint || {{hl|\A3\ui_f\data\map\groupicons\waypoint.paa}} || {{Icon|checked}} || 1 ||
+|-
+| 328. || {{hl|White}} || White || {{hl|\A3\ui_f_orange\data\cfgmarkers\white_ca.paa}} || {{Icon|unchecked}} || 2 || {{Icon|arma3lawsofwar|24}}
+|}
+
+{{Wiki|extractionScript}}
+
+
+{{GameCategory|arma3|Reference Lists}}

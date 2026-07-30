@@ -1,0 +1,580 @@
+// source: https://community.bistudio.com/wiki/Iron_Front:_Factions
+// revision: 349969 (2023-11-20T22:11:30Z)
+// export sha1: pdupxeblqw9jxdoce369dj8yhpnjc9q
+// categories: Category:Iron Front
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|horizontal|||y}}
+= Allies =
+<div style="float: right;">
+<div style="border:1px solid #a8a8a8;">
+{| style="width: 300px; text-align: left;" id=toc
+|-
+| colspan="2" style="text-align:center;" | [[File:UScolors.gif|100px]]
+|-
+! colspan="2" style="font-size: larger; font-variant:small-caps;text-align:center;" | Allies
+|  
+|-
+! colspan="2" style="text-align: center; border-top:1px solid #a8a8a8;" | <u>Details</u>
+|- style="vertical-align:top;"
+! Side
+| Guerilla
+|- style="vertical-align:top;"
+! Factions
+| LIB_US_ARMY<br>LIB_US_TANK_TROOPS<br>LIB_US_AIRFORCE
+|-
+! colspan="2" style="text-align: center;" | <u>Scripting uniques</u>
+|- style="vertical-align:top;"
+! Heads
+| HEAD_USMC
+|- style="vertical-align:top;"
+! Language
+| EN
+|- style="vertical-align:top;"
+! Names
+| EnglishMen
+|}
+</div>
+</div>
+The '''US Army''' represents the USA in the Iron Front DLC D-Day 1944.
+
+=== Men ===
+{| class="wikitable"
+|'''Classname'''||'''Full Name'''||'''Footnotes'''
+|-
+|LIB_US_rifleman||Rifleman||
+|-
+|LIB_US_driver||Driver||
+|-
+|LIB_US_FC_rifleman||FC Rifleman||
+|-
+|LIB_US_corporal||Corporal||
+|-
+|LIB_US_smgunner||Submachine Gunner||
+|-
+|LIB_US_second_lieutenant||Second Lieutenant||
+|-
+|LIB_US_first_lieutenant||First Lieutenant||
+|-
+|LIB_US_captain||Captain||
+|-
+|LIB_US_sniper||Sniper||
+|-
+|LIB_US_mgunner||Machine Gunner||
+|-
+|LIB_US_AT_soldier||AT Soldier||
+|-
+|LIB_US_engineer||Engineer||
+|-
+|LIB_US_medic||Medic||
+|-
+|LIB_US_pilot||Pilot||
+|-
+|LIB_US_tank_crew||Tank Crew||
+|-
+|LIB_US_tank_sergeant||Sergeant||
+|-
+|LIB_US_tank_second_lieutenant||Second Lieutenant||
+|-
+|}
+
+=== Vehicles ===
+{| class="wikitable"
+|'''Classname'''||'''Full Name'''||'''Footnotes'''
+|-
+|LIB_US_Willys_MB||Willys Jeep||
+|-
+|LIB_US_GMC_Tent||GMC truck||
+|-
+|LIB_US_GMC_Open||GMC truck (open)||
+|-
+|LIB_US_GMC_Ammo||GMC truck (ammo)
+|-
+|LIB_US_GMC_Ambulance||GMC truck (ambulance)||
+|-
+|LIB_US_GMC_Parm||GMC truck (repair)||
+|-
+|LIB_US_GMC_Fuel||GMC truck (fuel)||
+|-
+|LIB_US_M3_Halftrack||M3 Halftrack||
+|-
+|LIB_US_Scout_m3||M3 Scout Car||
+|-
+|LIB_M4A3_75||M4A3 Sherman||
+|-
+|LIB_M4A3_75_Tubes||M4A3 Sherman (amphibian)||
+|-
+|LIB_P47||Republic P-47 Thunderbolt||
+|-
+|LIB_LCVP||LCVP Carrier||
+|-
+|}
+
+=== Weapons ===
+{| class="wikitable"
+|'''Classname'''||'''Full Name'''||'''Footnotes'''
+|-
+|LIB_Colt_M1911||Colt M1911||
+|-
+|LIB_M1_Garand||M1 Garand||
+|-
+|LIB_M1_Carbine||M1 Carbine||
+|-
+|LIB_M1903A4_Springfield||M1903A4 Springfield||
+|-
+|LIB_M1A1_Thompson||M1A1 Thompson||
+|-
+|LIB_M1918A2_BAR||M1918A2 BAR||
+|-
+|LIB_M1A1_Bazooka||M1A1 Bazooka||
+|-
+|LIB_US_Mk_2||Mk2 Grenade||
+|-
+|}
+
+=== Objects ===
+{| class="wikitable"
+|'''Classname'''||'''Full Name'''||'''Footnotes'''
+|-
+|LIB_P47_MRWreck||P-47 Plane Wreck||
+|-
+|LIB_M4A3_75_wreck||Sherman Wreck||
+|-
+|FlagCarrierUSA||Flag (USA)||
+|-
+|}
+
+= Germany =
+<div style="float: right;">
+<div style="border:1px solid #a8a8a8;">
+{| style="width: 300px; text-align: left;" id=toc
+|-
+| colspan="2" style="text-align:center;" | [[File:Balkenkreuz.png|100px]]
+|-
+! colspan="2" style="font-size: larger; font-variant:small-caps;text-align:center;" | Germany
+|  
+|-
+! colspan="2" style="text-align: center; border-top:1px solid #a8a8a8;" | <u>Details</u>
+|- style="vertical-align:top;"
+! Side
+| BLUEFOR
+|- style="vertical-align:top;"
+! Factions
+| LIB_WEHRMACHT<br>LIB_PANZERWAFFE<br>LIB_LUFTWAFFE<br>SG_STURM
+|-
+! colspan="2" style="text-align: center;" | <u>Scripting uniques</u>
+|- style="vertical-align:top;"
+! Heads
+| Head_CDF
+|- style="vertical-align:top;"
+! Language
+| LIB_DE
+|- style="vertical-align:top;"
+! Names
+| LIB_GermanMen
+|}
+</div>
+</div>
+The '''Wehrmacht''' represents Germany in ''Iron Front: Liberation 1944''.
+
+=== Men ===
+{| class="wikitable"
+|'''Classname'''||'''Full Name'''||'''Footnotes'''
+|-
+|LIB_GER_rifleman||Rifleman||
+|-
+|LIB_GER_radioman||Radioman||
+|-
+|LIB_GER_smgunner||SMG Gunner||
+|-
+|LIB_GER_scout_smgunner||SMG Gunner (camo)||
+|-
+|LIB_GER_gun_crew|| Gun Crew||
+|-
+|LIB_GER_gun_lieutenant|| Gun Crew Lieutenant||
+|-
+|LIB_GER_gun_unterofficer||Gun Crew sergeant||
+|-
+|LIB_GER_hauptmann|| Captain||
+|-
+|LIB_GER_lieutenant||Lieutnant||
+|-
+|LIB_GER_scout_lieutenant||Lieutnant (camo)||
+|-
+|LIB_GER_mgunner|| Machine Gunner||
+|-
+|LIB_GER_scout_mgunner|| Machine Gunner (camo)||
+|-
+|LIB_GER_ober_lieutenant|| First Lieutnant||
+|-
+|LIB_GER_ober_rifleman|| Upper Rifleman||
+|-
+|LIB_GER_scout_ober_rifleman|| Upper Rifleman (camo)||
+|-
+|LIB_GER_oberst||Colonel||
+|-
+|LIB_GER_AT_soldier||Rifleman (AT)||
+|-
+|LIB_GER_AT_grenadier||Rifleman (AT Grenade)||
+|-
+|LIB_GER_sapper||Sapper||
+|-
+|LIB_GER_sapper_gefr||Sapper (corporal)||
+|-
+|LIB_GER_medic||Medic||
+|-
+|LIB_GER_stggunner||Rifleman (STG44)||
+|-
+|LIB_GER_unequip||Soldier (unequiped)||
+|-
+|LIB_GER_scout_rifleman||Rifleman (camo)||
+|-
+|LIB_GER_scout_sniper||Sniper (camo)||
+|-
+|LIB_GER_unterofficer||Sergeant||
+|-
+|LIB_GER_scout_unterofficer||Sergeant (camo)||
+|-
+|LIB_GER_pilot||Pilot||
+|-
+|LIB_GER_tank_crew|| Tank Crew||
+|-
+|LIB_GER_tank_lieutenant||Tank Crew Lieutenant||
+|-
+|LIB_GER_tank_unterofficer||Tank Crew Sergeant||
+|-
+|LIB_GER_spg_crew||SPG Crew||
+|-
+|LIB_GER_spg_lieutenant||SPG Crew Lieutenant||
+|-
+|LIB_GER_spg_unterofficer||SPG Crew Sergeant||
+|-
+|SG_sturmtrooper_radioman||Radioman (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_smgunner||SMG Gunner (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_lieutenant||Lieutenant (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_mgunner||Machinegunner (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_ober_rifleman||upper Rifleman (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_AT_soldier||Rifleman (AT) (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_AT_grenadier||Rifleman (AT Grenade) (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_sapper||Sapper (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_sapper_gefr||Sapper Corporal (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_medic||Medic (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_rifleman||Rifleman (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_stggunner||Rifleman (STG44) (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_sniper||Sniper (Stormtrooper)||since patch 1.03
+|-
+|SG_sturmtrooper_unterofficer||Sergeant (Stormtrooper)||since patch 1.03
+|}
+
+=== Vehicles ===
+{| class="wikitable"
+|'''Classname'''||'''Full Name'''||'''Footnotes'''
+|-
+|LIB_kfz1||VW Typ 82 Kübelwagen||
+|-
+|LIB_opelblitz_open_y_camo||Opel Blitz (open)||
+|-
+|LIB_opelblitz_tent_y_camo||Open Blitz||
+|-
+|lib_opelblitz_ammo||Open Blitz (ammo)||
+|-
+|LIB_opelblitz_parm||Open Blitz (repair)||
+|-
+|LIB_opelblitz_fuel||Open Blitz (fuel)||
+|-
+|LIB_opelblitz_ambulance||Open Blitz (ambulance)||
+|-
+|LIB_Static_opelblitz_radio||Open Blitz (radio)||
+|-
+|LIB_SdKfz_7||Sd.Kfz 7||
+|-
+|LIB_SdKfz_7_AA||Sd.Kfz 7 AA||
+|-
+|Lib_sdkfz251||Sd.Kfz 251 halftrack||
+|-
+|LIB_StuG_III_G||StuG III G||
+|-
+|LIB_StuG_III_G_WS||StuG III G without sidearmor||
+|-
+|LIB_PzKpfwIV_H||Pz.Kpfw. IV H||
+|-
+|LIB_PzKpfwV||Pz.Kpfw. V Panther||
+|-
+|LIB_PzKpfwVI_B||Pz.Kpfw. VI B Tiger II||
+|-
+|LIB_PzKpfwVI_B_camo||Pz.Kpfw. VI B Tiger II (camo)||
+|-
+|LIB_FW190F8||FW-190 F8||
+|-
+|LIB_Ju87||Ju-87D||
+|-
+|LIB_PzKpfwVI_E||Pz.Kpfw. VI E Tiger||since patch 1.05
+|-
+|}
+
+=== Weapons ===
+{| class="wikitable"
+|'''Classname'''||'''Full Name'''||'''Footnotes'''
+|-
+|LIB_P38||Walther P38
+|-
+|LIB_FLARE_PISTOL||Flare pistol||
+|-
+|LIB_MP40||MP 40||
+|-
+|LIB_K98||Karabiner 98k||
+|-
+|LIB_K98ZF39||Karabiner 98k with scope||
+|-
+|LIB_MP44||Sturmgewehr 44||
+|-
+|LIB_G43||Gewehr 43|| since Patch 1.03
+|-
+|LIB_MG42||MG 42||
+|-
+|LIB_RPzB||Panzerschreck||
+|-
+|LIB_PzFaust_30m||Panzerfaust|| easteregg
+|-
+|lib_shg24||Handgrenade 24||
+|-
+|lib_shg24x7||Big Handgrenade 24||
+|-
+|lib_m39||Handgrenade M39 ||
+|-
+|lib_nb39||Smokeshell 39
+|-
+|LIB_MG42_Lafette||MG 42 static||
+|-
+|LIB_MG42_Lafette_low||MG 42 static (low)||
+|-
+|LIB_MG42_Lafette_trench||MG 42 static (trench)||
+|-
+|LIB_Pak40||Pak 40 AT Gun||
+|-
+|LIB_FlaK_38||Flak 38 AA Gun||
+|-
+|LIB_Flakvierling_38||Flakvierling 38 AA Gun||
+|-
+|LIB_GrWr34||Mortar 34||
+|-
+|SearchLight_GER||Searchlight||
+|-
+|}
+
+= USSR =
+<div style="float: right;">
+<div style="border:1px solid #a8a8a8;">
+{| style="width: 300px; text-align: left;" id=toc
+|-
+| colspan="2" style="text-align:center;" | [[File:Red_star.png|100px]]
+|-
+! colspan="2" style="font-size: larger; font-variant:small-caps;text-align:center;" | USSR
+|  
+|-
+! colspan="2" style="text-align: center; border-top:1px solid #a8a8a8;" | <u>Details</u>
+|- style="vertical-align:top;"
+! Side
+| OPFOR
+|- style="vertical-align:top;"
+! Factions
+| LIB_RKKA<br>LIB_USSR_TANK_TROOPS<br>LIB_USSR_AIRFORCE
+|-
+! colspan="2" style="text-align: center;" | <u>Scripting uniques</u>
+|- style="vertical-align:top;"
+! Heads
+| Head_RU<br>Head_INS
+|- style="vertical-align:top;"
+! Language
+| LIB_SU
+|- style="vertical-align:top;"
+! Names
+| LIB_RussianMen
+|}
+</div>
+</div>
+The '''Red Army''' represents the USSR in ''Iron Front: Liberation 1944''.
+
+=== Men ===
+{| class="wikitable"
+|'''Classname'''||'''Full Name'''||'''Footnotes'''
+|-
+|LIB_SOV_rifleman||Rifleman||
+|-
+|LIB_SOV_p_officer||Officer||
+|-
+|LIB_SOV_scout_p_officer||Officer (camo)||
+|-
+|LIB_SOV_operator||Operator||
+|-
+|LIB_SOV_LC_rifleman||LC Rifleman||
+|-
+|LIB_SOV_scout_smgunner||Submachine Gunner (camo)
+|-
+|LIB_SOV_gun_crew||Gun Crew||
+|-
+|LIB_SOV_gun_lieutenant||Gun Crew Lieutenant||
+|-
+|LIB_SOV_gun_sergeant||Gun Crew Sergeant||
+|-
+|LIB_SOV_captain||Captain||
+|-
+|LIB_SOV_lieutenant||Lieutenant||
+|-
+|LIB_SOV_scout_lieutenant||Lieutenant (camo)||
+|-
+|LIB_SOV_mgunner||Machine Gunner||
+|-
+|LIB_SOV_scout_mgunner||Machine Gunner (camo)||
+|-
+|LIB_SOV_smgunner||Submachine Gunner||
+|-
+|LIB_SOV_sergeant||Sergeant||
+|-
+|LIB_SOV_scout_sergeant||Sergeant (camo)||
+|-
+|LIB_SOV_first_lieutenant||First Lieutenant||
+|-
+|LIB_SOV_AT_soldier||AT Soldier||
+|-
+|LIB_SOV_AT_grenadier||AT Grenadier||
+|-
+|LIB_SOV_sapper||Sapper||
+|-
+|LIB_SOV_medic||Medic||
+|-
+|LIB_SOV_scout_rifleman||Rifleman (camo)||
+|-
+|LIB_SOV_unequip||Soldier (unequip)||
+|-
+|LIB_SOV_scout_sniper||Sniper (camo)||
+|-
+|LIB_SOV_assault_smgunner||Assault Submachine Gunner||
+|-
+|LIB_SOV_assault_mgunner||Assault Machine Gunner||
+|-
+|LIB_SOV_assault_sergeant||Assault Sergeant||
+|-
+|LIB_SOV_tank_sergeant||Tank Sergeant||
+|-
+|LIB_SOV_tank_overall_crew||Tank Crew (Overall)||
+|-
+|LIB_SOV_tank_overall_lieutenant||Tank Lieutenant (Overall)||
+|-
+|LIB_SOV_tank_overall_sergeant||Tank Sergeant (Overall)||
+|-
+|LIB_SOV_tank_captain||Tank Captain||
+|-
+|LIB_SOV_tank_lieutenant||Tank Lieutenant||
+|-
+|LIB_sov_tank_crew||Tank Crew||
+|-
+|LIB_SOV_tank_overall_captain||Tank Crew (Overall)||
+|-
+|LIB_SOV_pilot||Pilot||
+|-
+|}
+
+=== Vehicles ===
+{| class="wikitable"
+|'''Classname'''||'''Full Name'''||'''Footnotes'''
+|-
+|Lib_Willys_MB||Willy's Jeep (Lend & Lease)||
+|-
+|lib_zis5v||ZIS-5 truck||
+|-
+|lib_zis5v_med||ZIS-5 (ambulance)||
+|-
+|lib_zis6_parm||ZIS-5 (repair)||
+|-
+|lib_zis5v_fuel||ZIS-5 (fuel)||
+|-
+|lib_us6_tent||US6 Studebaker||
+|-
+|lib_us6_open||US6 Studebaker (open)||
+|-
+|lib_us6_ammo||US6 Studebaker (ammo)||
+|-
+|lib_us6_bm13||BM-13 Katyusha (Studebaker)||
+|-
+|LIB_Scout_m3||M3 Scout car (Lend & Lease)||
+|-
+|LIB_SOV_M3_Halftrack||M3 Halftrack (Lend & Lease)|| D-Day DLC
+|-
+|Lib_SdKfz251_captured||Sd.Kfz. 251 (captured)||
+|-
+|LIB_t34_76||T-34/76||
+|-
+|LIB_t34_85||T-34/85||
+|-
+|LIB_SU85||SU-85 SPG||
+|-
+|LIB_JS2_43||JS-II Model 1943||
+|-
+|LIB_P39||P-39 Aircobra (Lend & Lease)||
+|-
+|LIB_Pe2||Pe-2 Bomber||
+|-
+|LIB_Li2||Li-2 Airplane|| easteregg
+|-
+|LIB_M4A2_SOV||M4A2 Sherman (Lend & Lease)|| D-Day DLC
+|-
+|}
+
+=== Weapons ===
+{| class="wikitable"
+|'''Classname'''||'''Full Name'''||'''Footnotes'''
+|-
+|LIB_Binocular_SU||Binocular||
+|-
+|LIB_TT33||Tokarev TT33||
+|-
+|LIB_M1895||Nagant M1895||
+|-
+|LIB_PPSh41_m||PPSh-41||
+|-
+|LIB_PPSh41_d||PPSh-41 drum mag||
+|-
+|LIB_M9130||M91/30 rifle||
+|-
+|LIB_M9130PU||M91/30 scoped||
+|-
+|LIB_SVT_40||SVT-40 Rifle||since Patch 1.03
+|-
+|LIB_DP28||DP-28 MG||
+|-
+|lib_f1||F1 Grenade||
+|-
+|lib_rg42||RG42 Grenade||
+|-
+|lib_rpg6||RPG6 Grenade||
+|-
+|lib_pwm||AT Grenade||
+|-
+|LIB_61k||61k AA gun||
+|-
+|LIB_Zis3||ZIS-3 Anti-Tank Gun||
+|-
+|LIB_BM37||BM-37 Mortar||
+|-
+|SearchLight_SU|| Searchlight||
+|-
+|lib_maxim_m30_trench||Maxim-MG (trench)||
+|-
+|lib_maxim_m30_base||Maxim-MG (base)||
+|-
+|}
+
+[[Category: Iron Front]]

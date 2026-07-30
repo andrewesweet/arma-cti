@@ -1,0 +1,78 @@
+// source: https://community.bistudio.com/wiki/ctrlTextWidth
+// revision: 373703 (2025-06-20T08:16:47Z)
+// export sha1: cok1enh5pwpj0jl8dw5wsv68g5u213t
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= GUI Control
+
+|descr= Returns the width of the control text including left and right margins (0.008 each). Supported control [[ctrlType|types]] are:
+{{Columns|2|
+* [[CT_STATIC]] 0
+* [[CT_EDIT]] 2
+* [[CT_STRUCTURED_TEXT]] 13
+* {{GVI|arma3|2.06|size= 0.75}} [[CT_XKEYDESC]] 40
+* {{GVI|arma3|2.06|size= 0.75}} [[CT_XBUTTON]] 41
+* {{GVI|arma3|2.06|size= 0.75}} [[CT_SHORTCUTBUTTON]] 16
+* {{GVI|arma3|2.06|size= 0.75}} [[CT_BUTTON]] 1
+* {{GVI|arma3|2.06|size= 0.75}} [[CT_ACTIVETEXT]] 11
+}}
+{{Feature|informative|For control-independent text width estimate see [[getTextWidth]].}}
+
+|s1= [[ctrlTextWidth]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _w = ctrlTextWidth _ctrl;</sqf>
+
+|seealso= [[getTextWidth]] [[ctrlTextHeight]] [[ctrlSetText]] [[ctrlType]] [[Arma: GUI Configuration]]
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20201028221000
+|text= When working with multiline controls [[ctrlTextWidth]] or [[getTextWidth]] will not return a proper value since the text will be treated as one long line.<br>
+
+'''Solution (Execute in [[:Category:Eden Editor|Eden Editor]]):'''
+
+<sqf>
+disableSerialization;
+
+private _display = findDisplay 313 createDisplay "RscDisplayEmpty";
+
+private _edit = _display ctrlCreate ["RscEditMulti", -1];
+_edit ctrlSetPosition [0,0,1,1];
+_edit ctrlSetBackgroundColor [0,0,0,1];
+_edit ctrlSetFont "EtelkaMonospacePro";
+_edit ctrlSetFontHeight 0.03;
+_edit ctrlCommit 0;
+
+private _longestLineWidth = 0;
+private _exampleString = "abcdefghijklmnopqrstuvxyz0134567890";
+private _text = "";
+
+for "_lines" from 1 to 400 do // loop through all lines and find the longest one
+{
+	_lineText = _exampleString select [round random 35];
+	_longestLineWidth = _longestLineWidth max (_lineText getTextWidth ["EtelkaMonospacePro", 0.03]);
+	_text = _text + _lineText + endl;
+};
+
+_edit ctrlSetPositionW (_longestLineWidth + 2 * 0.008); // width of longest line + left and right margin set in engine
+_edit ctrlCommit 0;
+_edit ctrlSetText _text;
+</sqf>
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20250620045735
+|text= If you have [[Procedural_Textures#UI_On_Texture|ui2textures]] in the text, there is a slight change this command can return NaN if texture is bugged, can be checked with [[finite]] for these rare cases.
+}}

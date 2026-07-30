@@ -1,0 +1,189 @@
+// source: https://community.bistudio.com/wiki/Debugging_Techniques
+// revision: 369845 (2024-10-16T13:51:58Z)
+// export sha1: 4i2awaarzcr934a8zgrr5b6q2l1shz7
+// categories: Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+[[Debugging Techniques]] are ways for a developers to debug (narrow down/determine the root source), or to learn and understand where and why errors or unexpected outcomes are occurring within their code.
+
+{{Feature|quote|Debugging is the process of finding and resolving defects or problems within a computer program that prevent correct operation of computer software or a system.|Wikipedia|https://en.wikipedia.org/w/index.php?title{{=}}Debugging}}
+
+
+== Code basics ==
+
+Various links about code and how to write it:
+* [[SQF Syntax]]
+* [[SQS Syntax]]
+* [[Code Optimisation]]
+
+=== IDE and Syntax Highlight ===
+
+Syntax errors are a frequent occurrence when developing scripts. '''Syntax highlight''' will help you find typos in commands and in your scripts.
+
+An '''I'''ntegrated '''D'''evelopment '''E'''nvironment (short '''IDE''') is a development environment software that provides among other things '''code analysis''', '''code completion''' and '''syntax highlight'''  to help you write better, more error free code.
+
+See further [[#Debugging Tools|Debugging Tools]] page section for download links.
+
+=== Errors ===
+
+An error in SQF '''will''' purely and simply '''halt''' the current script, leading to unpredictable behavior.
+Error are not to happen as it may reduce performance as well as break a mission/feature.
+So if you notice an issue, address it as your script '''will''' stop.
+
+=== Finding Errors ===
+
+Debugging is usually as complicated as writing the actual code itself. You usually get hinted by the game, where some error happened, and what it was.<br>
+There are instances where actual error reason might be something completely different than announced (eg. you get the error on a variable being [[nil]] somewhere, but the actual error is that you mistyped it where you set it initially).
+
+{{Feature|important|Make sure you enable ''Show Script Errors'' in the Launcher (for {{arma3}}) or set the corresponding [[Arma_3_Startup_Parameters|-showScriptErrors]] startup parameter.}}
+
+A script error will greet you with this box:
+[[File:A3_ScriptErrorMsg.jpg|thumb|Script error message|center|500px]]
+
+It tells you what went wrong, shows a snippet of the code that failed and what file and line it occurred in (unless you used a command combination like eg. <sqf inline>compile loadFile "filename";</sqf>).
+Knowing this, you now can proceed to find the actual reason why that specific piece of code errored.
+
+{{Feature|informative|This information can also be found in the [[arma.RPT|RPT log]].}}
+
+To solve an issue, you must first to became aware that of it. Aside from your script not having the desired result/effect (if any), an error message can tell you about the problem.
+* Be sure to use [[Arma 3: Startup Parameters#Developer Options|{{hl|-showScriptErrors}}&nbsp;startup&nbsp;parameter]] to display the error on-screen when it happens
+* To learn about the location in your script use [[preprocessFileLineNumbers]] to [[preprocessFile]]
+* Read [[Crash Files|RPT files]] for more information (make sure [[Arma 3: Startup Parameters#Performance|{{hl|-noLogs}} startup parameter]] is '''not''' active - otherwise the log will empty)
+** Scripts running on a server use the '''Arma''X''Server.RPT''' file which has varying location depending upon the type of server being run.
+** Scripts running on a client use the '''Arma''X''.RPT''' file.
+
+==== RPT files ====
+The [[arma.RPT|RPT]] is also used by the game's engine log other type of problems (low level engine issues, or content problems for example). Hence it will dump all kinds of debug information, warnings, errors as well as encountered script errors.
+One can also write information to it by using commands like [[diag_log]].
+
+{{Feature|important|The RPT file might be disabled using the Arma 3 launcher or by setting the corresponding [[Arma_3_Startup_Parameters|-noLogs]] startup parameter ({{arma3}} or {{arma2oa}} option)}}
+
+{| class="wikitable"
+|+ RPT File location per game (See [[Crash Files]] for more information)
+!Game
+!Location
+!Files
+|-
+| {{GVI|arma3|1.00}} {{arma3}}
+| <code style="display: block">'''%localappdata%'''\Arma 3</code>
+| <code style="display: block">Arma3_x64_yyyy-mm-dd_hh-mm-ss.rpt</code>
+|-
+| {{GVI|arma2|1.00}} {{arma2}}
+| <code style="display: block">'''%localappdata%'''\Arma 2</code>
+| <code style="display: block">arma2.rpt</code>
+|-
+| {{GVI|arma1|1.00}} {{arma1}}
+| <code style="display: block">'''%localappdata%'''\ArmA</code>
+| <code style="display: block">arma.rpt</code>
+|-
+| {{GVI|ofp|1.00}} {{ofp}}
+| <code style="display: block">'''''OFP root directory'''''</code>
+| <code style="display: block">flashpoint.rpt<br>context.bin</code>
+|}
+
+=== Solving Errors ===
+
+Once the script error is located: '''Make sure to check first the BiKi page corresponding to the command/function you are using to learn about potential misuse or other important information mentioned on the page!'''
+
+The most simple thing you can do is to output expected values. This can be done using for example [[diag_log]] or [[systemChat]].
+Output yourself a few [[Variables|variables]] that relate to your problem (for example: When the error occurs because you land in some [[if]] block, output the corresponding variables inside of the if).
+You continue doing this until you hit the actual problem: When [[Variables|variable]] A is not set, go to where [[Variables|variable]] A gets set and check around there, repeat and continue.
+
+The same can be done for non-critical errors like when a method is "just" computing the wrong values.
+
+{{Feature|informative|
+If you're having great difficulty solving a problem, the good way is to narrow down the issue to the simplest code block possible;
+or take the mission part that doesn't work, paste it into a new test mission and go from here.
+Doing so will save you dealing with other scripts' potential side effects!}}
+
+==== Common errors ====
+{| class="wikitable"
+! Error message
+! Cause
+! Solution
+|-
+| {{hl|Error Undefined variable in expression: _varName}}
+| Variable ''_varName'' has not been initialised properly in this context.
+<sqf>hint _nonExistentVar;</sqf>
+|
+* in the case of a [[spawn]]ed code, previous local variables are '''not''' accessible and must be passed as arguments in order to access them.
+* a variable may have been ''undefined'' (<sqf inline>_varName = nil;</sqf>). Unset it obviously ''after'' you are done using it.
+|-
+| {{hl|Error x elements provided, y is expected}}
+| A wrong number of arguments in array was provided
+<sqf>_unit setPos [0]; // setPos only takes an array of 2 to 3 elements</sqf>
+|rowspan="2" align="center"|'''Read the wiki about said command'''.<br><br>Use [[typeName]] to output a variable type and compare it to the command's wiki page.
+|-
+| {{hl|Error type x, expected y}}
+| An ill-typed argument was provided.
+<sqf>hint 5; // must be String or Structured Text, Number provided</sqf>
+|-
+| rowspan="2" | {{hl|Error Zero divisor}}
+| Pretty self-explanatory, somewhere in the code is a division by zero.
+<sqf>
+private _number = 0;
+private _result = 100/_number;
+</sqf>
+|
+* Make sure to check that your divisor is different from zero before dividing.
+<sqf>private _result = if (_number != 0) then { 100 / _number } else { 100 };</sqf>
+|-
+| Also happens when using an invalid [[select]] index.
+<sqf>["a", "b", "c"] select 20; // index can only be 0, 1 or 2</sqf>
+|
+* Ensure your [[select]] happens within the array boundaries.
+* Use [[selectRandom]] to pick a random item in an array.
+|-
+| {{hl|Local variable in global space}}
+| An attempt to [[private]] a public variable happened
+<sqf>private "myVar"; // should be "_myVar"</sqf>
+|
+* Replace public variable usage with private variables.
+|-
+| rowspan="2" | {{hl|Error Generic error in expression}}
+| A [[sleep]]/[[uiSleep]]/[[waitUntil]] command has been used in an [[Scheduler#Unscheduled Environment|unscheduled environment]].
+<sqf>player addEventHandler ["Fired", { sleep 1; hint "bang"; }];</sqf>
+|
+* Do '''not''' use such suspending commands in unscheduled environment.
+* For an '''FSM''' condition, a common workaround would be:
+<sqf>private _t = time + 5; // code - having to wait for 5 seconds</sqf>
+<sqf>time > _t // condition</sqf>
+* [[spawn]] code: <sqf>player addEventHandler ["Fired", { 0 spawn { sleep 1; hint "bang"; }; }];</sqf>
+|-
+| Further code reading is required.
+|
+* Cut your code in smaller pieces and locate the concerned line(s).
+|}
+
+=== Working with Addons ===
+
+If you are working on an addon, repacking a PBO can be time-intensive.
+This operation can be replaced simply by creating a basic mission in the "Missions" or "MPmissions" (if your feature is multiplayer-specific) folder of your game installation, and running the mission locally.
+The easiest way of accomplishing this is by the use of [[Event Scripts]] to run your code such as [[init.sqf]].
+Once you have tested your code this way, you can then sequentially pack your PBO when major changes have been made, rather than for each debug session of a script or piece of code.
+
+=== Debugging specific sections of code ===
+
+Although primitive, the combined use of [[diag_log]], [[systemChat]]/[[hint]] and [[format]] can help to debug the content of function arguments.
+In the case that specific pieces of code do not run, or if specific ''if'' conditions don't appear to fire, debugging the variable content with [[diag_log]] can be useful.
+As with all debugging, as long as the developer is methodical and logical in checking each section of code that runs, finding bugs and resolving them can be straightforward.
+
+
+== Debugging Tools ==
+
+=== Code Editing ===
+
+See {{Link|Category:Community Tools#Code Editing}}.
+
+=== Debug Console/System ===
+
+See {{Link|Category:Community Tools#Debug Console/System}}.
+
+=== SQF and debug Tools ===
+
+See {{Link|Category:Community Tools#SQF and debug Tools}}.
+
+
+[[Category:Scripting Topics]]

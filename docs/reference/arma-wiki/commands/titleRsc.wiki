@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/titleRsc
+// revision: 348002 (2023-11-08T10:24:40Z)
+// export sha1: c4x47cgiswa42zhht8z87d26okv6bjb
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= GUI Control
+
+|eff= local
+
+|descr= Displays a resource defined in RscTitles. Also see [[cutRsc]], with these two commands you can show two different resources at once.
+{{Feature|arma3|{{GVI|arma3|1.58}} Multiple layers and map overlays are possible with [[cutRsc]] which provides more options and handles layers better.}}
+
+|s1= [[titleRsc]] [text, type, speed, showInMap]
+
+|p1= text: [[String]] - the class name of the resource. ("Default" will remove the current resource)
+
+|p2= type: [[String]] - can be one of: "PLAIN", "PLAIN DOWN", "BLACK", "BLACK FADED", "BLACK OUT", "BLACK IN", "WHITE OUT" and "WHITE IN"; see [[Title Effect Type]]s for more information about these values
+
+|p3= speed: [[Number]] - (Optional, default -1) time in seconds to fade in resource
+
+|p4= showInMap: [[Boolean]] - (Optional, default [[true]]) [[false]] to hide the text when the map is opened
+
+|r1= [[Nothing]]
+
+|x1= <sqf>titleRsc ["BIS", "PLAIN"];</sqf>
+
+|seealso= [[titleText]] [[titleObj]] [[cutRsc]] [[allActiveTitleEffects]] [[activeTitleEffectParams]] 
+}}
+
+{{Note
+|user= Dr_Eyeball
+|timestamp= 20080630084400
+|text= Using [[titleRsc]] (unlike [[cutRsc]]) for a HUD will mean:
+* the HUD will remain visible when you access the map and overlay it.
+* using the 'Direct communication' chat channel messages will interfere with the HUD by hiding it, since it appears to use the same 'resource layer'.
+}}
+
+{{Note
+|user= Kenoxite
+|timestamp= 20140925100400
+|text= In OFP/CWA any ''<x>''Rsc will hide all the elements of the HUD, including the map.
+}}
+
+{{Note
+|user= Honger
+|timestamp= 20230828163424
+|text= The "Default" resource class does not exist in Arma 3 as of 2.12 version. Use a different class to remove resources that are not finite.
+}}

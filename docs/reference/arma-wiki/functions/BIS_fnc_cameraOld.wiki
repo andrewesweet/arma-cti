@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_cameraOld
+// revision: 329961 (2022-08-09T17:17:13Z)
+// export sha1: falpcxxkt7nwxnedxmk3bcyphr06pfo
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Classic camera script, replaced by the Splendid™ [[BIS_fnc_camera]].
+
+|s1= [target] call [[BIS_fnc_cameraOld]]
+
+|p1= target: [[Object]] - (Optional, default [[cameraOn]])
+
+|r1= [[Script Handle]]
+
+|x1= <sqf>[player] call BIS_fnc_cameraOld; // starts the camera on the player</sqf>
+
+|seealso= [[BIS_fnc_camera]]
+}}

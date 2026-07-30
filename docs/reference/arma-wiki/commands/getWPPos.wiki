@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/getWPPos
+// revision: 377567 (2026-01-02T06:55:33Z)
+// export sha1: sv1bq7rhblcini8w65i64ja4kj1ba8d
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Operation Flashpoint version 1.21 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.21
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Waypoints
+
+|alias= [[waypointPosition]]
+
+|descr= Returns the position of a selected waypoint of a given group. Waypoints include only those which were placed in the mission editor.
+
+|s1= [[getWPPos]] [groupOrUnit, index]
+
+|p1= groupOrUnit: [[Group]] or [[Object]] - the group (or unit) of which to select a waypoint
+
+|p2= index: [[Number]] - 0 equals the starting position of the group.<br>
+The number used in this and other waypoint commands is ''one more'' than the one displayed in the waypoint window in the editor: e.g if the editor labeled a waypoint {{hl|"0:MOVE"}} then it can be accessed using <sqf inline>getWPPos [grp, 1]</sqf>
+
+|r1= [[Position#Introduction|Position3D]] - the returned position equals [0,0,0] if the selected waypoint does not exist.
+
+|x1= <sqf>
+[_group1, 1] setWPPos [200,600,0];
+_pos = getWPPos [_group1, 1]; // returns [200, 600, 0]
+</sqf>
+
+|seealso= [[setWPPos]]
+}}

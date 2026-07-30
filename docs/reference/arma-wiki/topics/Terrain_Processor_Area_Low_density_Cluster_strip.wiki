@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Area:_Low-density_Cluster_(strip)
+// revision: 349819 (2023-11-20T22:10:25Z)
+// export sha1: hjso2d113z798pd62nmdikfnn62qh29
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Area]]
+{{TerrainProcessorManual|Area: Low-density Cluster (strip)|BITasksPlugin.dll|Polygon, PolygonM, PolygonZ|No
+|DESCRIPTION=Algorithm used for populating low-density areas. Objects are organized in linear clusters.
+|TASKPARAMETERS=* '''RANDOM SEED''' - number used to initialize pseudorandom number generator.
+* '''CDENSHA''' - The density of the filling in number of clusters for hectare.
+|OBJECTPROTOTYPEPARAMETERS=* '''OBJECT''' - Object's prototype name
+* '''MINHEIGHT''' - Minimal size in %
+* '''MAXHEIGHT''' - Maximal size in %
+* '''MINDIST''' - Minimal distance in meters  
+* '''GROUPID''' - Cluster group id
+* '''MINCOUNT''' - Minimal count of objects in one cluster
+* '''MAXCOUNT''' - Maximal count of objects in one cluster
+|USAGE=Similar to the "Area: Low-density Cluster (circle)", creates prolonged clusters of given width. Perfect for small tree groups, or for adding lines of undergrowth into forests.
+|ALGORITHM=For each shape (areal) do :
+# clusters_count = HECTARES * CDENSHA
+# For clusters_count :
+## Get random prototypes group.
+## Find position inside shape = cluster_center.
+## For each object prototype do :
+### prototypes_count = random MINCOUNT - MAXCOUNT
+### For prototypes_count :
+#### Get random direction_vector with random length (0 - MAXCRADIUS)  from cluster_center.
+#### If position = cluster_center + direction_vector id inside shape and condition MINDIST[n] is ok, then 3. else 1.
+#### Create new instance for object prototype in position.
+|SAMPLE=[[File:TerrainProcessor_LinearClusterSettings.png]]
+
+[[File:TerrainProcessor_LinearCluster.png]]
+}}

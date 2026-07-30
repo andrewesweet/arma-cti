@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Addons
+// revision: 183915 (2021-01-06T00:04:41Z)
+// export sha1: 1zqhlqfafo2ktfd9jd8rsbpj2c9f5sm
+// Vendored snapshot. Do not edit — re-export instead.
+
+
+{{GameCategory|ofp}}

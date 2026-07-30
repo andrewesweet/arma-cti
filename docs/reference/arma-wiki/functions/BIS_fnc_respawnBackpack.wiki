@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_respawnBackpack
+// revision: 352012 (2024-02-01T23:24:05Z)
+// export sha1: 4yb2xq0iqcy698la66jd9rih8rftww5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.96
+
+|gr1= Respawn
+
+|descr= Handles respawn camps functionality. Whoever "assembles" a camp from backpack it will receive a new respawn position. When backpack object has 'respawnNearbyPlayers' attribute set to 1, nearby players will receive the respawn position as well.
+{{Feature|important|Only for use with respawn camp event handlers!}}
+
+|s1= [] call [[BIS_fnc_respawnBackpack]]
+
+|p1= mode: [[String]] - mode
+
+|p2= arguments: [[Array]] - mode arguments
+
+|r1= [[Nothing]]
+
+|x1= - 
+
+|seealso= -
+}}

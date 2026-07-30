@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_spotter
+// revision: 341832 (2023-06-28T09:26:11Z)
+// export sha1: 157njm71r1uc0vrjtrtqhbdutwq6uj9
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Combat | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Manipulation
+
+|gr2= Combat
+
+|exec= spawn
+
+|descr= Make spotter report target distance to sniper. Will only stop if one of the two units dies.
+
+|s1= [sniper, spotter] spawn [[BIS_fnc_spotter]]
+
+|p1= sniper: [[Object]] - sniper unit
+
+|p2= spotter: [[Object]] - spotter unit
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player, spotter] spawn BIS_fnc_spotter;</sqf>
+
+|seealso=
+}}

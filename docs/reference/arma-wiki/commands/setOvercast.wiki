@@ -1,0 +1,115 @@
+// source: https://community.bistudio.com/wiki/setOvercast
+// revision: 376723 (2025-11-12T14:34:03Z)
+// export sha1: 9xk7oumye7uqhd4vy1azyyhxb3hbc3b
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Environment
+
+|eff= local
+
+|descr= Set overcast to given value smoothly during given time (in seconds). Zero time means immediate change.
+An overcast setting of zero means clear (sunny) weather, and one means storms and rain are very likely. Higher overcast values also result in higher [[wind]] speeds.
+
+|mp= '''Pre {{arma3}}:''' Each client and the server can have differing overcast values. {{Feature|arma3|In {{arma3}} weather values are periodically synchronised with the server.}}
+
+|s1= time [[setOvercast]] overcast
+
+|p1= time: [[Number]] - in seconds
+
+|p2= overcast: [[Number]] - in range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>60 setOvercast 0.5;</sqf>
+
+|seealso= [[overcast]] [[nextWeatherChange]] [[simulSetHumidity]]
+}}
+
+{{Note
+|user= Hardrock
+|timestamp= 20060804140000
+|text= ''Notes from before the conversion:''
+
+Use [[setRain]] if you want to make sure it rains.
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20070420042400
+|text= Only one script command induced weather change (either setOvercast or [[setFog]]) can be happening at a time. Starting a new weather change will immediately halt the current weather change. [[setRain|SetRain]] changes are independent and can occur simultaneously to a weather change.
+}}
+
+{{Note
+|user= DnA
+|timestamp= 20130814112200
+|text= {{arma3}}'s volumetric clouds cannot be instantly changed (it would take up to a few seconds to do a full recompute). Therefore, ''0 setOvercast 0'' will not have the desired effect. You can use [[skipTime|skipTime]] to get to the desired cloud coverage.
+
+<br><br>
+NOTE: To get instant, seamless overcast change to overcast 1 advance the time 24 hours with [[skipTime]] while setting overcast transition time to 86400 seconds (24 hours) - [[User:Killzone_Kid|Killzone_Kid]] (12:08, 15 August 2013)
+
+<sqf>
+86400 setOvercast 1;
+skipTime 24;
+
+// to remain on the same date:
+skipTime -24;
+86400 setOvercast 1;
+skipTime 24;
+</sqf>
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20131028110600
+|text= With removal of [[simulSetHumidity]], in order to add instant cloud cover, execute [[simulWeatherSync]] with delay (for now):
+<sqf>
+skipTime -24;
+86400 setOvercast 1;
+skipTime 24;
+0 spawn {
+	sleep 0.1;
+	simulWeatherSync;
+};
+</sqf>
+There is slight freeze with simul command.
+}}
+
+{{Note
+|user= Adanteh
+|timestamp= 20150821195800
+|text= Delay in {{arma3}} doesn't work for quick changes. Using 120 [[setOvercast]] 1 only reaches full overcast after about 50 minutes.
+Using [[setTimeMultiplier]] does speed up the overcast, but it doesn't render any clouds.
+You will need to [[skipTime]] or [[forceWeatherChange]] to render clouds if you want it to happen within the hour.
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20160505004100
+|text= Actual transition time is inversely proportional to the [[timeMultiplier]]. For example, a time of 7200 (2 hours) and a timeMultiplier of 2 will result in a real-life transition time of 7200 / 2 = 3600 (1 hour).<br>
+In case of overcast, a timeMultiplier > 1 will cause gradual desyncing of the cloud cover with the [[overcast]] value, so it is advised that you multiply the transition time by the multiplier, i.e. :
+<sqf>(7200 * timeMultiplier) setOvercast 1</sqf>
+}}

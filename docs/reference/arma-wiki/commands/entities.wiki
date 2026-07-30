@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/entities
+// revision: 377164 (2026-01-01T10:42:33Z)
+// export sha1: bpwk1zr195mwm3iekvszzu25qcam3mg
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 2: Operation Arrowhead version 1.60 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.60
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Detection
+
+|descr= Returns a list of all alive and dead entities of the given type or deriving from the given type. Units in vehicles are ignored with the primary syntax.
+{{Feature|informative|'''Optimisation tip''': Keep number of types in both ''includeTypes'' and ''excludeTypes'' arrays to a minimum by possibly using parent/base classes.<br>If you have to use several types, arrange them in order so that the more common types go at the beginning of the array.}}
+
+|s1= [[entities]] type
+
+|p1= type: [[String]] - if an empty string {{hl|""}} is provided, all entities are returned
+
+|r1= [[Array]] of [[Object]]s
+
+|s2= [[entities]] [typesInclude, typesExclude, includeCrews, excludeDead]
+
+|s2since= arma3 1.66
+
+|p21= typesInclude: [[Array]] - in format [type1, type2, ...typeN], where type is a [[String]]. Empty array [] means include every entity. Method used for filtering - [[isKindOf]]
+
+|p22= typesExclude: [[Array]] - in format [type1, type2, ...typeN], where type is a [[String]]. Empty array [] means exclude no entity. Method used for filtering - [[isKindOf]]
+
+|p23= includeCrews: [[Boolean]] - (Optional, default [[false]]) include crews currently in vehicles
+
+|p24= excludeDead: [[Boolean]] - (Optional, default [[false]]) exclude dead entities
+
+|r2= [[Array]]
+
+|x1= <sqf>_allCars = entities "Car";</sqf>
+
+|x2= Return all alive entities on the map:
+<sqf>_allAlive = entities [[], [], true, true];</sqf>
+
+|x3= Return dead and alive entities but logic:
+<sqf>_notLogic = entities [[], ["Logic"], true];</sqf>
+
+|x4= Return all alive [[west]] soldiers on foot:
+<sqf>_footSoldiers = entities [["SoldierWB"], [], false, true];</sqf>
+
+|seealso= [[nearEntities]] [[allGroups]] [[allUnits]] [[units]] [[vehicles]] [[agents]] [[playableUnits]] [[switchableUnits]] [[allPlayers]] [[allDead]] [[allDeadMen]] [[allUnitsUAV]] [[allCurators]] [[allObjects]] [[allMissionObjects]] [[allSimpleObjects]] [[allMines]]
+}}

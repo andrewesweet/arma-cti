@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/Buldozer_Configurator
+// revision: 378254 (2026-03-25T23:52:20Z)
+// export sha1: tdn8tiy881g67y02so7xgol3k4up8t9
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+|VERSION=
+|COMPATIBILITY= [[:Category:Arma_3:_Official_Tools|Arma 3 Tools]]
+|DOWNLOAD= {{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+|DESCRIPTION= This is a small UI tool that generates the configuration file of Buldozer and defines the settings in Terrain Builder and Object Builder.
+|NOTES= If Object Builder or Terrain Builder are running, Buldozer Configuration may not be able to set the parameters within the software settings.
+|COMMAND= BuldozerConfigurator.exe
+|OPTIONS= <nowiki/>
+* {{hl|/noUI}} applies the default parameters and closes itself in case of success, otherwise, the error will be displayed.
+|EXAMPLE=
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+|SEEALSO=
+}}
+
+=== Additional information ===
+==== Error list ====
+* #BCFG001: P Drive is absent
+* #BCFG002: Object Builder or Terrain Builder is not installed
+* #BCFG003: Buldozer installation is not present 
+* #BCFG004: Buldozer Configurator was not able to detect the installation directory of Arma 3 Tools
+
+
+{{GameCategory|arma3|Official Tools}}

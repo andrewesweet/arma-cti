@@ -1,0 +1,94 @@
+// source: https://community.bistudio.com/wiki/ctrlMapScreenToWorld
+// revision: 377831 (2026-01-03T04:31:43Z)
+// export sha1: 2v9j6t21wz5pke1ir8z964fvh35q71a
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Armed Assault version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.05
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - Map
+
+|descr= Converts map screen coordinates into world coordinates. Unlike [[posScreenToWorld]], this command returns world position is format [x, y], otherwise it is identical to [[posScreenToWorld]].
+
+|s1= control [[ctrlMapScreenToWorld]] [x, y]
+
+|p1= control: [[Control]] - map control
+
+|p2= x: [[Number]] - screen X
+
+|p3= y: [[Number]] - screen Y
+
+|r1= [[Position#Introduction|Position2D]] - world coordinates
+
+|x1= <sqf>_worldCoord = _control ctrlMapScreenToWorld _ScreenCoord;</sqf>
+
+|x2= <sqf>_worldCoord = _control ctrlMapScreenToWorld [_x, _y];</sqf>
+
+|x3= <sqf>_worldCoord = findDisplay 12 displayCtrl 51 ctrlMapScreenToWorld [0.5, 0.5];</sqf>
+
+|seealso= [[ctrlMapWorldToScreen]] [[posScreenToWorld]] [[posWorldToScreen]] [[findDisplay]] [[displayCtrl]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2007-04-06 - 23:41</dd>
+<dt class="note">[[User:LowFly|LowFly]]</dt>
+
+<dd class="note">You can get the screen coordinates by the [[User_Interface_Event_Handlers|UI Event Handlers]] onMouseButtonDown, onMouseButtonUp, onMouseButtonClick, onMouseButtonDblClick.
+
+The return Array is in 2D, you can use it with all set-position commands.
+<sqf>
+_x = returnArray select 0;
+_y = returnArray select 1;
+</sqf>
+</dd>
+
+<dt><dt>
+<dd class="notedate">
+<dt class="note">[[User:Ceeeb|Ceeeb]]</dt>
+<dd class="note">
+The command parameters are screen position coordinates, which may not equate to the map control's coordinates. A map control's screen coordinates and size can be found use the [[ctrlPosition]] command. This is an issue when using the Arma 3 in-game map, which is not fullscreen (all previous titles used full screen map controls, so map control coords did equate to screen coords).
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2017-08-28 - 0:05</dd>
+<dt class="note">[[User:Icaruk|Icaruk]]</dt>
+<dd class="note">
+This example creates a RscMapControl and hints you the [x,y] position where you clicked.
+
+<sqf>
+0 spawn {
+	disableSerialization;
+	_map = findDisplay 46 createDisplay "RscCredits" ctrlCreate ["RscMapControl", -1];
+	_map ctrlSetPosition [0,0,1,1];
+	_map ctrlCommit 0;
+
+	_map ctrlAddEventHandler ["mouseButtonDown", {
+		_ctrl = _this select 0;
+		_x = _this select 2;
+		_y = _this select 3;
+
+		_pos = _ctrl ctrlMapScreenToWorld [_x, _y];
+		hint format ["pos: %1", _pos];
+	}];
+};
+</sqf>
+</dd>
+
+</dl>

@@ -1,0 +1,22 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Point:_With_Rotation
+// revision: 201620 (2021-01-17T20:17:03Z)
+// export sha1: lcwd434rqpqj0jdlkjvcv82zn41bkp9
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Point]]
+{{TerrainProcessorManual|Point: With Rotation|BITasksPlugin.dll|Point, PointM, PointZ|No
+|DESCRIPTION=Method puts objects on points with defined or random rotation.
+|TASKPARAMETERS=
+|OBJECTPROTOTYPEPARAMETERS=* '''OBJECT''' - Object's prototype name
+* '''PROB''' - Object's probability
+* '''MINHEIGHT''' - Minimal size in %
+* '''MAXHEIGHT''' - Maximal size in %
+* '''RANDROT'''- Random rotation (true x false)
+* '''ROTATION'''- If random rotation is false, then use this value. ROTATION is specified in radians, anti-clockwise, with 0 being North.
+|USAGE=Very simple algorithm, it places objects with fixed or random rotation on given points. It can be used for any single object where particular orientation is desired and known: small crosses, chapels, street lights, towers etc.
+|ALGORITHM=For each shape point do :
+# Get rotation
+# Add object
+|SAMPLE=
+}}

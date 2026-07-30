@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/allowedService
+// revision: 338348 (2023-02-28T14:43:47Z)
+// export sha1: qprp3qrnoz3on1x0bois90g4sejnq33
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns which types of repair/refuel/rearm service are allowed. The two available types are manual, where the action is displayed to the user, and auto, where the service happens within distance.
+The engine default is both (manual and auto) for historic reasons.
+
+|s1= [[allowedService]] vehicle
+
+|p1= vehicle: [[Object]] - supply vehicle, i.e. ammo truck
+
+|r1= [[Number]] - 0: none, 1: auto, 2: manual, 3: both, -1: unsupported
+
+|x1= <sqf>if (allowedService _vehicle == -1) then { hint "this is not a service vehicle!" };</sqf>
+
+|seealso= [[allowService]] [[needService]]
+}}

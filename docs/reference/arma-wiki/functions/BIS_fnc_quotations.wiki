@@ -1,0 +1,154 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_quotations
+// revision: 364623 (2024-05-22T23:28:47Z)
+// export sha1: 96d490d84dm51ak1nghkdullrkmtu61
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Display a quotation video. 
+[[File:A3 quotation.png|thumb]]
+
+|s1= [videoPath, nonEnglishSubtitle] call [[BIS_fnc_quotations]]
+
+|p1= videoPath: [[String]] - path to video. 
+<spoiler text = "All .ogv files">
+{{Columns|2|
+* {{hl|a3\data_f_argo\video\preview_argo.ogv}}
+* {{hl|a3\data_f_curator\video\preview_curator.ogv}}
+* {{hl|a3\data_f_exp\video\preview_expansion.ogv}}
+* {{hl|a3\data_f_heli\video\preview_heli.ogv}}
+* {{hl|a3\data_f_jets\video\preview_jets.ogv}}
+* {{hl|a3\data_f_kart\video\preview_kart.ogv}}
+* {{hl|a3\data_f_mark\video\preview_mark.ogv}}
+* {{hl|a3\data_f_orange\video\preview_orange.ogv}}
+* {{hl|a3\data_f_tank\video\preview_tank.ogv}}
+* {{hl|a3\map_altis_scenes_f\video\previewvideo.ogv}}
+* {{hl|a3\map_malden_scenes_f\video\previewvideo.ogv}}
+* {{hl|a3\map_stratis_scenes_f\video\previewvideo.ogv}}
+* {{hl|a3\map_tanoa_scenes_f\video\previewvideo.ogv}}
+* {{hl|a3\map_vr_scenes_f\video\previewvideo.ogv}}
+* {{hl|a3\missions_f\video\helicopters.ogv}}
+* {{hl|a3\missions_f\video\infantry.ogv}}
+* {{hl|a3\missions_f\video\scuba.ogv}}
+* {{hl|a3\missions_f\video\supports.ogv}}
+* {{hl|a3\missions_f\video\vehicles.ogv}}
+* {{hl|a3\missions_f_beta\video\combined_arms.ogv}}
+* {{hl|a3\missions_f_beta\video\commanding.ogv}}
+* {{hl|a3\missions_f_beta\video\defend.ogv}}
+* {{hl|a3\missions_f_beta\video\night.ogv}}
+* {{hl|a3\missions_f_beta\video\supports.ogv}}
+* {{hl|a3\missions_f_bootcamp\video\boot_m05_sometime_later.ogv}}
+* {{hl|a3\missions_f_bootcamp\video\vr_boot.ogv}}
+* {{hl|a3\missions_f_bootcamp\video\vr_generictransition_1.ogv}}
+* {{hl|a3\missions_f_bootcamp\video\vr_generictransition_2.ogv}}
+* {{hl|a3\missions_f_bootcamp\video\vr_generictransition_3.ogv}}
+* {{hl|a3\missions_f_curator\data\video\showcase_curator.ogv}}
+* {{hl|a3\missions_f_epa\video\a_hub_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\a_in2_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\a_in2_two_hours_later.ogv}}
+* {{hl|a3\missions_f_epa\video\a_in_intro.ogv}}
+* {{hl|a3\missions_f_epa\video\a_in_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\a_m01_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\a_m02_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\a_m03_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\a_m04_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\a_m05_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\a_out_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\a_out_some_time_later.ogv}}
+* {{hl|a3\missions_f_epa\video\a_out_to_be_continued.ogv}}
+* {{hl|a3\missions_f_epa\video\b_hub01_10_days_later.ogv}}
+* {{hl|a3\missions_f_epa\video\b_hub01_few_hours_later.ogv}}
+* {{hl|a3\missions_f_epa\video\b_hub01_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\b_in2_12_hours_later.ogv}}
+* {{hl|a3\missions_f_epa\video\b_in_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\b_m01_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\b_m02_1_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\b_m03_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\b_m05_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\b_m06_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\b_out2_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\b_out2_sometime_later.ogv}}
+* {{hl|a3\missions_f_epa\video\c_ea_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\c_eb_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\c_in1_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\c_in2_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\c_m01_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\c_m02_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\c_out1_quotation.ogv}}
+* {{hl|a3\missions_f_epa\video\c_out2_sometime_later.ogv}}
+* {{hl|a3\missions_f_epa\video\fixed_wings.ogv}}
+* {{hl|a3\missions_f_exp\video\endgame.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m01_v01.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m01_vbohemia.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m01_vlogo.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m02_vin.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m02_vtimeline.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m02_vtitlecard.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m03_vin.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m03_vtimeline.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m03_vtitlecard.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m04_v01.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m04_v02.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m04_v03.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m04_vin.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m04_vtimeline.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m04_vtitlecard.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m05_vin.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m05_vtimeline.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m05_vtitlecard.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m06_v01.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m06_vin.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m06_vintel.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m06_vtitlecard.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m07_vin.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m07_vout.ogv}}
+* {{hl|a3\missions_f_exp\video\exp_m07_vtitlecard.ogv}}
+* {{hl|a3\missions_f_exp\video\vtol.ogv}}
+* {{hl|a3\missions_f_gamma\video\arma.ogv}}
+* {{hl|a3\missions_f_gamma\video\drones.ogv}}
+* {{hl|a3\missions_f_gamma\video\faction_blufor.ogv}}
+* {{hl|a3\missions_f_gamma\video\faction_independent.ogv}}
+* {{hl|a3\missions_f_gamma\video\faction_opfor.ogv}}
+* {{hl|a3\missions_f_gamma\video\gunships.ogv}}
+* {{hl|a3\missions_f_gamma\video\tanks.ogv}}
+* {{hl|a3\missions_f_heli\video\slingloading.ogv}}
+* {{hl|a3\missions_f_jets\video\showcase_jets_intro_01.ogv}}
+* {{hl|a3\missions_f_mark\video\ffv.ogv}}
+* {{hl|a3\missions_f_mark\video\marksman.ogv}}
+* {{hl|a3\missions_f_orange\video\faction_idap.ogv}}
+* {{hl|a3\missions_f_orange\video\laws_of_war.ogv}}
+* {{hl|a3\missions_f_orange\video\laws_of_war_establishing_shot.ogv}}
+* {{hl|a3\missions_f_tank\video\tanks_destroyers.ogv}}
+* {{hl|a3\props_f_argo\items\electronics\data\oldlaptop_video.ogv}}
+* {{hl|a3\ui_f\video\preview_dlcbundle.ogv}}
+* {{hl|a3\ui_f\video\preview_dlcbundle2.ogv}}
+* {{hl|a3\ui_f\video\spotlight3.ogv}}
+* {{hl|a3\ui_f\video\spotlight_1_apex.ogv}}
+* {{hl|a3\ui_f\video\spotlight_1_bootcamp.ogv}}
+* {{hl|a3\ui_f\video\spotlight_1_eastwind.ogv}}
+* {{hl|a3\ui_f\video\spotlight_1_old_man.ogv}}
+* {{hl|a3\ui_f\video\spotlight_2.ogv}}
+* {{hl|a3\ui_f_oldman\video\spotlight_a.ogv}}
+* {{hl|a3\ui_f_oldman\video\spotlight_fd14.ogv}}
+* {{hl|a3\ui_f_orange\video\spotlight_a.ogv}}
+* {{hl|a3\ui_f_orange\video\spotlight_b.ogv}}
+* {{hl|a3\ui_f_orange\video\spotlight_c.ogv}}
+* {{hl|a3\ui_f_tank\video\spotlight_a.ogv}}
+* {{hl|a3\ui_f_tank\video\spotlight_b.ogv}}
+}}
+</spoiler>
+
+|p2= nonEnglishSubtitle: [[String]] - string, localised or not, used for subtitles that is only shown if the game's language is not English
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["a3\missions_f_mark\video\ffv.ogv"] spawn BIS_fnc_quotations;</sqf>
+
+|seealso= [[BIS_fnc_playVideo]]
+}}

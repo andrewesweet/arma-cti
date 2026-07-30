@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Walkthrough/Thermophylae
+// revision: 296095 (2021-11-17T14:41:39Z)
+// export sha1: 86v47ede0vcm4ntl0fa6228mw0k9jcr
+// categories: Category:Carrier Command: Gaea Mission: Walkthrough
+// Vendored snapshot. Do not edit — re-export instead.
+
+This is a race against time. Myrick is to capture the island and obtain data necessary for using the anticarrier torpedo before the Red Dragon arrives and puts an end to his efforts.
+
+= Objectives =
+#ASSAULT ON THERMOPYLAE
+#*The island can only be described as a hive of all things nasty. A fortress swarming with the enemy, it will not fall easily. This will be a tough battle, a test for the real machines.
+#FIELD AROUND THERMOPYLAE
+#*We need to deactivate the field protecting Thermopylae. The field must have a phenomenal power consumption, so the surrounding islands must make up for this power somehow.
+#TAKE SECTOR 1
+#*The first sector. Just getting started, let&apos;s show them who&apos;s boss.
+#TAKE SECTOR 2
+#*The second sector. One pier down, many bases to go.
+#TAKE SECTOR 3
+#*The third sector. Almost half-way, but one hell of a fight left to go.
+#TAKE SECTOR 4
+#*The fourth sector. A nasty detour, but what needs to be done, needs to be done.
+#TAKE SECTOR 5
+#*The fifth sector. Not much more remains between us and victory.
+#TAKE SECTOR 6
+#*The sixth sector. Getting really warm, defeat the enemy and then move on to the Command Center.
+#TAKE THE CC SECTOR
+#*The final sector. Destroy the enemy here and the island is ours.
+#ENTER RESEARCH CENTER
+
+= Hints =
+You can move Myrick from one Walrus to another by driving close to the other unit and pressing the action key. This information is displayed in a hint that can be easilly missed.
+
+ In this part of the game the player controls
+ a vehicle, the "Walrus". Available are also
+ other walruses, which the player can switch to
+ by driving close to them and pressing "F" when
+ the Use indicator is displayed.
+
+ To switch to another walrus, get close to it
+ and press "F"; when the Use indicator
+ is displayed. This also applies to get in/out.
+
+
+{{GameCategory|carriercommand|Walkthrough}}

@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/A3Assets
+// revision: 368822 (2024-08-10T12:40:07Z)
+// export sha1: phaxud11cwjpct1w7jbp8ncss72cztx
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Navbox
+
+| title = {{arma3}} Assets
+
+| title1 = Objects
+| content1 = [[Arma 3: CfgVehicles WEST|BLUFOR]] {{!}} [[Arma 3: CfgVehicles EAST|OPFOR]] {{!}} [[Arma 3: CfgVehicles GUER|Independent]] {{!}} [[Arma 3: CfgVehicles CIV|Civilian]]
+
+| title2 = Props
+| content2 = [[Arma 3: CfgVehicles Structures|Structures]] {{!}} [[Arma 3: CfgVehicles Ruins & Wrecks|Ruins & Wrecks]] {{!}} [[Arma 3: CfgVehicles Equipment|Equipment]] {{!}} [[Arma 3: CfgVehicles EMPTY|Objects]] {{!}} [[Arma 3: CfgVehicles VR Objects|VR Objects]] {{!}} [[Arma 3: CfgVehicles Animals|Animals]]
+
+| title3 = Misc
+| content3 = [[Arma 3: CfgVehicles Other|Other]]
+
+| title4 = Items
+| content4 = [[Arma 3: CfgWeapons Weapons|Weapons]] {{!}} [[Arma 3: CfgWeapons Vehicle Weapons|Vehicle Weapons]] {{!}} [[Arma 3: CfgMagazines|Magazines]] {{!}} [[Arma 3: CfgWeapons Items|Items]] {{!}} [[Arma 3: CfgWeapons Equipment|Equipment]] {{!}} [[Arma 3: CfgGlasses|Glasses]] {{!}} [[Arma 3: CfgVehicles Backpacks|Backpacks]]
+}}</includeonly><noinclude>
+Shows the {{arma3}} Assets menu.
+
+== Usage ==
+{{<nowiki/>Navbox/A3Assets}}
+
+{| style="width: 100%"
+|+ Examples
+|- style="background-color: #EEE"
+! Code
+! style="width: 80%" | Result
+|-
+| <nowiki>{{Navbox/A3Assets}}</nowiki>
+| {{Navbox/A3Assets}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

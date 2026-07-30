@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/removeAllActions
+// revision: 329338 (2022-07-27T10:37:51Z)
+// export sha1: eejcd6zkekisqbq564j6kctimjwjz4l
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Interaction
+
+|descr= Removes all unit's user added actions.
+{{Feature|informative|This command's syntax was <sqf inline>unit removeAllActions number</sqf> from {{arma3}} v0.50 to v1.06.}}
+{{Feature|important|Usage of this command is usually a bad practice unless justified by the situation; removing all actions in order to remove all actions that ''one'' added is not a good method as a mod or another script could have added its own actions as well and see them removed. Instead, store the action id returned by [[addAction]] either in a script variable or using [[setVariable]].}}
+
+|s1= [[removeAllActions]] obj
+
+|p1= obj: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>removeAllActions player;</sqf>
+
+|x2= Do
+<sqf>
+private _actionId = player addAction ["Heal self", { player setDamage 0; }];
+// ...
+player removeAction _actionId;
+</sqf>
+Don't
+<sqf>
+player addAction ["Heal self", { player setDamage 0; }];
+// ...
+removeAllActions player;
+</sqf>
+
+|x3= Do
+<sqf>
+player addAction ["Heal self (once)", {
+	params ["_target", "", "_actionId"];
+	_target setDamage 0;
+	_target removeAction _actionId;
+}];
+</sqf>
+Don't
+<sqf>
+player addAction ["Heal self (once)", {
+	player setDamage 0;
+	removeAllActions player;
+}];
+</sqf>
+
+|seealso= [[actionIDs]] [[actionParams]] [[addAction]] [[setUserActionText]] [[inGameUISetEventHandler]] [[showHUD]] [[inputAction]] [[removeAction]] [[action]]
+}}

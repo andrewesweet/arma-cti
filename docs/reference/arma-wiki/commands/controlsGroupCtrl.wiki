@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/controlsGroupCtrl
+// revision: 310912 (2022-05-07T20:33:32Z)
+// export sha1: 880zz31anvr1zil7gnvwxq9ccryrew9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= GUI Control
+
+|descr= Returns a child control with specified idc from a controls group
+
+|s1= ctrlgrp [[controlsGroupCtrl]] idc
+
+|p1= ctrlgrp: [[Control]]
+
+|p2= idc: [[Number]]
+
+|r1= [[Control]]
+
+|x1= <sqf>_control = _controlsGroup controlsGroupCtrl 101;</sqf>
+
+|seealso= [[allDisplays]] [[allControls]] [[ctrlCreate]] [[ctrlParentControlsGroup]]
+}}

@@ -1,0 +1,93 @@
+// source: https://community.bistudio.com/wiki/date
+// revision: 377601 (2026-01-02T08:16:59Z)
+// export sha1: bhwb7y3y1m3rl6apb913hopzkjpevbx
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Environment
+
+|eff= local
+
+|descr= Return the actual in-mission date and time.
+
+|mp= Returns the current '''local''' (MP client) in-game date.
+{{Feature|arma3|Clients' local date is [[Multiplayer Scripting#JIP Synchronisation|automatically and periodically synchronised]] with the server date.}}
+
+|s1= [[date]]
+
+|r1= [[Date]]
+
+|x1= <sqf>
+// in {{arma3}}
+date params ["_year", "_month", "_day", "_hours", "_minutes"];
+
+// pre {{arma3}}
+private ["_now", "_year", "_month", "_day", "_hours", "_minutes"];
+_now = date;	// [2014,10,30,2,30] a.k.a Oct. 30th, 2:30am
+_year		= _now select 0;
+_month		= _now select 1;
+_day		= _now select 2;
+_hours		= _now select 3;
+_minutes	= _now select 4;
+</sqf>
+
+|x2= <sqf>
+if (date select 3 >= 19) then		// 7pm
+{
+	hintSilent "ah, Arma sunset";	// ...cue bad guys
+};
+</sqf>
+
+|seealso= [[setDate]] [[dateToNumber]] [[numberToDate]] [[time]] [[missionStart]] [[systemTime]] [[systemTimeUTC]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20180123233500
+|text= a useful script to format the date:
+<sqf>
+_curDate = date;
+private _ddMMyyyy = format ["%3/%2/%1",
+	_curDate select 0,
+	(if (_curDate select 1 < 10) then { "0" } else { "" }) + str (_curDate select 1),
+	(if (_curDate select 2 < 10) then { "0" } else { "" }) + str (_curDate select 2)
+];
+</sqf>
+
+it can be shortened to: (no intermediary variable but more request to [[date]])
+<sqf>
+private _ddMMyyyy = format ["%3/%2/%1",
+	date select 0,
+	(if (date select 1 < 10) then { "0" } else { "" }) + str (date select 1),
+	(if (date select 2 < 10) then { "0" } else { "" }) + str (date select 2)
+];
+</sqf>
+
+'''EDIT:''' or to
+<sqf>
+private _ddMMyyyy = format ["%4%5/%2%3/%1",
+	date select 0,
+	["", "0"] select (date select 1 < 10),
+	date select 1,
+	["", "0"] select (date select 2 < 10),
+	date select 2
+];
+</sqf>
+}}

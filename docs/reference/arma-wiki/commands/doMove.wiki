@@ -1,0 +1,90 @@
+// source: https://community.bistudio.com/wiki/doMove
+// revision: 377517 (2026-01-02T06:52:02Z)
+// export sha1: cwybij9g2t8h18cjmwugdu8u0kgj7br
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Control
+
+|descr= Order the given unit(s) to move to the given position (without radio messages). Upon reaching its destination, if it is the group leader it will order the group to form around it's new position. If it is not the leader, it will immediately be ordered to return to formation by the group leader and begin moving back to the group. Use [[doStop]] to stop units returning to formation. [[moveToCompleted]] will return true when a unit issued this command reaches its destination.
+
+|s1= unit(s) [[doMove]] position
+
+|p1= unit(s): [[Object]] or [[Array]] of [[Object]]s
+
+|p2= position: [[Position]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_soldier1 doMove (position _officer);</sqf>
+|x2= <sqf>this doMove (getMarkerPos "Marker1");</sqf>
+
+|seealso= [[commandMove]] [[setDestination]] [[moveTo]] [[move]] [[addWaypoint]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2008-02-09</dd>
+<dt class="note">[[User:Kronzky|Kronzky]]</dt>
+<dd class="note">
+If doMove is to be used in conjunction with waypoint behavior commands (e.g. [[setSpeedMode]]), then those have to be issued ''after'' the move command to have an effect. Otherwise the move will be done with the default settings.
+
+<dt><dt>
+<dd class="notedate">Posted on 2009-02-03</dd>
+<dt class="note">[[User:General_Barron|General Barron]]</dt>
+<dd class="note">
+If a unit is part of a group, and is not the leader, the unit will fall back into formation soon after the domove is completed. This does not happen for units that are in a group alone (because they are their own leader).
+There is no single command to get a unit to move to a position and stay there. The best way to do this is to issue a domove, then wait for the unit to reach his destination, then disable his movement AI. 
+
+</dl>
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20220402152226
+|text= The above note is only true of units which group leader is not the player. Player-squad will remain in position until given another order (A3 v2.08.149102)
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20220402203558
+|text= If you need your script to halt until the unit has reached it's destination, [[waitUntil]] and [[moveToCompleted]] will come in handy:
+<sqf>
+_unit doMove _pos;
+waitUntil {moveToCompleted _unit};
+</sqf>
+This also works with [[commandMove]]
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20220725062519
+|text= Seems to use PositionATL, which may be important if the destination is above a building's 1st floor.
+}}

@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Ylands:_How_To
+// revision: 296200 (2021-11-17T17:47:56Z)
+// export sha1: 95vgoz4b1fob658k98slgu08udzlm3s
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Ylands]]
+{{Navbox/Ylands}}

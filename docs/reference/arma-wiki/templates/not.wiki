@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:!
+// revision: 223798 (2021-01-24T18:18:12Z)
+// export sha1: ob02w9o1azf55kiii2yzrgmyzfx7d8f
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>|</includeonly><noinclude>{{Doc/Template
+|descr= This template returns the pipe character for use in template calls.
+|example1= <nowiki>{{!}}</nowiki>
+|result1= <nowiki>|</nowiki>
+}}</noinclude>

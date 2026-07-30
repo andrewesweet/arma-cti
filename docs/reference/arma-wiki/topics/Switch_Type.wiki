@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/Switch_Type
+// revision: 259189 (2021-06-06T15:50:38Z)
+// export sha1: s6ulhfb52qe4r3s9mbj8v59zky27xiy
+// categories: Category:Syntactical Helper Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Description:'''
+
+A helper type used in [[switch]] constructs.
+
+Introduced with {{arma1}}, does not refer to {{ofp}} or {{ofpr}}.
+
+[[Category:Syntactical Helper Types]]

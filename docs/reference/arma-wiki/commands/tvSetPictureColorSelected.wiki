@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/tvSetPictureColorSelected
+// revision: 377366 (2026-01-02T06:40:38Z)
+// export sha1: 7s0ccfni9l79f0i0k7znxlrjqwlfwe3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= GUI Control - Tree View
+
+|descr= Sets the color of the left picture of a tree item defined by path when item is selected
+
+|s1= control [[tvSetPictureColorSelected]] [path, color]
+
+|p1= control: [[Control]]
+
+|p2= path: [[Array]] of [[Number]]s - path to tree view item
+
+|p3= color: [[Color|Color (RGBA)]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control tvSetPictureColorSelected [[0], [1,0,1,1]];</sqf>
+
+|seealso= [[tvAdd]] [[tvClear]] [[tvCollapse]] [[tvCount]] [[tvCurSel]] [[tvData]] [[tvDelete]] [[tvExpand]] [[tvPicture]] [[tvSetCurSel]] [[tvSetData]] [[tvSetValue]] [[tvSort]] [[tvSortByValue]] [[tvValue]] [[tvText]] [[tvSetText]] [[tvSetPicture]] [[tvSetPictureColor]] [[tvSetPictureRight]] [[tvSetPictureColor]] [[tvSetPictureColorDisabled]] [[tvSetPictureRightColor]] [[tvSetPictureRightColorSelected]] [[tvSetPictureRightColorDisabled]]
+}}

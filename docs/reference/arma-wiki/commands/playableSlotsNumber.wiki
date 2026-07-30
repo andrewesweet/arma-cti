@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/playableSlotsNumber
+// revision: 319373 (2022-05-13T09:23:58Z)
+// export sha1: a4bduy4p0nugrfoh0s6jr0apm5ujltq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.06
+
+|gr1= Multiplayer
+
+|descr= Returns the number of available slots in mission per [[Side|side]] (both empty and taken). <br>In singleplayer mission, it returns number of playable units per side.
+
+|s1= [[playableSlotsNumber]] side
+
+|p1= side: [[Side]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_maxBluforPlayers = playableSlotsNumber blufor;</sqf>
+
+|seealso= [[playersNumber]] [[playableUnits]] [[switchableUnits]]
+}}

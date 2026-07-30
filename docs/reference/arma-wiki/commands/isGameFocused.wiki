@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/isGameFocused
+// revision: 309152 (2022-05-03T14:13:47Z)
+// export sha1: pmznfmur5fbs3ttr7f2aby9sqo3d8gs
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.96
+
+|gr1= System
+
+|descr= Returns the state of game focus changed by pressing {{Controls|ALT|TAB}} or similar action.
+
+|s1= [[isGameFocused]]
+
+|r1= [[Boolean]] - [[true]] if game window is focused, [[false]] if not
+
+|x1= <sqf>if (!isGameFocused) then { endMission "End" };</sqf>
+
+|seealso= [[isGamePaused]]
+}}

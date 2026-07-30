@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_holdKey
+// revision: 341505 (2023-06-05T20:02:15Z)
+// export sha1: n3uq38l4ukx6vgojbjtqemto1tlttl0
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interaction | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Interaction
+
+|descr= Function that executes code when a key has been held down for a long enough time - "Hold X to Advance" text is displayed when any key is pressed.<br>
+All other keys (but {{Controls|Esc}}) are deactivated until the conditions are met - only mouse controls work (character rotation and fire).
+
+|exec= spawn
+
+|s1= [display, key, time, code, control] call [[BIS_fnc_holdKey]]
+
+|p1= display: [[Display]] - (Optional, default <sqf inline>findDisplay 12</sqf> for map display) display the event is attached to. By default it is the map display
+
+|p2= key: [[Number]] - (Optional, default 57 for {{Controls|Space}}) what key to press - see [[DIK KeyCodes]]
+
+|p3= time: [[Number]] - (Optional, default 3) how long the key has to be held down in seconds
+
+|p4= code: [[Code]] - (Optional, default <sqf inline>{}</sqf>) [[Scheduler#Scheduled Environment|scheduled]] code to be executed when key is held down for long enough
+
+|p5= control: [[Control]] - (Optional, default [[controlNull]]) text control to be used in place of the default "Press X to skip" control.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[findDisplay 46, 36, 5, { hint "Key 'J' pressed for 5 seconds" }] spawn BIS_fnc_holdKey; // action is added to the mission display</sqf>
+
+|seealso= [[BIS_fnc_holdActionAdd]] [[addAction]] [[BIS_fnc_keyHold]]
+}}

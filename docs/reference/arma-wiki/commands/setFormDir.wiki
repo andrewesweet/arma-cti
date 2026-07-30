@@ -1,0 +1,73 @@
+// source: https://community.bistudio.com/wiki/setFormDir
+// revision: 369299 (2024-09-03T18:42:52Z)
+// export sha1: h64c88senf9jz6o1w1vxhukrvb25x6r
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Groups
+
+|descr= Sets group formation heading. Accepted heading range is 0 to 360. Formation is facing this direction unless enemy is seen. When group is moving, this value is overridden by movement direction. If the new direction is noticeably different from the old direction (approx +/- 15 degrees), units will change positions changing [[formationDirection]].
+
+|s1= group [[setFormDir]] heading
+
+|p1= group: [[Object]] or [[Group]]
+
+|p2= heading: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_group1 setFormDir 180;</sqf>
+
+|x2= <sqf>_unit1 setFormDir random 360;</sqf>
+
+|x3= <sqf>
+//center the main turret
+(group BIS_Crew1) setFormDir (getDir BIS_Armor);
+</sqf>
+
+|seealso= [[setDir]] [[setVectorDir]] [[setVectorDirAndUp]] [[resetSubgroupDirection]] [[formation]] [[formationLeader]] [[formationMembers]] [[formationTask]] [[formationDirection]] [[formationPosition]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-11-22 - 20:03 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+When applied to AI, [[setFormDir]] will set unit formation direction, which in turn will force unit to change direction to match formation direction, however unit will stop turning as soon as unit direction is +/- 30 degrees of the formation direction. To precisely match formation direction, additional [[setDir]] is required:
+<sqf>
+_unit setFormDir 45;
+_unit setDir 45;
+hint str direction _unit; //45
+</sqf> 
+
+</dd>
+
+</dl>

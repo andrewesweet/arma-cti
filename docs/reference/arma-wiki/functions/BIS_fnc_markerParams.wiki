@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_markerParams
+// revision: 363534 (2024-04-04T00:53:26Z)
+// export sha1: 5gde06xf0ynpkooz840odstbowm0jz8
+// categories: Category:Arma 3: Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Map and Markers
+
+|descr= Returns marker params in format compatible with [[BIS_fnc_markerCreate]].
+
+|s1= varName call [[BIS_fnc_markerParams]]
+
+|p1= varName: [[String]] - variable name of the marker
+
+|r1= [[Array]] - marker parameters in format [varName, pos, size, colour, type, brush, shape, alpha, name] where:
+* varName: [[Array]] with [[String]] - variable name
+* pos: [[Array]] format [[Position]] - position (see [[setMarkerPos]])
+* size: [[Array]] of [[Number]]s in format [x, y] (see [[setMarkerSize]])
+* colour: [[String]] - colour (see [[setMarkerColor]])
+* type: [[String]] - type (see [[setMarkerType]])
+* brush: [[String]] - brush (see [[setMarkerBrush]])
+* shape: [[String]] - shape (see [[setMarkerShape]])
+* alpha: [[Number]] - transparency (see [[setMarkerAlpha]])
+* text: [[String]] - text (see [[setMarkerText]])
+
+|x1= <sqf>private _params = "marker_1" call BIS_fnc_markerParams;</sqf>
+
+|x2= <sqf>
+("marker_1" call BIS_fnc_markerParams) params ["_nameArray", "_position", "_size", "_colour", "_type", "_brush", "_shape", "_alpha", "_text"];
+_position params ["_posX", "_posY"];
+_nameArray params ["_marker"];
+_size params ["_a", "_b"];
+</sqf>
+
+|seealso= [[BIS_fnc_markerCreate]]
+}}

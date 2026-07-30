@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_playSound
+// revision: 325115 (2022-07-01T12:28:25Z)
+// export sha1: lor9xqxtr7ik0vtlno3i2czd1tg2g7i
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sound | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sound
+
+|descr= Plays given sound. Identical to [[playSound]].
+
+|s1= [sound, forced] call [[BIS_fnc_playSound]]
+
+|p1= sound: [[String]] - sound name
+
+|p2= forced: [[Boolean]] - (Optional, default [[false]])
+
+|r1= [[Boolean]] - always [[true]]
+
+|x1= <sqf>"3DEN_visionMode" call BIS_fnc_playSound;</sqf>
+
+|x2= <sqf>["3DEN_visionMode", true] call BIS_fnc_playSound;</sqf>
+
+|seealso= [[playSound]]
+}}

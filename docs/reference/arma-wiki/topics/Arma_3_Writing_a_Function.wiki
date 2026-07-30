@@ -1,0 +1,263 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Writing_a_Function
+// revision: 341512 (2023-06-07T07:16:14Z)
+// export sha1: 5l6vjbnx38j7ehcwge98zqxj35hycnv
+// categories: Category:Arma 3: Tutorials | Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The most important thing to remember when writing a function is that other people are going to use it.
+Most of them won't understand how it works, expecting it to do its job without problems.
+
+The function must be '''robust'''. It should not allow passing arguments of incorrect [[:Category: Data Types| Data Types]] in.
+When some values are incorrect, it should throw an error explaining what went wrong and how to fix it.
+And above all, its header must provide complete explanation of usage.
+
+
+{{Feature|important|2= <div style="font-size: 1.25em; text-align: center">What is not documented does not exist!</div>}}
+
+
+== Header ==
+
+{| class="wikitable"
+! Template
+! Example
+|- style="vertical-align: top"
+|
+ {{codecomment|/*
+ 	{{Color|teal|Author:}} <author nickname>
+ 
+ 	{{Color|teal|Description:}}
+ 		<function description>
+ 
+ 	{{Color|teal|Parameter(s):}}
+ 		0: can be one of:
+ 			<type> - <description>
+ 			<type> - <description>
+ 		1: <type> - (Optional, default <default value>) <description>
+ 
+ 
+ 
+ 
+ 	{{Color|teal|Returns:}}
+ 		<return type>
+ 
+ 	{{Color|teal|Examples:}}
+ 		<example>
+ */}}
+
+|
+
+ {{codecomment|/*
+ 	{{Color|teal|Author:}} Karel Moricky
+ 
+ 	{{Color|teal|Description:}}
+ 		Ends mission with specific ending.
+ 
+ 	{{Color|teal|Parameter(s):}}
+ 		0: can be one of:
+ 			STRING - (Optional, default "end1") end name
+ 			ARRAY in format [endName, ID] - will be assembled as "endName_ID" string
+ 		1: BOOLEAN - (Optional, default true) true to end mission, false to fail mission
+ 		2: (Optional, default true) can be one of:
+ 			BOOLEAN - true for signature closing shot (default: true)
+ 			NUMBER - duration of a simple fade out to black
+ 
+ 	{{Color|teal|Returns:}}
+ 		BOOLEAN
+ 
+ 	{{Color|teal|Example:}}
+ 		[] call BIS_fnc_endMission
+ */}}
+
+|}
+
+
+== Taking Arguments ==
+
+Arguments are the only way to interact with a function. Let's now see how to make sure they are loaded properly.
+
+Here is this very simple function which will let a unit watch a position:
+<sqf>
+params ["_unit", "_target"];
+_unit doWatch _target;
+</sqf>
+
+Expected way how to call the function is by correctly defining all arguments:
+{|
+| {{Icon|checked}}
+| <sqf>[player, getPosASL myCar] call TAG_fnc_myFunction;</sqf>
+|}
+
+However, the function will break down when tried with only one argument:
+{|
+| {{Icon|unchecked}}
+| <sqf>[player] call TAG_fnc_myFunction;</sqf>
+|}
+
+Furthermore, using wrong data type will also lead to a problem:
+{|
+| {{Icon|unchecked}}
+| <sqf>[player, 0] call TAG_fnc_myFunction;</sqf>
+|}
+
+Variable ''_target'' expects position array in format [x,y,z]. Scripting error will appear when a different number of elements is used:
+{|
+| {{Icon|unchecked}}
+| <sqf>[player, [1, 2, 3, 4]] call TAG_fnc_myFunction;</sqf>
+|}
+
+
+As shown there, the most common problems are:
+# '''Param of wrong data type is sent'''
+# '''Param is missing'''
+# '''Param is an array expecting specific number of elements, but different number is sent'''
+
+Rather than check for all these exceptions manually, it is more than advised to use the [[param]] command:
+ _unit = [[param]] [{{Color|darkorange|0}}, {{Color|teal|objNull}}, {{Color|crimson|[objNull]}}];
+For multiple parameters, use the [[params]] command instead.
+ [[params]] [
+ 	[{{Color|green|"_unit"}}, {{Color|teal|objNull}}, {{Color|crimson|[objNull]}}],
+ 	[{{Color|green|"_target"}}, {{Color|teal|[0, 0, 0]}}, {{Color|crimson|[<nowiki/>[], objNull]}}, {{Color|indigo|[2, 3]}}]
+ ];
+ _unit [[doWatch]] _target;
+* In a [[params]] array first argument is the name of the '''{{Color|green|private variable}}'''. In [[param]] it is the '''{{Color|darkorange|index}}''' number.
+* Second argument is the '''{{Color|teal|default value}}'''. It will be used when the argument is missing, is [[nil]] or when wrong data type is used.
+* Next is optional '''{{Color|crimson|array of compatible data types}}'''. They are defined by an example of the type, e.g. [[objNull]] will mean an object is allowed. When wrong data type is sent into the function, [[param]] will log an error message explaining what went wrong and use the default value.
+* The last, also optional argument is an '''{{Color|indigo|array of required array sizes}}'''. [2,3] means only array with 2 or 3 elements are allowed. When incorrectly large array is sent into the function, [[param]] will log an error message explaining what went wrong and use the default value.
+
+
+Let's see what happens with wrong examples now:
+{|
+| {{Icon|checked}}
+| <sqf>[player] call TAG_fnc_myFunction;</sqf>
+|}
+: ''_target'' is undefined. Default {{Color|teal|[0, 0, 0]}} is used instead. No error message is logged.
+
+{|
+| {{Icon|checked}}
+| <sqf>[nil, getPosASL myCar] call TAG_fnc_myFunction;</sqf>
+|}
+: ''_unit'' is undefined (nil is passed instead). Default {{Color|teal|objNull}} is used instead. No error message is logged.
+
+{|
+| {{Icon|warning}}
+| <sqf>[player, 0] call TAG_fnc_myFunction;</sqf>
+|}
+: ''_target'' has wrong {{Color|crimson|type}}. Default {{Color|teal|[0, 0, 0]}} is used instead. Error message is logged.
+
+{|
+| {{Icon|warning}}
+| <sqf>[player, [1, 2, 3, 4]] call TAG_fnc_myFunction;</sqf>
+|}
+: ''_target'' has wrong {{Color|indigo|size}}. Default {{Color|teal|[0, 0, 0]}} is used instead. Error message is logged.
+
+
+Additionally, when only one argument is used, it can be sent into the function directly without the need to have it in an array.
+{|
+| {{Icon|checked}}
+| <sqf>player call TAG_fnc_myFunction;</sqf>
+|}
+
+
+== Returning Value ==
+
+A function can return a result (object reference, script handle, etc) that can then be saved by the user. If no value is returned, the variable would be [[nil]] and could lead to script errors.
+<sqf>_myVar = [player, getPosASL myCar] call TAG_fnc_myFunction;</sqf>
+
+It is a good practice to '''always''' return a value, even if it would be a simple [[true]] marking the function as completed. Let's use the example function from above:
+<sqf>
+params [
+	["_unit", objNull, [objNull]],
+	["_target", [0, 0, 0], [[], objNull], [2, 3]]
+];
+_unit doWatch _target;
+true;
+</sqf>
+{{Feature|informative|Note that a [[spawn]]ed function will always return a [[Script Handle]], as per [[spawn]] command's behaviour.}}
+
+
+== Showing Errors ==
+
+While [[param]] and [[params]] can filter out the most common issues, the function will sometimes have special rules which will need to be handled.
+Let's return back to the example function, where we would want to terminate the function with error when ''_unit'' is dead:
+<sqf>
+params [["_unit", objNull, [objNull]], ["_target", [0, 0, 0], [[], objNull], [2, 3]]];
+if (!alive _unit) exitWith { ["Unit %1 must be alive.", _unit] call BIS_fnc_error; false; };
+_unit doWatch _target;
+true;
+</sqf>
+Notice that we're returning [[false]] at the end of [[exitWith]] code.
+{{Feature|important|Error states must always return value of the same type as when everything is fine ([[Boolean]] in this case).}}
+
+
+[[BIS_fnc_error]] accepts [[String]] and [[Array]] of [[format]]ted ext. The error is logged into [[RPT]] and if the mission is previewd from the editor, it will also appear on screen.
+{|
+| [[RPT]]
+| 
+ "User1/log: ERROR: [BIS_fnc_respawnTickets] #0: 0 is type SCALAR, must be NAMESPACE, SIDE, GROUP, OBJECT, BOOL. true used instead."
+|-
+| In-game
+| [[File:A3 functions error.jpg|800px|On-screen error]]
+|}
+
+
+== Logging ==
+
+Apart from errors, it is possible to print any needed debug message. Use one of the following functions:
+* [[BIS_fnc_log]] - log a data of any type (e.g., [[String]], [[Number]], [[Object]], ...)
+* [[BIS_fnc_logFormat]] - log [[format]]ted text
+Profile name and function name will automatically appear in the output text, to help identifying the source.
+
+
+Usage examples:
+{| class="wikitable"
+! Expression
+! [[RPT]] Output
+|-
+|
+ {{Color|green|"Hello World"}} [[call]] [[BIS_fnc_log]];
+|
+ "User1/BIS_fnc_log: [TAG_fnc_myFunction] {{Color|green|Hello World}}"
+|-
+|
+ {{Color|green|42}} [[call]] [[BIS_fnc_log]];
+|
+ "User1/BIS_fnc_log: [TAG_fnc_myFunction] {{Color|green|42}}"
+|-
+|
+ [{{Color|green|"I'm playing %1"}}, [[missionName]]] [[call]] [[BIS_fnc_logFormat]];
+|
+ "User1/BIS_fnc_log: [TAG_fnc_myFunction] {{Color|green|I'm playing FalconWing}}"
+|}
+
+
+To prevent RPT spam, logging is by default enabled only when previewing a mission from the editor. To force it in the mission everywhere, use the following [[Description.ext]] attribute:
+<syntaxhighlight lang="cpp">
+allowFunctionsLog = 1;
+</syntaxhighlight>
+
+
+== Recompiling ==
+
+Once compiled, functions remain unchanged and editing their file won't have any effect in the game.
+To adjust functions on the fly, their recompilation can be manually triggered - see [[Arma 3: Functions Viewer]] and [[BIS_fnc_recompile]].
+
+
+== Meta Variables ==
+
+System is adding header with basic meta data to all functions. Following local variables are declared there:
+* '''_fnc_scriptName''': [[String]] - Function name (e.g., TAG_fnc_myFunction)
+* '''_fnc_scriptNameParent''': [[String]] - Name of q function from which the current one was called (_fnc_scriptName used when not defined)
+
+{{Feature|important|Do not modify these values!}}
+
+
+== See Also ==
+
+* [[Arma 3: Functions Library]]
+* [[Arma 2: Functions Library]]
+* [[Take On Helicopters: Functions Library]]
+
+
+{{GameCategory|arma3|Tutorials}}
+[[Category: Scripting Topics]]

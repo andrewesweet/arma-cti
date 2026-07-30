@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/infoPanel
+// revision: 378511 (2026-05-03T17:16:42Z)
+// export sha1: 75er79ci6qtba43hu2ev8c0cp9x1g9k
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Custom Panels | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= Custom Panels
+
+|descr= Returns information about what is currently displayed on given player's info panel.
+
+|s1= [[infoPanel]] infoPanelId
+
+|p1= infoPanelId: [[String]] - info panel classname, or "left" or "right"
+
+|r1= [[Array]] with [componentClass, componentType]
+* componentClass: [[String]] - ''EmptyDisplay'' when no panel is open
+* componentType: [[String]] -  ''EmptyDisplayComponent'' when no panel is open
+
+|x1= <sqf>infoPanel "left" params ["_componentClass", "_componentType"];</sqf>
+
+|seealso= [[Arma 3: Custom Info]] [[infoPanels]] [[setInfoPanel]] [[infoPanelComponents]] [[enableInfoPanelComponent]] [[infoPanelComponentEnabled]] [[openGPS]]
+}}

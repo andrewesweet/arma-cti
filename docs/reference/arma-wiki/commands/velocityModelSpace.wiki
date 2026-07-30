@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/velocityModelSpace
+// revision: 377109 (2026-01-01T10:06:22Z)
+// export sha1: ffdgsee8wgi31o4ubxywmn0ujp65zqv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns the velocity (speed vector) of the vehicle as an array with format [x, y, z] in metre per second. Vector is in model space.
+
+|s1= [[velocityModelSpace]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Vector3D]]
+
+|x1= <sqf>velocityModelSpace _chopper; // returns [X (left(-) right(+)), Y (backward(-) forward(+)), Z (down(-) up(+))]</sqf>
+
+|seealso= [[setVelocityModelSpace]] [[velocity]] [[speed]] [[setVelocity]] [[setVelocityTransformation]]
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20141211025500
+|text= This function is useful for helicopters as it returns Z vector like an indicator of thrust/load ratio. More or less climb (+) or descent (-) tendency but:
+As X,Y,Z vectors are relative to vehicle attitude, this function doesn't return a climb or descend rate (as the attitude of the vehicle can be far from horizontal).
+You can get negative Z vector, in jets, while climbing fast, peeling off in the sky!
+More or less, you can use as a Z accelerometer factor but invert the sign: +G acceleration (negative vector below the jet) is -Z here.
+If not "physically" correct, the behavior is sufficient enough for {{arma}} flight model.
+}}
+
+{{Note
+|user= K.J.
+|timestamp= 20150621023600
+|text= Previous note is physically incorrect. Velocity can not be used to give information about Thrust/Load ratio or G-Forces/acceleration.
+To get acceleration you have to create the derivative of velocity after time dv/dt -> the difference of velocity between 2 timesteps divided by the time that passed between the 2 steps.
+}}

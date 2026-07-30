@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/logNetworkTerminate
+// revision: 347532 (2023-09-28T06:16:33Z)
+// export sha1: 6c1d69gt1vs95ia934k6us0xm9z6sd2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+|game1= arma3
+|version1= 1.56
+
+|gr1= Multiplayer
+|gr2= Diagnostic
+
+|descr= Terminates a network log file started with [[logNetwork]] with the given handle
+|s1= [[logNetworkTerminate]] handle
+
+|p1=handle:  [[Number]] - handle to terminate (created with [[logNetwork]])
+
+|r1= [[Nothing]]
+
+|x1= <sqf>logNetworkTerminate _someHandle;</sqf>
+|seealso= [[logNetwork]]
+}}

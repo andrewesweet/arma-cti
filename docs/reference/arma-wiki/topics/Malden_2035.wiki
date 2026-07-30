@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Malden_2035
+// revision: 255851 (2021-04-24T18:49:48Z)
+// export sha1: pwyrxnlktrjet1hu1dwzuf9jwf3cqg0
+// categories: Category:Arma 3: Terrains
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:A3_Malden2035_birdView.jpg|400px|right]]
+Malden 2035 is a fresh take on the original Malden terrain featured in the very first Arma game. While Malden 2035 re-uses many vanilla Arma 3 structures, vegetation, and similar assets, it also includes additions such as colored buildings, vineyards, and barns. Malden 2035 was initially developed for Bohemia Interactive’s free tactical multiplayer shooter, Argo, and benefits greatly from Argo's infantry focus. A lot of effort was put into the gameplay flow of each location, and as such, this new version of Malden is ideal for Close Quarters Combat. 
+
+
+{{GameCategory|arma3|Terrains}}

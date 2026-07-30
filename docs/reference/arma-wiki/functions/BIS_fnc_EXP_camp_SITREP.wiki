@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_SITREP
+// revision: 337428 (2023-01-30T14:05:14Z)
+// export sha1: nnhdj277hvm3qvub2tgl0q5ve13cuay
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Campaign
+
+|gr2= GUI
+
+|eff= local
+
+|descr= Displays multiple lines of text in given order.<br>
+[[File:BIS_fnc_EXP camp SITREP.gif|400px]]
+
+|s1= [line1, line2, lineX] spawn [[BIS_fnc_EXP_camp_SITREP]]
+
+|p1= line#: [[Array]] - lines to be displayed, format [text, fadeInTime, waitTime, fadeOutTime]:
+* 0: text: [[String]] - text to be displayed
+* 1: fadeInTime: [[Number]] - (Optional, default 2) fade-in duration in seconds
+* 2: waitTime: [[Number]] - (Optional, default 1) how many seconds to wait before showing the next line
+* 3: fadeOutTime: [[String]] - (Optional, default 2) fade-out duration in seconds. It is only used by the last line. Fades all other lines as well
+
+|r1= [[Boolean]] - [[true]] if successful, [[false]] if not
+
+|x1= <sqf>[["line1", 4, 5], ["line2", 3, 5, 8]] spawn BIS_fnc_EXP_camp_SITREP;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_dynamicText]] [[BIS_fnc_infoText]] [[BIS_fnc_textTiles]] [[BIS_fnc_typeText2]]
+}}

@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:arma3
+// revision: 322488 (2022-06-13T10:36:49Z)
+// export sha1: pdpbdfvjwigejjz31mm8wm70tfm8yz9
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|arma3}}</includeonly><noinclude>{{Doc/Template
+|descr= Returns {{hl|{{arma3}}}}.
+|example1= <nowiki>{{arma3}}</nowiki>
+|result1= {{arma3}}
+}}</noinclude>

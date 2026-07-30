@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/getMagazineCargo
+// revision: 348622 (2023-11-08T13:46:04Z)
+// export sha1: e74b48xj0zqxglncfbzuyepxfsne54b
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 2: Operation Arrowhead version 1.54 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.54
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|gr1= Vehicle Inventory
+
+|gr2= Containers
+
+|descr= Returns all magazines types and count from the cargo space
+
+|s1= [[getMagazineCargo]] object
+
+|p1= object: [[Object]] - vehicle or ammo box
+
+|r1= [[Array]] of arrays. [["5MagsType1","10MagsType2"],[5,10]]
+
+|x1= <sqf>_content = getMagazineCargo carName;</sqf>
+|x2= <sqf>_content = getMagazineCargo ammoBoxName;</sqf>
+|x3= <sqf>hint str getMagazineCargo unitBackpack cursorTarget;</sqf>
+
+|seealso= [[magazinesAmmoCargo]] [[magazineCargo]] [[addMagazineCargo]] [[addMagazineCargoGlobal]] [[clearMagazineCargo]] [[clearMagazineCargoGlobal]]
+}}

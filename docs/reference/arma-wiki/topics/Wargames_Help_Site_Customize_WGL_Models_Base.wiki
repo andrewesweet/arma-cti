@@ -1,0 +1,98 @@
+// source: https://community.bistudio.com/wiki/Wargames:Help_Site:Customize_WGL:Models_Base
+// revision: 339615 (2023-04-28T14:11:53Z)
+// export sha1: q1iujhbu8wropzondndnrk64snhjktm
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Models Base =
+
+== Background Story ==
+
+The idea of the models base system is to give the user the possibility to customize the appearance of the units of his Wargames installation by choosing between different configurations via editing one text file. The ''..\@wgl5\bin\'''''models_base.hpp''' file is only the place to decide which model set to use from a few different ones available.
+
+The files really containing the model defintion are to be found in ''..\@wgl5\bin\model_definitions'' (which is only important for very experienced people).
+
+{{Feature|important|NOTE: Models_base.hpp is the setup file - yet it is possible to include new model configs. Check the very end of this page for detailed information.}}
+
+
+== File Location And Structure ==
+
+In your local WGL installation check the bin folder (''..\@wgl5\bin\'') for a file called '''models_base.hpp'''. You can open this with any program able to read text files like notepad. There are some brief comments - nothing to worry about. The main part is the important one to customize the settings. See below how to change them.
+
+
+== Available Settings ==
+
+=== DMA_ARMY_MODELS ===
+
+All infantry units are exchanged by the excellent DMA Army modpack made by '''Dynamic Mission Alliance'''.
+
+'''Beware: the required addons are NOT included in WGL5. Check {{Link|http://ofpc.de/wargames/e107_plugins/forum/forum_viewtopic.php?721|this link}} for download possibilities and further information.'''
+
+=== DMA_NAVAL_MODELS ===
+
+All infantry units are exchanged by the excellent DMA Naval modpack made by '''Dynamic Mission Alliance'''.
+
+'''Beware: the required addons are NOT included in WGL5. Check {{Link|http://ofpc.de/wargames/e107_plugins/forum/forum_viewtopic.php?722|this link}} for download possibilities and further information.'''
+
+=== SFP_MODELS ===
+
+West infantry units are exchanged by the excellent '''Swedish Forces Pack''' infantry. Some west vehicles units are exchanged by the excellent '''Swedish Forces Pack''' vehicles.
+
+'''Beware: the required addons are NOT included in WGL5. Check {{Link|http://ofpc.de/wargames/e107_plugins/forum/forum_viewtopic.php?700|this link}} for download possibilities and further information.'''
+
+=== BWMOD_MODELS ===
+
+West infantry units are exchanged by the excellent '''BW-Mod''' infantry. West vehicles units are exchanged by the excellent '''BW-Mod''' vehicles.
+
+'''Beware: the required addons are NOT included in WGL5. Check {{Link|http://ofpc.de/wargames/e107_plugins/forum/forum_viewtopic.php?617|this link}} for download possibilities and further information.'''
+
+=== RYAN_MODELS ===
+
+All infantry units are exchanged by the excellent DMA Naval modpack, HYK Soldiers and SFTY Marines.
+
+'''Beware: the required addons are NOT included in WGL5. Check {{Link|http://ofpc.de/wargames/e107_plugins/forum/forum_viewtopic.php?742|this link}} for download possibilities and further information.'''
+
+=== BIS_MODELS ===
+
+All units exchanged by original BIS units where applicable. The config aims for maximum performance and least resource drain.
+
+=== WGL5_MODELS ===
+
+WGL5 default models (default setting). These are the best compromise between performance and good looking stuff.
+
+
+== How To De- / Activate Settings ==
+
+* Activate a setting:
+
+Remove the two frontslashes ('//') before the expression:
+ #define WGL5_MODELS
+
+* Deactivate a setting:
+
+Add two frontslashes ('//') before the expression:
+ //#define WGL5_MODELS
+
+{{Feature|important|NOTE: '''Only ONE setting may be active at a time.'''}}
+
+{{Feature|important|NOTE: '''Don't forget to load the necessary addons for a model config.'''}}
+
+{{Feature|important|NOTE: '''Only load the required PBOs which contain the models. NOTHING ELSE - no other PBO \ CONFIG.BIN \ CONFIG.CPP.'''}}
+
+
+== Advanced - How To Make Your Own Config ==
+
+* Go in ''..\@wgl5\bin\model_definitions'' and copy '''wgl5_models_base.hpp'''.
+* Rename the file to ''YOUROWNNAME_models_base.hpp''.
+* _change_your_new_config_ like you desire (see link howTo).
+* _add_your_new_config_ to '''models_base.hpp''' file in ''..\@wgl5\bin'' (see link howTo).
+* Activate your new config in the models_base.hpp file
+* Load the new required addons in addition to WGL5
+
+Please share your personal model_definitions with us. Contact us via our site. Thank you.
+
+
+== How To Enforce Settings ==
+
+(for dedicated server play)
+
+//TODO

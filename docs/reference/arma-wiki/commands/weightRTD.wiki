@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/weightRTD
+// revision: 378400 (2026-04-04T08:04:41Z)
+// export sha1: ra480eg18ueifesbxdfo4ymdro5heu1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= RTD
+
+|descr={{Feature|afm}}Returns weight of RTD helicopter.
+
+|s1= [[weightRTD]] helicopter
+
+|p1= helicopter: [[Object]]
+
+|r1= [[Array]] with [fuselage, crew, fuel, custom, weapons] - weights in kilograms
+* fuselage: [[Number]] - weight of the fuselage
+* crew: [[Number]] - weight of the crew
+* fuel: [[Number]] - weight of the fuel
+* custom: [[Number]] - weight set with [[setCustomWeightRTD]]
+* weapons: [[Number]] - weight of the weapons
+
+|x1= <sqf>_taruWeight = weightRTD taru// Returns [7000,300,1990.56,0,0]</sqf>
+
+|seealso= [[setCustomWeightRTD]] [[isObjectRTD]] [[load]] [[getMass]]
+}}

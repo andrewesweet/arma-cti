@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:2D_Editor
+// revision: 342088 (2023-07-09T12:24:19Z)
+// export sha1: 20lo1ompi8xkpkdwx12eee6zogpv5ga
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|Eden Editor|See [[:Category:Eden Editor|Eden Editor]] for 3D Editor documentation.}}
+
+[[Category: Mission Editing]]

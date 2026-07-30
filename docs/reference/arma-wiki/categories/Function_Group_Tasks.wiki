@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Tasks
+// revision: 164013 (2020-09-30T10:34:43Z)
+// export sha1: 78mmhxnyda8sm1ry2vvju1vpf1hmeol
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Functions by Functionality]]

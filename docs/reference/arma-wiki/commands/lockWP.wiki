@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/lockWP
+// revision: 321186 (2022-05-13T15:20:16Z)
+// export sha1: g8uv456br8h56wp0u8c92anji8dxc0f
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= Waypoints
+
+|descr= Disable switching to next waypoint (current waypoint will never complete while lockwp is used). Sometimes used during cut-scenes.
+
+|s1= groupName [[lockWP]] lock
+
+|p1= groupName: [[Object]] or [[Group]]
+
+|p2= lock: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_groupOne lockWP true;</sqf>
+
+|x2= <sqf>_Soldier lockWP true;</sqf>
+
+|x3= <sqf>_MyTank lockWP false;</sqf>
+
+|seealso= [[waypoints]] [[deleteWaypoint]] [[copyWaypoints]] [[setCurrentWaypoint]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointTimeout]] [[setWaypointType]] [[setWaypointVisible]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[setWaypointLoiterRadius]] [[waypointLoiterRadius]] [[addWaypoint]] [[setWaypointLoiterType]] [[waypointSpeed]]
+}}

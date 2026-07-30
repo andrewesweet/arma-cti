@@ -1,0 +1,1321 @@
+// source: https://community.bistudio.com/wiki/Template:Name
+// revision: 378257 (2026-03-26T00:11:08Z)
+// export sha1: g9beduy2556rw5i5ukobwi1lwe6vcsy
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#switch:{{#replace:{{#replace:{{#replace:{{#replace:{{lc:{{{1}}}}}| |}}|:|}}|/|}}|-|}}
+<!--
+
+	COMPANIES
+
+-->
+|bi
+|bohemiainteractive={{#switch:{{lc:{{{2}}}}}
+	|id=bi
+	|img=bi
+	|short=BI
+	|cat=Bohemia Interactive
+	|com=Bohemia Interactive a.s
+	|#default=Bohemia Interactive}}
+<!--
+
+	SERIES (namespace)
+
+-->
+|arma
+|armaseries= Arma
+<!--
+
+	ENGINES
+
+-->
+|rv
+|realvirtuality={{#switch:{{lc:{{{2}}}}}
+	|id=realvirtuality
+	|img=rv
+	|short=RV
+	|cat=Real Virtuality
+	|com=Real Virtuality Engine
+	|#default=Real Virtuality}}
+|enfusion={{#switch:{{lc:{{{2}}}}}
+	|id=enfusion
+	|img=enfusion
+	|short=Enf.
+	|cat=Enfusion
+	|com=Enfusion Engine
+	|#default=Enfusion}}
+<!--
+
+	PRODUCTS
+
+	Missing:
+	Operation Flashpoint: Gold Edition
+	Operation Flashpoint: GOTY Edition
+	Arma 2: Firing Range
+	Arma 2: Free
+	Arma 2: Combined Operations
+	Arma 2: Reinforcements
+	Arma Tactics
+-->
+<!--
+	OPERATION FLASHPOINT: COLD WAR CRISIS
+-->
+|ofp={{#switch:{{lc:{{{2}}}}}
+	|id=ofp
+	|img=ofp
+	|short=OFP
+	|cat=Operation Flashpoint
+	|com=Operation Flashpoint: Cold War Crisis
+	|#default=Operation Flashpoint}}<!-- no "Cold War Crisis" -->
+<!--
+	ARMA: COLD WAR ASSAULT (OFP v1.99)
+-->
+|arma0={{#switch:{{lc:{{{2}}}}}
+	|id=ofp
+	|img=ofp
+	|short=Arma:CWA
+	|cat=Operation Flashpoint
+	|com
+	|#default=Arma: Cold War Assault}}
+<!--
+	OPERATION FLASHPOINT: RED HAMMER
+-->
+|ofprh
+|arma0rh
+|ofpredhammer={{#switch:{{lc:{{{2}}}}}
+	|id=ofprh
+	|img=ofprh
+	|short=OFP:RH
+	|cat=Operation Flashpoint
+	|com
+	|#default=Operation Flashpoint: Red Hammer}}
+<!--
+	OPERATION FLASHPOINT: RESISTANCE
+-->
+|ofpr
+|arma0r={{#switch:{{lc:{{{2}}}}}
+	|id=ofpr
+	|img=ofpr
+	|short=OFP:R
+	|cat
+	|com
+	|#default=Operation Flashpoint: Resistance}}
+<!--
+	OPERATION FLASHPOINT: ELITE
+-->
+|ofpe={{#switch:{{lc:{{{2}}}}}
+	|id=ofpe
+	|img=ofpe
+	|short=OFP:E
+	|cat=Operation Flashpoint: Elite
+	|com
+	|#default=Operation Flashpoint: Elite}}
+<!--
+	ARMA: ARMED ASSAULT
+-->
+|arma1={{#switch:{{lc:{{{2}}}}}
+	|id=arma1
+	|img=arma
+	|short=ArmA
+	|cat
+	|com=ArmA: Armed Assault
+	|#default=Armed Assault}}
+<!--
+	ARMA: COMBAT OPERATIONS
+-->
+|arma1co={{#switch:{{lc:{{{2}}}}}
+	|id=arma1co
+	|img=arma
+	|short=ArmA:CO
+	|cat=Arma 1
+	|com
+	|#default=ArmA: Combat Operations}}
+<!--
+	ARMA: QUEEN'S GAMBIT
+-->
+|arma1qg={{#switch:{{lc:{{{2}}}}}
+	|id=armaqg
+	|img=armaqg
+	|short=Arma:QG
+	|cat
+	|com
+	|#default=ArmA: Queen's Gambit}}
+<!--
+	ARMA 2
+-->
+|arma2={{#switch:{{lc:{{{2}}}}}
+	|id=arma2
+	|img=arma2
+	|short
+	|cat
+	|com
+	|#default=Arma 2}}
+<!--
+	ARMA 2: OPERATION ARROWHEAD
+-->
+|arma2oa={{#switch:{{lc:{{{2}}}}}
+	|id=arma2oa
+	|img=arma2oa
+	|short=Arma 2:OA
+	|cat
+	|com
+	|#default=Arma 2: Operation Arrowhead}}
+<!--
+	ARMA 2: BRITISH ARMED FORCES
+-->
+|arma2baf={{#switch:{{lc:{{{2}}}}}
+	|id=arma2baf
+	|img=arma2baf
+	|short=Arma 2:BAF
+	|cat=Arma 2: Operation Arrowhead
+	|com
+	|#default=Arma 2: British Armed Forces}}
+<!--
+	ARMA2: PRIVATE MILITARY COMPANY
+-->
+|arma2pmc={{#switch:{{lc:{{{2}}}}}
+	|id=arma2pmc
+	|img=arma2pmc
+	|short=Arma 2:PMC
+	|cat=Arma 2: Operation Arrowhead
+	|com
+	|#default=Arma 2: Private Military Company}}
+<!--
+	ARMA2: ARMY OF CZECH REPUBLIC
+-->
+|arma2acr={{#switch:{{lc:{{{2}}}}}
+	|id=arma2acr
+	|img=arma2acr
+	|short=Arma 2:ACR
+	|cat=Arma 2
+	|com
+	|#default=Arma 2: Army of the Czech Republic}}
+<!--
+	ARMA2: COMBINED OPERATIONS
+-->
+|arma2co={{#switch:{{lc:{{{2}}}}}
+	|id=arma2co
+	|img=arma2co
+	|short=Arma 2:CO
+	|cat=Arma 2
+	|com
+	|#default=Arma 2: Combined Operations}}
+<!--
+	ARMA 3
+-->
+|arma3={{#switch:{{lc:{{{2}}}}}
+	|id=arma3
+	|img=arma3
+	|short
+	|cat
+	|com
+	|#default=Arma 3}}
+<!--
+	ARMA 3 ZEUS
+-->
+|arma3zeus={{#switch:{{lc:{{{2}}}}}
+	|id=arma3zeus
+	|img=arma3zeus
+	|short=Zeus
+	|cat=Arma 3
+	|com
+	|#default=Arma 3 Zeus}}
+<!--
+	ARMA 3 KARTS
+-->
+|arma3karts={{#switch:{{lc:{{{2}}}}}
+	|id=arma3karts
+	|img=arma3karts
+	|short=Karts
+	|cat=Arma 3
+	|com
+	|#default=Arma 3 Karts}}
+<!--
+	ARMA 3 HELICOPTERS
+-->
+|arma3heli
+|arma3helicopters={{#switch:{{lc:{{{2}}}}}
+	|id=arma3helicopters
+	|img=arma3helicopters
+	|short=Helicopters
+	|cat=Arma 3
+	|com
+	|#default=Arma 3 Helicopters}}
+<!--
+	ARMA 3 MARKSMEN
+-->
+|arma3mark
+|arma3marksmen={{#switch:{{lc:{{{2}}}}}
+	|id=arma3marksmen
+	|img=arma3marksmen
+	|short=Marksmen
+	|cat=Arma 3
+	|com
+	|#default=Arma 3 Marksmen}}
+<!--
+	ARMA 3 APEX
+-->
+|arma3apex
+|arma3expansion={{#switch:{{lc:{{{2}}}}}
+	|id=arma3apex
+	|img=arma3apex
+	|short=Apex
+	|cat=Arma 3
+	|com
+	|#default=Arma 3 Apex}}
+<!--
+	ARMA 3 JETS
+-->
+|arma3jets={{#switch:{{lc:{{{2}}}}}
+	|id=arma3jets
+	|img=arma3jets
+	|short=Jets
+	|cat=Arma 3
+	|com
+	|#default=Arma 3 Jets}}
+<!--
+	ARMA 3 Malden
+-->
+|arma3malden={{#switch:{{lc:{{{2}}}}}
+	|id=arma3malden
+	|img=arma3malden
+	|short=Malden
+	|cat=Arma 3
+	|com
+	|#default=Arma 3 Malden}}
+<!--
+	ARMA 3 LAWS OF WAR
+-->
+|arma3low
+|arma3lawsofwar={{#switch:{{lc:{{{2}}}}}
+	|id=arma3lawsofwar
+	|img=arma3low
+	|short=Laws of War
+	|cat=Arma 3
+	|com
+	|#default=Arma 3 Laws of War}}
+<!--
+	ARMA 3 TAC-OPS
+-->
+|arma3tacops={{#switch:{{lc:{{{2}}}}}
+	|id=arma3tacops
+	|img=arma3tacops
+	|short=Tac-Ops
+	|cat=Arma 3
+	|com
+	|#default=Arma 3 Tac-Ops Mission Pack}}
+<!--
+	ARMA 3 TANKS
+-->
+|arma3tanks={{#switch:{{lc:{{{2}}}}}
+	|id=arma3tanks
+	|img=arma3tanks
+	|short=Tanks
+	|cat=Arma 3
+	|com
+	|#default=Arma 3 Tanks}}
+<!--
+	ARMA 3 CONTACT
+-->
+|arma3contact={{#switch:{{lc:{{{2}}}}}
+	|id=arma3contact
+	|img=arma3contact
+	|short=Contact
+	|cat=Arma 3
+	|com
+	|#default=Arma 3 Contact}}
+<!--
+	ARMA 3 APEX: OLD MAN
+-->
+|arma3oldman={{#switch:{{lc:{{{2}}}}}
+	|id=arma3oldman
+	|img=arma3oldman
+	|short=Old Man
+	|cat=Arma 3
+	|com
+	|#default=Arma 3 Apex: Old Man}}
+<!--
+	ARGO
+-->
+|argo={{#switch:{{lc:{{{2}}}}}
+	|id=argo
+	|img=argo
+	|short
+	|cat
+	|com
+	|#default=Argo}}
+<!--
+	ARMA REFORGER
+-->
+|armar={{#switch:{{lc:{{{2}}}}}
+	|id=armar
+	|img=armareforger
+	|short=Reforger
+	|cat
+	|com
+	|#default=Arma Reforger}}
+<!--
+	ARMA 4
+-->
+|arma4={{#switch:{{lc:{{{2}}}}}
+	|id=arma4
+	|img=arma4
+	|short
+	|cat
+	|com
+	|#default=Arma 4}}
+<!--
+	DAYZ
+-->
+|dayz={{#switch:{{lc:{{{2}}}}}
+	|id=dayz
+	|img=dayz
+	|short=DayZ
+	|cat=DayZ
+	|com
+	|#default=DayZ}}
+<!--
+	TAKE ON HELICOPTERS
+-->
+|tkoh={{#switch:{{lc:{{{2}}}}}
+	|id=tkoh
+	|img=TKOH
+	|short=TKOH
+	|cat
+	|com
+	|#default=Take On Helicopters}}
+<!--
+	TAKE ON HELICOPTERS: HINDS
+-->
+|tkohh={{#switch:{{lc:{{{2}}}}}
+	|id=tkohh
+	|img=TKOHH
+	|short=TKOHH
+	|cat=Take On Helicopters
+	|com
+	|#default=Take On Helicopters: Hinds}}
+<!--
+	TAKE ON MARS
+-->
+|tkom={{#switch:{{lc:{{{2}}}}}
+	|id=tkom
+	|img=TKOM
+	|short=TKOM
+	|cat
+	|com
+	|#default=Take On Mars}}
+<!--
+	YLANDS
+-->
+|ylands={{#switch:{{lc:{{{2}}}}}
+	|id=ylands
+	|img=ylands
+	|short
+	|cat
+	|com
+	|#default=Ylands}}
+<!--
+	VIGOR
+-->
+|vigor={{#switch:{{lc:{{{2}}}}}
+	|id=vigor
+	|img=vigor
+	|short
+	|cat
+	|com
+	|#default=Vigor}}
+<!--
+	SILICA
+-->
+|silica={{#switch:{{lc:{{{2}}}}}
+	|id=silica
+	|img=silica
+	|short
+	|cat
+	|com
+	|#default=Silica}}
+<!--
+	CARRIER COMMAND
+-->
+|carriercommand={{#switch:{{lc:{{{2}}}}}
+	|id=carriercommand
+	|img=carriercommand
+	|short=C. Command
+	|cat
+	|com=Carrier Command: Gaea Mission
+	|#default=Carrier Command}}
+<!--
+
+	DEFAULT
+
+-->
+|#default='''[[Bohemia Interactive Community:Guidelines#Format Guidelines|{{#if:{{{1|}}}|{{{1}}}|-no identifier defined-}}]]'''{{TemplateCase||[[Category:Name template usage error]]}}}}</includeonly><noinclude>
+{| class="wikitable" style="float: right; margin: 0 0 0.5em 1em"
+|+ Common ids/titles
+! Id || Title
+|-
+| {{Name|bi|id}} || {{Name|bi}}
+|-
+| {{Name|arma1|id}} || {{Name|arma1}}
+|-
+| {{Name|arma2|id}} || {{Name|arma2}}
+|-
+| {{Name|arma2oa|id}} || {{Name|arma2oa}}
+|-
+| {{Name|arma3|id}} || {{Name|arma3}}
+|-
+| {{Name|armaR|id}} || {{Name|armaR}}
+|-
+| {{Name|arma4|id}} || {{Name|arma4}}
+|-
+| {{Name|tkoh|id}} || {{Name|tkoh}}
+|-
+| {{Name|tkom|id}} || {{Name|tkom}}
+|-
+| {{Name|dayz|id}} || {{Name|dayz}}
+|-
+| {{Name|ylands|id}} || {{Name|ylands}}
+|-
+| {{Name|vigor|id}} || {{Name|vigor}}
+|-
+| {{Name|silica|id}} || {{silica}}
+|}
+Provides a wiki-formatted game name/id.
+
+== Usage ==
+{{<nowiki/>Name|'''''identifier'''''|'''''format'''''}}
+* identifier: short "identifier", such as "bi", "ofpr", "arma3" etc. It is case-insensitive.
+* format: (Optional) can be one of:
+** "id": wiki id
+** "cat": wiki category name
+** "com": commercial name (e.g "{{Name|ofp|com}}", "{{Name|bi|com}}")
+** "img": wiki image link
+** "short": short name (e.g BI for Bohemia Interactive).
+: Anything else or nothing will return the long version of the name.
+{{Feature|informative|if no matches are found for '''''identifier''''', the template will return the '''''identifier''''' string linked to [[Bohemia Interactive Community:Naming Conventions|Naming Conventions]] and add the page to [[:Category:Name template usage error]].}}
+
+{{Clear}}
+{| class="wikitable"
+|+ Examples
+! Code
+! style="min-width: 18em" | Result
+! Valid Identifiers
+|-
+| <nowiki>{{Name}}</nowiki>
+| {{Name}}
+| {{n/a}}
+|-
+| <nowiki>{{Name|}}</nowiki>
+| {{Name|}}
+| {{n/a}}
+|-
+| <nowiki>{{Name|1= }}</nowiki>
+| {{Name|1= }}
+| {{n/a}}
+|-
+| <nowiki>{{Name|unknown value}}</nowiki>
+| {{Name|unknown value}}
+| {{n/a}}
+|-
+! colspan="3" |
+
+Companies
+
+|-
+|
+{{<nowiki/>Name|bi}}<br>
+{{<nowiki/>Name|bi|com}}<br>
+{{<nowiki/>Name|bi|id}}<br>
+{{<nowiki/>Name|bi|cat}}<br>
+{{<nowiki/>Name|bi|short}}<br>
+{{<nowiki/>Name|bi|img}}<br>
+|
+{{Name|bi}}<br>
+{{Name|bi|com}}<br>
+{{Name|bi|id}}<br>
+{{Name|bi|cat}}<br>
+{{Name|bi|short}}<br>
+{{Name|bi|img}}<br>
+| bi, bohemiainteractive
+
+|-
+! colspan="3" |
+
+Engines
+
+|-
+|
+{{<nowiki/>Name|rv}}<br>
+{{<nowiki/>Name|rv|com}}<br>
+{{<nowiki/>Name|rv|id}}<br>
+{{<nowiki/>Name|rv|cat}}<br>
+{{<nowiki/>Name|rv|short}}<br>
+{{<nowiki/>Name|rv|img}}<br>
+|
+{{Name|rv}}<br>
+{{Name|rv|com}}<br>
+{{Name|rv|id}}<br>
+{{Name|rv|cat}}<br>
+{{Name|rv|short}}<br>
+{{Name|rv|img}}<br>
+| rv, realvirtuality
+
+|-
+|
+{{<nowiki/>Name|enfusion}}<br>
+{{<nowiki/>Name|enfusion|com}}<br>
+{{<nowiki/>Name|enfusion|id}}<br>
+{{<nowiki/>Name|enfusion|cat}}<br>
+{{<nowiki/>Name|enfusion|short}}<br>
+{{<nowiki/>Name|enfusion|img}}<br>
+|
+{{Name|enfusion}}<br>
+{{Name|enfusion|com}}<br>
+{{Name|enfusion|id}}<br>
+{{Name|enfusion|cat}}<br>
+{{Name|enfusion|short}}<br>
+{{Name|enfusion|img}}<br>
+| enfusion
+
+
+|-
+! colspan="3" |
+
+Series
+
+|-
+|
+{{<nowiki/>Name|arma}}
+| {{Name|arma}}
+| arma, armaseries
+|-
+! colspan="3" |
+
+Products
+
+|-
+<!--
+	OPERATION FLASHPOINT: COLD WAR CRISIS
+-->
+|
+{{<nowiki/>Name|ofp}}<br>
+{{<nowiki/>Name|ofp|com}}<br>
+{{<nowiki/>Name|ofp|id}}<br>
+{{<nowiki/>Name|ofp|cat}}<br>
+{{<nowiki/>Name|ofp|short}}<br>
+{{<nowiki/>Name|ofp|img}}<br>
+|
+{{Name|ofp}}<br>
+{{Name|ofp|com}}<br>
+{{Name|ofp|id}}<br>
+{{Name|ofp|cat}}<br>
+{{Name|ofp|short}}<br>
+{{Name|ofp|img}}<br>
+| ofp
+|-
+<!--
+	ARMA: COLD WAR ASSAULT (OFP v1.99)
+-->
+|
+{{<nowiki/>Name|arma0}}<br>
+{{<nowiki/>Name|arma0|com}}<br>
+{{<nowiki/>Name|arma0|id}}<br>
+{{<nowiki/>Name|arma0|cat}}<br>
+{{<nowiki/>Name|arma0|short}}<br>
+{{<nowiki/>Name|arma0|img}}<br>
+|
+{{Name|arma0}}<br>
+{{Name|arma0|com}}<br>
+{{Name|arma0|id}}<br>
+{{Name|arma0|cat}}<br>
+{{Name|arma0|short}}<br>
+{{Name|arma0|img}}<br>
+| a0, arma0, armacwa
+|-
+<!--
+	OPERATION FLASHPOINT: RED HAMMER
+-->
+|
+{{<nowiki/>Name|ofprh}}<br>
+{{<nowiki/>Name|ofprh|com}}<br>
+{{<nowiki/>Name|ofprh|id}}<br>
+{{<nowiki/>Name|ofprh|cat}}<br>
+{{<nowiki/>Name|ofprh|short}}<br>
+{{<nowiki/>Name|ofprh|img}}<br>
+|
+{{Name|ofprh}}<br>
+{{Name|ofprh|com}}<br>
+{{Name|ofprh|id}}<br>
+{{Name|ofprh|cat}}<br>
+{{Name|ofprh|short}}<br>
+{{Name|ofprh|img}}<br>
+| ofprh, arma0rh, ofpredhammer
+|-
+<!--
+	OPERATION FLASHPOINT: RESISTANCE
+-->
+|
+{{<nowiki/>Name|ofpr}}<br>
+{{<nowiki/>Name|ofpr|com}}<br>
+{{<nowiki/>Name|ofpr|id}}<br>
+{{<nowiki/>Name|ofpr|cat}}<br>
+{{<nowiki/>Name|ofpr|short}}<br>
+{{<nowiki/>Name|ofpr|img}}<br>
+|
+{{Name|ofpr}}<br>
+{{Name|ofpr|com}}<br>
+{{Name|ofpr|id}}<br>
+{{Name|ofpr|cat}}<br>
+{{Name|ofpr|short}}<br>
+{{Name|ofpr|img}}<br>
+| ofpr, arma0r
+|-
+<!--
+	OPERATION FLASHPOINT: ELITE
+-->
+|
+{{<nowiki/>Name|ofpe}}<br>
+{{<nowiki/>Name|ofpe|com}}<br>
+{{<nowiki/>Name|ofpe|id}}<br>
+{{<nowiki/>Name|ofpe|cat}}<br>
+{{<nowiki/>Name|ofpe|short}}<br>
+{{<nowiki/>Name|ofpe|img}}<br>
+|
+{{Name|ofpe}}<br>
+{{Name|ofpe|com}}<br>
+{{Name|ofpe|id}}<br>
+{{Name|ofpe|cat}}<br>
+{{Name|ofpe|short}}<br>
+{{Name|ofpe|img}}<br>
+| ofpe
+|-
+<!--
+	ARMA: ARMED ASSAULT
+-->
+|
+{{<nowiki/>Name|arma1}}<br>
+{{<nowiki/>Name|arma1|com}}<br>
+{{<nowiki/>Name|arma1|id}}<br>
+{{<nowiki/>Name|arma1|cat}}<br>
+{{<nowiki/>Name|arma1|short}}<br>
+{{<nowiki/>Name|arma1|img}}<br>
+|
+{{Name|arma1}}<br>
+{{Name|arma1|com}}<br>
+{{Name|arma1|id}}<br>
+{{Name|arma1|cat}}<br>
+{{Name|arma1|short}}<br>
+{{Name|arma1|img}}<br>
+| arma1
+|-
+<!--
+	ARMA: COMBAT OPERATIONS
+-->
+|
+{{<nowiki/>Name|arma1co}}<br>
+{{<nowiki/>Name|arma1co|com}}<br>
+{{<nowiki/>Name|arma1co|id}}<br>
+{{<nowiki/>Name|arma1co|cat}}<br>
+{{<nowiki/>Name|arma1co|short}}<br>
+{{<nowiki/>Name|arma1co|img}}<br>
+|
+{{Name|arma1co}}<br>
+{{Name|arma1co|com}}<br>
+{{Name|arma1co|id}}<br>
+{{Name|arma1co|cat}}<br>
+{{Name|arma1co|short}}<br>
+{{Name|arma1co|img}}<br>
+| arma1co
+|-
+<!--
+	ARMA: QUEEN'S GAMBIT
+-->
+|
+{{<nowiki/>Name|arma1qg}}<br>
+{{<nowiki/>Name|arma1qg|com}}<br>
+{{<nowiki/>Name|arma1qg|id}}<br>
+{{<nowiki/>Name|arma1qg|cat}}<br>
+{{<nowiki/>Name|arma1qg|short}}<br>
+{{<nowiki/>Name|arma1qg|img}}<br>
+|
+{{Name|arma1qg}}<br>
+{{Name|arma1qg|com}}<br>
+{{Name|arma1qg|id}}<br>
+{{Name|arma1qg|cat}}<br>
+{{Name|arma1qg|short}}<br>
+{{Name|arma1qg|img}}<br>
+| arma1qg
+|-
+<!--
+	ARMA 2
+-->
+|
+{{<nowiki/>Name|arma2}}<br>
+{{<nowiki/>Name|arma2|com}}<br>
+{{<nowiki/>Name|arma2|id}}<br>
+{{<nowiki/>Name|arma2|cat}}<br>
+{{<nowiki/>Name|arma2|short}}<br>
+{{<nowiki/>Name|arma2|img}}<br>
+|
+{{Name|arma2}}<br>
+{{Name|arma2|com}}<br>
+{{Name|arma2|id}}<br>
+{{Name|arma2|cat}}<br>
+{{Name|arma2|short}}<br>
+{{Name|arma2|img}}<br>
+| arma2
+|-
+<!--
+	ARMA 2: OPERATION ARROWHEAD
+-->
+|
+{{<nowiki/>Name|arma2oa}}<br>
+{{<nowiki/>Name|arma2oa|com}}<br>
+{{<nowiki/>Name|arma2oa|id}}<br>
+{{<nowiki/>Name|arma2oa|cat}}<br>
+{{<nowiki/>Name|arma2oa|short}}<br>
+{{<nowiki/>Name|arma2oa|img}}<br>
+|
+{{Name|arma2oa}}<br>
+{{Name|arma2oa|com}}<br>
+{{Name|arma2oa|id}}<br>
+{{Name|arma2oa|cat}}<br>
+{{Name|arma2oa|short}}<br>
+{{Name|arma2oa|img}}<br>
+| arma2oa
+|-
+<!--
+	ARMA 2: BRITISH ARMED FORCES
+-->
+|
+{{<nowiki/>Name|arma2baf}}<br>
+{{<nowiki/>Name|arma2baf|com}}<br>
+{{<nowiki/>Name|arma2baf|id}}<br>
+{{<nowiki/>Name|arma2baf|cat}}<br>
+{{<nowiki/>Name|arma2baf|short}}<br>
+{{<nowiki/>Name|arma2baf|img}}<br>
+|
+{{Name|arma2baf}}<br>
+{{Name|arma2baf|com}}<br>
+{{Name|arma2baf|id}}<br>
+{{Name|arma2baf|cat}}<br>
+{{Name|arma2baf|short}}<br>
+{{Name|arma2baf|img}}<br>
+| arma2baf
+|-
+<!--
+	ARMA2: PRIVATE MILITARY COMPANY
+-->
+|
+{{<nowiki/>Name|arma2pmc}}<br>
+{{<nowiki/>Name|arma2pmc|com}}<br>
+{{<nowiki/>Name|arma2pmc|id}}<br>
+{{<nowiki/>Name|arma2pmc|cat}}<br>
+{{<nowiki/>Name|arma2pmc|short}}<br>
+{{<nowiki/>Name|arma2pmc|img}}<br>
+|
+{{Name|arma2pmc}}<br>
+{{Name|arma2pmc|com}}<br>
+{{Name|arma2pmc|id}}<br>
+{{Name|arma2pmc|cat}}<br>
+{{Name|arma2pmc|short}}<br>
+{{Name|arma2pmc|img}}<br>
+| arma2pmc
+|-
+<!--
+	ARMA2: ARMY OF CZECH REPUBLIC
+-->
+|
+{{<nowiki/>Name|arma2acr}}<br>
+{{<nowiki/>Name|arma2acr|com}}<br>
+{{<nowiki/>Name|arma2acr|id}}<br>
+{{<nowiki/>Name|arma2acr|cat}}<br>
+{{<nowiki/>Name|arma2acr|short}}<br>
+{{<nowiki/>Name|arma2acr|img}}<br>
+|
+{{Name|arma2acr}}<br>
+{{Name|arma2acr|com}}<br>
+{{Name|arma2acr|id}}<br>
+{{Name|arma2acr|cat}}<br>
+{{Name|arma2acr|short}}<br>
+{{Name|arma2acr|img}}<br>
+| arma2acr
+|-
+<!--
+	ARMA2: COMBINED OPERATIONS
+-->
+|
+{{<nowiki/>Name|arma2co}}<br>
+{{<nowiki/>Name|arma2co|com}}<br>
+{{<nowiki/>Name|arma2co|id}}<br>
+{{<nowiki/>Name|arma2co|cat}}<br>
+{{<nowiki/>Name|arma2co|short}}<br>
+{{<nowiki/>Name|arma2co|img}}<br>
+|
+{{Name|arma2co}}<br>
+{{Name|arma2co|com}}<br>
+{{Name|arma2co|id}}<br>
+{{Name|arma2co|cat}}<br>
+{{Name|arma2co|short}}<br>
+{{Name|arma2co|img}}<br>
+| arma2co
+|-
+<!--
+	ARMA 3
+-->
+|
+{{<nowiki/>Name|arma3}}<br>
+{{<nowiki/>Name|arma3|com}}<br>
+{{<nowiki/>Name|arma3|id}}<br>
+{{<nowiki/>Name|arma3|cat}}<br>
+{{<nowiki/>Name|arma3|short}}<br>
+{{<nowiki/>Name|arma3|img}}<br>
+|
+{{Name|arma3}}<br>
+{{Name|arma3|com}}<br>
+{{Name|arma3|id}}<br>
+{{Name|arma3|cat}}<br>
+{{Name|arma3|short}}<br>
+{{Name|arma3|img}}<br>
+| arma3
+|-
+<!--
+	ARMA 3: ZEUS
+-->
+|
+{{<nowiki/>Name|arma3zeus}}<br>
+{{<nowiki/>Name|arma3zeus|com}}<br>
+{{<nowiki/>Name|arma3zeus|id}}<br>
+{{<nowiki/>Name|arma3zeus|cat}}<br>
+{{<nowiki/>Name|arma3zeus|short}}<br>
+{{<nowiki/>Name|arma3zeus|img}}<br>
+|
+{{Name|arma3zeus}}<br>
+{{Name|arma3zeus|com}}<br>
+{{Name|arma3zeus|id}}<br>
+{{Name|arma3zeus|cat}}<br>
+{{Name|arma3zeus|short}}<br>
+{{Name|arma3zeus|img}}<br>
+| arma3zeus
+|-
+<!--
+	ARMA 3: KARTS
+-->
+|
+{{<nowiki/>Name|arma3karts}}<br>
+{{<nowiki/>Name|arma3karts|com}}<br>
+{{<nowiki/>Name|arma3karts|id}}<br>
+{{<nowiki/>Name|arma3karts|cat}}<br>
+{{<nowiki/>Name|arma3karts|short}}<br>
+{{<nowiki/>Name|arma3karts|img}}<br>
+|
+{{Name|arma3karts}}<br>
+{{Name|arma3karts|com}}<br>
+{{Name|arma3karts|id}}<br>
+{{Name|arma3karts|cat}}<br>
+{{Name|arma3karts|short}}<br>
+{{Name|arma3karts|img}}<br>
+| arma3karts
+|-
+<!--
+	ARMA 3: HELICOPTERS
+-->
+|
+{{<nowiki/>Name|arma3helicopters}}<br>
+{{<nowiki/>Name|arma3helicopters|com}}<br>
+{{<nowiki/>Name|arma3helicopters|id}}<br>
+{{<nowiki/>Name|arma3helicopters|cat}}<br>
+{{<nowiki/>Name|arma3helicopters|short}}<br>
+{{<nowiki/>Name|arma3helicopters|img}}<br>
+|
+{{Name|arma3helicopters}}<br>
+{{Name|arma3helicopters|com}}<br>
+{{Name|arma3helicopters|id}}<br>
+{{Name|arma3helicopters|cat}}<br>
+{{Name|arma3helicopters|short}}<br>
+{{Name|arma3helicopters|img}}<br>
+| arma3heli, arma3helicopters
+|-
+<!--
+	ARMA 3: MARKSMEN
+-->
+|
+{{<nowiki/>Name|arma3marksmen}}<br>
+{{<nowiki/>Name|arma3marksmen|com}}<br>
+{{<nowiki/>Name|arma3marksmen|id}}<br>
+{{<nowiki/>Name|arma3marksmen|cat}}<br>
+{{<nowiki/>Name|arma3marksmen|short}}<br>
+{{<nowiki/>Name|arma3marksmen|img}}<br>
+|
+{{Name|arma3marksmen}}<br>
+{{Name|arma3marksmen|com}}<br>
+{{Name|arma3marksmen|id}}<br>
+{{Name|arma3marksmen|cat}}<br>
+{{Name|arma3marksmen|short}}<br>
+{{Name|arma3marksmen|img}}<br>
+| arma3mark, arma3marksmen
+|-
+<!--
+	ARMA 3 APEX
+-->
+|
+{{<nowiki/>Name|arma3apex}}<br>
+{{<nowiki/>Name|arma3apex|com}}<br>
+{{<nowiki/>Name|arma3apex|id}}<br>
+{{<nowiki/>Name|arma3apex|cat}}<br>
+{{<nowiki/>Name|arma3apex|short}}<br>
+{{<nowiki/>Name|arma3apex|img}}<br>
+|
+{{Name|arma3apex}}<br>
+{{Name|arma3apex|com}}<br>
+{{Name|arma3apex|id}}<br>
+{{Name|arma3apex|cat}}<br>
+{{Name|arma3apex|short}}<br>
+{{Name|arma3apex|img}}<br>
+| arma3apex, arma3expansion
+|-
+<!--
+	ARMA 3: JETS
+-->
+|
+{{<nowiki/>Name|arma3jets}}<br>
+{{<nowiki/>Name|arma3jets|com}}<br>
+{{<nowiki/>Name|arma3jets|id}}<br>
+{{<nowiki/>Name|arma3jets|cat}}<br>
+{{<nowiki/>Name|arma3jets|short}}<br>
+{{<nowiki/>Name|arma3jets|img}}<br>
+|
+{{Name|arma3jets}}<br>
+{{Name|arma3jets|com}}<br>
+{{Name|arma3jets|id}}<br>
+{{Name|arma3jets|cat}}<br>
+{{Name|arma3jets|short}}<br>
+{{Name|arma3jets|img}}<br>
+| arma3jets
+|-
+<!--
+	ARMA 3: MALDEN
+-->
+|
+{{<nowiki/>Name|arma3malden}}<br>
+{{<nowiki/>Name|arma3malden|com}}<br>
+{{<nowiki/>Name|arma3malden|id}}<br>
+{{<nowiki/>Name|arma3malden|cat}}<br>
+{{<nowiki/>Name|arma3malden|short}}<br>
+{{<nowiki/>Name|arma3malden|img}}<br>
+|
+{{Name|arma3malden}}<br>
+{{Name|arma3malden|com}}<br>
+{{Name|arma3malden|id}}<br>
+{{Name|arma3malden|cat}}<br>
+{{Name|arma3malden|short}}<br>
+{{Name|arma3malden|img}}<br>
+| arma3malden
+|-
+<!--
+	ARMA 3: LAWS OF WAR
+-->
+|
+{{<nowiki/>Name|arma3lawsofwar}}<br>
+{{<nowiki/>Name|arma3lawsofwar|com}}<br>
+{{<nowiki/>Name|arma3lawsofwar|id}}<br>
+{{<nowiki/>Name|arma3lawsofwar|cat}}<br>
+{{<nowiki/>Name|arma3lawsofwar|short}}<br>
+{{<nowiki/>Name|arma3lawsofwar|img}}<br>
+|
+{{Name|arma3lawsofwar}}<br>
+{{Name|arma3lawsofwar|com}}<br>
+{{Name|arma3lawsofwar|id}}<br>
+{{Name|arma3lawsofwar|cat}}<br>
+{{Name|arma3lawsofwar|short}}<br>
+{{Name|arma3lawsofwar|img}}<br>
+| arma3low, arma3lawsofwar
+|-
+<!--
+	ARMA 3: TAC-OPS
+-->
+|
+{{<nowiki/>Name|arma3tacops}}<br>
+{{<nowiki/>Name|arma3tacops|com}}<br>
+{{<nowiki/>Name|arma3tacops|id}}<br>
+{{<nowiki/>Name|arma3tacops|cat}}<br>
+{{<nowiki/>Name|arma3tacops|short}}<br>
+{{<nowiki/>Name|arma3tacops|img}}<br>
+|
+{{Name|arma3tacops}}<br>
+{{Name|arma3tacops|com}}<br>
+{{Name|arma3tacops|id}}<br>
+{{Name|arma3tacops|cat}}<br>
+{{Name|arma3tacops|short}}<br>
+{{Name|arma3tacops|img}}<br>
+| arma3tacops
+|-
+<!--
+	ARMA 3: TANKS
+-->
+|
+{{<nowiki/>Name|arma3tanks}}<br>
+{{<nowiki/>Name|arma3tanks|com}}<br>
+{{<nowiki/>Name|arma3tanks|id}}<br>
+{{<nowiki/>Name|arma3tanks|cat}}<br>
+{{<nowiki/>Name|arma3tanks|short}}<br>
+{{<nowiki/>Name|arma3tanks|img}}<br>
+|
+{{Name|arma3tanks}}<br>
+{{Name|arma3tanks|com}}<br>
+{{Name|arma3tanks|id}}<br>
+{{Name|arma3tanks|cat}}<br>
+{{Name|arma3tanks|short}}<br>
+{{Name|arma3tanks|img}}<br>
+| arma3tanks
+|-
+<!--
+	ARMA 3 CONTACT
+-->
+|
+{{<nowiki/>Name|arma3contact}}<br>
+{{<nowiki/>Name|arma3contact|com}}<br>
+{{<nowiki/>Name|arma3contact|id}}<br>
+{{<nowiki/>Name|arma3contact|cat}}<br>
+{{<nowiki/>Name|arma3contact|short}}<br>
+{{<nowiki/>Name|arma3contact|img}}<br>
+|
+{{Name|arma3contact}}<br>
+{{Name|arma3contact|com}}<br>
+{{Name|arma3contact|id}}<br>
+{{Name|arma3contact|cat}}<br>
+{{Name|arma3contact|short}}<br>
+{{Name|arma3contact|img}}<br>
+| arma3contact
+|-
+<!--
+	ARMA 3 APEX: OLD MAN
+-->
+|
+{{<nowiki/>Name|arma3oldman}}<br>
+{{<nowiki/>Name|arma3oldman|com}}<br>
+{{<nowiki/>Name|arma3oldman|id}}<br>
+{{<nowiki/>Name|arma3oldman|cat}}<br>
+{{<nowiki/>Name|arma3oldman|short}}<br>
+{{<nowiki/>Name|arma3oldman|img}}<br>
+|
+{{Name|arma3oldman}}<br>
+{{Name|arma3oldman|com}}<br>
+{{Name|arma3oldman|id}}<br>
+{{Name|arma3oldman|cat}}<br>
+{{Name|arma3oldman|short}}<br>
+{{Name|arma3oldman|img}}<br>
+| arma3oldman
+|-
+<!--
+	ARGO
+-->
+|
+{{<nowiki/>Name|argo}}<br>
+{{<nowiki/>Name|argo|com}}<br>
+{{<nowiki/>Name|argo|id}}<br>
+{{<nowiki/>Name|argo|cat}}<br>
+{{<nowiki/>Name|argo|short}}<br>
+{{<nowiki/>Name|argo|img}}<br>
+|
+{{Name|argo}}<br>
+{{Name|argo|com}}<br>
+{{Name|argo|id}}<br>
+{{Name|argo|cat}}<br>
+{{Name|argo|short}}<br>
+{{Name|argo|img}}<br>
+| argo
+|-
+<!--
+	ARMA REFORGER
+-->
+|
+{{<nowiki/>Name|armar}}<br>
+{{<nowiki/>Name|armar|com}}<br>
+{{<nowiki/>Name|armar|id}}<br>
+{{<nowiki/>Name|armar|cat}}<br>
+{{<nowiki/>Name|armar|short}}<br>
+{{<nowiki/>Name|armar|img}}<br>
+|
+{{Name|armar}}<br>
+{{Name|armar|com}}<br>
+{{Name|armar|id}}<br>
+{{Name|armar|cat}}<br>
+{{Name|armar|short}}<br>
+{{Name|armar|img}}<br>
+| armar
+|-
+<!--
+		ARMA 4
+-->
+|
+{{<nowiki/>Name|arma4}}<br>
+{{<nowiki/>Name|arma4|com}}<br>
+{{<nowiki/>Name|arma4|id}}<br>
+{{<nowiki/>Name|arma4|cat}}<br>
+{{<nowiki/>Name|arma4|short}}<br>
+{{<nowiki/>Name|arma4|img}}<br>
+|
+{{Name|arma4}}<br>
+{{Name|arma4|com}}<br>
+{{Name|arma4|id}}<br>
+{{Name|arma4|cat}}<br>
+{{Name|arma4|short}}<br>
+{{Name|arma4|img}}<br>
+| arma4
+|-
+<!--
+	DAYZ
+-->
+|
+{{<nowiki/>Name|dayz}}<br>
+{{<nowiki/>Name|dayz|com}}<br>
+{{<nowiki/>Name|dayz|id}}<br>
+{{<nowiki/>Name|dayz|cat}}<br>
+{{<nowiki/>Name|dayz|short}}<br>
+{{<nowiki/>Name|dayz|img}}<br>
+|
+{{Name|dayz}}<br>
+{{Name|dayz|com}}<br>
+{{Name|dayz|id}}<br>
+{{Name|dayz|cat}}<br>
+{{Name|dayz|short}}<br>
+{{Name|dayz|img}}<br>
+| dayz
+|-
+<!--
+	TAKE ON HELICOPTERS
+-->
+|
+{{<nowiki/>Name|tkoh}}<br>
+{{<nowiki/>Name|tkoh|com}}<br>
+{{<nowiki/>Name|tkoh|id}}<br>
+{{<nowiki/>Name|tkoh|cat}}<br>
+{{<nowiki/>Name|tkoh|short}}<br>
+{{<nowiki/>Name|tkoh|img}}<br>
+|
+{{Name|tkoh}}<br>
+{{Name|tkoh|com}}<br>
+{{Name|tkoh|id}}<br>
+{{Name|tkoh|cat}}<br>
+{{Name|tkoh|short}}<br>
+{{Name|tkoh|img}}<br>
+| tkoh
+|-
+<!--
+	TAKE ON HELICOPTERS: HINDS
+-->
+|
+{{<nowiki/>Name|tkohh}}<br>
+{{<nowiki/>Name|tkohh|com}}<br>
+{{<nowiki/>Name|tkohh|id}}<br>
+{{<nowiki/>Name|tkohh|cat}}<br>
+{{<nowiki/>Name|tkohh|short}}<br>
+{{<nowiki/>Name|tkohh|img}}<br>
+|
+{{Name|tkohh}}<br>
+{{Name|tkohh|com}}<br>
+{{Name|tkohh|id}}<br>
+{{Name|tkohh|cat}}<br>
+{{Name|tkohh|short}}<br>
+{{Name|tkohh|img}}<br>
+| tkohh
+|-
+<!--
+	TAKE ON MARS
+-->
+|
+{{<nowiki/>Name|tkom}}<br>
+{{<nowiki/>Name|tkom|com}}<br>
+{{<nowiki/>Name|tkom|id}}<br>
+{{<nowiki/>Name|tkom|cat}}<br>
+{{<nowiki/>Name|tkom|short}}<br>
+{{<nowiki/>Name|tkom|img}}<br>
+|
+{{Name|tkom}}<br>
+{{Name|tkom|com}}<br>
+{{Name|tkom|id}}<br>
+{{Name|tkom|cat}}<br>
+{{Name|tkom|short}}<br>
+{{Name|tkom|img}}<br>
+| tkom
+|-
+<!--
+	YLANDS
+-->
+|
+{{<nowiki/>Name|ylands}}<br>
+{{<nowiki/>Name|ylands|com}}<br>
+{{<nowiki/>Name|ylands|id}}<br>
+{{<nowiki/>Name|ylands|cat}}<br>
+{{<nowiki/>Name|ylands|short}}<br>
+{{<nowiki/>Name|ylands|img}}<br>
+|
+{{Name|ylands}}<br>
+{{Name|ylands|com}}<br>
+{{Name|ylands|id}}<br>
+{{Name|ylands|cat}}<br>
+{{Name|ylands|short}}<br>
+{{Name|ylands|img}}<br>
+| ylands
+|-
+<!--
+	VIGOR
+-->
+|
+{{<nowiki/>Name|vigor}}<br>
+{{<nowiki/>Name|vigor|com}}<br>
+{{<nowiki/>Name|vigor|id}}<br>
+{{<nowiki/>Name|vigor|cat}}<br>
+{{<nowiki/>Name|vigor|short}}<br>
+{{<nowiki/>Name|vigor|img}}<br>
+|
+{{Name|vigor}}<br>
+{{Name|vigor|com}}<br>
+{{Name|vigor|id}}<br>
+{{Name|vigor|cat}}<br>
+{{Name|vigor|short}}<br>
+{{Name|vigor|img}}<br>
+| vigor
+|-
+<!--
+	SILICA
+-->
+|
+{{<nowiki/>Name|silica}}<br>
+{{<nowiki/>Name|silica|com}}<br>
+{{<nowiki/>Name|silica|id}}<br>
+{{<nowiki/>Name|silica|cat}}<br>
+{{<nowiki/>Name|silica|short}}<br>
+{{<nowiki/>Name|silica|img}}<br>
+|
+{{silica}}<br>
+{{Name|silica|com}}<br>
+{{Name|silica|id}}<br>
+{{Name|silica|cat}}<br>
+{{Name|silica|short}}<br>
+{{Name|silica|img}}<br>
+| silica
+|-
+<!--
+	CARRIER COMMAND
+-->
+|
+{{<nowiki/>Name|carriercommand}}<br>
+{{<nowiki/>Name|carriercommand|com}}<br>
+{{<nowiki/>Name|carriercommand|id}}<br>
+{{<nowiki/>Name|carriercommand|cat}}<br>
+{{<nowiki/>Name|carriercommand|short}}<br>
+{{<nowiki/>Name|carriercommand|img}}<br>
+|
+{{Name|carriercommand}}<br>
+{{Name|carriercommand|com}}<br>
+{{Name|carriercommand|id}}<br>
+{{Name|carriercommand|cat}}<br>
+{{Name|carriercommand|short}}<br>
+{{Name|carriercommand|img}}<br>
+| carriercommand
+|}
+
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

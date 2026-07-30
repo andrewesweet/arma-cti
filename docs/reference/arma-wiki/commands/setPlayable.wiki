@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/setPlayable
+// revision: 341452 (2023-05-30T10:27:23Z)
+// export sha1: lhic7luirz4g18ewe1ot5n8vpqp1t3y
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Command Group: Multiplayer | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Broken Commands
+
+|gr2= Multiplayer
+
+|descr= Create a multiplayer role for the unit. The roles created this way are used for [[Multiplayer Scripting#Join In Progress|Join In Progress]] and [[Team Switch]]. 
+
+|pr= {{Feature|warning|This command does not work as intended and currently does nothing in {{arma3}}.}}
+
+|s1= [[setPlayable]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setPlayable _aPerson;</sqf>
+
+|seealso= [[addSwitchableUnit]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20091219224800
+|text= If you want to add a [[Team Switch|TeamSwitchable]] unit (at least in {{arma2}}), better use [[addSwitchableUnit]].
+|game= arma2
+}}

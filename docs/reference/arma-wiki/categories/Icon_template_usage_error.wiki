@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Icon_template_usage_error
+// revision: 295946 (2021-11-16T13:15:15Z)
+// export sha1: b2q4v0nbo1soc0fp0epkjbv59nb2vwv
+// Vendored snapshot. Do not edit — re-export instead.
+
+__HIDDENCAT__
+[[Category:Template usage error]]

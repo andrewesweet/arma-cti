@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/Texture_Naming_Conventions
+// revision: 255534 (2021-04-17T08:37:14Z)
+// export sha1: ppgy642lu9qlcg2ywt1m37vvl00mzrx
+// categories: Category:ArmA: Armed Assault: Texturing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Operation Flashpoint: Editing | Category:Take On Helicopters: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+The name should be english, without spaces, czech special letters nor any other extravagant symbols. Only one dot before filename type, usualy TGA.
+
+Example of texture name:
+ M151A1_fuelTank01_CO.tga
+
+
+Textures must be stored in DATA folder respective to the model. It must obey project structure rules. 
+
+Textures must be latest version in TGA. 24bit without alpha or 32bit for alpha transparent. PNG format is also suported.
+
+If the name of texture consists of more words, we use small letters and divide words by underscore.
+
+Example:
+ objectName_textureName_textureType.tga
+
+textureType is predefined suffix, that allows to choose proper compression for texture. The actual settings for compression are in file:///X|/TexConvert/TexConvert.cfg ) 
+
+You can find more details about each texture type in [[Texture Map Types]]
+
+{{GameCategory|ofp|Editing}}
+{{GameCategory|arma1|Texturing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+{{GameCategory|tkoh|Editing}}

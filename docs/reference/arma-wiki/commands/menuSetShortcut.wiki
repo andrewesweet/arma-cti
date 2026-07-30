@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/menuSetShortcut
+// revision: 378330 (2026-04-02T16:30:41Z)
+// export sha1: c9ppay6zrpp7uv5z83uuylxzkajl145
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= GUI Control - Menu
+
+|descr= Sets shortcut of given menu strip entry.
+
+|s1= [[menuSetShortcut]] [idc, path, shortcut]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|p3= shortcut: [[Number]]
+
+|r1= [[Nothing]]
+
+|s2= control [[menuSetShortcut]] [path, shortcut]
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|p23= shortcut: [[Number]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_ctrlMenuStrip menuSetShortcut [[0,0], 2048 + 0x16]; // ALT + U</sqf>
+
+|seealso= [[menuShortcut]] [[menuShortcutText]]
+}}

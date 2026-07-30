@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/skillFinal
+// revision: 378482 (2026-04-24T12:46:59Z)
+// export sha1: bgygoktdepg7lytp4ijcwmmf9niddot
+// categories: Category:AI | Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Introduced with Arma 3 version 1.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.08
+
+|gr1= AI Behaviour
+
+|descr= Returns final, recalculated sub skill value of given unit. (with regard to AI Level coefficient (Difficulty settings)).
+
+|mp= Since {{GVI|arma3|1.40}} the command works in multiplayer.
+
+|s1= unit [[skillFinal]] skillName
+
+|p1= unit: [[Object]]
+
+|p2= skillName: [[String]] - see [[AI Sub-skills|sub-skill]]. Possible values are:
+* "aimingAccuracy"
+* "aimingShake"
+* "aimingSpeed"
+* "endurance" - Has no effect in {{arma3}}
+* "spotDistance"
+* "spotTime"
+* "courage"
+* "reloadSpeed"
+* "commanding"
+* "general"
+
+|r1= [[Number]]
+
+|x1= <sqf>_unitTrueCourage = unit1 skillFinal "courage";</sqf>
+
+|seealso= [[skill]] [[setSkill]] [[setUnitAbility]] [[CfgAISkill]] [[Combat Modes]]
+}}
+
+[[Category:AI]]

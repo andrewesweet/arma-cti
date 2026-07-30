@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/isStressDamageEnabled
+// revision: 310782 (2022-05-07T20:21:46Z)
+// export sha1: 3dunr7z39donnyvs8nyjqluqjnfqjvh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= RTD
+|arg= local
+
+|eff= local
+
+|descr= Returns [[true]] if stress damage is enabled in the game settings. A getter for [[enableStressDamage]].
+{{Feature|afm}}
+
+|s1= [[isStressDamageEnabled]]
+
+|r1= [[Boolean]] Returns true if enabled, otherwise false
+
+|x1= <sqf>_settingEnabled = isStressDamageEnabled;</sqf>
+
+|seealso= [[enableStressDamage]]
+}}

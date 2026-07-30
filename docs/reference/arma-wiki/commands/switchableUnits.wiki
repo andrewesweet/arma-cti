@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/switchableUnits
+// revision: 376986 (2026-01-01T07:13:49Z)
+// export sha1: a3scimqe7jzycook8v9ff2tq9qdgzdw
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Command Group: Object Detection | Category:Command Group: Team Switch | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|eff= local
+
+|gr1= Multiplayer
+
+|gr2= Team Switch
+
+|gr3= Object Detection
+
+|descr= Returns a list of playable units available for switching to
+* Command is relative to the client on which it is executed and will only show playable units for the same [[side]] as [[player]]'s [[group]] + [[player]] himself
+* In singleplayer where playable units from all sides will be accessible via this command
+* Dead and player-controlled units are automatically removed from the resulting array
+* In order to get all ''playable'' units regardless of their [[side]], see the [[playableUnits]] command
+
+|mp= In Multiplayer, [[switchableUnits]] are only available when [[Description.ext#respawn|respawn]] type is set to SIDE or GROUP, the mission contains units marked playable and [[player]] is able to switch to any of those units. On dedicated servers, this command returns an empty array,.
+
+|s1= [[switchableUnits]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>_availableUnits = switchableUnits;</sqf>
+
+|seealso= [[Team Switch]] [[playableUnits]] [[allPlayers]] [[teamSwitch]]
+}}

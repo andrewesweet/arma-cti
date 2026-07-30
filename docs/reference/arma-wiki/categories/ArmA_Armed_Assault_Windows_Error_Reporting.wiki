@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Windows_Error_Reporting
+// revision: 290482 (2021-07-20T00:39:09Z)
+// export sha1: ke721sktjjqfxtfjws7k2wvvlzsjqz6
+// Vendored snapshot. Do not edit — re-export instead.
+
+Windows Error Reporting responses for [[:Category:ArmA: Armed Assault|{{arma1}}]] crashes.
+
+{{GameCategory|arma1| Troubleshooting}}

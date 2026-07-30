@@ -1,0 +1,62 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Field_Repair
+// revision: 365192 (2024-08-06T13:45:21Z)
+// export sha1: mjsctrssg07mm2amkanvw82jku2dkpm
+// categories: Category:Spearhead 1944 | Category:To-do
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Field Repair =
+[[Spearhead 1944]] introduces a system that allows to execute a field repair from within a vehicle. The [[BIS_fnc_holdActionAdd|hold action]] is available if the player's vehicle damage exceeds a predefined threshold.
+{{Feature|informative|The action is not available by default and has to be implemented by the scenario creator.}}
+
+== Adding the Action ==
+=== Scripted ===
+The action is added to the vehicle by executing <sqf inline>_vehicle call SPE_missionUtilityFunctions_fnc_addRepairAction</sqf>.
+The action has local effect which means it needs to be executed locally for every client that should have access to the action. Ideally, this is done by executing aboves code via [[Event Scripts#initPlayerLocal.sqf|initPlayerLocal.sqf]].
+
+Example:
+<sqf>
+// initPlayerLocal.sqf
+myVehicle call SPE_missionUtilityFunctions_fnc_addRepairAction
+</sqf>
+
+=== Module ===
+{{Wiki|TODO|⧼Do Stuff⧽}}
+
+== Customization ==
+The underlying system is quite flexiable and can be configured in multiple ways.
+
+=== Duration ===
+The base duration of the action can be changed via <sqf inline>SPE_RepairAction_BaseDuration = 5;</sqf> where 5 is the time in seconds the action takes.
+This base value is then multiplied by a difficutly factor and an engineer bonus.
+
+{{Feature|informative|''SPE_RepairAction_BaseDuration'' has to be set before the action is added to a vehicle!}}
+
+==== Engineer Bonus ====
+By default, players who are [[getUnitTrait|engineers]] repair 100% faster. This value can be adjusted by changing <sqf inline>SPE_RepairAction_EngineerBonus = 1; //Engineers have no bonus</sqf>
+
+=== Interval ===
+The interval defines how many seconds have to pass between two repairs. <sqf inline>SPE_RepairAction_Interval = 30;</sqf>
+
+=== Damage Thresholds ===
+The damage Thresholds are defined in <sqf inline>SPE_RepairAction_DamageThresholds = [0.5, 0]</sqf>. The first value is the threshold for <sqf inline>SPE_CadetMode == true</sqf> the second one for <sqf inline>SPE_CadetMode == false</sqf>. These values define at which damage level the repair action is available and how much damage can be repaired. The values should be ''>= 0 and < 1''.
+
+== What can be repaired? ==
+What and how much can be repaired depends on the difficulty. In cadet mode <sqf inline>SPE_CadetMode == true</sqf>, the vehicle can be fully repaired and all [[getAllHitPointsDamage|parts]] can be repaired.
+
+On higher difficulties <sqf inline>SPE_CadetMode == false</sqf> the repair is limited. Only vehicles with damage greater 0.5 can be repaired and only until their damage goes back down to 0.5. Besides that, only the crucial parts, responsible for keeping the vehicle operational, such as the ''engine'', the ''tracks'', the ''main gun'' and the ''turret'' can be repaired.
+
+== Pre-conditions ==
+The following conditions need to be met for the action to show up.
+
+# The vehicle is alive
+# Player has to be in the vehicle
+# The vehicle has to be slower than 10 km/h
+# The vehicle has to be of [[isKindOf|type]] "AllVehicles"
+# In none cadet mode, the vehicle has to be able to either [[canFire|fire]] or [[canMove|move]]
+# The vehicle is not burning <sqf inline>SPE_Vehicle_OnFire == false</sqf>
+# The time in seconds after the last repair execution is greater than <sqf inline>SPE_RepairAction_Interval</sqf>
+
+== Strategics ==
+{{Wiki|TODO|⧼Do Stuff⧽}}
+
+[[Category: Spearhead 1944]]

@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Vehicle_Hitpoint_Creation
+// revision: 373250 (2025-04-12T22:28:07Z)
+// export sha1: o0bqfmtkw03psudo1hv3zvyj9n289bv
+// categories: Category:Arma 3: Vehicle Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Intro =
+This article gives basic suggestions for building vehicle fire geometry and hit points. It assumes you are already familiar with making vehicle addons for Arma 3.
+
+Take a look at the following images. Using the fire geometry LOD of a generic "tank", they tell you a lot about how fire geometry ('''"FG"''') and hitpoints ('''"HP"''') should be set up:
+
+[[File:basic fg hp layout 01.png|400px]]
+
+[[File:basic fg hp layout 03.png|400px]]
+
+[[File:basic fg hp layout 02.png|400px]]
+
+*Transparent blue: armor FG
+*Solid-colored boxes: HP FG (different colors representing different HP classes / components / types)
+*Transparent spheres: HP spheres (a visual representation of your vehicle config "radius" values)
+
+= The Four Commandments =
+'''1. Pieces of FG should not overlap (as little as possible anyway)--even if the pieces all belong to the same component'''
+
+'''2. Leave SPACE between DIFFERENT types of FG--between armor and HP, or between one HP component and another. These should DEFINITELY NOT overlap.'''
+
+'''3. HP FG should be encased within an EVENLY SPACED matrix of HP spheres.'''
+
+'''4. HP spheres CAN overlap BUT they should only be in contact with ONE type of HP FG.'''
+
+Refer to the images in the Intro for a visual example of these rules.
+
+=More Detail (If You Need It)=
+This section is optional, in case you're looking for a more detailed discussion beyond the Commandments section above.
+
+=== 1. No FG overlap ===
+*The less the better, with none being the ideal. A little overlap is most tolerable in pieces of armor, or within a single type of HP FG (e.g. several convex pieces of FG that make up your vehicle's engine compartment).
+
+=== 2. Space between different FG types ===
+*There should be an airspace buffer between HP FG--which will be taking damage--and armor FG--which should cause marginal to no damage.
+*You also need airspace buffer between different HP components (engine, turret, gun, etc.). It's not the exact airspace distance that matters per se. The point is to have enough space to prevent an HP sphere encasing one component from touching a second component. When a sphere touches 2 different types of FG, damage on one component will "leak" to the other.
+*Meeting these requirements, you will typically find yourself needing somewhere on the order of 12" (25cm) between different FG components.
+
+=== 3. Encase FG evenly in HP spheres ===
+*Each HP component should be as evenly encased as possible within a "bubbly" matrix of overlapping HP spheres.
+*"Evenly encased" means:
+**...that the spheres should overlap with each other to fully encase the FG without leaving gaps.
+**...that the sphere matrix should be a completely regular 3D grid--the distance between each sphere should be identical
+**...that the FG should be evenly encased by your HP sphere matrix. It's as if you converted the FG into a voxel network of spherical cells--part of the FG should not be sticking out of the sphere matrix.
+*Arrange the relationship between the vertex spacing (in the P3D) and the "radius" value (in the vehicle config) so that the HP spheres overlap substantially with each other in the matrix.
+*This will create more even coverage of your FG. (See the Intro images above and the diagram below to get an idea of "substantial overlap").
+*[[File:hitpoint guide.JPG|300px]]
+*You want case "A" above (where blue FG is armor and orange FG is an HP component that receives damage).
+**You should avoid case "B" (unless you really know what you are doing).
+**Under no circumstances should you have a situation like "C", which has the following problems:
+***... the HP spheres are irregularly positioned over the FG.
+***... there is FG sticking out of the sphere matrix.
+*It will probably make your life MUCH EASIER if you simply standardize all HP at a single radius--rather than using slightly different radii for different HP.
+**This way you can space the "grid" or "matrix" of HP sphere verts just once--and simply copy and paste from there in your vehicle's HitPoints LOD.
+
+=== 4. HP spheres should only touch one type of HP ===
+*This is already explained #2 above.
+
+= Bad Things That Happen If You Don't Follow These Rules =
+*Weapons which don't penetrate your vehicle's armor will cause damage (even though they shouldn't).
+*HP will take totally erratic damage depending on the angle of the weapon impact.
+*HP which are not in the path of a penetrating weapon will take damage anyway.
+
+[[Arma_3_Damage_Description|For a much more detailed discussion of vehicular damage, go here]]. It explains the research behind this article.
+
+{{GameCategory|arma3|Vehicle Configuration}}

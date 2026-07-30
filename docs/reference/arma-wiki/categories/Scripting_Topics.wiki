@@ -1,0 +1,18 @@
+// source: https://community.bistudio.com/wiki/Category:Scripting_Topics
+// revision: 257286 (2021-05-05T07:35:09Z)
+// export sha1: kglz7fsq4p425dj6qfbuy1eiqhlmip1
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| style="width: 100%"
+| style="vertical-align: top; width: 55%" | Scripting is a very important tool used to create good missions or addons.<br>
+Most of the information found here can be generalized between many of the [[Bohemia Interactive]] games (mostly using the [[Real Virtuality]] engine). Game-specific material will be cited as such. 
+
+
+{{Table/RVScripting}}
+
+{{GameCategory|ofp| Editing}}
+{{GameCategory|ofpe|Editing}}
+{{GameCategory|arma1| Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+[[Category:Take On Helicopters: Editing]]

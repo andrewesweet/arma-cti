@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/posScreenToWorld
+// revision: 377564 (2026-01-02T06:55:27Z)
+// export sha1: e2lx5huqlbeu6jfwqic7yjjpqogc9o2
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Positions
+
+|descr= Converts map screen coordinates into world coordinates. Unlike [[ctrlMapScreenToWorld]], this command returns world position is format [x, y, 0], otherwise it is identical to it.
+
+|s1= map [[posScreenToWorld]] [x, y]
+
+|p1= map: [[Control]] - map control
+
+|p2= x: [[Number]] - screen X
+
+|p3= y: [[Number]] - screen Y
+
+|r1= [[Position#Introduction|Position3D]] - world position in format [x,y,0]
+
+|x1= <sqf>_worldCoord = _control posScreenToWorld _ScreenCoord;</sqf>
+
+|x2= <sqf>_worldCoord = _control posScreenToWorld [_x, _y];</sqf>
+
+|x3= <sqf>_worldCoord = _control posScreenToWorld [0.5, 0.5];</sqf>
+
+|seealso= [[posWorldToScreen]] [[ctrlMapScreenToWorld]] [[ctrlMapWorldToScreen]]
+}}
+
+<dl class="command_description">
+
+<dd class="notedate">Posted on 2007-04-07 - 10:03</dd>
+<dt class="note">[[User:LowFly|LowFly]]</dt>
+<dd class="note">''Notes:''
+
+You can get the screen coordinates by the [[User_Interface_Event_Handlers|UI Event Handlers]] onMouseButtonDown, onMouseButtonUp, onMouseButtonClick, onMouseButtonDblClick.  
+
+The return Array is in 2D, you can use it with all set-position commands.
+<sqf>
+_x = returnArray select 0;
+_y = returnArray select 1;
+</sqf>
+
+</dl>

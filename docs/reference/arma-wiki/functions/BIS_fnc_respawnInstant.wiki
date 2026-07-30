@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_respawnInstant
+// revision: 352211 (2024-02-01T23:26:04Z)
+// export sha1: 20637j3yee8dyjvyqdm5eulocukfu29
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= {{Feature|informative|This file contains no code.}}
+
+|s1= <!-- [] call [[BIS_fnc_respawnInstant]]; -->
+
+|r1= -
+
+|x1= -
+
+|seealso= -
+}}

@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/speechVolume
+// revision: 376983 (2026-01-01T06:23:31Z)
+// export sha1: jrmx3nb93xvyw50ncafd32jb2z6r4dz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|gr1= Sounds
+
+|descr= Returns the current speech volume (set by [[fadeSpeech]])
+
+|s1= '''speechVolume'''
+
+|r1= [[Number]] in range 0..2
+
+|x1= <sqf>hint str speechVolume;</sqf>
+
+|seealso= [[fadeSpeech]] [[musicVolume]] [[soundVolume]] [[radioVolume]] [[environmentVolume]] [[getAudioOptionVolumes]]
+}}

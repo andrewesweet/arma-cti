@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_crewCount
+// revision: 349180 (2023-11-08T14:50:38Z)
+// export sha1: byvus3ofo8a6kfb8r9eun16e4c95831
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.08 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.08
+
+|gr1= Object Manipulation
+
+|descr= Function that counts amount of seats, both for crew and cargo seats.
+
+|s1= param call [[BIS_fnc_crewCount]]
+
+|p1= [[String]] - classname of vehicle.
+|p2= [[Boolean]] - true if cargo seats should be included (see notes)
+
+|r1= [[Number]] - amount of seats in vehicle.
+
+|x1= <sqf>crewCount = ["B_Heli_Light_01_F", false] call BIS_fnc_crewCount; // Counts all available seats excluding cargo slots. Returns 6 (see notes).</sqf>
+|x2= <sqf>crewCount = ["B_Heli_Transport_01_F", true] call BIS_fnc_crewCount; // Counts all available seats including cargo slots. Returns 12.</sqf>
+
+|seealso= [[crew]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-10-01 - 20:12 (UTC)</dd>
+<dt class="note">[[User:Tryteyker-|Tryteyker-]]</dt>
+<dd class="note">
+This function goes through config values and as such is dependant on these. In some instances, this can lead to weird results; the user may, for example, expect the skids on the Littlebird to be cargo slots. <br>
+However, in reality, they are not and as such will be counted even if the boolean value is set to false. 
+<br>If the bool value is set to true, it will return the '''total''' amount of seats available. To get the cargo seats only, running this function twice (once with false and once with true as bool values), and then subtracting the total with crew-only will yield the cargo (F^cargo = Ftotal - Fcrew) slots. <br>
+Crew slots include gunners and in some instances some cargo slots. The above may not work for every vehicle.
+</dd>
+
+</dl>

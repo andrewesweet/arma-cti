@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_showWelcomeScreen
+// revision: 348588 (2023-11-08T13:42:42Z)
+// export sha1: mne9t5gps35pfs8mkemn5f66qi5j6rg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Show welcome screen. Used in the main menu (works fine in [[:Category:Eden Editor|Eden Editor]]).<br>
+<br>
+[[File:BIS_fnc_showWelcomeScreen.jpg|500px|center]]
+
+|s1= [display, forceLatest] call [[BIS_fnc_showWelcomeScreen]]
+
+|p1= display: [[Display]] - parent display where welcome screen is to be shown
+
+|p2= forceLatest: [[Boolean]] - (Optional, default [[false]]) show latest welcome screen automatically
+
+|r1= [[Boolean]] - [[true]] when screen is opened
+
+|x1= <sqf>[findDisplay 313, true] call BIS_fnc_showWelcomeScreen;</sqf>
+
+|seealso= [[:Category:Function Group: GUI|GUI Functions]]
+}}

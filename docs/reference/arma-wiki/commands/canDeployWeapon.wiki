@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/canDeployWeapon
+// revision: 310452 (2022-05-05T18:08:10Z)
+// export sha1: gi6il27wikxykja127nj9w2yitmvkaf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Weapons
+
+|arg= local
+
+|descr= Returns [[true]] if a unit's weapon can be deployed.
+
+|s1= [[canDeployWeapon]] unit
+
+|p1= unit : [[Object]]
+
+|r1= [[Boolean]] - [[true]] if unit's weapon can be deployed
+
+|x1= <sqf>if (canDeployWeapon player) then { hint "I could rest my weapon here..." };</sqf>
+
+|seealso= [[isWeaponDeployed]] [[isWeaponRested]]
+}}

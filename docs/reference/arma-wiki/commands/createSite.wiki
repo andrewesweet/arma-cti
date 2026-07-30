@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/createSite
+// revision: 337564 (2023-02-10T01:11:02Z)
+// export sha1: gg3pc0qxumgf9mp2t3l94j1sxe7uwti
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Command Group: Sides | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Broken Commands
+|gr2= Sides
+
+|descr= Create a new site. 
+{{Feature|warning|This command is considered deprecated and is no longer supported}}
+
+|s1= type [[createSite]] pos
+
+|p1= type: [[String]]
+
+|p2= pos: [[Position]]
+
+|r1= [[Object]]
+
+|x1= -
+
+|seealso= [[deleteSite]] [[allSites]]
+}}
+
+{{Note
+|user= Strangepete
+|timestamp= 20140219024900
+|text= {{Feature|quote|
+CreateSite is an obsolete command from the time in development when Sites were handled separately from other modules. Now they use the modules framework.<!--
+--> If you want a specific Site to be activated during the mission, place it in the editor and use the Condition line in its parameters (the last one).
+| [[User:Jezuro|Jezuro]]
+| https://forums.bohemia.net/forums/topic/140086-how-do-we-use-createsite/?tab{{=}}comments#comment-2382204
+}}
+}}

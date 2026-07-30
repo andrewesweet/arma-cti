@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/insideBuilding
+// revision: 338343 (2023-02-28T14:42:06Z)
+// export sha1: moizh0630md0f7b3lc31ibl1x4xg91c
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|gr1= Object Manipulation
+
+|descr= Returns how much a man is inside a building. The value is the same as normally returned by weapons/ammo sound controller "interior".
+It is possible to modify an individual object to use sound interior with [[enableAudioFeature]].
+
+{{Feature|informative|
+The sound is considered internal when the corresponding surface sound name starts with "int_".
+An object placed inside a building that does not have model {{hl|CfgSurfaces}}' {{sic|[[Config Properties Megalist#soundEviron|soundEviron]]}} parameter named this way would generate external sound inside the building, and [[insideBuilding]] on top of this object would return 0.
+}}
+
+|s1= [[insideBuilding]] man
+
+|p1= man: [[Object]] - entity of class Man
+
+|r1= [[Number]] - in range 0..1, where 0 is outside, 1 is inside
+
+|x1= <sqf>private _isFullyInside = insideBuilding player == 1;</sqf>
+
+|seealso= [[buildingPos]] [[buildingExit]] [[enableAudioFeature]] [[BIS_fnc_buildingPositions]]
+}}

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_curatorVisionModes
+// revision: 348668 (2023-11-08T13:51:42Z)
+// export sha1: 86k7kygcs9118ggje5dy4ott1nznynh
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Toggle curator vision mode.
+
+|s1= [curator] call [[BIS_fnc_curatorVisionModes]]
+
+|p1= curator: [[Object]] - curator
+
+|r1= [[Array]] of [[Number]]s - vision modes
+
+|x1= <sqf>private _visionModes = [Curator] call BIS_fnc_curatorVisionModes;</sqf>
+
+|seealso= [[BIS_fnc_toggleCuratorVisionMode]] [[Arma 3: Curator]]
+}}

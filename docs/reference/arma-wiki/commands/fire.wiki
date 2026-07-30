@@ -1,0 +1,159 @@
+// source: https://community.bistudio.com/wiki/fire
+// revision: 369149 (2024-09-03T10:34:38Z)
+// export sha1: kpwcc4m9ehdx9kxo37btwbckcklht18
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Command Group: Weapons | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Control
+
+|gr2= Weapons
+
+|descr= Forces a unit to fire the given weapon.
+{{Feature|informative|Just like with [[forceWeaponFire]] it is possible to pass remote unit as argument, but this could be unreliable. Considering this command might need to be used in combination with [[selectWeapon]], which takes only [[Multiplayer Scripting#Locality|local]] arguments, it would make sense to execute the [[fire]] command where the unit is [[Multiplayer Scripting#Locality|local]] as well.}}
+
+|s1= unit [[fire]] muzzle
+
+|p1= unit: [[Object]] - unit that is supposed to fire
+
+|p2= muzzle: [[String]] - name of the muzzle to be fired
+
+|r1= [[Nothing]]
+
+|s2= unit [[fire]] [muzzle, mode, magazine]
+
+|p21= unit: [[Object]]
+
+|p22= muzzle: [[String]]
+
+|p23= mode: [[String]]
+
+|p24= magazine: [[String]] - (Optional)
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_soldier fire "M16";</sqf>
+
+|x2= <sqf>_soldier fire "SmokeShellMuzzle";</sqf>
+
+|x3= <sqf>_soldier fire ["SmokeShellMuzzle", "SmokeShellMuzzle", "SmokeShellRed"];</sqf>
+
+|x4= <sqf>
+player playActionNow "PutDown";
+player selectWeapon "DemoChargeMuzzle";
+player fire ["DemoChargeMuzzle", "DemoChargeMuzzle", "DemoCharge_Remote_Mag"];
+player setWeaponReloadingTime [player, "DemoChargeMuzzle", 0];
+</sqf>
+
+|seealso= [[BIS_fnc_fire]] [[doFire]] [[commandFire]] [[canFire]] [[fireAtTarget]] [[forceWeaponFire]] [[commandArtilleryFire]] [[commandSuppressiveFire]] [[doArtilleryFire]] [[doSuppressiveFire]] [[isManualFire]] [[selectWeapon]] [[ArmA:_Actions#USEWEAPON|action ["UseWeapon"]]] [[:Category:Weapons]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2006-08-17</dd>
+<dt class="note">[[User:Str|Str]]</dt>
+<dd class="note">Sometimes AI won't shoot when you use this command. It can be fixed by placing [[selectWeapon]] command before it.</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2007-02-02</dd>
+<dt class="note">[[User:Ceeeb|Ceeeb]]</dt>
+<dd class="note">
+In '''OFP v1.96''', when a [[Operation_Flashpoint:_CfgVehicles#Man_Class_Vehicles|man]] class unit is given this command, he will aim up in the air before firing his weapon. This makes it rather useless if you want to make him shoot a target. It does work with vehicles, when the vehicle is first given a [[doWatch]] or [[doTarget]]  command.
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2007-01-20</dd>
+<dt class="note">[[User:Bdfy|Bdfy]]</dt>
+<dd class="note">In '''ArmA v1.02''', this command is not working with weapons in the secondary turrets (like "DSHKM" in T-72)</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2008-01-15</dd>
+<dt class="note">[[User:Kronzky|Kronzky]]</dt>
+<dd class="note">
+To place a satchel (pipebomb) the syntax is:<br>
+'''OFP''': unitname Fire ["put", "pipebomb"]<br>
+'''ArmA''': unitname Fire ["pipebombmuzzle", "pipebombmuzzle", "pipebomb"];<br>
+''The triggering is done via a "[[Armed_Assault:_Actions_List#TOUCHOFF|TOUCHOFF]]" action.''
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2010-03-18</dd>
+<dt class="note">[[User:Mr.g-c|Mr.g-c]]</dt>
+<dd class="note">In {{arma2}}, AI will automatically shoot straight up. Command seems to be broken.</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2010-11-24</dd>
+<dt class="note">[[User:Mikhail|Mikhail]]</dt>
+<dd class="note">Command is broken - confirmed. Use action [[ArmA:_Actions#USEWEAPON|"USEWEAPON"]] instead.
+Place a game logic in the editor. Name it '''MyGameLogic'''.
+Use this code to make '''unit1''' fire his primaryweapon:
+<sqf>MyGameLogic action ["useWeapon", primaryWeapon unit1, unit1, 0];</sqf></dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2011-02-25</dd>
+<dt class="note">[[User:.kju|.kju]]</dt>
+<dd class="note">Command works just fine in A2/OA. Make sure to execute it on '''local''' AI.</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2012-04-06</dd>
+<dt class="note">[[User:Max Power|Max Power]]</dt>
+<dd class="note">If it did work at one time, it does no longer.  The AI (or player) is forced to look upwards or reacts to a massive recoil force before getting his shot off.</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2013-02-16</dd>
+<dt class="note">[[User:hcpookie|hcpookie]]</dt>
+<dd class="note">Command did not work with {{Name|arma2acr|short}} v1.62.  Use [[fireAtTarget]] instead.</dd>
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-06-04 - 21:14 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+In {{arma3}} in order for AI to place Claymore, for example, it is necessary to execute 3 statements - an animation, weapon select and the actual [[fire]] command. Animation is most likely for forcing unit to leave rest state, weapon select and fire kinda both go together anyway:
+<sqf>
+_unit playActionNow "PutDown";
+_unit selectWeapon "DirectionalMineRemoteMuzzle";
+_unit fire [
+	"DirectionalMineRemoteMuzzle",
+	"DirectionalMineRemoteMuzzle",
+	"ClaymoreDirectionalMine_Remote_Mag"
+];
+</sqf>
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2017-11-25</dd>
+<dt class="note">[[User:SteveStevenson|Steve]]</dt>
+<dd class="note">
+In {{arma3}}, as of version 1.76, examples 2 and 3 in the section above for smoke grenades are no longer working.
+As a workaround (throwing green smoke grenades for example), you can use:
+<sqf>[_soldier, "SmokeShellGreenMuzzle"] call BIS_fnc_fire;</sqf></dt>
+</dd>
+
+</dl>

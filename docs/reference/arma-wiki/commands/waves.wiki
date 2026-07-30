@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/waves
+// revision: 319915 (2022-05-13T09:25:43Z)
+// export sha1: bg93g6k1cac4l0mso0yw4uqqvfw60xs
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|descr= Return waves value.
+
+|s1= '''waves'''
+
+|r1= [[Number]]
+
+|x1= <sqf>waveIntensity = waves;</sqf>
+
+|seealso= [[setWaves]]
+}}

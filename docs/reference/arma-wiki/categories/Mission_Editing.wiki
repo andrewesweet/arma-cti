@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Mission_Editing
+// revision: 255529 (2021-04-17T08:20:35Z)
+// export sha1: ladbk6atwicfi4fv9btg4irjebiq550
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|ofp|Editing}}
+{{GameCategory|ofpe|Editing}}
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+{{GameCategory|tkoh|Editing}}

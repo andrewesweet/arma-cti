@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/getSpeed
+// revision: 347558 (2023-09-28T09:45:46Z)
+// export sha1: 837avwc0ettqla7jvac6i79ca0o3pv3
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Get the speed for the given speed mode.
+
+SpeedMode can be:
+*"AUTO"
+*"SLOW"
+*"NORMAL"
+*"FAST"
+
+|s1= object [[getSpeed]] speedMode
+
+|p1= object: [[Object]]
+
+|p2= speedMode: [[String]]
+
+|r1= [[Number]] - m/s
+
+|x1= <sqf>_spd = player getSpeed "FAST";</sqf>
+
+|seealso= [[forceWalk]] [[isWalking]] [[forceSpeed]] [[isForcedWalk]]
+}}

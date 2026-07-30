@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isInFrontOf
+// revision: 328436 (2022-07-13T16:00:51Z)
+// export sha1: 4ddo0txq4t5uhwox031yskk5mvb3x3d
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Geometry | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Object Manipulation
+
+|gr2= Geometry
+
+|descr= Check if an object is in front of another object (in the front 180°)
+
+|s1= [reference, checked, offset] call [[BIS_fnc_isInFrontOf]]
+
+|p1= reference: [[Object]] - the reference object
+
+|p2= checked: [[Object]] - the object that has to be in front of ''reference''
+
+|p3= offset: [[Number]] - (Optional, default 0) allows to check from ''offset'' meters in front of (positive), or behind (negative) ''reference''
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _isInstructorInFrontOfPlayer = [player, instructor, 0] call BIS_fnc_isInFrontOf;</sqf>
+
+|seealso= [[getRelDir]] [[BIS_fnc_isInsideArea]]
+}}

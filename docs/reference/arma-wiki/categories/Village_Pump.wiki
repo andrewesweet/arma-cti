@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Village_Pump
+// revision: 219021 (2021-01-19T12:47:56Z)
+// export sha1: 2twjmejn56ditxo46hqinfh52nh6flb
+// Vendored snapshot. Do not edit — re-export instead.
+
+__HIDDENCAT__

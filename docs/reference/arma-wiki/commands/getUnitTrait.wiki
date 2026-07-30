@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/getUnitTrait
+// revision: 347973 (2023-11-08T09:46:06Z)
+// export sha1: rk6qaww4v7uokk7m90say8d13fc5x1l
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Gets the current value of a trait of the given unit.
+{{Feature|informative|For the default values see {{Link|setUnitTrait}}.}}
+
+|s1= unit [[getUnitTrait]] skillName
+
+|p1= unit: [[Object]]
+
+|p2= skillName: [[String]] - name of the skill
+
+|r1=
+* [[Boolean]] or [[Number]] - trait's value
+* [[Nothing]] - if ''unit'' is invalid, e.g an empty vehicle
+
+|x1= <sqf>player getUnitTrait "Medic";</sqf>
+
+|seealso= [[setUnitTrait]] [[getAllUnitTraits]]
+}}

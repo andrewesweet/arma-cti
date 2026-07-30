@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/isSaving
+// revision: 369063 (2024-09-02T20:24:55Z)
+// export sha1: 7dzp7jd6ck7oxb08vvsowh8nb2qd8mf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+|gr1= Mission Information
+
+|descr= Returns the status of autosave request, made when [[saveGame]] command is executed. When request is made, the command immediately returns [[true]]. The engine then handles the saving and when it is done, the command returns [[false]].
+
+|s1= [[isSaving]]
+
+|r1= [[Boolean]] - [[true]] autosave request is made, [[false]] autosave request is processed
+
+|x1= <sqf>
+0 spawn
+{
+	saveGame;
+	waitUntil { !isSaving };
+	systemChat "Game Saving Is Done!";
+};
+</sqf>
+
+|seealso= [[saveGame]] [[enableSaving]] [[loadGame]] [[savingEnabled]]
+}}

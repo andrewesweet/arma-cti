@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_decodeFlags8
+// revision: 373739 (2025-06-24T19:02:20Z)
+// export sha1: nyb6jdfug956ptmhs40w83blka62r89
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Bitwise | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Bitwise
+
+|descr= Decodes a single scalar into array of unique 8-state flags (values 0,1,2,3,4,5,6,7).
+
+|s1= [encodedFlags, size] call [[BIS_fnc_decodeFlags8]]
+
+|p1= encodedFlags: [[Number]] - non-decimal number between 0 and 16777215
+|p2= size: [[Number]] - (Optional, default -1) output size. Size -1 means output will not be resized
+
+|r1= [[Number]] - decoded flags
+
+|x1= <sqf>private _decodedFlags = 4311 call BIS_fnc_decodeFlags8; // [7,2,3,0,1]</sqf>
+|x2= <sqf>private _decodedFlags = [4311, 8] call BIS_fnc_decodeFlags8; // [7,2,3,0,1,0,0,0]</sqf>
+
+|seealso= [[BIS_fnc_encodeFlags8]]
+}}

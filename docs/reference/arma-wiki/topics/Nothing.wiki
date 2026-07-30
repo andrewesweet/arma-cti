@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Nothing
+// revision: 87135 (2014-12-22T17:42:31Z)
+// export sha1: 7soxu56te0r7wdag56rt4w3crj996n0
+// categories: Category:Magic Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+An expression of type '''Nothing''' is no value. It cannot be assigned to a variable. It exists because each expression needs to return some value and needs to have some clearly identified [[:Category:Data Types|type]].
+
+Its presence can be checked using [[isNil]].
+
+[[Category: Magic Types]]

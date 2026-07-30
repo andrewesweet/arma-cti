@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/image
+// revision: 341003 (2023-05-13T22:06:20Z)
+// export sha1: nmxmqkutdsddr1j5kpz4if48harn1ld
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Command Group: Strings | Category:Command Group: Structured Text | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Strings
+
+|gr2= GUI Control
+
+|gr3= Structured Text
+
+|descr= Creates a structured text containing the given image. Use [[setAttributes]] to set additional [[Structured_Text#Attributes | attributes]] on the image.
+
+|s1= [[image]] filename
+
+|p1= filename: [[String]]
+
+|r1= [[Structured Text]]
+
+|x1= <sqf>hint composeText ["Image: ", image "\a3\Data_f\Flags\flag_Altis_co.paa"];</sqf>
+ 
+|x2= <sqf>hint str (composeText ["Image: ", image "\a3\Data_f\Flags\flag_Altis_co.paa"] == parseText "Image: <img image='\a3\Data_f\Flags\flag_Altis_co.paa'/>"); // true</sqf>
+
+|seealso= [[setAttributes]] [[parseText]] [[text]] [[composeText]] [[lineBreak]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2009-03-21</dd>
+<dt class="note">[[User:Spooner|Spooner]]</dt>
+<dd class="note">Although there is a dedicated [[image]] command, [[parseText]] gives more options:
+<sqf>_imageText = parseText "<img size='5' color='#ff0000' image='fish.paa'/>"</sqf>
+
+</dl>

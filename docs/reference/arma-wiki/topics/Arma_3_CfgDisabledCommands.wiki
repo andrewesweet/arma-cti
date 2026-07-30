@@ -1,0 +1,148 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgDisabledCommands
+// revision: 378044 (2026-01-27T20:21:42Z)
+// export sha1: 1qw0cimobfbnoadx5gf3ahiygp05ro7
+// categories: Category:Arma 3: Remote Execution | Category:Introduced with Arma 3 version 1.66
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+__NOEDITSECTION__
+{{GVI|arma3|1.66}} The '''CfgDisabledCommands''' is a [[Description.ext#CfgDisabledCommands|Description.ext]] class which allows to disable selected scripting commands in a mission.
+
+{{Feature|important|
+It is a powerful tool and can '''make or break''' your game, since some of the default in-game mechanics also uses scripting.
+The use of CfgDisabledCommands feature requires advanced knowledge of scripting and should not be attempted unless the mission maker is confident in his abilities and is aware of potential dangers.
+}}
+
+
+== Motivation ==
+
+This powerful feature was developed in an attempt to give mission maker a tool, which allows him to increase security of multiplayer missions against possible hacking and exploits.
+Many mission makers choose to move important code to server side, however some script commands left on client side may prove it difficult to achieve desired security goal.
+Disabling them altogether while mission is running could be the answer to some of the common issues.
+
+
+== Mechanics ==
+
+Commands listed in {{hl|CfgDisabledCommands}} are disabled on mission start.
+This means that they are fully available in pre-init phase, therefore allowing mission maker to initialise the mission properly.
+Commands could be disabled on server, clients and HCs separately, giving even more flexibility to mission maker.
+
+{{Feature|informative|
+If the command is disabled on client:
+* '''In singleplayer:''' using {{hl|Local Exec}} in debug console throws a {{hl|Generic error in expression}}.
+* '''In multiplayer:''' if the command is [[remoteExec|remote executed]] from the server (or a headless client), the command executes normally. Using {{hl|Local Exec}} makes the command run normally, since it uses [[remoteExec]] to call the script.
+}}
+
+Any attempt of using disabled command after mission start will result in error message in .[[rpt]] file, while command itself will be ignored as if it didn't exist.
+The disabling is final and cannot be overridden during mission.
+Some commands have alternative syntaxes, therefore in order to disable command, the desired syntax has to be indicated (about this [[#Selecting Correct Syntax|later]]).
+
+{{Feature|important|{{hl|CfgDisabledCommands}} impacts both Singleplayer '''and''' Multiplayer. In Singleplayer, the '''client''' setting is used.}}
+
+
+== Indication ==
+
+If the [[missionConfigFile|mission config]] contains {{hl|CfgDisabledCommands}} class and it is not empty, the warning icon will be shown on the title bar of the debug console:
+
+[[File:cdc_icon.jpg|600px]]
+
+
+== Structure ==
+
+Here is an example config, which disables [[createUnit]], the one with remote exec ability, and [[createVehicleLocal]] on clients:
+<syntaxhighlight lang="cpp">
+class CfgDisabledCommands
+{
+	class CREATEUNIT
+	{
+		class SYNTAX1
+		{
+			targets[] = { 1, 0, 1 };
+			args[] = { { "STRING" }, { "ARRAY" } };
+		};
+	};
+
+	class CREATEVEHICLELOCAL
+	{
+		class SYNTAX1
+		{
+			targets[] = { 1, 0, 1 };
+			args[] = { { "STRING" }, { "ARRAY" } };
+		};
+	};
+};
+</syntaxhighlight>
+
+As you can see, the structure consists of definition of commands (CREATEUNIT, CREATEVEHICLELOCAL), definition of syntax (args[]) and target locality (targets[]):
+* '''targets[]''' - the format is <syntaxhighlight lang="cpp" inline>{ enableServer, enableClient ,enableHC }</syntaxhighlight>.<!--
+--> 1 means enable, 0 means disable. From the above example <syntaxhighlight lang="cpp" inline>targets[] = { 1, 0, 1 };</syntaxhighlight> means: enable server, disable client, enable HC.
+* '''args[]''' - (Optional) the format is '''{{leftArgumentType},{rightArgumentType}}'''. The information about argument types could be retrieved with [[supportInfo]] command.
+
+{{ArgTitle|3|CfgDisabledCommands Utility|{{GVI|arma3|1.68}}}}
+
+CfgDisabledCommand Utility can be used to generate [[Arma 3: Utilities#CfgDisabledCommands Template Generator|CfgDisabledCommands template]].
+In order to do so, open debug console and type {{hl|utils 1}} then click on LOCAL EXEC:
+
+[[File:CfgDisabledCommands.jpg|400px]]
+
+
+== Selecting Correct Syntax ==
+
+While [[createVehicleLocal]] has only 1 syntax, [[createUnit]] has 2 syntaxes:
+<syntaxhighlight lang="cpp">
+// ...
+class CREATEUNIT
+{
+	class SYNTAX1
+	{
+		targets[] = { 1, 1, 1 };
+		args[] = { { "STRING" }, { "ARRAY" } };
+	};
+
+	class SYNTAX2
+	{
+		targets[] = { 1, 1, 1 };
+		args[] = { { "GROUP" }, { "ARRAY" } };
+	};
+};
+// ...
+</syntaxhighlight>
+From the [[createUnit]] command page it is obvious that <syntaxhighlight lang="cpp" inline>args[] = { { "STRING" }, { "ARRAY" } };</syntaxhighlight> is the syntax we want to keep as it is the syntax we want to disable since it allows for passed code to be remote executed everywhere, and thus presenting a security issue, so we leave it and delete the other syntax which is harmless in comparison.
+For other commands also refer to the respectful command pages. For example, [[setViewDistance]]:
+<syntaxhighlight lang="cpp">
+class CfgDisabledCommands
+{
+	class SETVIEWDISTANCE
+	{
+		class SYNTAX1
+		{
+			targets[] = { 1, 1, 1 };
+			args[] = { {}, { "SCALAR" } };
+		};
+	};
+};
+</syntaxhighlight>
+
+Note that the command doesn't have left argument, so it is simply replaced with <syntaxhighlight lang="cpp" inline>{}</syntaxhighlight>.
+After the correct syntax is selected and other syntaxes are removed, the targets could be configured according to mission design (by default enabled everywhere).
+
+If a command doesn't have left arguments, or right arguments the correct syntax is:
+<syntaxhighlight lang="cpp">
+class CfgDisabledCommands
+{
+	class ALLPLAYERS
+	{
+		targets[] = { 1, 1, 1 };
+	};
+};
+</syntaxhighlight>
+
+
+== Reminder ==
+
+Once again, consider carefully what commands you want to disable and verify that disabling is not interfering with default functionality of the game.
+Don't forget to check [[rpt|.rpt]] file to avoid any confusion in the future.
+
+
+[[Category:Introduced with Arma 3 version 1.66]]
+{{GameCategory|arma3|Remote Execution}}

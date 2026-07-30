@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleModules
+// revision: 348251 (2023-11-08T11:40:33Z)
+// export sha1: lz0la4hpeps41zaxdefgx4g0rulay22
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|descr= Scans synchronized objects and returns synchronized modules
+
+|s1= [module] call BIS_fnc_moduleModules
+
+|r1=Array - array of Objects - Modules
+
+|x1= <!-- <sqf>[] call BIS_fnc_moduleModules;</sqf> -->
+
+|seealso=
+}}

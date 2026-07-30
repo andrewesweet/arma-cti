@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/exp
+// revision: 338163 (2023-02-23T23:48:34Z)
+// export sha1: 6ln702fs19xpckd7ccu1opedktt3hq3
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Math
+
+|descr= Exponential function with the base {{Link|https://en.wikipedia.org/wiki/E_(mathematical_constant)|e}}. Equal to {{hl|e^x}}. [[File:A3 expx.jpg|thumb|See how green and blue are identical except for the offset]]
+
+|s1= [[exp]] x
+
+|p1= x: [[Number]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_e = exp 1; // Returns e (2.7182...)</sqf>
+
+|x2= <sqf>ln exp 1; // Returns 1</sqf>
+
+|seealso= [[Math Commands]]
+}}
+
+{{Note
+|user= Franze
+|timestamp= 20090303220400
+|text= Note that you cannot exponent a value greater than 88.72283554077147726999 (999 repeating), as this is beyond what the game can calculate.
+}}

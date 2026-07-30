@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/vectorNormalized
+// revision: 378403 (2026-04-04T08:14:40Z)
+// export sha1: 0kvbq11qbm4xpludzy0lhu4y3wfa8bo
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Introduced with Arma 3 version 1.26 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.26
+
+|gr2= Math - Vectors
+
+|descr= Returns normalised vector (unit vector, [[vectorMagnitude]] {{=}}{{=}} 1) of given vector. If given vector is 0 result is a 0 vector as well.
+{{Feature|informative|
+* {{GVI|arma3|2.14|size= 0.75}} any count of numbers is valid
+* {{GVI|arma3|2.00|size= 0.75}} now supports [[Vector2D]] (z defaulted to 0)
+* {{GVI|arma3|1.26|size= 0.75}} command introduction, only works with [[Vector3D]]
+}}
+
+|s1= [[vectorNormalized]] vector
+
+|p1= vector: [[Array]] of [[Number]]s
+
+|r1= [[Vector3D]]
+
+|x1= <sqf>
+vectorNormalized [12345,7890,38383]; // [0.300481,0.192045,0.934254]
+vectorMagnitude [0.300481,0.192045,0.934254]; // 1
+</sqf>
+
+|seealso= [[vectorDiff]] [[vectorCrossProduct]] [[vectorDotProduct]] [[vectorCos]] [[vectorMagnitude]] [[vectorMagnitudeSqr]] [[vectorMultiply]] [[vectorDistance]] [[vectorDistanceSqr]] [[vectorDir]] [[vectorUp]] [[setVectorDir]] [[setVectorUp]] [[setVectorDirAndUp]] [[vectorFromTo]] [[matrixMultiply]] [[matrixTranspose]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140719151300
+|text= {{GVI|arma3|1.26}} Algorithm:
+<sqf>
+_vector = [x,y,z];
+_result = [x / (sqrt (x ^ 2 + y ^ 2 + z ^ 2)), y / (sqrt (x ^ 2 + y ^ 2 + z ^ 2)), z / (sqrt (x ^ 2 + y ^ 2 + z ^ 2))];
+</sqf>
+In mathematics, a unit vector in a normed vector space is a vector whose length is 1.
+}}

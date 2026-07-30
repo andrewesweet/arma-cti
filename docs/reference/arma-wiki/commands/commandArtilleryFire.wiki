@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/commandArtilleryFire
+// revision: 377430 (2026-01-02T06:45:46Z)
+// export sha1: bf5qrb9jfwsc4jsmrygq9o2pdei31il
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Artillery | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= local
+
+|gr1= Artillery
+
+|descr= Orders an artillery unit to fire a burst on the given position (via the radio).
+
+|pr= The unit will fire a burst even if the '''rounds''' parameter is 0 or a negative number.
+
+|s1= unit [[commandArtilleryFire]] [position, type, rounds]
+
+|p1= unit: [[Object]]
+
+|p2= position: [[Position#PositionAGL|PositionAGL]]
+
+|p3= type: [[String]] - magazine class name from [[Arma_3:_CfgMagazines|CfgMagazines]] (case sensitive).
+
+|p4= rounds: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>Mortar commandArtilleryFire [[3000, 120, 1000], "8Rnd_82mm_Mo_shells", 3];</sqf>
+
+|seealso= [[doArtilleryFire]] [[getArtilleryAmmo]] [[getArtilleryETA]] [[enableEngineArtillery]] [[getArtilleryComputerSettings]] [[shownArtilleryComputer]] [[inRangeOfArtillery]] [[fire]] [[doFire]] [[commandFire]] [[canFire]] [[fireAtTarget]] [[forceWeaponFire]] [[commandSuppressiveFire]] [[doSuppressiveFire]] [[isManualFire]]
+}}
+
+{{Note
+|user= ansin11
+|timestamp= 20200418142800
+|game= arma3
+|version= 1.98
+|text= This command can not fire bursts consisting of more rounds than the given magazine type holds, even if there are several magazines of the same type available. The fire mission issued by this command ends once the artillery unit has to reload.<br><br>
+'''Example:'''
+<br>The Mk6 Mortar comes with four "8Rnd_82mm_Mo_shells" magazines, giving it a total of 32 HE shells. However, <sqf inline>_mortar commandArtilleryFire [_somePos, "8Rnd_82mm_Mo_shells", 10];</sqf> will only fire 8 rounds instead of 10.<br><br>
+Similarly, ...
+<sqf>
+_mortar commandArtilleryFire [_somePos, "8Rnd_82mm_Mo_shells", 7]; // First burst
+sleep 20; // Wait until first burst has been fired
+_mortar commandArtilleryFire [_somePos, "8Rnd_82mm_Mo_shells", 2]; // Second burst
+</sqf>
+... will only fire 8 rounds total instead of 9; the second round of the second burst is never fired because the artillery unit has to reload after the first round of the second burst.
+}}

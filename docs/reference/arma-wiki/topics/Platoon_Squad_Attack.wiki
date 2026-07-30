@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/Platoon/Squad_Attack
+// revision: 219013 (2021-01-19T12:40:30Z)
+// export sha1: l9jzlheng0cfzj947c3dgse4essfxgx
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+When maneuvering to make contact with an enemy and a fighting erupts, the following drill should be executed.
+
+'''Step 1 (Initialization)'''
+Set up a base of fire element (squad/fireteam) and identify the enemy's position, strength, and any significant terrain features within the immediate area.
+
+'''Step 2 (Suppression)'''
+The base of fire engages the enemy. Produce a high volume of suppressing fire to ensure movement. Determine if the squad/platoon can suppress the enemy:
+
+*If '''NO''': Maneuver the unengaged squad/fireteam to a position to effectively suppress the enemy. If the enemy remains active and is not suppressed, maneuver yourself (the command element) in a position to suppress/observe the enemy and report to the Platoon/Company Commander. (End of Drill)
+
+*If '''YES''': The squad/fireteam in contact suppresses the enemy that is firing the most effectively against it. Then it pops smoke to obscure the movement of the unengaged squad/fireteam. Deploy machine gun elements/sections to continually suppress the enemy
+
+'''Step 3 (Attack)'''
+Determine if an unengaged squad/fireteam can maneuver
+
+*If '''NO''': Deploy remaining squads/fireteams to suppress the enemy. Report to the Platoon/Company Commander. (End of Drill)
+
+*If '''YES''': Lead the assaulting team/squad into position. Signal the base of fire to shift fire to the far flank of the area about to be assaulted. Advance into the enemy assigning specific objectives for each squad/fireteam and base maneuver team/squad.
+
+'''Step 4 (Reorganize)'''
+Position the base of fire into a position to actively deflect an enemy counter-attack. Assign specific sectors for each squad/fireteam. Make sure to cover likely avenues of approach with heavy weapons.
+
+*Reestablish the chain of command.
+*Redistribute and resupply ammunition 
+*Redistribute critical equipment
+*Fill vacancies in key positions
+
+Report to the Platoon/Company Commander.
+
+(End of Drill)
+[[Category:Battle Tactics]]

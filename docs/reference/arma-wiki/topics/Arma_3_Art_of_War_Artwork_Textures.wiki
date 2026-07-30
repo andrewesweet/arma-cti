@@ -1,0 +1,3511 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Art_of_War_Artwork_Textures
+// revision: 352019 (2024-02-01T23:24:22Z)
+// export sha1: crfjaoz4ey7dl85bws7zv7a4of0f7je
+// categories: Category:Arma 3
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|It is possible to change the artwork in all the frames and on all the canvases that arrived with the [[Arma_3_Art_of_War|Arma 3 Art of War DLC]]. This can be achieved directly in the Eden Editor by accessing the asset's attributes and adjusting the relative path to the texture. It can also be done via the [[setObjectTexture]] script command or [[BIS_fnc_setObjectTexture]] function. For more information on replacing textures in-game, see the article on [[Retexturing with setObjectTexture]]. For texture reference layouts, see the second table at the bottom of this page.}}
+
+
+== Custom Artwork ==
+
+
+{| class="wikitable"
+! style="min-width: 450px" | Image
+! Artwork Title
+! Artwork Author
+! Texture Path(s)
+! Compatible Assets
+! Texture Size
+! Contest Winner
+! Gallery Location
+! Accompanying Text
+|-
+| [[File:Arma 3 AOW artwork preview jet fighter.jpg|450px]]
+| ''Jet Fighter''
+| Descryver 'Papa Bear' Stéphane
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_63_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_63_ca.paa
+| 
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, South Wall
+| 2020
+
+Pencil on paper
+|-
+| [[File:Arma 3 AOW artwork preview first aid basics.jpg|450px]]
+| ''First Aid Basics''
+| Sparrowhawk
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Portrait\showcase_aow_picture_79_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_79_ca.paa
+| 
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, South Wall
+| 2016
+
+Photograph (IDAP 2016 Expo, Nevada, United States)
+|-
+| [[File:Arma 3 AOW artwork preview desert rats.jpg|450px]]
+| ''Desert Rats''
+| Kiki Mazar
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_92_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_92_ca.paa
+| 
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, West Wall
+| 2019
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview disarmament.jpg|450px]]
+| ''Disarmament''
+| Colin Marshal Harrison
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_38_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_38_ca.paa
+| 
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, West Wall
+| 2035
+
+Photograph (Pyrgos, The Republic of Altis and Stratis)
+|-
+| [[File:Arma 3 AOW artwork preview lalo.jpg|450px]]
+| ''LALO''
+| Greenfist
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_112_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_112_ca.paa
+| 
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, West Wall
+| 2035
+
+Photograph (Southern Livonia)
+|-
+| [[File:Arma 3 AOW artwork preview identify the target.jpg|450px]]
+| ''Identify the Target''
+| Jorge López Rodríguez
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Portrait\showcase_aow_picture_56_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_56_ca.paa
+| 
+* Gallery Frame (Large, v1) 
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, West Wall
+| 2035
+
+Acrylic and crayon on canvas
+|-
+| [[File:Arma 3 AOW artwork preview between the lines.jpg|450px]]
+| ''Between the Lines''
+| Jon Brown
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_41_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_41_ca.paa
+| 
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, West Wall
+| 2035
+
+Photograph (Zaros, The Republic of Altis and Stratis)
+|-
+| [[File:Arma 3 AOW artwork preview dust off.jpg|450px]]
+| ''Dust-Off''
+| Jon Brown
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_88_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_88_ca.paa
+| 
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, West Wall
+| 2022
+
+Photograph (Eastern Ardistan)
+|-
+| [[File:Arma 3 AOW artwork preview incident on stratis.jpg|450px]]
+| ''An Incident on Stratis''
+| Shaleshock
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_104_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_104_ca.paa
+| 
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, West Wall
+| 2034
+
+Photograph (Agia Marina, The Republic of Altis and Stratis)
+|-
+| [[File:Arma 3 AOW artwork preview underwater demolition.jpg|450px]]
+| ''Underwater Demolition''
+| Descryver 'Papa Bear' Stéphane
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_65_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_65_ca.paa
+| 
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, West Wall
+| 2032
+
+Photograph (U.S. Navy Training Center, California, United States)
+|-
+| [[File:Arma 3 AOW artwork preview noncombatants.jpg|450px]]
+| ''Non-Combatants''
+| Raphel Sanchez
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_42_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_42_ca.paa
+| 
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, West Wall
+| 2029
+
+Photograph (Bitez, Turkey)
+|-
+| [[File:Arma 3 AOW artwork preview collateral damage.jpg|450px]]
+| ''Collateral Damage''
+| João Victor Gonçalves Mariottini
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Portrait\showcase_aow_picture_08_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_08_ca.paa
+| 
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| 3rd Place - 2D Art Category
+| Entry Hall, North Wall
+| In this playful yet provocative scene, a paramedic carries a wounded individual on a stretcher while a pair of Livonian soldiers look on. The laptop reads 'EMP', an acronym for ElectroMagnetic Pulse. EMP weapons destroy electronics and are sometimes used indiscriminately in cyberwarfare, breaking International Humanitarian Law by targeting civilian as well as military infrastructure.
+
+2020
+
+Watercolor on canvas
+|-
+| [[File:Arma 3 AOW artwork preview technomachy.jpg|450px]]
+| ''Technomachy''
+| Stelios Afentakis
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Canvas\showcase_aow_picture_09_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_09_ca.paa
+| 
+* Canvas (Large)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| 2nd Place - 2D Art Category
+| Entry Hall, North Wall
+| Although it might appear like science fiction, this busy combat scene presages an authentic glimpse of tomorrow’s battlefields. Urban environments, swarming with ground and aerial combat drones, autonomous medical units, and soldiers, clad in dehumanizing armor, strike us now as a grounded interpretation of what is to come. The legal and humanitarian challenges these new forms of warfare present are a pressing global concern.
+
+2028
+
+Acrylic on canvas
+|-
+| [[File:Arma 3 AOW artwork preview hearts and minds.jpg|450px]]
+| ''Hearts and Minds''
+| Ultimate Dunkel
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_68_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_68_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, East Wall
+| 2012
+
+Photograph (Karichar, Takistan)
+|-
+| [[File:Arma 3 AOW artwork preview blue party prison riot.jpg|450px]]
+| ''Blue Party Prison Riot''
+| Bamslam
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_22_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_22_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| Screenshot Category Winner
+| Entry Hall, East Wall
+| Not all wars are fought upon the battlefield. This photograph depicts the famous 1989 'Blue Party Prison Riot' at Andrzejów Detention Center in Livonia, an episode which made international headlines and quickly captured the imagination of the world. Inmates, along with several guards, in solidarity with national actions against the Soviet regime and angry with deteriorating living conditions, staged several weeks of protests before finally taking full control of the facility.
+
+1989
+
+Photograph (Andrzejów, Livonia)
+|-
+| [[File:Arma 3 AOW artwork preview f16s over ktown.jpg|450px]]
+| ''F-16s Over K-Town''
+| Yooles
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Square\showcase_aow_picture_29_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_29_ca.paa
+|
+* Gallery Frame (Square)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, East Wall
+| Combat aircraft led to a revolution in the way that wars were waged, defining many conflicts over the last 100 years. But what will be the next seismic shift in warfare? What will be the 21st Century’s ‘Guernica’? A sky, dark with unmanned bombers? Clouds of miniature drones, subjugating nations at the touch of a button? Or will aerial engagements become a thing of the past, slowly superseded by battles in space?
+
+2003
+
+Photograph (Kaiserslautern, Germany)
+|-
+| [[File:Arma 3 AOW artwork preview as above so below.jpg|450px]]
+| ''As Above, So Below''
+| Kiko Mazar
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_91_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_91_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, East Wall
+| 2019
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview concept for automated strike helicopter.jpg|450px]]
+| ''Concept for Automated Strike Helicopter''
+| Maxi Cortés
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_44_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_44_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, East Wall
+| 2027
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview air cav.jpg|450px]]
+| ''Air Cav''
+| Descryver 'Papa Bear' Stéphane
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Portrait\showcase_aow_picture_66_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_66_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, East Wall
+| 2025
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview the apparition.jpg|450px]]
+| ''The Apparition''
+| Yooles
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_72_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_72_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, East Wall
+| 2030
+
+Acrylic on canvas
+|-
+| [[File:Arma 3 AOW artwork preview first aid station.jpg|450px]]
+| ''Aid Station''
+| Vyacheslav Spiridonov
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Portrait\showcase_aow_picture_55_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_55_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, East Wall
+| 2034
+
+Pencil on paper
+|-
+| [[File:Arma 3 AOW artwork preview safe inspection.jpg|450px]]
+| ''Safe Inspection''
+| Julian Łada
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_36_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_36_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| Entry Hall, East Wall
+| 2030
+
+Photograph (Mytilene, Greece)
+|-
+| [[File:Arma 3 AOW artwork preview workshop.jpg|450px]]
+| ''Workshop''
+| Farsight
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_30_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_30_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, South Wall
+| 2023
+
+Photograph (IDAP Expo, California, United States)
+|-
+| [[File:Arma 3 AOW artwork preview cbrn.jpg|450px]]
+| ''CBRN''
+| Farsight
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_31_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_31_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, South Wall
+| 2023
+
+Photograph (IDAP Expo, California, United States)
+|-
+| [[File:Arma 3 AOW artwork preview man with child.jpg|450px]]
+| ''Man with Child''
+| Pedro "Whiplash" Rodrigues
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_07_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_07_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, South Wall
+| This touching photograph is a powerful reminder of how armed conflict can impact children. Aside from the nightmarish imagery, embodied here by faceless soldiers in hazmat suits, war causes intense psychological trauma through the severance of emotional and physical ties. The experiences of young victims, forced to abandon homes and loved ones, often transcend generations and inflict indiscernible wounds, many of which remain for life.
+
+2035
+
+Photograph (La Roche, Horizon Islands)
+|-
+| [[File:Arma 3 AOW artwork preview sand and steel.jpg|450px]]
+| ''Sand and Steel''
+| Greenfist
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_80_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_80_ca.paa
+| 
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, South Wall
+| 2019
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview un troop carrier.jpg|450px]]
+| ''UN Troop Carrier''
+| Rostislav Skotnica
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Square\showcase_aow_picture_48_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_48_ca.paa
+|
+* Gallery Frame (Square)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, South Wall
+| 2019
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview paramedics.jpg|450px]]
+| ''Paramedics''
+| Farsight
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_32_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_32_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, South Wall
+| 2023
+
+Photograph (IDAP Expo, California, United States)
+|-
+| [[File:Arma 3 AOW artwork preview autonomous vehicles.jpg|450px]]
+| ''Autonomous Vehicles''
+| Farsight
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_33_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_33_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, South Wall
+| 2023
+
+Photograph (IDAP Expo, California, United States)
+|-
+| [[File:Arma 3 AOW artwork preview contraband.jpg|450px]]
+| ''Contraband''
+| Adam Dollard
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Portrait\showcase_aow_picture_40_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_40_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, South Wall
+| 2035
+
+Photograph (Georgetown, Horizon Islands)
+|-
+| [[File:Arma 3 AOW artwork preview the giftgivers.jpg|450px]]
+| ''The Gift-Givers''
+| Maria Isabel Rauber Neves Martinewski
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_47_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_47_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, South Wall
+| 2023
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview looters.jpg|450px]]
+| ''Looters''
+| Yooles
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_117_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_117_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, South Wall
+| 2032
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview lz hot.jpg|450px]]
+| ''LZ Hot!''
+| Nikolai'z
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_101_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_101_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, East Wall
+| 2012 
+
+Photograph (Nasdara, Takistan)
+|-
+| [[File:Arma 3 AOW artwork preview burgers on the msr.jpg|450px]]
+| ''Burgers on the MSR''
+| Greenfist
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_110_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_110_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, East Wall
+| 2017
+
+Photograph (Near Mazargan, Karzeghistan)
+|-
+| [[File:Arma 3 AOW artwork preview faithful.jpg|450px]]
+| ''Faithful''
+| Section 8
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_115_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_115_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, East Wall
+| 1945
+
+Photograph (Iwo Jima, Japan) [color reproduction]
+|-
+| [[File:Arma 3 AOW artwork preview ecce homo.jpg|450px]]
+| ''Ecce Homo''
+| Yooles
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_16_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_16_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+|| De Kornelis Zaal, East Wall
+| Behold the man. But a generation ago, how many would recognize this special forces operative as a man at all? There is no evidence of anything beneath the armor. Is this then, a sign of things to come? At what point, in a world of human enhancements and inchoate cybernetics, do we begin to lose ourselves? And what are the implications of dehumanizing combatants on the battlefield? How will this affect our perceptions of war? Is this another step in the sanitization of modern warfare? Or a simple practicality, providing soldiers with the equipment and protection needed?
+
+2031
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview at the crossroads of two worlds.jpg|450px]]
+| ''At the Crossroads of Two Worlds''
+| Victor Fievet
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_59_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_59_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, East Wall
+| 2023
+
+Photograph (Galbo, South Lombakka)
+|-
+| [[File:Arma 3 AOW artwork preview time to move.jpg|450px]]
+| ''Time to Move!''
+| Kevin Potter
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_39_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_39_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, East Wall
+| 2029
+
+Photograph (Bodrum, Turkey)
+|-
+| [[File:Arma 3 AOW artwork preview they shall not grow old.jpg|450px]]
+| ''They Shall Not Grow Old''
+| Armography
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_118_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_118_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, East Wall
+| 2020 
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview crossfire.jpg|450px]]
+| ''Crossfire''
+| Greenfist
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Portrait\showcase_aow_picture_113_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_113_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, East Wall
+| 2021
+
+Photograph (Okem, Argana)
+|-
+| [[File:Arma 3 AOW artwork preview dont let go.jpg|450px]]
+| ''<nowiki/>'Don't Let Go...'''
+| Mixuray
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_106_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_106_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, East Wall
+| 2029
+
+Photograph (Bodrum, Turkey)
+|-
+| [[File:Arma 3 AOW artwork preview carpool.jpg|450px]]
+| ''Carpool''
+| Komyeta
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_98_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_98_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, North Wall
+| 2013
+
+Photograph (Kavala, The Republic of Altis and Stratis)
+|-
+| [[File:Arma 3 AOW artwork preview eyes on.jpg|450px]]
+| ''Eyes On''
+| Gikas Voskopoulos
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_102_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_102_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, North Wall
+| 2032
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview casualties.jpg|450px]]
+| ''Casualties''
+| Descryver 'Papa Bear' Stéphane
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_62_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_62_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, North Wall
+| 2035
+
+Pencil and watercolor on paper
+|-
+| [[File:Arma 3 AOW artwork preview younger brother.jpg|450px]]
+| ''Younger Brother''
+| Juan José Abenza García
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_57_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_57_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, North Wall
+| 2026
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview firefighters.jpg|450px]]
+| ''Firefighters''
+| Sparky's Screenies
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_76_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_76_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, North Wall
+| 2019
+
+Photograph (Równia, Livonia)
+|-
+| [[File:Arma 3 AOW artwork preview jet with tail art.jpg|450px]]
+| ''Jet with Tail Art''
+| Loeb Florian
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Portrait\showcase_aow_picture_58_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_58_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, North Wall
+| 2030
+
+Photograph (Nevada, United States)
+|-
+| [[File:Arma 3 AOW artwork preview asymmetric warfare.jpg|450px]]
+| ''Asymmetric Warfare''
+| Kiko Mazar
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_93_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_93_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, North Wall
+| 2029
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview oscar mike.jpg|450px]]
+| ''Oscar Mike''
+| Gespt Tauro
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_69_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_69_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, North Wall
+| 2027
+
+Photograph (Near Batu-Nim, Argana)
+|-
+| [[File:Arma 3 AOW artwork preview the beachhead.jpg|450px]]
+| ''The Beachhead''
+| Just Dovid
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_75_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_75_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, North Wall
+| 1944
+
+Photograph (Normandy, France) [color reproduction]
+|-
+| [[File:Arma 3 AOW artwork preview the patrol.jpg|450px]]
+| ''The Patrol''
+| William Thomas Nuckolls
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_10_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_10_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, North Wall
+| A soldier relies upon their senses to make correct decisions on the battlefield. But as this curious painting shows, accurate observation is not always easy. Here, we can vaguely make out the silhouettes of soldiers moving through a field, partially obscured by their environment and its twilight shadows. Although it's clear there are combatants present, are all of them legitimate targets?
+
+2032
+
+Acrylic on canvas
+|-
+| [[File:Arma 3 AOW artwork preview casevac.jpg|450px]]
+| ''CASEVAC''
+| Bernardo José Prazeres Ferreira
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_49_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_49_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, North Wall
+| 2034
+
+Photograph (Camp Briareus, The Republic of Altis and Stratis)
+|-
+| [[File:Arma 3 AOW artwork preview let em pass.jpg|450px]]
+| ''<nowiki/>'Let 'em Pass'''
+| Kiki Muhammad Rizqi
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_37_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_37_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, West Wall
+| 2035
+
+Photograph (La Trinité, Malden)
+|-
+| [[File:Arma 3 AOW artwork preview river walk.jpg|450px]]
+| ''River Walk''
+| Pedro "Whiplash" Rodrigues
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_83_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_83_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, West Wall
+| 2025
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview death by algorithm.jpg|450px]]
+| ''Death by Algorithm''
+| Greenfist
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_109_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_109_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, West Wall
+| 2035
+
+Photograph (Brena, Livonia)
+|-
+| [[File:Arma 3 AOW artwork preview tank killer.jpg|450px]]
+| ''Tank Killer''
+| Descryver 'Papa Bear' Stéphane
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_64_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_64_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, West Wall
+| 2024
+
+Photograph
+|-
+| [[File:Arma 3 AOW artwork preview kinetic.jpg|450px]]
+| ''Kinetic''
+| Shasta
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_122_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_122_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, West Wall
+| 2020
+
+Photograph (Azure Island)
+|-
+| [[File:Arma 3 AOW artwork preview changing tracks.jpg|450px]]
+| ''Changing Tracks''
+| Jon Brown
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_87_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_87_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, West Wall
+| 2035
+
+Photograph (Southern Livonia)
+|-
+| [[File:Arma 3 AOW artwork preview one of many.jpg|450px]]
+| ''One of Many''
+| Diego Ferreirós González
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_05_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_05_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, West Wall
+| Like the rows of military graves in cemeteries across the world, this sober image highlights the human cost of conflict in no uncertain terms. In the context of modern warfare, it also poses some difficult questions. Not only in relation to reasons for war but with regards to the methods of waging it. Are autonomous weapons, for instance, an opportunity to save soldiers' lives? Do we really want to remove these tragic consequences, allowing nations to project force with impunity? And how can we argue against robots on the battlefield with the loved ones of combatants who have made an ultimate, yet ultimately avoidable sacrifice? Perhaps, scenes like this one, are a necessary reality of war?
+
+2035
+
+Photograph (Altis International Airport, The Republic of Altis and Stratis)
+|-
+| [[File:Arma 3 AOW artwork preview contractors.jpg|450px]]
+| ''Contractors''
+| Shasta
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_70_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_70_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, West Wall
+| 2021
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview gray goo.jpg|450px]]
+| ''<nowiki/>'Gray Goo'''
+| Otto Petäjä
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_01_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_01_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+|| De Kornelis Zaal, West Wall
+| In this famous work of abstract art, we are offered a chillingly prophetic vision of future conflict. Simply entitled 'Gray Goo', it alludes to the gray, slime-like appearance of molecular nanotechnology. Once a hypothetical concept, it became the controversial subject of military study in 2033. Today, propelled by recent breakthroughs in quantum technology, the idea of a globous and self-replicating mass of tiny robots, capable of stripping away the strongest steel, is edging from science fiction to science fact. Faced with such realities, many argue that International Humanitarian Law has a moral and legal responsibility to regulate new technologies.
+
+2033
+
+Acrylic on canvas
+|-
+| [[File:Arma 3 AOW artwork preview autonomous avarice.jpg|450px]]
+| ''Autonomous Avarice''
+| Nicolas Humphrey
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Canvas\showcase_aow_picture_12_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_12_ca.paa
+|
+* Canvas (Large)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| 1st Place Winner - 2D Art Category
+| De Kornelis Zaal, Inner Wall
+| A harrowing representation of a civilian casualty, killed by a sniper drone. The victim's position in the foreground and the saturated palette used by the artist lends the scene a somber immediacy, reminding the viewer that a 'human in the loop' is not without risk and that questions regarding battlefield responsibility are unlikely to disappear any time in the near future, regardless of technological developments.
+
+2020 
+
+Acrylic on canvas
+|-
+| [[File:Arma 3 AOW artwork preview lars blanken.jpg|450px]]
+| ''Lars Blanken''
+| Unknown
+| Picture:
+
+a3\props_f_aow\civilian\gallery\data\galleryframe_01_large_portrait_picture_f_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_00_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, Inner Wall
+| Portrait of the Dutch philanthropist and founder of the International Development &amp;amp; Aid Project, Lars Blanken. The wealthy son of a shipbuilding tycoon and war profiteer, Blanken turned his back on the pursuit of profit and became an instrumental figure in the Refugee Council, based in Leiden, supporting the Belgian diaspora through the First World War. This gallery is named in his honor. Visitors may notice the inscription on the fresco around the glass rotunda. It is a reference to Blanken's famous quote: 'Gentlemen, man's humanity has been weighed and found wanting - but <t font='RobotoCondensedBold'>together we can tip the scales.
+
+1922
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview tactical withdrawal.jpg|450px]]
+| ''Tactical Withdrawal''
+| Austin McGinty
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_11_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_11_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| 1st Place Winner - 2D Art Category
+| De Kornelis Zaal, Inner Wall
+| The cluster of menacing robotic soldiers in this work, standing against the bright orange glow of a featureless city aflame, are in fact, allowing enemy combatants to pull a wounded comrade to safety. Are these faceless entities observing the spirit of International Humanitarian Law? Do they suggest a coming era of restraint in modern warfare, free of human folly and passions? Or is this simply indifference? A short, calculating pause before an algorithm loads and the systematic killing continues? Like the future itself, this piece presents us with a vision that is difficult to decipher.
+
+2020
+
+Acrylic on canvas
+|-
+| [[File:Arma 3 AOW artwork preview concept for stealth uniform.jpg|450px]]
+| ''Concept for Stealth Uniform''
+| Maxi Cortés
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Square\showcase_aow_picture_43_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_43_ca.paa
+|
+* Gallery Frame (Square)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, Inner Wall
+| 2025
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview carrier deck.jpg|450px]]
+| ''Carrier Deck''
+| David Mustache
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_114_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_114_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Kornelis Zaal, Inner Wall
+| 2029
+
+Photograph (USS Freedom, Mediterranean Sea)
+|-
+| [[File:Arma 3 AOW artwork preview cold earth.jpg|450px]]
+| ''Cold Earth''
+| Komyeta
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Portrait\showcase_aow_picture_95_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_95_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, South Wall 
+| 2009
+
+Photograph (Near Svetlograd, Chernarus)
+|-
+| [[File:Arma 3 AOW artwork preview forest encounter.jpg|450px]]
+| ''Forest Encounter''
+| Lyotchik
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_100_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_100_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, South Wall 
+| 2029
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview tank platoon.jpg|450px]]
+| ''Tank Platoon''
+| Komyeta
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_96_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_96_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, South Wall 
+| 2012
+
+Photograph (Near Chalang, Takistan)
+|-
+| [[File:Arma 3 AOW artwork preview moving up.jpg|450px]]
+| ''Moving Up''
+| Descryver 'Papa Bear' Stéphane
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_14_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_14_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| Screenshot Category Winner
+| De Valič Kamer, South Wall 
+| In this picture, medics treat wounded combatants while soldiers from the US 5th Army file by, temporarily united, both in service and in the sacrifices demanded of them. It's a poignant scene, where the serenity and stillness of the Italian landscape is cleverly juxtaposed against the movement of infantry and tanks - a beautiful intermezzo in what could be called a symphony of war.
+
+2020
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview mini ugv.jpg|450px]]
+| ''Mini UGV''
+| Greenfist
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_89_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_89_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, South Wall 
+| 2035
+
+Photograph (Topolin, Livonia)
+|-
+| [[File:Arma 3 AOW artwork preview tango down.jpg|450px]]
+| ''Tango Down''
+| Austin Spears
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_04_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_04_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, South Wall 
+| This screenshot from a military simulation game raises some important questions regarding the fetishization of violence in popular culture. Are we becoming desensitized to representations of conflict? Or are video games and other interactive media a lens for exploring real-world concerns and unpleasant realities, challenging preconceptions and perspectives? Do the developers of these products have moral obligations in how they portray modern conflict? Or are they simply expected to create? And can video games be considered art at all? This last point, remains divisive.
+
+2020
+
+Screenshot (''Tango Down'',  Zbox)
+|-
+| [[File:Arma 3 AOW artwork preview intervention.jpg|450px]]
+| ''Intervention''
+| Artur Kulczycki
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_35_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_35_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, South Wall 
+| 2035
+
+Photograph (Kavala, The Republic of Altis and Stratis)
+|-
+| [[File:Arma 3 AOW artwork preview take my hand.jpg|450px]]
+| ''<nowiki/>'Take My Hand'''
+| The Buckfast Wine
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_67_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_67_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, South Wall 
+| 2029
+
+Photograph (Isfahan, Iran)
+|-
+| [[File:Arma 3 AOW artwork preview landslide.jpg|450px]]
+| ''Landslide''
+| Noah the Guy
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_78_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_78_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, South Wall 
+| 2026
+
+Photograph (Near Metsovo, Greece)
+|-
+| [[File:Arma 3 AOW artwork preview air superiority.jpg|450px]]
+| ''Air Superiority''
+| Yooels
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_86_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_86_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, West Wall 
+| 2022
+
+Digital print
+|-
+| [[File:Arma 3 AOW artwork preview think again.jpg|450px]]
+| ''Think Again''
+| Laurentius Kus Savata Reyhan
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_02_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_02_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, West Wall 
+| This poster with its didactic question masks a sophisticated artistic conceit. By overlapping and combining the profiles of several autonomous weapon systems, we are encouraged to separate their forms and exercise our sensory perception; just as a machine is expected to distinguish potential threats from non-combatants or cultural property. If we, as humans, struggle to depict these components, is it too much to expect from robots?
+
+2029
+
+Digital print
+|-
+| [[File:Arma 3 AOW artwork preview IDAP convoy.jpg|450px]]
+| ''IDAP Convoy''
+| Descryver 'Papa Bear' Stéphane
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_60_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_60_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, West Wall 
+| 2023
+
+Pencil and watercolor on paper
+|-
+| [[File:Arma 3 AOW artwork preview end times.jpg|450px]]
+| ''End Times''
+| Kiko Mazar
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_94_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_94_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, West Wall 
+| 2032
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview stay hydrated.jpg|450px]]
+| ''Stay Hydrated''
+| Komyeta
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_97_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_97_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, West Wall 
+| 1995
+
+Photograph (Near Neochori, The Republic of Altis and Stratis)
+|-
+| [[File:Arma 3 AOW artwork preview cockpit view.jpg|450px]]
+| ''Cockpit View''
+| Pedro "Whiplash" Rodrigues
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_84_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_84_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, West Wall 
+| 2021
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview desperation.jpg|450px]]
+| ''Desperation''
+| Kalle Oskar Ranta
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_45_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_45_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, West Wall 
+| 2035
+
+Photograph (Kavala, The Republic of Altis and Stratis)
+|-
+| [[File:Arma 3 AOW artwork preview IDAP camp.jpg|450px]]
+| ''IDAP Camp''
+| Ceb Cin
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_73_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_73_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, West Wall 
+| 2035
+
+Photograph (Near La Roche, Horizon Islands)
+|-
+| [[File:Arma 3 AOW artwork preview robogeddon.jpg|450px]]
+| ''Robogeddon''
+| Greenfist
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_15_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_15_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, West Wall 
+| Although seemingly absurd, this vision of the future is fast becoming a very plausible and very concerning reality. After the Quantum Revolution of the late 2020's, we are now faced with highly intelligent thinking machines, wired for war, interconnected, and supposedly subservient to the highest echelons of power. But what happens when the first robots become self-aware - when ascendance becomes transcendence? This possibility is causing great consternation amongst leading scientists and academics today, who fear tomorrow's war won't be one fought between humans.
+
+2035
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview non state actors.jpg|450px]]
+| ''Non-State Actors''
+| Braden Joseph Banks
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_82_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_82_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, West Wall 
+| 2024
+
+Photograph (Rosario, Argentina)
+|-
+| [[File:Arma 3 AOW artwork preview a childs dream.jpg|450px]]
+| ''A Child's Dream''
+| Aubrianna Rachmad
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_24_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_24_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, West Wall 
+| It's long been said that war brings out the worst and the best in us. As this heart-warming painting suggests, conflict can offer powerful opportunities for compassion. Indeed, it is in the wake of earth-shattering adversity that positive actions matter most.
+
+2034
+
+Acrylic on canvas
+|-
+| [[File:Arma 3 AOW artwork preview the extraction.jpg|450px]]
+| ''The Extraction''
+| Greenfist
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_28_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_28_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, East Wall 
+| As military technologies become increasingly sophisticated and climate change fuels competition for resources, it is not altogether surprising that more of the world has become prone to conflict. The melting arctic circle, in particular, has become a contested arena of major strategic importance.
+
+2028
+
+Photograph (Northern Svalbard, Norway)
+|-
+| [[File:Arma 3 AOW artwork preview first responder.jpg|450px]]
+| ''First Responder''
+| Scarecrow
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_74_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_74_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, East Wall 
+| 2035
+
+Photograph (Pyrgos, The Republic of Altis and Stratis)
+|-
+| [[File:Arma 3 AOW artwork preview sentries.jpg|450px]]
+| ''Sentries''
+| Joseph Braden Banks
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_21_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_21_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| Screenshot Category Winner
+| De Valič Kamer, East Wall 
+| This beautifully composed image, showing a group of sentries standing guard, highlights a reality of war that is seldom the subject of great works of art; waiting. Indeed, today, many soldiers never see action. This restrained work eschews romanticized notions of the battlefield and instead, presents a more grounded and nuanced snapshot of modern conflict, as experienced by the majority of military personnel.
+
+2012
+
+Photograph (Camp Casco, Southern Takistan)
+|-
+| [[File:Arma 3 AOW artwork preview safe room.jpg|450px]]
+| ''Safe Room''
+| Klat
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_108_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_108_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, East Wall 
+| 2023
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview the road ahead.jpg|450px]]
+| ''The Road Ahead''
+| EO
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_19_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_19_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| Screenshot Category Winner
+| De Valič Kamer, East Wall 
+| This multivalent work, with its overcast skies and gloomy atmosphere, carries an almost dream-like quality. The solitary drone, approaching an urban environment obscured by fog, hints at a journey into the unknown and evokes the idea of technology on a road towards an uncertain future. And who is in control? A human operator? Or is this vehicle fully autonomous, and rolling forwards on its own initiative?
+
+2032
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview joint disaster relief.jpg|450px]]
+| ''Joint Disaster Relief''
+| Greenfist
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_111_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_111_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, East Wall
+| 2035
+
+Photograph (La Roche, Horizon Islands)
+|-
+| [[File:Arma 3 AOW artwork preview battlefield sketch.jpg|450px]]
+| ''Battlefield Sketch''
+| Thomas Lattard
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_52_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_52_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, East Wall
+| 2035
+
+Pencil on paper
+|-
+| [[File:Arma 3 AOW artwork preview stay safe.jpg|450px]]
+| ''<nowiki/>'Stay Safe'''
+| Yooles
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_85_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_85_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, East Wall
+| 2020
+
+Photograph (Washington, United States)
+|-
+| [[File:Arma 3 AOW artwork preview lockdown.jpg|450px]]
+| ''Lockdown''
+| Pedro "Whiplash" Rodrigues
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_06_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_06_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Valič Kamer, East Wall
+| As this photograph from Chernarus during the 2020 pandemic shows, humankind has known many forms of conflict. Frequently described as 'a fight' against an 'invisible enemy', lockdown measures were often permeated by the language of war, indicating the latter's close connection to the human condition and its importance as a common framework of understanding. Should then, war art encompass 'wars' against poverty, crime, class and climate change? How can we define 'war'? By its dictionary definition, or by how we perceive it?
+
+2020
+
+Photograph (Novigrad, Chernarus)
+|-
+| [[File:Arma 3 AOW artwork preview vr battlefield.jpg|450px]]
+| ''VR Battlefield''
+| Yooles
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_116_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_116_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| 2035
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview remember the fallen.jpg|450px]]
+| ''Remember the Fallen''
+| LordOfWar
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_103_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_103_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| 2020
+
+Photograph (City of Paris Cemetery, Paris, France)
+|-
+| [[File:Arma 3 AOW artwork preview bad harvest.jpg|450px]]
+| ''Bad Harvest''
+| Mark Bailey
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_13_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_13_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| Commended Entry
+| De Verbeek Kamer, West Wall
+| This interesting work underscores the terrifying potential of entomological warfare. Although insects have been used in conflict since ancient times, such methods were finally forbidden by International Humanitarian Law in 1972, under the Biological and Toxic Weapons Convention. Nevertheless, possessing the means to devastate an enemy's food supply or spread deadly pathogens through agents such as fleas or mosquitoes remains a tempting prospect for some.
+
+2026
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview accident near a checkpoint.jpg|450px]]
+| ''Accident Near a Checkpoint''
+| Chace Smith
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_03_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_03_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| This unusual photograph was taken from the air and provides a unique perspective. On the road below, emergency services attempt to save the lives of civilians whose vehicle overturned after fleeing a military checkpoint. It was subsequently discovered that the driver missed warning signs and failed to reduce speed, finally panicking and crashing when warning shots were fired.
+
+2023
+
+Photograph (Aba, Nigeria)
+|-
+| [[File:Arma 3 AOW artwork preview winged infantry.jpg|450px]]
+| ''Winged Infantry''
+| David Mustache
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_17_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_17_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| Screenshot Category Winner
+| De Verbeek Kamer, West Wall
+| The striking sense of movement in this picture is astounding. It demonstrates both obvious technical ability and a careful eye for composition. The consistent and earthly palette of pale and dark greens, present in the parachutes, uniforms, grass, and distant trees also add a stunning conformity and emphasize the idea of many individual parts working as a whole; a true artistic, combined arms operation.
+
+2020
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview armored convoy.jpg|450px]]
+| ''Armored Convoy''
+| Alvando Aulia
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_53_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_53_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| 2029
+
+Photograph (Bodrum, Turkey)
+|-
+| [[File:Arma 3 AOW artwork preview the aftermath.jpg|450px]]
+| ''The Aftermath''
+| Abuelo Ceboleta
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_71_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_71_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| 2035
+
+Photograph (Kavala, The Republic of Altis and Stratis)
+|-
+| [[File:Arma 3 AOW artwork preview translating.jpg|450px]]
+| ''Translating''
+| Professor Death
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Portrait\showcase_aow_picture_23_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_23_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| Small quadcopter drones have played an important role in enforcing International Humanitarian Law in recent years. In this picture, we can see an unmanned aerial vehicle (UAV) belonging to the Canton Protocol Strategic Alliance Treaty, observing the processing of prisoners. Through remote surveillance, combatants on all sides are under increasing pressure to comply with the rules of war.
+
+2035
+
+Photograph (Tanouka, Hoizon Islands)
+|-
+| [[File:Arma 3 AOW artwork preview cultural exchange.jpg|450px]]
+| ''Cultural Exchange''
+| Descryver 'Papa Bear' Stéphane
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Portrait\showcase_aow_picture_61_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_61_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| 2033
+
+Pencil and watercolor on paper
+|-
+| [[File:Arma 3 AOW artwork preview coin ops.jpg|450px]]
+| ''COIN Ops''
+| Talyn
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_99_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_99_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, East Wall
+| 2034
+
+Photograph (Near Charkia, The Republic of Altis and Stratis)
+|-
+| [[File:Arma 3 AOW artwork preview little green men.jpg|450px]]
+| ''Little Green Men''
+| Yooles
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_27_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_27_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, East Wall
+| This powerful photograph, originally published in the News Today, neatly captures the changing nature of modern conflict. The old maxim that truth is the first casualty of war seems to be symptomatic of our times. Modern technology has introduced us to an age of subjective realities. But can this same technology resolve the problems it has created? Or must we rely upon our own discretion to sort facts from fiction?
+
+2014
+
+Photograph (Novodmitrovsk, Chernarus)
+|-
+| [[File:Arma 3 AOW artwork preview ambush.jpg|450px]]
+| ''Ambush''
+| Shaleshock
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_105_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_105_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, East Wall
+| 2012
+
+Photograph (Zargabad, Takistan)
+|-
+| [[File:Arma 3 AOW artwork preview yemen sunset.jpg|450px]]
+| ''Yemen Sunset''
+| Victor Fievet
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_123_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_123_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, East Wall
+| 2026
+
+Photograph (Near Marib, Yemen)
+|-
+| [[File:Arma 3 AOW artwork preview reassessment.jpg|450px]]
+| ''Reassessment''
+| Kiko Mazar
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_20_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_20_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, East Wall
+| The sharp contrasts, post-processing effects, and angular shadows that dissect this scene perfectly echo the intensity of the chaotic situation, as experienced by the soldiers. Each combatant crouches behind cover and seemingly melds with their environment, as if swallowed by the hostile surroundings. The enemy is nowhere to be seen. However, the non-presence is a presence in itself and brilliantly communicates feelings of unease and tension. The photograph also addresses an increasing trend in modern conflict; the urbanization of the battlefield. Consequently, it seems both familiar and contemporary.
+
+2012
+
+Photograph (Zargabad, Takistan)
+|-
+| [[File:Arma 3 AOW artwork preview survivor!.jpg|450px]]
+| ''Survivor!''
+| LordOfWar
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_50_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_50_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, East Wall
+| 2006
+
+Photograph (Sampur, Sri Lanka)
+|-
+| [[File:Arma 3 AOW artwork preview saint bernard.jpg|450px]]
+| ''Saint Bernard''
+| William Thomas Nuckolls
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Square\showcase_aow_picture_51_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_51_ca.paa
+|
+* Gallery Frame (Square)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, East Wall
+| 2023
+
+Pen, pencil, and watercolor on paper
+|-
+| [[File:Arma 3 AOW artwork preview peoples militia.jpg|450px]]
+| ''The People's Militia''
+| EO
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_90_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_90_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, East Wall
+| 1991
+
+Photograph (Stokowsko, Livonia)
+|-
+| [[File:Arma 3 AOW artwork preview dogs of peace.jpg|450px]]
+| ''Dogs of Peace''
+| Diana Pomortseva & Maria Komarova
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Portrait\showcase_aow_picture_54_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_54_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| Commended Entry
+| De Verbeek Kamer, East Wall
+| 2020
+
+Ink and gouache on paper
+|-
+| [[File:Arma 3 AOW artwork preview 17th armored division.jpg|450px]]
+| ''17<sup>th</sup> Armored Division''
+| Armaniac
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_77_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_77_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, East Wall
+| 2012
+
+Photograph (Mazargan, Karzhegistan)
+|-
+| [[File:Arma 3 AOW artwork preview road to bastogne.jpg|450px]]
+| ''The Road to Bastogne''
+| Gray Knight
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_81_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_81_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, East Wall
+| 2019
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview ghosts of war.jpg|450px]]
+| ''Ghosts of War''
+| Greenfist
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_18_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_18_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| Screenshot Category Winner
+| De Verbeek Kamer, West Wall
+| The human cost of war is cleverly executed in this clear but effective digital image. On close inspection, we can see that the ghostly silhouettes of the dead represent the losses of all sides and factions; spirits of fallen comrades appear to mingle with those of the enemy and all appear to be accompanying the grieving soldier in the mid-ground. The chiaroscuro effect is also ingeniously used, separating the living from the dead by way of light and shade.
+
+2019
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview fallen.jpg|450px]]
+| ''Fallen''
+| Professor Death
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Square\showcase_aow_picture_119_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_119_ca.paa
+|
+* Gallery Frame (Square)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| 2032
+
+Photograph (Awdak, Takistan)
+|-
+| [[File:Arma 3 AOW artwork preview carrier ops.jpg|450px]]
+| ''Carrier Ops''
+| Andreu Pérez Bechtold
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_46_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_46_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| 2035
+
+Photograph (Tanoan Coast, Horizon Islands)
+|-
+| [[File:Arma 3 AOW artwork preview watching the perimeter.jpg|450px]]
+| ''Watching the Perimeter''
+| Dog
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_121_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_121_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| 2012
+
+Oil on canvas
+|-
+| [[File:Arma 3 AOW artwork preview creative storm.jpg|450px]]
+| ''Creative Storm''
+| Nicolai Höglund
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_34_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_34_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| 2030
+
+Digital print
+|-
+| [[File:Arma 3 AOW artwork preview concept for automated aa vehicle.jpg|450px]]
+| ''Concept for Automated AA Vehicle''
+| Maxi Cortés
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_26_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_26_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| A much neglected aspect of war art concerns the conceptualization of ideas. Although many of us would accept the 15th Century scribblings of Leonardo da Vinci's siege weapons and fighting vehicles as art, contemporary works draw more complex reactions. Could it be our appreciation of innovative designs is tempered by their destructive potential? Or are there qualities in paintings such as this, that transcend their immediate application?
+
+2034
+
+Digital Print
+|-
+| [[File:Arma 3 AOW artwork preview remote response.jpg|450px]]
+| ''Remote Response''
+| Diana Pomortseva & Maria Komarova
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_25_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_25_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| Commended Entry
+| De Verbeek Kamer, West Wall
+| In the past, logistics were a serious challenge for humanitarian organizations. But today, modern technology has helped us transcend many practical problems. From robotic pack mules, able to traverse the most inhospitable mountain ranges, to squadrons of utility drones, capable of transporting life-saving aid to populations under siege, many things have changed for the better.
+
+2026
+
+Ink and gouache on paper
+|-
+| [[File:Arma 3 AOW artwork preview downtown georgetown.jpg|450px]]
+| ''Downtown Georgetown''
+| Greenfist
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Standard\showcase_aow_picture_107_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_107_ca.paa
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| 1024&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| 2029
+
+Photograph (Georgetown, Horizon Islands)
+|-
+| [[File:Arma 3 AOW artwork preview routine operation.jpg|450px]]
+| ''Routine Operation''
+| Victor Fievet
+| Picture:
+
+a3\Missions_F_AoW\Data\Img\Artwork\Landscape\showcase_aow_picture_120_co.paa
+
+Label:
+
+a3\Missions_F_AoW\Data\Img\Labels\showcase_aow_label_120_ca.paa
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| 2048&times;1024
+
+(Picture)
+
+1024&times;1024
+
+(Label)
+| -
+| De Verbeek Kamer, West Wall
+| 2032
+
+Photograph (Central Tanoa, Horizon Islands)
+|}
+
+
+== Image Layouts ==
+
+The table below provides a reference for texture layouts, as a helper for correctly positioning your image in its frame, or on its canvas.
+{| class="wikitable"
+! Asset(s)
+! Layout Reference
+! style="max-width: 300px" | Texture Selection
+! Suggested Resolutions
+|-
+|
+* Gallery Frame (Medium)
+* Gallery Frame (Large, Rectangle)
+| [[File:Arma 3 AOW Frame Reference Landscape.jpg|300px]]
+| 0
+| 1024&times;512
+
+2048&times;1024
+|-
+|
+* Gallery Frame (Large, v1)
+* Gallery Frame (Large, v2)
+* Gallery Frame (Large, v3)
+* Gallery Frame (Large, Portrait)
+| [[File:Arma 3 AOW Frame Reference Standard.jpg|300px]]
+| 0
+| 1024&times;1024
+
+2048&times;2048
+|-
+|
+* Gallery Frame (Square)
+| [[File:Arma 3 AOW Frame Reference Standard.jpg|300px]]
+| 0
+| 1024&times;1024
+
+2048&times;2048
+|-
+|
+* Canvas (Large)
+| [[File:Arma 3 AOW Canvas Reference Large.jpg|300px]]
+| 0
+| 1024&times;512
+
+2048&times;1024
+|-
+|
+* Canvas (Small)
+* Canvas (Rectangle)
+| [[File:Arma 3 AOW Canvas Reference Small.png|300px]]
+| 0
+| 1024&times;512
+
+2048&times;1024
+|-
+|
+* Canvas (Square)
+| [[File:Arma 3 AOW Canvas Reference Square.png|300px]]
+| 0
+| 1024&times;1024
+
+2048&times;2048
+|}
+
+
+{{GameCategory|arma3}}

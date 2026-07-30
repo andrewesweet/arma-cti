@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getConnectedUAVUnit
+// revision: 363204 (2024-03-25T20:23:08Z)
+// export sha1: 7c4zupvpq6lrdm8xgoeagwly6s1fon0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+|arg= local
+|gr1= Remote Control
+
+|descr= Returns UAV/UGV AI unit, which player is controlling. To return UAV vehicle, see [[getConnectedUAV]]
+
+|s1= [[getConnectedUAVUnit]] person
+
+|p1= person: [[Object]] - unit controlling the UAV/UGV
+
+|r1= [[Object]] - UAV unit (AI driver or AI gunner) or [[objNull]] otherwise including if the connected person is remote
+
+|x1= <sqf>private _playersDrone = getConnectedUAVUnit player;</sqf>
+
+|seealso= [[getConnectedUAV]] [[isUAVConnected]]
+}}

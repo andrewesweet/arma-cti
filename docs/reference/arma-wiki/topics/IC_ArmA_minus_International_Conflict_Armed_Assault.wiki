@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/IC:ArmA_-_International_Conflict:_Armed_Assault
+// revision: 350040 (2023-11-20T22:12:05Z)
+// export sha1: lacr2qb84tfxtqv4lxanct1xb4bl41v
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Header_2.jpg|800 px]]
+== IC:ArmA Has Become Charlie Foxtrot ==
+*{{Link|http://cfarma2.com/|Charlie Foxtrot Website}}
+*[[CF:ArmA2_-_Charlie_Foxtrot:_ArmA2|Charlie Foxtrot Biki]]
+*{{Link|link= http://forums.bistudio.com/showthread.php?t=73776&page=7&highlight=charlie+foxtrot|text= Charlie Foxtrot on the BI Forums}}

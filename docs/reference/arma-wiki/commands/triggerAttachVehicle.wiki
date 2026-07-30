@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/triggerAttachVehicle
+// revision: 377073 (2026-01-01T09:31:40Z)
+// export sha1: 6xypdulptaj0sreqdhbuc8wy4mkrzln
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Triggers
+
+|descr=Specifies the entity which will activate the selected trigger.<br>
+*If '''[]''' is given, the trigger is decoupled from the assigned vehicle (example 2).
+*If the activation source is '''"VEHICLE"''', '''"GROUP"''', '''"LEADER"''' or '''"MEMBER"''', it is changed to '''"NONE"'''. 
+*If '''[vehicle]''' is given, the trigger is coupled to the vehicle or its group. 
+*When the source is '''"GROUP"''', '''"LEADER"''' or '''"MEMBER"''', it is coupled to the group, otherwise it is coupled to the vehicle and the source is changed to '''"VEHICLE"'''.
+
+|s1= triggerName [[triggerAttachVehicle]] objects
+
+|p1= triggerName: [[Object]]
+
+|p2= objects: [[Array]] of [[Object]]s
+
+|r1= [[Nothing]]
+
+|x1= <sqf>trigger triggerAttachVehicle [player];</sqf>
+
+|x2= <sqf>trigger triggerAttachVehicle [];</sqf>
+
+|seealso= [[attachObject]] [[attachTo]] [[attachedObjects]] [[attachedTo]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[lightAttachObject]] [[attachedObject]] [[triggerAttachedVehicle]] [[triggerAttachObject]] [[triggerInterval]] [[setTriggerInterval]]
+}}

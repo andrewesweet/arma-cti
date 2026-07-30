@@ -1,0 +1,144 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Headless_Client
+// revision: 352522 (2024-02-12T16:42:16Z)
+// export sha1: ieermqepw9bsu0xi8oxhjeji80hhtkm
+// categories: Category:Arma 3: Multiplayer | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+* Headless Client is used to offload AI calculations from the server instance
+* Headless Client is integrated into game client and dedicated server executable (Windows and Linux, use -client parameter)
+* The server doesn't allow arbitrary connections from headless clients if you do not define the headless clients IPs in the '''server.cfg''', the below value defines accepted IP Addresses from Headless Clients.
+
+Multiple Connections and Addresses are allowed in the case of more than one Headless Client
+<syntaxhighlight lang="cpp">headlessClients[] = { "xxx.xxx.xxx.xxx", ... };</syntaxhighlight>
+Additionally to define clients with ''unlimited'' bandwidth and ''nearly no latency'' you must include theirs IPs in the '''server.cfg''' too:
+<syntaxhighlight lang="cpp">localClient[] = { "127.0.0.1", ... };</syntaxhighlight>
+
+* Missions need to be changed a little to support headless clients:
+** extract AI to separate AI script
+** edit init.sqf to execute an extracted AI on headless client
+** place headless client unit
+* in scripts the headless clients may be identified by its name, multiple headless clients are supported
+
+Headless Clients are rather similar to players:
+* The [[Array]] returned by the [[allPlayers]] command also contains Headless Clients.
+* The [[player]] command returns the Headless Client Entity on the Headless Client's machine.
+* Using [[isPlayer]] with a Headless Client Entity returns [[true]] if a Headless Client is connected to the corresponding slot.
+* Headless Clients execute [[Event Scripts#init.sqf|init.sqf]] and [[Event Scripts#initPlayerLocal.sqf|initPlayerLocal.sqf]].
+* Headless Clients trigger [[Event Scripts#initPlayerServer.sqf|initPlayerServer.sqf]].
+
+
+== Spawning the AI ==
+
+# Add a '''Headless Client''' entity to the mission:
+## Add a player unit
+## Then you can insert a Headless Client unit: <code style="display: block">SIDE: '''Game Logic''', CLASS: '''Virtual Entities''', UNIT: '''Headless Client''', CONTROL: '''Playable''', NAME: ''somename''</code>
+## Don't forget to set NAME property, it is necessary for the Headless Client to work correctly. The name can also be used to identify Headless Clients in scripts (by checking it against [[player]]).
+## Each Headless Client unit will add one Headless Client slot - missions may contain multiple Headless Client units
+# Create a script that will spawn AI (in the examples below we will use "init_HC.sqf"). To execute it on the Headless Client you have the two following options.
+#;Execute the script at mission start
+#* This method will make your mission spawn the AI '''only if''' a Headless Client is present. However it is the most simple to set up.
+## Add the following to  the beginning of [[Event Scripts#init.sqf|init.sqf]]:<sqf>
+if (!hasInterface && !isServer) then
+{
+	execVM "init_HC.sqf";
+};
+</sqf>
+#;Execute the script via a mission parameter
+#* If you intend to share your mission this method is more desirable as it means players do not need a Headless Client to play it.
+## First define a [[Arma 3: Functions Library|function]] to be used to run the headless client script file. Here's what it should look like in [[Description.ext|description.ext]]: <syntaxhighlight lang="cpp">
+class cfgFunctions
+{
+	class myTag
+	{
+		class myCategory
+		{
+			class myFunction {};
+		};
+	};
+};
+</syntaxhighlight>The reason we want to define a function is because it can be used within the mission parameter framework to execute the AI spawning script as soon as possible while still allowing the mission to reliably work with or without a headless client.
+## Add the following code to your function: <sqf>
+if ((_this select 0) == 1) then
+{	// Run on the HC only
+	if !(isServer or hasInterface) then
+	{
+		execVM "init_HC.sqf";
+	};
+} else {
+	// Run on the server only
+	if (isServer) then
+	{
+		execVM "init_HC.sqf";
+	};
+};
+</sqf>This code will be passed the value of the mission parameter defined in the next step, which is where the magic variable _this comes from. It executes the AI spawning script based on the value of the parameter and whether the local machine is the server or a headless client.
+## Finally define a [[Mission Parameters|mission parameter]] that players can use to enable/disable use of the headless client. Here's what it should look like in [[Description.ext|description.ext]]: <syntaxhighlight lang="cpp">
+class params
+{
+	class headlessClient
+	{
+		title = "Headless Client";
+		texts[] = {"Disabled","Enabled"};
+		values[] = {0, 1};
+		default = 0;
+		function = "myTag_fnc_myFunction";
+		isGlobal = 1;
+	};
+};
+</syntaxhighlight>
+The two important values here are "function" and "isGlobal". The function value must correspond to the name of the function defined in step 1. The isGlobal value must be set to 1 so that the function is ran by all machines. This means that the function is executed on any headless clients as well as the server so that it can decide where it is suitable to execute the AI spawning script (based on the value of the parameter). 
+# Repeat step 1 for the amount of Headless Clients your mission is designed to use. For multiple you must use the NAME property from step 1 to identify them individually within init_HC.sqf
+
+
+== Server ==
+
+# add headless client IP address into server.cfg (you can use more than one address):<syntaxhighlight lang="cpp">headlessClients[] = { "xxx.xxx.xxx.xxx", "xxx.xxx.xxx.xxx", "xxx.xxx.xxx.xxx" };
+</syntaxhighlight>
+# to run {{arma3}} Dedicated Server use one of these commands:<code style="display: block">Windows: arma3server.exe -config=server.cfg<br>Windows: arma3.exe -server -config=server.cfg<br>Linux: arma3server -config=server.cfg</code>
+
+
+== Headless Client ==
+
+# to run {{arma3}} Headless Client use one of these commands:<code style="display: block">Windows: arma3server.exe -client -connect=xxx.xxx.xxx.xxx -password=yourpass<br>Windows: arma3.exe -client -connect=xxx.xxx.xxx.xxx -password=yourpass<br>Linux: arma3server -client -connect=xxx.xxx.xxx.xxx -password=yourpass</code>
+# your client will be automatically connected to a free headless client slot
+# you can run arbitrary number of headless clients on the same machine
+
+
+== Overview of running options ==
+
+* Main game executable (Windows only)<code style="display: block">arma3.exe<br>arma3.exe -server<br>arma3.exe -client</code>
+* Windows server executable<code style="display: block">arma3server.exe<br>arma3server.exe -client</code>
+* Linux server executable<code style="display: block">arma3server<br>arma3server -client</code>
+
+
+== Mods ==
+
+Headless Clients are excluded from signature verification, therefore any mod can be used with the "-mod=" option.
+
+"-serverMod=" does not work when used alongside "-client".
+
+
+== GUI ==
+
+* Headless clients can be seen in the Role assignment display when creating a MP game
+** If you are admin (host)
+*** You will see HCs listed in the Players list on the right
+*** You will see a category called Virtual (it can contain both Zeus and HCs) on the left
+*** Note: HCs are automatically assigned to their slots
+** If you are normal player
+*** You won't see any HCs anywhere
+*** You won't see any Virtual category (if the mission contains Zeus then there will be Zeus category)
+* In-game UI
+** HCs are listed with other players only if you are admin (map, tasks, kill statistics, ...)
+
+
+== See Also ==
+
+* [[Arma 3: Server Config File]]
+* {{Link|link= https://www.dropbox.com/s/1n5a8entg3hvj5z/A3_hc_tutorial.pdf?dl=0|text= Headless Client Guide by Monsoon}}
+
+
+{{GameCategory|arma3|Tutorials}}
+{{GameCategory|arma3|Multiplayer}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/setHorizonParallaxCoef
+// revision: 309900 (2022-05-05T12:16:47Z)
+// export sha1: exorfa9u8q0268tr244v0fhbe14kgfr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Command Group: System | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Camera Control
+
+|gr2= System
+
+|descr= Sets coef used to shift horizon position based on camera height (use 0 to disable shifting).
+
+|s1= [[setHorizonParallaxCoef]] coef
+
+|p1= coef: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setHorizonParallaxCoef 1;</sqf>
+
+|seealso=
+}}

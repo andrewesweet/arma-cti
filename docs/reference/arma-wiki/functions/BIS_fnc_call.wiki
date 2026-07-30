@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_call
+// revision: 327597 (2022-07-13T09:49:02Z)
+// export sha1: qkwyxp0lc8yipmr2j638yg75ok89rho
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Program Flow | Category:Functions | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Program Flow
+
+|descr= Execute given code with or without parameter.
+{{Feature|arma3|Since {{GVI|arma3|1.50}}, use [[remoteExec]]/[[remoteExecCall]] instead.}}
+
+|s1= [params, code] call [[BIS_fnc_call]]
+
+|p1= params: [[Anything]] - function arguments
+
+|p2= code: [[Code]] - function code
+
+|r1= [[Anything]]
+
+|s2= code call [[BIS_fnc_call]]
+
+|p21= code: [[Code]]
+
+|r2= [[Anything]]
+
+|x1= Show a message for the current player.
+<sqf>[["Hello"], {hint (_this select 0);}] call BIS_fnc_call;</sqf>
+
+|x2= Alternative syntax
+<sqf>{ hint "Hello"; } call BIS_fnc_call;</sqf>
+
+|seealso= [[remoteExec]] [[remoteExecCall]] [[BIS_fnc_spawn]] [[BIS_fnc_execVM]] [[BIS_fnc_execFSM]] [[BIS_fnc_execRemote]]
+}}
+
+{{Note
+|user= Strangepete
+|timestamp= 20141130022200
+|text= As of writing (ver. 1.37) BIS_fnc_call is only a wrapper for [[BIS_fnc_spawn]]. Both functions use [[call]] to execute the code.
+}}

@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_objectHeight
+// revision: 348728 (2023-11-08T14:32:04Z)
+// export sha1: kqwl7yg91tiuwg6wr46h5j5yhmbhlst
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Return object height defined by its bounding box and eventual offset fix. For the following classes an offset is used.
+
+{{{!}} class="wikitable"
+{{!}}-
+! z-offset: -0.1 !! z-offset: -0.08
+{{!}}-
+{{!}} 
+* "box_east_support_f"
+* "box_ind_support_f"
+* "box_nato_support_f"
+* "box_east_ammoord_f"
+* "box_ind_ammoord_f"
+* "box_nato_ammoord_f"
+* "box_east_ammo_f"
+* "box_ind_ammo_f"
+* "box_nato_ammo_f
+{{!}}
+* "box_east_wpslaunch_f"
+* "box_ind_wpslaunch_f"
+* "box_nato_wpslaunch_f"
+* "box_east_wpsspecial_f"
+* "box_ind_wpsspecial_f"
+* "box_nato_wpsspecial_f"
+* "box_ind_wps_f"
+* "box_east_wps_f"
+* "box_nato_wps_f"
+{{!}}}
+
+|s1= object call [[BIS_fnc_objectHeight]]
+
+|p1= object: [[Object]] - evaluated object
+
+|r1= [[Number]] - height of the object
+
+|x1= <sqf>player call BIS_fnc_objectHeight;</sqf>
+
+|seealso= [[boundingBox]] [[sizeOf]] [[boundingBoxReal]] [[boundingCenter]]
+}}

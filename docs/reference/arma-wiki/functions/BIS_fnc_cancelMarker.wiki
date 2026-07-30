@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_cancelMarker
+// revision: 348835 (2023-11-08T14:39:09Z)
+// export sha1: h8t95hlzq99lfswb3janw9uw9xshbv0
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Map and Markers
+
+|arg= global
+
+|eff= global
+
+|descr= Cancels a marker by a red 'X' marker. Also sets its variable to "Canceled" to [[true]].
+
+|s1= [marker, duration, fadeTime, sizeMultiplier, angleOffset] spawn [[BIS_fnc_cancelMarker]]
+
+|p1= marker: [[String]] - marker
+
+|p2= duration: [[Number]] - (Optional, default 1) duration of canceling in seconds
+
+|p3= fadeTime: [[Number]] - (Optional, default -1) time in seconds after which cancel marker fades. If value is <0 then marker won't fade out and will be deleted after duration
+
+|p4= sizeMultiplier: [[Number]] - (Optional, default 1) multiplier for a size of the 'cancel' marker compared to the original
+
+|p5= angleOffset: [[Number]] - (Optional, default 45) angle offset from the original marker
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["BIS_marker",2,1.5,75] spawn BIS_fnc_cancelMarker;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_blinkMarker]] [[BIS_fnc_colorMarker]] [[BIS_fnc_changeColorMarker]] [[BIS_fnc_getMarkers]] [[BIS_fnc_getMarkerState]]
+}}

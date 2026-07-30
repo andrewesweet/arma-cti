@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/getObjectDLC
+// revision: 369364 (2024-09-03T18:43:08Z)
+// export sha1: l1xmki243em7ggway53dx6rgrfdg25l
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: DLC | Category:Introduced with Arma 3 version 1.36 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.36
+|gr1= DLC
+|arg= global
+
+|descr= Returns appID of the DLC the object belongs to or [[nil]] if object is vanilla.
+
+|s1= [[getObjectDLC]] obj
+
+|p1= obj: [[Object]]
+
+|r1= [[Number]] (or [[Nothing]] if vanilla item)
+
+|x1= <sqf>
+_appID = getObjectDLC cursorTarget;
+if (!isNil "_appID") then {
+	hint format ["This object belongs to DLC with id: %1", _appID];
+} else {
+	hint "This object is vanilla";
+};
+</sqf>
+
+|x2= <sqf>
+_akm = createSimpleObject ["A3\Weapons_F_Exp\Rifles\AKM\AKM_F.p3d",getPosASL player];
+getObjectDLC _akm;	// 395180
+</sqf>
+
+|seealso= [[getDLCs]] [[getPersonUsedDLCs]] [[getMissionDLCs]] [[getDLCAssetsUsageByName]] [[getDLCAssetsUsage]] [[getAssetDLCInfo]]
+}}

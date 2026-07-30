@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_drawArrow
+// revision: 352164 (2024-02-01T23:25:26Z)
+// export sha1: 8rl4e1lst0lp590it9sd2wi0xzcu8z3
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Arma 3 version 1.74 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.74
+
+|gr1= Map and Markers
+
+|descr= Draws a static arrow (outline or color filled) on map. See {{Link|#Example 4}} for arrow removal.
+{{Feature|informative|Note that the order in which arrows are added to map is reversed, the last added arrow will appear under the first added arrow}}
+
+|s1= [from, to, color, pars, fill, map] call [[BIS_fnc_drawArrow]]
+
+|p1= from: [[Array]] - arrow start position in format [x,y] or [x,y,z]
+
+|p2= to: [[Array]] - arrow end position in format [x,y] or [x,y,z]
+
+|p3= color: [[Array]] format [[Color|Color (RGBA)]] - (Optional, default [1,1,1,1]) arrow line or fill color
+
+|p4= pars: [[Array]] - (Optional) arrow geometry details in format [arrowThickness, arrowHeadLengthCoef, arrowHeadWidthCoef], where:
+* arrowThickness: [[Number]] - (Optional, default 10) arrow thickness in meters
+* arrowHeadLengthCoef:  [[Number]] - (Optional, default 1/3) arrow head length compared to the total length of the arrow
+* arrowHeadWidthCoef:  [[Number]] - (Optional, default 2) arrow head width compared to the arrow thickness
+* {{GVI|arma3|1.98|size= 0.75}} arrowBaseWidthCoef: [[Number]] - (Optional, default 1) arrow base width compared to the arrow thickness
+
+|p5= fill: [[Boolean]] - (Optional, default [[true]]) [[true]] to draw color filled arrow, [[false]] to draw outline
+
+|p6= map: [[Control]] - (Optional, default [[findDisplay|display]] 12 [[displayCtrl]] 51) map control
+
+|r1= [[Array]] - arrow reference for removal in format [idd, idc, ehId] or empty array [] on removal operation
+
+<br><br>[[File:fnc_drawArrow.jpg|448px]] [[File:BIS_fnc_drawArrow2.jpg|400px]]
+
+|x1= Draw a semi-transparent, blue arrow with default geometry:
+<sqf>myArrow1 = [_pos1, _pos2, [0,0,1,0.5]] call BIS_fnc_drawArrow;</sqf>
+
+|x2= Draw a wide, green arrow outline:
+<sqf>myArrow2 = [_pos1, _pos2, [0,1,0,1], [20], false] call BIS_fnc_drawArrow;</sqf>
+
+|x3= Draw a thin, red arrow with custom head geometry:
+<sqf>myArrow3 = [_pos1, _pos2, [1,0,0,1], [1,1/5,5]] call BIS_fnc_drawArrow;</sqf>
+
+|x4= Remove the arrow created in {{Link|#Example 3}}:
+<sqf>myArrow3 call BIS_fnc_drawArrow;</sqf>
+
+|x5= <sqf>
+myArrow1 = [[100,400,0], [200,500,0], [1,0,0,1], [20], true] call BIS_fnc_drawArrow;
+myArrow2 = [[400,700,0], [300,600,0], [0,1,0,1], [20, 1/3, 2, 2], true] call BIS_fnc_drawArrow;
+myArrow3 = [[600,700,0], [400,900,0], [0,0,1,1], [20, 1/3, 2, 0.5], true] call BIS_fnc_drawArrow;
+myArrow4 = [[100,100,0], [200,200,0], [0,0,0,1], [20], false] call BIS_fnc_drawArrow;
+myArrow5 = [[400,400,0], [300,300,0], [1,1,1,1], [20, 1/3, 2, 2], false] call BIS_fnc_drawArrow;
+myArrow6 = [[600,400,0], [400,600,0], [0,1,1,1], [20, 1/3, 2, 0.5], false] call BIS_fnc_drawArrow;
+</sqf>
+
+|seealso= [[drawArrow]]
+}}

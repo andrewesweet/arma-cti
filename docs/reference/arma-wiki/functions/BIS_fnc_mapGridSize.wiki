@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_mapGridSize
+// revision: 309186 (2022-05-03T18:13:13Z)
+// export sha1: s5hpk1rz4y9kdkuakbk72i3ret0j0et
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.92
+
+|gr1= Map and Markers
+
+|descr= Returns the size of map grid square at current zoom level.
+{{Feature|informative|This function caches config lookup result on the first use and for the duration of the mission, making subsequent access 2-3 times faster.}}
+
+|s1= [map] call [[BIS_fnc_mapGridSize]]
+
+|p1= map: [[Control]] - (Optional, default main mission map ([[findDisplay]] 12 [[displayCtrl]] 51)) map control
+
+|r1= [[Number]] - map grid size
+
+|x1= <sqf>private _gridSize = [] call BIS_fnc_mapGridSize;</sqf>
+
+|seealso= [[BIS_fnc_mapSize]]
+}}

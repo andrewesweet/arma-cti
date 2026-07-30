@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_timeline_cleanup
+// revision: 310493 (2022-05-06T11:02:10Z)
+// export sha1: hhixzkp9cmgcnf6bbvb66d0zroxcuqq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Timeline | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Timeline
+
+|descr= Destroys timeline and all related objects.
+
+|s1= [timeline] call [[BIS_fnc_timeline_cleanup]]
+
+|p1= timeline: [[Object]] - the timeline object
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[timeline] call BIS_fnc_timeline_cleanup;</sqf>
+
+|seealso= [[BIS_fnc_timeline_deleted]]
+}}

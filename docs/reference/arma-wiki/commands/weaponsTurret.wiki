@@ -1,0 +1,111 @@
+// source: https://community.bistudio.com/wiki/weaponsTurret
+// revision: 377486 (2026-01-02T06:49:06Z)
+// export sha1: 2vxd5yoiej84mcc2nulqqktzfl5k1sf
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 2: Operation Arrowhead version 1.52 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.52
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|gr1= Turrets
+
+|descr= Returns all weapons of a given turret. Use turret path [-1] for driver's turret.
+
+|s1= vehicle [[weaponsTurret]] turretPath
+
+|p1= vehicle: [[Object]]
+
+|p2= turretPath: [[Turret Path]]
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>_weapons = vehicle player weaponsTurret [0,0];</sqf>
+
+|x2= <sqf>_weapons = _tank weaponsTurret [0];</sqf>
+
+|x3= <sqf>_driverWeapon = _ka50pilot weaponsTurret [-1];</sqf>
+
+|x4= <sqf>_weaponsForAnyTurrentPosition = (vehicle player) weaponsTurret ((assignedVehicleRole player) select 1);</sqf>
+
+|seealso= [[addMagazineTurret]] [[magazinesTurret]] [[removeMagazinesTurret]] [[removeMagazineTurret]] [[weapons]] [[assignedVehicleRole]] [[addWeaponTurret]] [[removeWeaponTurret]] [[turretLocal]]
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20110311074900
+|text= Use [[assignedVehicleRole]] in combination to easily determine the weapons for any vehicle position. You need to check for -1 if the unit is in the driver/pilot position. See example 3 and 4.
+}}
+
+{{Note
+|user= DenV
+|timestamp= 20120530162600
+|text= Returns information (including the turrets paths) about all weapons on turrets
+<sqf>
+funcGetTurretsWeapons = {
+	private ["_result", "_getAnyMagazines", "_findRecurse", "_class"];
+	_result = [];
+	_getAnyMagazines = {
+		private ["_weapon", "_mags"];
+		_weapon = configFile >> "CfgWeapons" >> _this;
+		_mags = [];
+		{
+			_mags = _mags + getArray (
+				(if (_x == "this") then { _weapon } else { _weapon >> _x }) >> "magazines"
+			)
+		} forEach getArray (_weapon >> "muzzles");
+		_mags
+	};
+	_findRecurse = {
+		private ["_root", "_class", "_path", "_currentPath"];
+		_root = (_this select 0);
+		_path = +(_this select 1);
+		for "_i" from 0 to count _root -1 do {
+			_class = _root select _i;
+			if (isClass _class) then {
+				_currentPath = _path + [_i];
+				{
+					_result set [count _result, [_x, _x call _getAnyMagazines, _currentPath, str _class]];
+				} forEach getArray (_class >> "weapons");
+				_class = _class >> "turrets";
+				if (isClass _class) then {
+					[_class, _currentPath] call _findRecurse;
+				};
+			};
+		};
+	};
+	_class = (
+		configFile >> "CfgVehicles" >> (
+			switch (typeName _this) do {
+				case "STRING" : {_this};
+				case "OBJECT" : {typeOf _this};
+				default {nil}
+			}
+		) >> "turrets"
+	);
+	[_class, []] call _findRecurse;
+	_result;
+};
+</sqf>
+
+This call: 
+<sqf>"M1A2_US_TUSK_MG_EP1" call funcGetTurretsWeapons;</sqf>
+
+will return all turrets weapons, their magazines and their paths:
+<pre>[
+	["M256", ["20Rnd_120mmSABOT_M1A2", "20Rnd_120mmHE_M1A2"], [0], "bin\config.bin/CfgVehicles/M1A2_US_TUSK_MG_EP1/Turrets/MainTurret"],
+	["M240_veh", ["100Rnd_762x51_M240", "1200Rnd_762x51_M240"], [0], "bin\config.bin/CfgVehicles/M1A2_US_TUSK_MG_EP1/Turrets/MainTurret"],
+	["M2BC", ["100Rnd_127x99_M2"], [0, 0], "bin\config.bin/CfgVehicles/M1A2_US_TUSK_MG_EP1/Turrets/MainTurret/Turrets/CommanderOptics"],
+	["SmokeLauncher", ["SmokeLauncherMag"], [0, 0], "bin\config.bin/CfgVehicles/M1A2_US_TUSK_MG_EP1/Turrets/MainTurret/Turrets/CommanderOptics"],
+	["M240_veh_2", ["100Rnd_762x51_M240", "1200Rnd_762x51_M240"], [0, 1], "bin\config.bin/CfgVehicles/M1A2_US_TUSK_MG_EP1/Turrets/MainTurret/Turrets/LoaderTurret"]
+]</pre>
+}}

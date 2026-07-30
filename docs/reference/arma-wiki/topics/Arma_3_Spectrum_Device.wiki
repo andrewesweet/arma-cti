@@ -1,0 +1,94 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Spectrum_Device
+// revision: 373622 (2025-05-27T10:01:47Z)
+// export sha1: j5cgpqojxrp66nuyciqugw2pmnji6vz
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 1.96
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GVI|arma3|1.96}}
+
+The Spectrum Device is a tool / feature introduced in [[Arma 3 Contact]]. It's ''fully'' integrated only in the optionally loaded expansion data, relying on systems that cannot exist outside of Contact.
+
+The default {{arma3}}  version contains a light version of the device, which has a basic API for usage in scripts.
+
+{{Feature|important|This is documentation for the Spectrum Device in the vanilla game's sandbox. It will not work as described when the spin-off Arma 3 Contact expansion is loaded into the game.<br>
+Keep in mind that players need to own Arma 3 Contact in order to pick up the device and use it without restrictions (it can still be added by script, but DLC purchase notifications will be shown).}}
+
+
+== Features ==
+
+On its own, the simplified system handles these features:
+* Horizontal compass
+* Spectrum line animation (i.e., noise)
+* Player-controlled frequency selection (mouse wheel by default while in the 'sights' view)
+
+All other features have to be controlled by user-made scripting, notably:
+* Setting signal values (e.g., a stronger signal when pointing towards its source)
+* Playing sounds
+* Transmitting signals
+
+Certain aspects are not supported at all:
+* Signal labels (frequency and signal name above the peak)
+* Selected signal to transmit (shown below the compass in Contact)
+
+
+== Spectrum Device ==
+
+The device can be configured using global variables. Since the device is calculated locally, it is possible to set different values on each client in multiplayer.
+
+[[File:contact spectrumAnalyzer.jpg|512px]] [[File:contact spectrumAnalyzerTransmit.jpg|512px]]<br>
+<small style="color: grey">The images display values set by the following code examples.</small>
+
+== Display the UI ==
+<sqf>
+private _ctrlGroup = findDisplay 46 ctrlCreate ["ctrlControlsGroupNoScrollbars", -1];
+_ctrlGroup ctrlSetPosition [safeZoneX, safeZoneY, safeZoneW, safeZoneH];
+_ctrlGroup ctrlCommit 0;
+
+[_ctrlGroup] call BIN_fnc_showPlayerSpectrumAnalyzer;
+</sqf>
+
+
+=== Frequency ===
+
+Frequency range in which the analyzer operates. The values are in {{Link|https://en.wikipedia.org/wiki/Megahertz|MHz}}.
+<sqf>
+missionNamespace setVariable ["#EM_FMin", 140];
+missionNamespace setVariable ["#EM_FMax", 143];
+</sqf>
+
+=== Sensitivity ===
+
+Sensitivity of signals the analyzer is able to detect. The values are in {{Link|https://en.wikipedia.org/wiki/DBm|dBm}}.
+<sqf>
+missionNamespace setVariable ["#EM_SMin", -60];
+missionNamespace setVariable ["#EM_SMax", -10];
+</sqf>
+
+=== Selected Frequency ===
+
+Currently selected frequency. Must be within the frequency range, otherwise it will not be shown. The values are in MHz.
+<sqf>
+missionNamespace setVariable ["#EM_SelMin", 141.6];
+missionNamespace setVariable ["#EM_SelMax", 141.9];
+</sqf>
+Since the player can change the selection, it is possible to use [[getVariable]] to get the current value.
+
+=== Scanning Progress ===
+
+When a signal is selected, it is possible to progress the scanning bar by setting the following variable. The value is in a range from 0 to 1.
+<sqf>missionNamespace setVariable ["#EM_Progress", 0.5];</sqf>
+
+=== Transmission ===
+
+To visualize transmitting, set the following variable to [[true]].
+<sqf>missionNamespace setVariable ["#EM_Transmit", true];</sqf>
+
+=== Spectrum Signals ===
+
+List of displayed signal values. The array is in format ''[frequency1, strength1, frequency2, strength2, ... frequencyN, strengthN]''.
+<sqf>missionNamespace setVariable ["#EM_Values", [141.8, -30, 140.85, -50, 141.12, -40]];</sqf>
+
+
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 1.96]]

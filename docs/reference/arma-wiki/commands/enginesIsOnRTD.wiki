@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/enginesIsOnRTD
+// revision: 330055 (2022-08-15T16:03:50Z)
+// export sha1: 17fe2xifj960xde8ye818xhoiuiz320
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= RTD
+
+|descr=Returns which engines are producing some work.
+{{Feature|afm}}
+
+|s1= [[enginesIsOnRTD]] RTD_helicopter
+
+|p1= RTD_helicopter: [[Object]]
+
+|r1= [[Array]] of [[Boolean]]s - value for each engine
+
+|x1= <sqf>_enginesTaru = enginesIsOnRTD _taru; // returns [true, true]</sqf>
+
+|seealso= [[isObjectRTD]] [[enginesRpmRTD]] [[enginesTorqueRTD]] [[wingsForcesRTD]] [[engineOn]]
+}}

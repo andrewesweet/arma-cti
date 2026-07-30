@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Official_Tools/World_Editor_Generators
+// revision: 378049 (2026-01-29T20:42:57Z)
+// export sha1: lit8iit0g4f6103tn1nl3ivkscklym7
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable sortable float-right align-center"
+! Generator
+! Polyline
+! Spline
+! Open
+! Closed
+|-
+| {{Link|Arma Reforger:World Editor: Forest Generator|Forest Generator}}
+| {{Icon|checked}}
+| {{Icon|warning}}<br>as polyline
+| colspan="2" | {{Icon|checked}}
+|-
+| {{Link|Arma Reforger:World Editor: Lake Generator|Lake Generator}}
+| {{Icon|checked}}
+| {{Icon|warning}}<br>as polyline
+| colspan="2" | {{Icon|checked}}
+|-
+| {{Link|Arma Reforger:World Editor: Powerline Generator|Powerline Generator}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| colspan="2" | {{Icon|checked}}
+|-
+| {{Link|Arma Reforger:World Editor: Prefab Generator|Prefab Generator}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| colspan="2" | {{Icon|checked}}
+|-
+| {{Link|Arma Reforger:World Editor: River Generator|River Generator}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|warning}}<br>spline only
+|-
+| {{Link|Arma Reforger:World Editor: Road Generator|Road Generator}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| colspan="2" | {{Icon|checked}}
+|-
+| {{Link|Arma Reforger:World Editor: Wall Generator|Wall Generator}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| colspan="2" | {{Icon|checked}}
+|}
+Generators, as their name suggests, are entities that generate ''something'' (forest, road, wall, river, powerlines etc).
+
+They are based on Shapes, polylines/splines, closed or not depending on the generator. As of {{armaR}} 1.0.0, a generator '''must''' be a shape's direct child.
+
+{{Feature|informative|
+* For information on generator usage, see {{GameCategory|armaR|Modding|Official Tools|Workbench|World Editor Generators|Tutorials|text= World Editor Generators tutorials}}.
+* For information on shapes, see {{Link|Arma Reforger:World Editor: Vector Tool|Vector Tool}}.
+}}
+
+
+{{GameCategory|armaR|Modding|Official Tools}}

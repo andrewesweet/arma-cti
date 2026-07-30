@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Timeline
+// revision: 163997 (2020-09-30T10:31:58Z)
+// export sha1: bvs2ge62jt1iokolgqz2whcvhslx2r1
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions used by the timeline system.
+
+[[Category:Functions by Functionality]]

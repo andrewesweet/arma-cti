@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/addItemToUniform
+// revision: 318719 (2022-05-13T09:21:22Z)
+// export sha1: naj45sieirvupo3nwsxt5fp3u5bzdb2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|arg= global
+
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Create new item and store it to soldier's uniform. The item can also be a weapon or a magazine.
+
+|s1= unit [[addItemToUniform]] item
+
+|p1= unit: [[Object]]
+|p2= item: [[String]]
+|r1= [[Nothing]]
+
+|x1= <sqf>player addItemToUniform "itemGPS";</sqf>
+
+|x2= <sqf>player addItemToUniform "hgun_Rook40_F";</sqf>
+
+|seealso= [[removeItemFromUniform]] [[addItemToBackpack]] [[addItemToVest]]
+}}

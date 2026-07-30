@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Tanks
+// revision: 339441 (2023-04-28T14:08:51Z)
+// export sha1: 60k9u1uwrqmr37azx1158x7nzec60sp
+// categories: Category:Arma 3: DLCs & Expansions | Category:Introduced with Arma 3 version 1.82
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= arma3_tanks_logo.png
+|game= arma3
+|version= 1.82
+|releasedate= 11th April 2018
+|intro= '''Arma 3 Tanks''' is a paid DLC that was released on 11th April 2018.
+|premfeature1= '''T-140 Angara''' - board these CSAT Main Battle Tanks (MBT) built to deliver maximum destruction and crew protection (includes a Commander variant and multiple liveries)
+|premfeature2= '''AWC Nyx''' - flexibly deploy any of these smaller and nimbler armored vehicles as Anti-Tank, Anti-Air, Recon, and Autocannon variants
+|premfeature3= '''Rhino MGS''' - command this Tank Destroyer with a 120 mm cannon, which can fire all kinds of standard rounds, but also the new MARUK ATGM (includes the UP variant).
+|premfeature4= '''"''Altis Requiem"''''' - assume the role of an AAF tank commander in command of the new AWC Nyx as well as the new T-140 Angara MBT in this fun mini-campaign
+|premfeature5= '''Showcase Tank Destroyers''' - play as a NATO crewman on board the new Rhino MGS UP and utilize its speed and maneuverability to accomplish your mission
+
+|freefeature1= '''9M135 Vorona''' - field these manually guided missile launchers using powerful optics, featuring a high 6 or 12x magnification, Thermal Imaging, and a laser rangefinder.
+|freefeature2= '''MAAWS Mk4''' - fire the new unguided recoilless rifle, which is available in the older Mod 0 version used by AAF and FIA, and the newer Mod 1 version that is employed by NATO
+|freefeature3= '''Anti-Tank Vehicle Variants''' – use variants of the existing Offroad and Prowler / Qilin LSVs that come equipped with mounted launchers
+|freefeature4= '''Tanker Helmet''' - don a unique CSAT protective crew helmet while operating armored vehicles
+|freefeature5= '''Decorative Objects''' - place several new decorative objects made available to Arma 3 content creators, such as tank barricades, spare parts, tools, and a fully functional repair depot
+|freefeature6= '''Steam Achievements''' - unlock a set of extra Steam Achievements related to the new content
+|freefeature7= '''Official Soundtrack''' - listen to new music tracks composed specifically for this DLC
+|supportfeature1= '''Interiors''' - every armored vehicle in Arma 3 now features a fully 3D-modeled interior with Multi-Functional Displays and camera feeds for crew members
+|supportfeature2= '''Improved Handling''' - armored vehicles now feel more natural to drive thanks to improvements to the wheel collision simulation, the way different ground surfaces affect the handling, and other changes
+|supportfeature3= '''Extended Damage Model''' - armor now reacts more realistically to incoming rounds. For example, cage armor (also known as slat armor) is not just a visual object but really does offer protection against RPGs
+|supportfeature4= '''Upgraded Audio''' - the audio experience of armored vehicles is made more lifelike via the addition of more stereo sound samples, positional sounds, and more distinct audio cues for gearbox and RPM changes
+|supportfeature5= '''Vehicle Customization''' - armored vehicles can be customized in the Virtual Garage with additional armor protection and camouflage nets for better concealment in different terrains
+|supportfeature6= '''New Missile Flight Profiles & Capabilities''' - a selection of missiles now feature direct or top-down attack flight modes, plus support for terrain-following munitions has been added. A few weapons now also have the ability to lock-on after launch
+|supportfeature7= '''Time Trials''' - put the new Angara, Nyx, and Rhino to the test in three speedy time trial races across Altis and Malden
+|supportfeature8= '''"''Vanguard'''"'' - join this Team-vs-Team multiplayer mode focusing on the tactical aspects of Arma 3 combined arms gameplay
+|gallery1= a3 tanks 1.jpg
+|gallery2= a3 tanks 2.jpg
+|gallery3= a3 tanks 3.jpg
+|gallery4= a3 tanks 4.jpg
+|trailer= Hzi6f_RWJ3Y
+|start1= {{Link|https://arma3.com/dlc/tanks|Official Page}}
+|start2= {{Link|link= http://store.steampowered.com/app/798390/Arma_3_Tanks/|text= Tanks on Steam}}
+|start3= [[Vanguard MP|Vanguard MP Documentation]]
+|isDLC= y
+}}
+
+{{GameCategory|arma3|DLCs & Expansions}}

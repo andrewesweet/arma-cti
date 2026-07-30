@@ -1,0 +1,103 @@
+// source: https://community.bistudio.com/wiki/weaponDirection
+// revision: 377763 (2026-01-03T00:59:33Z)
+// export sha1: hocdmqjd2cqnpowghng561qi9v46ti5
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Command Group: Weapons | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= global
+
+|gr1= Weapons
+
+|gr2= Unit Control
+
+|descr= Returns the direction that the vehicle weapon is aiming in. For addons the weapon name must be an entry in [[:Category:CfgWeapons|CfgWeapons]].
+{{Feature|informative|Turret and gun angle in degrees can also be obtained using [[animationSourcePhase]] or [[animationPhase]] commands.}}
+
+|s1= vehicleName [[weaponDirection]] weaponName
+
+|p1= vehicleName: [[Object]]
+
+|p2= weaponName: [[String]]
+
+|r1= [[Vector3D]]
+
+|x1= <sqf>_weaponVectorDir = player weaponDirection currentWeapon player;</sqf>
+
+|x2= Draw AI eye direction (green) and weapon direction (red) in 3D:
+<sqf>
+bob = createGroup east createUnit ["O_Soldier_F", [0,0,0], [], 0, "NONE"];
+bob setVehiclePosition [player modelToWorld [0,100,0], [], 0, "NONE"];
+onEachFrame
+{
+	_beg = ASLToAGL eyePos bob;
+	_endE = _beg vectorAdd (eyeDirection bob vectorMultiply 100);
+	drawLine3D [_beg, _endE, [0,1,0,1]];
+	_endW = _beg vectorAdd (bob weaponDirection currentWeapon bob vectorMultiply 100);
+	drawLine3D [_beg, _endW, [1,0,0,1]];
+};
+</sqf>
+
+|seealso= [[positionCameraToWorld]] [[getCameraViewDirection]] [[eyeDirection]] [[vectorDir]] [[vectorDirVisual]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2007-08-18 - 12:18</dd>
+<dt class="note">[[User:HAC_mainframe|HWM mainframe]]</dt>
+<dd class="note">
+Works great in multiplayer.
+The numbers are representing offset as follows : [X axis,Y axis,Z axis]
+
+The return array can be processed-converted into degrees as follows:
+
+<sqf>
+_array = _this weaponDirection "weapon class";
+_dir_degrees = (_array select 0) atan2 (_array select 1);
+</sqf>
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2007-11-11 - 01:41</dd>
+<dt class="note">[[User:Messiah2|MessiahUA]]</dt>
+<dd class="note">
+WeaponClass can only be the primary turret of the vehicle. For example it is not possible to get direction of commander's M2 on M1Abrams.
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2007-11-13 - 15:54</dd>
+<dt class="note">[[User:UNN|UNN]]</dt>
+<dd class="note">
+For an alternative to the weaponDirection command, see the following post on the official forums. On how to obtain the direction of multiple turrets on vehicles. 
+
+{{Link|link= http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?s=a25eef63faad0e555557e7e17118a60c;act=ST;f=80;t=69777|text= Turret Animations}} - {{Link|link= http://forums.bistudio.com/showthread.php?t=63918|text= new forum}}
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2014-12-09 - 18:25 (UTC)</dd>
+<dt class="note">[[User:Mechariuswh|Mechariuswh]]</dt>
+<dd class="note">
+The suggestion above using [[atan2]] and [[weaponDirection]] get the direction the barrel of a weapon is pointing, but this is not the same as the direction a shell will be fired (verify this by getting in an M4 Scorcher, parking it on a slope, elevating the barrel "across" the slope and watching the shell come out in third person).
+</dd>
+
+</dl>

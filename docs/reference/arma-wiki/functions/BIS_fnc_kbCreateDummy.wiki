@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_kbCreateDummy
+// revision: 326868 (2022-07-12T21:35:32Z)
+// export sha1: 3cl674p92by3ybplqak8r4kw0pw6gqt
+// categories: Category:Arma 3: Functions | Category:Function Group: Conversations | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Conversations
+
+|descr= Creates a dummy speaker (as a [[Game Logic]]). If given dummy variable has already been created, returns this one.
+
+|s1= dummyVarName call [[BIS_fnc_kbCreateDummy]]
+
+|p1= dummyVarName: [[String]] - can be anything, but if an identity from [[Description.ext#CfgIdentities|CfgIdentities]] the dummy will take this identity.
+
+|r1= [[Object]] - dummy speaker game logic
+
+|x1= <sqf>private _dummySpeaker = "BIS_dummySpeaker" call BIS_fnc_kbCreateDummy; // _dummySpeaker == BIS_dummySpeaker now</sqf>
+
+|x2= <sqf>private _dummySpeaker = "Miller" call BIS_fnc_kbCreateDummy; // given Miller is defined in CfgIdentities</sqf>
+
+|seealso= [[Conversations]]
+}}

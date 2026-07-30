@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/directionStabilizationEnabled
+// revision: 377493 (2026-01-02T06:49:17Z)
+// export sha1: cntzgvyn1jrgy2rzm81tatda7g5ajz0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Camera Control
+|gr2= Turrets
+
+|descr= Get state of direction stabilization. This command returns [[true]] if the current optic mode of the selected turret has direction stabilization configured in config ({{hl|directionStabilized}}) and if it is also not disabled by [[enableDirectionStabilization]].<br>
+This command can not be used to determine if the current optic of the turret has {{hl|directionStabilized}} enabled in config.
+
+|s1= vehicle [[directionStabilizationEnabled]] turretPath
+
+|p1= vehicle: [[Object]]
+
+|p2= turretPath: [[Turret Path]]
+
+|r1= [[Boolean]] - whether direction stabilization is enabled
+
+|x1= <sqf>uav directionStabilizationEnabled [0];</sqf>
+
+|seealso= [[enableDirectionStabilization]] [[lockCameraTo]]
+}}

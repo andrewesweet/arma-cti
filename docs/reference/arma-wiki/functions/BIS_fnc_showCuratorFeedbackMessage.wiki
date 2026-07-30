@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_showCuratorFeedbackMessage
+// revision: 338635 (2023-03-25T13:54:12Z)
+// export sha1: 22xyrnh5zbal8utrwizfyjrev8lfu1u
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Show feedback message when illegal operation is attempted in curator interface.<br>
+
+{{{!}} class="valign-top"
+{{!}} style="padding-right: 2em" {{!}}
+'''Interface'''
+* '''000''': Cannot exit Zeus interface
+* '''003''': Cannot move camera outside the camera area
+'''Placing'''
+* '''101''': Placing objects is not available
+* '''102''': Insufficient resources
+* '''103''': Selected position is not in an editing area
+'''Placing waypoints'''
+* '''201''': Placing waypoints is not available
+* '''206''': No objects, groups or waypoints selected
+'''Editing'''
+* '''301''': Editing entities is not available
+* '''303''': Selected position is not inside editing area
+* '''304''': One of the selected entities is not in an editing area
+* '''307''': Players cannot be edited
+* '''308''': The vehicle is full
+{{!}}
+'''Deleting'''
+* '''401''': Deleting entities is not available
+* '''404''': One of the selected objects is not in an editing area
+* '''405''': One of selected vehicles has non-editable crew in it
+* '''407''': Players cannot be deleted
+''' Destroying'''
+* '''501''': Destroying entities is not available
+* '''504''': One of the selected objects is not in an editing area
+* '''505''': One of the selected vehicles has non-editable crew in it
+* '''506''': No objects selected
+* '''507''': Players cannot be destroyed
+'''Syncing'''
+* '''609''': At least one AI unit has to be present in synchronization
+* '''610''': Cannot change player side (typo: ''"changle"'')
+{{!}}}
+
+|s1= [curator, messageInfo] call [[BIS_fnc_showCuratorFeedbackMessage]]
+
+|p1= curator: [[Object]] - ''not used''
+
+|p2= messageInfo: [[Number]] or [[String]] - error ID, or text message to be displayed
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>[objNull, 404] call BIS_fnc_showCuratorFeedbackMessage;</sqf>
+
+|x2= <sqf>[objNull, "You can't do that!"] call BIS_fnc_showCuratorFeedbackMessage;</sqf>
+
+|seealso= [[BIS_fnc_curatorHint]]
+}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Det_Danske_Forsvar
+// revision: 184525 (2021-01-06T13:21:17Z)
+// export sha1: t78yh49m6guhiv997bker0poyckegky
+// Vendored snapshot. Do not edit — re-export instead.
+
+Danish Armed Forces
+
+{{GameCategory|arma2|Media}}

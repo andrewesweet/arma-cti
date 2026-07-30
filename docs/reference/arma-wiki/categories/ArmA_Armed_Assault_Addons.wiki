@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Addons
+// revision: 184327 (2021-01-06T09:09:42Z)
+// export sha1: ev6klvj7i2iyznrsj25x5slodly8pht
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1|Extensions}}

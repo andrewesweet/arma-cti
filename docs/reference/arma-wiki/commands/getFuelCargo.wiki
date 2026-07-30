@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/getFuelCargo
+// revision: 364121 (2024-05-04T22:07:43Z)
+// export sha1: qs1eju7fu6wo61is9l1vnwtcql35s9k
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 0.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.56
+
+|arg= global
+
+|gr1= Vehicle Inventory
+
+|descr= Returns the fuel amount (1 is full) in the cargo space of a refueling vehicle.
+{{Feature|informative|Since Arma 3 v1.96 the return value for vehicles that are not configured to have ability to refuel other vehicles is -1. (Prior to that the value was negative infinity)}}
+
+|s1= [[getFuelCargo]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Number]] - fuel cargo value, -1 if fuel cargo is not supported, 0 if the vehicle is ![[alive]] or [[isNull]]
+
+|x1= <sqf>value = getFuelCargo myVehicleName;</sqf>
+
+|seealso= [[setFuelCargo]] [[getAmmoCargo]] [[getRepairCargo]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-12-22 - 17:16 (UTC)</dd>
+<dt class="note">[[User:AgentRev|AgentRev]]</dt>
+<dd class="note">
+'''Prior to Arma 3 v1.94''' If the vehicle is not [[alive]], it always returns [[Nothing]], which you should check for using [[isNil]].<br>
+If the vehicle is unable to carry that type of cargo, it returns [[Number#Number_Type|-1.#IND]], which you should check for using [[finite]] or [[a_less_b | <]] 0.
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2019-09-06 - 07:19 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">If you have ACE mod installed, note that it removes fuel cargo from vehicles so it could appear that the command always returns 0</dd>
+
+</dl>

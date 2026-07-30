@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_reviveInit
+// revision: 349046 (2023-11-08T14:47:16Z)
+// export sha1: om6n6e7aglnjuzpzsk2d5gm4sdb58dl
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Revive | Category:Functions | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Revive
+
+|descr= Initialize the Revive system on all machines.
+
+|s1=
+
+|r1= [[Boolean]] - returns [[true]] if successful, otherwise [[false]]
+
+|x1= <sqf>call BIS_fnc_reviveInit;</sqf>
+
+|seealso= [[Arma 3: Revive]] [[BIS_fnc_disableRevive]] [[BIS_fnc_reenableRevive]] [[BIS_fnc_reviveAllowed]] [[BIS_fnc_reviveBleedOut]] [[BIS_fnc_reviveDamageReset]] [[BIS_fnc_reviveDebug]] [[BIS_fnc_reviveEhDammaged]] [[BIS_fnc_reviveEhHandleDamage]] [[BIS_fnc_reviveEhHandleHeal]] [[BIS_fnc_reviveEhKilled]] [[BIS_fnc_reviveEhRespawn]] [[BIS_fnc_reviveEnabled]] [[BIS_fnc_reviveGet3dIcons]] [[BIS_fnc_reviveGetActionIcon]] [[BIS_fnc_reviveIconControl]] [[BIS_fnc_reviveIsValid]] [[BIS_fnc_reviveIsValidSecure]] [[BIS_fnc_reviveOnBeingRevived]] [[BIS_fnc_reviveOnForcingRespawn]] [[BIS_fnc_reviveOnState]] [[BIS_fnc_reviveOnStateJIP]] [[BIS_fnc_reviveSecureUnit]]
+}}

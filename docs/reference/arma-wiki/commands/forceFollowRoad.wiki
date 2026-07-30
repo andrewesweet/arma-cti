@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/forceFollowRoad
+// revision: 346816 (2023-08-05T12:44:00Z)
+// export sha1: spyee5ucezkedw7b7st99sr5ahe25c7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|gr1= Unit Control
+
+|descr= Forces the vehicle to stay on road.
+
+|s1= vehicle [[forceFollowRoad]] state
+
+|p1= vehicle: [[Object]] - vehicle
+
+|p2= state: [[Boolean]] - true: Force on road, false: default behaviour
+
+|r1= [[Nothing]]
+
+|x1= <sqf>car forceFollowRoad true;</sqf>
+
+|seealso= [[setConvoySeparation]] [[limitSpeed]] [[setDriveOnPath]] [[useAISteeringComponent]]
+}}

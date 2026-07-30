@@ -1,0 +1,701 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Ships_Config_Guidelines
+// revision: 373024 (2025-03-18T15:54:45Z)
+// export sha1: 30ojb180938gt202lqkr8zusp6dxhbu
+// categories: Category:ArmA: Armed Assault: Modelling | Category:Arma 3: Tutorials | Category:Arma 3: Vehicle Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Messagebox/BI|Important:|Please be aware of the [[Licenses|{{arma3}} Modding License]].}}
+
+So you want to build a boat in Arma 3? Well lets start with some basics...
+
+What's the difference between a boat and a ship?
+
+- A ship is usually large enough to carry a boat. Subs are also called boats, regardless of size. :)
+
+Creating boats in {{arma3}} seems to be reasonably straight forward. They exist today (Speedboat, Inflatable boat etc), Arma 3 Tools include a Boat "sample".
+Creating ships in {{arma3}} is a little more challenging.
+
+There are 3 main issues for creating ships (and to some extent boats):
+
+# {{arma3}} has limitations when handling objects larger than ~50m in any dimension. Greater than ~50m and the physical structure (Geo LOD and Roadway LOD) becomes unstable. <!--
+-->This is the reason why the LHD in {{arma2}} is comprised of multiple objects attached together. <!--
+-->In theory if the LOD is centred on the model it can extend 60m in each direction, therefore supporting ships that are ~100m in length.
+# {{arma3}} has issues allowing certain classes to stand or move on a moving vehicle, so when getting out of a boat/vehicle or landing onto another vehicle (ship), players/vehicles will fall through the structure or become injured. <!--
+-->Helicopters and aircraft require a Physx LOD, while Man class requires a roadway LOD. <!--
+-->Physx ensures an amount of "stickiness" between aircraft and ship, but vehicles should be anchored via script. <!--
+-->Man class requires a scripted solution to allow men to walk around moving ships.
+# Ships push the limits from a model and config perspective, not just from a size perspective but also issues such as vertices, section and dynamic light maximum counts.
+
+There are a couple of approaches to ships and boats to date in Arma 3:
+
+# Typically boats or ships smaller than 100m are modelled and implemented as "vehicles" (that you cannot move men about on)
+# Ships longer than 100m historically have been implemented as a single or multiple "static" objects stitched together (i.e. LHD, Fregata, Destroyer etc) that are walkable, but do not act as vehicles
+# A few very brave modders have attempted to mix the two. <!--
+-->{{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}330941960|USS Iowa}} (mod by AusSnipe73) defines a ship vehicle but then attaches many different static objects and turrets to the ship to build out a 270m long vessel (using an init script to attachto all the ship parts). <!--
+-->Results have been mixed with regards to being walkable and having other vehicles land on a ship.
+
+There seems to be 3 areas of exploration within the modding community:
+
+# PhysX ships larger than 100m (that you can land an aircraft on) - such as USS Nimitz, ATLAS LHD (both atm are static)
+# PhysX ships and boats that MAN class can stand/move on - USS Iowa, LCS 1
+# PhysX subs (that can dive and maneouvre like a real sub) - Collins submarine
+
+
+== Comparison to A2/OA ships ==
+
+* PhysX support (ShipX, SubmarineX)
+* Improved support for vehicles landing on objects/vehicles (PhysX interaction)
+* Firing from Vehicles
+* Support for Buoyancy LOD
+* Picture in Picture - Render to texture (See [[Arma 3: Cars Config Guidelines#Picture in Picture for screens and mirrors]])
+* Random visual variants (textures, accessories, doors) (See [[Arma 3: Cars Config Guidelines#Random visual variants]])
+* Reflectors, markerlights and beacons (See [[Arma 3: Cars Config Guidelines#Reflectors.2C markerlights and beacons]])
+* Improved penetration materials (See [[Arma 3: Tanks Config Guidelines#Armour plates setup]])
+* More detailed Fire Geometry LODs
+* Improved tweakability of HitPoints LODs
+
+== Model requirements {p3d} ==
+
+Thanks to Hatchet and the guys on the {{arma3}} Model Makers skype channel for much of this information.
+
+=== General ===
+
+For ships greater than 100m, you should carve your model up into multple p3d's and use attachTo command on init to put the parts together.
+This ensures stability for all parts of the ship and avoids engine limits (such as vertices count, lights count etc). Considerations for p3d's are:
+
+# A main p3d which has the overall Physx Buoyancy and Physx Geo LOD, Res LOD for midship, GEO LOD for midship, Roadway LOD for midship, View Cargo, View Pilot etc.
+# Stern and bow p3ds including Res LOD, Physx Geo LOD, Geo LOD, Roadway LOD etc
+# Ladders p3d - vehicles do not support ladders, so a separate house class object should be attachTo the ship for ladders
+# Cranes p3d - you may want to setup cranes as slingloading capable vehicles that are attachTo the ship.
+# Proxies - weapon systems such as CIWS, Torpedos, Harpoon and Radars
+# For really large ships (i.e. aircraft carriers) you may want to split up the ship into more sections, breaking out components such as lights, superstructure, interior etc
+
+The behavior of the ship in the water does not depend anymore on the LandContact points, but on the GEO and PhysX LODs.
+The PhysX Buoyancy LOD seems to represent the water displacement of the ship. If you put too much mass in the Geo LOD (a value over the displacement) the ship sinks.
+The PhysX Buoyancy LOD must be similar in form and size, to the ship's hull.
+It must also follow the Geometry LOD rules (closed and convex) and any part of the ship in the water should be composed of as few components as possible.
+
+GEO is very important. You must balance the mass in all axis (plural axes?) and keep the weight down so the ship doesn't turn and sinks.
+In subs it is specially important because it controls how it moves once submerged and how it maintains depth.
+One approach is to create 4 small boxes for the bow, port side, starboard and stern in the Geo LOD and use these as the source of mass for the object.
+
+=== LODs (included in {{arma3}} boat p3ds)===
+* Resolution LODs
+** Anti-water rvmat required - a plane that will hide the water shader. so in a boat, you'd want it below the 'players viewpoint', and it will hide the water below that. so if bouncing thru waves or whatever, the bottom of your hull would remain visible.
+** Mirrors and screens should have RTT texture: #(argb,256,512,1)r2t(rendertargetX,1.0) - where X in rendertarget should be a number
+** Lights should have a face that has an emissive RVMAT. A3 has several default RVMATs in data_f/lights
+** named selections for all animated parts, areas that can be retextured, lights (emissive face) etc
+* ShadowVolume 0, 10, 1000, 1010
+* Buoyancy LOD Pictured right. [[File:mkv_bouy_lod.PNG|Buoyancy LOD|400px|right]]
+** You must add a named property called buoyancy = 1 (to geometry lod, not to buoyancy geometry lod).
+** buoyancy LOD can contain more than one component (convex/closed/tris). but for components in the water (especially all the time), they really should be a single component with physx geometry in general, it is usually best to have no intersecting geometry. especially with the bouy lod. as it will double physx calcs in the water. Outside of that.. nothing really special about it. you want to keep the face count as low as possible. but honestly it can handle a lot before you actually see performance hits in a typical environment.
+** "you can have more than one bouy component, the behavior can be really odd depending on where the geometry resides in the object space. so generally speaking, i'd would keep it a single piece. and adjust the geometry as i did on the front of the example boat (pictured right) where i lowered the bouy lod to adjust how it sits in the water. as weighting it that way, had negative influences on the physx."
+ From VBS2 wiki...
+ Ensure that the geometry is accurate to the shape of the ship, with accurate mass distribution and realistic Center of Mass.
+ Create a simplified copy of the geometry, for use in the displacement LOD.
+ The displacement LOD should adhere to these rules:
+ * Have as few faces as possible - high face counts will have a negative impact on performance.
+ * Convex components must not penetrate each other if possible (especially on permanently immersed parts). If they penetrate, then their volume and surface is calculated twice.
+ * Convex components must not even touch each other. Merge them together if possible. (especially on permanently immersed parts). If they touch, then their surface is calculated twice. This is not that big a problem on not permanently immersed parts.
+ * Inside areas must not be modeled. Volume is not calculated for this area and inside surface is then added, which we do not want.
+ * Volume of the object represents what will generate buoyancy. Do not model parts which can instantly fill with the water.
+ * Surface of the object represents what will generate resistance in water. Create only one convex component for permanently immersed part.
+ The ideal displacement LOD is built of a single component which matches (approximately) the shape of the hull. It is important that the volume be reasonably close to the real volume of the ship, as this is used for buoyancy calculations.
+ The displacement LOD adheres to the normal rules for geometry LODs.
+** Since {{GVI|arma3|2.12|size= 0.75}} can have animated=1 property, which when set allows animation/movement of buoyancy components, allowing to change the floating height of ship.
+* A new PhysX LOD - Pictured right[[File:mkv_physx_lod.PNG|PhysX LOD|400px|right]]
+** ensure this LOD is tris "/"
+** There needs to be a lod (4e13) consisting of convex components as simple as possible.
+*** Requires the latest Arma 3 Tools to binarizE
+* Memory LOD
+** See Model.cfg for a list of memory points
+** Additionally the placement of the engine effects is important. They must be below the waterline. Worth noting, if those memory points come out of the water in the simulation ... the engine will shut off (or wont turn on). These points are also where the 'thrust' is applied to the model. So there is a bit of a balancing act that can go on, depending on the speed/size of the vessel and relative weather conditions (eg.. 30 setWaves 1).
+** Mirrors and screens should have PIP pos and dir memory points.
+** Reflectors require a pos and dir memory points (maximum of 12 lights per model)
+** Markerlights require a memory point - nav lights and landing lights (group lights by colour)
+** Water effects should be placed at the bow wave location and can also be placed at the stern to create the wake effect.
+* Geo
+** ensure the LOD has sharp edges - press U in OB
+** You must add a named property called buoyancy = 1.
+** '''Regarding the GEO LOD, it is very important that the autocenter=1 property is set in the properties tab of the GEO LOD. Otherwise the ship will inmediately sink.'''
+** The basic concept/goal is to weight the vehicle accurately, the 'center of mass' should be about center vertically, and towards the rear of the vessel. This makes the vessel sit a little deeper aft when idle. What is important to note, is that the weighting is being applied to the Geometry LOD, but you need to balance the 'center of mass' around the shape of the PhysX GEO LOD.
+** What is also important to note is that the amount of weight you enter must counter the 'displacement' of the PhysX GEO LODs. I say LODs because I can't recall exactly if the Buoyancy LOD was actually responsible for that calculation. Either way, one of the PhysX LODs assumes a certain amount of displacement, and your total amount of mass must be balanced against that.
+* Roadway
+** Needed for Non Physx actors such as man class to walk on ship surface.
+** Will become unstable if beyond 50m from centre of model.
+* View Cargo
+** Ideally this LOD is used as the interior for troop carrying component of a ship.
+* View Pilot
+** Ideally used for the bridge of a ship
+
+
+== Model Config {model.cfg} ==
+
+* Nothing specific to boats/ships in model.cfg, suggest that you follow the example provided in arma 3 tools boat samples
+
+
+== Config (config.cpp) ==
+
+=== Ship/Boat Config Classes in {{arma3}} ===
+
+* Base class is Ship (inherits AllVehicles) and uses simulation = "ship". There are 4 child classes:
+** SmallShip - not used
+** BigShip - not used
+** FloatingStructure_F
+*** FloatingStructure_F uses simulation ShipX.
+*** Submarine_01_F inherits from FloatingStructure_F but is defined as vehicleClass="submerged" and does not appear to be implemented as a "vehicle".
+*** C_Boat_Civil_04_F inherits from FloatingStructure_F is defined as vehicleClass="submerged" and does appear to be implemented as a "vehicle" but you cannot interact with it (get in etc).
+** Ship_F
+*** Boat_F is the basis of most of the "boats" in Arma 3.
+**** Boat_Armed_01_base_F uses simulation shipX.
+**** Boat_Civil_01_base_F uses simulation shipX.
+**** Rubber_duck_base_F uses simulation shipX.
+**** SDV_01_base_F uses simulation submarineX and is used as the basis for all SDVs in Arma 3.
+
+=== Submarine and Ship Config Detail ===
+
+Thanks to Mankyle for the following explanation and sample Sub.
+
+ airCapacity = 1209600;
+Quite important for submarines. Determines the time the crew inside the ship can be below the surface before dying suffocated for lack of air.
+It seems that when using class submarinex, the engine sets the crew as if they were below the water
+
+ verticalTurnCoef = 20.2;
+This line seems to control the speed for ascending/descending.
+
+ waterSpeedFactor = 3.0;
+No idea of what this does. I have tried a couple of values and I have not seen changes
+
+ periscopeDepth = 15.5;
+This is the depth the sub mantains when you activate the "Mantain periscope Depth" Action.
+It is important to know that for big models (not a SDV sized submarine) that this depth DOES NOT coincide with the depth marker in the left upper corner of the screen
+
+ idleRpm = 1000;
+Self explaining
+
+ redRpm = 4000;
+
+ thrustDelay = 2;
+thrustDelay is the time the engine needs from 0 thrust to 1 thrust (or 0% to 100%). Time is in seconds.
+
+ simulation = "submarinex";
+ simulation = "shipx";
+PhysX simulation classes
+
+ overSpeedBrakeCoef = 0.8;
+Brake effectivity. If you follow VBS 2 explanations, this value is (overSpeedBrakeCoef * enginePower). The higher the value, the better it brakes
+
+ enginePower = 3278;
+Engine power in kW. 1hp is 0.746kW.
+
+ engineShiftY = 2;
+This lines tells where the engine applies the force related to the origin of the model.
+Essentially what one mus calculate is the distance in the vertical axis between the Y value of center of mass of the model and the Y Value of the propeller, waterjet or whatever moves the ship.
+Negative values tend to make the bow rise when you accelerate and positive values tend to make it dive.
+From vbs2 wiki - Adjust the height at which the engine force is applied to the hull, relative to the model origin, in m.
+Used for large ships, this will cause the ship to lean more/less in fast turns.
+
+ waterLeakiness = 1000;
+This parameter determines the quantity of water (M^3 x S) that will fill the volume of the PhysX LOD per second.
+Tipically lower vaues for boats, higher for bigger ships. Modifies the sinking rate of a ship when this suffers damage.
+From BIS Cars Config "WaterLeakiness should be amount of water in liters that goes into selected object per second.
+This is set to zero by engine for all vehicles with simulation of a ship or having <syntaxhighlight lang="cpp" inline>canFloat = 1;</syntaxhighlight> (unless they are toppled of destroyed, then config value takes precedence).
+<syntaxhighlight lang="cpp" inline>WaterLeakiness = 10;</syntaxhighlight> seems to be a good value to start with for all kinds of vehicles no matter the size (which is a bit spooky, but it works).
+
+ waterResistanceCoef = 0.01;
+Represents the resistance if the hull. The higher the value the higher the resistance. This affects acceleration and maximum speed.
+
+ waterLinearDampingCoefX = 10.0;
+This value represents lateral movements produced by waves. Higher values will make the ship corner better and slide less to the sides.
+
+ waterLinearDampingCoefY = 1.2;
+This one represents vertical movements depending on the waves. Higher values will modify how much the ship sinks/goes down depending on the waves.
+It can also affect the flotation line maintaining the ame Ship mass. Higher values will also make a ship sink slower
+
+ waterAngularDampingCoef = 8.0;
+Smooth the angular movement in all axis, higher values will reduce swinging/swaying, but may cause strange behavior in turns/rolling over waves.
+
+ rudderForceCoef = 12;
+Set how effective the rudder is, small boats are typically 0.5 - 5, large ships are typically 100 - 200.
+
+ rudderForceCoefAtMaxSpeed = 15;
+How the rudder works. The higher the value the more the ship will turn, BUT the more it will incline when turning.
+Values to high could even make a ship turn upside down (and sink) when turning. If you are transporting non scripted vehicles the can easily fall if this value is set too high.
+
+There are two values. The first one is for low speed (usually ships turn better when sailing faster than a certain speed) and the second one when going at MEDIUM or FAST speed.
+
+<syntaxhighlight lang="cpp">
+	memoryPointsLeftWaterEffect = "waterEffectR";
+	memoryPointsRightWaterEffect = "waterEffectL";
+	memoryPointsLeftEngineEffect = "EngineEffectL";
+	memoryPointsRightEngineEffect = "EngineEffectR";
+</syntaxhighlight>
+
+These are points in the memory LOD that represent the spawning points for water particle FX.
+The first ones represent bow FX, the last ones represent the foam generated by the engine propeller.
+See [[Arma 3: Particle Effects: Config Parameters#leftFastWaterEffect .2F rightFastWaterEffect|Arma 3 Particle Effects: Config Parameters - leftFastWaterEffect / rightFastWaterEffect]].
+
+Example Collins class submarine that uses submarinex simulation class:
+
+http://www.freeuploadsite.com/uploads/13725721431.rar
+
+=== Example Config for Armed Speedboat ===
+
+Key noted items from Boat_Armed_01_base_F
+
+<syntaxhighlight lang="cpp">
+		radarType = 8;
+		steerAheadSimul = 0.5;
+		steerAheadPlan = 0.35;
+		predictTurnPlan = 0.8;
+		predictTurnSimul = 0.6;
+		brakeDistance = 5;
+		acceleration = 15;
+		turnCoef = 0.75;
+		maxSpeed = 75;
+		simulation = "shipx";
+		waterLeakiness = 55.5;
+		waterLinearDampingCoefY = 5;
+		waterLinearDampingCoefX = 2;
+		waterAngularDampingCoef = 1.2;
+		waterResistanceCoef = 0.015;
+		rudderForceCoef = 0.3;
+		rudderForceCoefAtMaxSpeed = 0.02;
+		waterEffectSpeed = 5;
+		engineEffectSpeed = 5;
+		waterFastEffectSpeed = 28;
+</syntaxhighlight>
+
+==== Engine parameters ====
+
+For indepth information about engine parameters see RedPhoenix's awesome BIF post http://forums.bistudio.com/showthread.php?165390-Tutorial-Creating-Custom-Engine-Gearbox-and-Suspension-Vehicle-config&p=2518019&viewfull=1#post2518019
+
+Key noted items from Boat_Armed_01_base_F
+
+<syntaxhighlight lang="cpp">
+		thrustDelay = 0.2;
+		overSpeedBrakeCoef = 0.2;
+		enginePower = 1085;
+		engineShiftY = -0.1;
+		idleRpm = 200;
+		redRpm = 1200;
+		class complexGearbox
+		{
+			GearboxRatios[] = { "R1", -0.782, "N", 0, "D1", 2, "D2", 1.85, "D3", 1.75 };
+			TransmissionRatios[] = { "High", 1 };
+			gearBoxMode = "auto";
+			moveOffGear = 1;
+			driveString = "D";
+			neutralString = "N";
+			reverseString = "R";
+		};
+</syntaxhighlight>
+
+=== Config Comparison with USS Iowa (mod by AusSnipe73) ===
+
+Inherits from Ship_F
+<syntaxhighlight lang="cpp">
+		radarType = 4;
+		simulation = "shipx";
+		maxSpeed = 61;
+		overSpeedBrakeCoef = 0.8;
+		enginePower = 1580000;
+		engineShiftY = 0.0;
+		waterLeakiness = 1000.0;
+		turnCoef = 1000.0;
+		thrustDelay = 20;
+		waterLinearDampingCoefY = 2;
+		waterLinearDampingCoefX = 200.0;
+		waterAngularDampingCoef = 1.2;
+		waterResistanceCoef = 0.2;
+		rudderForceCoef = 1000.0;
+		rudderForceCoefAtMaxSpeed = 400.0;
+		idleRpm = 500;
+		redRpm = 1200;
+		brakeDistance = 3;
+		supplyRadius = 3;
+		precision = 15;
+		steerAheadSimul = 0.5;
+		steerAheadPlan = 0.35;
+		predictTurnPlan = 0.8;
+		predictTurnSimul = 0.6;
+
+		class complexGearbox
+		{
+			GearboxRatios[] = { "R1", -0.782, "N", 0, "D1", 2.0, "D2", 1.85, "D3", 1.75 };
+			TransmissionRatios[] = { "High", 1.0 };
+			gearBoxMode = "auto";
+			moveOffGear = 1;
+			driveString = "D";
+			neutralString = "N";
+			reverseString = "R";
+		};
+</syntaxhighlight>
+
+=== Config for SDV in {{arma3}} ===
+
+Inherits from Boat_F
+
+<syntaxhighlight lang="cpp">
+		radarType = 8;
+		verticalTurnCoef = 0.05;
+		turnCoef = 0.5;
+		steerAheadSimul = 0.5;
+		steerAheadPlan = 0.35;
+		predictTurnPlan = 0.8;
+		predictTurnSimul = 0.6;
+		brakeDistance = 25;
+		acceleration = 15;
+		maxSpeed = 30;
+		waterSpeedFactor = 1;
+		periscopeDepth = 1.2;
+		idleRpm = 200;
+		redRpm = 1200;
+		thrustDelay = 2;
+		formationX = 15;
+		formationZ = 15;
+		simulation = "submarinex";
+		overSpeedBrakeCoef = 0.8;
+		enginePower = 45;
+		engineShiftY = 0.4;
+		waterLeakiness = 0;
+		waterResistanceCoef = 0.015;
+		waterLinearDampingCoefX = 2;
+		waterLinearDampingCoefY = 0.8;
+		waterAngularDampingCoef = 1;
+		rudderForceCoef = 0.2;
+		rudderForceCoefAtMaxSpeed = 0.05;
+</syntaxhighlight>
+
+=== Weapon Systems ===
+
+==== Turret Config ====
+<syntaxhighlight lang="cpp">
+class Turrets : Turrets
+{
+	class FrontTurret : NewTurret
+	{
+		class HitPoints
+		{
+			class HitTurret
+			{
+				armor = 0.8;
+				material = 60;
+				name = "otochlaven";
+				visual = "otochlaven";
+				passThrough = 1;
+			};
+
+			class HitGun
+			{
+				armor = 0.6;
+				material = 60;
+				name = "otochlaven";
+				visual = "otochlaven";
+				passThrough = 1;
+			};
+		};
+
+		stabilizedInAxes = 4;
+		body = "MainTurret";
+		gun = "MainGun";
+		animationSourceBody = "mainTurret";
+		animationSourceGun = "mainGun";
+		gunnerAction = "gunner_Mrap_01";
+		gunnerGetInAction = "GetInMedium";
+		gunnerGetOutAction = "GetOutMedium";
+		ejectDeadGunner = 0;
+		outGunnerMayFire = 1;
+		inGunnerMayFire = 1;
+		soundServo[] = { "A3\sounds_f\dummysound", 0.00562341, 1 };
+		gunBeg = "usti hlavne";
+		gunEnd = "konec hlavne";
+		weapons[] = { "GMG_40mm" };
+		magazines[] = { "200Rnd_40mm_G_belt" };
+		discreteDistance[] = { 100, 200, 300, 400, 600, 800, 1000, 1200 };
+		discreteDistanceInitIndex = 2;
+		gunnerName = "Commander";
+		memoryPointGunnerOptics = "commanderview";
+		gunnerOpticsModel = "\A3\weapons_f\reticle\Optics_Gunner_02_F";
+		turretInfoType = "RscOptics_crows";
+		gunnerForceOptics = 0;
+		startEngine = 0;
+		commanding = 2;
+		primaryGunner = 0;
+		primaryObserver = 1;
+		LODTurnedIn = 1100;
+		LODTurnedOut = 1100;
+		usePip = 1;
+		minElev = -15;
+		maxElev = 40;
+		initElev = 5;
+		minTurn = -135;
+		maxTurn = 135;
+		initTurn = 0;
+
+		class ViewOptics : RCWSOptics
+		{
+		};
+
+		class ViewGunner : ViewOptics
+		{
+			initAngleX = -15;
+			minAngleX = -45;
+			maxAngleX = 45;
+			initFov = 0.9;
+			minFov = 0.42;
+			maxFov = 0.9;
+			visionMode[] = {};
+		};
+	};
+
+	class RearTurret : FrontTurret
+	{
+		class HitPoints
+		{
+			class HitTurret
+			{
+				armor = 0.8;
+				material = 60;
+				name = "otochlaven2";
+				visual = "otochlaven2";
+				passThrough = 1;
+			};
+
+			class HitGun
+			{
+				armor = 0.6;
+				material = 60;
+				name = "otochlaven2";
+				visual = "otochlaven2";
+				passThrough = 1;
+			};
+		};
+
+		stabilizedInAxes = 0;
+		body = "RearTurret";
+		gun = "RearGun";
+		animationSourceBody = "RearTurret";
+		animationSourceGun = "RearGun";
+		gunnerAction = "gunner_standup01";
+		gunnerGetInAction = "GetInMedium";
+		gunnerGetOutAction = "GetOutMedium";
+		ejectDeadGunner = 0;
+		soundServo[] = { "A3\sounds_f\dummysound", 0.00562341, 1 };
+		gunBeg = "usti hlavne2";
+		gunEnd = "konec hlavne2";
+		memoryPointGunnerOptics = "gunnerview2";
+		weapons[] = { "HMG_01" };
+		magazines[] = { "200Rnd_127x99_mag_Tracer_Green", "200Rnd_127x99_mag_Tracer_Green", "200Rnd_127x99_mag_Tracer_Green" };
+		gunnerName = "Rear gunner";
+		gunnerOpticsModel = "\A3\weapons_f\reticle\Optics_Commander_02_F";
+		gunnerForceOptics = 0;
+		proxyIndex = 2;
+		startEngine = 0;
+		commanding = 1;
+		primaryGunner = 1;
+		primaryObserver = 0;
+		LODTurnedIn = 1000;
+		LODTurnedOut = 1000;
+		usePip = 0;
+		gunnerLeftHandAnimName = "OtocHlaven2_Shake";
+		gunnerRightHandAnimName = "OtocHlaven2_Shake";
+		minElev = -5;
+		maxElev = 60;
+		initElev = 5;
+		minTurn = -360;
+		maxTurn = 360;
+		initTurn = -181;
+
+		class ViewOptics : ViewOptics
+		{
+			initAngleX = 0;
+			minAngleX = -30;
+			maxAngleX = 30;
+			initAngleY = 0;
+			minAngleY = -100;
+			maxAngleY = 100;
+			initFov = 0.7;
+			minFov = 0.25;
+			maxFov = 1.1;
+		};
+
+		class ViewGunner : ViewOptics
+		{
+			initAngleX = 5;
+			minAngleX = -65;
+			maxAngleX = 85;
+			initAngleY = 0;
+			minAngleY = -150;
+			maxAngleY = 150;
+			initFov = 0.7;
+			minFov = 0.25;
+			maxFov = 1.1;
+		};
+
+		maxHorizontalRotSpeed = 1.8;
+		maxVerticalRotSpeed = 1.2;
+	};
+};
+</syntaxhighlight>
+
+==== Weapons ====
+
+<syntaxhighlight lang="cpp">
+class Boat_Armed_01_base_F
+{
+	model = "\A3\Boat_F\Boat_Armed_01\Boat_Armed_01_minigun_F.p3d";
+	picture = "\A3\boat_f\Boat_Armed_01\data\ui\Boat_Armed_01_minigun.paa";
+	Icon = "\A3\boat_f\Boat_Armed_01\data\ui\map_boat_armed_01_minigun.paa";
+	displayName = "Speedboat Minigun";
+	class AnimationSources : AnimationSources
+	{
+		class muzzle2_source
+		{
+			source = "reload";
+			weapon = "LMG_Minigun";
+		};
+
+		class muzzle2_source_rot
+		{
+			source = "ammorandom";
+			weapon = "LMG_Minigun";
+		};
+
+		class ReloadAnim
+		{
+			source = "reload";
+			weapon = "LMG_Minigun";
+		};
+
+		class ReloadMagazine
+		{
+			source = "reloadmagazine";
+			weapon = "LMG_Minigun";
+		};
+
+		class Revolving
+		{
+			source = "revolving";
+			weapon = "LMG_Minigun";
+		};
+	};
+
+	class Turrets : Turrets
+	{
+		class FrontTurret : FrontTurret
+		{
+		};
+
+		class RearTurret : RearTurret
+		{
+			weapons[] = { "LMG_Minigun" };
+			magazines[] = { "2000Rnd_65x39_belt_Tracer_Red" };
+			LODTurnedIn = 1000;
+			LODTurnedOut = 1000;
+			gunBeg = "z_gunR_muzzle";
+			gunEnd = "z_gunR_chamber";
+			gunnerOpticsModel = "";
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Ship Attachments ===
+
+Example from Fregata CfgSkeletons:
+
+ "proxy:\ca\water2\fregata\amg_84_harpoon_launcher.001",
+ "",
+ "proxy:\ca\water2\fregata\amg_84_harpoon_launcher.002",
+ "",
+ "proxy:\ca\water2\fregata\crane.001",
+ "",
+ "proxy:\ca\water2\fregata\rhib.001",
+ "proxy:\ca\water2\fregata\crane.001",
+ "proxy:\ca\water2\fregata\crane.002",
+ "",
+ "proxy:\ca\water2\fregata\rhib.002",
+ "proxy:\ca\water2\fregata\crane.002",
+
+
+== 101 Getting a Boat in Game ==
+
+Don't forget to open and use the sample Boat p3d from Arma 3 Tools samples for reference.
+
+=== Object Builder ===
+
+# Create your boat model using your favourite modelling app. Blender can export to arma format using AlWarren's Arma Toolbox for Blender. Object Builder can also import 3DS Max or OBJ format.
+# In the Resolution 0 LoD create a face(s) that follows the outline of any opening in the boat where players maybe sitting. Assign the anti-water texture to this face.
+# Add textures and materials as necessary. Ensure any beacons/lights use materials that emit light.
+# Ensure you have simplified LoDs for shadowvolume, geo lod, fire lod etc
+# Setup proxies for Pilot, Commander, Gunner and Cargo
+# Create View Pilot, View Cargo, View Gunner LoDs as necessary
+# Create the Hit Points LoD
+# Create the Memory points LoD. Ensure you have points for the engine axis, propeller axis, waterEffects right and left, fastWaterEffects left and right, EngEffectSmall left/right, engineEffect points for each engine and position of lights (usually green, red and white navigation lights on naval vessels). Optionally, if creating a boat add slingloading points 1, 2, 3, 4 at the corners of the boat.
+# Copy the geo lod for the physx lod
+# For the geo lod ensure the mass is evenly distributed around the geo lod components.
+# Copy the four GEO LOD Boxes from the sample boat to your geo lod. Adjust as necessary.
+# For the Physx geo lod, merge all components into a single component. Remove any textures, mass etc
+# Copy the physx geo lod to create the buoyancy lod. Ensure that all components are convex.
+# Remove any autocenter=0 entries.
+
+=== Config ===
+
+Example Ship specific config entries to use for RHIB type boat
+
+<syntaxhighlight lang="cpp">
+		simulation					= "shipx";		/// all ships should have this simulation
+		maxSpeed					= 90;			/// top speed of the vehicle
+		overSpeedBrakeCoef			= 0.8;			/// how much does the vehicle itself brake in case it goes faster than maxSpeed
+		enginePower					= 235;			/// power of engine in kW
+		engineShiftY				= 0.1;			/// relative virtual position of engine for PhysX, affects lateral ship slope during turns
+		waterLeakiness				= 1.0;			/// amount of litres per second that leaks into ship if under water, destroyed or turned upside down
+		turnCoef					= 0.25;			/// how well is the ship able to turn
+		thrustDelay					= 2;			/// initial delay to cause lesser slip when on 1st gear - thrust goes from zero to full in this time
+		waterLinearDampingCoefY		= 2;			/// affect how fast does the ship go through waves down - higher values make it drift more on top of waves
+		waterLinearDampingCoefX		= 2.0;			/// affects sliding of the ship in turns
+		waterAngularDampingCoef		= 1.2;			/// increase this for smoother movement, but beware too high values
+		waterResistanceCoef			= 0.015;		/// how much does water slow the ship down
+		rudderForceCoef				= 0.100000;		/// increase this to gain more turning on lower speeds
+		rudderForceCoefAtMaxSpeed	= 0.003000;		/// increase this to gain more turning on higher speeds
+		idleRpm = 200;								/// revolutions per minute at which the engine idles
+		redRpm = 1200;								/// maximum revolutions per minute of the engine
+
+		class complexGearbox
+		{
+			GearboxRatios[]	= { "R1", -0.782, "N", 0, "D1", 2.0, "D2", 1.85, "D3", 1.75 };
+			TransmissionRatios[] = { "High", 1.0 }; // Optional: defines transmission ratios (for example, High and Low range as commonly found in offroad vehicles)
+			gearBoxMode		= "auto"; //gearbox can be of type: full-auto (only requires 'W' or 'S'), auto (requires shift between drive and reverse), semi-auto, manual
+			moveOffGear		= 1; // defines what gear an automatic or semi-automatic gearbox will move off from stationary in. 1 by default.
+			driveString		= "D"; // string to display in the HUD for forward gears.
+			neutralString	= "N"; // string to display in the HUD for neutral gear.
+			reverseString	= "R"; // string to display in the HUD for reverse gears.
+		};
+
+		waterEffectSpeed = 5;
+		engineEffectSpeed = 5;
+		waterFastEffectSpeed = 28;
+
+		leftEngineEffect		= "LEngEffectsSmall";	/// Particle effect class for engine particles
+		rightEngineEffect		= "REngEffectsSmall";
+		leftFastWaterEffect		= "LFastWaterEffects";	/// defines what class of water effect is going to be used while sailing fast
+		rightFastWaterEffect	= "RFastWaterEffects";	/// defines what class of water effect is going to be used while sailing fast
+
+		// These are points in the memory LOD that represent the spawning points for water particle FX. The first ones represent bow FX,
+		// the last ones represent the foam generated by the engine propeller
+		memoryPointsLeftWaterEffect = "waterEffectR";
+		memoryPointsRightWaterEffect = "waterEffectL";
+		memoryPointsLeftEngineEffect = "EngineEffectL";
+		memoryPointsRightEngineEffect = "EngineEffectR";
+
+		brakeDistance = 3; /// how many internal waypoints should the AI plan braking in advance
+
+		slingLoadCargoMemoryPoints[] = { "SlingLoadCargo1", "SlingLoadCargo2", "SlingLoadCargo3", "SlingLoadCargo4" };
+</syntaxhighlight>
+
+
+{{GameCategory|arma1|Modelling}}
+{{GameCategory|arma3|Tutorials}}
+{{GameCategory|arma3|Vehicle Configuration}}

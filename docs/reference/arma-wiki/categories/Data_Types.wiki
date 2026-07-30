@@ -1,0 +1,166 @@
+// source: https://community.bistudio.com/wiki/Category:Data_Types
+// revision: 373190 (2025-04-11T13:45:04Z)
+// export sha1: jhdjmudfrb0i0x2xp5vq4mo94peak4g
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable align-center float-right" style="font-size: 0.9em"
+! rowspan="2" | Type
+! colspan="4" | Introduced with
+|-
+! {{Name|ofp|short}}
+! {{Name|arma1|short}}
+! {{arma2}}
+! {{arma3}}
+|-
+! [[Array]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Boolean]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Group]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Number]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Object]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Side]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[String]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Code]]
+| {{Icon|checked}}<br>{{GVI|ofpr|1.85|size= 0.75}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Config]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Control]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Display]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Script Handle]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Structured Text]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Location]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}<br>{{GVI|arma1|1.08|size= 0.75}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Diary Record]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Task]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Team Member]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! [[Namespace]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+<!--
+! [[Editor Object]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+|-
+! [[Eden ID]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+|-
+! [[Eden Entity]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+|-
+-->
+! [[NaN]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+|-
+! [[HashMap]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}<br>{{GVI|arma3|2.02|size= 0.75}}
+<!--
+|-
+! [[HashMapKey]] 
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+-->
+|}
+The '''data type''' of a [[Variables|variable]] specifies which data it may contain. Certain [[Operators|operators]] and [[:Category:Scripting Commands|scripting commands]] require variables to be of certain types.
+
+
+[[Category:Scripting Topics]]

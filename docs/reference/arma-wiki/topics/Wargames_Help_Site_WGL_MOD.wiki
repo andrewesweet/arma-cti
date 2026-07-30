@@ -1,0 +1,124 @@
+// source: https://community.bistudio.com/wiki/Wargames:Help_Site:WGL_MOD
+// revision: 61853 (2011-03-27T09:46:00Z)
+// export sha1: ku5wfib46qb6dfgp6wzmmladjwfr4g8
+// Vendored snapshot. Do not edit — re-export instead.
+
+= The WGL Goal =
+
+WGL is intended to be the most comprehensive realism modification for Operation Flashpoint. WGL has been developed using extensive research on real world military. It has also had the input of real military personnel from countries including the United States, the United Kingdom, Sweden, Germany, and Finland.
+
+It is intended to provide the most realistic experience and simulation of modern warfare at the squad and platoon level available for OFP.
+
+The overall goal of this project was to reconfigure OFP from the ground up, replacing BIS values for more realistic ones where the game engine allowed, from altering the muzzle velocity for the M-16 to changing the visible names of the personnel/vehicles/weapons/ammunition (M16A2 for M16, for example).
+
+Realism has been kept as the highest priority without making sacrifices to, and instead improving upon, OFP's gameplay.
+
+
+
+= The WGL Experience =
+
+Whereas in BIS' OFP a single man can have a large effect on the battlefield, in WGL the individual's capability is reduced due to the implementation of realistic changes to the game, so he must instead coordinate with other forces to achieve his objective. For example, in WGL the accuracy and lethality of small-arms fire is less than that of BIS' OFP (changes made by observing the mechanics of real-world engagements), meaning more concentrated fire is needed to destroy the enemy.
+
+Anti-tank (AT) weapons are harder to successfully fire and they do less damage. The consensus of many ex-infantry consulted was that if an enemy tank is approaching you in the real world, you don't even think about attacking it, unless you have a direct order to do so and a surplus of AT weapons available.
+
+
+= The WGL Story =
+
+The Wargames MOD was first made for the USA pvp community and has been used in league gaming some time back. Originally a conversion of OFP done by mainly 3 people, AngusHeaf, Phaeden and Tactician, Wargames was developed, maintained and improved over the course of almost 3 years. Two things were the main motivators, the two pillars of wargames, so to say - making the game more realistic with taking own military experiences into account and fixing some of the problems in MP MOD, which became apparent in years of league gaming. The creators wanted to introduce new possibilities in many ways ( graphics, atmosphere, tactics and game play) and move the game focus heavily to tactical play and teamplay.
+
+The current Wargames MOD is version 5.0 beta and there are further developments underway.
+
+
+
+= WGL Features =
+
+The balanced modifications of weapons and vehicles in Wargames is impressive and creates a mod which has a lot more realism and atmosphere than classic OFP.
+As a result an emphasis is put on teamplay, which is a lot more in demand and a lot more rewarded. Also a huge reduction of the so-called "target locking" of weapons has been made.
+
+You will be surprised about a completely new experience of being an infantry soldier when playing without vehicles. The infantry weapons, completely redone, enable the player to operate in groups and to have real firefights. You won't be able to kill three enemies midrange with 3 shots without them even realizing what is going on. In general, in wargames, groups will always have a chance to successfully fight back.
+
+To make a long story short here are some more features of Wargames:
+
+* Custom damage system
+* Improved AI
+* New effects (explosion, smoke, etc.)
+* New sounds
+* New GUI
+* Rucksack system
+* Mortar system
+* Countermeasure system for air units
+* New binoculars / compass / nightvision goggles
+* Reworked target locking system
+* Config_Base and Models_Base system (dynamic adjustment of certain settings and models)
+* No crumble destructionType for tanks
+* No kill messages
+* No MP 'P' scores overview
+* DMA unique animation pack and leaning
+* and much much more !
+
+
+
+= Why Wargames =
+
+== Tired of OFP AIs' unrealistic ability to turn on a dime and kill you from 200m? ==
+
+Check out Wargames AI - it has been completely reworked.
+
+== Frustrated of getting killed by a single shot to the leg? ==
+
+Check out Wargames damage system - it offers a very different kind of combat.
+Its very important in what area you hit your opponent. Wargames also features various effects like bleeding, shock, blackout etc.
+
+== Out of ammo again - wouldn't a ruck be useful in that situation? ==
+
+Check out Wargames' revolutionary rucksack system - you are able to carry additional magazines and other equipment in it for later use. If you don't have in your ruck, your squad mate might!
+
+== Not happy with OFP's laser-like tracers? ==
+
+Check out Wargames and see the most realistic tracers available for OFP, made by the scripting guru bn880 himself.
+
+== Your hand aching after holding the RMB zoom for ages at a time? ==
+
+Check out Wargames and see the unrealistic ability to "zoom in" disabled. Weapon scope or binoculars are the way to go now or what about reactivating your DF1 pixel spotting skills.
+
+== Tired of wasting time with the default animated GUI? ==
+
+Check out Wargames and enjoy instant action in the GUI, as well as the enlargement and new style.
+
+== Wasted again as your AI took too long to react to your orders? ==
+
+Check out Wargames and see your squad move and react as fluidly and realistically as currently possible in OFP.
+
+== Annoyed by OFP's ridiculous crumpling buildings and vehicles? ==
+
+Check out Wargames and see the effect disabled for new levels of realism.
+
+== Can't find a single addon as the editor selection is too cluttered? ==
+
+Check out Wargames and and find a clean editor with the option to hide & display certain parts for your convenience.
+
+
+
+= The Jinef Story =
+
+The slower speeds for infantry, it gave a lot more meaning to vehicles and made you feel more human. In normal OFP you could quite happily sprint for 2km at a rosy 22 kmph without any ill effect.
+
+The field of view I made wider to give a better sense of perspective, while the aiming was made more difficult (someone at 300 meters is now a very small blob, as in real life). The operation of helicopters and fixed wing aircraft was much better because of this change, as it allows for better situational awareness.
+
+Sound ranges were altered so you can no longer hear vehicles from 10km away.
+
+Armor values for tanks and stuff - I feel it should be rare for a tank to explode and burn from every AT hit. Our system damaged the tanks according to accounts from Chechnya and Iraq. It could take up to 6 RPGs fired in succession at a T-80 to make it explode for example. It also made for a lot more viable AT vs Armor situations. Because of this increased armor you learned to operate in groups, firing from different angles through covered avenues of fire (defilade) so that the tanks couldn't react effectively. That is the theory anyway.
+
+More dispersive fires from the AI using AIDispersionCoeff which gives the feeling of suppressive fire from machine gunners (a fatal feeling if you are stupid enough to stay in the open).
+
+In practice this gameplay is much better than previous; for example if you are a normal infantry platoon (30 guys or so) attacking an airfield and you see enemy infantry at 500 meters, previously in BIS you could have quite easily lay down, zoom in and start selectively killing them. In WGL this simply isn't possible, as squad rifle fire is only really practical in terms of ammo at 300 meters (depending on skill as well), and your personal rifle fire is "comfortable" below 150 meters.
+
+So you can tell your MG to engage and suppress to fix while your rifle element advances to range (under risk of enemy fire) or you can try and draw them into an ambush, or alternatively sneak up. This 'realization' of perspective allows a lot more options to be available. It also makes the AI seem more human and balances the battlefield a lot more.
+
+Adding to the scenario a BMP comes along, in BIS you could order a LAW guy to go at it at 400 meters or so; don't try that in WGL. Your best chance is to keep your AI AT in cover behind your squad, keep down and wait for it to close to 150 meters so your AT has a 60% or better chance of hitting it .... not nice being infantry any more, eh?
+
+I am a mission maker who likes missions that put teamwork to test and organization; I made "platoon vs. platoon" sized pvps and platoon vs company sized coops. We played these a lot, we often found that the best way to go was with bounding overwatch, multiple directions of fire and always having a plan B (usually involving running in many different directions shooting at anything that moved).
+
+I have forgotten most of the other stuff, however these were significant changes to the gameplay.
+
+Another important thing done to WGL was code optimizations by Killswitch, our resident scripting guru, and bn880, our almost-resident scripting god. According to those two geeks optimization in the code makes for much smoother gameplay.

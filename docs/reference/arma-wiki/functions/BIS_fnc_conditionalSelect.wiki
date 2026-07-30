@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_conditionalSelect
+// revision: 327949 (2022-07-13T12:57:27Z)
+// export sha1: 14lsvn2eifhhcld6uxdpqpa450agqsw
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Arrays
+
+|descr= This returns a sub-array of elements that satisfy a specific condition '''in the order they have been passed'''.
+{{Feature|arma3|Since {{arma3}} v1.55, use <sqf inline>array select condition</sqf> instead.}}
+
+In the condition, the currently tested element is assigned to the variable "[[Magic Variables#x|_x]]".
+The original array is '''not''' modified.
+
+|s1= [items, condition] call [[BIS_fnc_conditionalSelect]]
+
+|p1= items: [[Array]] - array to check
+
+|p2= condition: [[Code]] - selection code
+
+|r1= [[Array]]
+
+|x1= <sqf>[[10, 0, 8, 2, 6, 4], { _x > 5 }] call BIS_fnc_conditionalSelect; // will return [10,8,6]</sqf>
+
+|x2= <sqf>[[10, true, 8, player], { typeName _x == "STRING" }] call BIS_fnc_conditionalSelect; // will return []</sqf>
+
+|seealso= [[select]] [[count]]
+}}

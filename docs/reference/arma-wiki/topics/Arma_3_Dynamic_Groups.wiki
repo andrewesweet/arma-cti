@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Dynamic_Groups
+// revision: 341445 (2023-05-27T19:54:35Z)
+// export sha1: 0wqn2pky3d6wod9vnzl8ti9hckjxtm6
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 1.42
+// Vendored snapshot. Do not edit — re-export instead.
+
+<div class="float-right">[[File:arma3_DynamicGroups.jpg|thumb|center|alt= Dynamic Groups|Dynamic Groups]]</div>
+{{GVI|arma3|1.42}}
+
+{{TOC}}
+
+
+== Installation ==
+
+To add the Dynamic Groups functionality to your mission do the following steps:
+
+
+Create a file in the mission root directory named [[Event Scripts#initServer.sqf|initServer.sqf]] (if you don't have it there already).
+This file is executed only on the server, when the mission starts.
+
+Into this file, copy & paste one of these two lines to make the server initialise the Dynamic Groups framework:
+<sqf>
+["Initialize"] call BIS_fnc_dynamicGroups;			// initialises the Dynamic Groups framework
+// or
+["Initialize", [true]] call BIS_fnc_dynamicGroups;	// initialises the Dynamic Groups framework and groups led by a player at mission start will be registered
+</sqf>
+
+
+Create another file in the mission root directory named [[Event Scripts#initPlayerLocal.sqf|initPlayerLocal.sqf]] (if you don't have it there already).
+This file is executed only by machines which have a human player when the mission starts (every machine  but a dedicated server or a [[Arma 3: Headless Client|headless client]] - see [[hasInterface]]).
+
+Into this file, copy & paste one of these two lines to make a client/player initialise the Dynamic Groups framework:
+<sqf>
+["InitializePlayer", [player]] call BIS_fnc_dynamicGroups;			// initialises the player/client side Dynamic Groups framework
+// or
+["InitializePlayer", [player, true]] call BIS_fnc_dynamicGroups;	// initialises the player/client side Dynamic Groups framework and registers the player group
+</sqf>
+
+
+== Dynamic Groups Interface Access ==
+
+The Dynamic Groups interface is tied to the '''TeamSwitch''' action, and its default keybind is {{Controls|U}}.
+
+
+== Additional Functionality ==
+
+If you would like to register a group manually (same as a player clicking the '''CREATE''' button in the UI) use '''RegisterGroup'''.
+Please note that the leader you pass must be the actual leader of the given group, for example:
+<sqf>
+if (isServer) then
+{
+	private _group = group player;
+	private _leader = leader _group;
+	private _data = [nil, "Awesome Group", false]; // [<Insignia>, <Group Name>, <Private>]
+
+	["RegisterGroup", [_group, _leader, _data]] call BIS_fnc_dynamicGroups;
+};
+</sqf>
+
+{{Feature|informative|See [[BIS_fnc_dynamicGroups]] in the Functions Viewer for more sub-functions and their parameters.}}
+
+
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 1.42]]

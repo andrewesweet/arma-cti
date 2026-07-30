@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Scripts
+// revision: 166442 (2020-10-10T17:13:59Z)
+// export sha1: rxmc48yearku54gm81w4npqoy4v77n9
+// Vendored snapshot. Do not edit — re-export instead.
+
+Scripts on these page usually only have one very specific functionality and usually can not be used for anything else.
+
+[[Category:Functions by Functionality]]

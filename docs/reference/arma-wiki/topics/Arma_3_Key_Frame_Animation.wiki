@@ -1,0 +1,197 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Key_Frame_Animation
+// revision: 342108 (2023-07-09T12:26:36Z)
+// export sha1: lk50hmnryhbqgz5wc84jgdelqy613tw
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 1.78
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+<div style="float: right; margin: 0 0 0.5em 1.5em">[[File:A3_KeyFrameAnimation_Overview.gif|600px]]</div>
+{{GVI|arma3|1.78}}
+
+'''Key Frame Animation''' is an animation system introduced in {{arma3}} v1.78 with real time preview with '''3DEN''' integration.
+A '''Key Frame''' is a location on a timeline which marks the beginning or end of a transition.
+It holds special information that defines where a transition should start or stop. The intermediate frames are interpolated over time between those definitions to create the illusion of motion.
+This interpolation is performed mathematically by the '''CPU'''.
+
+'''Keyframing''' is the simplest form of animating an object (be it 2D or 3D).
+Based on the notion that an object has a beginning state or condition and will be changing over time, in position, form, color, luminosity, or any other property, to some different final form.
+'''Keyframing''' takes the stance that we only need to show the "key" frames, or conditions, that describe the transformation of this object, and that all other intermediate positions can be figured out from these.
+
+
+This system is all about interpolation and can be used for the following: 
+
+* '''Camera Scene / Cut-Scene''': Camera path and timing
+* '''2D animations''': Ability to animate UI controls on screen
+* '''3D animations''': Ability to animate objects in the 3D world
+* '''Numeric animation''': Ability to animate any number transition
+
+{{Feature|informative|The low level system also includes a library of '''Non-Linear Interpolation''' methods that can be used independently from the rest.}}
+
+
+== Interpolation Algorithm == 
+
+* '''Linear''' - Linear interpolation is a method of curve fitting using linear polynomials to construct new data points within the range of a discrete set of known data points
+* '''Bezier Cubic''' - Non linear interpolation that uses 4 control points, Cubic Bezier interpolation
+* '''Ease In''' - Non linear interpolation that starts slow and ends at desired speed
+* '''Ease Out''' - Non linear interpolation that starts at desired speed and slows down the closer it is from the end
+* '''Ease In Out''' - Non linear interpolation that starts slow and speeds up to desired speed reaching the half way through, slowing down the closer it is from the end
+* '''Hermite''' - Non linear interpolation and only different a variation of Ease In Out
+* '''Bounce In''' - Non linear interpolation that bounces at start
+* '''Bounce Out''' - Non linear interpolation that bounces at the end
+* '''Bounce In Out''' - Non linear interpolation that bounces at start and end
+* '''Quintic In''' - Quintic version of ease in
+* '''Quintic Out''' - Quintic version of ease out
+* '''Quintic In Out''' - Quintic version of ease in out
+* '''Berp''' - Boing interpolation that overshoots target and comes to a rest after
+* '''Interpolate''' - Non linear interpolation from current value to target value based on speed, scaled by distance
+* '''Interpolate Constant''' - Linear interpolation from current value to target value based on speed
+
+{{Feature|informative|Both Float and Vector versions of above methods exist.}}
+
+
+== Math ==
+
+* '''Bezier Length''' - Computes the length of a bezier spline
+* '''Clamp''' - Clamps a float between min and max (inclusive)
+* '''Clamp Vector''' - Clamps all axis of a vector between min and max (inclusive)
+* '''Delta Time''' - Helper function to get and manage DeltaTime
+* '''Find Look At''' - Calculates Forward and Up vectors to orientate an objects looking at position from another position
+* '''Nearest Point''' - Computes the nearest point in a line
+* '''Pow''' - Helper function for Expoent Power
+* '''Pulsate''' - Pulsates a value between 0 and 1 with desired frequency and offsets
+* '''Vector Divide''' - Divides a vector by a float
+
+
+== [[:Category:Eden Editor|Eden Editor]] Tutorial ==
+
+For the 3DEN Keyframe Animation tutorial we will animate a UAV on a spline.
+
+=== 3DEN Object Setup ===
+
+* Open 3DEN and place a player unit
+* On the asset list, select Modules (F5) and select category Modules
+* Search for '''Keyframe Animation''' category, where all the related modules used to make up animations in 3DEN can be found
+
+[[File:A3_KeyFrameAnimation_tutorial3den_setupObjects.jpg|240px]]
+
+=== Placing the Timeline ===
+
+* When in '''Modules > Keyframe Animation''' place a '''Timeline''' module
+* Enable '''Play From Start''' - Will make the timeline start to be simulated when the scenario starts
+* Set the '''Length''' to 15 seconds - This is the length of the timeline
+* Enable '''Loop''' - Timeline will restart once it is simulation reaches the end
+* In '''Event Looped''' put the following: <sqf>hint "Timeline finished and is now looping";</sqf>
+
+[[File:A3_KeyFrameAnimation_tutorial3den_timeline1.jpg|240px]][[File:A3_KeyFrameAnimation_tutorial3den_timeline2.jpg|240px]]
+
+=== Placing the Curve ===
+
+* Place a '''Rich Curve''' module
+* Right click on the newly created '''Rich Curve''' and synchronize it with the '''Timeline'''
+* Set the '''Orientation Mode''' to Animation - This will make the orientation of the animated objects orientation follow the animation
+
+[[File:A3_KeyFrameAnimation_tutorial3den_curveSync.jpg|240px]][[File:A3_KeyFrameAnimation_tutorial3den_curve1.jpg|240px]][[File:A3_KeyFrameAnimation_tutorial3den_curve2.jpg|240px]]
+
+=== Placing the start and end keys ===
+
+* Place two '''Rich Curve Key'''s
+* Select and then right click on the newly created '''Rich Curve Key'''s and synchronize them with the '''Rich Curve'''
+[[File:A3_KeyFrameAnimation_tutorial3den_KeysSync.jpg|240px]]
+
+=== First Key Setup ===
+
+* Open the attributes of one of the placed keys, we will consider this one the first and so it is the start of our animation
+* All the settings' default values can be left for now
+
+[[File:A3_KeyFrameAnimation_tutorial3den_FirstKey.jpg|240px]]
+
+=== Last Key Setup ===
+
+* Open the attributes of the other key, this will be the final point in our animation
+* Set the '''Time''' property to '''10''', this means our animation will be in total 10 seconds long, since our first key starts at 0 and our last key is at 10
+
+[[File:A3_KeyFrameAnimation_tutorial3den_LastKey.jpg|240px]]
+
+=== First Animation ===
+
+* Congratulations, while not much so far, the first Animation in 3DEN has been created!
+* Move the '''Key''' objects around and notice how the path of the animation is being drawn in red and how it is affecting the animation in real-time
+* The red line defines the animation path or spline
+* The red dot's define the animation density
+{{Feature|informative|In order for things to be drawn, at least one object part of the animation needs to be selected in 3DEN.}}
+
+[[File:A3_KeyFrameAnimation_tutorial3den_anim1.gif]]
+
+=== Adding an Animated Object ===
+
+* The next step is to add our '''Animated Object''', basically, an object that will follow the animation with real-time 3DEN preview
+* In the '''Asset Browser''' select ''Units (F1) > NATO > Drones > MQ-4A Greyhawk'' and place it into the level
+* Right click on the newly created UAV and synchronize it with the '''Curve''' object
+* If an object that is part of the animation is selected, the UAV should start being animated along the first animation
+* Feel free to move the keys around and get a sense of the real-time editing features
+
+[[File:A3_KeyFrameAnimation_tutorial3den_anim2.gif]][[File:A3_KeyFrameAnimation_tutorial3den_anim3.gif]][[File:A3_KeyFrameAnimation_tutorial3den_anim4.gif]]
+
+=== Turning the animation into a spline (Bezier Cubic) ===
+
+* Select both keys in 3DEN and right click one of them, select '''Attributes'''
+* Set the '''Interpolation Mode''' to ''Cubic''
+* Now the animation will have non linear (Bezier Cubic in this case) interpolation and control points can be added to control the Bezier Cubic tangents
+
+[[File:A3_KeyFrameAnimation_tutorial3den_anim5.gif]]
+
+=== Adding Control Points to manipulate Tangents ===
+
+* There are two kinds of Control Points, Arrive and Leave
+* Go back to ''Modules > Keyframe Animation'' and place two '''Rich Curve Key Control Points''', these will be used to control the spline tangents
+* One of the '''Control Points''' synchronise with the first '''Key''', open its '''Attributes''' and set the '''Tangent Type''' to '''Leave'''
+* The other '''Control Point''' should be synchronised with the second '''Key''', open its '''Attributes''' and set the '''Tangent Type''' to '''Arrive''' (which should be set by default)
+* At this point, it is noticeable that the spline tangents being affected, try to move the control points around and modify the spline
+
+[[File:A3_KeyFrameAnimation_tutorial3den_anim6.gif]][[File:A3_KeyFrameAnimation_tutorial3den_anim7.gif]][[File:A3_KeyFrameAnimation_tutorial3den_anim8.gif]]
+
+=== Understanding 3DEN controls ===
+
+When working on an Animation in 3DEN there are a few specific controls:
+* {{Controls|Left Ctrl}} - Displays the index of all the keys of the highlighted animation starting at 0 for the first key, note that non selected keys (and it is control points) will be rendered in white while selected ones will render in green
+* {{Controls|Left Shift}} - If the mouse position is near the animation spline, a line will be drawn between mouse and spline that defines a point where a new key can easily be placed if {{Controls|Left Shift|Space}} is used
+* {{Controls|Left Shift|Space}} - If the above is valid, a new Key will be created at the exact place where the mouse is pointing to, the key will be registered with the given curve, will have control points and be set as Cubic
+
+{{Feature|informative|For Keyframe Animation controls to work, one or more animation must be highlighted in 3DEN; selecting an object that is part of the animation (Timeline, Curve, Key or Control Point) does that.}}
+
+[[File:A3_KeyFrameAnimation_tutorial3den_anim9.gif]][[File:A3_KeyFrameAnimation_tutorial3den_anim10.gif]]
+
+=== Adding a Key onto the Animation ===
+
+'''Keys''' can be directly placed onto the animation by using the keyboard combination {{Controls|Left Shift}} (Highlight) + {{Controls|Space}} (Spawn Key).
+This is a fast and straightforward way to add keys to an animation, since even properties like '''Time''' will automatically be computed, same with the registration done with the '''Curve'''.
+The created '''Keys''' using this method are set to '''Cubic''' and '''Control Points''' are created with them and registered. In future this could be a 3DEN setting.
+* ''Press and hold'' {{Controls|Left Shift}} and move the mouse pointer near the highlighted spline / curve
+* Once there is a connection between the curve and the mouse, while still holding {{Controls|Left Shift}} also press {{Controls|Space}} once, this will create the key
+
+{{Feature|informative|For Keyframe Animation controls to work, one or more animation must be highlighted in 3DEN; selecting an object that is part of the animation (Timeline, Curve, Key or Control Point) does that.}}
+
+[[File:A3_KeyFrameAnimation_tutorial3den_anim11.gif]]
+
+=== Lockable Control Points (Bezier Cubic) ===
+
+When control points are locked it is possible to have mathematically accurate and smooth transition between key frames. The lock mode can be set in each key.
+
+* To set the '''Control Points Lock State''' just open the '''Key''' attributes (to which control points are synchronized) and toggle the option '''Lock Control Points'''
+
+[[File:A3_KeyFrameAnimation_tutorial3den_anim12.gif]][[File:A3_KeyFrameAnimation_tutorial3den_anim13.gif]]
+
+{{Feature|informative|Always make sure Control Points are configured correctly: a key can have only one Arrive and one Leave control point.}}
+
+=== Play ===
+
+Now that everything is ready, preview the mission and observe the UAV moving.
+
+
+== Tutorial Videos ==
+
+{{Youtube|hoL_pc7309c|German tutorial}}
+
+
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 1.78]]

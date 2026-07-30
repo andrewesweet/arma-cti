@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_bitflagsUnset
+// revision: 328654 (2022-07-13T17:04:22Z)
+// export sha1: oypioa8z4v5fdz70nxah8jui2390s5c
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Bitwise | Category:Functions | Category:Introduced with Arma 3 version 1.66 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.66
+
+|gr1= Bitwise
+
+|descr= Unsets one or more flags in the given flagset, represented with decimal or hexadecimal number<br>
+(Hexadecimal number representation is simply auto-converted into decimal by the engine)<br>
+To check which flags are present in given flagset use [[BIS_fnc_bitflagsToArray]]<br><br>
+'''Limitations''':<br>
+Due to various limitations of the Real Virtuality engine this function is 
+intended to work with unsigned 24 bit integers only. This means that the 
+supported range is 2^0...2^24 (1...16777216)
+
+|s1= [flagset, flag] call [[BIS_fnc_bitflagsUnset]]
+
+|p1= flagset: [[Number]] - flagset
+|p2= flag: [[Number]] - one or more flags to unset
+
+|r1= [[Number]]  - new flagset with given flag or flags unset
+
+|x1=<sqf>[2 + 4 + 8, 8] call BIS_fnc_bitflagsUnset; // 6 (which is 2 + 4)
+[2 + 4 + 8, 2 + 8] call BIS_fnc_bitflagsUnset; // 4
+[2 + 4 + 8, 1 + 8] call BIS_fnc_bitflagsUnset; // 6 (which is 2 + 4)
+[2 + 4 + 8, 1 + 8 + 8 + 2 + 2] call BIS_fnc_bitflagsUnset; // 10 (which is 2 + 8, since 1 + 8 + 8 + 2 + 2 is in fact 1 + 4 + 16)</sqf>
+
+|seealso=    [[BIS_fnc_bitflagsFlip]] [[BIS_fnc_bitflagsCheck]] [[BIS_fnc_bitflagsToArray]] [[BIS_fnc_bitflagsSet]]
+}}

@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/triggerAttachObject
+// revision: 336715 (2023-01-04T15:24:43Z)
+// export sha1: b4iyf8z6bcthjgi4dcm9eybcfb69ehv
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Triggers
+
+|descr= Assigns a static object to the trigger. The activation source is changed to "STATIC".
+
+|s1= triggerName [[triggerAttachObject]] objectId
+
+|p1= triggerName: [[Object]]
+
+|p2= objectId: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_trigger triggerAttachObject 1234;</sqf>
+
+|seealso= [[attachObject]] [[attachTo]] [[attachedObjects]] [[attachedTo]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[lightAttachObject]] [[triggerAttachVehicle]] [[attachedObject]] [[triggerAttachedVehicle]] [[triggerInterval]] [[setTriggerInterval]] [[enableSimulation]] [[simulationEnabled]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20131031215600
+|text= This command doesn't quite work in {{arma3}}: see {{Link|link= http://feedback.arma3.com/view.php?id=15750|text= this ticket}}<br><br>
+Further investigation reveals that objectId param for this command is some kind of map id and not the id you can see in the editor. This map id could be seen in multiplayer when looking at [[netId]] of the static objects, for example "1:-23984219837", the -23984219837 would be the objectId. Unfortunately it still doesn't work.
+}}

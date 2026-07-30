@@ -1,0 +1,78 @@
+// source: https://community.bistudio.com/wiki/ppEffectEnable
+// revision: 363568 (2024-04-07T08:27:59Z)
+// export sha1: 8l2ihv9fnjkwsrmgycnltslsgmnwmpa
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Camera Control
+
+|descr= Enable / disable [[Post Process Effects]]
+{{Feature | important | If effect fails to get enabled (can check it with [[ppEffectEnabled]]) try adding a little [[sleep]] in front of it. }} 
+
+|s1= effect [[ppEffectEnable]] enable
+
+|p1= effect: [[String]] - name of the effect
+
+|p2= enable: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|s2= effect [[ppEffectEnable]] enable
+
+|p21= effect: [[Number]] - handle of the effect
+
+|p22= enable: [[Boolean]]
+
+|r2= [[Nothing]]
+
+|s3= effectArray [[ppEffectEnable]] enable
+
+|p41= effectArray: [[Array]] of [[Number]]s - array of effect handles
+
+|p42= enable: [[Boolean]]
+
+|r3= [[Nothing]]
+
+|x1= <sqf>"colorCorrections" ppEffectEnable true;</sqf>
+
+|x2= <sqf>_hndl ppEffectEnable true;</sqf>
+
+|x3= <sqf>[_hndl1, _hndl2] ppEffectEnable true;</sqf>
+
+|seealso= [[Post Process Effects]] [[ppEffectForceInNVG]] [[ppEffectDestroy]] [[ppEffectCreate]] [[ppEffectEnabled]] [[ppEffectCommit]] [[ppEffectCommitted]] [[ppEffectAdjust]]
+}}
+
+{{Note
+|user= Pi123263
+|timestamp= 20240406133257
+|text= Using ppEffectEnable immediatelly enables/disables the effect. If you want the effect to fade in/out it might be better to use ppEffectAdjust.
+
+If you want to fade out an effect using ppEffectAdjust you can set the values for the command back to the default and then use ppEffectCommit to set the time for the fadeout.
+<br>
+Example:
+Activate effect:
+<sqf>
+"colorCorrections" ppEffectAdjust [1,1,0,[0,0,0,0],[0,0,0,0.24],[1,1,1,0],[0.6,0.5,0,0,-0.1,0.4,0.8]]; 
+"colorCorrections" ppEffectEnable true; 
+"colorCorrections" ppEffectCommit 0;
+</sqf>
+And then fade the effect out over 10 seconds:
+<sqf>
+"colorCorrections" ppEffectAdjust [1,1,0,[0,0,0,0],[1,1,1,1],[0.299, 0.587, 0.114, 0],[-1,-1,0,0,0,0,0]]; 
+"colorCorrections" ppEffectCommit 10;
+</sqf>
+}}

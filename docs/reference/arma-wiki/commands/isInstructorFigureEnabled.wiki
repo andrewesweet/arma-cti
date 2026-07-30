@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/isInstructorFigureEnabled
+// revision: 310274 (2022-05-05T13:11:22Z)
+// export sha1: gahl2hbocthrquo9dbdvwg8amednor6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Difficulty | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|gr1= Difficulty
+
+|descr= Returns the status of INSTRUCTOR FIGURE setting in UI (OPTIONS >> GAME >> GENERAL >> INSTRUCTOR FIGURE).
+
+|s1= '''isInstructorFigureEnabled'''
+
+|r1= [[Boolean]]
+
+|x1= <sqf>hint str isInstructorFigureEnabled;</sqf>
+
+|seealso= [[isStreamFriendlyUIEnabled]] [[isTutHintsEnabled]]
+}}

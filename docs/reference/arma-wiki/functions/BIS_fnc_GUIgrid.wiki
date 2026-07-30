@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_GUIgrid
+// revision: 348772 (2023-11-08T14:33:15Z)
+// export sha1: eyg2bs6hcuvgr0i79sghvylfnc8zwfy
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= Returns grid params and stores it into [[uiNamespace]].
+
+|s1= [category, grid] call [[BIS_fnc_GUIgrid]]
+
+|p1= category: [[String]] - (Optional, default "GUI") category name
+
+|p2= grid: [[String]] - (Optional, default "GRID") grid name
+
+|r1= [[Array]] - in format [<nowiki/>[x,y,w,h],gridW,gridH]
+
+|x1= <sqf>call BIS_fnc_GUIgrid; //[-0.452381,0.214286,1.2,1]</sqf>
+
+|seealso= [[BIS_fnc_GUIgridToProfile]]
+}}

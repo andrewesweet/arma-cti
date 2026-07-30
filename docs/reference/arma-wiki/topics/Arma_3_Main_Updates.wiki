@@ -1,0 +1,295 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Main_Updates
+// revision: 373544 (2025-05-21T23:19:54Z)
+// export sha1: mrkscaztqo592h4nqwqn9i0ij8yel3g
+// categories: Category:Arma 3
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOEDITSECTION__
+{{TOC|side|||y}}
+This page gives an overview of past stable releases and their main features. This list is not supposed to give a complete overview but rather serve as quick resource to find out when features were introduced.<br>
+See also [[:Category:Arma 3 DLCs & Expansions|Arma 3 DLCs & Expansions]].
+
+* {{Link|https://dev.arma3.com/spotrep|SPOTREPs}}
+* {{Link|https://dev.arma3.com/sitrep|SITREPs}}
+
+{| class="wikitable sortable"
+|- style="border-bottom: 2px solid #000"
+! class="unsortable" style="width: 50px" |
+! style="width: 0" | Y&nbsp;/&nbsp;M&nbsp;/&nbsp;D
+! class="unsortable" style="min-width: 25em" | Release
+
+{{Timeline_Item
+|ARMA3|
+|2013|03&nbsp;/&nbsp;06|
+=== {{GVI|arma3|0.50}} - Alpha ===
+Main Features:
+* [[Stratis]]
+* Basic factions, weapons and vehicles
+}}
+
+{{Timeline_Item
+|ARMA3|
+|2013|06&nbsp;/&nbsp;25|
+=== {{GVI|arma3|0.70}} - Beta ===
+Main Features:
+* Several vehicles
+* New faction: AAF
+{{Link|https://dev.arma3.com/post/spotrep-00006|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3|
+|2013|09&nbsp;/&nbsp;12|
+=== {{GVI|arma3|1.00}} - Official Release ===
+Main Features:
+* [[Altis]]
+* Several Vehicles
+{{Link|https://dev.arma3.com/post/spotrep-00010|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3|
+|2013|10&nbsp;/&nbsp;31|
+=== {{GVI|arma3|1.04}} - "Survive" Campaign Episode ===
+Main Features:
+* "Survive" campaign episode (1/3)
+{{Link|https://dev.arma3.com/post/spotrep-00013|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3|
+|2014|01&nbsp;/&nbsp;21|
+=== {{GVI|arma3|1.10}} - "Adapt" Campaign Episode ===
+Main Features:
+* "Adapt" campaign episode (2/3)
+{{Link|https://dev.arma3.com/post/spotrep-00017|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3|
+|2014|03&nbsp;/&nbsp;20|
+=== {{GVI|arma3|1.14}} - "Win" Campaign Episode ===
+Main Features:
+* "Win" campaign episode (3/3)
+{{Link|https://dev.arma3.com/post/spotrep-00021|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3ZEUS|
+|2014|04&nbsp;/&nbsp;10|
+=== {{GVI|arma3|1.16}} - [[Arma 3 Zeus]] ===
+Main Features:
+* [[Arma 3 Curator]]
+{{Link|https://dev.arma3.com/post/spotrep-00023|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3KARTS|
+|2014|05&nbsp;/&nbsp;29|
+=== {{GVI|arma3|1.20}} - [[Arma 3 Karts]] ===
+Main Features:
+* Karts
+* Time Trials
+{{Link|https://dev.arma3.com/post/spotrep-00025|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3|
+|2014|06&nbsp;/&nbsp;14|
+=== {{GVI|arma3|1.24}} - Bootcamp ===
+Main Features:
+* "Bootcamp" Campaign
+* Virtual Training
+* Virtual Reality
+* [[Arsenal]]
+{{Link|https://dev.arma3.com/post/spotrep-00029|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3HELICOPTERS|
+|2014|11&nbsp;/&nbsp;14|
+=== {{GVI|arma3|1.34}} - [[Arma 3 Helicopters]] ===
+Main Features:
+* Sling loading
+* Firing From Vehicles (FFV)
+* {{Link|http://www.rtdynamics.com/products-services/simulation-and-training/rotorlib-fdm-for-c/|RotorLib}} [[Arma 3 Advanced Helicopter Flight Model|Advanced Flight Model]] (AFM)
+{{Link|https://dev.arma3.com/post/spotrep-00036|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3MARKSMEN|
+|2015|04&nbsp;/&nbsp;08|
+=== {{GVI|arma3|1.42}} - [[Arma 3 Marksmen]] ===
+Main Features:
+* [[Arma 3 MP End Game|End Game]]
+* Weapon resting
+* Bipods
+* New and improved weapon sounds
+{{Link|https://dev.arma3.com/post/spotrep-00040|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3|
+|2015|12&nbsp;/&nbsp;01|
+=== {{GVI|arma3|1.54}} - Nexus Update ===
+Main Features:
+* [[Arma 3 End Game Spectator Mode|End Game Spectator Mode]]
+* Personal Protective Equipment
+* Stamina
+* Launcher Mod dependencies
+{{Link|https://dev.arma3.com/post/spotrep-00049|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3EDEN|
+|2016|02&nbsp;/&nbsp;18|
+=== {{GVI|arma3|1.56}} - Eden Update ===
+Main Features:
+* [[:Category:Eden Editor|Eden Editor]]
+* New distant shooting SFX
+* New fonts
+{{Link|https://dev.arma3.com/post/spotrep-00052|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3|
+|2016|04&nbsp;/&nbsp;21|
+=== {{GVI|arma3|1.58}} - [[Arma 3: Task Framework#Task Overhaul|Task Overhaul]] ===
+* Tasks Overhaul
+* Weapon Switching on the Move
+* Action Menu Streamlining
+* Eden Editor Compositions
+{{Link|https://dev.arma3.com/post/spotrep-00054|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3|
+|2016|05&nbsp;/&nbsp;30|
+=== {{GVI|arma3|1.60}} - [[Arma 3: Visual Upgrade|Visual Upgrade]] ===
+Main Features:
+* Visual Upgrade
+* Quick Play
+* Line Drawing
+* Respawn Screen
+* Targeting
+* Limping
+{{Link|https://dev.arma3.com/post/spotrep-00056|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3APEX|
+|2016|07&nbsp;/&nbsp;11|
+=== {{GVI|arma3|1.62}} - [[Arma 3 Apex]] ===
+Main Features:
+* Apex Expansion
+* Main Menu Overhaul
+* Vehicle in Vehicle Transport
+* Revive Overhaul
+* Environmental Audio Enhancements
+{{Link|https://dev.arma3.com/post/spotrep-00058|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3|
+|2017|03&nbsp;/&nbsp;16|
+=== {{GVI|arma3|1.68}} - 64 bits Binaries ===
+Main Features:
+* 64-bit Executables
+* Ambient Occlusion Overhaul
+{{Link|https://dev.arma3.com/post/spotrep-00064|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3JETS|
+|2017|05&nbsp;/&nbsp;16|
+=== {{GVI|arma3|1.68}} - [[Arma 3 Jets]] ===
+Main Features:
+* Jets DLC
+* Sensor Overhaul
+* Dynamic Vehicle Loadouts
+{{Link|https://dev.arma3.com/post/spotrep-00067|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3MALDEN|
+|2017|06&nbsp;/&nbsp;22|
+=== {{GVI|arma3|1.72}} - [[Arma 3 Malden]] ===
+Main Features:
+* [[Malden 2035]]
+* [[Arma 3 MP Combat Patrol|Combat Patrol]]
+{{Link|https://dev.arma3.com/post/spotrep-00069|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3LAWSOFWAR|
+|2017|09&nbsp;/&nbsp;07|
+=== {{GVI|arma3|1.76}} - [[Arma 3 Laws of War]] ===
+Main Features:
+* Laws of War DLC
+* Mine Detector Enhancements
+{{Link|https://dev.arma3.com/post/spotrep-00073|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3TACOPS|
+|2017|11&nbsp;/&nbsp;30|
+=== {{GVI|arma3|1.78}} - [[Arma 3 Tac-Ops Mission Pack]] ===
+Main Features:
+* Tac-Ops Mission Pack
+{{Link|https://dev.arma3.com/post/spotrep-00076|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3TANKS|
+|2018|04&nbsp;/&nbsp;11|
+=== {{GVI|arma3|1.82}} - [[Arma 3 Tanks]] ===
+Main Features:
+* Tanks DLC
+* Tank interiors
+* Extended Damage Model
+{{Link|https://dev.arma3.com/post/spotrep-00079|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3|
+|2018|08&nbsp;/&nbsp;01|
+=== {{GVI|arma3|1.84}} - Encore Update ===
+Main Features:
+* Free Jets DLC Bonus Content
+{{Link|https://dev.arma3.com/post/spotrep-00081|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3|
+|2018|12&nbsp;/&nbsp;03|
+=== {{GVI|arma3|1.86}} - Warlords ===
+Main Features:
+* [[Arma 3 MP Warlords|Warlords MP Mode]]
+* ADR-97 Weapon Pack
+{{Link|https://dev.arma3.com/post/spotrep-00082|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3CONTACT|
+|2019|07&nbsp;/&nbsp;25|
+=== {{GVI|arma3|1.94}} - [[Arma 3 Contact]] ===
+Main Features:
+* Contact Expansion
+* [[Livonia]]
+{{Link|https://dev.arma3.com/post/spotrep-00089|Changelog}}
+}}
+
+{{Timeline_Item
+|ARMA3ARTOFWAR|
+|2021|02&nbsp;/&nbsp;23|
+=== {{GVI|arma3|2.02}} - [[Arma 3 Art of War]] ===
+Main Features:
+* Art of War assets
+* [[Arma 3: Art of War Artwork Textures]]
+{{Link|https://dev.arma3.com/post/spotrep-00096|Changelog}} {{Link|https://dev.arma3.com/post/spotrep-00097|Hotfix}}
+}}
+
+|}
+
+
+{{GameCategory|arma3}}

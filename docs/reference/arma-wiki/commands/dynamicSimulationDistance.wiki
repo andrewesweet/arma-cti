@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/dynamicSimulationDistance
+// revision: 348424 (2023-11-08T13:00:09Z)
+// export sha1: ov8cnt4887q361j9xrjenmpi0mtmgci
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Dynamic Simulation | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Dynamic Simulation
+
+|descr= A getter for [[setDynamicSimulationDistance]].
+
+|s1= [[dynamicSimulationDistance]]  category
+
+|p1= category: [[String]] - can be:
+* {{hl|"Group"}} - Infantry units and groups
+* {{hl|"Vehicle"}} - Vehicles with crew
+* {{hl|"EmptyVehicle"}} - All vehicles without crew
+* {{hl|"Prop"}} - Static objects
+
+|r1= [[Number]] - activation distance
+
+|x1= <sqf>hint str dynamicSimulationDistance "Prop";</sqf>
+
+|seealso= [[Arma 3: Dynamic Simulation]] [[setDynamicSimulationDistance]] [[setDynamicSimulationDistanceCoef]] [[dynamicSimulationDistanceCoef]] 
+}}

@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_respawnTimePenalty
+// revision: 309868 (2022-05-05T12:09:53Z)
+// export sha1: 622f6mwk5b9ojstpfgwnldvnf1ygklc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= <pre>/*
+
+	Description:
+	Set or execute respawn time penalty
+
+	Parameter(s):
+		0: CODE - penalty condition
+		1: NUMBER - penalty delay
+		2: TEXT - text displayed when penalty is in effect
+
+	Returns:
+	BOOL
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_respawnTimePenalty]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_respawnTimePenalty;</sqf> -->
+
+|seealso=
+}}

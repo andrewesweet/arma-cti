@@ -1,0 +1,14 @@
+// source: https://community.bistudio.com/wiki/Stratis
+// revision: 363950 (2024-04-27T20:14:34Z)
+// export sha1: 7p59re4o5nw177noy6hhfbhaq1qa6q0
+// categories: Category:Arma 3: Terrains
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:A3_Stratis_birdView.jpg|400px|right]]
+'''Stratis''' is an {{GameCategory|arma3|link= y}} terrain, released with the game. It is a Mediterranean island with an area of 20 km<sup>2</sup> based on the real-life island {{Link|https://en.wikipedia.org/wiki/Agios_Efstratios}}.
+It has a Mediterranean flora, complete with Mediterranean geology and geography. The island is entirely mountaneous, with very little delta and plain terrain. The capital is '''Agia Marina'''.
+The island is very small and mostly militarised, with very little civilian population, mostly situated at the capital.
+The island consists of only two towns, seven military encampments, 5 landing zones, one airfield, three lighthouses and 6 small harbors. Most of the roads in the island are gravel paths.
+
+
+{{GameCategory|arma3|Terrains}}

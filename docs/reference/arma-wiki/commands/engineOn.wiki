@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/engineOn
+// revision: 337565 (2023-02-10T01:12:53Z)
+// export sha1: m4d0g2ylv6brhekzs0tmxh5tiqb710u
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.90 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.90
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Activates and deactivates the engine of a vehicle.
+
+|mp= Executed on a remote vehicle this command may turn the engine on but then it will get turned off by itself after a short while.
+
+|s1= vehicle [[engineOn]] state
+
+|p1= vehicle: [[Object]]
+
+|p2= state: [[Boolean]] - [[true]] to turn the engine on, [[false]] to turn it off
+
+|r1= [[Nothing]]
+
+|x1= <sqf>if (!isEngineOn _jeep) then { _jeep engineOn true; };</sqf>
+
+|x2= <sqf>
+waitUntil { player == driver _jeep; };
+vehicle player engineOn true;
+</sqf>
+
+|seealso= [[isEngineOn]]
+}}
+
+{{Note
+|user= Benargee
+|timestamp= 20140825222700
+|text= To switch engine off can also use [[setFuel]] and [[fuel]]:
+<sqf>
+private "_gas";
+_gas = fuel heli;
+heli setFuel 0;
+sleep 0.01;
+heli setFuel _gas;
+</sqf>
+Also sets helicopter fuel back to original quantity. Works on every other vehicle.
+}}

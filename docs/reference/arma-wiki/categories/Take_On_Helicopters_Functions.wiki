@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Take_On_Helicopters:_Functions
+// revision: 257302 (2021-05-05T07:45:23Z)
+// export sha1: mzyksplmqoooiken1xhrtpz9ugdn4fz
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Table/RVScriptingFunctions}}
+
+[[Category:Functions]]

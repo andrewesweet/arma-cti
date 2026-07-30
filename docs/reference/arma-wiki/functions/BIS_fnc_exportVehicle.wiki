@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_exportVehicle
+// revision: 363634 (2024-04-08T21:57:47Z)
+// export sha1: 11kiucrobsmxcy8a3gkvm8q0prgt4x2
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Vehicles
+
+|descr= Export vehicle settings
+
+|s1= [vehicle,vehicleClass] call [[BIS_fnc_exportVehicle]]
+
+|p1= vehicle: [[Object]]
+
+|p2= vehicleClass: [[String]] - use "" to skip createVehicle part and set components / textures only
+
+|r1= [[String]] - [[SQF Syntax|SQF]] code
+
+|x1= <sqf>[BIS_tank,""] call BIS_fnc_exportVehicle;
+
+//Returns 
+"[
+  _this,
+  [""Hex"",1], 
+  [""showCamonetHull"",1,""showCamonetTurret"",1]
+] call BIS_fnc_initVehicle;"</sqf>
+
+|x2= <sqf>[BIS_tank] call BIS_fnc_exportVehicle;
+
+//Returns 
+"_veh = createVehicle [""O_MBT_04_cannon_F"",position player,[],0,""NONE""];
+[
+  _veh,
+  [""Hex"",1], 
+  [""showCamonetHull"",1,""showCamonetTurret"",1]
+] call BIS_fnc_initVehicle;"
+</sqf>
+
+|seealso= [[BIS_fnc_initVehicle]] [[Arma 3: Vehicle Customisation]]
+}}

@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/setLightAttenuation
+// revision: 369342 (2024-09-03T18:43:02Z)
+// export sha1: iig268klm7atrg84xnbykalgxb9ca4h
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Lights
+
+|arg= local
+
+|eff= local
+
+|descr= Sets attenuation of light. Standard method of attenuation (1 / (constant + linear*dist + quadratic*dist*dist)).
+''start'' param represents distance where the attenuation starts to take effects (dist = distance - start).
+
+|s1= light [[setLightAttenuation]] [start, constant, linear, quadratic, hardlimitstart, hardlimitend]
+
+|p1= light: [[Object]]
+
+|p2= start: [[Number]] - distance with 100% intensity, falloff starts here
+
+|p3= constant: [[Number]] - constant attenuation coef
+
+|p4= linear: [[Number]] - linear attenuation coef
+
+|p5= quadratic: [[Number]] - quadratic attenuation coef
+
+|p6= hardlimitstart: [[Number]] - (Optional) max distance hard limit start (start of fading of intensity to 0) in m
+
+|p7= hardlimitend: [[Number]] - (Optional) max distance hard limit end (end of fading of intensity to 0) in m
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myLight setLightAttenuation [2, 4, 4, 0, 9, 10];</sqf>
+
+|seealso= [[setLightAmbient]] [[setLightColor]] [[lightAttachObject]] [[lightDetachObject]] [[setLightBrightness]] [[setLightIntensity]] [[setLightUseFlare]] [[setLightFlareSize]] [[setLightFlareMaxDistance]] [[setLightDayLight]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140325123100
+|text= (A3 1.14) [[setLightAttenuation]] array will present fallowing visual effects:<br>
+<br>
+[start(SCALAR), constant(SCALAR), linear (SCALAR), quadratic(SCALAR)]<br>
+<br>
+'''start(SCALAR)''' – Number can be unlimited, this parameter determines the range that the light source takes effect. Terrain environmental color will be bathed by [[setLightAmbient]] within the range and its covered objects will reflect the color by [[setLightColor]].<br>
+<br>
+'''constant(SCALAR)''' – Support signed number, this parameter determines the brightness proportion of the light source, higher the number is, less the brightness will be, vice versa. Any minus value passed will be treated as 0 (100% brightness). In other words, this parameter is related with [[setLightBrightness]] and [[setLightIntensity]].<br>
+<br>
+'''linear (SCALAR)''' – Support signed number, effective range is from 0 ~ 100 (passed minus value will be treated as 0), this parameter determines the concentration of the light source, higher the number is, more will the light concentrate, vice versa. In other words, this parameter will turn the source into spotlight and sharpens its light circle border.<br>
+Please pay attention to a special value: '''4.31918e-005'''<br>
+e.g.<br>
+<sqf>
+// This value will make the light source reach an ultra high effect range. Any initial param set before will be discarded and overwritten.
+_light setLightAttenuation [2, 4, 4.31918e-005, 0];
+</sqf> 
+<br>
+'''quadratic(SCALAR)''' – Support signed number (range unlimited, passed minus number will be treated as 0), this parameter determines the range that the light source is visible and its visual presentation looks similar to linear. 0 means the maximum visible range. In further explanation, a less bright source can’t be seen out of the range on the land but still visible on the sea, and a bright enough source won’t be effected by the passed range who is still visible out of the range.<br>
+Please pay attention to a special value: '''4.31918e-005'''<br>
+e.g.<br>
+<sqf>
+// This value will make the light source reach an ultra high effect range. Any initial param set before will be discarded and overwritten.
+_light setLightAttenuation [6, 0, 0, 4.31918e-005]; 
+</sqf> 
+}}

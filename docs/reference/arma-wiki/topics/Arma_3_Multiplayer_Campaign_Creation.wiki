@@ -1,0 +1,282 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Multiplayer_Campaign_Creation
+// revision: 368956 (2024-08-20T22:52:27Z)
+// export sha1: m7x7l6nf6fbzwscq5ogdrx01kx5s7kr
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A multiplayer campaign is a series of interconnected missions that follow a sequential order, creating a storyline that groups of players can enjoy together.
+
+Key things that a multiplayer campaign will include:
+* Interconnected sequential missions
+* Centralized location of common mission files to save on storage space
+* Utilises {{Link|createMPCampaignDisplay|MPCampaignDisplay}}
+* Missions can be selected in the hosted server mission selection menu
+
+This article covers setting up a multiplayer campaign back end similar to how the APEX campaign works.
+
+
+== Mission Creation ==
+
+If new to creating missions, it is advised that you ignore concerns about disk space and make each mission independent of the campaign mod.
+When you get more comfortable with how the file structure works, and have more confidence in your code, you can then move on to centralising common files.
+Debugging missions within the mod structure is much more annoying, especially if your code is more prone to bugs/errors.
+
+Be sure you structure your missions with multiplayer {{Link|Multiplayer Scripting#Locality|locality}} in mind from the start.
+It is much more time-consuming to convert a single-player mission into a multiplayer mission.
+
+=== Mission Description.ext ===
+
+{{Feature|informative|See {{Link|Description.ext}}.}}
+
+The following settings need to be present in each mission's description.ext file:
+<syntaxhighlight lang="cpp">
+skipLobby = 1;
+</syntaxhighlight>
+
+These are important for the mission to flow from each mission in a multiplayer setting.
+
+Avoid lobbies so that the missions can flow from one to the next without hangups.
+If <syntaxhighlight lang="cpp" inline>skipLobby</syntaxhighlight> is disabled, mission01 is finished, the game will bring up mission01's lobby again and will only move to mission02's lobby upon hitting the {{Controls|Esc}} key.
+
+This means that missions should be structured with {{Link|Description.ext#CfgRespawnInventory|CfgRespawnInventory}} rather than using editor unit loadouts.
+
+
+== File Structure ==
+
+Now that the missions are created, we can move on to the mod's file structure.
+
+ '''{{Color|blue|myModName}}'''
+ |--{{Color|red|addons}}
+ 	|--{{Color|red|myCampaignAddon}}
+ 		|--{{Color|red|campaign}}
+ 		|  |--{{Color|red|missions}}
+ 		|  |  |--myMission01.worldName
+ 		|  |  |--myMission02.worldName
+ 		|  |  |--myMission03.worldName
+ 		|  |--{{Color|red|description.ext}}
+ 		|--{{Color|green|data}}
+ 		|--{{Color|green|functions}}
+ 		|--{{Color|red|$PBOPREFIX$}}
+ 		|--{{Color|red|config.cpp}}
+
+{{Color|red|Red}} highlights indicate required files/folders
+
+{{Color|green|Green}} highlights indicate optional organization files/folders for shared campaign files
+
+
+== PBO Prefix ==
+
+$PBOPREFIX$ is a file that sits in the root folder of an addon. If your mod contains multiple addons, you will need multiple $PBOPREFIX$ files.
+$PBOPREFIX$ is a namespace definition that tells the game the file path to navigate to your addon.
+
+Examples of possible $PBOPREFIX$:
+ myModName\myCampaignAddon	<--- Used for this guide
+ z\myModName\myCampaignAddon
+
+Please refer to the documentation on the addon packer of your choice.
+
+* {{Link|https://github.com/BrettMayson/HEMTT|HEMTT}} (Recommended): for repository-based mods
+* {{Link|https://github.com/winseros/pboman3|PBOMan3}}
+* {{Link|Addon Builder|Arma 3 - Addon Builder}}
+
+
+== Campaign Description.ext ==
+
+{{Feature|informative|See {{Link|Campaign Description.ext}}.}}
+
+Location: "\myModName\addons\myCampaignAddon\campaign\description.ext"
+
+The campaign description file will dictate how the missions are structured within the campaign menus.
+Unlike a single-player campaign, we are going to be ignoring the mission flow aspect of the campaign description file so that the multiplayer campaign menu functions correctly.
+
+<syntaxhighlight lang="cpp">
+/* --------------------------------------------------
+	Defining Templates for Inheriting Later
+-------------------------------------------------- */
+
+// Setting up no endings, cutscenes, or rewards (stuff for single-player campaigns).
+
+class NoEndings						// For use in chapter class and class MissionDefault.
+{
+	endDefault = "";
+};
+
+class MissionDefault : NoEndings	// For use in individual mission classes.
+{
+	lives = -1;						// Not important with/without "Tickets" respawn template.
+	cutscene = "";
+
+	lost = "";
+	end1 = "";
+	end2 = "";
+	end3 = "";
+	end4 = "";
+	end5 = "";
+	end6 = "";
+};
+
+/* --------------------------------------------------
+	Actual Campaign Class
+-------------------------------------------------- */
+
+class Campaign									// Contained inside CfgMissions - Holds other campaign classes such as "Apex", "Bootcamp", "EastWind".
+{
+	firstBattle = "Missions";					// This will point to class Missions below which contains no information on purpose
+												// so that the mp campaign menu will load all missions.
+												// If info is given, no MPCampaignDisplay will be created.
+	name = "$STR_CAMPAIGN_TITLE";
+	briefingName = "$STR_CAMPAIGN_TITLE";
+	author = "Hypoxic";
+	overviewPicture = "\myModName\myCampaignAddon\data\img\myCampaignOverviewPicture.jpg";
+	overviewText = "$STR_CAMPAIGN_DESCRIPTION";
+	disableMP = 0;								// Set to 0
+
+	class MyCampaign : NoEndings				// Chapter class - Typically only use one chapter when dealing with MP Campaigns.
+	{
+		firstMission = "myMission01";
+		name = "$STR_CAMPAIGN_TITLE";
+		cutscene = "";
+		end1 = "";
+
+		class myMission01 : MissionDefault		// Mission class - Inherits default settings from class MissionDefault above.
+		{
+			// Custom Endings - Defined in mission's CfgDebriefing
+			myCustomEnd = "myMission02";
+
+			// Default Endings - end1-6 inherited from MissionDefault class
+			endDefault = "myMission02";			// defaults to when no other ending is defined - to prevent game crashing
+			end1 = "myMission02";				// can override inherits from MissionDefault
+			lost = "myMission01";
+
+			template = "myMission01.worldName";
+		};
+
+		class MyMission02 : MissionDefault
+		{
+			endDefault = "myMission03";
+			lost = "MyMission02";
+			template = "MyMission02.worldName";
+		};
+
+		class MyMission03 : MissionDefault
+		{
+			endDefault = "";
+			lost = "MyMission03";
+			template = "MyMission03.worldName";
+		};
+	};
+
+	class Missions						// This is essentially a class with empty values. Used to invoke MPCampaignDisplay - See firstBattle above.
+	{
+		name = "$STR_CAMPAIGN_TITLE";
+		cutscene = "";
+		firstMission = "";
+		end1 = "";
+		end2 = "";
+		end3 = "";
+		end4 = "";
+		end5 = "";
+		end6 = "";
+		lost = "";
+	};
+};
+</syntaxhighlight>
+
+{{Feature|warning|An error in campaign's Description.ext WILL crash your game!}}
+
+
+== Config.cpp ==
+
+Config.cpp will contain all of the top-level classes we want our mod to modify in-game. In our campaign's case, this will mainly be CfgPatches and CfgMissions
+
+
+'''CfgPatches'''
+<syntaxhighlight lang="cpp">
+class CfgPatches
+{
+	class MyCampaign
+	{
+		name = "MyCampaign - A Campaign That Campaigns";
+		author = "Hypoxic";
+		url = "https://arepublixchickentendersubsonsale.com/";
+
+		requiredVersion = 2.10;
+		requiredAddons[] = {		// Insert addons that your mod/campaign requires
+			"A3_Functions_F"
+		};
+		units[] = {};
+		weapons[] = {};
+	};
+};
+</syntaxhighlight>
+
+If your campaign addon contains units/weapons/etc, add them to units[] and weapons[], just like you would with a normal mod.
+
+
+'''CfgMissions'''
+<syntaxhighlight lang="cpp">
+class CfgMissions
+{
+	class Campaigns
+	{
+		class MyCampaign
+		{
+			directory = "myModName\myCampaignAddon\campaign";
+		};
+	};
+
+	class MPMissions
+	{
+		class MyCampaign	// Campaign class from above
+		{
+			briefingName = "$STR_CAMPAIGN_TITLE";
+
+			class MyMission01
+			{
+				briefingName = "$STR_M01_MISSION_TITLE";
+				directory = "myModName\myCampaignAddon\campaign\missions\myMission01.worldName";
+			};
+
+			class MyMission02
+			{
+				briefingName = "$STR_M02_MISSION_TITLE";
+				directory = "myModName\myCampaignAddon\campaign\missions\myMission02.worldName";
+			};
+
+			class MyMission03
+			{
+				briefingName = "$STR_M03_MISSION_TITLE";
+				directory = "myModName\myCampaignAddon\campaign\missions\myMission03.worldName";
+			};
+		};
+	};
+};
+</syntaxhighlight>
+{{Feature|informative|Directory must not contain a leading {{hl|\}}}}
+
+
+== MPCampaign Display ==
+
+[[File:arma3-mpcampaigndisplayapex-example-filled.png|frame|right]]
+
+'''Defining Values'''
+
+# '''Campaign Name''' - defined in either:
+## CfgMissions.MPMissions.MyCampaign.briefingName
+## Campaign description.ext: Campaign.briefingName
+# '''Mission Name''' - defined in either:
+## CfgMissions.MPMissions.MyMission01.briefingName
+## Mission description.ext: briefingName
+# See #2
+# '''Author''' - defined in:
+## Campaign description.ext: Campaign.author
+# '''Mission Overview Picture''' - defined in:
+## Mission description.ext: overviewPicture
+# '''Mission Overview Text''' - defined in:
+## Mission description.ext: overviewText
+
+{{Feature|important|Although child classes will precede their parents, it is best for the naming to be consistent.}}
+
+
+[[Category:Arma 3: Editing]]

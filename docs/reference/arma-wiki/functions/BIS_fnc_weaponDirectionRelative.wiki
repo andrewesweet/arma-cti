@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_weaponDirectionRelative
+// revision: 339146 (2023-04-26T10:55:04Z)
+// export sha1: 5w2dw1nw3udnt58nobngukfp6mwmy9k
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Weapons | Category:Functions | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.64
+
+|gr1= Weapons
+
+|descr= Returns relative direction vector of given weapon for the given vehicle
+
+|s1= [vehicle, weapon, visual] call [[BIS_fnc_weaponDirectionRelative]]
+
+|p1= vehicle: [[Object]] - vehicle
+
+|p2= weapon: [[String]] - vehicle weapon
+
+|p3= visual: [[Boolean]] - (Optional, default [[true]]) if [[true]] - result is in render scope, [[false]] - simulation scope
+
+|r1= [[Array]] format [[Vector3D]]
+
+|x1= <sqf>private _relweapondir = [tank, "cannon_105mm"] call BIS_fnc_weaponDirectionRelative;</sqf>
+
+|seealso= [[BIS_fnc_attachToRelative]] [[BIS_fnc_vectorDirAndUpRelative]] [[weaponDirection]]
+}}

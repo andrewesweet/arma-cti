@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/setFlagTexture
+// revision: 378480 (2026-04-24T11:57:06Z)
+// export sha1: 6w0uxejs1gmfsjlofveseigo2gibew1
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Flags | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Flags
+
+|descr= Sets flag texture.
+
+|s1= flag [[setFlagTexture]] texture
+
+|p1= flag: [[Object]] - a flag pole
+
+|p2= texture: [[String]] - flag texture. If texture is {{hl|""}}, flag is not drawn. Custom texture can be used:
+* Prior {{arma3}}: Dimension 200×200, file extension .jpg
+* Since {{arma3}}: Dimension 512×256, file extension .paa
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_flagE setFlagTexture "\ca\misc\data\sever_vlajka.paa";</sqf>
+
+|x2= <sqf>_flagW setFlagTexture "\ca\misc\data\usa_vlajka.paa";</sqf>
+
+|x3= <sqf>flag1 setFlagTexture "\A3\Data_F\Flags\Flag_red_CO.paa";</sqf>
+
+|x4= <sqf>_customFlag setFlagTexture "myMissionFlag.paa";</sqf>
+
+|x5= <sqf>_flag_Arma_3 setFlagTexture "\a3\ui_f\data\Logos\arma3_expansion_ca.paa";</sqf>
+
+|x6= Capturable OPFOR flag:
+<sqf>
+private _flag = "FlagPole_F" createVehicle position player;
+_flag setFlagTexture "\A3\Data_F\Flags\Flag_CSAT_CO.paa";
+_flag setFlagSide east;
+</sqf>
+
+|seealso= [[flag]] [[flagOwner]] [[setFlagOwner]] [[setFlagSide]] [[setObjectTexture]] [[setObjectTextureGlobal]] [[flagSide]] [[flagTexture]] [[setFlagAnimationPhase]] [[flagAnimationPhase]] [[forceFlagTexture]] [[getForcedFlagTexture]]
+}}

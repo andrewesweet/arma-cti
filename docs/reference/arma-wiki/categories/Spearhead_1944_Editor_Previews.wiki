@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Spearhead_1944_Editor_Previews
+// revision: 344394 (2023-07-30T14:15:48Z)
+// export sha1: lxfqke2070lrtqjvs69gy8h0va05dlm
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Spearhead 1944 Images]]

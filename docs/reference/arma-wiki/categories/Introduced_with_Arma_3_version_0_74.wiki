@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_0.74
+// revision: 84880 (2014-10-02T00:44:18Z)
+// export sha1: 6zq4pvfn2yvozab6l0ktqiaugsbuwsm
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with Arma 3 version 0.74 may be recognised by the appearance of this icon: {{GVI|arma3|0.74}}
+Release date: July 25, 2013<br>
+[http://dev.arma3.com/post/spotrep-00008 SPOTREP 00008]
+[[Category:Introduced with Arma 3|0.74]]

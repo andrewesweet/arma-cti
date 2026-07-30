@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/ctRemoveRows
+// revision: 376516 (2025-10-22T23:05:37Z)
+// export sha1: mg2z4bp5lgagh277rpox9anzlzzi7o4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+|arg= local
+|eff= local
+
+|gr1= GUI Control - Controls Table
+
+|descr= Takes array of row indices as a parameter and removes rows with those indices. Indices of remaining rows will be recomputed.
+
+|s1= ctrl [[ctRemoveRows]] [index1, index2, ...]
+
+|p1= ctrl: [[Control]]
+
+|p2= indexN: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctRemoveRows [0, 1, 2];</sqf>
+
+|seealso= [[ctAddRow]] [[ctAddHeader]] [[ctClear]] [[ctCurSel]] [[ctSetCurSel]] [[ctRowControls]] [[ctHeaderControls]] [[ctRowCount]] [[ctHeaderCount]] [[ctSetValue]] [[ctValue]] [[ctSetData]] [[ctData]] [[ctFindRowHeader]] [[ctFindHeaderRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}
+
+{{Note
+|user= 7erra
+|timestamp= 20210102150500
+|text= If you want to remove a row by clicking on a button in the ControlsTable make sure that the code is scheduled. Otherwise the game will crash.
+}}

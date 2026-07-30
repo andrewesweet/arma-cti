@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_priorityQueue_GetHighestPriority
+// revision: 274107 (2021-06-13T01:16:43Z)
+// export sha1: e7gp4p0ockfxyfspyz673vvaris68ir
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Priority Queue | Category:Functions | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.86
+
+|gr1= Priority Queue
+
+|descr= <pre>/*
+	Author: Zozo
+
+	Description:
+	Get the highest priority in the queue
+
+	Parameters:
+	_handle:INT - Queue handle (get it with BIS_fnc_PriorityQueue_Init)
+
+	Returns:
+	_priority:SCALAR - the priority
+
+	Syntax:
+	_item:ANY = [_handle] call BIS_fnc_PriorityQueue_GetHighestPriority;
+
+	Example:
+	_myItem = [_priorityQueue_1] call BIS_fnc_PriorityQueue_PopItem;
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_priorityQueue_GetHighestPriority]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

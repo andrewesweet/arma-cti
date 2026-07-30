@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Health
+// revision: 349951 (2023-11-20T22:11:24Z)
+// export sha1: 6g1ky0si371ig4tmbga44snx909jgr9
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Health ==
+=== First Aid Kit ===
+The First Aid Kit (FAK) is used to treat small wounds.<br>
+* Point the cursor at a wounded soldier.<br>
+* Open the action menu '''[Mouse wheel down]'''.<br>
+* Select '''treat'''.<br>
+* Confirm with '''[Space]''' to use the FAK.<br>
+You can even use it on yourself.
+
+''FAK is depleted after a single use and is removed from your inventory.''
+
+
+=== Fatigue ===
+When your character starts to breathe heavily and is unable to aim steadily or continue running, he is fatigued. Stop moving for a while and catch your breath.
+
+''When fatigued, all actions take longer to complete and the time you can hold your breath while aiming is shortened. Current load also contributes to fatigue.''
+
+
+=== Fire ===
+Don't stay near fire or you will get burned. Fire damage is as dangerous as being hit by a bullet. Luckily, your armor protects you the same way.
+
+''Vehicles can withstand a fire for a time before taking damage. This time increases with their armor.''
+
+
+=== Fall and Hit Damage ===
+When you fall from certain heights, you suffer damage according to your gained momentum (speed and mass). The same applies to vehicles and also for being hit by them.
+
+''The damage caused by hits and falls is mitigated by armor. This is especially useful while being in vehicles as their armor counts towards protecting their crewmen.''
+
+
+=== Injury ===
+A few hits usually result in death, but for now you are just injured [[File:a3_fm_unitbleeding.png|24px]]. Your condition affects your view, aim and speed, but it is treatable. Now, call for a medic: <br>
+* Press '''[~]''' to open fast commands.<br>
+* Report '''Injured'''.<br>
+Alternative call procedure:<br>
+* Press '''[5]''' for status reports.<br>
+* Press '''[4]''' for '''Injured'''.
+
+
+=== Medkit ===
+Medics are trained to use a '''Medkit''', which can permanently heal any damage. When healing yourself as a Medic equipped with a Medkit:<br>
+* Open the action menu '''[Mouse wheel down]'''.<br>
+* Select '''Treat self'''.<br>
+* Confirm with '''[Space]'''.
+
+''Unlike the First Aid Kit, only Medics can use a Medkit.''
+
+
+=== Damage ===
+Damage from bullets and explosives is mitigated by armor. The more armor your uniform or vehicle has, the less damage is received. <br>
+For increased protection, don't forget to equip a helmet and vest, as they add armor.
+
+''Damage also affects movement and aim. When shot in the leg, you will not be able to sprint. When shot in the arm, aiming will become harder.''
+
+
+=== Drowning ===
+When you are underwater without a rebreather for a longer time, your oxygen supply will start to run out. Tunnel vision indicates that you are lacking oxygen and start taking drowning damage. Go to the surface fast.
+
+''This damage is also inflicted in other situations where the oxygen level is limited, like in sealed rooms or while using gas weapons.''
+
+
+{{GameCategory|arma3|Field Manual}}

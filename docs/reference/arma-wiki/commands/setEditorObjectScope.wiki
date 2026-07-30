@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/setEditorObjectScope
+// revision: 363242 (2024-03-26T10:51:18Z)
+// export sha1: lwfwl0fdqua9mfwxfun6n4h0jidr2eg
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Game 2 Editor | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Game 2 Editor
+
+|descr= This command defines the level of access a user has to editor objects.
+
+"objects" is an array of either [[Editor Object|Editor Objects]] (eg ["_unit_0"]) or actual [[Object|Game Objects]] (eg [player]). If the array is empty then the command will automatically parse all editor objects.
+
+"editorType" is the editor type to effect (eg "unit", "vehicle", "center") or "" for all types.
+
+"condition" is an executable string that must evaluate to true or false. If true, the scope of the evaluated editor object will be modified. "_x" can be used in the string as reference to the ingame representation of the currently processed array member.
+
+"scope" is one of "HIDE", "VIEW", "SELECT", "LINKTO", "LINKFROM", "ALLNODRAG", "ALLNOTREE", "ALLNOCOPY", "ALLNOSELECT" or "ALL".
+
+"subordinatesAlso" is a boolean value. If true then subordinates in the editor will be assigned the same scope as the parent.
+{{Feature|informative|Some Old Editor Command}}
+
+|s1= map [[setEditorObjectScope]] [objects, editorType, condition, scope, subordinatesAlso]
+
+|p1= map: [[Control]]
+|p2= [objects, editorType, condition, scope, subordinatesAlso]: [[Array]]
+
+|p3= objects: [[Array]] of [[Object]]s and/or [[Editor Object|Editor Objects]]
+
+|p4= editorType: [[String]]
+
+|p5= condition: [[String]]
+
+|p6= scope: [[String]]
+
+|p7= subordinatesAlso: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_map setEditorObjectScope [[],"vehicle", "side effectiveCommander _x != side player", "HIDE", false];</sqf>
+
+|x2= <sqf>((findDisplay 128) displayCtrl 51) setEditorObjectScope [["_unit_0"], "", "true", "ALLNODRAG", false];</sqf>
+
+|seealso= [[addEditorObject]] [[deleteEditorObject]] [[findEditorObject]] [[getEditorObjectScope]] [[insertEditorObject]]
+}}

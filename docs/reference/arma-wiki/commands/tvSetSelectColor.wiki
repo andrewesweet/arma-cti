@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/tvSetSelectColor
+// revision: 377360 (2026-01-02T06:40:27Z)
+// export sha1: 4nk9h7mk7c13ti7hsb4i97c2avrgy0c
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI Control - Tree View
+
+|descr= Sets the select color of given path.
+
+|s1= ctrl [[tvSetSelectColor]] [path, color]
+
+|p1= ctrl: [[Control]]
+
+|p2= path: [[Array]] of [[Number]]s - path of the item
+
+|p3= color: [[Color|Color (RGBA)]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control tvSetSelectColor [[0, 0], [1,1,1,0.5]];</sqf>
+
+|seealso= [[tvSetColor]]
+}}

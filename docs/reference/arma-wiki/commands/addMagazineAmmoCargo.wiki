@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/addMagazineAmmoCargo
+// revision: 364935 (2024-07-01T19:04:37Z)
+// export sha1: fmh8o1gpb9baujpwxftlb3d3rb1wk2t
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|arg= global
+
+|eff= global
+
+|gr1= Vehicle Inventory
+
+|descr= Adds magazines with specified ammo count to the cargo space of a vehicle or a container.
+
+|s1= cargospace [[addMagazineAmmoCargo]] [magazine, quantity, ammocount]
+
+|p1= cargospace: [[Object]] - vehicle or container or weaponholder
+
+|p2= magazine: [[String]] - magazine class name
+
+|p3= quantity: [[Number]] - number of magazines to add. {{GVI|arma3|2.14|size= 0.75}} a negative value remove magazines
+
+|p4= ammocount: [[Number]] - ammo count in each magazine
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_ammobox addMagazineAmmoCargo ["30Rnd_65x39_caseless_mag", 2, 5];</sqf>
+
+|seealso= [[magazinesAmmoCargo]] [[addMagazineCargo]] [[addMagazineGlobal]] [[addMagazine]] [[addMagazines]] [[addMagazinePool]] [[addMagazineTurret]] [[clearMagazineCargo]] [[addWeaponCargo]] [[clearWeaponCargo]] [[clearWeaponCargo]] [[addWeaponCargoGlobal]] [[addBackpackCargoGlobal]] [[addItemCargo]] [[addItemCargoGlobal]]
+}}

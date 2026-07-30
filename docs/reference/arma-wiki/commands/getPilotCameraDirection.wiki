@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getPilotCameraDirection
+// revision: 377256 (2026-01-02T06:32:48Z)
+// export sha1: mi66fmgojd8nfidwb7epuaemymqprxx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Pilot Camera | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|arg= local
+
+|gr1= Pilot Camera
+
+|descr= Returns model space vector of the object airplane or helicopter [[A3_Targeting_config_reference#class_pilotCamera|pilotCamera]] .
+
+|s1= [[getPilotCameraDirection]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Vector3D]] - relative to the model centre (In a similar fashion to [[Position#PositionRelative|PositionRelative]]). Returns [0,0,0] if object has no [[A3_Targeting_config_reference#class_pilotCamera|pilotCamera]].
+
+|x1= <sqf>_pilotCamVector = getPilotCameraDirection vehicle player;</sqf>
+
+|seealso= [[hasPilotCamera]] [[getPilotCameraPosition]] [[getPilotCameraRotation]] [[getPilotCameraTarget]] [[setPilotCameraDirection]] [[setPilotCameraRotation]] [[setPilotCameraTarget]]
+}}

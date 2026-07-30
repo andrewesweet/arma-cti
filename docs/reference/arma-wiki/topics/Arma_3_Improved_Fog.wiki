@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Improved_Fog
+// revision: 347057 (2023-08-28T23:00:26Z)
+// export sha1: rnvzva14e66znm034l0wup7fjarcnw0
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|none}}
+Main improvements are:
+* fog density now decays with altitude
+* skybox and clouds are colored by fog
+
+
+== Computation ==
+
+Most important values in computation:
+* '''fogBase''' - base altitude for fog (in meters)
+* '''beta0''' - macroscopic cross-section of atmospheric scatterers at base altitude - determines density of fog based on distance from viewer at base altitude
+* '''fogDecay''' - how much the fog density decays with altitude. 0 = constant density, 0.0049333 = density halves every 500m
+
+
+== Config ==
+
+In world config following values can be configured:
+<syntaxhighlight lang="cpp">
+startFogBase = 0.0;			// base altitude for fog computations (in meters)
+forecastFogBase = 0.0;
+startFogDecay = 0.005;		// decay coefficient - decay of fog with altitude
+forecastFogDecay = 0.005;
+fogBeta0Min = 0.0001;		// beta0 (macroscopic cross-section of atmospheric scatterers at base level) for fog value 0
+fogBeta0Max = 0.02;			// beta0 (macroscopic cross-section of atmospheric scatterers at base level) for fog value 1
+</syntaxhighlight>
+
+
+== Script commands ==
+
+Command [[setFog]] was extended - now can be used with some optional params.
+
+
+{{GameCategory|arma3|Editing}}

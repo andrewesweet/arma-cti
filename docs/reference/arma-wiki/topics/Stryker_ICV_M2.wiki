@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Stryker_ICV_(M2)
+// revision: 34115 (2007-05-15T05:01:20Z)
+// export sha1: qxanm8qo5nzrcl7mrbr9xc096uouf6o
+// Vendored snapshot. Do not edit — re-export instead.
+
+The Stryker ICV (M2) is a wheeled, armored troop transport. It is armed with an M2 machine gun.

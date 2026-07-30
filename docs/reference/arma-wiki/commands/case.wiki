@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/case
+// revision: 347319 (2023-09-10T15:36:24Z)
+// export sha1: suphg49i53xxxytz6z08v0m8uhh2uwb
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Program Flow
+
+|descr= This command is used as a keyword inside a [[switch]] structure to define a value case.
+{{Feature|important|
+This command '''must''' be written and used inside a [[switch]] construct, never stored in a variable, otherwise its behaviour is not guaranteed - see {{Link|https://foxhound.international/arma-3-sqf-grammar.html}} for further explanation.
+}}
+
+|s1= [[case]] b
+
+|p1= b: [[Anything]]
+
+|r1= [[Switch Type]]
+
+|x1= <sqf>
+switch (_condition) do
+{
+	case 1: { hint "1" };
+	case 2: { hint "2" };
+	default { hint "default" };
+};
+</sqf>
+
+|seealso= [[Control Structures]] [[switch]] [[default]]
+}}

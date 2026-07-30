@@ -1,0 +1,92 @@
+// source: https://community.bistudio.com/wiki/setBehaviour
+// revision: 364537 (2024-05-16T20:46:45Z)
+// export sha1: 3iilum4ztpn180g21068cb6qhq14qkw
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Groups
+
+|gr2= AI Behaviour
+
+|descr= Sets individual unit behaviour '''on every unit in a group'''.
+{{Feature|important|This command doesn't set AI [[Group]] behaviour, see [[setCombatBehaviour]] or [[setBehaviourStrong]] for this.}}
+{{Feature|informative|See [[AI Behaviour]] for details of the effect of this command on AI units.}}
+<spoiler text="Comparison of Behaviour commands">
+{| class="wikitable" style="text-align: center"
+! Command
+! Applies To
+|-
+| [[setBehaviour]]
+| '''Every unit''' in the group, but '''not the group''' itself
+|-
+| [[setBehaviourStrong]]
+| '''Every unit''' in the group, and the '''group''' itself
+|-
+| [[setCombatBehaviour]]
+| If argument is [[Object]], only that '''unit''', and if argument is [[Group]], the '''group''' itself (not its units)
+|}
+</spoiler>
+
+|s1= groupOrUnit [[setBehaviour]] behaviour
+
+|p1= groupOrUnit : [[Group]] or [[Object]] - unit or a [[group]]
+
+|p2= behaviour: [[String]] - can be one of:
+* "CARELESS"
+* "SAFE"
+* "AWARE"
+* "COMBAT"
+* "STEALTH"
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_group1 setBehaviour "SAFE";</sqf>
+
+|seealso= [[setCombatBehaviour]] [[combatBehaviour]] [[AIBehaviour]] [[behaviour]] [[setBehaviourStrong]] [[setWaypointBehaviour]] [[combatMode]] [[setCombatMode]] [[skill]] [[setSkill]] [[Arma 3: AI Skill]]
+}}
+
+{{Note
+|user= SNKMAN
+|timestamp= 20090103155700
+|text= Warning! Since {{arma1}} v.1.14 the command setBehaviour "COMBAT" does not work correctly any longer.
+Units ( Groups ) which are using this behaviour and then get a move order will not move to the given position.
+}}
+
+{{Note
+|user= MadRussian
+|timestamp= 20100214081900
+|text=  Although setBehaviour can be called on an individual unit, the entire group will be affected.
+}}
+
+{{Note
+|user= MulleDK13
+|timestamp= 20101122191800
+|text= If setting a behaviour on an individual unit is required, it can be achieved by creating a temporary group, use joinSilent to make the individual unit belong to that group, then change his behaviour, use joinSilent into the original group, then delete the temporary group.
+}}

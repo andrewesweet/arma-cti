@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/setObjectMaterial
+// revision: 370026 (2024-10-27T23:18:53Z)
+// export sha1: 4rxdli11409is6pt8undr7qq5ono4ei
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Object Manipulation
+
+|descr= Sets material of object selection. The selection number is defined through the [[CfgVehicles Config Reference#hiddenSelections|hiddenselection]][] = {} array in the vehicle's config (starting with 0).
+
+|s1= obj [[setObjectMaterial]] [selectionNumber, material]
+
+|p1= obj: [[Object]]
+
+|p2= selectionNumber: [[Number]] or [[String]] (since {{GVI|arma3|2.10}}).
+
+|p3= material: [[String]] - material path. Since {{GVI|arma3|2.20}} using '''"#reset"''' would reset to default material.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+car setObjectMaterial [0,"A3\Structures_F\Data\Windows\window_set.rvmat"];
+car setObjectMaterial [1,"A3\Structures_F\Data\Windows\window_set.rvmat"];
+</sqf>
+
+|seealso= [[getObjectMaterials]] [[setObjectTextureGlobal]] [[getObjectTextures]] [[setObjectTexture]] [[setObjectMaterialGlobal]]
+}}

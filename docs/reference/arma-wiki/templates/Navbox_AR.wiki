@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/AR
+// revision: 339141 (2023-04-26T10:55:03Z)
+// export sha1: pidwfrxu0tt6xyz14m49uqugphya1vj
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Navbox
+|title= {{GameCategory|armaR|link= y}}
+|title1= Workbench
+|content1= [[Arma Reforger:Resource Manager|Resource Manager]] {{!}} [[Arma Reforger:World Editor|World Editor]] {{!}} [[Arma Reforger:Particle Editor|Particle Editor]] {{!}} [[Arma Reforger:Animation Editor|Animation Editor]] {{!}} [[Arma Reforger:Script Editor|Script Editor]] {{!}} [[Arma Reforger:Audio Editor|Audio Editor]] {{!}} [[Arma Reforger:Behavior Editor|Behavior Editor]] {{!}} [[Arma Reforger:Procedural Animation Editor|Procedural Animation Editor]] {{!}} [[Arma Reforger:String Editor|String Editor]]
+|title2= Documentation
+|content2= {{GameCategory|armaR|Content|link= y|text= Content}} {{!}} {{GameCategory|armaR|Modding|link= y|text= Modding}} {{!}} {{GameCategory|armaR|Support|link= y|text= Support}}
+<!-- etc -->
+}}</includeonly><noinclude>Adds an {{GameCategory|armaR|link= y}} navbox.
+
+== Usage ==
+{{<nowiki/>Navbox/AR}}
+
+{| style="width: 100%"
+|+ Examples
+|- style="background-color: #EEE"
+! Code
+! Result
+|-
+| <nowiki>{{Navbox/AR}}</nowiki>
+| {{Navbox/AR}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

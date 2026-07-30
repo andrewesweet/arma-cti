@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_setTXScanPolygon
+// revision: 281378 (2021-06-14T09:09:32Z)
+// export sha1: rbb4g885ybrc5ps4c2olzz9mdl3g835
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: TXScan | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= TXScan
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Pre-sets intersection polygon for given scan. Can only be done with newly created scans since once the first scan is made, the polygon cannot be overwritten
+
+	Parameter(s):
+		0: STRING - TXScan name
+		1: ARRAY - polygon points
+
+	Returns:
+		BOOL - false on error
+		
+	Example:
+		["MyScan",[p1,p2,p3...]] call BIN_fnc_setTXScanPolygon
+*/</pre>
+
+{{Wiki|placeholder}}
+{{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_setTXScanPolygon]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

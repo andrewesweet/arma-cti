@@ -1,0 +1,63 @@
+// source: https://community.bistudio.com/wiki/mapAnimAdd
+// revision: 377554 (2026-01-02T06:54:54Z)
+// export sha1: lzfbfhz9eg2aknh8jowf6r88jtj5gxa
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Map | Category:Introduced with Operation Flashpoint version 1.27 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.27
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|eff= local
+
+|gr1= Map
+
+|descr= Add next frame to map animation.
+
+|s1= [[mapAnimAdd]] [time, zoom, position]
+
+|p1= time: [[Number]] - animation duration in seconds
+
+|p2= zoom: [[Number]] - range from 0.01 (max. zoom) to 1 (zoomed out)
+
+|p3= position: [[Object]] or [[Position#Introduction|Position2D]], [[Position#Introduction|Position3D]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+mapAnimAdd [1, 0.1, markerPos "anim1"];
+mapAnimCommit;
+</sqf>
+
+|x2= <sqf>
+mapAnimAdd [3, 0.01, player];
+mapAnimCommit;
+</sqf>
+
+|seealso= [[mapAnimClear]] [[mapAnimCommit]] [[mapAnimDone]] [[ctrlMapAnimAdd]] [[ctrlMapAnimClear]] [[ctrlMapAnimCommit]] [[ctrlMapAnimDone]]
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20070202052600
+|text= In '''OFP v1.96''', the mapAnim series of commands, together with [[forceMap]] can only be used in the intro and mission, as it is not possible to access the map from the outro. ''(not checked, sourced from an old copy of the OFPEC comref)''
+}}

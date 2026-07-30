@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/leaderboardState
+// revision: 339110 (2023-04-26T10:54:35Z)
+// export sha1: kss5vtzdg9rpibgzaxe8kp5jyfm8z0j
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Leaderboards | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Leaderboards
+
+|descr= Returns the state of the board with the given name.
+
+|s1= [[leaderboardState]] boardname
+
+|p1= boardname: [[String]]
+
+|r1= [[Number]]
+* 0: Busy (async. operation in progress)
+* 1: Async. operation ended with success
+* 2: Async. operation ended with error
+* 3: Invalid board (bad board name, not initialised etc)
+
+|x1= <sqf>leaderboardState "TT01";</sqf>
+
+|seealso= [[leaderboardsRequestUploadScoreKeepBest]] [[leaderboardsRequestUploadScore]]
+}}

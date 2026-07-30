@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/removeCuratorEditableObjects
+// revision: 377069 (2026-01-01T09:30:27Z)
+// export sha1: 9h0sniydhxz4ohu0i8y2liuo6l32n68
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|serverExec= server
+
+|gr1= Curator
+
+|descr= Unregister objects which can be edited by a curator.
+
+|s1= curatorObj [[removeCuratorEditableObjects]] [objects, removeCrew]
+
+|p1= curatorObj: [[Object]] - curator module
+
+|p2= objects: [[Array]] of [[Object]]s
+
+|p3= removeCrew: [[Boolean]] - (Optional, default [[true]])
+
+|r1= [[Nothing]]
+
+|x1= <sqf>curatorModule removeCuratorEditableObjects [[cursorTarget], true];</sqf>
+
+|seealso= [[Arma 3: Curator]] [[addCuratorEditableObjects]] [[curatorEditableObjects]]
+}}

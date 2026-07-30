@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_2.08
+// revision: 365070 (2024-07-16T19:00:55Z)
+// export sha1: o8jp8jak4q21l8or833bvvd8sxh213s
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with {{arma3}} version 2.08 may be recognised by the appearance of this icon: {{GVI|arma3|2.08}}
+Release date: March 8th, 2022<br>
+{{Link|https://dev.arma3.com/post/spotrep-00102|SPOTREP 00102}}<br>
+{{Link|https://dev.arma3.com/post/spotrep-00103|SPOTREP 00103 (hotfix)}}<br>
+{{Link|https://dev.arma3.com/post/spotrep-00103|SPOTREP 00104 (hotfix)}}
+
+[[Category:Introduced with {{arma3}}|2.08]]

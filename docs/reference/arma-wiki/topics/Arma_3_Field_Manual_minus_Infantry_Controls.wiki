@@ -1,0 +1,93 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Infantry_Controls
+// revision: 281731 (2021-06-16T09:19:40Z)
+// export sha1: q4cdt9fek1bpof2r0oqa785ec0pbomk
+// categories: Category:Arma 3: Controls | Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Infantry Controls ==
+=== Adjust Pose ===
+Adjust your stance by pressing '''[Left Ctrl]''' and:<br>
+* '''[W]''', '''[S]''' for rise or crouch.<br>
+* '''[A]''', '''[D]''' for half-step sideways.<br>
+This will help you to stay in cover more effectively or shoot over obstacles more easily. Adjust works in all stances.
+
+
+=== Diving ===
+* Aim down and move forward '''[W]''' to dive.<br>
+* Ascend with '''[X]'''.<br>
+* Descend with '''[Z]'''.<br>
+* Move with '''[W]''', '''[S]''', '''[A]''', '''[D]'''.
+
+''Equip a re-breather to a vest slot to supply oxygen for longer dives. For clear vision underwater, equip diving goggles to the goggles slot.''
+
+
+=== Leaning Sideways ===
+Lean to peak around corners and still have most of your body hidden behind cover.<br>
+* Lean left: '''[Q]'''.<br>
+* Lean right: '''[E]'''.<br>
+You can also lock the character into a leaning position by pressing '''[2xQ]''' for left or '''[2xE]''' for right side.
+
+''Use the lean keys to roll while in the prone position. Try it: '''[Z]''', '''[Q]''', '''[E]'''.''
+
+
+=== Free Look ===
+Free look enables you to move while keeping awareness of your surroundings.<br>
+* Hold '''[Left Alt]''' and move the mouse left and right to look around.<br>
+* Tap '''[2xLeft Alt]''' to toggle between static and free look.
+
+''Free look represents turning the head sideways and up or down. That's why you cannot look directly behind you. This works the same for vehicles – usually only a commander has a 360° view.''
+
+
+=== Sprint ===
+Press '''[Left Shift]''' to sprint away from danger or towards cover. Sprinting increases your fatigue.
+
+''Sprint works in all stances, try using it while crouched '''[X]''' or prone '''[Z]'''.''
+
+
+=== Movement ===
+Use basic controls '''[W]''', '''[S]''', '''[A]''', '''[D]''' to move around and explore the surroundings. Use the mouse to rotate and adjust the direction.
+
+
+=== Stances ===
+To decrease the enemy's chances of detecting and hitting you, use different stances:<br>
+* Crouch with '''[X]'''.<br>
+* Go prone with '''[Z]'''.<br>
+Crouching and going prone also stabilizes your aim. To stand, simply press the Crouch/Go Prone button again.
+
+''When prone, you cannot use launchers.''
+
+
+=== Walk ===
+Default movement speed is run.<br>
+* Press '''[C]''' to move more slowly and silently in a combat pace.<br>
+* Press '''[W+S]''' to walk.
+
+''Tactical pace is best for moving slowly while maintaining a steady aim.''
+
+
+=== Death ===
+You are dead. There is nothing you can do besides restarting the mission from a save point or from the beginning. Better luck next time.
+
+''In multiplayer you will be able to see who killed you.''
+
+
+=== Fast Travel ===
+Fast travel is a method of quickly getting through a safe area.<br>
+* Open the map '''[M]'''.<br>
+* Select '''Fast travel''' and choose a destination.<br>
+Alternatively, use fast travel through the action menu:<br>
+* Open the action menu '''[Mouse wheel down]'''.<br>
+* Select a spot to '''travel''' on the map.
+
+
+=== Stepping Over ===
+When passing a low obstacle, step over it with '''[V]''' to shorten your route.
+
+
+=== Combat Pace ===
+Combat pace is a move stance with weapon raised permanently to the shoulder. It trades movement speed for situational awareness and faster reaction time. This is particularly useful in urban areas. Use '''[C]''' to toggle combat pace on and off.
+
+''Combat pace and lowered weapon stance are two independent body poses. Try switching to combat pace '''[C]''', lowering your weapon '''[2xLeft Ctrl]''' and raising it back '''[2xLeft Ctrl]'''. You will return to combat pace.''
+
+
+{{GameCategory|arma3|Field Manual}}{{GameCategory|arma3|Controls}}

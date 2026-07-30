@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera_setCinemaBordersEnabled
+// revision: 378073 (2026-02-11T08:04:24Z)
+// export sha1: 7l93ctfmh3wo1y45dhtk5i2pklw8gdg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Camera | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Camera
+
+|descr= Sets cinema borders.
+
+|s1= [camera, enabled] call [[BIS_fnc_camera_setCinemaBordersEnabled]]
+
+|p1= camera: [[Object]] - the camera
+
+|p2= enabled: [[Boolean]] - (Optional, default [[false]]) [[true]] to show cinema borders, [[false]] to hide them.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[BIS_camera, true] call BIS_fnc_camera_setCinemaBordersEnabled;</sqf>
+
+|seealso= [[BIS_fnc_camera_getCinemaBordersEnabled]]
+}}

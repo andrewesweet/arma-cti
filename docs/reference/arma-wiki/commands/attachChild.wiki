@@ -1,0 +1,249 @@
+// source: https://community.bistudio.com/wiki/attachChild
+// revision: 378128 (2026-02-21T23:21:06Z)
+// export sha1: scwdt8oam4n2l4x06sgjrip3tqbyjeb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Development Branch | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:WIP
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|branch= dev
+
+|arg= local
+|eff= global
+
+|serverExec=
+
+|gr1= PhysX
+
+|descr= Attaches a child object to a parent, similar to [[attachTo]] but instead of a rigid/forced attachment its using a PhysX joint.
+{{Feature|informative|For more information see {{Link|https://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/guide/Manual/Joints.html|NVIDIA docs}}.}}
+Note that the joint parameters XYZ orientations, are according to the localFrame of the joint. swingZ/swingY/twist being Yaw/Roll/Pitch, can be changed if the joint itself is rotated, because the joint rotation moves the whole axis.
+
+{{Wiki|WIP}}
+
+|mp= {{Feature|important|This command does NOT behave well in Multiplayer.}}
+
+|s1= [parent, child] [[attachChild]] [jointType, localFrameParent, localFrameChild, miscFlags, jointDescription]
+
+|p1= parent: [[Object]] - the parent object that another object is attached to. Must be a Transport vehicle like Car/Tank (Maybe helicopter/airplane works?).
+
+|p2= child: [[Object]] - the object being attached onto the parent. Must be a Transport vehicle like Car/Tank (Maybe helicopter/airplane works?).
+
+|p3= jointType: [[String]] - currently only "6DOFJoint" and "RevoluteJoint" and "FixedJoint"<br>
+
+<div class="_description">
+; 6DOFJoint
+: Allows to configure all axis (XYZ translation, Pitch/Yaw/Roll rotation) limits and drives.
+; RevoluteJoint
+: Only allows rotation around the X axis, a Revolute joint can also be implemented with a 6DOFJoint and the appropriate limits (internally it is implemented exactly like that)
+; FixedJoint
+: Limited in all axis, it essentially works like a PhysX based attachTo.
+</div>
+
+|p4= localFrameParent: [[Array]] - the Position and orientation, in parent's model-space of where the joint will be placed.<br>
+An Array of 3 elements [position, upPos, dirPos]<br>
+Each element can either be a Vector (3-element array of [[Number]]) or a Memory point name ([[String]]).<br>
+<br>
+<br>
+An important Caveat when using Vectors is that dir and up are not direction vectors, but positions.<br>
+Essentially, upPos/dirPos would be the model-space coordinates of where the memory point would be.<br>
+For example:
+<sqf>
+private _jointPos = [0, 0, 0];
+private _vectorDir = [0, 1, 0];
+private _vectorUp = [0, 0, 1];
+[_jointPos, _jointPos vectorAdd _vectorDir, _jointPos vectorAdd _vectorUp];
+</sqf>
+
+|p5= localFrameChild: [[Array]] - the position and orientation, in child's model-space of where the joint will be placed.
+
+|p6= miscFlags: [[Array]] - [(collisionEnabled, breakForce)]
+
+<div class="_description">
+;
+: collisionEnabled: [[Boolean]] (Optional, Default: [[false]]) - When false, disables collision between the two joint-ed objects
+;
+: breakForce: [[Number]] (Optional, Default: -1)
+;
+: limitsAreForces?
+</div>
+
+|p7= jointDescription: [[Array]] - this specifies the behavior/limits of the joint.<br>
+[(linearLimit, swingLimit, twistLimit, drives)] <br><br>Note that all are optional. Passing an empty array is equivalent to using a "FixedJoint" type<br>
+<br>
+<div class="_description">
+; linearLimit
+: [[Array]] - Linear limit specifies the joints permitted translation along the XYZ axis.<br>There are three types of linear limits, fully locked, per-axis limit and distance limit.<br><br><div class="_description">
+:; Fully Locked<nowiki>:</nowiki>
+:: []<br>Empty array, will completely lock the XYZ translational axes, only allowing rotational movement (If allowed in the swing/twist limits)
+:; Per axis<nowiki>:</nowiki>
+:: [limitX, limitY, limitZ]<br><div class="_description">
+::; limit*<nowiki>:</nowiki>
+::: [[Array]] - [lowerLimit, upperLimit, springParameters] <div class="_description">
+:::; lowerLimit<nowiki>:</nowiki>
+:::: [[Number]] - The minimum permitted offset on the axis
+:::; upperLimit<nowiki>:</nowiki>
+:::: [[Number]] - The maximum permitted offset on the axis<br> upperLimit must be larger than lowerLimit
+:::; springParameters<nowiki>:</nowiki>
+:::: [[Array]] - [(restitution, spring, damping)]<br>All spring parameters are optional, but for the linear limits, atleast an empty array must be provided. <div class="_description">
+::::; restitiution<nowiki>:</nowiki>
+::::: [[Number]] (Optional, Default: 0) - Must be between 0-1.<br> Controls the amount of bounce when the joint hits a limit.<br> A restitution value of 1.0 causes the joint to bounce back with the velocity which it hit the limit.<br> A value of zero causes the joint to stop dead.<br> {{Link|https://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/apireference/files/classPxJointLimitParameters.html#cf208a0f1e54fb8e9219af1e0357d4a9|NVIDIA docs}}
+::::; spring<nowiki>:</nowiki>
+::::: [[Number]] (Optional, Default: 0) - Must be 0 or greater.<br> if greater than zero, the limit is soft, i.e. a spring pulls the joint back to the limit
+::::; damping<nowiki>:</nowiki>
+::::: [[Number]] (Optional, Default: 0) - Must be 0 or greater. if spring is greater than zero, this is the damping of the limit spring</div>
+::; Distance Limit
+::: [xLocked, yLocked, zLocked, distanceLimit, springParameters]<br> <div class="_description">
+:::; <nowiki>*</nowiki>Locked<nowiki>:</nowiki>
+:::: [[Boolean]] - Whether the axis is completely locked and no translation is allowed along it
+:::; distanceLimit<nowiki>:</nowiki>
+:::: [[Number]] - Distance on meters, as a radius/sphere around the joint.
+:; swingLimit<nowiki>:</nowiki>
+:: [[Array]] - [(swingX, swingZ, springParameters)]<br>All parameters are optional, the default is both swing axis being locked<br>Swing limit comes in two types, cone and pyramid. Which variant is used depends on the datatype inside the swing parameter<br>Note that cone cannot be combined with pyramid, either both are cone or both are pyramid.<br>If the swing limit is [[pi]], the rotation around that axis is fully unlocked/free.<div class="_description">
+::; Cone limit<nowiki>:</nowiki>
+::: swingZ<nowiki>:</nowiki> [[Number]] (Optional, Default 0/locked) - The rotation around the Z (up) axis, thus the yaw. Rotation in radians, between [[pi]] and [[pi]].
+::;
+::: swingY<nowiki>:</nowiki> [[Number]] (Optional, Default 0/locked) - The rotation around the Y (front/dir) axis, thus the roll. Rotation in radians, between [[pi]] and [[pi]].
+::; Pyramid limit<nowiki>:</nowiki>
+::: swingZ<nowiki>:</nowiki> [[Array]] - [(min, max)] - Same rotation in radians as the cone limit, but it can be asymmetrical.
+::;
+::: swingY<nowiki>:</nowiki>  [[Array]] - [(min, max)] - Same rotation in radians as the cone limit, but it can be asymmetrical.
+:; twistLimit<nowiki>:</nowiki>
+:: [[Array]] - [(twistLower, twistUpper, springParameters)]<br>Twist is rotation about the X (right) axis, thus the pitch.<br>Left and right twist limits can be configured independently.<br><div class="_description">
+::; twist<nowiki>*:</nowiki>
+::: [[Number]] (Optional, Default: 0) - Rotation limit in radians, between -2[[pi]] and 2[[pi]]<br> 0 means twist is locked, and 2*pi means its completely unlocked
+:; drives<nowiki>:</nowiki>
+:: [[Array]] - [(angularSwingDrive, angularTwistDrive, angularSlerpDrive, linearXDrive, linearYDrive, linearZDrive, limitsAreForces)]<br>Drives allow to apply force into the joint on any of the axes.<br>Each drive is a spring, one end being on the joint, and the other end being on the target specified by the commands:<br>[[setJointDrivePosition]] [[setJointDriveOrientation]] [[setJointDriveLinearVelocity]] [[setJointDriveAngularVelocity]]<br>For rotational drives there are two variants, Swing+Twist or SLERP (Spherical Linear Interpolation)<br>See {{Link|https://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/guide/Manual/Joints.html#drives|NVIDIA docs}}<div class="_description">
+::; *Drive<nowiki>:</nowiki>
+::: [[Array]] - [type, spring, damping, forceLimit]<div class="_description">
+:::; type<nowiki>:</nowiki>
+:::: [[Number]] - MUST be 0 (#TODO acceleration drive implementation?)<br>
+:::; spring<nowiki>:</nowiki>
+:::: [[Number]] - Same as springParameters above
+:::; damping<nowiki>:</nowiki>
+:::: [[Number]] - Same as springParameters above
+:::; forceLimit<nowiki>:</nowiki>
+::::  [[Number]] - The maximum force this drive c an apply to the joint
+:; limitsAreForces<nowiki>:</nowiki>
+:: [[Boolean]] (Optional, Default: true) - NOT IMPLEMENTED #TODO?</div>
+
+|r1= [[Nothing]] - Do NOT depend on this staying nothing, it might change to be something.
+
+|x1= Attach a Quad (varname towbar) to a HEMTT (varName vParent) and another HEMTT (varName vChild) to the Quad.
+Essentially using the Quad as a "towbar":
+<sqf>
+_parentPos = [0, -5, 0]; // position on the hemtt
+_childPos = [0, 1, -0.2]; // position on the quad
+
+_jointDescription =
+[
+// Limits
+	// Linear
+	[], // Default is locked
+
+	// Swing
+	// [swing1 yaw, swing2 roll, springParams]
+	[
+		rad 45, // yaw
+		0 // roll
+	],
+	// Twist pitch
+	// [twistLower, twistUpper, springParams]
+	[rad -20, rad 20], // Default is locked
+
+// Drives
+	[] // Default are none
+];
+
+_params = [
+	"6DOFJoint",
+	// From [pos,dir,up]
+	[_parentPos, _parentPos vectorAdd [0, 1, 0], _parentPos vectorAdd [0, 0, 1]],
+	// To [pos,dir,up]
+	[_childPos, _childPos vectorAdd [0, 1, 0], _childPos vectorAdd [0, 0, 1]],
+	// misc [collisions enabled]
+	[false],
+	_jointDescription
+];
+
+[vParent, towBar] attachChild _params;
+
+_parentPos = [0, -1, -0.2]; // Position on the quad
+_childPos = [0, 5, 0]; // Position on the hemtt
+
+_params = [
+	"6DOFJoint",
+	// From [pos,dir,up]
+	[_parentPos, _parentPos vectorAdd [0, 1, 0], _parentPos vectorAdd[0, 0, 1]],
+	// To [pos,dir,up]
+	[_childPos, _childPos vectorAdd [0, 1, 0], _childPos vectorAdd [0, 0, 1]],
+	// misc [collisions enabled]
+	[false],
+	_jointDescription
+];
+
+[towBar, vChild] attachChild _params;
+</sqf>
+
+|x2= Attach a Quad (varname towbar) to a HEMTT (varName vParent) and another HEMTT (varName vChild) to the Quad.
+But we rotate the axis so that Swing's are Pitch/Yaw and Twist is roll
+<sqf>
+_parentPos = [0, -5, 0]; // position on the hemtt
+_childPos = [0, 1, -0.2]; // position on the quad
+
+_jointDescription =
+[
+// Limits
+	// Linear
+	[], // Default is locked
+
+	// Swing
+	// [swing1 pitch, swing2 yaw, springParams]
+	[
+		rad 20, // pitch
+		rad 45 // yaw
+	],
+	// Twist roll
+	// [twistLower, twistUpper, springParams]
+	[], // Default is locked
+
+// Drives
+	[] // Default are none
+];
+
+_params = [
+	"6DOFJoint",
+	// From [pos,dir,up]
+	[_parentPos, _parentPos vectorAdd [0, 0, 1], _parentPos vectorAdd [1, 0, 0]], // Note how the up is pointing right and forward is pointing down, we are rotating the whole joint
+	// To [pos,dir,up]
+	[_childPos, _childPos vectorAdd [0, 0, 1], _childPos vectorAdd [1, 0, 0]],
+	// misc [collisions enabled]
+	[false],
+	_jointDescription
+];
+
+[vParent, towBar] attachChild _params;
+
+_parentPos = [0, -1, -0.2]; // Position on the quad
+_childPos = [0, 5, 0]; // Position on the hemtt
+
+_params = [
+	"6DOFJoint",
+	// From [pos,dir,up]
+	[_parentPos, _parentPos vectorAdd [0, 0, 1], _parentPos vectorAdd [1, 0, 0]],
+	// To [pos,dir,up]
+	[_childPos, _childPos vectorAdd [0, 0, 1], _childPos vectorAdd [1, 0, 0]],
+	// misc [collisions enabled]
+	[false],
+	_jointDescription
+];
+
+[towBar, vChild] attachChild _params;
+</sqf>
+
+
+|seealso= [[detachChild]] [[setJointDrivePosition]] [[setJointDriveOrientation]] [[setJointDriveLinearVelocity]] [[setJointDriveAngularVelocity]] [[childAttached]] [[parentAttached]]
+}}

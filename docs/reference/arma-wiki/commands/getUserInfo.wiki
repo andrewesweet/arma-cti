@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/getUserInfo
+// revision: 378191 (2026-03-10T18:34:18Z)
+// export sha1: 6z3baq9tbh55h00g99fkm8omjv00e75
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Command Group: Object Detection | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Multiplayer
+
+|gr2= Object Detection
+
+|serverExec= server
+
+|descr= Returns extended information about given server user.
+
+|s1= [[getUserInfo]] playerID
+|p1= playerID: [[String]] - user DirectPlay ID (see [[getPlayerID]], [[Arma 3: Mission Event Handlers#PlayerConnected|PlayerConnected]])
+
+|r1= [[Array]] with [playerID, owner, playerUID, soldierName, displayName, steamProfileName, clientStateNumber, isHeadless, adminState, networkInfo, playerObject]
+* 0 - playerID: [[String]] - user DirectPlay ID (see [[getPlayerID]], [[Arma 3: Mission Event Handlers#PlayerConnected|PlayerConnected]])
+* 1 - owner: [[Number]] - user owner (see [[owner]])
+* 2 - playerUID: [[String]] - player UID (see [[getPlayerUID]])
+* 3 - soldierName: [[String]] - player name (see [[profileName]])
+* 4 - displayName: [[String]] - player name including squad (see [[name]], [[squadParams]])
+* 5 - steamProfileName: [[String]] - returns the ''current machine's'' Steam profile name (see [[profileNameSteam]]), '''not''' the targeted player's Steam profile name
+* 6 - clientStateNumber: [[String]] user client state (see [[getClientStateNumber]])
+* 7 - isHeadless: [[Boolean]] - whether or not this is a headless client (see [[hasInterface]], [[isServer]])
+* 8 - adminState: [[Number]] - admin status of the user (see [[admin]])
+* 9 - networkInfo: [[Array]] of [[Number]]s - format [ping, bandwidth, desync]
+* 10 - playerObject: [[Object]] - user player entity (see [[player]], [[selectPlayer]])
+
+{{Feature|informative|Returns an empty array if said player is not found.}}
+
+|s2= playerID [[getUserInfo]] infoIndex
+|s2since= Arma3 2.18
+|p21= playerID: [[String]] - user DirectPlay ID (see [[getPlayerID]], [[Arma 3: Mission Event Handlers#PlayerConnected|PlayerConnected]])
+|p22= infoIndex: [[Number]] - the index of the data in the return array (see main syntax)
+|r2= [[Anything]] - depends on the requested index (see main syntax) or [[Nothing]]
+
+|x1= <sqf>private _randomUserInfo = getUserInfo selectRandom allUsers;</sqf>
+
+|x2= <sqf>
+_userInfo params ["_playerID", "_ownerId", "_playerUID", "_profileName", "_displayName", "_steamName", "_clientState", "_isHC", "_adminState", "_networkInfo", "_unit"];
+_networkInfo params ["_avgPing", "_avgBandwidth", "_desync"];
+</sqf>
+
+|x3= <sqf>private _myInfo = getUserInfo getPlayerID player; // this particular example only works if player is server host</sqf>
+
+|seealso= [[allUsers]] [[getPlayerID]] [[getUnitFreefallInfo]]
+}}

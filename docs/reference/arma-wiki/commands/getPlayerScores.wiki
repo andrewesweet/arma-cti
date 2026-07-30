@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/getPlayerScores
+// revision: 376996 (2026-01-01T08:04:57Z)
+// export sha1: 6z8y7lw4ywpj5x3zf9essxiky6td1y6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Multiplayer
+
+|descr= Returns the unit's table of scores (infantry kills, soft vehicle kills, armor kills, air kills, deaths, total score) '''in multiplayer''' or an empty array in singleplayer.
+{{Feature|important|This command does not work (returns empty array) if the unit's side has been changed (e.g <sqf inline>[player] joinSilent createGroup east</sqf>).}}
+
+|s1= [[getPlayerScores]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[Array]] with [killsInfantry, killsSoft, killsArmor, killsAir, score]
+* killsInfantry: [[Number]] - number of infantry units killed
+* killsSoft: [[Number]] - number of soft vehicles killed
+* killsArmor: [[Number]] - number of armored vehicles killed
+* killsAir: [[Number]] - number of air vehicles killed
+* score: [[Number]] - total score
+
+|x1= <sqf>
+getPlayerScores BIS_player1;	// e.g [4, 0, 3, 1, 2, 16]
+								// or in SP: []
+</sqf>
+
+|seealso= [[score]] [[addScore]] [[scoreSide]] [[addScoreSide]] [[addPlayerScores]]
+}}

@@ -1,0 +1,77 @@
+// source: https://community.bistudio.com/wiki/Category:Projects
+// revision: 369843 (2024-10-16T13:51:56Z)
+// export sha1: fw4xry01xbgpi0ypyq7mfeghs1rd8iu
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable sortable float-right"
+! Game Name
+! Release Date
+|-
+| {{GameCategory|ofp|link= y}}
+| 2001-06-22
+|-
+| {{GameCategory|ofpe|link= y}}
+| 2005-10-28
+|-
+| {{GameCategory|arma1|link= y}}
+| 2006-11-10
+|-
+| {{GameCategory|arma2|link= y}}
+| 2009-06-17
+|-
+| {{GameCategory|arma2oa|link= y}}
+| 2010-06-29
+|-
+| {{GameCategory|tkoh|link= y}}
+| 2011-10-27
+|-
+| {{GameCategory|carriercommand|link= y}}
+| 2012-09-28
+|-
+| {{GameCategory|arma3|link= y}}
+| 2013-03-06 (Early Access)<br>2013-09-12
+|-
+| {{GameCategory|argo|link= y}}
+| 2016-11-01 (Early Access)<br>2017-06-22<br>2018-06-26 (Removal)
+|-
+| {{GameCategory|dayz|link= y}}
+| 2013-12-16 (Early Access)<br>2018-12-13
+|-
+| {{GameCategory|tkom|link= y}}
+| 2017-02-09
+|-
+| {{GameCategory|vigor|link= y}}
+| 2019-08-08
+|-
+| {{GameCategory|ylands|link= y}}
+| 2017-12-06 (Early Access)<br>2019-12-05
+|-
+| {{GameCategory|armaR|link= y}}
+| 2022-05-17 (Early Access)<br>2023-11-16
+|-
+| {{GameCategory|silica|link= y}}
+| 2023-05-03 (Early Access)
+|-
+| {{GameCategory|arma4|link= y}}
+| ''{{GameCategory|arma4|text= TBA}}''
+|}
+The original {{GameCategory|ofp|link= y}} series for PC created the new benchmark in modern realistic military gaming and included {{GameCategory|ofp|link= y}} in 2001 and [[{{ofpr}}]] in 2002.
+The games won many awards and were later distributed in one box by Codemasters as Operation Flashpoint: Game of the Year (GOTY) Edition.
+
+Since then, the story goes on&hellip;
+
+<!--
+Next came {{GameCategory|ofpe|link= y}} for the Xbox which was released in 2005.
+Unlike many PC game conversions, all of the in-game functionality of the PC version was provided in this release, which included modified versions of the original {{ofp}} and {{ofpr}} campaigns in upgraded game engine with full Xbox Live multiplayer support.
+
+And in late 2006 and early 2007 {{Name|bi}}'s new {{arma1}} came on the market. After many years of waiting, the fans finally had their true successor to {{ofp}}.
+
+In summer 2009, {{GameCategory|arma2|link= y}}, the next game in the {{arma}} series, was released worldwide.
+
+On the 12th of September 2013, {{GameCategory|arma3|link= y}} was released as [[Steam]]-exclusive.
+-->
+
+Before {{ofp}}, other games were produced by {{Name|bi}} and the Španěl brothers - see the {{Link|Category:Before Flashpoint‎}} category.
+
+
+[[Category:Bohemia Interactive]]

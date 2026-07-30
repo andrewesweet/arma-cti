@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera
+// revision: 349502 (2023-11-08T17:09:12Z)
+// export sha1: 5bl9zclh7xlasaly7r4qyjeclz56do9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Splendid™ Camera, ''"Ultimate Screenshot Simulator"''
+
+|s1= [mode, parameter] call [[BIS_fnc_camera]]
+
+|p1= mode: [[String]] - (Optional, default "Init") '''case-sensitive''', for internal use. Can be one of:
+{{Columns|4|
+* "Init"
+* "Mouse"
+* "MouseButtonDown"
+* "MouseButtonUp"
+* "MouseZChanged"
+* "KeyDown"
+* "KeyUp"
+* "Draw3D"
+* "MapDraw"
+* "MapClick"
+* "SliderFocus"
+* "SliderAperture"
+* "SliderDaytime"
+* "SliderOvercast"
+* "SliderAcctime"
+* "SliderColor"
+* "SliderContrast"
+* "SliderSaturation"
+* "Paste"
+* "InitDummy"
+* "ExitDummy"
+* "Exit"
+}}
+
+|p2= parameter: [[Anything]] - (Optional, default <sqf inline>[]</sqf>)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[] call BIS_fnc_camera;</sqf>
+
+|x2= <sqf>[] spawn BIS_fnc_camera;</sqf>
+
+|x3= <sqf>["Init"] call BIS_fnc_camera;</sqf>
+
+|seealso= [[Camera.sqs]] [[Arma 3: Splendid Camera|Splendid camera controls]] [[BIS_fnc_cameraOld]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-10-10 - 00:15 (UTC)</dd>
+<dt class="note">[[User:Benargee|Benargee]]</dt>
+<dd class="note">(Arma 3 1.30) Calling from pause menu debug console without arguments will crash the game. Tested in singleplayer editor preview.</dd>
+
+</dl>

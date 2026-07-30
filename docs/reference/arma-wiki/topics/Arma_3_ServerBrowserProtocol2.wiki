@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_ServerBrowserProtocol2
+// revision: 353491 (2024-03-19T12:00:44Z)
+// export sha1: kad1hjb2ri43szz799lhj34trg6f7v3
+// categories: Category:Arma 3: Multiplayer
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|link= y}} Server Browser Protocol
+
+[[File:WMSBPv2.png]]
+
+{{GameCategory|arma3|Multiplayer}}

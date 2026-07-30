@@ -1,0 +1,73 @@
+// source: https://community.bistudio.com/wiki/setVehicleLock
+// revision: 364112 (2024-05-04T22:05:25Z)
+// export sha1: ts64r14b2i93fa2srd5ktgextm8hp23
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= local
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Sets vehicle lock. Possible values:
+<br> 
+* "UNLOCKED" 
+* "DEFAULT"
+* "LOCKED"
+* "LOCKEDPLAYER"
+
+|s1= vehicleName [[setVehicleLock]] lockState
+
+|p1= vehicleName: [[Object]]
+
+|p2= lockState: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_veh1 setVehicleLock "LOCKED";</sqf>
+
+|seealso= [[lock]] [[locked]] [[lockDriver]] [[lockCargo]] [[lockTurret]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-10-22 - 02:01 (UTC)</dd>
+<dt class="note">[[User:AgentRev|AgentRev]]</dt>
+<dd class="note">
+In Arma 3:<br>
+setVehicleLock "UNLOCKED" = same as "[[lock]] 0"<br>
+setVehicleLock "DEFAULT" = same as "[[lock]] 1"<br>
+setVehicleLock "LOCKED" = same as "[[lock]] 2"<br>
+setVehicleLock "LOCKEDPLAYER" = same as "[[lock]] 3"
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2015-03-04 - 15:57 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+DEFAULT lock is default vehicle lock when vehicle placed in editor. If player is in a group of AIs and not the leader, he will not be able to enter this vehicle as he will not have GetIn action for this vehicle.
+</dd>
+
+</dl>

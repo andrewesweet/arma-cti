@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/UserActions
+// revision: 369522 (2024-09-13T14:34:49Z)
+// export sha1: qs1ew6vgapj8cb4jorcbgotccgz7gcq
+// categories: Category:ArmA: Armed Assault: Editing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Take On Helicopters: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+Defines an action to be associated with the current object class. Commonly used for operating doors on vehicles.
+
+
+== Class Properties ==
+
+* '''displayName''': [[String]] - this is the name displayed in the action menu. It supports [[Structured Text]] syntax, for including icons or changing the text appearance.
+* '''displayNameDefault''': [[String]] - this is the name displayed near mid screen. It supports [[Structured Text]] syntax, for including icons or changing the text appearance. Often, only an icon is used in this case.
+* '''priority''': [[Number]] - priority value of the action. Actions will be arranged descending according to this. Value can be negative or decimal. Actions with same values will be arranged in order which they were made, newest at the bottom. Typical range is 0 (low priority) to 6 (high priority). 
+* '''radius''': [[Number]] - defines the range to the object at which the action will become available. Value is in metres.
+* '''position''': [[String]] - memory point which acts as the centre for the radius check. {{Link|https://feedback.bistudio.com/T126930#1649747|May be replaced with named selections (actionNamedSel) in Tac-Ops DLC}}
+* '''showWindow''': [[Number]] or [[Boolean]] - if set to 1 or [[true]], players see the ''displayNameDefault'' name appear near mid screen as they approach the object if the priority is higher than other available actions. Set to 0 or [[false]] to turn it off.
+* '''hideOnUse''': [[Number]] or [[Boolean]] - if set to 1 or [[true]], it will hide the action menu after selecting that action. If set to 0 or "false", it will leave the action menu open and visible after selecting that action, leaving the same action highlighted, for the purpose of allowing you to reselect that same action quickly, or to select another action.
+* '''onlyForPlayer''': [[Number]] or [[Boolean]] - prevents the action from appearing in the commanding menu's action list ({{Controls|`}} &rarr; {{Controls|6}}) for an AI.
+* '''shortcut''': [[String]] - one of the [[:Category:Key Actions|key mapping names]] defined in class {{hl|CfgDefaultKeysMapping}} in bin.pbo (e.g. "moveForward").
+* '''condition''': [[String]] - code that must return true for the action to be available. Some standard variables can be used in the evaluation. Variable [[Magic Variables#this_2|this]] references the object to which action is attached to.
+* '''statement''': [[String]] - code that is executed when the action is activated. Some standard variables can be used in the evaluation. Variable [[Magic Variables#this_2|this]] references object to which action is attached to.
+* '''aiMaxRange''': [[Number]] radius at which an AI can see the action (in the commanding menu)
+
+
+== Examples ==
+
+{{arma3}} example
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class Civilian;
+
+	class Civilian_F : Civilian
+	{
+		class UserActions
+		{
+			class GetInformation
+			{
+				displayName = "Get Information";
+				displayNameDefault = "<img image='\a3\missions_f_oldman\data\img\holdactions\holdAction_talk_ca.paa'/>";
+				priority = 10;
+				radius = 10; // a too small radius might cause the action to not be visible
+				position = "camera";
+				showWindow = 0;
+				hideOnUse = 1;
+				onlyForPlayer = 0;
+				shortcut = "";
+				condition = "alive this && !isPlayer this"; // only show if the unit is alive and is not a player
+				statement = "if (selectRandom [true, false]) then { hint 'I do not have information for you!' } else { hint 'I tell you everything I know!' };";
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== See Also ==
+
+* [[addAction]]
+
+
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+{{GameCategory|tkoh|Editing}}

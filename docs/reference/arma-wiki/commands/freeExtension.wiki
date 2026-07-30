@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/freeExtension
+// revision: 370269 (2024-11-19T18:00:17Z)
+// export sha1: ko3josv671g7thj71sscwujx8dqu1b9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+
+|gr1= System
+
+|descr= Unloads given extension loaded previously with [[callExtension]] so that extension developer could rapidly tweak developed extension without restarting the game.
+{{Feature|important|This command was introduced in {{arma3}} dev v2.11.149751 and for security reasons is only effective in DevBranch; it does nothing in stable branch.}}
+
+|s1= [[freeExtension]] extension
+
+|p1= extension: [[String]] - extension name (see [[callExtension]])
+
+|r1= [[Boolean]] or [[Nothing]]
+* [[false]] if extension unloading attempt failed, [[true]] otherwise
+* [[Nothing]] if not dev branch
+
+|x1= <sqf>freeExtension "myExt";</sqf>
+
+|seealso= [[callExtension]]
+}}

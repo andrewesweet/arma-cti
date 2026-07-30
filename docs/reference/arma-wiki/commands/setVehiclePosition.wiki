@@ -1,0 +1,93 @@
+// source: https://community.bistudio.com/wiki/setVehiclePosition
+// revision: 377535 (2026-01-02T06:53:22Z)
+// export sha1: rqcsnxfxhazmxbiiwwv2exut3650l6v
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Positions | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Positions
+
+|gr2= Object Manipulation
+
+|descr= Moves the object to a given position (same as [[createVehicle]] placement algorithm). Uses either the position that's defined by the ''position'' param, or one of the marker positions from the markers array. The object is placed inside a circle with ''position'' as its center and ''placement'' as its radius. The type of placement could also be controlled with ''special''.<br><br>
+If position is in water and the vehicle can float, it is placed on water surface, otherwise it is placed on the ground, even if the ground is under water. If roof surfaces support walking, units will be placed on roofs if such position is given.
+
+|s1= object [[setVehiclePosition]] [position, markers, placement, special]
+
+|p1= object: [[Object]]
+
+|p2= position: [[Position#PositionATL|PositionATL]] ([[Position#PositionAGL|PositionAGL]] if boat or amphibious), [[Position#Introduction|Position2D]], or [[Object]] - desired placement position.
+If object is given, object position is used for ''position''. Normally only ''x'' and ''y'' are considered, unless "CAN_COLLIDE" is used for special placement
+
+|p3= markers: [[Array]] of [[String]]s - if the markers array contains one or more marker names, the position is chosen randomly and could be one of the marker positions or just the supplied main position.
+If marker had z coordinate set with [[setMarkerPos]], the vehicle will be placed on the nearest surface below this z coordinate
+
+|p4= placement: [[Number]] - the vehicle is randomly placed inside a circle with given position as center and placement as its radius
+
+|p5= special: [[String]] - (Optional, default "NONE") can be one of the following: 
+* {{hl|"NONE"}} - will look for suitable empty position near given position (subject to other placement params) before placing vehicle there. 
+* {{hl|"CAN_COLLIDE"}} - places vehicle at given position (subject to other placement params), without checking if others objects can cross its 3D model. 
+* {{hl|"FLY"}} - if vehicle is capable of flying and has crew, it will be made airborne at default height. 
+If ''special'' is "" or not specified, default {{hl|"NONE"}} is used.
+
+|r1= [[Boolean]] - [[true]] on success, [[false]] on failure
+
+|x1= <sqf>
+// place the player at either [1000,2000], or one of the three markers positions
+player setVehiclePosition [[1000,2000], ["Pos1","Pos2","Pos3"], 0, "CAN_COLLIDE"];
+</sqf>
+
+|x2= <sqf>heli setVehiclePosition [player, [], 0, "FLY"];</sqf>
+
+|x3= <sqf>
+_cam = "camera" camCreate [0,0,0];
+_cam setDir random 360;
+_cam setVehiclePosition [[5000,5000], [], 1000, "NONE"];
+_cam setPosWorld (getPosWorld _cam vectorAdd [0,0,1.8]);
+_cam cameraEffect ["Internal", "Back"];
+</sqf>
+
+|x4= <sqf>
+private _tablePos = player getRelPos [3, 0];
+private _table = "Land_CampingTable_F" createVehicle [0,0,0];
+private _laptop = "Land_Laptop_unfolded_F" createVehicle [0,0,0];
+_table setPos _tablePos;
+_laptop setVehiclePosition [_tablePos vectorAdd [0.5, 0.2, 10], [], 0, "CAN_COLLIDE"];
+_laptop attachTo [_table];
+</sqf>
+
+|seealso= [[setPos]] [[createUnit]] [[setPosASL]] [[setPosWorld]] [[setPosWorld]] [[createVehicle]] [[Position#setPosAGLS|setPosAGLS]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150624154300
+|text= If you need to set [[direction]] as well, set it before using [[setVehiclePosition]]. The command will use existing dir of the object for its calculations.
+<sqf>
+player setDir random 360;
+player setVehiclePosition [player, [], 100, "none"];
+</sqf> 
+}}

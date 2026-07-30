@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Content/Terrains
+// revision: 369498 (2024-09-07T11:40:13Z)
+// export sha1: stkxbmql0cu7lu6f04sft3v8sz90ea1
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Content}}
+{{GameCategory|arma|Terrains}}

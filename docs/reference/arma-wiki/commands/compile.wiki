@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/compile
+// revision: 321043 (2022-05-13T12:05:32Z)
+// export sha1: 3dqnu3lox230k6584amwvashrnj56h8
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Strings
+
+|descr= Compiles [[String]] expression into [[Code]].
+
+|s1= [[compile]] expression
+
+|p1= expression: [[String]] - expression to be compiled
+
+|r1= [[Code]] - compiled expression
+
+|x1= <sqf>
+_string = "a = a + 1";
+_code = compile _string;
+call _code;
+</sqf>
+
+|x2= <sqf>
+hint str compile "a = b";
+// result: { a = b }
+</sqf>
+
+|seealso= [[call]] [[spawn]] [[compileFinal]] [[compileScript]] [[parseSimpleArray]] [[isFinal]]
+}}

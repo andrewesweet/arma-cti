@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/isSteamOverlayEnabled
+// revision: 330173 (2022-08-23T12:24:04Z)
+// export sha1: eu5zbgode550a90waa5fmnw9jzt05ro
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= GUI Control
+
+|descr= Returns [[true]] if Steam overlay is enabled, otherwise [[false]].
+
+|s1= [[isSteamOverlayEnabled]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_overlayEnabled = isSteamOverlayEnabled;</sqf>
+
+|seealso= [[ctrlSetURLOverlayMode]] [[ctrlURLOverlayMode]]
+}}

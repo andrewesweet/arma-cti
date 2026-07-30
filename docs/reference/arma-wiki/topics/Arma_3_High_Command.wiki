@@ -1,0 +1,213 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_High_Command
+// revision: 343865 (2023-07-27T15:45:05Z)
+// export sha1: hiphd3nsxddfbkwr35mt65p9jvovpml
+// categories: Category:Arma 3: Editor Modules
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}} 
+{{Feature|arma2oa|For the '''{{arma2}}''' and '''{{arma2oa}}''' version see [[High Command]].}}
+High Command (HC) allows the player to slip into the role of a commander. Instead of having control over a group of several units, as high commander the player can take control of serverel squads and teams.
+
+
+== Setting up High Command ==
+
+# Create a new scenario in [[:Category:Eden Editor|Eden Editor]]
+# Place a player unit
+# Place the '''High Command - Commander''' module
+# Synchronize the module with the player unit
+# Place one '''High Command - Subordinate''' module for each group you want the player to have control over
+# Place one group for every  '''High Command - Subordinate''' module. Any group type will do e.g., Sentry, Fire Team, Weapon Team, tank platoon
+# Synchronize each group with one of the previously placed modules.
+[[File:A3 HighCommand Layout.png|center|800px]]
+
+=== Additional Information ===
+
+* If no subordinates were synchronized with the High Command - Commander module, all groups of the commander's side will automatically be added to the High Command.
+
+
+== Taking Control ==
+
+After pressing the '''preview''' button, you take control over the groups by pressing {{Controls|Left Ctrl|Space}} or the {{Controls|App Menu}} key. The ''command bar'' will now display the groups. Select them with {{Controls|F1}} to {{Controls|F...}} and give them orders.
+[[File:A3 HighCommand CommandMenu.png|center|800px]]
+
+=== Requesting a SITREP ===
+
+To request a SITREP, select a group with {{Controls|F1}} to {{Controls|F...}}, press {{Controls|0}} and then {{Controls|1}}. A hint will appear displaying the time, group icon and the members of the group.
+[[File:A3 HighCommand SITREP.png|center|800px]]
+
+=== In Map View ===
+
+Groups can also be selected with opened map. Open the map, click on one of the group markers and then click anywhere on the map to command the group to move to this position.
+[[File:A3 HighCommand MapView.png|Your setup should now look like this|center|800px]]
+Hovering over the group markers in map view will also provide additional information such as condition and callsign of the group and name and rank of the group leader. Furthermore, current waypoints of the groups will also be shown on the map. They are indicated by an X symbol.
+[[File:A3 HighCommand MapUnitStatus.png|center|800px]]
+
+==== Advanced Waypoint Usage ====
+When the map is opened, multiple waypoints can be place by holding {{Controls|Left Ctrl}} and pressing the left mouse button. Furthermore, waypoints can be dragged by selecting a waypoint and holding the left mouse button. Additionally, right clicking on a waypoint allows for further customisations such as:
+
+{| class="wikitable" width = "100%"
+|-
+! Property
+! Description / Available Values
+|-
+| Waypoint Type
+| Move, Cycle, Seek and Destroy, Guard, Unload, Load, Get Out, Get In
+|-
+| Combat Mode
+| Stealth, Combat, Aware, Safe, No Change
+|-
+| Formation
+| Usual waypoint formations
+|-
+| Speed
+| Limited, Normal, Full, No Change
+|-
+| Timeout
+| Group waits {{hl|x}} minutes and proceeds to the next waypoint afterward
+|-
+| Wait Until
+| Group waits until a certain day time is reached and proceeds to the next waypoint afterward
+|-
+| Radio
+| ?
+|-
+| Create Task 
+| Spawns code saved to High Command - Commander module's namespace <sqf inline>_logic getVariable "onTaskCreated"</sqf>
+|-
+| Cancel Waypoint
+| Deletes the waypoint
+|}
+
+==== Cycle Waypoint ====
+The cycle waypoint behaves a bit differently from what we are used to. The if a waypoint it set to ''cycle'' the group will actually never move toward it. Also timeouts and other waypoint properties are ignored. Instead, once the cycle waypoint is the last waypoint left, the previous waypoints are re-created.
+[[File:A3 HighCommand WPCycle.gif|center|800px]]
+
+
+== Group Type Markers ==
+
+In High Command, various unit types are indicated by an icon.
+
+=== Type ===
+
+<gallery mode="nolines" heights="64px">
+File:a3_fm_b_inf.png|Infantry
+File:a3_fm_b_armor.png|Armor
+File:a3_fm_b_motor_inf.png|Motorized Infantry
+File:a3_fm_b_mech_inf.png|Mechanized Infantry
+File:a3_fm_b_uav.png|UAV
+File:a3_fm_b_artillery.png|Artillery
+File:a3_fm_b_recon.png|Recon
+File:a3_fm_b_air.png|Helicopters
+File:a3_fm_b_plane.png|Airplanes
+</gallery>
+
+=== Size ===
+
+<gallery mode="nolines" heights="64px">
+File:a3_fm_group_0.png|Fireteam (2-4)
+File:a3_fm_group_1.png|Section (> 4)
+File:a3_fm_group_2.png|Squad (> 12)
+File:a3_fm_group_3.png|Platoon (> 25)
+File:a3_fm_group_4.png|Company (> 60)
+</gallery>
+
+
+== Scripting ==
+
+The High Command functionality can also be manipulated via scripts.
+
+{|
+! style="text-align: right" | Get commander of a group:
+| [[hcLeader]]
+|-
+! style="text-align: right" | Get group parameters:
+| [[hcGroupParams]]
+|-
+! style="text-align: right" | Remove all subordinate groups:
+| [[hcRemoveAllGroups]]
+|-
+! style="text-align: right" | Get selected groups:
+| [[hcSelected]]
+|-
+! style="text-align: right" | Remove a group from high command:
+| [[hcRemoveGroup]]
+|-
+! style="text-align: right" | Force select group(s):
+| [[hcSelectGroup]]
+|-
+! style="text-align: right" | Add a group to high command:
+| [[hcSetGroup]]
+|-
+! style="text-align: right" | Manipulate command bar:
+| [[hcShowBar]] [[hcShownBar]]
+|-
+! style="text-align: right" | Event Handlers:
+| [[onCommandModeChanged]] [[onHCGroupSelectionChanged]] ([[Arma 3: Mission Event Handlers#HCGroupSelectionChanged|stackable version]])
+|}
+
+=== All Scripting Commands  ===
+
+* [[:Category:Command Group: High Command|Command Group: High Command]]
+
+=== Scripts ===
+
+* {{hl|a3\modules_f\hc\data\scripts\hc.sqf}}
+* {{hl|a3\modules_f\hc\data\scripts\hc_gui.sqf}}
+* {{hl|a3\modules_f\hc\data\scripts\hc_gui_menu.sqf}}
+* {{hl|a3\modules_f\hc\data\scripts\hc_gui_stat.sqf}}
+* {{hl|a3\modules_f\hc\data\scripts\hc_local.sqf}}
+* {{hl|a3\modules_f\hc\data\scripts\hc_sound.sqf}} <small>(Sounds are not implemented in {{arma3}})</small>
+
+=== Special Module Variables ===
+
+{{Feature|important|The following information in this section should be taken with a ''grain of salt''. Some of the information might not be verified to be correct or complete!}}
+There are more way to customize the High Command experience and behaviour, however, they are sadly hidden for beginners. Let us take a look!
+The following variables can be set in the High Command - Commander module's namespace. Given our module's variable name is '''BIS_HC_1'''.
+
+==== Adding multiple commanders ====
+<sqf>BIS_HC_1 setVariable ["commanders", Array, true];</sqf>
+
+==== Radio Triggers ====
+Radio triggers can be made available by setting
+<sqf>BIS_HC_1 setVariable ["radios", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], true];</sqf>
+{{Columns|3|
+* 0: Alpha
+* 1: Bravo
+* 2: Charlie
+* 3: Delta
+* 4: Echo
+* 5: Foxtrot
+* 6: Golf
+* 7: Hotel 
+* 8: India 
+* 9: Juliet
+}}
+
+==== Chain of Command ====
+Chain of Command can be enabled by setting
+<sqf>BIS_HC_1 setVariable ["ChainOfCommand", true];</sqf>
+
+==== Code for Create Task ====
+The code executed when the '''Create Task''' (see table above) is selected for a waypoint can be set with
+<sqf>BIS_HC_1 setVariable ["onTaskCreated", Code, true];</sqf>
+
+==== Code for Task Assignment ====
+<sqf>BIS_HC_1 setVariable ["onTaskAssigned", Code, true];</sqf>
+
+==== Code for RMB Menu ====
+<sqf>BIS_HC_1 setVariable ["RMBmenu", Code, true];</sqf>
+
+
+== Mods ==
+
+Similar to many other {{arma3}} features, High Command can be modded as well. Here are ''some'' modifications:
+* {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}2094333651|Platoon Leader: High Command Mod 1.3}}
+* {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}562920130|HCC - High Command Converter 1.5.5}}
+
+
+== See Also ==
+
+* [[Arma 3: Field Manual - High Command]]
+
+
+{{GameCategory|arma3|Editor Modules}}

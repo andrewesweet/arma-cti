@@ -1,0 +1,74 @@
+// source: https://community.bistudio.com/wiki/inAreaArrayIndexes
+// revision: 370140 (2024-11-01T21:37:46Z)
+// export sha1: pl41biefbcwfz0m29hei6528o88yp1r
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Command Group: Locations | Category:Command Group: Markers | Category:Command Group: Positions | Category:Command Group: Triggers | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|gr1= Triggers
+
+|gr2= Markers
+
+|gr3= Locations
+
+|gr4= Positions
+
+|gr5= Groups
+
+|descr= Returns indices of positions that are within the provided area.
+
+{{Feature|important|Unlike [[inAreaArray]], all positions sent to this command are treated as [[Position#PositionASL|PositionASL]] but the center as [[PositionAGL]].}}
+{{Feature|important|Since {{GVI|arma3|2.20|size= 0.75}} this command is fully compatible with [[inAreaArray]], i.e by default all positions given as [[Array]] or as objects are treated as [[PositionAGL]]. There is also an option to force them to [[PositionWorld]] format.}}
+
+|s1= positions [[inAreaArrayIndexes]] area
+
+|p1= positions: [[Array]] of [[Object]]s and/or [[Position]]s
+
+|p2= area: [[Object]], [[Location]] or [[String]] - the defined area:
+* [[Object]] - trigger
+* [[Location]] - location
+* [[String]] - marker name
+
+|r1= [[Array]]: [[Number]]s - indexes of matched positions in positions array
+
+|s2= positions [[inAreaArrayIndexes]] [centre, a, b, angle, isRectangle, c, usePosWorld]
+
+|p21= positions: [[Array]] - [[Object]]s and/or [[Position]]s to check (see note in description)
+
+|p22= centre: [[Array]] - [[Position]] [[Object]] or [[Group]] (see note in description)
+
+|p23= a: [[Number]] - x axis (x / 2)
+
+|p24= b: [[Number]] - y axis (y / 2)
+
+|p25= angle: [[Number]] - (Optional, default 0) rotation angle
+
+|p26= isRectangle: [[Boolean]] - (Optional, default [[false]]) [[true]] if rectangle, [[false]] if ellipse
+
+|p27= c: [[Number]] - (Optional, default -1: unlimited) z axis (z / 2)
+
+|p28= usePosWorld: [[Boolean]] - (Optional, default [[false]]) set to [[true]] to treat all positions as [[PositionWorld]]
+|p28since= Arma3 2.20
+
+|r2= [[Array]]: [[Number]]s - indexes of matched positions in positions array
+
+|s3= positions [[inAreaArrayIndexes]] [pos1, pos2, pos3,...]
+|p41= positions: [[Array]] - [[Object]]s and/or [[Position]]s to check.
+|p42 = posN: [[Position]] - polygon vertices in 2d or 3d format (see [[inPolygon]])
+|r3= [[Array]]: [[Number]]s - indexes of matched positions in positions array
+
+|x1= <sqf>
+private _players = call BIS_fnc_listPlayers;
+private _indices = _players inAreaArrayIndexes _marker;
+{
+	private _player = _players select _x;
+	["You are in the marker!"] remoteExec ["hint", _player];
+} forEach _indices;
+</sqf>
+
+|seealso= [[inAreaArray]] [[inArea]] [[triggerArea]]
+}}

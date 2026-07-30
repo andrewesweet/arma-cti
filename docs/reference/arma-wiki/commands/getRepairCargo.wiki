@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/getRepairCargo
+// revision: 364120 (2024-05-04T22:07:42Z)
+// export sha1: 0j9zasb7tp38diwbzg5af2rfxxgpz9s
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 0.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.56
+|arg= global
+
+|gr1= Vehicle Inventory
+
+|descr= Returns the amount (1 is full) of repair resources in the cargo space of a repair vehicle. {{Feature|informative|Since Arma 3 v1.96 the return value for vehicles that are not configured to have ability to repair other vehicles is -1. (Prior to that the value was negative infinity)}}
+
+|s1= [[getRepairCargo]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Number]] - repair cargo value, -1 if repair cargo is not supported, 0 if the vehicle is ![[alive]] or [[isNull]]
+
+|x1= <sqf>value = getRepairCargo vehicleName;</sqf>
+
+|seealso= [[setRepairCargo]] [[getAmmoCargo]] [[getFuelCargo]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-12-22 - 17:17 (UTC)</dd>
+<dt class="note">[[User:AgentRev|AgentRev]]</dt>
+<dd class="note">
+'''Prior to Arma 3 v1.94''' If the vehicle is not [[alive]], it always returns [[Nothing]], which you should check for using [[isNil]].<br>
+If the vehicle is unable to carry that type of cargo, it returns [[Number#Number_Type|-1.#IND]], which you should check for using [[finite]] or [[a_less_b | <]] 0.
+</dd>
+
+</dl>
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20220424061318
+|text= The repair cargo does actually reduce when a repair truck repairs something, however, the default cargo amount of 1 is so high it is functionally infinite. It's inconceivable that you would drain the pool. You would need to [[setVehicleCargo|set the cargo]] to 10^-5 or 10^-6 (0.000001 or 0.0000001) before it is low enough to "realistically" run out given how physically large the storage pods on the trucks are
+}}

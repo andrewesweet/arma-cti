@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_addObjectsToArea
+// revision: 309616 (2022-05-05T12:07:44Z)
+// export sha1: 9246ftnq591d49c336crzq7trg9hluh
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Collisions | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Collisions 
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Adds given array of objects to area, ovewriting previous objects data stored for the area in extension
+
+	Parameter(s):
+		0: STRING - area name
+		1: ARRAY - array of objects to add
+
+	Returns:
+		NUMBER - number of objects added
+		
+	Example:
+		["myArea", [obj1,ob2,...]]  call BIN_fnc_addObjectsToArea
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_addObjectsToArea]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_addObjectsToArea;</sqf> -->
+
+|seealso=
+}}

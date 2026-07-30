@@ -1,0 +1,83 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_ctrlMapCursor/cursors
+// revision: 293483 (2021-09-21T19:50:43Z)
+// export sha1: keuv68brxpgu73wrdq854e1zihja1c6
+// categories: Category:Arma 3: Reference Lists | Category:GUI Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+Ancillary sub-page of [[ctrlMapCursor]], listing cursor classes available in {{arma3}}.
+{{Columns|4|
+* Arrow
+* Debug
+* Track
+* Move
+* Scroll
+* Rotate
+* Track3D
+* Move3D
+* Rotate3D
+* Raise3D
+* Wait
+* HC_move
+* HC_overFriendly
+* HC_overEnemy
+* HC_overMission
+* HC_unsel
+* Curator
+* CuratorSelect
+* CuratorPlace
+* CuratorPlaceMulti
+* CuratorPlaceDisabled
+* CuratorPlaceWaypoint
+* CuratorPlaceWaypointMulti
+* CuratorPlaceWaypointCycle
+* CuratorPlaceWaypointDestroy
+* CuratorPlaceWaypointDestroyMulti
+* CuratorPlaceWaypointGetIn
+* CuratorPlaceWaypointGetInMulti
+* CuratorPlaceWaypointHook
+* CuratorPlaceWaypointHookMulti
+* CuratorMove
+* CuratorMoveZ
+* CuratorMoveSnap
+* CuratorMoveDisabled
+* CuratorMoveIn
+* CuratorMoveInDisabled
+* CuratorRotate
+* CuratorGroup
+* CuratorSync
+* CuratorDisconnect
+* 3DEN
+* 3DENSelect
+* 3DENSelectWidgetX
+* 3DENSelectWidgetY
+* 3DENSelectWidgetZ
+* 3DENPlace
+* 3DENPlaceMulti
+* 3DENPlaceZ
+* 3DENPlaceZMulti
+* 3DENPlaceWaypoint
+* 3DENPlaceWaypointMulti
+* 3DENPlaceWaypointAttach
+* 3DENPlaceWaypointAttachMulti
+* 3DENMove
+* 3DENMoveZ
+* 3DENMoveSnap
+* 3DENMoveIn
+* 3DENMoveInDisabled
+* 3DENRotate
+* 3DENConnectGroup
+* 3DENConnectSync
+* 3DENDisconnect
+* 3DENTransformRotate0
+* 3DENTransformRotate90
+* 3DENTransformRotate180
+* 3DENTransformRotate270
+* 3DENTransformScale0
+* 3DENTransformScale45
+* 3DENTransformScale90
+* 3DENTransformScale135
+}}
+
+
+{{GameCategory|arma3|Reference Lists}}
+[[Category: GUI Topics]]

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/worldName
+// revision: 364784 (2024-06-12T09:38:47Z)
+// export sha1: 93x5erygf4obfhoszvejp8fmbqf8bvo
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Mission Information
+
+|descr= Return the name of the currently loaded world.
+
+|s1= [[worldName]]
+
+|r1= [[String]]
+
+|x1= <sqf>private _name = worldName;</sqf>
+
+|seealso= [[missionName]] [[briefingName]] [[serverName]] [[worldSize]]
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20240612093847
+|text= World name casing is unreliable and checks must be case insensitive!
+}}

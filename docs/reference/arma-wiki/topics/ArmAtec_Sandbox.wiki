@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/ArmAtec_Sandbox
+// revision: 227170 (2021-01-31T18:55:53Z)
+// export sha1: tvbyh30ul8usgawplkqhyd5b2jzok1a
+// categories: Category:Sandbox
+// Vendored snapshot. Do not edit — re-export instead.
+
+To animate a model, you have to make use of both, the ''cfgModels'' and ''cfgSkeletons'' class.
+
+The ''cfgSkeletons'' class defines the bones of a vehicle. Bones are, more or less, the <u>animated selections</u> of a model.
+
+The ''cfgModels'' class is an extended version of the OFP cfgModels class. It defines the selections of a model which you want to animate or use with the setObjectTexture command, but since ArmA, you have to put everything related to animate your model in here.
+
+[[Category:Sandbox]]

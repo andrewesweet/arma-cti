@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/unassignVehicle
+// revision: 363373 (2024-03-28T19:52:42Z)
+// export sha1: ibj6auuexmynnn71hu9axo3i0ucmd57
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|gr2= Unit Control
+
+|descr= Unassigns individual unit from a vehicle, usually previously assigned with ''assignAsXXX'' command, i.e removes [[assignedVehicleRole]] of the unit.
+If the unit is currently in that vehicle, the group leader will issue an order to disembark.
+{{Feature|informative|See [[AI Group Vehicle Management]] for more information.}}
+
+|s1= [[unassignVehicle]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>unassignVehicle player;</sqf>
+ 
+|x2= Make all the occupants of a vehicle disembark:
+<sqf>{ unassignVehicle _x } forEach crew _vehicle;</sqf>
+
+|x3= Make all the occupants of a vehicle disembark and unable to get back in:
+<sqf>
+private _crew = crew _vehicle;
+{ unassignVehicle _x } forEach _crew;
+_crew allowGetIn false;
+</sqf>
+
+|seealso= [[assignAsCargo]] [[assignAsCommander]] [[assignAsDriver]] [[assignAsGunner]] [[assignAsTurret]] [[assignedVehicle]] [[leaveVehicle]] [[assignedVehicles]] [[assignedGroup]] [[fullCrew]]
+}}

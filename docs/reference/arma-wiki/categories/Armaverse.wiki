@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Armaverse
+// revision: 163543 (2020-09-27T16:22:13Z)
+// export sha1: 89vltd2yngla2bg96v6w7e38u8o6kur
+// Vendored snapshot. Do not edit — re-export instead.
+
+Articles related to the in-game universe (called "Armaverse").

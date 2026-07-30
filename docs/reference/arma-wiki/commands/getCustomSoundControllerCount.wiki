@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getCustomSoundControllerCount
+// revision: 309206 (2022-05-03T18:49:18Z)
+// export sha1: 95n5u4zxbod0am24yl1xwu5secu8k8x
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.86
+
+|gr1= Sounds
+
+|descr= Returns current number of custom sound controllers supported by the engine for the given vehicle (currently 32)
+
+|s1= [[getCustomSoundControllerCount]] vehicle
+
+|p1= vehicle: [[Object]] - a transport type vehicle. Does not work on characters or buildings
+
+|r1= [[Number]] - number of custom controllers
+
+|x1= <sqf>getCustomSoundControllerCount vehicle player;</sqf>
+
+|seealso= [[Arma 3: Sound]] [[setCustomSoundController]] [[getCustomSoundController]] [[getSoundController]] [[getSoundControllerResult]] [[getAllSoundControllers]] [[getEnvSoundController]] [[getAllEnvSoundControllers]]
+}}

@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_recompile
+// revision: 327400 (2022-07-12T22:11:58Z)
+// export sha1: t8epk3ed7ktpswo58dxtajcnzvk8jxh
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Diagnostic
+
+|descr= Can be used to recompile functions.
+{{Feature|informative|As a security measure, functions are by default protected against rewriting during the mission. This restriction does '''not''' apply to:
+* missions previewed from the editor
+* missions with the following attribute in [[Description.ext]]: <syntaxhighlight lang="cpp">allowFunctionsRecompile = 1;</syntaxhighlight>
+}}
+
+|s1= [mode] call [[BIS_fnc_recompile]]
+
+|p1= mode (Optional, default 0):
+* [[String]] - name of the function to be recompiled
+* [[Number]] - can be:
+** 0 - Autodetect what compile type should be used
+** 1 - Forced recompile of all the things
+** 2 - Create only uiNamespace variables (used in UI)
+** 3 - Create missionNamespace variables and initialize mission
+** 4 - Create only missionNamespace variables
+** 5 - Recompile all functions, and initialize mission (used for editor preview with function recompile)
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[] call BIS_fnc_recompile;</sqf>
+
+|x2= <sqf>[3] call BIS_fnc_recompile;</sqf>
+
+|x3= <sqf>["BIS_fnc_spawnVehicle"] call BIS_fnc_recompile;</sqf>
+
+|seealso= [[compile]] [[compileFinal]]
+}}

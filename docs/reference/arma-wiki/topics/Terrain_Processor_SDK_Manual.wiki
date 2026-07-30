@@ -1,0 +1,110 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor_SDK_Manual
+// revision: 349828 (2023-11-20T22:10:30Z)
+// export sha1: 6g1d7urzc68jafk2qrlwqlfs49y2vt9
+// categories: Category:Arma 3: Official Tools Manual | Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Terrain Processor]] has its own '''SDK''' which allows the creation of new tasks. Hereafter, you will find a quick introduction of the setup of the new project. All you need is the Visual Studio (an Express version is enough) and the SDK which is available in {{Link|link= http://store.steampowered.com/app/390500|text= Arma 3 Samples}}.
+
+== Create New Project in Visual Studio ==
+Start Microsoft Visual Studio and create a new Project.
+
+[[File:TerrainProcessor_SDK_newProject.png|400px]]
+
+Configure it to be an empty DLL.
+
+[[File:TerrainProcessor_SDK_projectType.png|400px]]
+
+== Add include and library directories ==
+Then, go to the configuration of the project and edit the debug configuration to include the library directory (VC++ Directories option group).
+
+[[File:TerrainProcessor_SDK_configLibs.png|400px]]
+
+== Add lib to dependencies ==
+From the project configuration, go to ''Linker'', ''Input'' and define the additional dependencies.
+
+[[File:TerrainProcessor_SDK_configInput.png|400px]]
+
+== Create plugin source files ==
+Create a new header called '''pluginTest.h''' with the following content:
+
+<syntaxhighlight lang="cpp">#pragma once 
+
+#include "TerrainProcessorPlugin.h"
+
+using namespace TerrainProcessorSDK;
+
+// Test plugin.
+class PluginTest : public TerrainProcessorPlugin
+{
+public:
+	// Sample parameter
+	TerrainProcessorParameterDefinition _sampleParameter;
+
+	// Constructor.
+	PluginTest();
+	// Process shape.
+	virtual void ProcessShape(IRunContext& context, ShapeFiles::SHPShape* shape, const ShapeParameters& shapeParameters);
+};
+</syntaxhighlight>
+
+Then a code file called '''pluginTest.cpp''' with this content:
+
+<syntaxhighlight lang="cpp">
+#include "PluginTest.h"
+#include <algorithm>
+#include <cmath>
+
+// Constructor.
+PluginTest::PluginTest()
+	: TerrainProcessorPlugin(	
+	"Test",
+	"Test plugin.",
+	GTPolyline,
+	TPPFlagsShapeFile | TPPFlagsDEM)
+{
+	_sampleParameter = TerrainProcessorParameterDefinition(
+	"Sample parameter",
+	"Sample parameter. \r\n"
+	"Default value is : 10",
+	"10",
+	TPPT_DOUBLE);
+	_parameters.push_back(_sampleParameter);
+}
+
+// Process shape.
+void PluginTest::ProcessShape(IRunContext& context, ShapeFiles::SHPShape* shape, const ShapeParameters& shapeParameters)
+{
+	_sampleParameter = _parameters[0];
+}
+</syntaxhighlight>
+
+
+== Create Plugin.cpp and DllExport.def ==
+New code file named '''Plugin.cpp''':
+
+<syntaxhighlight lang="cpp">#include <vector>
+#include <memory>
+#include "TerrainProcessorPlugin.h"
+#include "PluginTest.h"
+
+using namespace TerrainProcessorSDK;
+
+// Get plugins function.
+__declspec(dllexport) bool __stdcall GetPlugins(std::reference_wrapper<std::vector<std::shared_ptr<TerrainProcessorPlugin>>> plugins)
+{
+	plugins.get().push_back(std::make_shared<PluginTest>());
+
+	return true;
+}
+</syntaxhighlight>
+
+And finally a new '''module-definitions''' file:
+
+<syntaxhighlight lang="cpp">
+LIBRARY PLUGIN_TEST
+EXPORTS
+	GetPlugins		@1
+</syntaxhighlight>
+
+[[Category:Terrain Processor Manual]]{{GameCategory|arma3|Official Tools Manual}}

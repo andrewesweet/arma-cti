@@ -1,0 +1,110 @@
+// source: https://community.bistudio.com/wiki/nearTargets
+// revision: 377595 (2026-01-02T07:00:21Z)
+// export sha1: m9zh29q48fcalniu6oq1n53mbu94d3q
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Armed Assault version 1.07 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.07
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Object Detection
+
+|descr= Returns a list of targets within the defined range. "Targets" are not restricted to enemy units.
+
+|s1= unit [[nearTargets]] range
+
+|p1= unit: [[Object]]
+
+|p2= range: [[Number]]
+
+|r1= [[Array]] of [[Array]]s in format [position, type, side, subjectiveCost, object, positionAccuracy]:
+* position: [[Position#Introduction|Position3D]] - perceived position including judgment and memory errors
+* type: [[String]] - perceived, gives only what was recognized
+* side: [[Side]] - perceived side
+* subjectiveCost: [[Number]] - positive for enemies, more positive for more important or more dangerous enemies
+* object: [[Object]] object type, can be used to get more information if needed
+* positionAccuracy: [[Number]] - assumed accuracy of the perceived position
+
+|x1= <sqf>
+player nearTargets 100;
+// can return e.g
+/*
+	[
+		[[2555.33,2535.33,1.32708],"SoldierEB",EAST,214222,EAST 1-1-A:1],
+		[[2550.39,2482.5,1.32696],"SoldierWB",WEST,0,WEST 1-1-A:2]
+	]
+*/
+</sqf>
+
+|seealso= [[targets]] [[targetsQuery]] [[targetsAggregate]] [[targetKnowledge]] [[knowsAbout]] [[reveal]] [[forgetTarget]] [[setTargetAge]] [[getHideFrom]] [[findNearestEnemy]] [[nearestBuilding]] [[nearestObject]] [[nearestObjects]] [[nearObjects]] [[nearestLocation]] [[nearEntities]] [[nearSupplies]] [[nearestLocationWithDubbing]] [[nearObjectsReady]] [[nearRoads]] [[nearestMines]]
+}}
+
+{{Note
+|user= mrcurry
+|timestamp= 20110217160000
+|text= A subjective cost greater than 0 does not necessarily mean the target is an enemy unit. <b>Any</b> unit, that have yet to be identified by the unit, have a small positive cost in the range 0 to 1.
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20120115174500
+|text= The quality/detail level of the info depends on the [[knowsAbout]] value of the sourceUnit about the targetUnit:
+
+* For infantry:
+** ] 0  , 1.5 [ - side unknown, some position offset, identified as SoldierWB
+** [ 1.5, 1.6 [ - side identified, subjective cost set
+** [ 1.6, 2   [ - type identified better (USMC_Soldier_Base)
+** [ 2  , 3.6 [ - type identified precisely (USMC_Soldier)
+** [ 3.6, 4   ] - position identified precisely
+
+The values seems closely linked to the accuracy value of the given targetUnit class and its parents up in the config tree:
+* 0			class CAManBase : Man
+* 1.6		class SoldierWB : CAManBase
+* 2			class USMC_Soldier_Base : SoldierWB
+* 3.9		class USMC_Soldier : USMC_Soldier_Base
+
+* For tanks:
+** ] 0   , 0.03 [ - side unknown, some position offset, identified as LandVehicle
+** [ 0.03, 0.13 [ - type identified better (Tank)
+** [ 0.13, 0.3  [ - type identified better (M1A1)
+** [ 0.3 , 1.5  [ - side identified, subjective cost set
+** [ 1.5 , 3.6  [ - side identified precisely (CIV), subjective cost adjusted
+** [ 3.6 , 4    ] - position identified precisely
+
+The values seems closely linked to the accuracy value of the given targetUnit class and its parents up in the config tree:
+* 0		class All
+* 		class AllVehicles : All
+**  0.0005		class Land : AllVehicles
+**  0.02		class LandVehicle : Land
+**  0.12		class Tank : LandVehicle
+**  0.25		class M1A1 : Tank
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20120117161400
+|text= <nowiki/>
+* When an unit dies, it is nearTargets array gets emptied after some seconds.
+* When an unit dies, its reference will get removed from other units nearTargets' arrays immediately.
+* A target will be removed from the array after about 360 seconds without contact.
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20120121200000
+|text= Position accuracy seems to be a radius in meters from the perceived position.
+}}

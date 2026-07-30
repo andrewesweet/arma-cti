@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/landResult
+// revision: 363668 (2024-04-14T20:18:01Z)
+// export sha1: f3c8wdx5rcv78rqyzyeagccy86fxa8b
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Unit Control
+
+|descr= Return the result of helicopter landing position searching (performed after the [[land]] command).
+
+|s1= [[landResult]] helicopter
+
+|p1= helicopter: [[Object]]
+
+|r1= [[String]] - result, can be:
+* {{hl|"Found"}} - position found
+* {{hl|"NotFound"}} - position not found
+* {{hl|"NotReady"}} - position searching is still in progress
+* {{hl|""}} - empty string when the provided ''helicopter'' is invalid
+
+|x1= <sqf>_result = landResult BIS_heli;</sqf>
+
+|seealso= [[land]]
+}}

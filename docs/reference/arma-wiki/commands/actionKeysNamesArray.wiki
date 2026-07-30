@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/actionKeysNamesArray
+// revision: 376357 (2025-10-07T21:38:14Z)
+// export sha1: mcmvv03ongiuy29qrlxiu9bu9uxprsr
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Interaction
+
+|descr= Returns a list of button names assigned to the given user action. You can find the action names in config class ControllerSchemes or [[:Category:Key_Actions|user action names]].
+
+|s1= [[actionKeysNamesArray]]  userAction
+
+|p1= userAction: [[String]] - name of the action
+
+|r1= [[Array]] of [[String]]s
+
+|s2= [[actionKeysNamesArray]] [userAction, maxKeys, inputDevicePriority]
+
+|p21= userAction: [[String]] - name of the action
+
+|p22= maxKeys: [[Number]] - maximum number of keys to return
+
+|p23= inputDevicePriority: [[String]] - (Optional) result sorted by {{hl|inputDevicePriority}} with values:
+* {{hl|"Mouse"}}
+* {{hl|"Keyboard"}}
+* {{hl|"Stick"}}
+* {{hl|"Gamepad"}}
+* {{hl|"Tracker"}}
+* {{hl|"Combo"}} (mouse and keyboard combinations)
+* {{sic|{{hl|"Controler"}}}} (any controller other than mouse or keyboard)
+Other values are considered as: 
+* {{hl|"Unsorted"}}
+
+|p23since= arma3 1.36
+
+|r2= [[Array]] of [[String]]s
+
+|x1= <sqf>_actionList = actionKeysNamesArray "ReloadMagazine";</sqf>
+
+|x2= <sqf>_actionList = actionKeysNamesArray ["ReloadMagazine", 1];</sqf>
+
+|seealso= [[actionKeys]] [[actionKeysImages]] [[actionKeysNames]] [[actionName]] [[inputAction]]
+}}

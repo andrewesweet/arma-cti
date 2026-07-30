@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_RichCurve
+// revision: 170854 (2020-12-23T22:12:37Z)
+// export sha1: 78mmhxnyda8sm1ry2vvju1vpf1hmeol
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Functions by Functionality]]

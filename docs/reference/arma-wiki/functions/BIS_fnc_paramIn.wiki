@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_paramIn
+// revision: 327870 (2022-07-13T11:38:41Z)
+// export sha1: qo92rir4spxspabkwti853925j2bf2x
+// categories: Category:Arma 3: Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Return value needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Arrays
+
+|descr= See [[BIS_fnc_param]].
+Overloading default values is disabled in this variant.
+It's intended to be used where [[Magic Variables#this|_this]] is not used as an input param.
+
+|s1= See [[BIS_fnc_param]]
+
+|r1=
+
+|x1= <sqf>private _array = [_this, 0, [], [[]]] call BIS_fnc_param;
+_item = [_array,0,true,[true]] call BIS_fnc_paramIn;</sqf>
+
+|seealso= [[BIS_fnc_param]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140906230000
+|text= {{GVI|arma3|1.28}} Use [[BIS_fnc_paramIn]] to load private path from parent parameters (loaded by [[BIS_fnc_param]])
+<sqf>
+private ["_parent","_child0","_child1"];
+_parent = [_this, 0, [], [[]]] call BIS_fnc_param;
+_child0 = [_parent, 0, missionNamespace, [missionNamespace, grpNull, objNull]] call BIS_fnc_paramIn;
+_child1 = [_parent, 1, "", [""]] call BIS_fnc_paramIn;
+</sqf>
+}}

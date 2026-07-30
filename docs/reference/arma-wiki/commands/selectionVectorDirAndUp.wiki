@@ -1,0 +1,84 @@
+// source: https://community.bistudio.com/wiki/selectionVectorDirAndUp
+// revision: 377722 (2026-01-02T09:17:58Z)
+// export sha1: fo37mwxgi537zsk8k9l1geqblulrn38
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|arg= global
+
+|descr= Searches for selection in the object model's LOD level, and returns the Direction and Up vectors in model space.
+
+|gr1= Object Manipulation
+
+|s1= object [[selectionVectorDirAndUp]] [selectionName, LOD]
+
+|p1= object: [[Object]]
+
+|p2= selectionName: [[String]] - selection name (see [[selectionNames]])
+
+|p3= LOD: [[String]] or [[Number]] - the LOD that contains the selection:
+* [[String]] - can be one of:
+** "Memory"
+** "Geometry"
+** "FireGeometry"
+** "LandContact"
+** "HitPoints"
+** "ViewGeometry"
+* [[Number]] - command searches for a LOD with the similar [[LOD resolutions|resolution]] (see [[allLODs]]).
+
+|r1= [[Array]] with [<nowiki/>[[vectorDir]], [[vectorUp]]] - vectors are in model space
+* vectorDir: [[Vector3D]]
+* vectorUp: [[Vector3D]]
+
+|x1= <sqf>vehicle player selectionVectorDirAndUp ["drivewheel_axis", "FireGeometry"] params ["_axisVectorDir", "_axisVectorUp"];</sqf>
+
+|x2= Get the player's barrel end ({{hl|_p1}} being muzzle end's ASL position):<sqf>
+onEachFrame {
+	private _weapon = currentWeapon player;
+	if (_weapon == "") exitWith {};
+
+	// update weapon info upon weapon switch
+	if (_weapon != player getVariable ["last_weapon", "?"]) then
+	{
+		private _cfg = configFile >> "CfgWeapons" >> _weapon;
+		private _model = getText(_cfg >> "model");
+		private _simpleObject = createSimpleObject [_model, [0,0,0], true];
+		private _offset = _simpleObject selectionPosition [getText (_cfg >> "muzzlePos"), "memory"];
+		_offset = _offset apply { [_x] };
+		deleteVehicle _simpleObject;
+		player setVariable ["offset", _offset];
+		player setVariable ["last_weapon", _weapon];
+		player setVariable ["proxy",
+			[
+				"proxy:\a3\characters_f\proxies\pistol.001",
+				"proxy:\a3\characters_f\proxies\weapon.001",
+				"proxy:\a3\characters_f\proxies\launcher.001",
+				"proxy:\a3\characters_f\proxies\binoculars.001"
+			] select (([1, 4, 4096] find getNumber (_cfg >> "type")) + 1)
+		];
+	};
+
+	_offset = player getVariable ["offset", []];
+	private _proxy = player getVariable ["proxy", ""];
+	// using LOD resolution 1 (and lod index 0) - this is not always reliable
+	// you should manually check allLODs and find the most suitable LOD (smallest res LOD usually has the best accuracy, but it might be slow too)
+	player selectionVectorDirAndUp [_proxy, 1] params ["_vy", "_vz"];
+	private _pos = selectionPosition [player, _proxy, 0];
+	private _vx = _vy vectorCrossProduct _vz;
+
+	private _mat = matrixTranspose [_vx, _vy, _vz];
+	_pos = _pos vectorAdd flatten (_mat matrixMultiply _offset);
+
+	private _p1 = player modelToWorldVisualWorld _pos;
+	private _p2 = _p1 vectorAdd (player vectorModelToWorldVisual (_vx vectorMultiply -1000));
+	drawLine3D [ASLToAGL _p1, ASLToAGL _p2, [1,0,0,1]];
+};
+</sqf>
+
+|seealso= [[selectionPosition]] [[selectionNames]] [[allLODs]]
+}}

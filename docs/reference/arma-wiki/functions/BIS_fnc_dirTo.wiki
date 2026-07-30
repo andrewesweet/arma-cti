@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_dirTo
+// revision: 327975 (2022-07-13T14:37:05Z)
+// export sha1: tcumdpdlg6djai8721ywjqdt4jj50t0
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Geometry | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Geometry
+
+|descr= Function which returns vector direction from pos1 to pos2.
+{{Feature|arma3|Use <sqf inline>obj1 getDir obj2</sqf> instead of [[BIS_fnc_dirTo]].}}
+
+|s1= [param1, param2] call [[BIS_fnc_dirTo]]
+
+|p1= param1 - vector starting point, [[Position]] '''or''' [[Object]]
+
+|p2= param2 - vector ending point, [[Position]] '''or''' [[Object]]
+
+|r1= [[Number]]
+
+|x1= sets unit1 in the direction of unit2
+<sqf>unit1 setDir ([unit1, unit2] call BIS_fnc_dirTo);</sqf>
+
+|seealso= [[getDir]] [[setDir]]
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20150121142000
+|text= Be careful when using this function in conjunction with [[BIS_fnc_rotateVector2D]], which rotates vectors counterclockwise as per trigonometric conventions, while [[BIS_fnc_dirTo]] returns a clockwise angle.<br>
+To counter this, simply negate the output of [[BIS_fnc_dirTo]]:
+<sqf>[0,1,0], -([_unit, _vehicle] call BIS_fnc_dirTo)] call BIS_fnc_rotateVector2D;</sqf>
+}}

@@ -1,0 +1,598 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Dev-Branch_Change_Log_v2.21
+// revision: 378690 (2026-05-27T14:11:01Z)
+// export sha1: 01ffhwpdi5kkc4f0x2qj3dp7xkokj3j
+// categories: Category:Arma 3: Dev-Branch Change Logs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+= 27-05-2026 =
+''EXE rev. 153788 (game)''<br />
+''EXE rev. 153804 (Launcher)''<br />
+''Size: ~102 MB''
+
+'''DATA'''
+* Fixed: Typo in the sound configuration for the Decon Shower - {{Link|https://feedback.bistudio.com/T188151|FT-T188151}}
+* Tweaked: When the Spectrum Device display is opened all engine actions are now hidden - {{Link|https://feedback.bistudio.com/T198138|FT-T198138}}
+* Added: "SpectrumAnalyzerOpened" and "SpectrumAnalyzerClosed" scripted Event Handlers - {{Link|https://feedback.bistudio.com/T198138|FT-T198138}}
+* Fixed: Huron's second rotor did not have its own hit selection name - {{Link|https://feedback.bistudio.com/T189559|FT-T189559}}
+* Tweaked: Improved load time of Eden Attribute ammo box UI
+* Fixed: Chemlight module did not show all of its options - {{Link|https://feedback.bistudio.com/T197569|FT-T197569}}
+* Fixed: Missing default color in the dynamic groups display would cause a script error
+* Fixed: Community Guides did not properly start playing in Steam overlay
+* Fixed: Typo in T-100X VFX config (and effect tweaked slightly) - {{Link|https://feedback.bistudio.com/T186109|FT-T186109}}
+
+'''ENGINE'''
+* Tweaked: [[closeDisplay]] on a UI2Texture display now instantly closes / unloads the display - {{Link|https://feedback.bistudio.com/T199098|FT-T199098}}
+* Added: ''idleFPSLimit'' server config to limit maximum FPS while a server is empty
+* Added: [[disableAI]] "HEARING" - {{Link|https://feedback.bistudio.com/T199087|FT-T199087}}
+* Fixed: [[currentVisionMode]] would always return 2 when a local player has thermal vision enabled - {{Link|https://feedback.bistudio.com/T198952|FT-T198952}}
+* Fixed: [[get3DENConnections]] did not return the correct syntax for Group / Waypoint connections - {{Link|https://feedback.bistudio.com/T191578|FT-T191578}}
+* Added: "OnAutoSelectRole" server-side Event Handler
+* Added: ''getRoles'' server-side script command - {{Link|https://feedback.bistudio.com/T198797|FT-T198797}}
+* Added: ''toJSON'' / ''fromJSON'' / ''supportInfo'' to server-side script commands
+* Added: "OnPlayerSelectRole" server-side Event Handler - {{Link|https://feedback.bistudio.com/T198797|FT-T198797}}
+* Added: [[shownAction]] script command
+* Fixed: Mission loading could fail when using a custom ''-mpmissions='' folder and selecting a mission using ''#missions'' - {{Link|https://feedback.bistudio.com/T199168|FT-T199168}}
+* Added: ''#mpmissions'' BattlEye RCon command to list the available missions on the server - {{Link|https://feedback.bistudio.com/T199178|FT-T199178}}
+* Added: Option to [[moveInAny]] and [[emptyPositions]] to ignore or not locked positions
+* Added: Custom color support to non-scripted (config) IR lasers
+* Added: [[hideActions]] and [[hiddenActions]] script commands - {{Link|https://feedback.bistudio.com/T158770|FT-T158770}}, {{Link|https://feedback.bistudio.com/T158795|FT-T158795}}, {{Link|https://feedback.bistudio.com/T81560|FT-T81560}}, {{Link|https://feedback.bistudio.com/T74062|FT-T74062}}
+* Fixed: ''#monitords'' now prints to BattlEye RCon as well as to the server console
+* Added: Mission Event Handler "ActionTargetChanged"
+* Fixed: Crash when issuing AI commands from "CommandChanged" Event Handler
+* Added: "DisplayOpened" Mission Event Handler - {{Link|https://feedback.bistudio.com/T199140|FT-T199140}}
+* Fixed: VTOL would not stop and hover after executing [[forceSpeed]] 0
+* Tweaked: [[limitSpeed]] false will now reset the limit speed to its default value - {{Link|https://feedback.bistudio.com/T179442|FT-T179442}}
+* Added: ''timeStampFormatConsole'' server config parameter - {{Link|https://feedback.bistudio.com/T199089|FT-T199089}}
+* Added: ''@shadowColor'' parameter to [[drawIcon3D]] - {{Link|https://feedback.bistudio.com/T198990|FT-T198990}}
+* Fixed: Double click on a second dead character's weapon did not always open the weapon subcontainer
+* Fixed: YouTube link opening issue
+* Fixed: The last item in an Eden Editor vehicle ammo box did not have add / remove options (known issue: click offset in some listboxes) - {{Link|https://feedback.bistudio.com/T199272|FT-T199272}}
+
+'''LAUNCHER'''
+* Fixed: Detection for Proton under Proton 11
+
+= 06-05-2026 =
+''EXE rev. 153732 (game)''<br />
+''EXE rev. 153732 (Launcher)''<br />
+''Size: ~87 MB''
+
+'''DATA'''
+* Fixed: Spectrum Device support for sub-Mhz ranges - {{Link|https://feedback.bistudio.com/T178445|FT-T178445}}
+* Fixed: Spectrum Device excessive shaking in vehicles - {{Link|https://feedback.bistudio.com/T198138|FT-T198138}}
+* Tweaked: Third-party on-screen action available in Spectrum Device view is now executable
+
+'''ENGINE'''
+* Fixed: [[currentZeroing]] crash
+* Fixed: Potential server browser crash
+* Tweaked: Dead body inventories now show both dropped weapons in the 'ground' list - {{Link|https://feedback.bistudio.com/T198101|FT-T198101}}
+* Tweaked: Weapon twitching is now suppressed when inventory is opened on a dead body's weapons
+* Fixed: [[drawLaser]] would not show in the main view if a Picture-In-Picture display is visible - {{Link|https://feedback.bistudio.com/T198779|FT-T198779}}
+* Fixed: [[setVariable]] with a target in singleplayer did not work as expected - {{Link|https://feedback.bistudio.com/T198795|FT-T198795}}
+* Added: ''activeSensors'' sound controller on transport vehicles
+* Added: ''stallSpeedForced'' config parameter, which will overwrite the airplane's stalling speed - {{Link|https://feedback.bistudio.com/T197983|FT-T197983}}
+* Fixed: ''activeSensorsPhase'' animation source no longer animates when a vehicle is destroyed
+* Added: ''-mpmissions='' command-line parameter for servers - {{Link|https://feedback.bistudio.com/T63330|FT-T63330}}
+* Fixed: [[forceUnicode]] did not work for == and != string comparison
+* Tweaked: Added scripted texture support for [[CT_PROGRESS]] - {{Link|https://feedback.bistudio.com/T198806|FT-T198806}}
+* Fixed: Wobble when destroying Repair Depot objects
+* Added: "JointAttached" / "JointDetached" Event Handlers
+* Added: Option to choose vehicle positions and the search order to the [[moveInAny]] script command - {{Link|https://feedback.bistudio.com/T180897|FT-T180897}}, {{Link|https://feedback.bistudio.com/T181607|FT-T181607}}
+* Added: Alternative syntax to [[emptyPositions]] to correlate with [[moveInAny]] algorithm
+* Fixed: Using [[moveInAny]] and [[moveInCargo]] together on cargo could produce undefined behavior - {{Link|https://feedback.bistudio.com/T198758|FT-T198758}}
+
+= 22-04-2026= 
+''EXE rev. 153691 (game)''<br />
+''EXE rev. 153691 (Launcher)'' <br />
+''Size: ~183 MB''
+
+'''KNOWN ISSUES'''
+* <strike>[[currentZeroing]] array syntax can crash when used on units not inside a vehicle</strike>
+* <strike>Possible crash in the server browser "direct connect" search (LAN search does work)</strike>
+
+'''DATA'''
+* Added: Bulgarian, Hungarian, Ukrainian, Slovak, and Latin*
+* Fixed: When the "First Contact" underground special map was loaded from a save, it would default to the top left corner instead of the player position
+* Fixed: ''RscCustomInfoAirborneMiniMap'' would overwrite the ''RscCustomInfoMiniMap'' variable - {{Link|https://feedback.bistudio.com/T197736|FT-T197736}}
+{{Feature|informative|&ast;These languages were experimentally translated using an AI model. The quality of these translations is not guaranteed, and they may contain mistakes. Separate issues are unlikely to be fixed, but full regenerations using improved models may occur. All other existing languages were translated by a team of human translators.}}
+
+'''ENGINE'''
+* Added: [[combatPace]] script command
+* Added: [[enableFreeLook]] script command
+* Tweaked: Allow [[animationState]] / [[getUnitMovesInfo]] commands to work on animals
+* Fixed: [[HashMap]]s did not resolve script handles when loading a savegame - {{Link|https://feedback.bistudio.com/T197940|FT-T197940}}
+* Added: Vehicle config ''textureTrackOverride'' entry to override the track marks texture
+* Fixed: Duplicate set damage events on static structures - {{Link|https://feedback.bistudio.com/T196391|FT-T196391}}
+* Added: [[Arma_3:_Event_Handlers#AmmoExplodedNear|"AmmoExplodedNear"]] entity Event Handler
+* Tweaked: Added ability to detect locality of scripted [[setDamage]] events for static structures
+* Fixed: Join-In-Progress sync for destroyed powerlines and communication towers
+* Added: Calls to scripted event handlers on structure damage and destroy events
+* Added: New ''destrType'' ''DestructColumn''
+* Fixed: [[Arma_3:_Event_Handlers#Dammaged|"Dammaged"]] Event Handler would not receive the projectile parameter in multiplayer if the damage was done by a different player - {{Link|https://feedback.bistudio.com/T196391|FT-T196391}}
+* Fixed: ''isEject'' in "GetOutMan" Event Handler was inconsistent when using the [[moveOut]] script command - {{Link|https://feedback.bistudio.com/T197942|FT-T197942}}
+* Added: ''animPosition'' memory point configuration for vehicle sensors - {{Link|https://feedback.bistudio.com/T197908|FT-T197908}}
+* Tweaked: Added ''aiAmmoUsageFlagsStrict'' property to ammo config to force strict use of AI ammo usage flags - {{Link|https://feedback.bistudio.com/T197937|FT-T197937}}
+* Added: New command [[getAnimationsQueue]]
+* Added: New command [[getAimDirectionAndUp]]
+* Fixed: When the player was in short combat pace after firing, holding shift to sprint would not disable combat pace, making the player slow in combat
+* Fixed: IR laser ''beamThickness'' parameter in config did not affect the beam thickness - {{Link|https://feedback.bistudio.com/T168103|FT-T168103}}
+* Fixed: VTOL aircraft would not land on helipads - {{Link|https://feedback.bistudio.com/T193098|FT-T193098}}
+* Fixed: Positioning of pylon cameras
+* Fixed: Rotation of pylon sensors
+* Fixed: HUD camera view would not use the correct position of a pylon camera
+* Fixed: Eden Editor attributes with ''condition=0'' would not show up (temporary hotfix)
+* Added: ''enableGunStabilization'' script command - {{Link|https://feedback.bistudio.com/T162061|FT-T162061}}
+* Fixed: ''ShipX'' simulation did not apply gun stabilization - {{Link|https://feedback.bistudio.com/T186846|FT-T186846}}
+* Fixed: Speedboat / SDV did not have gun stabilization (''stabilizedInAxes=4'' had camera roll stabilization, but no weapon stabilization) - {{Link|https://feedback.bistudio.com/T80918|FT-T80918}}
+* Fixed: Many ''lnb*'' script commands were missing error messages for invalid arguments - {{Link|https://feedback.bistudio.com/T198100|FT-T198100}}
+* Fixed: Animal / Man collision test did not account for the animation bounding radius correctly, thus collision test failed early for enlarged soldiers, or animations that moved the unit far from the model space origin - {{Link|https://feedback.bistudio.com/T198169|FT-T198169}}
+* Fixed: Moving the camera in a Mortar / Artillery would play ''soundServoVertical'' even though the gun did not move, and the GunElevUp/Down hotkeys would not play the sound
+* Fixed: Placing units into a vehicle in Eden Editor would not respect the get in order, and cause the Xi'an to eject units after filling more than 10 passenger slots - {{Link|https://feedback.bistudio.com/T162566|FT-T162566}}
+* Added: Refract shader material ''renderFlag'' "Special1" to disable aberration and time-based normal map UV animation - {{Link|https://feedback.bistudio.com/T198170|FT-T198170}}
+* Fixed: [[currentZeroing]] returned invalid data while in a Firing From Vehicles turret seat - {{Link|https://feedback.bistudio.com/T198019|FT-T198019}}
+* Added: ''mapMarkersEnabled'' / ''mapDrawingEnabled'' to the [[enableChannel]] command - {{Link|https://feedback.bistudio.com/T197705|FT-T197705}}
+* Fixed: Eden Editor now displays Module Description for legacy (pre-3DEN) modules - {{Link|https://feedback.bistudio.com/T197534|FT-T197534}}
+* Fixed: Disabled chat channels would not reset when switching between servers - {{Link|https://feedback.bistudio.com/T197534|FT-T197303}}
+* Added: ''[[Extensions#Extension_Signatures|CfgExtensions]]'' pre-load verification Event Handler
+* Tweaked: Server browser LAN / Direct Connect view is no longer limited to only 16 results
+* Fixed: After using the server browser Direct Connect, the LAN tab would stop showing LAN results - {{Link|https://feedback.bistudio.com/T195726|FT-T195726}}
+* Fixed: Refreshing the server browser official servers list multiple times would make it stop updating until a game restart - {{Link|https://feedback.bistudio.com/T195726|FT-T195726}}
+
+= 25-03-2026= 
+''EXE rev. 153624 (game)''<br />
+''EXE rev. 153624 (Launcher)''<br />
+''Size: ~88 MB''
+
+'''DATA'''
+* Fixed: [[BIS_fnc_initListNBoxSorting]] would display inverted sorting order icons
+* Tweaked: Default sorting order for Eden Editor save/load display is now to show the last-saved scenario first (instead of sorting by name)
+* Tweaked: Eden Editor context menu style
+
+'''ENGINE'''
+* Added: [[Arma_3:_Vehicle_Loadouts#%22Generic%22_Pylons|Generic vehicle pylons]]
+* Tweaked: Increased limitation for prone weapon deployment to catch more edge cases
+* Fixed: [[compatibleMagazines]] was not working correctly with mods
+* Fixed: ''windSpeed'' animation source (was continuously progressing from 0-1 and wrapping around)
+* Fixed: [[3DEN]] event [[Arma_3:_Eden_Editor_Event_Handlers|"OnEditableEntityRemoved"]] would not fire for units inside a group, if the whole group is deleted
+* Fixed: [[3DEN]] group icon would not render correctly after undoing deletion of all units inside the group
+* Added: Entity ID to [[3DEN]] [[Arma_3:_Eden_Editor_Event_Handlers|"OnEditableEntityRemoved"]] event - {{Link|https://feedback.bistudio.com/T175775|FT-T175775}}
+* Tweaked: Improved performance of AI sensor target visibility checks
+* Tweaked: "WeaponChanged" Event Handler now also fires for Throw muzzle changes - {{Link|https://feedback.bistudio.com/T197126|FT-T197126}}
+* Added: [[setTargetSize]] script command
+* Fixed: ''visualTargetSize'' config entry had no effect (the size would always be 1)
+* Added: [[waitUntil]] alternative syntax with timeout and check interval
+* Removed: [[lineIntersects]] / [[lineIntersectsSurfaces]] multithreading (unresolved crashes, though the script syntax is still present)
+* Added: Script conditions to [[Eden_Editor:_Custom_Connections|3DEN custom connections]]
+* Added: Script conditions to [[Eden_Editor:_Entity_Context_Menu|3DEN context menu items]]
+* Added: [[3DEN]] custom connection: cursor icon now changes to 'disabled' when the connection cannot be made
+* Fixed: [[3DEN]] custom connection to markers: would not render the line in 3D view
+* Fixed: [[3DEN]] custom connection expressions would not receive marker names
+* Added: Shortcuts now work in Eden Editor's context menus - {{Link|https://feedback.bistudio.com/T140938|FT-T140938}}
+* Added: ''submenuXOffset'' / ''submenuYOffset'' for ''StructuredMenu'' ([[CT_MENU]]) to specify the origin position of submenus
+* Fixed: Border rendering in [[CT_MENU]] (used to only render 2 of 4 borders, and using the wrong width)
+* Added: ''colorStripBorder'' for ''MenuStrip'' controls (to separate the strip's border from the opened menu's border)
+* Added: Eden Editor now renders custom connections as an arrow instead of a line (to indicate which is first / second entity)
+* Added: Script conditions to [[Eden_Editor:_Configuring_Attributes#2.22_ConditionScript|3DEN attributes]]
+* Added: Support for wildcard / RegEx search in the [[3DEN]] Create tree
+* Tweaked: [[3DEN]] Create tree search is now multithreaded
+* Fixed: [[3DEN]] attribute conditions did not apply on object-specific attributes
+* Added: [[typeOf]] command now supports Controls and Displays
+* Added: [[3DEN]] action [[Eden_Editor:_Actions#CreateTextFile|"CreateTextFile"]] to create files into the scenario folder within Eden Editor
+* Added: [[get3DENEntityID]] now also works with entities from within scenario previews
+* Added: Special "$mission" prefix to [[addonFiles]] command to retrieve scenario folder files while in Eden Editor
+* Added: [[Arma_3:_Eden_Editor_Event_Handlers|"OnConnectionAdded"]] / [[Arma_3:_Eden_Editor_Event_Handlers|"OnConnectionRemoved"]] [[3DEN]] Event Handlers
+* Fixed: [[3DEN]] custom connections were not included in copy-pasting nor compositions
+
+= 04-03-2026 =
+''EXE rev. 153584 (game)''<br />
+''EXE rev. 153584 (Launcher)''<br />
+''Size: ~83 MB''
+
+'''ENGINE'''
+* Fixed: [[diag_exportTerrainSVG]] was not escaping "&" in town names, and removed a superfluous semicolon in the style
+* Fixed: Red-tinted image when enabling a blur Post Processing effect in Thermal Imaging 
+* Added: A property to [[getVideoOptions]] to detect Reshade, DXVK, and other rendering modifications
+* Tweaked: Adjustments to prone weapon deployment to prevent the player floating or sinking into the ground
+* Added: ''windDir'' / ''windSpeed'' animation sources for entities (behavior still being iterated)
+
+'''LAUNCHER'''
+* Fixed: Slow profile scanning on Proton
+Missed in prior logs:
+* Added: It is now possible to edit mods while the game is running, and to start multiple game instances
+* Removed: Option to start 32-bit version of the game (and related features, but binaries are still distributed for now)
+* Added: Option to launch Server / Profiling / Diagnostic executables
+* Added: Icon in the mod list to indicate mods that contain [[Extensions]]
+
+= 11-02-2026 =
+''EXE rev. 153537 (game)''<br />
+''EXE rev. 153540 (Launcher)''<br />
+''Size: ~270 MB''
+
+'''DATA'''
+* Fixed: The network map in Contact's "Carpe Noctem" was not loading from saves
+* Fixed: Typo in the SUV list of available textures (the grey texture should now be available in Eden Editor and Virtual Garage)
+* Tweaked: Dev / Prof / RC change logs were re-directed to [https://community.bistudio.com/wiki/Category:Arma_3:_Change_Logs Community Wiki]
+
+'''ENGINE'''
+* Tweaked: [[getShotInfo]] is expanded with shot owner and shot instigator return values
+* Added: Alternative syntax to the [[triggerAmmo]] script command with the ability to set trigger time and trigger distance - {{Link|https://feedback.bistudio.com/T184143|FT-T184143}}
+* Fixed: Units in combat were reporting smoke throws when chemlights were thrown
+* Tweaked: [[compatibleMagazines]] can now also take an ammo name - {{Link|https://feedback.bistudio.com/T196535|FT-T196535}}
+* Fixed: Possible crash in ''compatibleXXX'' script commands when an invalid class name is given
+* Fixed: Weather configuration would not be reloaded on terrain changes
+* Fixed: RPT Logging could get disabled when opening the mission loading dialog in Eden Editor - {{Link|https://feedback.bistudio.com/T196576|FT-T196576}}
+* Fixed: Player not being able to issue 'return to formation' commands while having a pending command
+* Fixed: [[createHashMapObject]] did not accept string in its "#type" parameter - {{Link|https://feedback.bistudio.com/T196636|FT-T196636}}
+* Fixed: Call on a [[HashMap]] object with an unscheduled "#flag" would loose callstack information - {{Link|https://feedback.bistudio.com/T196813|FT-T196813}}
+* Tweaked: RPT Mod / DLC lists are now left-aligned - {{Link|https://feedback.bistudio.com/T196884|FT-T196884}}
+* Fixed: UAVs could not be used by a respawned player - {{Link|https://feedback.bistudio.com/T196936|FT-T196936}}
+* Added: Support for suppression by hand grenades including Event Handler triggering
+* Added: 2 new config parameters for hand grenades: ''suppressionRadiusGrenadeClose'' (default 5) and ''dangerRadiusGrenadeClose'' (default 3)
+* Tweaked: AI units will now shout a warning if an enemy hand grenade is detected nearby before taking defensive actions - {{Link|https://feedback.bistudio.com/T180926|FT-T180926}}
+* Tweaked: A few changes to custom radio addition handling to prevent a possible crash
+* Tweaked: Added multiplayer compatible alternative syntax to [[UAVControl]]
+* Fixed: [[nearEntities]] ignored the area parameter when any type was requested - {{Link|https://feedback.bistudio.com/T197081|FT-T197081}}
+* Fixed: Passing a non-existent type to [[nearEntities]] was returning entities of any type instead of none - {{Link|https://feedback.bistudio.com/T197081|FT-T197081}}
+* Tweaked: Area and marker parameters for [[nearEntities]] were updated to match with [[inArea]] parameters - {{Link|https://feedback.bistudio.com/T197081|FT-T197081}}
+
+= 17-12-2025 =
+''EXE rev. 153496 (game)''<br />
+''EXE rev. 153496 (Launcher)''<br />
+''Size: ~81 MB''
+
+'''ENGINE'''
+* Fixed: Possible crash when loading an old campaign save
+* Fixed: Possible crash when using [[setVehicleAmmoDef]] script command
+* Fixed: [[attachTo]] with ''followBoneRotation'' would not apply hand IK and head mimic animations - {{Link|https://feedback.bistudio.com/T189084|FT-T189084}}
+* Fixed: ''bisign'' and ''bikey'' files would not be loaded on Linux
+* Changed: Remote controlled UAV pilots can now control lights and collision lights - {{Link|https://feedback.bistudio.com/T196161|FT-T196161}}
+* Added: Vehicle exhaust particle emitter positions can now be animated - {{Link|https://feedback.bistudio.com/T196146|FT-T196146}}
+* Fixed: [[CT_WEBBROWSER]] would not correctly handle input from non-ASCII keyboard layouts - {{Link|https://feedback.bistudio.com/T196167|FT-T196167}}
+* Added: [[compatibleWeapons]] script command
+* Tweaked: [[compatibleItems]] and [[compatibleMagazines]] now support case-insensitive entries for muzzles and weapon slots
+* Tweaked: [[canAdd]] is now also case-insensitive to muzzle and weapon slot entries
+* Fixed: Airplane engine state would flicker and spam Event Handler when using analogue throttle with a broken engine
+* Fixed: Unit reporting for thrown grenade ("Frag out!") was not triggering for hand grenades - {{Link|https://feedback.bistudio.com/T180926|FT-T180926}}
+* Added: ''"ScriptSpawned"'' mission Event Handler - {{Link|https://feedback.bistudio.com/T171265|FT-T171265}}
+* Added: Script handles can now be used in [[hashValue]], additionally [[diag_activeSQFScripts]] now also includes the hashed handle of running scripts
+* Added: [[pylonAction]] script command
+* Fixed: The pylon transformation's orientation in [[getAllPylonsInfo]] was reversed
+
+= 03-12-2025 =
+''EXE rev. 153454 (game)''<br />
+''EXE rev. 153454 (Launcher)''<br />
+''Size: ~108 MB''
+
+'''DATA'''
+* Fixed: LDF Sweater uniform was showing the wrong ground texture
+* Tweaked: Moved Chemical Detector, Decon Kit, Antidote Kit and LDF UAV controller models to Weapons_F, so they no longer trigger DLC branding
+* Tweaked: The walkable surface on USS Freedom ship - {{Link|https://feedback.bistudio.com/T124858|FT-T124858}}, {{Link|https://feedback.bistudio.com/T124759|FT-T124759}}, {{Link|https://feedback.bistudio.com/T124494|FT-T124494}}
+* Fixed: A hole in the fire geometry of the Ghost Hawk - {{Link|https://feedback.bistudio.com/T195756|FT-T195756}}
+* Fixed: Ghost Hawk wheels not rotating correctly when AFM is enabled
+* Added: [[BIS_fnc_channelNumToRadioChannelID]] and [[BIS_fnc_radioChannelIDToChannelNum]] functions
+* Fixed: [[BIS_fnc_kbTellLocal]] was not checking mission or campaign configs - {{Link|https://feedback.bistudio.com/T127729|FT-T127729}}
+* Tweaked: Radio item detection now includes checking for any item in the radio inventory slot - {{Link|https://feedback.bistudio.com/T127729|FT-T127729}}
+* Fixed: Karts DLC helmets were not properly marked as content from DLC in Arsenal
+* Changed: Debug text font (script error messages) to one that supports non-ASCII characters
+* Tweaked: PCML damage config so AI is able to engage tanks with this weapon (e.g. T-100)
+
+'''ENGINE'''
+* Tweaked: Further custom chat code refactoring and optimization to accommodate a large number of custom channels - {{Link|https://feedback.bistudio.com/T194246|FT-T194246}}, {{Link|https://feedback.bistudio.com/T159403|FT-T159403}}, {{Link|https://feedback.bistudio.com/T85311|FT-T85311}}
+* Added: 40 custom radio channels to the existing 10 - {{Link|https://feedback.bistudio.com/T194246|FT-T194246}}, {{Link|https://feedback.bistudio.com/T159403|FT-T159403}}, {{Link|https://feedback.bistudio.com/T85311|FT-T85311}}
+* Tweaked: Added alternate syntax to [[radioChannelInfo]] script command - {{Link|https://feedback.bistudio.com/T194246|FT-T194246}}, {{Link|https://feedback.bistudio.com/T159403|FT-T159403}}, {{Link|https://feedback.bistudio.com/T85311|FT-T85311}}
+* Fixed: Potential VoN indicator not displaying due to a clash with other speaking players
+* Added: SuperExt shader now uses emissive property alpha channel as a multiplier of the emissive texture - {{Link|https://feedback.bistudio.com/T196021|FT-T196021}}
+* Tweaked: Added loop option to [[playSound3D]] and [[playSoundUI]] - {{Link|https://feedback.bistudio.com/T195793|FT-T195793}}
+* Tweaked: [[soundParams]] extended to return looped status - {{Link|https://feedback.bistudio.com/T195793|FT-T195793}}
+* Tweaked: [[soundParams]] can now return all IDs of the currently playing sound - {{Link|https://feedback.bistudio.com/T195793|FT-T195793}}
+* Added: [[getEventHandlerInfo]] now also supports Eden Editor events
+* Added: Ability to set VoN callsign on custom radio channel - {{Link|https://feedback.bistudio.com/T175722|FT-T175722}}
+* Fixed: [[curatorEditableObjects]] could accumulate null objects without the ability to remove them
+* Fixed: Possible crash in [[selectionPosition]] command if the shape geometry is not loaded yet
+* Added: "StaminaDrainCoef" to [[setUnitTrait]] to influence stamina drain rate - {{Link|https://feedback.bistudio.com/T192934|FT-T192934}}
+* Added: ''aiAwareIsCautious'' config property for tanks (setting this to 0 will make them work like cars that do not consider aware mode) - {{Link|https://feedback.bistudio.com/T191476|FT-T191476}}
+* Added: ''collisionSoundOverride''/''collisionDamageCoef'' config properties for building types
+* Fixed: Crash when spawning an animal with [[create3DENEntity]]
+
+= 19-11-2025 =
+''EXE rev. 153422 (game)''<br />
+''EXE rev. 153423 (Launcher)''<br />
+''Size: ~84 MB''
+
+'''DATA'''
+* Fixed: Various data pipeline errors introduced in the previous version
+
+'''ENGINE'''
+* Fixed: Wrong default value text in [[radioChannelSetLabel]]
+* Fixed: [[setCurrentChannel]] was not selecting the last custom channel - {{Link|https://feedback.bistudio.com/T85311|FT-T85311}}
+* Added: Additional ten channels to Custom Radio - {{Link|https://feedback.bistudio.com/T194246|FT-T194246}}, {{Link|https://feedback.bistudio.com/T159403|FT-T159403}}, {{Link|https://feedback.bistudio.com/T85311|FT-T85311}}
+* Fixed: Config Viewer showed the wrong parents array
+* Changed: Missing model files are now replaced by a default placeholder model to prevent crashes when a model is missing
+* Added: Ability to use custom texture for arrows to [[drawIcon3D]] - {{Link|https://feedback.bistudio.com/T181489|FT-T181489}}
+* Fixed: ''@arrowText'' size had no effect - {{Link|https://feedback.bistudio.com/T181489|FT-T181489}}
+* Fixed: Passing an invalid channel to [[radioChannelInfo]] was returning an empty array - {{Link|https://feedback.bistudio.com/T194246|FT-T194246}}, {{Link|https://feedback.bistudio.com/T159403|FT-T159403}}, {{Link|https://feedback.bistudio.com/T85311|FT-T85311}}
+
+= 12-11-2025 =
+''EXE rev. 153405 (game)''<br />
+''EXE rev. 153405 (Launcher)''<br />
+''Size: ~96 MB''
+
+'''DATA'''
+* Fixed: SAM systems were emitting sound even after destruction - {{Link|https://feedback.bistudio.com/T130979|FT-T130979}}
+* Tweaked: [[BIS_fnc_returnParents]] is optimized for performance
+* Tweaked: [[BIS_fnc_returnChildren]] is optimized for performance - {{Link|https://feedback.bistudio.com/T83458|FT-T83458}}
+* Added: More [[addAction]] parameters for [[BIS_fnc_holdActionAdd]] - {{Link|https://feedback.bistudio.com/T179964|FT-T179964}}
+* Fixed: [[BIS_fnc_gridToPos]] was not working in Eden Editor
+* Fixed: [[format]] script error in Escape from Stratis scenario
+* Fixed: "Updating base class" warnings in base game data
+* Fixed: [[groupID]] was not broadcast in Group Callsign module - {{Link|https://feedback.bistudio.com/T117142|FT-T117142}}
+* Fixed: Default texture error on the flagpole (PortableFlagPole_01_F) - {{Link|https://feedback.bistudio.com/T195033|FT-T195033}}
+* Fixed: Ammo variant of HEMTT was missing chimney in first resolution LOD - {{Link|https://feedback.bistudio.com/T126715|FT-T126715}}
+* Fixed: Missing close X button in the loadout menu - {{Link|https://feedback.bistudio.com/T176681|FT-T176681}}
+
+'''ENGINE'''
+* Fixed: Temporary freeze and improved performance when opening Eden Editor "Load Mission" dialog
+* Added: "ts3server:" as allowed protocol for openable URLs (button/links) - {{Link|https://feedback.bistudio.com/T195169|FT-T195169}}
+* Added: Alternative syntax to the drawIcon3D script command with extended capabilities - {{Link|https://feedback.bistudio.com/T194108|FT-T194108}}, {{Link|https://feedback.bistudio.com/T169233|FT-T169233}}, {{Link|https://feedback.bistudio.com/T167397|FT-T167397}}
+* Added: Alternative syntax to the [[getTextureInfo]] script command to return texture screen width
+* Added: Option to set group icon offset for 3D drawing separately - {{Link|https://feedback.bistudio.com/T170299|FT-T170299}}
+* Tweaked: [[drawIcon3D]] was still added to the draw queue when the game was paused - {{Link|https://feedback.bistudio.com/T167397|FT-T167397}}
+* Added: Progress bar feature to the [[drawIcon3D]]
+* Tweaked: [[getTextWidth]] can now use current font and size by default
+* Fixed: Ampersand character in item description name was breaking tooltips in inventory - {{Link|https://feedback.bistudio.com/T195596|FT-T195596}}
+* Added: Engine support for custom marker color in Eden Editor (data WIP) - {{Link|https://feedback.bistudio.com/T186076|FT-T186076}}
+* Added: [[getLightInfo]] script command - {{Link|https://feedback.bistudio.com/T188531|FT-T188531}}
+* Fixed: [[compatibleMagazines]] would return duplicate magazines when given muzzle parameter - {{Link|https://feedback.bistudio.com/T195724|FT-T195724}}
+
+= 22-10-2025 =
+''EXE rev. 153361 (game)''<br />
+''EXE rev. 153361 (Launcher)''<br />
+''Size: ~82 MB''
+
+'''ENGINE'''
+* Fixed: "Ref to nonnetwork object" if a vehicle Init script tries to send any network message relating to the vehicle
+* Fixed: Rendering could get stuck for a few seconds when right-clicking the spectrum device in thermal vision
+* Fixed: [[setShotParents]] would not assign the ''Instigator'' if it's Owner was [[objNull]]
+* Fixed: Very long loading times for some mod-packs
+* Added: Optional parameter to [[setParticleCircle]] to ignore surfaces - {{Link|https://feedback.bistudio.com/T162981|FT-T162981}}
+* Fixed: Config array += did not support appending array values - {{Link|https://feedback.bistudio.com/T195196|FT-T195196}}
+* Changed: More detailed source information in "Updating base class" warnings
+* Fixed: "Updating base class" warnings would show the wrong config as "original" if the class had no members
+* Changed: Silenced "Updating base class" warnings if the base was a forward declaration (except if -debug is set because it still indicates a load order issue)
+* Added: Config class can now contain "delete" and definition of class with same name (to delete&recreate classes for intentional base class change)
+* Fixed: Crash caused by malformed script
+* Added: Alternative syntax to [[configHierarchy]] script command - {{Link|https://feedback.bistudio.com/T83667|FT-T83667}}
+* Added: Alternative syntax to [[configClasses]] script command - {{Link|https://feedback.bistudio.com/T83667|FT-T83667}}
+* Fixed: Structured text hint color would persist through mission restart and get applied on all hints
+* Added: Alternative syntax to [[needReload]] script command - {{Link|https://feedback.bistudio.com/T151761|FT-T151761}}
+* Fixed: Player or AI unit on passenger seat would report "No Fuel" radio message even though they don't know the fuel status from that seat
+* Fixed: Game failed to extract key out of ''bisign'' for EBO files if the ''bikey'' is missing from the keys folder (leading to signature check failures)
+* Added: ''-noWindowBorder'' command line parameter to start game in borderless window
+* Changed: The "Copy Version" hotkey now also works in camera sequences and multiplayer
+* Fixed: [[selectLeader]] could select a leader who is in a different group - this could lead to game crash, now the command does an implicit 'join' into the group
+* Fixed: Some [[Arma_3:_Event_Handlers#Group_Event_Handlers|Group Event Handlers]] could cause game crash if the Event Handler code would re-trigger the event
+* Added: [[disableAI]] command to block all AI leader commanding
+* Fixed: [[lockCameraTo]] with temporary flag could get stuck if the target is beyond turret limits
+* Added: Option for soft-set of turret limits to the [[setTurretLimits]] script command - {{Link|https://feedback.bistudio.com/T170696|FT-T170696}}
+
+= 08-10-2025 =
+''EXE rev. 153321 (game)''<br />
+''EXE rev. 153321 (Launcher)''<br />
+''Size: ~203 MB''
+
+'''DATA'''
+* Fixed: Empty VO sample in Showcase Fighter Jets
+* Fixed: Firing Drill steel plate targets would not react to hits properly after restarting a drill
+
+'''ENGINE'''
+* Reverted: The [[setDamage]] reviving change
+* Added: Command-line parameter ''-profileGameStart'', which will profile the game start and write results to a file ([[Arma_3:_Diagnostics_Exe|Diagnostics binary]] only)
+* Tweaked: Improved game startup speed with more multithreading
+* Fixed: [[HashMap]] ''compileFinal'' did not keep HashMapObject's ''NoCopy'' flag - https://feedback.bistudio.com/T194855
+* Fixed: [[HashMap]] non-existent values would get replaced by nil values when stored into [[profileNamespace]]
+* Fixed: [[setMarkerShadow]] did not sync in multiplayer - https://feedback.bistudio.com/T194883
+* Fixed: Game would not load mods from a read-only mod folder - https://feedback.bistudio.com/T121694
+* Changed: "Cannot find base class" config error is now a warning, and will try to load anyway without inheriting base class
+* Added: CfgPatches ''skipWhenAnyAddonPresent'' property - https://feedback.bistudio.com/T195122
+* Changed: Client now does not send files larger than a server's ''maxCustomFileSize'' limit (preventing server from kicking the client) - https://feedback.bistudio.com/T193138
+* Added: Automatic cleaning of the MPMissionsCache folder (if above 1GB, deleting the oldest files that are over 50MB, except for the 5 newest) - https://feedback.bistudio.com/T195101
+* Added: Scripted Post Processing effects are now visible in Thermal Imaging view
+* Fixed: Saving the game while on the map screen would show a gray background on the saving display
+* Added: [[Arma_3:_Server_Config_File|server.cfg]]/''AdvancedOptions''/''logPlayerConnectionStates'' to log player "connecting" progress
+
+= 24-09-2025 =
+''EXE rev. 153280 (game)''<br />
+''EXE rev. 153280 (Launcher)''<br />
+''Size: ~84 MB''
+
+'''DATA'''
+* Fixed: USS Freedom rotation causing disconnected parts (thanks ''Markoo'') - https://feedback.bistudio.com/T124858
+* Tweaked: Quadbike KIA crew now remains in KIA pose in the vehicle
+
+'''ENGINE'''
+* Changed: Increased number of RenderTarget's from 8 to 10
+* Tweaked: Improved game startup time if improperly created mods log many error messages
+* Fixed: Destroying streetlights (any House simulation object with attached lights) while simulation is disabled would leave behind floating light emitters
+* Fixed: Going back from slot selection in a multiplayer campaign would start the next mission instead of showing mission selection
+* Fixed: Mines with a wire trigger did not update their trigger location when teleported or moved - https://feedback.bistudio.com/T193669
+* Added: Server-side log warning when headless client slot has no assigned name which makes it unusable
+* Fixed: Several "Ref to nonnetwork object" occurences -  https://feedback.bistudio.com/T178229, https://feedback.bistudio.com/T171682
+* Fixed: [[setDamage]] 0 would not properly reset the 'alive' state of most Entities (this will get reverted in favor of a setDamage alias with opt-in behavior)
+
+= 17-09-2025 =
+''EXE rev. 153240 (game)''<br />
+''EXE rev. 153243 (Launcher)''<br />
+''Size: ~87 MB''
+
+'''DATA'''
+* Fixed: Spectrum Device scripts could switch the camera back to the player when using ADS and switching to it on a remote-controlled character (thanks ''Rook'')
+* Fixed: It was possible to get stuck in Showcase Laws of War's "Non-Combatants" simulation when respawning after clearing a room
+* Tweaked: Restored some darkness to Showcase Zeus as intended by its creator
+* Added: Syntax highlight template for the Notepad++ export to [[Arma_3:_Utilities#Script_Commands|script command utility]]
+
+'''ENGINE'''
+* Fixed: [[createSoundSource]] ignored speed of sound - https://feedback.bistudio.com/T177285
+* Fixed: [[throwables]] script command return was inconsistent
+* Tweaked: Added optional parameter to throwables to return empty magazines
+* Tweaked: [[throwables]] and [[currentThrowable]] format now includes ammo count
+* Added: Support for ''keepInInventory'' config parameter and throw muzzles
+* Added: [[removeWeaponItem]] script command
+* Fixed: Mismatch of shot dispersion in multiplayer - https://feedback.bistudio.com/T194410
+* Tweaked: Amphibious tank steering in water - https://feedback.bistudio.com/T170421
+* Fixed: [[Arma_3:_Event_Handlers#Take|"Take"]] Entity Event Handler did not fire when using the "Rearm" action - https://feedback.bistudio.com/T194245
+* Fixed: Creating a [[Waypoints|CYCLE waypoint]] sometimes crashed the game
+* Fixed: [[nearSupplies]] alternate syntax did not work - https://feedback.bistudio.com/T194780
+* Fixed: [[calculatePath]] did not work when the starting position was too far out of terrain bounds - https://feedback.bistudio.com/T193491
+* Fixed: Aircraft autopilot would reduce speed to the wrong value and change vectoring mode in VTOL when input focus is lost - https://feedback.bistudio.com/T192405
+* Fixed: Aircraft autopilot would not be able to catch an airplane on too steep a dive when input focus is lost - https://feedback.bistudio.com/T192405
+
+= 27-08-2025 =
+''EXE rev. 153171 (game)''<br />
+''EXE rev. 153171 (Launcher)''<br />
+''Size: ~87 MB''
+
+'''DATA'''
+* Added: New options in Audio Options UI for input device selection
+* Fixed: Script errors in "Anomalous Phenomena" - https://feedback.bistudio.com/T186146
+
+'''ENGINE'''
+* Added: "extension" [[Procedural_Textures|Texture source]]
+* Fixed: Empty subgroups would not be removed from groups and could trigger errors
+
+'''LAUNCHER'''
+* Fixed: Custom command line parameters in launcher could inadvertently be filled with undesired parameters
+
+= 13-08-2025 =
+''EXE rev. 153122 (game)''<br />
+''EXE rev. 153122 (Launcher)''<br />
+''Size: ~101 MB''
+
+'''DATA'''
+* Fixed: Collateral damage detection in "Altis Requiem" made fairer to player - https://feedback.bistudio.com/T170768
+* Fixed: Several script errors on starting "Old Man"
+* Fixed: Script error in CoF: Green when running around the CoF before starting proper - https://feedback.bistudio.com/T175788
+
+'''ENGINE'''
+* Tweaked: Optimization for loading of Car/Tank vehicles, which speeds up Eden Editor mission loading and reduces lag spikes when spawning vehicles
+* Changed: Replaced special internal allocator with main allocator, which works more efficiently with file cache and script values
+* Added: "VoNStateChanged" entity [[Arma_3:_Event_Handlers|Event Handler]] - https://feedback.bistudio.com/T193790
+* Fixed: Stereo audio in Proton (thanks ''Madbug'') 
+* Added: Interior sound controller for explosions - https://feedback.bistudio.com/T193903
+
+= 06-08-2025 =
+''EXE rev. 153122 (game)''<br />
+''EXE rev. 153122 (Launcher)''<br />
+''Size: ~2.9 GB''
+
+'''DATA'''
+* Tweaked: All addons were repacked using new pipelines (this is not expected to change anything for players, but please report any new errors like missing data)
+* Tweaked: View geometries of a couple of Livonia and Tanoa buildings - {{Link|https://feedback.bistudio.com/T146447|FT-T146447}}
+* Tweaked: Collision model of Livonia's Small Church - {{Link|https://feedback.bistudio.com/T149484|FT-T149484}}
+* Tweaked: Adjusted Fire Geometry on the Garage Office structure - {{Link|https://feedback.bistudio.com/T149647|FT-T149647}}
+* Fixed: Damaged Greenhouse door sound - {{Link|https://feedback.bistudio.com/T151290|FT-T151290}}
+* Added: Eden Editor attribute for radar dish rotation to Mobile Radar
+* Fixed: Physics layer geometry of Barracks (Large), which was not being updated correctly when doors were manipulated - {{Link|https://feedback.bistudio.com/T161544|FT-T161544}}
+* Fixed: Incorrect value for ''numberOfDoors'' in the ''Land_House_1B01_F'' config file - {{Link|https://feedback.bistudio.com/T163053|FT-T163053}}
+* Fixed: Incorrect value for ''numberOfDoors'' in ''Land_House_1W05_F'' and ''Land_House_1W10_F'' config files - {{Link|https://feedback.bistudio.com/T164644|FT-T164644}}
+* Fixed: Incorrect Church inheritance - {{Link|https://feedback.bistudio.com/T169972|FT-T169972}}
+* Tweaked: View geometry of a few more structures: ''House_1W03_F'', ''House_2W03_F'', ''House_2W04_F'', ''House_2W05_F'', ''IndustrialShed_01_F'' and ''u_House_Big_01_V1_F'' - {{Link|https://feedback.bistudio.com/T146447|FT-T146447}}
+* Fixed: Issue related to occluders on Livonia civilian houses - {{Link|https://feedback.bistudio.com/T156396|FT-T156396}}
+* Tweaked: Config values for music track durations
+* Fixed: "Beyond Hope - No Reprieve" Tac-Ops campaign mission script error when artillery support is not called on terrain
+* Tweaked: Supply position of AL-6 drone
+* Fixed: "Zeus" and "Firing From Vehicles"  Showcases were not marked as belonging to their corresponding DLC
+* Tweaked: Zeus DLC color was inconsistent in a few places (f.e. main menu icon hover)
+* Tweaked: Vehicle threat and cost values adjusted 
+
+'''ENGINE'''
+* Fixed: [[Arma_3:_Event_Handlers#Mission_Event_Handlers|Mission Event Handler]] arguments of type Object/Group/Script would become null after loading a savegame
+* Added: Alternate syntax for [[spawn]] without arguments
+* Added: [[Script_Handle#Promise_Handles|Script handle promises]]
+* Fixed: Depth of Field post-processing effect could not be applied multiple times - {{Link|https://feedback.bistudio.com/T163827|FT-T163827}}
+* Fixed: Executing [[allDiaryRecords]]/[[allDiarySubjects]] after a diary change would block the visual update
+* Fixed: Game freeze when holding down the PrintScreen key
+* Added: ''RVExtensionGGetR2TTexture''
+* Added: "LaserTargetChanged" entity Event Handler - {{Link|https://feedback.bistudio.com/T163593|FT-T163593}}
+* Added: [[objectParent]] now returns the owner of LaserTargets - {{Link|https://feedback.bistudio.com/T163593|FT-T163593}}
+* Fixed: CarHorn type weapons did not work for Tank type vehicles - {{Link|https://feedback.bistudio.com/T192002|FT-T192002}}
+* Changed: Updated to XAudio 2.9
+* Added: AnimationSource "pilotLight" - {{Link|https://feedback.bistudio.com/T193507|FT-T193507}}
+* Fixed: Dedicated Server would keep the [[Arma_3:_Server_Config_File|config file]] locked for editing while it was running
+* Added: "water" sound controller for CfgAmmo explosions - {{Link|https://feedback.bistudio.com/T154695|FT-T154695}}
+* Added: "damage" sound controller for transport vehicles - {{Link|https://feedback.bistudio.com/T130979|FT-T130979}}
+* Added: Live microphone playback while adjusting sensitivity in the audio options - {{Link|https://feedback.bistudio.com/T172191|FT-T172191}}
+* Changed: Dedicated Server no longer requires XAudio DLL files
+* Changed: Audio input is now using Windows Audio Session API (instead of Windows Multimedia)
+* Fixed: Audio input would get lost when switching the input device, and could not be recovered without a game restart (now automatically switches to a new device) - {{Link|https://feedback.bistudio.com/T172191|FT-T172191}}
+* Fixed: [[worldName]] would be lowercased after loading a save game - {{Link|https://feedback.bistudio.com/T193597|FT-T193597}}
+* Fixed: Entity config [[Arma_3:_Event_Handlers|Event Handlers]] for WeaponChanged/EpeContactStart/EpeContactEnd/EpeContact/LaserTargetChanged, did only trigger if there was also a scripted Event Handler of the same type - {{Link|https://feedback.bistudio.com/T193588|FT-T193588}}
+
+= 09-07-2025 =
+''EXE rev. 153050 (game)''<br />
+''EXE rev. 153050 (Launcher)''<br />
+''Size: ~69 MB''
+
+'''ENGINE'''
+* Added: Support for ''ARGB8888'' PAA textures
+* Added: ''-keysFolder='' command line parameter
+* Fixed: Helicopter will not land on a helipad that was placed on an object over sea surface - {{Link|https://feedback.bistudio.com/T193098|FT-T193098}}
+* Added: Ability to manipulate local wind - {{Link|https://feedback.bistudio.com/T192853|FT-T192853}}
+* Added: Script commands [[attachChild]], [[detachChild]], [[childAttached]], [[parentAttached]], [[setJointDrivePosition]], [[setJointDriveOrientation]], [[setJointDriveLinearVelocity]], [[setJointDriveAngularVelocity]]
+* Fixed: [[Arma_3:_Steam_Game_Recording|Steam Game Recording]] overrides in [[description.ext]] would not apply if the event was triggered before the mission was loaded
+
+= 02-07-2025 =
+''EXE rev. 153017 (game)''<br />
+''EXE rev. 153014 (Launcher)''<br />
+''Size: ~104 MB''
+
+'''DATA'''
+* Fixed: Recurring flashlight script error in the "Old Man" scenario
+* Tweaked: Position of pylon proxies on UH-80 Ghost Hawk
+* Tweaked: UH-80 Ghost Hawk & AH-99 Blackfoot with stub wings are now using ejector pylons for ASRAAM missiles
+* Tweaked: Slightly moved position of pylon proxies on UH-80 Ghost Hawk with stub wings
+* Added: Missing mirroring launch option on pylons for AH-99 Blackfoot with stub wings
+* Fixed: Loadout preset on UH-80 Ghost Hawk with stub wings using incorrect variant of rockets
+* Fixed: Color of flare effect on both signal and illumination flares
+* Added: Rail for 1x Scalpel which looks better than the previous ejector
+* Added: [[DIK_KeyCodes|DIK scan code]] defines for F16-F24 keys
+* Tweaked: Restored DAGR missile on AH-99 in its default loadout - {{Link|https://feedback.bistudio.com/T192700|FT-T192700}}
+* Fixed: Penetration materials on the MH-80 fuel pod (thanks ''Trager'')
+* Fixed: AH-99 without pylons had still pylon collision with characters - {{Link|https://feedback.bistudio.com/T192733|FT-T192733}}
+* Fixed: Collision of characters with the external fuel pod
+* Fixed: Missing collision of character with DAR/DAGR pods
+* Fixed: Flare effect on both signal and illumination flares have proper colors now
+
+'''ENGINE'''
+* Fixed: Extreme slowdown (may look like a freeze) when the game has fewer CPU cores than it thinks it should have
+* Tweaked: Improved performance of engine closing files that could have caused lag spikes in some cases (thanks thegamecracks)
+* Added: Multithreaded loading of BISIGNs
+* Fixed: PP Fisheye/DepthOfField did not work in ''CfgOpticsEffect'' - {{Link|https://feedback.bistudio.com/T163827|FT-T163827}}
+* Changed: Fisheye PP effect with reduced area now no longer squishes the image - {{Link|https://feedback.bistudio.com/T163827|FT-T163827}}
+* Added: ''-cpuAffinity'' command line parameter
+* Fixed: Config parsing errors would be reported with the wrong line number if the file had empty lines at the start
+* Added: ''-cpuMainThreadAffinity'' command line parameter
+* Added: [[getServerInfo]] command now forwards the "PublicSettings" class from [[Arma_3:_Server_Config_File|server.cfg]]
+* Added: ''OnMissionInit''/''OnMarkerCreated''/''OnHandleChatMessage'' server-side events
+* Added: [[spawn]] [[Arma_3:_Server_Side_Scripting#Shared_Commands|server-side script]] command
+* Fixed: ''mfdMaxUserValues'' config entry was loaded too late (after MFDs were already initialized with a maximum of 50)
+* Added: Option to ''disableChannels'' [[Mission_Parameters|Mission]] and [[Arma_3:_Server_Config_File#Server_Options|Server]] parameter to disable map drawing and map marker placement from UI per chat channel
+* Fixed: [[fullCrew]] was returning empty driver position for the static weapon
+* Fixed: Difficulty option checkboxes were not saving correctly - {{Link|https://feedback.bistudio.com/T192324|FT-T192324}}
+* Fixed: [[remoteExec]] failing when used with #mission restart command - {{Link|https://feedback.bistudio.com/T190364|FT-T190364}}
+* Fixed: ''stringtable.bin'' would not fall back to "Original" > "English" > first language if the desired language is not included in the stringtable (thanks ''thegamecracks'')
+* Tweaked: [[nearEntities]] is now using an updated format for area definition, in line with the [[inArea]] format (thanks ''thegamecracks'')
+* Fixed: Possible crash when AI is repairing a vehicle (thanks ''Emperor'')
+* Fixed: High CPU load and possible freeze at game start after switching mods
+* Fixed: Post processing effects ''Sharpness'', ''Resolution'', ''DepthOfField'' and ''Fisheye'' would get lost when changing video settings - {{Link|https://feedback.bistudio.com/T163827|FT-T163827}}
+* Fixed: Helicopters would not land on a helipad placed on an object (thanks ''Ansible2'')
+* Tweaked: MFD radar target filtering is now multithreaded
+* Added: Enfusion crash reporter integration
+* Fixed: AI would stop engaging the enemy after it is released from remote control - {{Link|https://feedback.bistudio.com/T179189|FT-T179189}}
+* Added: Extension "RVFeature_ArgumentNoEscapeString" feature flag for more efficient string passing - {{Link|https://feedback.bistudio.com/T184219|FT-T184219}}
+* Fixed: Network weapons desync when using [[setUnitLoadout]] - {{Link|https://feedback.bistudio.com/T167015|FT-T167015}}
+
+'''LAUNCHER'''
+* Added: Launcher will now offer CDLC compatibility data mod when trying to join a CDLC server and not owning the CDLC - {{Link|https://feedback.bistudio.com/T186037|FT-T186037}}
+
+{{GameCategory|arma3|Dev-Branch Change Logs}}

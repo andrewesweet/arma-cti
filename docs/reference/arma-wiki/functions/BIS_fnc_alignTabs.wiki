@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_alignTabs
+// revision: 328461 (2022-07-13T16:11:04Z)
+// export sha1: eqwesndp8nvrlkj3vxrsiuil0g3ojzx
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strings | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strings
+
+|descr= Align two columns divided by tabs. A tab counts for 8 characters.
+
+|s1= array call [[BIS_fnc_alignTabs]]
+
+|p1= array: [[Array]] - in format
+<sqf>[
+	["left column 1", "right column 1"],
+	["left column 2", "right column 2"],
+	// ...
+]</sqf>
+
+|r1= [[String]]
+
+|x1= <sqf>[
+	["Player:", str player],
+	["Name:", name player],
+	["Type:", typeOf player],
+	["Location:", str getPosATL player],
+	["Direction:", str getDir player]
+] call BIS_fnc_alignTabs;</sqf>
+
+|seealso=
+}}

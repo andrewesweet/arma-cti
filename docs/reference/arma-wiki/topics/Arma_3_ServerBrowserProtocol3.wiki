@@ -1,0 +1,86 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_ServerBrowserProtocol3
+// revision: 377220 (2026-01-02T02:17:59Z)
+// export sha1: og4co3tg03p9ma6pmptz9frcshpiicu
+// categories: Category:Arma 3: Multiplayer
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Arma 3: STEAMWORKSquery|STEAMWORKSquery]] Server Browser Protocol
+
+[[File:WMSBPv3 02.png]]
+
+=== DLC Flags ===
+
+Bytes 4 and 5 are used for flags:
+
+{| class="wikitable"
+! DLC
+! Flag
+|-
+| {{Link|{{Name|arma3karts|category}}}}
+| 0x0001
+|-
+| {{Link|{{Name|arma3marksmen|category}}}}
+| 0x0002
+|-
+| {{Link|{{Name|arma3helicopters|category}}}}
+| 0x0004
+|-
+| {{Link|{{Name|arma3zeus|category}}}}
+| 0x0008
+|-
+| {{Link|{{Name|arma3apex|category}}}}
+| 0x0010
+|-
+| {{Link|{{Name|arma3jets|category}}}}
+| 0x0020
+|-
+| {{Link|{{Name|arma3lawsofwar|category}}}}
+| 0x0040
+|-
+| ''{{Name|argo}}''
+| ''0x0080''
+|-
+| {{Link|{{Name|arma3tacops|category}}}}
+| 0x0100
+|-
+| {{Link|{{Name|arma3tanks|category}}}}
+| 0x0200
+|-
+| {{Link|{{Name|arma3contact|category}}}}
+| 0x0400
+|-
+| Enoch
+| 0x0800
+|}
+
+=== Data Types ===
+
+{| class="wikitable"
+! Field
+! Format
+|-
+| Version
+| int
+|-
+| Difficulty
+| short
+|-
+| AI Level
+| short
+|-
+| Mods count
+| unsigned char
+|-
+| Mods Steam ID length
+| unsigned char
+|-
+| Mods Steam ID
+| unsigned long
+|-
+| Name length
+| unsigned char
+|}
+
+
+<!-- {{GameCategory|argo|Multiplayer}} -->
+{{GameCategory|arma3|Multiplayer}}

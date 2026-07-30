@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_showMarkerArray
+// revision: 327997 (2022-07-13T15:43:02Z)
+// export sha1: fuvjjzcpijj7dukwxzzsexxd468fs5h
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Map and Markers
+
+|arg= global
+
+|eff= global
+
+|descr= Unhide the markers sequentially.
+
+|s1= [marker, duration, hideAfter] spawn [[BIS_fnc_showMarkerArray]]
+
+|p1= marker: [[Array]] - [[Array]] of [[String]]s markers
+
+|p2= duration: [[Number]] - (Optional, default 1) duration
+
+|p3= hideAfter: [[Boolean]] - (Optional, default [[true]]) [[true]] to keep markers displayed, [[false]] to hide them again afterward
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[["marker_1","marker_2","marker_n"], 3, false] spawn BIS_fnc_showMarkers;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_blinkMarker]] [[BIS_fnc_colorMarker]] [[BIS_fnc_moveMarker]] [[BIS_fnc_showMarker]]
+}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/remove3DENConnection
+// revision: 348517 (2023-11-08T13:06:00Z)
+// export sha1: h710he22pxrg5fryldaf0emwwlp74uu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Removes [[Eden Editor: Connecting|connection]] between entities.
+
+|s1= [[remove3DENConnection]] [type, from, to]
+
+|p1= type: [[String]] - connection class from ''Cfg3DEN >> Connections''
+
+|p2= from: [[Array]] of [[Eden Entity|Eden Entities]] - entities which has a connection
+
+|p3= to: [[Eden Entity]] - connection target
+
+|r1= [[Boolean]] - [[true]] If the connection was removed
+
+|x1= <sqf>remove3DENConnection ["RandomStart", get3DENSelected "Object", "marker_0"];// Remove random start on marker "marker_0" from all selected objects.</sqf>
+
+|seealso= [[add3DENConnection]] [[get3DENConnections]]
+}}

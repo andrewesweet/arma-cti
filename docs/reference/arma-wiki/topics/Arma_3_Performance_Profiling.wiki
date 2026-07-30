@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Performance_Profiling
+// revision: 369994 (2024-10-25T16:22:22Z)
+// export sha1: 2nka1pvoct3v9qxl2lm5gp3s82tt1er
+// categories: Category:Arma 3: Editing | Category:WIP
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|WIP|⧼WIP reason⧽}}
+
+[[Category: Arma 3: Editing]]

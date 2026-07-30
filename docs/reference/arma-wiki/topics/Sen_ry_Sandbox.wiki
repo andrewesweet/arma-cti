@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Sen†ry_²°°³/Sandbox
+// revision: 110550 (2018-11-16T16:28:08Z)
+// export sha1: dh9im7r0mtxvjuf1m78gj7wrt6bg5qq
+// categories: Category:Sandbox
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Sandbox]]

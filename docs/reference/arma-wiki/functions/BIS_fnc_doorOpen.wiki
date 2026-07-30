@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_doorOpen
+// revision: 364482 (2024-05-16T20:41:57Z)
+// export sha1: 4olvzfd74rmqiukaqo1vpauesewwxnz
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Scripts | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Scripts
+
+|arg= global
+
+|eff= global
+
+|descr= Open a door with an animated doorhandle.
+
+{{Feature|informative|This function uses [[animate]] internally.}}
+
+|s1= [building, doorAnimation, upDownAnimation, downUpAnimation, animationPhase] call [[BIS_fnc_doorOpen]]
+
+|p1= building: [[Object]] - (Optional, default [[objNull]])
+
+|p2= doorAnimation: [[String]] - (Optional, default "")
+
+|p3= upDownAnimation: [[String]] - (Optional, default "")
+
+|p4= downUpAnimation: [[String]] - (Optional, default "")
+
+|p5= animationPhase: [[Number]] - (Optional, default 1)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_house, "door_1_rot", nil, nil, 0.25]  call BIS_fnc_doorOpen;</sqf>
+
+|seealso= [[BIS_fnc_doorClose]] [[BIS_fnc_door]] [[animate]] [[animateSource]] [[animateDoor]]
+}}

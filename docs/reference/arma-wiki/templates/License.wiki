@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/Template:License
+// revision: 338077 (2023-02-23T23:11:59Z)
+// export sha1: t6q0uh5wqh8b3ph7fwnptb398sef5pm
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Messagebox
+| I, the copyright holder of this work,''' hereby publish{{#if: {{{author|}}}|es|}} it under the following license:
+
+{{#switch:{{lc:{{{1|}}}}}
+
+| apl
+| adpl
+| dpl
+| topl=
+{{{!}}
+{{!}} style{{=}}"text-align: center" {{!}} [[Image:CC some rights reserved.png|90px]]
+{{!}} ''This work is licensed under the {{Name|bi}}'s '''[https://www.bohemia.net/community/licenses/ {{uc:{{{1}}}}}{{#if:{{{2|}}}|-{{uc:{{{2}}}}}}}]''' License.''
+{{!}}}
+
+|
+| cc-by-sa=
+{{{!}}
+{{!}} style{{=}}"text-align: center" {{!}} [[Image:CC some rights reserved.png|90px]]<br>[[Image:Cc-by new white.png|24px]][[Image:Cc-sa white.png|24px]]
+{{!}} ''This work is licensed under the {{Link|https://en.wikipedia.org/wiki/Creative_Commons}} [http://creativecommons.org/licenses/by-sa/{{{2|3}}}.0/ Attribution-ShareAlike '''{{{2|3}}}.0'''] License.''
+{{!}}}
+{{TemplateCase||[[Category:Creative Commons Attribution-ShareAlike {{{2|3}}}.0 images|{{uc:{{PAGENAME}}}}]]}}
+
+}} | &copy; | #BBB}}
+
+{{TemplateCase||
+[[Category:All free media|{{uc:{{PAGENAME}}}}]]
+[[Category:Self-published work|{{uc:{{PAGENAME}}}}]]}}</includeonly><noinclude>{{Doc/Template
+|descr=
+|param1= name
+|descr1= (Optional, default {{hl|cc-by-sa-3.0}}) one of:
+:{{{!}}class{{=}}"wikitable"
+! apl
+{{!}} [https://www.bohemia.net/community/licenses/ '''A'''rma '''P'''ublic '''L'''icense]
+{{!}}-
+! adpl
+{{!}} [https://www.bohemia.net/community/licenses/ '''A'''rma/'''D'''ayZ '''P'''ublic '''L'''icense]
+{{!}}-
+! dpl
+{{!}} [https://www.bohemia.net/community/licenses/ '''D'''ayZ '''P'''ublic '''L'''icense]
+{{!}}-
+! topl
+{{!}} [https://www.bohemia.net/community/licenses/ '''T'''ake '''O'''n '''P'''ublic '''L'''icense]
+{{!}}-
+! cc-by-sa
+{{!}} {{Link|https://en.wikipedia.org/wiki/Creative_Commons}} license
+{{!}}}
+|param2= version
+|descr2= (Optional, default {{hl|3}} for cc-by-sa, nothing for {{hl|apl}}, {{hl|adpl}}, {{hl|dpl}} and {{hl|topl}})
+|example1= <nowiki>{{License}}</nowiki>
+|result1= {{License}}
+|example2= <nowiki>{{License|apl}}</nowiki>
+|result2= {{License|apl}}
+|example3= <nowiki>{{License|apl|sa}}</nowiki>
+|result3= {{License|apl|sa}}
+|example4= <nowiki>{{License|cc-by-sa|1}}</nowiki>
+|result4= {{License|cc-by-sa|1}}
+|example5= <nowiki>{{License|cc-by-sa|2}}</nowiki>
+|result5= {{License|cc-by-sa|2}}
+|example6= <nowiki>{{License|cc-by-sa|3}}</nowiki>
+|result6= {{License|cc-by-sa|3}}
+|example7= <nowiki>{{License|cc-by-sa|4}}</nowiki>
+|result7= {{License|cc-by-sa|4}}
+}}</noinclude>

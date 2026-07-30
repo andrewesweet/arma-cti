@@ -1,0 +1,450 @@
+// source: https://community.bistudio.com/wiki/6thSense.eu/EG
+// revision: 351471 (2023-12-06T09:58:12Z)
+// export sha1: 34cma90fy5jo1osq9f2gqkic6tcvlqk
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Sponsored by [[6thSense.eu]]
+
+A view on (Multiplayer) Scripting, by [[User:Sickboy|Sickboy]]
+
+= General =
+
+== Player Object(s) ==
+
+* Player is a null object on a dedicated server
+* Player is a null object in SinglePlayer intro's and outro's
+* You can '''not''' verify if an object is a null object by testing: object == objNull because objNull doesn't equal anything, not even itself, you must use: isNull object
+* To test if a certain object is  '''the ''' player (on this machine), use: object == player
+* To test if a certain object is  '''a ''' player (on any machine), use: isPlayer object
+* player is a variable, just like any other variable. A variable can contain different values. In this case the variable "player" contains an Object.<br>The value of the variable "player" is:<br>Server: a null object<br>Clients: the object (vehicle) that represents the player on this computer<br>If there are 3 player slots in game,<br>player1 I name: p1<br>player2 I name: p2<br>player3 I name: p3<br><br>then on p3's computer:<br>player == p3<br>you can access the other players through the variables: p1 and p2<br><br>on p2's computer:<br>player == p2<br>and you can access the other players through the variables: p1 and p3<br>etc. etc.
+* To get a count of all connected players, you can use the [[playersNumber]] function
+
+== Order of Initialization ==
+
+* Units
+** Units initialize in order of the mission.sqm. So it depends on which unit comes first in the mission.sqm, you can open it with a text editor to review
+* Scripts
+** Server & Players (NOT JIP)
+*** While moving to Briefing
+**** Unit Init EH runs
+**** Unit Init line from editor runs
+**** After all units are initialized, init.sqf runs
+*** After Briefing
+*** if [[onPlayerConnected]] was setup in e.g. init.sqf, it will now process all the players connected in order of connected
+**** [[onPlayerConnected]] will process new players after they are connected to their player body. So JIP player connects, world initializes, he gets control of his character, now the onPlayerConnected fires on the server.
+** JIP Players
+*** Same as above, but there's no Briefing this time. init.sqf seems to run after the player gets control of his character
+** Init.sqf
+*** The init.sqf runs at the Briefing of the mission, as soon as the machine is ready to move into the Briefing. Or as JIP player after the initialization. So server/clients will not run them at the same time most of the time.
+*** You can halt the processing of init.sqf during Briefing by adding a [[sleep]] or [[waitUntil]] (some condition, e.g: time > 0). This will wait until at least after the Briefing.
+*** To my knowledge, there is no way to halt the game at the briefing until all (spawned) init scripts have run and are finished
+**** You could however use a [[titleCut]] to blackIn and blackOut while your scripts are finishing initialization
+**** Missions could use [[startLoadingScreen]] and [[endLoadingScreen]]
+**** Code *called* from init eventhandlers (config or mission editor init fields) will finish before initialization
+
+== Join in Progress ==
+
+The Basics:
+
+* A JIP Player is a player that joins while the mission is already in progress (Join In Progress)
+* What is synchronized at JIP
+** weather
+** time passed since mission start
+** all variables (+values) which were publicVariable'd before (done by [[publicVariable]] or [[setVariable]] with global parameter set to [[true]])
+** vehicleInits (set by [[setVehicleInit]])
+** the current gamestate (alive/death, position, status etc)
+* What is not synchronized at JIP
+** Markers (The markers themselves and their updated properties, e.g positions (if any))
+*** you can use the [[onPlayerConnected]] function to setMarkerPos the markers you wish to have updated to JIP players, this way when the player joins, the markers and their properties are transferred to the player
+** time or weather that was artificially changed; by [[skipTime]], [[setDate]], [[setOvercast]] and [[setFog]]
+** if the value was changed of a variable which was publicVariabled earlier on, the earlier value is synchronized, not the current
+* To only run something on dedicated server or serverClient: isServer
+* To only run something on clients, and never on dedicated server or serverClient: !isServer
+* To only run something on clients or server Clients: !(isNull player)
+
+== Locality ==
+
+* Players are local to their own machine
+* AI are local to the server, unless they are part of a team lead by a player, in that case, that AI is local to the player teamleader machine.
+* Empty Vehicles are local to the server
+* Controlled Vehicles are local to the machine of the driver (incase of AI, this is by default the server, incase of player, this is the player's machine. Again, if the AI is part of a group lead by a player, the vehicle will be local to the player teamleader machine)
+* The locality of functions is documented in the biki
+* Functions like: [[lock]], [[hint]], [[say]], [[sideChat]], [[globalChat]], [[groupChat]] etc. etc. are executed locally. So if you want to execute them on every computer, you will have to make sure that the script runs on every computer
+* [[setVehicleArmor]], [[setFuel]], [[setDammage]], [[setVectorDir]], etc. etc. effects are global (but usually only work when executed on the machine where the vehicle is local), so basicly you can run the script that uses these functions on every machine, but only execute the function there where the vehicle is local, e.g: if (local _veh) then { _veh setDammage 0.5 };  You could use [[setVehicleInit]] and [[processInitCommands]]  or [[publicVariable]] and [[addPublicVariableEventHandler]] as solution to achieve the wanted effect
+* Triggers created in editor exist on all machines (a trigger is created per machine, local to it), and they run on all machines (conditions checked, onActivation/onDeActivation executed when condition is true etc)
+** Because the trigger is created on each machine, changing the trigger properties (statements, onActivation, etc. etc) has only local effects.
+*** Unconfirmed: Is the effect of moving or deleting triggers global or local. One would believe local.
+* Triggers created in scripts are local and only exist/run on the machine where they got created.
+* Most eventHandlers are local. This means that the eventHandler only executes on the machine where the unit who triggered the eventHandler, is local. Some events are global, like getIn, getOut, Fired and Init. A complete list you can find here: [[:Category:Event Handlers|EventHandlers list]]
+
+== SQF vs SQS ==
+
+* [[SQF Syntax|SQF]] allows for precompiling by using [[compile]] and f.i [[preprocessFile]] (or [[loadFile]]). This means that the code is only compiled once, and saved into memory, only to [[call]] or [[spawn]] later on
+* [[SQF Syntax|SQF]] can be used to create [[Function|functions]], functions are like [[Script File|scripts]] but can be used for f.i: repeating code, make calculations and return the value, etc.
+** This can save load and end in better performance, especially in situations where the same scripts and functions are ran over and over and over
+* [[SQF Syntax|SQF]] allows for a nicer looking code that gives a better overview, as opposed to [[SQS Syntax|SQS]]'s one lined syntax
+* [[SQF Syntax|SQF]] seems to generally perform better than sqs
+* [[SQF Syntax|SQF]] seems more sensitive for intense operations; You must manually control the load on the system by using [[sleep]], [[waitUntil]], or a waitUntil loop (which only cycles once each frame)
+
+== Best Practices ==
+
+* IMHO best practice would be to keep as much as possible server sided, because this should result in the least complex scripting and least amount of data sending/receiving. Only interface elements should reside on Clients, or functionality that only interacts with the player himself or his machine.
+* Every variable that you 'publicVariabled' will be sent to JIP players. The value of these variables equal the value of the variable as it was at the moment it was last 'publicVariabled'.
+* Every vehicleInit that has been set (object setVehicleInit "blablalba"; processInitCommands), is synchronized to JIP Players
+* There is no general rule of thumb available for Join in Progress compatible scripting etc, at least not to my knowledge. Basicly it all depends on what you are making, what the functionality is, and how this relates to Multiplayer. Basicly you have to keep all the above in mind while developing for Join in Progress compatible projects.
+
+= Scripting Tips =
+
+== General ==
+
+* Scripts that need to be repeatedly called or spawned, should be preProcessed and compiled into a globalVariable (can be array). This will only read, process and compile the script once. (See Below Example "Precompiling")
+** You can also write functions/scripts directly into globalvariables (See same example)
+* Use [[call]] as opposed to [[spawn]] where-ever you can. Spawn would create a separate thread to run the code in, while call will execute the code in the same thread
+** It's generally a good rule of thumb to use spawn for scripts with loops, and call for functions / scripts without loops
+* [[waitUntil]] checks it is condition every frame. You can use it also to create a loop, like while or for, which automatically only runs once per frame
+** waitUntil { player setPos [0, 0, 0]; false }; // This would set the player every frame, back to position [0, 0, 0]
+* You can exit loops with [[exitWith]] (See Below Example "Exiting loops with exitWith")
+* [[sleep]] and [[waitUntil]] (SQS equilevants: ~  and  @)
+** You can not use [[sleep]] / ~  '''directly''' (or in a [[call]]) inside
+*** EventHandlers
+*** Initfields of objects in missions
+*** onActivation and onDeactivation fields of triggers
+** If you [[exec]], [[execVM]] or [[spawn]] a script (instance) in any of the above mentioned, it is no problem to use [[sleep]]
+** If you use [[sleep]] in any script that runs at mission initialization (init.sqf, initfields etc), the script will halt at the [[sleep]] until after the mission is started (after briefing has passed). Only then will it continue
+** You can use [[waitUntil]] which runs every frame and continues when-ever it is condition becomes true
+* Use publicVariableEventHandlers ([[addPublicVariableEventHandler]]), instead of [[setVehicleInit]], or a lot of publicVariables and waitUntil's etc (See Below Example: "PublicVariableEventHandler Demo")
+
+== Addons ==
+
+Incase you have the luxery to work with addons and thus configs, it is always good to look for things that may vary per machine that uses your addon. 
+
+For instance, you have an addon that supplies features for cars. You could now create arrays of all cars, e.g:
+
+ _vehicle in ["UAZ", "HMMWV", "HHMWV_M2"]
+
+However, this would make your script fail on uaz/hmmwv/hmmwv_m2 versions of other mods, like T_UAZ, or even a new vehicle: T_HMMWV_NUKE
+Instead of creating static arrays, you could use for instance: _vehicle [[isKindOf]] "Car". This way, all vehicles inherited from "Car" will be available.
+A more prefered option would be to give properties to ArmA classes (read by [[getNumber]], [[getArray]], [[getText]]), See Below Example "Config Properties". 
+You can also do a lot with the config properties already available in ArmA. Unrapify the ArmA configs and see for yourself. (weapons[], magazines[], side, etc etc)
+
+
+= Interesting functions =
+
+== Logging ==
+
+=== ArmA ===
+
+You can use these two commands to log messages to arma.rpt:
+
+* [[localize]]
+
+ localize "my Debug String";
+
+Logs in arma.rpt: 
+
+ String my Debug String Not Found
+
+* [[createVehicleLocal]]
+
+ "my Debug String" createVehicleLocal [0, 0, 0];
+
+Logs in arma.rpt: 
+
+ Cannot create non-ai vehicle: my Debug String
+
+=== Arma 2 ===
+
+* [[diag_log]]
+* [[copyToClipboard]]
+* [[copyFromClipboard]]
+
+== MultiPlayer ==
+
+* [[publicVariable]] and [[addPublicVariableEventHandler]]
+* [[setVariable]] and [[getVariable]]
+* [[setVehicleInit]] and [[processInitCommands]] and  [[clearVehicleInit]]
+* [[isPlayer]]
+* [[local]]
+
+Server side only:
+* [[onPlayerConnected]]
+* [[onPlayerDisconnected]]
+
+Note:
+These two commands only use last definition. If the command is executed/defined twice, the latter will be 'active' and the former definition will be ignored.
+
+= TeamSwitch =
+
+'''Speculations and Basic findings!''' Must be updated with the facts along the way...
+
+TeamSwitch in Multiplayer seems to be problematic when trying to switch to units that are not local to your machine.
+So if you are teamleader, the AI in your squad can be used for teamSwitching, but not the AI in another player's squad, or the AI on the server
+
+
+= Examples =
+
+== Precompiling ==
+
+* init.sqf:
+
+<pre>
+// we compile and preprocess this script because we wish to call or spawn it repeatedly
+T_someScript = compile preProcessFileLineNumbers "someScript.sqf";
+execVM "myLoop.sqf"; // we can use execVM because this script is only ran once, and not repeatedly.
+</pre>
+
+* someScript.sqf:
+
+<pre>
+player globalChat "Test321";
+</pre>
+
+* myLoop.sqf:
+
+<pre>
+while {true} do
+{
+	call T_someScript; // using call and not spawn, because in this case there is no need to spawn
+	sleep 1;
+};
+</pre>
+
+* alternative init.sqf: (in this example you don't require someScript.sqf)
+
+<pre>
+T_someScript =
+{
+	player globalChat "Test321";
+};
+execVM "myLoop.sqf"; // we can use execVM because this script is only ran once, and not repeatedly.
+</pre>
+
+== Exiting loops with exitWith ==
+
+<pre>
+	while { true } do
+	{
+		player setPos [0, 0, 0];
+		sleep 1;
+		if (time > 10) exitWith {}; // this will exit the while loop
+	};
+	// same behaviour, different code:
+	while { time =< 10 } do
+	{
+		player setPos [0, 0, 0];
+		sleep 1;
+	};
+</pre>
+
+== List all (alive)player-objects in the mission ==
+
+'''Arma''' method
+
+Get's updated every 5 seconds
+
+*Script.sqf:
+
+<pre>
+/*
+	Script by Sickboy (sb _at_ 6thSense.eu)
+	Version: v0.1
+*/
+T_players = [];
+T_trig = createTrigger ["EmptyDetector",getArray(configFile/"CfgWorlds"/worldName/"centerPosition")];
+T_trig setTriggerType "NONE";
+T_trig setTriggerActivation ["ANY", "PRESENT", true];
+T_trig setTriggerArea [30000, 30000, 0, false ];
+T_trig setTriggerStatements ["this", "", ""];
+private ["_ar", "_v"];
+while {true} do
+{
+	_ar = [];
+	{
+		_v = vehicle _x;
+		if (_v isKindOf "Man") then
+		{
+			if (isPlayer _v) then { _ar = _ar + [_v] };
+		} else {
+			if (_v isKindOf "AllVehicles") then
+			{
+				{ if (isPlayer _x) then { _ar = _ar + [_x] } } forEach (crew _v);
+			};
+		};
+	} forEach (list T_trig);
+	T_players = [] + _ar;
+	sleep 5;
+};
+</pre>
+
+T_Players (array) will contain the current player objects. The list is automaticly cleared of dead players or players who left.
+
+If you execute this on every machine:
+
+<pre>
+{
+ _x globalChat ("Really, My name is: " + name _x)
+} forEach T_Players;
+</pre>
+
+Then on every machine it will apear as if all players wrote "Really, My name is: (name)" in globalChat.
+
+Since '''Arma 2''' there is a faster way to do, since [[playableUnits]] and [[allUnits]] commands are available.
+
+<pre>
+/*
+	Arma 2 version
+	added by Lou Montana for Sickboy :-p
+*/
+while { true } do
+{
+	T_Players = [];
+	{
+		if (isPlayer _x && (alive _x) ) then { T_Players = T_Players + [_x] };
+	} forEach playableUnits;
+	sleep 5;
+};
+</pre>
+
+Since '''Arma 3''', you can simply use [[allPlayers]] command to return list of human players, including dead players,and headless clients.
+
+== Determining if machine is Ingame Server, Ded Server, Player or JIP Player ==
+'''Arma''' method
+* script.sqf (e.g init.sqf)
+
+<pre>
+/*
+	Script by Sickboy (sb _at_ 6thSense.eu)
+	Version: v0.1
+*/
+T_INIT = false;
+T_Server = false; T_Client = false; T_JIP = false;
+
+if (playersNumber east + playersNumber west + playersNumber resistance + playersNumber civilian > 0) then { T_MP = true } else { T_MP = false };
+
+if (isServer) then
+{
+	T_Server = true;
+	if (!(isNull player)) then { T_Client = true };
+	T_INIT = true;
+} else {
+	T_Client = true;
+	if (isNull player) then
+	{
+		T_JIP = true;
+		[] spawn { waitUntil { !(isNull player) }; T_INIT = true };
+	} else {
+		T_INIT = true;
+	};
+};
+</pre>
+
+Any script that has to work with the player object will have to wait until T_INIT == true:
+ waitUntil { T_INIT };
+
+''Conditions to use:''
+* SinglePlayer: !T_MP
+* MultiPlayer: T_MP
+* Dedicated Server: T_Server && !T_Client
+* Dedicated Server or ServerClient: T_Server
+* ClientOnly: T_Client && !T_Server
+* Client or ServerClient: T_Client
+* Client or ServerClient, NOT JIP: T_Client && !T_JIP
+* JIP Client: T_JIP
+etc. etc.
+
+Since '''Arma 3''', it is possible to figure out what each machine is, using [[isDedicated]], [[IsServer]], [[didJIP]] and [[isPlayer]]
+
+== PublicVariableEventHandler Demo ==
+
+* init.sqf:
+
+<pre>
+	"T_myPvEh" addPublicVariableEventHandler
+	{
+		private ["_variable", "_value", "_msg"];
+		_variable = _this select 0;
+		_value = _this select 1;
+		_msg = format["Variable: %1, Value: %2", _variable, _value];
+		localize _msg; // Write to arma.rpt
+		(_value select 0) globalChat format["Variable: %1, Value: %2", _variable, _value];
+	};
+	sleep 10;
+	T_myPvEh = [player, "HELLO"];
+	publicVariable "T_myPvEh"; // This data will only be received on other machines. Not on the machine where it is executed.
+</pre>
+
+== Limiting the amount of deaths by players ==
+
+* scrit.sqf
+
+<pre>
+/*
+	Script by Sickboy (sb _at_ 6thSense.eu), idea by Heatseeker
+	Version: v0.2
+*/
+private ["_exit"];
+_exit = false; T_KillEnd = false;
+
+[] spawn
+{
+	waitUntil { T_KillEnd };
+	sleep 5;
+	forceEnd;
+};
+
+if (isServer) then
+{
+	T_KillC = 0;
+	T_Killed = objNull;
+	T_fKilled = { T_KillC = T_KillC + 1; if (T_KillC >= param1) then { T_KillEnd = true; publicVariable "T_KillEnd" } };
+	"T_Killed" addPublicVariableEventHandler { (_this select 1) call T_fKilled };
+	if (player != player) then { _exit = true };
+};
+
+// No need to waitUntil player == player on a dedy server ^^
+if (_exit) exitWith {};
+
+waitUntil { player == player };
+player addEventHandler ["Killed", { T_Killed = _this select 0; if (isServer) then { T_Killed call T_fKilled } else { publicVariable "T_Killed" } }];
+</pre>
+
+Description.ext:
+
+<pre>
+titleParam1 = "Abort on casualties";
+valuesParam1[] = {11,22,44,88,110};
+defValueParam1 = 2;
+textsParam1[] = {"11","22","44","88","110"};
+</pre>
+
+== Config Properties ==
+
+<pre>
+class Car;
+class HMMWV : Car
+{
+	T_SIDE = 1;
+	T_ENABLED = 0;
+};
+</pre>
+
+You could now read these parameters from this class, e.g:
+
+<pre>
+_side = getNumber(configFile/"CfgVehicles"/typeOf _vehicle/"T_SIDE");
+_enabled = getNumber(configFile/"CfgVehicles"/typeOf _vehicle/"T_ENABLED");
+// if the _vehicle is inherited from HMMWV, _side == 1  and _enabled == 0
+</pre>
+
+
+= Interesting Links =
+
+* {{Link|link= http://forums.bistudio.com/showthread.php?t=65604|text= "ArmA (MP) Scripting" BIS Forums Thread}}
+* [[:Category:Syntax]]
+* [[Scripting]]
+* Scripting Languages: [[SQF Syntax|SQF]], [[SQS Syntax|SQS]]
+
+Other interesting links:
+* [[Code Optimisation]]
+* {{Link|link= http://forums.bistudio.com/showthread.php?t=115836|text= Some programming tips}}

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/sendCloudRequest
+// revision: 351587 (2023-12-07T18:53:31Z)
+// export sha1: d5hz848qs3cp2lho5r96gvgg0mc3zmo
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|gr1= Argo
+
+|alias= [[sendCloudRequestServer]]
+
+|descr= {{Feature|obsolete|Same behaviour as [[sendCloudRequestServer]]; use this or [[sendCloudRequestClient]] instead.}}
+
+|s1= -
+
+|r1= -
+
+|x1= -
+
+|seealso= [[sendCloudRequestServer]] [[sendCloudRequestClient]]
+}}

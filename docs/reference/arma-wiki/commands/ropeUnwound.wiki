@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/ropeUnwound
+// revision: 369179 (2024-09-03T10:34:44Z)
+// export sha1: gowlern1c5whamcj7jbzcj188jx36aa
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Ropes and Sling Loading
+
+|descr= Returns [[false]] if rope length changing animation is in progress. Returns [[true]] if animation is done.
+
+|s1= [[ropeUnwound]] rope
+
+|p1= rope: [[Object]] - given rope object
+
+|r1= [[Boolean]] - [[true]] if unwinding is complete
+
+|x1= <sqf>
+waitUntil { ropeUnwound (ropes heli1 select 0) };
+hint "Unwinding Complete";
+</sqf>
+
+|seealso= [[ropes]] [[canSlingLoad]] [[enableRopeAttach]] [[getSlingLoad]] [[ropeAttachedObjects]] [[ropeAttachTo]] [[ropeDestroy]] [[ropeLength]] [[ropeAttachedTo]] [[ropeCreate]] [[ropeDetach]] [[ropeAttachEnabled]] [[ropeCut]] [[ropeEndPosition]] [[ropeUnwind]] [[setSlingLoad]] [[slingLoadAssistantShown]]
+}}

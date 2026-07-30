@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/setFlagAnimationPhase
+// revision: 348703 (2023-11-08T14:29:28Z)
+// export sha1: 3yi5bgex9q8conqbbmofaar33gwnleg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Flags | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|arg= global
+
+|eff= local
+
+|gr1= Flags
+
+|descr= Sets flag position on the flag pole. To animate flag use [[BIS_fnc_animateFlag]].
+
+|s1= flag [[setFlagAnimationPhase]] phase
+
+|p1= flag: [[Object]] - flag pole of the type {{hl|"FlagCarrier"}}
+
+|p2= phase: [[Number]] - flag position on the flag pole according to the given animation phase, where 0 is the bottom of the flag pole, 1 is the top of the flag pole.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_flag1 setFlagAnimationPhase 0.5;</sqf>
+
+|seealso= [[flagAnimationPhase]] [[Arma 3: Flag Textures]]
+}}

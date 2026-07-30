@@ -1,0 +1,96 @@
+// source: https://community.bistudio.com/wiki/createMine
+// revision: 377391 (2026-01-02T06:44:33Z)
+// export sha1: gebjczrz7w6kician22gr12gb2a50ng
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mines | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Mines
+
+|descr= Creates a mine of the given type.<br>
+If the ''markers'' array only contains one marker name, it is ignored and the ''position'' parameter is used instead.
+If ''markers'' contains multiple marker names, one of them is chosen randomly and used as the center of the placement area.<br><br>
+This command creates objects of the {{hl|CfgAmmo}} class named in <sqf inline>configFile >> "CfgVehicles" >> _type >> "ammo"</sqf>.
+
+{{Feature|informative|
+Unit ability to detect mines depends on many factors:
+The starting value is defined in config, for example {{hl|./CfgVehicles/B_soldier_F/detectSkill}}, which in this case is 12.
+Mine specialist value for example, defined in {{hl|./CfgVehicles/B_soldier_exp_F/detectSkill}} is 38.
+This value is then dynamically reduced depending on factors such as distance, if a unit is in a vehicle, if it is day or night time, how directly unit is looking at the mine, how fast unit is moving, how inconspicuous is the mine or even if it is visible.
+}}
+
+|s1= [[createMine]] [type, position, markers, placement]
+
+|p1= type: [[String]] - mine class name from {{hl|CfgVehicles}}
+
+|p2= position: [[Object]] or [[Position#PositionAGL|PositionAGL]]
+
+|p3= markers: [[Array]] of [[String]]s - marker name(s)
+
+|p4= placement: [[Number]] - placement radius
+
+|r1= [[Object]]
+
+|x1= <sqf>_mine = createMine ["APERSMine", ASLToAGL getPosASL player, [], 3];</sqf>
+
+|x2= Create a satchel charge and give the player control over it:
+<sqf>
+_charge = createMine ["SatchelCharge_F", player, [], 0];
+player addOwnedMine _charge;
+</sqf>
+
+|seealso= [[allMines]] [[detectedMines]] [[mineDetectedBy]] [[mineActive]] [[revealMine]] [[getAllOwnedMines]] [[addOwnedMine]] [[removeOwnedMine]] [[removeAllOwnedMines]]
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20170605224300
+|text= Note that this command uses AGL (very similar to ASL) positions, so if you want to use the moored or seabed mine, you'll have to find the appropriate negative z value that is underwater and convert that to ASL.
+Also note that you can't adjust the positions of sea mines after they've been created. The command is either ignored or not propagated across the network to clients.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20190925032800
+|text= The following explosives used in {{arma3}} can be created with this command:
+{{{!}} class="wikitable"
+! Mines
+! Remote detonation charges
+{{!}}- style="vertical-align: top"
+{{!}}
+* {{hl|"ATMine"}}
+* {{hl|"APERSMine"}}
+* {{hl|"APERSBoundingMine"}}
+* {{hl|"SLAMDirectionalMine"}}
+* {{hl|"APERSTripMine"}}
+* {{hl|"UnderwaterMine"}}
+* {{hl|"UnderwaterMineAB"}}
+* {{hl|"UnderwaterMinePDM"}}
+{{!}}
+* {{hl|"SatchelCharge_F"}}
+* {{hl|"DemoCharge_F"}}
+* {{hl|"Claymore_F"}}
+* {{hl|"IEDUrbanBig_F"}}
+* {{hl|"IEDLandBig_F"}}
+* {{hl|"IEDUrbanSmall_F"}}
+* {{hl|"IEDLandSmall_F"}}
+}}

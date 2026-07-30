@@ -1,0 +1,262 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Trigger
+// revision: 369831 (2024-10-15T15:37:52Z)
+// export sha1: 2mpyaiw0s4bi2278qrn837276t7fr4l
+// categories: Category:Eden Editor: Asset Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A trigger is a virtual entity which executes an action once a specific condition is met.
+[[File:3den_triggerArea3D.jpg|center]]
+
+
+== Trigger Area ==
+
+A trigger has an area. It can be scaled in all axes and it can be rotated around Z (up) axis. Some areas have unlimited height by default, but that can be changed by manually adjusting their vertical scale. Setting it to negative value will make them unlimited vertically again.
+[[File:3den_triggerAreaZ.gif|center]]
+
+
+You can see it visualised both in the scene and in the map, but by default you cannot interact with it. However, when the trigger is selected, you can drag it by its area in the map.
+[[File:3den_triggerMove2D.gif|center]]
+
+
+== Activation Condition ==
+
+The activation condition can be based on the trigger area (e.g. no OFPOR present within a 500 m radius), but a scripted condition or combination of both can be applied as well.
+{{Feature|important|Animals are part of the civillian side. That means they can activate triggers which condition is set to "Civilian".}}
+
+
+== Trigger Owner ==
+
+Use the '''Set Trigger Owner''' connection to assign the trigger to a specific group. It will change the available activation options from the general ones (e.g. any BLUFOR character) to the group specific ones (e.g. any member of the group).
+[[File:3den_connectTriggerOwner.gif|center]]
+
+
+== Timer ==
+
+Using the '''Timer''' attribute, you can set the trigger to be activated either after a certain period of time since the condition has been met, or while the condition is met for the specified duration.
+
+
+== On Activation ==
+
+Once the condition is met, the trigger becomes activated. Its '''On Activation''' expression is executed, and connected waypoints or modules may be activated as well.
+
+
+== Repeatable ==
+
+If the trigger is set as repeatable, it will be deactivated once the condition is not met anymore. Afterwards, the trigger can be activated again, and this can continue until the scenario ends.
+
+
+Triggers are the primary way to design the scenario flow without use of external scripts. Find out more about their configuration in the tooltips of their attributes.
+
+
+== Attributes ==
+
+<onlyinclude>
+<!-- Exported from the game by BIS_fnc_3DENExportAttributes. Manual edits may be replaced by future exports. -->
+{| class="wikitable sortable"
+! colspan="3" | <big>Info</big>
+! colspan="2" | <big>[[Eden Editor: Setting Attributes|Development]]</big>
+|-
+! Name
+! Category
+! class="unsortable" | Description
+! Property
+! Type
+|-
+| '''Variable Name'''
+| Init
+| Unique system name. Can contain only letters, numbers and underscore. The name is not case sensitive, so 'someName' and 'SOMENAME' are treated as the same variables.
+| <small>{{hl|name}}</small>
+| [[String]]
+|-
+| '''Text'''
+| Init
+| Trigger description. Players can see it in the radio menu when its activation is set to 'Radio'. Also visible in tooltip when hovering over the trigger in the editor.
+| <small>{{hl|text}}</small>
+| [[String]]
+|-
+| '''Position'''
+| Transformation
+| World coordinates in meters. X goes from West to East, Y from South to North and Z is height above terrain.
+| <small>{{hl|position}}</small>
+| [[Position#Introduction|Position3D]]
+|-
+| '''Rotation'''
+| Transformation
+| Local rotation in degrees. X is pitch, Y is roll and Z is yaw.
+| <small>{{hl|rotation}}</small>
+| [[Number]]
+|-
+| '''Size'''
+| Transformation
+| Area size in meters in format [a, b, c].
+| <small>{{hl|size3}}</small>
+| [[Array]]
+|-
+| '''Shape'''
+| Transformation
+| Area shape.
+Available options:
+* '''Ellipse'''
+* '''Rectangle'''
+
+| <small>{{hl|IsRectangle}}</small>
+| [[Boolean]]
+|-
+| '''Type'''
+| Activation
+| Trigger type, determines special behavior upon activation.
+Available options:
+* '''None''' - No other effects except of those defined by 'On Activation' expression.
+* '''Guarded by BLUFOR'''/'''OPFOR'''/'''Independent''' - The trigger position becomes a point to be guarded by the given side. Groups with a 'Guard' waypoint will protect all guard points in the scenario, prioritizing them by the distance and order in which they were placed (the first placed is the most important).
+* '''Skip Waypoint''' - Meant to work with a waypoint linked to the trigger using the 'Set Waypoint Activation' connection. Once activated, the trigger will force the waypoint to skip. Particularly useful for 'Hold' or 'Guard' waypoint types, which do not complete automatically.
+* '''End #1'''/'''#2'''/'''#3'''/'''#4'''/'''#5'''/'''#6''' - Complete the scenario successfully.
+* '''Lose''' - Fail the scenario.
+
+| <small>{{hl|TriggerType}}</small>
+| [[String]]
+|-
+| '''Activation'''
+| Activation
+| What or who can activate the trigger. Some options further depend on 'Activation Condition'.
+Available options:
+* '''None''' - No default activation, only a custom condition expression can activate the trigger.
+* '''Any Player''' - Activated when any player of the given side satisfies the 'Activation Condition'.
+* '''Anybody''' - Activated when any object satisfies the 'Activation Condition'.
+* '''BLUFOR'''/'''OPFOR'''/'''Independent'''/'''Civilian Game Logic''' - Activated when any object of the given side satisfies the 'Activation Condition'.
+* '''Seized by BLUFOR'''/'''OPFOR'''/'''Independent''' - Activated when the given side is in control of the area. Strength matters, which means one tank can be in control of an area while ten enemy infantrymen are still present.
+* '''Radio Alpha'''/'''Bravo'''/'''Charlie'''/'''Delta'''/'''Echo'''/'''Foxtrot'''/'''Golf'''/'''Hotel'''/'''India'''/'''Juliet''' - Activated by a player using a radio command (accessible for the player by pressing 0-0 on a standard keyboard). The trigger's 'Text' will be used as the command title.
+
+| <small>{{hl|ActivationBy}}</small>
+| [[String]]
+|-
+| '''Activation'''
+| Activation
+| What or who can activate the trigger. Some options further depend on 'Activation Type'. The available options are specific to the connected trigger owner.
+Available options:
+* '''Owner Only''' - Activated when the connected trigger owner (or its vehicle, if the owner is a crew member) satisfies the 'Activation Condition'.
+* '''Whole Group''' - Activated when all the owner's group members satisfy the 'Activation Condition'.
+* '''Group Leader''' - Activated when leader of the owner's group satisfies the 'Activation Condition'.
+* '''Any Group Member''' - Activated when anyone from the owner's group satisfies the 'Activation Condition'.
+
+| <small>{{hl|activationByOwner}}</small>
+| [[String]]
+|-
+| '''Activation Type'''
+| Activation
+| Condition of the 'Activation' attribute.
+Available options:
+* '''Present''' - Activated when objects are in the area.
+* '''Not Present''' - Activated when objects are not in the area.
+* '''Detected by BLUFOR'''/'''OPFOR'''/'''Independent'''/'''Civilian''' - Activated when objects are in the area and are discovered by the given side.
+
+| <small>{{hl|activationType}}</small>
+| [[String]]
+|-
+| '''Repeatable'''
+| Activation
+| Repetition rules. When enabled, the trigger can be activated again once deactivated.
+| <small>{{hl|repeatable}}</small>
+| [[Boolean]]
+|-
+| '''Server Only'''
+| Activation
+| When enabled, the trigger will only be created and evaluated on the server.
+| <small>{{hl|isServerOnly}}</small>
+| [[Boolean]]
+|-
+| '''Condition'''
+| Expression
+| Repeatedly calculated condition, must return boolean expression. When true, the trigger will be activated.
+Passed variables are:
+* this - boolean value of activation condition
+* thisList - list of all objects in trigger area, based on 'Activation'
+* thisTrigger - trigger object
+| <small>{{hl|condition}}</small>
+| [[String]]
+|-
+| '''Interval'''
+| Expression
+| How frequently the trigger condition is evaluated in seconds.
+| <small>{{hl|triggerInterval}}</small>
+| [[Number]]
+|-
+| '''On Activation'''
+| Expression
+| Expression executed once the trigger is activated.
+Passed variables are:
+* thisList - list of all objects in trigger area, based on 'Activation'
+* thisTrigger - trigger object
+| <small>{{hl|onActivation}}</small>
+| [[String]]
+|-
+| '''On Deactivation'''
+| Expression
+| Expression executed once the trigger is deactivated. {{Feature|informative|This only concerns '''Repeatable''' triggers.}}
+Passed variables are:
+* thisTrigger - trigger object
+| <small>{{hl|onDeactivation}}</small>
+| [[String]]
+|-
+| '''Timer Type'''
+| Timer
+| Type of activation timer.
+Available options:
+* '''Countdown''' - Once the conditions are met, the trigger will activate after the specified amount of time has elapsed.
+* '''Timeout''' - The trigger's conditions must be satisfied for the specified duration for the trigger to be activated.
+
+| <small>{{hl|interuptable}}</small>
+| [[Boolean]]
+|-
+| '''Timer Values'''
+| Timer
+| Timer values in seconds, selected randomly in a range from Min to Max, gravitating towards Mid.
+| <small>{{hl|timeout}}</small>
+| [[Array]] in format [min, mid, max]
+|-
+| '''Effect Condition'''
+| Effects
+| Condition for effects to be played, must return boolean expression.
+| <small>{{hl|effectCondition}}</small>
+| [[String]]
+|-
+| '''Sound'''
+| Effects
+| Sound played upon activation.
+| <small>{{hl|sound}}</small>
+| [[String]]
+|-
+| '''Voice'''
+| Effects
+| Sound spoken by the first unit which activated the trigger.
+| <small>{{hl|voice}}</small>
+| [[String]]
+|-
+| '''Environment'''
+| Effects
+| Environment sounds played upon activation.
+| <small>{{hl|soundEnvironment}}</small>
+| [[String]]
+|-
+| '''SFX'''
+| Effects
+| Sound effect played by the trigger upon activation. Repeats as long as the repeatable trigger is active or forever for non-repeatable triggers.
+| <small>{{hl|soundTrigger}}</small>
+| [[String]]
+|-
+| '''Music'''
+| Effects
+| Music played upon activation. Replaces previously playing music track.
+| <small>{{hl|music}}</small>
+| [[String]]
+|-
+| '''UI Overlay'''
+| Effects
+| User interface overlay shown upon activation.
+| <small>{{hl|title}}</small>
+| [[String]]
+|}
+</onlyinclude>
+
+
+[[Category:Eden Editor: Asset Types|Triggers]]

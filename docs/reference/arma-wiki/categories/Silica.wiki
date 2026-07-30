@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/Category:Silica
+// revision: 347380 (2023-09-15T00:56:17Z)
+// export sha1: gxubl5hbl3evibvkiiehnib0l6rdarr
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= silica_logo_blue_800x200.png
+|EAdate= 20230503
+|releasedate=
+|size= 350
+|intro= '''Strategize, Strike, Harvest!'''
+
+An immersive blend of FPS and RTS, each true to its respective genre.
+
+'''About {{silica}}'''
+
+{{silica}} is a crossover of FPS and RTS where up to 3 factions battle for control over the planet of Baltarus.
+Lead from above as Commander, or experience the action first-hand, either alone or with friends.
+Join one of two human armies, or hunt them down as the territorial aliens.
+
+{{silica}} takes place in the scorching deserts of Baltarus, an exoplanet located thousands of light-years from Earth.
+Lead your faction to victory in Strategy, the flagship game mode.
+Harvest the Balterium hidden in the sands or defend Baltarus from the invading humans as an insect-like alien.
+
+
+|feature1= Choose between two gameplays:
+** If you prefer sand-filled boots, bullets whizzing overhead, and menacing alien jaws closing in, the infantry role is for you. Not limited to merely foot-based soldiers, you can also take control of any available vehicles, including the colossal Harvester, the speedy Light Quad, or the insidious Siege Tank, just to name a few.
+** The esteemed role of Commander awaits you in the relative safety of orbit. Deploy Harvesters to silica crystal fields, hiding the valuable resources you're after. Construct and place immense structures to produce and dispatch units that will dominate the battlefield.
+
+|gallery1= silica_screenshot-1.jpg
+|gallery2= silica_screenshot-2.jpg
+|gallery3= silica_screenshot-3.jpg
+|gallery4= silica_screenshot-4.jpg
+|gallery5= silica_screenshot-5.jpg
+|gallery6= silica_screenshot-6.jpg
+|gallery7= silica_screenshot-7.jpg
+|gallery8= silica_screenshot-8.jpg
+
+|trailer= 2MBi2dYtf-E
+
+|start1= {{Link|https://silicagame.com/|{{silica}} website}}
+|start2= Buy: {{Link|https://store.bistudio.com/products/silica-digital-steam-key|{{Name|bi|short}} Store}} - {{Link|https://store.steampowered.com/app/1494420/Silica/|Steam Store}}
+|start3=
+|start4=
+|start5=
+|start6=
+
+|social1= {{Link|https://twitter.com/SilicaGame|Twitter}}
+|social2= {{Link|https://discord.com/invite/QAqhhkYmM7|Discord}}
+|social3=
+}}

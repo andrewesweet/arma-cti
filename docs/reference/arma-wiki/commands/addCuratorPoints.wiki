@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/addCuratorPoints
+// revision: 376978 (2026-01-01T06:07:36Z)
+// export sha1: 6hq2vpetq49bk3hrbe74x3lahsvq6b1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|serverExec= server
+
+|descr= Adds or removes curator points.
+
+|s1= curatorObj [[addCuratorPoints]] points
+
+|p1= curatorObj: [[Object]] - curator module.
+
+|p2= points: [[Number]] in range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>curatorModule addCuratorPoints 0.5;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[curatorPoints]]
+}}

@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Navigation
+// revision: 349801 (2023-11-20T22:10:19Z)
+// export sha1: cl7axazzczoqqsi5a1vhq812lqnwu2v
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Navigation ==
+=== Directions ===
+To better understand direction codes (bearings):<br>
+* Open your GPS '''[Right Ctrl+M]''' or compass '''[2xK]'''.<br>
+The direction matches the 360° system. North is marked as 000, East as 090 and so on. Coordinates are also visible on the map.
+
+''Clock position is often used for a relative direction. Based on a 12-hour clock analogy, 12 o'clock means directly ahead, 3 o'clock means right and so on. When you receive such information, a simple clock icon appears.''
+
+
+=== Map ===
+The map is a powerful tool for navigation and commanding.<br>
+* Open it by pressing '''[M]'''.<br>
+* Zoom the map in or out with '''[mouse-wheel up and down]'''.<br>
+* Try hiding or showing map '''textures''' or centering on your position. Buttons are located on the top toolbar.<br>
+* Close the map by pressing '''[M]''' or '''[Esc]'''.
+
+''Remember, you can only see the map if you have a GPS or Map in your Inventory.''
+
+
+=== Tasks ===
+You have a new task. Tasks are mission objectives received from Command. To open mission tasks:<br>
+* Open the task list '''[J]'''.<br>
+Alternatively, you can access your tasks on the map.<br>
+* Open the map '''[M]''' and select '''Tasks'''.
+
+''Goals from the active task are marked on your screen. To select a different task as active:<br>
+* Open tasks '''[J]'''.<br>
+* Click on the task.<br>
+* Then click on '''set as an active task'''.''
+
+
+=== Waypoints ===
+Waypoints mark a location you are ordered to go to by your team-leader or a task. All waypoints and go-to orders will be shown by a marker on the screen. When moving in a formation, a formation marker will also be shown on the screen, but without any distance and description.
+
+''Task related waypoints [[File:a3_fm_taskicon.png|24px]] are shown on the map. The displaying of waypoints depends on difficulty settings chosen.''
+
+
+=== Custom Waypoints ===
+You can add a custom waypoint to a map. It will be displayed both on the map and in the scene. To add a waypoint<br>
+* Open the map by '''[M]'''.<br>
+* Place the waypoint with '''[Left Shift]'''+'''[LMB]'''.
+
+
+{{GameCategory|arma3|Field Manual}}

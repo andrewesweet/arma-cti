@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagAAR
+// revision: 329963 (2022-08-09T17:17:15Z)
+// export sha1: hzbdpvznq7v7uc1htacvmwq40a8vo78
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Fill an '''AAR''' (After Action Review) display with data and Event Handlers.<br>
+{{Feature|important|
+[[BIS_fnc_diagAARrecord]] '''must''' have been previously executed to have data to display.}}
+
+|s1= [mode, arguments] call [[BIS_fnc_diagAAR]]
+
+|p1= mode: [[String]] - can be one of:
+* "Init" - Fill display with AAR data
+* "Init_List" - ''internal function usage''
+* "Display_keydown" - ''internal function usage''
+* "Timeline_sliderposchanged" - ''internal function usage''
+* "ListMissions_lbselchanged" - ''internal function usage''
+* "ListSessions_lbselchanged" - ''internal function usage''
+* "draw" - ''internal function usage''
+
+|p2= arguments:
+* "Init" arguments: [display]: [[Display]]
+* "Init_List" arguments: [display]: [[Display]]
+* "Display_keydown" arguments: see [[User_Interface_Event_Handlers#onKeyDown|onKeyDown]] event
+* "Timeline_sliderposchanged" arguments: see [[User_Interface_Event_Handlers#onSliderPosChanged|onSliderPosChanged]] event
+* "ListMissions_lbselchanged" arguments: see [[User_Interface_Event_Handlers#onLbSelChanged|onLBSelChanged]] event
+* "ListSessions_lbselchanged" arguments: see [[User_Interface_Event_Handlers#onLbSelChanged|onLBSelChanged]] event
+* "draw" arguments: see [[User_Interface_Event_Handlers#onDraw|onDraw]] event
+
+|r1= [[Script Handle]]
+
+|x1= <sqf>["Init", [_anAARDisplay]] call BIS_fnc_diagAAR;</sqf>
+
+|seealso= [[BIS_fnc_diagAARrecord]]
+}}

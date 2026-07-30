@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/currentMagazineTurret
+// revision: 377500 (2026-01-02T06:49:28Z)
+// export sha1: tqdcvscu5h8j6kq4nsl128itbv4qz1k
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+
+|gr1= Turrets
+
+|descr= Returns the name of the type of the currently using magazine on specified turret. Use turret path [-1] for driver's turret. Note that a turret is not loaded until unit enters it, so this command will return "".
+
+|s1= vehicle [[currentMagazineTurret]] turretPath
+
+|p1= vehicle: [[Object]]
+
+|p2= turretPath: [[Turret Path]]
+
+|r1= [[String]]
+
+|x1= <sqf>_magazine = MBT_Kuma currentMagazineTurret [0];</sqf>
+
+|seealso= [[currentMagazineDetailTurret]] [[currentWeaponTurret]] [[addWeaponTurret]] [[removeWeaponTurret]] [[turretLocal]]
+}}

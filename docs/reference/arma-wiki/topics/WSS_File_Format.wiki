@@ -1,0 +1,269 @@
+// source: https://community.bistudio.com/wiki/WSS_File_Format
+// revision: 378052 (2026-02-02T10:15:21Z)
+// export sha1: pmqimnplfiv3xfnknigjvcqbaj0nfel
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+Bis-proprietary WSS files store Pulse Code Modulated (PCM) sound data. It's format is a variant of {{Link|http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html|RIFF WAVE file format}} used for .wav 
+
+There are three sound formats accepted by the engine:
+* '''ogg''': Vorbis Stereo Music files
+* '''wav''': Raw uncompressed PCM (mono or stereo)
+* '''wss''': compressed PCM mono
+
+All formats can store mono/stereo, compressed/uncompressed. The above is the '''intent''' of each one.
+
+Due to the Microsoft behemoth, wav files are 'industry standard' raw recording files.
+They are as good as any other raw '''recording''' choice with a range of convenient-to-use tools to do so.
+Wav files are also used as a standardized interchange format when converting a sound type from X to Y.
+Although they can be played as is, they are not intended for that purpose. They are unnecessarily huge (for the purposes of playback).
+
+{{Name|bi}} introduced compressed PCM data. To that end, wss files come in three flavours:
+* '''Uncompressed''': There is no performance, size or benefit between this, and a wav file. It is a not-normally-used, alternative to wav.
+* '''Compressed Byte''': Offers a fixed, 50% reduction in file size.
+* '''Compressed Nibble''': (Arrowhead only) Offers a fixed. 75% reduction in file size.
+
+The '''intent''' of wss is to store compressed '''mono-only''' pcm data.
+The engine and the format '''allow''' the other variants but that is not a preferred use (you will get rpt warnings).
+
+As a breakdown, here are the statistics of wss types in {{ofp}} and {{arma2oa}}:
+
+{| class="wikitable"
+! Offset
+! {{Name|ofp|short}}
+! {{Name|arma2oa|short}}
+|-
+| Stereo
+| 1
+| 19
+|-
+| Mono
+| 43
+| 659
+|-
+| ByteCompressed
+| 4074
+| 24197
+|-
+| NibbleCompressed
+| {{n/a}}
+| 156
+|}
+
+The above should show that the intent has always been to compress mono only pcm data, and the newer nibble format is taking over as of pmc/baf.
+The ''reason'' for mono wss files is straightforward. Almost all sounds in the game are environment, gunshot and engines.
+You don't need a stereo wind, nor a stereo vehicle noise when the tank is running over you.
+There is only one direction or all directions the noise is coming from.
+
+=== Faulty files ===
+
+A small number of {{Name|bi|short}} files have errors that cause rpt errors. All are heuristically decoded by the engine anyway.
+They are either straightforward and unintended stereo wss, or encoded nibble files that were actually not formatted properly. There are no 'bad' {{ofp}} files.
+Given the stupendous number of sounds in {{Name|arma2oa|short}}, and given that a large quantity of wss is derived from {{arma1}}, the few faulty emanations are not unreasonable.
+
+=== Tools ===
+
+* BI's [[Sound Tools|WavToWSS.exe]] for encoding wav to wss
+* 3rd party tools such as {{Link|https://dev-heaven.net/projects/mikero-pbodll/files|Mikero's Wss2Wav}} for translating both ways
+
+
+== File Format ==
+
+{| class="wikitable"
+! Offset
+! Datatype
+! Content
+! Description
+|-
+| 0
+| char[4]
+| "WSS0"
+| file signature
+|-
+| 4
+| ulong
+| CompressionType
+| 0 = none. 4 = Nibble compression. 8 = Byte compression
+|-
+| 8
+| ushort
+| format
+| Always 1 (WAVE_FORMAT_PCM)
+|-
+| 10
+| ushort
+| nChannels
+| 1 = mono, 2 = stereo
+|-
+| 12
+| ulong
+| SampleRate
+| e.g. 44100Hz
+|-
+| 16
+| ulong
+| BytesPerSecond
+| SampleRate * BlockAlign
+|-
+| 20
+| ushort
+| BlockAlign
+| nChannels * BytesPerSample
+|-
+| 22
+| ushort
+| BitsPerSecond
+| usually 16
+|-
+| 24
+| ushort
+| Output Size
+| See below
+|-
+| 26
+| byte[fileSize-26]
+| <soundData>
+| Sound's PCM data
+|}
+
+=== Input Size ===
+
+The Input Size is the '''bytes''' remaining in the file. For uncompressed data it is (logically) always an even number (since it is a count of nShorts / 2).
+'''However''' many {{Name|bi}}'s wss Delta4 encoded files are corrupt.
+While they specify uncompressed in the header, they are in fact encoded, and the only way of detecting same is by them having an odd number of bytes to decode.
+These files cause an rpt error but the engine heuristically decodes them anyway.
+
+=== Output Size ===
+
+This 'value' ''was'' similar in architecture at least to the wav "datasize" chunk. It appears to be unreliable in intent. Also, the intent appears to have changed.
+
+'''Originally''' it ''was'' very similar to the OutputSize specified by a (compressed) pbo. Specifically:
+* = 0 'uncompressed'. Remaining data is the size.
+* = input size. uncompressed.
+* non zero. The resultant size to extract (in bytes)
+
+The size in fact need not be known because output size is always a defined multiple of the input size.
+
+For Delta4 nibble compression, the value has changed to mean the Delta seed value. But this too is has been corrupted.
+
+In general:
+* Uncompressed data will have this set to zero.
+* Compressed bytes will have this set to a multiple of the input size or zero.
+* Compressed Nibbles are delta seed.
+'''None of above is reliable'''
+
+
+Note that early versions of wss formatted files did not appear to have this field at all (for uncompressed). There is no way of telling
+
+
+== Decompression ==
+
+{{Name|bi}} '''optionally''' uses Delta8 (byte) or Delta4 (nibble) 'Lossy' Compression for mono PCM data only.
+
+The facility exists to handle stereo compression but it isn't employed.
+
+=== Byte Compression ===
+
+Compression consists of single encoded byte 'samples' versus uncompressed short 'samples'.
+Each byte is, effectively, extrapolated to a short, thus making the compressed BYTE array, and the resulting decompressed SHORT array the same number of elements(length). The length is the remaining file length (in bytes) after the header.
+
+==== C++ code ====
+Function returns a short array, same size as it is compressed byte equivalent
+
+<syntaxhighlight lang="cpp">
+#define LOG10	2.3025850929940456840	// ln(10)
+#define LOG2	1.4426950408889634070	// log2(e)
+#define MAGIC_NUMBER	((LOG10*LOG2)/28.12574042515172)
+
+short* DeCompress(const char *CompressedData,int len)
+{
+	short *snap,*OutputData;
+
+	if (!(snap=OutputData=new short[len]))	return 0;
+	short LastVal = 0;
+	for (; len--; CompressedData++)
+	{
+		if (*CompressedData)
+		{
+			double asFloat = abs(*CompressedData) * MAGIC_NUMBER;
+			double rnd = Round(asFloat);
+			asFloat = pow(2.0, asFloat - rnd) * pow(2, rnd);// mantissa -
+			if (*CompressedData < 0) asFloat *= -1;
+			int asInt = Round(asFloat)+LastVal;
+			if (asInt > SHRT_MAX) asInt = SHRT_MAX ;
+			if (asInt < SHRT_MIN) asInt = SHRT_MIN;
+			LastVal=(short)asInt;
+		}
+		*OutputData++ = LastVal;
+	}
+	return snap;
+}
+</syntaxhighlight>
+
+==== C# code ====
+If the <soundData> is compressed the following (C#) code can be used for decompression:
+
+<syntaxhighlight lang="csharp">
+PCMData = new Int16[soundData.Length];
+for (int j = 0; j < PCMData.Length; j++)
+{
+	SByte srcSample = (SByte)soundData[j];
+	if (srcSample != 0)
+	{
+		double asFloat = Math.Abs((int)srcSample) / 28.12574042515172;
+		asFloat *= 2.3025850929940456840; // ln(10)
+		asFloat *= 1.4426950408889634070; // log2(e)
+		double rnd = Math.Round(asFloat);
+		double mantisse = Math.Pow(2.0, asFloat - rnd);
+		asFloat = mantisse * Math.Pow(2, rnd);
+		if (srcSample < 0) asFloat *= -1;
+		Int32 asInt = (int)Math.Round(asFloat);
+		asInt = (j == 0) ? asInt : (asInt + PCMData[j - 1]);
+		if (asInt > short.MaxValue) asInt = short.MaxValue;
+		if (asInt < short.MinValue) asInt = short.MinValue;
+		PCMData[j] = (Int16)asInt;
+	}
+	else
+	{
+		PCMData[j] = (j == 0) ? (Int16)0 : PCMData[j - 1];
+	}
+}
+</syntaxhighlight>
+
+=== Nibble Compression ===
+
+Although by no means the same thing, Nibble compression is an adaptation of IMA ADPCM compression.
+Each nibble represents a SHORT of PCMdata; thus the resultant output size will be four times larger (in bytes).
+
+==== C++ Code ====
+<syntaxhighlight lang="cpp">
+//
+// all honor and glory to T_D
+//
+
+static short PCMIndex[] = { -8192, -4096, -2048, -1024, -512, -256, -64, 0, 64, 256, 512, 1024, 2048, 4096, 8192 };
+
+static short limits(int PCM)
+{
+	if (PCM > SHRT_MAX) PCM = SHRT_MAX;
+	else if (PCM < SHRT_MIN) PCM = SHRT_MIN;
+	return PCM;
+}
+
+short * DeCompressNibble(const char *NibbleData,int len) // len in bytes
+{
+	short *snap,*pcmData;
+	if (!(snap=pcmData=new short[2*len])) throw GENERR_NOMEM;
+	int delta = 0;
+	while (len--)
+	{	
+		byte nibble = *NibbleData++;
+		*pcmData++ = limits(delta += PCMIndex[nibble >> 4]);
+		*pcmData++ = limits(delta += PCMIndex[nibble & 0x0F]);
+	}
+	return snap;
+}
+</syntaxhighlight>
+
+
+[[Category:Real Virtuality File Formats]]

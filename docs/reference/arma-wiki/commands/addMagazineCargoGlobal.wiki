@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/addMagazineCargoGlobal
+// revision: 376382 (2025-10-09T02:13:45Z)
+// export sha1: 9eryp5yevo2grn8dl2zahpezurgqb6l
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Containers
+
+|arg= global
+
+|eff= global
+
+|descr= Add magazines to the cargo space of vehicles, which can be taken out by infantry units.
+
+MP Synchronized
+
+|s1= vehicleName [[addMagazineCargoGlobal]] [magazineName, count]
+
+|p1= vehicleName: [[Object]] - vehicle to add the magazines to
+
+|p2= magazineName: [[String]] - magazine name. See [[:Category:Weapons]] for reference about possible values.
+
+|p3= count: [[Number]] - number of magazines to add. {{GVI|arma3|2.14|size= 0.75}} negative count will remove magazines.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_truck addMagazineCargoGlobal ["M16", 5];</sqf>
+
+|seealso= [[addMagazineCargo]] [[addMagazineGlobal]] [[addMagazine]] [[addMagazines]] [[addMagazinePool]] [[addMagazineTurret]] [[clearMagazineCargo]] [[addWeaponCargo]] [[clearWeaponCargo]] [[clearWeaponCargo]] [[addWeaponCargoGlobal]] [[addBackpackCargoGlobal]] [[addItemCargo]] [[addItemCargoGlobal]] [[addMagazineAmmoCargo]]
+}}

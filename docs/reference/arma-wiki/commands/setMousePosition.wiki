@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/setMousePosition
+// revision: 340820 (2023-05-07T11:05:54Z)
+// export sha1: 4dc51m46dweregv86bzdrq1cqhrf31i
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - Positioning
+
+|descr= Moves mouse pointer to specified position on the screen. '''x''' and '''y''' could be any number, but will be clipped so mouse never leaves the screen area.
+
+|s1= [[setMousePosition]] [x, y]
+
+|p1= x: [[Number]] - x in screen coordinates
+
+|p2= y: [[Number]] - y in screen coordinates
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setMousePosition [0.5, 0.5];</sqf>
+
+|seealso= [[getMousePosition]] [[ctrlSetMousePosition]] [[ctrlMousePosition]] [[ctrlMapCursor]] [[reversedMouseY]]
+}}

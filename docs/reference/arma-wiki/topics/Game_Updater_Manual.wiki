@@ -1,0 +1,84 @@
+// source: https://community.bistudio.com/wiki/Game_Updater_Manual
+// revision: 363713 (2024-04-16T18:22:56Z)
+// export sha1: i0cbkhs1dxz19x7s456jewsxu3bteo3
+// categories: Category:Arma 3: Official Tools Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+__ToC__
+
+= Foreword =
+This page contains all necessary data to install and use '''Game Updater''' (hereafter, '''GU'''). GU aims to improve the experience of switching between branches of the game by avoiding the fuss of additional downloads every time you change. More information can be found here: [[Game Updater]].
+
+== Notes ==
+Firstly, you need to have Arma 3 Tools installed correctly. Installation manual can be found here: [[Arma 3: Tools Installation]].
+
+= How to install =
+# Run Arma 3 Tools from Steam
+# Find GU on the main form<br>[[File:a3ct_mainForm.jpg|200px]] 
+Then, from GU itself, on the first startup, click ok in the message box telling you GU is not installed and:
+# Type your Steam credentials (leave Steam Guard Code empty) and click "Ok"<br>[[File:a3ct_gu_steamAcc.jpg|200px]] 
+# A console window appears, to check your Steam account<br>[[File:a3ct_gu_guardCode.jpg|200px]]
+## If your account is protected by Steam Guard, it will ask you the code that you will find in your emails (sent automatically)
+## Type the given code and hit ENTER
+# After a few seconds, the time to check your Steam license, the console window will close itself and the main form of GU should appears
+# Congratulations, GU is installed and ready to work
+== Notes ==
+In case of mistake on the Steam logging info, you will need to run "Delete user data.bat", located in the directory "Arma 3 Tools\GU"
+
+=How to use it?=
+== Parameters ==
+Once it is installed, there are two forms in which you should have a look.
+
+=== Options ===
+From the main form of GU, click on "options"
+
+[[File:a3ct_gu_options.jpg|200px]]
+
+* "Select Branch" allows you to select what branch you want to use to install or update
+** In case you want to install, either legacy or RC branch, a access code will be asked. If it is incorrect, the update process will fail.
+** The text-box of the access code is disabled when the branch is password free.
+* "Play sound when the update is done"
+* "Handle Steam Client"
+** If enabled the updater will log you out of your Steam automatically instead of asking you what to do when you hit "update".
+* "Check local content"
+** If checked, It will check for errors or corrupted files in the existing data. The update process will be a bit longer but it is the safer method. 
+** Otherwise, it will just download the modified data from your version to the newer, without any check on existing files.
+
+[[File:a3ct_gu_mainForm.jpg|200px]]
+
+In the main form, the only available option is the path to the installation to add or update. By default, this is "...\YourSteamPath\steamapps\common\Arma 3 [development]", change it if needed.
+
+=== Notes ===
+Be careful on your installation path when you change the branch. The main form give you some information about the version found in the selected directory (based on the executable).
+
+== The update process ==
+# Run GU
+# Double check the branch and the installation path
+# Click on Update
+## If Steam client is running live (started and on online mode), it will ask you to continue or not
+## A message box is displayed, click yes to proceed (by clicking "No", the main form will be displayed)
+## Other questions may be asked
+# Here you are, just wait until the end of the update process<br>[[File:a3ct gu update.jpeg|200px]]
+## If you are using the mobile authenticator, its code will be asked
+# Once the update done, you can open the installation directory or just exit GU.
+=== Notes ===
+* GU has some child processes, ran in asynchronous mode, to get better stability and performances. This is why the information displayed are not in real time. The delay can be from seconds to minutes.
+* If for some reason the update fails, check out the output and the step
+* You can send GU to the notification zone during the update. A balloon tool tip will be displayed as soon as the update process is completed
+* You can cancel the update at any time, "Resume update" is handled.
+* Update steps are:
+** Preparing: Prepare account info and game data
+** Starting: Check parameters and run child processes
+** Validating: Validate the local data if option is set to "Yes"
+** Preallocating: Reservation of the disk space needed
+** Downloading: Download of the new files
+** Success: Self explained
+
+== Logs ==
+There are two log files, stored in "''Arma 3 Tools\Logs''":
+# ''GameUpdaterYYYY-MM-DD.rpt'': Main log of GU
+# ''GameUpdaterChildYYYY-MM-DD.rpt'': For child processes
+
+Additional logs from Steam can be find in "Arma 3 Tools\GU\logs", the most relevant is "stderr.txt", filled in case of error.
+
+{{GameCategory|arma3|Official Tools Manual}}

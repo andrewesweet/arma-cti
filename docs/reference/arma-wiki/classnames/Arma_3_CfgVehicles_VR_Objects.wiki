@@ -1,0 +1,440 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgVehicles_VR_Objects
+// revision: 367237 (2024-08-08T16:03:38Z)
+// export sha1: h538omfxel6d5716c6ruk1yo06utefs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Navbox/A3Assets}}
+{| class="wikitable sortable" style="font-size:80%; margin: auto"
+! Preview
+! Class Name
+! Display Name
+! Side
+! Category
+! Subcategory
+! Scope
+! DLC
+! Addons
+! Features
+|-
+| [[File:arma3-land_vr_block_01_f.jpg|150px]]
+| <span id="Land_VR_Block_01_F" >'''Land_VR_Block_01_F'''</span>
+| ''VR Obstacle (20x10x8)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Blocks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Blocks|A3_Structures_F_Bootcamp_VR_Blocks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_vr_block_02_f.jpg|150px]]
+| <span id="Land_VR_Block_02_F" >'''Land_VR_Block_02_F'''</span>
+| ''VR Obstacle (12x12x4)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Blocks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Blocks|A3_Structures_F_Bootcamp_VR_Blocks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_vr_block_03_f.jpg|150px]]
+| <span id="Land_VR_Block_03_F" >'''Land_VR_Block_03_F'''</span>
+| ''VR Obstacle (12x7.5x6)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Blocks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Blocks|A3_Structures_F_Bootcamp_VR_Blocks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_vr_block_04_f.jpg|150px]]
+| <span id="Land_VR_Block_04_F" >'''Land_VR_Block_04_F'''</span>
+| ''VR Obstacle (10.5x10.5x9)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Blocks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Blocks|A3_Structures_F_Bootcamp_VR_Blocks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_vr_block_05_f.jpg|150px]]
+| <span id="Land_VR_Block_05_F" >'''Land_VR_Block_05_F'''</span>
+| ''VR Obstacle (10x5x4)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Blocks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Blocks|A3_Structures_F_Bootcamp_VR_Blocks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_vr_coverobject_01_kneellow_f.jpg|150px]]
+| <span id="Land_VR_CoverObject_01_kneelLow_F" >'''Land_VR_CoverObject_01_kneelLow_F'''</span>
+| ''VR Cover Object (Low kneel)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Obstacles
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_CoverObjects|A3_Structures_F_Bootcamp_VR_CoverObjects]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_vr_coverobject_01_kneel_f.jpg|150px]]
+| <span id="Land_VR_CoverObject_01_kneel_F" >'''Land_VR_CoverObject_01_kneel_F'''</span>
+| ''VR Cover Object (Kneel)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Obstacles
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_CoverObjects|A3_Structures_F_Bootcamp_VR_CoverObjects]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_vr_coverobject_01_kneelhigh_f.jpg|150px]]
+| <span id="Land_VR_CoverObject_01_kneelHigh_F" >'''Land_VR_CoverObject_01_kneelHigh_F'''</span>
+| ''VR Cover Object (High kneel)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Obstacles
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_CoverObjects|A3_Structures_F_Bootcamp_VR_CoverObjects]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_vr_coverobject_01_stand_f.jpg|150px]]
+| <span id="Land_VR_CoverObject_01_stand_F" >'''Land_VR_CoverObject_01_stand_F'''</span>
+| ''VR Cover Object (Stand)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Obstacles
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_CoverObjects|A3_Structures_F_Bootcamp_VR_CoverObjects]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_vr_coverobject_01_standhigh_f.jpg|150px]]
+| <span id="Land_VR_CoverObject_01_standHigh_F" >'''Land_VR_CoverObject_01_standHigh_F'''</span>
+| ''VR Cover Object (High stand)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Obstacles
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_CoverObjects|A3_Structures_F_Bootcamp_VR_CoverObjects]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_3dselector_01_default_f.jpg|150px]]
+| <span id="VR_3DSelector_01_default_F" >'''VR_3DSelector_01_default_F'''</span>
+| ''VR Selector''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_3dselector_01_incomplete_f.jpg|150px]]
+| <span id="VR_3DSelector_01_incomplete_F" >'''VR_3DSelector_01_incomplete_F'''</span>
+| ''VR Selector (Incomplete)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_3dselector_01_complete_f.jpg|150px]]
+| <span id="VR_3DSelector_01_complete_F" >'''VR_3DSelector_01_complete_F'''</span>
+| ''VR Selector (Complete)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_3dselector_01_exit_f.jpg|150px]]
+| <span id="VR_3DSelector_01_exit_F" >'''VR_3DSelector_01_exit_F'''</span>
+| ''VR Selector (Exit)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_area_01_circle_4_grey_f.jpg|150px]]
+| <span id="VR_Area_01_circle_4_grey_F" >'''VR_Area_01_circle_4_grey_F'''</span>
+| ''VR Area (Circle, 4m, Grey)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_area_01_circle_4_yellow_f.jpg|150px]]
+| <span id="VR_Area_01_circle_4_yellow_F" >'''VR_Area_01_circle_4_yellow_F'''</span>
+| ''VR Area (Circle, 4m, Yellow)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_area_01_square_1x1_grey_f.jpg|150px]]
+| <span id="VR_Area_01_square_1x1_grey_F" >'''VR_Area_01_square_1x1_grey_F'''</span>
+| ''VR Area (Square, 1x1, Grey)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_area_01_square_2x2_grey_f.jpg|150px]]
+| <span id="VR_Area_01_square_2x2_grey_F" >'''VR_Area_01_square_2x2_grey_F'''</span>
+| ''VR Area (Square, 2x2, Grey)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_area_01_square_4x4_grey_f.jpg|150px]]
+| <span id="VR_Area_01_square_4x4_grey_F" >'''VR_Area_01_square_4x4_grey_F'''</span>
+| ''VR Area (Square, 4x4, Grey)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_area_01_square_1x1_yellow_f.jpg|150px]]
+| <span id="VR_Area_01_square_1x1_yellow_F" >'''VR_Area_01_square_1x1_yellow_F'''</span>
+| ''VR Area (Square, 1x1, Yellow)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_area_01_square_2x2_yellow_f.jpg|150px]]
+| <span id="VR_Area_01_square_2x2_yellow_F" >'''VR_Area_01_square_2x2_yellow_F'''</span>
+| ''VR Area (Square, 2x2, Yellow)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_area_01_square_4x4_yellow_f.jpg|150px]]
+| <span id="VR_Area_01_square_4x4_yellow_F" >'''VR_Area_01_square_4x4_yellow_F'''</span>
+| ''VR Area (Square, 4x4, Yellow)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_billboard_01_f.jpg|150px]]
+| <span id="VR_Billboard_01_F" >'''VR_Billboard_01_F'''</span>
+| ''VR Wall''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_groundicon_01_f.jpg|150px]]
+| <span id="VR_GroundIcon_01_F" >'''VR_GroundIcon_01_F'''</span>
+| ''VR Ground Icon''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_sector_01_60deg_50_grey_f.jpg|150px]]
+| <span id="VR_Sector_01_60deg_50_grey_F" >'''VR_Sector_01_60deg_50_grey_F'''</span>
+| ''VR Sector (60deg, 50m, Grey)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-vr_sector_01_60deg_50_red_f.jpg|150px]]
+| <span id="VR_Sector_01_60deg_50_red_F" >'''VR_Sector_01_60deg_50_red_F'''</span>
+| ''VR Sector (60deg, 50m, Red)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Helpers
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Bootcamp_VR_Helpers|A3_Structures_F_Bootcamp_VR_Helpers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_vr_shape_01_cube_1m_f.jpg|150px]]
+| <span id="Land_VR_Shape_01_cube_1m_F" >'''Land_VR_Shape_01_cube_1m_F'''</span>
+| ''VR Game Block (Cube, 1m)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Blocks
+| style="background-color:#c2e1c2" | Public
+| [[File:mark_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mark_VR_Shapes|A3_Structures_F_Mark_VR_Shapes]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;7
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_vr_slope_01_f.jpg|150px]]
+| <span id="Land_VR_Slope_01_F" >'''Land_VR_Slope_01_F'''</span>
+| ''VR Slope (10x5x4)''
+| style="background-color:#dac2e1" | Civilian
+| VR Objects
+| Blocks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_A_VR_Blocks|A3_Structures_F_Exp_A_VR_Blocks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|}
+<div style="color: grey; font-size: 0.9em; padding: 0.5em; text-align: center">Generated in {{GVI|arma 3|2.16|size= 0.75}} by [[User:R3vo|R3vo]] ([[User talk:R3vo|talk]]) 18:03, 8 August 2024 (CEST)</div>
+{{Navbox/A3Assets}}

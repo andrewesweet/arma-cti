@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_displayControls
+// revision: 309465 (2022-05-05T12:06:10Z)
+// export sha1: oxrmzmkgqsmusy1wy1zwx409zpzuxo3
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= <pre>/*
+
+	Description:
+	Return all controls of given display class
+
+	Parameter(s):
+	_this select 0: CONFIG - display config
+	_this select 1: NUMBER or CONFIG or STRING - type of returned values (control configs, their names or IDCs; default: configfile))
+	_this select 2: BOOL - true to search content of controls group (default: true)
+
+	Returns:
+	ARRAY
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_displayControls]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_displayControls;</sqf> -->
+
+|seealso=
+}}

@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_randomPos
+// revision: 349485 (2023-11-08T17:09:03Z)
+// export sha1: caajqkv9mbsvxfx8odltsw63tcsbqb3
+// categories: Category:Arma 3: Functions | Category:Function Group: Positions | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Positions
+
+|descr= Selects random position according to given params within given area
+
+|s1= [whitelist, blacklist, code] call [[BIS_fnc_randomPos]]
+
+|p1= whitelist: [[Array]] - whitelisted areas. If not given, whole map is used. Areas can be:
+* [[Object]] - trigger
+* [[String]] - marker
+* [[Array]] - in format [center, radius] or [center, [a, b, angle, rect]]
+* [[Location]] - location
+
+|p2= blacklist: [[Array]] - (Optional, default <sqf inline>[]</sqf>) blacklisted areas. If not given, water is blacklisted. Areas can be:
+* [[Object]] - trigger
+* [[String]] - marker name or special tags names: "water" - exclude water, "ground" - exclude land
+* [[Array]] - in format [center, radius] or [center, [a, b, angle, rect]]
+* [[Location]] - location
+
+|p3= code: [[Code]] - (Optional, default <sqf inline>{ true }</sqf>) custom condition which should return true for current position candidate passed in [[Magic Variables#this|_this]] variable to be accepted. If not specified all candidates are accepted
+
+|r1= [[Array]] - position candidate in format [x,y,z] or [0,0] if position cannot be found
+
+|x1= <sqf>private _randomPosMapNoWater = [] call BIS_fnc_randomPos;</sqf>
+
+|x2= <sqf>private _randomPosMapNoWater = [nil, ["water"]] call BIS_fnc_randomPos;</sqf>
+
+|x3= <sqf>private _randomPosMapNoLand = [nil, ["ground"]] call BIS_fnc_randomPos;</sqf>
+
+|x4= <sqf>private _randomPosMap = [nil, []] call BIS_fnc_randomPos;</sqf>
+
+|x5= <sqf>private _randomPosAroundPlayer = [[[position player, 50]], []] call BIS_fnc_randomPos;</sqf>
+
+|seealso= [[BIS_fnc_randomPosTrigger]] [[BIS_fnc_getArea]] [[BIS_fnc_findSafePos]]
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20200330213300
+|text= The code parameter here can be quite powerful.
+If using {{Link|#Example 5}} above, adding code as below will make the returned positions always be on a road.
+<sqf>private _randomRoadPosAroundPlayer = [[[position player, 50]], [], { isOnRoad _this }] call BIS_fnc_randomPos;</sqf>
+}}

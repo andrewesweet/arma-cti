@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/setVehicleAmmoDef
+// revision: 378138 (2026-02-25T12:58:23Z)
+// export sha1: 9ng8ouzl2ncm14ierihlhpqicuggfg0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Inventory
+
+|gr2= Vehicle Inventory
+
+|descr= Sets how much ammunition (compared to the configuration of magazines defined in the vehicle's class) the vehicle has. Note that the ammo will only be added to [[Multiplayer Scripting#Locality|local]] turrets. To check the locality of turret use [[turretLocal]].
+
+|s1= unit [[setVehicleAmmoDef]] value
+
+|p1= unit: [[Object]] - unit or vehicle.
+
+|p2= value: [[Number]] - from 0 (no ammo) to 1 (fully loaded).
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setVehicleAmmoDef 0;</sqf>
+
+|seealso= [[setVehicleAmmo]] [[ammo]] [[setAmmo]] [[setAmmoCargo]] [[turretLocal]]
+}}
+
+{{Note
+|user= Actium
+|timestamp= 20141220224900
+|text= For vehicles this command operates relative to its stock magazine loadout (i.e. its CfgVehicles magazines[] values).
+Thus ''setVehicleAmmoDef 1'' will fully restore a vehicle to its default ammunition capacity, resetting any changes made by intentionally/implicitly adding/removing magazines.
+Use [[setVehicleAmmo]] to operate in relation to a vehicle's current magazine loadout.
+}}

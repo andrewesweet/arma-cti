@@ -1,0 +1,101 @@
+// source: https://community.bistudio.com/wiki/Mission_Readme_Template
+// revision: 363963 (2024-04-27T20:46:58Z)
+// export sha1: lhfds4pvst55scq5xlqdddtwiiv1r84
+// categories: Category:Mission Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+The following text can be freely used as a basis for creating {{Link|https://en.wikipedia.org/wiki/README|readme}} text as part of a user made [[Missions|mission]] distribution.
+Note text inside square brackets is intended as example or placeholder text and should be replaced.
+
+
+<pre>
+=====================================
+[Mission name]
+Version:
+Release date: 
+Author(s):
+Multiplayer compatible: [Yes/No/Only]
+=====================================
+
+An unofficial mission for the PC game "Arma 2: Operation Arrowhead" by Bohemia Interactive.
+
+
+=====================================
+DESCRIPTION
+=====================================
+
+[Mission descriptive text]
+
+
+=====================================
+REQUIREMENTS
+=====================================
+
+Arma 2 - version [1.XX] - Bohemia Interactive
+Arma 2: Operation Arrowhead - version [1.XX] - Bohemia Interactive
+British Armed Forces - version [1.XX] - Bohemia Interactive
+Private Military Contractors - version [1.XX] - Bohemia Interactive
+[Addon Name] - [Version] - [Author]
+[Addon Name] - [Version] - [Author]
+
+ 
+=====================================
+INSTALLATION
+=====================================
+
+Extract the supplied files into the Arma 2 single player mission folder "Arma2/Missions".
+For multiplayer use, extract the supplied files into the Arma 2 multiplayer folder "Arma2/MPMissions"
+For more information, please refer to http://community.bistudio.com/wiki/Missions
+
+
+=====================================
+TECHNICAL DETAILS
+=====================================
+
+[Script interaction, changes to default gameplay]
+ 
+ 
+=====================================
+KNOWN ISSUES
+=====================================
+
+[Known issue description]
+
+ 
+=====================================
+VERSION HISTORY
+=====================================
+
+[1.0 - Initial release]
+ 
+
+=====================================
+LICENSE
+=====================================
+
+[Example License text follows:
+Copyright (c) 2012 by Joe Bloggs. This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License.
+To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.] 
+
+
+=====================================
+CREDITS
+=====================================
+ 
+[Example credit text follows:
+Mission design and scripts by Joe Bloggs.
+This mission makes use of the Ultimate Revival Script © 2010 John Smith, used under a Creative Commons Attribution-Noncommercial license: http://creativecommons.org/licenses/by-nc/3.0/.]
+
+
+=====================================
+CONTACT DETAILS
+=====================================
+ 
+[Example credit text follows:
+Joe Bloggs can be contacted at joe.bloggs@email.net.zz]
+
+
+</pre>
+
+
+[[Category:Mission Editing]]

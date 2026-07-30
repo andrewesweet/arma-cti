@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/isFilePatchingEnabled
+// revision: 310763 (2022-05-07T20:21:37Z)
+// export sha1: 83z2qfsc58pty4ghbc84wnofphw076n
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Command Group: System | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= System
+
+|gr2= Diagnostic
+
+|descr= Returns [[true]] if file patching is enabled otherwise [[false]]
+
+|s1= [[isFilePatchingEnabled]] 
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_state = isFilePatchingEnabled;</sqf>
+
+|seealso= [[Arma 3: Startup Parameters#Developer_Options|-filePatching]]
+}}

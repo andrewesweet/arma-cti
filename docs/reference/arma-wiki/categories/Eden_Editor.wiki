@@ -1,0 +1,77 @@
+// source: https://community.bistudio.com/wiki/Category:Eden_Editor
+// revision: 370225 (2024-11-12T18:01:04Z)
+// export sha1: 4df90n197osoifv8zvbamunt6gi2hhv
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+__NOEDITSECTION__
+
+[[File:edenEditor_logo.png|center|256px]]
+
+<div class="floating-box-container" style="margin: auto; max-width: 1024px">
+
+<div class="floating-box">
+== [[:Category:Eden Editor: Getting Started|Getting Started]] ==
+[[Eden Editor: Introduction|Introduction]]<br>
+[[Eden Editor: Switching from 2D Editor|Switching from 2D Editor]]<br>
+[[Eden Editor: Terminology|Terminology]]<br>
+</div>
+
+<div class="floating-box">
+== [[:Category:Eden Editor: Interface|Interface]] ==
+[[Eden Editor: Menu Bar|Menu Bar]]<br>
+[[Eden Editor: Toolbar|Toolbar]]<br>
+[[Eden Editor: Asset Browser|Asset Browser]]<br>
+[[Eden Editor: Status Bar|Status Bar]]<br>
+[[Eden Editor: Controls|Controls]]<br>
+</div>
+
+<div class="floating-box">
+== [[:Category:Eden Editor: Asset Types|Asset Types]] ==
+{{Columns|2|[[Eden Editor: Object|Objects]]<br>[[Eden Editor: Groups|Groups]]<br>[[Eden Editor: Custom Composition|Custom Compositions]]<br>[[Eden Editor: Trigger|Triggers]]<br>[[Eden Editor: Waypoint|Waypoints]]<br>[[Eden Editor: System|Systems]]<br>[[Eden Editor: Marker|Markers]]<br>[[Eden Editor: Comment|Comments]]<br>[[Eden Editor: Layer|Layers]]<br>
+}}
+</div>
+
+<div class="floating-box">
+== [[:Category:Eden Editor: Editing|Entity Editing]] ==
+[[Eden Editor: Entity Placing|Placing]]<br>
+[[Eden Editor: Entity Transforming|Transforming]]<br>
+[[Eden Editor: Transforming Crew|Transforming Crew]]<br>
+[[Eden Editor: Transformation Widget|Transformation Widget]]<br>
+[[Eden Editor: Connecting|Connecting]]<br>
+[[Eden Editor: Entity Attributes|Attributes]]<br>
+</div>
+
+<div class="floating-box">
+== [[:Category:Eden Editor: Scenario|Scenario]] ==
+[[Eden Editor: Scenario Attributes|Scenario Attributes]]<br>
+[[Eden Editor: Scenario Phases|Phases]]<br>
+[[Eden Editor: Preview|Preview]]<br>
+[[Eden Editor: Publishing|Publishing]]<br>
+[[Eden Editor: Scenario Folder|Scenario Folder]]<br>
+</div>
+
+<div class="floating-box">
+== [[:Category:Eden Editor: Modding|Modding Eden Editor]] ==
+[[Eden Editor: Modding|Modding Basics]]<br>
+[[Eden Editor: Configuring Attributes|Configuring Attributes]]<br>
+[[:Category:Command_Group:_Eden_Editor|Eden Scripting Commands]]<br>
+[[Arma_3:_Event_Handlers:_Eden_Editor|Eden Event Handlers]]<br>
+[[Eden Editor: Actions|Eden Actions]]<br>
+[[Eden Editor: Object Categorization|Object Categorization]]<br>
+</div>
+
+</div>
+
+{| style="max-width: 970px; margin: auto"
+| '''See Also''':|| [[:Category:Scripting_Commands_Arma_3|Commands]]|| [[:Category:Arma_3:_Functions|Functions]]|| [[Arma_3:_Event_Handlers|Event Handlers]] || [[Waypoints]] || [[Modules]]
+|}
+
+<div class="floating-box-container" style="margin: auto; max-width: 1024px">
+<div class="floating-box" style="padding-top: 1em">[[File:3den promo 1.jpg|280px]]</div>
+<div class="floating-box" style="padding-top: 1em">[[File:3den promo 2.jpg|280px]]</div>
+<div class="floating-box" style="padding-top: 1em">[[File:3den promo 3.jpg|280px]]</div>
+</div>
+
+
+[[Category: Mission Editing]]

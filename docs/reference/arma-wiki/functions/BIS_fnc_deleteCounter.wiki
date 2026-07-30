@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_deleteCounter
+// revision: 363649 (2024-04-11T15:44:05Z)
+// export sha1: smqm8aty0dhzk48rzhdafau1785vl8g
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Systems | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|arg= global
+|eff= local
+
+|gr1= Systems
+
+|descr= Delete the provided counter added by [[BIS_fnc_counter]].
+
+|s1= [varName] call [[BIS_fnc_deleteCounter]]
+
+|p1= varName: [[String]] or [[Array]] format [varName, namespace] - default namespace is [[missionNamespace]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[["TAG_Score", player]] call BIS_fnc_deleteCounter;</sqf>
+
+|seealso= [[BIS_fnc_counter]]
+}}

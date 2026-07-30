@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Template:Table_Config_Item
+// revision: 378646 (2026-05-17T15:00:20Z)
+// export sha1: b13mdp412w4k5ksjxwf40s5fjadg9xx
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>|-
+| style="text-align:center;" | {{GVI|{{{1|ofp}}}|{{{2|1.00}}}}}
+|</includeonly><noinclude>Template once used in e.g [[Description.ext]].
+[[Category:Historical Templates]]</noinclude>

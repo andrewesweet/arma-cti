@@ -1,0 +1,211 @@
+// source: https://community.bistudio.com/wiki/Cold_War_Rearmed:_Beta
+// revision: 377983 (2026-01-20T15:19:20Z)
+// export sha1: 1mcjvncnqmsuomp4c97jo6w54vs9r86
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Cwrlogo2s.jpg|right|300px]]
+The ArmA: Cold War Rearmed (CWR) modification is a collaborative project with {{Name|bi}} and community fans to bring the ever popular Cold War Crisis campaign and content into {{arma1}} (1.14 or higher).
+
+Key features:
+* Original OFP islands taking advantage of the new texture and vegetation enhancements
+* New vehicles from the Cold War era
+* New units textured in the Cold War era style
+* OFP-like UI design
+* The whole CWC campaign
+* All OFP single- and multiplayer missions from {{Name|bi}}
+
+
+== CONTENT ==
+
+The Public Beta Release contains everything that was included in OFP and OFP: Resistance:
+
+* Malden island
+* Everon island
+* Kolgujev island
+* Nogova island
+* Desert Island
+* The OFP User Interface
+* Completely new US, Russian and Resistance soldiers
+* Completely new set of civilian units
+* New and converted buildings and plants
+* Music files from Operation Flashpoint
+
+
+== DOWNLOAD MIRRORS ==
+
+The filesize is approx. 1.4GB.
+
+* {{Link|http://www.armaholic.com/page.php?id{{=}}5668|Courtesy of ArmAholic}}
+* {{Link|ftp://ftp.e-utp.net/pub/mirror/arma-zone.pl/CWR_RC3_4392.rar|Courtesy of E-UTP.NET}}
+* {{Link|http://www.alcarda.eu/CWR_RC3_4392.rar|Courtesy of arma2.pl}}
+* {{Link|http://armed-assault.de/downloads/cwr-cold-war-rearmed-public-beta.html|Armed-Assault.de}}
+* {{Link|http://www.armagame.info/pliki/CWR_RC3_4392.rar|Courtesy of armagame.info}}
+* {{Link|http://www.ofpec.com/addons_depot/index.php?action{{=}}details&id{{=}}60|Courtesy of OFPEC.com}}
+
+Thank you very much to all our hosts.
+
+
+== BUGFIXES & PATCHES ==
+
+* {{Link|http://www.armaholic.com/argentina/patches/usermade/CWR_resistance_V1_01.7z|Fixed Resistance Campaign (v1.01)}}
+* {{Link|http://www.armaholic.com/argentina/patches/usermade/CWR_Infantry_SP_109.zip|Fixed SP Mission "Infantry" (v1.09)}}
+
+
+== INSTALLATION ==
+ 
+In order to install the modification, run the CWR_RC3_4392.exe from the downloaded archive.
+
+Please take note that sometimes the installer is not able to detect your correct ArmA installation folder, e.g. if you installed to a custom folder or another drive.
+In this case do the following:
+* Start the installer and enter a temporary folder for installation (e.g. cwr_temp. If the folder is not present it will be created.
+* Once the installation is complete, move the "CWR" folder which contains all pbo's to your ArmA installation folder - remember it is just another Modfolder.
+* The same you do with the Campaigns, Missions and MPMissions folders. Maybe the readme too.
+* If the folders are moved to your ArmA installation you can delete the temporary folder.
+* Next you must edit your ArmA shortcut (or make a new one). Like with any other Mod you add at the end of the 'target line' -mod=CWR.<br>Example: C:\games\arma\arma.exe -nosplash -mod=cwr<br>Alternatively copy that .bat file to your arma installation, it starts arma with the -nosplash parameter and CWR as Mod.
+
+The installation will not modify your settings for ArmA: Armed Assault.
+
+The technical support and troubleshooting follow the same guidelines as those for {{arma1}}. Please see the documentation for the original game for more information.
+
+
+== SYSTEM REQUIREMENTS ==
+
+ANY ORIGINAL VERSION OF ARMA 1.14.
+
+System requirements for Cold War Rearmed are identical to those of the original game. {{Name|arma1qg}} should not be used together with this modification. 
+
+
+== KNOWN ISSUES ==
+
+* The installer sometimes doesn't work as supposed (see above).
+* Ladders on some ArmA models are currently not working.
+* Winter Kolgujev might crash because the vegetation pbo is missing.
+
+
+== CREDITS ==
+
+There is a credits video sequence included in the demo. Here is a list, though:
+
+=== Team ===
+
+* '''Adammo''' (Model imports)
+* '''Berghoff''' (Everon, Winter Kolgujev, Plant models)
+* '''Binkowski''' (Textures)
+* '''DasPenguin''' (Models)
+* '''DaSquade''' (AT-3 launcher, Carl-Gustav launcher)
+* '''Ebud''' (US / Russian Units, Malden Sat & Mask images, Intro Sat & Mask images)
+* '''hardrock''' (Logo)
+* '''hoz''' (Project leadership, Packing pipeline)
+* '''Hudson''' (Models)
+* '''itim_tuko''' (Models, textures)
+* '''Jahve''' (Loading screens)
+* '''Jonny''' (Textures)
+* '''Mikero''' (Configs, Scripting, Missions)
+* '''Mondkalb''' (Nogova Sat & Mask images, Cessna)
+* '''Mr-Murray''' (Missions, Cutscenes, Credits)
+* '''NSXr''' (Military Advisor, Photography, Pain in the arse :-))
+* '''OFMan''' (Kolgujev, Everon Sat & Mask images)
+* '''Pennywise''' (Mission converter)
+* '''plaintiff1''' (Trabant)
+* '''Planck''' (Malden, Nogova, Intro, Models & Model Editing, Configs, Textures, Stringtable)
+* '''raedor''' (Configs, Scripting, Project leadership)
+* '''Rellikki''' (Resistance Units)
+* '''Schnapsdrosel''' (Civilians, Russian Sniper hood)
+* '''T_D''' (BRDM, UI, Packing pipeline, walking CWR reference)
+* '''TheSun''' (UAZs)
+* '''W0lle''' (Missions, Project leadership)
+
+=== Donators & Betatesters ===
+
+* '''Archibishop Lazarus''' (T-55)
+* '''CSLA Studio''' (BMP-1, Vz58, RPG-Nh75 - Maa, Yano.t11, TheSun, Faly)
+* '''EricM/RKSL''' (Hind)
+* '''HWM Mod''' (AH-64 - Aplion, Liongreek, Mainframe, Sparky, AnzacSASSteve)
+* '''kenji''' (T-80)
+* '''Panda[PL]''' (M21)
+* '''RHS Mod''' (Ataka rocket, Not used but the thought was there)
+* '''Robert Hammer''' (Bizon)
+* '''rygugu''' (M60)
+* '''scubaman3D''' (Carl-Gustav-Launcher, Uzi, FAL)
+* '''FleePee''' (French Translations)
+* '''D@nte''' (French Translations)
+* '''Kya''' (Polish Translations)
+* '''Snake Man''' (Beta testing)
+* '''h-''' (Beta testing)
+* '''i0n0s''' (Beta testing)
+* '''zipper''' (Beta testing)
+
+=== Special Thanks ===
+
+* '''Enrico Turri''' (BIS)
+* '''Ivan Buchta''' (BIS)
+* '''Jan Hlavatý''' (BIS)
+* '''Jan Horova''' (BIS)
+* '''Jan Pražák''' (BIS)
+* '''Lukas Soukenka''' (BIS)
+* '''Marek Španel''' (BIS)
+* '''Mariusz Zelmanski''' (BIS)
+* '''Markus Kurzawa''' (BIS)
+* '''Morten Gundersen''' (BIS)
+* '''Ondřej Španel''' (BIS)
+* '''Tomas Pavlis''' (BIS)
+* '''Foxhound''' (Providing us fast and reliable FTP/Webspace)
+* '''A.C.E. Mod''' (Donation of models)
+* '''sparks50''' (Pointing towards Schnapsdrosel)
+* '''vilas''' (Keeping our motivation level constantly high :-) )
+* '''OFPEC.com''' (Betatest organization)
+
+
+== SUPPORT ==
+
+If you encounter problems with ArmA: Cold War Rearmed, please use the link below for feedback:
+{{Link|http://forums.bistudio.com/showthread.php?t{{=}}72888|BI Forum CWR Beta Thread}}
+
+
+== CLASSNAMES LIST ==
+
+The class names are identical to those used by Operation Flashpoint. A complete list can be found [[:Category:Operation_Flashpoint:_Modelling|here]].
+
+We cannot guarantee that each class has been converted.
+
+
+== SCRIPTED FUNCTIONALITY ==
+
+=== Hangar main doors ===
+
+* Opening <sqf>{ this animate [_x, 0] } foreach ["Anim_MidDoor", "Anim_RightDoor", "Anim_LeftDoor", "Anim_LeftDoorGeo", "Anim_RightDoorGeo"]</sqf>
+* Closing <sqf>{ this animate [_x, 1] } foreach ["Anim_MidDoor", "Anim_RightDoor", "Anim_LeftDoor", "Anim_LeftDoorGeo", "Anim_RightDoorGeo"]</sqf>
+
+=== Hangar bureau door ===
+
+* Opening <sqf>this animate ["Anim_SideDoor", 1]</sqf>
+* Closing <sqf>this animate ["Anim_SideDoor", 0]</sqf>
+
+=== BMP1 random markings ===
+
+To turn off, write <sqf inline>CWR_noRandomNumbers = true</sqf> in the init.sqf or a init line.
+
+You can use custom markings on the BMP by typing
+
+ <vehicle> setObjectTexture [<x>, <path>]
+
+<vehicle> should be the BMP
+
+<x> should be 4, 5 or 6
+
+<path> can be any path to a picture; we have some pictures under \cwr\data\: blank.paa (for no marking), csla.paa, cwralpha.paa (for CWR logo), fia.paa, gvardija.paa, red_star.paa, russia.paa, russia_naval.paa, sign.paa, ussr.paa
+
+
+== COPYRIGHT ==
+
+Copyright © 2007-2009 Bohemia Interactive and the Cold War Rearmed team. All rights reserved.
+
+ArmA: Cold War Rearmed is distributed under the same conditions as the
+original game. See the EULA for ArmA: Armed Assault for more
+information.
+
+
+== VISIT US ==
+
+* {{Link|http://1985.armedassault.com/}}
+* {{Link|http://www.armaholic.eu/cwr/}}

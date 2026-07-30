@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/PR
+// revision: 343850 (2023-07-26T18:11:05Z)
+// export sha1: 7kwz1yyy81llvo6c99rqaqf9flmegy3
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Infobox/Squad
+|title= [PR]
+|image= -PR-.gif
+|members= kondor, Marek, Talar, [[:User:Matte_PL|Matte]], Rafi, Oko, Trawa, Scooter, [_aDaMoS_], Capi, Bartek, Sokol, Messer, Jacor, Slavko, Daro, Pik, KratS, Mundek, Cerber, Daniel, Olo101, Zero, Kroll, Kruk, Foxbat
+|former_members =
+|successes = M/A
+|founded= November 2005
+|link= <s>''Polish Resistance''</s>
+}}
+== Polish Resistance ==
+
+[PR] is Operation Flashpoint and Armed Assault Club. First members came from Polish [SAS] clan.
+
+
+== OFP Server ==
+
+'''Name''' - Polski Server Klubu [PR]<br>
+'''IP adress''' - 89.161.97.2:2302<br>
+Does not exist now
+
+
+== ArmA Server ==
+
+'''Name''' - Polski Server Klubu [PR]<br>
+'''IP adress''' - 87.204.25.233:2302<br>
+
+; Administration
+* ''[PR] Marek'' - Polish only
+*  ''[PR]zemek kondor'' - Polish and English
+* Slavko - Polish and English
+* Daro - Polish and English
+* Matte  - Polish and English
+
+; Mods used
+* Sigma cars
+* PKW
+
+; Statute
+First at server can play [PR] members, friends, Polish players
+
+; Kick for
+* Bad ping time
+* Breaking Netiquette
+* Team killing and destroing game
+* *Admin*'s will
+
+; Ban for
+* CHEATS
+* Vulgarity

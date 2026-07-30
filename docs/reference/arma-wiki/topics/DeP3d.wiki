@@ -1,0 +1,242 @@
+// source: https://community.bistudio.com/wiki/DeP3d
+// revision: 85282 (2014-10-12T23:20:53Z)
+// export sha1: 9qnzmhpfamm3h4r8ibt06t0419rf487
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+         
+DeP3d Version 1.xx by Mikero<br>
+
+ 
+see readmegeneral and fixes <br>
+
+ 
+----
+ 
+<br>
+Without options, DeP3d simply inspects '''any''' p3d for errors.
+
+ 
+With options, you can:
+
+ 
+* extract the skeleton
+* extract rvmats
+* list NamedSelections
+* convert from one p3d type to another
+ 
+output is generally produced on screen<br> <br> <br> '''Syntax:<br> ''' <br>
+DeP3d [-options] Anyfile[.p3d] '''or''' AnyFolder '''or''' 
+Any List '''or''' &quot;Comma,Separated,list&quot;<br>
+
+ 
+<u>options:</u>
+
+ 
+none list type of p3d(s) encountered
+
+ 
+-P don't pause
+
+ 
+-S list all named selections
+
+ 
+-Es folder | nameof[.p3d] | &lt;file.list&gt; : 
+extract skeleton(s) to &lt;model.cfg&gt;
+
+ 
+-Em 
+folder | nameof[.p3d] | &lt;file.list&gt; : extract rvmats to screen
+
+ 
+-[B]nn nameof[.p3d] : convert p3d to type nn
+
+ 
+nn must be hex 
+or decimal and all of remaining chars in this option string
+
+ 
+-B40 will convert to arma1 p3d
+
+ 
+-40B will fail with syntax error
+
+ 
+-B make a backup
+
+ 
+----
+ 
+'''Generic Scanning options (all dos tools)'''
+
+ 
+It is useful 
+to quickly scan a folder, series of folders, or a list of p3d's looking for 
+changes to the format.
+
+ 
+one such example is introduction of a physx lod.
+
+ 
+To that end, and in keeping with other pbo tools, dep3d accepts scan 
+syntax on the command line (-options are assumed)
+
+ 
+* dep3d \some\folder\anywhere
+ 
+folders are '''recursively''' scanned inspecting each p3d it encounters
+
+ 
+* dep3d some.file
+ 
+any file that is NOT a .p3d is taken to be a text scan list
+
+ 
+This list file can be a permanently held test suite of 'favorite' p3d's and 
+this list can be 
+generated from something as simple as
+
+ 
+dir/b somefolder &gt;some.lst
+
+ 
+* dep3d &quot;comma,separated,list&quot;
+ 
+the net effect of a &quot;comma,separated,list&quot; is the same as 
+specifying a file.list. Quotes are ONLY required when spaces exist in the file 
+names or between commas.
+
+ 
+In both cases (file.list or comma separated), these in 
+turn can be mixtures of specific files, folders and more scan lists.
+
+ 
+----
+ 
+<u>'''Conversions'''</u>
+
+ 
+Dep3d is not intended to reverse 
+engineer odol p3d's back to mlods
+
+ 
+If you are looking for cracking 
+tools, look elsewhere.
+
+ 
+'''However'''
+
+ 
+(among other things) DeP3d '''
+will''' convert odol formats to other odol formats
+
+ 
+The reasons for doing so is BI's 
+tools such as buldozer, oxygen and visitor are not always up to date with 
+respect to p3d's encountered in various engine patches.
+
+ 
+This part of dep3d is intended to 
+downgrade these p3d's into something usable for above tools. Whether they are 
+subsequently usable 'as is' in a derived pbo is not relevant to being placed IN 
+an island, or looked at IN buldozer.
+
+ 
+Separately, dep3d conversion '''
+will''' fully convert OFP formatted p3ds (both odol and mlod) to Arma and 
+vice versa.
+
+ 
+The following is a list of 
+version types current as of Arma3 release
+
+  
+1 MLOD (OFP) (SP3X)
+
+ 
+2 MLOD ARMA (P3DM)
+
+ 
+<u>'''ODOLS'''</u>
+
+ 
+7 OFP
+
+ 
+40 ARMA1
+
+  
+43 ARMA1
+
+ 
+47 ARMA2
+
+ 
+48 
+ARMA2
+
+ 
+49 
+ARMA2
+
+ 
+50 
+ARROWHEAD
+
+ 
+52 TOH
+
+ 
+56 ARMA3
+
+ 
+58 ARMA3
+
+  
+10043 VBS2
+
+  
+Following conversions are available:
+
+                                              
+{| border="1"
+|-
+|'''From'''
+|'''To'''
+|-
+|ANY
+|OFP MLOD (if text strings 
+    &lt;32)
+|-
+|OFP MLOD (type1)
+|ARMA MLOD 
+|-
+|ofp odol
+|any mlod (arma or ofp)
+|-
+|vbs odol
+|Arma 1
+|-
+|ARMA MLOD
+|none
+|-
+|Any Arma1
+|Any Lower Arma1
+|-
+|Any Arma2
+|Any Lower Arma2
+|-
+|Arrowhead
+|Any Arma2
+|-
+|TOH
+|Arrowhead or lower
+|-
+|ARMa3
+|TOH or lower
+|}      
+<br> <br> <br>
+
+
+[[Category:Mikero Tools]]

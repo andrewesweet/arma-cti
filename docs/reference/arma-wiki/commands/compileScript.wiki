@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/compileScript
+// revision: 365141 (2024-07-26T16:44:13Z)
+// export sha1: d6ftlgkyffa0q6fabn0d82eceiom1pl
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|descr= This command is an alias for {{hl|[[compile]](Final) (prefixHeader + [[preprocessFileLineNumbers]] path)}}. See description of [[preprocessFileLineNumbers]] for more details.<br>
+In addition, this command can also compile [[SQF Bytecode]] files, which can reduce compilation time. If both a .sqf file and .sqfc file are pressing in the the path, this command will automatically compile the .sqfc file.
+
+|gr1= System
+
+|s1= [[compileScript]] [path, final, prefixHeader]
+
+|p1= path: [[String]] - path to script file
+
+|p2= final: [[Boolean]] - (Optional, default [[false]]) compile final, see [[compileFinal]]
+
+|p3= prefixHeader: [[String]] - (Optional, default "") value added at the beginning of the file
+
+|r1= [[Code]]
+
+|x1= <sqf>
+compileScript ["a3\props_f_enoch\military\equipment\scripts\meteo.sqf"];
+// has the same functionality as 
+compile preprocessFileLineNumbers "a3\props_f_enoch\military\equipment\scripts\meteo.sqf";
+</sqf>
+
+|seealso= [[compile]] [[compileFinal]] [[preprocessFileLineNumbers]] [[preprocessFile]] [[call]] [[spawn]]
+}}

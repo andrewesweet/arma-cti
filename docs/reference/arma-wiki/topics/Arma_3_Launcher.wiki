@@ -1,0 +1,214 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Launcher
+// revision: 364306 (2024-05-06T09:38:42Z)
+// export sha1: l3304qma5xtdznww2xi43io5s3q7dzg
+// categories: Category:Arma 3: Official Tools Manual | Category:Introduced with Arma 3 version 1.24
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+<div class="float-right">[[File:Arma3LauncherIcon.png|128px]]</div>
+{{GVI|arma3|1.24}}
+The main purpose of the official '''Arma 3 Launcher''' is to enable easy management of local and [[Addons#Steam Workshop|Steam Workshop]] mods including their load order and custom presets, setting up game parameters and display {{arma3}} developer news. 
+
+The official Arma 3 Launcher was launched July 14, 2014 with the Bootcamp update 1.24 (http://arma3.com/news/bohemia-interactive-deploys-arma-3-bootcamp-update).
+
+
+== User interface ==
+
+[[File:Launcher MainUI.png|800px|center]]
+
+=== Common elements ===
+
+[[image:Launcher_CommonUI.png|800px|center]]
+'''Play''' button
+
+[[File:Launcher_QuickPresetSelector.png|160px|right]]
+* Starts the game with a current Launcher setup of mods and parameters. Mods tab will get locked when the game is running.
+* Expanded Play button supports quick selection of mod presets including unmodded game. 
+
+'''Status bar'''
+
+* Displays the workshop mod download progress and notifies the user when the steam is offline (making the workshop unreachable). 
+* Displays the state of BattlEye anti-cheat service initialization when launching the game. Use of BattlEye anti-cheat has to be enabled on [[#BattlEye|BattlEye]] page.
+* Displays notification when the mod updates handled by Steam Client are waiting for user to quit applications.
+* When the service is initialized, the status is switched automatically back to the Mods downloads.
+** ''Use arrows to switch between Mod downloads and Service progress.''
+
+'''Options''' menu gives you an access to [[#Options|Launcher options]], and also contains various links and additional info about the game. Logs and the game troubleshooter helper can be also accessed from this menu.
+
+'''Colored ribbon''' in the top-left corner identifies the currently used Steam branch (default main branch - no ribbon).
+
+
+== Pages ==
+
+=== Dashboard ===
+
+The first page in Launcher displays the latest news post, links to a social media of {{arma3}} and {{Name|bi}}, and mainly the information about joined units from {{Link|https://units.arma3.com|Arma 3 Units}}.
+
+If you are a member of any unit, you can pre-select that units in Launcher, by checking the box on the unit, and it will be automatically activated in the game, once you start it.
+Or you can choose to play without a unit or let the game use the same unit you've played the last time.
+
+=== News ===
+
+<!-- [[File:Arma 3 Launcher News.png|250px|right]] -->
+Displays news from the {{Link|http://dev.arma3.com/|{{arma3}} website}}.
+* Unread items are marked by orange color.
+* To load additional items, click Load more at the bottom.
+
+=== Parameters ===
+
+Allows setting up the [[Arma_3_Startup_Parameters|startup parameters]]. Parameters are separated to Basic and Advanced tabs:
+
+'''Basic''' tab
+[[File:Launcher_ParametersBasic.png|250px|right]]
+* ''Mods'' - Loads the specified sub-folders for different mods. Separated by semicolons.
+* ''No Splash'' - Bypass the splash screens on startup of {{arma3}}.
+* ''Skip Intro'' - Disables world intros in the main menu permanently.
+* ''Windowed'' - Displays {{arma3}} windowed instead of full screen.
+* ''Profiles'' - Profile name to load.
+* ''Mission File'' - Automatically opens the selected mission in the game editor.
+* ''Command line parameters'' - Launcher resolves all parameters set in the Steam's set launch option dialog and displays them in here. See list of [[Arma 3: Startup Parameters|supported parameters]].
+* ''Restore default setting'' - Turns off all parameters. 
+
+'''Advanced''' tab
+<!--[[File:Arma3LauncherParamAdv.png|250px|right]]-->
+<br>
+For detailed description of Advanced Parameters see: {{Link|Arma 3: Launcher - Advanced Parameters}}.
+
+=== Mods ===
+
+The Mods page allows you to configure {{Link|http://steamcommunity.com/workshop/browse?appid{{=}}107410|Steam Workshop}} mod content.
+From here you can see a list of all your subscribed content. Workshop supports uploading unlimited size items containing multiple files.
+
+{{Feature|important|
+All downloads are handled by the Steam Client.
+When downloading updates for multiple-files mods, Steam Client will download content but do not update the mod files when any {{arma3}}-related application ({{arma3}}, Launcher, Publisher) is running.
+Please, exit all the applications to allow updates to be pushed from the temporary download folder to a proper folder.
+}}
+[[File:Launcher_Mods.png|250px|right]]
+
+* All subscribed Steam Workshop mods are visible here.
+* Loaded mods {{Color|red|(1)}} are mods marked for launch when you start the game.
+* Available mods {{Color|red|(2)}} are mods which won't be loaded and used when the game starts.
+* User can move items between the two lists by clicking on the checkbox or by dragging the mod from one list to the other.
+
+'''Toolbar commands''' {{Color|red|(3)}}
+
+* [[File:Launcher_Button_AddWorkshopMod.png|Add Steam Workshop Mod]] - opens Steam Workshop home page with ''mod'' tag pre-selected to allow easier mod subscribing.
+* [[image:Launcher_Button_AddLocalMod.png|Add Steam Workshop Mod]] - opens browse folder dialog. User is able to include his local (non-Workshop) mods into Launcher to manage them from one place, mods can be also drag'n'dropped into the Launcher window. 
+* [[File:Launcher_Button_MoreModOptions.png|More toolbar button]] - opens a menu with more options:
+** Unsubscribe all Steam Workshop mods - Automatically unsubscribes all mods currently subscribed on Steam Workshop.
+** Add watched folder - Allows you to add watched folder where Launcher detects local mods.
+* ''Mod search box'' - allows search in the mods in the lists below; can be also activated with a keyboard shortcut {{Controls|Ctrl|F}}.
+
+'''Icons''' 
+* ''Steam icon'' - indicates that the mods comes from Steam Workshop.
+* ''Status icon'' - signifies the status of the mod, for detailed info visit [[Arma 3: Launcher - Mod_Handling#Mod States|Arma 3 Launcher - Mod Handling]].
+* ''Certificate icon'' - mods with multiplayer signatures are marked by a green certificate icon (it means that all PBOs has at least one BISIGN file).
+
+'''Presets'''
+[[File:Launcher_QuickPresetSelector.png|200px|right]]
+Mod presets are named sets of mods. You can display and manage presets by clicking on the name of current preset in the top right corner of the page {{Color|red|(4)}}.
+Here you can save, load and name various presets of mods. This makes switching mod sets much faster. The current unsaved preset is preserved when the launcher quits.
+
+
+You can also start the game directly with a saved preset using ''Quick preset selector'', which can be access by clicking on the arrow on Play button.
+
+
+For more info about mod handling and detailed description of all related windows see: [[Arma 3: Launcher - Mod Handling]]
+
+=== BattlEye ===
+
+BattlEye is anti-cheat software used by {{arma3}}. Launcher can start the anti-cheat service when you start the game.
+This options is controlled by the options ''Enable BattlEye anti-cheat software'', when checked it will start the BattlEye service when you start the game.
+
+Messages and status from BattlEye service are displayed on this page in the ''Log Messages'' list. When starting the game with BattlEye the current status is also displayed in the Launcher's status bar.
+The messages can be copied to Windows Clipboard by the button next to the message.
+
+{{Feature|informative|BattlEye EULA needs to be accepted. If not, the service is not launched.}}
+
+=== Servers ===
+
+Servers page contains an integrated server browser. It contains five tabs which contains a specific set of {{arma3}} Servers.
+* '''Favorites''' - displays only {{arma3}} servers you've marked as a favorite (with a star).
+* '''Recent''' - displays the servers you've played on recently.
+* '''Friends''' - the servers where you Steam friends play right now.
+* '''Internet''' - all the reachable internet servers.
+* '''Units''' - the servers related to Arma 3 Units that you are member of.
+[[image:Laiuncher_ServerBrowser.png|600px|center]]
+
+On each tab you can find the filter bar on the top, where you can enter a search phrase or filters or use the "Filters" button to display a dialog where you can edit your filters.
+If the filter is active, its icon and the frame will in gold. The server counter next to the filter bar shows number of displayed servers and total number of servers; when the filter is active, these numbers may be different.
+[[image:Launcher_ServerFilterBasic.png|400px|center]]
+
+Each game server is represented by a row in the list. You can join the server by clicking on "JOIN" button that will appear when you move your mouse to that row.
+{{Feature|informative|If the server cannot be joined because it is locked, the lock symbol will appear instead.}}
+Clicking anywhere else on the row will expand it and display more information about the server (e.g. server version, server address, required DLCs).
+[[image:Launcher_ServerRow.png|800px|center]]
+
+When you click on the JOIN button a dialog with required mods is displayed to you. On the top it displays the basic information about the server (you can click on it to display more {{Color|red|(1)}}).
+The middle part of the dialog displays required and optional mods (and also the mods you have currently selected, but that cannot be used on the server).
+When you click on '''SETUP MODS AND JOIN''' button {{Color|red|(2)}} Launcher will automatically load the mods it recognizes and subscribes you Steam Workshop to the ones that you do not have.
+{{Feature|informative|Some servers might be missing a Steam Workshop identifiers for the mods, so Launcher might have a hard time detecting the right mod or the mod might not be available on the Workshop at all.}}
+You can change what happens when you click the button by changing the action for each of the mods in the list of mods above it.
+{{Color|red|(4)}} '''KEEP CURRENT SELECTION AND JOIN''' button {{Color|red|(3)}} will connect you to the server without any changes to mods you have enabled on the MODS page.
+[[File:Launcher_JoinDialog.png|800px|center]]
+
+The commands displayed at the bottom:
+* ''Host server'' - starts the game and start the game server.
+* ''Direct connect'' - let you connect to the server by manually entering it is address and game port.
+
+=== Options ===
+
+[[image:Launcher_Options.png|250px|right]]
+* ''Launcher Options'' tab
+** ''Language'' - Switch Launcher to a Language of your choice. Available: English, Czech, German, Spanish, French, Italian, Portuguese, Polish and Russian (depending on a region, Japanese and Korean language pack might be also available).
+** ''Minimize Launcher to tray'' - When minimized, the Launcher will appear in the notification zone instead of the taskbar.
+** ''Action after game start'' - Available options are Do nothing, Minimize Launcher, Close Launcher, Close Launcher after game ends.
+** ''Default page'' - Set a tab opened right after Launcher's start.
+** ''Active theme'' - Select your favorite Launcher theme.
+** ''Enable analytics'' - Enables [[Arma 3: Analytics|{{arma3}} Analytics]]
+** ''Disable Launcher's UI hardware acceleration'' - Checkbox disables hardware acceleration for WPF rendering for Launcher. This option is Launcher only, does not affect the game itself.
+** ''Use an old system dialog for the folder selection'' - This item can be helpful when folder selections in Mod options tab doesn't work on your computer.
+
+[[image:Launcher_Options_ModOptions.png|250px|right]]
+* ''Mod Options'' tab
+** ''Mods storage'' - Select where legacy Steam mods downloaded from Steam Workshop are stored. {{Feature|informative|This setting only applies to legacy mods, most of the mods are stored by Steam client itself.}}
+** ''Watched folders'' - Allows you to define folders to continuously scan and auto-include any local mods found into Mods page.
+
+
+== Advanced Functions ==
+
+=== Command line parameters ===
+
+Launcher recognizes the following parameters (parameters are not case sensitive):
+* '''-safeMode''' - the Launcher will start in the safe-mode.
+* '''-noHwa''' - The Launcher will start with graphic hardware acceleration disabled (only the Launcher, this switch has no meaning for the game itself).
+* '''-noLauncher''' - Skips the Launcher and starts {{arma3}} directly. Unless no other options is specified it starts 64-bit version of the game on 64-bit OS, 32-bit when you have 32-bit OS.
+* '''-useBE''' - Used together with ''-noLauncher'' it also starts the BattlEye Anti-cheat Software before starting the game.
+* {{GVI|arma3|1.68|size=0.75}} '''-win32''' - Starts 32-bit version of the game. (To be used together with -noLauncher)
+* {{GVI|arma3|1.68|size=0.75}} '''-win64''' - Starts 64-bit version of the game. (To be used together with -noLauncher)
+* ''Any other parameters are considered to be {{arma3}} parameters and are passed to the game as they are.''
+
+
+== Troubleshooting ==
+
+# Check the {{Link|http://arma3.com/launcher/troubleshooting|troubleshooting webpage}} to learn about required redistributables and known issues.
+# Find more information about the [[Arma 3: Unusual Process Exit|Unusual process exit error here]].
+# Report any remaining issue on {{Link|http://feedback.arma3.com|Feedback Tracker}} (category Launcher) and include Launcher logs (see following paragraph).
+{{Feature|informative|Missing redistributables should be automatically installed by [[Steam]] on Launcher's first start.}}
+
+=== Creating a Troubleshooting Report ===
+
+* For issue with the launcher, you can export all launcher logs to the desktop via an action available in the option menu in the upper right corner (gear icon)
+* For issues regarding {{arma3}} you can file a troubleshooting report, also via an action available in the option menu in the upper right corner (gear icon)
+See Also: [[Arma 3: Startup Parameters]]
+
+=== Logs ===
+
+Launcher logs are stored in ''Users\yourUserName\AppData\Local\Arma 3 Launcher\Logs''.<br>
+''When something goes wrong (in several attempts, because Steam can have a bad moment sometimes :^), please, create an issue on the {{Link|http://feedback.arma3.com|Feedback Tracker}} (category Launcher) and include these logs.''<br>
+You can also move the launcher logs packed into a zip file to the desktop, see {{Link|#Creating a Troubleshooting Report}} above.
+
+
+[[Category:Introduced with Arma 3 version 1.24]]
+{{GameCategory|arma3|Official Tools Manual}}

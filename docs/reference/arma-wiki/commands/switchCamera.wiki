@@ -1,0 +1,97 @@
+// source: https://community.bistudio.com/wiki/switchCamera
+// revision: 376544 (2025-10-27T12:56:35Z)
+// export sha1: gsffhqnvuucfkfx8y8zmnbtcsxsfq60
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Camera Control
+
+|descr= Switch camera to given vehicle / camera. Mode is one of:
+* '''"INTERNAL"''': 1st person
+* '''"GUNNER"''': optics / sights
+* '''"EXTERNAL"''': 3rd person (inaccessible if difficulty settings do not allow for it)
+* '''"GROUP"''': group
+* '''"CARGO"''': same as "INTERNAL"
+
+If you switch to a unit in a vehicle, this command uses the correct turret.
+{{Feature|important|
+* Control over the unit is not given to the player. Use [[selectPlayer]] or a combination of [[switchCamera]] and [[remoteControl]] to achieve this.
+* Always [[switchCamera]] first (when needed) '''before''' using [[remoteControl]] as doing it after may lead to unpredictable results.
+}}
+
+|s1= target [[switchCamera]] mode
+
+|p1= target: [[Object]]
+
+|p2= mode: [[String]]
+
+|r1= [[Nothing]]
+
+|s2= [[switchCamera]] target
+
+|s2since= arma3 1.66
+
+|p21= target: [[Object]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>player switchCamera "Gunner";</sqf>
+
+|x2= <sqf>vehicle player switchCamera "External";</sqf>
+
+|seealso= [[cameraView]] [[cameraOn]] [[cameraEffect]] [[selectPlayer]] [[remoteControl]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150516131400
+|text=  Force top down view:
+<sqf>
+private _cameraObject = "Land_HandyCam_F" createVehicleLocal [0, 0, 0];
+_cameraObject hideObject true;
+_cameraObject attachTo [player, [0, 0, 10]];
+_cameraObject setVectorUp [0, 0.99, 0.01];
+_cameraObject switchCamera "Internal";
+
+findDisplay 46 displayAddEventHandler ["MouseButtonDown", {
+	if (_this select 1 == 0) then
+	{
+		player forceWeaponFire [currentMuzzle player, currentWeaponMode player];
+	};
+
+	false;
+}];
+
+findDisplay 46 displayAddEventHandler ["KeyDown", {
+	if (_this select 1 in actionKeys "ReloadMagazine") then
+	{
+		reload player;
+	};
+
+	false;
+}];
+</sqf>
+}}

@@ -1,0 +1,84 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Vehicle_Customization
+// revision: 373962 (2025-07-05T13:59:07Z)
+// export sha1: jqhcyf8d4jmkb3wabbtwtzvh9cgosti
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+The [[Spearhead 1944]] Vehicle Customization Menu was first introduced in the scenario '''Panzerkampfwagen'''. In order to add the feature to your scenario follow the steps on this page.
+
+The [[Spearhead 1944]] vehicle customization feature allows the player to customize one or multiple selected vehicles and is fully '''multiplayer compatible''' 
+
+Customization includes:
+
+* Selecting a different vehicle from a defined list
+* Changing the paint job, if any are available
+* Adjust the parts shown such as additional shields, camo nets or armor
+
+In addition to that, each vehicle can have a custom ''Vehicle Description'' displaying additional information to the player.
+
+Lastly, each vehicle will have a ''Vehicle Strength''. This value is calculated from the vehicles config ''cost'' property and set into relation of all vehicles that can be selected.
+
+{{Youtube|Pw9Tz6RqoAs||center|400}}
+
+<gallery mode="slideshow">
+spe vehicle customization 0.jpg
+spe vehicle customization 1.jpg
+spe vehicle customization 2.jpg
+spe vehicle customization 3.jpg
+spe vehicle customization 4.jpg
+spe vehicle customization 5.jpg
+spe vehicle customization 6.jpg
+</gallery>
+
+== Setup ==
+For this example we are going to add an [[addAction|action]] to two tanks that are then available to all players.
+
+# Place two tanks with the name {{hl|SPE_o_Player_Tank_SP}} and {{hl|SPE_o_Player_Tank_MP}} in [[Eden Editor]]
+# Create a file called [[init.sqf]] in the scenario folder, see [[Event Scripts]]
+# Paste the following code into the file
+<sqf>
+#define VEHICLE_CLASSES ["SPE_PzKpfwIII_J", "SPE_PzKpfwIII_L", "SPE_PzKpfwIII_M", "SPE_PzKpfwVI_H1", "SPE_Jagdpanther_G1"]
+#define VEHICLE_DESCRIPTIONS ["STR_SPE_DESC_PZKPFWIII_J", "STR_SPE_DESC_PZKPFWIII_L", "STR_SPE_DESC_PZKPFWIII_M", "STR_SPE_DESC_PZKPFWVI_H1", "STR_SPE_DESC_JAGDPANTHER_G1"]
+
+{
+    _x addAction
+    [
+        localize "STR_SPE_UTILITYFUNCTIONS_VEHICLECUSTOMIZATION_ACTION_TITLE",
+        {
+            params ["_target"];
+            [
+                "init",
+                _target,
+                VEHICLE_CLASSES,
+                VEHICLE_DESCRIPTIONS,
+                ["SPE_GroupID"]
+            ] call SPE_missionUtilityFunctions_fnc_vehicleCustomization;
+        }
+    ];
+} forEach [SPE_o_Player_Tank_SP, SPE_o_Player_Tank_MP];
+</sqf>
+# Preview the scenario and approach one of the tanks
+# Now select the action entry and open the menu
+
+== Function Documentation ==
+<sqf inline>[_mode, _vehicle, _vehicleClasses, _vehicleDescriptions, _variablesToCopy, _params] call SPE_missionUtilityFunctions_fnc_vehicleCustomization;</sqf>
+
+* _mode - [[String]]: Defines the mode. Use '''init''' to open the UI. The other modes are used internally.
+* _vehicle - [[Object]]: Defines the vehicle that can be customized
+* _vehicleClasses - [[Array]] of [[String]]s: The vehicle classes that will be available for selection
+* _vehicleDescriptions - [[Array]] of [[String]]s: The description for each vehicle class. Order needs to match the order of ''_vehicleClasses''
+* _variablesToCopy - [[Array]] of [[String]]s: Variables that will be copied upon switching the vehicle from the ''old'' to the ''new'' vehicle. These variables will automatically be made public
+* _params - [[Array]] - '''Internal use only!'''
+
+== Restrictions ==
+Some limitations were implemented to prevent faulty behaviour. These consist of:
+* The vehicle needs to be [[alive]]
+* There must be at least one vehicle class defined
+* The [[speed]] of the vehicle needs to be smaller than 1
+* Only one player at a time can customize a vehicle
+* In [[isMultiplayer|multiplayer]] the vehicle has to be empty
+* In [[isMultiplayer|multiplayer]] only one player can customize a vehicle. The first player opening the menu will block other players from doing so until it's closed
+
+'''Appropriate [[hint]]s are displayed to inform the player why customization is currently not possible'''
+
+[[Category:Spearhead 1944]]

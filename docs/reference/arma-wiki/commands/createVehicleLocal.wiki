@@ -1,0 +1,96 @@
+// source: https://community.bistudio.com/wiki/createVehicleLocal
+// revision: 377538 (2026-01-02T06:54:18Z)
+// export sha1: afugx2fjmy37ppjmck5p5rgvd2gdxkg
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|eff= local
+
+|gr1= Object Manipulation
+
+|descr= Creates an object of the given type. The Created object is not transferred through network in MP games.
+[[netId]] of such vehicle in multiplayer will be "0:0". To disable local vehicle creation, use [[CfgDisabledCommands]] to blacklist this command.
+Alternatively, you can use [[createSimpleObject]] with local option enabled where applicable.
+
+|s1= type [[createVehicleLocal]] position
+
+|p1= type: [[String]] - vehicle/object className
+
+|p2= position: [[Position#PositionAGL|PositionAGL]]
+
+|r1= [[Object]]
+
+|s2= [[createVehicleLocal]] [type, position, markers, placement, special]
+
+|s2since= arma3 2.14
+
+|p21= type: [[String]] - vehicle/object className
+
+|p22= position: [[Object]], [[Position#Introduction|Position2D]] or [[PositionATL]] ([[PositionAGL]] if watercraft or amphibious) - desired placement position
+
+|p23= markers: [[Array]] of [[String]]s - (Optional, default <sqf inline>[]</sqf>) if the markers array contains any markers, the position is randomly picked from array of given markers plus desired placement position.
+If any of the markers were given z coordinate with [[setMarkerPos]], the vehicle will also be created at given z coordinate.
+
+|p24= placement: [[Number]] - (Optional, default 0) the vehicle is placed inside a circle with given position as center and placement as its radius.
+
+|p25= special: [[String]] - (Optional, default "NONE") can be one of the following:
+* {{hl|"NONE"}} - will look for suitable empty position near given position (subject to other placement params) before placing vehicle there.
+* {{hl|"CAN_COLLIDE"}} - places vehicle at given position (subject to other placement params), without checking if others objects can cross its 3D model.
+* {{hl|"FLY"}} - if vehicle is capable of flying and has crew, it will be made airborne at default height.
+If ''special'' is "" or not specified, default {{hl|"NONE"}} is used.
+
+|r2= [[Object]] - created vehicle or [[objNull]] if failed
+
+|x1= <sqf>_lightSource = "#lightpoint" createVehicleLocal _pos;</sqf>
+
+|x2= Multiple types:
+<sqf>
+private _lightSource =		"#lightsource"		createVehicleLocal _pos;	// see [[Light Source Tutorial]]
+private _lightReflector =	"#lightreflector"	createVehicleLocal _pos;	// see [[Light Source Tutorial]] - since {{arma3}} v2.06
+private _particleSource =	"#particlesource"	createVehicleLocal _pos;	// see [[Particles Tutorial]]
+private _dynamicSound =		"#dynamicsound"		createVehicleLocal _pos;	// see [[createSoundSource]]
+</sqf>
+
+|x3= <sqf>
+// since {{arma3}} v2.14
+private _lightPoint = createVehicleLocal ["#lightpoint", getMarkerPos "marker1", ["marker2", "marker3"], 0, "NONE"];
+</sqf>
+
+|seealso= [[createVehicle]] [[createMine]] [[deleteVehicle]] [[createUnit]]
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20080605071800
+|text= If the object that is created is of the type ammo, then it will created on '''all''' clients (''tested only on VBS2'').
+}}
+
+{{Note
+|user= DamonDaemon
+|timestamp= 20130905180400
+|text= Indeed the type of Ammo is transfered to '''ALL''' clients, but apparently also the muzzle effects (firing sound, light, etc.); this includes muzzles from Horns (Truck or Car Horn, Bicycle bells, etc.) as well as any other weapon. Tested on {{Name|arma1|short}} - {{Name|arma2oa|short}} (latest patch).
+}}
+
+{{Note
+|user= demellion
+|timestamp= 20181102121600
+|text= '''WARNING:''' Do not instigate [[createVehicle]] or [[createVehicleLocal]] within a server function executed with [[Arma 3: Functions Library#Pre and Post Init|preInit]] flag.<br>
+This will cause ''"You cannot play/edit this mission"'' for a vehicles compiled from a [[Arma 3: Startup Parameters#Modifications|-mod]] and make server skip/loop that mission init.
+}}

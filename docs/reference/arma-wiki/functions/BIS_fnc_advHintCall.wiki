@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_advHintCall
+// revision: 363987 (2024-04-29T23:23:27Z)
+// export sha1: 9d6xw3efcf63hczd5arh08q0ytlaiu9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.20 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.20
+
+|gr1= GUI
+
+|descr= Advanced hint call, creates hint itself.<br>
+This function gets parameters from variable '''BIS_fnc_advHint_hint''' in format [class, fullText, shortText, shortDur, shortHideCond, fullDur, fullHideCond, showFull, sound]:
+* class: [[String]] - class of hint<br>
+* fullText: [[String]] - structured text of full hint<br>
+* shortText: [[String]] - structured text of short hint<br>
+* shortDur: [[Number]] - duration of short hint in seconds<br>
+* hideCond: [[String]] - condition for hiding of short hint (default: "false")<br>
+* fullDur: [[Number]] - duration of full hint in seconds<br>
+* fullHideCond: [[String]] - condition for hiding of full hint (default: "false")<br>
+* showFull: [[Boolean]] - true shows directly full hint (default: [[false]])<br>
+* sound: [[Boolean]] - true for using of sound (default: [[true]])
+
+|s1= fullText call [[BIS_fnc_advHintCall]]
+
+|p1= fullText: [[Boolean]] - [[true]] to show full text, [[false]] to only show small hint notification
+
+|r1= [[Nothing]]
+
+|x1= <sqf>false call BIS_fnc_advHintCall;</sqf>
+
+|seealso= [[BIS_fnc_advHint]] [[BIS_fnc_advHintFormat]] [[BIS_fnc_advHintArg]]
+}}

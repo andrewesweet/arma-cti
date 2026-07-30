@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/completedFSM
+// revision: 310814 (2022-05-07T20:23:36Z)
+// export sha1: 5fz8tj4zcqo8wer48syd2hnmh4mo8c3
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= System
+
+|descr= Checks whether the given FSM is completed. The FSM handle is the number returned by the [[execFSM]] command.
+
+|s1= [[completedFSM]] fsmHandle
+
+|p1= fsmHandle: [[Number]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_completed = completedFSM _fsmHandle;</sqf>
+
+|seealso= [[FSM]] [[commandFSM]] [[doFSM]] [[execFSM]] [[getFSMVariable]] [[setFSMVariable]]
+}}

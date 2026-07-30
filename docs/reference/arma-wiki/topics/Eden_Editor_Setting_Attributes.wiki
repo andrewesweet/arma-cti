@@ -1,0 +1,113 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Setting_Attributes
+// revision: 364857 (2024-06-25T09:35:04Z)
+// export sha1: 7yrwxt73qpacxp23bwkf9ynf9lyohau
+// categories: Category:Eden Editor: Asset Types | Category:Eden Editor: Editing | Category:Eden Editor: Modding
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+While Eden Editor [[Eden Editor: Modding#Workspace|Workspace]] behaves like a normal scenario and it is possible to modify entities using existing commands (e.g., [[setPosATL]]), such changes would be invisible for the editor and not saved to the scenario file.
+
+Instead, the editor is using attributes to store all entity and scenario settings. Most commonly, the scenario designer can edit them using Attributes window available after double-clicking on an entity. Some are also edited directly, like position when dragging entities around.
+
+When an attribute is changed, the functionality attached to it is also performed. Setting ''position'' attribute of an object will move it to the given position, and adjusting {{hl|IntelWeatherStart}} attribute will change the weather.
+Using [[setPosATL]] or [[setOvercast]] commands would seemingly achieve the same, but without permanent effect - the changes would not be visible next time the scenario is loaded.
+
+
+== Scripting ==
+
+A scenario designer is not the only one who can modify attributes. Scripted systems can access them as well, giving you an ability to write some automated systems.
+
+{{Feature|important|Attributes are available only within the Eden Editor workspace. They cannot be accessed in scenario preview or exported scenario.}}
+
+=== Setting Entity Attributes ===
+
+To set an attribute, you need to know it is ''property'' and value ''type''. Tables below will help you with that - look at the last two columns, labeled '''Development'''.
+For example to set player as invincible, we'll use '''Enable Damage''' attribute.
+You can see its class is {{hl|allowDamage}} (corresponding with [[allowDamage]] command; most attributes are named this way) and its value type is [[Boolean]]. This is how the expression will look like:
+<sqf>player set3DENAttribute ["allowDamage", false];</sqf>
+
+You can also check for the attribute state:
+<sqf>_isInvincible = player get3DENAttribute "allowDamage";</sqf>
+
+=== Managing History ===
+
+When setting attributes, each command execution would create a new history entry. When doing a batch change, the user would have to press undo for each entity modified, which would be uncomfortable.
+To prevent this, you can collect multiple changes together by wrapping them inside [[collect3DENHistory]] command:
+<sqf>
+collect3DENHistory {
+	{
+		_x set3DENAttribute ["allowDamage",false];
+	} forEach (all3DENEntities select 0);
+};
+</sqf>
+Alternatively, you can use more [[set3DENAttributes]] command which is able to modify multiple entities at once already.
+
+=== Setting Object Type ===
+
+[[Eden Editor: Object|Objects]] also have the ''ItemType'' special attribute, which defines which object class will represent them (i.e., a soldier, a car, a house, etc.).
+It cannot be changed as a normal attribute, because it requires replacing the old model with the new one. There's a special command to handle this:
+<sqf>player set3DENObjectType "B_Soldier_F";</sqf>
+
+=== Setting Scenario Attributes ===
+
+Scenario attributes can be set with the following commands.
+* [[set3DENMissionAttributes]]
+* [[set3DENMissionAttribute]]
+
+To return a specific scenario attribute value use [[get3DENMissionAttribute]].
+
+==== Sections & Properties ====
+Use the following sections to return the scenario attribute values.
+
+{| class="wikitable"
+|-
+! Display Name !! Section (Class Name)
+|-
+| Environment || <small>{{hl|Intel}}</small>
+|-
+| Multiplayer || <small>{{hl|Multiplayer}}</small>
+|-
+| Performance || <small>{{hl|GarbageCollection}}</small>
+|-
+| Preferences|| <small>{{hl|Preferences}}</small>
+|}
+
+The <small>{{hl|property}}</small> can be retrieved from the tables below.
+
+== Attributes ==
+
+=== Object ===
+
+{{:Eden Editor: Object}}
+
+=== Composition ===
+
+{{:Eden Editor: Composition}}
+
+=== Trigger ===
+
+{{:Eden Editor: Trigger}}
+
+=== Waypoint ===
+
+{{:Eden Editor: Waypoint}}
+
+=== System ===
+
+{{:Eden Editor: System}}
+
+=== Marker ===
+
+{{:Eden Editor: Marker}}
+
+=== Scenario ===
+
+{{:Eden Editor: Scenario Attributes}}
+
+=== Comment ===
+
+{{:Eden Editor: Comment}}
+
+
+[[Category:Eden Editor: Editing|Setting Attributes]]
+[[Category:Eden Editor: Modding|Setting Attributes]]

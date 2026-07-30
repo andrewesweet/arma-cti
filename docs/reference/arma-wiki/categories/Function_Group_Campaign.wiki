@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Campaign
+// revision: 168846 (2020-10-13T14:45:44Z)
+// export sha1: 3txl3hnav59upux9c3cbyolz2ug5m27
+// Vendored snapshot. Do not edit — re-export instead.
+
+Mostly functions used for the [[Arma 3 Apex|APEX Protocol campaign]].
+
+[[Category:Functions by Functionality]]

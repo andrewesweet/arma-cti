@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/isWeaponDeployed
+// revision: 321095 (2022-05-13T13:54:06Z)
+// export sha1: toe2eltk6qshdskjwh0b7abg1elv1cp
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.42
+
+|arg= global
+
+|gr1= Weapons
+
+|descr= Returns true if weapon is currently deployed.
+
+|s1= [[isWeaponDeployed]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Boolean]]
+
+|s2= [[isWeaponDeployed]] [unit, onGround]
+
+|s2since= arma3 2.06
+
+|p21= unit: [[Object]]
+
+|p22= onGround: [[Boolean]] - (Optional) [[true]] to check if deployed on ground, [[false]] to check if deployed on object. Omitted - same as main syntax.
+
+|r2= [[Boolean]] 
+
+|x1= <sqf>_dep = isWeaponDeployed player;</sqf>
+
+|x2= <sqf>_depOnObj = isWeaponDeployed [player, false];</sqf>
+
+|seealso= [[isWeaponRested]] [[canDeployWeapon]]
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20150701164400
+|text= You can force a unit out of bipod or resting with:
+<sqf>_unit playMove "";</sqf>
+}}
+
+{{Note
+|user= Beno 83au
+|timestamp= 20170304035800
+|text= [[playMove]], as well as [[switchMove]], appears to not work when forcing a player out of being deployed. A more reliable method is:
+<sqf>_player setPos (_player modelToWorld [0,0,0]);</sqf>
+}}

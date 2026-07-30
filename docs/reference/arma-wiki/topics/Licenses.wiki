@@ -1,0 +1,132 @@
+// source: https://community.bistudio.com/wiki/Licenses
+// revision: 349869 (2023-11-20T22:10:45Z)
+// export sha1: 0nnzw56kswsv7tvsbnnhp3q6lnqao71
+// categories: Category:Public Data
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+__NOEDITSECTION__
+This page provides an overview of the existing content licenses established by [[Bohemia Interactive]] a.s.
+
+Please understand also that there are '''other rules and rights''' that are not limited by these licenses:
+* Any of the above conditions can be waived if you get permission from the copyright holder.
+* Where the work or any of its elements is in the public domain, that status is in no way affected by the license.
+* Your fair dealing or fair use rights, or other applicable copyright exceptions and limitations;
+* The author's moral rights;
+* Rights other persons may have either in the work itself or in how the work is used, such as publicity or privacy rights.
+* For any reuse or distribution, you must make clear to others the license terms of this work. The best way to do this is with a link to particular license's web page (see below).
+
+Visit {{Link|https://www.bohemia.net/community/licenses/}} to learn more about the {{Name|bi}}'s licenses, check the full texts and see what licenses can or should be used for your work. 
+
+
+== Overview of the licenses ==
+
+{{Feature|important|Please, note that license summaries have no legal effect and are only of an informative nature designed for you to get the basic information about the content of the licenses. The only binding provisions are those in the original and full texts of these licenses.}}
+
+
+{| class="wikitable"
+
+| width="25%" style="padding-top:1em; vertical-align:top; text-align:center; background:#95D4E6;" |
+=== Arma Public License<br>(APL) ===
+[[File:Licence_APL.png]]
+| width="25%" style="padding-top:1em; vertical-align:top; text-align:center; background:#D2DC6B;" |
+=== Arma Public License Share Alike<br>(APL-SA) ===
+[[File:Licence_APL-SA.png]]
+| width="25%" style="padding-top:1em; vertical-align:top; text-align:center; background:#F29087;" |
+=== DAYZ Mod License Share Alike<br>(DML-SA) ===
+[[File:Licence_DML-SA.png]]
+| width="25%" style="padding-top:1em; vertical-align:top; text-align:center; background:#6fa81d;" |
+=== Take On Public License Share Alike<br>(TOPL-SA) ===
+[[File:Licence_TOPL-SA.png]]
+
+|- class="valign-top"
+
+| style="padding: 15px" |
+With this licence you are free to adapt (i.e. modify, rework or update) and share (i.e. copy, distribute or transmit) the material under the following conditions:
+* '''Attribution''' — You must attribute the material in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the material).
+* '''Noncommercial''' — You may not use this material for any commercial purposes. 
+* '''{{arma}} Only''' — You may not convert or adapt this material to be used in other games than Arma.
+
+| style="padding: 15px" |
+With this licence you are free to adapt (i.e. modify, rework or update) and share (i.e. copy, distribute or transmit) the material under the following conditions:
+
+* '''Attribution''' — You must attribute the material in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the material).
+* '''Noncommercial''' — You may not use this material for any commercial purposes.
+* '''{{arma}} Only''' — You may not convert or adapt this material to be used in other games than Arma.
+* '''Share Alike''' — If you adapt, or build upon this material, you may distribute the resulting material only under the same license.
+
+| style="padding: 15px" |
+With this licence you are free to adapt (i.e. modify, rework or update) and share (i.e. copy, distribute or transmit) the material under the following conditions:
+
+* '''Attribution''' — You must attribute the material in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the material).
+* '''Noncommercial''' — You may not use this material for any commercial purposes 
+* '''{{arma2}} Only''' — You may not convert or adapt this material to be used in other games than {{arma2}}
+* '''Share Alike''' — If you adapt, or build upon this material, you may distribute the resulting material only under the same license
+
+| style="padding: 15px" |
+With this licence you are free to adapt (i.e. modify, rework or update) and share (i.e. copy, distribute or transmit) the material under the following conditions:
+
+* '''Attribution''' — You must attribute the material in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the material).
+* '''Noncommercial''' — You may not use this material for any commercial purposes.
+* '''Take On Only''' — You may not convert or adapt this material to be used in other games than the Take On series.
+* '''Share Alike''' — If you adapt, or build upon this material, you may distribute the resulting material only under the same license.
+
+|- class="align-center" style="height: 3.5em; font-size: 1.1em"
+
+| {{Link|https://www.bohemia.net/community/licenses/arma-public-license|Read the full text}}
+| {{Link|https://www.bohemia.net/community/licenses/arma-public-license-share-alike|Read the full text}}
+| {{Link|https://www.bohemia.net/community/licenses/dayz-mod-license-share-alike|Read the full text}}
+| {{Link|https://www.bohemia.net/community/licenses/take-on-license-share-alike|Read the full text}}
+|}
+
+
+== Use of the Licenses ==
+
+Our community is encouraged to use {{Name|bi}}'s licenses for their own works. In some cases (usage of works which are released under any of the Share Alike licenses), usage of appropriate license is even mandatory.
+The flowchart below may help you in selecting the right license for your work.
+
+[[File:Licence_Selection.jpg|1200px]]
+
+
+=== Embed the license banners ===
+
+If you release your addon under one of {{Name|bi}}'s content licenses, feel free to use the following banners hosted by [https://bohemia.net/ bohemia.net]:
+
+==== Arma Public License ====
+<syntaxhighlight lang="html">
+<a rel="license" href="https://www.bohemia.net/community/licenses/arma-public-license" target="_blank">
+	<img src="https://www.bohemia.net/assets/img/licenses/APL.png">
+	<br>
+	This work is licensed under Arma Public License
+</a>
+</syntaxhighlight>
+
+==== Arma Public License Share Alike ====
+<syntaxhighlight lang="html">
+<a rel="license" href="https://www.bohemia.net/community/licenses/arma-public-license-share-alike" target="_blank">
+	<img src="https://www.bohemia.net/assets/img/licenses/APL-SA.png">
+	<br>
+	This work is licensed under Arma Public License Share Alike
+</a>
+</syntaxhighlight>
+
+==== DayZ Mod License Share Alike ====
+<syntaxhighlight lang="html">
+<a rel="license" href="https://www.bohemia.net/community/licenses/dayz-mod-license-share-alike" target="_blank">
+	<img src="https://www.bohemia.net/assets/img/licenses/DML-SA.png">
+	<br>
+	This work is licensed under Arma Public License Share Alike
+</a>
+</syntaxhighlight>
+
+==== Take On Public License Share Alike ====
+<syntaxhighlight lang="html">
+<a rel="license" href="https://www.bohemia.net/community/licenses/take-on-license-share-alike" target="_blank">
+	<img src="https://www.bohemia.net/assets/img/licenses/TOPL_SA.png">
+	<br>
+	This work is licensed under the Take On License
+</a>
+</syntaxhighlight>
+
+
+[[Category:Public Data]]

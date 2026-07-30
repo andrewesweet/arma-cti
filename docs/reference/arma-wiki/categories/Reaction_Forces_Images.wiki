@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Reaction_Forces_Images
+// revision: 363354 (2024-03-27T10:12:51Z)
+// export sha1: 8a49jmg9i097lv0092apa12srqxvdm8
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Reaction Forces]]

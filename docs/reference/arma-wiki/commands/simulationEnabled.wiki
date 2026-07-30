@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/simulationEnabled
+// revision: 310189 (2022-05-05T13:10:32Z)
+// export sha1: heedzo063fzzdysk1lojwztxpv8g286
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Check if the entity has enabled simulation. 
+
+{{Feature | important | The entity could be [[Multiplayer Scripting#Locality|local]] or remote but the result returned by this command will be for the entity simulation set up locally on the client that executed the command.
+See [[enableSimulation]] for more info.}}
+
+|s1= [[simulationEnabled]] entity
+
+|p1= entity: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>simulationEnabled player;</sqf>
+
+|seealso= [[enableSimulation]] [[enableSimulationGlobal]] [[enableDynamicSimulationSystem]] [[dynamicSimulationSystemEnabled]] [[enableDynamicSimulation]] [[dynamicSimulationEnabled]] [[setDynamicSimulationDistance]] [[dynamicSimulationDistance]] [[setDynamicSimulationDistanceCoef]] [[dynamicSimulationDistanceCoef]] [[triggerDynamicSimulation]] [[canTriggerDynamicSimulation]]
+}}

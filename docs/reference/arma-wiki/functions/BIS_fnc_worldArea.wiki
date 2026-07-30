@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_worldArea
+// revision: 328874 (2022-07-15T17:37:41Z)
+// export sha1: krbfyv8mu1cjoux9d322s0cfsww2l3u
+// categories: Category:Arma 3: Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Map and Markers
+
+|eff= local
+
+|descr= Creates (or returns if it already exists) trigger with size of map.
+
+|s1= call [[BIS_fnc_worldArea]]
+
+|r1= [[Object]]: a [[Trigger|trigger]] covering the whole ''defined'' terrain. Referenced by '''hsim_worldArea''' variable
+
+|x1= <sqf>private _bigTrigger = call BIS_fnc_worldArea;</sqf>
+
+|seealso= [[worldSize]] [[2D Editor: Triggers]] [[Eden Editor: Trigger]] [[createTrigger]]
+}}

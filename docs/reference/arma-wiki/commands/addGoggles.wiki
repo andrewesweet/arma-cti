@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/addGoggles
+// revision: 318656 (2022-05-13T09:21:15Z)
+// export sha1: 5kg9czl17xlwhzc0xokx3bkcfjkxcq1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Unit Inventory
+
+|descr= Create a new item and try to link it into goggles (glasses) slot.
+{{Feature | informative | This command does '''not''' add NVGs, which are [[hmd]] slot items (see [[linkItem]] instead).}}
+
+|s1= unit [[addGoggles]] type
+
+|p1= unit: [[Object]]
+
+|p2= type: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player addGoggles "G_Tactical_Clear";</sqf>
+
+|x2= <sqf>diver addGoggles "G_Diving";</sqf>
+
+|seealso= [[goggles]] [[removeGoggles]]
+}}

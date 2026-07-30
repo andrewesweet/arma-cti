@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/timeMultiplier
+// revision: 310775 (2022-05-07T20:21:45Z)
+// export sha1: 8zemwqzoy07yjtdh7cb2ljrliw3cf6u
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Command Group: Mission Information | Category:Command Group: Time | Category:Introduced with Arma 3 version 1.26 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.26
+
+|gr1= Time
+
+|gr2= Mission Information
+
+|gr3= Environment
+
+|descr= Returns the value set with [[setTimeMultiplier]].
+
+|s1= '''timeMultiplier'''
+
+|r1= [[Number]] - current time multiplier
+
+|x1= <sqf>_multiplier = timeMultiplier;</sqf>
+
+|seealso= [[setTimeMultiplier]] [[skipTime]] [[setAccTime]] [[accTime]] [[time]] [[serverTime]] [[date]] [[dayTime]]
+}}

@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_drawAO
+// revision: 330782 (2022-11-01T16:08:24Z)
+// export sha1: fxxt5wkf7bj270tvm2dzk513856ub7h
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Map and Markers
+
+|descr= Draws a dashed line around the outer edges of a trigger.
+
+|s1= [triggers, distance] call [[BIS_fnc_drawAO]]
+
+|p1= triggers: [[Object]] or [[Array]] - trigger or list of triggers that indicate AO
+
+|p2= distance: [[Number]] - (Optional, default 50) number that decides distance between each new line drawn
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[Trigger1] call BIS_fnc_drawAO; // draws a dashed line around trigger1's outer edge, with 50m between each line</sqf>
+
+|x2= <sqf>[Trigger1, 10] call BIS_fnc_drawAO; // draws a dashed line around trigger1's outer edge, with 10m between each line</sqf>
+
+|x3= <sqf>[[Trigger1, Trigger2]] call BIS_fnc_drawAO; // draws dashed lines around multiple triggers, useful for multiple AOs in one mission</sqf>
+
+|seealso=
+}}
+
+{{Note
+|user= Tryteyker-
+|timestamp= 20140928171600
+|text= It is worth noting that the size, color and other attributes that the line may have are dependant on the trigger itself.
+The crucial attributes for the function to work properly seem to be the following:
+: Activation: Anybody OR side player
+: Size: Has to be bigger than 50x50 to be visible (below 50x50 it will not work properly as the function increments in 50 for each new line)
+
+The following attributes are saved by the function once it is called, all attributes originating from trigger:
+<sqf>
+private _triggerPos = position _x;
+_triggerPosX = _triggerPos select 0;
+_triggerPosY = _triggerPos select 1;
+_triggerArea = triggerArea _x;
+_triggerSizeX = _triggerArea select 0;
+_triggerSizeY = _triggerArea select 1;
+_triggerSize = _triggerSizeX max _triggerSizeY;
+_triggerDir = _triggerArea select 2;
+_triggerType = _triggerArea select 3;
+_triggerText = triggerText _x;
+_triggerActivation = triggerActivation _x select 0;
+_triggerPresent = triggerActivation _x select 1;
+</sqf>
+
+This is taken directly from the function.
+Text will generally show up on the left hand side (''inside'' the circle/rectangle) AND on the right hand side (''outside'' the circle/rectangle).
+Size increments can be changed using ''_this select 1'', another example provided above.
+}}

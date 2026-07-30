@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/binocularItems
+// revision: 369611 (2024-09-26T20:58:03Z)
+// export sha1: 1kmu4a1dsmfkdqcdxas53cbik3960gn
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|arg= global
+
+|gr1= Unit Inventory
+
+|descr= Returns array with all items assigned to the [[binocular]] weapon except magazines. Use [[binocularMagazine]] command for the latter. This command is used for infantry weapons only.
+
+|s1= [[binocularItems]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] with [silencer, pointer, optic, bipod]
+* silencer: [[String]]
+* pointer: [[String]] - laserpointer or flashlight
+* optic: [[String]]
+* bipod: [[String]]
+
+|x1= <sqf>binocularItems player;</sqf>
+
+|seealso= [[addBinocularItem]] [[removeBinocularItem]] [[removeAllBinocularItems]] [[binocularMagazine]] [[weaponAccessories]] [[weaponAccessoriesCargo]] [[primaryWeaponItems]] [[secondaryWeaponItems]] [[handgunItems]] [[weaponsItems]] [[weaponsItemsCargo]]
+}}

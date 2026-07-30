@@ -1,0 +1,283 @@
+// source: https://community.bistudio.com/wiki/BattlEye
+// revision: 378579 (2026-05-10T17:03:23Z)
+// export sha1: h5pt0966pytxxawbo4oybh0qt7a4aa2
+// categories: Category:ArmA: Armed Assault: Multiplayer | Category:Arma 2: Multiplayer | Category:Arma 3: Multiplayer
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side|0.9}}
+{{Link|http://www.battleye.com|BattlEye website}}<br>
+Abbreviation: '''BE'''
+
+BattlEye is an anti-cheat tool created by ''BattlEye Innovations''. It is currently included in Bohemia Interactive's ''Arma'', ''Arma 2'' and ''Arma 3'' series as an optional installation and server configuration option.
+
+BattlEye works by scanning connected clients for various cheat and exploit methods. Upon detection, BattlEye disconnects (''kicking'') the offending clients. You can find more details about the ''BE'' cheat scanning engine on the {{Link|https://www.battleye.com/about/|about page}}.
+
+
+== Privacy ==
+
+'''BattlEye will never violate your privacy in any way'''. The EULA clearly states this when installing BattlEye. Any other statements found anywhere else are superseded by the EULA.
+
+BattlEye always has and will secure the user's privacy and protect against any sort of software exploitation from outside. 
+
+
+== Setup ==
+
+=== Latest version ===
+
+You can find out what the latest version is by visiting the {{Link|http://www.battleye.com/index.html|news section}}.
+
+=== Installation ===
+
+Installation of the BattlEye client is an option during the initial game installation process.
+
+BE updates itself automatically during a running MP session with internet access. However in the case of troubles use the following options:
+
+==== Manual BEClient.dll download ====
+# Download the latest ''BEClient.dll'' from the {{Link|http://www.battleye.com/download.html|download section}}. Make sure to download the ''BEClient.dll'' for the your series of Arma:
+#: ''Arma, Arma 2, Operation Arrowhead, Arma 3,'' &hellip;
+# Now you need to put ''BEClient.dll'' to the right location:
+#; ''Windows 7''
+#: {{hl|C:\Users\%USERNAME%\AppData\Local\Arma 2 OA\BattlEye\}}
+#; ''Windows XP''
+#: {{hl|C:\Documents and Settings\%USERNAME%\Local Settings\Application Data\ARMA 2 OA\BattlEye\}}
+#; ''STEAM''
+#: {{hl|C:\Program Files (x86)\Steam\SteamApps\common\ARMA 2 Operation Arrowhead\Expansion\BattlEye\}}
+
+{{Feature | important | You need to use the right subfolder for your game version (Arma/Arma 2/Arma 2 OA/Arma 3&hellip;).}}
+
+==== Automated BEClient.dll installer ====
+# Download the {{Link|link= http://forums.bistudio.com/showthread.php?t=109915|text= installer}} for your series of Arma.
+# Next run it and use '''''run as Administrator''''' (select file by left mouse click, right mouse click, select the '''''run as''''' option).
+::It is a very fast '''silent-installer'''. This means normally you will not notice anything - no application widow, no progress bar, no completion info. '''Only if there are issues, it will speak up'''.
+
+The automated installer looks for the ''BEClient.dll'' on your computer:
+# If your BEClient.dll is same or newer, then installer does nothing,
+# If your BEClient.dll is older, it updates the BEClient.dll version,
+# If the BEClient.dll is not found, it will install the latest BEClient.dll.
+
+You can verify if it was installed by checking the software uninstall list. You find it under "''BattlEye for OA uninstall''".
+
+=== Installation on Linux servers ===
+
+First of all, set up a working ''Arma 2'' or ''Arma 2:OA'' server. When your Linux Arma 2 server works as it should, you can follow these instructions to install and enable BattlEye.
+
+# Log on to your Linux server with '''''SSH''''' or open a new '''''terminal emulator window'''''.
+# Change directory to where you have the Arma 2 server files installed. In this example we'll use "{{hl|''/home/arma2/arma2server''}}" as the server's installation directory:
+#: {{hl|cd /home/arma2/arma2server}}
+# Next, create a directory for the BattlEye server.
+#* For an Arma 2 server, the path should be:
+#:: {{hl|./battleye}}
+#* Whilst for an Arma 2: Operation Arrowhead server it is:
+#:: {{hl|./expansion/battleye}}:
+#* ''i.e.'' {{hl|mkdir battleye}} '''or''' {{hl|mkdir expansion/battleye}}
+# Download the correct ''BE'' server from the BattlEye {{Link|http://www.battleye.com/download.html|website}} - there's one file for Arma 2 and another for Arma 2:OA. You can use a ''command-line'' download tool such as "''wget''" or "''curl''" as well:
+#* For Arma 2, use:
+#:: {{hl|wget <nowiki>http://www.battleye.com/downloads/arma2/beserver.so -O battleye/beserver.so</nowiki>}}
+#* Whilst for Arma 2:OA it is:
+#:: {{hl|wget <nowiki>http://www.battleye.com/downloads/arma2oa/beserver.so -O expansion/battleye/beserver.so</nowiki>}}
+# You now have the BE server component installed. Enable it in your game server's [[Arma 3: Server Config File| config]] with "{{hl|c= ''BattlEye=1;''}}".
+# Start the server again and watch the log file (usually "{{hl|''log.2302.txt''}}"). With BattlEye enabled, you'll see an extra line of output when the server is started. For example:
+#: {{hl|14:20:22 BattlEye Server: Initialized (v1.122)}}
+# '''''(Optional)''''' In order to administrate your BE server remotely, you'll need to create a configuration file for the BE server. It should be named "{{hl|''beserver.cfg''}}" and placed in the BE directory you just created.<br>We'll create one and set the admin password to "''mypassword''". (You should change the password used in this example to something better).
+#* For an Arma 2 server, run:
+#:: {{hl|echo "RConPassword mypassword" &gt; ./battleye/beserver.cfg}}
+#* For an Arma 2:OA server, do this:
+#:: {{hl|echo "RConPassword mypassword" &gt; ./expansion/battleye/beserver.cfg}}
+#* For an Arma 3 server, do this:
+#:: {{hl|echo "RConPassword mypassword" &gt; ./battleye/launch/beserver.cfg}}
+#*For more details, see the section below on [[#RCon|RCon]].
+
+=== Configuration ===
+
+==== Client ====
+Apart from installation there is no additional configuration required for game clients.
+
+==== Server ====
+Refer to the [[Arma 3: Server Config File|server config]] section on how to enable BattlEye on a game server.
+
+{{Feature | important | If you run multiple game servers on one machine, you need to specify separate BE paths for each in the [[Arma 2: Startup Parameters#Server_Options|server startup parameters]].}}
+
+
+== 64-bit support ==
+
+The 64-bit version of Arma 3 uses 64-bit dlls: BEClient_x64.dll and BEServer_x64.dll, as well as BEServer_x64.cfg for configuration.
+
+
+== BE commands ==
+
+{{Feature | important | The #beserver command has been disabled for now, due to the game admin hijacking hack. <br>You need to use the BE RCon tool to ban players from your server.}}
+
+{{Feature | important | The commands are case insensitive. In other words you can write them all lower case.}}
+
+=== GUID banning ===
+
+'''''BE''''' can permanently or temporarily ban players from your server. The advantage over Arma 2's ''PID'' banning is that the BE ''GUID'' cannot be hacked/changed client-side, therefore the only way for a player to get unbanned is to buy a new ''game/cd-key''.
+
+The following commands are available to manage ''GUID'' bans:
+
+{| class="wikitable"
+! Command						!! Description
+|-
+| {{hl|loadBans}}					|| (Re)load the BE ban list from bans.txt.
+|-
+| {{hl|bans}}						|| Show a list of all BE server bans.
+|-
+| {{hl|ban}} ''[player #] [time in minutes] [reason]''|| Ban a player's BE GUID from the server. If time is not specified or {{hl|0}}, the ban will be permanent; if reason is not specified the player will be kicked with "Banned".
+|-
+| {{hl|addBan}} ''[GUID] [time in minutes] [reason]''	|| Same as "ban", but allows to ban a player that is not currently on the server.
+|-
+| {{hl|removeBan}} ''[ban #]''			|| Remove ban (get the ban # from the bans command).
+|-	
+| {{hl|writeBans}}					|| removes expired bans from bans file
+|}
+
+You can either enter them via BE [[#RCon|RCon]] or in-game using "{{hl|''#beserver [command]''}}" (if logged in as admin). For example:
+:{{hl|#beserver ban 11}}
+
+Keep in mind that the "{{hl|''player #''}}" used here is the one listed by BE's "''players''" command. 
+
+BattlEye ''GUID'' and ''IP'' bans will now both be loaded from and saved to "{{hl|''bans.txt''}}" (no longer "{{hl|''guidbans.txt''}}" and "{{hl|''ipbans.txt''}}") in your server's BE working directory.<br>
+Timed bans're saved into bans.txt as timestamp of end-date(unixformat)
+
+
+== RCon ==
+
+; Latest version:
+: {{hl|b0.94}}.
+
+Since BattlEye server version {{hl|1.102}} you can control your Arma game server remotely (without having to be in-game) using the ''BattlEye RCon tool''.
+
+# Download the {{Link|http://www.battleye.com/downloads/BERCon.exe|BattlEye RCon tool (BERCon.exe)}}.
+# Create a file called {{hl|beserver.cfg}} (or {{hl|beserver_x64.cfg}} for 64-bit server) in '''''BattlEye working directory''''' on the server.
+# Set private ''RCon password'' in the {{hl|beserver.cfg}} (or {{hl|beserver_x64.cfg}} for 64-bit server) via setting "RConPassword"
+# Set ''custom BattlEye's RCON port'' defined in {{hl|beserver.cfg}} (or {{hl|beserver_x64.cfg}} for 64-bit server) via setting "RConPort" (''for Arma 3 update 1.58.135656 and newer builds'')
+# Set ''optional BattlEye's RCON IP'' defined in {{hl|beserver.cfg}} (or {{hl|beserver_x64.cfg}} for 64-bit server) via setting "RConIP" (''for Arma 3 update 1.58.135656 and newer builds'')
+# Start the RCon tool binary and connect to server with its ''IP'', ''port'' and ''RCon password''.
+
+RconPort must avoid reserved ARMA3server port range (gameport *+0,+1,+2,+3,+4))<br>
+default reserved ports are 2302 - 2306 (to clarify the reserved ports can't be used for BattlEye's RCON).<br>
+example for default server setting, RconPort 2301<br>
+
+RconIP entry isn't needed, as when undefined it equals to value of 0.0.0.0 (all IPv4 local IP addresses used at once)<br>
+setting it to e.g. 127.0.0.1 will prevent it to respond on external IP<br>
+setting it to e.g. external IP will prevent it to respond on localhost 127.0.0.1
+
+=== BattlEye working directory ===
+
+The BattlEye working directory is a folder in one of three places:
+
+# A folder named "''BattlEye''" within the [[#Arma 2 application data folder|Arma 2 application data folder]].
+# A folder named "''BattlEye''" in the path given by the "{{hl|''-profiles''}}" startup parameter.
+# In a folder given by the "{{hl|''-bepath''}}" startup parameter.
+
+{{Feature | important | Even with custom locations you will still need the BattlEye ''.dll's'' or ''.so's'' '''ALSO in the default location''' ("<''arma2''>\BattlEye" for Arma 2 or "<''arma2''>\Expansion\BattlEye" for Arma 2:OA/CO) for BattlEye to start.}}
+
+==== The Arma 2 application data folder ====
+In ''Windows Vista, 7 and 2008'', that's the path given by "{{hl|''%LOCALAPPDATA%\Arma 2''}}" for Arma 2 and "{{hl|''%LOCALAPPDATA%\Arma 2 OA''}}" for the Arrowhead dedi. A typical value is:
+: {{hl|C:\Users\''username''\AppData\Local\Arma 2}}
+
+In ''Windows XP and 2003'', the application data folder is "{{hl|''%USERPROFILE%\Local Settings\Application Data\Arma 2''}}". A typical example is:
+: {{hl|C:\Documents and Settings\''username''\Local Settings\Application data\Arma 2}}
+
+These locations are the default and are used, if you launch the dedicated server '''without''' using either the "{{hl|''-profiles''}}" or "{{hl|''-bepath''}}" launch parameters.
+
+==== The -profiles location ====
+The path given as the "{{hl|c= ''-profiles=...''}}" startup parameter used when launching the Arma 2 dedi. If, for example, you would launch the Arma 2:OA dedicated server using:
+: {{hl|c= arma2oaserver.exe -profiles=D:\Games\ArmA2}}
+then the BattlEye working directory would be:
+: {{hl|D:\Games\ArmA2\BattlEye}}
+
+{{Feature | important | Even if using custom locations you will still need the ''.dll's'' or ''.so's'' '''ALSO in the default location''' ("<''arma2''>\BattlEye" for Arma 2 or "<''arma2''>\Expansion\BattlEye" for Arma 2:OA/CO) for BattlEye to start.}}
+
+==== The -bepath location ====
+You can also specify the BattlEye working directory directly using the startup parameter "{{hl|''-bepath''}}". Example:
+: {{hl|c= arma2oaserver.exe -bepath=D:\MyBattlEye}}
+In this case, the BattlEye working directory will be:
+: {{hl|D:\MyBattlEye}}
+If path contains spaces, encase everything in quotes:
+: {{hl|c= arma2oaserver.exe "-bepath=D:\My BattlEye"}}
+
+{{Feature | important | Even if using custom locations you will still need the ''.dll's'' or ''.so's'' '''ALSO in the default location''' ("<''arma2''>\BattlEye" for Arma 2 or "<''arma2''>\Expansion\BattlEye" for Arma 2:OA/CO) for BattlEye to start.}}
+
+==== Full examples ====
+Here are examples of the full paths to the "{{hl|''beserver.cfg''}}" file for a few different cases.
+* The examples assume that the username of the user that will run the servers is "''jimbob''".
+* "''Arma 2''" means running the "{{hl|''arma2server.exe''}}" whereas "''Arma 2:OA''" means you're launching "{{hl|''arma2oaserver.exe''}}".
+
+{| class="wikitable"
+! To Launch						!! Follow Path
+|-
+| Arma 2, Windows 7/Vista/2008, default:		|| C:\Users\jimbob\AppData\Local\Arma 2\BattlEye\beserver.cfg
+|-
+| Arma 2:OA, Windows 7/Vista/2008, default:		|| C:\Users\jimbob\AppData\Local\Arma 2 OA\BattlEye\beserver.cfg
+|-
+| Arma 2, Windows XP, default:				|| C:\Documents and Settings\jimbob\Local Settings\Application data\Arma 2\BattlEye\beserver.cfg
+|-
+| Arma 2:OA, Windows XP, default:			|| C:\Documents and Settings\jimbob\Local Settings\Application data\Arma 2 OA\BattlEye\beserver.cfg
+|-
+| Any Arma 2, any Windows, ''-profiles=D:\profiles'':	|| D:\profiles\BattlEye\beserver.cfg
+|}
+
+==== Linux ====
+For Linux dedicated servers, the default locations are:
+
+* For the Arma 2 dedi, it is "{{hl|''./battleye''}}"
+* For the Arma 2:OA dedi, it is "{{hl|''./expansion/battleye''}}"
+
+=== Sample beserver.cfg ===
+
+<pre>RConPassword xyzxyz
+MaxPing 200</pre>
+
+=== RCon commands ===
+
+{{Feature | important | The commands are case insensitive. In other words you can write them all lower case.}}
+
+{| class="wikitable"
+! Command				!! Description
+|-
+| {{hl|loadScripts}}			|| loads the "{{hl|''scripts.txt''}}" file without the need to restart the server.
+|-
+| {{hl|missions}}			|| Returns a list of the available missions on the server.
+|-
+| {{hl|players}}			|| Displays a list of the players on the server including BE GUIDs and pings.
+|-
+| {{hl|kick}} ''[player#]''		|| Kicks a player. His {{hl|#}} can be found in the player list using the "{{hl|''players''}}" command.
+|-
+| {{hl|RConPassword}} ''[password]''	|| Changes the RCon password.
+|-
+| {{hl|MaxPing}} ''[ping]''		|| Changes the ''MaxPing'' value. If a player has a higher ping, he will be kicked from the server.
+|-
+| {{hl|logout}}			|| Logout from current server, but do not exit the program.
+|-
+| {{hl|Exit}}				|| Closes the connection.
+|-
+| {{hl|Say}} ''[player#]''		|| Say something to ''player #''. {{hl|-1}} equals '''all players''' on server (''e.g.'' "{{hl|Say -1 Hello World!}}")
+|-
+| {{hl|#mpmissions}}		|| (Since Arma 3 2.22) Lists available missions on the server, selectible with {{hl|<nowiki>#mission <missionname.world></nowiki>}} command. Works with custom {{hl|<nowiki>-mpmissions=</nowiki>}}
+|}
+
+;Server commands are passed directly to server:{{hl|''#mission [missionName]''}} - Loads the given mission on the server.
+
+{{Feature | important | Look at the [[BattlEye#GUID_banning|GUID banning]] section for additional commands.}}
+
+== Support ==
+
+* {{Link|http://www.battleye.com/support.html|BE Support page with contact details}}
+* {{Link|http://www.battleye.com/support.html|Frequently Asked Questions:}}
+** I am getting kicked for the following violation(s). I don't use hacks, so what can I do to resolve this?
+** How do I enable BattlEye in-game to be able to play on BE-enabled servers?
+** Are administrator rights required when playing with BattlEye enabled?
+** I am using a 64-bit operating system but can't seem to find the right files in the download section. Is 64-bit unsupported?
+** I am running multiple dedicated servers from one installation. Is there anything I have to keep in mind regarding BattlEye?
+* Official BattlEye threads in the BI forum
+** {{Link|link= http://forums.bistudio.com/showthread.php?t=109915|text= BattlEye Installer (A2:OA)}}
+** {{Link|link= http://forums.bistudio.com/showthread.php?t=95454|text= RCon server administration}}
+** {{Link|link= http://forums.bistudio.com/showthread.php?t=96228|text= BattlEye GUID banning}}
+** {{Link|link= http://forums.bistudio.com/showthread.php?131759-New-BattlEye-features-for-server-admins|text= New BattlEye features for server admins}}
+** {{Link|link= http://forums.bistudio.com/showthread.php?104242-Explanation-Why-does-BattlEye-need-administrator-privileges-now|text= Explanation: Why does BattlEye need administrator privileges now?}}
+
+
+{{GameCategory|arma1|Multiplayer}}
+[[Category:{{arma2}}: Multiplayer]]
+[[Category:{{arma3}}: Multiplayer]]

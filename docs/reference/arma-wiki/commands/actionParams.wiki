@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/actionParams
+// revision: 377675 (2026-01-02T09:02:37Z)
+// export sha1: 7sj5elwl8tuuz9dv4n8sajip3l07asa
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|gr1= Interaction
+
+|descr= Returns [[Array]] with params for given user action id (similar to [[addAction]] param array).
+
+|s1= entity [[actionParams]] id
+
+|p1= entity: [[Object]] - entity with added user actions
+
+|p2= id: [[Number]] - id of existing user action (returned by [[addAction]] or [[actionIDs]])
+
+|r1= [[Array]] with [title, script, arguments, priority, showWindow, hideOnUse, shortcut, condition, radius, unconscious, textWindowBackground, textWindowForeground, selection, memoryPoint]
+{{Columns|2|
+* title: [[String]] - action title text
+* script: [[String]] - script file or script expression assigned to the action
+* arguments: [[Anything]] or [[nil]] - arguments passed to the action
+* priority: [[Number]] - action priority on the action menu
+* showWindow: [[Boolean]] - whether the action is shown in the center of the screen too
+* hideOnUse: [[Boolean]] - whether the action menu should close after selecting the action 
+* shortcut: [[String]] - action bindings to some existing engine action if any
+* condition: [[String]] - expression returning [[true]] or [[nil]] for action to appear on the action menu
+* radius: [[Number]] - max distance to entity at which action becomes available. -1 means it is engine default (~15m)
+* unconscious: [[Boolean]] - whether the action is available to [[setUnconscious|unconscious]] person
+* textWindowBackground: [[String]] - same as textWindowBackground in [[setUserActionText]]
+* textWindowForeground: [[String]] - same as textWindowForeground in [[setUserActionText]]
+* selection: [[String]] - named selection in Geometry LOD to which the action is attached
+* memoryPoint: [[String]] - memory point on the object to which the action is attached
+}}
+If ''entity'' is [[objNull]], the following array is returned:
+<sqf>["", "", nil, 1.5, true, true, "", "", 50, false, "", "", "", ""]</sqf>
+
+(returned [[Nothing]] until {{arma3}} v1.94)
+
+|x1= <sqf>_params = player actionParams 0;</sqf>
+
+|seealso= [[actionIDs]] [[addAction]] [[setUserActionText]] [[inGameUISetEventHandler]] [[showHUD]] [[inputAction]] [[removeAction]] [[removeAllActions]] [[action]]
+}}

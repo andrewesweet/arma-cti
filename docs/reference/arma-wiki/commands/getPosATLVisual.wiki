@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getPosATLVisual
+// revision: 377529 (2026-01-02T06:53:11Z)
+// export sha1: bg8x0o9m9b6f1mzv41or1sltkfc43lj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Render Time Scope | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+|arg= global
+
+|gr1= Object Manipulation
+|gr2= Render Time Scope
+
+|descr= Returns an object's rendered [[Position#PositionATL|ATL position]] (z value above ground) in render time scope.
+
+|s1= [[getPosATLVisual]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Position#PositionATL|PositionATL]]
+
+|x1= <sqf>_playerRenderedPosATL = getPosATLVisual player;</sqf>
+
+|seealso= [[getPosVisual]] [[getPosASLVisual]] [[getPosWorldVisual]] [[visiblePositionASL]] [[visiblePosition]] [[position]] [[getPos]] [[getPosATL]] [[getPosASL]] [[getPosASLW]]
+}}

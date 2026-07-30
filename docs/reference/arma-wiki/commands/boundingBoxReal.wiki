@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/boundingBoxReal
+// revision: 378436 (2026-04-07T21:33:52Z)
+// export sha1: p6nzi53huug34mr55dqn7rj333qe23g
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= [[File:Boundingbox.jpg|right|200px]] Returns a raw bounding box of given object in model coordinates space. This command is similar to [[boundingBox]] but gives more precise measurements.<br>
+The alternative syntax allows to specify clipping type to be used, which in some cases could make the result even more precise.
+
+|s1= [[boundingBoxReal]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Position#PositionRelative|PositionRelative]] - the extreme points of the model along {{GVI|arma3|1.92|size= 0.75}} the bounding box sphere radius, in format [<nowiki/>[xmin, ymin, zmin], [xmax, ymax, zmax], boundingSphereRadius]
+
+|s2= clippingType [[boundingBoxReal]] object
+
+|s2since= arma3 1.92
+
+|p21= clippingType: [[Number]] - can be one of:
+* 0 - ClipVisual (can significantly reduce bounding box's size on buildings)
+* 1 - ClipShadow
+* 2 - ClipGeometry
+* 3 - ClipGeneral (same type that is used in the main syntax)
+
+|p22= object: [[Object]]
+
+|r2= [[Position#PositionRelative|PositionRelative]] - the extreme points of the model, as well as bounding sphere radius, in format [<nowiki/>[xmin, ymin, zmin], [xmax, ymax, zmax], boundingSphereRadius]
+
+|s3= [[boundingBoxReal]] [object, LOD]
+
+|s3since= arma3 2.14
+
+|p41= object: [[Object]]
+
+|p42= LOD: [[String]] or [[Number]] - can be one of:
+* {{hl|"Memory"}}
+* {{hl|"Geometry"}}
+* {{hl|"FireGeometry"}}
+* {{hl|"LandContact"}}
+* {{hl|"HitPoints"}}
+* {{hl|"ViewGeometry"}}
+When [[Number]] is used, command searches for a LOD with the similar [[LOD resolutions|LOD resolution]]
+
+|r3= [[Position#PositionRelative|PositionRelative]] - the extreme points of the model, as well as bounding box sphere radius, in format [<nowiki/>[xmin, ymin, zmin], [xmax, ymax, zmax], boundingSphereRadius]
+
+|x1= <sqf>
+private _bbr = boundingBoxReal vehicle player;
+private _p1 = _bbr select 0;
+private _p2 = _bbr select 1;
+private _maxWidth = abs ((_p2 select 0) - (_p1 select 0));
+private _maxLength = abs ((_p2 select 1) - (_p1 select 1));
+private _maxHeight = abs ((_p2 select 2) - (_p1 select 2));
+</sqf>
+
+|x2= <sqf>hint str (0 boundingBoxReal cursorObject);</sqf>
+
+|seealso= [[boundingBox]] [[sizeOf]] [[boundingCenter]]
+}}

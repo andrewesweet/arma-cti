@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/ctrlBackgroundColor
+// revision: 377353 (2026-01-02T06:40:17Z)
+// export sha1: 2jvfj4pg0ejj4rfpyn7xjaii1pnktky
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= GUI Control
+
+|descr= Returns control's background color.
+
+|s1= [[ctrlBackgroundColor]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Color|Color (RGBA)]]
+
+|x1= <sqf>ctrlBackgroundColor _control;</sqf>
+
+|seealso= [[ctrlSetBackgroundColor]] [[ctrlText]]
+}}

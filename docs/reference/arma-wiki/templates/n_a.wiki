@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/Template:n/a
+// revision: 337201 (2023-01-11T10:53:10Z)
+// export sha1: mnqxecq4ketyfj8ajnqqg3al6nj23wg
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>class="na-cell"{{#if:{{{style|}}}|<nowiki/> style="{{{style}}}"}} | {{{1|N/A}}}</includeonly><noinclude>
+Fills ''a table '''cell''''' in grey, with N/A text by default.
+{{Feature | important | This template has to be ''inside'' a table cell, e.g:
+
+{{{!}}
+{{!}}
+<code style="display: block"><nowiki>{| class="wikitable"
+! First Name !! Last Name
+|-
+| {{n/a}} || Miller
+|}</nowiki></code>
+{{!}} style{{=}}"text-align: center; width: 5em" {{!}} →
+{{!}}
+{{{!}} class{{=}}"wikitable"
+! First Name !! Last Name
+{{!}}-
+{{!}} {{n/a}} {{!}}{{!}} Miller
+{{!}}}
+{{!}}}
+
+If put in a text paragraph, it results in {{hl|{{n/a}}}}.}}
+
+== Usage ==
+<code style="display: block">{{<nowiki/>n/a|'''''text'''''|'''''style'''''}}</code>
+* text: (Optional, default "N/A")
+* style: (Optional, default "". Named parameter only) additional CSS (e.g {{hl|font-weight: bold}})
+
+{| class="wikitable"
+|+ Examples
+! Code
+! style="width: 10em" | Result
+|-
+| <nowiki>{{n/a}}</nowiki>
+| {{n/a}}
+|-
+| <nowiki>{{n/a|abc}}</nowiki>
+| {{n/a|abc}}
+|-
+| <nowiki>{{n/a|style=font-size: 2em; font-weight: bold;text-align: right|wabbit}}</nowiki>
+| {{n/a|align=right|style=font-size: 2em; font-weight: bold; text-align: right|wabbit}}
+|}
+
+== Source ==
+<syntaxhighlight lang="html">
+class="na-cell"{{#if:{{{style|}}}|<nowiki/> style="{{{style}}}"}} | {{{1|N/A}}}
+</syntaxhighlight>
+
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

@@ -1,0 +1,105 @@
+// source: https://community.bistudio.com/wiki/Binarize
+// revision: 336601 (2023-01-04T15:23:19Z)
+// export sha1: 57xavx0at1s6v4qmk7pluodxuif3kk3
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR=
+[[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY=
+[[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD=
+
+{{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION=
+Binarize is a model/world optimizing tool created by {{Link|link= http://www.bistudio.com|text= Bohemia Interactive}}.
+
+The purpose of the tool is to convert the file into the representation suitable for fast loading by the game engine. Some information important for editing, but not relevant for the game, may be discarded during the process, therefore the process in not always reversible (which is one of the reasons why BI does not provide a tools which would reverse the binarization).
+
+|COMMAND=
+    binarize [options] source destination mask
+
+|OPTIONS=
+Path to textures
+* -textures=<path>
+
+Files or masks of files to be excluded from binarization
+* -exclude=<filename>
+
+Additonal config is loaded from this folder
+* -addon=<addon folder> 
+
+
+|NOTES=
+The term 'binarizing' is sometimes used to describe converting a file into an optimized / binary format, like when converting [[Config.cpp]] into [[Config.bin]]. This is in fact not done using Binarize, rather by another tool called  [[CfgConvert]].
+
+|LICENSING=
+[[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO=
+
+}}
+
+=== Additional information ===
+
+==== Current directory ====
+
+
+Binarize converts p3d and wrp using provided config files. It's important to use defined current directory as there are many files used from there.
+
+    cd \
+
+    (current directory / current_dir)
+
+ 
+
+==== Config files ====
+
+
+Binarize uses following config files:
+
+    current_dir\binarize\bin\config.cpp
+
+    current_dir\addon_folder\config.cpp (one or more addon folders can be defined using -adddon option)
+
+    source_dir\config.cpp (and all config.cpp that are located in subfolders of the source directory)
+
+ 
+
+==== p3d Objects ====
+
+
+Binarize takes all textures and materials used in binarized p3d object and copies them into path defined by "-textures=<path>" with full path to the texture added as it is defined in the object.
+
+During processing the object, binarize will use class CfgModels from all used config.cpp files and creates independent sections from any named selection listed in CfgModels.
+
+Some proxy models used there must be present in the current directory during binarization.
+
+
+==== textures.lst ====
+
+When this file is present at the root of the addon directory, every referenced textures will be converted. 
+ A3\Air_F\Data\0_CA.png
+ A3\Air_F\Data\1_CA.png
+ A3\Air_F\Data\2_CA.png
+ A3\Air_F\Data\blank_CA.png
+ A3\Air_F\Data\Minigun_TI_CA.tga
+The path to the texture must include the "project path", as used in Addon Builder.
+
+
+==== Wrp Worlds ====
+
+When you binarize worlds, any object defined in config.cpp files under class "ReplaceObjects" can be replaced accordingly.
+
+All models used in the wrp file shall be available under the correct path in the current directory.
+
+Binarize takes all textures and materials used in binarized wrp object and copies them into path defined by "-textures=<path>" with full path to the textures and materials added as it is defined in the world.
+
+{{GameCategory|arma3|Official Tools}}

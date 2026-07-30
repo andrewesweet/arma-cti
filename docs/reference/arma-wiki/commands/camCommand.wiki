@@ -1,0 +1,84 @@
+// source: https://community.bistudio.com/wiki/camCommand
+// revision: 369082 (2024-09-02T20:36:38Z)
+// export sha1: 8e20zu9s1dhilzlihqtel87nso9r5rd
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= Camera Control
+
+|descr= Executes a command on the given ''camera / actor'' object. Known commands:
+
+{{{!}} class{{=}}"wikitable"
+! All cameras !! "Camera" !! "Seagull" !! "CamCurator"
+{{!}}- style="vertical-align: top"
+{{!}}
+* {{hl|"manual on"}}
+* {{hl|"manual off"}}
+{{!}}
+* {{hl|"inertia on"}}
+* {{hl|"inertia off"}}
+{{!}}
+* {{hl|"landed"}} lands the seagull
+* {{hl|"airborne"}} makes the seagull fly
+{{!}}
+* {{hl|"maxPitch (x)"}} (number, in degrees)
+* {{hl|"minPitch (x)"}} (number, in degrees)
+* {{hl|"speedDefault (x)"}} (number)
+* {{hl|"speedMax (x)"}} (number)
+* {{hl|"ceilingHeight (x)"}} (number, in meters, ASL)
+* {{hl|"atl (x)"}} (on/off)
+* {{hl|"surfaceSpeed (x)"}} (on/off)
+{{!}}}
+
+{{Feature|informative|The [[camCommand]] effect is immediate and does not need [[camCommit]]/[[camCommitPrepared]].}}
+
+|s1= camera [[camCommand]] command
+
+|p1= camera: [[Object]] - see [[camCreate]]
+
+|p2= command: [[String]] - see description
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_camera camCommand "manual on";</sqf>
+
+|x2= <sqf>
+private _camera = "CamCurator" camCreate [0,0,0];
+_camera camCommand "maxPitch 89";
+_camera camCommand "minPitch -89";
+_camera camCommand "speedDefault 0.1";
+_camera camCommand "speedMax 2";
+_camera camCommand "ceilingHeight 5000";
+_camera camCommand "atl off";
+_camera camCommand "surfaceSpeed off";
+</sqf>
+
+|seealso= [[cameraEffect]] [[camCreate]] [[camCommit]]
+}}

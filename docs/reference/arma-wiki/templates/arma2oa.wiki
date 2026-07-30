@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:arma2oa
+// revision: 322486 (2022-06-13T10:36:04Z)
+// export sha1: kmczl863h46tiemi7nhcbytxya2bbjn
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|arma2oa}}</includeonly><noinclude>{{Doc/Template
+|descr= Returns {{hl|{{arma2oa}}}}.
+|example1= <nowiki>{{arma2oa}}</nowiki>
+|result1= {{arma2oa}}
+}}</noinclude>

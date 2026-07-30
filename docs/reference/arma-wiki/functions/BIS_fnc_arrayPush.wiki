@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_arrayPush
+// revision: 327182 (2022-07-12T22:09:49Z)
+// export sha1: qybdm3ptrts6wlaepd4dj7tfu5x006t
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Arrays
+
+|descr= This function adds an element to the end of an array and returns the array.<br>
+'''The array is passed by reference''' so changes inside the function will be reflected outside of it.
+
+{{Feature|arma3|Use [[append]] or [[pushBack]] instead.}}
+
+|s1= [array, element] call [[BIS_fnc_arrayPush]]
+
+|p1= array: [[Array]]
+
+|p2= element: [[Anything]]
+
+|r1= [[Array]] - modified ''array''
+
+|x1= <sqf>_newArray = [[0,1,2], 3] call BIS_fnc_arrayPush; // _newArray is [0,1,2,3]</sqf>
+
+|x2= <sqf>private _array = [0,1,2]; [_array, [3]] call BIS_fnc_arrayPush; // _array is [0,1,2,[3]]</sqf>
+
+|seealso= [[append]] [[pushBack]] [[BIS_fnc_arrayPushStack]]
+}}

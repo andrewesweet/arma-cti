@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Interaction
+// revision: 166846 (2020-10-11T22:41:03Z)
+// export sha1: pso04mxwcfx759b3m99byh49j4eyrbq
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions to allow player to interact with objects.
+
+[[Category:Functions by Functionality]]

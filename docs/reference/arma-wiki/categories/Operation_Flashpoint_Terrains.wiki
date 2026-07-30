@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Terrains
+// revision: 249474 (2021-02-24T09:17:53Z)
+// export sha1: haqm134frllf2bzhj3g8wipux077gnf
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{ofp}} and {{ofpr}} official terrains.
+
+{{GameCategory|ofp}}
+[[Category:Arma: Terrains]]

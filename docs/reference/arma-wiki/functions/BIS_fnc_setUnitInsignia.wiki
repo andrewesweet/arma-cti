@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setUnitInsignia
+// revision: 349043 (2023-11-08T14:47:15Z)
+// export sha1: 7kh88hrp12v6ca4f02hwl8uqvu159kb
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= Object Manipulation
+
+|arg= global
+
+|eff= global
+
+|descr= Sets unit insignia (e.g., shoulder insignia on soldiers). See [[Arma 3: Unit Insignia]] for more details and a list of official insignias.
+
+|s1= [target, className] call [[BIS_fnc_setUnitInsignia]]
+
+|p1= target: [[Object]] - unit to which the insignia is going to be attached
+
+|p2= class: [[String]] - CfgUnitInsignia class name to use. Use an empty string to remove the current insignia.
+
+|r1= [[Boolean]] - returns [[true]] if successful.
+
+|x1= Place insignia:
+<sqf>[player, "111thID"] call BIS_fnc_setUnitInsignia;</sqf>
+
+|x2= Remove insignia:
+<sqf>[player, ""] call BIS_fnc_setUnitInsignia;</sqf>
+
+|seealso= [[BIS_fnc_getUnitInsignia]]
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20160809052600
+|text=In [[Arma 3: Unit Insignia]], you can read:
+{{Feature|quote|You can add a new insignia in Config.cpp and Description.ext.}}
+If it is possible to add a cfgUnitInsignia class in a description.ext, please note that the path of the texture differs for server and client in MP environment.
+Config.cpp (addon) is more reliable. Description.ext, in this case, should be used for SP mission only.<br>
+This function calls [[setObjectTextureGlobal]], which is a broken command in MP (see feedback tracker) August 2016.
+}}
+
+{{Note
+|user= Leopard20
+|timestamp= 20210621215100
+|text= To set the insignia after respawn, add this code to [[Event Scripts#initPlayerLocal.sqf|initPlayerLocal.sqf]]
+<sqf>
+params ["_player"];
+_player addMPEventHandler ["MPRespawn", {
+	params ["_unit", "_corpse"];
+	private _insignia = [_corpse] call BIS_fnc_getUnitInsignia;
+	[_unit, _insignia] spawn {
+		params ["_unit", "_insignia"];
+		sleep 1;
+		isNil {
+			_unit setVariable ["BIS_fnc_setUnitInsignia_class", nil]; // you can also do [_unit, ""] call BIS_fnc_setUnitInsignia, but this way is faster (plus no network traffic)
+			[_unit, _insignia] call BIS_fnc_setUnitInsignia;
+		};
+	};
+}];
+</sqf>
+Notice that the previous insignia has been '''cleared''' first to make the change happen (possibly a bug as of {{arma3}} v2.05)
+}}

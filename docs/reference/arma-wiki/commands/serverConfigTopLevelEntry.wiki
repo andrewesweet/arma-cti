@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/serverConfigTopLevelEntry
+// revision: 364595 (2024-05-17T12:58:28Z)
+// export sha1: n7ijgga9up0k4bd2beptbbwbuu9m02u
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|serverExec= server
+
+|gr1= Argo
+
+|descr= Get top-level entry (i.e. entry directly below config root) of the desired name from the {{Link|Arma 3: Server Config File|server config}}, making it some kind of secured '''''serverConfigFile''''' command.
+
+|mp= Only works on '''dedicated''' servers.
+
+|s1= [[serverConfigTopLevelEntry]] configEntry
+
+|p1= configEntry: [[String]] - any [[Arma 3: Server Config File|server config]] entry but {{hl|password}} and {{hl|passwordAdmin}} which are ignored
+
+|r1= [[Config]] - requested server config entry or [[configNull]] on error
+
+|x1= <sqf>_kickDupes = getNumber serverConfigTopLevelEntry "kickDuplicate" != 0;</sqf>
+
+|seealso= [[Arma 3: Server Config File]] [[configFile]] [[config greater greater name|config >> name]]
+}}

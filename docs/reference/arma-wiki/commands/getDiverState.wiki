@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/getDiverState
+// revision: 309148 (2022-05-03T14:10:04Z)
+// export sha1: idko79i2lpiqkge9pfjpld3j0ar80r3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.96
+
+|gr1= Object Manipulation
+
+|descr= Returns [[true]] when object is in diver state - e.g when the unit would put diving [[goggles]] on.
+{{Feature|informative|
+Diving [[goggles]] remove blurriness underwater, however when assigned, they do not appear on the face of the unit until the unit steps into the water.
+This command allows to detect the moment when the goggles are visible.
+If the unit doesn't have diving goggles assigned, this command would still return [[true]] at appropriate time if the unit steps into the water.
+}}
+
+|s1= [[getDiverState]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Boolean]] - [[true]] when diving [[goggles]] are visible
+
+|x1= <sqf>private _gogglesOn = getDiverState player;</sqf>
+
+|seealso= [[goggles]] [[removeGoggles]] [[addGoggles]]
+}}

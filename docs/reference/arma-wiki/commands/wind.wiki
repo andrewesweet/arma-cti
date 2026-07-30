@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/wind
+// revision: 378404 (2026-04-04T08:14:45Z)
+// export sha1: d6igs6um3nav64kd9ry17h95msxc4t2
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Environment
+
+|descr= Returns the current wind vector (in m/s).
+
+|s1= [[wind]]
+
+|r1= [[Vector3D]] - [x, y, 0]. with wind being only horizontal
+
+|x1= <sqf>_windArray = wind;</sqf>
+
+|seealso= [[setWind]] [[windDir]]
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20080810043800
+|text= In '''OFP 1.96''', wind speed and direction are directly related to [[overcast]].
+}}

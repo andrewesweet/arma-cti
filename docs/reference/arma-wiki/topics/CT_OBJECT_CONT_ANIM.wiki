@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/CT_OBJECT_CONT_ANIM
+// revision: 170158 (2020-11-29T14:31:46Z)
+// export sha1: d734ovn2uybdp157kcs0pvlqeb6hjus
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_OBJECT_CONT_ANIM
+|value = 83
+|description = Unknown control type.
+|gallery=
+|commands =
+|events =
+}}
+
+<!-- {{CT|abc start}}
+
+{{CT|abc end}} -->
+
+{{CT|examples}}
+None

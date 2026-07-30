@@ -1,0 +1,83 @@
+// source: https://community.bistudio.com/wiki/everyBackpack
+// revision: 376077 (2025-07-28T13:01:43Z)
+// export sha1: 9wb06zpvl343dlo799tdihx1ejytl5c
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|gr1= Containers
+
+|descr= Returns array of backpacks stored in given crate or vehicle. Used for accessing backpack content of a backpack on ground.
+
+|s1= [[everyBackpack]] box
+
+|p1= box: [[Object]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>everyBackpack cursorTarget;</sqf>
+
+|x2= <sqf>_vehicleBackpacks = everyBackpack vehicle player;</sqf>
+
+|seealso= [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[backpackContainer]] [[everyContainer]] [[backpacks]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140429170900
+|text= ({{arma3}} ver 1.16), here's a quick reference to backpack command family.
+{{{!}} class="wikitable sortable"
+
+! Command
+! Operand type
+! Return
+! Example
+
+{{!}}-
+{{!}} [[firstBackpack]]
+{{!}} [[Object]] (WeaponHolder, AmmoCrate, VehicleCrate)
+{{!}} [[Object]] (e.g 2bba9d00# 163957: backpack_compact.p3d)
+{{!}} <sqf>firstBackpack (getPos player nearestObject "weaponholder");</sqf>
+
+{{!}}-
+{{!}} [[backpackContainer]]
+{{!}} Unit([[Object]])
+{{!}} [[Object]] (e.g 2bba9d00# 163957: backpack_compact.p3d)
+{{!}} <sqf>backpackContainer player // currently same as [[unitBackpack]]</sqf>
+
+{{!}}-
+{{!}} [[unitBackpack]]
+{{!}} Unit([[Object]])
+{{!}} [[Object]] (e.g 2bba9d00# 163957: backpack_compact.p3d)
+{{!}} <sqf>unitBackpack player // currently same as [[backpackContainer]]</sqf>
+
+{{!}}-
+{{!}} [[backpack]]
+{{!}} Unit([[Object]])
+{{!}} [[String]] (e.g 2bba9d00# 163957: backpack_compact.p3d)
+{{!}} <sqf>backpack player // see also ([[typeOf]] [[backpackContainer]] [[player]]) or ([[typeOf]] [[unitBackpack]] [[player]])</sqf>
+
+{{!}}-
+{{!}} [[backpackCargo]]
+{{!}} [[Object]] (WeaponHolder, AmmoCrate, VehicleCrate)
+{{!}} [[Array]] of [[String]] (e.g ["Backpack0", "Backpack1"])
+{{!}} <sqf>backpackCargo _ammoCrate</sqf>
+
+{{!}}-
+{{!}} [[getBackpackCargo]]
+{{!}} [[Object]] (WeaponHolder, AmmoCrate, VehicleCrate)
+{{!}} [[Array]] of [[Array]] (e.g [["Backpack0", "Backpack1"], [1, 1]])
+{{!}} <sqf>getBackpackCargo _ammoCrate</sqf>
+
+{{!}}-
+{{!}} [[everyBackpack]]
+{{!}} [[Object]] (WeaponHolder, AmmoCrate, VehicleCrate)
+{{!}} [[Array]] of [[Object]] (e.g [22504f00# 163960: backpack_fast.p3d...])
+{{!}} <sqf>everyBackpack _ammoCrate</sqf>
+
+{{!}}}
+}}

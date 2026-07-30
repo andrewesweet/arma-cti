@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/Arma_2:_Operation_Arrowhead:_Installing_Beta
+// revision: 179555 (2021-01-01T04:14:54Z)
+// export sha1: hqaddox2awf7geiu5fxnpjxk7j59xyw
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Note of Warning ==
+Manually installing beta patches, or using them as "hotfix" by overwriting official game files is '''NOT''' recommended.
+
+Overwriting official game files with beta files, experimental in nature, is generally not useful.
+You might have to reinstall your game if you need to install a patch or go back to a stable version.
+
+Instead, It is recommended to install beta patches the official way, as mod folder "expansion/beta".
+
+== Needed Utilities ==
+* 7zip: http://www.7-zip.org
+
+== Steps ==
+* Download the Beta from http://www.arma2.com/beta-patch.php
+* Open the zip file in 7-zip
+* Right click the embedded ARMA2_OA_Build_#####.exe file, and select "Open Inside"
+* Again, Right click the embedded ARMA2_OA_Build_#####.exe file, and select "Open Inside"
+* Navigate to .rsrc\0\RCDATA\ALL\
+* Extract the files to a temporary folder
+* Rename the ARMA2OA.EXE#OA or #RFT depending on your game edition, to just ARMA2OA.exe
+* Put it in a modfolder, and launch how you always launch the beta. Or alternatively overwrite your original game files with the contents of the modfolder ('''after making a backup''' of the original files), however this is NOT recommended, see top.

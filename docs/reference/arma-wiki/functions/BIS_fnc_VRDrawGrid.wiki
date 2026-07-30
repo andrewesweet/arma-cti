@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_VRDrawGrid
+// revision: 352028 (2024-02-01T23:24:26Z)
+// export sha1: dfmes8hs70ricyh6v37yiawwmmtwpil
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: VR | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= VR
+
+|descr= Visualizes surface grid (used primarily for VR missions).<br>
+{{Feature|informative|Only one instance of grid visualisation can run at any given time. Calling this function multiple times will only move the grid center.}}
+
+|s1= [location, colour] call [[BIS_fnc_VRDrawGrid]]
+
+|p1= location: [[Boolean]] or [[Array]] format [[Position]]:
+* [[Boolean]]: use [[false]] to disable grid visualisation
+* [[Position]]: center position (should be multiple of 4 in both axis to correspond with the tiles on the ground, like [1000,1000] or [2400,2400])
+
+|p2= colour: [[Array]] - (Optional, default [0,0,0,1]) to format [{{Color|red|R}},{{Color|green|G}},{{Color|blue|B}},{{Color|grey|A}}]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[getPosATL player, [0.078, 0.3647, 0.0]] call BIS_fnc_VRDrawGrid;</sqf>
+
+|x2= <sqf>[false] call BIS_fnc_VRDrawGrid;</sqf>
+
+|seealso= [[BIS_fnc_VRDrawBorder]]
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/setTaskMarkerOffset
+// revision: 377378 (2026-01-02T06:43:41Z)
+// export sha1: re5nqp8tyw8dspeg4ysrzemt4sj5kr5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Briefing
+
+|descr= Sets the task marker position in model space.
+
+|s1= obj [[setTaskState]] position
+
+|p1= obj: [[Object]]
+
+|p2= position: [[Position#PositionRelative|PositionRelative]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setTaskMarkerOffset [0,0.5,1];</sqf>
+
+|seealso= [[taskMarkerOffset]]
+}}

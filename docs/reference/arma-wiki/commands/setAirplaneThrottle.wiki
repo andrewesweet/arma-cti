@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/setAirplaneThrottle
+// revision: 310925 (2022-05-07T20:46:43Z)
+// export sha1: kzgtkvup9vfbkazki0ip1xxgn1mm08m
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|arg= local
+
+|gr1= Object Manipulation
+
+|descr= Sets a wanted throttle position - works only on [[player]]'s vehicle.
+
+|s1= airplane [[setAirplaneThrottle]] value
+
+|p1= airplane: [[Object]]
+
+|p2= value: [[Number]] - wanted throttle
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player setAirplaneThrottle 0.5;</sqf>
+
+|seealso= [[airplaneThrottle]]
+}}

@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/Config.cpp/bin_File_Format
+// revision: 373403 (2025-05-08T11:27:10Z)
+// export sha1: 50fjdbf094nm6amjbkv1siuu77q8nef
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|UnsupportedDoc}}
+
+
+Two mutually exclusive file formats exist for '''addons''':
+
+* '''config.cpp''' (pre binarised, RaPifiable text) '''or'''
+* '''config.bin''' (binarised raP)
+<!--
+{{Feature|informative|An addon is a PBO, but a PBO is not necessarily an addon. Mission PBOs do '''not''' contain addon configs while mission addons do.}}
+-->
+{{Feature|informative|For a CPP file syntax, see {{Link|CPP File Format#Syntax}}.}}
+
+
+== Rules of Engagement ==
+
+* '''By convention only:'''
+** A 'bin' extension '''indicates''' ''binarised'' content.
+** A 'cpp' extension '''indicates''' ''pre-binarised'' text.
+* A cpp can, as equally, contain binarised content. No harm is done, and, indeed, this is familiar territory to {{Link|Rvmat File Format|rvmat files}} where there is no distinction. An rvmat (e.g) contains either format.
+* If both file formats exist in a PBO directory (e.g {{hl|config.bin}} and {{hl|config.cpp}}, the {{hl|.bin}} is ignored.
+
+
+== Usage ==
+
+*''Most'' pbos contain binarised configs (config.bin). This is because it saves engine loading time '''and''' guarantees the {{hl|config.cpp}} it came from was syntactically correct (no missing semicolons, duplicate or missing classes, etc). There is almost no circumstance where a {{hl|config.cpp}} should be released in a finished product. There are exceptions from '''very''' sophisticated, veteran, addon makers.
+*''Some'' pbos contain cpp because:
+** It is a work-in-progress.
+** they rely on #includes '''and/or'''
+** they use __EVAL/__EXEC statements, '''or'''
+** the author does not know how to binarise '''or'''
+** binarisation fails.
+
+
+There is no binarised equivalent for exec/eval or include.
+
+=== Exec/Eval ===
+
+{{Feature|informative|See {{Link|PreProcessor Commands#Config Parser}}.}}
+
+Although unusual, __EVAL and __EXEC are the only method of compiling dynamic variables during run time.
+They are '''exclusively''' useful in [[Description.ext]] and its derivative script dialogs.
+Although it can be, that specific file is never pre-binarised and is compiled on each mission load.
+
+Some very few dialog addons also use this method in their config.cpp's, BUT, in this circumstance, they offer no additional benefit to using #defines.
+This is because an addon is loaded and compiled only once.
+
+=== Includes ===
+
+Includes, while unusual, are a method of pre-configuring a series of PBOs for run time.
+There are many themes, but the main thrust is a common, text-based PBO, containing #defines. This is accessed from a series of dependent pbo's.
+In this manner, you can alter and update a common pbo and all the children don't require updating. ace_x and cba are popular architects of this scheme.
+
+For these architectures to work, they require config.cpp's since there is no equivalent in raP binary for #include or __EVAL.
+
+
+== Many configs, same PBO ==
+
+Any mission makers familiar with campaign architecture implicitly understand that this is simply packaging multiple addons inside a single one.
+
+Any folder within the pbo containing a config.cpp/bin (and cfgpatches class) is automatically an addon in it is own right.
+
+
+[[Category:Real Virtuality File Formats]]

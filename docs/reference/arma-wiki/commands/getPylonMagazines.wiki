@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/getPylonMagazines
+// revision: 364988 (2024-07-04T19:58:05Z)
+// export sha1: hd77h1l80zoufn73zq1fzl1jn5mfrfa
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Loadouts | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Vehicle Loadouts
+
+|descr=Return array of magazines on pylons.
+
+|s1= [[getPylonMagazines]]  vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Array]] of [[String]]s - magazine names
+
+|x1= <sqf>getPylonMagazines vehicle player;</sqf>
+
+|seealso= [[Arma 3: Vehicle Loadouts]] [[getCompatiblePylonMagazines]] [[setAmmoOnPylon]] [[ammoOnPylon]] [[animatePylon]] [[animateBay]] [[setPylonsPriority]] [[setPylonLoadout]] [[magazinesAllTurrets]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2017-05-12 - 19:58 (UTC)</dd>
+<dt class="note">[[User:AgentRev|AgentRev]]</dt>
+<dd class="note">
+The indexes of the returned array's elements are relative to the pylon indexes, such that element 0 is pylon 1, element 1 is pylon 2, etc.
+</dd>
+
+</dl>
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20240504051358
+|text= Just like [[getAllPylonsInfo]] this command returns last pylon state which can include non-existent magazine that was deleted with [[removeMagazineTurret]]
+}}

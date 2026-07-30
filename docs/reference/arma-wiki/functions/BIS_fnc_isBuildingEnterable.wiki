@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isBuildingEnterable
+// revision: 309316 (2022-05-05T12:04:26Z)
+// export sha1: 5zns74f4c5yyyxxibzg07r333jffync
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Check whether a building or structure has available positions defined within model.
+
+|s1= param call [[BIS_fnc_isBuildingEnterable]]
+
+|p1= param: [[Object]]
+
+|p2= param: [[Number]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[_building] call BIS_fnc_isBuildingEnterable;</sqf>
+
+|x2= <sqf>[_building, _minNumberOfPositions] call BIS_fnc_isBuildingEnterable;</sqf>
+
+|seealso=
+}}

@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/airDensityCurveRTD
+// revision: 377671 (2026-01-02T09:02:30Z)
+// export sha1: fdg2zu83kzwr1bwrn1festetj7lhjmu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= RTD
+
+|descr= Returns array with air density data.{{Feature|afm}}
+
+|s1= [[airDensityCurveRTD]]
+
+|r1= [[Array]] with [[Array|arrays]] Returns air density graph<br> 
+Each array consists of:
+* 0: Altitude (-60000 metres to 10^7 metres)
+* 1: Air density
+
+|x1= <sqf>private _densityArray = airDensityCurveRTD;</sqf>
+
+|seealso= [[:Category:Command_Group:_RTD|RTD Commands Group]] [[Advanced Helicopter Flight Model in Arma3]]
+}}

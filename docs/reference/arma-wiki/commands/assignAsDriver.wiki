@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/assignAsDriver
+// revision: 369098 (2024-09-03T10:25:27Z)
+// export sha1: 2oo3bmw35dbxavwccguc6j149riqvtr
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Unit Control
+
+|descr= Assign a unit as driver of a vehicle. Used together with [[orderGetIn]] to order subordinate units to get in as driver of a specific vehicle. Before usage of this command a subordinate unit has not got the option to get into the driver place of the vehicle.
+{{Feature|informative|See [[AI Group Vehicle Management]] for more information.}}
+
+|s1= unitName [[assignAsDriver]] vehicleName
+
+|p1= unitName: [[Object]]
+
+|p2= vehicleName: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_soldier1 assignAsDriver _tank;
+[_soldier1] orderGetIn true;
+</sqf>
+
+|seealso= [[assignAsCommander]] [[assignAsGunner]] [[assignAsCargo]] [[assignAsTurret]] [[assignAsCargoIndex]] [[moveInCargo]] [[moveInCommander]] [[moveInDriver]] [[moveInGunner]] [[moveInTurret]] [[assignedVehicleRole]] [[assignedVehicle]] [[unassignVehicle]] [[leaveVehicle]] [[fullCrew]]
+}}

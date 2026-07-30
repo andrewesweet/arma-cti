@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Scripting/Tutorials
+// revision: 371161 (2025-02-28T17:21:14Z)
+// export sha1: 07p4jqfxd48yxi3nnw1wag6caea3oik
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|See also {{GameCategory|armaR|Modding|Scripting|Guidelines|link= y|text= Scripting Guidelines}}.}}
+
+
+{{GameCategory|armaR|Modding|Scripting}}

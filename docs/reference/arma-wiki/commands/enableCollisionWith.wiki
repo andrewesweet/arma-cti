@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/enableCollisionWith
+// revision: 369423 (2024-09-03T18:48:51Z)
+// export sha1: tlqy0y682i6hysv6kwxwo4drea5riyx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Cancels the effects of [[disableCollisionWith]]. The collision is always enabled for both objects in the arguments, i.e. vehicle1 with vehicle2 and vehicle2 with vehicle1
+{{Feature|warning|Each object can contain only 1 reference to the object it disabled collision with. This command sets this reference to null. Therefore the command might not work as expected when trying to enable collisions with some objects but not other.}}
+
+|s1= vehicle1 [[enableCollisionWith]] vehicle2
+
+|p1= vehicle1: [[Object]]
+
+|p2= vehicle2: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_veh1, _veh2] remoteExecCall ["enableCollisionWith", 0, _veh1];</sqf>
+
+|seealso= [[collisionDisabledWith]] [[disableCollisionWith]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-04-05 - 00:13 (UTC)</dd>
+<dt class="note">[[User:Ranwer|Ranwer]]</dt>
+<dd class="note">
+
+'''enableCollisionWith''' is a script that when you apply it to an object, it will be solid and the player will not be able to go through it. However, if you want your unit to go through it, you may want to use the '''disableCollisionWith''' command. An example for this is: 
+<sqf>
+//name of unit in editor such as player1
+//name of object in editor such as car1
+
+car1 enableCollisionWith player1;
+
+//to make your unit go through the car, use the below and make sure you know what your doing!
+
+car1 disableCollisionWith player1;
+</sqf>
+Both commands '''enableCollisionWith''' and '''disableCollisionWith''', are very handy codes and could be used for example: map testing, mission editing and even animation cutscenes.
+
+</dd>
+
+</dl>

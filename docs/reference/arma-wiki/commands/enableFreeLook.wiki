@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/enableFreeLook
+// revision: 378222 (2026-03-14T18:00:23Z)
+// export sha1: kuu3zxqzkx3c7e2rth5bwqpbn0dtkik
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|gr1= Object Manipulation
+
+|descr= Enables or disables the freelook toggle (2x Alt)
+
+|s1= [[enableFreeLook]] enable
+|p1= [[Boolean]] - enable or disable the toggle
+|r1= [[Boolean]] - Previous state
+
+|x1= <sqf>enableFreeLook true;</sqf>
+
+|x2= <sqf>// a function to get the current state without making changes
+private _fnc_isFreeLookToggled = 
+{
+  private _oldState = enableFreeLook true; // enable temporarily; get state
+  enableFreeLook _oldState;
+  _oldState; // return the state
+};
+
+private _isFreeLookToggled = call _fnc_isFreeLookToggled;
+
+// a function to toggle the state
+private _fnc_toggleFreeLook = 
+{
+  enableFreeLook !enableFreeLook false;
+};
+
+call _fnc_toggleFreeLook; // toggle it (if enabled->disable it, and vice versa)
+</sqf>
+
+|seealso= [[freeLook]]
+}}

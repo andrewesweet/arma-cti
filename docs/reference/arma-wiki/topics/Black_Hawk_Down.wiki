@@ -1,0 +1,97 @@
+// source: https://community.bistudio.com/wiki/Black_Hawk_Down
+// revision: 336604 (2023-01-04T15:23:21Z)
+// export sha1: ovsg3e0enpoltv51zal1c2onmthwmka
+// Vendored snapshot. Do not edit — re-export instead.
+
+== '''[*]======------BLACK HAWK DOWN MOD------======[*]''' ==
+
+----
+
+
+OFP: Black Hawk Down ( OFP:BHD ) is a modification for the war simulator game Operation Flashpoint. Its purpose is to create a modificition that is based on the movie Black Hawk Down and the game Delta Force: BHD. OFP:BHD was formed by Kenwort and Linker Split on the start of january 2007.
+
+Our goal is to create a MOD that is based on the Black Hawk Down movie. Were working based on the movie not the real events that happened in Somalio in 1993. On seccond we are basing not only on the movie but the game DF:BHD. We have in mind to recreate some of the missions that were in the game.
+
+
+
+Task Force Ranger (which consisted of an assault force made up of Army Delta Force, 4 US Navy SEALs, and Ranger teams, an air element provided by the 160th Special Operations Aviation Regiment, and members of the Air Force Pararescue/Air Force Combat Controllers) achieved the mission objectives of capturing specific Aidid lieutenants, but the political fallout from the resultant battle and consequent eventual U.S. withdrawal from Somalia could classify this as a Pyrrhic victory.
+
+
+=== '''[----MOD PROJECT''' ===--
+
+The team of the {{Link|link= http://ofp.gamepark.cz/_hosted/ofpmm/BHD_MOD|text= OFP:BHD MOD}} is composed by:
+
+'''''Kenwort''''' - Project Leader, movie maker
+
+----
+
+'''''Linker Split''''' - Island, model maker, texture maker, scripts
+
+----
+
+'''''Serial Killer''''' - Textures, configs, scripts
+
+----
+
+'''''Thunderbird84''''' - Main config, effects, GUI
+
+----
+
+'''''Zinchux''''' - Artist, website designer
+
+----
+
+'''''Bufferin''''' - Model Maker
+
+----
+
+'''''Sekuristi''''' - Mission Maker
+
+----
+
+'''''Bowery Baker''''' - Mission Maker
+
+----
+
+'''''Reddragon''''' - Animation
+
+----
+
+'''''SeanTate''''' - Beta tester/Audio
+
+----
+
+'''''Synapse''''' - Beta tester
+
+----
+
+'''''Stryker''''' - Modellmaker, Mission Builder
+
+----
+
+'''''Streuner''''' - Missionmaker
+
+----
+
+'''''Mav''''' - Configs
+
+----
+
+'''''SOS Srey''''' - Missionmaker, Soundmaker, Modellmaker
+
+----
+
+'''''Zerg63''''' - Models
+
+----
+
+
+Now linker Split is working on the map, getting help from Bufferin in building models.
+Stryker is currently working on weapons for both U.S. Task Force Ranger and Somali militia
+Bufferin, that is creating building models, is also working on U.S. Task Force Ranger models.
+All the other members are working too.
+
+
+== '''Please modify this topic only if member of the TEAM''' ==
+
+--[[User:Linker Split|Linker Split]] 15:31, 10 March 2007 (CET)

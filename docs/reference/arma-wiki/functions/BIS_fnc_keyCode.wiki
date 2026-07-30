@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_keyCode
+// revision: 326904 (2022-07-12T21:44:37Z)
+// export sha1: ldbuilglrycm8g0a5qby3dbdlj1a0f1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Returns DIK code of a given key.
+
+|s1= input call [[BIS_fnc_keyCode]]
+
+|p1= input:
+* [[Number]]: Key code
+* [[String]]: Key name
+* [[Boolean]]: Return key definitions
+
+|x1= <sqf>13 call BIS_fnc_keyCode; // Returns "EQUALS"</sqf>
+
+|x2= <sqf>"EQUALS" call BIS_fnc_keyCode; // returns 13</sqf>
+
+|x3= <sqf>true call BIS_fnc_keyCode; // returns ["ESCAPE",1,"1",2,"2",3,"3",4,"4",5,"5",6,"6",7,"7",8,"8",9,"9",10,"0",11,"MINUS",12,"EQUALS",13...]</sqf>
+
+|r1= [[String]], [[Number]] or [[Array]]
+
+|seealso= [[DIK KeyCodes]]
+}}

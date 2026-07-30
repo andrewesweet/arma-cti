@@ -1,0 +1,534 @@
+// source: https://community.bistudio.com/wiki/playAction/actions
+// revision: 341447 (2023-05-29T04:10:57Z)
+// export sha1: p0ppc9huvcsguw29ahms9as89duebvd
+// Vendored snapshot. Do not edit — re-export instead.
+
+<noinclude>Ancillary sub-page of [[playAction]] and [[playActionNow]], listing actions available in Arma 3.
+{{TOC|abc}}</noinclude>
+
+
+{{Columns|4|
+=== A ===
+
+* AdjustB
+* AdjustF
+* AdjustL
+* AdjustLB
+* AdjustLF
+* AdjustR
+* AdjustRB
+* AdjustRF
+* agonyStart
+* agonyStop
+* apctracked2_slot1_in
+* apctracked2_slot1_out
+* apctracked2_slot2_in
+* apctracked2_slot2_out
+* apcwheeled3_slot1_in
+* apcwheeled3_slot1_out
+
+=== B ===
+
+* bench_Heli_Light_01_get_in
+* bench_Heli_Light_01_get_out
+* BinocOff
+* BinocOn
+* Binoculars
+* BottomDive
+* bottomSwim
+
+=== C ===
+
+* CanNotMove
+* carriedStill
+* ChopperHeavy_L_GetIn_H
+* ChopperHeavy_L_GetOut_H
+* ChopperHeavy_L_Static_H
+* ChopperHeavy_LP_Static_H
+* ChopperHeavy_Lux_GetIn_H
+* chopperheavy_Lux_getout_H
+* ChopperHeavy_R_GetIn_H
+* ChopperHeavy_R_GetOut_H
+* ChopperHeavy_R_static_H
+* chopperLight_C_L_idleA_H
+* chopperLight_C_L_idleB_H
+* chopperLight_C_L_idleC_H
+* chopperLight_C_L_idleD_H
+* chopperLight_C_L_static_H
+* chopperLight_C_LIn_H
+* chopperLight_C_LOut_H
+* chopperLight_C_R_idleA_H
+* chopperLight_C_R_idleB_H
+* chopperLight_C_R_idleC_H
+* chopperLight_C_R_idleD_H
+* chopperLight_C_R_static_H
+* chopperLight_C_Rin_H
+* chopperLight_C_Rout_H
+* chopperLight_CB_static_H
+* chopperLight_L_In_H
+* chopperLight_L_Out_H
+* chopperLight_L_static_H
+* chopperLight_R_in_H
+* chopperLight_R_out_H
+* chopperLight_R_static_H
+* chopperLight_RP_static_H
+* Civil
+* CivilLying
+* Combat
+* commander_apctracked1_in
+* commander_apctracked1_out
+* commander_apctracked1aa_in
+* commander_apctracked1aa_out
+* commander_apctracked1rcws_out
+* commander_apctracked3_in
+* commander_apctracked3_out
+* commander_apcwheeled1_in
+* commander_apcwheeled1_out
+* commander_apcwheeled2_in
+* commander_apcwheeled2_out
+* commander_apcwheeled2hi_in
+* commander_apcwheeled2hi_out
+* commander_mbt3_in
+* commander_mbt3_out
+* commander_MRAP_03
+* commander_sdv
+* copilot_Heli_Light_02
+* copilot_Heli_Light_02_Enter
+* copilot_Heli_Light_02_Exit
+* copilot_Heli_Light_03
+* copilot_Heli_Light_03_Enter
+* copilot_Heli_Light_03_Exit
+* crew_tank01_in
+* crew_tank01_out
+* Crouch
+
+=== D ===
+
+* Default
+* Diary
+* Die
+* DismountOptic
+* DismountSide
+* dooraction
+* Down
+* driver_apctracked3_in
+* driver_apctracked3_out
+* driver_apcwheeled2_in
+* driver_apcwheeled2_out
+* driver_boat01
+* driver_hemtt
+* Driver_High01
+* Driver_low01
+* driver_mantis
+* Driver_mid01
+* driver_MRAP_01
+* driver_MRAP_03
+* driver_offroad01
+* driver_quadbike
+* driver_sdv
+* driver_tractor
+* driver_Truck_02
+* driver_ugv_01
+
+=== E ===
+
+* EvasiveLeft
+* EvasiveRight
+
+=== F ===
+
+* FastB
+* FastF
+* FastL
+* FastLB
+* FastLF
+* FastR
+* FastRB
+* FastRF
+* FireNotPossible
+
+=== G ===
+
+* Gear
+* gestureAdvance
+* GestureAgonyCargo
+* gestureAttack
+* gestureCeaseFire
+* gestureCover
+* GestureDismountMuzzle
+* gestureFollow
+* gestureFreeze
+* gestureGo
+* gestureGoB
+* gestureHi
+* gestureHiB
+* gestureHiC
+* GestureLegPush
+* GestureMountMuzzle
+* gestureNo
+* gestureNod
+* gesturePoint
+* GestureReloadDMR
+* GestureReloadEBR
+* GestureReloadFlaregun
+* GestureReloadKatiba
+* GestureReloadLRR
+* GestureReloadM200
+* GestureReloadM4SSAS
+* GestureReloadMk20
+* GestureReloadMX
+* GestureReloadMXCompact
+* GestureReloadMXSniper
+* GestureReloadPistol
+* GestureReloadPistolHeavy02
+* GestureReloadSDAR
+* GestureReloadSMG_01
+* GestureReloadSMG_02
+* GestureReloadSMG_03
+* GestureReloadTRG
+* GestureReloadTRGUGL
+* GestureSpasm0
+* GestureSpasm0weak
+* GestureSpasm1
+* GestureSpasm1weak
+* GestureSpasm2
+* GestureSpasm2weak
+* GestureSpasm3
+* GestureSpasm3weak
+* GestureSpasm4
+* GestureSpasm4weak
+* GestureSpasm5
+* GestureSpasm5weak
+* GestureSpasm6
+* GestureSpasm6weak
+* gestureUp
+* gestureYes
+* GetInAMV_cargo
+* GetInAssaultBoat
+* GetInHeli_Attack_01Gunner
+* GetInHeli_Attack_01Pilot
+* GetInHeli_Light_01bench
+* GetInHeli_Transport_01Cargo
+* GetInHeli_Transport_02Cargo
+* GetInHelicopterCargo
+* GetInHemttBack
+* GetInHigh
+* GetInLow
+* GetInMantis
+* GetInMedium
+* GetInMortar
+* GetInMRAP_01
+* GetInMRAP_01_cargo
+* GetInMRAP_03
+* GetInOffroad
+* GetInOffroadBack
+* GetInOffroadCargo
+* GetInQuadbike
+* GetInQuadbike_cargo
+* GetInSDV
+* GetInSpeedboat
+* GetOutAssaultBoat
+* GetOutHeli_Attack_01Gunner
+* GetOutHeli_Attack_01Pilot
+* GetOutHeli_Light_01bench
+* GetOutHelicopterCargo
+* GetOutHigh
+* GetOutHighHemtt
+* GetOutHighZamak
+* GetOutLow
+* GetOutMantis
+* GetOutMedium
+* GetOutMortar
+* GetOutMRAP_01
+* GetOutMRAP_01_cargo
+* GetOutPara
+* GetOutQuadbike
+* GetOutQuadbike_cargo
+* GetOutSDV
+* GetOutSpeedboat
+* GetOver
+* grabCarried
+* grabCarry
+* grabDrag
+* grabDragged
+* gunner_apctracked1aa_in
+* gunner_apctracked1aa_out
+* gunner_apctracked3_in
+* gunner_apctracked3_out
+* gunner_apcwheeled1_in
+* gunner_apcwheeled1_out
+* gunner_Heli_Transport_01
+* gunner_mbt3_in
+* gunner_mbt3_out
+* gunner_mortar
+* gunner_MRAP_01
+* gunner_MRAP_03
+* gunner_MRAP_03_lookingatmonitor
+* gunner_standup01
+* gunner_static_low01
+* gunner_staticlauncher
+
+=== H ===
+
+* HandGunOn
+* healedStart
+* healedStop
+* Heli_Attack_01_Gunner
+* Heli_Attack_01_Gunner_Enter
+* Heli_Attack_01_Gunner_Exit
+* Heli_Attack_01_Pilot
+* Heli_Attack_01_Pilot_Enter
+* Heli_Attack_01_Pilot_Exit
+* Heli_Attack_02_Cargo
+* Heli_Attack_02_Gunner_SettleIn
+* Heli_Attack_02_Pilot
+* Heli_Light_02_Cargo
+* Heli_Light_02_Gunner
+* Heli_Light_02_Pilot
+
+=== I ===
+
+=== J ===
+
+* JumpOff
+
+=== K ===
+
+=== L ===
+
+* LadderOff
+* LadderOffBottom
+* LadderOffTop
+* LadderOnDown
+* LadderOnUp
+* Lying
+
+=== M ===
+
+* mbt1_slot1_in
+* mbt1_slot1_out
+* mbt1_slot2_in
+* mbt1_slot2_out
+* mbt1c_slot2_in
+* mbt1c_slot2_out
+* mbt2_slot1_in
+* mbt2_slot1_out
+* mbt2_slot2_in
+* mbt2_slot2_out
+* mbt2_slot2a_in
+* mbt2_slot2a_out
+* mbt2_slot2b_in
+* mbt2_slot2b_out
+* Medic
+* MedicOther
+* medicStart
+* medicStartRightSide
+* medicStartUp
+* medicStop
+* Mi17_Cargo02
+* Mk201_Turret
+* Mk34_Turret
+* Mortar_01_F_Turret
+* Mortar_Gunner
+* MountOptic
+* MountSide
+
+=== N ===
+
+=== O ===
+
+=== P ===
+
+* Panic
+* Para_Pilot
+* passenger_apc_generic01
+* passenger_apc_generic02
+* passenger_apc_generic02b
+* passenger_apc_generic03
+* passenger_apc_generic04
+* passenger_apc_narrow_generic01
+* passenger_apc_narrow_generic02
+* passenger_apc_narrow_generic03
+* passenger_apc_narrow_generic03still
+* passenger_boat_holdleft
+* passenger_boat_holdleft2
+* passenger_boat_holdright
+* passenger_boat_holdright2
+* passenger_boat_rightrear
+* passenger_flatground_crosslegs
+* passenger_flatground_generic01
+* passenger_flatground_generic02
+* passenger_flatground_generic03
+* passenger_flatground_generic04
+* passenger_flatground_generic05
+* passenger_flatground_leanleft
+* passenger_flatground_leanright
+* passenger_generic01_foldhands
+* passenger_generic01_leanleft
+* passenger_generic01_leanright
+* passenger_injured_medevac_truck01
+* passenger_injured_medevac_truck02
+* passenger_injured_medevac_truck03
+* passenger_low01
+* passenger_mantisrear
+* passenger_MRAP_01_back
+* passenger_MRAP_01_front
+* passenger_MRAP_03exgunner
+* passenger_quadbike
+* passenger_sdv
+* passenger_VAN_codriver01
+* passenger_VAN_codriver02
+* PBX_Cargo01
+* PBX_Cargo02
+* PBX_Cargo03
+* PBX_Driver
+* pilot_Heli_Attack_01
+* pilot_Heli_Light_02
+* pilot_Heli_Light_02_Enter
+* pilot_Heli_Light_02_Exit
+* pilot_Heli_Light_03
+* pilot_Heli_Light_03_Enter
+* pilot_Heli_Light_03_Exit
+* pilot_Heli_Transport_01
+* Plane_Fighter_01_Pilot
+* Plane_Fighter_03_pilot
+* Plane_Transport_01_Cargo
+* Plane_Transport_01_Pilot
+* PlayerCrouch
+* PlayerProne
+* PlayerSlowB
+* PlayerSlowF
+* PlayerSlowL
+* PlayerSlowLB
+* PlayerSlowLF
+* PlayerSlowR
+* PlayerSlowRB
+* PlayerSlowRF
+* PlayerStand
+* PlayerTactB
+* PlayerTactF
+* PlayerTactL
+* PlayerTactLB
+* PlayerTactLF
+* PlayerTactR
+* PlayerTactRB
+* PlayerTactRF
+* PlayerWalkB
+* PlayerWalkF
+* PlayerWalkL
+* PlayerWalkLB
+* PlayerWalkLF
+* PlayerWalkR
+* PlayerWalkRB
+* PlayerWalkRF
+* PrimaryWeapon
+* PutDown
+* PutDownEnd
+
+=== Q ===
+
+=== R ===
+
+* Relax
+* released
+* releasedBad
+* reloadGM6
+* ReloadMagazine
+* ReloadMGun
+* ReloadMortar
+* ReloadRPG
+* RHIB_Cargo
+* RHIB_Driver
+* RHIB_Gunner
+
+=== S ===
+
+* Salute
+* saluteOff
+* SecondaryWeapon
+* SitDown
+* SlowB
+* SlowF
+* SlowL
+* SlowLB
+* SlowLF
+* SlowR
+* SlowRB
+* SlowRF
+* Stand
+* startDive
+* StartFreefall
+* startSwim
+* Static_Turret
+* Stop
+* StopDive
+* StopRelaxed
+* StopSwim
+* StrokeFist
+* StrokeGun
+* SurfaceDive
+* surfaceSwim
+* Surrender
+* swimDown
+* swimUp
+
+=== T ===
+
+* TactB
+* TactF
+* TactL
+* TactLB
+* TactLF
+* TactR
+* TactRB
+* TactRF
+* TakeFlag
+* TestDriver
+* TestDriverOut
+* TestGunner
+* ThrowGrenade
+* ThrowPrepare
+* Treated
+* Truck_02_Driver
+* Truck_Cargo01
+* Truck_Cargo02
+* Truck_Cargo03
+* Truck_Cargo04
+* Truck_Driver
+* TurnL
+* TurnLRelaxed
+* TurnR
+* TurnRRelaxed
+
+=== U ===
+
+* Unconscious
+* Up
+
+=== V ===
+
+=== W ===
+
+* WalkB
+* WalkF
+* WalkL
+* WalkLB
+* WalkLF
+* WalkR
+* WalkRB
+* WalkRF
+* WeaponOff
+* WeaponOn
+
+=== X ===
+
+=== Y ===
+
+=== Z ===
+
+* Zodiac_Cargo01
+* Zodiac_Cargo02
+* Zodiac_Cargo03
+* Zodiac_Cargo04
+* Zodiac_Driver
+}}

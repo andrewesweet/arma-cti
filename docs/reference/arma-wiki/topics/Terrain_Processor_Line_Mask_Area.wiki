@@ -1,0 +1,15 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Line:_Mask:_Area
+// revision: 201445 (2021-01-17T20:09:46Z)
+// export sha1: qves25crjkrsr6snztl7hh5x7rsfgic
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Mask]]
+{{TerrainProcessorManual|Mask: Area|BITasksPlugin.dll|Polygon, PolygonM, PolygonZ|No
+|DESCRIPTION=Algorithm removes all objects in features database which are inside / outside given shapefile polygons.
+|TASKPARAMETERS=* '''Remove objects''' - where remove objects (Inside, Outside).
+|OBJECTPROTOTYPEPARAMETERS=
+|USAGE=This task removes objects inside/outside given areas. You can use it for removing trees in roads buffer, where there are water bodies or in areas you would want to edit manually.
+|ALGORITHM=# Algorithm finds all objects inside / outside polygons and removes them from feature database.
+|SAMPLE=
+}}

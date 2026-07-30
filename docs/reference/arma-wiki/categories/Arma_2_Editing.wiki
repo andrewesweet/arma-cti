@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Editing
+// revision: 255519 (2021-04-17T08:15:06Z)
+// export sha1: ofcf5xuro0wv7mv9j8tzm29qljx8611
+// Vendored snapshot. Do not edit — re-export instead.
+
+Editing category for '''{{arma2}}''' and its expansion '''{{arma2oa}}'''.
+
+{{GameCategory|arma2}}
+{{GameCategory|arma2oa}}

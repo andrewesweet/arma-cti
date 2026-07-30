@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_decodeFlags4
+// revision: 373738 (2025-06-24T18:40:13Z)
+// export sha1: 9i1xowlah0gxfif0ot9vjs8q3fasd9r
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Bitwise | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Bitwise
+
+|descr= Decodes a single scalar into array of unique 4-state flags (values 0,1,2,3).
+
+|s1= [encodedFlags, size] call [[BIS_fnc_decodeFlags4]]
+
+|p1= encodedFlags: [[Number]] - non-decimal number between 0 and 16777215
+|p2= size: [[Number]] - (Optional, default -1) output size. Size -1 means output will not be resized
+
+|r1= [[Number]] - decoded flags
+
+|x1= <sqf>private _decodedFlags = 225 call BIS_fnc_decodeFlags4; // [1,0,2,3]</sqf>
+|x2= <sqf>private _decodedFlags = [225, 8] call BIS_fnc_decodeFlags4; // [1,0,2,3,0,0,0,0]</sqf>
+
+|seealso= [[BIS_fnc_encodeFlags4]]
+}}

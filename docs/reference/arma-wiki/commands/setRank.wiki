@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/setRank
+// revision: 340311 (2023-04-29T17:00:34Z)
+// export sha1: sg9kbssmadgocjhn7joal1by79ok89h
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Identity | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+|eff= global
+
+|gr1= Unit Identity
+
+|descr= Sets rank of given unit.
+
+{{Feature|arma3|Before {{arma3}} v1.68 and in previous titles, this command was {{Icon|globalArgument|32}} {{Icon|localEffect|32}}.}}
+
+|s1= unitName [[setRank]] rank
+
+|p1= unitName: [[Object]]
+
+|p2= rank: [[String]] - one of:
+{{Columns|4|
+* {{hl|"PRIVATE"}}
+* {{hl|"CORPORAL"}}
+* {{hl|"SERGEANT"}}
+* {{hl|"LIEUTENANT"}}
+* {{hl|"CAPTAIN"}}
+* {{hl|"MAJOR"}}
+* {{hl|"COLONEL"}}
+}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setRank "COLONEL";</sqf>
+
+|seealso= [[rank]] [[setUnitRank]]
+}}
+
+{{Note
+|user= Wolfrug
+|timestamp= 20090326192400
+|text= Changing a unit's rank using either [[setUnitRank]] or [[setRank]] will also REPLACE their current rating dependent on their new rank (colonels have a rating of 7500 etc).
+That is to say REPLACE, not add to: the unit's old rating will disappear with the rank change.
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20140412203900
+|text= Behavior when used on players in multiplayer seems unpredictable. ({{arma3}} 1.00)
+}}

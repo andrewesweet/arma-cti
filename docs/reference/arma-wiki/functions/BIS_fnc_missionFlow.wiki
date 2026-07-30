@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_missionFlow
+// revision: 364294 (2024-05-06T09:38:39Z)
+// export sha1: tj13s4ejy99elos7uv9phyd7dtxfbxi
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Missions
+
+|descr= This function is automatically run in [[Arma 3: Functions Library#Attributes|post-init]] by a [[Arma 3: Functions Library|CfgFunctions]] declaration. If the mission contains a {{hl|missionFlow.fsm}} file, it will be loaded, otherwise an empty, default one will be used.
+
+|s1= call [[BIS_fnc_missionFlow]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_missionFlow;</sqf>
+
+|seealso= [[FSM]] [[Event Scripts]]
+}}

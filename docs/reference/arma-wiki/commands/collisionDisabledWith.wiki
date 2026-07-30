@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/collisionDisabledWith
+// revision: 377648 (2026-01-02T09:01:51Z)
+// export sha1: qmxxhoaq7b955hjclfnicu445nwjrol
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns the object, given object has collision disabled with and whether or not returned object has also collision disabled with given object.
+
+|s1= [[collisionDisabledWith]] obj
+
+|p1= obj: [[Object]] - given object
+
+|r1= [[Array]] with [other, mutual]
+* other: [[Object]] - the object, ''obj'' has collision disabled with, or [[objNull]]
+* mutual: [[Boolean]] - [[true]] if ''other'' has also disabled collision with ''obj'', [[false]] otherwise
+
+|x1= <sqf>private _collisionInfo = collisionDisabledWith _tank;</sqf>
+
+|seealso= [[disableCollisionWith]] [[enableCollisionWith]]
+}}

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Tools_Diag
+// revision: 364326 (2024-05-06T09:38:48Z)
+// export sha1: h8c5vvnkx97oqtttbvc2khzzwuojrdv
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR=
+[[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY=
+[[:Category: Arma 3: Official Tools|Arma 3 Official Tools]]
+
+|DOWNLOAD={{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION=
+This script will check some registry keys, files and other stuff to produce a report to help debugging your tools. Reports are stored in ''Arma3Toolsdirectory\Logs\'' and named "Arma3CommunityTools_<DATE>.rpt"<br>
+
+|NOTES=this script does not suggest any solution, it retrieves, stores and displays relevant data to debug "Arma 3 Tools".
+
+|COMMAND=
+    Arma3Tools_diag_retail.bat<br>
+    Arma3Tools_diag_retail.bat -autoStart
+
+|LICENSING=[[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO=}}
+=== Additional information ===
+
+==== How to use it ====
+You can simply go into your Arma 3 Tools directory and double click Arma3Tools_diag_retail.bat or run it from [[Arma 3: Tools Launcher]].
+
+
+Arma3Tools_diag_retail can take the following parameters:
+* "Arma3Tools_diag_retail.bat '''-autoStart'''": Won't ask the user if he wants to proceed
+* "Arma3Tools_diag_retail.bat '''-noStore'''": If used, the report will be stored in ''%temp%\BIStudio''
+
+{{GameCategory|arma3|Official Tools}}

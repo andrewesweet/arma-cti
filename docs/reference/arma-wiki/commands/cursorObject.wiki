@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/cursorObject
+// revision: 341004 (2023-05-13T22:06:20Z)
+// export sha1: ew3uho8gwl2db48prrl7h4ajtu99scb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Object Detection
+
+|descr= Returns the object under cursor. This command is quite different from [[cursorTarget]] as it is more precise in determining the boundaries of the pointed at object and can detect a larger variety of objects including map objects and trees.
+
+|s1= '''cursorObject'''
+
+|r1= [[Object]]
+
+|x1= <sqf>hint str [getModelInfo cursorObject, typeOf cursorObject];</sqf>
+
+|seealso= [[getCursorObjectParams]] [[cursorTarget]] [[lineIntersects]] [[lineIntersectsWith]] [[lineIntersectsObjs]] [[lineIntersectsSurfaces]] [[intersect]] [[checkVisibility]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2015-03-23 - 18:17 (UTC)</dd>
+<dt class="note">[[User:Pierre MGI|Pierre MGI]]</dt>
+<dd class="note">
+If you point at the primary weapon of an infantry unit, cursorObject will return the p3d of the weapon instead of  the unit itself (B Alpha 1-2:1.. or its variable name ). That doesn't occur for anything else (backpack or headgear).
+
+</dl>

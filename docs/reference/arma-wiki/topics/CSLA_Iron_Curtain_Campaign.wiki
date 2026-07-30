@@ -1,0 +1,87 @@
+// source: https://community.bistudio.com/wiki/CSLA_Iron_Curtain_Campaign
+// revision: 364700 (2024-05-25T17:42:59Z)
+// export sha1: isgo8rbs9jmmaohnc36rxmwon5yogup
+// categories: Category:CSLA: Iron Curtain
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Indian Summer Campaing =
+
+
+''There is a story about a father and his little son.''<br>
+''One day they came to a hill near the Iron Curtain.''<br> 
+''And the little son asked his father:''<br>
+''"Dad, who is behind that fence?"''<br> 
+''His father looked dreamily behind the fence and answered:''<br> 
+''"You know... we are behind that fence..."<br>''
+
+
+Czechoslovak Socialist Republic, Summer 1986
+The time has come... for changes in our homeland.
+
+Join the fight for freedom of a few insurgents, which want not to respect anymore the communist regime in their country.
+Play through their story in various types of infantry missions.
+
+Help them fight for their cause.
+
+
+=== Features ===
+* 15+ playable missions
+* some missions can played from a perspective of different FIA characters depending on player's choice at the mission start
+* experience mission played as FIA, CSLA and US characters
+* three possible campaign endings
+* text-to-speech ENG dubbing with ENG/CZ subtitles
+
+
+=== Mission List & Campaign Flow ===
+
+{| class="mw-collapsible mw-collapsed wikitable"
+|+ style=white-space:nowrap | !!!Spoilers ahead!!!
+|-
+! # !! Name !! Side !! Description !! Next mission
+|-
+| 1 || Czechoslovakia || N/A || Cutscene || Breaking point
+|-
+| 2 || Breaking point || FIA || The day, when our whole life turned upside down. || Crossing the border
+|-
+| 3 || Crossing the border || FIA|| Your brother has been detained by the state police and is held in the barracks at the border. Get him out! || In the West
+|-
+| 4 || In the West || N/A || Cutscene || Hostages 
+|-
+| 5 || Hostages || FIA || A couple of our friends fell into the trap of the State Police. We must free them before they disappear in uranium mines. || Nove Chalupy
+|-
+| 6 || Nove Chalupy || FIA || Today it will be decided. Today is the D day! CSLA units are attacking insurgent positions. || Road to Nova Pec
+|-
+| 7 || Road to Nova Pec || CSLA || Breakthrough! CSLA troops are pushing the insurgents back to the border and destroying the last points of resistance. || Reinforcements
+|-
+| 8 || Reinforcements || FIA || CSLA has moved more reinforcements into the battle zone, which can begin to search for the insurgents remaining in the forests. Strike them unexpectedly! || Good Morning
+|-
+| 9 || Good Morning || FIA || The insurgents are regrouping just in front of the advancing CSLA units. || Sparklers 
+|-
+| 10 || Sparklers || FIA || Enemy helicopters are approaching! Shoot them down! || Dark Woods
+|-
+| 11 || Dark Woods || FIA || Another important point of insurgents is blockaded. We have no other choice just a retreat into the dense forests. || Visitors 
+|-
+| 12 || Visitors || FIA || The insurgents co-operate with SOCOM special forces. A welcoming committee is sent to the landing site. || Knock knock
+|-
+| 13 || Knock knock || US || Take the command of the special operation - the raid on the command post of the CSLA units. || Convoy
+|-
+| 14 || Convoy || CSLA || The convoy with ammunition supplies is moving into the position of the artillery battery. || Long day
+|-
+| 15 || Long day || CSLA/FIA || Captured by the rebels... will you decide your own destiny? || Wasps nest or Operation Fish head
+|-
+| 16 || Operation Fish head || CSLA || Subversive elements have been cornered. Their last hour is approaching. Participate in the last CSLA counter-insurgency operation. || Alternative ending of campaign for CSLA
+|-
+| 17 || Wasps nest || FIA || Imaginary tickets to the west are hidden in important documents at the commanding point of CSLA. The last operation of the insurgents before their final escape to safety. || Direction West or Hide and seek
+|-
+| 18 || Hide and seek || FIA || CSLA units organize a hunt for the surviving insurgents. Avoid their patrols and move to the West at the agreed location, across the Iron Curtain. || Campaign ending for FIA - Antonin Anderle (alone)
+|-
+| 19 || Direction West || FIA || They are already waiting for us in the West. Now we must quickly capture an armored vehicle and break through to the Iron Curtain and then to the West. || Campaign ending for FIA - Vitek Finke (with his group)
+|}
+
+=== Download ===
+The campaign can be downloaded from steam workshop. Click the picture below to get to appropriate store page.
+
+[[File:csla_is_campaign.jpg|none|150px|thumb|link=https://steamcommunity.com/sharedfiles/filedetails/?id=2534376765|Indian Summer Campaign download page]]
+
+
+[[Category:CSLA: Iron Curtain]]

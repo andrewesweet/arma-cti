@@ -1,0 +1,80 @@
+// source: https://community.bistudio.com/wiki/camCommitted
+// revision: 325310 (2022-07-10T23:05:00Z)
+// export sha1: d10kpcowwwyywox6xm3q31htuoijyu4
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Camera Control
+
+|descr= Checks if the conduction of the last camCommit call already finished.
+
+|s1= [[camCommitted]] camera
+
+|p1= camera: [[Object]] - object of type "camera"
+
+|r1= [[Boolean]] - true if the last camCommit already finished, false if not
+
+|x1= SQS:
+<sqs>
+; create a camera object
+_cam = "camera" camCreate [5600,4800,10]
+_cam camSetTarget player
+_cam cameraEffect ["internal", "BACK"]
+_cam camCommit 0
+
+; smoothly move the camera to its new position in 6 seconds
+_cam camSetPos [5680,4720,20]
+_cam camCommit 6
+@camCommitted _cam
+
+; proceed
+</sqs>
+
+|x2= SQF:
+<sqf>
+_cam = "camera" camCreate [0, 0, 0];
+_cam camSetTarget player;
+_cam camSetRelPos [0, -5, 10];
+_cam cameraEffect ["internal", "back"];
+_cam camCommit 0;
+
+waitUntil { camCommitted _cam };
+
+_cam camSetTarget player;
+_cam camSetRelPos [90, 25, 10];
+_cam cameraEffect ["internal", "back"];
+_cam camCommit 5;
+
+waitUntil {camCommitted _cam};
+
+_cam camSetTarget player;
+_cam camSetRelPos [-90, -5, 10];
+_cam cameraEffect ["internal", "back"];
+_cam camCommit 5;
+</sqf>
+
+|seealso= [[camCommit]]
+}}

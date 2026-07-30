@@ -1,0 +1,81 @@
+// source: https://community.bistudio.com/wiki/breakOut
+// revision: 369282 (2024-09-03T18:42:47Z)
+// export sha1: tmztfovtactq4h5jpwd5oluxmjc1chn
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Program Flow
+
+|descr= Breaks out of the [[Variables#Scopes|scope]] with given '''name'''.
+* An unknown [[scopeName]] name will cause the script error {{hl|Generic error in expression}}
+* If multiple scopes with the same '''name''' exist, the command will break out the nearest scope. See {{Link|#Example 3}}.
+
+|s1= [[breakOut]]  name
+
+|p1= name: [[String]] - name of the scope which was previously set with [[scopeName]]. <sqf inline>""</sqf> will exit the current scope (see also [[exitWith]])
+
+|r1= [[Nothing]]
+
+|s2= value [[breakOut]]  name
+
+|s2since= arma3 1.48
+
+|p21= value: [[Anything]] - a value to return
+
+|p22= name: [[String]] - name of the scope which was previously set with [[scopeName]]. <sqf inline>""</sqf> will exit the current scope (see also [[exitWith]])
+
+|r2= [[Anything]] - will return '''value'''
+
+|x1= <sqf>
+scopeName "main";
+while { true } do {
+	scopeName "loop1";
+	while {true} do {
+		scopeName "loop2";
+		if (condition1) then {breakTo "main"}; // Breaks all scopes and return to "main"
+		if (condition2) then {breakOut "loop2"}; // Breaks scope named "loop2"
+		sleep 1;
+	};
+	sleep 1;
+};
+</sqf>
+
+|x2= <sqf>
+call {
+	scopeName "main";
+	call {
+		123 breakOut "main"
+	};
+	345
+}; // call returns 123
+</sqf>
+
+|x3= <sqf>
+call {
+	scopeName "Main"; // Parent Main
+	call {
+		scopeName "Main"; // Child Main
+		"String" breakOut "Main"; // Will break out of child main and return "String" to parent main
+	};
+};
+</sqf>
+
+|seealso= [[scopeName]] [[breakTo]] [[exitWith]]
+}}

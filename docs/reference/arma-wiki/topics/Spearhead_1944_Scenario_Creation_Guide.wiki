@@ -1,0 +1,530 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Scenario_Creation_Guide
+// revision: 376150 (2025-09-07T09:52:19Z)
+// export sha1: iz5u39yano5mya1m5i74pocfzvzi938
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+<!--<div class="floating-box-container" style="margin: auto; max-width: 1024px">-->
+
+== Introduction ==
+{{Feature|informative|
+This guide was created by {{Link|https://steamcommunity.com/id/h34dup/myworkshopfiles/|HeadUp}} and is additionally avaiable as flipbook [https://issuu.com/h34dup/docs/arma_3_scenario_editing_guide_the_making_of_the_l here]!<br />
+[[File: spe scenario guide flipbook.jpg|250px]]
+<br/><br/>
+You can find the link to the scenario '''''The Lock''''' {{Link|https://drive.google.com/file/d/1WuckrMjweG5_av3Lax2YpcKH_OWASsR3|here}}.
+}}
+
+In this guide, I will share my process for creating the singleplayer scenario, '''''The Lock''''', a simple airborne infantry-based mission taking place during the early hours of Operation Overlord during WWII. In creating this guide, my hope is that details of my approach to mission making will help fellow Arma editors, whether it’s introducing a new technique or confirming the way you already work, so players at large can enjoy more quality community-authored scenarios.
+
+A sliver of background on myself for those curious. I have been a longtime gamer and modder, starting with Medal of Honor: Allied Assault in 2001, and releasing mods of various sizes and levels of popularity for Call of Duty 1 and 2, Company of Heroes, Skyrim, {{arma2}}, and most recently, {{arma3}}. Games of the Arma series are unique in that they offer a platform for exploring realistic tactical and strategic scenarios, that, with CDLC and mods covering a wide range of historical conflicts and settings, empowers modders and editors to bring history to life. Whether its units playing amazing and painstakingly created ops based on real historical actions, elaborate screenshot art that tricks the eye into thinking it’s a real photograph, or a virtual ocean of addons, it’s a community unlike any other. It was this hobby of reading real accounts of combat and attempting to render them in Arma that got my scenarios noticed by HOW and ultimately led to my involvement in [[Spearhead 1944]]. So, it’s in that spirit that I created The Lock, and as such that I’ll lay out this guide.
+
+For fans of my work for the [[S.O.G. Prairie Fire]] CDLC, or old heads who remember LoK and TF42 for {{arma2}}, there is plenty useful here for you too if WWII and/or SPE is of no interest. What I am presenting for the first time here is the most succinct account I can offer of my approach to singleplayer mission making. It’s the result of over ten years of fiddling in the editor, and a lot of lessons learned the hard way. 
+
+It’s also well worth noting that before I get into my process, this guide does not at all reflect the process I or HOW followed in the making of SPE or SPEX. That process was worlds different in that it was a professional endeavor. The process below describes the making of a mission that, for me, took only a week (call it 5-6 sessions of 2-4 hours each). This was a solo and an independent endeavor, as is this guide. So although I share many techniques and conventions I’ve adopted having gone through the experience of making the original CDLC, no reader or editor should take these contents as anything official. If you ever have questions about my work on [[Spearhead 1944]], just reach out to me directly and ask :)
+
+So, I will lay out at a high level the key steps I took, share some tips about workflow and super simple scripting techniques I employed. This guide assumes readers have a general knowledge about Arma 3’s [[Eden Editor]], if you are brand new to it, you’ll want to have a foundational understanding which you won’t get in this guide.
+
+It’s also worth familiarizing yourself not only with the terrain, assets, modules, and objects included in the CDLC, but also the functions and documentation on the [[Spearhead 1944]] Biki - I will refer to it occasionally in the doc, but it’s a great extension to the Biki:
+{{Link|Category:Spearhead_1944|Spearhead 1944 Category}}
+
+Here are the key steps I’ll cover:
+
+* Where to Start - starting with the history, consider the medium, then make a marker sketch
+* Basic Set-up - init, description, missionFlow, plan to put all units in well-organized named layers, add in SPE systems
+* Task Structure - create and verify your basic tasks work before sinking hours, working backwards, until you’ve verified your objectives work correctly, briefing
+* Dialogue - considerations for voice, keep it in a doc, add it where needed while it’s easy to test and verify, even if it’s placeholder
+* Props, Set pieces, and Supplies - ensuring adequate supplies in the field
+* Presentation - details, opening sequences, screenshots
+* The Home Stretch - testing, workshop description tips, release and support
+
+So, with that, let’s dive into the making of “The Lock” from end-to-end!
+
+== Step 1: Getting Started ==
+[[File:spe scenario guide history.jpg|1024px]]
+
+=== Start with the History ===
+In the early morning hours of June 6th, 1944, the Normandy coastline was aflame. Operation Overlord was in its initial phases and the course of history would be shaped by the events that would transpire. American airborne infantry were parachuted behind enemy lines ahead of the invasion in a chaotic insertion that saw many troops miss their intended drop zones, forcing them to organize whoever they ran across into patchwork units to attempt to carry out their crucial objectives. If any of these objectives were not met, the invasion would be in jeopardy. One such objective involved The Lock at La Barquette, which factors if even only in mention, into many historical accounts of The Battle of Carentan. This provides the setting for this scenario, but the Carentan terrain, along with Normandy, Mortain, and countless others, are massive and provide ample opportunities for a great historical scenario.
+
+The first step in my process is to get inspired (and educated) about the history of the terrain. For [[Spearhead 1944]] 1.0 and 1.1, the entire HOW team was deeply immersed in historical research. We got our hands on real After Action Reports, along with historical accounts from multiple different sources, and explored how they might play out on the terrains. This kind of explorative play can help you understand what works best in the {{arma3}} engine and can likely fill up a modest list of initial ideas. 
+
+{{Feature|informative|I suggest coming up with multiple ideas before you dig in, your first idea isn’t always your best, and try not to be too precious about your vision at this stage, be open to significant changes while you haven’t sunk much time in if those changes will make your scenario better.}}
+
+=== Initial Gameplay Considerations ===
+When you have arrived at an idea you want to advance further, you should immediately start to consider how you will translate that into the {{arma3}} engine. 
+
+Firstly, as most editors and players are familiar, the Arma engine is impressive, but also experiences its fair share of quirks, especially when it comes to AI. The point is you should be aware of how the Arma engine works, what it’s good at and what it’s not so good at, and you should shape your scenario around what the engine does well. 
+
+Secondly, you should be aware of what the average Arma player likes about the game and what they would enjoy. That could be anything from showcasing combined arms with specific vehicles or fire supports and asymmetrical warfare, or just depicting a good old fashion infantry slug fest. The point is to keep your players in mind early and often throughout the process, remember they don’t know everything you do, consider what questions they may have and what they might do as they play through the scenario.
+
+Thirdly, bear in mind your own skill level in the Editor. Even if you’re no scripting guru (I’ll be the first to admit I am not a scripting guru, tbh I consider myself barely more than a novice), there’s no reason you can’t put together an awesome and fun scenario using only the basics. If you have the skill and experience, the sky really is the limit, but the point is not to bite off more than you can chew. The process I lay out in this guide should help you avoid wasting a lot of time for a mission that fundamentally can’t work in Arma before you’ve had a chance to change it so it does work, but it’s always best to know what you’re capable of. And of course, there is ample support online from the excellent BI wiki and forums to discord and beyond, so take this all into account and don’t sell your idea short if you know where to go to get your idea working.
+
+=== Make a Marker Sketch ===
+[[File:spe scenario guide sketch 1 bridgehead.jpg|500px]] [[File:spe scenario guide sketch 2 droueries.jpg|500px]]
+
+OK enough about ideation, let’s have some fun and put “pen to paper” by creating a marker sketch. Here are a few marker sketches I came up with for the Carentan terrain for example.
+
+As you can see, the marker sketches include information about the starting position (the upward arrow beneath the semi-circle icon next to the unit insignia marker), key objectives or tasks (the objective markers with the crossed out circle icons), and intended directions of player or other unit movements (the black and red arrows), as well as any other details, such as other AI-controlled units, defensive positions, or any other initial details about the mission scenario.
+
+You should be able to account for the entire scenario in your marker sketch, from start to finish. And while you don’t necessarily need to account for every detail now, you should have some idea of how the entire scenario is meant to play out. You don’t want to be in a position where you’ve created the entire scenario, spent maybe hours testing and adjusting, but haven’t figured out how it will end.
+
+[[File:spe scenario guide sketch lock.jpg|1024px]]
+
+Above is my marker sketch for The Lock. As you can see, I have the starting location, which would later change as I determined a better location later in the process -- and that’s totally fine, the marker sketch is not intended to be the end-all be-all for your scenario, it’s just supposed to help you stay clear, focused, and organized. I have marked each task I plan to include, both required, and optional, and the basic sequence of the tasks. I have marked the anticipated player movements, as well as key enemy movements if applicable.
+
+Here is the basic flow I have laid out:
+
+Player starts at a position a safe distance from their first objective, this will be the “starting area” a concept I will come back to later in this guide.
+Task 1 - Clear the Checkpoint - the player will assault an enemy-held checkpoint and clear it of all hostiles (this can be achieved using a simple BLUFOR / Not Present trigger)
+Task 2 - Capture the Lock - players will move from the cleared checkpoint to assault the lock and clear it of all hostiles (likewise, achieved with a similar trigger)
+Task 3 - Expand Defensive Perimeter - players will move from the lock to patrol the flooded fields south of the lock, I will plan for intermittent threat of enemy artillery, as well as a few encounters along the way (this can be accomplished via a combination of a Player / Present trigger with a “timeout” condition to ensure players have a limited time to expand the perimeter and dig in)
+Task 4 - Repel Counterattacks - players will be attacked from multiple angles by layers of enemy attackers, which I can hide at mission start and reveal whenever desired (this task can be completed when a specified defensive time frame has passed, let’s say in this case they have to defend for 15 minutes, after which, if they survive, the enemy will retreat and the player will succeed in their defense)
+Task 5 (not pictured) - Conclusion - the player will return to the lock to meet their CO, thus triggering the end of the mission (this will be triggered in the mission flow when the player has completed all tasks and is some distance close to the CO unit)
+Optional Task - Recover the Supplies - to add some extra challenge to the scenario, players can attempt to push past the defensive line and attempt to locate and recover a supply drop that will offer some additional firepower (completed when players use a hold action on the supply container)
+
+So, I have come up with an idea, I’ve considered how I’m going to make it fun, functional, and feasible, and I have a clear blueprint from start to finish. I’m now ready to save the sketch as a .sqm and move on to setting my scenario up!
+
+== Step 2: Basic Set-Up ==
+=== Bare Bone Basics ===
+As an editor, what I enjoy most is placing units in different spots, laying down waypoints, and testing out the result. I am capable of figuring out what’s needed for most simple scripting situations, by referring to the command reference, for the most part. I don’t really enjoy staring at a text editing tool unless it’s because I’m trying to figure out how to make a really exciting idea work. What I mean to say is even though I can script, I by no means consider myself a scripter. For that reason, my approach for “The Lock” is to use Editor modules over script wherever they speed up the process and are reliable enough to replace it. Keyword here is reliable enough, because in my experience, editor modules are almost never as reliable as doing it via script. The benefit of using editor modules like Intel > Create Diary Entry or Create Simple Task is that you save time and effort writing code. The trade-off is that the ordering of Diary entries is hard to ensure, even knowing that it places the latest entry passed into the system at the top of the list.
+
+The most basic structure possible still involves a few key .sqf files, including init.sqf, description.ext, and SPE_missionFlow.sqf, reflective of a technique I picked up from the team while working on the Operation Cobra campaign for [[Spearhead 1944]].
+
+init.sqf
+Most editors should already be familiar with this file, stop what you’re doing and read up if not. This file is the initial script loaded by default for every mission. It’s where you’ll want to establish your mission parameters, declare or adjust values of variables, and initialize, compile, or otherwise run various functions such as external scripts or other features. 
+
+For example, I will establish a bunch of variables in init.sqf that will track the tasks I have planned.
+
+<sqf>
+SPE_var_task_1 = 0;
+SPE_var_task_2 = 0;
+SPE_var_task_3 = 0;
+SPE_var_task_4 = 0;
+SPE_var_task_5 = 0;
+SPE_var_tasks_complete = 0;
+SPE_var_task_o = 0;
+</sqf>
+
+If you want to include a quote and fade-in effect, you’ll do that here, though we won’t worry about this until we’re close to the end of the process (unless you want to watch it every time you go to playtest or ‘play from here’). Another thing you’ll do in init.sqf that we won’t worry about until later is include commands to hide all units and/or props in layers you’ll set up in the editor which will help you manage the mission flow (and help maintain decent CPU/performance). Lastly, and importantly, you’ll also execute the script to run SPE_missionFlow.sqf, which I’ll cover in a moment.
+
+{{Feature|informative|NOTE: acknowledging initServer and initPlayer are considerations for hosted coop/multiplayer scenarios, that is beyond the scope of single player editing for scenarios such as The Lock.}}
+
+description.ext
+This file should likewise be familiar to you already, if not, have a look at all the important things that get managed in this file and you’ll see why it’s essential to be included in any proper scenario for release. While I barely scratch the surface of what’s possible based on the relative simplicity of my scenario, I am still using description.ext to declare a few key parameters. I often simply comment out areas that I don’t have yet, such as the overview and loadscreen image, which I’ll create and add later. Other things like the mission descriptions, should be short and to the point, maybe easy enough to fill in right then and there. I am also using description.ext to declare a few identities for characters I know I’ll want to account for - I recommend defining and setting identities for all playable units, and any key NPCs. Finally, I use description.ext for sounds and voice lines, which again won’t be added until later in the process.
+
+SPE_missionFlow.sqf
+Before using this file, I used to execute a lot of scripts within the On Activation field of a trigger, which proved hard to manage when a scenario grows to a certain size and can be frustrating when you are stuck searching inside trigger attribute windows trying to troubleshoot or make adjustments. Ideally, you could use a separate dedicated script file(s) to keep track of the overall flow of the mission and have more of your important scripts, if not all of it, in that file. I know I just mentioned minimizing the amount of script I’m writing, but I do find this saves time and is worth doing. This SPE_missionFlow file is where you can ensure players get from Point A to Point B, even if your mission’s intended flow is supposed to be non-linear. 
+
+In combination with the variables I just defined in init.sqf, I will refer to them throughout SPE_missionFlow.sqf, depending on the context, either to wait until a variable has been changed via trigger in-game (eg. BLUFOR / NOT PRESENT leads to a variable being updated from 0 to 1), or to update a variable directly, say, after 5 minutes delay (eg. you have a set sequence lasting a certain time). I still have my tasks set and managed via Intel modules for simplicity, SPE_missionFlow.sqf simply helps provide reliable structure.
+
+So let’s get into some more specific detail about what’s going on here. As I alluded above, when the criteria to complete a task is fulfilled via a trigger (eg. BLUFOR NOT PRESENT, PLAYER PRESENT, or after a specified countdown), I use this simple convention to update the value of the variables from init.sqf:
+
+<sqf>
+SPE_var_task_1 = SPE_var_task_1 +1;
+</sqf>
+
+This changes the value of the variable from 0 to 1. This can in turn trigger waitUntil conditions I establish for each task in SPE_missionFlow, as well as activate other triggers in the editor connected to modules that will change the task’s description, destination, or completion status (eg. “Succeed”, “Fail”, “Cancelled”, etc.). 
+
+Other triggers still can use the variables as part of their conditions for activation, so you can include something like the following to ensure the players have completed some task before triggering.
+
+Example conditions for a PLAYER PRESENT trigger:
+
+<sqf>
+((this) AND (SPE_var_task_1 > 0))
+</sqf>
+
+The above says that in addition to the basic conditions of the trigger (that the player is present in the trigger boundaries), they must have completed task 1 in order to fully satisfy the trigger conditions.
+
+All of this essentially amounts to the following for a basic SPE_missionFlow setup:
+
+[Mission starts, init.sqf runs, SPE_missionFlow.sqf runs]
+
+<sqf>
+// Do some initial stuff, like play a voice line and show a notification, we’ll do this later
+waitUntil { SPE_var_task_1 > 0 };
+// Editor based triggers and modules will create and/or assign the next task
+// Play another voice line, do some other stuff maybe
+waitUntil { SPE_var_task_2 > 0 };
+// Editor based triggers and modules will create and/or assign the next task
+// Play another voice line, do some other stuff maybe
+// . . . (this continues for tasks 3 and 4)
+waitUntil { (SPE_var_tasks_complete > 0) && ((player distance SPE_v_Eagle_CO_2) < 8) };
+// Do some stuff, complete task 5, cancel the optional task if it wasn’t completed
+// sleep for a little while…
+endMission "END1";
+</sqf>
+
+Basically, I have a pretty simple linear mission flow with the required tasks being assigned one at a time when the one before it is completed. If you are looking to make things non-linear, you just need to get creative with how you write the mission flow, you might have a few objectives with their own variables, and the waitUntil is only triggered when all of those objectives have been completed. 
+
+Note that I will also end up creating a few additional .sqf files to control the completion of objectives, and in some cases their creation (mostly because you can’t include sleep commands in the editor and I want to add some space for a voice line or two, a notification, and other sorts of details). And, to be clear - if it makes more sense to advance the variables and the mission flow within SPE_missionFlow.sqf itself rather than with a trigger, that’s also a possibility. Whatever makes sense for your scenario and works as intended.
+
+So, now that we have the skeletons for the basic script files and are able to test any initial parameters or settings to ensure you can “play” free of bugs so far, we can move on to some initial set up in the editor.
+
+=== Layer Naming and Structure ===
+As a professional designer during my working hours, I use a lot of creative tools on a daily basis, and have become painfully familiar with the need to have a project well-organized into named layers that have a clear and consistent hierarchy. Not only does it help keep things really organized and clear, so that you can open a project back up years later and still know where to find something, but having clearly named and well-organized layers in the editor is how we will manage huge numbers of units that, if all simulated at once, would quickly tank performance, or even risk crashing the game. By smartly managing everything in layers, you can ensure players always have lots of action taking place but aren’t leaving stuff they can’t see or interact with to hog precious CPU.
+
+[[File:spe scenario guide layers.png|1024px]]
+
+As you may have noticed, I am using "SPE_" frequently as a prefix to help make clear any and all custom variable names. We did this out of necessity for the CDLC, I am doing this optionally for my own unofficial projects simply because it helps me stay organized and clear on what I have input into the system. In addition to the prefix, I am trying to include in all custom names, a little detail on what the thing is, for example: 
+
+* {{hl|SPE_var_x}} is used for a variable 
+* {{hl|SPE_trig_x}} is used for the name of a trigger
+* {{hl|SPE_I_x}} or SPE_B_x is used for group names, where I = Independent and B = BLUFOR
+* {{hl|SPE_v_x}} is a vehicle (any unit or literal vehicle or prop)
+* {{hl|SPE_sys_x}} is used for systems
+* {{hl|SPE_gl_x}} is used for gamelogic
+* {{hl|SPE_l_x}} is used for layers (using a lower-case l, not to be confused with the upper case I used above for group names)
+…you get the idea
+
+And so, I create a bunch of Layers within the editor to contain all of my mission content, meaning I move things from the default folders with the same name into my custom folders as a way of passing them from initial placement and tweaks in the editor to being “in the mission” more officially. By doing it this way, I have something similar to a mini staging environment.
+
+* {{hl|SPE_l_Units}} contains all units I place in the editor
+* {{hl|SPE_l_Props}} contains all props I place in the editor
+* {{hl|SPE_l_Triggers}} contains all triggers
+* {{hl|SPE_l_Markers}} contains all markers
+* {{hl|SPE_l_Systems}} contains all systems, diary, tasks, modules, etc.
+
+The above is all good and fine for keeping organized, but the real magic happens with what you do inside these layers. As long as you have a clearly named layer, you can easily show or hide it in game and enable and disable simulation using the following command:
+
+To hide/desimulate (remember I mentioned you’ll do this for any layers you want to hide in init.sqf):
+
+<sqf>{ _x hideObjectGlobal true; _x enableSimulationGlobal false; } forEach ((getMissionLayerEntities "LAYER NAME HERE") select 0);</sqf>
+
+To show/simulate, simply change true to false for hideObjectGlobal and false to true for enableSimulationGlobal. 
+
+This seemingly simple technique means you can include many more units and layers in your scenario than if you had them all running at once (within reason), and by hiding in init.sqf, say, three layers containing huge waves of attackers, your scenario can involve different phases that show and simulate as the player and AI defeat each wave. By also including some simple cleanups of unneeded layers once their purpose has been fulfilled, you can maintain a thrilling pace, add bits of eye candy that go away once they are seen, and give players the feeling that they’re just one soldier in a much larger battle.
+
+So, in conclusion, it’s completely up to you how to name and organize your layers. Bear in mind if, when, and why you will hide and/or show these layers and be hyper-organized here and you’ll find that the effort and tedium of naming everything up front will pay off when you need to find something, want to duplicate something that was useful for a new mission, or just have a faster path to release later down the line.
+
+=== Systems and Modules ===
+I will often include any initial systems and modules early on. [[Spearhead 1944]] comes with a number of modules that help editors to easily implement a detailed suite of features and improvements and unlock a more authentic WWII gameplay experience. These modules include:
+
+* Ambient War Sounds - to help give the sense that players are on a battlefield
+* {{Link|Spearhead 1944 AI Systems (AIS)}} - to improve everything from combat behavior to adding flee/retreat/surrender
+* {{Link|Spearhead 1944 Enhanced Revive (ER)}} - to ensure single players have access to healing if they are incapacitated (note that we can easily turn this on or off for the player using a script command)
+* {{Link|Spearhead 1944 Indirect Fire Support (IFS)}} - to give players access to devastating fire support options with deep customization (in this case, I want players to have limited access to only 3 artillery strikes)
+
+Additionally, I like to use other systems like the '''Cover Map module''' to help players focus and know where the intended “playable area” is, the Animals module to add furry friends for increased immersion in the countryside, and the '''Show Terrain Object''' and '''Edit Terrain Object''' modules to adjust small details in the terrain in support of the gameplay (e.g. useful for removing a rock or a tree when a tank’s path keeps getting stuck because of it).
+
+Each of these systems is organized into the layers mentioned above. Less important but worth noting is that most if not all of these systems have names with {{hl|SPE_sys_ prefix}}, as it can be useful if you want to target a specific system.
+
+For more information on SPE Modules, check the Biki:
+{{Link|Spearhead_1944_CfgVehicles_Modules|Spearhead1944 CfgVehicles Modules}}
+
+== Step 3: Task Structure ==
+=== Task Modules, Triggers and Scripts ===
+With a lot of the basic systems in place, we can now start building out the skeleton of the task structure while keeping our intended mission flow in mind. In this step, we’re not yet at the point of placing all of the units, instead, we want to focus only on setting up the basic conditions to be able to complete a task in order to verify from start to finish that our scenario’s tasks can function properly. This means you should try to set up the tasks to be able to be realistically completed, but as easily as possible:
+
+It may be as simple as a presence trigger, keep the unit close by if applicable
+If it’s a not present trigger, it can be tested with a single unit
+If it’s a timeout in your missionFlow, the timeout can be a few seconds
+
+The basic components of a task in the editor will be:
+
+* {{hl|SPE_trig_taskCreate_x}} (assume you will set at least 1 task to be visible and assigned by default at mission start, all other tasks will be created mid-mission using triggers)
+* {{hl|SPE_sys_taskCreate_x}} this is the Intel / Create Simple Task module
+* {{hl|SPE_trig_taskSetSucceed_x}} this trigger controls the conditions to complete the trigger, you might separately add triggers and modules for task failure
+* {{hl|SPE_sys_taskSetSucceed_x}} this is the Intel / Set Task Status module that allows you to sync it to both the taskCreate module and the taskSetSucceed trigger to use those conditions to complete the sync’ed task
+
+[[File:spe scenario guide tasks.jpg|1024px]]
+
+I keep all of my task modules in a layer within SPE_l_Systems, called SPE_l_Task_Systems, and all my task triggers in the SPE_l_Triggers layer (rather than together w/ the other systems), how you do it is totally up to you.
+
+Ensure you set the correct conditions for the SetSucceed trigger, be it player presence, area clear, something in SPE_missionFlow.sqf, or a combination together with the value of a custom variable you set in init.sqf, and remember to include the script command to change the value of the variable for the corresponding task once it’s completed. In some cases, as noted earlier, I will execVM an external .sqf on task completion, or I’ll use one to create a task. Note that I’m still using triggers for all task completion with conditions based on either variables, mission flow, or some condition in the game space, but because {{arma3}} shows an error message if you try to include a sleep command in an in-Eden element such as a trigger, we instead use external .sqf which is often the most stable and secure way to do it.
+
+Set up your tasks using the simplest ways to test and verify that the tasks work correctly as intended. You should be able to do a very quick run through of your mission, as well as your task text and even consider showing notifications (using bis_fnc_showNotification) in your SPE_missionFlow.sqf in order to ensure not only that the tasks work but, bearing in mind your average player, that there is enough information to help guide the player. This is optional at this stage and will be covered later in the guide, so leave it until later if you want to. What is a must, however, is you should be able to get to the end of the mission having ensured all tasks work correctly. Once you have your basic tasks verified, you can move to the briefing.
+
+=== Classical Briefing ===
+[[Spearhead 1944]] included a special “animated briefing” sequence for each mission in the campaign. This not only provided a more immersive briefing experience, but offered players the chance to vote on their mission strategy and provide new and different tactical challenges for repeat playthroughs. We also included what the team came to refer to as, the “classical briefing,” which admittedly not everyone reads closely (enough), but is a necessity for any proper scenario.
+
+For more info on making an Animated Briefing, check out this excellent video guide by White Raven
+
+The classical briefing, loosely inspired by the military format, consists of a few common sections, which are available in the Editor by default. In general, I stick to this format, but in the past, like in the days of editing for {{arma2}}, I used to get very detailed and use a realistic structure. Nowadays, I like to keep it super simple, easy to understand, short, sweet, and hopefully a little bit exciting as well.
+
+* Situation
+* Mission
+* Execution
+* Signal
+
+If needed, I will add a section for Support, and if there are to be additional attachments, such as intelligence, recon photos, dossiers for a target, etc., I will create a custom section at the same “root” level of the diary as the briefing and tasks using the custom fields in the editor module.
+
+When writing a briefing, I try to ensure things are short and concise, use proper spelling and grammar, have clear and consistent use of abbreviations or acronyms, and, again -- keep it short! As much as I would love to immerse players in a long-written story there’s no better example of how we should show and not tell. With that said, it’s an opportunity to use only a few words to paint a very specific picture, so choose them wisely, otherwise players will skip it and move on. Hell, who am I kidding, most players will just skip it, but if they come to a point where they have a question, the briefing and task descriptions is the first place they’ll go to look, so always keep in mind ways to make clear what they should be doing.
+
+== Step 4: Dialogue and Voice Over ==
+=== Approaches to the Dialogue ===
+When it comes to telling a story, one of the best vehicles for your plot will be through exchanges between characters in the form of dialogue. While dialogue is crucial for almost any story you want to tell, it’s easy as an editor for dialogue to blow up the entire scope of your project. No one should know this better than me. In the {{arma2}} days, I toiled for countless hours over fully voiced campaigns. By the time I got back into {{arma3}} and editing a few years later, I was still so fatigued from including voice that I resolved not to worry about it with my releases for A3. While the absence was felt by some players, it didn’t stop my releases from many downloads and fulfilling play sessions. When I joined HOW and the [[Spearhead 1944]] CDLC project, it was finally time to return not only to working with voice actors, but professional ones this time, and contributing voice acting to the project myself, as well. I was back to spending toilsome hours working with the writing team on the script, and take great pride in the result. With the Battle of Saint Barthelemy, released with [[Spearhead 1944]]’s 1.1 update, the team and I pushed to the limit of voice over in a single player mission. All of this is to say that I’ve seen both extremes when it comes to dialogue. While the choice is ultimately yours, remember that often less is more, and for the purposes of any of my independent releases, such as “The Lock,” where I don’t have access nor the time available for the same level of professional VO, it’s still worth finding a way to include useful dialogue and some level of VO where possible can go a long way.
+
+Here are some approaches to dialogue that you might consider for your scenario, from the simplest to the most complicated:
+
+* Titletext with no dialogue
+* [[BIS_fnc_showSubtitle]]
+* Generic dialogue drawn from the game’s existing radio protocol and sounds
+* AI speech generated voice over using free tools (usually only a “default” emotionless tone, which can sometimes sound mechanical and break immersion)
+* AI speech generated VO with a more advanced or paid tool (capable of emotional tones)
+* Self-supplied VO recorded at home, maybe only for a single character, such as a commanding officer providing orders via radio
+* Live VO provided by a human (amateur)
+* Live VO provided by a team of professional voice actors
+
+The level of dialogue is up to you and what you’re capable of. As an independent editor working on free content for the benefit of the player community, you have no obligation to do any more than you’re comfortable with, as long as it’s something.
+
+In the case of “The Lock,” and as an independent release not officially associated with HOW, SPE, or SPEX, I opted to use AI generated voice for the first time. While I mean absolutely no disrespect to other VAs (having done professional VO before SPE and contributed VO to it myself), not all of us have the time (or budget, in some cases) to hire others to contribute VO. AI voice tools can provide something where most of us have nothing. While it’s not cool for professional commercial productions to potentially put real humans out of work, it can provide a big boost to immersion in your scenario at a scope that’s a lot more manageable. To illustrate how I managed to generate all the dialogue I needed with little over a dozen voice files created in a few hours, I’ll break down what I did.
+
+But before I do that, there’s another important organizational must that you should account for: a master document for your dialogue. Even if your scenario isn’t voiced, it’s a good idea to keep all text and dialogue in a document outside of Arma, such as Google Docs, Word, or the like. The benefit here is that you have it all in a single place, making it easier to move into and out of whatever platforms you’re working in. If you do live voice acting, by yourself, or involving others, a script will become a necessity. The more involved your dialogue and VO plans, the more detailed your document will need to be. For [[Spearhead 1944]], we organized all text for a mission into a huge master document that not only included the voice over lines, but also all briefing and task information, and even backstory about the characters and additional direction for the voice actors to make the context clear. It may be tempting to skip this step, especially when you have something exciting brewing in the editor. You don’t have to adhere to this guide religiously, but I find that it’s best not to leave dialogue until the very end. The reason I put it here in the guide is that in my process for the Lock, I generated my voice over and tested that I could get the VO working while the scope of the mission was still in it’s skeleton and I could easily trigger the lines. If you are more comfortable in your process, this can happen some other time, but I found it useful at this stage.
+USING FREE AI FOR VO
+With a master document open, I tried searching for free AI voice generators. There are so many options, and I barely scratched the surface before landing on ttsmaker.com and being drawn in by the somewhat distinct and raspy voice of their bot, Mason. Experimenting with the voice prompts, and keeping in mind my tasks and what players would need to know to guide them along my mission flow, I found a fair amount of tweaking was involved to get voice output sample that sounded somewhat believable and not too robotic. This means you have to try different ways of wording things until you arrive at something the bot can pronounce naturally enough. 
+
+At a minimum, you should consider VO lines to cover the following:
+
+* Mission start and/or the first task
+* Task completion
+* Next task assigned (can be combined with the prior task completion into a single line)
+* [Repeat for all tasks]
+* All tasks completed, final message confirming mission is complete
+* Any key pieces of information about tasks that players otherwise won’t know about, for example to warn players when enemy forces are present around the players flank
+
+=== Post Processing Voice Files ===
+I was pretty surprised at how the bot’s Mason voice sounded, even with just the free default tone (ttsmaker offers different emotions, such as anger, or fear, for a paid subscription). While it sounded believable enough, I intended for most of these lines to sound as if they’re coming over radio. While {{arma3}} does have some radio effect that can be applied, it isn’t quite as simple to script, nor does it sound authentic as it sounds more modern and anachronistic to the WWII setting. I’m no sound engineer, but I know how to use Audacity and freesound.org to give these sound files I got off ttsmaker a radio effect that resembled older radio transmissions. Here’s what I did from here:
+
+[[File:spe scenario guide audacity.png|1024px]]
+
+Open Audacity (you can download it for free if you don’t have it)
+Open your voice file in Audacity
+Trim the voice sample or add space as needed so that it flows more naturally
+Add a Filter Curve EQ filter with the pictured settings
+Use freesound.org or whatever resources you have access to in order to obtain a good radio background or white noise sample
+Add the radio background sample, cut, edit, etc. as needed
+Play the voice file with your radio effects, if all sounds good, export to .ogg
+Place the processed .ogg files in your mission directory, say in a folder called “Sounds”
+
+And with that, we are ready to bring the sounds into Arma and get them plugged in to the mission flow!
+
+
+=== Adding Sounds to the Game ===
+The first step is to go back to our description.ext and set up CfgSounds. Set a variable name for the sound, plug in the filename, and you can copy and paste your final voice line from your handy master document. Imagine not having a doc for the lines you generated and having to listen back to your lines to plug them in for the subtitles! You can also leave the subtitles blank here and apply subtitles elsewhere or not at all. With your sound files being configured properly in CfgSounds, you can use a few different commands, easiest in our case being the simple playSound. This works well for radio commands addressed directly to the player, but for other types of dialogue, you’ll want to use other commands entirely that aren’t covered here.
+
+In the case of “The Lock,” the majority of my sounds and playSound commands would happen within SPE_missionFlow.sqf, where I can reliably control when they play. In my external script files for the completion or creation of a task, which sometimes involved two or more separate voice lines with sleep commands between them, I plugged in a few other lines. With only 17 total lines between two characters (12 lines for the commanding officer and 5 additional lines for an engineer character I came up with on the fly for an optional bonus objective to unlock a 4x4 patrol vehicle), this process didn’t take very long. The logic of the mission flow was in place, the dialog was based on that flow, and it was very simple where to place a playSound command.
+
+The only thing left to do was to test my skeleton mission flow in order to ensure the right lines were playing at the right time. Maybe one thing or two needed adjusting, maybe I realized I needed an extra line here or there. Before I sunk the next big chunk of time into placing units and props and really getting into play testing, I made sure dialog and VO were solidly in place.
+
+== Step 5: Unit and Prop Placement ==
+Finally, we’ve arrived at my favorite part of all - placing units, waypoints, props and other details! You get to experiment and play as you place obstacles in the players way to make the path between tasks more interesting, dynamic, and immersive, what’s not to enjoy? Every mission is different, so the process may look different. Rather than detail everything, I’ll relay a few best practices for placement and setup of various things in the editor that I always try to follow.
+
+First, however, it warrants mentioning that a good order to work in is from the last task in your mission backwards to the first. The reason for this is so you don’t have to play through your entire mission in order to test the last phase of it. By working backwards, you can skip through the undeveloped skeleton of the earlier parts of your mission and go directly to the portion you are placing stuff into and testing. This can save countless hours of editing time, which you may be familiar with if you’ve ever played through the intro sequence of one of your scenarios so many times that you get flashbacks of it in your sleep. Wait, no one else has ever experienced that? Just me? Ok, moving on…
+
+=== Unit Placement ===
+Units and groups form the muscle of your scenario, their presence will drive the gameplay and provide a challenge for players to contend with. Bear in mind the following when placing units in the editor:
+Group and Unit Names
+Every unit you place is part of a group, you should have a convention in mind for both the naming of the GROUP and the group ID.
+
+Examples:
+{{hl|SPE_I_ABLE}} might represent a playable group with an ID like “ABLE Armored Crew”
+{{hl|SPE_B_P2_Pz4_1}} might represent a German Panzer 4 tank that appears in Phase 2 of the scenario, and it’s one of many, I often add _1 just for consistency even if it’s the only one, for both groups and vehicles, with the ID “GER P2 Panzer 4 Crew 1”
+{{hl|SPE_B_P1_S_W1_1}} might represent a group of German infantry that are part of Phase 1 of the scenario, starting from the south as part of wave 1 of multiple waves of enemies, and this group is the first of other groups in wave 1, it would have the ID “GER P1 S Wave 1 Infantry Squad 1”
+{{hl|SPE_B_P2_W1_HTC}} might represent a half-track crew (HTC) while a separate group riding in the cargo might be HTS for half-track squad
+{{hl|SPE_C_P0_1}} might represent a civilian group present as a Phase 0 or starting area unit
+
+It’s likewise a good idea to name any units or vehicles you intend to involve in your scenario. 
+
+Examples:
+{{hl|SPE_v_P1_MG42_1}} might be for an MG42 turret, Eden will automatically name the gunner {{hl|SPE_v_P1_MG42_1G}}
+{{hl|SPE_v_P1_Pz4_1}} for a Panzer 4 and you’ll find Eden names the Driver, Gunner, and Crew
+Just be careful when you copy and paste a named vehicle and crew as Eden will append a _1 to the crew names rather than maintain the number convention it set up itself
+{{hl|SPE_v_HVT_1}} may be a simple name for a high value target such as an officer
+
+Do I name groups and units like this before I do anything else like add more units? Yes. It’s easy to forget to if you skip this step.
+Group Composition and Formation
+For [[Spearhead 1944]], as a mission making standard, we aimed for infantry groups of no more than 4 units unless they are either static units (eg. defenders that have their AI path disabled) or have some special purpose. In addition, we almost always had these 4-man units in Diamond formation, as this appeared the most effective for combat situations in {{arma3}}. Sadly, the historically common formations of lines, columns, and staggered columns simply don’t perform as well in the engine.
+
+[[File:spe scenario guide units.jpg|1024px]]
+
+You should then consider the types of units you add to the group, which should reflect the role of the group. SPE and SPEX offer a ton of options for different classes of units, not only for special weapons but assistants and ammo bearers as well. You can refer to historical sources to learn more about how the Allied and Axis armies used various types of infantry formations. Consider the following types of group roles for your missions:
+
+Infantry Group
+Support Group
+MG Team
+Tank Hunter Group
+Medical Detachment
+Command Element
+Recon Element
+Forward Observer
+Weapons Crew
+Sniper Team
+Sentries, Guards, or Occupants
+Patrols (using the handy Patrol module added in SPE 1.1)
+Unit Detailing
+The fun doesn’t stop with the mere selection of classes. SPE and SPEX offer a wealth of loadout customization options that can take your units from either a generic or even potentially historically inaccurate loadout to one that more closely reflects the specific units you are rendering. While it’s not an exhaustive selection, the inclusion of texture templates enable players to create their own custom textures, some of which are available on the Workshop. This is actually one of my favorite parts. Seek out historical photos or illustrations of your sources and go the extra mile.
+
+[[File:spe scenario guide loadout.jpg|1024px]]
+
+For example, the 101st Airborne Units in the Editor are equipped by default with the 502 PIR variants of the airborne helmets. In “The Lock,” I intend to depict the 501st PIR, so I must go into (nearly) every loadout and ensure the helmets are swapped to 501st. There are, of course, easy ways to do this by script, so whatever works.
+
+In addition, I find that some units do not carry enough ammo in their primary loadout. The way the engine fills the inventory by default happens in a somewhat odd manner. If it’s a playable unit, or one that will be in combat, or that I notice in testing runs out of ammo too soon, I will empty the entire inventory and re-fill it with the following:
+
+Uniform - FAK, secondary ammo or toolkit if applicable, grenades if needed
+Vest - filled to capacity with primary ammo only
+Backpack - rarely fill to capacity unless with mines with whatever is needed
+
+Sometimes it can help to create an empty loadout to start off with, removing all weapons, uniform and gear items (maybe except compass, watch, etc., up to you), then saving the empty loadout in the arsenal. You should also consider saving loadouts you might want to re-use often, as customizing loadouts individually gets tedious after a while.
+
+The last considerations include whether or not a unit should have an identity from description.ext (as mentioned above, we should set up identities for all playable characters, characters in the player’s group, and other important named characters), I sometimes will set ranks though it’s not necessary. I do not touch skill level, as this is overridden by the SPE AI module I already added and the custom difficulty adjustment (CDA) system included within. 
+
+The insignia should also be set, if available and necessary. Note that Eden and the Arsenal bug the insignia after you change a loadout, so you will sometimes need to set the insignia to something else, accept, then reset it and accept again to fix that.
+Waypoints and Behavior
+While I won’t go into either topic in too much detail, I will note a few of the conventions I follow, and highlight the awesome custom waypoint types included in SPE.
+
+I often place waypoint #0 right in front of the group leader because I frequently use a synced trigger to make the group stay on its initial position until triggered. From there, I place move waypoints, placing another move waypoint directly in front of one that I intend to sync to a trigger. When a unit reaches their destination and shoul defend the area, I use a Sentry waypoint type.
+
+As mentioned above, [[Spearhead 1944]] also comes with a few useful custom waypoint types which you can find at the bottom of the menu.
+
+Infantry Rush - the infantry moves a lot more aggressively along the intended waypoint path.
+Vehicle Path - the vehicle moves a lot more reliably along the intended path, which should consist of more waypoints, as it is more or less a direct path (still subject to physics) and will need to be more detailed.
+Vehicle Path Calculated - even more reliable movement along path that is impacted by the speed of the waypoint, intended for even more precision, I usually don’t need to resort to this one.
+
+Vehicle Path is great for ensuring tanks come crashing through the hedgerows or tumbling over a wall, while Infantry Rush is good for infantry charging across a battlefield. Feel free to make use of them when standard waypoints aren’t cutting it.
+
+Not much to say about behavior and combat mode that is different to what’s already out there, but maybe the following observations are helpful. Consider that both combat mode and stealth mode mean much slower AI movement, either avoiding contact or engaging from cover, aware allows for fastest speeds, and safe mode should only be used when contact with the player should be truly unexpected - rare on the battlefields of WWII unless far behind enemy lines, or during occupation, etc. More common when safe behavior is set without triggers to change it, is players will come across dumb, senseless AI that ignore the threat aiming a weapon at them. I make use of disableAI “PATH” for static units, and disableAI “AUTOCOMBAT” with Aware behavior and fastest speed for any units that should be taking the most direct route of attack. 
+
+=== Animated Units ===
+In addition to both static and patrolling units, I will often place units that have AI disabled and switchMove playing a looping animation. These units are there to help establish a scene. While there are different ways to achieve this, I typically only place these types of units either in a starting area away from the action, or some initial phase to be hidden once combat kicks off, since simulated AI units in combat and AI-disabled units with looping animations don’t mix well. Basically, I will place a unit into a group (they can be all this way or part of a mixed unit with some units that can patrol, just don’t make an animated unit a group leader), disableAI “PATH”, “MOVE”, and “ANIM” followed by switchMove with an animation selected from the Animations Viewer tool. While units animated in this way have been shown to hog less engine power than the slightly more robust and editor-friendly [[BIS_fnc_ambientAnim]], it’s still necessary to clean them up once they’ve served their purpose. I typically either delete or hide and desimulate these units in their layers once the opening phase is over or the starting area props are no longer within player view.
+
+=== Presence, Vantage Points, and Strong Points ===
+As for where to place units, this is one way to achieve remarkably varied results, depending on many factors, including the terrain, available CPU, and player/AI behavior. Where you place the units, especially static units, matters a lot! I developed a reputation, even before working on [[Spearhead 1944]], with many of my [[S.O.G. Prairie Fire]] missions, for brutal placement of ambushers in every inconvenient corner. I spend a fair amount of time in the editor not only imagining the story of my protagonists, but also thinking in detail about enemy presence, direction of movement, and motivation. I also utilize the “Presence” attribute for the majority of AI combat units to add an element of randomness and improve replayability factor, most of the time setting unit probability of presence to simple values like 25%, 33%, 50%, 66%, or 75%. Of course, many units should be present every time, but I will often place turrets, mines, and other threats randomly.
+
+[[File:spe scenario guide vantage.jpg|1024px]]
+
+As for placement, it’s really helpful to refer to historical accounts. There are diagrams of how the Axis used the labyrinthine hedgerows to devastating effect, placing machine guns in the corners to provide overlapping fields of fire. While sometimes this proves simply too effective for AI, or frustrating for players, it pays to pay close attention to the available military fortifications already present on the map, and to create similar sorts of fortifications in the field to add a unique challenge to your scenario. I’ll go into more detail about prop placement next.
+
+=== Prop Placement ===
+The terrains of {{arma3}} are astounding feats of creativity that provide hundreds of square kilometers worth of space to play with. More and more, we can see what the engine is capable of, from GTA-esque distortions of entire regions of geography into a single play space, to the 1:2 and 1:1 scale recreations of real battlefields. Half the reason I feel the need to edit scenarios is to bring these incredible terrains to life. The other half is all the amazing assets and objects, from gear to guns to vehicles and, yes, even inane crates and barrels. They all deserve good missions, ops, and scenarios from editors like you.
+
+The amount of props I lay down as a scenario editor is often where it becomes more the province of the terrain maker. I have created immense cave systems and huge staging areas out of props. I have cleared huge swaths of terrain with the Hide Terrain Objects module only to replace it with a more elaborate set piece. There comes a point where overzealous prop placement leads to hampered performance. At the same time, without a few well-placed props, a mission space simply doesn’t feel lived in enough to be worth fighting over. It’s worth taking the time to lay down some props that will give your scenario a boost - that not only includes eye candy, but also much-needed supplies for your players to come across in a time of need.
+
+=== Mission Props ===
+One of the most important reasons to consider adding props is because they can make for useful factors in your scenario. In “The Lock,” I added two specific mission props related to two optional objectives, the first I had planned for earlier, the other I decided to add on the fly:
+An airborne supply container prop for the objective to locate and retrieve it
+An oil canister for an objective to locate and return it to the engineer in order to unlock a 4x4 patrol vehicle for the player to use
+Mission props should always have a variable name, as they will often need to be targeted by task-related triggers. They should be placed in a separate layer apart from other props so that they can be easily found within the entities pane of the editor.
+
+[[File:spe scenario guide props.jpg|1024px]]
+
+=== Supply Props ===
+Another type of prop I keep in a separate layer are any weapons, ammo, explosives, supply crates, equipment, or other stuff that the player can pick up and add to their inventory. I try to ensure that there’s at least a little bit of ammo and/or weaponry throughout the mission area, so that players who keep an eye out can almost always find something with which to tackle the challenges ahead. I also like to reward exploration, adding useful or rare weapons and equipment in likely places. Note I am not just dropping supplies randomly, they should have a reason to be where they are, whether it’s friendly supplies in a staging area or materiale abandoned by a hastily retreating enemy force.
+Set Pieces
+I can get lost for quite some time just placing props and creating little details for players to soak in (or miss entirely, either is fine). Set pieces can be anything from props placed directly within the path of the player so that they have to actively avoid the area in order to miss it, or conversely, props placed well out of the player’s path but still well within view, serving up an intended stimulus that immerses or thrills the player with something unexpected. So while not always a requirement for a good mission, it can nevertheless give a boost to the experience and is always worth at least considering.
+
+For The Lock, I created a few set pieces to fill out the fields between the player and their first objective. I often like to showcase props in a way that helps to tell the story of the characters, so in this case, I played around with the theme of a field littered with unfortunate casualties of the paradrop that occurred just hours before the mission’s start.
+
+A Horsa wreck which appears to have at least landed safely enough for the occupants to have disembarked, leaving behind some supplies, including some Mk2 grenades, for the the player to pick up and put to good use. In this case, I carefully placed the wreck prop in a fitting spot in the field where a depression in the land would house the glider’s cockpit.
+An enemy AA position which has already been cleared, littered with a few bodies of dead Axis soldiers, and hiding a scoped Kar98 for those inclined. This was simply a pre-made composition of a US Mortar Pit which I went through while ensuring the props were placed correctly in this new instance and replaced all US props with German ones.
+A disassembled 4x4 vehicle still in the remnants of its crate that probably rocketed back down to earth after its parachutes were perforated by flak, the wreckage houses some extra weapons and ammo options in some intact supply crates
+The burned out husk of a crashed C-47. There’s nothing for the player here except for a somber moment to reflect on the buddies who didn’t survive the drop.
+A group of farm sheds near where I had originally planned for the player’s start position and later moved it - there are some Cows from the animals module, a wrecked tractor, and a wooden counter, as well as a curious French civilian farmer who went to check on his livestock unaware of the danger in his back yard.
+
+In addition to these props, I tweaked the fog settings to have a high density and decay and set the fog floor to a few meters ASL, which for the flat, flooded AO, worked well to add a sense of uncertainty. With that, I added a couple groups of Axis “deserters” picturing units from the Ostfront pressed into service in France deciding to abandon their posts and go picking through the wreckage, maybe looking for a way out of the hell unfolding around them.
+Starting Area Props
+The other area I always give some attention to is the starting area of the mission. I often find that, unless the player is meant to start the mission aboard some insertion vehicle, a vacant mission starting area is a big missed opportunity. Just as the set pieces help tell the story, the player’s starting area should also help orient the player to the side they’re on, the condition of their unit, how well-supplied (or not) they are, and the overall combat intensity. For The Lock, I decided that the starting area should not be built up, practically at all, aside from a makeshift command post outside Addeville, where a small contingent in-game representing a larger bulk of the 101st that had set up there, can be found by curious players.
+
+As a rule, while the player should quickly be able to “get in the action” this action should be some safe distance from the starting area, and the action should commence as appropriate once the player leaves that starting area. Another way to think about it is that the starting area can and should serve as a mini-showcase, akin to the faction showcases included in CDLCs like [[S.O.G. Prairie Fire]] and [[Spearhead 1944]]. Using the named layer hide technique, or even simple dynamic simulation to de-simulate at a certain distance, depending on the design of your scenario, you should be able to clean up anything happening that is no longer needed.
+
+Finally, regarding the “starting experience,” while it’s not an immediate concern at this stage of the process, I am mindful of what the player sees upon mission load, considering what they might see on screen without touching the keyboard or mouse for a few seconds, and what information I can give them in just that initial shot. A silhouetted scene that evokes the classic “Band of Brothers” title sequence is what felt right for The Lock, together with a bit of BGM added later. To achieve this, I lined up a group of AI units, part of the “Reserve Element” I had waypoints set for them to essentially bring up the rear as the player fought their way south. All units in this group would be disableAI on path, move, and anim, and I added “warmup” animations to give them the dramatic poses they have. When the player triggered the Reserve Element to move up (after securing the checkpoint), in the group’s Waypoint #1, the one following their initial synced waypoint, I added in the on activation field, commands to enableAI and a default animation to reset their animation state so the AI could resume normal movement. In this way, I achieved a memorable opening scene without wasting the AI units by leaving them animated behind at the starting area.
+
+=== Building and Testing the Scenario ===
+It is through the above described workflows of placing units, waypoints, and props, and testing as I went in reverse order of objectives from the last ones to the first one, that I added the meat to the skeleton of my scenario, developing it from a concept into something playable and challenging. While it is tempting to work out of reverse order when I get inspired, I try to avoid anything that would extend my testing time of the core mission flow. Optional objectives, starting area details that won’t increase the test flow time, and other tweaks are totally fine, however.
+
+I would use the named layer technique described earlier to show successive waves of attackers after most of the editor-placed units in my phase 1 were reliably KIA, and when the player held out for long enough, I used a command to demoralize the entire BLUFOR faction, triggering them to retreat. This, along with the reliable presence of at least some friendly AI, I safely hide “Eagle 6 1” from his CP in the starting area and show “Eagle 6 2” complete with his retinue at a new position at The Lock. As defined my SPE_missionFlow.sqf, having completed all required tasks, once the player was less than 8m from Eagle 6 2, the final couple of voice lines would play, a layer containing some reinforcements from the 327th Glider Infantry should arrive, as they did historically, and the mission should end.
+
+And because I verified that my tasks were working before doing anything much else, the process is more focused on good secondary concerns like the quality of engagements and ensuring there’s enough action in the larger vicinity of the AO. However, in order for my scenario to truly feel like it’s part of the base game and attract players to want to invest the time to play it, more work is needed to fill out the scenario and give my skeleton and muscles some skin to sit on top and not scare people way. In other words, I had reached the “presentation” phase.
+
+== Step 6: Presentation ==
+While it often goes unnoticed (by design), games offer up an immense amount of extra user interface on top of the action playing out in the game world itself. Even on the most hardcore of settings, Arma offers clues as to what’s going on and what they player should be doing. And hopefully, they aren’t just afterthoughts of UI, but rather seized opportunities to improve immersion by providing greater clarity to the player in a way that feels consistent with what’s happening in the game, either thematically, or in terms of the content itself.
+
+Presentation elements include graphical elements such as the overview image and task images, map markers on the 2D map illustrating enemy movements, objectives, and other points of interest, and text-based notifications and hints. Presentation elements should also include background music, or BGM, if the tone of your scenario requires it. For singleplayer scenarios, we also consider automatically saving the game at a few key points in the mission if we haven’t done so yet. If this was a co-op scenario, the approach to making the scenario would have had to be different earlier on in the process, accounting for respawn and respawn positions, among other factors.
+
+=== Map Markers ===
+One of the simplest ways to improve the presentation of your scenario will be to add map markers and update them as the mission plays out. I created a library of new map markers as part of my involvement with [[Spearhead 1944]], introducing everything from unit markers to insignia and hand-drawn markers inspired by map briefings from WWII films. Explore these new additions if you haven’t yet, and consider adding markers to make the following things clearer to the player:
+
+While the player’s individual position is displayed on certain difficulty levels, I find it helpful to mark the insignia of the player’s unit and any friendlies in the vicinity
+While [[Spearhead 1944]] doesn’t include very much in the way of specific German insignia, a set of generic insignia are available
+Specific unit markers (infantry, Armor, MG, HQ, etc.) indicating units that the player would already be aware of before the mission begins 
+Zone markers illustrating dangerous areas or faction-held territory, often marked with a three-marker combination of area markers, one with a forward-diagonal pattern, and a duplicate pasted in place with Ctrl+Shift+V with a border, and a regular icon-based marker that includes some text (eg. “Search area” or “Enemy indirect fire risk”)
+Arrows of different sorts illustrating key movements, be it intended direction of player force to attack, or enemy movements and direction of counter-attacks
+
+Once the markers are placed, you’ll want to set the Alpha value of the marker to adjust its visibility. Some markers will display at 100% at all times, but other ones should not be visible until later in the mission, so those should be set to 0% and use setMarkerAlpha to set it to 1 later in the mission flow. Other markers will either disappear, or if they don’t, maybe just reduce to 0.1 alpha (10% opacity), which helps the player know that the marker represents something in the past. Together with new markers at full opacity, the player can infer where they should be in the mid mission flow.
+
+=== Background Music ===
+As part of [[Spearhead 1944]] 1.0 and 1.1, HOW worked with a professional composer and multi-instrumentalist to produce an original soundtrack (OST), which is available in the editor. The easiest way to listen to the BGM options is through the attributes of a trigger. Avoid being too heavy-handed with BGM, or you risk annoying the players who haven’t already done so to set their Music audio settings to mute. By inserting a little bit of BGM at the right moment, on the other hand, you can draw the player even deeper into your scenario, setting the mood, building suspense, or accompanying a climactic firefight in the game.
+
+To do this, I often create dedicated BGM triggers based on player presence and sometimes with conditions to play when a variable’s value has changed (eg. task 2 has been completed). I will also play a BGM as part of the intro sequence in init.sqf, along with a bit of title text with a quote and a cut fade effect. In all, you should consider a bit of music when the mission begins, when the player approaches an important stage in the mission, when they are discovered, when a firefight is happening or is about to happen, and when the mission reaches its resolution.
+
+=== Notifications and Hints ===
+When done wrong, hints and notifications are distractions displayed at the wrong time that get ignored and do nothing to help the player avoid the source of frustration they were intended to prevent. When done right, they anticipate a player’s need for information and provide it at just the moment the player realizes they need it, keeping the player in their flow and feeling empowered after having seen some function within the game play out in the way they expected.
+
+Notifications are supposed to display when tasks are created, updated, succeeded, or failed, yet they don’t always display, nor in the right order if multiple are to be shown (eg. task completed followed by a new task created/assigned). You can and should bis_fnc_showNotification when you find it’s missing from your use of the intel modules.
+
+Hints are supposed to display when the player is expected to take some specific action, use some piece of equipment, or a support at their disposal. They should be used sparingly, and only for important things. If there’s some aspect of gameplay that’s so implicit that only a hint can make it clear, consider changing the design so that it’s more intuitive. A good use for hints is to remind the player to use their IFS, or when they leave the mission area. [[Spearhead 1944]]’s modules and systems sometimes include hints by default, based on CDA setting, which can be deactivated if you find your hints are competing with those from the system that most players should already be aware of.
+OVERVIEW, TASK, AND PROMO IMAGES
+Along with VO, setting up shots and capturing them to create mission images feels like one of the most time-intensive parts of the process. The “photoshoot” as I call it can often take just as much effort as the mission itself, and while there are shortcuts to speed the process along, which I took for The Lock, it’s still a necessary step in order to attract players and distinguish my scenario from hundreds of thousands of other addons available for {{arma3}} on the Steam Workshop. Excluding the fact that screenshot artwork in {{arma3}} is a thriving scene, it goes a long way in convincing players to subscribe and play.
+The Overview / Load Screen
+If there’s one shot worth spending the most time on, it’s this one. I typically use this screenshot for the mission thumbnail that appears on the Workshop, adding the featured unit insignia along with the CDLC title and mission name as a consistent convention so players will recognize that it’s one of my releases.
+
+I have had the pleasure and good fortune of learning from one of the best screenshot artists in the community, Yooles, whom I collaborated closely with in the making of [[Spearhead 1944]]. While I won’t rehash the entire topic of screenshots in this guide, I will provide a few hints here:
+
+Get inspired by looking at screenshots from others, professional promo images, film stills, or real photographs - note the composition of the shot, what sits in the foreground and what in the background, and how movement is conveyed
+Use mods that offer tools for {{arma3}} photographers, such as POLPOX’s artwork helpers and pose packs themed to your historical period, in this case Rismarck’s and ZSL’s WWII poses work well
+Use POLPOX artwork helpers to do everything from place tracers and muzzle flashes to customizing vehicles that you convert to Simple Objects and edit in the Simple Object Editor
+Poses are the first step for animation, but don’t forget about the Gestures and Mimics menus that offer even more customization options
+Don’t be afraid to get up close and personal, but watch out both for cliche faces and expressions or unsightly texture issues, shoulders are often a culprit here where the texture can sometimes get stretched as a result of a pose being employed or the angle of the shot
+Try to present a combat situation where all members of each faction are more or less facing in one direction (eg. all Allies moving right, Axis facing left)
+If you are so inclined, you can use Photoshop to further tweak the light and color levels and/or add additional effects, such as motion blur, or post-processing that the engine can’t normally cover
+
+For the Lock, I wanted to make the terrain feature, the Lock at La Barquette, a prominent one. This would help tell the story and set player expectations. Even though it was a staged photo, players can reach the very same position and expect a somewhat similar firefight coming at them from the other side of the canal! For [[Spearhead 1944]], we painstakingly composed hundreds of images, the majority of which were done by hand. I especially enjoyed recreating real historical photos from Operation Cobra as black and white photos captured in the game. However, for the average time-strapped editor, this won’t be feasible nor worth the time and effort. For this reason, if you only dedicate any real effort to staging one shot, make it the overview image, as it’s the most important one.
+Task Images
+Task images, present for nearly all tasks in both [[S.O.G. Prairie Fire]] and [[Spearhead 1944]] are an important way to guide the player with some visual clues about their objective. The task images can depict anything from the location within the terrain to a specific vehicle or unit that the player should target. 
+
+I forgot to mention above, that with task images and overview images, they should be converted to .paa file format using TexView2, part of Arma Tools, which you can access for free via Steam. Note that .paa files will need to be in specific dimensions, often a 1:1 or 1:2 ratio, and divisible by 8 - eg. 1024x512px. I typically will need to crop my screenshots to fit this requirement. Once cropped and in the correct format, you can easily drag it into TexView2 and save as a .paa. These .paa files are then added to your mission folder and can be referred to in description.ext or your task description entries - note that the syntax for each will vary.
+
+To keep things as quick and easy as possible for myself, for The Lock, I captured all task images from within the live scenario, rather than staging them, which would take much longer.
+
+=== Promo Images ===
+The final thing we’ll need some screenshots for are for promotional purposes. These shots will go on your Steam Workshop page for the scenario. They should be exciting and enticing to players above all. While you can stage these shots or capture them from live play, you should be mindful of creating a false impression as to what players should expect to actually play. For this reason, and again for the sake of ease, for The Lock, I captured all my promo shots (except, as noted, the overview image) by swooping around the AO while the mission was playing out and capturing engagements between AI-controlled belligerents. It was actually a cool challenge trying to hunt for skirmishes by listening for gunfire, and then seeing the dangerous exchanges of fire with the Splendid Camera set to a time scale of 0.1, like in the Matrix. By doing it this way, I can assure players that they are likely to experience the gameplay they see in the screenshots. For other projects, particularly my [[S.O.G. Prairie Fire]] releases, I will include some staged shots that still nail the vibe of the play experience, but offer a little more cinematic and visual flare. In the end, the choice is yours, but you’ll notice the difference some great promo images will have on converting curious players into subscribers of your scenario.
+
+== Step 7: Releasing Your Scenario ==
+At long last, you are nearly ready to release your scenario -- congratulations on making it this far! If you’ve followed my advice up to this point, chances are you will have an awesome release on your hands that hundreds of other players will get to enjoy, not to mention that you can play through and enjoy yourself. If you’ve ever done this before, much of this may not be new information. 
+
+=== Play Testing ===
+The temptation to make your mission public immediately may be strong, but consider asking a couple folks to play test your scenario before you release it to the wider community. You’ll be surprised, blown away, even, watching a playthrough or hearing about another player’s experience. What was clear to them? What was unclear? Did they make it through without dying or did they need to revert? How long did it take? Did they complete any of the optional tasks? The more you know about this before you release, the better your chances of catching anything you may have missed that might be broken or just confusing to players who don’t know even a fraction of what you do about this scenario. 
+
+Because I don’t typically have the time or interest to modify my scenarios after I release them, unless someone catches something horribly broken and the scenario was only recently released, I try to do a decent job of testing and getting at least 1 or 2 other people to complete a playthrough. Each time, they mention something I wasn’t aware of, and more often than not, it leads to an improvement into the scenario that will ensure subsequent players have a better experience.
+
+=== Publishing to the Workshop ===
+When I am nearly ready to pull the trigger on the public release, I will push my final mission file via the Eden menu. I will select my Thumbnail image from an easy-to-reach directory, and add “TK” or “placeholder” in the description so that I don’t have to write that in the Eden menu, which I have found to be really finicky and prone to resetting the form, losing everything you may have written in to your frustration. If you push updates and add change notes, beware of this form issue and have your updates ready to plug in as quickly as possible, ideally from somewhere outside of Arma, such as your master text doc. I will typically make the scenario either private or friends-only at first, so that I can write the description outside of {{arma3}} and in Steam, and because Steam places all mission files and updates in an auto-moderation queue that hides it from public view anyway.
+
+=== Writing the Workshop Description ===
+When players are deciding whether or not to subscribe and give your scenario a play through, they will use any information at hand to determine whether it’s interesting enough to them. The text description may feel like an afterthought, but it’s another important way to persuade players to invest their time in your work. Because I am both lazy and prefer consistency, I use a similar format for all of my workshop scenario releases:
+
+I copy in the overview description text from description.ext and add a little hook to draw the player in
+Features (aka selling points) about why the player should give my scenario a try
+Historical single player action showcasing the airborne units included w/ SPE/SPEX
+Set pieces and hand-placed props
+Supports and “toys” the player can look forward to using
+Voicing, if included
+CPU optimization using smart editing techniques
+Author’s notes
+What number of missions this release represents for the chosen CDLC
+Setting player expectations about what they can and cannot do, including the format of play (eg. singleplayer or co-op for 12)
+Historical sources referred to in the making
+Disclaimers about the scenario not being associated with the official makers of the chosen CDLC, that players using additional mods and addons can’t expect a stable experience
+A polite ask for players who enjoyed the scenario to support it by liking and favoriting it on the workshop
+Known issues, listing out anything your aware of so that players won’t think it was an oversight on your part, and to assure players you are working on a solution
+Give credit to anyone who helped you with your mission, be it play testing, or giving direction, feedback, or advice, authors of the content used in your scenario, etc.
+
+=== Release Timing and Announcement ===
+The final consideration for your scenario is when to actually release it, how to announce and promote it, and how to respond to the response you receive. While you could technically upload your scenario to Steam and make it public immediately, I have found that, if you aspire for your scenario to appear in the carousel of most popular new addons on the {{arma3}} Workshop Page, there’s a best day of the week to do so. I’m not 100% sure how or why, but I have found on Wednesday of each week, the carousel seems to update, giving you the most time and the best chance for your scenario to get noticed, tried out, rated, and hopefully attract more players by breaking into the most popular page (when you click to see more addons behind the top 9 displayed), and this will set you on the path.
+
+When you make your scenario public, it can help to promote it on places like the BI forums, discord, and the discord of the CDLC, in this case the [[Spearhead 1944]] discord. Make sure you abide by the rules of the board or channel, and avoid promoting aggressively to the detriment of the work of others. Be patient and don’t get discouraged if your first attempt falls short of your expectations. 
+
+A note on dealing with haters. You may find some pretty obnoxious and even disheartening comments coming from trolls. Ignore them. Don’t respond. Don’t be dragged down to the level of a troll who would never be capable of doing what you’ve just done, or they wouldn’t be talking shit. This community of millions of players is full of all kinds of folks, some of whom are toxic pieces of dogshit, others who will prove loyal supporters and worthy proponents, and many who won’t say or do anything noticeable at all. While the temptation to take a break is always worth taking up after a big effort, don’t be daunted by a negative response the following time you feel tempted to return to the editor and spin up a new project. The community is richer as a result of your contribution, and who knows what fortune your efforts may bring, months, or even years later down the line. I never in my wildest dreams would have expected to be recruited for the amazing experience of helping to make [[Spearhead 1944]] a reality. Anything truly is possible.
+
+In conclusion, I hope this guide provided something useful to you that will give your editing and output a boost, however small. Thanks a lot for reading, for supporting my work, and I look forward to trying out (when I can find the time) whatever you come up with. I’d appreciate a shout in the credits if you’re feeling kind. Please feel free to reach out if you have any questions about my process, this guide, or anything else!
+
+[[Category: Spearhead 1944]]

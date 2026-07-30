@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Vehicle_Weapon_Switching
+// revision: 258157 (2021-05-23T16:34:00Z)
+// export sha1: 5id4dtzvo1qhernht40kl4yqgbhsoes
+// categories: Category:Arma 3: Vehicle Configuration | Category:Introduced with Arma 3 version 1.54
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|1.54}}
+As part of Arma 3 release 1.54, four actions were added offering the ability to switch between vehicle weapons based on categorization, which avoided the need to cycle through every weapon.
+The system was made fully configurable so developers can specify exactly where they want their weapons.
+
+
+== Config Defines ==
+
+The weapon groups use enumerated data types and are defined in Arma 3’s basic defines as the following:
+
+<syntaxhighlight lang="cpp">
+#define WEAPONGROUP_CANNONS		  1 // Cannons
+#define WEAPONGROUP_MGUNS		  2 // Machine Guns
+#define WEAPONGROUP_ROCKETS		  4 // Rockets
+#define WEAPONGROUP_AAMISSILES	  8 // Anti-Air Missiles
+#define WEAPONGROUP_ATMISSILES	 16 // Anti-Tank Missiles
+#define WEAPONGROUP_MISSILES	 32 // All / Other Missiles
+#define WEAPONGROUP_BOMBS		 64 // Bombs
+#define WEAPONGROUP_SPECIAL		128 // Laser Designator + Misc
+</syntaxhighlight>
+
+Weapon category definitions can be added to iterative '''weaponsGroup''' parameters in the vehicle class structure, which simply adds that category to a specific weapons group, which can then be directly selected from the controls. All vehicles that inherit from Arma 3's base classes will already have some weapon grouping template.
+
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class MyPrettyAirplane
+	{
+		weaponsGroup1 = WEAPONGROUP_CANNONS + WEAPONGROUP_MGUNS;								// Adds Cannons and Machine Guns to Weapons Group 1
+		weaponsGroup2 = WEAPONGROUP_ROCKETS;													// Adds Rockets to Weapons Group 2
+		weaponsGroup3 = WEAPONGROUP_AAMISSILES + WEAPONGROUP_ATMISSILES + WEAPONGROUP_MISSILES;	// Adds All Missile types to Weapons Group 3
+		weaponsGroup4 = WEAPONGROUP_BOMBS + WEAPONGROUP_SPECIAL;								// Adds Bombs and Laser Designators to Weapons Group 4
+	};
+};
+</syntaxhighlight>
+
+Once this is defined, the "Switch to Weapons Group" actions will correlate to the groups in the vehicle config, since the engine automatically determines the category for each weapon based on the ammo simulation. 
+
+
+== Weapon Override ==
+
+It is possible to override the engine's determination of weapon category by altering the '''weaponType''' parameter in the ammunition of the weapon, found in ''CfgAmmo'':
+
+<syntaxhighlight lang="cpp">
+class CfgAmmo
+{
+	class B_19mm_HE;
+	class B_30mm_HE : B_19mm_HE		{ weaponType = "cannon"; };
+
+	class BulletBase;
+	class B_30mm_AP : BulletBase	{ weaponType = "cannon"; };
+};
+</syntaxhighlight>
+
+The weapon category strings are:
+* "cannon"
+* "mGun"
+* "rocket"
+* "missileAA"
+* "missileAT"
+* "missileAAAT"
+* "bomb"
+* "special"
+
+
+{{GameCategory|arma3|Vehicle Configuration}}
+[[Category:Introduced with Arma 3 version 1.54]]

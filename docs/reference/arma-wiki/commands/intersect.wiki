@@ -1,0 +1,102 @@
+// source: https://community.bistudio.com/wiki/intersect
+// revision: 377413 (2026-01-02T06:45:16Z)
+// export sha1: e603daa9offwjaufh8dj98ci2mbwv1q
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Geometry | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|gr1= Math - Geometry
+
+|descr= Finds named selections in object which are in specified LOD, intersected by given section of a line. Return value is in the form of [selection, distance]. Multiple returned arrays are nested within a single array. No intersection returns []. ''lodName'' could be one of the following: 
+* "FIRE"
+* "VIEW"
+* "GEOM"
+* "IFIRE" - ("I" stands for Indirect, almost the same as FIRE)
+* {{GVI|arma3|2.02|size= 0.75}} "PHYSX" - PhysX geometry LOD
+
+|s1= [object, lodName] [[intersect]] [begPos, endPos]
+
+|p1= object: [[Object]]
+
+|p2= lodName: [[String]]
+
+|p3= begPos: [[Position#PositionAGL|PositionAGL]]
+
+|p4= endPos: [[Position#PositionAGL|PositionAGL]]
+
+|r1= [[Array]] with [selection, distance]
+* selection: [[String]] - name of intersected selection
+* distance: [[Number]] - distance from begPos
+The results are also sorted, closest selection first
+
+|x1= <sqf>[_tank, "VIEW"] intersect [[1500, 1500, 2], [1550, 1500, 2]];</sqf>
+
+|x2= <sqf>
+sphere = "Sign_Sphere10cm_F" createVehicle [0,0,0];
+onEachFrame {
+	_begPos = positionCameraToWorld [0,0,0];
+	_begPosASL = AGLToASL _begPos;
+	_endPos = positionCameraToWorld [0,0,1000];
+	_endPosASL = AGLToASL _endPos;
+	_ins = lineIntersectsSurfaces [_begPosASL, _endPosASL, player, objNull, true, 1, "FIRE", "NONE"];
+	if (_ins isEqualTo []) exitWith {sphere setPosASL [0,0,0]};
+	_ins select 0 params ["_pos", "_norm", "_obj", "_parent"];
+	if !(getModelInfo _parent select 2) exitWith {sphere setPosASL [0,0,0]};
+	_ins2 = [_parent, "FIRE"] intersect [_begPos, _endPos];
+	if (_ins2 isEqualTo []) exitWith {sphere setPosASL [0,0,0]};
+	_ins2 select 0 params ["_name", "_dist"];
+	_posASL = _begPosASL vectorAdd ((_begPosASL vectorFromTo _endPosASL) vectorMultiply _dist);
+	drawIcon3D ["", [1,1,1,1], ASLToAGL _posASL, 0, 0, 0, _name, 1, 0.03, "PuristaMedium"];
+	sphere setPosASL _posASL;
+};
+</sqf>
+
+|seealso= [[lineIntersectsSurfaces]] [[terrainIntersect]] [[terrainIntersectASL]] [[terrainIntersectAtASL]] [[lineIntersects]] [[lineIntersectsWith]] [[lineIntersectsObjs]] [[cursorObject]] [[cursorTarget]] [[checkVisibility]]
+}}
+
+{{Note
+|user= ManDay
+|timestamp= 20070725083700
+|text= The most common [[LOD]] is "''FIRE''", which identifies the most detailled hitbox used for ammunition.
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140327145200
+|text= Example (In {{arma3}} ver 1.14) display returned arrays on cursor entities:
+<sqf>
+Sto = [];
+Fn = {
+	{
+		Sto set [_foreachindex,[cursorTarget, _x] intersect [ASLToAGL eyePos player, screenToWorld [0.5,0.5]]];
+	} foreach ["FIRE", "VIEW", "GEOM", "IFIRE"];
+	hintSilent format ["FIRE: %1, VIEW: %2, GEOM: %3, IFIRE: %4", Sto select 0, Sto select 1, Sto select 2, Sto select 3];
+};
+["sample_id", "onEachFrame", "Fn"] call BIS_fnc_addStackedEventHandler;
+</sqf>
+Return FIRE: [something], VIEW: [something], GEOM: [something], IFIRE: [something].
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150820183400
+|text= [[intersect]] will spam .rpt if passed to it object has no skeleton. Use [[getModelInfo]] to filter out those objects.
+}}

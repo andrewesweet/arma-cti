@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getUnitInsignia
+// revision: 328412 (2022-07-13T16:00:50Z)
+// export sha1: 5crvzu6fxwevwdnvu1ldmtjhfny6gxw
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= Object Manipulation
+
+|descr= Get a unit's uniform insignia class set with [[BIS_fnc_setUnitInsignia]].
+
+|s1= [target] call [[BIS_fnc_getUnitInsignia]]
+
+|p1= target: [[Object]] - object from which to return its insignia's class
+
+|r1= [[String]] - insignia classname
+
+|x1= <sqf>private _insigniaClass = [player] call BIS_fnc_getUnitInsignia</sqf>
+
+|seealso= [[BIS_fnc_setUnitInsignia]] [[Arma 3: Unit Insignia]]
+}}

@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/shownSubtitles
+// revision: 349059 (2023-11-08T14:47:19Z)
+// export sha1: ao130nlx3pui7ofripzk07w770eoqig
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Radio and Chat
+
+|descr= A getter for [[showSubtitles]].
+
+|s1= [[shownSubtitles]]
+
+|r1= [[Boolean]] - returns [[true]] if subtitles are set to show
+
+|x1= <sqf>private _setToShow = shownSubtitles;</sqf>
+
+|seealso= [[showSubtitles]]
+}}

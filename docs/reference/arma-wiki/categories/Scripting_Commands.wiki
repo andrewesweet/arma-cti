@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Scripting_Commands
+// revision: 257290 (2021-05-05T07:37:11Z)
+// export sha1: hqtncy7vlmb1lyj5n4dg6j01tq44wnj
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Table/RVScriptingCommands}}
+
+[[Category:Scripting Topics]]
+[[Category:Reference Lists]]

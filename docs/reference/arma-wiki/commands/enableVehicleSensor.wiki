@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/enableVehicleSensor
+// revision: 349214 (2023-11-08T14:50:48Z)
+// export sha1: ggvzu84t8aghng9w2e6fmj4wi31pmdt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sensors | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.72
+
+|arg= global
+
+|eff= local
+
+|gr1= Sensors
+
+|descr= Enable/disable given sensor
+
+|s1= vehicle [[enableVehicleSensor]] [componentName, enabled]
+
+|p1= vehicle: [[Object]]
+
+|p2= componentName : [[String]] - the component's name (can either be its "real name" or its className)
+
+|p3= enabled: [[Boolean]] - component status
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player enableVehicleSensor ["PassiveRadarSensorComponent", false]; // disables passive radar</sqf>
+
+|seealso= [[listVehicleSensors]] [[isVehicleSensorEnabled]]
+}}

@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/getCargoIndex
+// revision: 369168 (2024-09-03T10:34:42Z)
+// export sha1: hghrgxnudbfabupp6r6oslcnpm11t0m
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.26 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.26
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns index of the unit in cargo. -1 if not in cargo.
+
+|s1= vehicle [[getCargoIndex]] unit
+
+|p1= vehicle: [[Object]]
+
+|p2= unit: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>
+player moveInCargo heli;
+hint str (heli getCargoIndex player);
+</sqf>
+
+|seealso= [[moveInCargo]] [[assignAsCargoIndex]] [[emptyPositions]]
+}}

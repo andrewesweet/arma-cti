@@ -1,0 +1,344 @@
+// source: https://community.bistudio.com/wiki/LOD
+// revision: 352092 (2024-02-01T23:24:49Z)
+// export sha1: j8iwhf5gooqmz43bgxm6skm5171h79d
+// categories: Category:ArmA: Armed Assault: Modelling | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Operation Flashpoint: Elite: Modelling | Category:Operation Flashpoint: Modelling | Category:Take On Helicopters: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{|
+|- style="vertical-align: top"
+| LOD means Level of Detail, and is a method of defining, via different variations of a model, how high or low the viewable quality of the model should be, and how it should interact with the environment.
+Note that having too many (30 or more) LODs in total could cause the binarize process to crash.
+|style="text-align: right" | [[File:LODs.gif]]
+|}
+
+
+{|
+|- style="vertical-align: top"
+|
+== <resolution> ==
+
+Resolution LOD are those LOD that are visible in the game to the player from the outside view. There should always be more than 1 resolution LOD (unless it is a low poly object).
+In Open-World 3D Games (including all Arma Titles) it is standard practice to swap out high-resolution Models with medium- or low-resolution models at far distance from the observer. This is done to prevent excessive demand of computing ressources. Without the resolution LOD technique, the games would be unplayable due to bad performance.
+
+The switching of different resolution LOD happens automatically, based on various factors / in-game conditions  (e.g. view-distance, number of objects, video quality, CPU utilization, etc.). In Arma 3 the number of the resolution LOD has no impact and there is no way to specify which LOD is to be used at which range. The algorithm needs enough different resolution LOD to be effective.  Therefore the modeller needs to provide multiple resolution LOD with different polygon-density. They should be ordered according to their polygoncount (highest polycount has number 0 (or 1), second highest one number 1(or 2) and so on).
+
+Proxies need to be included in every resolution LOD that they should appear in. The proxies switch LOD independantly of the main p3d's resolution LOD however. (Example: Tank has Commander Machinegun as a Proxy - the machinegun may switch to lowest poly LOD before Tank switches from resLOD 0 to resLOD 1).
+| [[File:Truck-ResLOD.jpg|right|thumb|160px]]
+|}
+
+{{arma3}} example:
+{| class="wikitable"
+! Model !! Data !! res 1 !! res 2 !! res 3 !! res 4 !! res 5 !! res 6
+|-
+| rowspan="3" | T-100 Varsuk
+| Points || 27600 || 18400 || 11500 ||5100 ||2500 || 800
+|-
+| Faces || 14100 || 9100 || 5500 || 2300 || 1200 || 350
+|-
+| Sections || 12 || 12 || 12 || 12 || 11 || 7
+|}
+
+A common practice is to half the polygon amount for the next lower resolution LOD by ~2.<br>
+As a guideline, the lowest resolution LOD should have a polygoncount of somewhere around 500 and as few [[Section Count|sections]] as possible. If a resolution LOD has far below 500 Polygons, the [[Section Count|amount of sections]] has a much bigger impact on performance then the Polygoncount (e.g. it does not really matter if a resolution LOD has 50 or 400 Polygons, it does matter alot more in this case if it has 1 section or 4 sections). This has to do with how draw-calls work (instructions that the CPU sends to the GPU).  
+In addition to reducing the polygon density, it is best practice to also reduce shader complexity and the amount of textures used - because those too eat valuable ressources. The lowest resolution LOD won't need a normalmap and propably not even a specular or gloss map (test it for your object).
+
+This LOD should not contain any empty [[Named Selection]]s which are used in animations or by the game engine (wheels, etc), as this might cause the game to crash once the LOD becomes active.
+To demonstrate the complexity of the LOD selection, and the effect the resolution name has on LOD switching, a series of tests have been documented here: [[Operation_Flashpoint:_Resolution_LOD_Samples|Resolution LOD Samples]]
+
+The modelgeometry in each LOD needs to be below a "maximum polygoncount". This "maximum polygoncount" varies depending on how your model looks. The actual limit is based off {{Link|http://wiki.polycount.com/wiki/VertexNormal|vertex normals}}. The total amount of triangles you can use therefore depends on the {{Link|http://www.ericchadwick.com/examples/provost/byf2.html#wts|Smoothing splits and UV splits}} in your model. According to some tests and documentation of DirectX9 the limit appears to be 2^15 = 32768 vertex normals in ArmA, Arma 2 and early Arma 3 (where DirectX9 is used). In a recent (Q1/2016) update, the .p3d format in Arma 3 was updated to version 70 and now has a higher limit (above 2^16 vertex normals).  If you exceed the vertex normal limit, loading your model may crash the game or it simply won't display it. You can check it in Objectbuilder by loading up Bulldozer - if the LOD is not displayed, you are above the limit. Modern 3D modelling tools also offer native or user created tools to check the amount of vertex normals. Please remember that this is the absolute maximum you can use - this does not mean you should fully utilize it on every object.
+
+{{Feature|warning|'''Do not''' just make identical copies of your res LOD. This is pointless, leads to errors and increased model size (&rarr; increased loading time and memory footprint) - and no performance is gained.}}
+
+The default [[Named Properties|Named Property]] for resolution LODs is: {{hl|1= LodNoShadow = 1}}.
+
+When using alpha textures inside the model, sometimes Ambient-Shadows of other objects shine through the entire model (instead of just the alpha mapped parts). To fix this, add the named Property {{hl|1= Forcenotalpha = 1}} to your Geometry LOD (not resolution LOD).
+
+
+== Edit ==
+
+This is a LOD that you can use for temporarily storing models / model parts in the p3d. They are stored regulary like any other LOD.
+Please note that these LODs will be included when binarizing, so before you release your mod, delete all edit LODs in your models.
+
+
+[[File:Truck-GeoLOD.gif|thumb|150px]]
+== Geometry ==
+
+Defines where the model will collide with other objects.<br>
+Should be '''very''' simple, and has to fulfill the following criteria in order to work:
+* Object must be [[Named Selection | named]] ComponentXX (where XX is a consecutive number between 01 and 2048 (a limit in earlier games might have been 99).
+* Must have 'Mass' (Alt-M). A minimum of 10 is required for character collision.
+* Must be closed and convex. Always validate your Geometry LOD. ([[Validating Geometries]])
+* Some object types require that every component must have some mass assigned in order to work properly. Does not apply to vehicles
+* It must be smaller than the size limit.
+
+If the geometry LOD is larger than the size limit, it gets glitchy (collision does not work for example and the object may disappear at certain view angles).
+The exact value of the limit is not yet known, but it is somewhere around 50-60 meter from the center of origin (meaning that your object can be 100m wide/long at max if it is symmetrical to the center of origin).
+According to reports there is no limit skywards, so you could make a tower of 200m height.
+Note that if your object requires a roadway LOD, you need to stay within the roadway size limit, which is smaller.
+
+Geometry objects should have a thickness of at least 0.5 meters in order to work properly.
+
+{{Feature|informative|Oxygen2/Objectbuilder can do ComponentXX naming automatically. [Structures->Topology->Find Components]}}
+
+'''{{arma3}}:''' 
+* Geometry LOD is used for Collision if one of the colliding Objects is not a PhysX simulated Object. For example living Soldiers are not PhysX objects. Tank-Soldier Collision is therefore determined by Geometry LOD, even-though the Tank is a PhysX simulated Object.
+* For PhysX Objects the Mass value and the Mass distribution is critically important for the Objects physical behavior ''<nowiki>[</nowiki>Keywords: "Inertia" and "Moment of Inertia"]''
+
+* The default [[Named Properties|Named Properties]] for the Geometry LOD are: {{hl|1= canocclude = 0}} and {{hl|1= canbeoccluded = 1}} (for Vehicles, Characters and Weapons)
+
+When creating terrain objects that have to be navigated or used by infantry, it is good to keep the {{Link|link= https://forums.bistudio.com/topic/201408-info-infantry-metrics/|text= infantry metrics}} in mind.
+
+
+{{ArgTitle|2|Geometry PhysX|{{GVI|arma3|1.00}}}}
+
+Defines the collision model that is used in a collision between two PhysX Objects.
+
+The same criteria like for the Geometry LOD apply. The difference is that Geometry Phys does not (should not) contain Mass information.
+The detail should be even lower than in the Geometry LOD if possible, as PhysX collisions are computationally more expensive.
+For helicopters, cut the blades and any non critical structures out of the PhysX LOD, otherwise the rotor blades can cause critical failure.
+For tanks or other vehicles with turrets/ large cannons it is best practice not to include the cannon barrel or long protruding turret parts in the PhysX LOD. The rotation of turrets is not limited by forces, therefore the collision of a barrel with the environment will cause the tank or other PhysX objects to move (often very violently, causing serious glitches and flying tanks). 
+
+{{Feature|informative|
+* Requires Objectbuilder to be selectable in the LOD list. Oxygen2 does not have this capability.
+* {{GVI|arma3|1.00|size= 0.75}} Grenades are currently PhysX objects, that means they do use this LOD instead of Fire Geometry.
+}}
+
+
+== Fire Geometry ==
+
+Defines where the model will collide with bullets & rockets.
+If this LOD is not present the ViewGeometry LOD will be used instead. If the ViewGeo LOD is not present either then Geometry LOD will be used instead.
+Should be simplified as much as possible, but can be a bit more complex then Geometry or Geometry Phys
+* Object must be [[Named Selection | named]] ComponentXX (where XX is a consecutive number between 01 and 2000).  (see Geometry LOD)
+* Must be closed and convex (see: [[Validating Geometries]]).<br>
+[[P3D Lod Proxies|Proxies]] for the driver & passenger must be present into this LOD as well (they can be copied from the Resolution LOD). Otherwise the units will be invincible. One should also do any geometry validation ''before'' adding the proxies, otherwise they will not be functional.
+* Object must have less than 3500 points
+
+
+{{Feature|arma3|{{arma3}} only}}
+All Components should have a damage material applied. This defined the penetrability of the object and the impact effect type. 
+There are two possibilities for Materials: Normal Materials or Plate Materials.
+
+* Normal Materials only define material characteristics. The thickness is determined by the modelled component.
+* Plate Materials have a pre-defined thickness value. The armor thickness check will take the defined thickness and the modelled thickness into account. It will always use the value that is lower. 
+
+Example1:<br>
+A component representing a Wall with a thickness of 2m is modelled in the Fire Geometry.
+If we apply {{hl|1= concrete.rvmat}} it will behave like a 2m thick concrete wall.
+If we apply {{hl|1= concrete_plate.rvmat}}, it will behave like a 30mm thick concrete wall.
+
+Example2:<br>
+A component representing an armorpiece with a thickness of 50mm is modelled in the Fire Geometry.
+If we apply {{hl|1= armour_plate_100mm.rvmat}} it will behave like a 50mm thick armorpanel (modelled thickness is lower than defined thickness).
+If we apply {{hl|1= armour_plate_30mm.rvmat}}, it will behave like a 30mm thick armorpanel (defined thickness is lower than modelled thickness)
+
+{{Feature|informative|
+* If no materials are applied, Arma 3 will default to a nonpenetrable material with dirt impact effect type
+* If during binarization, the P: drive is not properly set up the referenced materials won't be found -> default to dirt impact type
+* {{arma3}} has many materials that can be used directly or as base for custom materials, they can be found in "...\arma3\addons\data_f.pbo\penetration\"
+* {{arma3}} Plate materials are usually 30mm thick. Armour plate materials are the only ones with different thicknesses.
+* The penetration system does not work reliably for modelled plate thicknesses below 10mm. If you want plate thicknesses smaller than 10mm, model firegeometry with at least 10 to 20 mm but apply custom plate materials for decreased thickness.
+* If you have a case where 2 armor plates (or other Firegeometry) are ontop of each other, they should be modelled as 1 piece. Otherwise the second plate might get ignored by a bullet due to close proximity, which is caused by limited bullet simulationstep and therefore limited bullet simulation accuracy. Might be fps dependant.
+}}
+
+For more details on how Damage &amp; Penetration interact see  [[Arma_3_Damage_Description|Arma 3 Damage Description]]
+
+
+{{ArgTitle|2|Geometry Buoyancy|{{GVI|arma3|1.00}}}}
+
+For calculating buoyancy of ships and amphibious vehicles. To enable this LOD you must create a named property "buoyancy = 1" in the Geometry LOD (not Geometry Buoyancy) 
+Similar to PhysX LOD, it should be extremely simple and have as few objects as possible. It must be convex and triangulated. Multiple objects should not intersect each other (otherwise the intersecting volume is calculated twice). See also:
+* [[Arma 3: Ships Config Guidelines]]
+
+
+== Hit-points ==
+
+Hit-pointLODs define, via unconnected [[Named Selection|named]] vertexes, where certain destroyable parts of a model are (e.g. wheels, lights, etc.).
+
+{{Feature|informative|The spacing between the points needs to be tuned in close correlation with the Hitpoint Config Class in the Objects Config and the Fire Geometry.}}
+
+For more details on how Damage &amp; Penetration interact see [[Arma 3: Damage Description]].
+
+With the Marksman DLC, we got a platform update that introduced a new hitpoint dependency feature for better soldier protection. [[Arma_3_Soldier_Protection]] Note that this dependancy feature is not only usable for soldiers, but for regular vehicles as well.
+
+
+== Memory ==
+
+[[Named Selection]]s that are used to define lights, vehicle entry points, etc., as well as control points for [[Animations]].
+
+{{Feature|informative|For memorypoint creation in an external modelling tool that has no export plugin, you can create a triangle in the external modeller. Place one or two vertices of the triangle where you need them. Import the triangle(s) into Oxygen2/Objectbuilder. Delete the obsolete point(s) of the triangle.}}
+
+You can animate Memory LOD Selections via model.cfg just like any ordinary LOD. However, it is not guaranteed that this will work for the thing you intent to. Particles for example ignore animated memorypoints, they always use the default position from Objectbuilder. Same holds true for gun/cannon Memorypoints on vehicle turrets.  Vehicle Reflector class lights however do animate properly.
+
+
+== Paths ==
+
+Important LOD for AI path finding. With the help of this LOD the AI can find its way through objects (such as buildings). Not required for objects that don't require AI pathfinding.
+It consists of an interconnected mesh. All path vertices's must be connected by polygons. 
+
+Vertices where the AI can stop must be defined by named selection with ascending number ("posXX" where XX is the number). Those points can be used by scriptcommand <link>buildingpos and in the Mission editor for placing Units. Name selections called "inXX" (where XX is a number) serve as AI access points (doorways, ramps, etc) to the building. These "inXX" points must be above the terrain surface for the AI to be able to see them. The A3 sample house shows how it can be set up, using multiple "entry-fan's" with one raised point to allow access to the building, independant of terrain slope. 
+
+AI ignore the Geometry LOD when on a pathway. This means that they can walk through walls if you dont set up your pathway to lead around obstacles. The AI follow connected vertices but it is somewhat imprecise when following a path, so leave enough clearance to walls, corners and so on.
+
+Paths are best to be 10cm above the roadway/walkway/ground surface.
+Entry points (named selections "in#") are simply entry points onto the path network, and don't necessarily have to be positioned outside the doorways of models. 
+According to user reports, path vertices may be hidden via animation, which stops the AI from using the hidden path points.
+
+
+== Roadway ==
+
+If a units is supposed to be able to stand ''on top'' of a model, that surface has to be defined by a RoadwayLOD.
+
+Roadway LOD needs to be present below Ladder memory points for them to work.
+
+Make sure that a RoadwayLOD doesn't overlap with a GeometryLOD, or the unit will start to wobble at those points.
+
+If roadway contains animated elements (bones), amount of points must be less than 255 (127 prior to 1.96 patch). This limitation doesn't apply if there are no animated elements in roadway LOD.
+
+The roadway LOD does not work if components are further away from the center of origin than approximately 36 meters (estimate value, it is dependent on map size/cell size and may be bigger or smaller between terrains).
+Therefore you can make 72m long bridges at most. If that is not sufficient for your object then you need to split your model into multiple smaller segments with a separate .p3d modelfile each.
+
+This LOD is used to determine the sound environment effects the player hears. The used environment effect are defined by the texture of the roadway LOD surface the player are standing on. The texture name corresponds to the file="<string>" property in CfgSurfaces classes.
+
+
+== LandContact ==
+
+Where the object touches the ground (defined by a single vertex per contact point).
+
+
+== ViewGeometry ==
+
+The visible geometry of the model.
+
+As an example: If you have an object with this LOD properly configured, you will not be able to spot other units through the model. AI will not be able to spot other units through the model.
+If this LOD is not present the Geometry LOD will be used instead.
+
+
+== View - Cargo == 
+
+[[File:Truck-View-Cargo.jpg|thumb|150px]]
+What a cargo passenger can see of the model. 
+
+In vehicles of the class "Car", the player will '''always''' see this view, whether he is the driver, co-driver or cargo. (Unless the "View - Pilot" is defined. Then ''that'' view is taken for any position inside the vehicle).
+{{Clear}}
+
+
+== View - Commander == 
+
+What the commander can see of the model.
+In vehicles, this will be the commander's first person view of the model.
+
+
+== View - Gunner ==
+
+What the gunner can see of the model.
+In vehicles, this will be the gunner's first person view of the model.
+
+
+== View - Pilot == 
+
+What the pilot/driver can see of the model.
+In vehicles of the class "Car", the player will '''always''' see this view, whether he's the driver, co-driver or cargo. Players position in the LOD is determined by his proxy position.
+
+
+== ShadowVolume ==
+
+This LOD is used to cast shadows on the ground, other objects and on the object itself.
+Shadow LOD should be simplified compared to resolution LOD, but can be more detailed then Geometry/Fire Geometry LOD.
+Shadow LOD must be slightly shrinked compared to resolution LOD (in 3dsmax you can use a push modifier to do this), otherwise the Model may look partly or completely shaded in the game.
+There are usually two Shadow LODs - one detailed for close range and one very simple one for long distances.
+LOD '''must''' be:
+* Closed
+* Triangulated
+* Sharp Edges
+
+{{Feature|arma1|'''{{arma1}}/{{ofpe}} only:''' Typically named ShadowVolume 0.000 (Few features) and ShadowVolume 0.100 (same amount of features as the main visual model (i.e. equipment, weapon systems, etc).(Also see [[Creating Shadow LODs|this article]])}}
+
+
+== Exporting .fbx with LODs ==
+
+Object Builder's .fbx import tool is able to process mesh groups created in other 3D software into correct LODs, so long as the mesh groups are correctly named.
+
+Names should follow the format:
+'''NAME'''_'''LOD###'''
+Where "NAME" is the desired named selection for the mesh group when it imports to Object Builder, and "###" is the numeric value of the target LOD that the mesh will be allocated to.
+
+Numeric values for each kind of LOD can be found in the table below. Alternate syntax is provided for software that does not support mesh group names containing decimal points:
+
+{| class="wikitable"
+! LOD type !! _LOD### !! _LOD### (alt.)
+|-
+| <resolution> # || # ||
+|-
+| View Gunner || 1.0e3 || 1000 or 10e2
+|-
+| View Pilot || 1.1e3 || 1100 or 11e2
+|-
+| View Cargo || 1.2e3 || 1200 or 12e2
+|-
+| Shadow Volume 0 || 1e4 || 10000
+|-
+| Shadow Volume 10 || 1.001e4 || 10010
+|-
+| Shadow Buffer 0 || 1.1e4 || 11000
+|-
+| Shadow Buffer 10 || 1.101e4 || 11010
+|-
+| Edit # || 2.000#e4 || 2000#
+|-
+| Geometry || 1e13 ||
+|-
+| Geometry Buoyancy || 2e13 ||
+|-
+| Geometry PysX || 4e13 ||
+|-
+| Memory || 1e15 ||
+|-
+| Land Contact || 2e15 ||
+|-
+| Roadway || 3e15 ||
+|-
+| Paths || 4e15 ||
+|-
+| Hit-points || 5e15 ||
+|-
+| View Geometry || 6e15 ||
+|-
+| Fire Geometry || 7e15 ||
+|-
+| View Cargo Geom. || 8e15 ||
+|-
+| View Cargo Fire Geom. || 9e15 ||
+|-
+| View Commander || 1e16 ||
+|-
+| View Commander Geom. || 1.1e16  || 11e15
+|-
+| View Commander Fire Geom. || 1.2e16 || 12e15
+|-
+| View Pilot Geom. || 1.3e16 || 13e15
+|-
+| View Pilot Fire Geom. || 1.4e16 || 14e15
+|-
+| View Gunner Geom. || 1.5e16 || 15e15
+|-
+| View Gunner Fire Geom. || 1.6e16 || 16e15
+|-
+| Sub Parts || 1.7e16 || 17e15
+|-
+| Shadow Volume - View Cargo || 1.8e16 || 18e15
+|-
+| Shadow Volume - View Pilot || 1.9e16 || 19e15
+|-
+| Shadow Volume - View Gunner || 2e16
+|-
+| Wreck || 2.1e16 || 21e15
+|}
+
+{{GameCategory|ofp|Modelling}}
+{{GameCategory|ofpe|Modelling}}
+{{GameCategory|arma1|Modelling}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|tkoh|Editing}}
+{{GameCategory|arma3|Editing}}

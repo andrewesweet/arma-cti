@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/setGusts
+// revision: 376959 (2026-01-01T05:50:49Z)
+// export sha1: 68hp5mjzxk47h7hxaxeo4yj3iyiqt5o
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|eff= local
+
+|descr= Changes the gusts value smoothly during the given time (in seconds). A time of zero means there will be an immediate change.
+
+|s1= time [[setGusts]] value
+
+|p1= time: [[Number]]
+
+|p2= value: [[Number]] in range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>60 setGusts 0.75;</sqf>
+
+|seealso= [[gusts]] [[wind]] [[setWind]]
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20220706041709
+|text= Unlike most of weather commands, this one does not set gusts instantly but on next frame (in 2 frames in practice), so running it multiple times will overwrite each other. [[setRainbow]] has same behavior. In order to set gusts to some value and then have it change to another over time, you need to first do <sqf inline>0 setGusts 0</sqf> and then <sqf inline>100 setGusts 1</sqf> after 2 frames. Example:
+<sqf>
+// Initial gusts you want
+0 setGusts 0;
+
+// A thread to wait for 2 frames
+(diag_frameNo + 2) spawn {
+	waitUntil {
+		// Code in braces is not executed until wanted frame is reached because of lazy evaluation
+		diag_frameNo >= _this && {
+			100 setGusts 1;
+			true; // positive condition result to end waitUntil and spawned thread
+		};
+	};
+};
+</sqf>
+}}

@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/eyeDirection
+// revision: 377870 (2026-01-04T11:39:04Z)
+// export sha1: 4r0qlm7dyhfchld0uydrw3wxxpdzq0h
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns the direction object is watching (eyes, or a vehicle's primary observer).
+
+|s1= [[eyeDirection]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Vector3D]]
+
+|x1= Keep a can in front of the player's ''face'':
+<sqf>
+Can = "Land_Can_V3_F" createVehicle getPosATL player;
+onEachFrame {
+	_eyePos = eyePos player;
+	_eyeDir = eyeDirection player;
+	Can setPosASL [
+		_eyePos select 0 + (_eyeDir select 0),
+		_eyePos select 1 + (_eyeDir select 1),
+		_eyePos select 2 + (_eyeDir select 2)
+	]
+};
+</sqf>
+
+|x2= Draw AI eye direction (green) and weapon direction (red) in 3D:
+<sqf>
+Bob = createGroup east createUnit ["O_Soldier_F", [0,0,0], [], 0, "NONE"];
+Bob setVehiclePosition [player modelToWorld [0,100,0], [], 0, "NONE"];
+onEachFrame {
+	_beg = ASLToAGL eyePos Bob;
+
+	_endE = _beg vectorAdd (eyeDirection Bob vectorMultiply 100);
+	drawLine3D [_beg, _endE, [0,1,0,1]];
+
+	_endW = _beg vectorAdd (Bob weaponDirection currentWeapon Bob vectorMultiply 100);
+	drawLine3D [_beg, _endW, [1,0,0,1]];
+};
+</sqf>
+
+|seealso= [[positionCameraToWorld]] [[weaponDirection]] [[getCameraViewDirection]] [[vectorDir]] [[vectorDirVisual]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20140526191000
+|text= This command should have really been named ''headDirection'' instead of [[eyeDirection]] as one could mistakenly think that eyes direction of your avatar correspond to the direction of the centre of your screen.
+Play with the script in {{Link|#Example 1}} to find out limitations. If you need centre of screen direction, use [[positionCameraToWorld]] instead.
+}}

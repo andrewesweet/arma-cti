@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/addonFiles
+// revision: 378237 (2026-03-20T14:02:49Z)
+// export sha1: 1cea4n12v6ix9cy1wmq3lgbibd38295
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mods and Addons | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Mods and Addons
+
+|descr=Returns a list of files present in the addon.<br>
+{{Feature|informative|Querying protected {{hl|.ebo}} addons will return an empty array {{hl|[]}}.}}
+
+|s1= [[addonFiles]] [prefix, fileExtension]
+
+|p1= prefix: [[String]] - addon prefix available from [[allAddonsInfo]]. Since {{GVI|arma3|2.22}} it is possible to also return all files present in a scenario folder from within [[Eden Editor]] or Eden preview with the special prefix {{hl|$mission}}
+
+|p2= fileExtension: [[String]] - (Optional) file extension to filter results, for example {{hl|".paa"}}
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>
+addonFiles ["a3\3den\", ".paa"];
+/*
+	[
+		"a3\3den\data\attributes\formation\ech_left_ca.paa",
+		"a3\3den\data\attributes\formation\stag_column_ca.paa",
+		"a3\3den\data\attributes\stance\down_ca.paa",
+		"a3\3den\data\cfg3den\layer\icondisabled_ca.paa",
+		"a3\3den\data\controlsgroups\diagmousecontrol\mouse_ca.paa",
+		...
+	]
+*/
+</sqf>
+
+|x2= <sqf>
+// Since Arma 3 2.22
+addonFiles ["$mission", ".sqf"];
+</sqf>
+
+|seealso= [[allAddonsInfo]]
+}}

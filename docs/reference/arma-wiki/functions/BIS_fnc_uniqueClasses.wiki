@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_uniqueClasses
+// revision: 373744 (2025-06-24T21:38:03Z)
+// export sha1: qo0kdtsizluwk89qjeez6k0kyjypket
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Configs | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+|game1= arma3
+|version1= 1.00
+
+|gr1= Configs
+
+|descr= Composes an array of classes with unique param (based on returned value of passed code). If class inherits the param from parent, it's not listed.
+
+|s1= [config, code] call [[BIS_fnc_uniqueClasses]]
+ 
+|p1= config: [[Config]] - class which is searched
+|p2= code: [[Code]] - code executed on class, which is passed as <sqf inline>_this</sqf> or <sqf inline>_x</sqf> 
+
+|r1= [[Array]] of classes with unique param in format [<nowiki/>[config, value], ...] where:
+* config: [[Config]] - config which defines the parameter value
+* value: [[Anything]] - value returned by the specified {{hl|code}} parameter
+
+|x1= <sqf>_aiClassTypes = [configFile >> "CfgVehicles", { getText (_this >> "aiBrainType") }] call BIS_fnc_uniqueClasses;</sqf>
+
+|seealso= [[BIS_fnc_returnChildren]] [[BIS_fnc_returnParents]]
+}}

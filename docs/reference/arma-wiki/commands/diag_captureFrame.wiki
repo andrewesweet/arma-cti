@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/diag_captureFrame
+// revision: 370294 (2024-11-20T13:51:34Z)
+// export sha1: lpfre7ix7tbo8h679wkmgqh18f7lwb0
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Arma 3: Scripting Commands: Profiling Branch | Category:Command Group: Diagnostic | Category:Command Group: Performance Profiling | Category:Introduced with Arma 2: Operation Arrowhead version 1.63 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.63
+
+|game2= arma3
+|version2= 1.00
+
+|branch= diagnostic profiling
+
+|gr1= Diagnostic
+
+|gr2= Performance Profiling
+
+|descr= This command starts counting frames from the moment it is executed and when the count reaches the number passed as param, the current frame is captured and captured data UI dialog appears, similar to [[diag_captureSlowFrame]]. This can also be executed on a dedicated Server and because a Server has no UI it will behave like [[diag_captureFrameToFile]].
+{{Feature|important|BattlEye's RCON variant of this command is '''#captureFrame'''}}
+
+|s1= [[diag_captureFrame]] frame
+
+|p1= frame: [[Number]] - next n-th frame to be captured
+
+|r1= [[Nothing]]
+
+|x1= <sqf>diag_captureFrame 1; // capture the first frame after command execution</sqf>
+
+|x2= <sqf>diag_captureFrame 24; // capture 24th frame after command execution</sqf>
+
+|seealso= [[Arma 3: Diagnostics Exe]] [[Performance Profiling]] [[Arma 3: Cheats]] [[Multiplayer_Server_Commands#Performance_Profiling|Admin chat commands]] [[diag_captureFrameToFile]] [[diag_captureSlowFrame]] [[diag_logSlowFrame]] [[logEntities]] [[exportJIPMessages]]
+}}

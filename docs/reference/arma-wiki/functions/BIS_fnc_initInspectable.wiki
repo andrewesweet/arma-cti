@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_initInspectable
+// revision: 376287 (2025-09-29T12:34:48Z)
+// export sha1: g85501bk5xxbvutk0bk4ytyedtufvsx
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interaction | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Interaction
+
+|descr= Initialize inspectable object: add "Inspect" action to the object. When a player activates it, full-screen detail of the objects is shown.
+
+|s1= [inspectable, textureInfos, fullScreenText, soundName] call [[BIS_fnc_initInspectable]]
+
+|p1= inspectable: [[Object]] - object on which the action is added
+
+|p2= textureInfos: can be one of the following:
+* [[String]] - texture path
+* [[Array]] - [texture, index, aspectRatio]:
+** texture: [[String]] - texture path
+** index: [[Number]] - (Optional, default 0) index on which the texture will be mapped on the object using setObjectTexture. Use -1 to ignore.
+** aspectRatio: [[Number]] - (Optional, default -1) texture aspect ratio. 0.5 means width will be 0.5 of the height. -1 means texture default.
+* [[Boolean]] - [[true]] to instantly show the ''inspectable'' full-screen preview ('''following params are then ignored''')
+
+|p3= fullScreenText: [[String]] - text to be shown after clicking on READ button. Ideally localized.
+
+|p4= soundName: [[String]] - sound played when entering full-screen preview. Sould be defined in [[Description.ext#CfgSounds|CfgSounds]].
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[myLeaflet, "#(argb,8,8,3)color(1,0,1,1)", "This is some Magic Pink"] call BIS_fnc_initInspectable; // initialize</sqf>
+
+|x2= <sqf>[myLeaflet, true] call BIS_fnc_initInspectable; // Show preview instantly</sqf>
+
+|seealso= [[BIS_fnc_holdActionAdd]] [[BIS_fnc_holdActionRemove]]
+}}

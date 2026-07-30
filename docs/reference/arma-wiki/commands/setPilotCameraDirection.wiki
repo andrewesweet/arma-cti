@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/setPilotCameraDirection
+// revision: 377431 (2026-01-02T06:46:14Z)
+// export sha1: s98ws26qlqk0w1m36frfe3j522mqjfv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Pilot Camera | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|arg= local
+
+|gr1= Pilot Camera
+
+|descr= Sets the direction of airplane's or helicopter's {{Link|Arma 3: Targeting config reference#class pilotCamera|pilotCamera}}.
+
+|s1= object [[setPilotCameraDirection]] vector3D
+
+|p1= object: [[Object]] - a vehicle equipped with pilot camera
+
+|p2= vector3D: [[Vector3D]] - in model space, relative to the model centre (In a similar fashion to [[Position#PositionRelative|PositionRelative]])
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player setPilotCameraDirection [0,1,0] // re-centers the camera</sqf>
+
+|seealso= [[hasPilotCamera]] [[getPilotCameraPosition]] [[getPilotCameraDirection]] [[getPilotCameraRotation]] [[getPilotCameraTarget]] [[setPilotCameraRotation]] [[setPilotCameraTarget]]
+}}

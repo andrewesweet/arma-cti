@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/CF:ArmA2_-_Charlie_Foxtrot:_ArmA2
+// revision: 349798 (2023-11-20T22:10:17Z)
+// export sha1: b3crq3jrmxq7x0sifd1svy7kjnsg0w6
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Cf-logo-text.png]]
+<h1>Charlie Foxtrot: Virtual War</h1>
+Charlie  Foxtrot has been in continuous operation for four years.  We have a proven and tested environment that facilitates two armies fighting large-scale multi-player  battles against each other every week. This goes on for a number of  weeks (a campaign) and in the end one army is declared victorious.
+
+<h2>How  do these two armies fight each other?</h2>
+<ul>
+	<li> Charlie Foxtrot  utilizes a modified version of ArmA2's (and Operation Arrowhead) multi-player component to stage large-scale battles.</li>
+	<li>The armies fight over a region defined as a zone.  The zone is of various sizes and only inside this zone can score be accrued.</li>
+	<li>There are 3 score vehicles a lightly armored command vehicle worth 2 points per score cycle and three supply vehicles worth one point each.  These vehicles are monitored and every five minutes an updated score is published to the map screen.</li>
+	<li>The side with the highest score at the end of the battle is considered to be the victor.</li>
+	<li>The score is then added to the total campaign score which which is carried till the end of the campaign where a campaign victor is declared.</li>
+</ul>
+<blockquote>
+<ul>
+	<li><em>NOTE:</em> The score vehicles have other roles as well, the command vehicle which is lightlyarmored and has satellite view, FLIR  and other functions including a radar to monitor air and a communication  system that reports friendly troop locations.  The supply vehicles act as a forward resupply area by providing fuel, ammunition and repairs to the other armed or armored vehicles.</li>
+	<li>Charlie Foxtrot does not use kill messages, third-person view or a leader board to determine any aspect of the battle's progress.</li>
+	<li>In fact, the entire battle strategy is developed by the commanders of the armies, with input from the rest of the army.</li>
+	<li>The strategies and tactics evolve and change from battle to battle, sometimes even in the midst of a battle.</li>
+</ul>
+</blockquote>
+<h2>Sign up for free</h2>
+{{Link|http://cfarma2.com/forums/****join-your-army-here****/|You can join today}} via our forums!
+== The Companies ==
+<p>Charlie Foxtrot has been running two PMC oriented companies since the release of Arma 2.  The two companies have grown over time and have developed a set of traditions and a following that make their employees nearly fanatical in their support of the company.  While the funding and backing of various governement agencies may be present, it is never acknowledged and there is no proof that any direct interaction takes place.  Yet, RSi and SI tend to show up in the most unlikely places.  Servicing contracts that no other contractors would touch.</p>
+<p> The battles and skirmishes between these two companies may be legendary, but so is the pay and other benefits.</p>
+
+== Riverstone Inc. ==
+http://cfarma2.com/wp-content/uploads/2010/06/rs11.png<br>
+{{Link|http://riverstone-inc.com/|Riverstone Inc. (RSi)}}<br>
+Riverstone Inc. is a leading global engineering, construction and services company supporting the energy, hydrocarbon, government services and civil infrastructure sectors. The company is a leader in many of the growing end-markets it serves, particularly gas monetization, having designed and constructed, alone or with joint venture partners, more than half of the world's operating liquefied natural gas (LNG) production capacity over the past 30 years. RSI offers a wide range of services through its Upstream, Downstream, Technology, Services, Government and Infrastructure, and Ventures business segments.  RSi employs more than 40,000 people globally and is considered one of the world’s premier engineering, construction and services companies supporting the hydrocarbon, civil infrastructure, government and defense, power, industrial and venture markets.
+
+== Shashka International ==
+http://cfarma2.com/wp-content/uploads/2010/10/shaskalogowtypetranny.png<br>
+{{Link|http://shashka-gmbh.com/|Shashka International (SI)}}<br>
+<p>Shashka International is a multi-national highly skilled operational and consultancy firm in the areas of Security Services and Tactical Communications Support. We are here to complement and provide our clients with the best reliable Defense, Homeland Security, Intelligence Solutions, Information Technology and Tactical Communications Support at a cost effective rate.</p>
+<p>We offer the best ongoing support available while providing advice and deployment of comprehensive Tactical Operations in several countries around the world. Shashka International is managed by two focal Divisions; Defense Services and Tactical Support Services. Our expertise is in preparing effective field operations, protections initiatives, actions plans, and conducting test, training, and exercises (TT&E). Shashka International enjoys a unique worldwide recognition for its outstanding record of accomplishment in providing services.</p>
+== Links ==
+*{{Link|http://cfarma2.com/|Charlie Foxtrot Website}} 
+*{{Link|http://cfarma2.com/forums/****join-your-army-here****/|You can join today}} via our forums!
+*[[CF:ArmA2_-_Charlie_Foxtrot:_ArmA2|Charlie Foxtrot Biki]]
+*{{Link|link= http://forums.bistudio.com/showthread.php?t=73776|text= Charlie Foxtrot on the BI Forums}}
+*{{Link|http://shashka-gmbh.com/|Shashka International (SI)}}
+*{{Link|http://riverstone-inc.com/|Riverstone Inc. (RSi)}}
+*{{Link|link= http://www.arma2.com/links/arma-2-community.html|text= On Arma2.com}}

@@ -1,0 +1,156 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Simple_Objects
+// revision: 364525 (2024-05-16T20:46:23Z)
+// export sha1: i9wgd548wi117fbrns3c70vq8aefa1d
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Simple Objects is feature that allows creation of objects with very limited simulation, low performance impact and network traffic. Simple objects are ideal for decorative objects in situations where fully simulated and destructible objects are not required or we can sacrifice full simulation and destruction of some objects to get some performance improvements.
+
+The initial idea for the whole simple object feature was to allow creation of simple p3d shapes, with no extra support and features what so ever. Such objects could be:
+
+* created - using createSimpleObject with supplied path to p3d and absolute world position
+* positioned - using setPosWorld (absolute world position); there are no land contacts that would allow using setPos or setPosASL like commands
+* deleted - using deleteVehicle
+* retrieved - using allSimpleObjects
+
+This was later extended by providing possibility to create simple object according to the original object config, attach the original object class name as well as possibility to re-texture the simple object (for more info check Simple Object Types sub-section).
+
+Because simple objects have close to no simulation, they have strong advantages and disadvantages. Those must be considered and understood to avoid the pitfalls and make most out of the feature.
+
+'''PROS'''
+* Low performance impact - simple object limited simulation is way less demanding, objects outside player's FOV consume very low resources
+* Low network traffic in MP scenarios - simple objects do not need that frequent network updates as simulated objects.
+
+'''CONS'''
+* No PhysX and interaction - simple objects are unmovable static objects.
+* No destruction effects and wreck/ruin transitions
+* More mission/model-maker overhead: more complex objects like damaged vehicles require many manual adjustments to look "real", such as retexturing
+
+=== Simple Object Types ===
+
+There are 2 types of simple objects based on features they offer and way how they are created. Super-Simple Objects that are meant for some low level scripting and Simple Objects. In general Simple Objects are the way to go as they serve best the majority of use-cases, have more features and in most of the situations provide same performance boost. See the details below if you want to know more about the differences between Super-Simple Objects and Simple Objects.
+
+'''Super-Simple Objects''' - are simple objects that are created directly from the object shape. They have very limited functionality, do not contain type and cannot be re-textured. The lack of type (=inaccessibility of the original object's config) renders Super-Simple Objects unsuitable for more complex objects like are vehicles. Super-Simple Objects are useful for creating simple objects from objects that do not have config definition.
+
+'''Simple Objects''' - represent simple objects created from original object config. These simple objects contain type information which improves scripting capabilities, are automatically adjusted according to the config data and can be re-textured. They are ideal for almost any situation, with exception of objects that do not have config definition where using the Super-Simple Objects is the only possible way or complex objects that support re-texturing but we don't need it, there using Super-Simple Objects can net some significant performance boost (check Performance section). EDEN editor uses these Simple Objects, there is currently no support for Super-Simple Objects in EDEN.
+
+
+== Eden Implementation ==
+
+No debate the most common use of simple objects is through EDEN. The implementation is very straightforward there:
+# Place the object
+# Open object attributes
+# Go into Object: Special States
+# Select Simple Object option
+
+{| class="wikitable"
+! colspan="2" | Simulated vs. Simple Object
+|-
+| [[File:EDEN_SimulatedObject.png|500px]]
+| [[File:EDEN_SimpleObject.png|500px]]
+|-
+| Notice simulated object visual indication - yellow bounding box.
+| Notice simple object visual indication - grey bounding box.
+|}
+
+{{Feature|warning|Currently there is a bug with named objects and "simple object" property. In multiplayer, the object variable is only defined on the server, unlike with normal objects where it is defined everywhere.}}
+
+=== Simple Object Capability ===
+
+Not all objects work well as simple objects - some objects require adjustment data (that need to be prepared properly by the content creator), some do not work at all (like units, game logics, weapon holders etc.). Because of that objects need to be whitelisted for the simple object feature to become available. The decision if object is suitable and well prepared for simple object feature is left on the object creator. Whitelisting is done by adding config parameter eden = 1; into SimpleObject class in object config definition. Objects without this parameter will not have the Simple Object option available in EDEN editor.
+
+<syntaxhighlight lang="cpp">
+class B_LSV_01_armed_F
+{
+	// ...
+	class SimpleObject
+	{
+		eden = 1;
+		// ...
+	};
+};
+</syntaxhighlight>
+
+
+== Performance ==
+
+Object simulation is one of the significant factors that affect asset impact on game performance.
+Due to the nature of the simple object tech and logic of the thing it is obvious the performance impact will decrease with simulation complexity.
+But we cannot obviously create everything out of the Super-Simple Objects. So knowing where and how the disabled simulation, Simple Objects or even Super-Simple Objects help is crucial.
+
+Table below shows aggregated results for each major simulation type in comparison to clean-scene framerate.
+There you can see % framerate drop that 400 of simulated, disabled, simple and super simple objects on scene cause.
+
+[[File:SimpleObject_PerformanceChart.png|1000px]]
+
+=== Benchmark Details ===
+
+Over 3 thousands of official assets were sequentially tested. Each test composition was built of 400 instances of the tested asset on clean VR scene. To lower impact of LODing and rendering on benchmark results objects placed around player as close as possible but still outside of his FOV. Each asset was tested with full simulation, disabled simulation, simple object and super-simple object.
+
+'''How to read the data?''' You can see that 400 of buildings (simulation house) will bring the scene framerate down to 88%. That's great.
+You can also notice that disabling simulation on the buildings or turning them into simple objects doesn't help at all.
+If you check situation of the rotor-lib helicopters (simulation helicopterrtd) you will see it is very different thing.
+Placing 400 of those helicopters will completely destroy your performance, bringing the scene framerate down to 14%.
+Even if you most likely won't use 400 of those babies in a mission the results show how much more performance hungry are these RTD helicopters over buildings and that just disabling their simulation will not help much, while turning them into Simple Objects or even Super-Simple Objects will help drastically.
+
+=== Conclusion ===
+
+'''PhysX &amp; RTD vehicle''' simulation is very costly. Disabling the simulation helps, but even if disable the simulation performance impact is severe. Using Simple Objects or even Super-Simple Objects improves the performance significantly. If you do not need to re-texture the object use Super-Simple Objects (their performance here is awesome), otherwise stick with Simple Objects.
+
+'''PhysX object''' simulation (thingX) has in general about '''3x better performance''' than PhysX vehicles have but is still fairly costly. Due to fact that mission compositions tend to contain much larger number of PhysX objects then vehicles, it is strongly recommended to use Simple Objects there. Disabling simulation doesn't help enough and Super-Simple Objects don't net any performance boost over Simple Objects.
+
+'''House''' simulation works fine as it is. Disabling simulation or using simple objects there does not bring any measurable benefits.
+
+
+== Scripting Implementation ==
+
+Because simple objects are usually used for compositions and decorations, majority of simple object interaction is done through EDEN editor. Users create there their compositions and convert them into simple objects and are done.
+
+In cases where users need to create simple objects during mission runtime or want to create their own scripts / systems / modules facilitating simple objects there are script commands and supplementing function framework available.
+
+=== Scripting Commands ===
+
+Because of the limited functionality of the simple objects some of the object related scripting commands do not work for Simple Objects, even more so for Super-Simple Objects.
+
+==== createSimpleObject ====
+<sqf>createSimpleObject [shapeName, positionWorld];</sqf>
+* Creates Super-Simple Object at given world position.
+
+<sqf>createSimpleObject [objClassName, positionASL];</sqf>
+* Creates Simple Object at given ASL position.
+
+* Wiki: [[createSimpleObject]]
+
+==== allSimpleObjects ====
+<sqf>allSimpleObjects [className1, className2 /*, etc */];</sqf>
+* Returns Simple Objects directly matching one of the provided classnames.
+* Use [] to get all Simple and Super-Simple Objects.
+* Wiki: [[allSimpleObjects]]
+
+=== Scripted Framework ===
+
+There are 4 scripted functions that supplement and improve simple objects functionality and interaction.
+
+==== BIS_fnc_simpleObjectData ====
+* Get complete data needed for Simple Object or even auto-adjusted Super-Simple Object creation.
+* Data can be either retrieved from config or read from the simulated object.
+* Wiki: [[BIS_fnc_simpleObjectData]]
+
+==== BIS_fnc_createSimpleObject ====
+* Creates Simple or Super-Simple Object.
+* There are more options for different needs and situations then the createSimpleObject provide; e.g. function is capable to create auto-adjusted Super-Simple Object (best performance without need for manual adjustments).
+* Wiki: [[BIS_fnc_createSimpleObject]]
+
+==== BIS_fnc_adjustSimpleObject ====
+* Adjust simple object vertical position, animations and selection according to provided data.
+* Function is called by BIS_fnc_createSimpleObject and BIS_fnc_replaceWithSimpleObject, but can also be called from outside to (re)adjust existing simple object.
+* Wiki: [[BIS_fnc_adjustSimpleObject]]
+
+==== BIS_fnc_replaceWithSimpleObject ====
+* Replaces object with simple object 1:1. Object must not contain any crew and must be placed on ground.
+* Function is handy and very straight forward in usage, but same cannot be said for its functionality where existing object is deleted and replaced by simple object. In MP it is better to directly create the simple object, if possible, to avoid the unneeded network traffic.
+* Wiki: [[BIS_fnc_replaceWithSimpleObject]]
+
+
+{{GameCategory|arma3|Editing}}

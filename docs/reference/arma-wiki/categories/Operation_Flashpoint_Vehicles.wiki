@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Vehicles
+// revision: 183865 (2021-01-05T21:20:12Z)
+// export sha1: 8td18uos97f7zrvsw3vc58wxoz17ft2
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|ofp}}

@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/switchAction
+// revision: 323082 (2022-06-28T21:43:13Z)
+// export sha1: 7k4kns3rh4svqy3kbfk7zhrxyag9cxn
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Command Group: Unit Control | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Unit Control
+
+|gr2= Animations
+
+|descr= When used on a person, the given action is started immediately (there is no transition). Use switchmove "" to switch back to the default movement if there is no transition back, otherwise the person may be stuck.
+
+|s1= soldier [[switchAction]] action
+
+|p1= soldier: [[Object]]
+
+|p2= action: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>soldierOne switchAction "SitDown";</sqf>
+
+|seealso= [[playAction]] [[playActionNow]] [[switchMove]]
+}}

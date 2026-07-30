@@ -1,0 +1,2060 @@
+// source: https://community.bistudio.com/wiki/Armaverse_Timeline
+// revision: 376910 (2025-12-27T01:49:22Z)
+// export sha1: cl2m09wrbg1ts0po69juo5677y9btzs
+// categories: Category:Armaverse
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOEDITSECTION__
+__NOTOC__
+{| class="valign-top" style="width: 100%"
+|
+== Timeline Overview ==
+{| class="wikitable sortable"
+|- style="border-bottom: solid 2px #000"
+! Project&nbsp;<!-- space for the sort arrow -->
+! Y&nbsp;/&nbsp;M&nbsp;/&nbsp;D
+! class="unsortable" | Event
+{{Timeline_Item
+|arma0|
+|1982|08&nbsp;/&nbsp;21|
+<h3>[[#Resistance|{{ofp}} - Resistance]]</h3>
+}}
+{{Timeline_Item
+|arma0|
+|1985|05&nbsp;/&nbsp;05|
+<h3>[[#Cold War Crisis|{{ofp}}]]</h3>
+}}
+{{Timeline_Item
+|armaR|
+|1989||
+<h3>[[#Everon Conflict|{{armaR}}]]</h3>
+}}
+{{Timeline_Item
+|arma1|
+|2006|06&nbsp;/&nbsp;10|
+<h3>[[#Sahrani Conflict|{{arma1}}]]</h3>
+}}
+{{Timeline_Item
+|arma1|
+|2007|10&nbsp;/&nbsp;28|
+<h3>[[#Queen's Gambit|{{Name|arma1qg}}]]</h3>
+}}
+{{Timeline_Item
+|arma2|
+|2009|10&nbsp;/&nbsp;08|
+<h3>[[#Operation Harvest Red|{{arma2}}]]</h3>
+}}
+{{Timeline_Item
+|arma2acr|
+|2010|08&nbsp;/&nbsp;15|
+<h3>{{Name|arma2acr}}</h3>
+}}
+{{Timeline_Item
+|arma2oa|
+|2012|06&nbsp;/&nbsp;01|
+<h3>[[#Operation Arrowhead|{{arma2oa}}]]</h3>
+}}
+{{Timeline_Item
+|arma2baf|
+|2012|07&nbsp;/&nbsp;19|
+<h3>[[#Operation Crimson Lance|{{Name|arma2baf}}]]</h3>
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|06&nbsp;/&nbsp;29|
+<h3>[[#Operation Black Gauntlet|{{Name|arma2pmc}}]]</h3>
+}}
+{{Timeline_Item
+|tkoh|
+|2013|08&nbsp;/&nbsp;05|
+<h3>[[#Take On Helicopters 2|{{tkoh}}]]</h3>
+}}
+{{Timeline_Item
+|arma3tacops|
+|2026 &amp; 2035||
+<h3>[[#Beyond Hope|{{arma3}} Tac-Ops]]</h3>
+}}
+{{Timeline_Item
+|arma3|
+|2034|05&nbsp;/&nbsp;10|
+<h3>[[#Altis Incident Prologue|{{arma3}} Bootcamp]]</h3>
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;07|
+<h3>[[#East Wind|{{arma3}}]]</h3>
+}}
+{{Timeline_Item
+|arma3tanks|
+|2035|08&nbsp;/&nbsp;08|
+<h3>[[#East Wind|{{Name|arma3tanks}}]]</h3>
+}}
+{{Timeline_Item
+|arma3apex|
+|2035|08&nbsp;/&nbsp;11|
+<h3>[[#Apex Protocol|{{Name|arma3apex}}]]</h3>
+}}
+{{Timeline_Item
+|arma3lawsofwar|
+|2035|08&nbsp;/&nbsp;17|
+<h3>[[#Remnants of War|{{Name|arma3lawsofwar}}]]</h3>
+}}
+{{Timeline_Item
+|arma3contact|
+|2039||
+<h3 style{{=}}"display: inline; font-style: italic">[[#First Contact|{{Name|arma3contact}}]]</h3> <small>('''not''' canon)</small>
+}}
+|}
+
+| <!-- ############################## column separation ############################## -->
+
+== Legend ==
+{| class="wikitable"
+|- style="border-bottom: 2px solid #000"
+! Image
+! Description
+|-
+| style="background-color: #848484" | {{Icon|arma0}}
+| style="padding-left: 1em" | {{GameCategory|arma0|link= y}}
+|-
+| style="background-color: #848484" | {{Icon|arma1}}
+| style="padding-left: 1em" | {{GameCategory|arma1|link= y}}
+|-
+| style="background-color: #848484" | {{Icon|arma2}}
+| style="padding-left: 1em" | {{GameCategory|arma2|link= y}}
+|-
+| style="background-color: #848484" | {{Icon|arma2oa}}
+| style="padding-left: 1em" | {{GameCategory|arma2oa|link= y}}
+|-
+| style="background-color: #848484" | {{Icon|arma2baf}}
+| style="padding-left: 1em" | [[{{Name|arma2baf}}]]
+|-
+| style="background-color: #848484" | {{Icon|arma2pmc}}
+| style="padding-left: 1em" | [[{{Name|arma2pmc}}]]
+|-
+| style="background-color: #848484" | {{Icon|arma2acr}}
+| style="padding-left: 1em" | [[{{Name|arma2acr}}]]
+|-
+| style="background-color: #848484" | {{Icon|arma3}}
+| style="padding-left: 1em" | {{GameCategory|arma3|link= y}}
+|-
+| style="background-color: #848484" | {{Icon|apex}}
+| style="padding-left: 1em" | [[Arma 3 Apex]]
+|-
+| style="background-color: #848484" | {{Icon|low}}
+| style="padding-left: 1em" | [[Arma 3 Laws of War]]
+|-
+| style="background-color: #848484" | {{Icon|tacops}}
+| style="padding-left: 1em" | [[Arma 3 Tac-Ops Mission Pack|Arma 3 Tac-Ops]]
+|-
+| style="background-color: #848484" | {{Icon|tanks}}
+| style="padding-left: 1em" | [[Arma 3 Tanks]]
+|-
+| style="background-color: #848484" | {{Icon|tkoh}}
+| style="padding-left: 1em" | {{GameCategory|tkoh|link= y}}
+|-
+| style="background-color: #848484" | {{Icon|aan}}
+| style="padding-left: 1em" | AAN World News
+|-
+| style="background-color: #848484" | {{Icon|person}}
+| style="padding-left: 1em" | Person
+|-
+| style="background-color: #848484;border-top:2px solid #ababab" | {{Icon|person}}
+| style="padding-left: 1em" | Person - first mention<br>(indicated by the grey line above the image)
+|-
+| style="background-color: #848484" | {{Icon|real}}
+| style="padding-left: 1em" | Real event
+|}
+|}
+
+
+
+{{Feature|spoiler}}
+== Timeline ==
+{| class="wikitable sortable"
+|- style="border-bottom: 2px solid #000"
+! Project&nbsp;
+! Y&nbsp;/&nbsp;M&nbsp;/&nbsp;D
+! class="unsortable" | Event
+{{Timeline_Item
+|arma2|Chernarus
+|1917|11&nbsp;/&nbsp;07|
+Chernarus becomes part of an autonomous republic during the Russian Revolution.
+|start=2}}
+{{Timeline_Item
+|person|Guba
+|1920|approx.|
+[[Operation Flashpoint: Main Characters#General Guba|Aleksei Vasilii Guba]] is born.
+|start=2}}
+{{Timeline_Item
+|person|Troska
+|1940|approx.|
+[[Operation Flashpoint: Resistance: Main Characters#Victor Troska|Victor Troska]] is born in [[Nogova]].
+|start=2}}
+{{Timeline_Item
+|person|Gastovski
+|1945|approx.|
+[[Operation Flashpoint: Main Characters#James Gastovski|James Ian Gastovski]] is born.
+|start=2}}
+{{Timeline_Item
+|person|Guba
+|1948||
+Aleksei Vasilii Guba becomes Commandant in one of Stalin’s Siberian Gulags, where he earns the nickname of 'The Dentist'.
+}}
+{{Timeline_Item
+|real|
+|1955|11&nbsp;/&nbsp;01|
+{{Link|https://en.wikipedia.org/wiki/Vietnam_war|Vietnam War}} starts.
+}}
+{{Timeline_Item
+|person|Troska
+|1962|approx.|
+With the Communist regime in Nogova growing stronger, Victor Troska leaves the island as a stowaway on board a cargo ship.
+}}
+{{Timeline_Item
+|person|Armstrong
+|1965|approx.|
+David Armstrong is born.
+|start=2}}
+{{Timeline_Item
+|person|Lopotev
+|1965|07&nbsp;/&nbsp;24|
+Andrey Lopotev is born in Solnichniy, [[Chernarus]] (then CSSR).
+|start=2}}
+{{Timeline_Item
+|person|Troska
+|1970|approx.|
+Victor Troska, serving in the British Special Forces, meets Lt James Gastovski.
+}}
+{{Timeline_Item
+|arma3lawsofwar|IDAP
+|1973|approx.|
+International Development & Aid Project (IDAP) has been formed.
+}}
+{{Timeline_Item
+|person|Troska
+|1974||
+Anti-government demonstrations in Nogova. With the help of Victor Troska, pro-Soviet regime is overthrown. He becomes a police chief in the newly established republic.
+}}
+{{Timeline_Item
+|person|Razor
+|1974|04&nbsp;/&nbsp;12|
+{{Link|link= http://www.arma2.com/arma-2-characters/1stsgt-patrick-8-ballballer-miles|text= Patrick '8-Ball' Miles}} is born in Sacramento, CA.
+|start=2}}
+{{Timeline_Item
+|person|Razor
+|1974|06&nbsp;/&nbsp;15|
+{{Link|link= http://www.arma2.com/arma-2-characters/ssgt-randolph-ice-cold-sykes|text= Randolph 'Ice Cold' Sykes}} is born in San Antonio, TX.
+}}
+{{Timeline_Item
+|real|
+|1975|05&nbsp;/&nbsp;15|
+Vietnam War ends.
+}}
+{{Timeline_Item
+|person|Reynolds
+|1976|02&nbsp;/&nbsp;24|
+{{Link|link= http://www.arma2.com/arma-2-pmc-characters/mark-reynolds|text= Mark Reynolds}} is born in Hartford, CT.
+|start=2}}
+{{Timeline_Item
+|person|Razor
+|1976|12&nbsp;/&nbsp;09|
+{{Link|link= http://www.arma2.com/arma-2-characters/msgt-matthew-coops-cooper|text= Matthew 'Coops' Cooper}} is born in New York, NY.
+}}
+{{Timeline_Item
+|person|Razor
+|1977|02&nbsp;/&nbsp;08|
+{{Link|link= http://www.arma2.com/arma-2-characters/sgt-chad-roborobot-rodriguez|text= Chad 'Robo' Rodriguez}} is born.
+}}
+{{Timeline_Item
+|person|Tanny
+|1977|04&nbsp;/&nbsp;14|
+{{Link|link= http://www.arma2.com/arma-2-pmc-characters/tanny-radcliffe|text= Frank 'Tanny' Radcliffe}} is born in Falkirk, Scotland.
+|start=2}}
+{{Timeline_Item
+|person|Razor
+|1978|02&nbsp;/&nbsp;21|
+{{Link|link= http://www.arma2.com/arma-2-characters/ssgt-brian-scarlet-ohara|text= Brian 'Scarlet' O'Hara}} is born in San Francisco, CA.
+}}
+{{Timeline_Item
+|person|Pierce
+|1978|05&nbsp;/&nbsp;08|
+{{Link|link= http://www.arma2.com/arma-2-oa-characters/cpt-garry-pierce-callsign-qrenegade-oneq|text= Garry Pierce}} is born.
+|start=2}}
+{{Timeline_Item
+|person|Troska
+|1981||
+Victor Troska becomes a Judge at the Nogovan court.
+}}
+{{Timeline_Item
+|person|Larkin
+|1981|06&nbsp;/&nbsp;09|
+{{Link|http://takeonthegame.com/about-the-game/story/joseph-larkin/|Joe Larkin}} is born in {{Link|http://takeonthegame.com/about-the-game/environment/seattle/|Seattle, WA}}.
+|start=2}}
+{{Timeline_Item
+|person|Frost
+|1982|05&nbsp;/&nbsp;05|
+{{Link|link= http://www.arma2.com/arma-2-pmc-characters/a2pmc-brian-frost|text= Brian Frost}} is born in Duxford, England.
+|start=2}}
+<!--- RESISTANCE ----------------------------------------------------------------------------------------------->
+{{
+Timeline_Item
+|arma0|
+|1982|08|
+<h3>Resistance</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma0|
+|1982|08&nbsp;/&nbsp;21|
+<h4>Invasion</h4>
+After years of regime liberalization in Nogova, Vice-Premier Ostrovsky of the Nogova Communist party resigns and leaves for Moscow to meet with the General Secretary of the Soviet Communist party, Leonid Brezhnev. Result of this meeting is the dispatching of Soviet forces stationed on the nearby island of Kolguyev, to Nogova. Led by Col. Aleksei Guba, their official mission is to establish Socialist order and prevent the country from devolving into a capitalist regime of corruption and unemployment.
+
+Victor Troska manages to flee from Lipany, Nogovan capital, and hides at home.
+}}
+{{Timeline_Item
+|arma0|
+|1982|08&nbsp;/&nbsp;22|
+<h4>Crossroad</h4>
+Resistance leaders fail to draft Victor Troska to their cause, but the next morning, wounded resistance fighters appear at Troska's home and hide in his barn. Soviet forces searching for them arrive shortly afterwards and give Troska no choice other than to defend himself. After neutralizing all Soviet troops, Troska heads to the main Resistance base.
+}}
+{{Timeline_Item
+|arma0|
+|1982|08&nbsp;/&nbsp;22|
+<h4>No Turning Back</h4>
+Resistance camp is under Soviet attack and Guerrilla fighters are forced to retreat. Resistance leaders execute the Kappa plan and lure incoming Soviet forces into minefields, slowing them down.
+}}
+{{Timeline_Item
+|arma0|
+|1982|08&nbsp;/&nbsp;22|
+<h4>Ammo Low</h4>
+Victor Troska leads an ambush on a small supply convoy and steals as many weapons and as much ammo as possible.
+}}
+{{Timeline_Item
+|arma0|
+|1982|08&nbsp;/&nbsp;23|
+<h4>Scrap</h4>
+Small task force lead by Victor Troska attacks the tank base in Trosky and steals armored vehicles stationed there.
+}}
+{{Timeline_Item
+|arma0|
+|1982|08&nbsp;/&nbsp;24|
+<h4>Field Exercise</h4>
+With stolen vehicles, Resistance army attacks the city of Modrava and neutralizes all forces there. At this point, Soviet leadership stops viewing resistance as unorganized guerrillas and starts considering them to be a serious threat.
+}}
+{{Timeline_Item
+|arma0|
+|1982|08&nbsp;/&nbsp;28|
+<h4>First Strike</h4>
+Large Soviet tank group is sent towards Modrava to crush the resistance, but Victor Troska's armored group manages to stop them in a pass south of the city.
+}}
+{{Timeline_Item
+|arma0|
+|1982|09&nbsp;/&nbsp;02|
+<h4>Hostages</h4>
+Victor Troska's infantry squad rescues civilian hostages in village of Nova Ves.
+}}
+{{Timeline_Item
+|arma0|
+|1982|09&nbsp;/&nbsp;03|
+<h4>Information</h4>
+USA launches an operation to support Nogova anti-Communist resistance. Maj. James Gastovski is in charge. He meets with Victor Troska at an undisclosed location on Nogova and together they negotiate further resistance efforts.
+}}
+{{Timeline_Item
+|arma0|
+|1982|09&nbsp;/&nbsp;04|
+<h4>Occupation</h4>
+Resistance fights launches attack against Soviet base in ruins north of the city of Mirov.
+}}
+{{Timeline_Item
+|arma0|
+|1982|09&nbsp;/&nbsp;04|
+<h4>Counterattack</h4>
+Resistance fighters defend captured base, but incoming Soviet combat helicopters force them to retreat.
+}}
+{{Timeline_Item
+|arma0|
+|1982|09&nbsp;/&nbsp;06|
+<h4>Contraband</h4>
+During nighttime, The USA sends first major weapon shipment and Victor Troska transports it back to the resistance base.}}
+{{Timeline_Item
+|arma0|
+|1982|09&nbsp;/&nbsp;08|
+<h4>Reckoning</h4>
+Task force led by Victor Troska ambushes Soviet helicopter base and destroys numerous gunships.
+}}
+{{Timeline_Item
+|arma0|
+|1982|09&nbsp;/&nbsp;19|
+<h4>Fireworks</h4>
+Resistance fighters blow up the strategic bridge in central Nogova, practically dividing the island in half. Soviet logistics is crippled.
+}}
+{{Timeline_Item
+|arma0|
+|1982|09&nbsp;/&nbsp;21|
+<h4>The Pass</h4>
+Since the bridge is destroyed, Soviets are sending supply convoys through the mountains on the northern part of the island. Resistance fighters attack one of these convoys and destroys it completely.
+}}
+{{Timeline_Item
+|arma0|
+|1982|09&nbsp;/&nbsp;22|
+<h4>Hunting</h4>
+After a long and exhausting battle, Nogovan capital Lipany is liberated.
+}}
+{{Timeline_Item
+|arma0|
+|1982|09&nbsp;/&nbsp;24|
+<h4>Trap</h4>
+Pretty much all resistance forces participate in the attack on Petrovice, Nogova's largest city. Maj. James Gastovski destroys the Soviet communication center, disrupting enemy radio operations for several minutes. Offensive is successful and shortly afterwards, the whole of Nogova apart from the airport is in resistance hands.
+}}
+{{Timeline_Item
+|arma0|
+|1982|09&nbsp;/&nbsp;25|
+<h4>Fire Fight</h4>
+As a last resort, Col. Guba plans to level the whole island using his heavy bombers which arrived from nearby Kolgujev.
+
+With Malden NATO forces lead by Gen. Williams refusing to send support, Maj. James Gastovski's team tries to hastily infiltrate the airport and destroy the bombers before they can takeoff. However, a small spec-op team is no match for the heavy Soviet defenses and the retreating Gastovski is the only survivor. Victor Troska takes explosives from him and heads to the airport to finish the mission.
+
+Meanwhile, Col. Blake persuades Gen. Williams to send help. As a result, a small army group is dispatched to Nogova to help the local resistance.
+
+Victor Troska manages to destroy all the bombers, but fails to retreat safely and is hunted down by Col. Guba himself.
+
+Shortly afterwards, the US Army arrives at Nogova and crushes the invasion forces. Soviet Army retreats from the country.
+}}
+{{Timeline_Item
+|person|Troska
+|1982|09&nbsp;/&nbsp;25|
+Victor Troska dies. His body is never found.
+}}
+{{Timeline_Item
+|person|Gastovski
+|1982|10&nbsp;/&nbsp;12|
+James Gastovski sends a letter to Col. Blake, the newly appointed leader of the Malden NATO forces, with his resignation. He then moves to Malden and starts Pegasus Air Taxi.
+}}
+{{Timeline_Item
+|tkoh|
+|1983||[[File:Logo LarkinAviation.png|100px|right]]
+{{Link|http://takeonthegame.com/lark-rising/larkin-aviation/|Larkin Aviation}} is founded by Harry Larkin.
+}}
+{{Timeline_Item
+|person|Dixon
+|1983|07&nbsp;/&nbsp;04|
+{{Link|link= http://www.arma2.com/arma-2-pmc-characters/patrick-dixon|text= Patrick Dixon}} is born in Anna Bay, Australia.
+|start=2}}
+{{Timeline_Item
+|person|MacDade
+|1983|07&nbsp;/&nbsp;11|
+Nathan MacDade is born.
+|start=2}}
+<!--- COLD WAR CRISIS ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|real|
+|1985|03&nbsp;/&nbsp;11|
+Mikhail Gorbachev becomes General Secretary of the Communist Party of the Soviet Union.
+}}
+{{Timeline_Item
+|arma0|
+|1985|04|<h3>Cold War Crisis</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma0|
+|1985|04&nbsp;/&nbsp;04|
+Michail Gorbachev announces Glasnost and Perestroika reforms, welcomed by the West. However, Communist hardliners in his own government are unsympathetic to his cause and are ready to do anything to stop these reforms.
+}}
+{{Timeline_Item
+|arma0|
+|1985|04&nbsp;/&nbsp;04|
+<h4>Training</h4>
+NATO soldiers at the Malden base are going through soldier training.
+}}
+{{Timeline_Item
+|person|Guba
+|1985|05&nbsp;/&nbsp;05|
+General Aleksei Vasilii Guba with his loyal army forces invades the island of [[Everon]] to spark conflict between two superpowers and increase the power of Communist ideologists.
+}}
+{{Timeline_Item
+|arma0|
+|1985|05&nbsp;/&nbsp;08|
+<h4>Flashpoint</h4>
+As a response to recent hostilities, NATO forces invade the Everon city of Morton.
+}}
+{{Timeline_Item
+|arma0|
+|1985|05&nbsp;/&nbsp;08|
+<h4>Combined Arms</h4>
+NATO tank group attacks the village of Regine, south of Morton, to be repelled by enemy heavy armor.
+}}
+{{Timeline_Item
+|arma0|
+|1985|05&nbsp;/&nbsp;10|
+<h4>Camping</h4>
+Small NATO infantry squad establishes forward camp near Le Moule and secures its surroundings.
+}}
+{{Timeline_Item
+|arma0|
+|1985|05&nbsp;/&nbsp;10|
+<h4>Alert</h4>
+NATO officer is ambushed between Morton and Le Moule. NATO infantry squad manages to neutralize the attackers, but are too late to save the officer's life.
+}}
+{{Timeline_Item
+|arma0|
+|1985|05&nbsp;/&nbsp;13|
+<h4>Montignac Must Fall</h4>
+NATO forces pushes toward the city of Montignac. Order to evacuate Everon arrives shortly after the city is clear, and NATO forces retreat back to the sea.
+}}
+{{Timeline_Item
+|arma0|
+|1985|05&nbsp;/&nbsp;13|
+<h4>After Montignac</h4>
+NATO forces successfully leave Everon.
+}}
+{{Timeline_Item
+|person|Armstrong
+|1985|05&nbsp;/&nbsp;13|
+Cpl David Armstrong fails to reach the evac point and is left behind on Everon.
+}}
+{{Timeline_Item
+|arma0|
+|1985|05&nbsp;/&nbsp;14|
+<h4>Rescue</h4>
+Cpl David Armstrong joins Everon's resistance group, Freedom and Independence Army (FIA). Together they rescue captured civilians in the village of Levie.
+}}
+{{Timeline_Item
+|arma0|
+|1985|05&nbsp;/&nbsp;14|
+<h4>Undercover</h4>
+FIA group is heading south to their base of operations in a castle above St. Pierre.
+}}
+{{Timeline_Item
+|person|Armstrong
+|1985|05&nbsp;/&nbsp;14|
+With local resistance help, Cpl David Armstrong leaves the island of Everon and joins his forces on [[Malden]].
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;01|
+<h4>Night Patrol</h4>
+Cpl David Armstrong successfully neutralizes enemy commandos trying to disable AAA defenses on Malden.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;02|
+<h4>Hold Malden</h4>
+Guba's forces invade Malden, NATO defenders retreats from shore.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;04|
+<h4>Defender</h4>
+Small NATO task force prepares an ambush in central Malden and disables enemy heavy armor.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;04|
+<h4>Tank Training</h4>
+Robert Hammer undergoes final stage of his training before his first combat action.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;05|
+<h4>Battle Of Houdan</h4>
+NATO tank group repels the enemy attack against the city of Houdan.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;06|
+<h4>Interdiction</h4>
+In the early morning, Maj. James Gastovski's black op team disables enemy tanks.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;06|
+<h4>Spearhead</h4>
+NATO tank group successfully defends village of Lolise against enemy attack.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;08|
+<h4>Pathfinder</h4>
+NATO infantry groups clears AAA defense around St. Marie and then continues to the city with support of combat helicopters.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;08|
+<h4>Tank Rally</h4>
+NATO armored counter-offensive heads south and liberates large portion of Malden.
+}}
+{{Timeline_Item
+|person|Armstrong
+|1985|06&nbsp;/&nbsp;10|
+Cpl David Armstrong, freshly promoted to Lieutenant, meets Maj. James Gastovski. Together they learn about the ultimatum set by Gen. Aleksei Guba to NATO forces
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;11|
+<h4>Unfinished Business</h4>
+Lt. David Armstrong, protected by Maj. James Gastovski, returns undercover to Everon to negotiate a deal with the FIA.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;13|
+<h4>Taking Command</h4>
+During his first officer's assignment, Lt. David Armstrong collects his squad and defends village of Goisse.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;13|
+<h4>Scouting</h4>
+Lt. David Armstrong is sent to recon the valley north of Goisse to locate the base from which the attack on the village originated from.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;14|
+<h4>Turning the Tide</h4>
+Lt. David Armstrong leads offensive against enemy camp north of Goisse.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;16|
+<h4>Saboteur</h4>
+In preparation of upcoming Everon invasion, Maj. James Gastovski infiltrates enemy tanks base and sabotages all armored vehicles stationed there.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;18|
+<h4>Guardian</h4>
+Lt. David Armstrong leads important supply convoy to Malden's airport.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;20|
+<h4>Return To Eden</h4>
+NATO forces return to Everon, Lt. David Armstrong's infantry squad is first to land.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;20|
+<h4>Hind Attack</h4>
+Maj. James Gastovski infiltrates field helicopter base and destroys all vehicles there.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;21|
+<h4>Rolling Thunder</h4>
+NATO tank platoons storm northern Everon and neutralize all hostile forces.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;23|
+<h4>Airborne</h4>
+Cpt. Sam Nichols transports infantry squads during fast evolving Everon offensive.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;24|
+<h4>Air Superiority</h4>
+Cpt. Sam Nichols neutralizes enemy supply convoy heading from Morton to Le Moule.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;26|
+<h4>Recon</h4>
+Maj. James Gastovski's squad is deployed on [[Kolgujev]] and locates AAA defense posts.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;27|
+<h4>Killdozer</h4>
+NATO tank group rolls through central Everon and clears the way for infantry groups.
+}}
+{{Timeline_Item
+|arma0|
+|1985|06&nbsp;/&nbsp;27|
+<h4>Air Assault</h4>
+After launching a joint offensive against last enemy's stronghold in city of St. Pierre, NATO forces liberate Everon and ready themselves for a final strike on Kolgujev.
+}}
+{{Timeline_Item
+|arma0|
+|1985|07&nbsp;/&nbsp;02|
+<h4>Wake-up Call</h4>
+Maj. James Gastovski's squad gets a green light and neutralizes three AAA sites on Kolgujev.
+}}
+{{Timeline_Item
+|arma0|
+|1985|07&nbsp;/&nbsp;02|
+<h4>Planes Start</h4>
+Cpt. Sam Nichols takes off in his A-10 and heads to Kolgujev.
+}}
+{{Timeline_Item
+|arma0|
+|1985|07&nbsp;/&nbsp;02|
+<h4>Maverick</h4>
+Cpt. Sam Nichols arrives on Kolgujev and clears an armored force from the shoreline. Shortly before NATO ground forces arrive, his plane is hit and he ejects behind enemy lines.
+}}
+{{Timeline_Item
+|arma0|
+|1985|07&nbsp;/&nbsp;02|
+<h4>Counter Strike</h4>
+Lt. David Armstrong leads the offensive against an enemy base and captures it.
+}}
+{{Timeline_Item
+|arma0|
+|1985|07&nbsp;/&nbsp;03|
+<h4>Escape</h4>
+Cpt. Sam Nichols, being held as a POW, escapes from captivity shortly before Guba's orders to execute him arrive.
+}}
+{{Timeline_Item
+|arma0|
+|1985|07&nbsp;/&nbsp;03|
+USSR begins a full-scale mobilization, allegedly as a military exercise.
+}}
+{{Timeline_Item
+|arma0|
+|1985|07&nbsp;/&nbsp;07|
+<h4>Incursion</h4>
+Maj. James Gastovski infiltrates Guba's heavily guarded main base and steals important documents. According to the documents, Gen. Guba has managed to obtain a SCUD missile with nuclear warhead and plans to launch it on Everon to demonstrate Soviet power.
+}}
+{{Timeline_Item
+|arma0|
+|1985|07&nbsp;/&nbsp;07|
+<h4>Search And Destroy</h4>
+As an immediate response to latest Intel. NATO task force led by Maj. James Gastovski searches for SCUD launcher in central Kolgujev and manages to destroy it shortly before launch preparations are finished.
+}}
+{{Timeline_Item
+|arma0|
+|1985|07&nbsp;/&nbsp;10|
+<h4>Red Dawn</h4>
+After unsuccessful launch of SCUD missile, Gen. Guba decides to leave the island and heads to the harbor where his evac ship is prepared. Against all odds, Maj. James Gastovski manages to track him down and capture him, destroying a second SCUD launcher in the process. Remaining rogue Soviet Forces capitulate immediately afterwards.
+
+Cold War Crisis ends.
+}}
+{{Timeline_Item
+|person|Guba
+|1985|07&nbsp;/&nbsp;10|
+Gen. Aleksei Vasilii Guba is captured by Maj. James Gastovski. His further fate is unknown.
+}}
+{{Timeline_Item
+|person|Asano
+|1987|06&nbsp;/&nbsp;10|
+{{Link|link= http://www.arma2.com/arma-2-pmc-characters/henry-asano|text= Henry Asano}} is born in Los Angeles, CA.
+|start=2}}
+{{Timeline_Item
+|person|Larkin
+|1987|08&nbsp;/&nbsp;25|
+{{Link|http://takeonthegame.com/about-the-game/story/tom-larkin/|Tom Larkin}} is born in Seattle, WA.
+}}
+{{Timeline_Item
+|arma2oa|
+|1988||
+Coup d'état in {{Link| http://www.arma2.com/arma-2-oa-takistan|Takistan}}. Following the fall of the incumbent monarchy and second exile of the royal family, Socialist and Royalist groups fight for supremacy in Takistan. Each faction is backed by world-leading superpowers (Royalists by the USA, Socialists by the USSR).
+}}
+{{Timeline_Item
+|person|Adams
+|1988|approx.|
+Thomas Adams is born.
+}}
+{{Timeline_Item
+|armaR|
+|1989|approx.|
+<h3>Everon Conflict</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|real|
+|1990|08&nbsp;/&nbsp;02|
+{{Link|https://en.wikipedia.org/wiki/Gulf_War|Gulf War}} starts.
+}}
+{{Timeline_Item
+|real|
+|1991|02&nbsp;/&nbsp;28|
+Gulf War ends.
+}}
+{{Timeline_Item
+|arma2|Chernarus
+|1991|12&nbsp;/&nbsp;26|
+Chernarus gains its independence after the dissolution of the Soviet Union.
+|start=2}}
+{{Timeline_Item
+|arma0|
+|1991|05|
+<h4>Status Quo</h4>
+Buddies from 1985 conflict - James Gastovski, David Armstrong, Sam Nichols and Robert Hammer - meet back on Everon after many years.
+}}
+{{Timeline_Item
+|arma2oa|
+|1992||
+Reinforced by open Soviet military support and large shipments of Eastern weaponry, {{Link|link= http://www.arma2.com/arma-2-oa-factions/a-2-oa-takistanian-military-forces|text= Takistani Socialists}} prevail over the Royalists. The supply of crude oil at hand is quickly exploited to expand and strengthen the Takistani state police and armed forces. Scud-B ballistic missiles, missile carriers, and the covert research and development of chemical and nuclear weapons contributes to the proliferation of military stockpiles with the aim of maximizing Takistani military might – and, by extension – tightening the grip of Soviet rule.
+}}
+{{Timeline_Item
+|person|Lopotev
+|1997||
+Andrey Lopotev forms the 'Working Man's Defence Alliance' pseudo-union along with other employees of the Solnichniy Quarry Corporation.
+}}
+{{Timeline_Item
+|arma2pmc|
+|1998|01|[[File:Logo BlackElement.jpg|140px|right]]
+'''Black Element''' Private Military Company is founded.
+}}
+{{Timeline_Item
+|person|Reynolds
+|1998|05|
+Mark Reynolds graduates from an Ivy League college and is recruited by the Central Intelligence Agency.
+}}
+{{Timeline_Item
+|person|Lopotev
+|1999||[[File:Flag ChDKZ.jpg|thumb|100px|right|Flag of ChDKZ]]
+Andrey Lopotev organizes a violent protest over pay and conditions that leads to at least three deaths, unconfirmed injuries (figures vary from 10s to 100s) and a dozen prosecutions.
+
+Later he forms the {{Link|link= http://www.arma2.com/arma-2-factions/chernarussian-movement-of-the-red-sta|text= ChDKZ}} (Chedaki) along with several previous members of the Working Man's Defence Alliance. The party's main line is that of reintegration with the Russian Federation.
+}}
+{{Timeline_Item
+|arma2pmc|
+|1999|05&nbsp;/&nbsp;28|
+[[Takistan]] detonates its first nuclear bomb. Western diplomatic pressure forces it to stop its nuclear programme. Since their program is highly classified and Russia states it never supplied the country with any fissile materials, many analysts believe the country never had a nuclear bomb.
+}}
+{{Timeline_Item
+|person|Frost
+|2000|05|
+Brian Frost starts helicopter training supervised by his uncle, a professional pilot.
+}}
+{{Timeline_Item
+|person|Frost
+|2000|07|
+A few days after completing his helicopter training, Brian Frost's helicopter crashes during takeoff. Even while surviving with only a few scratches, his trust in helicopters is severely shaken.
+}}
+{{Timeline_Item
+|person|Frost
+|2000|11|
+Brian Frost enlists into the British Army.
+}}
+{{Timeline_Item
+|real|
+|2001|06&nbsp;/&nbsp;22|
+Documents about Cold War Crisis of 1985 are declassified. The world is shocked to learn how close to global flashpoint it was.
+}}
+{{Timeline_Item
+|real|
+|2001|09&nbsp;/&nbsp;11|
+{{Link|https://en.wikipedia.org/wiki/September_11_attacks|9/11}}
+}}
+{{Timeline_Item
+|real|
+|2001|10&nbsp;/&nbsp;07|
+{{Link|https://en.wikipedia.org/wiki/War_in_Afghanistan_(2001%E2%80%93present)|War in Afghanistan}} starts.
+}}
+{{Timeline_Item
+|arma1|
+|2002||[[File:Flag Sahrani.jpg|thumb|100px|right|Flag of Sahrani]]
+In aftermath of 9/11, a small US Army contingent is sent to the Atlantic island of [[Sahrani]] with the purpose of helping to train the army of the local pro-American monarchy and locating possible terrorist suspects who could use the country for its strategic position between America, Europe and Africa.
+
+As a longtime socialist regime with strong ties to the former Soviet Union, the Kingdom's Northern neighbor, the Democratic Republic of Sahrani, doesn't welcome the arrival of US troops much.
+}}
+{{Timeline_Item
+|person|
+|2003||
+Mark Reynolds joined the CIA.
+}}
+{{Timeline_Item
+|real|
+|2003|03&nbsp;/&nbsp;20|
+{{Link|https://en.wikipedia.org/wiki/Iraq_War|Iraq War}} starts.
+}}
+{{Timeline_Item
+|person|Frost
+|2003|04|
+Brian Frost is deployed in Iraq as part of Pegasus Company.
+}}
+{{Timeline_Item
+|person|Dixon
+|2003|09|
+Patrick Dixon joins Black Element.
+}}
+{{Timeline_Item
+|person|Asano
+|2004|07|
+Henry Asano enlists into the US Army.
+}}
+<!--- ARMED ASSAULT ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|arma1|
+|2006||
+As the situation in the Kingdom of South Sahrani has remained stable during recent years and the training of local forces is almost finished, US Army plans to leave the country in the following months.
+}}
+{{Timeline_Item
+|person|Porter
+|2006|03&nbsp;/&nbsp;02|
+William Porter {{Link|https://web.archive.org/web/20101204073228/http://www.armedassault.com/william/index.php?paged{{=}}6|starts}} {{Link|http://web.archive.org/web/20080401075137/http://www.armedassault.com/william/|blogging}} from Sahrani.
+|start=2}}
+{{Timeline_Item
+|person|Reynolds
+|2006|05|
+Mark Reynolds warns his superiors against a potential Sahrani Liberation Army (SLA) invasion into the Kingdom of South Sahrani. All his reports are ignored.
+}}
+{{Timeline_Item
+|arma1|
+|2006|06|
+<h3>Sahrani Conflict</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma1|
+|2006|06&nbsp;/&nbsp;10|
+<h4>Transport</h4>
+A few days after the official withdrawal of US Army troops, SLA invades the Kingdom of South Sahrani. Royal Army Corps Sahrani (RACS) are forced to retreat, and the few remaining US troops go with them.
+}}
+{{Timeline_Item
+|arma1|
+|2006|06&nbsp;/&nbsp;11|
+<h4>Beaten Dog</h4>
+SLA army proceeds to the city of Ortego, where it is slowed down by a mix of RACS and US forces.
+}}
+{{Timeline_Item
+|arma1|
+|2006|06&nbsp;/&nbsp;11|
+<h4>Dolores</h4>
+SLA armored forces move south towards coastal city of Dolores. In a desperate act of defense, RACS decides to destroy the bridges to cut the approaching enemy off. Even though the operation is successful and SLA forces are heavily hit, RACS has to retreat even further into its territory.
+}}
+{{Timeline_Item
+|arma1|
+|2006|06&nbsp;/&nbsp;11|
+<h4>Battle Of Somato</h4>
+US Army takes advantage of its technology and stages night attack at camping SLA forces in Southern Province.
+}}
+{{Timeline_Item
+|arma1|
+|2006|06&nbsp;/&nbsp;12|
+<h4>Dawn of Hope</h4>
+When the remains of RACS and US forces defend the last base on the Sahrani International Airport, United States Marine Corps (USMC) 27th Marine Expeditionary Unit (MEU) joins the battle, repelling SLA invasion back from the Kingdom.
+}}
+{{Timeline_Item
+|arma1|
+|2006|06&nbsp;/&nbsp;12|
+<h4>Reclaiming</h4>
+SLA is pushed away from the Kingdom of South Sahrani. After two days of conflict, the country is free again.
+}}
+{{Timeline_Item
+|arma1|
+|2006|06&nbsp;/&nbsp;14|
+<h4>Into Enemy Territory</h4>
+In order to restore peace in the region, USA decides to invade the Democratic Republic of Sahrani. RACS joins the offensive and both armies progress towards Bagango, the country's capital.
+}}
+{{Timeline_Item
+|arma1|
+|2006|06&nbsp;/&nbsp;15|
+<h4>Gryphons</h4>
+As main RACS forces are nearing Bagango, SLA launches majority of its remaining forces in one large counter-offensive. However, they are no match for US air superiority and are crushed after short battle.
+}}
+{{Timeline_Item
+|arma1|
+|2006|06&nbsp;/&nbsp;16|
+<h4>Blood, Sweat & Tears</h4>
+US forces open a new front by capturing a helicopter base in the Eastern part of the country.
+}}
+{{Timeline_Item
+|arma1|
+|2006|06&nbsp;/&nbsp;16|
+<h4>Final Countdown</h4>
+Bagango is encircled. A few SLA troops dressed like RACS infantry try to spread confusion amongst US forces, but their origin is quickly discovered and the offensive continues. Few hours later, Prime Minister Torrez is captured and the SLA capitulates.
+
+Sahrani Conflict ends.
+}}
+<!--- QUEEN'S GAMBIT ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|arma1|
+|2007|10|
+<h3>Queen's Gambit</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma1|
+|2006|10|
+King Jose of Sahrani and his son, Prince Orlando, die in helicopter crash. King's other child, Princess Isabella, becomes the Queen of Sahrani.
+}}
+{{Timeline_Item
+|arma1|
+|2007|10&nbsp;/&nbsp;28|
+<h4>Spy</h4>
+'''Black Element''' Private Military Contractors team (codenamed Royal Flush) arrives on Sahrani, hired by Queen Isabella Ximénez. Their job is to fight against growing anti-government resistance.
+}}
+{{Timeline_Item
+|arma1|
+|2007|10&nbsp;/&nbsp;29|
+<h4>Base</h4>
+Royal Flush team discovers that Prince Orlando is alive and leads the anti-government Guerrillas. They terminate their contract and sides with them.
+}}
+{{Timeline_Item
+|arma1|
+|2007|10&nbsp;/&nbsp;30|
+<h4>Camp</h4>
+Royal Flush team attack the government prison and liberate all political captives held there.
+}}
+{{Timeline_Item
+|arma1|
+|2007|10&nbsp;/&nbsp;30|
+<h4>Genocide</h4>
+Royal Flush team attacks another camp, liberating more of the Prince's supporters.
+}}
+{{Timeline_Item
+|arma1|
+|2007|10&nbsp;/&nbsp;31|
+<h4>Reality Show</h4>
+Prince Orlando is ready to go public, and the Royal Flush team clears a local TV station building in order to give the Prince the opportunity to speak to the nation.
+}}
+{{Timeline_Item
+|arma1|
+|2007|11&nbsp;/&nbsp;01|
+<h4>Meeting</h4>
+Royal Flush team fails to stop the Queen from luring her brother into a trap and killing him.
+}}
+{{Timeline_Item
+|arma1|
+|2007|11&nbsp;/&nbsp;01|
+<h4>Escape</h4>
+Surviving members of the Royal Flush team steal a plane on Sahrani Airport and flees the country. Black Element proclaims them rogue operators and denies any responsibility for their actions.
+
+Situation in the Kingdom of South Sahrani remains unchanged.
+}}
+<!--- ARMA 2 ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|aan|
+|2008|10&nbsp;/&nbsp;09|
+{{Link|http://www.youtube.com/watch?v&#x3d;jFa7bjEMSAc|US Marine Corps in Grozovia}}
+}}
+{{Timeline_Item
+|aan|
+|2008|10&nbsp;/&nbsp;27|
+{{Link|http://www.youtube.com/watch?v&#x3d;upWGjEAeCNo|Bombing in Chernogorsk leaves 6 dead}}
+}}
+{{Timeline_Item
+|aan|
+|2008|11&nbsp;/&nbsp;11|
+{{Link|link= http://www.arma2.com/arma-2-factions/national-party|text= National Party}} (NAPA) group, allegedly lead by mysterious Prizrak, {{Link|http://www.youtube.com/watch?v&#x3d;sDXoQvn8R4w|burns down ChDKZ warehouse}}
+}}
+{{Timeline_Item
+|person|Reynolds
+|2009|03|
+Mark Reynolds arrives in Chernarus with objective to find Aslan Radayev, international weapons dealer and major supplier for ChDKZ
+}}
+{{Timeline_Item
+|aan|
+|2009|07&nbsp;/&nbsp;27|
+{{Link|http://www.youtube.com/watch?v&#x3d;lMVDD7CTTFI|ChDKZ groups engage in skirmishes with Chernarussian Defence Forces}}, but lack of strong leadership leaves their efforts unsuccessful.
+}}
+{{Timeline_Item
+|arma2|
+|2009|09|[[File:Chernarus flag.jpg|thumb|right|Flag of Chernarus]]
+'''September Crisis'''
+
+{{Link|link= http://www.arma2.com/arma-2-factions/chernarussian-movement-of-the-red-sta|text= ChDKZ}} (Chedaki) masses its forces on the coast to take control of the most developed part of the country and gain access to harbors, trade routes etc. This effort is coordinated by three warlords and is largely successful. Chedaki seizes the majority of {{Link|link= http://www.arma2.com/arma-2-chernarus|text= Chernarus}} including Chernogorsk, the capital of South Zagoria.
+
+After negotiations to join Russia result in dismissal by Moscow, Chedaki executes Alexander Baranov, the prime minister of Chernarus, and declares the nation the Chernarussian Socialistic Republic.
+
+Part of the Chernarussian government manages to find a way off the island into exile abroad and insist they are still the only legitimate government of the country, asking western countries for help.
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;03|
+{{Link|http://aan.moricky.com/en/europe/1-chernarussian-pm-executed.html|Chernarussian PM Executed}}
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;04|
+{{Link|http://aan.moricky.com/en/europe/2-marines-en-route-to-green-sea.html|Marines En Route to Green Sea}}
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;06|
+{{Link|http://aan.moricky.com/en/europe/3-chernarussian-crisis-intensifies.html|Chernarussian Crisis Intensifies}}
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;07|
+{{Link|http://aan.moricky.com/en/europe/4-russians-call-emergency-un-meeting.html|Russians call emergency UN meeting}}
+}}
+{{Timeline_Item
+|arma2|
+|2009|10|
+<h3>Operation Harvest Red</h3>
+|LightSteelBlue}}
+{{Timeline_Item
+|arma2|
+|2009|10&nbsp;/&nbsp;08|
+<h4>First To Fight</h4>
+USMC 27th MEU is sent to Chernarus to prevent civilian casualties in the ongoing conflict between Chedaki and remnants of {{Link|link= http://www.arma2.com/arma-2-factions/chernarussian-defence-forces|text= Chernarussian Defence Forces}} (CDF).
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;08|
+{{Link|http://aan.moricky.com/en/europe/5-security-council-stalemate.html|Security Council stalemate}}
+}}
+{{Timeline_Item
+|arma2|
+|2009|10&nbsp;/&nbsp;09|
+<h4>Into The Storm</h4>
+Shortly before USMC invasion starts, {{Link|link= http://www.arma2.com/arma-2-characters|text= Razor Team}} is deployed near Chernogorsk with objective to destroy communication station. During the mission, they discovers a mass grave created by Chedaki forces.
+}}
+{{Timeline_Item
+|arma2|
+|2009|10&nbsp;/&nbsp;09|
+<h4>Harvest Red</h4>
+Razor team joins the battle of Chernogorsk tasked to locate and capture Chedaki leaders - Andrey 'Akula' Lopotev, Mikola Bardak and an unknown man going under the identity of Kostey. They manage to take the first two captive, while transporting them back to base, they are ambushed and taken captive. It's learned that Kostey was actually a CDF officer who now revealed his true identity. Shortly after the warlords leave the scene, USMC squad rescues Razor team, but they're too late to save Sgt. Miles' life.
+}}
+{{Timeline_Item
+|person|Razor
+|2009|10&nbsp;/&nbsp;09|
+Sgt. Patrick '8-Ball' Miles is KIA.
+}}
+{{Timeline_Item
+|arma2|
+|2009|10&nbsp;/&nbsp;09|
+<h4>Razor Two</h4>
+Though Andrey Lopotev manages to escape, Mikola Bardak is captured after a long hunt by Razor team, now led by MSgt. Matthew Cooper.
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;09|
+{{Link|http://aan.moricky.com/en/europe/6-us-marines-reportedly-inside-chernarus.html|US Marines reportedly inside Chernarus}}
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;09|
+{{Link|http://aan.moricky.com/en/europe/7-us-confirms-marine-incursion.html|US confirms Marine incursion}}
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;09|
+{{Link|http://aan.moricky.com/en/europe/8-marines-retake-chernagorsk-mass-graves-discovered.html|Marines retake Chernagorsk - mass graves discovered}}
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;09|
+{{Link|http://aan.moricky.com/en/europe/9-chdkz-leaders-captured.html|ChDKZ' leaders captured?}}
+}}
+{{Timeline_Item
+|person|Reynolds
+|2009|10&nbsp;/&nbsp;10|
+Mark Reynolds interrogates Mikola Bardak, who was captured by Razor team. From him he learns that Aslan Radayev has already fled Chernarus.
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;10|
+{{Link|http://aan.moricky.com/en/europe/10-chdkz-in-full-retreat.html|ChDKZ in full retreat?}}
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;11|
+{{Link|http://aan.moricky.com/en/europe/11-new-twist-in-chernarus-crisis.html|New Twist in Chernarus Crisis}}
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;12|
+{{Link|http://aan.moricky.com/en/europe/12-interim-chernarussian-government-elected.html|Interim Chernarussian Government Elected}}
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;13|
+{{Link|http://aan.moricky.com/en/europe/13-nationalist-reprisals-intensify.html|Nationalist reprisals intensify}}
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;14|
+{{Link|http://aan.moricky.com/en/europe/14-2nd-chance-for-un-talks.html|2nd chance for UN talks}}
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;15|
+{{Link|http://aan.moricky.com/en/europe/15-conventional-war-over.html|'Conventional' war over?}}
+}}
+{{Timeline_Item
+|aan|
+|2009|10&nbsp;/&nbsp;16|
+{{Link|http://aan.moricky.com/en/europe/16-chernarus-crisis-nearing-end-as-usmc-advance.html|Chernarus crisis nearing end as USMC advance}}
+}}
+{{Timeline_Item
+|arma2|
+|2009|10&nbsp;/&nbsp;16|
+<h4>Manhattan</h4>
+As USMC pushes north, Forward Operating Base (FOB) Manhattan is set up. Razor team searches for Chedaki base and smaller camps in the region. While doing that, they meet Father Fyodor, local priest with ties to NAPA.
+}}
+{{Timeline_Item
+|arma2|
+|2009|10&nbsp;/&nbsp;16|
+'''Moscow bombing.''' Fifty three people are killed and nearly two hundred injured, many critically, in a bomb blast that tore through Moscow's Red Square. NAPA is linked to the attack and Russia readies itself to enter the Chernarussian conflict.
+}}
+{{Timeline_Item
+|arma2|
+|2009|10&nbsp;/&nbsp;17|
+<h4>Bitter Chill</h4>
+Under diplomatic pressure, USMC withdraws from Chernarus, leaving arriving Russian Forces to handle the situation. Razor team fails to reach the evac point and goes undercover with the help of locals.
+}}
+{{Timeline_Item
+|arma2|
+|2009|10&nbsp;/&nbsp;18|
+<h4>Badlands</h4>
+Officially MIA, Razor team supports local forces with their fight against Chedaki. USMC command, unconvinced that NAPA was behind the Moscow bombing, tasks Razor team with finding evidence about the truth.
+}}
+{{Timeline_Item
+|arma2|
+|2009|10&nbsp;/&nbsp;19|
+<h4>Dogs of War</h4>
+After gathering enough evidence, Razor learns that Lopotev was the man responsible for the Moscow bombing. While US government presents this data to the UN council, USMC forces return to the country. Tolerated by Russian Forces, they help Razor team with the assault on the main Chedaki base, followed by the swift capture of Andrey Loptev.
+
+Chernarussian crisis ends.
+}}
+{{Timeline_Item
+|person|Lopotev
+|2009|10&nbsp;/&nbsp;19|
+Andrey Lopotev is captured by Razor team of USMC.
+}}
+{{Timeline_Item
+|arma2|
+|2009|12&nbsp;/&nbsp;22|
+'''Eagle Wing''' Preemptive Strike Plan is cancelled by Pentagon and never happens.
+}}
+<!--- AAN ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|person|Dixon
+|2009|12&nbsp;/&nbsp;27|
+Black Element caught up in controversy as contractors led by Patrick Dixon use live ammunition to disperse groups of angry civilians, protesting over fuel shortages amidst bitter winter chill.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2009|12&nbsp;/&nbsp;31|
+<h4>Infiltration</h4>
+Mark Reynolds oversees the destruction of the Takistani Army's BM-21 missile launchers, supplied by arms dealer Aslan Radayev. Reynolds needs army officers to contact Radayev again, so he can track him down.
+}}
+{{Timeline_Item
+|aan|
+|2010|05&nbsp;/&nbsp;28|
+{{Link|http://aan.moricky.com/en/europe/18-nato-training-exercises-in-2010.html|NATO training exercises planned for Green Sea Region}}.
+}}
+{{Timeline_Item
+|aan|
+|2010|05&nbsp;/&nbsp;31|
+{{Link|http://aan.moricky.com/en/europe/23-chernarus-firms-strike-uneasy-deal-in-takistan.html|Chernarus firms strike uneasy deal in Takistan}}.
+}}
+{{Timeline_Item
+|aan|
+|2010|06&nbsp;/&nbsp;01|
+{{Link|http://aan.moricky.com/en/europe/25-chernarussian-geologist-killed-in-karzeghistan.html|Chernarussian Geologist Killed in Karzeghistan}}.
+}}
+{{Timeline_Item
+|aan|
+|2010|06&nbsp;/&nbsp;06|
+{{Link|http://aan.moricky.com/en/europe/22-interview-un-chief-weapons-inspector.html|Interview: UN Chief Weapons inspector}}.
+}}
+{{Timeline_Item
+|person|Reynolds
+|2010|06|
+Mark Reynolds leads investigation into the slaying of geologists.
+}}
+{{Timeline_Item
+|aan|
+|2010|06&nbsp;/&nbsp;14|
+{{Link|http://aan.moricky.com/en/europe/24-green-sea-anger-at-takistani-missile-launch.html|Green Sea Anger at Takistani Missile Launch}}.
+}}
+{{Timeline_Item
+|aan|
+|2010|06&nbsp;/&nbsp;17|
+{{Link|http://aan.moricky.com/en/europe/26-chernarussian-beer-export-market-stagnates.html|Chernarussian Beer Export Market Stagnates}}.
+}}
+{{Timeline_Item
+|aan|
+|2010|08&nbsp;/&nbsp;13|
+{{Link|http://aan.moricky.com/en/europe/27-british-armed-forces-defuse-shapur-bomb.html|British Armed Forces Defuse Shapur Bomb}}.
+}}
+{{Timeline_Item
+|arma2acr|
+|2010|09&nbsp;/&nbsp;05|
+Based on Mark Reynolds' Intel, Aslan Radayev is captured by Czech Special Forces in Bystrica region, Chernarus.
+}}
+{{Timeline_Item
+|aan|
+|2010|09&nbsp;/&nbsp;20|
+The Chernarussian judiciary agrees to {{Link|http://aan.moricky.com/en/europe/28-radayev-extradition-approved.html|extradite weapons dealer}}, Aslan Radayev, to Russia.
+}}
+{{Timeline_Item
+|person|Razor
+|2010|10|
+Sgt. Chad "Robo" Rodriguez is KIA and Sgt. Randolph 'Ice Cold' Sykes is WIA during '''Operation Fiery Mountain''' in Zargabad. Purpose of the operation has not been declassified to this date.
+}}
+{{Timeline_Item
+|aan|
+|2010|10&nbsp;/&nbsp;01|[[File:Logo ION.png|60px|right]]
+{{Link|http://aan.moricky.com/en/europe/29-black-element-rebrand-corporate-image.html|Black Element Rebrand Corporate Image}}, changing its name from '''Black Element''' to '''ION Inc.'''
+}}
+{{Timeline_Item
+|person|Reynolds
+|2010|10&nbsp;/&nbsp;|
+Mark Reynolds leaves CIA and joins ION Inc.
+}}
+{{Timeline_Item
+|aan|
+|2010|11&nbsp;/&nbsp;10|
+{{Link|http://aan.moricky.com/en/europe/30-green-sea-armex-events-confirmed.html|Green Sea ARMEX events confirmed}}
+}}
+{{Timeline_Item
+|real|
+|2011|05&nbsp;/&nbsp;02|
+{{Link|https://en.wikipedia.org/wiki/Death_of_Osama_bin_Laden|Operation Neptune Spear}}
+}}
+{{Timeline_Item
+|tkoh|
+|2011|08&nbsp;/&nbsp;18|
+<h4>Take On: Operation Longbow</h4>
+Lt. Joe Larkin patrols the Karzegho-Takistani border, as military commanders assess the situation.
+}}
+{{Timeline_Item
+|person|Razor
+|2012||
+Following a slow recovery from his wounds, Sgt. Randolph 'Ice Cold' Sykes becomes a special warfare instructor at Marine Special Operations School, Camp Lejeune.
+}}
+<!--- ARROWHEAD ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|arma2oa|
+|2012|04 /17|[[File:Takistan flag.jpg|thumb|right|Flag of Takistan]]
+Takistani Royalist tribes, with the rumored support of CIA operatives seeking to destabilize the dangerous regime, succeed in significantly damaging the production of crude oil. A well-coordinated raid on key oil fields deals three critical blows to the regime: the loss of a year's production of crude oil, the destruction of 68% of the country's oil wells, and the sudden lack of resources required to hold Takistan.
+
+Power structures start to disintegrate; voices and actions of discontent spread. In a desperate bid to cling to the reins of power, the Socialist Supreme Bureau threatens the nearby country of Karzeghistan with the use of chemical weapons if the oil-rich Sharig Plateau, an integral part of Takistani territory usurped by the British reign in the times of the Takistani monarchy, was not "immediately returned to the people of Takistan". The ultimatum is set.
+}}
+{{Timeline_Item
+|arma2oa|
+|2012|06|
+<h3>Operation Arrowhead</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma2oa|
+|2012|06&nbsp;/&nbsp;01|
+<h4>One Shot One Kill</h4>
+At the dawn of upcoming full-scale NATO military operation, US Army sniper sent behind enemy lines neutralizes Jafar Karizi (Two of Spades), Intelligence Commander for Zargabad District.
+}}
+{{Timeline_Item
+|arma2oa|
+|2012|06&nbsp;/&nbsp;01|
+<h4>Good Morning T-stan</h4>
+A few days after the ultimatum set by Takistani Government in April, NATO forces deploy bases in rebel-controlled territories and instigate Operation Arrowhead, whose objectives is to neutralize the threat of ballistic missile attacks and nullify the possibility of an attack on Karzeghistan before attempting any humanitarian or political actions.
+}}
+{{Timeline_Item
+|arma2oa|
+|2012|06&nbsp;/&nbsp;01|
+<h4>Pathfinder</h4>
+After securing Loy Manara airport and establishing FOB Revolver, NATO dispatches armored convoy heading towards oil fields south of Zargabad. However, when C-130 cargo plane transporting humanitarian workers and journalists is shot down near convoy's position, objective changes to securing the crash site. Unfortunately, NATO forces are too late and civilians are captured by Takistani Army.
+}}
+{{Timeline_Item
+|arma2oa|
+|2012|06&nbsp;/&nbsp;01|
+<h4>Coltan Blues</h4>
+Delta Force is sent to rescue captive civilians supposedly held in nearby mine, but information proves incorrect and only the dead body of aan reporter Joe Harris is discovered.
+}}
+{{Timeline_Item
+|tkoh|
+|2012|06&nbsp;/&nbsp;01|
+<h4>Take On: Operation Arrowhead</h4>
+Lt. Joe Larkin provides air support in the full-scale invasion of Takistan.
+}}
+{{Timeline_Item
+|arma2oa|
+|2012|06&nbsp;/&nbsp;01|
+<h4>Open Season</h4>
+Cpt. Garry Pierce is tasked with neutralizing outpost and command stations along Takistani Army defense line. Whilst the operation is successful, Pierce's gunship is hit and he's forced to autorotate to the ground.
+}}
+{{Timeline_Item
+|person|Pierce
+|2012|06&nbsp;/&nbsp;01|
+Cpt. Garry Pierce is shot down over enemy territory and captured by Takistani Army.
+}}
+{{Timeline_Item
+|arma2oa|
+|2012|06&nbsp;/&nbsp;02|
+<h4>Death from Above</h4>
+Immediately before crucial offensive against main enemy base, NATO uses its technological advantage and sends Unmanned Littlebird (ULB) near the base. From there, it marks targets for Hellfire missiles fired by AH-64 gunship hovering 8km away in occupied territory.
+
+Abdul Mussawir Ghafurzai (Seven of Hearts) is reported killed by ULB strike, although the hit cannot be confirmed.
+}}
+{{Timeline_Item
+|arma2oa|
+|2012|06&nbsp;/&nbsp;01|
+<h4>Sandstorm</h4>
+NATO forces start offensive against main Takistani base in region. Under cover of night, fast moving armored platoons crushes poorly equipped enemy and seize the base and nearby airfield without significant losses.
+}}
+{{Timeline_Item
+|person|Pierce
+|2012|06&nbsp;/&nbsp;01|
+Cpt. Garry Pierce escapes during NATO offensive and manages to return back to safety.
+}}
+{{Timeline_Item
+|arma2oa|
+|2012|06&nbsp;/&nbsp;02|
+<h4>Eye Of The Hurricane</h4>
+Large scale battle of Zargabad takes place. Delta Team rescues civilian hostages held in city's mosque, while main NATO force focuses on disabling SCUD launchers scattered around city.
+
+Muhhamad R. Aziz (Jack of Clubs), local army commander, is captured alive while trying to escape the city.
+}}
+{{Timeline_Item
+|arma2baf|
+|2012|06&nbsp;/&nbsp;03|
+<h4>Scud Busters</h4>
+British SAS are sent into the deserts of Takistan to hunt for remaining mobile SCUD launchers, which are about to attack Karzeghistan and the Allied bridgeheads.
+}}
+<!--- BAF ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|arma2baf|
+|2012|07|
+<h3>Operation Crimson Lance</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma2baf|
+|2012|07&nbsp;/&nbsp;19|
+<h4>Blue Jam</h4>
+While heading towards FOB Arizona in central Takistan, a transport chopper carrying Sgt. Brian Frost's squad is mistakenly targeted and shot down by a US Missile. The squad defends the crash site and evacuates in another helicopter a few minutes later.
+}}
+{{Timeline_Item
+|arma2baf|
+|2012|07&nbsp;/&nbsp;20|
+<h4>Lancers</h4>
+Operation Crimson Lance is in effect. Sgt. Brian Frost's squad assists in defusing IEDs and minefields and then continues onto FOB Winchester, now serving as a mere outpost for a couple of British patrol teams.
+}}
+{{Timeline_Item
+|person|Dixon
+|2012|07&nbsp;/&nbsp;20|
+After numerous quarrels with his clients (notably Refugee Help Center organizer Rita Ensler), Patrick Dixon is demoted from his post of team coordinator.
+}}
+{{Timeline_Item
+|person|Reynolds
+|2012|07&nbsp;/&nbsp;20|
+Mark Reynolds takes command of ION Inc. security team, previously lead by Patrick Dixon.
+}}
+{{Timeline_Item
+|arma2baf|
+|2012|07&nbsp;/&nbsp;20|
+<h4>Heat</h4>
+Sgt. Brian Frost's squad manages to defend FOB Winchester against a surprise Takistani offensive.
+}}
+{{Timeline_Item
+|arma2baf|
+|2012|07&nbsp;/&nbsp;20|
+<h4>Mountain Lair</h4>
+A joint raid of US and UK forces against the insurgent's group headquarters succeeds and the region is secured.
+}}
+<!--- PMC ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|person|Tanny
+|2012|09|
+Frank 'Tanny' Radcliffe leaves British Army and joins ION Inc.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2012|12&nbsp;/&nbsp;24|
+<h4>Reaction</h4>
+Frank 'Tanny' Radcliffe leads a small security response team to rescue captured clients.
+}}
+{{Timeline_Item
+|person|Razor
+|2013||
+Brian 'Scarlet' O'Hara leaves USMC after 6 years in service. He returns to San Francisco to study, becoming a civilian MD some years later.
+}}
+{{Timeline_Item
+|person|Frost
+|2013|01|
+Brian Frost leaves British Army and joins ION Inc.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|03&nbsp;/&nbsp;27|
+<h4>Provision</h4>
+ION drops supplies for a UN team operating in Central Takistan.
+}}
+{{Timeline_Item
+|person|Frost
+|2013|02|
+Brian Frost is assigned to Mark Reynold's security team.
+}}
+{{Timeline_Item
+|person|Asano
+|2013|02|
+Henry Asano is assigned to Mark Reynold's security team.
+}}
+{{Timeline_Item
+|tkoh|
+|2013|03&nbsp;/&nbsp;29|
+<h4>Take On: Operation Gold Quiver</h4>
+Lt. Joe Larkin and Cpt. Garry Pierce air-drop propaganda leaflets over captured Takistani territory.
+}}
+{{Timeline_Item
+|person|Tanny
+|2013|04|
+Frank 'Tanny' Radcliffe is assigned to Mark Reynold's security team.
+}}
+{{Timeline_Item
+|aan|
+|2013|05&nbsp;/&nbsp;06|
+{{Link|http://www.youtube.com/watch?v&#x3d;4nbmCvytm3o|Four Talon International security contractors die in insurgent attack}}
+}}
+{{Timeline_Item
+|person|Larkin
+|2013|06&nbsp;/&nbsp;17|
+Harry Larkin, father of Joe and Tom, dies.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|06|
+<h3>Operation Black Gauntlet</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|06|
+After a year of occupation, the situation in Takistan is dire. NATO forces have withdrawn to a few Green Zones around major cities, while the rest of the country is ravaged by ongoing power struggle between the New Takistani Army (NTA) and Royalist tribes, no longer unconditionally pro-Western. With most of the allied forces already gone and the British Armed Forces in the process of leaving the region, the US government plans to draw down its forces in the following months.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|06&nbsp;/&nbsp;29|
+<h4>Reception</h4>
+UN weapon inspectors arrive in Zargabad to search for the remnants of the Takistani nuclear programme. An ION Inc. security team, lead by Mark Reynolds, is tasked with their protection.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|07&nbsp;/&nbsp;01|
+<h4>Vocation</h4>
+An ION Inc. security team disperses civilians around an abandoned factory while UN investigators search for documents pertaining to the Takistani nuclear programme.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|07&nbsp;/&nbsp;02|
+<h4>Confirmation</h4>
+UN inspectors locate the former Takistani presidential advisor and orchestrator of various weapon programmes. They discover it to be Abdul Mussawir Ghafurzai, proclaimed dead after NATO strike during Operation Arrowhead, now hiding in Zargabad. While they force him to tell them everything he knows, an NTA offensive against the emptied city arrives and Ghafurzai is killed.
+
+ION Inc. security team manages to evacuate UN inspectors back to safety, but some of its members are killed during an initial mortar strike and a few others are cut off from the main squad.
+}}
+{{Timeline_Item
+|person|Tanny
+|2013|07&nbsp;/&nbsp;02|
+Frank 'Tanny' Radcliffe is KIA during a mortar strike on Zargabad.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|07&nbsp;/&nbsp;02|
+<h4>Inception</h4>
+Brian Frost and Henry Asano reunite after the initial confusion and retreat back to Patrick Dixon's position on the city outskirts. All three of them are later evacuated by Mark Reynold's helicopter.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|07&nbsp;/&nbsp;02|
+<h4>Transportation</h4>
+UN inspectors insist upon getting to abandoned OKB-754 test site, located deep in unsecured territory. A lightly armored SUV convoy is dispatched to travel through no man's land of central Takistan, while Mark Reynolds stays in the U.S. Green Zone to handle the legality of such an operation.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|07&nbsp;/&nbsp;02|
+<h4>Elimination</h4>
+An ION Inc. security convoy deliver UN inspectors to the the Takistani test-facility, but locates an NTA camp there. Brian Frost and Henry Asano manage to neutralize scattered armored units and rest of the team then finishes off the demoralized infantry units.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|07&nbsp;/&nbsp;03|
+<h4>Malfunction</h4>
+Deep in the cover of night, an ION Inc. security team is ambushed by UAV's operated by competing PMC, Talon International. Even when they succeed in defending the site, questions about why they were attacked remain.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|07&nbsp;/&nbsp;03|
+<h4>Retaliation</h4>
+UN inspectors discover nuclear materials buried deep in a partially destroyed bunker. According to their calculations, the quantity is enough for creating small-yield nuclear warhead. Initial readings place the origin of the material to China, possibly Russia.
+
+In the morning, an ION Inc. security team is attacked by incoming enemy forces. Brian Frost uses UAVs hijacked by Patrick Dixon and soon the guerilla attack is repulsed. Mark Reynolds joins the battle in his helicopter shortly before enemy starts to retreat.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|07&nbsp;/&nbsp;03|
+<h4>Preparation</h4>
+UN inspectors ready the materials for transport back to the Green zone. Some of the ION Inc. contractors refuse to go with the radioactive material and they are assigned to a helicopter. Brian Frost overcomes his fear of flying and takes control of the helicopter, while Henry Asano and Patrick Dixon take crew seats. Mark Reynolds drives the car with the material.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|07&nbsp;/&nbsp;03|
+<h4>Aviation</h4>
+An ION Inc. security convoy travels back through Central Takistan, while helicopters provide air support.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|07&nbsp;/&nbsp;03|
+<h4>Decision</h4>
+After being damaged, Brian Frost's helicopter continues back to the Zargabad ION base. The SUV with UN inspectors arrives shortly afterwards, but Reynolds' SUV with nuclear materials on board is delayed.
+
+Reynolds contacts them and explains the situation - An unspecified government contacted ION Inc. and want to cover up their illegal involvement in Takistani nuclear programme. While Patrick Dixon openly opposes this change of plan, Brian Frost and Henry Asano are indecisive.
+}}
+{{Timeline_Item
+|arma2pmc|
+|2013|07&nbsp;/&nbsp;03|
+<h4>Deception</h4>
+Brian Frosts kills Patrick Dixon and together with Henry Asano, they join Mark Reynolds. Dressed in NTA uniforms, they use an IED to blow up the SUV with UN inspectors on board and murder all remaining survivors.
+}}
+{{Timeline_Item
+|person|Dixon
+|2013|07&nbsp;/&nbsp;03|
+According to official statement by ION Inc., Patrick Dixon is KIA while protecting the UN inspectors from militia ambush north of Zargabad. Attackers manage to escape before authorities arrive.
+}}
+<!--- TAKE ON ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|tkoh|
+|2013|07|
+<h3>Take On Helicopters</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|tkoh|
+|2013|07&nbsp;/&nbsp;04|
+<h4>The Gathering Storm</h4>
+Tom Larkin returns back home to Seattle.
+}}
+{{Timeline_Item
+|tkoh|
+|2013|08&nbsp;/&nbsp;05|
+<h4>The Brothers Larkin</h4>
+Tom Larkin takes responsibility for Larkin Aviation, the family business started by his father.
+}}
+{{Timeline_Item
+|tkoh|
+|2013|08|
+<h4>The Rising Tide</h4>
+}}
+{{Timeline_Item
+|tkoh|
+|2013|08|
+<h4>The Cove</h4>
+}}
+{{Timeline_Item
+|tkoh|
+|2013|08|
+<h4>The Deal</h4>
+}}
+{{Timeline_Item
+|tkoh|
+|2013|08|
+<h4>The Burn Card</h4>
+}}
+{{Timeline_Item
+|tkoh|
+|2013|08|
+<h4>The Best Laid Plans</h4>
+}}
+{{Timeline_Item
+|tkoh|
+|2013|08|
+<h4>The Shadow of the Blade</h4>
+}}
+{{Timeline_Item
+|tkoh|
+|2013|08|
+<h4>The Hand That Feeds</h4>
+}}
+{{Timeline_Item
+|tkoh|
+|2013|08|
+<h4>The Shakedown</h4>
+}}
+{{Timeline_Item
+|tkoh|
+|2013|08|
+<h4>The Take Down</h4>
+}}
+{{Timeline_Item
+|person|Kerry
+|2015||
+Ben Kerry is born in Portland, Oregon.
+|start=2}}
+{{Timeline_Item
+|arma3|
+|2026||
+'''Kavala Coup'''
+
+Georgious Akhanteros and his rogue troops take control of Altis by force, marking the beginning of the '''Altian Civil War'''.
+}}
+<!--- TACOPS - BEYOND HOPE ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|arma3tacops|
+|2026|05|
+<h3>Beyond Hope</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma3tacops|
+|2026|05&nbsp;/&nbsp;11|
+<h4>No Reprieve</h4>
+Government loyalists search for a missing squad ahead of a major offensive.
+}}
+{{Timeline_Item
+|arma3tacops|
+|2026|05&nbsp;/&nbsp;11|
+<h4>Avenging Furies</h4>
+A humanitarian convoy must be rescued from rebel forces.
+}}
+{{Timeline_Item
+|arma3|
+|2030||
+<h4>Jerusalem Ceasefire</h4>
+After the defeat of most loyalists, the '''Altian Civil War''' ends entrenching '''Georgious Akhanteros''' as [[Altis]]' legitimate leader.
+}}
+<!--- BOOTCAMP ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|arma3|
+|2034||
+<h3>Altis Incident Prologue</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma3|
+|2034|05&nbsp;/&nbsp;10|
+<h4>Reality Check</h4>
+Now for something completely different.
+}}
+{{Timeline_Item
+|arma3|
+|2034|05&nbsp;/&nbsp;10|
+<h4>Common Denominator</h4>
+NATO peacekeepers conduct joint training exercises with members of the AAF.
+}}
+{{Timeline_Item
+|arma3|
+|2034|05&nbsp;/&nbsp;10|
+<h4>Diplomatic Relations</h4>
+Members of the AAF require assistance from NATO peacekeepers.
+}}
+{{Timeline_Item
+|arma3lawsofwar|
+|2034|05&nbsp;/&nbsp;16|
+<h4>Oreokastro Memory</h4>
+Nathan MacDade arrives at IDAP's camp in Oreokastro.
+}}
+{{Timeline_Item
+|arma3|
+|2034|05&nbsp;/&nbsp;17|
+<h4>Rising Tensions</h4>
+The AAF and the FIA agree to a dialogue in the former capital, Kavala.
+}}{{Timeline_Item
+|arma3|
+|2034|05&nbsp;/&nbsp;17|
+<h4>Damage Control</h4>
+NATO peacekeepers returning to Kavala discover that the situation has gone from bad to worse.
+}}
+<!--- LAWS OF WAR----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|arma3lawsofwar|
+|2034||
+<h3>Remnants of War</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma3lawsofwar|
+|2034|05&nbsp;/&nbsp;28|
+<h4>The Peacekeeper</h4>
+NATO performs an airdrop to supply an IDAP camp in remote town of Oreokastro.
+}}
+{{Timeline_Item
+|arma3lawsofwar|
+|2034|09&nbsp;/&nbsp;30|
+<h4>The Guerrilla</h4>
+Guerrillas turn Oreokastro into a fortress. IDAP's camp moves from the center of the town to the church.
+}}
+{{Timeline_Item
+|arma3lawsofwar|
+|2034|10&nbsp;/&nbsp;13|
+<h4>The Redacted</h4>
+Oreokastro is destroyed by a cluster strike. IDAP's camp is spared, but the town is left in ruin.
+}}
+{{Timeline_Item
+|arma3lawsofwar|
+|2034|10&nbsp;/&nbsp;13|
+<h4>The Survivor</h4>
+After a two week siege, the town is taken by the AAF. Some guerrillas escape into the surrounding mountains.
+}}
+{{Timeline_Item
+|arma3tanks|
+|2035|04&nbsp;/&nbsp;01|
+<h4>Lost Horizons</h4>
+The AAF take active measures to defeat FIA guerrillas. Kyros Kalogeros of AAF's 1st Mechanized Regiment conducts patrol mission in the mountains around Oreokastro.
+}}
+<!--- EAST WIND ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|arma3|
+|2035||
+<h3>East Wind</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;07|
+<h4>Drawdown 2035</h4>
+Tensions grow as NATO peacekeepers prepare to leave the island of Stratis.
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;07|
+<h4>Situation Normal</h4>
+NATO forces struggle to regroup.
+}}
+{{Timeline_Item
+|person|Adams
+|2035|07&nbsp;/&nbsp;07|
+Staff Sergeant Thomas Adams is killed by a landmine.
+{{Feature|quote|Looking back though, I don't remember seeing much in the way of warning signs. Adams, he'd still be alive today if the government had done more. I mean, we could just as easily have been civilians, you know?|Ben Kerry}}
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;07|
+<h4>Blackfoot Down</h4>
+A NATO helicopter went down in a nearby forest.
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;07|
+<h4>Death Valley</h4>
+Friendly forces are pinned down in Girna.
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;07|
+<h4>Radio Silence</h4>
+The survivors launch a coordinated assault on Air Station Mike-26.
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;07|
+<h4>Wet Work</h4>
+An opportunity to neutralize an AAF commander presents itself.
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;07|
+<h4>Crossing Paths</h4>
+Ben Kerry meets FIA soldiers lead by Nikos.
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;08|
+<h4>Tipping Point</h4>
+The survivors launch a last-ditch effort to drive the remaining AAF units into the sea.
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;09|
+<h4>Signal Lost</h4>
+Kerry faces the consequences of a botched withdrawal.
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;09|
+<h4>Common Enemy</h4>
+The remaining survivors link up with the local guerrillas.
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;20|
+<h4>Supply Network</h4>
+CTRG prepare to ambush an enemy supply convoy.
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;21|
+<h4>Breaking Even</h4>
+The guerrillas plan a hit and run attack on an AAF outpost.
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;21|
+<h4>Bingo Fuel</h4>
+The FIA move in to retrieve a seized fuel truck.
+}}
+{{Timeline_Item
+|arma3|
+|2035|07&nbsp;/&nbsp;22|
+<h4>Exit Strategy</h4>
+An AAF officer looking to defect offers the guerrillas a chance for revenge.
+}}
+{{Timeline_Item
+|arma3tacops|
+|2035|07&nbsp;/&nbsp;24|
+<h4>Fait Accompli</h4>
+NATO forces strike strategic positions on Malden.
+}}
+{{Timeline_Item
+|arma3tacops|
+|2035|07&nbsp;/&nbsp;24|
+<h4>Desintegration Point</h4>
+Having captured Chapoi and Cancon, NATO push north for a final offensive.
+}}
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;02|
+<h4>Within Reach</h4>
+Kerry joins a small team bound for Stratis.
+}}
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;02|
+<h4>Attention Deficit</h4>
+CTRG lead an operation to extract Nikos from Stratis.
+}}
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;08|
+<h4>Beyond Recognition</h4>
+On the eve of a NATO invasion, the guerrillas launch a diversionary assault against a small airfield.
+}}
+{{Timeline_Item
+|arma3tanks|
+|2035|08&nbsp;/&nbsp;08|
+<h4>Salient Force</h4>
+As NATO forces advance on Pyrgos, the 1st Mechanized Regiment responds with a daring counter-offensive.
+}}
+{{Timeline_Item
+|arma3lawsofwar|
+|2035|08&nbsp;/&nbsp;08|
+<h4>The Major</h4>
+Trapped by NATO forces, Major Gavras and his adjutant, Antoniou Dimitriou, make a stand at Oreokastro's church. The area is mined during their defense, but Antoniou later visits IDAP and reports the location of the mines, significantly helping clearance efforts.
+}}
+<!--- TACOPS - BEYOND HOPE ----------------------------------------------------------------------------------------------->
+{{Timeline_Item
+|arma3tacops|
+|2035|08&nbsp;/&nbsp;09|
+<h4>LZ Nowhere</h4>
+As NATO's invasion of Altis falters, a high-risk plan is put into action.
+}}
+{{Timeline_Item
+|arma3tacops|
+|2035|08&nbsp;/&nbsp;09|
+<h4>Breaking Through</h4>
+Survivors from LZ Mustang attempt to reach friendly forces.
+}}
+{{Timeline_Item
+|arma3tacops|
+|2035|08&nbsp;/&nbsp;09|
+<h4>Final Strike</h4>
+Against the odds, NATO soldiers attempt to capture Chalkeia.
+}}
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;09|
+<h4>New Dawn</h4>
+Following a botched invasion on Altis, Kerry is taken back to NATO's re-established base on Stratis.
+}}
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;09|
+<h4>Resurgent West</h4>
+Although still under suspicion, Kerry returns to the NATO front-line on patrol duty.
+}}
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;09|
+<h4>Air Superiority</h4>
+In preparation for a major assault on the main airport, Kerry coordinates FIA forces as NATO form up near Neochori.
+}}
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;09|
+<h4>Moral Fiber</h4>
+Having seized control of the main airport, NATO are poised to strike Pyrgos, the capital city of Altis.
+}}
+{{Timeline_Item
+|arma3tanks|
+|2035|08&nbsp;/&nbsp;10|
+<h4>Terminal Defiance</h4>
+Hours before an expected ceasefire, the AAF make a stand against overwhelming odds.
+}}
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;10|
+<h4>Preventive Diplomacy</h4>
+NATO launches a final push against remaining AAF positions.
+}}
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;10|
+<h4>Cultural Property</h4>
+The cease fire is in effect, but the fight is still ongoing. A team with Captain Hepworth from British Cultural Rescue Initiative has been sent to the town of Sofia to secure some artifacts.
+}}
+{{Timeline_Item
+|arma3apex|
+|2035||
+<h3>Apex Protocol</h3>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma3apex|
+|2035|08&nbsp;/&nbsp;11|
+<h4>Warm Welcome</h4>
+Group 15 is deployed to ambush a Syndikat convoy en route to Tanoan village.
+}}
+{{Timeline_Item
+|arma3apex|
+|2035|08&nbsp;/&nbsp;12|
+<h4>Firestarter</h4>
+Following Syndikat's unchecked aggression towards the citizens of Tanoa, Group 15 launch an operation to draw out their leadership.
+}}
+{{Timeline_Item
+|arma3apex|
+|2035|08&nbsp;/&nbsp;13|
+<h4>Heart of Darkness</h4>
+Recently acquired intel sends Group 15 on a mission to kill or capture Warlock.
+}}
+{{Timeline_Item
+|arma3apex|
+|2035|08&nbsp;/&nbsp;14|
+<h4>Extraction</h4>
+Deep in enemy territory and vastly outnumbered, Group 15 race to get Keystone to safety.
+}}
+{{Timeline_Item
+|arma3lawsofwar|
+|2035|08&nbsp;/&nbsp;15|
+<h4>The Brother</h4>
+Markos Kouris returns to Oreokastro in search of his brother. He dies after stepping on a mine, leading IDAP to investigate the region.
+}}
+{{Timeline_Item
+|arma3apex|
+|2035|08&nbsp;/&nbsp;16|
+<h4>Apex Protocol</h4>
+Acting on intel uncovered by Captain Miller, Group 15 are sent to a former WW2 outpost in search of Viper.
+}}
+{{Timeline_Item
+|arma3lawsofwar|
+|2035|08&nbsp;/&nbsp;17|
+<h4>Oreokastro</h4>
+Nathan MacDade returns to Oreokastro to help with post-war explosive clearance efforts
+}}
+{{Timeline_Item
+|arma3apex|
+|2035|08&nbsp;/&nbsp;18|
+<h4>End Game</h4>
+Syndikat have occupied the Blue Pearl Industrial Port with the intent of ransoming the Eastwind Device. With enemies on all sides, Group 15 are deployed to end this once and for all.
+}}
+{{Timeline_Item
+|arma3apex|
+|2035|08&nbsp;/&nbsp;18|
+'Apex Protocol Papers' has been revealed to public. 
+}}
+{{Timeline_Item
+|arma3apex|
+|2038|02&nbsp;/&nbsp;06|
+<h4>Old Man</h4>
+Santiago leaves a spy camera in a trash bin near Ouméré.
+}}
+{{Timeline_Item
+|arma3contact|
+|2039||
+<h3 style{{=}}"display: inline; font-style: italic">First Contact</h3> <small>('''not''' canon)</small>
+|LightSteelBlue|
+}}
+{{Timeline_Item
+|arma3contact|
+|2039|06&nbsp;/&nbsp;15|
+<h4>''Electron-39''</h4>
+''A joint-exercise between NATO and LDF has started.''
+}}
+|}
+
+
+[[Category:Armaverse]]

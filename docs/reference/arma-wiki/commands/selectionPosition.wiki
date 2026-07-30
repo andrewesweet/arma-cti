@@ -1,0 +1,121 @@
+// source: https://community.bistudio.com/wiki/selectionPosition
+// revision: 377819 (2026-01-03T04:18:08Z)
+// export sha1: onbukfc9ocmcc8ujv6724hi6ohoq1lj
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Render Time Scope | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|gr2= Render Time Scope
+
+|descr= Returns selection position in model space pertaining to the current animation in [[Simulation vs Render Time Scope|render time scope]].
+When the default syntax is used, command searches first in Memory [[LOD]], then in Geometry LOD, FireGeometry LOD, LandContact LOD, HitPoints LOD and finally in ViewGeometry LOD and returns the first matching find.
+The second syntax allows to specify which one of these LODs to search in instead.
+{{Feature|important|
+Sometimes internally "ViewGeometry" could be equal to "Geometry", and "FireGeometry" could be equal to "ViewGeometry".
+In order to pinpoint the actual LOD, use [[allLODs]] and [[LOD_resolutions|LOD resolution]] as argument for selecting the LOD.<br><br>
+Also note that similar models can have different LOD indexes, for example a soldier model differs from a model of civilian in this regard.
+}}
+
+|s1= object [[selectionPosition]] selectionName
+
+|p1= object: [[Object]]
+
+|p2= selectionName: [[String]]
+
+|r1= [[Position#PositionRelative|relative position]] - If selection does not exist, [0, 0, 0] is returned.
+
+|s2= object [[selectionPosition]] [selectionName, LOD, returnMode]
+
+|s2since= arma3 1.50
+
+|p21= object: [[Object]]
+
+|p22= selectionName: [[String]]
+
+|p23= LOD: [[String]] or [[Number]] - can be one of:
+* {{hl|"Memory"}}
+* {{hl|"Geometry"}}
+* {{hl|"FireGeometry"}}
+* {{hl|"LandContact"}}
+* {{hl|"HitPoints"}}
+* {{GVI|arma3|2.06|size= 0.75}} {{hl|"ViewGeometry"}}
+When [[Number]] is used, command searches for a LOD with the similar [[LOD resolutions|LOD resolution]]
+|p23since= arma3 2.06
+
+|p24= returnMode: [[String]] - (Optional, default {{hl|"FirstPoint"}}) can be one of:
+* {{hl|"FirstPoint"}}
+* {{hl|"AveragePoint"}}
+* {{hl|"BoundingBox"}}
+
+|p24since= arma3 2.08
+
+|r2= [[Position#PositionRelative|relative position]] - If selection does not exist, [0, 0, 0] is returned. If returnMode is {{hl|"BoundingBox"}}, [[Array]] of [[Array]]s
+
+|s3= [[selectionPosition]] [object, selectionName, LODIndex, isVisual, returnMode]
+
+|s3since= arma3 2.06
+
+|p41= object: [[Object]]
+
+|p42= selectionName: [[String]]
+
+|p43= LODIndex: [[Number]] - the index of the target LOD (see [[allLODs]])
+
+|p44= isVisual: [[Boolean]] - (Optional, default [[true]]) [[true]] for Render, [[false]] for Simulation [[Simulation_vs_Render_Time_Scope|time scope]]
+
+|p45= returnMode: [[String]] - (Optional, default {{hl|"FirstPoint"}}) can be one of:
+* {{hl|"FirstPoint"}}
+* {{hl|"AveragePoint"}}
+* {{hl|"BoundingBox"}}
+
+|p45since= arma3 2.08
+
+|r3= [[Position#PositionRelative|relative position]] - If selection does not exist, [0, 0, 0] is returned. If returnMode is {{hl|"BoundingBox"}}, [[Array]] of [[Array]]s
+
+|x1= <sqf>_inModelPosition = player selectionPosition "head_hit";</sqf>
+
+|x2= <sqf>_inModelPosition = player selectionPosition "pelvis";</sqf>
+
+|x3= <sqf>_inModelPosition = player selectionPosition "head";</sqf>
+
+|x4= <sqf>_inModelPosition = player selectionPosition "camera";</sqf>
+
+|x5= <sqf>
+stomper selectionPosition ["wheel_1_1", "HitPoints", "FirstPoint"];	// [-0.774058,0.860854,-1.40365]
+stomper selectionPosition ["wheel_1_1", "HitPoints", "AveragePoint"];	// [-0.597142,1.35486,-1.58345]
+stomper selectionPosition ["wheel_1_1", "HitPoints", "BoundingBox"];	// [[-0.774058,0.860854,-2.07746],[-0.420225,1.84887,-1.08944]]
+</sqf>
+
+|seealso= [[selectionVectorDirAndUp]] [[modelToWorld]] [[selectionNames]] [[getAllHitPointsDamage]] [[allLODs]] [[LOD resolutions]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20170625151300
+|text= Do use the filter that comes with {{Link|#Syntax 2}} to suit your needs. For example [[player]] has 3 selections called "head" and their [[selectionPosition]]s are quite different from each other:
+<sqf>
+player selectionPosition ["head", "Memory"];		// [0.173798,0.330415,1.37783]
+player selectionPosition ["head", "FireGeometry"];	// [0.14375,0.206039,1.44689]
+player selectionPosition ["head", "HitPoints"];	// [0.144257,0.306769,1.53471]
+</sqf>
+}}

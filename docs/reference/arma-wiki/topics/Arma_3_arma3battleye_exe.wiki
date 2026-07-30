@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_arma3battleye.exe
+// revision: 363951 (2024-04-27T20:36:22Z)
+// export sha1: aawqcnv1nweq2bjh535jyshmrty8fqs
+// categories: Category:Startup Parameters
+// Vendored snapshot. Do not edit — re-export instead.
+
+These parameters can be configured by creating a new shortcut on your desktop and then adding the appropriate option.
+
+For {{arma3}} check this article: [[Arma 3: Startup Parameters]]
+
+'''Example'''
+
+32bit
+ "C:\somePath\arma3battleye.exe" 2 1 0 -exe arma3.exe -malloc=tbb4malloc_bi -CpuCount=4 -ExThreads=7 -maxmem=3021 -maxVRAM=0
+
+64bit
+ "C:\somePath\arma3battleye.exe" 2 1 0 -exe arma3_x64.exe -malloc=tbb4malloc_bi_x64 -CpuCount=0 -ExThreads=7 -maxmem=8192 -maxVRAM=0
+
+
+== Available Parameters ==
+
+{{Feature|informative|[[BattlEye]] parameters must always be present before game parameters.}}
+
+ 2 = Update check
+ 1 = Game ID
+ 0 = Show UI
+
+ -exe <program.exe> = name of the game executable file
+
+
+[[Category: Startup Parameters]]

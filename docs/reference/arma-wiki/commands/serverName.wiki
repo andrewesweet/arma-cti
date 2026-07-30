@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/serverName
+// revision: 319671 (2022-05-13T09:24:40Z)
+// export sha1: jujrjz6jk0s96hsznomzrxpl8x9uaxs
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.48
+
+|gr1= Multiplayer
+
+|descr= Returns name of the hosting server in MP, "" in SP.
+
+|s1= [[serverName]]
+
+|r1= [[String]]
+
+|x1= <sqf>hint format ["Welcome to the %1 server!", serverName];</sqf>
+
+|seealso= [[worldName]] [[briefingName]] [[missionName]] [[worldSize]]
+}}

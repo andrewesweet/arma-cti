@@ -1,0 +1,85 @@
+// source: https://community.bistudio.com/wiki/setTerrainHeight
+// revision: 377594 (2026-01-02T06:59:43Z)
+// export sha1: hor6126l58klbcq0p7k4fefl5mtrxla
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+
+|eff= global
+
+|serverExec= server
+
+|gr1= Positions
+
+|descr= Set the current terrain's altitude on provided location(s).
+{{Feature|important|
+* Heightmap changes:
+** are internally converted (rounded) to heightmap coordinates
+** are stored in the JIP queue
+** are '''not''' removed from the JIP queue if the values are set back to terrain's default value
+** are updated in the JIP queue for updated positions '''if''' the same group of positions are edited (order does not matter, but amount does);<br>editing positions by terrain ''sections'' is good for multiplayer optimisation (see {{Link|#Example 2}})
+** are '''not''' updated and sent twice (old one then new one) if position edits are not exactly the same (see point above and {{Link|#Example 2}}).
+* Edited terrain heights are '''not''' saved inside savegames, they need to be restored manually on savegame load.
+* Known issues:
+** Terrain sections can become invisible if the change is too extreme
+** Walking on the edge of extreme height changes can catapult the player away
+}}
+
+|s1= [[setTerrainHeight]] [positionAndAltitudeArray, adjustObjects]
+
+|p1= positionAndAltitudeArray: [[Array]] of [[Position#PositionASL|PositionASL]] - [<nowiki/>[x1, y1, newASLHeight1], [x2, y2, newASLHeight2], ...]
+
+|p2= adjustObjects: [[Boolean]] - (Optional, default [[true]]) if true then objects on modified points are moved up/down to keep the same ATL height
+{{Feature|important|'''All''' objects above modified terrain will be adjusted, even flying ones.}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+private _fnc_flattenTerrain =
+{
+	params ["_start", "_a", "_b", "_h"];
+	private _newPositions = [];
+
+	for "_xStep" from 0 to _a do
+	{
+		for "_yStep" from 0 to _b do
+		{
+			private _newHeight = _start vectorAdd [_xStep, _yStep, 0];
+			_newHeight set [2, _h];
+			_newPositions pushBack _newHeight;
+		};
+	};
+
+	_newPositions;
+};
+
+private _desiredTerrainHeight = 150;
+private _positionsAndHeights = [getPosWorld player, 50, 50, _desiredTerrainHeight] call _fnc_flattenTerrain;
+setTerrainHeight [_positionsAndHeights, true];
+</sqf>
+
+|x2= Bad example:
+<sqf>
+// first update
+setTerrainHeight [[[1000, 1000, 25], [1005, 1000, 25], [1000, 1005, 25], [1005, 1005, 25]]];
+
+// second update - this will make the JIP queue keep both messages
+setTerrainHeight [[[1005, 1000, 50]]];
+</sqf>
+
+Good example:
+<sqf>
+// first update
+setTerrainHeight [[[1000, 1000, 25], [1005, 1000, 25], [1000, 1005, 25], [1005, 1005, 25]]];
+
+// second update - this will update the JIP queue properly
+setTerrainHeight [[[1000, 1000, 25], [1005, 1000, 50], [1000, 1005, 25], [1005, 1005, 25]]];
+</sqf>
+
+|seealso= [[getTerrainInfo]] [[getTerrainHeight]]
+}}

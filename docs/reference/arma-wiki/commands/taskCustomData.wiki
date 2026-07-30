@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/taskCustomData
+// revision: 376365 (2025-10-07T21:46:44Z)
+// export sha1: mrqn32tqlt81j1356lob9c7kq8jpw3x
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Briefing
+
+|descr= Returns custom data attached to the local task or an empty array if there are no custom data attached.
+
+|s1= [[taskCustomData]] task
+
+|p1= task: [[Task]]
+
+|r1= [[Array]] of string - iconPath, iconText, descriptionText
+
+|x1= <sqf>_data = taskCustomData someTask;</sqf>
+
+|seealso= [[setSimpleTaskCustomData]] [[setSimpleTaskType]] [[taskType]] [[Arma 3: Task Framework#Task Overhaul|Tasks Overhaul]]
+}}

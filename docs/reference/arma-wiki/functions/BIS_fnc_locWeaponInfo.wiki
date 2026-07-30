@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_locWeaponInfo
+// revision: 329331 (2022-07-27T10:15:20Z)
+// export sha1: iwpsory5umd5w82hcsjutor766ilw8j
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Shows a utility tool checking length of weapon info texts.<br>[[File:BIS_fnc_locWeaponInfo screenshot.png|500px]]
+
+|s1= call [[BIS_fnc_locWeaponInfo]]
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>call BIS_fnc_locWeaponInfo;</sqf>
+
+|seealso= [[BIS_fnc_animViewer]] [[BIS_fnc_configViewer]] [[BIS_fnc_help]]
+}}

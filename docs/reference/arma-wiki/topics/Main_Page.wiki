@@ -1,0 +1,166 @@
+// source: https://community.bistudio.com/wiki/Main_Page
+// revision: 378836 (2026-07-08T16:45:03Z)
+// export sha1: 1mm3r7e0yx85rcidt1c0sg3e5vtr1dn
+// categories: Category:Community Wiki
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC____NOEDITSECTION__<!--
+{{Feature|warning|2= <div style="line-height: 3em; font-size: 1.5em; text-align: center">
+BIKI Maintenance is happening on {{#time:Y-m-d|20220824}} between '''09:00-12:00''' (CEST). It may become unavailable for this time period.
+</div>}}
+-->
+
+<div style="display: flex; justify-content: center">
+<div style="flex-grow: 0; margin-right: 4em">[[File:bohemia interactive logo black.png|200px|link= Bohemia Interactive Community:About]]</div>
+<div style="flex-grow: 1; line-height: 1.1em; margin-top: 0.25em; max-width: 45em">
+'''Welcome to the Bohemia Interactive Community Wiki, a.k.a BIKI.'''
+
+[[Special:ActiveUsers|{{NUMBEROFACTIVEUSERS}} active editors]] are currently maintaining [[Special:AllPages|{{NUMBEROFARTICLES}} articles]] and [[Special:ListFiles|{{NUMBEROFFILES}} images]] since <span title="The BIKI is {{#time: y|20{{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2006}}}} years old!">{{#time: M d, Y|200604031942}}</span>{{#ifeq:{{#expr:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}=0403}}|1|<nowiki/>:<div style="margin: 1em; text-align: center">'''Happy Birthday, BIKI!'''</div>|.}}
+
+If you want to participate in editing the BIKI, see [[Bohemia Interactive Community:Getting Started|Getting Started]] to obtain an account!
+</div>
+</div>
+
+
+<div class="floating-box-container" style="margin: 1.5em auto; max-width: 180em">
+
+<!--- ARMA REFORGER --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|1116|<nowiki/> box-highlight" title="{{armaR}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2023}} years old today}}">
+=== {{Icon|armaR|100|link=:Category:{{Name|armaR|cat}}{{!}}About {{Name|armaR}}}} ===
+<div style="margin-top: 1em"></div>
+[[Arma Reforger: Getting Started|Getting started]]<br>
+[[:Category:Arma Reforger/Content|Content]] / [[:Category:Arma Reforger/Modding|Modding]] / [[:Category:Arma Reforger/Support|Support]]
+<br>
+<!-- Special:CategoryTree?target=Category%3AArma+Reforger&mode=all&namespaces=&title=Special%3ACategoryTree -->
+<span class="plainlinks">[{{canonicalurl:Special:CategoryTree|target=Category:Arma_Reforger&mode=all}} Documentation Tree]</span> -
+<span class="plainlinks">[{{canonicalurl:Special:RecentChanges|namespace=5050}} Recent Changes]</span><br>
+Scripting doc: <span class="plainlinks">[https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/ {{Name|armaR|short}}] / [https://community.bistudio.com/wikidata/external-data/arma-reforger/EnfusionScriptAPIPublic/ Enfusion]</span> - {{GameCategory|armaR|Modding|Scripting|Guidelines|text= Guidelines}}
+</div>
+
+<!--- SILICA --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|0503|<nowiki/> box-highlight" title="{{silica}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2023}} years old today}}">
+=== {{Icon|silica|175|link=:Category:{{Name|silica|cat}}{{!}}About {{silica}}}} ===
+<br>
+{{Link|https://silicagame.com/|SilicaGame.com}}<br>
+{{Link|https://discord.com/invite/QAqhhkYmM7|Discord Server}}<br>
+Buy: {{Link|https://store.bistudio.com/products/silica-digital-steam-key|{{Name|bi|short}} Store}} - {{Link|https://store.steampowered.com/app/1494420/Silica/|Steam Store}}
+</div>
+
+<!--- DAYZ --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|1213|<nowiki/> box-highlight" title="{{dayz}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2018}} years old today}}">
+=== {{Icon|dayz|100|link=:Category:{{Name|dayz|cat}}{{!}}About {{dayz}}}} ===
+[[:Category:DayZ: Editing|Editing]]<br>
+[[:Category:DayZ: Official Tools|Tools]]<br>
+[[:Category:DayZ: Tutorials|Tutorials]]<br>
+[[:Category:DayZ: Central Economy|Central Economy]]
+</div>
+
+<!--- VIGOR --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|0808|<nowiki/> box-highlight" title="{{vigor}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2019}} years old today}}">
+=== {{Icon|vigor|100|link=:Category:{{Name|vigor|cat}}{{!}}About {{vigor}}}} ===
+<br>
+{{Link|https://www.vigorgame.com/|VigorGame.com}}<br>
+{{Link|https://forums.bohemia.net/forums/forum/251-vigor/|Forums}}<br>
+{{Link|https://www.youtube.com/@Vigorthegame|YouTube}}<br>
+Buy: <span class="plainlinks">
+{{Link|https://www.microsoft.com/store/productid/bql8l17rv09z?cid{{=}}vigor-landing-page|{{Icon|xbox|16}} Xbox}}
+- {{Link|https://www.nintendo.com/games/detail/vigor-switch/?utm_source{{=}}vigorgame.com&utm_medium{{=}}website&utm_campaign{{=}}vigor-landing-page|{{Icon|switch|16}} Switch}}
+- {{Link|https://store.playstation.com/product/EP2601-CUSA13066_00-VIGORLEADSKU0001?utm_source{{=}}vigorgame.com&utm_medium{{=}}website&utm_campaign{{=}}vigor-landing-page|{{Icon|playstation|16}} PlayStation}}</span>
+</div>
+
+<!--- YLANDS --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|1205|<nowiki/> box-highlight" title="{{ylands}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2019}} years old today}}">
+=== {{Icon|ylands|175|link=:Category:{{Name|ylands|cat}}{{!}}About {{ylands}}}} ===
+[[Ylands:Visual Scripting|Visual Scripting]]<br>
+[[Ylands:Editor|Editor]]<br>
+[[Ylands:Database|Database]]<br>
+[[Ylands:Basic Controls and Mechanics|Controls and Mechanics]]
+</div>
+
+<!--- A3 --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|0912|<nowiki/> box-highlight" title="{{arma3}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2013}} years old today}}">
+=== {{Icon|arma3|100|link=:Category:{{Name|arma3|cat}}{{!}}About {{arma3}}}} ===
+[[Arma 3: Getting Started|Getting started]]<br>
+[[:Category:Arma 3: Editing|Editing]]<br>
+[[Introduction to Arma Scripting]]<br>
+[[:Category:Arma 3: Scripting Commands|Scripting commands]] | [[:Category:Arma 3: Functions|Scripting functions]]<br>
+[[:Category:Eden Editor|Eden Editor]]
+</div>
+
+<!--- A2 OA --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|0629|<nowiki/> box-highlight" title="{{arma2oa}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2010}} years old today}}">
+=== {{Icon|arma2oa|100|link=:Category:{{Name|arma2oa|cat}}{{!}}About {{arma2oa}}}} ===
+[[:Category:Arma 2: Editing|Editing]]<br>
+[[Arma 2: Hints and Tips|Hints and tips]]<br>
+[[:Category:Arma 2: Operation Arrowhead: Scripting Commands|Scripting commands]] | [[:Category:Arma 2: Operation Arrowhead: Functions|Scripting functions]]<br>
+[[:Category:Arma 2: Multiplayer|Multiplayer]]
+</div>
+
+<!--- A2 --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|0629|<nowiki/> box-highlight" title="{{arma2}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2009}} years old today}}">
+=== {{Icon|arma2|125|link=:Category:{{Name|arma2|cat}}{{!}}About {{arma2}}}} ===
+[[:Category:Arma 2: Editing|Editing]]<br>
+[[Arma 2: Startup Parameters|Startup parameters]]<br>
+[[:Category:Arma 2: Scripting Commands|Scripting commands]] | [[:Category:Arma 2: Functions|Scripting functions]]<br>
+[[Mondkalb's Addon Tutorial|Creating Addons]]
+</div>
+
+<!--- A1 --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|1110|<nowiki/> box-highlight" title="{{arma1}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2006}} years old today}}">
+=== {{Icon|arma1|125|link=:Category:{{Name|arma1|cat}}{{!}}About {{arma1}}}} ===
+[[ArmA: Armed Assault: Editing|Editing]]<br>
+[[:Category:ArmA: Armed Assault: Scripting Commands|Scripting commands]]<br>
+[[ArmA: Armed Assault: Mission Editing|Mission Editing]]<br>
+[[ArmA: Armed Assault: FAQ|FAQ]]
+</div>
+
+<!--- OFP:E --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|1028|<nowiki/> box-highlight" title="{{ofpe}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2005}} years old today}}">
+<br>
+=== {{Icon|ofpe|150|link=:Category:{{Name|ofpe|cat}}{{!}}About {{ofpe}}}} ===
+[[:Category:Operation Flashpoint: Elite: Editing|Editing]]<br>
+[[:Category:Operation Flashpoint: Elite: Scripting Commands|Scripting commands]]<br>
+[[Operation Flashpoint: Elite: Controller Layout|Controls]]
+</div>
+
+<!--- OFP/CWA --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|0622|<nowiki/> box-highlight" title="{{ofp}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2001}} years old today}}">
+=== {{Icon|arma0|110|link=:Category:{{Name|arma0|cat}}{{!}}About {{arma0}}}} ===
+[[:Category:Operation Flashpoint: Editing|Editing]]<br>
+[[Operation Flashpoint: Startup Parameters|Startup parameters]]<br>
+[[:Category:Operation Flashpoint: Addons|Addons]]<br>
+[[:Category:Operation Flashpoint: Scripting Commands|Scripting commands]]
+</div>
+
+<!--- TKOH --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|1027|<nowiki/> box-highlight" title="{{tkoh}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2011}} years old today}}">
+=== {{Icon|tkoh_alt|150|link=:Category:{{Name|tkoh|cat}}{{!}}About {{tkoh}}}} ===
+[[:Category:Take On Helicopters: Editing|Editing]]<br>
+[[:Category:Take On Helicopters: Scripting Commands|Scripting commands]] | [[:Category:Take On Helicopters: Functions|Scripting functions]]<br>
+[[Functions Library 2.0]]
+</div>
+
+<!--- TKOM --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|0209|<nowiki/> box-highlight" title="{{tkom}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2017}} years old today}}">
+=== {{Icon|tkom_alt|150|link=:Category:{{Name|tkom|cat}}{{!}}About {{tkom}}}} ===
+[[Take On Mars: Editor|Editor]]<br>
+[[Take On Mars: Equipment|Equipment]]
+</div>
+
+<!--- CC --->
+<div class="floating-box{{#ifeq:{{#sub:{{CURRENTTIMESTAMP}}|4|4}}|0928|<nowiki/> box-highlight" title="{{Name|carriercommand}} is {{#expr:{{#sub:{{CURRENTTIMESTAMP}}|0|4}}-2012}} years old today}}">
+=== {{Icon|carriercommand|150|link=:Category:{{Name|carriercommand|cat}}{{!}}About {{Name|carriercommand|com}}}} ===
+<br>
+[[Carrier Command: Gaea Mission: Startup Parameters|Startup Parameters]]<br>
+[[Carrier Command: Gaea Mission: FAQ|FAQ]]
+</div>
+
+</div><!-- end of flex container -->
+
+
+<div style="margin: -0.5em 2em -1em">
+{{TopMenu|[[Addons|What are Addons?]] [[Terrain Editing]] [[Modelling]] [[:Category:Scripting Topics|Scripting]] [[:Category:Tools|Tools]] [[:Category:Public Data|Public Data]] [[:Category: Armaverse|Armaverse]] [[:Category:Hints & Tips|Hints & Tips]]}}
+</div>
+
+
+[[Category:Community Wiki]]

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/tvSortByValue
+// revision: 378381 (2026-04-04T04:47:06Z)
+// export sha1: pfa3lk6w97n4a7b58z2gaffjlfkgcyd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|descr= Sorts all children of given path. Value of [[CT_TREE|Tree View]] entries is used for sorting. [[tvSetValue]] can be used to set the value for a given path.
+
+|s1= control [[tvSortByValue]] [path, ascending]
+
+|p1= control: [[Control]]
+
+|p2= path: [[Tree View Path]] - the parent item to sort
+
+|p3= ascending: [[Boolean]] - (Optional, default [[false]]) [[true]] to sort ascending, else descending
+
+|r1= [[Nothing]]
+
+|s2= [[tvSortByValue]] [idc, path, ascending]
+
+|p21= idc: [[Number]] - control idc
+
+|p22= path: [[Tree View Path]] - the parent item to sort
+
+|p23= ascending: [[Boolean]] - (Optional) [[true]] to sort ascending, else descending. Default: [[false]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>control tvSortByValue [[0], false];</sqf>
+
+|x2= <sqf>tvSortByValue [102, [0], false];</sqf>
+
+|seealso= [[lbSortBy]] [[lnbSortBy]] [[tvSortAll]] [[tvSort]] [[tvSortByValueAll]]
+}}

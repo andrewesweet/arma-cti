@@ -1,0 +1,88 @@
+// source: https://community.bistudio.com/wiki/ctrlSetText
+// revision: 378494 (2026-04-26T15:15:10Z)
+// export sha1: ddrm95wpuqf7i24p7p2nbusnehym2mm
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control
+
+|descr= Sets the text of a control of the currently active user dialog or display.
+This command can be used for static texts, buttons, edit lines and active texts as well as for images, where you can use it to set the image path.
+<br>
+Read [[Arma: GUI Configuration]] for more information about user dialogs and controls.<br>
+Use [[endl]] to insert line breaks.
+
+Since {{GVI|arma3|2.06|size= 0.75}} supported control types are:
+{{Columns|4|
+* [[CT_STATIC]]
+* [[CT_EDIT]]
+* [[CT_XKEYDESC]]
+* [[CT_XBUTTON]]
+* [[CT_SHORTCUTBUTTON]]
+* [[CT_STRUCTURED_TEXT]]
+* [[CT_BUTTON]]
+* [[CT_ACTIVETEXT]]
+}}
+
+Since {{GVI|arma3|2.22|size= 0.75}} [[CT_PROGRESS]] is also supported.
+
+|s1= [[ctrlSetText]] [idc, text]
+
+|p1= idc: [[Number]] - control IDC
+
+|p2= text: [[String]] - text or image path or texture, depending on the control type
+
+|r1= [[Nothing]]
+
+|s2= control [[ctrlSetText]] text
+
+|p21= control: [[Control]] - control
+
+|p22= text: [[String]] - text or image path or texture, depending on the control type
+
+|r2= [[Nothing]]
+
+|x1= <sqf>ctrlSetText [100, "Hello world"]; // for Dialogs</sqf>
+
+|x2= <sqf>_control ctrlSetText "Hello world."; // for Displays</sqf>
+
+|x3= Since Arma 3 2.22:
+<sqf>with uiNamespace do 
+{ 
+ bar = findDisplay 46 ctrlCreate ["RscProgress", -1]; 
+ bar ctrlSetText "\A3\Data_F\Flags\Flag_red_CO.paa";
+ bar ctrlSetPosition [0,0,1,0.25]; 
+ bar ctrlCommit 0; 
+ bar progressSetPosition 0.7;
+};
+</sqf>
+
+|seealso= [[ctrlText]] [[ctrlTextSelection]] [[ctrlSetTextSelection]]
+}}

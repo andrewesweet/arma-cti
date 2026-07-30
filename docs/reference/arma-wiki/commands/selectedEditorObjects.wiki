@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/selectedEditorObjects
+// revision: 377133 (2026-01-01T10:26:59Z)
+// export sha1: 706wk6xiec41xqre4lyth4n7prvcpq7
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Game 2 Editor | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Game 2 Editor
+
+|descr= Returns a list of currently selected editor objects. 
+{{Feature|informative|Some Old Editor Command}}
+
+|s1= [[selectedEditorObjects]] map
+
+|p1= map: [[Control]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>_selObjects = selectedEditorObjects _map; // result can be: ["_vehicle_0","_vehicle_9","_vehicle_11"]</sqf>
+
+|seealso= [[get3DENSelected]]
+}}

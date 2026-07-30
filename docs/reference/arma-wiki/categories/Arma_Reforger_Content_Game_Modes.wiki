@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Content/Game_Modes
+// revision: 321736 (2022-05-19T14:29:33Z)
+// export sha1: 9db09pqb8bqw8v6bl055brufdgcnq3r
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Content}}

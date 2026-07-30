@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Markers
+// revision: 139110 (2019-12-03T21:55:52Z)
+// export sha1: bnymelwt8ybc6lq1nhups13ym14noti
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands by Functionality]]
+Set, define and use markers.

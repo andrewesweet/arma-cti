@@ -1,0 +1,319 @@
+// source: https://community.bistudio.com/wiki/Take_On_Helicopters:_CfgWeapons
+// revision: 226550 (2021-01-31T18:09:07Z)
+// export sha1: aws7vro4yykwd11esgwwf4phgze9bw8
+// categories: Category:CfgWeapons
+// Vendored snapshot. Do not edit — re-export instead.
+
+List of all objects available in game
+
+== List ==
+=== Public ===
+{| class="wikitable sortable"
+! Class
+! Name
+! Type
+! Magazines
+<!-- EXPORT START ----------------------------------------------------------->
+|-
+|
+==== Put ====
+| Put
+| Default
+| 
+|-
+|
+==== Throw ====
+| Throw
+| Default
+| 
+|-
+|
+==== Binocular_H ====
+| Binoculars
+| Item
+| 
+|-
+|
+==== NVGoggles_H ====
+| NV Goggles
+| Item
+| 
+|-
+|
+==== Earphones_H ====
+| Earphones
+| Item
+| 
+|-
+|
+==== CarHorn ====
+| Horn
+| Mounted
+| 
+|-
+|
+==== CarHorn_H ====
+| Horn
+| Mounted
+| 
+|-
+|
+==== TruckHorn_H ====
+| Horn
+| Mounted
+| 
+|-
+|
+==== MiniCarHorn_H ====
+| Horn
+| Mounted
+| 
+|-
+|
+==== M134_H ====
+| M134
+| Mounted
+| 
+* "2000Rnd_762x51_M134_H"
+
+* "4000Rnd_762x51_M134_H"
+
+|-
+|
+==== M134_02_H ====
+| M134
+| Mounted
+| 
+* "2000Rnd_762x51_M134_H"
+
+* "4000Rnd_762x51_M134_H"
+
+|-
+|
+==== M134_Twin_H ====
+| M134
+| Mounted
+| 
+* "2000Rnd_762x51_M134_H"
+
+* "4000Rnd_762x51_M134_H"
+
+|-
+|
+==== M240_veh_H ====
+| M240
+| Mounted
+| 
+* "100Rnd_762x51_M240_H"
+
+* "1200Rnd_762x51_M240_H"
+
+|-
+|
+==== FFARLauncher_H ====
+| Hydra
+| Mounted
+| 
+* "14Rnd_FFAR_H"
+
+* "28Rnd_FFAR_H"
+
+* "38Rnd_FFAR_H"
+
+|-
+|
+==== SPG9_H ====
+| SPG-9
+| Mounted
+| 
+* "PG9_AT_H"
+
+* "OG9_HE_H"
+
+|-
+|
+==== M2_H ====
+| M2 Machinegun
+| Mounted
+| 
+* "100Rnd_127x99_M2_H"
+
+|-
+|
+==== M2BC_Veh_H ====
+| M2 Machinegun
+| Mounted
+| 
+* "100Rnd_127x99_M2_H"
+
+|-
+|
+==== DSHKM_Veh_H ====
+| DShKM
+| Mounted
+| 
+* "50Rnd_127x107_DSHKM_H"
+
+* "150Rnd_127x107_DSHKM_H"
+
+|-
+|
+==== 2A14_Veh_H ====
+| ZU-23
+| Mounted
+| 
+* "2000Rnd_23mm_AZP85_H"
+
+* "40Rnd_23mm_AZP85_H"
+
+|-
+|
+==== SmokeLauncher_Veh_H ====
+| Smokes
+| Mounted
+| 
+* "SmokeLauncherMag_H"
+
+|-
+|
+==== 2A42_Veh_H ====
+| 2A42
+| Mounted
+| 
+* "230Rnd_30mmAP_2A42_H"
+
+* "230Rnd_30mmHE_2A42_H"
+
+* "250Rnd_30mmAP_2A42_H"
+
+* "250Rnd_30mmHE_2A42_H"
+
+|-
+|
+==== PKT_Veh_H ====
+| PKT
+| Mounted
+| 
+* "1500Rnd_762x54_PKT_H"
+
+* "2000Rnd_762x54_PKT_H"
+
+|-
+|
+==== AT5Launcher_H ====
+| Konkurs 9M113
+| Mounted
+| 
+* "5Rnd_AT5_BRDM2_H"
+
+|-
+|
+==== AT5LauncherSingle_H ====
+| Konkurs 9M113
+| Mounted
+| 
+* "8Rnd_AT5_BMP2_H"
+
+|-
+|
+==== Igla_Twice_Veh_H ====
+| Igla 9K38
+| Mounted
+| 
+* "2Rnd_Igla_H"
+
+|-
+|
+==== ItemMap_H ====
+| Map
+| Default
+| 
+|-
+|
+==== ItemRadio_H ====
+| Radio
+| Default
+| 
+|-
+|
+==== ItemWatch_H ====
+| Watch
+| Default
+| 
+|-
+|
+==== ItemCompass_H ====
+| Compass
+| Default
+| 
+|-
+|
+==== Rifle ====
+| Rifle
+| Rifle
+| 
+|-
+|
+==== Rifle_Base_H ====
+| Rifle
+| Rifle
+| 
+|-
+|
+==== AK47M_H ====
+| AKM
+| Rifle
+| 
+* "30Rnd_762x39_AK47_H"
+
+|-
+|
+==== Glock17_H ====
+| G17
+| Handgun
+| 
+* "17Rnd_9x19_glock17_H"
+
+|-
+|
+==== Phone_H ====
+| Phone
+| Item
+| 
+|-
+|
+==== Phone2_H ====
+| Phone
+| Item
+| 
+|-
+|
+==== PocketPC_H ====
+| PocketPC
+| Item
+| 
+|-
+|
+==== Camera_H ====
+| Camera
+| Handgun
+| 
+|-
+|
+==== M16_base_H ====
+| Rifle
+| Rifle
+| 
+* "30Rnd_556x45_Stanag_H"
+
+|-
+|
+==== M4A1_H ====
+| M4A1
+| Rifle
+| 
+* "30Rnd_556x45_Stanag_H"
+
+|}
+
+[[Category:CfgWeapons]]

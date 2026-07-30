@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/CSLA_Iron_Curtain_Polanek
+// revision: 339470 (2023-04-28T14:08:58Z)
+// export sha1: fw1fydz0hmi34gna2hwu1jc5ibeyzcj
+// categories: Category:CSLA: Iron Curtain
+// Vendored snapshot. Do not edit — re-export instead.
+
+Polanek is the name of 25km<sup>2</sup> sized map included in CSLA Iron Curtain - Operations expansion pack. The map is based on an area in southern Moravia in and around the town of {{Link|https://goo.gl/maps/vdQ2vKg1WUbP33dSA|Ždánice}} to represent some more of the inland territory of Czechoslovakia.
+
+While the map is freely accessible on Steam Workshop, the main cDLC is still required to run the map. 
+
+[[File:csla_cdlc-polanek-map.jpg|none|150px|thumb|Polanek map]]
+
+
+
+== Gallery ==
+<gallery mode="slideshow" showthumbnails>
+File:csla_cdlc_polanek_2.jpg
+File:csla_cdlc_polanek_1.png
+File:csla_cdlc_polanek_3.jpg
+File:csla_cdlc_polanek_4.jpg
+</gallery>
+
+[[Category:CSLA: Iron Curtain]]

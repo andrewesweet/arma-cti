@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/vehicle
+// revision: 376160 (2025-09-08T19:48:37Z)
+// export sha1: ajfhlsiq1x4iehrvtal0lt8q1m3x3f5
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Vehicle in which given unit is mounted. If none, unit is returned. Alternatively, use [[objectParent]]
+{{Feature|important|While [[vehicle]] may return the vehicle the unit is in for '''[[alive]]''' units, for dead units which are groupless, this command returns the unit itself - use [[objectParent]] instead.}}
+
+|s1= [[vehicle]] unitName
+
+|p1= unitName: [[Object]] - [[alive]] unit
+
+|r1= [[Object]]
+
+|x1= SQS
+<sqs>? vehicle player != player : hint "Player is in a vehicle"</sqs>
+
+|x2= SQF
+<sqf>if (vehicle player != player) then { hint "Player is in a vehicle" };</sqf>
+
+|seealso= [[objectParent]]
+}}

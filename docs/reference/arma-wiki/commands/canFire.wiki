@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/canFire
+// revision: 377852 (2026-01-03T21:50:58Z)
+// export sha1: ltrohvosrl50neh2dysxlkkoc2ipmz2
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Weapons
+
+|descr= Returns [[true]] if the given vehicle is still able to fire.
+For the command to return [[true]], vehicle must be alive, have weapon operator and the weapon cannot be damaged &ge; 0.9 but can be empty due to running out of ammo.
+If mission starts with vehicle having no ammo or [[setVehicleAmmo]] 0 command is executed on the vehicle, then [[canFire]] will always report [[false]] for it.
+
+|s1= [[canFire]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[Boolean]] - [[true]] if able to fire
+
+|x1= <sqf>
+if (not canFire _tank) then
+{
+	player sideChat "Tank disabled!";
+};
+</sqf>
+
+|seealso= [[canMove]] [[canStand]] [[fire]] [[doFire]] [[commandFire]] [[fireAtTarget]] [[forceWeaponFire]] [[commandArtilleryFire]] [[commandSuppressiveFire]] [[doArtilleryFire]] [[doSuppressiveFire]] [[isManualFire]]
+}}
+
+{{Note
+|user= Bdfy
+|timestamp= 20070120071600
+|text= true even if unit is out of ammo. Only false if gun is damaged. 
+}}
+
+{{Note
+|user= Canukausiuka
+|timestamp= 20080824052000
+|text= False if there is no gunner in the vehicle, regardless of damage level.
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20180423072000
+|text= This command seems to have evolved. Returns "true" (on Hunter, Ifrit) even if Gun's damage is set to 1 and turret also, as far there is a gunner. The only way to obtain a canFire  "false"  is to make the crew disembark (2 burned tires for example). Then no matter the gun state, if the gunner disembarks without order, the vehicle can't fire. In this case: can't move >> can't fire.
+NB: if you jump into a hunter HMG after having [[setHitPointDamage]](d) "hitTurret" and "hitGun"  to 1, the turret can't rotate any more, the gun is pitched down but you can fire (trigger) to the ground. Difficult to check the behavior for each vehicles.
+}}

@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_SoundShapes
+// revision: 364286 (2024-05-06T09:38:35Z)
+// export sha1: jsyqvla20zg8usakyuy9frwyx5y1eie
+// Vendored snapshot. Do not edit — re-export instead.
+
+SoundShapes allow sounds to have different volumes depending on whether the listener is inside or outside a soundShape with a transition inbetween. You can direct and point these shapes so that a sound is only heard in front of a vehicle for example.
+Underlying tech in Arma 3 - [https://msdn.microsoft.com/en-us/library/windows/desktop/ee418803(v{{=}}vs.85).aspx Microsoft XAudio2 SoundCone]
+
+Currenty only "cone" type shapes are available and they are configured within cfgSoundShapes. Two examples:
+
+<syntaxhighlight lang="cpp">
+class CfgSoundShapes
+{
+	class FrontSemispace60
+	{
+		type = "cone"; //type of shape, currently only cone available, check XAudio2 reference
+		innerVolume = 1; //volume when inside innerAngle area of cone, typically 1 (meaning 100%)
+		outerVolume = 0.001; //volume when outside outerAngle area of cone, typically lower
+		innerAngle = 135; //inner cone size in degrees, check XAudio2 reference
+		outerAngle = 225; //outer cone size in degrees, check XAudio2 reference
+		azimuth = 0; //direction of shape in degrees, 0 being FORWARD
+		elevation = 0; //elevation of shape in degrees, 0 meaning NO ELEVATION
+	};
+	class LeftBottomSemispace10
+	{
+		type = "cone";
+		innerVolume = 1;
+		outerVolume = 0.316228;
+		innerAngle = 135;
+		outerAngle = 225;
+		azimuth = -90; //direction of shape in degrees, -90 being 90 degrees LEFT
+		elevation = -90; //elevation of shape in degrees, -90 being 90 degrees UP
+	};
+};
+</syntaxhighlight>
+These are two BI default soundShapes. The naming scheme tells us what direction the cone is facing and how quiet the signal will be outside the cone. 60 means 60dB quieter, 10 means 10dB quieter. 
+To use soundShapes in [[Arma 3: Sound: SoundSet|soundSets]], add "shape" parameter to [[Arma 3: Sound: SoundSet|soundSet]]. If you want to use custom soundShapes, create them in class cfgSoundShapes.
+
+When the listener is BETWEEN inner and outer angles, the volume will be scaled between inner & outerVolume values. innerVolume does NOT have to be higher than outerVolume, you can switch it around so that a sound will be quiet, when inside the cone.

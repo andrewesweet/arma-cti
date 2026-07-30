@@ -1,0 +1,21 @@
+// source: https://community.bistudio.com/wiki/getAimingCoef
+// revision: 351281 (2023-11-27T02:47:48Z)
+// export sha1: qs9jrmvw3yrpwghf0d86vxm2mwgvipi
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+|game1= arma3
+|version1= 1.62
+|arg=
+|gr1= Stamina System
+
+|descr= Get current aiming coefficient (higher ~ less precise, default is 1)
+|s1= [[getAimingCoef]] unit
+
+|p1= unit: [[Object]]
+|r1= [[Number]]
+
+|x1= _coef = [[getAimingCoef]] [[player]]
+|seealso= [[getCustomAimingCoef]]
+}}

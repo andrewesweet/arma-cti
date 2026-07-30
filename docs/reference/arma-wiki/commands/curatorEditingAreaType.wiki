@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/curatorEditingAreaType
+// revision: 310854 (2022-05-07T20:24:08Z)
+// export sha1: e8w0j7gi7u2yjv4cxcpc7wryrbladqz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Returns type of edit areas assigned to curator (blacklist/whitelist).
+
+|s1= [[curatorEditingAreaType]] curator
+
+|p1= curator: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_isBlacklist = curatorEditingAreaType _curator;</sqf>
+
+|seealso= [[BIS_fnc_addCuratorAreaFromTrigger]] [[removeCuratorEditingArea]] [[removeAllCuratorEditingAreas]] [[curatorEditingArea]]
+}}

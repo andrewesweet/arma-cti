@@ -1,0 +1,2204 @@
+// source: https://community.bistudio.com/wiki/Biki_Export_Scripts
+// revision: 376823 (2025-11-22T10:55:00Z)
+// export sha1: ous2fubpe9iko58nwbvqi80u889jnde
+// categories: Category:Maintenance
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This page contains all export scripts used to generate data on various pages on this wiki.
+{{Feature|informative|In order to quickly link to the export script used to generate data on a specific page use {{hl|{<nowiki/>{[[Template:Wiki|Wiki]]{{!}}extractionScript<nowiki>}}</nowiki>}} on that specific page.}}
+{{Feature|informative|The functions from this page (and more) are also available in {{Link|https://github.com/arma3/Biki-Mod|this mod}}.}}
+<!--
+
+	copy/paste free sample
+
+= [[Arma 3: Page Name]] =
+
+'''Author:''' {{User|TheUserName}}<br>
+<spoiler>
+<sqf>
+// the code
+</sqf>
+</spoiler>
+
+-->
+
+= [[Arma: Airport IDs]] =
+
+'''Author:''' {{User|POLPOX}}<br>
+<spoiler>
+<sqf>
+_world = "Enoch";
+_cfg = (configFile >> "CfgWorlds" >> _world);
+
+_r = [
+	'{| class="wikitable"',
+	"! ID !! Coordinates !! Description !! AI approach",
+	"|-"
+];
+_id = 0;
+
+_addAirportInfo = {
+	_dir = asin ((getArray (_cfg >> "ilsDirection")) # 0);
+	if (_dir < 0) then
+	{
+		_dir = -_dir;
+	};
+	_compassDir = call {
+		_dir45 = round (_dir/45);
+		if (_dir45 == 1) exitWith { "NE" };
+		if (_dir45 == 2) exitWith { "E" };
+		if (_dir45 == 3) exitWith { "SE" };
+		if (_dir45 == 4) exitWith { "S" };
+		if (_dir45 == 5) exitWith { "SW" };
+		if (_dir45 == 6) exitWith { "W" };
+		if (_dir45 == 7) exitWith { "NW" };
+		"N"
+	};
+	_r pushBack "| " + str _id;
+	_r pushBack "| " + mapGridPosition (getArray (_cfg >> "ilsPosition"));
+	_r pushBack "| -";
+	_r pushBack "| " + str round _dir + " (" + _compassDir + ")";
+	_r pushBack "|-";
+	_id = _id + 1;
+};
+
+if (count getArray (_cfg >> "ilsPosition") != 0) exitWith
+{
+	call _addAirportInfo;
+	{
+		_cfg = _x;
+		call _addAirportInfo;
+	} forEach ("true" configClasses (_cfg >> "SecondaryAirports"));
+	_r pushBack "|}";
+	copyToClipboard (_r joinString endl);
+};
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: CfgFunctions]] =
+
+'''Author:''' {{User|R3vo}}<br>
+<spoiler>
+<sqf>
+private _export = format ["Last updated: {{GVI|arma3|%1}}", (productVersion # 2 / 100) toFixed 2] + endl + "{| class=""wikitable sortable"" cellpadding=""0.5em""
+! Group
+! Category
+! Functions";
+
+{ // Config
+	private _indexConfig = _forEachIndex;
+	private _nameConfig = _x # 0;
+	{ // Tags
+		private _nameTAG = configName _x;
+		private _valueTAG = getText (_x >> "tag");
+		if (_valueTAG == "") then { _valueTag = configName _x };
+		{ // Categories
+			private _nameCategory = configName _x;
+			_export = _export + endl + "|-" + endl + "! " + _nameTAG + endl + "! " + _nameCategory + endl + "|";
+			private _pathCategory = getText (_x >> "file");
+			{ // Functions
+				private _prefix = ["BIS_fnc_", "BIN_fnc_"] select (_nameTAG in ["A3_Enoch", "A3_Contact"]);
+				_export = _export + endl + ": [[" + _prefix + (configName _x) + "]]";
+			} forEach ((_nameConfig >> "CfgFunctions" >> _nameTAG >> _nameCategory) call BIS_fnc_returnChildren);
+		} forEach ((_nameConfig >> "CfgFunctions" >> configName _x) call BIS_fnc_returnChildren);
+	} forEach ((_nameConfig >> "CfgFunctions") call BIS_fnc_returnChildren);
+} forEach [[configFile, "configFile"]];
+
+_export = _export + endl + "|}";
+copyToClipboard _export;
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: CfgIdentities]] =
+
+'''Author:''' {{User|Lou Montana}} and {{User|POLPOX}}<br>
+<spoiler>
+<sqf>
+private _result = [
+	'{| class="sortable wikitable"',
+	'! className !! Name !! Note'
+];
+
+{
+	_result pushBack "|-";
+	_note = ["", "Hidden"] select (getNumber (_x >> "disabled") == 1);
+	_result pushBack format ["| {{hl|%1}} || %2 || %3", configName _x, getText (_x >> "displayName"), _note];
+} forEach ("true" configClasses (configFile >> "CfgFaces" >> "Man_A3"));
+
+_result pushBack "|}";
+
+_result joinString endl;
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: CfgMarkers]] =
+
+'''Author:''' {{User|R3vo}}<br>
+<spoiler>
+<sqf>
+// Marker data to biki table
+_classes = ("true" configClasses (configFile >> "CfgMarkers"));
+_classes = [_classes, [], {configName _x}, "ASCEND"] call BIS_fnc_sortBy;
+_export = "{| class=""wikitable - sortable""
+|-
+! No. !! Class !! Name !! Icon Path !! Shadow !! Scope !! Added with
+|-";
+
+{
+	_addon = _x call ENH_fnc_getConfigSourceAddon params [["_addonClass", ""]];
+	if (_addonClass isNotEqualTo "") then { _addonClass = format ["{{Icon|%1|24}}", _addonClass] };
+
+	_shadow = ["{{Icon|checked}}", "{{Icon|unchecked}}"] select (getNumber (_x >> "shadow"));
+	_export = _export + endl + "| " + str (_forEachIndex + 1) + "." + " || " + "{{hl|" + configName _x + "}}" + " || " + getText (_x >> "name") + " || " + "{{hl|" + getText (_x >> "icon") + "}}" + " || " + _shadow + " || " + str getNumber (_x >> "scope") + " || " + _addonClass + endl + "|-"
+} forEach _classes;
+
+copyToClipboard ((_export trim ["|-", 2]) + "|}");
+</sqf>
+</spoiler>
+
+<spoiler>
+<sqf>
+// Marker icons screenshot
+//Create a solid, grey area marker in the editor first. Set its size to 100000x100000
+_startPos = [-33000, 20000, 0];
+_classes = ("true" configClasses (configFile >> "CfgMarkers"));
+_classes = [_classes, [], {configName _x}, "ASCEND"] call BIS_fnc_sortBy;
+
+{
+	if (_startPos # 0 > 30000) then
+	{
+		_startPos set [0, -33000];
+		_startPos = _startPos vectorAdd [0, -1600, 0];
+	};
+	_marker = createMarker [configName _x , _startPos];
+	_marker setMarkerType configName _x;
+	_marker setMarkerText format ["  %1.", _forEachIndex + 1];
+	_startPos = _startPos vectorAdd [3500, 0, 0];
+} forEach _classes;
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: CfgMarkerColors]] =
+
+'''Author:''' {{User|R3vo}}<br>
+<spoiler>
+<sqf>
+toFixed 2;
+
+private _markers = "true" configClasses (configFile >> "CfgMarkerColors");
+
+private _export = "";
+_export = "{| class=""wikitable sortable""" + endl;
+_export = _export + "! style= ""min-width: 100px"" | Preview !! Class Name !! Display Name !! RGBA (0..1) !! RGB (0..255) !! HTML" + endl;
+
+{
+	private _classname = configName _x;
+	private _name = getText (_x >> "name");
+	private _colorRGBArma = getArray (_x >> "color");
+
+	_colorRGBArma = _colorRGBArma apply
+	{
+		if (_x isEqualType "") then
+		{
+			call compile _x;
+		}
+		else
+		{
+			_x;
+		};
+	};
+
+	private _colorRGB255 = _colorRGBArma apply {_x * 255};
+
+	_export = _export + "|-" + endl + format [
+			"| style=""background-color: %10"" | || %1 || ''%2'' || [%3, %4, %5, %6] || [%7, %8, %9] || %10",
+			_className,
+			_name,
+			_colorRGBArma # 0, _colorRGBArma # 1, _colorRGBArma # 2, _colorRGBArma # 3,
+			_colorRGB255 # 0, _colorRGB255 # 1, _colorRGB255 # 2,
+			_colorRGBArma call BIS_fnc_colorRGBtoHTML
+		] + endl;
+} forEach _markers;
+
+_export = _export + "|}" + endl + endl;
+
+copyToClipboard _export;
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: CfgMusic]] =
+
+'''Author:''' {{User|Killzone_Kid}}<br>
+<spoiler>
+<sqf>
+private _cfgMusic = [];
+_cfgMusic pushBack format ["Last updated: {{GVI|arma3|%1}}", ((productVersion select 2) / 100) toFixed 2];
+_cfgMusic pushBack "{| class=""wikitable sortable"" width=""100%1""", "%";
+_cfgMusic pushBack "! width=""5%"" | No.";
+_cfgMusic pushBack "! width=""35%"" | Title";
+_cfgMusic pushBack "! width=""30%"" | Class Name";
+_cfgMusic pushBack "! width=""15%"" | Duration";
+_cfgMusic pushBack "! width=""15%"" | DLC";
+_cfgMusic pushBack "";
+{
+	private _name = getText (_x >> "name");
+	private _duration = getNumber (_x >> "duration");
+	_duration = round _duration;
+	private _minutes = floor (_duration / 60);
+	private _mod = _duration mod 60;
+	private _seconds = _mod / 1;
+	_minutesStr = if (_minutes < 10) then { format ["0%1", _minutes] } else { format ["%1", _minutes] };
+	_secondsStr = if (_seconds < 10) then { format ["0%1", _seconds] } else { format ["%1", _seconds] };
+	_duration = format ["%1:%2", _minutesStr, _secondsStr];
+	private _dlc = if (configSourceMod _x == "") then
+	{
+		"Arma 3";
+	}
+	else
+	{
+		format ["%1", (modParams [configSourceMod _x, ["name"]]) select 0];
+	};
+	//Some work around to make wiki link work
+	if (_dlc isEqualTo "[[Arma 3 Contact (Platform)]]") then
+	{
+		_dlc = "Arma 3 Contact";
+	};
+	if (_dlc isEqualTo "[[Arma 3 Tac-Ops]]") then
+	{
+		_dlc = "[[Arma 3 Tac-Ops Mission Pack]]";
+	};
+	_cfgMusic pushBack "|-";
+	_cfgMusic pushBack format ["| %1", _forEachIndex + 1];
+	_cfgMusic pushBack format ["| %1", if (_name == "") then { "N/A" } else { _name }];
+	_cfgMusic pushBack format ["| %1", configName _x];
+	_cfgMusic pushBack format ["| %1", if (_duration == "00:00") then { "N/A" } else { _duration }];
+	_cfgMusic pushBack format ["| %1", _dlc];
+	_cfgMusic pushBack "";
+} forEach ("isClass _x" configClasses (configFile >> "CfgMusic"));
+_cfgMusic pushBack "|}";
+
+copyToClipboard (_cfgMusic joinString toString[10]);
+</sqf>
+</spoiler>
+
+
+= Arma 3: CfgVehicles =
+
+* [[Arma 3: CfgVehicles_WEST]]
+* [[Arma 3: CfgVehicles_EAST]]
+* [[Arma 3: CfgVehicles_GUER]]
+* [[Arma 3: CfgVehicles_CIV]]
+
+'''Author:''' [[BIS_fnc_exportCfgVehiclesAssetDB]] updated by {{User|R3vo}}<br>
+<spoiler>
+<sqf>
+/*
+AUTHOR: Asheara, updated by R3vo
+
+USE CASE:
+[0] spawn BIS_fnc_exportCfgVehiclesAssetDB; -> OPFOR / CSAT
+[1] spawn BIS_fnc_exportCfgVehiclesAssetDB; -> BLUFOR / NATO
+[2] spawn BIS_fnc_exportCfgVehiclesAssetDB; -> Independent / Guerrilla
+[3, 0] spawn BIS_fnc_exportCfgVehiclesAssetDB; -> Civilian side, Civilian
+[3, 1] spawn BIS_fnc_exportCfgVehiclesAssetDB; -> Civilian side, Structures
+[3, 2] spawn BIS_fnc_exportCfgVehiclesAssetDB; -> Civilian side, Ruins & Wrecks
+[3, 3] spawn BIS_fnc_exportCfgVehiclesAssetDB; -> Civilian side, Equipment
+[3, 4] spawn BIS_fnc_exportCfgVehiclesAssetDB; -> Civilian side, Objects
+[3, 5] spawn BIS_fnc_exportCfgVehiclesAssetDB; -> Civilian side, VR Objects
+[3, 6] spawn BIS_fnc_exportCfgVehiclesAssetDB; -> Civilian side, Animals
+[] spawn BIS_fnc_exportCfgVehiclesAssetDB; -> Other - Unknown, Enemy, Friendly, Modules, Empty, Ambient Life
+*/
+
+private _sides_param = param [0, [4, 5, 6, 7, 8, 9], [0, []]];				// first parameter, default value is "other" -> sides bigger than three, accepts array and numbers
+private _categories_param = param [1, 0, [0]];								// second parameter, default value is 0 - representing "Civilians" category as first field of array, accepts numbers
+
+if !(_sides_param isEqualType []) then										// if _side is not array, make it array
+{
+	_sides_param = [_sides_param];
+};
+
+if (count(_sides_param) > 1) then
+{
+	_categories_param = 1;
+};
+
+startLoadingScreen [""];
+
+_cfgVehicles 			= (configFile >> "cfgvehicles") call BIS_fnc_returnChildren;	// gets all subclasses of cfgVehicles
+_text 					= "";															// initialising the text variable
+_product 				= productVersion select 0;										// version of the product for purposes of the wiki links
+_productShort 			= productVersion select 1;										// version of the product for purposes of the wiki images
+
+_scopes 				= ["Private", "Protected", "Public"];																					// list of strings for scopes
+_sides 					= ["OPFOR", "BLUFOR", "Independent", "Civilian", "Unknown", "Enemy", "Friendly", "Modules", "Empty", "Ambient Life"];	// list of strings for sides
+_scopecolor 			= ["#E1C2C2", "#FFF3B2", "#C2E1C2"];																					// list of colors for scopes
+_sidecolor 				= ["#E1C2C2", "#C2D4E7", "#C2E1C2", "#DAC2E1", "#FFF3B2", "E1C2C2", "#C2E1C2", "#FDD3A6", "#DAC2E1", "#CCCCCC"];		// list of colors for sides
+
+// listed subcategories for "civilian" side
+_civilian				= ["Civilians"];
+_structures				= ["Structures", "Structures (Altis)", "Structures (Tanoa)", "Walls", "Fences"];
+_ruins_wrecks			= ["Ruins", "Ruins (Altis)", "Ruins (Tanoa)", "Wrecks"];
+_equipment				= ["Equipment", "Weapons", "Weapon Attachements", "Supplies"];
+_objects				= ["Furniture", "Signs", "Things", "Other"];
+_vr						= ["VR Objects"];
+_animals				= ["Animals"];
+
+_categories				= [_civilian, _structures, _ruins_wrecks, _equipment, _objects, _vr, _animals];
+
+_cfg_DLC				= ["Curator", "Expansion", "Heli", "Kart", "Mark", "Orange", "Argo", "Tank"];						// list of values for DLCs from config
+_icons_DLC				= [
+							"Kart", "karts_icon_ca",
+							"Heli", "heli_icon_ca",
+							"Mark", "mark_icon_ca",
+							"Expansion", "apex_icon_ca",
+							"Jets", "jets_icon_ca",
+							"Orange", "orange_icon_ca",
+							"Argo", "malden_icon_ca",
+							"Tank", "tank_icon_ca"
+						  ];
+
+_exclude_list			= [];
+
+// function returning appropriate string for the purpose of wiki links based on the item type passed as an argument
+_fnc_getItemPage = {
+	switch (_this) do {
+		case "Weapon":			{ "CfgWeapons Weapons" };
+		case "VehicleWeapon":	{ "CfgWeapons Vehicle Weapons" };
+		case "Item":			{ "CfgWeapons Items" };
+		case "Equipment":		{ "CfgWeapons Equipment" };
+		default					{ "CfgWeapons" };
+	};
+};
+
+_text = format ["{{Navbox/A3Assets}}", _product] + endl;
+
+// creating the wiki table header
+_text = _text + "{| class=""wikitable sortable"" style=""font-size: 80%; margin: auto""" + endl;
+_text = _text + "! Preview" + endl;
+_text = _text + "! Class Name" + endl;
+_text = _text + "! Display Name" + endl;
+_text = _text + "! Side" + endl;
+_text = _text + "! Category" + endl;
+_text = _text + "! Subcategory" + endl;
+_text = _text + "! Scope" + endl;
+_text = _text + "! DLC" + endl;
+// Props do not need to have these parameters listed
+if (_categories_param == 0) then
+{
+	_text = _text + "! Weapons" + endl;
+	_text = _text + "! Magazines" + endl;
+	_text = _text + "! Items" + endl;
+};
+_text = _text + "! Addons" + endl;
+_text = _text + "! Features" + endl;
+
+_parsed = [];				// initialising array for filtering the assets
+
+// Applies only for "civilian" side - too many assets, had to be split into several categories
+if (3 in _sides_param) then
+{
+	{	// getting side and editor category text to ve verified for every asset
+		_side = getNumber (_x >> "side");
+		_editorcategory = getText (configFile >> "cfgEditorCategories" >> getText (_x >> "editorCategory") >> "displayName");
+		if (_editorcategory == "") then
+		{
+			_editorcategory = getText (configFile >> "cfgFactionClasses" >> getText (_x >> "faction") >> "displayName");
+		};
+
+		// excluding classes starting as "Supply"
+		if ((configName _x select [0, 6]) == "Supply") then
+		{
+			_exclude_list pushBack _x;
+		};
+		// excluding carrier parts which are hidden from editor
+		if (((configName _x select [0, 15]) == "Land_Carrier_01") && { getNumber (_x >> "scope") != 2 }) then
+		{
+			_exclude_list pushBack _x;
+		};
+
+		// Verifying allegiance of an asset into chosen category
+		if (_side == 3 && { _editorcategory in (_categories select _categories_param) } && { !(_x in _exclude_list) }) then
+		{
+			_parsed pushBack _x;
+		};
+	} forEach _cfgVehicles;
+	_cfgVehicles = _parsed;
+};
+
+_cfgVehiclesCount = count _cfgVehicles;										// count of the subclasses for purpose of the loading screen progress
+{
+	_scope = getNumber (_x >> "scope");										// getting the scope parameter of the asset
+	_side = getNumber (_x >> "side");										// getting the side parameter of the asset
+
+	if (_scope > 0 && _side in _sides_param) then							// chooses only the classes with public or private scope (1 or 2)
+	{
+		_weapons = [];														// initialising the array for the weapons
+		_magazines = [];													// initialising the array for the magazines
+
+		_textSide = _sides select _side;									// getting the display name of side - number from config is used as array index
+		_textScope = _scopes select _scope;									// getting the display name of scope - number from config is used as array index
+		_textDLC = "";														// initialising the variable for DLC
+		_iconDLC = "";														// initialising the variable for the icon file
+		_textWeapons = "";													// initialising the text variable for weapons
+		_textMagazines = "";												// initialising the text variable for magazines
+		_textItems = "";													// initialising the text variable for items
+		_textAddons = "";													// initialising the text variable for addons
+		_textFeatures = "";													// initialising the text variable for features
+
+		/* features attribute variables */
+		_tmp_features_int = 0;
+		_tmp_features_array = [];
+		_count_textures = 0;
+		_count_animations = 0;
+		_count_hiddensel = 0;
+		_count_vehcapacity = 0;
+		_count_turrets = 0;
+		_array_turrets = [];
+		_count_slingload = 0;
+		_count_sling_ropes = 0;
+		_can_float = 0;
+
+		/* vehicle capacity details*/
+		_driver = 0;
+		_copilot = 0;
+		_commanders = 0;
+		_ffv_positions = 0;
+		_gunners = 0;
+		_cargo = 0;
+
+		/* vehicle roles details */
+		_veh_medic = 0;
+		_veh_repair = 0;
+		_veh_ammo = 0;
+		_veh_fuel = 0;
+
+		/* vehicle in vehicle tranport */
+		_veh_carrier = 0;
+		_veh_cargo = 0;
+
+		/* men roles details */
+		_men_medic = 0;
+		_men_repair = 0;
+		_men_mines = 0;
+		_men_uav = 0;
+
+		_classname = configName _x;																										// getting the class name of the object
+		_displayname = getText (_x >> "displayName");																					// getting the display name of the object
+		_editorcategory = getText (configFile >> "cfgEditorCategories" >> getText (_x >> "editorCategory") >> "displayName");			// getting editorcategory display name
+		_editorsubcategory = getText (configFile >> "cfgEditorSubcategories" >> getText (_x >> "editorSubcategory") >> "displayName");	// getting editor subcategory display name
+		_items = ([getText (_x >> "uniformClass")] + getArray (_x >> "linkedItems") + getArray (_x >> "items")) - [""];					// getting the list of the items
+		_addons = unitAddons _classname;																								// getting a list of addons required for the object
+
+		// if editorCategory is empty, variable is filled with faction instead
+		if (_editorcategory == "") then
+		{
+			_editorcategory = getText (configFile >> "cfgFactionClasses" >> getText (_x >> "faction") >> "displayName");
+		};
+
+		// if editorsubcategory is empty, variable is filled with vehicleclass instead
+		if (_editorsubcategory == "") then
+		{
+			_editorsubcategory = getText (configFile >> "cfgVehicleClasses" >> getText (_x >> "vehicleClass") >> "displayName");
+		};
+
+		// if the asset was released as part of DLC, there will be selected text for name of the expansion
+		_textDLC = getText (_x >> "DLC");
+		if ((_icons_DLC find _textDLC) != -1) then
+		{
+			_iconDLC = _icons_DLC select ((_icons_DLC find _textDLC)+1);
+		};
+
+		// Props do not need to have these parameters listed
+		if (_categories_param == 0) then
+		{
+			// loop for adding the turret weapons and magazines to the variables for current object
+			{
+				_weapons = _weapons + getArray (_x >> "weapons");
+				_magazines = _magazines + getArray (_x >> "magazines");
+			} forEach (_classname call bis_fnc_getTurrets);
+
+			// formatting of the _weapons array to fit to the wiki table, adding links
+			{
+				_type = _x call BIS_fnc_itemType;								// getting the type of the weapon
+				_page = (_type select 0) call _fnc_getItemPage;					// getting and appropriate
+				_textWeapons = _textWeapons + endl + format [": [[%1: %3#%2|%2]]", _product, _x, _page];
+			} forEach _weapons;
+
+			// formatting of the magazines - aggregating the duplicite magazines, adding links
+			while { _magazines isNotEqualTo [] } do {
+				_mag = _magazines select 0;
+				_textMagazines = _textMagazines + endl + format [":%1x&nbsp;[[%3: CfgMagazines#%2|%2]]", { _x == _mag } count _magazines, _mag, _product];
+				_magazines = _magazines - [_mag];
+			};
+
+			// formatting of the items
+			while { _items isNotEqualTo [] } do {
+				_item = _items select 0;
+				_type = _item call BIS_fnc_itemType;
+				_page = (_type select 0) call _fnc_getItemPage;
+				_textItems = _textItems + endl + format [": [[%4: %3#%2|%2]]", { _x == _item } count _items, _item, _page, _product];
+				_items = _items - [_item];
+			};
+		};
+
+		// formatting the addons list, adding links
+		{	// Addons starting with CuratorOnly shouldn't appear in the list
+			if ((_x find "CuratorOnly") == -1) then
+			{
+				_textAddons = _textAddons + endl + format [": [[%1: CfgPatches CfgVehicles#%2|%2]]", _product, _x];
+			};
+		} forEach _addons;
+
+		/* FEATURES */
+		/* RANDOMISATION */
+		// Randomisation has two parts - textures and components
+		_textFeatures = _textFeatures + endl + "* '''Randomisation:''' ";
+
+		// parsing amount of skins, which have non-zero value
+		_tmp_features_array = getArray(_x >> "TextureList");
+		for "_i" from 0 to (count _tmp_features_array - 1) step 2 do
+		{
+			if (_tmp_features_array select (_i + 1) > 0) then
+			{
+				_count_textures = _count_textures + 1;
+			};
+		};
+
+		// parsing amount of components, which have probability to be random - values between 0 and 1
+		_tmp_features_array = getArray(_x >> "animationList");
+		for "_i" from 0 to (count _tmp_features_array - 1) step 2 do
+		{
+			if (_tmp_features_array select (_i + 1) > 0 && _tmp_features_array select (_i + 1) < 1) then
+			{
+				_count_animations = _count_animations + 1;
+			};
+		};
+
+		// creating the final text for randomisation, based on the values obtained from before
+		if (_count_textures > 1 || { _count_animations > 0 }) then
+		{
+			_textFeatures = _textFeatures + "Yes";
+			// writing the amount of skins
+			if (_count_textures > 1) then
+			{
+				_textFeatures = _textFeatures + ", " + str _count_textures + " skins";
+			};
+
+			// writing the amount of components
+			if (_count_animations > 0) then
+			{
+				_textFeatures = _textFeatures + ", " + str _count_animations + " component";
+
+				if (_count_animations > 1) then
+				{
+					_textFeatures = _textFeatures + "s";
+				};
+			};
+
+			_textFeatures = _textFeatures + endl;
+		}
+		else
+		{
+			_textFeatures = _textFeatures + "No" + endl;
+		};
+
+		/* CAMO SELECTIONS */
+		// getting the amount of hidden selections used for camouflage
+		_count_hiddensel = count getArray(_x >> "hiddenSelections");
+		_textFeatures = _textFeatures + "* ''' Camo&nbsp;selections:'''&nbsp;" + str _count_hiddensel + endl;
+
+		/* VEHICLE SPECIFIC FEATURES */
+		if (configName _x isKindOf "Air" || { configName _x isKindOf "Car" } || { configName _x isKindOf "Tank" } || { configName _x isKindOf "Ship" }) then
+		{
+			/* VEHICLE CAPACITY */
+			// function to iterate through turrets, to get their count and list
+			_get_count_turrets =
+			{
+				private _config = _this select 0;
+				_count_turrets = _count_turrets + count("true" configClasses (_config >> "Turrets"));
+				{
+					_array_turrets pushBack _x;			// creates array of configs for the turrets, so they can be sorted out
+					[_x] call _get_count_turrets;		// checks if the turret has any other turrets as children
+				} forEach ("true" configClasses(_config >> "Turrets"));
+			};
+
+			[_x] call _get_count_turrets;			// call the function to count and list the turrets
+
+			_driver = getNumber (_x >> "hasDriver");			// getting value to determine whether there is a driver (but always should be)
+			_cargo = getNumber (_x >> "transportSoldier");	// getting value to determine amount of cargo positions
+
+			// iterating through the array of configs for turrets to determine their types
+			{	// whether the turret is a commander
+				if (getText (_x >> "ProxyType") == "CPCommander") then
+				{
+					_commanders = _commanders + 1;
+				}
+				else
+				{	// whether the turret is a copilot
+					if ((getNumber (_x >> "isCopilot") == 1) && { count(getArray(_x >> "weapons")) == 0 || count(getArray(_x >> "magazines")) == 0 }) then
+					{
+						_copilot = _copilot + 1;
+					}
+					else
+					{	// whether the turret is a firing from the vehicle
+						if (getNumber (_x >> "isPersonTurret") == 1 && {count(getArray(_x >> "weapons")) == 0 || {count(getArray(_x >> "magazines")) == 0} || {getText (_x >> "ProxyType") == "CPCargo"}}) then
+						{
+							_ffv_positions = _ffv_positions + 1;
+						} else
+						{	// anything else is a gunner
+							_gunners = _gunners + 1;
+						};
+					};
+				};
+			} forEach _array_turrets;
+
+			_count_vehcapacity = _driver + _cargo + _count_turrets; 	// capacity of vehicle is driver, amount of cargo positions and amount of turrets
+
+			_textFeatures = _textFeatures + "* '''Vehicle&nbsp;capacity:'''&nbsp;";
+			// vehicles with parameter isUav have are remotely controlled
+			if (getNumber (_x >> "isUav") == 1) then
+			{
+				_textFeatures = _textFeatures + "Remotely&nbsp;controlled, ";
+			};
+			_textFeatures = _textFeatures + str _count_vehcapacity;
+
+			// if capacity is more than a zero, we'll write more elaborate description
+			if (_count_vehcapacity > 0) then
+			{
+				_textFeatures = _textFeatures;
+
+				// "amount" of drivers (always just one)
+				if (_driver > 0) then
+				{
+					_textFeatures = _textFeatures + endl + "** " + str _driver + "&nbsp;driver";
+				};
+
+				// "amount" of copilots
+				if (_copilot > 0) then
+				{
+					if (_driver > 0) then
+					{
+						_textFeatures = _textFeatures;
+					};
+					_textFeatures = _textFeatures + endl + "** " + str _copilot + "&nbsp;copilot";
+
+					if (_copilot > 1) then
+					{
+						_textFeatures = _textFeatures + "s";
+					};
+				};
+
+				// amount of commanders
+				if (_commanders > 0) then
+				{
+					if (_driver > 0 || { _copilot > 0 }) then
+					{
+						_textFeatures = _textFeatures;
+					};
+					_textFeatures = _textFeatures + endl + "** " + str _commanders + "&nbsp;commander";
+
+					if (_commanders > 1) then
+					{
+						_textFeatures = _textFeatures + "s";
+					};
+				};
+
+				// amount of gunners
+				if (_gunners > 0) then
+				{
+					if (_driver > 0 || { _copilot > 0 } || { _commanders > 0 }) then
+					{
+						_textFeatures = _textFeatures;
+					};
+					_textFeatures = _textFeatures + endl + "** " + str _gunners + "&nbsp;gunner";
+
+					if (_gunners > 1) then
+					{
+						_textFeatures = _textFeatures + "s";
+					};
+				};
+
+				// amount of positions for firing from vehicle
+				if (_ffv_positions > 0) then
+				{
+					if ((_driver > 0) || { _copilot > 0 } || { _commanders > 0 } || { _gunners > 0 }) then
+					{
+						_textFeatures = _textFeatures;
+					};
+					_textFeatures = _textFeatures + endl + "** " + str _ffv_positions + "&nbsp;firing&nbsp;position";
+
+					if (_ffv_positions > 1) then
+					{
+						_textFeatures = _textFeatures + "s";
+					};
+				};
+
+				// amount of cargo positions
+				if (_cargo > 0) then
+				{
+					if ((_driver > 0) || { _copilot > 0 } || { _commanders > 0 } || { _gunners > 0 } || { _ffv_positions > 0 }) then
+					{
+						_textFeatures = _textFeatures;
+					};
+					_textFeatures = _textFeatures + endl + "** " + str _cargo + " cargo&nbsp;position";
+
+					if (_cargo > 1) then
+					{
+						_textFeatures = _textFeatures + "s";
+					};
+				};
+
+				_textFeatures = _textFeatures + endl;
+			};
+
+			/* ROLES */
+			_veh_medic = getNumber (_x >> "attendant");
+			_veh_ammo = getNumber (_x >> "transportAmmo");
+			_veh_fuel = getNumber (_x >> "transportFuel");
+			_veh_repair = getNumber (_x >> "transportRepair");
+
+			_textFeatures = _textFeatures + "* '''Roles:''' ";
+			// vehicle can heal, medic role
+			if (_veh_medic > 0) then
+			{
+				_textFeatures = _textFeatures + endl + "** can&nbsp;heal";
+			};
+			// vehicle can repair
+			if (_veh_repair > 0) then
+			{
+				if (_veh_medic > 0) then
+				{
+					_textFeatures = _textFeatures + ", " + endl;
+				};
+				_textFeatures = _textFeatures + endl + "** can&nbsp;repair";
+			};
+			// vehicle transports ammo, can replenish
+			if (_veh_ammo > 0) then
+			{
+				if (_veh_medic > 0 || { _veh_repair > 0 }) then
+				{
+					_textFeatures = _textFeatures + ", ";
+				};
+				_textFeatures = _textFeatures + endl + "** can&nbsp;replenish&nbsp;ammo";
+			};
+			// vehicle transports fuel, can replenish
+			if (_veh_fuel > 0) then
+			{
+				if (_veh_medic > 0 || { _veh_repair > 0 } || { _veh_ammo > 0 }) then
+				{
+					_textFeatures = _textFeatures + ", " + endl;
+				};
+				_textFeatures = _textFeatures + endl + "** can&nbsp;replenish&nbsp;fuel";
+			};
+
+			// no roles
+			if (!(_veh_fuel > 0) && {!(_veh_medic > 0)} && {!(_veh_repair > 0)} && {!(_veh_ammo > 0)}) then
+			{
+				_textFeatures = _textFeatures + endl + "** None";
+			};
+			_textFeatures = _textFeatures + endl;
+
+			/* FLOATING */
+			_can_float = getNumber (_x >> "canFloat");
+			_textFeatures = _textFeatures + "* '''Can&nbsp;float:'''&nbsp;";
+
+			if (_can_float == 1) then
+			{
+				_textFeatures = _textFeatures + "Yes" + endl;
+			}
+			else
+			{
+				_textFeatures = _textFeatures + "No" + endl;
+			};
+
+			/* VEHICLE IN VEHICLE TRANSPORT */
+			_textFeatures = _textFeatures + "* '''Vehicle&nbsp;in&nbsp;vehicle&nbsp;transport:''' ";
+			if (isClass (_x >> "VehicleTransport")) then
+			{
+				_veh_carrier = getNumber (_x >> "VehicleTransport" >> "Carrier" >> "maxLoadMass");
+				_veh_cargo = getNumber (_x >> "VehicleTransport" >> "Cargo" >> "canBeTransported");
+			}
+			else
+			{	// specific vehicles can be blacklisted and therefore can't be loaded, done with config parameter
+				// therefore if config parameter is missing, vehicle can be loaded
+				_veh_cargo = 1;
+			};
+
+			if (_veh_carrier > 0) then
+			{
+				_textFeatures = _textFeatures + "Can&nbsp;transport, &nbsp;up&nbsp;to&nbsp;" + str _veh_carrier + "&nbsp;kg. ";
+			}
+			else
+			{
+				_textFeatures = _textFeatures + "Cannot&nbsp;transport. ";
+			};
+
+			if (_veh_cargo > 0) then
+			{
+				_textFeatures = _textFeatures + "Can be transported." + endl;
+			}
+			else
+			{
+				_textFeatures = _textFeatures + "Cannot be transported." + endl;
+			};
+
+			/* SLINGLOAD */
+			_count_slingload = getNumber (_x >> "slingLoadMaxCargoMass");
+			_textFeatures = _textFeatures + "* '''Slingload:''' ";
+
+			if (_count_slingload > 0) then
+			{
+				_textFeatures = _textFeatures + "Yes, up&nbsp;to&nbsp;" + str _count_slingload + "&nbsp;kg" + endl;
+			}
+			else
+			{
+				_textFeatures = _textFeatures + "No" + endl;
+			};
+		};
+
+		/* MEN SPECIFIC FEATURES */
+		if (configName _x isKindOf "Man" && { !(configName _x isKindOf "Animal") }) then
+		{
+			/* ROLES */
+			_textFeatures = _textFeatures + "* '''Roles:''' ";
+
+			_men_medic = getNumber (_x >> "attendant");
+			_men_repair = getNumber (_x >> "engineer");
+			_men_mines = getNumber (_x >> "canDeactivateMines");
+			_men_uav = getNumber (_x >> "uavHacker");
+
+			// man can heal, medic role
+			if (_men_medic > 0) then
+			{
+				_textFeatures = _textFeatures + "can&nbsp;heal";
+			};
+			// man can repair, engineer role
+			if (_men_repair > 0) then
+			{
+				if (_men_medic > 0) then
+				{
+					_textFeatures = _textFeatures + ", ";
+				};
+				_textFeatures = _textFeatures + "can&nbsp;repair";
+			};
+			// man can deactivate mines
+			if (_men_mines > 0) then
+			{
+				if (_men_medic > 0 || { _men_repair > 0 }) then
+				{
+					_textFeatures = _textFeatures + ", ";
+				};
+				_textFeatures = _textFeatures + "can&nbsp;deactivate&nbsp;mines";
+			};
+			// vehicle transports fuel, can replenish
+			if (_men_uav > 0) then
+			{
+				if (_men_medic > 0 || { _men_repair > 0 } || { _men_mines > 0 }) then
+				{
+					_textFeatures = _textFeatures + ", ";
+				};
+				_textFeatures = _textFeatures + "can&nbsp;replenish&nbsp;fuel";
+			};
+
+			// no roles
+			if (!(_men_medic > 0) && { !(_men_repair > 0) } && { !(_men_mines > 0) } && { !(_men_uav > 0) }) then
+			{
+				_textFeatures = _textFeatures + "None";
+			};
+		};
+
+		/* FEATURES EXCLUDING MEN */
+		if !(configName _x isKindOf "Man") then
+		{
+			/* SLINLOADABLE */
+			_textFeatures = _textFeatures + "* '''Slingloadable:''' ";
+			_count_sling_ropes = count getArray(_x >> "slingLoadCargoMemoryPoints");
+			if (_count_sling_ropes > 0) then
+			{
+				_textFeatures = _textFeatures + "Yes";
+			}
+			else
+			{
+				_textFeatures = _textFeatures + "No";
+			};
+		};
+
+		// Get editor preview
+		private _image = getText (configFile >> "CfgVehicles" >> _classname >> "editorPreview");
+
+		if (_image != "") then
+		{
+			_image = (_image splitString "\");
+			reverse _image;
+			_image = _image param [0, ""];
+		};
+
+		if (_image != "") then
+		{
+			_image = format ["[[File:%1|150px]]", "arma3-" + toLowerANSI _image];
+		};
+
+		diag_log _image;
+
+		_text = _text + "|-" + endl;
+		_text = _text + "|" + (["", " " + _image] select (_image != "") + endl;															// preview
+		_text = _text + "| " + format ["<span id=""%1"">'''%1'''</span>", _classname] + endl;											// class name
+		_text = _text + "| " + (if (_displayName != "") then { "''" + _displayname + "''" } else { "" }) + endl;						// display name
+		_text = _text + "| " + format ["style=""background-color: %2"" | %1", _textSide, _sideColor select _side] + endl;				// side
+		_text = _text + "| " + _editorcategory + endl;																					// category
+		_text = _text + "| " + _editorsubcategory + endl;																				// subcategory
+		_text = _text + "| " + format ["style=""background-color: %2"" | %1", _textScope, _scopeColor select _scope] + endl;			// scope
+		if (_iconDLC != "") then 																										// DLC
+		{
+			_text = _text + "| " + format ["[[File:%1.png|50px]]", _iconDLC] + endl;
+		}
+		else
+		{
+			_text = _text + "| " + _textDLC + endl;
+		};
+		// Props do not need to have these parameters listed
+		if (_categories_param == 0) then
+		{
+			_text = _text + "| " + _textWeapons + endl;																					// weapons
+			_text = _text + "| " + _textMagazines + endl;																				// magazines
+			_text = _text + "| " + _textItems + endl + endl;																			// items
+		};
+		_text = _text + "| " + _textAddons + endl + endl;																				// addons
+		_text = _text + "| " + _textFeatures + endl;																					// features
+
+	};
+	progressLoadingScreen (_foreachindex / _cfgVehiclesCount);
+} forEach _cfgVehicles;
+
+_text = _text + "|}" + endl;													// wiki table ending
+_text = _text + format [
+		"<div style=""color: grey; font-size: 0.9em; padding: 0.5em; text-align: center"">Generated in {{GVI|%1|%2|size= 0.75}} by ~~~~</div>",
+		toLowerANSI (productVersion select 0),
+		(productVersion select 2) * 0.01
+	] + endl;
+
+_text = _text + "{{Navbox/A3Assets}}";
+
+copyToClipboard _text;														// copying the contents to the clipboard
+
+endLoadingScreen;
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: Difficulty Settings]] =
+
+'''Author:''' {{User|Killzone_Kid}}<br>
+<spoiler>
+<sqf>
+"debug_console" callExtension format ["class Difficulties"];
+"debug_console" callExtension format ["{"];
+_cfg = configFile >> "CfgDifficulties";
+{
+	_class = configName _x;
+	"debug_console" callExtension format ["	class %1", _class];
+	"debug_console" callExtension format ["	{"];
+	"debug_console" callExtension format ["		class Flags"];
+	"debug_console" callExtension format ["		{"];
+	_flags = _cfg >> _class >> "Flags";
+	_flagNames = [];
+	for "_i" from 0 to count _flags - 1 do {
+		_flag = _flags select _i;
+		_flagNames pushBack configName _flag;
+	};
+	_flagNames sort true;
+	{
+		getArray (_flags >> _x) params ["_current", "_canChange"];
+		if (_canChange == 1) then
+		{
+			"debug_console" callExtension format [
+				"			%1 = %2;",
+			_x, _current];
+		} else {
+			"debug_console" callExtension format [
+				"			/* %1 = %2; - cannot be changed */",
+			_x, _current];
+		}
+	} forEach _flagNames;
+	"debug_console" callExtension format ["		};"];
+	{
+		"debug_console" callExtension format [
+			"		%1 = %2;",
+		_x, getNumber(_cfg >> _class >> _x)];
+	} forEach [
+		"precisionEnemy",
+		"precisionFriendly",
+		"skillEnemy",
+		"skillFriendly"
+	];
+	"debug_console" callExtension format ["		};"];
+} forEach ("true" configClasses _cfg);
+"debug_console" callExtension format ["};"];
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: Display3DEN IDCs]] =
+
+'''Author:''' {{User|R3vo}}<br>
+<spoiler>
+<sqf>
+private _sqfTag = "sqf";
+private _controls = "{| class=""wikitable sortable""
+|-
+! Config Name !! IDC !! Config Path" + endl;
+
+private _fnc_scanConfig =
+{
+	params ["_config"];
+	"true" configClasses _config apply
+	{
+		_idc = getNumber (_x >> "idc");
+		if (_idc > 0) then
+		{
+			_controls = _controls + "|-" + endl + "| " + "{{hl|" + configName _x + "}}" + " || " + str _idc + " || " + "<" + _sqfTag + ">" + ([_x, ""] call BIS_fnc_configPath) + "</" + _sqfTag + ">" + endl;
+		};
+		_x call _fnc_scanConfig;
+	};
+};
+
+[configFile >> "display3DEN"] call _fnc_scanConfig;
+
+copyToClipboard (_controls + endl + "|}");
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: Hitpoints]] =
+
+'''Author:''' {{User|R3vo}}<br>
+<spoiler>
+<sqf>
+//If 3den Enhanced is installed, the script will also fill the "Name" column with available translations
+[] spawn
+{
+	startLoadingScreen ["Loading"];
+	private _hitPoints = [];
+	{
+		_veh = configName _x createVehicle [0, 0, 0];
+		{
+			_hitpoints pushBackUnique _x;
+		} forEach (getAllHitPointsDamage _veh # 0);
+		deleteVehicle _veh;
+	} forEach ("isClass (_x >> 'HitPoints') && getNumber (_x >> 'Scope') >= 1" configClasses (configFile >> "CfgVehicles"));
+	_hitpoints sort true;
+
+	private _text = "{| class=""wikitable sortable""" + endl +"|-" + endl + "! No. !! Hit Point !! Name";
+
+	{
+		_text = _text + endl + "|-" + endl + "| " + str (_forEachIndex + 1) + " || " + _x + " || " + localize ("STR_ENH_DAMAGE_" + _x);
+	} forEach _hitpoints;
+	copyToClipboard (_text + endl + "|}");
+	systemChat "Data copied!";
+	endLoadingScreen;
+};
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: Moves]] =
+
+'''Author:''' {{User|Lou Montana}}<br>
+<spoiler>
+<sqf>
+private _allAnimConfigs = toString { private _name = configName _x; count _name > 7 && { toLowerANSI (_name select [0, 8]) == "cfgmoves" } } configClasses configFile;
+
+private _humanAnimConfigs = _allAnimConfigs select {
+	private _name = configName _x;
+	count _name > 11 && { toLowerANSI (_name select [0, 12]) == "cfgmovesmale" }
+	|| { count _name > 12 && { toLowerANSI (_name select [0, 13]) == "cfgmoveswomen" } }
+};
+
+private _humanActions = [];
+private _humanStates  = [];
+{
+	_humanActions append ("true" configClasses (_x >> "Actions") apply { "* " + configName _x });
+	_humanStates  append ("true" configClasses (_x >> "States")  apply { "* " + configName _x });
+} forEach _humanAnimConfigs;
+
+private _result = "{{TOC|side||3}}" + endl
+	+ "== All Human Animations ==" + endl + endl
+	+ "=== Actions ===" + endl + endl + "{{Columns|2|" + endl + ((_humanActions call BIS_fnc_sortAlphabetically) joinString endl) + endl + "}}" + endl + endl
+	+ "=== States ==="  + endl + endl + "{{Columns|2|" + endl + ((_humanStates  call BIS_fnc_sortAlphabetically) joinString endl) + endl + "}}" + endl + endl;
+
+_result = _result + endl + "== All Animations ==" + endl + endl;
+{
+	if (count (_x >> "Actions") + count (_x >> "States") < 1) then { continue };
+
+	_result = _result + format ["=== %1 ===", configName _x];
+	if (count (_x >> "Actions") > 0) then
+	{
+		_result = _result + endl + endl + "==== Actions ====" + endl + "{{Columns|2|" + endl + ("true" configClasses (_x >> "Actions") apply { "* " + configName _x } call BIS_fnc_sortAlphabetically joinString endl) + endl + "}}";
+	};
+	if (count (_x >> "States") > 0) then
+	{
+		_result = _result + endl + endl + "==== States ===="  + endl + "{{Columns|2|" + endl + ("true" configClasses (_x >> "States")  apply { "* " + configName _x } call BIS_fnc_sortAlphabetically joinString endl) + endl + "}}";
+	};
+	_result = _result + endl + endl;
+} forEach _allAnimConfigs;
+
+_result = _result + endl + "{{Wiki|extractionScript}}" + endl + endl + "[[Category:Moves]]" + endl + "{{GameCategory|arma3|Reference Lists}}"; // categories
+
+copyToClipboard _result;
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: createSimpleObject/objects]] =
+
+'''Author:''' {{User|Lou Montana}}<br>
+<spoiler>
+<sqf>
+private _result = [];
+{ _result append addonFiles [_x select 0, ".p3d"] } forEach allAddonsInfo;
+copyToClipboard str _result;
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: createVehicle/vehicles]] =
+
+'''light version (without hitpoints)'''<br>
+'''Author:''' {{User|Lou Montana}}<br>
+<spoiler>
+<sqf>
+private _result = "";
+"if (getNumber (_x >> 'scope') > 0) then
+{
+	_result = format ['%1* %2\n', _result, configName _x];
+}" configClasses (configFile >> "CfgVehicles");
+copyToClipboard _result;
+_result;
+</sqf>
+</spoiler>
+
+'''heavy version (with hitpoints)'''<br>
+'''Author:''' {{User|Killzone_Kid}}<br>
+<spoiler>
+<sqf>
+private _result = "";
+toString {
+	if (getNumber (_x >> "scope") > 0) then
+	{
+		_result = _result + "* " + configName _x + "\n";
+		for "_i" from 0 to count (_x >> "AnimationSources") - 1 do
+		{
+			_animSource = (_x >> "AnimationSources") select _i;
+			_source = getText (_animSource >> "source");
+			if (_source == "hit") then { _source = "hit [" + getText (_animSource >> "hitpoint") + "]" };
+			if (_source != "") then { _source = " => " + _source };
+			_result = _result + ("*# " + configName _animSource + _source) + "\n";
+		};
+	}
+} configClasses (configFile >> "CfgVehicles");
+copyToClipboard _result;
+_result;
+</sqf>
+</spoiler>
+
+'''heavy version (with ''hidden'' hitpoints)'''<br>
+'''Author:''' {{User|Lou Montana}} from the above one<br>
+<spoiler>
+<sqf>
+private _result = "";
+private _tagName = "spoiler"; // cannot write the whole tag
+private _classes = "getNumber (_x >> 'scope') > 0" configClasses (configFile >> "CfgVehicles");
+_classes = [_classes, [], { configName _x }, "ASCEND"] call BIS_fnc_sortBy;
+
+private _currentLetter = "";
+private ["_configName", "_letter", "_config", "_animsCount", "_animSource", "_source"];
+{
+	_configName = configName _x;
+	_letter = toUpperANSI (_configName select [0, 1]);
+	if (_letter != _currentLetter) then
+	{
+		_result = _result + endl + "=== " + _letter + " ===" + endl + endl;
+		_currentLetter = _letter;
+	};
+	_result = _result + "* " + _configName;
+	_config = (_x >> "AnimationSources");
+	_animsCount = count _config;
+	if (_animsCount > 0) then
+	{
+		_result = _result + " <" + _tagName + " text= ""Show AnimationSources"">";
+		for "_i" from 0 to _animsCount - 1 do
+		{
+			_animSource = _config select _i;
+			_source = getText (_animSource >> "source");
+			if (_source == "hit") then { _source = "hit [" + getText (_animSource >> "hitpoint") + "]" };
+			if (_source != "") then { _source = " => " + _source };
+			_result = _result + endl + ("# " + configName _animSource + _source);
+		};
+		_result = _result + endl + "</" + _tagName + ">";
+	};
+	_result = _result + endl;
+} forEach _classes;
+_result = trim _result;
+copyToClipboard _result;
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: DLC Restrictions]] =
+
+'''Author:''' {{User|POLPOX}}<br>
+<spoiler>
+<sqf>
+// use unicode to prevent export error
+forceUnicode 0;
+
+// 0: personal equipments 1: vehicles
+private _mode = 0;
+
+// create hashmap to check looked models
+private _lookedModels = createHashMap;
+
+// get classes
+private "_classes";
+if (_mode == 0) then
+{
+	// get weapons, equipments, glasses, bags (in CfgVehicles)
+	_classes = (
+		toString {
+			getNumber (_x >> 'scope') == 2 &&
+			(([configName _x] call BIS_fnc_baseWeapon) == configName _x) &&
+			getNumber (_x >> 'type') != 65536 &&
+			!('UnknownEquipment' in (configName _x call BIS_fnc_itemType))
+		} configClasses (configFile >> "CfgWeapons")
+	) +
+	("getNumber (_x >> 'scope') == 2" configClasses (configFile >> "CfgGlasses")) +
+	("getNumber (_x >> 'scope') == 2 && configName _x isKindOf 'Bag_Base'" configClasses (configFile >> "CfgVehicles"));
+};
+if (_mode == 1) then
+{
+	// get vehicles, except Men
+	_classes = ("
+		getNumber (_x >> 'scope') == 2 &&
+		(configName _x isKindOf 'AllVehicles' &&
+		!(configName _x isKindOf 'Man'))
+	" configClasses (configFile >> "CfgVehicles"));
+};
+private _data = _classes apply {
+	private _class = configName _x;
+	private _model = toLower (call {
+		// check if the thing is a uniform
+		if ((getNumber (_x >> "itemInfo" >> "type")) == 801) exitWith
+		{
+			getText (_x >> "itemInfo" >> "uniformClass")
+		};
+		// normalize model path to prevent errors
+		private _split = (getText (_x >> "model") splitString "\");
+		if ((count _split >= 2) && { !(".p3d" in toLower (_split # (count _split-1))) }) then
+		{
+			_split set [count _split -1, (_split # (count _split-1)) + ".p3d"];
+		};
+		(_split joinString "\")
+	});
+
+	// get DLC info per items
+	if (isNil { _lookedModels get _model }) then
+	{
+		systemChat _class;
+
+		// create a simple object and check the DLC via getObjectDLC
+		private _obj = createSimpleObject [_model, [0, 0, 0]];
+		private _dlc = getObjectDLC _obj;
+
+		// and remove the object. bye-bye
+		deleteVehicle _obj;
+
+		// if it is a part of the base game, -1, otherwise DLC id
+		if (isNil "_dlc") then
+		{
+			_lookedModels set [_model, -1];
+			[_x, -1]
+		} else {
+			_lookedModels set [_model, _dlc];
+			[_x, _dlc]
+		};
+	} else {
+		// Skip the generation if the model is already checked
+		systemChat ("simple object generate skipped: " + _class);
+		[_x, _lookedModels get _model]
+	};
+};
+
+// return value preparation
+private _return = [
+	'{| class="wikitable sortable"',
+	'|-'
+];
+if (_mode == 0) then
+{
+	_return pushBack '! Type'
+} else {
+	_return pushBack '! Faction'
+};
+_return append [
+	'! classname',
+	'! displayName',
+	'! Icon',
+	'! Restricted?'
+];
+// code to convert things to things
+private _IDtoDLC = {
+	switch _this do {
+		case 275700: { "arma3zeus" };
+		case 288520: { "arma3karts" };
+		case 304380: { "arma3helicopters" };
+		case 332350: { "arma3marksmen" };
+		case 395180: { "arma3apex" };
+		case 571710: { "arma3lawsofwar" };
+		case 601670: { "arma3jets" };
+		case 612480: { "arma3malden" };
+		case 744950: { "arma3tacops" };
+		case 798390: { "arma3tanks" };
+		case 1021790: { "arma3contact" };
+		case 1325500: { "arma3artofwar" };
+		default { "" };
+	};
+};
+private _DLCToName = {
+	switch _this do {
+		case "arma3zeus": { "Zeus" };
+		case "arma3karts": { "Karts" };
+		case "arma3helicopters": { "Helicopters" };
+		case "arma3marksmen": { "Marksmen" };
+		case "arma3apex": { "Apex" };
+		case "arma3lawsofwar": { "Laws of War" };
+		case "arma3jets": { "Jets" };
+		case "arma3malden": { "Malden" };
+		case "arma3tacops": { "Tac-Ops" };
+		case "arma3tanks": { "Tanks" };
+		case "arma3contact": { "Contact" };
+		case "arma3artofwar": { "Art of War" };
+		default { "" };
+	};
+};
+private _MODtoDLC = {
+	switch toLower _this do {
+		case "curator": { "arma3zeus" };
+		case "kart": { "arma3karts" };
+		case "heli": { "arma3helicopters" };
+		case "mark": { "arma3marksmen" };
+		case "expansion": { "arma3apex" };
+		case "orange": { "arma3lawsofwar" };
+		case "jets": { "arma3jets" };
+		case "argo": { "arma3malden" };
+		case "tacops": { "arma3tacops" };
+		case "tank": { "arma3tanks" };
+		case "enoch": { "arma3contact" };
+		case "aow": { "arma3artofwar" };
+		default { "" };
+	};
+};
+{
+	_x params ["_class", "_dlc"];
+	private _dlcName = _dlc call _IDtoDLC;
+	// Make the BG red when is restricted
+	_return pushBack ("|-" + (["", " style=""background: #EDD; color: #333"""] select (_dlcName != "")));
+	// Categorize personal equipments
+	if (_mode == 0) then
+	{
+		_return pushBack ("| " + call {
+			if ((configHierarchy (_x # 0)) # 1 == (configFile >> "CfgWeapons")) exitWith
+			{
+				_type = (configName (_x # 0)) call BIS_fnc_itemType;
+				if (configName (_x select 0) isKindOf ["Rifle", configFile >> "CfgWeapons"]) exitWith { "Rifle" };
+				if (configName (_x select 0) isKindOf ["Pistol", configFile >> "CfgWeapons"]) exitWith { "Pistol" };
+				if (configName (_x select 0) isKindOf ["Launcher", configFile >> "CfgWeapons"]) exitWith { "Launcher" };
+				if (_type # 1 == "GPS") exitWith { "Terminal" };
+				if (_type # 1 == "UAVTerminal") exitWith { "Terminal" };
+				if (_type # 1 == "AccessoryMuzzle") exitWith { "Muzzle Attachment" };
+				if (_type # 1 == "AccessorySights") exitWith { "Sight" };
+				if (_type # 1 == "AccessoryPointer") exitWith { "Rail Attachment" };
+				if (_type # 1 == "AccessoryBipod") exitWith { "Bipod" };
+				if (_type # 1 == "LaserDesignator") exitWith { "Binocular" };
+				if (_type # 1 == "NVGoggles") exitWith { "NVGs" };
+				if (_type # 1 == "Radio") exitWith { "Communication" };
+				if (
+					_type # 1 == "FirstAidKit" ||
+					_type # 1 == "Medikit" ||
+					_type # 1 == "Toolkit" ||
+					_type # 1 == "MineDetector"
+				) exitWith { "Item" };
+				_type # 1
+			};
+			if ((configHierarchy (_x # 0)) # 1 == (configFile >> "CfgGlasses")) exitWith
+			{
+				"Facewear"
+			};
+			if ((configHierarchy (_x # 0)) # 1 == (configFile >> "CfgVehicles") && configName (_x # 0) isKindOf "Bag_Base") exitWith
+			{
+				"Backpack"
+			};
+		});
+	} else {
+		_return pushBack ("| " + getText (configfile >> "CfgFactionClasses" >> (getText (_class >> "faction")) >> "displayName"));
+	};
+	_return append [
+		("| " + configName _class),
+		("| " + getText (_class >> "displayName"))
+	];
+
+	// DLC Icons
+	private _MOD = call {
+		private _return = "";
+		// emulate Arsenal icons
+		if (_mode == 0) then
+		{
+			private _addon = configSourceAddonList (_x # 0);
+			private _MOD = configSourceMODList (configFile >> "CfgPatches" >> _addon # 0);
+			if (count _MOD > 0) then
+			{
+				_MOD = _MOD # 0
+			} else {
+				_MOD = ""
+			};
+			_return = _MOD;
+		};
+
+		// emulate Eden Editor icons
+		if (_mode == 1) then
+		{
+			private _MOD = configSourceMODList (_x # 0);
+			if (count _MOD > 0) then
+			{
+				_MOD = _MOD # 0
+			} else {
+				_MOD = ""
+			};
+			_return = _MOD;
+		};
+
+		_return;
+	};
+	_return pushBack ("| " + (["", format ["{{Icon|%1|25}}", _MOD call _MODtoDLC]] select (_MOD != "")));
+	if (_dlcName == "") then
+	{
+		_return pushBack ("| No");
+	} else {
+		_return pushBack ("| " + (_dlcName call _DLCToName));
+	};
+} forEach _data;
+_return pushBack "|}";
+
+// and finally done, use joinString to make line breaks and copy
+copyToClipboard (_return joinString endl);
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: Shooting Targets]] =
+
+'''Author:''' {{User|R3vo}}<br>
+<spoiler>
+<sqf>
+popUpTargets = "{| class=""wikitable""
+|-
+! Display Name !! Class !! Animation Sources"
+
+{
+	private _anims = "true" configClasses (_x >> "AnimationSources");
+	if (_anims isNotEqualTo []) then
+	{
+		private _animsStr = "";
+		{
+			_animsStr = _animsStr + "{{hl|" + configName _x + "}}" + "<br>" + endl;
+		} forEach _anims;
+		popUpTargets = popUpTargets + endl + "|-" + endl + "| " + getText (_x >> "displayName") + " || " + "{{hl|" + configName _x + "}}" + " || " + endl + _animsStr;
+	};
+} forEach ("getNumber (_x >> 'scope') > 1 && getText (_x >> 'editorSubcategory') == 'EdSubcat_Targets'" configClasses (configfile >> "CfgVehicles"));
+
+copyToClipboard (popUpTargets + endl + "|}");
+</sqf>
+</spoiler>
+
+
+= [[Arma 3: Sound Files]] =
+
+'''Author:''' {{User|Lou Montana}}<br>
+<spoiler>
+<sqf>
+0 spawn {
+	private _exts = [".wav", ".wss", ".ogg"];
+	private _spoilerTagThreshold = 30;
+	private _extractRadioDubbing = false;
+
+	private _addonPaths = allAddonsInfo apply { _x select 0 };
+	if (!_extractRadioDubbing) then
+	{
+		_addonPaths = _addonPaths select { !("dubbing_radio" in _x) };
+	};
+	_addonPaths sort true;
+
+	{
+		private _addonPath = _x;
+		private _files = [];
+
+		{
+			_files append addonFiles [_addonPath, _x];
+		} forEach _exts;
+
+		if (_files isEqualTo []) then { continue };
+
+		private _showSpoiler = count _files > _spoilerTagThreshold;
+
+		diag_log text "";
+		diag_log text ("=== " + (_addonPath select [3, count _addonPath - 4]) + " ===");
+		diag_log text "";
+
+		if (_showSpoiler) then { diag_log text ("<" + "spoiler>") };
+
+		_files sort true;
+		{
+			diag_log text (" """ + _x + """");
+		} forEach _files;
+
+		if (_showSpoiler) then { diag_log text ("</" + "spoiler>") };
+
+	} forEach _addonPaths;
+};
+</sqf>
+</spoiler>
+
+
+= [[BIS_fnc_holdActionAdd]] =
+
+'''Author:''' {{User|Lou Montana}}<br>
+<spoiler>
+<sqf>
+private _result = [];
+private _foundPaas = [];
+private _splits  = [];
+{
+	_foundPaas = addonFiles [_x select 0, ".paa"] select {
+		_x = toLower _x;
+		_x = _x splitString "\";
+		if (count _x > 5 && { _x select 2 == "data" && _x select 3 == "igui" && _x select 5 in ["actions", "holdactions"] }) then
+		{
+			true
+		}
+		else
+		{
+			_x = _x select (count _x - 1);
+			"action" in _x && { !("faction" in _x) && { !("interaction" in _x) } };
+		};
+	};
+	_result append _foundPaas;
+} forEach allAddonsInfo;
+copyToClipboard str _result;
+</sqf>
+</spoiler>
+
+
+= [[:Category:CfgGroups|CfgGroups]] =
+
+'''Author:''' {{User|Lou Montana}}
+* [[Arma 2: CfgGroups]]<br><spoiler>
+<sqf>
+local _result = "";
+local _addLine = {
+	_result = _result + _this + (toString [10]);
+};
+
+local _maxGroupWidth = 5;
+local _cfgGroups = configFile >> "CfgGroups";
+
+"{{TOC|horizontal}}" call _addLine;
+
+for "_sideindex" from 0 to (count _cfgGroups -1) do
+{	// side level
+
+	local _sideConfig = _cfgGroups select _sideindex;
+
+	if (isClass _sideConfig) then
+	{
+		if (_sideindex > 0) then
+		{
+			"" call _addLine;
+		};
+		"" call _addLine;
+		"== " + getText (_sideConfig >> "name") + " ==" call _addLine;
+		"" call _addLine;
+		"config: " + configName _sideConfig call _addLine;
+		"" call _addLine;
+
+		for "_factionindex" from 0 to count _sideConfig -1 do
+		{	// faction level
+
+			local _factionConfig = _sideConfig select _factionindex;
+
+			if (isClass _factionConfig) then
+			{
+				"=== " + getText (_factionConfig >> "name") + " ===" call _addLine;
+				"" call _addLine;
+				"config: " + configName _factionConfig call _addLine;
+				"" call _addLine;
+				"{| class=""wikitable""" call _addLine;
+
+				for "_grouptypeindex" from 0 to count _factionConfig -1 do
+				{	// groupType level
+
+					local _groupTypeConfig = _factionConfig select _grouptypeindex;
+
+					if (isClass _groupTypeConfig) then
+					{
+						local _count = 0;
+						for "_cnt" from 0 to count _groupTypeConfig -1 do { if (isClass (_groupTypeConfig select _cnt)) then { _count = _count + 1; }; };
+
+						local _groupLines = ceil (_count / _maxGroupWidth);
+
+						"|- style=""vertical-align: top""" call _addLine;
+						"! style=""vertical-align: middle; white-space: pre""" + (["", format [" rowspan=""%1""", _groupLines]] select (_groupLines > 1)) + " | " + getText (_groupTypeConfig >> "name") call _addLine;
+						"<div style=""font-weight: normal"">config: " + configName _groupTypeConfig + "</div>" call _addLine;
+
+						local _groupRow = 1;
+
+						for "_groupindex" from 0 to count _groupTypeConfig -1 do
+						{	// group level
+
+							local _groupConfig = _groupTypeConfig select _groupindex;
+
+							if (isClass _groupConfig) then
+							{
+								"| <div style=""white-space: pre"">'''" + getText (_groupConfig >> "name") + "'''<br>config: " + configName _groupConfig + "</div>" call _addLine;
+
+								"Composition:<div style=""" + (["", "columns: 2; "] select (count _groupConfig > 600 /* if needed */)) + "font-size: small"" class=""mw-collapsible mw-collapsed""><div style=""margin-right: 5em; padding-top: 1em"">" call _addLine;
+
+								for "_unitindex" from 0 to count _groupConfig -1 do
+								{
+									local _unitClass = _groupConfig select _unitindex;
+									if (isClass _unitClass) then
+									{
+										("# " + getText (_unitClass >> "vehicle")) call _addLine;
+									};
+								};
+
+								"</div></div>" call _addLine;
+
+								_groupRow = _groupRow + 1;
+								if (_groupRow > _maxGroupWidth) then
+								{
+									"|-" call _addLine;
+									_groupRow = 1;
+								};
+							};
+						};
+
+						"|-" call _addLine;
+					};
+
+				};
+
+				"|}" call _addLine;
+
+			};
+		};
+	};
+};
+
+"" call _addLine;
+"" call _addLine;
+"[[Category: CfgGroups]]" call _addLine;
+"" call _addLine;
+
+copyToClipboard _result;
+_result;
+</sqf>
+</spoiler>
+* [[Arma 2: Operation Arrowhead: CfgGroups]]<br><spoiler>
+<sqf>
+local _result = "";
+local _addLine = {
+	_result = _result + _this + (toString [10]);
+};
+
+local _maxGroupWidth = 5;
+local _cfgGroups = configFile >> "CfgGroups";
+
+"{{TOC|horizontal|||y}}" call _addLine;
+
+for "_sideindex" from 0 to (count _cfgGroups -1) do
+{	// side level
+
+	local _sideConfig = _cfgGroups select _sideindex;
+
+	if (isClass _sideConfig) then
+	{
+		if (_sideindex > 0) then
+		{
+			"" call _addLine;
+		};
+		"" call _addLine;
+		"== " + getText (_sideConfig >> "name") + " ==" call _addLine;
+		"" call _addLine;
+		"config: " + configName _sideConfig call _addLine;
+		"" call _addLine;
+
+		for "_factionindex" from 0 to count _sideConfig -1 do
+		{	// faction level
+
+			local _factionConfig = _sideConfig select _factionindex;
+
+			if (isClass _factionConfig) then
+			{
+				"=== " + getText (_factionConfig >> "name") + " ===" call _addLine;
+				"" call _addLine;
+				"config: " + configName _factionConfig call _addLine;
+				"" call _addLine;
+				"{| class=""wikitable""" call _addLine;
+
+				for "_grouptypeindex" from 0 to count _factionConfig -1 do
+				{	// groupType level
+
+					local _groupTypeConfig = _factionConfig select _grouptypeindex;
+
+					if (isClass _groupTypeConfig) then
+					{
+						local _count = 0;
+						for "_cnt" from 0 to count _groupTypeConfig -1 do { if (isClass (_groupTypeConfig select _cnt)) then { _count = _count + 1; }; };
+
+						local _groupLines = ceil (_count / _maxGroupWidth);
+
+						"|- style=""vertical-align: top""" call _addLine;
+						"! style=""vertical-align: middle; white-space: pre""" + (["", format [" rowspan=""%1""", _groupLines]] select (_groupLines > 1)) + " | " + getText (_groupTypeConfig >> "name") call _addLine;
+						"<div style=""font-weight: normal"">config: " + configName _groupTypeConfig + "</div>" call _addLine;
+
+						local _groupRow = 1;
+
+						for "_groupindex" from 0 to count _groupTypeConfig -1 do
+						{	// group level
+
+							local _groupConfig = _groupTypeConfig select _groupindex;
+
+							if (isClass _groupConfig) then
+							{
+								"| <div style=""white-space: pre"">'''" + getText (_groupConfig >> "name") + "'''<br>config: " + configName _groupConfig + "</div>" call _addLine;
+
+								"Composition:<div style=""" + (["", "columns: 2; "] select (count _groupConfig > 600 /* if needed */)) + "font-size: small"" class=""mw-collapsible mw-collapsed""><div style=""margin-right: 5em; padding-top: 1em"">" call _addLine;
+
+								for "_unitindex" from 0 to count _groupConfig -1 do
+								{
+									local _unitClass = _groupConfig select _unitindex;
+									if (isClass _unitClass) then
+									{
+										("# " + getText (_unitClass >> "vehicle")) call _addLine;
+									};
+								};
+
+								"</div></div>" call _addLine;
+
+								_groupRow = _groupRow + 1;
+								if (_groupRow > _maxGroupWidth) then
+								{
+									"|-" call _addLine;
+									_groupRow = 1;
+								};
+							};
+						};
+
+						"|-" call _addLine;
+					};
+
+				};
+
+				"|}" call _addLine;
+
+			};
+		};
+	};
+};
+
+"" call _addLine;
+"" call _addLine;
+"[[Category: CfgGroups]]" call _addLine;
+"" call _addLine;
+
+copyToClipboard _result;
+_result;
+</sqf>
+</spoiler>
+* [[Arma 3: CfgGroups]]<br><spoiler>
+<sqf>
+private _lines = [];
+private _maxGroupWidth = 5;
+private _groupSides = "true" configClasses (configFile >> "CfgGroups");
+
+// _lines pushBack "{{TopMenu|" + (_groupSides apply { format ["[[#%1|%1]]", getText (_x >> "name")] } joinString "") + "}}";
+_lines pushBack "{{TOC|horizontal|||y}}";
+
+{	// side level
+	if (_forEachIndex > 0) then
+	{
+		_lines pushBack "";
+	};
+	_lines pushBack "";
+	_lines pushBack "== " + getText (_x >> "name") + " ==";
+	_lines pushBack "";
+	_lines pushBack "config: " + configName _x;
+	_lines pushBack "";
+
+	private _factions = "true" configClasses _x;
+	{	// faction level
+
+		_lines pushBack "=== " + getText (_x >> "name") + " ===";
+		_lines pushBack "";
+		_lines pushBack "config: " + configName _x;
+		_lines pushBack "";
+		_lines pushBack "{| class=""wikitable""";
+
+		private _groupTypes = "true" configClasses _x;
+		{	// groupType level
+
+			private _groups = "true" configClasses _x;
+			private _groupLines = ceil (count _groups / _maxGroupWidth);
+
+			_lines pushBack "|- style=""vertical-align: top""";
+			_lines pushBack "! style=""vertical-align: middle; white-space: pre""" + (["", format [" rowspan=""%1""", _groupLines]] select (_groupLines > 1)) + " | " + getText (_x >> "name");
+			_lines pushBack "<div style=""font-weight: normal"">config: " + configName _x + "</div>";
+
+			private _groupRow = 1;
+			{	// group level
+				_lines pushBack "| <div style=""white-space: pre"">'''" + getText (_x >> "name") + "'''<br>config: " + configName _x + "</div>";
+
+				private _units = "true" configClasses _x;
+				_lines pushBack "Composition:<div style=""" + (["", "columns: 2; "] select (count _units > 600 /* if needed */)) + "font-size: small"" class=""mw-collapsible mw-collapsed""><div style=""margin-right: 5em; padding-top: 1em"">";
+				{
+					_lines pushBack ("# " + getText (_x >> "vehicle"));
+
+				} forEach _units;
+
+				_lines pushBack "</div></div>";
+
+				_groupRow = _groupRow + 1;
+				if (_groupRow > _maxGroupWidth) then
+				{
+					_lines pushBack "|-";
+					_groupRow = 1;
+				}
+
+			} forEach _groups;
+
+			_lines pushBack "|-";
+
+		} forEach _groupTypes;
+
+		_lines pushBack "|}";
+
+	} forEach _factions;
+
+} forEach _groupSides;
+
+_lines pushBack "";
+_lines pushBack "";
+_lines pushBack "[[Category: CfgGroups]]";
+_lines pushBack "";
+
+private _result = _lines joinString endl;
+
+copyToClipboard _result;
+_result;
+</sqf>
+</spoiler>
+
+
+= CfgWorlds/Group* =
+
+'''Author:''' {{User|Killzone_Kid}}<br>
+<spoiler>
+<sqf>
+"if ((configName _x) select [0, 5] == 'group') then
+{
+	diag_log ('%' + configName _x);
+	for '_i' from 0 to count _x - 1 do {
+		diag_log ('* ""' + configName (_x select _i) + '"" &amp;rarr; ' + getText ((_x select _i) >> "name"));
+	};
+}; false" configClasses (configFile >> "CfgWorlds");
+</sqf>
+</spoiler>
+
+
+= [[inputAction/actions]] =
+
+'''Author:''' {{User|POLPOX}}<br>
+<spoiler>
+<sqf>
+_r = [];
+{
+	_r pushBack [getText (_x >> "name"), []];
+	_index = _forEachIndex;
+	{
+		private _actionName = actionName _x;
+		(_r # _index # 1) pushBack [_x, _actionName];
+	} forEach getArray (_x >> "group");
+} forEach ("true" configClasses (configFile >> "UserActionGroups"));
+
+_rFinal = [
+	'{| class="sortable wikitable"'
+];
+
+_presets = ("configName _x != 'Empty'" configClasses (configFile >> "CfgDefaultKeysPresets"));
+_str = '! Type !! actionName !! Name';
+
+{
+	_str = _str + " !! " + getText (_x >> "displayName");
+	if (getNumber (_x >> "default") == 1) then
+	{
+		_str = _str + "<br/>(Default)";
+	};
+} forEach _presets;
+
+
+_rFinal pushBack format ['! colspan="3" | Action information !! colspan="%1" | Presets', count _presets];
+_rFinal pushBack "|-";
+_rFinal pushBack _str;
+
+{
+	_type = _x # 0;
+	{
+		_rFinal pushBack "|-";
+		_x params ["_actionName", "_name"/*, "_tooltip"*/];
+		if (_name isEqualTo "") then
+		{
+			_name = "{{n/a}}";
+		};
+		_str = format ["| %1 || {{hl|%2}} || %3 ", _type, _actionName, _name];
+		{
+			_keys = getArray (_x >> "Mappings" >> _actionName);
+			if (count _keys != 0) then
+			{
+				_keys = _keys apply {
+					call {
+						if (typeName _x == "STRING") exitWith
+						{
+							keyName call compile _x;
+						};
+						if (typeName _x == "ARRAY") exitWith
+						{
+							_r = [];
+							{
+								if (typeName _x == "STRING") then
+								{
+									_r pushBack ((keyName call compile _x) splitString """") # 0;
+								};
+								_r pushBack ((keyName _x) splitString """") # 0;
+							} forEach _x;
+							_r = (_r joinString "+");
+							_r
+						};
+						keyName _x
+					};
+				};
+				_str = _str + format ["|| %1 ", (_keys joinString ", " splitString """") # 0];
+			} else {
+				_str = _str + "|| ";
+			};
+		} forEach _presets;
+		_rFinal pushBack _str;
+	} forEach (_x # 1);
+} forEach _r;
+
+_rFinal pushBack "|}";
+
+copyToClipboard (_rFinal joinString endl);
+</sqf>
+</spoiler>
+
+
+= [[Mission Parameters]] =
+
+'''Author:''' {{User|Lou Montana}}<br>
+<spoiler>
+<sqf>
+private _addLine = { _result = _result + _this + endl; };
+
+private _result = "";
+
+if (not isNull getMissionConfig "titleParam1") then
+{
+	("titleParam1 = """ + getText getMissionConfig "titleParam1" + """; // " + getTextRaw (getMissionConfig "titleParam1")) call _addLine;
+	("textsParam1[] = { """ + (getArray (getMissionConfig "textsParam1") joinString """, """) + """ };") call _addLine;
+	("valuesParam1[] = { " + (getArray (getMissionConfig "valuesParam1") joinString ", ") + " };") call _addLine;
+	("defValueParam1 = " + str getNumber getMissionConfig "defValueParam1" + ";") call _addLine;
+};
+
+if (not isNull getMissionConfig "titleParam2") then
+{
+	("titleParam2 = """ + getText getMissionConfig "titleParam2" + """; // " + getTextRaw (getMissionConfig "titleParam2")) call _addLine;
+	("textsParam2[] = { """ + (getArray (getMissionConfig "textsParam2") joinString """, """) + """ };") call _addLine;
+	("valuesParam2[] = { " + (getArray (getMissionConfig "valuesParam2") joinString ", ") + " };") call _addLine;
+	("defValueParam2 = " + str getNumber getMissionConfig "defValueParam2" + ";") call _addLine;
+};
+
+if (not isNull getMissionConfig "Params") then
+{
+	{
+		("class " + configName _x) call _addLine;
+		"{" call _addLine;
+		("	title = """ + getText (_x >> "title") + """; // " + getTextRaw (_x >> "title")) call _addLine;
+		("	texts[] = { """ + (getArray (_x >> "texts") joinString """, """) + """ };") call _addLine;
+		("	values[] = { " + (getArray (_x >> "values") joinString ", ") + " };") call _addLine;
+		("	default = " + str getNumber (_x >> "default") + ";") call _addLine;
+		"};" call _addLine;
+	} forEach ("true" configClasses getMissionConfig "Params");
+};
+
+copyToClipboard _result;
+systemChat "Mission Params copied to clipboard";
+</sqf>
+</spoiler>
+
+
+= [[Modules]] =
+
+'''Author:''' {{User|R3vo}}<br>
+<spoiler>
+<sqf>
+private _version = format ["Last updated: {{GVI|arma3|%1}}", (productVersion # 2 / 100) toFixed 2];
+private _counter = 0;
+private _export = _version + endl + "{| class=""wikitable""" + endl + "! Module Name !! Category !! Addon !! Function !! Description" + endl + "|-" + endl;
+private _modules = "(configName inheritsFrom _x) == 'Module_F'" configClasses (configFile >> "CfgVehicles");
+{
+	if ((getNumber (_x >> "scope") > 1)) then
+	{
+		private _name = getText (_x >> "displayName");
+		private _cat = getText (_x >> "category");
+		private _mod = configSourceMod _x;
+		private _fnc = getText (_x >> "function");
+		if !(_fnc isEqualTo "") then
+		{
+			_fnc = _fnc select [7];
+			_fnc = "[[BIS_fnc" + _fnc + "]]";
+		};
+		private _desc = getText (_x >> "ModuleDescription" >> "Description");
+		if (_desc isEqualTo "") then { _desc = "" };
+		if (_mod == "") then { _mod = "A3" };
+		private _modName = modParams [_mod, ["name"]];
+		_modName = _modName select 0;
+		_cat = getText (configFile >> "CfgFactionClasses" >> _cat >> "displayName");
+		if (_cat isEqualTo "") then { _cat = "Others" };
+
+		_export = _export + "| " + _name + endl + "| " + _cat + endl + "| " + _modName + endl + "| " + _fnc + endl + "| " + _desc + endl + "|-" + endl;
+	};
+	_counter = _counter + 1;
+} forEach _modules;
+
+_export = _export + "|}" + endl + format ["Total number of modules: %1", _counter];
+copyToClipboard _export;
+</sqf>
+</spoiler>
+
+
+= [[nearestTerrainObjects]] =
+
+'''Author:''' {{User|R3vo}}<br>
+
+<spoiler>
+<sqf>
+[] spawn
+{
+	private _types = ["TREE", "SMALL TREE", "BUSH", "BUILDING", "HOUSE", "FOREST BORDER", "FOREST TRIANGLE", "FOREST SQUARE", "CHURCH", "CHAPEL",
+	"CROSS", "BUNKER", "FORTRESS", "FOUNTAIN", "VIEW-TOWER", "LIGHTHOUSE", "QUAY", "FUELSTATION", "HOSPITAL", "FENCE", "WALL", "HIDE", "BUSSTOP",
+	"ROAD", "FOREST", "TRANSMITTER", "STACK", "RUIN", "TOURISM", "WATERTOWER", "TRACK", "MAIN ROAD", "ROCK", "ROCKS", "POWER LINES", "RAILWAY",
+	"POWERSOLAR", "POWERWAVE", "POWERWIND", "SHIPWRECK", "TRAIL"];
+
+	_types sort true;
+
+	private _counts = [];
+	private _countTypes = count _types;
+
+	["R3vo_GetNearestTerrainObjects", ""] call BIS_fnc_startLoadingScreen;
+
+	{
+		private _terrainObjects = nearestTerrainObjects [
+			[worldSize / 2, worldSize / 2],
+			[_x],
+			worldSize / 2 * sqrt 2,
+			false
+		];
+
+		if (count _terrainObjects > 0) then
+		{
+			_counts pushBack [_x, count _terrainObjects toFixed 0];
+		};
+		((_forEachIndex + 1) / _countTypes) call BIS_fnc_progressLoadingScreen;
+	} forEach _types;
+
+	"R3vo_GetNearestTerrainObjects" call BIS_fnc_endLoadingScreen;
+
+	private _export = "<big>[[" + getText (configFile >> "CfgWorlds" >> worldName >> "description") + "]]</big>" + endl + "{{Columns|5|";
+
+	{
+		_export = _export + endl + "* " + (_x # 0) + ": " + (_x # 1);
+	} forEach _counts;
+
+	_export = _export + endl + "}}";
+
+	copyToClipboard _export;
+};
+</sqf>
+</spoiler>
+
+
+= [[Side Relations]] =
+
+'''Author: {{User|Lou Montana}}<br>
+
+<spoiler>
+<sqf>
+private _func = BIS_fnc_sideIsFriendly; // change here with BIS_fnc_sideIsEnemy for the other table
+private _sidesAsString = ["east", "west", "resistance", "civilian", "sideAmbientLife", "sideUnknown", "sideEnemy", "sideFriendly", "sideEmpty", "sideLogic"];
+private _sideResults = [];
+{
+	private _sideAsString = _x;
+	private _side = call compile _sideAsString;
+	_sideResults pushBack ([_sideAsString] + (_sidesAsString apply { [_side, call compile _x] call _func }));
+} forEach _sidesAsString;
+
+private _result = "{| class=""wikitable align-center""\n|-\n";
+{
+	_result = _result + "! [[" + _x +"]]\n";
+} forEach _sidesAsString;
+{
+	private _results = _x;
+	{
+		if (_x isEqualType true) then
+		{
+			if (_x) then
+			{
+				_result = _result + "| {{Icon|checked}}\n";
+			}
+			else
+			{
+				_result = _result + "| {{Icon|unchecked}}\n";
+			}
+		}
+		else
+		{
+			_result = _result + ("| [[" + _x + "]]\n");
+		}
+	} forEach _results;
+
+	_result = _result + "|-\n";
+} forEach _sideResults;
+
+_result = _result + "|}";
+
+_result;
+</sqf>
+</spoiler>
+
+
+[[Category: Maintenance]]

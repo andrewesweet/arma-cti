@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_credits_movieSupport
+// revision: 272860 (2021-06-13T00:33:50Z)
+// export sha1: 378vsxhxb8oeyg04jhda1ye4mft0z37
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= <pre>/*
+	File: fn_credits_movieSupport.sqf
+
+	Description:
+	Movie credits supporters preprocessor.
+
+	Parameter(s):
+	None.
+	
+	Returned value:
+	_array: Array
+	_array select 0: String - Position name (and tags) as structured text.
+	_array select 1: String - Names (and tags) as structured text - 1st paragraph.
+	_array select 2: String - Names (and tags) as structured text - 2nd paragraph.
+	_array select 3: String - Names (and tags) as structured text - 3rd paragraph.
+	_array select 4: Number - Required space coeficient (numberOfNamesInOneParagraph * textSizeCoef)
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_credits_movieSupport]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

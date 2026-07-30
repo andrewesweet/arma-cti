@@ -1,0 +1,173 @@
+// source: https://community.bistudio.com/wiki/Side
+// revision: 342100 (2023-07-09T12:26:36Z)
+// export sha1: 6m6ionzptesog9lmdq66ie3y2c6g4ww
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable sortable align-center align-left-col-1 align-left-col-2 align-left-col-3 align-left-col-4 align-left-col-6" style="width: 100%"
+! style="text-align: center" rowspan="2" | [[BIS_fnc_sideID|Id]]
+! style="text-align: center" rowspan="2" | Side
+! style="text-align: center" rowspan="2" | Description
+! style="text-align: center" rowspan="2" | Commands
+! rowspan="2" | Can<br>[[createCenter]]
+! style="text-align: center" rowspan="2" | [[str|String]] version
+! colspan="7" | Present in
+|-
+! {{GVI|ofp|1.00}}
+! {{GVI|ofpr|1.75}}
+! {{GVI|arma1|1.00}}
+! {{GVI|arma2|1.00}}
+! {{GVI|arma2oa|1.50}}
+! {{GVI|arma3|0.50}}
+! {{GVI|tkoh|1.00}}
+|-
+| 1
+| BLUFOR
+| The BLUFOR (''Blue Forces'') side.
+| [[west]], [[blufor]]
+| {{Icon|checked}}
+| "WEST"
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| 0
+| OPFOR
+| The {{Link|https://en.wikipedia.org/wiki/Opposing_force|OPFOR}} (''Opposing Forces'') side.
+| [[east]], [[opfor]]
+| {{Icon|checked}}
+| "EAST"
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| 2
+| Independent
+| The ''Independent Forces''/''Guerilla'' side.
+| [[resistance]], [[independent]]
+| {{Icon|checked}}
+| "GUER"
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| 3
+| Civilian
+| The civilian side.
+| [[civilian]]
+| {{Icon|checked}}
+| "CIV"
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| 9
+| Ambient Life
+| Animals like fish, rabbits and snakes.
+| [[sideAmbientLife]]
+| {{Icon|unchecked}}
+| "AMBIENT LIFE"
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|-
+| 8
+| Empty
+| Empty buildings placed in the [[:Category:Eden Editor|Eden Editor]].
+| [[sideEmpty]]
+| {{Icon|unchecked}}
+| "EMPTY"
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|-
+| 6
+| Friendly
+| Friendly sides.
+| [[sideFriendly]]
+| {{Icon|unchecked}}
+| "FRIENDLY"
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| 5
+| Enemy
+| Enemy side.
+| [[sideEnemy]]
+| {{Icon|unchecked}}
+| "ENEMY"
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| 4
+| Unknown
+| Used when the side of a unit is unknown, e.g for spotted targets with insufficient information.
+| [[sideUnknown]]
+| {{Icon|unchecked}}
+| "UNKNOWN"
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| 7
+| Logic
+| Side of [[Game Logic]]s and [[Modules]].
+| [[sideLogic]]
+| {{Icon|checked}}
+| "LOGIC"
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|}
+
+
+== See Also ==
+
+* [[Side Relations]]
+* [[faction|Factions]]
+* [[:Category:Command Group: Sides|Command Group: Sides]]
+
+
+[[Category: Data Types]]

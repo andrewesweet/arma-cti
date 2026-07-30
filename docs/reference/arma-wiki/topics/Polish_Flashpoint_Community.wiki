@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/Polish_Flashpoint_Community
+// revision: 349903 (2023-11-20T22:11:02Z)
+// export sha1: 3l8f0r7m3c9m4e8wlidq25qg0w7g2jp
+// categories: Category:Arma 3: Multiplayer Squads | Category:Operation Flashpoint: Multiplayer Squads
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Infobox/Squad
+|title = [PFC] Polish Flashpoint Community
+|image = pfclogo.png
+|tag = [PFC]
+|members =
+|former_members =
+|founded = 01.01.2014
+|successes = → [[Operation Flashpoint: Community Masterserver]]
+→ [[OFP.INFO|OFP.INFO 2.0 (revival project)]]
+|link = {{Link|http://www.pfc.paradoxstudio.pl|www.pfc.paradoxstudio.pl}}
+}}
+
+
+== [[File:minipfc.png|left|25px]]History ==
+[PFC] Polish Flashpoint Community was founded as a community of Polish [[Operation_Flashpoint|OFP/ARMA:CWA]] and [[Arma_3|ARMA3]] players. The main goal of PFC is to have fun playing OFP/ARMA:CWA online. PFC co-operates with a number of OFP and ARMA series clans, groups and communities.
+
+== [[File:minipfc.png|left|25px]]Dedicated server ==
+PFC hosts dedicated servers for ARMA:CWA and ARMA3. More details about the server can be found {{Link|http://pfc.paradoxstudio.pl|here}}.
+
+== [[File:minipfc.png|left|25px]]Community Masterserver ==
+On 31st of May, 2014 (effectively on 31st of July), GameSpy servers were closed. As a result, the in-game server browser of OFP/ARMA:CWA stopped working. Thanks to {{Link|link= http://forums.bistudio.com/member.php?985-Poweruser|text= Poweruser's}} effort, it was possible to overcome this difficult situation. Poweruser created a program that alternates the former GameSpy masterserver by a new one that is hosted by PFC. The PFC masterserver was hosted from 31.05.2014 till 31.12.2016. A new community masterserver has been launched - more about it [[Operation Flashpoint: Community Masterserver|here]].
+
+== [[File:minipfc.png|left|25px]]OFP.INFO 2.0 (revival project) ==
+On 2nd of June, 2018, OFP(R).INFO - the greatest OFP/CWA content-oriented website that was founded around 2001-2018, was closed down. On 15th of July, 2018, {{Link|link= https://forums.bohemia.net/forums/topic/217443-ofpinfo-20-revival-project/?tab=comments#comment-3302703|text= OFP.INFO 2.0 (revival project)}} was launched. More about it - [[OFP.INFO|here]].
+
+== Links ==
+*{{Link|http://www.pfc.paradoxstudio.pl|Website}}
+*{{Link|http://www.facebook.com/RozekPoland0|Facebook fanpage}}
+*{{Link|http://twitter.com/RozekPoland|Twitter profile}}
+*{{Link|http://www.youtube.com/RozekPoland1|YouTube channel}}
+*{{Link|link= http://units.arma3.com/unit/pfc-ofp|text= units.arma3.com}}
+
+
+
+{{GameCategory|ofp|Multiplayer Squads}}
+{{GameCategory|arma3|Multiplayer_Squads}}

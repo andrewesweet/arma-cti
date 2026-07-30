@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/waypointLoiterAltitude
+// revision: 377578 (2026-01-02T06:56:34Z)
+// export sha1: cvuxry8lbqg622vzbs69mjaghxm8sml
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Waypoints
+
+|descr= Gets the waypoint loiter altitude.
+
+|s1= [[waypointLoiterAltitude]] waypoint
+
+|p1= waypoint: [[Waypoint]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _loiterAlt = waypointLoiterAltitude [groupOne, 1];</sqf>
+
+|seealso= [[setWaypointLoiterAltitude]]
+}}

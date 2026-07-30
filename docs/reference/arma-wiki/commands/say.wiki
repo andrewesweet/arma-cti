@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/say
+// revision: 338267 (2023-02-25T14:17:50Z)
+// export sha1: 77reooc18lmnt4aaqh3eb6thh09obr9
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Sounds
+
+|descr= Make unit say given sound. The sound is defined in [[Description.ext#CfgSounds|CfgSounds]].
+If the [[Object#Unit|unit]] is a [[Object#Person|person]], it will also perform the corresponding lipsync effect provided an appropriate [[Lip File Format|.lip file]] has been [[WaveToLip|created]] for this sound.
+
+* A dead or non-existent unit obviously cannot say anything.
+* If the camera is not within given range, title is not shown and the sound will not be heard.
+* See also [[playSound]] in order to play a sound wherever the [[cameraOn|camera/player]] is.
+
+{{Feature|informative|[[say]] will mimic either [[say2D]] or [[say3D]] depending on whether it is executed in a cutscene or in a game scene.}}
+
+|s1= from [[say]] sound
+
+|p1= from: [[Object]] or [[Array]] of [[Object]]s
+* [[Object]] - the sound source
+* [[Array]] - format [from, to]:
+** from: [[Object]] - sound source
+** to: [[Object]] - target
+
+|p2= sound: [[String]] or [[Array]]
+* [[String]] - class name of the sound to be played. Defined in CfgSounds including [[Description.ext]]
+* [[Array]] - format [sound, maxTitlesDistance, speed]:
+** sound: [[String]] - class name of the sound to be played. Defined in CfgSounds including [[Description.ext]]
+** maxTitlesDistance: [[Number]] (Optional, default 100) - max. distance in meters at which the sound can be heard
+** speed: [[Number]] (Optional, default 1) - pitch of the sound
+
+|r1= [[Nothing]]
+
+|x1= <sqf>(units player select 1) say ["whisper1", 5];</sqf>
+
+|x2= <sqf>player say "scuba_breath"; // Arma 3 vanilla sound</sqf>
+
+|seealso= [[say3D]] [[say2D]] [[playSound]] [[createSoundSource]] [[playSoundUI]]
+}}

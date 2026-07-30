@@ -1,0 +1,202 @@
+// source: https://community.bistudio.com/wiki/AI_Group_Vehicle_Management
+// revision: 330316 (2022-08-31T15:05:00Z)
+// export sha1: oncvrvl9iei2bddks4bsm6e8tprukpa
+// categories: Category:AI | Category:Clarification needed | Category:To-do
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+[[Real Virtuality]] games' AI groups all work the same way with vehicles. Aside from game-specific commands, this page applies from {{ofp}} to {{arma3}}.
+
+
+== System ==
+
+* A group has a "vehicle pool" that is an array of vehicles it can use. A group can "own" multiple vehicles.
+* A vehicle can be in the vehicle pool of '''multiple groups''' at once. A vehicle itself has no "group pool".
+
+* A vehicle can be added to a group with [[addVehicle]].
+* A vehicle can be assigned (added) to a group with none of its units assigned to any of its vehicle role.
+** A group leader will most likely assign its units to the vehicle if need be.
+* A unit can be unassigned from its role from a vehicle with [[unassignVehicle]]. However, as the vehicle itself remains in the group's vehicle pool, the leader may at one point order the unit back in (a) seat.
+** To prevent a unit from being reassigned, [[allowGetIn]] can be used.
+* A vehicle can be removed from the group's vehicle pool with [[leaveVehicle]], unassigning any units from their role in the process.
+
+=== AI Decisions ===
+
+{{Wiki|TODO|Sort this.}}
+* The AI choosing what vehicle to use based on the vehicle's [[CfgVehicles Config Reference#cost|cost]] value. The distance from the vehicle may also play a role.
+* When deciding whether to board a vehicle, AI leaders seem to only consider the transport benefit of a vehicle, ignoring any combat benefits the vehicle may provide.
+* An AI group leader can be forced to order his group to board the specified vehicle with [[orderGetIn]] [[true]]. Setting to [[false]] will cancel the order, but the AI will first enter to get out again immediately thereafter. To immediately (potentially temporarily) halt the AI moving to the vehicle one can use [[allowGetIn]] [[false]].
+* {{Clarify|When a vehicle is added this way, it can appear as a target for the enemy - even if the vehicle currently has no crew.}}
+* If used on a vehicle already driven by a member of another group, the driver will continue under his own group's orders, which may not benefit the [[addVehicle]]'d group.
+* {{Clarify|Seems to have no affect on AI under player command - at least as long as the player remains the GL.}}
+
+
+== Commands ==
+
+=== Assign/MoveIn Commands (Unit specific)===
+
+{| class="wikitable"
+! assign setter commands
+! moveIn setter commands
+! assign getter commands
+|-
+| {{Columns|3|
+* [[assignAsDriver]]
+* [[assignAsGunner]]
+* [[assignAsCommander]]
+* [[assignAsTurret]]
+* [[assignAsCargo]]
+* [[assignAsCargoIndex]]
+* [[unassignVehicle]]
+}}
+| {{Columns|3|
+* [[moveInDriver]]
+* [[moveInGunner]]
+* [[moveInCommander]]
+* [[moveInTurret]]
+* [[moveInCargo]]
+* [[moveInAny]]
+* [[moveOut]]
+}}
+| style="vertical-align: top" |
+* [[assignedVehicle]]
+* [[assignedVehicleRole]]
+|}
+
+=== Other Commands (Group specific)===
+
+* [[addVehicle]]
+* [[leaveVehicle]]
+
+=== Shared Commands ===
+
+* [[fullCrew]] Since {{GVI|arma3|2.12}} the output of the command includes vehicle's assigned units
+
+<!--
+* The vehicle will be considered as available for use by this group. 
+* It creates a/adds to the vehicle pool for the given group to use. So more than one vehicle can be added to a group, and more than one group can be added to a vehicle.
+* This is relevant for some waypoints like getIn and guard - potentially more.
+* The AI choosing what vehicle to use based on the vehicle's [[CfgVehicles_Config_Reference#cost|cost]] value. Probably also distance to the available vehicles plays a role.
+* When deciding whether to board a vehicle, AI leaders seem to only consider the transport benefit of a vehicle, ignoring any combat benefits the vehicle may provide.
+* This happens also implicitly when using assignAsXXX or moveInXXX commands, or player GL orders units to enter a vehicle, as well editor or Zeus placed vehicles with units assigned to it.
+* One can make an AI GL order his group to board the specified vehicle with [[orderGetIn]] [[true]]. Setting to [[false]] will cancel the order, but the AI will first enter to get out again immediately thereafter. To immediately (potentially temporarily) halt the AI moving to the vehicle one can use  [[allowGetIn]] [[false]].
+* When vehicle is added in this way, it can appear as a target for the enemy - even if the vehicle currently has no crew.
+* If used on a vehicle already driven by a member of another group, the driver will continue under his own group's orders, which may not benefit the addVehicle group.
+* Seems to have no affect on AI under player command - at least as long as the player remains the GL.
+* To remove vehicle from a group, use [[leaveVehicle]].
+-->
+
+
+----
+
+
+from [[assignedVehicle]]
+{{Wiki|TODO|Sort this.}}
+* The assignment happens via the various assignAsXXX/moveInXXX commands, or player/AI GL getIn radio commands, getIn waypoint, or when units start in vehicles or get moved in to a vehicle by Zeus/via Eden.
+* [[addVehicle]] indirectly may also add the vehicle, however only if an AI GL assigns [[assignedVehicleRole|vehicle roles]] (which depends on various things).
+* [[vehicle]] returns the current vehicles an AI is in, while with [[assignedVehicle]] the AI may not (yet) be in the said vehicle (still in transit or held of by waypoints or other SQF commands).
+* To make AI under AI GL enter a vehicle, use [[orderGetIn]] [[true]].
+* While [[unassignVehicle]] works, if the group is under AI command, the AI GL may re-assign the vehicle immediately. To stop the AI from re-entering at least, use [[orderGetIn]] or [[allowGetIn]] [[false]], or permanently remove the assignment vi a [[leaveVehicle]].
+* For player GL lead AI [[assignedVehicle]] seems not to be really reliable/behaves strange. Disembark radio command seems to [[unassignVehicle|unassign]] though.
+
+
+from [[assignedVehicleRole]]
+{{Wiki|TODO|Sort this.}}
+* When an unit enters a vehicle crew position, it gets assigned the vehicle role automatically for the given crew position.
+* The unit does not have to be in the vehicle when getting the role assignment (ie via assignAsXXX or human/AI GL getIn radio commands).
+* GL getIn radio commands result in instant assignment - the unit does not yet have to occupy the crew position.
+* Dying units will let go of the assigned role after a few seconds - seems the delay is independent of being in the vehicle or not.
+* An unit will hold on to its assigned role after exiting the vehicle.
+* One has to use [[unassignVehicle]] (and stop an AI GL to assign vehicle positions again) or [[leaveVehicle]] to remove the assignment - or assigned to another vehicle.
+* A vehicle position/role can only be assigned to one unit at a time. So even when not (visually) occupied, the "seat" may be blocked/reserved by another unit. 
+* A player can still get into the vehicle position already assigned if not already taken, or switch seats with AI (if [[leader]] or [[effectiveCommander]] for those AI).
+
+
+from [[unassignVehicle]]
+{{Wiki|TODO|Sort this.}}
+* Important is to understand the basic system first: 
+# [[addVehicle]] creates a vehicle pool for the AI group to use.
+# [[leaveVehicle]] removes a vehicle from the pool (and makes AI disembark when in that vehicle).
+# However there is also [[assignedVehicle]]. This is about the ''current vehicle in use'' essentially. The assignment happens via the various assignAsXXX/moveInXXX commands, or player/AI GL getIn radio commands, getIn waypoint, or when units start in vehicles or get moved in to a vehicle by Zeus/via Eden.
+# So the idea of [[unassignVehicle]] is to remove the ''current vehicle in use''.
+# However as long as the vehicle is still part of the vehicle pool of the group the AI GL may order the AI to re-enter the vehicle immediately.
+# To stop this from happening, one can use [[orderGetIn]]/[[allowGetIn]] [[false]] to (temporarily) disallow the AI from entering any vehicle.
+* If you use [[leaveVehicle]] on an AI group not in the vehicle, only the AI GL will get the vehicle removed from [[assignedVehicle]]. However when you now apply [[unassignVehicle]] on the whole group, it will stick/the AI GL not order to re-enter immediately - as the AI GL no longer has the vehicle in his pool for the group.
+* For player GL lead AI, the command removes the assignment. However it won't make the AI disembark the vehicle.
+
+
+from [[orderGetIn]]
+{{Wiki|TODO|Sort this.}}
+* The command has no effect on AI lead by a player Group Leader (GL)
+* A vehicle needs be assigned via [[addVehicle]] or assignAsXXX or moveInXXX first for the command to have any effect. [[orderGetIn]] [[true]] makes the AI to board the vehicle. Or the AI GL orders them due to other means (ie getIn, guard waypoints).
+* However one can initially set [[orderGetIn]] [[false]], add one or more vehicles and only once/when the AI is to enter, you set [[orderGetIn]] [[true]]  for AI to start moving to the vehicle(s) or getting in the vehicle(s).
+* [[orderGetIn]] [[false]] makes AI also leave a vehicle when inside already. However it does not affect [[assignedVehicleRole]] nor [[assignedVehicle]]. Only [[leaveVehicle]] will remove both
+* [[orderGetIn]] [[false]] even makes AI eject while the vehicle positions are locked (([[lockDriver]], [[lockTurret]], [[lockCargo]] - however [[orderGetIn]] [[true]] will not override the position lock to make them enter
+* AI units on the way to enter the vehicle won't stop on the way if [[orderGetIn]] [[false]] set but continue to the vehicle and just stop short without entering - [[allowGetIn]] false instead will make the AI stop instantly (same as [[unassignVehicle]] when combined with [[orderGetIn]] [[false]])
+* One can combine [[orderGetIn]] [[false]] and [[allowGetIn]] [[false]] to manage when exactly AI is to enter vehicles
+* [[orderGetIn]] is persistent/a general group behavior setting - don't forget previous changes with future vehicle use!
+* If you want to make a vehicle no longer used by a group, you need to remove the vehicle from the group's vehicle pool via [[leaveVehicle]].
+
+== Dis/Embarking Behaviour ==
+
+{| class="wikitable sortable"
+|+ Courtesy of [[User:ffur2007slx2_5|ffur2007slx2_5]]
+
+! style="min-width: 12em" | Command
+! Remote Control
+! class="unsortable" | Behaviour
+! Role Unassigning
+
+|-
+| [[orderGetIn]]
+| {{Icon|unchecked}}
+| [[orderGetIn]] won't take effect on [[player]] controlled AI units, and which needs to be used together with assaignAs command family. Generally speaking, [[orderGetIn]] is a Role Excuator.
+| When [[orderGetIn]] was disabled it won't automatically unassign unit's vehicle role but will force the unit get out of the vehicle and stop him re-entering until it was enabled again. [[orderGetIn]] [[false]] won't stop a unit when he is embarking a vehicle in the half way but [[unassignVehicle]] will do. [[orderGetIn]] [[false]] will wait to fire until the unit enter a vehicle. 
+
+|-
+| [[allowGetIn]]
+| {{Icon|unchecked}}
+| [[allowGetIn]] won't take effect on [[player]] controlled AI units. Different from [[orderGetIn]], this command is a Role Holder, it can control the unit's movement in the half way set by [[orderGetIn]] but not by [[setWaypointType]], unit will be forced to get out from a vehicle by [[allowGetIn]] [[false]] and won't automatically re-enter the vehicle until [[allowGetIn]] [[true]]
+| [[allowGetIn]] won't do anything with unit's vehicle role
+
+|-
+| [[doGetOut]]
+| {{Icon|checked}}
+| Works on player controlled ai silently, unit will automatically get back to the vehicle after disembarkation. (Unit won't get out until vehicle is stopped or landed)
+| false
+
+|-
+| [[commandGetOut]]
+| {{Icon|checked}}
+| Same as [[doGetOut]] with radio message. (Unit won't get out until vehicle is stopped or landed)
+| false
+
+|-
+| [[leaveVehicle]]
+| {{Icon|unchecked}}
+| [[leaveVehicle]] can't force a player controlled AI disembark
+| true
+
+|-
+| [[action]] ["GetOut", _veh]
+| {{Icon|checked}}
+| Eject immediately without parachute
+| false
+
+|-
+| [[action]] ["Eject", _veh]
+| {{Icon|checked}}
+| Eject immediately with parachute if needed
+| false
+
+|-
+| [[setWaypointType]] "GETIN"
+| {{Icon|unchecked}}
+| Waypoint won't be affected by [[orderGetIn]] [[false]] or [[allowGetIn]] [[false]] until the unit is on the vehicle.
+| {{n/a}}
+
+|}
+
+
+[[Category:AI]]

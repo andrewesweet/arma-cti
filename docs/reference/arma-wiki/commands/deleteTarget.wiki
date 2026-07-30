@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/deleteTarget
+// revision: 352111 (2024-02-01T23:24:58Z)
+// export sha1: jy7q7nxo4nxocudo8nu7o3jrlbmy5fy
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Broken Commands
+
+|descr= Delete a target.
+
+|pr= {{Feature|warning|This command is not implemented.}}
+
+|s1= [[deleteTarget]] target
+
+|p1= target: [[Target]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>deleteTarget target1;</sqf>
+
+|seealso= [[createTarget]] [[moveTarget]]
+}}

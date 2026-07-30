@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/curatorAddons
+// revision: 377174 (2026-01-01T10:46:28Z)
+// export sha1: 56imdr627acyc0tntcw42ccvzfzldsy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Returns list of addons allowed to given curator. The addon names are not guaranteed to be all lower case
+
+|s1= [[curatorAddons]] curatorObj
+
+|p1= curatorObj: [[Object]] - curator module
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>private _addons = curatorAddons myCurator;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[addCuratorAddons]] [[removeCuratorAddons]] [[removeAllCuratorAddons]]
+}}

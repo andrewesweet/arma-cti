@@ -1,0 +1,1949 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgPatches_CfgWeapons
+// revision: 368845 (2024-08-10T14:30:30Z)
+// export sha1: efbw31furo64goqwj9tvlnvdr8m0fma
+// categories: Category:Arma 3: Assets | Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:100%;" cellpadding="3px"
+! Class
+! Objects
+! Objects Gallery
+|-
+| <span id="Core" >'''Core'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#FakeWeapon|FakeWeapon]]
+</small>
+| <small>
+</small>
+|-
+| <span id="A3_Weapons_F" >'''A3_Weapons_F'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Vehicle Weapons#autocannon_30mm|autocannon_30mm]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#autocannon_30mm_CTWS|autocannon_30mm_CTWS]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#autocannon_35mm|autocannon_35mm]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#autocannon_40mm_CTWS|autocannon_40mm_CTWS]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#autocannon_Base_F|autocannon_Base_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#BikeHorn|BikeHorn]]
+:[[Arma 3 CfgWeapons Items#Binocular|Binocular]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Bomb_03_Plane_CAS_02_F|Bomb_03_Plane_CAS_02_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Bomb_04_Plane_CAS_01_F|Bomb_04_Plane_CAS_01_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#cannon_105mm|cannon_105mm]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#cannon_120mm|cannon_120mm]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#cannon_120mm_long|cannon_120mm_long]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#cannon_125mm|cannon_125mm]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Cannon_30mm_Plane_CAS_02_F|Cannon_30mm_Plane_CAS_02_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CMFlareLauncher|CMFlareLauncher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CMFlareLauncher_Singles|CMFlareLauncher_Singles]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CMFlareLauncher_Triples|CMFlareLauncher_Triples]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#FakeHorn|FakeHorn]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#FlareLauncher|FlareLauncher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#gatling_20mm|gatling_20mm]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#gatling_25mm|gatling_25mm]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#gatling_30mm|gatling_30mm]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Gatling_30mm_Plane_CAS_01_F|Gatling_30mm_Plane_CAS_01_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#GBU12BombLauncher|GBU12BombLauncher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#GMG_20mm|GMG_20mm]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#GMG_40mm|GMG_40mm]]
+:[[Arma 3 CfgWeapons Weapons#HandGunBase|HandGunBase]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#HMG_01|HMG_01]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#HMG_127|HMG_127]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#HMG_127_APC|HMG_127_APC]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#HMG_127_MBT|HMG_127_MBT]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#HMG_127_UGV|HMG_127_UGV]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#HMG_M2|HMG_M2]]
+:[[Arma 3 CfgWeapons Weapons#HMG_M2_Mounted|HMG_M2_Mounted]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#HMG_NSVT|HMG_NSVT]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#HMG_static|HMG_static]]
+:[[Arma 3 CfgWeapons Items#Integrated_NVG_F|Integrated_NVG_F]]
+:[[Arma 3 CfgWeapons Items#Integrated_NVG_TI_0_F|Integrated_NVG_TI_0_F]]
+:[[Arma 3 CfgWeapons Items#Integrated_NVG_TI_1_F|Integrated_NVG_TI_1_F]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemGPS|ItemGPS]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#Laserdesignator|Laserdesignator]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Laserdesignator_mounted|Laserdesignator_mounted]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Laserdesignator_pilotCamera|Laserdesignator_pilotCamera]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Laserdesignator_vehicle|Laserdesignator_vehicle]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#LMG_65mm_body|LMG_65mm_body]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#LMG_coax|LMG_coax]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#LMG_coax_ext|LMG_coax_ext]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#LMG_M200|LMG_M200]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#LMG_M200_body|LMG_M200_body]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#LMG_Minigun|LMG_Minigun]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#LMG_Minigun2|LMG_Minigun2]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#LMG_Minigun_heli|LMG_Minigun_heli]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#LMG_Minigun_Transport|LMG_Minigun_Transport]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#LMG_Minigun_Transport2|LMG_Minigun_Transport2]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#LMG_RCWS|LMG_RCWS]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#M134_minigun|M134_minigun]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#M2|M2]]
+:[[Arma 3 CfgWeapons Items#MineDetector|MineDetector]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#MiniCarHorn|MiniCarHorn]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Missile_AA_03_Plane_CAS_02_F|Missile_AA_03_Plane_CAS_02_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Missile_AA_04_Plane_CAS_01_F|Missile_AA_04_Plane_CAS_01_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Missile_AGM_01_Plane_CAS_02_F|Missile_AGM_01_Plane_CAS_02_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Missile_AGM_02_Plane_CAS_01_F|Missile_AGM_02_Plane_CAS_01_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#MissileLauncher|MissileLauncher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#missiles_ASRAAM|missiles_ASRAAM]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#missiles_DAGR|missiles_DAGR]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#missiles_DAR|missiles_DAR]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#missiles_SCALPEL|missiles_SCALPEL]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#missiles_titan|missiles_titan]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#missiles_titan_AA|missiles_titan_AA]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#missiles_titan_static|missiles_titan_static]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#missiles_Zephyr|missiles_Zephyr]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Mk82BombLauncher|Mk82BombLauncher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#mortar_155mm_AMOS|mortar_155mm_AMOS]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#mortar_82mm|mortar_82mm]]
+:[[Arma 3 CfgWeapons Items#NVGoggles|NVGoggles]]
+:[[Arma 3 CfgWeapons Items#NVGoggles_INDEP|NVGoggles_INDEP]]
+:[[Arma 3 CfgWeapons Items#NVGoggles_OPFOR|NVGoggles_OPFOR]]
+:[[Arma 3 CfgWeapons Weapons#Put|Put]]
+:[[Arma 3 CfgWeapons Items#Rangefinder|Rangefinder]]
+:[[Arma 3 CfgWeapons Weapons#Rifle|Rifle]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Rocket_03_AP_Plane_CAS_02_F|Rocket_03_AP_Plane_CAS_02_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Rocket_03_HE_Plane_CAS_02_F|Rocket_03_HE_Plane_CAS_02_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Rocket_04_AP_Plane_CAS_01_F|Rocket_04_AP_Plane_CAS_01_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Rocket_04_HE_Plane_CAS_01_F|Rocket_04_HE_Plane_CAS_01_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#RocketPods|RocketPods]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#rockets_230mm_GAT|rockets_230mm_GAT]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#rockets_Skyfire|rockets_Skyfire]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#SEARCHLIGHT|SEARCHLIGHT]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#SmokeLauncher|SmokeLauncher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#SportCarHorn|SportCarHorn]]
+:[[Arma 3 CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn|TruckHorn]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn2|TruckHorn2]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn3|TruckHorn3]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Twin_Cannon_20mm|Twin_Cannon_20mm]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_LGBLauncherBase|weapon_LGBLauncherBase]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_VLSBase|weapon_VLSBase]]
+</small>
+| <small>[[File:arma3-gear_binoculars_ca.png|150px]][[File:arma3-gear_nvg_ca.png|150px]][[File:arma3-gear_nvg_ca.png|150px]][[File:arma3-gear_nvg_ca.png|150px]][[File:arma3-gear_item_compass_ca.png|150px]][[File:arma3-gear_item_gps_ca.png|150px]][[File:arma3-gear_item_map_ca.png|150px]][[File:arma3-gear_item_radio_ca.png|150px]][[File:arma3-gear_item_watch_ca.png|150px]][[File:arma3-gear_laserdesignator_ca.png|150px]][[File:arma3-gear_minedetector_ca.png|150px]][[File:arma3-gear_nvg_ca.png|150px]][[File:arma3-gear_nvg_indep_ca.png|150px]][[File:arma3-gear_nvg_opfor_ca.png|150px]][[File:arma3-gear_rangefinder_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Items" >'''A3_Weapons_F_Items'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Items#FirstAidKit|FirstAidKit]]
+:[[Arma 3 CfgWeapons Items#Medikit|Medikit]]
+:[[Arma 3 CfgWeapons Items#ToolKit|ToolKit]]
+</small>
+| <small>[[File:arma3-gear_firstaidkit_ca.png|150px]][[File:arma3-gear_medikit_ca.png|150px]][[File:arma3-gear_toolkit_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Launchers_NLAW" >'''A3_Weapons_F_Launchers_NLAW'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#launch_NLAW_F|launch_NLAW_F]]
+</small>
+| <small>[[File:arma3-gear_nlaw_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Launchers_RPG32" >'''A3_Weapons_F_Launchers_RPG32'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#launch_RPG32_F|launch_RPG32_F]]
+</small>
+| <small>[[File:arma3-gear_rpg32_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Launchers_Titan" >'''A3_Weapons_F_Launchers_Titan'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#launch_B_Titan_F|launch_B_Titan_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_B_Titan_short_F|launch_B_Titan_short_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_I_Titan_F|launch_I_Titan_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_I_Titan_short_F|launch_I_Titan_short_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_O_Titan_F|launch_O_Titan_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_O_Titan_short_F|launch_O_Titan_short_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_Titan_F|launch_Titan_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_Titan_short_F|launch_Titan_short_F]]
+</small>
+| <small>[[File:arma3-icon_launch_b_titan_f_ca.png|150px]][[File:arma3-icon_launch_b_titan_short_f_ca.png|150px]][[File:arma3-icon_launch_i_titan_f_ca.png|150px]][[File:arma3-icon_launch_i_titan_short_f_ca.png|150px]][[File:arma3-icon_launch_o_titan_f_ca.png|150px]][[File:arma3-icon_launch_o_titan_short_f_ca.png|150px]][[File:arma3-icon_launch_b_titan_f_ca.png|150px]][[File:arma3-icon_launch_b_titan_short_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_LongRangeRifles_DMR_01" >'''A3_Weapons_F_LongRangeRifles_DMR_01'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_01_ACO_F|srifle_DMR_01_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_01_ARCO_F|srifle_DMR_01_ARCO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_01_DMS_F|srifle_DMR_01_DMS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_01_DMS_snds_F|srifle_DMR_01_DMS_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_01_F|srifle_DMR_01_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_01_MRCO_F|srifle_DMR_01_MRCO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_01_SOS_F|srifle_DMR_01_SOS_F]]
+</small>
+| <small>[[File:arma3-gear_dmr_01_x_ca.png|150px]][[File:arma3-gear_dmr_01_x_ca.png|150px]][[File:arma3-gear_dmr_01_x_ca.png|150px]][[File:arma3-gear_dmr_01_x_ca.png|150px]][[File:arma3-gear_dmr_01_x_ca.png|150px]][[File:arma3-gear_dmr_01_x_ca.png|150px]][[File:arma3-gear_dmr_01_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_LongRangeRifles_EBR" >'''A3_Weapons_F_LongRangeRifles_EBR'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_EBR_ACO_F|srifle_EBR_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_EBR_ARCO_pointer_F|srifle_EBR_ARCO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_EBR_ARCO_pointer_snds_F|srifle_EBR_ARCO_pointer_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_EBR_DMS_F|srifle_EBR_DMS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_EBR_DMS_pointer_snds_F|srifle_EBR_DMS_pointer_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_EBR_F|srifle_EBR_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_EBR_Hamr_pointer_F|srifle_EBR_Hamr_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_EBR_MRCO_pointer_F|srifle_EBR_MRCO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_EBR_SOS_F|srifle_EBR_SOS_F]]
+</small>
+| <small>[[File:arma3-gear_ebr_x_ca.png|150px]][[File:arma3-gear_ebr_x_ca.png|150px]][[File:arma3-gear_ebr_x_ca.png|150px]][[File:arma3-gear_ebr_x_ca.png|150px]][[File:arma3-gear_ebr_x_ca.png|150px]][[File:arma3-gear_ebr_x_ca.png|150px]][[File:arma3-gear_ebr_x_ca.png|150px]][[File:arma3-gear_ebr_x_ca.png|150px]][[File:arma3-gear_ebr_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_LongRangeRifles_GM6" >'''A3_Weapons_F_LongRangeRifles_GM6'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_GM6_camo_F|srifle_GM6_camo_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_GM6_camo_LRPS_F|srifle_GM6_camo_LRPS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_GM6_camo_SOS_F|srifle_GM6_camo_SOS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_GM6_F|srifle_GM6_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_GM6_LRPS_F|srifle_GM6_LRPS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_GM6_SOS_F|srifle_GM6_SOS_F]]
+</small>
+| <small>[[File:arma3-gear_gm6_x_ca.png|150px]][[File:arma3-gear_gm6_x_ca.png|150px]][[File:arma3-gear_gm6_x_ca.png|150px]][[File:arma3-gear_gm6_x_ca.png|150px]][[File:arma3-gear_gm6_x_ca.png|150px]][[File:arma3-gear_gm6_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_LongRangeRifles_M320" >'''A3_Weapons_F_LongRangeRifles_M320'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_LRR_camo_F|srifle_LRR_camo_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_LRR_camo_LRPS_F|srifle_LRR_camo_LRPS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_LRR_camo_SOS_F|srifle_LRR_camo_SOS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_LRR_F|srifle_LRR_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_LRR_LRPS_F|srifle_LRR_LRPS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_LRR_SOS_F|srifle_LRR_SOS_F]]
+</small>
+| <small>[[File:arma3-gear_m320_lrr_x_ca.png|150px]][[File:arma3-gear_m320_lrr_x_ca.png|150px]][[File:arma3-gear_m320_lrr_x_ca.png|150px]][[File:arma3-gear_m320_lrr_x_ca.png|150px]][[File:arma3-gear_m320_lrr_x_ca.png|150px]][[File:arma3-gear_m320_lrr_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Machineguns_M200" >'''A3_Weapons_F_Machineguns_M200'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#LMG_Mk200_F|LMG_Mk200_F]]
+:[[Arma 3 CfgWeapons Weapons#LMG_Mk200_MRCO_F|LMG_Mk200_MRCO_F]]
+:[[Arma 3 CfgWeapons Weapons#LMG_Mk200_pointer_F|LMG_Mk200_pointer_F]]
+</small>
+| <small>[[File:arma3-gear_m200_x_ca.png|150px]][[File:arma3-gear_m200_x_ca.png|150px]][[File:arma3-gear_m200_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Machineguns_Zafir" >'''A3_Weapons_F_Machineguns_Zafir'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#LMG_Zafir_ARCO_F|LMG_Zafir_ARCO_F]]
+:[[Arma 3 CfgWeapons Weapons#LMG_Zafir_F|LMG_Zafir_F]]
+:[[Arma 3 CfgWeapons Weapons#LMG_Zafir_pointer_F|LMG_Zafir_pointer_F]]
+</small>
+| <small>[[File:arma3-gear_zafir_x_ca.png|150px]][[File:arma3-gear_zafir_x_ca.png|150px]][[File:arma3-gear_zafir_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Pistols_ACPC2" >'''A3_Weapons_F_Pistols_ACPC2'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#hgun_ACPC2_F|hgun_ACPC2_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_ACPC2_snds_F|hgun_ACPC2_snds_F]]
+</small>
+| <small>[[File:arma3-gear_acpc2_x_ca.png|150px]][[File:arma3-gear_acpc2_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Pistols_P07" >'''A3_Weapons_F_Pistols_P07'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#hgun_P07_F|hgun_P07_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_P07_snds_F|hgun_P07_snds_F]]
+</small>
+| <small>[[File:arma3-gear_p07_x_ca.png|150px]][[File:arma3-gear_p07_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Pistols_Pistol_Heavy_01" >'''A3_Weapons_F_Pistols_Pistol_Heavy_01'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#hgun_Pistol_heavy_01_F|hgun_Pistol_heavy_01_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_Pistol_heavy_01_MRD_F|hgun_Pistol_heavy_01_MRD_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_Pistol_heavy_01_snds_F|hgun_Pistol_heavy_01_snds_F]]
+</small>
+| <small>[[File:arma3-gear_pistol_heavy_01_x_ca.png|150px]][[File:arma3-gear_pistol_heavy_01_x_ca.png|150px]][[File:arma3-gear_pistol_heavy_01_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Pistols_Pistol_Heavy_02" >'''A3_Weapons_F_Pistols_Pistol_Heavy_02'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#hgun_Pistol_heavy_02_F|hgun_Pistol_heavy_02_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_Pistol_heavy_02_Yorris_F|hgun_Pistol_heavy_02_Yorris_F]]
+</small>
+| <small>[[File:arma3-gear_pistol_heavy_02_x_ca.png|150px]][[File:arma3-gear_pistol_heavy_02_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Pistols_Rook40" >'''A3_Weapons_F_Pistols_Rook40'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#hgun_Rook40_F|hgun_Rook40_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_Rook40_snds_F|hgun_Rook40_snds_F]]
+</small>
+| <small>[[File:arma3-gear_rook40_x_ca.png|150px]][[File:arma3-gear_rook40_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Rifles_Khaybar" >'''A3_Weapons_F_Rifles_Khaybar'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_ACO_F|arifle_Katiba_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_ACO_pointer_F|arifle_Katiba_ACO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_ACO_pointer_snds_F|arifle_Katiba_ACO_pointer_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_ARCO_F|arifle_Katiba_ARCO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_ARCO_pointer_F|arifle_Katiba_ARCO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_ARCO_pointer_snds_F|arifle_Katiba_ARCO_pointer_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_C_ACO_F|arifle_Katiba_C_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_C_ACO_pointer_F|arifle_Katiba_C_ACO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_C_ACO_pointer_snds_F|arifle_Katiba_C_ACO_pointer_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_C_F|arifle_Katiba_C_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_F|arifle_Katiba_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_GL_ACO_F|arifle_Katiba_GL_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_GL_ACO_pointer_F|arifle_Katiba_GL_ACO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_GL_ACO_pointer_snds_F|arifle_Katiba_GL_ACO_pointer_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_GL_ARCO_pointer_F|arifle_Katiba_GL_ARCO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_GL_F|arifle_Katiba_GL_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_GL_Nstalker_pointer_F|arifle_Katiba_GL_Nstalker_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Katiba_pointer_F|arifle_Katiba_pointer_F]]
+</small>
+| <small>[[File:arma3-gear_khaybar_x_ca.png|150px]][[File:arma3-gear_khaybar_x_ca.png|150px]][[File:arma3-gear_khaybar_x_ca.png|150px]][[File:arma3-gear_khaybar_x_ca.png|150px]][[File:arma3-gear_khaybar_x_ca.png|150px]][[File:arma3-gear_khaybar_x_ca.png|150px]][[File:arma3-gear_khaybarc_x_ca.png|150px]][[File:arma3-gear_khaybarc_x_ca.png|150px]][[File:arma3-gear_khaybarc_x_ca.png|150px]][[File:arma3-gear_khaybarc_x_ca.png|150px]][[File:arma3-gear_khaybar_x_ca.png|150px]][[File:arma3-gear_khaybar_gl_x_ca.png|150px]][[File:arma3-gear_khaybar_gl_x_ca.png|150px]][[File:arma3-gear_khaybar_gl_x_ca.png|150px]][[File:arma3-gear_khaybar_gl_x_ca.png|150px]][[File:arma3-gear_khaybar_gl_x_ca.png|150px]][[File:arma3-gear_khaybar_gl_x_ca.png|150px]][[File:arma3-gear_khaybar_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Rifles_MK20" >'''A3_Weapons_F_Rifles_MK20'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_ACO_F|arifle_Mk20_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_ACO_pointer_F|arifle_Mk20_ACO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_F|arifle_Mk20_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_GL_ACO_F|arifle_Mk20_GL_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_GL_F|arifle_Mk20_GL_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_GL_MRCO_pointer_F|arifle_Mk20_GL_MRCO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_GL_plain_F|arifle_Mk20_GL_plain_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_Holo_F|arifle_Mk20_Holo_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_MRCO_F|arifle_Mk20_MRCO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_MRCO_plain_F|arifle_Mk20_MRCO_plain_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_MRCO_pointer_F|arifle_Mk20_MRCO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_plain_F|arifle_Mk20_plain_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20_pointer_F|arifle_Mk20_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20C_ACO_F|arifle_Mk20C_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20C_ACO_pointer_F|arifle_Mk20C_ACO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20C_F|arifle_Mk20C_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_Mk20C_plain_F|arifle_Mk20C_plain_F]]
+</small>
+| <small>[[File:arma3-gear_mk20_camo_ca.png|150px]][[File:arma3-gear_mk20_camo_ca.png|150px]][[File:arma3-gear_mk20_camo_ca.png|150px]][[File:arma3-gear_mk20_camo_gl_x_ca.png|150px]][[File:arma3-gear_mk20_camo_gl_x_ca.png|150px]][[File:arma3-gear_mk20_camo_gl_x_ca.png|150px]][[File:arma3-gear_mk20_gl_x_ca.png|150px]][[File:arma3-gear_mk20_camo_ca.png|150px]][[File:arma3-gear_mk20_camo_ca.png|150px]][[File:arma3-gear_mk20_ca.png|150px]][[File:arma3-gear_mk20_camo_ca.png|150px]][[File:arma3-gear_mk20_ca.png|150px]][[File:arma3-gear_mk20_camo_ca.png|150px]][[File:arma3-gear_mk20_camo_c_ca.png|150px]][[File:arma3-gear_mk20_camo_c_ca.png|150px]][[File:arma3-gear_mk20_camo_c_ca.png|150px]][[File:arma3-gear_mk20_c_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Rifles_MX" >'''A3_Weapons_F_Rifles_MX'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_ACO_F|arifle_MX_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_ACO_pointer_F|arifle_MX_ACO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_ACO_pointer_snds_F|arifle_MX_ACO_pointer_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_F|arifle_MX_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_ACO_F|arifle_MX_GL_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_ACO_pointer_F|arifle_MX_GL_ACO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_F|arifle_MX_GL_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_Hamr_pointer_F|arifle_MX_GL_Hamr_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_Holo_pointer_snds_F|arifle_MX_GL_Holo_pointer_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_Hamr_pointer_F|arifle_MX_Hamr_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_Holo_pointer_F|arifle_MX_Holo_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_pointer_F|arifle_MX_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_RCO_pointer_snds_F|arifle_MX_RCO_pointer_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_SW_F|arifle_MX_SW_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_SW_Hamr_pointer_F|arifle_MX_SW_Hamr_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_SW_pointer_F|arifle_MX_SW_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_ACO_F|arifle_MXC_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_ACO_pointer_F|arifle_MXC_ACO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_ACO_pointer_snds_F|arifle_MXC_ACO_pointer_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_F|arifle_MXC_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_Holo_F|arifle_MXC_Holo_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_Holo_pointer_F|arifle_MXC_Holo_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_Holo_pointer_snds_F|arifle_MXC_Holo_pointer_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_SOS_point_snds_F|arifle_MXC_SOS_point_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_DMS_F|arifle_MXM_DMS_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_F|arifle_MXM_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_Hamr_pointer_F|arifle_MXM_Hamr_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_RCO_pointer_snds_F|arifle_MXM_RCO_pointer_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_SOS_pointer_F|arifle_MXM_SOS_pointer_F]]
+</small>
+| <small>[[File:arma3-gear_mx_rifle_x_ca.png|150px]][[File:arma3-gear_mx_rifle_x_ca.png|150px]][[File:arma3-gear_mx_rifle_x_ca.png|150px]][[File:arma3-gear_mx_rifle_x_ca.png|150px]][[File:arma3-gear_mx_rifle_gl_x_ca.png|150px]][[File:arma3-gear_mx_rifle_gl_x_ca.png|150px]][[File:arma3-gear_mx_rifle_gl_x_ca.png|150px]][[File:arma3-gear_mx_rifle_gl_x_ca.png|150px]][[File:arma3-gear_mx_rifle_gl_x_ca.png|150px]][[File:arma3-gear_mx_rifle_x_ca.png|150px]][[File:arma3-gear_mx_rifle_x_ca.png|150px]][[File:arma3-gear_mx_rifle_x_ca.png|150px]][[File:arma3-gear_mx_rifle_x_ca.png|150px]][[File:arma3-gear_mx_lmg_x_ca.png|150px]][[File:arma3-gear_mx_lmg_x_ca.png|150px]][[File:arma3-gear_mx_lmg_x_ca.png|150px]][[File:arma3-gear_mx_cqc_x_ca.png|150px]][[File:arma3-gear_mx_cqc_x_ca.png|150px]][[File:arma3-gear_mx_cqc_x_ca.png|150px]][[File:arma3-gear_mx_cqc_x_ca.png|150px]][[File:arma3-gear_mx_cqc_x_ca.png|150px]][[File:arma3-gear_mx_cqc_x_ca.png|150px]][[File:arma3-gear_mx_cqc_x_ca.png|150px]][[File:arma3-gear_mx_cqc_x_ca.png|150px]][[File:arma3-gear_mx_dmr_x_ca.png|150px]][[File:arma3-gear_mx_dmr_x_ca.png|150px]][[File:arma3-gear_mx_dmr_x_ca.png|150px]][[File:arma3-gear_mx_dmr_x_ca.png|150px]][[File:arma3-gear_mx_dmr_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Rifles_MX_Black" >'''A3_Weapons_F_Rifles_MX_Black'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_Black_F|arifle_MX_Black_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_Black_Hamr_pointer_F|arifle_MX_Black_Hamr_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_Black_F|arifle_MX_GL_Black_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_Black_Hamr_pointer_F|arifle_MX_GL_Black_Hamr_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_SW_Black_F|arifle_MX_SW_Black_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_SW_Black_Hamr_pointer_F|arifle_MX_SW_Black_Hamr_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_Black_F|arifle_MXC_Black_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_Black_F|arifle_MXM_Black_F]]
+</small>
+| <small>[[File:arma3-gear_mx_rifle_black_x_ca.png|150px]][[File:arma3-gear_mx_rifle_black_x_ca.png|150px]][[File:arma3-gear_mx_rifle_gl_black_x_ca.png|150px]][[File:arma3-gear_mx_rifle_gl_black_x_ca.png|150px]][[File:arma3-gear_mx_lmg_black_x_ca.png|150px]][[File:arma3-gear_mx_lmg_black_x_ca.png|150px]][[File:arma3-gear_mx_cqc_black_x_ca.png|150px]][[File:arma3-gear_mx_dmr_black_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Rifles_SDAR" >'''A3_Weapons_F_Rifles_SDAR'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_SDAR_F|arifle_SDAR_F]]
+</small>
+| <small>[[File:arma3-gear_sdar_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Rifles_TRG20" >'''A3_Weapons_F_Rifles_TRG20'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_TRG20_ACO_F|arifle_TRG20_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_TRG20_ACO_Flash_F|arifle_TRG20_ACO_Flash_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_TRG20_ACO_pointer_F|arifle_TRG20_ACO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_TRG20_F|arifle_TRG20_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_TRG20_Holo_F|arifle_TRG20_Holo_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_TRG21_ACO_pointer_F|arifle_TRG21_ACO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_TRG21_ARCO_pointer_F|arifle_TRG21_ARCO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_TRG21_F|arifle_TRG21_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_TRG21_GL_ACO_pointer_F|arifle_TRG21_GL_ACO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_TRG21_GL_F|arifle_TRG21_GL_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_TRG21_GL_MRCO_F|arifle_TRG21_GL_MRCO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_TRG21_MRCO_F|arifle_TRG21_MRCO_F]]
+</small>
+| <small>[[File:arma3-gear_trg20_x_ca.png|150px]][[File:arma3-gear_trg20_x_ca.png|150px]][[File:arma3-gear_trg20_x_ca.png|150px]][[File:arma3-gear_trg20_x_ca.png|150px]][[File:arma3-gear_trg20_x_ca.png|150px]][[File:arma3-gear_trg21_x_ca.png|150px]][[File:arma3-gear_trg21_x_ca.png|150px]][[File:arma3-gear_trg21_x_ca.png|150px]][[File:arma3-gear_trg21_gl_x_ca.png|150px]][[File:arma3-gear_trg21_gl_x_ca.png|150px]][[File:arma3-gear_trg21_gl_x_ca.png|150px]][[File:arma3-gear_trg21_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_SMGs_Pdw2000" >'''A3_Weapons_F_SMGs_Pdw2000'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#hgun_PDW2000_F|hgun_PDW2000_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_PDW2000_Holo_F|hgun_PDW2000_Holo_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_PDW2000_Holo_snds_F|hgun_PDW2000_Holo_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_PDW2000_snds_F|hgun_PDW2000_snds_F]]
+</small>
+| <small>[[File:arma3-gear_pdw2x_x_ca.png|150px]][[File:arma3-gear_pdw2x_x_ca.png|150px]][[File:arma3-gear_pdw2x_x_ca.png|150px]][[File:arma3-gear_pdw2x_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_SMGs_SMG_01" >'''A3_Weapons_F_SMGs_SMG_01'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#SMG_01_ACO_F|SMG_01_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#SMG_01_F|SMG_01_F]]
+:[[Arma 3 CfgWeapons Weapons#SMG_01_Holo_F|SMG_01_Holo_F]]
+:[[Arma 3 CfgWeapons Weapons#SMG_01_Holo_pointer_snds_F|SMG_01_Holo_pointer_snds_F]]
+</small>
+| <small>[[File:arma3-gear_smg_01_x_ca.png|150px]][[File:arma3-gear_smg_01_x_ca.png|150px]][[File:arma3-gear_smg_01_x_ca.png|150px]][[File:arma3-gear_smg_01_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_SMGs_SMG_02" >'''A3_Weapons_F_SMGs_SMG_02'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#SMG_02_ACO_F|SMG_02_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#SMG_02_ARCO_pointg_F|SMG_02_ARCO_pointg_F]]
+:[[Arma 3 CfgWeapons Weapons#SMG_02_F|SMG_02_F]]
+</small>
+| <small>[[File:arma3-gear_smg_02_x_ca.png|150px]][[File:arma3-gear_smg_02_x_ca.png|150px]][[File:arma3-gear_smg_02_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F" >'''A3_Characters_F'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_blu|H_Bandanna_blu]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_camo|H_Bandanna_camo]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_cbr|H_Bandanna_cbr]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_gry|H_Bandanna_gry]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_khk|H_Bandanna_khk]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_khk_hs|H_Bandanna_khk_hs]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_mcamo|H_Bandanna_mcamo]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_sand|H_Bandanna_sand]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_sgg|H_Bandanna_sgg]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_surfer|H_Bandanna_surfer]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_surfer_blk|H_Bandanna_surfer_blk]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_surfer_grn|H_Bandanna_surfer_grn]]
+:[[Arma 3 CfgWeapons Equipment#H_BandMask_blk|H_BandMask_blk]]
+:[[Arma 3 CfgWeapons Equipment#H_BandMask_demon|H_BandMask_demon]]
+:[[Arma 3 CfgWeapons Equipment#H_BandMask_khk|H_BandMask_khk]]
+:[[Arma 3 CfgWeapons Equipment#H_BandMask_reaper|H_BandMask_reaper]]
+:[[Arma 3 CfgWeapons Equipment#H_Beret_02|H_Beret_02]]
+:[[Arma 3 CfgWeapons Equipment#H_Beret_blk|H_Beret_blk]]
+:[[Arma 3 CfgWeapons Equipment#H_Beret_blk_POLICE|H_Beret_blk_POLICE]]
+:[[Arma 3 CfgWeapons Equipment#H_Beret_brn_SF|H_Beret_brn_SF]]
+:[[Arma 3 CfgWeapons Equipment#H_Beret_Colonel|H_Beret_Colonel]]
+:[[Arma 3 CfgWeapons Equipment#H_Beret_grn|H_Beret_grn]]
+:[[Arma 3 CfgWeapons Equipment#H_Beret_grn_SF|H_Beret_grn_SF]]
+:[[Arma 3 CfgWeapons Equipment#H_Beret_ocamo|H_Beret_ocamo]]
+:[[Arma 3 CfgWeapons Equipment#H_Beret_red|H_Beret_red]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_dgtl|H_Booniehat_dgtl]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_dirty|H_Booniehat_dirty]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_grn|H_Booniehat_grn]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_indp|H_Booniehat_indp]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_khk|H_Booniehat_khk]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_khk_hs|H_Booniehat_khk_hs]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_mcamo|H_Booniehat_mcamo]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_oli|H_Booniehat_oli]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_tan|H_Booniehat_tan]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_blk|H_Cap_blk]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_blk_CMMG|H_Cap_blk_CMMG]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_blk_ION|H_Cap_blk_ION]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_blk_Raven|H_Cap_blk_Raven]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_blu|H_Cap_blu]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_brn_SPECOPS|H_Cap_brn_SPECOPS]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_grn|H_Cap_grn]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_grn_BI|H_Cap_grn_BI]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_headphones|H_Cap_headphones]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_khaki_specops_UK|H_Cap_khaki_specops_UK]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_marshal|H_Cap_marshal]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_oli|H_Cap_oli]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_oli_hs|H_Cap_oli_hs]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_police|H_Cap_police]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_press|H_Cap_press]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_red|H_Cap_red]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_surfer|H_Cap_surfer]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_tan|H_Cap_tan]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_tan_specops_US|H_Cap_tan_specops_US]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_usblack|H_Cap_usblack]]
+:[[Arma 3 CfgWeapons Equipment#H_CrewHelmetHeli_B|H_CrewHelmetHeli_B]]
+:[[Arma 3 CfgWeapons Equipment#H_CrewHelmetHeli_I|H_CrewHelmetHeli_I]]
+:[[Arma 3 CfgWeapons Equipment#H_CrewHelmetHeli_O|H_CrewHelmetHeli_O]]
+:[[Arma 3 CfgWeapons Equipment#H_Hat_blue|H_Hat_blue]]
+:[[Arma 3 CfgWeapons Equipment#H_Hat_brown|H_Hat_brown]]
+:[[Arma 3 CfgWeapons Equipment#H_Hat_camo|H_Hat_camo]]
+:[[Arma 3 CfgWeapons Equipment#H_Hat_checker|H_Hat_checker]]
+:[[Arma 3 CfgWeapons Equipment#H_Hat_grey|H_Hat_grey]]
+:[[Arma 3 CfgWeapons Equipment#H_Hat_tan|H_Hat_tan]]
+:[[Arma 3 CfgWeapons Equipment#H_Helmet_Kerry|H_Helmet_Kerry]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB|H_HelmetB]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_black|H_HelmetB_black]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_camo|H_HelmetB_camo]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_desert|H_HelmetB_desert]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_grass|H_HelmetB_grass]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_light|H_HelmetB_light]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_light_black|H_HelmetB_light_black]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_light_desert|H_HelmetB_light_desert]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_light_grass|H_HelmetB_light_grass]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_light_sand|H_HelmetB_light_sand]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_light_snakeskin|H_HelmetB_light_snakeskin]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_paint|H_HelmetB_paint]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_plain_blk|H_HelmetB_plain_blk]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_plain_mcamo|H_HelmetB_plain_mcamo]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_sand|H_HelmetB_sand]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_snakeskin|H_HelmetB_snakeskin]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetCrew_B|H_HelmetCrew_B]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetCrew_I|H_HelmetCrew_I]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetCrew_O|H_HelmetCrew_O]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetIA|H_HelmetIA]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetIA_camo|H_HelmetIA_camo]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetIA_net|H_HelmetIA_net]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetLeaderO_ocamo|H_HelmetLeaderO_ocamo]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetLeaderO_oucamo|H_HelmetLeaderO_oucamo]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetO_ocamo|H_HelmetO_ocamo]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetO_oucamo|H_HelmetO_oucamo]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetSpecB|H_HelmetSpecB]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetSpecB_blk|H_HelmetSpecB_blk]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetSpecB_paint1|H_HelmetSpecB_paint1]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetSpecB_paint2|H_HelmetSpecB_paint2]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetSpecB_sand|H_HelmetSpecB_sand]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetSpecB_snakeskin|H_HelmetSpecB_snakeskin]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetSpecO_blk|H_HelmetSpecO_blk]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetSpecO_ocamo|H_HelmetSpecO_ocamo]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_blue|H_MilCap_blue]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_dgtl|H_MilCap_dgtl]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_gry|H_MilCap_gry]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_mcamo|H_MilCap_mcamo]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_ocamo|H_MilCap_ocamo]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_oucamo|H_MilCap_oucamo]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_rucamo|H_MilCap_rucamo]]
+:[[Arma 3 CfgWeapons Equipment#H_PilotHelmetFighter_B|H_PilotHelmetFighter_B]]
+:[[Arma 3 CfgWeapons Equipment#H_PilotHelmetFighter_I|H_PilotHelmetFighter_I]]
+:[[Arma 3 CfgWeapons Equipment#H_PilotHelmetFighter_O|H_PilotHelmetFighter_O]]
+:[[Arma 3 CfgWeapons Equipment#H_PilotHelmetHeli_B|H_PilotHelmetHeli_B]]
+:[[Arma 3 CfgWeapons Equipment#H_PilotHelmetHeli_I|H_PilotHelmetHeli_I]]
+:[[Arma 3 CfgWeapons Equipment#H_PilotHelmetHeli_O|H_PilotHelmetHeli_O]]
+:[[Arma 3 CfgWeapons Equipment#H_RacingHelmet_1_black_F|H_RacingHelmet_1_black_F]]
+:[[Arma 3 CfgWeapons Equipment#H_RacingHelmet_1_blue_F|H_RacingHelmet_1_blue_F]]
+:[[Arma 3 CfgWeapons Equipment#H_RacingHelmet_1_F|H_RacingHelmet_1_F]]
+:[[Arma 3 CfgWeapons Equipment#H_RacingHelmet_1_green_F|H_RacingHelmet_1_green_F]]
+:[[Arma 3 CfgWeapons Equipment#H_RacingHelmet_1_orange_F|H_RacingHelmet_1_orange_F]]
+:[[Arma 3 CfgWeapons Equipment#H_RacingHelmet_1_red_F|H_RacingHelmet_1_red_F]]
+:[[Arma 3 CfgWeapons Equipment#H_RacingHelmet_1_white_F|H_RacingHelmet_1_white_F]]
+:[[Arma 3 CfgWeapons Equipment#H_RacingHelmet_1_yellow_F|H_RacingHelmet_1_yellow_F]]
+:[[Arma 3 CfgWeapons Equipment#H_RacingHelmet_2_F|H_RacingHelmet_2_F]]
+:[[Arma 3 CfgWeapons Equipment#H_RacingHelmet_3_F|H_RacingHelmet_3_F]]
+:[[Arma 3 CfgWeapons Equipment#H_RacingHelmet_4_F|H_RacingHelmet_4_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Shemag_khk|H_Shemag_khk]]
+:[[Arma 3 CfgWeapons Equipment#H_Shemag_olive|H_Shemag_olive]]
+:[[Arma 3 CfgWeapons Equipment#H_Shemag_olive_hs|H_Shemag_olive_hs]]
+:[[Arma 3 CfgWeapons Equipment#H_Shemag_tan|H_Shemag_tan]]
+:[[Arma 3 CfgWeapons Equipment#H_ShemagOpen_khk|H_ShemagOpen_khk]]
+:[[Arma 3 CfgWeapons Equipment#H_ShemagOpen_tan|H_ShemagOpen_tan]]
+:[[Arma 3 CfgWeapons Equipment#H_StrawHat|H_StrawHat]]
+:[[Arma 3 CfgWeapons Equipment#H_StrawHat_dark|H_StrawHat_dark]]
+:[[Arma 3 CfgWeapons Equipment#H_TurbanO_blk|H_TurbanO_blk]]
+:[[Arma 3 CfgWeapons Equipment#H_Watchcap_blk|H_Watchcap_blk]]
+:[[Arma 3 CfgWeapons Equipment#H_Watchcap_camo|H_Watchcap_camo]]
+:[[Arma 3 CfgWeapons Equipment#H_Watchcap_cbr|H_Watchcap_cbr]]
+:[[Arma 3 CfgWeapons Equipment#H_Watchcap_khk|H_Watchcap_khk]]
+:[[Arma 3 CfgWeapons Equipment#H_Watchcap_sgg|H_Watchcap_sgg]]
+:[[Arma 3 CfgWeapons Equipment#U_AntigonaBody|U_AntigonaBody]]
+:[[Arma 3 CfgWeapons Equipment#U_AttisBody|U_AttisBody]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_mcam|U_B_CombatUniform_mcam]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_mcam_tshirt|U_B_CombatUniform_mcam_tshirt]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_mcam_vest|U_B_CombatUniform_mcam_vest]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_mcam_worn|U_B_CombatUniform_mcam_worn]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_sgg|U_B_CombatUniform_sgg]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_sgg_tshirt|U_B_CombatUniform_sgg_tshirt]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_sgg_vest|U_B_CombatUniform_sgg_vest]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_wdl|U_B_CombatUniform_wdl]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_wdl_tshirt|U_B_CombatUniform_wdl_tshirt]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_wdl_vest|U_B_CombatUniform_wdl_vest]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CTRG_1|U_B_CTRG_1]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CTRG_2|U_B_CTRG_2]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CTRG_3|U_B_CTRG_3]]
+:[[Arma 3 CfgWeapons Equipment#U_B_FullGhillie_ard|U_B_FullGhillie_ard]]
+:[[Arma 3 CfgWeapons Equipment#U_B_FullGhillie_lsh|U_B_FullGhillie_lsh]]
+:[[Arma 3 CfgWeapons Equipment#U_B_FullGhillie_sard|U_B_FullGhillie_sard]]
+:[[Arma 3 CfgWeapons Equipment#U_B_GhillieSuit|U_B_GhillieSuit]]
+:[[Arma 3 CfgWeapons Equipment#U_B_HeliPilotCoveralls|U_B_HeliPilotCoveralls]]
+:[[Arma 3 CfgWeapons Equipment#U_B_PilotCoveralls|U_B_PilotCoveralls]]
+:[[Arma 3 CfgWeapons Equipment#U_B_Protagonist_VR|U_B_Protagonist_VR]]
+:[[Arma 3 CfgWeapons Equipment#U_B_Soldier_VR|U_B_Soldier_VR]]
+:[[Arma 3 CfgWeapons Equipment#U_B_SpecopsUniform_sgg|U_B_SpecopsUniform_sgg]]
+:[[Arma 3 CfgWeapons Equipment#U_B_survival_uniform|U_B_survival_uniform]]
+:[[Arma 3 CfgWeapons Equipment#U_B_Wetsuit|U_B_Wetsuit]]
+:[[Arma 3 CfgWeapons Equipment#U_BasicBody|U_BasicBody]]
+:[[Arma 3 CfgWeapons Equipment#U_BG_Guerilla1_1|U_BG_Guerilla1_1]]
+:[[Arma 3 CfgWeapons Equipment#U_BG_Guerilla2_1|U_BG_Guerilla2_1]]
+:[[Arma 3 CfgWeapons Equipment#U_BG_Guerilla2_2|U_BG_Guerilla2_2]]
+:[[Arma 3 CfgWeapons Equipment#U_BG_Guerilla2_3|U_BG_Guerilla2_3]]
+:[[Arma 3 CfgWeapons Equipment#U_BG_Guerilla3_1|U_BG_Guerilla3_1]]
+:[[Arma 3 CfgWeapons Equipment#U_BG_Guerilla3_2|U_BG_Guerilla3_2]]
+:[[Arma 3 CfgWeapons Equipment#U_BG_Guerrilla_6_1|U_BG_Guerrilla_6_1]]
+:[[Arma 3 CfgWeapons Equipment#U_BG_leader|U_BG_leader]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Commoner1_1|U_C_Commoner1_1]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Commoner1_2|U_C_Commoner1_2]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Commoner1_3|U_C_Commoner1_3]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Commoner2_1|U_C_Commoner2_1]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Commoner2_2|U_C_Commoner2_2]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Commoner2_3|U_C_Commoner2_3]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Commoner_shorts|U_C_Commoner_shorts]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Driver_1|U_C_Driver_1]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Driver_1_black|U_C_Driver_1_black]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Driver_1_blue|U_C_Driver_1_blue]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Driver_1_green|U_C_Driver_1_green]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Driver_1_orange|U_C_Driver_1_orange]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Driver_1_red|U_C_Driver_1_red]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Driver_1_white|U_C_Driver_1_white]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Driver_1_yellow|U_C_Driver_1_yellow]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Driver_2|U_C_Driver_2]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Driver_3|U_C_Driver_3]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Driver_4|U_C_Driver_4]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Farmer|U_C_Farmer]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Fisherman|U_C_Fisherman]]
+:[[Arma 3 CfgWeapons Equipment#U_C_FishermanOveralls|U_C_FishermanOveralls]]
+:[[Arma 3 CfgWeapons Equipment#U_C_HunterBody_brn|U_C_HunterBody_brn]]
+:[[Arma 3 CfgWeapons Equipment#U_C_HunterBody_grn|U_C_HunterBody_grn]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Journalist|U_C_Journalist]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Novak|U_C_Novak]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poloshirt_blue|U_C_Poloshirt_blue]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poloshirt_burgundy|U_C_Poloshirt_burgundy]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poloshirt_redwhite|U_C_Poloshirt_redwhite]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poloshirt_salmon|U_C_Poloshirt_salmon]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poloshirt_stripped|U_C_Poloshirt_stripped]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poloshirt_tricolour|U_C_Poloshirt_tricolour]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poor_1|U_C_Poor_1]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poor_2|U_C_Poor_2]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poor_shorts_1|U_C_Poor_shorts_1]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poor_shorts_2|U_C_Poor_shorts_2]]
+:[[Arma 3 CfgWeapons Equipment#U_C_PriestBody|U_C_PriestBody]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Protagonist_VR|U_C_Protagonist_VR]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Scavenger_1|U_C_Scavenger_1]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Scavenger_2|U_C_Scavenger_2]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Scientist|U_C_Scientist]]
+:[[Arma 3 CfgWeapons Equipment#U_C_ShirtSurfer_shorts|U_C_ShirtSurfer_shorts]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Soldier_VR|U_C_Soldier_VR]]
+:[[Arma 3 CfgWeapons Equipment#U_C_TeeSurfer_shorts_1|U_C_TeeSurfer_shorts_1]]
+:[[Arma 3 CfgWeapons Equipment#U_C_TeeSurfer_shorts_2|U_C_TeeSurfer_shorts_2]]
+:[[Arma 3 CfgWeapons Equipment#U_C_WorkerCoveralls|U_C_WorkerCoveralls]]
+:[[Arma 3 CfgWeapons Equipment#U_C_WorkerOveralls|U_C_WorkerOveralls]]
+:[[Arma 3 CfgWeapons Equipment#U_Competitor|U_Competitor]]
+:[[Arma 3 CfgWeapons Equipment#U_I_CombatUniform|U_I_CombatUniform]]
+:[[Arma 3 CfgWeapons Equipment#U_I_CombatUniform_shortsleeve|U_I_CombatUniform_shortsleeve]]
+:[[Arma 3 CfgWeapons Equipment#U_I_CombatUniform_tshirt|U_I_CombatUniform_tshirt]]
+:[[Arma 3 CfgWeapons Equipment#U_I_FullGhillie_ard|U_I_FullGhillie_ard]]
+:[[Arma 3 CfgWeapons Equipment#U_I_FullGhillie_lsh|U_I_FullGhillie_lsh]]
+:[[Arma 3 CfgWeapons Equipment#U_I_FullGhillie_sard|U_I_FullGhillie_sard]]
+:[[Arma 3 CfgWeapons Equipment#U_I_G_resistanceLeader_F|U_I_G_resistanceLeader_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_G_Story_Protagonist_F|U_I_G_Story_Protagonist_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_GhillieSuit|U_I_GhillieSuit]]
+:[[Arma 3 CfgWeapons Equipment#U_I_HeliPilotCoveralls|U_I_HeliPilotCoveralls]]
+:[[Arma 3 CfgWeapons Equipment#U_I_OfficerUniform|U_I_OfficerUniform]]
+:[[Arma 3 CfgWeapons Equipment#U_I_pilotCoveralls|U_I_pilotCoveralls]]
+:[[Arma 3 CfgWeapons Equipment#U_I_Protagonist_VR|U_I_Protagonist_VR]]
+:[[Arma 3 CfgWeapons Equipment#U_I_Soldier_VR|U_I_Soldier_VR]]
+:[[Arma 3 CfgWeapons Equipment#U_I_Wetsuit|U_I_Wetsuit]]
+:[[Arma 3 CfgWeapons Equipment#U_IG_Guerilla1_1|U_IG_Guerilla1_1]]
+:[[Arma 3 CfgWeapons Equipment#U_IG_Guerilla2_1|U_IG_Guerilla2_1]]
+:[[Arma 3 CfgWeapons Equipment#U_IG_Guerilla2_2|U_IG_Guerilla2_2]]
+:[[Arma 3 CfgWeapons Equipment#U_IG_Guerilla2_3|U_IG_Guerilla2_3]]
+:[[Arma 3 CfgWeapons Equipment#U_IG_Guerilla3_1|U_IG_Guerilla3_1]]
+:[[Arma 3 CfgWeapons Equipment#U_IG_Guerilla3_2|U_IG_Guerilla3_2]]
+:[[Arma 3 CfgWeapons Equipment#U_IG_Guerrilla_6_1|U_IG_Guerrilla_6_1]]
+:[[Arma 3 CfgWeapons Equipment#U_IG_leader|U_IG_leader]]
+:[[Arma 3 CfgWeapons Equipment#U_IG_Menelaos|U_IG_Menelaos]]
+:[[Arma 3 CfgWeapons Equipment#U_KerryBody|U_KerryBody]]
+:[[Arma 3 CfgWeapons Equipment#U_Marshal|U_Marshal]]
+:[[Arma 3 CfgWeapons Equipment#U_MillerBody|U_MillerBody]]
+:[[Arma 3 CfgWeapons Equipment#U_NikosAgedBody|U_NikosAgedBody]]
+:[[Arma 3 CfgWeapons Equipment#U_NikosBody|U_NikosBody]]
+:[[Arma 3 CfgWeapons Equipment#U_O_CombatUniform_ocamo|U_O_CombatUniform_ocamo]]
+:[[Arma 3 CfgWeapons Equipment#U_O_CombatUniform_oucamo|U_O_CombatUniform_oucamo]]
+:[[Arma 3 CfgWeapons Equipment#U_O_FullGhillie_ard|U_O_FullGhillie_ard]]
+:[[Arma 3 CfgWeapons Equipment#U_O_FullGhillie_lsh|U_O_FullGhillie_lsh]]
+:[[Arma 3 CfgWeapons Equipment#U_O_FullGhillie_sard|U_O_FullGhillie_sard]]
+:[[Arma 3 CfgWeapons Equipment#U_O_GhillieSuit|U_O_GhillieSuit]]
+:[[Arma 3 CfgWeapons Equipment#U_O_OfficerUniform_ocamo|U_O_OfficerUniform_ocamo]]
+:[[Arma 3 CfgWeapons Equipment#U_O_PilotCoveralls|U_O_PilotCoveralls]]
+:[[Arma 3 CfgWeapons Equipment#U_O_Protagonist_VR|U_O_Protagonist_VR]]
+:[[Arma 3 CfgWeapons Equipment#U_O_Soldier_VR|U_O_Soldier_VR]]
+:[[Arma 3 CfgWeapons Equipment#U_O_SpecopsUniform_blk|U_O_SpecopsUniform_blk]]
+:[[Arma 3 CfgWeapons Equipment#U_O_SpecopsUniform_ocamo|U_O_SpecopsUniform_ocamo]]
+:[[Arma 3 CfgWeapons Equipment#U_O_Wetsuit|U_O_Wetsuit]]
+:[[Arma 3 CfgWeapons Equipment#U_OG_Guerilla1_1|U_OG_Guerilla1_1]]
+:[[Arma 3 CfgWeapons Equipment#U_OG_Guerilla2_1|U_OG_Guerilla2_1]]
+:[[Arma 3 CfgWeapons Equipment#U_OG_Guerilla2_2|U_OG_Guerilla2_2]]
+:[[Arma 3 CfgWeapons Equipment#U_OG_Guerilla2_3|U_OG_Guerilla2_3]]
+:[[Arma 3 CfgWeapons Equipment#U_OG_Guerilla3_1|U_OG_Guerilla3_1]]
+:[[Arma 3 CfgWeapons Equipment#U_OG_Guerilla3_2|U_OG_Guerilla3_2]]
+:[[Arma 3 CfgWeapons Equipment#U_OG_Guerrilla_6_1|U_OG_Guerrilla_6_1]]
+:[[Arma 3 CfgWeapons Equipment#U_OG_leader|U_OG_leader]]
+:[[Arma 3 CfgWeapons Equipment#U_OI_Scientist|U_OI_Scientist]]
+:[[Arma 3 CfgWeapons Equipment#U_OrestesBody|U_OrestesBody]]
+:[[Arma 3 CfgWeapons Equipment#U_Rangemaster|U_Rangemaster]]
+:[[Arma 3 CfgWeapons Equipment#V_BandollierB_blk|V_BandollierB_blk]]
+:[[Arma 3 CfgWeapons Equipment#V_BandollierB_cbr|V_BandollierB_cbr]]
+:[[Arma 3 CfgWeapons Equipment#V_BandollierB_khk|V_BandollierB_khk]]
+:[[Arma 3 CfgWeapons Equipment#V_BandollierB_oli|V_BandollierB_oli]]
+:[[Arma 3 CfgWeapons Equipment#V_BandollierB_rgr|V_BandollierB_rgr]]
+:[[Arma 3 CfgWeapons Equipment#V_Chestrig_blk|V_Chestrig_blk]]
+:[[Arma 3 CfgWeapons Equipment#V_Chestrig_khk|V_Chestrig_khk]]
+:[[Arma 3 CfgWeapons Equipment#V_Chestrig_oli|V_Chestrig_oli]]
+:[[Arma 3 CfgWeapons Equipment#V_Chestrig_rgr|V_Chestrig_rgr]]
+:[[Arma 3 CfgWeapons Equipment#V_HarnessO_brn|V_HarnessO_brn]]
+:[[Arma 3 CfgWeapons Equipment#V_HarnessO_gry|V_HarnessO_gry]]
+:[[Arma 3 CfgWeapons Equipment#V_HarnessOGL_brn|V_HarnessOGL_brn]]
+:[[Arma 3 CfgWeapons Equipment#V_HarnessOGL_gry|V_HarnessOGL_gry]]
+:[[Arma 3 CfgWeapons Equipment#V_HarnessOSpec_brn|V_HarnessOSpec_brn]]
+:[[Arma 3 CfgWeapons Equipment#V_HarnessOSpec_gry|V_HarnessOSpec_gry]]
+:[[Arma 3 CfgWeapons Equipment#V_I_G_resistanceLeader_F|V_I_G_resistanceLeader_F]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrier1_blk|V_PlateCarrier1_blk]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrier1_rgr|V_PlateCarrier1_rgr]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrier2_blk|V_PlateCarrier2_blk]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrier2_rgr|V_PlateCarrier2_rgr]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrier3_rgr|V_PlateCarrier3_rgr]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrier_Kerry|V_PlateCarrier_Kerry]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierGL_blk|V_PlateCarrierGL_blk]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierGL_mtp|V_PlateCarrierGL_mtp]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierGL_rgr|V_PlateCarrierGL_rgr]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierH_CTRG|V_PlateCarrierH_CTRG]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierIA1_dgtl|V_PlateCarrierIA1_dgtl]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierIA2_dgtl|V_PlateCarrierIA2_dgtl]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierIAGL_dgtl|V_PlateCarrierIAGL_dgtl]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierIAGL_oli|V_PlateCarrierIAGL_oli]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierL_CTRG|V_PlateCarrierL_CTRG]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierSpec_blk|V_PlateCarrierSpec_blk]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierSpec_mtp|V_PlateCarrierSpec_mtp]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierSpec_rgr|V_PlateCarrierSpec_rgr]]
+:[[Arma 3 CfgWeapons Equipment#V_Press_F|V_Press_F]]
+:[[Arma 3 CfgWeapons Equipment#V_Rangemaster_belt|V_Rangemaster_belt]]
+:[[Arma 3 CfgWeapons Equipment#V_RebreatherB|V_RebreatherB]]
+:[[Arma 3 CfgWeapons Equipment#V_RebreatherIA|V_RebreatherIA]]
+:[[Arma 3 CfgWeapons Equipment#V_RebreatherIR|V_RebreatherIR]]
+:[[Arma 3 CfgWeapons Equipment#V_TacVest_blk|V_TacVest_blk]]
+:[[Arma 3 CfgWeapons Equipment#V_TacVest_blk_POLICE|V_TacVest_blk_POLICE]]
+:[[Arma 3 CfgWeapons Equipment#V_TacVest_brn|V_TacVest_brn]]
+:[[Arma 3 CfgWeapons Equipment#V_TacVest_camo|V_TacVest_camo]]
+:[[Arma 3 CfgWeapons Equipment#V_TacVest_khk|V_TacVest_khk]]
+:[[Arma 3 CfgWeapons Equipment#V_TacVest_oli|V_TacVest_oli]]
+:[[Arma 3 CfgWeapons Equipment#V_TacVestCamo_khk|V_TacVestCamo_khk]]
+:[[Arma 3 CfgWeapons Equipment#V_TacVestIR_blk|V_TacVestIR_blk]]
+</small>
+| <small>[[File:arma3-icon_h_bandanna_blu_ca.png|150px]][[File:arma3-icon_h_bandanna_camo_ca.png|150px]][[File:arma3-icon_h_bandanna_cbr_ca.png|150px]][[File:arma3-icon_h_bandanna_gry_ca.png|150px]][[File:arma3-icon_h_bandanna_khk_ca.png|150px]][[File:arma3-icon_bandana_green_hs_ca.png|150px]][[File:arma3-icon_h_bandanna_mcamo_ca.png|150px]][[File:arma3-icon_h_bandanna_sand_ca.png|150px]][[File:arma3-icon_h_bandanna_sgg_ca.png|150px]][[File:arma3-icon_h_bandanna_surfer_ca.png|150px]][[File:arma3-icon_h_bandanna_surfer_blk_ca.png|150px]][[File:arma3-icon_h_bandana_surfer_grn_ca.png|150px]][[File:arma3-icon_h_pilothelmetfighter_b_ca.png|150px]][[File:arma3-icon_h_pilothelmetfighter_b_ca.png|150px]][[File:arma3-icon_h_pilothelmetfighter_b_ca.png|150px]][[File:arma3-icon_h_pilothelmetfighter_b_ca.png|150px]][[File:arma3-icon_h_beret02_ca.png|150px]][[File:arma3-icon_h_beret_blk_ca.png|150px]][[File:arma3-icon_h_beret_blk_ca.png|150px]][[File:arma3-icon_h_beret_blk_ca.png|150px]][[File:arma3-icon_h_beret_colonel_ca.png|150px]][[File:arma3-icon_h_beret_blk_ca.png|150px]][[File:arma3-icon_h_beret_blk_ca.png|150px]][[File:arma3-icon_h_beret_blk_ca.png|150px]][[File:arma3-icon_h_beret_blk_ca.png|150px]][[File:arma3-icon_h_booniehat_indp_ca.png|150px]][[File:arma3-icon_h_booniehat_desert_ca.png|150px]][[File:arma3-icon_h_booniehat_desert_ca.png|150px]][[File:arma3-icon_h_booniehat_indp_ca.png|150px]][[File:arma3-icon_h_booniehat_desert_ca.png|150px]][[File:arma3-icon_booniehat_hs_ca.png|150px]][[File:arma3-icon_h_booniehat_mcamo_ca.png|150px]][[File:arma3-icon_h_booniehat_oli_ca.png|150px]][[File:arma3-icon_h_booniehat_tan_ca.png|150px]][[File:arma3-icon_h_cap_blk_ca.png|150px]][[File:arma3-icon_h_cap_blk_cmmg_ca.png|150px]][[File:arma3-icon_h_cap_blk_ion_ca.png|150px]][[File:arma3-icon_h_cap_blk_raven_ca.png|150px]][[File:arma3-icon_h_cap_blu_ca.png|150px]][[File:arma3-icon_h_cap_brn_specops_ca.png|150px]][[File:arma3-icon_h_cap_grn_ca.png|150px]][[File:arma3-icon_h_cap_grn_bi_ca.png|150px]][[File:arma3-icon_h_cap_headphones_khk_ca.png|150px]][[File:arma3-icon_h_cap_khaki_specops_uk_ca.png|150px]][[File:arma3-icon_h_cap_headphones_red_ca.png|150px]][[File:arma3-icon_h_cap_oli_ca.png|150px]][[File:arma3-icon_h_cap_oli_hs_ca.png|150px]][[File:arma3-icon_h_cap_police_ca.png|150px]][[File:arma3-icon_h_cap_press_ca.png|150px]][[File:arma3-icon_h_cap_red_ca.png|150px]][[File:arma3-icon_h_cap_surfer_ca.png|150px]][[File:arma3-icon_h_cap_tan_ca.png|150px]][[File:arma3-icon_h_cap_tan_specops_us_ca.png|150px]][[File:arma3-icon_h_cap_usblack_ca.png|150px]][[File:arma3-icon_h_crew_helmet_heli_b_ca.png|150px]][[File:arma3-icon_h_i_helmet_helishield_ca.png|150px]][[File:arma3-icon_h_crew_helmet_heli_oi_ca.png|150px]][[File:arma3-icon_h_hat_blue_ca.png|150px]][[File:arma3-icon_h_hat_brown_ca.png|150px]][[File:arma3-icon_h_hat_camo_ca.png|150px]][[File:arma3-icon_h_hat_checker_ca.png|150px]][[File:arma3-icon_h_hat_grey_ca.png|150px]][[File:arma3-icon_h_hat_tan_ca.png|150px]][[File:arma3-icon_h_helmetb_ca.png|150px]][[File:arma3-icon_h_helmet_plain_ca.png|150px]][[File:arma3-icon_h_helmetb_black_ca.png|150px]][[File:arma3-icon_h_helmetb_camo_ca.png|150px]][[File:arma3-icon_h_helmetb_desert_ca.png|150px]][[File:arma3-icon_h_helmetb_grass_ca.png|150px]][[File:arma3-icon_h_helmetb_light_ca.png|150px]][[File:arma3-icon_h_helmetb_light_black_ca.png|150px]][[File:arma3-icon_h_helmetb_light_desert_ca.png|150px]][[File:arma3-icon_h_helmetb_light_grass_ca.png|150px]][[File:arma3-icon_h_helmetb_light_sand_ca.png|150px]][[File:arma3-icon_h_helmetb_light_snakeskin_ca.png|150px]][[File:arma3-icon_h_helmet_plain_ca.png|150px]][[File:arma3-icon_h_helmet_plain_ca.png|150px]][[File:arma3-icon_h_helmet_plain_ca.png|150px]][[File:arma3-icon_h_helmetb_sand_ca.png|150px]][[File:arma3-icon_h_helmetb_snakeskin_ca.png|150px]][[File:arma3-icon_h_helmetcrewb_ca.png|150px]][[File:arma3-icon_h_i_helmet_crew_ca.png|150px]][[File:arma3-icon_h_helmetcrewo_ocamo_ca.png|150px]][[File:arma3-icon_h_i_helmet_canvas_ca.png|150px]][[File:arma3-icon_h_i_helmet_canvas_ca.png|150px]][[File:arma3-icon_h_i_helmet_canvas_ca.png|150px]][[File:arma3-icon_h_helmetleadero_ocamo_ca.png|150px]][[File:arma3-icon_h_helmetleadero_oucamo_ca.png|150px]][[File:arma3-icon_h_helmeto_ocamo_ca.png|150px]][[File:arma3-icon_h_helmeto_oucamo_ca.png|150px]][[File:arma3-icon_h_helmetb_ca.png|150px]][[File:arma3-icon_h_helmetspecb_blk_ca.png|150px]][[File:arma3-icon_h_helmetspecb_paint1_ca.png|150px]][[File:arma3-icon_h_helmetspecb_paint2_ca.png|150px]][[File:arma3-icon_h_helmetspecb_sand_ca.png|150px]][[File:arma3-icon_h_helmetspecb_snakeskin_ca.png|150px]][[File:arma3-icon_h_helmeto_spec_ca.png|150px]][[File:arma3-icon_h_helmeto_ocamo_ca.png|150px]][[File:arma3-icon_h_milcap_blue_ca.png|150px]][[File:arma3-icon_h_milcap_dgtl_ca.png|150px]][[File:arma3-icon_h_milcap_gry_ca.png|150px]][[File:arma3-icon_h_milcap_mcamo_ca.png|150px]][[File:arma3-icon_h_milcap_ocamo_ca.png|150px]][[File:arma3-icon_h_milcap_ocamo_ca.png|150px]][[File:arma3-icon_h_milcap_ocamo_ca.png|150px]][[File:arma3-icon_h_pilothelmetfighter_b_ca.png|150px]][[File:arma3-icon_h_pilothelmetfighter_ir_ca.png|150px]][[File:arma3-icon_h_pilothelmetfighter_oi_ca.png|150px]][[File:arma3-icon_h_pilot_helmet_heli_b_ca.png|150px]][[File:arma3-icon_h_i_helmet_heli_ca.png|150px]][[File:arma3-icon_h_pilot_helmet_heli_oi_ca.png|150px]][[File:arma3-icon_h_racinghelmet_base_black_ca.png|150px]][[File:arma3-icon_h_racinghelmet_base_blue_ca.png|150px]][[File:arma3-icon_h_racinghelmet_01_ca.png|150px]][[File:arma3-icon_h_racinghelmet_base_green_ca.png|150px]][[File:arma3-icon_h_racinghelmet_base_orange_ca.png|150px]][[File:arma3-icon_h_racinghelmet_base_red_ca.png|150px]][[File:arma3-icon_h_racinghelmet_base_white_ca.png|150px]][[File:arma3-icon_h_racinghelmet_base_yellow_ca.png|150px]][[File:arma3-icon_h_racinghelmet_02_ca.png|150px]][[File:arma3-icon_h_racinghelmet_03_ca.png|150px]][[File:arma3-icon_h_racinghelmet_04_ca.png|150px]][[File:arma3-icon_h_shemag_basic_ca.png|150px]][[File:arma3-icon_h_shemag_olive_ca.png|150px]][[File:arma3-icon_shemagmask_hs_ca.png|150px]][[File:arma3-icon_h_shemag_basic_ca.png|150px]][[File:arma3-icon_h_shemagopen_khk_ca.png|150px]][[File:arma3-icon_h_shemagopen_tan_ca.png|150px]][[File:arma3-icon_h_strawhat_ca.png|150px]][[File:arma3-icon_h_strawhat_dark_ca.png|150px]][[File:arma3-icon_h_cap_red_ca.png|150px]][[File:arma3-icon_h_cap_beanie_ca.png|150px]][[File:arma3-icon_h_watchcap_camo_ca.png|150px]][[File:arma3-icon_h_watchcap_cbr_ca.png|150px]][[File:arma3-icon_h_watchcap_khk_ca.png|150px]][[File:arma3-icon_h_cap_beanie_ca.png|150px]][[File:arma3-icon_u_basicbody_ca.png|150px]][[File:arma3-icon_u_basicbody_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_tshirt_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_vest_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_tshirt_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_vest_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_tshirt_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_vest_ca.png|150px]][[File:arma3-icon_u_b_ctrg_uniform_ca.png|150px]][[File:arma3-icon_u_b_ctrg_tshirt_ca.png|150px]][[File:arma3-icon_u_b_ctrg_vest_ca.png|150px]][[File:arma3-icon_u_b_fullghillie_ard_ca.png|150px]][[File:arma3-icon_u_b_fullghillie_lsh_ca.png|150px]][[File:arma3-icon_u_b_fullghillie_sard_ca.png|150px]][[File:arma3-icon_u_b_ghilliesuit_ca.png|150px]][[File:arma3-icon_u_b_coveralls_ca.png|150px]][[File:arma3-icon_u_b_pilotcoveralls_ca.png|150px]][[File:arma3-icon_u_b_protagonist_vr_ca.png|150px]][[File:arma3-icon_u_b_soldier_vr_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_tshirt_ca.png|150px]][[File:arma3-icon_u_b_wetsuit_ca.png|150px]][[File:arma3-icon_u_basicbody_ca.png|150px]][[File:arma3-icon_u_g_guerrilla1_1_ca.png|150px]][[File:arma3-icon_u_g_guerrilla2_1_ca.png|150px]][[File:arma3-icon_u_g_guerrilla2_2_ca.png|150px]][[File:arma3-icon_u_g_guerrilla2_3_ca.png|150px]][[File:arma3-icon_u_g_guerrilla3_1_ca.png|150px]][[File:arma3-icon_u_g_guerrilla3_2_ca.png|150px]][[File:arma3-icon_u_g_guerrilla_6_1_ca.png|150px]][[File:arma3-icon_u_g_ig_leader_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_driver_01_ca.png|150px]][[File:arma3-icon_u_driver_base_black_ca.png|150px]][[File:arma3-icon_u_driver_base_blue_ca.png|150px]][[File:arma3-icon_u_driver_base_green_ca.png|150px]][[File:arma3-icon_u_driver_base_orange_ca.png|150px]][[File:arma3-icon_u_driver_base_red_ca.png|150px]][[File:arma3-icon_u_driver_base_white_ca.png|150px]][[File:arma3-icon_u_driver_base_yellow_ca.png|150px]][[File:arma3-icon_u_driver_02_ca.png|150px]][[File:arma3-icon_u_driver_03_ca.png|150px]][[File:arma3-icon_u_driver_04_ca.png|150px]][[File:arma3-icon_u_citizen_ca.png|150px]][[File:arma3-icon_u_citizen_ca.png|150px]][[File:arma3-icon_u_citizen_ca.png|150px]][[File:arma3-icon_u_citizen_ca.png|150px]][[File:arma3-icon_u_c_hunterbody_grn_ca.png|150px]][[File:arma3-icon_u_journalist_ca.png|150px]][[File:arma3-icon_u_basicbody_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_blue_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_burgundy_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_redwhite_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_salmon_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_tricolour_ca.png|150px]][[File:arma3-icon_u_c_poor_1_ca.png|150px]][[File:arma3-icon_u_c_poor_1_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_protagonist_vr_ca.png|150px]][[File:arma3-icon_u_citizen_ca.png|150px]][[File:arma3-icon_u_citizen_ca.png|150px]][[File:arma3-icon_u_scientist_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_soldier_vr_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_workercoveralls_ca.png|150px]][[File:arma3-icon_u_citizen_ca.png|150px]][[File:arma3-icon_u_basicbody_ca.png|150px]][[File:arma3-icon_u_ir_crewuniform_rucamo_ca.png|150px]][[File:arma3-icon_u_ir_combatuniform_rucamo_ca.png|150px]][[File:arma3-icon_u_ir_combatuniform_rucamo_ca.png|150px]][[File:arma3-icon_u_i_fullghillie_ard_ca.png|150px]][[File:arma3-icon_u_i_fullghillie_lsh_ca.png|150px]][[File:arma3-icon_u_i_fullghillie_sard_ca.png|150px]][[File:arma3-icon_u_i_g_resistanceleader_ca.png|150px]][[File:arma3-icon_u_i_g_story_protagonist_ca.png|150px]][[File:arma3-icon_u_i_ghilliesuit_ca.png|150px]][[File:arma3-icon_u_ir_pilotcoveralls_ca.png|150px]][[File:arma3-icon_u_ir_officer_spc_ca.png|150px]][[File:arma3-icon_u_ir_pilotcoveralls_ca.png|150px]][[File:arma3-icon_u_i_protagonist_vr_ca.png|150px]][[File:arma3-icon_u_i_soldier_vr_ca.png|150px]][[File:arma3-icon_u_ir_wetsuit_ca.png|150px]][[File:arma3-icon_u_g_guerrilla1_1_ca.png|150px]][[File:arma3-icon_u_g_guerrilla2_1_ca.png|150px]][[File:arma3-icon_u_g_guerrilla2_2_ca.png|150px]][[File:arma3-icon_u_g_guerrilla2_3_ca.png|150px]][[File:arma3-icon_u_g_guerrilla3_1_ca.png|150px]][[File:arma3-icon_u_g_guerrilla3_2_ca.png|150px]][[File:arma3-icon_u_g_guerrilla_6_1_ca.png|150px]][[File:arma3-icon_u_g_ig_leader_ca.png|150px]][[File:arma3-icon_u_basicbody_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_tshirt_ca.png|150px]][[File:arma3-icon_u_marshall_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_ca.png|150px]][[File:arma3-icon_u_nikos_formal_ca.png|150px]][[File:arma3-icon_u_nikos_ca.png|150px]][[File:arma3-icon_u_oi_combatuniform_ocamo_ca.png|150px]][[File:arma3-icon_u_oi_combatuniform_oucamo_ca.png|150px]][[File:arma3-icon_u_o_fullghillie_ard_ca.png|150px]][[File:arma3-icon_u_o_fullghillie_lsh_ca.png|150px]][[File:arma3-icon_u_o_fullghillie_sard_ca.png|150px]][[File:arma3-icon_u_o_ghilliesuit_ca.png|150px]][[File:arma3-icon_u_oi_officer_ocamo_ca.png|150px]][[File:arma3-icon_u_oi_pilotcoveralls_ca.png|150px]][[File:arma3-icon_u_o_protagonist_vr_ca.png|150px]][[File:arma3-icon_u_o_soldier_vr_ca.png|150px]][[File:arma3-icon_u_oi_combatuniform_oucamo_ca.png|150px]][[File:arma3-icon_u_oi_combatuniform_ocamo_ca.png|150px]][[File:arma3-icon_u_oi_wetsuit_ca.png|150px]][[File:arma3-icon_u_g_guerrilla1_1_ca.png|150px]][[File:arma3-icon_u_g_guerrilla2_1_ca.png|150px]][[File:arma3-icon_u_g_guerrilla2_2_ca.png|150px]][[File:arma3-icon_u_g_guerrilla2_3_ca.png|150px]][[File:arma3-icon_u_g_guerrilla3_1_ca.png|150px]][[File:arma3-icon_u_g_guerrilla3_2_ca.png|150px]][[File:arma3-icon_u_g_guerrilla_6_1_ca.png|150px]][[File:arma3-icon_u_g_ig_leader_ca.png|150px]][[File:arma3-icon_u_basicbody_ca.png|150px]][[File:arma3-icon_u_orestes_ca.png|150px]][[File:arma3-icon_u_c_miller_ca.png|150px]][[File:arma3-icon_v_bandollier_blk_ca.png|150px]][[File:arma3-icon_v_bandollier_cbr_ca.png|150px]][[File:arma3-icon_v_bandollierb_ca.png|150px]][[File:arma3-icon_v_bandolier_oli_ca.png|150px]][[File:arma3-icon_v_bandollierb_ca.png|150px]][[File:arma3-icon_v_fchestrig_blk_ca.png|150px]][[File:arma3-icon_v_chestrig_khk_ca.png|150px]][[File:arma3-icon_v_fchestrig_oli_ca.png|150px]][[File:arma3-icon_v_chestrig_rgr_ca.png|150px]][[File:arma3-icon_v_harnesso_brn_ca.png|150px]][[File:arma3-icon_v_harnessou_gry_ca.png|150px]][[File:arma3-icon_v_harnessogl_brn_ca.png|150px]][[File:arma3-icon_v_harnessougl_gry_ca.png|150px]][[File:arma3-icon_v_harnesso_brn_ca.png|150px]][[File:arma3-icon_v_harnessou_gry_ca.png|150px]][[File:arma3-icon_v_i_g_resistanceleader_f_ca.png|150px]][[File:arma3-icon_v_platecarrier1_blk_ca.png|150px]][[File:arma3-icon_v_plate_carrier_1_ca.png|150px]][[File:arma3-icon_v_plate_carrier_2_blk_ca.png|150px]][[File:arma3-icon_v_plate_carrier_2_ca.png|150px]][[File:arma3-icon_v_plate_carrier_2_ca.png|150px]][[File:arma3-icon_v_plate_carrier_1_ca.png|150px]][[File:arma3-icon_carrier_gl_rig_blk.png|150px]][[File:arma3-icon_carrier_gl_rig_mtp.png|150px]][[File:arma3-icon_carrier_gl_rig_grn.png|150px]][[File:arma3-icon_v_plate_carrier_snake_ca.png|150px]][[File:arma3-icon_v_i_vest_01_ca.png|150px]][[File:arma3-icon_v_i_vest_02_ca.png|150px]][[File:arma3-icon_ga_carrier_gl_rig_digi.png|150px]][[File:arma3-icon_ga_carrier_gl_rig_oli.png|150px]][[File:arma3-icon_v_plate_carrier_snake_ca.png|150px]][[File:arma3-icon_carrier_spec_rig_blk.png|150px]][[File:arma3-icon_carrier_spec_rig_mtp.png|150px]][[File:arma3-icon_carrier_spec_rig_grn.png|150px]][[File:arma3-icon_v_pressvest_ca.png|150px]][[File:arma3-icon_v_belt_ca.png|150px]][[File:arma3-icon_v_rebreatherb_ca.png|150px]][[File:arma3-icon_v_rebreatherru_ca.png|150px]][[File:arma3-icon_v_rebreatherir_ca.png|150px]][[File:arma3-icon_v_tacvest_blk_ca.png|150px]][[File:arma3-icon_v_tacvest_blk_police_ca.png|150px]][[File:arma3-icon_v_tacvest_brn_ca.png|150px]][[File:arma3-icon_v_tacvest_camo_ca.png|150px]][[File:arma3-icon_v_tacvest_khk_ca.png|150px]][[File:arma3-icon_v_tacvest_oli_ca.png|150px]][[File:arma3-icon_v_tacvest_camo_ca.png|150px]][[File:arma3-icon_v_tacvestir_blk_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Acc" >'''A3_Weapons_F_Acc'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Items#acc_flashlight|acc_flashlight]]
+:[[Arma 3 CfgWeapons Items#acc_flashlight_pistol|acc_flashlight_pistol]]
+:[[Arma 3 CfgWeapons Items#acc_flashlight_smg_01|acc_flashlight_smg_01]]
+:[[Arma 3 CfgWeapons Items#acc_pointer_IR|acc_pointer_IR]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_acp|muzzle_snds_acp]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_B|muzzle_snds_B]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_H|muzzle_snds_H]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_H_MG|muzzle_snds_H_MG]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_H_SW|muzzle_snds_H_SW]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_L|muzzle_snds_L]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_M|muzzle_snds_M]]
+:[[Arma 3 CfgWeapons Items#optic_Aco|optic_Aco]]
+:[[Arma 3 CfgWeapons Items#optic_ACO_grn|optic_ACO_grn]]
+:[[Arma 3 CfgWeapons Items#optic_ACO_grn_smg|optic_ACO_grn_smg]]
+:[[Arma 3 CfgWeapons Items#optic_Aco_smg|optic_Aco_smg]]
+:[[Arma 3 CfgWeapons Items#optic_Arco|optic_Arco]]
+:[[Arma 3 CfgWeapons Items#optic_DMS|optic_DMS]]
+:[[Arma 3 CfgWeapons Items#optic_Hamr|optic_Hamr]]
+:[[Arma 3 CfgWeapons Items#optic_Holosight|optic_Holosight]]
+:[[Arma 3 CfgWeapons Items#optic_Holosight_smg|optic_Holosight_smg]]
+:[[Arma 3 CfgWeapons Items#optic_LRPS|optic_LRPS]]
+:[[Arma 3 CfgWeapons Items#optic_MRCO|optic_MRCO]]
+:[[Arma 3 CfgWeapons Items#optic_MRD|optic_MRD]]
+:[[Arma 3 CfgWeapons Items#optic_Nightstalker|optic_Nightstalker]]
+:[[Arma 3 CfgWeapons Items#optic_NVS|optic_NVS]]
+:[[Arma 3 CfgWeapons Items#optic_SOS|optic_SOS]]
+:[[Arma 3 CfgWeapons Items#optic_tws|optic_tws]]
+:[[Arma 3 CfgWeapons Items#optic_tws_mg|optic_tws_mg]]
+:[[Arma 3 CfgWeapons Items#optic_Yorris|optic_Yorris]]
+:[[Arma 3 CfgWeapons Items#Zasleh2|Zasleh2]]
+</small>
+| <small>[[File:arma3-gear_accv_flashlight_ca.png|150px]][[File:arma3-gear_accv_flashlight_tls_ca.png|150px]][[File:arma3-gear_accv_flashlight_ca.png|150px]][[File:arma3-gear_accv_pointer_ca.png|150px]][[File:arma3-gear_acca_snds_l_ca.png|150px]][[File:arma3-icon_muzzle_snds_b_ca.png|150px]][[File:arma3-icon_muzzle_snds_h_ca.png|150px]][[File:arma3-icon_muzzle_snds_h_mg_ca.png|150px]][[File:arma3-icon_muzzle_snds_h_mg_ca.png|150px]][[File:arma3-icon_muzzle_snds_l_ca.png|150px]][[File:arma3-icon_muzzle_snds_m_ca.png|150px]][[File:arma3-icon_optic_aco_grn_ca.png|150px]][[File:arma3-icon_optic_aco_grn_ca.png|150px]][[File:arma3-icon_optic_aco_grn_smg_ca.png|150px]][[File:arma3-icon_optic_aco_smg_ca.png|150px]][[File:arma3-icon_optic_arco_ca.png|150px]][[File:arma3-icon_optic_dms_ca.png|150px]][[File:arma3-icon_optic_hamr_ca.png|150px]][[File:arma3-icon_optic_holosight_ca.png|150px]][[File:arma3-icon_optic_holosight_smg_ca.png|150px]][[File:arma3-gear_acco_sniper02_ca.png|150px]][[File:arma3-icon_optic_mrco_ca.png|150px]][[File:arma3-icon_optic_mrd_ca.png|150px]][[File:arma3-icon_optic_nightstalker_ca.png|150px]][[File:arma3-icon_optic_nvs_ca.png|150px]][[File:arma3-icon_optic_sos_ca.png|150px]][[File:arma3-icon_optic_tws_ca.png|150px]][[File:arma3-icon_optic_tws_mg_ca.png|150px]][[File:arma3-gear_acco_yorris_ca.png|150px]][[File:arma3-clear_empty.png|150px]]
+</small>
+|-
+| <span id="A3_Drones_F_Weapons_F_Gamma_Items" >'''A3_Drones_F_Weapons_F_Gamma_Items'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Items#B_UavTerminal|B_UavTerminal]]
+:[[Arma 3 CfgWeapons Items#I_UavTerminal|I_UavTerminal]]
+:[[Arma 3 CfgWeapons Items#O_UavTerminal|O_UavTerminal]]
+</small>
+| <small>[[File:arma3-gear_uav_controller_rgr_ca.png|150px]][[File:arma3-gear_uav_controller_oli_ca.png|150px]][[File:arma3-gear_uav_controller_cbr_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Data_F_Curator" >'''A3_Data_F_Curator'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#FakeWeapon_moduleTracers_F|FakeWeapon_moduleTracers_F]]
+</small>
+| <small>[[File:arma3-gear_m200_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Data_F_Curator_Virtual" >'''A3_Data_F_Curator_Virtual'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#U_VirtualMan_F|U_VirtualMan_F]]
+</small>
+| <small>[[File:arma3-icon_u_b_soldier_vr_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Kart_Pistols_Pistol_Signal_F" >'''A3_Weapons_F_Kart_Pistols_Pistol_Signal_F'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#hgun_Pistol_Signal_F|hgun_Pistol_Signal_F]]
+</small>
+| <small>[[File:arma3-gear_pistol_signal_01_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark" >'''A3_Weapons_F_Mark'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Items#Laserdesignator_02|Laserdesignator_02]]
+:[[Arma 3 CfgWeapons Items#Laserdesignator_03|Laserdesignator_03]]
+</small>
+| <small>[[File:arma3-gear_laserdesignator_02_x_ca.png|150px]][[File:arma3-gear_laserdesignator_03_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark_Acc" >'''A3_Weapons_F_Mark_Acc'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Items#bipod_01_F_blk|bipod_01_F_blk]]
+:[[Arma 3 CfgWeapons Items#bipod_01_F_mtp|bipod_01_F_mtp]]
+:[[Arma 3 CfgWeapons Items#bipod_01_F_snd|bipod_01_F_snd]]
+:[[Arma 3 CfgWeapons Items#bipod_02_F_blk|bipod_02_F_blk]]
+:[[Arma 3 CfgWeapons Items#bipod_02_F_hex|bipod_02_F_hex]]
+:[[Arma 3 CfgWeapons Items#bipod_02_F_tan|bipod_02_F_tan]]
+:[[Arma 3 CfgWeapons Items#bipod_03_F_blk|bipod_03_F_blk]]
+:[[Arma 3 CfgWeapons Items#bipod_03_F_oli|bipod_03_F_oli]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_338_black|muzzle_snds_338_black]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_338_green|muzzle_snds_338_green]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_338_sand|muzzle_snds_338_sand]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_93mmg|muzzle_snds_93mmg]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_93mmg_tan|muzzle_snds_93mmg_tan]]
+:[[Arma 3 CfgWeapons Items#optic_AMS|optic_AMS]]
+:[[Arma 3 CfgWeapons Items#optic_AMS_khk|optic_AMS_khk]]
+:[[Arma 3 CfgWeapons Items#optic_AMS_snd|optic_AMS_snd]]
+:[[Arma 3 CfgWeapons Items#optic_KHS_blk|optic_KHS_blk]]
+:[[Arma 3 CfgWeapons Items#optic_KHS_hex|optic_KHS_hex]]
+:[[Arma 3 CfgWeapons Items#optic_KHS_old|optic_KHS_old]]
+:[[Arma 3 CfgWeapons Items#optic_KHS_tan|optic_KHS_tan]]
+</small>
+| <small>[[File:arma3-icon_bipod_01_f_blk_ca.png|150px]][[File:arma3-icon_bipod_01_f_mtp_ca.png|150px]][[File:arma3-icon_bipod_01_f_snd_ca.png|150px]][[File:arma3-icon_bipod_02_f_blk_ca.png|150px]][[File:arma3-icon_bipod_02_f_hex_ca.png|150px]][[File:arma3-icon_bipod_02_f_tan_ca.png|150px]][[File:arma3-icon_bipod_03_f_blk_ca.png|150px]][[File:arma3-icon_bipod_03_f_oli_ca.png|150px]][[File:arma3-icon_muzzle_snds_338_black_ca.png|150px]][[File:arma3-icon_muzzle_snds_338_green_ca.png|150px]][[File:arma3-icon_muzzle_snds_338_sand_ca.png|150px]][[File:arma3-icon_muzzle_snds_93mmg_ca.png|150px]][[File:arma3-icon_muzzle_snds_93mmg_tan_ca.png|150px]][[File:arma3-icon_optic_ams_ca.png|150px]][[File:arma3-icon_optic_ams_khk_ca.png|150px]][[File:arma3-icon_optic_ams_snd_ca.png|150px]][[File:arma3-icon_optic_khs_blk_ca.png|150px]][[File:arma3-icon_optic_khs_hex_ca.png|150px]][[File:arma3-icon_optic_khs_old_ca.png|150px]][[File:arma3-icon_optic_khs_tan_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark_LongRangeRifles_DMR_01" >'''A3_Weapons_F_Mark_LongRangeRifles_DMR_01'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_01_DMS_BI_F|srifle_DMR_01_DMS_BI_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_01_DMS_snds_BI_F|srifle_DMR_01_DMS_snds_BI_F]]
+</small>
+| <small>[[File:arma3-gear_dmr_01_x_ca.png|150px]][[File:arma3-gear_dmr_01_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark_LongRangeRifles_DMR_02" >'''A3_Weapons_F_Mark_LongRangeRifles_DMR_02'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_02_ACO_F|srifle_DMR_02_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_02_ARCO_F|srifle_DMR_02_ARCO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_02_camo_AMS_LP_F|srifle_DMR_02_camo_AMS_LP_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_02_camo_F|srifle_DMR_02_camo_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_02_DMS_F|srifle_DMR_02_DMS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_02_F|srifle_DMR_02_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_02_MRCO_F|srifle_DMR_02_MRCO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_02_sniper_AMS_LP_S_F|srifle_DMR_02_sniper_AMS_LP_S_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_02_sniper_F|srifle_DMR_02_sniper_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_02_SOS_F|srifle_DMR_02_SOS_F]]
+</small>
+| <small>[[File:arma3-gear_dmr_02_x_ca.png|150px]][[File:arma3-gear_dmr_02_x_ca.png|150px]][[File:arma3-gear_dmr_02_camo_x_ca.png|150px]][[File:arma3-gear_dmr_02_camo_x_ca.png|150px]][[File:arma3-gear_dmr_02_x_ca.png|150px]][[File:arma3-gear_dmr_02_x_ca.png|150px]][[File:arma3-gear_dmr_02_x_ca.png|150px]][[File:arma3-gear_dmr_02_sniper_x_ca.png|150px]][[File:arma3-gear_dmr_02_sniper_x_ca.png|150px]][[File:arma3-gear_dmr_02_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark_LongRangeRifles_DMR_03" >'''A3_Weapons_F_Mark_LongRangeRifles_DMR_03'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_ACO_F|srifle_DMR_03_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_AMS_F|srifle_DMR_03_AMS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_ARCO_F|srifle_DMR_03_ARCO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_DMS_F|srifle_DMR_03_DMS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_DMS_snds_F|srifle_DMR_03_DMS_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_F|srifle_DMR_03_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_khaki_F|srifle_DMR_03_khaki_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_MRCO_F|srifle_DMR_03_MRCO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_multicam_F|srifle_DMR_03_multicam_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_SOS_F|srifle_DMR_03_SOS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_tan_AMS_LP_F|srifle_DMR_03_tan_AMS_LP_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_tan_F|srifle_DMR_03_tan_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_03_woodland_F|srifle_DMR_03_woodland_F]]
+</small>
+| <small>[[File:arma3-gear_dmr_03_x_ca.png|150px]][[File:arma3-gear_dmr_03_x_ca.png|150px]][[File:arma3-gear_dmr_03_x_ca.png|150px]][[File:arma3-gear_dmr_03_x_ca.png|150px]][[File:arma3-gear_dmr_03_x_ca.png|150px]][[File:arma3-gear_dmr_03_x_ca.png|150px]][[File:arma3-gear_dmr_03_khaki_x_ca.png|150px]][[File:arma3-gear_dmr_03_x_ca.png|150px]][[File:arma3-gear_dmr_03_multicam_x_ca.png|150px]][[File:arma3-gear_dmr_03_x_ca.png|150px]][[File:arma3-gear_dmr_03_tan_x_ca.png|150px]][[File:arma3-gear_dmr_03_tan_x_ca.png|150px]][[File:arma3-gear_dmr_03_woodland_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark_LongRangeRifles_DMR_04" >'''A3_Weapons_F_Mark_LongRangeRifles_DMR_04'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_04_ACO_F|srifle_DMR_04_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_04_ARCO_F|srifle_DMR_04_ARCO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_04_DMS_F|srifle_DMR_04_DMS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_04_F|srifle_DMR_04_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_04_MRCO_F|srifle_DMR_04_MRCO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_04_NS_LP_F|srifle_DMR_04_NS_LP_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_04_SOS_F|srifle_DMR_04_SOS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_04_Tan_F|srifle_DMR_04_Tan_F]]
+</small>
+| <small>[[File:arma3-gear_dmr_04_x_ca.png|150px]][[File:arma3-gear_dmr_04_x_ca.png|150px]][[File:arma3-gear_dmr_04_x_ca.png|150px]][[File:arma3-gear_dmr_04_x_ca.png|150px]][[File:arma3-gear_dmr_04_x_ca.png|150px]][[File:arma3-gear_dmr_04_x_ca.png|150px]][[File:arma3-gear_dmr_04_x_ca.png|150px]][[File:arma3-gear_dmr_04_tan_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark_LongRangeRifles_DMR_05" >'''A3_Weapons_F_Mark_LongRangeRifles_DMR_05'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_05_ACO_F|srifle_DMR_05_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_05_ARCO_F|srifle_DMR_05_ARCO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_05_blk_F|srifle_DMR_05_blk_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_05_DMS_F|srifle_DMR_05_DMS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_05_DMS_snds_F|srifle_DMR_05_DMS_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_05_hex_F|srifle_DMR_05_hex_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_05_KHS_LP_F|srifle_DMR_05_KHS_LP_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_05_MRCO_F|srifle_DMR_05_MRCO_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_05_SOS_F|srifle_DMR_05_SOS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_05_tan_f|srifle_DMR_05_tan_f]]
+</small>
+| <small>[[File:arma3-gear_dmr_05_x_ca.png|150px]][[File:arma3-gear_dmr_05_x_ca.png|150px]][[File:arma3-gear_dmr_05_x_ca.png|150px]][[File:arma3-gear_dmr_05_x_ca.png|150px]][[File:arma3-gear_dmr_05_x_ca.png|150px]][[File:arma3-gear_dmr_05_camo_x_ca.png|150px]][[File:arma3-gear_dmr_05_x_ca.png|150px]][[File:arma3-gear_dmr_05_x_ca.png|150px]][[File:arma3-gear_dmr_05_x_ca.png|150px]][[File:arma3-gear_dmr_05_sniper_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark_LongRangeRifles_DMR_06" >'''A3_Weapons_F_Mark_LongRangeRifles_DMR_06'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_06_camo_F|srifle_DMR_06_camo_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_06_camo_khs_F|srifle_DMR_06_camo_khs_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_06_olive_F|srifle_DMR_06_olive_F]]
+</small>
+| <small>[[File:arma3-gear_dmr_06_camo_x_ca.png|150px]][[File:arma3-gear_dmr_06_camo_x_ca.png|150px]][[File:arma3-gear_dmr_06_olive_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark_LongRangeRifles_EBR" >'''A3_Weapons_F_Mark_LongRangeRifles_EBR'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_EBR_MRCO_LP_BI_F|srifle_EBR_MRCO_LP_BI_F]]
+</small>
+| <small>[[File:arma3-gear_ebr_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark_Machineguns_M200" >'''A3_Weapons_F_Mark_Machineguns_M200'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#LMG_Mk200_BI_F|LMG_Mk200_BI_F]]
+:[[Arma 3 CfgWeapons Weapons#LMG_Mk200_LP_BI_F|LMG_Mk200_LP_BI_F]]
+</small>
+| <small>[[File:arma3-gear_m200_x_ca.png|150px]][[File:arma3-gear_m200_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark_Machineguns_MMG_01" >'''A3_Weapons_F_Mark_Machineguns_MMG_01'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#MMG_01_hex_ARCO_LP_F|MMG_01_hex_ARCO_LP_F]]
+:[[Arma 3 CfgWeapons Weapons#MMG_01_hex_F|MMG_01_hex_F]]
+:[[Arma 3 CfgWeapons Weapons#MMG_01_tan_F|MMG_01_tan_F]]
+</small>
+| <small>[[File:arma3-gear_mmg_01_hex_x_co.png|150px]][[File:arma3-gear_mmg_01_hex_x_co.png|150px]][[File:arma3-gear_mmg_01_tan_x_co.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark_Machineguns_MMG_02" >'''A3_Weapons_F_Mark_Machineguns_MMG_02'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#MMG_02_black_F|MMG_02_black_F]]
+:[[Arma 3 CfgWeapons Weapons#MMG_02_black_RCO_BI_F|MMG_02_black_RCO_BI_F]]
+:[[Arma 3 CfgWeapons Weapons#MMG_02_camo_F|MMG_02_camo_F]]
+:[[Arma 3 CfgWeapons Weapons#MMG_02_sand_F|MMG_02_sand_F]]
+:[[Arma 3 CfgWeapons Weapons#MMG_02_sand_RCO_LP_F|MMG_02_sand_RCO_LP_F]]
+</small>
+| <small>[[File:arma3-gear_mmg_02_black_x_co.png|150px]][[File:arma3-gear_mmg_02_black_x_co.png|150px]][[File:arma3-gear_mmg_02_camo_x_co.png|150px]][[File:arma3-gear_mmg_02_sand_x_co.png|150px]][[File:arma3-gear_mmg_02_sand_x_co.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mark_Rifles_MX" >'''A3_Weapons_F_Mark_Rifles_MX'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_DMS_LP_BI_snds_F|arifle_MXM_DMS_LP_BI_snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_Hamr_LP_BI_F|arifle_MXM_Hamr_LP_BI_F]]
+</small>
+| <small>[[File:arma3-gear_mx_dmr_x_ca.png|150px]][[File:arma3-gear_mx_dmr_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mod" >'''A3_Weapons_F_Mod'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Items#muzzle_snds_570|muzzle_snds_570]]
+</small>
+| <small>[[File:arma3-gear_acca_snds_h_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Mod_SMGs_SMG_03" >'''A3_Weapons_F_Mod_SMGs_SMG_03'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#SMG_03_black|SMG_03_black]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03_camo|SMG_03_camo]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03_hex|SMG_03_hex]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03_khaki|SMG_03_khaki]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03_TR_black|SMG_03_TR_black]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03_TR_camo|SMG_03_TR_camo]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03_TR_hex|SMG_03_TR_hex]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03_TR_khaki|SMG_03_TR_khaki]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03C_black|SMG_03C_black]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03C_camo|SMG_03C_camo]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03C_hex|SMG_03C_hex]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03C_khaki|SMG_03C_khaki]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03C_TR_black|SMG_03C_TR_black]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03C_TR_camo|SMG_03C_TR_camo]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03C_TR_hex|SMG_03C_TR_hex]]
+:[[Arma 3 CfgWeapons Weapons#SMG_03C_TR_khaki|SMG_03C_TR_khaki]]
+</small>
+| <small>[[File:arma3-gear_adr97_black_ca.png|150px]][[File:arma3-gear_adr97_camo_ca.png|150px]][[File:arma3-gear_adr97_hex_ca.png|150px]][[File:arma3-gear_adr97_khaki_ca.png|150px]][[File:arma3-gear_adr97_tr_black_ca.png|150px]][[File:arma3-gear_adr97_tr_camo_ca.png|150px]][[File:arma3-gear_adr97_tr_hex_ca.png|150px]][[File:arma3-gear_adr97_tr_khaki_ca.png|150px]][[File:arma3-gear_adr97_c_black_ca.png|150px]][[File:arma3-gear_adr97_c_camo_ca.png|150px]][[File:arma3-gear_adr97_c_hex_ca.png|150px]][[File:arma3-gear_adr97_c_khaki_ca.png|150px]][[File:arma3-gear_adr97_c_tr_black_ca.png|150px]][[File:arma3-gear_adr97_c_tr_camo_ca.png|150px]][[File:arma3-gear_adr97_c_tr_hex_ca.png|150px]][[File:arma3-gear_adr97_c_tr_khaki_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp" >'''A3_Weapons_F_Exp'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_khk_ACO_F|arifle_MX_GL_khk_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_khk_F|arifle_MX_GL_khk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_khk_Hamr_Pointer_F|arifle_MX_GL_khk_Hamr_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_khk_Holo_Pointer_Snds_F|arifle_MX_GL_khk_Holo_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_khk_ACO_Pointer_F|arifle_MX_khk_ACO_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_khk_ACO_Pointer_Snds_F|arifle_MX_khk_ACO_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_khk_F|arifle_MX_khk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_khk_Hamr_Pointer_F|arifle_MX_khk_Hamr_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_khk_Hamr_Pointer_Snds_F|arifle_MX_khk_Hamr_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_khk_Holo_Pointer_F|arifle_MX_khk_Holo_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_khk_Pointer_F|arifle_MX_khk_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_SW_khk_F|arifle_MX_SW_khk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_SW_khk_Pointer_F|arifle_MX_SW_khk_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_khk_ACO_F|arifle_MXC_khk_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_khk_ACO_Pointer_Snds_F|arifle_MXC_khk_ACO_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_khk_F|arifle_MXC_khk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_khk_Holo_Pointer_F|arifle_MXC_khk_Holo_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_khk_F|arifle_MXM_khk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_khk_MOS_Pointer_Bipod_F|arifle_MXM_khk_MOS_Pointer_Bipod_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_khk_MOS_Pointer_Bipod_Snds_F|arifle_MXM_khk_MOS_Pointer_Bipod_Snds_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#autocannon_40mm_VTOL_01|autocannon_40mm_VTOL_01]]
+:[[Arma 3 CfgWeapons Items#bipod_01_F_khk|bipod_01_F_khk]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#cannon_105mm_VTOL_01|cannon_105mm_VTOL_01]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#gatling_20mm_VTOL_01|gatling_20mm_VTOL_01]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#gatling_30mm_VTOL_02|gatling_30mm_VTOL_02]]
+:[[Arma 3 CfgWeapons Weapons#hgun_P07_blk_F|hgun_P07_blk_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_P07_blk_Snds_F|hgun_P07_blk_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_P07_khk_F|hgun_P07_khk_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_P07_khk_Snds_F|hgun_P07_khk_Snds_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#HMG_127_LSV_01|HMG_127_LSV_01]]
+:[[Arma 3 CfgWeapons Items#Laserdesignator_01_khk_F|Laserdesignator_01_khk_F]]
+:[[Arma 3 CfgWeapons Items#Laserdesignator_02_ghex_F|Laserdesignator_02_ghex_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#missiles_Jian|missiles_Jian]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#MMG_02_vehicle|MMG_02_vehicle]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_58_blk_F|muzzle_snds_58_blk_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_58_ghex_F|muzzle_snds_58_ghex_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_58_hex_F|muzzle_snds_58_hex_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_58_wdm_F|muzzle_snds_58_wdm_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_65_TI_blk_F|muzzle_snds_65_TI_blk_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_65_TI_ghex_F|muzzle_snds_65_TI_ghex_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_65_TI_hex_F|muzzle_snds_65_TI_hex_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_B_khk_F|muzzle_snds_B_khk_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_B_snd_F|muzzle_snds_B_snd_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_H_khk_F|muzzle_snds_H_khk_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_H_MG_blk_F|muzzle_snds_H_MG_blk_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_H_MG_khk_F|muzzle_snds_H_MG_khk_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_H_snd_F|muzzle_snds_H_snd_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_m_khk_F|muzzle_snds_m_khk_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_m_snd_F|muzzle_snds_m_snd_F]]
+:[[Arma 3 CfgWeapons Items#NVGoggles_tna_F|NVGoggles_tna_F]]
+:[[Arma 3 CfgWeapons Items#NVGogglesB_blk_F|NVGogglesB_blk_F]]
+:[[Arma 3 CfgWeapons Items#NVGogglesB_grn_F|NVGogglesB_grn_F]]
+:[[Arma 3 CfgWeapons Items#NVGogglesB_gry_F|NVGogglesB_gry_F]]
+:[[Arma 3 CfgWeapons Items#O_NVGoggles_ghex_F|O_NVGoggles_ghex_F]]
+:[[Arma 3 CfgWeapons Items#O_NVGoggles_hex_F|O_NVGoggles_hex_F]]
+:[[Arma 3 CfgWeapons Items#O_NVGoggles_urb_F|O_NVGoggles_urb_F]]
+:[[Arma 3 CfgWeapons Items#optic_Arco_blk_F|optic_Arco_blk_F]]
+:[[Arma 3 CfgWeapons Items#optic_Arco_ghex_F|optic_Arco_ghex_F]]
+:[[Arma 3 CfgWeapons Items#optic_DMS_ghex_F|optic_DMS_ghex_F]]
+:[[Arma 3 CfgWeapons Items#optic_ERCO_blk_F|optic_ERCO_blk_F]]
+:[[Arma 3 CfgWeapons Items#optic_ERCO_khk_F|optic_ERCO_khk_F]]
+:[[Arma 3 CfgWeapons Items#optic_ERCO_snd_F|optic_ERCO_snd_F]]
+:[[Arma 3 CfgWeapons Items#optic_Hamr_khk_F|optic_Hamr_khk_F]]
+:[[Arma 3 CfgWeapons Items#optic_Holosight_blk_F|optic_Holosight_blk_F]]
+:[[Arma 3 CfgWeapons Items#optic_Holosight_khk_F|optic_Holosight_khk_F]]
+:[[Arma 3 CfgWeapons Items#optic_Holosight_smg_blk_F|optic_Holosight_smg_blk_F]]
+:[[Arma 3 CfgWeapons Items#optic_Holosight_smg_khk_F|optic_Holosight_smg_khk_F]]
+:[[Arma 3 CfgWeapons Items#optic_LRPS_ghex_F|optic_LRPS_ghex_F]]
+:[[Arma 3 CfgWeapons Items#optic_LRPS_tna_F|optic_LRPS_tna_F]]
+:[[Arma 3 CfgWeapons Items#optic_SOS_khk_F|optic_SOS_khk_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_GM6_ghex_F|srifle_GM6_ghex_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_GM6_ghex_LRPS_F|srifle_GM6_ghex_LRPS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_LRR_tna_F|srifle_LRR_tna_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_LRR_tna_LRPS_F|srifle_LRR_tna_LRPS_F]]
+</small>
+| <small>[[File:arma3-icon_arifle_mx_gl_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mx_gl_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mx_gl_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mx_gl_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mx_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mx_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mx_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mx_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mx_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mx_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mx_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mx_sw_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mx_sw_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mxc_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mxc_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mxc_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mxc_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mxm_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mxm_khk_f_x_ca.png|150px]][[File:arma3-icon_arifle_mxm_khk_f_x_ca.png|150px]][[File:arma3-icon_bipod_01_f_khk_ca.png|150px]][[File:arma3-icon_hgun_p07_blk_f_x_ca.png|150px]][[File:arma3-icon_hgun_p07_blk_f_x_ca.png|150px]][[File:arma3-icon_hgun_p07_khk_f_x_ca.png|150px]][[File:arma3-icon_hgun_p07_khk_f_x_ca.png|150px]][[File:arma3-icon_laserdesignator_01_khk_x_ca.png|150px]][[File:arma3-icon_laserdesignator_02_ghex_x_ca.png|150px]][[File:arma3-icon_muzzle_snds_58_blk_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_58_wdm_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_58_hex_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_58_wdm_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_65_ti_blk_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_65_ti_ghex_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_65_ti_hex_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_b_khk_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_b_snd_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_h_khk_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_h_mg_blk_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_h_mg_khk_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_h_snd_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_m_khk_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_m_snd_f_ca.png|150px]][[File:arma3-icon_nvgoggles_tna_f_ca.png|150px]][[File:arma3-icon_nvgogglesb_blk_f_ca.png|150px]][[File:arma3-icon_nvgogglesb_grn_f_ca.png|150px]][[File:arma3-icon_nvgogglesb_gry_f_ca.png|150px]][[File:arma3-icon_o_nvgoggles_ghex_f_ca.png|150px]][[File:arma3-icon_o_nvgoggles_urb_f_ca.png|150px]][[File:arma3-icon_o_nvgoggles_urb_f_ca.png|150px]][[File:arma3-icon_optic_arco_blk_f_ca.png|150px]][[File:arma3-icon_optic_arco_ghex_f_ca.png|150px]][[File:arma3-icon_optic_dms_ghex_f_ca.png|150px]][[File:arma3-icon_optic_erco_blk_f_ca.png|150px]][[File:arma3-icon_optic_erco_khk_f_ca.png|150px]][[File:arma3-icon_optic_erco_snd_f_ca.png|150px]][[File:arma3-icon_optic_hamr_khk_f_ca.png|150px]][[File:arma3-icon_optic_holosight_blk_f_ca.png|150px]][[File:arma3-icon_optic_holosight_khk_f_ca.png|150px]][[File:arma3-icon_optic_holosight_smg_blk_f_ca.png|150px]][[File:arma3-icon_optic_holosight_smg_khk_f_ca.png|150px]][[File:arma3-icon_optic_lrps_ghex_f_ca.png|150px]][[File:arma3-icon_optic_lrps_tna_f_ca.png|150px]][[File:arma3-icon_optic_sos_khk_f_ca.png|150px]][[File:arma3-icon_srifle_gm6_ghex_f_x_ca.png|150px]][[File:arma3-icon_srifle_gm6_ghex_f_x_ca.png|150px]][[File:arma3-icon_srifle_lrr_tna_f_x_ca.png|150px]][[File:arma3-icon_srifle_lrr_tna_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Launchers_RPG32" >'''A3_Weapons_F_Exp_Launchers_RPG32'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#launch_RPG32_ghex_F|launch_RPG32_ghex_F]]
+</small>
+| <small>[[File:arma3-launch_rpg32_ghex_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Launchers_RPG7" >'''A3_Weapons_F_Exp_Launchers_RPG7'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#launch_RPG7_F|launch_RPG7_F]]
+</small>
+| <small>[[File:arma3-icon_launch_rpg7_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Launchers_Titan" >'''A3_Weapons_F_Exp_Launchers_Titan'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#launch_B_Titan_short_tna_F|launch_B_Titan_short_tna_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_B_Titan_tna_F|launch_B_Titan_tna_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_O_Titan_ghex_F|launch_O_Titan_ghex_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_O_Titan_short_ghex_F|launch_O_Titan_short_ghex_F]]
+</small>
+| <small>[[File:arma3-icon_launch_b_titan_short_tna_f_ca.png|150px]][[File:arma3-icon_launch_b_titan_tna_f_ca.png|150px]][[File:arma3-icon_launch_o_titan_ghex_f_ca.png|150px]][[File:arma3-icon_launch_o_titan_short_ghex_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_LongRangeRifles_DMR_07" >'''A3_Weapons_F_Exp_LongRangeRifles_DMR_07'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_07_blk_DMS_F|srifle_DMR_07_blk_DMS_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_07_blk_DMS_Snds_F|srifle_DMR_07_blk_DMS_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_07_blk_F|srifle_DMR_07_blk_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_07_ghex_F|srifle_DMR_07_ghex_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_07_hex_F|srifle_DMR_07_hex_F]]
+</small>
+| <small>[[File:arma3-icon_srifle_dmr_07_blk_f_x_ca.png|150px]][[File:arma3-icon_srifle_dmr_07_blk_f_x_ca.png|150px]][[File:arma3-icon_srifle_dmr_07_blk_f_x_ca.png|150px]][[File:arma3-icon_srifle_dmr_07_ghex_f_x_ca.png|150px]][[File:arma3-icon_srifle_dmr_07_hex_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Machineguns_LMG_03" >'''A3_Weapons_F_Exp_Machineguns_LMG_03'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#LMG_03_F|LMG_03_F]]
+:[[Arma 3 CfgWeapons Weapons#LMG_03_Vehicle_F|LMG_03_Vehicle_F]]
+</small>
+| <small>[[File:arma3-icon_lmg_03_f_x_ca.png|150px]][[File:arma3-icon_lmg_03_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Pistols_Pistol_01" >'''A3_Weapons_F_Exp_Pistols_Pistol_01'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#hgun_Pistol_01_F|hgun_Pistol_01_F]]
+</small>
+| <small>[[File:arma3-icon_hgun_pistol_01_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Rifles_AK12" >'''A3_Weapons_F_Exp_Rifles_AK12'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_F|arifle_AK12_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_GL_F|arifle_AK12_GL_F]]
+</small>
+| <small>[[File:arma3-icon_arifle_ak12_f_x_ca.png|150px]][[File:arma3-icon_arifle_ak12_gl_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Rifles_AKM" >'''A3_Weapons_F_Exp_Rifles_AKM'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_AKM_F|arifle_AKM_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AKM_FL_F|arifle_AKM_FL_F]]
+</small>
+| <small>[[File:arma3-arifle_akm_f_x_ca.png|150px]][[File:arma3-arifle_akm_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Rifles_AKS" >'''A3_Weapons_F_Exp_Rifles_AKS'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_AKS_F|arifle_AKS_F]]
+</small>
+| <small>[[File:arma3-arifle_aks_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Rifles_ARX" >'''A3_Weapons_F_Exp_Rifles_ARX'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_ARX_blk_F|arifle_ARX_blk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_ARX_ghex_ACO_Pointer_Snds_F|arifle_ARX_ghex_ACO_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_ARX_ghex_ARCO_Pointer_Snds_F|arifle_ARX_ghex_ARCO_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_ARX_ghex_DMS_Pointer_Snds_Bipod_F|arifle_ARX_ghex_DMS_Pointer_Snds_Bipod_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_ARX_ghex_F|arifle_ARX_ghex_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_ARX_hex_ACO_Pointer_Snds_F|arifle_ARX_hex_ACO_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_ARX_hex_ARCO_Pointer_Snds_F|arifle_ARX_hex_ARCO_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_ARX_hex_DMS_Pointer_Snds_Bipod_F|arifle_ARX_hex_DMS_Pointer_Snds_Bipod_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_ARX_hex_F|arifle_ARX_hex_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_ARX_Viper_F|arifle_ARX_Viper_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_ARX_Viper_hex_F|arifle_ARX_Viper_hex_F]]
+</small>
+| <small>[[File:arma3-arifle_arx_blk_f_x_ca.png|150px]][[File:arma3-arifle_arx_ghex_f_x_ca.png|150px]][[File:arma3-arifle_arx_ghex_f_x_ca.png|150px]][[File:arma3-arifle_arx_ghex_f_x_ca.png|150px]][[File:arma3-arifle_arx_ghex_f_x_ca.png|150px]][[File:arma3-arifle_arx_hex_f_x_ca.png|150px]][[File:arma3-arifle_arx_hex_f_x_ca.png|150px]][[File:arma3-arifle_arx_hex_f_x_ca.png|150px]][[File:arma3-arifle_arx_hex_f_x_ca.png|150px]][[File:arma3-arifle_arx_ghex_f_x_ca.png|150px]][[File:arma3-arifle_arx_hex_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Rifles_CTAR" >'''A3_Weapons_F_Exp_Rifles_CTAR'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_blk_ACO_F|arifle_CTAR_blk_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_blk_ACO_Pointer_F|arifle_CTAR_blk_ACO_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_blk_ACO_Pointer_Snds_F|arifle_CTAR_blk_ACO_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_blk_ARCO_F|arifle_CTAR_blk_ARCO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_blk_ARCO_Pointer_F|arifle_CTAR_blk_ARCO_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_blk_ARCO_Pointer_Snds_F|arifle_CTAR_blk_ARCO_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_blk_F|arifle_CTAR_blk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_blk_Pointer_F|arifle_CTAR_blk_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_ghex_F|arifle_CTAR_ghex_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_GL_blk_ACO_F|arifle_CTAR_GL_blk_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_GL_blk_ACO_Pointer_Snds_F|arifle_CTAR_GL_blk_ACO_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_GL_blk_ARCO_Pointer_F|arifle_CTAR_GL_blk_ARCO_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_GL_blk_F|arifle_CTAR_GL_blk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_GL_ghex_F|arifle_CTAR_GL_ghex_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_GL_hex_F|arifle_CTAR_GL_hex_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_hex_F|arifle_CTAR_hex_F]]
+</small>
+| <small>[[File:arma3-icon_arifle_ctar_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_ghex_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_gl_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_gl_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_gl_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_gl_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_gl_ghex_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_gl_hex_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_hex_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Rifles_CTARS" >'''A3_Weapons_F_Exp_Rifles_CTARS'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_CTARS_blk_F|arifle_CTARS_blk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTARS_blk_Pointer_F|arifle_CTARS_blk_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTARS_ghex_F|arifle_CTARS_ghex_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTARS_hex_F|arifle_CTARS_hex_F]]
+</small>
+| <small>[[File:arma3-icon_arifle_ctars_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctars_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctars_ghex_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctars_hex_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Rifles_SPAR_01" >'''A3_Weapons_F_Exp_Rifles_SPAR_01'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_01_blk_ACO_Pointer_F|arifle_SPAR_01_blk_ACO_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_01_blk_ERCO_Pointer_F|arifle_SPAR_01_blk_ERCO_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_01_blk_F|arifle_SPAR_01_blk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_01_GL_blk_ACO_Pointer_F|arifle_SPAR_01_GL_blk_ACO_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_01_GL_blk_ERCO_Pointer_F|arifle_SPAR_01_GL_blk_ERCO_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_01_GL_blk_F|arifle_SPAR_01_GL_blk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_01_GL_khk_F|arifle_SPAR_01_GL_khk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_01_GL_snd_F|arifle_SPAR_01_GL_snd_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_01_khk_F|arifle_SPAR_01_khk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_01_snd_F|arifle_SPAR_01_snd_F]]
+</small>
+| <small>[[File:arma3-arifle_spar_01_blk_f_x_ca.png|150px]][[File:arma3-arifle_spar_01_blk_f_x_ca.png|150px]][[File:arma3-arifle_spar_01_blk_f_x_ca.png|150px]][[File:arma3-arifle_spar_01_gl_blk_f_x_ca.png|150px]][[File:arma3-arifle_spar_01_gl_blk_f_x_ca.png|150px]][[File:arma3-arifle_spar_01_gl_blk_f_x_ca.png|150px]][[File:arma3-arifle_spar_01_gl_khk_f_x_ca.png|150px]][[File:arma3-arifle_spar_01_gl_snd_f_x_ca.png|150px]][[File:arma3-arifle_spar_01_khk_f_x_ca.png|150px]][[File:arma3-arifle_spar_01_snd_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Rifles_SPAR_02" >'''A3_Weapons_F_Exp_Rifles_SPAR_02'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_02_blk_ERCO_Pointer_F|arifle_SPAR_02_blk_ERCO_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_02_blk_F|arifle_SPAR_02_blk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_02_blk_Pointer_F|arifle_SPAR_02_blk_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_02_khk_F|arifle_SPAR_02_khk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_02_snd_F|arifle_SPAR_02_snd_F]]
+</small>
+| <small>[[File:arma3-arifle_spar_02_blk_f_x_ca.png|150px]][[File:arma3-arifle_spar_02_blk_f_x_ca.png|150px]][[File:arma3-arifle_spar_02_blk_f_x_ca.png|150px]][[File:arma3-arifle_spar_02_khk_f_x_ca.png|150px]][[File:arma3-arifle_spar_02_snd_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_Rifles_SPAR_03" >'''A3_Weapons_F_Exp_Rifles_SPAR_03'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_03_blk_F|arifle_SPAR_03_blk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_03_blk_MOS_Pointer_Bipod_F|arifle_SPAR_03_blk_MOS_Pointer_Bipod_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_03_khk_F|arifle_SPAR_03_khk_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_SPAR_03_snd_F|arifle_SPAR_03_snd_F]]
+</small>
+| <small>[[File:arma3-arifle_spar_03_blk_f_x_ca.png|150px]][[File:arma3-arifle_spar_03_blk_f_x_ca.png|150px]][[File:arma3-arifle_spar_03_khk_f_x_ca.png|150px]][[File:arma3-arifle_spar_03_snd_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Exp_SMGs_SMG_05" >'''A3_Weapons_F_Exp_SMGs_SMG_05'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#SMG_05_F|SMG_05_F]]
+</small>
+| <small>[[File:arma3-icon_smg_05_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Exp" >'''A3_Characters_F_Exp'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#U_B_CTRG_Soldier_2_Arid_F|U_B_CTRG_Soldier_2_Arid_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CTRG_Soldier_2_F|U_B_CTRG_Soldier_2_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CTRG_Soldier_3_Arid_F|U_B_CTRG_Soldier_3_Arid_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CTRG_Soldier_3_F|U_B_CTRG_Soldier_3_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CTRG_Soldier_Arid_F|U_B_CTRG_Soldier_Arid_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CTRG_Soldier_F|U_B_CTRG_Soldier_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CTRG_Soldier_urb_1_F|U_B_CTRG_Soldier_urb_1_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CTRG_Soldier_urb_2_F|U_B_CTRG_Soldier_urb_2_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CTRG_Soldier_urb_3_F|U_B_CTRG_Soldier_urb_3_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_G_Captain_Ivan_F|U_B_G_Captain_Ivan_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_GEN_Commander_F|U_B_GEN_Commander_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_GEN_Soldier_F|U_B_GEN_Soldier_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_T_FullGhillie_tna_F|U_B_T_FullGhillie_tna_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_T_Sniper_F|U_B_T_Sniper_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_T_Soldier_AR_F|U_B_T_Soldier_AR_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_T_Soldier_F|U_B_T_Soldier_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_T_Soldier_SL_F|U_B_T_Soldier_SL_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Man_casual_1_F|U_C_Man_casual_1_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Man_casual_2_F|U_C_Man_casual_2_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Man_casual_3_F|U_C_Man_casual_3_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Man_casual_4_F|U_C_Man_casual_4_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Man_casual_5_F|U_C_Man_casual_5_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Man_casual_6_F|U_C_Man_casual_6_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_man_sport_1_F|U_C_man_sport_1_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_man_sport_2_F|U_C_man_sport_2_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_man_sport_3_F|U_C_man_sport_3_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_C_Soldier_Bandit_1_F|U_I_C_Soldier_Bandit_1_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_C_Soldier_Bandit_2_F|U_I_C_Soldier_Bandit_2_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_C_Soldier_Bandit_3_F|U_I_C_Soldier_Bandit_3_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_C_Soldier_Bandit_4_F|U_I_C_Soldier_Bandit_4_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_C_Soldier_Bandit_5_F|U_I_C_Soldier_Bandit_5_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_C_Soldier_Camo_F|U_I_C_Soldier_Camo_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_C_Soldier_Para_1_F|U_I_C_Soldier_Para_1_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_C_Soldier_Para_2_F|U_I_C_Soldier_Para_2_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_C_Soldier_Para_3_F|U_I_C_Soldier_Para_3_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_C_Soldier_Para_4_F|U_I_C_Soldier_Para_4_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_C_Soldier_Para_5_F|U_I_C_Soldier_Para_5_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_T_FullGhillie_tna_F|U_O_T_FullGhillie_tna_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_T_Officer_F|U_O_T_Officer_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_T_Sniper_F|U_O_T_Sniper_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_T_Soldier_F|U_O_T_Soldier_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_V_Soldier_Viper_F|U_O_V_Soldier_Viper_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_V_Soldier_Viper_hex_F|U_O_V_Soldier_Viper_hex_F]]
+</small>
+| <small>[[File:arma3-icon_u_b_ctrg_soldier_2_arid_f_ca.png|150px]][[File:arma3-icon_u_b_ctrg_soldier_2_f_ca.png|150px]][[File:arma3-icon_u_b_ctrg_soldier_3_arid_f_ca.png|150px]][[File:arma3-icon_u_b_ctrg_soldier_3_f_ca.png|150px]][[File:arma3-icon_u_b_ctrg_soldier_arid_f_ca.png|150px]][[File:arma3-icon_u_b_ctrg_soldier_f_ca.png|150px]][[File:arma3-icon_u_b_ctrg_soldier_urb_1_f_ca.png|150px]][[File:arma3-icon_u_b_ctrg_soldier_urb_2_f_ca.png|150px]][[File:arma3-icon_u_b_ctrg_soldier_urb_3_f_ca.png|150px]][[File:arma3-icon_u_i_c_soldier_para_2_f_ca.png|150px]][[File:arma3-icon_u_b_gen_commander_f_ca.png|150px]][[File:arma3-icon_u_b_gen_soldier_f_ca.png|150px]][[File:arma3-icon_u_b_fullghillie_tna_ca.png|150px]][[File:arma3-icon_u_bt_sniper_f_tna_ca.png|150px]][[File:arma3-icon_u_bt_soldier_ar_f_tna_ca.png|150px]][[File:arma3-icon_u_bt_soldier_f_tna_ca.png|150px]][[File:arma3-icon_u_bt_soldier_sl_f_tna_ca.png|150px]][[File:arma3-icon_u_c_man_casual_1_f_ca.png|150px]][[File:arma3-icon_u_c_man_casual_2_f_ca.png|150px]][[File:arma3-icon_u_c_man_casual_3_f_ca.png|150px]][[File:arma3-icon_u_c_man_casual_4_f_ca.png|150px]][[File:arma3-icon_u_c_man_casual_5_f_ca.png|150px]][[File:arma3-icon_u_c_man_casual_6_f_ca.png|150px]][[File:arma3-icon_u_c_man_sport_1_ca.png|150px]][[File:arma3-icon_u_c_man_sport_2_f_ca.png|150px]][[File:arma3-icon_u_c_man_sport_3_f_ca.png|150px]][[File:arma3-icon_u_i_c_soldier_bandit_1_f_ca.png|150px]][[File:arma3-icon_u_i_c_soldier_bandit_2_f_ca.png|150px]][[File:arma3-icon_u_i_c_soldier_bandit_3_f_ca.png|150px]][[File:arma3-icon_u_i_c_soldier_bandit_4_f_ca.png|150px]][[File:arma3-icon_u_i_c_soldier_bandit_5_f_ca.png|150px]][[File:arma3-icon_u_i_c_soldier_camo_f_ca.png|150px]][[File:arma3-icon_u_i_c_soldier_para_1_f_ca.png|150px]][[File:arma3-icon_u_i_c_soldier_para_2_f_ca.png|150px]][[File:arma3-icon_u_i_c_soldier_para_3_f_ca.png|150px]][[File:arma3-icon_u_i_c_soldier_para_4_f_ca.png|150px]][[File:arma3-icon_u_i_c_soldier_para_5_f_ca.png|150px]][[File:arma3-icon_u_o_fullghillie_tna_ca.png|150px]][[File:arma3-icon_u_ot_officer_f_ca.png|150px]][[File:arma3-icon_u_ot_sniper_f_ca.png|150px]][[File:arma3-icon_u_ot_soldier_f_ca.png|150px]][[File:arma3-icon_u_o_soldier_viper_ghex_f_ca.png|150px]][[File:arma3-icon_u_o_soldier_viper_hex_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Exp_Headgear" >'''A3_Characters_F_Exp_Headgear'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#H_Beret_gen_F|H_Beret_gen_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_tna_F|H_Booniehat_tna_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_blk_Syndikat_F|H_Cap_blk_Syndikat_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_grn_Syndikat_F|H_Cap_grn_Syndikat_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_oli_Syndikat_F|H_Cap_oli_Syndikat_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_tan_Syndikat_F|H_Cap_tan_Syndikat_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Helmet_Skate|H_Helmet_Skate]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_Enh_tna_F|H_HelmetB_Enh_tna_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_Light_tna_F|H_HelmetB_Light_tna_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_TI_arid_F|H_HelmetB_TI_arid_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_TI_tna_F|H_HelmetB_TI_tna_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_tna_F|H_HelmetB_tna_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetCrew_O_ghex_F|H_HelmetCrew_O_ghex_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetLeaderO_ghex_F|H_HelmetLeaderO_ghex_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetO_ghex_F|H_HelmetO_ghex_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetO_ViperSP_ghex_F|H_HelmetO_ViperSP_ghex_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetO_ViperSP_hex_F|H_HelmetO_ViperSP_hex_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetSpecO_ghex_F|H_HelmetSpecO_ghex_F]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_gen_F|H_MilCap_gen_F]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_ghex_F|H_MilCap_ghex_F]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_tna_F|H_MilCap_tna_F]]
+</small>
+| <small>[[File:arma3-icon_h_beret_gen_f_ca.png|150px]][[File:arma3-icon_h_booniehat_tna_f_ca.png|150px]][[File:arma3-icon_h_cap_blk_ca.png|150px]][[File:arma3-icon_h_cap_grn_ca.png|150px]][[File:arma3-icon_h_cap_oli_ca.png|150px]][[File:arma3-icon_h_cap_tan_ca.png|150px]][[File:arma3-icon_h_helmet_skate_ca.png|150px]][[File:arma3-icon_h_helmetb_enh_tna_f_ca.png|150px]][[File:arma3-icon_h_helmetb_light_tna_f_ca.png|150px]][[File:arma3-icon_h_helmetb_ti_arid_f_ca.png|150px]][[File:arma3-icon_h_helmetb_ti_tna_f_ca.png|150px]][[File:arma3-icon_h_helmetb_tna_f_ca.png|150px]][[File:arma3-icon_h_helmetcrew_o_ghex_f_ca.png|150px]][[File:arma3-icon_h_helmetleadero_ghex_f_ca.png|150px]][[File:arma3-icon_h_helmeto_ghex_f_ca.png|150px]][[File:arma3-icon_h_helmeto_vipersp_ghex_f_ca.png|150px]][[File:arma3-icon_h_helmeto_vipersp_hex_f_ca.png|150px]][[File:arma3-icon_h_helmetspeco_ghex_f_ca.png|150px]][[File:arma3-icon_h_milcap_gen_f_ca.png|150px]][[File:arma3-icon_h_milcap_ghex_f_ca.png|150px]][[File:arma3-icon_h_milcap_tna_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Exp_Vests" >'''A3_Characters_F_Exp_Vests'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#V_BandollierB_ghex_F|V_BandollierB_ghex_F]]
+:[[Arma 3 CfgWeapons Equipment#V_HarnessO_ghex_F|V_HarnessO_ghex_F]]
+:[[Arma 3 CfgWeapons Equipment#V_HarnessOGL_ghex_F|V_HarnessOGL_ghex_F]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrier1_rgr_noflag_F|V_PlateCarrier1_rgr_noflag_F]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrier1_tna_F|V_PlateCarrier1_tna_F]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrier2_rgr_noflag_F|V_PlateCarrier2_rgr_noflag_F]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrier2_tna_F|V_PlateCarrier2_tna_F]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierGL_tna_F|V_PlateCarrierGL_tna_F]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierSpec_tna_F|V_PlateCarrierSpec_tna_F]]
+:[[Arma 3 CfgWeapons Equipment#V_TacChestrig_cbr_F|V_TacChestrig_cbr_F]]
+:[[Arma 3 CfgWeapons Equipment#V_TacChestrig_grn_F|V_TacChestrig_grn_F]]
+:[[Arma 3 CfgWeapons Equipment#V_TacChestrig_oli_F|V_TacChestrig_oli_F]]
+:[[Arma 3 CfgWeapons Equipment#V_TacVest_gen_F|V_TacVest_gen_F]]
+</small>
+| <small>[[File:arma3-icon_v_bandollierb_ghex_f_ca.png|150px]][[File:arma3-icon_v_harnesso_ghex_f_ca.png|150px]][[File:arma3-icon_v_harnessogl_ghex_f_ca.png|150px]][[File:arma3-icon_v_plate_carrier_1_ca.png|150px]][[File:arma3-icon_v_platecarrier1_tna_f_ca.png|150px]][[File:arma3-icon_v_plate_carrier_2_ca.png|150px]][[File:arma3-icon_v_platecarrier1_tna_f_ca.png|150px]][[File:arma3-icon_v_platecarriergl_tna_f_ca.png|150px]][[File:arma3-icon_v_platecarrierspec_tna_f_ca.png|150px]][[File:arma3-icon_v_tacchestrig_cbr_ca.png|150px]][[File:arma3-icon_v_tacchestrig_grn_ca.png|150px]][[File:arma3-icon_v_tacchestrig_oli_ca.png|150px]][[File:arma3-icon_v_tacvest_gen_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Jets" >'''A3_Weapons_F_Jets'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_AGM_65Launcher|weapon_AGM_65Launcher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_AGM_KH25Launcher|weapon_AGM_KH25Launcher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_AMRAAMLauncher|weapon_AMRAAMLauncher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_BIM9xLauncher|weapon_BIM9xLauncher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_Cannon_Phalanx|weapon_Cannon_Phalanx]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_Fighter_Gun20mm_AA|weapon_Fighter_Gun20mm_AA]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_Fighter_Gun_30mm|weapon_Fighter_Gun_30mm]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_GBU12Launcher|weapon_GBU12Launcher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_KAB250Launcher|weapon_KAB250Launcher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_R73Launcher|weapon_R73Launcher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_R77Launcher|weapon_R77Launcher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_rim116Launcher|weapon_rim116Launcher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_rim162Launcher|weapon_rim162Launcher]]
+</small>
+| <small>
+</small>
+|-
+| <span id="A3_Characters_F_Jets_Vests" >'''A3_Characters_F_Jets_Vests'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#V_DeckCrew_blue_F|V_DeckCrew_blue_F]]
+:[[Arma 3 CfgWeapons Equipment#V_DeckCrew_brown_F|V_DeckCrew_brown_F]]
+:[[Arma 3 CfgWeapons Equipment#V_DeckCrew_green_F|V_DeckCrew_green_F]]
+:[[Arma 3 CfgWeapons Equipment#V_DeckCrew_red_F|V_DeckCrew_red_F]]
+:[[Arma 3 CfgWeapons Equipment#V_DeckCrew_violet_F|V_DeckCrew_violet_F]]
+:[[Arma 3 CfgWeapons Equipment#V_DeckCrew_white_F|V_DeckCrew_white_F]]
+:[[Arma 3 CfgWeapons Equipment#V_DeckCrew_yellow_F|V_DeckCrew_yellow_F]]
+</small>
+| <small>[[File:arma3-icon_v_deckcrew_blue_ca.png|150px]][[File:arma3-icon_v_deckcrew_brown_ca.png|150px]][[File:arma3-icon_v_deckcrew_green_ca.png|150px]][[File:arma3-icon_v_deckcrew_red_ca.png|150px]][[File:arma3-icon_v_deckcrew_violet_ca.png|150px]][[File:arma3-icon_v_deckcrew_white_ca.png|150px]][[File:arma3-icon_v_deckcrew_yellow_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Patrol" >'''A3_Weapons_F_Patrol'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#B_Patrol_Soldier_Autorifleman_weapon_F|B_Patrol_Soldier_Autorifleman_weapon_F]]
+:[[Arma 3 CfgWeapons Weapons#B_Patrol_Soldier_Carrier_weapon_F|B_Patrol_Soldier_Carrier_weapon_F]]
+:[[Arma 3 CfgWeapons Weapons#B_Patrol_Soldier_HeavyGunner_weapon_F|B_Patrol_Soldier_HeavyGunner_weapon_F]]
+:[[Arma 3 CfgWeapons Weapons#B_Patrol_Soldier_Leader_weapon_F|B_Patrol_Soldier_Leader_weapon_F]]
+:[[Arma 3 CfgWeapons Weapons#B_Patrol_Soldier_MachineGunner_weapon_F|B_Patrol_Soldier_MachineGunner_weapon_F]]
+:[[Arma 3 CfgWeapons Weapons#B_Patrol_Soldier_Marksman_weapon_F|B_Patrol_Soldier_Marksman_weapon_F]]
+:[[Arma 3 CfgWeapons Weapons#B_Patrol_Soldier_Medic_weapon_F|B_Patrol_Soldier_Medic_weapon_F]]
+:[[Arma 3 CfgWeapons Weapons#B_Patrol_Soldier_Operator_weapon_F|B_Patrol_Soldier_Operator_weapon_F]]
+:[[Arma 3 CfgWeapons Weapons#B_Patrol_Soldier_Pistol_F|B_Patrol_Soldier_Pistol_F]]
+:[[Arma 3 CfgWeapons Weapons#B_Patrol_Soldier_Specialist_weapon_F|B_Patrol_Soldier_Specialist_weapon_F]]
+</small>
+| <small>[[File:arma3-gear_mx_lmg_x_ca.png|150px]][[File:arma3-gear_mx_rifle_x_ca.png|150px]][[File:arma3-gear_zafir_x_ca.png|150px]][[File:arma3-gear_mx_rifle_gl_x_ca.png|150px]][[File:arma3-gear_m200_x_ca.png|150px]][[File:arma3-gear_ebr_x_ca.png|150px]][[File:arma3-gear_mx_rifle_x_ca.png|150px]][[File:arma3-gear_mx_cqc_x_ca.png|150px]][[File:arma3-gear_pistol_heavy_01_x_ca.png|150px]][[File:arma3-gear_mx_rifle_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Orange" >'''A3_Weapons_F_Orange'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Vehicle Weapons#AmbulanceHorn|AmbulanceHorn]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#Bomb_Leaflets|Bomb_Leaflets]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#BombCluster_01_F|BombCluster_01_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#BombCluster_02_F|BombCluster_02_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#BombCluster_03_F|BombCluster_03_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#BombDemine_01_F|BombDemine_01_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#PoliceHorn|PoliceHorn]]
+</small>
+| <small>
+</small>
+|-
+| <span id="A3_Weapons_F_Orange_Items" >'''A3_Weapons_F_Orange_Items'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Items#C_UavTerminal|C_UavTerminal]]
+</small>
+| <small>[[File:arma3-gear_uav_controller_civ_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Orange" >'''A3_Characters_F_Orange'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#U_BG_Guerilla1_2_F|U_BG_Guerilla1_2_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_ConstructionCoverall_Black_F|U_C_ConstructionCoverall_Black_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_ConstructionCoverall_Blue_F|U_C_ConstructionCoverall_Blue_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_ConstructionCoverall_Red_F|U_C_ConstructionCoverall_Red_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_ConstructionCoverall_Vrana_F|U_C_ConstructionCoverall_Vrana_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_IDAP_Man_cargo_F|U_C_IDAP_Man_cargo_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_IDAP_Man_casual_F|U_C_IDAP_Man_casual_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_IDAP_Man_Jeans_F|U_C_IDAP_Man_Jeans_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_IDAP_Man_shorts_F|U_C_IDAP_Man_shorts_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_IDAP_Man_Tee_F|U_C_IDAP_Man_Tee_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_IDAP_Man_TeeShorts_F|U_C_IDAP_Man_TeeShorts_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Mechanic_01_F|U_C_Mechanic_01_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Paramedic_01_F|U_C_Paramedic_01_F]]
+</small>
+| <small>[[File:arma3-icon_u_g_guerrilla1_2_ca.png|150px]][[File:arma3-icon_u_c_constructioncoverall_black_ca.png|150px]][[File:arma3-icon_u_c_constructioncoverall_blue_ca.png|150px]][[File:arma3-icon_u_c_constructioncoverall_red_ca.png|150px]][[File:arma3-icon_u_c_constructioncoverall_vrana_ca.png|150px]][[File:arma3-icon_u_c_idap_man_cargo_ca.png|150px]][[File:arma3-icon_u_c_idap_man_casual_ca.png|150px]][[File:arma3-icon_u_c_idap_man_jeans_ca.png|150px]][[File:arma3-icon_u_c_idap_man_shorts_ca.png|150px]][[File:arma3-icon_u_c_idap_man_tee_ca.png|150px]][[File:arma3-icon_u_c_idap_man_teeshorts_ca.png|150px]][[File:arma3-icon_u_c_mechanic_01_ca.png|150px]][[File:arma3-icon_u_c_paramedic_01_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Orange_Headgear" >'''A3_Characters_F_Orange_Headgear'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#H_Cap_Black_IDAP_F|H_Cap_Black_IDAP_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_Orange_IDAP_F|H_Cap_Orange_IDAP_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_White_IDAP_F|H_Cap_White_IDAP_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_basic_black_F|H_Construction_basic_black_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_basic_orange_F|H_Construction_basic_orange_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_basic_red_F|H_Construction_basic_red_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_basic_vrana_F|H_Construction_basic_vrana_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_basic_white_F|H_Construction_basic_white_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_basic_yellow_F|H_Construction_basic_yellow_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_earprot_black_F|H_Construction_earprot_black_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_earprot_orange_F|H_Construction_earprot_orange_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_earprot_red_F|H_Construction_earprot_red_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_earprot_vrana_F|H_Construction_earprot_vrana_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_earprot_white_F|H_Construction_earprot_white_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_earprot_yellow_F|H_Construction_earprot_yellow_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_headset_black_F|H_Construction_headset_black_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_headset_orange_F|H_Construction_headset_orange_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_headset_red_F|H_Construction_headset_red_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_headset_vrana_F|H_Construction_headset_vrana_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_headset_white_F|H_Construction_headset_white_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Construction_headset_yellow_F|H_Construction_headset_yellow_F]]
+:[[Arma 3 CfgWeapons Equipment#H_EarProtectors_black_F|H_EarProtectors_black_F]]
+:[[Arma 3 CfgWeapons Equipment#H_EarProtectors_orange_F|H_EarProtectors_orange_F]]
+:[[Arma 3 CfgWeapons Equipment#H_EarProtectors_red_F|H_EarProtectors_red_F]]
+:[[Arma 3 CfgWeapons Equipment#H_EarProtectors_white_F|H_EarProtectors_white_F]]
+:[[Arma 3 CfgWeapons Equipment#H_EarProtectors_yellow_F|H_EarProtectors_yellow_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Hat_Safari_olive_F|H_Hat_Safari_olive_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Hat_Safari_sand_F|H_Hat_Safari_sand_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HeadBandage_bloody_F|H_HeadBandage_bloody_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HeadBandage_clean_F|H_HeadBandage_clean_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HeadBandage_stained_F|H_HeadBandage_stained_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HeadSet_black_F|H_HeadSet_black_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HeadSet_orange_F|H_HeadSet_orange_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HeadSet_red_F|H_HeadSet_red_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HeadSet_white_F|H_HeadSet_white_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HeadSet_yellow_F|H_HeadSet_yellow_F]]
+:[[Arma 3 CfgWeapons Equipment#H_PASGT_basic_black_F|H_PASGT_basic_black_F]]
+:[[Arma 3 CfgWeapons Equipment#H_PASGT_basic_blue_F|H_PASGT_basic_blue_F]]
+:[[Arma 3 CfgWeapons Equipment#H_PASGT_basic_blue_press_F|H_PASGT_basic_blue_press_F]]
+:[[Arma 3 CfgWeapons Equipment#H_PASGT_basic_olive_F|H_PASGT_basic_olive_F]]
+:[[Arma 3 CfgWeapons Equipment#H_PASGT_basic_white_F|H_PASGT_basic_white_F]]
+:[[Arma 3 CfgWeapons Equipment#H_PASGT_neckprot_blue_press_F|H_PASGT_neckprot_blue_press_F]]
+:[[Arma 3 CfgWeapons Equipment#H_WirelessEarpiece_F|H_WirelessEarpiece_F]]
+</small>
+| <small>[[File:arma3-icon_h_cap_black_idap_ca.png|150px]][[File:arma3-icon_h_cap_orange_idap_ca.png|150px]][[File:arma3-icon_h_cap_white_idap_ca.png|150px]][[File:arma3-icon_h_construction_basic_black_f_ca.png|150px]][[File:arma3-icon_h_construction_basic_orange_f_ca.png|150px]][[File:arma3-icon_h_construction_basic_red_f_ca.png|150px]][[File:arma3-icon_h_construction_basic_vrana_f_ca.png|150px]][[File:arma3-icon_h_construction_basic_white_f_ca.png|150px]][[File:arma3-icon_h_construction_basic_yellow_f_ca.png|150px]][[File:arma3-icon_h_construction_earprot_black_f_ca.png|150px]][[File:arma3-icon_h_construction_earprot_orange_f_ca.png|150px]][[File:arma3-icon_h_construction_earprot_red_f_ca.png|150px]][[File:arma3-icon_h_construction_earprot_vrana_f_ca.png|150px]][[File:arma3-icon_h_construction_earprot_white_f_ca.png|150px]][[File:arma3-icon_h_construction_earprot_yellow_f_ca.png|150px]][[File:arma3-icon_h_construction_headset_black_f_ca.png|150px]][[File:arma3-icon_h_construction_headset_orange_f_ca.png|150px]][[File:arma3-icon_h_construction_headset_red_f_ca.png|150px]][[File:arma3-icon_h_construction_headset_vrana_f_ca.png|150px]][[File:arma3-icon_h_construction_headset_white_f_ca.png|150px]][[File:arma3-icon_h_construction_headset_yellow_f_ca.png|150px]][[File:arma3-icon_h_earprotectors_black_f_ca.png|150px]][[File:arma3-icon_h_earprotectors_orange_f_ca.png|150px]][[File:arma3-icon_h_earprotectors_red_f_ca.png|150px]][[File:arma3-icon_h_earprotectors_white_f_ca.png|150px]][[File:arma3-icon_h_earprotectors_yellow_f_ca.png|150px]][[File:arma3-icon_h_hat_safari_olive_ca.png|150px]][[File:arma3-icon_h_hat_safari_sand_ca.png|150px]][[File:arma3-icon_h_headbandage_bloody_ca.png|150px]][[File:arma3-icon_h_headbandage_clean_ca.png|150px]][[File:arma3-icon_h_headbandage_stained_ca.png|150px]][[File:arma3-icon_h_headset_black_f_ca.png|150px]][[File:arma3-icon_h_headset_orange_f_ca.png|150px]][[File:arma3-icon_h_headset_red_f_ca.png|150px]][[File:arma3-icon_h_headset_white_f_ca.png|150px]][[File:arma3-icon_h_headset_yellow_f_ca.png|150px]][[File:arma3-icon_h_pasgt_basic_black_ca.png|150px]][[File:arma3-icon_h_pasgt_basic_blue_ca.png|150px]][[File:arma3-icon_h_pasgt_basic_blue_press_ca.png|150px]][[File:arma3-icon_h_pasgt_basic_olive_ca.png|150px]][[File:arma3-icon_h_pasgt_basic_white_ca.png|150px]][[File:arma3-icon_h_pasgt_neckprot_blue_press_ca.png|150px]][[File:arma3-icon_h_wirelessearpiece_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Orange_Vests" >'''A3_Characters_F_Orange_Vests'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#V_EOD_blue_F|V_EOD_blue_F]]
+:[[Arma 3 CfgWeapons Equipment#V_EOD_coyote_F|V_EOD_coyote_F]]
+:[[Arma 3 CfgWeapons Equipment#V_EOD_IDAP_blue_F|V_EOD_IDAP_blue_F]]
+:[[Arma 3 CfgWeapons Equipment#V_EOD_olive_F|V_EOD_olive_F]]
+:[[Arma 3 CfgWeapons Equipment#V_LegStrapBag_black_F|V_LegStrapBag_black_F]]
+:[[Arma 3 CfgWeapons Equipment#V_LegStrapBag_coyote_F|V_LegStrapBag_coyote_F]]
+:[[Arma 3 CfgWeapons Equipment#V_LegStrapBag_olive_F|V_LegStrapBag_olive_F]]
+:[[Arma 3 CfgWeapons Equipment#V_Plain_crystal_F|V_Plain_crystal_F]]
+:[[Arma 3 CfgWeapons Equipment#V_Plain_medical_F|V_Plain_medical_F]]
+:[[Arma 3 CfgWeapons Equipment#V_Pocketed_black_F|V_Pocketed_black_F]]
+:[[Arma 3 CfgWeapons Equipment#V_Pocketed_coyote_F|V_Pocketed_coyote_F]]
+:[[Arma 3 CfgWeapons Equipment#V_Pocketed_olive_F|V_Pocketed_olive_F]]
+:[[Arma 3 CfgWeapons Equipment#V_Safety_blue_F|V_Safety_blue_F]]
+:[[Arma 3 CfgWeapons Equipment#V_Safety_orange_F|V_Safety_orange_F]]
+:[[Arma 3 CfgWeapons Equipment#V_Safety_yellow_F|V_Safety_yellow_F]]
+</small>
+| <small>[[File:arma3-icon_v_eod_blue_ca.png|150px]][[File:arma3-icon_v_eod_coyote_ca.png|150px]][[File:arma3-icon_v_eod_idap_blue_ca.png|150px]][[File:arma3-icon_v_eod_olive_ca.png|150px]][[File:arma3-icon_v_legstrapbag_black_ca.png|150px]][[File:arma3-icon_v_legstrapbag_coyote_ca.png|150px]][[File:arma3-icon_v_legstrapbag_olive_ca.png|150px]][[File:arma3-icon_v_plain_crystal_ca.png|150px]][[File:arma3-icon_v_plain_medical_ca.png|150px]][[File:arma3-icon_v_pocketed_black_ca.png|150px]][[File:arma3-icon_v_pocketed_coyote_ca.png|150px]][[File:arma3-icon_v_pocketed_olive_ca.png|150px]][[File:arma3-icon_v_safety_blue_ca.png|150px]][[File:arma3-icon_v_safety_orange_ca.png|150px]][[File:arma3-icon_v_safety_yellow_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Tacops" >'''A3_Characters_F_Tacops'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_blk_aco_flash_F|arifle_CTAR_blk_aco_flash_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_blk_arco_flash_F|arifle_CTAR_blk_arco_flash_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_blk_flash_F|arifle_CTAR_blk_flash_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_GL_blk_aco_flash_F|arifle_CTAR_GL_blk_aco_flash_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTAR_GL_blk_arco_flash_F|arifle_CTAR_GL_blk_arco_flash_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_CTARS_blk_flash_F|arifle_CTARS_blk_flash_F]]
+:[[Arma 3 CfgWeapons Weapons#SMG_02_flash_F|SMG_02_flash_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_07_blk_F_arco_flash_F|srifle_DMR_07_blk_F_arco_flash_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_officer_noInsignia_hex_F|U_O_officer_noInsignia_hex_F]]
+</small>
+| <small>[[File:arma3-icon_arifle_ctar_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_gl_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctar_gl_blk_f_x_ca.png|150px]][[File:arma3-icon_arifle_ctars_blk_f_x_ca.png|150px]][[File:arma3-gear_smg_02_x_ca.png|150px]][[File:arma3-icon_srifle_dmr_07_blk_f_x_ca.png|150px]][[File:arma3-icon_u_oi_officer_ocamo_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Tank" >'''A3_Weapons_F_Tank'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Vehicle Weapons#autocannon_30mm_RCWS|autocannon_30mm_RCWS]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#cannon_125mm_advanced|cannon_125mm_advanced]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#cannon_20mm|cannon_20mm]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#HMG_127_AFV|HMG_127_AFV]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#launcher_SPG9|launcher_SPG9]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#missiles_Firefist|missiles_Firefist]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#missiles_SAAMI|missiles_SAAMI]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#missiles_Vorona|missiles_Vorona]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#MMG_01_vehicle|MMG_01_vehicle]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#MMG_02_coax|MMG_02_coax]]
+</small>
+| <small>
+</small>
+|-
+| <span id="A3_Weapons_F_Tank_Launchers_MRAWS" >'''A3_Weapons_F_Tank_Launchers_MRAWS'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#launch_MRAWS_green_F|launch_MRAWS_green_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_MRAWS_green_rail_F|launch_MRAWS_green_rail_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_MRAWS_olive_F|launch_MRAWS_olive_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_MRAWS_olive_rail_F|launch_MRAWS_olive_rail_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_MRAWS_sand_F|launch_MRAWS_sand_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_MRAWS_sand_rail_F|launch_MRAWS_sand_rail_F]]
+</small>
+| <small>[[File:arma3-icon_launch_mraws_darkgreen_f_x_ca.png|150px]][[File:arma3-icon_launch_mraws_rails_darkgreen_f_x_ca.png|150px]][[File:arma3-icon_launch_mraws_olive_f_x_ca.png|150px]][[File:arma3-icon_launch_mraws_rails_olive_f_x_ca.png|150px]][[File:arma3-icon_launch_mraws_sand_f_x_ca.png|150px]][[File:arma3-icon_launch_mraws_rails_sand_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Tank_Launchers_Vorona" >'''A3_Weapons_F_Tank_Launchers_Vorona'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#launch_O_Vorona_brown_F|launch_O_Vorona_brown_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_O_Vorona_green_F|launch_O_Vorona_green_F]]
+</small>
+| <small>[[File:arma3-icon_launch_vorona_tan_f_x_ca.png|150px]][[File:arma3-icon_launch_vorona_olive_f_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Tank_Headgear" >'''A3_Characters_F_Tank_Headgear'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#H_Tank_black_F|H_Tank_black_F]]
+</small>
+| <small>[[File:arma3-icon_h_tank_unzip_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Tank_Uniforms" >'''A3_Characters_F_Tank_Uniforms'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#U_Tank_green_F|U_Tank_green_F]]
+</small>
+| <small>[[File:arma3-icon_u_tank_crew_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Destroyer" >'''A3_Weapons_F_Destroyer'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_ShipCannon_120mm|weapon_ShipCannon_120mm]]
+</small>
+| <small>
+</small>
+|-
+| <span id="A3_Weapons_F_Sams" >'''A3_Weapons_F_Sams'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_HARMLauncher|weapon_HARMLauncher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_KH58Launcher|weapon_KH58Launcher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_mim145Launcher|weapon_mim145Launcher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_s750Launcher|weapon_s750Launcher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#weapon_SDBLauncher|weapon_SDBLauncher]]
+</small>
+| <small>
+</small>
+|-
+| <span id="A3_Sounds_F_Enoch" >'''A3_Sounds_F_Enoch'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Vehicle Weapons#ProbingWeapon_01_F|ProbingWeapon_01_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#ProbingWeapon_02_F|ProbingWeapon_02_F]]
+</small>
+| <small>
+</small>
+|-
+| <span id="A3_Weapons_F_Enoch" >'''A3_Weapons_F_Enoch'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_Black_ACO_FL_F|arifle_MX_Black_ACO_FL_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_Black_ACO_Pointer_F|arifle_MX_Black_ACO_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_Black_ACO_Pointer_Snds_F|arifle_MX_Black_ACO_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_Black_Hamr_Pointer_Snds_F|arifle_MX_Black_Hamr_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_Black_Holo_Pointer_F|arifle_MX_Black_Holo_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_Black_Pointer_F|arifle_MX_Black_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_Black_ACO_F|arifle_MX_GL_Black_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_GL_Black_Holo_Pointer_Snds_F|arifle_MX_GL_Black_Holo_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MX_SW_Black_Pointer_F|arifle_MX_SW_Black_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_Black_ACO_F|arifle_MXC_Black_ACO_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_Black_ACO_Pointer_Snds_F|arifle_MXC_Black_ACO_Pointer_Snds_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_Black_Holo_FL_F|arifle_MXC_Black_Holo_FL_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXC_Black_Holo_Pointer_F|arifle_MXC_Black_Holo_Pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_Black_MOS_Pointer_Bipod_F|arifle_MXM_Black_MOS_Pointer_Bipod_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MXM_Black_MOS_Pointer_Bipod_Snds_F|arifle_MXM_Black_MOS_Pointer_Bipod_Snds_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#DeminingDisruptor_01_F|DeminingDisruptor_01_F]]
+:[[Arma 3 CfgWeapons Items#Item_AntidoteKit_01_F|Item_AntidoteKit_01_F]]
+:[[Arma 3 CfgWeapons Items#Item_DeconKit_01_F|Item_DeconKit_01_F]]
+:[[Arma 3 CfgWeapons Items#O_NVGoggles_grn_F|O_NVGoggles_grn_F]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#ProbingLaser_01_F|ProbingLaser_01_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_04_DMS_weathered_Kir_F_F|srifle_DMR_04_DMS_weathered_Kir_F_F]]
+</small>
+| <small>[[File:arma3-gear_mx_rifle_black_x_ca.png|150px]][[File:arma3-gear_mx_rifle_black_x_ca.png|150px]][[File:arma3-gear_mx_rifle_black_x_ca.png|150px]][[File:arma3-gear_mx_rifle_black_x_ca.png|150px]][[File:arma3-gear_mx_rifle_black_x_ca.png|150px]][[File:arma3-gear_mx_rifle_black_x_ca.png|150px]][[File:arma3-gear_mx_rifle_gl_black_x_ca.png|150px]][[File:arma3-gear_mx_rifle_gl_black_x_ca.png|150px]][[File:arma3-gear_mx_lmg_black_x_ca.png|150px]][[File:arma3-gear_mx_cqc_black_x_ca.png|150px]][[File:arma3-gear_mx_cqc_black_x_ca.png|150px]][[File:arma3-gear_mx_cqc_black_x_ca.png|150px]][[File:arma3-gear_mx_cqc_black_x_ca.png|150px]][[File:arma3-gear_mx_dmr_black_x_ca.png|150px]][[File:arma3-gear_mx_dmr_black_x_ca.png|150px]][[File:arma3-m_chemlight_blue_ca.png|150px]][[File:arma3-gear_firstaidkit_ca.png|150px]][[File:arma3-icon_o_nvgoggles_grn_f_ca.png|150px]][[File:arma3-gear_dmr_04_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Enoch_Acc" >'''A3_Weapons_F_Enoch_Acc'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Items#acc_esd_01_flashlight|acc_esd_01_flashlight]]
+:[[Arma 3 CfgWeapons Items#bipod_02_F_arid|bipod_02_F_arid]]
+:[[Arma 3 CfgWeapons Items#bipod_02_F_lush|bipod_02_F_lush]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_B_arid_F|muzzle_snds_B_arid_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_snds_B_lush_F|muzzle_snds_B_lush_F]]
+:[[Arma 3 CfgWeapons Items#muzzle_tma_65|muzzle_tma_65]]
+:[[Arma 3 CfgWeapons Items#optic_Arco_AK_arid_F|optic_Arco_AK_arid_F]]
+:[[Arma 3 CfgWeapons Items#optic_Arco_AK_blk_F|optic_Arco_AK_blk_F]]
+:[[Arma 3 CfgWeapons Items#optic_Arco_AK_lush_F|optic_Arco_AK_lush_F]]
+:[[Arma 3 CfgWeapons Items#optic_Arco_arid_F|optic_Arco_arid_F]]
+:[[Arma 3 CfgWeapons Items#optic_Arco_lush_F|optic_Arco_lush_F]]
+:[[Arma 3 CfgWeapons Items#optic_DMS_weathered_F|optic_DMS_weathered_F]]
+:[[Arma 3 CfgWeapons Items#optic_DMS_weathered_Kir_F|optic_DMS_weathered_Kir_F]]
+:[[Arma 3 CfgWeapons Items#optic_Holosight_arid_F|optic_Holosight_arid_F]]
+:[[Arma 3 CfgWeapons Items#optic_Holosight_lush_F|optic_Holosight_lush_F]]
+:[[Arma 3 CfgWeapons Items#optic_ico_01_black_f|optic_ico_01_black_f]]
+:[[Arma 3 CfgWeapons Items#optic_ico_01_camo_f|optic_ico_01_camo_f]]
+:[[Arma 3 CfgWeapons Items#optic_ico_01_f|optic_ico_01_f]]
+:[[Arma 3 CfgWeapons Items#optic_ico_01_sand_f|optic_ico_01_sand_f]]
+:[[Arma 3 CfgWeapons Items#optic_MRD_black|optic_MRD_black]]
+</small>
+| <small>[[File:arma3-gear_acc_esd_01_flashlight_ca.png|150px]][[File:arma3-icon_bipod_02_f_arid_ca.png|150px]][[File:arma3-icon_bipod_02_f_lush_ca.png|150px]][[File:arma3-icon_muzzle_snds_b_arid_f_ca.png|150px]][[File:arma3-icon_muzzle_snds_b_lush_f_ca.png|150px]][[File:arma3-gear_acca_tma_65_01_ca.png|150px]][[File:arma3-icon_optic_arco_arid_f_ca.png|150px]][[File:arma3-icon_optic_arco_blk_f_ca.png|150px]][[File:arma3-icon_optic_arco_lush_f_ca.png|150px]][[File:arma3-icon_optic_arco_arid_f_ca.png|150px]][[File:arma3-icon_optic_arco_lush_f_ca.png|150px]][[File:arma3-icon_optic_dms_weathered_f_ca.png|150px]][[File:arma3-icon_optic_dms_weathered_f_ca.png|150px]][[File:arma3-icon_optic_holosight_arid_f_ca.png|150px]][[File:arma3-icon_optic_holosight_lush_f_ca.png|150px]][[File:arma3-icon_optic_ico_01_black_f_ca.png|150px]][[File:arma3-icon_optic_ico_01_camo_f_ca.png|150px]][[File:arma3-icon_optic_ico_01_f_ca.png|150px]][[File:arma3-icon_optic_ico_01_sand_f_ca.png|150px]][[File:arma3-icon_optic_mrd_black_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Enoch_Items" >'''A3_Weapons_F_Enoch_Items'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Items#ChemicalDetector_01_base_F|ChemicalDetector_01_base_F]]
+:[[Arma 3 CfgWeapons Items#ChemicalDetector_01_black_F|ChemicalDetector_01_black_F]]
+:[[Arma 3 CfgWeapons Items#ChemicalDetector_01_olive_F|ChemicalDetector_01_olive_F]]
+:[[Arma 3 CfgWeapons Items#ChemicalDetector_01_tan_F|ChemicalDetector_01_tan_F]]
+:[[Arma 3 CfgWeapons Items#ChemicalDetector_01_watch_F|ChemicalDetector_01_watch_F]]
+:[[Arma 3 CfgWeapons Items#I_E_UavTerminal|I_E_UavTerminal]]
+</small>
+| <small>[[File:arma3-clear_empty.png|150px]][[File:arma3-gear_chemicaldetector_01_blk_ca.png|150px]][[File:arma3-gear_chemicaldetector_01_oli_ca.png|150px]][[File:arma3-gear_chemicaldetector_01_tan_ca.png|150px]][[File:arma3-gear_chemicaldetector_01_ca.png|150px]][[File:arma3-gear_uav_controller_eaf_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Enoch_Launchers_RPG32" >'''A3_Weapons_F_Enoch_Launchers_RPG32'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#launch_RPG32_camo_F|launch_RPG32_camo_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_RPG32_green_F|launch_RPG32_green_F]]
+</small>
+| <small>[[File:arma3-icon_launch_rpg32_camo_f_ca.png|150px]][[File:arma3-icon_launch_rpg32_green_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Enoch_Launchers_Titan" >'''A3_Weapons_F_Enoch_Launchers_Titan'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#launch_B_Titan_olive_F|launch_B_Titan_olive_F]]
+:[[Arma 3 CfgWeapons Weapons#launch_I_Titan_eaf_F|launch_I_Titan_eaf_F]]
+</small>
+| <small>[[File:arma3-icon_launch_b_titan_olive_f_ca.png|150px]][[File:arma3-icon_launch_i_titan_eaf_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Enoch_LongRangeRifles_DMR_06" >'''A3_Weapons_F_Enoch_LongRangeRifles_DMR_06'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_06_hunter_F|srifle_DMR_06_hunter_F]]
+:[[Arma 3 CfgWeapons Weapons#srifle_DMR_06_hunter_khs_F|srifle_DMR_06_hunter_khs_F]]
+</small>
+| <small>[[File:arma3-gear_dmr_06_hunter_x_ca.png|150px]][[File:arma3-gear_dmr_06_hunter_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Enoch_Machineguns_M200" >'''A3_Weapons_F_Enoch_Machineguns_M200'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#LMG_Mk200_black_ACO_pointer_F|LMG_Mk200_black_ACO_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#LMG_Mk200_black_BI_F|LMG_Mk200_black_BI_F]]
+:[[Arma 3 CfgWeapons Weapons#LMG_Mk200_black_F|LMG_Mk200_black_F]]
+:[[Arma 3 CfgWeapons Weapons#LMG_Mk200_black_LP_BI_F|LMG_Mk200_black_LP_BI_F]]
+</small>
+| <small>[[File:arma3-icon_lmg_mk200_black_f_ca.png|150px]][[File:arma3-icon_lmg_mk200_black_f_ca.png|150px]][[File:arma3-icon_lmg_mk200_black_f_ca.png|150px]][[File:arma3-icon_lmg_mk200_black_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Enoch_Pistols_ESD" >'''A3_Weapons_F_Enoch_Pistols_ESD'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#hgun_ESD_01_F|hgun_ESD_01_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_esd_01_antenna_01_F|hgun_esd_01_antenna_01_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_esd_01_antenna_02_F|hgun_esd_01_antenna_02_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_esd_01_antenna_03_F|hgun_esd_01_antenna_03_F]]
+</small>
+| <small>[[File:arma3-gear_esd_01_ca.png|150px]][[File:arma3-gear_esd_01_ca.png|150px]][[File:arma3-gear_esd_01_ca.png|150px]][[File:arma3-gear_esd_01_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Enoch_Pistols_Pistol_Heavy_01" >'''A3_Weapons_F_Enoch_Pistols_Pistol_Heavy_01'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#hgun_Pistol_heavy_01_green_F|hgun_Pistol_heavy_01_green_F]]
+:[[Arma 3 CfgWeapons Weapons#hgun_Pistol_heavy_01_green_snds_F|hgun_Pistol_heavy_01_green_snds_F]]
+</small>
+| <small>[[File:arma3-gear_pistol_heavy_01_green_x_ca.png|150px]][[File:arma3-gear_pistol_heavy_01_green_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Enoch_Rifles_AK12" >'''A3_Weapons_F_Enoch_Rifles_AK12'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_arid_F|arifle_AK12_arid_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_GL_arid_F|arifle_AK12_GL_arid_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_GL_lush_arco_pointer_F|arifle_AK12_GL_lush_arco_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_GL_lush_arco_snds_pointer_F|arifle_AK12_GL_lush_arco_snds_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_GL_lush_F|arifle_AK12_GL_lush_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_GL_lush_holo_pointer_F|arifle_AK12_GL_lush_holo_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_GL_lush_holo_snds_pointer_F|arifle_AK12_GL_lush_holo_snds_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_lush_arco_pointer_F|arifle_AK12_lush_arco_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_lush_arco_snds_pointer_bipod_F|arifle_AK12_lush_arco_snds_pointer_bipod_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_lush_arco_snds_pointer_F|arifle_AK12_lush_arco_snds_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_lush_F|arifle_AK12_lush_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12_lush_snds_pointer_F|arifle_AK12_lush_snds_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12U_arid_F|arifle_AK12U_arid_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12U_F|arifle_AK12U_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12U_lush_F|arifle_AK12U_lush_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12U_lush_holo_F|arifle_AK12U_lush_holo_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12U_lush_holo_fl_F|arifle_AK12U_lush_holo_fl_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12U_lush_holo_pointer_F|arifle_AK12U_lush_holo_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12U_lush_holo_snds_pointer_F|arifle_AK12U_lush_holo_snds_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_AK12U_lush_snds_pointer_F|arifle_AK12U_lush_snds_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_RPK12_arid_F|arifle_RPK12_arid_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_RPK12_F|arifle_RPK12_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_RPK12_lush_arco_pointer_F|arifle_RPK12_lush_arco_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_RPK12_lush_arco_snds_pointer_F|arifle_RPK12_lush_arco_snds_pointer_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_RPK12_lush_F|arifle_RPK12_lush_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_RPK12_lush_holo_snds_pointer_F|arifle_RPK12_lush_holo_snds_pointer_F]]
+</small>
+| <small>[[File:arma3-icon_arifle_ak12_arid_f_ca.png|150px]][[File:arma3-icon_arifle_ak12_gl_arid_f_ca.png|150px]][[File:arma3-icon_arifle_ak12_gl_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12_gl_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12_gl_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12_gl_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12_gl_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12u_arid_f_ca.png|150px]][[File:arma3-icon_arifle_ak12u_f_ca.png|150px]][[File:arma3-icon_arifle_ak12u_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12u_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12u_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12u_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12u_lush_f_ca.png|150px]][[File:arma3-icon_arifle_ak12u_lush_f_ca.png|150px]][[File:arma3-icon_arifle_rpk12_arid_f_ca.png|150px]][[File:arma3-icon_arifle_rpk12_f_ca.png|150px]][[File:arma3-icon_arifle_rpk12_lush_f_ca.png|150px]][[File:arma3-icon_arifle_rpk12_lush_f_ca.png|150px]][[File:arma3-icon_arifle_rpk12_lush_f_ca.png|150px]][[File:arma3-icon_arifle_rpk12_lush_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Enoch_Rifles_MSBS" >'''A3_Weapons_F_Enoch_Rifles_MSBS'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_aco_F|arifle_MSBS65_aco_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_black_aco_F|arifle_MSBS65_black_aco_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_black_aco_FL_F|arifle_MSBS65_black_aco_FL_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_black_F|arifle_MSBS65_black_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_black_ico_F|arifle_MSBS65_black_ico_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_black_ico_pointer_f|arifle_MSBS65_black_ico_pointer_f]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_camo_F|arifle_MSBS65_camo_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_F|arifle_MSBS65_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_GL_black_F|arifle_MSBS65_GL_black_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_GL_black_ico_F|arifle_MSBS65_GL_black_ico_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_GL_black_ico_pointer_f|arifle_MSBS65_GL_black_ico_pointer_f]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_GL_camo_F|arifle_MSBS65_GL_camo_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_GL_F|arifle_MSBS65_GL_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_GL_ico_F|arifle_MSBS65_GL_ico_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_GL_ico_pointer_f|arifle_MSBS65_GL_ico_pointer_f]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_GL_sand_F|arifle_MSBS65_GL_sand_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_ico_F|arifle_MSBS65_ico_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_ico_pointer_f|arifle_MSBS65_ico_pointer_f]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_Mark_black_F|arifle_MSBS65_Mark_black_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_Mark_camo_F|arifle_MSBS65_Mark_camo_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_Mark_F|arifle_MSBS65_Mark_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_Mark_sand_F|arifle_MSBS65_Mark_sand_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_Mark_SOS_LP_BI_F|arifle_MSBS65_Mark_SOS_LP_BI_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_sand_F|arifle_MSBS65_sand_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_UBS_black_F|arifle_MSBS65_UBS_black_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_UBS_black_ico_F|arifle_MSBS65_UBS_black_ico_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_UBS_black_ico_pointer_f|arifle_MSBS65_UBS_black_ico_pointer_f]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_UBS_camo_F|arifle_MSBS65_UBS_camo_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_UBS_F|arifle_MSBS65_UBS_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_UBS_ico_F|arifle_MSBS65_UBS_ico_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_UBS_ico_pointer_f|arifle_MSBS65_UBS_ico_pointer_f]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_UBS_sand_F|arifle_MSBS65_UBS_sand_F]]
+:[[Arma 3 CfgWeapons Weapons#arifle_MSBS65_UBS_snds_ico_pointer_F|arifle_MSBS65_UBS_snds_ico_pointer_F]]
+</small>
+| <small>[[File:arma3-icon_arifle_msbs65_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_black_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_black_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_black_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_black_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_black_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_camo_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_gl_black_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_gl_black_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_gl_black_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_gl_camo_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_gl_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_gl_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_gl_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_gl_sand_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_mark_black_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_mark_camo_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_mark_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_mark_sand_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_mark_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_sand_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_ubs_black_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_ubs_black_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_ubs_black_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_ubs_camo_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_ubs_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_ubs_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_ubs_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_ubs_sand_f_ca.png|150px]][[File:arma3-icon_arifle_msbs65_ubs_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Weapons_F_Enoch_Rifles_HunterShotgun_01" >'''A3_Weapons_F_Enoch_Rifles_HunterShotgun_01'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Weapons#sgun_HunterShotgun_01_F|sgun_HunterShotgun_01_F]]
+:[[Arma 3 CfgWeapons Weapons#sgun_HunterShotgun_01_sawedoff_F|sgun_HunterShotgun_01_sawedoff_F]]
+</small>
+| <small>[[File:arma3-gear_huntershotgun_01_x_ca.png|150px]][[File:arma3-gear_huntershotgun_01_sawedoff_x_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Enoch" >'''A3_Characters_F_Enoch'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#U_B_CBRN_Suit_01_MTP_F|U_B_CBRN_Suit_01_MTP_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CBRN_Suit_01_Tropic_F|U_B_CBRN_Suit_01_Tropic_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CBRN_Suit_01_Wdl_F|U_B_CBRN_Suit_01_Wdl_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_mcam_wdl_f|U_B_CombatUniform_mcam_wdl_f]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_tshirt_mcam_wdL_f|U_B_CombatUniform_tshirt_mcam_wdL_f]]
+:[[Arma 3 CfgWeapons Equipment#U_B_CombatUniform_vest_mcam_wdl_f|U_B_CombatUniform_vest_mcam_wdl_f]]
+:[[Arma 3 CfgWeapons Equipment#U_C_CBRN_Suit_01_Blue_F|U_C_CBRN_Suit_01_Blue_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_CBRN_Suit_01_White_F|U_C_CBRN_Suit_01_White_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_E_LooterJacket_01_F|U_C_E_LooterJacket_01_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Uniform_Farmer_01_F|U_C_Uniform_Farmer_01_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Uniform_Scientist_01_F|U_C_Uniform_Scientist_01_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Uniform_Scientist_01_formal_F|U_C_Uniform_Scientist_01_formal_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Uniform_Scientist_02_F|U_C_Uniform_Scientist_02_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Uniform_Scientist_02_formal_F|U_C_Uniform_Scientist_02_formal_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_CBRN_Suit_01_AAF_F|U_I_CBRN_Suit_01_AAF_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_E_CBRN_Suit_01_EAF_F|U_I_E_CBRN_Suit_01_EAF_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_E_Uniform_01_coveralls_F|U_I_E_Uniform_01_coveralls_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_E_Uniform_01_F|U_I_E_Uniform_01_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_E_Uniform_01_officer_F|U_I_E_Uniform_01_officer_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_E_Uniform_01_shortsleeve_F|U_I_E_Uniform_01_shortsleeve_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_E_Uniform_01_sweater_F|U_I_E_Uniform_01_sweater_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_E_Uniform_01_tanktop_F|U_I_E_Uniform_01_tanktop_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_L_Uniform_01_camo_F|U_I_L_Uniform_01_camo_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_L_Uniform_01_deserter_F|U_I_L_Uniform_01_deserter_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_L_Uniform_01_tshirt_black_F|U_I_L_Uniform_01_tshirt_black_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_L_Uniform_01_tshirt_olive_F|U_I_L_Uniform_01_tshirt_olive_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_L_Uniform_01_tshirt_skull_F|U_I_L_Uniform_01_tshirt_skull_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_L_Uniform_01_tshirt_sport_F|U_I_L_Uniform_01_tshirt_sport_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_R_Gorka_01_black_F|U_O_R_Gorka_01_black_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_R_Gorka_01_brown_F|U_O_R_Gorka_01_brown_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_R_Gorka_01_camo_F|U_O_R_Gorka_01_camo_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_R_Gorka_01_F|U_O_R_Gorka_01_F]]
+</small>
+| <small>[[File:arma3-icon_u_b_cbrn_suit_01_mtp_f_ca.png|150px]][[File:arma3-icon_u_b_cbrn_suit_01_tropic_f_ca.png|150px]][[File:arma3-icon_u_b_cbrn_suit_01_wdl_f_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_mcam_wdl_f_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_tshirt_mcam_wdl_f_ca.png|150px]][[File:arma3-icon_u_b_combatuniform_vest_mcam_wdl_f_ca.png|150px]][[File:arma3-icon_u_c_cbrn_suit_01_blue_f_ca.png|150px]][[File:arma3-icon_u_c_cbrn_suit_01_white_f_ca.png|150px]][[File:arma3-icon_u_c_e_looterjacket_01_f_ca.png|150px]][[File:arma3-icon_u_c_uniform_farmer_01_f_ca.png|150px]][[File:arma3-icon_u_c_uniform_scientist_01_f_ca.png|150px]][[File:arma3-icon_u_c_uniform_scientist_01_formal_f_ca.png|150px]][[File:arma3-icon_u_c_uniform_scientist_02_f_ca.png|150px]][[File:arma3-icon_u_c_uniform_scientist_02_formal_f_ca.png|150px]][[File:arma3-icon_u_i_cbrn_suit_01_aaf_f_ca.png|150px]][[File:arma3-icon_u_i_e_cbrn_suit_01_eaf_f_ca.png|150px]][[File:arma3-icon_u_i_e_uniform_01_coveralls_f_ca.png|150px]][[File:arma3-icon_u_i_e_uniform_01_f_ca.png|150px]][[File:arma3-icon_u_i_e_uniform_01_officer_f_ca.png|150px]][[File:arma3-icon_u_i_e_uniform_01_shortsleeve_f_ca.png|150px]][[File:arma3-icon_u_i_e_uniform_01_sweater_f_ca.png|150px]][[File:arma3-icon_u_i_e_uniform_01_tanktop_f_ca.png|150px]][[File:arma3-icon_u_i_l_uniform_01_camo_f_ca.png|150px]][[File:arma3-icon_u_i_l_uniform_01_deserter_f_ca.png|150px]][[File:arma3-icon_u_i_l_uniform_01_tshirt_black_f_ca.png|150px]][[File:arma3-icon_u_i_l_uniform_01_tshirt_olive_f_ca.png|150px]][[File:arma3-icon_u_i_l_uniform_01_tshirt_skull_f_ca.png|150px]][[File:arma3-icon_u_i_l_uniform_01_tshirt_sport_f_ca.png|150px]][[File:arma3-icon_u_o_r_gorka_01_black_f_ca.png|150px]][[File:arma3-icon_u_o_r_gorka_01_brown_f_ca.png|150px]][[File:arma3-icon_u_o_r_gorka_01_camo_f_ca.png|150px]][[File:arma3-icon_u_o_r_gorka_01_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Enoch_Headgear" >'''A3_Characters_F_Enoch_Headgear'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#H_Beret_EAF_01_F|H_Beret_EAF_01_F]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_eaf|H_Booniehat_eaf]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_mgrn|H_Booniehat_mgrn]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_taiga|H_Booniehat_taiga]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_wdl|H_Booniehat_wdl]]
+:[[Arma 3 CfgWeapons Equipment#H_CrewHelmetHeli_I_E|H_CrewHelmetHeli_I_E]]
+:[[Arma 3 CfgWeapons Equipment#H_Hat_Tinfoil_F|H_Hat_Tinfoil_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetAggressor_cover_F|H_HelmetAggressor_cover_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetAggressor_cover_taiga_F|H_HelmetAggressor_cover_taiga_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetAggressor_F|H_HelmetAggressor_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_light_wdl|H_HelmetB_light_wdl]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetB_plain_wdl|H_HelmetB_plain_wdl]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetCrew_I_E|H_HelmetCrew_I_E]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetHBK_chops_F|H_HelmetHBK_chops_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetHBK_ear_F|H_HelmetHBK_ear_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetHBK_F|H_HelmetHBK_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetHBK_headset_F|H_HelmetHBK_headset_F]]
+:[[Arma 3 CfgWeapons Equipment#H_HelmetSpecB_wdl|H_HelmetSpecB_wdl]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_eaf|H_MilCap_eaf]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_grn|H_MilCap_grn]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_taiga|H_MilCap_taiga]]
+:[[Arma 3 CfgWeapons Equipment#H_MilCap_wdl|H_MilCap_wdl]]
+:[[Arma 3 CfgWeapons Equipment#H_PilotHelmetFighter_I_E|H_PilotHelmetFighter_I_E]]
+:[[Arma 3 CfgWeapons Equipment#H_PilotHelmetHeli_I_E|H_PilotHelmetHeli_I_E]]
+:[[Arma 3 CfgWeapons Equipment#H_Tank_eaf_F|H_Tank_eaf_F]]
+</small>
+| <small>[[File:arma3-icon_h_beret_eaf_01_f_ca.png|150px]][[File:arma3-icon_h_booniehat_eaf_ca.png|150px]][[File:arma3-icon_h_booniehat_mgrn_ca.png|150px]][[File:arma3-icon_h_booniehat_taiga_ca.png|150px]][[File:arma3-icon_h_booniehat_wdl_ca.png|150px]][[File:arma3-icon_h_crew_helmet_heli_oi_ca.png|150px]][[File:arma3-icon_h_hat_tinfoil_f_ca.png|150px]][[File:arma3-icon_h_helmetaggressor_cover_f_ca.png|150px]][[File:arma3-icon_h_helmetaggressor_cover_taiga_f_ca.png|150px]][[File:arma3-icon_h_helmetaggressor_f_ca.png|150px]][[File:arma3-icon_h_helmetb_light_wdl_ca.png|150px]][[File:arma3-icon_h_helmetb_plain_wdl_ca.png|150px]][[File:arma3-icon_h_i_helmet_crew_ca.png|150px]][[File:arma3-icon_h_helmethbk_chops_f_ca.png|150px]][[File:arma3-icon_h_helmethbk_ear_f_ca.png|150px]][[File:arma3-icon_h_helmethbk_f_ca.png|150px]][[File:arma3-icon_h_helmethbk_headset_f_ca.png|150px]][[File:arma3-icon_h_helmetspecb_wdl_ca.png|150px]][[File:arma3-icon_h_milcap_eaf_ca.png|150px]][[File:arma3-icon_h_milcap_grn_ca.png|150px]][[File:arma3-icon_h_milcap_taiga_ca.png|150px]][[File:arma3-icon_h_milcap_wdl_ca.png|150px]][[File:arma3-icon_h_pilothelmetfighter_oi_ca.png|150px]][[File:arma3-icon_h_pilot_helmet_heli_oi_ca.png|150px]][[File:arma3-icon_h_tank_unzip_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Enoch_Vests" >'''A3_Characters_F_Enoch_Vests'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#V_CarrierRigKBT_01_EAF_F|V_CarrierRigKBT_01_EAF_F]]
+:[[Arma 3 CfgWeapons Equipment#V_CarrierRigKBT_01_heavy_EAF_F|V_CarrierRigKBT_01_heavy_EAF_F]]
+:[[Arma 3 CfgWeapons Equipment#V_CarrierRigKBT_01_heavy_Olive_F|V_CarrierRigKBT_01_heavy_Olive_F]]
+:[[Arma 3 CfgWeapons Equipment#V_CarrierRigKBT_01_light_EAF_F|V_CarrierRigKBT_01_light_EAF_F]]
+:[[Arma 3 CfgWeapons Equipment#V_CarrierRigKBT_01_light_Olive_F|V_CarrierRigKBT_01_light_Olive_F]]
+:[[Arma 3 CfgWeapons Equipment#V_CarrierRigKBT_01_Olive_F|V_CarrierRigKBT_01_Olive_F]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrier1_wdl|V_PlateCarrier1_wdl]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrier2_wdl|V_PlateCarrier2_wdl]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierGL_wdl|V_PlateCarrierGL_wdl]]
+:[[Arma 3 CfgWeapons Equipment#V_PlateCarrierSpec_wdl|V_PlateCarrierSpec_wdl]]
+:[[Arma 3 CfgWeapons Equipment#V_SmershVest_01_F|V_SmershVest_01_F]]
+:[[Arma 3 CfgWeapons Equipment#V_SmershVest_01_radio_F|V_SmershVest_01_radio_F]]
+</small>
+| <small>[[File:arma3-icon_v_carrierrigkbt_01_eaf_f_ca.png|150px]][[File:arma3-icon_v_carrierrigkbt_01_heavy_eaf_f_ca.png|150px]][[File:arma3-icon_v_carrierrigkbt_01_heavy_olive_f_ca.png|150px]][[File:arma3-icon_v_carrierrigkbt_01_light_eaf_f_ca.png|150px]][[File:arma3-icon_v_carrierrigkbt_01_light_olive_f_ca.png|150px]][[File:arma3-icon_v_carrierrigkbt_01_olive_f_ca.png|150px]][[File:arma3-icon_v_platecarrier1_wdl_ca.png|150px]][[File:arma3-icon_v_platecarrier2_wdl_ca.png|150px]][[File:arma3-icon_v_platecarriergl_wdl_ca.png|150px]][[File:arma3-icon_v_platecarrierspec_wdl_ca.png|150px]][[File:arma3-icon_v_smershvest_01_f_ca.png|150px]][[File:arma3-icon_v_smershvest_01_radio_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Missions_F_Oldman" >'''A3_Missions_F_Oldman'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Items#DroneDetector|DroneDetector]]
+:[[Arma 3 CfgWeapons Equipment#U_O_GEN_Commander_F|U_O_GEN_Commander_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_GEN_Soldier_F|U_O_GEN_Soldier_F]]
+</small>
+| <small>[[File:arma3-gear_minedetector_ca.png|150px]][[File:arma3-icon_u_b_gen_commander_f_ca.png|150px]][[File:arma3-icon_u_b_gen_soldier_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Oldman" >'''A3_Characters_F_Oldman'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#U_C_Man_casual_1_sick_F|U_C_Man_casual_1_sick_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Man_casual_2_sick_F|U_C_Man_casual_2_sick_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Man_casual_3_sick_F|U_C_Man_casual_3_sick_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Man_casual_4_sick_F|U_C_Man_casual_4_sick_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Man_casual_5_sick_F|U_C_Man_casual_5_sick_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Man_casual_6_sick_F|U_C_Man_casual_6_sick_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_man_sport_2_sick_F|U_C_man_sport_2_sick_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poloshirt_blue_sick|U_C_Poloshirt_blue_sick]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poloshirt_burgundy_sick|U_C_Poloshirt_burgundy_sick]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poloshirt_redwhite_sick|U_C_Poloshirt_redwhite_sick]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poloshirt_stripped_sick|U_C_Poloshirt_stripped_sick]]
+:[[Arma 3 CfgWeapons Equipment#U_C_Poor_2_sick|U_C_Poor_2_sick]]
+</small>
+| <small>[[File:arma3-icon_u_c_man_casual_1_f_ca.png|150px]][[File:arma3-icon_u_c_man_casual_2_f_ca.png|150px]][[File:arma3-icon_u_c_man_casual_3_f_ca.png|150px]][[File:arma3-icon_u_c_man_casual_4_f_ca.png|150px]][[File:arma3-icon_u_c_man_casual_5_f_ca.png|150px]][[File:arma3-icon_u_c_man_casual_6_f_ca.png|150px]][[File:arma3-icon_u_c_man_sport_2_f_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_blue_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_burgundy_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_redwhite_ca.png|150px]][[File:arma3-icon_u_c_poloshirt_stripped_ca.png|150px]][[File:arma3-icon_u_c_poor_1_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_Oldman_Headgear" >'''A3_Characters_F_Oldman_Headgear'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#H_Beret_CSAT_01_F|H_Beret_CSAT_01_F]]
+</small>
+| <small>[[File:arma3-icon_h_beret_csat_01_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_AoW" >'''A3_Characters_F_AoW'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#U_B_ParadeUniform_01_US_decorated_F|U_B_ParadeUniform_01_US_decorated_F]]
+:[[Arma 3 CfgWeapons Equipment#U_B_ParadeUniform_01_US_F|U_B_ParadeUniform_01_US_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_ArtTShirt_01_v1_F|U_C_ArtTShirt_01_v1_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_ArtTShirt_01_v2_F|U_C_ArtTShirt_01_v2_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_ArtTShirt_01_v3_F|U_C_ArtTShirt_01_v3_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_ArtTShirt_01_v4_F|U_C_ArtTShirt_01_v4_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_ArtTShirt_01_v5_F|U_C_ArtTShirt_01_v5_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_ArtTShirt_01_v6_F|U_C_ArtTShirt_01_v6_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_FormalSuit_01_black_F|U_C_FormalSuit_01_black_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_FormalSuit_01_blue_F|U_C_FormalSuit_01_blue_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_FormalSuit_01_gray_F|U_C_FormalSuit_01_gray_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_FormalSuit_01_khaki_F|U_C_FormalSuit_01_khaki_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_FormalSuit_01_tshirt_black_F|U_C_FormalSuit_01_tshirt_black_F]]
+:[[Arma 3 CfgWeapons Equipment#U_C_FormalSuit_01_tshirt_gray_F|U_C_FormalSuit_01_tshirt_gray_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_E_ParadeUniform_01_LDF_decorated_F|U_I_E_ParadeUniform_01_LDF_decorated_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_E_ParadeUniform_01_LDF_F|U_I_E_ParadeUniform_01_LDF_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_ParadeUniform_01_AAF_decorated_F|U_I_ParadeUniform_01_AAF_decorated_F]]
+:[[Arma 3 CfgWeapons Equipment#U_I_ParadeUniform_01_AAF_F|U_I_ParadeUniform_01_AAF_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_ParadeUniform_01_CSAT_decorated_F|U_O_ParadeUniform_01_CSAT_decorated_F]]
+:[[Arma 3 CfgWeapons Equipment#U_O_ParadeUniform_01_CSAT_F|U_O_ParadeUniform_01_CSAT_F]]
+</small>
+| <small>[[File:arma3-icon_u_b_paradeuniform_01_us_decorated_f_ca.png|150px]][[File:arma3-icon_u_b_paradeuniform_01_us_f_ca.png|150px]][[File:arma3-icon_u_c_arttshirt_01_v1_f_ca.png|150px]][[File:arma3-icon_u_c_arttshirt_01_v2_f_ca.png|150px]][[File:arma3-icon_u_c_arttshirt_01_v3_f_ca.png|150px]][[File:arma3-icon_u_c_arttshirt_01_v4_f_ca.png|150px]][[File:arma3-icon_u_c_arttshirt_01_v5_f_ca.png|150px]][[File:arma3-icon_u_c_arttshirt_01_v6_f_ca.png|150px]][[File:arma3-icon_u_c_formalsuit_01_black_f_ca.png|150px]][[File:arma3-icon_u_c_formalsuit_01_blue_f_ca.png|150px]][[File:arma3-icon_u_c_formalsuit_01_gray_f_ca.png|150px]][[File:arma3-icon_u_c_formalsuit_01_khaki_f_ca.png|150px]][[File:arma3-icon_u_c_formalsuit_01_tshirt_black_f_ca.png|150px]][[File:arma3-icon_u_c_formalsuit_01_tshirt_gray_f_ca.png|150px]][[File:arma3-icon_u_i_e_paradeuniform_01_ldf_decorated_f_ca.png|150px]][[File:arma3-icon_u_i_e_paradeuniform_01_ldf_f_ca.png|150px]][[File:arma3-icon_u_i_paradeuniform_01_aaf_decorated_f_ca.png|150px]][[File:arma3-icon_u_i_paradeuniform_01_aaf_f_ca.png|150px]][[File:arma3-icon_u_o_paradeuniform_01_csat_decorated_f_ca.png|150px]][[File:arma3-icon_u_o_paradeuniform_01_csat_f_ca.png|150px]]
+</small>
+|-
+| <span id="A3_Characters_F_AoW_Headgear" >'''A3_Characters_F_AoW_Headgear'''</span>
+| <small>
+:[[Arma 3 CfgWeapons Equipment#H_ParadeDressCap_01_AAF_F|H_ParadeDressCap_01_AAF_F]]
+:[[Arma 3 CfgWeapons Equipment#H_ParadeDressCap_01_CSAT_F|H_ParadeDressCap_01_CSAT_F]]
+:[[Arma 3 CfgWeapons Equipment#H_ParadeDressCap_01_LDF_F|H_ParadeDressCap_01_LDF_F]]
+:[[Arma 3 CfgWeapons Equipment#H_ParadeDressCap_01_US_F|H_ParadeDressCap_01_US_F]]
+</small>
+| <small>[[File:arma3-icon_h_paradedresscap_01_aaf_f_ca.png|150px]][[File:arma3-icon_h_paradedresscap_01_csat_f_ca.png|150px]][[File:arma3-icon_h_paradedresscap_01_ldf_f_ca.png|150px]][[File:arma3-icon_h_paradedresscap_01_us_f_ca.png|150px]]
+</small>
+|}
+<div style="color: grey; font-size: 0.9em; padding: 0.5em; text-align: center">Generated in {{GVI|arma 3|2.17|size= 0.75}} by [[User:R3vo|R3vo]] ([[User talk:R3vo|talk]]) 16:30, 10 August 2024 (CEST)</div>
+{{Navbox/A3Assets}}
+[[Category:Arma 3: Assets]]
+[[Category:Arma 3: Editing]]

@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/moveInAny
+// revision: 378826 (2026-07-02T20:02:58Z)
+// export sha1: 8y0fgvysp1ukamayv7agvb4zsq8pand
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Arma 3 version 1.18 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.18
+
+|arg= global
+
+|eff= global
+
+|gr1= Unit Control
+
+|descr= Moves unit to the first available seat in the specified vehicle.
+
+The order of priorities is the same order used in squad command when you order subordinates to get in vehicle to any position and is the same order used in Zeus when you drag units to a vehicle.<br><br>
+Seat assignment seems to use the following priority logic:<br>
+driver ([[moveInDriver]]) &rarr; commander ([[moveInCommander]]) &rarr; gunner ([[moveInGunner]]) &rarr; turrets ([[moveInTurret]]) &rarr; cargo ([[moveInCargo]]).
+{{Feature|important|If the unit is already in a vehicle, nothing will happen. You should use [[moveOut]] to move the unit out of his vehicle before trying to move him into a new (or same) vehicle.}}
+{{Feature|informative|This command will move player into the [[locked]] vehicle or seat just as well.}}
+
+|s1= unit [[moveInAny]] vehicle
+
+|p1= unit: [[Object]] - person
+
+|p2= vehicle: [[Object]] - transport
+
+|r1= [[Boolean]] - [[true]] on success, [[false]] on failure
+
+|s2= unit [[moveInAny]] [vehicle, positions, ignoreLocked]
+|s2since= arma3 2.22
+
+|p21= unit: [[Object]] - person
+
+|p22= vehicle: [[Object]] - transport
+
+|p23= positions: [[Array]] of [[String]]s - array of positions to check and in which order. Positions are (in default order):
+* "DRIVER" - driver
+* "COMMANDER" - commander turret (turret configured as commander)
+* "GUNNER" - gunner turret (turret configured as gunner)
+* "TURRET" - other turrets incl. FFV but excl. gunner or commander turret
+* "CARGO" - cargo seats excl. FFV
+When empty array [] is given, all positions in default order (same as in the main syntax) will be considered; see also [[emptyPositions]]
+
+|p24= ignoreLocked: [[Boolean]] - (Optional, default [[false]]) [[true]] to ignore locked positions
+
+|r2= [[Boolean]] - [[true]] on success, [[false]] on failure
+
+|x1= <sqf>player moveInAny tank;</sqf>
+
+|x2= <sqf>player moveInAny [tank, ["CARGO", "TURRET"]]; // checks free cargo position, if not available, checks free turret next</sqf>
+
+|seealso= [[moveInDriver]] [[moveInCommander]] [[moveInGunner]] [[moveInTurret]] [[moveInCargo]] [[emptyPositions]]
+}}

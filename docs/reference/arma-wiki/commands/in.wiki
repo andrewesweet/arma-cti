@@ -1,0 +1,138 @@
+// source: https://community.bistudio.com/wiki/in
+// revision: 377765 (2026-01-03T01:00:35Z)
+// export sha1: 7olh57k6xkhsjtf105xz43g84fubnxm
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: HashMap | Category:Command Group: Locations | Category:Command Group: Strings | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Strings
+
+|gr2= Arrays
+
+|gr3= Locations
+
+|gr4= HashMap
+
+|gr5= Unit Control
+
+|descr= Checks whether value is in array, unit is in vehicle, position is inside location or ANSI string is part of other ANSI string. If Unicode support is desired, see [[forceUnicode]].
+{{Feature|informative|[[String]] comparison is case-sensitive (see Examples '''2''' and '''6''').}}
+
+|s1= value [[in]] array
+
+|p1= value: [[Anything]] - any value (cannot  match [[Array]] before {{arma3}})
+
+|p2= array: [[Array]] - array of values
+
+|r1= [[Boolean]]
+
+|s2= unit [[in]] vehicle
+
+|p21= unit: [[Object]] - [[alive]] unit
+
+|p22= vehicle: [[Object]] - entity vehicle
+
+|r2= [[Boolean]]
+
+|s3= position [[in]] location
+
+|s3since= arma3 0.50
+
+|p41= position: [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]]
+
+|p42= location: [[Location]]
+
+|r3= [[Boolean]]
+
+|s4= needle [[in]] haystack
+
+|s4since= arma3 1.96
+
+|p61= needle: [[String]] - string to search '''for'''
+
+|p62= haystack: [[String]] - string to search '''in'''
+
+|r4= [[Boolean]]
+
+|s5= key [[in]] hashMap
+
+|s5since= arma3 2.02
+
+|p81= key: [[HashMapKey]]
+
+|p82= hashMap : [[HashMap]]
+
+|r5= [[Boolean]]
+
+|x1= <sqf>1 in [0, 1, 2]; // true</sqf>
+
+|x2= <sqf>
+private _myArray = ["Aaa", "AAa", "AAA"];
+
+"aaa" in _myArray; // false
+"AAa" in _myArray; // true
+
+// Case-insensitive alternatives:
+_myArray findIf { _x == "aaa"; } != -1; // true
+
+({
+	if (_x == "aaa") exitWith { _forEachIndex };
+	-1
+} forEach _myArray) != -1; // true, less performant but valid before the introduction of the findIf command
+
+{ if (_x == "aaa") exitWith { 1 } } count _myArray > 0; // true
+
+{ _x == "aaa"; } count _myArray > 0; // true, worst performance, only option available in OFP
+</sqf>
+
+|x3= <sqf>[1,2,3] in [[1,2,3], [4,5,6]]; // true - Arma 3 only</sqf>
+
+|x4= <sqf>private _isInCar = player in Car;</sqf>
+
+|x5= <sqf>private _isInside = [1000,2000,0] in MyLocation;</sqf>
+
+|x6= <sqf>
+private _isInString = "foo" in "foobar"; // true
+_isInString = "Foo" in "foobar"; // false
+</sqf>
+
+|x7= <sqf>private _onFoot = _unit in _unit;</sqf>
+Other options:
+<sqf>private _onFoot = vehicle _unit == _unit;</sqf>
+<sqf>private _onFoot = isNull objectParent _unit;</sqf>
+
+|seealso= [[inPolygon]] [[inArea]] [[find]] [[findIf]] [[toArray]] [[forceUnicode]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2019-10-08 - 21:08 (UTC)</dd>
+<dt class="note">[[User:Lou Montana|Lou Montana]]</dt>
+<dd class="note">''From a description note:''<br>
+''<unit>'' [[in]] ''<vehicle>'' literally does this: {{hl|c= [[vehicle]] <unit> {{=}}{{=}} <vehicle>}}. If ''<vehicle>'' is the same as ''<unit>'' the expression will return [[true]] for when the ''<unit>'' is on foot and [[false]] for when ''<unit>'' is in vehicle (see example '''7''' &amp; '''8''').
+</dd>
+
+</dl>

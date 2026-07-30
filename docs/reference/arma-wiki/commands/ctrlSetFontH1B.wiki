@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/ctrlSetFontH1B
+// revision: 318797 (2022-05-13T09:21:51Z)
+// export sha1: 2716tz394x8x34n0wub2flp1hxnz7n3
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - HTML | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - HTML
+
+|descr= Sets H1 bold font of given HTML control.
+
+|s1= controlName [[ctrlSetFontH1B]] fontName
+
+|p1= controlName: [[Control]]
+
+|p2= fontName: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetFontH1B "TahomaB";</sqf>
+
+|seealso= [[ctrlSetFontH2]] [[ctrlSetFontH2B]] [[ctrlSetFontH3]] [[ctrlSetFontH3B]] [[ctrlSetFontH4]] [[ctrlSetFontH4B]] [[ctrlSetFontH5]] [[ctrlSetFontH5B]] [[ctrlSetFontH6]] [[ctrlSetFontH6B]]
+}}

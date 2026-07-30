@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/assignCurator
+// revision: 348458 (2023-11-08T13:00:18Z)
+// export sha1: 3aetgisl5nx9cd0g3ptiq50ho2vwvur
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|serverExec= server
+
+|gr1= Curator
+
+|descr= Assign player as curator. Two players cannot act as one curator.
+
+|s1= player [[assignCurator]] curatorObj
+
+|p1= player: [[Object]]
+
+|p2= curatorObj: [[Object]] - curator module.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player assignCurator myCurator;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[unassignCurator]]
+
+|mp= Can be executed only on server
+}}

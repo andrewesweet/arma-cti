@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addEvidence
+// revision: 284951 (2021-06-20T15:56:44Z)
+// export sha1: lhp5fohl7w8wk56jfqfkkas6lt4nd8g
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Missions
+
+|descr= <pre>
+/*******************************************************************************
+ *
+ *	version: 		1.0
+ *	name:			Add evidence
+ *	description:	add an evidence value to global campaign variable 	
+ *	paramater:		evidence variable name (defined in init.sqf of campaign
+ 					mission C1) or simply number (scalar)
+ *	return value:	none 	
+ * 
+</pre>
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_addEvidence]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

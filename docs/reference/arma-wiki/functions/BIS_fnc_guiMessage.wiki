@@ -1,0 +1,137 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_guiMessage
+// revision: 329335 (2022-07-27T10:15:21Z)
+// export sha1: kt5fxdyq904nev2nnwahafl1u7vkq7v
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 0.50 | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TabView
+
+|selected= 2
+
+|title1= {{TabView/GameTitle|tkoh}}
+|content1=
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Shows customized native message box to user.
+
+|s1= [message, header, position, isCancel, parent, pause] spawn [[BIS_fnc_guiMessage]]
+
+|p1= message: [[String]], [[Structured Text]] or [[Array]]:
+* [[String]] or [[Structured Text]] - message
+* [[Array]] - listbox, every item is defined as [[String]] (enabled) or [[String]] in [[Array]] (disabled)
+When variable '''BIS_fnc_guiMessage_cursel''' is defined as a [[Number]], item with this index will be selected.
+
+|p2= header: [[String]] or [[Structured Text]] - (Optional, default "") header text
+
+|p3= position: [[Array]] - (Optional) position in format [x,y,w,h]
+
+|p4= isCancel: [[Boolean]] or [[Array]] - (Optional, default [[true]]) [[true]] to display cancel button or array with button texts [okText, cancelText]
+
+|p5= parent: [[Display]] - (Optional) parent display
+
+|p6= pause: [[Boolean]] - (Optional) [[true]] to pause simulation when message window is open
+
+|r1= [[Array]] - [endState, lbId]
+* endState: [[Boolean]] - [[true]] when clicked OK button, [[false]] when escaped or clicked on Cancel button
+* lbId: [[Number]] - (Optional, returned if listbox was used) selected listbox item
+Returned only after message box is closed.
+
+|x1= <sqf>["Hello World"] spawn BIS_fnc_guiMessage;</sqf>
+
+|x2= [[File:TakeOn BIS_fnc_guiMessage.jpg|right|200px]]
+<sqf>["Message", "Header", nil, true] spawn BIS_fnc_guiMessage;</sqf>
+
+|x3= <sqf>[["Enabled Item", ["Disabled Item"]], "Header"] spawn BIS_fnc_guiMessage;</sqf>
+
+|seealso= [[hintC]] [[BIS_fnc_GUIhint]]
+
+|exec= spawn
+}}
+
+|title2= {{TabView/GameTitle|arma3}}
+|content2=
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+
+|gr1= GUI
+
+|descr= [[File:BIS_fnc_guiMessage.jpg|thumb|[[BIS_fnc_guiMessage]] dialog in {{arma3}}]]
+Displays an interactive message dialog in the center of the screen.
+{{Feature|important|This function internally utilizes suspension ([[waitUntil]] to be specific) and therefore has to be executed in a [[Scheduler#Scheduled_Environment|scheduled environment]].}} 
+
+|exec= call
+
+|s1= [message, header, okButton, cancelButton, parent, useParentBox, pause] call [[BIS_fnc_guiMessage]]
+
+|p1= message: [[String]] or [[Structured Text]] - (Optional, default: "") message
+
+|p2= header: [[String]] - (Optional, default: "") header text
+
+|p3= okButton [[Boolean]] or [[String]] - (Optional, default [[true]]):
+* [[Boolean]] - enable the "OK" button
+* [[String]] - custom text for the "OK" button
+
+|p4= cancelButton: [[Boolean]] or [[String]] - (Optional, default [[false]]):
+* [[Boolean]] - enable the "Cancel" button
+* [[String]] - custom text for the "Cancel" button
+
+|p5= parent: [[Display]] - (Optional, default: <sqf inline>[] call BIS_fnc_displayMission</sqf>) parent display
+
+|p6= useParentBox: [[Boolean]] - (Optional, default: [[false]]) try to use control inherited from "RscMessageBox" in parent instead of creating a new one
+
+|p7= pause: [[Boolean]] - (Optional, default: [[true]]) pause simulation while message dialog is open (no effect in multiplayer)
+
+|r1= [[Boolean]] - [[true]] if the "OK" button was pressed, otherwise [[false]]. Returned only after the message box is closed.
+
+|x1= Because this example uses [[spawn]], the return value of [[BIS_fnc_guiMessage]] is lost and can not be used.
+<sqf>["Hello World"] spawn BIS_fnc_guiMessage;</sqf>
+
+|x2= <sqf>
+private _result = ["Are you sure?", "Confirm", true, true] call BIS_fnc_guiMessage;
+
+if (_result) then {
+	systemChat "The player is sure.";
+} else {
+	systemChat "The player is not sure.";
+};
+</sqf>
+
+|seealso= [[BIS_fnc_GUIhint]] [[BIS_fnc_3DENShowMessage]] [[hintC]]
+}}
+
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20140624004300
+|text= Message boxes can be force-closed with:
+<sqf>uiNamespace setVariable ["BIS_fnc_guiMessage_status", false];</sqf>
+}}
+
+{{Note
+|user= Eden
+|timestamp= 20160113151600
+|text= Calling this function can cause an game crash. When doing this you have to [[spawn]] the function or add an spawn around it so you can use the result:
+<sqf>
+[] spawn
+{
+	private _result = ["Are you sure?", "Confirm", true, true] call BIS_fnc_guiMessage;
+	// Use _result here
+};
+</sqf>
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20171101183500
+|text= This function only exists along with mission display ([[findDisplay]] 46). If this function is called before with ''-skipIntro'' parameter enabled (see [[Arma 3: Startup Parameters]]) it will result as [[Void]].
+}}

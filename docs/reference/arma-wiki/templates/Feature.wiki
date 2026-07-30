@@ -1,0 +1,111 @@
+// source: https://community.bistudio.com/wiki/Template:Feature
+// revision: 373628 (2025-05-28T09:58:43Z)
+// export sha1: 4iti2jktdfl429ots1hnxr09cy79e24
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+|
+	{{#switch: {{uc:{{{1}}}}}
+		|AFM= {{Messagebox|{{{2|For this command to have any effect, the [[Arma 3: Advanced Helicopter Flight Model|Advanced Flight Model]] (AFM) has to be enabled. AFM status can be checked with [[difficultyEnabledRTD]].}}}|{{Icon|afm|35}}|class= feature-{{lc:{{{1}}}}}}}
+		|OFP
+		|ARMA0= {{Messagebox|{{{2|This is an [[:Category:Operation Flashpoint|{{Name|arma0}}]] feature.}}}|{{Icon|arma0}}|class= feature-{{lc:{{{1}}}}}}}
+		|OFPE= {{Messagebox|{{{2|This is an {{GameCategory|ofpe|link=y}} feature.}}}|{{Icon|ofpe}}|class= feature-{{lc:{{{1}}}}}}}
+		|ARMA1= {{Messagebox|{{{2|This is an {{GameCategory|arma1|link=y}} feature.}}}|{{Icon|arma1}}|class= feature-{{lc:{{{1}}}}}}}
+		|ARMA2= {{Messagebox|{{{2|This is an {{GameCategory|arma2|link=y}} feature.}}}|{{Icon|arma2}}|class= feature-{{lc:{{{1}}}}}}}
+		|ARMA2OA= {{Messagebox|{{{2|This is an {{GameCategory|arma2oa|link=y}} feature.}}}|{{Icon|arma2oa}}|class= feature-{{lc:{{{1}}}}}}}
+		|ARMA3= {{Messagebox|{{{2|This is an {{GameCategory|arma3|link=y}} feature.}}}|{{Icon|arma3}}|class= feature-{{lc:{{{1}}}}}}}
+		|ARMA3CONTACT= {{Messagebox|{{{2|This content is exclusive to the [[Arma 3 Contact]] Expansion.}}}|{{Icon|arma3contact|32}}|class= feature-{{lc:{{{1}}}}}}}
+		|ARMA3OLDMAN= {{Messagebox|{{{2|This function is used by the [[Arma 3 Apex: Old Man]] content. It might only work properly inside this scenario.}}}|{{Icon|arma3oldman_alt}}|class= feature-{{lc:{{{1}}}}}}}
+		|ARMAR= {{Messagebox|{{{2|This is an {{GameCategory|armaR|link=y}} feature.}}}|{{Icon|armaR}}|class= feature-armaR}}<!-- armar != armaR -->
+		|ARMA4= {{Messagebox|{{{2|This is an {{GameCategory|arma4|link=y}} feature.}}}|{{Icon|arma4}}|class= feature-{{lc:{{{1}}}}}}}
+		|CONSOLES= {{Messagebox|{{{2|This is a console feature.}}}|{{Icon|gamepad}}|class= feature-{{lc:{{{1}}}}}}}
+		|DAYZ= {{Messagebox|{{{2|This is a {{GameCategory|dayz|link=y}} feature.}}}|{{Icon|dayz_alt}}|class= feature-{{lc:{{{1}}}}}}}
+		|EDENEDITOR
+		|EDEN EDITOR= {{Messagebox|{{{2|This is an [[:Category:Eden Editor|Eden Editor]] feature.}}}|{{Icon|arma3eden}}|class= feature-eden-editor}}
+		|GAMEPAD= {{Messagebox|{{{2|{{TemplateCase||[[Category:Feature template usage error]]}}}}}|<div style{{=}}"margin-top: -.25em">{{Icon|gamepad}}</div>|class= feature-{{lc:{{{1}}}}}}}
+		|GVI= {{Messagebox|{{{4|{{#if:{{{2|}}}|This feature was introduced with {{Name|{{{2}}}}}{{#if:{{{3|}}}|<nowiki/> v{{{3}}}}}.|-no game provided-{{TemplateCase||[[Category:Feature template usage error]]}}}}}}}|{{#if:{{{2|}}}|<div style{{=}}"color: #333">{{GVI|{{{2}}}|{{{3|1.00}}}}}</div>|?}}|class= feature-{{lc:{{{1}}}}}}}
+		|IMPORTANT= {{Messagebox|{{{2|{{TemplateCase||[[Category:Feature template usage error]]}}}}}|⚠|class= feature-{{lc:{{{1}}}}}}}
+		|INFORMATIVE= {{Messagebox|{{{2|{{TemplateCase||[[Category:Feature template usage error]]}}}}}|ⓘ|class= feature-{{lc:{{{1}}}}}}}
+		|KEYBOARD= {{Messagebox|{{{2|{{TemplateCase||[[Category:Feature template usage error]]}}}}}|<div style{{=}}"margin-top: -.25em">{{Icon|keyboard}}</div>|class= feature-{{lc:{{{1}}}}}}}
+		|PC= {{Messagebox|{{{2|This is a PC feature.}}}|{{Icon|kbm}}|class= feature-pc}}
+		|PLAYSTATION= {{Messagebox|{{{2|This is a PlayStation® feature.}}}|<div style{{=}}"margin-top: -.25em">{{Icon|playstation}}</div>|class= feature-{{lc:{{{1}}}}}}}
+		|OBSOLETE= {{Messagebox|This information is '''obsolete'''{{#if:{{{3|}}}|<nowiki/> as of {{Name|{{{3}}}}}{{#if:{{{4|}}}|<nowiki/> v{{{4}}}}}|}}.{{#if:{{{2|{{{message|}}}}}}|<nowiki/> Reason: {{{2|{{{message}}}}}}}}|🕖|class= feature-{{lc:{{{1}}}}}}}
+		|QUOTE= {{Messagebox|{{#if:{{Trim|{{{2|}}}}}|<span class="feature-quote">«&nbsp;{{Trim|{{{2}}}}}&nbsp;»</span>{{#if:{{{3|}}}|&nbsp;&ndash;&nbsp;{{Trim|{{{3}}}}}}}{{#if:{{{4|}}}|&nbsp;({{Link|{{{4}}}|source}})}}}}|«|class= feature-{{lc:{{{1}}}}}}}
+		|SPOILER= <div class="biki-messagebox-spoiler">
+		<div class="spoiler-title">Spoiler Warning</div>
+		'''The following text contains game spoilers such as story details or mission walkthroughs. Read at your own risk!'''{{#if:{{{2|}}}
+		|<br>The potential spoilers concern the following topic: {{{2}}}.}}</div>
+		|STEAM= {{Messagebox|{{{2|This is a [[Steam]] feature.}}}|{{Icon|steam}}|class= feature-{{lc:{{{1}}}}}}}
+		|TKOH= {{Messagebox|{{{2|This is a {{GameCategory|tkoh|link=y}} feature.}}}|{{Icon|tkoh|32}}|class= feature-{{lc:{{{1}}}}}}}
+		|UNSUPPORTEDDOC= {{Messagebox/BI|Disclaimer: This page describes internal undocumented structures of [[Bohemia Interactive]] software.|
+		This page contains unofficial information.
+
+		Some usage of this information may constitute a violation of the rights of Bohemia Interactive and is in no way endorsed or recommended by {{Name|bi}}.<br><!--
+		-->{{Name|bi}} is not willing to tolerate use of such tools if it contravenes any general licenses granted to end users of this community wiki or BI products.
+		}}
+		|UNSUPPORTEDTOOL= {{Messagebox/BI|Disclaimer: This page describes an unofficial tool created without permission or support of [[{{Name|bi}}]].|
+		The product itself and its usage may be violating rights of Bohemia Interactive and is in no way endorsed or recommended by {{Name|bi}}.
+		See also '''[[:Category:Official Tools|Official Tools]]'''.}}
+		|WARNING= {{Messagebox|{{{2|{{TemplateCase||[[Category:Feature template usage error]]}}}}}|⚠|class= feature-{{lc:{{{1}}}}}}}
+		|XBOX= {{Messagebox|{{{2|This is an Xbox® feature.}}}|<div style{{=}}"margin-top: -.25em">{{Icon|xbox}}</div>|class= feature-{{lc:{{{1}}}}}}}
+		|YLANDS= {{Messagebox|{{{2|This is a {{GameCategory|ylands|link=y}} feature.}}}|{{Icon|ylands|60}}|class= feature-{{lc:{{{1}}}}}}}
+		| -unknown [[Template:Feature|feature]] ("{{{1}}}") defined-{{TemplateCase||[[Category:Feature template usage error]]}}
+	}}
+| -no feature defined-{{TemplateCase||[[Category:Feature template usage error]]}}
+}}</includeonly><noinclude>{{Feature/doc}}<templatedata>
+{
+	"description": "",
+	"params": {
+		"1": {
+			"label": "name",
+			"description": "name of the feature used for the messagebox",
+			"type": "string",
+			"suggestedvalues": [
+				"AFM",
+				"ofp",
+				"arma0",
+				"ofpe",
+				"arma1",
+				"arma2",
+				"arma2oa",
+				"arma3",
+				"arma3contact",
+				"arma3oldman",
+				"armaR",
+				"arma4",
+				"dayz",
+				"Eden Editor",
+				"gamepad",
+				"GVI",
+				"keyboard",
+				"important",
+				"informative",
+				"obsolete",
+				"quote",
+				"playstation",
+				"spoiler",
+				"tkoh",
+				"UnsupportedDoc",
+				"UnsupportedTool",
+				"warning",
+				"xbox",
+				"ylands"
+			],
+			"autovalue": "informative",
+			"required": true
+		},
+		"2": {},
+		"3": {},
+		"4": {},
+		"message": {}
+	},
+	"paramOrder": [
+		"1",
+		"2",
+		"3",
+		"4",
+		"message"
+	],
+	"format": "inline"
+}
+</templatedata></noinclude>

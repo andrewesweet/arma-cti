@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Custom_Radio_and_Chat
+// revision: 352104 (2024-02-01T23:24:54Z)
+// export sha1: 74lnm6jk8sypol8ulrvx9y6rvivxmun
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to create or work with custom channels.
+These commands work with a '''custom channel ID''' which should not be confused with the '''default chat IDs'''.
+
+{{Feature|informative|Visit [[Channel IDs]] for more information.}}
+
+[[Category:Command Group: Radio and Chat]]

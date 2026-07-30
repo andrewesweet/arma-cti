@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_textureVehicleIcon
+// revision: 327466 (2022-07-12T22:12:10Z)
+// export sha1: m9biq68bs5smukvcrcbr32rkkan0myx
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Checks whether icon is defined in CfgVehicleIcons and if so, returns the icon.
+
+|s1= [wantedIcon] call [[BIS_fnc_textureVehicleIcon]]
+
+|p1= wantedIcon: [[String]]
+
+|r1= [[String]] - icon texture path, or ''wantedIcon'' if not found
+
+|x1= <sqf>private _mediTexture = ["iconManMedic"] call BIS_fnc_textureVehicleIcon;</sqf>
+
+|seealso= [[BIS_fnc_textureMarker]]
+}}

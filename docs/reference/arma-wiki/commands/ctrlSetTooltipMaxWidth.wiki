@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/ctrlSetTooltipMaxWidth
+// revision: 310331 (2022-05-05T16:44:26Z)
+// export sha1: r4xyaev2smus8jm5s0qwr7v5mhbjfzk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|descr= Set maximum width of a control's tooltip.
+
+|gr1= GUI Control
+
+|s1= ctrl [[ctrlSetTooltipMaxWidth]] width
+
+|p1= ctrl: [[Control]]
+
+|p2= width: [[Number]] - in screen measurement units
+
+|r1= [[Number]] - the previous maximum width of the tooltip
+
+|x1= <sqf>private _previousMaxWidth = _myControl ctrlSetTooltipMaxWidth (SafeZoneW / 2);</sqf>
+
+|seealso= [[SafeZone]] [[SafeZoneW]]
+}}

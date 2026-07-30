@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Entity_Transforming
+// revision: 174806 (2020-12-29T01:24:40Z)
+// export sha1: tv9mvm17h5yzz6ud7ja7r8stq8bai79
+// categories: Category:Eden Editor: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Entities in the scenario can be quickly manipulated using basic transformation.
+
+== Position ==
+To change the entity's position, simply '''drag it around''' with the '''Left Mouse Button'''.
+[[File:3den moveXY.gif|center]]
+
+== Altitude ==
+To change the entity's altitude, '''hold Alt''' and drag it up and down.
+[[File:3den moveZ.gif|center]]
+
+=== Vertical Mode ===
+By default, the entity's altitude above the terrain is maintained while dragging it, and it cannot be moved underground.'''Toggle Vertical Mode''' to make it follow the sea surface instead, allowing it to be moved underground as well.
+[[File:3den verticalMode.gif|center]]
+
+=== Surface Snapping ===
+When an entity gets near any surface while its altitude is being changed, it will be snapped to it. This is useful for quick positioning on building floors or terraces. You can '''Toggle Surface Snap''' to disable this behavior when necessary.
+[[File:3den surfaceSnap.gif|center]]
+
+== Direction ==
+To rotate an entity, '''hold Shift''' and drag it. It will rotate to face the cursor.
+[[File:3den rotate.gif|center]]
+
+
+This is all you need to know about basic transformation. Check [[Eden_Editor:_Transformation_Widget|Transformation Widget]] tutorial to learn more about the advanced editing.
+
+[[Category:Eden Editor: Editing|Entity Transforming]]

@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/Exception_handling
+// revision: 377910 (2026-01-07T16:15:07Z)
+// export sha1: gz9mbatmz3ohl233gj51ytxxdyhi7ht
+// categories: Category:Introduced with Armed Assault version 1.00 | Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma1|1.00}}
+
+{{arma1}} introduced exception handling through the [[try]], [[catch]] and [[throw]] scripting commands, allowing scripts to create and react to exceptions.
+
+Standard structure:
+<sqf>
+try		// code block that can throw exception
+{
+	if (_name == "") then { throw "no name"; };	// this exits the [[try]] block and enters the [[catch]] block below
+	if (_name == "") throw "no name";			// since {{arma3}} v1.54
+
+	titleText [format ["Good morning, Captain %1.", _name], "PLAIN DOWN"];
+}
+catch	// code block that processes an exception
+{
+	if (_exception == "no name") then
+	{
+		hint "Name was not entered";
+		titleText ["Good morning, anonymous Captain.", "PLAIN DOWN"];
+	};
+};
+</sqf>
+
+
+{{Feature|important|
+{{Name|rv}} scripting commands do '''not''' create SQF exceptions by themselves if they encounter an illegal situation,
+they throw a '''''compilation''''' exception that cannot be caught by this try-catch structure explained here.
+
+The following would therefore '''not''' create a catchable exception:
+<sqf>
+_divider = 0;
+try		{ a = 1 / _divider; }			// SQF error happens here already
+catch	{ hint "illegal operation"; };	// useless
+</sqf>
+
+The proper way:
+<sqf>
+_divider = 0;
+try		{ if (_divider == 0) then { throw "div0"; }; a = 1 / _divider; }
+catch	{ hint "illegal operation"; };
+</sqf>
+}}
+
+
+[[Category: Scripting Topics]]
+[[Category:Introduced with Armed Assault version 1.00]]

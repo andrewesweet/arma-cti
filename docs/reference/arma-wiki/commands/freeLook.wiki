@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/freeLook
+// revision: 369220 (2024-09-03T10:34:54Z)
+// export sha1: 3u6ki9xt1qncqhwy0z8ooe0xt31gxo8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns if freelook is active on the current machine's controlled character.
+
+|s1= [[freeLook]]
+
+|r1= [[Boolean]] - [[true]] if freelook is active, [[false]] otherwise
+
+|x1= <sqf>
+if freeLook then
+{
+	systemChat "Quit looking around, soldier!";
+};
+</sqf>
+
+|seealso= [[lookAt]]
+}}

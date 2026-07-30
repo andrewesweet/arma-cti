@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addScore
+// revision: 349163 (2023-11-08T14:49:51Z)
+// export sha1: dt9uuhd993gwief7tsawa06mldys6u9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Multiplayer | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Multiplayer
+
+|serverExec= server
+
+|descr= Adds a set amount of points to the score of a unit ''(MP only)''
+
+|s1= [object, number] call [[BIS_fnc_addScore]]
+
+|p1= [[Object]] - unit to add score to.
+|p2= [[Number]] - number of points (score) to add to unit.
+
+|r1= [[Number]] - score added to unit
+
+|x1= <sqf>[player,20] call BIS_fnc_addScore;</sqf>
+
+|seealso= [[addScore]]
+ 
+}}

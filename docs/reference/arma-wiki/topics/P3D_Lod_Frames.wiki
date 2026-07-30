@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/P3D_Lod_Frames
+// revision: 373421 (2025-05-08T11:27:12Z)
+// export sha1: dqbs4oqwaxx7w6ahm6ujiq96bnx2e55
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|UnsupportedDoc}}
+
+Frames are Animation times. They are similar in nature to [[Rtm (Animation) File Format|RTM files]].
+
+Only specific models have them, and, they are found only in certain [[P3D Model Info#LodTypes|Lod Types]] of that P3D.
+
+*In MLOD the structure is contained in the [[P3D File Format - MLOD#Animation#| #Animation# TaggSet]] of the lod
+*In ODOL the structure is contained in the [[P3D File Format - ODOLV7#LodStruct|Lod]] itself.
+
+'''Animated Frames are NOT to be confused with ODOLV4x (ARMA) Animation structures. Animation structures are used with skeletons.'''
+
+Very few models in the official addons for arma1 and arma2 have these frames. Only RacekT.p3d eg
+
+= ODOLFrames =
+ struct
+ {
+   ulong      nFrames;
+   LodFrame   LodFrames[nFrames];
+ }
+== LodFrame ==
+ struct
+ {
+  float      FrameTime;
+  ulong      nBones;
+  XYZTriplet BonePositions[nBones];
+ }
+
+== MLODTaggFrame ==
+ struct
+ {
+  ulong      nBytes;
+  float      FrameTime;
+  XYZTriplet BonePositions[nBones];
+ }
+*MLOD: nBones = (nBytes-sizeof(float)) / sizeof(XYZTriplet)
+*MLOD: nFrames = as many #Animation#s as are in the TaggStruct
+<hr>
+For any lod that has them, there are a contiguous series of Frames making up the total. Each one has an identical number of bones (triplets).
+
+For ODOL7 and both types of MLOD, the nLodPoints in the VertexTable is also the same as the nBones.
+
+For Arma, there are no Vertexes in this lod, hence no LodPoints
+
+NB: There will be 1 'Animation' chunk per Frame. This can result in VERY large p3dm mlod models. A model with three thousand (3,000) odd frames (eg. ActsPercMstpSnonWnonDnon_DancingStefan.rtm) will be approx. 200 Megabytes on disk.
+
+This type of data format for Animation is commonly known as a 'Point Cache' or an 'MDD Point Cache'. It describes the exact location of every point in the LOD in 3D 'Model Space' for each frame.
+
+
+
+
+
+[[Category:Real Virtuality File Formats]]

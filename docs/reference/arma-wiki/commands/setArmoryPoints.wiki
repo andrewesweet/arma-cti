@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/setArmoryPoints
+// revision: 319633 (2022-05-13T09:24:36Z)
+// export sha1: powhp2il0e8ieihygsr9i4hyo83094y
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= System
+
+|descr= Stores passed number into [USERNAME].ArmaXProfile file, where it assigns it as a value to ''armoryPoints'' entry. If entry doesn't exist, it is created.
+
+|s1= [[setArmoryPoints]] points
+
+|p1= points: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setArmoryPoints (armoryPoints + 20);</sqf>
+
+|x2= <sqf>setArmoryPoints 3.14;</sqf>
+
+|seealso= [[armoryPoints]]
+}}

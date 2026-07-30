@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/Combat_tips
+// revision: 33549 (2007-05-01T06:16:50Z)
+// export sha1: n3wai0cz7s85bco3o90x8gtng7qbuiz
+// Vendored snapshot. Do not edit — re-export instead.
+
+*COMBAT SKILLS
+
+* You can hold your breath for a couple of seconds to stabilize your weapon aim in the game to aim more accurately. Slightly press the firing trigger before you fully press it to fire.
+* When you are tired, your aim is less stable and you run slower. Your aiming precision is also influenced by your health status and posture.
+* Ballistics and even bullet deflection (ricochets) for machine guns are accurately simulated in the game.
+* There are indicators at corners of the screen to give you realistic situational awareness (eye and ear based).
+* When you're hit and you don't immediately die (not that this is too likely on higher difficulty settings) the position of red spots on the screen can help you to identify the direction of incoming fire.
+* You can lean when you're not moving and you can look around during movement.
+* You can bounce the US grenades. The East grenades are like the PC version and explode on impact.
+
+*MOVEMENT SKILLS
+
+*Use the 4 Sluts and a Mole method to help keep your self out of danger online.
+Shape- Is your vehicle/body outlines agasint a background, such as a wall?
+Shadow- Are you casting a shadow that enemy AI or human players can detect?
+Shine- Is your uniform standing out agasint the background or is a weapon coming in contact with sunlight?
+Silholete- Are you exposing your body or vehicle over a rise agasint the sky?
+Movement- Are you speeding enough to be quicly spotted by an enemy?
+* Stay low in combat, you have more chance of being shot kneeling or standing that hugging the earth.
+*Remember to keep all movements fluid, so your teamates dont bunch up to you.
+*Grenades are a great way to get you moving, if you hear the 'thunk' or the sound of a grenade pin being pulled, get your ass into gear and move locations.

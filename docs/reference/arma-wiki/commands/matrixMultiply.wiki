@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/matrixMultiply
+// revision: 364807 (2024-06-15T13:13:13Z)
+// export sha1: mehqlgx20nur5qr2vxzsl97g56iuhr4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Command Group: Math - Vectors | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.92
+
+|gr1= Math
+|gr2= Math - Vectors
+
+|descr= [[File:matrixMultiply.jpg|right|600px]]
+Returns resulting matrix from the {{Link|https://en.wikipedia.org/wiki/Matrix_multiplication|multiplication}} of two matrices. First matrix must be of the size n &times; '''k''', while the second must be of the size '''k''' &times; m, i.e {{hl|columns}} matrix1 == {{hl|rows}} matrix2. The resulting matrix will be of the size n &times; m. If the shapes do not match, empty array [] will be returned.
+
+|s1= matrix1 [[matrixMultiply]] matrix2
+
+|p1= matrix1: [[Array]] of [[Array]] of [[Number]]s - matrix of the size {{hl|n}}''(rows)'' &times; {{hl|k}}''(columns)''
+
+|p2= matrix2: [[Array]] of [[Array]] of [[Number]]s - matrix of the size {{hl|k}}''(rows)'' &times; {{hl|m}}''(columns)''
+
+|r1= [[Array]] of [[Array]] of [[Number]]s - resulting matrix of the size {{hl|n}}''(rows)'' &times; {{hl|m}}''(columns)''
+
+|x1= <sqf>
+[
+	[2],
+	[2]
+] 
+matrixMultiply 
+[
+	[3] 
+]
+/* returns 
+[
+	[6],
+	[6]
+] */
+</sqf>
+
+|x2= <sqf>
+[
+	[-1,0,0],
+	[0,-1,0]
+] 
+matrixMultiply 
+[
+	[1,2],
+	[3,1],
+	[2,3]
+] 
+/* returns 
+[
+	[-1,-2],
+	[-3,-1]
+] */
+</sqf>
+
+|seealso= [[matrixTranspose]] [[vectorAdd]] [[vectorMagnitude]] [[vectorNormalized]] [[vectorMultiply]] [[vectorDotProduct]] [[vectorCrossProduct]] [[vectorDistance]] [[vectorLinearConversion]] [[vectorCos]] [[vectorFromTo]] [[vectorModelToWorld]] [[vectorWorldToModel]] [[BIS_fnc_transformVectorDirAndUp]]
+}}
+
+{{Note
+|user= oOKexOo
+|timestamp= 20190630035300
+|text= Note that this command won't automatically transform a 1D array into a column vector
+<sqf>
+[[-1,0,0],[0,-1,0],[0,0,-1]] matrixMultiply [1,2,3] // wrong, syntax error
+[[-1,0,0],[0,-1,0],[0,0,-1]] matrixMultiply [[1,2,3]] // wrong, will return []
+[[-1,0,0],[0,-1,0],[0,0,-1]] matrixMultiply [[1], [2], [3]] // correct, will return [[-1], [-2], [-3]]
+</sqf>
+}}

@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_roundDir
+// revision: 327918 (2022-07-13T12:12:29Z)
+// export sha1: kc1zgn16mxio2vns7hfgqy9a7eisocq
+// categories: Category:Arma 3: Functions | Category:Function Group: Math | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Math
+
+|descr= Round direction to nearest set rounding; used for determining cardinal direction.
+
+|s1= [rawDirection, rounding] call [[BIS_fnc_roundDir]]
+
+|p1= rawDirection: [[Number]] - direction to round
+
+|p2= rounding: [[Number]] - (Optional, default 90) - rounding value. With 90° possible return values are 0, 90, 180 and 270
+
+|r1= [[Number]] - rounded direction, depending on input. '''Can be negative or over 360'''
+
+|x1= <sqf>player setDir ([getDir player, 45] call BIS_fnc_roundDir);</sqf>
+
+|x2= <sqf>[204.2, 10] call BIS_fnc_roundDir; // will return 200</sqf>
+
+|x3= <sqf>[271, 180] call BIS_fnc_roundDir; // will return 360</sqf>
+
+|x4= <sqf>70 call BIS_fnc_roundDir; // will return 90</sqf>
+
+|seealso= [[setDir]] [[getRelDir]] [[round]]
+}}

@@ -1,0 +1,83 @@
+// source: https://community.bistudio.com/wiki/Global_Mobilization_Furniture_Module
+// revision: 338806 (2023-04-08T20:29:00Z)
+// export sha1: kxcd022sgnr2lug3p8axjv0d71zev5y
+// categories: Category:Global Mobilization
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:gm module automaticfurnitrue.jpg|thumb|right]]
+== Overview ==
+'''[[Global Mobilization]]''' introduces the “Automatic Furniture” Module in 3DEN. It allows you to automatically furnish houses in the given area, enabling exact control which houses shall be furnished, and also how “full” of furniture they should be.
+
+{{Feature|informative|Systems (F5) > Other > Systems (F5) > Environment > Automatic Furniture}}
+
+With the initial release of the Module in GM’s 1.5 Update the module comes ready to support the following structures:
+
+* All GM Weferlingen buildings
+* All GM Weferlingen winter buildings
+* All Arma 3 Baseline Buildings (Altis and Stratis)
+* All Apex Buildings (Tanoa)
+* All Contact Buildings (Livonia)
+* All Malden Buildings
+
+{{Feature|arma3|
+The module is not bound to any terrain. Custom user made terrains that use these assets will be automatically supported by the Automatic Furniture module.
+}}
+== Modding ==
+The Automatic Furniture Module is extendable with custom assets. To do so, you will require two things:
+
+# A list of furniture offsets saved per building
+# A config addon that extends the module’s list of known assets
+
+=== Furniture Offset List ===
+The Furniture Offset List is the heart of the module. It describes where and with what orientation each furniture piece is located within a house.
+
+Creating this list is quite labour intensive, but worth the investment.
+
+How to create the list
+# Start by creating a new empty mission on the Virtual Reality terrain.
+# Place every house you wish to furnish, space them at least one house’s width apart from each other. More space is better.
+# Place furniture inside every house
+# Save the mission
+# Create a new [[init.sqf]] file in that mission
+# Paste the following contents into that init.sqf:
+ ''You will probably want to adjust the classname filter here, also depending on how your houses are set up you may need to adjust the placement vertical offset with some building specific coefficient''
+<sqf>
+sleep 1;
+
+_work = [];
+{
+	_ht = typeOf _x;
+	_item = [_ht];_os = [];_hp = _x;
+	_hd = getDir _x;
+	_fs = nearestObjects [getPosATL _x, ["gm_furniturestatic_euro_80_base","gm_furniture_euro_80_base","gm_object_static_base"], sizeOf _ht, true];
+	{
+		_c = typeOf _x;
+		_p = _hp worldToModel getPosATL _x;
+		_os pushBack [_c,_p,(getDir _x - _hd)]
+	} forEach _fs;
+	_item pushBack _os;_work pushBack _item;
+
+} forEach allmissionobjects "house_f";
+
+copyToClipboard str _work;
+systemchat "Done";
+</sqf>
+# Preview the mission and wait for the “Done” message
+# Your Clipboard (Ctrl + V) now contains the Furniture Offset List
+# Create a new file and call it “yourmod_furniture.sqf”, paste the contents of your clipboard into there
+# Create a new config addon (We’ll assume you have the basic addon skills to do so)
+# Add this class to your config, and customize the names and paths to match your addon and generated list.
+<syntaxhighlight lang="cpp">
+class gm_furnitureCoordinateLibrary // keep this classname unchanged
+{
+	class youraddon_yourBuildings
+	{
+		file = "\your\path\to\furnitureCoordinates.sqf";
+	};
+};
+</syntaxhighlight>
+# Copy the offset list SQF file to your addon
+# Pack the addon. 
+# The Automatic Furniture Module will now be able to deal with your assets.
+
+[[Category:Global Mobilization]]

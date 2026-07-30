@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Tutorials
+// revision: 352907 (2024-03-03T23:32:57Z)
+// export sha1: 2cotpwqjyj9ncq4c4wimgnvimr2drsh
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaSeries|Tutorials}}

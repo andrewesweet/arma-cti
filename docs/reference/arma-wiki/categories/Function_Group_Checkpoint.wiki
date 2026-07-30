@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Checkpoint
+// revision: 164700 (2020-10-05T14:23:49Z)
+// export sha1: twcbh8s751nsa2xohxlx880v5rnnoma
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions used for checkpoints in the [[Arma 3 Apex: Old Man]] scenario.
+
+[[Category:Function Group: Old Man]]

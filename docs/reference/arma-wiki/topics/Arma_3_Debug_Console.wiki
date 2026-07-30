@@ -1,0 +1,144 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Debug_Console
+// revision: 377942 (2026-01-11T22:56:41Z)
+// export sha1: cumhpsd8mznw3ra77gzie9awmcxj1ce
+// categories: Category:2D Editor | Category:Arma 3: Editing | Category:Introduced with Arma 3 version 0.54
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[File:A3 console mission.jpg|thumb|Debug Console in pause menu]]
+[[File:A3 console editor.jpg|thumb|Debug Console in editor]]
+[[File:debug_console_history.jpg|thumb|Debug Console History (10 slots accessible via {{Controls|PageUp}} and {{Controls|PageDown}})]]
+
+{{GVI|arma3|0.54}}
+
+The '''Debug Console''' is an editing tool that provides scenario designers with the ability to observe variables and to execute code on the fly.
+
+== Access ==
+
+While playing a mission from the editor, the console is immediately available in pause menu.
+In the old [[2D Editor]] map screen, you can open it by clicking the "Debug Console" button or with {{Controls|Ctrl|D}}.
+In Eden editor it is available under {{hl|Tools > Debug Console}}.<br>
+<br>
+In multiplayer the debug console is available by default only when MP preview is started from [[:Category:Eden Editor|Eden Editor]], and is only available to the host who started it.
+In all other cases debug console needs to be explicitly enabled with either editor attribute or ''enableDebugConsole'' param (see below).
+It is worth noting that when debug console is configured for admin access, it is only available for [[Arma 3: Server Config File#Logged_In_Admin|logged in]] admin, [[Arma 3: Server Config File#Voted_In_Admin|voted in]] admin is treated just like any other user in this respect.
+
+
+== Configuration ==
+
+The console is automatically available in missions running from editor.
+If mission designer wishes to enable it elsewhere, he can achieve it in one of the three ways:
+
+* Using mission config param. You can add ''"\a3\functions_f\Params\paramDebugConsole.hpp"'' [[Mission Parameters|mission parameter]], where server host / admin can choose whether or not he'll allow debug console.
+* Using following [[Description.ext]] param, for example: <syntaxhighlight lang="cpp">enableDebugConsole = 1;</syntaxhighlight>Possible values:
+** 0 - Default behavior, available only in editor
+** 1 - Available in SP and for hosts / logged in admins in MP
+** 2 - Available for everyone</blockquote>
+* Using Eden attribute {{hl|Debug Console}}, available in {{hl|Attributes > General > States > Debug Console}}
+* Using global/mod config param, for example: <syntaxhighlight lang="cpp">enableDebugConsole = 2;</syntaxhighlight>
+
+{{ArgTitle|3|Whitelisting Multiple Users|{{GVI|arma3|1.72}}}}
+
+It is possible to let more than one person access debug console in Multiplayer.
+This is done by defining {{hl|enableDebugConsole}} param as [[Array]] and adding UIDs of whitelisted users to this array, for example:
+<syntaxhighlight lang="cpp">enableDebugConsole[] = { "81273982178973213", "3749832749732749", "7492374983274234" };</syntaxhighlight>
+All users with UIDs matching the added UIDs will be able to access debug console in Multiplayer.
+Additionally, server host will also be able to use debug console, as well as any logged in admin on dedicated server.
+
+=== Mod support ===
+
+Since {{GVI|arma3|1.72}} it is possible to configure debug console availability with a mod param {{hl|enableDebugConsole}}.
+This param is checked if no debug console option is set in the mission.
+If a server admin would like to make debug console available for a group of trusted people, he can create a custom mod, for example with <syntaxhighlight lang="cpp" inline>enableDebugConsole = 2;</syntaxhighlight> then sign it and distribute it amongst trusted people.
+This way anyone who has this custom mod signed with correct signature, will be able to connect to the server and use debug console.
+Array of UIDs is also supported here.
+
+To whitelist (multiple) users with a mod, if ''enableDebugConsole'' has already been defined, use the delete keyword:
+<syntaxhighlight lang="cpp">
+delete enableDebugConsole;
+enableDebugConsole[] = { "81273982178973213" };
+</syntaxhighlight>
+
+=== Order of Precedence ===
+
+# [[Mission Parameters | Mission param]] is checked. If it is not defined then...
+# [[Description.ext|description.ext]] param {{hl|enableDebugConsole}} is checked. If is not defined then...
+# [[:Category:Eden Editor|Eden]] attribute option is checked. If not defined then...
+# Global/mod param {{hl|enableDebugConsole}} is checked.
+
+=== BattlEye Filters ===
+
+Debug Console uses [[Remote Execution]]. If you wish to exclude Debug Console execution from BE Filters, add this to your {{hl|remoteexec.txt}}
+ !="BIS_fnc_debugConsoleExec \[[0-2],\{.*\}\]"
+
+
+== Features ==
+
+{{Feature|informative|You can clear large amounts of text from the expression field or a watch field by selecting the field and pressing {{Controls|Ctrl|A}} and then {{Controls|Del}}.}}
+
+=== Expression field ===
+
+* The expression is saved when the debug console is closed and restored again upon return.
+* {{GVI|arma3|1.74|size= 0.75}} Comments with {{hl|//}} are supported (use {{Controls|Shift|Enter}} to start a new line).
+* The expression can be executed in the [[Scheduler#Unscheduled Environment|unscheduled environment]] using the following buttons:
+** Local - execute on player's computer using [[remoteExec]] to [[call]] the given code.
+** Global - execute on all computers using [[remoteExec]] to [[call]] the given code. Only enabled in MP.
+** Server - execute only on the server using [[remoteExec]] to [[call]] the given code. Only enabled in MP.
+** Performance Test - See: [[diag_codePerformance]]
+
+=== 4x Watch field ===
+
+* The expression is saved when the debug console is closed and restored again upon return.
+* When the code is taking too long to evaluate (>0.003s), the background turns orange and the value is not saved.
+* Watch field execution is paused when the user edits the watch expression and resumed on change of focus or when pressing {{Controls|Enter}}.
+
+{{ArgTitle|3|Execution result field|{{GVI|arma3|1.74}}}}
+
+[[File:Arma3 Debug ExecutionResult.jpg|thumb|right|Execution result field]]
+* The execution result field shows result of local execution of the expression code.
+* In MP the execution result field shows remote result for server execution.
+
+=== Expression History ===
+
+The debug console will keep track of the last ten expressions which were executed.
+One can use {{Controls|PageUp}} and {{Controls|PageDown}} to cycle through them.
+
+=== Buttons ===
+
+All of the following buttons close the pause menu and open another window.
+* [[Spectator Mode|Spectator Camera]]
+* [[Arma 3: Splendid Camera]]
+* [[Arma 3: Functions Viewer|Functions Viewer]]
+* [[Arma 3: Splendid Config Viewer|Config Viewer]]
+* [[Arma 3: Splendid Animation Viewer|Animation Viewer]]
+* [[User Interface Editor]]
+
+=== Profile Saving ===
+
+The debug console automatically saves each field as you go, even after game restart.
+These can also be access using [[profileNamespace]] [[getVariable]] with the following code:
+* '''Expression Field''' <sqf>profileNamespace getVariable "rscdebugconsole_expression";</sqf>
+* '''4x Watch Field''' <sqf>
+profileNamespace getVariable "rscdebugconsole_watch1";
+profileNamespace getVariable "rscdebugconsole_watch2";
+profileNamespace getVariable "rscdebugconsole_watch3";
+profileNamespace getVariable "rscdebugconsole_watch4";
+</sqf>
+Using the same variables you can also clear or change the fields.
+
+
+== Utilities ==
+
+In order to access [[Arma 3: Utilities]] from debug console, type {{hl|utils}} in the debug console and press local exec.
+To go directly to the utility of your choice use {{hl|utils n}}, where {{hl|n}} is the number of the utility in the list.
+For example {{hl|utils 2}} will take you to config browser.
+
+
+== See Also ==
+
+* [[Debugging Techniques]]
+
+
+[[Category: 2D Editor]]
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 0.54]]

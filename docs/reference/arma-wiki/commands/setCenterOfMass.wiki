@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/setCenterOfMass
+// revision: 377797 (2026-01-03T03:53:45Z)
+// export sha1: 7hwvv3wtja8435srnhkv51h1vw4jeou
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 1.02 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.02
+|arg= local
+|eff= global
+
+|gr1= PhysX
+
+|descr= Changes the center of mass of an object smoothly during the given time (in seconds). A time of zero (or using the alternative syntax) means an immediate change.
+
+|s1= myObject [[setCenterOfMass]] [centerOfMass, time]
+
+|p1= myObject: [[Object]]
+
+|p2= centerOfMass: [[Position#PositionRelative|PositionRelative]] - relative to the model centre
+
+|p3= time: [[Number]] - transition time, 0 for instant center of mass transfer
+
+|r1= [[Nothing]]
+
+|s2= myObject [[setCenterOfMass]] centerOfMass
+
+|p21= myObject: [[Object]]
+
+|p22= centerOfMass: [[Position#PositionRelative|PositionRelative]] - relative to the model centre
+
+|r2= [[Nothing]]
+
+|x1= <sqf>myObject setCenterOfMass [[0,-1,0], 0.5];</sqf>
+
+|x2= <sqf>myObject setCenterOfMass [0,-1,0];</sqf>
+
+|seealso= [[getCenterOfMass]] [[setMass]] [[getMass]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 20 Jun, 2014 - 12:50</dd>
+<dt class="note">[[User:ffur2007slx2_5|ffur2007slx2_5]]</dt>
+<dd class="note">
+{{GVI|arma3|1.22}} A quick reference:
+{| class="wikitable sortable"
+
+! category
+! [[setMass]]
+! [[setCenterOfMass]]
+
+|-
+| unit
+| The larger the mass is, the easier a unit will physically fatigued
+| {{n/a}}
+
+|-
+| aircraft
+| The larger the mass is, the more sensitive an aircraft will react to joystick, vice versa.
+| Aircraft slant due to center change accordingly, and the position of the camera view will be altered relatively at the same time. (3rd person view)
+|-
+| vehicle
+| The larger the mass is, the slower a vehicle drives (Ships will sink), vice versa. (Land vehicle performs like a bouncing ball while ships accelerated pretty speedy.)
+
+| Vehicle slant due to center change accordingly.
+
+|}
+</dl>

@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/surfaceTexture
+// revision: 378535 (2026-05-04T02:24:02Z)
+// export sha1: qp48lsrebd2vas2bxccs8mcbxnq9647
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Positions
+
+|descr= Same as [[surfaceType]], but returns texture path to ground texture as string.
+{{Feature|informative|The texture returned is of the ground, even if there is a road at that position. To get road texture use [[getRoadInfo]] command.}}
+
+|s1= [[surfaceTexture]] [x, y, useLayerMask]
+
+|p1= x: [[Number]] - world x coordinate of the position
+|p2= y: [[Number]] - world y coordinate of the position
+|p3since=arma3 2.18
+|p3= useLayerMask: [[Number]] or [[Boolean]] - When a number is provided (Z in 3D positions), it is ignored. When a boolean is provided, it defines whether the layer mask should be used. Using the layer mask is more accurate but slightly slower.
+[[File:Capture.png|thumb|256px|The patches of "dirt" are defined using a layer mask. The "concrete" is the primary surface texture.]]
+|r1= [[String]] - Surface texture
+
+|x1= <sqf>private _groundTexture = surfaceTexture getPosATL player;</sqf>
+
+|x2= <sqf>
+private _pos = getPosATL player;
+_pos set [2, true]; // use layer mask
+private _groundTexture = surfaceTexture _pos;
+</sqf>
+
+|seealso= [[surfaceType]] [[getRoadInfo]]
+}}

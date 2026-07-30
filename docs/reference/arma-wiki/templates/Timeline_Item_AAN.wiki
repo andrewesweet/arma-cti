@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Timeline_Item_AAN
+// revision: 378659 (2026-05-18T16:33:03Z)
+// export sha1: l7cz8b5okfsnzfed814susdmvp336uk
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>[[File:Logo_TVAAN.png|50px|link=http://aan.moricky.com]]</includeonly><noinclude>[[Category:Historical Templates]]</noinclude>

@@ -1,0 +1,78 @@
+// source: https://community.bistudio.com/wiki/forceUnicode
+// revision: 377708 (2026-01-02T09:03:46Z)
+// export sha1: 247y163sk2n3ktmxid1qzsp1ae2u8bj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Strings
+
+|descr=
+<div style="float: right">
+List of the commands that work with [[forceUnicode]]
+{{Columns|2|
+* [[copyFromClipboard]]
+* [[copyToClipboard]]
+* [[count]]
+* [[find]]
+* [[in]]
+* [[insert]]
+* [[reverse]]
+* [[select]]
+* [[splitString]]
+* [[trim]]
+* [[regexFind]]
+* [[regexMatch]]
+* [[regexReplace]]
+}}
+</div>
+Sets the Unicode flag which forces some of the string manipulation commands to switch to {{Link|https://en.wikipedia.org/wiki/Unicode}}.
+The Unicode flag is always set right after [[forceUnicode]] command execution, but is reset depending on the command mode (see ''{{Link|#Syntax 1|mode}}'').
+
+When the flag is set it will also affect all scopes within the script including child scopes (see [[diag_scope]]).
+There are many other string manipulation commands like [[ctrlSetText]], [[getTextWidth]], etc. that support Unicode by design so no additional forcing is needed.
+
+|s1= [[forceUnicode]] mode
+
+|p1= mode: [[Number]] - mode of operation, can be:
+* -1 - resets previously set Unicode flag
+* &nbsp;0 - sets Unicode flag until the end of script
+* &nbsp;1 - sets Unicode flag until after next supported command or until the end of script, whichever comes earlier
+
+|r1= [[Anything]]
+
+|x1= <sqf>
+copyToClipboard "д"; // copies "Ð´" to clipboard
+forceUnicode 1;
+copyToClipboard "д"; // copies "д" to clipboard
+</sqf>
+
+|x2= <sqf>
+private _string = "привет";			// a string that uses Unicode characters
+systemChat str count _string;		// 12 - the character count is wrong without forceUnicode
+
+call {
+	systemChat str count _string;	// 12 - identical result
+	forceUnicode 0;
+	systemChat str count _string;	// 6 - correct result
+};
+
+systemChat str count _string;		// 6 - outer scope is affected by forceUnicode as well, because the command mode is 0
+
+forceUnicode -1; // cancelled
+
+call {
+	systemChat str count _string;	// 12 - wrong count
+	forceUnicode 1;
+	systemChat str count _string;	// 6 - correct result, but Unicode it reset after this operation, because command mode is 1
+};
+
+systemChat str count _string;		// 12 - outer scope is not affected as it was reset right after count
+</sqf>
+
+|seealso= [[copyToClipboard]] [[copyFromClipboard]] [[select]] [[count]] [[in]] [[insert]] [[find]] [[splitString]] [[reverse]]
+}}

@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_richCurve_computeKeys
+// revision: 278952 (2021-06-13T21:47:00Z)
+// export sha1: 3woptc8i64xilhu5624a5xp9im9z5gq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: RichCurve | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= RichCurve
+|descr= <pre>/*
+	Author: Nelson Duarte <@Nelson_G_Duarte>
+
+	Description:
+	Get's keys assigned to given curve
+
+	Parameter(s):
+	_this select 0: Object 	- The curve
+	_this select 1: Bool	- Whether or not to sort the keys by time
+
+	Returns:
+	Array - List of assigned keys
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_richCurve_computeKeys]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

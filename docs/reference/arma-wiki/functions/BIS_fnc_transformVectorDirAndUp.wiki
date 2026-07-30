@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_transformVectorDirAndUp
+// revision: 352125 (2024-02-01T23:25:06Z)
+// export sha1: kuvn2orju65gc1ceyt29nqc6prwg0mh
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vectors | Category:Functions | Category:Introduced with Arma 3 version 1.98 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.98
+
+|gr1= Vectors
+
+|descr= [[File:transformVectorUpAndDir.jpg|300px|right]]
+Rotates both [[vectorDir]] and [[vectorUp]] on 3 axes: z (yaw), x (pitch) and y (roll). Positive angle direction is according to the {{Link|https://en.wikipedia.org/wiki/Right-hand_rule|right hand rule}}.
+{{Feature|informative| The vectors are rotated first on '''z''' axis then on '''x''' axis then on '''y''' axis. For example standard [[0,1,0],[0,0,1]] pair rotated 90 degrees on every axis will result in [[0,0,1],[0,-1,0]]}}
+
+|s1= [vectorDirAndUp, yaw, pitch, roll] call [[BIS_fnc_transformVectorDirAndUp]]
+
+|p1= vectorDirAndUp: [[Array]] in format [vectorDir, vectorUp] -(Optional, default [[0,1,0],[0,0,1]])
+
+|p2= yaw: [[Number]] - (Optional, default 0) yaw angle
+
+|p3= pitch: [[Number]] - (Optional, default 0) pitch angle
+
+|p4= roll: [[Number]] - (Optional, default 0) roll angle
+
+|r1= [[Array]] in format [vectorDir, vectorUp]
+
+|x1= <sqf>private _vDirUp = [[vectorDirVisual uav, vectorUpVisual uav], 0, 0, 90] call BIS_fnc_transformVectorDirAndUp;</sqf>
+
+|x2= Create UAV object and make it pitch with mouse up/down and roll with mouse left/right:
+<sqf>
+uav = "B_UAV_05_F" createVehicle [0,0,0];
+uav attachTo [player, [0,30,10]];
+findDisplay 46 displayAddEventHandler ["MouseMoving", 
+{
+	uav setVectorDirAndUp
+	(
+		[
+			[vectorDirVisual uav, vectorUpVisual uav],
+			getDirVisual uav,
+			_this select 2,
+			_this select 1
+		]
+		call BIS_fnc_transformVectorDirAndUp
+	);
+}];
+</sqf>
+
+|seealso= [[vectorDir]] [[vectorUp]] [[setVectorDirAndUp]]
+}}

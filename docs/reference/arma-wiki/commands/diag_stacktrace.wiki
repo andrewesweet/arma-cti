@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/diag_stacktrace
+// revision: 351630 (2023-12-11T19:47:32Z)
+// export sha1: 9rrn672jlbxhk3hpkwx07i56q7c2tr5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|descr= Returns an array containing the function name, line number, scope name and all local variables in form of a hashmap.
+
+|gr1= Diagnostic
+
+|s1= [[diag_stacktrace]]
+
+|r1= [[Array]] of [[Array]]s, in format:
+<sqf>params ["_functionName", "_lineNumber", "_scopeName", "_variablesHashmap"];</sqf>
+* _functionName: [[String]] - function name
+* _lineNumber: [[Number]] - line number
+* _scopeName: [[String]] - scope name
+* _variablesHashmap: [[HashMap]] - all local variables
+
+|x1= <sqf>
+private _testvar = 1;
+private _testother = 2;
+call 
+{
+	_testvar = 3;
+	if (_testvar == 3) then 
+	{
+		_myVariable = 4;
+		hint str diag_stacktrace;
+	};
+};
+/*
+[
+	["", 3, "", [["_this", []], ["_testother", 2], ["_testvar", 3]]],
+	["", 6, "", []],
+	["", 8, "", [["_myvariable", 4]]]
+]
+*/
+</sqf>
+
+|seealso= [[arma.RPT]] [[diag_dumpCalltraceToLog]] [[diag_log]]
+}}

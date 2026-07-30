@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_controlPoint_setIsArrive
+// revision: 349230 (2023-11-08T14:50:53Z)
+// export sha1: 85dr4wy7f5tj0xensb4978osmwpm9sr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: ControlPoint | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= ControlPoint
+
+|descr= Set's whether this control point is arrive or leave.
+
+|s1= [controlPoint, isArrive] call [[BIS_fnc_controlPoint_setIsArrive]]
+
+|p1= controlPoint: [[Object]] - the control point
+
+|p2= isArrive: [[Object]] - (Optional, default [[true]]) [[true]] - arrive<br>[[false]] -  leave
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[controlPoint,false] call BIS_fnc_controlPoint_setIsArrive;</sqf>
+
+|seealso= [[BIS_fnc_controlPoint_isArrive]] [[BIS_fnc_controlPoint_compute]] [[BIS_fnc_controlPoint_computeOwnerKey]] [[BIS_fnc_controlPoint_getOwnerKey]]
+}}

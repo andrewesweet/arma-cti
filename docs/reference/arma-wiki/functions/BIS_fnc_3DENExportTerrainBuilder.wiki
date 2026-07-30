@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENExportTerrainBuilder
+// revision: 342143 (2023-07-09T12:26:47Z)
+// export sha1: 0f45iabq2n8v52dltl2zlzwuwggrls1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Gets all empty vehicles placed in the currently opened Eden mission and converts data into the format used by the [[Terrain Builder]].
+
+|s1= call [[BIS_fnc_3DENExportTerrainBuilder]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_3DENExportTerrainBuilder;</sqf>
+
+|seealso= [[:Category:Eden Editor|Eden Editor]] [[Terrain Builder]]
+}}

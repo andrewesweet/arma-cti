@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_GUI_Control_-_Event_Handlers
+// revision: 169711 (2020-11-10T17:04:09Z)
+// export sha1: mq4e7oc1dph1pautl8cgpsjss8ojg8v
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to add Event Handlers to GUIs. For a full list of available event handlers see '''[[User Interface Event Handlers]]'''.
+
+[[Category:Command Group: GUI Control]]

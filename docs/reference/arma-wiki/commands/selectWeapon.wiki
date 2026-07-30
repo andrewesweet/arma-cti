@@ -1,0 +1,127 @@
+// source: https://community.bistudio.com/wiki/selectWeapon
+// revision: 373007 (2025-03-11T23:11:21Z)
+// export sha1: gcctwrspi6mxwdmcf9m9swgf5du7ygz
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Operation Flashpoint version 1.27 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.27
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Weapons
+
+|descr= Selects the given weapon.
+{{Feature|informative|Passing empty string will not deselect current weapon. Use 'SwitchWeapon' [[action]] instead:
+<sqf>player action ["SwitchWeapon", player, player, -1]</sqf>
+}}
+|s1= unitName [[selectWeapon]] muzzleName
+
+|p1= unitName: [[Object]]
+
+|p2= muzzleName: [[String]] - name of the weapon or muzzle
+{{Feature|important|For weapons that have '''more than one muzzle''', you have to input the '''muzzleName''' and not the '''weaponName'''.
+* In {{ofp}}, in most cases, both names are the same. But check.
+* In {{arma1}} the weaponNames and muzzleNames are different.
+* For muzzle names see [[:Category:Weapons|CfgWeapons]].
+}}
+
+|r1= [[Nothing]]
+
+|s2= unit [[selectWeapon]] [weapon, muzzle, firemode]
+
+|s2since= arma3 2.08
+
+|p21= unit: [[Object]] - person. This argument has to be [[local]], or it can be remote when executed on the [[isServer|server]]
+
+|p22= weapon: [[String]] - name of the weapon, personal or vehicle's weapon (see [[weaponState]])
+
+|p23= muzzle: [[String]] - name of the selected muzzle (see [[weaponState]])
+
+|p24= firemode: [[String]] - name of the firemode (see [[weaponState]])
+
+|r2= [[Boolean]] or [[Nothing]] - [[true]] on success, [[false]] on failure, [[Nothing]] when the call to the command is dispatched over network
+
+|x1= <sqf>_soldier1 selectWeapon "LAWLauncher";</sqf>
+
+|x2= <sqf>player selectWeapon "M203Muzzle";</sqf>
+
+|x3= <sqf>player selectWeapon ["arifle_MX_GL_ACO_F", "arifle_MX_GL_ACO_F", "FullAuto"];</sqf>
+
+|seealso= [[fire]] [[forceWeaponFire]] [[primaryWeapon]] [[handgunWeapon]] [[secondaryWeapon]] [[weapons]] [[ArmA:_Actions#SWITCHWEAPON|action SwitchWeapon]] [[ArmA:_Actions#SWITCHMAGAZINE|action SwitchMagazine]] [[isSwitchingWeapon]]
+}}
+
+{{Note
+|user= Dr_Eyeball
+|timestamp= 20080805094900
+|text= Rather than simply using [[selectWeapon]] to select your default weapon after adding them to your player, it is recommended you use a script instead similar to the following, which caters for multiple muzzles:<br>
+SelectWeapon.sqf
+<sqf>
+// Desc: select default weapon & handle multiple muzzles
+if (count weapons player > 0) then
+{
+	private ['_type', '_muzzles'];
+
+	_type = ((weapons player) select 0);
+	// check for multiple muzzles (eg: GL)
+	_muzzles = getArray (configFile >> "cfgWeapons" >> _type >> "muzzles");
+
+	if (count _muzzles > 1) then
+	{
+		player selectWeapon (_muzzles select 0);
+	}
+	else
+	{
+		player selectWeapon _type;
+	};
+};
+</sqf>
+}}
+
+{{Note
+|user= MaestrO.fr
+|timestamp= 20100322154500
+|text= Can be used with [[primaryWeapon]] to select the primary weapon.
+An example with muzzle care (see Dr_EyeBall note) : 
+<sqf>
+if ((primaryWeapon player) != "") then
+{
+	private ['_type', '_muzzles'];
+
+	_type = primaryWeapon player;
+	// check for multiple muzzles (eg: GL)
+	_muzzles = getArray (configFile >> "cfgWeapons" >> _type >> "muzzles");
+
+	if (count _muzzles > 1) then
+	{
+		player selectWeapon (_muzzles select 0);
+	}
+	else
+	{
+		player selectWeapon _type;
+	};
+};
+</sqf>
+}}

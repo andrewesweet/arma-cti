@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/GateBuilder
+// revision: 349706 (2023-11-20T22:09:47Z)
+// export sha1: hzjf9mt7uwdzkdy73li44vuybo34yav
+// categories: Category:Community Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+== BX GATEBuilder ==
+
+=== BX GateBuilder 0.0.2.5 ===
+
+http://bxbx.atrey.vdsoft.org/GateBuilder0025.rar
+
+possiable open ODOL v7, topologi->components, mass editing 
+
+=== BX GateBuilder 0.0.2.2 alfa ===
+
+http://bxbx.atrey.vdsoft.org/GateBuilder0022.rar
+
+some options available, remember last setting, bugs fixed.
+
+=== BX GateBuilder 0.0.2.0 alfa ===
+
+http://bxbx.atrey.vdsoft.org/GateBuilder.rar
+
+this is an alfa version of this software and some functions are not working now and some can make bugs in any case.
+
+use on your own risk.
+
+only MLOD format is supported (like oxygen) 
+
+directX 9c Dec 2006 or later required.
+
+Software for OFP/AA addon-makers with similar remoting like oxygen, but using DX9 for rendering.
+
+This software is based on OXYGEN 2 Light (c) Bohemia Interactive Studio.
+
+Developed by SG MOD for Operation Flashpoint, programmed by BXBX.
+Free for nonprofit using.
+
+[[File:GateBuilder_error_msg.JPG]]
+=== Some pics ===
+[[File:Bxgatebuilder1.jpg]]
+
+[[File:Bxgatebuilder2.jpg]]
+
+[[File:Bxgatebuilder3.jpg]]
+
+[[Category:Community Tools]]

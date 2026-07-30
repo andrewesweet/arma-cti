@@ -1,0 +1,14 @@
+// source: https://community.bistudio.com/wiki/Wargames:Help_Site:Customize_WGL:Sky_Packs
+// revision: 61865 (2011-03-27T10:37:15Z)
+// export sha1: if4ouu5vslofqtbydemzy0v6dun3h35
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Sky Packs =
+
+== Llaumax Sky Pack Version 1.2 ==
+
+'''Llauma sky 2 and Maximus night sky + INQ's NVG's'''
+
+Version 1.2 is now fully compatible with DXDLL. It contains installers for all versions of windows that supports OFP. The size has been cut in half and the installer has never been faster.
+
+Run '''installXXX.bat''' file made for your windows version to install it.

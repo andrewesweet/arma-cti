@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/allCameras
+// revision: 376999 (2026-01-01T08:07:12Z)
+// export sha1: c7lvundjisuk30esw5p91cq8d3e9b7u
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Camera Control
+
+|descr= Return a list of all existing cameras.
+
+|s1= [[allCameras]]
+
+|r1= [[Array]] of [[Array]]s with [camera, r2tInfos, isPrimary, effectName, viewMode, TIindex]
+* camera: [[Object]] - the camera itself (see [[camCreate]])
+* r2tInfos: [[Array]] of [[Array]]s with [r2tName, r2tEffectName, ppEffectType, TIindex]
+** r2tName: [[String]] - the camera's RTT name (see [[cameraEffect]])
+** r2tEffectName: [[String]] - see [[cameraEffect]] for possible values
+** ppEffectType: [[String]] - one of {{hl|Normal}}, {{hl|NightVision}}, {{hl|Thermal}}, {{hl|Colors}}, {{hl|Mirror}}, {{hl|ChromAber}} or {{hl|FilmGrain}}
+** TIIndex: [[Number]] - see [[setCamUseTI]] for possible values
+* isPrimary: [[Boolean]] - whether or not this camera is the current main one
+* effectName: [[String]] - (Optional, only available if ''isPrimary'' is [[true]]) see [[cameraEffect]] for possible values
+* viewMode: [[Number]] - (Optional, only available if ''isPrimary'' is [[true]]) 0 = normal, 1 = NVG, 2 = TI, 3 = NVG + TI
+* TIIndex: [[Number]] - (Optional, only available if ''isPrimary'' is [[true]]) see [[setCamUseTI]] for possible values
+
+|x1= <sqf>
+{
+	params ["_camera", "_r2tInfos", "_isPrimary", "_ppEffectName", "_viewMode", "_TIindex"];
+	{
+		params["_r2tName", "_ppEffectName", "_ppEffectType", "_TIindex"];
+	} forEach _r2tInfos;
+} forEach allCameras;
+</sqf>
+
+|x2= <sqf>
+private _allCamerasInfo = allCameras;
+{
+	params ["_camera", "", "_isPrimary"];
+	if (!_isPrimary) then { camDestroy _camera };
+} forEach _allCamerasInfo;
+</sqf>
+
+|seealso= [[camCreate]] [[camDestroy]]
+}}

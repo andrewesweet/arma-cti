@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Sound
+// revision: 183704 (2021-01-05T16:59:32Z)
+// export sha1: 2ib30iz19xu8nfbnjw4efuzko4e252e
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|Editing}}

@@ -1,0 +1,83 @@
+// source: https://community.bistudio.com/wiki/create3DENEntity
+// revision: 377519 (2026-01-02T06:52:05Z)
+// export sha1: tfx1f601lee70gdxhwkvgkgwuwsm9jr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Create new [[Eden Entity]]. Used for creating individual entities; to create a [[Eden_Editor:_Composition|composition]] (e.g., infantry squad), use [[create3DENComposition]] and to create a [[Eden_Editor:_Layer|layer]] use [[add3DENLayer]].<br>
+This is the only way to add new editable entities to an [[:Category:Eden Editor|Eden Editor]] scenario. Other 'create' commands like [[createVehicle]] or [[createUnit]] will still work, but the resulting entity will not be editable.
+
+|s1= [[create3DENEntity]] [mode, class, position, isEmpty]
+
+|p1= mode: [[String]] - can be "Object", "Trigger", "Waypoint", "Logic", "Marker" or {{GVI|arma3|2.14|size= 0.75}} "Comment"
+
+|p2= class: [[String]] - entity class, defined in one of the following classes:
+* {{hl|CfgVehicles}} - objects and logic entities
+* {{hl|CfgNonAIVehicles}} - triggers
+* {{hl|CfgWaypoint}} - waypoints
+* {{hl|CfgMarkers}} - markers
+
+|p3= position: [[Position]]
+
+|p4= isEmpty: [[Boolean]] - (Optional, default [[false]]) [[true]] to create vehicle without crew
+
+|r1= [[Eden Entity]] ([[Eden_ID]] for Comment)
+
+|s2= group [[create3DENEntity]] [mode, class, position]
+
+|p21= group: [[Group]] - group in which an AI character or waypoint is created.
+* When missing for AI characters, a new group is created for them
+* When missing for waypoints, an error is logged and nothing is created
+* When used on any other mode, it is ignored and the entity is created as usual
+
+|p22= mode: [[String]] - can be "Object", "Trigger", "Waypoint", "Logic", "Marker" or {{GVI|arma3|2.14|size= 0.75}} "Comment"
+
+|p23= class: [[String]] - entity class
+
+|p24= position: [[Position]]
+
+|r2= [[Eden Entity]] ([[Eden_ID]] for Comment)
+
+|x1= <sqf>dude1 = create3DENEntity ["Object", "B_Soldier_F", screenToWorld [0.5, 0.5]];</sqf>
+
+|x2= <sqf>dude2 = group dude1 create3DENEntity ["Object", "B_Soldier_AR_F", screenToWorld [0.5, 0.5]];</sqf>
+
+|x3= <sqf>myMarker = create3DENEntity ["Marker", "mil_warning", getPosATL player];</sqf>
+
+|x4= <sqf>mytrigger = create3DENEntity ["Trigger", "EmptyDetectorArea10x10", getPosATL player];</sqf>
+
+|x5= {{GVI|arma3|2.06|size= 0.75}} Create a shape marker:
+<sqf>
+m = create3DENEntity ["Marker", "", getPosATL player];	// default rectangular marker
+m set3DENAttribute ["markerType", 1];					// 0 - rectangle; 1 - ellipse
+m set3DENAttribute ["brush", "DiagGrid"];
+</sqf>
+
+|x6= {{GVI|arma3|2.14|size= 0.75}} Create a comment:
+<sqf>
+myComment = create3DENEntity ["Comment", "loc_talk", [0,0,0]];
+myComment set3DENAttribute ["name", "Title Here"];
+myComment set3DENAttribute ["description", "Tooltip Here"];
+</sqf>
+
+|seealso= [[create3DENComposition]] [[delete3DENEntities]] [[add3DENLayer]] 
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20190906083300
+|text= To create a waypoint, use the alternative syntax and pass the group which should receive it as the left-hand argument.
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20221009072629
+|text= Due to an unknown reason, you cannot [[create3DENEntity]] animals, will cause a crash of the game.
+}}

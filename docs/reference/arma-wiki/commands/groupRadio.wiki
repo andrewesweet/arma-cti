@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/groupRadio
+// revision: 363908 (2024-04-24T22:08:47Z)
+// export sha1: 8e7txy43ixkzrtn6fothjoylfjjnnrb
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Command Group: Sounds | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Radio and Chat
+
+|gr2= Sounds
+
+|descr= Sends the audio message to the group radio channel. The message is defined in CfgRadio in the [[Description.ext|description.ext]] file or config radio protocol. 
+{{Feature|important|
+The unit must have an [[assignItem|assigned]] radio item (such as '''''"ItemRadio"''''') to see or transmit the messages.
+A radio item must have the property <syntaxhighlight lang="cpp" inline>simulation = "ItemRadio";</syntaxhighlight> in its [[CfgWeapons_Config_Reference#simulation.3D.22Weapon.22|CfgWeapons config]].
+}}
+{{Feature|informative|When the transmitting unit gets killed, the transmission is interrupted. However when the receiving unit gets killed, the transmission continues to play.}}
+
+|mp= If you need the transmission to play on all computers, you have to execute it globally (see [[remoteExec]]).
+
+|s1= unit [[groupRadio]]  radioName
+
+|p1= unit: [[Object]] - unit to transmit
+
+|p2= radioName: [[String]] - class name from {{hl|CfgRadio}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_soldierOne groupRadio "messageOne";</sqf>
+
+|x2= <sqf>player groupRadio (configName selectRandom ("true" configClasses (configFile >> "CfgRadio")));</sqf>
+
+|seealso= [[sideRadio]] [[groupChat]] [[customRadio]] [[vehicleRadio]] [[globalRadio]] [[directSay]] [[commandRadio]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20161203213400
+|text= To transmit user custom sounds (see [[Multiplayer Custom Sounds Tutorial]]), prefix the full filename including file extension with {{hl|#}}.
+For example if there is a custom user sound file called {{hl|MySound.ogg}}, to play it on the radio use:
+<sqf>player groupRadio "#MySound.ogg";</sqf>
+}}

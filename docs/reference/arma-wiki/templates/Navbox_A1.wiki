@@ -1,0 +1,14 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/A1
+// revision: 323127 (2022-06-30T15:04:40Z)
+// export sha1: 67kozlpse8jreue26b3ycdzb1kbxojd
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Navbox
+|title= Factions in {{GameCategory|arma1|link=y}}
+|content1= [[USA (ArmA)|USA]] {{!}} [[Royal Army Corps of Sahrani|RACS]] {{!}} [[Sahrani Liberation Army|SLA]] {{!}} [[Civilians (ArmA)|Civilians]]
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Adds an {{GameCategory|arma1|link=y}} faction navbox.
+
+|example1= <nowiki>{{Navbox/A1}}</nowiki>
+|result1= <div style="width: 50em"></div>{{Navbox/A1}}
+}}</noinclude>

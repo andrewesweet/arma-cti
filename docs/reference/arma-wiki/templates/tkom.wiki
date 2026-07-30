@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:tkom
+// revision: 322489 (2022-06-13T10:37:10Z)
+// export sha1: tjjmzu3q6e3jd8qz1j6rt4arbucm66p
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|tkom}}</includeonly><noinclude>{{Doc/Template
+|descr= Returns {{hl|{{tkom}}}}.
+|example1= <nowiki>{{tkom}}</nowiki>
+|result1= {{tkom}}
+}}</noinclude>

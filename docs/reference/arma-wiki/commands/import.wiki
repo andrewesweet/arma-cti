@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/import
+// revision: 369760 (2024-10-08T15:08:56Z)
+// export sha1: nuijgbgz5zivl4a2mftx4keoopqjcgd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Variables
+
+|descr= Imports one or multiple local variables from the parent scope, and defines them as [[private]] variables in the current scope. It can bypass [[privateAll]].
+
+{{Feature|informative|For the config keyword, see [[import (Config)]].}}
+
+|s1= [[import]] variableName
+
+|p1= variableName: [[String]] or [[Array]] of [[String]]s - variable(s) to import
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+private _myVar = 1;
+call
+{
+	import "_myVar"; // similar to: private _myVar = _myVar;
+};
+</sqf>
+
+|x2= <sqf>
+private _a = 1;
+private _b = 2;
+call
+{
+	import ["_a", "_b"]; // similar to: [_a, _b] params ["_a", "_b"];
+};
+</sqf>
+
+|seealso= [[privateAll]] [[private]] [[params]]
+}}
+
+{{Note
+|user= Hypoxic125
+|timestamp= 20240303183125
+|text= When making local functions, the imported variable does not have to exist until the function is called.
+
+<sqf>
+// Local function
+private _stringifyNum = {
+	import "_num";
+	str _num;
+};
+
+private _num = 5;
+call _stringifyNum;
+// Returns "5"
+</sqf>
+}}

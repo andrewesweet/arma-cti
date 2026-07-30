@@ -1,0 +1,20 @@
+// source: https://community.bistudio.com/wiki/Template:Clarify
+// revision: 194872 (2021-01-16T18:18:08Z)
+// export sha1: 8jer2zzyy2yxn7nlk0ftph5vn6csacj
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}|<span style="border-bottom: 0.0625em dotted grey; cursor: help" title{{=}}"This statement needs clarification.{{#if:{{{2||}}}|<nowiki/> Reason: {{{2}}}}}">{{{1}}}</span>|}}<sup style="font-size:75%">[[:Category:Clarification needed|Clarify]]</sup>{{TemplateCase||[[Category:Clarification needed|{{uc:{{PAGENAME}}}}]]}}</includeonly><noinclude>{{Doc/Template
+|descr= This template will add a small superior note that links to the [[:Category:Clarification needed|Clarification needed]] category, whilst simultaneously adding the page to that category.
+|param1= statement
+|descr1= (Optional) the statement to clarify
+|param2= reason
+|descr2= (Optional) reason for needed clarification
+|example1= <nowiki>unclear statement{{Clarify}}</nowiki>
+|result1= unclear statement{{Clarify}}
+|example2= <nowiki>{{Clarify|unclear statement}}</nowiki>
+|result2= {{Clarify|unclear statement}}
+|example3= <nowiki>unclear statement{{Clarify||This statement is unclear!}}</nowiki>
+|result3= unclear statement{{Clarify||This statement is unclear!}}
+|example4= <nowiki>{{Clarify|unclear statement|This statement is unclear!}}</nowiki>
+|result4= {{Clarify|unclear statement|This statement is unclear!}}
+}}</noinclude>

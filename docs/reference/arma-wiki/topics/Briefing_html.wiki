@@ -1,0 +1,244 @@
+// source: https://community.bistudio.com/wiki/Briefing.html
+// revision: 364465 (2024-05-16T20:41:48Z)
+// export sha1: 1m0qqz36jznw7mtnu33fwpsep2mwb50
+// categories: Category:Briefing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|informative|In '''{{arma2}}''' In briefing.html is only used for the debriefing text. For more information see [[Arma 2: Briefing]].}}
+{{Feature|arma3|Briefing.html is completely obsolete in {{arma3}}. For briefing creation, see [[Arma 3: Briefing]]. For debriefing, see [[Arma 3: Debriefing]].}}
+
+== Introduction ==
+
+[[Briefing.html]] is a simple HTML file located in the mission folder. You have to create this file manually, and the file will be loaded automatically when the mission begins. For SP missions and campaigns, the [[Briefing.html]] is accompanied with the [[Overview.html]] file.
+
+The briefing is split into 4 main sections:
+* Notes
+* Plan
+* Objectives
+* Endings
+
+To preview your briefing whilst in the editor, hold SHIFT while clicking 'preview'.
+
+
+== Notes ==
+
+The '''Briefing Notes''' section gives the player additional information about the mission. You can specify the mission goal in more detail, give some hints or add other background information. 
+In multiplayer missions the '''Notes''' section is seen exactly the same regardless of [[side]].
+
+
+== Plan and Objectives ==
+
+The '''Briefing Plan''' section of the Briefing.html is used as a formal introduction to your mission.
+The mission plan is the only interactive part of the mission briefing - you can change it from within the mission at any time.
+
+You can have as many objectives in the mission plan as you want, but every objective has to have its own small section. The name of the section is "OBJ_ID", where ID is an arbitrary identification of the objective - but it is recommended to use numbers. (For example, the first objective should be "OBJ_1", the second "OBJ_2", etc.)
+
+You can change the status of an objective any time by using [[objStatus]] function. Just write "ID" objStatus "Status" in a script or trigger. ID is objective's ID; Status can be Active (visible objective), Hidden (invisible objective), Failed (failed objective) or Done (completed objective). When the player is in Cadet mode and you change status of any objective to Done, the message "Objective completed" appears. If you change it to any other type, the message on the screen will be "Mission plan updated".
+
+
+== Endings ==
+
+The last part of the briefing is the '''debriefing'''. You can have up to six endings in your mission and all of them need their own debriefing. Simply choose the appropriate section (there are "End1" and "End2" sections in the example below), change the "Title" and write your own description of the ending. Again, the space for this isn't limited. Mission endings are controlled by choosing appropriate [[Triggers|trigger]] type (End #1, End #2, etc.).
+
+
+== Simple Example ==
+
+Briefing.html:
+<syntaxhighlight lang="html">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+<title>Briefing</title>
+</head>
+<body>
+
+<!-------------------------------->
+<!--- Notes                    --->
+<!--------------------------------> 
+<h2><a name="Main"></a></h2>
+
+<p>
+Write some text here - it will be in the "Notes" section.
+<br><br>
+You can use some <a href="marker:MarkerName">links</a> too.
+When the player clicks on it, the map will center to the marker.
+</p>
+
+<hr>
+<!--- End of Notes             --->
+
+<!-------------------------------->
+<!--- Missions plan            --->
+<!-------------------------------->
+
+<p><a name="Plan"></a>
+Short description of the mission.
+</p>
+<hr>
+
+<p><a name="OBJ_1"></a>First objective.
+</p>
+<hr>
+
+<p><a name="OBJ_2"></a>Second objective.
+</p>
+<hr>
+<!--- End of Missions plan     --->
+
+<!-------------------------------->
+<!--- Debriefings              --->
+<!-------------------------------->
+<hr>
+
+<br>
+<h2><p><a name="Debriefing:End1">Title</a></p></h2>
+<br>
+<p>
+Write description of End1 here.
+</p>
+<br>
+
+<hr>
+
+<br>
+<h2><p><a name="Debriefing:End2">Title</a></p></h2>
+<br>
+<p> 
+Write description of End2 here.
+</p>
+<br>
+
+<!--- End of Debriefings       --->
+
+</body>
+</html>
+</syntaxhighlight>
+
+
+== Advanced Briefing ==
+
+The original BIS style briefings employ a small amount of information on the mission to be played, giving the player only the most basic of intelligence needed to complete his task. The BIS notes section usually takes the form of a diary entry and whilst these methods are certainly an accepted in the community, there is another way to write your briefings.
+
+=== Subpages ===
+
+The advanced briefing takes writing and presenting a briefing to a whole new level. Using links and pictures, you can create a much more detailed and aesthetically pleasing effect which allow you to share with the player as much information as you wish.
+Multiple pages will allow you to present different portions of your briefing in an orderly fashion. For example, you may wish to break your briefing down into phases such as:
+* Sitrep (Situation Report)
+* Orders
+* Insertion
+* Target
+* Exfiltration
+* Friendly Forces
+* Enemy Forces
+
+With various links this is easily achievable: See [[#Custom sections|Custom sections]].
+{{Feature|informative|For easy navigation, do not forget to add a "back" button leading back to the main part (plan)!}}
+
+=== Side-specific briefing ===
+
+The following line makes the briefing identical for all sides:
+<syntaxhighlight lang="html"><a name="Plan"></a></syntaxhighlight>
+
+To make side-specific briefing, "Plan.''side''" can be used:
+<syntaxhighlight lang="html"><a name="Plan.west"></a></syntaxhighlight>
+
+Objectives go as follow:
+<syntaxhighlight lang="html"><a name="OBJ_1"></a></syntaxhighlight>
+
+Side-specific:
+<syntaxhighlight lang="html"><a name="OBJ_WEST_1"></a></syntaxhighlight>
+
+=== Custom sounds ===
+
+You can define some sounds for the briefing in the [[#Description.ext#CfgSounds|Description.ext CfgSounds section]], and activate them at the top of the description file using:
+
+<syntaxhighlight lang="cpp">
+onBriefingGear = "SoundName";
+onBriefingPlan = "SoundName";
+onBriefingGroup = "SoundName";
+</syntaxhighlight>
+
+
+== Other possibilities ==
+
+=== Markers ===
+
+You can add [[Eden Editor: Marker|marker]] links in your briefing. Take a look at this line from the example above:
+ You can use some <a href="marker:MarkerName">links</a> too.
+In this code, "MarkerName" is the name of the marker in your mission. The text in the tag ("links" in this case) will be in different color - and if the player clicks on it, the screen will center to the marker (named "MarkerName").
+
+=== Custom sections ===
+
+If you want, you can create your own sections in the briefing, as here:
+<syntaxhighlight lang="html">
+<!-------------------------------->
+<!--- Notes section            --->
+<!-------------------------------->
+
+<h2><a name="Main"></a></h2>
+<p>
+Write some text here - it will be in the "Notes" section.
+<br><br>
+You can use some <a href="marker:MarkerName">links</a> too.
+<br>
+You can also use <a href="#MySection">your own section</a> in the briefing.
+</p>
+<hr>
+
+<!--- End of Notes             --->
+
+<h2><a name="MySection">Section name</a></h2>
+<p>
+
+This is the new section of the briefing.
+<br><br><br>
+<a href="#Main">Link back</a>
+</p>
+<hr>
+
+<!-------------------------------->
+<!--- Missions plan            --->
+<!-------------------------------->
+</syntaxhighlight>
+As you can see, you have to create a new section in HTML code. It begins with a name (<a name="…">) and ends with <nowiki><hr></nowiki>. This tag has special meaning in OFP, it divides the sections of the briefing. In this example, "your own section" is the link to the section; "Section name" is the headline. (This can be empty - try this: <nowiki><a name="MySection"></a> </h2></nowiki>.)
+
+=== Pictures ===
+
+Pictures can be added to your briefings, simply by using this img-tag:
+<syntaxhighlight lang="html"><p align="center"><img src="PictureName.jpg" width="128" height="64"></p></syntaxhighlight>
+In this example "PictureName.jpg" is the name of your picture. It has to be in the correct mission folder. Its maximum resolution is 256x256 pixels, and both width and height have to be a power of two (i.e. both sides have to be 2, 4, 8, 16, 32, 64, 128 or 256 pixels). "Width" and "Height" are the new width and height of the picture; that is, how it will be seen on the screen. "Align" determines if the picture is centered or not. You can set it as "left", "right" or "center".
+
+=== Font types ===
+
+You can use various fonts in the briefing. Notice the <nowiki><p> and </p></nowiki> tags before and after any text - if you replace them with "headline" tags, the text will be in a different format. A list of tags follows:
+* <nowiki><h1></nowiki>: large headline
+* <nowiki><h2></nowiki>: small headline
+* <nowiki><h3></nowiki>: normal text
+* <nowiki><h4></nowiki>: smaller text
+* <nowiki><h5></nowiki>: book text style
+* <nowiki><h6></nowiki>: hand written text
+
+=== Multi-language briefings ===
+
+There is the possibility to make versions of the briefing for other languages. At the moment there is support for the following languages:
+* Czech
+* English
+* French
+* German
+* Italian
+* Polish
+* Russian
+* Spanish
+
+The files must be named "briefing.'''''language'''''.html" (e.g "briefing.'''French'''.html", "briefing.'''Italian'''.html").<br>
+If the user language cannot be found, the usual file "briefing.html" will be displayed. 
+
+* '''{{ofp}}:''' Special characters are not shown in the regular "briefing.html" and should be html-encoded ({{hl|&amp;eacute;}} for {{hl|é}}, etc)
+* '''{{arma1}}:''' In order for special characters to be shown in ArmA, you have to save your briefing in UTF-8 (notepad "save as..." options)
+
+
+== See Also ==
+* [[Overview.html]]
+
+[[Category:Briefing]]

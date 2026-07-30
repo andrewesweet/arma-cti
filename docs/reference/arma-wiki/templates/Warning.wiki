@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Warning
+// revision: 336989 (2023-01-05T10:25:14Z)
+// export sha1: iddj7lwjqycjnpcd3uv64yys14n99xp
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Feature|warning|{{{1}}}}}</includeonly><noinclude>See [[Template:Feature|Feature-warning Template]].[[Category:Historical Templates]]</noinclude>

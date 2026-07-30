@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENExportOldSQM
+// revision: 342122 (2023-07-09T12:26:41Z)
+// export sha1: c4wmgk3njc4o422gh2d12enifhh846n
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Export current mission (usually in [[:Category:Eden Editor|Eden Editor]]) in [[2D Editor]] format to the clipboard.
+
+|s1= call [[BIS_fnc_3DENExportOldSQM]]
+
+|r1= [[Nothing]] - old SQM is [[copyToClipboard|copied to the clipboard]]
+
+|x1= See [[Arma 3: Debug Console|Debug Console]]<sqf>call BIS_fnc_3DENExportOldSQM; // execute in debug console</sqf>
+
+|seealso= [[:Category:Eden Editor|Eden Editor]] [[2D Editor]]
+}}

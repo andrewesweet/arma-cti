@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_mapAnimAdd
+// revision: 323161 (2022-07-01T10:31:36Z)
+// export sha1: 5bulwc9qot01w6u23lw71gsngbjxjvg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Map and Markers
+
+|arg= local
+
+|eff= local
+
+|descr= Similar to [[mapAnimAdd]], yet it provides additional parameters to allow for a non-linear zoom and various position interpolation modes.
+
+|s1= [duration, toZoom, toPosition, interpModeZoom, interpModePosition, fromZoom, fromPosition] call [[BIS_fnc_mapAnimAdd]]
+
+|p1= duration: [[Number]] - (Optional, default 1.0) the animation duration in seconds
+
+|p2= toZoom: [[Number]] - (Optional, default 0.05) the zoom at the end of the animation, ranging from 0.01 (max. zoom) to 1 (zoomed out)
+
+|p3= toPosition: [[Position]] - (Optional, default [0, 0, 0]) the position vector
+
+|p4= interpModeZoom: [[Number]] - (Optional, default 12) the interpolation mode for the zoom
+
+|p5= interpModePosition: [[Number]] - (Optional, default 12) the interpolation mode for the position
+
+|p6= fromZoom: [[Number]] - (Optional, default current map zoom) the zoom at the begnning of the animation, ranging from 0.01 (max. zoom) to 1 (zoomed out)
+
+|p7= fromPosition: [[Array]] format [[Position]] - (Optional, default current map position) the position vector from which to start the animation
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+openMap true; // the function will not work if the map is not open
+[2.0, 0.05, getPosASL player] call BIS_fnc_mapAnimAdd;
+</sqf>
+
+|seealso= [[BIS_fnc_mapAnimClear]] [[BIS_fnc_mapAnimDone]] [[mapAnimAdd]] [[mapAnimClear]] [[mapAnimCommit]] [[mapAnimDone]] [[ctrlMapAnimAdd]] [[ctrlMapAnimClear]] [[ctrlMapAnimCommit]] [[ctrlMapAnimDone]]
+}}

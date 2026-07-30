@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/Template:TerrainProcessorManual
+// revision: 226990 (2021-01-31T18:32:14Z)
+// export sha1: tsojg2nm7eriuahc01q4fgiij0gfz9z
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>__NOTOC__ __NOEDITSECTION__ <div class="_description tool">
+
+=== Task details ===
+'''Task name''' : {{{1}}}
+
+'''Dll plugin name''' : {{{2}}}
+
+'''Geometry type''' : {{{3}}}
+
+'''Heightmap''' : {{{4}}}
+
+{{#if:{{{DESCRIPTION|}}}|===Description===
+{{{DESCRIPTION}}}|}}
+
+{{#if:{{{TASKPARAMETERS|}}}|===Task parameters===
+{{{TASKPARAMETERS}}}|}}
+
+{{#if:{{{OBJECTPROTOTYPEPARAMETERS|}}}|===Object prototype parameters===
+{{{OBJECTPROTOTYPEPARAMETERS}}}|}}
+
+{{#if:{{{USAGE|}}}|===Usage===
+{{{USAGE}}}|}}
+
+{{#if:{{{ALGORITHM|}}}|===Algorithm===
+{{{ALGORITHM}}}|}}
+
+{{#if:{{{SAMPLE|}}}|===Sample===
+{{{SAMPLE}}}|}}
+</div></includeonly><noinclude>
+== Usage ==
+<pre>
+{{TerrainProcessorManual|Task name|Dll|Geomery|Heightmap
+|DESCRIPTION=
+|TASKPARAMETERS=
+|OBJECTPROTOTYPEPARAMETERS=
+|USAGE=
+|ALGORITHM=
+|SAMPLE=
+}}
+</pre>
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

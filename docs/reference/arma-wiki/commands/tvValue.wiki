@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/tvValue
+// revision: 347317 (2023-09-10T15:24:11Z)
+// export sha1: n49zyf6zswwlzpjlzh9w0tejw6egyi6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|arg= local
+
+|eff= local
+
+|descr= Returns numeric value set for given tree view path. 
+
+|s1= [[tvValue]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Array]] of [[Number]]s
+
+|r1= [[Number]] - set value; if no value was set, 0 is returned
+
+|s2= ctrl [[tvValue]] path
+
+|p21= ctrl: [[Control]]
+
+|p22= path: [[Array]] of [[Number]]s
+
+|r2= [[Number]] - set value; if no value was set, 0 is returned
+
+|x1= <sqf>tvValue [101, [0]];</sqf>
+
+|x2= <sqf>_ctrl tvValue [0,0,0];</sqf>
+
+|seealso= [[tvAdd]] [[tvClear]] [[tvCollapse]] [[tvCount]] [[tvCurSel]] [[tvData]] [[tvDelete]] [[tvExpand]] [[tvPicture]] [[tvSetCurSel]] [[tvSetData]] [[tvSetPicture]] [[tvSetValue]] [[tvSort]] [[tvSortByValue]] [[tvText]]
+}}

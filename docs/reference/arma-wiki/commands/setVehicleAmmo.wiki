@@ -1,0 +1,82 @@
+// source: https://community.bistudio.com/wiki/setVehicleAmmo
+// revision: 376973 (2026-01-01T06:03:41Z)
+// export sha1: 090xjf0nob8hfs0lmax0f8yyyl9qplv
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Vehicle Inventory
+
+|descr= Sets how much ammunition (compared to a full state defined by the vehicle type) the vehicle has. Note that the ammo will be added only to [[Multiplayer Scripting#Locality|local]] turrets. To check locality of turret use [[turretLocal]].
+
+|s1= vehicleName [[setVehicleAmmo]] value
+
+|p1= vehicleName: [[Object]]
+
+|p2= value: [[Number]] in range 0..1 - 0: empty, 1: full
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setVehicleAmmo 0;</sqf>
+|x2= <sqf>_vehicle setVehicleAmmo 1;</sqf>
+
+|seealso= [[setVehicleAmmoDef]] [[ammo]] [[setAmmo]] [[setAmmoCargo]] [[turretLocal]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">
+<dt class="note">[[User:Ceeeb|Ceeeb]]</dt>
+<dd class="note">This command does not add magazines to vehicle weapons that normally start with more than one magazine. It can however, remove these magazines.
+<dt><dt>
+<dd class="notedate">
+<dt class="note">[[User:Bon_Inf*|Bon_Inf*]]</dt>
+<dd class="note">A2:OA v1.59 - Magazines of vehicle turrets are also refilled by this command.
+<dt><dt>
+<dd class="notedate">
+<dt class="note">[[User:.kju|.kju]]</dt>
+<dd class="note">
+* If you 'unit/vehicle setVehicleAmmo 0;' an unit/vehicle first, you cannot refill it with 'unit/vehicle setVehicleAmmo 1;'.
+* You need to execute where the unit is [[Multiplayer Scripting#Locality|local]].
+* You need to execute on the [[effectiveCommander]] of a vehicle.
+<dt><dt>
+<dd class="notedate">
+<dt class="note">[[User:Galzohar|Galzohar]]</dt>
+<dd class="note">
+* In Arma 3, using this command seems correctly rearm the vehicle and its turrets in all situations (tested with beta 0.72).
+<dt><dt>
+<dd class="notedate">
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+* In Arma 3, when using this on a player, this command can only reduce the number of magazine in relation to the current ammo quantity of the unit. For example if player has 8 magazines, [[player]] [[setVehicleAmmo]] 0.5; will leave unit with 4 mags. Executing [[player]] [[setVehicleAmmo]] 0.5; again will leave unit with 2 mags. [[player]] [[setVehicleAmmo]] 0.5; again -> 1 mag. [[player]] [[setVehicleAmmo]] 0; will remove all mags. If player had 10 mags with 30 bullets in each, [[player]] [[setVehicleAmmo]] 0.01; will leave player with loaded mag with 3 bullets in it (300 x 0.01 = 3)
+
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-12-20 - 21:55 (UTC)</dd>
+<dt class="note">[[User:Actium|Actium]]</dt>
+<dd class="note">
+This command does not operate ''compared to a full state defined by the vehicle type'', but rather relative to a vehicle's current magazine loadout. To get the former behaviour use [[setVehicleAmmoDef]], which utilizes the vehicles default magazine loadout (i.e. its CfgVehicles magazines[] values).
+</dd>
+
+</dl>

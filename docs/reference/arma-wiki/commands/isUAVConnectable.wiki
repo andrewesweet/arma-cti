@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/isUAVConnectable
+// revision: 319168 (2022-05-13T09:23:18Z)
+// export sha1: t15h54aejr41q7adzbxpqb7paodvtib
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= Remote Control
+
+|descr= Returns true if UAV is connectable by AV terminal(s).
+
+|s1= object [[isUAVConnectable]] [uav, checkAllItems]
+
+|p1= object: [[Object]]
+
+|p2= uav: [[Object]] or [[Array]]
+
+|p3= checkAllItems: [[Boolean]] - [[true]] to check all terminals in unit's inventory, [[false]] to only check assigned terminal.
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _canConnect = myUnit isUAVConnectable [myUav, true];</sqf>
+
+|seealso= [[enableUAVConnectability]] [[disableUAVConnectability]]
+}}

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleEffectsPlankton
+// revision: 352077 (2024-02-01T23:24:42Z)
+// export sha1: duljd0q1uajswbgdz3j82kk3dkchwme
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|descr= Creates underwater plankton effect around player (called usually by [[BIS_fnc_moduleEffectsEmitterCreator]]).{{Feature|informative|Mainly meant to be used by modules available in [[:Category:Eden Editor|Eden Editor]]}}
+
+|s1= [module] call [[BIS_fnc_moduleEffectsPlankton]]
+
+|p1= module: [[Object]] - module
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[BIS_module] call BIS_fnc_moduleEffectsPlankton;</sqf>
+
+|seealso= [[Modules]] [[Eden Editor: System]]
+}}

@@ -1,0 +1,249 @@
+// source: https://community.bistudio.com/wiki/Crash_Files
+// revision: 373643 (2025-05-30T14:58:28Z)
+// export sha1: olpjihw6uwpwqjvu5sdcvm8cm16nocq
+// categories: Category:ArmA: Armed Assault: Troubleshooting | Category:Arma 2: Troubleshooting | Category:Arma 3: Troubleshooting | Category:Operation Flashpoint: Troubleshooting
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Location ==
+
+{{Feature|important| If  [[Arma 3: Startup Parameters|-profiles]] startup parameter is used, the crash files will be located in that directory. In addition, the [[:Category:Eden Editor|Eden Editor]] option "Open Log Folder" will open this folder. This parameter can also be found in the [[Arma_3_Launcher#Parameters|Arma 3 Launcher]].}}
+
+{{Feature|informative|The crash file folder of {{arma3}} can be quickly accessed with:
+* Press {{Controls|Windows|R}} to open the run command
+* Type {{hl|%localappdata%\Arma 3}} (for {{arma3}}) and confirm
+See other paths for other games/operating systems in the table below.
+}}
+
+{| class="wikitable"
+! Game
+! Files
+! Directory
+! Operating System
+|-
+| rowspan="2" | {{arma3}}
+| rowspan="2" |
+* arma3.rpt
+* arma3.bidmp
+* arma3.mdmp
+| {{hl|%localappdata%\Arma 3}}
+| Windows 7 &rarr; Windows 10
+|-
+| {{hl|/home/X/.local/share/Arma 3/}}
+| Linux
+|-
+| rowspan="2" | {{Name|arma2oa|short}}
+| rowspan="2" |
+* arma2OA.rpt
+* arma2OA.bidmp
+* arma2OA.mdmp
+| {{hl|%localappdata%\Arma 2 OA}}
+| Windows Vista &rarr; Windows 10
+|-
+| {{hl|%userprofile%\Local Settings\Application Data\Arma 2 OA}}
+| Windows XP
+|-
+| rowspan="2" | {{arma2}}
+| rowspan="2" |
+* arma2.rpt
+* arma2.bidmp
+* arma2.mdmp
+| {{hl|%localappdata%\Arma 2}}
+| Windows Vista &rarr; Windows 10
+|-
+| {{hl|%userprofile%\Local Settings\Application Data\Arma 2}}
+| Windows XP
+|-
+| {{arma1}}
+|
+* arma.rpt
+* arma.bidmp
+* arma.mdmp
+| {{hl|&lt;profileDirectory&gt;\ArmA}}
+| Windows XP &rarr; Windows 10
+|-
+| {{ofp}}
+|
+* flashpoint.rpt (same role as .rpt files)
+* context.bin
+| {{hl|&lt;GameDirectory&gt;}}
+| Windows 95 &rarr; Windows 10
+|}
+
+
+== Log File Content Explained ==
+
+{{Feature|arma3|This section is only valid for {{arma3}}!}}
+{{Feature|informative|This is WIP, please provide feedback in the Arma 3 Discord #community_wiki channel.}}
+
+=== Beginning of the Log File === 
+
+<spoiler text="Show">
+<syntaxhighlight lang="cpp">
+=====================================================================
+== C:\Program Files (x86)\Steam\steamapps\common\Arma 3\Arma3_x64.exe
+== "C:\Program Files (x86)\Steam\steamapps\common\Arma 3\Arma3_x64.exe" -skipIntro -noSplash -hugePages -showScriptErrors
+
+Original output filename: Arma3Retail_DX11_x64
+Exe timestamp: 2020/08/20 01:03:22
+Current time:  2020/09/06 10:35:03
+
+Type: Public
+Build: Development
+Version: 2.01.146606
+
+Allocator: C:\Program Files (x86)\Steam\steamapps\common\Arma 3\Dll\tbb4malloc_bi_x64.dll [2017.0.0.0] [2017.0.0.0]
+PhysMem: 24 GiB, VirtMem : 131072 GiB, AvailPhys : 18 GiB, AvailVirt : 131068 GiB, AvailPage : 19 GiB
+=====================================================================
+
+10:35:03 Detected number of DLCs: 26
+10:35:03 DLC index:3 - unable to get DLC data
+10:35:03 DLC index:23 - unable to get DLC data
+10:35:03 DLC index:24 - unable to get DLC data
+10:35:03 DLC index:25 - unable to get DLC data
+10:35:03 ---------------------------------------------------------- Game ----------------------------------------------------------
+10:35:03                                                                name      appId   owned  installed  available   isDlc
+10:35:03                                                              Arma 3     107410     yes        yes        yes      no
+10:35:03                                                             Unknown         -1      no         no         no     yes
+10:35:03 ---------------------------------------------------------- Dlcs ----------------------------------------------------------
+10:35:03  index                                                         name      appId   owned  installed  available   isDlc
+10:35:03      0                              Arma 3 Alpha Lite - expires now     228800      no         no         no     yes
+10:35:03      1                                                Arma 3 Server     233780     yes        yes         no     yes
+10:35:03      2                                                 Arma 3 Tools     233800     yes        yes         no     yes
+10:35:03      4                                            Arma 3 Soundtrack     249860     yes        yes         no     yes
+10:35:03      5                                                  Arma 3 Maps     249861      no         no         no     yes
+10:35:03      6                                        Arma 3 Tactical Guide     249862      no         no         no     yes
+10:35:03      7                                                  Arma 3 Zeus     275700     yes        yes        yes     yes
+10:35:03      8                                                 Arma 3 Karts     288520     yes        yes        yes     yes
+10:35:03      9                                           Arma 3 Helicopters     304380     yes        yes        yes     yes
+10:35:03     10                                          Arma 3 DLC Bundle 1     304400     yes        yes         no     yes
+10:35:03     11                                              Arma 3 Marksmen     332350     yes        yes        yes     yes
+10:35:03     12                                               Arma 3 Samples     390500     yes        yes         no     yes
+10:35:03     13                                                  Arma 3 Apex     395180     yes        yes        yes     yes
+10:35:03     14                                           Arma 3 Laws of War     571710     yes        yes        yes     yes
+10:35:03     15                                                  Arma 3 Jets     601670     yes        yes        yes     yes
+10:35:03     16                                          Arma 3 DLC Bundle 2     612480     yes        yes         no     yes
+10:35:03     17                                                Arma 3 Malden     639600     yes        yes        yes     yes
+10:35:03     18                                  Arma 3 Tac-Ops Mission Pack     744950     yes        yes        yes     yes
+10:35:03     19                                                 Arma 3 Tanks     798390     yes        yes        yes     yes
+10:35:03     20                                               Arma 3 Contact    1021790     yes        yes        yes     yes
+10:35:03     21   Arma 3 Creator DLC: Global Mobilization - Cold War Germany    1042220     yes        yes        yes     yes
+10:35:03 --------------------------------------------------------------------------------------------------------------------------
+</syntaxhighlight>
+</spoiler>
+
+=== Common Errors and Warnings ===
+
+{{Feature|informative|
+{{Colorball|green}} &rarr; No action needed<br>
+{{Colorball|orange}} &rarr; Issue should be fixed<br>
+{{Colorball|red}} &rarr; Issue '''must''' be fixed<br>
+{{Colorball|grey}} &rarr; A false error; no action required
+}}
+
+{| class="wikitable sortable align-center-col-3" style="width: 100%"
+|-
+! Message (Exact message can vary) !! Explanation !! Significance
+|-
+| ''Warning Message: Picture iconmanleader not found''
+| An image or icon was not found.
+| {{Colorball|green}}
+|-
+| ''Warning Message: You cannot play/edit this mission; it is dependent on downloadable content that has been deleted.'''a3_characters_f'''''
+| False error that can be ignored - only with ''a3_characters_f''
+| {{Colorball|grey}}
+|-
+| ''Updating base class RscShortcutButton->RscButton...'' || Caused by inheriting from wrong config while modifiying an existing base class. Currently {{arma3}} has a lot of these issues out of the box.
+| {{Colorball|red}}
+|-
+| ''Cannot delete class B_KickOff, it is referenced somewhere (used as a base class probably)'' || Attempt to delete a class failed.
+| {{Colorball|red}}
+|-
+| ''SimulWeather - Cloud Renderer - noise texture file is not specified!''
+|
+| {{Colorball|grey}}
+|-
+| ''Warning: looped for animation: a3\anims_f_epa\data\anim\sdr\cts\hubcleaned\briefing\hubbriefing_loop.rtm differs (looped now 0)! MoveName: hubbriefing_ext''
+|
+| {{Colorball|red}}
+|-
+| ''a3\characters_f\proxies\flag.p3d: No geometry and no visual shape''
+|
+| {{Colorball|green}}
+|-
+| ''B_LSV_01_unarmed_F: mainturret - unknown animation source mainturret''
+|
+| {{Colorball|green}}
+|-
+| ''No face for B Alpha 1-4:1''<br>''No speaker given for 'Sotiris Zenon'''
+|
+| {{Colorball|green}}
+|-
+| ''Strange convex component08 in a3\weapons_f_enoch\rifles\msbs\msbs65_ubs_f.p3d:geometryView''
+|
+| {{Colorball|green}}
+|-
+| ''hidebullet_001 - unknown animation source codrivermuzzle_revolving''
+|
+| {{Colorball|green}}
+|-
+| ''Trying to create an invalid center EMPTY''
+|
+| {{Colorball|Orange}}
+|-
+| ''ModParams - Undefined or empty mod directory''
+| [[modParams]] was unable to find the specified mod directory.
+| {{Colorball|orange}}
+|-
+| ''Unit is not in cargo''
+| 
+| {{Colorball|green}}
+|-
+| ''Deinitialized shape [Class: "C_Soldier_VR_F"; Shape: "a3\characters_f_bootcamp\common\vr_soldier_f.p3d";]''
+| 
+| {{Colorball|green}}
+|-
+| ''Error: entity [ProxyFlag_Auto] still has its shape, ref_count=2''
+| 
+|  {{Colorball|green}}
+|-
+| ''"Some path": Missing ';' at the end of line''
+| 
+| {{Colorball|orange}}
+|-
+| ''"Unsupported language English in stringtable"''
+| Happens if an entry was not found in the desired language e.g., '''English'''. This error will even show if it falls back to another language, e.g. '''Original'''. When stringtable can't find the entry it wants, it first tries '''Original''' entry, then '''English''', after that the first entry in the stringtable is taken.
+| {{Colorball|orange}}
+|-
+| ''Serialization of Control variables is not implemented'' || Can be produced when the game is saved (e.g. via [[saveGame]]).<br>
+Possible reasons:
+* [[missionNamespace]] contained a [[Control]] variable.
+* A script or function that was running contained a [[Control]] variable and did not use [[disableSerialization]].
+Solution: Use the [[uiNamespace]] to save [[Control]] variables and use [[disableSerialization]] in scripts and functions that contain [[Control]] variables.
+| {{Colorball|orange}}
+|-
+|''DiaryParser: <nowiki><br/></nowiki> without corresponding <nowiki><br></nowiki>''
+|Erroneous ''&amp;lt;/br&amp;gt;'' (<nowiki></br></nowiki>) instead of ''&amp;lt;br/&amp;gt;'' (<nowiki><br/></nowiki>) used in [[Stringtable.xml|stringtable.xml]] for localized string that is being used with [[createDiaryRecord]] or [[setDiaryRecordText]]. Does not seem to care for <nowiki></br></nowiki> used in scripts directly.
+|{{Colorball|green}}
+|} 
+
+
+== Creating a diagnostic file for DirectX ==
+
+To better analyze the reason for malfunctions it might be useful to also create a DirectX diagnostic file.
+
+* Press {{Controls|Windows|R}} to open the run command.
+* Enter {{hl|dxdiag}} and confirm
+* After data collection is done, click on "Save All Information" and specify a location of where the file should be created.
+
+
+== Sending Crash Files ==
+
+* For '''{{arma3}}''' use {{Link|http://feedback.arma3.com/|Arma 3 Feedback Tracker}} to send crash files. {{Link|https://feedback.bistudio.com/w/ft_a3_howto/|How To Guide}}
+* For '''{{arma2}}''' & '''{{arma2oa}}''' follow the instructions provided in this {{Link|https://forums.bohemia.net/forums/topic/106594-got-game-crash-do-this/|forum thread}}.
+
+
+{{GameCategory|arma0|Troubleshooting}}
+{{GameCategory|arma1|Troubleshooting}}
+{{GameCategory|arma2|Troubleshooting}}
+{{GameCategory|arma3|Troubleshooting}}

@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_drawTXScan
+// revision: 309589 (2022-05-05T12:07:26Z)
+// export sha1: pizg6qy14zsu0xdt2jq2qcp34ymywav
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: TXScan | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= TXScan 
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Draws TXScan with given name
+
+	Parameter(s):
+		STRING - scan name or "" to draw all scans
+		
+	Returns:
+		BOOL - true on success
+		
+	Example:
+		"MyScan" call BIN_fnc_drawTXScan
+		"" call BIN_fnc_drawTXScan - draw all scans
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_drawTXScan]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_drawTXScan;</sqf> -->
+
+|seealso=
+}}

@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgMovesFatigue
+// revision: 373253 (2025-04-12T22:28:08Z)
+// export sha1: 4v1rdop5xz73pok7k1vk7ge89drgqif
+// categories: Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Introduction ==
+See [[CfgVehicles Config Reference|CfgVehicles Config Reference Introduction]] or [[Arma_3_Stamina|Arma 3 Stamina]] for functionality description.
+
+'''This class is defined in base soldier class so all soldiers in vanilla game have the same Stamina behavior. However it can be defined for each soldier class separately if desired.'''
+
+== Alphabetical Order ==
+=== A ===
+==== aimPrecisionSpeedCoef ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+aimPrecisionSpeedCoef	= 5;	//aimPrecision adjusting rate coefficient between two animation states with different aimPrecision parameter value
+</syntaxhighlight>
+
+=== S ===
+==== staminaCooldown ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+staminaCooldown = 10; //when you run out of stamina the sprinting is disabled for this duration
+</syntaxhighlight>
+
+==== staminaDuration ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+staminaDuration = 60; //total amount of stamina
+</syntaxhighlight>
+
+==== staminaRestoration ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+staminaRestoration = 30; //time required for your current stamina pool (total stamina - inventory load) to restore
+</syntaxhighlight>
+
+=== T ===
+==== terrainDrainSprint ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+terrainDrainSprint = -1; //when terrain gradient disable sprint, this stamina value is added to every animation state (do not stack with following terrain threshold)
+</syntaxhighlight>
+
+==== terrainDrainRun ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+terrainDrainRun = -1; //when terrain gradient enable force walk, this stamina value is added to every animation state (do not stack with previous terrain threshold)
+</syntaxhighlight>
+
+==== terrainSpeedCoef ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+terrainSpeedCoef = 0.9; //when terrain gradient disable sprint, animation speed is multiplied by this value
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Reference Lists}}

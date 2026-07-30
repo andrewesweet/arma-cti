@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_drawBoundingBox
+// revision: 376923 (2025-12-29T12:16:33Z)
+// export sha1: hfbtayrssi9x5i9603kn6xyqf0i21av
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.98 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.98
+
+|gr1= Object Manipulation
+
+|descr= Draws bounding box around given objects.
+
+|s1= [objects, color, draw] call [[BIS_fnc_drawBoundingBox]]
+
+|p1= objects: [[Array]] of [[Object]]s - (Optional, default <sqf inline>[objNull]</sqf>)
+
+|p2= color: [[Array]] in format [[Color|Color (RGBA)]] - (Optional, default [1,0,1,1])
+
+|p3= draw: [[Boolean]] - (Optional, default nil) [[true]] to draw, [[false]] to remove
+
+|r1= [[Boolean]] - [[true]] if successful, [[false]] if not
+
+|x1= <sqf>[[BIS_building], [1,0,1,1], true] call BIS_fnc_drawBoundingBox;</sqf>
+
+|x2= <sqf>[[], [], false] call BIS_fnc_drawBoundingBox;</sqf>
+
+|seealso= [[boundingBoxReal]] [[boundingBox]]
+}}

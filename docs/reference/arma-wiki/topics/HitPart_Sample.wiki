@@ -1,0 +1,171 @@
+// source: https://community.bistudio.com/wiki/HitPart_Sample
+// revision: 347049 (2023-08-28T22:08:18Z)
+// export sha1: boa8tnowmy0i3aw7qwgk26iflktz0ql
+// Vendored snapshot. Do not edit — re-export instead.
+
+<syntaxhighlight lang="cpp">
+[
+	[
+		3e676040# 164932: b_soldier_01.p3d REMOTE,	// target
+		B Alpha 1-1:1 (KK),							// shooter
+		165405: c4_charge_small.p3d,				// damage caused by
+		[2494.03,5661.56,73.3266],					// PositionASL of impact
+		[0,0,0],									// impact velocity
+		["leftfoot"],								// target selection that was hit
+		[											
+			1250,						// hit value
+			1250,						// indirect hit value
+			10,							// indirect hit range
+			1,							// explosive damage
+			"DemoCharge_Remote_Ammo" 	// ammo class
+		],
+		[-0.40303,-0.915106,-0.0121449], 		// hit surface surfaceNormal
+		0.122292,								// radius (size) of component hit
+		"A3\data_f\Penetration\meat.bisurf", 	// surface type hit
+		false									// true - direct hit; false - splash damage
+	],[
+		3e676040# 164932: b_soldier_01.p3d REMOTE,
+		B Alpha 1-1:1 (KK),
+		165405: c4_charge_small.p3d,
+		[2494.38,5661.56,73.342],
+		[0,0,0],
+		["rightfoot"],
+		[1250,1250,10,1,"DemoCharge_Remote_Ammo"],
+		[-0.402983,-0.915127,-0.012144],
+		0.122292,
+		"A3\data_f\Penetration\meat.bisurf",
+		false
+	],[
+		3e676040# 164932: b_soldier_01.p3d REMOTE,
+		B Alpha 1-1:1 (KK),
+		165405: c4_charge_small.p3d,
+		[2494.16,5661.69,74.9598],
+		[0,0,0],
+		["head"],
+		[1250,1250,10,1,"DemoCharge_Remote_Ammo"],
+		[-0.403009,-0.915119,-0.0118809],
+		0.128259,
+		"A3\data_f\Penetration\meatbones.bisurf",
+		false
+	],[
+		3e676040# 164932: b_soldier_01.p3d REMOTE,
+		B Alpha 1-1:1 (KK),
+		165405: c4_charge_small.p3d,
+		[2494.05,5661.53,73.5859],
+		[0,0,0],
+		["leftleg"],
+		[1250,1250,10,1,"DemoCharge_Remote_Ammo"],
+		[-0.403024,-0.915109,-0.0121034],
+		0.245614,"A3\data_f\Penetration\meat.bisurf",
+		false
+	],[
+		3e676040# 164932: b_soldier_01.p3d REMOTE,
+		B Alpha 1-1:1 (KK),
+		165405: c4_charge_small.p3d,
+		[2494.34,5661.53,73.589],
+		[0,0,0],
+		["rightleg"],
+		[1250,1250,10,1,"DemoCharge_Remote_Ammo"],
+		[-0.402985,-0.915127,-0.0121043],
+		0.244403,
+		"A3\data_f\Penetration\meat.bisurf",
+		false
+	],[
+		3e676040# 164932: b_soldier_01.p3d REMOTE,
+		B Alpha 1-1:1 (KK),
+		165405: c4_charge_small.p3d,
+		[2494.3,5661.6,74.002],
+		[0,0,0],
+		["rightupleg"],
+		[1250,1250,10,1,"DemoCharge_Remote_Ammo"],
+		[-0.402992,-0.915124,-0.0120368],
+		0.270724,
+		"A3\data_f\Penetration\meat.bisurf",
+		false
+	],[
+		3e676040# 164932:b_soldier_01.p3d REMOTE,
+		B Alpha 1-1:1 (KK),
+		165405: c4_charge_small.p3d,
+		[2494.08,5661.6,73.9916],
+		[0,0,0],
+		["leftupleg"],
+		[1250,1250,10,1,"DemoCharge_Remote_Ammo"],
+		[-0.403021,-0.915111,-0.0120375],
+		0.276019,
+		"A3\data_f\Penetration\meat.bisurf",
+		false
+	],[
+		3e676040# 164932: b_soldier_01.p3d REMOTE,
+		B Alpha 1-1:1 (KK),
+		165405: c4_charge_small.p3d,
+		[2494.45,5661.59,74.6458],
+		[0,0,0],
+		["rightarm"],
+		[1250,1250,10,1,"DemoCharge_Remote_Ammo"],
+		[-0.402966,-0.915137,-0.0119338],
+		0.201042,
+		"A3\data_f\Penetration\meat.bisurf",
+		false
+	],[
+		3e676040# 164932: b_soldier_01.p3d REMOTE,
+		B Alpha1-1:1 (KK),
+		165405: c4_charge_small.p3d,
+		[2494.65,5661.56,74.4757],
+		[0,0,0],
+		["rightforearm"],
+		[1250,1250,10,1,"DemoCharge_Remote_Ammo"],
+		[-0.402938,-0.915149,-0.0119625],
+		0.185828,
+		"A3\data_f\Penetration\meat.bisurf",
+		false
+	],[
+		3e676040# 164932: b_soldier_01.p3d REMOTE,
+		B Alpha 1-1:1 (KK),
+		165405: c4_charge_small.p3d,
+		[2493.69,5661.56,74.4522],
+		[0,0,0],
+		["leftforearm"],
+		[1250,1250,10,1,"DemoCharge_Remote_Ammo"],
+		[-0.403069,-0.915092,-0.0119617],
+		0.171061,
+		"A3\data_f\Penetration\meat.bisurf",
+		false
+	],[
+		3e676040# 164932: b_soldier_01.p3d REMOTE,
+		B Alpha 1-1:1 (KK),
+		165405: c4_charge_small.p3d,
+		[2493.88,5661.59,74.6279],
+		[0,0,0],
+		["leftarm"],
+		[1250,1250,10,1,"DemoCharge_Remote_Ammo"],
+		[-0.403044,-0.915103,-0.011934],
+		0.191989,
+		"A3\data_f\Penetration\meat.bisurf",
+		false
+	],[
+		3e676040# 164932: b_soldier_01.p3d REMOTE,
+		B Alpha 1-1:1 (KK),
+		165405: c4_charge_small.p3d,
+		[2494.17,5661.64,74.6648],
+		[0,0,0],
+		["spine3"],
+		[1250,1250,10,1,"DemoCharge_Remote_Ammo"],
+		[-0.403007,-0.915119,-0.011929],
+		0.220345,
+		"A3\data_f\Penetration\meatbones.bisurf",
+		false
+	],[
+		3e676040# 164932: b_soldier_01.p3d REMOTE,
+		B Alpha 1-1:1 (KK),
+		165405: c4_charge_small.p3d,
+		[2494.18,5661.62,74.3631],
+		[0,0,0],
+		["spine1"],
+		[1250,1250,10,1,"DemoCharge_Remote_Ammo"],
+		[-0.403007,-0.915119,-0.0119778],
+		0.240982,
+		"A3\data_f\Penetration\meatbones.bisurf",
+		false
+	]
+]
+</syntaxhighlight>

@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/Color
+// revision: 376825 (2025-11-22T11:46:47Z)
+// export sha1: 4ibgr6hp4m5s8rkmpu6mey5opardy9m
+// categories: Category:Arrays
+// Vendored snapshot. Do not edit — re-export instead.
+
+Color is [[:Category:Arrays|a format]] of an [[Array]],
+namely an [[Array]] of [[Number]]s in format {{hl|[r, g, b]}} or {{hl|[r, g, b, a]}}, values ranging from 0 to 1.
+
+* '''r''' is the intensity of '''{{Color|#F00|r}}'''ed,
+* '''g''' is the intensity of '''{{Color|#0F0|g}}'''reen,
+* '''b''' is the intensity of '''{{Color|#00F|b}}'''lue
+* '''a''', if present, is '''{{Color|grey|a}}'''lpha (opacity). An alpha value of 0 means totally transparent and a value of 1 means totally opaque.
+
+{{Feature|informative|
+In config, the color array respects the RGBA format, only it is encapsulated by curly braces:
+<syntaxhighlight lang="cpp">myColor[] = { 1, 1, 1, 1 };</syntaxhighlight>
+}}
+
+== Examples ==
+
+{|  class="wikitable"
+! Colour
+! [[SQF Syntax|SQF]] Array
+! HTML
+! Render
+|-
+| Mauve purple
+| <sqf>[0.3, 0.3, 0.5, 1]</sqf>
+| <syntaxhighlight lang="html">#4D4D80</syntaxhighlight>
+| style="background-color: #4D4D80" |
+|-
+| White
+| <sqf>[1, 1, 1, 1]</sqf>
+| <syntaxhighlight lang="html">#FFFFFF</syntaxhighlight>
+| style="background-color: #FFF" |
+|-
+| Camo green
+| <sqf>[0, 0.2, 0, 1]</sqf>
+| <syntaxhighlight lang="html">#003300</syntaxhighlight>
+| style="background-color: #030" |
+|-
+| Rust orange
+| <sqf>[0.73, 0.24, 011, 1]</sqf>
+| <syntaxhighlight lang="html">#BA3D1C</syntaxhighlight>
+| style="background-color: #BA3D1C" |
+|}
+
+
+[[Category: Arrays]]

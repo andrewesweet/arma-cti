@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/lockIdentity
+// revision: 321185 (2022-05-13T15:19:51Z)
+// export sha1: mmfdi9x739b5c8j33nz0gu4mxq93e82
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Identity | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Unit Identity
+
+|descr= Locks the identity of a person. This will disable default identity.
+
+|s1= [[lockIdentity]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Boolean]] - [[true]], if it was applied
+
+|x1= <sqf>_success = lockIdentity player;</sqf>
+
+|seealso= [[loadIdentity]] [[setIdentity]]
+}}

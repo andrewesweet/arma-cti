@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/menuText
+// revision: 378349 (2026-04-02T16:31:38Z)
+// export sha1: kkoq1zyklghuwkip1alpo0bzjgrkcuj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+|game1= arma3
+|version1= 1.56
+|arg=
+|gr1= GUI Control - Menu
+
+|descr= Returns current text set in menu entry on given path.
+|s1= [[menuText]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|r1= [[String]]
+
+|s2= control [[menuText]] path
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|r2= [[String]]
+
+|x1= <sqf>_ctrlMenuStrip menuText [1];</sqf>
+
+|seealso= [[menuSetText]]
+}}

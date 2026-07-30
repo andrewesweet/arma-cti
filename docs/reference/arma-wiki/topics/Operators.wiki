@@ -1,0 +1,308 @@
+// source: https://community.bistudio.com/wiki/Operators
+// revision: 363637 (2024-04-09T03:49:39Z)
+// export sha1: ojumsexwilydnla4o3yq0soq71dtby7
+// categories: Category:Syntax
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+'''Operators''' are the base commands each programming language is built on. They provide ability to perform basic mathematical and logical operations.
+
+
+== Requirements ==
+
+To understand this article, you should read the following articles:
+
+* [[Variables]]
+
+
+== Terms ==
+
+; Operand
+: An [[Operand|operand]] is any value given to an operator.
+
+; Expression
+: An expression is basically any code that returns a value. Read [[Expression|expression]] for more information.
+
+; Unary Operator
+: An unary operator is an operator that requires only one operand.
+:
+: Unary operation:
+: <code style="display: block">''operator'' [[Expression|expression]]</code>
+
+; Binary Operator
+: A binary operator is an operator that requires two operands.
+:
+: Binary operation:
+: <code style="display: block">[[Expression|expression]] ''operator'' [[Expression|expression]]</code>
+
+
+== Operators ==
+
+=== Assignment Operators ===
+
+Assignment operators are used to assign values to a [[Variables|variable]]. OFP's scripting language provides only one assignment operator.
+
+'''Assignment:'''
+ [[Identifier|identifier]] = [[Expression|expression]]
+
+'''Example 1:'''
+<sqf>a = b</sqf>
+
+You might think that this operator compares {{hl|a}} and {{hl|b}}, but that is not the case. {{hl|{{=}}}} simply sets the left value to be the right one. Other assignment operators like {{hl|c= +=}}, {{hl|c= -=}} that can be found in other programming languages do not exist in [[SQF Syntax|SQF]]/[[SQS Syntax|SQS]].
+
+'''Example 2:'''
+<sqf>a = b * c</sqf>
+
+=== Arithmetic Operators ===
+
+Remember arithmetic operations from school? These work just the same way.
+All operands of arithmetic operations must be [[Number]]s. Arithmetic operations always return a [[Number]].
+
+{| class="wikitable"
+|+ Unary arithmetic operators (in order of precedence)
+! Operator !! Name !! Example
+|-
+| - || Negation || <sqf>-a</sqf>
+|-
+| + || Duplication || <sqf>+a</sqf>
+|-
+| ( || Bracket  || <sqf>(expression)</sqf>
+|}
+
+{| class="wikitable"
+|+ Binary arithmetic operators
+! Operator !! Name !! Example
+|-
+| + || Addition || <sqf>a + b</sqf>
+|-
+| - || Subtraction || <sqf>a - b</sqf>
+|-
+| * || Multiplication || <sqf>a * b</sqf>
+|-
+| / || Division || <sqf>a / b</sqf>
+|-
+| % || Modulo || <sqf>a % b</sqf>
+|-
+| mod || Modulo || <sqf>a mod b</sqf>
+|-
+| ^ || Raise to the power of || <sqf>a ^ b</sqf>
+|}
+
+{{Feature|informative|See also [[:Category:Command Group: Math|Math Commands]].}}
+
+=== Logical Operators ===
+
+Logical operators evaluate [[Boolean]] values. All operands of logical operations are [[Boolean]]s.
+A logical operation always returns a [[Boolean]].
+
+{| class="wikitable"
+|+ Unary logical operators
+! Operator !! Name !! Example
+|-
+| ! || Not || <sqf>!a</sqf>
+|-
+| not || Not || <sqf>not a</sqf>
+|}
+
+The {{hl|Not}}-operator always returns the inverse [[Boolean]] value. If a [[Boolean]] {{hl|a}} is {{hl|true}}, {{hl|!a}} returns {{hl|false}} and vice versa.
+
+{| class="wikitable"
+|+ Binary logical operators
+! Operator !! Name !! Example
+|-
+| && || And || <sqf>a && b</sqf>
+|-
+| and || And || <sqf>a and b</sqf>
+|-
+| <nowiki>||</nowiki> || Or || <sqf>a || b</sqf>
+|-
+| or || Or || <sqf>a or b</sqf>
+|}
+
+* {{hl|And}} only returns {{hl|true}} if ''both'' operands are {{hl|true}}
+* {{hl|Or}} returns {{hl|true}} if ''one or both'' operands are {{hl|true}}
+
+
+There is no Xor, Nor and Nand operator. Those can be simulated using the basic operators though:
+
+{| class="wikitable"
+|+ Combined logical operators
+! Name !! Combination
+|-
+| Xor || <sqf>((a || b) && !(a && b))</sqf>
+|-
+| Nor || <sqf>!(a || b)</sqf>
+|-
+| Nand || <sqf>!(a && b)</sqf>
+|}
+
+* {{hl|Xor}} returns {{hl|true}} if ''exactly one'' of both values is {{hl|true}}
+* {{hl|Nor}} returns {{hl|true}} if ''none'' of both values is {{hl|true}}
+* {{hl|Nand}} returns {{hl|true}} if ''not both'' values are {{hl|true}} at the same time
+
+=== Comparison Operators ===
+
+Comparison operators compare two values. Operands of comparisons may be of type [[Number]], [[Side]], [[String]], [[Object]], [[Group]], [[Structured Text]], [[Config]], [[Display]] or [[Control]] for {{hl|c= ==}} and {{hl|c= !=}}, and [[Number]] for {{hl|c= < > >= <=}}.
+Comparisons always return a [[Boolean]]: {{hl|true}} if the comparison matches, {{hl|false}} if not.
+
+{| class="wikitable"
+|+ Comparison operators
+! Operator !! Name !! Example
+|-
+| == || Equal || <sqf>a == b</sqf>
+|-
+| != || Not equal || <sqf>a != b</sqf>
+|-
+| < || Less than || <sqf>a < b</sqf>
+|-
+| > || Greater than || <sqf>a > b</sqf>
+|-
+| <= || Less or equal || <sqf>a <= b</sqf>
+|-
+| >= || Greater or equal || <sqf>a >= b</sqf>
+|}
+
+{{Feature|informative|2=
+{{{!}} class="wikitable" style="float: right"
+! invalid before {{arma3}} v2.00
+! valid in all versions
+{{!}}-
+{{!}} <sqf>a == true</sqf>
+{{!}} <sqf>a</sqf>
+{{!}}-
+{{!}} <sqf>a == false</sqf>
+{{!}} <sqf>!a</sqf>
+{{!}}}
+You could not compare [[Boolean]] values with [[a {{=}}{{=}} b|{{=}}{{=}}]] before '''{{arma3}} v2.00''' (in {{arma3}} before that, use [[isEqualTo]]).<br><!--
+-->Comparing a [[Boolean]] value with {{hl|[[true]]}} is the same as the value itself.<br><!--
+-->Comparing a [[Boolean]] value with {{hl|[[false]]}} is the same as the ''inverse'' value.
+}}
+
+=== Array Operators ===
+
+The scripting language offers own operators to deal with arrays. All operands, of course, have to be of type [[Array]].
+The return value of an array operation is an [[Array]].
+
+{| class="wikitable"
+|+ Unary array operators
+! Operator !! Name !! Example
+|-
+| + || Copy || <sqf>+myArray</sqf>
+|}
+
+Normally arrays are assigned ''by reference''. That means, if you assign array {{hl|a}} to array {{hl|b}} and change {{hl|a}} afterwards, also {{hl|b}} is changed. Use the copy operator to avoid this otherwise useful feature.
+
+'''Example 1:'''
+<sqf>
+_arrayA = [1,2];
+_arrayB = _arrayA;
+_arrayA set [0,5];
+
+// _arrayA => [5,2]
+// _arrayB => [5,2]
+</sqf>
+
+'''Example 2:'''
+<sqf>
+_arrayA = [1,2];
+_arrayB = +_arrayA;
+_arrayA set [0,5];
+
+// _arrayA => [5,2]
+// _arrayB => [1,2]
+</sqf>
+
+{| class="wikitable"
+|+ Binary array operators
+! Operator !! Name !! Example
+|-
+| + || Concatenation || <sqf>myArray1 + myArray2</sqf>
+|-
+| - || Removal || <sqf>myArray1 - myArray2</sqf>
+|}
+
+* {{hl|+}} adds the second operand on the end of the first operand
+* {{hl|-}} removes all elements of the second operand from the first operand
+
+'''Example 1:'''
+<sqf>
+_arrayA = [1,2];
+_arrayB = [3,2,4];
+
+_arrayC = _arrayA + _arrayB;
+
+// _arrayC => [1,2,3,2,4]
+</sqf>
+
+'''Example 2:'''
+<sqf>
+_arrayA = [1,2,3,2,4];
+_arrayB = [2,3];
+
+_arrayC = _arrayA - _arrayB;
+
+// _arrayC => [1,4]
+</sqf>
+
+=== String Operators ===
+
+The scripting language offers one single string operator to concatenate strings. Both operands must be [[String]]s.
+The return value of a string operation is a [[String]].
+
+{| class="wikitable"
+|+ Binary string operators
+! Operator !! Name !! Example
+|-
+| + || Concatenation || <sqf>myString1 + myString2</sqf>
+|}
+
+* {{hl|+}} adds the second operand on the end of the first operand
+
+'''Example:'''
+<sqf>
+_stringA = "Hello ";
+_stringB = "World!";
+
+_stringC = _stringA + _stringB;
+
+// _stringC => "Hello World!"
+</sqf>
+
+=== Config Operators ===
+
+{| class="wikitable"
+|+ Config operators
+! Operator !! Name !! Example
+|-
+| += || Append Array || <syntaxhighlight lang="cpp">myProperty[] += {element_1, element_2};</syntaxhighlight>
+|}
+
+'''Example:'''
+<syntaxhighlight lang="cpp">
+class B_Soldier_F;
+class MySoldier: B_Soldier_F
+{
+	RespawnItems[] += {"FirstAidKit"}; //Adds additional FAK
+};
+
+/*
+	Original RespawnItems[] array in config viewer:
+	RespawnItems[] = {"FirstAidKit"};
+
+	Modified RespawnItems[] array in config viewer:
+	RespawnItems[] = {"FirstAidKit","FirstAidKit"};
+*/
+</syntaxhighlight>
+
+== Order of Precedence ==
+
+{{:Order of Precedence}}
+
+
+== See Also ==
+
+* [[SQF Syntax]]
+* [[SQS Syntax]]
+
+
+[[Category: Syntax]]

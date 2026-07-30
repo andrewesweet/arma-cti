@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Animated_Briefing_(AB)
+// revision: 347178 (2023-09-03T11:40:50Z)
+// export sha1: 1amgdnr7ejuqblahb3ldvw57ew645rd
+// categories: Category:Spearhead 1944 | Category:WIP
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|WIP}}
+
+[[Category: Spearhead 1944]]

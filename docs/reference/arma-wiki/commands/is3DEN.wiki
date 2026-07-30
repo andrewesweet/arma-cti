@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/is3DEN
+// revision: 376878 (2025-12-15T11:17:30Z)
+// export sha1: k1uj0slmpckvdjvjoxcpu8mn9pyinii
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Returns [[true]] if the [[:Category:Eden Editor|Eden Editor]] is currently being used.
+
+|s1= [[is3DEN]] 
+
+|r1= [[Boolean]] - [[true]] when inside editor environment, [[false]] when outside of editor environment
+
+|x1= <sqf>if is3DEN then { systemChat "Welcome to Eden Editor!" };</sqf>
+
+|seealso= [[is3DENMultiplayer]] [[is3DENPreview]]
+}}

@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/lockCameraTo
+// revision: 377889 (2026-01-05T17:33:18Z)
+// export sha1: ncc7vm6qfkaa8bd51a4o8rcmt3mol0n
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 3 version 1.26 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.26
+
+|arg= local
+
+|gr1= Camera Control
+
+|descr= Lock/Unlock stabilized camera to target. Works only on turrets which have optic mode selected with [[directionStabilizationEnabled|direction stabilization enabled]].
+
+{{Feature|informative|Since {{GVI|arma3|2.08}} the command also works with non-stabilized turrets (such as main turret of a tank). See {{Link|#Alternative_Syntax|syntax 2}}.}}
+
+{{Feature|informative|The command is local to the '''turret''' gunner, not the vehicle.}}
+
+|s1= vehicle [[lockCameraTo]] [target, turretPath]
+
+|p1= vehicle: [[Object]] - UAV
+
+|p2= target: [[Object]] or [[Position#PositionASL|PositionASL]] - use [[objNull]] to unlock
+
+|p3= turretPath: [[Turret Path]] - path to the turret with required camera
+
+|r1= [[Nothing]]
+
+{{Feature|important|
+* This syntax only works with stabilized turrets.
+* When using this syntax, if target is out of possible view, the turret will move to its limit and get stuck there, with blocked input.
+}}
+
+|s2= vehicle [[lockCameraTo]] [target, turretPath, temporary]
+
+|s2since= arma3 2.08
+
+|p21= vehicle: [[Object]] - UAV
+
+|p22= target: [[Object]] or [[Position#PositionASL|PositionASL]] - use [[objNull]] to unlock
+
+|p23= turretPath: [[Turret Path]] - path to the turret with required camera
+
+|p24= temporary: [[Boolean]] - if set to [[true]], the engine will automatically remove the lock-on once the turret reaches its target.
+If the target is out of turret's reach, once the turret reaches its [[getTurretLimits | limits]] the lock-on will be released.
+
+|r2= [[Nothing]]
+
+{{Feature|informative|This syntax also works with non-stabilized turrets, unlike {{Link|#Syntax 1}}.}}
+
+|x1= <sqf>uav lockCameraTo [cursorObject, [0,0]];</sqf>
+
+|x2= <sqf>uav lockCameraTo [objNull, [0,0]]; // unlocks the turret</sqf>
+
+|x3= <sqf>vehicle player lockCameraTo [enemyTarget, vehicle player unitTurret player, false];</sqf>
+
+|seealso= [[lockedCameraTo]] [[camTarget]] [[camSetTarget]] [[camPrepareTarget]] [[directionStabilizationEnabled]] [[enableDirectionStabilization]]
+}}
+
+{{Note
+|user= Commy2
+|timestamp= 20150410065400
+|text= The vehicle has to have a stabilized optic for this command to work with ASL position.
+}}

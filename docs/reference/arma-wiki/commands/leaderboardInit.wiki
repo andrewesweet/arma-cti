@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/leaderboardInit
+// revision: 323025 (2022-06-28T21:43:08Z)
+// export sha1: gvno0o417f69zr8tcjachqfxoepwovy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Leaderboards | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Leaderboards
+
+|descr= Initialize the leaderboard structure for board with given name. Returns true if board is already initialized.
+
+|s1= [[leaderboardInit]] boardName
+
+|p1= boardName: [[String]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>leaderboardInit "TT01";</sqf>
+
+|seealso= [[leaderboardDeInit]] [[leaderboardGetRows]] [[leaderboardRequestRowsFriends]] [[leaderboardRequestRowsGlobal]] [[leaderboardRequestRowsGlobalAroundUser]] [[leaderboardsRequestUploadScore]] [[leaderboardsRequestUploadScoreKeepBest]] [[leaderboardState]]
+}}

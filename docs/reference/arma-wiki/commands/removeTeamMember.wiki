@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/removeTeamMember
+// revision: 310128 (2022-05-05T12:25:41Z)
+// export sha1: g64dadn2nqws1mghc9hfgjiz9k9cx2k
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Teams | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= Teams
+
+|descr= Remove given member from given team. Effect is local, unless both member and team are local to PC on which command is executed, then effect is global.
+
+|s1= team [[removeTeamMember]] member
+
+|p1= team: [[Team Member]]
+
+|p2= member: [[Team Member]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_team removeTeamMember _teamMember;</sqf>
+
+|seealso= [[addTeamMember]] [[createTeam]] [[deleteTeam]] [[forEachMemberTeam]] [[teamMember]] [[teamMemberNull]] [[teamName]] [[teams]] [[teamType]]
+}}

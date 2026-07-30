@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_genericSentenceInit
+// revision: 309713 (2022-05-05T12:09:47Z)
+// export sha1: 4dt9l6i5kk7mlk1rnr4lvw4h3lwm7aq
+// categories: Category:Arma 3: Functions | Category:Function Group: Conversations | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Conversations
+
+|serverExec= server
+
+|descr= ''N/A''
+
+|s1= <!-- [] call [[BIS_fnc_genericSentenceInit]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_genericSentenceInit;</sqf> -->
+
+|seealso=
+}}

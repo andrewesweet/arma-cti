@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setIDCStreamFriendly
+// revision: 349413 (2023-11-08T16:27:27Z)
+// export sha1: hp0na8ern03owzxghlkof7889bgo5oz
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Shows or hides UI control according to state of the Stream Friendly UI switch in Game Options.
+
+|s1= [target,IDC] call [[BIS_fnc_setIDCStreamFriendly]]
+
+|p1=target: [[Display]] or [[Control]]
+
+|p2=IDC: [[Number]] - (Optional, default -1) control IDC when the first parameter is a display
+
+|r1= [[Boolean]] - [[true]] when visible, [[false]] when hidden
+
+|x1= <sqf>[(findDisplay 1337) displayCtrl 42] call BIS_fnc_setIDCStreamFriendly;</sqf>
+
+|x2= <sqf>[findDisplay 1337, 42] call BIS_fnc_setIDCStreamFriendly;</sqf>
+
+|seealso= [[findDisplay]] [[displayCtrl]]
+}}

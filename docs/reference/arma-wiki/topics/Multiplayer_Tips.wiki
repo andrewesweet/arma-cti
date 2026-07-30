@@ -1,0 +1,212 @@
+// source: https://community.bistudio.com/wiki/Multiplayer_Tips
+// revision: 296005 (2021-11-17T14:39:39Z)
+// export sha1: ro6hqgzx633ovcxu4xz8nhwauygtdw4
+// categories: Category:Multiplayer Hints and Tips
+// Vendored snapshot. Do not edit — re-export instead.
+
+These tips have been copied directly from the official BI forums.
+
+Text has been altered for the purpose of presentation in this Wiki.
+
+Please feel free to add any tips you may feel be helpful to other players.
+
+= Getting Connected =
+
+Be sure to join servers with as low a ping as possible. Many server-admins and hosts dislike HPB's (High Ping Bastards) because their high ping impacts the rest of the players, making effective teamwork difficult i.e. if a HPB occupies a tank, all players in the tank get lagged. 'Lagged' means the game runs with a low frame rate, generally making the game unenjoyable or at the worst...unplayable.
+
+If you can't find any low-ping servers, use the All-Seeing Eye to find dedicated servers, which are usually better. In general it is best to play on servers closer to your region and with the lowest ping time possible.
+
+
+== Which CD should I load to play MP online? ==
+
+*Resistance  		1.75 or higher
+*Cold War Crisis 	1.00 - 1.46
+
+
+== I only have a 56k connection so would the game lag for me? ==
+
+OFP is not 56k friendly.
+
+
+== What is 'The Eye' or the 'AllSeeing Eye'? ==
+
+The All Seeing Eye allows you to see OFP servers available for connection. Many people feel this is a much better solution than GameSpy.
+
+The All Seeing Eye will show you an accurate ping from the server back to you, along with other network statistics, to help you choose the best game possible.
+
+http://www.udpsoft.com/eye/ 
+
+
+== How do I know which servers I want? ==
+
+Best ping.
+
+Using the addons you want to play with, for example FDF mod.
+
+Type of gameplay you prefer, for example all co-op or CTI. 
+
+
+== How do I connect to a server using the All Seeing Eye? ==
+
+Go to the 'Waiting for players' tab and scroll through until you find a server with a low ping and no packet loss.
+
+If it says 'Force Connection' it means the game has started and you will have to wait for the next map.
+
+
+== What is a "good" ping time? ==
+
+I rarely see ping times under 100ms and most games are in the 150+ range.
+
+On most servers the highest ping that seems bearable is 250. Anything greater than this is considered unplayable.  
+
+
+Try and find a server closer to your region/country.
+
+=Connected! Now what?=
+
+Now that you have connected to a server, you might be wondering what's next?
+
+
+*When you do get onto a server you need to pick a side to play either EAST, WEST, Resistance or Civilian.....depending on the mission. Once you pick your side hit 'START' so it changes your icon to green. The game wont be able to start unless everyones name is green and there is no one in the 'Player Pool'. Another pointer is if your are in the top slot you are responsible for turning off the AI players. To do this hit 'DISABLE ALL', dont forget or this will cause lag on the server and annoy people, as you will have to restart the mission to get rid of the AI.
+
+*The next stage is to pick the role of the player you want to be, once you are moved over into an empty slot you are ready to go.
+
+*Third stage is the mission briefing....it may take a while to get here becuase the mission is being sent to all of the players, be patient. Once the mission is loaded and you have selected your gear, if the mission allows it, hit 'READY'. Again, this changes your name to green so the game can go ahead. All players names must be green before the game starts.
+
+
+Stay at your PC and don't wander off when the game is starting up, because it holds others back waiting for you. Make your selections quickly and click the relevant buttons when you are ready, so the game starts fast with no hassle.
+
+
+The box in the bottom right hand corner shows every players status and ping time back to the server and will also let you see who the server admin is.
+
+*RED = Not ready/lagged out/or if its on the briefing screen they are still loading.
+*YELLOW= Made selection but has not hit 'Im Ready or Start'.
+*GREEN= Ready to go.
+
+
+== How do I chat with other players? ==
+I was playing an on-line game yesterday. It was the first time, so I accidentally TeamKilled everyone. I can´t figure out how to message the other players, to say I´m sorry.
+
+You must press the "/" key. Or you can configure a key for this in your keyboard control options.
+
+This allows you to chat back to other players.
+
+Once in this mode if you use the  arrow keys up and down you can choose just to chat with your group (group chat), side chat (everyone on your side), global chat (to everyone on the server).
+
+== How can I scroll back the chat if I've missed an important message? ==
+
+Press "/" (or "-" depending on your keyboard layout) to open the chat, then use PageUp/PageDown to scroll back/forward.
+
+= Vehicle Tips =
+
+
+*To avoid getting shot down in your helo or plane constantly turn and roll when safe to do so. Hovering for extended periods of time is generally bad news.
+
+*Its a good idea to travel in packs of 2 or 3 when using tanks. If you get in trouble you can help each other out.
+
+*BMPs and Bradleys are good vehicles to camp or hide in. Park the vehicle just enough so you can see over a hill.
+
+*Don't waste vehicles, it is annoying when someone takes off in a vehicle alone, only to either get killed, or crash without a reason or abandon it when he doesn't need it anymore.
+
+*If you don't know how to fly don't try and learn in a MP game. Fire up the OFP mission editor set yourself up with some gound targets and put a chopper or plane at the airport. Once you have ground targets down throw in some air targets too. If you can take down a few choppers without an AI gunner, you are ready to try it in a MP game. Do the same with the A10 or other vehicles to improve your skill.
+
+*Shooting down aircraft can be a challenge. Grab an AA launcher and with a couple of your friends from your team, leave your vehicles and head out on foot to the  area the chopper is in. Try to all fire at once or in quick spaced intervals, try not to fire at him when he is moving low or in a turn as it is a waste of ammo, try and catch him in a straight run coming at you or going away.
+
+= Map Reading =
+
+When playing OFP in veteran mode, it is imperative that you find out where you are. If you crash or something messes up then you will be lost in the middle of nowhere. You just have to learn how to read your map. Its quite simple actually.  Go into your mission editor, and make yourself an A10, Su25, Cessna, or whatever you want.
+
+Now, fly around the islands.  Make a few quick passes and study the landscapes. That is the first step in map reading. Also, look at your map, get an idea of where towns are, what their names are, even markers marking altitude of the landscape.
+
+Now onto how to figure out just where the hell you are in a real game. Keep track of where you were when you were last able to remember your location. Think about where you were going, and what path you were going to take. These three things will give you a general idea of where you might be. The rest of this is process of elimination.
+
+Wherever you landed from your ejection, crash, or whatever happened, take a good look around. Try to find landmarks, such as farms, roads, signs, forests or any bodies of water. If you land in or near a forest, run around it and get its general shape, then, most likely you can use that to find out where you are and call for support. If you still can't figure out where you are from that, look for a road. They are all over the place. That will aid you a lot.
+
+Just follow the road, and sooner or later you will arrive at a town. Most towns have signs telling their names, with others you can just by recognising unique features. If you land on the coast, just look at your compass (default button "G" or just look on your map you may have a compass there.)  Look out to the ocean, and by doing that, you may be able to tell what coast you are on.  After that, look for the landmarks and locating yourself should be easy.  Following these instructions will aid you greatly.  If all else fails, talk to one of your team-mates, and describe your location to them.
+
+
+
+*Get an idea of where you started the mission from. Know where the objective is. Look at the path you'll be taking. Have some landmarks ready to see.
+
+*If you get lost during flight, look at where roads lead and that might give yout clues as to where you might be.
+
+*Knowing the landscape helps greatly. Once in a while, do some land surveying in your chooper around the 3 islands. You can get a rough idea of where mountains are and some other usefull tips.
+
+*Get used to reading maps in OFP. the curvy lines indicate elevation, and you can find mountains with that, or estimate where you are with it.
+
+*A rarely used technique is looking at how trees and bushes are laid. in OFP many bushes and trees are laid to the point where it seems like there is a unique layout for each part of island. so if you can identify some layout and look around the approximate area of where you think you are, you might find where you are.
+
+*It's also good to find a high point when surveying. If there is a peak or even just a small elevated piece of land. Try to get a good view of what is around you when you are surveying.
+
+
+
+= Capture The Flag Style Game Play =
+
+
+In CTF, especially smaller maps, there is a good chance that your home flag will be covered by the enemy trying to keep you from scoring.
+
+Smoke grenades have REALLY been overlooked because of their non-lethality, but absolutely rock in this situation, 3-4 grenades widely dispersed around the flag, with the smoke blowing in the wind, disorient enemy gunners to the true position of the flag, even if it shows your intentions.  This makes snipers almost useless, and forces machinegunners to use a 'spray-and-pray' approach.
+
+
+Guarding a flag is simple, just lay mines and satchels then leave your town. Grab a sniper rifle or binoculars and find some place to watch your flag from far away but close enough that you can still set off your satchels. Wait till they get near your flag and then set off your satchels or use your sniper rifle, try not to hide in the same spot every time, as they will know where to look after the first time.
+
+
+Going for a flag is also simple, again get a couple of guys and go after it. Make sure the enemy is cleared out. There is likely to be someone hiding ready to blow a satchel, so someone has to be a sacrificial lamb and go for the flag, only to get killed by the satchel. Once the satchel has been used the others can go for the flag. Also try and move from corner to corner of buildings etc, travel in two to three man teams spaced out a little so if someone throws a grenade or shoots one of you, you don't all die.
+
+
+Now, not all these tricks will work all the time, but it gives you a step in the right direction and a few pointers to get started. Hopefully you won't feel like such a newcomer on the OFP battlefield.
+
+
+
+= General Tips =
+
+*The most important thing for playing OFP online is: Persistent patience!
+
+*Find a place to hide when its time to look at your map. Standing in an open field and looking at the map could get a bullet in your head.
+
+*Watch others. You learn the most by watching how other players move, camp, aim, crouch.
+
+*When tagging along, learning from someone who displays skill in-game, have the mindset of supporting them, trying to keep them alive moreso than yourself.  i.e. teamwork.  This will help the team score as you learn.
+
+*Give yourself plenty of time to play a MP game. It often takes a few mins to get into a game. Many suggest not play OFP if you don`t have at least 1 hour time to play. (For CTI style mission give yourself a few hours).
+
+*When playing in cadet mode, forget about the friendly/enemy tags, learn the uniform textures. This can help cut down on getting chewed for a TeamKill.
+
+
+== How do you delete the markers in the briefing screen? ==
+
+I know that you can create map markers at the briefing screen and during the mission by double clicking on the map.
+
+Sometimes when the waiting takes a while, people start writing bogus messages. Then someone removes them one by one. How is this removing done?
+
+Move the mouse pointer over the marker and press the delete key. 
+
+
+
+== How do you type other kinds of markers? Arrows, question signs, etc? ==
+
+While the cursor is still flashing awaiting text input, press the up or down arrows and choose the desired marker.
+
+
+
+== How to change colors of markers? ==
+
+While the cursor is still flashing awaiting text input, press the up or down arrows holding SHIFT key.
+
+
+
+== Is there a spectator mode in Operation Flashpoint? ==
+
+There is no default spectator mode, the seagull is the BI solution to spectate mode. There is an alternative for mission builders to implement, Kegetys made a spectator script which allows you to introduce a 'real' spectating mode into your missions.
+
+== I hear some custom sounds, like a dirty laugh... is that implemented in the game or in the downloaded mission? ==
+
+These are implemented in a custom mission. Searching the multiplayer forum for custom sounds will find you 'many' threads that explain how they work, and how annoying most players find them as well.
+
+
+
+== How can I brush up on my MP skills and not embarrass myself on the Internet? ==
+
+Copy the mission you want to play to your MPMissions folder then you can just open a LAN game with yourself.
+
+[[Category:Multiplayer Hints and Tips]]

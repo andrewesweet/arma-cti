@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/getMissionPath
+// revision: 339107 (2023-04-26T10:54:34Z)
+// export sha1: 1e7qew65fd0ksnmttz2owkdg35e4ir6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Command Group: System | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.96
+
+|gr1= System
+
+|gr2= Mission Information
+
+|descr= Returns mission root plus the filename in a form of filepath to be used with commands requiring absolute path such as [[playSound3D]], [[drawIcon3D]], [[createSimpleObject]], etc.
+Any leading "\" in the filename will be stripped as the mission root includes one already.
+
+|s1= [[getMissionPath]] filename
+
+|p1= filename: [[String]]
+
+|r1= [[String]] - absolute path
+
+|x1= <sqf>
+// returns e.g "C:\Users\Username\Documents\Arma 3\missions\MissionName.Altis\icons\myIcon.paa"
+private _path = getMissionPath "icons\myIcon.paa";
+private _path = getMissionPath "\icons\myIcon.paa"; // leading \ is also fine
+</sqf>
+
+|x2= <sqf>
+// returns e.g "C:\Users\Username\Documents\Arma 3\missions\MissionName.Altis\" with the trailing \
+private _root = getMissionPath "";
+</sqf>
+
+|seealso= [[missionConfigFile]] [[playSound3D]] [[drawIcon3D]] [[createSimpleObject]] [[Description.ext|description.ext]] [[playSoundUI]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20230418205440
+|text= 
+Before the introduction of [[getMissionPath]], absolute mission directory could be obtained as follow in config:
+<syntaxhighlight lang="cpp">
+__EXEC(MISSION_DIRECTORY = __FILE__ select [0, count __FILE__ - 15])
+// ...
+texture = __EVAL(MISSION_DIRECTORY + "subDirectory\texture.paa");
+</syntaxhighlight>
+
+}}

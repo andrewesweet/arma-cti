@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/addMPEventHandler
+// revision: 369855 (2024-10-16T13:52:05Z)
+// export sha1: fjtyojvkuoee5o1nq11nw47dd2c4v2t
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: Multiplayer | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Multiplayer
+
+|gr2= Event Handlers
+
+|arg= global
+
+|eff= global
+
+|descr= Adds a multiplayer event handler (EH) to the given object and returns EH handle. See {{Link|Category:Event Handlers|Event Handlers}}.
+{{Feature|important|A Multiplayer Event Handler is '''not''' saved in a save file and therefore will not be restored on load - use it accordingly.}}
+
+|mp= Multiplayer EHs are added globally to every client and the server will fire on itself and every client upon event.
+The only exception is the '''MPRespawn''' EH that one only fires where the respawned unit is local. Make sure to check the EHs' locality in {{Link|Category:Event Handlers|Event Handlers}} pages.
+
+|s1= object [[addMPEventHandler]] [type, expression]
+
+|p1= object: [[Object]] - object to monitor
+
+|p2= type: [[String]] - event handler name
+
+|p3= expression: [[String]] or [[Code]] - expression to execute.<br>
+If EH has some data to return upon event (e.g. the "MPKilled" EH will return an array with 2 elements: the killed unit, and the killer), it is passed in {{hl|_this}} variable.
+{{Feature|arma3|Since Arma 3 v.1.64 the EH handle is also stored in {{hl|_thisEventHandler}} variable and is available during EH code execution.}}
+* Event Handler parameters are accessible via <sqf inline>_this</sqf>
+* The Event Handler type is available as <sqf inline>_thisEvent</sqf>
+* The Event Handler index is available as <sqf inline>_thisEventHandler</sqf>
+
+|r1= [[Number]] - event handler index
+
+|x1= <sqf>_index = player addMPEventHandler ["MPKilled", { _this execVM "playerKilled.sqf"; }];</sqf>
+
+|seealso= [[:Category:Event Handlers|EventHandlers List]] [[removeMPEventHandler]] [[removeAllMPEventHandlers]] [[getEventHandlerInfo]]
+}}

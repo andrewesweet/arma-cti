@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ambientBoats
+// revision: 283011 (2021-06-16T22:11:35Z)
+// export sha1: fdlq3rj8jdo4hgdl88p7e9ewr1m578p
+// categories: Category:Arma 3: Functions | Category:Function Group: Ambient | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Ambient
+
+|descr= {{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_ambientBoats]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

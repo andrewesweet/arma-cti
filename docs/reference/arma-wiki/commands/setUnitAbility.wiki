@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/setUnitAbility
+// revision: 369306 (2024-09-03T18:42:54Z)
+// export sha1: cf6vh25dfzvfgxtt9sgg990d2uvdlmt
+// categories: Category:AI | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= AI Behaviour
+
+|descr= Sets skill of given unit. Unlike [[setSkill]], [[setUnitAbility]] can set values > 1. Even though the [[skill]] command will correctly return set value, the actual unit ability will be capped to max available.
+
+|s1= unit [[setUnitAbility]] value
+
+|p1= unit: [[Object]]
+
+|p2= value: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_unit setUnitAbility 1;</sqf>
+|x2= <sqf>
+bob setUnitAbility -log 0;
+hint str skill bob; //1.#INF
+</sqf>
+
+|seealso= [[skill]] [[setSkill]] [[CfgAISkill]] [[Combat Modes]]
+}}
+
+[[Category:AI]]
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-10-08 - 09:20 (UTC)</dd>
+<dt class="note">[[User:Dwarden|Dwarden]]</dt>
+<dd class="note">
+AFAIK not used in Arma 3 anymore (or equals to setSkill)
+</dd>
+
+</dl>

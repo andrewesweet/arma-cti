@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/menuSetText
+// revision: 378350 (2026-04-02T16:31:40Z)
+// export sha1: jfsax25c48i4gt3rvnn8ef8h8boen3g
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= GUI Control - Menu
+
+|descr= Sets text of given menu strip entry.
+
+|s1= [[menuSetText]] [idc, path, text]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|p3= text: [[String]]
+
+|r1= [[Nothing]]
+
+|s2= control [[menuSetText]] [path, text]
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|p23= text: [[String]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_ctrlMenuStrip menuSetText [[0,0,1], "Hello World!"];</sqf>
+
+|seealso= [[menuText]]
+}}

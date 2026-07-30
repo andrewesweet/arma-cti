@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_locationDescription
+// revision: 329682 (2022-08-01T09:39:35Z)
+// export sha1: 8lrqlocgi5upi53dcn9p3h8nxhskkuz
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Function Group: Positions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Map and Markers
+|gr2= Positions
+
+|descr= Return location description (e.g. "NE of Agia Marina")
+
+|s1= position call [[BIS_fnc_locationDescription]]
+
+|p1= position: [[Position]] - (Optional, default <sqf inline>cameraOn call BIS_fnc_position</sqf>)
+
+|r1= [[String]]
+
+|x1= <sqf>hint format ["Player's position: %1", player call BIS_fnc_locationDescription];</sqf>
+
+|seealso= [[BIS_fnc_position]] [[cameraOn]] [[getPos]] [[getPosATL]] [[getPosASL]] [[getPosASLW]]
+}}

@@ -1,0 +1,241 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_ExampleWeaponConfig
+// revision: 347070 (2023-08-29T19:15:36Z)
+// export sha1: 1atzw2x17zdom8peb290x1tn4o7gu0t
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Example Weapon Config ==
+
+=== CfgPatches ===
+CfgPatches is the class that that gives your addon it is identity. More info in the [[CfgPatches]] page.
+
+<syntaxhighlight lang="cpp">
+class CfgPatches
+{
+	class TAG_ThisIsMyAddon
+	{
+		units[] = {};
+		weapons[] = {};
+		requiredAddons[] = { "A3_Weapons_F", "A3_Sounds_F", "A3_Sounds_F_Mark", "A3_CargoPoses_F" };
+		/*
+			requiredAddons is important. It kind of answers the question "What addons do I load before loading this one?"
+			If your addon will overwrite certain data from the original arma3 config (that is mostly the case
+			with sound/asset REPLACEMENTS) you need to put the cfgPatches class here that contains the information that you are about to
+			overwrite. For example most arma3 sounds are defined in a config that's cfgPatches class is "A3_Sounds_F". So if you want to
+			overwrite data from there you need to put it into the requiredAddons array. If you want to change vehicle sounds, look in which
+			cfgPatches they are configured and add that to requiredAddons.
+		*/
+		requiredVersion = 0.1;
+		version = "0.01"; //optional: internal version number
+		author = "Megagoth1702"; //optional: your alias
+		authorUrl = "URL"; //optional: URL to your website/online presence
+	};
+};
+</syntaxhighlight>
+
+=== CfgSoundShaders ===
+
+More detailed infos on CfgSoundShaders can be found on the [[Arma 3: Sound: cfgSoundShaders]] page.
+<syntaxhighlight lang="cpp">
+class CfgSoundShaders
+{
+	//###################################### SHOTS ######################################
+	class TAG_Your_Rifle_Closure_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }}; // you can use wav/wss/ogg, ogg will have a small delay before playback (not too good for weapons/explosions)
+		volume = 0.4466836;
+		range = 5;
+	};
+	class TAG_Your_Rifle_closeShot_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = 1.0;
+		range = 50;
+		rangeCurve = "closeShotCurve";
+	};
+	class TAG_Your_Rifle_midShot_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = 0.7943282;
+		range = 1800;
+		rangeCurve[] = { {0,0.2}, {50,1}, {300,0}, {1800,0} };
+	};
+	class TAG_Your_Rifle_distShot_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = 1.0;
+		range = 1800;
+		rangeCurve[] = { {0,0}, {50,0}, {300,1}, {1800,1} };
+	};
+	// ###################################### TAILS ######################################
+	class TAG_Your_Rifle_tailInterior_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = "interior";
+		range = 500;
+		limitation = 0;
+	};
+	class TAG_Your_Rifle_tailTrees_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = "(1-interior/1.4)*trees/3";
+		range = 1800;
+		limitation = 1;
+	};
+	class TAG_Your_Rifle_tailForest_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = "(1-interior/1.4)*forest/3";
+		range = 1800;
+		limitation = 1;
+	};
+	class TAG_Your_Rifle_tailMeadows_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = "(1-interior/1.4)*(meadows/2 max sea/2)/3";
+		range = 1800;
+		limitation = 1;
+	};
+	class TAG_Your_Rifle_tailHouses_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = "(1-interior/1.4)*houses/3";
+		range = 1200;
+		limitation = 1;
+	};
+	class TAG_Your_Rifle_silencerShot_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = 1.0;
+		range = 150;
+		rangeCurve = "closeShotCurve";
+	};
+	class TAG_Your_Rifle_silencerTailForest_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = "(1-interior/1.4)*forest/3";
+		range = 150;
+		rangeCurve[] = { {0,1}, {150,0.3} };
+		limitation = 1;
+	};
+	class TAG_Your_Rifle_silencerTailHouses_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = "(1-interior/1.4)*houses/3";
+		range = 150;
+		rangeCurve[] = { {0,1}, {150,0} };
+		limitation = 1;
+	};
+	class TAG_Your_Rifle_silencerTailInterior_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = "interior";
+		range = 150;
+		rangeCurve[] = { {0,1}, {50,0.3}, {150,0} };
+		limitation = 1;
+	};
+	class TAG_Your_Rifle_silencerTailMeadows_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = "(1-interior/1.4)*(meadows/2 max sea/2)/3";
+		range = 150;
+		rangeCurve[] = { {0,1}, {150,0.3} };
+		limitation = 1;
+	};
+	class TAG_Your_Rifle_silencerTailTrees_SoundShader
+	{
+		samples[] = {{ "path\to\sound.wav", 1 }};
+		volume = "(1-interior/1.4)*trees/3";
+		range = 150;
+		rangeCurve[] = { {0,1}, {150,0.3} };
+		limitation = 1;
+	};
+};
+</syntaxhighlight>
+
+=== CfgSoundSets ===
+
+more info about soundSetscan be found on the [[Arma 3: Sound: cfgSoundSets]] page.
+
+<syntaxhighlight lang="cpp">
+class CfgSoundSets
+{
+	class TAG_Your_Rifle_Shot_SoundSet
+	{
+		soundShaders[] = { "TAG_Your_Rifle_Closure_SoundShader", "TAG_Your_Rifle_closeShot_SoundShader", "TAG_Your_Rifle_midShot_SoundShader", "TAG_Your_Rifle_distShot_SoundShader", "TAG_Your_Rifle_tailInterior_SoundShader" };
+		volumeFactor = 1.6;
+		volumeCurve = "InverseSquare2Curve";
+		sound3DProcessingType = "WeaponMediumShot3DProcessingType";
+		distanceFilter = "weaponShotDistanceFreqAttenuationFilter";
+		spatial = 1;
+		doppler = 0;
+		loop = 0;
+	};
+	class TAG_Your_Rifle_Tail_SoundSet
+	{
+		soundShaders[] = { "TAG_Your_Rifle_tailTrees_SoundShader", "TAG_Your_Rifle_tailForest_SoundShader", "TAG_Your_Rifle_tailMeadows_SoundShader", "TAG_Your_Rifle_tailHouses_SoundShader" };
+		volumeFactor = 1;
+		volumeCurve = "InverseSquare2Curve";
+		frequencyRandomizer = 1;
+		sound3DProcessingType = "WeaponMediumShotTail3DProcessingType";
+		distanceFilter = "weaponShotTailDistanceFreqAttenuationFilter";
+		spatial = 1;
+		doppler = 0;
+		loop = 0;
+		soundShadersLimit = 2;
+	};
+};
+</syntaxhighlight>
+
+=== CfgWeapons ===
+
+<syntaxhighlight lang="cpp">
+// ###################################### GENERAL MODES FOR INHERITANCE ######################################
+// sooner or later in weapon modding you are going to need to inherit from these classes so why not just put them here for future reference?
+
+class Mode_SemiAuto;
+class Mode_Burst;
+class Mode_FullAuto;
+
+class BaseSoundModeType;
+
+class CfgWeapons
+{
+	class Rifle_Base_F;
+	class arifle_MX_Base_F : Rifle_Base_F
+	{
+		class Single : Mode_SemiAuto
+		{
+			sounds[] = { "StandardSound", "SilencedSound" };
+			class StandardSound : BaseSoundModeType
+			{
+				soundSetShot[] = { "TAG_Your_Rifle_Shot_SoundSet", "TAG_Your_Rifle_Tail_SoundSet" };
+			};
+			class SilencedSound : BaseSoundModeType
+			{
+				// this is wrong, obviously you would create your own silenced versions of soundShaders & sets and assign the SETS here
+				// the soundSets was put here as an example
+				soundSetShot[] = { "TAG_Your_Rifle_Shot_SoundSet", "TAG_Your_Rifle_Tail_SoundSet" };
+			};
+		};
+		class FullAuto : Mode_FullAuto
+		{
+			sounds[] = { "StandardSound", "SilencedSound" };
+			class StandardSound : BaseSoundModeType
+			{
+				soundSetShot[] = { "TAG_Your_Rifle_Shot_SoundSet", "TAG_Your_Rifle_Tail_SoundSet" };
+			};
+			class SilencedSound : BaseSoundModeType
+			{
+				// this is wrong, obviously you would create your own silenced versions of soundShaders & sets and assign the SETS here
+				// the soundSets was put here as an example
+				soundSetShot[] = { "TAG_Your_Rifle_Shot_SoundSet", "TAG_Your_Rifle_Tail_SoundSet" };
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Sound}}

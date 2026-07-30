@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/setAmmoCargo
+// revision: 376962 (2026-01-01T05:54:37Z)
+// export sha1: 4oizywxe64a16h8804pmjgwudijqsns
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+|eff= global
+
+|gr1= Vehicle Inventory
+
+|descr= Set amount of ammo resources in cargo space of a rearm vehicle. Ammo resource is used to resupply vehicles that take ammo. Soldiers use individual magazines instead.
+
+The <u>actual</u> '''quantity''' to work with is determined by the model's class in [[CfgVehicles]]
+
+|s1= vehicleName [[setAmmoCargo]] ammoCargo
+
+|p1= vehicleName: [[Object]]
+|p2= ammoCargo: [[Number]] in range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_ammoTruck1 setAmmoCargo 0.5;</sqf>
+
+|seealso= [[getAmmoCargo]] [[setFuelCargo]] [[setRepairCargo]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 31 Aug, 2011</dd>
+<dt class="note">[[User:PlacidBox|PlacidBox]]</dt>
+<dd class="note">
+While the amount of total 'ammo' that can be reloaded is defined in the truck/supply point's CfgVehicles entry, the amount each round of ammunition takes from that total is defined in the [[CfgAmmo_Config_Reference#cost|CfgAmmo]] 'Cost' entry for that round.
+
+Your typical truck has 300000 ammo capacity, and the tunguska's missiles have a Cost of 50000. So the tunguska can reload a total of 6 missiles from the ammo truck before the ammo capacity is depleted and needs to be set with setAmmoCargo.
+
+A similar thing applies with a vehicle's cfgVehicle Cost entry for repairing, and the vehicle's fuelCapacity entry when refuelling.
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-07-10 - 19:27 (UTC)</dd>
+<dt class="note">[[User:Waffle SS.|Waffle SS.]]</dt>
+<dd class="note">
+(Arma 3 1.44) '''setAmmoCargo''' will have no effect if the vehicle doesn't support [[getAmmoCargo]].
+</dd>
+
+</dl>

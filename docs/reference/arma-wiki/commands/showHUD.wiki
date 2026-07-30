@@ -1,0 +1,109 @@
+// source: https://community.bistudio.com/wiki/showHUD
+// revision: 377971 (2026-01-19T13:33:47Z)
+// export sha1: hpx85xx7h9bfypdp0t63owzzk8658zf
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|eff= local
+
+|gr1= Interaction
+
+|descr= Enable / disable showing of HUD. Defines visibility of weapon crosshair and any informational tags that appear when pointing the weapon at an object as well as availability of the default action menu. Unfortunately, it also hides icons drawn with [[drawIcon3D]].
+{{Feature|arma3|
+'''Since {{arma3}} v1.50''' there is a Description.ext's [[Description.ext#showHUD|showHUD[]<nowiki/>]] array param that is identical in format to the extended [[showHUD]] command.
+When present, it will disable [[showHUD]] command entirely, allowing mission makers to permanently alter visibility of some HUD elements.<br>
+'''Since {{arma3}} v2.04''' it is possible to force drawing of [[drawIcon3D]] icons when HUD is hidden.
+The icons will also show when custom camera is [[camCreate|created]] and the view is switched to it via [[switchCamera]] or [[cameraEffect]] provided [[cameraEffectEnableHUD]] is enabled.
+For more information see [[drawIcon3D]].
+}}
+
+|s1= [[showHUD]] enable
+
+|p1= enable: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|s2= [[showHUD]] [scriptedHUD, info, radar, compass, direction, menu, group, cursors, panels, kills, showIcon3D]
+
+|p21= scriptedHUD: [[Boolean]] - show scripted HUD such as weapon crosshair, action menu and overlays created with [[cutRsc]] and [[titleRsc]]. Same as [[showHUD]]'s first syntax
+
+|p22= info: [[Boolean]] - (Optional, default [[true]]) show vehicle, soldier and weapon info
+
+|p23= radar: [[Boolean]] - (Optional, default [[true]]) show vehicle radar
+
+|p24= compass: [[Boolean]] - (Optional, default [[true]]) show vehicle compass
+
+|p25= direction: [[Boolean]] - (Optional, default [[true]]) show tank direction indicator. Not present in vanilla {{arma3}}
+
+|p26= menu: [[Boolean]] - (Optional, default [[true]]) show commanding menu (HC related menus)
+
+|p27= group: [[Boolean]] - (Optional, default [[true]]) show group info bar (Squad leader info bar)
+
+|p28= cursors: [[Boolean]] - (Optional, default [[true]]) show HUD weapon cursors (connected with scripted HUD)
+
+|p29= panels: [[Boolean]] - (Optional, default [[true]]) show [[Arma 3: Custom Info]]
+|p29since= arma3 1.70
+
+|p30= kills: [[Boolean]] - (Optional, default [[true]]) show "x killed by y" [[systemChat]] messages
+<!--
+|p30since= ? 1.70?
+-->
+
+|p31= showIcon3D: [[Boolean]] - (Optional, default [[false]]) show icons drawn with [[drawIcon3D]] even when the HUD is hidden
+|p31since= arma3 2.04
+
+|r2= [[Nothing]]
+
+|x1= <sqf>showHUD false;</sqf>
+
+|x2= Hide vehicle radar and compass:
+<sqf>
+showHUD [
+	true,  // scriptedHUD
+	true,  // info
+	false, // radar
+	false, // compass
+	true,  // direction
+	true,  // menu
+	true,  // group
+	true,  // cursors
+	true,  // panels
+	true,  // kills
+	true   // showIcon3D
+];
+</sqf>
+
+|x3= Check if HUD visibility is hardcoded in mission config and [[showHUD]] command is overridden:
+<sqf>private _disabledShowHUD = isArray (missionConfigFile >> "showHUD");</sqf>
+
+|seealso= [[shownHUD]] [[showCinemaBorder]] [[showSubtitles]] [[showWatch]] [[showRadio]] [[showMap]] [[showGPS]] [[showCompass]] [[showPad]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150817190800
+|text= The "cursors" parameter controls visibility of the action menu as well as weapon cursors.
+However if 1st param "hud" hides and disables action menu, param "cursors" only hides it. So you get invisible action menu that is fully operational.
+[[inGameUISetEventHandler]] will still fire on interaction, giving the information about selected item on the action menu even if you cannot see it.
+Unfortunately it also hides icons drawn with [[drawIcon3D]].
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20200301143300
+|text= <sqf>showHUD false;</sqf> removes [[Arma 3 Contact|Contact]]'s compass that is shown at the top of the screen.
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Timeline_Item_ARMA0
+// revision: 378650 (2026-05-18T16:01:31Z)
+// export sha1: 3rbcw73fcwopy0lpx9y9u798rcsnkp2
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>[[Image:Logo_A0.png|50px|link=http://www.bistudio.com/games/arma-cwa]]</includeonly><noinclude>[[Category:Historical Templates]]</noinclude>

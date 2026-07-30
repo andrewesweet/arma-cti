@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/profileName
+// revision: 310755 (2022-05-07T20:21:33Z)
+// export sha1: kehrcdq4yahyf7tubt0lutd64h00lsy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= System
+
+|descr= Returns currently chosen user profile name. For Steam profile name see [[profileNameSteam]].
+
+|s1= '''profileName'''
+
+|r1= [[String]]
+
+|x1= <sqf>_myInGameProfileName = profileName;</sqf>
+
+|seealso= [[profileNameSteam]] [[name]]
+}}

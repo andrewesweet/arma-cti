@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/aimPos
+// revision: 378158 (2026-02-26T16:15:24Z)
+// export sha1: n4wzfpe4e70i3lkpk6nw0tfhxksu32u
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|gr1= Positions
+
+|descr= Returns the position of the object other units can aim to.
+
+|s1= [[aimPos]]  unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Position#PositionASL|PositionASL]]
+
+|x1= <sqf>_aimPos = aimPos player;</sqf>
+
+|x2= '''''aimPosVisual''''' equivalent:<sqf>private _aimPosVisual = AGLToASL unitAimPositionVisual player;</sqf>
+
+|seealso= [[eyePos]] [[getPosASL]] [[weaponDirection]] [[unitAimPosition]] [[unitAimPositionVisual]]
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20150707211900
+|text= Generally returns the center position of the object (middle of the geometry, not the model's [0,0,0]).
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20230327123311
+|text= This command uses "zamerny" memory point which is hardcoded name in the engine. If memory point is not present then geometry LOD bounding center is used (according to dedmen)
+}}

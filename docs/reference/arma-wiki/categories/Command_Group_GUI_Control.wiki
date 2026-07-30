@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_GUI_Control
+// revision: 186735 (2021-01-08T04:04:08Z)
+// export sha1: mvme9hkchqd2y8j7z28r6u88yqtsbaz
+// Vendored snapshot. Do not edit — re-export instead.
+
+Customize or create GUIs (Graphical User Interfaces). General GUI related commands are in this main group, while commands which are specific to one control type might be placed in one of the subcategories.
+
+Also, see the page [[Arma: GUI Configuration]] for more information.
+
+[[Category:Scripting Commands by Functionality]]
+[[Category:GUI Topics]]

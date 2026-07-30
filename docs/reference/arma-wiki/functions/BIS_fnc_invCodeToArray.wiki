@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_invCodeToArray
+// revision: 349404 (2023-11-08T16:27:26Z)
+// export sha1: 1cjo3dj8z9fppifurx7vhs9dv0tf5wy
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Inventory
+
+|descr=Converts inventory code (used in configs) to array with numbers for weapons and magazines (and their counts).
+
+|s1= [configCode] call [[BIS_fnc_invCodeToArray]]
+
+|p1=configCode: [[Number]] - config code, see example
+
+|r1= [[Array]] of [[Number]]s - items slots numbers
+
+|x1= <sqf>[call compile getText (configfile >> "CfgVehicles" >> typeOf player >> "weaponSlots")] call BIS_fnc_invCodeToArray;//Can return [1,0,0,0,0,0,0,0]</sqf>
+
+|seealso= [[BIS_fnc_invRemove]] [[BIS_fnc_invString]] [[BIS_fnc_invSlots]] [[BIS_fnc_invSlotsEmpty]] [[BIS_fnc_invSlotType]] [[BIS_fnc_invAdd]]
+}}

@@ -1,0 +1,377 @@
+// source: https://community.bistudio.com/wiki/Global_Mobilization_Script_Snippets
+// revision: 378495 (2026-04-27T16:09:41Z)
+// export sha1: 8nvyf9n65xyfwk5zexsutqlbp4oie3r
+// categories: Category:Global Mobilization
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}<div class="float-right">[[image:gm picture ca.png|borderless|60px|link= Global Mobilization]]</div>
+This page serves as a place to collect all smaller known script snippets (and other tricks) related to using the content of [[Global Mobilization]].
+
+
+== Destroy specific chunks of a house ==
+
+Use this code on an invisible object nearby the house. chunk_01_hp to chunk_11_hp. But most homes only have 3-4 chunks.
+<sqf>
+(nearestBuilding this) setHit ["chunk_03_hp", 1, false];
+</sqf>
+
+
+== Extend a vehicle's large antenna ==
+
+<sqf>
+_vic animateSource ["antennamast_01_elev_source", 1, true];
+</sqf>
+To lower it again, set the second parameter from 1 to 0. If you want to have a slow assembly/disassembly animation, omit the last parameter that is set to true in this example.
+
+== Close the XSW-30 target searchlight on the Leopard tanks ==
+<sqf>
+leo animateSource ["MainTurret_searchLight_door_source", 0, true];
+</sqf>
+Set the second parameter to 1 to open it again. Warning: This doesn't affect the searchlight functionality. It will shine through closed doors.
+
+
+== Open doors and hatches on a vehicle ==
+
+<sqf>
+<object> animatedoor ["<DoorName>", 1];
+</sqf>
+
+Animate the M113's main rear hatch:
+<sqf>
+m113dk animatedoor ["hatch_2_1_source", 1];
+</sqf>
+
+All doors and hatches in GM follow a unified naming standard:
+<syntaxhighlight lang="cpp">
+<type>_<row>_<side>_source
+</syntaxhighlight>
+
+A list of most commonly found doors and hatches:
+{{Columns|2|
+* {{hl|hatch_1_1_source}}
+* {{hl|hatch_1_2_source}}
+* {{hl|hatch_2_1_source}}
+* {{hl|hatch_2_2_source}}
+* {{hl|door_1_1_source}}
+* {{hl|door_1_2_source}}
+* {{hl|door_2_1_source}}
+* {{hl|door_2_2_source}}
+}}
+
+It varies per asset, so you may have to try a few combinations until you find the right animation.
+
+
+== Set a vehicle's tactical sign ==
+
+<sqf>
+[myM113, ["1", "gm_din_norm_gry", "gm_tacticalSign_nato_mechanizedInfantry", "100", "gm_din_norm_gry"]] call gm_core_vehicles_fnc_setTacticalSign;
+</sqf>
+
+The array is in format [preIconNumber, preIconNumberFont, tacticalSymbol, postIconNumber, postIconNumberFont]:
+* preIconNumber: [[String]] - pre-icon number
+* preIconNumberFont: [[String]] - pre-icon number font
+* tacticalSymbol: [[String]] - tactical symbol; for available tactical symbols browse <sqf inline>configFile >> "gm_tacticalSigns"</sqf>; possible values:
+** {{hl|"gm_tacticalSign_nato_armored"}}
+** {{hl|"gm_tacticalSign_nato_armoredEngineer"}}
+** {{hl|"gm_tacticalSign_nato_armoredRecon"}}
+** {{hl|"gm_tacticalSign_nato_artillery"}}
+* postIconNumber: [[String]] - post-icon number
+* postIconNumberFont: [[String]] - post-icon number font
+
+
+== GM flags present on a flagpole ==
+
+Place an existing flagpole, and write the following into the init-field of this object:
+<sqf>
+this setFlagTexture "\gm\gm_core\data\flags\gm_flag_gc_co.paa";
+</sqf>
+
+The following flags are available from within GM:
+{{Columns|4|
+* {{hl|gm_flag_au_co.paa}}
+* {{hl|gm_flag_be_co.paa}}
+* {{hl|gm_flag_bu_co.paa}}
+* {{hl|gm_flag_ca_co.paa}}
+* {{hl|gm_flag_cs_co.paa}}
+* {{hl|gm_flag_cz_co.paa}}
+* {{hl|gm_flag_dk_co.paa}}
+* {{hl|gm_flag_fi_co.paa}}
+* {{hl|gm_flag_fr_co.paa}}
+* {{hl|gm_flag_gc_co.paa}}
+* {{hl|gm_flag_ge_co.paa}}
+* {{hl|gm_flag_gr_co.paa}}
+* {{hl|gm_flag_hu_co.paa}}
+* {{hl|gm_flag_ic_co.paa}}
+* {{hl|gm_flag_it_co.paa}}
+* {{hl|gm_flag_lu_co.paa}}
+* {{hl|gm_flag_nato_co.paa}}
+* {{hl|gm_flag_nl_co.paa}}
+* {{hl|gm_flag_no_co.paa}}
+* {{hl|gm_flag_pl_co.paa}}
+* {{hl|gm_flag_po_co.paa}}
+* {{hl|gm_flag_ro_co.paa}}
+* {{hl|gm_flag_se_co.paa}}
+* {{hl|gm_flag_sp_co.paa}}
+* {{hl|gm_flag_tu_co.paa}}
+* {{hl|gm_flag_uk_co.paa}}
+* {{hl|gm_flag_ur_co.paa}}
+* {{hl|gm_flag_us_co.paa}}
+}}
+
+They are assigned via the NATO 2-Letter Nation code from STANAG 1059 7th Edition.
+
+Find the 9th edition (which differs) here: {{Link|https://en.wikipedia.org/wiki/List_of_NATO_country_codes}}
+ GE = West Germany
+ GC = East Germany
+
+
+== Toggle vehicle beacons and sirens ==
+
+<sqf>
+[this, "gm_beacons_org", true] call gm_core_vehicles_fnc_beaconSwitch;
+</sqf>
+
+<sqf>
+[this, "", true] call gm_core_vehicles_fnc_beaconSwitch;
+</sqf>
+
+
+<sqf inline>true</sqf> for on, <sqf inline>false</sqf> for off.
+
+<sqf inline>gm_beacons_org</sqf> for the orange one, and <sqf inline>gm_beacons_blu</sqf> for blue. Leave it empty <sqf inline>""</sqf> as secondary method.
+
+To toggle beacons on a car via script: (also possible gm_beacons_orn on vehicles with orange beacon lights).
+
+Toggle on:
+<sqf inline>[this, "gm_beacons_blu", true] call gm_core_vehicles_fnc_beaconSwitch;</sqf>
+
+Toggle off:
+<sqf inline>[this, "gm_beacons_blu", false] call gm_core_vehicles_fnc_beaconSwitch;</sqf>
+
+Sirens on:
+<sqf inline>[this, "CustomSoundController1", 1, 0.2] remoteExec ["BIS_fnc_setCustomSoundController"];</sqf>
+
+Sirens off:
+<sqf inline>[this, "CustomSoundController1", 0, 0.4] remoteExec ["BIS_fnc_setCustomSoundController"];</sqf>
+
+
+== Use the teletype effect from the Campaign Intro ==
+
+1)
+Include this in your description.ext in class RscTitles
+<syntaxhighlight lang="cpp">
+import RscStructuredText;
+class RscTitles
+{
+    #include "\gm\gm_missions\gm_campaign_01\missions\gm_campaign_intro.gm_weferlingen_summer\resources.inc"
+};
+</syntaxhighlight>
+
+
+2)
+Include this in [[Description.ext#CfgSounds|CfgSounds]]:
+<syntaxhighlight lang="cpp">
+class gm_teletype_stroke_01
+{
+	name = "";
+	titles[] = {};
+	sound[] = { "@gm\gm_missions\gm_campaign_01\missions\gm_campaign_intro.gm_weferlingen_summer\sounds\gm_teletype_stroke_01.ogg", 3, 1, 100 };
+};
+
+class gm_teletype_stroke_02 : gm_teletype_stroke_01
+{
+	sound[] = { "@gm\gm_missions\gm_campaign_01\missions\gm_campaign_intro.gm_weferlingen_summer\sounds\gm_teletype_stroke_01.ogg", 3, 0.98, 100 };
+};
+
+class gm_teletype_stroke_03 : gm_teletype_stroke_01
+{
+	sound[] = { "@gm\gm_missions\gm_campaign_01\missions\gm_campaign_intro.gm_weferlingen_summer\sounds\gm_teletype_stroke_01.ogg", 3, 1.02, 100 };
+};
+</syntaxhighlight>
+
+
+3)
+Create  script called typeText.sqf.
+<sqf>
+private _text = _this;
+
+if (isNull (uiNameSpace getVariable ["gm_teleraet_overlay", displayNull])) then {91 cutRsc ["gm_teleraet_overlay", "PLAIN"]};
+private _o = uiNameSpace getVariable ["gm_teleraet_overlay", displayNull];
+private _len = count _text;
+private _cache = [""];
+private _curLnLen = 0;
+private _cln = 0;
+private _maxLines = 7;
+
+for "_i" from 1 to _len do
+{
+	private _curC = _text select [_i-1, 1];
+	switch true do
+	{
+		// add a space, which is a bit faster than regular typing.
+		case (_curC == " ") :
+		{
+			private _ct = (_cache select _cln);
+			_ct = _ct + _curC;
+			_cache set [_cln, _ct];
+			_curLnLen = _curLnLen + 1;
+			sleep 0.03;
+		};
+		// add a linebreak, which means writer head needs to readjust and travel back the lenngth of current line
+		case (_curC == "@") :
+		{
+			_cache pushBack linebreak;
+			_cache pushBack "";
+			_cln = _cln +2;
+			_curLnLen = 0;
+			sleep (0.14 +(_curLnLen * 0.05));
+		};
+
+		// text, so we write and wait, plus play sound
+		default
+		{
+			private _ct = _cache select _cln;
+			_ct = _ct + _curC;
+			_cache set [_cln, _ct];
+			_curLnLen = _curLnLen + 1;
+			playSound [selectRandom ["gm_teletype_stroke_01", "gm_teletype_stroke_02", "gm_teletype_stroke_03"], true];
+			sleep 0.06;
+		};
+	};
+
+	// adjust cacheLines to follow the max visible lines
+	private _dif = ((count _cache - ({_x isEqualTo linebreak} count _cache)) - _maxLines) max 0;
+	if (_dif > 0) then { _dif = _dif + 1 };
+	_cache deleteRange [0, _dif];
+	_cln = _cln - _dif;
+
+	(_o displayCtrl 2) ctrlSetStructuredText composeText _cache;
+};
+</sqf>
+
+
+4)
+Call the script via <sqf inline>"My Text Is This" execVM "typeText.sqf"</sqf>. You can also make it a function and spawn it.
+
+{{Feature|informative|Using the @ character in the input text will cause a line break.}}
+
+== Add helmet camo to any unit ==
+
+<sqf>player linkItem  "gm_headgear_foliage_summer_grass_01";</sqf>
+
+You can use these types:
+{{Columns|3|
+* {{hl|gm_headgear_foliage_summer_grass_01}}
+* {{hl|gm_headgear_foliage_summer_grass_02}}
+* {{hl|gm_headgear_foliage_summer_grass_03}}
+* {{hl|gm_headgear_foliage_summer_grass_04}}
+* {{hl|gm_headgear_foliage_autumn_grass_01}}
+* {{hl|gm_headgear_foliage_autumn_grass_02}}
+* {{hl|gm_headgear_foliage_autumn_grass_03}}
+* {{hl|gm_headgear_foliage_autumn_grass_04}}
+* {{hl|gm_headgear_foliage_summer_forest_01}}
+* {{hl|gm_headgear_foliage_summer_forest_02}}
+* {{hl|gm_headgear_foliage_summer_forest_03}}
+* {{hl|gm_headgear_foliage_summer_forest_04}}
+}}
+
+== Eject parachutists out of a vehicle ==
+
+Inside "On Activation" of a waypoint for the plane (not the squad to jump out!)
+<sqf>
+temp = this spawn
+{
+	{
+		private _d = _x select 0;
+		moveOut _d;
+		unassignVehicle _d;
+		sleep (0.7 + random 0.2);
+	} forEach fullCrew [vehicle leader _this, "cargo"];
+};
+</sqf>
+
+
+== Mi-2Ch Smoke Generator control ==
+
+Turn On:
+<sqf inline>[this] call gm_countermeasures_fnc_engine_smoke_toggle;</sqf>
+
+Turn Off:
+<sqf inline>[this, true] call gm_countermeasures_fnc_engine_smoke_toggle;</sqf>
+
+
+== Override Bridge Laying Restrictions ==
+
+If you want to override the red indicator and deploy/pickup the bridge regardless:
+
+<sqf>
+vehicle player setVariable ["GM_BRIDGE_ACCEPTED", true, true];
+vehicle player setVariable ["GM_BRIDGE_INPOSITION", true, true];
+</sqf>
+
+
+== Start a bridge deployment ==
+
+<sqf inline>[yourBridgeLayer] spawn gm_core_vehicles_fnc_bridge_deploy;</sqf>
+
+Once activated you can force the process into the next phase of actively deploying it via the above mentioned lines:
+
+<sqf>
+yourBridgeLayer setVariable ["GM_BRIDGE_ACCEPTED", true, true];
+yourBridgeLayer setVariable ["GM_BRIDGE_INPOSITION", true, true];
+</sqf>
+
+{{Feature|informative|There may be side effects from forcing the deployment in an unsuitable location.}}
+
+
+== Spawn a bridgelayer without bridge ==
+
+<sqf>
+this setVariable ["GM_BRIDGE_BRIDGELOADED", false, true];
+this setVariable ["GM_BRIDGE_STATUS", false, true];
+this animateSource ["gm_bridgePrepare_source", 1, true];
+this animateSource ["gm_bridgeDetach_source", 1, true];
+this animateSource ["gm_bridgeReady_source", 1, true];
+</sqf>
+
+
+== Nuclear Warhead for the 2P16 Luna ==
+
+To quickly change the 2P16 over to the nuclear missile use the following code to circumvent the long reload time the missile otherwise would have:
+
+<sqf inline>myLuna</sqf> is the given variable name of the vehicle. You can use <sqf inline>this</sqf> instead when pasting this into the vehicle's init line.
+<sqf>
+myLuna removeMagazinesTurret ["gm_1Rnd_luna_he_3r9", [0]];
+myLuna removeWeaponTurret ["gm_luna_launcher", [0]];
+myLuna addMagazineTurret ["gm_1Rnd_luna_nuc_3r10", [0]];
+myLuna addWeaponTurret ["gm_luna_launcher", [0]];
+</sqf>
+
+
+== Searchlight Guard Towers ==
+
+To easily turn the BT-6 and BT-11 guard towers in functioning towers that scan with search lights, raise alarm and shoot flares:
+
+Paste this code into your [[Event Scripts#init.sqf|init.sqf]]:
+
+<sqf>
+if isServer then
+{
+    gm_fr_guardTowerCrew = ["gm_gc_army_rifleman_mpiak74n_80_str"]; // change the classnames in here to the type of soldier you want
+    gm_fr_alarmSirenSound = "gm_alarmHorn"; // you can change this to other sounds
+    gm_fr_alarmFlareAmmoType = "gm_flare_illum_red"; // you can change this to other flare sounds
+    gm_fr_side_friendly = west; // use the appropriate side for your enemies
+    gm_fr_side_enemy = east; // use the appropriate side for your enemies
+    gm_fr_extendedDebugMode = 0; // leave it as 0
+    gm_alias_fr_fnc_debugMarker = [{ "" }]; // leave this the way it is
+	gm_alias_fr_fnc_raiseAlarm = [gm_fr_fnc_raiseAlarm];
+	gm_alias_fr_fnc_shootFlare = [gm_core_fnc_shootIllumFlare];
+    {
+        _x call gm_fr_fnc_makeBorderTurret;
+    } forEach allMissionObjects "gm_missionHelper_guardtower"; // you can change the logic type to any object you want, best to leave it this way
+};</sqf>
+
+Then go around the map in Weferlingen and place the '''Guard Tower Mission Context object''' <sqf inline>gm_missionHelper_guardtower</sqf> near any of the guard towers you wish to equip.
+
+
+[[Category:Global Mobilization]]

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_1.98
+// revision: 151623 (2020-04-14T13:38:20Z)
+// export sha1: a9a0405cgthoo50my4tdt9rwyfa491o
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with  Arma 3 version 1.98 may be recognised by the appearance of this icon: {{GVI|Arma 3 |1.98}}
+
+[[Category:Introduced with Arma 3|1.98]]

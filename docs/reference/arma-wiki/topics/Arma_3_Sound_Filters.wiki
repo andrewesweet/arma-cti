@@ -1,0 +1,251 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_Filters
+// revision: 338010 (2023-02-23T21:11:13Z)
+// export sha1: czqamgzlohxtl4b2v1pi0kb00gn1jew
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Distance Frequency Attenuation ==
+
+Every sound in the game is attenuated by a frequency Low Pass Filter, the frequency cutoff changes with distance.
+
+Default filter is configured in '''CfgSoundGlobals''', however it is possible to define a custom distance attenuation filter for each SoundSet using parameter ''distanceFilter''.
+
+All Distance Frequency Attenuation Filters must be configured in the base class '''CfgDistanceFilters'''.
+
+{| class="wikitable"
+
+|-
+! Parameter
+! Unit/values
+! Default
+! Description
+
+|-
+! ''type''
+| Fitler Type name
+| "lowPassFilter"
+|
+* type of filter (note: currently, there only Low Pass Filter is possible)
+
+|-
+! ''minCutoffFrequency''
+| [Hz]
+| 300
+|
+* minimal cutoff frequency (see: {{Link|https://en.wikipedia.org/wiki/Cutoff_frequency|Cutoff Frequency}} on Wikipedia))
+
+|-
+! ''qFactor''
+| float (0..1)
+| 1
+|
+* slope of attenuation curve in frequency spectrum (see {{Link|https://en.wikipedia.org/wiki/Q_factor|Q factor}} on Wikipedia
+
+|-
+! ''innerRange''
+| [m]
+| 100
+|
+* radius of sphere with sound source in its' center
+* within innerRange distance, no filter is applied
+
+|-
+! ''range''
+| [m]
+| 1500
+|
+* radius of sphere with sound source in its' center
+* outside the range distance, cutoff frequency of filtering stops at minCutoffFrequency
+
+|-
+! ''powerFactor''
+| (0..100)
+| 2
+|
+* relationship between cutoff frequency and distance
+* higher value means faster attanuation
+|}
+
+<syntaxhighlight lang="cpp">
+class CfgDistanceFilters
+{
+	class defaultDistanceFreqAttenuationFilter
+	{
+		type = "lowPassFilter";
+		minCutoffFrequency = 150;
+		qFactor = 1;
+		innerRange = 10;
+		range = 1000;
+		powerFactor = 32;
+	};
+};
+</syntaxhighlight>
+
+== Sound Effects ==
+
+''Sound Effects'' is an older Arma 3 audio feature which handles sound filtering of a specific group of sounds, like radio protocol, underwater, or interior attenuation.
+
+=== Attenuation Effects ===
+
+All attenuation effects have to be configured within class '''AttenuationsEffects''' (base class '''CfgSoundEffects''').
+
+It is represented by class containing predefined filter chain (''2x4 band equalizer + echo''), which is applied on specific groups of sounds witch are considered to come "from outside" of a vehicle or building.
+
+{{Feature | informative
+|
+* Configuration for vehicles is handled by parameter ''attenuationEffectType'' within the vehicle configuration class. It links the vehicle to a specific attenuation class ( e.g.: attenuationEffectType {{=}} "CarAttenuation";
+* A special case is attenuation of sounds related to building interiors, there is no parameter that defines which attenuation class should be used, the expected class name is hard-coded instead: ''HouseAttenuation''
+}}
+
+<syntaxhighlight lang="cpp">
+class CfgSoundEffects
+{
+	class AttenuationsEffects
+	{
+		class HouseAttenuation
+		{
+			class Equalizer0
+			{
+				center[] = { 50, 600, 2000, 6000 };  // 20 - 20000Hz
+				bandwidth[] = {1, 2, 2, 2 };         // 0.1 and 2.0
+				gain[] = { db-3, db-1, db-5, db-8 }; // 0.126 - 7.94; +/- 18dB
+			};
+			class Equalizer1
+			{
+				center[] = { 60, 500, 3000, 15000 }; // 20 - 20000Hz
+				bandwidth[] = {2, 2, 2, 2 };		 // 0.1 and 2.0
+				gain[] = { db0, db0, db0, db0 };	 // 0.126 - 7.94; +/- 18dB
+			};
+			class Echo
+			{
+				WetDryMix = 0.1;   // 0 - 1
+				Feedback = 0.01;   // 0 - 1
+				Delay = 50;        // 1 - 2000
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Special Filters ===
+
+Special Filters are used to filter sounds within specific gameplay conditions like underwater or in an unconscious state.
+
+There are three hard-coded classes that are expected by the audio engine (with different, predefined filter chains): ''UnderWaterEffects'', ''UnconsciousStateEffect'', ''RadioFilterEffects''
+
+All of following have to be configured in base class '''CfgSoundEffects'''.
+
+==== Underwater Filters ====
+<syntaxhighlight lang="cpp">
+class CfgSoundEffects
+{
+	class UnderWaterEffects
+	{
+		class Mono
+		{
+			// 0m - unchanged sound
+			// 1m - below surface level all sounds are mixed into mono
+			distance = 1;
+		};
+		class Equalizer
+		{
+			// in range [0 - 3] equalizer pars are linearly interpolated from neutral values to set
+			distance = 3;
+			// Equalizer
+			center[] = { 100, 800, 2000, 10000 };	// frequencies
+			bandwidth[] = { 2.0, 2.0, 2.0, 2.0 };	// must be between 0.1 and 2.0
+			gain[] = { db3, db0, db-15, db-18 };	// +/- 18dB
+		};
+	};
+};
+</syntaxhighlight>
+
+==== Unconscious State Effect ====
+<syntaxhighlight lang="cpp">
+class CfgSoundEffects
+{
+	class UnconsciousStateEffect
+	{
+		// linear interpolation ... Echo0 * t + (Echo1 - Echo0), t = [0 - 1]
+		class Echo0
+		{
+			WetDryMix = 0.25;   // 0 - 1
+			Feedback = 0.15;     // 0 - 1
+			Delay = 50;        // 1 - 2000
+		};
+		class Echo1
+		{
+			WetDryMix = 0.5;    // 0 - 1
+			Feedback = 0.2;     // 0 - 1
+			Delay = 100;      // 1 - 2000
+		};
+		class Equalizer0
+		{
+			center[] = { 100, 800, 2000, 10000 }; // frequencies
+			bandwidth[] = { 1.0, 1.0, 1.0, 1.0 }; // must be between 0.1 and 2.0
+			gain[] = { db0, db-5, db-10, db-10 }; // +/- 18dB
+		};
+		class Equalizer1
+		{
+			center[] = { 100, 800, 2000, 10000 };	// frequencies
+			bandwidth[] = { 2.0, 2.0, 2.0, 2.0 }; // must be between 0.1 and 2.0
+			gain[] = { db0, db-10, db-18, db-18 }; // +/- 18dB
+		};
+	};
+};
+</syntaxhighlight>
+
+==== Radio Protocol Filters ====
+<syntaxhighlight lang="cpp">
+class CfgSoundEffects
+{
+	class RadioFilterEffects
+	{
+		class Part0 
+		{
+			// Equalizer
+			center[] = { 370, 900, 6000, 10000 };	// frequencies
+			bandwidth[] = { 1, 2, 1, 1.2 };			// must be between 0.1 and 2.0
+			gain[] = { db0, db4, db4, db5 };		// +/- 18dB
+			// Limiter
+			lim_limit = 1;
+			lim_attack = 5;
+			lim_release = 50;
+			enabled[] = { true, false, true };	// equalizer, limiter, convert to 8bit
+		};
+		class Part1
+		{
+			// low pass filter
+			filter_cut_off = 650;
+			/* Filter radian frequency calculated as (2 * sin(pi * (desired filter cutoff frequency) / sampleRate)).
+			The frequency must be greater than or equal to 0 and less than or equal to XAUDIO2_MAX_FILTER_FREQUENCY
+			frequency == 11025, cuttoff > 1837 = 1 */
+			filter_one_over_Q = 0.5;
+			/* 0 - 1, Reciprocal of Q factor. Controls how quickly frequencies beyond Frequency are dampened.
+			Larger values result in quicker dampening while smaller values cause dampening to occur more gradually */
+			filter_enabled = true;
+		};
+		class Part2
+		{			
+			// Equalizer
+			center[] = { 100, 250, 900, 5000 };		// 20 - 2000Hz
+			bandwidth[] = {2, 1.9, 2, 2 };			// 0.1 and 2.0
+			gain[] = { db-18, db-18, db4, db-3 };	// 0.126 - 7.94; +/- 18dB
+			// Compressor
+			comp_threshold = db0;
+			comp_ratio = 0.27;	  	// 1:1
+			comp_attack = 1;		// milliseconds			 
+			comp_relase = 100;		// milliseconds
+			// Limiter
+			lim_limit = db-18;
+			lim_attack = 1;
+			lim_release = 500;
+			enabled[] = { true, false, false };   // equalizer, compressor, limiter
+		};
+	};
+};
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Sound}}

@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/markerColor
+// revision: 370049 (2024-10-29T12:21:16Z)
+// export sha1: 7pti6gpmemmsr1xuevb5b2xdtbzmicv
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Operation Flashpoint version 1.46 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.46
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Markers
+
+|descr= Returns colour of the given marker. See also [[setMarkerColor]]/[[setMarkerColorLocal|Local]].
+
+|s1= [[markerColor]] markerName
+
+|p1= markerName: [[String]]
+
+|r1= [[String]]
+
+|x1= <sqf>if (markerColor "Marker1" == "ColorRed") then { hint "Marker1 is red!" };</sqf>
+
+|x2= <sqf>
+"mySuperMarker" setMarkerColor "#(0,1000,0,0.50000)";	// full green, 50% alpha
+private _colour = markerColor "mySuperMarker";			// return properly-formatted custom value, here #(0,1,0,0.5)
+if (_colour select [0, 1] == "#") then { hint "this marker has a custom colour!" };
+</sqf>
+
+|seealso= [[setMarkerColor]] [[setMarkerColorLocal]]
+}}

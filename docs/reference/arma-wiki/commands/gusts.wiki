@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/gusts
+// revision: 376953 (2026-01-01T05:39:26Z)
+// export sha1: r2n7w0qyrov7w4vm2qjj16m330prxfz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|descr= Return the current gusts value.
+
+|s1= '''gusts'''
+
+|r1= [[Number]] in range 0..1
+
+|x1= <sqf>_gustsValue = gusts;</sqf>
+
+|seealso= [[setGusts]] [[windStr]] [[wind]]
+}}

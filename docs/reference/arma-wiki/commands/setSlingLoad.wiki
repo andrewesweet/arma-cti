@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/setSlingLoad
+// revision: 353299 (2024-03-15T17:11:43Z)
+// export sha1: aqsrh4tebdf0a4qtzfmd9ayiksi6pd2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Ropes and Sling Loading
+
+|descr= Creates a sling loading from a helicopter to an entity if possible. To unload cargo, pass [[objNull]] as second param. {{Feature|informative|FROM object has to be a helicoper, alive with [[enableRopeAttach | rope attachment]] enabled, TO object has to be an entity, alive with [[enableRopeAttach | rope attachment]] enabled.}}
+
+|s1= heli [[setSlingLoad]] cargo
+
+|p1= heli: [[Object]] - the helicopter slinging the load
+
+|p2= cargo: [[Object]] - the cargo load entity
+
+|r1= [[Boolean]] - [[true]] on success
+
+|x1= <sqf>_success = heli1 setSlingLoad veh1;</sqf>
+
+|x2= To unload cargo:
+<sqf>_success = heli setSlingLoad objNull;</sqf>
+
+|seealso= [[ropes]] [[canSlingLoad]] [[enableRopeAttach]] [[getSlingLoad]] [[ropeAttachedObjects]] [[ropeAttachTo]] [[ropeDestroy]] [[ropeLength]] [[ropeUnwound]] [[ropeAttachedTo]] [[ropeCreate]] [[ropeDetach]] [[ropeAttachEnabled]] [[ropeCut]] [[ropeEndPosition]] [[ropeUnwind]] [[slingLoadAssistantShown]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-11-08 - 14:42 (UTC)</dd>
+<dt class="note">[[User:Tajin|Tajin]]</dt>
+<dd class="note">
+"... if possible "<br>
+FYI, that only means that 'vehicle' has to be able to lift 'cargo'. The position/distance does not matter, 'cargo' is automatically moved to a position that is close enough but doesn't doesn't collide with 'vehicle'. (can also be used if 'vehicle' is not flying, in which case 'cargo' will be placed and attached on the ground next to it).
+</dd>
+
+</dl>

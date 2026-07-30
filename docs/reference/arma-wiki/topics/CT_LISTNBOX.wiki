@@ -1,0 +1,626 @@
+// source: https://community.bistudio.com/wiki/CT_LISTNBOX
+// revision: 376157 (2025-09-08T19:16:56Z)
+// export sha1: iddnt6doiazitndrjb67ps6681auwya
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{CT|intro
+
+|macro = CT_LISTNBOX
+|value = 102
+|description = Similar to [[CT_LISTBOX]]. Additionally this control supports multiple columns which all have their own text, data and value. Another feature is the ability to define [[#idcLeft|idcLeft]] and [[#idcRight|idcRight]] to add buttons to the currently selected row.
+{{Feature|important|[[CT_LISTNBOX]] controls frequently cause unexpected issues with other controls if {{hl|idcLeft}} and {{hl|idcRight}} are set to -1. Use other values for {{hl|idcLeft}} and {{hl|idcRight}} to avoid these issues.}}
+
+|gallery=
+File:a3 arsenal loadout save.png{{!}}The Arsenal uses [[CT_LISTNBOX]] for example.
+File:CT LISTNBOX buttons.jpg{{!}}This Arsenal control utilizes the abbility of [[CT_LISTNBOX]] to add buttons to rows.
+File:WuChaoRen 000.png{{!}}Example for a [[CT_LISTNBOX]] with an image as the first column.
+File:WuChaoRen 001.png
+File:WuChaoRen 002.png{{!}}[[CT_LISTNBOX]] with a column that is moved to the middle of the control.
+File:WuChaoRen 003.png
+|commands =
+* [[:Category:Command_Group:_GUI_Control_-_ListNBox|Commands: ListNBox]]
+* [[:Category:Command_Group:_GUI_Control_-_ListBox|Commands: Listbox]]
+* [[BIS_fnc_initListNBoxSorting]]
+|events =
+* [[User_Interface_Event_Handlers#Listbox_Events|Events: Listbox]]
+}}
+
+{{CT|abc start}}
+=== A ===
+{{CT|attribute
+|name=arrowEmpty
+|type1=String
+|value1="#(argb,8,8,3)color(1,1,1,1)"
+|description=
+}}
+
+{{CT|attribute
+|name=arrowFull
+|type1=String
+|value1="#(argb,8,8,3)color(1,1,1,1)"
+|description=
+}}
+
+{{CT|attribute
+|name=autoScrollDelay
+|type1=Number
+|value1=5
+|description=
+}}
+
+{{CT|attribute
+|name=autoScrollRewind
+|type1=Number
+|value1=0
+|description=
+}}
+
+{{CT|attribute
+|name=autoScrollSpeed
+|type1=Number
+|value1=-1
+|description=
+}}
+
+=== C ===
+{{CT|attribute
+|name=canDrag
+|type1=Number
+|value1=1
+|description=
+}}
+
+{{CT|attribute
+|name=color
+|type1=Array
+|value1={0.95,0.95,0.95,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorPicture
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorPictureDisabled
+|type1=Array
+|value1={1,1,1,0.25}
+|description=
+}}
+
+{{CT|attribute
+|name=colorPictureSelected
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorPlayerItem
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorScrollbar
+|type1=Array
+|value1={0.95,0.95,0.95,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSelect
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSelect2
+|type1=Array
+|value1={0,0,0,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSelect2Right
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSelectBackground
+|type1=Array
+|value1={1,1,1,0.25}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSelectBackground2
+|type1=Array
+|value1={1,1,1,0.3}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSelectRight
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorShadow
+|type1=Array
+|value1={0,0,0,0.5}
+|description=
+}}
+
+{{CT|attribute
+|name=columns
+|type1=Array
+|value1={"7.2 * (((safezoneW / safezoneH) min 1.2) / 40) + (safezoneX)","15.8 * (((safezoneW / safezoneH) min 1.2) / 40) + (safezoneX)"}
+|description=Define the left starting position of each column. The values are offsets ratios (not spacing ratios). Tip: Use {-0.01} in first column to fix unwanted offset, if desired.
+}}
+
+=== D ===
+{{CT|attribute
+|name=disableOverflow
+|type1=Number
+|value1=1
+|description=Don't allow text to continue in next column.
+}}
+
+{{CT|attribute
+|name=drawSideArrows
+|type1=Number
+|value1=1
+|description=Each row can be linked to 2 arrow buttons which are shown on the left and right of the row.
+{{Feature|important| {{hl|drawSideArrows}} attribute is irrelevant and does not control the appearance of the left and right arrows/buttons despite the intention, and it could be ignored all together. Instead, [[#idcLeft|idcLeft]] and [[#idcRight|idcRight]] attributes control these arrows/buttons.}} 
+}}
+
+=== I ===
+{{CT|attribute
+|name=idcLeft
+|type1=Number
+|value1=24468
+|description=The IDC of the control to be used for the left control that shows up in the selected row.
+{{Feature|important|Buttons will only be drawn if '''both''' idcLeft and idcRight are defined. Furthermore, the position of the first column needs to be adjusted so that the button does not overlap with the text. The button's height will be adjusted to the rowHeight property of the [[CT_LISTNBOX]] and the button's x, y, w and h properties can be set to -1.}}
+{{Feature|important|-1 is a valid idc for this attribute!}}
+}}
+
+{{CT|attribute
+|name=idcRight
+|type1=Number
+|value1=24469
+|description=The IDC of the control to be used for the right control that shows up in the selected row.
+{{Feature|important|-1 is a valid idc for this attribute!}}
+}}
+
+{{CT|attribute
+|name=idcx
+|type1=Number
+|value1=984
+|description=Used in the Arsenal, can be ignored.
+}}
+
+{{CT|attribute
+|name=Items
+|type1=Class
+|value1=class Items
+{
+	class Presence
+	{
+		text = "";
+		value = 1;
+		data = "value";
+	};
+	class Name
+	{
+		text = "Name";
+		value = -1;
+	};
+	class Author
+	{
+		text = "Author";
+		value = -1;
+	};
+};
+|description=List of default items. See [[CT_COMBO#Items]] for more details.
+}}
+
+=== L ===
+{{CT|attribute
+|name=ListScrollBar
+|type1=Class
+|value1=class ListScrollBar
+{
+	color[] = {1,1,1,0.6};
+	colorActive[] = {1,1,1,1};
+	colorDisabled[] = {1,1,1,0.3};
+	thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+	arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+	arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+	border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+	shadow = 0;
+	scrollSpeed = 0.06;
+	width = 0;
+	height = 0;
+	autoScrollEnabled = 0;
+	autoScrollSpeed = -1;
+	autoScrollDelay = 5;
+	autoScrollRewind = 0;
+};
+|description=
+}}
+
+=== M ===
+{{CT|attribute
+|name=maxHistoryDelay
+|type1=Number
+|value1=1
+|description=
+}}
+
+{{CT|attribute
+|name=MuteCheckBoxTemplate
+|type1=Class
+|value1=class MuteCheckBoxTemplate
+{
+	x = 0;
+	y = 0;
+	w = "0.8 * (((safezoneW / safezoneH) min 1.2) / 40)";
+	h = "0.8 * ((((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
+	textureChecked = "\A3\Ui_f\data\IGUI\RscIngameUI\RscDisplayChannel\MuteVON_ca.paa";
+	textureUnchecked = "\A3\Ui_f\data\IGUI\RscIngameUI\RscDisplayChannel\MuteVON_crossed_ca.paa";
+	textureFocusedChecked = "\A3\Ui_f\data\IGUI\RscIngameUI\RscDisplayChannel\MuteVON_ca.paa";
+	textureFocusedUnchecked = "\A3\Ui_f\data\IGUI\RscIngameUI\RscDisplayChannel\MuteVON_crossed_ca.paa";
+	textureHoverChecked = "\A3\Ui_f\data\IGUI\RscIngameUI\RscDisplayChannel\MuteVON_ca.paa";
+	textureHoverUnchecked = "\A3\Ui_f\data\IGUI\RscIngameUI\RscDisplayChannel\MuteVON_crossed_ca.paa";
+	texturePressedChecked = "\A3\Ui_f\data\IGUI\RscIngameUI\RscDisplayChannel\MuteVON_ca.paa";
+	texturePressedUnchecked = "\A3\Ui_f\data\IGUI\RscIngameUI\RscDisplayChannel\MuteVON_crossed_ca.paa";
+	textureDisabledChecked = "\A3\Ui_f\data\IGUI\RscIngameUI\RscDisplayChannel\MuteVON_ca.paa";
+	textureDisabledUnchecked = "\A3\Ui_f\data\IGUI\RscIngameUI\RscDisplayChannel\MuteVON_crossed_ca.paa";
+	idc = -1;
+	type = 77;
+	deletable = 0;
+	style = 0;
+	checked = 0;
+	color[] = {1,1,1,0.7};
+	colorFocused[] = {1,1,1,1};
+	colorHover[] = {1,1,1,1};
+	colorPressed[] = {1,1,1,1};
+	colorDisabled[] = {1,1,1,0.2};
+	colorBackground[] = {0,0,0,0};
+	colorBackgroundFocused[] = {0,0,0,0};
+	colorBackgroundHover[] = {0,0,0,0};
+	colorBackgroundPressed[] = {0,0,0,0};
+	colorBackgroundDisabled[] = {0,0,0,0};
+	tooltipColorText[] = {1,1,1,1};
+	tooltipColorBox[] = {1,1,1,1};
+	tooltipColorShade[] = {0,0,0,0.65};
+	soundEnter[] = {"",0.1,1};
+	soundPush[] = {"",0.1,1};
+	soundClick[] = {"",0.1,1};
+	soundEscape[] = {"",0.1,1};
+};
+|description=
+}}
+
+=== P ===
+{{CT|attribute
+|name=padding
+|type1=Number
+|value1=0.004
+|description=
+}}
+
+{{CT|attribute
+|name=period
+|type1=Number
+|value1=1.2
+|description=Time it takes to pulsate between the select colors.
+}}
+
+=== R ===
+{{CT|attribute
+|name=rowHeight
+|type1=Number
+|value1=0
+|type2=String
+|value2="((((safezoneW / safezoneH) min 1.2) / 1.2) / 25)"
+|description=The height of a single row.
+}}
+
+{{CT|attribute
+|name=rows
+|type1=Number
+|value1=25
+|description=
+}}
+
+=== S ===
+{{CT|attribute
+|name=selectWithRMB
+|type1=Number
+|value1=0
+|description=Enable row selection with the right mouse button. {{Feature|arma3| Since {{arma3}} v2.00.}}
+}}
+
+{{CT|attribute
+|name=shadowPictureLeft
+|type1=Number
+|value1=0
+|description=
+}}
+
+{{CT|attribute
+|name=shadowPictureRight
+|type1=Number
+|value1=0
+|description=
+}}
+
+{{CT|attribute
+|name=shadowTextLeft
+|type1=Number
+|value1=0
+|description=
+}}
+
+{{CT|attribute
+|name=shadowTextRight
+|type1=Number
+|value1=0
+|description=
+}}
+
+{{CT|attribute
+|name=soundSelect
+|type1=Array
+|value1={"",0.1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=soundSelect
+|type1=Array
+|value1={"",0.1,1}
+|description=
+}}
+
+=== T ===
+{{CT|attribute
+|name=tooltipPerColumn
+|type1=Boolean
+|value1= true
+|description= If set to [[true]], each cell can have a different tooltip. (Optional - default: [[false]]) {{Feature|arma3| Since {{arma3}} v2.01.147037.}}
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscListNBox ===
+<syntaxhighlight lang="cpp">
+class RscListNBox
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_LISTNBOX;
+	rowHeight = 0;
+	colorText[] = {1,1,1,1};
+	colorScrollbar[] = {0.95,0.95,0.95,1};
+	colorSelect[] = {0,0,0,1};
+	colorSelect2[] = {0,0,0,1};
+	colorSelectBackground[] = {0.95,0.95,0.95,1};
+	colorSelectBackground2[] = {1,1,1,0.5};
+	colorBackground[] = {0,0,0,1};
+	maxHistoryDelay = 1;
+	soundSelect[] =
+	{
+		"",
+		0.1,
+		1
+	};
+	autoScrollSpeed = -1;
+	autoScrollDelay = 5;
+	autoScrollRewind = 0;
+	arrowEmpty = "#(argb,8,8,3)color(1,1,1,1)";
+	arrowFull = "#(argb,8,8,3)color(1,1,1,1)";
+	drawSideArrows = 0;
+	columns[] = {0.3,0.6,0.7};
+	idcLeft = -1;
+	idcRight = -1;
+	class ListScrollBar : ScrollBar
+	{
+	};
+	style = ST_MULTI;
+	shadow = 0;
+	font = "RobotoCondensed";
+	sizeEx = GUI_TEXT_SIZE_MEDIUM;
+	color[] = {0.95,0.95,0.95,1};
+	colorDisabled[] = {1,1,1,0.25};
+	colorPicture[] = {1,1,1,1};
+	colorPictureSelected[] = {1,1,1,1};
+	colorPictureDisabled[] = {1,1,1,1};
+	period = 1.2;
+	x = 0;
+	y = 0;
+	w = 0.3;
+	h = 0.3;
+	class ScrollBar : ScrollBar
+	{
+	};
+};
+</syntaxhighlight>
+
+== Other Examples ==
+<syntaxhighlight lang="cpp">
+class RscListNBox
+{
+  access = 0;
+  type = CT_LISTNBOX;// 102;
+  style =ST_MULTI;
+  w = 0.4;   h = 0.4;
+  font = "TahomaB";
+  sizeEx = 0.04;
+  colorText[] = {0.8784, 0.8471, 0.651, 1};
+  colorBackground[] = {0, 0, 0, 1};
+  autoScrollSpeed = -1;
+  autoScrollDelay = 5;
+  autoScrollRewind = 0;
+  arrowEmpty = "#(argb,8,8,3)color(1,1,1,1)";
+  arrowFull = "#(argb,8,8,3)color(1,1,1,1)";
+  columns[] = {0.3, 0.6, 0.7};
+  color[] = {1, 1, 1, 1};
+  colorScrollbar[] = {0.95, 0.95, 0.95, 1};
+  colorSelect[] = {0.95, 0.95, 0.95, 1};
+  colorSelect2[] = {0.95, 0.95, 0.95, 1};
+  colorSelectBackground[] = {0, 0, 0, 1};
+  colorSelectBackground2[] = {0.8784, 0.8471, 0.651, 1};
+  drawSideArrows = 0;
+  idcLeft = -1;
+  idcRight = -1;
+  maxHistoryDelay = 1;
+  rowHeight = 0;
+  soundSelect[] = {"", 0.1, 1};
+  period = 1;
+  shadow = 2;
+  class ScrollBar
+  {
+	arrowEmpty = "#(argb,8,8,3)color(1,1,1,1)";
+	arrowFull = "#(argb,8,8,3)color(1,1,1,1)";
+	border = "#(argb,8,8,3)color(1,1,1,1)";
+	color[] = {1,1,1,0.6};
+	colorActive[] = {1,1,1,1};
+	colorDisabled[] = {1,1,1,0.3};
+	thumb = "#(argb,8,8,3)color(1,1,1,1)";
+  };
+};
+</syntaxhighlight>
+
+== Scripting Example ==
+As for invisible data processing, [[lnbAddArray]], [[lnbAddColumn]], [[lnbData]], [[lnbGetColumnsPosition]], [[lnbSetColumnsPos]], [[lnbSetData]], [[lnbSetText]], [[lnbSetValue]], [[lnbText]] and [[lnbValue]] store data types into exact position of the [[CT_LISTNBOX]] with different spaces. Accessing data with coordinate command at nearly the same syntax:
+<sqf>
+// Set same value to one position of a Control
+_ctrl lnbSetData [[0,0],"#1"];
+lnbSetColumnsPos [102,[0,1],1];
+_ctrl lnbSetText [[0,1], "#1"];
+_ctrl lnbSetValue [[0,0],1];
+// Accessing the value disregard affecting one another
+_ctrl lnbData [0,0]; // "#1"
+lnbGetColumnsPosition _ctrl; // [1];
+_ctrl lnbText [0,0]; // "#1"
+_ctrl lnbValue [0,0]; // 1
+</sqf>
+
+For a direct visible control over [[CT_LISTNBOX]]:
+
+{| class="wikitable valign-top"
+|-
+! Code !! Pictures
+|-
+| <sqf>
+[_CT_LISTNBOX] spawn {
+
+	disableSerialization;
+	params ["_CT_LISTNBOX"];
+	{
+		_CT_LISTNBOX lnbAddRow [getText (_x >> "displayNameShort"), getText (_x >> "displayName")];
+		_CT_LISTNBOX lnbSetPicture [[_foreachIndex, 0],getText (_x >> "texture")];
+	} forEach ("true" configClasses (configFile >> "CfgRanks"));
+	_CT_LISTNBOX lnbSetCurSelRow 0;
+
+	private _current = lnbCurSelRow _CT_LISTNBOX;
+	private _color = _CT_LISTNBOX lnbColor [_current, 0];
+	_CT_LISTNBOX lnbSetColor [[_current, 1], [(_color select 0) / 2, 0, 0, 1]];
+	_CT_LISTNBOX lnbDeleteColumn 0;
+	_CT_LISTNBOX lnbDeleteRow 1;
+	sleep 1;
+	lnbClear _CT_LISTNBOX; // Clear all items but control still remains just invisible
+};
+</sqf>
+|
+[[File:WuChaoRen_000.png|200px]]<br><br>
+[[File:WuChaoRen_001.png|200px]]<br><br>
+[[File:WuChaoRen_002.png|200px]]<br><br>
+[[File:WuChaoRen_003.png|200px]]
+|}
+
+
+== BIS_fnc_initListNBoxSorting Example ==
+
+[[BIS_fnc_initListNBoxSorting]] can be used to create a sortable [[CT_LISTNBOX]]. To that end, two separate [[CT_LISTNBOX]] controls are required: One filter control and one content control. The filter control becomes the header of the sortable [[CT_LISTNBOX]].
+[[File:A3_BIS_fnc_initListNBoxSorting_example.jpg|thumb|center|A GUI using [[BIS_fnc_initListNBoxSorting]]]]
+This example demonstrates the basic steps and components needed to create a sortable [[CT_LISTNBOX]]. See [[BIS_fnc_initListNBoxSorting]] to learn more about additional features of that function.
+<syntaxhighlight lang="cpp">
+import ctrlListNBox; //This base class comes with vanilla Arma 3 and is of type CT_LISTNBOX.
+
+class ExampleDialog {
+	idd = 12345;
+	onLoad = "_this call TAG_fnc_initListNBoxCtrls;";
+	//...
+	
+	class ControlsBackground {
+		//...
+	};
+
+	class Controls {
+		class Filter : ctrlListNBox {
+			idc = 100;
+			x = 0;
+			y = 0.045;
+			w = 1;
+			h = 0.04;
+		};
+
+		class Content : ctrlListNBox {
+			idc = 101;
+			disableOverflow = 1;
+			tooltipPerColumn = 1;
+			x = 0;
+			y = 0.085;
+			w = 1;
+			h = 0.87;
+		};
+
+		//...
+	};
+};
+</syntaxhighlight>
+The {{hl|TAG_fnc_initListNBoxCtrls}} function (called from the [[User Interface Event Handlers#onLoad|onLoad]] UI Event Handler):
+<sqf>
+disableSerialization;
+
+params ["_parentDisplay"];
+
+private _filterCtrl = _parentDisplay displayCtrl 100;
+private _contentCtrl = _parentDisplay displayCtrl 101;
+
+// Add columns:
+{
+	_x lnbAddColumn 0.5;
+} forEach [_filterCtrl, _contentCtrl];
+
+// Add column headers:
+_filterCtrl lnbAddRow ["Name", "Group"];
+
+// Add content rows:
+{
+	_contentCtrl lnbAddRow [name _x, groupId group _x];
+} forEach allUnits;
+
+[_filterCtrl, _contentCtrl] call BIS_fnc_initListNBoxSorting;
+
+ctrlSetFocus _contentCtrl; // Without this line, the user has to click _contentCtrl first in order to use the sorting buttons.
+</sqf>
+
+
+[[Category: Control Types]]

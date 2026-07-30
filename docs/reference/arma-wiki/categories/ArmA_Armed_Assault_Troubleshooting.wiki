@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Troubleshooting
+// revision: 187206 (2021-01-08T13:11:54Z)
+// export sha1: jsmneqzldxjen5c61jj4opnmnhhv4ss
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1}}

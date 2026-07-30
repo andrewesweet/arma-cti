@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_tridentHandleDamage
+// revision: 325064 (2022-07-01T12:23:56Z)
+// export sha1: kyqaizo7r3rw4s7uvt2db1ghbor6i7f
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sides
+
+|descr= Register a unit as Trident unit.
+When competing sides are still friendly and the unit is killed by the competing side,
+the killer won't be punsihed by negative score. Instead, Trident relationship will decrease.
+
+|s1= object call [[BIS_fnc_tridentHandleDamage]]
+
+|p1= object: [[Object]]
+
+|r1= [[Boolean]] - [[true]] if event handler managing the functionality was added, [[false]] when it existed already
+
+|x1= <sqf>BIS_tridentObject call BIS_fnc_tridentHandleDamage;</sqf>
+
+|seealso= [[BIS_fnc_tridentSetRelationship]] [[BIS_fnc_tridentGetRelationship]] [[BIS_fnc_tridentExecute]]
+}}

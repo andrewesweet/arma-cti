@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/hiddenActions
+// revision: 378627 (2026-05-15T07:57:31Z)
+// export sha1: 0c9s3c1kgb9cripeef49bckxtw4aywb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Development Branch | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|branch= dev
+
+|gr1= Interaction
+
+|descr= {{Feature|important|This command is a work in progress and can evolve until release on stable branch.}}
+Getter for [[hideActions]], see also [[shownAction]]. 
+
+|s1= [[hiddenActions]] filter
+
+|p1= filter: [[Array]] - Array of [[Number]]s - actions to check if hidden or [] to check all. See [[shownAction]] for numbers meaning
+
+|r1= [[Array]] - Array of [[Number]]s - actions that are hidden or [] if none is hidden. See [[shownAction]] for numbers meaning
+
+|x1= <sqf>if (hiddenActions [] isEqualTo []) then { hint "No actions have been harmed during script execution" };</sqf>
+|x2= <sqf>if (hiddenActions [91] isEqualTo [91]) then { hint "User actions have been hidden" };</sqf>
+|x3= <sqf>hiddenActions []; // [2] - GetInDriver is hidden</sqf>
+|x4= <sqf>hiddenActions [1, 2, 4]; // [1,4] - from GetInCommander/Driver/Gunner only Commander and Gunner are hidden</sqf>
+
+|seealso= [[hideActions]] [[shownAction]] [[visibleMap]] [[shownGPS]] [[shownWatch]] [[shownCompass]] [[shownUAVFeed]] [[shownHUD]] [[addAction]] [[action]] [[isActionMenuVisible]]
+}}

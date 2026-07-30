@@ -1,0 +1,84 @@
+// source: https://community.bistudio.com/wiki/ArmA:_Armed_Assault:_Sample_Models
+// revision: 353568 (2024-03-19T12:01:45Z)
+// export sha1: 61inbrjlz98a7zlvcagkwohvlk39pc7
+// categories: Category:Public Data
+// Vendored snapshot. Do not edit — re-export instead.
+
+BIS has released several runs of sample files for their games.  These packs include configuration files, material files, 3d models, and textures for users to learn from and modify.
+
+== Armed Assault Sample Models ==
+
+The first run of Armed Assault Sample Models had example models, materials, and textures from the tracked, wheeled, aircraft, rifle, and soldier classes. It also featured complete configuration files for each model.
+
+=== Armed Assault Sample Models License===
+
+This archive contains sample models to be used in Oxygen 2 Personal Edition to create custom models for ArmA. To use those models, you must agree to the following conditions of use:
+
+1) Bohemia Interactive grants to you a personal, nonexclusive license to open and modify the models for the purpose of designing, developing, testing, and producing non-commercial game content for PC game ArmA.
+
+2) You acknowledge and agree that Bohemia Interactive is providing you the models free of charge in order to allow you creation of non-commercial game content for ArmA only and you agree to not commercially exploit any game content you may create using the models without Bohemia Interactive prior written permission.
+
+3) Bohemia Interactive doesn't give you permission to exploit the models in any other way than written in this readme, especially not to convert them for use in any other game or engine than ArmA.
+
+=== Download ===
+
+{{Link|link= http://downloads.bistudio.com/Tools/BIModels.zip|text= Arma Sample Models}}
+
+== Armed Assault Models Complete Pack ==
+
+Bohemia later released all models for Armed Assault for modders to edit.  It was made available on a slightly revised license.  It made available MLOD p3ds for ArmA but no textures.
+
+=== Armed Assault Complete Pack License ===
+
+1) Bohemia Interactive grants to you a personal, nonexclusive License to open, modify and distribute the ArmA Sample Models for the purpose of designing, developing, testing, and producing non-commercial game content for PC game ArmA and its sequels or expansion packs.
+
+2) You acknowledge and agree that you will not commercially exploit any game content you may created using the models without Bohemia Interactive prior written permission.
+
+3) Bohemia Interactive doesn't give you permission to exploit ArmA Sample Models in any other way, especially not to convert them for use in any other game or engine than ArmA or its sequels and expansion.
+
+4) If you create and distribute a work based on the ArmA Sample Models you must license the entire work, as a whole, under this License to anyone who will be using it. This License gives no permission to license the work in any other way, but it does not invalidate such permission if you have separately received it.
+
+=== Download ===
+
+{{Link|link= http://downloads.bistudio.com/Tools/ARMA_SampleVehiclesWeapons.zip|text= Vehicles and Weapons Complete Pack}}
+
+{{Link|link= http://downloads.bistudio.com/Tools/ARMA_SampleModelsEnvironmentOther.zip|text= Environment Models Complete Pack}}
+
+{{Link|link= http://downloads.bistudio.com/Tools/ARMA_SampleCharactersAnimals.zip|text= Characters and Creatures Complete Pack}}
+
+== Arma 2 Character Sample ==
+
+To help modders ease in to Arma 2, Bohemia released a set of character tools.  This release included a character, and a head example models, a male skeleton animation export helper model, textures, and a configuration file for the entire ca.pbo.
+
+=== Arma 2 Character Sample License ===
+
+1) Bohemia Interactive grants to you a personal, nonexclusive License to open, modify and distribute the ArmA Sample Models for the purpose of designing, developing, testing, and producing non-commercial game content for PC game ArmA and its sequels or expansion packs.
+
+2) You acknowledge and agree that you will not commercially exploit any game content you may created using the models without Bohemia Interactive prior written permission.
+
+3) Bohemia Interactive doesn't give you permission to exploit ArmA Sample Models in any other way, especially not to convert them for use in any other game or engine than ArmA or its sequels and expansion.
+
+4) If you create and distribute a work based on the ArmA Sample Models you must license the entire work, as a whole, under this License to anyone who will be using it. This License gives no permission to license the work in any other way, but it does not invalidate such permission if you have separately received it.
+
+=== Download ===
+
+{{Link|link= http://downloads.bistudio.com/Tools/ArmaII_SampleCharacterModels.zip|text= Arma 2 Character Sample}}
+
+== Arma 2 Sample Models ==
+
+The pack of sample models and animations from {{GameCategory|arma2|link= y}} and its expansions; contains unbinarized models, configs, model configs, RVMATs and scripts from Arma 2 including all DLCs in ZIP archives divided according to the [[Licenses|licenses]] applied.
+
+=== See: [[Arma_2_Sample_Models|Arma 2 Sample Models]] ===
+
+== Links ==
+
+Armed Assault Sample Models News Thread: 
+{{Link|link= http://forums.bistudio.com/showthread.php?t=61769|text= BI Forums}}
+
+Arma 2 Tools / Character Sample Models News Thread:
+{{Link|link= http://forums.bistudio.com/showthread.php?t=83808|text= BI Forums}}
+
+
+[[Category:Public_Data]]
+{{GameCategory|arma1|Modelling]]
+[[Category:Arma 2: Editing}}

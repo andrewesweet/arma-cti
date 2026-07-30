@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getIntersectionsUnderCursor
+// revision: 336299 (2022-12-21T11:10:09Z)
+// export sha1: 9qi4frx29frv220r215cy94paeca3tc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Geometry | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Geometry
+
+|descr= Returns intersections under cursor. For more information see [[lineIntersectsSurfaces]].
+
+|s1= [screenX, screenY, ignoreObj1, ignoreObj2, sortMode, maxResults, LOD1, LOD2] call [[BIS_fnc_getIntersectionsUnderCursor]]
+
+|p1= screenX: [[Number]] - (Optional, default 0) cursor's X position - see [[screenToWorld]]
+
+|p2= screenY: [[Number]] - (Optional, default 0) cursor's Y position - see [[screenToWorld]]
+
+|p3= ignoreObj1: [[Object]] - (Optional, default [[objNull]]) first object to ignore
+
+|p4= ignoreObj2: [[Object]] - (Optional, default [[objNull]]) second object to ignore
+
+|p5= sortMode: [[Boolean]] - (Optional, default [[true]]) [[true]]: closest to furthest, [[false]]: furthest to closest
+
+|p6= maxResults: [[Number]] - (Optional, default 1) max results to return. -1 to return every result
+
+|p7= LOD1: [[String]] - (Optional, default "VIEW") primary [[LOD]] to look for intersection. Can be one of:
+* "FIRE"
+* "VIEW"
+* "GEOM"
+* "IFIRE" - ("I" stands for Indirect, ''almost'' identical to "FIRE")
+* "NONE"
+* {{GVI|arma3|2.02|size= 0.75}} "PHYSX" - PhysX geometry LOD
+* {{GVI|arma3|2.08|size= 0.75}} "ROADWAY" - only works from the top
+|p7since= arma3 1.52
+
+|p8= LOD2: [[String]] - (Optional, default "FIRE") secondary [[LOD]] to look for intersection. See ''LOD1'' for possible values
+|p8since= arma3 1.52
+
+|r1= [[Array]] of intersections in format [<nowiki/>[intersectPosASL, surfaceNormal, intersectObj, parentObject, selectionNames, pathToBisurf], ...] where:
+* intersectPosASL: [[PositionASL]] - the actual position where line intersects surface
+* [[surfaceNormal]]: [[Vector]] - a normal to the intersected surface 
+* intersectObject: [[Object]] - the object the surface belongs to (could be proxy object) - [[objNull]] if terrain
+* parentObject: [[Object]] - the object proxy object belongs to (not always the same as intersect object) - [[objNull]] if terrain
+* {{GVI|arma3|2.10|size= 0.75}} [[selectionNames]]: [[Array]] of [[String]]s - Names of the intersected selections (bones). Returns {{hl|[]}} if there is no intersection with a selection.
+* {{GVI|arma3|2.10|size= 0.75}} pathToBisurf: [[String]] - path to intersected surface properties (.bisurf) file. Returns {{hl|""}} if surface has no special properties. Terrain surface properties begin with {{hl|#}}, and the surface properties are defined in {{hl|CfgSurfaces}}. For example, if it returns {{hl|#GdtVRsurface01}}, properties are defined in: <sqf inline>configFile >> "CfgSurfaces" >> "GdtVRsurface01"</sqf>
+
+|x1= <sqf>[0.5, 0.5, player, objNull, true, "VIEW"] call BIS_fnc_getIntersectionsUnderCursor;</sqf>
+
+|seealso= [[lineIntersectsSurfaces]]
+}}

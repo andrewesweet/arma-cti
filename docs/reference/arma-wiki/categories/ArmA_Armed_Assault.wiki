@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault
+// revision: 351565 (2023-12-07T16:17:26Z)
+// export sha1: 4t55vw20d6wrvqg8ve97rm0rskwxjks
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|releasedate= 2006-11-10
+|latestversion= 1.18
+|image = Arma.jpg
+|intro = '''{{Name|arma1|com}}''' ('''{{Name|arma1co|com}}''' in North America) is a new game from the developers of {{ofp}}, is a first person tactical military shooter with large elements of realism and simulation.
+{{Feature|quote
+| We aim to again deliver the ultimate military simulation for PC, improving the successful gameplay formula of our debut PC game release Operation Flashpoint.
+It's refreshing for us to focus again on PC game development after years spent working on the Xbox platform and we work hard to make sure not to disappoint the expectations of the great community that built around {{ofp}} with this new game.
+| Marek Španěl, director and co-founder of {{Name|bi}}
+}}
+|feature1 = Tactical military shooter
+|feature2 = Large elements of realism and simulation
+|feature3 = Swimming - The ability to swim is now available!
+|feature4 = Large number of troops possible
+|feature5 = Bullet deflection
+|feature6 = Dynamically simulated night sky (star constellations, moon phases)
+|feature7 = Destructible environments
+|feature8 = [[ArmA: Armed Assault: Unique Features|Full feature list]]
+|gallery1 = Beta 24.jpg
+|gallery2 = Beta 25.jpg
+|gallery3 = Beta 27.jpg
+|gallery4 = Beta 30.jpg
+|start1 = [[ArmA: Armed Assault: FAQ|FAQ]]
+|start2 = [[ArmA: Armed Assault: Manual|Manual]]
+|start3 = [[ArmA: Armed Assault: Extensions|Extensions]]
+|start4 = [[ArmA: Armed Assault: Editing|Editing]]
+|start5 = [[ArmA: Armed Assault: Demo|Demo]]
+}}

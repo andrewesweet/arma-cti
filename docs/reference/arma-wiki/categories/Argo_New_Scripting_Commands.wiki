@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Argo:_New_Scripting_Commands
+// revision: 351598 (2023-12-07T20:08:24Z)
+// export sha1: 9z2f92kc668o5gei56s1symf73hl57d
+// Vendored snapshot. Do not edit — re-export instead.
+
+List of all new commands in {{GameCategory|argo|link= y}}.
+
+{{GameCategory|argo|Scripting Commands}}

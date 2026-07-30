@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_healing
+// revision: 352134 (2024-02-01T23:25:10Z)
+// export sha1: 96m9zf61w1qdtw60fs5gkblesd4jdm6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Broken Functions | Category:Function Group: Feedback | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Broken Functions
+
+|gr2= Feedback
+
+|descr= Healing postprocess. Supposed to give healing postprocess effects.
+{{Feature|warning|This function is unfinished, must not and '''cannot''' be used!}}
+
+|s1= call [[BIS_fnc_healing]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_healing; // do NOT use</sqf>
+
+|seealso= [[BIS_fnc_healthEffects]]
+}}

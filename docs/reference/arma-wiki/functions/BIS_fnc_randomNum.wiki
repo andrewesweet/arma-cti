@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_randomNum
+// revision: 338225 (2023-02-24T13:01:16Z)
+// export sha1: gqhkujeuno4171fsp6z9piz4r9bk4pj
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Math | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Math
+
+|descr= Returns a random (float) number between the two passed numbers. The order of parameters doesn't matter: it can be {{hl|[min, max]}} or {{hl|[max, min]}}.
+
+|s1= [min, max] call [[BIS_fnc_randomNum]]
+
+|p1= min: [[Number]] - minimum value, inclusive
+
+|p2= max: [[Number]] - maximum value, exclusive
+
+|r1= [[Number]]
+
+|x1= <sqf>[1, 3] call BIS_fnc_randomNum; // return a number between 1 and 3, including 1</sqf>
+
+|seealso= [[BIS_fnc_randomInt]] [[BIS_fnc_arithmeticMean]] [[BIS_fnc_geometricMean]] [[BIS_fnc_nearestNum]] [[BIS_fnc_sortNum]] [[BIS_fnc_roundNum]]
+}}

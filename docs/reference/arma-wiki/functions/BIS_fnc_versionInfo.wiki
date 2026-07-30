@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_versionInfo
+// revision: 327598 (2022-07-13T09:50:06Z)
+// export sha1: 98vz1snae7q6horkejx7r31q3p883a0
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Fills the first passed control with game type and version number, and positions both controls according to the game type.
+
+|s1=  [gameTypeVersionControl, modControl] call [[BIS_fnc_versionInfo]]
+
+|p1= gameTypeVersionControl - [[Control]] - Control for indication of game type (Stable/Dev) and version number (RscText)
+
+|p2= modControl - [[Control]] - Control for indication of modded game (RscActiveText)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_ctrlVersion, _ctrlModded] call BIS_fnc_versionInfo;</sqf>
+
+|seealso= [[productVersion]]
+}}

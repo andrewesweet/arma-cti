@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/focusOn
+// revision: 363319 (2024-03-26T16:41:39Z)
+// export sha1: 8n9nyicituhc45nuwcw5cfo4z74241q
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 2.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.16
+|gr1= Camera Control
+|gr2= Remote Control
+
+|descr= Returns the person the camera is focused on. If you need the vehicle, see [[cameraOn]].
+
+|s1= [[focusOn]]
+
+|r1= [[Object]] - controlled person or [[objNull]] if no unit is controlled
+
+|x1= <sqf>private _currentlyControlledUnit = focusOn;</sqf>
+
+|x2= <sqf>
+if (isNull player) exitWith { /* no player */ };
+
+if (player == focusOn) then
+{
+	hint "You are controlling your player unit";
+}
+else
+{
+	hint "You are remote-controlling a unit";
+};
+</sqf>
+
+|seealso= [[switchCamera]] [[cameraView]] [[cameraEffect]] [[cameraOn]] [[remoteControl]]
+}}

@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Startup_Parameters
+// revision: 249604 (2021-02-25T10:45:34Z)
+// export sha1: bhs5ubxgut1qevlcizpi9wjwfadnjds
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|ofp}}
+{{GameCategory|arma1}}
+{{GameCategory|arma2}}
+{{GameCategory|arma2oa}}
+{{GameCategory|arma3}}
+{{GameCategory|carriercommand}}

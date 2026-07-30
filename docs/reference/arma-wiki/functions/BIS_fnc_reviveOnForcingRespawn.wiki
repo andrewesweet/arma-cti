@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_reviveOnForcingRespawn
+// revision: 274406 (2021-06-13T01:22:07Z)
+// export sha1: 1462evnrrtj50j3zlv9i8pmdwcyplfl
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Revive | Category:Functions | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Revive
+
+|descr= <pre>/*
+	Author: Jiri Wainar
+
+	Description:
+	Used to execute specific code localy on every client whenever 'forcing respawn' flag changes.
+
+	Parameters:
+		_this select 0: STRING - Variable that carries the 'being revived' flag over the network, defined by macro VAR_TRANSFER_FORCING_RESPAWN.
+		_this select 1: BOOL - Flag state - true or false.
+		_this select 2: OBJECT - Unit to set the flag for.
+
+	Returns:
+	True if successful, false if not.
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_reviveOnForcingRespawn]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

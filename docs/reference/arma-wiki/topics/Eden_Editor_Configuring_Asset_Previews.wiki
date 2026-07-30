@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Configuring_Asset_Previews
+// revision: 376722 (2025-11-12T13:58:28Z)
+// export sha1: ngpmx5rpv5mza0xx6jjykkosf30jhoz
+// categories: Category:Eden Editor: Modding
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:3den_editorPreview.gif|center]]
+
+=== Picture Production ===
+<ol>
+<li>Increase folder size for screenshots to at least 1000 MB. The process how to do it is described in [[screenshot]] command description.</li>
+<li>Run Arma 3</li>
+<li>Set the following video settings:
+* '''16:9''' aspect ratio
+* Brightness at 0.5
+* Object, texture and shadow quality to at least Very High
+* FSAA at 8x
+* PPAA disabled (brightens the image too much)
+* Bloom disabled
+* Make sure '''HDRprecision is set to 16''' in the [[arma3.cfg]]</li>
+{{Feature|informative|Disabling Depth of Field along with the above settings can be used to generate images with a transparent background, which can be useful for image editing.<br>However by convention, Arma 3 asset previews include the ground plane background and the asset's shadow projected on the ground plane. So it is advisable to set the DoF slider to a non-zero value.}}
+<li>Open [[:Category:Eden Editor|Eden Editor]] on VR terrain</li>
+<li>Run the [[BIS_fnc_exportEditorPreviews]] function to capture images. Code examples:
+<syntaxhighlight lang="cpp">// All objects
+[] spawn BIS_fnc_exportEditorPreviews;
+ 
+// All characters and vehicles. Capturing delay will be 0.5 seconds
+[0.5,"vehicles"] spawn BIS_fnc_exportEditorPreviews;
+ 
+// BLUFOR characters and vehicles
+[nil,"vehicles",[west]] spawn BIS_fnc_exportEditorPreviews;
+ 
+// Props in Karts DLC
+[nil,"props",[],["kart"]] spawn BIS_fnc_exportEditorPreviews;
+ 
+// All objects in specified addons
+[nil,"all",[],[],["A3_Armor_F_Slammer","A3_Air_F_Heli_Heli_Transport_03"]] spawn BIS_fnc_exportEditorPreviews;
+ 
+// BLUFOR characters and vehicles in Marksmen DLC
+[nil,"vehicles",[west],["mark"]] spawn BIS_fnc_exportEditorPreviews;
+</syntaxhighlight>
+<li>The function will go through given objects and automatically create screenshots for them in the following folder: <pre><Arma 3 Profile>\Screenshots\EditorPreviews</pre>
+Pictures of objects belonging to a mod will be created in sub-folder with the mod class.
+
+This operation can take several minutes. If you wish to cancel it, exit the editor.</li>
+<li>Resize all images to 455x256 and save them in '''JPG''' format.</li>
+<li>Move pictures to your addon.</li>
+<li>Add {{hl|[[CfgVehicles_Config_Reference#editorPreview|editorPreview]]}} config property to all your objects. Let it point to a picture which belongs to the object.
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class MyObject
+	{
+		editorPreview = "\A3\EditorPreviews_F\Data\myObject.jpg";
+	};
+};
+</syntaxhighlight></li>
+<li>Pack your addon. Don't forget to set JPG files to be packed as well.</li>
+</ol>
+
+[[Category:Eden Editor: Modding|Menu Bar: Configuring Asset Previews]]

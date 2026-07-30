@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_setDiaryRecord
+// revision: 364342 (2024-05-06T10:33:57Z)
+// export sha1: ovz4t8j299h2o52d44e7qb2nc0gmcyq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diary | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Diary
+
+|descr= {{Wiki|placeholder}}
+{{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_setDiaryRecord]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

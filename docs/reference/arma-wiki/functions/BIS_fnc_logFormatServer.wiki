@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_logFormatServer
+// revision: 351746 (2023-12-30T21:45:26Z)
+// export sha1: shpuplgqd9wkcfkdfnjz68998glfcik
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Logs (using [[diag_log]]) a debug message ([[profileName]], [[getPlayerUID|playerUID]], [[Magic Variables#fnc_scriptName|_fnc_scriptName]], provided text) to '''server'''<nowiki/>'s [[Crash Files|.RPT]]. In singleplayer, [[BIS_fnc_logFormat]] is used.
+{{Feature|informative|{{hl|[[Description.ext#allowFunctionsLog|allowFunctionsLog]]}} has to be set to '''1''' in [[Description.ext]] for this function to have any effect.}}
+
+|s1= [text, argument1, argument2, ...] call [[BIS_fnc_logFormatServer]]
+
+|p1= text: [[String]] or [[Anything]] - text using [[format]] standard (with %). Any non-[[String]] value will be converted (with [[str]])
+
+|p2= argument1..n: [[Anything]] - same as [[format]] arguments - referenced in ''text'' as %1, %2 etc
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>private _currentFPS = diag_fps;
+if (_currentFPS < 10) then
+{
+	["Player %1 has performance issues (%2 FPS)", name player, _currentFPS] call BIS_fnc_logFormatServer;
+};
+</sqf>
+
+|seealso= [[BIS_fnc_error]] [[BIS_fnc_logFormat]] [[BIS_fnc_errorMsg]] [[BIS_fnc_log]]
+}}

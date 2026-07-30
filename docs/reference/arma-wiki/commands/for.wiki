@@ -1,0 +1,196 @@
+// source: https://community.bistudio.com/wiki/for
+// revision: 353544 (2024-03-19T12:01:33Z)
+// export sha1: o54ia05jnssny1k9v1298e11pk1orsy
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Program Flow
+
+|descr= This operator creates a [[For Type]] which is used in the for-constructs.
+{{Feature|warning|
+The alternative syntax <sqf inline>for _array do _code</sqf> is [[Code Optimisation#for|slower]] than the first syntax because the condition is checked in every iteration, and it has a few bugs.<br>
+It is only kept for backward compatibility; always use the first syntax <sqf inline>for "_i" from 0 to _end do _code</sqf>.
+}}
+
+|pr= {{Feature|arma2|There is an {{GameCategory|arma2|link= y}} issue (not present in {{Name|arma2oa|short}} nor in {{arma3}}) where having a capital letter in the variable name '''will''' throw an error:
+<sqf>
+for "_i" from 0 to 2 do { hintSilent str _i; }; // works
+for "_I" from 0 to 2 do { hintSilent str _I; }; // "variable _i is not defined" error
+</sqf>
+}}
+
+|s1= [[for]] arguments
+
+|p1= arguments: [[String]] - declares the index variable name like "_myVar". [[from]] and [[to]] are required, [[step]] is optional.
+
+|r1= [[For Type]]
+
+|s2= [[for]] [init, condition, codeToExecute]
+
+|p21= init: [[Code]] - loop variable definition
+|p22= condition: [[Code]] - [[call]]ed code returns [[false]], leave the [[for]]-loop
+|p23= codeToExecute: [[Code]] - code to be run on each loop
+
+|r2= [[For Type]]
+
+|x1= <sqf>
+// will output 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 (the to value being inclusive)
+for "_i" from 1 to 10 do { systemChat str _i; };
+</sqf>
+
+|x2= <sqf>
+// will output 9, 7, 5, 3, 1
+for "_i" from 9 to 1 step -2 do { systemChat str _i; };
+</sqf>
+
+|x3= <sqf>
+// will output 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+for [{ _i = 0 }, { _i < 10 }, { _i = _i + 1 }] do { systemChat str _i };
+</sqf>
+
+|x4= <sqf>
+// BAD CODE
+_i = 100;
+for [{ _i = 0 }, { _i < 5 }, { _i = _i + 1 }] do { /* code */ };
+hint str _i; // 5
+
+// GOOD CODE (private keyword is recommended)
+_i = 100;
+for [{ private _i = 0 }, { _i < 5 }, { _i = _i + 1 }] do { /* code */ };
+hint str _i; // 100
+
+// BEST CODE (primary syntax, fastest)
+_i = 100;
+for "_i" from 0 to 4 do { /* code */ };
+hint str _i; // 100
+</sqf>
+
+|seealso= [[Control Structures]] [[while]] [[do]]
+}}
+
+{{Note
+|user= Alef
+|timestamp= 20100429160600
+|text= <sqf>
+for "_i" from 0 to  0 do {}; // will do once, with _i = 0
+for "_i" from 0 to -1 do {}; // will not do
+</sqf>
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140415125400
+|text= <nowiki/>
+* {{GVI|arma 3|1.16}} Please note the difference between the two syntaxes; {{hl|[[for]] ''arguments''}} detects Boolean in each scope while {{hl|[[for]] ''array''}} doesn’t. e.g.
+{{{!}} class="wikitable"
+! command
+! Structure
+! Summary
+{{!}}-
+{{!}} [[for]]&nbsp;''array''
+{{!}}
+<sqf>
+a = 0; b = true;
+for [{ _i = 0 }, { _i < 10 && b }, { _i = _i + 1 }] do
+{
+	a = a + 1;
+	if (a >= 7) then {b = false}
+};
+</sqf>
+{{!}} loop can be exited via [[Boolean]] control, possible workaround can be e.g [[BIS_fnc_areEqual]]
+{{!}}-
+{{!}} [[for]]&nbsp;''arguments''
+{{!}}
+<sqf>
+a = 0;
+for "_i" from 0 to 10 do
+{
+	a = a + 1;
+	if (a >= 7) exitwith {};
+};
+</sqf>
+{{!}} has to be exited via [[exitWith]]
+
+{{!}}}
+* Never try to tell a decimal number via binary number in a loop; otherwise the loop will be infinite:
+<sqf>for [{_a = 0},{_a != 1},{_a = _a + 0.1}] do {}; // an infinite loop; _a will never be 1 so the scope will always be true</sqf>
+Any binary number behind the decimal point is always the sum of 1/2, 1/4, 1/8, 1/16 etc. so decimal number with odd denominator like 1/3 or 1/10 cannot be exactly equal to each other.
+* Avoid too large factorial multiply which may loose the leading indicator in result. And 12 is the biggest accessable factor in this example.
+<sqf>for [{_a = 2; _b = 1;},{_a < 100},{_a = _a + 1}] do {_b = _b * _a}; // _b =  1.#INF</sqf>
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150604192700
+|text= Variable name doesn't have to start with _. could be:
+<sqf>for "LAlala" from 0 to 0 do { hint str LAlala }; // 0</sqf>
+The variable ''LAlala'' will exist only inside [[do]] {} scope and will not overwrite any variable of the same name that existed before.
+}}
+
+{{Note
+|user= Nickorr
+|timestamp= 20150604194500
+|text= Dont use this notation if you plan to change the cycle ranges dynamically. The range values are checked only before the cycle started. Use {{hl|[[for]] ''array''}} instead. <br>
+
+Example, that won't work correctly:
+<sqf>
+_xy = [1,2,3,4,5,6,7,8,9,10];
+for "_i" from 0 to (count _xy - 1) do
+{
+	if ( _xy select _i == 3 ) then
+	{
+		_xy deleteAt _i;
+		_i = _i - 1;
+	};
+};
+</sqf>
+(Here the {{hl|c= <nowiki>_i = 9</nowiki>}} step will still be checked by the cycle, which will lead to "out of the array range" error.) <br>
+This code will work correctly:
+<sqf>
+_xy = [1,2,3,4,5,6,7,8,9,10];
+for [{_i = 1},{_i<=(count _xy - 1)},{_i=_i+1}] do
+{
+	if ( _xy select _i == 3 ) then
+	{
+		_xy deleteAt _i;
+		_i = _i - 1;
+	};
+};
+</sqf>
+(The last step here will be {{hl|_i {{=}} 8}} with array looking like this: {{hl|[1,2,4,5,6,7,8,9,10]}})
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20160129051800
+|text= For loops can be safely nested. This means that there should not be any problems with recursion.
+<sqf>
+_array = [];
+for "_i" from 0 to 3 do
+{
+	for "_i" from 0 to 3 do
+	{
+		_array pushBack _i;
+	};
+	_array pushBack _i;
+};
+hint str _array;
+</sqf>
+}}

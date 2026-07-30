@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_respawnConfirm
+// revision: 348120 (2023-11-08T11:32:18Z)
+// export sha1: ng7k1wzlef894hfti3gdv1jehrvgdat
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Shows a message box which the user needs to accept in order to respawn.
+
+|s1= [respawnDelay] spawn [[BIS_fnc_respawnConfirm]]
+
+|p1= respawnDelay: [[Number]] - (Optional, default 3) respawn delay
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[3] spawn BIS_fnc_respawnConfirm;</sqf>
+
+|exec= spawn
+
+|seealso= [[Arma 3: Respawn]]
+}}

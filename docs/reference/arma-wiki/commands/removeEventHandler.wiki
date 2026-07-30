@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/removeEventHandler
+// revision: 369196 (2024-09-03T10:34:47Z)
+// export sha1: 9plbw9q06eqf8bfrhjhoozq9etlpnfp
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Introduced with Operation Flashpoint version 1.85 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.85
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Event Handlers
+
+|descr= Removes a given Event Handler that was added with [[addEventHandler]].
+
+|s1= target [[removeEventHandler]] [type, index]
+
+|p1= target: [[Object]] or {{GVI|arma3|2.10}} [[Group]]
+
+|p2= type: [[String]] - see [[:Category:Event Handlers|Event Handlers]] for the full list of available options
+
+|p3= index: [[Number]] - the value originally returned by [[addEventHandler]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeEventHandler ["Killed", 0];</sqf>
+
+|x2= The [[Magic Variables]] <var>_thisEvent</var> and <var>_thisEventHandler</var> can be used to easily remove an Event Handler:
+<sqf>
+player addEventHandler ["FiredNear", {
+	systemChat "This Event Handler is now removing itself!";
+	player removeEventHandler [_thisEvent, _thisEventHandler];
+}];
+</sqf>
+
+|seealso= [[addEventHandler]] [[removeAllEventHandlers]] [[removeMPEventHandler]] [[removeMissionEventHandler]] [[:Category:Event Handlers|Event Handlers]]
+}}

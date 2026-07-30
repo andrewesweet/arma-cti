@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_deltaTime
+// revision: 364505 (2024-05-16T20:42:05Z)
+// export sha1: 0a8u25w45705jm55tkavx8wvmguo7gi
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Function Group: Math | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Math
+
+|gr2= Diagnostic
+
+|descr= Calculates and returns the time's delta between previous and current call to this function.
+
+{{Feature|informative|This commands internally uses [[time]]. For accurate-critical time measurement, use [[diag_tickTime]].}}
+
+|s1= [id, clear] call [[BIS_fnc_deltaTime]]
+
+|p1= id: [[String]] - (Optional, default "generic") used to not create conflicts between different systems calling this function, each system can calculate delta time since it last ticked. Will be a [[missionNamespace]] variable
+
+|p2= clear: [[Boolean]] - (Optional, default [[false]]) if set to [[true]], will delete the [[missionNamespace]] variable (defined by ''id'')
+
+|r1= [[Number]] - the delta time - 0.001 if ''clear'' is [[true]]
+
+|x1= <sqf>["TAG_duration"] call BIS_fnc_deltaTime; // Defines the starting point
+// ...
+private _duration1 = ["TAG_duration"] call BIS_fnc_deltaTime; // Gets time between starting point and now
+// ...
+private _duration2 = ["TAG_duration"] call BIS_fnc_deltaTime; // Gets time between _duration1 and now
+["TAG_duration", true] call BIS_fnc_deltaTime; // deletes the global variable "TAG_duration"</sqf>
+
+|seealso= [[diag_tickTime]] [[diag_deltaTime]]
+}}

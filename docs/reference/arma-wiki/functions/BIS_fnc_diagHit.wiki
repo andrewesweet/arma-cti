@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagHit
+// revision: 309315 (2022-05-05T12:04:26Z)
+// export sha1: mc1inowhd3hwtapqcfnnlcr4y00ne7a
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Tracks received wounds. ([[getNumber]] ([[missionConfigFile]] >> "diagHit") > 0) has to be [[true]].
+
+|s1= call [[BIS_fnc_diagHit]]
+
+|r1= [[Boolean]] - [[true]] when activated
+
+|x1= <sqf>call BIS_fnc_diagHit;</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic|Diag functions]]
+}}

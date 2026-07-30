@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/currentWeaponMode
+// revision: 369197 (2024-09-03T10:34:48Z)
+// export sha1: f4s3stnw6v21qwtkmc84e4pu8nw9lyg
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Weapons
+
+|descr= Returns current weapon mode of unit's weapon.
+
+{{Feature|warning|This command will return 0 [[Number]] if given object is a vehicle instead of a person.<br>
+You can alternatively use <sqf>_muzzle = weaponState player select 2;</sqf>}}
+
+|s1= [[currentWeaponMode]] gunner
+
+|p1= gunner: [[Object]]
+
+|r1= [[String]] - current mode's classname
+
+|x1= <sqf>_weaponMode = currentWeaponMode player;</sqf>
+
+|x2= <sqf>_weaponMode = currentWeaponMode gunner vehicle player;</sqf>
+
+|seealso= [[ArmA:_Actions#SWITCHWEAPON|SWITCHWEAPON]] [[currentWeapon]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-09-27 - 18:20 (UTC)</dd>
+<dt class="note">[[User:Pierre MGI|Pierre MGI]]</dt>
+<dd class="note">
+- Be careful using this in script. This function returns these strings but also:<br>
+- 0 if unit is in a vehicle (pax),<br>
+- absolutely nothing if AH-99 helo driver or all weapons removed,<br>
+- "truckhorn2" if Hunter driver...<br>
+Absolutely nothing means: if you use a hint to display the returned value, you obtain absolutely no text,no black box, no error! Hint isn't displayed and there is no error in rpt file with compile preprocessFileLineNumbers.
+
+On the other hand, returned value 0 when unit is pax of a vehicle, could lead to a variable error type if your script is waiting for a string.
+</dd>
+
+</dl>
+
+{{Note
+|user= Sarogahtyp
+|timestamp= 20220704124833
+|text= To set the firemode of the current weapon of a player, simply use the workaround described by [[User:Killzone_Kid|Killzone_Kid]] in the first note of the [[forceWeaponFire]] wiki entry:
+
+<sqf>
+_weapon = currentWeapon player;
+_ammo = player ammo _weapon;
+player setAmmo [_weapon, 0];
+player forceWeaponFire [_weapon, "FullAuto"];
+player setAmmo [_weapon, _ammo];
+</sqf>
+}}

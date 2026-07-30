@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/getTIParameters
+// revision: 378062 (2026-02-05T14:11:50Z)
+// export sha1: jlveni6xh5wmlqlg02r9eavu759e15j
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= Environment
+
+|descr= Returns all Thermal Imaging parameters.
+{{{!}} class="wikitable align-center-col-2"
+! Parameter
+! Default Value
+! Description
+{{!}}-
+{{!}} {{hl|OutputRangeStart}}
+{{!}} 0.1
+{{!}} Thermal output minimal value
+{{!}}-
+{{!}} {{hl|OutputRangeWidth}}
+{{!}} 0.8
+{{!}} Thermal output width
+{{!}}-
+{{!}} {{hl|FilmGrain}}
+{{!}} 1
+{{!}} Film grain
+{{!}}-
+{{!}} {{hl|Blur}}
+{{!}} 1
+{{!}} Blur
+{{!}}-
+{{!}} {{hl|UpdateHistogram}}
+{{!}} 1
+{{!}} Histogram
+{{!}}-
+{{!}} {{GVI|arma3|2.20|size= 0.75}} {{hl|MaxResolution}}
+{{!}} -1
+{{!}} Maximum vertical resolution
+{{!}}-
+{{!}}}
+{{Feature|informative|
+* The output formula is as follows: {{hl|OutputRangeStart + ''thermalValue'' &times; OutputRangeWidth}}, making the default range 0.1..0.9.
+* {{GVI|arma3|2.20|size= 0.75}} The {{hl|MaxResolution}} setting takes into account the aspect ratio of the screen. A value of 1080 on a 16:9 screen provides a resolution of 1920&times;1080.
+}}
+
+|s1= [[getTIParameters]]
+
+|r1= [[HashMap]] format <sqf inline>[["OutputRangeStart", 0.1], ["OutputRangeWidth", 0.8]]</sqf>
+
+|x1= <sqf>if (getTIParameters get "OutputRangeStart" == 0.1) then { hint "default Start" };</sqf>
+
+|seealso= [[setTIParameter]] [[setCamUseTI]] [[disableTIEquipment]]
+}}

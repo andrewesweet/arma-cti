@@ -1,0 +1,16 @@
+// source: https://community.bistudio.com/wiki/Functions
+// revision: 364327 (2024-05-06T09:38:48Z)
+// export sha1: 4khnaovdwg1xede3xm0z8t4kjeu2nc5
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+{{PAGENAME}} may refer to:
+* Use of [[Function]]s
+* [[:Category:Functions| List of all functions]]
+* [[:Category:Arma_3:_Functions|List of all functions (Arma 3)]]
+* [[Arma 3: Functions Library]]
+* [[Functions Library|Functions Library (Arma 2)]]
+* [[Functions Library (Take On Helicopters)]]
+* [[Arma 3: CfgFunctions]]

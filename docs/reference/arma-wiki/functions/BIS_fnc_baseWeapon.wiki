@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_baseWeapon
+// revision: 349362 (2023-11-08T15:35:11Z)
+// export sha1: a19u8p6y0iqv9gpvop0e1cq81bnz067
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Weapons | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Weapons
+
+|descr= Determines base weapon class, with no attachments.
+
+|s1= [weaponName] call [[BIS_fnc_baseWeapon]]
+
+|p1= weaponName: [[String]] - weapon classname.
+
+|r1= [[String]] - weapon classname that features no attachments.
+
+|x1= <sqf>["arifle_Mk20_MRCO_pointer_F"] call BIS_fnc_baseWeapon; // Returns "arifle_Mk20_F"</sqf>
+
+|seealso= [[BIS_fnc_weaponAddon]] [[BIS_fnc_addWeapon]]
+}}

@@ -1,0 +1,117 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Toolbar
+// revision: 336440 (2023-01-04T15:21:42Z)
+// export sha1: 34krt5f2mg1zj1bvbgrxjciet3143en
+// categories: Category:Eden Editor: Interface
+// Vendored snapshot. Do not edit — re-export instead.
+
+The '''Toolbar''' is displayed at the top of the Workspace. It provided quick access to commonly used actions and tools.
+[[File:3den toolbar.jpg]]
+
+== Toolbar Buttons ==
+{| class="wikitable"
+! Icon
+! Description
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;" | [[File:3den toolbar new.png|32px]]
+| Open a dialog to create a new scenario
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar open.png|32px]]
+| Open a dialog to choose a scenario to open
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar save.png|32px]]
+| Save the current scenario. If it has not been saved yet, open a dialog to save the scenario with specific name.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar steam.png|32px]]
+| Open Workshop Scenario Management window, from which you can publish the scenario to the {{Link|link= http://steamcommunity.com/app/107410/workshop/|text= Steam Workshop}}. Only scenario which is already saved can be published.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar undo.png|32px]]
+| Undo the last completed action.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar redo.png|32px]]
+| Redo the last undone action.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar widget none.png|32px]]
+| Toggle the [[Eden_Editor:_Transformation_Widget|transformation widget]] off.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar widget translation.png|32px]]
+| Toggle the [[Eden_Editor:_Transformation_Widget|translation widget]].
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar widget rotation.png|32px]]
+| Toggle the [[Eden_Editor:_Transformation_Widget|rotation widget]].
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar widget scaling.png|32px]]
+| Toggle the [[Eden_Editor:_Transformation_Widget|area scaling widget]].
+<!---------------------------------------------------------------------------------------->
+|-
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar widget area.png|32px]]
+| Toggle the Area Widget.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar widget global.png|32px]][[File:3den toolbar widget local.png|32px]]
+| Toggle between global and local coordinate space for the [[Eden_Editor:_Transformation_Widget|transformation widget]].
+* Global - widget is rotated in cardinal directions (X axis points east, Y axis points north, and Z axis points up).
+* Local - widget is rotated together with the selected entity (X axis points right, Y axis points forward, and Z points above the entity).
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar vert ATL.png|32px]][[File:3den toolbar vert ASL.png|32px]]
+| Toggle between translation parallel to the surface level and parallel to the sea level.
+* Surface Level - preserve entity altitude above surface (e.g., terrain, building floor, etc.)
+* Sea Level - preserve entity altitude above sea level.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar snap on.png|32px]][[File:3den toolbar snap.png|32px]]
+| Toggle ground snapping. When on, entity will be snapped to the ground surface when it gets near it during translation editing.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar grid translation.png|32px]]
+| Toggle or set the translation grid.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar grid rotation.png|32px]]
+| Toggle or set the rotation grid.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar grid scaling.png|32px]]
+| Toggle or set the area scaling grid.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar intel.png|32px]]
+| Open [[Eden_Editor:_Scenario_Atttributes|scenario attributes]] dialog.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar map.png|32px]]
+| Toggle between Scene (3D) and Map (2D) view.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar flashlight.png|32px]]
+| Toggle flashlight. At night, it will light up the immediate surroundings of the camera. 
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar vision normal.png|32px]]
+| Toggle vision mode.
+* Normal
+* Night Vision
+* Thermal Vision
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar phase.png]]
+| Select the [[Eden_Editor:_Scenario_Phases|scenario phase]].
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;"| [[File:3den toolbar help tutorial.png|32px]]
+| Open tutorial dialog. You can pick from various courses which will guide you through basic Editor features.
+|}
+
+[[Category:Eden Editor: Interface|Toolbar]]

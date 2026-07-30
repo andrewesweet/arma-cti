@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getPilotCameraRotation
+// revision: 348962 (2023-11-08T14:45:40Z)
+// export sha1: i8xakra1umb110mzxymwxy5ggy13fhr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Pilot Camera | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|arg= local
+
+|gr1= Pilot Camera
+
+|descr= Returns rotation (relative to the centered camera position) of the object airplane or helicopter [[A3_Targeting_config_reference#class_pilotCamera|pilotCamera]] .
+
+|s1= [[getPilotCameraRotation]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Array]] of [[Number]]s in format [yaw (turn), pitch (elevation)] - positive values are left yaw and down pitch from the center. Returns [0,0] when camera is centered but also if object has no [[A3_Targeting_config_reference#class_pilotCamera|pilotCamera]].
+
+|x1= <sqf>_pilotCamRot = getPilotCameraRotation vehicle player;</sqf>
+
+|seealso= [[hasPilotCamera]] [[getPilotCameraPosition]] [[getPilotCameraDirection]] [[getPilotCameraTarget]] [[setPilotCameraDirection]] [[setPilotCameraRotation]] [[setPilotCameraTarget]]
+}}

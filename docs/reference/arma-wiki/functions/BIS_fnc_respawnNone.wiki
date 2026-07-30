@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_respawnNone
+// revision: 348557 (2023-11-08T13:39:18Z)
+// export sha1: p98s8e0echdz57kd862wcvsvcklqxul
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Create a death screen.
+
+|s1= [killed, killer] spawn [[BIS_fnc_respawnNone]]
+
+|p1= killed: [[Object]] - killed unit ([[player]])
+
+|p2= killer: [[Object]] - any unit
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player, someUnit] spawn BIS_fnc_respawnNone;</sqf>
+
+|exec= spawn
+
+|seealso= [[:Category:Function Group: Respawn]]
+}}

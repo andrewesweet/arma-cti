@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_functionsDebug
+// revision: 325092 (2022-07-01T12:24:49Z)
+// export sha1: blhmmhef6gi3ewlkswrkfz1x7fz7tno
+// categories: Category:Arma 3: Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Diagnostic
+
+|descr= Changes debug mode used when compiling functions from the [[Arma 3: Functions Library]]. Also recompiles all functions. See [[Arma 3: Functions Library]] for more information.
+
+|s1= mode call [[BIS_fnc_functionsDebug]]
+
+|p1= mode: [[Number]] - debug mode, can be:
+* 0  - no debugging
+* 1 - script map will be saved
+* 2 - script map will be saved and logged
+
+|r1= [[Boolean]]
+
+|x1= <sqf>2 call BIS_fnc_functionsDebug;</sqf>
+
+|seealso= [[Arma 3: Functions Library]]
+}}

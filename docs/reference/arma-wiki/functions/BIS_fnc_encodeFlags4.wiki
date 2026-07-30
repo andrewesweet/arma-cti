@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_encodeFlags4
+// revision: 373737 (2025-06-24T17:58:44Z)
+// export sha1: ql1gu8mzpky7mlf468wyo6yuuwyc8zy
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Bitwise | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Bitwise
+
+|descr= Encodes array of unique 4-state flags (0,1,2,3) into a single number.
+
+|s1= flags call [[BIS_fnc_encodeFlags4]]
+
+|p1= flags: [[Array]] of [[Number]]s - collections of 4-state flags. Maximum number of flags is 12.
+
+|r1= [[Number]] - encoded flags
+
+|x1= <sqf>private _encodedFlags = [1, 0, 2, 3] call BIS_fnc_encodeFlags4; // 225</sqf>
+
+|seealso= [[BIS_fnc_decodeFlags4]]
+}}

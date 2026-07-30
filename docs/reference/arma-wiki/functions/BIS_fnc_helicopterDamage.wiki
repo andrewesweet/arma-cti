@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_helicopterDamage
+// revision: 370866 (2025-02-21T10:43:59Z)
+// export sha1: ruvp597gphkozmq0qxdzvytbtmqg40s
+// categories: Category:Arma 3: Functions | Category:Function Group: Helicopters | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Helicopters
+
+|descr= Handling EH-based helicopter damage, event handler in question being {{sic|[[Arma 3: Event Handlers#Dammaged|Da''mm''aged]]}}.
+
+{{Feature|informative|
+Executed script is:
+<sqf>helicopter execVM "hsim\air_h\data\scripts\main_rotor_destruction.sqf";</sqf>
+
+helicopter rotor status can be found via variable '''HSim_mainRotorDestroyed''':
+<sqf>_isRotorDestroyed = helicopter getVariable ["HSim_mainRotorDestroyed", false];</sqf>
+}}
+
+|s1= [helicopter, selection, damage] call [[BIS_fnc_helicopterDamage]]
+
+|p1= helicopter: [[Object]]
+
+|p2= selection: [[String]] - name of the helicopter selection receiving damage. Must be "main rotor"
+
+|p3= damage: [[Number]] - ''selection'''s damage. Will only trigger effects if ''damage'' &gt; 0.999
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>myHelicopter addEventHandler ["Dammaged", { _this call BIS_fnc_helicopterDamage; }];</sqf>
+
+|seealso=
+}}

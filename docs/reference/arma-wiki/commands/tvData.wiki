@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/tvData
+// revision: 378318 (2026-04-02T16:17:09Z)
+// export sha1: dukfp5r9c4o7s5cobpow7irhx1wgq5i
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|descr= Returns string data from item on given path. IDC means id of parent [[CT_TREE]].
+
+|s1= [[tvData]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|r1= [[String]]
+
+|s2= control [[tvData]] path
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|r2= [[String]]
+
+|x1= <sqf>tvData [101, [0]];</sqf>
+
+|x2= <sqf>(_display displayCtrl 101) tvData [0];</sqf>
+
+|seealso= [[tvSetData]]
+}}

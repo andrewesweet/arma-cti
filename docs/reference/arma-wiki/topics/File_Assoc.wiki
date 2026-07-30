@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/File_Assoc
+// revision: 336644 (2023-01-04T15:23:36Z)
+// export sha1: 7vx68um0fgg3h6xmhh3qxbjczfoxp82
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= 
+
+[[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD= 
+
+{{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= File Assoc is used to associate file types (like scripts or 3D files) with the appropriate application.
+
+|NOTES=
+
+|COMMAND=
+    FileAssoc.exe [options]<br>
+
+|OPTIONS=
+/addOnly<br>
+/clearOnly<br>
+-pbo
+
+|EXAMPLE=
+fileAssoc /addOnly |LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= 
+
+}}
+
+=== Additional information ===
+==== Supported file types ====
+* FSM (''with FSM Editor'')
+* BIFSM (''with FSM Editor'')
+* P3D (''with Objcet Builder'')
+* PAA (''with TexView'')
+* PAC (''with TexView'')
+* SQF (''with Poseidon Tools, when linked via [[mapFolders]]'')
+* SQS (''with Poseidon Tools, when linked via [[mapFolders]]'') 
+* PBO (''with BankRev, when started with the parameter -pbo'')
+* TPP (''with Terrain Processor'')
+
+
+{{GameCategory|arma3|Official Tools}}

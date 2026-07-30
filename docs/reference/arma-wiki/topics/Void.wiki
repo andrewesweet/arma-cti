@@ -1,0 +1,121 @@
+// source: https://community.bistudio.com/wiki/Void
+// revision: 330443 (2022-09-15T21:30:58Z)
+// export sha1: sx2dhe24skzg3o4wcc6oxcyczat8ssa
+// categories: Category:Magic Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A [[Variables|variable]] of type '''Void''' is an '''undefined variable'''.
+
+
+== Undefining Variables ==
+
+[[nil]] can be used to undefine variables.
+
+<sqf>
+myVar = 1;
+// ...
+myVar = nil;
+// myVar is undefined
+</sqf>
+
+
+== String Representation ==
+
+The [[String]] representation of an undefined variable depends on its {{Link|#Type Inference|inferred type}}:
+
+{| class="wikitable"
+! [[Data Types|Data Type]]
+! [[String]]
+|-
+| [[Anything]]
+|
+[[scalar bool array string 0xfcffffef]] ({{Name|ofp|short}})<br>
+[[scalar bool array string 0xe0ffffef]] ({{Name|arma1|short}})
+|-
+| [[Nothing]]
+| scalar bool array string nothing 0xfcffffef
+|-
+| [[Number]]
+| scalar
+|-
+| [[Boolean]]
+| bool
+|-
+| [[Array]]
+| array
+|}
+
+
+== Comparisons ==
+
+No comparison with any variables will work.
+
+'''Example:'''
+<sqf>
+// error
+if (undefinedVar == definedVar) then { /* ... */ };
+</sqf>
+<sqf>
+// error
+if (undefinedVar == undefinedVar) then { /* ... */ };
+</sqf>
+
+
+== Detect an Undefined Variable ==
+
+The [[isNil]] command, introduced in {{arma1}}, allows to detect if a variable exists or not:
+<sqf>
+HelloThere = 42;
+isNil "HelloThere"; // false
+
+HelloThere = nil;
+isNil "HelloThere"; // true
+</sqf>
+
+{{ArgTitle|3|isNil Workaround 1|{{GVI|ofp|1.00}}}}
+
+[[SQS Syntax]]:
+<sqs>
+_nil = format ["%1", _undefinedVariable]
+? (format ["%1", variableToTest] == _nil) : hint "variableToTest is nil"
+</sqs>
+[[SQF Syntax]]:
+<sqf>
+_nil = format ["%1", _undefinedVariable];
+if (format ["%1", variableToTest] == _nil) then { hint "variableToTest is nil" };
+</sqf>
+
+{{ArgTitle|3|isNil Workaround 2|{{GVI|ofp|1.00}}}}
+
+{{Feature|obsolete|{{arma1}} introduced [[isNil]], and {{arma2}} forbade undefined variables usage in script - see {{Link|ArmA: Editing#Forward Compatibility}}.|arma1}}
+
+The alternative way to check if a variable is undefined before [[isNil]] existence is that it silently fails any expression evaluations on it:
+<sqf>
+defined = false;
+if (var == var) then
+{
+	defined = true;
+};
+if (var != var) then
+{
+	defined = true;
+};
+if (!defined) then
+{
+	// we know var is undefined here
+};
+</sqf>
+
+
+== Type Inference ==
+
+Suppose the variable '''a''' is undefined, and we set the variable '''b''' like so:
+<sqf>b = a + [];</sqf>
+
+The inferred type of b is now array - since b was the product result of an array [[+|add]] operation with a definite array ([]) and an unknown type (a)
+
+'''b'''<nowiki/>'s string representation will now be "array", and b wil be considered an undefined array.
+
+
+[[Category: Magic Types]]

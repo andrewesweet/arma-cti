@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/DSKeys
+// revision: 373420 (2025-05-08T11:27:12Z)
+// export sha1: 2hxtyhyzt4ioljnnbyu06lm6stqz7sl
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+ FileStruct
+ {
+   Asciiz OFPEC_TAGG_Name;  //"mikero" eg
+   Bytes  PubSig[24];
+     OR   PrvSig[24];
+   Bytes  data[528]; // v2 bisign 
+     OR   data[260]; // v1 bisign 
+     OR   data[128]; // Public BiKey 
+     OR   data[576]; // private bikey
+ }
+ Bytes PublicSig[]=
+ {
+    0x94,0x00,0x00,0x00,0x06,0x02,0x00,0x00,0x00,0x24,0x00,0x00, 
+    'R',  'S','A', '1', 0x00,0x04,0x00,0x00,0x01,0x00,0x01,0x00
+ };
+ Bytes PrivateSig[]=
+ { 
+   0x54,0x02,0x00,0x00,0x07,0x02,0x00,0x00,0x00,0x24,0x00,0x00, 
+   'R',  'S', 'A', '2',0x00,0x04,0x00,0x00,0x01,0x00,0x01,0x00
+ };
+
+*Author.bikey's are public
+*Author.privatebikey's are private
+*NameOf.pbo.Author.bisign are public (two versions)
+
+DsCheckSignatures (and probably the MP engine too) does not check filenames. it reads *all*  *.bikeys from wherever it can (eg root or ~expansions) and only checks the internal signames at that point. you can rename your bikey PinkElephants.bikey for all it matters.
+
+[[Category:Real Virtuality File Formats]]

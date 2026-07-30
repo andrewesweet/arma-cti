@@ -1,0 +1,275 @@
+// source: https://community.bistudio.com/wiki/Arma_2:_Operation_Arrowhead:_Weapons
+// revision: 339248 (2023-04-28T13:43:42Z)
+// export sha1: kgyu94tejtxj7n3m29ihq05ynyvdq48
+// categories: Category:CfgWeapons
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+=== Rifle Bases ===
+
+{| class="wikitable"
+!width="200"|Weapon Classname
+!width="200"|Magazine Classnames
+!width="200"|Muzzle Classname
+!width="200"|Ammo Classnames
+
+|-
+| L85A2_base_BAF
+| 30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36
+| ---<br>---<br>---
+| B_556x45_Ball<br>B_556x45_SD<br>B_556x45_Ball
+|}
+
+=== US Weapons ===
+*Armatechsquad{{Link|http://www.armatechsquad.com/ArmA2Class151656165165341654165165165165f/index.|link}}
+
+=== Takistan Weapons ===
+*Armatechsquad{{Link|http://www.armatechsquad.com/ArmA2Class151656165165341654165165165165f/index.php|link}}
+
+=== BAF Weapons ===
+{| class="wikitable"
+!width="200"|Weapon Classname
+!width="200"|Magazine Classnames
+!width="200"|Muzzle Classname
+!width="200"|Ammo Classnames
+
+|-
+| BAF_L85A2_RIS_Holo
+| 30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36
+| ---<br>---<br>---
+| B_556x45_Ball<br>B_556x45_SD<br>B_556x45_Ball
+
+|-
+| BAF_L85A2_UGL_Holo
+| 30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36<br>BAF_L109A1_HE6<br>Rnd_HE_M203
+| ---<br>---<br>---<br>BAF_L17_40mm<br>BAF_L17_40mm
+| B_556x45_Ball<br>B_556x45_SD<br>B_556x45_Ball<br>---<br>---
+
+|-
+| BAF_L85A2_RIS_SUSAT
+| 30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36<br>BAF_L109A1_HE6<br>Rnd_HE_M203
+| ---<br>---<br>---<br>BAF_L17_40mm<br>BAF_L17_40mm
+| B_556x45_Ball<br>B_556x45_SD<br>B_556x45_Ball<br>---<br>---
+
+|-
+| BAF_L85A2_UGL_SUSAT
+| 30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36<br>BAF_L109A1_HE6<br>Rnd_HE_M203
+| ---<br>---<br>---<br>BAF_L17_40mm<br>BAF_L17_40mm
+| B_556x45_Ball<br>B_556x45_SD<br>B_556x45_Ball<br>---<br>---
+
+|-
+| BAF_L85A2_RIS_ACOG
+| 30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36
+| ---<br>---<br>---
+| B_556x45_Ball<br>B_556x45_SD<br>B_556x45_Ball
+
+|-
+| BAF_L85A2_UGL_ACOG
+| 30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36<br>BAF_L109A1_HE6<br>Rnd_HE_M203
+| ---<br>---<br>---<br>BAF_L17_40mm<br>BAF_L17_40mm
+| B_556x45_Ball<br>B_556x45_SD<br>B_556x45_Ball<br>---<br>---
+
+|-
+| BAF_L85A2_RIS_CWS
+| 30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36
+| ---<br>---<br>---
+| B_556x45_Ball<br>B_556x45_SD<br>B_556x45_Ball
+
+|-
+| BAF_L86A2_ACOG
+| 30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD
+| ---<br>---
+| B_556x45_Ball<br>B_556x45_Ball_SD
+
+|-
+| BAF_L110A1_Aim
+| 200Rnd_556x45_L110A1<br>100Rnd_556x45_M249<br>30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>200Rnd_556x45_M249<br>30Rnd_556x45_G36
+| ---<br>---<br>---<br>---<br>---<br>---
+|B_556x45_Ball<br>---"---<br>B_556x45_Ball<br>B_556x45_Ball_SD<br>B_556x45_Ball<br>B_556x45_Ball
+
+|-
+| BAF_L7A2_GPMG
+| 100Rnd_762x51_M240
+| ---
+| B_762x51_Ball
+
+|-
+| BAF_AS50_scoped
+| 5Rnd_127x99_AS50<br>10Rnd_127x99_m107
+| ---<br>---
+| B_127x99_Ball_noTracer_BAF
+
+|-
+| BAF_AS50_TWS
+| 5Rnd_127x99_AS50<br>10Rnd_127x99_m107
+| ---<br>---
+| B_127x99_Ball_noTracer_BAF
+
+|-
+| BAF_LRR_scoped
+| 5Rnd_86x70_L115A1
+| ---
+| B_86x70_Ball_noTracer
+
+|-
+| BAF_LRR_scoped_W
+| 5Rnd_86x70_L115A1
+| ---
+| B_86x70_Ball_noTracer
+
+|-
+| BAF_NLAW_Launcher
+| NLAW
+| ---
+| M_NLAW_AT
+
+|-
+| BAF_L17_40mm
+| 1Rnd_HE_M203<br>FlareWhite_M203<br>FlareGreen_M203<br>FlareRed_M203<br>FlareYellow_M203<br>1Rnd_Smoke_M203<br>1Rnd_SmokeRed_M203<br>1Rnd_SmokeGreen_M203<br>1Rnd_SmokeYellow_M203
+| ---<br>---<br>---<br>---<br>---
+|
+
+|}
+
+
+=== PMC Weapons ===
+
+{| class="wikitable"
+!width="200"|Weapon Classname
+!width="200"|Magazine Classnames
+!width="200"|Muzzle Classname
+!width="200"|Ammo Classnames
+
+|-
+| AA12_PMC
+| 20Rnd_B_AA12_Pellets<br>20Rnd_B_AA12_74Slug<br>20Rnd_B_AA12_HE
+| ---<br>---<br>---
+| B_12Gauge_Pellets<br>B_12Gauge_74Slug<br>B_19mm_HE
+
+|-
+| PMC_AS50_scoped<br>PMC_AS50_TWS
+| 5Rnd_127x99_AS50<br>10Rnd_127x99_m107
+| ---<br>---
+| B_127x99_Ball_noTracer_BAF
+
+|-
+| m8_Carbine
+| 20Rnd_556x45_Stanag<br>30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36<br>30Rnd_556x45_G36SD<br>100Rnd_556x45_BetaCMag
+| ---<br>---<br>---<br>---<br>---<br>---
+| B_556x45_Ball<br>---"---<br>B_556x45_SD<br>B_556x45_Ball<br>B_556x45_Ball_SD<br>B_556x45_Ball
+
+|-
+| m8_CarbineGL
+| 20Rnd_556x45_Stanag<br>30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36<br>30Rnd_556x45_G36SD<br>100Rnd_556x45_BetaCMag
+FlareWhite_M203<br>FlareGreen_M203<br>FlareRed_M203<br>FlareYellow_M203<br>1Rnd_HE_M203<br>1Rnd_Smoke_M203<br>1Rnd_SmokeRed_M203<br>1Rnd_SmokeGreen_M203<br>1Rnd_SmokeYellow_M203
+| M16Muzzle<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---
+XM320Muzzle<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---
+| B_556x45_Ball<br>--- " ---<br>B_556x45_Ball_SD<br>B_556x45_Ball<br>B_556x45_Ball_SD<br>B_556x45_Ball
+F_40mm_White<br>F_40mm_Green<br>F_40mm_Red<br>F_40mm_Yellow<br>G_40mm_HE<br>G_40mm_Smoke<br>G_40mm_SmokeRed<br>G_40mm_SmokeGreen<br>G_40mm_SmokeYellow
+
+|-
+| m8_Compact
+| 20Rnd_556x45_Stanag<br>30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36<br>30Rnd_556x45_G36SD<br>100Rnd_556x45_BetaCMag
+| ---<br>---<br>---<br>---<br>---<br>---
+| B_556x45_Ball<br>---"---<br>B_556x45_SD<br>B_556x45_Ball<br>B_556x45_Ball_SD<br>B_556x45_Ball
+
+|-
+| m8_Sharpshooter
+|20Rnd_556x45_Stanag<br>30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36<br>30Rnd_556x45_G36SD<br>100Rnd_556x45_BetaCMag
+| ---<br>---<br>---<br>---<br>---<br>---
+| B_556x45_Ball<br>---"---<br>B_556x45_SD<br>B_556x45_Ball<br>B_556x45_Ball_SD<br>B_556x45_Ball
+
+|-
+| m8_SAW
+| 20Rnd_556x45_Stanag<br>30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36<br>30Rnd_556x45_G36SD<br>100Rnd_556x45_BetaCMag
+| ---<br>---<br>---<br>---<br>---<br>---
+| B_556x45_Ball<br>---"---<br>B_556x45_SD<br>B_556x45_Ball<br>B_556x45_Ball_SD<br>B_556x45_Ball
+
+|}
+
+=== ACR Weapons ===
+{| class="wikitable"
+!width="200"|Weapon Classname
+!width="200"|Magazine Classnames
+!width="200"|Muzzle Classname
+!width="200"|Ammo Classnames
+
+|-
+| CZ_75_P_07_DUTY
+| 15Rnd_9x19_M9<br>15Rnd_9x19_M9SD
+| ---<br>---
+| B_9x19_Ball<br>B_9x19_SD
+
+|-
+| CZ_75_D_COMPACT
+| 10Rnd_9x19_Compact
+| ---
+| B_9x19_Ball
+
+|-
+| CZ_75_SP_01_PHANTOM
+| 18Rnd_9x19_Phantom<br>18Rnd_9x19_PhantomSD<br>17Rnd_9x19_glock17<br>15Rnd_9x19_M9<br>15Rnd_9x19_M9SD<br>10Rnd_9x19_Compact
+| ---<br>---<br>---<br>---<br>---<br>---
+| B_9x19_Ball<br>B_9x19_SD<br>B_9x19_Ball<br>B_9x19_Ball<br>B_9x19_SD<br>B_9x19_Ball
+
+|-
+| CZ_75_SP_01_PHANTOM_SD
+| 18Rnd_9x19_PhantomSD<br>15Rnd_9x19_M9SD
+| ---
+| B_9x19_Ball<br>B_9x19_SD
+
+|-
+| CZ805_A1_ACR
+| 30Rnd_556x45_G36<br>30Rnd_556x45_G36SD<br>100Rnd_556x45_BetaCMag<br>30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD
+| ---
+| B_556x45_Ball<br>B_556x45_SD<br>B_556x45_Ball<br>B_556x45_Ball<br>B_556x45_Ball_SD
+
+|-
+| CZ805_A1_GL_ACR
+| 20Rnd_556x45_Stanag<br>30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36<br>30Rnd_556x45_G36SD<br>100Rnd_556x45_BetaCMag
+FlareWhite_M203<br>FlareGreen_M203<br>FlareRed_M203<br>FlareYellow_M203<br>1Rnd_HE_M203<br>1Rnd_Smoke_M203<br>1Rnd_SmokeRed_M203<br>1Rnd_SmokeGreen_M203<br>1Rnd_SmokeYellow_M203
+| M16Muzzle<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---
+XM320Muzzle<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---
+| B_556x45_Ball<br>--- " ---<br>B_556x45_Ball_SD<br>B_556x45_Ball<br>B_556x45_Ball_SD<br>B_556x45_Ball
+F_40mm_White<br>F_40mm_Green<br>F_40mm_Red<br>F_40mm_Yellow<br>G_40mm_HE<br>G_40mm_Smoke<br>G_40mm_SmokeRed<br>G_40mm_SmokeGreen<br>G_40mm_SmokeYellow
+
+|-
+| CZ805_A2_ACR
+| 30Rnd_556x45_G36<br>30Rnd_556x45_G36SD<br>100Rnd_556x45_BetaCMag<br>30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD
+| ---
+| B_556x45_Ball<br>B_556x45_SD<br>B_556x45_Ball<br>B_556x45_Ball<br>B_556x45_Ball_SD
+
+|-
+| CZ805_A2_SD_ACR
+| 30Rnd_556x45_G36<br>30Rnd_556x45_G36SD<br>100Rnd_556x45_BetaCMag<br>30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD
+| ---
+| B_556x45_Ball<br>B_556x45_SD<br>B_556x45_Ball<br>B_556x45_Ball<br>B_556x45_Ball_SD
+
+|-
+| CZ805_B_GL_ACR
+| 20Rnd_556x45_Stanag<br>30Rnd_556x45_Stanag<br>30Rnd_556x45_StanagSD<br>30Rnd_556x45_G36<br>30Rnd_556x45_G36SD<br>100Rnd_556x45_BetaCMag
+FlareWhite_M203<br>FlareGreen_M203<br>FlareRed_M203<br>FlareYellow_M203<br>1Rnd_HE_M203<br>1Rnd_Smoke_M203<br>1Rnd_SmokeRed_M203<br>1Rnd_SmokeGreen_M203<br>1Rnd_SmokeYellow_M203
+| M16Muzzle<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---
+XM320Muzzle<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---<br>--- " ---
+| B_556x45_Ball<br>--- " ---<br>B_556x45_Ball_SD<br>B_556x45_Ball<br>B_556x45_Ball_SD<br>B_556x45_Ball
+F_40mm_White<br>F_40mm_Green<br>F_40mm_Red<br>F_40mm_Yellow<br>G_40mm_HE<br>G_40mm_Smoke<br>G_40mm_SmokeRed<br>G_40mm_SmokeGreen<br>G_40mm_SmokeYellow
+
+|-
+| UK59_ACR
+| 100Rnd_762x54_PK
+| ---
+| B_762x54_Ball
+
+|}
+
+=== ACR Equipment ===
+
+{| class="wikitable"
+!width="200"|Weapon Classname
+!width="200"|Magazine Classnames
+|-
+| LRTV_ACR
+| Laserbatteries
+|}
+
+[[Category: CfgWeapons]]

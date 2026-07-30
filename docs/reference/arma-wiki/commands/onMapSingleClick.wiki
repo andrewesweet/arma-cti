@@ -1,0 +1,104 @@
+// source: https://community.bistudio.com/wiki/onMapSingleClick
+// revision: 377823 (2026-01-03T04:21:02Z)
+// export sha1: n0p01csba6lh00vgoomje342k3pnc07
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: Map | Category:Introduced with Operation Flashpoint version 1.85 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.85
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Map
+
+|gr2= Event Handlers
+
+|descr= Defines the action performed when user clicks in map by executing command string. The code is executed on every click, until the '''command''' is 
+* removed via <sqf inline>onMapSingleClick ""</sqf>, or
+* replaced by <sqf inline>onMapSingleClick "SomeOtherCommand(s)"</sqf>
+
+In {{arma3}} the code should return [[true]] only if you wish to override default engine handling of the mouse click on map (see {{Link|#Example 4}}).<br>
+For older games, when click is processed, code should ultimately return [[true]] back to the engine. If [[false]] is returned, default processing by the game engine is done.
+Return value of any other type (including [[Nothing]]) is an error. In such case default processing by the game engine is done, and error message may be displayed.
+
+{{Feature|arma3|Since {{GVI|arma3|1.58}} the stackable [[Arma 3: Mission Event Handlers#MapSingleClick|MapSingleClick]] Mission Event Handler is available and should be used instead.}}
+
+|s1= [[onMapSingleClick]] command
+
+|p1= command: [[String]] or [[Code]] - code executed on click. The following variables are available:
+* _pos: [[Position#Introduction|Position2D]] - clicked position
+* _units: [[Array]] of [[Object]]s - units which were selected (via function keys) '''before''' opening the map (''may be non-functional in Arma'')
+* _shift: [[Boolean]] - Whether {{Controls|Shift}} was pressed when clicking on the map
+* _alt: [[Boolean]] - Whether {{Controls|Alt}} was pressed when clicking on the map
+
+|r1= [[Nothing]]
+
+|s2= params [[onMapSingleClick]] command
+
+|p21= params: [[Anything]]
+
+|p22= command: [[String]] or [[Code]] - code executed on click. The following variables are available:
+* _this: [[Anything]] - Params passed to onMapSingleClick
+* _pos: [[Position#Introduction|Position2D]] - clicked position
+* _units: [[Array]] of [[Object]]s - units which were selected (via function keys) '''before''' opening the map (''may be non-functional in Arma'')
+* _shift: [[Boolean]] - Whether {{Controls|Shift}} was pressed when clicking on the map
+* _alt: [[Boolean]] - Whether {{Controls|Alt}} was pressed when clicking on the map
+
+|r2= [[Nothing]]
+
+|x1= '''{{arma1}}:''' Creates a soldier unit at the position clicked:
+<sqf>onMapSingleClick "'SoldierWB' createUnit [_pos, group player]; true";</sqf>
+
+|x2= '''{{arma1}}:''' Orders "grp1" to move to position clicked. Disables further map-click actions:
+<sqf>onMapSingleClick "grp1 move _pos; onMapSingleClick ''; true";</sqf>
+
+|x3= '''{{ofp}}:''' Single quotes cannot be used for string definition, so two double-quotes have to be used instead:
+<sqf>onMapSingleClick "'SoldierWB' createUnit [_pos, group player]; true";</sqf>
+
+|x4= <sqf>
+// The following code will disable Shift+click waypoint marker creation
+onMapSingleClick {_shift};
+</sqf>
+
+|x5= <sqf>
+// Pass params to onMapSingleClick code
+player onMapSingleClick { hint ("Hello " + name _this) }; // Hello KK
+</sqf>
+
+|x6= <sqf>
+// Pass params to onMapSingleClick code -and- disable Shift+click waypoint marker creation
+ player onMapSingleClick "hint (""Hello "" + name _this); _shift"; // Hello KK
+</sqf>
+
+|seealso= [[onGroupIconClick]]
+}}
+
+{{Note
+|user= General Barron
+|timestamp= 20090708022500
+|text= See my [http://www.ofpec.com/editors-depot/index.php?action{{=}}details&id{{=}}292&game{{=}}ArmA Multiple OnMapSingleClick] script to allow you to add multiple events to the onMapSingleClick event. Some minor editing of the scripts would be required to use them in Arma.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20160401002500
+|text= {{hl|_units}} param is supposed to return what [[groupSelectedUnits]] returns. Player must be [[leader]] and some [[units]] in the [[group]] must be selected on the group bar. However selected units are connected with group orders menu, which interferes with map click. In other words, when you click on the main map, the map gets focus and group orders menu closes, deselecting any selected unit, so {{hl|_units}} is [] pretty much all the time. 
+}}

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/tvCount
+// revision: 319984 (2022-05-13T09:25:50Z)
+// export sha1: lsasiqzck6je0ln7fba8autvyguepno
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|arg= local
+
+|eff= local
+
+|descr= Returns children count on given path. IDC means id of parent Tree View.
+
+|s1= [[tvCount]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Array]] of [[Number]]s
+
+|r1= [[Number]]
+
+|s2= ctrl [[tvCount]] path
+
+|p21= ctrl: [[Control]]
+
+|p22= path: [[Array]] of [[Number]]s
+
+|r2= [[Number]]
+
+|x1= <sqf>tvCount [101, [0]];</sqf>
+
+|x2= <sqf>_ctrl tvCount [1,0];</sqf>
+
+|seealso= [[tvAdd]] [[tvClear]] [[tvCollapse]] [[tvCurSel]] [[tvData]] [[tvDelete]] [[tvExpand]] [[tvPicture]] [[tvSetCurSel]] [[tvSetData]] [[tvSetPicture]] [[tvSetValue]] [[tvSort]] [[tvSortByValue]] [[tvText]] [[tvValue]]
+}}

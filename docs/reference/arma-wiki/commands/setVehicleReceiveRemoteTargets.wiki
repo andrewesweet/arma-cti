@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/setVehicleReceiveRemoteTargets
+// revision: 311071 (2022-05-07T20:56:47Z)
+// export sha1: 5euv3b2so79ojgaf4nhu8adclx1b2ex
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sensors | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Sensors
+
+|descr= Sets that the vehicle will be able to receive targets acquired by someone else via datalink from the [[Side]] center.
+
+|s1= vehicle [[setVehicleReceiveRemoteTargets]] bool
+
+|p1= vehicle: [[Object]]
+
+|p2= bool: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player setVehicleReceiveRemoteTargets true;</sqf>
+
+|seealso= [[setVehicleRadar]] [[vehicleReportRemoteTargets]] [[setVehicleReportRemoteTargets]] [[vehicleReceiveRemoteTargets]] [[vehicleReportOwnPosition]] [[setVehicleReportOwnPosition]] [[reportRemoteTarget]] [[confirmSensorTarget]]
+}}

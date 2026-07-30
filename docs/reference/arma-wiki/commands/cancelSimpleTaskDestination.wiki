@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/cancelSimpleTaskDestination
+// revision: 320959 (2022-05-13T10:04:50Z)
+// export sha1: eamngx5y32xaktlu9jw8kca9qfu1n7d
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Briefing
+
+|descr= Cancels a simple task destination.
+
+|s1= [[cancelSimpleTaskDestination]] task
+
+|p1= task: [[Task]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>cancelSimpleTaskDestination myTask;</sqf>
+
+|seealso= [[taskDestination]] [[setSimpleTaskDestination]]
+}}

@@ -1,0 +1,74 @@
+// source: https://community.bistudio.com/wiki/getNumber
+// revision: 322306 (2022-05-30T13:22:38Z)
+// export sha1: 3iavaxtdd283ad6329s6b3vqiu7qnin
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Config
+
+|descr= Extract number from config entry.
+
+|s1= [[getNumber]] config
+
+|p1= config: [[Config]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_value = getNumber (configFile >> "CfgVehicles" >> "Thing" >> "maxSpeed");</sqf>
+
+|seealso= [[configFile]] [[a / b]] [[configName]] [[count]] [[getArray]] [[getText]] [[inheritsFrom]] [[isArray]] [[isClass]] [[isNumber]] [[isText]] [[select]]
+}}
+
+{{Note
+|user= Donnervogel
+|timestamp= 20070303044500
+|text= Use [[getNumber]] to get [[Boolean|boolean]] values from a config entry. 1 equals [[true]], 0 equals [[false]].
+}}
+
+{{Note
+|user= Loki
+|timestamp= 20110913004400
+|text= With an not existing entry, [[getNumber]] returns 0.
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140328075300
+|text= ({{arma3}} 1.14), It's recommended to use [[BIS_fnc_getCfgData]] or [[BIS_fnc_returnConfigEntry]] to get variable cfg data rather than conditioning via [[isNumber]], [[isText]], [[isArray]], [[getNumber]], [[getText]] and [[getArray]] combination. <br>
+Traditional workaround:
+<sqf>
+private _cfg = configFile >> "CfgVehicles" >> _SomeAddonClassName >> "DestructionEffects" >> "Smoke1" >> "type";
+switch (true) do
+{
+	case (isNumber _cfg):	{ getNumber _cfg };
+	case (isText _cfg):		{ getText _cfg };
+	case (isArray _cfg):	{ getArray _cfg };
+	default					{ nil };
+};
+</sqf>
+'''Recommended workaround:'''
+<sqf>(configFile >> "CfgVehicles" >> _SomeAddonClassName >> "DestructionEffects" >> "Smoke1" >> "type") call BIS_fnc_getCfgData;</sqf>
+To return default value once entry was not found, we can use [[BIS_fnc_returnConfigEntry]] instead of [[BIS_fnc_getCfgData]].
+<sqf>[(configFile >> "CannonFire" >> "LightExp"),"lifeTime",0] call BIS_fnc_returnConfigEntry; // 0.5</sqf>
+To compose collected [[Number]] into [[Array]], use [[BIS_fnc_getCfgDataArray]] instead.
+<sqf>(configFile >> "CfgVehicles" >> _SomeAddonClassName >> "DestructionEffects" >> "Smoke1" >> "type") call BIS_fnc_getCfgDataArray;</sqf>
+To retype collected [[Number]] into [[Boolean]], use [[BIS_fnc_getCfgDataBool]]. Anything bigger than 0 is true, otherwise false. 
+<sqf>(configFile >> "CfgVehicles" >> _SomeAddonClassName >> "DestructionEffects" >> "Smoke1" >> "type") call BIS_fnc_getCfgDataBool;</sqf>
+}}

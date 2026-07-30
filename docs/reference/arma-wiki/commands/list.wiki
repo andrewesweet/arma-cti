@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/list
+// revision: 378370 (2026-04-03T16:47:58Z)
+// export sha1: kpzlpw809ouppvv2w20l03t3f7uy58a
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Triggers
+
+|descr= List of units that would activate given [[Triggers|Trigger]].
+
+It returns nothing before the simulation started, i.e. in (undelayed) init.sqf files. Returns a '''[[Array#Array properties|pointer]]''' to the trigger's list after the simulation started.<br>
+Since this is just a ''reference'' this means that the value in your local variable will change as the content of the trigger area changes.
+To permanently copy the returned list to a different variable, use <sqf inline>_mylist = +(list triggerOne)</sqf>.
+
+The second example can be used inside the trigger (in that case, no need to name your trigger).
+
+The list returned for trigger of type "Not present" is the same as that returned for type "present". 
+
+{{Feature|important|While the command can query any trigger, local or remote, the result will be only for the trigger condition set on the local client. See [[createTrigger]] for more info.}}
+
+|s1= [[list]] trigger
+
+|p1= trigger: [[Object]]
+
+|r1= [[Nothing]] or [[Array]] of [[Object]]s
+
+|x1= <sqf>_triggerList = list _triggerOne;</sqf>
+
+|x2= <sqf>hint format ["%1", thisList];</sqf>
+
+|seealso= [[setTriggerActivation]] [[createTrigger]] [[thisList]]
+}}
+
+{{Note
+|user= TeaCup
+|timestamp= 20130306141500
+|text= Calling [[list]] immediately after creating a trigger via [[createTrigger]] (and setting up activation, area, statements, timeout, etc..), will return {{hl|<null>}} instead of an array. It seems the trigger needs about 1 second to initialise, after which it will behave as expected: returning an array of all the objects inside the trigger (the ones matching the criteria), or an empty array.
+}}
+
+{{Note
+|user= 7erra
+|timestamp= 20210106015800
+|text= The resulting array is not modifiable. Any [[:Category:Command_Group:_Arrays|array related commands]], that modify the original array, will fail with the error message: {{hl|Error Reserved variable in expression}}.
+}}

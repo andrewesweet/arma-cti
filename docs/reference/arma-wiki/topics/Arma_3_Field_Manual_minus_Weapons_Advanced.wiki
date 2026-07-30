@@ -1,0 +1,159 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Weapons_Advanced
+// revision: 349723 (2023-11-20T22:09:53Z)
+// export sha1: 58uf6e8ka8u26lopj5m1vlhgbkwdu2r
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Weapons (Advanced) ==
+=== Designator ===
+Laser designator is used for aiming guided missiles, bombs and artillery.<br>
+1. Select '''Laser Designator''' from the action menu '''[Mouse wheel down]'''.<br>
+2. Zoom using '''[+ [NUM]]''', '''[- [NUM]]'''.<br>
+3. Switch view modes with '''[Hold Sec. Mouse Btn.]'''.<br>
+4. And finally, press '''[Prim. Mouse Btn.]''' to mark the target.
+
+''Once marked, do not move or switch the laser beam off or the missiles will be unable to correct their trajectory and might miss the target.''
+
+
+=== Directional Mines ===
+M6 SLAM Mine and Claymore Charge are directional explosives with a narrow arc of effect. They're especially useful in corridors and when defending a closed in spot. When placing them, face the direction you want the mine to explode.
+
+
+=== Disarming ===
+To disarm an explosive, you have to be an '''Explosives expert''' or an '''Engineer''', have a '''Toolkit''' and know the location of the explosive.<br>
+* Crawl '''[Z]''' to the explosive.<br>
+* Select '''Disarm'''[[File:a3_fm_ico_off.png|24px]] from the action menu.<br>
+WARNING: if you don't approach the explosive carefully in a prone position, it will detonate.
+
+''Disarming a mine underwater doesn't require being in a prone position.''
+
+
+=== Flares ===
+Flares of various colors are used for signaling. They can be launched from certain types of underslung grenade launcher.
+
+
+=== Chemlights ===
+Chemlights of various colors are great for signaling during the night.<br>
+* Cycle between grenade and chemlight types by pressing '''[Left Ctrl+G]'''.<br>
+* Throw a chemlight by pressing '''[G]'''.<br>
+The angle of the throw has a great influence on its distance.
+
+
+=== Arming Charges ===
+Charges and IEDs can be detonated remotely or set  with a timer. If you have an IED in your inventory, an item will appear in your action menu.<br>
+* Open the action menu '''[Mouse wheel down]'''.<br>
+* Place the IED on the ground using '''Put'''.<br>
+* Confirm with '''[Space]'''.<br>
+* Point at it with the cursor.<br>
+* Now you can set a timer in 40–second steps using the action menu.
+
+''You can detonate all your charges by selecting '''Touch off''' from the action menu. Also, your side is aware of the positions of your charges to avoid friendly fire.''
+
+
+=== Arming Mines ===
+You don't need to be an explosives specialist to set mines. If you have a mine in your inventory, an item will appear in your action menu.<br>
+* Open the action menu '''[Mouse wheel down]'''.<br>
+* Go to a place you want mined.<br>
+* Select '''Put''' mine.<br>
+* Confirm with '''[Space]'''.
+
+''Anti-Tank mines will not be triggered by infantry as they are set for higher weights. Also, your side is aware of the position of your explosives to avoid friendly-fire.''
+
+
+=== Finding Mines ===
+Having a mine detector in your inventory will automatically locate all explosives in a close range. Units can also spot mines depending on their training, so if you want to bet on luck, you can. When looking for a mine, move slowly and look around you. Note that mines are less likely to be spotted in bushes and grass.
+
+''Known locations of mines are displayed on the map and are distributed among your fellow soldiers. They will keep away from such spots.''
+
+
+=== Suppressor ===
+Suppressors are used to reduce a weapon's sound and muzzle flash. To equip a suppressor:<br>
+* Open Inventory '''[I]'''.<br>
+* '''Drag and drop''' a suppressor to your weapon's suppressor slot. The slot will be marked.
+
+''Equipping a suppressor reduces the power of fired bullets.''
+
+
+=== Pointers ===
+Flashlight, Laser and IR Laser pointers can be attached to your rifle to provide accuracy, coordination and utility. Flashlights are especially useful during night missions.<br>
+* To activate the laser or flashlight, press '''[L]'''.
+
+''To equip a pointer, open the inventory '''[I]''' and drag them to your weapon's side slot. The proper slot will be highlighted.''
+
+
+=== Rangefinder ===
+The rangefinder is an important part of scopes and optics. It determines the distance of a target and allows you to shoot more accurately.<br>
+* Use '''[Page Up]''' and '''[Page Down]''' to adjust the weapon's zeroing to match the target range.
+
+
+=== Smoke Grenades ===
+Smoke grenades are great for screening units and signaling.<br>
+* Cycle between grenade types by pressing '''[Left Ctrl+G]'''.<br>
+* Throw a grenade by pressing '''[G]'''.<br>
+The angle of the throw has a great influence on its distance.
+
+''Various smoke colors can be very useful when simultaneously marking more areas.''
+
+
+=== Sniper Rifles ===
+Sniper rifles are accurate and deadly at long ranges, provided that you can keep your aim steady. <br>
+1. Go prone with '''[Z]''' to keep weapon movement minimal.<br>
+2. Press '''[Hold Sec. Mouse Btn.]''' to look through the scope to see the enemy.<br>
+3. Adjust the rifle's zeroing with '''[Page Up]'''/'''[Page Down]''' to match the target's range.<br>
+4. Hold your breath with '''[Hold Sec. Mouse Btn.]''' to steady the aim.<br>
+5. Shoot by pressing '''[Prim. Mouse Btn.]''' to kill.
+
+''Some scopes have range indication, which provides information for zeroing the weapon.''
+
+
+=== Tracer Rounds ===
+Tracer rounds are used to mark enemy positions to other soldiers or check the bullet trajectory. Some magazines have tracer bullets loaded at the end. This way your teammates (and enemies) will know that you need to reload. Team leaders often have their magazines loaded only with tracers to mark the targets.
+
+=== Grenade Launchers ===
+Underslung grenade launchers are great for engaging groups of enemies or enemies hidden behind cover. If your weapon has a grenade launcher: <br>
+1. Select it by cycling fire modes '''[F]'''.<br>
+2. You can switch to sights by pressing '''[Hold Sec. Mouse Btn.]'''.<br>
+3. Adjust zeroing to match the target range '''[Page Up]''', '''[Page Down]'''.<br>
+4. Aim with the red dot on the sights.<br>
+5. Finally, fire with '''[Prim. Mouse Btn.]'''.
+
+''Grenade launchers are also capable of launching flares usable for signaling.''
+
+
+=== Underwater Weapons ===
+Shooting normal guns underwater is impossible. SDAR 5.56 mm is a special weapon designed to withstand higher pressure. If loaded with a dual purpose mag, it becomes an effective weapon for underwater combat at ranges of up to 40 meters.
+
+
+=== Zeroing ===
+Zeroing is the accurate setup of weapon sights. It tells you the range where the bullet will hit the center of the scope. Zeroing in meters is displayed in Weapon Info. <br>
+* Use '''[Page Up]''' and '''[Page Down]''' to adjust the weapon zeroing up and down.
+
+''* In close ranges under the zeroed range, it is better to shoot slightly below the target.<br>
+* In ranges over the zeroed range, it is better to shoot slightly above the target.<br>
+Some scopes come with crosshair aids for such situations.''
+
+
+=== Flashlight ===
+A flashlight can be very useful during night-time. Turn your gun-mounted flashlight on/off by pressing '''[L]'''. Be careful, light can give away your position.
+
+
+=== Mil dots ===
+Mil dots serve as a reliable helper to acquiring the target distance. The distance between dots represents one milliradian. How to use it:<br>
+* Know your target size<br>
+* Measure your current target height in mils.<br>
+* Calcualte the distance:<br>
+Distance = Target size * 1000 / Mils read
+
+
+=== IR Grenades ===
+Use IR grenades for signaling or marking targets during night-time.<br>
+* Throw an IR grenade by pressing '''[G]'''.<br>
+* Cycle between grenade and chemlight types by pressing '''[Left Ctrl+G]'''.<br>
+The angle of the throw has a great influence on its distance.
+
+''IR Grenades are especially useful for marking targets, because they can be targeted by vehicle operators.<br>
+* When in a vehicle, press '''[T]''' to target.<br>
+* Cycle available targets by '''[R]'''.''
+
+
+{{GameCategory|arma3|Field Manual}}

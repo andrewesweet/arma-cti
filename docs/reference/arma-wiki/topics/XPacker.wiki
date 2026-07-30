@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/XPacker
+// revision: 377970 (2026-01-19T13:25:36Z)
+// export sha1: praxcvf8x6yyk6pbamqwaoqk61onjy6
+// categories: Category:Carrier Command: Gaea Mission: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+=XPacker=
+Xpacker is used to pack and unpack data (for example mods) for {{Name|carriercommand|com}}.<br>
+Xpacker is included in {{Name|carriercommand}} SDK release.
+
+{{Feature|important|
+Video files must '''not''' be compressed.
+If you have some in your mod, use the "exclude suffixes" (-x) parameter on them when you want to pack the mod.
+}}
+
+
+== Usage ==
+
+{| class="wikitable float-right"
+|+ Parameters
+! Parameter
+! Description
+|-
+| -r
+| Recursive
+|-
+| -u
+| Unpack
+|-
+| -# 0...9
+| level of compression
+|-
+| -n
+| Do not compress suffixes
+|-
+| -m
+| Move to archive
+|-
+| -x
+| Exclude suffixes
+|-
+| -productId #
+| Product identifier
+|-
+| -key $
+| Encryption key
+|}
+
+ xpacker [-r][-m][-n][-#] target.zip [source-dir, ...]
+or
+ xpacker -u[-r][-n] source.zip [source-dir] [target-dir]
+
+e.g
+ xpacker.exe -u "C:\Program Files (x86)\Bohemia Interactive\Carrier Command Gaea Mission\data00.cc" "C:\Program Files (x86)\Bohemia Interactive\Carrier Command Gaea Mission\unpacked_data\"
+
+unpacks {{hl|data00.cc}} in Carrier Command folder into subfolder "unpacked_data" in the same folder.
+
+
+ C:\Program Files (x86)\Bohemia Interactive\Carrier Command Gaea Mission\xpacker.exe -r6mn .wav:.ogg:.ttf:.xob:.wmv:.dds -x .txo data01.cc  .\worlds .\video .\gui \materials .\particle
+
+This command uses xpacker.exe in Carrier Command directory to pack (recursively and with medium level of compression) subdirs "worlds", 
+"video", "gui", "materials" and  "particle" of current dir into {{hl|data01.cc}} file, which will be placed in current directory.
+When the data are packed it will delete the source files and folders ("-m" parameter).
+"-x .txo" means that it will not include any .txo files in the final archive.
+"-n .wav:.ogg:.ttf:.xob:.wmv:.dds" means that wav, ogg, ttf, xob, wmv and dds files will be added into archive, but will not be compressed.
+This exact option is recommended for Carrier Command mods for the best performance.
+In the case of wmv files it is crucial because wmv files MUST NOT be compressed.
+
+
+{{GameCategory|carriercommand|Official Tools}}

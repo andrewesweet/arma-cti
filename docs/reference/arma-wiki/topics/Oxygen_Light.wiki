@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/Oxygen_Light
+// revision: 201500 (2021-01-17T20:11:54Z)
+// export sha1: nitre6rliv66pem0z2hif45hmjmnm1n
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= [[:Category: Operation Flashpoint|Operation Flashpoint]]
+
+|DOWNLOAD= http://www.flashpoint1985.com/breathe/index.html
+
+|DESCRIPTION= Oxygen Light is an editing tool for models. 
+
+|NOTES=
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= [[Oxygen Keyboard Shortcuts]]
+
+[[BIS_File_Formats#3D_Model_File_Formats|Model File Formats]]
+
+}}

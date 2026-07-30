@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/Wargames:Help_Site:Home
+// revision: 61867 (2011-03-27T10:53:53Z)
+// export sha1: 7nr1ybjduj8n9gojepe2t6uxtyidz5j
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Welcome To The Wargames Mod Wiki Site =
+
+This site should work as a general knowledge-base to learn about Wargames as well as solve any problems that may be encountered while installing or playing.
+
+This site is remains in infinite the phase of construction and completion - '''you are welcome to contribute!'''
+
+Register to be able to make changes to the wiki sites yourself, such as adding additional information, help requests about specific topics, or any other helpful data.
+
+== Site Map ==
+
+* [[Wargames:Help_Site:WGL_MOD|WGL MOD]]
+* [[Wargames:Help_Site:Download|Download]]
+* [[Wargames:Help_Site:Installation|Installation]]
+* [[Wargames:Help_Site:Missions|Missions]]
+* [[Wargames:Help_Site:FAQ|FAQ]]
+* [[Wargames:Help_Site:Documentation|Documentation]]
+* [[Wargames:Help_Site:Additional_Info|Additional Info]]
+* [[Wargames:Help_Site:Customize_WGL|Customize WGL]]
+
+* [[Wargames:Help_Site:Team|Team]]
+* [[Wargames:Help_Site:Credits|Credits]]
+* [[Wargames:Help_Site:Links|Links]]

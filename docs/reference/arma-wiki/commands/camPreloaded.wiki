@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/camPreloaded
+// revision: 321907 (2022-05-22T12:22:10Z)
+// export sha1: 9f2to1b2p7w1bm4pbhkhq6wnx55rfg7
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Camera Control
+
+|descr= Checks whether the camera has finished preloading.
+
+|s1= [[camPreloaded]] camera
+
+|p1= camera: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (camPreloaded _camera) exitWith { hint "loaded" };</sqf>
+
+|seealso= [[cameraEffect]] [[camCreate]] [[camCommit]]
+}}

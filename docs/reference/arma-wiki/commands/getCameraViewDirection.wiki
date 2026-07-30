@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/getCameraViewDirection
+// revision: 349460 (2023-11-08T16:48:37Z)
+// export sha1: lmjn6a24uhq5bu768hl2oxdxyzhavm1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns the direction unit is looking in render time scope. While for AI the origin for the view direction vector can be taken from <sqf inline>eyePos unit</sqf>, for human player the origin should be taken from player camera position <sqf inline>positionCameraToWorld [0,0,0]</sqf>
+
+|s1= [[getCameraViewDirection]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] - 3D Vector
+
+|x1= Draw AI eye direction (green), weapon direction (red) and camera direction (blue) in 3D:
+<sqf>
+Bob = createGroup east createUnit ["O_Soldier_F", [0,0,0], [], 0, "NONE"];
+Bob setVehiclePosition [player modelToWorld [0,100,0], [], 0, "NONE"];
+onEachFrame {
+	_beg = ASLToAGL eyePos Bob;
+	_endE = (_beg vectorAdd (eyeDirection Bob vectorMultiply 100));
+	drawLine3D [_beg, _endE, [0,1,0,1]];
+	_endW = (_beg vectorAdd (Bob weaponDirection currentWeapon Bob vectorMultiply 100));
+	drawLine3D [_beg, _endW, [1,0,0,1]];
+	_endV = (_beg vectorAdd (getCameraViewDirection Bob vectorMultiply 100));
+	drawLine3D [_beg, _endV, [0,0,1,1]];
+};
+</sqf>
+
+|seealso= [[positionCameraToWorld]] [[weaponDirection]] [[eyeDirection]] [[vectorDir]] [[vectorDirVisual]]
+}}

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/get3DENEntity
+// revision: 378362 (2026-04-03T16:26:44Z)
+// export sha1: pbtcvhczrrychdo77tdyqrxnm5sl19b
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Returns [[Eden Entity]] based on its [[Eden ID]].
+
+|s1= [[get3DENEntity]]  ID
+
+|p1= ID: [[Number]] - [[Eden ID]]
+
+|r1= [[Eden Entity]] or [[Number]]
+* If the ''ID'' points to an [[Eden Entity]] the entity is returned
+* If it points to a [[Eden Editor: Layer]] or [[Eden Editor: Comment]] the ''ID'' is returned
+* If no entity with given ''ID'' exists {{hl|-1}} is returned
+
+|x1= <sqf>myEntity = get3DENEntity 1;</sqf>
+
+|seealso= [[get3DENEntityID]]
+}}

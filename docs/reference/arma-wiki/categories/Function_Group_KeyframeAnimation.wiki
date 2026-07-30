@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_KeyframeAnimation
+// revision: 370906 (2025-02-26T10:40:41Z)
+// export sha1: 07qt7ni57sbtwmfubcs7yeo2435wr8g
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions used by the [[Arma 3: Key Frame Animation]] system.
+
+
+[[Category:Functions by Functionality]]

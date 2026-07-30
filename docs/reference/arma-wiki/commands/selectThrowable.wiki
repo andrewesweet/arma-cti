@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/selectThrowable
+// revision: 369741 (2024-10-08T15:05:51Z)
+// export sha1: 3fr9gzreagoiteamj0bvt7iey54szz7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Weapons
+
+|gr2= Unit Inventory
+
+|descr= Selects [[currentThrowable | current throwable]], which will be launched if the user presses {{Controls|G}}.
+
+|s1= unit [[selectThrowable]] throwable
+
+|p1= unit: [[Object]]
+
+|p2= throwable: [[String]] - either the name of the throwable magazine or the name of the throwable muzzle
+
+|r1= [[Boolean]] - [[true]] on success
+
+|x1= <sqf>player selectThrowable "SmokeShellGreen";</sqf>
+
+|x2= <sqf>player selectThrowable "SmokeShellGreenMuzzle";</sqf>
+
+|seealso= [[throwables]] [[isThrowable]] [[currentThrowable]] [[selectWeapon]][[currentWeapon]] [[currentMagazine]] [[currentMuzzle]] [[BIS_fnc_isThrowable]]
+}}

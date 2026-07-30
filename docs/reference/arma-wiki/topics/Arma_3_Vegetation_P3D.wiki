@@ -1,0 +1,289 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Vegetation_P3D
+// revision: 364288 (2024-05-06T09:38:37Z)
+// export sha1: n5p3qcnks4k6qskdmnngroltu87tbtg
+// categories: Category:Arma 3: Editing | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+=Basic vegetation P3D setup for Arma 3=
+
+{| class="wikitable"
+!  !!  !! Clutter !! Bush !! SoftTree !! HardTree
+|-
+| LOD1 || Triangle Max || +-100  || -3000 || -6000 || -15000
+|-
+|  ||  || lock normals Y=-1 ||  ||  || 
+|-
+|  || Section || 1 || 2 || 03-II || 04-II
+|-
+|  || Material || Grass || TreeAdv; TreeAdvTrunk; || TreeAdv; TreeAdvTrunk; || TreeAdv; TreeAdvTrunk;
+|-
+|  || Textures || CA || CO; CA; CS; NOHQ; MCA; || CO; CA; CS; NOHQ; MCA; || CO; CA; CS; NOHQ; MCA;
+|-
+|  || Named Properties || N/A || LODNoShadow=1 || LODNoShadow=1 || LODNoShadow=1
+|-
+|  || UV set max || 1 || 2 || 2 || 2
+|-
+| LOD2 || Triangle Max || LOD1 / 2  || LOD1 / 2 || LOD1 / 2 || LOD1 / 2
+|-
+|  ||  || lock normals Y=-1 ||  ||  || 
+|-
+|  || Section || 1 || 2 || 03-II || 04-II
+|-
+|  || Material || Grass || TreeAdv; TreeAdvTrunk; || TreeAdv; TreeAdvTrunk; || TreeAdv; TreeAdvTrunk;
+|-
+|  || Textures || CA || CO; CA; CS; NOHQ; MCA; || CO; CA; CS; NOHQ; MCA; || CO; CA; CS; NOHQ; MCA;
+|-
+|  || Named Properties || N/A || LODNoShadow=1 || LODNoShadow=1 || LODNoShadow=1
+|-
+|  || UV set max || 1 || 2 || 2 || 2
+|-
+| LOD3 || Triangle Max || LOD2 / 2  || LOD2 / 2 || LOD2 / 2 || LOD2 / 2
+|-
+|  ||  || lock normals Y=-1 ||  ||  || 
+|-
+|  || Section || 1 || 2 || 2 || 3
+|-
+|  || Material || Grass || TreeAdv; TreeAdvTrunk; || TreeAdv; TreeAdvTrunk; || TreeAdv; TreeAdvTrunk;
+|-
+|  || Textures || CA || CO; CA; CS; NOHQ; MCA; || CO; CA; CS; NOHQ; MCA; || CO; CA; CS; NOHQ; MCA;
+|-
+|  || Named Properties || N/A || LODNoShadow=1 || LODNoShadow=1 || LODNoShadow=1
+|-
+|  || UV set max || 1 || 2 || 2 || 2
+|-
+| LOD4 (MLOD) || Triangle Max || 12  || 12 || 12 || 12
+|-
+|  ||  || lock normals Y=-1 ||  ||  || 
+|-
+|  || Section || 1 || 1 || 1 || 1
+|-
+|  || Material || Grass || TreeAdv; TreeAdvTrunk; || TreeAdv; TreeAdvTrunk; || TreeAdv; TreeAdvTrunk;
+|-
+|  || Textures || CA || CA; CAN; NO; || CA; CAN; NO; || CA; CAN; NO;
+|-
+|  || Named Properties || N/A || LODNoShadow=1 || LODNoShadow=1 || LODNoShadow=1
+|-
+|  || UV set max || 1 || 2 || 2 || 2
+|-
+| LOD || Triangle Max || N/A || 100 || 100 || 100
+|-
+| ShadowVolume0 || Section || N/A || 02-I || 02-I || 02-I
+|-
+|  || Material || N/A || N/A || N/A || N/A
+|-
+|  || Textures || N/A || N/A || N/A || N/A
+|-
+|  || Named Properties || N/A || N/A || N/A || N/A
+|-
+|  || UV set max || 1 || 1 || 1 || 1
+|-
+| LOD || Triangle Max || N/A || -1000 || -1000 || -1000
+|-
+| ShadowVolume1000 || Section || N/A || 02-I || 02-I || 02-I
+|-
+|  || Material || N/A || N/A || N/A || N/A
+|-
+|  || Textures || N/A || CA;CAN; || CA;CAN; || CA;CAN;
+|-
+|  || Named Properties || N/A || N/A || N/A || N/A
+|-
+|  || UV set max || 1 || 1 || 1 || 1
+|-
+| LOD || Triangle Max || N/A || cca LOD4 || cca LOD4 || cca LOD4
+|-
+| ShadowVolume1010 || Section || N/A || 1 || 1 || 1
+|-
+|  || Material || N/A || N/A || N/A || N/A
+|-
+|  || Textures || N/A || CA;CAN; || CA;CAN; || CA;CAN;
+|-
+|  || Named Properties || N/A || N/A || N/A || N/A
+|-
+|  || UV set max || 1 || 1 || 1 || 1
+|-
+| LOD || Triangle Max || 0 || 100 || 100 || 100
+|-
+| GEOMETRY || Mass || 0 || 10-I || 10-100 || 50-1000
+|-
+|  || Material || N/A || N/A || N/A || N/A
+|-
+|  || Textures || N/A || N/A || N/A || N/A
+|-
+|  || Named Properties || frequent=1; || frequent=1; || frequent=1; || frequent=1;
+|-
+|  ||  || class=clutter; || class=bushSoft; || class=TreeSoft; || class=TreeHard;
+|-
+|  ||  ||  || map=bush; || map=SmallTree; || map=tree;
+|-
+|  ||  ||  || dammage=tent; || dammage=Tree; || dammage=Tree;
+|-
+|  ||  ||  || canOcclude=0; || canOcclude=0; || canOcclude=0;
+|-
+|  ||  ||  || shadow=hybrid; || shadow=hybrid; || shadow=hybrid;
+|-
+|  ||  ||  || sbsource=explicit; || sbsource=explicit; || sbsource=explicit;
+|-
+|  ||  ||  || preferShadowVolume=0; || preferShadowVolume=0; || preferShadowVolume=0;
+|-
+|  ||  ||  || armor=700 || armor=1500 || armor=15000
+|-
+|  || UV set max || 1 || 1 || 1 || 1
+|-
+| LOD || Triangle Max || 0 || 100 || 100 || 100
+|-
+| GEOMETRY PhysX || Mass || 0 || 10-I || 10-100 || 50-1000
+|-
+| -3.00E+13 || Material || N/A || N/A || N/A || N/A
+|-
+|  || Textures || N/A || N/A || N/A || N/A
+|-
+|  || Named Properties || N/A || dammage=tent; || dammage=Tree; || dammage=Tree;
+|-
+|  || UV set max || 1 || 1 || 1 || 1
+|-
+| LOD || Triangle Max || 0 || -1000 || -1000 || -1000
+|-
+| ViewGeometry || Components || 0 || 10 || 20-I || 1-100
+|-
+|  || Material || N/A || foliage_green.rvmat || foliage_green.rvmat || foliage_green.rvmat
+|-
+|  || Textures || N/A || N/A || N/A || N/A
+|-
+|  || Named Properties || N/A || N/A || N/A || N/A
+|-
+|  || UV set max || 1 || 1 || 1 || 1
+|}
+== Shadow LODs ==
+=== [ShadowVolume 0] ===
+LOWpoly stencil shadow LOD (up to 100 triangles), is cast when shadows are on Low video settings.
+
+Mesh in the LOD must be:
+* convex
+* closed
+* triangulated
+* with sharp edges
+* without textures
+* without material
+* only UVset 0
+* up to 100 triangles
+
+=== [ShadowVolume 10] ===
+* simplified version of ShadowVolume 0... it is often not needed to have this ShadowVolume present in the P3D
+
+=== [ShadowVolume 1000] ===
+ShadowBuffer shadow LOD, matches as much as possible the first resolution LOD, so it has biggest complexity from all shadow LODs. Polyplanes use texture with mask in Alpha channel to cast shadows (the same as for polyplanes in resolution first LOD...no need to duplicate the data). Trunk has no texture or material at all
+
+Mesh in the LOD must be:
+* triangulated
+* with sharp edges
+* polyplanes with _CA texture (Alpha channel)
+* no material
+* only UVset 0
+* up to +-1000 triangles
+ 
+=== [ShadowVolume 1010] ===
+Simplified ShadowBuffer shadow LOD, made usually fro last resolution LOD. Texture used from the last resolution LOD...no need to duplicate the data.
+
+Mesh in the LOD must be:
+* triangulated
+* with sharp edges
+* with _CA texture (Alpha channel)
+* pouze s UVset 0
+* up to +-20 triangles
+
+== Geometry LODs ==
+P3D must contain at least Geometry layer, which is used also as ViewGeometry and FireGeometry in case they are not present in the p3d. In case only FireGeometry is missing, ViewGeometry is used as FireGeometry.
+=== [Geometry] ===
+In game invisible model allowing collisions with player and other objects in the game. It contains extremely simplified model of the crown and trunk. Model is made from convex components, all of the components must have set weight and the overall weight must not be below 150, otherwise the model will not collide
+
+model must contain:
+* convex meshes
+* Components (selections Component01; component02 atd...)
+* Weight (weight below 10kg is causing no collisions)
+* only  UVset 0
+* penetration material (if it doesn't already exist in  FireGeometry or ViewGeometry)
+
+=== [FireGeometry] ===
+Model allowing the vegetation to get hits from weapons. Is more complex than ViewGeometry and Geometry...it should match the shape of first resolution LOD very well. If player can hide inside the mesh, its penetration material must contain thickness parameter.
+
+model must contain:
+* convex meshes
+* Components (selections Component01; component02 atd...)
+* only  UVset 0
+* material (penetration) 
+
+=== [ViewGeometry] ===
+[[File:Arma 3 Vegetation P3D geom.png|thumb]]
+Model which covers the view for AI. Is more complex than Geometry, but less than FireGeometry.
+
+model must contain:
+* convex meshes
+* Components (selections Component01; component02 atd...)
+* only  UVset 0
+* material (defines transparency) 
+Models, which have property class=tree or bush are calculated as partly transparent by default (without any linked materials). Their "viewDensity" values are hardcoded...they can be overridden only by material used on Apex bushes called foliage_sparse and foliage_dense. Stacking two meshes, one smaller inside one bigger, both with foliage_sparse material proved to work very well on Apex bushed. It is causing edge of the bush to be gradually more transparent for the AI towards the edge of the model and still opaque in the center
+
+== Properties ==
+=== Resolution LODs ===
+
+* LODNoShadows=1 (this LOD will not be used for casting ShadowBuffer shadow)
+* ShadowVolumeLod=10 (choose ShadowVolume LOD for casting Stencil shadows, for specific resolution LOD)
+* ShadowBufferLod=1000 (choose  ShadowVolume LOD for casting ShadowBuffer LODs, for specific resolution LOD)
+* ShadowBufferLodVis=3 (choose resolution LOD, which will be used for casting ShadowBuffer shadow for specific resolution LOD)
+
+=== Geometry ===
+* loddensitycoef=1 (values 0.01 - 1) - coefficient/multiplier of the bounding box size, which influence how engine is choosing resolution LODs. Engine chooses better LODs for assets with bigger bounding box and worse LODs for assets with smaller bounding box at given distance.
+* SbSource=visual - as shadow buffer LODs will be used the closest resolution LOD with lower or the same amount of triangles. It works only on resolution LODs which dont't have property LODNoShadow=1
+* SbSource=explicit - as shadow buffer LODs will be used special models created for shadow buffer shadows. For shadow buffer LODs we use numbers between <1000,1999>
+* SbSource=shadowvolume - as shadow buffer LOD will be used model made for Stencil shadows <0,999>
+* sbSource=VisualEx - each resolutin LOD casts ShadowBuffer shadows from itself. It overrides property LodNoShadow=1.
+* SbSource=none - nothing will be rendered into the shadow buffer
+* damage=tent - vegetation model will be destroyed by flattening to the ground
+* damage=tree - vegetation model will be destroyed by falling down, center of rotation is in 0,0,0 coordinates in oxygen
+* damage=no - model can't be destroyed
+* map=bush - model is rendered in the map as a green circle
+* map=tree - model is rendered in the map as a bigger green circle, or as a green area in case of a forests
+* map=small tree - model is rendered in the map as a green dot
+* class=bushHard - animation of bush of bending in the wind - weak
+* class=bushSoft - animation of bush of bending in the wind - strong
+* class=treeHard - animation of tree of bending in the wind - weak
+* class=treeSoft - animation of tree of bending in the wind - strong
+* class=clutter - model is rendered as a clutter, which means that it is colored by satelite map (amount of coloring is set in cfgSurfaces.hpp via maxClutterColoringCoef (values 1 - 2) parameter) , model is required to have only one section/drawcall
+* class=forest - blok se v mape kresli jako les, neda se znicit, vykresluje se jako les v enginu
+* shadow=hybrid - when set, shadow volumes <0,999>will cast stencil shadows on Low shadow setting in video options
+* preferShadowVolume=0 (values 0 or 1) - 1 = shadow volumes are used  0 = shadow buffer shadows are used
+* CanOcclude=0 - model will be never used for "horizont pruning" or any other occlusions from View geometry. It's still used for standard visibility tests. Engine does not use "horizont pruning" with dynamic objects (characters, vehicles). If static object view geometry is accurate enough to be used for occlusions do not use this property. It should be used only if the object contains some transparency or gaps (e.g. windows, holes, ...)
+* frequent=1 - this is causing instancing, is used for static environment models as vegetation and ground rocks
+* autocenter=0 - this property prohibits binarization of model centering. Should not be used for trees and most of other models.
+* armor=700 - sets life/damage resistance of a model in case of collision
+= Vegetation tips =
+* do not merge branches and trunk together, maybe just really low near the ground...mostly just leave them not actually merged, nobody will notice the difference and you will save polycont
+* edit materials (rvmat) in notepad++ and don't use material editor...you will have much bigger control. Material editor in not supported for some time and it can break some stuff in materials if you save them through the editor.
+* have consistently set materials across all vegetation...like having for example RGB color information everywhere the same...this will force artist to have correctly done textures themselves.
+* make polyplane texture for crown from highpoly branches with leaves, you can bake from it nice normal map, cavity or AO map for baking into the Diffuse texture, correctly done normal map will result in nice specular in the leaves. Software like Plant Factory or Speed Tree can help you to create such a highpoly models. Leaves is always best to make by hand in 3dsMax/Maya/Blender (or other soft) and distribute these in the plant creation software.
+* be aware of pixel overdraw effect (https://unity3d.com/learn/tutorials/temas/performance-optimization/optimizing-graphics-rendering-unity-games)...if you have a lot of polyplanes with a lot of transparency, it can have big effect on the performance. Bigger number of triangles is often better solution for higher visual LODs
+= Trees =
+'''[[Arma 3: Trees]]'''
+= Clutter =
+'''PixelShaderID="Grass"'''
+Allows take over of color (satellite texture) and lighting from the terrain.
+
+'''VertexShaderID="Grass"'''
+Allows collision with characters or vehicles - grass layes down.
+
+Example material:
+<syntaxhighlight lang="cpp">
+mainLight = "Sun";
+fogMode = "Fog";
+ 
+ambient[]={1,0.95,0.95,1.3};
+diffuse[]={0.2,0.17,0.17,1};
+forcedDiffuse[]={0,0,0,0};
+renderFlags[] = {AlphaTest32};
+ 
+VertexShaderID = "Grass";
+PixelShaderID = "Grass";
+</syntaxhighlight>
+
+{{GameCategory|arma3|Editing}}
+{{GameCategory|arma3|Tutorials}}

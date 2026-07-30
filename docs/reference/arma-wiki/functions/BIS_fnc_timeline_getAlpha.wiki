@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_timeline_getAlpha
+// revision: 348336 (2023-11-08T12:59:45Z)
+// export sha1: fzfl5sjvi8yx1tiah32n5rr9eanr7ui
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Timeline | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Timeline
+
+|descr= Get's current alpha in given timeline.
+
+|s1= [timeline] call [[BIS_fnc_timeline_getAlpha]]
+
+|p1= timeline: [[Object]] - the timeline object
+
+|r1= [[Number]] - current Alpha value
+
+|x1= <sqf>private _alpha = [timeline] call BIS_fnc_timeline_getAlpha;</sqf>
+
+|seealso= [[BIS_fnc_timeline_deleted]] [[BIS_fnc_timeline_cleanup]] [[BIS_fnc_timeline_finish]] [[BIS_fnc_timeline_getCurrentTime]] [[BIS_fnc_timeline_getInterpMode]] [[BIS_fnc_timeline_getLength]] [[BIS_fnc_timeline_getPlayFromStart]] [[BIS_fnc_timeline_getPlayRate]] [[BIS_fnc_timeline_getPlayTime]] [[BIS_fnc_timeline_getPosition]] [[BIS_fnc_timeline_getSimulatedCurves]] [[BIS_fnc_timeline_getStopTime]] [[BIS_fnc_timeline_getTimeLeft]] [[BIS_fnc_timeline_init]] [[BIS_fnc_timeline_isFinished]] [[BIS_fnc_timeline_isLooping]] [[BIS_fnc_timeline_isPaused]] [[BIS_fnc_timeline_isPlaying]] [[BIS_fnc_timeline_play]] [[BIS_fnc_timeline_setInterpMode]] [[BIS_fnc_timeline_setLength]] [[BIS_fnc_timeline_setLoop]] [[BIS_fnc_timeline_setPause]] [[BIS_fnc_timeline_setPlayRate]] [[BIS_fnc_timeline_setPosition]] [[BIS_fnc_timeline_simulateCurves]] [[BIS_fnc_timeline_stop]] [[BIS_fnc_timeline_tick]] [[BIS_fnc_timeline_setReverse]] [[BIS_fnc_timeline_isReverse]]
+}}

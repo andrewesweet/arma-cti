@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/PVPScriptPack
+// revision: 364692 (2024-05-25T17:23:27Z)
+// export sha1: avxzbi6er1u4f6bgr6bz51qw9ypl7a5
+// Vendored snapshot. Do not edit — re-export instead.
+
+==PVP script pack==
+
+==== Preface ====
+
+The PVP script pack is an attempt to encourage a lot more players to create player-vs-player maps.  When I first started playing OFP and looking at map-making I was frustrated by just how awkward and error-prone the process was.  Players had to have a fairly good understanding of concepts such as triggers and scripting, and the smallest error could cause hours of frustration in trying to track down the problem.
+
+==== Design concept ====
+
+So, how does this script pack change that ?  The main concept is that as much as possible is set up by placing markers from the editor.  After that, all the magic is done by scripts 'under the hood'.  A CTF including spawn-protection and borders can be made by placing just 6 markers and editing one line in a text file. Other game modes are also supported - you can create a Capture and Hold mission that includes an arbitrary number of objectives, minefields, respawning vehicles and special zones to parachute players to the action in just a few minutes by placing some markers.
+
+==== Supported gamemodes ====
+
+ * CTF (Capture the Flag)
+ * DM (DeathMatch)
+ * TDM (Team deathmatch)
+ * FF (Flag-fight)
+ * KoH (King Of the Hill)
+ * C&H (Capture and Hold)
+ * AAS (Advance and secure) 
+
+==== Further info ====
+
+The {{Link|link= http://dev-heaven.net/wiki/sbsmac-pvpsp|text= "main project page"}} is hosted by [[DevHeaven]]
+
+There is a 30 page {{Link|link= http://dev-heaven.net/attachments/download/1672/CTF_script_pack_user_guide.pdf|text= manual}} that explains how to use the script-pack but you don't need to read more than the first few pages to make a basic mission.
+
+You can download the latest version from {{Link|link= http://dev-heaven.net/projects/list_files/sbsmac-pvpsp|text= "the files section"}}.
+
+There is also a {{Link|link= http://forums.bistudio.com/showthread.php?t=79842|text= thread}} on the official BIS forums.

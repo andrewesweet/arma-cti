@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/doFollow
+// revision: 353189 (2024-03-12T13:35:21Z)
+// export sha1: 3ys3s8wrwkpuxoda4ipmz0zeuol3tn3
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Control
+
+|descr= Order the given unit(s) to follow another from his own group as his [[formLeader|formation leader]] (without radio messages).<br>
+It is also used to order the unit to '''return to formation''' after e.g [[doStop]] even if it is the leader himself that should return to formation (see [[#Example 2|Example 2]]).
+
+|s1= unit [[doFollow]] unitLead
+
+|p1= unit: [[Object]] or [[Array]] of [[Object]]s
+
+|p2= unitLead: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_soldier1 doFollow _soldier2;</sqf>
+
+|x2= <sqf>units _group doFollow leader _group; // returns all the units to formation</sqf>
+
+|seealso= [[doStop]] [[doMove]] [[commandFollow]] [[formationLeader]] [[formLeader]] [[isFormationLeader]] [[leader]] [[selectLeader]] [[setLeader]]
+}}
+
+{{Note
+|user= Mojito69
+|timestamp= 20101011180000
+|text= These commands ([[doFollow]] or [[commandFollow]]) work only if the two units are in the same group.
+}}
+
+{{Note
+|user= BaerMitUmlaut
+|timestamp= 20160829234800
+|text= The name of this command is a bit misleading, it is used to make a unit return to the formation of its group or subformation.
+}}
+
+{{Note
+|user= Leopard20
+|timestamp= 20220217122529
+|text= [[doFollow]] doesn't work with player-issued commands (those issued via the commanding menus). As a workaround, it is possible to use [[joinSilent]] instead, and join the unit into its current group:
+<sqf>[_unit] joinSilent group _unit; // return to formation</sqf>
+Note that the group must have '''at least 2 units''', and not all units should be joined at once, otherwise the group will temporarily become empty and all its waypoints '''will be lost'''!
+}}

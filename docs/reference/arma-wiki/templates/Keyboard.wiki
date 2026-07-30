@@ -1,0 +1,351 @@
+// source: https://community.bistudio.com/wiki/Template:Keyboard
+// revision: 336976 (2023-01-04T16:45:09Z)
+// export sha1: 6s7pnift98ohpbrn08khvqlahi8wr2x
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{| cellpadding="0" cellspacing="3" style="background:#CCC; border: 1px solid #999; border-spacing: 3px; border-collapse: separate; margin-bottom: 10px; border-radius: .5em; width: 100%"
+
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+| style="width: 50px" |
+
+|-
+{{Keyboard/Key | Escape|{{{Escape|}}} | {{{colorEscape|}}}}}
+{{Keyboard/Key | | | transparent | 1 | | 0}}
+{{Keyboard/Key | F1 | {{{F1|}}} | {{{colorF1|}}}}}
+{{Keyboard/Key | F2 | {{{F2|}}} | {{{colorF2|}}}}}
+{{Keyboard/Key | F3 | {{{F3|}}} | {{{colorF3|}}}}}
+{{Keyboard/Key | F4 | {{{F4|}}} | {{{colorF4|}}}}}
+{{Keyboard/Key | | | transparent | 1 | | 0}}
+{{Keyboard/Key | F5 | {{{F5|}}} | {{{colorF5|}}}}}
+{{Keyboard/Key | F6 | {{{F6|}}} | {{{colorF6|}}}}}
+{{Keyboard/Key | F7 | {{{F7|}}} | {{{colorF7|}}}}}
+{{Keyboard/Key | F8 | {{{F8|}}} | {{{colorF8|}}}}}
+{{Keyboard/Key | | | transparent | 1 | | 0}}
+{{Keyboard/Key | F9 | {{{F9|}}} | {{{colorF9|}}}}}
+{{Keyboard/Key | F10 | {{{F10|}}} | {{{colorF10|}}}}}
+{{Keyboard/Key | F11 | {{{F11|}}} | {{{colorF11|}}}}}
+{{Keyboard/Key | F12 | {{{F12|}}} | {{{colorF12|}}}}}
+{{Keyboard/Key | | | transparent | 1 | | 0}}
+{{Keyboard/Key | Prt&nbsp;Scr|{{{PrintScreen|}}} | {{{colorPrintScreen|}}}}}
+{{Keyboard/Key | Scr&nbsp;Lck|{{{ScrollLock|}}} | {{{colorScrollLock|}}}}}
+{{Keyboard/Key | Pause|{{{Pause|}}} | {{{colorPause|}}}}}
+{{Keyboard/Key | | | transparent | 8 | | 0}}
+|<small>[[Template:Keyboard|Help]]</small>
+
+|-
+| style="height: 10px" colspan="45" |
+
+|-
+{{Keyboard/Key | ` | {{{Tilde|}}} | {{{colorTilde|}}}}}
+{{Keyboard/Key | 1 | {{{Key1|}}} | {{{colorKey1|}}}}}
+{{Keyboard/Key | 2 | {{{Key2|}}} | {{{colorKey2|}}}}}
+{{Keyboard/Key | 3 | {{{Key3|}}} | {{{colorKey3|}}}}}
+{{Keyboard/Key | 4 | {{{Key4|}}} | {{{colorKey4|}}}}}
+{{Keyboard/Key | 5 | {{{Key5|}}} | {{{colorKey5|}}}}}
+{{Keyboard/Key | 6 | {{{Key6|}}} | {{{colorKey6|}}}}}
+{{Keyboard/Key | 7 | {{{Key7|}}} | {{{colorKey7|}}}}}
+{{Keyboard/Key | 8 | {{{Key8|}}} | {{{colorKey8|}}}}}
+{{Keyboard/Key | 9 | {{{Key9|}}} | {{{colorKey9|}}}}}
+{{Keyboard/Key | 0 | {{{Key0|}}} | {{{colorKey0|}}}}}
+{{Keyboard/Key | - | {{{Minus|}}} | {{{colorMinus|}}}}}
+{{Keyboard/Key | {{=}} | {{{Equals|}}} | {{{colorEquals|}}}}}
+{{Keyboard/Key | Backspace | {{{Backspace|}}} | {{{colorBackspace|}}} | 3}}
+{{Keyboard/Key | | | transparent | 1 | | 0}}
+{{Keyboard/Key | Insert | {{{Insert|}}} | {{{colorInsert|}}}}}
+{{Keyboard/Key | Home | {{{Home|}}} | {{{colorHome|}}}}}
+{{Keyboard/Key | Pg Up | {{{PageUp|}}} | {{{colorPageUp|}}}}}
+{{Keyboard/Key | | | transparent | 1 | | 0}}
+{{Keyboard/Key | Num&nbsp;Lck | {{{NumLock|}}} | {{{colorNumLock|}}}}}
+{{Keyboard/Key | / | {{{NumSlash|}}} | {{{colorNumSlash|}}}}}
+{{Keyboard/Key | * | {{{NumAsterisk|}}} | {{{colorNumAsterisk|}}}}}
+{{Keyboard/Key | - | {{{NumMinus|}}} | {{{colorNumMinus|}}}}}
+
+|-
+{{Keyboard/Key | Tab | {{{Tab|}}} | {{{colorTab|}}}|3}}
+{{Keyboard/Key | Q | {{{Q|}}} | {{{colorQ|}}}}}
+{{Keyboard/Key | W | {{{W|}}} | {{{colorW|}}}}}
+{{Keyboard/Key | E | {{{E|}}} | {{{colorE|}}}}}
+{{Keyboard/Key | R | {{{R|}}} | {{{colorR|}}}}}
+{{Keyboard/Key | T | {{{T|}}} | {{{colorT|}}}}}
+{{Keyboard/Key | Y | {{{Y|}}} | {{{colorY|}}}}}
+{{Keyboard/Key | U | {{{U|}}} | {{{colorU|}}}}}
+{{Keyboard/Key | I | {{{I|}}} | {{{colorI|}}}}}
+{{Keyboard/Key | O | {{{O|}}} | {{{colorO|}}}}}
+{{Keyboard/Key | P | {{{P|}}} | {{{colorP|}}}}}
+{{Keyboard/Key | [ | {{{LBracket|}}} | {{{colorLBracket|}}}}}
+{{Keyboard/Key | ] | {{{RBracket|}}} | {{{colorRBracket|}}}}}
+{{Keyboard/Key | \ | {{{Backslash|}}} | {{{colorBackslash|}}}}}
+{{Keyboard/Key | | | transparent | 1 | | 0}}
+{{Keyboard/Key | Delete | {{{delete|}}} | {{{colorDelete|}}}}}
+{{Keyboard/Key | End | {{{End|}}} | {{{colorEnd|}}}}}
+{{Keyboard/Key | Pg Down | {{{PageDown|}}} | {{{colorPageDown|}}}}}
+{{Keyboard/Key | | | transparent | 1 | | 0}}
+{{Keyboard/Key | 7 | {{{Num7|}}} | {{{colorNum7|}}}}}
+{{Keyboard/Key | 8 | {{{Num8|}}} | {{{colorNum8|}}}}}
+{{Keyboard/Key | 9 | {{{Num9|}}} | {{{colorNum9|}}}}}
+{{Keyboard/Key | + | {{{NumPlus|}}} | {{{colorNumPlus|}}}|2|2}}
+
+|-
+{{Keyboard/Key | Caps&nbsp;Lock|{{{CapsLock|}}} | {{{colorCapsLock|}}} | 4}}
+{{Keyboard/Key | A | {{{A|}}} | {{{colorA|}}}}}
+{{Keyboard/Key | S | {{{S|}}} | {{{colorS|}}}}}
+{{Keyboard/Key | D | {{{D|}}} | {{{colorD|}}}}}
+{{Keyboard/Key | F | {{{F|}}} | {{{colorF|}}}}}
+{{Keyboard/Key | G | {{{G|}}} | {{{colorG|}}}}}
+{{Keyboard/Key | H | {{{H|}}} | {{{colorH|}}}}}
+{{Keyboard/Key | J | {{{J|}}} | {{{colorJ|}}}}}
+{{Keyboard/Key | K | {{{K|}}} | {{{colorK|}}}}}
+{{Keyboard/Key | L | {{{L|}}} | {{{colorL|}}}}}
+{{Keyboard/Key | ; | {{{Semicolon|}}} | {{{colorSemicolon|}}}}}
+{{Keyboard/Key | ' | {{{Apostrophe|}}} | {{{colorApostrophe|}}}}}
+{{Keyboard/Key | Enter | {{{Enter|}}} | {{{colorEnter|}}}|3}}
+{{Keyboard/Key | | | transparent | 8 | | 0}}
+{{Keyboard/Key | 4 | {{{Num4|}}} | {{{colorNum4|}}}}}
+{{Keyboard/Key | 5 | {{{Num5|}}} | {{{colorNum5|}}}}}
+{{Keyboard/Key | 6 | {{{Num6|}}} | {{{colorNum6|}}}}}
+
+|-
+{{Keyboard/Key | Shift | {{{LShift|}}} | {{{colorLShift|}}} | 5}}
+{{Keyboard/Key | Z | {{{Z|}}} | {{{colorZ|}}}}}
+{{Keyboard/Key | X | {{{X|}}} | {{{colorX|}}}}}
+{{Keyboard/Key | C | {{{C|}}} | {{{colorC|}}}}}
+{{Keyboard/Key | V | {{{V|}}} | {{{colorV|}}}}}
+{{Keyboard/Key | B | {{{B|}}} | {{{colorB|}}}}}
+{{Keyboard/Key | N | {{{N|}}} | {{{colorN|}}}}}
+{{Keyboard/Key | M | {{{M|}}} | {{{colorM|}}}}}
+{{Keyboard/Key | , | {{{Comma|}}} | {{{colorComma|}}}}}
+{{Keyboard/Key | . | {{{FullStop|}}} | {{{colorFullStop|}}}}}
+{{Keyboard/Key | / | {{{Slash|}}} | {{{colorSlash|}}}}}
+{{Keyboard/Key | Shift | {{{RShift|}}} | {{{colorRShift|}}} | 4}}
+{{Keyboard/Key | | | transparent | 3 | | 0}}
+{{Keyboard/Key | &uarr; | {{{Up|}}} | {{{colorUp|}}}}}
+{{Keyboard/Key | | | transparent | 3 | | 0}}
+{{Keyboard/Key | 1 | {{{Num1|}}} | {{{colorNum1|}}}}}
+{{Keyboard/Key | 2 | {{{Num2|}}} | {{{colorNum2|}}}}}
+{{Keyboard/Key | 3 | {{{Num3|}}} | {{{colorNum3|}}}}}
+{{Keyboard/Key | Enter | {{{NumEnter|}}} | {{{colorNumEnter|}}} | 2 | 2}}
+
+|-
+{{Keyboard/Key | Ctrl | {{{LCtrl|}}} | {{{colorLCtrl|}}} | 3}}
+{{Keyboard/Key | Win | {{{LWin|}}} | {{{colorLWin|}}}}}
+{{Keyboard/Key | Alt | {{{LAlt|}}} | {{{colorLAlt|}}} | 3}}
+{{Keyboard/Key | Space | {{{Space|}}} | {{{colorSpace|}}} | 12}}
+{{Keyboard/Key | Alt Gr | {{{RAlt|}}} | {{{colorRAlt|}}}}}
+{{Keyboard/Key | Win | {{{RWin|}}} | {{{colorRWin|}}}}}
+{{Keyboard/Key | Menu | {{{Menu|}}} | {{{colorMenu|}}}}}
+{{Keyboard/Key | Ctrl | {{{RCtrl|}}} | {{{colorRCtrl|}}} | 3}}
+{{Keyboard/Key | | | transparent | 1 | | 0}}
+{{Keyboard/Key | &larr; | {{{Left|}}} | {{{colorLeft|}}}}}
+{{Keyboard/Key | &darr; | {{{Down|}}} | {{{colorDown|}}}}}
+{{Keyboard/Key | &rarr; | {{{Right|}}} | {{{colorRight|}}}}}
+{{Keyboard/Key | | | transparent | 1 | | 0}}
+{{Keyboard/Key | 0 | {{{Num0|}}} | {{{colorNum0|}}} | 4}}
+{{Keyboard/Key | , | {{{NumSeparator|}}} | {{{colorNumSeparator|}}}}}
+|}
+
+{| cellpadding="0" cellspacing="3px" style="width: 100%"
+|-
+| style="background: {{{color1|#FFF}}}; padding-left: 5px; width: 10%" | {{{color1desc|}}}
+| style="background: {{{color2|#FFF}}}; padding-left: 5px; width: 10%" | {{{color2desc|}}}
+| style="background: {{{color3|#FFF}}}; padding-left: 5px; width: 10%" | {{{color3desc|}}}
+| style="background: {{{color4|#FFF}}}; padding-left: 5px; width: 10%" | {{{color4desc|}}}
+| style="background: {{{color5|#FFF}}}; padding-left: 5px; width: 10%" | {{{color5desc|}}}
+| style="background: {{{color6|#FFF}}}; padding-left: 5px; width: 10%" | {{{color6desc|}}}
+| style="background: {{{color7|#FFF}}}; padding-left: 5px; width: 10%" | {{{color7desc|}}}
+| style="background: {{{color8|#FFF}}}; padding-left: 5px; width: 10%" | {{{color8desc|}}}
+| style="background: {{{color9|#FFF}}}; padding-left: 5px; width: 10%" | {{{color9desc|}}}
+| style="background: {{{color10|#FFF}}}; padding-left: 5px; width: 10%" | {{{color10desc|}}}
+|}</includeonly><noinclude>
+== Usage ==
+{{<nowiki/>Keyboard|'''''key='''''|'''''colorKey'''''|'''''color#'''''|'''''color#descr'''''}}
+* key: key name (e.g F1, Esc, P) see the {{Link|#Full Template}} for all the keys.
+* color''Key'': (Optional, default empty) key color definition, e.g {{hl|c= colorP= #CDF}}
+* color#: (Optional, default empty) color code (e.g {{hl|c= color1= #CDF}}) range 1..10
+* color#desc: (Optional, default empty) color description (e.g color1desc= Movement) range 1..10
+
+== Example ==
+<pre>{{Keyboard}}</pre>
+{{Keyboard}}
+
+<pre>{{Keyboard
+| colorW = #CDF
+| colorA = #CDF
+| colorS = #CDF
+| colorD = #CDF
+| color1 = #CDF
+| color1descr = Basic movement
+}}</pre>
+{{Keyboard
+| colorW = #CDF
+| colorA = #CDF
+| colorS = #CDF
+| colorD = #CDF
+| color1 = #CDF
+| color1desc = Basic movement
+}}
+
+== Full Template ==
+<spoiler text="show full template">
+<pre>{{Keyboard
+
+|Escape = 
+|F1 = 
+|F2 = 
+|F3 = 
+|F4 = 
+|F5 = 
+|F6 = 
+|F7 = 
+|F8 = 
+|F9 = 
+|F10 = 
+|F11 = 
+|F12 = 
+
+|Tilde = 
+|Key1 = 
+|Key2 = 
+|Key3 = 
+|Key4 = 
+|Key5 = 
+|Key6 = 
+|Key7 = 
+|Key8 = 
+|Key9 = 
+|Key0 = 
+|Minus = 
+|Equals = 
+|Backspace = 
+
+|Tab = 
+|Q = 
+|W = 
+|E = 
+|R = 
+|Y = 
+|T = 
+|U = 
+|I = 
+|O = 
+|P = 
+|LBracket = 
+|RBracket = 
+|Backslash = 
+
+|CapsLock = 
+|A = 
+|S = 
+|D = 
+|F = 
+|G = 
+|H = 
+|J = 
+|K = 
+|L = 
+|Semicolon = 
+|Apostrophe = 
+|Enter = 
+
+|LShift = 
+|Z = 
+|X = 
+|C = 
+|V = 
+|B = 
+|N = 
+|M = 
+|Comma = 
+|FullStop = 
+|Slash = 
+|RShift = 
+
+|LCtrl = 
+|LWin = 
+|LAlt = 
+|Space = 
+|RAlt = 
+|RWin = 
+|Menu = 
+|RCtrl = 
+
+|PrintScreen = 
+|ScrollLock = 
+|Pause = 
+|Insert = 
+|Delete = 
+|Home = 
+|End = 
+|PageUp = 
+|PageDown = 
+
+|Up = 
+|Left = 
+|Down = 
+|Right = 
+
+|NumLock = 
+|NumSlash = 
+|NumAsterisk = 
+|NumMinus = 
+|NumPlus = 
+|NumSeparator = 
+|NumEnter = 
+|Num1 = 
+|Num2 = 
+|Num3 = 
+|Num4 = 
+|Num5 = 
+|Num6 = 
+|Num7 = 
+|Num8 = 
+|Num9 = 
+|Num0 = 
+}}
+</pre>
+</spoiler>
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

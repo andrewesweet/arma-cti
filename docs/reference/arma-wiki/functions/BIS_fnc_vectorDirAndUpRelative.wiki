@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_vectorDirAndUpRelative
+// revision: 325129 (2022-07-01T12:35:35Z)
+// export sha1: amm1ptm77tdnaa5qg640gx2dya7enz6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vectors | Category:Functions | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.64
+
+|gr1= Vectors
+
+|descr= Returns [[setVectorDirAndUp|vectorDirAndUp]] of object 1 relative to object 2
+
+|s1= [object1, object2, visual] call [[BIS_fnc_vectorDirAndUpRelative]]
+
+|p1= object1: [[Object]]
+
+|p2= object2: [[Object]]
+
+|p3= visual: [[Boolean]] - (Optional, default [[true]]) [[true]] for a render scope result, [[false]] for simulation scope
+
+|r1= [[Array]] in format [<nowiki/>[[vectorDir]], [[vectorUp]]]
+
+|x1= <sqf>private _vectorDirAndUp = [tank, car] call BIS_fnc_vectorDirAndUpRelative;</sqf>
+
+|seealso= [[BIS_fnc_attachToRelative]] [[BIS_fnc_weaponDirectionRelative]] [[vectorDir]] [[vectorUp]] [[setVectorDirAndUp]]
+}}

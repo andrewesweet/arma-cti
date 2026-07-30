@@ -1,0 +1,82 @@
+// source: https://community.bistudio.com/wiki/Missions
+// revision: 377938 (2026-01-11T17:01:53Z)
+// export sha1: gsd5aaymzg3phm7o4hd0zp0lkh1kbg9
+// categories: Category:ArmA: Armed Assault: Editing | Category:ArmA: Armed Assault: Mission Editing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Operation Flashpoint: Missions
+// Vendored snapshot. Do not edit — re-export instead.
+
+Information regarding missions for each of the {{Name|bi}} games is available from the appropriate link below.
+
+* {{GameCategory|arma3|Editing|link= y}}
+* {{GameCategory|arma2|Editing|link= y}}
+* {{GameCategory|arma1|Editing|link= y}}
+* {{GameCategory|arma1|Mission Editing|link= y}}
+* {{GameCategory|ofp|Missions|link= y}}
+
+
+== Types of Mission Files ==
+
+=== In {{arma1}} ===
+
+There are three forms of mission file in ArmA:
+
+* Editable missions.
+:These exist as folders, named with either a ".sara" or ".intro" suffix. The folders contain a variety of files and subfolders that define the mission; usually at least including a "mission.sqm" file.
+* PBO Files.
+:These are single files with a ".pbo" extension. They are compressed versions of the contents of an editable mission folder. They are not themselves editable, but a variety of 3rd-party tools exist to recreate the original editable mission folder.
+* ArmA Wizard Missions.
+:These are single files, with a ".ArmAWizardMission" extension. They are created by the ArmA mission wizard, and are actually text files.
+
+== Locations of Mission Files ==
+
+=== in Armed Assault ===
+
+There are four locations where ArmA looks for mission files. Which ones are used, and what is looked for in each location, depends on which option you choose in the ArmA user interface.
+
+There are five options available in the ArmA interface for accessing missions to play (this doesn't count accessing missions for editing - that is still TBD).
+
+<small>In the following, locations that start with "ArmA\" refer to folders under your Armed Assault installation; usually in C:\Program Files\Bohemia Interactive\ArmA. Locations that start with "My Documents\" refer to folders in your My Documents folder. Terms like <''folder''> and <''name''> indicate values which vary depending on your environment.</small>
+
+==== Play -> Missions ====
+ArmA will look for missions in the following locations:
+:ArmA\Missions\*.pbo
+:ArmA\Missions\<''mission name''>.sara\
+:ArmA\Missions\<''mission name''>.intro\
+You can select any such missions and click 'play'.
+In addition, any other sub-folders in ArmA\Missions will be listed. You will be able to select them and click 'open' to display any .pbo and editable mission folders they contain.
+
+<small>''It has not been determined whether you can also have sub-sub-folders!''</small>
+
+Finally, ArmA also displays two special options; "My Missions..." and "Training Missions...". They are described below.
+
+==== Play -> Missions -> My Missions... ====
+ArmA will look for missions in the following locations:
+:My Documents\ArmA Other Profiles\<''name''>\Missions\*.ArmAWizardMission
+This option will only show ArmAWizardMission files. Other mission types, and subfolders, will ''not'' be displayed.
+
+==== Play -> Missions -> Training Missions... ====
+ArmA will look for missions in the following locations:
+:ArmA\Missions\Tutorial\*.pbo
+This option will only show ".pbo" missions. Other mission types, and subfolders, will ''not'' be displayed.
+
+==== Play -> Multiplayer -> New -> Sahrani ====
+ArmA will look for missions in the following locations:
+:ArmA\MPMissions\*.pbo
+:ArmA\MPMissions\<''mission name''>.sara\
+:My Documents\ArmA Other Profiles\<''name''>\MPMissions\<''mission name''>.sara\
+:My Documents\ArmA Other Profiles\<''name''>\MPMissions\*.ArmAWizardMission
+Note that this option does ''not'' allow sub-folders, and does ''not'' detect ".pbo" missions in the ArmA Other Profiles folder, and does ''not'' detect ArmAWizardMissions in the "ArmA\MPMissions" folder.
+
+==== Play -> Multiplayer -> New -> Rahmadi ====
+ArmA will look for missions in the following locations:
+:ArmA\MPMissions\*.pbo
+:ArmA\MPMissions\<''mission name''>.intro\
+:My Documents\ArmA Other Profiles\<''name''>\MPMissions\<''mission name''>.intro\
+:My Documents\ArmA Other Profiles\<''name''>\MPMissions\*.ArmAWizardMission
+Note that this option does ''not'' allow sub-folders, and does ''not'' detect ".pbo" missions in the "ArmA Other Profiles" folder, and does ''not'' detect ArmAWizardMissions in the "ArmA\MPMissions" folder.
+
+
+{{GameCategory|ofp|Missions}}
+{{GameCategory|arma1|Mission Editing}}
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}

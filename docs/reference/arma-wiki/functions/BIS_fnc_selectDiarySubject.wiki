@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_selectDiarySubject
+// revision: 348504 (2023-11-08T13:01:33Z)
+// export sha1: nj7n8xeyn2diictig2d5tblk6lo7s5g
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Briefing | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Briefing
+
+|descr= Selects a diary subject. 
+{{Feature|informative|This was a temporary replacement for [[selectDiarySubject]] scripting command which '''had been broken''' until v2.04.}}
+
+|s1= [diaryName] call [[BIS_fnc_selectDiarySubject]]
+
+|p1= diaryName: [[String]] - diary subject name
+
+|r1= [[Boolean]] - [[true]] if the subject was found and selected
+
+|x1= <sqf>["someSubject"] call BIS_fnc_selectDiarySubject;</sqf>
+
+|seealso= [[processDiaryLink]] [[createDiaryLink]] [[createDiarySubject]] [[diarySubjectExists]] [[selectDiarySubject]]
+}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/diag_dynamicSimulationStart
+// revision: 349478 (2023-11-08T17:06:18Z)
+// export sha1: dnk6c7gu0oroujg1h1r6tsqy9k360mx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Command Group: Dynamic Simulation | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|branch= diag
+
+|eff= local
+
+|descr= Starts gathering [[Arma 3: Dynamic Simulation]] diagnostic data.
+
+|gr1= Dynamic Simulation
+
+|gr2= Diagnostic
+
+|s1= [[diag_dynamicSimulationStart]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>diag_dynamicSimulationStart;</sqf>
+
+|seealso= [[diag_dynamicSimulationEnd]] [[Arma 3: Dynamic Simulation]]
+}}

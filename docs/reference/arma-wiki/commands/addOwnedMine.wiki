@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/addOwnedMine
+// revision: 376880 (2025-12-15T16:39:34Z)
+// export sha1: 53nwdndgiopi2hv039nne7pdz5tdbaz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mines | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|eff= local
+|arg= global
+
+|gr1= Mines
+
+|descr= Sets ownership of a remotely detonatable mine to a unit. If the unit is a player, an action that allows the player to detonate the mine is added to the action menu.
+
+|mp= Multiple players can own the same mine.
+
+|s1= unit [[addOwnedMine]] mine
+
+|p1= unit: [[Object]]
+
+|p2= mine: [[Object]] - the mine object
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player addOwnedMine _superMine;</sqf>
+
+|seealso= [[allMines]] [[createMine]] [[detectedMines]] [[mineActive]] [[getAllOwnedMines]] [[removeOwnedMine]] [[removeAllOwnedMines]]
+}}

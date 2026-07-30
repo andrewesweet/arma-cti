@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getCfgIsClass
+// revision: 328662 (2022-07-13T17:04:23Z)
+// export sha1: 2n76szfxa3q04brcya37s0gavoes2hg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Configs | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Configs
+
+|descr= Return true if it is a class. Can by called in two ways:
+* first way (general) works for any config
+* second way is for comfortable working with mission description.ext
+
+|s1= configEntry call [[BIS_fnc_getCfgIsClass]]
+
+|p1= configEntry: [[Config]]
+
+|r1= [[Boolean]] - [[true]] if it is a class
+
+|s2= classNames call [[BIS_fnc_getCfgIsClass]]
+
+|p21= classNames: [[Array]] of [[String]] - [[missionConfigFile]] classes and an attribute
+
+|r2= [[Boolean]] - [[true]] if it is a class
+
+|x1= <sqf>private _isClass = (missionConfigFile >> "Hubs" >> "A1" >> "QuickStart") call BIS_fnc_getCfgIsClass;</sqf>
+
+|x2= <sqf>private _isClass = ["Hubs"] call BIS_fnc_getCfgIsClass;</sqf>
+
+|seealso=     [[BIS_fnc_getCfg]] [[BIS_fnc_getCfgData]] [[BIS_fnc_getCfgDataArray]] [[BIS_fnc_getCfgDataBool]] [[BIS_fnc_getCfgDataObject]] [[BIS_fnc_getCfgDataPool]] [[BIS_fnc_getCfgSubClasses]]
+}}

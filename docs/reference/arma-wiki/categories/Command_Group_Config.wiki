@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Config
+// revision: 145445 (2019-12-20T11:57:57Z)
+// export sha1: kvbd4b3hhgusj9q79jtu6urm41l2d3m
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands by Functionality]]
+Config related commands.

@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/estimatedTimeLeft
+// revision: 370869 (2025-02-21T10:43:59Z)
+// export sha1: ny2xptdo442tnkdnk6xcz4p5y2zf8b5
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Command Group: Multiplayer | Category:Command Group: Time | Category:Introduced with Operation Flashpoint version 1.35 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Scripting Commands: Server Execution | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.35
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|eff= global
+
+|serverExec= server
+
+|gr1= Time
+
+|gr2= Mission Information
+
+|gr3= Multiplayer
+
+|descr= Sets the estimated time left in the game that is shown in the "Game in progress" screen or in the master browser.
+{{Feature|informative|This command will force the server to broadcast [[serverTime]] to all clients without waiting for the next broadcast window (usually every 5 minutes).}}
+
+|s1= [[estimatedTimeLeft]] seconds
+
+|p1= seconds: [[Number]] - estimated time in seconds, max 36000 (10 hours), 7200 (2 hours) before {{GVI|arma3|1.70|size= 0.75}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>estimatedTimeLeft 600; // 10 min</sqf>
+
+|x2= '''{{ofp}}:''' for missions with a hard set limit adjusted via {{Link|Description.ext#param1/param2|param1}}, the following example can be used in the [[Event Scripts#init.sqs|init.sqs]] file:
+<sqs>estimatedTimeLeft param1</sqs>
+
+|seealso= [[estimatedEndServerTime]] [[serverTime]]
+}}

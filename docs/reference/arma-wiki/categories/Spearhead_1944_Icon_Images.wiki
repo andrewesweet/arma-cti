@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Spearhead_1944_Icon_Images
+// revision: 372912 (2025-03-02T13:50:29Z)
+// export sha1: lxu3inue7gvm6mbb730hgza5skb6tda
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Spearhead 1944 Images]]

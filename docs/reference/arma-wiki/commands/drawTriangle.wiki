@@ -1,0 +1,159 @@
+// source: https://community.bistudio.com/wiki/drawTriangle
+// revision: 377356 (2026-01-02T06:40:21Z)
+// export sha1: m60iubm3ma20n7osl6bc5qiou8hqgjb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= GUI Control - Map
+
+|descr= [[File:drawTriangle.jpg|right|250px]]
+Draws one to multiple triangles on the map.
+{{Feature | informative | When {{hl|fill}} param is absent or is an empty string "", the triangle is drawn with lines of the color set in {{hl|color}} param.
+In order to draw color-filled triangle of the same color as {{hl|color}} param, set {{hl|fill}} param to opaque white procedural texture{{hl|"#(rgb,1,1,1)color(1,1,1,1)"}}.}}
+
+|s1= map [[drawTriangle]] [vertices, color, fill]
+
+|p1= map: [[Control]] - map control
+
+|p2= vertices: [[Array]] of [[Position]]s - triangle(s) vertices in multiple of 3, see {{Link|#Example 1}} - if [[Position#Introduction|Position3D]] is provided for a vertex, its z value is ignored
+
+|p3= color: [[Color|Color (RGBA)]]
+
+|p4= fill: [[String]] - (Optional, default {{hl|""}}) fill texture file or [[Procedural Textures]]. See note in description for more info.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+findDisplay 12 displayCtrl 51 ctrlAddEventHandler ["Draw", 
+{
+	_this select 0 drawTriangle 
+	[
+		[
+			// triangle 1 start
+			player getRelPos [100, 0],
+			player getRelPos [100, -135],
+			player getRelPos [100, 135]
+			// triangle 1 end
+		],
+		[1,0,0,0.5],
+		"#(rgb,1,1,1)color(1,1,1,1)"		
+	];
+}];
+</sqf>
+
+|seealso= [[drawArrow]] [[drawEllipse]] [[drawIcon]] [[drawLine]] [[drawPolygon]] [[drawRectangle]] [[drawXPolygon]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20170716153600
+|text= Example [https://www.youtube.com/watch?v{{=}}gSiuLdUeq0M YouTube video]
+<spoiler>
+<sqf>
+ctrl = findDisplay 12 displayCtrl 51;
+_ctrl setVariable ["data", [1, "#(rgb,1,1,1)color(1,1,1,1)", 1000, position player, 
+{
+	params ["_p", "_r", "_a", "_sr", "_ba"];
+	_sr = _r * 0.382;
+	_pb = _p getPos [_sr, _a + 180];
+	[
+		_p getPos [_r, _a], _p getPos [_sr, _a + 36], _p getPos [_sr, _a - 36],
+		_pb, _p getPos [_r, _a - 72], _p getPos [_r, _a + 72],
+		_p getPos [_r, _a - 144], _p getPos [_sr, _a - 108], _pb,
+		_p getPos [_r, _a + 144], _p getPos [_sr, _a + 108], _pb
+	]
+}]];
+
+_ctrl ctrlRemoveAllEventHandlers "Draw";
+_ctrl ctrlAddEventHandler ["Draw", 
+{
+	_map = _this select 0;
+	_data = _map getVariable "data";
+	_data params ["_i", "_fill", "_dist", "_pos", "_fn"];
+	_data set [0, _i + 1];
+	_size = _i % _dist;
+	if (_size == 0) then 
+	{
+		_data set [0, 1];
+		_data set [1, ["#(rgb,1,1,1)color(1,1,1,1)", ""] select (random 1 < 0.3)];
+		_data set [2, 250 + round random 750];
+	};
+	_alpha = linearConversion [_dist, 0, _dist - _size, 1, 0];
+	_map drawEllipse [_pos, _size * 2, _size * 2, 0, [0,0,1,_alpha], _fill];
+	_map drawTriangle [[_pos getPos [_size, -_size], _size, _size] call _fn, [1,0,0,_alpha], _fill];
+	_map drawTriangle [[_pos getPos [_size, -_size + 120], _size, _size] call _fn, [0,1,0,_alpha], _fill];
+	_map drawTriangle [[_pos getPos [_size, -_size - 120], _size, _size] call _fn, [1,1,0,_alpha], _fill];
+}];
+
+openMap true;
+</sqf>
+</spoiler>
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20181113210500
+|text= Drawing holes ({{Link|https://www.youtube.com/watch?v{{=}}XZRtXsBFLAg|video}}):
+<spoiler>
+<sqf>
+t = time;
+i = 0;
+tex = "#(rgb,1,1,1)color(1,1,1,0.5)";
+col = [1,1,1,1];
+
+findDisplay 12 displayCtrl 51 ctrlAddEventHandler ["Draw", 
+{
+	if (time > t) then
+	{
+		col = [random 1, random 1, random 1, 1];
+		tex = [	
+			"\A3\ui_f\data\map\markerbrushes\vertical_ca.paa",
+			"\A3\ui_f\data\map\markerbrushes\bdiagonal_ca.paa",
+			"\A3\ui_f\data\map\markerbrushes\cross_ca.paa",
+			"\A3\ui_f\data\map\markerbrushes\diaggrid_ca.paa",
+			"\A3\ui_f\data\map\markerbrushes\fdiagonal_ca.paa",
+			"\A3\ui_f\data\map\markerbrushes\grid_ca.paa",
+			"\A3\ui_f\data\map\markerbrushes\horizontal_ca.paa",
+			"#(rgb,1,1,1)color(1,1,1,0.5)"
+		] 
+		select (i % 8);
+		
+		t = time + 0.5;
+		i = i + 1;
+	};
+	
+	_this select 0 drawTriangle 
+	[
+		[
+			[0,0],[100,500],[400,400],
+			[0,0],[400,400],[500,100],
+			[0,0],[500,100],[1000,0],
+			[1000,0],[500,100],[600,400],
+			[1000,0],[600,400],[900,500],
+			[1000,0],[900,500],[1000,1000],
+			[1000,1000],[900,500],[600,600],
+			[1000,1000],[600,600],[500,900],
+			[1000,1000],[500,900],[0,1000],
+			[0,1000],[500,900],[400,600],
+			[0,1000],[400,600],[100,500],
+			[0,1000],[100,500],[0,0]
+		],
+		col, 
+		tex
+	];
+	
+	_this select 0 drawPolygon [[[0,0,0],[0,1000,0],[1000,1000,0],[1000,0,0]], col];
+	_this select 0 drawPolygon [[[100,500,0],[400,600,0],[500,900,0],[600,600,0],[900,500,0],[600,400,0],[500,100,0],[400,400,0]], col];
+}];
+
+openMap true;
+mapAnimAdd [0, 0.15, [500,500,0]];
+mapAnimCommit;
+</sqf>
+</spoiler>
+}}

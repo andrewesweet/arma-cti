@@ -1,0 +1,199 @@
+// source: https://community.bistudio.com/wiki/Template:Doc/Template
+// revision: 376699 (2025-11-07T00:43:51Z)
+// export sha1: j8fi3iwu3ldkslnwle0y45jjxg6dqtk
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{historical|}}}|{{Feature|important|This is a {{Link|Category:Historical Templates|Historical Template}} kept in order to read old page revisions; it must '''not''' be used on up-to-date pages.}}}}
+{{{descr|}}}
+
+{{#if:{{{historical|}}}
+| This {{Link|Category:Historical Templates|Historical Template}} must '''not''' be used on any current page; please verify [[Special:WhatLinksHere/{{FULLPAGENAMEE}}|this list]] is empty.
+| This template is used on [[Special:WhatLinksHere/{{FULLPAGENAMEE}}|these pages]].
+}}
+
+== Usage ==
+{{<nowiki/>{{{name|{{PAGENAME}}}}}<!--
+-->{{#if:{{{param1|}}} | {{!}}'''''{{{param1}}}'''''}}<!--
+-->{{#if:{{{param2|}}} | {{!}}'''''{{{param2}}}'''''}}<!--
+-->{{#if:{{{param3|}}} | {{!}}'''''{{{param3}}}'''''}}<!--
+-->{{#if:{{{param4|}}} | {{!}}'''''{{{param4}}}'''''}}<!--
+-->{{#if:{{{param5|}}} | {{!}}'''''{{{param5}}}'''''}}<!--
+--><nowiki>}}</nowiki>
+{{#if:{{{param1|}}}|
+* {{{param1}}}{{#if:{{{descr1|}}}|<nowiki/>: {{{descr1|}}}}}
+}}<!--
+-->{{#if:{{{param2|}}}|
+* {{{param2}}}{{#if:{{{descr2|}}}|<nowiki/>: {{{descr2|}}}}}
+}}<!--
+-->{{#if:{{{param3|}}}|
+* {{{param3}}}{{#if:{{{descr3|}}}|<nowiki/>: {{{descr3|}}}}}
+}}<!--
+-->{{#if:{{{param4|}}}|
+* {{{param4}}}{{#if:{{{descr4|}}}|<nowiki/>: {{{descr4|}}}}}
+}}<!--
+-->{{#if:{{{param5|}}}|
+* {{{param5}}}{{#if:{{{descr5|}}}|<nowiki/>: {{{descr5|}}}}}
+}}<!--
+-->{{#if:{{{param6|}}}|
+* {{{param6}}}{{#if:{{{descr6|}}}|<nowiki/>: {{{descr6|}}}}}
+}}<!--
+-->{{#if:{{{param7|}}}|
+* {{{param7}}}{{#if:{{{descr7|}}}|<nowiki/>: {{{descr7|}}}}}
+}}<!--
+-->{{#if:{{{param8|}}}|
+* {{{param8}}}{{#if:{{{descr8|}}}|<nowiki/>: {{{descr8|}}}}}
+}}<!--
+-->{{#if:{{{param9|}}}|
+* {{{param9}}}{{#if:{{{descr9|}}}|<nowiki/>: {{{descr9|}}}}}
+}}<!--
+-->{{#if:{{{param10|}}}|
+* {{{param10}}}{{#if:{{{descr10|}}}|<nowiki/>: {{{descr10|}}}}}
+}}
+
+{{#if:{{{example1|}}}{{{example2|}}}{{{example3|}}}{{{example4|}}}{{{example5|}}}
+|
+{{{!}} style{{=}}"border-spacing: 1em 0.5em"
+{{!}}+ Examples
+{{!}}- style{{=}}"background-color: #EEE"
+! Code
+! Result
+{{!}}-
+{{#if: {{{example1|}}}
+|
+{{!}} {{{example1|}}}
+{{!}} {{{result1|}}}
+{{!}}-
+}}
+{{#if: {{{example2|}}}
+|
+{{!}} {{{example2|}}}
+{{!}} {{{result2|}}}
+{{!}}-
+}}
+{{#if: {{{example3|}}}
+|
+{{!}} {{{example3|}}}
+{{!}} {{{result3|}}}
+{{!}}-
+}}
+{{#if: {{{example4|}}}
+|
+{{!}} {{{example4|}}}
+{{!}} {{{result4|}}}
+{{!}}-
+}}
+{{#if: {{{example5|}}}
+|
+{{!}} {{{example5|}}}
+{{!}} {{{result5|}}}
+{{!}}-
+}}
+{{#if: {{{example6|}}}
+|
+{{!}} {{{example6|}}}
+{{!}} {{{result6|}}}
+{{!}}-
+}}
+{{#if: {{{example7|}}}
+|
+{{!}} {{{example7|}}}
+{{!}} {{{result7|}}}
+{{!}}-
+}}
+{{#if: {{{example8|}}}
+|
+{{!}} {{{example8|}}}
+{{!}} {{{result8|}}}
+{{!}}-
+}}
+{{#if: {{{example9|}}}
+|
+{{!}} {{{example9|}}}
+{{!}} {{{result9|}}}
+{{!}}-
+}}
+{{#if: {{{example10|}}}
+|
+{{!}} {{{example10|}}}
+{{!}} {{{result10|}}}
+{{!}}-
+}}
+{{!}}}
+}}
+
+{{#ifeq: {{uc:{{FULLPAGENAME}}}} | TEMPLATE:DOC/TEMPLATE | | {{TemplateCase|[[Category:{{#if:{{{historical|}}}|Historical Templates|Templates}}|{{uc:{{PAGENAME}}}}]]}} }}</includeonly><noinclude>__NOEDITSECTION____NOTOC__
+Documents and categorises a [[:Category:Templates|Template]]. To be used within {{hl|<no<nowiki/>include></no<nowiki/>include>}} tags, e.g:
+ <include<nowiki/>only>'''*template's code*'''</include<nowiki/>only><no<nowiki/>include>{{<nowiki/>'''Doc/Template'''
+ | ...
+ }}
+ </no<nowiki/>include>
+
+== Usage ==
+{{<nowiki/>Doc/Template|'''''name'''''|'''''descr'''''|'''''param''#'''|'''''descr''#'''|'''''example''#'''|'''''result''#'''|'''''historical'''''}}
+* name: (Optional, default {{hl|{{<nowiki/>PAGENAME}}}}) template name
+* descr: template text description
+* param#: (# = number range 1..10) parameter name
+* descr#: (# = number range 1..10) parameter description
+* example#: (# = number range 1..10) mediawiki code example - '''to be wrapped between nowiki tags!''' (e.g {{hl|<nowiki><nowiki>{{Doc/Template}}</nowiki></nowiki>}})
+* result#: (# = number range 1..10) mediawiki code result - identical to example#, less nowiki tags (e.g {{hl|<nowiki>{{Doc/Template}}</nowiki>}})
+* historical: {{hl|y}} (or anything, technically) to make it part of the [[:Category:Historical Templates|Historical Templates]] instead of the [[:Category:Templates|Templates]]
+
+This template is used on [[Special:WhatLinksHere/{{FULLPAGENAMEE}}|these pages]].
+
+{| style="border-spacing: 1em 0.5em; min-width: 50em"
+|+ Examples
+|- style="background-color: #EEE"
+! Code
+! Result
+|-
+| <pre>{{Doc/Template}}</pre>
+| {{Doc/Template}}
+|-
+
+| <pre>{{Doc/Template
+| name = MyTemplate
+| descr = Template description
+| param1 = parameter1
+| descr1 = this is the first parameter
+| param2 = parameter2
+| descr2 = (Optional) this is the second parameter
+}}</pre>
+
+| {{Doc/Template
+| name = MyTemplate
+| descr = Template description
+| param1 = parameter1
+| descr1 = this is the first parameter
+| param2 = parameter2
+| descr2 = (Optional) this is the second parameter
+}}
+
+|-
+
+| <pre>{{Doc/Template
+| name = MyTemplate
+| descr = Template description
+| param1 = parameter1
+| descr1 = this is the first parameter
+| param2 = parameter2
+| descr2 = (Optional) this is the second parameter
+| example1 = <nowiki><nowiki>{{MyTemplate|Hello there!}}</nowiki></nowiki>
+| result1 = <nowiki>{{MyTemplate|Hello there!}}</nowiki>
+| historical = y
+}}</pre>
+
+| {{Doc/Template
+| name = MyTemplate
+| descr = Template description
+| param1 = parameter1
+| descr1 = this is the first parameter
+| param2 = parameter2
+| descr2 = (Optional) this is the second parameter
+| example1 = <nowiki>{{MyTemplate|Hello there!}}</nowiki>
+| result1 = {{hl|Hello there!}}
+| historical = y
+}}
+
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

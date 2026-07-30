@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getRespawnMarkers
+// revision: 349076 (2023-11-08T14:47:23Z)
+// export sha1: pebfqrjrot1xhfb9si1gs1savx0ul0u
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Returns all respawn markers for given side.
+
+|s1= [side, vehicleMarkers] call [[BIS_fnc_getRespawnMarkers]]
+
+|p1= side: [[Side]] - (Optional, default <sqf inline>player call BIS_fnc_objectSide</sqf>) side to which returned markers belong to
+
+|p2= vehicleMarkers: [[Boolean]] - (Optional, default [[false]]) [[true]] to return vehicle respawn markers, [[false]] to return units respawn markers
+
+|r1= [[Array]] of [[String]]s - respawn markers of given side
+
+|x1= <sqf>[west, false] call BIS_fnc_getRespawnMarkers;</sqf>
+
+|seealso= [[:Category:Function Group: Respawn|Respawn Functions]]
+}}

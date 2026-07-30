@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/hideSelection
+// revision: 330039 (2022-08-15T15:23:51Z)
+// export sha1: fqr9xm7wg79za4dtvvnujs9q2wjttav
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+|game1= arma3
+|version1= 1.58
+
+|eff= global
+
+|arg= local
+
+|gr1= Object Manipulation
+
+|descr= Hides or shows the [[createSimpleObject | simple object]]'s provided selection.
+
+|s1= object [[hideSelection]] [selection, hidden]
+
+|p1= object: [[Object]] - simple object
+
+|p2= selection: [[String]] - selection name
+
+|p3= hidden: [[Boolean]] - [[true]] to hide, [[false]] to show
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_simpleObject hideSelection ["some_selection", true];</sqf>
+
+|seealso= [[createSimpleObject]] [[selectionNames]] [[allLODs]]
+}}

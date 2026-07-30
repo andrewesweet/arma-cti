@@ -1,0 +1,83 @@
+// source: https://community.bistudio.com/wiki/How_to_create_destroyable_wheels
+// revision: 293910 (2021-10-30T01:10:49Z)
+// export sha1: pquvdla8y4vo58yfw6bowubq4xa0a04
+// categories: Category:ArmA: Armed Assault: Addon Editing | Category:Arma 2: Editing | Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+=== The Principle ===
+
+The model already contains the destroyed wheels, but they are hidden with animations. These animations uses the damage value of hitpoints to switch the wheels when needed.
+
+=== Prepare the model ===
+
+In the case of wheels it makes sense to create an extra model for a destroyed wheel. This way you are able to implement the destroyed wheels in the original model via proxies which reference to the destroyed wheel model. It doesn't need to be done via proxies though. Now, you just need to create named selections for every wheel and for every destroyed wheel. The normal wheels are called "wheel_x_x_hide" and the destroyed ones "wheel_x_x_unhide" in this tutorial. 
+
+=== The Animations ===
+
+You should have some basic knowledge about animations and [[Model_Config|model.cfg]] as this is not covered here.
+
+The following class is an example animation that makes the destroyed wheel visible:
+<syntaxhighlight lang="cpp">
+class wheel_1_1_destruct_unhide
+{
+	type = "hide";
+	source = "HitLFWheel";
+	sourceAddress = "mirror";
+	selection = "wheel_1_1_unhide";
+	minValue = -1;
+	maxValue = 0;
+	minPhase = -1;
+	maxPhase = 0;
+	hideValue = 0.010000;
+};
+</syntaxhighlight>
+
+The animation that hides the undestroyed wheel looks like this:
+<syntaxhighlight lang="cpp">
+class wheel_1_1_destruct
+{
+	type = "hide";
+	source = "HitLFWheel";
+	selection = "wheel_1_1_hide";
+	minValue = 0;
+	maxValue = 1;
+	minPhase = 0;
+	maxPhase = 1;
+	hideValue = 0.990000;
+};
+</syntaxhighlight>
+
+Make sure that the sum of the hideValues of two corresponding anims is 1, so the switch happens at the same time.
+
+=== Animation sources ===
+
+The animationsource used in the previous section is a custom one which needs to be defined in the config of the vehicle:
+<syntaxhighlight lang="cpp">
+class AnimationSources
+{
+	class HitLFWheel
+	{
+		source = "Hit";
+		hitpoint = "HitLFWheel";
+		raw = 1;
+	};
+};
+</syntaxhighlight>
+
+The hitpoint entry refers to the hitpoints defined in the vehicle config, e.g.
+<syntaxhighlight lang="cpp">
+class HitLFWheel
+{
+	armor = 0.15;
+	material = -1;
+	name = "wheel_1_1_steering";
+	visual = "";
+	passThrough = 0.3;
+};
+</syntaxhighlight>
+
+
+{{GameCategory|arma1|Addon Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}

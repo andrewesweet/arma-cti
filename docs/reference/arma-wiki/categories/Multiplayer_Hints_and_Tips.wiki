@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Multiplayer_Hints_and_Tips
+// revision: 184750 (2021-01-06T15:36:12Z)
+// export sha1: svkuesrxg54cnj4jwa33hdo2vuaglzz
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Hints & Tips]]
+{{GameCategory|arma1| Multiplayer}}

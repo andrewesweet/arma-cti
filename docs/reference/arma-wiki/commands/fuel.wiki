@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/fuel
+// revision: 376958 (2026-01-01T05:49:41Z)
+// export sha1: s2nyxnzb1k52lkbb7wu70qv7hc94e4m
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Checks how much fuel is left in the gas tank of a vehicle.
+
+|s1= [[fuel]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Number]] in range 0..1 - 0 (empty tank) to 1 (full tank).
+
+|x1= <sqf>if (fuel vehicle player == 0) then { hint "The vehicle is out of fuel!" };</sqf>
+
+|seealso= [[setFuel]] [[setFuelCargo]] [[getFuelCargo]]
+}}
+
+{{Note
+|user= UNN
+|timestamp= 20060813123600
+|text= Vehicles refuelled in game with the Fuel trucks e.t.c never get completely refuelled. After refuelling, rather than returning a value of 1 when the [[fuel]] command is called.
+They return a value greater than 0.98 and less than 1.
+}}
+
+{{Note
+|user= fusselwurm
+|timestamp= 20201219191000
+|text= returns
+* ''1'' for units (dead or alive)
+* ''0'' for ''objNull''
+}}

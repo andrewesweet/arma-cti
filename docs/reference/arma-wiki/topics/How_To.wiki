@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/How_To
+// revision: 347374 (2023-09-14T15:29:28Z)
+// export sha1: n5nusrinjw0x7s4erppkusoh6ik98e9
+// categories: Category:Community Wiki
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Add a new note ==
+
+<div class="float-right">
+{{Youtube|NtOl1gLz3Fo|[http://www.youtube.com/watch?v{{=}}NtOl1gLz3Fo Video Tutorial]|right|400}}
+</div>
+* Click on "Add New Note"
+* Read the embedded guide: <syntaxhighlight lang="html">
+{{subst:Preload/Note|1=
+<!--
+* Write your comment here (remove both "arrows" top and bottom)
+* Pipe signs "|" MUST be written {{!}}
+* New lines can be forced with <br>
+* Please -PREVIEW YOUR ADDITION BEFORE SAVING-
+
+* Video Tutorial: https://www.youtube.com/watch?v=NtOl1gLz3Fo
+-->
+}}
+</syntaxhighlight>
+** Type your note in-between <syntaxhighlight lang="html" inline>{{subst:Preload/Note|1=</syntaxhighlight> and <syntaxhighlight lang="html" inline>}}</syntaxhighlight>
+** Pipe signs "{{!}}" MUST be written {{hl|<nowiki>{{!}}</nowiki>}}
+** New lines can be forced with {{hl|<nowiki><br></nowiki>}}
+* Check your note using the "Show preview" button
+* Publish it by clicking the "Save changes" button
+
+{| class="wikitable valign-top" style="width: 100%"
+|+ Examples
+! Code
+! Result
+|-
+| <syntaxhighlight lang="html+handlebars">
+{{Note
+|user= Username
+|timestamp= 20010622120000
+|text= note's content
+}}
+</syntaxhighlight>
+|
+{{Note
+|user= Username
+|timestamp= 20010622120000
+|text= note's content
+}}
+|}
+
+
+[[Category:Community Wiki]]

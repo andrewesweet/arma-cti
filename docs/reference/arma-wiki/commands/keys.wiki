@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/keys
+// revision: 377092 (2026-01-01T09:48:45Z)
+// export sha1: hyueh2tpjuto2hs8ozmlb43td87vcap
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: HashMap | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= HashMap
+
+|descr= Retrieves a list of all keys in a [[HashMap]].
+
+|s1= [[keys]] hashMap 
+
+|p1= hashMap : [[HashMap]]
+
+|r1= [[Array]] of [[Anything]] - array of all keys in the HashMap
+
+|x1= <sqf>keys _myHashMap;</sqf>
+
+|seealso= [[HashMap]] [[values]] [[toArray]]
+}}

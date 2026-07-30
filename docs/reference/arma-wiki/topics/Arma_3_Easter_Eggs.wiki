@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Easter_Eggs
+// revision: 353594 (2024-03-19T15:48:25Z)
+// export sha1: 3b4n74xt4rz9gqy9dfnslz6tq2jk8y0
+// categories: Category:Arma 3 | Category:Easter Eggs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|informative|See also [[Arma 3: Points of Interest]].}}
+
+
+== Assets ==
+
+=== Old Laptop ===
+
+The '''[[Arma 3 CfgVehicles EMPTY#Land_Laptop_02_unfolded_F|"Land_Laptop_02_unfolded_F"]]''' Old Laptop has an action to "Get Back to Main Menu" when the mission date is set to 2001-06-22 ({{GameCategory|ofp|link= y}} release date).
+Completing the action causes the Old Laptop to display a video showcasing the {{GameCategory|ofp|link= y}}'s main menu. The [[BIS_fnc_laptopInit]] function can be used to apply this Easter Egg on other computers.
+
+[[File:A3 Tanoa Galaxy.jpg|thumb|200px|Galaxy in chimney]]
+=== Chimney's galaxy ===
+
+Some {{arma3}} performance issues can be explained by the fact the [[Real Virtuality]] engine has to render '''a whole galaxy''' in '''[[Arma_3_CfgVehicles_Structures#Land_SCF_01_chimney_F|"Land_SCF_01_chimney_F"]]''' Sugar Cane Factory chimney tower.
+
+
+{{Clear}}
+[[File:arma3-predator_easter_egg_ancient_head.jpg|thumb|200px|''There's something out there waiting for you, and it ain't no man...'']]
+=== Predator ===
+
+An ancient statue makes the sound of the {{Link|https://en.wikipedia.org/wiki/Predator_(film)|Predator}} - stay on your toes.
+
+
+{{Clear}}
+[[File:livonian christmas trees.jpg|thumb|An LDF soldier looking up trees with Christmas ornaments.]]
+=== Merry Christmas! ===
+On December 24th and 25th in [[systemTime|system time]], some of the trees in Livonia get Christmas ornaments.
+
+
+{{Clear}}
+== Missions/Campaigns ==
+
+=== Dutch flag and oranges ===
+
+In one of the IDAP tents that you see at the beginning from the van of Remnants of War, there are small dutch flags and a couple of oranges, which usually one can not see during gameplay.
+This is a reference to the fact that [[Arma 3 Laws of War]] (codename ''orange'') is made by the [[Bohemia Interactive]] Amsterdam Studio.
+
+
+{{GameCategory|arma3}}
+[[Category:Easter Eggs]]

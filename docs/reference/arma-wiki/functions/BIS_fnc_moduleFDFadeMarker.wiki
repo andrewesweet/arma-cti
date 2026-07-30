@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleFDFadeMarker
+// revision: 328478 (2022-07-13T16:11:11Z)
+// export sha1: iakztpaqpkbtjtrwxwjci37fo1icgub
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules - Firing Drills | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules - Firing Drills
+
+|descr= Gradually change the alpha of the given marker.
+
+|s1= [markerName, alpha] spawn [[BIS_fnc_moduleFDFadeMarker]]
+
+|p1= markerName: [[String]]
+
+|p2= alpha: [[Number]] - wanted marker alpha
+
+|r1= [[Boolean]] - [[true]] when done
+
+|exec= spawn
+
+|x1= <sqf>["tankMarker", 0.25] spawn BIS_fnc_moduleFDFadeMarker;</sqf>
+
+|x2= Creates a pulsating marker:
+<sqf>[] spawn 
+{
+	while { alive enemyTank } do
+	{
+		["tankMarker", 1] call BIS_fnc_moduleFDFadeMarker;
+		["tankMarker", 0] call BIS_fnc_moduleFDFadeMarker;
+		sleep 0.05;
+	};
+	["tankMarker", 0] call BIS_fnc_moduleFDFadeMarker;
+};</sqf>
+
+|seealso= [[markerAlpha]] [[setMarkerAlpha]]
+}}

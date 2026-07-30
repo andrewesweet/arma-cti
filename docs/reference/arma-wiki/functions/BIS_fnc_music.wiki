@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_music
+// revision: 351904 (2024-01-23T11:34:10Z)
+// export sha1: cxjzivy4l0gz64gib8jlgqko48xd5w1
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Sound | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Sound
+
+|descr= Randomly play provided tracks defined in [[Description.ext#CfgMusic|CfgMusic]] and does a 3 seconds [[fadeMusic|fade out]]. This function takes [[accTime]] into account. See also [[BIS_fnc_jukebox]].
+{{Feature|informative|The function stores the script handle in the {{hl|BIS_fnc_music_spawn}} variable that can be used to stop the function; see {{Link|#Example 3}} for its usage example.}}
+
+|s1= [tracklist, delay] call [[BIS_fnc_music]]
+
+|p1= tracklist: [[Array]] of [[String]]s - (Optional, default all game musics) a list of [[Description.ext#CfgMusic|CfgMusic]] classes
+
+|p2= delay: [[Number]] - (Optional, default 3) delay in seconds between tracks
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[["myMusic1", "myMusic2"], 1] call BIS_fnc_music; // play the two musics in a random order</sqf>
+
+|x2= <sqf>[] call BIS_fnc_music; // play all game tracks randomly</sqf>
+
+|x3= <sqf>
+[] call BIS_fnc_music;
+private _startingPos = getPosWorld player;
+private _timeLimit = time + 30;
+waitUntil { sleep 1; getPosWorld player distance _startingPos > 50 || time > _timeLimit };
+if (!isNil "BIS_fnc_music_spawn") then { terminate BIS_fnc_music_spawn };
+playMusic "";
+</sqf>
+
+|seealso= [[playMusic]] [[BIS_fnc_jukebox]]
+}}

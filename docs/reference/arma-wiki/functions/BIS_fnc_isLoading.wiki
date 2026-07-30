@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isLoading
+// revision: 338991 (2023-04-23T08:45:57Z)
+// export sha1: q9ezzfyz08cwb39ytxjiewr1a1kdxj9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Check if a loading screen is opened.
+
+|s1= call [[BIS_fnc_isLoading]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _isLoading = call BIS_fnc_isLoading;</sqf>
+
+|seealso= [[BIS_fnc_startLoadingScreen]] [[BIS_fnc_endLoadingScreen]] [[BIS_fnc_progressLoadingScreen]]
+}}

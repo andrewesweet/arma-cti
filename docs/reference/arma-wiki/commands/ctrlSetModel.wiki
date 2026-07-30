@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/ctrlSetModel
+// revision: 336418 (2023-01-03T08:09:24Z)
+// export sha1: khdmpov8ow5ms2sgybf2dvu8jogpor1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Object | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= GUI Control - Object
+
+|descr= Sets model for 3D-[[Arma: GUI Configuration|Dialogs]] (see [[Arma 3: createSimpleObject/objects]] for a p3d models' list).
+
+|s1= control [[ctrlSetModel]] model
+
+|p1= control : [[Control]] - 3D control
+
+|p2= model : [[String]] - model path
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control3D ctrlSetModel "\a3\Ui_f\objects\Compass.p3d";</sqf>
+
+|seealso= [[ctrlCreate]] [[ctrlDelete]] [[ctrlModel]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlClassName]] [[displayCtrl]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlModelDirAndUp]] [[ctrlSetModelDirAndUp]]
+}}

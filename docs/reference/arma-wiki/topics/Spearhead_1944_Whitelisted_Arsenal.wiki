@@ -1,0 +1,14 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Whitelisted_Arsenal
+// revision: 363875 (2024-04-23T21:08:26Z)
+// export sha1: ixq83gx64dl6yg5m4pjq5rb6f7945om
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Link|https://forums.bohemia.net/profile/755553-gunter-severloh/|Gunter Severloh}} has created a fantastic guide on how to create a whitelisted [[Arsenal]] for [[Spearhead 1944]].
+
+Read {{Link|https://forums.bohemia.net/forums/topic/243239-spearhead-1944-virtual-arsenal-whitelists/|his post}} on the {{Link|https://forums.bohemia.net/|BI Forums}} and watch his video guide below to learn more.
+
+{{Youtube|1Cl-iXNJnS4|||800}}
+
+
+[[Category: Spearhead 1944]]

@@ -1,0 +1,762 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Targeting_Config_Reference
+// revision: 373259 (2025-04-12T22:28:09Z)
+// export sha1: 3su5o8nzw2gq1i4v603e95ofdaez2fd
+// categories: Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|Note that this is the relevant page for {{arma3}} targeting. Implementations for older Arma titles differ somewhat, but are irrelevant for {{arma3}}.}}
+
+
+== [[CfgAmmo_Config_Reference|CfgAmmo]] ==
+
+=== A ===
+
+==== airLock ====
+Limits locking to specific target category. Also says if the AI will be "able" to engage these certain types with the given ammo
+(for the actual AI target preference use [[CfgAmmo_Config_Reference#aiAmmoUsageFlags|aiAmmoUsageFlags]]).
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+airLock = 0; // Cannot target air units
+airLock = 1; // Can target air and ground units
+airLock = 2; // Can target air units ONLY
+</syntaxhighlight>
+
+==== artilleryLock ====
+Can lock onto ArtilleryTarget object (created when commanding an AI that operates an artillery piece). Warning: With artilleryLock = 1 the airfriction gets forced to 0 ingame.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+artilleryLock = 0;
+artilleryLock = 1;
+</syntaxhighlight>
+
+==== autoSeekTarget ====
+If set to true the missile flies towards a marked target and after reaching [[A3_Targeting_config_reference#lockSeekRadius|lockSeekRadius]] it searches for the best target (can be still the marked target) and homes in on it. 
+If set to false the missile needs a valid lock first and will only guide towards the locked target.
+The property is used for example for guided artillery shells.
+
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+autoSeekTarget = 0;
+autoSeekTarget = 1;
+</syntaxhighlight>
+
+=== C ===
+
+==== cameraViewAvailable ====
+Says whether the missile can provide [[Arma_3_Custom_Info|camera feed]] after being launched.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+cameraViewAvailable = 1; // pilot can see the missile's flight from missile's perspective
+</syntaxhighlight>
+
+==== cmImmunity ====
+Defines the guidance sensitivity to countermeasures (flares, chaff, smoke). Range 0...1. The higher the number the more chance missile will ignore CM.
+1 makes it completely ignore CM while 0 makes the projectile lose its target immediately after first CM is fired.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+cmImmunity = 0; // Projectile loses its target immediately after CM launch
+cmImmunity = 1; // Projectile is immune to countermeasures
+</syntaxhighlight>
+
+=== F ===
+
+==== flightProfiles ====
+Array of flight profiles (guidance specifics) the missile is allowed to use as a fire mode.
+Each entry references a flight profile class defined in the ammo and is paired with [[CfgWeapons_Config_Reference#Modes|fire modes]] of the weapon.
+The naming has to be exactly the same in ammo flight profile class, weapon fire mode class, modes[] and flightProfiles[].
+Classes that are defined in the ammo but which are not included in the flightProfiles at the same time will be ignored.
+
+More info in [[Arma 3: Missile flight profiles]]
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+flightProfiles[] = {Direct};		// added by default - if the ammo does not specify any flight profile OR if the weapon has more player fire modes (other than for flight profiles)
+flightProfiles[] = {TopDown};		// top attack fire mode, can be used with [[autoSeekTarget]]
+flightProfiles[] = {LOALDistance};	// lock-on after launch fire mode - missile will autonomously find a target after traveling specified distance, requires [[autoSeekTarget]]
+flightProfiles[] = {LOALAltitude};	// lock-on after launch fire mode - for bombs - bomb will autonomously find a target after dropping to specified altitude, requires [[autoSeekTarget]]
+flightProfiles[] = {Overfly};		// overfly top attack fire mode - the missile will overfly the target in specified height, best used with submunitions
+flightProfiles[] = {Cruise};		// terrain following fire mode, can be used with [[autoSeekTarget]]
+flightProfiles[] = {Direct, TopDown};	// a missile supporting two flight profiles - direct and top attack
+</syntaxhighlight>
+
+=== I ===
+
+==== irLock ====
+''Property is unused if the ammo uses the new [[Arma_3_Sensors|Sensors (Radar, IR...)]] system.''
+
+Can lock air/ground vehicles (target vehicle must have irTarget=1).
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+irLock = 0;
+irLock = 1;
+</syntaxhighlight>
+
+=== L ===
+
+==== laserLock ====
+''Property is unused if the ammo uses the new [[Arma_3_Sensors|Sensors (Radar, IR...)]] system.''
+
+Can lock on LaserTarget objects (laserTarget = 1).
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+laserLock = 0;
+laserLock = 1;
+</syntaxhighlight>
+
+==== lockSeekRadius ====
+Specifies the maximum distance from the initial target position where the missile will search for suitable targets if it has [[A3_Targeting_config_reference#autoSeekTarget|autoSeekTarget]] enabled.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+lockSeekRadius = 100; // Current value for all
+</syntaxhighlight>
+
+==== lockType ====
+Defines ammo dependance on weapon lock. Only works for missiles.
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+lockType = 0; // Fire and Forget (currently all guided weapons)
+lockType = 1; // Manual - beamriding guidance (use together with manualControl true)
+lockType = 2; // Manual - point guidance
+</syntaxhighlight>
+
+=== M ===
+
+==== maneuvrability ====
+Defines how much the missile is able to turn / how well it can be controlled during the flight.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+maneuvrability = 1;		// Default value
+maneuvrability = 20;	// MissileBase
+maneuvrability = 16;	// BombCore
+maneuvrability = 4;		// NLAW missile
+maneuvrability = 14;	// SCALPEL missile
+</syntaxhighlight>
+
+==== manualControl ====
+Missile follows the cursor (unless locked onto a target). maxControlRange, maneuvrability and missile speed are very important for manual control. AI is able to guide missiles manually too.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+manualControl = 0; // Default value
+manualControl = 1; // Titan AT missile
+</syntaxhighlight>
+
+==== maxControlRange ====
+Defines the distance in meters from the firing platform at which manual control over the missile is lost and it flies in a straight path.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+maxControlRange = 4000; // MissileBase
+maxControlRange = 5000; // Titan AT missile
+</syntaxhighlight>
+
+==== missileManualControlCone ====
+Defines the in-flight maximum cone from the missile where the player has to aim in order to retain manual guidance.
+Missile can re-gain the control if the player's aim goes outside of the cone for a moment and reappears later.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+missileManualControlCone = 45; // Titan AT
+</syntaxhighlight>
+
+==== missileKeepLockedCone ====
+Defines the in-flight maximum cone (field of regard) from the missile where the missile can still track the target. Missile can re-gain tracking if target disappears for a moment and reappears later within the cone.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+missileKeepLockedCone = 90;		// can only follow targets as long as it stays in 90° infront of the missile
+missileKeepLockedCone = 360;	// off-boresight capabilities, missile can attempt a full turn in order to hunt targets behind
+</syntaxhighlight>
+
+==== missileLockCone ====
+Defines the in-flight maximum cone from the missile where the target has to be and remain so the missile can lock it.
+
+This doesn't affect missile's [[Arma_3_Sensors|Sensor]] so in theory a missile can "know about" a target outside of its locking range.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+missileLockCone = 5;	// DAGR
+missileLockCone = 180;	// GBU-12
+missileLockCone = 50;	// Default (MissileCore)
+</syntaxhighlight>
+
+==== missileLockMaxDistance ====
+Specifies the maximum distance at which the missile is able to lock a target.
+This doesn't affect missile's [[Arma_3_Sensors|Sensor]] so in theory a missile can detect and track a target outside of its locking range.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+missileLockMaxDistance = 2000; // missile won't be able to lock targets further than than 2km away
+</syntaxhighlight>
+
+==== missileLockMinDistance ====
+Specifies the minimum distance at which the missile is able to lock a target.
+This doesn't affect missile's [[Arma_3_Sensors|Sensor]] so in theory a missile can detect and track a target outside of its locking range.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+missileLockMinDistance = 50; // missile won't be able to lock a target closer than 50m
+</syntaxhighlight>
+
+==== missileLockMaxSpeed ====
+Specifies the maximum speed (m/s) at which the target can be travelling to be still lockable by the missile.
+This doesn't affect missile's [[Arma 3: Sensors|Sensor]] so in theory a missile can detect and track a faster target than it can lock.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+missileLockMaxSpeed = 42; // missile won't be able to lock a target closer that is moving faster than 151km/h
+</syntaxhighlight>
+
+=== N ===
+
+==== nvLock ====
+''Property is unused if the ammo uses the new [[Arma_3_Sensors|Sensors (Radar, IR...)]] system.''
+
+Can lock onto NVTarget objects (IR-Grenades thrown by infantry).
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+nvLock = 0; // Default
+nvLock = 1; // GBU-12
+</syntaxhighlight>
+
+=== S ===
+
+==== sideAirFriction ====
+Indirectly affects missiles turning / the flight path once the missile changes its orientation. The higher the side friction the more accurate is the maneuvring with the missile.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+sideAirFriction = 0.001;	// Default (MissileBase)
+sideAirFriction = 0.1;		// Titan AA
+</syntaxhighlight>
+
+=== T ===
+
+==== trackLead ====
+​​Range 0-1, how much is the missile performing "smart" tracking, which assumes onboard computer computing predicted target position at the impact time, resulting in a mostly straight flight trajectory.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+trackLead = 1; // Missile intercepts
+trackLead = 0; // Missile follows
+</syntaxhighlight>
+
+==== trackOversteer ====
+Simulates manoeuvering errors of the missile.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+trackOversteer = 1; // Missiles flies straight to its target
+trackOversteer = 0; // Missile never hits its target
+</syntaxhighlight>
+
+=== W ===
+
+==== weaponLockSystem ====
+Defines which
+* target vehicle's [[A3_Targeting_config_reference#lockDetectionSystem|lockDetectionSystem]] will be able to detect being locking by this ammo
+* target vehicle's [[A3_Targeting_config_reference#incomingMissileDetectionSystem|incomingMissileDetectionSystem]] will be able to detect this ammo when it is in-flight and guided towards the target vehicle
+* countermeasures' [[A3_Targeting_config_reference#weaponLockSystem|weaponLockSystem]] will break this ammo's lock or guidance. (Same property is used also on flares and chaff to define the opposite match.)
+
+More details in [[Arma 3: Countermeasures]]
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+weaponLockSystem = 0; // Undetectable
+weaponLockSystem = 1; // Visual/Contrast
+weaponLockSystem = 2; // Infra-red
+weaponLockSystem = 4; // Laser
+weaponLockSystem = 8; // Radar
+weaponLockSystem = 16; // Missile
+weaponLockSystem = "2+4"; // Lock types can be combined (in this case, IR and Laser lock)
+</syntaxhighlight>
+
+
+== [[CfgWeapons_Config_Reference|CfgWeapons]] ==
+
+=== B ===
+
+==== ballisticsComputer ====
+[[File:ballisticsComputer.jpg|thumb|upright=1|Fire control and aids]]
+Various fire control systems and ballistic aids can be defined (and combined) in a weapon system. Aids based on target motion prediction (1 and 4) require a [[Arma_3_Sensors|Sensor (Radar, IR...)]] to be able to track the target (Since Arma 3 1.60 they are no longer dependable canLock > 0. You can mark anything what your sensors are able to detect and use the gained information for fire control.)
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+ballisticsComputer = 0;		// Disabled
+ballisticsComputer = 1;		// Automatic zeroing and lead on a sensor-tracked target (Weapon attempts to calculate and shift the aimpoint to hit a locked target based on range, target movement, own movement, and ballistics of selected ammo type.)
+ballisticsComputer = 2;		// Manual zeroing
+ballisticsComputer = 4;		// Target Lead indication; since Arma 3 1.60
+ballisticsComputer = 8;		// Predicted Impact Point indication; since Arma 3 1.60
+ballisticsComputer = 16;	// FCS, Prediction based on laser distance and speed measurement; since Arma 3 1.70
+</syntaxhighlight>
+
+=== C ===
+
+==== canLock ====
+Determines if the weapon can lock onto targets allowed by the ammunition it uses.
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+canLock = 0; // Disabled
+canLock = 1; // Locks only on lower difficulties (Recruit, Cadet), disabled since Arma 3 1.58
+canLock = 2; // Always locks
+</syntaxhighlight>
+
+==== cmImmunity ====
+Defines how well the weapon can maintain lock if the target fires countermeasures (flares, chaff, smoke).
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+cmImmunity = 0; // Lock breakes whenever target fires CM
+cmImmunity = 1; // Lock never breaks
+</syntaxhighlight>
+
+=== F ===
+
+==== FCSMaxLeadSpeed ====
+Maximum target speed (m/s) to which the gun can still adjust zeroing/deflection
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+FCSMaxLeadSpeed = 27.7; // ~100km/h
+</syntaxhighlight>
+
+=== L ===
+
+==== lockAcquire ====
+Determines if weapons locks automatically a target within its lock cone or player has to use Lock Target action while pointing at a target.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+lockAcquire = 0; // player has to select a target himself
+lockAcquire = 1; // automatic acquisition of the closest target in missileLockCone
+</syntaxhighlight>
+
+==== lockingTargetSound ====
+Determines sound played once the selected weapon starts locking a target. The sound is played in a loop while locking.
+Note the sound is only played if the weapon is a missile.
+
+Sound array : {"path/to/file.wss",<volume priority>,<sound pitch>}
+<syntaxhighlight lang="cpp">
+lockingTargetSound[] = {"\A3\Sounds_F\weapons\Rockets\locked_1",0.562341,1}; // Used in missiles_DAGR
+</syntaxhighlight>
+
+==== lockedTargetSound ====
+Determines sound played once the selected weapon locked its target. The sound is played in a loop until the weapon maintains a lock and is able to fire.
+Note the sound is only played if the weapon is a missile.
+
+Sound array : {"path/to/file.wss",<volume priority>,<sound pitch>}
+<syntaxhighlight lang="cpp">
+lockedTargetSound[] = {"\A3\Sounds_F\weapons\Rockets\locked_1",0.562341,4};
+</syntaxhighlight>
+
+=== W ===
+
+==== weaponLockDelay ====
+Once the locking conditions are met (target is marked, can be locked by this projectile and is in missileLockCone), how much time in seconds would it take for the lock to be achieved.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+weaponLockDelay = 0; // Immediate lock if the locking conditions are met
+weaponLockDelay = 3; // Most of the guided weapons
+</syntaxhighlight>
+
+==== weaponLockSystem ====
+Defines which target vehicle's [[A3_Targeting_config_reference#lockDetectionSystem|lockDetectionSystem]] will be able to detect being marked/tracked by this weapon.
+
+More details in [[Arma 3: Countermeasures]]
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+weaponLockSystem = 0;	// Undetectable
+weaponLockSystem = 4;	// Laser
+weaponLockSystem = 8;	// Radar
+weaponLockSystem = 12;	// Lock types can be combined (in this case, Radar and Laser)
+</syntaxhighlight>
+
+== [[CfgVehicles_Config_Reference|CfgVehicles]] ==
+
+=== A ===
+
+==== allowTabLock ====
+If true, allows the usage of automatic cycling of targets using Tab (Next Target key assignment - default "R" in Arma 3).
+Can be used for driver, or each individual turret.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+allowTabLock = 0; // Tab-lock disabled (man-pads)
+allowTabLock = 1; // Most of the vehicles
+</syntaxhighlight>
+
+==== alwaysTarget ====
+Defines if the vehicle is considered as a training target by AI and IFF sensors (always enemy).
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+alwaysTarget = 0;
+alwaysTarget = 1; // VR Targets
+</syntaxhighlight>
+
+==== artilleryScanner ====
+Enables the Artillery Computer feature and allows the usage of artillery-type weapons more efficiently.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+artilleryScanner = 0;
+artilleryScanner = 1; // Artillery vehicles/mortars
+</syntaxhighlight>
+
+==== artilleryTarget ====
+Only used by ArtilleryTarget class objects.
+ArtilleryTarget gets created temporarily on the position designated by a player leader for a subordinate AI artillery operator (Fire Artillery command). 
+Can be locked by projectiles with artilleryLock = 1;
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+artilleryTarget = 0;
+artilleryTarget = 1;
+</syntaxhighlight>
+
+=== C ===
+
+==== xxxCanSee ====
+Defines specific tools/sensors for the AI/players when on a specific seat.
+* 1 = CanSeeRadar
+* 2 = CanSeeEye
+* 4 = CanSeeOptics
+* 8 = CanSeeEar
+* 16 = CanSeeCompass
+* 1+16 = CanSeeRadarC
+* 31 = CanSeeAll
+* 32 = CanSeePeripheral // Enables small colored blobs at the edge of the screen that indicate nearby units.
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+driverCanSee	= 2+8+16;	// The driver of this vehicle can see and hear enemies and use its compass
+gunnerCanSee	= 1+4+16;	// The gunner of this vehicle can detect enemies with optics or radar, and sees a compass
+commanderCanSee	= 31;		// The commander of this vehicle can see and use all its tools
+</syntaxhighlight>
+
+==== canUseScanners ====
+Can be defined per individual turret. Useful to restrict access to vehicle sensors (target marking) on some positions in vehicles (i.e. door gunners)
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+canUseScanner = 0; // can't use the vehicle's Sensors
+</syntaxhighlight>
+
+==== countermeasureActivationRadius ====
+Defines how far the vehicle can detect incoming missiles (see [[#incomingMissileDetectionSystem|incomingMissileDetectionSystem]])
+
+More details in [[Arma 3: Countermeasures]]
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+countermeasureActivationRadius = 2000;	// Ground vehicles
+countermeasureActivationRadius = 10000;	// Air vehicles
+
+</syntaxhighlight>
+
+=== I ===
+
+==== incomingMissileDetectionSystem ====
+Defines which munitions guided towards the vehicle the vehicle can detect.
+Checks a bit flag match with the incoming ammo's [[A3_Targeting_config_reference#weaponLockSystem|weaponLockSystem]].
+
+More details in [[Arma 3: Countermeasures]]
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+incomingMissileDetectionSystem = 0;		// No missile-in-flight detection
+incomingMissileDetectionSystem = 8;		// Active Radar Homing missile-in-flight detection
+incomingMissileDetectionSystem = 16;	// Detects all missiles (Missile Approach Warning)
+</syntaxhighlight>
+
+==== irScanXXX ====
+''Property is unused if the vehicle uses the new [[Arma_3_Sensors|Sensors (Radar, IR...)]] system.''
+
+Those settings can be used instead of irScanRange to make IR+Radar scan range depend on the visibility distance. If there is irScanRange, fixed value is used. The same thing can also be accomplished by setting both irScanRangeMin and irScanRangeMax to the same value.
+
+If there is no irScanRange,IR+Radar scan range is calculated as:
+
+ scanRange = visibility_range * irScanToEyeFactor;
+ if (scanRange<irScanRangeMin) scanRange = irScanRangeMin;
+ if (scanRange>irScanRangeMax) scanRange = irScanRangeMax;
+
+Where visiblity_range is basically a drawing distance, but may be shortened by rain or fog.
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+irScanToEyeFactor	= 1;
+irScanRangeMin		= 200;
+irScanRangeMax		= 1000;
+</syntaxhighlight>
+
+==== irScanGround ====
+''Property is unused if the vehicle uses the new [[Arma_3_Sensors|Sensors (Radar, IR...)]] system.''
+
+Can be used to limit target detection to air or groun targets.
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+irScanGround = 0; // Can detect and track aerial irTargets only (AAA)
+irScanGround = 1; // Can detect and track any irTargets (multirole)
+irScanGround = 2; // Can detect and track ground irTargets only (air-to-surface radar, gunships)
+</syntaxhighlight>
+
+==== irTarget ====
+Says whether the vehicle - once heated up - can be detected and tracked by an IR [[Arma_3_Sensors|Sensor]] system.
+Vehicle heats up mainly from a running engine (~ 6 sec to heat up after engine start, 1h to cool down).
+Firing a weapon or wheels friction also builds up the vehicle's heat signature.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+irTarget = 0; // Buildings, men, static defenses, etc...
+irTarget = 1; // Ground/Air vehicles
+</syntaxhighlight>
+
+==== irTargetSize ====
+Says how big the vehicle's heat signature is once heated up. Works as a coefficient of IR [[Arma_3_Sensors|Sensor]]'s range within the given combat situation.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+irTargetSize = 0.1; // heated vehicle will be detected by an IR sensor only at 1/10 of the sensors range in the given tactical situation
+irTargetSize = 2.0; // maximum value, vehicle can be detected at 2x the sensor's range
+</syntaxhighlight>
+
+=== L ===
+
+==== laserScanner ====
+''Property is unused if the vehicle uses the new [[Arma_3_Sensors|Sensors (Radar, IR...)]] system.''
+
+Defines if the vehicle has a ''Laser Spot Tracker'' and is able to detect and lock laser targets (for example, CAS jets, gunships).
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+laserScanner = 0;
+laserScanner = 1;
+</syntaxhighlight>
+
+==== laserTarget ====
+Defines if the vehicle can be detected by vehicles equipped with a laser sensor (laserScanner). Used only by LaserTarget and Land_VR_Target.. classes.
+LaserTarget gets created at the position of laser spot painted by a laser designator.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+laserTarget = 0;
+laserTarget = 1;
+</syntaxhighlight>
+
+==== lockDetectionSystem ====
+Defines what type of locking or marking the vehicle can detect.
+Checks a bit flag match with the locking ammo's [[A3_Targeting_config_reference#weaponLockSystem|weaponLockSystem]] and/or weapon's [[A3_Targeting_config_reference#weaponLockSystem_2|weaponLockSystem]] (when marked).
+
+More details in [[Arma 3: Countermeasures]]
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+weaponLockSystem = 0; // Undetectable
+weaponLockSystem = 4; // Laser
+weaponLockSystem = 8; // Radar
+weaponLockSystem = "2+4"; // Lock types can be combined (in this case, IR and Laser lock)
+</syntaxhighlight>
+
+=== N ===
+
+==== nvScanner ====
+''Property is unused if the vehicle uses the new [[Arma_3_Sensors|Sensors (Radar, IR...)]] system.''
+
+Defines if the vehicle is able to detect and lock Night-Vision targets (used by IR-Grenades).
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+nvScanner = 0;
+nvScanner = 1;
+</syntaxhighlight>
+
+==== nvTarget ====
+Defines if the vehicle can be detected by vehicles equipped with a night-vision sensor (nvScanner). Used only by NVTarget and Land_VR_Target.. classes.
+NV target gets created on the position of ammo with
+ simulation = "shotNVGMarker";
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+nvTarget = 0;
+nvTarget = 1;
+</syntaxhighlight>
+
+=== P ===
+
+==== class pilotCamera ====
+Gives the pilot access to a targeting pod (or some CCTV) and control over it in a full screen display feed (via *Multifunction camera* action, Ctrl+RMB by default).
+<syntaxhighlight lang="cpp">
+class pilotCamera
+{
+ 
+	class OpticsIn
+	{
+		// different optics mode, same as in turrets
+	}
+ 
+	minTurn		= -90;	// yaw limits
+	maxTurn		=  90;	// yaw limits
+	initTurn	=   0;	// initial yaw angle
+	minElev		= -90;	// pitch limits
+	maxElev		=  90;	// pitch limits
+	initElev	=   0;	// initial pitch angle
+	maxXRotSpeed = 0.5;	// yawing speed
+	maxYRotSpeed = 0.5;	// pitching speed
+	pilotOpticsShowCursor = 1; // to show aimCursor (is useful to see plane direction)
+	controllable = 1;	// set false to have static camera
+ };
+</syntaxhighlight>
+Related commands: [[:Category:Command Group: Pilot Camera|Command Group: Pilot Camera]]
+
+=== R ===
+
+==== radarTarget ====
+Says whether the vehicle can be detected and tracked by a RADAR [[Arma_3_Sensors|Sensor]].
+
+[[A3_Targeting_config_reference#irTarget|IRTarget]] is used if undefined for backwards compatibility.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+radarTarget = 1; // can be detected by RADAR
+</syntaxhighlight>
+
+==== radarTargetSize ====
+Radar cross-section coefficient of the vehicle. Works as a coefficient of RADAR [[Arma_3_Sensors|Sensor]]'s range within the given combat situation. 
+
+
+* ''0.1 - fully stealth (<0.0005m2 RCS) (not recommended)''
+* ''0.7 - small aircrafts, semi-stealth (~1m2 RCS)''
+* ''1.0 - mid sized aircraft, car (~5m2 RCS)''
+* ''1.2 - tanks, trucks (~10m2 RCS)''
+* ''2.0 - large bomber, small ship and bigger (>80m2 RCS)''
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+radarTargetSize = 0.1; // vehicle will be detected by a Radar sensor only at 1/10 of the sensors range in the given tactical situation
+radarTargetSize = 2.0 // maximum value, vehicle can be detected at 2x the sensor's range
+</syntaxhighlight>
+
+==== radarType ====
+[[File:Arma3radarTargetTypes.png|thumb|upright=0.5|Old Radar and targets indication]]
+
+* ''Property is no longer used for the game HUD UI''
+* AI is only able to utilize ''sensors'' (Radar, IR, LST...) if value 1, 2 or 4 is used
+
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+radarType = 0; // No radar (used for infantry)
+radarType = 1; // Tactical display (not used)
+radarType = 2; // Vehicle radar (used for AAA) - shows compass, turret directions and targets
+radarType = 4; // Air radar (used for jets and gunships) - shows compass, turret directions and targets
+radarType = 8; // Compass + turret directions (used for majority of vehicles and their turret positions) - shows compass and turret directions
+</syntaxhighlight>
+
+==== receiveRemoteTargets ====
+Says if the vehicle is able to receive targets and positions from friendly vehicles with [[A3_Targeting_config_reference#reportRemoteTargets|reportRemoteTargets]].
+
+This feature can be added/removed to/from any vehicle or soldier via EDEN editor object attribute "Data Link Receive" under "Electronics & Sensors".
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+receiveRemoteTargets = true;
+</syntaxhighlight>
+
+==== reportRemoteTargets ====
+Says if the vehicle is able to broadcast targets acquired by own sensors.
+
+This feature can be added/removed to/from any vehicle or soldier via EDEN editor object attribute "Data Link Send" under "Electronics & Sensors".
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+reportRemoteTargets = true;
+</syntaxhighlight>
+
+==== reportOwnPosition ====
+Says if the vehicle is able to broadcast its own position.
+
+This feature can be added/removed to/from any vehicle or soldier via EDEN editor object attribute "Data Link Position" under "Electronics & Sensors".
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+reportOwnPosition = true;
+</syntaxhighlight>
+
+=== S ===
+
+==== showAllTargets ====
+[[File:showAllTargets.png|thumb|upright=0.5|showAllTargets indication]]
+Vehicle/turret setting. Displays all targets known to vehicle sensors in via the ingame UI.
+Values can be combined.
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+showAllTargets = 0; //LockNo
+showAllTargets = 1; //LockCadet, show targets from all sensors, but only on lower difficulty; disabled since Arma 3 1.58
+showAllTargets = 2; //LockYes, show targets from all sensors 
+showAllTargets = 4; //LockLaser, show only targets from laser spot tracker (laserScanner); since Arma 3 1.60
+</syntaxhighlight>
+
+==== showCrewAim ====
+[[File:showCrewAim.jpg|thumb|upright=1|showCrewAim indication]]
+Vehicle/turret setting. Displays gunner/commander turret aimpoints on the in-game UI. Disabled when crosshair is turned off in difficulty since Arma 3 1.68
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+showCrewAim = 0; // disabled
+showCrewAim = 1; // show primary gunner
+showCrewAim = 2; // show commander
+showCrewAim = 4; // show all
+showCrewAim = 1+2+4; // values can be combined
+</syntaxhighlight>
+
+=== V ===
+
+==== visualTarget ====
+Says whether the vehicle can be detected and tracked by a Visual [[Arma_3_Sensors|sensor]] (electro-optical sensors in vis. spectrum, contrast seekers).
+
+[[A3_Targeting_config_reference#irTarget|IRTarget]] is used if undefined for backwards compatibility.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+visualTarget = 1; // can be detected by visual sensor
+</syntaxhighlight>
+
+==== visualTargetSize ====
+Contrast and visual distinguishability properties of the vehicle. Works as a coefficient of Visual [[Arma_3_Sensors|Sensor]]'s range within the given combat situation.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+visualTargetSize = 0.1; // vehicle will be detected by a visual spectrum sensor only at 1/10 of the sensors range in the given tactical situation
+visualTargetSize = 2.0; // maximum value, vehicle can be detected at 2x the sensor's range
+</syntaxhighlight>
+
+
+
+== See Also ==
+
+* [[CfgAmmo Config Reference|CfgAmmo]]
+* [[CfgWeapons Config Reference|CfgWeapons]]
+* [[CfgVehicles Config Reference|CfgVehicles]]
+* [[Arma 3: Sensors|Sensors (Radar, IR...)]]
+* [[Arma 3: Targeting]]
+* [[Arma 3: Missile flight profiles]]
+* {{Link|link= https://forums.bistudio.com/topic/200467-jets-sensor-overhaul/|text= Sensor Overhaul (Forums)}}
+* {{Link|link= https://forums.bistudio.com/topic/189734-targeting-improvements/|text= Targeting improvements (Forums)}}
+
+
+{{GameCategory|arma3|Reference Lists}}

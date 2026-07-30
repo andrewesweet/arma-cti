@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/compatibleItems
+// revision: 376857 (2025-12-08T20:38:25Z)
+// export sha1: 95qiw6y6f8lgeo73i69y8r8mrd0zr5d
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+
+|descr= Returns all items (attachments) that can be mounted on the given weapon.
+
+|gr1= Weapons
+
+|s1= [[compatibleItems]] weapon
+
+|p1= weapon: [[String]] - weapon class name
+
+|r1= [[Array]] of [[String]]s - compatible attachments
+
+|s2= [[compatibleItems]] [weapon, slot]
+
+|p21= weapon: [[String]] - weapon class name
+
+|p22= slot: [[String]] - class name of the slot (defined under '''WeaponSlotsInfo''' class in weapon config), for example: 
+* "CowsSlot" for optics 
+* "MuzzleSlot" for silencers
+* "PointerSlot" for laser pointers and flashlights
+* "UnderBarrelSlot" for bipods
+
+|r2= [[Array]] of [[String]]s - compatible attachments
+
+|x1= <sqf>
+compatibleItems "arifle_Katiba_GL_F"; // ["optic_Nightstalker","optic_tws","optic_tws_mg","optic_NVS", ...]
+</sqf>
+
+|x2= <sqf>
+compatibleItems ["arifle_Katiba_GL_F", "PointerSlot"]; // ["acc_flashlight","acc_flashlight_broken","acc_pointer_IR", ...]
+</sqf>
+
+|seealso= [[compatibleWeapons]] [[compatibleMagazines]] [[BIS_fnc_compatibleItems]] [[canAdd]]
+}}

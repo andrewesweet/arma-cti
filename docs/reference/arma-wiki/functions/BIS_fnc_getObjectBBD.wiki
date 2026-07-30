@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getObjectBBD
+// revision: 327920 (2022-07-13T12:13:12Z)
+// export sha1: afo1eldihictw7x3b8fle0qsq4qe749
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Get object [[boundingBoxReal]] max values and store them with [[setVariable]] ["BIS_EGSpectator_objectBBD", [maxWidth, maxLength, maxHeight]] for later calls.
+
+|s1= [object] call [[BIS_fnc_getObjectBBD]]
+
+|p1= object: [[Object]] - object to measure
+
+|r1= [[Array]] to format [maxWidth, maxLength, maxHeight]
+
+|x1= <sqf>[player] call BIS_fnc_getObjectBBD;</sqf>
+
+|x2= <sqf>[vehicle player] call BIS_fnc_getObjectBBD;</sqf>
+
+|seealso= [[boundingBox]] [[boundingBoxReal]] [[sizeOf]]
+}}

@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/floor
+// revision: 369333 (2024-09-03T18:43:00Z)
+// export sha1: stot4zn4ffu0zdluqxp89sam4jrxxpr
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Math
+
+|descr= Returns the next '''lowest''' integer in relation to the provided number.
+
+|s1= [[floor]] num
+
+|p1= num: [[Number]]
+
+|r1= [[Number]]
+
+|x1= <sqf>
+floor 5.1;		// result is  5
+floor 5.999;	// result is  5
+floor -2.01;	// result is -3
+floor -2.99;	// result is -3
+</sqf>
+
+|seealso= [[ceil]] [[round]] [[linearConversion]]
+}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Positions
+// revision: 166039 (2020-10-10T13:56:07Z)
+// export sha1: c2y8pkptu2nit6s6w1w8cubn9998upb
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions used to get positions.
+
+[[Category:Functions by Functionality]]

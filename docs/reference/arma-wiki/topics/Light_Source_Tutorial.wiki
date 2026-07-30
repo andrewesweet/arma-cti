@@ -1,0 +1,175 @@
+// source: https://community.bistudio.com/wiki/Light_Source_Tutorial
+// revision: 370877 (2025-02-21T10:44:02Z)
+// export sha1: 6crio2dv1oc5uidpd6l5h384fem2kqu
+// categories: Category:ArmA: Armed Assault: Tutorials | Category:Arma 2: Tutorials | Category:Arma 3: Tutorials | Category:Arma Scripting Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GVI|arma1|1.00}}
+== Basics ==
+
+A '''light source''' is a non-physical object that shines a light. Its light does not cast shadows (only the sun or the moon can) and can go through walls. It can be of one of these two types:
+* A '''light point''' (glowing light source) is an all-directional light source, like a floating lightbulb, that emits light all around it.
+* A '''light reflector''', much like projectors or vehicle headlights, is a beam-shaped light that was introduced in {{GVI|arma3|2.06|size= 0.75}} (see {{Link|#Heli Spotlight|this example below}}).
+
+Such light source is '''[[Multiplayer Scripting#Locality|local]]''' to the computer where the script has been called; one player could see a light in the dark while another would not have such light "object" created.
+
+<div class="float-right" style="margin-top: 1em"><!-- little trick to keep Flare's thumbnail aligned -->
+[[File:lightpoint_redColor_blueAmbient.jpg|thumb|left|200px|Lightpoint with {{Color|darkred|red}} colour, and {{Color|blue|blue}} ambient.
+Note how the {{Color|darkred|red}} and {{Color|blue|blue}} hues mix to create {{Color|purple|purple}}.]]
+</div>
+=== Colour ===
+
+Colour set via [[setLightColor]] determines the lens [[#Flare|flare]] effect colour, as well as light's first colour.
+
+=== Ambient ===
+
+Colour set via [[setLightAmbient]] determines the outer colour shone by the light source.
+{{Feature|important|Light colour does not affect AI spotting ability, but ambient '''does'''.}}
+
+=== Flare ===
+
+The flare is the "colour point" centre that emits light. It can be visible or invisible (set by [[setLightUseFlare]]).
+{{Feature|informative|Flare is '''not''' visible by day, even using [[setLightDayLight]].}}
+
+
+== How To ==
+
+The list of all light source commands can be found in the [[:Category:Command Group: Lights|Lights command group]] category.
+
+=== Create a Light Source ===
+
+<sqf>
+private _lightSource = "#lightpoint" createVehicleLocal player modelToWorld [0, 2, 1.5];
+// alternatively, a light reflector (cone) can be created since {{arma3}} v2.06
+private _lightSource = "#lightreflector" createVehicleLocal player modelToWorld [0, 2, 1.5];
+</sqf>
+
+{{Feature|informative|A light source is '''local''' (and all the light commands take a local argument too), hence [[createVehicleLocal]]'s usage.}}
+
+=== Set Light Colour ===
+
+==== Colour ====
+<sqf>_lightSource setLightColor [0.25, 1, 1]; // also defines Flare colour</sqf>
+
+==== Ambient Colour ====
+<sqf>_lightSource setLightAmbient [1, 1, 1]; // sets the colour applied to the surroundings</sqf>
+
+=== Set Flare ===
+
+{{Feature|informative|For the flare to be visible, all the following values (use flare, size, visibility) must be defined and light colour [[#Colour_2|set by]] [[setLightColor]] must not be [0,0,0].}}
+
+{{ArgTitle|4|Enable Flare|{{GVI|arma3|0.50}}}}
+<sqf>_lightSource setLightUseFlare true;</sqf>
+
+{{ArgTitle|4|Set Flare Size|{{GVI|arma3|0.50}}}}
+<sqf>_lightSource setLightFlareSize 1; // in metre</sqf>
+
+{{ArgTitle|4|Set Flare Visibility|{{GVI|arma3|0.50}}}}
+<sqf>_lightSource setLightFlareMaxDistance 100; // in metre</sqf>
+
+=== Set Light Brightness ===
+
+==== Set Brightness ====
+<sqf>_lightSource setLightBrightness 8;</sqf>
+{{Feature|important|Does '''not''' work with {{hl|#lightreflector}} - use {{Link|#Set Intensity|setLightIntensity}} instead.}}
+
+{{ArgTitle|4|Set Intensity|{{GVI|arma3|0.50}}}}
+<sqf>_lightSource setLightIntensity 3000;</sqf>
+
+{{ArgTitle|4|Set Attenuation|{{GVI|arma3|0.50}}}}
+<sqf>_lightSource setLightAttenuation [0, 2, 4, 4, 0, 9, 10]; // [start, constant, linear, quadratic, hardLimitStart, hardLimitEnd]</sqf>
+{{Feature|informative|Formula is {{hl|1 / (constant + linear &times; dist + quadratic &times; dist &times; dist)}} - see [[setLightAttenuation]] for more information.}}
+
+{{ArgTitle|3|Make Light Visible by Day|{{GVI|arma3|0.50}}}}
+
+<sqf>_lightSource setLightDayLight true; // only for the light itself, not the flare</sqf>
+
+{{ArgTitle|3|Set IR|{{GVI|arma3|2.06}}}}
+
+<sqf>_lightSource setLightIR true;</sqf>
+
+{{ArgTitle|3|Set Reflector Angles|{{GVI|arma3|2.06}}}}
+
+==== Set Cone Parameters ====
+<sqf>_lightReflector setLightConePars [90, 45, 1];</sqf>
+
+==== Set Reflector Volume Shape ====
+<sqf>_lightReflector setLightVolumeShape ["a3\data_f\VolumeLightFlashlight.p3d", [1, 1, 1]];</sqf>
+
+=== Delete Light Source ===
+
+<sqf>deleteVehicle _lightSource; // as simple as that</sqf>
+
+
+== Examples ==
+
+=== Dark Souls ===
+
+<sqf>
+skipTime -dayTime;
+
+_lightSource = "#lightpoint" createVehicleLocal [0,0,0];
+_lightSource attachTo [player, [0, 0, 1.5]];
+_lightSource setLightColor [0,0,0];
+_lightSource setLightAmbient [1,0.8, 0.25];
+_lightSource setLightBrightness 0.15;
+</sqf>
+
+=== Contact ===
+
+<sqf>
+skipTime -dayTime;
+
+private _position = player modelToWorld [0, 20, 1.5];
+private _lightSource = "#lightpoint" createVehicleLocal _position;
+_lightSource setLightColor [0,1,1];
+_lightSource setLightAmbient [0.2,0.0,0.3];
+_lightSource setLightUseFlare true;
+_lightSource setLightFlareSize 3;
+_lightSource setLightFlareMaxDistance 3.5;
+_lightSource setLightBrightness 4;
+_lightSource setLightDayLight true;
+
+_lightSource spawn {
+	while { sleep 0.05; player distance _this > 2 } do
+	{
+		_this setLightBrightness 4 max (40 / (player distance _this));
+	};
+	deleteVehicle _this;
+};
+</sqf>
+
+=== Heli Spotlight ===
+
+<sqf>
+private _reflector = "#lightreflector" createVehicleLocal [0, 0, 0];
+_reflector attachTo [myHeliVariable, [0, 0, 0], "light_l"];
+_reflector setLightColor [1, 1, 1];
+_reflector setLightAmbient [1, 1, 1];
+_reflector setLightIntensity 1e6;
+_reflector setLightConePars [60, 10, 1];
+private _vector3D = [[[0, 1, 0], [0, 0, 1]], 0, -45, 0] call BIS_fnc_transformVectorDirAndUp;
+_reflector setVectorDirAndUp _vector3D;
+
+private _light = "#lightpoint" createVehicleLocal [0, 0, 0];
+_light attachTo [myHeliVariable, [0, 0, 0], "light_l"];
+_light setLightColor [1, 1, 1];
+_light setLightAmbient [1, 1, 1];
+_light setLightUseFlare true;
+_light setLightFlareSize 5;
+_light setLightFlareMaxDistance 500;
+_light setLightBrightness 1000;
+_light setLightIntensity 10;
+</sqf>
+
+
+== See Also ==
+
+* [[:Category:Command Group: Lights|Command Group: Lights]]
+
+
+[[Category:Arma Scripting Tutorials]]
+{{GameCategory|arma1|Tutorials}}
+{{GameCategory|arma2|Tutorials}}
+{{GameCategory|arma3|Tutorials}}

@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_disableLoading
+// revision: 348269 (2023-11-08T11:40:36Z)
+// export sha1: krglfccqrcaz49123q5gh1jwjxnwx5g
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Missions
+
+|descr= Disables the load/restart button. Currently only for [[BIS_fnc_cinemaBorder]] used within the Prologue and Survive campaigns. Only works in single player.
+
+|s1= call [[BIS_fnc_disableLoading]]
+
+|r1= [[Boolean]] - always [[true]]
+
+|x1= <sqf>call BIS_fnc_disableLoading;</sqf>
+
+|seealso= [[BIS_fnc_cinemaBorder]]
+}}

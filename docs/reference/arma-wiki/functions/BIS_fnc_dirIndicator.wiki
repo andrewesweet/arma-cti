@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_dirIndicator
+// revision: 329960 (2022-08-09T17:17:13Z)
+// export sha1: sdx1o3zncbnmbtw8p795k5kx0j5vb0j
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 2: Operation Arrowhead version 1.56 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.56
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= GUI
+
+|arg= global
+
+|eff= local
+
+|descr= Show a 4-directions indicator.<br>
+Indicator GUI layer is 17, its [[Display]] is accessible with <sqf inline>uiNamespace getVariable "BIS_RscMissionScreen_dirIndicator"</sqf>.<br>
+Can be reexecuted to change its colour, but once executed this function '''cannot''' be halted  until ''origin''<nowiki/>'s death.
+
+|s1= [origin, target, color, sizeCoef] call [[BIS_fnc_dirIndicator]]
+
+|p1= origin: [[Object]] - origin, usually [[player]]
+
+|p2= target: [[Code]], [[String]], [[Object]] or [[Array]] format [[Position]] - to which indicator points to:
+* [[Code]] - code result must be [[Object]] or [[Position]]
+* [[String]] - [[missionNamespace]] variable name
+* [[Object]] - any object
+* [[Array]] format [[Position]] - any position
+
+|p3= color: [[Array]] format [[Color|Color (RGBA)]] - (Optional, default [0.424,0.651,0.247,1] ({{arma2}} green))
+
+|p4= sizeCoef: [[Number]] - (Optional, default 0.1045752 (command bar height)) size coefficient
+
+|r1= [[Script Handle]]
+
+|x1= <sqf>[player, TheBoss, [0.706, 0.0745, 0.0196, 1]] call BIS_fnc_dirIndicator;</sqf>
+
+|seealso= [[getRelDir]]
+}}

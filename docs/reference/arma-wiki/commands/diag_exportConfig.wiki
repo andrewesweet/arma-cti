@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/diag_exportConfig
+// revision: 349240 (2023-11-08T14:50:57Z)
+// export sha1: tl1i2o2ojmngg9h6rb6ciso84unq54p
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Config | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|branch= diag
+
+|gr1= Diagnostic
+
+|gr2= Config
+
+|descr= Exports given [[Config|config]] into file of given path.
+
+|s1= [[diag_exportConfig]] [path, config]
+
+|p1= path: [[String]] - file path on disc
+
+|p2= config: [[Config]] - the config you would like to export
+
+|r1= [[Nothing]]
+
+|x1= export an [[Arma: All-in-one Config|All-in-One config]]:
+<sqf>diag_exportConfig ["O:/config.cpp", configFile];</sqf>
+
+|seealso= [[configFile]]
+}}

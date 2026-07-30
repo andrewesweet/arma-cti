@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Editor_Modules
+// revision: 229627 (2021-02-01T13:32:38Z)
+// export sha1: 21ugcv2etmpc46uaadkdtnyr1j3ouw5
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Editor Modules]]

@@ -1,0 +1,419 @@
+// source: https://community.bistudio.com/wiki/Material_Templates
+// revision: 367260 (2024-08-08T20:07:07Z)
+// export sha1: ly36rodyjr7fdq0c01owhb5azaqk2kn
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Air ==
+
+<!-- | [[File:Podklad vehicle air.jpg|200px|thumb]] -->
+{| class="wikitable valign-top"
+! Metal - Helicopter
+! Glass
+! Metal - Fighter
+! Rubber
+|-
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.15 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 90;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(1.36,0)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 1.0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 1000;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnelGlass(2.1) // or
+fresnel(0.81,2.2)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.15 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 90;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(2.68,3.69)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.05 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 8;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(3.48,0.03)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+|}
+
+
+<!-- [[File:Podklad vehicle tracked.jpg|200px|thumb]] -->
+== Tracked ==
+
+{| class="wikitable valign-top"
+! Metal
+! Metal - cast iron
+! Plastics
+! Wood
+|-
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.14 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 70;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(0.45,0.35)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.14 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 30;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(0.45,0.35)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.05 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 40;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(0.75,0.8)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.01 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 60;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(0.45,0.35)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+|}
+
+
+<!-- [[File:Podklad vehicle wheeled.jpg|200px|thumb]] -->
+== Wheeled ==
+{| class="wikitable valign-top"
+! Metal - type HMMWV
+! Metal - type GAZ Vodnik
+! Car paint - New
+! Car paint - Old
+|-
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.05 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 30;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(7.53,5.44)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.05 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 30;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(7.53,5.44)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.5 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 500;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(0.65,0.06)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.12 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 18;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(0.14,0.17)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+|}
+
+
+<!-- [[File:Podklad soldier.jpg|200px|thumb]] -->
+== Soldier ==
+
+{| class="wikitable valign-top"
+! Skin
+! Eyes
+! Eyes transparent
+! Cloth
+|-
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 0.78 };
+FDiffuse[] = { 0.32 / 0.5 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.2 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 8;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(2.51,0)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 0.7 };
+ForcedDiffuse[] = { 0.3 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.28 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 850;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnelGlass(2.1)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1 };
+ForcedDiffuse[] = { 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 1 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 850;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(1.5,1.05)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1 };
+Diffuse[] = { 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.03 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 50;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(1.32,0.94)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+|}
+
+
+<!-- [[File:Podklad weapons.jpg|200px|thumb]] -->
+== Weapons ==
+
+{| class="wikitable valign-top"
+! Metal
+! Plastic
+! Wood
+! Shell Casing
+|-
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1 };
+Diffuse[] = { 1 };
+ForcedDiffuse[] = { 0 };
+emmisive[] = { 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.16 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 100;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(4.01,2.86)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 1, 1, 1, 1 };
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.09 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 35;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(1.5,1.22)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1 };
+Diffuse[] = { 1 };
+ForcedDiffuse[] = { 0 };
+emmisive[] = { 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 0.16 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 45;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(1.5,0.45)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+
+|
+<syntaxhighlight lang="cpp">
+Ambient[] = { 1 };
+Diffuse[] = { 1 };
+ForcedDiffuse[] = { 0 };
+emmisive[] = { 0 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specular[] = { 1,0.5,0.25 };
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+specularPower = 800;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+fresnel(0.87,10)
+</syntaxhighlight>
+{{hl|CA\data\env_land_co.tga}}
+|}

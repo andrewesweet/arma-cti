@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/HMMWV
+// revision: 363408 (2024-03-29T20:32:33Z)
+// export sha1: o1y2mvvidf20i2ecrzspsk69rnrtkry
+// Vendored snapshot. Do not edit — re-export instead.
+
+The High Mobility Multi-purpose Wheeled Vehicle (HMMWV) has replaced the M151 ‘Willys’ jeep in US Army service.
+The HMMWV was designed to fill myriad roles, including that of light tactical commander's vehicle, special purpose shelter carrier, and mobile weapons platform.
+The HMMWV is equipped with a high performance diesel engine and four wheel drive, making it capable of traversing very difficult terrain.
+
+This one is not armed.
+
+{{Navbox/OFP}}

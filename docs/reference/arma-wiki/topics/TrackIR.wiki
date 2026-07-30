@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/TrackIR
+// revision: 364632 (2024-05-24T16:25:02Z)
+// export sha1: t7ru5vz4t8dc2vyl74ne0lpjdohfyr2
+// categories: Category:ArmA: Armed Assault | Category:Arma 2 | Category:Arma 3 | Category:Take On Helicopters
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[TrackIR]] is a virtual reality personal computer control device developed by NaturalPoint. It can track the user's head movements in full 6DOF, on the X-, Y- and Z-axis and, using this data, can communicate with an arbitrary program where the user's head is pointing and thus update the screen as if they were looking around. For example, with a flight simulator, the player can look around the cockpit.
+
+The sensitivity is scalable in order to avoid the user having to turn their head so much away from the screen that they will be unable to keep looking at it. Only very fine movements are needed to operate the device.
+
+{{GameCategory|arma1|text= {{arma1}}}}, {{GameCategory|arma2|link= y}}, {{GameCategory|arma3|link= y}} and {{GameCategory|tkoh|link= y}} all support this device, but ensure you have the latest version of TrackIR software and latest game list update (available {{Link|http://www.naturalpoint.com/trackir/downloads/|here}}).
+
+
+== External Links ==
+
+* {{Link|http://www.naturalpoint.com/trackir/02-products/product-TrackIR-3-PRO.html|Natural Point's web site}}
+* [https://www.youtube.com/watch?v{{=}}9pl9lT5GS_U {{arma3}} review]
+* [https://www.youtube.com/watch?v{{=}}9wXx3vMy_AQ {{arma2}} review] 
+
+
+== Alternatives ==
+
+=== FaceTrackNoIR ===
+
+* {{Link|https://facetracknoir.sourceforge.net/|Official Website}}
+* {{Link|https://facetracknoir.sourceforge.net/information_links/download.htm|Download Page}}
+* {{Link|https://www.youtube.com/watch?v{{=}}P6OzkPpHbdw YouTube Review}}
+
+
+{{GameCategory|arma1}}
+{{GameCategory|arma2}}
+{{GameCategory|arma3}}
+{{GameCategory|tkoh}}

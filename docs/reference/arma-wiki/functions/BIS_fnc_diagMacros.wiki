@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagMacros
+// revision: 309630 (2022-05-05T12:07:49Z)
+// export sha1: ooz1oetzko49q7e2lfo6jhbfuhkveua
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= <pre>/*
+
+	Description:
+	Exports config macros.
+
+	Parameter(s):
+		0: CONFIG or ARRAY - config container to be searched (e.g. configFile >> "CfgVehicles") or list of classes or classnames
+		1: ARRAY - list of macro names to be used (e.g. ["MAPSIZE","NAMESOUND"])
+		2 (Optional): STRING - macro category name (when param 0 is CONFIG, its classname is used by default - e.g. "CfgVehicles")
+
+	Returns:
+	STRING
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_diagMacros]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_diagMacros;</sqf> -->
+
+|seealso=
+}}

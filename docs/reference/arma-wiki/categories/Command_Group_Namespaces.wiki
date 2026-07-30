@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Namespaces
+// revision: 308543 (2022-03-18T15:42:55Z)
+// export sha1: odn821gcrefkerwt5tyopijo3165ns0
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands related to [[Namespace]]s.
+
+[[Category:Scripting Commands by Functionality]]

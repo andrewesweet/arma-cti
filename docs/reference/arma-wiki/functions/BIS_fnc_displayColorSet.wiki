@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_displayColorSet
+// revision: 329650 (2022-08-01T00:36:45Z)
+// export sha1: dqjulo87t9iretz29emgv8iukw56nxv
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= Applies custom [[User Interface Colors|color settings]] to given [[Display]].
+
+Display must be already using color macros, function will just refresh the values according to current color settings.
+
+|s1= [displayClass, display, commitTime, code] call [[BIS_fnc_displayColorSet]] 
+
+|p1= displayClass: [[Config]] - display config class
+
+|p2= display: [[Display]]
+
+|p3= commitTime: [[Number]] - (Optional, default 0) commit time
+
+|p4= code: [[Code]] - (Optional, default <sqf inline>{}</sqf>) code executed for every control element (which is passed as _this)
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[configFile >> (GUI_classes select _forEachIndex), _x] call BIS_fnc_displayColorSet;</sqf>
+
+|x2= <sqf>
+[
+	configFile >> _class,
+	_display,
+	0,
+	{
+		_this ctrlSetFade 0;
+		_this ctrlCommit 0.5;
+	}
+] call BIS_fnc_displayColorSet;
+</sqf>
+
+|seealso= [[BIS_fnc_displayColorGet]]
+}}

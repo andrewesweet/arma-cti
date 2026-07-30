@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/menuHover
+// revision: 339129 (2023-04-26T10:54:57Z)
+// export sha1: 7gz1qu0h6no8s0xzxdbjguolz1tbgks
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= GUI Control - Menu
+
+|descr= Returns path to menu entry mouse is currently hovering over.
+
+|s1= [[menuHover]] idc
+
+|p1= idc: [[Number]]
+
+|r1= [[Array]]
+
+|s2= [[menuHover]] control
+
+|p21= control: [[Control]]
+
+|r2= [[Array]]
+
+|x1= <sqf>private _path = menuHover (findDisplay 313 displayCtrl 120);</sqf>
+
+|seealso= [[menuEnable]] [[menuExpand]] [[menuCollapse]] [[menuSetData]] [[menuSetValue]] [[menuSetCheck]] [[menuSetAction]] [[menuDelete]] [[menuAdd]] [[menuValue]] [[menuURL]] [[menuText]] [[menuSort]] [[menuSize]] [[menuEnabled]] [[menuChecked]] [[menuAction]] [[menuShortcutText]] [[menuShortcut]] [[menuPicture]] [[menuData]] [[menuClear]] [[menuSetPicture]]
+}}

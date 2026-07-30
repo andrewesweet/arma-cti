@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/Template:Note
+// revision: 378484 (2026-04-24T17:35:11Z)
+// export sha1: 55459qlldm2vd4rbm8ainegg87pg3ig
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><dl class="command_description{{#if:{{{game|}}}|<nowiki/> usernote_{{{game}}}}}"{{#if:{{{timestamp|}}}|<nowiki/> id="usernote{{{timestamp}}}"}}>
+<dt class="noteauthor">{{#if:{{{user|}}}|{{User|{{{user}}}}} <small>- [[Special:Contributions/{{{user}}}|c]]</small>|Unknown author <span class="plainlinks" style="font-size: smaller">- [{{canonicalurl:{{FULLPAGENAME}}|action=history}} view page history]</span>}}</dt>
+<dd class="notedate">{{#if:{{{timestamp|}}}|Posted on {{#time: M d, Y - H:i|{{{timestamp}}}}} (UTC) {{Link|#usernote{{{timestamp|}}}|§}}|Date unknown}}</dd>
+<dt></dt>
+<dd class="note">{{#if:{{{game|}}}|<div class="float-right">{{GVI|{{{game}}}|{{{version|1.00}}}|size= 1}}</div>}}
+{{Trim|{{{text|-no text defined-{{TemplateCase||[[Category:Note template usage error]]}}}}}}}
+</dd>
+</dl></includeonly><noinclude>{{Doc/Template
+|descr= Creates a user note. Adds the page to the [[:Category:Note template usage error|Note template usage error]] category if no text is provided.
+|param1= user
+|descr1= author's username
+|param2= timestamp
+|descr2= comment timestamp in the format of {{hl|{{<nowiki/>CURRENTTIMESTAMP}}}} (i.e. YYYYMMDDHHmmss), e.g. {{CURRENTTIMESTAMP}}
+|param3= text
+|descr3= comment's content
+|param4= game
+|descr4= (Optional) game (in [[Template:Name|id format]], e.g. {{hl|arma2}}) and (optional too) version (e.g. {{hl|1.00}})
+|param5= version
+|descr5= (Optional) game version (e.g. {{hl|1.00}})
+
+|example1= <pre>{{Note}}</pre>
+|result1= <div style="min-width: 40em">{{Note}}</div>
+|example2= <pre>{{Note
+|user= Lou Montana
+}}</pre>
+|result2= {{Note|user= Lou Montana}}
+|example3= <pre>{{Note
+|user= Lou Montana
+|timestamp= 20210826230000
+}}</pre>
+|result3= {{Note|user= Lou Montana|timestamp= 20210826230000}}
+|example4= <pre>{{Note
+|user= Lou Montana
+|timestamp= 20210826230000
+|text= Hello there!
+}}</pre>
+|result4= {{Note|user= Lou Montana|timestamp= 20210826230000|text= Hello there!}}
+|example5= <pre>{{Note
+|user= Lou Montana
+|timestamp= 20210826230000
+|text= Hello there!
+|game= tkoh
+}}</pre>
+|result5= {{Note|user= Lou Montana|timestamp= 20210826230000|text= Hello there!|game= tkoh}}
+|example6= <pre>{{Note|user= Lou Montana|timestamp= 20010622000000|text= Hello there!|game= ofp|version= 1.00}}
+{{Note|user= Lou Montana|timestamp= 20110623000000|text= Hello there!|game= arma0|version= 1.00}}
+{{Note|user= Lou Montana|timestamp= 20061110000000|text= Hello there!|game= arma1|version= 1.00}}
+{{Note|user= Lou Montana|timestamp= 20090617000000|text= Hello there!|game= arma2|version= 1.00}}
+{{Note|user= Lou Montana|timestamp= 20100629000000|text= Hello there!|game= arma2oa|version= 1.00}}
+{{Note|user= Lou Montana|timestamp= 20130912000000|text= Hello there!|game= arma3|version= 1.00}}
+{{Note|user= Lou Montana|timestamp= 20111027000000|text= Hello there!|game= tkoh|version= 1.00}}</pre>
+|result6=
+{{Note|user= Lou Montana|timestamp= 20010622000000|text= Hello there!|game= ofp|version= 1.00}}
+{{Note|user= Lou Montana|timestamp= 20110623000000|text= Hello there!|game= arma0|version= 1.00}}
+{{Note|user= Lou Montana|timestamp= 20061110000000|text= Hello there!|game= arma1|version= 1.00}}
+{{Note|user= Lou Montana|timestamp= 20090617000000|text= Hello there!|game= arma2|version= 1.00}}
+{{Note|user= Lou Montana|timestamp= 20100629000000|text= Hello there!|game= arma2oa|version= 1.00}}
+{{Note|user= Lou Montana|timestamp= 20130912000000|text= Hello there!|game= arma3|version= 1.00}}
+{{Note|user= Lou Montana|timestamp= 20111027000000|text= Hello there!|game= tkoh|version= 1.00}}
+}}</noinclude>

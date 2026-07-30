@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/setObjectArguments
+// revision: 363285 (2024-03-26T10:51:56Z)
+// export sha1: 4w4bvtot0a2ekytucvcyr944bzan9xa
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Game 2 Editor | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Game 2 Editor
+
+|descr= Set object arguments in mission editor.
+{{Feature|informative|Some Old Editor Command}}
+
+|s1= map [[setObjectArguments]] [object,[name1,value1,...]]
+
+|p1= map: [[Control]]
+|p2= [object,[name1,value1,...]]: [[Array]]
+|r1= [[Anything]]
+
+|x1= -
+
+|seealso= -
+}}

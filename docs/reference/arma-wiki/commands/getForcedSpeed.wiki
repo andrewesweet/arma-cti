@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getForcedSpeed
+// revision: 338349 (2023-02-28T14:44:10Z)
+// export sha1: rtmhzp7bf5m3qbzxasqr9ash63x6wsh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|gr1= Object Manipulation
+
+|descr= Returns forced speed set with [[forceSpeed]] or -1 if not set.
+
+|s1= [[getForcedSpeed]] entity
+
+|p1= entity: [[Object]]
+
+|r1= [[Number]] 
+
+|x1= <sqf>_spd = getForcedSpeed _heli;</sqf>
+
+|seealso= [[forceSpeed]] [[getSpeed]] [[forceWalk]]
+}}

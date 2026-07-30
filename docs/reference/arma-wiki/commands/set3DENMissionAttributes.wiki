@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/set3DENMissionAttributes
+// revision: 364856 (2024-06-25T09:27:10Z)
+// export sha1: 8xworj8bv86sk83bfk2r3frmj9xem0c
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Set [[Eden_Editor:_Scenario_Atttributes|scenario attributes]].
+An attribute is identified by its {{hl|property}} ({{hl|data}} when it is an engine-driven attribute) value in config.
+For the list of all attributes with their properties, see [[Eden_Editor:_Setting_Attributes#Scenario|Mission Attributes]].
+
+{{Feature|important|Attributes are available only within the Eden Editor workspace. You cannot access them in scenario preview or exported scenario!}}
+
+|s1= [[set3DENMissionAttributes]] [<nowiki/>[section1, class1, value1], ...]
+
+|p1= sectionN: [[String]] - attribute section. See [[Eden_Editor:_Setting_Attributes#Sections_.26_Properties|Sections & Properties]]
+
+|p2= classN: [[String]] - attribute name
+
+|p3= valueN: [[Anything]] - new attribute value
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+// set respawn type to 3 and respawn delay to 10 seconds
+set3DENMissionAttributes [["Multiplayer", "respawn", 3], ["Multiplayer", "respawnDelay", 10]];
+</sqf>
+
+|seealso= [[get3DENMissionAttribute]] [[set3DENMissionAttribute]]
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20190102120900
+|text= Usually, the attributes value can be received by <sqf>_sectionName get3DENMissionAttribute _attributeName; // See example above</sqf>
+However, if the attribute was not changed and it is default value is used [[get3DENMissionAttribute]] might return [[Nothing]], even though in [[:Category:Eden Editor|Eden Editor]] the attribute has got a value. In that case the attribute's config name is not identical to the 'property' or 'data' config value. To get the right values in these cases one has to do:<br>
+<sqf>
+_sectionName get3DENMissionAttribute _propertyName;
+// or
+_sectionName get3DENMissionAttribute _dataName;
+</sqf>
+}}

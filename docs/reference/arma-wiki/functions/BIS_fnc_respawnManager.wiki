@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_respawnManager
+// revision: 309778 (2022-05-05T12:09:49Z)
+// export sha1: kloqtlccegfsc5d4w12whxx077oplnp
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Respawn
+
+|descr= <pre>
+/*******************************************************************************
+	Version:	2.0
+	Name:		Respawn manager
+	DESCRIPTION:	All checkpoints must be markers with name prefix BIS_checkpointnr  
+	PARAMETERS:	1) function called - string, list of functions:
+				- Init
+				- Destroy
+				- AddCheckpoint
+				- RemoveCheckpoint			
+			2) parameter for the function
+			For more information see https://wiki.bistudio.com/index.php/RespawnManager
+	RETURNED VALUE: depends on the function called
+	
+	TODO:		-performance: add markers positions to the array instead of the testing 
+			their positions every loop in _CheckNearestCheckpoint function - DONE
+			-pridat funkci GetActualCheckpoint(character) - DONE 
+			-osetrit pripad, kdy postava neexistuje (je prave v respawnu/zahynula) - NEPOTREBUJEME
+			-typy markeru podle modu: normal/debug - DONE
+			-optional parameter marker name - DONE
+			-optional prefix marker name as a parameter to the Init procedure
+			-add functionality for 3 parameters function call - DONE
+			-vlastni lokalni checkpointy(markery) pro hratelne postavy(AddCheckpoint/RemoveCheckpoint)
+*******************************************************************************/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_respawnManager]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_respawnManager;</sqf> -->
+
+|seealso=
+}}

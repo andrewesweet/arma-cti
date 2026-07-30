@@ -1,0 +1,183 @@
+// source: https://community.bistudio.com/wiki/SQF_Syntax
+// revision: 363899 (2024-04-24T15:51:27Z)
+// export sha1: 2fgxu0g157sudtrgkcjcktnse8k9m0c
+// categories: Category:Syntax
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}} {{Table/RVScripting}}
+'''SQF''' stands for '''S'''tatus '''Q'''uo '''F'''unction - a successor of [[SQS Syntax|'''S'''tatus '''Q'''uo '''S'''cript]], which is deprecated since [[:Category:ArmA: Armed Assault|{{arma1}}]] but could still be used in {{arma3}}. 
+SQF was first introduced in [[{{ofpr}}]] together with the [[call]] operator in [[:Category:Introduced with Operation Flashpoint: Resistance version 1.85|update 1.85]].
+
+<small>
+* "Status Quo" was a code name for {{Link|https://en.wikipedia.org/wiki/Operation_Flashpoint|Operation Flashpoint}}
+* "Combined Arms" was a code name for {{Link|https://en.wikipedia.org/wiki/ARMA_(series)|{{arma}}}}
+* "Futura" was a code name for {{Link|https://en.wikipedia.org/wiki/ARMA_3|{{arma3}}}}.
+</small> 
+
+
+The SQF Language is fairly simple in how it is built.
+In fact: there are barely any actual language structures at all.
+
+The functionality is provided via so called ''[[:Category:Arma 3: Scripting Commands|operators]]'' (or more commonly known [[:Category:Arma 3: Scripting Commands|scripting commands]]).
+Those [[:Category:Scripting Commands Arma 3|operators]] are one of the following types: [[#Nular Operators|Nular]]{{sic}}, [[#Unary Operators|Unary]], or [[#Binary Operators|Binary]].
+
+
+== Terminating an expression ==
+
+An SQF expression has to be terminated via either <sqf inline>;</sqf> (preferred by convention!) or <sqf inline>,</sqf>.
+
+<sqf>
+_num = 10;
+_num = _num + 20; systemChat str _num;
+</sqf>
+In the above example, there are three expressions:
+# <sqf inline>_num = 10</sqf>
+# <sqf inline>_num = _num + 20</sqf>
+# <sqf inline>systemChat str _num</sqf>
+All are separated by <sqf inline>;</sqf> and not the line return - they could all be inlined and it would not impact the code.
+
+
+== Brackets ==
+
+* <sqf inline>()</sqf> - Round brackets are used to override the default [[Order of Precedence]] or improve legibility.
+* <sqf inline>[]</sqf> - Square brackets define [[Array]]s.
+* <sqf inline>{}</sqf> - Curly brackets enclose instances of the [[Code]] [[:Category:Data Types|Data Type]]. They are also used in [[Control Structures]].
+
+
+== Whitespaces ==
+
+Whitespace consists of tabs and/or space characters.
+
+ For the
+  purposes of the
+    engine
+      The 'line' begins at the first non whitespace character.
+
+Similarly, trailing whitespace at the end of a line or statement is also ignored.
+
+
+== Blank Lines ==
+
+Blank lines are lines containing nothing but whitespace and are therefore ignored by the engine.
+
+
+== Comments ==
+
+A comment is additional text that gets ignored when a script is parsed.
+They serve as future reference and are often used to explain a specific part of the code.
+
+In SQF, there are two kind of comments:
+<sqf>
+// in-line comment that ends on new line
+
+/* block comment that can span above multiple lines
+and ends on the following character combination: */
+</sqf>
+
+A comment can occur anywhere but inside a [[String|string]].
+For example, the following would be valid:
+<sqf>1 + /* some random comment in an expression */ 1</sqf>
+
+It should be mentioned that there is a [[comment]] unary [[:Category:Arma 3: Scripting Commands|operator]] that should not be used as it will actually be executed (thus taking time to execute) but does nothing besides consuming a [[String|string]].
+There is no benefit in using it and the reason it exists is solely for backward compatibility.
+Another way to make a ''comment'' that way, is to just place a [[String|string]]: <sqf inline>/* some code */ "I can be considered as a comment but should not be used"; /* some other code */</sqf>
+
+''Comments are removed during the [[PreProcessor_Commands|preprocessing]] phase.'' This is important to know as that prevents usage in e.g a [[String|string]] that gets compiled using the [[compile]] unary [[:Category:Scripting Commands|operator]] or when only using [[loadFile]].
+
+
+== Nular Operators ==
+
+A {{sic|nular|nullar}} operator is more or less a computed [[Variables|variable]]. Each time accessed, it will return the current state of something.
+It is tempting to think of a nular{{sic}} [[:Category:Arma 3: Scripting Commands|operator]] as nothing more but a magic [[Variables|global variable]], but it is important to differentiate!
+
+Consider following example in a mission with e.g. 5 units:
+<sqf>
+// put the result of allUnits into a Variable
+_unitsArray = allUnits;
+
+// display the current Array size using systemChat
+systemChat str count _unitsArray;
+
+// create a new unit in the player group
+group player createUnit ["B_RangeMaster_F", getPosATL player, [], 0, "NONE"];
+
+// output the Array size again
+systemChat str count _unitsArray;
+
+// output the size of allUnits
+systemChat str count allUnits;
+</sqf>
+
+Now, what would the output of this look like?
+ System: 5
+ System: 5
+ System: 6
+
+As you can see, <sqf inline>_unitsArray</sqf> was not automatically updated as it would have been if it was not generated each time. If [[allUnits]] was just a [[Variables|global variable]] with a reference to some internal managed array, our private [[Variables|variable]] should have had reflected the change as [[Data_Types|value types]] are passed by reference.
+The reason for this is because [[allUnits]] and other nular{{sic}} operators just return the current state of something and do not return a reference to eg. an [[Array|array]] containing all units.
+It is generated each time, which is why some of theese operators are more expensive to run then ''just'' using a [[Variables|variable]].
+
+
+== Unary Operators ==
+
+The unary [[:Category:Arma 3: Scripting Commands|operators]] are operators that expect an argument on their right side ({{hl|unary &lt;argument&gt;}}). They always will take the first argument that occurs.
+
+A common mistake would be the following:
+<sqf>
+// create some Array containing three arrays
+_arr = [[1, 2, 3, 4, 5], [1, 2, 3, 4], [1, 2]];
+
+// wrongly use the select operator to get the count of the third array
+count _arr select 2; // error
+</sqf>
+
+Now, what went wrong?
+
+Let's put some brackets in the right places to make the mistake understandable:
+<sqf>(count _arr) select 2; // error</sqf>
+
+Due to the nature of unary [[:Category:Arma 3: Scripting Commands|operators]], count instantly consumes our [[Variables|variable]] ''_arr'' and returns the number ''3''.
+The ''3'' then is passed to [[select]] which does not knows what to do with a number as left argument and thus errors out.
+
+To do it correctly, one would have to put the <sqf inline>_arr select 2</sqf> in brackets.
+The correct code thus would be:
+<sqf>
+// create an array containing three Arrays
+_arr = [[1, 2, 3, 4, 5], [1, 2, 3, 4], [1, 2]];
+
+// use brackets to correctly get count of the third Array
+count (_arr select 2); // good :) will evaluate to 2
+</sqf>
+
+
+== Binary Operators ==
+
+Binary [[:Category:Arma 3: Scripting Commands|operators]] expect two arguments ({{hl|&lt;1st argument&gt; binary &lt;2nd argument&gt;}}) and are executed according to their {{Link|#precedence}}. If their precedence is equal, they are executed left to right.
+
+As example, we will look into the following expression:
+<sqf>
+// create a nested Array with 5 levels
+_arr = [[[[[1]]]]];
+
+// receive the nested number with some random math expressions
+_arr select 0 select 1 - 1 select 15 / 3 - 5 select 0 select 10 * 10 + 4 * 0 - 100 // evaluates to 1
+</sqf>
+
+Now, let us analyze why this is happening for the first few expressions:
+# _arr is loaded
+# 0 is loaded
+# [[select]] is executed with the result of 1. & 2.
+# 1 is loaded
+# 1 is loaded
+# [[-]] is executed with the result of 4. & 5.
+# [[select]] is executed with the result of 3. & 6.
+# ...
+
+If we now would put brackets at the correct spots, the expression will get clearer:
+<sqf>((((_arr select 0) select (1 - 1)) select ((15 / 3) - 5)) select 0) select (((10 * 10) + (4 * 0)) - 100)</sqf>
+
+As you can see the <sqf inline>*</sqf> and <sqf inline>/</sqf> are executed first which matches their [[Order of Precedence|precedence]]. 
+Afterward, the <sqf inline>+</sqf> and <sqf inline>-</sqf> [[:Category:Scripting Commands|operators]] will get executed followed by our [[select]] operator, which are executed from the left to the right.
+
+
+[[Category: Syntax]]

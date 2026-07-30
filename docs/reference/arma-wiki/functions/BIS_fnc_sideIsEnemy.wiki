@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sideIsEnemy
+// revision: 349213 (2023-11-08T14:50:48Z)
+// export sha1: ng1s7855zpivcqaawyo9nrpnazfykft
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Sides
+
+|descr= Determines if side B is enemy to side A the way the game engine does it. The relationship table can be found here:  [[Side Relations]].
+
+|s1= [sideA, sideB] call [[BIS_fnc_sideIsEnemy]]
+
+|p1= sideA: [[Side]]
+|p2= sideB: [[Side]]
+
+|r1= [[Boolean]] - true if side B is enemy to side A.
+
+|x1= <sqf>private _isEnemy = [west, east] call BIS_fnc_sideIsEnemy; //Checks if EAST is enemy to WEST.</sqf>
+
+|seealso= [[getFriend]] [[setFriend]] [[BIS_fnc_sideIsFriendly]] [[Side Relations]]
+}}

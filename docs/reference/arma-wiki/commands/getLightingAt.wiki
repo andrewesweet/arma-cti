@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/getLightingAt
+// revision: 377785 (2026-01-03T01:33:52Z)
+// export sha1: 5ncwkvry5u9phwi0jn9cj7cxe0779j3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Lights
+
+|descr= Gets provided object's lighting information.
+{{Feature|informative|The command will use [[local]] [[player]]'s night vision state to determine whether to include IR lights in the result or not.<br>
+On a dedicated server, [[Arma 3: Headless Client|headless client]] or if the player is [[objNull|null]], the night vision state will always be off.}}
+
+|s1= [[getLightingAt]] obj
+
+|p1= obj: [[Object]]
+
+|r1= [[Array]] with [ambientLightColor, ambientLightBrightness, dynamicLightColor, dynamicLightBrightness]
+* ambientLightColor: [[Color|Color (RGB)]]
+* ambientLightBrightness: [[Number]]
+* dynamicLightColor: [[Color|Color (RGB)]]
+* dynamicLightBrightness: [[Number]]
+
+|x1= <sqf>getLightingAt player; // returns [[1,1,1], 0.5, [0,0,0], 0]</sqf>
+
+|x2= <sqf>getLightingAt player params ["_ambientLightColour", "_ambientLightBrightness", "_dynamicLightColour", "_dynamicLightBrightness"];</sqf>
+
+|seealso= [[getLighting]] [[Light Source Tutorial]]
+}}

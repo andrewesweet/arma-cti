@@ -1,0 +1,154 @@
+// source: https://community.bistudio.com/wiki/exitWith
+// revision: 369326 (2024-09-03T18:42:59Z)
+// export sha1: s446i4q7zoq1gc7po5t5s182hfj23n3
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Program Flow
+
+|descr= Exits the '''current''' code scope. Often used for exiting [[do]], [[for]], [[count]], [[forEach]] or the whole script.
+{{Feature|informative|See {{Link|Variables#Local Variables Scope}} for more information.}}
+
+|s1= ifType [[exitWith]] code
+
+|p1= ifType: [[If Type]]
+
+|p2= code: [[Code]]
+
+|r1= [[Anything]]
+
+|x1= <sqf>
+systemChat "start";
+private _condition = true;
+
+if (_condition) then
+{
+	if (true) exitWith
+	{
+		systemChat "exiting if _condition scope";
+	};
+	systemChat "never shown";
+};
+
+systemChat "exiting #1 worked";
+
+if (true) exitWith
+{
+	systemChat "exiting the main scope = leaving the whole script";
+};
+
+systemChat "never shown - the script has already ended";
+</sqf>
+
+|x2= <sqf>
+for "_j" from 1 to 10 do
+{
+	systemChat format ["%1", _j];
+
+	// the for loop will cease and code execution will continue after the end of the loop
+	if (_j == 5) exitWith
+	{
+		systemChat "5 is enough";
+	};
+};
+systemChat "Complete";
+</sqf>
+
+|x3= Most loops will also terminate when their scope is exited. To exit and terminate scopes which are called every frame such as [[onEachFrame]] and [[waitUntil]] use the following examples:
+
+<sqf>
+onEachFrame {
+	if (!alive player) exitWith
+	{
+		onEachFrame {};
+	};
+};
+</sqf>
+
+<sqf>
+_time = time + 10;
+waitUntil 
+{
+	if (time > _time) exitWith { true };
+	false
+};
+</sqf>
+
+|x4= <sqf>
+while { true } do
+{
+	if (alive player) then
+	{
+		if (time > 300) exitWith // [wrong] - it will only leave the "if alive player" scope, remaining in the "while true" loop forever
+		{
+			hint "exiting";
+		};
+	};
+};
+</sqf>
+
+|x5= <sqf>
+if (_condition) exitWith
+{
+	hint "reached";
+};
+// else { hint "not reached" }; // [wrong] - using else does not work and makes no sense here
+</sqf>
+<sqf>
+if (_condition) exitWith
+{
+	hint "reached";
+};
+hint "not reached"; // [correct] - if _condition is met, the scope has already been exited by now
+</sqf>
+
+|seealso= [[scopeName]] [[breakOut]] [[breakTo]] [[else]] [[Control Structures]] [[then]] [[assert]] [[try]] [[catch]] [[throw]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2010-05-28 - 22:15</dd>
+<dt class="note">[[User:RoehrenRadio|RoehrenRadio]]</dt>
+<dd class="note">Since Arma 2 uses Blocks in FSM as any ordinary Handle like [[while]], [[for]] etc. in Scripts, '''ExitWith''' also only closes the Block in the FSM.</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2013-08-04 - 12:20</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">The command will exit the current scope - no ifs no buts. If the current scope is a loop, it will exit the loop. If the current scope is the main body of a script, it will exit the script. For more understanding of scopes and [[exitWith]] have a look at {{Link|http://killzonekid.com/arma-scripting-tutorials-scopes/|this resource}}.</dd>
+
+<dt></dt>
+<dd class="notedate">Posted on 2016-03-10 - 08:31 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+[[exitWith]] cannot be used in event handlers with override ability to simply exit with override value. The following is incorrect:
+<sqf>
+// INCORRECT USAGE
+onMapSingleClick { if (!isServer) exitWith { true } };
+</sqf>
+The override value must be returned in the main scope of EH, but since it is exited with [[exitWith]], it never happens. The correct way in this case would be:
+<sqf>
+// CORRECT USAGE
+onMapSingleClick { call { if (!isServer) exitWith { true } } };
+</sqf>
+[[exitWith]] will exit current [[call]] scope only and override value therefore will appear in the main scope of the EH, right where we want it.
+</dd>
+
+</dl>

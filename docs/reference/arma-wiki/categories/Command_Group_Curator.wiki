@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Curator
+// revision: 329012 (2022-07-19T08:43:06Z)
+// export sha1: 6yxim23jf49hwv39d4zs2ax63pf0bou
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to control curator (Game Master / Zeus) interface introduced in [[Arma 3 Zeus]]. For the setup documentation see [[Arma 3: Curator]].
+
+[[Category:Scripting Commands by Functionality]]

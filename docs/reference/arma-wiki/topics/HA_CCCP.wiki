@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/HA_CCCP
+// revision: 363392 (2024-03-29T17:43:03Z)
+// export sha1: hd61io8cyfvvhrsn8ah47x0mc16ghst
+// Vendored snapshot. Do not edit — re-export instead.
+
+''[[HA CCCP]]''
+
+{{Infobox/Squad
+|title = HA[CCCP]
+|image =  Our-Army_logo.png
+|members = ''commanders:''
+
+Supreme Commander  CEPЖAHT
+
+Chief of General Staff  PKozik 
+
+1st Deputy Chief of General Staff  Красноармеец 
+
+2nd Deputy Chief of General Staff  ElDaR 
+
+Deputy Chief of General Staff for Logistics  Macheta
+
+|former_members = 
+|successes = 
+
+European Combat League First Fight Tournament Winner 2007;
+
+European Combat League Battle Ladder Summer 2007;
+
+European Combat League Battle Ladder Supercup Autumn 2007;
+
+|founded = 22nd April 2001.
+|link = http://our-army.su/
+}}
+
+
+=== Introduction ===
+
+==== Squad name ====
+НA [CCCP] (which stands for "Nasha Armiya [SSSR]", meaning "Our Army [USSR]") is a combat formation of units of Armed Forces of USSR in a virtual environment. It brings together the Russian-speaking players of "{{arma2}}" military tactical simulator, and implements a role-playing aspect of the virtual military organization based on the principles of military discipline and conduct (derived from Soviet Armed Forces regulations of 1985) on a voluntary, but mandatory basis, with the ultimate goal of creating a composed virtual military force for participation in simulation of modern combined arms combat.
+
+HA [CCCP] was founded to realize these principles on April 22nd, 2001, then utilizing the ground-breaking "Operation Flashpoint" military tactical simulator as its basic system of armament, and has continuosly participated in various activities of both its Russian-speaking and worldwide communities ever since. Over time, the system of armament was updated first to the "Armed Assault", and then to the "{{arma2}}" military tactical simulator (with the recent addition of "Operation Arrowhead" module).
+
+==== Organization of the HA [CCCP]: ====
+
+HA [CCCP] consists of various structural elements that serve to fulfill various aspects of its mission:
+
+- General Staff and its departments - oversee and regulate the overall functioning of HA [CCCP]
+
+- Training Company - provides basic training to newly enlisted recruits, also educating them about procedures and methods of warfare adopted by HA [CCCP]
+
+- Professional Training Units - give soldiers professional training in their areas of specialization according to their branches of military service
+
+- Combat Units - joint-force detachments of soldiers from various branches of military service, formed for execution of warfare on specific theatres of operations
+
+== links ==
+
+{{Link|http://our-army.su/|HA CCCP site}}
+
+{{Link|http://www.obr.dxi.ru/news.php|OBR HA CCCP site}}
+
+== Successes(Awards) ==
+
+[[File:Bl2007cup.gif|left|]]
+[[File:Bl2007playoffs.gif|center]]
+
+[[File:Eclfirstfight2007.gif|left|]]
+[[File:DCIITrophy.gif|left|]]
+[[File:AL2010.gif|left|]]

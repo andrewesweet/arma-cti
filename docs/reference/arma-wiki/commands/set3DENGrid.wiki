@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/set3DENGrid
+// revision: 353050 (2024-03-12T12:23:19Z)
+// export sha1: g1m6c7du8hyy6lngvmi3uw98zuyikwr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Sets the grid increment for the given transformation type.
+
+|s1= [[set3DENGrid]] [type, value]
+
+|p1= type: [[String]] - name of transformation type. Can be:
+* {{hl|"r"}} - Rotation
+* {{hl|"t"}} - Translation
+* {{hl|"s"}} - Scale
+
+|p2= value: [[Number]] - transformation increment
+
+|r1= [[Nothing]]
+
+|x1= <sqf>set3DENGrid ["t", 100]; // 100m movement increment</sqf>
+
+|seealso= [[get3DENGrid]]
+}}

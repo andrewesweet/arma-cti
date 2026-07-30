@@ -1,0 +1,112 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Functions_Viewer
+// revision: 342171 (2023-07-09T12:26:57Z)
+// export sha1: kbcq3919r2jjhiuaglv96nkffa60vjn
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The Functions Viewer allows you to view all functions, modded or default that are defined in CfgFunctions.
+[[File:A3 FunctionViewer Overview.png|thumb|The Functions Viewer UI in Arma 3.]]
+
+== Access ==
+
+The Functions Viewer can be opened via
+* the [[Arma 3: Debug Console|Debug Console]]
+* executing <sqf inline>[] spawn BIS_fnc_help</sqf>
+* the [[:Category:Eden Editor|Eden Editor]] [[Eden Editor: Menu Bar|Menu Bar]]
+
+
+== Interface ==
+
+=== Config Source Combobox ===
+
+Choose which config file should be used, can be:
+* [[campaignConfigFile]]
+* [[missionConfigFile]]
+* [[configFile]]
+
+=== TAG Combobox ===
+
+Select the TAG the function uses. The TAG usually indicates for which project, mod or addon a function was created for.
+To learn more visit [[Arma 3: Functions Library#Adding a Function|Functions Library]].
+
+=== Category Combobox ===
+
+Select the category of the function. Categories can for example be: Actions, Math or Modules.
+To learn more visit [[Arma 3: Functions Library#Adding_a_Function|Functions Library]].
+
+=== Functions List ===
+
+The functions list contains all functions of given TAG and category and is sorted alphabetically.
+
+=== Name Text Field ===
+
+Shows the name of the function. It can be selected and copied.
+
+=== Path Text Field ===
+
+Shows the path to the original function file.
+
+=== Code Text Field ===
+
+This area will show the code of the function and can be scrolled left and right or up and down.
+Most functions have a function header at the top of the code that shows useful information about the function, its parameters and return values.
+
+=== Recompile All Button ===
+
+Pressing that button will recompile all functions. However, this button is only activated in Eden Editor or if function recompiling is [[Description.ext#allowFunctionsRecompile|allowed]] in [[Description.ext]].
+
+=== Recompile Selected Button ===
+
+Pressing this button will recompile the selected function.
+
+=== Close Button ===
+
+Closes the Functions Viewer.
+
+
+== Shortcuts ==
+
+The config viewer supports a very basic search functionality. If you focus either the classes list or the attributes list and start typing it will search for a match in the given list.
+
+{| class="wikitable"
+|-
+! Key !! Effect
+|-
+| {{Controls|Escape}} || Closes the Functions Viewer
+|}
+
+=== Functions List ===
+
+{| class="wikitable"
+|-
+! Key !! Effect
+|-
+| {{Controls|A..Z}} || Quickly browse through the functions
+|-
+| {{Controls|Ctrl|C}} || Copy function name of selected function to the clipboard
+|}
+
+=== Code Field ===
+
+{| class="wikitable"
+|-
+! Key !! Effect
+|-
+| {{Controls|Ctrl|A}} || Selects all code
+|-
+| {{Controls|Ctrl|C}} || Copy selected code to clipboard
+|}
+
+{{GameCategory|arma3|Editing}}
+
+
+== Alternative Tools ==
+
+Listed here are some mods which improve the Functions Viewer. If you created one you can add it to the list too.
+* {{Link|link= https://steamcommunity.com/sharedfiles/filedetails/?id=2369477168|text= '''Advanced Developer Tools''' by Leopard20}}
+* {{Link|link= https://steamcommunity.com/sharedfiles/filedetails/?id=1862880106|text= '''Extended Function Viewer''' by Connor}}
+* {{Link|link= https://steamcommunity.com/sharedfiles/filedetails/?id=623475643|text= '''3den Enhanced''' by R3vo'''}}
+
+
+{{GameCategory|arma3|Editing}}

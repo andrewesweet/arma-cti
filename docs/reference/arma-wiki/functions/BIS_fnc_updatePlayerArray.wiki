@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_updatePlayerArray
+// revision: 348288 (2023-11-08T11:40:40Z)
+// export sha1: qeyhxm3r50m9jg0w4msc5h91jtxsb4h
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Updates dead player objects to their current respawned objects.
+
+|s1= [input] call [[BIS_fnc_updatePlayerArray]]
+
+|p1= input: [[Array]] of [[Object]]s - array of old player objects
+
+|r1= [[Array]] - array with new player objects
+
+|x1= <sqf>private _newPlayerObjects = _oldPlayerObjects call BIS_fnc_updatePlayerArray;</sqf>
+
+|seealso= [[player]] [[allPlayers]] [[playableUnits]]
+}}

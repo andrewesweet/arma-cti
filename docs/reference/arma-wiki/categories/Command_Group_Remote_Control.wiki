@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Remote_Control
+// revision: 347147 (2023-09-02T13:28:23Z)
+// export sha1: p11cqo0125p9mpzjz9wixesqshqiwvf
+// Vendored snapshot. Do not edit — re-export instead.
+
+Remote control [[Arma 3 Field Manual - Uav|UAVs]] or units. See also [[Remote Control Tutorial]].
+
+
+[[Category:Scripting Commands by Functionality]]

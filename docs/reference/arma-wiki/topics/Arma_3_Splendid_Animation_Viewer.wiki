@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Splendid_Animation_Viewer
+// revision: 352101 (2024-02-01T23:24:52Z)
+// export sha1: h0mkzw4p242ma60l2zhcrxpc0fxjied
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The Splendid Animation Viewer lets you preview animations ingame. You can use some of the commands listed [[:Category:Command_Group:_Animations|here]] to animate the character.
+
+
+== Interface ==
+
+[[File:Splendid_Animation_Viewer.png|thumb|The interface of the Splendid Animation Viewer.]]
+
+=== Unit Combobox ===
+
+With the first combobox you can change which character to view. The list of units includes animals as well.
+
+=== A, P, M, S and W Comboboxes ===
+
+These comboboxes act as a filter for animations. Every animation is categorised by its name. The meaning of the name is explained on [[CfgMoves_Config_Reference#Namespace_of_anim_classes_and_files|this page]].
+
+=== Listbox ===
+
+In this listbox you can select the animation you would like to view. It contains all animations that fit the parameters specified by the comboboxes above. Double clicking on an entry will open the [[Arma 3: Splendid Config Viewer|Config Viewer]] with the config of the animation selected.
+
+=== Information Textbox ===
+
+The textbox contains the following information:
+* Animation name as selected in the left listbox
+* File: Where to find the animation file (rtm) in the game files
+* Duration: How long the animation is in total
+* Progress: At which point the animation is currently
+* Time acceleration: Speed multiplier of the animation
+
+
+== Controls ==
+
+=== Camera Movement ===
+
+The camera can be moved by holding the left mouse button and dragging. To rotate the camera hold down the right mouse button and move the mouse. Zoom in or out by using the scroll wheel.
+
+=== Shortcuts ===
+
+{{Feature|informative|The following keys refer to a {{Link|https://en.wikipedia.org/wiki/QWERTY|QWERTY keyboard}}.}}
+{| class="wikitable"
+|-
+! Key !! Effect
+|-
+| {{Controls|C}} || Copy the name of the selected animation
+|-
+| {{Controls|X}} || Copy a code snippet to the cliboard with which you can open the Splendid Animation Viewer with the currently selected animation
+|-
+| {{Controls|ESCAPE}} || Closes the display
+|-
+| {{Controls|+}} || Increase the time acceleration
+|-
+| {{Controls|-}} || Decrease the time acceleration
+|}
+
+
+== Alternative Tools ==
+
+* {{Link|link= https://steamcommunity.com/workshop/filedetails/?id=1862880106|text= POLPOX's Animations Viewer}} as part of POLPOX's Base Functions by [[User:POLPOX|POLPOX]]
+
+
+{{GameCategory|arma3|Editing}}

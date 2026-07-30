@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/enableWeaponDisassembly
+// revision: 338953 (2023-04-18T16:08:55Z)
+// export sha1: kb2tipnjrfs3vba6w4zvpni56ixwzrr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|arg= global
+
+|eff= global
+
+|gr1= Weapons
+
+|descr= Enables or disables disassembly of static weapons. Could be applied to local [[player]], to another unit or to static weapon directly.
+
+|s1= [[enableWeaponDisassembly]] enable
+
+|p1= enable: [[Boolean]] - [[false]] to prevent local [[player]] from being able to disassemble static weapons
+
+|r1= [[Nothing]]
+
+|s2= entity [[enableWeaponDisassembly]]  enable
+
+|p21= entity: [[Object]] - unit or static weapon
+|p22= enable: [[Boolean]]  - [[false]] to prevent a unit from being able to disassemble static weapons, or to prevent a static weapon from being disassembled by anyone
+
+|r2= [[Nothing]]
+
+|x1= <sqf>enableWeaponDisassembly false;</sqf>
+
+|x2= <sqf>soldier1 enableWeaponDisassembly false;</sqf>
+
+|x3= <sqf>mortar1 enableWeaponDisassembly false;</sqf>
+
+|seealso= [[weaponDisassemblyEnabled]] [[weapons]] [[action]] [[inGameUISetEventHandler]]
+}}

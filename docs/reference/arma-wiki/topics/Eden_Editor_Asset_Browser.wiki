@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Asset_Browser
+// revision: 378233 (2026-03-19T14:20:56Z)
+// export sha1: hpga5273v36jgfradc1b3mltuf221ls
+// categories: Category:Eden Editor: Interface
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:3den_objectCategorization.png|right]]
+The '''Asset Browser''' shows all available assets which can be placed in the scenario, sorted into various lists. When unofficial addons are installed, assets added by them are listed as well.
+# '''Mode''' - the main functional filter, divides assets by entity types.
+#* You can also use F keys (F1-F6) to quickly select the desired mode.
+#* The asset types are:
+#** [[Eden Editor: Object|Object]]
+#** [[Eden Editor: Composition|Composition]]
+#** [[Eden Editor: Trigger|Trigger]]
+#** [[Eden Editor: Waypoint|Waypoint]]
+#** [[Eden Editor: System|System]]
+#** [[Eden Editor: Marker|Marker]]
+# '''Submode''' - mode specific separation to keep major asset groups together (e.g., BLUFOR objects).
+#* Submodes are not available for triggers and waypoints, where low number of assets wouldn't justify them.
+# '''Search''' - search the asset tree.
+#* Use {{hl|class }} prefix to search by class name (e.g., {{hl|class B_Soldier}})
+#* Use {{hl|mod }} prefix to search by mod name (e.g., {{hl|mod kart}}). This can also be done via the dropdown menu (not shown in the image)
+#* {{GVI|arma3|2.22}} Use {{hl|*}} and {{hl|?}} for wildcard matching (e.g., {{hl|house*ruin}})
+#* {{GVI|arma3|2.22}} Prefix by {{hl|/}} to search with a Regular Expression (e.g., {{hl|/(Brick|Big).*House.*}})
+# '''List''' - List of actual assets, further divided by up to two layers of categorization.
+#* You can use the search field to filter the list by specific asset name.
+#* Entities are indicated by an icon. Category folders don't have one.
+
+[[Category:Eden Editor: Interface|Asset Browser]]

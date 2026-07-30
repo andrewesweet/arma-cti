@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/drawLine
+// revision: 377558 (2026-01-02T06:55:00Z)
+// export sha1: qx3cv53s0qykov2y5007uqqfpmk4jjd
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - Map
+
+|descr= Draw a line on the map. Can decrease framerate!
+
+|s1= map [[drawLine]] [from, to, color, width]
+
+|p1= map: [[Control]]
+
+|p2= from: [[Object]] or [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]]
+
+|p3= to: [[Object]] or [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]]
+
+|p4= color: [[Color|Color (RGBA)]]
+
+|p5= width: [[Number]] - (Optional, default 3)
+|p5since= arma3 2.18
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+(findDisplay 12 displayCtrl 51) ctrlAddEventHandler ["Draw",
+	"(_this select 0) drawLine [
+		player,
+		[0,0,0],
+		[0,0,1,1]
+	];"
+];
+</sqf>
+
+{{GVI|arma3|2.02}} [[toString]] version:
+<sqf>
+(findDisplay 12 displayCtrl 51) ctrlAddEventHandler ["Draw", toString {
+	(_this select 0) drawLine [
+		player,
+		[0,0,0],
+		[0,0,1,1] // blue
+	];
+}];
+</sqf>
+
+|seealso= [[drawArrow]] [[drawEllipse]] [[drawIcon]] [[drawRectangle]] [[drawPolygon]] [[drawTriangle]] [[drawXPolygon]]
+}}

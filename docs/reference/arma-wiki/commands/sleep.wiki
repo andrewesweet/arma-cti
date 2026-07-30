@@ -1,0 +1,78 @@
+// source: https://community.bistudio.com/wiki/sleep
+// revision: 370495 (2024-12-26T17:40:41Z)
+// export sha1: 2dzwt41ddg7suwruy5r9lpfqu5gjhjb
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Program Flow
+
+|descr= Suspends code execution for given [[time]] in seconds. The sleep precision is given by a framerate, the delay given is the minimal delay expected. Must be called inside of a context which is interruptible, i.e. a [[Script Handle|script]] executed by [[execVM]] or [[spawn]].
+{{Feature | Informative |
+* this command will suspend the code for '''''at least''''' the given amount of time, and can be way more if the [[Scheduler|script scheduler]] is busy.
+* this command will suspend the script as the game gets paused in single player (and will resume with it). To avoid this, use [[uiSleep]].
+}}
+
+|s1= [[sleep]] delay
+
+|p1= delay: [[Number]] - in seconds. Negative values will not be considered.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+0 spawn {
+	sleep 5;
+	hint "after (at least) 5 seconds...";
+};
+</sqf>
+
+|x2= <sqf>
+sleep 5 + random 10;	// incorrect - will only sleep for 5 seconds, as it will be interpreted as (sleep 5) (+(random 10))
+sleep (5 + random 10);	// correct
+</sqf>
+
+|seealso= [[time]] [[uiSleep]] [[waitUntil]] [[canSuspend]] [[execVM]] [[spawn]] [[sleep vs uiSleep]] [[Control Structures]]
+}}
+
+{{Note
+|user= CrashDome
+|timestamp= 20061220205300
+|text= Sleep suspends both SQF functions and SQF scripts. In functions, the calling script is still in suspension due to waiting for a return from the [[call]] command. The game engine will continue, however. See [[Function]] for more detail.
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20070212201600
+|text= Sleep durations between .0005 and .02 will cause the same delay (roughly .02 seconds).<br>
+Delays of .0005 and less have '''no''' effect (i.e, the sleep call will return immediately).
+}}
+
+{{Note
+|user= Sbsmac
+|timestamp= 20070213223200
+|text= The comment above is a little misleading. The game engine appears to work by processing frames and then checking to see whether scripts are available to execute.
+Sleep causes the script/function to be suspended until at least the specified time has elapsed.
+To wait for the next frame, or give other scripts a chance to run, use Sleep 0.001. 
+}}
+
+{{Note
+|user= Inkompetent
+|timestamp= 20070616001300
+|text= For scripts called by the [[Arma 3: Event Handlers#Init|Init Event Handler]] the first sleep command will suspend the script at the briefing screen at the start of a mission. The script will continue after the briefing screen, when actually "in game".
+}}

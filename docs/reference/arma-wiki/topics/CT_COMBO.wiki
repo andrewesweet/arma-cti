@@ -1,0 +1,392 @@
+// source: https://community.bistudio.com/wiki/CT_COMBO
+// revision: 351463 (2023-12-06T09:58:00Z)
+// export sha1: bjugycjm9fesmgphhsuo71oxpcl20x7
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT/intro
+
+|macro = CT_COMBO
+|value = 4
+|description = A drop down menu. Compared to a [[CT_LISTBOX]] or [[CT_TOOLBOX]] it can display many items without taking a lot of space. Disadvantage is that the user has to interact first with the control so see multiple entries.
+|gallery = 
+File:CT COMBO.jpg {{!}} A normal [[CT_COMBO]]
+File:CT COMBO PICTURE RIGHT.jpg {{!}} A [[CT_COMBO]] can have a picture on the right and on the left
+File:CT COMBO TOOLTIP.jpg {{!}} Tooltips are also no problem
+|commands =
+* [[:Category:Command_Group:_GUI_Control_-_ListBox|Commands: Listbox]]
+|events =
+* [[User_Interface_Event_Handlers#Listbox_events|Events: Listbox]]
+}}
+
+{{CT/abc start}}
+=== A ===
+{{CT/attribute
+|name=arrowEmpty
+|type1=String
+|value1="\A3\ui_f\data\GUI\RscCommon\rsccombo\arrow_combo_ca.paa"
+|description=Texture of the collapsed control.
+}}
+
+{{CT/attribute
+|name=arrowFull
+|type1=String
+|value1="\A3\ui_f\data\GUI\RscCommon\rsccombo\arrow_combo_active_ca.paa"
+|description=Texture of the expanded control.
+}}
+
+=== C ===
+{{CT/attribute
+|name=colorActive
+|type1=Array
+|value1={1,0,0,1}
+|description=
+}}
+
+{{CT/attribute
+|name=colorPicture
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT/attribute
+|name=colorPictureDisabled
+|type1=Array
+|value1={1,1,1,0.25}
+|description=
+}}
+
+{{CT/attribute
+|name=colorPictureRight
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT/attribute
+|name=colorPictureRightDisabled
+|type1=Array
+|value1={1,1,1,0.25}
+|description=
+}}
+
+{{CT/attribute
+|name=colorPictureRightSelected
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT/attribute
+|name=colorPictureSelect
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT/attribute
+|name=colorPictureSelected
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT/attribute
+|name=colorScrollbar
+|type1=Array
+|value1={1,0,0,1}
+|description=
+}}
+
+{{CT/attribute
+|name=colorSelect
+|type1=Array
+|value1={0,0,0,1}
+|description=
+}}
+
+{{CT/attribute
+|name=colorSelect2Right
+|type1=Array
+|value1={0,0,0,1}
+|description=
+}}
+
+{{CT/attribute
+|name=colorSelectBackground
+|type1=Array
+|value1={1,1,1,0.7}
+|description=
+}}
+
+{{CT/attribute
+|name=colorSelectRight
+|type1=Array
+|value1={0,0,0,1}
+|description=
+}}
+
+{{CT/attribute
+|name=colorTextRight
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT/attribute
+|name=ComboScrollBar
+|type1=Class
+|value1=class ComboScrollBar
+{
+	color[] = {1,1,1,1};
+	colorActive[] = {1,1,1,1};
+	colorDisabled[] = {1,1,1,0.3};
+	thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+	arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+	arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+	border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+	shadow = 0;
+	scrollSpeed = 0.06;
+	width = 0;
+	height = 0;
+	autoScrollEnabled = 0;
+	autoScrollSpeed = -1;
+	autoScrollDelay = 5;
+	autoScrollRewind = 0;
+};
+|description=The scrollbar that is visible when there are more elements than wholeHeight can display.
+}}
+
+=== E ===
+{{CT/attribute
+|name=ExtendedTooltip
+|type1=Class
+|value1=class ExtendedTooltip
+{
+	size = "0.028 * SafezoneH";
+	colorPremium[] = {1,0.502,0,1};
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = 13;
+	idc = -1;
+	style = 0;
+	colorText[] = {1,1,1,1};
+	class Attributes
+	{
+		font = "RobotoCondensed";
+		color = "#ffffff";
+		colorLink = "#D09B43";
+		align = "left";
+		shadow = 1;
+	};
+	x = 0;
+	y = 0;
+	h = 0.035;
+	w = 0.1;
+	text = "";
+	shadow = 1;
+};
+|description=
+}}
+
+=== F ===
+{{CT/attribute
+|name=from
+|type1=Number
+|value1=1982
+|description=Probably used in conjunction with {{hl|to}}
+}}
+
+=== G ===
+{{CT/attribute
+|name=gridType
+|type1=String
+|value1="scaling"
+|description=
+}}
+
+=== I ===
+{{CT/attribute
+|name=Items
+|type1=Class
+|value1=class Items
+{
+	class Alphabet
+	{
+		text = "Sort alphabetically";
+		default = 1;
+	};
+	class Mod
+	{
+		text = "Sort by mod";
+	};
+};
+|description=List of entries.
+{{{!}}class="wikitable" border="1" align="left" cellpadding="3" cellspacing="0" {{!}}
+! colspan="3" {{!}} Items
+{{!}}-
+! Name
+! Type
+! Remark
+{{!}}-
+{{!}} '''text'''
+{{!}} [[String]]
+{{!}} Displayed text (equal to [[lbAdd]])
+{{!}}-
+{{!}} '''value'''
+{{!}} [[Number]]
+{{!}} Value of the entry (equal to [[lbSetValue]])
+{{!}}-
+{{!}} '''data'''
+{{!}} [[String]]
+{{!}} Data of the entry (equal to [[lbSetData]])
+{{!}}-
+{{!}} '''picture'''
+{{!}} [[String]]
+{{!}} Picture displayed on the left (equal to [[lbSetPicture]])
+{{!}}-
+{{!}} '''pictureRight'''
+{{!}} [[String]]
+{{!}} Picture displayed on the right (equal to [[lbSetPictureRight]])
+{{!}}-
+{{!}} '''default'''
+{{!}} [[Number]]
+{{!}} Sets this entry as the by default selected (equal to [[lbSetCurSel]])
+{{!}}-
+{{!}} '''color'''
+{{!}} [[Color{{!}}Color (RGBA)]]
+{{!}} Text color of the entry (equal to [[lbSetColor]])
+{{!}}-
+{{!}} '''tooltip'''
+{{!}} [[String]]
+{{!}} Tooltip of the entry (equal to [[lbSetTooltip]])
+{{!}}-
+{{!}}}<br clear="all">
+}}
+
+=== M ===
+{{CT/attribute
+|name=maxHistoryDelay
+|type1=Number
+|value1=1
+|description=
+}}
+
+=== R ===
+{{CT/attribute
+|name=rows
+|type1=Number
+|value1=2
+|description=
+}}
+
+=== S ===
+{{CT/attribute
+|name=soundCollapse
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscCombo\soundCollapse",0.1,1}
+|description=Sound played when the combobox is collapsed.
+}}
+
+{{CT/attribute
+|name=soundExpand
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscCombo\soundExpand",0.1,1}
+|description=Sound played when the combobox is expanded
+}}
+
+{{CT/attribute
+|name=soundSelect
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscCombo\soundSelect",0.1,1}
+|description=Sound played when an item from the combobox is selected.
+}}
+
+=== T ===
+{{CT/attribute
+|name=to
+|type1=Number
+|value1=2050
+|description=Probably used in conjunction with {{hl|from}}
+}}
+
+=== W ===
+{{CT/attribute
+|name=wholeHeight
+|type1=Number
+|value1=0.45
+|type2=String
+|value2="12 * 	5 * (pixelH * pixelGrid * 	0.50)"
+|description=Limits the height of the expanded combobox.
+}}
+
+{{CT/abc end}}
+
+{{CT/examples}}
+=== RscCombo ===
+<syntaxhighlight lang="cpp">
+class RscCombo
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_COMBO;
+	colorSelect[] = {0,0,0,1};
+	colorText[] = {1,1,1,1};
+	colorBackground[] = {0,0,0,1};
+	colorScrollbar[] = {1,0,0,1};
+	colorDisabled[] = {1,1,1,0.25};
+	colorPicture[] = {1,1,1,1};
+	colorPictureSelected[] = {1,1,1,1};
+	colorPictureDisabled[] = {1,1,1,0.25};
+	colorPictureRight[] = {1,1,1,1};
+	colorPictureRightSelected[] = {1,1,1,1};
+	colorPictureRightDisabled[] = {1,1,1,0.25};
+	colorTextRight[] = {1,1,1,1};
+	colorSelectRight[] = {0,0,0,1};
+	colorSelect2Right[] = {0,0,0,1};
+	tooltipColorText[] = {1,1,1,1};
+	tooltipColorBox[] = {1,1,1,1};
+	tooltipColorShade[] = {0,0,0,0.65};
+	soundSelect[] =
+	{
+		"\A3\ui_f\data\sound\RscCombo\soundSelect",
+		0.1,
+		1
+	};
+	soundExpand[] =
+	{
+		"\A3\ui_f\data\sound\RscCombo\soundExpand",
+		0.1,
+		1
+	};
+	soundCollapse[] =
+	{
+		"\A3\ui_f\data\sound\RscCombo\soundCollapse",
+		0.1,
+		1
+	};
+	maxHistoryDelay = 1;
+	class ComboScrollBar : ScrollBar
+	{
+		color[] = {1,1,1,1};
+	};
+	style = ST_MULTI + ST_NO_RECT;
+	font = "RobotoCondensed";
+	sizeEx = GUI_TEXT_SIZE_MEDIUM;
+	shadow = 0;
+	x = 0;
+	y = 0;
+	w = 0.12;
+	h = 0.035;
+	colorSelectBackground[] = {1,1,1,0.7};
+	arrowEmpty = "\A3\ui_f\data\GUI\RscCommon\rsccombo\arrow_combo_ca.paa";
+	arrowFull = "\A3\ui_f\data\GUI\RscCommon\rsccombo\arrow_combo_active_ca.paa";
+	wholeHeight = 0.45;
+	colorActive[] = {1,0,0,1};
+};
+</syntaxhighlight>

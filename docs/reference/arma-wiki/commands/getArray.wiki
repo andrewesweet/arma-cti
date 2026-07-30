@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/getArray
+// revision: 377159 (2026-01-01T10:40:02Z)
+// export sha1: rk6e3cc2t5ufbdk8o4bgxss2ckisdnz
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Config
+
+|descr= Extract array from config entry.
+
+|s1= [[getArray]] config
+
+|p1= config: [[Config]]
+
+|r1= [[Array]] of [[Anything]]
+
+|x1= <sqf>_array = getArray (configFile >> "CfgVehicles" >> "Thing" >> "threat");</sqf>
+
+|seealso= [[configFile]] [[a / b]] [[configName]] [[count]] [[getText]] [[getNumber]] [[inheritsFrom]] [[isArray]] [[isClass]] [[isNumber]] [[isText]] [[select]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140328075200
+|text= ({{arma3}} 1.14) It's recommended to use [[BIS_fnc_getCfgData]] or [[BIS_fnc_returnConfigEntry]] to get variable cfg data rather than conditioning via [[isNumber]], [[isText]], [[isArray]], [[getNumber]], [[getText]] and [[getArray]] combination.<br>
+Traditional workaround:
+<sqf>
+_cfg = configFile >> "CfgVehicles" >> _SomeAddonClassName >> "DestructionEffects" >> "Smoke1" >> "type";
+switch ( true ) do
+{
+	case (isNumber _cfg): {getNumber _cfg};
+	case (isText _cfg): {getText _cfg};
+	case (isArray _cfg): {getArray _cfg;};
+	default { nil };
+};
+</sqf>
+'''Recommended workaround:'''
+<sqf>(configFile >> "CfgVehicles" >> _SomeAddonClassName >> "DestructionEffects" >> "Smoke1" >> "type") call BIS_fnc_getCfgData;</sqf>
+To return default value once entry was not found, we can use [[BIS_fnc_returnConfigEntry]] instead of [[BIS_fnc_getCfgData]].
+<sqf>[(configFile >> "CannonFire" >> "LightExp"),"lifeTime",0] call BIS_fnc_returnConfigEntry; // 0.5</sqf>
+}}
+
+{{Note
+|user= demellion
+|timestamp= 20180112194800
+|text= There is special behaviour if you try to read a description.ext config entry [[Array]] that contains a [[Boolean]].<br>
+Getting array in '''MP''' will result in [[Number]], while '''SP''' will return [[String]].
+<sqf>
+// SP with false in array
+getArray (missionConfigFile >> "someClass" >> "someArray") // -> "false"
+
+// MP with false in array
+getArray (missionConfigFile >> "someClass" >> "someArray") // -> 0
+</sqf>
+}}

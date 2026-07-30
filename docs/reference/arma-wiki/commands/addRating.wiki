@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/addRating
+// revision: 353042 (2024-03-12T12:07:04Z)
+// export sha1: ljuj4d8epkpsi482iyavq5xrheqxi4g
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Add a number to the [[rating]] of a unit - negative values can be used to reduce the rating.<br>
+This command is usually used to reward for completed mission objectives.The rating is given at the end of the mission and is automatically adjusted when killing enemies or friendlies.<br>
+When the rating gets below -2000, the unit's side switches to [[sideEnemy]] and the unit is attacked by everyone.
+{{Feature|informative|See also {{Link|ArmA: Armed Assault: Rating Values}} and {{Link|Arma 3: Event Handlers#HandleRating}}.}}
+
+|s1= unitName [[addRating]] rating
+
+|p1= unitName: [[Object]]
+
+|p2= rating: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player addRating 2000;</sqf>
+
+|x2= Set the rating to a specific value:
+<sqf>
+private _wantedRating = 9001;
+player addRating (_wantedRating - rating player);
+</sqf>
+
+|seealso= [[Side Relations]] [[ArmA: Rating Values|Rating Values]] [[rating]] [[rank]] [[setUnitRank]] [[sideEnemy]]
+}}

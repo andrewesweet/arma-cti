@@ -1,0 +1,102 @@
+// source: https://community.bistudio.com/wiki/Template:Wiki
+// revision: 352926 (2024-03-04T18:33:54Z)
+// export sha1: 9pl85jltjz6tddujihmdwyyuj80laxk
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}|{{#switch:{{uc:{{{1|}}}}}
+|DELETE= {{Messagebox|'''This article has been submitted for''' <big>[[:Category:Deletion requests|deletion]]</big>'''.'''{{#if:{{{2|}}}|<nowiki> </nowiki>'''The reason given was:''' {{{2}}}}}|🗙|#F00}}{{TemplateCase||[[Category:Deletion requests]]}}
+|DISAMB
+|DISAMBIG= {{Messagebox|This [[:Category:Disambiguation Pages|disambiguation page]] lists articles associated with the same title.|{{Icon|disamb|35}}|burlyWood}}{{TemplateCase||[[Category:Disambiguation Pages]]}}
+|EXTRACTIONSCRIPT= {{Feature|informative|Extraction script can be found on the [[Biki Export Scripts#{{{2|{{FULLPAGENAME}}}}}|Biki Export Scripts]] page.}}
+|LIPSUM
+|LOREM= Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris{{#ifeq:{{{2|}}}|...|&hellip;|<nowiki/> nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}}
+|MERGE= {{Messagebox|This article has been proposed to [[:Category:Merge Requests|merge]] with {{#if:{{{2|}}}|[[{{{2}}}]]|'''-no article provided-'''{{TemplateCase||[[Category:Wiki template usage error]]}}}}.{{#if:{{{3|}}}|<nowiki/> Reason: {{{3}}}}}|<div style{{=}}"font-size: .75em; line-height: .6em">↘<br>↗</div><!--↣-->|blueviolet}}{{TemplateCase||[[Category:Merge Requests]]}}
+|PLACEHOLDER= {{Messagebox|[[:Category:Maintenance/RV/Description needed|Placeholder description]] extracted from the function header by [[BIS_fnc_exportFunctionsToWiki]].|🏗|DarkGray}}{{TemplateCase||[[Category:Maintenance/RV/Description needed]]}}
+|STUB= <div class="notice metadata" id="stub">''This article is a [[:Category:Stubs|Stub]]. You can help BI Community Wiki by <span class="plainlinks">[{{fullurl:{{FULLPAGENAME}}|action=edit}} expanding it]</span>.''</div>{{TemplateCase||[[Category:Stubs]]}}
+|TODO= {{Messagebox|'''[[:Category:To-do|TODO]]:''' {{{2|this must be updated.}}}|🚧|#96C}}{{TemplateCase||[[Category:To-do]]}}
+|WIP= {{Messagebox|This article is a '''[[:Category:WIP|work in progress]]'''!{{#if:{{{2|}}}|<nowiki/> Reason: {{{2}}}}}|🏗|dodgerblue}}{{TemplateCase||[[Category:WIP]]}}
+|#default= -wrong wiki option ("{{{1}}}") defined-{{TemplateCase||[[Category:Wiki template usage error]]}}
+}}
+|-no wiki option defined!-{{TemplateCase||[[Category:Wiki template usage error]]}}}}</includeonly><noinclude>
+This template serves as a toolbox for wiki editors. It contains most useful templates, and automatically categorises pages - placing them in the [[:Category:Wiki template usage error|Wiki template usage error]] category if misused.
+
+== Usage ==
+{{<nowiki/>Wiki|'''''type'''''|'''''arguments'''''}}
+* type: (case-insensitive) messagebox type, can be:
+** delete: a [[:Category:Deletion requests|Deletion request]]
+*** argument1: deletion request reason
+** disamb: a [[:Category:Disambiguation Pages|Disambiguation]] page
+** extractionScript: a link to the [[Biki Export Scripts]] page
+*** argument1: (Optional, default {{hl|<nowiki>{{FULLPAGENAME}}</nowiki>}} link anchor
+** lipsum: a {{Link|https://en.wikipedia.org/wiki/Lorem_ipsum}} excerpt
+*** argument1: {{hl|...}} to have a shortened version (see examples below)
+** merge: a [[:Category:Merge Requests|Merge request]]
+*** argument1: destination page
+*** argument2: merge reason
+** placeholder: a [[:Category:Maintenance/RV/Description needed|placeholder]] mark, meaning the [[:Category:Functions|Function]] page has a basic header documentation
+** stub: a [[:Category:Stubs|Stub]] mark, meaning the page/section can be expanded
+** TODO: a [[:Category:To-do|To-Do]] mark, meaning the page/section must be (re)written ''soon''&trade;
+** WIP: a [[:Category:WIP|work in progress]] page - a wiki editor is ''currently'' working on it
+* argument: (Optional) argument, depends on ''type''
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{Wiki}}</nowiki>
+| {{Wiki}}
+|-
+| <nowiki>{{Wiki|Hello there!}}</nowiki>
+| {{Wiki|Hello there!}}
+|-
+| <nowiki>{{Wiki|delete}}</nowiki>
+| {{Wiki|delete}}
+|-
+| <nowiki>{{Wiki|delete|Why not?}}</nowiki>
+| {{Wiki|delete|Why not?}}
+|-
+| <nowiki>{{Wiki|disamb}}</nowiki>
+| {{Wiki|disamb}}
+|-
+| <nowiki>{{Wiki|extractionScript}}</nowiki>
+| {{Wiki|extractionScript}}
+|-
+| <nowiki>{{Wiki|extractionScript|OtherName}}</nowiki>
+| {{Wiki|extractionScript|OtherName}}
+|-
+| <nowiki>{{Wiki|lorem}}</nowiki>
+| {{Wiki|lorem}}
+|-
+| <nowiki>{{Wiki|lorem|...}}</nowiki>
+| {{Wiki|lorem|...}}
+|-
+| <nowiki>{{Wiki|merge}}</nowiki>
+| {{Wiki|merge}}
+|-
+| <nowiki>{{Wiki|merge|Main Page}}</nowiki>
+| {{Wiki|merge|Main Page}}
+|-
+| <nowiki>{{Wiki|merge|Main Page|Why not?}}</nowiki>
+| {{Wiki|merge|Main Page|Why not?}}
+|-
+| <nowiki>{{Wiki|placeholder}}</nowiki>
+| {{Wiki|placeholder}}
+|-
+| <nowiki>{{Wiki|stub}}</nowiki>
+| {{Wiki|stub}}
+|-
+| <nowiki>{{Wiki|todo}}</nowiki>
+| {{Wiki|todo}}
+|-
+| <nowiki>{{Wiki|todo|message}}</nowiki>
+| {{Wiki|todo|This article needs a refresh!}}
+|-
+| <nowiki>{{Wiki|WIP}}</nowiki>
+| {{Wiki|WIP}}
+|-
+| <nowiki>{{Wiki|WIP|working on new pictures.}}</nowiki>
+| {{Wiki|WIP|working on new pictures.}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

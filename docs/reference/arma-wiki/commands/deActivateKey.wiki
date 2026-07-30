@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/deActivateKey
+// revision: 318885 (2022-05-13T09:21:59Z)
+// export sha1: nxnuk6jxhitpowtmqoga9pjuqaw0msq
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Mission Information
+
+|descr= Deactivates the given keyname for the current user profile. The keys are used to unlock missions or campaigns.
+
+See keys, keysLimit and doneKeys in the [[Description.ext#keys|description.ext]] file of the missions.
+
+|s1= [[deActivateKey]] keyname
+
+|p1= keyname: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>deActivateKey "Mission04Key";</sqf>
+
+|seealso= [[isKeyActive]] [[activateKey]]
+}}

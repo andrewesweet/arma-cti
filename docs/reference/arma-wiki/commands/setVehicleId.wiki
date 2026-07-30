@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/setVehicleId
+// revision: 364524 (2024-05-16T20:46:23Z)
+// export sha1: 824tffz2lvcnjeomh7p08oq7cbxr06i
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Object Manipulation
+
+|gr2= Broken Commands
+
+|descr= Sets ID to vehicle. By this ID vehicle is referenced by triggers and waypoints.
+
+{{Feature|warning|This command is '''not''' to be used.}}
+
+|s1= vehicleName [[setVehicleId]] id
+
+|p1= vehicleName: [[Object]]
+
+|p2= id: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setVehicleId 1;</sqf>
+
+|seealso= [[setVehicleVarName]]
+}}

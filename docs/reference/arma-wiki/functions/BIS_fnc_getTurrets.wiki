@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getTurrets
+// revision: 348930 (2023-11-08T14:44:06Z)
+// export sha1: ralodw9uebymjlg6cw4nmx9xmtzhl5n
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Returns vehicle turrets.
+
+|s1= [input, outputType] call [[BIS_fnc_getTurrets]]
+
+|p1= input: [[Object]] or [[String]] - object or object's class name
+
+|p2= outputType: [[Config]] or [[Array]] - output type (array of config paths or IDs)
+
+|r1= [[Array]] of [[Config|configs]] or [[Array]] - vehicle turrets
+
+|x1= <sqf>[vehicle player]  call BIS_fnc_getTurrets;</sqf>
+
+|seealso= [[moveInTurret]] [[allTurrets]]
+}}

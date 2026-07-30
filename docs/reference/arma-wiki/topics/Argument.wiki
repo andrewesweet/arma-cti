@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/Argument
+// revision: 329068 (2022-07-21T23:40:25Z)
+// export sha1: seihf1kvga5u8uxn1fjz2v3d0zxg5o2
+// categories: Category:Syntax
+// Vendored snapshot. Do not edit — re-export instead.
+
+An '''argument''' is any value that ''is being passed'' to a [[:Category: Scripting Commands|scripting command]] or an executed [[Script File|script]] or [[Function|function]]. In the script or function this value is considered a [[Parameter|parameter]].
+
+
+'''Example:'''
+
+<sqf>[variable, 5, "string"] execVM "myScript.sqf"</sqf>
+
+The [[Array]] {{hl|[variable, 5, "string"]}} and the contained values are called the arguments given to the script.
+
+== Access ==
+
+In the script the argument can be accessed using the [[Magic Variables|magic variable]] {{hl|_this}}.
+
+== See also ==
+
+* [[Parameter]]
+
+[[Category:Syntax]]

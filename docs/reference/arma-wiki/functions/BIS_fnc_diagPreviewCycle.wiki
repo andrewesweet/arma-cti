@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagPreviewCycle
+// revision: 347983 (2023-11-08T09:59:34Z)
+// export sha1: hnw9g2gziccgyfzrfpm2xe8i6bz5t10
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Previews selected class from the list. When '''cheat1''' (?) is activated, classnames will be shown instead of display names.
+
+|s1= [container, position, vector, display] call [[BIS_fnc_diagPreviewCycle]]
+
+|p1= container: [[String]] - (Optional, default "CfgVehicles") class container. Can be:
+* "CfgVehicles"
+* "CfgWeapons"
+
+|p2= position: [Array]] format [[Position]] - (Optional, default <sqf inline>[position player, 10, 0] call BIS_fnc_relPos</sqf>) position of the previewed object
+
+|p3= vector [[Array]] of [[Number]]s - (Optional, default [0,0]]) vector of previewed object in format:
+* 0: Pitch
+* 1: Bank
+
+|p4= display: [[Display]] - (Optional, default [[BIS_fnc_displayMission]]) parent display
+
+|r1= [[Boolean]]
+
+|x1= <sqf>["CfgVehicles"] call BIS_fnc_diagPreviewCycle;</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic|Diag functions]]
+}}

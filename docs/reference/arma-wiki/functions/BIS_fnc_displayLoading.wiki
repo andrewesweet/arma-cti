@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_displayLoading
+// revision: 327045 (2022-07-12T21:44:46Z)
+// export sha1: 1gncek1cic3gq7swppn9wy5w582u3zb
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= [[Loading Screens]] init.
+
+|s1= [onLoad, id] call [[BIS_fnc_displayLoading]] 
+
+|p1= onLoad: [[Array]] - params provided by onLoad [[User Interface Event Handlers|UI Event Handler]]
+
+|p2= id: [[Number]] - id of loading screen. Used only for debugging
+
+|r1= [[Nothing]]
+
+|x1= <sqf>([_this, 2302] call (uiNamespace getVariable 'BIS_fnc_displayLoading')</sqf>
+
+|seealso= [[Loading Screens]]
+}}

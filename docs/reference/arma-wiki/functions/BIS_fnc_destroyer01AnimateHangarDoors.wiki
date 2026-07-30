@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_destroyer01AnimateHangarDoors
+// revision: 286010 (2021-06-20T17:24:13Z)
+// export sha1: lm51k33n1igs2bn3b72tf9wirfu4k8e
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Destroyer | Category:Functions | Category:Introduced with Arma 3 version 1.84 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.84
+
+|gr1= Destroyer
+
+|descr= <pre>/*
+	Author: Bravo Zero One development
+	- John_Spartan
+
+	Description:
+	- This is a sub function designed to handle animations of ship hangar doors. Used in Eden attributes and objects user actions.
+
+	Execution:
+	- Call from script.
+
+	Example:
+		[_shipPart, _value, false] spawn BIS_fnc_destroyer01AnimateHangarDoors;
+
+	Required:
+		Object (ship) must have all animations correctly defined and user actions configured.
+
+	Parameter(s):
+		_this select 0: mode (Scalar)
+		0: ship-part object
+		and
+		1: animation state of doors
+		2: animation speed (instant = true/smooth=false);
+
+	Returns: nothing
+	Result: Ship's hangar door animation is played with sounds added.
+
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_destroyer01AnimateHangarDoors]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

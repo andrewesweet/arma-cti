@@ -1,0 +1,82 @@
+// source: https://community.bistudio.com/wiki/isServer
+// revision: 369339 (2024-09-03T18:43:01Z)
+// export sha1: a9j1hs8o6do9fqvc92we27r199q9v4f
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Operation Flashpoint version 1.99 | Category:Maintenance/RV | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.99
+
+|game2= arma1
+|version2= 1.06
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Multiplayer
+
+|descr= Returns [[true]] if the machine executing the command is the server in a multiplayer game or is running single player. It will return [[true]] for both dedicated and player-hosted server. See also [[Multiplayer Scripting#Different machines and how to target them|Multiplayer Scripting/machines]].
+
+|s1= [[isServer]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (!isServer) exitWith {};</sqf>
+
+|seealso= [[isDedicated]] [[isMultiplayer]] [[hasInterface]] [[local]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2011-04-08</dd>
+<dt class="note">[[User:Igneous01|Igneous01]]</dt>
+<dd class="note">'''Before {{arma3}} and server-only triggers:''' You can use [[isServer]] inside the condition of a trigger to have the trigger activate only for the server. All other conditions for the trigger will be checked across all machines, but it will only activate the trigger created on the server. For example:
+<sqf>this && isServer</sqf>
+<dt></dt>
+<dd class="notedate">Posted on 2014-12-21 - 14:51 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+<sqf>
+if (isDedicated) then {
+	// run on dedicated server only
+};
+
+if (isServer) then {
+	// run on dedicated server or player host
+};
+
+if (hasInterface) then {
+	// run on all player clients incl. player host
+};
+
+if (!isDedicated) then {
+	// run on all player clients incl. player host and headless clients
+};
+
+if (!isServer) then {
+	// run on all player clients incl. headless clients but not player host
+};
+
+if (!hasInterface) then {
+	// run on headless clients and dedicated server
+};
+
+if (!hasInterface && !isDedicated) then {
+	// run on headless clients only
+};
+</sqf>
+</dd>
+
+</dl>

@@ -1,0 +1,124 @@
+// source: https://community.bistudio.com/wiki/Expeditionary_Forces
+// revision: 370327 (2024-11-27T18:53:43Z)
+// export sha1: 4d9p5zzopmjkvqzhw0lhwpl9xq53o7y
+// categories: Category:Arma 3: CDLCs | Category:Expeditionary Forces
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+{{Navbox/CDLCs}}
+
+{{Infobox/Game
+|title= Expeditionary Forces
+|image= [[File:arma3-cdlc-expeditionary forces store header.jpg|300px|link= https://store.steampowered.com/app/2647830/Arma_3_Creator_DLC_Expeditionary_Forces/]]<br/>[[File:a3 gm arma3-com steampageimg 600x100 3c.png|link=http://www.arma3.com/dlc/creator|300px]]
+|releaseDate= 26 November 2024
+|storePage= {{Link|https://store.steampowered.com/app/2647830/Arma_3_Creator_DLC_Expeditionary_Forces/|Steam}}
+|developer= [[File:tiny-gecko-studios-96x96.png|48px]] Tiny Gecko Studios
+|website= {{Link|https://tinygeckostudios.com/|https://tinygeckostudios.com/}}
+|discord= {{Link|https://discord.gg/eMF78KxPrQ|https://discord.gg/eMF78KxPrQ}}
+|facebook=
+|twitter= {{Link|https://twitter.com/TinyGeckoDev|https://twitter.com/TinyGeckoDev}}
+}}
+
+The Marines have landed! Explore new warfare capabilities in Arma 3 with the Expeditionary Forces Creator DLC.
+Prepare your Marines for action on the Amphibious Warfare Ship, assault enemy shores with AAV-9 Mack IFVs and Combat Boats, bring supplies ashore with the LCC-1 Landing Craft, perform raids behind enemy lines with new Hunter reconnaissance vehicles, and take part in the invasion of Altis from a new perspective.
+
+== Features ==
+
+Key features of the Expeditionary Forces Creator DLC include:
+
+=== AAV-9 Mack ===
+
+The AAV-9 Mack is an amphibious Infantry Fighting Vehicle capable of ferrying a squad of 13 Marines from ship to shore at high speed.
+It is equipped with either a 30mm or 50mm autocannon and a 7.62mm coaxial machine gun. It features an extendable periscope for the commander and hatches in the back to allow troops to turn out and return fire.
+
+=== Combat Boat ===
+
+The Combat Boat is a 17 meter long multi-role vessel. Its high speed, combined with a versatile design, makes it suitable for amphibious assaults, maritime patrol, and fire support.
+It can carry a squad of 16 troops plus crew, and can be fitted with a variety of weapons.
+
+=== LCC-1 Landing Craft ===
+
+The LCC-1 is a landing craft used to ferry equipment and vehicles from ship to shore. Its design allows it to change between a slow-speed shallow draft ship and a high-speed catamaran.
+It has a maximum payload of 200 tons and is capable of reaching speeds up to 35 knots (or 65 kph).
+
+=== Amphibious Warfare Ship "USS Takmyr" (LPD-36) ===
+
+The Amphibious Warfare Ship is the core of Marine Expeditionary Units. Acting as a floating barracks, it allows MJTFs to deploy all the assets required to sustain operations abroad.
+Named after the Takistani capital following one of Operation Arrowhead's fiercest battles, the LPD-36 USS Takmyr is the ship assigned to carry the 29th MEU to Altis and execute Operation Resolute Cyclone.
+
+Its design features a flight deck with hangar for launching helicopters, and a well deck to launch landing crafts or amphibious assault vehicles.
+
+=== One New Faction ===
+
+The Marine Joint Task Force has arrived. It is a self-contained expeditionary unit capable of operating independently from amphibious warfare ships and specialized in fighting in littoral areas.
+It comes with a variety of new equipment, including helmets, vests, uniforms, night vision devices, and scuba diving gear.
+
+=== Hunter Reconnaissance Vehicles ===
+
+Taking advantage of the capable MRAP chassis, the Hunter Reconnaissance Vehicles greatly expand on their firepower and sensors.
+Three new variants are available: Fire Support Vehicle (featuring a 30mm rapid-fire autocannon and Titan missiles), Anti-Tank (featuring a dual Titan-NLOS launcher and 7.62mm coaxial machine gun), and Low Altitude Air Defense (featuring a 30mm rapid fire autocannon, SAAMI missiles, and short-range radar for drone detection).
+
+=== AH-99J Python ===
+
+At the request of the Marines, an upgrade for the AH-99 was developed in the late 2010s. Named AH-99J Python, the helicopter trades some of its stealth capabilities for long-range datalink antennas, more powerful radar, and external stores allowing it to carry a wider array of weapons, including AGM-122M Sidearm anti-radiation missiles and Titan NLOS pods.
+
+=== Resolute Cyclone SP Mini-Campaign ===
+
+On the eve of the NATO invasion on Altis, Marines from the 29th MEU are tasked with securing the western part of the island.
+Join the MJTF in this single player mini-campaign, use stealth to infiltrate enemy territory, cut the enemy off from reinforcements, and liberate Kavala from the AAF.
+
+=== Rope In Hand MP CO-OP ===
+
+A platoon from Light Armor Reconnaissance is tasked with clearing the road for the Marines who are rapidly advancing towards Athira.
+Hop in a Hunter FSV or Hunter AT with your friends in this multiplayer co-op scenario and strike deep into enemy territory.
+
+=== New Features ===
+
+* Airburst Munitions: The Hunter LAAD's autocannon is loaded with Airburst munitions which, when combined with radar targeting information, can easily destroy fast aircraft or small drones with just a few shots.
+* Enhanced Drone Detection: The Hunter LAAD features radar that trades detection range for higher sensitivity, enabling it to even detect small quadcopter drones up to a distance of 4 km.
+* Titan NLOS: Long-range anti-tank missile that requires a datalink to gather targeting information, and can engage both laser and vehicle targets. Using ground following radar, it can fly past terrain obstacles and engage targets with no line of sight at launch up to 32 kms away.
+* AGM-122M Sidearm: The AGM-122M Sidearm was developed as a cheap alternative to more expensive and sophisticated AGM-88C HARM anti-radiation missiles. Converted from stocks of Falchion-22 short range air-to-air missiles, the Sidearm takes advantage of already existing mounts to give most western-made aircraft basic SEAD/DEAD capabilities.
+
+<!--
+== Videos ==
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center">
+{{Youtube|<ID>|Launch Trailer|center|500}}
+</div>
+-->
+
+== Gallery ==
+
+<gallery mode="slideshow" showThumbnails>
+File:arma3 expeditionary forces screenshot 01.jpg
+File:arma3 expeditionary forces screenshot 02.jpg
+File:arma3 expeditionary forces screenshot 03.jpg
+File:arma3 expeditionary forces screenshot 04.jpg
+File:arma3 expeditionary forces screenshot 05.jpg
+File:arma3 expeditionary forces screenshot 06.jpg
+File:arma3 expeditionary forces screenshot 07.jpg
+File:arma3 expeditionary forces screenshot 08.jpg
+File:arma3 expeditionary forces screenshot 09.jpg
+File:arma3 expeditionary forces screenshot 10.jpg
+</gallery>
+
+
+== About the Developers ==
+
+The '''{{arma3}} Creator DLC: Expeditionary Forces''' is published by {{Name|bi}} and developed by Tiny Gecko Studios - a small group of {{arma}} modders and developers with more than a decade of experience across various well-established projects and Creator DLCs.
+
+
+== Compatibility Data for Non-Owners ==
+
+People who do not own the Expeditionary Forces DLC will be able to download and install the DLC's optional data via the {{arma3}} Steam Workshop. Subscribing to this Workshop item will make it possible for potential buyers to try out many of the DLC's assets prior to purchasing.
+People who do not own the Expeditionary Forces DLC are able to download and install the DLC's optional data via the {{arma3}} Steam Workshop {{Link|https://steamcommunity.com/sharedfiles/filedetails/3348605126|here}}. Subscribing to this Workshop item makes it possible for potential buyers to try out many of the DLC's assets prior to purchasing.
+It also enables non-owners to join multiplayer servers that make use of DLC content. Be aware that access to the <!--DLC's terrain and--> campaign remains exclusive to owners of the DLC. Restrictions to the use of non-owned content also apply.
+
+Please note that access to premium content is restricted for non-owners in a similar way to our official default DLC. The missions are inaccessible. Premium weapons cannot be picked up. Premium vehicles can be primarily used as a passenger.
+For a detailed overview of premium DLC content restrictions, please refer to this {{Link|https://www.bohemia.net/blog/roadmap-14-15-dlc-strategy-blog|blogpost}}.
+
+Buying the DLC will remove these restrictions, enabling owners to access all the content.
+
+
+[[Category:Expeditionary Forces]]
+{{GameCategory|arma3|CDLCs}}

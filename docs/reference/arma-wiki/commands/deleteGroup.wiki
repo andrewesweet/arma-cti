@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/deleteGroup
+// revision: 330309 (2022-08-30T23:40:39Z)
+// export sha1: ix7oy44anna2x4hk9sairy1cwg5x9t3
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Groups
+|arg= local
+
+|eff= global
+
+|descr= Destroys the given group - the group must be empty and [[Multiplayer Scripting#Locality|local]] to the machine executing this command.
+
+{{Feature|informative|In {{arma3}} you can find out locality of the group with [[local]] command, unlike with previous games. However [[owner]] and [[setOwner]] don't work with groups anywhere. The group will always be local to the client that created it, until the client disconnects, then the group becomes local to the server. So if you need to delete a group, delete all members first then execute [[deleteGroup]] where is it [[local]].}}
+
+{{Feature|arma3|In {{arma3}} when the last unit leaves a group, the group gets automatically deleted. Manually deleting all units from a group, however, does '''not''' automatically delete the empty group. To force the group to get auto-deleted when empty, use [[deleteGroupWhenEmpty]].}}
+
+|s1= [[deleteGroup]] group
+
+|p1= group: [[Group]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>deleteGroup _group;</sqf>
+
+|x2= <sqf>[_group] remoteExec ["deleteGroup", groupOwner _group]; // server only</sqf>
+
+|seealso= [[deleteGroupWhenEmpty]] [[isGroupDeletedWhenEmpty]] [[createGroup]] [[units]] [[group]] [[groupFromNetId]]
+}}
+
+{{Note
+|user= ColonelSandersLite
+|timestamp= 20061217003400
+|text= The deleteGroup Command does not work when there are living members of in the group.  It doesn't error, it simply doesn't do anything.
+}}
+
+{{Note
+|user= 5133p39
+|timestamp= 20070710075000
+|text= Living or not doesn't matter - you can't delete the group while it contains any units - even dead ones. It takes few seconds until a dead unit is automatically removed from its group.
+}}
+
+{{Note
+|user= LongEnoughName
+|timestamp= 20130912035400
+|text= deleteGroup will only delete local groups even if called by server.
+Say we have a situation where client creates a group and puts a unit there and later unit dies/gets deleted, server will not be able to delete that empty group until client leaves the game and group ownership switches to server.
+}}

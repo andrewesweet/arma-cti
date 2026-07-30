@@ -1,0 +1,108 @@
+// source: https://community.bistudio.com/wiki/with
+// revision: 369023 (2024-08-26T13:58:14Z)
+// export sha1: kj1hl06x9iq9wut863trl75ora6ldtf
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Namespaces | Category:Command Group: Program Flow | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Program Flow
+|gr2= Namespaces
+
+|descr= Creates a [[With Type]] that is used inside a [[do]] construct in order to execute code inside a given namespace.
+{{Feature|important|To avoid the below-mentioned issue error (whether in [[Scheduler#Scheduled Environment|scheduled]] or [[Scheduler#Unscheduled Environment|unscheduled]] environment) use [[setVariable]]/[[getVariable]] with the desired [[Namespace]].}}
+
+|pr= When used in a do-construct in scripts with allowed suspension, a namespace switching might unexpectedly occur inside some scopes ([[for]], [[if]], [[try]], [[call]]) started in a [[Scheduler#Scheduled Environment|scheduled]] environment after small suspension if [[with]] was not the main scope; however, the issue does not arise if [[with]] is used in the parent scope:
+{{{!}} class="wikitable"
+! namespace switch risk
+! namespace switch safe
+{{!}}-
+{{!}}
+<sqf>
+0 spawn
+{
+	with uiNamespace do
+	{
+		for "_i" from 1 to 1 do 
+		{
+			systemChat str [
+				currentNamespace isEqualTo uiNamespace, 
+				currentNamespace isEqualTo missionNamespace
+			];
+			// result [true, false]
+			sleep 0.05; // <-- small suspension
+			systemChat str [
+				currentNamespace isEqualTo uiNamespace, 
+				currentNamespace isEqualTo missionNamespace
+			];
+			// result [false, true] <-- switching
+		};
+	};
+};
+</sqf>
+{{!}}
+<sqf>
+with uiNamespace do
+{
+	0 spawn
+	{
+		for "_i" from 1 to 1 do 
+		{
+			systemChat str [
+				currentNamespace isEqualTo uiNamespace, 
+				currentNamespace isEqualTo missionNamespace
+			];
+			// result [true, false]
+			sleep 0.05; // <-- small suspension
+			systemChat str [
+				currentNamespace isEqualTo uiNamespace, 
+				currentNamespace isEqualTo missionNamespace
+			];
+			// result [true, false] <-- NO switching
+		};
+	};
+};
+</sqf>
+{{!}}}
+
+|s1= [[with]] namespace
+
+|p1= namespace: [[Namespace]]
+
+|r1= [[With Type]]
+
+|x1= <sqf>_myWithType = with uiNamespace;</sqf>
+
+|x2= <sqf>with missionNamespace do { global = global + 1 };</sqf>
+
+|seealso= [[missionNamespace]] [[uiNamespace]] [[parsingNamespace]] [[currentNamespace]]
+}}
+
+{{Note
+|user= Hypoxic125
+|timestamp= 20230223070505
+|text= '''Using with:'''
+<sqf>
+with profileNamespace do {
+	myVariable = "Hello!";
+};
+</sqf>
+'''is the same as:'''
+<sqf>
+profileNamespace setVariable ["myVariable", "Hello!"];
+</sqf>
+
+This allows you to quickly modify/use variables within a namespace without using '''get/setvariable''' every time.
+}}

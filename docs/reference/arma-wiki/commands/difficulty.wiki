@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/difficulty
+// revision: 353045 (2024-03-12T12:13:06Z)
+// export sha1: 7jb5vf6jqo184x5piq77r2kv19mhwo3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Difficulty | Category:Introduced with Arma 3 version 0.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.56
+
+|gr1= Difficulty
+
+|descr= Returns high-level selected difficulty mode.
+
+|s1= [[difficulty]]
+
+|r1= [[Number]] - Can be one of:
+* 0 (Recruit)
+* 1 (Regular)
+* 2 (Veteran)
+* 3 (Elite)
+
+|x1= <sqf>
+if (difficulty == 0) then
+{
+	hint "You will need to follow my lead - read the Field Manual!";
+};
+</sqf>
+
+|x2= [[File:Difficulty.jpg|400px|thumb|Note: "Insane" is a modded difficulty]] The command returns the index of selected difficulty as they appear in ''CfgDifficulties'':
+<sqf>hint str difficulty; //Result: 4</sqf>
+
+|seealso= [[difficultyOption]] [[Arma 3: Difficulty Settings]] [[missionDifficulty]]
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20230822063121
+|text= The return value can be overwritten by the [[Arma 3: Server Config File|forcedDifficulty]] by the server if it is a MP session.
+}}

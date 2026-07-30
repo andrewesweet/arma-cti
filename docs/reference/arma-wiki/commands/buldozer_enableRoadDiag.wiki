@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/buldozer_enableRoadDiag
+// revision: 310178 (2022-05-05T13:10:30Z)
+// export sha1: 2bxvyhlxpgoo2e1hbhghbj0zpi23yag
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 1.26 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.26
+
+|gr1= System
+
+|descr= Enables road diagnostics in buldozer.
+
+|s1= [[buldozer_enableRoadDiag]] enable
+
+|p1= enable: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>buldozer_enableRoadDiag true;</sqf>
+
+|seealso= [[buldozer_loadNewRoads]] [[buldozer_isEnabledRoadDiag]]
+}}

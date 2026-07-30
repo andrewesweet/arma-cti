@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/Template:GameCategory/SortKey
+// revision: 295912 (2021-11-16T09:33:38Z)
+// export sha1: 5cd4h20gu2qboc44y4guex9tg9wym1r
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{2|}}}
+	|{{#ifeq:{{Trim|{{uc:{{{2|}}}}}}}|{{uc:{{{1}}}}}
+		|{{uc:{{{1}}}}}
+		|{{Trim|
+			{{#replace:
+				{{#replace:{{uc:{{{2}}}}}
+					|{{uc:{{{1}}}}}:
+					|
+				}}
+				|{{uc:{{{1}}}}}
+				|
+			}}
+		}}
+	}}
+}}</includeonly><noinclude>
+Returns an uppercase category sort key for the provided page.
+
+== Usage ==
+{{<nowiki/>GameCategory/SortKey|'''''categoryName'''''|'''''pageName'''''}}
+* categoryName: the game's ''category'' name (see {{Template|Name}} - e.g {{hl|Arma 2}}, '''not''' {{hl|arma2}})
+* pageName: the page name from which the key is taken
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{GameCategory/SortKey}}</nowiki>
+| {{GameCategory/SortKey}}
+|-
+| <nowiki>{{GameCategory/SortKey|Arma 2}}</nowiki>
+| {{GameCategory/SortKey|Arma 2}}
+|-
+| <nowiki>{{GameCategory/SortKey|Arma 2|Arma 2}}</nowiki>
+| {{GameCategory/SortKey|Arma 2|Arma 2}}
+|-
+| <nowiki>{{GameCategory/SortKey|Arma 2|Arma 2: Editing}}</nowiki>
+| {{GameCategory/SortKey|Arma 2|Arma 2: Editing}}
+|-
+| <nowiki>{{GameCategory/SortKey|Arma 3|Arma 3 Editing}}</nowiki>
+| {{GameCategory/SortKey|Arma 3|Arma 3 Editing}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

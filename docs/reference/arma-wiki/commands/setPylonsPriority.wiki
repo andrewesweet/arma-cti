@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/setPylonsPriority
+// revision: 310928 (2022-05-07T20:51:11Z)
+// export sha1: 3q538j6za8ao3p0c7bjlk9qbht4gaqy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Loadouts | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Vehicle Loadouts
+
+|descr= Overrides default pylons priorities.
+
+|s1= vehicle [[setPylonsPriority]] priorities
+
+|p1= vehicle: [[Object]]
+
+|p2= priorities: [[Array]] of [[Number]]s
+
+|r1= [[Nothing]]
+
+|x1= <sqf>(vehicle player) setPylonsPriority [0,1,2,3,4,5,5,4,3,2,1,0];</sqf>
+
+|seealso= [[Arma 3: Vehicle Loadouts]] [[getCompatiblePylonMagazines]] [[getPylonMagazines]] [[setAmmoOnPylon]] [[ammoOnPylon]] [[animatePylon]] [[animateBay]] [[setPylonLoadout]]
+}}

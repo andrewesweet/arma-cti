@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/visiblePosition
+// revision: 363616 (2024-04-08T11:45:05Z)
+// export sha1: oaeha9m65izbprlxvdzup1mapy87q4c
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Command Group: Render Time Scope | Category:Introduced with Arma 2: Operation Arrowhead version 1.60 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.60
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Positions
+|gr2= Render Time Scope
+
+|descr= Returns an object's rendered position (z value above surface underneath) in render time scope. Same as [[getPosVisual]].
+{{Feature|important|This command must '''not''' be used for actual 3D calculations. See [[getPos]] for an explanation.}}
+
+|s1= [[visiblePosition]] object
+
+|p1= object: [[Object]] - name of the object
+
+|r1= [[Position#PositionAGLS|PositionAGLS]]
+
+|x1= <sqf>_playerRenderedPos = visiblePosition player;</sqf>
+
+|seealso= [[getPosVisual]] [[getPosATLVisual]] [[getPosASLVisual]] [[getPosWorldVisual]] [[visiblePositionASL]] [[position]] [[getPos]] [[getPosATL]] [[getPosASL]] [[getPosASLW]]
+}}
+
+{{Note
+|user= Leopard20
+|timestamp= 20220126151506
+|text= Note that this command returns the position in [[Position#PositionAGLS|AGLS]] format (Z is measured from the nearest surface below). For example the value of Z is 0 even if the object is resting on top of a building.<br>
+For use with draw commands, such as [[drawIcon3D]], an [[Position#PositionAGL|AGL]] position is needed. The following alternatives can be used, depending on where the icon is intended to be shown:
+<sqf>
+ASLToAGL getPosWorldVisual _object		// object center in model coordinates, i.e [0,0,0]
+ASLToAGL getPosASLVisual _object		// object land contact (e.g. floor of a building)
+unitAimPositionVisual _object			// object's aiming position, i.e where the AI aim at, such as a soldier's chest
+_object modelToWorldVisual _relativePos	// custom position in model coordinates. if _relativePos is [0,0,0], it'll be the same as ASLToAGL getPosWorldVisual _object
+</sqf>
+}}

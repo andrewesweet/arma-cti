@@ -1,0 +1,199 @@
+// source: https://community.bistudio.com/wiki/Template:Infobox/WorkbenchPlugin
+// revision: 378611 (2026-05-13T17:00:14Z)
+// export sha1: gtw92vxsntns18m2trj11t33pkc2ri5
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div class="float-right" style="max-width: 30em">
+{| class="wikitable"
+! class="align-center" |
+{{{name|-no name provided!-{{TemplateCase||[[Category:Infobox/WorkbenchPlugin template usage error]]}}}}}
+|-
+{{#if:{{{editor|}}}
+| {{#if: {{#pos:{{Trim|{{{editor}}}}}|<nowiki> </nowiki>}}
+| <!-- multiple values -->
+{{#if: {{#pos:{{{editor}}}|world}}{{#pos:{{{editor}}}|particle}}{{#pos:{{{editor}}}|animation}}{{#pos:{{{editor}}}|script}}{{#pos:{{{editor}}}|audio}}{{#pos:{{{editor}}}|behavior}}{{#pos:{{{editor}}}|string}}{{#pos:{{{editor}}}|procanim}}
+|
+{{!}} style="font-size: 0.9em" {{!}}
+This plugin is available in:
+{{Columns|2|
+{{#if: {{#pos:{{{editor}}}|resource}} |
+* {{Link|{{TemplateCase|Arma Reforger:Resource Manager{{!}}Resource Manager|{{NAMESPACE}}:Resource Manager}}}}
+}}{{#if: {{#pos:{{{editor}}}|world}} |
+* {{Link|{{TemplateCase|Arma Reforger:World Editor{{!}}World Editor|{{NAMESPACE}}:World Editor}}}}
+}}{{#if: {{#pos:{{{editor}}}|particle}} |
+* {{Link|{{TemplateCase|Arma Reforger:Particle Editor{{!}}Particle Editor|{{NAMESPACE}}:Particle Editor}}}}
+}}{{#if: {{#pos:{{{editor}}}|animation}} |
+* {{Link|{{TemplateCase|Arma Reforger:Animation Editor{{!}}Animation Editor|{{NAMESPACE}}:Animation Editor}}}}
+}}{{#if: {{#pos:{{{editor}}}|script}} |
+* {{Link|{{TemplateCase|Arma Reforger:Script Editor{{!}}Script Editor|{{NAMESPACE}}:Script Editor}}}}
+}}{{#if: {{#pos:{{{editor}}}|audio}} |
+* {{Link|{{TemplateCase|Arma Reforger:Audio Editor{{!}}Audio Editor|{{NAMESPACE}}:Audio Editor}}}}
+}}{{#if: {{#pos:{{{editor}}}|behavior}} |
+* {{Link|{{TemplateCase|Arma Reforger:Behavior Editor{{!}}Behavior Editor|{{NAMESPACE}}:Behavior Editor}}}}
+}}{{#if: {{#pos:{{{editor}}}|string}} |
+* {{Link|{{TemplateCase|Arma Reforger:String Editor{{!}}String Editor|{{NAMESPACE}}:String Editor}}}}
+}}{{#if: {{#pos:{{{editor}}}|procanim}} |
+* {{Link|{{TemplateCase|Arma Reforger:Procedural Animation Editor{{!}}Procedural Animation Editor|{{NAMESPACE}}:Procedural Animation Editor}}}}
+}}
+}}
+| {{!}} class="align-center" {{!}}
+-bad editors "{{{editor}}}" provided!-{{TemplateCase||[[Category:Infobox/WorkbenchPlugin template usage error]]}}
+}}
+| <!-- single or no values -->
+{{!}} class="align-center" {{!}}
+{{#switch:{{lc:{{{editor}}}}}
+|resource=	{{Link|{{TemplateCase|Arma Reforger:Resource Manager{{!}}Resource Manager|{{NAMESPACE}}:Resource Manager}}}} plugin
+|world=		{{Link|{{TemplateCase|Arma Reforger:World Editor{{!}}World Editor|{{NAMESPACE}}:World Editor}}}} plugin
+|particle=	{{Link|{{TemplateCase|Arma Reforger:Particle Editor{{!}}Particle Editor|{{NAMESPACE}}:Particle Editor}}}} plugin
+|animation=	{{Link|{{TemplateCase|Arma Reforger:Animation Editor{{!}}Animation Editor|{{NAMESPACE}}:Animation Editor}}}} plugin
+|script=	{{Link|{{TemplateCase|Arma Reforger:Script Editor{{!}}Script Editor|{{NAMESPACE}}:Script Editor}}}} plugin
+|audio=		{{Link|{{TemplateCase|Arma Reforger:Audio Editor{{!}}Audio Editor|{{NAMESPACE}}:Audio Editor}}}} plugin
+|behavior=	{{Link|{{TemplateCase|Arma Reforger:Behavior Editor{{!}}Behavior Editor|{{NAMESPACE}}:Behavior Editor}}}} plugin
+|string=	{{Link|{{TemplateCase|Arma Reforger:String Editor{{!}}String Editor|{{NAMESPACE}}:String Editor}}}} plugin
+|procanim=	{{Link|{{TemplateCase|Arma Reforger:Procedural Animation Editor{{!}}Procedural Animation Editor|{{NAMESPACE}}:Procedural Animation Editor}}}} plugin
+|#default=	-bad editor "{{{editor|}}}" provided!-{{TemplateCase||[[Category:Infobox/WorkbenchPlugin template usage error]]}}
+}}
+}}
+| {{!}} class="align-center" {{!}}
+-no editor provided!-{{TemplateCase||[[Category:Infobox/WorkbenchPlugin template usage error]]}}
+}}<!--
+-->{{#if: {{{uiPath|}}}
+| <nowiki/>
+{{!}}-
+{{!}} {{!}} '''UI Path:''' Plugins/{{{uiPath}}}
+}}
+{{#if: {{{shortcut|}}}
+|
+{{!}}-
+{{!}} {{!}} {{{shortcut}}}
+}}
+|-
+|
+{{{descr|-no description provided!-{{TemplateCase||[[Category:Infobox/WorkbenchPlugin template usage error]]}}}}}
+{{#if: {{{file|}}}
+| <nowiki/>
+{{!}}-
+{{!}}
+'''File:''' {{{file}}}
+}}
+|}</div></includeonly><noinclude>{{Doc/Template
+|descr= Create an infobox for a Workbench Editor plugin.{{Feature|informative|All parameters are named.}}
+Its error category is {{Link|Category:Infobox/WorkbenchPlugin template usage error|Infobox/WorkbenchPlugin template usage error}}.
+|param1= name=
+|descr1= the plugin's display name
+|param2= editor=
+|descr2= in which editors can this plugin be found - can be a multiple space-separated (case-insensitive) selection of:
+<div style="margin-left: 2em">
+{{Columns|4|
+* {{Link|Arma Reforger:Resource Manager|resource}}
+* {{Link|Arma Reforger:World Editor|world}}
+* {{Link|Arma Reforger:Particle Editor|particle}}
+* {{Link|Arma Reforger:Animation Editor|animation}}
+* {{Link|Arma Reforger:Script Editor|script}}
+* {{Link|Arma Reforger:Audio Editor|audio}}
+* {{Link|Arma Reforger:Behavior Editor|behavior}}
+* {{Link|Arma Reforger:String Editor|string}}
+* {{Link|Arma Reforger:Procedural Animation Editor|procanim}}
+}}
+</div>
+|param3= descr=
+|descr3= a short description of the plugin's role(s)
+|param4= uiPath=
+|descr4= (Optional) UI path that will be prefixed by {{hl|Plugins/}}, e.g "Terrain" or "World/Prefabs" (will respectively display {{hl|Plugins/Terrain}} / {{hl|Plugins/World/Prefabs}})
+|param5= shortcut=
+|descr5= (Optional) keyboard shortcut - see {{Template|Controls}}
+|param6= file=
+|descr6= (Optional) the editor's file path - see {{Template|Link}}
+
+|example1= <syntaxhighlight lang="handlebars">{{Infobox/WorkbenchPlugin}}</syntaxhighlight>
+|result1= {{Infobox/WorkbenchPlugin}}
+
+|example2= <syntaxhighlight lang="handlebars">
+{{Infobox/WorkbenchPlugin
+|name= My Plugin
+|editor= script
+|file=
+}}
+</syntaxhighlight>
+|result2= {{Infobox/WorkbenchPlugin
+|name= My Plugin
+|editor= script
+|file=
+}}
+
+|example3= <syntaxhighlight lang="handlebars">
+{{Infobox/WorkbenchPlugin
+|name= My Plugin
+|editor= badvalue
+|descr= plugin description
+}}
+</syntaxhighlight>
+|result3= {{Infobox/WorkbenchPlugin
+|name= My Plugin
+|editor= badvalue
+|descr= plugin description
+}}
+
+|example4= <syntaxhighlight lang="handlebars">
+{{Infobox/WorkbenchPlugin
+|name= My Plugin
+|editor= bad value
+|descr= plugin description
+}}
+</syntaxhighlight>
+|result4= {{Infobox/WorkbenchPlugin
+|name= My Plugin
+|editor= bad value
+|descr= plugin description
+}}
+
+|example5= <syntaxhighlight lang="handlebars">
+{{Infobox/WorkbenchPlugin
+|name= Basic Code Formatter
+|editor= script
+|descr= The Basic Code Formatter is a plugin that helps formatting code properly. Use is this way:
+* Shortcut 1 to scan edited lines in the currently-opened file (or in a whole addon, depending on options)
+* Shortcut 2 to scan '''all''' the lines in the currently-opened file (not depending on options)
+|file= {{Link|enfusion://ScriptEditor/scripts/WorkbenchGame/ScriptEditor/SCR_BasicCodeFormatterPlugin.c}}
+|shortcut= <nowiki/>
+# {{Controls|Ctrl|Shift|K}}
+# {{Controls|Ctrl|Alt|Shift|K}}
+}}
+</syntaxhighlight>
+|result5= {{Infobox/WorkbenchPlugin
+|name= Basic Code Formatter
+|editor= script
+|descr= The Basic Code Formatter is a plugin that helps formatting code properly. Use is this way:
+* Shortcut 1 to scan edited lines in the currently-opened file (or in a whole addon, depending on options)
+* Shortcut 2 to scan '''all''' the lines in the currently-opened file (not depending on options)
+|file= {{Link|enfusion://ScriptEditor/scripts/WorkbenchGame/ScriptEditor/SCR_BasicCodeFormatterPlugin.c}}
+|shortcut= <nowiki/>
+# {{Controls|Ctrl|Shift|K}}
+# {{Controls|Ctrl|Alt|Shift|K}}
+}}
+
+
+|example6= <syntaxhighlight lang="handlebars">
+{{Infobox/WorkbenchPlugin
+|name= Do Something
+|editor= world particle animation script audio behavior string procanim
+|descr= The Do Something plugin does something, as the name says.
+|shortcut= <nowiki/>
+# {{Controls|Ctrl|Alt|Del}} in {{Link|Arma Reforger:Script Editor|Script Editor}}
+# {{Controls|Ctrl|Shift|Del}} in {{Link|Arma Reforger:World Editor|World Editor}}
+|file= {{Link|enfusion://ScriptEditor/scripts/WorkbenchGame/ScriptEditor/SCR_BasicCodeFormatterPlugin.c}}
+}}
+</syntaxhighlight>
+|
+|result6= {{Infobox/WorkbenchPlugin
+|name= Do Something
+|editor= world particle animation script audio behavior string procanim
+|descr= The Do Something plugin does something, as the name says.
+|uiPath= World Entities
+|shortcut= <nowiki/>
+# {{Controls|Ctrl|Alt|Del}} in {{Link|Arma Reforger:Script Editor|Script Editor}}
+# {{Controls|Ctrl|Shift|Del}} in {{Link|Arma Reforger:World Editor|World Editor}}
+|file= {{Link|enfusion://ScriptEditor/scripts/WorkbenchGame/ScriptEditor/SCR_BasicCodeFormatterPlugin.c}}
+}}
+
+}}</noinclude>

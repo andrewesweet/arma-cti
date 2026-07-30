@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Timeline_Item_ARMA2
+// revision: 378652 (2026-05-18T16:04:24Z)
+// export sha1: 6yeqa6at13mv19el3gvj9ifty6iucuo
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>[[Image:Logo_A2.png|50px|link=Category:Arma_2]]</includeonly><noinclude>[[Category:Historical Templates]]</noinclude>

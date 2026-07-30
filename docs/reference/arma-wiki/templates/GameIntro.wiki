@@ -1,0 +1,270 @@
+// source: https://community.bistudio.com/wiki/Template:GameIntro
+// revision: 378832 (2026-07-08T16:31:14Z)
+// export sha1: 1038z06zs9frfm2kcv0mfey8mh7xo58
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>[[File:{{{image|MaldenFi17.jpg}}}|{{{size|250}}}px|right]]<!--
+-->{{#if: {{{isDLC|}}} | {{#if: {{{game|}}} | Introduced with: {{GVI|{{{game}}}|{{{version|?}}}}}{{TemplateCase||[[Category:Introduced with {{Name|{{{game|}}}}} version {{{version|}}}]]}}<br> }} }}<!--
+-->{{#if: {{{EAdate|}}} | Early Access: {{#time: M d, Y|{{{EAdate}}}}}<br> }}<!--
+-->{{#if: {{{releasedate|}}}
+| Released: {{#ifexpr: {{#len:{{{releasedate}}}}} = 8 or {{#len:{{{releasedate}}}}} = 10 <!-- 8 = YYYYMMDD, 10 = YYYY-MM-DD -->
+| {{#time: M d, Y|{{{releasedate}}}}}
+|
+{{{releasedate}}}<!-- line return for * lists -->
+}}<br>
+| <!--
+-->{{#if: {{{releasedate-pc|}}}{{{releasedate-xbox|}}}{{{releasedate-playstation|}}} | Released:}}<!--
+-->{{#if: {{{releasedate-pc|}}} | * {{#time: M d, Y|{{{releasedate-pc}}}}} on PC }}<!--
+-->{{#if: {{{releasedate-xbox|}}} | * {{#time: M d, Y|{{{releasedate-xbox}}}}} on Xbox }}<!--
+-->{{#if: {{{releasedate-playstation|}}} | * {{#time: M d, Y|{{{releasedate-playstation}}}}} on PlayStation }}
+}}<!--
+-->{{#if: {{{enddate|}}} | Ended: {{#time: M d, Y|{{{enddate}}}}}<br> }}<!--
+-->{{#if: {{{latestversion|}}} | Latest version: {{{latestversion}}}<br> }}
+=== Introduction ===
+{{#if: {{{EAdate|}}} | {{#if: {{{releasedate|}}}{{{releasedate-pc|}}}{{{releasedate-xbox|}}}{{{releasedate-playstation|}}} | <!-- released --> | {{Messagebox/BI||This product is in '''Early Access'''.}}}}}}
+{{{intro|Please add some introductory text!}}}
+{{#if: {{{feature1|}}} |
+=== Features ===
+* {{{feature1}}} }}
+{{#if: {{{feature2|}}} | * {{{feature2}}}}}<!--
+-->{{#if: {{{feature3|}}} | * {{{feature3}}} }}<!--
+-->{{#if: {{{feature4|}}} | * {{{feature4}}} }}<!--
+-->{{#if: {{{feature5|}}} | * {{{feature5}}} }}<!--
+-->{{#if: {{{feature6|}}} | * {{{feature6}}} }}<!--
+-->{{#if: {{{feature7|}}} | * {{{feature7}}} }}<!--
+-->{{#if: {{{feature8|}}} | * {{{feature8}}} }}<!--
+-->{{#if: {{{feature9|}}} | * {{{feature9}}} }}<!--
+-->{{#if: {{{feature10|}}} | * {{{feature10}}} }}<!--
+-->{{#if: {{{premfeature1|}}} |
+=== Premium Content ===
+* {{{premfeature1}}} }}
+{{#if: {{{premfeature2|}}} | * {{{premfeature2}}}}}<!--
+-->{{#if: {{{premfeature3|}}} | * {{{premfeature3}}} }}<!--
+-->{{#if: {{{premfeature4|}}} | * {{{premfeature4}}} }}<!--
+-->{{#if: {{{premfeature5|}}} | * {{{premfeature5}}} }}<!--
+-->{{#if: {{{premfeature6|}}} | * {{{premfeature6}}} }}<!--
+-->{{#if: {{{premfeature7|}}} | * {{{premfeature7}}} }}<!--
+-->{{#if: {{{premfeature8|}}} | * {{{premfeature8}}} }}<!--
+-->{{#if: {{{premfeature9|}}} | * {{{premfeature9}}} }}<!--
+-->{{#if: {{{premfeature10|}}} | * {{{premfeature10}}} }}
+{{#if: {{{freefeature1|}}} |
+=== Free Content ===
+* {{{freefeature1}}} }}
+{{#if: {{{freefeature2|}}} | * {{{freefeature2}}}}}<!--
+-->{{#if: {{{freefeature3|}}} | * {{{freefeature3}}} }}<!--
+-->{{#if: {{{freefeature4|}}} | * {{{freefeature4}}} }}<!--
+-->{{#if: {{{freefeature5|}}} | * {{{freefeature5}}} }}<!--
+-->{{#if: {{{freefeature6|}}} | * {{{freefeature6}}} }}<!--
+-->{{#if: {{{freefeature7|}}} | * {{{freefeature7}}} }}<!--
+-->{{#if: {{{freefeature8|}}} | * {{{freefeature8}}} }}<!--
+-->{{#if: {{{freefeature9|}}} | * {{{freefeature9}}} }}<!--
+-->{{#if: {{{freefeature10|}}} | * {{{freefeature10}}} }}
+{{#if: {{{supportfeature1|}}} |
+=== Supporting Content ===
+* {{{supportfeature1}}} }}
+{{#if: {{{supportfeature2|}}} | * {{{supportfeature2}}}}}<!--
+-->{{#if: {{{supportfeature3|}}} | * {{{supportfeature3}}} }}<!--
+-->{{#if: {{{supportfeature4|}}} | * {{{supportfeature4}}} }}<!--
+-->{{#if: {{{supportfeature5|}}} | * {{{supportfeature5}}} }}<!--
+-->{{#if: {{{supportfeature6|}}} | * {{{supportfeature6}}} }}<!--
+-->{{#if: {{{supportefeature7|}}} | * {{{supportfeature7}}} }}<!--
+-->{{#if: {{{supportfeature8|}}} | * {{{supportfeature8}}} }}<!--
+-->{{#if: {{{supportfeature9|}}} | * {{{supportfeature9}}} }}<!--
+-->{{#if: {{{supportfeature10|}}} | * {{{supportfeature10}}} }}
+{{#if: {{{gallery1|}}}|
+=== Gallery ===
+{{#tag:gallery|
+{{{gallery1}}}
+{{{gallery2}}}
+{{{gallery3}}}
+{{{gallery4}}}
+{{{gallery5}}}
+{{{gallery6}}}
+{{{gallery7}}}
+{{{gallery8}}}
+{{{gallery9}}}
+{{{gallery10}}}
+|class=center
+|mode=nolines
+|widths=350px
+}}
+}}
+{{#if: {{{dlcs|}}} |
+=== DLCs ===
+{{{dlcs}}} }}<!--
+-->{{#if: {{{trailer|}}} | {{Youtube|{{{trailer}}}|Trailer|center|500}}}}
+{{#if: {{{start1|}}} |
+=== Getting Started ===
+* {{{start1}}} }}
+{{#if: {{{start2|}}} | * {{{start2}}} }}<!--
+-->{{#if: {{{start3|}}} | * {{{start3}}} }}<!--
+-->{{#if: {{{start4|}}} | * {{{start4}}} }}<!--
+-->{{#if: {{{start5|}}} | * {{{start5}}} }}<!--
+-->{{#if: {{{start6|}}} | * {{{start6}}} }}<!--
+-->{{#if: {{{start7|}}} | * {{{start7}}} }}
+{{#if: {{{social1|}}} |
+=== Social Media ===
+* {{{social1}}} }}
+{{#if: {{{social2|}}} | * {{{social2}}} }}<!--
+-->{{#if: {{{social3|}}} | * {{{social3}}} }}<!--
+-->{{#if: {{{social4|}}} | * {{{social4}}} }}<!--
+-->{{#if: {{{social5|}}} | * {{{social5}}} }}
+__NOTOC__
+__NOEDITSECTION__
+{{#ifeq: {{{isDLC|n}}} | n | {{TemplateCase||[[Category:Projects]]}}}}</includeonly><noinclude>
+== Usage ==
+{{<nowiki/>GameIntro|'''''image'''''|'''''game'''''|'''''version'''''|'''''releasedate/releasedate-pc/releasedate-xbox/releasedate-playstation'''''|'''''size'''''|'''''intro'''''|'''''feature''#'''|'''''premfeature''#'''|'''''freefeature''#'''|'''''supportfeature''#'''|'''''gallery''#'''|'''''dlcs'''''|'''''start''#'''|'''''social''#'''|'''''isDLC'''''}}
+* image: image displayed on the top right
+* game: (Optional, default empty) DLC introduction - see [[Template:GVI]]
+* version: (Optional, default "?") DLC introduction - see [[Template:GVI]]
+* EAdate: (Optional, default empty) Early Access date, format yyyymmdd or yyyy-mm-dd
+* releasedate: (Optional, default empty) release date, format yyyymmdd, yyyy-mm-dd or free text. If undefined, below fields can be used:
+** releasedate-pc: (Optional, default empty) PC release date, format yyyymmdd
+** releasedate-xbox: (Optional, default empty) Xbox release date, format yyyymmdd
+** releasedate-playstation: (Optional, default empty) PlayStation release date, format yyyymmdd
+* enddate: (Optional, default empty) end date, format yyyymmdd
+* latestversion: (Optional, default empty) latest version, displayed as is (no "v" prefix)
+* size: (Optional, default 250) size of ''image'' in px
+* intro: a short summary of what the game is about
+* feature'''#''': (Optional) a list of features (# in range 1..10)
+* premfeature'''#''': (Optional) a list of premium content (# in range 1..10)
+* freefeature'''#''': (Optional) a list of free content (# in range 1..10)
+* supportfeature'''#''': (Optional) a list of supporting content (# in range 1..10)
+* gallery'''#''': (Optional) images displayed at the bottom of the page (# in range 1..10)
+* trailer: (Optional) id of the YouTube video to be displayed - see [[Template:Youtube]]
+* dlcs: (Optional) available DLCs
+* start'''#''': (Optional) a list with "getting started" pages (# in range 1..7)
+* social'''#''': (Optional) links to social media (# in range 1..5)
+* isDLC: (Optional, default n) enter ''y'' if it is a DLC. This will prevent {{hl|[[:Category: Projects]]}} from being added to the page
+
+{{Feature|informative|
+* The template will automatically remove TOC and section edit links
+* The page is automatically added to the [[:Category:Projects|Projects]] category (if not a DLC)
+* The page is automatically added to ''Introduced with version xxx'' pages (if a DLC)}}
+== Example ==
+{| class="wikitable valign-top"
+|+ Examples
+! Code
+! style="min-width: 500px" | Result
+|-
+| <syntaxhighlight lang="html+handlebars">{{GameIntro}}</syntaxhighlight>
+| {{GameIntro}}
+|-
+| <syntaxhighlight lang="html+handlebars">
+{{GameIntro
+|releasedate= 2001-06-22
+|releasedate-xbox= 2005-11-08
+}}
+</syntaxhighlight>
+| {{GameIntro
+|releasedate= 2001-06-22
+|releasedate-xbox= 2005-11-08
+}}
+|-
+| <syntaxhighlight lang="html+handlebars">
+{{GameIntro
+|releasedate-pc= 2001-06-22
+|releasedate-xbox= 2005-11-08
+}}
+</syntaxhighlight>
+| {{GameIntro
+|releasedate-pc= 2001-06-22
+|releasedate-xbox= 2005-11-08
+}}
+|-
+| <syntaxhighlight lang="handlebars">
+{{GameIntro
+|image= arma3 zeus logo.png
+|game= arma3
+|version= 1.16
+|releasedate= 2014-02-13
+|intro= Zeus is a Free DLC for Arma 3 that was announced on 13th February 2014 and is available since 10th April 2014. [...]
+|feature1= '''Basic Features''' - Some basic features. (Leave empty if Premium Content, Free Content and Supporting Content are used)
+|premfeature1= '''Premium Features''' - Features that are only available if one owns the DLC
+|freefeature1= '''Free Features''' - Features that are available to everyone
+|supportfeature1= '''Supporting Features''' - Features that expand the platform
+|gallery1= arma3 dlc zeus screenshot 1.jpg
+|gallery2= arma3 dlc zeus screenshot 2.jpg
+|gallery3= arma3 dlc zeus screenshot 3.jpg
+|gallery4= arma3 dlc zeus screenshot 4.jpg
+|trailer= 5JiXznUyldM
+|dlcs= [[File:arma3 zeus logo.png|200px|link= Arma 3 Zeus]] [[File:arma3 karts logo.png|200px|link= Arma 3 Karts]]
+|start1= [[Arma 3 Field Manual - Zeus|Field Manual]]
+|start2= [[Curator|Zeus Editing]]
+|start3= [http://forums.bistudio.com/forumdisplay.php?198-ARMA-3-ZEUS Bohemia Interactive Forums - Zeus]
+|start4= [http://forums.bistudio.com/forumdisplay.php?199-ARMA-3-ZEUS-EDITING Bohemia Interactive Forums - Zeus Editing]
+|start5= [http://www.arma3.com/dlc/zeus Official Site]
+|social1= [https://www.youtube.com/user/Arma3official {{arma3}} on YouTube]
+|isDLC= y
+}}
+</syntaxhighlight>
+| {{GameIntro
+|image= arma3 zeus logo.png
+|game= arma3
+|version= 1.16
+|releasedate= 2014-02-13
+|intro= Zeus is a Free DLC for {{arma3}} that was announced on 13th February 2014 and is available since 10th April 2014. [...]
+|feature1= '''Basic Features''' - Some basic features. (Leave empty if Premium Content, Free Content and Supporting Content are used)
+|premfeature1= '''Premium Features''' - Features that are only available if one owns the DLC
+|freefeature1= '''Free Features''' - Features that are available to everyone
+|supportfeature1= '''Supporting Features''' - Features that expand the platform
+|gallery1= arma3 dlc zeus screenshot 1.jpg
+|gallery2= arma3 dlc zeus screenshot 2.jpg
+|gallery3= arma3 dlc zeus screenshot 3.jpg
+|gallery4= arma3 dlc zeus screenshot 4.jpg
+|trailer= 5JiXznUyldM
+|dlcs= [[File:arma3 zeus logo.png|200px|link= Arma 3 Zeus]] [[File:arma3 karts logo.png|200px|link= Arma 3 Karts]]
+|start1= [[Arma 3 Field Manual - Zeus|Field Manual]]
+|start2= [[Curator|Zeus Editing]]
+|start3= [http://forums.bistudio.com/forumdisplay.php?198-ARMA-3-ZEUS Bohemia Interactive Forums - Zeus]
+|start4= [http://forums.bistudio.com/forumdisplay.php?199-ARMA-3-ZEUS-EDITING Bohemia Interactive Forums - Zeus Editing]
+|start5= [http://www.arma3.com/dlc/zeus Official Site]
+|social1= [https://www.youtube.com/user/Arma3official {{arma3}} on YouTube]
+|isDLC= y
+}}
+|}
+
+== Template ==
+<spoiler text="Show template">
+<syntaxhighlight lang="handlebars">
+{{GameIntro
+|image=
+|game=
+|version=
+|EAdate=
+|releasedate=
+|enddate=
+|latestversion=
+|intro=
+|feature1=
+|premfeature1=
+|freefeature1=
+|supportfeature1=
+|gallery1=
+|gallery2=
+|gallery3=
+|gallery4=
+|trailer=
+|dlcs=
+|start1=
+|start2=
+|start3=
+|start4=
+|start5=
+|start6=
+|start7=
+|social1=
+|social2=
+|social3=
+|social4=
+|social5=
+|isDLC=
+}}
+</syntaxhighlight>
+</spoiler>
+
+== Example ==
+See [[Special:WhatLinksHere/{{FULLPAGENAME}} | pages using this template]].
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

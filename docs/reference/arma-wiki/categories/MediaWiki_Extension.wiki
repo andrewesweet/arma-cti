@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:MediaWiki_Extension
+// revision: 328796 (2022-07-15T16:35:36Z)
+// export sha1: ascmj7fij6r471h7xk5j6h24dwbtinc
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Community Wiki]]

@@ -1,0 +1,154 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Common_Terrain_Creation_Problems
+// revision: 370848 (2025-02-16T19:52:04Z)
+// export sha1: d41553qbxy7u7uzvhupvh15vg78ezmv
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Error: Layers generation - Bad texel mapping for surface mask image ==
+
+This tends to be caused by your image files having the wrong image resolution for satellite / mask, compared to what you have in mapframe settings. 
+
+Open Terrain Builder and double click your project in the Mapframes panel. If you don't see Mapframes panel, make sure it's enabled in Window > Mapframe View.
+
+In the Mapframe window, click the Samplers tab. Compare the size of the "Satellite / Surface (mask) source images" and make sure your images resolution matches it. For the best visual results in the game, the size should match the "Terrain Size".
+
+[[File:arma3-bad texel mapping.png]]
+
+
+==Error: LandGrid reference exceeded the range [1024, 1024], it is [1337, 123]==
+
+(numbers are different depending on your map)
+
+The Texture Layer in the Mapframe settings is incorrect. You should aim to get as close to 40 x 40 as possible. Having the wrong Texture Layer size can break AI and physics.
+
+For large terrains with a cell size larger than 10, it's recommended to be 4 x cell size. So if cell size is 20, you would use 80 x 80.
+
+[[File:arma3-texture layer.png]]
+
+
+==Error: Too many objects in grid rectangle 64,64==
+
+This error happens when your roads are "outside" the mapframe (i.e your terrain). To fix it, simply remove any roads that are outside your terrain.
+
+
+==L3DT to Terrain Builder==
+
+See image example of how to match L3DT to Terrain Builder Mapframe, so images are high resolution and avoiding bad texel mapping error.
+
+[[File:arma3-l3dt to tb mapframe.png]]
+
+
+==Import objects from Eden to Terrain Builder==
+
+Eden has this feature built in BUT it's broke on certain rotations. Use the mod [https://steamcommunity.com/sharedfiles/filedetails/?id=1174073713 E2TB] instead.
+
+Export your objects in Eden using scenario > export > export to Terrain Builder (E2TB, absolute position). It will then save the objects to your clipboard, open notepad and paste them into a new file and save as Whatever_name_you_want.txt
+
+[[File:arma3-e2tb.png]]
+
+
+Open your terrain in Terrain Builder, go to Layers Manager > Objects > Add New Layer. If you don't see Layer Manager, go to Toolbar > Window > Layers Manager.
+
+With the new layer selected, go to File > Import > Objects.
+
+[[File:arma3-tb import objects.png]]
+
+
+Select your .txt file you saved. Click advanced and use relative or absolute depending on what you exported using E2TB. In this case we used absolute position.
+
+[[File:arma3-tb advanced object import.png]]
+
+
+{{Feature|informative|If you drag the .txt file into Terrain Builder, it will always import as relative!}}
+
+
+== Dialog - TxTImport - Wrong file format or source template not found ==
+
+This comes up when you import an objects .txt file from Eden or other in-game editors. If you don't have a certain object that you are using in your template library, then you will receive the above error. {{Feature|warning|Note: It will import objects up to the one it fails on, so it is very easy to end up with duplicate objects! Always import objects to a new layer.}}
+
+To fix it, go to Layers Manager > Objects > Add New Layer. If you don't see Layer Manager, go to Toolbar > Window > Layers Manager.
+
+Import objects to the new layer, then right click object layer > show info.
+
+[[File:arma3-tb objects context menu.png]]
+
+A menu will then pop up, showing the object count. For example, if there are 150 objects, open the text file you are trying to import, line 151 will be the missing object. Windows basic Notepad doesn't show lines numbers, so use Notepad++ (free) or something similar.
+
+Find the missing object(s) on the P drive and add it to your template library. Import the .txt file again until you no longer receive the error. To avoid the risk of duplicate objects, clear the layer and re-import the .txt file.
+
+
+== Extracting mods to Terrain Builder==
+
+Paths are hard coded so you can't just put mods anywhere you want, they MUST be in the correct folder structure to work. It's also best to not to cherry pick what pbo's you want, as textures can be in other folders so you end up with white buildings in buldozer.
+
+You will need Mikero's extractpbo, you should be using his tools if you are making a terrain! Go to his website https://mikero.bytex.digital/Downloads, download "Mikero_AiO_Installer" and then install it after downloading.
+
+Make sure your P drive is mounted, then open Arma 3 Launcher. Click the mod you want to use, then the 3 dots down the bottom right corner, click "Open in Windows Explorer". Click "I Understand" when the warning pops up.
+
+[[File:arma3-windows explorer from launcher.png]]
+
+
+
+Once the workshop mod folder opens, double click the mod you want, go into the addons folder. In the folder address bar highlight and copy the whole path.
+
+[[File:arma3-copy mod path.png]]
+
+
+
+Now there is 2 ways to do the next step, in the folder address bar, type <code>extractpbo "paste the path you copied" P:\</code> then press enter. Extractpbo window will open and start extracting all the pbo's to your P drive.
+
+Example of how it should look if done correct. It's really important to use quotation marks " " if the path has spaces in it <code>extractpbo "D:\SteamLibrary\steamapps\common\Arma 3\!Workshop\@CUP Terrains - Core\addons" P:\</code>
+
+[[File:arma3-extractpbo extract mod example.png]]
+
+
+The 2nd way is in the folder address bar type <code>cmd</code> , in the command prompt window that opens, type <code>extractpbo "paste the path you copied" P:\</code> then press enter.
+
+Once the mod finishes extracting to the P drive, simply add the objects to your template library in Terrain Builder.
+
+
+== Import objects faster (including from Terrain Processor) ==
+
+Turn off Library Manager in Terrain Builder to import objects faster. After the objects import, you can turn it back on via Toolbar > Window > Library Manager
+
+
+== Terrain Builder crashing when saving ==
+
+The most likely cause of Terrain Builder crashing when you press save is due to duplicate objects in your template library. Remove the duplicate templates or remake the whole template library.
+
+{{Feature|warning|Always backup your project before changing or trying to fix the template library. It's very easy to delete all placed objects!}}
+
+
+== Objects being replaced with random objects ==
+
+This issue tends to be caused by corrupted template library or duplicate objects in template library. Remaking the whole template library fixes it for most people.
+
+
+== Heightmap / Shapes / Objects etc not showing in Terrain Builder==
+
+When running Terrain Builder for the first time, certain views are turned off, but you can easily turn them back on via the toolbar. The icons are not very helpful, but they do show button names when you hover the cursor over them.
+
+[[File:arma3-tb view layers.png]]
+
+
+== Game crashes to desktop - STATUS_STACK_BUFFER_OVERRUN ==
+
+A possible cause of this is having no ID in the database of roads.
+
+
+== Roads not showing in Buldozer ==
+
+These fixes presume you used mikero's Arma3p to extract data to P drive, which also installs Buldozer Tools by Lappihuan.
+
+Press 1 when buldozer loads to show roads. If roads don't appear, then try the fixes below. You will have to reload buldozer to see any effect.
+
+Check "roadpath" is correct in "P:\scripts\userconfig.sqf". Make sure you use the correct slash, the file uses forward slash <code>/</code> and not backslash <code>\</code> like windows.
+
+Sometimes people have to put <code>P:</code> at the start of the roadpath <code>roadpath = "P:/myTag/myProject/data/roads/";</code>
+
+Check your roads folder, all the files should be called roads (apart from roadslib.cfg). If there is roads_polylines and roads_polygons, then you have polygons on your roads layers in TB. Delete the polygons and export fresh roads shapefiles.
+
+Make sure your Terrain Builder project is at the correct coordinates. It must be at Easting 200000, Northing 0, even if it's a real world location!
+
+
+{{GameCategory|arma3|Editing}}

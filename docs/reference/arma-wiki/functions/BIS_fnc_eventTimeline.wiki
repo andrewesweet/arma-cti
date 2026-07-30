@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_eventTimeline
+// revision: 352082 (2024-02-01T23:24:45Z)
+// export sha1: 191y2rbo8010igvdz84wfhm6uts6ri4
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Systems | Category:Function Group: Timeline | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|eff= local
+
+|gr1= Timeline
+
+|gr2= Systems
+
+|descr= Universal system for playing sequential events defined by time. {{Feature|informative|''codeInterrupt'' and ''codeEnd'' are [[call]]ed while the code in the timeline is [[spawn]]ed.}}
+
+|s1= [timeline, index, music, codeInterrupt, codeEnd] call [[BIS_fnc_eventTimeline]]
+
+|p1= timeline: [[Array]] - timeline in format <nowiki>[[1.0, {code}], [2.0, {code}], [2.3, {code}], [4.7, {code}]]</nowiki>
+
+|p2= index: [[Number]] - (Optional, default 0) index of the event to play
+
+|p3= music: [[String]] - (Optional, default "") music to be played which will provide the sync time for the timeline
+
+|p4= codeInterrupt: [[Code]] - (Optional, default 
+<sqf inline>params ["_pointer", "_baseTime", "_evenTime"];
+["Timeline interrupted while playing event nr.: %1 (%2)", _pointer, _baseTime + _eventTime] call BIS_fnc_logFormat;</sqf>)<br>Code to be executed if the timeline is interrupted with 
+<sqf inline>missionNamespace setVariable ["BIS_fnc_eventTimeline_playing", false]</sqf>
+
+|p5= codeEnd: [[Array]] or [[Code]] - (Optional, default [[nil]]) [[Code]] or [[Array]] of codes to be executed once the timeline is finished. The codes are [[call]]ed one after the other.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+private _timeline =
+[
+	[0.0, { hint "Start of the Timeline" }],
+	[1.0, { hint "Event 1" }],
+	[3.0, { hint "End of the timeline" }]
+];
+
+[_timeline, 0, "", { hint "Interrupted" }, { hint "Timeline done" }] spawn BIS_fnc_eventTimeline;
+</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_animatedBriefing]]
+}}

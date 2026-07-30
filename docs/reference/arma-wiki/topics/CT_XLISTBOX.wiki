@@ -1,0 +1,247 @@
+// source: https://community.bistudio.com/wiki/CT_XLISTBOX
+// revision: 258316 (2021-05-25T08:59:30Z)
+// export sha1: gs5byd8zmx0z4vndryolafqp4xkxulk
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{CT|intro
+|macro = CT_XLISTBOX
+|value = 42
+|description = Sideways listbox with only one entry visible at a time. More similar to [[CT_COMBO]]. This control should probably not be used at all because of its poor usability. The user has to click through all entries to find the correct one. Use [[CT_TOOLBOX]], [[CT_COMBO]] or [[CT_LISTBOX]] instead.
+|gallery=File:WuChaoRen ctXListBox.png{{!}}A [[CT_XLISTBOX]].
+|commands =
+* [[:Category:Command_Group:_GUI_Control_-_ListBox|Commands: Listbox]]
+|events =
+* [[User_Interface_Event_Handlers#Listbox_events|Events: Listbox]]
+}}
+
+{{CT|abc start}}
+=== A ===
+{{CT|attribute
+|name=arrowEmpty
+|type1=String
+|value1="\A3\ui_f\data\gui\cfg\slider\arrowEmpty_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=arrowFull
+|type1=String
+|value1="\A3\ui_f\data\gui\cfg\slider\arrowFull_ca.paa"
+|description=
+}}
+
+=== B ===
+{{CT|attribute
+|name=border
+|type1=String
+|value1="\A3\ui_f\data\gui\cfg\slider\border_ca.paa"
+|description=
+}}
+
+=== C ===
+{{CT|attribute
+|name=color
+|type1=Array
+|value1={1,1,1,0.6}
+|description=
+}}
+
+{{CT|attribute
+|name=colorActive
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorPicture
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorPictureDisabled
+|type1=Array
+|value1={1,1,1,0.25}
+|description=
+}}
+
+{{CT|attribute
+|name=colorPictureRight
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorPictureRightDisabled
+|type1=Array
+|value1={1,1,1,0.25}
+|description=
+}}
+
+{{CT|attribute
+|name=colorPictureRightSelected
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorPictureSelected
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSelect
+|type1=Array
+|value1={0.95,0.95,0.95,1}
+|description=
+}}
+
+{{CT|attribute
+|name=cycle
+|type1=Number
+|value1=1
+|description=
+}}
+
+=== I ===
+{{CT|attribute
+|name=Items
+|type1=Class
+|value1=class Items
+{
+	class Item0
+	{
+		text = "LOL";
+		picture = "\a3\Ui_f\data\Map\Markers\Military\warning_CA.paa";
+		color[] = {1,0,1,1};
+		colorPicture[] = {0,1,1,1};
+		data = "WTF";
+		value = 42;
+		default = 0;
+	};
+	class AnotherItem
+	{
+		text = "O RLY";
+		default = 1;
+	};
+};
+|description=List of default items. Supports most [[:Category:Command_Group:_GUI_Control_-_ListBox|Listbox commands]] as a config entry.
+}}
+
+=== S ===
+{{CT|attribute
+|name=soundSelect
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscListbox\soundSelect",0.09,1}
+|description=
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscXListBox ===
+<syntaxhighlight lang="cpp">
+class RscXListBox
+{
+	deletable = 0;
+	fade = 0;
+	idc = -1;
+	type = CT_XLISTBOX;
+	x = 0.1;
+	y = 0.1;
+	color[] = {1,1,1,0.6};
+	colorActive[] = {1,1,1,1};
+	colorDisabled[] = {1,1,1,0.25};
+	colorSelect[] = {0.95,0.95,0.95,1};
+	colorText[] = {1,1,1,1};
+	soundSelect[] =
+	{
+		"\A3\ui_f\data\sound\RscListbox\soundSelect",
+		0.09,
+		1
+	};
+	colorPicture[] = {1,1,1,1};
+	colorPictureSelected[] = {1,1,1,1};
+	colorPictureDisabled[] = {1,1,1,0.25};
+	colorPictureRight[] = {1,1,1,1};
+	colorPictureRightSelected[] = {1,1,1,1};
+	colorPictureRightDisabled[] = {1,1,1,0.25};
+	tooltipColorText[] = {1,1,1,1};
+	tooltipColorBox[] = {1,1,1,1};
+	tooltipColorShade[] = {0,0,0,0.65};
+	style = ST_CENTER + LB_TEXTURES + SL_HORZ;
+	shadow = 2;
+	arrowEmpty = "\A3\ui_f\data\gui\cfg\slider\arrowEmpty_ca.paa";
+	arrowFull = "\A3\ui_f\data\gui\cfg\slider\arrowFull_ca.paa";
+	border = "\A3\ui_f\data\gui\cfg\slider\border_ca.paa";
+	w = 0.14706;
+	h = 0.039216;
+	font = "RobotoCondensed";
+	sizeEx = GUI_TEXT_SIZE_MEDIUM;
+};
+</syntaxhighlight>
+
+== Other examples ==
+<syntaxhighlight lang="cpp">
+class _CT_XLISTBOX
+{
+  access = 0; // Control access (0 - ReadAndWrite, 1 - ReadAndCreate, 2 - ReadOnly, 3 - ReadOnlyVerified)
+  idc = CT_XLISTBOX; // Control identification (without it, the control won't be displayed)
+  type = CT_XLISTBOX; // Type is 42
+  style = SL_HORZ + ST_CENTER + LB_TEXTURES; // Style
+  default = 0; // Control selected by default (only one within a display can be used)
+  blinkingPeriod = 0; // Time in which control will fade out and back in. Use 0 to disable the effect.
+
+  x = 12 * GUI_GRID_CENTER_W + GUI_GRID_CENTER_X; // Horizontal coordinates
+  y = 17 * GUI_GRID_CENTER_H + GUI_GRID_CENTER_Y; // Vertical coordinates
+  w = 10 * GUI_GRID_CENTER_W; // Width
+  h = 1 * GUI_GRID_CENTER_H; // Height
+
+  color[] = {1,1,1,1}; // Arrow color
+  colorActive[] = {1,0.5,0,1}; // Selected arrow color
+
+  sizeEx = GUI_GRID_CENTER_H; // Text size
+  font = GUI_FONT_NORMAL; // Font from CfgFontFamilies
+  shadow = 0; // Shadow (0 - none, 1 - N/A, 2 - black outline)
+  colorText[] = {1,1,1,1}; // Text color
+  colorSelect[] = {1,0.5,0,1}; // Selected text color
+  colorDisabled[] = {1,1,1,0.5}; // Disabled text color
+
+  tooltip = "CT_XLISTBOX"; // Tooltip text
+  tooltipColorShade[] = {0,0,0,1}; // Tooltip background color
+  tooltipColorText[] = {1,1,1,1}; // Tooltip text color
+  tooltipColorBox[] = {1,1,1,1}; // Tooltip frame color
+
+  arrowEmpty = "\A3\ui_f\data\gui\cfg\slider\arrowEmpty_ca.paa"; // Arrow
+  arrowFull = "\A3\ui_f\data\gui\cfg\slider\arrowFull_ca.paa"; // Arrow when clicked on
+  border = "\A3\ui_f\data\gui\cfg\slider\border_ca.paa"; // Fill texture
+
+  soundSelect[] = {"\A3\ui_f\data\sound\RscListbox\soundSelect",0.09,1}; // Sound played when an item is selected
+
+  onCanDestroy = "systemChat str ['onCanDestroy',_this]; true";
+  onDestroy = "systemChat str ['onDestroy',_this]; false";
+  onSetFocus = "systemChat str ['onSetFocus',_this]; false";
+  onKillFocus = "systemChat str ['onKillFocus',_this]; false";
+  onKeyDown = "systemChat str ['onKeyDown',_this]; false";
+  onKeyUp = "systemChat str ['onKeyUp',_this]; false";
+  onMouseButtonDown = "systemChat str ['onMouseButtonDown',_this]; false";
+  onMouseButtonUp = "systemChat str ['onMouseButtonUp',_this]; false";
+  onMouseButtonClick = "systemChat str ['onMouseButtonClick',_this]; false";
+  onMouseButtonDblClick = "systemChat str ['onMouseButtonDblClick',_this]; false";
+  onMouseZChanged = "systemChat str ['onMouseZChanged',_this]; false";
+  onMouseMoving = "";
+  onMouseHolding = "";
+
+  onLBSelChanged = "systemChat str ['onLBSelChanged',_this]; false";
+  onLBDblClick = "systemChat str ['onLBDblClick',_this]; false";
+};
+</syntaxhighlight>
+
+[[Category: Control Types]]

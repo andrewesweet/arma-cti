@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/forceWalk
+// revision: 310282 (2022-05-05T13:11:25Z)
+// export sha1: jkftzq3frif2ma0w7zb15iz3sbwvw59
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= local
+
+|gr1= Stamina System
+
+|descr= Forces unit to walk even if run or sprint is selected.
+
+|s1= unit [[forceWalk]] value
+
+|p1= unit: [[Object]] - the unit forced to walk
+|p2= value: [[Boolean]] - true/false
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player forceWalk true;</sqf>
+
+|seealso= [[isForcedWalk]] [[isWalking]] [[forceSpeed]] [[getSpeed]]
+}}

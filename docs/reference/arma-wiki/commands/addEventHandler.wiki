@@ -1,0 +1,76 @@
+// source: https://community.bistudio.com/wiki/addEventHandler
+// revision: 363476 (2024-03-31T14:58:59Z)
+// export sha1: kr62lvrv7jzsf4zskt8oc7d8lr7zt4v
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Introduced with Operation Flashpoint version 1.85 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.85
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Event Handlers
+
+|descr= Adds an Event Handler to the given object.
+* As many Event Handlers of any type can be added - existing Event Handlers do not get overwritten
+* Use [[removeEventHandler]] to remove an Event Handler
+Read [[:Category:Event Handlers|Event Handlers]] for more information and a list of all available Event Handlers.
+
+|mp= Some event handlers are persistent (i.e they stay attached to the unit, even after it dies and respawns).
+
+|s1= target [[addEventHandler]] [type, code]
+
+|p1= target: [[Object]] or {{GVI|arma3|2.10|size= 0.75}} [[Group]]
+
+|p2= type: [[String]] - see [[:Category:Event Handlers|Event Handlers]] for the full list of available options
+
+|p3= code: [[Code]] or [[String]] - code that should be executed when the Event Handler fires; executed in [[missionNamespace]] by default. Several [[Magic Variables]] are available:
+* Event Handler parameters are accessible via <sqf inline>_this</sqf>
+* The Event Handler type is available as <sqf inline>_thisEvent</sqf>
+* The Event Handler index is available as <sqf inline>_thisEventHandler</sqf>
+
+|r1= [[Number]] - the index of the added Event Handler. Indices start at 0 for each unit and increment with each added Event Handler.
+
+|x1= <sqf>
+this addEventHandler ["Killed", {
+	params ["_unit", "_killer"];
+	systemChat format ["%1 has been killed by %2.", _unit, _killer];
+}];
+</sqf>
+
+|x2= <sqs>_index = player addEventHandler ["Killed", { _this exec "playerKilled.sqs" }]</sqs>
+
+|seealso= [[removeEventHandler]] [[removeAllEventHandlers]] [[:Category:Event Handlers|Event Handlers]] [[addMPEventHandler]] [[addMissionEventHandler]] [[BIS_fnc_addScriptedEventHandler]] [[getEventHandlerInfo]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150607210600
+|text= When using overridable EH, such as "InventoryOpened" and similar, where returning [[true]] allows to override default action, [[exitWith]] cannot be used to return value. So:
+<sqf>if (whatever) exitWith {true}; false;</sqf>
+Forget about it, will not work. Instead use:
+<sqf>if (whatever) then {true} else {false};</sqf>
+100% satisfaction guaranteed!
+}}

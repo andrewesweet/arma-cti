@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/Template:Colorball
+// revision: 378288 (2026-03-31T13:51:31Z)
+// export sha1: nygpj9fm3i3esce3jujo8qkpno57sqi
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div style="background-color: {{{1|#025D00}}}; background: radial-gradient(circle at 0.33em 0.25em, #FFF, {{{1|#025D00}}}, #333); border-radius: 50%; box-shadow: 0 0 3px 0 #888; display: inline-block; font-size: {{{2|1}}}em; margin: 3px; vertical-align: middle; height: 1em; width: 1em"></div></includeonly><noinclude>
+Displays a color ball.
+
+== Usage ==
+<nowiki>{{Colorball|</nowiki>'''''colour'''''|'''''size'''''}}
+* colour: (Optional, default #025D00) HTML colour, can be one of:
+** HTML colour name - ''red'', ''darkgrey'', etc.
+** HTML colour format - '''#RGB''', '''#RRGGBB''', '''#RGBA''' or '''#RRGGBBAA'''
+** rgb format - '''rgb(255, 0, 0)'''
+** rgba format - '''rgba(255, 0, 0, 0.5)'''
+** hsl format - '''hsl(120, 100%, 50%)'''
+** hsla format - '''hsla(120, 60%, 70%, 0.3)'''
+* size: (Optional, default 1) size relative to font size (em)
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <syntaxhighlight lang="handlebars">{{Colorball}}</syntaxhighlight>
+| {{Colorball}}
+|-
+| <syntaxhighlight lang="handlebars">{{Colorball|green}} {{Colorball|orange}} {{Colorball|red}}</syntaxhighlight>
+| {{Colorball|green}} {{Colorball|orange}} {{Colorball|red}}
+|-
+| <syntaxhighlight lang="handlebars">
+{{Colorball|#000}}	{{Colorball|#888}}	{{Colorball|#FFF}}
+{{Colorball|#0000}}	{{Colorball|#0008}}	{{Colorball|#000F}}
+</syntaxhighlight>
+| {{Colorball|#000}} {{Colorball|#888}} {{Colorball|#FFF}}<br>{{Colorball|#0000}} {{Colorball|#0008}} {{Colorball|#000F}}
+|-
+| <syntaxhighlight lang="handlebars">{{Colorball|#F53|2}}</syntaxhighlight>
+| {{Colorball|#F53|2}}
+|-
+| <syntaxhighlight lang="handlebars">{{Colorball|#F0F|8}}</syntaxhighlight>
+| {{Colorball|#F0F|8}}
+|}
+
+== Source ==
+<syntaxhighlight lang="html">
+<div style="
+	background-color: {{{1|#025D00}}};
+	background: radial-gradient(circle at 0.33em 0.25em, #FFF, {{{1|#025D00}}}, #333);
+	border-radius: 50%;
+	box-shadow: 0 0 3px 0 #888;
+	display: inline-block;
+	font-size: {{{2|1}}}em;
+	margin: 3px;
+	vertical-align: middle;
+	height: 1em;
+	width: 1em"></div>
+</syntaxhighlight>
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

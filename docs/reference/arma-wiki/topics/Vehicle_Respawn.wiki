@@ -1,0 +1,139 @@
+// source: https://community.bistudio.com/wiki/Vehicle_Respawn
+// revision: 373037 (2025-03-20T14:09:20Z)
+// export sha1: kqmiko3539xw74e9eddb6s5gz2stf4b
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|2.18}}
+
+{{arma3}} v2.18 improved and extended the vehicle respawn functionality. The new options can be found on [[respawnVehicle]] and [[getRespawnVehicleInfo]] pages.
+
+=== Description.ext ===
+
+{| class="wikitable align-center float-right"
+|+ {{Feature|important|Any mode set for vehicle that is invalid (e.g 4/"GROUP") will be treated as 0/"NONE".}}
+! colspan="2" | Respawn Type
+! colspan="2" | Available To
+|-
+! Number
+! String
+! Character
+! Vehicle
+|-
+| 0
+| "NONE"
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| 1
+| "BIRD"
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|-
+| 2
+| "INSTANT"
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| 3
+| "BASE"
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| 4
+| "GROUP"
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|-
+| 5
+| "SIDE"
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|}
+
+
+The 'respawn' mode parameter is applied to both units and vehicles. Since {{GVI|arma3|2.18}} there is a new [[respawnVehicle]] parameter that can set individual respawn mode for vehicles:
+
+{| class="wikitable valign-top"
+! Before {{GVI|arma3|2.18}}
+! Since {{GVI|arma3|2.18}}
+|-
+|
+<syntaxhighlight lang="cpp">
+respawn = 3;				// sets respawn mode for units and vehicles
+respawnDelay = 8;			// sets respawn delay for units
+
+
+respawnVehicleDelay = 30;	// sets respawn delay for vehicles
+</syntaxhighlight>
+|
+<syntaxhighlight lang="cpp">
+respawn = 3;				// sets respawn mode for units
+respawnDelay = 8;			// sets respawn delay for units
+// if 'respawnVehicle' is not set, 'respawn' is used for vehicles
+respawnVehicle = 2;			// sets respawn mode for vehicles
+respawnVehicleDelay = 30;	// sets respawn delay for vehicles
+</syntaxhighlight>
+|}
+
+=== 3den Editor ===
+
+There are 6 respawn options in the 3DEN in Multiplayer options:
+
+* Disabled - same as "NONE" or 0
+* Respawn on Custom Position - same as "BASE" or 3
+* Resapwn on Position Of Death - same as "INSTANT" or 2
+* Switch to Group Member - same as "GROUP" or 4
+* Switch to Side Member - same as "SIDE" or 5
+* Switch to Spectator - same as "BIRD" or 1
+
+This option is mirroring 'respawn' from description.ext. Only Disabled, Respawn on Custom Position and Resapwn on Position Of Death apply to vehicles.
+There is no separate option for individual vehicle respawn mode, which is currently available in description.ext and via script command only.
+
+Other parameters are:
+* Respawn Delay - same as 'respawnDelay' from description.ext
+* Vehicle Respawn Delay - same as 'respawnVehicleDelay' from description.ext
+
+The description.ext respawn params take priority over 3DEN respawn params.
+
+=== Script ===
+
+The vehicle respawn params can be set via [[respawnVehicle]] and read via [[getRespawnVehicleInfo]]. The script commands also provide additional options not available otherwise.
+
+In addition to setting respawn mode and delay, it is possible to set:
+* a finite number of respawns for a vehicle
+* whether or not the old wreck should be deleted when new vehicle respawns (wreck left behind gets the {{hl|_oldwreck}} suffix in [[vehicleVarName]] for it)
+* force vehicle to spawn on the server (by default vehicle will spawn on the client it was destroyed)
+* whether or not the vehicle respawns in the air
+* the respawn unit
+* the respawn side
+* whether or not the respawned vehicle uses marker direction
+
+The vehicle respawn is handled at the client where vehicle was destroyed. If client leaves the server, the vehicle respawn will be transferred to the server.
+Vehicle placed in editor will also spawn on the server for the very first time.
+
+[[respawnVehicle]] now has an option to force vehicle respawn on the server regardless, which should make it easier to use [[respawnVehicle]] command as it requires vehicle to be [[local]].
+When vehicle respawn is "BASE", the moment a vehicle is destroyed, a respawn marker for it is chosen, which could be returned with [[getRespawnVehicleInfo]]. This is the process of selecting such marker:
+
+# vehicle specific side specific: search for all markers that prefix with "respawn_<vehicleVarName>_<side>", for example "respawn_car1_west_1". If several are found, a random one is chosen
+# vehicle specific: search for all markers that prefix with "respawn_<vehicleVarName>", for example "respawn_car1_123". If several are found, a random one is chosen
+# vehicle general side specific: search for all markers that prefix with "respawn_vehicle_<side>", for example "respawn_vehicle_east_FOREST". If several are found, a random one is chosen
+# vehicle general: search for all markers that prefix with "respawn_vehicle", for example "respawn_vehicle_garage". If several are found, a random one is chosen
+# any respawn marker: search for all markers that prefix with "respawn", for example "respawn_left1". If several are found, a random one is chosen
+# if no markers found, the wreck position and direction is used.
+
+When a marker is found, the respawn position is chosen randomly within the marker. If the marker is Icon, or the size of the marker is 0, the position is marker position.
+If the marker is Ellipse or Rectangular, the position is chosed randomly within its area.
+Vehicle direction is chosen randomly unless specified to take direction of the marker with [[respawnVehicle]].
+Alternatively, the respawn position can be passed as return value in the vehicle's {{Link|Arma 3: Event Handlers#Respawn|Respawn event handler}}.
+By default all vehicles are respawned on the ground even if position's height is above the ground.
+[[respawnVehicle]] has an option to respawn in the air.
+
+Many respawn params can be ajusted on the fly while the vehicle is in respawn queue, but the vehicle has to be [[local]] for this to have an effect.
+
+Vehicle specific side specific marker could be used to have the same named vehicle spawn on enemy or friendly side, depending on the respawn side param set with [[respawnVehicle]] command.
+If there are 2 markers "respawn_car1_west", "respawn_car1_east", car1 will respawn on the marker that matches respawn side set after vehicle entered into repsawn queue.
+For example one could make a scenario where enemy vehicles could get commandeered and on the next respawn appear on friendly side.
+
+
+{{GameCategory|arma3|Editing}}

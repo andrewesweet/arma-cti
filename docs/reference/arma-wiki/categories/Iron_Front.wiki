@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/Category:Iron_Front
+// revision: 340070 (2023-04-28T16:27:22Z)
+// export sha1: 33v18tbi1sun3rm00tarh2xo2mj2fgo
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image = if box cover.jpg
+|intro = Iron Front is an {{arma2}} engine based standalone game made by Awar and published by Deep Silver on May, 25 2012. The story line is set in the World War 2 in 1944 during the German Occupation of the Eastern Front also known as Ostfront, the area of operations in the game is in East-Poland and West-Ukraine.
+
+The game is based on the {{ofp}} Modification Liberation 1941 - 45. The latest patch is v1.05 (v1.65 {{arma}} engine).
+
+=== Story ===
+Iron Front: Liberation 1944 is set in Southern Poland during the Soviet Offensive in the summer of that year, when the infantry and tank as well as aircraft units of the Red Army and the Wehrmacht engaged in fierce combat. It was the first time in history that the "Königstiger" tanks fought with the powerful JS2 soviet tanks.
+
+The German's objective is clear – consolidate and regroup the remaining troops, stop the Red Army’s advance at all cost, or at least slow it down. As a Red Army soldier, the task less complex, but no less challenging: Break the resistance to enable an attack on Germany. Starting out as a simple soldier on either side, you will experience nerve-wracking, tactical combat – always caught between your orders from your senior, and reality on the battlefield. In the course of the story, both protagonists will be promoted to command tanks and even fighter planes in addition to their own troops. However, the player does not have to do all this on foot: Using their computers, tacticians will control tanks, including the famous German battle tank Panzerkampfwagen VI or "Königstiger" and the Russian Stalin tank JS2, or fighter planes such as the Focke Wulf 190 and dive bombers like the Stuka or the Petlyakov PE-2.
+
+Online is where the battle really heats up in "Iron Front – Liberation 1944": Players can either complete missions cooperatively or compete with each other in special multiplayer modes such as "Capture the Flag" or "Attack and Defense". "Iron Front – Liberation 1944" also includes an extensive mission editor, enabling players to intuitively create their own missions and share them with their friends online, thus guaranteeing that there will never be a shortage of new missions.
+|feature1 = Completely new gameplay, coming out from the technical and tactical level of the history period.
+|feature2 = Large-scale battles involving infantry, tanks and planes that re-enact a realistic development of the summer offensive of 1944
+|feature3 = Over 40 vehicles and planes, including the Königstiger, the Katyusha, the Focke-Wulf Fw-190 and the notorious Stuka
+|feature4 = Huge arsenal with authentic weapons, such as the Mauser Karabiner, the MP 40 and grenades, mines, etc,.,
+|feature5 = Tactical combat and commands to troops and vehicles for a realistic “in the thick of it” feeling.
+|feature6 = Advanced game systems, such as realistic damage models for tanks, destructible environment, hitching and unhitching artillery, etc
+|feature7 = Editor for creating your own missions, and campaigns
+|feature8 = Rich and fully destructible environment of the Southeastern Poland of 40' years with workable interiors of the buildings
+|feature9 = Both sides speak on their own language
+|feature10 = Dynamic system of destruction of cars, trucks and artillery, giving the possibility to break them into pieces
+|feature11 =Rifle animations(not only reloading)
+|start1 = [https://ironfront.fanforum.co/post/manual-6285649?pid{{=}}1277531542#post1277531542 Manuals]
+|start2 = [https://forums.bohemia.net/forums/topic/161011-iron-front-as-mod-in-arma-3/ Iron Front as Mod in {{arma3}}]
+|start3 = [https://steamcommunity.com/groups/MissionRepository Mission Repository]
+|dlc1 = Iron Front: D-Day
+|gallery1 = if 1.jpg
+|gallery2 = if 2.jpg
+|gallery3 = if 3.jpg
+|gallery4 = if 4.jpg
+|social1 = [https://ironfront.fanforum.co/ Fan Forum]
+|social2 = [https://www.reddit.com/r/IronFront/ Reddit]
+|social3 = [https://www.reddit.com/r/IronFront/ Facebook]
+|social4 = [https://steamcommunity.com/groups/IronFrontLiberation1944 Steam Group]
+}}

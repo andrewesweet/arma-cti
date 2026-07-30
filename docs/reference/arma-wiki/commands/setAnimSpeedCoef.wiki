@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/setAnimSpeedCoef
+// revision: 353131 (2024-03-12T12:48:26Z)
+// export sha1: 33tyrak98dvtiwr3e62zn3798m9u1po
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|gr1= Animations
+
+|gr2= Stamina System
+
+|arg= global
+
+|eff= local
+
+|descr= Sets a coefficient for animation speed (0.5 will play animations half the speed, 2 twice the speed).<br>
+Doesn't affect upper body animations (reloading, etc.)
+
+|s1= unit [[setAnimSpeedCoef]] coef
+
+|p1= unit: [[Object]]
+
+|p2= coef: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setAnimSpeedCoef 0.75;</sqf>
+
+|seealso= [[Arma 3: Stamina]] [[getAnimSpeedCoef]] [[setAccTime]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2016-11-14 - 03:30</dd>
+<dt class="note">[[User:Demellion|Demellion]]</dt>
+<dd class="note">Increasing animation speed of a unit also increases its run/walk speed (thanks to [[User:Killzone_Kid|Killzone_Kid]])</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2016-11-27 - 02:02</dd>
+<dt class="note">[[User:Demellion|Demellion]]</dt>
+<dd class="note">Setting negative values with this makes animations act in reverse or make you stuck sliding in unknown directions.</dd>
+
+<dt></dt>
+<dd class="notedate">Posted on 2018-11-07 - 08:39 (UTC)</dd>
+<dt class="note">[[User:DrSova|DrSova]]</dt>
+<dd class="note">Didn't work on animals (A3 1.84.144923)</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2019-11-14 - 14:09 (UTC)</dd>
+<dt class="note">[[User:nomisum|nomisum]]</dt>
+<dd class="note">Must be executed on all clients to work properly in MP (otherwise only movement speed is adjusted, not animation itself)</dd>
+
+</dl>
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20211030194102
+|text= For animation speed to control unit speed, this must be executed on the local client.
+Non-local clients can set a speed less than the local client's.
+Non-local clients using an animation speed greater than the local client's may result in the animation freezing.
+}}

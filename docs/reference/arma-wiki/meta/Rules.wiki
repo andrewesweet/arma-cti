@@ -1,0 +1,218 @@
+// source: https://community.bistudio.com/wiki/Bohemia_Interactive_Community:Rules
+// revision: 378226 (2026-03-17T11:50:39Z)
+// export sha1: l1ex1j9cf0bsbx18fdnjnh94hb1tfek
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Name|bi}} offers {{Link|https://forums.bohemia.net/|Forums}}, Discord servers (such as but not limited to {{Link|https://discord.com/invite/bohemiainteractive|{{Name|bi}}}},
+{{Link|https://discord.com/invite/arma|{{arma}}}},
+{{Link|https://discord.com/invite/dayz|{{dayz}}}},
+{{Link|https://discord.com/invite/vigor|{{vigor}}}},
+{{Link|https://discord.com/invite/ylands|{{ylands}}}},
+{{Link|https://discord.com/invite/QAqhhkYmM7|{{silica}}}}) and many other public platforms on which its communit'''ies''' can express themselves and exchange together.
+
+These platforms have rules in order to ensure the best experience for the most people.
+
+
+== Definitions ==
+
+{| class="wikitable"
+! Term
+! Description
+|-
+| Moderator
+| "Staff" (that can be a {{Name|bi}}'s employee or a volunteer) in charge of the smooth running of said platforms.
+|-
+| DM / PM
+| Direct Message / Private Message
+|-
+| Crosspost
+| Posting the same thing in multiple locations (usually to get a faster answer)
+|-
+| Spam
+| Spam is defined as follows:
+* Irrelevant/out-of-context ("unrequested") message
+* Rapid-fire messages (a.k.a "flood")
+* Wall of text for the sake of a wall of text
+|-
+| Flame-baiting/Flaming
+| Flame-baiting/Flaming is posting a message that is intended to elicit an angry response. Mocking/teasing/ridiculing someone or their point is also flame-baiting.
+|}
+
+
+== Short Version ==
+
+# '''All public messages are to be made in English'''
+# Do be nice (and helpful whenever possible) to others
+# Do not spam
+# Do not crosspost; to prevent that, pick the best location and stick to it (appropriate forum/channel/etc)
+# Do not post illegal content or do things such as trolling, flaming, hacking, cracking, doxxing etc; this '''will''' be punished
+# Before asking anything, '''use Search'''
+# Do not ask to ask, just ask
+# If you encounter an issue or have a question about rules and general behaviour, ask a {{Link|#Moderators|moderator}} - they are here for a smooth experience!
+{{Feature|warning|You may lose access to one or ALL media depending on the infraction.}}
+{{Feature|informative|
+In general, follow '''Wheaton's Law'''.
+
+'''Be a decent human being:''' Harassment, name calling, racism, sexism, homophobia, derogatory remarks, directed or excessive profanity, vulgarities and insults, flaming, baiting etc, all this does not have a place in here.
+
+You are free to voice your opinion. You are free to disagree. You are free to even state your dislike of a game mode, a game, or {{Name|bi}}.<br>
+You are not free from keeping it civil and using arguments - the moment you lose your temper or use low methods, you lose the debate if there was any.
+
+Use your brains, keep the brawl for in-game.
+}}
+
+
+== Long Version ==
+
+=== Common Rules ===
+
+<ol>
+<li> '''Write in English'''<br>
+Please write only in English on the public media.
+Avoid writing in any other language or any kind of slang or leet-speak since the majority of the members will most likely not understand.
+Keep in mind that not everyone is a native speaker, so English has been chosen as the platforms' {{Link|https://en.wikipedia.org/wiki/Lingua_franca|lingua franca}}.
+
+In private messages you are of course welcome to write in any language both participants wish.
+
+{{Feature|informative|An exception to this rule is a moderator explaining the rule to a non-English speaker. A community member can do the same (explaining the rule) provided an English translation is provided as well.}}
+
+<li> '''No flame-baiting/bigotry'''<br>
+Abusive, racist, sexist, flame-baiting, homophobic comments (or any other type of bigotry), excessive profanity, personal attacks and name-calling are not allowed.
+
+If you receive a DM that you find offensive and/or abusive, please forward it to a moderator who will investigate.
+
+<li> '''Follow the instructions of the moderators'''<br>
+When a moderator or a {{Name|bi}} staff member asks you to do or not do something, follow their instructions.
+If you have questions/complaints/comments about the board or moderators please contact a {{Link|#Moderators|moderator}}, we will do our utmost to reply to any that we receive.
+
+If you feel that you have been wrongly handled by a moderator contact another moderator; if you have an issue that you feel cannot be solved by another moderator, please DM the head moderator who will look into the matter.
+
+<li> '''No hacking/cracking discussion'''<br>
+Discussions about copy protection or copying, backing-up, hacking, cracking or reverse engineering of any of {{Name|bi}} or any other developer's product will not be tolerated, and such discussions will be deleted immediately.
+
+<li> '''Advertising commercial products'''<br>
+Do not advertise any commercial products other than those of {{Name|bi}} without prior {{Name|bi}}'s approval.
+
+<li> '''No soliciting for gifts, licenses or anything'''<br>
+Do not ask for a free game, money, or any freebies for anything monetised. Advices are free, of course!
+
+<li> '''No Spam'''<br>
+We deem spam as making a thread or posting a reply that has no real worth, is irrelevant, useless and offers nothing to a discussion.
+If your post/thread is not able to elicit or sustain an in-depth conversation then it is spam.
+
+<li> '''No posting of explicit images/videos'''<br>
+No posting of pictures/videos containing porn, real killing, wounds, mutilations, carnage, and other disgusting/explicit images. This also includes links to pages that contain such content.
+If you are in doubt, contact a moderator ''via'' private message before posting you won't be banned for checking out if a link is ok to post if it's a genuine request.
+
+<li> '''Search before posting'''<br>
+If you have a question, please use the board search function before posting to make sure that it hasn't been answered before.
+There is a big chance it has, not only does searching help to keep the board free of multiple threads it will also help you to get an answer much quicker.
+
+<li> '''Post in the right place'''<br>
+Please ensure to post in the correct place, if you are unsure of the proper destination in which to post feel free to ask a {{Link|#Moderators|moderator}}.
+
+<li> '''Do not crosspost'''<br>
+Do not post duplicate threads in more than one place simply to get an answer quicker or to draw more attention to your post.
+
+<li> '''No duplicate accounts'''<br>
+Having several accounts is '''strictly forbidden'''. If you want to get a new account, contact a moderator.
+If you wish to change your name for any reason we will be happy to do that, if you discover you inadvertently ended up with two accounts we can merge them for you, better to inform a moderator than risk being banned as a "dupe".
+
+<li> '''Do not type in all capital letters, all bold, or in a non-standard colour'''<br>
+Typing in all caps equates (according to standard net etiquette or {{Link|https://en.wikipedia.org/wiki/Etiquette_in_technology#Netiquette|Netiquette}}) to yelling; it is also difficult and obnoxious to read such posts.
+This rule also applies to posting all in bold or all in a certain font colour just to try to make words stand out. If the point is interesting enough or well written enough it will stand out.
+
+You are of course welcome to use different colours for parts of your post if it helps clarifying certain areas, but typing complete messages in any colour other than the usual colour should be avoided.
+
+<li> '''Reposting/repacking user-generated content without permission'''<br>
+For many years this community has been known as the premium mod creating community, people work tirelessly and in great detail to create fantastic mods/missions/campaigns to release for free so that everyone benefits, including {{Name|bi}}. There are a few simple rules in place to provide the respect to these creative people/groups that they deserve:
+
+The first and most fundamental rule is that you '''must seek permission''' to alter someone's work, to mirror it or use it in any way other than for personal use. No permission, no editing, no mirroring, no adding to your mod pack, no editing and sharing around your private squad, none of that is acceptable.
+
+If a person/team posts a thread to share a mod using content from someone else without permission and we receive a complaint then the message will be dealt with appropriately, and said person/team risks a permanent ban.
+
+This is not just limited to re-using content in mods/missions however, it's not acceptable to edit someone's work without permission and then to post screenshots of it (even if the edited mod is purely for personal use), it's also not acceptable to edit someone's work, or use someone's work in any way that you don't have permission for and then to create videos you post, doing any of the above without the permission of the original creators risks a permanent ban, for individuals, for whole mod teams or squads.
+{{Feature|informative|See [[Intellectual Property]].}}
+
+<li> '''Report rule violations'''<br>
+If you see a violation of these rules, do not reply to the message but send a PM to a moderator or use the "Report Message/Post" option instead; replying will be considered as spam.
+Reporting posts contributes to a well structured, well disciplined medium which benefits everyone.
+</ol>
+
+=== Specific Rules ===
+
+{| class="wikitable valign-top valign-middle-row-1 align-center-row-4 align-center-row-7" style="margin: auto"
+! style="height: 3em; width: 50%" |
+==== Forums ====
+! style="width: 50%" |
+==== Discord Servers ====
+|-
+| colspan="2" |
+|-
+! colspan="2" | URLs
+|-
+|
+{{Link|https://forums.bohemia.net/|https://forums.bohemia.net/}}
+|
+{{Link|https://discord.com/invite/bohemiainteractive|{{Name|bi}}}} {{!}}
+{{Link|https://discord.com/invite/arma|{{arma}}}} {{!}}
+{{Link|https://discord.com/invite/dayz|{{dayz}}}} {{!}}
+{{Link|https://discord.com/invite/vigor|{{vigor}}}} {{!}}
+{{Link|https://discord.com/invite/ylands|{{ylands}}}} {{!}}
+{{Link|https://discord.com/invite/QAqhhkYmM7|{{silica}}}}
+|-
+| colspan="2" |
+|-
+! colspan="2" |
+<div id="Moderators">Moderators</div>
+|-
+| Found in {{hl|Browse > Staff}}: {{Link|https://forums.bohemia.net/staff/|https://forums.bohemia.net/staff/}}<br>Head Moderator: {{Link|https://forums.bohemia.net/profile/814722-nillers/|Nillers}}
+| Ping the {{hl|@@discord_moderator}} role<br>Head Moderator: {{hl|@Nillers}}
+|-
+| colspan="2" |
+|-
+! colspan="2" | Specific Rules
+|-
+| {{Feature|important|
+Please respect the following rules when posting on the forums.
+Breaking any of these rules may result in a warning, infraction or post restriction (PR) for a set period of time or in extreme cases can result in a permanent ban.'''
+}}
+
+
+<ol>
+<li> '''Do not dig up old threads'''<br>
+Threads older than '''4 months''' should not be dug up unless something significant is being added.
+If in doubt as to what is "significant", contact a moderator and they will give you their opinion.
+As always old threads will remain open or be closed at the moderator's discretion.
+
+<li> '''Remove image tags when quoting a post containing an image'''<br>
+If you quote a post that contains an image please remove the image tag or the whole image, it helps keep the thread tidy and easier to read if the same image isn't being posted repeatedly, you only need to delete one {{hl|[}} to stop the image from hotlinking.
+
+<li> '''Keep avatars and signatures within forum regulations'''
+* Total maximum signature size is 600&times;150px (text and/or images combined). Total maximum image size is 100KB.
+* Avatar filesize must not exceed 100KB.
+* Signature and avatar must be quiet, no sounds may be played back in them by any means.
+* No flame-baiting or similar material and/or text that others may find offensive is allowed to be displayed.<br>If someone asks you to remove something they posted on the forum from your signature you must remove it.
+The signature may be used to advertise your clan, fan-site or mods, but not as a billboard for flaming or opinion statements.
+
+<li> '''No public discussion on how the forum is moderated'''<br>
+If you have questions/complaints/comments about the board or moderators please PM them to a moderator, we will do our utmost to reply to any that we receive.
+If you have an issue that you feel cannot be solved by another moderator then please PM the head moderator ({{Link|https://forums.bohemia.net/profile/814722-nillers/|Nillers}}) who will look into the matter.
+You may also ask your questions in the {{Link|https://forums.bohemia.net/showthread.php?t{{=}}72059|"Ask a mod" thread}}; however that thread is not to be used to attack/rant against specific moderators or about specific rules but more for questions/answers.
+</ol>
+
+| {{Feature|important|Those who violate rules may get Warned, Muted, Kicked, Temporarily or Permanently Banned in relation to the severity of the violation.}}
+
+
+# All the rules apply to both text and voice channels.
+# '''Channel descriptions and pinned messages act as rules addendums'''. Follow channel names, descriptions and pinned messages to avoid chat clutter.
+# Please refrain from tagging {{hl|Bohemia.net}} (green) staff; if a (non-game) situation needs immediate attention, please tag a {{hl|@@discord_moderator}}. If they cannot provide the necessary information or are unavailable, then you may tag the Head Moderator, then {{hl|@@sysadmin}}.
+# No conversation about politics, or any political issues.
+# Provide a description/context to posted links - do not post a link without context or description (with the exception of {{Name|bi}} web domains such as {{hl|bohemia.net}}, {{hl|bistudio.com}}, {{hl|armaplatform.com}} etc).
+# Where available, the {{hl|#discord_server}} channel is here to allow for suggestions, recommendations and also reports.
+# Authorised advertising only goes to dedicated channels, if any. '''Any DM advertising will result in a ban.'''
+|}
+
+
+[[Category:Community Wiki]]

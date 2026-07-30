@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/isObjectRTD
+// revision: 330053 (2022-08-15T16:03:49Z)
+// export sha1: 8366vdzjqcc9t19rarg2tnq32s9a3ru
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= RTD
+
+|descr=Returns true if RTD model is loaded.{{Feature|afm}}
+
+|s1= [[isObjectRTD]] helicopter
+
+|p1= helicopter: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_heliRTD = isObjectRTD vehicle player;</sqf>
+
+|seealso= [[weightRTD]] [[difficultyEnabledRTD]]
+}}

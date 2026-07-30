@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/gearIDCAmmoCount
+// revision: 363874 (2024-04-23T21:04:42Z)
+// export sha1: nxm8m7591t48gsoo5salux2uwrb3n2s
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Command Group: Unit Inventory | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Unit Inventory
+
+|gr2= GUI Control
+
+|descr= Returns ammo count of assigned magazine.
+
+|s1= [[gearIDCAmmoCount]] idc
+
+|p1= idc: [[Number]] - idc of control type CT_ITEMSLOT 103
+
+|r1= [[Number]]
+
+|x1= <sqf>_ammoCount = gearIDCAmmoCount _control;</sqf>
+
+|seealso= [[gearSlotData]] [[gearSlotAmmoCount]]
+}}

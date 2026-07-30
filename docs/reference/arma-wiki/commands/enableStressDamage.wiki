@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/enableStressDamage
+// revision: 319014 (2022-05-13T09:22:11Z)
+// export sha1: c3pgis0vpm29x5pn9ascdysr4bnr6iz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= RTD
+
+|arg= local
+
+|eff= local
+
+|descr= Toggles stress damage in [[Description.ext#forceRotorLibSimulation | Advanced Flight Model]], which otherwise could be manually toggles in game setting: {{hl|Options &gt; Game &gt; Helicopter Flight Model &gt; Advanced &gt; Stress Damage}}.
+{{Feature|afm}}
+
+|s1= [[enableStressDamage]] state
+
+|p1= state: [[Boolean]] - [[true]] to enable stress damage, [[false]] to disable it
+
+|r1= [[Nothing]]
+
+|x1= <sqf>if (difficultyEnabledRTD) then { enableStressDamage true };</sqf>
+
+|seealso= [[Description.ext#forceRotorLibSimulation | forceRotorLibSimulation]] [[difficultyEnabledRTD]] [[isStressDamageEnabled]]
+}}

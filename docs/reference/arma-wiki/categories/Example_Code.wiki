@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Example_Code
+// revision: 126453 (2019-08-17T18:17:09Z)
+// export sha1: 4l7dat0jonwuuns432ccvw98dosp7x6
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists example code that is '''optimised''' (for its tagged version) and '''commented''' in order to explain the different steps of code operation.
+
+
+[[Category:Scripting Topics]]

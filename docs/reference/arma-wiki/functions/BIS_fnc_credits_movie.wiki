@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_credits_movie
+// revision: 328530 (2022-07-13T16:47:54Z)
+// export sha1: t8irh7a6av23d9plgoj4blwkl96pvwy
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Movie credits function.
+
+|exec= spawn
+
+|s1= [display, mode] call [[BIS_fnc_credits_movie]]
+
+|p1= display: [[Display]] - (Optional) display to use to show the credits
+
+|p2= mode: [[Number]] - (Optional, default 0) 0 to start the credits, 1 to end them
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[] spawn BIS_fnc_credits_movie;</sqf>
+
+|x2= Display the credits full screen:
+<sqf>
+[] spawn {
+	disableSerialization;
+	// create credits
+	(findDisplay 46) createDisplay "RscCredits";
+	[] call BIS_fnc_credits_movie;
+};
+</sqf>
+
+|seealso= [[BIS_fnc_credits]] [[BIS_fnc_credits_movieConfig]] [[BIS_fnc_credits_movieSupport]]
+}}

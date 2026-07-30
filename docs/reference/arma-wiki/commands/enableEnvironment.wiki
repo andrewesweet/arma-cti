@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/enableEnvironment
+// revision: 349663 (2023-11-18T17:02:32Z)
+// export sha1: gubp39i2q3bq0s8vfb6i63jemzscfok
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Command Group: Sounds | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Environment
+
+|gr2= Sounds
+
+|eff= local
+
+|descr= Enable/disable environmental effects: ambient life and/or ambient sound.
+
+{{Feature|informative|This command has to be executed after mission start: be sure to use e.g <sqf inline>sleep 0.1;</sqf> for it to take effect.}}
+Influenced sounds among others are:
+{{Columns|2|
+* bird sounds
+* insect sounds
+* waves
+* wind
+* rain
+* sounds produced by air conditioners and similar
+}}
+* {{GVI|arma3|2.06|size= 0.75}} thunder (an already started sound will not be cut but future ones will be prevented)
+
+|s1= [[enableEnvironment]] enable
+
+|p1= enable: [[Boolean]] - [[false]] to disable ambient life and ambient sounds, [[true]] to re-enable it
+
+|r1= [[Nothing]]
+
+|s2= [[enableEnvironment]] [ambientLife, ambientSound, windyCoef]
+
+|s2since= arma3 1.68
+
+|p21= ambientLife: [[Boolean]] - enable/disable ambient life (bees, rabbits, birds, snakes, fish)
+
+|p22= ambientSound: [[Boolean]] - enable/disable ambient sounds (cicadas, owls, etc)
+
+|p23= windyCoef: [[Number]] - (Optional, default 1) howling wind at heights, range 0..1
+|p23since= arma3 2.12
+
+|r2= [[Nothing]]
+
+|x1= <sqf>enableEnvironment false; // identical to enableEnvironment [false, false]</sqf>
+
+|x2= <sqf>
+enableEnvironment [false, true];
+enableEnvironment [false, true, 0.5]; // since {{arma3}} v2.12
+</sqf>
+
+|seealso= [[environmentEnabled]] [[fadeEnvironment]] [[environmentVolume]] [[initAmbientLife]] [[sideAmbientLife]] [[getAllEnvSoundControllers]] [[getEnvSoundController]] [[setSoundEffect]] [[Arma 3: Animals: Ambient System]]
+}}

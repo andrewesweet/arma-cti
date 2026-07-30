@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setCuratorVisionModes
+// revision: 378130 (2026-02-22T20:24:30Z)
+// export sha1: o7rk4o42yho3lgdsf0p63zo5es9fdh6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Set which vision modes curator can access.
+
+|s1= [curator, mode] call [[BIS_fnc_setCuratorVisionModes]]
+
+|p1= curator: [[Object]]
+
+|p2= mode: [[Array]] of [[Number]]s - vision modes, can be:
+* -2 - Night vision mode
+* -1 - Normal mode
+* 0, 1, ... - Thermal vision mode - see [[setCamUseTi]] for detailed information
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[BIS_curator, [-1, -2]] call BIS_fnc_setCuratorVisionModes;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[curatorCamera]] [[setCamUseTi]]
+}}

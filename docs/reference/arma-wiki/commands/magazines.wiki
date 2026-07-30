@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/magazines
+// revision: 378372 (2026-04-03T16:50:03Z)
+// export sha1: d059mzc1szv4enewcfmk5bqznfjj0s8
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Command Group: Vehicle Inventory | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Unit Inventory
+
+|gr2= Vehicle Inventory
+
+|descr= Returns array of type names of all vehicle's magazines. When applied to a unit, the command behaves differently and will omit magazines already loaded into unit's weapons. Use [[currentMagazine]] to get this information for a currently loaded magazine.
+
+|s1= [[magazines]] vehicle
+
+|p1= vehicle: [[Object]] - unit or vehicle
+
+|r1= [[Array]] of [[String]]s
+
+|s2= [[magazines]] [vehicle, includeEmpty]
+
+|s2since= arma3 2.00
+
+|p21= vehicle: [[Object]] - unit or vehicle
+
+|p22= includeEmpty: [[Boolean]] - (Optional, default [[false]]) [[true]] to include empty magazines
+
+|r2= [[Array]] of [[String]]s
+
+|x1= <sqf>_mags = magazines player;</sqf>
+
+|seealso= [[currentMagazine]] [[magazinesTurret]] [[magazinesDetail]] [[magazinesAmmo]] [[magazinesAmmoFull]] [[ammo]] [[weapons]] [[backpacks]]
+}}
+
+<dl class="command_description">
+
+<dt class="note">[[User:Ceeeb|Ceeeb]]</dt>
+<dd class="note">
+In {{GVI|ofp|1.96}}, if a weapon is loaded with an empty magazine, that magazine will still be counted by this command. The [[ammo|ammo]] command can be used to check if a unit has any ammunition into it is last magazine.
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 25 November 2011</dd>
+<dt class="note">[[User:Dr_Eyeball|Dr_Eyeball]]</dt>
+<dd class="note">
+This command does not include non-turret weapon magazines, such as smoke, flare or chaff magazines which are usually declared in the root of the vehicle's class, rather than in the Turrets hierarchy.
+</dd>
+
+</dl>

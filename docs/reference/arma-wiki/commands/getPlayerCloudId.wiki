@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/getPlayerCloudId
+// revision: 351574 (2023-12-07T17:16:57Z)
+// export sha1: iplhih8voc5th4wcdgatchv7id2k9un
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|arg= global
+
+|gr1= Argo
+
+|descr= Return the provided player's unique Cloud service account id.
+
+|mp= {{Feature|important|Only works in multiplayer and on official servers.}}
+
+|s1= [[getPlayerCloudId]] unit
+
+|p1= unit: [[Object]] - the player unit from whom to obtain the Cloud ID
+
+|r1= [[String]] - the Cloud ID or empty string if in single player or if ''unit'' is not a live player unit
+
+|x1= <sqf>
+_localPlayerCloudID = getPlayerCloudId player;
+_remotePlayerCloudID = getPlayerCloudId _otherPlayer;
+_emptyString = getPlayerCloudId objNull;
+</sqf>
+
+|seealso= [[getPlayerUID]] [[getPlayerUIDOld]]
+}}

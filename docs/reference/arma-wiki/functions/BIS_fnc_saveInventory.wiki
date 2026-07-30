@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_saveInventory
+// revision: 378580 (2026-05-10T21:43:21Z)
+// export sha1: rxlznwvsd4kgktc2a4powihe2s3k4d7
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Inventory
+
+|descr= Save unit's loadout.
+
+|s1= [unit, input, params, delete] call [[BIS_fnc_saveInventory]]
+
+|p1= unit: [[Object]] - unit whose inventory should be saved
+
+|p2= input: [[Array]] format [target, loadoutName]:
+* target: [[Namespace]], [[Group]] or [[Object]] - target where the loadout is stored
+* loadoutName: [[String]] - loadout name
+
+|p3= params: [[Array]] - (Optional, default []) custom parameters stored with the loadout
+
+|p4= delete: [[Boolean]] - (Optional, default [[false]]) whether or not to delete the loadout
+
+|r1= [[Array]] - saved value
+
+|x1= <sqf>[player, [missionNamespace, "BIS_inv"], [], true] call BIS_fnc_saveInventory;</sqf>
+
+|seealso= [[BIS_fnc_loadInventory]][[BIS_fnc_exportInventory]][[BIS_fnc_deleteInventory]] [[getUnitLoadout]]
+}}
+
+{{Note
+|user= Ilias38rus
+|timestamp= 20200802152200
+|text= Doesn't work for backpacks in backpack, unlike [[getUnitLoadout]].
+}}

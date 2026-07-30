@@ -1,0 +1,75 @@
+// source: https://community.bistudio.com/wiki/privateAll
+// revision: 369773 (2024-10-08T15:08:58Z)
+// export sha1: 6e4z7er3by3qxdpys2nbgcd4rs9x2z0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Variables
+
+|descr= Disables the implicit inheritance of local variables, as defined in the parent scope.<br>
+By default, any local variables defined in a parent scope are available to the lower scope code.<br>
+After using [[privateAll]], parent scope variables can no longer be accessed implicitly. However, it is still possible to explicitly access parent scope variables using the [[import]] command.
+
+|s1= [[privateAll]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_a = 1;
+_b = 2;
+_c = 3;
+4 call {
+	// _a, _b and _c from the parent scope are accessible at this point
+	systemChat str [_a, _b, _c]; 			// prints [1, 2, 3]
+	privateAll; 							// _a, _b and _c from the parent scope can no longer be accessed
+	systemChat str [_a, _b, _c]; 			// prints [Any, Any, Any]
+	import ["_a", "_b"]; 					// _a and _b are now defined as private variables in the current scope; _c is still not defined
+	systemChat str [_a, _b, _c, _this]; 	// prints [1, 2, Any, 4]
+	_a = _a + 1; 							// changes the private _a variable in the current scope, but doesn't change the parent scope _a
+};
+systemChat str _a; // _a is still 1
+</sqf>
+
+|x2= <sqf>
+private _a = /* ... */;
+private _b = /* ... */;
+private _c = /* ... */;
+
+{
+	_x call {
+		privateAll;
+		import ["_a", "_b"];
+		call _this;
+	};
+} forEach CustomEventHandlers;
+</sqf>
+
+# Because of the [[import]]-statement, code from <var>CustomEventHandlers</var> can use <var>_a</var> and <var>_b</var> without using [[params]] (even if <var>_a</var> and <var>_b</var> were provided via <sqf inline>_this</sqf>, which is not the case here).
+# Code from <var>CustomEventHandlers</var> can only see <var>_a</var> and <var>_b</var>, but no other variables such as <var>_c</var>, <sqf inline>_x</sqf> or <sqf inline>_forEachIndex</sqf>.
+# Code from <var>CustomEventHandlers</var> can modify <var>_a</var> and <var>_b</var> (e.g. <sqf inline>_a = _b / 2</sqf>), but only within its own scope (i.e. <sqf inline>CustomEventHandlers # (n + 1)</sqf> will not see any changes that <sqf inline>CustomEventHandlers # n</sqf> may have made to <var>_a</var> and <var>_b</var>).
+# The values of <var>_a</var>, <var>_b</var> and <var>_c</var> after the [[forEach]]-loop are guaranteed to be the same as before the [[forEach]]-loop.
+
+{{Feature|important|There is one important exception to points 3 and 4: Modifications by reference (e.g. <sqf inline>_a pushBack 123</sqf> where <var>_a</var> is an [[Array]]) are applied in all scopes. This can be avoided by copying <var>_a</var> before calling the <var>CustomEventHandlers</var> code:
+<spoiler text="Show Code">
+<sqf>
+private _a = [/* ... */]; // Note that _a is an array.
+private _b = /* ... */;
+private _c = /* ... */;
+
+{
+	_x call {
+		privateAll;
+		import ["_a", "_b"];
+		_a = +_a; // Copy the array so that the code from CustomEventHandlers can no longer modify the original array.
+		call _this;
+	};
+} forEach CustomEventHandlers;
+</sqf></spoiler>}}
+
+|seealso= [[import]] [[private]] [[Variables#Scopes]]
+}}

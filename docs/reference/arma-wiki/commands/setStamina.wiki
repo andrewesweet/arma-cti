@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/setStamina
+// revision: 369292 (2024-09-03T18:42:49Z)
+// export sha1: 1k1ym3m0o9sqvo6mzuj9dy4lt1oriy2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+|game1= arma3
+|version1= 1.54
+
+|eff= local
+|arg= local
+
+|gr1= Stamina System
+
+|descr= Set units' stamina (seconds until depletion)
+
+|s1= unit [[setStamina]] stamina
+
+|p1= unit: [[Object]]
+
+|p2= stamina: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setStamina 42;</sqf>
+
+|seealso= [[setStaminaScheme]] [[getStamina]] [[enableStamina]] [[setFatigue]] [[getFatigue]] [[Arma 3: Stamina]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-12-30 - 01:50 (UTC)</dd>
+<dt class="note">[[User:Molaron|Molaron]]</dt>
+<dd class="note">
+"setStamina" has the same effect as "setFatigue".
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2018-12-26 - 11:34 (UTC)</dd>
+<dt class="note">[[User:demellion|demellion]]</dt>
+<dd class="note">
+Note that [[setStamina]] will not be able to exceed a 100% stamina value given by the engine. It will minimize to a maximum possible value, similar to application of the old command [[setFatigue]] in a range of '''0..1'''. Example:
+<sqf>
+getStamina player; // 8.58
+getFatigue player; // 0
+player setStamina 50; // This will be minimized to 8.58 on next unit simulation cycle. 
+</sqf>
+</dd>
+
+</dl>

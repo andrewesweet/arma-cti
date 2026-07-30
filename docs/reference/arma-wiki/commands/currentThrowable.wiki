@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/currentThrowable
+// revision: 377712 (2026-01-02T09:03:53Z)
+// export sha1: 65s8reu2ftc464lc2vz2d4lq0baqqob
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.48
+
+|gr1= Weapons
+
+|gr2= Unit Inventory
+
+|descr= Returns currently selected throwable (and the muzzle it is loaded into), which will be launched if the user presses {{Controls|G}}.
+
+|s1= [[currentThrowable]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] with [magazineName, muzzleName, id, ammoCount]
+* magazineName: [[String]]
+* muzzleName: [[String]]
+* id: [[Array]] of [[Number]] pairs: [itemWorldID, creatorID]
+* {{GVI|arma3|2.22|size= 0.75}} ammoCount: [[Number]] - magazine ammo
+
+|x1= <sqf>currentThrowable player; // ["SmokeShellGreen", "SmokeShellGreenMuzzle", [1.00002e+007, 0], 1]</sqf>
+
+|x2= <sqf>
+_ct = currentThrowable player;				// ["HandGrenade", "HandGrenadeMuzzle", [1e+007, 0], 1]
+_id = (_ct select 2 select 0) - 1e7;		// 18
+</sqf>
+
+|seealso= [[selectThrowable]] [[currentWeapon]] [[currentMagazine]] [[currentMuzzle]] [[BIS_fnc_isThrowable]]
+}}

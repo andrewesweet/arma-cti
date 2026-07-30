@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Feature_arma3
+// revision: 363813 (2024-04-22T18:50:10Z)
+// export sha1: kkswjrg1wab87dxv7awv5cl23gndo8u
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Feature|arma3|{{{1|}}}}}</includeonly><noinclude>See [[Template:Feature|Feature-arma3 Template]].[[Category:Historical Templates]]</noinclude>

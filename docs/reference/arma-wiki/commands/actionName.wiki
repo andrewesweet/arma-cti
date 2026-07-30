@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/actionName
+// revision: 321154 (2022-05-13T15:05:12Z)
+// export sha1: q98n681db63r1bnuhtxwsp60thiw5vv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Interaction
+
+|descr= Returns localized name of action.
+
+|s1= [[actionName]] action
+
+|p1= action: [[String]]
+
+|r1= [[String]]
+
+|x1= <sqf>actionName "ReloadMagazine"; // returns "Reload"</sqf>
+
+|seealso= [[inputAction/actions]] [[playAction]] [[playActionNow]]
+}}

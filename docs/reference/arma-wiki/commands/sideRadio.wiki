@@ -1,0 +1,90 @@
+// source: https://community.bistudio.com/wiki/sideRadio
+// revision: 364536 (2024-05-16T20:46:45Z)
+// export sha1: dzvb2ns851mmlhu2c8blk5pc053k6y0
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Command Group: Sounds | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Radio and Chat
+
+|gr2= Sounds
+
+|descr= Sends the audio message to the side radio channel. The message is defined in CfgRadio in the [[Description.ext|description.ext]] file or config radio protocol. The transmission will play only on the PC where command was executed. If you need the transmission to play on all computers, you have to execute it globally (see [[remoteExec]]).
+{{Feature|important|The unit must have an [[assignItem|assigned]] radio item (such as '''''"ItemRadio"''''') to see or transmit the messages. A radio item must have the property <syntaxhighlight lang="cpp" inline>simulation = "ItemRadio";</syntaxhighlight> in its [[CfgWeapons_Config_Reference#simulation.3D.22Weapon.22|CfgWeapons config]].}}
+{{Feature|informative|When transmitting unit gets killed, transmission will be interrupted. However when receiving unit gets killed, the transmission continues to play.}}
+
+|s1= unit [[sideRadio]] radioName
+
+|p1= unit: [[Object]] - unit to transmit
+
+|p2= radioName: [[String]] - class name from {{hl|CfgRadio}}
+
+|r1= [[Nothing]]
+
+|s2= [side, identity] [[sideRadio]] radioName
+
+|p21= side: [[Side]] - side to which the transmission will be played
+
+|p22= identity: [[String]] - class name of one of the identities in CfgHQIdentities. Possible identities in {{arma3}} are:
+{{Columns|4|
+* "Base"
+* "HQ"
+* "PAPA_BEAR"
+* "AirBase"
+* "BLU"
+* "OPF"
+* "IND"
+* "IND_G"
+}}
+
+|p24= radioName: [[String]] - class name from {{hl|CfgRadio}}
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_soldierOne sideRadio "messageOne";</sqf>
+
+|x2= <sqf>player sideRadio configName selectRandom ("true" configClasses (configFile >> "CfgRadio"));</sqf>
+
+|x3= <sqf>[west, "Base"] sideRadio configName selectRandom ("true" configClasses (configFile >> "CfgRadio"));</sqf>
+
+|seealso= [[sideChat]] [[groupRadio]] [[customRadio]] [[vehicleRadio]] [[globalRadio]] [[directSay]] [[commandRadio]]
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20070212034700
+|text= In '''OFP v1.96''', sideRadio messages can be sent from 2 abstract sources: "Papa_Bear" and "Base FireFly". Use sideRadio on an array in the form [SIDE,"base"],[SIDE,"HQ"],[SIDE,"Papa_bear"] or [SIDE,"airbase"], where SIDE is the [[side]] broadcasting. "HQ", "base" and "Papa_bear" seem to be the same object. The callsign strings can be re-defined using a stringTable.csv file, using STR_CFG_PAPABEAR and STR_CFG_FIREFLYBASE.  ''Example : [EAST,"base"] sideRadio "returnToBase"''. 
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20161203213200
+|text= To transmit user custom sounds (see [[Multiplayer_Custom_Sounds_Tutorial]]), prefix the full filename including file extension with #. For example if there is a custom user sound file called {{hl|MySound.ogg}}, to play it on the radio use:
+<sqf>player sideRadio "#MySound.ogg";</sqf> 
+}}

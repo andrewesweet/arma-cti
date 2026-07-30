@@ -1,0 +1,1016 @@
+// source: https://community.bistudio.com/wiki/RVMAT_basics
+// revision: 367263 (2024-08-08T20:11:51Z)
+// export sha1: bvbhzbcmxl04mq9gyv2h8nkqxbg75c1
+// categories: Category:ArmA: Armed Assault: Editing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Operation Flashpoint: Editing | Category:Take On Helicopters: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+== Theory ==
+
+=== Lighting ===
+
+Lighting and shading are what make 3D scene appealing. In real-time render we still have to simplify so the Artist must understand how shading works in engine to be able prepare the best realistic looking surfaces.
+
+[[Real Virtuality]] counts lighting as '''T * (D.o + A) + S.o''':
+
+* T = texture color
+* D = diffuse lighting (color, intensity and direction. ARMA engine has just one light source of directional light - sun or moon.) D is calculated as max(L.N,0)*sunLightColor - where L is light direction, N is surface direction (normal)
+* A = ambient lighting (color and intensity. It is always present at same intensity all over the scene and its value is done by overcast setting)
+* S = specular (setting of material glossiness and specularity)
+* o = direction of light (1 = pixel is lit, 0 = pixel is in shadow)
+
+Simple materials count lighting per vertex by interpolating light direction between face edges (normals). It is similar to well known Gouraud shading model. More complex materials use per pixel normal orientation.
+
+Values for shading calculations are combined from textures, effect bitmaps, engine light settings (config) and material settings ({{hl|.rvmat}}).
+
+=== Shadows ===
+
+Shadows are calculated in ARMA engine two types, depending on values in Video options and each model setting.
+
+Stencil buffer shadows are sharp and they are added after the whole scene has been drawn. Engine just subtracts diffuse light value on places where stencil shadow volume appeared.
+This results in speculars still being present in shadows. Also when ambient and diffuse settings of the material are not equal (and ForceDiffuse!=0) then resulting color isn't correct.
+
+Shadow buffer makes one soft shadow map calculated on GCard for whole scene from the viewport. This affects the precision of the shadow.
+
+=== Glossiness ===
+
+Material specularity is defined by a curve ({{Link|https://en.wikipedia.org/wiki/Bidirectional_reflectance_function}}) that says how much light is reflected under all angles.
+In Real Virtuality we are able to use:
+* Specular Power
+* Irradiance Table
+* Fresnel values
+in {{hl|.rvmat}} files.
+
+=== Sections ===
+
+Textures and materials are linked to each face separately so artist can have various materials on surface mapped with a single texture.
+
+Everytime when Graphics Card (GPU) is instructed to draw with new parameters, we call it scene section. It is usually when new object (*.p3d), texture or material appears.
+Sections are generated each time when there is need to change parameters for rendering on Graphical Card (GPU).
+This is always when loading information from CPU about independent OBJECT, TEXTURE, MATERIAL or bone limit is exceeded on the card.
+Overhead in instruction transfer between CPU and GPU then lowers rendering performance which could be used to render hundreds polygons or textures etc.
+
+Texture (TGA) is assigned to individual faces.
+Material (RVMAT) is assigned to same faces separately thus it is possible use various materials on surface covered with one UV and CO map.
+Yet then are generated another sections. In STAGE 0 is possible change with RVMAT also difusse component texture.
+Sections may differ in individual LODs.
+
+=== Procedural textures ===
+
+Besides TGA/PAA textures, Real Virtuality can work with maps generated in real-time procedurally - see [[Procedural Textures]].
+
+=== Normal Map ===
+
+The {{Link|http://wiki.polycount.com/wiki/Normal_map|Normal maps}} used in {{arma}} are {{Link|http://wiki.polycount.com/wiki/Normal_Map_Technical_Details#Tangent-space_normal_map|Tangent-space}} maps with the {{Link|http://wiki.polycount.com/wiki/Normal_Map_Technical_Details#Common_Swizzle_Coordinates|X+ Y-}} orientation (same as in Unreal Engine and 3dsmax renderer default setting).
+
+
+== RVMAT files ==
+
+Those files are a sort of config.
+
+=== Basic Surface Setting ===
+
+==== Ambient ====
+<syntaxhighlight lang="cpp">
+Ambient[] = { 0.9, 0.9, 0.9, 1 };
+</syntaxhighlight>
+
+multiplies color values (color texture R,G,B,A) of the surface that is not lit by the main directional light.
+
+==== Diffuse ====
+<syntaxhighlight lang="cpp">
+Diffuse[] = { 0.9, 0.9, 0.9, 1 };
+</syntaxhighlight>
+
+multiplies color values of the surface that lit by main directional light.
+
+==== ForcedDiffuse ====
+<syntaxhighlight lang="cpp">
+ForcedDiffuse[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+those values help to simulate so called '''Translucency'''; part of the diffuse lighting that is reflected on surface in shadow.
+It works similar to ambient but with different lighting component. Unfortunately some shaders do not work well with <syntaxhighlight lang="cpp" inline>forcedDiffuse</syntaxhighlight>.
+
+<syntaxhighlight lang="cpp">
+ambient[] = { 1, 1, 1, 1 };
+Diffuse[] = { 0.5, 0.5, 0.5, 1 };
+ForcedDiffuse[] = { 0.5, 0.5, 0.5, 0 };
+</syntaxhighlight>
+
+This combination makes the same result as the old <syntaxhighlight lang="cpp" inline>HalfLighted</syntaxhighlight> vertex property (surface is lit the same from all sides, it appears flat)
+
+For foliage surfaces there are special shaders that use also forcedDiffuse Alpha value setting for calculating how much light goes through (1 = all).
+
+==== Emmisive ====
+<syntaxhighlight lang="cpp">
+emmisive[] = { 0, 0, 0, 0 };
+</syntaxhighlight>
+
+{{sic|Emmisive|Emissive}} - also called '''Luminescence'''. Values give amount of light that surface shines by himself. Use it for light-sources. It will appeal shining but will not lit anything around.
+
+==== Specular ====
+<syntaxhighlight lang="cpp">
+specular[] = { 0.3, 0.3, 0.3, 0 };
+</syntaxhighlight>
+
+Used for making so called '''hotspot''' (in max it is Specular level+specular color). It is part of the light that is reflected from surface. Specular is calculated poer vertex or per pixel depending od specific shader.
+
+==== SpecularPower ====
+<syntaxhighlight lang="cpp">
+specularPower = 40;
+</syntaxhighlight>
+Also called '''Glossiness'''. Defines how sharp the hot-spot will be. Some shaders use IRRADIANCE TABLE instead of this value.
+
+[[File:MaterialSettings.jpg]]
+
+
+{{Feature|informative|2=
+* All above mentioned settings can be calculated in some shaders per pixel using effect bitmaps.
+* All components are together used in calculation of surface shading:
+ pixel RGB on screen = (RVMAT ambient * RGB texture * Environment ambient)
+ + (RVMAT diffuse * RGB texture * Environment diffuse * light direction)
+ + (RVMAT forced diffuse * RGB texture * Environment diffuse)
+ + (RVMAT emissive material * RGB texture)
+ + (RVMAT specular * Environment diffuse * light direction)
+<nowiki/>
+}}
+
+
+Color values are usually in range 0-1, but it can be more. ARMA engine calculates light in high dynamic range, with values exceeding 0-255 RGB depth.
+Final RGB in monitor is calculated for each frame depending od eye/optics Aperture (shutter) settings [[setAperture]]/[[setApertureNew]].
+
+Realistic surfaces do not reflect 100% of incoming light. The more light is reflected as specular the less diffuse it has.
+Sum of diffuse, forced diffuse and reflected light should not exceed 1 BUT this is not true on ArmA real-time materials that do render just sunlight hot-spot and miss environmental light.
+
+Diffuse for many usual surfaces is between 40%-80%. If you aim for maximum realistic surface settings, study photoreference.
+RVMAT settings allow you to put as much color range as possible in texture and than modify it to realistic values with maximum dynamic range.
+
+Realistic surfaces usually reflect directional and scattered light the same way - Diffuse and Ambient are equal.
+Real Virtuality has environment settings with values for diffuse and ambient (scene contrast) based on real world light recording. [[Color Calibration]]. It is not wise to compensate contrast in material settings.
+
+Lower diffuse values are used for spongy materials (some light is transfered to forceDiffuse).
+Lower ambient values can be used on surfaces where global ambient should be reduced, such as Interiors. It is usually made using Ambient Light maps.
+
+=== Specular color ===
+
+Usually we set RGB values color neutral. But sometimes it is effective to tint color in rvmat. Most obvious it is in specular settings of some glossy metal surfaces.
+
+If I want a specific color, I count:
+
+'''X = B / (Sp * Db)'''
+
+'''B'''.. desired color of hot-spot
+
+'''Sp'''.. actual Specular setting of hot-spotmaterial
+
+'''Db'''.. color of environment light (Ambient and Diffuse change during day and overcast) O2 environment editor shows actual colors used in buldozer preview.
+
+'''X''' ..number that i use to multiply Specular to get desired color.
+
+=== RenderFlags ===
+
+Special shading property that are used instead of old VERTEX LIGHTING PROPERTY settings.
+
+<syntaxhighlight lang="cpp">
+renderFlags[] = { flag1, flag2 };
+</syntaxhighlight>
+
+{| class="wikitable"
+! Flag Name
+! Description
+|-
+| NoZWrite
+| Face is not count in Z-buffer. Used for alpha-transparent surfaces laid over another faces to fix shadow artifacts. (for example squad logo)
+|-
+| NoColorWrite
+| Disables calculation in color channels. Face is calculated just in alpha and Z-buffer.
+|-
+| NoAlphaWrite
+| Disables calculation in alpha channels. Used for transparent glass that has 2 pass material.
+|-
+| AddBlend
+| Allows adding alpha-transparent surface color to the background. Used for fire particles.
+|-
+| LandShadow
+| For terrain.
+|-
+|
+AlphaTest32<br>
+Alphatest64<br>
+Alphatest128
+| Defines threshold where pixel becomes transparent at drop off to discrete alpha. The bigger value, the more pixels are used
+|-
+| Road
+|
+|-
+| NoTiWrite
+|
+|-
+| NoReceiveShadow
+|
+|-
+| NoLODBlend
+|
+|-
+| Dummy0
+|
+|}
+'''Always in Shadow''' can be achieved with setting RVMAT <syntaxhighlight lang="cpp" inline>diffuse[] = { 0, 0, 0, 0 }</syntaxhighlight> + reasonable specular reduction.
+
+=== Light Mode ===
+
+Setting of various kinds of light calculation:
+<syntaxhighlight lang="cpp">
+mainLight = "Sun";
+</syntaxhighlight>
+
+Possible values are:
+{{Columns|3|
+* None
+* Sun
+* Sky
+* Horizon
+* Stars
+* SunObject
+* SunHaloObject
+* MoonObject
+* MoonHaloObject
+}}
+
+=== Fog Mode ===
+
+Setting of various kinds of fog calculation:
+<syntaxhighlight lang="cpp">
+fogMode = "Alpha";
+</syntaxhighlight>
+
+Possible values are:
+* none - no fog
+* fog - fog used by usual opaque objects; the more the object is covered by fog, the closer its color is to fog color
+* alpha - fog used by objects with alpha; the more the object is covered by fog, the more transparent it is
+* fogAlpha - combination of both above approaches; used for roads (alpha-out could be quicker than fogging); can be used to fade away objects when object is not just normally fogging
+* fogSky - fog for sky objects (moon, stars)
+
+=== Shader-Specific Setting ===
+
+Selecting shader.
+
+<syntaxhighlight lang="cpp">
+PixelShaderID = "xxx";
+VertexShaderID = "xxx";
+</syntaxhighlight>
+
+Each shader uses specific "Stages".
+
+<syntaxhighlight lang="cpp">
+class StageX
+</syntaxhighlight>
+
+Each stage define parameters for shader calculation, usually as links to effect bitmaps.
+
+* texture = (name and path to effect bitmap texture)
+Must obey texture naming conventions [[Texture Naming Conventions]] otherwise there will be no proper automatic conversion made from TGA to PAA.
+
+* Filter = "Anizotropic";
+Default is Anizotropic, but in some situations you can use Point, Linear, Trilinear.
+
+* uvSource = "tex";
+can be: none, tex, tex1 (second UV set), pos, norm, worlPos, worldNorm, texShoreAnim, texCollimator, texCollimatorInv
+
+* class uvTransform
+Offset, deformation or repeating ot texture in given UV set.
+
+=== Material Types ===
+
+Inside O2 Material editor exist examples for most of shaders - see {{Link|Oxygen 2 - Manual#MAT plugin}}.
+
+<spoiler text="Show Material Types">
+{| class="wikitable"
+ ! Wikipage !! Vertex shader !! Pixel shader !! Notes
+ |-
+ | [[Material - General material]] || Basic || Normal
+ |-
+ | [[Material - DXTA material]] || Basic || NormalDXTA
+ |-
+ | [[Material - Basic detail map]] || Basic || Detail
+ |-
+ | || Basic || White
+ |-
+ | || Basic || WhiteAlpha
+ |-
+ | [[Material - Basic glass]] || Basic || AlphaShadow
+ |-
+ | [[Material - Normal map]] || NormalMap || NormalMap
+ |-
+ | [[Material - Normal map HQ specular]] || NormalMap || NormalMapSpecularMap || NOHQ+SM
+ |-
+ | || NormalMap || NormalMapSpecularDIMap || NOHQ+SMDI
+ |-
+ | [[Material - Normal map HQ detail map specular]] || NormalMap || NormalMapDetailSpecularMap || NOHQ+DT+SM
+ |-
+ | || NormalMap || NormalMapDetailSpecularDIMap || NOHQ+SMDI+DT
+ |-
+ | [[Material - Basic normal detail]] || NormalMapDiffuse || NormalMapDiffuse || NormalMapDetail, per vertex lit
+ |-
+ | || Water || Water
+ |-
+ | [[Material - Water simple]] || WaterSimple || WaterSimple
+ |-
+ | || NormalMapThrough || NormalMapThrough
+ |-
+ | || NormalMapThrough || NormalMapThroughSimple
+ |-
+ | [[Material - Basic Tree crown]] || NormalMapSpecularThrough || NormalMapSpecularThrough || TreeCrown - colormap must be with continuous alpha
+ |-
+ | || NormalMapSpecularThrough || NormalMapSpecularThroughSimple
+ |-
+ | || NormalMapThroughNoFade || NormalMapThrough
+ |-
+ | || NormalMapThroughNoFade || NormalMapThroughSimple
+ |-
+ | || NormalMapSpecularThroughNoFade || NormalMapSpecularThrough
+ |-
+ | || NormalMapSpecularThroughNoFade || NormalMapSpecularThroughSimple
+ |-
+ | [[Material - Detail macro AS]] || BasicAS || DetailMacroAS || DT+MC+AS
+ |-
+ | [[Material - Normal map macro AS]] || NormalMapAS || NormalMapMacroAS
+ |-
+ | [[Material - Normal map HQ specular macro AS]] || NormalMapAS || NormalMapMacroASSpecularMap || NOHQ+MC+AS+SM
+ |-
+ | || NormalMapAS || NormalMapMacroASSpecularDIMap || NOHQ+SMDI+MC+AS
+ |-
+ | [[Material - Normal map HQ detail specular macro AS]] || NormalMapAS || NormalMapDetailMacroASSpecularMap || NOHQ+DT+MC+AS+SM
+ |-
+ | || NormalMapAS || NormalMapDetailMacroASSpecularDIMap || NOHQ+SMDI+DT+MC+AS
+ |-
+ | [[Material - Normal map detail macro AS]] || NormalMapDiffuseAS || NormalMapDiffuseMacroAS || NO+DT+MC+AS
+ |-
+ | [[Material - Basic glass reflectance]] || Glass || Glass
+ |-
+ | Terrain || TerrainX || || X is number from 1 to 15 and presents mask as per which is choosen combination from 4 layers
+ |-
+ | [[Material - Antiwater]] || Basic || AlphaNoShadow || in combination with empty alpha texture clears water from ship and is shadowless
+ |-
+ | Terrain || TerrainSimpleX || || X is number from 1 to 15 and presents mask as per which is choosen combination from 4 layers
+
+ |-
+ | [[Super_shader]] || Super || Super || SM 3.0 - shader with Fresnel for Arma 2
+ |-
+ | [[Multimaterial]] || Multi || Multi || SM 3.0 - shader with multiple submaterials for Arma 2
+ |-
+ | [[Material - Tree]] || Tree || TreeNoFade || SM 3.0 - shader for Arma 2 vegetation
+ |-
+ | [[Material - TreePRT]] || TreePRT || TreePRT || SM 3.0 - shader for Arma 2 vegetation
+ |-
+ |-
+ | [[Skin_shader]] ||
+ |}
+</spoiler>
+
+==== Shaders ====
+
+===== Pixel Shaders =====
+<spoiler text="Show Pixel Shaders">
+{| class="wikitable"
+! Shader Name
+! Description
+|-
+| Normal
+| diffuse color modulate, alpha replicate
+|-
+| NormalDXTA
+| diffuse color modulate, alpha replicate, DXT alpha correction
+|-
+| NormalMap
+| normal map shader
+|-
+| NormalMapThrough
+| normal map shader - through lighting
+|-
+| NormalMapGrass
+| normal map shader - through lighting
+|-
+| NormalMapDiffuse
+|
+|-
+| Detail
+| detail texturing
+|-
+| Interpolation
+|
+|-
+| Water
+| sea water
+|-
+| WaterSimple
+| small water
+|-
+| White
+|
+|-
+| WhiteAlpha
+|
+|-
+| AlphaShadow
+| shadow alpha write
+|-
+| AlphaNoShadow
+| shadow alpha (no shadow write
+|-
+| Dummy0
+|
+|-
+| DetailMacroAS
+| detail with ambient shadow texture
+|-
+| NormalMapMacroAS
+| normal map with ambient shadow texture
+|-
+| NormalMapDiffuseMacroAS
+| diffuse normal map with ambient shadow texture
+|-
+| NormalMapSpecularMap
+| normal map with specular map
+|-
+| NormalMapDetailSpecularMap
+| normal map with detail and specular map
+|-
+| NormalMapMacroASSpecularMap
+| normal map with ambient shadow and specular map
+|-
+| NormalMapDetailMacroASSpecularMap
+| normal map with detail and ambient shadow and specular map
+|-
+| NormalMapSpecularDIMap
+| normal map with specular map, diffuse is inverse of specular
+|-
+| NormalMapDetailSpecularDIMap
+| normal map with detail and specular map, diffuse is inverse of specular
+|-
+| NormalMapMacroASSpecularDIMap
+| normal map with ambient shadow and specular map, diffuse is inverse of specular
+|-
+| NormalMapDetailMacroASSpecularDIMap
+| normal map with detail and ambient shadow and specular map, diffuse is inverse of specular
+|-
+| Terrain1
+| terrain - X layers
+|-
+| Terrain2
+| terrain - X layers
+|-
+| Terrain3
+| terrain - X layers
+|-
+| Terrain4
+| terrain - X layers
+|-
+| Terrain5
+| terrain - X layers
+|-
+| Terrain6
+| terrain - X layers
+|-
+| Terrain7
+| terrain - X layers
+|-
+| Terrain8
+| terrain - X layers
+|-
+| Terrain9
+| terrain - X layers
+|-
+| Terrain10
+| terrain - X layers
+|-
+| Terrain11
+| terrain - X layers
+|-
+| Terrain12
+| terrain - X layers
+|-
+| Terrain13
+| terrain - X layers
+|-
+| Terrain14
+| terrain - X layers
+|-
+| Terrain15
+| terrain - X layers
+|-
+| TerrainSimple1
+| terrainSimple - X layers
+|-
+| TerrainSimple2
+| terrainSimple - X layers
+|-
+| TerrainSimple3
+| terrainSimple - X layers
+|-
+| TerrainSimple4
+| terrainSimple - X layers
+|-
+| TerrainSimple5
+| terrainSimple - X layers
+|-
+| TerrainSimple6
+| terrainSimple - X layers
+|-
+| TerrainSimple7
+| terrainSimple - X layers
+|-
+| TerrainSimple8
+| terrainSimple - X layers
+|-
+| TerrainSimple9
+| terrainSimple - X layers
+|-
+| TerrainSimple10
+| terrainSimple - X layers
+|-
+| TerrainSimple11
+| terrainSimple - X layers
+|-
+| TerrainSimple12
+| terrainSimple - X layers
+|-
+| TerrainSimple13
+| terrainSimple - X layers
+|-
+| TerrainSimple14
+| terrainSimple - X layers
+|-
+| TerrainSimple15
+| terrainSimple - X layers
+|-
+| Glass
+| glass shader with environmental map
+|-
+| NonTL
+| very simple 2D pixel shader
+|-
+| NormalMapSpecularThrough
+| normal map shader - through with specular lighting
+|-
+| Grass
+| grass shader - alpha discretized
+|-
+| NormalMapThroughSimple
+| simple version of NormalMapThrough shader
+|-
+| NormalMapSpecularThroughSimple
+| simple version of NormalMapSpecularThrough shader
+|-
+| Road
+| road shader
+|-
+| Shore
+| shore shader
+|-
+| ShoreWet
+| shore shader for the wet part
+|-
+| Road2Pass
+| road shader - second pass
+|-
+| ShoreFoam
+| shore shader for the foam on the top of the shore
+|-
+| NonTLFlare
+| shader to be used for flares
+|-
+| NormalMapThroughLowEnd
+| substitute shader for NormalMapThrough shaders for low-end settings
+|-
+| TerrainGrass1
+| terrain grass - X layers
+|-
+| TerrainGrass2
+| terrain grass - X layers
+|-
+| TerrainGrass3
+| terrain grass - X layers
+|-
+| TerrainGrass4
+| terrain grass - X layers
+|-
+| TerrainGrass5
+| terrain grass - X layers
+|-
+| TerrainGrass6
+| terrain grass - X layers
+|-
+| TerrainGrass7
+| terrain grass - X layers
+|-
+| TerrainGrass8
+| terrain grass - X layers
+|-
+| TerrainGrass9
+| terrain grass - X layers
+|-
+| TerrainGrass10
+| terrain grass - X layers
+|-
+| TerrainGrass11
+| terrain grass - X layers
+|-
+| TerrainGrass12
+| terrain grass - X layers
+|-
+| TerrainGrass13
+| terrain grass - X layers
+|-
+| TerrainGrass14
+| terrain grass - X layers
+|-
+| TerrainGrass15
+| terrain grass - X layers
+|-
+| Crater1
+| Crater rendering - X craters
+|-
+| Crater2
+| Crater rendering - X craters
+|-
+| Crater3
+| Crater rendering - X craters
+|-
+| Crater4
+| Crater rendering - X craters
+|-
+| Crater5
+| Crater rendering - X craters
+|-
+| Crater6
+| Crater rendering - X craters
+|-
+| Crater7
+| Crater rendering - X craters
+|-
+| Crater8
+| Crater rendering - X craters
+|-
+| Crater9
+| Crater rendering - X craters
+|-
+| Crater10
+| Crater rendering - X craters
+|-
+| Crater11
+| Crater rendering - X craters
+|-
+| Crater12
+| Crater rendering - X craters
+|-
+| Crater13
+| Crater rendering - X craters
+|-
+| Crater14
+| Crater rendering - X craters
+|-
+| Sprite
+| Shader used for sprite rendering - it uses SoftParticle approach
+|-
+| SpriteSimple
+| Shader used for sprite rendering - no SoftParticle approach
+|-
+| Cloud
+| Shader used for clouds
+|-
+| Horizon
+| Shader used for the horizon
+|-
+| Super
+| Super shader
+|-
+| Multi
+| Multi shader
+|-
+| TerrainX
+| terrain - general number of layers
+|-
+| TerrainSimpleX
+| terrainSimple - general number of layers
+|-
+| TerrainGrassX
+| terrain grass - general number of layers
+|-
+| Tree
+| Tree shader
+|-
+| TreePRT
+| Tree shader - very cheap shader with PRT
+|-
+| TreeSimple
+| Tree shader - simpler version of Tree
+|-
+| Skin
+| Human skin - derived from Super shader
+|-
+| CalmWater
+| calm water surface
+|-
+| TreeAToC
+| tree with alpha to coverage
+|-
+| GrassAToC
+| grass with alpha to coverage
+|-
+| TreeAdv
+| advanced tree crown shader
+|-
+| TreeAdvSimple
+| advanced tree crown shader
+|-
+| TreeAdvTrunk
+| advanced tree shader
+|-
+| TreeAdvTrunkSimple
+| advanced tree shader
+|-
+| TreeAdvAToC
+| advanced tree crown shader
+|-
+| TreeAdvSimpleAToC
+| advanced tree crown shader
+|-
+| TreeSN
+| Tree shader width simple noise
+|-
+| SpriteExtTi
+| Sprite used for vehicles covering
+|-
+| TerrainSNX
+| terrain - general number of layers + satellite normal map
+|-
+| InterpolationAlpha
+|
+|-
+| VolCloud
+| Shader used for volumetric cloud - it uses SoftParticle approach
+|-
+| VolCloudSimple
+| Shader used for volumetric cloud - no SoftParticle approach
+|-
+| UnderwaterOcclusion
+| Shader used for underwater occlusion object
+|-
+| SimulWeatherClouds
+| SimulWeather clouds
+|-
+| SimulWeatherCloudsWithLightning
+| SimulWeather clouds with lightning
+|-
+| SimulWeatherCloudsCPU
+| SimulWeather clouds with CPU distance fading
+|-
+| SimulWeatherCloudsWithLightningCPU
+| SimulWeather clouds with lightning and CPU distance fading
+|-
+| SuperExt
+| skyscraper & building, intended as super shader light version
+|-
+| SuperHair
+| super shader for hair rendering
+|-
+| SuperHairAtoC
+| super shader for hair rendering, atoc version
+|-
+| Caustics
+| shader for caustics effect
+|-
+| Refract
+| shader for refractions _ARMA3_REFRACTION
+|-
+| SpriteRefract
+| _ARMA3_REFRACTION_SPRITES - Shader used for sprite rendering with refraction - it uses SoftParticle approach
+|-
+| SpriteRefractSimple
+| _ARMA3_REFRACTION_SPRITES - Shader used for sprite rendering with refraction- no SoftParticle approach
+|-
+| SuperAToC
+| Super shader AToC variant
+|-
+| NonTLFlareNew
+| shader to be used for flares, new HDR version
+|-
+| NonTLFlareLight
+| shader to be used for flares from dynamic lights (not sun)
+|-
+| TerrainNoDetailX
+| terrainX without detail map
+|-
+| TerrainNoDetailSNX
+| terrainSNX without detail map
+|-
+| TerrainSimpleSNX
+| terrainSNX without parallax mapping
+|-
+| NormalPiP
+| shader for PiP screens
+|-
+| NonTLFlareNewNoOcclusion
+| same as NonTLFlareNew, but without occlusion test
+|-
+| Empty
+| empty shader, does not output anything (used only for depth output)
+|-
+| Point
+| Shader used for point lights
+|-
+| TreeAdvTrans
+| same as TreeAdv, but there is translucency map in alpha channel of MCA texture ( instead of AO)
+|-
+| TreeAdvTransAToC
+| same as TreeAdv, but there is translucency map in alpha channel of MCA texture ( instead of AO)
+|-
+| Collimator
+| special shader for collimator
+|-
+| LODDiag
+| shader for lod diagnostics
+|-
+| DepthOnly
+| Special replacement for AlphaOnly for priming non- alpha objects
+|}
+</spoiler>
+
+===== Vertex Shaders =====
+<spoiler text="Show Vertex Shaders">
+{| class="wikitable"
+! Shader Name
+! Description
+|-
+| Basic
+| {{n/a}}
+|-
+| NormalMap
+| normal map
+|-
+| NormalMapDiffuse
+| normal map + detail map
+|-
+| Grass
+|
+|-
+| Dummy1
+|
+|-
+| Dummy2
+|
+|-
+| ShadowVolume
+| shadow volumes
+|-
+| Water
+| per-vertex water animation
+|-
+| WaterSimple
+| per-vertex water animation (without foam)
+|-
+| Sprite
+| particle effects
+|-
+| Point
+| anti-aliased points
+|-
+| NormalMapThrough
+| normal map - tree shader
+|-
+| Dummy3
+|
+|-
+| Terrain
+| one pass terrain, no alpha mask - based on VSNormalMapDiffuse
+|-
+| BasicAS
+| ambient shadow
+|-
+| NormalMapAS
+| normal map with ambient shadow
+|-
+| NormalMapDiffuseAS
+| diffuse normal map with ambient shadow
+Glass						/*glass shader*/ \
+|-
+| NormalMapSpecularThrough
+| normal map with specular - tree shader
+|-
+| NormalMapThroughNoFade
+| normal map - tree shader - without face fading
+|-
+| NormalMapSpecularThroughNoFade
+| normal map with specular - tree shader - without face fading
+|-
+| Shore
+| sea shore - similar to Terrain
+|-
+| TerrainGrass
+| grass layer - similar to Terrain
+|-
+| Super
+| Super shader - expensive shader containing all common features
+|-
+| Multi
+| Multi shader - shader with multiple layers suitable for huge surfaces like houses
+|-
+| Tree
+| Tree shader - cheap shader designed for trees and bushes
+|-
+| TreeNoFade
+| Tree shader - cheap shader designed for trees and bushes - without face fading
+|-
+| TreePRT
+| Tree shader - very cheap shader designed for trees and bushes
+|-
+| TreePRTNoFade
+| Tree shader - very cheap shader designed for trees and bushes - without face fading
+|-
+| Skin
+| Human skin - derived from Super shader
+|-
+| CalmWater
+| calm water surface - special shader
+|-
+| TreeAdv
+| advanced tree crown shader VSTreeAdv
+|-
+| TreeAdvTrunk
+| advanced tree crown shader VSTreeAdvTrunk
+|-
+| VolCloud
+| volumetric clouds
+|-
+| Road
+| roads
+|-
+| UnderwaterOcclusion
+| underwater occlusion object vertex shader
+|-
+| SimulWeatherClouds
+| simul weather clouds
+|-
+| SimulWeatherCloudsCPU
+| simul weather clouds with CPU distance fading
+|-
+| SpriteOnSurface
+| sprite on surface
+|-
+| TreeAdvModNormals
+| advanced tree crown shader with modified vertex normals
+|-
+| Refract
+| vertex shader for refractions - _ARMA3_REFRACTION
+|-
+| SimulWeatherCloudsGS
+| simul weather clouds with geom shader
+|-
+| BasicFade
+| basic with face fading (based on the angle with camera direction
+|-
+| Star
+| Similar to Point but only for drawing stars
+|-
+| TreeAdvNoFade
+| advanced tree crown shader - no face fading
+|}
+</spoiler>
+
+You can find More about material settings in [[Material Templates]].
+
+=== Physical Properties ===
+
+Materials are also used in geometries for definition of physical properties.
+
+Parameters for engine are saves into material tables *.bisurf and reference to them from material looks like:
+
+<syntaxhighlight lang="cpp">
+surfaceInfo = "data\wood.bisurf";
+</syntaxhighlight>
+
+Such {{hl|.bisurf}} file with physical properties looks like:
+
+<syntaxhighlight lang="cpp">
+density = 2500;				// density of homogeneous object in kg/m³ - see https://en.wikipedia.org/wiki/List_of_elements_by_density
+thickness = 10;				// non-homogeneous component casing thickness in mm, implemented since Arma 2: Operation Arrowhead
+rough = 0.1;
+dust = 0.1;
+bulletPenetrability = 150;	// distance in mm bullet (with speed 1000m/s) travels before it fully stops, simulation for calculation simplification calculate linear braking
+							// (ergo on third of distance is bullet decelerated to two thirds of original speed)
+soundEnviron = Empty;
+isWater = false;
+</syntaxhighlight>
+
+See more about penetration in [[Bullet penetrability]].
+
+When components in Your model got materials with references to physical properties then use script which sets weight.
+
+
+{{GameCategory|ofp|Editing}}
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+{{GameCategory|tkoh|Editing}}

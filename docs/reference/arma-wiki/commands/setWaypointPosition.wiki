@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/setWaypointPosition
+// revision: 377573 (2026-01-02T06:56:26Z)
+// export sha1: 3ipabe3ht0vj843ns64yoea3szrezs1
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Waypoints
+
+|descr= Attempts to move given waypoint to a random position inside a circle with the given center and radius. 
+The waypoint will be placed similar to {{hl|"NONE"}} attribute in [[setVehiclePosition]], even if the radius is 0, which means it could still be off center. In order to force waypoint to the exact position, similar to {{hl|"CAN_COLLIDE"}} attribute, use a negative radius (see {{Link|#Example 2}}).
+
+|s1= waypoint [[setWaypointPosition]] [center, radius]
+
+|p1= waypoint: [[Waypoint]]
+
+|p2= center: [[Object]] or [[Position#PositionAGL|PositionAGL]] or [[Position#PositionASL|PositionASL]] if ''radius'' is negative
+
+|p3= radius: [[Number]] - random placement radius in meters. Set it to -1 and convert center to [[Position#PositionASL|PositionASL]] for the exact center placement
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_grp, 2] setWaypointPosition [position player, 0];</sqf>
+
+|x2= Exact placement using a negative ''radius'' and [[Position#PositionASL|PositionASL]]:
+<sqf>_wp setWaypointPosition [getPosASL player, -1];</sqf>
+
+|seealso= [[waypointPosition]] [[setWPPos]] [[waypoints]] [[deleteWaypoint]] [[copyWaypoints]] [[setCurrentWaypoint]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointDescription]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointTimeout]] [[setWaypointType]] [[setWaypointVisible]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[setWaypointLoiterRadius]] [[waypointLoiterRadius]] [[addWaypoint]] [[setWaypointLoiterType]] [[waypointSpeed]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20181114225200
+|text= If you want AI to understand height of the waypoint, for example set waypoint at the top of Military Cargo Tower, use {{Link|#Example 2}} with position in ASL format and -1 radius.
+}}

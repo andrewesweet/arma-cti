@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Positions
+// revision: 163330 (2020-09-27T08:47:35Z)
+// export sha1: rprz3pfv6wkf5q8givq0ipqg55odwin
+// Vendored snapshot. Do not edit — re-export instead.
+
+All commands which work with positions and heights.
+
+[[Category:Scripting Commands by Functionality]]

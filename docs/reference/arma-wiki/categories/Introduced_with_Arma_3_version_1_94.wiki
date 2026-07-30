@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_1.94
+// revision: 136885 (2019-09-04T17:55:52Z)
+// export sha1: jcizxtpwoeqlw5of1zakjfb9xnb16m2
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with  Arma 3 version 1.94 may be recognised by the appearance of this icon: {{GVI|Arma 3 |1.94}}
+
+[[Category:Introduced with Arma 3 |1.94]]

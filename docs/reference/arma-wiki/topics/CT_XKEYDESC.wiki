@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/CT_XKEYDESC
+// revision: 170149 (2020-11-29T14:30:29Z)
+// export sha1: oty2tanx6ajv5scalug4dk4k826esag
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_XKEYDESC
+|value = 40
+|description = Unknown control type.
+|gallery=
+|commands =
+|events =
+}}
+
+<!-- {{CT|abc start}}
+
+{{CT|abc end}} -->
+
+{{CT|examples}}
+
+None

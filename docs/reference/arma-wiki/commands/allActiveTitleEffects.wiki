@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/allActiveTitleEffects
+// revision: 377719 (2026-01-02T09:16:16Z)
+// export sha1: odoxlqx9g30c8c78iiy8nl1zcm487ui
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.98 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.98
+
+|gr1= GUI Control
+
+|descr= Returns a list of all layers that have currently active title effect. Numbers equal to or greater than 0 represent cut layers, where as -1 represents title layer (see [[Title Effect Type]]). Named layers are represented by their respective index.{{Feature|informative|Effects created with [[titleText]], [[titleRsc]] and [[titleObj]] commands do not have a numbered layer, so they are represented as -1 layer in the result. Effects created with [[cutText]], [[cutRsc]] and [[cutObj]] are created either on layer 0, if no layer is specified, or on the given layer, if the layer index is specified, so they are represented by the layer index.}}
+
+|s1= [[allActiveTitleEffects]]
+
+|r1= [[Array]] of [[Number]]s - indexes of currently active effect layer
+
+|x1= <sqf>
+cutText ["Hello World!" ,"PLAIN", 2];
+hint str allActiveTitleEffects; // [0]
+</sqf>
+
+|x2= <sqf>
+21 cutText ["Hello World!", "PLAIN", 2];
+hint str allActiveTitleEffects; // [21]
+</sqf>
+
+|x3= <sqf>
+cutText ["Hello World!", "PLAIN", 2];
+titleText ["Hello World!", "PLAIN", 2];
+hint str allActiveTitleEffects; // [-1, 0]
+</sqf>
+
+|seealso= [[allCutLayers]] [[cutText]] [[cutRsc]] [[cutObj]] [[cutFadeOut]] [[titleText]] [[titleRsc]] [[titleObj]] [[titleFadeOut]] [[activeTitleEffectParams]] [[Title Effect Type]]
+}}

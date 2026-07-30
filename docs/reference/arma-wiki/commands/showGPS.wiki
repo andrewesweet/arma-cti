@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/showGPS
+// revision: 364728 (2024-05-30T11:49:12Z)
+// export sha1: cxbl1pfvdkasdiqcu5za7qxbvi17218
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Interaction
+
+|descr= Shows or hides the GPS receiver on the map screen, if enabled for the mission and you possess the item. (default [[false]]). {{Feature|arma3|This command does nothing in Arma 3. Use the command [[openGPS]] that is available since v2.04.}}
+
+|s1= [[showGPS]] show
+
+|p1= show: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>showGPS true;</sqf>
+
+|seealso= [[openGPS]] [[shownGPS]] [[visibleGPS]] [[showCompass]] [[showRadio]] [[showWatch]] [[showPad]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 16 Aug, 2009</dd>
+<dt class="note">[[User:Generalcarver|GeneralCarver]]</dt>
+<dd class="note">
+In Arma 2, the GPS is now an inventory item. Class path is CfgWeapons->ItemGPS. Use the commands addWeapon and removeWeapon to add or remove it from a unit's inventory. (example: player addweapon "ItemGPS") 
+
+<dt><dt>
+<dd class="notedate">Posted on 14 Jun, 2010</dd>
+<dt class="note">[[User:Galzohar|Galzohar]]</dt>
+<dd class="note">
+In Arma 2 GPS is also an item, so will not be removed by removeAllWeapons, even though it can be removed by removeWeapon and added by addWeapon. To remove all items use the removeAllItems command (though this will also remove basic items such as map and compass).
+
+</dl>

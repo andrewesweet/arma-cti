@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Particles
+// revision: 163591 (2020-09-28T07:22:57Z)
+// export sha1: huhj7h3mb75fs3harewfn3y8o0t6cur
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands for working with particles.
+
+[[Category:Scripting Commands by Functionality]]
+[[Category:Particle System]]

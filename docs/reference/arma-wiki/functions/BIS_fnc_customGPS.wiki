@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_customGPS
+// revision: 327288 (2022-07-12T22:11:51Z)
+// export sha1: p6yyvtmhbxx4fo1hlw0mszwcpon47ew
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 2: Operation Arrowhead version 1.56 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.56
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= GUI
+
+|eff= local
+
+|descr= Replaces GPS frame.<br>
+The following line '''must''' be defined in mission [[Description.ext]]:
+<syntaxhighlight lang="cpp">onMinimapScript[] = {"BIS_fnc_customGPS_Spawn"};
+</syntaxhighlight>
+
+|s1= [path, ''deltaX'', ''deltaY''] call [[BIS_fnc_customGPS]]
+
+|p1= path: [[String]] - full path to image file
+
+|p2= deltaX ''(Optional)'': [[Number]]
+
+|p3= deltaY ''(Optional)'': [[Number]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>["ca\missions_pmc\data\ui_gps_ca.paa", -0.05, 0.16] call BIS_fnc_customGPS;</sqf>
+
+|seealso= [[Functions Library]]
+}}

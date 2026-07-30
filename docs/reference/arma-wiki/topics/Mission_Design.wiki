@@ -1,0 +1,113 @@
+// source: https://community.bistudio.com/wiki/Mission_Design
+// revision: 364466 (2024-05-16T20:41:51Z)
+// export sha1: 4iyefll39awdo6a1zm4zx9b2j3pnpeq
+// categories: Category:Mission Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[Mission Design]] is an important aspect to consider in order to keep the player(s) entertained. '''Arma is a game''' after all!
+
+But what makes a mission ''enjoyable''? This page aims to define what players usually expect from a game:
+# Wanting to play through the whole mission
+# Seeing an effect to their actions
+# In the end, having '''a sense of accomplishment'''.
+
+<!-- {{Feature|informative|This page does not apply to all milsim-targeted missions, which may or may not be completely "eventless"!}} -->
+
+== Action/Reward ==
+
+The meat of player's interest is here; an achieved goal must reward the player with an evolution: either a reward (new intel, less enemies, easier progress) or a scenario evolution (enemy counterattack, reinforcements incoming, radio update).
+
+
+== Mission Structure ==
+
+=== Gameplay Structure ===
+
+''PvP (DM/TDM/etc)''
+
+In missions without scenario (or a very basic one), '''fighting''' is the main course.
+Players want to fight, battle, win over the other team. So firefight it is!
+
+{{Feature | important | When winning an objective, it is important to know that something has been achieved. If the action is not obvious by itself, use the HUD to inform the players.}}
+
+==== Balance ====
+'''''Balance''''' is a bigger concern in these missions as a feeling of unfairness can kill the mood. Balance does not mean equal forces (e.g 1 airplane, 3 tanks and 20 soldiers each) but it should mean that with same-level players, the chances of winning is 50/50 (or 33.33/33.33/33.33 in the event of a tripartite scenario).
+
+If forces are imbalanced, think of {{Link|https://en.wikipedia.org/wiki/GoldenEye_007_(1997_video_game)|GoldenEye (N64)}} Golden Gun system: a player with an insta-kill weapon stood against all the other players, but had to reload after each shot.
+In {{arma}} this could be translated as one person having an assault helicopter with Air-to-Ground locking missiles, while all the other players have AA guns and try to take him down.
+
+Another example of "balanced imbalance" would be high technology blufor forces outnumbered 2 to 1 by rusty AK47-equipped insurgents - the goal would then be to ''Survive, Adapt, and Win''.
+
+==== Examples ====
+{| class="wikitable"
+! [[Multiplayer Game Types#Available Types|Game Type]] !! HUD !! Information
+|-
+| DeathMatch || Top Score on the screen || {{n/a}}
+|-
+| Team DeathMatch || rowspan="4" | [[Side]]'s Score on the screen || {{n/a}}
+|-
+| Capture The Flag || A [[Arma 3: Notification|Notification]] on flag taken/captured/dropped/picked up
+|-
+| CTI || A [[Arma 3: Notification|Notification]] on city under attack/captured/lost
+|-
+| Sector Control || A [[Arma 3: Notification|Notification]] on sector under attack/captured/lost
+|-
+| Last Man || Number of Survivors on the screen || {{n/a}}
+|}
+
+=== Narrative Structure ===
+
+''PvE (rarely PvP)'' (SP/MP)
+
+<!-- {{Feature|informative|The narrative structure only applies to story-driven scenarios and does not have to be respected for missions that are mostly focused on immersion/gameplay.}} -->
+The basics are that most stories follow the {{Link|https://en.wikipedia.org/wiki/Narrative_structure|narrative structure}}, which can be boldly boiled down to the following step:
+
+{| class="wikitable"
+! Initial Situation
+|
+* The initial situation does not have to be peaceful or positive
+* [[:Category:Briefing|Briefing]] can be used to provide some background without having to create it in-game
+|-
+! Event<br><small>bringing imbalance to the situation</small>
+|
+* The origin of it is not always coming from the designated or future enemy
+* The event can or can not come from a player's action
+|-
+! Actions and resulting events
+|
+* Actions can be taken against said event, but also (and/or) against its consequences
+|-
+! ''Dénouement''
+| ''Dénouement'' means the end of actions and situation evolution, it can be:
+* A lead to solve the initial situation
+* A way to escape it
+* Reaching the goal set by it
+|-
+! Ending
+|
+* Ending does not always mean problem resolution; it can be:
+** Reducing the damages provoked by event's consequences 
+** Leaving the immediate danger
+** Solving the initial problem and getting everything back to normal.
+|}
+
+{{Feature|informative|[[Scripting]] aside, The difference between Singleplayer and Multiplayer is the felt importance of '''Cooperation'''.}}
+
+==== Mission Goal ====
+While the ''mission's'' goal can remain hidden or obscure to the player(s), his ''current'' goal must be crystal clear. For example, the end goal of "fighting back" can remain hidden, but the first goal of "patrol the camp" must be made obvious so the player is not at loss and feels he has something to accomplish.
+
+==== Examples ====
+{| class="wikitable"
+! Initial Situation !! Event !! Actions !! Dénouement !! Ending !! Notes
+|-
+| During blufor/opfor war, a specops operation at night with the objective to blow up enemy tanks || {{n/a}} || '''Player's role:''' fulfilling the mission || Tanks are blown up || Extraction || This scenario may look bland, and should therefore focus on '''immersion''' and '''achievement'''
+|-
+| During blufor/opfor war, a specops operation at night with the objective to blow up enemy tanks || While approaching, the alarm is raised because the opfor got some information about a night attack. || '''Player's role:''' fulfilling the mission while a sub-group goes and creates a diversion in another depot || Diversion is made, then tanks are blown up || Extraction || This additional event gives (the) player(s) the feeling to have influenced the story, making the '''cooperation''' feel useful
+|-
+| Normal day || Enemies attack the base || Riposting, taking fire<br>'''Player's role:''' take strategical shooting positions and cover fellow soldiers || Killing/defeating all the enemies || Back to normal || Same as above, the scenario might be seen as too simple ("defending") and immersion should be prioritised
+|-
+| Normal day || Nuclear attack || Panic, explosions, firefights<br>'''Player's role:''' survive || Getting to a long-range radio || HQ sends a team to extract the player || This whole scenario is based on player's survival
+|}
+
+
+[[Category:Mission Editing]]

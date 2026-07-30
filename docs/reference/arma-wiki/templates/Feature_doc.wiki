@@ -1,0 +1,327 @@
+// source: https://community.bistudio.com/wiki/Template:Feature/doc
+// revision: 373591 (2025-05-23T14:00:33Z)
+// export sha1: e2dllqetaly737ibuy2b61tablkoqvs
+// Vendored snapshot. Do not edit — re-export instead.
+
+Adds a feature messagebox. Adds the page to the [[:Category:Feature template usage error|Feature template usage error]] category if wrongly filled.
+
+== Usage ==
+{{<nowiki/>Feature|'''''name'''''|'''''message'''''}}
+* name: (case-insensitive) can be one of:
+** '''games:''' <spoiler>
+* ofp/arma0: {{GameCategory|ofp|link=y}} feature
+* ofp: {{GameCategory|ofpe|link=y}} feature
+* arma1: {{GameCategory|arma1|link=y}} feature
+* arma2: {{GameCategory|arma2|link=y}} feature
+* arma2oa: {{GameCategory|arma2oa|link=y}} feature
+* arma3: {{GameCategory|arma3|link=y}} feature
+* Eden Editor: [[:Category:Eden Editor|Eden Editor]] feature
+* AFM: [[Arma 3: Advanced Helicopter Flight Model]] feature
+* arma3contact: [[Arma 3 Contact]] feature
+* arma3oldman: [[Arma 3 Apex: Old Man]] feature
+* armaR: {{GameCategory|armaR|link=y}} feature
+* arma4: {{GameCategory|arma4|link=y}} feature
+* dayz: {{GameCategory|dayz|link=y}} feature
+* TKOH: {{GameCategory|tkoh|link=y}} feature
+* ylands: {{GameCategory|ylands|link=y}} feature
+* GVI: a '''G'''ame '''V'''ersion '''I'''nformation - see {{Template|GVI}}
+** game id
+** game version (Optional, default "1.00")
+** additional text (Optional, default "This feature was introduced with ''game'' v''Version''")
+</spoiler>
+** '''controls:''' <spoiler>
+* keyboard: a keyboard-specific information
+* gamepad: a gamepad-specific information
+</spoiler>
+** '''platforms:''' <spoiler>
+* consoles: any console
+* playstation: a PlayStation feature
+* xbox: an Xbox feature
+* PC: a PC<!-- master race --> feature
+* Steam: a Steam feature
+</spoiler>
+** '''infoboxes:''' <spoiler>
+* informative: an '''{{Color|#00BFFF|informative}}''' messagebox
+* important: an '''{{Color|#EA0|important}}''' messagebox
+* warning: a '''{{Color|#F00|warning}}''' messagebox
+* obsolete: an obsolete part of the documentation '''or''' documentation about an obsolete aspect of the product; parameters (all optional):
+** message (obsolescence reason)
+** game (e.g arma3)
+** version (e.g 1.50)
+* quote: a quote, parameters (all but ''message'' optional):
+** message: quote
+** author
+** source (URL)
+* spoiler: spoiler alert
+* UnsupportedDoc: unsupported internal structure documentation (e.g PBO, save file etc)
+* UnsupportedTool: unsupported, most likely unofficial tool
+</spoiler>
+* message: (Optional) the message to display
+
+{| class="wikitable"
+|+ Examples
+|- class="sticky-top"
+! Code
+! Result
+|-
+
+<!--
+	ERRORS
+-->
+
+! colspan="3" style="height: 3em" | Errors
+|-
+| <nowiki>{{Feature}}</nowiki>
+| {{Feature}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|test}}</syntaxhighlight>
+| {{Feature|test}}
+|-
+
+<!--
+	GAMES
+-->
+
+! colspan="3" style="height: 3em" | Games
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|ofp}}</syntaxhighlight>
+| {{Feature|ofp}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|ofp|Hello there!}}</syntaxhighlight>
+| {{Feature|ofp|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma0}}</syntaxhighlight>
+| {{Feature|arma0}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma0|Hello there!}}</syntaxhighlight>
+| {{Feature|arma0|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|ofpe}}</syntaxhighlight>
+| {{Feature|ofpe}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|ofpe|Hello there!}}</syntaxhighlight>
+| {{Feature|ofpe|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma1}}</syntaxhighlight>
+| {{Feature|arma1}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma1|Hello there!}}</syntaxhighlight>
+| {{Feature|arma1|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma2}}</syntaxhighlight>
+| {{Feature|arma2}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma2|Hello there!}}</syntaxhighlight>
+| {{Feature|arma2|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma2oa}}</syntaxhighlight>
+| {{Feature|arma2oa}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma2oa|Hello there!}}</syntaxhighlight>
+| {{Feature|arma2oa|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma3}}</syntaxhighlight>
+| {{Feature|arma3}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma3|Hello there!}}</syntaxhighlight>
+| {{Feature|arma3|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|eden editor}}</syntaxhighlight>
+| {{Feature|eden editor}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|eden editor|Hello there!}}</syntaxhighlight>
+| {{Feature|eden editor|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|afm}}</syntaxhighlight>
+| {{Feature|afm}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|afm|Hello there!}}</syntaxhighlight>
+| {{Feature|afm|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma3contact}}</syntaxhighlight>
+| {{Feature|arma3contact}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma3contact|Hello there!}}</syntaxhighlight>
+| {{Feature|arma3contact|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma3oldman}}</syntaxhighlight>
+| {{Feature|arma3oldman}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma3oldman|Hello there!}}</syntaxhighlight>
+| {{Feature|arma3oldman|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|armaR}}</syntaxhighlight>
+| {{Feature|armaR}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|armaR|Hello there!}}</syntaxhighlight>
+| {{Feature|armaR|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma4}}</syntaxhighlight>
+| {{Feature|arma4}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|arma4|Hello there!}}</syntaxhighlight>
+| {{Feature|arma4|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|dayz}}</syntaxhighlight>
+| {{Feature|dayz}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|dayz|Hello there!}}</syntaxhighlight>
+| {{Feature|dayz|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|tkoh}}</syntaxhighlight>
+| {{Feature|tkoh}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|tkoh|Hello there!}}</syntaxhighlight>
+| {{Feature|tkoh|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|ylands}}</syntaxhighlight>
+| {{Feature|ylands}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|ylands|Hello there!}}</syntaxhighlight>
+| {{Feature|ylands|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|GVI}}</syntaxhighlight>
+| {{Feature|GVI}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|GVI|ofp}}</syntaxhighlight>
+| {{Feature|GVI|ofp}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|GVI|ofp|1.75}}</syntaxhighlight>
+| {{Feature|GVI|ofp|1.75}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|GVI|ofp|1.75|Great game!}}</syntaxhighlight>
+| {{Feature|GVI|ofp|1.75|Great game!}}
+
+<!--
+	CONTROLS
+-->
+
+|-
+! colspan="3" style="height: 3em" | Controls
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|keyboard}}</syntaxhighlight>
+| {{Feature|keyboard}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|keyboard|Hello there!}}</syntaxhighlight>
+| {{Feature|keyboard|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|gamepad}}</syntaxhighlight>
+| {{Feature|gamepad}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|gamepad|Hello there!}}</syntaxhighlight>
+| {{Feature|gamepad|Hello there!}}
+
+<!--
+	PLATFORMS
+-->
+
+|-
+! colspan="3" style="height: 3em" | Platforms
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|consoles}}</syntaxhighlight>
+| {{Feature|consoles}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|consoles|Hello there!}}</syntaxhighlight>
+| {{Feature|consoles|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|playstation}}</syntaxhighlight>
+| {{Feature|playstation}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|playstation|Hello there!}}</syntaxhighlight>
+| {{Feature|playstation|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|xbox}}</syntaxhighlight>
+| {{Feature|xbox}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|xbox|Hello there!}}</syntaxhighlight>
+| {{Feature|xbox|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|PC}}</syntaxhighlight>
+| {{Feature|PC}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|PC|Hello there!}}</syntaxhighlight>
+| {{Feature|PC|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|steam}}</syntaxhighlight>
+| {{Feature|steam}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|steam|Hello there!}}</syntaxhighlight>
+| {{Feature|steam|Hello there!}}
+
+<!--
+	INFOBOXES
+-->
+
+|-
+! colspan="3" style="height: 3em" | Infoboxes
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|informative}}</syntaxhighlight>
+| {{Feature|informative}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|informative|Hello there!}}</syntaxhighlight>
+| {{Feature|informative|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|important}}</syntaxhighlight>
+| {{Feature|important}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|important|Hello there!}}</syntaxhighlight>
+| {{Feature|important|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|warning}}</syntaxhighlight>
+| {{Feature|warning}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|warning|Hello there!}}</syntaxhighlight>
+| {{Feature|warning|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|obsolete}}</syntaxhighlight>
+| {{Feature|obsolete}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|obsolete|Hello there!}}</syntaxhighlight>
+| {{Feature|obsolete|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|obsolete|Hello there!|arma2}}</syntaxhighlight>
+| {{Feature|obsolete|Hello there!|arma2}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|obsolete|Hello there!|arma2|1.03}}</syntaxhighlight>
+| {{Feature|obsolete|Hello there!|arma2|1.03}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|quote}}</syntaxhighlight>
+| {{Feature|quote}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|quote|Hello there!}}</syntaxhighlight>
+| {{Feature|quote|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|quote|Hello there!|General Kenobi}}</syntaxhighlight>
+| {{Feature|quote|Hello there!|General Kenobi}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|quote|Hello there!|General Kenobi|Conversations}}</syntaxhighlight>
+| {{Feature|quote|Hello there!|General Kenobi|Conversations}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature
+|quote
+|Hello there!
+|General Kenobi
+|4= https://www.youtube.com/watch?v=rEq1Z0bjdwc
+}}</syntaxhighlight>
+| {{Feature|quote|Hello there!|General Kenobi|https://www.youtube.com/watch?v{{=}}rEq1Z0bjdwc}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|spoiler}}</syntaxhighlight>
+| {{Feature|spoiler}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|spoiler|Hello there!}}</syntaxhighlight>
+| {{Feature|spoiler|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|UnsupportedDoc}}</syntaxhighlight>
+| {{Feature|UnsupportedDoc}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|UnsupportedDoc|Hello there!}}</syntaxhighlight>
+| {{Feature|UnsupportedDoc|Hello there!}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|UnsupportedTool}}</syntaxhighlight>
+| {{Feature|UnsupportedTool}}
+|-
+| <syntaxhighlight lang="handlebars">{{Feature|UnsupportedTool|Hello there!}}</syntaxhighlight>
+| {{Feature|UnsupportedTool|Hello there!}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]

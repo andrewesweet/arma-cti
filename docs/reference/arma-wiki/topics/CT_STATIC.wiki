@@ -1,0 +1,343 @@
+// source: https://community.bistudio.com/wiki/CT_STATIC
+// revision: 376897 (2025-12-20T15:48:42Z)
+// export sha1: qux9iw7bynywdfy9ahkmdsqikbdwqj7
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{CT|intro
+|macro = CT_STATIC
+|value = 0
+|description = Static controls represent exactly that: static data. Static means there is NO possible user interaction. CT_STATIC is primarily used for texts, dialog backgrounds, pictures (and videos). The constant ''type'' property for these controls usually is {{hl|CT_STATIC}}.
+}}
+
+{{CT|abc start}}
+
+=== A ===
+
+{{CT|attribute
+|name=align
+|type1=String
+|value1="center"
+|description=Alignment of text. Values can be "left", "center" or "right". Seems to have no effect. Use ST_LEFT/ST_CENTER/ST_RIGHT instead.
+}}
+
+{{CT|attribute
+|name=angle
+|type1=Number
+|value1=180
+|description=Rotation of the image. See [[ctrlSetAngle]].
+}}
+
+{{CT|attribute
+|name=autoplay
+|type1=Number
+|value1=0
+|description=Used on video controls. 1 means that the video starts playing as soon as the UI is opened.
+}}
+
+=== B ===
+
+{{CT|attribute
+|name=background
+|type1=Number
+|value1=1
+|description=
+}}
+
+=== C ===
+
+{{CT|attribute
+|name=centerU
+|type1=Number
+|value1=0.5
+|description=Sets the horizontal center for the rotation of images with ST_PICTURE controls. 0 is left border of the control, 1 is right border. See also: [[ctrlSetAngle]].
+}}
+
+{{CT|attribute
+|name=centerV
+|type1=Number
+|value1=0.5
+|description=Sets the vertical center for the rotation of images with ST_PICTURE controls. 0 is top border of the control, 1 is bottom border. See also: [[ctrlSetAngle]].
+}}
+
+{{CT|attribute
+|name=color
+|type1=Array
+|value1={ 1, 1, 1, 1 }
+|description=Most likely without function.
+}}
+
+{{CT|attribute
+|name=colorActive
+|type1=Array
+|value1={ 0.23, 0.35, 0.42, 0.9 }
+|description=Not applicable for this type as it can not be active.
+}}
+
+{{CT|attribute
+|name=colorShadow
+|type1=Array
+|value1={ 0, 0, 0, 1 }
+|description=Color of the shadow of the text.
+}}
+
+=== F ===
+
+{{CT|attribute
+|name=fixedWidth
+|type1=Number
+|value1=0
+|description=Makes normal text like "LALALA" appear like "L A L A L A".
+}}
+
+=== L ===
+
+{{CT|attribute
+|name=lines
+|type1=Number
+|value1=3
+|description=
+}}
+
+{{CT|attribute
+|name=lineSpacing
+|type1=Number
+|value1=0
+|description=Space between lines, required if the style was set to ST_MULTI.
+}}
+
+{{CT|attribute
+|name=loops
+|type1=Number
+|value1=0
+|description=Defines how many times video will be restarted.
+}}
+
+=== S ===
+
+{{CT|attribute
+|name=sortDown
+|type1=String
+|value1="\a3\ui_f\data\gui\rsc\rscdisplaymultiplayer\arrow_down_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=sortUp
+|type1=String
+|value1="\a3\ui_f\data\gui\rsc\rscdisplaymultiplayer\arrow_up_ca.paa"
+|description=
+}}
+
+=== T ===
+
+{{CT|attribute
+|name=tileH
+|type1=Number
+|value1=1
+|type2=String
+|value2="4 / (32 * pixelH)"
+|description=Height of one tile. Used with ST_TILE_PICTURE to create a repeating wall of pictures, such as the fullscreen backgrounds in the [[:Category:Eden Editor|Eden Editor]]. Uses [[GUI Coordinates]].
+}}
+
+{{CT|attribute
+|name=tileW
+|type1=Number
+|value1=1
+|type2=String
+|value2="8 / (32 * pixelW)"
+|description=Width of one tile. Used with ST_TILE_PICTURE to create a repeating wall of pictures, such as the fullscreen backgrounds in the [[:Category:Eden Editor|Eden Editor]]. Uses [[GUI Coordinates]].
+}}
+
+=== W ===
+
+{{CT|attribute
+|name=widgetLineWidth
+|type1=Number
+|value1=10
+|description=
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+
+=== RscText ===
+
+[[File:Dialog controls text.jpg|thumb||''Hello world'' text with semi-transparent background]]
+Most often this type of control will be used to add text to dialogs. If you want the text to change dynamically while playing the mission, you should set the ''idc'' property to a positive number, which allows usage of the [[ctrlSetText]] function. Text alignment can be controlled using the ''style'' property and the {{hl|ST_*}} constants.
+
+By default, this will only display a '''single line''' (and cut the overflow); use {{hl|ST_MULTI}} if you intend to use multiple lines. This also requires setting the property ''lineSpacing'', which indicates the relative space between lines; usually, you can set this to 1 for normal line spacing.
+
+<syntaxhighlight lang="cpp">
+class RscText
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_STATIC;
+	idc = -1;
+	colorBackground[] = { 0, 0, 0, 0 };
+	colorText[] = { 1, 1, 1, 1 };
+	text = "";
+	fixedWidth = 0;
+	x = 0;
+	y = 0;
+	h = 0.037;
+	w = 0.3;
+	style = ST_LEFT;
+	shadow = 1;
+	colorShadow[] = { 0, 0, 0, 0.5 };
+	font = "RobotoCondensed";
+	SizeEx = GUI_TEXT_SIZE_MEDIUM;
+	linespacing = 1;
+	tooltipColorText[] = { 1, 1, 1, 1 };
+	tooltipColorBox[] = { 1, 1, 1, 1 };
+	tooltipColorShade[] = { 0, 0, 0, 0.65 };
+};
+</syntaxhighlight>
+
+==== Trivia ====
+When an RscText control with IDC 101 is added to the map, it displays the current time.
+<sqf>
+private _ctrl = findDisplay 12 ctrlCreate ["RscText", 101];
+_ctrl ctrlSetPosition [0, 0, 1, 1];
+_ctrl ctrlCommit 0;
+_ctrl ctrlSetFontHeight 0.5;
+</sqf>
+
+=== RscLine ===
+
+[[File:Arma RscLine.png|thumb||RscLine control with black background.]]
+Draws a single line from top left to bottom right corner of the control.
+<syntaxhighlight lang="cpp">
+class RscLine : RscText
+{
+	idc = -1;
+	style = ST_MULTI + ST_TITLE_BAR + ST_HUD_BACKGROUND;
+	x = 0.17;
+	y = 0.48;
+	w = 0.66;
+	h = 0;
+	text = "";
+	colorBackground[] = { 0, 0, 0, 0 };
+	colorText[] = { 1, 1, 1, 1 };
+};
+</syntaxhighlight>
+
+=== RscFrame ===
+
+[[File:Arma RscFrame.png|thumb||Example of a RscFrame in the {{arma3}} server browser.]]
+Frame that outlines the control's borders. When text is set it appears on the top line to the left.
+<syntaxhighlight lang="cpp">
+class RscFrame
+{
+	type = CT_STATIC;
+	idc = -1;
+	deletable = 0;
+	style = ST_FRAME;
+	shadow = 2;
+	colorBackground[] = { 0, 0, 0, 0 };
+	colorText[] = { 1, 1, 1, 1 };
+	font = "RobotoCondensed";
+	sizeEx = 0.02;
+	text = "";
+	x = 0;
+	y = 0;
+	w = 0.3;
+	h = 0.3;
+};
+</syntaxhighlight>
+
+=== RscPicture ===
+
+Using specific style constants you can enhance your dialogs with pictures too.
+These pictures should reside in your mission folder as [[PAA File Format|paa]]-files.
+Then set your ''style'' property to {{hl|ST_PICTURE}} (to display it once) or {{hl|ST_TILE_PICTURE}} (to tile it) and use the ''text'' property to locate the paa image you want to use, relative to your addon or mission folder (''absolute paths should not be used'').
+
+[[File:Dialog controls picture.jpg|thumb|100px|Dialog control showing a picture]]
+<syntaxhighlight lang="cpp">
+class RscPicture
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_STATIC;
+	idc = -1;
+	style = ST_MULTI + ST_TITLE_BAR;
+	colorBackground[] = { 0, 0, 0, 0 };
+	colorText[] = { 1, 1, 1, 1 };
+	font = "TahomaB";
+	sizeEx = 0;
+	lineSpacing = 0;
+	text = "";
+	fixedWidth = 0;
+	shadow = 0;
+	x = 0;
+	y = 0;
+	w = 0.2;
+	h = 0.15;
+	tooltipColorText[] = { 1, 1, 1, 1 };
+	tooltipColorBox[] = { 1, 1, 1, 1 };
+	tooltipColorShade[] = { 0, 0, 0, 0.65 };
+};
+</syntaxhighlight>
+
+=== RscPictureKeepAspect ===
+
+Same as RscPicture, but keeps the image the same ratio as in the source file.
+<syntaxhighlight lang="cpp">
+class RscPictureKeepAspect : RscPicture
+{
+	style = ST_MULTI + ST_TITLE_BAR + ST_KEEP_ASPECT_RATIO;
+};
+</syntaxhighlight>
+
+{{ArgTitle|3|RscVideo|{{GVI|arma2oa|1.56}}}}
+
+All settings are same as for pictures, only source file must be of ''.OGV'' format.
+Two additional properties are available - ''autoplay'' (when 1, video starts automatically) and ''loops'' (defines how many times video will be played in loop).
+
+For video encoding, you can use:
+* {{Link|http://www.v2v.cc/~j/ffmpeg2theora/download.html|ffmpeg2theora}}
+* {{Link|http://sourceforge.net/projects/theoraconverter/|Theora Converter .NET (GUI for ffmpeg2theora)}}
+
+<syntaxhighlight lang="cpp">
+class RscVideo : RscPicture
+{
+	autoplay = 1;
+	loops = 1;
+};
+</syntaxhighlight>
+
+{{ArgTitle|3|RscVideoKeepAspect|{{GVI|arma3|?}}}}
+
+Same as {{Link|#RscVideo}} but keeps the source video's aspect ratio.
+<syntaxhighlight lang="cpp">
+class RscVideoKeepAspect : RscVideo
+{
+	autoplay = 1;
+	loops = 1;
+	style = ST_MULTI + ST_TITLE_BAR + ST_KEEP_ASPECT_RATIO;
+};
+</syntaxhighlight>
+
+
+== Other Classes ==
+
+=== Static background ===
+
+[[File:Dialog controls background.jpg|thumb||Semi-transparent background]]
+One can also use this control type to add solid background to dialogs by simply leaving the ''text'' property empty. This way, it will look like a regular rectangle.
+
+<syntaxhighlight lang="cpp">
+class MyRedBackgroundExample
+{
+	/* ... same as the text example, except for */
+	colorBackground[] = { 1, 0.1, 0.1, 0.8 };
+	text = "";
+};
+</syntaxhighlight>
+
+
+[[Category: Control Types]]

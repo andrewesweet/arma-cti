@@ -1,0 +1,19 @@
+// source: https://community.bistudio.com/wiki/Resource.cpp/bin
+// revision: 373419 (2025-05-08T11:27:12Z)
+// export sha1: strwaz58k4iqinh5u14n07htg7qksyr
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|UnsupportedDoc}}
+bin\resource.bin is exclusively used in OFP and contains the resource dialogs.
+
+In Arma, it has been subsumed into the standard bin\config.bin
+
+Hindsight being that wonderful invention, it was ''probably'' better to retain it and keep dialogs out of config namespace. Certainly a little more thought was needed than simply cut and pasting the entire resource as-was.
+
+RscDialog classes are heavily polluting. Unlike other items, there is no cfgResource class container and hence almost everything written for dialogs is a root parent. You alter or delete a root parent at your peril. Hunting for anything other than RscDialogs in the engine's post built config is noisy and time consuming. Naming and creating new dialogs is ofpec_tag critical because there is no context to refer to them, other than the root parent. If you've named your dialog "widget". You can be certain, someone else has too.
+
+Along with the config.bin file, resource.cpp also has global defines, which, in bis, take the form of enums. These are almost the only instances of global defines in the game. This has been a clever approach, because only the engine.exe and the bin\config are tightly coupled. The nature of the engine can change, it is id's for specific dialogs(solely as an eg) can change, but all pbo's which access that reference do not require recompiles.
+
+
+[[Category:Real Virtuality File Formats]]

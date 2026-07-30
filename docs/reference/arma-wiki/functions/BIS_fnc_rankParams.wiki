@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_rankParams
+// revision: 328370 (2022-07-13T16:00:47Z)
+// export sha1: mqckfe4dz50k8u9yv3ztz3lygigodyr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Return information about military rank.
+
+	1: STRING - requited data, can be one of following:
+		"displayName" - full localized name (e.g. "Major")
+		"displayNameShort" - short localized name (e.g. "Maj.")
+		"classname" - system name (e.g. "MAJOR")
+		"texture" - path to rank insignia
+
+|s1= [source, infoType] call [[BIS_fnc_rankParams]]
+
+|p1= source: [[Number]], [[String]] or [[Object]] - can be one of:
+* [[Number]] - rank ID
+* [[String]] -  rank system name (e.g. "PRIVATE", "CORPORAL", …)
+* [[Object]] - person whose rank is checked
+
+|p2= infoType: [[String]] - can be one of:
+* "displayName" - full localized name (e.g. "Major")
+* "displayNameShort" - short localized name (e.g. "Maj.")
+* "classname" - system name (e.g. "MAJOR")
+* "texture" - path to rank insignia
+
+|r1= [[String]]
+
+|x1= <sqf>private _shortRank = [player, "displayNameShort"] call BIS_fnc_rankParams;</sqf>
+
+|seealso= [[rank]] [[setUnitRank]]
+}}

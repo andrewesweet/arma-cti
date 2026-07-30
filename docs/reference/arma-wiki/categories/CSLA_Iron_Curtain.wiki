@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:CSLA:_Iron_Curtain
+// revision: 281714 (2021-06-15T07:22:21Z)
+// export sha1: katl4pgj82clpkqnta59qbhhurr7zbl
+// Vendored snapshot. Do not edit — re-export instead.
+
+This page serves as a list of pages related to CSLA: Iron Curtain CDLC.
+
+{{GameCategory|arma3|CDLCs}}

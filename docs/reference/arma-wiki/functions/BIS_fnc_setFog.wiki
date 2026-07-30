@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setFog
+// revision: 336201 (2022-12-14T14:12:44Z)
+// export sha1: 23s71ocdk0qemph0chsq136syvext3g
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Environment | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Environment
+
+|serverExec= server
+
+|descr= Instantly set weather conditions and share it across network.
+
+|s1= [strength, density, altitude] call [[BIS_fnc_setFog]]
+
+|p1= strength: [[Number]] - fog strength from 0 to 1
+
+|p2= density: [[Number]] - fog density from 0 to 1
+
+|p3= altitude: [[Number]] - fog base altitude in metres.
+
+|r1= [[Array]] - array with set values
+
+|x1= <sqf>[1,1,100] call BIS_fnc_setFog; // returns [1,1,100]</sqf>
+
+|seealso= [[setFog]] [[fog]]
+}}

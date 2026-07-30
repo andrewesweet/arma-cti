@@ -1,0 +1,1539 @@
+// source: https://community.bistudio.com/wiki/Global_Mobilization_Vehicles
+// revision: 340803 (2023-04-30T17:05:25Z)
+// export sha1: 0jcs668jr0o3vd9k9f1m4yu50zehvhe
+// categories: Category:Global Mobilization
+// Vendored snapshot. Do not edit — re-export instead.
+
+
+[[image:gm picture ca.png|borderless|60px|right|link=Global Mobilization]]
+Find below an overview of the classnames for available vehicles in Arma 3 Creator DLC: Global Mobilization - Cold War Germany.
+
+== Explanation ==
+The listed class name in '''bold''' is already enough to create the vehicle via scripting. If you wish to create a vehicle with a specific color scheme through script, add the suffix to the classname as listed in the Additional Color Variants list.
+
+Example:<br>
+To spawn a default green SPW-40P via script, use this classname:
+ gm_gc_army_brdm2
+
+To spawn a SPW-40P with winter camo paint applied:<br>
+ gm_gc_army_brdm2'''_win'''
+
+Naming of classes follows a very strict structure. Nationality of an asset is indicated by using the {{Link|https://en.wikipedia.org/wiki/List_of_NATO_country_codes|two-Letter NATO County Code}}.
+{| class="wikitable"
+|-
+! Suffix
+! Meaning
+|-
+| _gc
+| [[image:gm_nation_gc2.png]] East Germany
+|-
+|_ge
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+|_dk
+| [[image:gm_nation_dk2.png]] Denmark
+|-
+|_pl
+| [[image:gm_nation_pl.png]] Poland
+|}
+
+National Organizations that the vehicle/asset belongs to is indicated by the following suffixes:
+{| class="wikitable"
+|-
+! Suffix
+! Meaning
+|-
+| _army
+| Army
+|-
+|_bgs
+| Borderguards
+|-
+|_pol
+| Police Authority
+|-
+|_civ
+| Civilian
+|}
+
+Available color paint suffixes and their meanings:
+{| class="wikitable"
+|-
+! Suffix
+! Meaning
+|-
+| _oli
+| Olive / Green
+|-
+|_ols
+| Olive / Green with dried mud for extra pattern camo
+|-
+|_olw
+| Olive with white chalk paint for extra winter pattern camo
+|-
+|_un
+| White
+|-
+|_inv
+| Invasion Stripes
+|-
+|_wdl
+| Woodland / 3-Color pattern
+|-
+|_win
+| Winter Camo Pattern
+|-
+|_des
+| Desert Camo Pattern
+|-
+|_trp
+| Tropical Camo Pattern
+|-
+|_wiw
+| Winter Camo Pattern (Alternative Variant)
+|-
+|_rc
+| Red Diamond (Medical vehicle, suffix applied additionally to color paint)
+|}
+
+[[image:gm picture ca.png|borderless|60px|right|link=Global Mobilization]]
+ 
+== Wheeled ==
+ 
+=== Denmark ===
+ 
+5 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+! Sub Faction<br>
+|-
+| [[image:preview_gm_dk_army_typ1200_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_typ1200_cargo'''</span>
+| ''M111''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+| [[image:preview_gm_dk_army_typ247_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_typ247_cargo'''</span>
+| ''M247''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+| [[image:preview_gm_dk_army_typ253_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_typ253_cargo'''</span>
+| ''M253''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+| [[image:preview_gm_dk_army_typ253_mp.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_typ253_mp'''</span>
+| ''M253 Military Police''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+| [[image:preview_gm_dk_army_u1300l_container.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_u1300l_container'''</span>
+| ''Truck 2t mil gl Flatbed''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+|}
+ 
+=== West Germany ===
+ 
+33 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+! Sub Faction<br>
+|-
+| [[image:gm_ge_army_bicycle_01_oli.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_bicycle_01_oli'''</span>
+| ''Service Bicycle''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_fuchsa0_command.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_fuchsa0_command'''</span>
+| ''TPz 1A0 Command''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_fuchsa0_engineer.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_fuchsa0_engineer'''</span>
+| ''TPz 1A0 Engineer''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_fuchsa0_reconnaissance.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_fuchsa0_reconnaissance'''</span>
+| ''TPz 1A0 Recon''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_iltis_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_iltis_cargo'''</span>
+| ''Truck 0.5t tmil gl''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_iltis_mg3.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_iltis_mg3'''</span>
+| ''Truck 0.5t tmil gl MG3''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_iltis_milan.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_iltis_milan'''</span>
+| ''Truck 0.5t tmil gl LATGM''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_k125.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_k125'''</span>
+| ''K125 gl''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_kat1_451_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_kat1_451_cargo'''</span>
+| ''Truck 5t mil gl Transport''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_kat1_451_container.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_kat1_451_container'''</span>
+| ''Truck 5t mil gl Flatbed''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_kat1_451_reammo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_kat1_451_reammo'''</span>
+| ''Truck 5t mil gl Ammo''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_kat1_451_refuel.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_kat1_451_refuel'''</span>
+| ''Truck 5t mil gl Fuel''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_kat1_452_container.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_kat1_452_container'''</span>
+| ''Truck 7t mil gl Flatbed''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_kat1_454_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_kat1_454_cargo'''</span>
+| ''Truck 10t mil gl Flatbed''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_kat1_454_reammo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_kat1_454_reammo'''</span>
+| ''Truck 10t mil gl Ammo''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_kat1_463_mlrs.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_kat1_463_mlrs'''</span>
+| ''110mm SF2 LARS 2''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_luchsa1.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_luchsa1'''</span>
+| ''SpPz 2A1''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_luchsa2.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_luchsa2'''</span>
+| ''SpPz 2A2''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_typ1200_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_typ1200_cargo'''</span>
+| ''Pkw 2''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_typ247_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_typ247_cargo'''</span>
+| ''Pkw 5 Seats Transport''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_typ247_firefighter.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_typ247_firefighter'''</span>
+| ''FlKfz ELW''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_typ253_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_typ253_cargo'''</span>
+| ''Pkw 8 Seats''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_typ253_mp.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_typ253_mp'''</span>
+| ''Pkw 8 Seats Military Police''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_u1300l_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_u1300l_cargo'''</span>
+| ''Truck 2t mil gl Transport''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_u1300l_container.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_u1300l_container'''</span>
+| ''Truck 2t mil gl Flatbed''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_u1300l_firefighter.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_u1300l_firefighter'''</span>
+| ''FlKfz 1000''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_u1300l_medic.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_u1300l_medic'''</span>
+| ''Truck 2t mil gl Medical''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_u1300l_repair.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_u1300l_repair'''</span>
+| ''Truck 2t mil gl Repair''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_w123_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_w123_cargo'''</span>
+| ''Pkw Heavy''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:gm_ge_bgs_bicycle_01_grn.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_bgs_bicycle_01_grn'''</span>
+| ''Service Bicycle''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Borderguards
+|-
+| [[image:preview_gm_ge_bgs_k125.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_bgs_k125'''</span>
+| ''K125 gl''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Borderguards
+|-
+| [[image:preview_gm_ge_bgs_typ253_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_bgs_typ253_cargo'''</span>
+| ''Typ 253''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Borderguards
+|-
+| [[image:preview_gm_ge_bgs_w123_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_bgs_w123_cargo'''</span>
+| ''W123''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Borderguards
+|-
+|}
+ 
+=== East Germany ===
+ 
+28 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+! Sub Faction<br>
+|-
+| [[image:gm_gc_army_bicycle_01_oli.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_bicycle_01_oli'''</span>
+| ''Army Bicycle''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_brdm2.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_brdm2'''</span>
+| ''SPW-40P2''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_brdm2rkh.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_brdm2rkh'''</span>
+| ''SPW-40P2 (Ch)''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_brdm2um.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_brdm2um'''</span>
+| ''SPW-40P2UM''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_btr60pa.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_btr60pa'''</span>
+| ''SPW-60PA''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_btr60pa_dshkm.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_btr60pa_dshkm'''</span>
+| ''SPW-60PA DShKM''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_btr60pb.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_btr60pb'''</span>
+| ''SPW-60PB''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_btr60pu12.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_btr60pu12'''</span>
+| ''SPW-60PU-12''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_p601.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_p601'''</span>
+| ''P601 (Patrol)''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_uaz469_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_uaz469_cargo'''</span>
+| ''Pkw gel. 469''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_uaz469_dshkm.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_uaz469_dshkm'''</span>
+| ''Pkw gel. 469 DShKM''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_uaz469_spg9.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_uaz469_spg9'''</span>
+| ''Pkw gel. 469 SPG-9''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_ural375d_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_ural375d_cargo'''</span>
+| ''Truck gel. 5 Mp Transport''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_ural375d_medic.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_ural375d_medic'''</span>
+| ''Truck gel. 5 Mp Medical''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_ural375d_mlrs.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_ural375d_mlrs'''</span>
+| ''GeW BM-21''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_ural375d_refuel.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_ural375d_refuel'''</span>
+| ''Truck gel. 5 Mp Fuel''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_ural4320_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_ural4320_cargo'''</span>
+| ''Truck gel. 5 Transport''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_ural4320_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_ural4320_reammo'''</span>
+| ''Truck gel. 5 Ammo''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_ural4320_repair.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_ural4320_repair'''</span>
+| ''Truck gel. 5 Repair''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_ural44202.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_ural44202'''</span>
+| ''Truck gel. 5 Tractor''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_bgs_p601.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_bgs_p601'''</span>
+| ''P601 (Patrol)''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Borderguards
+|-
+| [[image:preview_gm_gc_bgs_uaz469_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_bgs_uaz469_cargo'''</span>
+| ''Pkw gel. 469''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Borderguards
+|-
+| [[image:preview_gm_gc_bgs_uaz469_spg9.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_bgs_uaz469_spg9'''</span>
+| ''Pkw gel. 469 SPG-9''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Borderguards
+|-
+| [[image:preview_gm_gc_bgs_ural375d_medic.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_bgs_ural375d_medic'''</span>
+| ''Truck gel. 5 Mp Medical''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Borderguards
+|-
+| [[image:preview_gm_gc_bgs_ural375d_refuel.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_bgs_ural375d_refuel'''</span>
+| ''Truck gel. 5 Mp Fuel''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Borderguards
+|-
+| [[image:preview_gm_gc_bgs_ural4320_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_bgs_ural4320_cargo'''</span>
+| ''Truck gel. 5 Transport''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Borderguards
+|-
+| [[image:preview_gm_gc_bgs_ural4320_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_bgs_ural4320_reammo'''</span>
+| ''Truck gel. 5 Ammo''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Borderguards
+|-
+| [[image:preview_gm_gc_bgs_ural4320_repair.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_bgs_ural4320_repair'''</span>
+| ''Truck gel. 5 Repair''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Borderguards
+|-
+|}
+ 
+=== Poland ===
+ 
+10 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+! Sub Faction<br>
+|-
+| [[image:preview_gm_pl_army_brdm2.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_brdm2'''</span>
+| ''BRDM-2''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_ot64a.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_ot64a'''</span>
+| ''SKOT-2A''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_uaz469_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_uaz469_cargo'''</span>
+| ''UAZ 469''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_uaz469_dshkm.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_uaz469_dshkm'''</span>
+| ''UAZ 469 DShKM''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_ural375d_medic.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_ural375d_medic'''</span>
+| ''Truck gel. 5 Mp Medical''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_ural375d_mlrs.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_ural375d_mlrs'''</span>
+| ''BM-21''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_ural375d_refuel.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_ural375d_refuel'''</span>
+| ''Truck gel. 5 Mp Fuel''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_ural4320_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_ural4320_cargo'''</span>
+| ''Truck gel. 5 Transport''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_ural4320_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_ural4320_reammo'''</span>
+| ''Truck gel. 5 Ammo''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_ural4320_repair.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_ural4320_repair'''</span>
+| ''Truck gel. 5 Repair''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+|}
+ 
+=== Civilians ===
+ 
+30 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+|-
+| [[image:preview_gm_gc_civ_p601.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_civ_p601'''</span>
+| ''P601''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_gc2.png]] East Germany
+|-
+| [[image:preview_gm_gc_civ_ural375d_cargo.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_civ_ural375d_cargo'''</span>
+| ''Truck gel. 5 Mp''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_gc2.png]] East Germany
+|-
+| [[image:preview_gm_gc_dp_p601.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_dp_p601'''</span>
+| ''P601 (Post)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_gc2.png]] East Germany
+|-
+| [[image:preview_gm_gc_ff_p601.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_ff_p601'''</span>
+| ''P601 (Firefighters)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_gc2.png]] East Germany
+|-
+| [[image:preview_gm_gc_pol_p601.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_pol_p601'''</span>
+| ''P601 (Police)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_gc2.png]] East Germany
+|-
+| [[image:preview_gm_ge_civ_typ1200.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_civ_typ1200'''</span>
+| ''Typ 1200''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_civ_typ247.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_civ_typ247'''</span>
+| ''Typ 247''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_civ_typ251.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_civ_typ251'''</span>
+| ''Typ 251''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_civ_typ253.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_civ_typ253'''</span>
+| ''Typ 253''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_civ_u1300l.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_civ_u1300l'''</span>
+| ''Truck 2t gl''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_civ_w123.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_civ_w123'''</span>
+| ''W123''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:gm_ge_dbp_bicycle_01_ylw.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_dbp_bicycle_01_ylw'''</span>
+| ''Post Bicycle''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_dbp_typ1200.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_dbp_typ1200'''</span>
+| ''Typ 1200 (Post)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_dbp_typ247.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_dbp_typ247'''</span>
+| ''Typ 247 (Post)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_dbp_typ251.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_dbp_typ251'''</span>
+| ''Typ 251 (Post)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_dbp_w123.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_dbp_w123'''</span>
+| ''W123 (Post)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_ff_typ1200.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_ff_typ1200'''</span>
+| ''Typ 1200 (Firefighters)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_ff_typ247.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_ff_typ247'''</span>
+| ''Typ 247 (Firefighters)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_ff_typ247_firefighter.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_ff_typ247_firefighter'''</span>
+| ''FlKfz ELW''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_ff_typ253.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_ff_typ253'''</span>
+| ''Typ 253 (Firefighters)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_ff_u1300l_firefighter.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_ff_u1300l_firefighter'''</span>
+| ''FlKfz 1000''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_ff_u1300l_medic.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_ff_u1300l_medic'''</span>
+| ''U1300L Medical''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_ff_w123.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_ff_w123'''</span>
+| ''W123 (Firefighters)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:gm_ge_pol_bicycle_01_grn.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_pol_bicycle_01_grn'''</span>
+| ''Police Bicycle''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_pol_typ1200.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_pol_typ1200'''</span>
+| ''Typ 1200 (Police)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_pol_typ253.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_pol_typ253'''</span>
+| ''Typ 253 (Police)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_pol_w123.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_pol_w123'''</span>
+| ''W123 (Police)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_taxi_typ253.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_taxi_typ253'''</span>
+| ''Typ 253 (Taxi)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_taxi_w123.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_taxi_w123'''</span>
+| ''W123 (Taxi)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:gm_xx_civ_bicycle_01.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_xx_civ_bicycle_01'''</span>
+| ''Bicycle''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_gc2.png]] East Germany
+|-
+|}
+ 
+== Tracked ==
+ 
+=== Denmark ===
+ 
+9 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+! Sub Faction<br>
+|-
+| [[image:preview_gm_dk_army_bibera0.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_bibera0'''</span>
+| ''BrPz 1''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+| [[image:preview_gm_dk_army_bpz2a0.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_bpz2a0'''</span>
+| ''BPz 2A0''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+| [[image:preview_gm_dk_army_Leopard1a3.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_Leopard1a3'''</span>
+| ''KPz 1A3''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+| [[image:preview_gm_dk_army_m109.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_m109'''</span>
+| ''M109''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+| [[image:preview_gm_dk_army_m113a1dk_apc.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_m113a1dk_apc'''</span>
+| ''M113A1DK APC''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+| [[image:preview_gm_dk_army_m113a1dk_command.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_m113a1dk_command'''</span>
+| ''M113A1DK Command''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+| [[image:preview_gm_dk_army_m113a1dk_engineer.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_m113a1dk_engineer'''</span>
+| ''M113A1DK Engineer''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+| [[image:preview_gm_dk_army_m113a1dk_medic.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_m113a1dk_medic'''</span>
+| ''M113A1DK Medical''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+| [[image:preview_gm_dk_army_m113a2dk.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_dk_army_m113a2dk'''</span>
+| ''M113A2DK PNMK''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_dk2.png]] Denmark
+| Army
+|-
+|}
+ 
+=== West Germany ===
+ 
+17 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+! Sub Faction<br>
+|-
+| [[image:preview_gm_ge_army_bibera0.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_bibera0'''</span>
+| ''BrPz 1''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_bpz2a0.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_bpz2a0'''</span>
+| ''BPz 2A0''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_gepard1a1.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_gepard1a1'''</span>
+| ''FlakPz 1A1''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_Leopard1a1.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_Leopard1a1'''</span>
+| ''KPz 1A1''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_Leopard1a1a1.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_Leopard1a1a1'''</span>
+| ''KPz 1A1A1''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_Leopard1a1a2.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_Leopard1a1a2'''</span>
+| ''KPz 1A1A2''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_Leopard1a3.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_Leopard1a3'''</span>
+| ''KPz 1A3''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_Leopard1a3a1.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_Leopard1a3a1'''</span>
+| ''KPz 1A3A1''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_Leopard1a5.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_Leopard1a5'''</span>
+| ''KPz 1A5''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_m109g.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_m109g'''</span>
+| ''M109G''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_m113a1g_apc.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_m113a1g_apc'''</span>
+| ''M113A1G APC''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_m113a1g_apc_milan.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_m113a1g_apc_milan'''</span>
+| ''M113A1G APC LATGM''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_m113a1g_command.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_m113a1g_command'''</span>
+| ''M113A1G Command''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_m113a1g_medic.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_m113a1g_medic'''</span>
+| ''M113A1G Medical''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_mardera1a1a.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_marder1a1a'''</span>
+| ''SPz 1A1A''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_mardera1a1plus.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_marder1a1plus'''</span>
+| ''SPz 1A1+''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_mardera1a2.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_marder1a2'''</span>
+| ''SPz 1A2''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+|}
+
+=== East Germany ===
+ 
+10 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+! Sub Faction<br>
+|-
+| [[image:preview_gm_gc_army_2p16.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_2p16'''</span>
+| ''SR 2P16''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_2s1.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_2s1'''</span>
+| ''SFL 2S1''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_bmp1sp2.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_bmp1sp2'''</span>
+| ''BMP-1 SP-2''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_pt76b.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_pt76b'''</span>
+| ''PT-76B''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_t55.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_t55'''</span>
+| ''T-55''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_t55a.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_t55a'''</span>
+| ''T-55A''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_t55ak.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_t55ak'''</span>
+| ''T-55AK''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_t55am2.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_t55am2'''</span>
+| ''T-55AM2''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_t55am2b.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_t55am2b'''</span>
+| ''T-55AM2B''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_army_zsu234v1.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_zsu234v1'''</span>
+| ''Fla-SFL 23-4V1''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+|}
+ 
+=== Poland ===
+ 
+8 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+! Sub Faction<br>
+|-
+| [[image:preview_gm_pl_army_2p16.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_2p16'''</span>
+| ''2P16''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_2s1.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_2s1'''</span>
+| ''2S1''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_bmp1sp2.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_bmp1sp2'''</span>
+| ''BWP-1''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_pt76b.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_pt76b'''</span>
+| ''PT-76B''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_t55a.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_t55'''</span>
+| ''T-55''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_t55a.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_t55a'''</span>
+| ''T-55A''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_t55ak.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_t55ak'''</span>
+| ''T-55AD1''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_army_zsu234v1.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_army_zsu234v1'''</span>
+| ''ZSU-23-4V1''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+|}
+ 
+== Air ==
+ 
+=== West Germany ===
+ 
+10 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+! Sub Faction<br>
+|-
+| [[image:preview_gm_ge_airforce_do28d2.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_airforce_do28d2'''</span>
+| ''Do 28 D2''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_airforce_do28d2_medevac.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_airforce_do28d2_medevac'''</span>
+| ''Do 28 D2 (Medevac)''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_bo105m_vbh.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_bo105m_vbh'''</span>
+| ''VBH 1''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_bo105p1m_vbh.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_bo105p1m_vbh'''</span>
+| ''VBH 1A1''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_bo105p1m_vbh_swooper.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_bo105p1m_vbh_swooper'''</span>
+| ''VBH 1A1 Swooper''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_bo105p_pah1.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_bo105p_pah1'''</span>
+| ''PAH 1''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_bo105p_pah1a1.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_bo105p_pah1a1'''</span>
+| ''PAH 1A1''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_ch53g.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_ch53g'''</span>
+| ''CH-53G''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_army_ch53gs.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_ch53gs'''</span>
+| ''CH-53GS''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Army
+|-
+| [[image:preview_gm_ge_bgs_bo105_vbh.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_bgs_bo105m_vbh'''</span>
+| ''VBH 1''
+| style="background-color:#c2d4e7"| BLUFOR
+| [[image:gm_nation_ge2.png]] West Germany
+| Borderguards
+|-
+|}
+ 
+=== East Germany ===
+ 
+9 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+! Sub Faction<br>
+|-
+| [[image:preview_gm_gc_airforce_l410s_salon.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_airforce_l410s_salon'''</span>
+| ''L-410S''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_airforce_l410t.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_airforce_l410t'''</span>
+| ''L-410T''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_airforce_mi2p.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_airforce_mi2p'''</span>
+| ''Mi-2P''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_airforce_mi2sr.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_airforce_mi2sr'''</span>
+| ''Mi-2SR''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_airforce_mi2t.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_airforce_mi2t'''</span>
+| ''Mi-2T''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_airforce_mi2urn.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_airforce_mi2urn'''</span>
+| ''Mi-2URN''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_airforce_mi2us.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_airforce_mi2us'''</span>
+| ''Mi-2US''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Army
+|-
+| [[image:preview_gm_gc_bgs_mi2p.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_bgs_mi2p'''</span>
+| ''Mi-2P''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Borderguards
+|-
+| [[image:preview_gm_gc_bgs_mi2us.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_bgs_mi2us'''</span>
+| ''Mi-2US''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_gc2.png]] East Germany
+| Borderguards
+|-
+|}
+ 
+=== Poland ===
+ 
+10 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+! Sub Faction<br>
+|-
+| [[image:preview_gm_pl_airforce_mi2ch.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_airforce_mi2ch'''</span>
+| ''Mi-2Ch''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_airforce_mi2p.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_airforce_mi2p'''</span>
+| ''Mi-2P''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_airforce_mi2t.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_airforce_mi2platan'''</span>
+| ''Mi-2P Platan''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_airforce_mi2sr.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_airforce_mi2sr'''</span>
+| ''Mi-2SR''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_airforce_mi2t.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_airforce_mi2t'''</span>
+| ''Mi-2T''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_airforce_mi2urn.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_airforce_mi2urn'''</span>
+| ''Mi-2URN''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_airforce_mi2urp.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_airforce_mi2urp'''</span>
+| ''Mi-2URP''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_airforce_mi2urpg.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_airforce_mi2urpg'''</span>
+| ''Mi-2URP-G''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_airforce_mi2urs.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_airforce_mi2urs'''</span>
+| ''Mi-2URS''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+| [[image:preview_gm_pl_airforce_mi2us.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_pl_airforce_mi2us'''</span>
+| ''Mi-2US''
+| style="background-color:#e1c2c2"| OPFOR
+| [[image:gm_nation_pl.png]] Poland
+| Army
+|-
+|}
+ 
+=== Civilians ===
+ 
+7 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Side<br>
+! Faction<br>
+|-
+| [[image:preview_gm_gc_civ_l410s_passenger.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_civ_l410s_passenger'''</span>
+| ''L-410S''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_gc2.png]] East Germany
+|-
+| [[image:preview_gm_gc_civ_l410s_salon.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_civ_l410s_salon'''</span>
+| ''L-410S Salon''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_gc2.png]] East Germany
+|-
+| [[image:preview_gm_gc_civ_mi2p.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_civ_mi2p'''</span>
+| ''Mi-2P''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_gc2.png]] East Germany
+|-
+| [[image:preview_gm_gc_civ_mi2r.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_civ_mi2r'''</span>
+| ''Mi-2R''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_gc2.png]] East Germany
+|-
+| [[image:preview_gm_gc_civ_mi2sr.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_gc_civ_mi2sr'''</span>
+| ''Mi-2SR''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_gc2.png]] East Germany
+|-
+| [[image:preview_gm_ge_adak_bo105m_vbh.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_adak_bo105m_vbh'''</span>
+| ''LH 105M (ADAK)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+| [[image:preview_gm_ge_pol_bo105m_vbh.jpg|100px|&nbsp;]]
+| <span id='' >'''gm_ge_pol_bo105m_vbh'''</span>
+| ''LH 105M (Police)''
+|  style="background-color:#dac2e1"| CIVILIAN
+| [[image:gm_nation_ge2.png]] West Germany
+|-
+|}
+
+[[Category:Global Mobilization]]

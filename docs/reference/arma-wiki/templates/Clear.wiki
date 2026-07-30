@@ -1,0 +1,87 @@
+// source: https://community.bistudio.com/wiki/Template:Clear
+// revision: 352908 (2024-03-03T23:57:36Z)
+// export sha1: cnnq368qbjd74eutn5grgzfbh0q68ho
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div style="clear:{{#switch:{{{1|}}}|left=left|right=right|#default=both}}"></div></includeonly><noinclude>{{Doc/Template
+|descr= Adds an invisible HTML object to clear CSS float style.
+
+Code:
+<syntaxhighlight lang="html">
+<div style="clear:{{#switch:{{{1|}}}|left=left|right=|right|=both}}"></div>
+</syntaxhighlight>
+
+|param1= alignment
+|descr1= (Optional, default {{hl|both}}) float clearing; can be {{hl|left}}, {{hl|right}} or {{hl|both}}.
+|example1= <syntaxhighlight lang="html+handlebars">
+<div style="float: left; background-color: #5F5">LEFT</div>
+<div style="float: right; background-color: #F55; height: 3em">RIGHT</div>
+
+<div style="background-color: #FD5">Cleared</div>
+</syntaxhighlight>
+<syntaxhighlight lang="html+handlebars">
+<div style="float: left; background-color: #5F5">LEFT</div>
+<div style="float: right; background-color: #F55; height: 3em">RIGHT</div>
+{{Clear}}
+<div style="background-color: #FD5">Cleared</div>
+</syntaxhighlight>
+|result1=
+<div style="float: left; background-color: #5F5">LEFT</div>
+<div style="float: right; background-color: #F55; height: 3em">RIGHT</div>
+
+<div style="background-color: #FD5">Cleared</div>
+<br>
+<div style="min-width: 15em"><!-- only for presentation --></div>
+<div style="float: left; background-color: #5F5">LEFT</div>
+<div style="float: right; background-color: #F55; height: 3em">RIGHT</div>
+{{Clear}}
+<div style="background-color: #FD5">Cleared</div>
+
+|example2= <syntaxhighlight lang="html+handlebars">
+<div style="float: left; background-color: #5F5">LEFT</div>
+<div style="float: right; background-color: #F55; height: 3em">RIGHT</div>
+{{Clear|ohhimark}}
+<div style="background-color: #FD5">Cleared</div>
+</syntaxhighlight>
+|result2=
+<div style="float: left; background-color: #5F5">LEFT</div>
+<div style="float: right; background-color: #F55; height: 3em">RIGHT</div>
+{{Clear|ohhimark}}
+<div style="background-color: #FD5">Cleared</div>
+
+|example3= <syntaxhighlight lang="html+handlebars">
+<div style="float: left; background-color: #5F5">LEFT</div>
+<div style="float: right; background-color: #F55; height: 3em">RIGHT</div>
+{{Clear|both}}
+<div style="background-color: #FD5">Cleared</div>
+</syntaxhighlight>
+|result3=
+<div style="float: left; background-color: #5F5">LEFT</div>
+<div style="float: right; background-color: #F55; height: 3em">RIGHT</div>
+{{Clear|both}}
+<div style="background-color: #FD5">Cleared</div>
+
+|example4= <syntaxhighlight lang="html+handlebars">
+<div style="float: left; background-color: #5F5">LEFT</div>
+<div style="float: right; background-color: #F55; height: 3em">RIGHT</div>
+{{Clear|left}}
+<div style="background-color: #FD5">Cleared</div>
+</syntaxhighlight>
+|result4=
+<div style="float: left; background-color: #5F5">LEFT</div>
+<div style="float: right; background-color: #F55; height: 3em">RIGHT</div>
+{{Clear|left}}
+<div style="background-color: #FD5">Cleared</div>
+
+|example5= <syntaxhighlight lang="html+handlebars">
+<div style="float: left; background-color: #5F5; height: 3em">LEFT</div>
+<div style="float: right; background-color: #F55">RIGHT</div>
+{{Clear|right}}
+<div style="background-color: #FD5">Cleared</div>
+</syntaxhighlight>
+|result5=
+<div style="float: left; background-color: #5F5; height: 3em">LEFT</div>
+<div style="float: right; background-color: #F55">RIGHT</div>
+{{Clear|right}}
+<div style="background-color: #FD5">Cleared</div>
+}}</noinclude>

@@ -1,0 +1,131 @@
+// source: https://community.bistudio.com/wiki/Infantry_Tips
+// revision: 338848 (2023-04-11T21:13:15Z)
+// export sha1: cy1mso4o91y3nqxz082s4hd8p4g5y55
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+There are many tips on being part of a multiplayer squad. some in this article range from roles as privates, corporals, and sergeants to officers such as lieutenants, and captains. This article is focused more on the combat side and playing. For easy use I have divided these sections into smaller parts based on the role or rank you play.
+<br>
+<br>
+:::::::::::'''The Community's tips for Infantry<br>
+:::::::::::''Basic multiplayer squad handbook''
+
+== Privates ==
+
+This is the lowest rank but also the most populous. This role is usually people with very little experience. these people are what make up fire teams (or for others, squads):
+
+The major thing for you to do is to make sure you are with your team, avoid loosing sight with your corporal (or sergeant). The first thing to learn is the [[The Basic Drill|basic drill]], this will give your leaders time to asses the situation. If you wait for orders your unit will be in danger of annihilation. If you spot a target report it and do not fire unless given the order to if it is at a distance. while waiting for the order to fire, observe the target and its surroundings:
+
+Are there any more targets?
+How many more?
+Are they acting as if they notice you?
+Do they seem relaxed?
+Are there blind spots around the target where you cannot see?
+
+simple questions that can give your commander a synopsis of the enemy. Another thing for you to work on is you marksmanship, practice shooting when you can on your off time. when firing at a moving target fire just before. Keep your eye on the sights of your weapon; make the target relative to the sights, not the sights relative to the target.
+
+== Corporals ==
+
+People that are more experienced and have seen enough combat, but are still learning on how to lead a squad are (in my book) corporals. You may or may not be appointed to lead a fire team depending on how your multiplayer squad operates. but for those who are appointed a fire team:
+
+Always know where your teammates and sergeant is at all times. avoid loosing sight of your teammates. You will be the first to encounter the enemy, so never cross an open field if you suspect the enemy is near. Use the terrain to hide your advances if you have no alternative to crossing an open area. If you have contact react quickly and position your fire team in a hasty defence. 
+
+# Find out where most of the enemy is coming from and position your automatic riflemen to over look the targeted area. If you have no machine gun or automatic riffles position your most skilled player instead. Make sure he has cover or concealment.
+# If the enemy is downhill or has a more men in one spot position a grenadier to overlook the targeted area. If none is present position your assaultman (AT soldier) or second best player instead, again make sure his position has cover or concealment.
+# Place yourself in a position that if either your automatic riflemen or grenadier were to be killed you will have enough time to react and relocate yourself in that position in the best time available. But make sure both routes have cover and that you yourself can fire at the same targets your automatic rifleman and grenadier are fire at.
+# finally the remaining player(s) must then provide safety to your flanks. if you have a radioman that is left have him closer to you but still able to react to an incursion of his field of fire.
+
+*Always make sure you know where other friendly forces are to avoid friendly fire
+*Avoid overlapping fields of fire it will maximize your flanks.
+*Aways try to gain the high ground if you spot the enemy first.
+*Do not forget your flanks! make sure to check on the rear guard constantly (remaining players)
+*If you notice friendly forces around: '''communicate with them'''
+**If you spotted the enemy let them know and where the enemy is
+**If you are pinned down let them know, trust them to maneuver around the enemy's flanks
+***If they can't, retreat
+
+== Sergeants ==
+
+These people have enough experience to lead a larger force of men, usually 8-12 men. For multiplayer squads without fire teams I suggest reading the above section for sergeants.
+
+=== Squad Leader ===
+
+Here is where you start trusting your lower ranks. Your primary concern now is to supervise the fireteams, but keep in mind you are still part of the front. Most of the this you will do is identify traveling routes, and coordinate hasty attacks and defenses. Your corporals have learned a lot but are still learning so if you think they are going about a problem in a wrong way, correct them!
+
+When encountering the enemy during travel you are the primary leader to determine what to do. When you come up on a stationary force order a halt in the advance. Keep in mind as soon as you halt it is strongly suggested to order your men to start creating a hasty defence. Observe the enemy.
+
+*Are they fortified?
+**How advanced/hard?
+**What are the weak points in the defence?
+**What are the strong points?
+*What is stationed at the post?
+**What armor? How many?
+**What aircraft? How many?
+**How many men?
+*Do you see any patrols
+**How many men per a patrol?
+**How far out?
+*What is the significance of defending this position?
+
+After an quick assessment relay the information to your platoon commander. He will soon give out orders on what to do. If you feel there is a better way discuss your thoughts with the commander he may not have thought of that or must know more about the area than you do. Do not be mad if he holds to his order, and certainly don't do what you feel is better. You are still learning too. Try to determine what his objectives are and how to fulfill them as best as you can. If you have a question ask him about it, but don't play twenty questions. Depending on how far the enemy positions are, you will eventually be spotted. so make the questions quick and informative!
+
+When you make contact with a traveling force while traveling determine where they are traveling. If they are coming towards you and they do not know you are there, maneuver around them to their flanks or just take defencive positions. There will be very little time to consult the platoon commander so just notify him that you are making contact and your estimate of the size. If the force is moving parallel or away from you try to find out why. do not follow a force moving away from you! instead slant to the right or left keeping a close observations of your surroundings. If they are moving parallel to you slant to meet them at their flanks or continue on to a more favorable ambush site. Always notify your platoon commander first before preforming your actions he may just deny any action against the force.
+
+=== Platoon Sergeant ===
+
+You have more experience than a squad leader and have made your way up the chain of command to be assistant to a lieutenant or platoon commander. You actions are to advise and help the commander plan small unit operations. You also are expected to take his position if he were to be killed. I would suggest reading the "[[#Platoon Commander|platoon commander section]]" to let you have a basic understanding of what to do.
+
+=== First Sergeant ===
+
+Major part of the chain of command. You will be the Company Commander's "other assistant" showing him the enlisted side of problems. If you feel the unit is unable to perform certain tasks, let the Company Commander (CC) know. You usually stay close to the CC or float around the battle Field. I suggest to inspect the front while in a battle, then  relay the your input or findings to the CC. More times than one the formation or front will have shifted. During a battle, it is bad. Because your forces may have exposed themselves for a flanking maneuver. The CC may also want to know what his men are doing in comparison to his plan too.
+
+== Lieutenants ==
+
+This is the first rank for officers. You have probably been appointed over sergeants to be a platoon commander. Or have been commissioned to lead a support branch. You also are learning or have learned about different aspects of {{Link|https://en.wikipedia.org/wiki/Military_science|Military Science}}. Some multiplayer squads base a commission on long experience, and others may even give links on study material (have not ran into much of these). But the overall aspect is that you have proven to be capable of leading a platoon-size force.
+
+=== Platoon Commander ===
+
+Here is where you rely acutely on your lower ranks. There will be times where one of your squads goes out of sight, and that's OK. What you really have to look out for is positioning yourself relative to the enemy. Never put yourself where you give the enemy an advantage:
+
+*If a city/base is near
+**...and is unoccupied, position yourself between the city and your enemy. This will give an advantage to your forces in a retreat.
+**...and is occupied by enemy forces, avoid being caught between the two forces. Also, make sure you are not in sight of the city either.
+**...and is occupied by friendly forces, you can either do two things:
+***withdraw to the city and wait for an enemy advancement
+***maneuver around the enemy and push them closer to the city, pinning them between the city and your forces
+*'''always make sure of the status of the city/base first before planning'''
+
+*If a hill or mountain is near move to hold it
+**If the enemy is between you and the hill, determine if that hill posses as a hazard to your objective.
+***If it does, try to {{Link|https://en.wikipedia.org/wiki/Double_envelopment|double envelope}} the enemy, or attack as best as you can.
+***If it doesn't, don't waste time or ammo! withdraw and maneuver to confuse the enemy on where you are really going.
+
+There are many more scenarios but these two seem to be the more prominent. 
+
+Always go for the heart (i.e. the objective, supplies, etc.). Identify it and attack it with overwhelming power, or synchronize your attacks to maximize damage. This simple principle can give you victory against a numerically larger enemy. 
+*Make sure your...
+**Orders are clear and understandable
+**Sergeants know what you expect of them
+**Plans are easy-to-follow an simple
+**Men are properly equipped for the mission
+
+*Never...
+**Hesitate on orders
+**Retreat if there are still men able to fight
+**Leave casualties on the field, evacuate or tend to them after combat
+**Cross an open field (yes this is a rule for officers too)
+**Attack a fortified target with light weapons
+**Do something stupid
+**NEVER ORDER YOUR MEN TO DO SOMETHING YOU WILL NOT DO!
+
+=== Executive Officer ===
+
+Usually a Second Lieutenant. People who acts as the assistant for a company-sized force. I suggest reading up on [[#section:Company Commander|what CC do]]. You will basically be doing "secretary work" for the CC.
+
+== Company Commander ==
+<!--uh, if anyone can expand this part it would be greatly appreciated-->
+The head honcho for most this guy really knows his stuff. Not much to say here (look at previous sentence). Just, watch out for your men and trust your platoon commanders... frequently! They know what to do as long as you tell them what to do. Here I shall end this article in a quote:
+
+''"don't tell your men how to do a command. tell them what you want done and their ingenuity will take over"''
+
+[[Category:Battle Tactics]]

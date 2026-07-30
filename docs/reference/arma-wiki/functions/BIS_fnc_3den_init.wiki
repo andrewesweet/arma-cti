@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3den_init
+// revision: 363858 (2024-04-23T20:52:51Z)
+// export sha1: seagite9b40uj2encgkqoip7m0rhq1i
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: KeyframeAnimation | Category:Functions | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= KeyframeAnimation
+
+|descr= Used internally by the [[Arma 3: Key Frame Animation|Key Frame Animation]] system. Adds needed event handlers.
+
+|s1=
+
+|r1= [[Nothing]]
+
+|x1= -
+
+|seealso= [[Arma 3: Key Frame Animation|Key Frame Animation]]
+}}

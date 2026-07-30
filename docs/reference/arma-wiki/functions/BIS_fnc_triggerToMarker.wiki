@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_triggerToMarker
+// revision: 328350 (2022-07-13T16:00:46Z)
+// export sha1: 09ck0nb3ahl0susacksyze6wzlkoomn
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Map and Markers
+
+|eff= local
+
+|descr= Makes an existing or new trigger cover a marker area.
+
+|s1= [trigger, markerName] call [[BIS_fnc_triggerToMarker]]
+
+|p1= trigger: [[Object]] - trigger that will be used to cover the marker. [[objNull]] to create a new trigger
+
+|p2= markerName: [[String]]
+
+|r1= [[Object]] - the (created) trigger. [[objNull]] if marker is not rectangular or elliptical.
+
+|x1= <sqf>private _createdTrigger = [objNull, myAreaTrigger] call BIS_fnc_triggerToMarker;</sqf>
+
+|seealso= [[BIS_fnc_markerToTrigger]]
+}}

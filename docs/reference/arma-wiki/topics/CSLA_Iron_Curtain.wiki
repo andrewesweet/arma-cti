@@ -1,0 +1,219 @@
+// source: https://community.bistudio.com/wiki/CSLA_Iron_Curtain
+// revision: 376182 (2025-09-12T09:45:52Z)
+// export sha1: sxs8i94uboubuouvl2jwdkoenl8hv4l
+// categories: Category:Arma 3: CDLCs | Category:CSLA: Iron Curtain
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+{{Navbox/CDLCs}}
+
+{{Infobox/Game
+|title= ČSLA: Iron Curtain
+|image= [[File:arma3-cdlc-csla store header.jpg|300px|link= https://store.steampowered.com/app/1294440/Arma_3_Creator_DLC_CSLA_Iron_Curtain/]]<br/>[[File:a3 gm arma3-com steampageimg 600x100 3c.png|link=http://www.arma3.com/dlc/creator|300px]]
+|releaseDate= 16 June 2021
+|storePage= {{Link|link= https://store.steampowered.com/app/1294440/Arma_3_Creator_DLC_CSLA_Iron_Curtain/|text= Steam}}
+|developer= [[File:csla_studio.png|48px]] ČSLA Studio
+|website= {{Link|https://csla-studio.blogspot.com/|https://csla-studio.blogspot.com/}}
+|discord= {{Link|https://discord.gg/ekmBnmVY6Z|https://discord.gg/ekmBnmVY6Z}}
+|facebook= {{Link|https://www.facebook.com/cslastudio|https://www.facebook.com/cslastudio}}
+|twitter= {{Link|https://twitter.com/cslastudio|https://twitter.com/cslastudio}}
+}}
+Welcome behind the Iron Curtain! Take a look at what life behind the barbed wire could have been in an alternate universe of the 1980s in Czechoslovakia and its border with West Germany.
+Ride, fly, or run into battle against your enemy in an all-new lush and mountainous terrain.
+Conduct large-scale mechanised infantry operations, Special Forces raids and long-range reconnaissance patrols deep behind enemy lines.
+Choose to be a member of US Armed Forces, Czechoslovak People's Army, Independent Rebels, or even play as a civilian. It's all up to you!
+
+=== How To Launch ===
+
+Arma 3 Creator DLC is optional to install and load. To play {{arma3}} with this DLC enabled, please visit the DLC section in the Arma 3 Launcher, make sure "CSLA Iron Curtain" is owned and loaded, and then launch the game by clicking on the PLAY button.
+
+=== Key Features ===
+
+* Original 256 km<sup>2</sup> landlocked map "Gabreta" with deep forests, windswept mountains, and calm valleys
+* Close representation of a once heavily guarded border between Czechoslovakia and West Germany
+* Cold War era armed forces of the United States and Czechoslovakia, as well as local rebel fighters
+* 68 ground and air vehicle variants, selection of 35 new weapon variants
+* 11 singleplayer missions and 10 multiplayer scenarios plus variants
+
+=== The 256 km<sup>2</sup> Gabreta Terrain ===
+
+This map depicts the southwestern border area of 1980s Czechoslovakia and West Germany. The vast border area divides the map into two different worlds.
+This contribution of Czechoslovakia to the Iron Curtain stretches through a diverse terrain of rivers, valleys, and mountains.
+Meeting your enemy on the field of battle will make you fight for both urban and country areas while operating from field camps, military bases and airfields.
+If you get tired of fighting your enemies, you can just wander into the woods along tourist trails and visit various landmarks including a large castle, a dam, caverns, mines and other interesting places.
+
+==== Terrain features ====
+* Buildings characteristic of 1980s Czechoslovakia and West Germany.
+* Various military outposts and radar installations.
+* Railway network.
+* Large bodies of water representing rivers, swamps, and a large dam.
+* One full blown airbase and one improvised airfield on a highway.
+
+=== Campaign ===
+
+While not part of the main release, the standalone (CDLC still required) campaign which revolves around FIA rebels fighting Czechoslovak Communist Party has been relased by ČSLA Studio on {{Link|link= https://steamcommunity.com/sharedfiles/filedetails/2534376765|text= Steam Workshop}}. For more information see [[CSLA Iron Curtain Campaign|here]].
+
+=== 22 Scenarios ===
+
+Use the full potential of both armies' inventory. Battle Czechoslovak armored columns in your trusty Abrams tank. Lead a team of Special Forces on a combat patrol in enemy territory.
+Get together with a group of fellow players and liberate vast territories from the hands of other human players or AI forces.
+Alternatively, get back to the roots and visit a military equipment showcase at a local airbase to test all vehicles and weapons in a military training area.
+
+==== Features ====
+* 11 singleplayer scenarios
+* 10 multiplayer scenarios plus their variants (COOP, DM, CP, SC, C&H, End Game, Warlords, Zeus)
+* 1 singleplayer Showcase scenario
+
+=== Vehicles ===
+Take advantage of 40 unique vehicles in over 68 variants in total. Almost every vehicle sports a variety of stowage and other customizable parts including camouflage.
+
+==== United States Armed Forces ====
+* M1 Abrams Main Battle Tank
+* M923 5t truck
+* M998/M1025/M1043 High Mobility Vehicle
+* M923A1 5t truck
+* LAV-25 Infantry Fighting Vehicle
+* M113 tracked Armored Personnel Carrier
+* M113A2 tracked Armored Personnel Carrier
+* M163 Vulcan tracked Anti-Aircraft Gun
+* M270 Multiple Rocket Launch System
+* M1008 utility vehicle
+* M1030 motorbike
+* UH/MH-60A transport helicopter
+* AH-1F attack helicopter
+* Rubber motor boat
+
+==== Czechoslovak Armed Forces ====
+* T-72 Main Battle Tank
+* BMP-1 Infantry Fighting Vehicle
+* OT-62 TOPAS Armored Personnel Carrier
+* OT-65A Vydra Reconnaissance vehicle
+* OT-64A2 SKOT Armored Personnel Carrier
+* Pldvk 53/59 Lizard anti-aircraft gun
+* ShKH-77 DANA self-propelled howitzer
+* RM-70 self-propelled rocket artillery
+* RM-51 Rocket Launcher
+* MU-90 Armored Minelayer
+* AZU 469 military offroad
+* Jara 250 motorbike
+* Fatra 813 heavy-duty truck
+* Mk. V3S transport truck
+* Mi-24 Attack Helicopter
+* Mi-17 transport helicopter
+* Cator military tractor
+* Small motor boat
+
+==== Independent ====
+* Customised AZU 469 military offroad
+* BTR-40 Armored Personnel Carrier
+* V3S gun truck
+
+==== Civilian ====
+* Sarka 1200 car
+* Ada 1600 car
+* Mk. V3S truck
+* OT-64 SKOT VB with fences
+* Cator tractor
+* Motorbike
+* AN-2 transport aircraft
+
+=== Weapons ===
+Battle your enemies using 41 new weapons, including multiple variants and a large variety of attachments such as bipods, suppressors, flashlights, bayonets, regular and NV scopes.
+
+==== United States Armed Forces ====
+* M16A2 assault rifle and carbine variants
+* M16A1 assault rifle
+* M21 marksman rifle
+* M14 assault rifle
+* M60(E3) machinegun
+* M249 squad automatic weapon
+* MP-V submachine gun
+* M9 pistol
+* M1911 pistol
+* M23 SOCOM pistol
+* M72, M136, M47 Dragon, MAAWS, SMAW anti-tank launchers
+* FIM-92 anti-air launcher
+* static M2 machinegun
+* TOW anti-tank launcher
+* M252 mortar
+* M67 grenade
+* AN/PAQ-1 laser target designator
+
+==== Czechoslovak Armed Forces ====
+* Sa-58P/V assault rifle
+* Sa-58 + VG70 grenade launcher
+* Scorpion submachine gun
+* OP-63 marksman rifle
+* Uk-59 machine gun
+* Pi-52 pistol
+* Pi-82 pistol
+* RPG-7(V), RPG-75 rocket launchers
+* 9K32 Strela -2 anti-air launcher
+* static Uk-59 machinegun
+* 9K113 anti-tank launcher
+* M52 mortar
+* M53/59 anti-air gun
+* T21 recoilless gun
+* Bzk-59 recoilless gun
+* RG4, F1, URG86 grenades
+
+==== Independent ====
+* FAL assault rifle
+* Hunting rifle
+* Sa-24 submachine gun
+* Sa-26 submachine gun
+* Pi-75 pistol
+* Vz.54 sniper rifle
+* Pu-52/57 rifle
+* LK-52/57 machine gun
+* P27 AT weapon
+
+=== Other ===
+
+Fancy dressing in M81 woodland camo or perhaps M60 Raindrop pattern? No?
+Then probably a mixture of both complemented with Salamander and Oaks camo smocks worn by the rebels? Of course, we have an assortment of civilian clothes and you might even find a police uniform or two.
+
+If woodland is not your thing, all three major factions received desert camouflage uniforms with update 2.
+
+Soldiers have to carry a lot equipment in various weather conditions. For that, you get to choose from an assortment of vests, harnesses, backpacks, caps, helmets and other gear.
+Be sure to check them all in the Virtual Arsenal or in the editor.
+
+== Compatibility Data for Non-Owners ==
+
+People who do not own the CSLA Iron Curtain DLC are able to download and install the DLC's optional data via the {{arma3}} Steam Workshop:
+[[File:csla_compat_data.jpg|none|150px|thumb|link=https://steamcommunity.com/sharedfiles/filedetails/?id=2503886780|CSLA Iron Curtain compatibility data]]
+
+
+Subscribing to this Workshop item makes it possible for potential buyers to try out CSLA Iron Curtain DLC assets (such as weapons and vehicles) prior to purchasing.
+It also enables non-owners to join multiplayer servers that make use of CSLA content. Be aware that access to the DLC's Gabreta terrain remains exclusive to owners of the DLC, plus restrictions to the use of non-owned content apply.
+
+
+== Additional Content ==
+
+'''CSLA Iron Curtain - Indian Summer Campaign:'''
+
+A campaign which revolves around FIA rebels fighting Czechoslovak Comunist Party has been relased by ČSLA Studio. For more information see [[CSLA Iron Curtain Campaign|here]].
+[[File:csla_is_campaign.jpg|none|150px|thumb|link=https://steamcommunity.com/sharedfiles/filedetails/2534376765|Indian Summer Campaign download page]]
+
+
+'''CSLA Iron Curtain - Operations:'''
+
+An expansion pack not depending on official Bohemia CDLC Update release pipeline. Currently, it contains a number of single and multi player missions and a map named Polanek created by ČSLA Studio post-release of the CDLC.
+[[File:csla_ops_pack.jpg|none|150px|thumb|link=https://steamcommunity.com/sharedfiles/filedetails/2719101174|CSLA Iron Curtain - Operations]]
+
+== About the Developers ==
+
+The Arma 3 Creator DLC: CSLA Iron Curtain was created by ČSLA Studio.
+Originally founded in early 2001, the ČSLA Studio team focused on the history of the Cold War era in Czechoslovakia since the first {{arma}} game, {{arma0}}, was released.
+Putting thousands of hours into making community modifications, the team earned the respect of the Arma community.
+Expanding and utilising their experience, the team is now taking their work to the next level with their CSLA Iron Curtain Creator DLC.
+For more information about the history of ČSLA Team and its mods see here: [[Czechoslovak Peoples Army]].
+
+
+== Further Resources ==
+
+To gain more information about all the aspects of the CDLC including asset class names, mission lists etc, pick a link in the [[:Category:CSLA: Iron Curtain|CSLA: Iron Curtain category]].
+
+
+[[Category:CSLA: Iron Curtain]]
+{{GameCategory|arma3|CDLCs}}

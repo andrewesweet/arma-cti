@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/ctrlMapScale
+// revision: 378435 (2026-04-07T21:06:22Z)
+// export sha1: kpy8hmsvcghmdwzel9hrb32k179taga
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - Map
+
+|descr= Returns the current scale of given map control.
+
+|s1= [[ctrlMapScale]] ctrl
+
+|p1= ctrl: [[Control]]
+
+|r1= [[Number]]
+
+|x1= <sqf>
+_control = (findDisplay 12) displayCtrl 51; // {{arma3}}
+_scale = ctrlMapScale _control; // returns number from 1 to 0.001
+</sqf>
+
+|seealso= [[ctrlScale]] [[ctrlSetScale]] [[ctrlMapDir]]
+}}
+
+{{Note
+|user= Veteran29
+|timestamp= 20241007003513
+|text= Following formula can be used to calculate current "zoom points", these can be used to hide/show icons at the same thresholds as the native map icons:
+<sqf>800 * (1 / ctrlMapScale _ctrlMap) * (1 / getTerrainInfo#1)</sqf>
+
+The thresholds are defined in 
+ptsPerSquare* ctrl map properties, e.g:
+<sqf>getNumber (configFile >> "ctrlMap" >> "ptsPerSquareObj")</sqf>
+}}

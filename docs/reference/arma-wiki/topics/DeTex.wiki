@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/DeTex
+// revision: 85290 (2014-10-12T23:23:29Z)
+// export sha1: ru5ltlcgl2qpe7ty7tfe99jkf66le5y
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+          
+DeTex Version 1.xx by Mikero<br>
+See ReadMe General
+
+ 
+See fixes
+
+ 
+----
+ 
+Detex lists the paa files used in the special bis file 
+TexHeaders.bin
+
+ 
+as such it is not needed on the command line if in the 
+same dir as detex
+
+ 
+Output analysis is to screen
+
+ 
+<br>
+Syntax:<br> <br>
+DeTex [-p] [TexHeaders[.bin]]<br>
+
+ 
+-p Dont pause<br> <br> <br> <br>
+
+
+[[Category:Mikero Tools]]

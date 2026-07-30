@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/setUserActionText
+// revision: 369154 (2024-09-03T10:34:39Z)
+// export sha1: ptxr4cc9314ec4qvi8gwlden7zyl7uw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Interaction
+
+|descr= [[File:setUserActionText.jpg|right|350px]] Changes user added action (see [[addAction]]) menu item text. <br><br>
+
+|s1= object [[setUserActionText]] [actionIndex, textMenu, textWindowBackground, textWindowForeground]
+
+|p1= object: [[Object]] - object the action is added to
+
+|p2= actionIndex: [[Number]] - action id returned by [[addAction]]
+
+|p3= textMenu: [[String]] or [[Structured Text]] - text title shown in scroll action menu
+
+|p4= textWindowBackground: [[String]] or [[Structured Text]] - (Optional, default "") background text
+|p4since= arma3 1.62
+
+|p5= textWindowForeground: [[String]] or [[Structured Text]] - (Optional, default "") foreground text
+|p5since= arma3 1.62
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_id = player addAction ["Hello", ""];
+player setUserActionText [_id, "Good Bye"];
+</sqf>
+
+|x2= <sqf>
+_id = billboard addAction ["Some Action", {}];
+billboard setUserActionText [
+	_id, 
+	"Some Action", 
+	"<t color='#ff0000'>Background-----------------</t><br>Multiline<br>Multiline<br>Multiline<br>. . .", 
+	"<t color='#00ff00'>-----------------Foreground</t>"
+];
+</sqf>
+
+|seealso= [[actionIDs]] [[actionParams]] [[addAction]] [[inGameUISetEventHandler]] [[showHUD]] [[inputAction]] [[removeAction]] [[removeAllActions]] [[action]]
+}}

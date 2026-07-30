@@ -1,0 +1,62 @@
+// source: https://community.bistudio.com/wiki/finite
+// revision: 369301 (2024-09-03T18:42:53Z)
+// export sha1: bzhyelce86z56d4fhdfs4x1v48c4njf
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Math
+
+|descr= Returns [[true]] if the provided number is finite (not infinite and a valid number). 
+{{ Feature | Informative | 
+* Maximum finite [[Number]] : 3.40282e+38
+* Minimum finite [[Number]] : -3.40282e+38 }}
+
+|s1= [[finite]] number
+
+|p1= number: [[Number]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>finite 123; // returns true</sqf>
+|x2= <sqf>finite log -1; // returns false</sqf>
+|x3= <sqf>if (not finite log -1) then { hint "Infinite" };</sqf>
+
+|seealso= [[a / b]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 27 Sep, 2013</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+Don't get high hopes with this command thinking what a great way of catching divisions by zero, the command is pretty useless in this respect:
+<sqf>
+// Arma 2
+hint str finite (10/0);	// true ... O_o Huh????
+hint str (10/0);		// 0 ... Weird, but that explains it.
+
+// Arma 3
+hint str finite (10/0);	// true + Error Zero Divisor
+hint str finite 10;		// true
+hint str finite 1000000000000000000000000000000000000000; // false
+</sqf>
+
+</dl>

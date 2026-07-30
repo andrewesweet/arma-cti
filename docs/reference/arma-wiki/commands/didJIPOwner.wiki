@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/didJIPOwner
+// revision: 318912 (2022-05-13T09:22:01Z)
+// export sha1: 0ws1754vfyiiuyvlgpsee866xtefbzp
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|gr1= Multiplayer
+
+|serverExec= server
+
+|descr= Checks if the current [[owner]] of supplied [[Object]] Joined In Progress. Returns [[false]] on clients.
+
+|s1= [[didJIPOwner]]  object
+
+|p1= object: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_ownerDidJip = didJIPOwner tank;</sqf>
+
+|seealso= [[didJIP]] [[owner]] [[setOwner]] [[groupOwner]] [[remoteExecutedOwner]] [[exportJIPMessages]]
+}}

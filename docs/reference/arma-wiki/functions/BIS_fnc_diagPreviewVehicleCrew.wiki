@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagPreviewVehicleCrew
+// revision: 347965 (2023-11-08T08:52:15Z)
+// export sha1: jw4rnfmikmpnic05xfzl7mhfbqk5t3c
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Creates vehicles with their crew.
+
+|s1= [class, dimensions, distance] call [[BIS_fnc_diagPreviewVehicleCrew]]
+
+|p1= class: [[String]] - vehicle class name
+
+|p2= dimensions: [[Array]] of [[Number]]s - number of vehicles in format [rows, columns] (number of vehicles = rows &times; columns)
+
+|p3= distance: [[Number]] - distance between vehicles
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["B_MRAP_01_F", [5,5], 10] call BIS_fnc_diagPreviewVehicleCrew;</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic|Diag functions]]
+}}

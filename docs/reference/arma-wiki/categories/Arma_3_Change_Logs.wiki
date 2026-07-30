@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Change_Logs
+// revision: 378004 (2026-01-21T14:52:19Z)
+// export sha1: 5n4wecq3g64q0r0s3q5qx8qec156734
+// Vendored snapshot. Do not edit — re-export instead.
+
+Arma 3 [[Arma 3: Main Updates|main branch update]] change logs are presented as {{Link|https://dev.arma3.com/spotrep|SPOTREPs on the official Dev Hub}}. 
+
+The change logs on this Wiki are for its more experimental / testing [[Arma 3: Steam Branches|Steam branches]].
+{{Feature|informative|Change logs like these have historically been posted to the {{Link|https://forums.bohemia.net/|Bohemia Interactive forums}}, but those have been offline or in read-only mode since 2025. Therefore, any logs since then will be shared here. The {{Link|https://discord.com/invite/arma|Arma Discord}} is another channel to learn about changes and to discuss them.}}
+
+{{GameCategory|arma3}}

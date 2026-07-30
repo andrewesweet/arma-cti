@@ -1,0 +1,345 @@
+// source: https://community.bistudio.com/wiki/CT_MENU_STRIP
+// revision: 377981 (2026-01-20T13:49:58Z)
+// export sha1: hldpbtnbwxdm5iu3sd7yjstvopnlmtx
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{CT|intro
+
+|macro= CT_MENU_STRIP
+|value= 47
+|description= Control with expandable sublists. The top bar in 3den uses this CT.
+|gallery= File:a3 ct menu strip.jpg{{!}}[[CT_MENU_STRIP]] in [[:Category:Eden Editor|Eden Editor]].
+|commands=
+* [[:Category:Command_Group:_GUI_Control_-_Menu|Commands: Menu]]
+|events=
+}}
+
+{{CT|abc start}}
+=== A ===
+{{CT|attribute
+|name= arrow
+|type1= String
+|value1= "\a3\3DEN\Data\Controls\ctrlMenu\arrow_ca.paa"
+|description= Icon used to navigate from second to third level.
+}}
+
+=== C ===
+{{CT|attribute
+|name= colorBorder
+|type1= Array
+|value1= { 0, 0, 0, 0 }
+|description= Color of the border drawn around the menu strip and the flyout.
+}}
+
+{{CT|attribute
+|name= colorPicture
+|type1= Array
+|value1= { 1, 1, 1, 1 }
+|description= Default picture color.
+}}
+
+{{CT|attribute
+|name= colorPictureDisabled
+|type1= Array
+|value1= { 1, 1, 1, 0.5 }
+|description= Picture color when menu strip is disabled.
+}}
+
+{{CT|attribute
+|name= colorPictureSelect
+|type1= Array
+|value1= { 0, 0, 0, 1 }
+|description= Picture color when entry is selected. All levels!
+}}
+
+{{CT|attribute
+|name= colorSelect
+|type1= Array
+|value1= { 0, 0, 0, 1 }
+|description= Text color when entry is selected. All levels!
+}}
+
+{{CT|attribute
+|name= colorSelectBackground
+|type1= Array
+|value1= {
+	"(profileNamespace getVariable ['GUI_BCG_RGB_R', 0.77])",
+	"(profileNamespace getVariable ['GUI_BCG_RGB_G', 0.51])",
+	"(profileNamespace getVariable ['GUI_BCG_RGB_B', 0.08])",
+	1
+}
+|description= Background color when entry is selected. Only sub first level.
+}}
+
+{{CT|attribute
+|name= colorStripBackground
+|type1= Array
+|value1= { 0, 0, 0, 0 }
+|description= Background color.
+}}
+
+{{CT|attribute
+|name= colorStripDisabled
+|type1= Array
+|value1= { 1, 1, 1, 0.25 }
+|description= Does not seem to do anything.
+}}
+
+{{CT|attribute
+|name= colorStripSelect
+|type1= Array
+|value1= { 0, 0, 0, 1 }
+|description= Does not seem to do anything.
+}}
+
+{{CT|attribute
+|name= colorStripSelectBackground
+|type1= Array
+|value1= {
+	"(profileNamespace getVariable ['GUI_BCG_RGB_R', 0.77])",
+	"(profileNamespace getVariable ['GUI_BCG_RGB_G', 0.51])",
+	"(profileNamespace getVariable ['GUI_BCG_RGB_B', 0.08])",
+	1
+}
+|description= Background color when entry is selected. First level only!
+}}
+
+{{CT|attribute
+|name= colorStripText
+|type1= Array
+|value1= { 1, 1, 1, 1 }
+|description= Text color
+}}
+
+=== I ===
+{{CT|attribute
+|name= Items
+|type1= Class
+|value1= class Items
+{
+	items[] = { "MissionNew" }; // First level entries
+	class MissionNew
+	{
+		action = "systemChat str _this"; 									// Action that is called when entry is selected. _this contains the control and the path to the entry e.g. [control#10, [0, 1, 5]]
+		data = "Data";														// Data, see menuSetData, menuData. String only. If set in Eden Editor it means that the functionality is handle in engine
+		default = "true";													// Sets the default state of the entry. Needs type property to be defined
+		opensNewWindow = 1;													// ... is added to the action, indicating that a new window will be opened. In this example, displayed text would be "New..."
+		picture = "\a3\3DEN\Data\Displays\Display3DEN\ToolBar\new_ca.paa";	// Picture displayed to the left
+		shortcuts[] = {"512 + 0x31"};										// Shortcut that will automatically execute attached action
+		text = "New";														// Text displayed
+		type = "Checkbox2";													// Control type used for indicating the selection state. Only "Checkbox" seems to work
+		value = 1337;														// Value, see menuSetValue, menuValue. Number only
+		weblink = "https:// arma3.com/";									// URL, see menuSetURL, menuURL
+	};
+
+	class Default; // Default entry. Needs to be defined otherwise error is shown upon creation of the display
+	class Separator; // Needs to be defined to create a separator
+};
+|description= List of entries ordered in subclasses. The {{hl|Default}} class needs to be defined.
+}}
+
+{{CT|attribute
+|name= itemSpacingH
+|type1= Number
+|value1= 0.01
+|description= Vertical distance between two entries. Will cause icons and text to not be aligned anymore if anything else than default value is used. Real use is unknown and should probably not be changed.
+}}
+
+{{CT|attribute
+|name= itemSpacingW
+|type1= Number
+|value1= 0.01
+|description= Horizontal distance between two entries. (Seems to have no effect)
+}}
+
+=== P ===
+{{CT|attribute
+|name= pictureCheckboxDisabled
+|type1= String
+|value1= "#(argb,8,8,3)color(0,0,0,0)"
+|description= Icon shown if entry was disabled. Seems to have no effect since there is no way to disable an entry.
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+
+== Other Examples ==
+
+<syntaxhighlight lang = "cpp">
+class MenuStrip
+{
+	idc = 120;
+	type = CT_MENU_STRIP;
+	colorStripBackground[] = { 0, 0, 0, 1 };
+	colorStripText[] = { 1, 1, 1, 1 };
+	colorStripSelect[] = { 0, 0, 0, 1 };
+	colorStripSelectBackground[] =
+	{
+		"(profilenamespace getvariable ['GUI_BCG_RGB_R', 0.77])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_G', 0.51])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_B', 0.08])",
+		1
+	};
+
+	colorStripDisabled[] = { 1, 1, 1, 0.25 };
+	x = "safezoneX";
+	y = "safezoneY";
+	w = "safezoneW - 	5 * (pixelW * pixelGrid * 0.50)";
+	h = "5 * (pixelH * pixelGrid * 0.50)";
+	colorStripBackground[] = { 0, 0, 0, 0 };
+	colorBackground[] = { 0.1, 0.1, 0.1, 1 };
+	font = "RobotoCondensedLight";
+	colorBorder[] = { 0, 0, 0, 0 };
+	colorText[] = { 1, 1, 1, 1 };
+	colorSelect[] = { 0, 0, 0, 1 };
+	colorSelectBackground[] =
+	{
+		"(profilenamespace getvariable ['GUI_BCG_RGB_R', 0.77])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_G', 0.51])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_B', 0.08])",
+		1
+	};
+	colorDisabled[] = { 1, 1, 1, 0.25 };
+	colorPicture[] = { 1, 1, 1, 1 };
+	colorPictureSelect[] = { 0, 0, 0, 1 };
+	colorPictureDisabled[] = { 1, 1, 1, 0.5 };
+	arrow = "\a3\3DEN\Data\Controls\ctrlMenu\arrow_ca.paa";
+	rowHeight = 0;
+	itemSpacingW = 0.0099999998;
+	itemSpacingH = 0.0099999998;
+	pictureCheckboxEnabled = "\a3\3DEN\Data\Controls\CtrlMenu\pictureCheckboxEnabled_ca.paa";
+	pictureCheckboxDisabled = "#(argb,8,8,3)color(0,0,0,0)";
+	pictureRadioEnabled = "\a3\3DEN\Data\Controls\CtrlMenu\pictureRadioEnabled_ca.paa";
+	pictureRadioDisabled = "#(argb,8,8,3)color(0,0,0,0)";
+	class Items
+	{
+		items[] =
+		{
+			"entry1",
+			"entry2",
+			"entry3",
+		};
+
+		class entry1
+		{
+			text = "First Entry";
+			items[] =
+			{
+				"sub1_1",
+				"sub1_2"
+			};
+		};
+
+		class sub1_1
+		{
+			text = "First Sub Entry";
+			action = "systemchat ""Sub entry one."";";
+		};
+
+		class sub1_2
+		{
+			text = "Second Sub Entry";
+		};
+
+		class entry2
+		{
+			text = "Entry 2, no sub menu";
+			action = "systemchat ""Entry 2."";";
+		};
+
+		class entry3
+		{
+			text = "Fancy entry 3";
+			action = "systemchat ""Entry 3."";";
+			data = "CustomData";
+			shortcuts[] =
+			{
+				"512 + 0x31" // CTRL+N
+			};
+
+			picture = "\a3\3DEN\Data\Displays\Display3DEN\ToolBar\new_ca.paa";
+		};
+
+		class Default;
+		class Separator;
+	};
+};
+</syntaxhighlight>
+
+<syntaxhighlight lang = "cpp">
+class RscMenuStrip
+{
+	idd = -1;
+	movingEnable = true;
+	enableSimulation = true;
+	onLoad = "";
+	onUnload = "";
+	class Controls
+	{
+		class MenuStrip : ctrlMenuStrip
+		{
+			idc = 1000;
+			x = safeZoneX;
+			y = (safeZoneY + (safezoneH * 0.132));
+			w =  safezoneW;
+			h = (safezoneH  * 0.03);
+			class Items
+			{
+				items[] = // First Level Entries, when editing an existing menu strip, one can use the += operator to add new entries without overwriting the old ones
+				{
+					"Menu1",
+					"Menu2"
+				};
+
+	 			class Menu1
+				{
+					text = "Menu 1";
+					items[] = // Second Level Entries
+					{
+						"WebLink"
+					};
+				};
+
+				class Menu2
+				{
+					text = "Menu 2";
+					items[] = // Second Level Entries
+					{
+						"SayHello",
+						"PlayMusic"
+					};
+				};
+
+				class WebLink
+				{
+					text = "Go to Arma 3 Webpage"; // Display name of menu entry
+					picture = "\A3\Ui_f\data\Logos\arma3_white_ca.paa"; // Picture shown in front of text
+					weblink = "https:// arma3.com/"; // Opens a web page in default webbrowser
+					opensNewWindow = 1; // Adds ... after text, indicating that this menu entry will open a new display
+				};
+
+				class SayHello
+				{
+					text = "Say Hello";
+					action = "systemChat 'Hello World!'"; // Code executed when entry is clicked
+				};
+
+				class PlayMusic
+				{
+					text = "Play Music";
+					picture = "\a3\Modules_F_Curator\Data\portraitMusic_ca.paa";
+					action = "playMusic 'Track15_MainTheme'";
+				};
+
+				class Default;
+				class Separator;
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+[[Category: Control Types]]

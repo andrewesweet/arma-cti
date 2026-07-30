@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getCfg
+// revision: 349406 (2023-11-08T16:27:26Z)
+// export sha1: 25ddqdu3h0ifg6ordt4dac2v8fg9fo7
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Configs | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Configs
+
+|descr= Smart-return config (extension for BIS_fnc_getCfgXXXX functions).
+Can by called 2 ways:
+* 1st way - passing config directly
+* 2nd way - passing array of strings or config and strings
+
+|s1= input call [[BIS_fnc_getCfg]]
+
+|p1= input: [[Config]] or [[Array]] - can be [[Config]] path or array of strings with config names
+
+|r1= [[Config]]
+
+|x1= <sqf>( configFile >> "BulletBubbles" >> "BulletBubbles1" ) call BIS_fnc_getCfg;</sqf>
+|x2= <sqf>[configFile >> "BulletBubbles" >> "BulletBubbles1"] call BIS_fnc_getCfg;</sqf>
+|x3= <sqf>[configFile, "BulletBubbles", "BulletBubbles1"] call BIS_fnc_getCfg;</sqf>
+|x4= <sqf>["Hubs", "A1", "QuickStart", "trigger"] call BIS_fnc_getCfg;</sqf>
+|x5= <sqf>["Hubs"] call BIS_fnc_getCfg;</sqf>
+
+|seealso= [[configClasses]] [[configProperties]] [[missionConfigFile]] [[campaignConfigFile]] [[configName]] [[getArray]] [[getText]] [[getNumber]] [[inheritsFrom]] [[isClass]] [[isText]] [[configHierarchy]]
+}}

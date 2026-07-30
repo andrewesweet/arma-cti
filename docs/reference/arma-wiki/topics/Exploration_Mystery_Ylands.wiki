@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Exploration/Mystery_Ylands
+// revision: 259141 (2021-06-06T10:46:10Z)
+// export sha1: jeusyh40fg7o896yymmtd6ogv7auinh
+// Vendored snapshot. Do not edit — re-export instead.
+
+TBD

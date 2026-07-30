@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Armed_Assault_version_1.04
+// revision: 171672 (2020-12-26T08:37:45Z)
+// export sha1: d9mhbyb72zgmd9f2yg0t3as0ck2pfmz
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with Armed Assault version 1.04 may be recognised by the appearance of this icon: {{GVI|arma1|1.04}}
+
+[[Category:Introduced with Armed Assault|1.04]]

@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/getHit
+// revision: 340840 (2023-05-10T13:56:15Z)
+// export sha1: ft03t1mjs26x2myjepxfnx75vhv6mew
+// categories: Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|game2= arma2oa
+|version2= 1.64
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns selection damage. Same as [[getHitPointDamage]], only the argument is selection part instead of hit point.
+{{Feature|informative|Some part names are in Czech; see the [[ArmA: Armed Assault: Selection Translations|translation table]].}}
+
+|s1= vehicle [[getHit]] selection
+
+|p1= vehicle : [[Object]] - vehicle to be queried
+
+|p2= selection: [[String]] - selection part name
+
+|r1= [[Number]] - before {{GVI|arma3|1.94|size= 0.75}}, [[Nothing]] was returned when an invalid ''selection'' was provided (now returns {{hl|0}})
+
+|x1= <sqf>hint str (player getHit "head");</sqf>
+
+|x2= <sqf>private _engineDamage = _car getHit "motor";</sqf>
+
+|seealso= [[setHit]] [[getHitPointDamage]] [[setHitPointDamage]] [[setDamage]] [[damage]] [[getHitIndex]] [[setHitIndex]]
+}}

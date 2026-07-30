@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Apex:_Old_Man
+// revision: 339298 (2023-04-28T14:08:06Z)
+// export sha1: r3dn6brib7xyqk6ydy3ue974c2riqlu
+// categories: Category:Arma 3: DLCs & Expansions
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:arma3apex oldman logo.png|350px|right]]
+
+'''Arma 3 Apex: Old Man''' is a free bonus scenario for [[Arma 3 Apex]] owners. A beta released on December 17th, 2019 as a Steam Workshop Item, and it was later published as '''a part of version 1.98''' on April 14th, 2020.
+
+{{Feature|quote|La mission est sacrée, tu l'exécutes jusqu'au bout et si besoin, en opérations, au péril de ta vie.|The Legionnaire's Code of Honor, Art. 6.}}
+
+Bienvenue, “Old Man”. In this open-world singleplayer scenario, you assume the role of a retired Legionnaire, who – together with a familiar CTRG operative – attempts to avert a catastrophic CSAT power play on the island of [[Tanoa]].
+
+This experimental scenario is a {{Link|link= https://incubator.bohemia.net/|text= Bohemia Incubator}} project developed by [[Bohemia Interactive]]. It is available as free bonus content for everyone who owns the [[Arma 3 Apex]] expansion.
+
+
+=== Key Features ===
+
+* '''Shared Armaverse''' – After the events of the Arma 3 “The East Wind” and “Apex Protocol” campaigns, the South Pacific island nation of Tanoa is hit by yet another humanitarian crisis; a malaria outbreak. When authorities fail to distribute an effective vaccine, a local veteran is tipped off about a possible plot and sets out to uncover the truth.
+* '''Open World''' – Return to the beautiful Horizon Islands and discover their many hidden secrets. Travel by land, sea, or even air – and stay in one of the many shelters to save your progress. Populated by CSAT soldiers, Gendarmerie officers, Syndikat rebels, civilians, and IDAP aid workers, Tanoa draws you right into its long history of conflict and turmoil.
+* '''Sandbox Gameplay''' – “Old Man” presents you with a varied set of objectives, but how you accomplish these is completely up to you. Get creative and make good use of Arma 3’s diverse selection of weapons and explosives. Just remember; all missions are a matter of life and death – so consider your tactics, prepare your loadout, and always have an exit strategy ready.
+* '''Experimental Design''' – Our goal with this scenario is to provide freedom of choice and let real world logic apply to what you can (and cannot) do. At the same time, we have added a few convenience features to keep it fun, such as the option to wait and skip time, and the ability to fast travel between known safe houses. Additionally, you can choose to purchase all equipment directly on the black market – if you have enough money, of course. Lastly, Old Man's reputation system means that your actions can influence your relationship with Syndikat, which in turn determines their support for your cause.
+* '''Free Content''' – This free bonus scenario for [[Arma 3 Apex]] offers '''more than 10 hours of game time'''. It also comes with '''a new static M2 .50 Caliber Machine Gun''', and adds '''new assets''' for community content creators to use, such as a Tanoa CSAT reskin of the Zamak truck, a red beret, malaria-infected civilian characters, and various decals and inventory items. These extras are currently only available as part of this Workshop item but will be added to the Arma 3 base game for free in a future platform update.
+
+
+<gallery>
+File:arma3apex oldman beta screenshot 01.jpg
+File:arma3apex oldman beta screenshot 02.jpg
+File:arma3apex oldman beta screenshot 03.jpg
+File:arma3apex oldman beta screenshot 04.jpg
+File:arma3apex oldman beta screenshot 05.jpg
+</gallery>
+
+
+=== Documentation ===
+
+* [[Arma 3: Old Man Systems]]
+
+
+=== External Links ===
+
+* {{Link|https://arma3.com/news/arma-3-apex-old-man-is-now-available|Full release article (arma3.com)}}
+* {{Link|link= https://steamcommunity.com/sharedfiles/filedetails/?id=1938939381|text= Arma 3 Apex: Old Man on Steam Workshop}} (deprecated - now integrated into the vanilla game)
+* {{Link|https://arma3.com/news/arma-3-apex-old-man-beta-now-available|Beta release article (arma3.com)}}
+
+
+{{GameCategory|arma3|DLCs & Expansions}}

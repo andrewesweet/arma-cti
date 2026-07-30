@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Asset_Previews
+// revision: 367292 (2024-08-09T17:12:29Z)
+// export sha1: sxopgijtaebhq9n7vau10vjafts8ssw
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|Media}}

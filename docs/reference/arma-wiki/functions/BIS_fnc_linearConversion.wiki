@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_linearConversion
+// revision: 341218 (2023-05-13T23:07:03Z)
+// export sha1: bvz5o7mpymfc3jwmogoo42i76cu09cp
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Math | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Math
+
+|descr= Linear conversion of a value from one set to another
+{{Feature|arma3|This function became obsolete with the introduction of [[linearConversion]].}}
+
+|s1=  [[minFrom, maxFrom], value, [minTo, maxTo]] call [[BIS_fnc_linearConversion]]
+
+|p1= minFrom: [[Number]]
+
+|p2= maxFrom: [[Number]]
+
+|p3= value: [[Number]]
+
+|p4= minTo: [[Number]]
+
+|p5= maxTo: [[Number]]
+
+|r1= [[Number]] ''value'' adapted to [''minTo'', ''maxTo''] range
+
+|x1= <sqf>
+[[-50, 50], -50, [0, 1]] call BIS_fnc_linearConversion; // returns 0
+[[-50, 50],   0, [0, 1]] call BIS_fnc_linearConversion; // returns 0.5
+[[-50, 50], +50, [0, 1]] call BIS_fnc_linearConversion; // returns 1
+</sqf>
+
+|seealso= [[linearConversion]]
+}}

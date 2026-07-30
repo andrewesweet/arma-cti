@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/ctrlVisible
+// revision: 348410 (2023-11-08T13:00:06Z)
+// export sha1: hmii25wadd9f03q7fr4yc4jh0gys6lw
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= GUI Control
+
+|arg= local
+
+|descr= Returns if a control of the currently active user dialog is shown or not. Read [[Arma: GUI Configuration]] for more information about user dialogs and controls.
+
+|s1= [[ctrlVisible]]  idc
+
+|p1= idc: [[Number]] - control IDC
+
+|r1= [[Boolean]] - [[true]] if the control is shown, [[false]] if not
+
+|x1= <sqf>_bool = ctrlVisible 100;</sqf>
+
+|seealso= [[ctrlShow]] [[ctrlShown]]
+}}

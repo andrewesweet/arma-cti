@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/actionNow
+// revision: 378711 (2026-06-01T07:27:35Z)
+// export sha1: li40kpp2d0f4jdja8al0aoihfkqgrps
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|eff= global
+
+|gr1= Interaction
+
+|descr= Make a unit perform an action immediately (without any animation/pre-processing). See the [[action]] command for more information.
+
+|s1= unit [[actionNow]] actionArray
+
+|p1= unit: [[Object]]
+
+|p2= actionArray: [[Array]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player actionNow ["TakeBag", _backpack]; // pick up a backpack without any animation</sqf>
+
+|x2= <sqf>player actionNow ["Gear", vehicle player]; // open inventory while in vehicle</sqf>
+
+|seealso= [[action]] [[actionIDs]] [[actionParams]] [[addAction]] [[setUserActionText]] [[inGameUISetEventHandler]] [[showHUD]] [[inputAction]] [[removeAction]] [[removeAllActions]] [[weaponsInfo]]
+}}

@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_version
+// revision: 353287 (2024-03-15T17:03:27Z)
+// export sha1: pjitgl648uv3h2cidh4tvipn7wwpbgd
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Diagnostic
+
+|descr= Detects which '''{{arma2}}''' expansions and addons are available. Only works in {{arma2}}/{{arma2oa}}.
+{{Feature|informative|{{Name|arma2acr}} is not detected by this function.}}
+
+|s1= call [[BIS_fnc_version]]
+
+|r1= [[Array]] of [[Number]]s - can contain:
+* 0: {{arma2}}
+* 1: {{arma2oa}}
+* 2: {{Name|arma2baf}}
+* 4: {{Name|arma2pmc}}
+
+|x1= <sqf>private _availableExpansions = call BIS_fnc_version;</sqf>
+
+|x2= <sqf>private _playerHasPMC = 4 in (call BIS_fnc_version);</sqf>
+
+|seealso= [[productVersion]] [[requiredVersion]]
+}}

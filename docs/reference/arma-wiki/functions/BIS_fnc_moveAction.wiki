@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moveAction
+// revision: 327869 (2022-07-13T11:36:50Z)
+// export sha1: o5cjmsxbeo3bughi8n5vfk6c5qfw69c
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Return current move action (used in [[playAction]], [[playActionNow]] and [[switchAction]])
+
+|s1= [unit, returnConfig] call [[BIS_fnc_moveAction]]
+
+|p1= unit: [[Object]]
+
+|p2= returnConfig: [[Boolean]] - (Optional, default [[false]]) [[true]] to return action config path, [[false]] to return the action name
+
+|r1= [[Config]] or [[String]] - depends on ''returnConfig''
+
+|x1= <sqf>
+_actionName		= [player, false] call BIS_fnc_moveAction;
+_actionConfig	= [player,  true] call BIS_fnc_moveAction;
+</sqf>
+
+|seealso= [[playAction]] [[playActionNow]] [[switchAction]] [[playMove]] [[switchMove]]
+}}

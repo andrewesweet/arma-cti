@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/Category:Vigor
+// revision: 353413 (2024-03-17T21:49:28Z)
+// export sha1: 20r5nzidrplbcslosd7bdwk0jsl5awk
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= vigor_logo.png
+|EAdate=
+|releasedate= 20190808
+|size= 350
+|intro= Outlive the apocalypse, {{vigor}} is a free-to-play looter shooter in post-war Norway. Play for Free on PlayStation, Xbox and Nintendo Switch.
+
+Shoot and loot in tense encounters<br>
+Build your shelter and vital equipment<br>
+Challenge others in various game modes<br>
+Play on your own or fight together
+
+|feature1= '''Loot, shoot, build'''
+** Shoot and loot in tense encounters
+** Build your shelter and vital equipment
+** Challenge others in various game modes
+** Play on your own or fight together
+|feature2= '''Key features'''
+** Multiplayer
+** Online
+** PvP
+** Shooter
+** Looter
+** Building your Shelter
+** Cooperation
+|gallery1= vigor_screenshot-1.jpg
+|gallery2= vigor_screenshot-2.jpg
+|gallery3= vigor_screenshot-3.jpg
+|gallery4= vigor_screenshot-4.jpg
+|trailer= 2noHKNMvKkA
+|start1= {{Link|https://vigorgame.com/|Vigor website}}
+|start2= {{Link|https://vigorgame.com/community|Vigor website - Community}}
+|start3= Buy: <!-- prevents vigor.com in the url to be detected as BI website -->
+: <span class="plainlinks">{{Link|https://www.microsoft.com/store/productid/bql8l17rv09z?cid{{=}}vigor-landing-page|{{Icon|xbox}} Xbox}}<!--
+--> {{Link|https://www.nintendo.com/games/detail/vigor-switch/?utm_source{{=}}vigorgame.com&utm_medium{{=}}website&utm_campaign{{=}}vigor-landing-page|{{Icon|switch}} Switch}}<!--
+--> {{Link|https://store.playstation.com/product/EP2601-CUSA13066_00-VIGORLEADSKU0001?utm_source{{=}}vigorgame.com&utm_medium{{=}}website&utm_campaign{{=}}vigor-landing-page|{{Icon|playstation}} PlayStation}}</span>
+</span>
+|social1= {{Link|https://twitter.com/vigorthegame|Twitter}}
+|social2= {{Link|https://forums.bohemia.net/forums/forum/251-vigor/|Forums}}
+|social3= {{Link|https://www.reddit.com/r/Vigor/|Reddit}}
+}}

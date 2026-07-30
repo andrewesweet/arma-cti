@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_GUI_Control_-_HTML
+// revision: 169093 (2020-10-19T14:25:23Z)
+// export sha1: gr04gg885gn3fx78fskone5zewepwrj
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands specifically to change font settings of [[DialogControls-Text#CT_HTML=9|HTML / CT_HTML]] control.
+
+[[Category:Command Group: GUI Control]]

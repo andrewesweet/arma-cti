@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_laptopInit
+// revision: 364479 (2024-05-16T20:41:56Z)
+// export sha1: q071i55tgfwlervkeuiqog3f5l1j8kd
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Easter Eggs | Category:Function Group: Scripts | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= Scripts
+
+|arg= global|eff= local
+
+|descr= Adds an [[:Category:Easter Eggs|Easter egg]] to the laptop, that is active only if the mission date is set to '''2001-06-22'''.
+{{Feature|informative|Best used with the Old Laptop.}}
+
+|s1= laptop call [[BIS_fnc_laptopInit]]
+
+|p1= laptop: [[Object]]
+
+|r1= [[Nothing]] or [[Number]] (action ID)
+
+|x1= <sqf>private _actionId = _myLaptop call BIS_fnc_laptopInit;</sqf>
+
+|seealso= [[BIS_fnc_laptopPlayVideo]]
+}}
+
+[[Category:Easter Eggs]]
+
+{{Note
+|user= Poslovitch
+|timestamp= 20200422192900
+|text= On '''{{arma3}} 1.98.146303''':
+* As specified in the description, if the mission's date is not set to 2001-06-22, this function won't have any effects.
+* If the mission's date is set to 2001-06-22, there is no need to call this function on Old Laptops. The hold action is already applied to them on mission start.
+* This function does not have any effects on (open variants of) modern laptops (Land_Laptop_unfolded_F, Land_Laptop_device_F, Land_Laptop_Intel_01_F, Land_Laptop_Intel_02_F, Land_Laptop_Intel_03_F), except for Rugged laptops (Land_Laptop_03_sand_F, Land_Laptop_03_black_F, Land_Laptop_03_olive_F): the hold action is available and, when completed, causes the laptops to become graphically glitched and to use the Easter Egg video as their textures.
+}}

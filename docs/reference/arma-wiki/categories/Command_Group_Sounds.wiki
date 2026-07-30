@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Sounds
+// revision: 308244 (2022-02-05T22:30:58Z)
+// export sha1: 044t9x15zyhd7he6t4d3zfozga3xrys
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands by Functionality]]
+Control in-game sounds.

@@ -1,0 +1,147 @@
+// source: https://community.bistudio.com/wiki/Template:Infobox/Terrain
+// revision: 376419 (2025-10-12T01:02:04Z)
+// export sha1: latavfqjvcjdzmak7gtron11h4ei5wq
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div class="float-right">
+{| class="wikitable mw-collapsible"
+! colspan="2" | {{#if:{{{wbLink|}}}|{{Link|{{{wbLink}}}|{{{name|{{PAGENAME}}}}}}}|{{{name|{{PAGENAME}}}}}}}
+|-
+{{#if:{{{image|}}}
+|<nowiki/>
+{{!}} colspan="2" class="align-center" {{!}} {{{image}}}
+{{!}}-
+}}
+! colspan="2" {{!}} General
+{{!}}-
+{{#if:{{{defaultDateTime|}}}
+|<nowiki/>
+! Default date/time
+{{!}} {{{defaultDateTime}}}
+{{!}}-
+}}{{#if:{{{season|}}}
+|<nowiki/>
+! Season
+{{!}} {{{season}}}
+{{!}}-
+}}{{#if:{{{landArea|}}}
+|<nowiki/>
+! Terrain surface
+{{!}} {{{landArea}}}
+{{!}}-
+}}{{#if:{{{totalArea|}}}
+|<nowiki/>
+! World surface
+{{!}} {{{totalArea}}}
+{{!}}-
+}}{{#if:{{{minMaxAltitude|}}}
+|<nowiki/>
+! Min/max altitude
+{{!}} {{{minMaxAltitude}}}
+{{!}}-
+}}{{#if:{{{coords|}}}
+|<nowiki/>
+! In-game coordinates
+{{!}} {{{coords}}}
+{{!}}-
+}}{{#if:{{{dimensions|}}}{{{resolution|}}}{{{basedOn|}}}
+|<nowiki/>
+! colspan="2" {{!}} Technical
+{{!}}-
+	{{#if:{{{dimensions|}}}
+	|<nowiki/>
+	! Dimensions
+	{{!}} {{{dimensions}}}
+	{{!}}-
+	}}{{#if:{{{resolution|}}}
+	|<nowiki/>
+	! Resolution
+	{{!}} {{{resolution}}}
+	{{!}}-
+	}}{{#if:{{{basedOn|}}}
+	|<nowiki/>
+	! Based on
+	{{!}} {{{basedOn}}}
+	{{!}}-
+	}}
+}}
+|}</div></includeonly><noinclude>{{Doc/Template
+
+|descr= Describes a game terrain.
+
+|param1= name
+|descr1= Terrain name
+
+|param2= wbLink
+|descr2= {{Link|Arma Reforger:World Editor}} link to the terrain
+
+|param3= image
+|descr3= (Optional) image
+
+|param4= defaultDateTime
+|descr4= (Optional) terrain's default date and time
+
+|param5= season
+|descr5= (Optional) terrain's current season
+
+|param6= landArea
+|descr6= (Optional) land area surface
+
+|param7= totalArea
+|descr7= (Optional) total area surface
+
+|param8= minMaxAltitude
+|descr8= min and max altitude
+
+|param9= coords
+|descr9= (Optional) in-game geographic coordinates
+
+|param10= dimensions
+|descr10= (Optional) in-game dimensions (e.g 4096x4096m)
+
+|param11= resolution
+|descr11= (Optional) terrain resolution (e.g 2m for a 2x2m cell)
+
+|param12= basedOn
+|descr12= (Optional) real-life location on which it is based
+<!--
+
+-->
+|example1= <nowiki>{{Infobox/Terrain}}</nowiki>
+|result1= {{Infobox/Terrain}}
+
+|example2= <nowiki>{{Infobox/Terrain|name= Nogova}}</nowiki>
+|result2= {{Infobox/Terrain|name= Nogova}}
+
+|example3= <nowiki>{{Infobox/Terrain|defaultDateTime= 1985-05-10 07:30:00}}</nowiki>
+|result3= {{Infobox/Terrain|defaultDateTime= 1985-05-10 07:30:00}}
+
+|example4= <pre>{{Infobox/Terrain
+|name= Arland
+|wbLink= enfusion://WorldEditor/worlds/Arland/Arland.ent
+|image= [[File:armareforger_arland-1.jpg|300px]]
+|defaultDateTime= 1989-08-20 12:00:00
+|season= Summer
+|coords= {{Link|https://www.google.com/maps/?q{{=}}47.411%20N%2027.184%20W|47.411&amp;nbsp;N<br>27.184&amp;nbsp;W}}
+|landArea= 6.38&amp;nbsp;km&amp;sup2; (1&amp;nbsp;m step)
+|totalArea= 16.78&amp;nbsp;km&amp;sup2;
+|minMaxAltitude= min. -163&amp;nbsp;m<br>max 148.38&amp;nbsp;m
+|dimensions= 4096&amp;nbsp;m &amp;times; 4096&amp;nbsp;m
+|resolution= 2&amp;nbsp;m
+|basedOn= {{n/a}}
+}}</pre>
+|result4= {{Infobox/Terrain
+|name= Arland
+|wbLink= enfusion://WorldEditor/worlds/Arland/Arland.ent
+|image= [[File:armareforger_arland-1.jpg|300px]]
+|defaultDateTime= 1989-08-20 12:00:00
+|season= Summer
+|coords= {{Link|https://www.google.com/maps/?q{{=}}47.411%20N%2027.184%20W|47.411&nbsp;N<br>27.184&nbsp;W}}
+|landArea= 6.38&nbsp;km&sup2; (1&nbsp;m step)
+|totalArea= 16.78&nbsp;km&sup2;
+|minMaxAltitude= min. -163&nbsp;m<br>max 148.38&nbsp;m
+|dimensions= 4096&nbsp;m &times; 4096&nbsp;m
+|resolution= 2&nbsp;m
+|basedOn= {{n/a}}
+}}
+}}</noinclude>

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_feedbackMain
+// revision: 327275 (2022-07-12T22:11:51Z)
+// export sha1: i5zaf1m80uho1jig8a6erwsfdrjuei3
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Feedback | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Feedback
+
+|descr= Main feedback [[FSM]], used for feedback effects (fatigue, drowning, injury etc.). Internal use only.
+
+|s1= [] call [[BIS_fnc_feedbackMain]]
+
+|p1=
+
+|r1= [[Number]]? ([[execFSM]])
+
+|x1= <sqf>[] call BIS_fnc_feedbackMain;</sqf>
+
+|seealso= [[FSM]] [[:Category:Function Group: Feedback|Feedback Function Group]]
+}}

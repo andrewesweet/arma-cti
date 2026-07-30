@@ -1,0 +1,99 @@
+// source: https://community.bistudio.com/wiki/Code_vs._Strings
+// revision: 378168 (2026-03-02T16:50:28Z)
+// export sha1: og9ybh60wr3szw2ba72p2xh6io6ci7c
+// categories: Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+Since {{arma1}} the convention to use quotation marks for [[String]]s and curly braces for [[Code]] has been formalised.
+Some "exceptions" exist, for example with [[onMapSingleClick]] and [[onDoubleClick]] that take [[String]] as [[Code]].<br>
+When scripting, {{hl|'abc'}} or {{hl|"abc"}} generally indicates a [[String]] data type, and brackets {{hl|{ }<nowiki/>}} indicate [[Code]] data type.
+
+In {{ofp}}, many language constructs (including [[forEach]]) use the concept of "code strings".
+Code is passed as a string to them and they interpret it as code if they wish.<br>Since {{GVI|ofp|1.85}}, [[Code]] is also accepted.
+<sqf>
+// {{ofp}} / {{arma1}} only!
+"_x setDammage 1" forEach _units;
+
+// from {{ofp}} v1.85+ up to {{arma3}}
+{ _x setDamage 1 } forEach _units;
+</sqf>
+
+
+== Code to String / String to Code ==
+
+<sqf>
+_code = { hint "Hello there (code)"; };
+_string = "hint 'Hello there (string)';";
+
+_stringCode = compile _string;	// from string to code ({{arma1}} v1.00)
+_codeString = toString _code;	// from code to string ({{arma3}} v2.02)
+</sqf>
+
+
+== Code Commands ==
+
+'''Code commands''' are any commands from the scripting language expecting a coded statement string as one of their parameters.
+Earlier engines accepted code as such when it was provided as a [[String]] using quotation marks, ''or'' using braces.
+Since {{arma1}} the engine '''specifically''' requires braces.
+Thus, because the way the engine determines whether it is dealing with code has changed, this list is presented here.
+
+Commands passed as [[Code]] data type: (as of {{GVI|arma3|2.02}})
+{{Columns|3|
+* [[&&]]
+* [[a or b|<nowiki/>||]]
+* [[addPublicVariableEventHandler]]
+* [[and]]
+* [[apply]]
+* [[call]]
+* [[catch]]
+* [[collect3DENHistory]]
+* [[count]]
+* [[default]]
+* [[deleteAt]]
+* [[do]]
+* [[else]]
+* [[exitWith]]
+* [[findIf]]
+* [[forEachMemberAgent]]
+* [[forEachMemberTeam]]
+* [[forEachMember]]
+* [[forEach]]
+* [[for]]
+* [[get]]
+* [[if]]
+* [[in]]
+* [[isFinal]]
+* [[isNil]]
+* [[onCommandModeChanged]]
+* [[onEachFrame]]
+* [[onGroupIconClick]]
+* [[onGroupIconOverEnter]]
+* [[onGroupIconOverLeave]]
+* [[onHCGroupSelectionChanged]]
+* [[onMapSingleClick]]
+* [[onPlayerConnected]]
+* [[onPlayerDisconnected]]
+* [[onPreloadFinished]]
+* [[onPreloadStarted]]
+* [[onTeamSwitch]]
+* [[or]]
+* [[select]]
+* [[spawn]]
+* [[switch]]
+* [[then]]
+* [[toString]]
+* [[try]]
+* [[waitUntil]]
+* [[while]]
+* [[with]]
+}}
+
+
+== String Commands ==
+
+Commands passed as [[String]] data type:
+* map [[onDoubleClick]] "[[Code]]"
+* map [[onMapSingleClick]] "[[Code]]"
+
+
+[[Category: Scripting Topics]]

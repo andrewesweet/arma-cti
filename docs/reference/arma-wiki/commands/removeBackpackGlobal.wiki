@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/removeBackpackGlobal
+// revision: 364902 (2024-06-29T14:38:36Z)
+// export sha1: dtgs90u20rxdyrhwzpe4c11562ntwq5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|arg= global
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Removes backpack from a unit. (even non-local)
+
+|s1= [[removeBackpackGlobal]] unit
+
+|p1= unit: [[Object]] - soldier
+
+|r1= [[Nothing]]
+
+|x1= <sqf>removeBackpackGlobal player;</sqf>
+
+|seealso= [[removeBackpack]] [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2016-05-08 - 18:00 (UTC)</dd>
+<dt class="note">[[User:Nelis75733126|Nelis75733126]]</dt>
+<dd class="note">
+Because of AG (Arguments Global), you can use this command to remove the backpack from UNITS that are local as well as REMOTE.
+<sqf>removeBackpackGlobal UNIT;</sqf> where UNIT can be a local and/or REMOTE player and/or AI
+</dd>
+
+</dl>

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_missionRespawnType
+// revision: 327021 (2022-07-12T21:44:45Z)
+// export sha1: kdr3uwtltywe0kjnrgduw9yusrxaxd7
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Return respawn type defined in [[Description.ext]]. Can return as [[Number]] (e.g 1) or [[String]] (e.g "BIRD").
+
+|s1= type call [[BIS_fnc_missionRespawnType]]
+
+|p1= type: [[Number]] or [[String]] - wanted return value type
+
+|r1= [[Number]] or [[String]] - return type depends on ''type''
+
+|x1= <sqf>private _respawnAsNumber = 0 call BIS_fnc_missionRespawnType;</sqf>
+
+|x2= <sqf>private _respawnAsString = "" call BIS_fnc_missionRespawnType;</sqf>
+
+|seealso= [[Arma 3: Respawn]] [[Arma 3: Respawn]] [[:Category:Function_Group:_Respawn|Respawn Function Group]]
+}}

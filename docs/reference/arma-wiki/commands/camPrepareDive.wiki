@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/camPrepareDive
+// revision: 352190 (2024-02-01T23:25:57Z)
+// export sha1: h8ublreoxjh6ow7gefizfuje1h8x19k
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Command Group: Camera Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Broken Commands
+|gr2= Camera Control
+
+|descr= Prepares the camera dive angle. 
+{{Feature|warning|This command is '''non-functional'''!}}
+
+|s1= camera [[camPrepareDive]] dive
+
+|p1= camera: [[Object]]
+|p2= dive: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_camera camPrepareDive -0.1;</sqf>
+
+|seealso= [[camPreload]] [[camCommitPrepared]]
+}}

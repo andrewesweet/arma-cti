@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/saveVar
+// revision: 340971 (2023-05-13T22:02:54Z)
+// export sha1: rxye8bokj5tz7y4wyhkabildqsv6pet
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Variables
+
+|descr= Save variable value into the campaign space.
+This variable is available to all following missions in the campaign.
+
+|s1= [[saveVar]] varname
+
+|p1= varname: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>saveVar "varOne";</sqf>
+
+|seealso= [[isNil]] [[missionNamespace]] [[saveStatus]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2009-01-28 - 22:56 (CET)</dd>
+<dt class="note">[[User:Wolfrug|Wolfrug]]</dt>
+<dd class="note">If you try to saveVar a vehicle saved in your variable (SavedVars = [Car1]; saveVar "SavedVars"), then Car1 will not be properly "saved", refering to ObjNull if you try to use it in subsequent missions, even if a vehicle with the same vehicle varname exists. To get around this, save the vehicle's varname as a string (SavedVars = [str(Car1)]) and then when you need it just use call compile to "unstring" the varname (_car = call compile (SavedVars select 0);).
+</dd>
+
+</dl>

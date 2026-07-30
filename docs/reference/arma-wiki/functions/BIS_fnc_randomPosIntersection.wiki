@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_randomPosIntersection
+// revision: 349156 (2023-11-08T14:49:50Z)
+// export sha1: e3dfk5q2hx52vwxyxt42jcqlcjqdb4i
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Geometry | Category:Function Group: Positions | Category:Functions | Category:Introduced with Arma 3 version 1.82 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.82
+
+|gr1= Positions
+
+|gr2= Geometry
+
+|descr= Returns random 2D position inside the intersection of two circles. [-1,-1] is returned if the circles do not intersect.
+
+|s1= [firstCircle, secondCircle, positioning1, positioning2] call [[BIS_fnc_randomPosIntersection]]
+
+|p1= firstCircle: [[Object]], [[String]] or [[Array]] - first circle. Can be a trigger, a marker or an array in form 
+*0: [[Array]] - circleCenter
+**0: [[Number]] - coordinate X
+**1: [[Number]] - coordinate Y
+*1: [[Number]] - radius
+
+|p2= secondCircle: [[Object]], [[String]] or [[Array]] - second circle. Same as above.
+
+|p3= positioning1: [[Number]] - (Optional, default -1) if a value between 0 and 1 is passed (0 and 1 included), then a gaussian distribution is used. This will influence the random position along the axis which connects the two circles' centers. A lower value means the position will be close to the first circle
+
+|p4= positioning2: [[Number]] - (Optional, default -1) if a value between 0 and 1 is passed (0 and 1 included), then a gaussian distribution is used. This will influence the random position along the axis perpendicular to the axis which connects the two circles' centers
+
+|r1= [[Array]] - 2D Position
+
+|x1= <sqf>[trigger1, trigger2, 0.75, 0.75] call BIS_fnc_randomPosIntersection;</sqf>
+
+|seealso=
+}}

@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/Template:Link/Hash
+// revision: 351389 (2023-12-01T20:07:19Z)
+// export sha1: ttycxhezwunpa5bjm3j3l8k2hzi14lm
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+	| [[{{{1}}}{{!}}{{#if:{{{2|}}}
+		| {{{2}}}
+		| {{#ifeq:{{#pos:{{Trim|{{{1}}}}}|#}}|0
+			| {{#replace:{{#sub:{{Trim|{{{1}}}}}|1}}|#|&#35;}}
+			| {{#ifeq: {{NAMESPACENUMBER}} | {{NAMESPACENUMBER:{{#explode:{{Trim|{{{1}}}}}|#|0|0|2}}}}
+				| {{#explode:{{Trim|{{PAGENAME:{{#replace:{{{1}}}|:Category|Category}}}}}}|#|0|0|2}} - {{#explode:{{Trim|{{{1}}}}}|#|1|2}}
+				| {{#explode:{{Trim|{{#replace:{{{1}}}|:Category|Category}}}}|#|0|0|2}} - {{#explode:{{Trim|{{{1}}}}}|#|1|2}}
+			}}
+		}}
+	}}]]
+| -no link specified-
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Creates an auto-formatted hash link (e.g {{hl|#value}} or {{hl|page#anchor}}).
+|param1= hashLink
+|descr1= wiki hash link, e.g {{hl|#toc}} or {{hl|Arma 3#Key features}}
+|param2= text
+|descr2= display text
+|example1= <nowiki>{{Link/Hash}}</nowiki>
+|result1= {{Link/Hash}}
+|example2= <nowiki>{{Link/Hash|setDir}}</nowiki>
+|result2= {{Link/Hash|setDir}}
+|example3= <nowiki/>
+<nowiki>{{Link/Hash|#toc}}</nowiki><br>
+<nowiki>{{Link/Hash|#Multipart Hashlink}}</nowiki>
+|result3= {{Link/Hash|#toc}}<br>{{Link/Hash|#Multipart Hashlink}}
+|example4= <nowiki>{{Link/Hash|#Multipart Hashlink|Display text}}</nowiki>
+|result4= {{Link/Hash|#Multipart Hashlink|Display text}}
+|example5= <nowiki>{{Link/Hash|Arma_3#Key_features}}</nowiki><br><nowiki>{{Link/Hash|Arma 3#Key features}}</nowiki>
+|result5= {{Link/Hash|Arma_3#Key_features}}<br>{{Link/Hash|Arma 3#Key features}}
+|example6= <nowiki>{{Link/Hash|Arma 3#Key features|A3's Key Features}}</nowiki>
+|result6= {{Link/Hash|Arma 3#Key features|A3's Key Features}}
+|example7= <nowiki/>
+<nowiki>.{{Link/Hash|Arma 3#Key features}}.</nowiki><br>
+<nowiki>{{Link/Hash|##if}}</nowiki><br>
+<nowiki>{{Link/Hash|##if#then##else}}</nowiki><br>
+<nowiki>{{Link/Hash|PreProcessor Commands##if}}</nowiki><br>
+<nowiki>{{Link/Hash|CT_LISTNBOX#BIS_fnc_initList example}}</nowiki><br>
+<nowiki>{{Link/Hash|:Category:Community Tools#Code Edition}}</nowiki><br>
+<nowiki>{{Link/Hash|Arma Reforger:Server Hosting#Dedicated Server}}</nowiki><br>
+<nowiki>{{Link/Hash|Template:Link#Usage}}</nowiki>
+|result7= <nowiki/>
+.{{Link/Hash|Arma 3#Key features}}.<br>
+{{Link/Hash|##if}}<br>
+{{Link/Hash|##if#then##else}}<br>
+{{Link/Hash|PreProcessor Commands##if}}<br>
+{{Link/Hash|CT_LISTNBOX#BIS_fnc_initList example}}<br>
+{{Link/Hash|:Category:Community Tools#Code Edition}}<br>
+{{Link/Hash|Arma Reforger:Server Hosting#Dedicated Server}}<br>
+{{Link/Hash|Template:Link#Usage}}
+}}</noinclude>

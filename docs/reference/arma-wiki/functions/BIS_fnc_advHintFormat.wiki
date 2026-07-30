@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_advHintFormat
+// revision: 363518 (2024-04-02T15:08:52Z)
+// export sha1: hf56i3i6g2uwqbvkzdof617y9jcshba
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Return formatted texts of a CfgHints hint.
+
+|s1= [topic,hint,subHint,colour] call [[BIS_fnc_advHintFormat]]
+
+|p1= topic: [[String]] - topic
+
+|p2= hint: [[String]] - hint
+
+|p3= subHint: [[String]] - sub-hint
+
+|p4= colour: [[Array]] - custom highlight color
+
+|r1= [[Array]] - array in format:
+*0: [[Config]] - Hint path
+*1: [[String]] - Display name
+*2: [[String]] - Display name (short)
+*3: [[String]] - Description
+*4: [[String]] - Tip
+*5: [[String]] - Image
+*6: [[Number]] - DLC ID
+*7: [[Boolean]] - [[true]] if hint belongs to non-owned DLC
+
+|x1= <sqf>["Arma3","Feedback","",[0.5,0.3,0.6,1]] call BIS_fnc_advHintFormat;</sqf>
+
+|seealso= [[BIS_fnc_advHint]] [[BIS_fnc_advHintArg]] [[BIS_fnc_advHintCall]]
+}}

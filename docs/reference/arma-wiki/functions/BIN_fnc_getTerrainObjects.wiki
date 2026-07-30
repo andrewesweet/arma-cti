@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_getTerrainObjects
+// revision: 309520 (2022-05-05T12:06:43Z)
+// export sha1: q00i8ru7gk0ajfmvc2y8tu0tg8yig80
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Collisions | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Collisions 
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Returns terrain objects of the given type for the given area dimensions
+		
+	Parameter(s):
+		0: ARRAY - area details in Area format (see BIS_fnc_getArea)
+		1: ARRAY - types of terrain objects, for example ["HOUSE", "TREE"]
+
+	Returns:
+		ARRAY of objects
+		
+	Example:
+		["myArea", [player, 100], ["HOUSE", "TREE"]] call BIN_fnc_getTerrainObjects
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_getTerrainObjects]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_getTerrainObjects;</sqf> -->
+
+|seealso=
+}}

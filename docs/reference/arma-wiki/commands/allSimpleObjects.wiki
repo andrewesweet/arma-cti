@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/allSimpleObjects
+// revision: 377075 (2026-01-01T09:37:55Z)
+// export sha1: jpyu3yn1ovieswr1fuohqvse28is84i
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Object Detection
+
+|descr= Returns array of all simple objects that belong to the listed class names. If the array of types is empty [], all simple objects are returned including those without class name.
+{{Feature|informative|
+* There is no inheritance in simple objects, so only exact class match is allowed.
+* ''className'' is not case sensitive.
+}}
+
+|s1= [[allSimpleObjects]] classes
+
+|p1= classes: [[Array]] of [[String]]s - classnames array. Use {{hl|[]}} to return all simple objects
+
+|r1= [[Array]] of [[Object]]s - all [[createSimpleObject|simple objects]]
+
+|x1= <sqf>private _boxesAndChairs = allSimpleObjects ["Box_NATO_Equip_F", "Land_CampingChair_V2_F"];</sqf>
+
+|x2= <sqf>private _allSimpleObjects = allSimpleObjects [];</sqf>
+
+|seealso= [[createSimpleObject]] [[isSimpleObject]] [[nearestObjects]] [[nearObjectsReady]] [[nearObjects]] [[nearestObject]] [[createVehicle]]
+}}

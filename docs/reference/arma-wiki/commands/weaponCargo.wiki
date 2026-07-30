@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/weaponCargo
+// revision: 310284 (2022-05-05T13:11:26Z)
+// export sha1: ev7h6feggzhpmsqd8xek2puma68e1ip
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Command Group: Unit Inventory | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Vehicle Inventory
+
+|gr2= Unit Inventory
+
+|gr3= Containers
+
+|descr= Get array with weapons from ammo box (or any general weapon holder container).
+
+|s1= [[weaponCargo]] box
+
+|p1= box: [[Object]]
+
+|r1= [[Array]] of [[String]] - list of present classes
+
+|x1= <sqf>hint str weaponCargo backpackContainer player;</sqf>
+
+|seealso= [[getWeaponCargo]] [[addWeaponCargo]] [[addWeaponCargoGlobal]] [[clearWeaponCargo]] [[clearWeaponCargoGlobal]] [[magazineCargo]] [[itemCargo]]
+}}

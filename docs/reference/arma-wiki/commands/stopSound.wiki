@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/stopSound
+// revision: 376804 (2025-11-21T13:58:54Z)
+// export sha1: g9tejxum0neubg6t8qss0zlgfkeorm8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|eff= local
+
+|gr1= Sounds
+
+|descr= Terminates the given sound
+
+|s1= [[stopSound]] id
+
+|p1= id: [[Number]] - id returned by [[playSoundUI]] and [[playSound3D]] commands{{Feature|important|Sound ids are '''local'''.}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>stopSound 10;</sqf>
+
+|seealso= [[playSoundUI]] [[playSound3D]] [[soundParams]]
+}}

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/activateKey
+// revision: 341303 (2023-05-20T20:40:03Z)
+// export sha1: kf8mqz5vgv7f1j55eu688ish2edbg08
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Mission Information
+
+|descr= Activates the given keyname for the current user profile. The keys are used to unlock missions or campaigns.
+See <syntaxhighlight lang="cpp" inline>keys</syntaxhighlight>, <syntaxhighlight lang="cpp" inline>keysLimit</syntaxhighlight> and <syntaxhighlight lang="cpp" inline>doneKeys</syntaxhighlight> in the [[Description.ext#Mission Keys]] chapter.
+
+|s1= [[activateKey]] keyname
+
+|p1= keyname: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>activateKey "Mission04Key";</sqf>
+
+|seealso= [[deActivateKey]] [[isKeyActive]]
+}}

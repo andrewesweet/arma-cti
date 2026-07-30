@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/briefingName
+// revision: 310777 (2022-05-07T20:21:45Z)
+// export sha1: e979hctvoi8lmr9zz02n9riqg2y4x9x
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+
+|gr1= Briefing
+
+|descr= Returns the name of the current briefing/scenario name.
+
+|s1= [[briefingName]] 
+
+|r1= [[String]]
+
+|x1= <sqf>_name = briefingName;</sqf>
+
+|seealso= [[missionName]] [[worldName]] [[serverName]] [[worldSize]]
+}}

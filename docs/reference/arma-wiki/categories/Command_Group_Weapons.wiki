@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Weapons
+// revision: 163494 (2020-09-27T14:13:12Z)
+// export sha1: 5j826zke2dtczvaj7z9joyn46jwylaz
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to manipulate weapons. For example fire at a target or check if weapon is lowered. In order to retrieve a unit's or vehicle's weapon see [[:Category: Command Group: Unit Inventory| Command Group: Unit Inventory]] and [[:Category: Command Group: Vehicle Inventory| Command Group: Vehicle Inventory]].
+
+[[Category:Scripting Commands by Functionality]]

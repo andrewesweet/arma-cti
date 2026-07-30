@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/addItemPool
+// revision: 318565 (2022-05-13T09:21:06Z)
+// export sha1: lysqjqjr0ynee34mrrwy4qmol8wkkik
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapon Pool | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|gr1= Weapon Pool
+
+|descr= Adds count items of type name into the weapon pool (used in the campaign to transfer items to the next mission)
+
+|s1= [[addItemPool]] [itemName, count]
+
+|p1= itemName: [[String]] - item name
+
+|p2= count: [[Number]] - number of items to add
+
+|r1= [[Nothing]]
+
+|x1= <sqf>addItemPool ["ItemGPS", 5];</sqf>
+
+|seealso= [[clearItemPool]]
+}}

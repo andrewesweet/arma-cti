@@ -1,0 +1,876 @@
+// source: https://community.bistudio.com/wiki/Post_Process_Effects
+// revision: 378536 (2026-05-04T12:07:41Z)
+// export sha1: iscgbjn5xesx690psn72lkdt1tlr7ka
+// categories: Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Scripting Commands ==
+
+{{Columns|4|
+* [[ppEffectCreate]]
+* [[ppEffectAdjust]]
+* [[ppEffectEnable]]
+* [[ppEffectEnabled]]
+* [[ppEffectForceInNVG]]
+* [[ppEffectCommit]]
+* [[ppEffectCommitted]]
+* [[ppEffectDestroy]]
+}}
+
+
+== Usage ==
+
+=== Effect Creation ===
+
+<sqf>
+_handle = ppEffectCreate ["effect_type", priority];
+_handlesArray = ppEffectCreate [["effect_type0", priority0], ["effect_type1", priority1], /* ... */];
+</sqf>
+
+=== Effect Cancellation ===
+
+<sqf>
+ppEffectDestroy handle;
+ppEffectDestroy handlesArray;
+</sqf>
+
+=== Effect Disabling ===
+Compared to the effect cancellation, in this case the effect is just disabled but still exists
+<sqf>
+_handle ppEffectEnable false;
+</sqf>
+
+=== Effect Fade out ===
+Rather than disabling the effect completely at once, it is possible to use ppEffectAdjust to fade it out over time
+<sqf>
+//after having created and used effect:
+//set the parameters for the effect back to the default values
+"colorCorrections" ppEffectAdjust [1,1,0,[0,0,0,0],[1,1,1,1],[0.299, 0.587, 0.114, 0],[-1,-1,0,0,0,0,0]];
+//then commit and fade out over given time (10 seconds)
+"colorCorrections" ppEffectCommit 10;
+//Disable completely after fadeout
+"colorCorrections" ppEffectEnable false;
+</sqf>
+
+=== Parameter Setup ===
+
+<sqf>handle ppEffectAdjust [par0, par1, /* ... */, parN];</sqf>
+
+=== Parameter application ===
+
+<sqf>
+handle ppEffectCommit _duration;
+handlesArray ppEffectCommit _duration;
+</sqf>
+
+=== Effect Permission ===
+
+<sqf>
+handle ppEffectEnable _OnOrOff;
+handlesArray ppEffectEnable _OnOrOff;
+</sqf>
+
+{{ArgTitle|3|Check if Enabled|{{GVI|arma3|1.56}}}}
+
+<sqf>ppEffectEnabled handle;</sqf>
+
+=== Example ===
+
+<sqf>
+_handle = ppEffectCreate ["colorCorrections", 1501];
+_handle ppEffectEnable true;
+_handle ppEffectAdjust [1.0, 1.0, 0.0, [1.0, 0.1, 1.0, 0.75], [0.0, 1.0, 1.0, 1.0], [0.199, 0.587, 0.114, 0.0]];
+_handle ppEffectCommit 0;
+sleep 10;
+ppEffectDestroy _handle;
+</sqf>
+
+== Table of Priorities ==
+
+Priority defines sequence in which post effects are applied. The higher priority, the later the effect will be applied, on top of the others.
+
+{| class="wikitable sortable"
+! Base Priority !! Effect
+|-
+| 2500 || [[#ColorInversion|ColorInversion]]
+|-
+| 2000 || [[#FilmGrain|FilmGrain]]
+|-
+| 1500 || [[#ColorCorrections|ColorCorrections]]
+|-
+| 400 || [[#DynamicBlur|DynamicBlur]]
+|-
+| 300 || [[#WetDistortion|WetDistortion]]
+|-
+| 200 || [[#ChromaticAberration|ChromaticAberration]]
+|-
+| 100 || [[#RadialBlur|RadialBlur]]
+|-
+| 0 || [[#SSAO|SSAO]]
+|-
+| 0 || [[#Resolution|Resolution]]
+|}
+
+
+== Parameters of Individual Effects ==
+
+=== RadialBlur ===
+
+Title: "RadialBlur"; Base Priority: 100
+
+{{Feature|informative|RadialBlur will not do anything if RADIAL BLUR is disabled in Video Options}}
+
+{| class="wikitable"
+! Parameter !! Meaning !! Type !! Range !! Defaults
+|-
+| powerX || relative blur degree on axis X || float || 0... || 0.01
+|-
+| powerY || relative blur degree on axis Y || float || 0... || 0.01
+|-
+| offsetX || relative size X of un-blurred centre || float || 0... || 0.06
+|-
+| offsetY || relative size Y of un-blurred centre || float || 0... || 0.06
+|}
+
+Syntax:
+<sqf>_radialBlurHandle ppEffectAdjust [powerX, powerY, offsetX, offsetY];</sqf>
+
+Defaults:
+<sqf>_radialBlurHandle ppEffectAdjust [0.01, 0.01, 0.06, 0.06];</sqf>
+
+Example:
+<sqf>
+["RadialBlur", 100, [100, 0.5, 0.1, 0.5]] spawn
+{
+	params ["_name", "_priority", "_effect", "_handle"];
+	while {
+		_handle = ppEffectCreate [_name, _priority];
+		_handle < 0
+	} do {
+		_priority = _priority + 1;
+	};
+	_handle ppEffectEnable true;
+	_handle ppEffectAdjust _effect;
+	_handle ppEffectCommit 5;
+	waitUntil { ppEffectCommitted _handle };
+	systemChat "admire effect for a sec";
+	uiSleep 3;
+	_handle ppEffectEnable false;
+	ppEffectDestroy _handle;
+};
+</sqf>
+
+=== ChromAberration ===
+
+Title "ChromAberration"; Base Priority: 200
+
+{| class="wikitable"
+! Parameter !! Meaning !! Type !! Range !! Defaults
+|-
+| aberrationPowerX || relative effect strength (sample spacing from each other) axis X || float || 0... || 0.005
+|-
+| aberrationPowerY || relative effect strength (sample spacing from each other) axis Y || float || 0... || 0.005
+|-
+| aspectCorrection || enable/disable correction according to screen aspect ratio || bool || true, false || false
+|}
+
+Syntax:
+<sqf>_chromaticAberrationHandle ppEffectAdjust [aberrationPowerX, aberrationPowerY, aspectCorrection];</sqf>
+
+Defaults:
+<sqf>_chromaticAberrationHandle ppEffectAdjust [0.005, 0.005, false];</sqf>
+
+Example:
+<sqf>
+["ChromAberration", 200, [0.05, 0.05, true]] spawn {
+	params ["_name", "_priority", "_effect", "_handle"];
+	while {
+		_handle = ppEffectCreate [_name, _priority];
+		_handle < 0
+	} do {
+		_priority = _priority + 1;
+	};
+	_handle ppEffectEnable true;
+	_handle ppEffectAdjust _effect;
+	_handle ppEffectCommit 5;
+	waitUntil { ppEffectCommitted _handle };
+	systemChat "admire effect for a sec";
+	uiSleep 3;
+	_handle ppEffectEnable false;
+	ppEffectDestroy _handle;
+};
+</sqf>
+
+=== WetDistortion ===
+
+Title: "WetDistortion"; Base Priority: 300
+
+{{Feature|informative|Effect cancels automatically under water.}}
+
+{| class="wikitable"
+! Parameter !! Meaning !! Type !! Range !! Defaults
+|-
+| value || blurriness of distorted image (0 to 1, values above 1 cause unusual) || float || 0..1 || 1
+|-
+| top, bottom || effect power (top/bottom of screen separately) || float || 0..1 || 1, 1
+|-
+| horizontal1, horizontal2, vertical1, vertical2 || waves speeds (frequency/PI) || float || 0... || 4.10, 3.70, 2.50, 1.85
+|-
+| horizontal1, horizontal2, vertical1, vertical2 || waves amplitudes (delta texture coordinates)|| float || 0... || 0.0054, 0.0041, 0.0090, 0.0070
+|-
+| randX, randY || coefficients for phase computing; weight of random vertex data on horizontal/vertical wave phases || float || 0... || 0.5, 0.3
+|-
+| posX, posY || coefficients for phase computing; weight of vertex X/Y-position on horizontal/vertical wave phases || float || 0... || 10.0, 6.0
+|}
+
+Syntax:
+<sqf>
+_wetDistorsionHandle ppEffectAdjust [
+	value,
+	top, bottom,
+	horizontal1, horizontal2, vertical1, vertical2,
+	horizontal1, horizontal2, vertical1, vertical2,
+	randX, randY, posX, posY
+];
+</sqf>
+
+Defaults:
+<sqf>
+_wetDistorsionHandle ppEffectAdjust [
+	1,
+	1, 1,
+	4.10, 3.70, 2.50, 1.85,
+	0.0054, 0.0041, 0.0090, 0.0070,
+	0.5, 0.3, 10.0, 6.0
+];
+</sqf>
+
+Example:
+<sqf>
+["WetDistortion", 300, [1, 0, 1, 4.10, 3.70, 2.50, 1.85, 0.0054, 0.0041, 0.05, 0.0070, 1, 1, 1, 1]] spawn
+{
+	params ["_name", "_priority", "_effect", "_handle"];
+	while {
+		_handle = ppEffectCreate [_name, _priority];
+		_handle < 0
+	} do {
+		_priority = _priority + 1;
+	};
+	_handle ppEffectEnable true;
+	_handle ppEffectAdjust _effect;
+	_handle ppEffectCommit 5;
+	waitUntil { ppEffectCommitted _handle };
+	systemChat "admire effect for a sec";
+	uiSleep 3;
+	_handle ppEffectEnable false;
+	ppEffectDestroy _handle;
+};
+</sqf>
+
+=== ColorCorrections ===
+
+Title: "ColorCorrections"; Base Priority: 1500
+
+{| class="wikitable"
+! Parameter !! Meaning !! Type !! Range !! Defaults
+|-
+| brightness|| image brightness (0 - black, 1 - unchanged, 2 - white ) || float || 0..2 || 1
+|-
+| contrast || image contrast (1 - normal contrast) || float || 0... || 1
+|-
+| offset || image contrast offset (0 - unchanged )|| float || 0... || 0
+|-
+| [r, g, b, a] || color for blending (r, g, b - color, a - blend factor (0 - original color, 1 - blend color )) || float || 0..1 || [0, 0, 0, 0]
+|-
+| [r, g, b, a] || color for colorization ( r, g, b - color, a - saturation (0 - original color, 1 - B&W multiplied by colorize color)) || float || 0..1 || [1, 1, 1, 1]
+|-
+| [r, g, b, 0] || color rgb weights for desaturation || float || 0..1 || [0.299, 0.587, 0.114, 0]
+|-
+| [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;radialMajorAxisRadius,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;radialMinorAxisRadius,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;radialRotationDeg,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;radialCenterX,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;radialCenterY,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;radialInnerRadiusCoef,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;radialInterpCoef<br>
+]
+|| radial color '''''(optional, Arma 3 only)'''''<br>
+major axis radius of ellipse<br>
+minor axis radius of ellipse<br>
+rotation of ellipse axis (in degrees)<br>
+centerX of ellipse on the screen (in relative coords, [-0.5] -> [0.5], where 0 is in the screen center)<br>
+centerY of ellipse on the screen (in relative coords, [-0.5] -> [0.5], where 0 is in the screen center)<br>
+coefficient for inner radius (where effect is not applied)<br>
+coefficient for color interpolation between inner and outer radius<br>
+&nbsp;
+||<br>
+float<br>
+float<br>
+float<br>
+float<br>
+float<br>
+float<br>
+float<br>
+&nbsp;
+||<br>
+0..1<br>
+0..1<br>
+0..359<br>
+-1..1<br>
+-1..1<br>
+0..1<br>
+0...<br>
+&nbsp;
+||
+[<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;0<br>
+]
+|}
+
+Syntax:
+{| class="wikitable valign-top"
+! {{GVI|arma3|1.00}}
+! {{GVI|arma2|1.00}}{{GVI|arma2oa|1.50}}
+|-
+| <sqf>
+_colorCorrectionHandle ppEffectAdjust
+[
+	brightness,
+	contrast,
+	offset,
+	[blendR, blendG, blendB, blendA],
+	[colorizeR, colorizeG, colorizeB, colorizeA],
+	[weightR, weightG, weightB, 0],
+	[a, b, angle, cx, cy, innerRCoef, interpCoef]
+];
+</sqf>
+| <sqf>
+_colorCorrectionHandle ppEffectAdjust
+[
+	brightness,
+	contrast,
+	offset,
+	[blendR, blendG, blendB, blendA],
+	[colorizeR, colorizeG, colorizeB, colorizeA],
+	[weightR, weightG, weightB, 0]
+];
+</sqf>
+|}
+
+Defaults:
+{| class="wikitable"
+! {{GVI|arma3|1.00}}
+! {{GVI|arma2|1.00}}{{GVI|arma2oa|1.50}}
+|-
+| <sqf>
+_colorCorrectionHandle ppEffectAdjust
+[
+	1,
+	1,
+	0,
+	[0, 0, 0, 0],
+	[1, 1, 1, 1],
+	[0.299, 0.587, 0.114, 0],
+	[-1, -1, 0, 0, 0, 0, 0]
+];
+</sqf>
+| <sqf>
+_colorCorrectionHandle ppEffectAdjust
+[
+	1,
+	1,
+	0,
+	[0, 0, 0, 0],
+	[1, 1, 1, 1],
+	[0.299, 0.587, 0.114, 0]
+];
+</sqf>
+|}
+
+Example:
+<sqf>
+["ColorCorrections", 1500, [1, 0.4, 0, [0, 0, 0, 0], [1, 1, 1, 0], [1, 1, 1, 0]]] spawn
+{
+	params ["_name", "_priority", "_effect", "_handle"];
+	while {
+		_handle = ppEffectCreate [_name, _priority];
+		_handle < 0
+	} do {
+		_priority = _priority + 1;
+	};
+	_handle ppEffectEnable true;
+	_handle ppEffectAdjust _effect;
+	_handle ppEffectCommit 5;
+	waitUntil { ppEffectCommitted _handle };
+	systemChat "admire effect for a sec";
+	uiSleep 3;
+	_handle ppEffectEnable false;
+	ppEffectDestroy _handle;
+};
+</sqf>
+
+=== DynamicBlur ===
+
+Title: "DynamicBlur"; Base Priority: 400
+
+{| class="wikitable"
+! Parameter !! Meaning !! Type !! Range !! Defaults
+|-
+| value || blurriness || float || 0... || 0
+|}
+
+Syntax:
+<sqf>_dynamicBlurHandle ppEffectAdjust [value];</sqf>
+
+Defaults:
+<sqf>_dynamicBlurHandle ppEffectAdjust [0];</sqf>
+
+Example:
+<sqf>
+["DynamicBlur", 400, [10]] spawn
+{
+	params ["_name", "_priority", "_effect", "_handle"];
+	while {
+		_handle = ppEffectCreate [_name, _priority];
+		_handle < 0
+	} do {
+		_priority = _priority + 1;
+	};
+	_handle ppEffectEnable true;
+	_handle ppEffectAdjust _effect;
+	_handle ppEffectCommit 5;
+	waitUntil { ppEffectCommitted _handle };
+	systemChat "admire effect for a sec";
+	uiSleep 3;
+	_handle ppEffectEnable false;
+	ppEffectDestroy _handle;
+};
+</sqf>
+
+=== FilmGrain ===
+
+Title: "FilmGrain"; Base Priority: 2000
+
+{{Feature|arma3|In {{arma3}} the '''monochromatic''' parameter is [[Number|numeric]]. Use '''0''' for monochrome, any other value for colour.}}
+
+Number of parameters is flexible: it may be defined from 1 to 6 parameters, meaning of individual parameters is following:
+
+{| class="wikitable"
+! colspan="2" | Parameter !! Meaning !! Type !! Range !! Default
+|-
+| colspan="2" | intensity || intensity || float || 0..1 || 0.005
+|-
+| colspan="2" | sharpness || sharpness || float || 1..20 || 1.25
+|-
+| colspan="2" | grainSize || grain size || float || 1..8 ||  2.01
+|-
+| colspan="2" | intensityX0 || intensityX0 || float || -x..0..+x ||0.75
+|-
+| colspan="2" | intensityX1 || intensityX1 || float || -x..0..+x ||1.0
+|-
+| rowspan="2" | monochromatic || {{GVI|arma2|1.00}}{{GVI|arma2oa|1.50}} || monochromatic || bool|| false, true || true
+|-
+| {{GVI|arma3|1.00}} || monochromatic || integer || 0, 1 || 0
+|}
+
+Syntax:
+<sqf>
+_filmGrainHandle ppEffectAdjust [
+	intensity,
+	sharpness,
+	grainSize,
+	intensityX0,
+	intensityX1,
+	monochromatic
+];
+</sqf>
+
+Defaults:
+{| class="wikitable"
+! {{GVI|arma3|1.00}}
+! {{GVI|arma2|1.00}}{{GVI|arma2oa|1.50}}
+|-
+| <sqf>
+_filmGrainHandle ppEffectAdjust [
+	0.005,
+	1.25,
+	2.01,
+	0.75,
+	1.0,
+	0
+];
+</sqf>
+| <sqf>
+_filmGrainHandle ppEffectAdjust [
+	0.005,
+	1.25,
+	2.01,
+	0.75,
+	1.0,
+	true
+];
+</sqf>
+|}
+
+Example:
+{| class="wikitable"
+! {{GVI|arma3|1.00}}
+! {{GVI|arma2|1.00}}{{GVI|arma2oa|1.50}}
+|-
+| <sqf>
+["FilmGrain", 2000, [1, 0.15, 7, 0.2, 1.0, 0]] spawn
+{
+	params ["_name", "_priority", "_effect"];
+
+
+	private _handle = -1;
+	while {
+		_handle = ppEffectCreate [_name, _priority];
+		_handle < 0;
+	} do {
+		_priority = _priority + 1;
+	};
+	_handle ppEffectEnable true;
+	_handle ppEffectAdjust _effect;
+	_handle ppEffectCommit 5;
+	waitUntil { sleep 0.1; ppEffectCommitted _handle };
+	systemChat "admire effect for a sec";
+	uiSleep 3;
+	_handle ppEffectEnable false;
+	ppEffectDestroy _handle;
+};
+</sqf>
+| <sqf>
+["FilmGrain", 2000, [1, 0.15, 7, 0.2, 1.0, true]] spawn
+{
+	local _name = _this select 0;
+	local _priority = _this select 1;
+	local _effect = _this select 2;
+	local _handle = -1;
+	while {
+		_handle = ppEffectCreate [_name, _priority];
+		_handle < 0;
+	} do {
+		_priority = _priority + 1;
+	};
+	_handle ppEffectEnable true;
+	_handle ppEffectAdjust _effect;
+	_handle ppEffectCommit 5;
+	waitUntil { sleep 0.1; ppEffectCommitted _handle };
+	systemChat "admire effect for a sec";
+	uiSleep 3;
+	_handle ppEffectEnable false;
+	ppEffectDestroy _handle;
+};
+</sqf>
+|}
+
+=== ColorInversion ===
+
+Title: "ColorInversion"; Base Priority: 2500
+
+{| class="wikitable"
+! Parameter !! Meaning !! Type !! Range !! Defaults
+|-
+| Red || Inversion of R channel (image inversion (0..no blur, 1..very blurred) || float || 0..1 || 0
+|-
+| Green || Inversion of G channel (image inversion (0..no blur, 1..very blurred) || float || 0..1 || 0
+|-
+| Blue || Inversion of B channel (image inversion (0..no blur, 1..very blurred) || float || 0..1 || 0
+|}
+
+Syntax:
+<sqf>_colorInversionHandle ppEffectAdjust [Red, Green, Blue];</sqf>
+
+Defaults:
+<sqf>_colorInversionHandle ppEffectAdjust [0, 0, 0];</sqf>
+
+Example:
+<sqf>
+["ColorInversion", 2500, [0.5, 0.5, 0.5]] spawn
+{
+	params ["_name", "_priority", "_effect", "_handle"];
+	while {
+		_handle = ppEffectCreate [_name, _priority];
+		_handle < 0
+	} do {
+		_priority = _priority + 1;
+	};
+	_handle ppEffectEnable true;
+	_handle ppEffectAdjust _effect;
+	_handle ppEffectCommit 5;
+	waitUntil { ppEffectCommitted _handle };
+	systemChat "admire effect for a sec";
+	uiSleep 3;
+	_handle ppEffectEnable false;
+	ppEffectDestroy _handle;
+};
+</sqf>
+
+{{ArgTitle|3|SSAO|{{GVI|arma3|0.50}}}}
+
+Title: "SSAO"; Base Priority: 0
+
+{| class="wikitable"
+! Parameter !! Meaning !! Type !! Range !! Defaults
+|-
+| intensity ||  || float || 0..1 || 0
+|-
+| threshold0 ||  || float || 0..1 || 0
+|-
+| threshold0 ||  || float || 0..1 || 0
+|-
+| nearRadius ||  || float || 0..1 || 0
+|-
+| farRadius ||  || float || 0..1 || 0
+|-
+| nearDist ||  || float || 0..1 || 0
+|-
+| farDist ||  || float || 0..1 || 0
+|-
+| depthBlurDist ||  || float || 0..1 || 0
+|-
+| blurPasses ||  || integer || 0..x || 0
+|-
+| halfRes ||  || bool || true, false|| false
+|-
+| blurHalfRes ||  || boolean || true, false|| false
+|}
+
+Syntax:
+<sqf>
+_ssaoHandle ppEffectAdjust [
+	intensity,
+	threshold0,
+	threshold1,
+	nearRadius,
+	farRadius,
+	nearDist,
+	farDist,
+	depthBlurDist,
+	blurPasses,
+	halfRes,
+	blurHalfRes
+];
+</sqf>
+
+Defaults:
+<sqf>_ssaoHandle ppEffectAdjust [0, 0, 0, 0, 0, 0, 0, 0, 0, false, false];</sqf>
+
+Example:
+<sqf>
+["SSAO", 1, [3, 0.25, 0.75, 5, 50, 5, 25, 100, 3, true, true]] spawn
+{
+	params ["_name", "_priority", "_effect", "_handle"];
+	while {
+		_handle = ppEffectCreate [_name, _priority];
+		_handle < 0;
+	} do {
+		_priority = _priority + 1;
+	};
+	_handle ppEffectEnable true;
+	_handle ppEffectAdjust _effect;
+	_handle ppEffectCommit 5;
+	waitUntil { ppEffectCommitted _handle };
+	systemChat "admire effect for a sec";
+	uiSleep 3;
+	_handle ppEffectEnable false;
+	ppEffectDestroy _handle;
+};
+</sqf>
+
+{{ArgTitle|3|Resolution|{{GVI|arma3|2.10}}}}
+
+Title: "Resolution"; Base Priority: 0
+
+{| class="wikitable"
+! Parameter !! Meaning !! Type !! Range !! Defaults
+|-
+| verticalResolution || define the render's vertical resolution.<br>
+If the value is negative, the resolution goes back to normal. If the value is greater than the final render's vertical resolution, it gets clamped to it.<br>
+The effect can be disabled in both cases.
+| integer || -1..x || -1
+|}
+
+Syntax:
+<sqf>_resolutionHandle ppEffectAdjust [verticalResolution];</sqf>
+
+Defaults:
+<sqf>_ssaoHandle ppEffectAdjust [-1];</sqf>
+
+Example:
+<sqf>
+["Resolution", 1, [400]] spawn
+{
+	params ["_name", "_priority", "_effect", "_handle"];
+	while {
+		_handle = ppEffectCreate [_name, _priority];
+		_handle < 0;
+	} do {
+		_priority = _priority + 1;
+	};
+	_handle ppEffectEnable true;
+	_handle ppEffectAdjust _effect;
+	_handle ppEffectCommit 5;
+	waitUntil { ppEffectCommitted _handle };
+	systemChat "admire effect for a sec";
+	uiSleep 3;
+	_handle ppEffectEnable false;
+	ppEffectDestroy _handle;
+};
+</sqf>
+
+
+{{ArgTitle|3|Sharpness|{{GVI|arma3|2.20}}}}
+
+Title: "Sharpness"; Base Priority: 0
+
+{| class="wikitable"
+! Parameter !! Meaning !! Type !! Range !! Defaults
+|-
+| scale || Scale (minimum 0.01)
+| integer || 0..x || 0
+|}
+
+{{ArgTitle|3|DepthOfField|{{GVI|arma3|2.20}}}}
+
+Title: "DepthOfField"; Base Priority: ?
+
+TBD
+
+{{ArgTitle|3|FishEye|{{GVI|arma3|2.20}}}}
+
+Title: "FishEye"; Base Priority: ?
+
+TBD
+
+== Advanced effects ==
+
+{{Feature|important|The advanced effects are not intended to be used by the end user. They cannot be created by [[ppEffectCreate]] and their adjustments (via [[ppEffectAdjust]]) are '''immediate''' and do not require [[ppEffectCommit]].<br/>{{Link|https://forums.bohemia.net/forums/topic/220199-hbaoplus-post-processing-effect/|More info on the forums}}.}}
+
+=== LightShafts ===
+
+Title: "LightShafts"; Base Priority: N/A 
+
+* can be used with [[ppEffectAdjust]]
+* can be used with [[ppEffectEnable]]
+* '''cannot''' be used with [[ppEffectCreate]]
+* '''cannot''' be used with [[ppEffectCommit]]
+
+{| class="wikitable"
+! Parameter !! Meaning !! Type !! Range !! Defaults
+|-
+| sunInnerRadius || inner radius of the sun. 0 = no radius, 1 = full screen || float || 0.001..1 || 0.01
+|-
+| sunOuterRadius || outer radius of the sun. Must be > sunInnerRadius. 0 = no radius, 1 = full screen. light intensity fades out from inner to outer radius || float || 0..1 || 0.6
+|-
+| exposure || strength of effect || float || 0... || 0.45
+|-
+| decay || how fast intensity of rays decays with distance || float || 0..1 || 0.89
+|}
+
+Syntax:
+<sqf>"LightShafts" ppEffectAdjust [sunInnerRadius, sunOuterRadius, exposure, decay];</sqf>
+
+Defaults:
+<sqf>"LightShafts" ppEffectAdjust [0.01, 0.6, 0.45, 0.89];</sqf>
+
+Example:
+<sqf>
+0 spawn 
+{
+	"LightShafts" ppEffectEnable true;
+	"LightShafts" ppEffectAdjust [0.1,0.25,0.1,1];
+	systemChat "admire effect for a sec";
+	uiSleep 3;
+	"LightShafts" ppEffectEnable false;
+};
+</sqf>
+
+=== HBAOPlus ===
+
+{{Feature|important|HBAOPlus requires DirectX 11 feature level 11 or above as well as being enabled in Video Options to affect display.}}
+
+Title: "HBAOPlus"; Base Priority: N/A 
+
+* can be used with [[ppEffectAdjust]]
+* '''cannot''' be used with [[ppEffectEnable]]
+* '''cannot''' be used with [[ppEffectCreate]]
+* '''cannot''' be used with [[ppEffectCommit]]
+
+{| class="wikitable"
+! Parameter !! Meaning !! Type !! Range !! Defaults (Soft) !! Defaults (Medium) !! Defaults (Strong)
+|-
+| radius || AO radius in meters || float || 0...
+| colspan="2" style="text-align: center;" | 1
+| style="text-align: center;" | 1.2
+|-
+| bias || hide low-tessellation artifacts || float || 0..0.5
+| colspan="3" style="text-align: center;" | 0.3
+|-
+| detailAO || scale factor for the small-scale AO, the greater the darker || float || 0..2
+| style="text-align: center;" | 0.1
+| style="text-align: center;" | 0.3
+| style="text-align: center;" | 0.5
+|-
+| coarseAO || scale factor for the large-scale AO, the greater the darker || float || 0..2
+| style="text-align: center;" | 0.50
+| style="text-align: center;" | 0.75
+| style="text-align: center;" | 1.00
+|-
+| powerExponent || final AO output is pow(AO, powerExponent) || float || 1..4
+| colspan="3" style="text-align: center;" | 3
+|-
+| blurRadius ||  0 = disabled blur, 1 = enabled with a radius of 2, 2 = enabled with a radius of 4. || integer || 0, 1, 2
+| colspan="3" style="text-align: center;" | 1
+|-
+| blurSharpness || the greater the sharpness parameter, the more the blur preserves edges || float || 0...
+| colspan="3" style="text-align: center;" | 4
+|-
+| fadeSharpness || fading of the AO with distance (greater value = sharper transition) || float || 0...
+| colspan="3" style="text-align: center;" | 5
+|-
+| foregroundViewDepth || distance (in meters) of foreground objects - up to this distance the depth is handled differently from the rest of the scene - to prevent huge AO kernel of foreground objects || float || 0...
+| colspan="3" style="text-align: center;" | 2
+|-
+| backgroundViewDepth || distance (in meters) of background objects - AO kernel for objects beyond this distance is computed differently || float || 0...
+| colspan="3" style="text-align: center;" | 0
+|}
+
+Syntax:
+<sqf>"HBAOPlus" ppEffectAdjust [radius, bias, detailAO, coarseAO, powerExponent, blurRadius, blurSharpness, fadeSharpness, foregroundViewDepth, backgroundViewDepth];</sqf>
+
+Defaults - ''depend on HBAO+ setting in Video Options'':
+<sqf>
+// HBAO+ Soft
+"HBAOPlus" ppEffectAdjust [1.0, 0.3, 0.1, 0.50, 3.0, 1.0, 4.0, 5.0, 2.0, 0.0];
+
+// HBAO+ Medium
+"HBAOPlus" ppEffectAdjust [1.0, 0.3, 0.3, 0.75, 3.0, 1.0, 4.0, 5.0, 2.0, 0.0];
+
+// HBAO+ Strong
+"HBAOPlus" ppEffectAdjust [1.2, 0.3, 0.5, 1.0, 3.0, 1.0, 4.0, 5.0, 2.0, 0.0];
+</sqf>
+
+
+Example:
+<sqf>
+0 spawn
+{
+	"HBAOPlus" ppEffectAdjust [2, 0.3, 1, 1, 2, 1, 4, 5, 2, 0];
+	systemChat "admire effect for a sec";
+	uiSleep 3;
+	"HBAOPlus" ppEffectAdjust [1.0, 0.3, 0.1, 0.50, 3.0, 1.0, 4.0, 5.0, 2.0, 0.0];
+};
+</sqf>
+
+
+[[Category: Scripting Topics]]

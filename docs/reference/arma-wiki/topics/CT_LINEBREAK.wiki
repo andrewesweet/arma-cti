@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/CT_LINEBREAK
+// revision: 378645 (2026-05-17T14:56:28Z)
+// export sha1: gdijwofd7caycr5q7efvjrjbrex88lw
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_LINEBREAK
+|value = 98
+|description = Unknown control type.
+|commands =
+|events =
+}}
+<!--
+{{CT|abc start}}
+
+{{CT|abc end}}
+-->
+{{CT|examples}}
+=== RscExample ===
+<syntaxhighlight lang="cpp">
+class RscLineBreak
+{
+	idc = -1;
+	type = 98;
+	shadow = 0;
+};
+</syntaxhighlight>

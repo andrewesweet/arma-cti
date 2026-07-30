@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_hideMarker
+// revision: 373735 (2025-06-24T12:24:32Z)
+// export sha1: 6xxl08oqkzr5m13ki4tzgvlb7o30cie
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Map and Markers
+
+|arg= global
+
+|eff= global
+
+|descr= Gradual hiding of a marker by setting its alpha to 0.
+
+|s1= [marker, duration] spawn [[BIS_fnc_hideMarker]]
+
+|p1= marker: [[String]] - marker name
+
+|p2= duration: [[Number]] - (Optional, default 1) duration of the hiding
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["BIS_marker",2] spawn BIS_fnc_hideMarker;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_blinkMarker]] [[BIS_fnc_colorMarker]] [[BIS_fnc_moveMarker]]
+}}

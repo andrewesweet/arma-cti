@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_richCurve_resetKeysEventState
+// revision: 278968 (2021-06-13T21:47:08Z)
+// export sha1: r397zp7cxw1mh3aehixp7l8zv8uhkoj
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: RichCurve | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= RichCurve
+|descr= <pre>/*
+	Author: Nelson Duarte <@Nelson_G_Duarte>
+
+	Description:
+	Reset's flag on all keys about handled events
+
+	Parameter(s):
+	_this select 0: Object - The curve
+
+	Returns:
+	Nothing
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_richCurve_resetKeysEventState]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

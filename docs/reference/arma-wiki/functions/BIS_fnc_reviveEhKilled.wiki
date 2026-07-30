@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_reviveEhKilled
+// revision: 328476 (2022-07-13T16:11:11Z)
+// export sha1: fb175fam3xj3oj23k5vpbp77l4osqb5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Revive | Category:Functions | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Revive
+
+|descr= Should be called from Killed event handler. Handles what happens if unit dies if revive system is enabled.
+
+|s1=
+
+|r1= [[Nothing]]
+
+|x1= <sqf>BIS_unit addEventHandler ["Killed", 
+{
+ _this call BIS_fnc_reviveEhKilled;
+}];</sqf>
+
+|seealso= [[Arma 3: Revive]] [[BIS_fnc_disableRevive]] [[BIS_fnc_reenableRevive]] [[BIS_fnc_reviveAllowed]] [[BIS_fnc_reviveBleedOut]] [[BIS_fnc_reviveDamageReset]] [[BIS_fnc_reviveDebug]] [[BIS_fnc_reviveEhDammaged]] [[BIS_fnc_reviveEhHandleDamage]] [[BIS_fnc_reviveEhHandleHeal]] [[BIS_fnc_reviveEhRespawn]] [[BIS_fnc_reviveEnabled]] [[BIS_fnc_reviveGet3dIcons]] [[BIS_fnc_reviveGetActionIcon]] [[BIS_fnc_reviveIconControl]] [[BIS_fnc_reviveInit]] [[BIS_fnc_reviveIsValid]] [[BIS_fnc_reviveIsValidSecure]] [[BIS_fnc_reviveOnBeingRevived]] [[BIS_fnc_reviveOnForcingRespawn]] [[BIS_fnc_reviveOnState]] [[BIS_fnc_reviveOnStateJIP]] [[BIS_fnc_reviveSecureUnit]]
+}}

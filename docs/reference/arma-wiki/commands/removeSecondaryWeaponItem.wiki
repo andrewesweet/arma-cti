@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/removeSecondaryWeaponItem
+// revision: 319509 (2022-05-13T09:24:13Z)
+// export sha1: qpipepwiqvd4fkitwypmq60o83b4gus
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.38 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.38
+
+|arg= local
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Removes given weapon item, including magazine, from the [[secondaryWeapon]].
+
+|s1= unit [[removeSecondaryWeaponItem]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeSecondaryWeaponItem (secondaryWeaponItems player select 0);</sqf>
+
+|seealso= [[addSecondaryWeaponItem]] [[removePrimaryWeaponItem]] [[removeHandgunItem]] [[removeBinocularItem]]
+}}

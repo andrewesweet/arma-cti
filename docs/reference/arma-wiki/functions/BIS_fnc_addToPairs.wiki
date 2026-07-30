@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addToPairs
+// revision: 352076 (2024-02-01T23:24:42Z)
+// export sha1: 7yf71gbn9h2i3bl1qb5jx1szpucra8b
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.76
+
+|gr1= Arrays
+
+|descr= Adds given value to pair array, stored under unique key.<br><br>
+
+ If value is found:<br>
+ a) both values are scalars: values are added and stored as a single scalar<br>
+ b) one or both values are array: values are added and stored as a single array<br>
+ c) anything else: an array is created and both values are stored there<br><br>
+
+{{Feature|informative|Function by default modifies the input array. This can be overrriden by setting '_copyArray' param to true.}}
+
+|s1= [array, key, value, copyArray] call [[BIS_fnc_addToPairs]]
+
+|p1= array: [[Array]] - array to search through
+
+|p2= key: [[String]] - key to search for
+
+|p3= value: [[Number]] - (Optional, default [[nil]]) default return value if no match was found
+
+|p4= copyArray: [[Boolean]] - (Optional, default [[false]]) [[true]] to copy the array and return it, [[false]] to modify the original array
+
+|r1= [[Array]] - resulting modified array or a copy
+
+|x1= <sqf>[[["apple",3],["pear",2]],"pear",10] call BIS_fnc_addToPairs; // Returns [["apple",3],["pear",12]]</sqf>
+
+|x2= <sqf>[[["apple",3],["pear",2]],"apple",-2] call BIS_fnc_addToPairs; // Returns [["apple",1],["pear",2]]</sqf>
+
+|x3= <sqf>[[["greetings","Hello!"],["rudewords",""]],"greetings","Hi!"] call BIS_fnc_addToPairs; // Returns [["greetings",["Hello!","Hi!"]],["rudewords",""]]</sqf>
+
+|seealso= [[find]] [[findIf]] [[BIS_fnc_findInPairs]] [[BIS_fnc_getFromPairs]] [[BIS_fnc_removeFromPairs]] [[BIS_fnc_setToPairs]]
+}}

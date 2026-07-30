@@ -1,0 +1,85 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_createTooltip
+// revision: 352466 (2024-02-11T23:22:48Z)
+// export sha1: kpbyv8ky4kbyvwfnyj5gx578pw77n68
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+|game1= arma3
+|version1= 1.78
+
+|gr1= GUI
+
+|descr= Shows group tooltip. Adapted for Tac Ops DLC for use in the animated briefings.
+
+[[File:a3 bis fnc createTooltip.jpg|300px|right]]
+|s1= [input, display, mousePos] call [[BIS_fnc_createTooltip]]
+
+|p1= input: [[Array]] format [config, parameters]:
+* config: [[Config]] - group from CfgORBAT
+* parameters: [[Array]] - group params returned by [[BIS_fnc_ORBATGetGroupParams]]
+
+|p2= display: [[Display]] - display where tooltip controls group is created
+
+|p3= mousePos: [[Array]] - mouse position in format [x, y]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+// enable icons in 2D and 3D
+setGroupIconsVisible [true, true];
+setGroupIconsSelectable true;
+
+// add the icon for all existing groups
+private _group = group player;
+private _color = [side _group, false] call BIS_fnc_sideColor;
+_group addGroupIcon ["o_inf", [0, 0]];
+_group setGroupIconParams [_color, groupID _group, 1, true];
+
+// show tooltip when hovering over group icon of player group
+addMissionEventHandler ["GroupIconOverEnter",
+{
+	[configFile >> "CfgORBAT" >> "BIS" >> "I_AAF", findDisplay 12, getMousePosition] call BIS_fnc_createTooltip;
+}];
+
+// remove tooltip when leaving group icon area
+addMissionEventHandler ["GroupIconOverLeave",
+{
+	[nil, findDisplay 12, getMousePosition] call BIS_fnc_createTooltip;
+}];
+</sqf>
+
+|x2= <sqf>
+private _marker = createMarker ["marker_0", [worldSize / 2, worldSize / 2]];
+_marker setMarkerType "flag_Germany";
+_marker setMarkerText "GERMANY";
+
+_marker = createMarker ["marker_1", [worldSize / 1.5, worldSize / 1.5]];
+_marker setMarkerType "flag_Altis";
+_marker setMarkerText "ALTIS";
+
+findDisplay 12 displayCtrl 51 ctrlAddEventHandler
+[
+	"draw",
+	{
+		params ["_ctrlMap"];
+
+		ctrlMapMouseOver _ctrlMap params [["_type", ""], ["_markerName", ""]];
+
+		if (_type == "marker") then
+		{
+			private _markerTexture = getText (configFile >> "CfgMarkers" >> markerType _markerName >> "icon");
+			private _markerText = markerText _markerName;
+
+			[[nil, nil, _markerName, nil, _markerTexture, nil, nil, nil, _markerText, nil, nil, "Some Description"], findDisplay 12, getMousePosition] call BIS_fnc_createTooltip;
+		}
+		else
+		{
+			[nil, findDisplay 12, getMousePosition] call BIS_fnc_createTooltip;
+		};
+	}
+];
+</sqf>
+
+|seealso= [[BIS_fnc_ORBATGetGroupParams]]
+}}

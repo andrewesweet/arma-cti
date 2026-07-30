@@ -1,0 +1,95 @@
+// source: https://community.bistudio.com/wiki/setVectorDir
+// revision: 377248 (2026-01-02T05:42:47Z)
+// export sha1: rpofozpopt77xvy69259tyh7l93351f
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg=local
+|eff=global
+
+|gr2= Math - Vectors
+
+|descr= Set object's direction vector. Up vector will remain unchanged.
+
+|pr= The effect is {{Icon|localeffect|32}} when using [[setVectorDir]] on a mine. Use a position modification to broadcast [[setVectorDir]]'s change (see {{Link|#Example 2}}).
+
+|s1= object [[setVectorDir]] vectorDir
+
+|p1= object: [[Object]]
+
+|p2= vectorDir: [[Vector3D]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setVectorDir [5,6,1];</sqf>
+
+|x2= <sqf>
+// provided _myMine is local
+_myMine setVectorDir [0.3, 1, 0];
+_myMine setPosWorld getPosWorld _myMine; // synchronises the mine's direction over the network (special case)
+</sqf>
+
+|seealso= [[vectorDir]] [[vectorUp]] [[setVectorUp]] [[setVectorDirAndUp]] [[vectorDiff]] [[vectorAdd]] [[vectorMultiply]] [[vectorCrossProduct]] [[vectorDistance]] [[vectorMagnitudeSqr]] [[vectorDistanceSqr]] [[vectorCos]] [[vectorMagnitude]] [[vectorDotProduct]] [[vectorNormalized]] [[vectorFromTo]]
+}}
+
+{{Note
+|user= Str
+|timestamp= 20080316095000
+|text= Command can be also used to rotate camera in all three axis.
+}}
+
+{{Note
+|user= General Barron
+|timestamp= 20090303210600
+|text= [[setVectorDir]] can only influence an object's pitch. It can not influence bank. Example:
+<sqf>player setVectorDir [0,0,1];</sqf>
+*If the player is facing 0 degrees (north), then this will do NOTHING.
+*If the player is facing 90 degrees (east), then this will make him pitch 90 degrees up.
+You can't directly pitch an object beyond 90 degrees, because this would change its facing direction. You must first flip it is direction using setDir, then you must bank the object 180 degrees, THEN you pitch the object appropriately.
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20150817032700
+|text= In Arma 3, [[setVectorDir]] does not control an object's pitch or bank, in fact, it is not possible to change either of those solely using [[setVectorDir]]. This command can only affect horizontal rotation along the x-plane, unless an object first has it is [[vectorUp]] changed to something other than [0,0,1]. Correct input to [[setVectorDir]] should be calculated using the trigonometric functions [[sin]] and [[cos]].
+
+examples:
+<sqf>
+// 0 degrees (north)
+player setVectorDir
+[
+	sin 0, // equals 0
+	cos 0, // equals 1
+	1
+];
+// 45 degrees (north-east)
+player setVectorDir
+[
+	sin 45, // equals 0.707
+	cos 45, // equals 0.707
+	1
+];
+</sqf>
+If you are doing trigonometric calculations, it may be better to use [[setVectorDir]] rather than [[setDir]], since sine and cosine have already been calculated and will not need to be re-calculated
+(also, [[setDir]] probably uses [[setVectorDir]] anyway.)
+}}

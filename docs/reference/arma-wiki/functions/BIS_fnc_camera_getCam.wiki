@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera_getCam
+// revision: 349206 (2023-11-08T14:50:44Z)
+// export sha1: 4dt9c04bj3h7dgphk7w3z5kqpbu2op4
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Camera | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Camera
+
+|descr= Gets camera instance of camerea object
+
+|s1= [camera] call [[BIS_fnc_camera_getCam]]
+
+|p1= camera: [[Object]] - the camera
+
+|r1= [[Object]] - camera instance
+
+|x1= <sqf>[BIS_camera] call BIS_fnc_camera_getCam;</sqf>
+
+|seealso= [[BIS_fnc_camera_setCam]]
+}}

@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/getRoadInfo
+// revision: 377688 (2026-01-02T09:03:05Z)
+// export sha1: kdy75gm56cx7kcia1lplus6olz8421o
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Roads and Airports | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Roads and Airports
+
+|descr= Returns road piece information.
+{{Feature|informative|
+* Bridges are special case. Only large bridges are part of Road Net. Small pedestrian bridges are not recognized as roads. Bridge "mapType" is {{hl|"ROAD"}} so the best way to detect bridges is to check "isBridge" value. Bridges are not part of new roads and don't have the same info as other new roads, so only "mapType", "texture" (maybe "textureEnd"), "begPos", "endPos" and "isBridge" are  updated.
+* Pedestrian roads "mapType" is usually {{hl|"TRAIL"}}. They are part of Road Net but excluded from path finding. Use [[roadsConnectedTo]] with alternative flag to find the connections between pedestrian roads.
+}}
+
+|s1= [[getRoadInfo]] road
+
+|p1= road: [[Object]]
+
+|r1= [[Array]] with [mapType, width, isPedestrian, texture, textureEnd, material, begPos, endPos, isBridge, AIpathOffset]
+* mapType: [[String]] - road segment type, could be {{hl|"HIDE"}}, {{hl|"ROAD"}}, {{hl|"MAIN ROAD"}}, {{hl|"TRACK"}}, {{hl|"TRAIL"}} (see [[nearestTerrainObjects]])
+* width: [[Number]] - road segment width
+* isPedestrian: [[Boolean]] - when [[true]] road is for pedestrian use only
+* texture: [[String]] - road segment surface texture
+* textureEnd: [[String]] - road segment surface texture
+* material: [[String]] - road segment surface material 
+* begPos: [[Position#PositionASL|PositionASL]] - start of the road segment
+* endPos: [[Position#PositionASL|PositionASL]] - finish of the road segment
+* isBridge: [[Boolean]] - when [[true]] road segment is a bridge
+* {{GVI|arma3|2.12|size= 0.75}} AIpathOffset: [[Number]] - config value of `AIpathOffset` 
+
+|x1= <sqf>
+private _info = getRoadInfo _road;
+_info params ["_mapType", "_width", "_isPedestrian", "_texture", "_textureEnd", "_material", "_begPos", "_endPos", "_isBridge"];
+private _roadDirection = _begPos getDir _endPos;
+</sqf>
+
+|seealso= [[nearRoads]] [[roadsConnectedTo]] [[isOnRoad]] [[roadAt]] [[nearestTerrainObjects]]
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Mission_Editing
+// revision: 184351 (2021-01-06T09:35:25Z)
+// export sha1: jk92y56x2bsx97v9vzjepbui8xao0dx
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1|Editing}}

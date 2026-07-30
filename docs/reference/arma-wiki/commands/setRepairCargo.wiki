@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/setRepairCargo
+// revision: 376963 (2026-01-01T05:55:08Z)
+// export sha1: hxywg7kcs1gt5e4dx2yj3lipk56hyjo
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+|eff= global
+
+|gr1= Vehicle Inventory
+
+|descr= Set amount of repair resources in cargo space of repair vehicle.
+Amount 1 is full cargo.
+
+|s1= vehicleName [[setRepairCargo]] amount
+
+|p1= vehicleName: [[Object]]
+
+|p2= amount: [[Number]] in range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_repairTruck1 setRepairCargo 0;</sqf>
+
+|seealso= [[getRepairCargo]] [[setAmmoCargo]] [[setFuelCargo]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-07-10 - 19:36 (UTC)</dd>
+<dt class="note">[[User:Waffle SS.|Waffle SS.]]</dt>
+<dd class="note">
+(Arma 3 1.44) '''setRepairCargo''' will have no effect if the vehicle doesn't support [[getRepairCargo]].
+</dd>
+
+</dl>

@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_richCurve_getKeyTime
+// revision: 279034 (2021-06-13T21:47:57Z)
+// export sha1: 1mxhz2bakcctgom7d9i65410xehxgc2
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: RichCurve | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= RichCurve
+|descr= <pre>/*
+	Author: Nelson Duarte <@Nelson_G_Duarte>
+
+	Description:
+	Returns given key time in alpha
+
+	Parameter(s):
+	_this select 0: Object - The curve
+
+	Returns:
+	Float - The time in alpha of given key (from 0 to 1)
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_richCurve_getKeyTime]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

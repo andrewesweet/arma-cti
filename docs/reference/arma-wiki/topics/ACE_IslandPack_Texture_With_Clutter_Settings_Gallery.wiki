@@ -1,0 +1,88 @@
+// source: https://community.bistudio.com/wiki/ACE:IslandPack:Texture_With_Clutter_Settings_Gallery
+// revision: 226011 (2021-01-31T17:32:14Z)
+// export sha1: sr7gyqgt04bxdrxlaa3cpvp326x3z0k
+// Vendored snapshot. Do not edit — re-export instead.
+
+==ARMA_PISEK==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ARMA_PISEK_Clutter.jpg
+
+== ARMA_PISEKPLAZ ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ARMA_PISEKPLAZ_Clutter.jpg
+
+== ARMA_PISEKPOUST ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ARMA_PISEKPOUST_Clutter.jpg
+
+== ARMA_POLE1 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ARMA_POLE1_Clutter.jpg
+
+== ARMA_TRAVA ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ARMA_TRAVA_Clutter.jpg
+
+== ARMA_TRAVAJIH ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ARMA_TRAVAJIH_Clutter.jpg
+
+== DESERT01 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_DESERT01_Clutter.jpg
+
+== DESERT04 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_DESERT04_Clutter.jpg
+
+== GRASS02 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_GRASS02_Clutter.jpg
+
+== GRASS03 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_GRASS03_Clutter.jpg
+
+== GRASS05 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_GRASS05_Clutter.jpg
+
+== SNOW01 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_SNOW01_Clutter.jpg
+
+== STEPPE01 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_STEPPE01_Clutter.jpg
+
+== STEPPE02 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_STEPPE02_Clutter.jpg
+
+== STEPPE03 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_STEPPE03_Clutter.jpg
+
+== STONE01 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_STONE01_Clutter.jpg
+
+== STONE03 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_STONE03_Clutter.jpg
+
+== WOOD01 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_WOOD01_Clutter.jpg
+
+== ACEIP_SAT_SNOW ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ACEIP_SAT_SNOW_Clutter.jpg
+
+== RG_SAT_TRAVA ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_RG_SAT_TRAVA_Clutter.jpg
+
+== RG_NORDIC ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_RG_NORDIC_Clutter.jpg

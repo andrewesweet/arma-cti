@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/CSLA_Iron_Curtain_Gabreta
+// revision: 341227 (2023-05-14T19:49:16Z)
+// export sha1: 6xapzf3qpj7w09xoxp4e5xtba5lv92u
+// categories: Category:CSLA: Iron Curtain
+// Vendored snapshot. Do not edit — re-export instead.
+
+Gabreta is the name of 256km<sup>2</sup> sized map included in CSLA Iron Curtain cDLC. The map is based on a part of {{Link|https://en.wikipedia.org/wiki/Bohemian_Forest|Bohemian Forest (Böhmerwald)}} area and it's surroundings from both sides of the border between {{Link|https://en.wikipedia.org/wiki/Czechoslovakia|Czechoslovakia}} and {{Link|https://en.m.wikipedia.org/wiki/West_Germany|Federal Republic of Germany}}. The depicted area is roughly located {{Link|https://www.google.com/maps/@48.8515041,13.8218135,12z|here}}. The name of the map was chosen according to an old {{Link|https://en.wikipedia.org/wiki/Gabreta_Forest|Greek name}} of Bohemian Forest.
+
+To accurately depict a part of {{Link|https://en.wikipedia.org/wiki/Iron_Curtain|Iron Curtain}} between Czechoslovakia and West Germany, the map contains large amount of new objects such as buildings, military and border objects, traffic signs, and various other objects that are often unique to both sides.
+
+[[File:csla_gabreta_map.jpg|none|150px|thumb|Gabreta map]]
+
+==== Notable map features: ====
+* A border splitting the map in rougly two halves, each with it's unique architecture
+* Camping grounds and a dam near Nove Chalupy
+* Military training area, with shooting range and obstacle courses located to the east of Lenora
+* Swamps to the southwest of Volary
+* Large military air base to the south of Volary
+* Improvised airfield on a highway close to Haidmühle
+* Teresa chasm on the way between Lenora and  Horni Vltavice
+* Sand quarry near Obendorf
+* Rotstein castle to the southwest of Pekna
+* Dead man's cave to the west of Pekna
+* Abandoned mining colony in Strasice ghosttown to the south of Stozec
+* Tristolicnik peak to the south of Lippe
+* Military hospital in the woods near northern border of the map
+* Tourist spot at Lake Plesne near St. Michael
+* Various militarybases and radar installations on both sides of the map
+
+
+== Gallery ==
+<gallery mode="slideshow" showthumbnails>
+File:CSLA_CDLC_GABRETA_13.jpg
+File:CSLA_CDLC_GABRETA_23.jpg
+File:CSLA_CDLC_GABRETA_38.jpg
+File:CSLA_CDLC_screen_007.jpg
+File:CSLA_CDLC_screen_016.jpg
+File:CSLA_CDLC_screen_030.jpg
+</gallery>
+
+[[Category:CSLA: Iron Curtain]]

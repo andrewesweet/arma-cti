@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/setMarkerPos
+// revision: 377245 (2026-01-02T05:03:33Z)
+// export sha1: 0pzdkmfa7fwjfljkk99sx0d57zzq2ge
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Markers
+
+|eff= global
+
+|descr= Moves the marker. If position is given in 3D format, {{hl|z}} coordinate is stored with the marker and will be used when marker is passed to commands like [[createVehicle]], [[createUnit]], [[createAgent]], [[createMine]], [[setVehiclePosition]] for example. In case of an object, the object's model [0,0,0] is used.
+{{Feature|informative|
+'''Multiplayer optimisation:''' Global marker commands always broadcast the ''entire'' marker state over the network.
+As such, the number of network messages exchanged when creating or editing a marker can be reduced by performing all but the last operation using local marker commands, then using a global marker command for the last change (and subsequent global broadcast of all changes applied to the marker).
+}}
+
+|s1= markerName [[setMarkerPos]] position
+
+|p1= markerName: [[String]]
+
+|p2= position: [[Position#Introduction|Position2D]] or [[Position#PositionAGL|PositionAGL]] or {{GVI|arma3|1.94|size= 0.75}} [[Object]]. In case of an object, the object's model [0,0,0] is used.
+|r1= [[Nothing]]
+
+|x1= <sqf>"MarkerOne" setMarkerPos getMarkerPos "MarkerTwo";</sqf>
+
+|seealso= [[setMarkerPosLocal]] [[setMarkerBrush]] [[setMarkerColor]] [[setMarkerDir]] [[createMarker]] [[setMarkerShape]] [[setMarkerSize]] [[setMarkerText]] [[setMarkerType]] [[setMarkerAlpha]]
+}}
+
+{{Note
+|user= Pulverizer
+|timestamp= 20070323234700
+|text= Effect is local in OFP.
+|game= ofp
+}}
+
+{{Note
+|user= Dr Eyeball
+|timestamp= 20090807020300
+|text= The marker position can actually be set in 3D. This has a benefit for respawn markers, when placed at the correct altitude ASL on the LHD, the correct altitude will be used for respawn.
+There is no particular benefit for regular markers since [[markerPos]] will still return 0 for the altitude array element. // Tip obtained from Xeno
+}}

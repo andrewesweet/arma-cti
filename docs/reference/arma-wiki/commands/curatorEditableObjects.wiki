@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/curatorEditableObjects
+// revision: 377173 (2026-01-01T10:46:13Z)
+// export sha1: 1d1svumba6jltrpw6xbbtnnkpnhu38g
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|arg= global
+
+|gr1= Curator
+
+|descr= Returns all editable objects which belong to a curator.
+
+|s1= [[curatorEditableObjects]] curatorObj
+
+|p1= curatorObj: [[Object]] - curator module.
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>_objects = curatorEditableObjects myCurator;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[curatorMouseOver]] [[addCuratorEditableObjects]] [[removeCuratorEditableObjects]]
+}}

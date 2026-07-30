@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/camUseNVG
+// revision: 369119 (2024-09-03T10:30:51Z)
+// export sha1: 46lhrf746o1gefnj2o7xbwinffpdpc5
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Camera Control
+
+|descr= Set / clear using of night vision during cutscenes. This command only works with [[camCreate]] created camera that is currently the main camera for the player (see {{Link|#Examples}}).
+
+|s1= [[camUseNVG]] set
+
+|p1= set: [[Boolean]] - enable/disable night vision
+
+|r1= [[Nothing]]
+
+|x1= <sqf>camUseNVG true;</sqf>
+
+|x2= <sqf>
+setDate [2000, 12, 31, 0, 0];
+_cam = "camera" camCreate [0, 0, 0];
+_cam camSetTarget player;
+_cam camSetRelPos [0, -5, 3];
+_cam cameraEffect ["Internal", "Back"];
+_cam camCommit 0;
+camUseNVG true;
+</sqf>
+
+|seealso= [[setCamUseTI]] [[disableTIEquipment]]
+}}

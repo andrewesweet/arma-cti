@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/diag_enabled
+// revision: 369346 (2024-09-03T18:43:02Z)
+// export sha1: mkkrujwvozf6dvjredrya9dmr0lmaeg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|branch= diag
+
+|gr1= Diagnostic
+
+|descr= Checks whether specific diagnostic mode is activated.
+
+|s1= [[diag_enabled]]  mode
+
+|p1= mode: [[String]] - see [[Arma 3: Diagnostics Exe]]
+
+|r1= [[Boolean]] - [[true]] when enabled, [[false]] when disabled
+
+|x1= <sqf>
+"Animation" diag_enable true;
+diag_enabled "Animation"; // returns true
+</sqf>
+
+|seealso= [[Arma 3: Diagnostics Exe]] [[diag_toggle]] [[diag_enable]]
+}}

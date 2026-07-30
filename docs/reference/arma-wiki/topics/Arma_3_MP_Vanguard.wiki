@@ -1,0 +1,100 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_MP_Vanguard
+// revision: 350042 (2023-11-20T22:12:06Z)
+// export sha1: ezc336xe8x0knyb7oqwgwvpg2x20u2b
+// categories: Category:Arma 3: MP Modes
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+In these combined arms scenarios, we're paradropping an important device over a random area on the map, and three teams need to compete by picking up the device and taking it back to their base.
+
+This is a setup guide for Vanguard MP mode. It serves for documenting all possibilities in creating new Vanguard scenarios or modding the mode.
+
+{{Feature|informative|Most features can be tweaked from the module or in the server lobby. The server lobby overwrites parameters set up in the mission.}}
+
+
+== Setting up new scenario ==
+
+To successfully set up a new scenario, you need to go through several steps. All specific settings are documented below in the modules and Server params.
+
+# Find Vanguard modules under Systems->Gameplay Modes
+# Create and set up Vanguard: Objective area.
+# Create 2 or 3 Starting Areas.
+# Fill them with vehicles of your choosing and correct side.
+# Create playable characters (in any position, they will be repositioned on start).
+# Save mission, and create file description.ext into the mission folder. Write this line into the file: It will include all parameters for server lobby setup, and revive parameters.<syntaxhighlight lang="cpp">#include "\a3\Missions_F_Tank\MPTypes\Vanguard\commonDescription.inc"</syntaxhighlight>
+# You are ready to go. Try the mission in single player or MP and see how it works.
+
+
+== Modules ==
+
+=== Vanguard: Objective Area ===
+
+This is the main module, which controls most of the parameters of the game mode. Many of these parameters can be overloaded from the server lobby.
+
+* '''Module size''': This will affect the size of the area. It highly affects the tempo of the match. Too small a zone, in too highly occupied an area, might result in the Device being unable to find a safe place to land outside the module area, on the nearest reasonable position.
+* '''Number of Zone Changes''':How many times the zone will shrink before the Device is dropped.
+* '''Briefing, Zone interval, end game timers''': Timers explained above.
+* '''Number of spawned trucks''': <span class="inline-comment-marker">Describes density (spacing) of spawned trucks.</span>
+** <u>None</u>: No trucks spawned.
+** <u>Few</u>: 300 meters distances.
+** <u>Medium</u> (default): 500 meters distances.
+** <u>Dense</u>: 800 meters distances.
+* '''Disable thermal optics''': Removing thermal mode from all turrets in selected vehicles.<br />
+** <u>None</u>: No changes on vehicles
+** <u>Combat Vehicles</u> (default): Combat vehicles with guns have thermal optics disabled, but unarmed vehicles (like the unarmed Strider), still have their thermals to serve as mobile spotting platforms.
+** <u>All vehicles</u>: No vehicles can have thermals.
+* '''Respawn''': This parameter handles respawn mechanics, although in neither case is it typical revive, because this mechanic doesn’t fit well into the mode.<br />
+** <u>None</u>: No respawn allowed.
+** <u>Revive</u> (default): Revive allowed, in current implementation the reviving member consumes one first aid kit.
+** <u>Into AI members</u>: Experimental feature, which will give a certain amount of AI soldiers divided for a side, to ensure that 10 units (players and AI) by default. They are divided into equal sized groups for the player on the side. If the player dies, he will respawn into one of his AI members. <br />
+*** This functionality also enables players to Join in Progress, as they will replace an AI member in one of the groups.
+
+[[File:vanguardObjectiveArea.jpg|800x600px]]
+
+=== Vanguard: Starting Area ===
+
+This is the starting area for each side.
+
+* '''Module Size''': Marks area that counts as the base
+** All vehicles registered into the area are part of the base.
+** The area does not affect the size of the area into which the Device is needed to be delivered, that is a fixed 100 meters diameter.
+** Vehicles can be marked as part of the base also by synchronizing them with the module, but having them as part of the area is more convenient.
+* '''Side''': Side of the starting area.
+** There cannot be 2 or more bases of one side.
+** There can be either 2 bases for sufficient setup of the scenario, or 3.
+** Starting areas can be randomized, and composition in the starting area will be removed to two-columns layout, with units spawning in the middle. This randomization can be set up only in server lobby params.
+
+[[File:vanguardStartingArea.jpg|800x600px]]
+
+
+== Server lobby params ==
+
+There are multiple server lobby params done for wide customization of the scenario. They often serve for rewriting the basic settings of the game made in modules.
+
+* '''Hour''': Set up time of the scenario.
+* '''Weather''': Set up weather.
+* '''Briefing time''': Overwrite length of Briefing time.
+* '''Zone interval time''': Overwrite length of Zone interval time.
+* '''End game time''': Overwrite length of End game time.
+* '''Respawn''': Set up if you want to play without any respawn, with revive, or add AI reinforcements to each side, which you can command.
+* '''Fill Positions with AI''' (if used): If you use AI as "respawn", set their amount.
+* '''Randomization of Starting position''': Switch sides of set up bases. Vehicles in those bases will be moved into correct positions.
+* '''Name Tags''': Toggle Vanguard name tags that you can see in 3D.
+
+
+== Modding possibilities ==
+
+Vanguard is designed to be as customizable and moddable as possible. Yet there are several restrictions to count with.
+
+=== What can be modded ===
+
+* '''Playable characters''': Any characters you place as playable will work out of the box.
+* '''Vehicles on bases''': Vehicles on bases will work as well.
+
+=== Not moddable ===
+
+* '''Truck for carrying device''': Because the device has to be attached with a specific offset to each truck, only default trucks are supported now.
+* '''AI team members''': AI team members are detected from the player's faction, and AI units are detected accordingly. Factions supported: NATO, CSAT, AAF, Syndikat, FIA for all 3 sides.
+
+
+{{GameCategory|arma3|MP Modes}}

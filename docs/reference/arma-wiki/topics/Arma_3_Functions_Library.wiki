@@ -1,0 +1,277 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Functions_Library
+// revision: 369667 (2024-10-02T11:01:19Z)
+// export sha1: n9mhlcnvlprkx53u9o5wm48o0ymvc70
+// categories: Category:Arma 3: Editing | Category:Functions Library
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side||3}}
+{{arma3}}'s '''Functions Library''' is the way to declare mission, campaign or addon's [[Function]]s. The main difference from older [[:Category:Functions Library|Function Libraries]] is that it runs automatically and does not require a Functions module.
+
+The advantages of using the Functions Library over e.g [[execVM]] an [[SQF Syntax|SQF]] file are as follow:
+# '''Automatic compilation upon mission start''' into a global variable - no need to remember direct paths to files.
+# '''Anti-hack protection''' using [[compileFinal]] (see {{Link|Arma 3: Writing a Function#Recompiling}} and [[BIS_fnc_recompile]])
+# '''Listing in the [[Arma 3: Functions Viewer|Functions Viewer]]'''
+# '''Advanced debugging options'''
+# '''Optional immediate execution upon mission start''', without need for manual call
+# '''Potential performance improvements'''
+
+
+{{Feature|important|This page is about {{arma3}} Functions Library.
+* For {{arma2}}/{{Name|arma2oa|short}}, see [[Arma 2: Functions Library]].
+* For {{tkoh}}, see [[Take On Helicopters: Functions Library]].
+}}
+
+
+== Function Declaration ==
+
+Functions are configured within the {{hl|CfgFunctions}} class.
+
+Mission and campaign specific functions can be configured in [[Description.ext]]/[[Campaign Description.ext]], while addon functions are defined in [[Config.cpp]].
+Configuration structure is the same in both cases.
+
+
+{{Feature|informative|The root directory (noted as '''&lt;ROOT&gt;''' on this page) is the origin from which the game will try to load function files. It depends on {{hl|CfgFunctions}}' location:
+* if [[Description.ext]], '''&lt;ROOT&gt;''' means the [[Mission Editor: External#Mission Folder|mission's root]] directory
+* if [[Campaign Description.ext]], '''&lt;ROOT&gt;''' means the campaign's root directory
+* if in config, '''&lt;ROOT&gt;''' means the '''game'''<nowiki/>'s root directory. The addon path needs to be set manually.
+}}
+
+
+See a basic example config:
+ class '''CfgFunctions'''
+ {
+ 	class {{Color|purple|TAG}}
+ 	{
+ 		class {{Color|darkorange|Category}}
+ 		{
+ 			class {{Color|teal|functionName}} {};
+ 		};
+ 	};
+ };
+* The function's name will be '''{{Color|purple|TAG}}'''_fnc_'''{{Color|teal|functionName}}'''
+* The function will be loaded:
+** from config: {{hl|'''&lt;ROOT&gt;'''\{{Color|darkorange|Category}}\'''fn_'''{{Color|teal|functionName}}'''.sqf'''}}
+** from description.ext: {{hl|'''&lt;ROOT&gt;'''\'''Functions'''\{{Color|darkorange|Category}}\'''fn_'''{{Color|teal|functionName}}'''.sqf'''}}
+
+{{Feature|important|
+'''config.cpp only''':
+* {{hl|<ROOT>}} in mods is defined by the {{hl|file}} mandatory attribute - see the {{Link|#file}} section below.
+* Anywhere outside of running mission, refer to the functions stored in [[uiNamespace]]. e.g: <sqf>arguments call (uiNamespace getVariable "TAG_fnc_functionName");</sqf>
+}}
+
+=== Config Levels ===
+
+A '''CfgFunctions''' config is made of three levels: Tag, Category, and Function.
+
+==== Tag ====
+To prevent duplicates, every author must create a subclass with a unique {{Color|purple|[[Scripting Tags|tag]]}} and create functions under it.
+The tag name will be used when composing a function name (e.g [[BIS_fnc_spawnGroup|'''BIS'''_fnc_spawnGroup]]).
+ class CfgFunctions
+ {
+ 	class {{Color|purple|TAG}}
+ 	{
+ 		class Category
+ 		{
+ 			class myFunction {};
+ 		};
+ 	};
+ 
+ 	class TAG_WeaponManagement
+ 	{
+ 		'''tag''' = {{Color|purple|"TAG"}}; {{cc|the function will be named '''{{Color|purple|TAG}}_fnc_myOtherFunction'''}}
+ 		class Category
+ 		{
+ 			class myOtherFunction {};
+ 		};
+ 	};
+ };
+
+===== Attributes =====
+====== tag ======
+The {{hl|tag}} attribute can override the config {{Color|green|tag}} set differently.
+
+==== Category ====
+The category name changes the function's category in the [[Arma 3: Functions Viewer|Functions Viewer]]. It does not change the function's name, only the loading path.
+ class CfgFunctions
+ {
+ 	class TAG
+ 	{
+ 		class {{Color|darkorange|Category}}
+ 		{
+ 			class myFunction {};
+ 		};
+ 
+ 		class OtherCategory
+ 		{
+ 			'''file''' = "{{Color|darkorange|My}}\{{Color|darkorange|Category}}\{{Color|darkorange|Path}}";
+ 			class myFunction {}; {{cc|file path will be '''&lt;ROOT&gt;'''\{{Color|darkorange|My}}\{{Color|darkorange|Category}}\{{Color|darkorange|Path}}\fn_myFunction.sqf";}}
+ 		};
+ 
+ 		class DataCategory
+ 		{
+ 			'''requiredAddons[]''' = {{Color|darkorange|{ "A3_Data_F" }<nowiki/>}}; {{cc|Optional requirements of [[CfgPatches]] classes. If some addons are missing, category functions will not be compiled.}}
+ 			class myDataFunction {};
+ 		};
+ 	};
+ };
+
+===== Attributes =====
+====== file ======
+The {{hl|file}} attribute can override the category's loading path segment - it is required for mods.
+
+====== requiredAddons ======
+The category can skip loading if a required addon is missing by setting its dependency with the {{hl|requiredAddons}} attribute.
+
+==== Function ====
+{{Feature|informative|By convention, the function class should be named in '''camelCase''' and not have its first letter capitalised (e.g PascalCase):
+* {{Icon|checked}} TAG_fnc_{{Color|teal|myFunction}}
+* {{Icon|unchecked}} TAG_fnc_{{Color|teal|MyFunction}}
+* {{Icon|checked}} TAG_fnc_{{Color|teal|POWRescue}}
+}}
+ class CfgFunctions
+ {
+ 	class TAG
+ 	{
+ 		class Category1
+ 		{
+ 			class {{Color|teal|myFunction}} {};
+ 		};
+ 
+ 		class Category2
+ 		{
+ 			file = "Path\To\Category";
+ 			class myFunction
+ 			{
+ 				'''file''' = "{{Color|teal|My}}\{{Color|teal|Function}}\{{Color|teal|Filepath.sqf}}"; {{cc|file path will be '''&lt;ROOT&gt;'''\{{Color|teal|My}}\{{Color|teal|Function}}\{{Color|teal|Filepath.sqf}}", ignoring "Path\To\Category"}}
+ 			};
+ 
+ 			class {{Color|teal|myFSMFunction}}
+ 			{
+ 				'''preInit'''		= 1;
+ 				'''postInit'''	= 1;
+ 				'''ext'''			= ".fsm";
+ 				'''preStart'''	= 1;
+ 				'''recompile'''	= 1;
+ 			};
+ 		};
+ 	};
+ };
+
+===== Attributes =====
+{| class="wikitable sortable"
+! rowspan="2" | Attribute
+! rowspan="2" | Description
+! colspan="2" | Available in
+|- style="font-size: 0.9em"
+! [[Description.ext]]
+! [[config.cpp]]
+|-
+| file
+| the {{hl|file}} attribute can be used to manually set the file path.
+{{Feature|important|The '''file''' entry '''overrides''' Category's set path and ignores it entirely (they are not merged).}}
+| style="text-align: center" | {{Icon|checked}}
+| style="text-align: center" | {{Icon|checked}}
+|-
+| preInit
+| the {{hl|preInit}} attribute (formerly known as "forced") can be set to 1 to call the function upon mission start, before objects are initialized.<br>Passed arguments are <sqf inline>["preInit"]</sqf>.
+The function is run in an '''[[Scheduler#Unscheduled Environment|unscheduled environment]]'''.
+| style="text-align: center" | {{Icon|checked}}
+| style="text-align: center" | {{Icon|checked}}
+|-
+| postInit
+| the {{hl|postInit}} attribute can be set to 1 to call the function upon mission start, after objects are initialized.<br>Passed arguments are <sqf inline>["postInit", didJIP]</sqf>.
+The function is run in a '''[[Scheduler#Scheduled Environment|scheduled environment]]''' so suspension is allowed, but '''any long term suspension will halt the mission loading until suspension is done'''.
+| style="text-align: center" | {{Icon|checked}}
+| style="text-align: center" | {{Icon|checked}}
+|-
+| ext
+| the {{hl|ext}} attribute can be used to set function file's type; it can be one of:
+* ".sqf" (default)
+* ".fsm" (see [[FSM]])
+| style="text-align: center" | {{Icon|checked}}
+| style="text-align: center" | {{Icon|checked}}
+|-
+| preStart
+| the {{hl|preStart}} attribute can be set to 1 to call the function upon game start, before title screen, but after all addons are loaded.
+| style="text-align: center" | {{Icon|unchecked}}
+| style="text-align: center" | {{Icon|checked}}
+|-
+| recompile
+| the {{hl|recompile}} attribute can be set to 1 to recompile the function upon mission start (functions in [[Description.ext]] are always compiled upon mission (re)start)
+| style="text-align: center" | {{Icon|unchecked}}
+| style="text-align: center" | {{Icon|checked}}
+|-
+| headerType
+| the {{hl|headerType}} adds code to the beginning of functions that can:
+* Set up the [[#Meta Variables|Meta Variables]] _fnc_scriptParent and _fnc_scriptName
+* Name the current scope via the command [[scriptName]]
+* Adds debug information by saving the current execution order in the [[Array]] _fnc_scriptMap.<br/>
+Possible values are:
+* -1: No header - Adds nothing, literally adds a blank [[String]] to the beginning of functions. The functions will have no debug or {{Link|#Meta Variables}} assigned for it and the scope will not be named. Useful to reduce the performance overhead or if custom debug system is used.
+* 0: Default header - The default header changes based on the current [[#Debug Modes|Debug Mode]]
+* 1: System header - Incorporates the [[#Meta Variables|Meta Variables]] _fnc_scriptParent. Also names the current scope.<sqf>
+private _fnc_scriptNameParent = if (isNil '_fnc_scriptName') then { '%1' } else { _fnc_scriptName };
+scriptName '%1';
+</sqf>
+See the following section for more information.
+| style="text-align: center" | {{Icon|checked}}
+| style="text-align: center" | {{Icon|checked}}
+|}
+
+{{Feature|important|Notes about {{hl|preInit}} and {{hl|postInit}} defined in '''config.cpp''':
+* these attributes will make the function run '''on each, every and any mission start'''
+* Any scripting error will prevent the mission from being loaded correctly
+* Server admins might blacklist the whole addon if they find out the function is used for hacking
+}}
+
+
+== Advanced Knowledge ==
+
+=== Meta Variables ===
+
+* '''_fnc_scriptName''': [[String]] - Name of the script
+* '''_fnc_scriptNameParent''': [[String]] - Name of the parent script
+* '''_fnc_scriptMap''': [[Array]] - List of all parent scripts
+
+=== Debug Modes ===
+
+Developers can access several debug modes using ''[[BIS_fnc_functionsDebug]]'' function. '''For this to work [[Description.ext#allowFunctionsRecompile|function recompiling]] has to be allowed!'''
+
+==== Debug Mode 0 ====
+default - incorporates the [[#Meta Variables|Meta Variables]] _fnc_scriptParent and _fnc_scriptName and names the current scope.
+<sqf>
+private _fnc_scriptNameParent = if (isNil "_fnc_scriptName") then { "%1" } else { _fnc_scriptName };
+private _fnc_scriptName = "%1";
+scriptName _fnc_scriptName;
+</sqf>
+
+==== Debug Mode 1 ====
+As per ''Debug Mode 0'' and also saves the current execution order in the [[Array]] _fnc_scriptMap.
+<sqf>
+private _fnc_scriptNameParent = if (isNil "_fnc_scriptName") then { "%1" } else { _fnc_scriptName };
+private _fnc_scriptName = "%1";
+scriptName _fnc_scriptName;
+private _fnc_scriptMap = if (isNil "_fnc_scriptMap") then { [_fnc_scriptName] } else { _fnc_scriptMap + [_fnc_scriptName] };
+</sqf>
+
+==== Debug Mode 2 ====
+As per ''Debug Mode 1'' and also outputs execution order using [[textLogFormat]] ( textLogFormat is not available in the retail version of Arma3 ) is it available in Diagnostics exe?
+<sqf>
+private _fnc_scriptNameParent = if (isNil "_fnc_scriptName") then { "%1" } else { _fnc_scriptName };
+private _fnc_scriptName = "%1";
+scriptName _fnc_scriptName;
+private _fnc_scriptMap = if (isNil "_fnc_scriptMap") then { [_fnc_scriptName] } else { _fnc_scriptMap + [_fnc_scriptName] };
+textLogFormat ["%1 : %2", _fnc_scriptMap joinString " >> ", _this];
+</sqf>
+
+
+== See Also ==
+
+* [[Initialisation Order]]
+* [[Arma 3: Functions Viewer]]
+* [[:Category:Arma 3: Functions|Arma 3 Functions]]
+* [[Arma 3: Writing a Function|Writing a Function Tutorial]]
+
+
+{{GameCategory|arma3|Editing}}
+[[Category: Functions Library]]

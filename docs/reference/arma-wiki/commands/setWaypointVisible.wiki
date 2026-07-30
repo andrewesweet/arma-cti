@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/setWaypointVisible
+// revision: 377758 (2026-01-03T00:58:16Z)
+// export sha1: coy13zl6ludc2ui2pp6fj6jevfpqo1e
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|eff= global
+
+|gr1= Waypoints
+
+|descr= Sets the visibility of the given waypoint in 3D HUD view (for map visibility see [[showWaypoint]]).
+
+|s1= waypoint [[setWaypointVisible]] visible
+
+|p1= waypoint: [[Waypoint]]
+
+|p2= visible: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[grp, 2] setWaypointVisible false;</sqf>
+
+|x2= <sqf>[group player, currentWaypoint group player] setWaypointVisible false;</sqf>
+
+|seealso= [[waypointVisible]] [[showWaypoint]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-09-23 - 08:22 (UTC)</dd>
+<dt class="note">[[User:Sixtyfour|Sixtyfour]]</dt>
+<dd class="note">This does not apply to Zeus/Curator view... so this command won't hide the Waypoint lines and icons from your view as a Zeus when units are in your EditableAddons list.
+</dd>
+
+</dl>

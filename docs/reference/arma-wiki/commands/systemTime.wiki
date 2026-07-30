@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/systemTime
+// revision: 347950 (2023-11-07T05:40:08Z)
+// export sha1: ksu3ypntngssb878tn12reskga6ilfm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Time | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Time
+
+|descr= Returns system time.
+
+|s1= [[systemTime]]
+
+|r1= [[Array]] of [[Number]]s in format [year, month, day, hour, minute, second, millisecond]
+
+|x1= <sqf>private _currentTime = systemTime;</sqf>
+
+|x2= <sqf>systemTime apply {if (_x < 10) then {"0" + str _x} else {str _x}}; // ["2021","05","03","14","09","37","593"]</sqf>
+
+|x3= <sqf>systemTime params ["_year", "_month", "_day", "_hour", "_minute", "_second", "_millisecond"];</sqf>
+
+|seealso= [[systemTimeUTC]] [[date]] [[time]] [[dayTime]] [[diag_tickTime]] [[serverTime]] [[missionStart]] [[diag_deltaTime]]
+}}

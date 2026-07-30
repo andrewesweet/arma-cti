@@ -1,0 +1,117 @@
+// source: https://community.bistudio.com/wiki/ACE_FAQ
+// revision: 349846 (2023-11-20T22:10:41Z)
+// export sha1: a2fz4gf8wc0imx5x1op1a9c76woe6x6
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Acebanner.jpg|right]]
+
+== General ==
+=== I think I found a bug. What do I do? ===
+Check the existing reports using the {{Link|link= http://dev-heaven.net/projects/ace-mod/issues|text= ACE trouble ticket system}} to see if someone else has reported a similar problem, there might be useful information. If you have determined you've found an unreported problem then use the {{Link|link= http://dev-heaven.net/projects/ace-mod/issues/new|text= new issues}} button on the web page to create a trouble ticket.
+
+Be sure to include the patch levels of ArmA and ACE. Then try to describe objectively and in detail what you are observing and and conditions that would make it easier for the developers to reproduce your problem. If the bug involves a custom mission you are developing it would be handy to include that mission as part of the ticket.
+
+Do not set the Status, Priority, Catagory, or any other of the pull-down fields below the text panel for your ticket description. Those are for the ACE team leaders to use and they'll just reset the values if you fiddle with them anyway.
+== Player Issues ==
+=== I keep passing out. Why? ===
+One of ACE's features is a system modelling soldier fatigue. Note carefully the weight of your gear. There is an additional amount of
+base weight representing your boots, helmet, body armor, etc. around 20kg. Once you cross certain weight thresholds it becomes much
+more likely that activities like sprinting or moving on a steep slope will tire you out quickly. Symptoms of fatigue include poor aim,
+heavy breathing, blackouts, and finally unconciousness.
+
+To regain your stamina, just rest. Kneeling helps, going prone even more.
+
+To help avoid fatigue in the first place concider the following.
+* Watch your weight. Taking heavy weapons or lots of magazines can send your weight soaring.
+* Travel slowly. Walk instead of running. Move in short bursts and take a knee now and then.
+* Pick a more fit soldier. Some types have more stamina than others.
+* Get a lift. Ride in style and stow extra ammo in the vehicle itself.
+
+== Client Issues ==
+=== My graphics driver halts when using ACE on Vista ===
+* Make sure you are running at least ACE 1.09 - there are performance hotfixes in it.
+* Ensure you have a stable and reasonable recent graphics driver. Vista SP2 also helps.
+* There is a tweek to adjust the timeouts for Vista's graphics subsystem. It should only be attempted if you are comfortable with making changes to the registery. Details can be found in this article discussing {{Link|http://www.microsoft.com/whdc/device/display/wddm_timeout.mspx|wddm timouts}}.
+
+=== How do change the amount of chatter from the AI? ===
+* Find the file clientside_config.hpp in the subfolder dta\ACE of your ArmA game folder ( e.g. c:\Program Files\Atari\ArmA ).
+* Optionally make a backup copy for just in case situations.
+* Open that file with a text editor, notepad works fine.
+* Locate string
+<pre>
+#define ACE_RADIO_FULL
+</pre>
+* Change the define to one of the following
+** ACE_RADIO_SILENT
+** ACE_RADIO_STEALTH
+** ACE_RADIO_INFORMATIVE
+** ACE_RADIO_FULL
+* Your file should now have lines that look like this.
+<pre>
+Stealth active speech files:
+Negative, Roger, On the way, Moving On, Ready, Waiting
+
+Informative active speech files:
+Negative, Roger, On the way, Moving On, Ready, Waiting
+Injured, Status Red, Ammo Low, Fuel Low, Out of Ammo, Out of Fuel, Contact, Contact (vehicles), Under Fire, Where Are You?
+
+Example: #define ACE_RADIO_SILENT
+Example: #define ACE_RADIO_STEALTH
+Example: #define ACE_RADIO_INFORMATIVE
+Example: #define ACE_RADIO_FULL
+
+### ONLY USE ONE #define at time ###
+*/
+
+#define ACE_RADIO_STEALTH
+</pre>
+* Save the file and restart ArmA. The amount of chatter should be different now.
+== Server Issues ==
+
+== Mission Developer Issues ==
+
+=== I can't see all the units in the ArmA mission editor when using ACE. How do I get that back? ===
+ACE hides these units by default to reduce clutter in the units and groups lists as well as to help avoid problems with
+accidently using non-ACE items. But if you desire to access the original units and groups it is easy.
+
+* Find the file clientside_config.hpp in the subfolder dta\ACE of your ArmA game folder ( e.g. c:\Program Files\Atari\ArmA ).
+* Optionally make a backup copy for just in case situations.
+* Open that file with a text editor, notepad works fine.
+* Locate string
+<pre>
+#define ACE_SCOPE_SHOW_BIS __hidden
+</pre>
+* Change the value from __hidden to __visible. Note there are two leading underscores in this value.
+* Add or uncomment a line ( preferably following the above change )
+<pre>
+#define ACE_SHOW_BIS_CLASSES
+</pre>
+* Your file should now have lines that look like this.
+<pre>
+/*
+"ACE Mod" - "Class hiding"
+Hide BIS classes: set "ACE_SCOPE_SHOW_BIS" to "__hidden"
+Show BIS classes: set "ACE_SCOPE_SHOW_BIS" to "__visible"
+
+NOTE: it is 2x a underline ( _ ) before "hidden" or "visible"
+*/
+#define __hidden 1
+#define __visible 2
+
+#define ACE_SCOPE_SHOW_BIS __hidden
+
+/*Uncomment the following line to show BIS Class Weapons and ammo in RTE and some missions.
+Mission designers may use ACE_HIDE flag from configs to control display of BIS classes.
+*/
+
+#define ACE_SHOW_BIS_CLASSES
+</pre>
+* Save the file and restart ArmA. You should now be able to access all units and groups.
+
+=== ACE is interfering with my mission's custom weather. How do I fix this? ===
+Create a game logic and add the following to it is init line.
+<code style="display: block">ace_sys_network_WeatherSync_Disabled = true; ace_sys_network_TimeSync_Disabled = true;
+</code>
+
+=== How do I add items to a unit's rucksack? ===
+See the [[ACE_Features#Rucksack_System|ACE Features section on Rucksacks]].

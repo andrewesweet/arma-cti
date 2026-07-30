@@ -1,0 +1,185 @@
+// source: https://community.bistudio.com/wiki/Camera_Tutorial
+// revision: 370868 (2025-02-21T10:43:59Z)
+// export sha1: fomqw35bp68qwbfhur1llm35d9a464t
+// categories: Category:Arma Scripting Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Basics ==
+
+A cinematic camera is what is commonly known as a "cutscene"; the player's input are dismissed and events happen during the video.<br>
+A camera is '''[[Multiplayer Scripting#Locality|local]]''' to the computer where the script has been called; one player could see a cutscene but still get killed by another player that didn't trigger the video.
+
+
+== How to ==
+
+The list of all camera commands can be found in the [[:Category:Command Group: Camera Control|Camera command group]] category.
+
+{{Feature|important|
+The "Prepare" version of camera commands has been introduced with {{arma1}}. Using this set of commands helps the engine preloading the camera's (future) field of view (see also [[preloadCamera]]).<br><!--
+-->'''{{ofp}}''' only features the "Set" version of camera commands; use them instead (e.g [[camPreparePos]] becomes [[camSetPos]], [[camCommitPrepared]] becomes [[camCommit]], etc).<br><!--
+-->Only [[camCommitted]] is common to both syntaxes.}}
+
+=== Create the camera ===
+
+<sqf>private _camera = "camera" camCreate getPosATL player;</sqf>
+
+=== Enter the camera ===
+
+<sqf>_camera cameraEffect ["internal", "back"];</sqf>
+
+=== Select a target ===
+
+==== Object target ====
+<sqf>_camera camPrepareTarget player; // a camera will automatically target the human target's face</sqf>
+
+==== Position target ====
+<sqf>_camera camPrepareTarget getPosATL player;</sqf>
+
+=== Place the camera ===
+
+==== World position ====
+<sqf>_camera camPreparePos (player getRelPos [5, 0]);</sqf>
+
+==== Relative position ====
+<sqf>
+_camera camCommitPrepared 0; // required to apply the prepared target first - otherwise a long trip from [0,0,0] is to follow
+_camera camPrepareRelPos [0,5,0];
+</sqf>
+
+=== Apply camera's Field of View ===
+
+<sqf>_camera camPrepareFOV 0.5; // standard FOV is 0.7; lesser (e.g 0.5) is zoomed in, greater (e.g 0.9) is zoomed out</sqf>
+
+=== Apply all the changes ===
+
+==== Immediately or with transition ====
+<sqf>_camera camCommitPrepared 0; // 0 for immediate change, value in seconds for transition</sqf>
+
+==== With a loading timeout ====
+<sqf>
+_camera camPreload 3;	// since Armed Assault - instantly moves the camera once preload or timeout is done.
+						// tells the game to preload the future field of view. 3 here is a timeout, 0 for infinite timeout
+</sqf>
+
+=== Check that the commit happened ===
+
+<sqf>camCommitted _camera; // for camCommit/camCommitPrepared usage</sqf>
+
+<sqf>camPreloaded _camera; // for camPreload usage</sqf>
+
+=== Leave the camera ===
+
+<sqf>_camera cameraEffect ["terminate", "back"];</sqf>
+
+=== Delete the camera ===
+
+<sqf>camDestroy _camera;</sqf>
+
+
+== Specific cases ==
+
+* A camera of bird type (seagull or crowe) '''cannot''' be controlled via "Prepare" commands - only camSet* ones.
+* A camera of bird type is '''always''' committed ([[camCommitted]] will always return [[true]]) even if it is still moving toward its destination.
+
+
+== Full example ==
+
+{| class="wikitable"
+! style="width: 50%" | [[SQF Syntax]]
+! [[SQS Syntax]]
+|-
+|
+<sqf>
+private _camera = "camera" camCreate [0, 0, 0];
+_camera camPrepareTarget player;
+_camera camCommitPrepared 0; // needed for relative position
+_camera camPrepareRelPos [0, -5, 10];
+_camera cameraEffect ["internal", "back"];
+_camera camCommitPrepared 0;
+waitUntil { camCommitted _camera };
+
+_camera camPrepareRelPos [90, 25, 8];
+_camera camCommitPrepared 5;
+waitUntil { camCommitted _camera };
+
+_camera camPrepareRelPos [-90, -5, 5];
+_camera camCommitPrepared 3;
+waitUntil { camCommitted _camera };
+
+sleep 3;
+_camera cameraEffect ["terminate", "back"];
+camDestroy _camera;
+</sqf>
+
+|
+
+<sqs>
+_camera = "camera" camCreate [0, 0, 0]
+_camera camSetTarget player
+
+_camera camSetRelPos [0, -5, 10]
+_camera cameraEffect ["internal", "back"]
+_camera camCommit 0
+@camCommitted _camera
+
+_camera camSetRelPos [90, 25, 8]
+_camera camCommit 5
+@camCommitted _camera
+
+_camera camSetRelPos [-90, -5, 5]
+_camera camCommit 3
+@camCommitted _camera
+
+~3
+_camera cameraEffect ["terminate", "back"]
+camDestroy _camera
+</sqs>
+|}
+
+
+== Picture-in-Picture ==
+
+=== Create Source ===
+
+The Picture-in-Picture (PiP) RTT (or R2T, Render to Texture) source can be defined at the {{Link|#Enter the camera}} step; instead of
+<sqf>_camera cameraEffect ["internal", "back"];</sqf>
+use the following to create a PiP source - multiple sources can be 
+<sqf>_camera cameraEffect ["internal", "back", "rttName"];</sqf>
+
+=== Configure PiP Effects ===
+
+A camera effect is set using [[setPiPEffect]] as such:
+<sqf>"rttName" setPiPEffect [2]; // sets thermal imaging</sqf>
+
+Once all the configuration is done, the PiP texture can be accessed by referencing its name "rttName". For example:
+<sqf>
+if (!isPiPEnabled) exitWith { systemChat "PiP is not enabled in video options"; };
+
+with uiNamespace do // or use disableSerialization
+{
+	private _ctrl = findDisplay 46 createDisplay "RscDisplayEmpty" ctrlCreate ["RscPicture", -1];
+	_ctrl ctrlSetPosition [safeZoneW * 0.75, safeZoneY, safeZoneW * 0.25, safeZoneH * 0.25];
+	_ctrl ctrlSetText "#(argb,512,512,1)r2t(rttName,1.0)";
+	_ctrl ctrlCommit 0;
+};
+</sqf>
+
+In order to stop the camera from "broadcasting", use
+<sqf>
+_camera cameraEffect ["terminate", "back", "rttName"];	// terminates "rttName" r2t source
+_camera cameraEffect ["terminate", "back"];				// terminates all r2t source
+</sqf>
+
+The camera still exists until destroyed with [[camDestroy]].
+
+
+== See also ==
+
+* [[Camera.sqs]]
+* [[Arma 3: Splendid Camera]]&nbsp;/&nbsp;[[BIS_fnc_camera]]
+* [[:Category:Command Group: Camera Control|Command Group: Camera Control]]
+* [[BIS_fnc_PIP]]
+
+
+[[Category:Arma Scripting Tutorials]]

@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:ofpr
+// revision: 322495 (2022-06-13T11:16:37Z)
+// export sha1: dw2hc6xqgwakr7ekbivrtefr4ebr0vs
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|ofpr}}</includeonly><noinclude>{{Doc/Template
+|descr= Returns {{hl|{{ofpr}}}}.
+|example1= <nowiki>{{ofpr}}</nowiki>
+|result1= {{ofpr}}
+}}</noinclude>

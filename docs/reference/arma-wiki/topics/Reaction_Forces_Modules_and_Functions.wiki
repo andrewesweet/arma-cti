@@ -1,0 +1,308 @@
+// source: https://community.bistudio.com/wiki/Reaction_Forces/Modules_and_Functions
+// revision: 373953 (2025-07-04T11:39:05Z)
+// export sha1: omw4pg05sarch8izac86jslpc6e54mj
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|Side}}
+
+This article explains useful Modules and Functions you can use in your mission making.
+
+
+== Modules ==
+
+=== Wildfire ===
+
+Creates a fire with defined size and intensity that can be extinguished with the helicopter water bucket. If synchronised to each other, the module with the highest fire intensity will slowly increase lower intensity fire modules.
+If you synchronize Wildfire modules in Eden Editor, the fire intensity will spread to synchronised modules. This "influence" system will not spread everything randomly but only happens on predetermined/placed modules so it won't go uncontrollable.
+
+==== Arugments ====
+
+===== Fire Intensity =====
+The intensity of fire. 0% is no fire, 100% is very intense fire that requires more water to be put out.
+
+===== Size =====
+Determines the size of the fire area.
+
+===== On Intensity Changed =====
+A code that will run upon an intensity change e.g. a bucket water has landed on the fire.
+<sqf>params ["_module", "_intensityBefore", "_intensityAfter"];</sqf>
+Where:
+* _module: the module object
+* _intensityBefore: the intensity before the change
+* _intensityAfter: the intensity after the change
+You can use a number between 0 to 1 to overwrite the intensity.
+
+===== On Extinguishment =====
+A code that will run upon the fire has been extinguished.
+<sqf>params ["_module"];</sqf>
+Where:
+* _module: the module object
+
+==== Note ====
+The extinguished wildfire module will not be deleted automatically. You can use [[deleteVehicle]] to remove the module and effects.
+If the simulation is disabled ([[enableSimulation]]) the influence system will stop to receive nearby wildfire's intensity.
+
+==== See also ====
+{{Link|#lxRF_fnc_wildfire}}
+
+=== Hit Indicator ===
+
+Enables audio cues when hitting and taking down enemy soldiers.
+The sound is only played if player successfully hit a target.
+
+==== Arguments ====
+
+===== Headshots only =====
+Plays the sound only when you have done a headshot.
+
+===== Scream on death =====
+Plays a scream voice upon you killed a target.
+
+
+== Functions ==
+
+=== lxRF_fnc_bucket ===
+
+Controls Helicopter Bucket functionalities.
+
+==== Syntax ====
+<sqf>[bucketObject, mode, arguments] call lxRF_fnc_bucket;</sqf>
+* bucketObject - Object. Either of "WaterBucket_1000L_Red_RF" or "WaterBucket_1000L_Yellow_RF" type of object should be used.
+* mode - String.
+** "ReleaseWater" - releases the current water.
+** "setFill" - sets the water level.
+** "aimPos" - returns the estimated water aiming/land position.
+* arguments - see below.
+** if "setFill",
+*** Number - 0 to 1 where 0 is empty and 1 is full.
+
+===== Return value =====
+* Position - Array if "aimPos" mode.
+
+==== Examples ====
+* Fills the bucket: <sqf>[bucket_1, "setFill", 1] call lxRF_fnc_bucket;</sqf>
+* Perform a waterbomb: <sqf>[bucket_1, "ReleaseWater"] call lxRF_fnc_bucket;</sqf>
+
+=== lxRF_fnc_triggerWater ===
+
+Use in a condition of a trigger so the trigger will detect a water drop from a bucket.
+
+==== Examples ====
+* In a trigger's Condition: <sqf>thisTrigger call lxRF_fnc_triggerWater;</sqf>
+
+=== lxRF_fnc_wildFire ===
+
+Controls Wildfire module's functionalities.
+
+==== Syntax ====
+<sqf>[wildfireModule, mode, arguments] call lxRF_fnc_wildFire;</sqf>
+* wildfireModule - Module Object.
+* mode - String.
+** "setIntensity" - sets the wildfire's intensity level. (Run globally aka remoteExec or remoteExecCall to apply the changes to all client!)
+** "getIntensity" - gets the wildfire's intensity level.
+** "DebugOn" - enables the debug system on the module. The debulg will show the position of the module, intensity and area in 3D space and map.
+** "DebugOff" - disables the debug system on the module.
+
+===== Return Value =====
+* Intensity - Number, 0 to 1 if "getIntensity" mode.
+
+==== Alternative Syntax ====
+<sqf>[position, mode, [intensity, area, onExtinguishedScript, onIntensityChangedScript]] call lxRF_fnc_wildFire;</sqf>
+* position - Array.
+* mode - String.
+** "fireCreate" - sets the wildfire's intensity level.
+* arguments - (Optional) Array.
+** intensity - (Optional) Number. Sets the initial intensity in 0 to 1. Default: 0.3
+** area - (Optional) Number. Sets the fire area in 1 to 50 in meters. Default: 5
+** onExtinguishedScript - (Optional) String. See {{Link|#On Intensity Changed}}. Default: "true"
+** onIntensityChangedScript - (Optional) String. See {{Link|#On Extinguishment}}. Default: "true"
+
+===== Return Value =====
+* module - Created Wildfire module.
+
+==== Alternative Syntax 2 ====
+<sqf>mode call lxRF_fnc_wildFire;</sqf>
+* mode - String.
+** "DebugOn" - Enables the debug on every Wildfire modules.
+** "DebugOff" - Disables the debug on every Wildfire modules.
+** "AutoConnect" - In Eden Editor only: sets the synchronisation network on every selected Wildfire modules, depends on the distance between and area, so spread/influence system will work.
+
+=== lxRF_fnc_mapContextMenu ===
+
+Generates a context menu upon a mouse click on the map.
+
+==== Syntax ====
+<sqf>["Init"] call lxRF_fnc_mapContextMenu;</sqf>
+
+==== Alternative Syntax ====
+<sqf>["Init", [LMB, RMB]] call lxRF_fnc_mapContextMenu;</sqf>
+* LMB - Boolean. true to enable the menu upon a Left Click.
+* RMB - Boolean. true to enable the menu upon a Right Click.
+
+==== Setting the context menu items ====
+An item is defined in this syntax:
+<sqf>[text, action, icon, tooltip, enabled, bgCol, textCol, itemExpand]</sqf>
+* text - String, item text/title
+* action - Code, action to execute upon clicking this item
+* icon - String, icon path to be shown in the item
+* tooltip - String, tooltip to be shown when mouse over the item
+* enabled - Boolean, true to enable this item, false to disable so cannot click the item
+* bgCol - Array, format [R, G, B, A], sets the background color of the item
+* textCol - Array, format [R, G, B, A], sets the item text color
+* itemExpand - Array, define nested items within this array
+<sqf>
+lxRF_fnc_mapContextMenu_menu = [
+	["Example Item 1", { params ["_ctrl", "_mPos", "_path"]; systemChat format ["Cursor pos: %1, Item path: %2", _mPos, _path] }, "a3\3den\Data\Cfg3DEN\Comment\texture_ca.paa", "Tooltip is also possible"],
+	["*hr*"],	// or you can leave this array empty [] so it can create a separate line
+	["Example Item 2", {}, "", "", false],							// you can disable an item
+	["Example Item 3", {}, "", "", false, [1,0,1,1], [0,1,0,1]],	// you can also set BG and text color
+	["Example Item 4", nil, nil, nil, nil, nil, nil],				// using nil will use default argument
+	["Example Item 5", nil, nil, nil, nil, nil, nil, [
+		["Example Item 5-1", { systemChat "Same way to define it" }],
+		[],
+		["Example Item 5-2"]
+	]]	// nesting items is also possible like this
+];
+</sqf>
+lxRF_fnc_mapContextMenu_menu is a [[missionNamespace]] variable. If the variable is empty [] nothing will happen
+
+==== Event Handlers ====
+To run an EH before the menu generation:
+<sqf>
+[missionNamespace,"lxRF_fnc_mapContextMenu_beforeCall", {
+	params ["_map", "_mPos"];
+}] call BIS_fnc_addScriptedEventHandler;
+</sqf>
+* _map - Control, the map control
+* _mPos - Array, the mouse position
+Useful to change the items depends on the context.
+To run an EH after the menu generation:
+<sqf>[missionNamespace,"lxRF_fnc_mapContextMenu_beforeCall",{
+	params ["_map","_mPos","_disp","_ctrls"];
+}] call BIS_fnc_addScriptedEventHandler;</sqf>
+* _map - Control, the map control
+* _mPos - Array, the mouse position
+* _disp - Display, the created display
+* _ctrls - Array, the button controls
+Useful to change the GUI elements' preferences if necessary.
+
+=== lxRF_fnc_customGameOptions ===
+
+Gets or sets the custom game options in RF's custom game options framework.
+
+==== Syntax ====
+<sqf>[mode, option, setDefault] call lxRF_fnc_customGameOptions;</sqf>
+* mode - String
+** "set" - Sets the option setting.
+** "get" - Gets the option setting.
+** "forceGet" - Gets the option setting. This will not consider the MP server's setting but only your profile's preference.
+* setDefault - (Optional) Boolean, if "get" or "forceGet" sets the default state and save into the profile.
+===== Return Value =====
+* value - Number, if "get" or "forceGet"
+==== See also ====
+{{Link|#Custom Game Options Framework}}
+
+=== lxRF_fnc_openCustomConfig ===
+
+Use this to update the Dedicated server's setting to overwrite everyone's setting. You have to be an admin to use this.
+<sqf>call lxRF_fnc_openCustomConfig;</sqf>
+
+=== lxRF_fnc_triggerWater ===
+<sqf>thisTrigger call lxRF_fnc_triggerWater</sqf>
+Use this code as a condition of a trigger to detect a water drop in the area.
+
+=== lxRF_fnc_RC40_attack ===
+Make an RC40 "kamikaze" into the determined target.
+<sqf>[RC40, target] call lxRF_fnc_RC40_attack</sqf>
+* RC40 - Object, RC40 HE object
+* target - Array (Position) or Object
+** If it is an object, it will try to maneuver to predicted position.
+or
+<sqf>[soldier, target] call lxRF_fnc_RC40_attack</sqf>
+* soldier - Object, a soldier with an RC40 HE magazine
+* target - Array (Position) or Object
+** If it is an object, it will try to maneuver to predicted position.
+This syntax will exit if:
+* the unit has no RC40
+* the unit has no compatible weapon to fire it
+* the unit failed to aim upwards
+* the unit's group behaviour is either SAFE or CARELESS (for an unknown reason, both won't work)
+This syntax leave some logs in RPT files upon each stage of function.
+
+=== lxRF_fnc_water ===
+Creates a water projectile in desired settings.
+<sqf>["create",
+	[_projectileClass,_pos,_vel,_shotOwner,_muzzleDiameter,_muzzleSpread]
+] call lxRF_fnc_water</sqf>
+* _projectileClass - "waterCannonAmmo_RF" or "waterCannonAmmo_NoScript_RF"
+* _pos - Array, spawn position
+* _vel - Array, velocity
+* _shotOwner - Object, sets the water's owner
+* _muzzleDiameter - Number, bigger number means bigger projectile
+* _muzzleSpread - Number, bigger number means bigger particle effect
+
+=== Scripted Event Handlers ===
+<sqf>[missionNamespace, "lxRF_water_droppedOnUnit", { params ["_unit", "_instigator", "_velocity"] }] call BIS_fnc_addScriptedEventHandler; // runs when a water is dropped on an unit
+[missionNamespace, "lxRF_water_droppedOnVehicle", { params ["_vehicle", "_instigator", "_velocity"] }] call BIS_fnc_addScriptedEventHandler; // runs when a water is dropped on a vehicle</sqf>
+* _unit/_vehicle - the dropped object
+* _instigator - the water's owner
+* _velocity - the water's velocity
+
+== Custom Game Options Framework ==
+
+In Reaction Forces, we introduced a framework to add game options.
+You can access the custom category in regular Game Options screen. Also the options are very moddable via a config.
+<syntaxhighlight lang="cpp">
+class lxRF_customDifficultyOptions
+{
+	// this will be the variable header
+	class yourTag
+	{
+		displayName = "Your Options";
+		class Options
+		{
+			// this will be the variable suffix
+			// so will be saved into profile with the name yourTag_combo in this case
+			class combo
+			{
+				displayName = "combo";
+				type = "combo";
+				optionPicture = "something_co.paa";
+				optionDescription = "desc";
+				class items
+				{
+					class first
+					{
+						displayName = "first";
+						value = 0;	// this variable will be stored into the profile
+					};
+
+					class second
+					{
+						displayName = "second";
+						value = 1;
+					};
+
+					class third
+					{
+						displayName = "third";
+						value = 2;
+					};
+				};
+			};
+
+			class checkbox
+			{
+				displayName = "checkbox";
+				type = "checkBox";	// 0 or 1
+			};
+
+			class slider
+			{
+				displayName = "slider";
+				type = "slider";	// 0 to 1
+			};
+		};
+	};
+};
+</syntaxhighlight>

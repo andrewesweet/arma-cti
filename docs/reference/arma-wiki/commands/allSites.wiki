@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/allSites
+// revision: 378477 (2026-04-24T11:33:54Z)
+// export sha1: owtlyvt4fl6jmiaclsycwgnx6wxrvyj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Command Group: Sides | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Broken Commands
+|gr2= Sides
+
+|descr= Return all sites in map.
+{{Feature|warning|This command is considered deprecated and is no longer supported}}
+
+|s1= '''allSites'''
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>_allSites = allSites;</sqf>
+
+|seealso= [[deleteSite]] [[createSite]] [[allGroups]] [[allDead]] [[playableUnits]] [[switchableUnits]] [[vehicles]] [[allUnitsUAV]] [[allCurators]] [[allDeadMen]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20220829214802
+|text= Well, this command is not broken, it just doesn't have anything to return.
+}}

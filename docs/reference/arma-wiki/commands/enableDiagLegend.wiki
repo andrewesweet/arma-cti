@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/enableDiagLegend
+// revision: 310210 (2022-05-05T13:10:42Z)
+// export sha1: rczpecbve9cpjhttukj7hnjim0qsud5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+
+|gr1= Diagnostic
+
+|descr= Enable or disable the legend for diagnostics. '''Internal dev only!'''
+
+|s1= [[enableDiagLegend]] enable
+
+|p1= enable: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>enableDiagLegend false;</sqf>
+
+|seealso= [[diag_fpsMin]] [[diag_frameNo]] [[diag_log]] [[diag_tickTime]]
+}}

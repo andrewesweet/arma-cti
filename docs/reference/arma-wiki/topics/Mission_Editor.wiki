@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/Mission_Editor
+// revision: 353539 (2024-03-19T12:01:30Z)
+// export sha1: a490seoq41ls37vafo6gmefuktcfilp
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+
+{{PAGENAME}} may refer to:
+* [[:Category:Eden Editor|Eden Editor]] - 3D scenario editor introduced in {{GameCategory|arma3|link= y}}
+* [[2D Editor]] - Map only scenario editor used in [[:Category:Operation Flashpoint|{{ofp}}]], [[:Category:ArmA: Armed Assault|{{Name|arma1|short}}]], {{GameCategory|arma2|link= y}}, {{GameCategory|arma3|link= y}} and [[Take On Helicopters]]
+* [[Game 2 Editor]] - Prototype 3D editor originally planned for unreleased sequel to Operation Flashpoint. Never officially supported.

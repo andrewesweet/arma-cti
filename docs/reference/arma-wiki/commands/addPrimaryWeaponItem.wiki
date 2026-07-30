@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/addPrimaryWeaponItem
+// revision: 347500 (2023-09-24T01:03:28Z)
+// export sha1: 3cyvqtzbhm3ia47e0tt27mvkbgafepu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= local
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Adds weapon item, including magazine, directly to the [[primaryWeapon]]. This is used for infantry weapons.
+
+|s1= unit [[addPrimaryWeaponItem]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]] or [[Boolean]] - '''false''' is returned if '''item''' can not be added
+
+|x1= <sqf>player addPrimaryWeaponItem "muzzle_snds_H";</sqf>
+
+|seealso= [[addWeaponItem]] [[removePrimaryWeaponItem]] [[removeAllPrimaryWeaponItems]] [[addSecondaryWeaponItem]] [[addHandgunItem]] [[addBinocularItem]] [[weaponsItems]] [[handgunItems]] [[primaryWeaponItems]] [[secondaryWeaponItems]] [[binocularItems]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-06-22 - 23:08 (UTC)</dd>
+<dt class="note">[[User:SilentSpike|SilentSpike]]</dt>
+<dd class="note">
+If the item being added is not supported by the unit's weapon then the command will simply fail silently. The item is also '''not''' added to the unit's inventory in such a case.
+</dd>
+
+</dl>

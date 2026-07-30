@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_bitflagsCheck
+// revision: 329417 (2022-07-27T15:28:10Z)
+// export sha1: posu5iu78jumkfnhfzzsqzzouu1eoxe
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Bitwise | Category:Functions | Category:Introduced with Arma 3 version 1.66 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.66
+
+|gr1= Bitwise
+
+|descr= Checks if one or more flags are set in the given flagset, represented with decimal or hexadecimal number<br>
+(Hexadecimal number representation is simply auto-converted into decimal by the engine)<br>
+In other words, it simply performs a [[BIS_fnc_bitwiseAND|bitwise AND (&)]] operation on the two numbers: {{hl|flags & flagset > 0}}<br>
+To check which flags are present in given flagset use [[BIS_fnc_bitflagsToArray]]<br><br>
+
+|pr= Due to various limitations of the Real Virtuality engine this function is intended to work with unsigned 24 bit integers only. This means that the supported range is 2^0...2^24 (1..16777216).
+
+|s1= [flagset, flag] call [[BIS_fnc_bitflagsCheck]]
+
+|p1= flagset: [[Number]] - flagset
+
+|p2= flag: [[Number]] - one or more flags to check
+
+|r1= [[Boolean]]
+* [[true]]: one or more flags are set in given flagset
+* [[false]]: no given flag or flags are set in the given flagset
+
+|x1= <sqf>
+[2 + 4 + 8, 8] call BIS_fnc_bitflagsCheck; // true
+[2 + 4 + 8, 2 + 32] call BIS_fnc_bitflagsCheck; // true
+[2 + 4 + 8, 1] call BIS_fnc_bitflagsCheck; // false
+[2 + 4 + 8, 1 + 32] call BIS_fnc_bitflagsCheck; // false
+</sqf>
+
+|seealso= [[BIS_fnc_bitflagsFlip]] [[BIS_fnc_bitflagsSet]] [[BIS_fnc_bitflagsToArray]] [[BIS_fnc_bitflagsUnset]]
+}}

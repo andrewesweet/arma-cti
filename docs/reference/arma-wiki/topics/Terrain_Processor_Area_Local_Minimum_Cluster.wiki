@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Area:_Local_Minimum_Cluster
+// revision: 201591 (2021-01-17T20:15:46Z)
+// export sha1: 4dx3t27jq2nuooojc1x30z15qafsjij
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Area]]
+{{TerrainProcessorManual|Area: Local Minimum Cluster|BITasksPlugin.dll|Polygon, PolygonM, PolygonZ|Yes
+|DESCRIPTION=Random placement of multiple objects into local depressions within the extent of the polygons. It creates linear clusters.
+|TASKPARAMETERS=* '''Random seed''' - number used to initialize pseudorandom number generator.
+|OBJECTPROTOTYPEPARAMETERS=* '''OBJECT''' - Object's prototype name
+* '''MINHEIGHT''' - Minimal size in %
+* '''MAXHEIGHT''' - Maximal size in %
+* '''MINDIST''' - Minimal distance in meters  
+* '''GROUPID''' - Cluster group id.
+* '''MINCOUNT''' - Minimal instances count.
+* '''MAXCOUNT''' - Maximal instances count.
+* '''MINRADIUS''' - Minimal occurence radius.
+* '''MAXRADIUS''' - Maxima occurence radius.
+|USAGE=Use it for placing objects in local depressions, e.g. wetland tree or bush clusters.
+|ALGORITHM=# Find local maximals.
+# Populate linear cluster as usual.
+|SAMPLE=
+}}

@@ -1,0 +1,148 @@
+// source: https://community.bistudio.com/wiki/Transport_helicopter_Role
+// revision: 340280 (2023-04-28T16:53:46Z)
+// export sha1: qhb3yp2jmn6eghfl2s8tu8866pno0yc
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Transport Helicopter Pilots ==
+
+Transport helicopter pilots are respected in the community, good ones are treated like gold by their clans and jealousy guarded. If players are TK shooting at copters get their ID and pass it on to the server Admin.
+
+
+== The Pilot Role ==
+
+=== DO NOT PRACTICE BEING A HELICOPTER PILOT IN MP! ===
+
+One thing to ALL NEW GUYS please do not practice being a pilot in MP! It can make you look bad mannered at best and label you forever as a stupid idiot at worst.
+The SP mission editor is the place for that, stick in some enemy AA units so you can get used to choosing a Landing Zones (LZ) that will not attract their attention. 
+
+=== Practice, Practice, Practice ===
+
+Like any good player in any role you can make your self a range of training missions in the editor, to sort out your own problems.
+Find out what slopes you can land on and at what angle and how you need to fly to land on them and take off from them.
+Practice your Auto-rotation Landings, do this even when you are experienced, it is part of your pilots skills and needs to practiced regularly.
+If you set a mission in the editor you can include a tail rotor failure script, or brute force it by setting up a playable AI with an MG or heavy sniper rifle as well as you in the pilot role, then team switch a shoot out your tail rotor, then team switch back into the pilot role to practice Auto-rotation landings. 
+
+=== Moving to MP Pilot ===
+
+Once you have practiced. Act as door gunner for say 7 MP trips to get a feel for what is needed.
+On your first three MP pilot trips out; Tell the passengers you are new and ask for experienced door gunners; if they are good they will be talking to you about the LZ and when over it telling you whether you are clear to land.
+Choose the safest LZ for your first few trips. Beware of yellow chain, Red chain and lag spikes or Desync, if they happen consider auto-hover. If you have a bad ping do not choose any pilot role.
+Look for servers that have good pings for you. 
+
+=== Plan, Plan, Plan ===
+
+An experienced pilot should take a minute, before take off to examine the LZ in the Map; looking for possible obstructions such as Electricity Pylons, also consider slope of the LZ and warn your crew and passengers if you think it will be a hover landing.  
+
+Plan both Ingress and Egress routes. Choose routes that avoid exposure to enemy fire; such as valleys and the backs of hills. At lower difficulty you can place a 3D visible Waypoint at the point you wish to go to with Default Buttons {{Controls|Ctrl|LMB}} in the Map Screen. 
+
+==== Mark your Route ====
+You can use markers to mark a dot course on the map by using Gold Vehicle Channel means only the crew can see it and or wipe the markers.
+If you have an air controller who is doing an air control plan for all aircraft make sure he is a commander of a group and then use Yellow Command Channel then only commanders can see the map markers and alter them.
+If you are using a human navigator then they need to be group commander for the helicopter.
+If you have a GPS available bring it up with Default Buttons {{Controls|RCtrl|M}} you can then follow your dot course all the way to your objective. 
+
+===== Navigator =====
+With a Human navigator you can call the route while looking at the map screen. You should dot mark the route in either Green Group or Gold vehicle channels so that only your group/vehicle members can see and alter the markers.
+At lower difficulty settings a group leader as navigator can mark 3D visible waypoints for a team member such as a pilot using Default Buttons unit selection {{Controls|F1..F12}} and left mouse button single click in the map screen.
+When giving vocal directions remember you need to give all directions early because of the speed of aircraft so say what the next turn is as you exit the previous.
+Format is distance to turn plus turn direction and heading in degrees and cardinal direction.
+
+Example: "In 500m turn left to 220 degrees SW"
+
+==== At the Objective ====
+DO NOT OVERFLY OBJECTIVES that have not been taken, helicopters are precious things. Helicopters need to stay about 600m behind allied lines. 
+
+If you have the chance the pilot should rotate the helo over the LZ to see the lay of the land and so the Pilot, Navigator, crew chief and door gunners can spot obstructions, but this will not be possible over a hot LZ.
+If it is steep try to land uphill, turning lateral to the slope in the last few seconds to come to a hover; but if it is too steep axe it.
+Turn the left side of chopper toward the rising slope or the tail if it is a Chinook and tell the passengers it will be a wheels up hot landing so they need to eject 1 meter from ground. 
+
+{{Feature|informative|Door gunners and navigators especially in Chinooks need to get in the back of the helicopter before (ejecting/getting out) in hot landings over steep slopes.}}
+
+=== Blackhawk Down ===
+
+If you are hit in the tail gain height, default key {{Controls|Q}}, and use GOLD vehicle channel to tell all passengers to bail out, then you do the same. That is for standard {{arma}}; in reality and probably in the coming ACE mod that is not a possibility.
+So if you want to try to save your copter and passengers or so it can be repaired, you are going to have to do an auto-rotation landing. Nose down, Engine off glide it in and the last few seconds pull up to kill your speed.
+
+To get back to base in standard {{arma}} using auto rotation. KEEP THE POWER ON.
+You need to gain a lot of height, then stick the nose down to gain speed this will straighten you up due to the forces of airflow over the hull and allow you to fly somewhat, then as you come into a spot near BUT NOT OVER the base, cut the engine, and try to do an auto-rotation landing.
+
+=== On the Role of Osprey Pilot ===
+
+If doing a hover landing at an LZ choose one that is further away than the blackhawks would land. You are a BIGGER TARGET and you contain more valuable troops, killing a Full Osprey means all the OPFOR's Christmases have come at once.
+If you doing a para drop FLY with their commander up front if your forced to use text the commander can  map read and give the text Go Go Go! Give the grunts a warning to stand by 30 seconds before jump, then a GO GO GO!
+Remember that they cannot see out.
+
+You have 3 para drop options: 
+# A slow Low lateral run well back from objective. 
+# A fast High lateral perhaps even over the objective, the stick will be very scattered unless they halo and have steerable parachutes
+# A fast medium height hairpin, if there is no other friendly air assets in the location, or such assets are properly coordinated by an Air Controller with all ingress egress routes marked and timed. Give the the grunts a 30 second warning and the GO GO GO 5 seconds before the hairpin. The advantage of the hairpin is the stick will be closer together.
+
+If doing a rolling take off from flight deck, take as long a run as you can make and autohover on.
+
+Only do Hover landings at safe spots, hovering you are a big lumbering juicy target. Your best safety features are in height and speed.
+
+=== The Battle Commander Role ===
+
+A good battle commander should point out a range of LZ's looking out for Power Pylons and cables. Then let pilot choose the one they are happiest with. Clearings in forests are often favored.
+The LZ needs to be near the Objective but not so close it brings the helicopters into AA defensive fire. Be conservative with the first LZ better for the grunts to hump an extra half klick than they all get killed before they land.
+The Pilot should be allowed to take a minute to look hard at the map for possible obstructions such as power lines and choose ingress and egress routes that reduce exposure particularly to Objective AA defenses.
+In the Helicopter the pilot is captain and has last word about their bird and the LZ. 
+
+Once you have a secure LZ keep using it; a good battle commander will keep it safe. If you think a closer LZ is now safe let the pilots know.
+Beware commander there are scripts out that will setpos Guarded By OPFOR trigger over a frequently used LZ, so things will get harder as the mission makers improve!
+
+=== Crew Chief and Door Gunner's Role ===
+
+The Crew Chief is the primary eyes and voice on LZ, the door gunner should still holler out if that right side is not clear. The Crew Chief & door gunner should also look hard at the map for possible obstructions such as power lines.
+It is the duty of Crew Chief & door gunner to look down at the LZ and tell the pilot if they are clear below and behind. Saying "Forward 10", "Left 10" "rotate 20" etc. until the pilot is clear.
+All measurements in meters and degrees, a meter is approx the same as a yard.
+The Crew Chief & door gunner needs to pay particular attention to telegraph polls and sign posts and other man made objects, as well as the odd tall tree sitting on its own in the LZ. All are chopper killers.
+If you feel the need to test your gun. DO NOT DO IT AT BASE, it puts everyone on alert and may cause a TK. Warn everyone you are about to "Testfire" Do not waste ammo, you may need it later in the mission.
+Fire one or two shots. If you want to practice being a door gunner again the editor is the place to do that.
+
+=== Grab the stick! ===
+
+If the pilot is killed or disconnects for whatever reason, you have perhaps seconds to jump in the pilots seat.
+Know your pilots ID you may spot their disconnect or death note in the chat, but watch for a sudden dive which may be your only warning.
+You will also have the addaction of move to pilot displayed off middle mouse button, that makes it certain, if you see it in flight jump in the pilots seat, you may be able to save your passengers, copter and crew.
+
+=== Passengers Role ===
+
+Tell the pilot thank you for getting you to the LZ safe. Protect their LZ. If the tail rotor gets hit get ready to eject. Remember to give the pilot room to land at the extraction LZ. Pop smoke to tell them where to land.
+It is the job of all on the ground to tell the pilot they are under fire and to abort. If you see or hear of a copter coming in damaged or hear an emergency landing request.
+Grab a repair truck and fuel truck (Hopefully one day we will have working fire trucks in {{arma}} too) but keep back until rotors have stopped, then race to the copter to get it repaired and refueled congratulate the pilot for a safe landing.
+
+If you see numpties tail rotor shooting report to the server admin, use the space Bar to see their game name. They will be FRAPSed then banned.
+If the server admin is not there, the game admin can kick them and you can report with proof via FRAPS or a {{Controls|Prn[Print Screen] key Photo to the clans forum. 
+
+
+== {{arma2}} Bible ==
+
+There is additional detailed info from Dslyecxi on helicopter roles here:
+{{Link|http://ttp2.dslyecxi.com/veh_usage.html}}
+
+=== Video ===
+
+Also here is great video from Dslyecxi in {{arma1}}, it deals with the MH-6 Littlebirds but the gist of the video applies (special thanks to SASrecon for reminding me of it)
+{{Link|http://www.youtube.com/watch?v{{=}}cERmuVaVh0U}}
+
+[[:Category:Multiplayer Hints and Tips|Multiplayer Hints and Tips]]
+
+
+== Little Extra Tips ==
+
+Ensure that you have somebody you know, if possible, on the doorguns if the helicopter has them.
+If you don't, there is a very good chance that one of your passengers will be an idiot and fire off a few hundred rounds into the sky, and alerting every single enemy on the map to your location.
+
+If you use the ACE mod then spend 5-10 minutes to create your own personal Kit before you get airborne.
+The standard is a pistol, a submachinegun or rifle, several smoke grenades, a frag, medical supplies if they apply, misc. equipment, and a satchel charge.
+The Satchel Charge may seem like an odd choice, but if you get shot down without hope of recovering your bird, then it is both logical, and realistic.
+If your not going to return, blowing it up will cause it to respawn (depending on mission) and will also simulate destroying any sensitive equipment.
+
+If there are any "Tactical Assets" (Helicopters, Fixed Wings, Armor, even a Humvee) in the general are of your destination, ask them to secure your LZ until you get there, or stick around long enough to provide support if the "Fit hits the Shan"
+- Darkhorse 1-6
+
+
+[[Category:Battle Tactics]]

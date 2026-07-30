@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isLocalized
+// revision: 330064 (2022-08-15T16:33:12Z)
+// export sha1: jyrfhojm0g2x2khpgc9y7go8by7qn71
+// categories: Category:Arma 3: Functions | Category:Function Group: Strings | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Strings
+
+|descr= Checks if string is localized. Obsolete variant before [[isLocalized]] command was introduced.
+
+|s1= [localizationString] call [[BIS_fnc_isLocalized]]
+
+|p1= localizationString: [[String]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>["STR_someLocalizedString"] call BIS_fnc_isLocalized;</sqf>
+
+|seealso= [[isLocalized]] [[localize]]
+}}

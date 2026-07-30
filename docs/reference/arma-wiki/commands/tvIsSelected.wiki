@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/tvIsSelected
+// revision: 378325 (2026-04-02T16:30:16Z)
+// export sha1: 98n11h9bov4xkppa5avbsecymf971ev
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= GUI Control - Tree View
+
+|descr= Returns true if given treeview item is selected.
+
+|s1= control [[tvIsSelected]] path
+
+|p1= control: [[Control]]
+|p2= path: [[Tree View Path]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_control tvIsSelected [0];</sqf>
+
+|seealso= [[tvSelection]] [[tvSetSelected]]
+}}

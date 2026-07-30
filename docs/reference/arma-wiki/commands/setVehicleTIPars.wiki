@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/setVehicleTIPars
+// revision: 348636 (2023-11-08T13:46:10Z)
+// export sha1: pextyk0c3e83kimgciqvrb5z6ub64ql
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Object Manipulation
+
+|descr= Sets the "heat" state of different vehicle parts for Thermal Imaging detection.
+This allows simulation of heated up parts of a vehicle without it actually having to utilize them - on a 0..1 range - 0 being cold, 1 being hot.
+{{Feature|informative|This command does not work on infantry weapons.}}
+
+|s1= vehicle [[setVehicleTIPars]] [engine, wheels, weapon]
+
+|p1= vehicle: [[Object]] - vehicle whose components are manipulated
+
+|p2= engine: [[Number]] - engine and body's heat
+
+|p3= wheels: [[Number]] - tracks/wheels' heat
+
+|p4= weapon: [[Number]] - main weapon's heat
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+vehicle player setVehicleTIPars [1, 1, 1];			// set all parts hot
+vehicle player setVehicleTIPars [0, 0, 0];			// set all parts cold
+vehicle player setVehicleTIPars [0.5, 0.5, 0.5];	// set all parts warm
+</sqf>
+
+|x2= <sqf>vehicle player setVehicleTIPars [1, 0, 0]; // set the engine warm, perfect for winter</sqf>
+
+|seealso= [[disableTIEquipment]] [[setCamUseTI]]
+}}

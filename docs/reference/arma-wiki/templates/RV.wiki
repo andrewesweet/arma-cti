@@ -1,0 +1,387 @@
+// source: https://community.bistudio.com/wiki/Template:RV
+// revision: 376841 (2025-12-01T16:49:54Z)
+// export sha1: dkgj6bvbw2obemdfx86cg1a8ovckgt5
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#switch:{{uc:{{{type|}}}}}
+| COMMAND
+| FUNCTION =
+__NOTOC__ __NOEDITSECTION__{{TemplateCase||{{DISPLAYTITLE:
+	{{#if: {{{displayTitle|}}}
+		| {{{displayTitle}}}
+		| {{#ifeq:{{lc:{{{type}}}}}
+			| command
+			| {{#replace:{{#replace:{{PAGENAME}}|diag <nowiki/>|diag_}}|buldozer <nowiki/>|buldozer_}}
+			| {{#replace:{{PAGENAME}}|<nowiki> </nowiki>|_}}
+		}}
+	}}
+}}}}
+{{DEFAULTSORT:{{{sortKey|{{uc:{{#replace:{{#replace:{{PAGENAMEE}}|BIS_fnc_|}}|BIN_fnc_|}}}}}}}}}<!--
+--><div class="_description {{#ifeq:{{lc:{{{type}}}}}|command|cmd|fnc}}">
+<div class="top-icons"><div class="gvi-icons"><!--
+
+-->{{#if:{{{game1|}}} | {{GVI | {{{game1}}} | {{{version1|}}} }} | ''[[:Category:Maintenance/RV/Game1 needed|Game1 needed]]''{{#if:{{{version1|}}}||<nowiki/> - ''[[:Category:Maintenance/RV/Version1 needed|Version1 needed]]'' }} }}<!--
+-->{{#if:{{{game2|}}} | {{GVI | {{{game2}}} | {{{version2|}}} }} }}<!--
+-->{{#if:{{{game3|}}} | {{GVI | {{{game3}}} | {{{version3|}}} }} }}<!--
+-->{{#if:{{{game4|}}} | {{GVI | {{{game4}}} | {{{version4|}}} }} }}<!--
+-->{{#if:{{{game5|}}} | {{GVI | {{{game5}}} | {{{version5|}}} }} }}<!--
+-->{{#if:{{{game6|}}} | {{GVI | {{{game6}}} | {{{version6|}}} }} }}<!--
+-->{{#if:{{{game7|}}} | {{GVI | {{{game7}}} | {{{version7|}}} }} }}<!--
+
+--></div>{{#if:{{{arg|}}}{{{eff|}}}{{{serverExec|}}} | <div class="locality-icons"><!--
+	-->{{#if:{{{arg|}}}			| {{Icon|{{{arg}}}argument|32}}}}<!--
+	-->{{#if:{{{eff|}}}			| {{Icon|{{{eff}}}effect|32}}}}<!--
+	-->{{#if:{{{serverExec|}}}	| {{Icon|serverExec|32}}}}<!--
+--></div>}}
+<div class="top-icons-info">Hover &amp; click on the images for description</div>
+</div>
+{{#if: {{{branch|}}}
+	| {{#if:{{#pos:{{lc:{{{branch|}}}}}|dev}}{{#pos:{{lc:{{{branch|}}}}}|diag}}{{#pos:{{lc:{{{branch|}}}}}|prof}}
+		| {{Feature | important | Only available in {{#replace:{{Trim|{{
+			#if:{{#pos:{{lc:{{{branch}}}}}|dev}}|[[Arma_3:_Steam_Branches#Arma_3|Development]]}} {{
+			#if:{{#pos:{{lc:{{{branch}}}}}|diag}}|[[Arma_3:_Diagnostics_Exe|Diagnostic]]}} {{
+			#if:{{#pos:{{lc:{{{branch}}}}}|prof}}|[[Performance_Profiling|Profiling]]}}
+			}}| |/}} branch(es){{#if:{{#pos:{{lc:{{{branch}}}}}|dev}}|<nowiki/> until its release with {{arma3}} patch '''v{{{version1|}}}''' }}.
+		}}
+	}}
+}}
+<h3>Description</h3>
+<dl>
+<dt>Description:</dt>
+<dd>{{#if:{{{descr|}}} | {{{descr}}} | {{Wiki|stub}}''[[:Category:Maintenance/RV/Description needed|Description needed]]''}}</dd>
+{{#ifeq:{{lc:{{{type}}}}}|command||
+<dt>Execution:</dt>
+<dd>{{#if:{{{exec|}}}|{{#ifeq:{{{exec|call}}}|call|[[call]]|'''[[{{{exec}}}]]'''}}|[[call]]}}</dd>
+}}<!--
+
+-->{{#if:{{{mp|}}}|
+<dt id="Multiplayer">Multiplayer:</dt>
+<dd>{{{mp}}}</dd>}}<!--
+
+-->{{#if:{{{pr|}}}|
+<dt id="Problems">Problems:</dt>
+<dd>{{{pr}}}</dd>}}<!--
+
+-->{{#if:{{{alias|}}}|
+<dt id="Alias">Alias:</dt>
+<dd class="alias">{{#replace:
+{{#replace:{{{alias}}}|], [|][}}
+|],[|][}}</dd>}}<!--
+
+--><dt id="Groups">Groups:</dt>
+<dd class="groups"><!--
+-->{{#if: {{{gr1|}}}{{{gr2|}}}{{{gr3|}}}{{{gr4|}}}{{{gr5|}}}
+| {{#ifeq:{{lc:{{{type}}}}}|command
+	| {{#if: {{{gr1|}}} | [[:Category:Command Group: {{Trim|{{{gr1}}}}}|{{Trim|{{{gr1}}}}}]]
+	}}{{#if: {{{gr2|}}} | [[:Category:Command Group: {{Trim|{{{gr2}}}}}|{{Trim|{{{gr2}}}}}]]
+	}}{{#if: {{{gr3|}}} | [[:Category:Command Group: {{Trim|{{{gr3}}}}}|{{Trim|{{{gr3}}}}}]]
+	}}{{#if: {{{gr4|}}} | [[:Category:Command Group: {{Trim|{{{gr4}}}}}|{{Trim|{{{gr4}}}}}]]
+	}}{{#if: {{{gr5|}}} | [[:Category:Command Group: {{Trim|{{{gr5}}}}}|{{Trim|{{{gr5}}}}}]] }}
+
+	| {{#if: {{{gr1|}}} | [[:Category:Function Group: {{Trim|{{{gr1}}}}}|{{Trim|{{{gr1}}}}}]]
+	}}{{#if: {{{gr2|}}} | [[:Category:Function Group: {{Trim|{{{gr2}}}}}|{{Trim|{{{gr2}}}}}]]
+	}}{{#if: {{{gr3|}}} | [[:Category:Function Group: {{Trim|{{{gr3}}}}}|{{Trim|{{{gr3}}}}}]]
+	}}{{#if: {{{gr4|}}} | [[:Category:Function Group: {{Trim|{{{gr4}}}}}|{{Trim|{{{gr4}}}}}]]
+	}}{{#if: {{{gr5|}}} | [[:Category:Function Group: {{Trim|{{{gr5}}}}}|{{Trim|{{{gr5}}}}}]] }}
+}}
+| [[:Category:{{#ifeq:{{lc:{{{type}}}}}|command|Command|Function}} Group: Uncategorised|Uncategorised]]
+}}
+</dd><!--
+--></dl><!--
+
+--><h3>{{#if:{{{s3|}}}{{{s4|}}}{{{s5|}}}{{{s6|}}}|Syntax 1|Syntax}}</h3>
+<dl class="syntax">
+<dt id="Syntax 1">Syntax:</dt>
+<dd>{{#if:{{{s1|}}}|{{{s1}}} | ''[[:Category:Maintenance/RV/Syntax needed|Syntax needed]]''}}</dd><!--
+
+-->{{#if:{{{p1|}}}|
+<dt id="Parameters 1">Parameters:</dt>
+<dd>{{{p1}}}</dd>
+{{#if:{{{p2|}}}|<dt>{{#if:{{{p2since|}}}|since {{GVI|{{#explode:{{{p2since}}}| |0|2}}|{{#explode:{{{p2since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p2}}}</dd>}}
+{{#if:{{{p3|}}}|<dt>{{#if:{{{p3since|}}}|since {{GVI|{{#explode:{{{p3since}}}| |0|2}}|{{#explode:{{{p3since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p3}}}</dd>}}
+{{#if:{{{p4|}}}|<dt>{{#if:{{{p4since|}}}|since {{GVI|{{#explode:{{{p4since}}}| |0|2}}|{{#explode:{{{p4since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p4}}}</dd>}}
+{{#if:{{{p5|}}}|<dt>{{#if:{{{p5since|}}}|since {{GVI|{{#explode:{{{p5since}}}| |0|2}}|{{#explode:{{{p5since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p5}}}</dd>}}
+{{#if:{{{p6|}}}|<dt>{{#if:{{{p6since|}}}|since {{GVI|{{#explode:{{{p6since}}}| |0|2}}|{{#explode:{{{p6since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p6}}}</dd>}}
+{{#if:{{{p7|}}}|<dt>{{#if:{{{p7since|}}}|since {{GVI|{{#explode:{{{p7since}}}| |0|2}}|{{#explode:{{{p7since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p7}}}</dd>}}
+{{#if:{{{p8|}}}|<dt>{{#if:{{{p8since|}}}|since {{GVI|{{#explode:{{{p8since}}}| |0|2}}|{{#explode:{{{p8since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p8}}}</dd>}}
+{{#if:{{{p9|}}}|<dt>{{#if:{{{p9since|}}}|since {{GVI|{{#explode:{{{p9since}}}| |0|2}}|{{#explode:{{{p9since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p9}}}</dd>}}
+{{#if:{{{p10|}}}|<dt>{{#if:{{{p10since|}}}|since {{GVI|{{#explode:{{{p10since}}}| |0|2}}|{{#explode:{{{p10since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p10}}}</dd>}}
+{{#if:{{{p11|}}}|<dt>{{#if:{{{p11since|}}}|since {{GVI|{{#explode:{{{p11since}}}| |0|2}}|{{#explode:{{{p11since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p11}}}</dd>}}
+{{#if:{{{p12|}}}|<dt>{{#if:{{{p12since|}}}|since {{GVI|{{#explode:{{{p12since}}}| |0|2}}|{{#explode:{{{p12since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p12}}}</dd>}}
+{{#if:{{{p13|}}}|<dt>{{#if:{{{p13since|}}}|since {{GVI|{{#explode:{{{p13since}}}| |0|2}}|{{#explode:{{{p13since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p13}}}</dd>}}
+{{#if:{{{p14|}}}|<dt>{{#if:{{{p14since|}}}|since {{GVI|{{#explode:{{{p14since}}}| |0|2}}|{{#explode:{{{p14since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p14}}}</dd>}}
+{{#if:{{{p15|}}}|<dt>{{#if:{{{p15since|}}}|since {{GVI|{{#explode:{{{p15since}}}| |0|2}}|{{#explode:{{{p15since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p15}}}</dd>}}
+{{#if:{{{p16|}}}|<dt>{{#if:{{{p16since|}}}|since {{GVI|{{#explode:{{{p16since}}}| |0|2}}|{{#explode:{{{p16since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p16}}}</dd>}}
+{{#if:{{{p17|}}}|<dt>{{#if:{{{p17since|}}}|since {{GVI|{{#explode:{{{p17since}}}| |0|2}}|{{#explode:{{{p17since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p17}}}</dd>}}
+{{#if:{{{p18|}}}|<dt>{{#if:{{{p18since|}}}|since {{GVI|{{#explode:{{{p18since}}}| |0|2}}|{{#explode:{{{p18since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p18}}}</dd>}}
+{{#if:{{{p19|}}}|<dt>{{#if:{{{p19since|}}}|since {{GVI|{{#explode:{{{p19since}}}| |0|2}}|{{#explode:{{{p19since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p19}}}</dd>}}
+{{#if:{{{p20|}}}|<dt>{{#if:{{{p20since|}}}|since {{GVI|{{#explode:{{{p20since}}}| |0|2}}|{{#explode:{{{p20since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p20}}}</dd>}}
+}}<!--
+
+--><dt id="Return Value 1">Return Value:</dt>
+<dd>{{#if:{{{r1|}}} | {{{r1}}} | ''[[:Category:Maintenance/RV/Return value needed|Return value needed]]''}}</dd>
+</dl><!--
+
+-->{{#if:{{{s2|}}}|
+{{Clear}}{{ArgTitle|3|{{#if:{{{s3|}}}{{{s4|}}}{{{s5|}}}{{{s6|}}}|Syntax 2|Alternative Syntax}}|{{#if:{{{s2since|}}} | {{GVI|{{#explode:{{{s2since}}}| |0|2}}|{{#explode:{{{s2since}}}| |1|2}}}}}}{{#if:{{{s2effect|}}} | {{Icon|{{{s2effect}}}effect|32}}}}{{#if:{{{s2exec|}}} | {{Icon|{{{s2exec}}}Exec|32}}}}}}
+<dl class="syntax">
+<dt id="Syntax 2">Syntax:</dt>
+<dd>{{{s2}}}</dd><!--
+
+-->{{#if:{{{p21|}}}|
+<dt id="Parameters 2">Parameters:</dt>
+<dd>{{{p21}}}</dd>
+{{#if:{{{p22|}}}|<dt>{{#if:{{{p22since|}}}|since {{GVI|{{#explode:{{{p22since}}}| |0|2}}|{{#explode:{{{p22since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p22}}}</dd>}}
+{{#if:{{{p23|}}}|<dt>{{#if:{{{p23since|}}}|since {{GVI|{{#explode:{{{p23since}}}| |0|2}}|{{#explode:{{{p23since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p23}}}</dd>}}
+{{#if:{{{p24|}}}|<dt>{{#if:{{{p24since|}}}|since {{GVI|{{#explode:{{{p24since}}}| |0|2}}|{{#explode:{{{p24since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p24}}}</dd>}}
+{{#if:{{{p25|}}}|<dt>{{#if:{{{p25since|}}}|since {{GVI|{{#explode:{{{p25since}}}| |0|2}}|{{#explode:{{{p25since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p25}}}</dd>}}
+{{#if:{{{p26|}}}|<dt>{{#if:{{{p26since|}}}|since {{GVI|{{#explode:{{{p26since}}}| |0|2}}|{{#explode:{{{p26since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p26}}}</dd>}}
+{{#if:{{{p27|}}}|<dt>{{#if:{{{p27since|}}}|since {{GVI|{{#explode:{{{p27since}}}| |0|2}}|{{#explode:{{{p27since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p27}}}</dd>}}
+{{#if:{{{p28|}}}|<dt>{{#if:{{{p28since|}}}|since {{GVI|{{#explode:{{{p28since}}}| |0|2}}|{{#explode:{{{p28since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p28}}}</dd>}}
+{{#if:{{{p29|}}}|<dt>{{#if:{{{p29since|}}}|since {{GVI|{{#explode:{{{p29since}}}| |0|2}}|{{#explode:{{{p29since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p29}}}</dd>}}
+{{#if:{{{p30|}}}|<dt>{{#if:{{{p30since|}}}|since {{GVI|{{#explode:{{{p30since}}}| |0|2}}|{{#explode:{{{p30since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p30}}}</dd>}}
+{{#if:{{{p31|}}}|<dt>{{#if:{{{p31since|}}}|since {{GVI|{{#explode:{{{p31since}}}| |0|2}}|{{#explode:{{{p31since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p31}}}</dd>}}
+{{#if:{{{p32|}}}|<dt>{{#if:{{{p32since|}}}|since {{GVI|{{#explode:{{{p32since}}}| |0|2}}|{{#explode:{{{p32since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p32}}}</dd>}}
+{{#if:{{{p33|}}}|<dt>{{#if:{{{p33since|}}}|since {{GVI|{{#explode:{{{p33since}}}| |0|2}}|{{#explode:{{{p33since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p33}}}</dd>}}
+{{#if:{{{p34|}}}|<dt>{{#if:{{{p34since|}}}|since {{GVI|{{#explode:{{{p34since}}}| |0|2}}|{{#explode:{{{p34since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p34}}}</dd>}}
+{{#if:{{{p35|}}}|<dt>{{#if:{{{p35since|}}}|since {{GVI|{{#explode:{{{p35since}}}| |0|2}}|{{#explode:{{{p35since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p35}}}</dd>}}
+{{#if:{{{p36|}}}|<dt>{{#if:{{{p36since|}}}|since {{GVI|{{#explode:{{{p36since}}}| |0|2}}|{{#explode:{{{p36since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p36}}}</dd>}}
+{{#if:{{{p37|}}}|<dt>{{#if:{{{p37since|}}}|since {{GVI|{{#explode:{{{p37since}}}| |0|2}}|{{#explode:{{{p37since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p37}}}</dd>}}
+{{#if:{{{p38|}}}|<dt>{{#if:{{{p38since|}}}|since {{GVI|{{#explode:{{{p38since}}}| |0|2}}|{{#explode:{{{p38since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p38}}}</dd>}}
+{{#if:{{{p39|}}}|<dt>{{#if:{{{p39since|}}}|since {{GVI|{{#explode:{{{p39since}}}| |0|2}}|{{#explode:{{{p39since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p39}}}</dd>}}
+{{#if:{{{p40|}}}|<dt>{{#if:{{{p40since|}}}|since {{GVI|{{#explode:{{{p40since}}}| |0|2}}|{{#explode:{{{p40since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p40}}}</dd>}}
+}}<!--
+
+--><dt id="Return Value 2">Return Value:</dt>
+<dd>{{#if:{{{r2|}}}|{{{r2}}}|[[Nothing]]}}</dd>
+</dl>}}<!--
+
+-->{{#if:{{{s3|}}}|
+{{Clear}}{{ArgTitle|3|Syntax 3|{{#if:{{{s3since|}}} | {{GVI|{{#explode:{{{s3since}}}| |0|2}}|{{#explode:{{{s3since}}}| |1|2}}}}}}{{#if:{{{s3effect|}}} | {{Icon|{{{s3effect}}}effect|32}}}}{{#if:{{{s3exec|}}} | {{Icon|{{{s3exec}}}Exec|32}}}}}}
+<dl class="syntax">
+<dt id="Syntax 3">Syntax:</dt>
+<dd>{{{s3}}}</dd><!--
+
+-->{{#if:{{{p41|}}}|
+<dt id="Parameters 3">Parameters:</dt>
+<dd>{{{p41}}}</dd>
+{{#if:{{{p42|}}}|<dt>{{#if:{{{p42since|}}}|since {{GVI|{{#explode:{{{p42since}}}| |0|2}}|{{#explode:{{{p42since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p42}}}</dd>}}
+{{#if:{{{p43|}}}|<dt>{{#if:{{{p43since|}}}|since {{GVI|{{#explode:{{{p43since}}}| |0|2}}|{{#explode:{{{p43since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p43}}}</dd>}}
+{{#if:{{{p44|}}}|<dt>{{#if:{{{p44since|}}}|since {{GVI|{{#explode:{{{p44since}}}| |0|2}}|{{#explode:{{{p44since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p44}}}</dd>}}
+{{#if:{{{p45|}}}|<dt>{{#if:{{{p45since|}}}|since {{GVI|{{#explode:{{{p45since}}}| |0|2}}|{{#explode:{{{p45since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p45}}}</dd>}}
+{{#if:{{{p46|}}}|<dt>{{#if:{{{p46since|}}}|since {{GVI|{{#explode:{{{p46since}}}| |0|2}}|{{#explode:{{{p46since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p46}}}</dd>}}
+{{#if:{{{p47|}}}|<dt>{{#if:{{{p47since|}}}|since {{GVI|{{#explode:{{{p47since}}}| |0|2}}|{{#explode:{{{p47since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p47}}}</dd>}}
+{{#if:{{{p48|}}}|<dt>{{#if:{{{p48since|}}}|since {{GVI|{{#explode:{{{p48since}}}| |0|2}}|{{#explode:{{{p48since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p48}}}</dd>}}
+{{#if:{{{p49|}}}|<dt>{{#if:{{{p49since|}}}|since {{GVI|{{#explode:{{{p49since}}}| |0|2}}|{{#explode:{{{p49since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p49}}}</dd>}}
+{{#if:{{{p50|}}}|<dt>{{#if:{{{p50since|}}}|since {{GVI|{{#explode:{{{p50since}}}| |0|2}}|{{#explode:{{{p50since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p50}}}</dd>}}
+{{#if:{{{p51|}}}|<dt>{{#if:{{{p51since|}}}|since {{GVI|{{#explode:{{{p51since}}}| |0|2}}|{{#explode:{{{p51since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p51}}}</dd>}}
+{{#if:{{{p52|}}}|<dt>{{#if:{{{p52since|}}}|since {{GVI|{{#explode:{{{p52since}}}| |0|2}}|{{#explode:{{{p52since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p52}}}</dd>}}
+{{#if:{{{p53|}}}|<dt>{{#if:{{{p53since|}}}|since {{GVI|{{#explode:{{{p53since}}}| |0|2}}|{{#explode:{{{p53since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p53}}}</dd>}}
+{{#if:{{{p54|}}}|<dt>{{#if:{{{p54since|}}}|since {{GVI|{{#explode:{{{p54since}}}| |0|2}}|{{#explode:{{{p54since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p54}}}</dd>}}
+{{#if:{{{p55|}}}|<dt>{{#if:{{{p55since|}}}|since {{GVI|{{#explode:{{{p55since}}}| |0|2}}|{{#explode:{{{p55since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p55}}}</dd>}}
+{{#if:{{{p56|}}}|<dt>{{#if:{{{p56since|}}}|since {{GVI|{{#explode:{{{p56since}}}| |0|2}}|{{#explode:{{{p56since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p56}}}</dd>}}
+{{#if:{{{p57|}}}|<dt>{{#if:{{{p57since|}}}|since {{GVI|{{#explode:{{{p57since}}}| |0|2}}|{{#explode:{{{p57since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p57}}}</dd>}}
+{{#if:{{{p58|}}}|<dt>{{#if:{{{p58since|}}}|since {{GVI|{{#explode:{{{p58since}}}| |0|2}}|{{#explode:{{{p58since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p58}}}</dd>}}
+{{#if:{{{p59|}}}|<dt>{{#if:{{{p59since|}}}|since {{GVI|{{#explode:{{{p59since}}}| |0|2}}|{{#explode:{{{p59since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p59}}}</dd>}}
+{{#if:{{{p60|}}}|<dt>{{#if:{{{p60since|}}}|since {{GVI|{{#explode:{{{p60since}}}| |0|2}}|{{#explode:{{{p60since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p60}}}</dd>}}
+}}<!--
+
+--><dt id="Return Value 3">Return Value:</dt>
+<dd>{{#if:{{{r3|}}}|{{{r3}}}|[[Nothing]]}}</dd>
+</dl>}}<!--
+
+-->{{#if:{{{s4|}}}|
+{{Clear}}{{ArgTitle|3|Syntax 4|{{#if:{{{s4since|}}} | {{GVI|{{#explode:{{{s4since}}}| |0|2}}|{{#explode:{{{s4since}}}| |1|2}}}}}}{{#if:{{{s4effect|}}} | {{Icon|{{{s4effect}}}effect|32}}}}{{#if:{{{s4exec|}}} | {{Icon|{{{s4exec}}}Exec|32}}}}}}
+<dl class="syntax">
+<dt id="Syntax 4">Syntax:</dt>
+<dd>{{{s4}}}</dd><!--
+
+-->{{#if:{{{p61|}}}|
+<dt id="Parameters 4">Parameters:</dt>
+<dd>{{{p61}}}</dd>
+{{#if:{{{p62|}}}|<dt>{{#if:{{{p62since|}}}|since {{GVI|{{#explode:{{{p62since}}}| |0|2}}|{{#explode:{{{p62since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p62}}}</dd>}}
+{{#if:{{{p63|}}}|<dt>{{#if:{{{p63since|}}}|since {{GVI|{{#explode:{{{p63since}}}| |0|2}}|{{#explode:{{{p63since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p63}}}</dd>}}
+{{#if:{{{p64|}}}|<dt>{{#if:{{{p64since|}}}|since {{GVI|{{#explode:{{{p64since}}}| |0|2}}|{{#explode:{{{p64since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p64}}}</dd>}}
+{{#if:{{{p65|}}}|<dt>{{#if:{{{p65since|}}}|since {{GVI|{{#explode:{{{p65since}}}| |0|2}}|{{#explode:{{{p65since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p65}}}</dd>}}
+{{#if:{{{p66|}}}|<dt>{{#if:{{{p66since|}}}|since {{GVI|{{#explode:{{{p66since}}}| |0|2}}|{{#explode:{{{p66since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p66}}}</dd>}}
+{{#if:{{{p67|}}}|<dt>{{#if:{{{p67since|}}}|since {{GVI|{{#explode:{{{p67since}}}| |0|2}}|{{#explode:{{{p67since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p67}}}</dd>}}
+{{#if:{{{p68|}}}|<dt>{{#if:{{{p68since|}}}|since {{GVI|{{#explode:{{{p68since}}}| |0|2}}|{{#explode:{{{p68since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p68}}}</dd>}}
+{{#if:{{{p69|}}}|<dt>{{#if:{{{p69since|}}}|since {{GVI|{{#explode:{{{p69since}}}| |0|2}}|{{#explode:{{{p69since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p69}}}</dd>}}
+{{#if:{{{p70|}}}|<dt>{{#if:{{{p70since|}}}|since {{GVI|{{#explode:{{{p70since}}}| |0|2}}|{{#explode:{{{p70since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p70}}}</dd>}}
+{{#if:{{{p71|}}}|<dt>{{#if:{{{p71since|}}}|since {{GVI|{{#explode:{{{p71since}}}| |0|2}}|{{#explode:{{{p71since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p71}}}</dd>}}
+{{#if:{{{p72|}}}|<dt>{{#if:{{{p72since|}}}|since {{GVI|{{#explode:{{{p72since}}}| |0|2}}|{{#explode:{{{p72since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p72}}}</dd>}}
+{{#if:{{{p73|}}}|<dt>{{#if:{{{p73since|}}}|since {{GVI|{{#explode:{{{p73since}}}| |0|2}}|{{#explode:{{{p73since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p73}}}</dd>}}
+{{#if:{{{p74|}}}|<dt>{{#if:{{{p74since|}}}|since {{GVI|{{#explode:{{{p74since}}}| |0|2}}|{{#explode:{{{p74since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p74}}}</dd>}}
+{{#if:{{{p75|}}}|<dt>{{#if:{{{p75since|}}}|since {{GVI|{{#explode:{{{p75since}}}| |0|2}}|{{#explode:{{{p75since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p75}}}</dd>}}
+{{#if:{{{p76|}}}|<dt>{{#if:{{{p76since|}}}|since {{GVI|{{#explode:{{{p76since}}}| |0|2}}|{{#explode:{{{p76since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p76}}}</dd>}}
+{{#if:{{{p77|}}}|<dt>{{#if:{{{p77since|}}}|since {{GVI|{{#explode:{{{p77since}}}| |0|2}}|{{#explode:{{{p77since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p77}}}</dd>}}
+{{#if:{{{p78|}}}|<dt>{{#if:{{{p78since|}}}|since {{GVI|{{#explode:{{{p78since}}}| |0|2}}|{{#explode:{{{p78since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p78}}}</dd>}}
+{{#if:{{{p79|}}}|<dt>{{#if:{{{p79since|}}}|since {{GVI|{{#explode:{{{p79since}}}| |0|2}}|{{#explode:{{{p79since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p79}}}</dd>}}
+{{#if:{{{p80|}}}|<dt>{{#if:{{{p80since|}}}|since {{GVI|{{#explode:{{{p80since}}}| |0|2}}|{{#explode:{{{p80since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p80}}}</dd>}}
+}}<!--
+
+--><dt id="Return Value 4">Return Value:</dt>
+<dd>{{#if:{{{r4|}}}|{{{r4}}}|[[Nothing]]}}</dd>
+</dl>}}<!--
+
+-->{{#if:{{{s5|}}}|
+{{Clear}}{{ArgTitle|3|Syntax 5|{{#if:{{{s5since|}}} | {{GVI|{{#explode:{{{s5since}}}| |0|2}}|{{#explode:{{{s5since}}}| |1|2}}}}}}{{#if:{{{s5effect|}}} | {{Icon|{{{s5effect}}}effect|32}}}}{{#if:{{{s5exec|}}} | {{Icon|{{{s5exec}}}Exec|32}}}}}}
+<dl class="syntax">
+<dt id="Syntax 5">Syntax:</dt>
+<dd>{{{s5}}}</dd><!--
+
+-->{{#if:{{{p81|}}}|
+<dt id="Parameters 5">Parameters:</dt>
+<dd>{{{p81}}}</dd>
+{{#if:{{{p82|}}}|<dt>{{#if:{{{p82since|}}}|since {{GVI|{{#explode:{{{p82since}}}| |0|2}}|{{#explode:{{{p82since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p82}}}</dd>}}
+{{#if:{{{p83|}}}|<dt>{{#if:{{{p83since|}}}|since {{GVI|{{#explode:{{{p83since}}}| |0|2}}|{{#explode:{{{p83since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p83}}}</dd>}}
+{{#if:{{{p84|}}}|<dt>{{#if:{{{p84since|}}}|since {{GVI|{{#explode:{{{p84since}}}| |0|2}}|{{#explode:{{{p84since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p84}}}</dd>}}
+{{#if:{{{p85|}}}|<dt>{{#if:{{{p85since|}}}|since {{GVI|{{#explode:{{{p85since}}}| |0|2}}|{{#explode:{{{p85since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p85}}}</dd>}}
+{{#if:{{{p86|}}}|<dt>{{#if:{{{p86since|}}}|since {{GVI|{{#explode:{{{p86since}}}| |0|2}}|{{#explode:{{{p86since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p86}}}</dd>}}
+{{#if:{{{p87|}}}|<dt>{{#if:{{{p87since|}}}|since {{GVI|{{#explode:{{{p87since}}}| |0|2}}|{{#explode:{{{p87since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p87}}}</dd>}}
+{{#if:{{{p88|}}}|<dt>{{#if:{{{p88since|}}}|since {{GVI|{{#explode:{{{p88since}}}| |0|2}}|{{#explode:{{{p88since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p88}}}</dd>}}
+{{#if:{{{p89|}}}|<dt>{{#if:{{{p89since|}}}|since {{GVI|{{#explode:{{{p89since}}}| |0|2}}|{{#explode:{{{p89since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p89}}}</dd>}}
+{{#if:{{{p90|}}}|<dt>{{#if:{{{p90since|}}}|since {{GVI|{{#explode:{{{p90since}}}| |0|2}}|{{#explode:{{{p90since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p90}}}</dd>}}
+{{#if:{{{p91|}}}|<dt>{{#if:{{{p91since|}}}|since {{GVI|{{#explode:{{{p91since}}}| |0|2}}|{{#explode:{{{p91since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p91}}}</dd>}}
+{{#if:{{{p92|}}}|<dt>{{#if:{{{p92since|}}}|since {{GVI|{{#explode:{{{p92since}}}| |0|2}}|{{#explode:{{{p92since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p92}}}</dd>}}
+{{#if:{{{p93|}}}|<dt>{{#if:{{{p93since|}}}|since {{GVI|{{#explode:{{{p93since}}}| |0|2}}|{{#explode:{{{p93since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p93}}}</dd>}}
+{{#if:{{{p94|}}}|<dt>{{#if:{{{p94since|}}}|since {{GVI|{{#explode:{{{p94since}}}| |0|2}}|{{#explode:{{{p94since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p94}}}</dd>}}
+{{#if:{{{p95|}}}|<dt>{{#if:{{{p95since|}}}|since {{GVI|{{#explode:{{{p95since}}}| |0|2}}|{{#explode:{{{p95since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p95}}}</dd>}}
+{{#if:{{{p96|}}}|<dt>{{#if:{{{p96since|}}}|since {{GVI|{{#explode:{{{p96since}}}| |0|2}}|{{#explode:{{{p96since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p96}}}</dd>}}
+{{#if:{{{p97|}}}|<dt>{{#if:{{{p97since|}}}|since {{GVI|{{#explode:{{{p97since}}}| |0|2}}|{{#explode:{{{p97since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p97}}}</dd>}}
+{{#if:{{{p98|}}}|<dt>{{#if:{{{p98since|}}}|since {{GVI|{{#explode:{{{p98since}}}| |0|2}}|{{#explode:{{{p98since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p98}}}</dd>}}
+{{#if:{{{p99|}}}|<dt>{{#if:{{{p99since|}}}|since {{GVI|{{#explode:{{{p99since}}}| |0|2}}|{{#explode:{{{p99since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p99}}}</dd>}}
+{{#if:{{{p100|}}}|<dt>{{#if:{{{p100since|}}}|since {{GVI|{{#explode:{{{p100since}}}| |0|2}}|{{#explode:{{{p100since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p100}}}</dd>}}
+}}<!--
+
+--><dt id="Return Value 5">Return Value:</dt>
+<dd>{{#if:{{{r5|}}}|{{{r5}}}|[[Nothing]]}}</dd>
+</dl>}}<!--
+
+-->{{#if:{{{s6|}}}|
+{{Clear}}{{ArgTitle|3|Syntax 6|{{#if:{{{s6since|}}} | {{GVI|{{#explode:{{{s6since}}}| |0|2}}|{{#explode:{{{s6since}}}| |1|2}}}}}}{{#if:{{{s6effect|}}} | {{Icon|{{{s6effect}}}effect|32}}}}{{#if:{{{s6exec|}}} | {{Icon|{{{s6exec}}}Exec|32}}}}}}
+<dl class="syntax">
+<dt id="Syntax 6">Syntax:</dt>
+<dd>{{{s6}}}</dd><!--
+
+-->{{#if:{{{p101|}}}|
+<dt id="Parameters 6">Parameters:</dt>
+<dd>{{{p101}}}</dd>
+{{#if:{{{p102|}}}|<dt>{{#if:{{{p102since|}}}|since {{GVI|{{#explode:{{{p102since}}}| |0|2}}|{{#explode:{{{p102since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p102}}}</dd>}}
+{{#if:{{{p103|}}}|<dt>{{#if:{{{p103since|}}}|since {{GVI|{{#explode:{{{p103since}}}| |0|2}}|{{#explode:{{{p103since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p103}}}</dd>}}
+{{#if:{{{p104|}}}|<dt>{{#if:{{{p104since|}}}|since {{GVI|{{#explode:{{{p104since}}}| |0|2}}|{{#explode:{{{p104since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p104}}}</dd>}}
+{{#if:{{{p105|}}}|<dt>{{#if:{{{p105since|}}}|since {{GVI|{{#explode:{{{p105since}}}| |0|2}}|{{#explode:{{{p105since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p105}}}</dd>}}
+{{#if:{{{p106|}}}|<dt>{{#if:{{{p106since|}}}|since {{GVI|{{#explode:{{{p106since}}}| |0|2}}|{{#explode:{{{p106since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p106}}}</dd>}}
+{{#if:{{{p107|}}}|<dt>{{#if:{{{p107since|}}}|since {{GVI|{{#explode:{{{p107since}}}| |0|2}}|{{#explode:{{{p107since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p107}}}</dd>}}
+{{#if:{{{p108|}}}|<dt>{{#if:{{{p108since|}}}|since {{GVI|{{#explode:{{{p108since}}}| |0|2}}|{{#explode:{{{p108since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p108}}}</dd>}}
+{{#if:{{{p109|}}}|<dt>{{#if:{{{p109since|}}}|since {{GVI|{{#explode:{{{p109since}}}| |0|2}}|{{#explode:{{{p109since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p109}}}</dd>}}
+{{#if:{{{p110|}}}|<dt>{{#if:{{{p110since|}}}|since {{GVI|{{#explode:{{{p110since}}}| |0|2}}|{{#explode:{{{p110since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p110}}}</dd>}}
+{{#if:{{{p111|}}}|<dt>{{#if:{{{p111since|}}}|since {{GVI|{{#explode:{{{p111since}}}| |0|2}}|{{#explode:{{{p111since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p111}}}</dd>}}
+{{#if:{{{p112|}}}|<dt>{{#if:{{{p112since|}}}|since {{GVI|{{#explode:{{{p112since}}}| |0|2}}|{{#explode:{{{p112since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p112}}}</dd>}}
+{{#if:{{{p113|}}}|<dt>{{#if:{{{p113since|}}}|since {{GVI|{{#explode:{{{p113since}}}| |0|2}}|{{#explode:{{{p113since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p113}}}</dd>}}
+{{#if:{{{p114|}}}|<dt>{{#if:{{{p114since|}}}|since {{GVI|{{#explode:{{{p114since}}}| |0|2}}|{{#explode:{{{p114since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p114}}}</dd>}}
+{{#if:{{{p115|}}}|<dt>{{#if:{{{p115since|}}}|since {{GVI|{{#explode:{{{p115since}}}| |0|2}}|{{#explode:{{{p115since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p115}}}</dd>}}
+{{#if:{{{p116|}}}|<dt>{{#if:{{{p116since|}}}|since {{GVI|{{#explode:{{{p116since}}}| |0|2}}|{{#explode:{{{p116since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p116}}}</dd>}}
+{{#if:{{{p117|}}}|<dt>{{#if:{{{p117since|}}}|since {{GVI|{{#explode:{{{p117since}}}| |0|2}}|{{#explode:{{{p117since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p117}}}</dd>}}
+{{#if:{{{p118|}}}|<dt>{{#if:{{{p118since|}}}|since {{GVI|{{#explode:{{{p118since}}}| |0|2}}|{{#explode:{{{p118since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p118}}}</dd>}}
+{{#if:{{{p119|}}}|<dt>{{#if:{{{p119since|}}}|since {{GVI|{{#explode:{{{p119since}}}| |0|2}}|{{#explode:{{{p119since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p119}}}</dd>}}
+{{#if:{{{p120|}}}|<dt>{{#if:{{{p120since|}}}|since {{GVI|{{#explode:{{{p120since}}}| |0|2}}|{{#explode:{{{p120since}}}| |1|2}}|size=0.85}}}}</dt><dd>{{{p120}}}</dd>}}
+}}<!--
+
+--><dt id="Return Value 6">Return Value:</dt>
+<dd>{{#if:{{{r6|}}}|{{{r6}}}|[[Nothing]]}}</dd>
+</dl>}}<!--
+
+--><h3>Examples</h3>
+<dl>
+{{#if:{{{x1|}}}{{{x2|}}}{{{x3|}}}{{{x4|}}}{{{x5|}}}{{{x6|}}}{{{x7|}}}{{{x8|}}}{{{x9|}}}{{{x10|}}}
+|
+   {{#if: {{{x1|}}}|<dt id="Example 1">Example 1:</dt><dd>{{{x1}}}</dd>}}<!--
+-->{{#if: {{{x2|}}}|<dt id="Example 2">Example 2:</dt><dd>{{{x2}}}</dd>}}<!--
+-->{{#if: {{{x3|}}}|<dt id="Example 3">Example 3:</dt><dd>{{{x3}}}</dd>}}<!--
+-->{{#if: {{{x4|}}}|<dt id="Example 4">Example 4:</dt><dd>{{{x4}}}</dd>}}<!--
+-->{{#if: {{{x5|}}}|<dt id="Example 5">Example 5:</dt><dd>{{{x5}}}</dd>}}<!--
+-->{{#if: {{{x6|}}}|<dt id="Example 6">Example 6:</dt><dd>{{{x6}}}</dd>}}<!--
+-->{{#if: {{{x7|}}}|<dt id="Example 7">Example 7:</dt><dd>{{{x7}}}</dd>}}<!--
+-->{{#if: {{{x8|}}}|<dt id="Example 8">Example 8:</dt><dd>{{{x8}}}</dd>}}<!--
+-->{{#if: {{{x9|}}}|<dt id="Example 9">Example 9:</dt><dd>{{{x9}}}</dd>}}<!--
+-->{{#if:{{{x10|}}}|<dt id="Example 10">Example 10:</dt><dd>{{{x10}}}</dd>}}
+| <dt>Examples:</dt><dd>''[[:Category:Maintenance/RV/Example needed|Example needed]]''</dd>
+}}
+</dl>
+<h3>Additional Information</h3>
+<dl>
+<dt id="See Also">See also:</dt>
+<dd class="seealso"><!--
+-->{{#if: {{{seealso|}}} | {{#replace:{{#replace:{{{seealso}}}|], [|][}}|],[|][}} | ''[[:Category:Maintenance/RV/See also needed|See also needed]]''}}</dd>
+</dl>
+
+<h3>Notes</h3>
+<dl class="notes">
+<dt></dt>
+<dd>
+Report bugs on the {{Link|http://feedback.arma3.com/|Feedback Tracker}} and/or discuss them on the {{Link|https://discord.gg/arma|{{arma}} Discord}}<!-- or on the {{Link|https://forums.bohemia.net/|Forums}}-->.<br>'''Only post proven facts here!'''
+[{{canonicalurl:{{FULLPAGENAMEE}}|action=edit&section=new&preload=Template:Preload/Base&preloadparams%5B%5D=%7B%7Bsubst%3APreload%2FNote%7C1%3D%0D%0A%3C%21--%0D%0A%2A%20Write%20your%20comment%20here%20%28remove%20both%20%22arrows%22%20top%20and%20bottom%29%0D%0A%2A%20Pipe%20signs%20%22%7C%22%20MUST%20be%20written%20%7B%7B%21%7D%7D%0D%0A%2A%20New%20lines%20can%20be%20forced%20with%20%3Cbr%3E%0D%0A%2A%20Please%20-PREVIEW%20YOUR%20ADDITION%20BEFORE%20SAVING-%0D%0A%0D%0A%2A%20Video%20Tutorial%3A%20https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DNtOl1gLz3Fo%0D%0A--%3E%0D%0A%7D%7D&preloadtitle=&summary=New+note&nosummary=true}} Add Note]
+</dd>
+</dl>
+</div><!--
+
+
+	CATEGORIES
+
+
+-->{{TemplateCase | | [[Category:{{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}]]<!--
+
+	Introduced with + branches
+
+-->{{#if:{{{game1|}}} |
+	[[Category:Introduced with {{Name|{{{game1}}}}} version {{Trim|{{{version1|?}}}}}]]<!--
+	-->{{GameCategory | {{{game1}}} | New {{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}}}<!--
+	-->{{GameCategory | {{{game1}}} | {{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}}}
+}}{{#if:{{{branch|}}} |
+	{{#if:{{#pos:{{lc:{{{game1}}}{{{game2|}}}{{{game3|}}}{{{game4|}}}{{{game5|}}}{{{game6|}}}{{{game7|}}}}}|arma3}} |
+	   {{#if:{{#pos:{{lc:{{{branch}}}}}|dev}}  | {{GameCategory| {{arma3}} | {{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}: Development Branch }} }}<!--
+	-->{{#if:{{#pos:{{lc:{{{branch}}}}}|diag}} | {{GameCategory| {{arma3}} | {{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}: Diagnostic Branch }} }}<!--
+	-->{{#if:{{#pos:{{lc:{{{branch}}}}}|prof}} | {{GameCategory| {{arma3}} | {{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}: Profiling Branch }} }}
+	}}
+}}<!--
+
+	Other games
+
+-->{{#if:{{{game2|}}} | {{GameCategory|{{{game2}}}|{{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}}}
+}}{{#if:{{{game3|}}} | {{GameCategory|{{{game3}}}|{{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}}}
+}}{{#if:{{{game4|}}} | {{GameCategory|{{{game4}}}|{{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}}}
+}}{{#if:{{{game5|}}} | {{GameCategory|{{{game5}}}|{{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}}}
+}}{{#if:{{{game6|}}} | {{GameCategory|{{{game6}}}|{{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}}}
+}}{{#if:{{{game7|}}} | {{GameCategory|{{{game7}}}|{{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}}}
+}}<!--
+
+	Groups
+
+-->{{#if: {{{gr1|}}} | [[Category:{{#ifeq:{{lc:{{{type}}}}}|command|Command|Function}} Group: {{Trim|{{{gr1}}}}}]]
+}}{{#if: {{{gr2|}}} | [[Category:{{#ifeq:{{lc:{{{type}}}}}|command|Command|Function}} Group: {{Trim|{{{gr2}}}}}]]
+}}{{#if: {{{gr3|}}} | [[Category:{{#ifeq:{{lc:{{{type}}}}}|command|Command|Function}} Group: {{Trim|{{{gr3}}}}}]]
+}}{{#if: {{{gr4|}}} | [[Category:{{#ifeq:{{lc:{{{type}}}}}|command|Command|Function}} Group: {{Trim|{{{gr4}}}}}]]
+}}{{#if: {{{gr5|}}} | [[Category:{{#ifeq:{{lc:{{{type}}}}}|command|Command|Function}} Group: {{Trim|{{{gr5}}}}}]]
+}}{{#if: {{{gr1|}}}{{{gr2|}}}{{{gr3|}}}{{{gr4|}}}{{{gr5|}}} | | [[Category:{{#ifeq:{{lc:{{{type}}}}}|command|Command|Function}} Group: Uncategorised]]}}<!--
+
+	Locality of (arguments/)effect/execution
+
+-->{{#if: {{{eff|}}}       | [[Category:{{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}: {{#ifeq:{{lc:{{{eff}}}}}|local|Local|Global}} Effect]]
+}}{{#if: {{{serverExec|}}} | [[Category:{{#ifeq:{{lc:{{{type}}}}}|command|Scripting Commands|Functions}}: Server Execution]] }}<!--
+
+	Maintenance/RV categories
+
+-->[[Category:Maintenance/RV]]{{#ifeq:KILROY|{{{1|KILROY}}} | | [[Category:Maintenance/RV/Nameless parameter usage]]
+}}{{#if:{{{game1|}}} | | [[Category:Maintenance/RV/Game1 needed]]
+}}{{#if:{{{version1|}}} | | [[Category:Maintenance/RV/Version1 needed]]
+}}{{#if:{{{descr|}}} | | [[Category:Maintenance/RV/Description needed]]
+}}{{#if:{{{s1|}}} | | [[Category:Maintenance/RV/Syntax needed]]
+}}{{#if:{{{r1|}}} | | [[Category:Maintenance/RV/Return value needed]]
+}}{{#if:{{{x1|}}}{{{x2|}}}{{{x3|}}}{{{x4|}}}{{{x5|}}}{{{x6|}}}{{{x7|}}}{{{x8|}}}{{{x9|}}}{{{x10|}}} | | [[Category:Maintenance/RV/Example needed]]
+}}{{#if:{{{seealso|}}} | | [[Category:Maintenance/RV/See also needed]]
+}}<!--
+	closing Categories TemplateCase
+-->}}
+|= -no type provided-
+|#default = -wrong type ("{{{type}}}") provided-}}</includeonly><noinclude>{{RV/doc}}</noinclude>

@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/lnbSetColumnsPos
+// revision: 341220 (2023-05-13T23:12:29Z)
+// export sha1: mxklxks54vydn1vtzsq0qwnkx6nfbha
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= GUI Control - ListNBox
+
+|descr= Sets relative screen X for ListNBox control columns positions. Setter for [[lnbGetColumnsPosition]].
+
+|s1= [[lnbSetColumnsPos]] [idc, positions]
+
+|p1= idc: [[Number]] - idc of the control
+
+|p2= positions: [[Array]] - positions of the columns
+
+|r1= [[Nothing]]
+
+|s2= ctrl [[lnbSetColumnsPos]] positions
+
+|p21= ctrl: [[Control]] - lnb control
+
+|p22= positions: [[Array]] - positions of the columns
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lnbSetColumnsPos [101, [0.1,0.5,0.7]];</sqf>
+
+|x2= <sqf>_ctrl lnbSetColumnsPos [0.1,0.5,0.7];</sqf>
+
+|seealso= [[lnbAddArray]] [[lnbAddColumn]] [[lnbAddRow]] [[lnbClear]] [[lnbColor]] [[lnbCurSelRow]] [[lnbData]] [[lnbDeleteColumn]] [[lnbDeleteRow]] [[lnbGetColumnsPosition]] [[lnbPicture]] [[lnbSetColor]] [[lnbSetCurSelRow]] [[lnbSetData]] [[lnbSetPicture]] [[lnbSetText]] [[lnbSetValue]] [[lnbSize]] [[lnbText]] [[lnbValue]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140909165200
+|text= See: [[List Box#LISTNBOX]]
+}}

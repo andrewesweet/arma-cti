@@ -1,0 +1,123 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Launcher_-_Mod_Handling
+// revision: 349978 (2023-11-20T22:11:33Z)
+// export sha1: ip5g31ara4n45i2qmaqoojp1gwqityx
+// Vendored snapshot. Do not edit — re-export instead.
+
+This page presents description of mod handling by [[Arma_3_Launcher|Arma 3 Launcher]].
+
+== Overview ==
+The Mods tab in Launcher allows you to configure {{Link|link= http://steamcommunity.com/workshop/browse?appid=107410|text= Steam Workshop}} mod content. From here you can see a list of all your subscribed content. Workshop supports uploading unlimited size items containing multiple files.<br>
+
+=== Main Features ===
+*All subscribed Steam Workshop mods are visible in Mods tab.
+*User can subscribe and unsubscribe mods directly from the Launcher.
+*Launcher automatically downloads updates for all subscribed mods (data, signatures, dependencies).
+*Launcher signalizes current state of mod (ready, downloading, corrupted etc.).
+*'''[NEW]''' Launcher signalizes mod dependencies (one mod requires different mod for proper functionality) and handles missing mods.
+User can add even Local mods (=not present on Steam Workshop) to the Launcher list of mods, but only enabling and disabling is supported in this case.
+
+{{Feature|important|All downloads are handled by the Steam Client. When downloading updates for multiple-files mods, Steam Client will download content but do not update the mod files when any Arma 3 related application (Arma 3, Launcher, Publisher) is running. Please, exit all the applications to allow updates to be pushed from the temporary download folder to a proper folder.}}
+
+
+== Mods in Launcher ==
+=== UI Documentation ===
+'''Mods Tab'''<br>
+[[File:Arma3LauncherModsTab.png|250px|right]]
+The Mods tab is together with News, Parameters and Battleye one of the main tabs in Launcher.
+*Preset - Here you can save, load and name various presets of mods. This makes switching mod sets much faster. The current unsaved preset is preserved when the launcher quits.
+*+ Steam Workshop - Opens Steam Workshop home page with ''mod'' tag pre-selected to allow easier mod subscribing.
+*+ Local mod - Opens browse folder dialog. User is able to include his local (non-Workshop) mods into Launcher to manage them from one place, mods can be also drag'n'dropped into the Launcher window.
+*More
+**Unsubscribe all Steam Workshop mods - Automatically unsubscribes and deletes data of all mods currently subscribed on Steam Workshop.
+**Add watched folder - Allows you to add watched folder where Launcher detects local mods.
+*Unload all - All mods are unloaded and moved into the Available mods part.
+*Load all - All mods are loaded and moved into the Loaded mods part.
+*Status icon - Signifies the status of the mod, for detailed info see next chapter ''Mod States''.
+*Signature icon - Mods with multiplayer signatures are marked by a green sign icon.
+*Dependencies icon - Info about mod dependencies related to this mod.
+'''Mod Info'''<br>
+[[File:Arma3LauncherModInfo.png|250px|right]]
+The Mod Info presents detailed info about a mod and is opened after click on any mod in the list of mods.
+*Source - Indicates the source of mod (Steam Workshop or Local)
+*Author - Shows author of given mod. For Steam Workshop mods it is person who uploaded the mod on Workshop. 
+*Last update - Time when was the last update uploaded on Steam Workshop.
+*File size - Size of mod's data folder.
+*Status - Signifies the status of the mod, for detailed info see next chapter ''Mod States''.
+*Multiplayer - Multiplayer signatures are marked in here. Except the signed and not signed states, even the partially signed state (not all PBOs have signature) is signalized.
+*Button Steam Workshop - Opens the mod's page in Steam Workshop.
+*Button Mod Folder - Opens the mod folder.
+*Button Dependencies View - Opens the dependencies view, for more info see part Dependencies below.
+*Button Re-download - Re-downloads the mod from Steam Workshop.
+*Button Unsubscribe - Unsubscribes from mod and deletes its local files.
+
+=== Mod States ===
+{| class="wikitable"
+! '''Icon'''
+! '''State'''
+! '''Status in Mod Info'''
+! '''Description'''
+|-
+| 
+| OK
+| Ready
+| Item is installed and ready to be used.
+|-
+| [[File:ExtensionState NotReady.png|16px]]
+| Not Ready
+| Not Ready<br>Verifing...<br>Checking..
+| Item is being initialized.
+|-
+| [[File:ExtensionState Busy.png|16px]]
+| Busy
+| Downloading...<br>Synchronizing...<br>Removing...<br>Working...
+| Item is currently being processed. It cannot be loaded into the game.
+|-
+| [[File:ExtensionState Listed.png|16px]]
+| Listed
+| Not Installed
+| Item is not installed, waiting for download by the Steam Client.
+|-
+| [[File:ExtensionState Listed.png|16px]]
+| Installation Queued
+| Not installed, download queued
+| Item is waiting to be installed by the Steam Client.
+|-
+| [[File:ExtensionState Listed.png|16px]]
+| Update Queued
+| Ready, update queued (on Steam)
+| Item is installed and is queued for update. Update will not be processed when the Launcher, Publisher or game are running. This will be marked in the Progress bar.
+|-
+| | [[File:ExtensionState Corrupted.png|16px]]
+| Corrupted
+| Corrupted
+| Item is installed and corrupted and cannot be loaded into the game. Causes:
+* mod target path is not set
+* mod target path doesn't exist
+* mod target path doesn't contain Addons directory
+* mod target path / Addons doesn't contain an *.pbo or *.ebo file
+|}
+
+
+== Dependencies ==
+Launcher is able to handle mod dependencies (one mod requires different mod for proper functionality) and offer download of missing mods from Steam Workshop.
+
+=== System Description ===
+*Only mods on Steam Workshop can use dependencies.
+*Dependencies can be set by mod's author in the mod's administration on Steam Workshop.
+*Subscribe/Load of required mods is offered to user when loading a mod with dependencies.
+*Multiple dependencies are supported (even mods downloaded as a dependency can have own dependencies and Launcher solves them).
+
+=== UI Documentation ===
+'''Load dependencies'''<br>
+This dialog offers subscription/load of missing dependencies.
+*Checkbox - Select which mods should be subscribed/loaded.
+*+Subscribe - Manually subscribes given mod.
+*Webpage - Opens the mod's page in Steam Workshop.
+*Subscribe/Load selected mods - Subscribes/Loads all selected mods from Steam Workshop.
+*Ignore dependencies - The mod is still loaded, but all dependencies are ignored.
+*Cancel - Cancels the dialog, the mod is not loaded neither are the dependencies.
+'''Unload mod with dependencies'''<br>
+This dialog warns user when trying to unload a mod which is a dependency for any other loaded mod.
+*Checkbox - Select which mods should be unloaded as well.
+*Unload mod anyway - Unloads only the mod you choose to unload. Keeps all mods dependent on this mod loaded.
+*Unload all selected mods - Unloads the mod you choose to unload and all selected mods as well.

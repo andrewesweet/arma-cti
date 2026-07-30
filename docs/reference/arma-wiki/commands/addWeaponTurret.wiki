@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/addWeaponTurret
+// revision: 377484 (2026-01-02T06:49:02Z)
+// export sha1: jyd0ykzzsoorfzuf1rk9a3i63zq6sbt
+// categories: Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|game2= arma2oa
+|version2=1.64
+
+|arg= local
+
+|eff= global
+
+|gr1= Turrets
+
+|descr= Adds a weapon to the turret. Use turret path [-1] for driver's turret.
+
+|s1= vehicle [[addWeaponTurret]] [weaponName, turretPath]
+
+|p1= vehicle: [[Object]]
+
+|p2= weaponName: [[String]]
+
+|p3= turretPath: [[Turret Path]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_tank addWeaponTurret ["LMG_M200", [0,0]];</sqf>
+
+|seealso= [[removeWeaponTurret]] [[turretLocal]] [[addMagazineTurret]] [[magazinesTurret]] [[removeMagazinesTurret]] [[removeMagazineTurret]] [[weaponsTurret]] [[currentMagazineDetailTurret]] [[currentMagazineTurret]] [[currentWeaponTurret]] [[selectWeaponTurret]]
+}}
+
+{{Note
+|user= 7erra
+|timestamp= 20210603120500
+|text= You can find out the turret path by entering the turret and checking with
+<sqf>assignedVehicleRole player;</sqf>
+}}

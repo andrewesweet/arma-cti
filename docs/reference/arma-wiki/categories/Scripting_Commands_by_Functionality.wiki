@@ -1,0 +1,194 @@
+// source: https://community.bistudio.com/wiki/Category:Scripting_Commands_by_Functionality
+// revision: 373898 (2025-06-26T11:34:07Z)
+// export sha1: kej1hny7g6ah1phos154pdf3qtpybmp
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable sortable" width = "100%"
+|-
+! Command Group !! Description !! Examples !! Only for !! #Commands / #Subcategories
+|-
+| style="width: 15%" | [[:Category:Command Group: Animations|Animations]] || Commands used to work with animations. || [[moveTime]], [[animateSource]] || || {{PAGESINCATEGORY:Command Group: Animations|pages}}
+|-
+| [[:Category:Command Group: Argo|Argo]] || Commands exclusive to {{GameCategory|argo|link= y}}. || [[onOfficialServer]], [[kickPlayer]] || {{Name|argo}} || {{PAGESINCATEGORY:Command Group: Argo|pages}}
+|-
+| [[:Category:Command Group: Arrays|Arrays]] || Commands used to manipulate arrays. || [[append]], [[select]] || || {{PAGESINCATEGORY:Command Group: Arrays|pages}}
+|-
+| [[:Category:Command Group: Artillery|Artillery]] || All commands related to artilleries. || [[commandArtilleryFire]], [[getArtilleryAmmo]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: Artillery|pages}}
+|-
+| [[:Category:Command Group: AI Behaviour|AI Behaviour]] || Commands used to modify the behaviour of the AI. || [[setSkill]], [[behaviour]] || || {{PAGESINCATEGORY:Command Group: AI Behaviour|pages}}
+|-
+| [[:Category:Command Group: Briefing|Briefing]] || Objectives, tasks and notes. || [[createSimpleTask]], [[createDiaryRecord]] || || {{PAGESINCATEGORY:Command Group: Briefing|pages}}
+|-
+| [[:Category:Command Group: Broken Commands|Broken Commands]] || Commands that don't work as intended or are not implemented at all. || [[echo]], [[textLog]] || || {{PAGESINCATEGORY:Command Group: Broken Commands|pages}}
+|-
+| [[:Category:Command Group: Camera Control|Camera Control]] || Commands to manipulate the camera for intros, outros and cut-scenes. See also [[Camera Tutorial]]. Commands related to [[:Category:Eden Editor|Eden Editor]] and [[Curator|Zeus]] camera are not listed here. See [[:Category: Command Group: Eden Editor|Command Group: Eden Editor]] and [[:Category: Command Group: Curator|Command Group: Curator]]. || [[camCreate]], [[camSetDir]] || || {{PAGESINCATEGORY:Command Group: Camera Control|pages}}
+|-
+| [[:Category:Command Group: Config|Config]] || Commands for working with configs. || [[configFile]], [[config greater greater name|>>]] || || {{PAGESINCATEGORY:Command Group: Config|pages}}
+|-
+| [[:Category:Command Group: Containers|Containers]] || Commands related to containers like backpacks and vests. || [[vest]], [[canAdd]] || || {{PAGESINCATEGORY:Command Group: Containers|pages}}
+|-
+| [[:Category:Command Group: Conversations|Conversations]] || bikb, topics, etc.|| [[kbTell]], [[kbWasSaid]]. || || {{PAGESINCATEGORY:Command Group: Conversations|pages}}
+|-
+| [[:Category:Command Group: Custom Panels|Custom Panels]] || Commands to handle [[Arma 3: Custom Info|custom panels]]. || [[infoPanel]], [[setInfoPanel]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: Custom Panels|pages}}
+|-
+| [[:Category:Command Group: Custom Radio and Chat|Custom Radio and Chat]] || Commands used to create or work with custom channels. || [[radioChannelCreate]], [[setCurrentChannel]] || {{tkoh}} and {{arma3}} || {{PAGESINCATEGORY:Command Group: Custom Radio and Chat|pages}}
+|-
+| [[:Category:Command Group: Diagnostic|Diagnostic (Diag)]] || Commands helpful for diagnosing issues. || [[diag_log]], [[diag_fpsMin]] || || {{PAGESINCATEGORY:Command Group: Diagnostic|pages}}
+|-
+| [[:Category:Command Group: Difficulty|Difficulty]] || Commands to change the difficulty of the game. || [[disableMapIndicators]], [[difficultyOption]] || || {{PAGESINCATEGORY:Command Group: Difficulty|pages}}
+|-
+| [[:Category:Command Group: DLC|DLC]] || DLC related commands. || [[getDLCs]], [[isDLCAvailable]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: DLC|pages}}
+|-
+| [[:Category:Command Group: Dynamic Simulation|Dynamic Simulation]] || Commands related to [[Arma 3: Dynamic Simulation]]. || [[enableDynamicSimulationSystem]], [[setDynamicSimulationDistance]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: Dynamic Simulation|pages}}
+|-
+| [[:Category:Command Group: Eden Editor|Eden Editor]] || Commands to work with [[:Category:Eden Editor|Eden Editor]]. || [[get3DENCamera]], [[get3DENSelected]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: Eden Editor|pages}}
+|-
+| [[:Category:Command Group: Environment|Environment]] || Commands to manipulate the weather, time, date or traffic. || [[setFog]], [[date]] || || {{PAGESINCATEGORY:Command Group: Environment|pages}}
+|-
+| [[:Category:Command Group: Event Handlers|Event Handlers]] || Set, define and use Event Handlers. || [[addEventHandler]], [[displayAddEventHandler]] || || {{PAGESINCATEGORY:Command Group: Event Handlers|pages}}
+|-
+| [[:Category:Command Group: Flags|Flags]] || Commands that are used to work with flags. || [[setFlagOwner]], [[flagOwner]] || || {{PAGESINCATEGORY:Command Group: Flags|pages}}
+|-
+| [[:Category:Command Group: Game 2 Editor|Game 2 Editor]] || Commands related to the [[Game 2 Editor]]. || [[updateObjectTree]], [[fromEditor]] || {{n/a}} || {{PAGESINCATEGORY:Command Group: Game 2 Editor||pages}}
+|-
+| [[:Category:Command Group: Groups|Groups]] || Read and set group properties. || [[formation]], [[group]] || || {{PAGESINCATEGORY:Command Group: Groups|pages}}
+|-
+| [[:Category:Command Group: GUI Control|GUI Control]] || Customize the look of dialogs and menus in the game. || [[buttonAction]], [[ctrlCreate]] || || {{PAGESINCATEGORY:Command Group: GUI Control|pages}} / {{PAGESINCATEGORY:Command Group: GUI Control|subcats}}
+|-
+| [[:Category:Command Group: GUI Control - Controls Table|GUI Control - Controls Table]] || Commands to manipulate [[CT_CONTROLS_TABLE]] controls. || [[ctAddRow]], [[ctClear]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: GUI Control - Controls Table|pages}}
+|-
+| [[:Category:Command Group: GUI Control - Event Handlers|GUI Control - Event Handlers]] || Commands used to add Event Handlers to GUIs. For a full list of available event handlers see '''[[User Interface Event Handlers]]'''. || [[displayAddEventHandler]], [[displayRemoveAllEventHandlers]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: GUI Control - Event Handlers|pages}}
+|-
+| [[:Category:Command Group: GUI Control - HTML|GUI Control - HTML]] || Commands to specifically change font settings of [[CT_HTML]] controls. || [[ctrlSetFontH1]], [[ctrlSetFontH2]] || || {{PAGESINCATEGORY:Command Group: GUI Control - HTML|pages}}
+|-
+| [[:Category:Command Group: GUI Control - ListNBox|GUI Control - ListNBox]] || Commands to manipulate [[CT_LISTNBOX]] controls. || [[lnbAddArray]], [[lnbSetText]] || || {{PAGESINCATEGORY:Command Group: GUI Control - ListNBox|pages}}
+|-
+| [[:Category:Command Group: GUI Control - ListBox|GUI Control - ListBox]] || Commands to manipulate [[CT_LISTBOX]] controls. || [[lbAdd]], [[lbDelete]] || || {{PAGESINCATEGORY:Command Group: GUI Control - ListBox|pages}}
+|-
+| [[:Category:Command Group: GUI Control - Map|GUI Control - Map]] || Commands to manipulate [[CT_MAP]] and [[CT_MAP_MAIN]] controls. || [[drawArrow]], [[ctrlMapAnimClear]] || || {{PAGESINCATEGORY:Command Group: GUI Control - Map|pages}}
+|-
+| [[:Category:Command Group: GUI Control - Menu|GUI Control - Menu]] || Commands to manipulate [[CT_MENU_STRIP]], [[CT_MENU]], [[CT_CONTEXT_MENU]] controls. || [[menuAdd]], [[menuAction]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: GUI Control - Menu|pages}}
+|-
+| [[:Category:Command Group: GUI Control - Object|GUI Control - Object]] || Commands to manipulate [[CT_OBJECT]], [[CT_OBJECT_ZOOM]], [[CT_OBJECT_CONTAINER]], [[CT_OBJECT_CONT_ANIM]] controls. || [[ctrlModel]], [[ctrlSetModel]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: GUI Control - Object|pages}}
+|-
+| [[:Category:Command Group: GUI Control - Positioning|GUI Control - Positioning]] || Commands to position controls. || [[safeZoneH]], [[ctrlSetPosition]] || || {{PAGESINCATEGORY:Command Group: GUI Control - Positioning|pages}}
+|-
+| [[:Category:Command Group: GUI Control - Tree View|GUI Control - Tree View]] || Commands to manipulate [[CT_TREE]] controls. || [[tvAdd]], [[tvCollapse]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: GUI Control - Tree View|pages}}
+|-
+| [[:Category:Command Group: HashMap|HashMap]] || Commands related to [[HashMap]]s. || [[createHashMapFromArray]], [[getOrDefault]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: HashMap}}
+|-
+| [[:Category:Command Group: High Command|High Command]] || Commands for high command. || [[hcAllGroups]], [[onHCGroupSelectionChanged]] || || {{PAGESINCATEGORY:Command Group: High Command|pages}}
+|-
+| [[:Category:Command Group: Interaction|Interaction]] || On-screen messages, dialogs, menus. || [[hint]], [[showGPS]] || || {{PAGESINCATEGORY:Command Group: Interaction|pages}}
+|-
+| [[:Category:Command Group: Leaderboards|Leaderboards]] || Leader board related scripting commands. || [[leaderboardDeInit]], [[leaderboardInit]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: Leaderboards|pages}}
+|-
+| [[:Category:Command Group: Lights|Lights]] || Create, enable light sources on vehicles, terrain objects or lightpoints. || [[setLightColor]], [[enableGunLights]] || || {{PAGESINCATEGORY:Command Group: Lights|pages}}
+|-
+| [[:Category:Command Group: Localization|Localization]] || Commands to work with localized text. || [[isLocalized]], [[diag_localized]] || || {{PAGESINCATEGORY:Command Group: Localization|pages}}
+|-
+| [[:Category:Command Group: Locations|Locations]] || Create, define, use and manipulate locations. || [[nearestLocation]], [[setSize]] || || {{PAGESINCATEGORY:Command Group: Locations|pages}}
+|-
+| [[:Category:Command Group: Map|Map]] || Commands to work with the map. || [[forceMap]], [[mapGridPosition]] || || {{PAGESINCATEGORY:Command Group: Map|pages}}
+|-
+| [[:Category:Command Group: Markers|Markers]] || Set, define and use markers. || [[createMarker]], [[getMarkerType]] || || {{PAGESINCATEGORY:Command Group: Markers|pages}}
+|-
+| [[:Category:Command Group: Math|Math]] || General math related commands. Also see [[:Category: Command Group: Math - Geometry|Command Group: Math - Geometry]] and [[:Category: Command Group: Math - Vectors|Command Group: Math - Vectors]]. || [[abs]], [[+]] || || {{PAGESINCATEGORY:Command Group: Math|pages}} / {{PAGESINCATEGORY:Command Group: Math|subcats}}
+|-
+| [[:Category:Command Group: Math - Geometry|Math - Geometry]] || Commands closely related to geometry. || [[intersect]], [[distance]] || || {{PAGESINCATEGORY:Command Group: Math - Geometry||pages}}
+|-
+| [[:Category:Command Group: Math - Vectors|Math - Vectors]] || Commands which work with vectors. || [[vectorAdd]], [[vectorUpVisual]] || || {{PAGESINCATEGORY:Command Group: Math - Vectors|pages}}
+|-
+| [[:Category:Command Group: Mines|Mines]] || Commands to create, get and interact with mines. || [[allMines]], [[createMine]] || || {{PAGESINCATEGORY:Command Group: Mines|pages}}
+|-
+| [[:Category:Command Group: Mission Information|Mission Information]] || Read and set parameters for the current mission. || [[addRating]], [[score]] || || {{PAGESINCATEGORY:Command Group: Mission Information|pages}}
+|-
+| [[:Category:Command Group: Mods and Addons|Mods and Addons]] || Commands that are used to get information about mods and addons. || [[configSourceModList]], [[configSourceMod]] || || {{PAGESINCATEGORY:Command Group: Mods and Addons|pages}}
+|-
+| [[:Category:Command Group: Multiplayer|Multiplayer]] || Commands that are specific to Multiplayer games. || [[remoteExec]], [[didJIP]] || || {{PAGESINCATEGORY:Command Group: Multiplayer|pages}}
+|-
+| [[:Category:Command Group: Namespaces|Namespaces]] || Commands related to [[Namespace]]s. || [[missionNamespace]], [[uiNamespace]], [[setVariable]] || || {{PAGESINCATEGORY:Command Group: Namespaces|pages}}
+|-
+| [[:Category:Command Group: Object Detection|Object Detection]] ||Commands used to find certain objects. || [[allUnits]], [[nearestObjects]] || || {{PAGESINCATEGORY:Command Group: Object Detection|pages}}
+|-
+| [[:Category:Command Group: Object Manipulation|Object Manipulation]] || Get or set various different properties of units, vehicles and other objects. || [[createVehicle]], [[setDamage]] || || {{PAGESINCATEGORY:Command Group: Object Manipulation|pages}}
+|-
+| [[:Category:Command Group: Particles|Particles]] || Commands for working with particles. || [[drop]], [[particlesQuality]] || || {{PAGESINCATEGORY:Command Group: Particles|pages}}
+|-
+| [[:Category:Command Group: Performance Profiling|Performance Profiling]] || Commands used to debug performance such as finding slow scripts. || [[diag_captureFrame]], [[logEntities]] || || {{PAGESINCATEGORY:Command Group: Performance Profiling|pages}}
+|-
+| [[:Category:Command Group: Pilot Camera|Pilot Camera]] || Commands used to control a vehicles' [[A3_Targeting_config_reference#class_pilotCamera|pilotCamera]]. || [[getPilotCameraTarget]], [[hasPilotCamera]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: Pilot Camera|pages}}
+|-
+| [[:Category:Command Group: PhysX|PhysX]] || Commands used to deal with PhysX. || [[addForce]], [[getCenterOfMass]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: PhysX|pages}}
+|-
+| [[:Category:Command Group: Positions|Positions]] || All commands which work with positions and heights. || [[getPosWorld]], [[setPosWorld]] || || {{PAGESINCATEGORY:Command Group: Positions|pages}}
+|-
+| [[:Category:Command Group: Program Flow|Program Flow]] || Commands to define loops, conditions, and jumps inside scripts. || [[forEach]], [[execVM]] || || {{PAGESINCATEGORY:Command Group: Program Flow|pages}}
+|-
+| [[:Category:Command Group: Radio and Chat|Radio and Chat]] || Control radio availability, chat messages and subtitles. || [[enableRadio]], [[systemChat]] || || {{PAGESINCATEGORY:Command Group: Radio and Chat|pages}}
+|-
+| [[:Category:Command Group: Remote Control|Remote Control]] || Manipulate and connect to UAVs or remote control units. || [[connectTerminalToUAV]], [[remoteControl]] || || {{PAGESINCATEGORY:Command Group: Remote Control|pages}}
+|-
+| [[:Category:Command Group: Render Time Scope|Render Time Scope]] || These scripting commands work in render time scope rather than simulation time scope. || [[getDirVisual]], [[visiblePosition]] || || {{PAGESINCATEGORY:Command Group: Render Time Scope|pages}}
+|-
+| [[:Category:Command Group: Roads and Airports|Roads and Airports]] || All commands related to roads and airports. || [[allAirports]], [[roadAt]] || || {{PAGESINCATEGORY:Command Group: Roads and Airports|pages}}
+|-
+| [[:Category:Command Group: Ropes and Sling Loading|Ropes and Sling Loading]] || Attach and detach ropes to objects, slingload and drop them. || [[enableRopeAttach]], [[ropes]] || {{arma3}}, {{tkoh}} || {{PAGESINCATEGORY:Command Group: Ropes and Sling Loading|pages}}
+|-
+| [[:Category:Command Group: RTD|RTD]] || Commands related to the [[Arma 3: Advanced Helicopter Flight Model]]. || [[collectiveRTD]], [[throttleRTD]] || {{arma3}}, {{tkoh}} || {{PAGESINCATEGORY:Command Group: RTD|pages}}
+|-
+| [[:Category:Command Group: Sensors|Sensors]] || Commands to work with [[Arma 3: Sensors]] || [[setVehicleReceiveRemoteTargets]], [[vehicleReportRemoteTargets]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: Sensors|pages}}
+|-
+| [[:Category:Command Group: Sides|Sides]] || Read and set unit affiliations. || [[side]], [[friendly]] || || {{PAGESINCATEGORY:Command Group: Sides|pages}}
+
+|-
+| [[:Category:Command Group: Sounds|Sounds]] || Control in-game sounds. || [[fadeMusic]], [[say]] || || {{PAGESINCATEGORY:Command Group: Sounds|pages}}
+|-
+| [[:Category:Command Group: Stamina System|Stamina System]] || Commands related to units stamina and fatigue. See [[Arma 3: Stamina]]. || [[getStamina]], [[setStamina]] || Only {{arma3}} except for [[forceWalk]]<br> and [[isForcedWalk]]. || {{PAGESINCATEGORY:Command Group: Stamina System|pages}}
+|-
+| [[:Category:Command Group: Strings|Strings]] || Commands to work with strings. || [[in]], [[toLower]] || || {{PAGESINCATEGORY:Command Group: Strings|pages}} / {{PAGESINCATEGORY:Command Group: Strings|subcats}}
+|-
+| [[:Category:Command Group: Strings - Regular Expression|Strings - Regular Expression]] || Regular Expression (Regex) commands to manupilate strings. || [[regexMatch]], [[regexFind]] || || {{PAGESINCATEGORY:Command Group: Strings - Regular Expression|pages}}
+|-
+| [[:Category:Command Group: Structured Text|Structured Text]] || Commands which work with [[Structured Text|structured text]]. || [[text]], [[parseText]] || || {{PAGESINCATEGORY:Command Group: Structured Text|pages}}
+|-
+| [[:Category:Command Group: System|System]] || Commands that deal with the game as a whole. || [[benchmark]], [[loadGame]] || || {{PAGESINCATEGORY:Command Group: System|pages}}
+|-
+| [[:Category:Command Group: Team Switch|Team Switch]] || Everything to do with the Team Switch feature. || [[enableTeamSwitch]], [[onTeamSwitch]] || || {{PAGESINCATEGORY:Command Group: Team Switch|pages}}
+|-
+| [[:Category:Command Group: Teams|Teams]] || Commands used to work with [[Team|teams]] and [[Team Member|team members]]. || [[createTeam]], [[members]] || || {{PAGESINCATEGORY:Command Group: Teams|pages}}
+|-
+| [[:Category:Command Group: Time|Time]] || Commands related to in-game time or system time. || [[systemTimeUTC]], [[timeMultiplier]] || || {{PAGESINCATEGORY:Command Group: Time|pages}}
+|-
+| [[:Category:Command Group: Triggers|Triggers]] || Set, define and use Triggers and Event Handlers. || [[createTrigger]], [[triggerType]] || || {{PAGESINCATEGORY:Command Group: Triggers|pages}}
+|-
+| [[:Category:Command Group: Turrets|Turrets]] || Commands which work with turrets. || [[turretLocal]], [[addWeaponTurret]] || || {{PAGESINCATEGORY:Command Group: Turrets|pages}}
+|-
+| [[:Category:Command Group: Uncategorised|Uncategorised]] || Commands which have no defined category. || ''should always be empty'' || || {{PAGESINCATEGORY:Command Group: Uncategorised|pages}}
+|-
+| [[:Category:Command Group: Unit Control|Unit Control]] || Controls the behaviour of your troops. || [[action]], [[setHideBehind]] || || {{PAGESINCATEGORY:Command Group: Unit Control|pages}}
+|-
+| [[:Category:Command Group: Unit Identity|Unit Identity]] || Commands used to change a unit's identity such as rank, voice and name. || [[setFace]], [[setUnitRank]] || || {{PAGESINCATEGORY:Command Group: Unit Identity|pages}}
+|-
+| [[:Category:Command Group: Unit Inventory|Unit Inventory]] || Commands related to an unit's inventory. For working with weapons and magazines, also see [[:Category: Command Group: Weapons|Command Group Weapons]]. || [[assignItem]], [[addGoggles]] || || {{PAGESINCATEGORY:Command Group: Unit Inventory|pages}}
+|-
+| [[:Category:Command Group: Variables|Variables]] || Commands to handle variables. For example comparing two variables or retrieving all variables from a namespace. || [[setVariable]], [[isNull]] || || {{PAGESINCATEGORY:Command Group: Variables|pages}}
+|-
+| [[:Category:Command Group: Vehicle in Vehicle Transport |Vehicle in Vehicle Transport]] || Commands related to [[Arma 3: Vehicle in Vehicle Transport]].
+ || [[canVehicleCargo]], [[vehicleCargoEnabled]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: Vehicle in Vehicle Transport|pages}}
+|-
+| [[:Category:Command Group: Vehicle Inventory|Vehicle Inventory]] || Commands used to manipulate a vehicle's (or ammo box) inventory. Not to be confused with [[:Category:Command Group: Vehicle Loadouts|Command Group: Vehicle Loadouts]].  || [[getWeaponCargo]], [[getFuelCargo]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: Vehicle Inventory|pages}}
+|-
+| [[:Category:Command Group: Vehicle Loadouts|Vehicle Loadouts]] || [[Arma 3: Vehicle Loadouts]] related commands. || [[getCompatiblePylonMagazines]], [[getPylonMagazines]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: Vehicle Loadouts|pages}}
+|-
+| [[:Category:Command Group: Waypoints|Waypoints]] || Commands to handle waypoints. || [[addWaypoint]], [[deleteWaypoint]] || || {{PAGESINCATEGORY:Command Group: Waypoints|pages}}
+|-
+| [[:Category:Command Group: Weapon Pool|Weapon Pool]] || The Weapon Pool enables the player to use weapons from one mission in others. || [[addMagazinePool]], [[queryMagazinePool]] || || {{PAGESINCATEGORY:Command Group: Weapon Pool|pages}}
+|-
+| [[:Category:Command Group: Weapons|Weapons]] || Commands used to manipulate weapons. For example fire at a target or check if weapon is lowered. In order to retrieve a unit's or vehicle's weapon see [[:Category: Command Group: Unit Inventory| Command Group: Unit Inventory]] and [[:Category: Command Group: Vehicle Inventory| Command Group: Vehicle Inventory]]. || [[addMagazine]], [[weapons]] || || {{PAGESINCATEGORY:Command Group: Weapons|pages}}
+|-
+| [[:Category:Command Group: Curator|Zeus (Curator)]] || Setting up [[Arma 3: Curator|Zeus]] rules and interface. || [[allCurators]], [[curatorAddons]] || {{arma3}} || {{PAGESINCATEGORY:Command Group: Curator|pages}}
+|-
+|}
+
+[[Category:Scripting Commands]]

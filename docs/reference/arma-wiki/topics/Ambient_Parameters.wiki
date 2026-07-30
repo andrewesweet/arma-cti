@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/Ambient_Parameters
+// revision: 291487 (2021-08-07T11:43:01Z)
+// export sha1: 83dmb81qonoe5ngssl34fg2ijhfl3qk
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|Sound}}
+
+See also [[getAllEnvSoundControllers]], [[Arma_3_Sound:_SoundControllers|SoundControllers]].
+
+Dynamic ambient parameters:
+* '''rain''' 0..1 rain intensity
+* '''windy''' 0..1 wind streght (0 m/s ->0, 20 m/s -> 1)
+* '''night''' 0..1 night "intensity"
+* '''deadBody''' 0..1 is the place close to a dead body? (0 m ->1, 10 m -> 0)
+
+Static ambient parameters:
+* '''meadow''' 0..1 how much does the surrounding have a character of a meadow
+* '''trees''' 0..1 how many trees are growing in the area
+* '''forest''' 0..1 forest density
+* '''hills''' 0..1 how much is the place "hilly" (160 ASL -> 0, 400 ASL -> 1)
+* '''houses''' 0..1 how many houses or other building are around
+* '''sea''' 0..1 is the place close to a sea? (0 m->1, approx. 100 m->0)
+* '''waterDepth''' 0..M where M is the actual water depth, and 0 on land.
+* '''camDepth''' 0..1 ???
+
+Operators:
+* mathematical operators
+* '''randomGen N''' float from 0 to N
+* '''factor [p,q]''' (V-p/q-p) if p <= V <= q, 0 otherwise
+* '''interpolate [p,q,r,s]''' (V-p/q-p)*(s-r) + r
+
+Parameters can be combined into [[Simple Expression]]s, like:
+<syntaxhighlight lang="cpp">
+"meadow * (1 - rain) * (1 - night)"
+"(10 - (5 * rain)) * (1 - sea) * (windy factor [0.2, 0.5])"
+"sea - waterDepth" // neat way to retrieve the loveliest beaches/coastal places
+"sea - waterDepth + (waterDepth factor [0.05, 0.5])" // ...even more fine tuning w.r.t water depth using factor!
+</syntaxhighlight>

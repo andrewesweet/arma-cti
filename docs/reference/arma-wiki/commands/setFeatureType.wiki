@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/setFeatureType
+// revision: 378060 (2026-02-04T23:41:20Z)
+// export sha1: k9zdum96gso50qd7pv7y2tq1kke16an
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|arg= global
+
+|eff= local
+
+|gr1= Object Manipulation
+
+|descr= Enable/disable object as a feature/landmark. Possible feature types:
+* 0 - Feature disabled
+* 1 - Object is always visible within object view distance
+* 2 - Object is always visible within terrain view distance
+
+{{Feature|important|
+The limit is '''500''' map/static objects and '''200''' dynamic objects including config features and auto features (flying helicopters, airplanes).<br>
+The command returns [[false]] if the related limit is reached.
+}}
+
+|s1= object [[setFeatureType]] type
+
+|p1= object: [[Object]]
+
+|p2= type: [[Number]] - the desired feature type
+
+|r1= [[Boolean]] - [[true]] if the feature is set, [[false]] otherwise (limit reached)
+
+|x1= Set a building to be always rendered:
+<sqf>building setFeatureType 2;</sqf>
+
+|seealso= [[setViewDistance]] [[setObjectViewDistance]]
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20171010161800
+|text= For world objects, command effect persists '''after mission restart'''. Map must be reloaded to automatically revert setting.
+}}

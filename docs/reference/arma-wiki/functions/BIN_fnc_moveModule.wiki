@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_moveModule
+// revision: 280953 (2021-06-14T08:58:16Z)
+// export sha1: 1tg1y3zb8zoispi3y1p7kj7du7re0ya
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Movement | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Movement
+
+|descr= {{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_moveModule]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

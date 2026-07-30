@@ -1,0 +1,336 @@
+// source: https://community.bistudio.com/wiki/CT_CONTROLS_TABLE
+// revision: 376877 (2025-12-15T11:16:38Z)
+// export sha1: iiiloawm0j99n7do3vnl7l878ecyy1u
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{CT|intro
+
+|macro = CT_CONTROLS_TABLE
+|value = 19
+|description =
+This control type is a crossover between [[CT_LISTNBOX]] and [[CT_CONTROLS_GROUP]]. It is a list of user defined controls.
+=== Rows and headers ===
+
+Each Controls Table consists of N lines, with each line being either row or header.
+Header is a collection of controls that are located on the same row.
+Row is similar to header, with added functionality of selection. If user clicks on a row or any control in it, the row is selected and highlighted. Up and down keys can be used to change selection to the previous or next row, respectively. When the selection is changed, the event onLBSelChanged is emitted.
+If the highlight colour is set to fully transparent, rows can act as another type of header as user does not perceive any selection.
+
+=== Row and header templates ===
+
+Structure of row and header is defined using a template. Apart from their names (RowTemplate and HeaderTemplate), structure of both templates is the same. Each defines a set of columns and their properties. The column class (the name of which is currently not used) defines key properties of control that is created upon creation of new row or header.
+
+* '''controlBaseClassPath''' - Defines config path to control. See next section for detailed info.
+* '''columnX''' - Position of the created control, in table coordinates (0 is the table's left side).
+* '''columnW''' - Width of the created control. UI element created inside the column will be as wide as the column is.
+* '''controlOffsetY''' - Optional, default value 0. Defines offset of control from top of its line. Negative values are ignored.
+* '''controlH''' - Optional, default value 0. If set to non-negative value, it overrides height of the control from base class. Otherwise, the height from control base class is used.
+
+It is important to note that even if a Controls Table uses only rows or only headers, both templates must be defined in config.
+
+=== Base class ===
+
+Each column must have its base class defined by the controlBaseClassPath[] parameter. This array of strings defines config path to class that is instantiated each time a new row (or header) is added to the table. The given class must be a valid UI control, i.e. it must contain parameter type that has a valid value and any other parameters that correspond to the given type.
+<syntaxhighlight lang="cpp">
+controlBaseClassPath[] = { "RscDisplayTemp", "RscDisplayTemp_LineTextBase" };
+</syntaxhighlight>
+Expands to config path:
+<sqf>
+configFile >> "RscDisplayTemp" >> "RscDisplayTemp_LineTextBase";
+// or
+missionConfigFile >> "RscDisplayTemp" >> "RscDisplayTemp_LineTextBase"; // since {{arma3}} v2.02
+// or
+campaignConfigFile >> "RscDisplayTemp" >> "RscDisplayTemp_LineTextBase"; // since {{arma3}} v2.02
+</sqf>
+
+
+=== White list ===
+
+Some control types are not suitable for use inside of Controls Table. These include e.g. control containers (Controls Group and Controls Table) or controls that exceed their defined bounds while being drawn (Combo box). For this reason, the Controls Table only supports limited subset of UI controls that have been tested and confirmed to work.
+
+The currently supported types are:
+{{Columns|2|
+* '''CT_STATIC'''
+* '''CT_BUTTON'''
+* '''CT_EDIT'''
+* '''CT_ACTIVETEXT'''
+* '''CT_STRUCTURED_TEXT'''
+* '''CT_SHORTCUTBUTTON'''
+* '''CT_XSLIDER'''
+* '''CT_CHECKBOX'''
+}}
+
+=== IDC pool ===
+
+Each control created by the RV engine has an IDC which can be used for its identification among other controls which are part of the same display. For obvious reasons, each IDC should be unique in the context of its parent display.
+As the Controls Table can be set to create and remove controls at run time (for example, click on a button can result in addition of a row to the table) and can potentially be used to create thousands of controls, it was necessary to implement a system which would
+Allow the creator/designer to limit total number of controls.
+Make sure that each control created by ControlsTable has a unique IDC.
+For this reason, ControlsTable requires two parameters that define range of IDCs which are assigned to controls upon their creation. These parameters are firstIDC and lastIDC and together they define a range of values. If an instance of ControlsTable runs out of IDCs to create a new row or header, no elements are created.
+The IDC range is used for both row and header controls. When a line of controls is removed, IDCs that were assigned to them are returned to the pool and reused for new lines. It is therefore not recommended to rely on a control to have the same IDC, unless you're certain that it won't be removed and replaced by a another one.
+ControlsTable A has 3 controls in its row template (image, text and checkbox) and 1 control in its header template (text). firstIDC is set to 500 and lastIDC is set to 799. This means that table A has 300 IDCs at its disposal and may contain up to 100 rows (if it has no headers) or up to 300 headers (if it has no rows).
+If table A contains 50 headers and 83 rows, it is using 299 IDCs and no additional row can be created. However, it is still possible to add one more header.
+
+{{Feature|informative|Currently, the system does not check if there is any other control, the IDC of which lies in the range.}}
+
+=== Draw order ===
+
+Vertical and horizontal scrollbars (if necessary).
+Rectangle that highlights currently selected row.
+All rows and headers, from row/header that was created first to the one that was created last.
+In each row/header, controls are drawn in the same order as they're defined in the row/header template - starting with control from the first column.
+This approach is different than the one used by ControlsGroup where the currently focused control is always drawn last (and is therefore drawn on top of the others in case of overlap). In ControlsTable, focus does not affect draw order in any way.
+''Note: If the columns of the table overlap, it is possible to change draw order by reordering columns in the row/header template. This is used in lobby of Project Argo where multiple non-interactive controls (each defined by a different column) overlap each other.''
+
+|gallery=File:A3 ControlsTable.jpg{{!}}[[CT_CONTROLS_TABLE]] control.
+|commands =
+* [[:Category:Command Group: GUI Control - Controls Table|Commands: Controls Table]]
+|events =
+}}
+
+{{CT|abc start}}
+=== F ===
+{{CT|attribute
+|name=firstIDC
+|type1=Numer
+|value1=9000
+|description=The start IDC.
+}}
+
+=== H ===
+{{CT|attribute
+|name=headerHeight
+|type1=Number
+|value1=0.025
+|type2=String
+|value2="5 * 0.5 * pixelGrid * pixeH"
+|description=The height of the header row.
+}}
+
+{{CT|attribute
+|name=HeaderTemplate
+|type1=Class
+|value1=class HeaderTemplate
+{
+	class HeaderBackground
+	{
+		controlBaseClassPath[] = { "RscText" };
+		columnX = 0;
+		columnW = 14.7 * GUI_GRID_W;
+		controlOffsetY = 0;
+	};
+	class Column1
+	{
+		controlBaseClassPath[] = { "RscPictureKeepAspect" };
+		columnX = 0.2 * GUI_GRID_W;
+		columnW = 0.6 * GUI_GRID_W;
+		controlOffsetY = 0.2 * GUI_GRID_H;
+		controlH = 0.6 * GUI_GRID_H;
+	};
+	class Column2
+	{
+		controlBaseClassPath[] = { "RscText" };
+		columnX = 0.8 * GUI_GRID_W;
+		columnW = 9 * GUI_GRID_W;
+		controlOffsetY = 0.1 * GUI_GRID_H;
+	};
+};
+|description=Template for headers (unlike rows, cannot be selected).
+}}
+
+=== L ===
+{{CT|attribute
+|name=lastIDC
+|type1=Numer
+|value1=9999
+|description=The last IDC.
+}}
+
+{{CT|attribute
+|name=lineSpacing
+|type1=Number
+|value1=0.1
+|type2=String
+|value2="1 * 0.5 * pixelGrid * pixelH"
+|description=The amount of space to leave between rows.
+}}
+
+=== R ===
+{{CT|attribute
+|name=rowHeight
+|type1=Number
+|value1=0.025
+|type2=String
+|value2="5 * 0.5 * pixelGrid * pixeH"
+|description=The height of one row.
+}}
+
+{{CT|attribute
+|name=RowTemplate
+|type1=Class
+|value1=class RowTemplate
+{
+	class RowBackground
+	{
+		controlBaseClassPath[] = { "RscText" };
+		columnX = 0;
+		columnW = 14.7 * GUI_GRID_W;
+		controlOffsetY = 0;
+	};
+	class Column1
+	{
+		controlBaseClassPath[] = { "RscPictureKeepAspect" };
+		columnX = 0;
+		columnW = 2 * GUI_GRID_W;
+		controlOffsetY = 0;
+		controlH = 1 * GUI_GRID_H;
+	};
+	class Column2
+	{
+		controlBaseClassPath[] = { "RscText" };
+		columnX = 2 * GUI_GRID_W;
+		columnW = 8.7 * GUI_GRID_W;
+		controlOffsetY = 0.1 * GUI_GRID_H;
+	};
+	class Column3
+	{
+		controlBaseClassPath[] = { "RscButton" };
+		columnX = 11.2 * GUI_GRID_W;
+		columnW = 2 * GUI_GRID_W;
+		controlOffsetY = 0.1 * GUI_GRID_H;
+	};
+};
+|description=Template for selectable rows.
+}}
+
+=== S ===
+{{CT|attribute
+|name=selectedRowAnimLength
+|type1=Number
+|value1=1.2
+|description=Length of the animation cycle in seconds.
+}}
+
+{{CT|attribute
+|name=selectedRowColorFrom
+|type1=Array
+|value1={1,1,1,1}
+|description=Colours which are used for animation (i.e. change of colour) of the selected line.
+}}
+
+{{CT|attribute
+|name=selectedRowColorTo
+|type1=Array
+|value1={1,1,1,0}
+|description=Colours which are used for animation (i.e. change of colour) of the selected line.
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+{{Feature|warning|The default class seems to be broken. For a working example which replicates the controls table from the image above see: https://feedback.bistudio.com/T155872#2144204}}
+<syntaxhighlight lang="cpp">
+class MyControlsTable
+{
+	idc = 107;
+	x = SafezoneX + 16.5 * GUI_GRID_W;
+	y = SafezoneY + 3.5 * GUI_GRID_H;
+	w = 15 * GUI_GRID_W;
+	h = 20 * GUI_GRID_H;
+
+	type = CT_CONTROLS_TABLE;
+	style = SL_TEXTURES;
+
+	lineSpacing = 0;
+	rowHeight = 1 * GUI_GRID_H;
+	headerHeight = 1 * GUI_GRID_H;
+
+	firstIDC = 42000;
+	lastIDC = 44999;
+
+	// Colours which are used for animation (i.e. change of colour) of the selected line.
+	selectedRowColorFrom[]  = { 0.7, 0.85, 1, 0.25 };
+	selectedRowColorTo[]	= { 0.7, 0.85, 1, 0.5 };
+	// Length of the animation cycle in seconds.
+	selectedRowAnimLength = 1.2;
+
+	class VScrollBar : ScrollBar
+	{
+		width = 0.021;
+		autoScrollEnabled = 0;
+		autoScrollDelay = 1;
+		autoScrollRewind = 1;
+		autoScrollSpeed = 1;
+	};
+
+	class HScrollBar : ScrollBar
+	{
+		height = 0.028;
+	};
+
+	// Template for selectable rows
+	class RowTemplate
+	{
+		class RowBackground
+		{
+			controlBaseClassPath[] = { "RscText" };
+			columnX = 0;
+			columnW = 14.7 * GUI_GRID_W;
+			controlOffsetY = 0;
+		};
+		class Column1
+		{
+			controlBaseClassPath[] = { "RscPictureKeepAspect" };
+			columnX = 0;
+			columnW = 2 * GUI_GRID_W;
+			controlOffsetY = 0;
+			controlH = 1 * GUI_GRID_H;
+		};
+		class Column2
+		{
+			controlBaseClassPath[] = { "RscText" };
+			columnX = 2 * GUI_GRID_W;
+			columnW = 8.7 * GUI_GRID_W;
+			controlOffsetY = 0.1 * GUI_GRID_H;
+		};
+		class Column3
+		{
+			controlBaseClassPath[] = { "RscButton" };
+			columnX = 11.2 * GUI_GRID_W;
+			columnW = 2 * GUI_GRID_W;
+			controlOffsetY = 0.1 * GUI_GRID_H;
+		};
+	};
+
+	// Template for headers (unlike rows, cannot be selected)
+	class HeaderTemplate
+	{
+		class HeaderBackground
+		{
+			controlBaseClassPath[] = { "RscText" };
+			columnX = 0;
+			columnW = 14.7 * GUI_GRID_W;
+			controlOffsetY = 0;
+		};
+		class Column1
+		{
+			controlBaseClassPath[] = { "RscPictureKeepAspect" };
+			columnX = 0.2 * GUI_GRID_W;
+			columnW = 0.6 * GUI_GRID_W;
+			controlOffsetY = 0.2 * GUI_GRID_H;
+			controlH = 0.6 * GUI_GRID_H;
+		};
+		class Column2
+		{
+			controlBaseClassPath[] = { "RscText" };
+			columnX = 0.8 * GUI_GRID_W;
+			columnW = 9 * GUI_GRID_W;
+			controlOffsetY = 0.1 * GUI_GRID_H;
+		};
+	};
+};
+</syntaxhighlight>
+
+
+[[Category: Control Types]]

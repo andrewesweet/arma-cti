@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/enginesRpmRTD
+// revision: 377781 (2026-01-03T01:32:37Z)
+// export sha1: qb7c3k5c65cs8hl6cq5kpqox0duw5po
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= RTD
+
+|descr=Returns all engines RPM.{{Feature|afm}}
+
+|s1= [[enginesRpmRTD]] RTD_helicopter
+
+|p1= RTD_helicopter: [[Object|ObjectRTD]]
+
+|r1= [[Array]] of [[Number]]s
+
+|x1= <sqf>enginesRpmRTD RTD_helicopter params ["_RPMEngine1","_RPMEngine2"];</sqf>
+
+|seealso= [[isObjectRTD]] [[enginesTorqueRTD]] [[enginesIsOnRTD]] [[airDensityRTD]] [[weightRTD]] [[wingsForcesRTD]]
+}}

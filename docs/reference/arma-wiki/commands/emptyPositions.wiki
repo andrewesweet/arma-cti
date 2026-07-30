@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/emptyPositions
+// revision: 378582 (2026-05-11T11:45:50Z)
+// export sha1: e9woepyz3log9ebzs1kjzap3joywdxp
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Unit Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Object Manipulation
+
+|gr2= Unit Control
+
+|descr= Returns the number of given empty positions in the vehicle.
+{{Feature|informative|To return the actual units in the vehicle use [[fullCrew]]. However if only the number is desired, use [[emptyPositions]] because it is faster.}}
+
+|s1= vehicle [[emptyPositions]] position
+
+|p1= vehicle: [[Object]] - transport
+
+|p2= position: [[String]] - can be one of:
+{{Columns|2|
+* {{hl|"Commander"}}
+* {{hl|"Driver"}}
+* {{hl|"Gunner"}}
+* {{hl|"Cargo"}} - all cargo positions, FFV or not
+* {{GVI|arma3|2.10|size= 0.75}} {{hl|""}} - all empty positions
+* {{GVI|arma3|2.10|size= 0.75}} {{hl|"CargoNoFFV"}} - non-FFV cargo
+* {{GVI|arma3|2.10|size= 0.75}} {{hl|"CargoFFV"}} - FFV cargo
+* {{GVI|arma3|2.14|size= 0.75}} {{hl|"Turret"}} - empty turrets (no FFV turrets, they are included in "CargoFFV")
+}}
+
+|r1= [[Number]] - the number of available positions ignoring locked positions
+
+|s2= vehicle [[emptyPositions]] <nowiki>[</nowiki>position, ignoreLocked]
+|s2since= arma3 2.22
+|p21= vehicle: [[Object]] - transport
+|p22= position: [[String]] - see [[moveInAny]]. Empty string "" returns number of all free positions
+|p23= ignoreLocked (Optional): [[Boolean]] - [[true]] to ignore locked positions. Default: [[false]]
+
+|r2= [[Number]] - the number of available positions ignoring locked positions
+
+|x1= <sqf>_freeCargoAndFFVPositions = vehicle player emptyPositions "Cargo";</sqf>
+
+|x2= <sqf>_freeCargoOnlyPositions = vehicle player emptyPositions "CargoNoFFV";</sqf>
+
+|seealso= [[moveInDriver]] [[moveInTurret]] [[moveInCommander]] [[moveInGunner]] [[moveInCargo]] [[getCargoIndex]] [[moveInAny]]
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20220320000854
+|text= '''emptyPositions''' combines both turret and cargo in its output. If you must know the true count of either, you will have to use [[fullCrew]] (tested on several vehicles)
+<br>I have not found a way to test for copilot in helicopters
+}}

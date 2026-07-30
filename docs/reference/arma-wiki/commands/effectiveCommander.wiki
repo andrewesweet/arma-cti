@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/effectiveCommander
+// revision: 369524 (2024-09-15T17:56:50Z)
+// export sha1: pogxujzxxt99q067t0rpfg30svhwvni
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Unit Control
+
+|descr= Returns the effective commander of the vehicle. Effective commander is the player whom driver AI will listen to.
+So if in a tank there is a gunner and a commander and AI driver, if the [[effectiveCommander]] is gunner, then gunner pressing {{Controls|W}} {{Controls|A}} {{Controls|S}} {{Controls|D}} will give AI orders to move.
+If gunner jumps out and then enters a tank again, the [[effectiveCommander]] role most likely has changed to commander that remained in tank. Also the assignment seems to work on first come first served basis.
+
+|s1= [[effectiveCommander]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Object]] - commander unit
+
+|x1= <sqf>
+_unit = driver tank;
+_effectiveCommander = effectiveCommander _unit;				// returns the tank driver itself
+_effectiveCommander = effectiveCommander tank;				// returns the effective commander (commander or gunner or driver)
+_effectiveCommander = effectiveCommander vehicle _unit;		// identical to the one above - use [[vehicle]] if only the unit is known
+</sqf>
+
+|seealso= [[setEffectiveCommander]] [[commander]] [[driver]] [[gunner]] [[currentPilot]] [[vehicleMoveInfo]]
+}}

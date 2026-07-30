@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/diag_getTerrainSegmentOffset
+// revision: 377557 (2026-01-02T06:54:58Z)
+// export sha1: 71kda6vkvwy6hb38pbfnccoab22eknd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+
+|version1= 2.04
+
+|branch= diag
+
+|gr1= Diagnostic
+
+|descr= Returns the terrain segment. It is basically the same as:
+<sqf>
+_worldPos params ["_x", "_y"];
+[floor (_x / diag_getTerrainGrid), floor (_y / diag_getTerrainGrid)];
+</sqf>
+
+|s1= [[diag_getTerrainSegmentOffset]]  worldPos
+
+|p1= worldPos: [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - world coordinates
+
+|r1= [[Position#Introduction|Position2D]] - [x,y] of terrain segment (integer, basically pixel coordinates in heightmap)
+
+|x1= <sqf>private _segmentOffset = diag_getTerrainSegmentOffset getPosWorld player;</sqf>
+
+|seealso= [[diag_getTerrainHeight]] [[diag_getTerrainGrid]]
+}}

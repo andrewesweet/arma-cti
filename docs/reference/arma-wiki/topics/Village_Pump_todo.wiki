@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Village_Pump_(todo)
+// revision: 163320 (2020-09-27T07:51:36Z)
+// export sha1: 4i061hbxboghps8ii8fork0wa4hxcc1
+// categories: Category:Village Pump
+// Vendored snapshot. Do not edit — re-export instead.
+
+<noinclude>
+''List areas of the Biki that are in need of attention.''
+{{villagepumpmenu}}
+</noinclude>
+[[Category:Village Pump]]

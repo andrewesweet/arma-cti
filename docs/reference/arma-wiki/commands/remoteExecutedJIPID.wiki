@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/remoteExecutedJIPID
+// revision: 369745 (2024-10-08T15:06:58Z)
+// export sha1: 6aov8f1gmjx9pteye763xdojwixaacz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Multiplayer
+
+|descr= Returns JIP ID of the persistent call generated from JIP queue for the joining player (see [[remoteExec]]).
+
+|s1= [[remoteExecutedJIPID]]
+
+|r1= [[String]] - JIP ID
+
+|x1= <sqf>_jipid = remoteExecutedJIPID;</sqf>
+
+|x2= <sqf>
+/* 
+Have mission with 2 players.
+First player starts local server and executes given code
+Second player joins the server and sees the 'all good' message
+Second player logs out 
+First player kills 'bob'
+Second player joins back and sees 'removing JIP call' message
+Second player logs out then joins back in, no message as call was removed
+*/
+
+private _fnc = 
+{
+	if (isRemoteExecutedJIP) then
+	{
+		remoteExecutedJIPID splitString "|" params ["_myID", "_netID"];
+		private _obj = objectFromNetId _netID;
+		if (!alive _obj) then
+		{
+			hint "object is dead or deleted, removing JIP call";
+			remoteExec ["", remoteExecutedJIPID];
+		}
+		else
+		{
+			hint "JIP call, all good, doing something";
+		};
+	};
+};
+
+private _bob = group player createUnit [typeOf player, position player, [], 0, "NONE"];
+private _myID = "lalala";
+private _jipID = [_myID, netId _bob] joinString "|";
+[[], _fnc] remoteExec ["call", 0, _jipId];
+</sqf>
+
+|seealso= [[remoteExecutedOwner]] [[isRemoteExecuted]] [[isRemoteExecutedJIP]] [[remoteExec]] [[remoteExecCall]] [[canSuspend]] [[publicVariableClient]] [[admin]] [[owner]] [[clientOwner]] [[groupOwner]] [[didJIPOwner]]
+}}

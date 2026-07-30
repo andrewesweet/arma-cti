@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/unitBackpack
+// revision: 341213 (2023-05-13T22:52:01Z)
+// export sha1: fpu4yn22bd03dn9ixtw8ma0p340mi9g
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Containers
+
+|descr= Returns unit's backpack
+
+|s1= [[unitBackpack]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Object]]
+
+|x1= <sqf>private _myBackpack = unitBackpack player;</sqf>
+
+|x2= <sqf>clearMagazineCargo unitBackpack player;</sqf>
+
+|x3= <sqf>player action ["gear", unitBackpack player];</sqf>
+
+|seealso= [[backpackContainer]] [[firstBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140429154900
+|text= In {{arma3}} ver 1.16, we can use either [[backpackContainer]] or [[unitBackpack]] at present since both of them enjoy same operand type and return value.
+}}

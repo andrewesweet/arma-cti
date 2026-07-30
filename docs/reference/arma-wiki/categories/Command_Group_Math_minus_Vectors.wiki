@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Math_-_Vectors
+// revision: 163225 (2020-09-26T22:22:52Z)
+// export sha1: emitg2krlcecu6d71knynkyivv3elab
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Command Group: Math]]

@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/Addons
+// revision: 364737 (2024-06-03T07:37:04Z)
+// export sha1: esgso3j2qlty8e30a8hgd0rrchyi843
+// categories: Category:ArmA: Armed Assault: Addon Editing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Operation Flashpoint: Editing | Category:Take On Helicopters: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+'''Addons''' are content additions to the game engine.
+'''Addons''' can take many forms such as '''weapons''', '''buildings''', '''vehicles''' to name a few, are developed and released by members of the {{Name|bi}} community or by [[{{Name|bi}}]] themselves.
+
+An '''addon''' is an archive ([[PBO File Format|pbo]]) of files that the game loads at startup.
+Generally when most people think of addons, they immediately think of a new unit, or a new terrain, but in some cases an addon can contain only a {{hl|config.cpp}} file and a few scripts, or some images.
+
+
+== Installation ==
+
+There comes a time when you've downloaded so many addons from the Internet and plunked them in your {{hl|~\addons}} folder, that eventually, can cause a clash between one addon and another.
+What [[{{Name|bi}}]] has done is introducing [[Arma: Mod Folders|mod]] folders to separate addons into different folders. The '''mod folders''' is the method that should be used when testing out new addons.
+
+Always review the included ReadMe file for further information about the installation of an addon.
+
+=== {{arma3}} ===
+
+* '''Addons'''<br>must be installed into a custom [[Arma: Mod Folders|modfolder]]. It is not recommended to place addons into the original Addons folder. Mods can also be installed from the [[Steam]] Workshop.
+
+==== Steam Workshop ====
+{{arma3}} has introduced a new way of publishing, browsing and installing mods: {{Link|http://steamcommunity.com/workshop/browse?appid{{=}}107410|Steam Workshop}}.
+There are two main parts to using Workshop: [[Publisher]] to publish addons into Steam Cloud and [[Arma 3: Launcher]] to download and/or update mods and launch the game with a selected set.
+
+A typical use for '''mods''' case is:
+* Creator publishes file to Steam Workshop using [[Publisher]]. He adds a tag ''mod'' to the published file.
+* User browses Steam Workshop and subscribes to content he likes.
+* [[Arma 3: Launcher]] downloads and updates the subscribed mods (it only shows files with a steam tag ''mod'').
+* User can select which mods to load into the game.
+
+A typical use for '''scenarios''' is:
+* Creator publishes a scenario from in-game editor. Editor auto-adds the tag ''scenarios''.
+* User browses Steam Workshop and subscribes to content he likes.
+* Steam downloads and updates the subscribed scenarios. They are accessible in-game from Play/Scenarios/Steam subscribed content (only content with a tag ''scenario'' is displayed here).
+
+=== {{arma2}} ===
+
+* '''Addons'''<br>must be installed into a custom [[Arma: Mod Folders|modfolder]]. It is not recommended to place addons into the original Addons folder.
+
+=== {{arma1}} ===
+
+* '''Addons'''<br>must be installed to ''"Addons"'' or ''"ArmA\Addons"'' or into a custom [[Arma: Mod Folders|modfolder]]. It is not recommended to place addons into the original Addons folder.
+
+=== {{ofp}} ===
+
+* '''Addons'''<br>must be installed to ''"...directory\Operation Flashpoint\Addons"'' or ''"...directory\Operation Flashpoint\Res\Addons"'' or into a custom [[Arma: Mod Folders|modfolder]].
+* '''Custom Animations'''<br>must be installed to ''"...directory\Operation Flashpoint\dta\"'' (overwrite existing Anim.pbo) or ''"...directory\Operation Flashpoint\Res\dta\"'' (overwrite existing Anim.pbo) or into a custom modfolder (''"...directory\Operation Flashpoint\modfolder\dta\"'').<br>The original Anim.pbo can be restored from the Resistance CD.
+* '''Custom Campaigns'''<br>must be installed to ''"...directory\Operation Flashpoint\Campaigns\"'' or ''"...directory\Operation Flashpoint\Res\Campaigns\"'' or into a custom modfolder (''"...directory\Operation Flashpoint\modfolder\Campaigns\"'').<br>This only works with campaigns. Single missions have to be installed to ''"...directory\Operation Flashpoint\Missions\"''.
+* '''Mods'''<br>mostly come with an installer and create their own modfolder.
+* '''Custom Skies'''<br>mostly come with an installer and create their own modfolder.
+
+
+== Creation ==
+
+See the [[{{Name|bi}}]] games's categories below for more information.
+
+* {{GameCategory|ofp|Editing|link= y}}
+* {{GameCategory|arma1|Addon Editing|link= y}}
+* {{GameCategory|arma2|Editing|link= y}}
+* {{GameCategory|arma3|Editing|link= y}}
+
+
+{{GameCategory|ofp|Editing}}
+{{GameCategory|arma1|Addon Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+{{GameCategory|tkoh|Editing}}

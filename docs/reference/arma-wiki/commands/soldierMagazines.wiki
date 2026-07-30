@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/soldierMagazines
+// revision: 369271 (2024-09-03T18:42:43Z)
+// export sha1: b7775mxh053r310i2zb05lv1ewgiv6t
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Unit Inventory
+
+|descr= Get array with all magazines of the given unit.
+
+|s1= [[soldierMagazines]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[String]]
+
+|x1= <sqf>
+soldierMagazines player;
+// returns:
+[
+	"6.5mm 30Rnd STANAG Mag(30/30)[id/cr:1/0](5x)",
+	"9mm 16Rnd Mag(16/16)[id/cr:7/0](2x)",
+	"RGO Frag Grenade(1/1)[id/cr:10/0](2x)",
+	"Smoke Grenade (White)(1/1)[id/cr:12/0](1x)",
+	"Smoke Grenade (Green)(1/1)[id/cr:13/0](1x)",
+	"Chemlight (Green)(1/1)[id/cr:14/0](2x)",
+	"Titan AT Missile(1/1)[id/cr:16/0](2x)"
+]
+</sqf>
+
+|seealso= [[uniformMagazines]] [[vestMagazines]] [[backpackMagazines]]
+}}

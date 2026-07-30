@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/VOLCBAT
+// revision: 349887 (2023-11-20T22:10:54Z)
+// export sha1: pthzjbeehej4obwtwy5sqz1in40c0l1
+// categories: Category:Arma 3: Multiplayer Squads | Category:Operation Flashpoint: Multiplayer Squads
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:vcb_logo.jpg]]
+
+== History ==
+Formed in 2003, VOLCBAT is led by serving and former members of the UK Armed forces. We provide an authentic military experience operating as a British Light Infantry platoon but without the bollocks associated with many realism units. 
+What sets us apart from other British squads is that we offer an intense and enjoyable experience on operations for all members, playing alongside a number of serving and ex-forces personnel, and an all-pervasive level of squaddie humour. We maintain a platoon's worth of members and co-operative operations (missions) are held at least twice a week. On top of this we occasionally take part in joint operations.
+== Armed Assault 3 ==
+VOLCBAT has continued to play scenario coop missions in every ArmA game since OFP. Whatever the changes in the platform, our core business remains to provide for a realistic and tactical mission twice a week, and we continue to do so.
+== Structure ==
+VCB models itself on a Platoon in an Infantry Battalion, which operates predominantly in the Light Infantry Role.  Our full unit title is 3 (Morton) Platoon, A Company, 1 Battalion The Volunteer Commandos.  The abbreviated version is 3Pl ACoy 1VCB.
+=== HQ Section ===
+Consists of the Platoon Commander, the Platoon Sergeant, a platoon medic and two riflemen if attendance permits it. HQ's role is to co-ordinate the rifle sections and their support during operations, as well as handling the out-of-mission administration.
+=== The three Rifle Sections ===
+The Rifle sections are the backbone of the battalion. Each section is comprised of eight men, split into two four man fireteams and led by a Corporal. Tasks for the rifle sections range from aggressive fighting patrols, to ambushes to reassurance patrols in towns and villages. However, their primary role is to close with and destroy the enemy using a variety of light weapons from the L85 Rifle, hand grenades and bayonets.
+=== Support Group ===
+The Support Group is a non-permanent section that consists of riflemen who are specialised in a particular support role, ranging from the employment of Direct Fire Support Weapons, such as the GMPG SF,  to indirect fire weapons, to ISTAR and much more. The qualification courses are open to all riflemen, who then become eligible to participate in the Support Group on missions. When the mission and attendance allow for it, the Support Group is then assembled to fill a capability gap for that night.
+== Recruitment process ==
+The success of VOLCBAT depends on the quality of our members and not mere numbers. Recruitment is always open but we cap our membership at around 50. To be eligible to join, you must meet the following requirements:
+*You must be aged 18 or over
+*You need to have a working mic
+*You need to be able to speak and understand English
+We do not have dual clanning or strict attendance rules although we do require everyone to join at least 50% of our missions to get the most out of the game.
+If there are temporary circumstances that will limit your free time (connection problems, work, illness, etc.) then there's no problem if you're 'missing' for a few weeks.
+=== Application ===
+The first step of becoming a member of VCB is to put in an application on our forums. The NCO team will review the written application and may ask a few follow-up questions. Ideally, your application will be fleshed out and will allow us to get some insight in to what sort of person you are.
+Successful applicants will then be assigned a Senior Rifleman, who will act as a mentor during the rest of the application process. You will also receive instructions on how to set up for your Phase 1 training.
+=== Phase 1: Basic Infantry Training And Assessment ===
+Recruits are given basic instruction in the makeup of the platoon, map-reading, radio operation, section level communications, reaction to contact and section attacks. In this period we put emphasis on skills and tactics that will allow you to function in a section during missions straight, not 'game skills' that by this point we'd expect you to know (firing weapons at targets, getting a weapon out of a crate, driving a van). 
+If you make it through past this stage and you've made chummy, then you will likely be able to consider yourself a member of our unit and come and destroy the enemy wherever they may be.
+=== Probation Period ===
+After completing Phase 1, you will join your Senior Rifleman’s section on operations. During two operations, you will be assessed on your in-game attitude, applications of the skill taught to you in Phase 1 and your ability to keep up with the section. At the same time, this will allow you to check out our missions and gameplay style. If it doesn’t suit you, you can bow out, no hard feelings!
+After successfully completing this probationary period, you will be permanently assigned to one of the rifle sections in the platoon. All further training is conducted at the section-level, or on our platoon-wide training nights.
+
+=== Further training opportunities ===
+To complete their training as a rifleman, all members attend regular platoon-wide training sessions. These are organised on mission-nights and are usually a mix between refreshing basic individual and section level skills as well as campaign-specific training: It could cover anything we needed, from IED procedures, to refreshers on working with PPVs, to parachuting. All topics covered are documented in our extensive training wing: a collection of written documents available to all members that we base our training on.
+ 
+In addition to this, we offer a variety of courses revolving around the use of specialized gear, from courses on the sharpshooter rifle, and extra medical qualifications. Additionally, rifleman can attende specialised courses that prepare them for a role in the Support Group. These trainings include sessions on using the GMPG as a support weapon, use of mortar and ISTAR skills.
+
+== Addons ==
+VOLCBAT maintains a carefully curated mod collection. For ease of use, these mods are grouped in a steam workshop collection. Getting set up is as easy as subscribing to the workshop items, and you benefit from steam’s excellent service speed.
+
+== Links ==
+*{{Link|http://www.volcbat.com//|VOLCBAT Homepage}}
+*[https://drive.google.com/file/d/0B4afv28CRrHNV25WZ1ROaEY2Z1U/view?usp{{=}}sharing VOLCBAT information pack]
+
+
+{{GameCategory|ofp|Multiplayer Squads}}
+{{GameCategory|arma3|Multiplayer_Squads}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Multiplayer
+// revision: 155729 (2020-07-26T17:19:24Z)
+// export sha1: sezg3dzdba6kyq5wpa2kiu7cn4f89jp
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3}}

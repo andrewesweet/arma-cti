@@ -1,0 +1,419 @@
+// source: https://community.bistudio.com/wiki/Template:Link/External
+// revision: 378846 (2026-07-18T14:23:08Z)
+// export sha1: nf2hyjn9fh38gzjunkclvud7uyymgmz
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if: {{{link|}}}
+|
+	{{#switch:1
+
+	<!--
+		protocols
+	-->
+
+	<!-- enfusion:// - must be above enfusionengine.com -->
+	|{{#if:
+		{{#pos:{{{link}}}|enfusion://}}
+		|1|0}}= <span class="enfusion">{{#ifeq:{{#sub:{{{link}}}|0|43}}|https://enfusionengine.com/api/redirect?to=<!-- do NOT use redirects, just raw links -->
+			| {{#if: {{{text|}}} | [{{#replace:{{#sub:{{{link}}}|43}}| |_}} {{{text}}}] | [{{#replace:{{#sub:{{{link}}}|43}}| |_}} {{#explode:{{{link}}}|/|-1}}] }} -redirect link provided-{{TemplateCase||[[Category:Link template usage error]]}}
+			| {{#if: {{{text|}}} | [{{#replace:{{{link}}}| |_}} {{{text}}}] | [{{#replace:{{{link}}}| |_}} {{#explode:{{{link}}}|/|-1}}] }}
+		}}</span>
+
+	<!-- armareforger:// -->
+	|{{#if:
+		{{#pos:{{{link}}}|armareforger://}}
+		|1|0}}= <span class="armar">{{#if: {{{text|}}} | [{{#replace:{{{link}}}| |_}} {{{text}}}] | [{{#replace:{{{link}}}| |_}} {{#explode:{{{link}}}|/|-1}}] }}</span>
+
+	<!-- steam:// -->
+	|{{#if:
+		{{#pos:{{{link}}}|steam://}}
+		|1|0}}= <span class="steam">{{#if: {{{text|}}} | [{{{link}}} {{{text}}}] | {{{link}}} }}</span>
+
+	<!--
+		domains
+	-->
+
+	<!-- Bohemia Interactive -->
+	<!-- must be below Enfusion in case of enfusionengine.com redirection -->
+	|{{#if:
+		{{#pos:{{{link}}}|bistudio.com}}
+		{{#pos:{{{link}}}|bohemia.net}}
+		{{#pos:{{{link}}}|arma2.com}}
+		{{#pos:{{{link}}}|arma3.com}}
+		{{#pos:{{{link}}}|armareforger.com}}
+		{{#pos:{{{link}}}|arma4.com}}
+		{{#pos:{{{link}}}|armaplatform.com}}
+		{{#pos:{{{link}}}|enfusionengine.com}}
+		{{#pos:{{{link}}}|dayz.com}}
+		{{#pos:{{{link}}}|takeonthegame.com}}
+		{{#pos:{{{link}}}|silicagame.com}}
+		{{#pos:{{{link}}}|vigorgame.com}}
+		|1|0}}= <span class="bohemia">[{{{link}}} {{{text|{{{link}}}}}}]</span>
+
+	<!-- web.archive.org -->
+	|{{#if:
+		{{#pos:{{{link}}}|web.archive.org}}
+		|1|0}}= <span title="web.archive.org backup">{{#if: {{{text|}}} | [{{#replace:{{{link}}}| |_}} {{{text}}}] | {{#replace:{{{link}}}| |_}} }} <sub style="font-size: .8em">(archive)</sub></span>
+
+	<!-- Wikipedia / Wiktionary -->
+	|{{#if:
+		{{#pos:{{{link}}}|wikipedia.org}}
+		|1|0}}= <span class="wikipedia" title="{{#if:{{#explode:{{{link}}}|/wiki/|1}}|Read the '{{#replace:{{#explode:{{{link}}}|/wiki/|1}}|_|&nbsp;}}' Wikipedia article|Access Wikipedia}}">[{{{link}}} {{#if:{{{text|}}}|{{{text}}}|{{#if:{{#explode:{{{link}}}|/wiki/|1}}|{{#replace:{{#explode:{{{link}}}|/wiki/|1}}|_|&#32;}}|{{{link}}}}}}}]</span>
+	|{{#if:
+		{{#pos:{{{link}}}|wiktionary.org}}
+		|1|0}}= <span class="wikipedia" title="{{#if:{{#explode:{{{link}}}|/wiki/|1}}|Read the '{{#replace:{{#explode:{{{link}}}|/wiki/|1}}|_|&nbsp;}}' Wiktionary article|Access the Wiktionary}}">[{{{link}}} {{#if:{{{text|}}}|{{{text}}}|{{#if:{{#explode:{{{link}}}|/wiki/|1}}|{{#replace:{{#explode:{{{link}}}|/wiki/|1}}|_|&#32;}}|{{{link}}}}}}}]</span>
+
+	<!-- Steam -->
+	|{{#if:
+		{{#pos:{{{link}}}|steampowered.com}}
+		{{#pos:{{{link}}}|steamcommunity.com}}
+		{{#pos:{{{link}}}|steamgames.com}}
+		{{#pos:{{{link}}}|steamstatic.com}}
+		|1|0}}= <span class="steam" title="{{#if:{{#pos:{{{link}}}|steamcommunity.com}}|Steam Community file|Steam link}}">[{{{link}}} {{#if:{{{text|}}}|{{{text}}}|{{#if:{{#explode:{{{link}}}|/filedetails/|1}}|Steam File {{#replace:{{#explode:{{{link}}}|/filedetails/|1}}|?id=}}|{{{link}}}}}}}]</span>
+
+	<!-- GOG -->
+	|{{#if:
+		{{#pos:{{{link}}}|gog.com}}
+		|1|0}}= <span class="gog" title="GOG link">[{{{link}}} {{{text|{{{link}}}}}}]</span>
+
+	<!-- GitHub -->
+	|{{#if:
+		{{#pos:{{{link}}}|github.com}}
+		|1|0}}= <span class="github" title="GitHub link">[{{{link}}} {{{text|{{{link}}}}}}]</span>
+
+	<!-- Discord -->
+	|{{#if:
+		{{#pos:{{{link}}}|discord.gg}}
+		{{#pos:{{{link}}}|discord.com}}
+		|1|0}}= <span class="discord" title="Discord link">[{{{link}}} {{{text|{{{link}}}}}}]</span>
+
+	<!-- Facebook -->
+	|{{#if:
+		{{#pos:{{{link}}}|facebook.com}}
+		|1|0}}= <span class="facebook" title="Facebook link">[{{{link}}} {{{text|{{{link}}}}}}]</span>
+
+	<!-- Twitter / X -->
+	|{{#if:
+		{{#pos:{{{link}}}|.x.com}}
+		{{#pos:{{{link}}}|/x.com}}
+		{{#pos:{{{link}}}|.twitter.com}}
+		{{#pos:{{{link}}}|/twitter.com}}
+		|1|0}}= <span class="twitter-x" title="Twitter/X link">[{{{link}}} {{{text|{{{link}}}}}}]</span>
+
+	<!-- YouTube -->
+	|{{#if:
+		{{#pos:{{{link}}}|youtu.be}}
+		{{#pos:{{{link}}}|youtube.com}}
+		|1|0}}= <span class="youtube">[{{{link}}} {{{text|{{{link}}}}}}]</span>
+
+	<!-- ofp.info fallback -->
+	|{{#if:
+		{{#pos:{{{link}}}|ofp.gamepark.cz}}
+		{{#pos:{{{link}}}|ofp.gamepark.eu}}
+		{{#pos:{{{link}}}|ofp.gamezone.cz}}
+		{{#pos:{{{link}}}|ofp.info}}
+		{{#pos:{{{link}}}|ofpr.info/ofpd/}}
+		{{#pos:{{{link}}}|ftp://ofpr.info}}
+		{{#pos:{{{link}}}|ftp://ftp.ofpr.info}}
+		{{#pos:{{{link}}}|ftp://www.ofpr.info}}
+		|1|0}}= <span class="ofp-faguss-link" title="Old link: {{{link}}}">[https://ofp-faguss.com/addonsearch.php?searchfor={{URLENCODE:{{{link}}}}} {{#if:{{{text|}}}|{{{text}}}|ofpr.info link}}]</span> <span class="ofp-faguss-info">link courtesy of<br>[https://ofp-faguss.com/ OFP-Faguss.com]</span>
+
+	<!-- AAN Online fallback - Kudos to Karel for it -->
+	|{{#if:
+		{{#pos:{{{link}}}|aan.moricky.com}}
+		|1|0}}= <span class="aan-online" title="AAN Online article - courtesy of Karel Mořický">[{{{link}}} {{{text|{{{link}}}}}}]</span>
+	|{{#if:
+		{{#pos:{{{link}}}|aan-online.com}}
+		|1|0}}= <span class="aan-online" title="AAN Online article - courtesy of Karel Mořický">[{{#replace:{{#replace:{{{link}}}|www.aan-online.com|aan.moricky.com}}|aan-online.com|aan.moricky.com}} {{{text|{{{link}}}}}}]</span>
+
+	<!-- drives -->
+	|{{#if:
+		{{#pos:{{{link}}}|drive.google.com}}
+		|1|0}}= <span class="googledrive">[{{{link}}} {{{text|{{{link}}}}}}]</span>
+
+	|{{#if:
+		{{#pos:{{{link}}}|onedrive.live.com}}
+		{{#pos:{{{link}}}|1drv.ms/}}
+		|1|0}}= <span class="onedrive">[{{{link}}} {{{text|{{{link}}}}}}]</span>
+
+	<!-- dead links -->
+	|{{#if:
+		{{#pos:{{{link}}}|6thsense.eu}}
+		{{#pos:{{{link}}}|acemod.net}}
+		{{#pos:{{{link}}}|armaholic.com}}
+		{{#pos:{{{link}}}|armaholic.eu}}
+		{{#pos:{{{link}}}|armedassault.com}}
+		{{#pos:{{{link}}}|bohemiainteractive.com}}
+		{{#pos:{{{link}}}|dev-heaven.net}}
+		{{#pos:{{{link}}}|dyndns.org}}
+		{{#pos:{{{link}}}|flashpoint1985.com}}
+		{{#pos:{{{link}}}|mapfact.net}}
+		{{#pos:{{{link}}}|maverick-applications.com}}
+		{{#pos:{{{link}}}|pastebin.jonasscholz.de}}
+		{{#pos:{{{link}}}|sprocketidea.com}}
+		{{#pos:{{{link}}}|withsix.com}}
+		|1|0}}= <span title="Old link: {{{link}}}">{{#if:{{{text|}}}|''{{{text}}}'' <sub style="font-size: .8em">(dead link)</sub>|''-dead link-''}}</span>
+
+	<!-- default link -->
+	<!--
+		community.bistudio.com/wiki/
+		community.bohemia.net/wiki/
+		= add to [[:Category:Link template usage error]]
+	-->
+	|#default= {{#if: {{{text|}}} | [{{#replace:{{{link}}}| |_}} {{{text}}}] | {{#replace:{{{link}}}| |_}} }}{{#if:
+			{{#pos:{{{link}}}|community.bistudio.com/wiki/}}
+			{{#pos:{{{link}}}|community.bohemia.net/wiki/}}
+			| <sub style="font-size: .66em">''[[:Category:Link template usage error|BIKI]]''</sub>{{TemplateCase||[[Category:Link template usage error]]}}
+		}}
+	}}
+| -no link provided{{#if:{{{text|}}}|<nowiki/> for {{{text}}}}}-{{TemplateCase||[[Category:Link template usage error]]}}
+}}</includeonly><noinclude>{{Doc/Template
+|descr= External link template allows external URLs filter/styliser depending on the domain name.
+It also replaces spaces in links by underscores. It adds the page to [[:Category:Link template usage error|Link template usage error]] category in case of improper formatting or BIKI link.
+
+{{{!}} class="wikitable valign-top"
+! Filtered
+! Redirected
+! Decorated
+{{!}}-
+{{!}}
+* 6thsense.eu
+* acemod.net
+* armaholic.com
+* armaholic.eu
+* armedassault.com
+* bohemiainteractive.com
+* dev-heaven.net
+* dyndns.org
+* flashpoint1985.com
+* mapfact.net
+* pastebin.jonasscholz.de
+* sprocketidea.com
+* withsix.com
+{{!}}
+* aan-online.com (aan.moricky.com)
+* ofp.gamepark.cz
+* ofp.gamepark.eu
+* ofp.gamezone.cz
+* ofp.info
+* ofpr.info FTP links ({{hl|ftp:<nowiki/>//ofpr.info}}, {{hl|ftp:<nowiki/>//ftp.ofpr.info}}, {{hl|ofpr.info/ofpd}})
+{{Feature|informative|
+[http://ofpr.info ofpr.info] domain itself is valid and points to http://ofpr.info.paradoxstudio.uk.<br>
+ofp.gamepark.cz &rarr; ofp.info redirections are possible thanks to [https://ofp-faguss.com OFP-Faguss.com]!
+}}
+{{!}}
+* bistudio.com / bohemia.net / arma2.com / arma3.com / armareforger.com / arma4.com / armaplatform.com / enfusionengine.com / dayz.com / takeonthegame.com / silicagame.com / vigorgame.com
+* {{hl|enfusion://}}, {{hl|steam://}} and {{hl|armareforger://}} links
+* steampowered.com / steamcommunity.com / steamgames.com / steamstatic.com
+* gog.com
+* github.com
+* discord.com / discord.gg
+* wikipedia.org / wiktionary.org
+* web.archive.org
+* youtube.com / youtu.be
+* facebook.com
+* twitter.com / x.com
+* drive.google.com
+* onedrive.live.com / 1drv.ms
+
+{{!}}}
+|param1= link=
+|descr1= (named parameter) the URL
+|param2= text=
+|descr2= (Optional, named parameter) the link's text
+
+|example1= <nowiki>{{Link/External}}</nowiki>
+|result1= {{Link/External}}
+
+|example2= <nowiki>{{Link/External|link= https://www.bohemia.net}}</nowiki>
+|result2= {{Link/External|link= https://www.bohemia.net}}
+
+|example3= <nowiki>{{Link/External|text= {{Name|bi}} website}}</nowiki>
+|result3= {{Link/External|text= {{Name|bi}} website}}
+
+|example4= <nowiki/>
+<nowiki>* {{Link/External|link= https://www.bohemia.net|text= {{Name|bi}} website}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://community.bistudio.com/wiki/setDir|text= setDir}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://community.bohemia.net/wiki/setDir|text= setDir}}</nowiki>
+|result4= <nowiki/>
+* {{Link/External|link= https://www.bohemia.net|text= {{Name|bi}} website}}
+* {{Link/External|link= https://community.bistudio.com/wiki/setDir|text= setDir}}
+* {{Link/External|link= https://community.bohemia.net/wiki/setDir|text= setDir}}
+
+<!-- dead websites -->
+|example5= <nowiki/>
+<nowiki>* {{Link/External|link= https://www.6thsense.eu}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://www.acemod.net}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://www.armaholic.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://www.armaholic.com/page.php?id=1}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://www.armaholic.com/page.php?id=1|text= My {{arma1}} mod}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://www.armaholic.eu}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://www.armedassault.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= http://www.armedassault.com/william/|text= William Porter's Blog}}</nowiki><br>
+<nowiki>* {{Link/External|link= http://www.bohemiainteractive.com}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://dev-heaven.net}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://mywebsite.dyndns.org}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://www.flashpoint1985.com}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://www.mapfact.net}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://maverick-applications.com}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://pastebin.jonasscholz.de}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://www.sprocketidea.com}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://www.withsix.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://dev.withsix.com}}</nowiki><br>
+|result5= <nowiki/>
+* {{Link/External|link= https://www.6thsense.eu}}
+* {{Link/External|link= https://www.acemod.net}}
+* {{Link/External|link= https://www.armaholic.com}}
+** {{Link/External|link= https://www.armaholic.com/page.php?id=1}}
+** {{Link/External|link= https://www.armaholic.com/page.php?id=1|text= My {{arma1}} mod}}
+* {{Link/External|link= https://www.armaholic.eu}}
+* {{Link/External|link= https://www.armedassault.com}}
+** {{Link/External|link= http://www.armedassault.com/william/|text= William Porter's Blog}}
+* {{Link/External|link= http://www.bohemiainteractive.com}}
+* {{Link/External|link= https://dev-heaven.net}}
+* {{Link/External|link= https://mywebsite.dyndns.org}}
+* {{Link/External|link= https://www.flashpoint1985.com}}
+* {{Link/External|link= https://www.mapfact.net}}
+* {{Link/External|link= https://maverick-applications.com}}
+* {{Link/External|link= https://pastebin.jonasscholz.de}}
+* {{Link/External|link= https://www.sprocketidea.com}}
+* {{Link/External|link= https://www.withsix.com}}
+** {{Link/External|link= https://dev.withsix.com}}
+
+<!-- redirected websites -->
+|example6= <nowiki/>
+<nowiki>* {{Link/External|link= http://ofp.gamepark.cz/index.php?showthis=2302}}</nowiki><br>
+<nowiki>* {{Link/External|link= http://ofp.gamepark.cz/index.php?showthis=2302|text= Screen shot of the week 21}}</nowiki><br>
+<nowiki>* {{Link/External|link= http://ofpr.info}}</nowiki><br>
+<nowiki>* {{Link/External|link= ftp://ofpr.info}}</nowiki><br>
+<nowiki>* {{Link/External|link= http://www.aan-online.com/en/europe/29-black-element-rebrand-corporate-image.html}}</nowiki><br>
+<nowiki>** {{Link/External|link= http://www.aan-online.com/en/europe/29-black-element-rebrand-corporate-image.html|text= AAN Online explanation article}}</nowiki><br>
+<nowiki>* {{Link/External|link= http://www.aan.moricky.com/en/europe/29-black-element-rebrand-corporate-image.html}}</nowiki><br>
+<nowiki>** {{Link/External|link= http://www.aan.moricky.com/en/europe/29-black-element-rebrand-corporate-image.html|text= AAN Online explanation article}}</nowiki>
+|result6= <nowiki/>
+* {{Link/External|link= http://ofp.gamepark.cz/index.php?showthis=2302}}
+* {{Link/External|link= http://ofp.gamepark.cz/index.php?showthis=2302|text= Screen shot of the week 21}}
+* {{Link/External|link= http://ofpr.info}}
+* {{Link/External|link= ftp://ofpr.info}}
+* {{Link/External|link= http://www.aan-online.com/en/europe/29-black-element-rebrand-corporate-image.html}}
+** {{Link/External|link= http://www.aan-online.com/en/europe/29-black-element-rebrand-corporate-image.html|text= AAN Online explanation article}}
+* {{Link/External|link= http://www.aan.moricky.com/en/europe/29-black-element-rebrand-corporate-image.html}}
+** {{Link/External|link= http://www.aan.moricky.com/en/europe/29-black-element-rebrand-corporate-image.html|text= AAN Online explanation article}}
+
+<!-- marked websites -->
+|example7= <nowiki/>
+<nowiki>* {{Link/External|link= https://bistudio.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://bohemia.net}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://arma2.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://arma3.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://armareforger.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://arma4.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://armaplatform.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://enfusionengine.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://dayz.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://takeonthegame.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://silicagame.com}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://vigorgame.com}}</nowiki><br>
+<nowiki>* {{Link/External|link= enfusion://ScriptEditor/scripts/Game/generated/EPlayerRole.c;13|text= EPlayerRole}}</nowiki><br>
+<nowiki>** {{Link/External|link= enfusion://ScriptEditor/scripts/Game/generated/EPlayerRole.c;13}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://enfusionengine.com/api/redirect?to=enfusion://ScriptEditor/scripts/Game/generated/EPlayerRole.c;13|text= EPlayerRole}}</nowiki><br>
+<nowiki>** {{Link/External|link= enfusion://ResourceManager/~ArmaReforger:UI/layouts/Menus/MainMenu/MainMenu.layout}}</nowiki><br>
+<nowiki>* {{Link/External|link= http://web.archive.org/web/20080401075137/http://www.armedassault.com/william/|text= William Porter's Blog}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://en.wikipedia.org/}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://en.wikipedia.org/|text= An article}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://en.wikipedia.org/Arma_2}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://en.wikipedia.org/Arma_2|text= an {{arma2}} article}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://en.wiktionary.org/}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://en.wiktionary.org/wiki/arma}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://steampowered.com/}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://steamcommunity.com/sharedfiles/filedetails/2206040060}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://steamcommunity.com/sharedfiles/filedetails/?id=2206040060}}</nowiki><br>
+<nowiki>** {{Link/External|link= https://partner.steamgames.com/doc/store/application/dlc}}</nowiki><br>
+<nowiki>** {{Link/External|link= http://cdn.akamai.steamstatic.com/steam/apps/107410/manuals/Arma_3_keylayout_ENG.pdf|text= {{arma3}} keyboard layout}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://gog.com/}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://github.com/}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://discord.com/}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://discord.com/invite/arma|Arma Discord Server}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://facebook.com}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://www.facebook.com/armaplatform}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://x.com/}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://twitter.com/}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://twitter.com/ArmaPlatform}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://youtube.com/}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://youtu.be/|text= Short YouTube link}}</nowiki><br>
+|result7= <nowiki/>
+* {{Link/External|link= https://bistudio.com}}
+** {{Link/External|link= https://bohemia.net}}
+** {{Link/External|link= https://arma2.com}}
+** {{Link/External|link= https://arma3.com}}
+** {{Link/External|link= https://armareforger.com}}
+** {{Link/External|link= https://arma4.com}}
+** {{Link/External|link= https://armaplatform.com}}
+** {{Link/External|link= https://enfusionengine.com}}
+** {{Link/External|link= https://dayz.com}}
+** {{Link/External|link= https://takeonthegame.com}}
+** {{Link/External|link= https://silicagame.com}}
+** {{Link/External|link= https://vigorgame.com}}
+* {{Link/External|link= enfusion://ScriptEditor/scripts/Game/generated/EPlayerRole.c;13|text= EPlayerRole}}
+** {{Link/External|link= enfusion://ScriptEditor/scripts/Game/generated/EPlayerRole.c;13}}
+** {{Link/External|link= https://enfusionengine.com/api/redirect?to=enfusion://ScriptEditor/scripts/Game/generated/EPlayerRole.c;13|text= EPlayerRole}}
+** {{Link/External|link= enfusion://ResourceManager/~ArmaReforger:UI/layouts/Menus/MainMenu/MainMenu.layout}}
+* {{Link/External|link= http://web.archive.org/web/20080401075137/http://www.armedassault.com/william/|text= William Porter's Blog}}
+* {{Link/External|link= https://en.wikipedia.org/}}
+** {{Link/External|link= https://en.wikipedia.org/|text= An article}}
+** {{Link/External|link= https://en.wikipedia.org/Arma_2}}
+** {{Link/External|link= https://en.wikipedia.org/Arma_2|text= an {{arma2}} article}}
+* {{Link/External|link= https://en.wiktionary.org/}}
+** {{Link/External|link= https://en.wiktionary.org/wiki/arma}}
+* {{Link/External|link= https://steampowered.com/}}
+** {{Link/External|link= https://steamcommunity.com/sharedfiles/filedetails/2206040060}}
+** {{Link/External|link= https://steamcommunity.com/sharedfiles/filedetails/?id=2206040060}}
+** {{Link/External|link= https://partner.steamgames.com/doc/store/application/dlc}}
+** {{Link/External|link= http://cdn.akamai.steamstatic.com/steam/apps/107410/manuals/Arma_3_keylayout_ENG.pdf|text= {{arma3}} keyboard layout}}
+* {{Link/External|link= https://gog.com/}}
+* {{Link/External|link= https://github.com/}}
+* {{Link/External|link= https://discord.com/}}
+* {{Link/External|link= https://discord.com/invite/arma|Arma Discord Server}}
+* {{Link/External|link= https://facebook.com}}
+* {{Link/External|link= https://www.facebook.com/armaplatform}}
+* {{Link/External|link= https://x.com/}}
+* {{Link/External|link= https://twitter.com/}}
+* {{Link/External|link= https://twitter.com/ArmaPlatform}}
+* {{Link/External|link= https://youtube.com/}}
+* {{Link/External|link= https://youtu.be/|text= Short YouTube link}}
+
+|example8= <nowiki/>
+<nowiki>* {{Link/External|link= https://drive.google.com}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://drive.google.com|text= GDrive}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://onedrive.live.com}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://1drv.ms/}}</nowiki><br>
+<nowiki>* {{Link/External|link= https://onedrive.live.com|text= OneDrive}}</nowiki><br>
+|result8= <nowiki/>
+* {{Link/External|link= https://drive.google.com}}
+* {{Link/External|link= https://drive.google.com|text= GDrive}}
+* {{Link/External|link= https://onedrive.live.com}}
+* {{Link/External|link= https://1drv.ms/}} 
+* {{Link/External|link= https://onedrive.live.com|text= OneDrive}}
+
+<!-- protocols -->
+|example9= <nowiki/>
+<nowiki>* {{Link|steam://}}</nowiki><br>
+<nowiki>* {{Link|steam://install/1890860}}</nowiki><br>
+<nowiki>* {{Link|steam://install/1890860|install on Steam}}</nowiki><br>
+<nowiki>* {{Link|enfusion://}}</nowiki><br>
+<nowiki>* {{Link|enfusion://aaa/bbb/ccc.et}}</nowiki><br>
+<nowiki>* {{Link|enfusion://aaa/bbb/ccc.et|something.et}}</nowiki><br>
+<nowiki>* {{Link|armareforger://}}</nowiki><br>
+<nowiki>* {{Link|armareforger://aaa/bbb/ccc.c}}</nowiki><br>
+<nowiki>* {{Link|armareforger://aaa/bbb/ccc.c|something something}}</nowiki>
+|result9= <nowiki/>
+* {{Link|steam://}}
+* {{Link|steam://install/1890860}}
+* {{Link|steam://install/1890860|install on Steam}}
+* {{Link|enfusion://}}
+* {{Link|enfusion://aaa/bbb/ccc.et}}
+* {{Link|enfusion://aaa/bbb/ccc.et|something.et}}
+* {{Link|armareforger://}}
+* {{Link|armareforger://aaa/bbb/ccc.c}}
+* {{Link|armareforger://aaa/bbb/ccc.c|something something}}
+}}</noinclude>

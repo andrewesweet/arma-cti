@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/Template:CT/examples
+// revision: 347873 (2023-10-30T17:03:54Z)
+// export sha1: h377wovryxwdb15vw92w9o7t5ch83zc
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{TemplateCase|<big>Default Classes</big>|== Default Classes ==}} 
+{{Feature|arma3|'''AddOns:''' Classes need to be initialised first with {{hl|class SomeClass;}}
+----
+'''Missions:''' Since {{arma3}} v2.02 one can use {{hl|[[import (Config)|import]] SomeClass;}} to initialise a class. In older versions, use <sqf inline>"Default" call BIS_fnc_exportGUIBaseClasses;</sqf> and paste the result into [[Description.ext|description.ext]].}}</includeonly><noinclude>{{Doc/Template
+|descr= Adds some informative text before the examples of a Control Types page.
+|example1= <nowiki>{{CT/examples}}</nowiki>
+|result1= {{CT/examples}}
+}}</noinclude>

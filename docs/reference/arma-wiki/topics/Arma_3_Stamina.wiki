@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Stamina
+// revision: 364263 (2024-05-06T09:38:28Z)
+// export sha1: iqmihj1gxs3cc2q4vi90e17t7uce20m
+// categories: Category:Arma 3: Editing | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== General ==
+Stamina is the new exhaustion mechanics that replaced the old Fatigue system as of {{arma3}} Nexus update (1.54). It is supposed to be much simpler, clearer, better communicated and easier to grasp mechanics that will allow for management of exhaustion, encumbrance, terrain gradient penalties and overall mobility of infantry while it is also much more open to modifications and should serve as a solid platform for community made solutions as suggested by our own {{Link|link= http://steamcommunity.com/sharedfiles/filedetails/?id=561559542|text= Legacy Fatigue Mod}} & [[Arma 3: Asset Samples|Sample]].
+
+
+== Functionality ==
+Stamina work as reservoir used for Sprinting in vanilla game. Full Stamina bar allows for 60 seconds of Sprinting ('''staminaDuration'''). However, as carried equipment fills up your Inventory bar, the exact same portion is also reserved from the overall Stamina and thus cannot be used for Sprinting. Total mass of the entire inventory bar is defined to be 1000 mass units (parameter '''maxSoldierLoad''' defined in ''class CfgInventoryGlobalVariable'').
+
+Whatever remains at your disposal is your Stamina pool. Whenever you exhaust all of your Stamina pool, you have to recuperate for 10 seconds ('''staminaCooldown''') until you can Sprint again, but Stamina pool is regenerating during this exhaustion period. The whole Stamina pool always regenerate in 30 seconds ('''staminaRestoration''') from the total exhaustion to the full, regardless of how much Stamina it actually is. Less equipped soldiers can therefore Sprint for longer and will regenerate their Stamina faster than more equipped ones.
+
+Parameter '''stamina''' defined for every animation state defines the behavior of Stamina while the soldier remains in that particular state. Positive values determine regeneration, negative values determine exhaustion, while the magnitude defines the multiplier of exhaustion ('''staminaDuration''') and regeneration ('''staminaRestoration''') time defined for the whole Stamina. Zero value means that current stamina state is conserved in that animation state.
+
+Stamina bar indicating you current Stamina pool is positioned at the upper right corner, just below the weapon info. It is hidden by default, and is only visible when you are in the inventory or when your Stamina pool is changing or not full. It's position can be shifted in UI settings as it is separate from Weapon Info panel. It is red whenever you try (hold Sprint button), but cannot Sprint (due to injury or terrain gradient) and whenever you are fully exhausted. It is also augmented with Terrain and Injury icons that became visible whenever the terrain prevents you from sprinting and / or running.
+
+
+== Relation to Weapon Sway ==
+
+Every particular state you are in has it is predefined aiming precision coefficient (parameter '''aimPrecision''' in every animation state), multiplying the magnitude of the default sway. The longer you remain in certain state, the more is your actual sway approaching the precision defined for that state. Time needed to reach that value is directly related to your equipment load, so that the more equipment you carry the sooner your weapon sway deteriorate in states bad for precision and it is also slower to stabilize back in states with good precision and vice versa. Overall time coefficient is controlled by general Stamina setting (parameter '''aimPrecisionSpeedCoef''').
+
+
+== Scripting commands ==
+
+[[:Category:Command Group: Stamina System|Command Group: Stamina System]]
+
+
+== Parameters ==
+
+All Stamina related parameters are described in: [[Arma 3: CfgMovesFatigue|CfgMovesFatigue]]
+
+
+{{GameCategory|arma3|Tutorials}}
+{{GameCategory|arma3|Editing}}

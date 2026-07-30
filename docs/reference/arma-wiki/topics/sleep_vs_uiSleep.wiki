@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/sleep_vs_uiSleep
+// revision: 370501 (2024-12-26T17:49:57Z)
+// export sha1: 924bqbk63fedwumbaqjquxbz8bac3b5
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[sleep]] pauses the waiting when the game is paused, where [[uiSleep]] does not.
+
+{| class="wikitable"
+! [[sleep]]
+! [[uiSleep]]
+|-
+| <sqf>
+// sleep 5;
+_t = time + 5;
+waitUntil { time >= _t };
+</sqf>
+| <sqf>
+// uiSleep 5;
+_t = uiTime + 5;
+waitUntil { uiTime >= _t };
+</sqf>
+|}
+
+When the simulation is interrupted, [[time]] freezes, but not [[uiTime]]. Also [[time]] at the start of in ''init.sqf'' is often reported as 0, even if the mission has already started.

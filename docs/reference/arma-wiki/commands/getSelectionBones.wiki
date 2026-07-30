@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/getSelectionBones
+// revision: 369782 (2024-10-08T15:09:02Z)
+// export sha1: exj6hpzqrfegta03lb0153a2ei12cig
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Object Manipulation
+
+|descr= Returns an array of bone names to which the specified selection is attached.
+{{Feature|important|This command is relatively slow because it searches in all vertices of every bone.}}
+
+|s1= object [[getSelectionBones]] [selectionName, LOD]
+
+|p1= object: [[Object]]
+
+|p2= selectionName: [[String]]
+
+|p3= LOD: [[String]] or [[Number]] - can be one of:
+{{Columns|2|
+* {{hl|"Memory"}}
+* {{hl|"Geometry"}}
+* {{hl|"FireGeometry"}}
+* {{hl|"LandContact"}}
+* {{hl|"HitPoints"}}
+* {{hl|"ViewGeometry"}}
+}}
+When [[Number]] is used, command searches for a LOD with the same [[LOD resolutions|LOD resolution]]
+
+|r1= [[Array]] of [[String]]s - array of bone names
+
+|seealso= [[selectionPosition]] [[selectionNames]] [[getBoneNames]]
+}}

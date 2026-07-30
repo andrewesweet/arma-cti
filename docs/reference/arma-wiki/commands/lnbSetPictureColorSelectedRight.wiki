@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/lnbSetPictureColorSelectedRight
+// revision: 377729 (2026-01-03T00:21:11Z)
+// export sha1: 4r3dg5379wq3t0xwg4ntr01ldel6v11
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI Control - ListNBox
+
+|descr= Sets the color of the right picture when it is selected.
+
+|s1= [[lnbSetPictureColorSelectedRight]] [idc, [row, column], color]
+
+|p1= idc: [[Number]]
+
+|p2= row: [[Number]] - index of the row
+
+|p3= column: [[Number]] - index of the column
+
+|p4= color: [[Color|Color (RGBA)]]
+
+|r1= [[Nothing]]
+
+|s2= ctrl [[lnbSetPictureColorSelectedRight]] [<nowiki/>[row, column], color]
+
+|p21= ctrl: [[Control]]
+
+|p22= row: [[Number]] - index of the row
+
+|p23= column: [[Number]] - index of the column
+
+|p24= color: [[Color|Color (RGBA)]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_control lnbSetPictureColorSelectedRight [[0, 0], [1,1,1,0.5]];</sqf>
+
+|seealso= [[lnbSetColor]] [[lnbColorRight]] [[lnbColor]]
+}}

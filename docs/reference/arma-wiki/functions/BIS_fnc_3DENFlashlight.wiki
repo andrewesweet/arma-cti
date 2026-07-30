@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENFlashlight
+// revision: 349107 (2023-11-08T14:49:36Z)
+// export sha1: 5offdqvqa2ngmwt86zmf5j16j91lcsx
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Toggle or set [[:Category:Eden Editor|Eden Editor]] flashlight (light source snapped to the camera).
+
+|s1= mode call [[BIS_fnc_3DENFlashlight]]
+
+|p1= mode: [[Number]] - can be:
+* -2: restore the current mode
+* -1: toggle mode
+* &nbsp;0: off
+* &nbsp;1: on
+&nbsp;
+
+|r1= [[Number]] - selected mode
+
+|x1= <sqf>private _mode = 0 call BIS_fnc_3DENFlashlight;</sqf>
+
+|seealso= [[:Category:Eden Editor|Eden Editor]] [[BIS_fnc_3DENCamera]] [[BIS_fnc_3DENControlsHint]] [[BIS_fnc_3DENDiagCreateList]] [[BIS_fnc_3DENDiagFonts]] [[BIS_fnc_3DENDiagMouseControl]] [[BIS_fnc_3DENDrawLocations]] [[BIS_fnc_3DENEntityMenu]] [[BIS_fnc_3DENExportAttributes]] [[BIS_fnc_3DENExportOldSQM]] [[BIS_fnc_3DENExportTerrainBuilder]] [[BIS_fnc_3DENGrid]] [[BIS_fnc_3DENIntel]] [[BIS_fnc_3DENInterface]] [[BIS_fnc_3DENListLocations]] [[BIS_fnc_3DENMissionPreview]] [[BIS_fnc_3DENModuleDescription]] [[BIS_fnc_3DENShowMessage]] [[BIS_fnc_3DENStatusBar]] [[BIS_fnc_3DENToolbar]] [[BIS_fnc_3DENTutorial]] [[BIS_fnc_3DENVisionMode]]
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Ylands_Tutorial
+// revision: 332443 (2022-11-16T15:44:42Z)
+// export sha1: rzulofmb7absu840ql68iznuxul7iff
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Ylands]]

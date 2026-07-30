@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/assert
+// revision: 363603 (2024-04-08T09:49:06Z)
+// export sha1: 6lbhuplp0hy9qrq1wy3s6i2ztp5w441
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Program Flow
+
+|descr= Tests a condition and if the condition is false, displays error on screen (if -showscripterrors enabled) and logs error into .rpt file. It does not interrupt the script execution.
+
+If script was pre-processed with [[preprocessFileLineNumbers]], it will also show/log the error line number and the file name.
+
+|s1= [[assert]] condition
+
+|p1= condition: [[Boolean]]
+
+|r1= [[Boolean]] - mirrors condition
+
+|x1= <sqf>assert (1 > 2);</sqf>
+
+[[File:PreprocessFile.jpg]]
+
+|x2= Check function params (Faster alternative to [[BIS_fnc_param]])
+<sqf>
+some_func = {
+	_0 = _this select 0;
+	_1 = _this select 1;
+	_2 = _this select 2;
+	if (!assert (
+		typeName _0 == "ARRAY" && 
+		typeName _1 == "STRING" &&
+		typeName _2 == "SCALAR"
+	)) exitWith { /* optional error logging */ };
+	hint "Alright!";
+};
+[1,2,3] call some_func; // assert error
+[[1],"2",3] call some_func; // Alright!
+</sqf>
+
+|seealso= [[try]] [[catch]] [[throw]] [[halt]] [[diag_captureFrame]] [[diag_captureSlowFrame]] [[diag_logSlowFrame]]
+}}
+
+{{Note
+|user= RoehrenRadio
+|timestamp= 20100515000100
+|text= Returns false, if condition is false, and returns true, if condition is true.
+}}

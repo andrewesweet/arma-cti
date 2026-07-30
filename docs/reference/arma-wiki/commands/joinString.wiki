@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/joinString
+// revision: 377091 (2026-01-01T09:48:22Z)
+// export sha1: hxozzm62e2p22d98rze60ir3sxlr9sw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|gr1= Strings
+
+|descr= Joins ''array'' into [[String]] with provided ''separator''. Array can be of mixed types, all elements will be converted to [[String]] prior to joining, but the fastest operation is on the array of [[String]]s.
+
+|s1= array [[joinString]] separator
+
+|p1= array: [[Array]] of [[Anything]]
+
+|p2= separator: [[String]] - separator used to join array elements.
+
+|r1= [[String]]
+
+|x1= <sqf>
+_str = "- This, is a sample string." splitString "-,. "; // ["This","is","a","sample","string"]
+_str joinString " "; // "This is a sample string"
+</sqf>
+
+|x2= <sqf>["This","is","sparta"] joinString " ~ "; // "This ~ is ~ sparta"</sqf>
+
+|x3= <sqf>["1",2,text "3"] joinString ""; // "123"</sqf>
+
+|x4= <sqf>"Japa is the best!" splitString "" joinString " "; // "J a p a   i s   t h e   b e s t !"</sqf>
+
+|x5= Remove all \r\n from file:
+<sqf>loadFile "somefile.txt" splitString toString [13,10] joinString " "</sqf>
+
+|seealso= [[splitString]] [[set]] [[resize]] [[reverse]] [[select]] [[in]] [[find]] [[toArray]] [[forEach]] [[count]] [[deleteAt]] [[deleteRange]] [[append]] [[sort]] [[param]] [[params]] [[arrayIntersect]] [[toString]] [[endl]], {{Link|http://www.utf8-chartable.de/|Unicode Character Table}}
+}}

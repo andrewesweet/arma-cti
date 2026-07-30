@@ -1,0 +1,14 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Walkthrough/Garnite
+// revision: 180392 (2021-01-02T01:05:00Z)
+// export sha1: 829xsi2dzhoza0k3i9fafpxuibhvf6x
+// categories: Category:Carrier Command: Gaea Mission: Walkthrough
+// Vendored snapshot. Do not edit — re-export instead.
+
+=Objectives=
+#TAKE GRANITE
+#*Granite is the north-western link to the Arctic islands beyond. Those islands are rich in resources and would be a valuable addition. Take Granite to gain access to these resources.
+#SEARCH THE RESEARCH CENTER
+#*The Research Center likely holds blueprints for some useful upgrades. Searching it is recommended.
+
+
+{{GameCategory|carriercommand|Walkthrough}}

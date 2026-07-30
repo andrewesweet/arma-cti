@@ -1,0 +1,720 @@
+// source: https://community.bistudio.com/wiki/ACE:IslandPack
+// revision: 349994 (2023-11-20T22:11:43Z)
+// export sha1: sjhuhj3s5ubeobmvjo904t2z4tdwwih
+// Vendored snapshot. Do not edit — re-export instead.
+
+by the [[ACE:IslandPack#ACE Island Pack Team|ACE Island Pack Team]]
+
+
+== Mod Info ==
+
+Welcome to the '''ACE Island Pack (ACEIP)''' project by the [[ACE:IslandPack#ACE Island Pack Team|ACE Island Pack Team]].<br>
+<br>
+
+== Bug reporting ==
+
+Please post bugs related to ACEIP only at the {{Link|link= http://dev-heaven.net/projects/ace-ip/issues|text= ACEIP @ dev-heaven}}.<br>
+
+Please keep your bug reports '''as specific and as precise as possible'''.<br>
+Adding '''screenshots''', '''videos''' or the errors from the [[arma.RPT]] help to visualize
+the problem.<br>
+
+Recommended tools for recording:
+
+* {{Link|http://www.planetgamecam.com/?locid{{=}}download|GameCam}}
+* {{Link|http://www.fraps.com/download.php|Fraps}}
+* {{Link|http://www.howiesfunware.com/loadSideBarMiscSoftware.html|Howie's Quick Screen Capture Tool}}
+
+== ACE Island Pack ==
+
+=== Summary ===
+
+With the permission of each original author you find the most popular community created islands of Operation Flashpoint as well the {{GameCategory|ofp|link=y}} islands [[Everon]], [[Malden]], [[Kolgujev]] and [[Nogova]] of [[{{ofpr}}]] playable in [[:Category:ArmA: Armed Assault|{{Name|arma1|short}}]].
+
+
+
+=== Features ===
+
+==== v1.0 ====
+
+* All island in the ArmA file format (HUGE THANKS to Spooner for Roller).
+* No dependencies. You can load them with any other addon or MOD.
+* Tested in MP / dedicated server.
+* Replaced all possible objects/buildings with an ArmA counterpart. The others objects/buildings have been converted to ArmA as part of the ACEIP addons.
+* Uses OFP:Res Nogova vegetation for best performance/look.
+* Replaced the 'block forest objects' with 'single tree pattern'. (click for screenshot)
+* Forest trees can be brought down by explosions.
+* Forest trees slow down vehicles, yet can be brought down.
+* Single ground texture technology - several to choose from via client side config. You can even assign each island a texture individually.
+
+==== v1.10 ====
+
+* High quality SAT texture:
+** Snow SAT by the-f.
+** Trava SAT by Rg.
+** Nordic SAT by Rg (single SAT texture with mask and four HQ textures).
+* Island with no objects with OFP like bumpy terrain for tank and air battles (unfortunately unstable for VD large 1500-2000).
+
+==== v1.11 ====
+
+* ArmA clutters
+
+==== v1.12 ====
+
+* New small full download (< 300 MB) and standard patch available.
+** HDT islands are separate package now.
+** Big SAT textures are separate package now.
+* Replaced missing icons with new ones.
+* Changed folder naming to userconfig naming to avoid special character issues.
+* Replaced the broken forest line model with a single tree (fixes Avignon and Ivtiliac CTD problem).
+* Up-to-date ACEIP YomaTools AddonSync available.
+
+==== v1.13 ====
+
+* Improved: coloring of trees to be more brownish and different for each tree type. BIG THANKS to Rg once again!
+* Added: forest environment sound for wood ground textures (wood sounded weird for open areas).
+* Fixed: Possible rpt annoyance with PK_veh class.
+* Added: cfgSurface classes for MikeBart's ground textures.
+
+=== Texture preview galleries ===
+
+* [[ACE:IslandPack:HeightMap_Gallery|HeightMap gallery]] (6,4 MB)
+* [[ACE:IslandPack:Satellite_View_Gallery|Single texture satellite view gallery]] (5,9 MB)
+* [[ACE:IslandPack:Texture_Settings_Gallery|Single texture texture settings gallery]] (2,2 MB)
+* [[ACE:IslandPack:Texture_With_Clutter_Settings_Gallery|Single texture texture with clutter settings gallery]] (2,2 MB)
+* [[ACE:IslandPack:SAT_Gallery|SAT texture gallery]] (0,7 MB)
+
+=== ACEIP World List ===
+
+* ACEIP '''Abel''' by ''Bohemia Interactive and Codemasters''
+* ACEIP '''Cain''' by ''Bohemia Interactive and Codemasters''
+* ACEIP '''Eden''' by ''Bohemia Interactive and Codemasters''
+* ACEIP '''Noe''' by ''Bohemia Interactive and Codemasters''
+* ACEIP '''OFP World''' by ''Bohemia Interactive and Codemasters''
+
+* ACEIP '''Clarkisland''' by ''Phaeden''
+* ACEIP '''Elephanthead''' by ''Phaeden''
+* ACEIP '''Gaia''' by ''Phaeden''
+* ACEIP '''Highlands''' by ''Phaeden''
+* ACEIP '''Isladestella''' by ''Phaeden''
+* ACEIP '''Lakemartin''' by ''Phaeden''
+* ACEIP '''SamakHills''' by ''Phaeden''
+
+* ACEIP '''Canyonda''' by ''Pierre W.''
+* ACEIP '''Nabukonodexa''' by ''Pierre W.''
+
+* ACEIP '''Messor''' by ''Reaper''
+* ACEIP '''Occasus''' by ''Reaper''
+
+* ACEIP '''Torment_valley''' by ''Barn''
+* ACEIP '''Trinity''' by ''Brent a.k.a Buggs''
+* ACEIP '''Havelte''' by ''Coolhand''
+* ACEIP '''Anilym''' by ''cowardheart''
+* ACEIP '''Freya''' by ''HeinBloed''
+* ACEIP '''Avignon''' by ''Jakerod''
+* ACEIP '''73Eastings''' by ''Calm Terror''
+* ACEIP '''Sandy_rocks''' by ''Mr Bean''
+* ACEIP '''Ivtiliac''' by ''Narpal''
+* ACEIP '''Saru''' by ''Schuschs''
+* ACEIP '''Atlantis_gold''' by ''Scipio''
+* ACEIP '''Virovitica''' by ''Skalpel''
+* ACEIP '''Sontonagh_district''' by ''Smiley_Nick''
+* ACEIP '''Uwar_desert''' by ''ThruYerStErNuM''
+* ACEIP '''Skye''' by ''Waterman''
+* ACEIP '''Leusderheide''' by ''Wouter''
+
+=== Terrain Grid Size ===
+
+All islands have 50 terrain cell size.
+
+==== 128 ====
+
+* Virovitica
+
+==== 256 ====
+
+* Abel
+* Anilym
+* Atlantis Gold
+* Avignon
+* Cain
+* Eden
+* Freya
+* Gaia
+* Havelte
+* Ivtiliac
+* Leusderheide
+* Nabukonodexa
+* Noe
+* Sandy Rocks
+* Saru
+* Skye
+* Sontonagh District
+* Torment Valley
+* Trinity
+
+==== 512 ====
+
+* 73eastings
+* Canyonda
+* Clarkisland
+* Elephanthead
+* Highlands
+* Isladestella
+* Lakemartin
+* Messor
+* Occasus
+* Samakhills
+
+==== 1024 ====
+
+* OFP World
+* Uwar Desert
+
+<br clear="all" />
+[[File:ACE_IslandPack_OFPWorld.JPG|thumb|300px|left|OFP World layout]]
+[[File:Aceip_singletree_forest.jpg|thumb|320px|left|Woods drawn on the map ]]
+<br clear="all" />
+
+=== Integrated missions ===
+
+ACEIP has several missions integrated.
+
+==== Vehicle DM ====
+
+This mission is a rather simple '''Vehicle DM''' with a focus on fast and fun play.
+
+One of the key features is that it auto integrates available vehicle addons into the mission.
+
+{{Link|link= http://dev-heaven.net/wiki/ace-ip/Vehicle_DM|text= More info}}
+
+==== Test 50K ====
+
+Sightseeing flight mission for each islands of ACEIP.
+You start in flying plane with 50K view distance.
+
+To play select '''Play->Missions''' and select any of the listed '''ACEIP_Test50k''' missions.
+
+Note that for the HDT versions you need to download the HDT islands package separately.
+
+==== DMA LastFight ====
+
+This mission is a rather simple survive coop mission.
+That said it has some unique features as well.
+
+{{Link|link= http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?act=ST;f=67;t=76741|text= More info}}
+
+== Download ==
+
+=== ACEIP core package ===
+
+{{Feature|important|To play with high view distance (>3000) you have to
+play with very high terrain details to prevent crashes!
+
+See [[setTerrainGrid]].}}
+
+==== Installer ====
+
+ACEIP_v1.13full.exe (289 MB) - Mirrors:
+
+* {{Link|http://www.acemod.net/pub/ACEIP_v1.13full.exe|acemod.net}}
+* {{Link|http://www.kellys-heroes.eu/files/addons/ACEIP_v1.13full.exe|Kellys-Heroes.eu - Full}}<br>
+
+ACEIP_v1.13update.exe (3 MB) - Mirrors:
+
+* {{Link|http://www.acemod.net/updates/ACEIP_v1.13update.exe|acemod.net}}
+* {{Link|http://www.kellys-heroes.eu/files/addons/ACEIP_v1.13update.exe|Kellys-Heroes.eu - Update}}<br>
+
+==== 7z Package ====
+
+You can extract the exe version above just fine with 7z.
+
+==== ACEIP Yoma Addon Sync 2009 Server ====
+
+* Server name: '''ACEIP YAS Server'''
+* Auto config URL: '''http://oac.quest-link.net/yas/aceip/aceip.7z'''
+* (Optional) Hompage: '''http://community.bistudio.com/wiki/ACE:IslandPack'''
+
+Get Addon Sync 2009 {{Link|link= http://dev-heaven.net/projects/show/yoma-addonsync2009|text= here}}.
+
+=== HDT package ===
+
+{{Feature|important|The OFP high terrain detail (bumpy) versions require 2000 meter
+view distance or less and very high terrain details to prevent crashes!}}
+
+==== Installation ====
+
+* Unpack the 7z file into some modfolder like .\arma\@aceip_hdt\addons and load the ACEIP along.
+
+* You need to activate the cfgWorldList HDT island classes in '''.\arma\userconfig\aceip\aceip_hide_island_in_island_list.hpp''' to make the HDT islands available.
+
+From
+
+ // High terrain detail versions
+ /*
+ //class aceip_w_hdt_73eastings {};
+ class aceip_w_hdt_anilym {};
+ ...
+ class aceip_w_hdt_virovitica {};
+ */
+
+To
+
+ // High terrain detail versions
+ //class aceip_w_hdt_73eastings {};
+ class aceip_w_hdt_anilym {};
+ ...
+ class aceip_w_hdt_virovitica {};
+
+So remove the comment area start (/*) and comment area end (*/).
+
+==== 7z Package ====
+
+aceip_hdt_2008_02_25.7z (175 MB) - Mirrors:
+
+* {{Link|http://public.acemod.net/download/aceip/optional/aceip_hdt_2008_02_25.7z|acemod.net}}<br>
+
+=== Big SAT package ===
+
+==== Installation ====
+
+* Unpack the 7z file into some modfolder like .\arma\@aceip_sat\addons and load the ACEIP along.
+
+* Activate the '''RG_SAT_TRAVA''' or '''ACEIP_SAT_SNOW''' define in the .\arma\userconfig\aceip\aceip_select_texture.hpp for the desired island(s).
+
+==== 7z Package ====
+
+aceip_sat_2008_02_25.7z (251 MB) - Mirrors:
+
+* {{Link|http://public.acemod.net/download/aceip/optional/aceip_sat_2008_02_25.7z|acemod.net}}<br>
+
+== Installation ==
+
+=== Preface ===
+
+'''NEVER ever put addons (pbo files) in the arma\addons folder!'''<br>
+
+=== Installer ===
+
+Simply execute the binary you downloaded before and follow onscreen instructions.
+
+=== 7z package ===
+
+Unpack the exe file with RMB extract into the '''.\arma''' folder itself.<br>
+The result is:
+
+* .\arma\@aceip
+* .\arma\userconfig\aceip
+** aceip_hide_island_in_island_list.hpp
+** aceip_select_texture.hpp
+** aceip_select_texture_custom.hpp
+* .\arma\userconfig\aceip\aceip_config
+** aceip_t_definitions.hpp
+** aceip_t_rvmat_base.hpp
+** aceip_t_rvmat_stuff.hpp
+** aceip_t_rvmat_with_mask.hpp
+** aceip_t_rvmat_without_mask.hpp
+
+=== ACEIP YomaTools Server ===
+
+=== Stay up to date (included automatic updater) ===
+
+The ACEIP offers an unique updating system which allows you to stay always up to date with the latest ACEIP version.
+
+1. Go to '''.\arma\@aceip\tools'''.
+
+2. Run '''Update ACEIP and vehicle DM'''.
+
+3. Follow on screen instructions.
+
+As alternative you can update with the ACEIP YomaTools Server.
+
+== Additional information ==
+
+==== HowTo switch ground textures ====
+
+1. Go to '''.\arma\userconfig\aceip'''.
+
+2. Open the '''ace_island_select_texture.hpp''' file with a text editor.
+
+You can chose the texture you want to apply to the specific island.
+
+3. At the very end you have the list of '''available textures'''.
+
+4. Replace the UPPERCASE string, like ARMA_BLATO, with a new one for the desired island.
+
+{{Feature|important|Do NOT change anything else!}}
+
+ #ifdef ACE_MALDEN
+  #define ARMA_BLATO
+ #endif
+ #ifdef ACE_KOLGUJEV
+  #define ARMA_LESLIST
+ #endif
+ #ifdef ACE_EVERON
+  #define ARMA_LESJEH
+ #endif
+ #ifdef ACE_NOGOVA
+  #define ARMA_TRAVA
+ #endif
+
+
+You can check the different textures in the [[ACE:IslandPack:Texture_Settings_Gallery|ACEIP Texture Settings Gallery]] in the BIKI or download the {{Link|http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery.7z|ACEIP Texture Settings Gallery}} as screenshots.
+
+==== HowTo enforce the same texture in MP play ====
+
+1. Have [[ArmA:_Addon_Signatures|verifySignatures]] active on your server.
+
+2. On your server ONLY the '''ACEIP_v*.*.bikey''' may remain in a keys folder.<br>
+You have to remove the ''' ACEIP_client_can_choose_texture_settings_v*.*.bikey''' from any keys folder or your server completely.
+
+3. Go to '''.\arma\@aceip\addons'''.
+
+4. Move the '''aceip__client_can_choose_texture_settings.pbo''' to '''.\arma\@aceip''' (one folder higher).
+
+A client has to do points 3 and 4 in able to play.
+
+====Standard setup - files overview ====
+
+<br clear="all" />
+[[File:Aceip_overview_1.12.jpg|thumb|520px|left|Install overview]]
+<br clear="all" />
+
+=== Server key file ===
+
+Included in the release package.
+
+The '''.bikey''' file are needed only on the dedicated server in .\arma\keys.<br>
+
+To have the key(s) inside .\arma\@aceip\keys should work as well.
+
+'''Separate download''':
+
+* Standard key<br>{{Link|link= http://dev-heaven.net/projects/list_files/ace-ip|text= ACEIP_v*.*.bikey}}
+
+* To allow custom ground textures<br>{{Link|link= http://dev-heaven.net/projects/list_files/ace-ip|text=  ACEIP_client_can_choose_texture_settings_v*.*.bikey}}
+
+'''Important''': To allow custom ground textures you need both keys on the server!
+
+=== BISign ===
+
+Included in the release package.
+
+The '''.bisign''' files are needed both on the dedicated server and client 
+in .\arma\@aceip\addons for each PBO, if a server only allows to join only with signed files.
+
+'''Separate download''':
+
+{{Link|link= http://dev-heaven.net/projects/list_files/ace-ip|text= aceip_bisign_files_v*.*.7z}}
+
+Extract the package inside the .\arma\@aceip\addons folder.
+
+=== Linux server ===
+
+For better readability the files still use case sensitivity.
+
+{{Feature|important|Do not forget to make all files lower case only on a Linux server machine!}}
+
+=== FAQ ===
+
+==== I have problems with the download / the download is never complete? ====
+
+Please use the free {{Link|http://www.freedownloadmanager.org|freedownloadmanager}} to download the file.
+
+==== Why is ACEIP again back to < 300 MB? ====
+
+People complained about the bad texture quality in the past. 
+
+Rg and the-f kindly made real SAT textures. Compared to the single SAT texture technology these eat a lot of MB and cannot be compressed that much.
+
+People complained about the big size of ACEIP v1.10.
+
+So HDT islands and big SAT textures are optional additions for now.
+
+==== How can I remove ACEIP v1.0 completely from my computer? ====
+
+* Files
+** $DESKTOP\Play ArmA With ${PRODUCT_NAME}.lnk
+** $DESKTOP\Play ArmA (Beta) With ${PRODUCT_NAME}.lnk
+** .\arma\aceip uninst.exe
+** .\arma\@ace-islands
+** .\arma\dta\userconfig\aceip_select_texture.hpp
+** .\arma\dta\userconfig\aceip_select_texture_custom.hpp
+** .\arma\dta\userconfig\aceip_config\aceip_t_definitions.hpp
+** .\arma\keys\aceip_*.bikey
+* Startmenu
+** aceip
+* Registry
+** HKLM Software\aceip\ACEIP
+** HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\ACEIP
+
+==== Why do the HDT islands have no objects? ====
+
+The intention of the HDT islands is to create an interesting battlefield for vehicle and air combat. 
+
+To allow maximum view distance the idea was to have no objects. Unfortunately due to the low cell size the islands are tend to crash with more than 1500-2000m. 
+
+A future version of the ACEIP will probably not reduce the cell size as much.
+
+'''Overall the current version is an experimental version and is meant to gather feedback from you. Please head over to our project site and share your view in the forum or open a feature/change request.'''
+
+==== Will there be HDT islands with objects? ====
+
+See the FAQ item above.
+
+==== Does the PROPER plants addon work with these islands? ====
+
+No. PROPER plants modifies arma vegetation. ACEIP, so far, uses OFP: Resistance vegetation. That one has correct AI viewblock as well.
+
+==== Does the 'userconfig' folder have to be moved into the dta folder? ====
+
+No, it should be like this:
+
+ .\arma\userconfig\aceip
+
+Please refer to [[ACE:IslandPack#Standard_setup_-_files_overview]]
+
+==== Where can we download ACE island pack vX.Y? ====
+
+Older ACEIP versions are no longer officially supported. You are very much recommended to use latest ACEIP version. 
+
+'''Please head over to our project site and share your problems with the latest version.'''
+
+==== The ACEIP updater says "File not found or site error..." ====
+
+Probably not available on this mirror.
+
+Run it again or use the direct download of the patch listed on the BIKI page @ [[ACE:IslandPack#Installer|ACE:IslandPack#Installer]].
+
+==== How to use the SAT pack ====
+
+ When I use to add SAT pack, will they instantly replace other textures 
+ and make sat-texture as default? Or how to use it together WITH Signature-checking?
+
+No you have to activate them.
+Please read [[ACE:IslandPack#Installation_2|Big SAT package # Installation]] and [[ACE:IslandPack#HowTo_switch_ground_textures|HowTo_switch_ground_textures]].
+
+The SAT and HDT pack have their own key found {{Link|link= http://dev-heaven.net/projects/list_files/ace-ip|text= here}}. BIsign files are included in the download package itself.
+
+== Credits ==
+
+=== Tools ===
+
+* '''Spooner''' for the outstanding OFP to ArmA island conversion tool '''Roller'''.
+* '''Sickboy''' for the superb automated build process and installer tool.
+* '''Dschulle, Rom, Snake Man''' for the excellent WrpTool.
+
+
+=== Island designers ===
+
+* '''Bohemia Interactive and Codemasters''' for 'Everon', 'Kolgujev', 'Malden' and 'Nogova' islands.
+* '''Barn''' for the 'Torment_valley' island.
+* '''Brent a.k.a Buggs''' for the 'Trinity' island.
+* '''Coolhand''' for the 'Havelte' island.
+* '''cowardheart''' for the 'Anilym' island.
+* '''HeinBloed''' for the 'Freya' island.
+* '''Jakerod''' for the 'Avignon' island.
+* '''Calm Terror''' for the '73Eastings' island.
+* '''Mr Bean''' for the 'Sandy_rocks' island.
+* '''Narpal''' for the 'Ivtiliac' island.
+* '''Phaeden''' for 'Clarkisland', 'Elephanthead', 'Gaia', 'Highlands', 'Isladestella', 'Lakemartin' and 'Samakhills' islandS.
+* '''Pierre W. aka PIWI56''' for 'Canyonda' and 'Nabukonodexa' islands.
+* '''Reaper''' for 'Messor' and 'Occasus' islands.
+* '''Schuschs''' for the 'Saru' island.
+* '''Scipio''' for the 'Atlantis_gold' island.
+* '''Skalpel''' for the 'Virovitica' island.
+* '''Smiley_Nick''' for the 'Sontonagh_district' island.
+* '''ThruYerStErNuM''' for the 'Uwar_desert' island.
+* '''Waterman''' for the 'Skye' island.
+* '''Wouter''' for the 'Leusderheide' island.
+
+=== Addon designers ===
+
+* '''Agent Smith''' for the 'AGS_build', 'AGS_inds', 'AGS_port', 'F3WX_O1' addons.
+* '''Lester''' for the 'aef_reallights' addon.
+* '''OFP_Pupsi''' for the 'anjaddon1' addon.
+* '''USMC Sniper''' for the 'art_bd' addon.
+* '''Bkm Mod''' for the 'bkm_balkan' addon.
+* '''Iva from Bkm Mod''' for the 'bkm_objects' addon.
+* '''MiG and PowerSlide''' for the 'fml_objects' addon.
+* '''HeinBloed''' for the 'freya' addon.
+* '''Miles Teg''' for the 'ob73east' addon.
+* '''bk1276''' for the 'rksl-netpack-uk' and 'rksl-netpack-us' addons.
+* '''Team Yankee''' for the 'tmyk_bridges' addon.
+* '''Barn''' for the 'tormobj' addon.
+
+=== Texture designers ===
+
+* '''Bohemia Interactive'''
+* '''CAT_SHIT_ONE'''
+* '''Gummi'''
+* '''Hund [Zeus]'''
+* '''NVidia'''
+* '''Phaeden (WGL/ACE Mod)'''
+* '''Rg'''
+* '''Sgt.Ace'''
+* '''Symbiot'''
+* '''Wouter'''
+
+=== ACE Island Pack Team ===
+
+* the-f
+* kju
+* Snake_Man
+
+== Change log ==
+
+=== 2009-04-23 v1.13 ===
+
+* ADDED:
+** cfgSurfaces classes for MikeBart's ground textures.
+
+* CHANGED:
+** Improved: coloring of trees to be more brownish and different for each tree type. BIG THANKS to Rg once again!
+
+* FIXED:
+** Added forest environment sound for wood ground textures (wood sounded weird for open areas).
+** Possible rpt annoyance with PK_veh class.
+
+
+=== 2009-02-25 v1.12 ===
+
+* UPDATED:
+** Replaced missing icons with new ones.
+** Texture setting files not to use big SAT textures by default and added note about separate package.
+
+* CHANGED:
+** #userconfig folder naming to userconfig to avoid special character issues.
+** Separated big SAT related files to its own folder tree.
+
+* FIXED:
+** Replaced the broken forest line model with a single tree.
+
+
+=== 2009-02-23 v1.11 ===
+
+* ADDED:
+** Configs for clutter.
+
+* UPDATED:
+** Default cfgSurfaces settings.
+
+* FIXED:
+** Naming of the wrp file.
+** Proper structure of the array.
+
+
+=== 2009-02-11 v1.10 ===
+
+* ADDED:
+** Single texture SAT kindly donated by Rg. Used Mask with four different ground textures!
+** Big SAT of Rg. BIG THANKS!
+** Snow SAT by the-f.
+** HDT versions of vehicle DM, Test50K and LastFight. Test50K deactivated for now. Needs to be changed to ground only and 1500 VD.
+** Working island intros for all ACEIP island to have instant intro loading.
+** Wrp addons of the HDT islands.
+
+* UPDATED:
+** Added defines for RG sat.
+** Added new defines for the sat selection.
+** Docs with proper naming; some small fixes in the files.
+** Prepared include system to allow single texture SAT with mask with four HQ files.
+** Moved the setting of the rvmat which are not needed for the SAT texture setting to new config file.
+** User config to show/hide islands with HDT islands. Disabled eastings and uvwar due to crazy load times.
+
+* REMOVED:
+** Crappy single textures. Removed textures without potential completely. Removed the rest in question only from the configuration files.
+
+* CHANGED:
+** 50k demo islands for HDT. Only 1500m VD. Motorbike instead of A10. Starting in the center of the island.
+** Improved overall texture setting for HDT versions. No HQ used. Disabled clutter.
+** Trunk color from grey to brown [by Rg].
+** Move cfgWorldList definition to an external file to allow simple hiding of islands in an island list (editor).
+** Different default texture for all islands. Used the new ones as well as added more variation by using the former good ones.
+** Improved: using standard arma island textures now instead of a copy (DRY). Removed no longer needed files and update configuration files.
+** Separate pbo for the island icons with config.
+** path of the userconfig files from "\Arma\dta\userconfig\.." to "\ArmA\#userconfig\..".
+
+* FIXED:
+** Added dependency to ACE island rvmat.
+** Added intros for HDT islands.
+** CfgWorld naming used by the missions for CWC islands.
+** height of the "o\hous\ace_domek_radnice".
+** forest vegetation now blocks tanks.
+** crossroads. (skye)
+** height of the footbridge. (freya)
+
+
+=== 2008-12-24 v1.00 ===
+
+* ADDED:
+** Ace Island pack SP test mission pack with default VD 50k and very high terrain detail.
+** Pboprefix for the islands.
+** Pboprefix for the other addons.
+
+* UPDATED:
+** Added missing objects from object lists.
+** Integrated latest object definition templates.
+** Wrp file to 8wvr format and single object woods.
+
+* CHANGED:
+** Added arma wrp format.
+** Arma wrp format.
+** Path from "data\" to "aced\" for the cwc textures.
+
+* FIXED:
+** Added missing cfgpatches classes.
+** Height of bridge. [freya]
+** Height of harbor walls.
+** Height of northern light house. [abel]
+** Height of the capitol building. [noe]
+** Height of the cranes. [gaia]
+** Height of the island on the edge.
+** Height of the skyscraper. [nabu]
+** Pattern of the deciduous forest.
+
+
+=== 2008-11-09 ===
+
+* Changed: separate the island textures.
+** All islands have ArmA textures set on default.
+** The defines for the other islands are in the config file, but you need the pbo to use them.
+* Fixed: "Not all levels have Keep Height set". (ace_cwc_obj)
+* Added: option to add custom textures in the "ace_island_select_texture.hpp"
+** check "ace_island_select_texture_custom.hpp" for more info.
+* Added: a modified version of the ArmA bridge - thx to Aushilfe !.
+** It now matches the size of the OPF bridge and have the destruction animation of ArmA.
+* Added: new Sat textures for "ArmA_trava","ArmA_travajih" and "ArmA_pisek".
+* Fixed: "Warning Message: Cannot load texture ca\buildings\data\zalchat_beton.pac".
+* Fixed: "Warning Message: Cannot load texture ca\buildings\data\zalchat_pode2.pac".
+* Added: missing HeliH. (everon)
+* Updated: imported the new versions of each island.
+* Fixed: position of the bridge. (noe)
+** All sections are in one row.
+* Changed: set the type of "map" to "tree" to make them visible on the map.
+* Updated: config with runway and taxi drive info.
+** Still WIP SecondaryAirports is missing on most islands and some don't fit.
+
+
+=== 2008-11-07 ===
+
+* Fixed: Height settings of harbor buildings.
+* Fixed: Height settings of street lamps.
+* Fixed: Moved some crossroads.
+* Changed: Replaced the "leafed tree" with "conifer" on cain.
+* Fixed: Added some bushes to fix some issues with OAC missions.
+* Added: hangar model.
+* Added: "sat textures" for arma terrain textures.
+* Changed: classname, displayname removed the "1 Tex". (eden)
+* Added: compatibility to the old class. (eden)
+* Fixed: replaced the hanger with the OFP hanger. (abel)
+* Removed: obsolete ace_island_base.pbo.
+* Changed: set different textures for the islands.
+* Changed: the position of the islands according to the feedback, they are now more like told ingame. (ofp world)
+* Changed: separate the vegetation and the house/road models.
+* Fixed: moved some crossroads. (noe)
+* Added: runway and taxi drive objects; objects are from rocko; textures are old wgl ones.
+* Added: runway, taxi drive and concrete floor plate objects.
+* Added: icon for each island.
+* Optimized: split textures and rvmat files.
+* Changed: the selection of the rvmat files.

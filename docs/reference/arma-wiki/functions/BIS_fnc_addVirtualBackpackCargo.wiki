@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addVirtualBackpackCargo
+// revision: 349390 (2023-11-08T16:27:25Z)
+// export sha1: 4vmwl0afvpmchpf6c40u08prmcme06y
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= Inventory
+
+|descr=Add virtual backpacks to an object (e.g., ammo box). Virtual items can be selected in the [[Arsenal]].
+
+|s1= [object,backpackClasses,addItemsGlobal,arsenal] call [[BIS_fnc_addVirtualBackpackCargo]]
+
+|p1=object: [[Object]] - object to which items will be added
+
+|p2=backpackClasses: [[Boolean]], [[String]] or [[Array]] of [[String]]s - backpack classes
+
+|p3=addItemsGlobal: [[Boolean]] - (Optional, default [[false]]) [[true]] to add items globally
+
+|p4=arsenal: [[Boolean]] - (Optional, default [[true]]) [[true]] to add [[Arsenal]] action
+
+|r1= [[Array]] of [[String]]s - all virtual backpacks
+
+|x1= <sqf>[BIS_ammoBox, ["class_1","class_2"], false, true] call BIS_fnc_addVirtualBackpackCargo;</sqf>
+
+|seealso= [[Arsenal]] [[BIS_fnc_addVirtualItemCargo]] [[BIS_fnc_addVirtualMagazineCargo]] [[BIS_fnc_addVirtualWeaponCargo]] [[BIS_fnc_arsenal]] [[BIS_fnc_getVirtualBackpackCargo]] [[BIS_fnc_getVirtualItemCargo]] [[BIS_fnc_getVirtualMagazineCargo]] [[BIS_fnc_getVirtualWeaponCargo]] [[BIS_fnc_removeVirtualBackpackCargo]] [[BIS_fnc_removeVirtualItemCargo]] [[BIS_fnc_removeVirtualMagazineCargo]] [[BIS_fnc_removeVirtualWeaponCargo]]
+}}

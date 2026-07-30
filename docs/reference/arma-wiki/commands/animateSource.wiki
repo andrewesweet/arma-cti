@@ -1,0 +1,78 @@
+// source: https://community.bistudio.com/wiki/animateSource
+// revision: 353025 (2024-03-12T11:30:02Z)
+// export sha1: kjrzxxgl2fgpy6zw5a3lqhafxbo5xnx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|eff= global
+|arg= global
+
+|gr1= Animations
+
+|descr= Process an animation of the object. If [[animate]] uses class name from [[CfgModels]] ''Animations'', [[animateSource]] uses name defined by the ''source'' property. AnimationSources can animate multiple [[animate]] Animations. AnimationSource is defined in [[:Category:CfgVehicles|CfgVehicles]]' [[Model Config#AnimationSources|AnimationSources]] (see [[Arma 3: createVehicle/vehicles]]).
+
+{{Feature|arma3| It is recommended that [[animateSource]] command is used instead of [[animate]] whenever is possible, as it is more efficient and optimized for MP}}
+{{Feature|warning|Mixing [[animateSource]] command with [[animate]] command to animate the same part may produce some undefined behaviour.}}
+
+|s1= object [[animateSource]] [source, phase, speed]
+
+|p1= object: [[Object]]
+
+|p2= source: [[String]] - common source
+
+|p3= phase: [[Number]] - wanted animation phase
+
+|p5= speed: [[Boolean]] or [[Number]] - (Optional, default [[false]])
+* [[Boolean]] - when set to [[true]], animation is instant
+* {{GVI|arma3|1.66|size= 0.75}} [[Number]] > 0 is treated as config speed value multiplier. Since {{GVI|arma3|2.10|size= 0.75}} values <= 0 will instantly reset animation to initPhase.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>house animateSource ["Door_1_source", 1, true];</sqf>
+
+|x2= Create UGV and manipulate its turret (Not possible to do with [[animate]] command. See [[Arma 3: createVehicle/vehicles]] for reference)
+<sqf>
+ugv = "B_UGV_01_F" createVehicle (player getRelPos [5, 0]);
+ugv addAction ["Show Turret",
+{
+	ugv animateSource ["Turret", 0];
+	ugv animateSource ["MainTurret", rad 0, true];
+	ugv animateSource ["MainGun", rad 0, true];
+}];
+ugv addAction ["Hide Turret",	{ ugv animateSource ["Turret", 1] }];
+ugv addAction ["Turret Left",	{ ugv animateSource ["MainTurret",	 rad 90] }];
+ugv addAction ["Turret Right",	{ ugv animateSource ["MainTurret",	-rad 90] }];
+ugv addAction ["Turret Up",		{ ugv animateSource ["MainGun",		 rad 30] }];
+ugv addAction ["Turret Down",	{ ugv animateSource ["MainGun",		-rad 20] }];
+</sqf>
+
+|x3= <sqf>
+barGate animateSource ["Door_1_sound_source", 1]; // Open
+barGate animateSource ["Door_1_sound_source", 0]; // Close
+</sqf>
+
+|x4= Open/close Bar Gate automatically:
+<sqf>
+// Bar Gate init
+if (isServer) then
+{	
+	private _gateTrigger = createTrigger ["EmptyDetector", getPosWorld this, false];
+	_gateTrigger setVariable ["BarGateObj", this];
+	_gateTrigger setTriggerActivation ["ANYPLAYER", "PRESENT", true];
+	_gateTrigger setTriggerArea [5, 25, getDir this, true];
+	_gateTrigger setTriggerStatements 
+	[
+		"this",
+		"thisTrigger getVariable 'BarGateObj' animateSource ['Door_1_sound_source', 1]",
+		"thisTrigger getVariable 'BarGateObj' animateSource ['Door_1_sound_source', 0]"
+	];
+};
+</sqf>
+
+|seealso= [[animationSourcePhase]] [[setFaceAnimation]] [[animate]] [[animationPhase]] [[animateDoor]] [[doorPhase]] [[animationNames]]
+}}

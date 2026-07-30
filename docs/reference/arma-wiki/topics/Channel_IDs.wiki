@@ -1,0 +1,211 @@
+// source: https://community.bistudio.com/wiki/Channel_IDs
+// revision: 376795 (2025-11-20T17:35:01Z)
+// export sha1: 9xgwfr7skieuq422bt9f9cijvfm2x1i
+// categories: Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+In {{arma3}}, chat, radio, VON and markers all use the same channel ID system. However, channel IDs for custom channels behave a bit differently. This is explained in the table below.
+
+
+== Description ==
+
+{{Feature|informative|"Content" designates anything channel-related: markers, messages, voice.}}
+
+{| class="wikitable sortable" width = "100%"
+|-
+! Channel ID !! Channel Name !! Visible To !! Additional Information
+|-
+| -1 || None || All players. || Is used when a marker is created with [[createMarker]] and the '''channelID''' parameter was not defined. Markers in "none" channel are visible in all other channels as well.
+|-
+| 0 || Global || All players. ||
+|-
+| 1 || Side || Content is only visible to the [[side]] of the player who created it. ||
+|-
+| 2 || Command || ||
+|-
+| 3 || Group || Content is only visible for the players in the group of the player who created it. || This channel cannot be disabled. It's the default fallback channel if all other channels are disabled.
+|-
+| 4 || Vehicle || Content is only visible to the vehicle's crew. ||
+|-
+| 5 || Direct || Players in close proximity. ||
+|-
+| 6..15<br>26..65 || Custom Channels || Content will only be available for players which have been assigned to this channel. See [[radioChannelAdd]]. || Custom channels can be created on the fly. See [[radioChannelCreate]].
+{{Feature|warning|2=
+The '''custom channel ID''' returned by [[radioChannelCreate]] is going to be in a range from 1 to 50 (0 if failed).
+Internally, these numbers are converted to the '''channel IDs''' 6..15 and 26..65 (notice the additionaloffset) which are reserved for custom channels.
+: {{{!}} class="wikitable align-center"
+{{!}}-
+! Channel ID
+{{!}} style="width: 1.5em" {{!}} '''6'''
+{{!}} style="width: 1.5em" {{!}} 7
+{{!}} style="width: 1.5em" {{!}} 8
+{{!}} style="width: 1.5em" {{!}} 9
+{{!}} style="width: 1.5em" {{!}} 10
+{{!}} style="width: 1.5em" {{!}} 11
+{{!}} style="width: 1.5em" {{!}} 12
+{{!}} style="width: 1.5em" {{!}} 13
+{{!}} style="width: 1.5em" {{!}} 14
+{{!}} style="width: 1.5em" {{!}} '''15'''
+{{!}}-
+! Custom Channel ID
+{{!}} '''1'''
+{{!}} 2
+{{!}} 3
+{{!}} 4
+{{!}} 5
+{{!}} 6
+{{!}} 7
+{{!}} 8
+{{!}} 9
+{{!}} '''10'''
+{{!}}} <!--- close inner table --->
+: {{{!}} class="wikitable align-center"
+{{!}}+ since {{GVI|arma3|2.22}}
+{{!}}-
+! Channel ID
+{{!}} style="width: 1.5em" {{!}} '''26'''
+{{!}} style="width: 1.5em" {{!}} 27
+{{!}} style="width: 1.5em" {{!}} 28
+{{!}} style="width: 1.5em" {{!}} 29
+{{!}} style="width: 1.5em" {{!}} 30
+{{!}} style="width: 1.5em" {{!}} 31
+{{!}} style="width: 1.5em" {{!}} 32
+{{!}} style="width: 1.5em" {{!}} 33
+{{!}} style="width: 1.5em" {{!}} 34
+{{!}} style="width: 1.5em" {{!}} 35
+{{!}} style="width: 1.5em" {{!}} 36
+{{!}} style="width: 1.5em" {{!}} 37
+{{!}} style="width: 1.5em" {{!}} 38
+{{!}} style="width: 1.5em" {{!}} 39
+{{!}} style="width: 1.5em" {{!}} 40
+{{!}} style="width: 1.5em" {{!}} 41
+{{!}} style="width: 1.5em" {{!}} 42
+{{!}} style="width: 1.5em" {{!}} 43
+{{!}} style="width: 1.5em" {{!}} 44
+{{!}} style="width: 1.5em" {{!}} '''45'''
+{{!}}-
+! Custom Channel ID
+{{!}} '''11'''
+{{!}} 12
+{{!}} 13
+{{!}} 14
+{{!}} 15
+{{!}} 16
+{{!}} 17
+{{!}} 18
+{{!}} 19
+{{!}} 20
+{{!}} 21
+{{!}} 22
+{{!}} 23
+{{!}} 24
+{{!}} 25
+{{!}} 26
+{{!}} 27
+{{!}} 28
+{{!}} 29
+{{!}} '''30'''
+{{!}}} <!--- close inner table --->
+: {{{!}} class="wikitable align-center"
+{{!}}-
+! Channel ID
+{{!}} style="width: 1.5em" {{!}} '''46'''
+{{!}} style="width: 1.5em" {{!}} 47
+{{!}} style="width: 1.5em" {{!}} 48
+{{!}} style="width: 1.5em" {{!}} 49
+{{!}} style="width: 1.5em" {{!}} 50
+{{!}} style="width: 1.5em" {{!}} 51
+{{!}} style="width: 1.5em" {{!}} 52
+{{!}} style="width: 1.5em" {{!}} 53
+{{!}} style="width: 1.5em" {{!}} 54
+{{!}} style="width: 1.5em" {{!}} 55
+{{!}} style="width: 1.5em" {{!}} 56
+{{!}} style="width: 1.5em" {{!}} 57
+{{!}} style="width: 1.5em" {{!}} 58
+{{!}} style="width: 1.5em" {{!}} 59
+{{!}} style="width: 1.5em" {{!}} 60
+{{!}} style="width: 1.5em" {{!}} 61
+{{!}} style="width: 1.5em" {{!}} 62
+{{!}} style="width: 1.5em" {{!}} 63
+{{!}} style="width: 1.5em" {{!}} 64
+{{!}} style="width: 1.5em" {{!}} '''65'''
+{{!}}-
+! Custom Channel ID
+{{!}} '''31'''
+{{!}} 32
+{{!}} 33
+{{!}} 34
+{{!}} 35
+{{!}} 36
+{{!}} 37
+{{!}} 38
+{{!}} 39
+{{!}} 40
+{{!}} 41
+{{!}} 42
+{{!}} 43
+{{!}} 44
+{{!}} 45
+{{!}} 46
+{{!}} 47
+{{!}} 48
+{{!}} 49
+{{!}} '''50'''
+{{!}}} <!--- close inner table --->
+}} <!--- close warning template --->
+|-
+| 16 || System || All players, dedicated and headless client. || System messages like "Player connecting" or scripted from [[systemChat]].
+|} <!--- close outer table --->
+
+
+== Colours ==
+
+[[File:xChat.jpg|right]]
+<sqf>
+driver vehicle player sideChat "sideChat";
+driver vehicle player globalChat "globalChat";
+driver vehicle player groupChat "groupChat";
+vehicle player vehicleChat "vehicleChat";
+driver vehicle player commandChat "commandChat";
+driver vehicle player customChat [1, "customChat"];
+systemChat "systemChat";
+</sqf>
+
+
+== Changing Channels ==
+
+; Ingame Controls
+: {{Controls|,}} and {{Controls|.}} cycle through the channels
+
+; Scripting
+: [[setCurrentChannel]]
+
+
+== Custom Channel Example ==
+
+<sqf>
+// Create custom channel
+_customChannelID = radioChannelCreate [[0.96, 0.34, 0.13, 0.8], "Q-dance Radio", "%UNIT_NAME", [player]]; // _customChannelID is 1
+
+// Switch current channel of the player to the newly created channel.
+setCurrentChannel (_customChannelID + 5); // Note the channel ID used here. Even though the ID returned by radioChannelCreate is 1, we have to use 6 as channel ID - see table above.
+
+// Let us use this channel for a message
+player customChat [_customChannelID, "Hi, I am a custom chat message"]; // Since this command uses the customChannelID we have to use 1 (_customChannelID) here
+</sqf>
+
+{{Feature|important|
+Always be aware of what kind of channel ID you are currently working with and what channel ID is expected by the command you are using.
+See [[:Category:Command Group: Custom Radio and Chat|Command Group: Custom Radio and Chat]] for commands which expect a customChannelID.
+}}
+
+
+== See Also ==
+
+* [[:Category:Command Group: Markers|Command Group: Markers]]
+* [[:Category:Command Group: Custom Radio and Chat|Command Group: Custom Radio and Chat]]
+* [[:Category:Command Group: Radio and Chat|Command Group: Radio and Chat]]
+
+
+[[Category:Scripting Topics|Data Types]]

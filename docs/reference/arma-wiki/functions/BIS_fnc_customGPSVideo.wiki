@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_customGPSVideo
+// revision: 365057 (2024-07-16T09:31:55Z)
+// export sha1: mrju8tq26s6auqmuut7lz4i6otsddlg
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 2: Operation Arrowhead version 1.56 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.56
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= GUI
+
+|eff= local
+
+|descr= Plays in-game video in GPS frame.<br>
+If [[BIS_fnc_customGPS]] changed the GPS texture, it is used. GPS GUI layer is {{hl|19}}.
+{{Feature|arma3|Does not work in {{arma3}}. See [[BIS_fnc_playVideo]] instead.}}
+
+|s1= [path, sizeCoef] spawn '''BIS_fnc_customGPSVideo'''
+
+|p1= path: [[String]] - full path to image file
+
+|p2= sizeCoef: [[Number]] - (Optional, default 1) screen size coefficient
+
+|r1= [[Script Handle]] - script which terminates itself once video ends
+
+|x1= <sqf>
+private _script = ["\ca\video_pmc\CP00_Reynolds_b.ogv", 1.04] spawn BIS_fnc_customGPSVideo;
+waitUntil { scriptDone _script };
+</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_playVideo]] [[BIS_fnc_customGPS]]
+}}

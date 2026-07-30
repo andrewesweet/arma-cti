@@ -1,0 +1,289 @@
+// source: https://community.bistudio.com/wiki/Generic_FileFormat_Data_Types
+// revision: 373408 (2025-05-08T11:27:11Z)
+// export sha1: jvgp9llyqrt8r5mdvbdxtq4cnmf65hi
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+==Intro==
+
+This is a generic list of data types encountered in '''all''' file formats. Not all of which will be used in a specific file format.
+
+They are listed here, rather than repetitive typing in each of file format's documentation.
+== Endian ==
+{{Link|https://en.wikipedia.org/wiki/Endianness#Little-endian|Little endian}} byte order, lsb first for numeric values,
+text is stored in {{Link|https://en.wikipedia.org/wiki/Endianness#Big-endian|Big endian}} byte order.
+== Data Types ==
+{| border="0"
+!width="100" align="left"|Type
+!width="400" align="left"|Description
+|-
+|-
+|align="left"|byte||align="left"| unsigned 8 bit (1 byte)
+|-
+|align="left"|char||align="left"| signed 8 bit Ascii(utf8)character
+|-
+|align="left"|char[]||align="left"| fixed length string
+|-
+|align="middle"|tbool||align="left"| byte (0 = false).
+|-
+|align="middle"|short||align="left"| 16 bit signed short (2 bytes)
+|-
+|align="middle"|ushort||align="left"| 16 bit '''unsigned''' short (2 bytes)
+|-
+|align="middle"|long||align="left"| 32 bit signed integer (4 bytes)
+|-
+|align="middle"|ulong||align="left"| 32 bit '''unsigned''' integer (4 bytes)
+|-
+|align="middle"|float||align="left"| 32 bit IEEE-single precision floating point value (4 bytes)
+|-
+|align="middle"|double||align="left"| 64 bit IEEE-double precision floating point value (8 bytes)
+|-
+|align="middle"|asciiz||align="left"| Null terminated (0x00) variable length ascii string
+|-
+|align="middle"|asciiz...||align="left"| zero or more concatenated asciiz strings
+|-
+|align="middle"|ascii||align="left"| fixed length ascii string(UTF-8)
+|-
+|-
+|}
+=== XYPair ===
+ XYPair
+ {
+  ulong x,y; // normally associated with cell sizes
+ }
+==== XYZTriplet ====
+ XYZTriplet
+ {
+  float    x,y,z;
+ }
+
+ Normally, this structure is associated with positional information.
+
+=== RGBAColor ===
+ RGBAColor
+ {
+  byte r,g,b,a; // // 0xFF:FF:FF:FF means 'default'
+ }
+*RGBA colors correspond to Microsoft's D3DCOLORVALUE
+*They normally come in pairs inside the pew structures to reflect object and outline colors
+=== String ===
+ LenString
+ {
+  ulong  Length;
+  Asciiz Characters[Length];// null terminated regardless. 
+ };
+ 
+Length always =strlen(Characters)+1;
+
+This is a pre-calculated convenience to reduce load times (and skip over the variable length block).
+
+=== TransformMatrices ===
+==== RowFormat[4][3] ====
+
+This is the transform matrix as used by Microsoft DirectX. Known as row-vector format
+
+In fact, the 'correct' matrix is actually 4 x 4, but the last column always represents 0,0,0,1 thus
+ M11,M12 M13 (0.0)
+ M21,M22,M23 (0.0)
+ M31,M32,M33 (0.0)
+ M41,M42,M43 (1.0)
+
+and so is never stored. This identical matrix is used for all formats other than pew ([[Wrp File Format - 8WVR|WRP files]]  [[Rtm (Animation) File Format|RTM files]] eg)
+
+In this documentation the above matrix is represented as XYZTriplets
+
+ struct TransformMatrix
+ {
+  XYZTriplet XYZ[4];
+ };
+
+The last row (M41..., or XYZ[3]...) corresponds to the position of the object.
+
+It is useful, coding wise, to view the above matrix as:
+
+ Triplet[0] r11   r12   r13
+ Triplet[1] r21   r22   r23
+ Triplet[2] r31   r32   r33
+ Triplet[3]  x     y     z
+===== Rotations =====
+An object (using above transform) can be rotated on 3 axis at once (the X-axis, the Y-axis and the Z-axis). It is useful however to look at individual axis rotations first.
+
+An object with no rotation (0 degrees) from any of it is axis is represented as
+
+ 1  0  0
+ 0  1  0
+ 0  0  1
+
+====== Single Axis rotations ======
+This does not mean the object in question doesn't already have a tilt or slant. The above, is the stasis point where none of it is axis are oriented other than 0 degrees from the designer's intended rest position. Eg, a cannon may already be tilted upward at 30 degrees.
+
+Rotation around
+
+    Y-axis                   X-axis              Z-axis
+ 
+ cosY  .  -SinY        1    .     .          cosZ SinZ   .
+   .   1    .          .   cosX  SinX       -SinZ cosZ   .
+ SinY  .   cosY        .  -SinX  cosX         .     .    1
+
+Example:
+
+ A right turn of 10° from the south uses the Y axis
+                                    (float radians)
+ cos 10°   0    -sin 10°          0.9848077    0    -0.1736482            
+   0       1       0       =      0            1     0
+ sin 10°   0     cos 10°          0.1736482    0     0.9848077
+
+Note very carefully that for the above to be true the other two axis are in stasis (0 degrees)
+
+====== Multi-Axis Rotations ======
+
+'''All credit for this section (and most of the transform matrix topic) is to Snake Man, PMC'''
+
+A rotation around more than 1 axis is a matrix multiplication of the separate rotation matrixes:
+
+ Y-axis * X-axis  *Z-axis
+
+ cosY  0  -sinY             1      0     0            cosZ  sinZ    0
+ 0     1     0        *     0    cosX    sinX     *  -sinZ  cosZ    0
+ sinY  0   cosY             0   -sinX    cosX           0    0      1
+
+( cosY * cosZ - cosX * sinZ * sinY)     (cosY * sinZ + cosX * cosZ * sinY)      (sinY * sinX)
+
+=   (-sinY * cosZ - cosX * sinZ * cosY)    (-sin Y * sinZ + cosX * cosZ * cosY)     (cosY* sinX) (sinX * sinZ)(-sinX * cosZ)  (cosX)
+
+The formula for a rotation of Z° around the Z-axis, then X° around the X-axis and finaly Y° around the Y-axis (exactly in this order) is:
+
+
+ r11 =  cosZ * cosY - cosX * sinY * sinZ 
+ r12 =  cosZ * sinY + cosX * cosY * sinZ 
+ r13 =  sinZ * sinX
+ r21 = -sinZ * cosY - cosX * sinY * cosZ 
+ r22 = -sinZ * sinY + cosX * cosY * cosZ 
+ r23 =  cosZ * sinX
+ r31 =  sinX * sinY
+ r32 = -sinX * cosY
+ r33 =  cosX
+
+To get the rotation angles:
+
+The rotation around the X-axis you get directly out of r33 by doing an inverse cos on it, since r33 = cosX.
+
+ x° = inv cos (r33)
+
+To get the angle of the Y-axis you take r31 = sin b * sin c. Since you already have b you get the following:
+
+ y° = inv sin (r31/sin b)
+
+And to get the angle of the Z-axis you take r23 = sin a * sin b. Since you already have b you get the following:
+
+ z° = inv sin (r23/sin b)
+
+==== ColumnFormat[3][4] ====
+
+As a special consideration, Pew files, and only pew files, were geared to OpenGL, not directX, so hold this data in Column (rather than row) vectors.
+
+Thus visually:
+
+ Wrp      Pew
+ ABC      ADGx
+ DEF      BEHy
+ GHI      CFIz
+ xyz
+
+ Any subsequent examples of how to discover rotation or position assume Wrp (row) format. 
+
+Since the same amount of identical data is held in both (types of) transforms, just in different positions, it is useful to work with functions that work in a preferred format (Row) and convert to from the other where necessary. Using XYZTriplets as a base, essentially meaning row format:
+
+ Triplet[0] r11   r12   r13
+ Triplet[1] r21   r22   r23
+ Triplet[2] r31   r32   r33
+ Triplet[3]  x     y     z
+ 
+Note that the xyz triplet (in this format) lends itself exceptionally well to simply being passed as an array of 3 floats without further massaging.
+
+
+To convert one to the other (with the above construct in mind)
+
+ row to col
+ r11 r21 r31
+  X  r12 r22
+ r32  Y  r13
+ r23 r33  Z
+
+=== C++ code ===
+==== Column2Row ====
+ void Column2Row(float ColumnIn[12],RowOut[12])// eg pew to wrp
+ {
+   for (int r=0;r<4;r++)
+     for (int c=0;c<3;c++)
+      *RowOut++=ColumnIn[c*4+r];
+ }
+==== Row2Column ====
+ void Row2Column(float RowIn[12],ColumnOut[12]) // eg wrp->pew
+ {
+  for (int r=0;r<3;r++)
+   for (int c=0;c<4;c++)
+    *ColumnOut++=RowIn[c*3+r];
+ }
+
+== Index/Indexes/Indices ==
+
+An index is a table of integers that lookup a separate table, or series of separate tables.
+
+Put simply
+
+ Integer= Index[AValue];
+
+and
+
+ struct thing = Array[Integer];
+
+*Integers are ALWAYS zero based. They refer to the 0th to n-1 element of a table.
+
+*The 'integers' can be bytes, shorts, or longs. In general, unbinarised file formats use longs. Binarised formats use the smallest practical sizeof(). Eg if the table referred to cannot exceed 32k elements, binarised formats (generally) use shorts.
+
+*Just like every other table, index tables might be compressed by the 1024 rule.
+
+*The type of tables referred to are immaterial. They can contain a mixuture of floats and strings, or, simply, a table of floats, or indeed, another index table!
+
+*The same index value, the 'integer', can refer to multiple tables that all have the same '''number''' of elements (not necessarily the same '''type''' of data. Eg: a points table and a separate string table, both having the same number of elements. Or the table could refer to a table that CONTAINS a table of floats and a table of strings (MLOO vertices eg)
+
+*Tables are described as structures in the 'biki file-formats'.
+
+
+=== Dummmy Entries ===
+
+*In some formats, the 0th element is a dummy entry and never accessed. (Warp files eg). It must be 'there' for the zero based indexing to work.
+
+*Alternatively, the table uses a default indicator of -1. 
+
+This use of default indicator is (one of) the rare instances in Bis where the 'integer' is a signed value.
+
+
+
+== Note ==
+:Note that 'int' is not used in this documentation for the following reasons:
+:*an 'int' is machine and compiler and language dependent. It is an arbitrary size SIGNED value.
+:*with exceptions, BI use floats when requiring negative values.
+:*almost all references to 'integers' in BI file formats are either positive-only offsets into memory, zero based indexes, and counts.
+:*the incidence of true shorts and true integers in BI is quite rare. Exception -1 is a favourite, to indicate default
+
+== Floating Point Comparisons ==
+
+BI use floating point precision to four decimal places, mostly, and 2 decimal places sometimes (pew relative height eg)
+
+
+
+'Identical' floating point values are rare because the IEEE represention of any given value is a range of precisions. The value 0.02 eg cannot be represented exactly, as a float (or double for that matter). 
+
+The following code compares, in a general sense, two floats for 'identicalness'
+
+ bool AlmostEqual(float A, float B)
+ {
+    if (A == B)  return true; // gets over neg and positive zero
+    return abs(*(int*)&A - *(int*)&B)==0; // gets around nans' qnans
+ }
+
+For a very, very good article on this subject http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
+
+[[Category:Real Virtuality File Formats]]

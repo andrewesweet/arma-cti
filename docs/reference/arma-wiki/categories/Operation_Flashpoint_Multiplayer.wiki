@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Multiplayer
+// revision: 226905 (2021-01-31T18:27:59Z)
+// export sha1: avw0e4nc2f9uyg9vrov1yjy30gauz24
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|ofp}}
+
+=== Introduction ===
+
+There are many aspects to the multiplayer mode in Operation Flashpoint. This section will cover topics related to multiplayer mode.

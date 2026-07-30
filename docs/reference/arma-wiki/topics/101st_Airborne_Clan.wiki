@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/101st_Airborne_Clan
+// revision: 328983 (2022-07-18T18:19:26Z)
+// export sha1: 2gudcspqd4e80gtmmx2miw04uvpso1f
+// Vendored snapshot. Do not edit — re-export instead.
+
+101st Airborne Clan was started by MAJORdorMo, B17gunner98th, hckyluke19, Hellsnake, and Zero. Most of the group has been playing together since OFP and ArmA and want to continue the tradition into {{arma2}}. They decided it was fitting to name the clan after the 101st Airborne to honor their bravery (particularly in WWII).
+
+== Overview ==
+The 101st Airborne Clan plays COOP and PvP, but generally leans towards coop.<br>
+The 101st Airborne Clan is always looking for new recruits. All we ask is that they have a passion for teamwork and realistic gaming.
+
+== Links ==
+http://www.101starma.com - This site has details on how to join.

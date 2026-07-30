@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Battle_Tactics
+// revision: 14772 (2006-07-25T06:49:25Z)
+// export sha1: j02t7ld2le6nntwbewr37o7b5y8sxua
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Hints & Tips]]Place holder for '''Battle Tactics'''

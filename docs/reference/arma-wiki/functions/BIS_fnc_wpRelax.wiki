@@ -1,0 +1,18 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_wpRelax
+// revision: 339104 (2023-04-26T10:54:29Z)
+// export sha1: mw9ouzejk5pmg04bvjeuyhc1l7yspzn
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Waypoints | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+|game1= arma3
+|version1= 1.00
+
+|gr1= Waypoints
+
+|descr= {{Feature|important|This function does not work.}}|s1= -
+
+|r1= -
+
+|x1= -|seealso= [[:Category:Function Group: Waypoints]]
+}}

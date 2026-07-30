@@ -1,0 +1,659 @@
+// source: https://community.bistudio.com/wiki/Turret_Config_Reference
+// revision: 378633 (2026-05-15T12:07:13Z)
+// export sha1: qkdxds8gxwfwvfawqscfd2lbj9npi4o
+// categories: Category:ArmA: Armed Assault: Addon Configuration | Category:Arma 3: Vehicle Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{ofp}} used an optional turret class for some, few, models.
+
+The next {{arma}} titles use a '''Turrets''' (plural) class.
+
+Generally, there is only a single "MainTurret" in the turrets class of any model that wants to have one. Or put another way, any model that has any turrets at all, will have a MainTurret class plus additionals if any.
+
+This (often empty) Turrets class is embedded in the class heirarchy of many generic base models. A generic base model == Tank eg. Ie, a generic class that all real tanks inherit.
+For the given tank (a T80 eg), it is expected, that values will be filled into the (often empty) Turrets class already provided.
+Some model families (HMMWV_Base eg) flesh out this turrets class for all their children, others do not.
+The principle being, that many child models will inherit a Turrets class whether they want it or not.
+
+As a consequence, '''many''' models that do not have turrets require the following:
+<syntaxhighlight lang="cpp">
+class Turrets{};
+</syntaxhighlight>
+
+I.e, their parent (or parents) have inherited a Turret class that needs to be ignored (for this model and it is children). It is good practice to put the above statement in your model (if you dont use turrets).
+A later change by you to a 'better' (&trade;) parent might introduce unexpected errors if that parent has a turrets class and you didn't want one anyway.
+
+
+== Creating ==
+
+Creating any turret (singular) class for your model involves the use of:
+
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class SomeModel // AllVehicles e.g
+	{
+		class NewTurret; // derive from your base base base class
+	};
+
+	class MyGreatModel : SomeModel // AllVehicles e.g
+	{
+		class Turrets
+		{
+			class MainTurret : NewTurret // build (or overwrite) a completely new turret
+			{
+				// ...
+			};
+
+			class MoreTurrets : NewTurret // if any
+			{
+				// ...
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+{{hl|AllVehicles}} is the lowest possible base class where you can obtain a pristine NewTurret class.
+It would be an unusual model to inherit directly from {{hl|AllVehicles}} (you might derive NewTurret from there, again, unusual), but you are unlikely to INHERIT {{hl|AllVehicles}} directly.
+More likely, you have got some other generic class that fills in much of the donkey work. For the purposes of obtaining a NewTurret, it matters diddly squat where it comes from. ALL models have one. Used, or not.
+
+
+== Inheriting ==
+
+There are of course, derivations on the theme, a.k.a:
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class Ship;
+	class Boat : Ship
+	{
+		class Turrets
+		{	// your model has to inherit from somewhere!
+			class NewTurret;	// create an entirely new animal OR
+			class MainTurret;	// twiddle what's already there IF there
+		};
+	};
+
+	class MyGreatModel : Boat
+	{
+		class Turrets : Turrets
+		{
+			class MainTurret : NewTurret	// create an entirely new one OR
+			class MainTurret : MainTurret	// just twiddle a few things from the generic class
+			{
+				// ...
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+The bottom line is that, ultimately, your turret will attach a '''NewTurret class''' (whether inherited, or, created right then)
+
+
+'''ALL''' models, ultimately, derive their turret(s), from this one, singular, NewTurret class.
+
+The NewTurret class is embedded in '''ALL''' Vehicle classes (via the bin/config.bin). It can be used, or ignored, but it is unconditially there.
+
+The following alphabetical sort describes all values that can be set in YOUR derived NewTurret (eg your MainTurret)
+
+
+== Notes ==
+
+* In the following list, the default value is declared. Ie the value that comes from the (sometimes inherited) NewTurret class. There should be no requirement to restate a default value unless the class you inherit from has done so.
+* Some values cannot be known by the NewTurret class and are defaulted to empty. They need you, to fill them in. They are of course string values pertaining to YOUR model.
+
+Very fortunately, these values (e.g memory points), are almost universal. It is a strange and wonderful model indeed that strays from the standard Czech names for these points.
+
+In General, an inherited model will have already had these standard Czech names supplied by the parent.
+So at best, they are *generally* not required to be stated, and at worst, using the 'example' name supplied in the alpabetic list below is a fairly sage bet.
+(if you have not got an OctoVez in your model, it's your problem, isn't it)
+
+
+== Alphabetic ==
+
+
+=== A ===
+
+==== animationSourceBody = "mainTurret" ====
+[[TokenNameValueTypes#Strings|String]]<br>
+'''controller''' source name for use with this turret's body in the cfgModels class.
+
+<syntaxhighlight lang="cpp">
+class CfgModels
+{
+	class YourModel : InheritedFromSomeWhere
+	{
+		class Animations : Animations
+		{
+			class MainTurret
+			{
+				type = "rotationY";
+				source = "mainTurret";	// controller that provides input above
+				selection = "OtocVez";	// name of the used skeleton bone
+				axis = "OsaVeze";		// name of the model's axis
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+==== animationSourceGun = "mainGun" ====
+[[TokenNameValueTypes#Strings|String]]<br>
+Creates a new animation source for use with this turret's gun in the cfgModels class.
+
+==== animationSourceHatch = "hatchGunner" ====
+[[TokenNameValueTypes#Strings|String]]<br>
+Creates a new animation source for use with this turret's gunner hatch in the cfgModels class.
+
+{{ArgTitle|4|animationSourceElevation {{=}} ""|{{GVI|arma3|1.00}}}}
+[[TokenNameValueTypes#Strings|String]]<br>
+Creates a new animation source to be used for raising/lowering the turret.
+
+{{ArgTitle|4|animationSourceCamElev {{=}} ""|{{GVI|arma3|1.00}}}}
+[[TokenNameValueTypes#Strings|String]]<br>
+Creates animation for camera movement which is independent from the main cannon (see artillery guns)
+
+{{ArgTitle|4|animationSourceStickX {{=}} ""|{{GVI|arma3|1.00}}}}
+[[TokenNameValueTypes#Strings|String]]<br>
+Creates animation transferring controller input in X axis. Useful for i.e. joystick in turrets
+
+{{ArgTitle|4|animationSourceStickY {{=}} ""|{{GVI|arma3|1.00}}}}
+[[TokenNameValueTypes#Strings|String]]<br>
+Creates animation transferring controller input in Y axis. Useful for i.e. joystick in turrets
+
+=== B ===
+
+==== body = "mainTurret" ====
+[[TokenNameValueTypes#Strings|String]]<br>
+This defines the animation to be used for the horizontally moving selection of the turret and must be a model.cfg's '''animation classname'''.
+The name of the source for the animation is defined via [[Turret_Config_Reference#animationSourceBody.3D_.22mainTurret.22|animationSourceBody]].
+
+=== C ===
+
+{{ArgTitle|4|cameraDir {{=}} ""|{{GVI|arma3|1.00}}}}
+[[TokenNameValueTypes#Strings|String]]<br>
+unknown. used in conjunction with artillery turrets with detached camera elevation from gun elevation
+
+==== canHideGunner = true ====
+[[TokenNameValueTypes#Boolean|Boolean]]
+
+==== castGunnerShadow = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]
+
+==== class GunFire: WeaponFireGun{} ====
+
+==== class GunClouds: WeaponCloudsGun{} ====
+
+==== class MGunClouds: WeaponCloudsMGun{} ====
+These all inherit the default external class.
+
+==== class HitPoints ====
+<syntaxhighlight lang="cpp">
+class HitPoints
+{
+	class HitTurret
+	{
+		armor = 0.8;
+		material = 51;
+		name = "turret";
+		visual = "turret";
+		passThrough = 1;
+	};
+
+	class HitGun
+	{
+		armor = 0.6;
+		material = 52;
+		name = "gun";
+		visual = "gun";
+		passThrough = 1;
+	};
+};
+</syntaxhighlight>
+
+==== class Turrets{} ====
+no embedded turret(s)
+
+==== class ViewGunner ====
+<syntaxhighlight lang="cpp">
+class ViewGunner
+{
+	initAngleX = 5;
+	minAngleX = -85;
+	maxAngleX = 85;
+	initAngleY = 0;
+	minAngleY = -150;
+	maxAngleY = 150;
+	initFov = 0.7;
+	minFov = 0.42; // FOV of 0.4 is considered as 1x magnification by RSC displays
+	maxFov = 0.85;
+};
+</syntaxhighlight>
+
+==== class ViewOptics ====
+<syntaxhighlight lang="cpp">
+class ViewOptics
+{
+	initAngleX = 0;
+	minAngleX = -30;
+	maxAngleX = 30;
+	initAngleY = 0;
+	minAngleY = -100;
+	maxAngleY = 100;
+	initFov = 0.3; // baseline FOV 0.4 / optic FOV 0.3 = x1.33 magnification
+	minFov = 0.07; // baseline FOV 0.4 / optic FOV 0.07 = x5.7 magnification
+	maxFov = 0.35; // baseline FOV 0.4 / optic FOV 0.35 = x1.14 magnification
+};
+</syntaxhighlight>
+
+==== commanding = 1 ====
+[[TokenNameValueTypes#Integer|Integer]]<br>
+The commanding number defines who is in command of the vehicle. The turret with the highest number will be the vehicles commander.
+If he dies, the crew of the turret with the nearest smaller number will take over command, etc.
+
+=== D ===
+
+==== dontCreateAI = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]
+
+Do not create AI in this turret
+
+=== E ===
+
+==== elevationMode = 3 ====
+[[TokenNameValueTypes#Integer|Integer]].
+
+0 - Default, manual elevation by mouse<br>
+1 - Manual elevation by elevUp/Down actions (Page Up/Page Down with default keybinds)<br>
+2 - Auto elevation to the aimed position<br>
+3 - {{GVI|arma3|1.00|size= 0.75}} Switchable between manual elevation (1) and auto elevation (2) - with elevationMode = 3 the gun barrel is elevated via the page-up and page-down keys
+
+==== ejectDeadGunner = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+If true, the gunner's body will be ejected when killed.
+
+==== elevationAnimSourceSpeed = 1.0f ====
+[[TokenNameValueTypes#|Float]]<br>
+Speed of rising/lowering turret. See [[#animationSourceElevation_.3D_.22.22|animationSourceElevation]]
+
+=== F ===
+
+==== forceHideGunner = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+If true, the gunner will not be able to turn out.
+
+=== G ===
+
+==== gun = "mainGun" ====
+[[TokenNameValueTypes#String|String]]<br>
+This defines the animation to be used for the verticaly moving selection of the turret and must be a model.cfg's '''animation classname'''. The name of the source for the animation is defined via [[Turret_Config_Reference#animationSourceGun.3D_.22mainGun.22|animationSourceGun]].
+
+==== gunAxis = "" ====
+[[TokenNameValueTypes#String|String]]<br>
+'''Description:''' Axis selectionname in MemoryLOD (for the gun axis, ie mouse up and down input).
+ gunAxis = "OsaHlavne";
+
+==== gunBeg = "" ====
+[[TokenNameValueTypes#String|String]]<br>
+The name of the barrel's front point in the model.
+ '''example''': gunBeg = "usti hlavne";
+
+==== gunEnd = "" ====
+[[TokenNameValueTypes#Strings|String]] The name of the barrel's rear point in the model.
+ '''example''': gunEnd = "konec hlavne";
+
+==== gunnerAction = "" ====
+[[TokenNameValueTypes#String|String]] The name of the animation the gunner is using while turned out.
+
+==== gunnerCompartments = "Compartment1" ====
+[[TokenNameValueTypes#String|String]]<br>
+Only units sharing a compartment can switch seats.
+
+==== gunnerFireAlsoInInternalCamera = true ====
+[[TokenNameValueTypes#Boolean|Boolean]]
+
+==== gunnerForceOptics = true ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+Forces the gunner to use optics while turned in.
+
+==== gunnerGetInAction = "" ====
+[[TokenNameValueTypes#String|String]]<br>
+Name of animation used for Get In action
+
+==== gunnerGetOutAction = "" ====
+[[TokenNameValueTypes#String|String]]<br>
+Name of animation used for Get Out action
+
+==== gunnerInAction = "" ====
+[[TokenNameValueTypes#String|String]]<br>
+The name of the animation the gunner is using while turned in.
+
+==== gunnerName = "Gunner" ====
+[[TokenNameValueTypes#String|String]]<br>
+Allows to use a custom string for the name of the turret.
+
+'''example''' gunnerName = "Rear Gunner";
+
+==== gunnerNotSpawned = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+Used in {{arma3}} vanilla for Copilot turrets. Difference between gunnerNotSpawned and dontCreateAI is unknown.
+
+// Parameter doesn't exist in engine
+
+==== gunnerOpticsColor[] = { 0, 0, 0, 1 } ====
+[[TokenNameValueTypes#Array|Array]]
+
+==== gunnerOpticsEffect[] = {} ====
+[[TokenNameValueTypes#Array|Array]]<br>
+Defines the Effects used for the optical view when turned in. Effects correspond to classes defined in CfgOpticsEffect.
+
+'''example''' gunnerOpticsEffect[] = { "TankGunnerOptics1", "OpticsCHAbera1" };
+
+==== gunnerOpticsModel = "" ====
+[[TokenNameValueTypes#String|String]]<br>
+The optics model used when gunner is not turned out.
+
+ '''example''': gunnerOpticsModel = "\ca\Tracked\optika_tank_gunner";
+
+==== gunnerOutFireAlsoInInternalCamera = true ====
+[[TokenNameValueTypes#Boolean|Boolean]]
+
+==== gunnerOutForceOptics = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+Forces the gunner to use optics while turned out.
+
+==== gunnerOutOpticsColor[] = { 0, 0, 0, 1 } ====
+[[TokenNameValueTypes#Array|Array]]
+
+==== gunnerOutOpticsEffect[] = {} ====
+[[TokenNameValueTypes#Array|Array]]
+
+==== gunnerOutOpticsModel = "" ====
+[[TokenNameValueTypes#Strings|String]]<br>
+'''Description:''' The optics model used when gunner is turned out.
+ gunnerOutOpticsModel = "\ca\Weapons\optika_empty";
+ 
+==== gunnerOutOpticsShowCursor = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]
+
+{{ArgTitle|4|gunnerType {{=}} ""|{{GVI|arma3|1.00}}}}
+[[TokenNameValueTypes#Strings|String]]<br>
+'''Description:''' The soldier class that is the default crew for this turret. Overwrites the class defined in the {{hl|CfgVehicles}}'s {{hl|1= crew = "";}} token
+ gunnerType = "O_Soldier_F";
+
+==== gunnerLeftHandAnimName = "" ====
+[[TokenNameValueTypes#Strings|String]]<br>
+'''Description:''' Defines bone for IK animations for gunner left hand
+
+==== gunnerReversedGetOut = 1 ====
+[[TokenNameValueTypes#Number|Number]]<br>
+When set to 1, it is the old default behaviour of when you exit a vehicle, you face the opposite direction than the getIn point, so usually away from the vehicle.
+When set to 0 you can turn it off, so you will face at the vehicle when you get out. Useful for static turrets, like the M2 Turret 
+
+==== gunnerRightHandAnimName = "" ====
+[[TokenNameValueTypes#Strings|String]]<br>
+Defines bone for IK animations for gunner right hand
+
+==== gunnerUsesPilotView = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+The gunner will use the View LOD - Pilot if true.
+
+=== H ===
+
+==== hasGunner = true ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+When false, AI and players can't enter the turret from the outside. Players can switch to the turret from inside the vehicle however (if there is an enterable position with the same Compartment).
+
+==== hideWeaponsGunner = true ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+If true, the gunners weapons (his rifle) will not be displayed.
+
+=== I ===
+
+==== InGunnerMayFire = true ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+If true, the gunner will be able to fire the turrets weapons while inside the vehicle.
+
+==== initElev = 0 ====
+[[TokenNameValueTypes#Degrees|Degrees]]<br>
+The initial elevation of the gun.
+
+==== initTurn = 0 ====
+[[TokenNameValueTypes#Degrees|Degrees]]<br>
+The initial turn of the turret.
+
+==== isCopilot = 0 ====
+
+==== isPersonTurret = 2 ====
+Value 1 gives a working turret but only accessible from the inside while 2 enables a person to get into the turret from outside.
+
+=== L ===
+
+==== lockWhenDriverOut = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+If true, the turret can not be moved while the driver is turned out.
+
+==== lockWhenVehicleSpeed = -1 ====
+[[TokenNameValueTypes#Integers|Integer]]<br>
+Vehicle speed (in meter per second) at which point the turret will automatically return to a neutral pose (does not match up with "initElev" or "initTurn"). Value of -1 means it will never lock.
+
+==== LODTurnedIn = -1 ====
+[[TokenNameValueTypes#Integers|Integer]]<br>
+Defines the LOD that is to be used when the Gunner is turned in.
+Value = -1 seems to default to the standard LOD (for Turret's that is Gunnerview).
+Note that LODTurnedIn = VIEW_GUNNER; or similar is not valid - unless you use a #define (see Arma 3 Samples to see how defines work).
+
+Value: -1 or 0 = Default LOD; 1 = first resolution LOD; 1000 = Gunnerview; 1100 = Pilotview; 1200 = Cargoview.
+
+The View_Commander LOD is the default for turrets that have "primaryObserver = 1;" and "primaryGunner = 0;" in their config. The View_Commander LOD cannot be accessed manually in any other way.
+
+==== LODTurnedOut = -1 ====
+[[TokenNameValueTypes#Integers|Integer]]<br>
+Defines the LOD that is to be used when the Gunner is turned out. The same rules as with LODTurnedIn apply.
+
+==== LODOpticsIn = -1 ====
+[[TokenNameValueTypes#Integers|Integer]]<br>
+Defines the LOD that is to be used when the Gunner is turned in and in optics mode.
+Value = -1 or 0 default to the standard LOD (for Turret's that is Gunnerview).
+Note that LODTurnedIn = VIEW_GUNNER; or similar is not valid - unless you use a #define (see Arma 3 Samples to see how defines work).
+
+Value: -1 or 0 = Default LOD; 1 = first resolution LOD; 1000 = Gunnerview; 1100 = Pilotview; 1200 = Cargoview.
+
+The View_Commander LOD is the default for turrets that have "primaryObserver = 1;" and "primaryGunner = 0;" in their config. The View_Commander LOD cannot be accessed manually in any other way.
+
+==== LODOpticsOut = -1 ====
+[[TokenNameValueTypes#Integers|Integer]]<br>
+Defines the LOD that is to be used when the Gunner is turned out & optics in. The same rules as with LODOpticsIn apply.
+
+=== M ===
+
+==== magazines[] = {} ====
+[[TokenNameValueTypes#Arrays|Array]]<br>
+An array made of all magazines this turret is equipped with.
+
+ '''example''' magazines[] = { "BigGunMagazine", "SmallGunMagazine" };
+
+==== maxElev = 20 ====
+[[TokenNameValueTypes#Degrees|Degrees]] The maximum elevation of the gun.
+
+==== maxHorizontalRotSpeed = 1.2 ====
+[[TokenNameValueTypes#Floats|Float]]<br>
+The maximum horizontal speed of the turret.
+
+maxHorizontalRotSpeed = "((360/X)/45)";
+
+X = time in seconds to turn 360°
+
+==== maxTurn = 360 ====
+[[TokenNameValueTypes#Degrees|Degrees]] The maximum turn of the turret, unit is deegres.
+
+==== maxVerticalRotSpeed = 1.2 ====
+[[TokenNameValueTypes#Floats|Float]] The maximum vertical speed of the turret, unit unknown. Bigger value - bigger rotation speed
+
+==== memoryPointsGetInGunner = "" ====
+[[TokenNameValueTypes#Strings|String]] The name of the get in-point selection for this turret, located in the Memory-LOD of the model.
+ '''example''': memoryPointsGetInGunner = "pos gunner";
+
+==== memoryPointsGetInGunnerDir = "" ====
+[[TokenNameValueTypes#Strings|String]]<br>
+The name of the dir-point selection for this turret, located in the Memory-LOD of the model. It is used to make the gunner face a special direction while entering the vehicle.
+ memoryPointsGetInGunnerDir = "pos gunner dir";
+
+==== memoryPointGun = "" ====
+[[TokenNameValueTypes#Strings|String]]<br>
+The point in the model where the MG fire of this turret will come from.
+ memoryPointGun = "machineGun";
+
+==== memoryPointGunnerOptics = "" ====
+[[TokenNameValueTypes#String|String]]<br>
+The point in the model that defines gunner view point.
+ '''example''': memoryPointGunnerOptics = "gunnerview";
+
+==== memoryPointGunnerOutOptics = "" ====
+[[TokenNameValueTypes#String|String]]
+
+==== minElev = -4 ====
+[[TokenNameValueTypes#Degrees|Degrees]]<br>
+The minimal elevation of the gun.
+
+==== minTurn = -360 ====
+[[TokenNameValueTypes#Degrees|Degrees]]<br>
+The minimal turn of the turret, unit is degrees.
+
+==== minCamElev = -90 ====
+[[TokenNameValueTypes#Degrees|Degrees]]<br>
+The minimal elevation of the camera, unit is degrees. Used together with [[Turret_Config_Reference#elevationMode_.3D_3|elevationMode]] on artillery vehicles
+
+==== maxCamElev = 90 ====
+[[TokenNameValueTypes#Degrees|Degrees]]<br>
+The maximum elevation of the camera, unit is degrees. Used together with [[Turret_Config_Reference#elevationMode_.3D_3|elevationMode]] on artillery vehicles
+
+==== missileBeg = "spice rakety" ====
+[[TokenNameValueTypes#Strings|String]]
+
+==== missileEnd = "konec rakety" ====
+[[TokenNameValueTypes#Strings|String]]
+
+=== O ===
+
+==== outGunnerMayFire = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+If true, the gunner will be able to fire and move(!) the turret while turned out.
+
+=== P ===
+
+==== primary= 1 ====
+Unknown: ??
+
+==== primaryGunner = true ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+True if this turret is used by the primary gunner, false else.
+{{Feature|warning|
+There can be only ONE primary gunner on a vehicle, else you might often get a CTD.<br>
+Using [[addMagazine]] will add to the primaryGunner weapons. See [[addMagazineTurret]] ({{arma3}}) for other turrets.
+}}
+
+==== primaryObserver = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+True if this turret is used by the primary observer (e.g. tank commander), false else.
+
+==== proxyType = "CPGunner" ====
+[[TokenNameValueTypes#String|String]]<br>
+The proxy type of the turrets gunner, this may be CPGunner or CPCommander. The proxies have to be named according to this setting, so either "proxy:Gunner.XX" or "proxy:Commander.XX".
+
+==== proxyIndex = 1 ====
+[[TokenNameValueTypes#Integers|Integer]]<br>
+The proxy index of the turrets gunner. If your proxyType is "CPGunner" and proxyIndex = 1, the proxyname must be "proxy:Gunner.01", etc.
+
+==== playerPosition = 1 ====
+[[TokenNameValueTypes#Integers|Integer]]<br>
+Player position, used for sound controller "playerPos" - see {{Link|Arma 3: Sound: SoundControllers}}
+
+=== S ===
+
+==== selectionFireAnim = "" ====
+[[TokenNameValueTypes#Strings|String]]
+
+==== showgunneroptics ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+'''Description:''' ???
+ showgunneroptics = true;
+
+//Doesn't exist in engine
+
+==== showAsCargo = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+If true, turret is considered as Cargoposition
+
+==== soundServo[] = {"",0.003162,1.0} ====
+[[TokenNameValueTypes#Arrays|Array]]<br>
+Sound of the turrets servo, this is played whenever the turret is moving.
+
+==== stabilizedInAxes = 3 ====
+[[TokenNameValueTypes#Integer|Integer]]<br>
+0 - No stabilisation<br>
+1 - Gun elevation stabilised<br>
+2 - Turret traverse stabilised<br>
+3 - Both stabilised<br>
+4 - View roll stabilised with the horizon (used in boats)
+
+Using strings (like "StabilizedInAxisX") requires {{hl|#define}}s in config:
+<syntaxhighlight lang="cpp">
+#define StabilizedInAxesNone	0
+#define StabilizedInAxisX		1
+#define StabilizedInAxisY		2
+#define StabilizedInAxesBoth	3
+#define StabilizedInRoll		4
+</syntaxhighlight>
+
+==== startEngine = true ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+If true, moving the turret will start the vehicles engine. The engine will stop automatically once the turret stops moving.
+
+=== T ===
+
+==== turretAxis ====
+[[TokenNameValueTypes#Strings|String]]<br>
+'''Description:''' Axis selectionname in MemoryLOD (for the turret axis, ie mouse left and right input).
+ turretAxis = "OsaVeze";
+
+==== turretFollowFreeLook = 0 ====
+[[TokenNameValueTypes#Float|Float]]<br>
+If 1, turret is slaved to the gunners viewdirection in freelook. When values is set to 2, it is possible to control turret on weaponless turrets. Value 1 is used in Attack Helicopters for example.
+
+=== U ===
+
+==== usePip = 0 ====
+[[TokenNameValueTypes#Float|Float]]<br>
+Gunner head movement will rotate the picture-in-picture (PIP) camera instead of the gunner's head within the vehicle.
+Used for example in the Blackfish gunner turrets and the Hunter RCWS versions.
+Since 1.73.141940 it is possible to use <syntaxhighlight lang="cpp" inline>usePiP = 2</syntaxhighlight>, which is going to make gunner following main turret movement - used i.e. for mortar gunner.
+
+=== V ===
+
+==== viewGunnerInExternal = false ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+View gunner in external.
+
+==== viewGunnerShadow = true ====
+[[TokenNameValueTypes#Boolean|Boolean]]
+
+==== viewGunnerShadowDiff = 1.0 ====
+[[TokenNameValueTypes#Float|Float]]
+
+==== viewGunnerShadowAmb = 1.0 ====
+[[TokenNameValueTypes#Float|Float]]
+
+
+=== W ===
+
+==== weapons[] = {} ====
+[[TokenNameValueTypes#Arrays|Array]] An array made of all weapons this turret is armed with.
+
+'''example''': weapons[] = { "BWMod_L55", "BWMod_MG3_veh" };
+
+
+{{GameCategory|arma1|Addon Configuration}}
+{{GameCategory|arma3|Vehicle Configuration}}

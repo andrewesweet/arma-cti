@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/wingsForcesRTD
+// revision: 341020 (2023-05-13T22:06:26Z)
+// export sha1: 3aa7bf5lt9icubffi84yhe8n6lahjm9
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 1.34
+
+|gr1= RTD
+
+|descr= {{Feature|afm}} Returns force produced by wings.
+
+|s1= [[wingsForcesRTD]] RTD_helicopter
+
+|p1= RTD_helicopter: [[Object]]
+
+|r1= [[Array]]
+
+|x1= <sqf>_wingForce = wingsForcesRTD _rtdHelo;</sqf>
+
+|seealso= [[isObjectRTD]] [[enginesRpmRTD]] [[enginesTorqueRTD]] [[airDensityRTD]] [[wind]] [[windDir]] [[windStr]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-03-19 - 20:37 (UTC)</dd>
+<dt class="note">[[User:Douggem|Douggem]]</dt>
+<dd class="note">
+Advanced helicopter flight model MUST be enabled for this function to work, otherwise it returns an empty array.
+Returns a 3x3 two-dimensional array.  In the editor while climbing in a little bird, it returned this: 
+<sqf>[[0.3993577, 11.72865, -30.21434], [0.3053164, 11.17272, -30.17695], [94.33984, 51.3513, -40.4908]]</sqf>
+</dd>
+
+</dl>

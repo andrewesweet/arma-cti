@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_exportCfgHints
+// revision: 328568 (2022-07-13T17:02:21Z)
+// export sha1: p0wotivahz8af8tf7hd3jiypc32lhqz
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Exports {{hl|CfgHints}} to wiki format (see [[:Category:Arma 3: Field Manual]]).
+
+|s1= [category, class] call [[BIS_fnc_exportCfgHints]]
+
+|p1= category: [[String]]
+
+|p2= class: [[String]]
+
+|r1= [[String]] - wiki content
+
+|x1= <sqf>[] call BIS_fnc_exportCfgHints;</sqf>
+
+|seealso=   [[BIS_fnc_exportEditorPreviews]] [[BIS_fnc_exportFunctionsToWiki]]
+}}

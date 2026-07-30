@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/2D_Editor:_Take_On_Helicopters_Sample_Mission
+// revision: 347373 (2023-09-14T15:22:18Z)
+// export sha1: 30h1roahz28kojz18ao4k6yj2f3w691
+// categories: Category:2D Editor
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GameCategory|tkoh|link= y}} presents the players with a powerful - and sometimes overwhelming - Editor. 
+
+The goal of this section is to introduce new players to the basics, and show some veteran users a little of the new features introduced by this project.
+
+* Below you will find a step-by-step guide to creating {{Link|Take On Helicopters: Sample Mission 1|sample mission 1}}
+* You can find and download the scenario itself {{Link|http://takeonthegame.com/take-on-editing/|here}}!
+** ''note, unzip the file, and put the directory:''<code style="display: block">SampleMission.United_States_H</code>''into your TKOH user profile's mission directory:''<code style="display: block">[USER]\Documents\Take On Helicopters\missions\</code>
+* We also used this scenario as the basis for a video guide, which you can find here: {{Link|http://www.youtube.com/watch?v{{=}}wcSgRoSJGZk}}
+* Once you've completed part one, we've created {{Link|Take On Helicopters: Sample Mission 2|sample mission 2}}
+** Part 2 builds upon this mission, and introduces more advanced techniques!
+
+
+== Sample Mission 1 - Guide ==
+
+{{:Take On Helicopters: Sample Mission 1}}
+
+
+[[Category: 2D Editor]]

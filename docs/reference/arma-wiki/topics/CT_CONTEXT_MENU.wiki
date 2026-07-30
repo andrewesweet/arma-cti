@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/CT_CONTEXT_MENU
+// revision: 352167 (2024-02-01T23:25:31Z)
+// export sha1: tm06jbfkvqfqcujn19v723kgrrcxy0m
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_CONTEXT_MENU
+|value = 14
+|description = {{Feature|warning|Control with unknown application. It is used for the waypoint editing in the UAV terminal but is not reproducable in other displays. When creating it either by config or ctrlCreate command the following rpt error is logged:<br>'''Do not create it this way'''}}
+|gallery=File:a3 ct context menu.jpg|Context menu in the UAV terminal display
+|commands =
+|events =
+}}
+
+{{CT|examples}}
+
+There are no base classes for this control type.
+
+== Other Examples ==
+The following control class is exported from the Arma 3 config.
+<syntaxhighlight lang="cpp">
+class RscDisplayUavTerminalWaypointMenu
+{
+	idc=108;
+	type=CT_CONTEXT_MENU;
+	font="RobotoCondensed";
+	sizeEx="0.028*SafezoneH";
+	style=0;
+	colorBackground[]={0,0,0,0.5};
+	colorBorder[]={0,0,0,0};
+	colorSeparator[]={0.94999999,0.94999999,0.94999999,1};
+	colorSelectBackground[]={1,1,1,0.30000001};
+	colorChecked[]=
+	{
+		"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.13])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_G',0.54])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_B',0.21])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_A',0.8])"
+	};
+	colorEnabled[]={1,1,1,1};
+	colorDisabled[]={1,1,1,0.25};
+	x=0;
+	y=0;
+	w=0;
+	h=0;
+};
+</syntaxhighlight>

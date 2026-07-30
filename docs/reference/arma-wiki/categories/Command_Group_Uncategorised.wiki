@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Uncategorised
+// revision: 163692 (2020-09-28T23:31:44Z)
+// export sha1: eymxd17sfihh81mk8dazobvwczsqgjp
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands without defined [[:Category:Scripting Commands by Functionality|command group]]. '''This category should always be empty!'''
+
+[[Category:Scripting Commands by Functionality]]
+[[Category:Maintenance]]

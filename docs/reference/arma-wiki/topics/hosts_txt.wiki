@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/hosts.txt
+// revision: 295577 (2021-11-15T22:57:10Z)
+// export sha1: ni1ns64tt3novz98565wztof8ysqbnx
+// categories: Category:ArmA: Armed Assault: Multiplayer | Category:Arma 2: Multiplayer | Category:Arma 3: Multiplayer | Category:Multiplayer Hints and Tips | Category:Operation Flashpoint: Multiplayer | Category:Take On Helicopters
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The '''hosts.txt''' file is a special file that lists servers for [[Real Virtuality]] games.<br>
+When the multiplayer option is selected, the game will scan the file and list these servers in the multiplayer interface.
+
+
+== Supported Games ==
+
+* {{GameCategory|ofp|link= y}}
+* {{GameCategory|arma1|link= y}}
+* {{GameCategory|arma2|link= y}}
+* {{GameCategory|arma2oa|link= y}}
+* {{GameCategory|tkoh|link= y}}
+* {{GameCategory|arma3|link= y}}
+
+
+== Location ==
+
+The file has to be manually created in the game's root directory and named '''hosts.txt'''.
+
+
+== Format ==
+
+The content of this file is so that each line is a server, defined as follow:
+ server:port
+
+* ''server'' can be an IPv4 address (e.g {{hl|192.168.1.33}}) or a DNS name (e.g {{hl|arma3.my-server.com}})
+* ''port'' is optional and is set to {{hl|2302}} by default if it is not defined.
+
+There is no limit to the amount of lines in the file.
+
+
+== Example ==
+
+ 192.168.1.33
+ 192.168.1.42:2402
+ arma3.my-server.com
+ arma3.my-server.com:2302
+
+
+[[Category:Multiplayer Hints and Tips]]
+{{GameCategory|ofp|Multiplayer}}
+{{GameCategory|arma1|Multiplayer}}
+{{GameCategory|arma2|Multiplayer}}
+{{GameCategory|arma3|Multiplayer}}
+{{GameCategory|tkoh}}

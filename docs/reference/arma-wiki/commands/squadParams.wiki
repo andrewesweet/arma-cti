@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/squadParams
+// revision: 377683 (2026-01-02T09:02:50Z)
+// export sha1: 0q0afvnghawp3vqhmcr2tcbwnnt03b3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: System | Category:Introduced with Arma 3 version 1.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.18
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|gr2= System
+
+|descr= Returns data about squad of given unit loaded from [[squad.xml]] as well as the unit itself.
+{{Feature|informative|This command returns an empty array in single player.}}
+
+|s1= [[squadParams]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] with [squadInfo, memberInfo, squadId, a3unitsId]
+* squadInfo: [[Array]] with [nick, name, email, web, picture, title]
+** nick: [[String]] - squad nickname
+** name: [[String]] - squad full name
+** email: [[String]] - squad contact email
+** web: [[String]] - squad website URL
+** picture: [[String]] - squad picture URL
+** title: [[String]] - squad title
+* memberInfo: [[Array]] with [uid, name, fullname, email, icq, remark]
+** uid: [[String]] - member unique ID
+** name: [[String]] - member name
+** fullname: [[String]] - member full name
+** email: [[String]] - member email
+** icq: [[String]] - member ICQ number
+** remark: [[String]] - member remark
+* {{GVI|arma3|2.06|size= 0.75}} squadId: [[String]] - unique squad ID
+* {{GVI|arma3|2.06|size= 0.75}} a3unitsId: [[String]] - unique {{arma3}} Units  ID
+
+|x1= <sqf>_info = squadParams player;</sqf>
+
+|x2= <sqf>squadParams player params ["_squadInfo", "_memberInfo", "_squadID", "_a3unitsID"];</sqf>
+
+|seealso= [[squad.xml]]
+}}

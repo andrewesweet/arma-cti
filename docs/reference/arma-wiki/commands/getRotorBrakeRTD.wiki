@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/getRotorBrakeRTD
+// revision: 310829 (2022-05-07T20:23:51Z)
+// export sha1: km6zy58sw7wxbsw8eqp8xp5jppb0u8b
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|gr1= RTD
+
+|game2= arma3
+|version2=1.34
+
+|descr= Returns if rotor break is on.
+{{Feature|afm}}
+
+|s1= [[getRotorBrakeRTD]] helicopter
+
+|p1= helicopter : [[Object]]
+
+|r1= [[Boolean]] - [[true]] if on, otherwise [[false]]
+
+|x1= <sqf>_isOn = getRotorBrakeRTD _heli;</sqf>
+
+|seealso= [[setRotorBrakeRTD]]
+}}

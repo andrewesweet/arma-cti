@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/compatibleMagazines
+// revision: 376900 (2025-12-20T16:40:46Z)
+// export sha1: 0rzo8d4k6zkzn4jtq13p98l95izxes4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+
+|descr= Returns all magazines that can be loaded in the given weapon or all magazines containing the provided ammo. No compatible magazines are returned for submunition or missiles.
+
+|gr1= Weapons
+
+|s1= [[compatibleMagazines]] weaponOrAmmo
+
+|p1= weaponOrAmmo: [[String]] - weapon class name or {{GVI|arma3|2.22|size= 0.75}} ammo class name
+
+|r1= [[Array]] of [[String]]s - all magazines that can be loaded in '''any muzzle''' of the given weapon or magazines containing given ammo.
+
+|s2= [[compatibleMagazines]] [weapon, muzzle]
+
+|p21= weapon: [[String]] - weapon class name
+
+|p22= muzzle: [[String]] - muzzle name ("this" is supported for primary muzzle)
+
+|r2= [[Array]] of [[String]]s - all magazines that can be loaded in the given muzzle of the given weapon.
+
+|x1= <sqf>compatibleMagazines "arifle_Katiba_GL_F";</sqf>
+
+|x2= <sqf>compatibleMagazines ["arifle_Katiba_GL_F", "this"];</sqf>
+
+|x3= <sqf>compatibleMagazines ["arifle_Katiba_GL_F", "EGLM"];</sqf>
+
+|x4= <sqf>
+compatibleMagazines "B_65x39_Caseless_green"; // ["30Rnd_65x39_caseless_green", "30Rnd_65x39_caseless_green_mag_Tracer"]
+</sqf>
+
+|seealso= [[compatibleWeapons]] [[compatibleItems]] [[BIS_fnc_compatibleMagazines]] [[canAdd]]
+}}

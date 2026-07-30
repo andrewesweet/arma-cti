@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Argo
+// revision: 351594 (2023-12-07T19:59:58Z)
+// export sha1: dqa8vsoz2fcqj4ue24z49fkt0320qbg
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|argo|link= y}}-related commands.
+
+
+[[Category:Scripting Commands by Functionality]]

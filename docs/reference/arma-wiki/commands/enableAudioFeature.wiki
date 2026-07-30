@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/enableAudioFeature
+// revision: 363491 (2024-04-01T10:41:02Z)
+// export sha1: cq0xofuojc3evhs71aw7tht3ox5ztu4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|arg= global
+|eff= local
+
+|gr1= Sounds
+
+|descr= Get the state of '''or''' enable/disable an audio feature. Available features are {{hl|"lowpass"}} and {{hl|"building_interior"}}.
+* {{GVI|arma3|2.14|size= 0.75}} it is possible to enable {{hl|"building_interior"}} on an object placed in a building.
+* {{GVI|arma3|2.14|size= 0.75}} if 'enable' argument is omitted, the command returns the current state of the feature.
+
+|mp= To use this command on objects in multiplayer, [[remoteExec]] it globally with JIP queue enabled:
+<sqf>[_obj, ["building_interior", true]] remoteExec ["enableAudioFeature", 0, _obj];</sqf>
+
+|s1= [[enableAudioFeature]] [feature, enable]
+
+|p1= feature: [[String]] - {{hl|"lowpass"}} or {{hl|"building_interior"}}
+
+|p2= enable: [[Boolean]] - (Optional, getter if not provided) [[true]] enable, [[false]], disable
+
+|r1= [[Boolean]] - previous state
+
+|s2= object [[enableAudioFeature]] [feature, enable]
+
+|s2since= arma3 2.14
+
+|p21= object: [[Object]] 
+
+|p22= feature: [[String]] - {{hl|"building_interior"}} or {{hl|"building_exterior"}} only (mutually exclusive)
+
+|p23= enable: [[Boolean]] - (Optional, getter if not provided) [[true]] enable, [[false]], disable
+
+|r2= [[Boolean]] - previous state
+
+|x1= <sqf>private _prevState = enableAudioFeature ["lowpass", true];</sqf>
+
+|x2= <sqf>private _prevState = pallet enableAudioFeature ["building_interior", true];</sqf>
+
+|x3= <sqf>
+private _currState = pallet enableAudioFeature ["building_interior"];
+private _prevState = pallet enableAudioFeature ["building_interior", !_currState];
+hint str (_currState == _prevState); // true
+
+private _currState = pallet enableAudioFeature ["building_interior"];
+hint str (_currState == _prevState); // false
+</sqf>
+
+|seealso= [[insideBuilding]]
+}}

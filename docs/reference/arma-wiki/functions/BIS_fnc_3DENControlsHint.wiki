@@ -1,0 +1,78 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENControlsHint
+// revision: 363834 (2024-04-23T15:04:44Z)
+// export sha1: kdksvayvsruj6frw9elx41q11x6phoj
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Eden Editor
+
+|descr= Used by Eden to display control hints for the current Eden operation as seen in the bottom right corner of the Editor display.
+
+|s1= [mode] call [[BIS_fnc_3DENControlsHint]]
+
+|p1= mode: [[String]] - '''case-sensitive''', can be one of:
+* "show" - Shows controls hints
+* "hide" - Hides controls hints
+* "toggle" - Toggles controls hints
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["toggle"] call BIS_fnc_3DENControlsHint; // toggle Eden controls hints</sqf>
+
+|seealso= [[:Category:Eden Editor|Eden Editor]] [[BIS_fnc_3DENCamera]] [[BIS_fnc_3DENDiagCreateList]] [[BIS_fnc_3DENDiagFonts]] [[BIS_fnc_3DENDiagMouseControl]] [[BIS_fnc_3DENDrawLocations]] [[BIS_fnc_3DENEntityMenu]] [[BIS_fnc_3DENExportAttributes]] [[BIS_fnc_3DENExportOldSQM]] [[BIS_fnc_3DENExportTerrainBuilder]] [[BIS_fnc_3DENFlashlight]] [[BIS_fnc_3DENGrid]] [[BIS_fnc_3DENIntel]] [[BIS_fnc_3DENInterface]] [[BIS_fnc_3DENListLocations]] [[BIS_fnc_3DENMissionPreview]] [[BIS_fnc_3DENModuleDescription]] [[BIS_fnc_3DENShowMessage]] [[BIS_fnc_3DENStatusBar]] [[BIS_fnc_3DENToolbar]] [[BIS_fnc_3DENTutorial]] [[BIS_fnc_3DENVisionMode]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2017-07-23 - 02:34 (UTC)</dd>
+<dt class="note">[[User:Larrow|Larrow]]</dt>
+<dd class="note">
+Although a lot of this function may be of no use to the end user there are a number of UINamespace variables a designer may find helpful
+<br>
+<br>
+'''uiNamespace getVariable "BIS_fnc_3DENControlsHint_selected"'''
+:default - [0,[0,0,0,0,0,0],[[],[],[],[],[],[]]]
+* 0 - total number of selected Eden entities
+* 1 - count of selected Eden entities by type
+** 0 - units
+** 1 - groups
+** 2 - triggers
+** 3 - waypoints
+** 4 - logics/systems/modules
+** 5 - markers
+* 2 - same results as [[get3DENSelected]] "" . Which is the same order as above for counts
+<br>
+
+'''uiNamespace getVariable "BIS_fnc_3DENControlsHint_place"'''
+:default - ["", false]
+* 0 - Class name of current Eden entity being placed
+* 1 - true if class simulation type is a kind of vehicle
+::["car","carx","tank","tankx","helicopter","helicopterx",
+::"helicopterrtd","airplane","airplanex","ship","shipx",
+::"submarinex","hovercraftx","motorcycle","parachute","paraglide"]
+<br>
+
+'''uiNamespace getVariable "BIS_fnc_3DENControlsHint_mouseButtons"'''
+:default - [false, false]
+* 0 - left mouse button is down in Asset tree
+* 1 - right mouse button is down in Asset tree
+<br>
+
+'''uiNamespace getVariable "BIS_fnc_3DENControlsHint_connect"'''
+:default - ["", ""]
+* 0 - text description of current connection being made eg "Sync to"
+* 1 - config path to CfgWrapperUI cursor texture
+<br>
+
+'''uiNamespace getVariable "BIS_fnc_3DENControlsHint_pos"'''
+:default - [1.40902,1.37676,0.309598,0.401606] - may vary between different setups
+:default position and size of Eden controls hint - [[ctrlPosition]]
+</dd>
+
+</dl>

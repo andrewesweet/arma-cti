@@ -1,0 +1,91 @@
+// source: https://community.bistudio.com/wiki/drawRectangle
+// revision: 377559 (2026-01-02T06:55:02Z)
+// export sha1: 6un4drs430dla1do4myxzfdn8idejw2
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - Map
+
+|descr= Draws a rectangle on the map.<br> [[File:drawRectangle.jpg|250px]]
+
+|s1= map [[drawRectangle]] [centre, halfWidth, halfHeight, angle, color, fill, alignWithMap]
+
+|p1= map: [[Control]]
+
+|p2= centre: [[Object]] or [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - rectangle's centre
+
+|p3= halfWidth: [[Number]] - 1/2 width of rectangle in meters
+
+|p4= halfHeight: [[Number]] - 1/2 height of rectangle in meters
+
+|p5= angle: [[Number]] - angle of rotation in degrees
+
+|p6= color: [[Color|Color (RGBA)]] - line color
+
+|p7= fill: [[String]] - fill texture file or [[Procedural Textures]]. Note that the file texture will not rotate with rectangle, use [[drawIcon]] for that. If fill texture is not empty, set line color to white <sqf inline>[1,1,1,1]</sqf>
+
+|p8= alignWithMap: [[Boolean]] - (Optional, default [[true]]) - when [[false]] the shape will not follow map rotation.
+|p8since= Arma3 2.18
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_ctrl drawRectangle [
+	getPos player,
+	20,
+	20,
+	getDir player,
+	[0,0,1,1],
+	""
+];
+</sqf>
+
+|x2= <sqf>
+_ctrl drawRectangle [
+	player,
+	10,
+	20,
+	getDir player,
+	[1,1,1,1],
+	"#(rgb,8,8,3)color(1,0,0,1)"
+];
+</sqf>
+
+|seealso= [[drawArrow]] [[drawEllipse]] [[drawIcon]] [[drawLine]] [[drawPolygon]] [[drawTriangle]] [[drawXPolygon]]
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20140323002100
+|text= Map example:
+<sqf>
+(findDisplay 12 displayCtrl 51) ctrlAddEventHandler ["Draw",{
+	(_this select 0) drawRectangle [
+		getPos player,
+		20,
+		20,
+		getDir player,
+		[0,0,1,1],
+		""
+	];
+}];
+</sqf>
+Be careful when using this command. Unlike map markers, the draw commands can decrease your framerate.
+}}

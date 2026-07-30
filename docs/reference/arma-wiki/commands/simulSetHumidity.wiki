@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/simulSetHumidity
+// revision: 373025 (2025-03-18T15:57:35Z)
+// export sha1: 2k4kfpoqg43bsvvxd0k7ss7u62rf1jy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|gr2= Broken Commands
+
+|descr= Sets simul cloud cover. This command does not affect overcast value.<br /><br />
+
+This command was not implemented up until {{GVI|arma3|2.18}}
+
+|s1= [[simulSetHumidity]] humidity
+
+|p1= humidity: [[Number]] - 0 (min): clear sky, 1 (max): heavy cloud cover
+
+|r1= [[Nothing]]
+
+|x1= <sqf>simulSetHumidity 1;</sqf>
+
+|x2= When combined with [[setOvercast]] 1 this command will also start random strength rain.<sqf>
+skipTime -24;
+86400 setOvercast 1;
+skipTime 24;
+simulSetHumidity 1;
+</sqf>Creates rainy looking weather, followed by thunder in about 10 seconds and rain in about 20.
+
+|seealso= [[overcast]] [[setOvercast]]
+}}
+
+{{Note
+|user= Dedmen
+|timestamp= 20250318155735
+|text= setOvercast 1 and simulSetHumidity 0, can cause thunderstorm with lightning on a clear sky.<br>
+You can also setOvercast 0 to have a cloudless sky, but use SetHumidity to bring the clouds back
+}}

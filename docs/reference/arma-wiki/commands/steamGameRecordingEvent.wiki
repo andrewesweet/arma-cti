@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/steamGameRecordingEvent
+// revision: 377704 (2026-01-02T09:03:36Z)
+// export sha1: gdqx38lycyc0udadsfpft1rn0ufie12
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 2.20 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.20
+
+|gr1= System
+
+|descr= Triggers a {{Link|https://partner.steamgames.com/doc/features/timeline|Steam Timeline}} event within the {{Link|https://store.steampowered.com/gamerecording|Game Recording}} feature. Read [[Arma 3: Steam Game Recording]] for more information and a list of all available event icons.
+
+|s1= [[steamGameRecordingEvent]] parameters
+
+|p1= parameters: [[Array]] with [eventClass, eventDuration, eventArguments, startOffset]
+* eventClass: [[String]] - class in [[description.ext]] >> "SteamGameRecording" or config "SteamManagerConfig" >> "GameRecording" or a special utility string
+* eventDuration: [[Number]] - 0 for an instant event, or an amount of seconds this event lasted
+* eventArguments: [[Array]] of [[String]] - arguments that can be used to add dynamic info to the event (texts)
+* startOffset: [[Number]] - amount of seconds relative to the even trigger time
+
+|r1= [[String]] - event handle (which can be used to edit an event after it has been triggered)
+
+|x1= <sqf>steamGameRecordingEvent ["UnitKilled", 0, ["Player1", "50"]]; //"UnitKilled" event, happening now, with arguments</sqf>
+
+|x2= <sqf>steamGameRecordingEvent ["ZeusUI", 5, [], -5]; //Was in the Zeus UI during the last 5 seconds</sqf>
+
+|x3= <sqf>steamGameRecordingEvent ["StartGamePhase", "ArmaInvaders"]; //Starting a game phase for [[Arma 3: Invaders]] with a unique ID</sqf>
+
+|seealso= [[Arma 3: Steam Game Recording]]
+
+}}

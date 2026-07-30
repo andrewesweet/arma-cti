@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_replaceVehicles
+// revision: 309403 (2022-05-05T12:04:35Z)
+// export sha1: 6rbcph0zeh1t6ryhvuetn7uvvtiumzt
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Functions | Category:Functions: Global Effect | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Campaign
+
+|eff= global
+
+|serverExec= server
+
+|descr= Replaces textures of "I_G_Offroad_01_armed_F" and "I_G_Quadbike_01_F" randomly.
+
+|s1=
+
+|r1= [[Boolean]] - [[true]] if in cinematic mode, [[false]] if not
+
+|x1= <sqf>call BIS_fnc_EXP_camp_replaceVehicles;</sqf>
+
+|seealso= [[vehicles]]
+}}

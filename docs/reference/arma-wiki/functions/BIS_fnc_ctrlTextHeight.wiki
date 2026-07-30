@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ctrlTextHeight
+// revision: 349287 (2023-11-08T14:51:15Z)
+// export sha1: jj1dgm5rii0ygt61j51btfzt9fzjd2j
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Resize control according to it is text.
+
+|s1= [control] call [[BIS_fnc_ctrlTextHeight]]
+
+|p1= control: [[Control]] - the control which should changed
+
+|r1= [[Boolean]] - [[true]]
+
+|x1= <sqf>[_ctrl] call BIS_fnc_ctrlTextHeight;</sqf>
+
+|seealso= [[ctrlCommitted]] [[ctrlSetPosition]] [[ctrlSetFade]]
+}}

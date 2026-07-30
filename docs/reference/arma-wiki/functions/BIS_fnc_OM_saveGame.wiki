@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_OM_saveGame
+// revision: 309436 (2022-05-05T12:04:39Z)
+// export sha1: cbaxdax0zi1l5en45yx7ojq76ie3tvt
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Old Man | Category:Functions | Category:Introduced with Arma 3 version 1.98 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.98
+
+|gr1= Old Man
+
+|descr= Saves the game - simply calls [[saveGame]].
+
+|s1= call [[BIS_fnc_OM_saveGame]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_OM_saveGame;</sqf>
+
+|seealso= [[saveGame]]
+}}

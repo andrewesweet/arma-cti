@@ -1,0 +1,85 @@
+// source: https://community.bistudio.com/wiki/set
+// revision: 377132 (2026-01-01T10:26:06Z)
+// export sha1: 0hkckma52yb41jzxfze3l27gi3up9j5
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: HashMap | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Arrays
+
+|gr2= HashMap
+
+|descr= Changes the element at the given zero-based index of the [[Array|array]]. 
+
+{{Feature|informative|If the index is out of bounds, the array will [[resize]] to incorporate the index as its last value, padding with [[nil]] as necessary (see {{Link|#Example 4}}). }}
+
+|s1= array [[set]] [index, value]
+
+|p1= array: [[Array]] of [[Anything]]
+
+|p2= index: [[Number]] - 0-based array index. {{GVI|arma3|2.12|size= 0.75}} negative index can be used to select from the end of the array, i.e. -1 means last array element.
+
+|p3= value: [[Anything]]
+
+|r1= [[Nothing]]
+
+|s2= hashMap [[set]] [key, value, insertOnly]
+
+|s2since= arma3 2.02
+
+|p21= hashMap: [[HashMap]]
+
+|p22= key: [[HashMapKey]]
+
+|p23= value: [[Anything]]
+
+|p24= insertOnly: [[Boolean]] - (Optional, default [[false]]) if set to [[true]], set the value only if the key does not exist already
+|p24since= arma3 2.08
+
+|r2= [[Boolean]] - [[false]] if the key is new to the hashmap, [[true]] if a value got overwritten
+
+|x1= <sqf>_arrayOne set [0, "Hello"];</sqf>
+
+|x2= Append "Bye" as last element to {{hl|_arrayTwo}}:
+<sqf>_arrayTwo set [count _arrayTwo, "Bye"];</sqf>
+
+|x3= Replace the last element of {{hl|_arrayThree}} with 23:
+<sqf>_arrayThree set [(count _arrayThree) - 1, 23];</sqf>
+
+|x4= Using [[set]] with an index that is out of bounds:
+<sqf>
+private _array = ["A"];
+_array set [2, "C"]; // _array is now ["A", nil, "C"]
+_array set [1, "B"]; // _array is now ["A", "B", "C"]
+</sqf>
+
+|x5= <sqf>
+private _myHashMap = createHashMap;
+_myHashMap set ["key", "value1", true]; // "key" value is set to "value1"
+_myHashMap set ["key", "value2", true]; // "key" value is still "value1" as "key" already exists in the hashmap
+</sqf>
+
+|seealso= [[resize]] [[reverse]] [[select]] [[deleteAt]] [[deleteRange]] 
+}}

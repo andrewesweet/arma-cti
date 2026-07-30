@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/createMPCampaignDisplay
+// revision: 368963 (2024-08-21T08:49:17Z)
+// export sha1: nr47p1f6bg0934omjl2rjkw88q1dir1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control
+
+|descr= Create a MP campaign display. The class name must be a mission collection declared in the configs; for example, <sqf inline>configFile >> "CfgMissions" >> "MPMissions" >> "Apex"</sqf><br>
+If the class does not exist or is not a mission collection, the display will be created empty.
+
+|s1= display [[createMPCampaignDisplay]] class
+
+|p1= display: [[Display]]
+
+|p2= class: [[String]] - mission collection classname
+
+|r1= [[Nothing]]
+
+|x1= <sqf>findDisplay 46 createMPCampaignDisplay "Apex";</sqf>
+
+|seealso= [[createMissionDisplay]] [[playMission]] [[playScriptedMission]] [[hostMission]]
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20160714231600
+|text= <sqf>findDisplay 46 createMPCampaignDisplay "123";</sqf>
+[[File:MPCampaignDisplay_Apex Protocol.jpg|APEX Protocol Campaign Screen]]
+}}

@@ -1,0 +1,115 @@
+// source: https://community.bistudio.com/wiki/modParams
+// revision: 329409 (2022-07-27T15:04:52Z)
+// export sha1: fnibzlud2y1zcta38uva1k50zs2ae31
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mods and Addons | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Mods and Addons
+
+|descr= Returns list of mod parameters according to given options, values are in same order as the given options.
+
+|s1= [[modParams]] [modClass, options]
+
+|p1= modClass: [[String]] - mod classname
+
+|p2= options: [[Array]] of [[String]]s - can be: <spoiler>
+{{{!}} class="wikitable"
+! Option
+! [[:Category:Data Types|Data Type]]
+! Description
+{{!}}-
+{{!}} {{hl|"name"}}
+{{!}} [[String]]
+{{!}} Name to be shown (Arma 3 instead of A3, etc.)
+{{!}}-
+{{!}} {{hl|"picture"}}
+{{!}} [[String]]
+{{!}} Picture shown in Mod Launcher
+{{!}}-
+{{!}} {{hl|"logo"}}
+{{!}} [[String]]
+{{!}} Logo to be shown in Main Menu
+{{!}}-
+{{!}} {{hl|"logoOver"}}
+{{!}} [[String]]
+{{!}} Logo to be shown in Main Menu when mouse is over
+{{!}}-
+{{!}} {{hl|"logoSmall"}}
+{{!}} [[String]]
+{{!}} Small version of logo, prepared for drawing small icons
+{{!}}-
+{{!}} {{hl|"tooltip"}}
+{{!}} [[String]]
+{{!}} Tooltip to be shown on mouse over 
+{{!}}-
+{{!}} {{hl|"tooltipOwned"}}
+{{!}} [[String]]
+{{!}} Tooltip to be shown on mouse over the icon when DLC is owned by player
+{{!}}-
+{{!}} {{hl|"action"}}
+{{!}} [[String]]
+{{!}} URL to be triggered when mod button is clicked
+{{!}}-
+{{!}} {{hl|"actionName"}}
+{{!}} [[String]]
+{{!}} What to put on Action Button
+{{!}}-
+{{!}} {{hl|"overview"}}
+{{!}} [[String]]
+{{!}} Overview text visible in expansion menu
+{{!}}-
+{{!}} {{hl|"hidePicture"}}
+{{!}} [[Boolean]]
+{{!}} Do not show mod picture icon in the main menu mod list
+{{!}}-
+{{!}} {{hl|"hideName"}}
+{{!}} [[Boolean]]
+{{!}} Do not show mod name in the main menu mod list
+{{!}}-
+{{!}} {{hl|"defaultMod"}}
+{{!}} [[Boolean]]
+{{!}} Default mods cannot be moved or disabled by Mod Launcher
+{{!}}-
+{{!}} {{hl|"serverOnly"}}
+{{!}} [[Boolean]]
+{{!}} Mod does not have to be installed on client in order to play on server with this mod running
+{{!}}-
+{{!}} {{hl|"active"}}
+{{!}} [[Boolean]]
+{{!}} Active mod (activated through command line or stored in profile by mod launcher)
+{{Feature|important|Note that {{hl|"active"}} does not actually tell if a mod is actually running.}}
+{{!}}}
+</spoiler>
+
+|r1= [[Array]] - retrieved requested data on success or empty array {{hl|[]}}
+
+|x1= <sqf>_data = modParams ["Kart", ["name", "logo", "picture"]];</sqf>
+
+|seealso= [[configSourceModList]] [[configSourceMod]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20170424212500
+|text= This command used to spam .[[rpt]] when queried mod didn't exist, making it little awkward to use for testing if mod is active. For example: 
+<sqf>_superDuperModEnabled = modParams ["super_duper", ["active"]] param [0, false];</sqf>
+Since v1.69 the command would fail silently if mod didn't exist, but would still log .rpt error if the mod name passed to the command was empty or there was an error processing one of the passed options.
+}}
+
+{{Note
+|user= heyoxe
+|timestamp= 20210226164200
+|text= For each value, it will first read the value from the {{hl|mod.cpp}} file, if the value is not in it (or the files does not exist), it will try to read it from the {{hl|CfgMods}} entry as long as it has the '''exact''' same name. If you try to get {{hl|"name"}} and the command cannot find it in either of those locations, it will return the same value as the {{hl|modClass}} input.<br>
+In practice, this means that content from user mods will always be read from {{hl|mod.cpp}} and never from the {{hl|CfgMods}}.
+}}
+
+{{Note
+|user= mikero
+|timestamp= 20211007162117
+|text= Later versions of PboProject and its friends with arma as the intended engine, will '''never''' allow a cfgmods to appear in a pbo. Instead, it will scribble it out to a mod.cpp in the mods\ folder that this pbo was intended for.
+}}

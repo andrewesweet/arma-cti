@@ -1,0 +1,664 @@
+// source: https://community.bistudio.com/wiki/ExtractPbo
+// revision: 377931 (2026-01-11T16:27:00Z)
+// export sha1: jtemhn4ixi3n77zicie7aevbsdo3afa
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+ExtractPbo (Gui) and
+ExtractPboDos version 2.xx by mikero.
+
+
+WIN VISTA and beyond. This
+exe is not compatible with winxp.
+
+
+See readmeGeneral and fixes
+
+
+----
+
+ExtractPboDos is a dos console only
+application for spread freaks.
+
+
+ExtractPbo is the gui version which
+contains ExtractPboDos inside
+
+
+ExtractPbo works in an identical manner to
+ExtractPboDos in console mode.
+
+
+ExtractPbo does what it is name suggests.
+
+
+ExtractPbo covers the nuances of all Bis 'pbo' files from
+the very first cwc demo to Arma3. This includes (but is not limited to):
+
+
+* Cold war crisis
+* Resistance
+* Xbox Elite
+* Arma1,2,3
+* Arrowhead
+* Ifa (ifa files)
+* vbs2lite (xbo files)
+
+Extractpbo will specifically '''not'''
+extract vbs2 'ebo' files.
+
+
+In the following documentation a 'pbo' is considered to
+be: .pbo, .ifa, ,ebo, .xbo
+
+
+This is a powerful dos console extractor that extracts ANY pbo from CWR thru
+to VBS2 LITE (xbo files)
+
+
+ExtractPbo uses a heuristic approach to output the best possible results to
+the best-possible output folder. While you can over-ride the default options the
+general scenario is that the extractor will
+
+
+* Derapify binarised content (mission.sqm, config.bin. *rvmat ,etc)
+* Decompress a pbo (ofp only)
+* Decrypt Elite and VBS2 Lite pbo's
+* Autodetect the type of pbo / xbo / ebo
+* Verify valid compression for p3d and paa content (eg)
+
+In the specific case of non-ofp pbo's , the prefix is accounted for by
+writing the file pboPrext.txt
+to the output.
+
+
+An erroneous pboPrext.txt file if detected in the pbo itself, is '''never''' extracted.
+
+
+'''usage'''
+
+
+''' extractpbo [-options...] NameOfPbo[.pbo|.xbo|.ebo]/aFolder/AnExtractionList [SomeFolder]'''
+
+
+.extensions are not required. a 'pbo' is considered to be ANY *.xbo,*.ebo,*pbo
+
+
+'''options (optional, case insensitive)'''
+
+
+-L list only
+
+
+-LB brief dir style output
+
+
+-P do not pause (allow the controlling program to handle the
+return status)
+
+
+-S silent (default)
+
+
+-N Noisy
+
+
+-D Derapify file(s) where relevant (default)
+
+
+-R Dont Derapify file(s)
+
+
+-Y Don't prompt if overwriting a folder
+
+
+-A deprecated
+
+
+-T used spaced (not tabbed) derap output
+
+
+-W Warnings are errors
+
+
+-V1 force extraction of vbs2 lite uk
+
+
+-V2 ditto us
+
+
+normally, the dll will detect which type it is. In extreme circumstances the
+heuristic model might fail, and you can force it to one, or the other.
+
+
+Note missions (pbo) and addons (xbo) are equivalent.
+
+
+-F filelist[,...] name(s) of file(s) to extract
+
+
+extracted file(s) will appear in their 'correct' position in the relevent
+output folder tree
+
+
+thus, multiple instances of config.cpp (eg) can be extracted.
+
+
+a minor form of wildcard the aster dot sequence can indicate 'all' extensions
+of that type
+
+
+-K ignore prefix
+
+
+==== OUTPUT FOLDER ====
+
+
+Distinctions exist between folder output for OFP vs non OFP (ARMA)
+
+
+* in OFP the NameOfPbo is sacrosanct. It must form part of the output to have any meaning to the engine.
+* in ARMA the prefix inside the pbo is sacrosanct. It will form part of the output.
+
+The dll detects the difference.
+
+
+Thus:
+
+
+'''For OFP:'''
+
+
+extractppo thing.pbo &gt;&gt; contents to thing\
+
+
+extractpbo thing.pbo anywhere &gt;&gt; contents to anywhere\thing\
+
+
+'''For ARMA:'''
+
+
+extractppo thing.pbo &gt;&gt; contents to thing\'prefix'\
+
+
+extractpbo thing.pbo drive:\anywhere &gt;&gt; contents to contents to
+anywhere\'prefix'\
+
+
+the anywhere clause for arma allows creation of a p:\ca by specifying
+
+
+extractpbo thing P:\
+
+
+Note that the -K option ignores the prefix and writes to output as per ofp
+
+
+this can be a convenience when decoding very long paths
+
+
+----
+
+Be WARNED
+
+
+Normally, extractPBO does two important things
+
+
+1) it checks before over-writing a folder
+
+
+2) it erases all output folder content in an 'all bets are off' approach
+before extracting the pbo
+
+
+using the anywhere option causes these 2 features to be disabled.
+
+
+if you have crap in the output folder(s). the crap will remain in the output
+folder(s)
+
+
+if you specify an 'interesting' destination. you will get, 'interesting'
+results.
+
+
+----
+
+'''extraction behaviour'''
+
+
+** Fundamentally, a folder is created of the same name as the pbo in the same
+folder as the pbo.
+
+
+** Arma pbo's will, in addition, create subfolders based on the detected
+prefix. Thus:
+
+
+ExtractPbo Thing
+
+
+'''OFP: '''pbo thing.pbo -&gt; thing\.....
+
+
+'''ARMA:''' pbo thing.pbo -&gt; thing\Prefix\......
+
+
+Option -K is used to force OFP behaviour
+
+
+''' ExtractPbo -k Thing //Arma prefix subfolders are NOT created (but the
+$PREFIX% is still supplied correctly)'''
+
+
+thing.pbo -&gt; thing\..... (prefix is ignored)
+
+
+**============================
+
+
+** Specifying a destination
+
+
+**============================
+
+
+**
+
+
+ExtractPbo thing P:\
+
+
+thing.pbo -&gt;P:\prefix\.... will create a perfect namespace based on the
+prefix.
+
+
+ExtractPbo thing -k P:\
+
+
+thing.pbo -&gt;P:\thing\prefix\....
+
+
+ExtractPbo thing P:\SomeWhere
+
+
+thing.pbo -&gt;P:\Somewhere\prefix\...
+
+
+ExtractPbo -K thing P:\SomeWhere
+
+
+thing.pbo -&gt;P:\Somewhere\thing\.........
+
+
+<nowiki>=============================</nowiki>
+
+
+Specifying a relative destination address
+
+
+<nowiki>=============================</nowiki>
+
+
+you can't. drive: MUST be specified
+
+
+==== Other examples ====
+
+
+extractpbo thing
+
+
+will extract thing.pbo to thing\ folder and derapify any content (such as
+mission.sqm) that has been binarised
+
+
+extractpbo -f -r mission.sqm thing.pbo
+
+
+will extract a single file (and NOT derapify)
+
+
+extractpbo -L thing
+
+
+does a dir listing of pbo content along with added info
+
+
+extractpbo -f *.p3d nameofpbo
+
+
+will extract ONLY p3d files
+
+
+extractpbo ExtractionList.any [toSomewhere]
+
+
+will extract files contained in extraction list. Nameof extraction list can
+be anything other than .pbo, or foldername
+
+
+line syntax for each line is identical to command line.
+
+
+global parameters FROM the command line operate as defaults if not
+respecified in the list
+
+
+extractpbo Folder [toSomewhere]
+
+
+will recurse subfolders of above searching for pbo files.
+
+
+'''==warning messages===='''
+
+
+&quot;1st/last entry has non-zero real_size, reserved, or BlockLength field&quot;
+
+
+&quot;reserved field non zero anywhere in entry bodies (except xbo)&quot;
+
+
+Normally an attempt to prevent extraction and should present no issues. But,
+users should suspect something wonky in the author's implementation
+
+
+&quot;no shakey on arma&quot;;
+
+
+early pbo makers did not create the appended 21 byte sha. This causes issues
+only if attempting to sign the pbo for MP play
+
+
+&quot;residual bytes in file&quot; // throws an error anyway
+
+
+something has been either misinterpreted, or the pbo maker is at fault
+
+
+&quot;arma pbo is missing a prefix (probably a mission)&quot;;
+
+
+missions do not require prefix entries. But, as a matter of de-riguer, they
+normally have them.
+
+
+----
+
+ExtractPbo,exe
+is ExtractPboDos.exe with
+Window dressing (pun intended).
+
+
+Major Features:
+
+
+* Dual Dos-Console or Windows Mode.
+* Drag n Drop Interface fully exploited.
+** Drop (and open) pbo's onto the dialog
+** Drag or drop single files or entire folders INTO or OUT OF the pbo
+** Double Click Automated viewing of (almost) any pbo file in it is relevant application (texview,visitor, rvmat, ogg)
+** Renaming/Deleting/Adding/Moving any part of the pbo tree
+*
+
+This application implements a consistent user interface.
+To whit:
+
+
+* All files extracted from a pbo are '''unconditionally''':
+** DeCrypted if encrypted.
+** DeCompressed if compressed.
+** Unparsed to humanly readable text (config.bin, rvmat, bisurf eg)
+*
+* All Saved As pbo's are '''unconditionally:'''
+** Encrypted if vbs2lite
+** Uncompressed
+** Parsed (Rapified)
+*
+
+To keep the interface noise free and simple to use, there
+is no facility for selective Parsing/Compression/Encryption. All of these
+'features' use tried and proven algorithms inside the dll including which types
+of files require modification.
+
+
+'''Dos Mode:'''
+
+
+It will operate, just like before, in dos (console) mode,
+allowing batch file processing, drag n drop, and dos console operations. It will
+behave as nature intended, and as described, in the
+ExtractPbo
+readme. A more versatile and extensive range of -options
+exist in this mode for the connoisseur (or insane). The very popular
+Arma2P extractor for instance uses Dos Mode.
+
+
+'''Windows Mode:'''
+
+
+Windows mode is how most (new) users will prefer to use
+it.
+
+
+'''Switching between Dos and Windows Mode:'''
+
+
+'''ANY''' parameters supplied on the command line invoke Dos Mode. This occurs as a natural result of simply using it in a
+dos console to begin with and specifying a pbo to extract, or, dropping a
+file onto the exe icon. On the other hand, simply invoking this exe from a dos
+console with NO parameters, invokes the gui.
+
+
+Windows mode uses previously recorded 'session' data of
+which files, what targets, to start with (including window positioning and
+size).
+
+
+'''Forcing Windows Mode:'''
+
+
+-w on the command line, or, by checkbox.
+
+
+Be wary of using this option. Dos batch files expecting
+dos results, will fail.
+
+
+----
+
+ExtractPboGui will extract the content of '''any''' 'pbo'
+except encrypted '''vbs2'''. (yes, it does extract '''vbs2lite''')
+
+
+The over-riding philosophy of '''all''' MikeroTools (not
+just this one) is to maintain backward compatibility. To this end, the same
+'behaviour' can be expected from files emanating from the very first cwc demo,
+Resistance, Xbox Elite, Arrowhead, TOH, Arma3, IFA extensions, Vbs2lite. There
+are nuances to each type which the underlying dll takes care of. They are hidden
+from the user (and hidden from developers using the dll who only want to 'see' a
+uniform API). ExtractPboGui utilises over a decade of lessons learned in
+the dll about things-pbo. Underneath the covers it is exceptionally powerful
+and above all, robust.
+
+
+Options available in this gui are intentionally bare
+minimal. The intent being, 'just extract the damn thing'.
+
+
+'''Installation:'''
+
+
+'''Self installer: sit back and watch the pretty lights.'''
+
+
+'''Manual Install:'''
+
+
+Anywhere that gives you a thrill, but take note that
+dePbodll is '''also '''required for this gui. (of course)
+
+
+''''pbo''''
+
+<blockquote>
+In this documentation 'pbo' is meant to infer SomeFile'''.pbo'''
+:
+
+
+To avoid the risk of tediousness everywhere else, a 'pbo'
+can actually be an '''.xbo''' '''.ebo''', '''.ifa''', or, indeed, a '''.pbo.
+'''If a '''.toh''' ever gets introduced (or any other 'pbo' extension) you can
+be sure the underlying dll will 'understand' it is a Packed Binary Object.
+
+</blockquote>
+Gui options:
+
+
+'''<u>PboName</u>'''
+
+
+Use the browse button (...) to select any 'pbo' from
+anywhere, including net drives.
+
+
+'''<u>Output Path</u>'''
+
+
+Use the browse button (...) to select the '''beginning'''
+of the extraction point or simply type or paste it in. The Browse button allows
+you to create new folder(s) for the '''beginning''' should you wish to.
+
+
+Note most
+carefully. This is the '''beginning''' path of all extracted content.
+From this point on, the nature of the pbo determines how that path will be
+filled (by prefix, by pboname)
+
+
+If you wanted to re-create the bis engine's view of
+'files', you would set the Output Path to '''&quot;P:\&quot;'''
+
+
+'''<u>Destination Folder</u>'''
+
+
+ExtractPboGui autogenerates this path based on the
+'''OutputPath above''', catenated with the internal prefix of the selected pbo (if any),
+or it is pboname (if none). There is no facility to change this catenated prefix.
+
+<blockquote>
+'''Allow Overwrite'''
+
+<blockquote>
+If the '''Destination Folder '''already exists, you will
+normally be asked before extracting. <u>Allow Overwrite</u> removes this
+sometimes annoying safety feature.
+
+
+Be aware this is the '''Destination Folder''' being
+over-written, not, the entire '''Output''' '''Path'''.
+
+
+'''Remove Folder Before Extraction.'''
+
+<blockquote>
+In a fair and reasonable world, you wouldn't want 'stale'
+paa's remaining via some previously extracted content. Or any other 'file' you
+might have placed there. Unfortunately the nature of Arma prefixed pbo's is such
+that nost of the pbo's live inside the file space of some other pbo. If you extracted Air3.pbo and
+THEN extracted Air.pbo (it's root). Air3 content would be inadvertently removed.
+
+</blockquote> </blockquote> </blockquote>
+'''BUTTONS'''
+
+
+'''EXTRACT'''
+
+
+Should speak for itself. The main purpose of this application!
+
+
+'''SAVEAS'''
+
+
+For whatever reason wanted, the current contents of this pbo can be saved
+anywhere, including a new name for the pbo, or indeed an existing pbo including
+the original. (protection dialogs exist).
+
+
+The 'current' contents may indeed be 'as is' or some/ all /none of the
+contents may have been renamed/ added to, moved, or deleted.
+
+
+'''<u>Sneak Peak</u>'''
+
+
+The file and folder header entries of the 'pbo'
+are listed in this panel as soon as any valid file is selected. While
+exceptionally useful for advanced work, you can safely ignore them for simply
+extracting your 'pbo'.
+
+
+'''<u>Output Screen</u>'''
+
+
+Is (almost) identical to the dos console screen output on the dos
+mode of this exe
+
+
+Initially it shows the basic pbo header type whenever a pbo is
+selected. This, together with <u>Sneak Peak, </u>is
+useful when you're browsing multiple pbo's, not necessarily wanting to
+extract them.
+
+
+Ultimately, this screen lists the content as it is being
+extracted: it is compression, it is encryption, it is (de)Rapification, and any errors encountered.
+
+
+'''DRAG n DROP'''
+
+
+The list below of possibilities should
+all be intuitive.
+
+
+You can:
+
+
+* Drop pbo's anywhere on the gui and they open automatically.
+* Drag or drop any file or folder from, to, the currently open pbo
+<blockquote>
+Dropping files into the pbo are problematical in the sense of bi's
+braindead file referencing but opportunity's exist to drag out, fix a texture,
+drop it back in as but one, of many possibilities.
+
+
+Dragging out (or simply
+viewing) a single file such as the all important config.bin/cpp speaks for
+itself.
+
+</blockquote>
+* Double Click (almost) any file in the pbo to 'view it' with it is relevant application
+* Rename files or folders in situ
+* sanity checks prevail that you don't rename extensions from rvmat to paa (eg)
+* delete files or folders in situ
+* Move files or folders in situ Again, with BIS's braindead file referencing the usefulness is problematic, But, it can be done, for whatever purpose.<br>
+* Direct drag of 'ofp/vbs/arma' files from one Gui to another 'vbs/arma/ofp' Gui (mix n match upgrades)
+* Change the prefix
+
+'''Expandable Dialog'''
+
+
+As implemented, the Gui initialises in 'basic view'. Simply
+extend the edges of it is borders (or open in full screen mode) to view
+very-long-filenames eg, to suit your purpose.
+
+
+Enjoy
+
+
+[[Category:Mikero Tools]]

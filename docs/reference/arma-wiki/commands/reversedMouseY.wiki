@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/reversedMouseY
+// revision: 319719 (2022-05-13T09:24:45Z)
+// export sha1: p7a8wr2bxyquecrrtruooschc438znq
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= System
+
+|descr= Returns [[true]] if mouse vertical axe is inverted.
+
+|s1= '''reversedMouseY'''
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (reversedMouseY) then { hint "Dude!" };</sqf>
+
+|seealso= [[setMousePosition]] [[getMousePosition]]
+}}

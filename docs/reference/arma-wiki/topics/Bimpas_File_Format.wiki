@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/Bimpas_File_Format
+// revision: 378450 (2026-04-16T20:22:06Z)
+// export sha1: 2nihrz1n9zczdnjpbjiejk2se0yss8s
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+bimpas files are associated with Xbox elite they were the precursor to {{arma1}}'s rvmat files.
+
+In both cases they define a series of textures for p3d models (and wrps)
+
+The new Visitor 3 graphical editor tool refers to bimpas files as:
+* rvmat surface materials
+* bimpas transition materials
+
+* rvmat files are a series of paas
+* bimpas files are a series of rvmats
+
+
+== Rapification ==
+
+Ordinarily, these files, if binarised, are rapified in the normal xbox/arma manner
+
+some files, possibly in error, contain substituted space characters for zeroes.
+
+
+== Examples ==
+
+<syntaxhighlight lang="cpp">
+class Pass0
+{
+	material = "ca\introofp\ps.rvmat";
+	texture = "ca\introofp\ps.paa";
+	tlAlpha = 1;
+	trAlpha = 1;
+	blAlpha = 1;
+	brAlpha = 1;
+};
+
+class Pass0
+{
+	material = "LandText\az.rvmat";
+	texture = "LandText\az.paa";
+	trAlpha = 1.000000;
+};
+
+class Pass1
+{
+	material = "LandText\ba.rvmat";
+	texture = "LandText\ba.paa";
+	blAlpha = 1.000000;
+};
+
+class Pass2
+{
+	material = "LandText\_N.rvmat";
+	texture = "LandText\_N.paa";
+	brAlpha = 1.000000;
+};
+
+class Pass3
+{
+	material = "LandText\Dl.rvmat";
+	texture = "LandText\Dl.paa";
+	tlAlpha = 1.000000;
+};
+</syntaxhighlight>
+
+
+[[Category:Real Virtuality File Formats]]

@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/tvPicture
+// revision: 378317 (2026-04-02T16:16:57Z)
+// export sha1: kjiqmo8qp6kgja36y6cbqwipawnbj5l
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|arg= local
+
+|eff= local
+
+|descr= Returns name of picture from item pointed to by path. IDC means id of parent Tree View.
+
+|s1= [[tvPicture]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|r1= [[String]]
+
+|s2= ctrl [[tvPicture]] path
+
+|p21= ctrl: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|r2= [[String]]
+
+|x1= <sqf>tvPicture [101, [0]];</sqf>
+|x2= <sqf>_ctrl tvPicture [0,0,0];</sqf>
+
+|seealso= [[tvAdd]] [[tvClear]] [[tvCollapse]] [[tvCount]] [[tvCurSel]] [[tvData]] [[tvDelete]] [[tvExpand]] [[tvSetCurSel]] [[tvSetData]] [[tvSetPicture]] [[tvSetValue]] [[tvSort]] [[tvSortByValue]] [[tvText]] [[tvValue]]
+}}

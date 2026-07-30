@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/getObjectTextures
+// revision: 370025 (2024-10-27T20:33:06Z)
+// export sha1: 0bod4mtjnzj8lbr6eexdbdd66jdnjs2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.38 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.38
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Gets all custom textures (hiddenSelectionsTextures) associated with the object. {{Feature|important|Prior to Arma 3 v2.20 it will return an empty [[Array]] when executed on [[Arma 3: Simple Objects|simple objects]].}}
+
+|s1= [[getObjectTextures]] obj
+
+|p1= obj: [[Object]]
+
+|r1= [[Array]] of [[String]]s - array of textures
+
+|s2= obj [[getObjectTextures]] sels
+|s2since= Arma3 2.20
+
+|p21= obj: [[Object]] - entity
+|p22= sels: [[Array]] - array of index(es) and/or selection(s). If array is empty [] - default object textures are returned (see example 3)
+
+|r2= [[Array]] of [[String]]s - array of textures in order of 'sels'. Non existing textures filled with [[nil]]s.
+
+
+|x1= <sqf>_textures = getObjectTextures player;</sqf>
+|x2= <sqf>player setObjectTexture ["clan", "\a3\missions_f_epa\data\img\orbat\b_111_texture_ca.paa"];
+player getObjectTextures ["clan", 1, 0, player, "dskjhkjhsad"]; 
+// ["a3\missions_f_epa\data\img\orbat\b_111_texture_ca.paa","","a3\characters_f\blufor\data\clothing1_co.paa",<null>,<null>]</sqf>
+|x3= <sqf>player setObjectTexture [0, ""];
+player getObjectTextures []; // ["a3\characters_f\blufor\data\clothing1_co.paa",""]</sqf>
+
+|seealso= [[setObjectTexture]] [[setObjectTextureGlobal]] [[getObjectMaterials]] [[setObjectMaterial]] [[setObjectMaterialGlobal]] [[getModelInfo]]
+}}

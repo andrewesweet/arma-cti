@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/load
+// revision: 347534 (2023-09-28T08:15:16Z)
+// export sha1: keg0c8s8qwoizbfumn50kz36u143owp
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Unit Inventory
+
+|descr= Returns the percentage of fullness of a unit's cargo. Output is usually in range 0..1, but can be higher after using certain scripting commands (like [[addWeaponWithAttachmentsCargoGlobal]]) which ignore load values when adding items.
+{{Feature|informative|See {{Link|#Example 2}} for load calculation.}}
+
+|s1= [[load]] unit
+
+|p1= unit: [[Object]] - (before {{GVI|arma3|2.08|size= 0.75}} the command did not support containers, ammo boxes, weapon holders, vehicle cargos)
+
+|r1= [[Number]]
+
+|x1= <sqf>load player;</sqf>
+
+|x2= unit load calculation formula:
+<sqf>private _unitLoad = loadAbs _unit / getNumber (configFile >> "CfgInventoryGlobalVariable" >> "maxSoldierLoad");</sqf>
+
+|seealso= [[maxLoad]] [[loadAbs]] [[loadBackpack]] [[loadUniform]] [[loadVest]] [[getMass]] [[weightRTD]] [[getContainerMaxLoad]]
+}}

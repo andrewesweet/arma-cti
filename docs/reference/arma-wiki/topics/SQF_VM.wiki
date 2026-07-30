@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/SQF-VM
+// revision: 353694 (2024-03-21T12:28:41Z)
+// export sha1: g0wpl1c42g4dtj8z9u8vwwrio5x7shm
+// categories: Category:Community Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+<!-- {{Feature|UnsupportedTool}} -->
+{{Tool
+
+|AUTHOR= {{User|X39}}
+
+|DOWNLOAD= {{Link|https://github.com/X39/sqf-vm/releases|GitHub releases}}
+|COMPATIBILITY= {{GameCategory|arma3|link= y}} (partial support for previous games)
+|DESCRIPTION= [[SQF-VM]] is a project aiming to provide a fully functional [[SQF Syntax|SQF]] {{Link|https://en.wikipedia.org/wiki/Virtual_machine|Virtual Machine}}.
+{{Feature|important|
+* This is '''not''' an [[:Category:Official Tools|official tool]], so '''use at your own risk!'''
+* Be sure to read the {{Link|https://github.com/SQFvm/vm/wiki|GitHub Wiki}}.
+}}
+
+|COMMAND= -
+
+|LICENSING= -
+
+|SEEALSO= <nowiki/>
+* {{Link|https://discord.gg/vpdwJtG|SQF-VM Discord Server}}
+* {{Link|https://sqfvm.arma3.io/vm/}} - {{User|Dedmen}}'s SQF-VM web interface
+* {{Link|link= https://forums.bohemia.net/forums/topic/210118-sqf-vm-an-sqf-emulator/|text= Forum post}}
+}}
+
+
+[[Category:Community Tools]]

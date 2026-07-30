@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_channelNumToRadioChannelID
+// revision: 378101 (2026-02-13T20:44:52Z)
+// export sha1: lwzhf1x8gwwjzoze7wdua9y8bo6kbn5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Radio | Category:Functions | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 2.22
+
+|gr1= Radio
+
+|descr=	Converts chat channel number, used in [[currentChannel]], [[enableChannel]], etc to radio channel id, used in [[radioChannelAdd]], [[radioChannelSetLabel]], etc.
+
+|s1= channelNum call [[BIS_fnc_channelNumToRadioChannelID]]
+
+|p1= channelNum: [[Number]] - channel number (6..15, 26..65)
+
+|r1= [[Number]] - radio channel id (1..50)
+
+|x1= <sqf>26 call BIS_fnc_channelNumToRadioChannelID; // 11</sqf>
+
+|seealso= [[BIS_fnc_radioChannelIDToChannelNum]] [[radioChannelCreate]] [[currentChannel]]
+}}

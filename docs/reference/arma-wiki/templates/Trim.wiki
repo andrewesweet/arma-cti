@@ -1,0 +1,14 @@
+// source: https://community.bistudio.com/wiki/Template:Trim
+// revision: 337219 (2023-01-11T10:53:17Z)
+// export sha1: pyxgarz4qp5v46hd0t2p67xhp2ozasn
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}|{{{1|}}}}}</includeonly><noinclude>{{Doc/Template
+|descr= <pre>{{Trim| {{{parameter|}}} }}</pre>
+|param1= text
+|descr1= text to trim
+|example1= <code style="display: block">   test   </code>
+|result1= <code style="display: block">   test   </code>
+|example2= <code style="display: block"><nowiki>{{Trim|   test   }}</nowiki></code>
+|result2= <code style="display: block">{{Trim|   test   }}</code>
+}}</noinclude>

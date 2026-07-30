@@ -1,0 +1,102 @@
+// source: https://community.bistudio.com/wiki/distance
+// revision: 377523 (2026-01-02T06:52:13Z)
+// export sha1: 6zzd9fas5bylvl355njsugvf1y9o1bh
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Geometry | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Math - Geometry
+
+|descr= [[File:distance2D.jpg|400px|right]]
+Returns a distance in meters between [[Object]]s, [[Position]]s or [[Location]]s.
+{{Feature | important | If positions are supplied as arguments, the coordinates are treated as [[Position#PositionAGL|PositionAGL]]. If [[Position#Introduction|Position2D]] is supplied, z is assumed 0. If you need distance between two [[Position#Position3D|Position3D]] coordinates, use [[vectorDistance]].}}
+
+|s1= param1 [[distance]] param2
+
+|p1= param1: [[Object]] or [[Position#PositionAGL|PositionAGL]] or [[Position#Introduction|Position2D]]
+
+|p2= param2: [[Object]] or [[Position#PositionAGL|PositionAGL]] or [[Position#Introduction|Position2D]]
+
+|r1= [[Number]] - distance in meters or 1e10 if distance cannot be calculated
+
+|s2= location1 [[distance]] location2
+
+|p21= location1: [[Location]] or [[Position]] or [[Position#Introduction|Position2D]]
+
+|p22= location2: [[Location]] or [[Position]] or [[Position#Introduction|Position2D]]
+
+|r2= [[Number]] - distance in meters or 1e10 if distance cannot be calculated
+
+|s3= a [[distance]] b
+|s3since= arma3 2.18
+
+|p41= a: [[Number]] 
+|p42= b: [[Number]] 
+
+|r3= [[Number]] - distance c calculated as c = sqrt(a * a + b * b);
+
+
+|x1= <sqf>_meters = player distance _object;</sqf>
+
+|x2= <sqf>_meters = player distance [1,2,3];</sqf>
+
+|x3= <sqf>_meters = [1,2,3] distance [4,5,6];</sqf>
+
+|x4= <sqf>_meters = position player distance nearestLocation [position player, "hill"];</sqf>
+
+|seealso= [[distanceSqr]] [[vectorDistance]] [[distance2D]]
+}}
+
+{{Note
+|user= Sudden Death
+|timestamp= 20070214164700
+|text= Distance to position3D (array) does not work with {{ofp}}, only objects
+
+Armed Assault:
+position3D (array) and object works
+}}
+
+{{Note
+|user= Rommel
+|timestamp= 20100310075400
+|text= This returns the map distance, not the vector distance, [0,0,0] distance [0,0,1] can be >1 or <1, not exactly 1; unlike the vector math.
+}}
+
+{{Note
+|user= Igneous01
+|timestamp= 20120803101500
+|text= If a position in format [x, y, z] is provided for both arguments, distance also checks the z dimension as well. Ie:
+player distance [0,0,200]
+will return 200, if the player is at this position at ground/sea level.
+}}
+
+{{Note
+|user= AgentRev01
+|timestamp= 20140323025200
+|text= When objects are supplied as arguments, distance is calculated from their model center (object modelToWorld [0,0,0]), and not the position returned by getPos/ATL/ASL.<br>
+However, this is not relevant for units, as their model center matches their world position.
+}}

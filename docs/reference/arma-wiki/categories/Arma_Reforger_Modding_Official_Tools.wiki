@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Official_Tools
+// revision: 376780 (2025-11-17T23:26:03Z)
+// export sha1: tgg223am8p148wbdf8qpufdehy7ej52
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|none}}__NOEDITSECTION__
+The '''{{Link|https://store.steampowered.com/app/1874910/Arma_Reforger_Tools/|Workbench}}''' is the Tools suite provided on [[Steam]] for users to mod {{armaR}}.
+It can be found in Steam's {{hl|Tools}} category, under the name {{hl|Arma Reforger Tools}}.
+
+Through the '''{{Link|Arma Reforger:Resource Manager|Resource Manager}}''', it provides access to the following tools:
+<!--
+	the order is the same as Workbench's welcome screen
+-->
+<div class="floating-box-container" style="margin: 1.5em auto">
+
+
+<div class="floating-box armaR-world-editor" style="font-size: 0.85em; width: 13em">
+=== {{Link|Arma Reforger:World Editor|World Editor}} ===
+'''{{Link|Category:Arma Reforger/Modding/Official Tools/World Editor Plugins|Plugins}} - {{Link|Category:Arma Reforger/Modding/Official Tools/World Editor Tools|Tools}}'''<br>
+'''{{Link|Category:Arma Reforger/Modding/Official Tools/World Editor Generators|Generators}}'''<br>
+</div>
+
+<div class="floating-box armaR-particle-editor" style="font-size: 0.85em; width: 13em">
+=== {{Link|Arma Reforger:Particle Editor|Particle Editor}} ===
+</div>
+
+<div class="floating-box armaR-animation-editor" style="font-size: 0.85em; width: 13em">
+=== {{Link|Arma Reforger:Animation Editor|Animation Editor}} ===
+{{Link|Arma Reforger:Animation Editor: Human Variables|Human Variables}}<br>
+{{Link|Arma Reforger:Animation Editor: Nodes|Nodes}}<br>
+{{Link|Arma Reforger:Animation Editor: State Machine|State Machine}}<br>
+{{Link|Arma Reforger:Animation Editor: Vehicle Action Commands|Vehicle Actions Commands}}<br>
+</div>
+
+<div class="floating-box armaR-script-editor" style="font-size: 0.85em; width: 13em">
+=== {{Link|Arma Reforger:Script Editor|Script Editor}} ===
+'''{{Link|Category:Arma Reforger/Modding/Official Tools/Script Editor Plugins|Plugins}}'''<br>
+</div>
+
+<div class="floating-box armaR-audio-editor" style="font-size: 0.85em; width: 13em">
+=== {{Link|Arma Reforger:Audio Editor|Audio Editor}} ===
+{{Link|Arma Reforger:Audio Editor: Audio Variables|Audio Variables}}<br>
+{{Link|Arma Reforger:Audio Editor: Directivity|Directivity}}<br>
+{{Link|Arma Reforger:Audio Editor: Nodes|Nodes}}<br>
+</div>
+
+<div class="floating-box armaR-behavior-editor" style="font-size: 0.85em; width: 13em">
+=== {{Link|Arma Reforger:Behavior Editor|Behavior Editor}} ===
+{{Link|Arma Reforger:Behavior Editor: Nodes|Nodes}}<br>
+</div>
+
+<div class="floating-box armaR-string-editor" style="font-size: 0.85em; width: 13em">
+=== {{Link|Arma Reforger:String Editor|String Editor}} ===
+<!-- '''{{Link|Category:Arma Reforger/Modding/Official Tools/String Editor Plugins|Plugins}}'''<br> -->
+</div>
+
+<div class="floating-box armaR-procedural-animation-editor" style="font-size: 0.85em; width: 13em">
+=== {{Link|Arma Reforger:Procedural Animation Editor|Proced...Editor}} ===
+{{Link|Arma Reforger:Procedural Animation Editor: Nodes|Nodes}}<br>
+</div>
+
+
+</div>
+
+
+{{Feature|informative|See {{Link|Arma Reforger:Mod Project Setup|Mod Project Setup}} for mod project setup information.}}
+
+
+{{GameCategory|armaR|Modding}}

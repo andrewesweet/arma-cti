@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isDemo
+// revision: 327111 (2022-07-12T21:44:50Z)
+// export sha1: 1p6n9m81yzd6v3743cs1r55dit4w4dh
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Returns true when game version is demo.
+
+|s1= call [[BIS_fnc_isDemo]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _isDemo = call BIS_fnc_isDemo;</sqf>
+
+|seealso= [[BIS_fnc_version]] [[productVersion]] [[requiredVersion]]
+}}

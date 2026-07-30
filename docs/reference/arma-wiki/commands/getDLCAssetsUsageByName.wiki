@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/getDLCAssetsUsageByName
+// revision: 319132 (2022-05-13T09:23:14Z)
+// export sha1: n44fvb4uj4hja4bigiyh69yttqv7z4g
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: DLC | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+|gr1= DLC
+
+|descr= Returns an array with the session and global time the asset has been used.
+
+|s1= [[getDLCAssetsUsageByName]] assetName
+
+|p1= assetName: [[String]]
+
+|r1= [[Array]] - array in format: [sessionTime, totalTime].
+
+|x1= <sqf>_dlcAssetUsage = getDLCAssetsUsageByName "C_IDAP_Heli_Transport_02_F";</sqf>
+|seealso= [[getDLCs]] [[getObjectDLC]] [[getPersonUsedDLCs]] [[getMissionDLCs]] [[getDLCAssetsUsage]] [[getAssetDLCInfo]]
+}}

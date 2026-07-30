@@ -1,0 +1,219 @@
+// source: https://community.bistudio.com/wiki/ctrlCreate
+// revision: 378109 (2026-02-15T22:08:16Z)
+// export sha1: 6k29heu2pwim9xe0wnt160npo67tcu0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.26 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.26
+
+|gr1= GUI Control
+
+|descr= Creates a new control in the given display.<br>
+The control class could be an existing class from the [[configFile | main config]] or a custom class defined in the [[missionConfigFile | mission config]].
+The main config is searched first, if the class does not exist there, the mission config is searched.
+Some of the common controls defined in the main config that can be used with this command:
+<spoiler text="Show list">
+{{Feature|informative|This list contains controls which are guaranteed to work with this command. However, controls not listed here should work as well - as long as they are properly defined.}}
+
+{{{!}} class="wikitable" width="100%"
+! Class !! Description !! Available since
+{{!}}-
+{{!}} RscText {{!}}{{!}} simple text box {{!}}{{!}}
+{{!}}-
+{{!}} RscStructuredText {{!}}{{!}} text box which supports [[Structured Text|structured text]] {{!}}{{!}}
+{{!}}-
+{{!}} RscTextMulti {{!}}{{!}} simple multiline text box {{!}}{{!}}
+{{!}}-
+{{!}} RscPicture {{!}}{{!}} simple picture box {{!}}{{!}}
+{{!}}-
+{{!}} RscPictureKeepAspect {{!}}{{!}} picture box that doesn't stretch picture {{!}}{{!}}
+{{!}}-
+{{!}} RscEdit {{!}}{{!}} input box {{!}}{{!}}
+{{!}}-
+{{!}} RscEditMulti {{!}}{{!}} multiline input box {{!}}{{!}}
+{{!}}-
+{{!}} RscEditReadOnly {{!}}{{!}} input box with [[DialogControls-EditBox | {{hl|c= canModify {{=}} false;}}]] {{!}}{{!}} {{GVI|arma3|1.98}}
+{{!}}-
+{{!}} RscEditMultiReadOnly {{!}}{{!}} multiline input box with [[DialogControls-EditBox | {{hl|c= canModify {{=}} false;}}]]{{!}}{{!}} {{GVI|arma3|1.98}}
+{{!}}-
+{{!}} RscTree {{!}}{{!}} tree view control {{!}}{{!}}
+{{!}}-
+{{!}} RscTreeMulti {{!}}{{!}} multi-select tree view {{!}}{{!}} {{GVI|arma3|2.02}}
+{{!}}-
+{{!}} RscTreeSearch {{!}}{{!}} searchable tree view control (see Example 4) {{!}}{{!}}
+{{!}}-
+{{!}} RscVideo {{!}}{{!}} picture control with autostart for video texture (see [[BIS_fnc_playVideo]]) {{!}}{{!}}
+{{!}}-
+{{!}} RscVideoKeepAspect {{!}}{{!}} picture control for video to keep original video aspect ratio {{!}}{{!}}
+{{!}}-
+{{!}} RscButtonMenuBIKI {{!}}{{!}} shortcut button with url pointing to "https://community.bistudio.com/wiki/" {{!}}{{!}} {{GVI|arma3|1.98}}
+{{!}}-
+{{!}} RscControlsGroup {{!}}{{!}} default controls group {{!}}{{!}}
+{{!}}-
+{{!}} RscControlsGroupNoScrollbars {{!}}{{!}} controls group without scrollbars {{!}}{{!}}
+{{!}}-
+{{!}} RscControlsGroupNoHScrollbars {{!}}{{!}} controls group without horizontal scrollbar {{!}}{{!}}
+{{!}}-
+{{!}} RscControlsGroupNoVScrollbars {{!}}{{!}} controls group without vertical scrollbar {{!}}{{!}}
+{{!}}}
+</spoiler>
+{{Feature|important|If you are creating [[CT_MAP]] control dynamically, use [[ctrlMapSetPosition]] to update control position instead of [[ctrlSetPosition]].}}
+
+|s1= display [[ctrlCreate]] [class, idc, controlsGroup]
+
+|p1= display: [[Display]] - display in which control will be created
+
+|p2= class: [[String]] or {{GVI|arma3|2.14|size= 0.75}} [[Config]] - existing classname (see [[ctrlCreate/classnames]]) of the new control;  {{GVI|arma3|1.70|size= 0.75}} it is possible to use classes defined in mission config
+
+|p3= idc: [[Number]] - IDC of the new control. Use -1 if not needed. Using 0 will use the IDC that is provided by the class.
+{{Feature|warning|Be careful when setting the IDC to {{hl|-1}} if the GUI also contains a [[CT_LISTNBOX]] since {{hl|idcLeft}} and {{hl|idcRight}} by default have <syntaxhighlight lang="cpp" inline>idc = -1;</syntaxhighlight>.}}
+
+|p4= controlsGroup: [[Control]] - (Optional, default [[controlNull]]) creates controls in existing controls group
+
+|r1= [[Control]]
+
+|x1= <sqf>_display ctrlCreate ["RscText", 1234];</sqf>
+
+|x2= <sqf>
+_map = findDisplay 46 ctrlCreate ["RscMapControl", -1];
+_multiLineText = findDisplay 46 ctrlCreate ["RscTextMulti", -1];
+_multiLineEdit = findDisplay 46 ctrlCreate ["RscEditMulti", -1];
+</sqf>
+
+|x3= <sqf>myControl = findDisplay 0 ctrlCreate ["RscText", 1234, findDisplay 0 displayCtrl 2300];</sqf>
+
+|x4= Create Tree View control with search. Available {{hl|RscTreeSearch}} class is hardcoded to be used with {{hl|RscEdit}} with idc {{hl|645}}.
+Example below demonstrates how to. After tree is generated, try typing something in the top box.
+<sqf>
+0 spawn 
+{
+	disableSerialization;
+
+	_display = (if (is3DEN) then {findDisplay 313} else {[] call BIS_fnc_displayMission}) createDisplay "RscDisplayEmpty";
+
+	_edit = _display ctrlCreate ["RscEdit", 645];
+	_edit ctrlSetPosition [0,0,1,0.04];
+	_edit ctrlSetBackgroundColor [0,0,0,1];
+	_edit ctrlCommit 0;
+
+	_tv = _display ctrlCreate ["RscTreeSearch", -1];
+	_tv ctrlSetFont "EtelkaMonospacePro";
+	_tv ctrlSetFontHeight 0.03;
+	_tv ctrlSetPosition [0,0.06,1,0.94];
+	_tv ctrlSetBackgroundColor [0,0,0,1];
+	_tv ctrlCommit 0;
+
+	_classes = "true" configClasses (configFile >> "CfgVehicles");
+
+	for "_i" from 0 to 5 do
+	{
+		_tv tvAdd [[], configName selectRandom _classes];
+		for "_j" from 0 to 5 do
+		{
+			_tv tvAdd [[_i], configName selectRandom _classes];
+			for "_k" from 0 to 5 do
+			{
+				_tv tvAdd [[_i, _j], configName selectRandom _classes];
+				for "_n" from 0 to 5 do
+				{
+					_tv tvAdd [[_i, _j, _k], configName selectRandom _classes];
+				};
+			};
+		};
+	};
+};
+</sqf>
+
+|x5= Create a simple submit edit box and show content in hint:
+<sqf>
+disableSerialization;
+private _display = findDisplay 46 createDisplay "RscDisplayEmpty";
+private _ctrlGroup = _display ctrlCreate ["RscControlsGroupNoScrollbars", -1];
+private _ctrlBackground = _display ctrlCreate ["RscTextMulti", -1, _ctrlGroup];
+IDD_EDIT_BOX = 123;
+private _ctrlEdit = _display ctrlCreate ["RscEditMulti", IDD_EDIT_BOX, _ctrlGroup];
+private _ctrlButton = _display ctrlCreate ["RscShortcutButton", -1, _ctrlGroup];
+_ctrlGroup ctrlSetPosition [0.5, 0.5, 0, 0];
+_ctrlGroup ctrlCommit 0;
+_ctrlBackground ctrlSetPosition [0, 0, 0.5, 0.5];
+_ctrlBackground ctrlSetBackgroundColor [0.5, 0.5, 0.5, 0.9];
+_ctrlBackground ctrlSetText "ENTER TEXT:";
+_ctrlBackground ctrlEnable false;
+_ctrlBackground ctrlCommit 0;
+_ctrlEdit ctrlSetPosition [0.01, 0.05, 0.48, 0.34];
+_ctrlEdit ctrlSetBackgroundColor [0, 0, 0, 0.5];
+_ctrlEdit ctrlCommit 0;
+_ctrlButton ctrlSetPosition [0.185, 0.42, 0.13, 0.05];
+_ctrlButton ctrlCommit 0;
+_ctrlButton ctrlSetText "SUBMIT";
+_ctrlButton ctrlAddEventHandler ["ButtonClick", 
+{
+	params ["_ctrl"];
+	_display = ctrlParent _ctrl;
+	_text = ctrlText (_display displayCtrl IDD_EDIT_BOX);
+	if (_text == "") then { _text = "EMPTY" };
+	hint _text;
+	_display closeDisplay 1;
+}];
+ctrlSetFocus _ctrlEdit;
+_ctrlGroup ctrlSetPosition [0.25, 0.25, 0.5, 0.5];
+_ctrlGroup ctrlCommit 0.1;
+playSound "Hint3";
+</sqf>
+
+|x6= <sqf>
+// since {{arma3}} v2.14
+findDisplay 46 createDisplay "RscDisplayEmpty" ctrlCreate [configFile >> "RscDisplayBootcampMsgBox" >> "controls" >> "BootcampMessageBox", -1];
+</sqf>
+
+|x7= <sqf>
+// Creates a vertical slider. Execute in [[Eden Editor]]
+private _display = findDisplay 313 createDisplay "RscDisplayEmpty";
+private _ctrlSlider = _display ctrlCreate ["ctrlSliderV", -1];
+
+_ctrlSlider ctrlSetPosition 
+[
+  0.5 - 0.5 * pixelGrid * pixelW * 10, 
+  0.5 - 0.5 * pixelGrid * pixelH * 40, 
+  0.5 * pixelGrid * pixelW * 20, 
+  0.5 * pixelGrid * pixelH * 80
+];
+
+_ctrlSlider ctrlCommit 0;
+</sqf>
+
+|x8= <sqf>
+// The following script creates a button that follows the position of the player unit in [[Eden Editor]]
+
+if (isNull player) exitWith {["Place a player entity first", 1] call BIS_fnc_3DENNotification};
+
+private _display = findDisplay 313;
+
+private _ctrlButton = _display ctrlCreate ["ctrlButton", 1234];
+_ctrlButton ctrlSetText "Delete Me";
+
+_ctrlButton ctrlAddEventHandler ["ButtonClick",
+{
+    params ["_ctrlButton"];
+
+    onEachFrame {};
+    _ctrlButton spawn {sleep 0.05; ctrlDelete _this};
+}];
+
+onEachFrame
+{
+    private _ctrlButton = findDisplay 313 displayCtrl 1234;
+
+    if (isNull player) exitWith {};
+
+    (worldToScreen getPosWorld player) params ["_xPos", "_yPos"];
+
+    _ctrlButton ctrlSetPosition [_xPos, _yPos, 0.1 * safeZoneW, 0.05 * safeZoneH];
+    _ctrlButton ctrlCommit 0;
+};</sqf>
+
+|seealso= [[ctrlMapSetPosition]] [[allControls]] [[allDisplays]] [[controlsGroupCtrl]] [[ctrlDelete]] [[ctrlModel]] [[ctrlSetModel]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlClassName]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlModelDirAndUp]] [[ctrlSetModelDirAndUp]] [[displayParent]]
+}}

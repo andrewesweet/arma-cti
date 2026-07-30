@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/difficultyEnabledRTD
+// revision: 339089 (2023-04-26T10:54:08Z)
+// export sha1: dubrkt75d9crhwzqrfm5907sybl5ir3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Difficulty | Category:Command Group: RTD | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= RTD
+
+|gr2= Difficulty
+
+|descr= Returns [[true]] if Advanced Flight Model is enabled.
+Forcing of rotorlib simulation could be done with mission param [[Description.ext#forceRotorLibSimulation|forceRotorLibSimulation]].
+
+|s1= [[difficultyEnabledRTD]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_rtdOn = difficultyEnabledRTD;</sqf>
+
+|seealso= [[difficultyEnabled]] [[isObjectRTD]] [[Description.ext#forceRotorLibSimulation|forceRotorLibSimulation]]
+}}

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_initListNBoxSorting
+// revision: 349789 (2023-11-20T22:10:14Z)
+// export sha1: o7f7zszeluivgp6bt0f26v0xmodpojs
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= GUI
+
+|descr= [[File:A3_BIS_fnc_initListNBoxSorting_example.jpg|thumb|right|A GUI using [[BIS_fnc_initListNBoxSorting]]]]
+Automatically creates buttons and sets them up so they can be used to sort a [[CT_LISTNBOX]]. The buttons will automatically be resized to fit the column width of '''ctrlFilter'''.
+
+By default, the '''ctrlContent''' columns are sorted by [[lnbText]] (using [[lnbSort]]). If a specific column should be sorted by [[lnbValue]] (using [[lnbSortByValue]]) instead, then something needs to be set in the data of the corresponding '''ctrlFilter''' column (literally ''something'', the condition in the source code is <sqf inline>(_ctrlFilter lnbData [0, _i]) != ""</sqf>).
+
+Regarding '''ctrlFilter''':
+* The position and size of this control define where the buttons for sorting are created, thus it should be placed above '''ctrlContent''' and its columns should have the same size as the columns of '''ctrlContent'''.
+* The text set in the columns is displayed as text for the buttons (the buttons are actually transparent).
+* The control can also be part of a [[CT_CONTROLS_GROUP]]. If that is the case, the buttons will be created as children of that group.
+* To keep a uniform style between vanilla and custom controls it is recommended to create a background with [[CT_STATIC]] behind '''ctrlFilter''' with <syntaxhighlight lang="cpp" inline>colorBackground[] = { 0, 0, 0, 1 };</syntaxhighlight>.
+See {{Link|CT_LISTNBOX#BIS_fnc_initListNBoxSorting Example}} for a full example including a config.
+
+|s1= [ctrlFilter, ctrlContent, columnIndexes, idc] call [[BIS_fnc_initListNBoxSorting]]
+
+|p1= ctrlFilter: [[Control]] - dummy [[CT_LISTNBOX]] control used for setting up the filter.
+
+|p2= ctrlContent: [[Control]] - the [[CT_LISTNBOX]] which actually contains the sortable content.
+
+|p3= columnIndexes: [[Array]] of [[Number]]s - (Optional, default: []) these are the column indexes of ''ctrlContent'' which should be sortable. An empty array means all columns are sortable.
+
+|p4= idc: [[Number]] - (Optional, default: 200) used to assign IDCs to the buttons created by this function. The first button has '''idc''', the second button has '''idc''' + 1 and so on.
+
+|r1= [[Boolean]] - [[true]] on success, otherwise [[false]]
+
+|x1= <sqf>[_lnbFilter, _lnbContent, [0,1,2,3]] call BIS_fnc_initListNBoxSorting;</sqf>
+
+|seealso= [[BIS_fnc_initSliderValue]]
+}}

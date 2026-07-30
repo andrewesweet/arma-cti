@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/Template:GVI/intro
+// revision: 295925 (2021-11-16T09:33:58Z)
+// export sha1: luw0lkhrj7lfw26tivvjttntgcwqb2q
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}|Introduced with {{Name|{{{1}}}}} {{#ifeq: {{uc:{{{2|}}}}} | DEV | Development Branch
+	|{{#ifeq: {{uc:{{{2|}}}}} | DIAG | Diagnostic Build
+		| version {{GVI/version | {{{2|}}} | category}}
+	}}
+}}}}</includeonly><noinclude>
+Template [[Template:GVI/intro|GVI/intro]] stands for '''G'''ame '''V'''ersion '''I'''nformation: '''intro'''duced ''with''.
+{{Feature | Informative |
+* {{Template|GVI}} uses this template.
+* This template defines '''Category names''', such as [[:Category:Introduced with Operation Flashpoint version 1.00]]}}
+
+== Usage ==
+{{<nowiki/>GVI/intro|'''''game'''''|'''''version'''''}}
+* game: in the [[Template:GVI]] format, e.g arma3, ofp, tkoh etc.
+* version: (Optional, default {{hl|?}}) game version in format '''<Major>.<Minor>''', e.g 1.00, 1.86 etc.
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{GVI/intro}}</nowiki>
+| {{GVI/intro}}
+|-
+| <nowiki>{{GVI/intro|ofp}}</nowiki>
+| {{GVI/intro|ofp}}
+|-
+| <nowiki>{{GVI/intro|arma2|abc}}</nowiki>
+| {{GVI/intro|arma2|abc}}
+|-
+| <nowiki>{{GVI/intro|arma3|1.96}}</nowiki>
+| {{GVI/intro|arma3|1.96}}
+|-
+| <nowiki>{{GVI/intro|arma3|dev}}</nowiki>
+| {{GVI/intro|arma3|dev}}
+|-
+| <nowiki>{{GVI/intro|arma3|diag}}</nowiki>
+| {{GVI/intro|arma3|diag}}
+|-
+| <nowiki>{{GVI/intro|arma3|1.96.123456}}</nowiki>
+| {{GVI/intro|arma3|1.96.123456}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

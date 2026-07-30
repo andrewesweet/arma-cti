@@ -1,0 +1,744 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_SoundControllers
+// revision: 373068 (2025-03-24T15:22:20Z)
+// export sha1: 7hc6b8ehmpueov8sbis00ybf384wkj3
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Sound Controllers ==
+
+Sound controllers deliver data from the engine in real time which makes them perfect to control volumes and frequencies of sounds. If you want to monitor sound controllers, you can use these functions:
+{| class="wikitable align-center-col-2"
+! Command
+! Usable On
+|-
+| [[getAllSoundControllers]]
+| rowspan="3" | Vehicles
+|-
+| [[getSoundController]]
+|-
+| [[getSoundControllerResult]]
+|-
+| [[getAllEnvSoundControllers]]
+| rowspan="2" | Positions
+|-
+| [[getEnvSoundController]]
+|-
+| [[getAllEnv3DSoundControllers]]
+| rowspan="3" | Environmental objects
+|-
+| [[getEnv3DSoundController]]
+|-
+| [[allEnv3DSoundSources]]
+|}
+
+Also look at this {{Link|https://forums.bistudio.com/topic/187202-arma-3-sound-modding-101/?p{{=}}3049207|forum post}} for a video showcase and a great and simple to use example mission.
+
+{| class="wikitable sortable align-center"
+|- class="align-center"
+! Sound Controller
+! Description / Notes
+! type/range of value
+! Usable in EnvSounds
+! CfgWeapons
+! CfgAmmo
+! CfgVehicles (Land)
+! CfgVehicles (Helicopter)
+! CfgVehicles (Plane)
+! CfgVehicles (Ship)
+|-
+| interior
+| Surface texture name below character character starts with int_, character is inside building (time based transition, 0.8s)
+| <0;1>
+|
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|
+|
+|
+|
+|-
+| houses
+| local density of object type “building”, derived from map
+| <0;1>
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|
+|
+|
+|-
+| meadow
+| derived from map - probably outdated: getAllEnvSoundControllers returns meadows (A3 1.80)
+| <0;1>
+| {{Icon|checked}}
+|
+|
+|
+|
+|
+|
+|-
+| meadows
+| derived from map
+| <0;1>
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|
+|
+|
+|-
+| forest
+| local density of trees, derived from map
+| <0;1>
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|
+|
+|
+|-
+| trees
+| local density of trees (different settings), derived from map
+| <0;1>
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|
+|
+|
+|-
+| sea
+| derived from map
+| <0;1>
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|
+|
+|
+|-
+| '''windy'''
+| ambient map wind intensity (soundSetEnvironment). See [[getAllEnvSoundControllers]]
+| <0;1>
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| '''wind'''
+| wind intensity. See [[getAllEnv3DSoundControllers]]
+| <0;1>
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|-
+| rain
+| rain intensity. This controller is zeroed for all types when snow = true in RainParticles config
+| <0;1>
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|-
+| fog
+| fog intensity
+| <0;1>
+| {{Icon|unknown}}
+| {{Icon|unknown}}
+|
+| {{Icon|unknown}}
+| {{Icon|unknown}}
+| {{Icon|unknown}}
+|
+|-
+| daytime
+| relative daytime (0 = midnight, 0.5 = noon)
+| <0;1>
+| {{Icon|checked}}
+|
+|
+|
+|
+|
+|
+|-
+| night
+| night time with transitions at ~17:30-18:00 and 07:00 – 07:15
+| <0;1>
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|
+|
+|
+|
+|
+|-
+| rainDrops
+| Rain drop sound occlusion. How much the rain drops can be heard, 1 no occlusion 0 full occlusion. If 'snow' is set to true, rainDrops is 0 (3D Env controllers)
+| <0;1>
+| {{Icon|checked}}
+|
+|
+|
+|
+|
+|
+|-
+| altitudeGround
+| ground altitude
+| m
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|
+|
+|
+|
+|
+|-
+| altitudeSea
+| sea level altitude
+| m
+| {{Icon|checked}}
+|
+|
+|
+|
+|
+|
+|-
+| coast
+| precise sea shore detection, calculation includes high above sea level (~50m)
+| <0;1>
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|
+|
+|
+|
+|-
+| waterDepth
+| sea depth - not available as EnvSoundController (A3 1.80)
+| m
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| distance
+| distance to player?
+| m
+| {{Icon|unknown}}
+|
+|
+|
+|
+|
+|
+|-
+| shooting
+| firefight detection, 1 = no firefight, value is divided by 2 with every shot
+| <0;1>
+| {{Icon|checked}}
+|
+|
+|
+|
+|
+|
+|-
+| deadBody
+| presense of dead body (~10m)
+| <0;1>
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|
+|
+|
+|
+|
+|-
+| rpm
+| actual rpm of the vehicle engine
+| rpm
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|-
+| randomizer
+| generates random number between 0 and 1 (once per live of instance)
+| <0;1>
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|-
+| speed
+| actual speed of the vehicle
+| m/s
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|-
+| thrust
+| thrust of the vehicle engine (acceleration)
+| <0;1>
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|-
+| camPos
+| position of camera (0 = internal, 1 = external)
+| <0;1>
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|-
+| playerPos
+| position of player within the vehicle (0 = front, 1 = Passenger)
+| <0;1>
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|-
+| engineOn
+| state of vehicle engine
+| 0/1
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|-
+| angVelocity
+| speed of rotation (in all axes)
+|
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|-
+| gmeterZ
+| accelleration meter
+|
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|-
+| roughness
+| roughness of surface (0 = "glass")
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| dustness
+| roughness of surface (0 = no dust)
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| damper0
+| dampers
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| rock
+| surface type
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| sand
+| surface type
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| grass
+| surface type
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| mud
+| surface type
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| gravel
+| surface type
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| asphalt
+| surface type
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| water
+| surface type
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| latSlip
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| latSlipDrive
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| longSlip
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| longSlipDrive
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|
+|-
+| lateralMovement
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|
+|-
+| machCone
+| only for Jets, makes sure sound is within machCone, if not -> sound will be silent
+| <0;1>
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|-
+| gear
+|
+|
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|-
+| flaps
+|
+|
+|
+|
+|
+|
+|
+| {{Icon|checked}}<br>(buggy)
+|
+|-
+| envelope
+|
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|-
+| rotorThrust
+|
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|-
+| rotorSpeed
+|
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|-
+| rotorDamage
+|
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|-
+| motorDamage
+|
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|-
+| transmissionDamage
+|
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|-
+| slingLoadActive
+|
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|-
+| scrubLand
+| object is scrubbing terrain
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}<br>(VTOL,UAV)
+| {{Icon|checked}}
+|-
+| scrubObject
+| object is scrubbing another object (vehicle ↔ vehicle)
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|-
+| scrubTree
+| object is scrubbing object type: tree
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}<br>(VTOL)
+|
+|-
+| scrubBuilding
+| object is scrubbing object type: building
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+| {{Icon|checked}}<br>(VTOL,UAV)
+|
+|-
+| scrubArmor
+| object is scrubbing armored vehicle (tank)
+|
+|
+|
+|
+|
+| {{Icon|checked}}
+|
+|
+|-
+| yearTime
+| Time of the year in 0..1 range &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;''(Since Arma 3 v2.07.148385)''
+| [0,1[
+| {{Icon|checked}}
+|
+|
+|
+|
+|
+|
+|-
+| {{GVI|arma3|2.08|size= 0.75}} ambientTemp
+| Ambient air temperature, see [[ambientTemperature]]
+| min..max world temperature in Celsius
+| {{Icon|checked}}
+|
+|
+|
+|
+|
+|
+|-
+| {{GVI|arma3|2.08|size= 0.75}} snow
+| 1 if "RainParticle" config 'snow' = true, 0 if false. When snow is 1, 'rainDrops' is 0
+| 1 or 0
+| {{Icon|checked}}
+|
+|
+|
+|
+|
+|
+|}
+
+
+{{GameCategory|arma3|Sound}}

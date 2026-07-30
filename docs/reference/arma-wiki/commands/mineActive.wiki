@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/mineActive
+// revision: 319444 (2022-05-13T09:24:05Z)
+// export sha1: tuel0u8i5yyyawoxl52cl4vmdgxctnu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mines | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|gr1= Mines
+
+|descr= Checks if the given mine is active.
+
+|s1= [[mineActive]] obj
+
+|p1= obj: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (mineActive _mine) then {hint "BOOM!"};</sqf>
+
+|seealso= [[allMines]] [[detectedMines]] [[mineDetectedBy]] [[createMine]] [[revealMine]]
+}}

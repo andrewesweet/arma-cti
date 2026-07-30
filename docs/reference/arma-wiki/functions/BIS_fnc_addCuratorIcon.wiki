@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addCuratorIcon
+// revision: 349435 (2023-11-08T16:27:36Z)
+// export sha1: mfagd8n1qz1lzgqrpr6jr4bhk78bzg9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Add an icon displayed in curator interface.
+
+|s1= [object, iconParams, map, 3D] call [[BIS_fnc_addCuratorIcon]]
+
+|p1= object: [[Object]] - curator module
+
+|p2= iconParams: [[Array]] - icon params (see [[drawIcon3D]] scripting command for its format)
+
+|p3= map: [[Boolean]] - (Optional, default [[true]]) [[true]] to show icon on map
+
+|p4= 3D: [[Boolean]] - (Optional, default [[true]]) [[true]] to show icon in 3D scene
+
+|r1= [[Number]] - icon ID, used in [[BIS_fnc_removeCuratorIcon]]
+
+|x1= <sqf>[curatorModule, ["targetIcon.paa", [1,1,1,1], position player, 1, 1, 45, "Target", 1, 0.05, "TahomaB"], false] call BIS_fnc_addCuratorIcon;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[BIS_fnc_removeCuratorIcon]]
+}}

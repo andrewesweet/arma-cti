@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Spearhead_1944_Vehicle_Customization
+// revision: 373949 (2025-07-02T21:12:37Z)
+// export sha1: lxu3inue7gvm6mbb730hgza5skb6tda
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Spearhead 1944 Images]]

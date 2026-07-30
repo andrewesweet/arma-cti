@@ -1,0 +1,95 @@
+// source: https://community.bistudio.com/wiki/htmlLoad
+// revision: 369066 (2024-09-02T20:24:56Z)
+// export sha1: sas7s9kel4acrfjckyb5jt2j6ydsnga
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= Load [[HTML File Format|HTML]] from file or URI using given control. File path is relative to current mission dir or an absolute path (with drive letter etc.).
+The command is subject to restrictions, imposed by [[CfgCommands]] class.
+{{Feature|arma3|Since {{GVI|arma3|2.10|size= 0.75}} the 'title' attribute is supported within &lt;img&gt; and &lt;a&gt; html tags}}
+{{Feature|important|For unknown reasons, URL's length is limited to 255 characters.}}
+
+|s1= control [[htmlLoad]] filename
+
+|p1= control: [[Control]]
+
+|p2= filename: [[String]] - local file name or remote file URL
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control htmlLoad "briefing.html";</sqf>
+
+|x2= <sqf>_control htmlLoad "http://www.bistudio.com/newsfeed/arma3_news.php?build=main&language=English";</sqf>
+
+|x3= Display news item:
+<sqf>
+0 spawn {
+	disableSerialization;
+	private _html = findDisplay 46 createDisplay "RscCredits" ctrlCreate ["RscHTML", -1];
+	_html ctrlSetBackgroundColor [0,0,0,0.8];
+	_html ctrlSetPosition [safeZoneX, safeZoneY, safeZoneW, safeZoneH];
+	_html ctrlCommit 0;
+	_html htmlLoad "http://www.bistudio.com/newsfeed/arma3_news.php?build=main&language=English";
+};
+</sqf>
+
+|seealso= [[ctrlHTMLLoaded]] [[loadFile]] [[preprocessFile]] [[preprocessFileLineNumbers]] [[HTML File Format]]
+}}
+
+{{Note
+|user= BrotherhoodOfHam
+|timestamp= 20140907180200
+|text= [[htmlLoad]] works with URLs as well as html files.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20140907193500
+|text= While [[htmlLoad]] surprisingly does work with URLs as pointed above, the operation is blocking, meaning the whole game will freeze until the operation is complete.
+It is therefore not recommended to use this command in such way.
+}}
+
+{{Note
+|user= Benargee
+|timestamp= 20150421180800
+|text= Example use of URL can be found in [[BIS_fnc_GUInewsfeed]] with the function browser.
+}}
+
+{{Note
+|user= Tupolov
+|timestamp= 20151007220300
+|text= ({{arma3}}) In order to use URLs, they must be included in CfgCommands -> allowedHTMLLoadURIs. In order to use URIs with params a wildcard * character is supported:
+'''Script'''
+<sqf>
+_newsOnline = "http://alivemod.com/alive_news.php?map=" + _map + "&amp;mission=" + _mission + "&amp;player=" + _player;
+_ctrlHTML htmlLoad _newsOnline;
+</sqf>
+'''Config'''
+<syntaxhighlight lang="cpp">
+class CfgCommands {
+	allowedHTMLLoadURIs[] += {
+		"http://alivemod.com/alive_news.php*"
+	};
+};
+</syntaxhighlight>
+|game= arma3
+}}

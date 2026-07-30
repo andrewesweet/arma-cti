@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_cinemaBorder
+// revision: 348331 (2023-11-08T12:59:44Z)
+// export sha1: aj9obbki70aq15dz1v1xuhnrlm5sdjm
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr=Creates cinematic borders. Player cannot move during cutscene.
+
+|s1= [mode, duration, sound, view] call [[BIS_fnc_cinemaBorder]]
+
+|p1= mode: [[Number]] - can be:
+*0 - In
+*1 - Out
+|p2= duration: [[Number]] - (Optional, default 1.5) duration in seconds
+|p3= sound: [[Boolean]] - (Optional, default [[true]]) play sound
+|p4= view: [[Boolean]] - (Optional, default [[false]]) lock 1st-person-view
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[1, 2, true, true] call BIS_fnc_cinemaBorder;</sqf>
+
+|seealso= [[disableUserInput]] [[userInputDisabled]]
+}}
+
+{{Note
+|user= Honger
+|timestamp= 20221015144335
+|text= When cinematic borders are active and player is not provided with any animation, he can abuse the movement lock by vaulting (default button V).
+}}

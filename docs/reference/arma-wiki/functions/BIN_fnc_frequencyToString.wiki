@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_frequencyToString
+// revision: 363749 (2024-04-17T19:52:50Z)
+// export sha1: rwbdz33uws4wazf7nn9v7ltumvzjpq5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: EM Interface | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= EM Interface 
+
+|descr= <pre>/*
+
+	Description:
+		Returns frequency as a string
+
+	Parameter(s):
+		0:
+			NUMBER - frequency in MHz, returned value is in format "<value> <unit>"
+			ARRAY in format [NUMBER,NUMBER] - frequency range in MHz, returned value is in format "<value1> <unit1> - <value2> <unit2>"
+		1: NUMBER - order offset. When 0, frequency 1000 will return "1 GHz". When -1, returned value will be "1000 MHz"
+		2: BOOL - true if input values are in Hz, false if in MHz (standard across the game)
+
+	Returns:
+		STRING
+*/
+</pre>
+
+{{Wiki|placeholder}} 
+
+|s1= <!-- [] call [[BIN_fnc_frequencyToString]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_frequencyToString;</sqf> -->
+
+|seealso=
+}}

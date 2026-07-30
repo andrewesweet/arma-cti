@@ -1,0 +1,133 @@
+// source: https://community.bistudio.com/wiki/difficultyEnabled
+// revision: 348496 (2023-11-08T13:01:31Z)
+// export sha1: ieoa9kl89dwvq1gbg8zffr37w7xb0d8
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Difficulty | Category:Introduced with Armed Assault version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.05
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Difficulty
+
+|descr= Checks specific difficulty settings of the current user. Difficulty flag names can be found in the [[server.armaprofile|ArmA profile]] file under class Difficulties/xxx/Flags (xxx being regular or veteran).
+
+|mp= This command checks the difficulty flags of the computer (client/server) where it is executed.
+
+{{Feature|arma3|
+This command is '''deprecated since {{arma3}} v1.58'''. Since this version it always returns false. Use [[difficultyOption]] instead.
+See [[Arma 3: Difficulty Settings#Difficulty_Overhaul|Arma 3 Difficulty Overhaul]] for further details.
+* Stress damage is a separate difficulty setting. There are two dedicated commands for it:
+** [[enableStressDamage]]
+** [[isStressDamageEnabled]]
+* Auto trim is also a separate difficulty setting. There are also two dedicated commands for it:
+** [[enableAutoTrimRTD]]
+** [[isAutoTrimOnRTD]]
+}}
+
+|s1= [[difficultyEnabled]] flagName
+
+|p1= flagName: [[String]] - difficulty flag name. Following values are available:<br>
+<spoiler text="Arma 3 Flags">
+{{Columns|5|
+* 3rdPersonView
+* armor
+* autoAim
+* autoGuideAT
+* autoSpot
+* autoTrimEnabled
+* cameraShake
+* clockIndicator
+* deathMessages
+* enemyTag
+* extendetInfoType
+* friendlyTag
+* hud
+* hudGroupInfo
+* hudPerm
+* hudWp
+* hudWpPerm
+* map
+* mineTag
+* netStats
+* roughLanding
+* stanceIndicator
+* stressDamageEnabled
+* unlimitedSaves
+* vonID
+* weaponCursor
+* windEnabled
+}}
+</spoiler>
+<spoiler text="Arma 2 Flags">
+{{Columns|5|
+* 3rdPersonView
+* armor
+* autoSpot
+* autoGuideAT
+* autoAim
+* allowSeagull
+* clockIndicator
+* deathMessages
+* enemyTag
+* friendlyTag
+* hud
+* hudPerm
+* hudWp
+* hudWpPerm
+* map
+* netStats
+* suppressPlayer
+* tracers
+* realisticFatigue
+* ultraAI
+* unlimitedSaves
+* weaponCursor
+}}
+</spoiler>
+
+|r1= [[Boolean]]
+
+|x1= <sqf>hint str (difficultyEnabled "armor");</sqf>
+
+|x2= List current difficulty settings:
+<sqf>
+call {
+	private ["_diff", "_cfg", "_flags", "_res"];
+	_diff = [];
+	_cfg = configFile >> "CfgDifficulties";
+	{
+		_flags = _cfg >> configName _x >> "Flags";
+		for "_i" from 0 to count _flags - 1 do {
+			_diff pushBack configName (_flags select _i);
+		};
+	} forEach ("true" configClasses _cfg);
+	_diff = _diff arrayIntersect _diff;
+	_diff sort true;
+	_res = text "";
+	{
+		_res = composeText [_res, parseText format [
+			"<t align='left'>%1 - %2</t>", 
+			_x, 
+			[0, 1] select difficultyEnabled _x
+		], lineBreak];
+	} forEach _diff;
+	hint _res;
+};
+</sqf>
+
+|seealso= [[difficultyOption]] [[difficulty]] [[difficultyEnabledRTD]] [[Arma 3: Difficulty Settings]]
+}}

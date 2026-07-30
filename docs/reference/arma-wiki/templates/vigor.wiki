@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Template:vigor
+// revision: 295913 (2021-11-16T09:33:41Z)
+// export sha1: mint8gh6zxlxgafnrm1e1e7pja10zd3
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>Vigor</includeonly><noinclude>Returns {{hl|{{vigor}}}}.
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3
+// revision: 370290 (2024-11-20T09:16:21Z)
+// export sha1: dw4obrmjdpl33yygtalmqoktxssypvj
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|EAdate = 20130306
+|releasedate = 2013-09-12
+<!-- |latestversion = 2.14 -->
+|image = Arma_3_logo_black.png
+|size = 350
+|intro = Experience true combat gameplay in a massive military sandbox. Deploying a wide variety of single- and multiplayer content, over 20 vehicles and 40 weapons, and limitless opportunities for content creation, this is the PC’s premier military game. Authentic, diverse, open - Arma 3 sends you to war.<br><br>'''{{arma3}}''' – ''This'' Is War.
+|feature1 = '''Altis & Stratis''' - Defeat your enemy on a richly detailed, open-world battlefield – stretching over 290 km² of Mediterranean island terrain. From expansive cities to rolling hills, whether steamrolling your tank across the dusty plains, flying a transport helicopter over the dense forests, or waging asymmetric warfare from the rocky hills, the islands of Altis and Stratis are dynamic worlds, which lend themselves to the most varied engagements in gaming.
+|feature2 = '''Weapons & Vehicles''' - Head into combat on foot, drive armored vehicles, or take to the skies in helicopters and jets. Conduct a combined arms attack over air, land, and sea, with over 20 vehicles to drive and pilot, 40+ weapons to pick from, customizable loadouts with short- and long-distance attachments, and various types of gear to suit your needs on the battlefield. With a massive arsenal at your disposal, Arma 3 moves you into a world of tactical opportunities.
+|feature3 = '''Singleplayer''' - Follow the story of Ben Kerry, a soldier who gets caught up in a Mediterranean flashpoint, across three gameplay-driven campaign episodes: Survive, Adapt, Win. Immerse yourself in Arma 3’s diverse gameplay by completing the focused showcase scenarios. Run through the competitive firing drills to hone your shooting and movement skills, and complete your training by signing up to Arma 3 Bootcamp, which features SP and MP tutorials, and a dedicated Virtual Reality practice environment.
+|feature4 = '''Multiplayer''' - Fight online in the massive military sandbox that is Arma 3. Form a squad and team up against your enemy in the official Defend and Seize multiplayer scenarios. Or jump into one of the many popular unofficial game modes developed by the Arma 3 community. Experience a new form of multiplayer in Arma 3 Zeus, where Game Masters have the ability to influence the battlefield of other players in real-time.
+|feature5 = '''Content Creation''' - Start creating your own experiences with Arma 3’s intuitive scenario editor and powerful modding tools. Enjoy a platform filled with player-created content, ranging from custom weapons and vehicles, to intense singleplayer scenarios and entirely new multiplayer game modes. Share and discover content on the Arma 3 Steam Workshop, which lets you install player-created content with a click of a button.
+|feature6 = '''Revamped Engine''' - Navigate the battlefield with fluid new animations; feel the devastating power of combat with the upgraded sound engine, new ragdoll simulation and PhysX™-supported vehicles. Pushed forward by game-changing innovations, the highly moddable Real Virtuality™ 4 engine powers a new generation of Arma with even more stunning graphics, broad simulation gameplay, and massive sandbox terrains.
+|gallery1 = arma3_1_screenshot.jpg
+|gallery2 = arma3_2.jpg
+|gallery3 = arma3_3.jpg
+|gallery4 = arma3_4.jpg
+|dlcs=
+[[File:arma3 zeus logo.png|200px|link= Arma 3 Zeus]]
+[[File:arma3 karts logo.png|200px|link= Arma 3 Karts]]
+[[File:arma3 helicopters logo.png|200px|link= Arma 3 Helicopters]]
+[[File:arma3 marksmen logo.png|200px|link= Arma 3 Marksmen]]
+[[File:arma3 jets logo.png|200px|link= Arma 3 Jets]]
+[[File:arma3 lawsofwar logo.png|200px|link= Arma 3 Laws of War]]
+[[File:arma3 tacops logo.png|200px|link= Arma 3 Tac-Ops Mission Pack]]
+[[File:A3 Malden DLC.png|200px|link= Arma 3 Malden]]
+[[File:arma3 tanks logo.png|200px|link= Arma 3 Tanks]]
+[[File:arma3 apex logo.png|200px|link= Arma 3 Apex]]
+[[File:arma3 Contact logo black.png|200px|link= Arma 3 Contact]]
+[[File:arma3 artofwar logo.png|200px|link= Arma 3 Art of War]]
+
+=== Creator DLCs ===
+
+[[File:gm picture ca.png|175px|link= Global Mobilization]]
+[[File:arma3 cdlc sog prairiefire logo.png|140px|link= S.O.G. Prairie Fire]]
+[[File:csla_dlc_logotitle.jpg|140px|link= CSLA Iron Curtain]]
+[[File:arma3-cdlc-western_sahara_black-256x256.png|140px|link= Western Sahara]]
+[[File:arma3_cdlc-spearhead-1944_normandy_256x256.png|140px|link= Spearhead 1944]]
+[[File:arma3_cdlc-reaction_forces_256x256.png|140px|link= Reaction Forces]]
+[[File:arma3_cdlc-expeditionary_forces_256x256.png|140px|link= Expeditionary Forces]]
+
+|start1 = [[Arma 3: Getting Started]]
+|start2 = {{Link|http://www.arma3.com|Official Website}}
+|start3 = [[:Category: Arma 3: Editing| Arma 3: Editing]]
+|start4 = [[Arma 3: Assets]]
+|start5 = {{Link|https://arma3.com/faq|FAQ}}
+|social1 = {{Link|http://forums.bistudio.com/forumdisplay.php?112-ARMA-3|Bohemia Interactive Forums - {{arma3}}}}
+|social2 = {{Link|http://forums.bistudio.com/forumdisplay.php?169-ARMA-3-EDITING|Bohemia Interactive Forums - {{arma3}} Editing}}
+|social3 = {{Link|https://www.youtube.com/user/Arma3official|YouTube}}
+|social4 = {{Link|https://twitter.com/Arma3official/|Twitter}}
+|social5 = {{Link|https://arma3.com/|Website}}
+}}

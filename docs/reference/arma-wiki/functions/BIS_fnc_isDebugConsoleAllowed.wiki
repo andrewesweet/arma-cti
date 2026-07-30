@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isDebugConsoleAllowed
+// revision: 349022 (2023-11-08T14:47:09Z)
+// export sha1: ammj4cogsttgatacv9kh2gdrxs97b47
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Missions
+
+|gr2= Diagnostic
+
+|descr= Returns true if debug console is allowed in current context
+
+|s1=
+
+|r1= [[Boolean]] - return [[true]] if allowed, [[false]] if not
+
+|x1= <sqf>call BIS_fnc_isDebugConsoleAllowed;</sqf>
+
+|seealso= [[Arma 3: Debug Console]] [[BIS_fnc_debugConsoleExec]]
+}}

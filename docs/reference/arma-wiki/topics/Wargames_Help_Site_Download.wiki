@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/Wargames:Help_Site:Download
+// revision: 339631 (2023-04-28T14:11:57Z)
+// export sha1: c76zecp80iv89uv80oj62p33f94zouq
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Wargames 5.0 Package =
+
+Currently you can download the latest beta of the Wargames mod here:
+
+* {{Link|http://ofpc.de/wargames/download.php|OFP WarGames MOD - Downloads by hx3}}
+* {{Link|http://ofpc.de/wargames/e107_plugins/forum/forum_viewforum.php?15|Additional WGL Files (optional)}}
+* {{Link|http://ofpc.de/wargames/e107_plugins/forum/forum_viewforum.php?16|Browse changelog forum}}
+
+'''IMPORTANT'''
+
+Either use '''right mouse button click: save as''' or some download manager like {{Link|http://www.freedownloadmanager.org|Free Download Manager}}.
+
+
+
+= Package Information =
+
+# While the .RAR package itself is currently roughly 160 MB, uncompressed the mod is around 363 MB, so make sure you have enough disc space available.
+# The files of the mod are compressed in a .rar file to reduce the download size. Get the latest version of {{Link|http://www.7-zip.org|7-Zip}} to be able to unpack it.
+
+
+
+= The Next Step =
+
+See [[Wargames:Help_Site:Installation|Installation]] for further information how to proceed.

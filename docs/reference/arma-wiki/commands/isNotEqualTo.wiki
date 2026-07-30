@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/isNotEqualTo
+// revision: 330347 (2022-09-02T12:25:54Z)
+// export sha1: 57ip23eh34qyzrsowcxx5pmdorgq2od
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Variables
+
+|descr= Performs strict comparison between var1 and var2 and returns [[false]] if equal, otherwise true.
+
+|s1= val1 [[isNotEqualTo]] val2
+
+|p1= val1: [[Anything]]
+|p2= val2: [[Anything]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _true = 0 isNotEqualTo 1;</sqf>
+
+|seealso= [[isEqualTo]] [[isNotEqualRef]]
+}}

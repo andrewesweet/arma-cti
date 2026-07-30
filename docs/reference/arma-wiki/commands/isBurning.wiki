@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/isBurning
+// revision: 323033 (2022-06-28T21:43:08Z)
+// export sha1: 994pit9yq4w6ea52b2o5lhk8zd3y6o9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns whether the unit is burning.
+This returns true only if unit is damaged by nearby fire, it does '''not''' check whether a fireplace is burning, use [[inflamed]] command for that.
+
+|s1= [[isBurning]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (isBurning player) then { player groupChat "I'm burning!!"; };</sqf>
+
+|seealso= [[getBleedingRemaining]] [[setBleedingRemaining]] [[isBleeding]] [[inflamed]]
+}}

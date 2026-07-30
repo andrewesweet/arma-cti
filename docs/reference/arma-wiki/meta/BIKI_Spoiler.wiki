@@ -1,0 +1,128 @@
+// source: https://community.bistudio.com/wiki/Extension:BIKI_Spoiler
+// revision: 341878 (2023-07-04T00:11:38Z)
+// export sha1: cie7x1xgtmxz1mhz11f40iamkf9oowl
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable float-right"
+! colspan="2" style="padding: 1.5em" | BIKI Spoiler
+|-
+! Description
+| Provides a spoiler button (based on previously used {{Link|https://www.mediawiki.org/wiki/Extension:JSpoiler|JSpoiler}} syntax)
+|-
+! Author
+| {{User|Lou Montana}}
+|-
+! Project Start
+| 2023-06-19: Project start
+|-
+! Release Date
+|
+* 2023-06-19: "v1" (0.50)
+|-
+! Version
+| 0.50
+|}
+This extension manages <syntaxhighlight lang="html" inline><spoiler></syntaxhighlight> tags in spoiler buttons.
+
+
+== Features ==
+
+* Turns <syntaxhighlight lang="html" inline><spoiler></syntaxhighlight> in spoiler buttons
+* Dynamic Show/Hide / Display/Conceal actions
+* "Back to spoiler's top" link when the spoiler is of a certain height
+
+
+== Installation ==
+
+* Unzip the directory to {{hl|wiki/extensions/BIKISpoiler}}
+* Add <syntaxhighlight lang="php" inline>wfLoadExtension( 'BIKISpoiler' );</syntaxhighlight> to {{hl|LocalSettings.php}}
+
+
+== Usage ==
+
+{| class="wikitable valign-top" style="min-width: 50em"
+|+ Examples
+|-
+! Code
+! Result
+|-
+| <syntaxhighlight lang="html"><spoiler/></syntaxhighlight>
+| <spoiler/>
+|-
+| <syntaxhighlight lang="html"><spoiler></spoiler></syntaxhighlight>
+| <spoiler></spoiler>
+|-
+| <syntaxhighlight lang="html"><spoiler>abc</spoiler></syntaxhighlight>
+| <spoiler>abc</spoiler>
+|-
+| <syntaxhighlight lang="html"><spoiler text="Show the hidden message">abc</spoiler></syntaxhighlight>
+| <spoiler text="Show the hidden message">abc</spoiler>
+|-
+| <syntaxhighlight lang="html+handlebars">
+* abc
+* def <spoiler>ghi</spoiler>
+* jkl
+</syntaxhighlight>
+|
+* abc
+* def <spoiler>ghi</spoiler>
+* jkl
+|-
+| <syntaxhighlight lang="html+handlebars">
+# abc
+# def <spoiler>
+# ghi
+# jkl
+</spoiler>
+# mno
+</syntaxhighlight>
+|
+# abc
+# def <spoiler>
+# ghi
+# jkl
+</spoiler>
+# mno
+|-
+| <syntaxhighlight lang="html+handlebars">
+<spoiler>*long text*</spoiler>
+</syntaxhighlight>
+|
+<spoiler>
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+* many lines
+</spoiler>
+|}
+
+
+[[Category: MediaWiki Extension]]

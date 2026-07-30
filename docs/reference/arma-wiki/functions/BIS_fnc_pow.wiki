@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_pow
+// revision: 327747 (2022-07-13T11:01:20Z)
+// export sha1: kghazsq5v0u5aqqstpqr8gbdsqu8a1l
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Math | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Math
+
+|descr= Return value1 raised to the power of value2. Identical to [[a ^ b]]. {{Feature|important|Use [[a ^ b]] as it is 5 times faster.}}
+<!--
+|alias= [[a ^ b]]
+-->
+|s1= [value1, value2] call [[BIS_fnc_pow]]
+
+|p1= value1: [[Number]]
+
+|p2= value2: [[Number]]
+
+|r1= [[Number]] - ''value1'' raised to the power of ''value2''
+
+|x1= <sqf>[2, 10] call BIS_fnc_pow; // returns 2^10 = 1024</sqf>
+
+|seealso= [[Operators]] [[:Category:Command Group: Math|Math Commands group]] [[a ^ b]]
+}}

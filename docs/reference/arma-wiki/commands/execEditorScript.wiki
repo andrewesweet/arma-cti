@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/execEditorScript
+// revision: 363286 (2024-03-26T10:51:56Z)
+// export sha1: esz9obckrg10f6big9ze8aq1fvjag3u
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Game 2 Editor | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Game 2 Editor
+
+|descr= Execute an editor script for the specified object.
+{{Feature|informative|Some Old Editor Command}}
+
+|s1= map [[execEditorScript]] [object,script]
+
+|p1= map: [[Control]]
+|p2= [object,script]: [[Array]]
+|r1= [[Anything]]
+
+|x1= <sqf>_map execEditorScript ["_team_1","create"];</sqf>
+
+|seealso= -
+}}

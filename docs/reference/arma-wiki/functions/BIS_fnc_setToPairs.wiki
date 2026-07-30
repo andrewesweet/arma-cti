@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setToPairs
+// revision: 349084 (2023-11-08T14:47:24Z)
+// export sha1: 0z85vhz6k4pwevi5n7gokqwroef6mf3
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Arrays
+
+|descr= Works similar to the [[BIS_fnc_addToPairs]] but it doesn't try to add values. It just overwrites the volue if the key already exists.
+
+|s1= [array, key, newValue] call [[BIS_fnc_setToPairs]]
+
+|p1= array: [[Array]] - array to search through
+
+|p2= key: [[String]] - key to search for
+
+|p3= newValue: [[Anything]] - (Optional, default 1) new value set if match was found
+
+|r1= [[Array]] - resulting modified array
+
+|x1= <sqf>[[["apple",3],["pear",2]],"pear",10] call BIS_fnc_setToPairs; // Returns [["apple",3],["pear",10]]</sqf>
+
+|seealso= [[find]] [[findIf]] [[BIS_fnc_findInPairs]] [[BIS_fnc_getFromPairs]] [[BIS_fnc_addToPairs]] [[BIS_fnc_removeFromPairs]]
+}}

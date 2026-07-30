@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/currentMuzzle
+// revision: 321269 (2022-05-13T19:08:05Z)
+// export sha1: di17e0fatznqgux10eigu0y4t65yddm
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Weapons
+
+|descr= Returns a unit's current weapon muzzle. Does not work on vehicles.
+
+|s1= [[currentMuzzle]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[String]] - current muzzle
+{{Feature|important|In earlier games/versions, this command could return a [[Number]] ({{hl|0}}) if ''unit'' was in a vehicle.
+Use the following to circumvent the issue:
+<sqf>_muzzle = weaponState unit select 1;</sqf>}}
+
+|x1= <sqf>_muzzle = currentMuzzle player;</sqf>
+
+|x2= <sqf>_muzzle = currentMuzzle (gunner (vehicle player));</sqf>
+
+|seealso= [[currentWeapon]] [[currentMagazine]] [[currentThrowable]]
+}}

@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_boatRack01Init
+// revision: 273973 (2021-06-13T01:14:22Z)
+// export sha1: rmpb95lqidxsiyim5rmkoyb7tutbhx2
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Boat Recovery | Category:Functions | Category:Introduced with Arma 3 version 1.84 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.84
+
+|gr1= Boat Recovery
+
+|descr= <pre>/*
+	Author: Bravo Zero One development
+	- John_Spartan
+
+	Description:
+	- This is main function for 'boat recovery' functionality.
+
+	Execution:
+	- Call from assets init EH.
+
+	Example:
+		class Eventhandlers
+		{
+			init = "_this call BIS_fnc_BoatRack01Init;";
+		};
+
+	Required:
+		Object (boat rack) must have vehicle in vehicle behavior configured (https://community.bistudio.com/wiki/Arma_3_Vehicle_in_Vehicle_Transport).
+
+	Parameter(s):
+		_this select 0: mode (Scalar)
+		0: boat rack object
+		and
+		other parameters from configuration
+
+	Returns: nothing
+	Result: Two triggers are added near object to allow user to interact with feature.
+
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_boatRack01Init]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

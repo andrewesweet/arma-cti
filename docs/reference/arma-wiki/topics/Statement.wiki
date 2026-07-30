@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/Statement
+// revision: 329108 (2022-07-22T12:48:01Z)
+// export sha1: 3r7zc2laxnwcfxrq51byx2g3t4goea4
+// categories: Category:Syntax
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+A '''statement''' is a piece of scripting code. It is an '''instruction''' to the script Interpreter and tells it to do something.
+
+
+== Types of Statements ==
+
+=== Value Assignment ===
+
+A [[Operators#Assignment Operators|value assignment]] to a [[Variables|variable]].
+
+<sqf>_variable = 5;</sqf>
+
+=== Control Structure ===
+
+Any [[Control Structures|control structure]] including its blocks.
+
+<sqf>
+if (_value > _limit) then
+{
+	hint "oh no";
+};
+</sqf>
+
+=== Command ===
+
+Any [[:Category:Scripting Commands|scripting command]] including its [[Argument|arguments]].
+
+<sqf>player sideChat "hello";</sqf>
+
+
+[[Category: Syntax]]

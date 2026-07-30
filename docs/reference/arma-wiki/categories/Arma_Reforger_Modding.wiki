@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding
+// revision: 371125 (2025-02-28T15:44:11Z)
+// export sha1: hbid76jqv4ey94axopsuhesc47od3ya
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{| class="wikitable valign-top" style="margin: auto; min-width: 50em"
+! colspan="2" | Modding
+! Mod Usage
+|-
+| style="padding: 1em" |
+; Official Tools
+* {{GameCategory|armaR|Modding|Official Tools|text= Official Tools}}
+* [[Arma Reforger:Resource Manager|Resource Manager Documentation]]
+
+
+; Project Creation
+* {{Link|Arma Reforger:Mod Project Setup|Mod Project Setup}}
+
+|
+; Content
+{|
+|- class="valign-top"
+|
+; Assets
+* {{GameCategory|armaR|Modding|Assets|Tutorials|text= Tutorials}}
+* {{GameCategory|armaR|Modding|Assets|Guidelines|text= Guidelines}}
+|
+; Scenarios
+* {{GameCategory|armaR|Modding|Scenario|Tutorials|text= Scenario Tutorials}}
+|
+; Scripts/Mechanics
+* {{GameCategory|armaR|Modding|Scripting|Tutorials|text= Scripting Tutorials}}
+* {{GameCategory|armaR|Modding|Scripting|Guidelines|text= Scripting Guidelines}}
+|
+; Terrains
+* {{GameCategory|armaR|Modding|Terrains|Guidelines|text= Terrains Tutorials}}
+|}
+
+; Workshop Publication
+* [[Arma Reforger:Mod Publishing Process|Mod Publishing Process]]
+
+| style="padding: 1em" |
+
+; Mods Download
+* [[Arma Reforger:Workshop|{{armaR}} Workshop]]
+
+
+; Modded Server Hosting
+* [[Arma Reforger:Server Config#mods|Self Hosting]]
+* [[Arma Reforger:Server Hosting#Mods|Dedicated Server]]
+|}
+
+
+{{GameCategory|armaR}}

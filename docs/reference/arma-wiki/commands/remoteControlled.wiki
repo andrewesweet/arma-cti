@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/remoteControlled
+// revision: 349626 (2023-11-16T13:24:07Z)
+// export sha1: 65rkoojqr736x2hnqdgjkglmy7ymz75
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|arg= local
+|gr1= Remote Control
+
+|descr= Returns the player controlling the given unit if the argument is the unit, or the unit controlled by the player if the argument is the player.
+{{Feature|important|See also [[Remote Control Tutorial]].}}
+
+|s1= [[remoteControlled]] unitOrPlayer
+
+|p1= unitOrPlayer: [[Object]] - unit under remote control or the player controlling a unit
+
+|r1= [[Object]] - the person controlling the unit or the unit controlled by the player; [[objNull]] if not applicable
+
+|x1= <sqf>private _controllingPlayer = remoteControlled _dronePilot;</sqf>
+
+|x2= <sqf>private _dronePilot = remoteControlled _controllingPlayer;</sqf>
+
+|seealso= [[remoteControl]] [[isRemoteControlling]]
+}}

@@ -1,0 +1,91 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Tactics
+// revision: 255829 (2021-04-24T18:49:27Z)
+// export sha1: 6j5xgl2dhjdyhzs0vydr2va8i2p47h0
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Tactics ==
+=== Artillery Ammo Types ===
+Artillery operates with several different ammo types: <br>
+* HE shells – simple explosive ammo.<br>
+* Flares – used for signaling.<br>
+* Smoke shells – for signaling or screening.<br>
+* Guided – heat seeking shells.<br>
+* Laser Guided – precise, guided by laser designation.
+
+
+=== Call for Support ===
+Sometimes it is possible to call in various kinds of support such as artillery, close air support and other means of support. You may call in support by:<br>
+* Opening a command menu '''[0]'''.<br>
+* Selecting '''Communications [8]'''.<br>
+* Requesting Support Type.<br>
+* And finally, selecting the unit to provide support.
+
+''With the communications menu open, scroll in the map by using the '''[Left Ctrl + Mouse Wheel]'''.''
+
+
+=== Announcing Targets ===
+At certain proximities observed enemies are automatically announced to your side. When you spot someone in the distance use '''[T]''' to announce the target to your side.
+
+
+=== Artillery Support ===
+Artillery is a precise strike effective against well defended or armored targets.<br>
+1. Point at the target.<br>
+2. Press '''[~]''' or '''[0]''' to enter the command menu.<br>
+3. Select '''Communications''' - '''[8]'''.<br>
+4. Select '''Artillery Strike'''.<br>
+5. Choose artillery.<br>
+6. Select a type of ammo.<br>
+7. Pick the number of rounds.<br>
+Artillery support will then confirm the request and report the splash.
+
+''The procedure is the same as with other types of support, just choose a different support in step 4.''
+
+
+=== Ballistic Computer ===
+When serving in artillery as a gunner, you can use the '''Artillery computer''' to calculate the elevation/power as well as to fire rounds.<br>
+* Open the action menu '''[Mouse wheel down]'''.<br>
+* Open the Artillery computer.<br>
+* Select a place on the map within the displayed radius.<br>
+* Select the type of ammunition and other parameters.<br>
+* Use the '''Fire''' button to fire, when ready.
+
+
+=== Instructor Figure ===
+Instructor figure represents the military insight available to help you carry out your tasks.<br>
+* To prompt the advice, press '''[0]''', '''[8]'''.
+
+''Log of the instructor's advices can be found in the Diary, section Instructor Figure<br>
+*  Open the diary with '''[J]'''.''
+
+
+=== Assembling Turrets ===
+After moving a static weapon, it needs to be assembled again. You will need bags with both parts of the weapon: the tripod and the gun.<br>
+* Open Inventory '''[I]'''.<br>
+* '''Drag and drop''' the first bag on the ground.<br>
+* Bring the second bag close, you must have it in your posession.<br>
+When both bags are close to each other, you can point at them and click '''Assemble'''. The turret will be facing the same direction you're facing when assembling it.
+
+''Start using the turret by pointing at it and choosing '''Get in''' from the action menu.''
+
+
+=== Moving Turrets ===
+Turrets can be disassembled, moved and reassembled on the battlefield. To disassemble it:<br>
+* Point the cursor at the weapon.<br>
+* Choose '''Disassemble''' from the action menu '''[Mouse wheel down]'''.<br>
+Two bags will appear. To grab a bag: <br>
+* Point at it.<br>
+* Select '''Take''' from the action menu.
+
+''You will need both bags to assemble the weapon again. You can only carry one at a time.''
+
+
+=== Respawn Camp ===
+Camps are respawn points which players can pack into a backpack, and later unpack on a different location. Use '''Assemble''' and '''Disassemble''' in the action menu to pack and unpack them.<br>
+* A tent will give a respawn point to the player who unpacked it and all friendlies nearby.<br>
+* A sleeping bag will create a point available only to the player who unpacked it.
+
+''Any player, including enemies, can pack your camp and use it later for themselves.''
+
+
+{{GameCategory|arma3|Field Manual}}

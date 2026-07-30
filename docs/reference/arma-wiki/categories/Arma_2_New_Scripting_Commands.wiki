@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_New_Scripting_Commands
+// revision: 184942 (2021-01-06T23:21:52Z)
+// export sha1: g9qsdzpkf3fgepcox9vplmliz4xd5ss
+// Vendored snapshot. Do not edit — re-export instead.
+
+List of all new commands in {{arma2}}.
+
+{{GameCategory|arma2|Scripting Commands}}
+{{GameCategory|arma2|Editing}}

@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/lnbPictureRight
+// revision: 348973 (2023-11-08T14:45:44Z)
+// export sha1: c8lj6xvtcp3hkiix3eq1aijehb03jpt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI Control - ListNBox
+
+|descr= Returns the right picture of given row. The ''column'' parameter does not matter.
+
+|s1= [[lnbPictureRight]] [idc, [row, column]]
+
+|p1= idc: [[Number]]
+
+|p2= row: [[Number]] - index of the row
+
+|p3= column: [[Number]] - index of the column
+
+|r1= [[String]] - path of image
+
+|s2= ctrl [[lnbPictureRight]] [row, column]
+
+|p21= ctrl: [[Control]]
+
+|p22= row: [[Number]] - index of the row
+
+|p23= column: [[Number]] - index of the column
+
+|r2= [[String]] - path of image
+
+|x1= <sqf>_path = _control lnbPictureRight [0, 0];</sqf>
+
+|seealso= [[lnbSetPictureRight]] [[lnbSetPicture]] [[lnbPicture]]
+}}

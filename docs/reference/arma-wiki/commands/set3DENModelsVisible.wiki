@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/set3DENModelsVisible
+// revision: 351312 (2023-11-27T04:55:31Z)
+// export sha1: 8mtmwn2xbeqffser4fmookbxqxr4s9o
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Enables or disables trigger area visibility.
+|s1= [[set3DENModelsVisible]] [map, scene]
+
+|p1= map: [[Boolean]]
+
+|p2= scene: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>set3DENModelsVisible [true, true];</sqf>
+
+|seealso= [[get3DENLinesVisible]] [[get3DENIconsVisible]]
+}}

@@ -1,0 +1,102 @@
+// source: https://community.bistudio.com/wiki/getResolution
+// revision: 378509 (2026-05-03T17:11:30Z)
+// export sha1: n8apuh82mw4yeonf7ngjcijpu4lxkcw
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Command Group: System | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= System
+
+|gr2= GUI Control - Positioning
+
+|descr= Returns an array containing all information about current client screen resolution.
+
+{{Feature|arma3|
+'''Render resolution''' is not returned by this command.<br>
+A sampling setting of '''50%''' means half of native width ''and'' half of native height, resulting in a render resolution of '''''25%''''' the original resolution.}}
+{{Feature | important | The engine default value for {{hl|fovTop}} is '''0.75''' in case it is needed to calculate difference with custom FOV.}}
+{{Feature|informative|The {{hl|aspectRatio}} is calculated as {{hl|fovLeft&nbsp;/&nbsp;fovTop}} and should be the same as {{hl|screenW&nbsp;/&nbsp;screenH}} for undistorted image if the FOV is custom. Some of the common values:
+{{{!}} class{{=}}"wikitable"
+! 16/9 !! 16/10 !! 5/4 !! 4/3 !! 16/9 triple screen
+{{!}}-
+{{!}} 1.777777(…) {{!}}{{!}} 1.6 {{!}}{{!}} 1.25 {{!}}{{!}} 1.333333(…) {{!}}{{!}} 5.333333(…)
+{{!}}}
+}}
+
+|s1= [[getResolution]]
+
+|r1= [[Array]] with [screenW, screenH, viewPortW, viewPortH, aspectRatio, uiScale, fovTop, fovLeft, tripleHead, textureQuality]
+* screenW: [[Number]] - width of the screen in pixels
+* screenH: [[Number]] - height of the screen in pixels
+* viewPortW: [[Number]] - width of the '''4:3''' view port in pixels
+* viewPortH: [[Number]] - height of the '''4:3''' view port in pixels 
+* aspectRatio: [[Number]] - screen aspect ratio
+* uiScale: [[Number]] - the scale of the UI, which affects view port size:
+: {{{!}} class="wikitable" style="margin-top: -0.5em"
+{{!}}+ {{arma3}}
+! Very Small !! Small !! Normal !! Large !! Very Large
+{{!}}-
+{{!}} 0.47 {{!}}{{!}} 0.55 {{!}}{{!}} 0.7 {{!}}{{!}} 0.85 {{!}}{{!}} 1
+{{!}}}
+* {{GVI|arma3|1.94|size= 0.75}} fovTop: [[Number]] - vertical FOV in [[rad]]ians, the same as {{hl|fovTop}} value from the user profile
+* {{GVI|arma3|1.94|size= 0.75}} fovLeft: [[Number]] - horizontal FOV in [[rad]]ians, the same as{{hl|fovLeft}} value from the user profile
+* {{GVI|arma3|1.94|size= 0.75}} tripleHead: [[Boolean]] - [[true]] if user has triple head screen (see also [[safeZoneXAbs]], [[safeZoneWAbs]])
+* {{GVI|arma3|2.10|size= 0.75}} textureQuality: [[Number]] - current texture quality set in user preferences in 0..1 range, where 0 is lowest, 1 is highest
+
+|x1= <sqf>private _res = getResolution;</sqf>
+
+Example result with a single 16:9 monitor:
+<sqf>
+[
+	1920,		// width
+	1080,		// height
+	792,		// 2D viewport width
+	594,		// 2D viewport height
+	1.77778,	// aspect ratio
+	0.55,		// UI scale
+	0.75,		// fovTop
+	1.33333,	// fovLeft
+	false		// tripleHead
+]
+</sqf>
+Example result with a triple 16:9 monitor setup:
+<sqf>
+[
+	5760,		// width
+	1080,		// height
+	792,		// 2D viewport width
+	594,		// 2D viewport height
+	5.33333,	// aspect ratio
+	0.55		// UI scale
+]
+</sqf>
+Example result on a dedicated server:
+<sqf>
+[
+	160,		// width
+	120,		// height
+	136,		// 2D viewport width
+	102,		// 2D viewport height
+	1.33333,	// aspect ratio
+	0.85		// UI scale
+]
+</sqf>
+
+|seealso= [[getObjectFOV]] [[worldToScreen]] [[screenToWorld]] [[safeZoneX]] [[safeZoneY]] [[safeZoneW]] [[safeZoneH]]
+}}
+
+{{Note
+|user= Tom_48_97
+|timestamp= 20101220053800
+|text= This command can be useful to play a video (see this function [[BIS_fnc_playVideo]]) in the given format if you have compiled it for different UI scale.
+}}

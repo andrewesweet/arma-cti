@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/enginesPowerRTD
+// revision: 349357 (2023-11-08T15:35:08Z)
+// export sha1: 2fpklrsn82w6s9awqzvdmlrxqwv2cx1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= RTD
+
+|descr= Returns power produced by engines in Watts.
+{{Feature|afm}}
+
+|s1= [[enginesPowerRTD]] RTD_helicopter
+
+|p1= RTD_helicopter: [[Object]] - helicopter with advanced flight model enabled
+
+|r1= [[Array]] of [[Number]]s - watts produced by the engines, to format [engine1, engine2]. Returns an empty array if [[Advanced_Helicopter_Flight_Model_in_Arma3|Advanced Flight Model]] is disabled.
+
+|x1= <sqf>_array = enginesPowerRTD vehicle player;</sqf>
+
+|seealso= [[:Category:Command_Group:_RTD|RTD Commands Group]]
+}}

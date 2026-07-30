@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/ctrlRemoveEventHandler
+// revision: 329861 (2022-08-07T23:04:48Z)
+// export sha1: 3rwyxyw0takf00g1q2cr9vxwrwko636
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: GUI Control - Event Handlers | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= GUI Control - Event Handlers
+|gr2= Event Handlers
+
+|descr= Remove a given event handler from the given control.
+
+|s1= control [[ctrlRemoveEventHandler]] [type, id]
+
+|p1= control: [[Control]]
+
+|p2= type: [[String]]
+
+|p3= id: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_map ctrlRemoveEventHandler ["Draw", _id];</sqf>
+
+|seealso= [[ctrlAddEventHandler]] [[ctrlRemoveAllEventHandlers]]
+}}

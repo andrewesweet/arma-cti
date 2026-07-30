@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/Real_Virtuality
+// revision: 369530 (2024-09-15T21:03:02Z)
+// export sha1: enr3i3hrokja9ezilb1g6npu37lr51f
+// categories: Category:Projects
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+[[Real Virtuality]] is the engine behind most of [[{{Name|bi}}]] games (also previously referred to as "{{Link|#Poseidon}}") until the advent of [[Enfusion]].
+It is responsible for handling the graphics, physics, scripting and the user interface.
+
+The different versions of the engine are as follows:
+
+=== Real Virtuality 1 ===
+
+* {{GameCategory|ofp|link= y}}: 1.00 - 1.46
+* [[{{ofpr}}]]: 1.75-1.99
+* Virtual Battlespace 1: 1.75-2.12.14
+
+=== Real Virtuality 2 ===
+
+* {{GameCategory|ofpe|link= y}}: 2.85
+* {{GameCategory|arma1|link= y}}: 5089 - 5151 - 5163 (See also [[ArmA: Armed Assault: Version History#Build numbers|build numbers]])
+* Virtual Battlespace 2: 1.19.5630
+* Virtual Battlespace 2: VTK
+
+=== Real Virtuality 3 ===
+
+* {{GameCategory|arma2|link= y}}: 57270 (v1.00) - 74450 (v1.08) (See also [[Arma 2: Version History#Build_Numbers|build numbers]])
+* {{GameCategory|arma2oa|link= y}} 70996 (v1.50) - 76134 (v1.56) (See also [[Arma 2: Operation Arrowhead: Version History#Build Numbers|build numbers]])
+* {{GameCategory|tkoh|link= y}}
+
+=== Real Virtuality 4 ===
+
+* {{GameCategory|arma3|link= y}}
+
+=== Poseidon ===
+
+"Poseidon" is the internally used name of the [[Real Virtuality]] engine, used to drive all {{Name|bi}} games from {{ofp}} to {{arma3}} (with the exception of {{Name|carriercommand}} which used the '''Enforce''' engine).
+An early version of the {{ofp}} engine can be downloaded  {{Link|http://tom4897.info/?attachment_id{{=}}2258|here}}.
+<!-- ftp://www.flashpoint1985.com/flashpoint/demos/1997_Dawn_of_Flashpoint.zip -->
+
+
+[[Category:Projects]]

@@ -1,0 +1,3339 @@
+// source: https://community.bistudio.com/wiki/Global_Mobilization_Weapons
+// revision: 340808 (2023-04-30T17:09:17Z)
+// export sha1: bq6prq1i3sk2w10y6yo2lgpstd1yq66
+// categories: Category:Global Mobilization
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[image:gm picture ca.png|borderless|60px|right|link=Global Mobilization]]
+ 
+== Weapons ==
+ 
+=== Primary Weapons ===
+ 
+126 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Info<br>
+! Description<br>
+! Magazine Well<br>
+|-
+| [[image:picture_gm_ak74n_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ak74n_wud'''</span>
+| ''AK-74N 5.45x39 mm''
+| Assault Rifle<br />Caliber: 5.45x39 mm
+| The AK-74 is a 5.45x39 mm assault rifle of Soviet origin. It is well known for its robustness.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_akm_pallad_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_akm_pallad_wud'''</span>
+| ''AKM Pallad 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_akm_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_akm_wud'''</span>
+| ''AKM 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_akml_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_akml_wud'''</span>
+| ''AKML 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_akmn_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_akmn_wud'''</span>
+| ''AKMN 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_akms_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_akms_wud'''</span>
+| ''AKMS 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_akmsl_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_akmsl_wud'''</span>
+| ''AKMSL 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_akmsn_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_akmsn_wud'''</span>
+| ''AKMSN 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_c7a1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_c7a1_blk'''</span>
+| ''C7A1 5.56x45 mm (Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The M16 is a 5.56x45 mm NATO assault rifle of American origin.
+| gm_magazineWell_556x45mm_stanag<br>STANAG_556x45<br>STANAG_556x45_Large
+|-
+| [[image:picture_gm_c7a1_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_c7a1_oli'''</span>
+| ''C7A1 5.56x45 mm''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The M16 is a 5.56x45 mm NATO assault rifle of American origin.
+| gm_magazineWell_556x45mm_stanag<br>STANAG_556x45<br>STANAG_556x45_Large
+|-
+| [[image:picture_gm_g11k2_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g11k2_blk'''</span>
+| ''G11K2 4.73x33 mm''
+| Assault Rifle<br />Caliber: 4.73x33 mm
+| The G11 is a 4.73x33 mm assault rifle of German origin.
+| gm_magazineWell_473x33mm_g11
+|-
+| [[image:picture_gm_g11k2_ris_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g11k2_ris_blk'''</span>
+| ''G11K2 RIS 4.73x33 mm''
+| Assault Rifle<br />Caliber: 4.73x33 mm
+| The G11 is a 4.73x33 mm assault rifle of German origin.
+| gm_magazineWell_473x33mm_g11
+|-
+| [[image:picture_gm_g36a1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g36a1_blk'''</span>
+| ''G36A1 5.56x45 mm''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The G36 is a 5.56x45 mm NATO assault rifle of German origin.
+| gm_magazineWell_556x45mm_g36
+|-
+| [[image:picture_gm_g36e_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g36e_blk'''</span>
+| ''G36E 5.56x45 mm''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The G36 is a 5.56x45 mm NATO assault rifle of German origin.
+| gm_magazineWell_556x45mm_g36
+|-
+| [[image:picture_gm_g3a3_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a3_blk'''</span>
+| ''G3A3 7.62x51 mm (Black)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a3_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a3_oli'''</span>
+| ''G3A3 7.62x51 mm (Olive)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a3a0_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a3a0_blk'''</span>
+| ''G3A3A0 7.62x51 mm (Black)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a3a0_gold_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a3a0_gold'''</span>
+| ''G3A3A0 7.62x51 mm (Gold)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a3a0_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a3a0_oli'''</span>
+| ''G3A3A0 7.62x51 mm (Olive)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a3a1_ris_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a3a1_ris_blk'''</span>
+| ''G3A3A1 7.62x51 mm (Black, RIS)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a3a1_ris_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a3a1_ris_oli'''</span>
+| ''G3A3A1 7.62x51 mm (Olive, RIS)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a4_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a4_blk'''</span>
+| ''G3A4 7.62x51 mm (Black)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a4_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a4_oli'''</span>
+| ''G3A4 7.62x51 mm (Olive)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a4a0_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a4a0_blk'''</span>
+| ''G3A4A0 7.62x51 mm (Black)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a4a0_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a4a0_oli'''</span>
+| ''G3A4A0 7.62x51 mm (Olive)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a4a1_ris_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a4a1_ris_blk'''</span>
+| ''G3A4A1 7.62x51 mm (Black, RIS)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a4a1_ris_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3a4a1_ris_oli'''</span>
+| ''G3A4A1 7.62x51 mm (Olive, RIS)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3ka4_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3ka4_blk'''</span>
+| ''G3KA4 7.62x51 mm (Black)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3
+|-
+| [[image:picture_gm_g3ka4_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3ka4_oli'''</span>
+| ''G3KA4 7.62x51 mm (Olive)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3
+|-
+| [[image:picture_gm_g3ka4a1_ris_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3ka4a1_ris_blk'''</span>
+| ''G3KA4A1 7.62x51 mm (Black, RIS)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3
+|-
+| [[image:picture_gm_g3sg1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3sg1_blk'''</span>
+| ''G3SG1 7.62x51 mm (Black)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3sg1_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3sg1_oli'''</span>
+| ''G3SG1 7.62x51 mm (Olive)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g8a1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g8a1_blk'''</span>
+| ''G8A1 7.62x51 mm (Black)''
+| Precision Machine gun<br />Caliber: 7.62x51 mm
+| The G8 is a 7,62x51 mm NATO Machinegun of West German origin derived from the G3 Battle rifle.
+| gm_magazineWell_762x51mm_g3
+|-
+| [[image:picture_gm_g8a2_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g8a2_blk'''</span>
+| ''G8A2 7.62x51 mm (Black)''
+| Precision Machine gun<br />Caliber: 7.62x51 mm
+| The G8 is a 7,62x51 mm NATO Machinegun of West German origin derived from the G3 Battle rifle.
+| gm_magazineWell_762x51mm_g3
+|-
+| [[image:picture_gm_g3a3_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_gvm75_blk'''</span>
+| ''GV M/75 7.62x51 mm (Black)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a3_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_gvm75_oli'''</span>
+| ''GV M/75 7.62x51 mm''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a4_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_gvm75carb_blk'''</span>
+| ''GV M/75 Carbine 7.62x51 mm (Black)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_g3a4_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_gvm75carb_oli'''</span>
+| ''GV M/75 Carbine 7.62x51 mm''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The G3 is a 7.62x51 mm NATO battle rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3<br>gm_magazineWell_67mm_g3
+|-
+| [[image:picture_gm_gvm95_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_gvm95_blk'''</span>
+| ''GV M/95 5.56x45 mm''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The M16 is a 5.56x45 mm NATO assault rifle of American origin.
+| gm_magazineWell_556x45mm_stanag<br>STANAG_556x45<br>STANAG_556x45_Large
+|-
+| [[image:picture_gm_hk33a2_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_hk33a2_blk'''</span>
+| ''G33A2 5.56x45 mm (Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The G33 is a 5.56x45 mm NATO assault rifle of West German origin.
+| gm_magazineWell_556x45mm_hk33
+|-
+| [[image:picture_gm_hk33a3_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_hk33a3_blk'''</span>
+| ''G33A3 5.56x45 mm (Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The G33 is a 5.56x45 mm NATO assault rifle of West German origin.
+| gm_magazineWell_556x45mm_hk33
+|-
+| [[image:picture_gm_hk33ka2_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_hk33ka2_blk'''</span>
+| ''G33KA2 5.56x45 mm (Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The G33 is a 5.56x45 mm NATO assault rifle of West German origin.
+| gm_magazineWell_556x45mm_hk33
+|-
+| [[image:picture_gm_hk33ka3_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_hk33ka3_blk'''</span>
+| ''G33KA3 5.56x45 mm (Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The G33 is a 5.56x45 mm NATO assault rifle of West German origin.
+| gm_magazineWell_556x45mm_hk33
+|-
+| [[image:picture_gm_hk33sg1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_hk33sg1_blk'''</span>
+| ''G33SG1 5.56x45 mm (Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The G33 is a 5.56x45 mm NATO assault rifle of West German origin.
+| gm_magazineWell_556x45mm_hk33
+|-
+| [[image:picture_gm_hk512_ris_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_hk512_ris_wud'''</span>
+| ''MZF512 12 ga (RIS)''
+| Shotgun<br />Caliber: 12 ga
+| MZF512 12 ga
+| gm_magazineWell_12ga_7rnd
+|-
+| [[image:picture_gm_hk512_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_hk512_wud'''</span>
+| ''MZF512 12 ga''
+| Shotgun<br />Caliber: 12 ga
+| MZF512 12 ga
+| gm_magazineWell_12ga_7rnd
+|-
+| [[image:picture_gm_hk53a2_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_hk53a2_blk'''</span>
+| ''G53A2 5.56x45 mm (Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The G53 is a 5.56x45 mm NATO assault rifle of West German origin.
+| gm_magazineWell_556x45mm_hk33
+|-
+| [[image:picture_gm_hk53a3_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_hk53a3_blk'''</span>
+| ''G53A3 5.56x45 mm (Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The G53 is a 5.56x45 mm NATO assault rifle of West German origin.
+| gm_magazineWell_556x45mm_hk33
+|-
+| [[image:picture_gm_hk69a1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_hk69a1_blk'''</span>
+| ''GraPi 40x46 mm''
+| Grenadelauncher<br />Caliber: 40x46 mm
+| The GraPi is a 40x46 mm grenade launcher of West German origin.
+| 
+|-
+| [[image:picture_gm_hmgpkm_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_hmgpkm_prp'''</span>
+| ''HMG PKM 7.62x54 mmR''
+| Machinegun<br />Caliber: 7.62x54 mmR
+| The PK is a 7.62x54 mmR machinegun of Soviet origin.
+| gm_magazineWell_762x54mmR_pk<br>gm_magazineWell_762x54mm_pk
+|-
+| [[image:picture_gm_lmgk500_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lmgk500_blk'''</span>
+| ''LMG K 500 7.62x39 mm (Black)''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_lmgk500_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lmgk500_brn'''</span>
+| ''LMG K 500 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_lmgk500_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lmgk500_prp'''</span>
+| ''LMG K 500 7.62x39 mm (Plum)''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_lmgk500s_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lmgk500s_blk'''</span>
+| ''LMG K 500 S 7.62x39 mm (Black)''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_lmgk500s_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lmgk500s_brn'''</span>
+| ''LMG K 500 S 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_lmgk500s_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lmgk500s_prp'''</span>
+| ''LMG K 500 S 7.62x39 mm (Plum)''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_lmgm62_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lmgm62_blk'''</span>
+| ''LMG M/62 7.62x51 mm''
+| General Purpose Machine gun<br />Caliber: 7.62x51 mm
+| The MG3 is a 7,62x51 mm NATO General Purpose Machinegun of West German origin derived from the World War II Machinegun MG42. It is well known for its high rate of fire.
+| gm_magazineWell_762x51mm_mg3
+|-
+| [[image:picture_gm_lmgrpk74n_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lmgrpk74n_blk'''</span>
+| ''LMG RPK-74 5.45x39 mm (Black)''
+| Light Machinegun<br />Caliber: 5.45x39 mm
+| The RPK-74 is a 5.45x39 mm light machinegun of Soviet origin. It is based on the AK-74.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_lmgrpk74n_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lmgrpk74n_brn'''</span>
+| ''LMG RPK-74 5.45x39 mm''
+| Light Machinegun<br />Caliber: 5.45x39 mm
+| The RPK-74 is a 5.45x39 mm light machinegun of Soviet origin. It is based on the AK-74.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_lmgrpk74n_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lmgrpk74n_prp'''</span>
+| ''LMG RPK-74 5.45x39 mm (Plum)''
+| Light Machinegun<br />Caliber: 5.45x39 mm
+| The RPK-74 is a 5.45x39 mm light machinegun of Soviet origin. It is based on the AK-74.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_lmgrpk_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lmgrpk_brn'''</span>
+| ''LMG RPK 7.62x39 mm''
+| 
+| The RPK-74 is a 7.62x39 mm light machinegun of Soviet origin. It is based on the AK-47.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_lmgrpk_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lmgrpk_prp'''</span>
+| ''LMG RPK 7.62x39 mm (Plum)''
+| 
+| The RPK-74 is a 7.62x39 mm light machinegun of Soviet origin. It is based on the AK-47.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_m16a1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_m16a1_blk'''</span>
+| ''M16A1 5.56x45 mm''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The M16 is a 5.56x45 mm NATO assault rifle of American origin.
+| gm_magazineWell_556x45mm_stanag<br>STANAG_556x45<br>STANAG_556x45_Large
+|-
+| [[image:picture_gm_m16a2_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_m16a2_blk'''</span>
+| ''M16A2 5.56x45 mm''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The M16 is a 5.56x45 mm NATO assault rifle of American origin.
+| gm_magazineWell_556x45mm_stanag<br>STANAG_556x45<br>STANAG_556x45_Large
+|-
+| [[image:picture_gm_mg3_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mg3_blk'''</span>
+| ''MG3 7.62x51 mm''
+| General Purpose Machine gun<br />Caliber: 7.62x51 mm
+| The MG3 is a 7,62x51 mm NATO General Purpose Machinegun of West German origin derived from the World War II Machinegun MG42. It is well known for its high rate of fire.
+| gm_magazineWell_762x51mm_mg3
+|-
+| [[image:picture_gm_mg8a1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mg8a1_blk'''</span>
+| ''MG8A1 7.62x51 mm (Black)''
+| Precision Machine gun<br />Caliber: 7.62x51 mm
+| The G8 is a 7,62x51 mm NATO Machinegun of West German origin derived from the G3 Battle rifle.
+| gm_magazineWell_762x51mm_mg8
+|-
+| [[image:picture_gm_mg8a2_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mg8a2_blk'''</span>
+| ''MG8A2 7.62x51 mm (Black)''
+| Precision Machine gun<br />Caliber: 7.62x51 mm
+| The G8 is a 7,62x51 mm NATO Machinegun of West German origin derived from the G3 Battle rifle.
+| gm_magazineWell_762x51mm_mg8
+|-
+| [[image:picture_gm_mp2a1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp2a1_blk'''</span>
+| ''MP2A1 9x19 mm''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP2 is a 9x19 mm submachinegun of Israeli origin.
+| gm_magazineWell_9x19mm_mp2
+|-
+| [[image:picture_gm_mp5a2_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5a2_blk'''</span>
+| ''SG5A2 9x19 mm (Black)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mp5a3_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5a3_blk'''</span>
+| ''SG5A3 9x19 mm (Black)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mp5a3_surefire_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5a3_surefire_blk'''</span>
+| ''SG5A3 9x19 mm (Black, Flashlight)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mp5a4_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5a4_blk'''</span>
+| ''SG5A4 9x19 mm (Black)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mp5a5_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5a5_blk'''</span>
+| ''SG5A5 9x19 mm (Black)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mp5n_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5n_blk'''</span>
+| ''SG5N 9x19 mm (Black)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mp5n_surefire_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5n_surefire_blk'''</span>
+| ''SG5N 9x19 mm (Black, Flashlight)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mp5nsd1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5nsd1_blk'''</span>
+| ''SG5NSD1 9x19 mm (Black)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mp5nsd2_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5nsd2_blk'''</span>
+| ''SG5NSD2 9x19 mm (Black)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mp5sd2_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5sd2_blk'''</span>
+| ''SG5SD2 9x19 mm (Black)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mp5sd3_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5sd3_blk'''</span>
+| ''SG5SD3 9x19 mm (Black)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mp5sd5_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5sd5_blk'''</span>
+| ''SG5SD5 9x19 mm (Black)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mp5sd6_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mp5sd6_blk'''</span>
+| ''SG5SD6 9x19 mm (Black)''
+| Submachinegun<br />Caliber: 9x19 mm
+| The MP5 is a 9x19 mm submachinegun of West German origin.
+| gm_magazineWell_9x19mm_mp5
+|-
+| [[image:picture_gm_mpiak74n_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpiak74n_blk'''</span>
+| ''MPi AK-74 5.45x39 mm (Black)''
+| Assault Rifle<br />Caliber: 5.45x39 mm
+| The AK-74 is a 5.45x39 mm assault rifle of Soviet origin. It is well known for its robustness.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_mpiak74n_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpiak74n_brn'''</span>
+| ''MPi AK-74 5.45x39 mm''
+| Assault Rifle<br />Caliber: 5.45x39 mm
+| The AK-74 is a 5.45x39 mm assault rifle of Soviet origin. It is well known for its robustness.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_mpiak74n_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpiak74n_prp'''</span>
+| ''MPi AK-74 5.45x39 mm (Plum)''
+| Assault Rifle<br />Caliber: 5.45x39 mm
+| The AK-74 is a 5.45x39 mm assault rifle of Soviet origin. It is well known for its robustness.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_mpiaks74n_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpiaks74n_blk'''</span>
+| ''MPi AKS-74 5.45x39 mm (Black)''
+| Assault Rifle<br />Caliber: 5.45x39 mm
+| The AK-74 is a 5.45x39 mm assault rifle of Soviet origin. It is well known for its robustness.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_mpiaks74n_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpiaks74n_brn'''</span>
+| ''MPi AKS-74 5.45x39 mm''
+| Assault Rifle<br />Caliber: 5.45x39 mm
+| The AK-74 is a 5.45x39 mm assault rifle of Soviet origin. It is well known for its robustness.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_mpiaks74n_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpiaks74n_prp'''</span>
+| ''MPi AKS-74 5.45x39 mm (Plum)''
+| Assault Rifle<br />Caliber: 5.45x39 mm
+| The AK-74 is a 5.45x39 mm assault rifle of Soviet origin. It is well known for its robustness.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_mpiaks74nk_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpiaks74nk_blk'''</span>
+| ''MPi AKS-74K 5.45x39 mm (Black)''
+| Assault Rifle<br />Caliber: 5.45x39 mm
+| The AK-74 is a 5.45x39 mm assault rifle of Soviet origin. It is well known for its robustness.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_mpiaks74nk_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpiaks74nk_brn'''</span>
+| ''MPi AKS-74K 5.45x39 mm''
+| Assault Rifle<br />Caliber: 5.45x39 mm
+| The AK-74 is a 5.45x39 mm assault rifle of Soviet origin. It is well known for its robustness.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_mpiaks74nk_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpiaks74nk_prp'''</span>
+| ''MPi AKS-74K 5.45x39 mm (Plum)''
+| Assault Rifle<br />Caliber: 5.45x39 mm
+| The AK-74 is a 5.45x39 mm assault rifle of Soviet origin. It is well known for its robustness.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_mpikm72_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikm72_blk'''</span>
+| ''MPi KM-72 7.62x39 mm (Black)''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpikm72_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikm72_brn'''</span>
+| ''MPi KM-72 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpikm72_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikm72_prp'''</span>
+| ''MPi KM-72 7.62x39 mm (Plum)''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpikm_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikm_brn'''</span>
+| ''MPi KM 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpikms72_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikms72_blk'''</span>
+| ''MPi KMS-72 7.62x39 mm (Black)''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpikms72_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikms72_brn'''</span>
+| ''MPi KMS-72 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpikms72_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikms72_prp'''</span>
+| ''MPi KMS-72 7.62x39 mm (Plum)''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpikms72k_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikms72k_blk'''</span>
+| ''MPi KMS-72K 7.62x39 mm (Black)''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpikms72k_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikms72k_brn'''</span>
+| ''MPi KMS-72K 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpikms72k_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikms72k_prp'''</span>
+| ''MPi KMS-72K 7.62x39 mm (Plum)''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpikms72ksd_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikms72ksd_blk'''</span>
+| ''MPi KMS-72KSD 7.62x39 mm (Black)''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpikms72ksd_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikms72ksd_brn'''</span>
+| ''MPi KMS-72KSD 7.62x39 mm''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpikms72ksd_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpikms72ksd_prp'''</span>
+| ''MPi KMS-72KSD 7.62x39 mm (Plum)''
+| Assault Rifle<br />Caliber: 7.62x39 mm
+| The AK-47 is a 7.62x39 mm assault rifle of Soviet origin. It is well known for its reliability.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_mpm85_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_mpm85_blk'''</span>
+| ''Mp M/85 5.56x45 mm (Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The G53 is a 5.56x45 mm NATO assault rifle of West German origin.
+| gm_magazineWell_556x45mm_hk33
+|-
+| [[image:picture_gm_msg90_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_msg90_blk'''</span>
+| ''MSG90 7.62x51 mm''
+| Sniper Rifle<br />Caliber: 7.62x51 mm
+| The PSG1 is a 7.62x51 mm Sniper Rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3
+|-
+| [[image:picture_gm_msg90a1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_msg90a1_blk'''</span>
+| ''MSG90A1 7.62x51 mm''
+| Sniper Rifle<br />Caliber: 7.62x51 mm
+| The PSG1 is a 7.62x51 mm Sniper Rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3
+|-
+| [[image:picture_gm_pallad_d_brn_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pallad_d_brn'''</span>
+| ''wz.83 Pallad-D 40x47mm''
+| Grenadelauncher<br />Caliber: 40x47 mm
+| The wz.83 Pallad-D is a 40x47 mm grenade launcher of Polish origin.
+| 
+|-
+| [[image:picture_gm_pm63_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pm63_blk'''</span>
+| ''PM-63 9x18 mm''
+| Submachinegun<br />Caliber: 9x18 mm
+| The PM-63 is a 9x18 mm submachinegun of Polish origin.
+| gm_magazineWell_9x18mm_pm63
+|-
+| [[image:picture_gm_psg1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_psg1_blk'''</span>
+| ''PSG1 7.62x51 mm''
+| Sniper Rifle<br />Caliber: 7.62x51 mm
+| The PSG1 is a 7.62x51 mm Sniper Rifle of West German origin. It is well known for its high precision.
+| gm_magazineWell_762x51mm_g3
+|-
+| [[image:picture_gm_rpk74n_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_rpk74n_wud'''</span>
+| ''RPK-74N 5.45x39 mm''
+| Light Machinegun<br />Caliber: 5.45x39 mm
+| The RPK-74 is a 5.45x39 mm light machinegun of Soviet origin. It is based on the AK-74.
+| gm_magazineWell_545x39mm_ak74<br>AK_545x39
+|-
+| [[image:picture_gm_rpk_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_rpk_wud'''</span>
+| ''RPK 7.62x39 mm''
+| Light Machinegun<br />Caliber: 7.62x39 mm
+| The RPK-74 is a 7.62x39 mm light machinegun of Soviet origin. It is based on the AK-47.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_rpk_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_rpkn_wud'''</span>
+| ''RPKN 7.62x39 mm''
+| 
+| The RPK-74 is a 7.62x39 mm light machinegun of Soviet origin. It is based on the AK-47.
+| gm_magazineWell_762x39mm_ak47<br>AK_762x39
+|-
+| [[image:picture_gm_sg542_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg542_blk'''</span>
+| ''SG542 7.62x51 mm (Black)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The SG542 is a 7.62x51 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_762x51mm_sg542
+|-
+| [[image:picture_gm_sg542_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg542_oli'''</span>
+| ''SG542 7.62x51 mm''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The SG542 is a 7.62x51 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_762x51mm_sg542
+|-
+| [[image:picture_gm_sg542_ris_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg542_ris_blk'''</span>
+| ''SG542 7.62x51 mm (RIS, Black)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The SG542 is a 7.62x51 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_762x51mm_sg542
+|-
+| [[image:picture_gm_sg542_ris_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg542_ris_oli'''</span>
+| ''SG542 7.62x51 mm (RIS)''
+| Battle Rifle<br />Caliber: 7.62x51 mm
+| The SG542 is a 7.62x51 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_762x51mm_sg542
+|-
+| [[image:picture_gm_sg550_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg550_blk'''</span>
+| ''SG550 5.56x45 mm (Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The SG550 is a 5.56x45 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_556x45mm_sg550
+|-
+| [[image:picture_gm_sg550_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg550_oli'''</span>
+| ''SG550 5.56x45 mm''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The SG550 is a 5.56x45 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_556x45mm_sg550
+|-
+| [[image:picture_gm_sg550_ris_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg550_ris_blk'''</span>
+| ''SG550 5.56x45 mm (RIS, Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The SG550 is a 5.56x45 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_556x45mm_sg550
+|-
+| [[image:picture_gm_sg550_ris_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg550_ris_oli'''</span>
+| ''SG550 5.56x45 mm (RIS)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The SG550 is a 5.56x45 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_556x45mm_sg550
+|-
+| [[image:picture_gm_sg551_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg551_blk'''</span>
+| ''SG551 5.56x45 mm (Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The SG551 is a 5.56x45 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_556x45mm_sg550
+|-
+| [[image:picture_gm_sg551_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg551_oli'''</span>
+| ''SG551 5.56x45 mm''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The SG551 is a 5.56x45 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_556x45mm_sg550
+|-
+| [[image:picture_gm_sg551_ris_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg551_ris_blk'''</span>
+| ''SG551 5.56x45 mm (RIS, Black)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The SG551 is a 5.56x45 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_556x45mm_sg550
+|-
+| [[image:picture_gm_sg551_ris_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg551_ris_oli'''</span>
+| ''SG551 5.56x45 mm (RIS)''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The SG551 is a 5.56x45 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_556x45mm_sg550
+|-
+| [[image:picture_gm_sg551_swat_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_sg551_swat_blk'''</span>
+| ''SG551 SWAT 5.56x45 mm''
+| Assault Rifle<br />Caliber: 5.56x45 mm
+| The SG551 is a 5.56x45 mm NATO assault rifle of Swiss origin.
+| gm_magazineWell_556x45mm_sg550
+|-
+| [[image:picture_gm_svd_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_svd_wud'''</span>
+| ''SVD 7.62x54 mmR''
+| Sniper Rifle<br />Caliber: 7.62x54 mmR
+| The SVD is a 7.62x54 mmR sniper rifle of Soviet origin.
+| gm_magazineWell_762x54mmR_svd
+|-
+|}
+
+=== Handguns ===
+ 
+12 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Info<br>
+! Description<br>
+! Magazine Well<br>
+|-
+| [[image:picture_gm_lp1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lp1_blk'''</span>
+| ''LP1 26.5 mm''
+| Flaregun<br />Caliber: 26.5 mm
+| The LP1 is a 26.5 mm flaregun of East German origin.
+| gm_magazineWell_265mm
+|-
+| [[image:picture_gm_m49_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_m49_blk'''</span>
+| ''P M/49 9x19 mm''
+| Pistol<br />Caliber: 9x19 mm
+| The P M/49 is a 9x19 mm Pistol of Swiss origin with legendary accuracy.
+| gm_magazineWell_9x19mm_p210
+|-
+| [[image:picture_gm_p1_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_p1_blk'''</span>
+| ''P1 9x19 mm''
+| Pistol<br />Caliber: 9x19 mm
+| The P1 is a 9x19 mm Pistol of West German origin derived from a World War II pistol of similar design.
+| gm_magazineWell_9x19mm_p1
+|-
+| [[image:picture_gm_p1sd_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_p1sd_blk'''</span>
+| ''P1SD 9x19 mm''
+| Pistol<br />Caliber: 9x19 mm
+| The P1 is a 9x19 mm Pistol of West German origin derived from a World War II pistol of similar design.
+| gm_magazineWell_9x19mm_p1
+|-
+| [[image:picture_gm_p210_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_p210_blk'''</span>
+| ''P2 9x19 mm''
+| Pistol<br />Caliber: 9x19 mm
+| The P2 is a 9x19 mm Pistol of Swiss origin with legendary accuracy.
+| gm_magazineWell_9x19mm_p210
+|-
+| [[image:picture_gm_p2a1_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_p2a1_blk'''</span>
+| ''P2A1 26.5 mm''
+| Flaregun<br />Caliber: 26.5 mm
+| The P2A1 is a 26.5 mm flaregun of West German origin.
+| gm_magazineWell_265mm
+|-
+| [[image:picture_gm_pim_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pim_blk'''</span>
+| ''PiM 9x18 mm''
+| Pistol<br />Caliber: 9x18 mm
+| The PM is a 9x18 mm Pistol of Soviet origin and is the standard military and police side arm.
+| gm_magazineWell_9x18mm_pm
+|-
+| [[image:picture_gm_pimb_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pimb_blk'''</span>
+| ''PiMB 9x18 mm''
+| Pistol<br />Caliber: 9x18 mm
+| The PiMB is a 9x18 mm Pistol of Bulgarian origin, based on the soviet PM it's designed for silent operation.
+| gm_magazineWell_9x18mm_pm
+|-
+| [[image:picture_gm_pm63_handgun_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pm63_handgun_blk'''</span>
+| ''PM-63 9x18 mm''
+| Submachinegun<br />Caliber: 9x18 mm
+| The PM-63 is a 9x18 mm submachinegun of Polish origin.
+| gm_magazineWell_9x18mm_pm63
+|-
+| [[image:picture_gm_pm_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pm_blk'''</span>
+| ''PM 9x18 mm''
+| Pistol<br />Caliber: 9x18 mm
+| The PM is a 9x18 mm Pistol of Soviet origin and is the standard military and police side arm.
+| gm_magazineWell_9x18mm_pm
+|-
+| [[image:picture_gm_pn3_gry_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pn3_gry'''</span>
+| ''PN-3''
+| Night Vision Camera
+| The PN-3 is a handheld Night Vision device of Soviet origin.
+| 
+|-
+| [[image:picture_gm_wz78_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_wz78_blk'''</span>
+| ''wz. 78 26.5 mm''
+| Flaregun<br />Caliber: 26.5 mm
+| The P2A1 is a 26.5 mm flaregun of West German origin.
+| gm_magazineWell_265mm
+|-
+|}
+ 
+=== Launchers ===
+ 
+10 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Info<br>
+! Description<br>
+! Magazine Well<br>
+|-
+| [[image:picture_gm_9k32m_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_9k32m_oli'''</span>
+| ''Strela-2M''
+| Single Use Anti-Air Missile<br />Guidance: IR
+| The 9K32M Stela-2M is a shoulder-launched IR guided anti-air fire-and-forget missile system.
+| 
+|-
+| [[image:picture_gm_fim43_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_fim43_oli'''</span>
+| ''FIM-43''
+| Single Use Anti-Air Missile<br />Guidance: IR
+| The FIM-43 is a shoulder-launched IR guided anti-air fire-and-forget missile system.
+| 
+|-
+| [[image:picture_gm_m72a3_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_m72a3_oli'''</span>
+| ''M72A3 LAW''
+| Anti-Tank Weapon<br />Caliber: 66 mm
+| The M72 LAW is a 66 mm shoulder-fired anti tank weapon of US origin.
+| 
+|-
+| [[image:picture_gm_p2a1_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_p2a1_launcher_blk'''</span>
+| ''P2A1 Experimental''
+| 
+| 
+| 
+|-
+| [[image:picture_gm_pzf3_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pzf3_blk'''</span>
+| ''PzF3''
+| Anti-Tank Weapon<br />Caliber: 60 mm
+| The PzF3 is a 60 mm shoulder-fired anti tank weapon of West German origin.
+| 
+|-
+| [[image:picture_gm_pzf44_2_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pzf44_2_oli'''</span>
+| ''PzF44-2''
+| Anti-Tank Weapon<br />Caliber: 44x537 mm
+| The PzF44-2 is a 44x537 mm shoulder-fired anti tank weapon of West German origin.
+| 
+|-
+| [[image:picture_gm_pzf84_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pzf84_oli'''</span>
+| ''PzF84''
+| Recoilless Rifle<br />Caliber: 84 mm
+| The Carl Gustaf is a 84 mm is a shoulder-fired recoilless rifle of Swedish origin.
+| 
+|-
+| [[image:picture_gm_rpg18_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_rpg18_oli'''</span>
+| ''RPG-18''
+| Anti-Tank Weapon<br />Caliber: 64 mm
+| The RPG-18 is a 64 mm shoulder-fired anti tank weapon of Soviet origin.
+| 
+|-
+| [[image:picture_gm_rpg7_prp_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_rpg7_prp'''</span>
+| ''RPG-7 (Plum)''
+| Anti-Tank Weapon<br />Caliber: 40 mm
+| The RPG-7 is a 40 mm shoulder-fired anti tank weapon of Soviet origin.
+| 
+|-
+| [[image:picture_gm_rpg7_wud_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_rpg7_wud'''</span>
+| ''RPG-7''
+| Anti-Tank Weapon<br />Caliber: 40 mm
+| The RPG-7 is a 40 mm shoulder-fired anti tank weapon of Soviet origin.
+| 
+|-
+|}
+
+== Items ==
+ 
+=== Binoculars ===
+ 
+7 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Info<br>
+! Description<br>
+|-
+| [[image:picture_gm_df7x40_blk_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_df7x40_blk'''</span>
+| ''DF7X40 (Black)''
+| Magnification 7x
+| Binoculars allow the soldier to survey the battlefield over long distances.
+|-
+| [[image:picture_gm_fero51_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_fero51_oli'''</span>
+| ''Fero-51''
+| Magnification 6x
+| Binoculars allow the soldier to survey the battlefield over long distances.
+|-
+| [[image:picture_gm_ferod16_des_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ferod16_des'''</span>
+| ''FeroD-16 (Desert)''
+| Magnification 8x
+| Binoculars allow the soldier to survey the battlefield over long distances.
+|-
+| [[image:picture_gm_ferod16_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ferod16_oli'''</span>
+| ''FeroD-16 (Olive)''
+| Magnification 8x
+| Binoculars allow the soldier to survey the battlefield over long distances.
+|-
+| [[image:picture_gm_ferod16_win_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ferod16_win'''</span>
+| ''FeroD-16 (Winter)''
+| Magnification 8x
+| Binoculars allow the soldier to survey the battlefield over long distances.
+|-
+| [[image:picture_gm_lp7_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lp7_oli'''</span>
+| ''LP7''
+| Magnification 7x
+| The LP7 is a Laser Range Finder of Norwegian origin.
+|-
+| [[image:picture_gm_lpr1_oli_x_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lpr1_oli'''</span>
+| ''LPR-1''
+| Magnification 7x
+| The LPR-1 is a Laser Range Finder. It's a Soviet copy of the Norwegian LP7. Espionage at work.
+|-
+|}
+ 
+=== Night Vision Goggles ===
+ 
+2 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Info<br>
+! Description<br>
+|-
+| [[image:picture_gm_ferod51_oli_ca.paa.png|100px|&nbsp;]]
+| <span id='' >'''gm_ferod51_oli'''</span>
+| ''FeroD-51 ZUB''
+| Night Vision Goggles
+| Night vision goggles are intended for observation and terrain orientation at night. They work by intensifying the already available light in conditions of low illumination using, for instance, light from the moon or the stars.
+|-
+| [[image:picture_gm_nsg66_oli_ca.paa.png|100px|&nbsp;]]
+| <span id='' >'''gm_nsg66_oli'''</span>
+| ''NSG-66''
+| Night Vision Goggles
+| Night vision goggles are intended for observation and terrain orientation at night. They work by intensifying the already available light in conditions of low illumination using, for instance, light from the moon or the stars.
+|-
+|}
+ 
+=== Other ===
+ 
+21 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Info<br>
+|-
+| [[image:picture_gm_bayonet_6x3_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_bayonet_6x3_blk'''</span>
+| ''6H3 Bayonet (Black)''
+| Bayonet
+|-
+| [[image:picture_gm_bayonet_6x3_wud_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_bayonet_6x3_wud'''</span>
+| ''6H3 Bayonet''
+| Bayonet
+|-
+| [[image:picture_gm_bayonet_g11_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_bayonet_g11_blk'''</span>
+| ''G11 Bayonet (Black)''
+| Bayonet
+|-
+| [[image:picture_gm_bayonet_g11_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_bayonet_g11_oli'''</span>
+| ''G11 Bayonet (Olive)''
+| Bayonet
+|-
+| [[image:picture_gm_bayonet_g3_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_bayonet_g3_blk'''</span>
+| ''G3 Bayonet (Black)''
+| Bayonet
+|-
+| [[image:picture_gm_bayonet_g3_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_bayonet_g3_oli'''</span>
+| ''G3 Bayonet (Olive)''
+| Bayonet
+|-
+| [[image:picture_gm_boltcutter_ca.paa.png|100px|&nbsp;]]
+| <span id='' >'''gm_boltcutter'''</span>
+| ''Bolt Cutter''
+| Useful for cutting fences and barbed wire.
+|-
+| [[image:picture_gm_gc_army_gauzebandage_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_gauzeBandage'''</span>
+| ''Gauze Bandage''
+| Use to treat heavy wounds.<br />Usable on: Self, Others
+|-
+| [[image:picture_gm_gc_army_medbox_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_medbox'''</span>
+| ''Medbox''
+| Enables the treatment of any wounds.<br/>Unlimited number of uses<br />Used by: Medic
+|-
+| [[image:picture_gm_gc_army_medkit_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_gc_army_medkit'''</span>
+| ''Personal Medkit''
+| Use to treat heavy wounds.<br />Usable on: Self, Others
+|-
+| [[image:picture_gm_gc_compass_f73_ca.paa.png|100px|&nbsp;]]
+| <span id='' >'''gm_gc_compass_f73'''</span>
+| ''F73''
+| Compass
+|-
+| [[image:picture_gm_gc_firstaidkit_vehicle_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_gc_firstaidkit_vehicle'''</span>
+| ''Vehicle First Aid Kit (Grey)''
+| Use to treat heavy wounds.<br />Usable on: Self, Others
+|-
+| [[image:picture_gm_ge_army_burnbandage_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_burnBandage'''</span>
+| ''Burn Bandage''
+| Use to treat heavy wounds.<br />Usable on: Self, Others
+|-
+| [[image:picture_gm_ge_army_conat2_ca.paa.png|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_conat2'''</span>
+| ''Conat''
+| Compass
+|-
+| [[image:picture_gm_ge_army_firstaidkit_vehicle_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_firstaidkit_vehicle'''</span>
+| ''Vehicle First Aid Kit (Olive)''
+| Use to treat heavy wounds.<br />Usable on: Self, Others
+|-
+| [[image:picture_gm_ge_army_gauzebandage_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_gauzeBandage'''</span>
+| ''Gauze Bandage''
+| Use to treat heavy wounds.<br />Usable on: Self, Others
+|-
+| [[image:picture_gm_ge_army_gauzecompress_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_gauzeCompress'''</span>
+| ''Gauze Compress''
+| Use to treat heavy wounds.<br />Usable on: Self, Others
+|-
+| [[image:picture_gm_ge_army_medkit_80_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ge_army_medkit_80'''</span>
+| ''Medikit''
+| Enables the treatment of any wounds.<br/>Unlimited number of uses<br />Used by: Medic
+|-
+| [[image:picture_gm_ge_firstaidkit_vehicle_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ge_firstaidkit_vehicle'''</span>
+| ''Vehicle First Aid Kit (Green)''
+| Use to treat heavy wounds.<br />Usable on: Self, Others
+|-
+| [[image:picture_gm_repairkit_01_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_repairkit_01'''</span>
+| ''Toolkit''
+| Enables repair of vehicles - Engineer<br/>Enables deactivating explosives - Demo expert
+|-
+| [[image:picture_gm_watch_kosei_80_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_watch_kosei_80'''</span>
+| ''Kosei C80''
+| Digital Wristwatch
+|-
+|}
+
+== Attachments ==
+ 
+=== Top Attachments ===
+ 
+97 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Info<br>
+! Description<br>
+|-
+| [[image:picture_gm_blits_ris_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_blits_ris_blk'''</span>
+| ''BLITS (Black, RIS)''
+| Rifle Scope<br />Magnification: 4x
+| The BLITS is a rifle scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_blits_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_blits_stanagClaw_blk'''</span>
+| ''BLITS (Black, Claw)''
+| Rifle Scope<br />Magnification: 4x
+| The BLITS is a rifle scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_blits_stanagclaw_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_blits_stanagClaw_oli'''</span>
+| ''BLITS (Olive, Claw)''
+| Rifle Scope<br />Magnification: 4x
+| The BLITS is a rifle scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_blits_stanaghk_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_blits_stanagHK_blk'''</span>
+| ''BLITS (Black, Flat)''
+| Rifle Scope<br />Magnification: 4x
+| The BLITS is a rifle scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_blits_stanagsig_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_blits_stanagSig_blk'''</span>
+| ''BLITS (Black, SG)''
+| Rifle Scope<br />Magnification: 4x
+| The BLITS is a rifle scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_c79a1_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_c79a1_blk'''</span>
+| ''C79A1''
+| Rifle Scope<br />Magnification: 3.4x
+| The C79 is a Rifle Scope with 3.4x magnification of Canadian origin
+|-
+| [[image:picture_gm_c79a1_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_c79a1_oli'''</span>
+| ''C79A1 (Olive)''
+| Rifle Scope<br />Magnification: 3.4x
+| The C79 is a Rifle Scope with 3.4x magnification of Canadian origin
+|-
+| [[image:picture_gm_colt4x20_ar15_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_colt4x20_ar15_blk'''</span>
+| ''RS 4x20 (Black, AR15)''
+| Rifle Scope<br />Magnification: 4x
+| The RS 4x20 is a rifle scope with 4x magnification of American origin.
+|-
+| [[image:picture_gm_colt4x20_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_colt4x20_stanagClaw_blk'''</span>
+| ''RS 4x20 (Black, Claw)''
+| Rifle Scope<br />Magnification: 4x
+| The RS 4x20 is a rifle scope with 4x magnification of American origin.
+|-
+| [[image:picture_gm_diavari_da_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_diavari_da_stanagClaw_blk'''</span>
+| ''Fero Z 1.5x-6x (Black, Claw)''
+| Rifle Scope<br />Magnification: 1.5x-6x
+| The Fero Z 1.5x-6x is a rifle scope with 1.5x-6x magnification of West German origin.
+|-
+| [[image:picture_gm_diavari_da_stanagclaw_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_diavari_da_stanagClaw_oli'''</span>
+| ''Fero Z 1.5x-6x (Olive, Claw)''
+| Rifle Scope<br />Magnification: 1.5x-6x
+| The Fero Z 1.5x-6x is a rifle scope with 1.5x-6x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz24_ris_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz24_ris_blk'''</span>
+| ''Fero Z-24 (Black, RIS)''
+| Rifle Scope<br />Magnification: 4x
+| The Fero Z-24 is a rifle scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz24_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz24_stanagClaw_blk'''</span>
+| ''Fero Z-24 (Black, Claw)''
+| Rifle Scope<br />Magnification: 4x
+| The Fero Z-24 is a rifle scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz24_stanagclaw_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz24_stanagClaw_oli'''</span>
+| ''Fero Z-24 (Olive, Claw)''
+| Rifle Scope<br />Magnification: 4x
+| The Fero Z-24 is a rifle scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz24_stanaghk_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz24_stanagHK_blk'''</span>
+| ''Fero Z-24 (Black, Flat)''
+| Rifle Scope<br />Magnification: 4x
+| The Fero Z-24 is a rifle scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz24_stanagsig_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz24_stanagSig_blk'''</span>
+| ''Fero Z-24 (Black, SG)''
+| Rifle Scope<br />Magnification: 4x
+| The Fero Z-24 is a rifle scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz2x17_pzf44_2_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz2x17_pzf44_2_blk'''</span>
+| ''Fero Z 2x17 (PzF44-2)''
+| Anti-Tank Weapon Scope<br />Magnification: 2x
+| The Fero Z 2x17 is an anti-tank weapon scope with 2x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz2x17_pzf84_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz2x17_pzf84_blk'''</span>
+| ''Fero Z 2x17 (PzF84)''
+| Anti-Tank Weapon Scope<br />Magnification: 2x
+| The Fero Z 2x17 is an anti-tank weapon scope with 2x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz51_pzf44_2_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz51_pzf44_2_oli'''</span>
+| ''Fero Z-51 (Olive, PzF44-2)''
+| Nightvision Scope<br />Magnification: 4x
+| The Fero Z-51 is a night vision scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz51_pzf84_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz51_pzf84_oli'''</span>
+| ''Fero Z-51 (Olive, PzF84)''
+| Nightvision Scope<br />Magnification: 4x
+| The Fero Z-51 is a night vision scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz51_ris_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz51_ris_oli'''</span>
+| ''Fero Z-51 (Olive, RIS)''
+| Nightvision Scope<br />Magnification: 4x
+| The Fero Z-51 is a night vision scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz51_stanagclaw_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz51_stanagClaw_oli'''</span>
+| ''Fero Z-51 (Olive, Claw)''
+| Nightvision Scope<br />Magnification: 4x
+| The Fero Z-51 is a night vision scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz51_stanaghk_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz51_stanagHK_oli'''</span>
+| ''Fero Z-51 (Olive, Flat)''
+| Nightvision Scope<br />Magnification: 4x
+| The Fero Z-51 is a night vision scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_feroz51_stanagsig_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_feroz51_stanagSig_oli'''</span>
+| ''Fero Z-51 (Olive, SG)''
+| Nightvision Scope<br />Magnification: 4x
+| The Fero Z-51 is a night vision scope with 4x magnification of West German origin.
+|-
+| [[image:picture_gm_g11_lps_prism11mm_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g11_lps_prism11mm_blk'''</span>
+| ''Fero Z-G11 (Black)''
+| Rifle Scope<br />Magnification: 1x
+| The Fero Z-G11 is a rifle scope with a 1x magnification of West German origin.
+|-
+| [[image:picture_gm_g11_mps_prism11mm_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g11_mps_prism11mm_blk'''</span>
+| ''Fero Z-G11A1 (Black)''
+| Rifle Scope<br />Magnification: 3x
+| The Fero Z-G11A1 is a rifle scope with a 3x magnification of West German origin.
+|-
+| [[image:picture_gm_ls1500_ris_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls1500_ir_ris_blk'''</span>
+| ''LS1500 Laser-IR (Black, RIS)''
+| Laser Aiming Device<br />Range: Large
+| The LS1500 is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_ls1500_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls1500_ir_stanagClaw_blk'''</span>
+| ''LS1500 Laser-IR (Black, Claw)''
+| Laser Aiming Device<br />Range: Large
+| The LS1500 is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_ls1500_stanaghk_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls1500_ir_stanaghk_blk'''</span>
+| ''LS1500 Laser-IR (Black, Flat)''
+| Laser Aiming Device<br />Range: Large
+| The LS1500 is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_ls1500_stanagsig_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls1500_ir_stanagSig_blk'''</span>
+| ''LS1500 Laser-IR (Black, SG)''
+| Laser Aiming Device<br />Range: Large
+| The LS1500 is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_ls1500_ris_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls1500_red_ris_blk'''</span>
+| ''LS1500 Laser-Red (Black, RIS)''
+| Laser Aiming Device<br />Range: Large
+| The LS1500 is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_ls1500_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls1500_red_stanagClaw_blk'''</span>
+| ''LS1500 Laser-Red (Black, Claw)''
+| Laser Aiming Device<br />Range: Large
+| The LS1500 is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_ls1500_stanaghk_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls1500_red_stanaghk_blk'''</span>
+| ''LS1500 Laser-Red (Black, Flat)''
+| Laser Aiming Device<br />Range: Large
+| The LS1500 is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_ls1500_stanagsig_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls1500_red_stanagSig_blk'''</span>
+| ''LS1500 Laser-Red (Black, SG)''
+| Laser Aiming Device<br />Range: Large
+| The LS1500 is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_ls45_ris_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls45_ir_ris_blk'''</span>
+| ''LS45 Laser-IR (Black, RIS)''
+| Laser Aiming Device<br />Range: Medium
+| The LS45 is a laser aiming device from the United Kingdom.
+|-
+| [[image:picture_gm_ls45_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls45_ir_stanagClaw_blk'''</span>
+| ''LS45 Laser-IR (Black, Claw)''
+| Laser Aiming Device<br />Range: Medium
+| The LS45 is a laser aiming device from the United Kingdom.
+|-
+| [[image:picture_gm_ls45_stanaghk_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls45_ir_stanaghk_blk'''</span>
+| ''LS45 Laser-IR (Black, Flat)''
+| Laser Aiming Device<br />Range: Medium
+| The LS45 is a laser aiming device from the United Kingdom.
+|-
+| [[image:picture_gm_ls45_stanagsig_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls45_ir_stanagSig_blk'''</span>
+| ''LS45 Laser-IR (Black, SG)''
+| Laser Aiming Device<br />Range: Medium
+| The LS45 is a laser aiming device from the United Kingdom.
+|-
+| [[image:picture_gm_ls45_uziclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls45_ir_uziclaw_blk'''</span>
+| ''LS45 Laser-IR (Black, MP-Bracket)''
+| Laser Aiming Device<br />Range: Medium
+| The LS45 is a laser aiming device from the United Kingdom.
+|-
+| [[image:picture_gm_ls45_ris_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls45_red_ris_blk'''</span>
+| ''LS45 Laser-Red (Black, RIS)''
+| Laser Aiming Device<br />Range: Medium
+| The LS45 is a laser aiming device from the United Kingdom.
+|-
+| [[image:picture_gm_ls45_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls45_red_stanagClaw_blk'''</span>
+| ''LS45 Laser-Red (Black, Claw)''
+| Laser Aiming Device<br />Range: Medium
+| The LS45 is a laser aiming device from the United Kingdom.
+|-
+| [[image:picture_gm_ls45_stanaghk_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls45_red_stanaghk_blk'''</span>
+| ''LS45 Laser-Red (Black, Flat)''
+| Laser Aiming Device<br />Range: Medium
+| The LS45 is a laser aiming device from the United Kingdom.
+|-
+| [[image:picture_gm_ls45_stanagsig_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls45_red_stanagSig_blk'''</span>
+| ''LS45 Laser-Red (Black, SG)''
+| Laser Aiming Device<br />Range: Medium
+| The LS45 is a laser aiming device from the United Kingdom.
+|-
+| [[image:picture_gm_ls45_uziclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_ls45_red_uziclaw_blk'''</span>
+| ''LS45 Laser-Red (Black, MP-Bracket)''
+| Laser Aiming Device<br />Range: Medium
+| The LS45 is a laser aiming device from the United Kingdom.
+|-
+| [[image:picture_gm_lsminiv_ris_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lsminiv_ir_ris_blk'''</span>
+| ''LS Mini V Laser-IR (Black, RIS)''
+| Laser Aiming Device<br />Range: Extra Large
+| The LS Mini V is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_lsminiv_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lsminiv_ir_stanagClaw_blk'''</span>
+| ''LS Mini V Laser-IR (Black, Claw)''
+| Laser Aiming Device<br />Range: Extra Large
+| The LS Mini V is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_lsminiv_stanaghk_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lsminiv_ir_stanaghk_blk'''</span>
+| ''LS Mini V Laser-IR (Black, Flat)''
+| Laser Aiming Device<br />Range: Extra Large
+| The LS Mini V is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_lsminiv_stanagsig_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lsminiv_ir_stanagSig_blk'''</span>
+| ''LS Mini V Laser-IR (Black, SG)''
+| Laser Aiming Device<br />Range: Extra Large
+| The LS Mini V is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_lsminiv_ris_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lsminiv_red_ris_blk'''</span>
+| ''LS Mini V Laser-Red (Black, RIS)''
+| Laser Aiming Device<br />Range: Extra Large
+| The LS Mini V is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_lsminiv_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lsminiv_red_stanagClaw_blk'''</span>
+| ''LS Mini V Laser-Red (Black, Claw)''
+| Laser Aiming Device<br />Range: Extra Large
+| The LS Mini V is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_lsminiv_stanaghk_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lsminiv_red_stanaghk_blk'''</span>
+| ''LS Mini V Laser-Red (Black, Flat)''
+| Laser Aiming Device<br />Range: Extra Large
+| The LS Mini V is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_lsminiv_stanagsig_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_lsminiv_red_stanagSig_blk'''</span>
+| ''LS Mini V Laser-Red (Black, SG)''
+| Laser Aiming Device<br />Range: Extra Large
+| The LS Mini V is a laser aiming device from Switzerland.
+|-
+| [[image:picture_gm_maglite_3d_ris_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_maglite_3d_ris_blk'''</span>
+| ''McLight 3D (Black, RIS)''
+| Flashlight<br />Range: Large<br />Size: Small
+| The McLight 3D is a flashlight with a small illumination area and a large range.
+|-
+| [[image:picture_gm_maglite_3d_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_maglite_3d_stanagClaw_blk'''</span>
+| ''McLight 3D (Black, Claw)''
+| Flashlight<br />Range: Large<br />Size: Small
+| The McLight 3D is a flashlight with a small illumination area and a large range.
+|-
+| [[image:picture_gm_maglite_3d_stanaghk_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_maglite_3d_stanaghk_blk'''</span>
+| ''McLight 3D (Black, Flat)''
+| Flashlight<br />Range: Large<br />Size: Small
+| The McLight 3D is a flashlight with a small illumination area and a large range.
+|-
+| [[image:picture_gm_maglite_3d_stanagsig_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_maglite_3d_stanagSig_blk'''</span>
+| ''McLight 3D (Black, SG)''
+| Flashlight<br />Range: Large<br />Size: Small
+| The McLight 3D is a flashlight with a small illumination area and a large range.
+|-
+| [[image:picture_gm_nspu_dovetail_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_nspu_dovetail_blk'''</span>
+| ''NSPU (Black)''
+| Nightvision Scope<br />Magnification: 3.5x
+| The Fero NSPU is a night vision scope with 3.5x magnification of Soviet origin.
+|-
+| [[image:picture_gm_nspu_dovetail_gry_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_nspu_dovetail_gry'''</span>
+| ''NSPU (Grey)''
+| Nightvision Scope<br />Magnification: 3.5x
+| The Fero NSPU is a night vision scope with 3.5x magnification of Soviet origin.
+|-
+| [[image:picture_gm_pgo7v_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pgo7v_blk'''</span>
+| ''PGO-7V''
+| Anti Tank Weapon Scope<br />Magnification: 2.8x
+| The PGO-7V is an anti-tank weapon scope with 2.8x magnification of Soviet origin.
+|-
+| [[image:picture_gm_pka_dovetail_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pka_dovetail_blk'''</span>
+| ''PK-A (Black)''
+| Collimator Sight<br />Magnification: 1x
+| The PK-A is a red dot sight of Soviet origin.
+|-
+| [[image:picture_gm_pka_dovetail_gry_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pka_dovetail_gry'''</span>
+| ''PK-A (Grey)''
+| Collimator Sight<br />Magnification: 1x
+| The PK-A is a red dot sight of Soviet origin.
+|-
+| [[image:picture_gm_pso1_dovetail_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pso1_dovetail_blk'''</span>
+| ''PSO-1 (Black)''
+| Rifle Scope<br />Magnification: 4x
+| The PSO-1 is a rifle scope with 4x magnification of Soviet origin.
+|-
+| [[image:picture_gm_pso1_dovetail_gry_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pso1_dovetail_gry'''</span>
+| ''PSO-1 (Grey)''
+| Rifle Scope<br />Magnification: 4x
+| The PSO-1 is a rifle scope with 4x magnification of Soviet origin.
+|-
+| [[image:picture_gm_pso6x36_1_dovetail_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pso6x36_1_dovetail_blk'''</span>
+| ''PSO 6x36-1 (Black)''
+| Rifle Scope<br />Magnification: 6x
+| The PSO 6x36-1 is a rifle scope with 6x magnification of Soviet origin.
+|-
+| [[image:picture_gm_pso6x36_1_dovetail_gry_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_pso6x36_1_dovetail_gry'''</span>
+| ''PSO 6x36-1 (Grey)''
+| Rifle Scope<br />Magnification: 6x
+| The PSO 6x36-1 is a rifle scope with 6x magnification of Soviet origin.
+|-
+| [[image:picture_gm_rv_ris_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_rv_ris_blk'''</span>
+| ''RV Reflex (Black, RIS)''
+| Collimator Sight<br />Magnification: 1x
+| The RV Reflex is a collimator sight of Swiss origin
+|-
+| [[image:picture_gm_rv_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_rv_stanagClaw_blk'''</span>
+| ''RV Reflex (Black, Claw)''
+| Collimator Sight<br />Magnification: 1x
+| The RV Reflex is a collimator sight of Swiss origin
+|-
+| [[image:picture_gm_rv_stanagclaw_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_rv_stanagClaw_oli'''</span>
+| ''RV Reflex (Olive, Claw)''
+| Collimator Sight<br />Magnification: 1x
+| The RV Reflex is a collimator sight of Swiss origin
+|-
+| [[image:picture_gm_rv_stanaghk_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_rv_stanagHK_blk'''</span>
+| ''RV Reflex (Black, Flat)''
+| Collimator Sight<br />Magnification: 1x
+| The RV Reflex is a collimator sight of Swiss origin
+|-
+| [[image:picture_gm_rv_stanagsig_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_rv_stanagSig_blk'''</span>
+| ''RV Reflex (Black, SG)''
+| Collimator Sight<br />Magnification: 1x
+| The RV Reflex is a collimator sight of Swiss origin
+|-
+| [[image:picture_gm_streamlight_sl20_ris_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_streamlight_sl20_ris_blk'''</span>
+| ''Beamlight SL20 (Black, RIS)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The Beamlight SL20 is a flashlight with medium iluminated area and range.
+|-
+| [[image:picture_gm_streamlight_sl20_ris_brn_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_streamlight_sl20_ris_brn'''</span>
+| ''Beamlight SL20 (Brown, RIS)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The Beamlight SL20 is a flashlight with medium iluminated area and range.
+|-
+| [[image:picture_gm_streamlight_sl20_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_streamlight_sl20_stanagClaw_blk'''</span>
+| ''Beamlight SL20 (Black, Claw)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The Beamlight SL20 is a flashlight with medium iluminated area and range.
+|-
+| [[image:picture_gm_streamlight_sl20_stanagclaw_brn_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_streamlight_sl20_stanagClaw_brn'''</span>
+| ''Beamlight SL20 (Brown, Claw)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The Beamlight SL20 is a flashlight with medium iluminated area and range.
+|-
+| [[image:picture_gm_streamlight_sl20_stanaghk_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_streamlight_sl20_stanaghk_blk'''</span>
+| ''Beamlight SL20 (Black, Flat)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The Beamlight SL20 is a flashlight with medium iluminated area and range.
+|-
+| [[image:picture_gm_streamlight_sl20_stanaghk_brn_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_streamlight_sl20_stanaghk_brn'''</span>
+| ''Beamlight SL20 (Brown, Flat)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The Beamlight SL20 is a flashlight with medium iluminated area and range.
+|-
+| [[image:picture_gm_streamlight_sl20_stanagsig_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_streamlight_sl20_stanagSig_blk'''</span>
+| ''Beamlight SL20 (Black, SG)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The Beamlight SL20 is a flashlight with medium iluminated area and range.
+|-
+| [[image:picture_gm_streamlight_sl20_stanagsig_brn_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_streamlight_sl20_stanagSig_brn'''</span>
+| ''Beamlight SL20 (Brown, SG)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The Beamlight SL20 is a flashlight with medium iluminated area and range.
+|-
+| [[image:picture_gm_zf10x42_ris_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zf10x42_ris_blk'''</span>
+| ''Fero Z 10x42 (Black, RIS)''
+| Rifle Scope<br />Magnification: 10x
+| The Fero Z 10x42 is a rifle scope with 10x magnification of West German origin.
+|-
+| [[image:picture_gm_zf10x42_ris_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zf10x42_ris_oli'''</span>
+| ''Fero Z 10x42 (Olive, RIS)''
+| Rifle Scope<br />Magnification: 10x
+| The Fero Z 10x42 is a rifle scope with 10x magnification of West German origin.
+|-
+| [[image:picture_gm_zf10x42_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zf10x42_stanagClaw_blk'''</span>
+| ''Fero Z 10x42 (Black, Claw)''
+| Rifle Scope<br />Magnification: 10x
+| The Fero Z 10x42 is a rifle scope with 10x magnification of West German origin.
+|-
+| [[image:picture_gm_zf10x42_stanagclaw_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zf10x42_stanagClaw_oli'''</span>
+| ''Fero Z 10x42 (Olive, Claw)''
+| Rifle Scope<br />Magnification: 10x
+| The Fero Z 10x42 is a rifle scope with 10x magnification of West German origin.
+|-
+| [[image:picture_gm_zf10x42_stanaghk_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zf10x42_stanaghk_blk'''</span>
+| ''Fero Z 10x42 (Black, Flat)''
+| Rifle Scope<br />Magnification: 10x
+| The Fero Z 10x42 is a rifle scope with 10x magnification of West German origin.
+|-
+| [[image:picture_gm_zf10x42_stanaghk_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zf10x42_stanaghk_oli'''</span>
+| ''Fero Z 10x42 (Olive, Flat)''
+| Rifle Scope<br />Magnification: 10x
+| The Fero Z 10x42 is a rifle scope with 10x magnification of West German origin.
+|-
+| [[image:picture_gm_zf10x42_stanagsig_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zf10x42_stanagsig_blk'''</span>
+| ''Fero Z 10x42 (Black, SG)''
+| Rifle Scope<br />Magnification: 10x
+| The Fero Z 10x42 is a rifle scope with 10x magnification of West German origin.
+|-
+| [[image:picture_gm_zf10x42_stanagsig_oli_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zf10x42_stanagsig_oli'''</span>
+| ''Fero Z 10x42 (Olive, SG)''
+| Rifle Scope<br />Magnification: 10x
+| The Fero Z 10x42 is a rifle scope with 10x magnification of West German origin.
+|-
+| [[image:picture_gm_zf6x42_psg1_stanag_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zf6x42_psg1_stanag_blk'''</span>
+| ''Fero Z 6x42 (Black, PSG1)''
+| Rifle Scope<br />Magnification: 6x
+| The Fero Z 6x42 is a rifle scope with 6x magnification of West German origin.
+|-
+| [[image:picture_gm_zfk4x25_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zfk4x25_blk'''</span>
+| ''ZFK 4x25''
+| Rifle Scope<br />Magnification: 4x
+| The ZFK 4x25 is rifle scope with 4x magnification of East German origin.
+|-
+| [[image:picture_gm_zln1k_dovetail_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zln1k_grn_dovetail_blk'''</span>
+| ''ZLN-1K Laser-Green (Black)''
+| Laser Aiming Device
+| The ZLN-1K is a laser aiming device of Russian origin.
+|-
+| [[image:picture_gm_zln1k_dovetail_gry_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zln1k_grn_dovetail_gry'''</span>
+| ''ZLN-1K Laser-Green (Grey)''
+| Laser Aiming Device
+| The ZLN-1K is a laser aiming device of Russian origin.
+|-
+| [[image:picture_gm_zln1k_dovetail_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zln1k_ir_dovetail_blk'''</span>
+| ''ZLN-1K Laser-IR (Black)''
+| Laser Aiming Device
+| The ZLN-1K is a laser aiming device of Russian origin.
+|-
+| [[image:picture_gm_zln1k_dovetail_gry_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zln1k_ir_dovetail_gry'''</span>
+| ''ZLN-1K Laser-IR (Grey)''
+| Laser Aiming Device
+| The ZLN-1K is a laser aiming device of Russian origin.
+|-
+| [[image:picture_gm_zpp_stanagclaw_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zpp_stanagClaw_blk'''</span>
+| ''APP (Black, Claw)''
+| Aiming Point Projector<br />Magnification: 4x
+| The APP is an aiming point projector of West German origin
+|-
+| [[image:picture_gm_zvn64_rear_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zvn64_ak'''</span>
+| ''ZVN-64 Sight''
+| Sight Attachment, Illuminated
+| Self illuminating night sight attachment of East German origin.
+|-
+| [[image:picture_gm_zvn64_rear_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zvn64_akk'''</span>
+| ''ZVN-64 Sight''
+| Sight Attachment, Illuminated
+| Self illuminating night sight attachment of East German origin.
+|-
+| [[image:picture_gm_zvn64_rear_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zvn64_lmgk500'''</span>
+| ''ZVN-64 Sight''
+| Sight Attachment, Illuminated
+| Self illuminating night sight attachment of East German origin.
+|-
+| [[image:picture_gm_zvn64_rear_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_zvn64_rpk'''</span>
+| ''ZVN-69 Sight''
+| Sight Attachment, Illuminated
+| Self illuminating night sight attachment of East German origin.
+|-
+|}
+ 
+=== Side Attachments ===
+ 
+25 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Info<br>
+! Description<br>
+|-
+| [[image:picture_flashlightp2_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_flashlightp2_brk_ak74handguard_dino'''</span>
+| ''P2 Flashlight (Dino Tape, AK74)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The P2 is a flashlight with a medium illumination area and a medium range.
+|-
+| [[image:picture_flashlightp2_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_flashlightp2_brk_akhandguard_dino'''</span>
+| ''P2 Flashlight (Dino Tape, AKM)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The P2 is a flashlight with a medium illumination area and a medium range.
+|-
+| [[image:picture_flashlightp2_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_flashlightp2_brk_akkhandguard_dino'''</span>
+| ''P2 Flashlight (Dino Tape, AKMK)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The P2 is a flashlight with a medium illumination area and a medium range.
+|-
+| [[image:picture_flashlightp2_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_flashlightp2_wht_ak74handguard_blu'''</span>
+| ''P2 Flashlight (Blue Tape, AK74)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The P2 is a flashlight with a medium illumination area and a medium range.
+|-
+| [[image:picture_flashlightp2_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_flashlightp2_wht_akhandguard_blu'''</span>
+| ''P2 Flashlight (Blue Tape, AKM)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The P2 is a flashlight with a medium illumination area and a medium range.
+|-
+| [[image:picture_flashlightp2_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_flashlightp2_wht_akkhandguard_blu'''</span>
+| ''P2 Flashlight (Blue Tape, AKMK)''
+| Flashlight<br />Range: Medium<br />Size: Medium
+| The P2 is a flashlight with a medium illumination area and a medium range.
+|-
+| [[image:picture_gm_maglite_2d_hkslim_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_maglite_2d_hkslim_blk'''</span>
+| ''McLight 2D (Black)''
+| Flashlight<br />Range: Small<br />Size: Large
+| The McLight 2D is a flashlight with a large illumination area and a small range.
+|-
+| [[image:picture_gm_surefire_l60_wht_bayonetg11_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l60_ir_bayonetg11_blk'''</span>
+| ''L1160 Light IR (Black, G11)''
+| Flashlight<br />Range: Small<br />Size: Small
+| The L60 is a flashlight with small illumination area and a small range.
+|-
+| [[image:picture_gm_surefire_l60_wht_hoseclamp_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l60_ir_hoseclamp_blk'''</span>
+| ''L60 Light IR (Black, Hoseclamp)''
+| Flashlight<br />Range: Small<br />Size: Small
+| The L60 is a flashlight with small illumination area and a small range.
+|-
+| [[image:picture_gm_surefire_l60_wht_surefire_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l60_ir_surefire_blk'''</span>
+| ''L60 Light IR (Black)''
+| Flashlight<br />Range: Small<br />Size: Small
+| The L60 is a flashlight with small illumination area and a small range.
+|-
+| [[image:picture_gm_surefire_l60_wht_bayonetg11_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l60_red_bayonetg11_blk'''</span>
+| ''L1160 Light Red (Black, G11)''
+| Flashlight<br />Range: Small<br />Size: Small
+| The L60 is a flashlight with small illumination area and a small range.
+|-
+| [[image:picture_gm_surefire_l60_wht_hoseclamp_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l60_red_hoseclamp_blk'''</span>
+| ''L60 Light Red (Black, Hoseclamp)''
+| Flashlight<br />Range: Small<br />Size: Small
+| The L60 is a flashlight with small illumination area and a small range.
+|-
+| [[image:picture_gm_surefire_l60_wht_surefire_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l60_red_surefire_blk'''</span>
+| ''L60 Light Red (Black)''
+| Flashlight<br />Range: Small<br />Size: Small
+| The L60 is a flashlight with small illumination area and a small range.
+|-
+| [[image:picture_gm_surefire_l60_wht_bayonetg11_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l60_wht_bayonetg11_blk'''</span>
+| ''L1160 Light (Black, G11)''
+| Flashlight<br />Range: Small<br />Size: Small
+| The L60 is a flashlight with small illumination area and a small range.
+|-
+| [[image:picture_gm_surefire_l60_wht_hoseclamp_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l60_wht_hoseclamp_blk'''</span>
+| ''L60 Light (Black, Hoseclamp)''
+| Flashlight<br />Range: Small<br />Size: Small
+| The L60 is a flashlight with small illumination area and a small range.
+|-
+| [[image:picture_gm_surefire_l60_wht_surefire_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l60_wht_surefire_blk'''</span>
+| ''L60 Light (Black)''
+| Flashlight<br />Range: Small<br />Size: Small
+| The L60 is a flashlight with small illumination area and a small range.
+|-
+| [[image:picture_gm_surefire_l72_red_bayonetg11_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l72_grn_bayonetg11_blk'''</span>
+| ''L1172 Laser-Green (Black, G11)''
+| Laser Aiming Device<br />Range: Small
+| The L72 is a laser aiming device from the United States
+|-
+| [[image:picture_gm_surefire_l72_red_hoseclamp_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l72_grn_hoseclamp_blk'''</span>
+| ''L72 Laser-Green (Black, Hoseclamp)''
+| Laser Aiming Device<br />Range: Small
+| The L72 is a laser aiming device from the United States
+|-
+| [[image:picture_gm_surefire_l72_red_surefire_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l72_grn_surefire_blk'''</span>
+| ''L72 Laser-Green (Black)''
+| Laser Aiming Device<br />Range: Small
+| The L72 is a laser aiming device from the United States
+|-
+| [[image:picture_gm_surefire_l72_red_bayonetg11_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l72_red_bayonetg11_blk'''</span>
+| ''L1172 Laser-Red (Black, G11)''
+| Laser Aiming Device<br />Range: Small
+| The L72 is a laser aiming device from the United States
+|-
+| [[image:picture_gm_surefire_l72_red_hoseclamp_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l72_red_hoseclamp_blk'''</span>
+| ''L72 Laser-Red (Black, Hoseclamp)''
+| Laser Aiming Device<br />Range: Small
+| The L72 is a laser aiming device from the United States
+|-
+| [[image:picture_gm_surefire_l72_red_surefire_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l72_red_surefire_blk'''</span>
+| ''L72 Laser-Red (Black)''
+| Laser Aiming Device<br />Range: Small
+| The L72 is a laser aiming device from the United States
+|-
+| [[image:picture_gm_surefire_l75_ir_bayonetg11_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l75_ir_bayonetg11_blk'''</span>
+| ''L1175 Laser-IR (Black, G11)''
+| Laser Aiming Device<br />Range: Small
+| The L75 is a laser aiming device from the United States
+|-
+| [[image:picture_gm_surefire_l75_ir_hoseclamp_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l75_ir_hoseclamp_blk'''</span>
+| ''L75 Laser-IR (Black, Hoseclamp)''
+| Laser Aiming Device<br />Range: Small
+| The L75 is a laser aiming device from the United States
+|-
+| [[image:picture_gm_surefire_l75_ir_surefire_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_surefire_l75_ir_surefire_blk'''</span>
+| ''L75 Laser-IR (Black)''
+| Laser Aiming Device<br />Range: Small
+| The L75 is a laser aiming device from the United States
+|-
+|}
+ 
+=== Suppressors ===
+ 
+14 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Info<br>
+! Description<br>
+|-
+| [[image:picture_gm_suppressor_atec150_556mm_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_atec150_556mm_blk'''</span>
+| ''Sound Suppressor A150 (5.56 mm, Black)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+| [[image:picture_gm_suppressor_atec150_556mm_long_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_atec150_556mm_long_blk'''</span>
+| ''Sound Suppressor A150 (5.56 mm, Black, over barrel)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+| [[image:picture_gm_suppressor_atec150_762mm_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_atec150_762mm_blk'''</span>
+| ''Sound Suppressor A150 (7.62 mm, Black)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+| [[image:picture_gm_suppressor_atec150_762mm_long_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_atec150_762mm_long_blk'''</span>
+| ''Sound Suppressor A150 (7.62 mm, Black, over barrel)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+| [[image:picture_gm_suppressor_hknavy_9mm_gry_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_hknavy_9mm_gry'''</span>
+| ''Sound Suppressor KH Navy (9 mm, Grey)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+| [[image:picture_gm_suppressor_kacnavy_9mm_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_kacnavy_9mm_blk'''</span>
+| ''Sound Suppressor NAC Navy (9 mm, Black)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+| [[image:picture_gm_suppressor_kacnavyk_9mm_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_kacnavyk_9mm_blk'''</span>
+| ''Sound Suppressor NAC Navy K (9 mm, Black)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+| [[image:picture_gm_suppressor_kacnavysd_9mm_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_kacnavysd_9mm_blk'''</span>
+| ''Sound Suppressor NAC Navy SD (9 mm, Black)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+| [[image:picture_gm_suppressor_m10_9mm_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_m10_9mm_blk'''</span>
+| ''Sound Suppressor M10 (9 mm, Black)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+| [[image:picture_gm_suppressor_pbs1_762mm_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_pbs1_762mm_blk'''</span>
+| ''Sound Suppressor PBS-1 (7.62 mm, Black)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+| [[image:picture_gm_suppressor_pbs4_545mm_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_pbs4_545mm_blk'''</span>
+| ''Sound Suppressor PBS-4 (5.45 mm, Black)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+| [[image:picture_gm_suppressor_safloryt_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_safloryt_blk'''</span>
+| ''Sound Suppressor Safloryt (9 mm, Black)''
+| Sound Suppressor for PM-63
+| Sound Suppressor of Polish origin for the PM-63.
+|-
+| [[image:picture_gm_suppressor_tgpp_9mm_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_tgpp_9mm_blk'''</span>
+| ''Sound Suppressor TGP-P (9 mm, Black)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+| [[image:picture_gm_suppressor_tgpv_762mm_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_suppressor_tgpv_762mm_blk'''</span>
+| ''Sound Suppressor TGP-V (7.62 mm, Black)''
+| Sound Suppressor
+| A sound suppresso is a muzzle device that reduces the acoustic intensity of the muzzle report.
+|-
+|}
+ 
+=== Bipods ===
+ 
+5 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class Name<br>
+! Display Name<br>
+! Info<br>
+! Description<br>
+|-
+| [[image:picture_gm_g3_bipod_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g3_bipod_blk'''</span>
+| ''G3 Bipod (Black)''
+| Bipod
+| A bipod is a V-shaped portable attachment that helps support and steady the weapon it is attached to.
+|-
+| [[image:picture_gm_g8_bipod_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_g8_bipod_blk'''</span>
+| ''G8 Bipod (Black)''
+| Bipod
+| A bipod is a V-shaped portable attachment that helps support and steady the weapon it is attached to.
+|-
+| [[image:picture_gm_msg90_bipod_blk_ca.png|100px|&nbsp;]]
+| <span id='' >'''gm_msg90_bipod_blk'''</span>
+| ''MSG90 Bipod (Black)''
+| Bipod
+| A bipod is a V-shaped portable attachment that helps support and steady the weapon it is attached to.
+|-
+|}
+
+== Magazines ==
+ 
+=== Primary Magazines ===
+ 
+172 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Class Name<br>
+! Display Name<br>
+! Amount of Cartridges<br>
+! Info<br>
+|-
+| <span id='' >'''gm_100Rnd_762x51mm_B_T_DM21_mg8_oli'''</span>
+| ''7.62 mm 100Rnd MG8 Ball-T DM21 Olive Mag''
+| ''100''
+| ''Caliber: 7.62x51 mm Ball-T DM21<br />Rounds: 100<br />Used in: MG8''
+|-
+| <span id='' >'''gm_100Rnd_762x51mm_B_T_DM21A1_mg8_oli'''</span>
+| ''7.62 mm 100Rnd MG8 Ball-T DM21A1 Olive Mag''
+| ''100''
+| ''Caliber: 7.62x51 mm Ball-T DM21A1<br />Rounds: 100<br />Used in: MG8''
+|-
+| <span id='' >'''gm_100Rnd_762x51mm_B_T_DM21A2_mg8_oli'''</span>
+| ''7.62 mm 100Rnd MG8 Ball-T DM21A2 Olive Mag''
+| ''100''
+| ''Caliber: 7.62x51 mm Ball-T DM21A2<br />Rounds: 100<br />Used in: MG8''
+|-
+| <span id='' >'''gm_100Rnd_762x54mm_API_b32_pk_grn'''</span>
+| ''7.62 mm 100Rnd PK API B32 Green Mag''
+| ''100''
+| ''Caliber: 7.62x54 mmR API<br />Rounds: 100<br />Used in: PK''
+|-
+| <span id='' >'''gm_100Rnd_762x54mm_B_T_t46_pk_grn'''</span>
+| ''7.62 mm 100Rnd PK Ball-T T46 Green Mag''
+| ''100''
+| ''Caliber: 7.62x54 mmR Ball-T<br />Rounds: 100<br />Used in: PK''
+|-
+| <span id='' >'''gm_100Rnd_762x54mmR_API_7bz3_pk_grn'''</span>
+| ''7.62 mm 100Rnd PK API 7BZ3 Green Mag''
+| ''100''
+| ''Caliber: 7.62x54 mmR API<br />Rounds: 100<br />Used in: PK''
+|-
+| <span id='' >'''gm_100Rnd_762x54mmR_B_T_7t2_pk_grn'''</span>
+| ''7.62 mm 100Rnd PK Ball-T 7T2 Green Mag''
+| ''100''
+| ''Caliber: 7.62x54 mmR Ball-T<br />Rounds: 100<br />Used in: PK''
+|-
+| <span id='' >'''gm_10Rnd_762x51mm_AP_DM151_g3_blk'''</span>
+| ''7.62 mm 10Rnd G3 AP DM151 Black Mag''
+| ''10''
+| ''Caliber: 7.62x51 mm AP DM151<br />Rounds: 10<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_10Rnd_762x51mm_B_DM111_g3_blk'''</span>
+| ''7.62 mm 10Rnd G3 Ball DM111 Black Mag''
+| ''10''
+| ''Caliber: 7.62x51 mm Ball DM111<br />Rounds: 10<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_10Rnd_762x51mm_B_DM41_g3_blk'''</span>
+| ''7.62 mm 10Rnd G3 Ball DM41 Black Mag''
+| ''10''
+| ''Caliber: 7.62x51 mm Ball DM41<br />Rounds: 10<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_10Rnd_762x51mm_B_T_DM21_g3_blk'''</span>
+| ''7.62 mm 10Rnd G3 Ball-T DM21 Black Mag''
+| ''10''
+| ''Caliber: 7.62x51 mm Ball-T DM21<br />Rounds: 10<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_10Rnd_762x51mm_B_T_DM21A1_g3_blk'''</span>
+| ''7.62 mm 10Rnd G3 Ball-T DM21A1 Black Mag''
+| ''10''
+| ''Caliber: 7.62x51 mm Ball-T DM21A1<br />Rounds: 10<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_10Rnd_762x51mm_B_T_DM21A2_g3_blk'''</span>
+| ''7.62 mm 10Rnd G3 Ball-T DM21A2 Black Mag''
+| ''10''
+| ''Caliber: 7.62x51 mm Ball-T DM21A2<br />Rounds: 10<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_10Rnd_762x54mmR_AP_7N1_svd_blk'''</span>
+| ''7.62 mm 10Rnd SVD AP 7N1 Black Mag''
+| ''10''
+| ''Caliber: 7.62x54 mmR AP<br />Rounds: 10<br />Used in: SVD''
+|-
+| <span id='' >'''gm_10Rnd_762x54mmR_API_7bz3_svd_blk'''</span>
+| ''7.62 mm 10Rnd SVD API 7BZ3 Black Mag''
+| ''10''
+| ''Caliber: 7.62x54 mmR API<br />Rounds: 10<br />Used in: SVD''
+|-
+| <span id='' >'''gm_10Rnd_762x54mmR_B_T_7t2_svd_blk'''</span>
+| ''7.62 mm 10Rnd SVD Ball-T 7T2 Black Mag''
+| ''10''
+| ''Caliber: 7.62x54 mmR Ball-T<br />Rounds: 10<br />Used in: SVD''
+|-
+| <span id='' >'''gm_120Rnd_762x51mm_B_T_DM21_mg3_grn'''</span>
+| ''7.62 mm 120Rnd MG3 Ball-T DM21 Green Mag''
+| ''120''
+| ''Caliber: 7.62x51 mm Ball-T DM21<br />Rounds: 120<br />Used in: MG3''
+|-
+| <span id='' >'''gm_120Rnd_762x51mm_B_T_DM21A1_mg3_grn'''</span>
+| ''7.62 mm 120Rnd MG3 Ball-T DM21A1 Green Mag''
+| ''120''
+| ''Caliber: 7.62x51 mm Ball-T DM21A1<br />Rounds: 120<br />Used in: MG3''
+|-
+| <span id='' >'''gm_120Rnd_762x51mm_B_T_DM21A2_mg3_grn'''</span>
+| ''7.62 mm 120Rnd MG3 Ball-T DM21A2 Green Mag''
+| ''120''
+| ''Caliber: 7.62x51 mm Ball-T DM21A2<br />Rounds: 120<br />Used in: MG3''
+|-
+| <span id='' >'''gm_15Rnd_9x18mm_B_pst_pm63_blk'''</span>
+| ''9 mm 15Rnd PM63 Ball PST Black Mag''
+| ''15''
+| ''Caliber: 9x18 mm Ball PST<br />Rounds: 15<br />Used in: PM-63''
+|-
+| <span id='' >'''gm_1rnd_67mm_heat_dm22a1_g3'''</span>
+| ''Rifle Grenade, DM22A1''
+| ''1''
+| ''Caliber: 67 mm HEAT DM22A1<br />Rounds: 1<br />Used in: G3''
+|-
+| <span id='' >'''gm_20Rnd_556x45mm_B_M193_stanag_gry'''</span>
+| ''5.56 mm 20Rnd M16 Ball M193 Grey Mag''
+| ''20''
+| ''Caliber: 5.56x45 mm Ball M193<br />Rounds: 20<br />Used in: C7, Gv M/95, M16''
+|-
+| <span id='' >'''gm_20Rnd_556x45mm_B_M855_stanag_gry'''</span>
+| ''5.56 mm 20Rnd M16 Ball M855 Grey Mag''
+| ''20''
+| ''Caliber: 5.56x45 mm Ball M855<br />Rounds: 20<br />Used in: C7, Gv M/95, M16''
+|-
+| <span id='' >'''gm_20Rnd_556x45mm_B_T_M196_stanag_gry'''</span>
+| ''5.56 mm 20Rnd M16 Ball-T M196 Grey Mag''
+| ''20''
+| ''Caliber: 5.56x45 mm Ball-T M196<br />Rounds: 20<br />Used in: C7, Gv M/95, M16''
+|-
+| <span id='' >'''gm_20Rnd_556x45mm_B_T_M856_stanag_gry'''</span>
+| ''5.56 mm 20Rnd M16 Ball-T M856 Grey Mag''
+| ''20''
+| ''Caliber: 5.56x45 mm Ball-T M856<br />Rounds: 20<br />Used in: C7, Gv M/95, M16''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_AP_DM151_g3_blk'''</span>
+| ''7.62 mm 20Rnd G3 AP DM151 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm AP DM151<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_ap_DM151_g3_des'''</span>
+| ''7.62 mm 20Rnd G3 AP DM151 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm AP DM151<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_AP_DM151_sg542_blk'''</span>
+| ''7.62 mm 20Rnd SG542 AP DM151 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm AP DM151<br />Rounds: 20<br />Used in: SG542''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_B_DM111_g3_blk'''</span>
+| ''7.62 mm 20Rnd G3 Ball DM111 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball DM111<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_b_DM111_g3_des'''</span>
+| ''7.62 mm 20Rnd G3 Ball DM111 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball DM111<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_B_DM111_sg542_blk'''</span>
+| ''7.62 mm 20Rnd SG542 Ball DM111 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball DM111<br />Rounds: 20<br />Used in: SG542''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_B_DM41_g3_blk'''</span>
+| ''7.62 mm 20Rnd G3 Ball DM41 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball DM41<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_b_DM41_g3_des'''</span>
+| ''7.62 mm 20Rnd G3 Ball DM41 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball DM41<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_B_DM41_sg542_blk'''</span>
+| ''7.62 mm 20Rnd SG542 Ball DM41 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball DM41<br />Rounds: 20<br />Used in: SG542''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_B_T_DM21_g3_blk'''</span>
+| ''7.62 mm 20Rnd G3 Ball-T DM21 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball-T DM21<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_b_t_DM21_g3_des'''</span>
+| ''7.62 mm 20Rnd G3 Ball-T DM21 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball-T DM21<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_B_T_DM21_g3_gold'''</span>
+| ''7.62 mm 20Rnd G3 Ball-T DM21 Gold Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball-T DM21<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_B_T_DM21_sg542_blk'''</span>
+| ''7.62 mm 20Rnd SG542 Ball-T DM21 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball-T DM21<br />Rounds: 20<br />Used in: SG542''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_B_T_DM21A1_g3_blk'''</span>
+| ''7.62 mm 20Rnd G3 Ball-T DM21A1 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball-T DM21A1<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_b_t_DM21A1_g3_des'''</span>
+| ''7.62 mm 20Rnd G3 Ball-T DM21A1 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball-T DM21A1<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_B_T_DM21A1_sg542_blk'''</span>
+| ''7.62 mm 20Rnd SG542 Ball-T DM21A1 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball-T DM21A1<br />Rounds: 20<br />Used in: SG542''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_B_T_DM21A2_g3_blk'''</span>
+| ''7.62 mm 20Rnd G3 Ball-T DM21A2 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball-T DM21A2<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_b_t_DM21A2_g3_des'''</span>
+| ''7.62 mm 20Rnd G3 Ball-T DM21A2 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball-T DM21A2<br />Rounds: 20<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_20Rnd_762x51mm_B_T_DM21A2_sg542_blk'''</span>
+| ''7.62 mm 20Rnd SG542 Ball-T DM21A2 Black Mag''
+| ''20''
+| ''Caliber: 7.62x51 mm Ball-T DM21A2<br />Rounds: 20<br />Used in: SG542''
+|-
+| <span id='' >'''gm_25Rnd_9x18mm_B_pst_pm63_blk'''</span>
+| ''9 mm 25Rnd PM63 Ball PST Black Mag''
+| ''25''
+| ''Caliber: 9x18 mm Ball PST<br />Rounds: 25<br />Used in: PM-63''
+|-
+| <span id='' >'''gm_30Rnd_545x39mm_B_7N6_ak74_blk'''</span>
+| ''5.45 mm 30Rnd AK74 Ball 7N6 Black Mag''
+| ''30''
+| ''Caliber: 5.45x39 mm Ball 7N6<br />Rounds: 30<br />Used in: AK-74''
+|-
+| <span id='' >'''gm_30Rnd_545x39mm_B_7N6_ak74_org'''</span>
+| ''5.45 mm 30Rnd AK74 Ball 7N6 Orange Mag''
+| ''30''
+| ''Caliber: 5.45x39 mm Ball 7N6<br />Rounds: 30<br />Used in: AK-74''
+|-
+| <span id='' >'''gm_30Rnd_545x39mm_B_7N6_ak74_prp'''</span>
+| ''5.45 mm 30Rnd AK74 Ball 7N6 Plum Mag''
+| ''30''
+| ''Caliber: 5.45x39 mm Ball 7N6<br />Rounds: 30<br />Used in: AK-74''
+|-
+| <span id='' >'''gm_30Rnd_545x39mm_B_T_7T3_ak74_blk'''</span>
+| ''5.45 mm 30Rnd AK74 Ball-T 7T3 Black Mag''
+| ''30''
+| ''Caliber: 5.45x39 mm Ball-T 7T3<br />Rounds: 30<br />Used in: AK-74''
+|-
+| <span id='' >'''gm_30Rnd_545x39mm_B_T_7T3_ak74_org'''</span>
+| ''5.45 mm 30Rnd AK74 Ball-T 7T3 Orange Mag''
+| ''30''
+| ''Caliber: 5.45x39 mm Ball-T 7T3<br />Rounds: 30<br />Used in: AK-74''
+|-
+| <span id='' >'''gm_30Rnd_545x39mm_B_T_7T3_ak74_prp'''</span>
+| ''5.45 mm 30Rnd AK74 Ball-T 7T3 Plum Mag''
+| ''30''
+| ''Caliber: 5.45x39 mm Ball-T 7T3<br />Rounds: 30<br />Used in: AK-74''
+|-
+| <span id='' >'''gm_30Rnd_556x45mm_B_DM11_g36_blk'''</span>
+| ''5.56 mm 30Rnd G36 Ball DM11 Black Mag''
+| ''30''
+| ''Caliber: 5.56x45 mm Ball DM11<br />Rounds: 30<br />Used in: G36''
+|-
+| <span id='' >'''gm_30Rnd_556x45mm_b_dm11_g36_des'''</span>
+| ''5.56 mm 30Rnd G36 Ball DM11 Black Mag''
+| ''30''
+| ''Caliber: 5.56x45 mm Ball DM11<br />Rounds: 30<br />Used in: G36''
+|-
+| <span id='' >'''gm_30Rnd_556x45mm_B_DM11_hk33_blk'''</span>
+| ''5.56 mm 30Rnd G33 Ball DM11 Black Mag''
+| ''30''
+| ''Caliber: 5.56x45 mm Ball DM11<br />Rounds: 30<br />Used in: G33, G53''
+|-
+| <span id='' >'''gm_30Rnd_556x45mm_B_DM11_sg550_brn'''</span>
+| ''5.56 mm 30Rnd SG550 Ball DM11 Brown Mag''
+| ''30''
+| ''Caliber: 5.56x45 mm Ball DM11<br />Rounds: 30<br />Used in: SG550''
+|-
+| <span id='' >'''gm_30Rnd_556x45mm_B_M193_stanag_gry'''</span>
+| ''5.56 mm 30Rnd M16 Ball M193 Grey Mag''
+| ''30''
+| ''Caliber: 5.56x45 mm Ball M193<br />Rounds: 30<br />Used in: C7, Gv M/95, M16''
+|-
+| <span id='' >'''gm_30Rnd_556x45mm_B_M855_stanag_gry'''</span>
+| ''5.56 mm 30Rnd M16 Ball M855 Grey Mag''
+| ''30''
+| ''Caliber: 5.56x45 mm Ball M855<br />Rounds: 30<br />Used in: C7, Gv M/95, M16''
+|-
+| <span id='' >'''gm_30Rnd_556x45mm_B_T_DM21_g36_blk'''</span>
+| ''5.56 mm 30Rnd G36 Ball-T DM21 Black Mag''
+| ''30''
+| ''Caliber: 5.56x45 mm Ball-T DM21<br />Rounds: 30<br />Used in: G36''
+|-
+| <span id='' >'''gm_30Rnd_556x45mm_b_t_dm21_g36_des'''</span>
+| ''5.56 mm 30Rnd G36 Ball-T DM21 Black Mag''
+| ''30''
+| ''Caliber: 5.56x45 mm Ball-T DM21<br />Rounds: 30<br />Used in: G36''
+|-
+| <span id='' >'''gm_30Rnd_556x45mm_B_T_DM21_hk33_blk'''</span>
+| ''5.56 mm 30Rnd G33 Ball-T DM21 Black Mag''
+| ''30''
+| ''Caliber: 5.56x45 mm Ball-T DM21<br />Rounds: 30<br />Used in: G33, G53''
+|-
+| <span id='' >'''gm_30Rnd_556x45mm_B_T_DM21_sg550_brn'''</span>
+| ''5.56 mm 30Rnd SG550 Ball-T DM21 Brown Mag''
+| ''30''
+| ''Caliber: 5.56x45 mm Ball-T DM21<br />Rounds: 30<br />Used in: SG550''
+|-
+| <span id='' >'''gm_30Rnd_556x45mm_B_T_M196_stanag_gry'''</span>
+| ''5.56 mm 30Rnd M16 Ball-T M196 Grey Mag''
+| ''30''
+| ''Caliber: 5.56x45 mm Ball-T M196<br />Rounds: 30<br />Used in: C7, Gv M/95, M16''
+|-
+| <span id='' >'''gm_30Rnd_556x45mm_B_T_M856_stanag_gry'''</span>
+| ''5.56 mm 30Rnd M16 Ball-T M856 Grey Mag''
+| ''30''
+| ''Caliber: 5.56x45 mm Ball-T M856<br />Rounds: 30<br />Used in: C7, Gv M/95, M16''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_AP_7N23_ak47_blk'''</span>
+| ''7.62 mm 30Rnd AK47 AP 7N23 Blued Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm AP 7N23<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_AP_7N23_akm_blk'''</span>
+| ''7.62 mm 30Rnd AK47 AP 7N23 Black Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm AP 7N23<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_AP_7N23_akm_org'''</span>
+| ''7.62 mm 30Rnd AK47 AP 7N23 Orange Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm AP 7N23<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_AP_7N23_mpikm_blk'''</span>
+| ''7.62 mm 30Rnd MPiKM AP 7N23 Parkerized Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm AP 7N23<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_B_57N231_ak47_blk'''</span>
+| ''7.62 mm 30Rnd AK47 Ball 57N231 Blued Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball 57N231<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_B_57N231_akm_blk'''</span>
+| ''7.62 mm 30Rnd AK47 Ball 57N231 Black Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball 57N231<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_B_57N231_akm_org'''</span>
+| ''7.62 mm 30Rnd AK47 Ball 57N231 Orange Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball 57N231<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_B_57N231_mpikm_blk'''</span>
+| ''7.62 mm 30Rnd MPiKM Ball 57N231 Parkerized Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball 57N231<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_B_M43_ak47_blk'''</span>
+| ''7.62 mm 30Rnd Ball M43 Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball M43<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_B_T_57N231P_ak47_blk'''</span>
+| ''7.62 mm 30Rnd AK47 Ball-T 57N231P Blued Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball-T 57N231P<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_B_T_57N231P_akm_blk'''</span>
+| ''7.62 mm 30Rnd AK47 Ball-T 57N231P Black Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball-T 57N231P<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_B_T_57N231P_akm_org'''</span>
+| ''7.62 mm 30Rnd AK47 Ball-T 57N231P Orange Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball-T 57N231P<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_B_T_57N231P_mpikm_blk'''</span>
+| ''7.62 mm 30Rnd MPiKM Ball-T 57N231P Parkerized Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball-T 57N231P<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_B_T_M43_ak47_blk'''</span>
+| ''7.62 mm 30Rnd Ball-T M43 Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball-T M43<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_BSD_57N231U_ak47_blk'''</span>
+| ''7.62 mm 30Rnd AK47 Ball-SD 57N231U Blued Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball-SD 57N231U<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_BSD_57N231U_akm_blk'''</span>
+| ''7.62 mm 30Rnd AK47 Ball-SD 57N231U Black Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball-SD 57N231U<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_BSD_57N231U_akm_org'''</span>
+| ''7.62 mm 30Rnd AK47 Ball-SD 57N231U Orange Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball-SD 57N231U<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_762x39mm_BSD_57N231U_mpikm_blk'''</span>
+| ''7.62 mm 30Rnd MPiKM Ball-SD 57N231U Parkerized Mag''
+| ''30''
+| ''Caliber: 7.62x39 mm Ball-SD 57N231U<br />Rounds: 30<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_30Rnd_9x19mm_AP_DM91_mp5_blk'''</span>
+| ''9 mm 30Rnd MP5 AP DM91 Black Mag''
+| ''30''
+| ''Caliber: 9x19 mm AP DM91<br />Rounds: 30<br />Used in: SG5''
+|-
+| <span id='' >'''gm_30Rnd_9x19mm_AP_DM91_mp5a3_blk'''</span>
+| ''9 mm 30Rnd MP5A3 AP DM91 Black Mag''
+| ''30''
+| ''Caliber: 9x19 mm AP DM91<br />Rounds: 30<br />Used in: SG5''
+|-
+| <span id='' >'''gm_30Rnd_9x19mm_B_DM11_mp5_blk'''</span>
+| ''9 mm 30Rnd MP5 Ball DM11 Black Mag''
+| ''30''
+| ''Caliber: 9x19 mm Ball DM11<br />Rounds: 30<br />Used in: SG5''
+|-
+| <span id='' >'''gm_30Rnd_9x19mm_B_DM11_mp5a3_blk'''</span>
+| ''9 mm 30Rnd MP5A3 Ball DM11 Black Mag''
+| ''30''
+| ''Caliber: 9x19 mm Ball DM11<br />Rounds: 30<br />Used in: SG5''
+|-
+| <span id='' >'''gm_30Rnd_9x19mm_B_DM51_mp5_blk'''</span>
+| ''9 mm 30Rnd MP5 Ball DM51 Black Mag''
+| ''30''
+| ''Caliber: 9x19 mm Ball DM51<br />Rounds: 30<br />Used in: SG5''
+|-
+| <span id='' >'''gm_30Rnd_9x19mm_B_DM51_mp5a3_blk'''</span>
+| ''9 mm 30Rnd MP5A3 Ball DM51 Black Mag''
+| ''30''
+| ''Caliber: 9x19 mm Ball DM51<br />Rounds: 30<br />Used in: SG5''
+|-
+| <span id='' >'''gm_30Rnd_9x19mm_BSD_DM81_mp5_blk'''</span>
+| ''9 mm 30Rnd MP5 Ball-SD DM81 Black Mag''
+| ''30''
+| ''Caliber: 9x19 mm Ball-SD DM81<br />Rounds: 30<br />Used in: SG5''
+|-
+| <span id='' >'''gm_30Rnd_9x19mm_BSD_DM81_mp5a3_blk'''</span>
+| ''9 mm 30Rnd MP5A3 Ball-SD DM81 Black Mag''
+| ''30''
+| ''Caliber: 9x19 mm Ball Ball-SD DM81<br />Rounds: 30<br />Used in: SG5''
+|-
+| <span id='' >'''gm_32Rnd_9x19mm_AP_DM91_mp2_blk'''</span>
+| ''9 mm 32Rnd MP2 AP DM91 Black Mag''
+| ''32''
+| ''Caliber: 9x19 mm AP DM91<br />Rounds: 32<br />Used in: MP2''
+|-
+| <span id='' >'''gm_32Rnd_9x19mm_B_DM11_mp2_blk'''</span>
+| ''9 mm 32Rnd MP2 Ball DM11 Black Mag''
+| ''32''
+| ''Caliber: 9x19 mm Ball DM11<br />Rounds: 32<br />Used in: MP2''
+|-
+| <span id='' >'''gm_32Rnd_9x19mm_B_DM51_mp2_blk'''</span>
+| ''9 mm 32Rnd MP2 Ball DM51 Black Mag''
+| ''32''
+| ''Caliber: 9x19 mm Ball DM51<br />Rounds: 32<br />Used in: MP2''
+|-
+| <span id='' >'''gm_40Rnd_556x45mm_B_DM11_hk33_blk'''</span>
+| ''5.56 mm 40Rnd G33 Ball DM11 Black Mag''
+| ''40''
+| ''Caliber: 5.56x45 mm Ball DM11<br />Rounds: 40<br />Used in: G33, G53''
+|-
+| <span id='' >'''gm_40Rnd_556x45mm_B_T_DM21_hk33_blk'''</span>
+| ''5.56 mm 40Rnd G33 Ball-T DM21 Black Mag''
+| ''40''
+| ''Caliber: 5.56x45 mm Ball-T DM21<br />Rounds: 40<br />Used in: G33, G53''
+|-
+| <span id='' >'''gm_40Rnd_762x51mm_AP_DM151_g3_blk'''</span>
+| ''7.62 mm 40Rnd G3 AP DM151 Black Mag''
+| ''40''
+| ''Caliber: 7.62x51 mm AP DM151<br />Rounds: 40<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_40Rnd_762x51mm_B_DM111_g3_blk'''</span>
+| ''7.62 mm 40Rnd G3 Ball DM111 Black Mag''
+| ''40''
+| ''Caliber: 7.62x51 mm Ball DM111<br />Rounds: 40<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_40Rnd_762x51mm_B_DM41_g3_blk'''</span>
+| ''7.62 mm 40Rnd G3 Ball DM41 Black Mag''
+| ''40''
+| ''Caliber: 7.62x51 mm Ball DM41<br />Rounds: 40<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_40Rnd_762x51mm_B_T_DM21_g3_blk'''</span>
+| ''7.62 mm 40Rnd G3 Ball-T DM21 Black Mag''
+| ''40''
+| ''Caliber: 7.62x51 mm Ball-T DM21<br />Rounds: 40<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_40Rnd_762x51mm_B_T_DM21A1_g3_blk'''</span>
+| ''7.62 mm 40Rnd G3 Ball-T DM21A1 Black Mag''
+| ''40''
+| ''Caliber: 7.62x51 mm Ball-T DM21A1<br />Rounds: 40<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_40Rnd_762x51mm_B_T_DM21A2_g3_blk'''</span>
+| ''7.62 mm 40Rnd G3 Ball-T DM21A2 Black Mag''
+| ''40''
+| ''Caliber: 7.62x51 mm Ball-T DM21A2<br />Rounds: 40<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_45Rnd_545x39mm_B_7N6_ak74_blk'''</span>
+| ''5.45 mm 45Rnd AK74 Ball 7N6 Black Mag''
+| ''45''
+| ''Caliber: 5.45x39 mm Ball 7N6<br />Rounds: 45<br />Used in: AK-74''
+|-
+| <span id='' >'''gm_45Rnd_545x39mm_B_7N6_ak74_org'''</span>
+| ''5.45 mm 45Rnd AK74 Ball 7N6 Orange Mag''
+| ''45''
+| ''Caliber: 5.45x39 mm Ball 7N6<br />Rounds: 45<br />Used in: AK-74''
+|-
+| <span id='' >'''gm_45Rnd_545x39mm_B_7N6_ak74_prp'''</span>
+| ''5.45 mm 45Rnd AK74 Ball 7N6 Plum Mag''
+| ''45''
+| ''Caliber: 5.45x39 mm Ball 7N6<br />Rounds: 45<br />Used in: AK-74''
+|-
+| <span id='' >'''gm_45Rnd_545x39mm_B_T_7T3_ak74_blk'''</span>
+| ''5.45 mm 45Rnd AK74 Ball-T 7T3 Black Mag''
+| ''45''
+| ''Caliber: 5.45x39 mm Ball-T 7T3<br />Rounds: 45<br />Used in: AK-74''
+|-
+| <span id='' >'''gm_45Rnd_545x39mm_B_T_7T3_ak74_org'''</span>
+| ''5.45 mm 45Rnd AK74 Ball-T 7T3 Orange Mag''
+| ''45''
+| ''Caliber: 5.45x39 mm Ball-T 7T3<br />Rounds: 45<br />Used in: AK-74''
+|-
+| <span id='' >'''gm_45Rnd_545x39mm_B_T_7T3_ak74_prp'''</span>
+| ''5.45 mm 45Rnd AK74 Ball-T 7T3 Plum Mag''
+| ''45''
+| ''Caliber: 5.45x39 mm Ball-T 7T3<br />Rounds: 45<br />Used in: AK-74''
+|-
+| <span id='' >'''gm_50Rnd_473x33mm_B_DM11_g11_blk'''</span>
+| ''4.73 mm 50Rnd G11 Ball DM11 Black Mag''
+| ''50''
+| ''Caliber: 4.73x33 mm Ball DM11<br />Rounds: 50<br />Used in: G11''
+|-
+| <span id='' >'''gm_50Rnd_473x33mm_B_T_DM21_g11_blk'''</span>
+| ''4.73 mm 50Rnd G11 Ball-T DM21 Black Mag''
+| ''50''
+| ''Caliber: 4.73x33 mm Ball-T DM21<br />Rounds: 50<br />Used in: G11''
+|-
+| <span id='' >'''gm_5Rnd_762x51mm_AP_DM151_g3_blk'''</span>
+| ''7.62 mm 5Rnd G3 AP DM151 Black Mag''
+| ''5''
+| ''Caliber: 7.62x51 mm AP DM151<br />Rounds: 5<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_5Rnd_762x51mm_B_DM111_g3_blk'''</span>
+| ''7.62 mm 5Rnd G3 Ball DM111 Black Mag''
+| ''5''
+| ''Caliber: 7.62x51 mm Ball DM111<br />Rounds: 5<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_5Rnd_762x51mm_B_DM41_g3_blk'''</span>
+| ''7.62 mm 5Rnd G3 Ball DM41 Black Mag''
+| ''5''
+| ''Caliber: 7.62x51 mm Ball DM41<br />Rounds: 5<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_5Rnd_762x51mm_B_T_DM21_g3_blk'''</span>
+| ''7.62 mm 5Rnd G3 Ball-T DM21 Black Mag''
+| ''5''
+| ''Caliber: 7.62x51 mm Ball-T DM21<br />Rounds: 5<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_5Rnd_762x51mm_B_T_DM21A1_g3_blk'''</span>
+| ''7.62 mm 5Rnd G3 Ball-T DM21A1 Black Mag''
+| ''5''
+| ''Caliber: 7.62x51 mm Ball-T DM21A1<br />Rounds: 5<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_5Rnd_762x51mm_B_T_DM21A2_g3_blk'''</span>
+| ''7.62 mm 5Rnd G3 Ball-T DM21A2 Black Mag''
+| ''5''
+| ''Caliber: 7.62x51 mm Ball-T DM21A2<br />Rounds: 5<br />Used in: G3, G8, PSG1, MSG90''
+|-
+| <span id='' >'''gm_60Rnd_556x45mm_B_DM11_hk33_blk'''</span>
+| ''5.56 mm 60Rnd G33 Ball DM11 Black Mag''
+| ''60''
+| ''Caliber: 5.56x45 mm Ball DM11<br />Rounds: 60<br />Used in: G33, G53''
+|-
+| <span id='' >'''gm_60Rnd_556x45mm_B_T_DM21_hk33_blk'''</span>
+| ''5.56 mm 60Rnd G33 Ball-T DM21 Black Mag''
+| ''60''
+| ''Caliber: 5.56x45 mm Ball-T DM21<br />Rounds: 60<br />Used in: G33, G53''
+|-
+| <span id='' >'''gm_60Rnd_9x19mm_AP_DM91_mp5a3_blk'''</span>
+| ''9 mm 60Rnd MP5A3 AP DM91 Black Mag''
+| ''60''
+| ''Caliber: 9x19 mm AP DM91<br />Rounds: 60<br />Used in: SG5''
+|-
+| <span id='' >'''gm_60Rnd_9x19mm_B_DM11_mp5a3_blk'''</span>
+| ''9 mm 60Rnd MP5A3 Ball DM11 Black Mag''
+| ''60''
+| ''Caliber: 9x19 mm Ball DM11<br />Rounds: 60<br />Used in: SG5''
+|-
+| <span id='' >'''gm_60Rnd_9x19mm_B_DM51_mp5a3_blk'''</span>
+| ''9 mm 60Rnd MP5A3 Ball DM51 Black Mag''
+| ''60''
+| ''Caliber: 9x19 mm Ball DM51<br />Rounds: 60<br />Used in: SG5''
+|-
+| <span id='' >'''gm_60Rnd_9x19mm_BSD_DM81_mp5a3_blk'''</span>
+| ''9 mm 60Rnd MP5A3 Ball-SD DM81 Black Mag''
+| ''60''
+| ''Caliber: 9x19 mm Ball-SD DM81<br />Rounds: 60<br />Used in: SG5''
+|-
+| <span id='' >'''gm_75Rnd_762x39mm_AP_7N23_ak47_blk'''</span>
+| ''7.62 mm 75Rnd AK47 AP 7N23 Blued Mag''
+| ''75''
+| ''Caliber: 7.62x39 mm AP 7N23<br />Rounds: 75<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_75Rnd_762x39mm_AP_7N23_mpikm_blk'''</span>
+| ''7.62 mm 75Rnd MPiKM AP 7N23 Parkerized Mag''
+| ''75''
+| ''Caliber: 7.62x39 mm AP 7N23<br />Rounds: 75<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_75Rnd_762x39mm_B_57N231_ak47_blk'''</span>
+| ''7.62 mm 75Rnd AK47 Ball 57N231 Blued Mag''
+| ''75''
+| ''Caliber: 7.62x39 mm Ball 57N231<br />Rounds: 75<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_75Rnd_762x39mm_B_57N231_mpikm_blk'''</span>
+| ''7.62 mm 75Rnd MPiKM Ball 57N231 Parkerized Mag''
+| ''75''
+| ''Caliber: 7.62x39 mm Ball 57N231<br />Rounds: 75<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_75Rnd_762x39mm_B_M43_ak47_blk'''</span>
+| ''7.62 mm 75Rnd Ball M43 Mag''
+| ''75''
+| ''Caliber: 7.62x39 mm Ball M43<br />Rounds: 75<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_75Rnd_762x39mm_B_T_57N231P_ak47_blk'''</span>
+| ''7.62 mm 75Rnd AK47 Ball-T 57N231P Blued Mag''
+| ''75''
+| ''Caliber: 7.62x39 mm Ball-T 57N231P<br />Rounds: 75<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_75Rnd_762x39mm_B_T_57N231P_mpikm_blk'''</span>
+| ''7.62 mm 75Rnd MPiKM Ball-T 57N231P Parkerized Mag''
+| ''75''
+| ''Caliber: 7.62x39 mm Ball-T 57N231P<br />Rounds: 75<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_75Rnd_762x39mm_B_T_M43_ak47_blk'''</span>
+| ''7.62 mm 75Rnd Ball-T M43 Mag''
+| ''75''
+| ''Caliber: 7.62x39 mm Ball-T M43<br />Rounds: 75<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_75Rnd_762x39mm_BSD_57N231U_ak47_blk'''</span>
+| ''7.62 mm 75Rnd AK47 Ball-SD 57N231U Blued Mag''
+| ''75''
+| ''Caliber: 7.62x39 mm Ball-SD 57N231U<br />Rounds: 75<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_75Rnd_762x39mm_BSD_57N231U_mpikm_blk'''</span>
+| ''7.62 mm 75Rnd MPiKM Ball-SD 57N231U Parkerized Mag''
+| ''75''
+| ''Caliber: 7.62x39 mm Ball-SD 57N231U<br />Rounds: 75<br />Used in: AK-47, RPK, MPi KM''
+|-
+| <span id='' >'''gm_7rnd_12ga_hk512_pellet'''</span>
+| ''12 ga 7Rnd Pellet''
+| ''7''
+| ''Caliber: 12 ga Pellet<br />Rounds: 7<br />Used in: MZF512''
+|-
+| <span id='' >'''gm_7rnd_12ga_hk512_slug'''</span>
+| ''12 ga 7Rnd Slug''
+| ''7''
+| ''Caliber: 12 ga Slug<br />Rounds: 7<br />Used in: MZF512''
+|-
+|}
+ 
+=== Pistol Magazines ===
+ 
+28 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Class Name<br>
+! Display Name<br>
+! Amount of Cartridges<br>
+! Info<br>
+|-
+| <span id='' >'''gm_15Rnd_9x18mm_B_pst_pm63_blk'''</span>
+| ''9 mm 15Rnd PM63 Ball PST Black Mag''
+| ''15''
+| ''Caliber: 9x18 mm Ball PST<br />Rounds: 15<br />Used in: PM-63''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_multi_grn_DM21'''</span>
+| ''26.5 mm Flare DM21 (Multi Green)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 4<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_multi_nbc_DM47'''</span>
+| ''26.5 mm Flare DM47 (NBC)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 3<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_multi_red_DM23'''</span>
+| ''26.5 mm Flare DM23 (Multi Red)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 4<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_multi_red_gc'''</span>
+| ''26.5 mm Flare (Multi Red)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 3<br />Used in: LP1, WZ78''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_multi_wht_DM25'''</span>
+| ''26.5 mm Flare DM25 (Multi White)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 4<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_multi_yel_DM20'''</span>
+| ''26.5 mm Flare DM20 (Multi Yellow)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 4<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_para_yel_DM16'''</span>
+| ''26.5 mm Flare DM16 (Yellow)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 1<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_single_grn_DM11'''</span>
+| ''26.5 mm Flare DM11 (Green)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 1<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_single_grn_gc'''</span>
+| ''26.5 mm Flare (Green)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 1<br />Used in: LP1, WZ78''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_single_red_DM13'''</span>
+| ''26.5 mm Flare DM13 (Red)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 1<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_single_red_gc'''</span>
+| ''26.5 mm Flare (Red)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 1<br />Used in: LP1, WZ78''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_single_wht_DM15'''</span>
+| ''26.5 mm Flare DM15 (White)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 1<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_single_wht_gc'''</span>
+| ''26.5 mm Flare (White)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 1<br />Used in: LP1, WZ78''
+|-
+| <span id='' >'''gm_1Rnd_265mm_flare_single_yel_DM10'''</span>
+| ''26.5 mm Flare DM10 (Yellow)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Stars: 1<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_smoke_single_blk_gc'''</span>
+| ''26.5 mm Smoke (Black)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Smoke<br />Used in: LP1, WZ78''
+|-
+| <span id='' >'''gm_1Rnd_265mm_smoke_single_blu_gc'''</span>
+| ''26.5 mm Smoke (Blue)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Smoke<br />Used in: LP1, WZ78''
+|-
+| <span id='' >'''gm_1Rnd_265mm_smoke_single_org_DM22'''</span>
+| ''26.5 mm Smoke DM22 (Orange)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Smoke<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_smoke_single_vlt_DM24'''</span>
+| ''26.5 mm Smoke DM24 (Purple)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Smoke<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_smoke_single_yel_DM19'''</span>
+| ''26.5 mm Smoke DM19 (Yellow)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Smoke<br />Used in: P2A1''
+|-
+| <span id='' >'''gm_1Rnd_265mm_smoke_single_yel_gc'''</span>
+| ''26.5 mm Smoke (Yellow)''
+| ''1''
+| ''Caliber: 26.5 mm flare<br />Smoke<br />Used in: LP1, WZ78''
+|-
+| <span id='' >'''gm_25Rnd_9x18mm_B_pst_pm63_blk'''</span>
+| ''9 mm 25Rnd PM63 Ball PST Black Mag''
+| ''25''
+| ''Caliber: 9x18 mm Ball PST<br />Rounds: 25<br />Used in: PM-63''
+|-
+| <span id='' >'''gm_8Rnd_9x18mm_B_pst_pm_blk'''</span>
+| ''9 mm 8Rnd PM Ball PST Black Mag''
+| ''8''
+| ''Caliber: 9x18 mm Ball PST<br />Rounds: 8<br />Used in: PM''
+|-
+| <span id='' >'''gm_8Rnd_9x19mm_B_DM11_p1_blk'''</span>
+| ''9 mm 8Rnd P1 Ball DM11 Black Mag''
+| ''8''
+| ''Caliber: 9x19 mm Ball DM11<br />Rounds: 8<br />Used in: P1''
+|-
+| <span id='' >'''gm_8Rnd_9x19mm_B_DM11_p210_blk'''</span>
+| ''9 mm 8Rnd P210 Ball DM11 Black Mag''
+| ''8''
+| ''Caliber: 9x19 mm Ball DM11<br />Rounds: 8<br />Used in: P2''
+|-
+| <span id='' >'''gm_8Rnd_9x19mm_B_DM51_p1_blk'''</span>
+| ''9 mm 8Rnd P1 Ball DM51 Black Mag''
+| ''8''
+| ''Caliber: 9x19 mm Ball DM51<br />Rounds: 8<br />Used in: P1''
+|-
+| <span id='' >'''gm_8Rnd_9x19mm_B_DM51_p210_blk'''</span>
+| ''9 mm 8Rnd P210 Ball DM51 Black Mag''
+| ''8''
+| ''Caliber: 9x19 mm Ball DM51<br />Rounds: 8<br />Used in: P2''
+|-
+| <span id='' >'''gm_8Rnd_9x19mm_BSD_DM81_p1_blk'''</span>
+| ''9 mm 8Rnd P1 Ball-SD DM81 Black Mag''
+| ''8''
+| ''Caliber: 9x19 mm Ball-SD DM81<br />Rounds: 8<br />Used in: P1''
+|-
+|}
+ 
+=== Launcher Magazines ===
+ 
+16 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Class Name<br>
+! Display Name<br>
+! Amount of Cartridges<br>
+! Info<br>
+|-
+| <span id='' >'''gm_1Rnd_2650mm_potato_dm11'''</span>
+| ''265mm 1Rnd POTATO DM11''
+| ''1''
+| ''Po. Tato''
+|-
+| <span id='' >'''gm_1Rnd_40mm_heat_pg7v_rpg7'''</span>
+| ''40 mm HEAT PG-7V''
+| ''1''
+| ''Caliber: 40 mm HEAT PG-7V<br />Rounds: 1<br />Used in: RPG-7''
+|-
+| <span id='' >'''gm_1Rnd_40mm_heat_pg7vl_rpg7'''</span>
+| ''40 mm HEAT PG-7VL''
+| ''1''
+| ''Caliber: 40 mm HEAT PG-7VL<br />Rounds: 1<br />Used in: RPG-7''
+|-
+| <span id='' >'''gm_1Rnd_44x537mm_heat_dm32_pzf44_2'''</span>
+| ''44 mm HEAT DM32''
+| ''1''
+| ''Caliber: 44x537 mm HEAT DM32<br />Rounds: 1<br />Used in: PzF44-2''
+|-
+| <span id='' >'''gm_1Rnd_60mm_heat_dm12_pzf3'''</span>
+| ''60 mm HEAT DM12A1''
+| ''1''
+| ''Caliber: 60 mm HEAT DM12A1<br />Rounds: 1<br />Used in: PzF3''
+|-
+| <span id='' >'''gm_1Rnd_60mm_heat_dm22_pzf3'''</span>
+| ''60 mm HEAT DM22A1''
+| ''1''
+| ''Caliber: 60 mm HEAT DM22A1<br />Rounds: 1<br />Used in: PzF3''
+|-
+| <span id='' >'''gm_1Rnd_60mm_heat_dm32_pzf3'''</span>
+| ''60 mm HEAT-MP DM32''
+| ''1''
+| ''Caliber: 60 mm HEAT-MP DM32<br />Rounds: 1<br />Used in: PzF3''
+|-
+| <span id='' >'''gm_1Rnd_64mm_heat_pg18'''</span>
+| ''64 mm HEAT PG-18''
+| ''1''
+| ''Caliber: 64 mm HEAT PG-18<br />Rounds: 1<br />Used in: RPG-18''
+|-
+| <span id='' >'''gm_1Rnd_66mm_heat_m72a3'''</span>
+| ''66 mm HEAT M72A3''
+| ''1''
+| ''Caliber: 66 mm HEAT M72A3<br />Rounds: 1<br />Used in: M72A3''
+|-
+| <span id='' >'''gm_1Rnd_70mm_he_m585_fim43'''</span>
+| ''FIM-43 M585''
+| ''1''
+| ''HE M585<br />Rounds: 1<br />Used in: FIM-43''
+|-
+| <span id='' >'''gm_1Rnd_72mm_he_9m32m'''</span>
+| ''Strela-2M 9M32M''
+| ''1''
+| ''HE 9M32M<br />Rounds: 1<br />Used in: Strela-2''
+|-
+| <span id='' >'''gm_1Rnd_84x245mm_heat_t_DM12_carlgustaf'''</span>
+| ''84 mm HEAT-T DM12''
+| ''1''
+| ''Caliber: 84x245 mm HEAT DM12<br />Rounds: 1<br />Used in: PzF84''
+|-
+| <span id='' >'''gm_1Rnd_84x245mm_heat_t_DM12a1_carlgustaf'''</span>
+| ''84 mm HEAT-T DM12A1''
+| ''1''
+| ''Caliber: 84x245 mm HEAT DM12A1<br />Rounds: 1<br />Used in: PzF84''
+|-
+| <span id='' >'''gm_1Rnd_84x245mm_heat_t_DM22_carlgustaf'''</span>
+| ''84 mm HEAT-T DM22''
+| ''1''
+| ''Caliber: 84x245 mm HEAT DM22<br />Rounds: 1<br />Used in: PzF84''
+|-
+| <span id='' >'''gm_1Rnd_84x245mm_heat_t_DM32_carlgustaf'''</span>
+| ''84 mm HEAT-T DM32''
+| ''1''
+| ''Caliber: 84x245 mm HEAT DM32<br />Rounds: 1<br />Used in: PzF84''
+|-
+| <span id='' >'''gm_1Rnd_84x245mm_ILLUM_DM16_carlgustaf'''</span>
+| ''84 mm Illum DM16''
+| ''1''
+| ''Caliber: 84x245 mm Illum DM16<br />Rounds: 1<br />Used in: PzF84''
+|-
+|}
+ 
+=== Throwable Magazines ===
+ 
+16 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Class Name<br>
+! Display Name<br>
+! Amount of Cartridges<br>
+! Info<br>
+|-
+| <span id='' >'''gm_handgrenade_frag_dm41'''</span>
+| ''Fragmentation Grenade DM41''
+| ''1''
+| ''Type: Fragmentation Grenade<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_handgrenade_frag_dm41a1'''</span>
+| ''Fragmentation Grenade DM41A1''
+| ''1''
+| ''Type: Fragmentation Grenade<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_handgrenade_frag_dm51'''</span>
+| ''Fragmentation Grenade DM51''
+| ''1''
+| ''Type: Fragmentation Grenade<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_handgrenade_frag_dm51a1'''</span>
+| ''Fragmentation Grenade DM51A1''
+| ''1''
+| ''Type: Fragmentation Grenade<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_handgrenade_pracfrag_dm58'''</span>
+| ''Practice Fragmentation Grenade DM58''
+| ''1''
+| ''Type: Practice Fragmentation Grenade<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_handgrenade_conc_dm51'''</span>
+| ''Concussion Grenade DM51''
+| ''1''
+| ''Type: Concussion Grenade<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_handgrenade_conc_dm51a1'''</span>
+| ''Concussion Grenade DM51A1''
+| ''1''
+| ''Type: Concussion Grenade<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_handgrenade_pracconc_dm58'''</span>
+| ''Practice Concussion Grenade DM58''
+| ''1''
+| ''Type: Practice Concussion Grenade<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_handgrenade_frag_m26'''</span>
+| ''Fragmentation Grenade M26''
+| ''1''
+| ''Type: Fragmentation Grenade<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_handgrenade_frag_m26a1'''</span>
+| ''Fragmentation Grenade M26A1''
+| ''1''
+| ''Type: Fragmentation Grenade<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_handgrenade_frag_rgd5'''</span>
+| ''Fragmentation Grenade RGD5''
+| ''1''
+| ''Type: Fragmentation Grenade<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_smokeshell_grn_dm21'''</span>
+| ''Smoke Grenade DM21 (Green)''
+| ''1''
+| ''Type: Smoke Grenade - Green<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_smokeshell_red_dm23'''</span>
+| ''Smoke Grenade DM23 (Red)''
+| ''1''
+| ''Type: Smoke Grenade - Red<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_smokeshell_yel_dm26'''</span>
+| ''Smoke Grenade DM26 (Yellow)''
+| ''1''
+| ''Type: Smoke Grenade - Yellow<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_smokeshell_org_dm32'''</span>
+| ''Smoke Grenade DM32 (Orange)''
+| ''1''
+| ''Type: Smoke Grenade - Orange<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_smokeshell_wht_dm25'''</span>
+| ''Smoke Grenade DM25 (White)''
+| ''1''
+| ''Type: Smoke Grenade - White<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_smokeshell_grn_gc'''</span>
+| ''Smoke Grenade (Green)''
+| ''1''
+| ''Type: Smoke Grenade - Green<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_smokeshell_blk_gc'''</span>
+| ''Smoke Grenade (Black)''
+| ''1''
+| ''Type: Smoke Grenade - Black<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_smokeshell_red_gc'''</span>
+| ''Smoke Grenade (Red)''
+| ''1''
+| ''Type: Smoke Grenade - Red<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_smokeshell_yel_gc'''</span>
+| ''Smoke Grenade (Yellow)''
+| ''1''
+| ''Type: Smoke Grenade - Yellow<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_smokeshell_blu_gc'''</span>
+| ''Smoke Grenade (Blue)''
+| ''1''
+| ''Type: Smoke Grenade - Blue<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_smokeshell_org_gc'''</span>
+| ''Smoke Grenade (Orange)''
+| ''1''
+| ''Type: Smoke Grenade - Orange<br />Rounds: 1<br />Used in: Hand''
+|-
+| <span id='' >'''gm_smokeshell_wht_gc'''</span>
+| ''Smoke Grenade (White)''
+| ''1''
+| ''Type: Smoke Grenade - White<br />Rounds: 1<br />Used in: Hand''
+|-
+|}
+ 
+=== Put Magazines ===
+ 
+16 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Class Name<br>
+! Display Name<br>
+! Amount of Cartridges<br>
+! Info<br>
+|-
+| <span id='' >'''gm_mine_at_dm21'''</span>
+| ''AT Mine DM21''
+| ''1''
+| ''Fuse: Contact<br />Rounds: 1<br />Used on: Ground''
+|-
+| <span id='' >'''gm_mine_at_tm46'''</span>
+| ''AT Mine TM46''
+| ''1''
+| ''Fuse: Contact<br />Rounds: 1<br />Used on: Ground''
+|-
+| <span id='' >'''gm_mine_ap_dm31'''</span>
+| ''AP Mine DM31''
+| ''1''
+| ''Fuse: Wire<br />Rounds: 1<br />Used on: Ground''
+|-
+| <span id='' >'''gm_explosive_petn_charge'''</span>
+| ''PETN Charge''
+| ''1''
+| ''Plastic Explosive''
+|-
+| <span id='' >'''gm_explosive_plnp_charge'''</span>
+| ''PLNP Charge''
+| ''1''
+| ''Plastic Explosive''
+|-
+| <span id='' >'''gm_mine_at_mn111'''</span>
+| ''AT Mine Scatterable MN111''
+| ''1''
+| ''Fuse: Contact<br />Rounds: 1<br />Used on: Ground''
+|-
+|}
+ 
+== Magazine Wells ==
+ 
+27 classes
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Magazine Well Classname<br>
+! Compatible Magazines<br>
+|-
+| <span id='' >'''ak_545x39'''</span>
+| 30Rnd_545x39_Mag_F<br>30Rnd_545x39_Mag_Green_F<br>30Rnd_545x39_Mag_Tracer_F<br>30Rnd_545x39_Mag_Tracer_Green_F<br>gm_30Rnd_545x39mm_b_7N6_ak74_org<br>gm_30Rnd_545x39mm_b_t_7T3_ak74_org<br>gm_45Rnd_545x39mm_b_7N6_ak74_org<br>gm_45Rnd_545x39mm_b_t_7T3_ak74_org<br>gm_30Rnd_545x39mm_b_7N6_ak74_prp<br>gm_30Rnd_545x39mm_b_t_7T3_ak74_prp<br>gm_45Rnd_545x39mm_b_7N6_ak74_prp<br>gm_45Rnd_545x39mm_b_t_7T3_ak74_prp<br>gm_30Rnd_545x39mm_b_7N6_ak74_blk<br>gm_30Rnd_545x39mm_b_t_7T3_ak74_blk<br>gm_45Rnd_545x39mm_b_7N6_ak74_blk<br>gm_45Rnd_545x39mm_b_t_7T3_ak74_blk
+|-
+| <span id='' >'''ak_762x39'''</span>
+| 30Rnd_762x39_Mag_F<br>30Rnd_762x39_Mag_Green_F<br>30Rnd_762x39_Mag_Tracer_F<br>30Rnd_762x39_Mag_Tracer_Green_F<br>30Rnd_762x39_AK12_Mag_F<br>30Rnd_762x39_AK12_Mag_Tracer_F<br>75Rnd_762x39_Mag_F<br>75Rnd_762x39_Mag_Tracer_F<br>30Rnd_762x39_AK12_Lush_Mag_F<br>30Rnd_762x39_AK12_Lush_Mag_Tracer_F<br>30Rnd_762x39_AK12_Arid_Mag_F<br>30Rnd_762x39_AK12_Arid_Mag_Tracer_F<br>75rnd_762x39_AK12_Mag_F<br>75rnd_762x39_AK12_Mag_Tracer_F<br>75rnd_762x39_AK12_Lush_Mag_F<br>75rnd_762x39_AK12_Lush_Mag_Tracer_F<br>75rnd_762x39_AK12_Arid_Mag_F<br>75rnd_762x39_AK12_Arid_Mag_Tracer_F<br>gm_30Rnd_762x39mm_b_57N231_ak47_blk<br>gm_30Rnd_762x39mm_bsd_57N231U_ak47_blk<br>gm_30Rnd_762x39mm_b_t_57N231P_ak47_blk<br>gm_30Rnd_762x39mm_ap_7N23_ak47_blk<br>gm_30Rnd_762x39mm_b_M43_ak47_blk<br>gm_30Rnd_762x39mm_b_t_M43_ak47_blk<br>gm_30Rnd_762x39mm_b_57N231_mpikm_blk<br>gm_30Rnd_762x39mm_bsd_57N231U_mpikm_blk<br>gm_30Rnd_762x39mm_b_t_57N231P_mpikm_blk<br>gm_30Rnd_762x39mm_ap_7N23_mpikm_blk<br>gm_30Rnd_762x39mm_b_57N231_akm_blk<br>gm_30Rnd_762x39mm_bsd_57N231U_akm_blk<br>gm_30Rnd_762x39mm_b_t_57N231P_akm_blk<br>gm_30Rnd_762x39mm_ap_7N23_akm_blk<br>gm_30Rnd_762x39mm_b_57N231_akm_org<br>gm_30Rnd_762x39mm_bsd_57N231U_akm_org<br>gm_30Rnd_762x39mm_b_t_57N231P_akm_org<br>gm_30Rnd_762x39mm_ap_7N23_akm_org<br>gm_75Rnd_762x39mm_b_57N231_ak47_blk<br>gm_75Rnd_762x39mm_bsd_57N231U_ak47_blk<br>gm_75Rnd_762x39mm_b_t_57N231P_ak47_blk<br>gm_75Rnd_762x39mm_ap_7N23_ak47_blk<br>gm_75Rnd_762x39mm_b_M43_ak47_blk<br>gm_75Rnd_762x39mm_b_t_M43_ak47_blk<br>gm_75Rnd_762x39mm_b_57N231_mpikm_blk<br>gm_75Rnd_762x39mm_bsd_57N231U_mpikm_blk<br>gm_75Rnd_762x39mm_b_t_57N231P_mpikm_blk<br>gm_75Rnd_762x39mm_ap_7N23_mpikm_blk
+|-
+| <span id='' >'''gm_magazinewell_12ga_7rnd'''</span>
+| gm_7rnd_12ga_hk512_slug<br>gm_7rnd_12ga_hk512_pellet
+|-
+| <span id='' >'''gm_magazinewell_265mm'''</span>
+| gm_1Rnd_265mm_flare_single_wht_gc<br>gm_1Rnd_265mm_flare_single_grn_gc<br>gm_1Rnd_265mm_flare_single_red_gc<br>gm_1Rnd_265mm_flare_multi_red_gc<br>gm_1Rnd_265mm_smoke_single_yel_gc<br>gm_1Rnd_265mm_smoke_single_blu_gc<br>gm_1Rnd_265mm_smoke_single_blk_gc<br>gm_1Rnd_265mm_flare_para_yel_DM16<br>gm_1Rnd_265mm_flare_single_wht_DM15<br>gm_1Rnd_265mm_flare_single_red_DM13<br>gm_1Rnd_265mm_flare_single_grn_DM11<br>gm_1Rnd_265mm_flare_single_yel_DM10<br>gm_1Rnd_265mm_flare_multi_wht_DM25<br>gm_1Rnd_265mm_flare_multi_red_DM23<br>gm_1Rnd_265mm_flare_multi_grn_DM21<br>gm_1Rnd_265mm_flare_multi_yel_DM20<br>gm_1Rnd_265mm_smoke_single_yel_DM19<br>gm_1Rnd_265mm_smoke_single_org_DM22<br>gm_1Rnd_265mm_smoke_single_vlt_DM24<br>gm_1Rnd_265mm_flare_multi_nbc_DM47
+|-
+| <span id='' >'''gm_magazinewell_473x33mm_g11'''</span>
+| gm_50Rnd_473x33mm_b_dm11_g11_blk<br>gm_50Rnd_473x33mm_b_t_dm21_g11_blk
+|-
+| <span id='' >'''gm_magazinewell_545x39mm_ak74'''</span>
+| gm_30Rnd_545x39mm_b_7N6_ak74_org<br>gm_30Rnd_545x39mm_b_t_7T3_ak74_org<br>gm_45Rnd_545x39mm_b_7N6_ak74_org<br>gm_45Rnd_545x39mm_b_t_7T3_ak74_org<br>gm_30Rnd_545x39mm_b_7N6_ak74_prp<br>gm_30Rnd_545x39mm_b_t_7T3_ak74_prp<br>gm_45Rnd_545x39mm_b_7N6_ak74_prp<br>gm_45Rnd_545x39mm_b_t_7T3_ak74_prp<br>gm_30Rnd_545x39mm_b_7N6_ak74_blk<br>gm_30Rnd_545x39mm_b_t_7T3_ak74_blk<br>gm_45Rnd_545x39mm_b_7N6_ak74_blk<br>gm_45Rnd_545x39mm_b_t_7T3_ak74_blk
+|-
+| <span id='' >'''gm_magazinewell_556x45mm_g36'''</span>
+| gm_30Rnd_556x45mm_b_dm11_g36_blk<br>gm_30Rnd_556x45mm_b_t_dm21_g36_blk<br>gm_30Rnd_556x45mm_b_dm11_g36_des<br>gm_30Rnd_556x45mm_b_t_dm21_g36_des
+|-
+| <span id='' >'''gm_magazinewell_556x45mm_hk33'''</span>
+| gm_30Rnd_556x45mm_b_DM11_hk33_blk<br>gm_30Rnd_556x45mm_b_t_DM21_hk33_blk<br>gm_40Rnd_556x45mm_b_DM11_hk33_blk<br>gm_40Rnd_556x45mm_b_t_DM21_hk33_blk<br>gm_60Rnd_556x45mm_b_DM11_hk33_blk<br>gm_60Rnd_556x45mm_b_t_DM21_hk33_blk
+|-
+| <span id='' >'''gm_magazinewell_556x45mm_sg550'''</span>
+| gm_30Rnd_556x45mm_b_dm11_sg550_brn<br>gm_30Rnd_556x45mm_b_t_dm21_sg550_brn
+|-
+| <span id='' >'''gm_magazinewell_556x45mm_stanag'''</span>
+| gm_20Rnd_556x45mm_b_M855_stanag_gry<br>gm_20Rnd_556x45mm_b_t_M856_stanag_gry<br>gm_20Rnd_556x45mm_b_M193_stanag_gry<br>gm_20Rnd_556x45mm_b_t_M196_stanag_gry<br>gm_30Rnd_556x45mm_b_M855_stanag_gry<br>gm_30Rnd_556x45mm_b_t_M856_stanag_gry<br>gm_30Rnd_556x45mm_b_M193_stanag_gry<br>gm_30Rnd_556x45mm_b_t_M196_stanag_gry
+|-
+| <span id='' >'''gm_magazinewell_67mm_g3'''</span>
+| gm_1rnd_67mm_heat_dm22a1_g3
+|-
+| <span id='' >'''gm_magazinewell_762x39mm_ak47'''</span>
+| gm_30Rnd_762x39mm_b_57N231_ak47_blk<br>gm_30Rnd_762x39mm_bsd_57N231U_ak47_blk<br>gm_30Rnd_762x39mm_b_t_57N231P_ak47_blk<br>gm_30Rnd_762x39mm_ap_7N23_ak47_blk<br>gm_30Rnd_762x39mm_b_M43_ak47_blk<br>gm_30Rnd_762x39mm_b_t_M43_ak47_blk<br>gm_30Rnd_762x39mm_b_57N231_mpikm_blk<br>gm_30Rnd_762x39mm_bsd_57N231U_mpikm_blk<br>gm_30Rnd_762x39mm_b_t_57N231P_mpikm_blk<br>gm_30Rnd_762x39mm_ap_7N23_mpikm_blk<br>gm_30Rnd_762x39mm_b_57N231_akm_blk<br>gm_30Rnd_762x39mm_bsd_57N231U_akm_blk<br>gm_30Rnd_762x39mm_b_t_57N231P_akm_blk<br>gm_30Rnd_762x39mm_ap_7N23_akm_blk<br>gm_30Rnd_762x39mm_b_57N231_akm_org<br>gm_30Rnd_762x39mm_bsd_57N231U_akm_org<br>gm_30Rnd_762x39mm_b_t_57N231P_akm_org<br>gm_30Rnd_762x39mm_ap_7N23_akm_org<br>gm_75Rnd_762x39mm_b_57N231_ak47_blk<br>gm_75Rnd_762x39mm_bsd_57N231U_ak47_blk<br>gm_75Rnd_762x39mm_b_t_57N231P_ak47_blk<br>gm_75Rnd_762x39mm_ap_7N23_ak47_blk<br>gm_75Rnd_762x39mm_b_M43_ak47_blk<br>gm_75Rnd_762x39mm_b_t_M43_ak47_blk<br>gm_75Rnd_762x39mm_b_57N231_mpikm_blk<br>gm_75Rnd_762x39mm_bsd_57N231U_mpikm_blk<br>gm_75Rnd_762x39mm_b_t_57N231P_mpikm_blk<br>gm_75Rnd_762x39mm_ap_7N23_mpikm_blk
+|-
+| <span id='' >'''gm_magazinewell_762x51mm_g3'''</span>
+| gm_20Rnd_762x51mm_b_t_DM21_g3_blk<br>gm_20Rnd_762x51mm_b_t_DM21A1_g3_blk<br>gm_20Rnd_762x51mm_b_t_DM21A2_g3_blk<br>gm_20Rnd_762x51mm_b_DM111_g3_blk<br>gm_20Rnd_762x51mm_b_DM41_g3_blk<br>gm_20Rnd_762x51mm_ap_DM151_g3_blk<br>gm_20Rnd_762x51mm_b_t_DM21_g3_des<br>gm_20Rnd_762x51mm_b_t_DM21A1_g3_des<br>gm_20Rnd_762x51mm_b_t_DM21A2_g3_des<br>gm_20Rnd_762x51mm_b_DM111_g3_des<br>gm_20Rnd_762x51mm_b_DM41_g3_des<br>gm_20Rnd_762x51mm_ap_DM151_g3_des<br>gm_40Rnd_762x51mm_b_t_DM21_g3_blk<br>gm_40Rnd_762x51mm_b_t_DM21A1_g3_blk<br>gm_40Rnd_762x51mm_b_t_DM21A2_g3_blk<br>gm_40Rnd_762x51mm_b_DM111_g3_blk<br>gm_40Rnd_762x51mm_b_DM41_g3_blk<br>gm_40Rnd_762x51mm_ap_DM151_g3_blk<br>gm_20Rnd_762x51mm_b_t_DM21_g3_gold<br>gm_10Rnd_762x51mm_b_t_DM21_g3_blk<br>gm_10Rnd_762x51mm_b_t_DM21A1_g3_blk<br>gm_10Rnd_762x51mm_b_t_DM21A2_g3_blk<br>gm_10Rnd_762x51mm_b_DM111_g3_blk<br>gm_10Rnd_762x51mm_b_DM41_g3_blk<br>gm_10Rnd_762x51mm_ap_DM151_g3_blk<br>gm_5Rnd_762x51mm_b_t_DM21_g3_blk<br>gm_5Rnd_762x51mm_b_t_DM21A1_g3_blk<br>gm_5Rnd_762x51mm_b_t_DM21A2_g3_blk<br>gm_5Rnd_762x51mm_b_DM111_g3_blk<br>gm_5Rnd_762x51mm_b_DM41_g3_blk<br>gm_5Rnd_762x51mm_ap_DM151_g3_blk
+|-
+| <span id='' >'''gm_magazinewell_762x51mm_mg3'''</span>
+| gm_120Rnd_762x51mm_b_t_DM21_mg3_grn<br>gm_120Rnd_762x51mm_b_t_DM21A1_mg3_grn<br>gm_120Rnd_762x51mm_b_t_DM21A2_mg3_grn
+|-
+| <span id='' >'''gm_magazinewell_762x51mm_mg8'''</span>
+| gm_100Rnd_762x51mm_b_t_DM21_mg8_oli<br>gm_100Rnd_762x51mm_b_t_DM21A1_mg8_oli<br>gm_100Rnd_762x51mm_b_t_DM21A2_mg8_oli
+|-
+| <span id='' >'''gm_magazinewell_762x51mm_sg542'''</span>
+| gm_20Rnd_762x51mm_b_t_DM21_sg542_blk<br>gm_20Rnd_762x51mm_b_t_DM21A1_sg542_blk<br>gm_20Rnd_762x51mm_b_t_DM21A2_sg542_blk<br>gm_20Rnd_762x51mm_b_DM111_sg542_blk<br>gm_20Rnd_762x51mm_b_DM41_sg542_blk<br>gm_20Rnd_762x51mm_ap_DM151_sg542_blk
+|-
+| <span id='' >'''gm_magazinewell_762x54mm_pk'''</span>
+| gm_100Rnd_762x54mm_b_t_t46_pk_grn<br>gm_100Rnd_762x54mm_api_b32_pk_grn<br>gm_100Rnd_762x54mmR_b_t_7t2_pk_grn<br>gm_100Rnd_762x54mmR_api_7bz3_pk_grn
+|-
+| <span id='' >'''gm_magazinewell_762x54mmr_pk'''</span>
+| gm_100Rnd_762x54mm_b_t_t46_pk_grn<br>gm_100Rnd_762x54mm_api_b32_pk_grn<br>gm_100Rnd_762x54mmR_b_t_7t2_pk_grn<br>gm_100Rnd_762x54mmR_api_7bz3_pk_grn
+|-
+| <span id='' >'''gm_magazinewell_762x54mmr_svd'''</span>
+| gm_10Rnd_762x54mmR_ap_7n1_svd_blk<br>gm_10Rnd_762x54mmR_api_7bz3_svd_blk<br>gm_10Rnd_762x54mmR_b_t_7t2_svd_blk
+|-
+| <span id='' >'''gm_magazinewell_9x18mm_pm'''</span>
+| gm_8rnd_9x18mm_b_pst_pm_blk
+|-
+| <span id='' >'''gm_magazinewell_9x18mm_pm63'''</span>
+| gm_15Rnd_9x18mm_b_pst_pm63_blk<br>gm_25Rnd_9x18mm_b_pst_pm63_blk
+|-
+| <span id='' >'''gm_magazinewell_9x19mm_mp2'''</span>
+| gm_32Rnd_9x19mm_b_DM51_mp2_blk<br>gm_32Rnd_9x19mm_b_DM11_mp2_blk<br>gm_32Rnd_9x19mm_ap_DM91_mp2_blk
+|-
+| <span id='' >'''gm_magazinewell_9x19mm_mp5'''</span>
+| gm_30Rnd_9x19mm_b_DM51_mp5_blk<br>gm_30Rnd_9x19mm_b_DM11_mp5_blk<br>gm_30Rnd_9x19mm_ap_DM91_mp5_blk<br>gm_30Rnd_9x19mm_bsd_DM81_mp5_blk<br>gm_30Rnd_9x19mm_b_DM51_mp5a3_blk<br>gm_30Rnd_9x19mm_b_DM11_mp5a3_blk<br>gm_30Rnd_9x19mm_ap_DM91_mp5a3_blk<br>gm_30Rnd_9x19mm_bsd_DM81_mp5a3_blk<br>gm_60Rnd_9x19mm_b_DM51_mp5a3_blk<br>gm_60Rnd_9x19mm_b_DM11_mp5a3_blk<br>gm_60Rnd_9x19mm_ap_DM91_mp5a3_blk<br>gm_60Rnd_9x19mm_bsd_DM81_mp5a3_blk
+|-
+| <span id='' >'''gm_magazinewell_9x19mm_p1'''</span>
+| gm_8rnd_9x19mm_b_dm11_p1_blk<br>gm_8rnd_9x19mm_b_dm51_p1_blk<br>gm_8rnd_9x19mm_bsd_dm81_p1_blk
+|-
+| <span id='' >'''gm_magazinewell_9x19mm_p210'''</span>
+| gm_8rnd_9x19mm_b_dm11_p210_blk<br>gm_8rnd_9x19mm_b_dm51_p210_blk
+|-
+| <span id='' >'''stanag_556x45'''</span>
+| 30Rnd_556x45_Stanag<br>30Rnd_556x45_Stanag_green<br>30Rnd_556x45_Stanag_red<br>30Rnd_556x45_Stanag_Tracer_Red<br>30Rnd_556x45_Stanag_Tracer_Green<br>30Rnd_556x45_Stanag_Tracer_Yellow<br>30Rnd_556x45_Stanag_Sand<br>30Rnd_556x45_Stanag_Sand_green<br>30Rnd_556x45_Stanag_Sand_red<br>30Rnd_556x45_Stanag_Sand_Tracer_Red<br>30Rnd_556x45_Stanag_Sand_Tracer_Green<br>30Rnd_556x45_Stanag_Sand_Tracer_Yellow<br>gm_30Rnd_556x45mm_b_M855_stanag_gry<br>gm_30Rnd_556x45mm_b_t_M856_stanag_gry
+|-
+| <span id='' >'''stanag_556x45_large'''</span>
+| 150Rnd_556x45_Drum_Mag_F<br>150Rnd_556x45_Drum_Mag_Tracer_F<br>150Rnd_556x45_Drum_Sand_Mag_F<br>150Rnd_556x45_Drum_Sand_Mag_Tracer_F<br>150Rnd_556x45_Drum_Green_Mag_F<br>150Rnd_556x45_Drum_Green_Mag_Tracer_F
+|-
+|}
+ 
+
+[[Category:Global Mobilization]]

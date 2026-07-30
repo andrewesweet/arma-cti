@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/ctrlActivate
+// revision: 369263 (2024-09-03T18:42:41Z)
+// export sha1: c41f3r9kka34xxqsrl5dmf3pmwwtdj5
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= Launches action attached to given (button based) control. Command ignores control disabled state. (Example 2). Main syntax command only triggers engine-based actions (cancel or ok codes) and will not trigger button related [[User_Interface_Event_Handlers|User Interface Event Handlers]] or [[buttonAction]], use the alternative syntax for this. "ButtonClick" UI event handler will also be triggered with the alternative syntax. Use [[isUIContext]] to distinguish between scripted activation and user activation.<br>
+|s1= [[ctrlActivate]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Nothing]]
+
+|s2= control [[ctrlActivate]] full
+|s2since= arma3 2.18
+|p21= control: [[Control]] - button based control ([[CT_BUTTON]], [[CT_XBUTTON]], [[CT_SHORTCUTBUTTON]], [[CT_ACTIVETEXT]])
+|p22= full: [[Boolean]] - [[true]] to simulate button click in full including UI event handling
+|r2= [[Nothing]]
+
+|x1= <sqf>ctrlActivate _control;</sqf>
+|x2= <sqf>
+_control ctrlEnable false;
+ctrlActivate _control; // Action fired.
+</sqf>
+
+|seealso= [[allControls]] [[allDisplays]] [[controlsGroupCtrl]] [[ctrlDelete]] [[ctrlModel]] [[ctrlSetModel]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlClassName]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlModelDirAndUp]] [[ctrlSetModelDirAndUp]] [[displayParent]]
+}}

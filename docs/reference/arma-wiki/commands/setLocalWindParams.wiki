@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/setLocalWindParams
+// revision: 321461 (2022-05-14T14:53:34Z)
+// export sha1: gbrdi5o12jvczafu3vni59n1dwl28wh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|descr= Sets parameters for helicopter rotor wash.
+It affects the visual effect of a rotor's downwash, such as blown particles, vegetation wind effect and area size.
+
+|s1= [[setLocalWindParams]] [strength, diameter]
+
+|p1= strength: [[Number]] - down-force wind strength
+
+|p2= diameter: [[Number]] - area affected
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setLocalWindParams [10, 5];</sqf>
+
+|x2= "Disables" the effects:
+<sqf>setLocalWindParams [0.0001, 0.0001]; // 0 values are ignored by the command</sqf>
+
+|x3= Reset to default:<sqf>setLocalWindParams [1, 1];</sqf>
+
+|seealso= [[setWind]] [[wind]] [[setWindStr]] [[setWindDir]] [[setWindForce]] [[windDir]] [[windStr]] [[gusts]] [[setGusts]]
+}}

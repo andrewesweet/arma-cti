@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/waypointForceBehaviour
+// revision: 377583 (2026-01-02T06:56:41Z)
+// export sha1: 1vr5mrg00n304ey03h3gcg6p4yk1m2a
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Waypoints
+
+|descr= Returns true if the waypoint behavior is forced.
+
+|s1= [[waypointForceBehaviour]] waypoint
+
+|p1= waypoint: [[Waypoint]]
+
+|r1= [[Boolean]] - is forced
+
+|x1= <sqf>_isForced = waypointForceBehaviour [groupOne, 1];</sqf>
+
+|seealso= [[setWaypointForceBehaviour]] [[setWaypointBehaviour]] [[waypointBehaviour]] [[Mission_Editor:_Waypoints#Behaviour|Behaviour Description]]
+}}

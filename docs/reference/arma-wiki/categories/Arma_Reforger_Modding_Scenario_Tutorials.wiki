@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Scenario/Tutorials
+// revision: 371157 (2025-02-28T17:19:54Z)
+// export sha1: 828mbgh2tzporcbzbujll8lyszy0abg
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding|Scenario}}

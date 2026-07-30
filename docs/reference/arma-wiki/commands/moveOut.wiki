@@ -1,0 +1,82 @@
+// source: https://community.bistudio.com/wiki/moveOut
+// revision: 349641 (2023-11-16T22:02:40Z)
+// export sha1: baxj2tb1ei8rfrbndh7lfob9p4e1lw7
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+|eff= global
+|arg= global
+
+|gr1= Unit Control
+
+|descr= Moves the soldier out of the vehicle.
+<br><br>
+Notes:
+* Works for both AI and player entities
+* AI unit gets back in - unless is under player command or combined with other sqf commands ([[orderGetIn]] false, [[allowGetIn]] false or [[leaveVehicle]])
+* Respects the vehicle's lock state (same as [[Arma 3: Actions#Eject|action "Eject"]]) - unlike [[doGetOut]], [[commandGetOut]]. It will work for [[player]] entities regardless though
+* Still executes when the vehicle is moving/flying (same as [[Arma 3: Actions#Eject|action "Eject"]]) - unlike [[doGetOut]], [[commandGetOut]]
+* Without vehicle's position's get out animation - unlike [[Arma 3: Actions#Eject|action eject]], [[doGetOut]], [[commandGetOut]]
+* Immediately - unlike [[Arma 3: Actions#Eject|action eject]], [[doGetOut]], [[commandGetOut]]
+* Works also on dead units (same as [[Arma 3: Actions#Eject|action "Eject"]] (but one after another)) - unlike [[doGetOut]], [[commandGetOut]]
+* Does not work for UAV crew
+* Does not work for [[remoteControl]]led units
+* Works on [[setUnconscious|unconscious]] (same as [[Arma 3: Actions#Eject|action "Eject"]] (but one after another)) - unlike [[doGetOut]], [[commandGetOut]] (unless AI under player command)
+
+|s1= [[moveOut]] soldier
+
+|p1= soldier: [[Object]] - unit (only a living unit before {{GVI|arma3|2.06}})
+
+|r1= [[Nothing]]
+
+|s2= soldier [[moveOut]] vehicle
+
+|s2since= arma3 2.06
+
+|p21= soldier: [[Object]] - unit
+
+|p22= vehicle: [[Object]] - vehicle could be [[objNull]], in this case the command is identical to the main syntax.
+
+|r2= [[Nothing]]
+
+|x1= <sqf>{ if (lifeState _x == "UNCONSCIOUS") then { moveOut _x } } forEach crew cursorTarget;</sqf>
+
+|x2= Move out player just before he dies:
+<sqf>
+player addEventHandler [
+	"HandleDamage", 
+	format [
+		'if (switch (_this select 1) do {
+			case "": { _this select 2 >= 1 };
+			case "head": {_this select 2 >= %1};
+			case "body": {_this select 2 >= %2};
+			default {false};
+		}) then {moveOut player}',
+		getNumber (configFile >> "CfgFirstAid" >> "CriticalHeadHit"),
+		getNumber (configFile >> "CfgFirstAid" >> "CriticalBodyHit")
+	]
+];
+</sqf>
+
+|seealso= [[Arma 3: Actions#Eject|"Eject" action]] [[doGetOut]] [[commandGetOut]] [[leaveVehicle]] [[moveInDriver]] [[moveInGunner]] [[moveInCommander]] [[moveInTurret]] [[moveInCargo]] [[isTurnedOut]]
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20200807085300
+|text= This seems no longer true in {{arma3}}:<br>
+''Does not work on dead [[crew]] - Use [[setPos]] family of commands to move dead units out soon after they became dead. After awhile dead unit's group becomes [[grpNull]] and it cannot be moved out at all.'' 
+}}

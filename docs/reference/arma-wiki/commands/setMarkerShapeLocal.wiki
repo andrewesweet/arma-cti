@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/setMarkerShapeLocal
+// revision: 370123 (2024-11-01T19:52:42Z)
+// export sha1: 3nlvqh4to9o3aon4lwb4xhhfjatkkjl
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Armed Assault version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.04
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Markers
+
+|eff= local
+
+|descr= Selects shape (actual type) of the local marker. Non-existing marker shape defaults to "RECTANGLE".
+
+|s1= markerName [[setMarkerShapeLocal]] shape
+
+|p1= markerName: [[String]]
+
+|p2= shape: [[String]] - the shape, can be one of:
+* {{hl|"ICON"}}
+* {{hl|"RECTANGLE"}}
+* {{hl|"ELLIPSE"}}
+* {{GVI|arma3|1.60|size= 0.75}} {{hl|"POLYLINE"}}
+* {{GVI|arma3|2.20|size= 0.75}} {{hl|"TRIANGLE"}}
+* {{GVI|arma3|2.20|size= 0.75}} {{hl|"PENTAGON"}}
+* {{GVI|arma3|2.20|size= 0.75}} {{hl|"HEXAGON"}}
+* {{GVI|arma3|2.20|size= 0.75}} {{hl|"HEPTAGON"}}
+* {{GVI|arma3|2.20|size= 0.75}} {{hl|"OCTAGON"}}
+* {{GVI|arma3|2.20|size= 0.75}} {{hl|"NONAGON"}}
+* {{GVI|arma3|2.20|size= 0.75}} {{hl|"DECAGON"}}
+
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"Marker1" setMarkerShapeLocal "RECTANGLE";</sqf>
+
+|seealso= [[setMarkerShape]] [[markerShape]]
+}}

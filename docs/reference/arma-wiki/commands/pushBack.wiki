@@ -1,0 +1,103 @@
+// source: https://community.bistudio.com/wiki/pushBack
+// revision: 377141 (2026-01-01T10:30:59Z)
+// export sha1: 2bt53gdxvthj3419y2sqtpublj3ngin
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Introduced with Arma 3 version 1.26 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.26
+
+|gr1= Arrays
+
+|descr= Insert an element to the back of the given array. This command modifies the original array. (see also: [[pushBackUnique]])
+
+|s1= array [[pushBack]] element
+
+|p1= array: [[Array]] of [[Anything]]
+
+|p2= element: [[Anything]]
+
+|r1= [[Number]] - index of inserted element
+
+|x1= <sqf>
+_arr = [1,2,3];
+_arr pushBack 4;
+hint str _arr; //[1,2,3,4]
+</sqf>
+|x2= <sqf>
+_arr = [1,[2,4],3];
+(_arr select 1) pushBack [5,6];
+hint str _arr //[1,[2,4,[5,6]],3]
+</sqf>
+
+|seealso= [[pushBackUnique]] [[select]] [[set]] [[resize]] [[reverse]] [[count]] [[find]] [[in]] [[forEach]] [[deleteAt]] [[deleteRange]] [[append]] [[sort]] [[arrayIntersect]] [[apply]] [[BIS_fnc_arrayPushStack]] [[BIS_fnc_arrayPush]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140801211500
+|text= (A3 1.26) It is recommended to use [[pushBack]] instead of [[BIS_fnc_arrayPush]].
+<sqf>
+_array = [1,2,3];
+_array pushBack 4; //same as [_array, 4] call BIS_fnc_arrayPush;
+</sqf>
+}}
+
+{{Note
+|user= Skaronator
+|timestamp= 20140823213500
+|text= It's highly recommended to use the new [[pushBack]] command, up to 43% faster than [[set]] and up to '''11843%''' faster [[a plus b]]!
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20141126182500
+|text= [[pushBack]] does not support [[nil]] while [[set]] and [[a plus b]] do. For example:
+<sqf>
+_array = [];
+for "_i" from 0 to 3 do
+{
+	_array pushBack nil;
+};
+hint str _array; //hint is []
+</sqf>
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150521105200
+|text= Array "push" implementation using [[pushBack]], alternative to [[BIS_fnc_arrayPush]]
+<sqf>
+KK_fnc_push = {
+	_this select 0 pushBack (_this select 1);
+	_this select 0
+};
+
+// Example
+arr = [1,2,3];
+[arr, 4] call KK_fnc_push; //both arr and return of function are now [1,2,3,4]
+</sqf>
+}}
+
+{{Note
+|user= OOKexOo
+|timestamp= 20161005021900
+|text= Note that [[pushBack]] does not create a new object.<br>
+Therefore, if you edit an object that was pushed back to an array, it also affects the object in the array.
+e.g.
+<sqf>
+_first_squence = [1,2,3];
+_second_squence = [5,4];
+
+_first_squence pushBack _second_squence;
+systemChat str _first_squence // prints [1,2,3,[5,4]]]
+
+reverse _second_squence;
+systemChat str _first_squence // prints [1,2,3,[4,5]]]
+</sqf>
+If you pushBack an array for instance, you can just copy it to generate a new object.
+e.g.<br>
+<sqf>_first_squence pushBack +_second_squence;</sqf>
+}}

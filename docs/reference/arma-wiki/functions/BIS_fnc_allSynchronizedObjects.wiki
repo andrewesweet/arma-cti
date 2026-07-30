@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_allSynchronizedObjects
+// revision: 376826 (2025-11-22T11:52:27Z)
+// export sha1: sa98lyhoheq1793ingdja81a7l91r3e
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Return all synchronised objects, including those synced to synced and so on.
+
+|s1= [object, filter] call [[BIS_fnc_allSynchronizedObjects]]
+
+|p1= object: [[Object]] - parent object
+
+|p2= filter: [[String]] or [[Array]] of strings - (Optional, default "") class name filter. 1 or more class name of objects we are interested in
+
+|r1= [[Array]] - synchronized objects
+
+|x1= <sqf>[BIS_Poliakko, "LocationArea_F"] call BIS_fnc_allSynchronizedObjects;</sqf>
+
+|seealso= [[BIS_fnc_synchronizedObjects]]
+}}

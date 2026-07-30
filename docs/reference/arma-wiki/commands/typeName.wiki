@@ -1,0 +1,103 @@
+// source: https://community.bistudio.com/wiki/typeName
+// revision: 369624 (2024-09-28T16:16:12Z)
+// export sha1: duq85gryk1ngkwsrlyu991otxs3j3i0
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Variables
+
+|descr= Returns the [[:Category:Data Types|Data Type]] of an expression. 
+
+The type is returned as on of the following all-uppercase strings:
+{{Columns|5|
+* "[[Array|ARRAY]]"
+* "[[Boolean|BOOL]]"
+* "[[Code|CODE]]"
+* "[[Config|CONFIG]]"
+* "[[Control|CONTROL]]"
+* "[[Display|DISPLAY]]"
+* "[[Group|GROUP]]"
+* "[[Object|OBJECT]]"
+* "[[Number|SCALAR]]" (and "[[Number|NaN]]")
+* "[[Script Handle|SCRIPT]]"
+* "[[Side|SIDE]]"
+* "[[String|STRING]]"
+* "[[Structured Text|TEXT]]"
+* {{GVI|arma1|1.08|size= 0.75}} "[[Location|LOCATION]]"
+* {{GVI|arma2|1.00|size= 0.75}} "[[Team Member|TEAM_MEMBER]]"
+* {{GVI|arma2|1.00|size= 0.75}} "[[Namespace|NAMESPACE]]"
+* {{GVI|arma2|1.00|size= 0.75}} "[[Diary Record|DIARY_RECORD]]"
+* {{GVI|arma2|1.00|size= 0.75}} "[[Task|TASK]]"
+* {{GVI|arma3|2.02|size= 0.75}} "[[HashMap|HASHMAP]]"
+}}
+They represent the available [[:Category:Data Types|Data Types]] in {{arma}}.
+{{Feature|arma3|For type comparison, use [[isEqualType]] command instead.}}
+
+|s1= [[typeName]] anything
+
+|p1= anything: [[Anything]]
+
+|r1= [[String]]
+
+|x1= <sqf>_msg = "hello"; _result = typeName _msg;  //_result will be "STRING"</sqf>
+
+|x2= <sqf>_unit = player; _result = typeName _unit; //_result becomes "OBJECT"</sqf>
+
+|x3= Values representing direct [[:Category:Data Types|Data Types]]:
+<sqf>
+hint typeName 0;					// SCALAR
+hint typeName 1e39;					// NaN
+hint typeName "";					// STRING
+hint typeName true;					// BOOL
+hint typeName [];					// ARRAY
+hint typeName {};					// CODE
+hint typeName scriptNull;			// SCRIPT (since {{arma3}} v1.32)
+hint typeName objNull;				// OBJECT
+hint typeName grpNull;				// GROUP
+hint typeName controlNull;			// CONTROL
+hint typeName teamMemberNull;		// TEAM_MEMBER (since {{arma2}} v1.00)
+hint typeName displayNull;			// DISPLAY
+hint typeName taskNull;				// TASK (since {{arma2}} v1.00)
+hint typeName locationNull;			// LOCATION
+hint typeName sideUnknown;			// SIDE
+hint typeName text "";				// TEXT
+hint typeName configFile;			// CONFIG
+hint typeName configNull;			// CONFIG (since {{arma3}} v1.54)
+hint typeName missionNamespace;		// NAMESPACE
+hint typeName diaryRecordNull;		// DIARY_RECORD (since {{arma3}} v2.00)
+hint typeName createHashMap;		// HASHMAP (since {{arma3}} v2.02)
+</sqf>
+
+|x4= <sqf>
+if (typeName _this != "ARRAY") exitWith { hint "_this is not an array!" };
+// is the same as
+if (typeName _this != typeName []) exitWith { hint "_this is not an array!" };
+// same result but faster in {{arma3}}
+if !(_this isEqualType []) exitWith { hint "_this is not an array!" };
+</sqf>
+
+|seealso= [[isEqualTypeAll]] [[isEqualType]] [[isEqualTypeParams]] [[isEqualTypeArray]] [[isEqualTypeAny]] [[typeOf]] [[isKindOf]] [[isClass]] [[isArray]] [[isNumber]] [[isText]] [[isNil]] [[isNull]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20160925111400
+|text= [[typeName]] of [[nil]] is {{hl|ANY}}, however this is not possible to test as script command is just ignored when any argument is [[nil]].
+}}

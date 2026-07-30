@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Briefing
+// revision: 126429 (2019-08-16T17:56:55Z)
+// export sha1: n6jqnlqzbdr0td2884ahnrxeq7wqqay
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands that are used to create, update and check objectives, tasks and notes. See [[:Category:Briefing|Briefing]] for more information.
+
+
+[[Category:Scripting Commands by Functionality]]

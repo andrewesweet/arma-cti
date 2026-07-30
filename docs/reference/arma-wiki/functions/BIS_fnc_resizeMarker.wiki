@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_resizeMarker
+// revision: 351261 (2023-11-26T08:03:52Z)
+// export sha1: 5kaiwnx3qdp9fxjz08jofdc5v7gk4hs
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Map and Markers
+
+|arg= global
+
+|eff= global
+
+|descr= Resize marker. Use either absolute values or proportional values.
+
+|s1= [marker, size, duration] spawn [[BIS_fnc_resizeMarker]]
+
+|p1= marker: [[String]] - marker
+
+|p2= size: [[Array]] - (Optional, default [1,1]) array in form of:<br>
+0: [[Number]] - Size x<br>
+1: [[Number]] - Size y
+
+|p3= duration: [[Number]] - (Optional, default 1) duration of the transition
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["BIS_marker",[2,2],3] spawn BIS_fnc_resizeMarker;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_blinkMarker]] [[BIS_fnc_changeColorMarker]] [[BIS_fnc_getMarkers]] [[BIS_fnc_getMarkerState]] [[BIS_fnc_colorMarker]]
+}}

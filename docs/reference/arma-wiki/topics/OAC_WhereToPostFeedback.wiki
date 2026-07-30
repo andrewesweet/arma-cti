@@ -1,0 +1,19 @@
+// source: https://community.bistudio.com/wiki/OAC:WhereToPostFeedback
+// revision: 349959 (2023-11-20T22:11:25Z)
+// export sha1: nhfa6i7gzum2fj35f5ujt0iho06tiau
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Banner biki.jpg]]
+
+=# III. Where to post feedback=
+
+The {{Link|link= http://dev-heaven.net/projects/oac/boards|text= OAC forum}} is the the best place to share your thoughts and suggestions about the project itself.<br>
+
+{{Feature|important|We cannot follow other forums or news-sites.
+So please use our space to get your feedback heard!}}
+
+For bug reporting or suggesting new content to be made compatible the best place is the {{Link|link= http://dev-heaven.net/projects/oac/issues|text= OAC issue tracker}}.
+
+= Back to OAC Home =
+
+[[OAC:Project#Subpage_link_overview|The seven roads to OAC - subpage link overview]]

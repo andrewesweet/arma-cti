@@ -1,0 +1,310 @@
+// source: https://community.bistudio.com/wiki/CT_WEBBROWSER
+// revision: 377953 (2026-01-15T11:00:48Z)
+// export sha1: kdmr5wmf8yie3xnlqfrod2lh9ino2fc
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{CT|intro
+
+|macro= CT_WEBBROWSER
+|value= 106
+|description=
+Web browser control features an embedded Chromium window.<br>
+The URL is subject to {{hl|allowedHTMLLoadURIs[]}} whitelisting in {{Link|Description.ext#CfgCommands}}.<br>
+[[ctrlSetURL]] can be used to change the URL after creation of the control.
+}}
+
+{{CT|abc start}}
+
+=== A ===
+
+{{CT|attribute
+|name= allowExternalURL
+|type1= Boolean
+|value1= 1
+|description= Whether this browser will allow external URLs, as opposed to local content.
+{{Feature|warning|
+This is an experimental feature currently available for testing on Development Branch.
+It is not yet decided whether this will ever become available in Stable branch.
+}}
+}}
+
+
+=== U ===
+
+{{CT|attribute
+|name= url
+|type1= String
+|value1= "https://arma3.com"
+|description= An external (if {{Link|#allowExternalURL}} is enabled) URL to be opened, or a path to a local file to load. Local files are subject to {{Link|Description.ext#CfgCommands|{{hl|allowedHTMLLoadURIs[]}}}}.
+}}
+
+{{CT|abc end}}
+
+== Scripting ==
+
+{{Feature|informative|See [[ctrlWebBrowserAction]].}}
+
+=== Control Event Handlers ===
+
+The following event handlers can only be added to [[CT_WEBBROWSER]] controls.
+
+==== JSDialog ====
+* '''Use on:''' Control ([[CT_WEBBROWSER]])
+* '''Fired on:''' Fires when JavaScript triggers an {{hl|alert()}} or {{hl|confirm()}} dialog.
+<sqf>params ["_control", "_isConfirmDialog", "_message"];</sqf>
+The code handling this event can return a [[Boolean]] true/false. Which will stop the next Eventhandlers from being triggered, and will be interpreted as a reply to the dialog.<br>
+If the code does not immediately provide a reply, it should return [[Nothing]].<br>
+If the code does not return bool, then the script must call [[ctrlWebBrowserAction]] with the "JSDialog" action to reply to the dialog, the WebBrowser will be unresponsive until a reply has been sent.
+
+==== Draw ====
+* '''Use on:''' Control ([[CT_WEBBROWSER]])
+* '''Fired on:''' Fires when the WebBrowser has drawn a new frame (NOT when the game control displays a new frame)
+<sqf>params ["_control"];</sqf>
+
+==== PageLoaded ====
+* '''Use on:''' Control ([[CT_WEBBROWSER]])
+* '''Fired on:''' Fires when the current page has finished loading. This only contains the main page, the page may contain content (scripts, images) that will load asynchronously and may not be ready. This fires multiple times, when the current page (URL) was changed or when the browser is Resumed.
+<sqf>params ["_control"];</sqf>
+Once PageLoaded is triggered, it is safe to execute JavaScript on the page. Before PageLoaded, the page might not be ready to receive JavaScript and may drop ExecJS requests.
+{{CT|examples}}
+
+=== RscWebBrowser ===
+
+Baseline RscWebBrowser example
+<syntaxhighlight lang="cpp">
+class RscWebBrowser
+{
+	type = CT_WEBBROWSER; // 106
+	idc = -1;
+	deletable = 0;
+	style = 0;
+	x = 0;
+	y = 0;
+	w = 0.3;
+	h = 0.3;
+	allowExternalURL = 1;
+	url = "https://arma3.com";
+};
+</syntaxhighlight>
+
+
+== Browser Content ==
+
+The browser is separated into two modes:
+* Remote content (i.e. loading external resources using a URL), which can be enabled with the {{Link|#allowExternalURL}} attribute.
+* Local content (i.e. loading local HTML files from within a PBO or mission).
+
+=== Remote Content ===
+
+Remote content is considered unsafe. Any browser that uses {{Link|#allowExternalURL}} will prompt the player to allow it being opened.
+URLs are limited by the {{Link|Description.ext#CfgCommands|{{hl|allowedHTMLLoadURIs[]}}}} configuration.
+
+=== Local Content ===
+
+Loading Local Content forces the browser into a sandbox mode.<br>
+Players will not receive a permission popup for Local Content.<br>
+Local Content offers a JavaScript API to interact with the game without having to go through SQF.<br>
+Local files are subject to {{Link|Description.ext#CfgCommands|{{hl|allowedHTMLLoadURIs[]}}}}.
+
+==== Sandbox ====
+The content is loaded into a [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#sandbox sandboxed] {{hl|<iframe>}} with a [https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP Content Security Policy].<br>
+<br>
+Any external communication via [https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API fetch] or [https://developer.mozilla.org/de/docs/Web/API/XMLHttpRequest XMLHttpRequest] is unavailable.<br>
+Access to [https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage Local Storage] and [https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API IndexedDB] is unvailable.<br>
+[https://developer.mozilla.org/en-US/docs/Web/API/Window/alert alert()] and [https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm confirm()] are not directly accessible, but the JavaScript API provides a wrapper.
+
+Content like images, styles, fonts, scripts and media can only be specified inline (in case of scripts and styles) or via [https://developer.mozilla.org/en-US/docs/Web/URI/Schemes/data Data URLs].<br>
+
+==== JavaScript API ====
+This API is injected into every local content page automatically.
+
+The API offers the following functions (here expressed as TypeScript to clarify argument and return types):
+<syntaxhighlight lang="javascript">
+class A3API
+{
+	/**
+	 * Loads file from game filesystem.
+	 *
+	 * @param filePath - Path in game filesystem, without leading backslash
+	 * @param maxSize - maximum texture width (used to select Mip)
+	 * @returns The image as a data-url
+	 */
+	static RequestTexture(texturePath: string, maxSize: number): Promise<string>;
+
+	/**
+	 * Loads file from game filesystem.
+	 *
+	 * @param filePath - same as loadFile SQF command
+	 * @returns The file content
+	 */
+	static RequestFile(filePath: string): Promise<string>;
+
+	/**
+	 * Loads and preprocesses file from game filesystem.
+	 *
+	 * @param filePath - same as preprocessFile SQF command
+	 * @returns The file content
+	 */
+	static RequestPreprocessedFile(filePath: string): Promise<string>;
+
+	// Triggers a alert() (Needs to be piped due to https://chromestatus.com/feature/5148698084376576)
+	static SendAlert(content: string): void;
+
+	static SendConfirm(content: string): Promise<bool>;
+}
+</syntaxhighlight>
+
+Example, this is how to load a image out of the game, into JavaScript, and insert it into the page
+<syntaxhighlight lang="javascript">
+const eWeaponImage = document.createElement('img');
+A3API.RequestTexture("A3\\weapons_F\\Rifles\\MX\\data\\UI\\gear_mx_rifle_X_CA.paa", 512).then(imageContent => eWeaponImage.src = imageContent);
+document.body.appendChild(eWeaponImage);
+</syntaxhighlight>
+
+==== Example HUD ====
+Here is an example of how to create a basic WebBrowser based HUD overlay purely inside a mission file.
+
+Create a basic mission, and place the following files next to the mission.sqm
+
+description.ext:
+<syntaxhighlight lang="cpp">
+import RscText;
+class RscTitles
+{
+	class HudOverlayUI
+	{
+		idd = 13371337;
+		fadein = 0; // Required parameters for RscTitles
+		fadeout = 0;
+		duration = 1e+011;
+
+		onLoad = "GHUDOverlay = _this"; // Store our Display in a variable so we can access it from script
+
+		class controls
+		{
+			class Texture: RscText
+			{
+				type = 106; // CT_WEBBROWSER
+				idc = 1337;
+				x = safeZoneX; // Full screen from corner to corner
+				y = safeZoneY;
+				w = safeZoneW;
+				h = safeZoneH;
+				url = "file://hudOverlay.html"; // Reference to a file inside our mission
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+init.sqf
+<sqf>
+("MyHudLayer" call BIS_fnc_rscLayer) cutRsc ["HudOverlayUI", "PLAIN"]; // Add our Display to the HUD
+
+private _ctrl = ((GHUDOverlay#0) displayCtrl 1337);
+
+_ctrl ctrlAddEventHandler ["JSDialog", {
+	params ["_control", "_isConfirmDialog", "_message"];
+
+	// Insert message as text into the page, by assembling JavaScript code to insert a new element and set its text.
+	_control ctrlWebBrowserAction [
+		"ExecJS",
+		format ["const eSpan = document.createElement('span'); eSpan.textContent = 'Script says %1!'; document.body.appendChild(eSpan);", _message]
+	];
+
+	true; // We need to tell it that we handled the "dialog", by returning true or false.
+}];
+
+
+//_ctrl ctrlWebBrowserAction ["OpenDevConsole"]; // Can open developer console here
+//_ctrl ctrlWebBrowserAction ["LoadFile", "hudOverlay.html"];	// Instead of using url= in description.ext, we could also load the file here,
+																// that way we can open dev console before the page is loaded
+</sqf>
+
+hudOverlay.html
+<syntaxhighlight lang="html">
+<!DOCTYPE html>
+<html lang="en">
+<body>
+
+<script>
+// Load the MX Rifle inventory image and add it to the page
+const eWeaponImage = document.createElement('img');
+A3API.RequestTexture("A3\\weapons_F\\Rifles\\MX\\data\\UI\\gear_mx_rifle_X_CA.paa", 512).then(imageContent => eWeaponImage.src = imageContent);
+document.body.appendChild(eWeaponImage);
+
+// Send a message to script
+A3API.SendAlert("JavaScript is sending an alert"); // This alert will trigger a JSDialog (Alert Dialog) eventhandler
+</script>
+
+</body>
+</html>
+</syntaxhighlight>
+
+==== Seamless Stop / Resume ====
+When you stop a browser, and resume it again, the browser will have to reload the last page which might take a couple frames. During the reload, the browser might display a few empty.
+Inside a ui2texture containing a browser, it is possible to skip/hide these empty frames by also pausing the ui2texture updates.
+
+This code assumes that the displayUpdate calls on the ui2texture, are done with a EachFrame Mission EH.
+And also the WebBrowser control is directly inside the ui2texture display.
+<sqf>
+_ctrl ctrlWebBrowserAction ["StopBrowser"];
+// Remove the EachFrame handler doing displayUpdate. So our ui2tex will also be frozen
+removeMissionEventHandler ["EachFrame", (ctrlParent _ctrl) getVariable "displayUpdateHandler"];
+</sqf>
+
+
+<sqf>
+// Resume the browser, it will now start loading the page
+private _display = ctrlParent _ctrl;
+_ctrl ctrlWebBrowserAction ["ResumeBrowser"];
+
+// Remember when the last browser draw happened, so we can wait for it to become stable (once it stops drawing for a while)
+_ctrl setVariable ["lastDraw", diag_frameNo];
+private _drawHandlerIndex = _ctrl ctrlAddEventHandler ["Draw", {
+	params ["_ctrl"];
+	_ctrl setVariable ["lastDraw", diag_frameNo]; // Remember when the last draw happened
+}];
+
+// Note that this will not serialize into savegames, and will probably cause errors if Save/Load is involved.
+waitUntil { ((_ctrl getVariable "lastDraw") + 60) < diag_frameNo };
+//#TODO handle the control becoming null because the UI was closed
+
+// No draw for 60 frames, its probably stable, so we resume updating the ui2tex
+
+// Note that this will not serialize into savegames, and will probably cause errors if Save/Load is involved.
+private _handlerID = addMissionEventHandler ["EachFrame", {displayUpdate (_thisArgs#0)}, [_display]];
+
+_display setVariable ["displayUpdateHandler", _handlerID];
+
+_ctrl ctrlRemoveEventHandler ["Draw", _drawHandlerIndex]; // Stop listening for draw events
+</sqf>
+
+==== Redirecting links into Arma files ====
+You can build a "normal" web page, with "normal" <syntaxhighlight lang="html" inline><a href=".."></syntaxhighlight> links on it and have the links navigate to files that are inside {{arma3}}.
+This JavaScript will redirect all links to the A3API which will make it load the file from the game filesystem.
+Just like using "LoadFile" ctrlWebBrowserAction.
+
+
+<syntaxhighlight lang="html">
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+	var allLinks = document.getElementsByTagName("a");
+	[...allLinks].forEach((link) => {
+		link.onclick = function (e) {
+			e.preventDefault();
+			var targetUrl = e.currentTarget.getAttribute('href');
+			A3API.NavigateTo(targetUrl);
+		};
+	});
+});
+</script>
+
+<body>
+<a href="arma://MissionSubFolder/index.html">Click me to get to page</a>
+</body>
+</syntaxhighlight>
+
+
+[[Category: Control Types]]

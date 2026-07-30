@@ -1,0 +1,87 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Arsenal_(WW2)
+// revision: 368854 (2024-08-11T08:52:42Z)
+// export sha1: 8lqh22fj62ht97f6w078dw7aqy855zg
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+[[Spearhead 1944]] comes with a custom [[Arma 3: Arsenal|Arsenal]]. It automatically filters out non WW2 content (based on author tag, modfolder name and cfgPatches class naming).
+
+<sqf>
+/*
+Modes:
+	"Preload" - Preload item configs for Arsenal (without preloading, configs are parsed the first time Arsenal is opened)
+		No params
+
+	"Open" - Open the Arsenal
+		0 (Optional): BOOL - true to open full Arsenal, with all categories and items available (default: false)
+
+	"AmmoboxInit" - Add virtual ammobox. Action to access the Arsenal will be added automatically on all clients.
+		0: OBJECT - ammobox
+		1 (Optional): BOOL - true to make all weapons and items in the game available in the box (default: false)
+		2 (Optional): Condition for showing the Arsenal action (default: {true})
+			      Passed arguments are the same as in addAction condition, i.e., _target - the box, _this - caller
+
+	"AmmoboxExit" - Remove virtual ammobox
+		0: OBJECT - ammobox
+*/
+
+["Preload"] call SPE_Arsenal_fnc_arsenal;
+
+["Open", false] spawn SPE_Arsenal_fnc_arsenal;
+["Open", true] spawn SPE_Arsenal_fnc_arsenal;
+["Open", [_full, _cargo, _unit]] call SPE_Arsenal_fnc_arsenal;
+
+["AmmoboxInit", [_ammobox, false]] call SPE_Arsenal_fnc_arsenal;
+["AmmoboxInit", [_ammobox, true, {side group player == west}]] call SPE_Arsenal_fnc_arsenal;
+</sqf>
+
+== Filtering ==
+
+=== Per Side/faction ===
+
+The equipment available can be filtered based on [[Side|side]] or [[faction]] by assigning values to '''BIS_fnc_arsenal_sides''' or '''BIS_fnc_arsenal_factions'''.
+
+The filters can be combined and one can provide multiple sides or factions too.
+
+<sqf>
+// Filter by sides
+BIS_fnc_arsenal_sides = [side player, 2]; //Converts side automatically to the id number - so both inputs are valid
+["Open", true] spawn SPE_Arsenal_fnc_arsenal;
+</sqf>
+
+<sqf>
+// Filter by factions
+BIS_fnc_arsenal_factions = [faction player, "SPE_US_ARMY"]; 
+["Open", true] spawn SPE_Arsenal_fnc_arsenal;
+</sqf>
+
+=== Mission Parameters ===
+
+<sqf>
+SPE_Arsenal_WhiteListedClasses = ["SPE_Arsenal_WhiteListedClasses", nil] call BIS_fnc_getParamValue;
+SPE_Arsenal_ModFilterTags = ["SPE_Arsenal_ModFilterTags", nil] call BIS_fnc_getParamValue;
+SPE_Arsenal_AuthorsFilters = ["SPE_Arsenal_AuthorsFilters", nil] call BIS_fnc_getParamValue;
+SPE_Arsenal_ModFolderFilters = ["SPE_Arsenal_ModFolderFilters", nil] call BIS_fnc_getParamValue;
+SPE_Arsenal_MinimumScopeGear = ["SPE_Arsenal_MinimumScopeGear", 2] call BIS_fnc_getParamValue;
+SPE_Arsenal_MinimumScopeRandomGear = ["SPE_Arsenal_MinimumScopeRandomGear", 1] call BIS_fnc_getParamValue;
+</sqf>
+
+You can check the defaults via console/logging above parameters or loadFile.<pre>\WW2\SPE_Missions_p\Arsenal_p\Functions\fn_postInit.sqf</pre>
+
+=== Mid-Mission Adjustment ===
+
+You can adjust the WW2 content filter mid mission via the following variable in the uiNamespace.
+
+<sqf>
+uiNamespace setVariable ["SPE_Arsenal_WhiteListedClasses", SPE_Arsenal_WhiteListedClasses];
+uiNamespace setVariable ["SPE_Arsenal_ModFilterTags", SPE_Arsenal_ModFilterTags];
+uiNamespace setVariable ["SPE_Arsenal_AuthorsFilters", SPE_Arsenal_AuthorsFilters];
+uiNamespace setVariable ["SPE_Arsenal_ModFolderFilters", SPE_Arsenal_ModFolderFilters];
+uiNamespace setVariable ["SPE_Arsenal_MinimumScopeGear", SPE_Arsenal_MinimumScopeGear];
+uiNamespace setVariable ["SPE_Arsenal_MinimumScopeRandomGear", SPE_Arsenal_MinimumScopeRandomGear];
+uiNamespace setVariable ["SPE_ArsenalMissionNames", SPE_ArsenalMissionNames];
+</sqf>
+
+[[Category: Spearhead 1944]]

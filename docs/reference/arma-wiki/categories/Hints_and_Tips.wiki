@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Hints_&_Tips
+// revision: 219019 (2021-01-19T12:44:04Z)
+// export sha1: o0ky3x18r4gtpv2rkuqnh2deoch4k6m
+// Vendored snapshot. Do not edit — re-export instead.
+
+You may find yourself playing an {{arma}} series game and wondering why you get shot so much, or you may be wondering if there is something you are missing.
+Wonder no longer; consult the guides below on how to improve your gameplay.

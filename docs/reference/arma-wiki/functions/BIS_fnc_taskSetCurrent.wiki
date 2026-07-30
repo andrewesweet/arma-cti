@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskSetCurrent
+// revision: 352102 (2024-02-01T23:24:52Z)
+// export sha1: a0r8s9k9inq9g2lxh8a2ovpecwn7g87
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|arg= global
+|eff= global
+
+|descr= Set a task to current. Identical to assigning a task. {{Feature|informative| See [[Arma 3: Task Framework]].}}
+
+|s1= taskName call [[BIS_fnc_taskSetCurrent]]
+
+|p1= taskName: [[String]]
+
+|p2= showNotification: [[Boolean]] - (Optional, default true) true to show notification, false to disable it
+
+|r1= [[Boolean]]
+
+|x1= <sqf>"BIS_task_01" call BIS_fnc_taskSetCurrent;</sqf>
+
+|x2= <sqf>["BIS_task_01", false] call BIS_fnc_taskSetCurrent; //Assign without notificiation</sqf>
+
+|seealso= [[Arma 3: Task Framework]]
+}}

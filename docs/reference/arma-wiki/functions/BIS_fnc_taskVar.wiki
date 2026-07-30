@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskVar
+// revision: 352089 (2024-02-01T23:24:47Z)
+// export sha1: 8rige1c1iekpnzwtip4jajlrs4lzy45
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|descr= Returns task's variable name. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= taskID call [[BIS_fnc_taskVar]]
+
+|p1= taskID: [[String]] - ID of the task
+
+|r1= [[String]] - returns '''"@test"''' for a task with the variable name '''"test"'''.
+
+|x1= <sqf>"task_1" call BIS_fnc_taskVar;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

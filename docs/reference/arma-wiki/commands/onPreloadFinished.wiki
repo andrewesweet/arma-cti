@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/onPreloadFinished
+// revision: 369526 (2024-09-15T18:15:31Z)
+// export sha1: o7jbivgq1o3coc37oqsbp8wgm9xf4dj
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Event Handlers
+
+|descr= Defines an action performed after the preload screen finished. Preload event occurs after briefing screen on mission start.
+{{Feature | important | This event handler also fires on client after user closes the main map. }}
+{{Feature|arma3|
+* Since {{arma3}} v1.58 a stackable version of this EH is available: [[Arma 3: Mission Event Handlers#PreloadFinished|PreloadFinished]]
+* Before that, the [[BIS_fnc_addStackedEventHandler]] and [[BIS_fnc_removeStackedEventHandler]] functions should be used instead.}}
+
+|s1= [[onPreloadFinished]] command
+
+|p1= command: [[String]] or [[Code]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>onPreloadFinished {TAG_ReceivingScreenDone = true};</sqf>
+
+|x2= <sqf>
+// removes the event immediately after the first run again
+onPreloadFinished { TAG_ReceivingScreenDone = true; onPreloadFinished "" };
+</sqf>
+
+|seealso= [[onPreloadStarted]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2009-07-24</dd>
+<dt class="note">[[User:Tophe|Tophe]]</dt>
+<dd class="note">There is a bug in {{arma2}} that will make this command execute every time the screen with "Receiving..." has been displayed.<br>
+If this code is put in the Init.sqf it will run the startcam.sqf script when the loading screen has disappeared
+<sqf>onPreloadFinished '[fire1] execVM "scripts\startcam.sqf"';</sqf>
+It will however also run every time a player change graphics settings, alt-tab or do anything else that will trigger the loading screen.<br>
+You will have to script around it with if statements to get it to run only in the beginning of the mission.
+</dd>
+
+</dl>

@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/Template:Youtube
+// revision: 363889 (2024-04-24T11:36:14Z)
+// export sha1: s96pk0lfcao8juwhklokpsed6rymw2m
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+| <div style="text-align: {{#switch:{{{3|}}}|right=right|center=center|left}}"><div class="thumbinner" style="width: {{{4|300}}}px; display: inline-block">{{#tag:youtube
+| {{{1}}}
+| height = {{#expr: ({{{4|300}}} * 9/16) round 0}}
+| width = {{{4|300}}}
+}}{{#if:{{{2|}}}|<div class="thumbcaption">{{{2}}}</div>}}</div></div>
+| -Youtube ID not defined-
+}}</includeonly><noinclude>
+Shows a {{Link|https://www.youtube.com|YouTube}} video.
+
+== Usage ==
+{{<nowiki/>Youtube|'''''videoID'''''|'''''caption'''''|'''''position'''''|'''''size'''''}}
+* videoID: the ID part of the URL. e.g '''a75eG8HG5Fk'''
+* caption: (optional) caption below the video
+* textAlign: (optional, default left) "left", "right" or "center" - does '''not''' use the {{Link|https://developer.mozilla.org/en-US/docs/Web/CSS/float|float}} property
+* size: (optional, default 300) width in pixels
+
+{| class="wikitable"
+|+ Examples
+! Code
+! style="min-width: 500px" | Result
+|-
+| <nowiki>{{Youtube}}</nowiki>
+| {{Youtube}}
+|-
+| <nowiki>{{Youtube|a75eG8HG5Fk}}</nowiki>
+| {{Youtube|a75eG8HG5Fk}}
+|-
+| <nowiki>{{Youtube|UgXq6z6-644|{{arma2}} trailer}}</nowiki>
+| {{Youtube|UgXq6z6-644|{{arma2}} trailer}}
+|-
+| <nowiki>{{Youtube|M1YBZUxMX8g|{{arma3}} trailer|right}}</nowiki>
+| {{Youtube|M1YBZUxMX8g|{{arma3}} trailer|right}}
+|-
+| <nowiki>{{Youtube|EwAxJC9AR_A|{{Name|arma3apex}} trailer|center|400}}</nowiki>
+| {{Youtube|EwAxJC9AR_A|{{Name|arma3apex}} trailer|center|400}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

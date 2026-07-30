@@ -1,0 +1,95 @@
+// source: https://community.bistudio.com/wiki/isKindOf
+// revision: 341247 (2023-05-18T10:50:41Z)
+// export sha1: k55nplwwfcruaph5ly3r9mr9ri0b4m5
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Checks whether the given object or type is (a subtype) of the given type.<br>
+While {{Link|#Syntax 1}} and {{Link|#Syntax 2}} only support '''CfgVehicles''', {{GVI|arma2|1.00|size= 0.75}}'''CfgAmmo''' and '''CfgNonAIVehicles''', {{Link|#Syntax 3}} can be used with any config, including the [[missionConfigFile|mission config]].
+
+|s1= object [[isKindOf]] typeName
+
+|p1= object: [[Object]]
+
+|p2= typeName: [[String]]
+
+|r1= [[Boolean]]
+
+|s2= class1 [[isKindOf]] class2
+
+|p21= class1: [[String]]
+
+|p22= class2: [[String]]
+
+|r2= [[Boolean]]
+
+|s3= class1 [[isKindOf]] [class2, targetConfig]
+
+|s3since= arma3 1.48
+
+|p41= class1: [[String]]
+
+|p42= class2: [[String]]
+
+|p43= targetConfig: [[Config]]
+
+|r3= [[Boolean]]
+
+|x1= <sqf>vehicle player isKindOf "Tank";</sqf>
+
+|x2= <sqf>"BMP2" isKindOf "Tank";</sqf>
+
+|x3= <sqf>currentWeapon player isKindOf ["Rifle", configFile >> "CfgWeapons"];</sqf>
+
+|x4= <sqf>private _isSoldier = player isKindOf "CAManBase";</sqf>
+
+|seealso= [[typeOf]] [[countType]] [[inheritsFrom]] [[configHierarchy]]
+}}
+
+
+{{Note
+|user= Kronzky
+|timestamp= 20070423163400
+|text= This command can be used on the whole [[ArmA: CfgVehicles|hierarchical class tree]] (i.e. when checking a [[ArmA:_Vehicles#Wheeled|HMMWV]], one could test for "HMMWV50", "Car", "LandVehicle", etc., all of which would return [[true]].)
+}}
+
+{{Note
+|user= James
+|timestamp= 20150616175400
+|text= In case you cannot use [[isKindOf]] because of the reasons stated, just use [[BIS_fnc_returnParents]] with class names as return value:
+<sqf>_isKindOf = "Rifle" in [configFile >> "CfgWeapons" >> "BWA3_G36K", true] call BIS_fnc_returnParents; // is true</sqf>
+}}
+
+{{Note
+|user= Basstard
+|timestamp= 20150906222100
+|text= In {{arma3}} [[isKindOf]] works well with CfgWeapons and CfgMagazines using the syntax from example 3.<br>
+It should be prefered to James' solution as it performs more than 25x faster. Tested in debug console with the following code snippets:
+<sqf>
+"CA_Magazine" in ([configFile >> "CfgMagazines" >> "HandGrenade", true] call BIS_fnc_returnParents);	// 0.12111 ms
+"HandGrenade" isKindOf ["CA_Magazine", configFile >> "CfgMagazines"];									// 0.00439453 ms
+</sqf>
+When checking in [[CfgVehicles]] the syntax from {{Link|#Example 2}} performs a little faster.
+}}

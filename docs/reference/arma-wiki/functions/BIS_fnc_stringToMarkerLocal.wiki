@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_stringToMarkerLocal
+// revision: 378264 (2026-03-26T17:30:17Z)
+// export sha1: d2mpxhadxmep9hocwtm86a3nsgcdeqy
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.92
+
+|gr1= Map and Markers
+|eff= local
+
+|descr= Converts serialized data from [[BIS_fnc_markerToString]] into a [[Multiplayer Scripting#Locality|local]] map marker.
+
+|s1= data call [[BIS_fnc_stringToMarkerLocal]]
+
+|p1= data: [[String]] - serialized data
+
+|r1= [[String]] - created [[Multiplayer Scripting#Locality|local]] marker
+
+|x1= <sqf>"|marker_0|[3799.0110,2781.9880,0.0000]|mil_pickup|ICON|[1,1]|0|Solid|Default|1|You are here" call BIS_fnc_stringToMarkerLocal;</sqf>
+
+|seealso= [[BIS_fnc_markerToString]] [[BIS_fnc_stringToMarker]] [[BIS_fnc_triggerToMarker]] [[createMarker]] [[createMarkerLocal]]
+}}
+
+{{Note
+|user= 7erra
+|timestamp= 20190503121700
+|text= The format is the following:
+<code style="display: block">"{{!}}MARKERNAME{{!}}[[markerPos]]{{!}}[[markerType]]{{!}}[[markerShape]]{{!}}[[markerSize]]{{!}}[[markerDir]]{{!}}[[markerBrush]]{{!}}[[markerColor]]{{!}}[[markerAlpha]]{{!}}[[markerText]]"</code>
+The delimiter for [[BIS_fnc_stringToMarker]] is the first character of the string.
+}}

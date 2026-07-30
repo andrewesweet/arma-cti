@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/lockedCargo
+// revision: 321015 (2022-05-13T11:15:18Z)
+// export sha1: 5ahisy3qe8ipx5hhzrwjymp956ters9
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Check whether cargo position of the vehicle is locked.
+
+|s1= vehicle [[lockedCargo]] cargoIndex
+
+|p1= vehicle: [[Object]]
+
+|p2= cargoIndex: [[Number]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_result = vehicleName lockedCargo 0;</sqf>
+
+|seealso= [[lockCargo]]
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20160504230900
+|text= For some vehicles, the command returns [[Nothing]] if the cargo index is invalid (i.e. -1)
+}}

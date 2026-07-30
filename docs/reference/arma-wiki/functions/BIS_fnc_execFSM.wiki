@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_execFSM
+// revision: 330759 (2022-11-01T15:34:52Z)
+// export sha1: bdq7aonlmofy8nqh8asjudmyms86g7k
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Program Flow | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Program Flow
+
+|descr= Execute the scripted FSM. Shell for [[execFSM]] command
+
+|s1= filename call [[BIS_fnc_execFSM]]
+
+|p1= filename: [[String]] - [[FSM]] filename
+
+|r1= [[Number]] - [[FSM]] handle
+
+|s2=  [params, filename] call [[BIS_fnc_execFSM]]
+
+|p21= params: [[Array]] - parameters are passed to script as variable [[Magic Variables#this|_this]]
+
+|p22= filename: [[FSM]] - [[FSM]] filename
+
+|r2= [[Number]] - FSM handle or '''0''' on error
+
+|x1= <sqf>private _handle = [[_param1, _param2, _param3 /* etc */], "test.fsm"] call BIS_fnc_execFSM;</sqf>
+
+|x2= <sqf>private _handle = "test.fsm" call BIS_fnc_execFSM;</sqf>
+
+|seealso= [[execFSM]] [[FSM]] [[BIS_fnc_execRemote]] [[BIS_fnc_execVM]] [[BIS_fnc_call]]
+}}

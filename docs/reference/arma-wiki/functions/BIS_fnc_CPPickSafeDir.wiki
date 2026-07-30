@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_CPPickSafeDir
+// revision: 274099 (2021-06-13T01:16:36Z)
+// export sha1: eo35balrau4bg7bcwu9mganu0nep766
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: CombatPatrol | Category:Functions | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= CombatPatrol
+
+|descr= <pre>/*
+	Author: Josef Zemanek
+
+	Description:
+	Combat Patrol safe azimuth picker.
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_CPPickSafeDir]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

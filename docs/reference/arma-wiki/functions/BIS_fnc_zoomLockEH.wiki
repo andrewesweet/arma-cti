@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_zoomLockEH
+// revision: 348988 (2023-11-08T14:45:47Z)
+// export sha1: dygkkr7hu1dlqy0qbot78wv3f0qh3qg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Event Handlers | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Maintenance/RV/Return value needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|eff= local
+
+|gr1= Map and Markers
+
+|gr2= Event Handlers
+
+|descr= Event handler function for locking the camera.
+
+|s1= position call [[BIS_fnc_zoomLockEH]]
+
+|p1= position: [[Position]] - position that the camera should focus
+
+|r1=
+
+|x1= <sqf>[position player] call BIS_fnc_zoomLockEH;</sqf>
+
+|seealso= [[BIS_fnc_zoomLock]] [[BIS_fnc_zoomUnlock]]
+}}

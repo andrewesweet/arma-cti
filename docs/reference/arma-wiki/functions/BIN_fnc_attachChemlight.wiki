@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_attachChemlight
+// revision: 363740 (2024-04-17T15:23:36Z)
+// export sha1: asmqt3m96ah33xiva56ic23oc8gxylv
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Contact | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Contact 
+
+|descr= <pre>#define VAR_LIGHT	"BIN_fnc_attachChemlight_light"
+#define VAR_KILLED	"BIN_fnc_attachChemlight_killed"
+</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_attachChemlight]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_attachChemlight;</sqf> -->
+
+|seealso=
+}}

@@ -1,0 +1,241 @@
+// source: https://community.bistudio.com/wiki/Take_On_Helicopters:_Sample_Mission_2
+// revision: 341456 (2023-05-30T10:54:37Z)
+// export sha1: 6x4yq04ycdqdr8t6znbuk53w2ttyauv
+// categories: Category:Mission Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+<noinclude>
+__TOC__
+== Overview ==
+This mission is designed to specifically build upon the techniques introduced by [[Sample_Mission_1|sample mission 1]].
+* Introduces users to scripting outside of the game
+* Demonstrates the use of tasks
+* Introduces some simple randomisation
+
+
+Below you'll find a step-by-step guide to creating sample mission 2. Or you can find and download the completed scenario {{Link|http://takeonthegame.com/take-on-editing/|here}}! ''Note, unzip the file, and put the entire unzipped folder in: [USER]\Documents\Take On Helicopters\missions\
+
+</noinclude>
+== Text Guide ==
+=== Continuing ===
+# '''Load the simple [[Sample_Mission_1|sample mission 1]]'''
+#* This 'advanced' sample mission guide is designed to work from the simple mission (mission 1)
+#* Load the mission, or, if you do not have it, either [[Sample_Mission_1|make it]], or {{Link|http://takeonthegame.com/take-on-editing/|download the sample source}}.
+# '''Save the mission'''
+#* Save the mission and rename it ''sampleMissonAdvanced''
+#* This will create a new save directory, so you don't overwrite your previous work.
+#** ''note, this will only re-create the mission.sqm file in a new directory. If you had any other content in the original mission directory (like a script or text file), it would not be duplicated in the new directory, and you would need to manually copy it across.''
+
+=== Modifying the Mission ===
+# '''Unlink the helicopter'''
+#* Desynchronize the heli from the heliport:
+#*# Select the synchronize icon
+#*# Click on the helicopter
+#*# Click and hold the LMB (Left Mouse Button) and drag your cursor into empty space
+#*# Release the LMB
+# '''Rename the Helicopter'''
+#* In the 'Variable Name' field, type <sqf inline>HSim_Heli</sqf>
+# ''' Move the player into the pilot seat'''
+#* The player needs to be manually added to the helicopter's pilot seat
+#* To do this, we use a script command
+#* Double click on the Player and, in the 'initialization' field, type <sqf inline>this moveInDriver HSim_Heli;</sqf>
+<gallery>
+File:Tkoh s2 FIG unlink.jpg|Unlink the helicopter
+File:Tkoh s2 FIG rename.jpg|Rename the Helicopter
+File:Tkoh s2 FIG moveIn.jpg|Move the player into the pilot seat
+</gallery>
+
+=== Using Script Files ===
+# '''Modify the Attach Waypoint Args'''
+#* Double click on the Scripted Waypoint ('SCRIPTED (hsim_Player)') where you attach the cargo.
+#* Change the 'Arguments' field of the attach waypoint to:<sqf>[5, { [false] execVM "end.sqf" }]</sqf>
+#* Here, we're handling a failure condition, telling the game that - if the rope breaks - it should execute the scripts contained within 'end.sqf'
+# '''Create end.sqf'''
+#* We need to create our script outside of the game, using our favourite text-editor.
+#* Create a new document in [USER]\Documents\Take On Helicopters\missions\sampleMissonAdvanced\ and save it as'end.sqf'.
+#** ''note, the file type must be '.sqf'; however, sometimes the security permission on your computer will create a file as '.sqf.txt'. Make sure you have the required privileges to {{Link|http://windows.microsoft.com/en-AU/windows-vista/File-names-and-file-name-extensions-frequently-asked-questions|change file extensions}}, and that it is saved in the correct format!''
+#* This script will control the possible endings for the missions by passing simple arguments to it.
+#* In this case, they can be either true or false. True has the successful ending, false has the failure ending.
+#* In the end.sqf file, Type: <sqf>
+_HSim_IsSuccess = _this select 0;					// Here, we're checking to see which ending was passed to the script.
+
+if (_HSim_IsSuccess) then							// If _HSim_IsSuccess is true, that means the player has successfully landed.
+{
+	[
+		"HSim_Land",
+		"SUCCEEDED",
+		false,										// We do not want it to save the game as the mission is about to end.
+		true
+	] call BIS_fnc_taskSetState;
+
+	HSim_EndText = "";								// Since this is the correct ending, there is no need for any ending text.
+}
+else												// If _HSim_IsSuccess is not true, this will be called.
+{
+	{												// We can apply these to multiple tasks, so we use the forEach syntax.
+		[
+			_x,										// This _x variable is where the game will automatically substitute the variables you use with forEach.
+			"FAILED",
+			false,									// We again do not want the game to save as the mission is going to fail.
+			true
+		] call BIS_fnc_taskSetState;
+	} forEach ["HSim_DropOff", "HSim_Land"];		// These are the variables forEach is applying this code to.
+
+	HSim_EndText = "The rope was cut!";				// Since this is not the correct ending, we do want text to be shown.
+};
+
+titleCut [format ["%1",HSim_EndText],"BLACK OUT",4];	// This will black out the screen over 4 seconds.
+4 fadeSound 0;											// This will fade out all sound over 4 seconds.
+4 fadeMusic 0;											// This will fade out all music over 4 seconds.
+4 fadeSpeech 0;											// And this will fade out all speech over 4 seconds.
+
+sleep 4;												// Now we need to wait 4 seconds for it to black out and mute.
+
+if (_HSim_IsSuccess) then
+{
+	endMission "END1";									// End the mission with endMission and the proper ending if it is successful.
+}
+else
+{
+	failMission "END2";									// Or fail the mission with failMission and the proper ending.
+};
+</sqf>
+# '''Modify the Attach Waypoint Initialisation'''
+#* We can handle assigning tasks in a cleaner way, by calling another script once we've successfully attached the crate to our helicopter.
+#*  Change the ''On Act.:'' line of the attach waypoint to: <sqf inline>0 = 0 execVM "attached.sqf"</sqf>
+# '''Create 'attached.sqf''''
+#* Create another file in the \sampleMissionAdvanced\ Directory, this time name naming it 'attached.sqf'.
+#* We're going to make use of the [[BIS_fnc_taskSetState]] function.
+#* It too needs parameters passed to it, which are made-up as follows: <sqf inline>["task ID", "task state", saveGame, showTaskHint] call BIS_fnc_taskSetState</sqf>
+#* In the attached.sqf file, type:<sqf>
+[
+	"HSim_PickUp",		// In this case, the task we're focusing on is "HSim_PickUp".
+	"SUCCEEDED",		// We want it to be marked as "SUCCEEDED".
+	true,				// We also want it to save the game.
+	true				// And we want it to show the task hint.
+] call BIS_fnc_taskSetState;
+</sqf>
+#* Next, we're using the [[BIS_fnc_taskSetCurrent]] function to assign the next objective to the player.
+#* It has only one parameter passed to it, which is the ID of the task we wish to assign: <sqf inline>["task ID"] call BIS_fnc_taskSetCurrent</sqf>
+#* In the attached.sqf file, type:<sqf>
+[
+	"HSim_DropOff"	// In this example, we are going to set "HSim_DropOff" as the next task.
+] call BIS_fnc_taskSetCurrent;
+</sqf>
+# '''Modify the Detach Slingload Arguments'''
+#* We want to force the player to maintain a stable hover to detach the cargo
+#* To achieve this, double click the detach slingload waypoint and modify the 'Arguments' field to: <sqf inline>[5]</sqf>
+# '''Modify the Detach Slingload Activation'''
+#* We want to handle updating the Player's tasks once the crate is successfully detached.
+#* To do this, we'll call another script file, similar to the way in which we handled the task of attaching the sling-load
+#* Change the 'On Act.:' line of the detach waypoint to: <sqf inline>0 = 0 execVM "detached.sqf"</sqf>
+# '''Create 'detached.sqf''''
+#* Once again, create an .sqf file in the mission directory, names 'detached.sqf'
+#* In the detached.sqf file, Type:<sqf>
+[
+	"HSim_DropOff",		// We want to focus on the task "HSim_DropOff".
+	"SUCCEEDED",		// We want it to be marked as "SUCCEEDED".
+	true,				// We also want it to save the game.
+	true				// And we want it to show the task hint.
+] call BIS_fnc_taskSetState;
+[
+	"HSim_Land"			// In this case, we want to make the next assigned objective "HSim_Land".
+] call BIS_fnc_taskSetCurrent;
+</sqf>
+# '''Modify the Land Waypoint'''
+#* We want to trigger a script when we successfully complete the landing waypoint
+#* Change the 'On Act.:' line of the land waypoint to: <sqf inline>0 = [true] execVM "end.sqf"</sqf>
+# '''Create the Tasks'''
+#* In the same mission directory, create another sqf file, called 'init.sqf'. 
+#* It is perfect for setting parameters before the mission properly starts, which is exactly what we're going to use it for.
+#** ''note, the init.sqf is called automatically, immediately after the mission reaches the briefing screen. It processes all lines up to the first instance of a sleep or waitUntil command.''
+#* So far, we've placed triggers for scripts in the waypoints, which relate to tasks for the player.
+#* We need to define these tasks, and add information, so the player knows what to do, using BIS_fnc_taskCreate.
+#* Task create's parameters are made up like so: <sqf inline>[unit, "task ID", ["task description", "task title", "GUI task title"], taskDestination, setAsCurrentTask] call BIS_fnc_taskCreate</sqf>
+#** ''Note: you can preview the [[Function]] in the Functions Viewer under {{hl|configFile >> All >> Tasks >> BIS_fnc_taskCreate}}
+#* In the 'init.sqf', type:<sqf>
+[
+	HSim_Player,													// In this example, the task only has to be given to the player unit, HSim_Player.
+	"HSim_Land",													// Each task is given a unique ID to be referenced with later commands. In this case, it is "HSim_Land".
+	[
+		"Land on the helipad once you have dropped off the crate.",	// The task description.
+		"Land on the helipad",										// The task title.
+		"LAND"														// The GUI title.
+	],
+	3,																// Here we're going to have it reference waypoint 3 belonging to HSim_Player, which will automatically hide the waypoint.
+	false															// And finally, we do not want it to be the current task just yet, so we set this to false.
+] call BIS_fnc_taskCreate;
+
+[
+	HSim_Player,
+	"HSim_DropOff",
+	[
+		"Once the crate is successfully attached to your helicopter, fly it back to your heliport and drop it off safely.",
+		"Drop off the crate",
+		"DROP OFF"
+	],
+	2,
+	false
+] call BIS_fnc_taskCreate;
+
+[
+	HSim_Player,
+	"HSim_PickUp",
+	[
+		"Fly to the cargo ship and safely pick up the crate.",
+		"Pick up the crate",
+		"PICK UP"
+	],
+	1,
+	true															// We do, however, want this task to be the current task. So, we set this parameter to true.
+] call BIS_fnc_taskCreate;
+</sqf>
+
+=== Finishing Up ===
+
+# '''Create the briefing.html'''
+#* A single html file can be used to define all of the possible ending conditions for the mission.
+#* Create an html file in the mission directory, naming it 'briefing'.
+#* In 'briefing.html', type: <syntaxhighlight lang="html">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+</head>
+<body>
+	<h2><a name="debriefing:end1"></a><br>	<!-- here we are defining a particular mission ending -->
+	Mission Complete!
+	</h2>
+	<br>
+	<p>
+		You have successfully transported the crate back to your heliport!
+	</p>
+	<br>
+	<hr>
+
+	<h2><a name="debriefing:end2"></a><br>	<!-- here we are defining another (failure) -->
+		Mission Failed!
+	</h2>
+	<br>
+	<p>
+		The rope was cut!
+	</p>
+	<br>
+	<hr>
+</body>
+</html>
+</syntaxhighlight>
+# '''Randomize the Date '''
+#* To randomise the date and time, we pass random parameters to the [[setDate]] command.
+#* setDate parameters are made up like so: <sqf>setDate [year,month,day,hour,minute]</sqf>
+#* At the top of the 'init.sqf' file, type:<sqf>
+setDate [
+	date select 0,	// We want to keep the current year.
+	date select 1,	// Keep the current month.
+	date select 2,	// Keep the current day.
+	7 + random 12,	// But we want to choose a random hour. In this case, between 7AM (07:00) and 7PM (19:00)
+	random 60		// And we also want to choose a random minute, in this case anything up to 60 minutes.
+];
+</sqf>
+<noinclude>
+[[Category: Mission Editing]]
+</noinclude>

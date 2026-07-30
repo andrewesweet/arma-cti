@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/disableNVGEquipment
+// revision: 336380 (2022-12-31T19:13:15Z)
+// export sha1: qm5flgpeh7fdkbuo48vfvmf4rrx0qn6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 1.52 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.52
+|arg= global
+|eff= global
+
+|gr1= Weapons
+
+|descr= Enables or disables transport NV (Night Vision). To disable TI (Thermal Imaging) use [[disableTIEquipment]].
+
+|s1= vehicle [[disableNVGEquipment]] state
+
+|p1= vehicle: [[Object]]
+
+|p2= state: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myTank disableNVGEquipment true;</sqf>
+
+|seealso= [[equipmentDisabled]] [[disableTIEquipment]]
+}}

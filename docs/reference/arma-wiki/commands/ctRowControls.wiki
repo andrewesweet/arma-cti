@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/ctRowControls
+// revision: 377175 (2026-01-01T10:46:47Z)
+// export sha1: t0vyrtee6b0rjztllbwrt145m9815kc
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+|arg= local
+|eff= local
+
+|gr1= GUI Control - Controls Table
+
+|descr= Returns array of controls on the row with the given index.
+
+|s1= control [[ctRowControls]] index
+
+|p1= control: [[Control]]
+|p2= index: [[Number]]
+
+|r1= [[Array]] of [[Control]]s
+
+|x1= <sqf>_array = _control ctRowControls 0;</sqf>
+
+|seealso= [[ctAddRow]] [[ctAddHeader]] [[ctClear]] [[ctCurSel]] [[ctSetCurSel]] [[ctHeaderControls]] [[ctRowCount]] [[ctHeaderCount]] [[ctSetValue]] [[ctValue]] [[ctSetData]] [[ctData]] [[ctFindRowHeader]] [[ctFindHeaderRows]] [[ctRemoveRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}

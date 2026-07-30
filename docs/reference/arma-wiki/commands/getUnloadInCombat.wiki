@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/getUnloadInCombat
+// revision: 377617 (2026-01-02T08:51:47Z)
+// export sha1: a5f7dusp2q8004hgtqc0o2pp02645iu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|gr1= Object Manipulation
+
+|descr= A getter for [[setUnloadInCombat]]. To return global config value see [[canUnloadInCombat]]
+
+|s1= [[getUnloadInCombat]] vehicle
+
+|p1= vehicle: [[Object]]
+|r1= [[Array]] with [cargo, turrets]
+
+|x1= <sqf>getUnloadInCombat _vehicle params ["_cargo", "_turrets"];</sqf>
+
+|seealso= [[setUnloadInCombat]] [[canUnloadInCombat]]
+}}

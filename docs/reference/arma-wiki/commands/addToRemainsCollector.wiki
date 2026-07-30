@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/addToRemainsCollector
+// revision: 353431 (2024-03-18T11:57:19Z)
+// export sha1: bpdvi3xcx2g2pngmms9ccvssfq6ljr4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|arg= global
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Adds an array of vehicles/units to disposal manager for automatic wreck/body removal. The disposal manager follows wreck/body removal values set in [[Description.ext|description.ext]]
+
+|s1= [[addToRemainsCollector]] remains
+
+|p1= remains: [[Array]] of [[Object]]s - array of vehicles/units
+
+|r1= [[Nothing]]
+
+|x1= <sqf>addToRemainsCollector [unit1, unit2, vehicle1];</sqf>
+
+|seealso= [[removeFromRemainsCollector]] [[isInRemainsCollector]] [[diag_remainsCollector]]
+}}

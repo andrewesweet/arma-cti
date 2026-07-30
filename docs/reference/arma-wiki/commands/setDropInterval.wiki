@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/setDropInterval
+// revision: 336719 (2023-01-04T15:24:43Z)
+// export sha1: qv1ip3ntfnyowba2789foyf2eygeugs
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Particles | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Particles
+
+|descr= Set interval of emitting particles from particle source. In Arma 3 hardcoded limit of how many particles can exist at the same time is {{Link|link= http://forums.bistudio.com/showthread.php?177797-Ruin-your-copy-of-Arma-and-your-PC#post2691090|text= 18000}}. Correspondence between CfgCloudlets class param name and command param:
+<sqf>particleSource setDropInterval interval;</sqf>
+
+|s1= particleSource [[setDropInterval]] interval
+
+|p1= particleSource: [[Object]]
+
+|p2= interval: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_source setDropInterval 0.05;</sqf>
+
+|seealso= [[drop]] [[setParticleParams]] [[setParticleRandom]] [[setParticleFire]] [[setParticleCircle]]
+}}

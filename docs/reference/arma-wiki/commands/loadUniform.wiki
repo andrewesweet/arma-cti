@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/loadUniform
+// revision: 320992 (2022-05-13T10:22:04Z)
+// export sha1: 9horj1ob90y70fe0c9n0p24vaehdc6x
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Unit Inventory
+
+|descr= Returns current percentage of mass from items stored in a uniform relative to the maximum capacity of the uniform.<br>
+It is equivalent to this formula:
+<sqf>private _loadUniform = massOfAllItemsInUniform / getContainerMaxLoad uniform player;</sqf>
+
+|s1= [[loadUniform]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _weight = loadUniform player;</sqf>
+
+|seealso= [[load]] [[loadAbs]] [[loadBackpack]] [[loadVest]] [[getMass]] [[weightRTD]] [[getContainerMaxLoad]]
+}}

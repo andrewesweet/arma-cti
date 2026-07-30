@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_rotateMarker
+// revision: 348885 (2023-11-08T14:39:49Z)
+// export sha1: h586nhffe5zn0ghm5l6j1tssge80pw7
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Map and Markers
+
+|arg= global
+
+|eff= global
+
+|descr= Rotating a marker to new azimuth, using shortest turn, clockwise or anticlockwise movement.
+
+|s1= [marker, newAzimuth, absoluteOrRelativ, shortestTurn, duraton] spawn [[BIS_fnc_rotateMarker]]
+
+|p1= marker: [[String]] - marker to rotate
+
+|p2= newAzimuth: [[Number]] - new azimuth
+
+|p3= absoluteOrRelativ: [[Boolean]] - (Optional, default [[true]]) defines if the azimuth is absolute [[true]] or relative [[false]]
+
+|p4= shortestTurn: [[Number]] - (Optional, default 0) 0 - shortest turn (default, if used with relative dir, counter clockwise is used)<br>1 - force clockwise<br>2 - force counter clockwise
+
+|p5= duraton: [[Number]] - (Optional, default 2) duration for the complete rotation in seconds
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["BIS_marker",90] spawn BIS_fnc_rotateMarker;</sqf>
+
+|x2= <sqf>["BIS_marker",90,false,2,5] spawn BIS_fnc_rotateMarker;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_blinkMarker]] [[BIS_fnc_resizeMarker]] [[BIS_fnc_moveMarker]]
+}}

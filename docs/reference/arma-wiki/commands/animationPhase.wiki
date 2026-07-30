@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/animationPhase
+// revision: 376960 (2026-01-01T05:52:02Z)
+// export sha1: d6k9qjr4galrz7gd30nil77kczhqn6x
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Animations
+
+|descr= Returns the phase of the given animation on the given object. Animation can be scripted ([[animate]], [[animateSource]], [[animateDoor]]) or engine driven. Animation names for an object could be found out with [[animationNames]] command. When animation is rotation, like with "MainTurret" for example, the output is in radians, to convert to degrees use [[deg]] command.
+
+|mp= In {{ofp}}, on dedicated servers, ''animationPhase'' will always return 0, no matter what the actual phase is.
+
+|s1= object [[animationPhase]]  animationName
+
+|p1= object: [[Object]]
+
+|p2= animationName: [[String]] - name of the animation. This is the class-name of the animation defined in the addon's config.cpp
+
+|r1= [[Number]] in range 0..1 - where 0 is the start point of the animation and 0 is the end point
+
+|x1= <sqf>
+_building animate ["maindoor",1];
+sleep 1;
+_p = _building animationPhase "maindoor";// Returns 1, if the animation speed is two seconds
+</sqf>
+
+|x2= <sqf>_flagPole animationPhase "flag";</sqf>
+
+|x3= <sqf>_tank animationPhase "MainTurret";</sqf>
+
+|seealso= [[animate]] [[moveTime]] [[setFaceAnimation]] [[animateDoor]] [[doorPhase]] [[animateSource]] [[animationSourcePhase]] [[animationNames]]
+}}

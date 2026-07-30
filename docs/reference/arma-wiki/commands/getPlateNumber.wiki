@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getPlateNumber
+// revision: 309220 (2022-05-03T22:51:33Z)
+// export sha1: 9skvl2dnh47od1eki2ok4qk4im9gntz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.82 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.82
+
+|gr1= Object Manipulation
+
+|descr= Get the license plates from any vehicle which has plates configured.
+
+|s1= [[getPlateNumber]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[String]]
+
+|x1= <sqf>if (getPlateNumber vehicle player != "H4X0RZ") then { hint "u no 1337 bro" };</sqf>
+
+|seealso= [[setPlateNumber]]
+}}

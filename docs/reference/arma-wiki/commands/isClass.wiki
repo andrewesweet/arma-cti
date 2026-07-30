@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/isClass
+// revision: 341206 (2023-05-13T22:33:10Z)
+// export sha1: ox0wi52k3isoj753eteky19me671fxf
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Config
+
+|descr= Check if config entry represents config class.
+
+|s1= [[isClass]] config
+
+|p1= config: [[Config]]
+|r1= [[Boolean]]
+
+|x1= <sqf>_ok = isClass (configFile >> "CfgVehicles");</sqf> Result is [[true]].
+
+|seealso= [[configFile]] [[a / b]] [[configName]] [[count]] [[getArray]] [[getText]] [[getNumber]] [[inheritsFrom]] [[isArray]] [[isNumber]] [[isText]] [[select]]
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20070302011700
+|text= This command allows you to check for the presence of an addon.
+ isClass (configFile >> "cfgVehicles" >> "MyCustomCar") 
+will return [[true]] if the addon "MyCustomCar" is installed, and [[false]] if it is not installed. 
+
+''You will have to know under which class the addon is categorized (in this case "cfgVehicles") to be able to use the right config path.''
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140331154500
+|text= ({{arma3}} ver 1.14) According to BI Dev Karel Mořický, [[BIS_fnc_getCfgIsClass]] provides a comfortable workaround with custom config under description.ext compared with [[isClass]].
+(But as a function created specifically for A3 campaign, it is in no way intended as a replacement for [[isClass]].
+So it is not suggested to use it for [[configFile]] classes. But [[isClass]] instead.)
+E.g.
+<sqf>["Something1", "Something2", "Something3"] call BIS_fnc_getCfgIsClass; // same as isClass (missionConfigFile >> "Something1" >> "Something2" >> "Something3")</sqf>
+}}

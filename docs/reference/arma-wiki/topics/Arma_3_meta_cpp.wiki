@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_meta.cpp
+// revision: 373435 (2025-05-08T11:27:12Z)
+// export sha1: 20tioty7se15osrmi57ue1ugacqw0xk
+// categories: Category:ArmA: Armed Assault: Addon Configuration | Category:Arma 3: Editing | Category:Introduced with Arma 3 version 1.54 | Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|1.54}}
+
+'''Meta.cpp''' file contains additional information about mods published on Steam Workshop.
+This file is automatically created when a mod is published by [[Arma 3: Publisher]] to Steam Workshop.
+
+=== Attributes ===
+
+{| class="wikitable"
+|+ meta.cpp attributes
+! style="text-align:left" | Key
+! style="text-align:center" | Required 
+! Meaning
+|-
+| {{hl|protocol}}
+| Yes
+| Version of meta.cpp file content.
+|-
+| {{hl|publishedId}}
+| No
+| Steam Workshop identifier for the mod. If this id is filled in on a server, [[Arma 3: Launcher]] set up this mod when user connects to that server.
+|-
+| {{hl|name}}
+| No
+| Steam Workshop item name.
+|-
+| {{hl|timestamp}}
+| No
+| Time of last mod update in [https://docs.microsoft.com/en-us/dotnet/api/system.datetime.tobinary?view{{=}}netcore-3.1 .NET Framework ticks time format] (10,000 ticks = 1 millisecond).
+|-
+| {{hl|hashOverride}}
+| No
+| Mod hash override that is send by the server to the client instead of the hash calculated from real mod. The override hash can be calculated by [[ModHashCalculator]].
+|}
+
+=== Example ===
+
+<syntaxhighlight lang="cpp">
+/// Version of meta.cpp content
+protocol = 1;
+
+/// Steam Workshop item id
+publishedid = 123456790;
+
+/// Steam Workshop item name
+name = "Splendid mod";
+
+/// Time of last update of the Steam Workshop Item (in .NET Framework time format)
+timestamp = 9876432101234567890;
+
+/// Mod hash that is send by the server to the client instead of calculated hash)
+hashOverride = 1234567890;
+</syntaxhighlight>
+
+
+[[Category:Introduced with Arma 3 version 1.54]]
+[[Category:Real Virtuality File Formats]]
+{{GameCategory|arma1|Addon_Configuration}}
+{{GameCategory|arma3|Editing}}

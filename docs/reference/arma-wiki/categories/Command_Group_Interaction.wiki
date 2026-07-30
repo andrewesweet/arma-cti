@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Interaction
+// revision: 139086 (2019-12-03T21:48:04Z)
+// export sha1: q9bs3w6zl43glx00qk7zhqi2idmxbwk
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands by Functionality]]
+On-screen messages, dialogs, menus.

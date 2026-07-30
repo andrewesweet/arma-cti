@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/mapAnimDone
+// revision: 310810 (2022-05-07T20:22:01Z)
+// export sha1: cptadsi4dyel2z93g48wxza3pmb7ggx
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Map | Category:Introduced with Operation Flashpoint version 1.27 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.27
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= Map
+
+|descr= Check if map animation is finished.
+
+|s1= [[mapAnimDone]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _isDone = mapAnimDone;</sqf>
+
+|seealso= [[mapAnimAdd]] [[mapAnimClear]] [[mapAnimCommit]] [[ctrlMapAnimAdd]] [[ctrlMapAnimClear]] [[ctrlMapAnimCommit]] [[ctrlMapAnimDone]]
+}}
+
+<dl class="command_description">
+<dt class="note">[[User:Ceeeb|Ceeeb]]</dt>
+<dd class="note">
+In '''OFP v1.96''', the mapAnim series of commands, together with [[forceMap]] can only be used in the intro and mission, as it is not possible to access the map from the outro. ''(not checked, sourced from an old copy of the OFPEC comref)''
+</dd>
+
+</dl>

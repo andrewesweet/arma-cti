@@ -1,0 +1,142 @@
+// source: https://community.bistudio.com/wiki/Startup_Parameters_Config_File
+// revision: 364391 (2024-05-13T10:51:55Z)
+// export sha1: i149ko6t92h18u5x6x1jhw74logl8cf
+// categories: Category:Startup Parameters
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The startup parameters config file can be used to put startup parameters in, instead of specifying them in a shortcut/commandline.
+
+{{Feature|important|Low level parameters are NOT supported:<br>
+.par file does not (and will not) support some low level parameters, namely:
+* -cpuCount
+* -malloc
+* -exThreads
+* -maxMem
+* -profiles (confirmed on {{arma3}} version 1.66.139586, options does not work from parameter file)
+* -debug
+The reason is those need to be initialized before any file operations are done.
+}}
+
+
+== Usage ==
+
+'''-par''' {{Link|Arma 3: Startup Parameters|startup parameter}} allows to specify the file.
+Whether using {{Link|#Plain Text Format}} or {{Link|#.par Format}}, '''the file is preprocessed before parsing''', allowing C++ style comments and {{hl|#define}}s to be used.
+{{Feature|informative|Before {{arma2oa}} v1.60.86060, only the {{hl|{{Link|#.par Format|.par}}}} format was supported.}}
+
+=== Windows ===
+
+'''-par''' won't work being passed by cmd as variable to quotes; a specific format must be applied:
+<syntaxhighlight lang="bat">
+setlocal enableDelayedExpansion enableExtensions
+
+set v=!v! "-profiles=!cd!\acc"
+set v=!v! "-par=D:\par\startupParameters.txt"
+
+start "" "D:\arma3\arma3.exe" !v!	&rem need "start" for closing cmd window;
+timeout /t 1						&rem need for keeping game window (starting from logo) foreground after cmd window close;
+</syntaxhighlight>
+
+
+== Plain Text Format ==
+
+* The file extension must be anything '''but''' {{hl|.par}}, otherwise  the {{Link|#.par Format}} syntax will be assumed.
+* The file can be located either inside or outside of the game folder for organizational purposes.
+* The file must have one command line option per line.
+
+=== Location ===
+
+Location can be defined with -par=parameterFileName startup parameter.
+
+=== Format ===
+
+Whitespace is ignored.
+<syntaxhighlight lang="cpp">
+-startupParameter
+-startupParameter2=value1;value2
+MissionFileToOpenInTheEditor
+</syntaxhighlight>
+
+=== Examples ===
+
+==== Simple Example ====
+<syntaxhighlight lang="cpp">
+-nosplash
+-skipIntro
+-world=none
+-mod=Expansion;Expansion\beta;Expansion\beta\Expansion;@cwr2
+"C:\arma2\Users\USERNAME\missions\MissionName.Desert_E\mission.sqm"
+</syntaxhighlight>
+
+==== Host and Client ====
+The following example allows you to launch two instances of the game with common startup parameters. One for hosting from [[:Category:Eden Editor|Eden]] and another one as a client to test for [[Multiplayer_Scripting|locality]] issues.
+
+'''base.txt'''
+<syntaxhighlight lang="cpp">
+-mod="!Workshop\@Mod1;!Workshop\@Mod2"
+-skipIntro
+-noSplash
+-filePatching
+-noSound
+-noLand
+</syntaxhighlight>
+
+'''host.txt'''
+<syntaxhighlight lang="cpp">
+#include "base.txt"
+"C:\Users\USERNAME\Documents\Arma 3\missions\BIKI.VR"
+</syntaxhighlight>
+
+'''client.txt'''
+<syntaxhighlight lang="cpp">
+#include "base.txt"
+-name=ClientTest
+</syntaxhighlight>
+
+
+== .par Format ==
+
+{{Feature|warning|The {{hl|.PAR}} file extension is apparently no longer read correctly on a dedicated server.}}
+
+=== Location ===
+
+At game directory's root.
+
+=== Naming ===
+
+{| class="wikitable" style="text-align: center"
+! {{arma2}} !! {{arma2oa}} !! {{tkoh}}
+|-
+| {{hl|ArmA2.par}} || {{hl|ArmA2OA.par}} || {{hl|TakeOnH.par}}
+|}
+
+=== Format ===
+
+<syntaxhighlight lang="cpp">
+class Arg
+{
+	startupParameter="-startupParameter"
+	startupParameter2="-startupParameter2=value1;value2"
+};
+</syntaxhighlight>
+
+=== Example ===
+
+<syntaxhighlight lang="cpp">
+class Arg
+{
+	nosplash="-nosplash";
+	skipIntro="-skipIntro";
+	world="-world=none";
+	mod="-mod=Expansion;Expansion\beta;Expansion\beta\Expansion;@cwr2";
+};
+</syntaxhighlight>
+
+
+== External links ==
+
+* {{Link|https://web.archive.org/web/20151114132158/http://dev.withsix.com/issues/26103|Feature is discussed here by Suma}}
+
+
+[[Category:Startup Parameters]]

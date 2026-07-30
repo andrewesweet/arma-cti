@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getFromPairs
+// revision: 349332 (2023-11-08T14:53:28Z)
+// export sha1: hpjl45w0oxkan449t1oc0encmquuarr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 3 version 1.02 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.02
+
+|gr1= Arrays
+
+|descr= Searches the associative array for the 1st occurance of the key string and returns the value associated with it. Search is not case sensitiv.
+ 
+
+|s1= [array, key, defaultValue] call [[BIS_fnc_getFromPairs]]
+
+|p1= array: [[Array]] - array to search through
+
+|p2= key: [[String]] - key to search for
+
+|p3= defaultValue: [[Anything]] - (Optional, default [[nil]]) default return value if no match was found
+
+|r1= [[Anything]] - value associated with the key.
+
+|x1= <sqf>[[["apple",3],["pear","test"]],"pear"] call BIS_fnc_getFromPairs; // Returns "test"</sqf>
+
+|x2= <sqf>[[["apple",3],["pear",6]],"pear"] call BIS_fnc_getFromPairs; // Returns "6"</sqf>
+
+|seealso= [[find]] [[findIf]] [[BIS_fnc_findInPairs]] [[BIS_fnc_addToPairs]] [[BIS_fnc_removeFromPairs]] [[BIS_fnc_setToPairs]]
+}}
+
+{{Note
+|user= Benargee
+|timestamp= 20141002011700
+|text= [[BIS_fnc_findInPairs]] renamed to [[BIS_fnc_getFromPairs]] and now supports all variable types {{Link|http://dev.arma3.com/post/spotrep-00011|Source}}
+}}

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_log
+// revision: 351743 (2023-12-30T21:31:42Z)
+// export sha1: hme3bdan0kx4ct4x371zaluytfjg3t1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Diagnostic
+
+|descr= Log debug message.
+{{Feature|informative|{{hl|[[Description.ext#allowFunctionsLog|allowFunctionsLog]]}} has to be set to '''1''' in [[Description.ext]] for this function to have any effect.}}
+
+|s1= param call [[BIS_fnc_log]]
+
+|p1= param: [[Anything]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>diag_tickTime call BIS_fnc_log;</sqf>
+
+|x2= <sqf>[dayTime, overcast, fog] call BIS_fnc_log;</sqf>
+
+|x3= <sqf>(name player) call BIS_fnc_log;</sqf>
+
+|seealso= [[BIS_fnc_error]] [[BIS_fnc_logFormat]] [[BIS_fnc_errorMsg]] [[BIS_fnc_logFormatServer]]
+}}

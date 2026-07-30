@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/commandGetOut
+// revision: 364242 (2024-05-06T09:38:17Z)
+// export sha1: ap8ijpv7lzd63jlbpxfy00sdcuk0qxq
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Unit Control
+
+|arg= local
+
+|eff= global
+
+|descr= Orders one or multiple units to get out from the vehicle (via the radio). Same as [[doGetOut]] with latter being silent. 
+{{Feature|informative|
+* Works for both AI and player entities
+* AI unit gets back in - unless is under player command or combined with other sqf commands ([[orderGetIn]] false, [[allowGetIn]] false or [[leaveVehicle]])
+* Ignores vehicle's lock state - unlike [[Arma 3: Actions#Eject|action "Eject"]] and [[moveOut]]
+* AI waits for execution until vehicle has stopped/is no longer flying (unclear if any timeout exists for order to be discarded) - unlike [[Arma 3: Actions#Eject|action "Eject"]] and [[moveOut]]
+* Plays the vehicle's position's get out animation (same as [[Arma 3: Actions#Eject|action "Eject"]]) - unlike [[moveOut]]
+* When execute for multiple units, it waits till the action is completed, before the next to take his turn (same as [[Arma 3: Actions#Eject|action "Eject"]]) - unlike [[moveOut]]
+* AI gets back into formation afterwards
+* Works only on alive units - unlike [[Arma 3: Actions#Eject|action "Eject"]] (one after another) or [[moveOut]] (instantly)
+* Does not work on [[setUnconscious|unconscious]] units - unless the AI is under player command. Unlike [[moveOut]] or [[Arma 3: Actions#Eject|action "Eject"]] (but one after another)
+}}
+
+|s1= [[commandGetOut]] unit(s)
+
+|p1= unit(s): [[Object]] or [[Array]] of [[Object]]s
+
+|r1= [[Nothing]]
+
+|x1= <sqf>commandGetOut _unitOne;</sqf>
+
+|x2= <sqf>commandGetOut [_unitOne,_unitTwo];</sqf>
+
+|mp= This command is only effective when used on local units. When used on a remote unit, this command will create radio dialogue on the machine the unit is local to, but the unit will not leave the vehicle.
+
+|seealso= [[doGetOut]] [[moveOut]] [[leaveVehicle]]
+}}

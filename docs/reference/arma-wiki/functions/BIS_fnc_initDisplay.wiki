@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_initDisplay
+// revision: 349445 (2023-11-08T16:48:31Z)
+// export sha1: lwgg7dtk7n44lnu7horpsenw47u98dk
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= This function is a central part of how BI handles UIs. For a full explanation see [[GUI_Tutorial#BIS_fnc_initDisplay|this page]].
+
+|s1= parameters call [[BIS_fnc_initDisplay]]
+
+|p1= parameters: [[Array]]
+* [] - Init displays during preStart
+* [mode, params, displayClass, scriptPath, register]
+** mode: [[String]] -  Mode, can be "onLoad" or "onUnload"
+** params: [[Array]] - Parameters passed from [[User_Interface_Event_Handlers#onLoad|onLoad]] or [[User_Interface_Event_Handlers#onUnload|onUnload]] UI event handler
+** displayClass: [[String]] - [[Display]] class, usually to format "RscDisplayXXX"
+** scriptPath: [[String]] - Script path from CfgScriptPaths
+** register: [[Number]] or [[Boolean]] - Save variables associated with the display to the uiNamespace. Usually this is {{hl|false}} when the function is called from a control.
+&nbsp;
+
+|r1= Nothing
+
+|x1= <sqf>["onLoad", _this, "RscDisplayAAR", "GUI", true] call (uiNamespace getVariable "BIS_fnc_initDisplay");</sqf>
+
+|seealso= [[GUI Tutorial]] [[Arma: GUI Configuration]]
+
+}}

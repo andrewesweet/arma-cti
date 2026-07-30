@@ -1,0 +1,131 @@
+// source: https://community.bistudio.com/wiki/String
+// revision: 373361 (2025-04-28T08:59:37Z)
+// export sha1: 55wcx39ukzs5x82aa2h51d4rtutzw4l
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+A '''string''' is a [[:Category:Data Types|variable type]] that contains text. Possible length and characters depend on the game and its version.
+
+{{Feature|informative|The encoding should be mostly transparent. The input files can be encoded both in UTF-16 or UTF-8, the [[toString]] and [[toArray]] functions always convert from/to UTF-16 representation.}}
+
+
+== Properties ==
+
+{| class="wikitable" style="text-align: center"
+!
+! {{Name|ofp|short}}
+! {{Name|arma1|short}}
+! {{Name|arma2|short}}
+! {{Name|arma2oa|short}}
+! {{Name|tkoh|short}}
+! {{Name|arma3|short}} (before v1.56)
+! {{Name|arma3|short}} (since v1.56)
+|-
+! Max length
+| 2056
+| colspan="5" | No set limit
+| 9,999,999 to 10,000,000<br>(same as [[Array]] length)
+|-
+! Encoding
+| {{Link|https://en.wikipedia.org/wiki/ASCII|ASCII}}
+| colspan="6" | {{Link|https://en.wikipedia.org/wiki/Unicode|Unicode}}
+|-
+! {{Link|https://en.wikipedia.org/wiki/Code_page|Code page}}
+| product language defined
+| colspan="6" | {{Link|https://en.wikipedia.org/wiki/UTF-8|UTF-8}}
+|-
+! "text"
+| colspan="7" | {{Icon|checked}}
+|-
+! 'text'
+| {{Icon|unchecked}}
+| colspan="6" | {{Icon|checked}}
+|-
+! {text}
+| {{Icon|checked}}
+| colspan="6" | {{Icon|unchecked}}
+|}
+
+
+== Commands and Functions ==
+
+* [[:Category:Command Group: Strings|String Scripting Commands]]
+* [[:Category:Function Group: Strings|String Functions]]
+
+
+== Single quote limitation ==
+
+Strings can be written with both double quotes ("text") and single quotes ('text'). While they are identical, there are slightly differences in how they are treated:
+* Single quote strings are [[PreProcessor_Commands#Strings|parsed by the preprocessor]] and may cause undesired results.
+* Single quote strings do not seem to support tabs:
+<sqf>
+_string = "	
+	";
+copyToClipboard _string;
+diag_log format ["%1 %2 %3 x%4x", toArray _string, toArray copyFromClipboard, toArray (_string select [0]), _string];
+
+/*
+	return is good: "[9,10,9] [9,10,9] [9,10,9] x	
+	x"
+*/
+</sqf>
+
+<sqf>
+_string = '	
+	';
+copyToClipboard _string;
+diag_log format ["%1 %2 %3 x%4x", toArray _string, toArray copyFromClipboard, toArray (_string select [0]), _string];
+
+/*
+	return: "[9,10] [9,10] [9,10] x	
+x" - second tab vanished
+*/
+</sqf>
+
+<small>Example courtesy of {{Link|http://forums.bistudio.com/member.php?81568-Rydygier|Rydygier}}</small>
+
+
+== Examples ==
+
+=== Quotes in Quotes ===
+
+<sqf>
+private _string = "my string ""with"" quotes";
+private _string = 'my string "with" quotes';
+private _string = 'my string with quotes';
+</sqf>
+
+=== String Formats ===
+
+<sqf>
+// Operation Flashpoint
+_string = "Hello there" // works
+_string = 'Hello there' // does NOT work
+_string = {Hello there} // works
+</sqf>
+
+<sqf>
+// since Armed Assault
+_string = "Hello there" // works
+_string = 'Hello there' // works
+_string = {Hello there} // does NOT work
+</sqf>
+
+=== Operators ===
+
+<sqf>private _finalString = "Hello" + " " + "there"; // outputs "Hello there" - the + sign concatenates strings</sqf>
+The only basic operator to be used on strings is "plus". You can use "plus" to concatenate two strings.
+
+=== Conversion ===
+
+<sqf>
+private _value = 42; // this is a Number
+hint _value; // error - hint takes a String, not a Number
+hint format ["%1", _value]; // ok
+hint str _value; // ok - since Armed Assault
+</sqf>
+
+
+[[Category: Data Types]]

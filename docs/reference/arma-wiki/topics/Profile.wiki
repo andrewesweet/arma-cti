@@ -1,0 +1,89 @@
+// source: https://community.bistudio.com/wiki/Profile
+// revision: 353531 (2024-03-19T12:01:24Z)
+// export sha1: rutn7s712vaup775g3zzi163ej6py7q
+// categories: Category:ArmA: Armed Assault: Editing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Operation Flashpoint: Editing | Category:Take On Helicopters: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+All [[Real Virtuality]] games allow you to create multiple profiles. Personal settings like video configuration, campaign progress or controls assigments are saved in profile files.
+
+
+== Directory ==
+
+Path varies depending on a [[:Category:Projects|project]], see following table for specific directories.
+
+{{Color|green|Green}} text means variable based on your local settings.
+
+{| class="wikitable"
+! Icon
+! Game
+! Path
+! Extension
+|-
+| {{GVI|ofp|1.00}}
+| '''[[Arma: Cold War Assault]]'''
+| <code style="display: block">{{Color|green|Arma: CWA directory}}\Users\{{Color|green|ProfileName}}\</code>
+| {{n/a}}
+|-
+| {{GVI|arma1|1.00}}
+| '''[[:Category:ArmA: Armed Assault|{{arma1}}]]'''
+| <code style="display: block">My Documents\ArmA\<br>My Documents\ArmA Other Profiles\{{Color|green|ProfileName}}\</code>
+| {{hl|{{Color|darkorange|*.ArmAProfile}}}}
+|-
+| {{GVI|arma2|1.00}}
+| '''{{GameCategory|arma2|link= y}}'''
+| rowspan="2" | <code style="display: block">My Documents\Arma 2\<br>My Documents\Arma 2 Other Profiles\{{Color|green|ProfileName}}\</code>
+| {{hl|{{Color|darkorange|*.ArmA2Profile}}}}
+|-
+| {{GVI|arma2oa|1.50}}
+| '''[[{{arma2oa}}]]'''
+| {{hl|{{Color|darkorange|*.ArmA2OAProfile}}}}
+|-
+| {{GVI|tkoh|1.00}}
+| '''[[{{tkoh}}]]'''
+| <code style="display: block">My Documents\Take On Helicopters\<br>My Documents\Take On Helicopters Other Profiles\{{Color|green|ProfileName}}\</code>
+| {{hl|{{Color|darkorange|*.TakeOnHProfile}}}}
+|-
+| {{GVI|arma3|1.00}}
+| '''{{GameCategory|arma3|link= y}}'''
+| <code style="display: block">My Documents\Arma 3\<br>My Documents\Arma 3 - Other Profiles\{{Color|green|ProfileName}}\</code>
+| {{hl|{{Color|darkorange|*.Arma3Profile}}}}
+|}
+
+
+== Contents ==
+
+=== Files ===
+
+* '''{{Color|green|ProfileName}}.{{Color|darkorange|Extension}}''' - file with all basic profile settings. Commonly referred to as a '''profile file'''.
+* '''{{Color|green|ProfileName}}.vars.{{Color|darkorange|Extension}}''' - file with scripted variables used by scenarios or modules. See [[#scripting|Scripting]] section below for more details. The file is binarized, which means it is encrypted and cannot be opened as a plain text and saved afterwards. This is to prevent cheating by editing values of certain variables.
+* '''{{Color|green|ProfileName}}.3den.{{Color|darkorange|Extension}}''' - [[:Category:Eden Editor|Eden Editor]] specific settings.
+* '''UserInfo.cfg''' - file with all basic profile settings used in Arma: CWA.
+
+=== Folders ===
+
+* '''''Compositions''''' - [[Eden_Editor:_Custom_Composition|custom compositions]] saved by the editor
+* '''''Missions''''' - scenarios saved by [[:Category:Eden Editor|Eden Editor]]
+* '''''MPMissions''''' - scenarios saved by [[:Category:Eden Editor|Eden Editor]] when it was opened on a server
+* '''''Saved''''' - savegames of scenarios and campaigns. Also contains local versions of subscribed Steam scenarios.
+* '''''Screenshot''''' - folder where pictures are saved by [[screenshot]] command. By default limited to 250 MB to prevent abuse, see the command page for description on how to increase the size.
+* '''''UserSaved''''' - savegames of scenarios previewed in the editor.
+
+
+{{ArgTitle|2|Scripting|{{GVI|tkoh|1.00}}{{GVI|arma3|1.00}}}}
+
+You can save any variable to the profile using [[profileNamespace]] command.
+This is used to preserve persistent information like character progress, resources or various mod settings.
+<sqf>profileNamespace setVariable ["myVariable", 1];</sqf>
+This will save it to namespace, but not yet to the file itself, so restarting would not preserve the variable. To mirror the namespace into the file, call:
+<sqf>saveProfileNamespace;</sqf>
+Once set, you can retrieve the variable using:
+<sqf>private _myVar = profileNamespace getVariable "myVariable";</sqf>
+{{Feature|important|Do not save large amount of data to the profile: the larger the profile file gets, the slower it loads!}}
+
+
+{{GameCategory|ofp|Editing}}
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+[[Category:Take On Helicopters: Editing]]

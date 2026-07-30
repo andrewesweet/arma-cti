@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/getMousePosition
+// revision: 378523 (2026-05-04T01:55:30Z)
+// export sha1: b8vturvjcqiy7ugncn0qmt9oxlre815
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|gr1= GUI Control - Positioning
+
+|descr= Returns mouse position in UI coordinates.
+
+|s1= [[getMousePosition]] 
+
+|r1= [[Position#Introduction|Position2D]] - x and y UI coordinates of the mouse position
+
+|x1= <sqf>getMousePosition params ["_mouseX", "_mouseY"];</sqf>
+
+|seealso= [[setMousePosition]] [[ctrlSetMousePosition]] [[ctrlMousePosition]] [[ctrlMapCursor]] [[reversedMouseY]]
+}}

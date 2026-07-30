@@ -1,0 +1,98 @@
+// source: https://community.bistudio.com/wiki/setViewDistance
+// revision: 364699 (2024-05-25T17:28:31Z)
+// export sha1: diy1a7vuxdj39u14rdn3lm877xcc3d4
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Command Group: System | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|eff= local
+
+|gr1= System
+
+|gr2= Environment
+
+|descr= Set rendering distance. Setting view distance to <= 0 resets the value to the client's options (set in {{hl|Options → Video → General → Visibility → Overall}}).
+{{Feature|informative|In previous versions, client's max view distance was limited by the server's view distance.}}
+{{Feature|important|
+View distance also defines the maximum distance between a unit and any other unit they can [[knowsAbout|know about]].
+Higher view distance will involve more AI simulation cycles for every unit, which causes low performance. See [[Arma 3: Performance Optimisation]].
+}}
+
+{{{!}} class="wikitable"
+! Game
+! min. scripted
+! min. UI
+! default
+! max. UI
+! max. scripted
+{{!}}-
+{{!}} {{arma3}}
+{{!}} 200
+{{!}} 500
+{{!}} '''1600'''
+{{!}} 12000
+{{!}} 40000
+{{!}}-
+{{!}} {{arma2oa}}
+{{!}} 200
+{{!}} 500
+{{!}} '''2500'''
+{{!}} 10000
+{{!}} 15000
+{{!}}-
+{{!}} {{arma2}}
+{{!}} 200
+{{!}} 500
+{{!}} '''3000'''
+{{!}} 10000
+{{!}} 15000
+{{!}}-
+{{!}} {{arma1}}
+{{!}} 200
+{{!}} 500
+{{!}} '''1200'''
+{{!}} 10000
+{{!}} 15000
+{{!}}-
+{{!}} {{ofp}}
+{{!}} 500
+{{!}} 500
+{{!}} '''900'''
+{{!}} 5000
+{{!}} 5000
+{{!}}}
+
+|s1= [[setViewDistance]] distance
+
+|p1= distance: [[Number]] - distance in metres; {{GVI|arma3|1.00|size= 0.75}} a negative value resets the view distance to user video setting
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setViewDistance 2250;</sqf>
+
+|x2= <sqf>setViewDistance -1; // reset view distance in Arma 3</sqf>
+
+|seealso= [[viewDistance]] [[setDetailMapBlendPars]] [[setTerrainGrid]] [[getObjectViewDistance]] [[setObjectViewDistance]]
+}}

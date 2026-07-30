@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/getSensorTargets
+// revision: 310341 (2022-05-05T17:07:32Z)
+// export sha1: afz575lkexhsydcybjbn6oq665rfu36
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sensors | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|arg= local
+
+|descr= Returns vehicle sensors' potential targets.
+
+|gr1= Sensors
+
+|s1= [[getSensorTargets]] vehicle
+
+|p1= vehicle: [[Object]] - the sensors-equipped vehicle
+
+|r1= [[Array]] of [[Array]]s format [<nowiki/>[target, type, relationship, sensor], ...]:
+* target: [[Object]]
+* type: [[String]] - can be one of:
+** "unknown"
+** "footmobile"
+** "air"
+** "ground"
+** "laserTarget"
+** "irTarget"
+** "radarTarget"
+* relationship: [[String]] - can be one of:
+** "friendly"
+** "enemy"
+** "destroyed"
+** "unknown"
+* sensor: [[Array]] of [[String]]s - among the following values:
+** "ir"
+** "nv"
+** "laser"
+** "activeradar"
+** "passiveradar"
+** "man"
+** "visual"
+** "datalink"
+|x1= <sqf>
+private _radarTargets = getSensorTargets vehicle player;
+/*
+	returns e.g
+	[
+		[O Alpha 1-3:1, "air", "unknown", ["ir", "activeradar", "visual"]],
+		[17750112040# 163957: apc_tracked_01_aa_f.p3d, "ground", "unknown", ["datalink"]]
+	]
+*/
+</sqf>
+
+|seealso= [[getSensorThreats]] [[listVehicleSensors]] [[listRemoteTargets]]
+}}

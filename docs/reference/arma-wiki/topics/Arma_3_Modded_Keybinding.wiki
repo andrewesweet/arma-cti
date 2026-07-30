@@ -1,0 +1,271 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Modded_Keybinding
+// revision: 363526 (2024-04-03T19:34:02Z)
+// export sha1: ks4ng0sa67e0al6ieuul4jwqv17z06u
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 2.06
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+As of {{GVI|arma3|2.06}}, mods are able to define keys that can be bound by the user in the keybindings.
+
+<syntaxhighlight lang="cpp">
+class CfgUserActions
+{
+	class TAG_MyActionName // This class name is used for internal representation and also for the inputAction command.
+	{
+		displayName = "";
+		tooltip = "";
+		onActivate = "['TAG_MyActionName', true] call TAG_fnc_MyHandler";		// _this is always true.
+		onDeactivate = "['TAG_MyActionName', false] call TAG_fnc_MyHandler";	// _this is always false.
+		onAnalog = "['TAG_MyActionName', _this] call TAG_fnc_MyAnalogHandler";	// _this is the scalar analog value.
+		analogChangeThreshold = 0.01; // Minimum change required to trigger the onAnalog EH (default: 0.01).
+		modifierBlocking = 1; // Whether this action would block other actions if the assigned key has modifier keys on it. (Since Arma 2.12)
+	};
+};
+</syntaxhighlight>
+
+
+== Key Combination Enumerations ==
+
+<syntaxhighlight lang="cpp">
+// Secondary combo types:
+#define INPUT_DEVICE_COMBO_KB 0x00100000 // Keyboard button (key)
+#define INPUT_DEVICE_COMBO_MB 0x00300000 // Mouse button
+#define INPUT_DEVICE_COMBO_JB 0x00500000 // Joystick button
+#define INPUT_DEVICE_COMBO_JP 0x00600000 // Joystick POV
+#define INPUT_DEVICE_COMBO_XI 0x00900000 // Xbox controller (XInput)
+
+// Main combo types:
+#define INPUT_DEVICE_MAIN_MB 0x00010000 // Mouse button
+#define INPUT_DEVICE_MAIN_MA 0x00020000 // Mouse axis
+#define INPUT_DEVICE_MAIN_KB 0x00030000 // Keyboard button (key)
+#define INPUT_DEVICE_MAIN_JB 0x00040000 // Joystick button
+#define INPUT_DEVICE_MAIN_JA 0x00050000 // Joystick axis
+#define INPUT_DEVICE_MAIN_JP 0x00060000 // Joystick POV
+#define INPUT_DEVICE_MAIN_XI 0x00070000 // Xbox controller (XInput)
+#define INPUT_DEVICE_MAIN_TR 0x00080000 // Movement tracking device
+
+// Device types:
+#define INPUT_DEVICE_SOLO_KB 0x00000000 // Keyboard button (key)
+#define INPUT_DEVICE_SOLO_MB 0x00010000 // Mouse button
+#define INPUT_DEVICE_SOLO_JB 0x00020000 // Stick button
+#define INPUT_DEVICE_SOLO_JA 0x00030000 // Stick axis
+#define INPUT_DEVICE_SOLO_JP 0x00040000 // Stick POV
+#define INPUT_DEVICE_SOLO_XI 0x00050000 // XInput device
+#define INPUT_DEVICE_SOLO_TR 0x00080000 // EyeXTracker, TrackIR, FreeTrack, ... exclusive, in this preference
+#define INPUT_DEVICE_SOLO_MA 0x00100000 // Mouse axis
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+enum MouseButtons
+{
+	MOUSE_BUTTONS_LEFT		= 0,
+	MOUSE_BUTTONS_RIGHT		= 1,
+	MOUSE_BUTTONS_MIDDLE	= 2,
+	MOUSE_BUTTONS_CUSTOM_1	= 3,
+	MOUSE_BUTTONS_CUSTOM_2	= 4,
+	MOUSE_BUTTONS_CUSTOM_3	= 5,
+	MOUSE_BUTTONS_CUSTOM_4	= 6,
+	MOUSE_BUTTONS_CUSTOM_5	= 7
+};
+
+#define INPUT_DOUBLE_TAP_OFFSET		0x100	// Offset for double click (used as mask)
+#define MOUSE_CLICK_OFFSET			0x80	// Offset for mouse button click (compared to hold)
+</syntaxhighlight>
+
+Examples:
+* Left click: 0x80
+* Left click hold: 0x0
+* Left click doubletap: 0x100
+* Right click hold: 0x1
+There are 256 stick buttons.
+
+<syntaxhighlight lang="cpp">
+#define N_JOYSTICK_AXES		8 // 3 normal, 3 rotate, 2 sliders
+#define N_JOYSTICK_POV		8 // 8 directional stick
+</syntaxhighlight>
+
+TrackIR axis:
+<syntaxhighlight lang="cpp">
+enum MovementTrackerAxis
+{
+	TRACK_PITCH = 0,	// Up / down rotation
+	TRACK_YAW = 1,		// Left / right rotation
+	TRACK_ROLL = 2,		// Side roll
+	TRACK_X = 3,		// Left / right move
+	TRACK_Y = 4,		// Up / down move
+	TRACK_Z = 5			// Forward / backward move
+};
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+enum MouseAxis
+{
+	MOUSE_AXIS_LEFT = 0,
+	MOUSE_AXIS_RIGHT = 1,
+	MOUSE_AXIS_UP = 2,
+	MOUSE_AXIS_DOWN = 3, // Last actual mouse axis, change N_MOUSE_AXES if adding new axis
+	MOUSE_AXIS_WHEEL_UP = 4,
+	MOUSE_AXIS_WHEEL_DOWN = 5
+};
+</syntaxhighlight>
+
+
+== Adding a new key ==
+
+=== Defining a new action in CfgUserActions ===
+
+<syntaxhighlight lang="cpp">
+class CfgUserActions
+{
+	class TAG_MyActionName // This class name is used for internal representation and also for the inputAction command.
+	{
+		displayName = "My Test Action";
+		tooltip = "This action is for testing.";
+		onActivate = "_this call TAG_fnc_MyHandler";		// _this is always true.
+		onDeactivate = "_this call TAG_fnc_MyHandler";		// _this is always false.
+		onAnalog = "_this call TAG_fnc_MyAnalogHandler";	// _this is the scalar analog value.
+		analogChangeThreshold = 0.1; // Minimum change required to trigger the onAnalog EH (default: 0.01).
+	};
+};
+</syntaxhighlight>
+
+=== Defining a default keybind in CfgDefaultKeysPresets ===
+<syntaxhighlight lang="cpp">
+class CfgDefaultKeysPresets
+{
+	class Arma2 // Arma2 is inherited by all other presets.
+	{
+		class Mappings
+		{
+			TAG_MyActionName[] = {
+				0x25, // DIK_K
+				"256 + 0x25", // 256 is the bitflag for "doubletap", 0x25 is the DIK code for K.
+				"0x00010000 + 2" // 0x00010000 is the bitflag for "mouse button".
+			};
+		};
+	};
+};
+</syntaxhighlight>
+{{Feature|warning|
+If the key code is large enough, for example {{hl|0x1D130023}} ({{Controls|Ctrl|H}}), then adding values may lead to a wrong result due to rounding errors (see {{Link|Number#Floating-point Precision}}).
+As such, it is recommended to do the calculation manually and use that value instead.
+}}
+
+=== Adding a keybind to the keybind options dialog ===
+
+<syntaxhighlight lang="cpp">
+class UserActionGroups
+{
+	class ModSection // Unique classname of your category.
+	{
+		name = "Mod Section"; // Display name of your category.
+		isAddon = 1;
+		group[] = { "TAG_MyActionName" }; // List of all actions inside this category.
+	};
+};
+</syntaxhighlight>
+
+=== Setting up a collision group (optional) ===
+
+Class UserActionsConflictGroups provides the ability to configure checks for keybinding collisions. The following example demonstrates how to ensure that the input does not conflict with car movement keybindings:
+<syntaxhighlight lang="cpp">
+class UserActionsConflictGroups
+{
+	class ActionGroups
+	{
+		TAG_MyActionGroup[] = { "TAG_MyActionName" };
+	};
+
+	class CollisionGroups
+	{
+		// Add your group to an existing collision group:
+		carMove[] += { "TAG_MyActionGroup" };
+
+		// Or alternatively add your own collision group (which is usually preferrable):
+		TAG_MyActionGroupCollisions[] = { "basic", "vehBasic", "HeadMove", "TAG_MyActionGroup" };
+	};
+};
+</syntaxhighlight>
+
+
+== Scripted Event Handlers ==
+
+<sqf>
+addUserActionEventHandler ["ReloadMagazine", "Activate", {
+	systemChat "Reloading!";
+	removeUserActionEventHandler ["ReloadMagazine", "Activate", _thisEventHandler];
+}];
+</sqf>
+The persistence of these EHs is the same as that of [[Arma 3: Mission Event Handlers|Mission Event Handlers]] - they are scoped per mission and get removed when the mission ends.
+
+'''See Also:'''
+* [[addUserActionEventHandler]]
+* [[removeUserActionEventHandler]]
+* [[removeAllUserActionEventHandlers]]
+
+
+== Additional documentation on key bitflags (CfgDefaultKeysPresets) ==
+
+{{Feature|informative|
+* See also [[DIK KeyCodes]]
+* The format is as follows (here for {{Controls|Ctrl|W}} with a value of {{hl|487784465}}, hexadecimal {{hl|0x1D130011}}):
+: {{{!}} class{{=}}"wikitable align-center"
+! Value
+{{!}} 0x
+{{!}} 1D
+{{!}} 13
+{{!}} 00
+{{!}} 11
+{{!}}-
+! Title
+{{!}} hexPrefix
+{{!}} comboKB
+{{!}} deviceType
+{{!}} doubleTapInfo
+{{!}} keyId
+{{!}}-
+! Translated
+{{!}} rowspan{{=}}"2" {{n/a}}
+{{!}} {{hl|DIK_LCONTROL}}
+{{!}} {{hl|INPUT_DEVICE_COMBO_KB}}  + {{hl|INPUT_DEVICE_MAIN_KB}}
+{{!}} 0
+{{!}} DIK_W
+{{!}}-
+! Details
+{{!}} combo keyboard key (second key of a combo is always keyboard)
+{{!}} device type of first key (joystick, mouse, KB, ...)<br>or in case of combo, first half secondary combo type, second half main combo type
+{{!}} offset for joysticks or double tap info for keyboard
+{{!}} key/button/axis identification
+{{!}}}
+}}
+
+<sqf>
+// dik = 0xAABBCCDD
+// BBCCDD = whole info about first key
+// CCDD = button info (doubleTap or joyID + btnID)
+// DD = button local ID
+</sqf>
+
+; Example for {{Controls|A|2×B}}
+ DIK_A = 0x1E, DIK_B = 0x30
+ Combined code = 0x1E130130
+combo key is DIK_A (1E), combo key device type is INPUT_DEVICE_COMBO_KB (1), main key device type is INPUT_DEVICE_MAIN_KB (3), doubletap (01), main key is IDK_B (30)
+
+; Example for {{Controls|A|MMB}}
+ DIK_A = 0x1E, middle mouse hold = 0x2
+ Combined code 0x1E110002
+Combo key is DIK_A (1E), combo key device type is INPUT_DEVICE_COMBO_KB (1), main key device is INPUT_DEVICE_MAIN_MB (1), no double tap (00), main key is MOUSE_BUTTONS_MIDDLE (2)
+
+; Example for A + Mouse Left (move)
+ DIK_A = 0x1E, MOUSE_AXIS_LEFT = 0
+ Combined code 0x1E120001
+Combo key is DIK_A (1E), combo key device type is INPUT_DEVICE_COMBO_KB (1), main key device is INPUT_DEVICE_MAIN_MA (2), no double tap (00), main key is MOUSE_AXIS_RIGHT (1)
+
+; Example for {{Controls|LMB|MMB}}
+ MOUSE_BUTTONS_LEFT = 0, MOUSE_BUTTONS_MIDDLE = 2
+ Combined code 0x02310000
+Combo key is MOUSE_BUTTONS_MIDDLE (2), combo key device type is INPUT_DEVICE_COMBO_MB (3), main key device is INPUT_DEVICE_MAIN_MB (1), no double tap (00), main key is MOUSE_BUTTONS_LEFT (0)
+
+
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 2.06]]

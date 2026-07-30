@@ -1,0 +1,239 @@
+// source: https://community.bistudio.com/wiki/Location
+// revision: 378131 (2026-02-22T20:29:35Z)
+// export sha1: omtl0qdbzloy8yox5gp8smamuurdsns
+// categories: Category:Data Types | Category:Introduced with Armed Assault version 1.08
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A location is an extended type of marker. For example city names displayed on the map are locations; their information can be accessed and modified with [[:Category:Command Group: Locations|Location commands]].
+
+[[Location]] notion was introduced in {{GVI|arma1|1.08}}.
+
+
+== Specifics ==
+
+Locations:
+* are defined in {{hl|bin\Config.bin\CfgLocationTypes}} / <sqf inline>configFile >> "CfgLocationTypes"</sqf>
+* have a name, a side, a [[Position#Position3D|3D position]], a 2D area, and an [[direction|orientation]]
+* have a non-scaling map representation (icon and/or text, depending on their class)
+* can be attached to objects, with all of the location's relevant properties inherited from the object
+* are [[Multiplayer Scripting#Locality|local]], their properties are not synchronised over the network
+
+Terrain built-in locations:
+* provide a way to find nearby high points, towns, etc.
+* are defined in an island's {{hl|.pew}} file. When the island is exported to {{hl|.wrp}} its {{hl|.hpp}} file is also produced, containing the location names used in the {{hl|.pew}} file. This {{hl|.hpp}} file is then incorporated into the config for the island using an [[PreProcessor Commands#.23include|#include]] statement.<br>This section included in the island config ensures any locations set in the {{hl|.pew}} file are included in the island during packing.
+
+
+{| class="wikitable align-center align-left-col-1 align-center-row-1"
+! Modification
+! Terrain Location
+! Scripted Terrain Location<br><small>using {{Link|createLocation#Syntax 2}}</small>
+! Scripted Location
+|-
+| [[Side]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| [[setSize|Size]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| [[direction|Direction]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| [[setVariable]]/[[getVariable]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| [[Position#Position3D|3D Position]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+|-
+| [[attachTo|Attach to]] an object
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+|-
+| [[deleteLocation|Deletion]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+|}
+
+
+== Location Types ==
+
+[[File:LocationTypes.JPG|right|thumb|{{arma1}} Location icons and fonts]]
+=== {{arma1}} ===
+
+Possible location types are:
+* Mount
+* Name
+* NameMarine
+* NameCityCapital
+* NameCity
+* NameVillage
+* NameLocal
+* Hill
+* ViewPoint
+* RockArea
+* BorderCrossing
+* VegetationBroadleaf
+* VegetationFir
+* VegetationPalm
+* VegetationVineyard
+
+{{Clear}}
+[[File:Arma2_CfgLocationTypes.jpg|right|thumb|{{arma2}} Location icons and fonts]]
+=== {{arma2}} ===
+
+* Name
+* Strategic
+* StrongpointArea
+* FlatArea
+* FlatAreaCity
+* FlatAreaCitySmall
+* CityCenter
+* Airport
+* NameMarine
+* NameCityCapital
+* NameCity
+* NameVillage
+* NameLocal
+* Hill
+* ViewPoint
+* RockArea
+* BorderCrossing
+* VegetationBroadleaf
+* VegetationFir
+* VegetationPalm
+* VegetationVineyard
+
+{{Clear}}
+[[File:CfgLocationTypes Arma3.png|right|thumb|{{arma3}} Location icons and fonts]]
+=== {{arma3}} ===
+
+* Airport (on Tanoa only. Tanoan airports have their own location type. On Altis and Stratis, airports are '''NameLocal''')
+* Area
+* BorderCrossing
+* CityCenter
+* CivilDefense
+* CulturalProperty
+* DangerousForces
+* Flag
+* FlatArea
+* FlatAreaCity
+* FlatAreaCitySmall
+* Hill
+* HistoricalSite
+* Invisible
+* Mount
+* Name
+* NameCity
+* NameCityCapital
+* NameLocal (will return names like Airport)
+* NameMarine
+* NameVillage
+* RockArea
+* SafetyZone
+* Strategic
+* StrongpointArea
+* VegetationBroadleaf
+* VegetationFir
+* VegetationPalm
+* VegetationVineyard
+* ViewPoint
+* b_air
+* b_antiair
+* b_armor
+* b_art
+* b_hq
+* b_inf
+* b_installation
+* b_maint
+* b_mech_inf
+* b_med
+* b_mortar
+* b_motor_inf
+* b_naval
+* b_plane
+* b_recon
+* b_service
+* b_support
+* b_uav
+* b_unknown
+* c_air
+* c_car
+* c_plane
+* c_ship
+* c_unknown
+* fakeTown
+* group_0
+* group_1
+* group_10
+* group_11
+* group_2
+* group_3
+* group_4
+* group_5
+* group_6
+* group_7
+* group_8
+* group_9
+* n_air
+* n_antiair
+* n_armor
+* n_art
+* n_hq
+* n_inf
+* n_installation
+* n_maint
+* n_mech_inf
+* n_med
+* n_mortar
+* n_motor_inf
+* n_naval
+* n_plane
+* n_recon
+* n_service
+* n_support
+* n_uav
+* n_unknown
+* o_air
+* o_antiair
+* o_armor
+* o_art
+* o_hq
+* o_inf
+* o_installation
+* o_maint
+* o_mech_inf
+* o_med
+* o_mortar
+* o_motor_inf
+* o_naval
+* o_plane
+* o_recon
+* o_service
+* o_support
+* o_uav
+* o_unknown
+* respawn_air
+* respawn_armor
+* respawn_inf
+* respawn_motor
+* respawn_naval
+* respawn_para
+* respawn_plane
+* respawn_unknown
+* u_installation
+
+
+[[Category: Data Types]]
+[[Category: Introduced with Armed Assault version 1.08]]

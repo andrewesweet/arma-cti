@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/unitAimPosition
+// revision: 378159 (2026-02-26T16:15:33Z)
+// export sha1: esesxehdvu37sdo3ue58b87bvyuy4ma
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Positions | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+|arg= global
+
+|gr1= Object Manipulation
+
+|gr2= Positions
+
+|descr= Returns the position on the unit other units can aim at. Same as [[aimPos]] only returns position in [[Position#PositionAGL|PositionAGL]] format and has render scope alternative [[unitAimPositionVisual]].
+
+|s1= [[unitAimPosition]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Position#PositionAGL|PositionAGL]]
+
+|x1= <sqf>private _aimPosAGL = unitAimPosition player;</sqf>
+
+|seealso= [[unitAimPositionVisual]] [[aimPos]] [[eyePos]] [[getPosASL]] [[weaponDirection]]
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20230327123327
+|text= This command uses "zamerny" memory point which is hardcoded name in the engine. If memory point is not present then geometry LOD bounding center is used (according to dedmen)
+}}

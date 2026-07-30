@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Line:_Sparse_Cluster
+// revision: 201674 (2021-01-17T20:19:16Z)
+// export sha1: t4of5tjb9umnmvtf7u4o1y9am9t3xw9
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Line]]
+{{TerrainProcessorManual|Line: Sparse Cluster|BITasksPlugin.dll|Polyline, PolylineM, PolylineZ|No
+|DESCRIPTION=Random placement of object clusters on linear shapes specified in the given shapefile.
+|TASKPARAMETERS=* '''RANDOM SEED''' - number used to initialize pseudorandom number generator.
+* '''CDENSHA''' - The density of the filling in number of clusters over linear shape.
+* '''MAXDISTANCE''' - maximal object distance  from centreline.
+* '''Spline interpolation''' - Use bezier spline instead of original polyline.
+|OBJECTPROTOTYPEPARAMETERS=* '''OBJECT''' - Object's prototype name
+* '''MINHEIGHT''' - Minimal size in %
+* '''MAXHEIGHT''' - Maximal size in %
+* '''MINDIST''' - Minimal distance in meters  
+* '''GROUPID''' - Group id.
+* '''MINCOUNT''' - Minimal objects count in one cluster.
+* '''MAXCOUNT''' - Maximal objects count in one cluster. 
+* '''MINRADIUS''' - Minimal radius from cluster center to place object.
+* '''MAXRADIUS''' - Maximal radius from cluster center to place object.
+|USAGE=This module is perfect for creating naturally looking vegetation clusters along lines, e.g. small groves separating fields etc.
+|ALGORITHM=
+|SAMPLE=
+}}

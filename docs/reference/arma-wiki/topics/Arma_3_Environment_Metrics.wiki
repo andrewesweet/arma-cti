@@ -1,0 +1,149 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Environment_Metrics
+// revision: 376837 (2025-11-30T00:01:25Z)
+// export sha1: q75mvm93e8ro0b7mqd25det1zl8r7ul
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Cover ==
+
+{| class="wikitable align-center-col-5"
+! rowspan="2" | Height
+! colspan="3" | Stances
+! rowspan="2" | Deployable bipod<br>when covered
+|-
+! Look Over
+! Shoot Over
+! Covered
+|-
+| 50cm
+| high prone
+| high prone
+| regular prone
+| {{Icon|unchecked}}
+|-
+| 80cm
+| regular crouch
+| regular crouch
+| high prone (sitting)
+| {{Icon|checked}}
+|-
+| 110cm
+| high crouch
+| high crouch
+| low crouch
+| {{Icon|checked}}
+|-
+| 130cm
+| low stand
+| regular stand
+| high crouch
+| {{Icon|checked}}
+|-
+| 145cm
+| stand
+| high stand
+| high crouch
+| {{Icon|checked}}
+|}
+
+{{Feature|informative|
+* The heights listed here are the VR Obstacle objects that can be used as reference.
+* "Shoot Over" and "Covered" depend on what height the target is at. Infantry targets were used at same level (flat VR map) at 100m here.
+}}
+
+
+== Gap ==
+
+e.g an opening below a fence, space under a vehicle, etc.
+
+{| class="wikitable sortable"
+! Height
+! colspan="3" | Stances
+|-
+| 20cm
+| can shoot below in "low prone", enemy feet past 50m barely hittable however
+|-
+| 50cm
+| minimum for moving through in prone
+|-
+| 110cm
+| minimum for moving through in crouch, BUT bad clipping with head. Better use 120cm
+|-
+| 170cm
+| minimum for moving through in standing, BUT bad clipping with head. Better use 180cm (no clipping, even in high stand)
+|}
+
+
+== Width ==
+
+{| class="wikitable align-center-col-5"
+|+ Lone character
+! Width
+! Description
+|-
+| 90cm
+| Minimum width for walking through. Turning in "regular stand" and "regular crouch" is possible but very twitchy (due to wall collisions of the weapon). Better use 100cm. Crouched turning causes head to clip through wall
+|-
+| 130cm
+| Minimum for turning in "low crouch" and "high crouch" (but twitchy). Better use 140cm.
+|-
+| 170cm
+| Minimum for turning in "regular prone", but twitchy (only is gone at 200cm). No "high prone" or "low prone" turning possible.
+|-
+| 200cm
+| Minimum for turning in "high prone" and "low prone", no twitching.
+|}
+
+{| class="wikitable align-center-col-5"
+|+ Two characters side by side, one close to the wall, both facing along the corridor
+! Width
+! Description
+|-
+| 150cm
+| Only using "step over" function - pretty glitchy.
+|-
+| 160cm
+| Only using "step over" but only 1 step required
+|-
+| 180cm
+| Passing without "step over" possible.
+|}
+
+{{Feature|informative|Note that depending on orientation and stance of both soldiers, it may be easier or harder to pass.}}
+
+=== AI Behaviour ===
+
+When 2 seperate buildings/objects walls are 180cm apart from each other, the AI seems to be able to navigate this corridor (better use 2m in this case though).
+For building interiors (with paths LOD and roadway LOD) smaller corridors are no issue for AI, because they can walk through Geometry when on a path.
+
+{{Feature|informative|The tests were conducted using the '''1x1x1m''' and the '''10x5x4m''' VR blocks.}}
+{{Feature|important|
+Either the VR blocks have a collision different from their announced size or the crouched stand got its geometry model increased in some path as it is not possible anymore to turn 360° in a 1m gap in a building in the regular crouched stance; 1.1m is fine.
+}}
+
+
+== Weapon Deployment ==
+
+Weapons can definitely be deployed between '''0.8m''' (maybe even lower) and '''1.45m''' height (maybe even higher).
+
+Minimum clearance is required for the muzzle when deployed; that clearance is calculated in fire geometry.
+
+
+== Slope ==
+
+{| class="wikitable sortable"
+! Degrees
+! Description
+|-
+| 0..50°
+| No problem getting on the slope and walking on it
+|-
+| 50..65+°
+| Can walk on the slope itself, but difficulty getting on it from a horizontal level ithout using "step over" or glitching/walking diagonal.
+|}
+
+{{Feature|important|Avoid steep slopes whenever possible; infantry speed is based on horizontal speed, allowing it to climb a steep slope very quickly.}}
+
+
+{{GameCategory|arma3|Editing}}

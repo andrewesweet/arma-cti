@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_WLSubroutine_purchaseMenuRefresh
+// revision: 273930 (2021-06-13T01:13:38Z)
+// export sha1: dbm0pp0ml01lf66n2lq7juwql768190
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Warlords | Category:Functions | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.86
+
+|gr1= Warlords
+
+|descr= ''N/A''
+
+|s1= [] call [[BIS_fnc_WLSubroutine_purchaseMenuRefresh]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

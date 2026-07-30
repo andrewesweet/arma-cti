@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getArea
+// revision: 376280 (2025-09-24T15:31:26Z)
+// export sha1: 4rddrdbxj3anyhqwptu723rj6j23gl9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Geometry | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Geometry
+
+|gr2= Map and Markers
+
+|descr= Extracts area information from trigger, marker, location or array
+
+|s1= param call [[BIS_fnc_getArea]]
+
+|p1= param:
+* [[Object]] - trigger
+* [[String]] - marker
+* [[Location]] - location
+* [[Array]] - array in format [center, distance] or [center, [a, b, angle, rect]] or [center, [a, b, angle, rect, height]]
+
+|r1= [[Array]] - in format [center, a, b, angle, isRectangle, height]
+
+|x1= <sqf>private _area = [player, 100] call BIS_fnc_getArea;</sqf>
+
+|seealso= [[createTrigger]] [[createMarker]] [[setTriggerArea]] [[setMarkerSize]] [[triggerArea]] [[markerSize]] [[inArea]] [[inAreaArray]] [[BIS_fnc_inTrigger]]
+}}

@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Pages_using_deprecated_source_tags
+// revision: 352974 (2024-03-07T20:40:14Z)
+// export sha1: teanmwgc5v5uc86hrkapv0i23sbg6ej
+// Vendored snapshot. Do not edit — re-export instead.
+
+Happening when using <syntaxhighlight lang="html" inline><source></source></syntaxhighlight> tags instead of <code class="mw-highlight mw-highlight-lang-html mw-content-ltr" dir="ltr"><span class="p">&lt;</span><span class="nt">syntaxhighlight</span><span class="p">&gt;&lt;/</span><span class="nt">syntaxhighlight</span><span class="p">&gt;</span></code><!-- dat hack -->.
+
+__HIDDENCAT__
+[[Category:Maintenance]]

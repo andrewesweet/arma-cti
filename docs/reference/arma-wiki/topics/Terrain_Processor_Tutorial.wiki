@@ -1,0 +1,340 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Tutorial
+// revision: 363714 (2024-04-16T18:22:56Z)
+// export sha1: n3okvpw8iwp7rbot9jx5kqgr5uey8ax
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This tutorial explains the basic usage of Terrain Processor and publicly available vector geographic data from {{Link|link= https://www.openstreetmap.org/#map=5/51.500/-0.100|text= OpenStreetMap}} (OSM) in making terrains for {{arma3}}, and also introduces map makers to possible use of geographic data in their work. The tutorial is accompanied with the [[Terrain Processor: Tutorial Sample project|sample map project]] containing source data, [[Terrain Builder]] (TB) and [[Terrain Processor]] (TP) projects. Before you start, it is recommended to get acquainted with the [[:Category:Terrain_Processor_Manual|Terrain Processor User Manual]]. Also, it is expected that user of Terrain Processor is already knowledgeable of map-making workflow in Terrain Builder.
+
+We hope that Terrain Processor will become useful tool in your map-making effort. If you have questions, please feel free to let us know via the official forums. If you spot an issue, please do file it on the {{Link|link= http://feedback.arma3.com/|text= issue tracker}} or on the {{Link|link= https://forums.bistudio.com/topic/183779-terrain-processor/|text= official topic}}.
+
+
+== Download Tools and Tutorial Data ==
+
+=== Download Tools ===
+
+* [[Arma 3: Tools Installation|Install Arma 3 Tools]] from Steam if you don't have it already. Used programs:
+** '''[[Terrain Processor]]''' - fast object population of extents of areal or linear topologies (plant trees, smooth terrain under roads, ...)
+** '''[[Terrain Builder]]''' + '''[[Buldozer]]''' - terrain project, collect all data and export terrain for Arma 3, terrain preview in Buldozer without clutter
+** '''[[Addon Builder]]''' - convert terrain data and [[Binarize]] for {{arma3}}
+* {{Link|https://www.qgis.org/|Download QGIS}} – we recommend you to use this reliable and capable open-source GIS software, capable of preparing data for processing in Terrain Processor and Terrain Builder, as well as generating mask and satellite textures.
+
+=== Set up tutorial data ===
+
+* Install {{arma3}} Samples from Steam if not done already.
+* Download the project demo: {{Link|http://data.bistudio.com/a3data/TerrainProcessor_Demo.zip}} ''(temporary link)''
+** (Data structure: [[Terrain Processor: Tutorial Sample project|TPDemo Map Sample Data Pack]])
+** Unpack the folder '''map_TPDemo''' from the downloaded package to the '''P:\a3\'''. Drive is set up by the Arma 3 Tools available on Steam.
+* '''Download {{arma2}} Sample Data''':
+** The sample terrain is utilizing licensed {{arma2}} data. Place the required data to '''P:\ca\''' to ensure they work correctly.<br>The only needed packages are: '''A2SM_Data_APL''' and '''A2SM_Data_APL-SA'''
+** [[:Category:Public Data|Public Data]]
+** [[Arma 2 Sample Models]]
+** [[Arma Licensed Data Pack]]
+
+
+== Workflow ==
+
+The following diagram illustrates what kinds of data are processed in which tools, and what is the succession of the workflow steps. Please note that the generation of basic supertextures (sat, mask) in QGIS is optional.
+
+As a first step, you should gather the data describing your terrain: digital elevation model (= DEM; terrain mesh), some vector data (roads, forests, points of interest etc.), supertextures (please note that we supply you with a sample piece of Chernarus ortho-photography, but you can also create a basis of working supertextures using QGIS).
+
+The geographic data can be subsequently processed in the Terrain Processor: DEM can be processed and noise can be added to it, trees can be placed to the extent of forests, additional objects can be placed randomly into the landscape, or along the roads or on particular points. Once TP processes the geodata, you can set up a Terrain Builder project and import the terrain, suprtextures and objects into it.
+
+Rest is the common TB map-making work and publishing. :)
+
+[[File:TerrainProcessor_tutorial_workflow.jpg|800px]]
+
+
+== Defining Area of Interest ==
+
+The first step is to pick an area of interest based on your choice of map size. In this tutorial, we chose an {{Link|https://www.google.cz/maps/place/%C3%9Ast%C3%AD+nad+Labem/@50.7115439,14.0958882,3958m/data{{=}}!3m1!1e3!4m2!3m1!1s0x470984a714d02511:0x400af0f66160e00!6m1!1e1?hl{{=}}en|area of real life Chernarus}}.
+
+As geographic data from OpenStreetMap will be used in this tutorial, you will need to get the real-life coordinates of the area, with <u>values in some geodetic coordinate system</u>. It is not as scary as it seems: we will find the lower left corner of the map in some online map service (Google Maps, Google Earth, Mapy.cz etc.), and create a polygonal Shapefile (SHP) of map extent square in QGIS. We will need this SHP later for selecting the geographic data.
+
+As our tools work in coordinate system in meters, we recommend to work in the {{Link|https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system|UTM coordinate system}} (and if possible, always choose your terrain extent within a single UTM zone, as combining data from multiple zones is worth another tutorial). Most online maps will give you the coordinates in a geodetic form (degrees, minutes, seconds) used e.g. in GPS. You can use some online conversion tools (e.g. {{Link|http://www.apsalin.com/convert-geodetic-to-universal-transverse-mercator.aspx}}) to convert from WGS (geodetic datum) to UTM.
+
+In our example, lower-left corner coordinate is '''50°41'58.456"N, 14°4'29.853"E.'''
+
+After conversion to UTM, coordinates look like this: '''X: 434672.535216139, Y: 5616825.03162143, UTM Zone : 33N'''
+
+To have nice whole numbers, we rounded them up to the following: '''X: 434000, Y:5616000, UTMZone: 33N'''
+
+For the purpose of our tutorial, we use the following map size: '''1024x1024 cells with 4 m cell size; terrain size is 4096x4096m.'''
+
+Now that we know where our square starts and how big it is, we can create one in QGIS:
+
+{{Messagebox|
+* Create new project in QGIS (in our case '''map_TPDemo\source\Shapefiles\GISProject.qgs''')
+* Add new shapefile layer Layer > Create Layer > New Shapefile Layer (layer '''Border''' in sample project)
+** Layer type: Polygon
+** CRS set to UTM with your terrain UTMZone
+* Select new layer and Toggle Editing.
+* Create new random rectangle.
+* Use Numerical Vertex Edit plugin to move all 4 points to the right positions, left down will be 434000, 5616000.
+* You can use OpenLayers plugin to check terrain correlation to area what you want.
+You can find the resulting SHP in the TPDemo sample data: '''..\map_TPDemo\source\Shapefiles\Border.shp'''
+|<span style{{=}}"font-size: 0.8em">QGIS</span>|#AAB8C6}}
+
+
+== Terrain Base: Heightmap and Supertextures ==
+
+Now that you know what is the terrain extent, you can prepare the basic heightmap, "satellite" texture and surface mask for your terrain. Please note that these steps are abbreviated, as it is expected that you are already knowledgeable of the underlying technology and TB workflow.
+
+=== Heightmap ===
+
+Terrain Builder can import .ASC heightmap in UTM projection. It has to be square and cell count has to be power of two (64x64, 128x128, 256x256 etc.).
+
+You can use '''[[Terrain Processor]]''' to create the heightmap, using the "'''Heightmap: Create from geodetic .asc'''" module.
+
+As a first step, let's get us some heightmap. You can download geodetic '''.ASC''' from {{Link|http://earthexplorer.usgs.gov/}} - download '''SRTM 1 Arc-Second Global''' data.
+
+In most cases, the USGS data are in DTED format, not in the ASC. In such case, you need to convert the DTED to ASC:
+{{Messagebox|
+* Download DTED file from USGS website for latitude '''50°''' and longitude '''14°''', as this is where our tutorial part of Czech Republic is located.
+* This DTED has different rows and columns count. Reprojected the DTED (Raster > Projections > Warp (Reproject)) to GeoTIFF format; this step allows you to resample it to have the equal count of rows and columns. In this steps, we work with GeoTIFF format because of QGIS limitations.
+* Now you can convert the GeoTIFF to ASC (Raster > Conversion > Translate (Convert Format)) and use it in TP. You can find the result data in '''..\map_TPDemo\source\Heightmap\n50_e014.asc'''.
+|<span style{{=}}"font-size: 0.8em">QGIS</span>|#AAB8C6}}
+
+Now you may import this terrain into TP, convert its coordinates to UTM and apply some changes based on other map data. The following steps are contained in the sample TP project: '''..\map_TPDemo\source\HeightmapGeneration.tpp'''
+
+{{Feature|informative|
+'''Terrain Processor'''
+* Create new project and add "'''Heightmap:Create from geodetic .asc'''" task. Add the required values and it will create an output ASC heightmap of desired dimensions in UTM coordinates.
+* Once you create the heightmap output file '''..\map_TPDemo\source\heightmap.asc'''), you can turn off the task and perform further modifications to it. Following tasks are also contained in the sample project.
+* You can use '''Heightmap: Perlin noise''' task to add some height noise in areas defined by a polygon SHP, e.g. in the extent of forests.
+* If you want to level terrain under the roads, you can use '''Heightmap: Road integration''' task together with the roads SHP.
+}}
+After heightmap generation in TP, copy the output ASC file to location '''map_TPDemo\source\heightmap.asc''' and import to or refresh in Terrain Builder, and voilá, you should have the heightmap ready.
+
+=== Satellite Texture ===
+
+As the most basic step, you can just use the satellite texture provided with the sample project: '''map_TPDemo\source\satellite.tif'''.
+
+You may also use QGIS to create basic raster from the available vector data, applicable to both satellite texture and the surface mask (you only have to change drawing styles for objects). The details of the process are described in the [[Terrain Processor: Print Composer Tutorial]].
+
+=== Surface Mask ===
+
+Of course you can use a monochromatic texture as a start, or you can paint the whole mask by hand. However, you can use vector data as a source for basic surface mask, which is perfect base for further manual improvements.
+
+The sample data contain a QGIS project summarizing the data, to be used together with [[Terrain Processor: Print Composer Tutorial|the Print Composer Tutorial]]: '''..\map_TPDemo\source\Shapefiles\GISProject - Mask.qgs'''. The resulting surface mask is also part of the sample data: '''..\map_TPDemo\source\mask.tif'''.
+
+Following surface colours are used in the project:
+{| class="wikitable sortable"
+! Ground type
+! R
+! G
+! B
+! Colour
+|-
+| Tarmac
+| 255
+| 137
+| 255
+| style="background-color: rgb(255,137,255)" |
+|-
+| Forest coniferous
+| 128
+| 128
+| 0
+| style="background-color: rgb(128,128,0)" |
+|-
+| Forest deciduous
+| 0
+| 128
+| 0
+| style="background-color: rgb(0,128,0)" |
+|-
+| Grass 1
+| 128
+| 212
+| 128
+| style="background-color: rgb(128,212,128)" |
+|-
+| Grass 2
+| 255
+| 212
+| 0
+| style="background-color: rgb(255,212,0)" |
+|-
+| Soil
+| 212
+| 128
+| 64
+| style="background-color: rgb(212,128,64)" |
+|}
+
+
+{{Messagebox|
+Change colors accordingly for all layers you want to contribute to the final mask. Switch all other layers off to make them invisible and NOT contributing to the final raster.
+
+Check the Print Composer Tutorial to learn about the exact steps of preparing the rasters.
+|<span style{{=}}"font-size: 0.8em">QGIS</span>|#AAB8C6}}
+
+Once all the rasters and related data are prepared, you can import them to TB. The sample map project uses detailed textures from the Arma 2 Sample Data Pack (check ..\map_TPDemo\source\layers.cfg for details), and should work if you have them unpacked in P:\ca\..
+
+
+== Acquiring and Processing the Vector Data ==
+
+In this section, you will see how to get publicly available data from the OpenStreetMap (OSM) and how to use them to populate your terrain using the TP.
+
+The data you would acquire from OSM may be in projection other than UTM, therefore you will need to '''reproject them to UTM'''.
+
+=== Getting data from OpenStreetMap ===
+
+Let's see how to get data from the '''OpenStreetMap''' first. There is a plugin in QGIS for fast downloading and using these data, however, we recommend to rather download data from the OSM webpage, which proved to yield more reliable results.
+
+'''Download from OSM (via web browser)'''
+* Visit the {{Link|https://www.openstreetmap.org/}} and browse for desired area of interest. Then hit Export button on the top of the page.
+* Select the area manually or using the coordinates input.
+* Either hit blue "Export" button on the left or follow the link to "Overpass API" mirror, which is suitable for downloading larger data.
+
+Once you have these data, you can import them to QGIS:
+
+{{Messagebox|Select Vector > OpenStreetMap > Import Topology from XML and find the downloaded OSM data. This converts data to '''*.DB''' spatial database file you can process further.|<span style{{=}}"font-size: 0.8em">QGIS</span>|#AAB8C6}}
+
+Now you can convert the DB data to other vector formats, in our case, to SHP: Vector > OpenStreetMap > Export Topology to SpatiaLite. Follow the dialogs to select what types of geometry you want to be exported, and to which file and format.
+
+It is recommended to save 3 separate SHPs with different kind of geometries: polygons, polylines and points. In order to get e.g. roads, you can later make a copy of "all lines" SHP and use a query to select and delete the unsuitable data, as described later.
+</div>
+
+Once you have the data safely imported in the project, you may realize that they stretch far out of the sample terrain boundaries. You can clip the SHPs to the extent of '''Border.shp''' using QGIS.
+
+{{Messagebox|
+* Use the '''..\map_TPDemo\source\Shapefiles\Border.shp''' to clip the vector data.
+* Clip particular SHP layer using Vector > Geoprocessing Tools > Clip tool.
+|<span style{{=}}"font-size: 0.8em">QGIS</span>|#AAB8C6}}
+
+=== Preparing the Roads ===
+
+Import polyline topology from OSM data. You can use OpenLayers plugin for drawing map under shapes to be able to verify the road polylines
+
+To prepare the roads, you should remove all no-road polylines.
+
+Now you need to add data Arma 3 uses for drawing the roads - you will be adding new columns to the Shapefile's database (DBF). While at it, you can also erase the useless columns in attribute table.
+# Open attribute table (RMB on layer in layers list and select this option).
+# Create new column ('''ROADTYPE''') using a toolbar button  "Add new column" with default value (in my case ''''track'''' - cart-track).
+# Select roads and assign right '''ROADTYPE''' (in my case ''''road'''' - better road, ''''asphalt'''' - worse road and ''''track'''' for cart-track
+# For '''Terrain Processor''' you can add two columns :
+## '''WIDTH''' - road width (road - 8, asphalt - 7, track - 4)
+## '''TERRAIN''' - terrain affected range for integration
+
+This is how you can add the values in Field Calculator:
+{{Messagebox|
+For '''WIDTH''' and '''TERRAIN''' you can use this command in '''Field Calculator'''
+<pre>
+CASE
+ WHEN ROADTYPE is 'road' THEN 8
+ WHEN ROADTYPE is 'asphalt' THEN 7
+ ELSE 4
+END
+</pre>
+|<span style{{=}}"font-size: 0.8em">QGIS</span>|#AAB8C6}}
+
+{{Feature|informative|
+'''Buldozer'''
+
+Buldozer and {{arma3}} need road shapefile in position '''(200000;0)'''. You have to shift all vectors to be relative to this point.
+
+In QGIS you can use function '''Vector -> Geoprocessing Tools -> Affine Transformation'''.
+
+For use in Buldozer, you have to add 2 more columns into attribute table.
+# ID - id in RoadsLib.cfg
+# LAYER - layer for drawing roads
+}}
+
+You can check the reference data in the sample pack: '''..\map_TPDemo\data\roads'''.
+
+Please note that Terrain Processor module "'''Heightmap: Road Integration'''" cannot always smooth terrain under crossroads on extreme slopes too well. It is recommended to check crossroads on sloped terrain and manually fine-tune the location in Buldozer.
+
+
+== Generating Map Content in TP: Forests etc. ==
+
+There are many opportunities on how to utilize the extracted data in TP modules to create forests and undergrowth, stone groups, brushland, and also some man-made terrain features like powerlines.
+
+The sample data contain several TP project (*.TTP) in '''..\map_TPDemo\source\''', demonstrating various tasks:
+* '''Forests.tpp''' - trees, undergrowth and forest boundaries based on polygon data
+* '''HayBales.tpp''' - point-based object positioning
+* '''Powerlines.tpp''' - powerline models of various kind placed along lines
+* '''RoadVergePosts.tpp''' - verge posts placed along some roads in regular intervals
+In each project, you can directly check what data are being processed.
+
+It is also recommended to check particular values in the SHP databases in sample data. The use and role of DBF values is covered in detail in the Terrain Processor User Manual.
+
+Please note that '''you need''' to compute '''area in hectares for the polygons''', as most modules require this value for each polygon in a Shapefile. This is how you can compute this value in QGIS:
+{{Messagebox|
+How to compute area in hectares:
+* Toggle editing on selected layer
+* Open Attribute Table
+* Open Field Calculator
+* You can add new column or update existing field
+* Use expression :  '''$area / 10000'''
+'''IMPORTANT''':
+
+Sometimes values are wrong. It is a QGIS bug. Start a new project, add only one layer and try it again. If it fails again, check your projection or simplify shape geometry.
+|<span style{{=}}"font-size: 0.8em">QGIS</span>|#AAB8C6}}
+
+
+== Appendix: More about QGIS ==
+
+This section contains couple of tips and tricks for the QGIS users.
+
+=== OpenLayers (Web > OpenLayers plugin) ===
+
+Very useful plugin. It can put new layer in project with Google maps, Bing maps, OpenStreet maps, ... data. You can see if your data projection is ok. These data are watch only, you can't work with these layers.And you can this layer for digitizing vector objects. These data are streamed, it takes some time for loading if you move with map.
+
+=== Documentation ===
+
+{{Link|http://docs.qgis.org/2.8/en/docs/user_manual/|QGIS documentation}} with tutorials.
+
+=== Useful Tools ===
+
+This section lists the tools used in the tutorial to process the sample data.
+
+'''Vector tools:'''
+{| class="wikitable sortable"
+! Path
+! Description
+|-
+| Vector -> Geoprocessing Tools -> Affine Transformation	
+| Vector transformations for selected shapes or whole layer. Possible transformations are translate, rotation, scale.
+|-
+| Vector -> Geoprocessing Tools -> Buffer(s)	
+| Creates plugin around given polyline or polygon.
+|-
+| Vector -> Geoprocessing Tools -> Intersect	
+| Vector intersect for two layers.
+|-
+| Vector -> Geoprocessing Tools -> Union	
+| Vector unionfor two layers.
+|-
+| Vector -> Geoprocessing Tools -> Symetrical Difference	
+| Vector symmetrical difference for two layers.
+|-
+| Vector -> Geoprocessing Tools -> Clip	
+| Vector clip for two layers.
+|-
+| Vector -> Geoprocessing Tools -> Difference	
+| Vector difference for two layers.
+|-
+| Vector -> OpenStreetMap
+| Plugin for downloading OSM data.
+|-
+| Vector -> Geometry Tools -> Check Geometry Validity	
+| Can check if all shapes in layer are valid.
+|}
+
+'''Raster tools:'''
+{| class="wikitable sortable"
+! Path
+! Description
+|-
+| Raster -> Projections -> Warp (Reproject)
+| Reproject, resize raster data. For example resize heightmap from 3601x1801 to 3601x3601.
+|-
+| Raster -> Conversion -> Translate (Convert Format)
+| Convert one raster format to another For example from GeoTiff to .asc
+|}
+
+
+[[Category:Terrain_Processor_Manual|Tutorial]]

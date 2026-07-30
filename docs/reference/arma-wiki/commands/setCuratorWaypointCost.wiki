@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/setCuratorWaypointCost
+// revision: 348446 (2023-11-08T13:00:16Z)
+// export sha1: pgntuh8ad192i3t80o3okmsvw1ur7tm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|serverExec= server
+
+|gr1= Curator
+
+|descr= Sets cost of waypoints (used for placing, editing and deleting).
+
+|s1= curatorObj [[setCuratorWaypointCost]] cost
+
+|p1= curatorObj: [[Object]] - curator module
+
+|p2= cost: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myCurator setCuratorWaypointCost 0.1;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/assignedTarget
+// revision: 364219 (2024-05-06T09:38:11Z)
+// export sha1: 59d64zb6zx3ayda1ytghoxnya5lp0nv
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= local
+
+|gr1= Object Manipulation
+
+|descr= Returns the target assigned to an unit or the vehicle's [[effectiveCommander]]. The target can be assigned by the group/vehicle/formation leader (as player via [[Arma 3: Field Manual - Commanding#Target_Assignment|quick command menu]] or [[Operation Flashpoint: Commander Guide#TARGET .282.29|"target" complex command menu]]).<br>
+To unassign the target use [[doWatch]] [[objNull]] or [[commandWatch]] [[objNull]] or as player and group leader order "no target" in the [[Operation Flashpoint: Commander Guide#TARGET .282.29|"target" complex command menu]].
+{{Feature | Informative |
+* This command does not return the target a unit is actually engaging ("attack unit"). For this information, see [[getAttackTarget]].
+* If a player is inside a vehicle as the [[effectiveCommander]], the vehicle's crew assignedTarget will always be [[objNull]].
+}}
+
+|s1= [[assignedTarget]] vehicleName
+
+|p1= vehicleName: [[Object]]
+
+|r1= [[Object]]
+
+|x1= <sqf>_target = assignedTarget _T72;</sqf>
+
+|seealso= [[getAttackTarget]] [[commandTarget]] [[doTarget]] [[commandWatch]] [[doWatch]] [[effectiveCommander]] [[setEffectiveCommander]]
+}}

@@ -1,0 +1,152 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Mission_Overview
+// revision: 353569 (2024-03-19T12:01:45Z)
+// export sha1: 1he9lsssspaxr92limk5xy69r9xlv3c
+// categories: Category:Mission Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|For overview configuration in [[:Category:Operation Flashpoint|{{ofp}}]], [[:Category:ArmA: Armed Assault|{{Name|arma1|short}}]] and {{GameCategory|arma2|link= y}}, see [[Overview.html]].}}
+{{TOC|side}}
+
+Overview is short summary of a mission displayed in mission selection. It's the first thing player sees from a mission and should not be underestimated; well made overview can immediately capture player's attention, while poorly made one can make him ignore your mission forever.
+
+The overview is visible in the following menus:
+* '''Play > Scenarios / Showcases / Challenges'''
+* '''Play > Campaign'''
+* '''Multiplayer Create Game''' (only for hosts / admins)
+
+
+== Displayed Information ==
+
+[[File:A3_missionOverview.jpg|400px|right]]
+[[File:A3_customMissionOverview.jpg|400px|right]]
+The overview consists of:
+* '''Name'''
+** Mission name. Keep it short, because space in mission selection menu and in loading screens is limited.
+* '''Author'''
+** Your name or nickname, used also in [[Loading Screens]]. Displayed as "by <author>".
+* '''Preview picture'''
+** Must be in [[PAA]] file format.
+** 2:1 aspect ratio (different aspect are rendered correctly as well, but won't cover the whole area).
+** Ideally 1024x512 pixels. 
+* '''Description'''
+** Short and snappy summary formatted as [[Structured Text]].
+* '''Custom Description'''
+** Allows addition of custom UI elements to mission description. Serves for example for displaying score reached in challenges.
+** Is displayed only when ''overviewScript'' parameter is defined in mission's class in CfgMissions. See Sample overviewScript.sqf.
+** Works only for SP missions (namely in Showcases, Challenges and Scenarios dialogue).
+** For custom IDCs only values higher than 10000 should be used.
+
+
+== Configuration ==
+
+Two ways how to [[Mission Export|export a mission]] exists - either as mission [[PBO]], or as addon PBO. Both are using [[Description.ext]], but addon format also allows configuration in [[Config.cpp]]. Campaign missions are listed in [[Campaign Description.ext]], but missions still support Description.ext.
+
+Entries defined in mission Description.ext have the largest priority and will overwrite those in Config.cpp / Campaign Description.ext
+
+Single missions can be locked using [[Description.ext#keys|keys]]. In such cases, overview image is transparent and ''overviewTextLocked'' is used instead of ''overviewText''. This applies <u>only</u> to single missions, not to mission folders, campaigns or campaign missions.
+
+=== [[Description.ext]] ===
+
+<syntaxhighlight lang="cpp">
+briefingName = "The Final Countdown";
+overviewText = "The nuke is still out there!";
+overviewTextLocked = "Finish the Splendid campaign in order to unlock this mission.";
+overviewPicture = "overviewPicture_ca.paa";
+author = "Stranger";
+</syntaxhighlight>
+
+=== [[Config.cpp]] ===
+
+<syntaxhighlight lang="cpp">
+class CfgMissions
+{
+	class Missions
+	{
+		// Mission subfolder (optional, mission can be defined straight away)
+		class MySubfolder
+		{
+			displayName = "Comanche Missions";
+			overviewText = "Scenarios involving your favorite helicopter.";
+			overviewPicture = "\a3\fw_f\data\overviewPictureFolder_ca.paa";
+			author = "Stranger";
+ 
+			// Mission itself
+			class MyMission
+			{
+				overviewText = "The nuke is still out there!";
+				overviewPicture = "\FW\data\overviewPicture_ca.paa";
+				overviewTextLocked = "Finish the Splendid campaign in order to unlock this mission.";
+				author = "Stranger";
+				overviewScript = "\FW\scripts\overviewScript.sqf";
+
+				directory = "\FW\MyMission.Altis";
+			};
+		};
+	};
+	class Campaigns
+ 	{
+		// Campaign; its missions are defined in campaign description.ext
+		class Splendid
+		{
+			overviewText = "SURVIVE - ADAPT - WIN";
+			overviewPicture = "\a3\missions_f\data\splendid_ca.paa";
+			author = "Bohemia Interactive";
+
+			directory = "\FW\Splendid";
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Sample overviewScript.sqf ===
+
+<sqf>
+#include "\A3\ui_f\hpp\defineCommonGrids.inc"
+
+params ["_display", "_missionClassname"];
+
+private _challengesOverviewGroup = _display displayCtrl 2302;  // Custom UI elements should be created inside this group
+
+private _newControl = _display ctrlCreate ["Rsctext", 10001, _challengesOverviewGroup]; // IDCs higher than 10000 should be used
+_newControl ctrlSetPosition [0, 0, 21.5 * GUI_GRID_W, 3.5 * GUI_GRID_H + (0.5 * (safeZoneH - GUI_GRID_HAbs))];
+_newControl ctrlCommit 0;
+_newControl ctrlSetText "TEST";
+_newControl ctrlSetBackgroundColor [1,0,0,0.5];
+</sqf>
+
+=== [[Campaign Description.ext]] ===
+
+<syntaxhighlight lang="cpp">
+class Campaign
+{
+	firstBattle = Beginning;
+	disableMP = 1;
+	 
+	briefingName = "Splendid";
+	author = "Campaign author";
+	overviewPicture = "\FW\data\overviewPicture_ca.paa";
+	overviewText = "Campaign overview";
+  
+	class Beginning
+	{
+		name = "The Beginning";
+		cutscene = ;
+		firstMission = mission01;
+		end1 = ;
+		lost = ;
+		 
+		class mission01
+		{
+			briefingName = "Mission name";
+			author = "Mission author";
+			overviewPicture = "\FW\data\overviewPicture_ca.paa";
+			overviewText = "Mission overview";
+
+			template = mission01.Altis;
+		};
+	};
+};
+</syntaxhighlight>
+
+
+[[Category:Mission Editing]]

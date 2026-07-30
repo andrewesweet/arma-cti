@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/delete3DENEntities
+// revision: 342152 (2023-07-09T12:26:49Z)
+// export sha1: 2pim3luayv4r62fw7y1u2kcft5b235t
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Delete given [[Eden Entity|entities]] in [[:Category:Eden Editor|Eden Editor]].
+
+|s1= [[delete3DENEntities]]  entities
+
+|p1= entities: [[Array]] of [[Eden Entity]] or [[Eden ID]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>delete3DENEntities (all3DENEntities select 0); // Removes all objects</sqf>
+
+|seealso= [[collect3DENHistory]] [[create3DENComposition]] [[create3DENEntity]] [[all3DENEntities]]
+}}

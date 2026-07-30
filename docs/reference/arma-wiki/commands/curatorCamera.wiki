@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/curatorCamera
+// revision: 310772 (2022-05-07T20:21:44Z)
+// export sha1: 9q7qnrjmkj3isav4k2ov50ty98hcl4r
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Returns curator camera object.
+
+|s1= [[curatorCamera]]
+
+|r1= [[Object]]
+
+|x1= <sqf>_camCurator = curatorCamera;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/DeOgg
+// revision: 156767 (2020-09-07T15:31:44Z)
+// export sha1: 8g1p9h7p0uqdfjckd47ealfe4qjrl1z
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+from mikero@norfolk.nf
+
+Deogg.dll is a support dll to depbo.dll it has been introduced as a hopefully one-off to
+reduce the payload of the main dll by more than 1 meg
+
+
+Installation:
+
+Automatic:
+
+The dll comes with it is own self installer which will automatically put it in the same folder as the family of exe's that depend on this dll for their livelihood. 
+
+c:\program files (x86)\Mikero\DePboTools\bin
+
+There is no requirement for this dll to be global (eg system32), if all exe's use their auto installer.
+
+[[Category:Mikero Tools]]

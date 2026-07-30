@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/Floating_Point_Number
+// revision: 337263 (2023-01-11T10:53:30Z)
+// export sha1: 51teyyz7txkwom6u2197ygp4mjfkla4
+// Vendored snapshot. Do not edit — re-export instead.
+
+__TOC__
+== Floating Point Number ==
+'''Floating point numbers (floats)''' are numbers which contain an integer component, a decimal point, and a fractional component. Since computers do not read fractions, floats are commonly used to represent the results of multiplication and division of integers, and are very useful. Floats are denoted as numbers with a decimal place or through the use of literals if they get too long. While leaving numbers in fraction form when doing math by hand is more efficient, multiplication and division inside a CPU is very different, usually requiring many more clock cycles than simple addition or subtraction, therefore it is much more efficient for a computer to create an absolute value, rather than recalculating each time the values are used.
+
+'''FLOPS''' ('''FL'''oating-point '''O'''perations '''P'''er '''S'''econd) is a measure of computer performance, useful in fields of scientific calculations that make heavy use of floating-point calculations. For such cases it is a more accurate measure than instructions per second.
+
+The term floating point refers to the fact that a number's radix point (decimal point, or, more commonly in computers, binary point) can "float"; that is, it can be placed anywhere relative to the significant digits of the number. This position is indicated as the exponent component, and thus the floating-point representation can be thought of as a kind of scientific notation.
+
+Floating-point representation is able to represent an integer that has a large magnitude, but the precision suffers due to rounding. Conversely, a floating-point representation is also able to represent a very small magnitude, with extreme precision. Floats become less precise due to rounding as they grow larger, while smaller floats gain precision the smaller their magnitude.
+
+Over the years, a variety of floating-point representations have been used in computers. However, since the 1990s, the most commonly encountered representation is that defined by the IEEE 754 Standard.
+
+== Floating Point Literals ==
+While a variable is a name that can represent different values during the execution of the program, a literal refers to the value itself. Long float literals are shortened by using an exponent component, which closely resembles scientific notation. Therefore, it is possible for a single float to contain an integer component, a decimal point, a fractional component, and an exponent component.
+<code style="display: block">decimal             -> 1134121
+scientific notation -> 1.13412 x 10^6
+float               -> 1.13412e6
+float               ->         1                  .               13412                  e6
+breakdown           -> integer component | decimal point | fractional component | exponent component</code>
+
+'''NOTE:''' In the same way scientific notation can still be used to represent small integers, floats of a reasonable size can still be represented with an exponent component of e0, but it would be cut off, and the user would be unaware.
+<code style="display: block">decimal             -> 19
+scientific notation -> 19 x 10^0 (any number multiplied to the 0th power is 1)
+float               -> 19e0</code>
+
+== Floating Point Numbers in Arma ==
+A very simple formula is used to calculate floats in [[Real_Virtuality]]. It is (+/-)1 integer, decimal point, 5 integers as the fractional component, e,(+/-)3 integers representing the exponent component. If the beginning integer is negative, the negative symbol will be added, but if it is positive, it will be dropped. In the exponent component, positive and negative is always shown. If the resulting shortened value would go further than the hundred-thousandth's decimal place, it will be rounded at the hundred-thousandth's decimal place, this is why numbers of larger magnitude lose precision. Numbers start getting shortened once they reach the millions, thus, 999999 is the largest unshortened number than can be shown. 1000000 will be shown as 1e+006.
+<code style="display: block">'''An example of a floating point literal in Arma:'''
+unshortened -> 12390828
+shortened   -> 1.23908e+008</code>
+'''NOTE:''' If there are any zeros at the end of the fractional component, they will be dropped. This can also be observed when the rounding causes the hundred-thousandth's decimal place to round up from 9 to 0 and is subsequently dropped.
+'''NOTE:''' The highest number that can be shown by Arma is 1e+038 or 99999999999999999999999999999999999999 (38 9's). Anything larger than that will be shown as 1#INF.<br>
+'''NOTE:''' When attempting to observe the number in any way ([[hint]], [[copyToClipboard]], [[diag_log]]), it is shorted to Xe+000 (X is your value), causing it to be rounded to 6 digits.<br>
+'''NOTE:''' Despite rounding the number and displaying it as a shortened literal, the engine '''seems to keep the actual value stored in RAM'''.

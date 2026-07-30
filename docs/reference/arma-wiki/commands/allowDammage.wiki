@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/allowDammage
+// revision: 310281 (2022-05-05T13:11:25Z)
+// export sha1: et8n4zv4p9ieupggkml2an0dycvylfz
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Allow or prevent an object being damaged (or injured, or killed). The command does not prevent object from taking scripted damage such as [[setDamage]] or [[setHit]].
+
+|mp= {{Feature | important | The command has to be executed where the object is [[Multiplayer Scripting#Locality|local]] and will be effective as long as the object does not change locality.
+If the object changes locality, the command needs to be executed again on the new [[owner]]'s machine to maintain the effect.}}
+
+|alias= [[allowDamage]]
+
+|pr= This command did nothing until {{arma2}}.
+
+|s1= object [[allowDammage]] allow
+
+|p1= object: [[Object]]
+
+|p2= allow: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player allowDammage false;</sqf>
+
+|seealso= [[setDamage]] [[damage]] [[allowDamage]]
+}}

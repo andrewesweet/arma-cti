@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/getCustomSoundController
+// revision: 364165 (2024-05-05T10:46:42Z)
+// export sha1: f70j3n77dkwc4tyy0xpbcnwi0fm30n7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.86
+
+|gr1= Sounds
+
+|descr= Returns current value set to the controller (see [[setCustomSoundController]]).
+
+|s1= [[getCustomSoundController]] [vehicle, controller]
+
+|p1= vehicle: [[Object]] - a transport type vehicle. Does not work on characters or buildings
+
+|p2= controller: [[String]] - name of custom sound controller - needs to be full string e.g "CustomSoundController1". It goes from "CustomSoundController1" to "CustomSoundController32"
+
+|r1= [[Number]]
+
+|x1= <sqf>getCustomSoundController [vehicle player, "CustomSoundController1"];</sqf>
+
+|x2= <sqf>
+private _allCustomSoundControllers = [];
+for "_i" from 1 to (getCustomSoundControllerCount vehicle player) do
+{
+	_allCustomSoundControllers pushBack getCustomSoundController [vehicle player, format ["CustomSoundController%1", _i]];
+};
+</sqf>
+
+|seealso= [[Arma 3: Sound]] [[setCustomSoundController]] [[getCustomSoundControllerCount]] [[getSoundController]] [[getSoundControllerResult]] [[getAllSoundControllers]] [[getEnvSoundController]] [[getAllEnvSoundControllers]]
+}}

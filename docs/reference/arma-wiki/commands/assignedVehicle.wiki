@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/assignedVehicle
+// revision: 330331 (2022-08-31T15:20:27Z)
+// export sha1: c08o0ovftoetge0t2myni88sqbhc616
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.05
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|gr1= Object Manipulation
+
+|descr= Returns the vehicle to which a unit is assigned, usually with ''assignAsXXX'' command. If no vehicle is assigned [[objNull]] is returned.
+{{Feature|informative|See [[AI Group Vehicle Management]] for more information.}}
+
+|s1= [[assignedVehicle]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Object]]
+
+|x1= <sqf>_vehicle = assignedVehicle player;</sqf>
+
+|x2= <sqf>_units apply { _x leaveVehicle (assignedVehicle _x) };</sqf>
+
+|seealso= [[assignedVehicleRole]] [[addVehicle]] [[assignAsDriver]] [[assignAsCargo]] [[assignAsCommander]] [[assignAsGunner]] [[assignAsTurret]] [[assignAsCargoIndex]] [[unassignVehicle]] [[leaveVehicle]] [[assignedVehicles]] [[assignedGroup]] [[fullCrew]]
+}}

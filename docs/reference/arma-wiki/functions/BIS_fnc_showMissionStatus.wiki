@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_showMissionStatus
+// revision: 309845 (2022-05-05T12:09:52Z)
+// export sha1: nenbyruqkzp1ci3smrvf5h1kq22b032
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Missions | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.32
+
+|eff= local
+
+|gr1= Missions
+
+|descr= Show mission status with sectors, respawn tickets, etc.
+
+|s1= [] call [[BIS_fnc_showMissionStatus]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>call BIS_fnc_showMissionStatus;</sqf>
+
+|seealso= [[BIS_fnc_rscLayer]]
+}}

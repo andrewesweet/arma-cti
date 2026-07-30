@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/getEventHandlerInfo
+// revision: 377682 (2026-01-02T09:02:48Z)
+// export sha1: lxgw4uzlt4s8ld7juacxojo25dt8ee2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= Event Handlers
+
+|descr= Queries given event handler's information.
+
+|s1= oper [[getEventHandlerInfo]] [type, id]
+
+|p1= oper: [[Object]], [[Group]], [[Control]] or [[Display]] - subject to which event handler is assigned
+
+|p2= type: [[String]] - event handler name
+
+|p3= id: [[Number]] - event handler id returned by [[addEventHandler]], [[ctrlAddEventHandler]], [[displayAddEventHandler]], or [[addMPEventHandler]] - '''not''' any other EH system (e.g [[add3DENEventHandler]] or [[addUserActionEventHandler]])
+
+|r1= [[Array]] with [exists, isLast, total] or empty array []
+* exists: [[Boolean]] - event handler exists
+* isLast: [[Boolean]] - will be executed last (relevant if last event handler modifies default engine behaviour)
+* total: [[Number]] - total number of event handlers added to the same event
+
+|s2= [[getEventHandlerInfo]] [type, id]
+
+|p21= type: [[String]] - event handler name
+
+|p22= id: [[Number]] - event handler id returned by [[addMissionEventHandler]] or [[addMusicEventHandler]] '''only'''
+
+|r2= [[Array]] with [exists, isLast, total] or empty array []
+* exists: [[Boolean]] - event handler exists
+* isLast: [[Boolean]] - will be executed last (relevant if last event handler modifies default engine behaviour)
+* total: [[Number]] - total number of event handlers added to the same event
+
+|x1= <sqf>private _info = player getEventHandlerInfo ["MPKilled", 1];			// object EH</sqf>
+
+|x2= <sqf>private _info = getEventHandlerInfo ["EachFrame", 0];				// mission EH</sqf>
+
+|x3= <sqf>private _info = _bullet getEventHandlerInfo ["Deflected", 0];		// projectile EH</sqf>
+
+|x4= <sqf>private _info = _group getEventHandlerInfo ["EnemyDetected", 1];	// group EH</sqf>
+
+|x5= <sqf>private _info = _control getEventHandlerInfo ["ButtonClick", 1];	// control (UI) EH</sqf>
+
+|seealso= [[addEventHandler]] [[ctrlAddEventHandler]] [[displayAddEventHandler]] [[addMPEventHandler]] [[addMissionEventHandler]] [[addMusicEventHandler]]
+}}

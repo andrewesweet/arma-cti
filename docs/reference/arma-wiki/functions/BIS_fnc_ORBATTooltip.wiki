@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ORBATTooltip
+// revision: 349257 (2023-11-08T14:51:05Z)
+// export sha1: 67kpf0xevee2fax3dv60pwodjfbh9sw
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strategic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strategic
+
+|descr= Animates an ORBAT viewer.
+
+|s1= [target, control, position] call [[BIS_fnc_ORBATTooltip]]
+
+|p1= target: [[Config]] or [[Array]] - path to group in CfgORBAT or group params returned by [[BIS_fnc_ORBATGetGroupParams]]
+|p2= control: [[Control]] - tooltip control
+|p3= position: [[Array]] - mouse position in format '''[x,y]'''
+
+|r1= [[Boolean]]
+
+|x1=
+
+|seealso= [[ORBAT Viewer]] [[BIS_fnc_ORBATAddGroupOverlay]] [[BIS_fnc_ORBATAnimate]] [[BIS_fnc_ORBATConfigPreview]] [[BIS_fnc_ORBATGetGroupParams]] [[BIS_fnc_ORBATOpen]] [[BIS_fnc_ORBATRemoveGroupOverlay]] [[BIS_fnc_ORBATSetGroupFade]] [[BIS_fnc_ORBATSetGroupParams]]
+}}

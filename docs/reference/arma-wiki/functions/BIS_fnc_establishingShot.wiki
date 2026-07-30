@@ -1,0 +1,107 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_establishingShot
+// revision: 370443 (2024-12-10T00:25:43Z)
+// export sha1: bslhagy6g96pz1g334lce1m57sts0ba
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|arg= global
+
+|eff= local
+
+|descr= Plays a fake UAV observational sequence which serves as an establishing shot.<br> [[File:BIS_fnc_establishingShot.gif|left|400px]]
+
+|s1= [target, text, altitude, radius, angle, rotation, iconOptions, mode, fadeIn, waitTime] spawn [[BIS_fnc_establishingShot]]
+
+|p1= target: [[Object]] or [[Array]] - target or target's position
+
+|p2= text: [[String]] - (Optional, default "") text to display
+
+|p3= altitude: [[Number]] - (Optional, default 500) altitude in meters
+
+|p4= radius: [[Number]] - (Optional, default 200) radius of the circular movement in meters
+
+|p5= angle: [[Number]] - (Optional, default random) viewing angle in degrees
+
+|p6= rotation: [[Number]] - (Optional, default random) direction of camera movement
+* 0: anti-clockwise
+* 1: clockwise
+
+|p7= iconOptions: [[Array]] of [[Array]]s - (Optional, default <sqf inline>[]</sqf>) each array in format [icon, color, target, sizeX, sizeY, angle, text, shadow]:
+* icon: [[String]] - path to icon texture
+* color: [[Array]] format [[Color|Color (RGBA)]]
+* target: [[Object]], [[Position]] or [[Group]] - where the texture should be drawn
+* sizeX: [[Number]] - (Optional, default 1) icon width
+* sizeY: [[Number]] - (Optional, default 1) icon height
+* angle: [[Number]] - (Optional, default [[random]] 360) icon angle
+* text: [[String]] - (Optional, default "") text displayed underneath the icon
+* shadow: [[Number]] - (Optional, default 0)
+** 0 to draw a flat icon
+** 1 to draw a shadowed icon
+
+|p8= mode: [[Number]] - (Optional, default 0)
+* 0: normal (disables saving and sets {{hl|BIS_missionStarted}} to [[nil]])
+* 1: world scenes (i.e. for main menu background, doesn't display text and does not end)
+
+|p9= fadeIn: [[Boolean]] - (Optional, default [[true]]) fade in after completion
+
+|p10= waitTime: [[Number]] - (Optional, default 2) wait time in seconds after the shot has been completed
+|p10since= arma3 1.82
+
+|r1= [[Boolean]] - true when done
+
+|x1= <sqf>[player, "I can see my house from here", 500, 250, 75, 1, [], 0, true] spawn BIS_fnc_establishingShot;</sqf>
+
+|x2= <sqf>
+[
+	[5229.97, 5233.07, 0],
+	"BLUFOR and OPFOR firefight",
+	500,
+	250,
+	75,
+	1,
+	[
+		["\A3\ui_f\data\map\markers\nato\b_inf.paa", [0, 0.3, 0.6, 1], group_1, 1, 1, 0, "BLUFOR"],
+		["\A3\ui_f\data\map\markers\nato\o_inf.paa", [0.5, 0, 0, 1], group_2, 1, 1, 0, "OPFOR"]
+	],
+	0,
+	true,
+	15
+] spawn BIS_fnc_establishingShot;
+</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_dynamicText]] [[Arma 3: Mission Presentation]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20180128020100
+|text= Be aware that [[spawn]]ing this function will set [[enableSaving]] to true. Quick workaround:
+<sqf>
+private _savingEnabled = savingEnabled;
+_handle = [player, "myText"] spawn BIS_fnc_establishingShot;
+waitUntil { scriptDone _handle };
+enableSaving [_savingEnabled, false];
+</sqf>
+
+Or, if you can't wait the end of the establishing shot:
+<sqf>private _savingEnabled = savingEnabled;
+_handle = [player, "myText"] spawn BIS_fnc_establishingShot;
+_handle spawn { waitUntil { scriptDone _this }; enableSaving [_savingEnabled, false]; };</sqf>
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20190730120100
+|text= In order to change the camera to TI or NVG mode execute the following right after [[BIS_fnc_establishingShot]] was spawned.
+<sqf>true setCamUseTI 1;</sqf>
+The effect will automatically be terminated once the establishing shot ended.
+}}

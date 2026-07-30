@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/getTerrainInfo
+// revision: 377882 (2026-01-04T16:22:56Z)
+// export sha1: pchxghsmwwiktt8qyso29vl1ch9d6z9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+
+|gr1= Positions
+
+|descr= Returns the terrain heightmap information, as well as sea level offset (due to tides, if available).
+
+|s1= [[getTerrainInfo]]
+
+|r1= [[Array]] with [landGridWidth, landGridSize, terrainGridWidth, terrainGridSize, seaLevel]
+* landGridWidth: [[Number]] - width of each land grid, in meters
+* landGridSize: [[Number]] - number of land grid pixels
+* terrainGridWidth: [[Number]] width of each terrain grid, in meters (also known as "cell size")
+* terrainGridSize: [[Number]] - number of terrain grid pixels (also known as "heightmap resolution")
+* seaLevel: [[Number]] - sea level without waves. The value is {{hl|0}} if tides are disabled.
+
+{{Feature|informative|
+* The result of {{hl|landGridWidth * landGridSize}} and {{hl|terrainGridWidth * terrainGridSize}} is always equal to the [[worldSize]].
+* "land grid" is used by the game for object placement (e.g. finding the [[nearestObject]]), dynamic simulation, etc.
+* "terrain grid" is the actual terrain, used to display the terrain, calculate [[getTerrainHeightASL|terrain height]], [[surfaceNormal|surface normal]], etc.
+}}
+
+|x1= <sqf>private _terrainInfo = getTerrainInfo; // Stratis: [32,256,4,2048,0]; Altis: [30,1024,7.5,4096,0] </sqf>
+
+|x2= [[File:Terrain grid on Stratis.jpg|thumb|Terrain grid on Stratis]]
+<sqf>
+// Draws a 20x20 terrain grid when clicking on the map
+// Each triangle of the terrain is formed by a diagonal
+// that starts from the top-left corner of the cell and ends at the bottom-right corner.
+// The green lines show the cell diagonals 
+onMapSingleClick {
+	getTerrainInfo params ["", "", "_cellsize", "_resolution"];
+	gridLines = [];
+	_pos apply { floor (_x / _cellsize) } params ["_x0", "_y0"];
+	for "_x" from ((_x0 - 10) max 0) to ((_x0 + 10) min _resolution) do
+	{
+		for "_y" from ((_y0 - 10) max 0) to ((_y0 + 10) min _resolution) do
+		{
+			private _p1 = [_x, _y] vectorMultiply _cellsize;		// bottom-left corner
+			private _p2 = [_x, _y + 1] vectorMultiply _cellsize;	// top-left corner
+			private _p3 = [_x + 1, _y] vectorMultiply _cellsize;	// bottom-right corner
+			// Positions are AGL, and Z value of 0 is already at the terrain surface (except on water surface). 
+			// Just move them up a few centimeters so they're visible.
+			_p1 set [2, 0.1];
+			_p2 set [2, 0.1];
+			_p3 set [2, 0.1];
+
+			gridLines pushBack [_p1, _p2, [1,0,0,1]];
+			gridLines pushBack [_p1, _p3, [1,0,0,1]];
+			gridLines pushBack [_p2, _p3, [0,1,0,1]];
+		};
+	};
+
+	onEachFrame {
+		{
+			drawLine3D _x;
+		} forEach gridLines;
+	}
+};
+</sqf>
+|seealso= [[getTerrainHeight]] [[setTerrainHeight]] [[worldSize]]
+}}

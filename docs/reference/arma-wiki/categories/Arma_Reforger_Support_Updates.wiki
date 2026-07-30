@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Support/Updates
+// revision: 321690 (2022-05-19T09:12:24Z)
+// export sha1: 5dqs407cehs3t5c1xva3dwpg7zll1sm
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Support}}

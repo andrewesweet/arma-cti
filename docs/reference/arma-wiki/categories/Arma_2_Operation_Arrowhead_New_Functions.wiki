@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Operation_Arrowhead:_New_Functions
+// revision: 194726 (2021-01-12T23:31:06Z)
+// export sha1: kl3ckyr9c6mndbxx2zxvyha1mc4f2y2
+// Vendored snapshot. Do not edit — re-export instead.
+
+List of all new [[:Category:Functions|Functions]] in {{arma2oa}}.
+
+
+[[Category:{{arma2oa}}: Functions|New Functions List]]

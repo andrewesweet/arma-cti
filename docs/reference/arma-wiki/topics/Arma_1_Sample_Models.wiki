@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/Arma_1_Sample_Models
+// revision: 329708 (2022-08-02T13:13:31Z)
+// export sha1: 4k82rmg2s8wejx9exgbau880ehqrb9t
+// categories: Category:Public Data
+// Vendored snapshot. Do not edit — re-export instead.
+
+==Description==
+Re-release of the [[:Category:ArmA: Armed Assault|{{Name|arma1|short}}]] complete sample models pack under new licenses, in ZIP archives divided according to the [[Licenses|licenses]] applied.
+
+== Package content ==
+{{Feature|important|We recommend to download the data using the torrent. Due to high demand the direct download links may be overloaded.}}
+
+=== A1SM_Data_DPL_APL.zip ===
+:https://tr4.bistudio.com/A1SM_Data_DPL_APL.zip
+:'''https://www.bistudio.com/licenseddata/A1SM_Data_APL.zip.torrent'''
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* A10
+* air
+* air3
+* animals
+* anims
+* characters
+* tracked
+* voice
+* water
+* weapons
+* weapons3
+* wheeled
+* wheeled3
+|}
+
+=== A1SM_Data_ADPL-SA_APL-SA.zip ===
+: https://tr4.bistudio.com/A1SM_Data_ADPL-SA_APL-SA.zip
+: '''https://www.bistudio.com/licenseddata/A1SM_Data_APL-SA.zip.torrent'''
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* buildings
+* data
+* desert
+* desert2
+* introanims
+* language
+* misc
+* plants
+* roads
+* rocks
+* sara
+* signs
+* sounds
+* ui
+* uifonts (config only)
+* + some root configs
+|}
+
+[[Category:Public Data]]

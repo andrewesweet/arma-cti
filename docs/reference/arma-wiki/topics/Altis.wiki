@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/Altis
+// revision: 363949 (2024-04-27T20:09:59Z)
+// export sha1: m8w9654udu54opbbrvj7lwyi02gshey
+// categories: Category:Arma 3: Terrains
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:A3_Altis_birdView.jpg|250px|right]]
+[[Altis]] is an {{arma3}} terrain, released with the game. It is a North Aegean Mediterranean island with an area of 268.65&nbsp;km<sup>2</sup> and is a 0.75&times; scale rendition of {{Link|https://en.wikipedia.org/wiki/Lemnos}}.
+It has a Mediterranean flora and north aegean geology. The island is mountainous and has a lot of delta. The capital is Pyrgos, succeeding Kavala. It consists of 32 towns.
+
+
+== Geography ==
+
+The island geologically has volcanic North Mediterranean properties. There are multiple pine forests scattered around the landscape. There is also a very small desert, just north of the town of Abdera.
+
+There are 3 seasonal lakes that are all flooded in all seasons except summer, Limni, Ochrolimni and Almyra. In summer, they are completely dry with hard and cracked surfaces.
+Limni is used as an airfield during the summer thanks to its salt and hard surface properties.
+
+The coastline is surrounded by 20 bays. Outside of the bays, the coastline mostly shows rocks and cliffs, with very little number of beaches.
+
+The highest point in the island is the Thronos hill, with an altitude of 350m.
+
+The northwest part of the island (north of Negades and west of Abdera) features a very rugged and mountanious terrain. Most of this part of the island is covered with forests.
+The mountains and valleys provide a lot of coverage, hence the many wind turbines in this area. There is a paved road going across, to the town of Oreokastro. The area has a single fuel station and no military facilities.
+
+The southwest part of the island (South of Agios Konstantinos and west of Neochori) is very mountanious as well, but without forests since the heavy population in the area has turned most of the land into farmlands.
+This area has a very heavy population, and features the only hospital on the island, 6 observation post towers, 8 military outposts, 4 helipads, numerous fuel stations, AAC Airfield, and a long range transmission station at Magos, just south of Negades.
+
+
+{{GameCategory|arma3|Terrains}}

@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/compatibleWeapons
+// revision: 376865 (2025-12-09T14:24:00Z)
+// export sha1: l0rtr2sy1x1w9t9ekwc8dkykvuja68f
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Development Branch | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|branch= dev
+
+|descr= Returns all compatible weapons for given weapon item, weapon magazine or weapon slot.
+
+|gr1= Weapons
+
+|s1= [[compatibleWeapons]] name
+
+|p1= name: [[String]] - weapon item (see [[compatibleItems]]), weapon magazine (see [[compatibleMagazines]]) or weapon slot (defined under '''WeaponSlotsInfo''' class in weapon config), for example: 
+* "CowsSlot" for optics 
+* "MuzzleSlot" for silencers
+* "PointerSlot" for laser pointers and flashlights
+* "UnderBarrelSlot" for bipods
+
+|r1= [[Array]] of [[Array]]s in format:
+* [weapon, slot] - for weapon items
+* [weapon, muzzle] - for weapon magazines (primary muzzle returned as "this")
+* [weapon, slot] - for weapon slot
+
+|x1= <sqf>compatibleWeapons "LaserBatteries"; // [["Laserdesignator_pilotCamera","this"],["Laserdesignator_mounted","this"],...]</sqf>
+
+|x2= <sqf>compatibleWeapons "PointerSlot"; // [["arifle_MX_ACO_pointer_F","PointerSlot"],["arifle_TRG21_F","PointerSlot"],...]</sqf>
+
+|x3= <sqf>compatibleWeapons "1Rnd_HE_Grenade_shell"; // [["arifle_Katiba_GL_F","EGLM"],["arifle_Katiba_GL_ACO_F","EGLM"],...]</sqf>
+
+|x4= <sqf>compatibleWeapons "bipod_01_F_blk"; // [["arifle_MX_ACO_pointer_F","UnderBarrelSlot"],["arifle_MX_F","UnderBarrelSlot"],...]</sqf>
+
+|seealso= [[compatibleItems]] [[compatibleMagazines]] [[BIS_fnc_compatibleItems]] [[canAdd]]
+}}

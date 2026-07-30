@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/ctrlTooltip
+// revision: 309294 (2022-05-05T11:52:36Z)
+// export sha1: 0qeqhvmn699un90wxw3d56uo4f2jzaz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= GUI Control
+
+|descr= Returns the tooltip property of a button control. Getter for [[ctrlSetTooltip]].
+
+|s1= [[ctrlTooltip]] control
+
+|p1= control: [[Control]]
+
+|r1= [[String]]
+
+|x1= <sqf>ctrlTooltip _control;</sqf>
+
+|seealso= [[ctrlSetTooltip]]
+}}

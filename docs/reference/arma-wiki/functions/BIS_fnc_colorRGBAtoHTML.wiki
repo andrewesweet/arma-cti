@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_colorRGBAtoHTML
+// revision: 327485 (2022-07-12T22:19:04Z)
+// export sha1: it3c5jrhaw91dhjayehzx4dog831jm8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Arrays
+
+|descr= Converts RGBA color format to #AARRGGBB HTML color format.
+
+|s1= colorArray call [[BIS_fnc_colorRGBAtoHTML]]
+
+|p1= colorArray: [[Color|Color (RGBA)]] - in [r, g, b, a] format
+
+|r1= [[String]] - format #{{Color|grey|AA}}{{Color|red|RR}}{{Color|green|GG}}{{Color|blue|BB}}
+
+|x1= <sqf>[0,0,0,1] call BIS_fnc_colorRGBAtoHTML; // will return #FF000000</sqf>
+
+|x2= <sqf>[2,93,0,1] call BIS_fnc_colorRGBAtoHTML; // will return #FF025D00</sqf>
+
+|seealso= [[Color|Color (RGBA)]] [[BIS_fnc_colorConfigToRGBA]] [[BIS_fnc_colorRGBtoHTML]] [[BIS_fnc_colorRGBAtoTexture]]
+}}

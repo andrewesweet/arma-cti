@@ -1,0 +1,126 @@
+// source: https://community.bistudio.com/wiki/setSpeaker
+// revision: 364908 (2024-06-30T09:06:33Z)
+// export sha1: 292myvafmyqgmlj62t4f9h2deaijr5t
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Command Group: Unit Identity | Category:Introduced with Arma 3 version 1.02 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.02
+
+|arg= global
+
+|eff= local
+
+|gr1= Unit Identity
+
+|gr2= Sounds
+
+|descr= Sets the speaker of a person.
+
+|mp= The command needs to run on every computer with exactly the same arguments, otherwise the speaking unit could appear silent on other PCs.
+
+|s1= person [[setSpeaker]] speaker
+
+|p1= person: [[Object]]
+
+|p2= speaker: [[String]] - the used voice type, see [[Arma 3: CfgIdentities#Speakers|{{arma3}} Speakers]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>unit1 setSpeaker "Male02GRE";</sqf>
+
+|seealso= [[speaker]] [[disableConversation]] [[enableRadio]] [[enableSentences]] [[showSubtitles]] [[setIdentity]] [[setFace]] [[hasCustomFace]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2014-01-12 - 15:12 UTC</dd>
+<dt class="note">[[User:Lou Montana|Lou Montana]]</dt>
+<dd class="note">
+'''speakers available''' in {{arma3}} (v1.08):
+<table style="border: solid 0.0625em #000; box-shadow: .5em .5em .5em #888; font-size: .95em; min-width: 50%">
+<tr>
+	<th>Gender</th>
+	<th>Profile setting</th>
+	<th>US English<br>''(B) for EN-GB available''</th>
+	<th>Greek</th>
+	<th>Persian</th>
+</tr>
+<tr>
+	<th rowspan="9" style="border-right: solid .25em blue">Male</th>
+	<td>Male01_F</td>
+	<td>Male01ENG(B)</td>
+	<td>Male01GRE</td>
+	<td>Male01PER</td>
+</tr>
+<tr>
+	<td>Male02_F</td>
+	<td>Male02ENG(B)</td>
+	<td>Male02GRE</td>
+	<td>Male02PER</td>
+</tr>
+<tr>
+	<td>Male03_F</td>
+	<td>Male03ENG(B)</td>
+	<td>Male03GRE</td>
+	<td>Male03PER</td>
+</tr>
+<tr>
+	<td>Male04_F</td>
+	<td>Male04ENG(B)</td>
+	<td>Male04GRE</td>
+	<td>''Male01PER''</td>
+</tr>
+<tr>
+	<td>Male05_F</td>
+	<td>Male05ENG</td>
+	<td>Male05GRE</td>
+	<td>''Male02PER''</td>
+</tr>
+<tr>
+	<td>Male06_F</td>
+	<td>Male06ENG</td>
+	<td>''Male02GRE''</td>
+	<td>''Male03PER''</td>
+</tr>
+<tr>
+	<td>Male07_F</td>
+	<td>Male07ENG</td>
+	<td>''Male03GRE''</td>
+	<td>''Male01PER''</td>
+</tr>
+<tr>
+	<td>Male08_F</td>
+	<td>Male08ENG</td>
+	<td>''Male04GRE''</td>
+	<td>''Male02PER''</td>
+</tr>
+<tr>
+	<td>Male09_F</td>
+	<td>Male09ENG</td>
+	<td>''Male01GRE''</td>
+	<td>''Male03PER''</td>
+</tr>
+<tr>
+	<th rowspan="1" style="border-right: solid .25em pink">Female</th>
+	<td>-</td>
+	<td>-</td>
+	<td>-</td>
+	<td>-</td>
+</tr>
+</table>
+</dd>
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-11-10 - 22:07 (UTC)</dd>
+<dt class="note">[[User:Deadfast|Deadfast]]</dt>
+<dd class="note">
+In order to stop a unit from talking you can use:
+<sqf>_unit setSpeaker "NoVoice"</sqf>
+This will have no negative effect on the ability to command the unit.
+</dd>
+
+</dl>

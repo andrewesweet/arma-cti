@@ -1,0 +1,2820 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgMusic
+// revision: 364048 (2024-04-30T11:47:16Z)
+// export sha1: 44a15bmx92kr7n8vphwfau2iuqaac44
+// categories: Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{arma3}} soundtrack that can be played with [[playMusic]], for example:
+
+<sqf>playMusic "SkyNet";</sqf>
+
+
+== {{arma3}} & DLCs ==
+
+Last updated: {{GVI|arma3|2.10}}
+{| class="wikitable sortable" width="100%"
+! width="5%" | No.
+! width="35%" | Title
+! width="30%" | Class Name
+! width="15%" | Duration
+! width="15%" | DLC
+
+|-
+| 1
+| This Is War
+| LeadTrack01_F
+| 02:43
+| {{arma3}}
+
+|-
+| 2
+| This Is War a
+| LeadTrack01a_F
+| 01:14
+| {{arma3}}
+
+|-
+| 3
+| This Is War b
+| LeadTrack01b_F
+| 01:07
+| {{arma3}}
+
+|-
+| 4
+| Main Menu
+| LeadTrack01c_F
+| 02:09
+| {{arma3}}
+
+|-
+| 5
+| Proteus
+| LeadTrack02_F
+| 01:34
+| {{arma3}}
+
+|-
+| 6
+| Combined Arms
+| LeadTrack03_F
+| 01:37
+| {{arma3}}
+
+|-
+| 7
+| Action Dark 2
+| LeadTrack04_F
+| 02:31
+| {{arma3}}
+
+|-
+| 8
+| Action Dark
+| LeadTrack04a_F
+| 01:52
+| {{arma3}}
+
+|-
+| 9
+| Taking Kavala
+| LeadTrack05_F
+| 01:26
+| {{arma3}}
+
+|-
+| 10
+| Down at the Girina Bay
+| LeadTrack06_F
+| 01:00
+| {{arma3}}
+
+|-
+| 11
+| The East Wind - Alternative 1
+| AmbientTrack01_F
+| 03:10
+| {{arma3}}
+
+|-
+| 12
+| The East Wind
+| AmbientTrack01a_F
+| 03:05
+| {{arma3}}
+
+|-
+| 13
+| The East Wind - Alternative 2
+| AmbientTrack01b_F
+| 01:36
+| {{arma3}}
+
+|-
+| 14
+| Solar Power
+| AmbientTrack03_F
+| 01:53
+| {{arma3}}
+
+|-
+| 15
+| Night percussions
+| AmbientTrack04a_F
+| 03:11
+| {{arma3}}
+
+|-
+| 16
+| Night ambient
+| AmbientTrack04_F
+| 03:24
+| {{arma3}}
+
+|-
+| 17
+| Car and Heli
+| BackgroundTrack03_F
+| 01:51
+| {{arma3}}
+
+|-
+| 18
+| Underwater 2
+| BackgroundTrack01_F
+| 01:38
+| {{arma3}}
+
+|-
+| 19
+| Underwater 1
+| BackgroundTrack01a_F
+| 01:36
+| {{arma3}}
+
+|-
+| 20
+| On The Road
+| BackgroundTrack02_F
+| 01:28
+| {{arma3}}
+
+|-
+| 21
+| N/A
+| Track01_Proteus
+| 01:34
+| {{arma3}}
+
+|-
+| 22
+| N/A
+| Track02_SolarPower
+| 01:53
+| {{arma3}}
+
+|-
+| 23
+| N/A
+| Track03_OnTheRoad
+| 01:28
+| {{arma3}}
+
+|-
+| 24
+| N/A
+| Track04_Underwater1
+| 01:36
+| {{arma3}}
+
+|-
+| 25
+| N/A
+| Track05_Underwater2
+| 01:38
+| {{arma3}}
+
+|-
+| 26
+| N/A
+| Track06_CarnHeli
+| 01:51
+| {{arma3}}
+
+|-
+| 27
+| N/A
+| Track07_ActionDark
+| 01:52
+| {{arma3}}
+
+|-
+| 28
+| N/A
+| Track08_Night_ambient
+| 03:24
+| {{arma3}}
+
+|-
+| 29
+| N/A
+| Track09_Night_percussions
+| 03:11
+| {{arma3}}
+
+|-
+| 30
+| N/A
+| Track10_StageB_action
+| 01:37
+| {{arma3}}
+
+|-
+| 31
+| N/A
+| Track11_StageB_stealth
+| 03:05
+| {{arma3}}
+
+|-
+| 32
+| N/A
+| Track12_StageC_action
+| 01:26
+| {{arma3}}
+
+|-
+| 33
+| N/A
+| Track13_StageC_negative
+| 01:00
+| {{arma3}}
+
+|-
+| 34
+| N/A
+| Track14_MainMenu
+| 02:09
+| {{arma3}}
+
+|-
+| 35
+| N/A
+| Track15_MainTheme
+| 02:43
+| {{arma3}}
+
+|-
+| 36
+| Stage A: Lead Track 01 (Conquistador)
+| LeadTrack01_F_EPA
+| 01:36
+| {{arma3}}
+
+|-
+| 37
+| Stage A: Lead Track 02 (Aegis Blues)
+| LeadTrack02_F_EPA
+| 01:57
+| {{arma3}}
+
+|-
+| 38
+| Stage A: Lead Track 02 (Aegis Blues - Alternative 1)
+| LeadTrack02a_F_EPA
+| 00:53
+| {{arma3}}
+
+|-
+| 39
+| Stage A: Lead Track 02 (Aegis Blues - Alternative 2)
+| LeadTrack02b_F_EPA
+| 01:02
+| {{arma3}}
+
+|-
+| 40
+| Stage A: Lead Track 03 (Survive the Hard Part)
+| LeadTrack03_F_EPA
+| 02:18
+| {{arma3}}
+
+|-
+| 41
+| Stage A: Lead Track 03 (Survive the Hard Part - Alternative)
+| LeadTrack03a_F_EPA
+| 00:23
+| {{arma3}}
+
+|-
+| 42
+| Stage A: Event Track 01 (Fragmented)
+| EventTrack01_F_EPA
+| 00:29
+| {{arma3}}
+
+|-
+| 43
+| Stage A: Event Track 01 (Fragmented - Alternative)
+| EventTrack01a_F_EPA
+| 00:28
+| {{arma3}}
+
+|-
+| 44
+| Stage A: Event Track 02 (Horizon Scan)
+| EventTrack02_F_EPA
+| 00:36
+| {{arma3}}
+
+|-
+| 45
+| Stage A: Event Track 02 (Horizon Scan - Alternative)
+| EventTrack02a_F_EPA
+| 00:36
+| {{arma3}}
+
+|-
+| 46
+| Stage A: Event Track 03 (Chemistry of War)
+| EventTrack03_F_EPA
+| 00:36
+| {{arma3}}
+
+|-
+| 47
+| Stage A: Event Track 03 (Chemistry of War - Alternative)
+| EventTrack03a_F_EPA
+| 00:35
+| {{arma3}}
+
+|-
+| 48
+| Stage B: Lead Track 01 (Adapt)
+| LeadTrack01_F_EPB
+| 02:15
+| {{arma3}}
+
+|-
+| 49
+| Stage B: Lead Track 01 (Adapt - Alternative)
+| LeadTrack01a_F_EPB
+| 01:26
+| {{arma3}}
+
+|-
+| 50
+| Stage B: Lead Track 02 (Exit Strategy)
+| LeadTrack02_F_EPB
+| 02:59
+| {{arma3}}
+
+|-
+| 51
+| Stage B: Lead Track 02 (Exit Strategy - Alternative 1)
+| LeadTrack02a_F_EPB
+| 01:10
+| {{arma3}}
+
+|-
+| 52
+| Stage B: Lead Track 02 (Exit Strategy - Alternative 2)
+| LeadTrack02b_F_EPB
+| 01:57
+| {{arma3}}
+
+|-
+| 53
+| Stage B: Lead Track 03 (Beyond Recognition)
+| LeadTrack03_F_EPB
+| 02:03
+| {{arma3}}
+
+|-
+| 54
+| Stage B: Lead Track 03 (Beyond Recognition - Alternative 1)
+| LeadTrack03a_F_EPB
+| 01:01
+| {{arma3}}
+
+|-
+| 55
+| Stage B: Lead Track 04 (Canton Protocol)
+| LeadTrack04_F_EPB
+| 02:12
+| {{arma3}}
+
+|-
+| 56
+| Stage B: Event Track 01 (Resist)
+| EventTrack01_F_EPB
+| 00:36
+| {{arma3}}
+
+|-
+| 57
+| Stage B: Event Track 01 (Resist - Alternative)
+| EventTrack01a_F_EPB
+| 00:28
+| {{arma3}}
+
+|-
+| 58
+| Stage B: Event Track 02 (Ambush)
+| EventTrack02_F_EPB
+| 00:22
+| {{arma3}}
+
+|-
+| 59
+| Stage B: Event Track 02 (Ambush - Alternative)
+| EventTrack02a_F_EPB
+| 00:22
+| {{arma3}}
+
+|-
+| 60
+| Stage B: Event Track 03 (Recon)
+| EventTrack03_F_EPB
+| 00:30
+| {{arma3}}
+
+|-
+| 61
+| Stage B: Event Track 04 (Radio Silence)
+| EventTrack04_F_EPB
+| 00:45
+| {{arma3}}
+
+|-
+| 62
+| Stage B: Event Track 04 (Radio Silence - Alternative 1)
+| EventTrack04a_F_EPB
+| 00:41
+| {{arma3}}
+
+|-
+| 63
+| Stage B: Event Track 03 (Recon - Alternative)
+| EventTrack03a_F_EPB
+| 00:30
+| {{arma3}}
+
+|-
+| 64
+| Stage B: Ambient Track 01 (Signal Lost)
+| AmbientTrack01_F_EPB
+| 01:09
+| {{arma3}}
+
+|-
+| 65
+| Stage B: Background Track 01 (The Hunt)
+| BackgroundTrack01_F_EPB
+| 02:07
+| {{arma3}}
+
+|-
+| 66
+| Stage C: Lead Track 01 (Back on Stratis)
+| LeadTrack01_F_EPC
+| 01:34
+| {{arma3}}
+
+|-
+| 67
+| Stage C: Lead Track 02 (LZ hot)
+| LeadTrack02_F_EPC
+| 01:36
+| {{arma3}}
+
+|-
+| 68
+| Stage C: Lead Track 03 (The Trap)
+| LeadTrack03_F_EPC
+| 02:27
+| {{arma3}}
+
+|-
+| 69
+| Stage C: Lead Track 04 (In the Open)
+| LeadTrack04_F_EPC
+| 02:09
+| {{arma3}}
+
+|-
+| 70
+| Stage C: Lead Track 05 (Revenge)
+| LeadTrack05_F_EPC
+| 01:27
+| {{arma3}}
+
+|-
+| 71
+| Stage C: Lead Track 06 (Win)
+| LeadTrack06_F_EPC
+| 02:12
+| {{arma3}}
+
+|-
+| 72
+| Stage C: Lead Track 06 (Win - Alternative 1)
+| LeadTrack06b_F_EPC
+| 01:06
+| {{arma3}}
+
+|-
+| 73
+| Stage C: Event Track 01 (Farewell Altis)
+| EventTrack01_F_EPC
+| 00:39
+| {{arma3}}
+
+|-
+| 74
+| Stage C: Event Track 02 (Broken Barricade)
+| EventTrack02_F_EPC
+| 00:47
+| {{arma3}}
+
+|-
+| 75
+| Stage C: Event Track 02 (Broken Barricade - Alternative 1)
+| EventTrack02b_F_EPC
+| 00:30
+| {{arma3}}
+
+|-
+| 76
+| Stage C: Event Track 03 (Unforeseen Perdition)
+| EventTrack03_F_EPC
+| 01:28
+| {{arma3}}
+
+|-
+| 77
+| Stage C: Background Track 01 (Alone)
+| BackgroundTrack01_F_EPC
+| 01:36
+| {{arma3}}
+
+|-
+| 78
+| Stage C: Background Track 02 (Just Another Day)
+| BackgroundTrack02_F_EPC
+| 01:38
+| {{arma3}}
+
+|-
+| 79
+| Stage C: Background Track 03 (Altis Requiem)
+| BackgroundTrack03_F_EPC
+| 02:28
+| {{arma3}}
+
+|-
+| 80
+| Stage C: Background Track 04 (Assembly)
+| BackgroundTrack04_F_EPC
+| 01:20
+| {{arma3}}
+
+|-
+| 81
+| N/A
+| C_EA_RadioBroadcast1
+| 00:42
+| {{arma3}}
+
+|-
+| 82
+| N/A
+| C_EA_RadioBroadcast2
+| 00:38
+| {{arma3}}
+
+|-
+| 83
+| N/A
+| C_EA_RadioMusic1
+| 00:52
+| {{arma3}}
+
+|-
+| 84
+| N/A
+| C_EA_RadioMusic2
+| 01:12
+| {{arma3}}
+
+|-
+| 85
+| N/A
+| RadioAmbient1
+| 00:17
+| {{arma3}}
+
+|-
+| 86
+| N/A
+| RadioAmbient2
+| 00:10
+| {{arma3}}
+
+|-
+| 87
+| N/A
+| RadioAmbient3
+| 00:11
+| {{arma3}}
+
+|-
+| 88
+| N/A
+| RadioAmbient4
+| 00:07
+| {{arma3}}
+
+|-
+| 89
+| N/A
+| RadioAmbient5
+| 00:09
+| {{arma3}}
+
+|-
+| 90
+| N/A
+| RadioAmbient6
+| 00:07
+| {{arma3}}
+
+|-
+| 91
+| N/A
+| RadioAmbient7
+| 00:05
+| {{arma3}}
+
+|-
+| 92
+| N/A
+| RadioAmbient8
+| 00:12
+| {{arma3}}
+
+|-
+| 93
+| N/A
+| RadioAmbient9
+| 00:08
+| {{arma3}}
+
+|-
+| 94
+| N/A
+| RadioAmbient10
+| 00:11
+| {{arma3}}
+
+|-
+| 95
+| N/A
+| RadioAmbient11
+| 00:06
+| {{arma3}}
+
+|-
+| 96
+| N/A
+| RadioAmbient12
+| 00:18
+| {{arma3}}
+
+|-
+| 97
+| N/A
+| RadioAmbient13
+| 00:06
+| {{arma3}}
+
+|-
+| 98
+| N/A
+| RadioAmbient14
+| 00:07
+| {{arma3}}
+
+|-
+| 99
+| N/A
+| RadioAmbient15
+| 00:08
+| {{arma3}}
+
+|-
+| 100
+| N/A
+| RadioAmbient16
+| 00:11
+| {{arma3}}
+
+|-
+| 101
+| N/A
+| RadioAmbient17
+| 00:06
+| {{arma3}}
+
+|-
+| 102
+| N/A
+| RadioAmbient18
+| 00:10
+| {{arma3}}
+
+|-
+| 103
+| N/A
+| RadioAmbient19
+| 00:10
+| {{arma3}}
+
+|-
+| 104
+| N/A
+| RadioAmbient20
+| 00:06
+| {{arma3}}
+
+|-
+| 105
+| N/A
+| RadioAmbient21
+| 00:04
+| {{arma3}}
+
+|-
+| 106
+| N/A
+| RadioAmbient22
+| 00:05
+| {{arma3}}
+
+|-
+| 107
+| N/A
+| RadioAmbient23
+| 00:08
+| {{arma3}}
+
+|-
+| 108
+| N/A
+| RadioAmbient24
+| 00:08
+| {{arma3}}
+
+|-
+| 109
+| N/A
+| RadioAmbient25
+| 00:10
+| {{arma3}}
+
+|-
+| 110
+| N/A
+| RadioAmbient26
+| 00:08
+| {{arma3}}
+
+|-
+| 111
+| N/A
+| RadioAmbient27
+| 00:15
+| {{arma3}}
+
+|-
+| 112
+| N/A
+| RadioAmbient28
+| 00:13
+| {{arma3}}
+
+|-
+| 113
+| N/A
+| RadioAmbient29
+| 00:19
+| {{arma3}}
+
+|-
+| 114
+| N/A
+| RadioAmbient30
+| 00:09
+| {{arma3}}
+
+|-
+| 115
+| N/A
+| Fallout
+| 03:27
+| {{arma3}}
+
+|-
+| 116
+| N/A
+| Defcon
+| 03:13
+| {{arma3}}
+
+|-
+| 117
+| N/A
+| Wasteland
+| 03:15
+| {{arma3}}
+
+|-
+| 118
+| N/A
+| SkyNet
+| 03:54
+| {{arma3}}
+
+|-
+| 119
+| N/A
+| MAD
+| 03:18
+| {{arma3}}
+
+|-
+| 120
+| N/A
+| radio_music
+| 02:31
+| {{arma3}}
+
+|-
+| 121
+| Zeus Theme
+| LeadTrack01_F_Curator
+| 03:03
+| {{Name|arma3zeus}}
+
+|-
+| 122
+| Mission Accomplished
+| EventTrack01_F_Curator
+| 00:13
+| {{Name|arma3zeus}}
+
+|-
+| 123
+| Mission Failed
+| EventTrack02_F_Curator
+| 00:14
+| {{Name|arma3zeus}}
+
+|-
+| 124
+| Mission Accomplished (Zeus)
+| EventTrack03_F_Curator
+| 00:14
+| {{Name|arma3zeus}}
+
+|-
+| 125
+| This is War (VR Remix)
+| LeadTrack01_F_Bootcamp
+| 02:45
+| {{arma3}}
+
+|-
+| 126
+| This is War (VR Remix - loop)
+| LeadTrack01b_F_Bootcamp
+| 00:32
+| {{arma3}}
+
+|-
+| 127
+| Evolution
+| LeadTrack02_F_Bootcamp
+| 04:02
+| {{arma3}}
+
+|-
+| 128
+| Epic Split
+| LeadTrack03_F_Bootcamp
+| 01:01
+| {{arma3}}
+
+|-
+| 129
+| This is War (Heli Remix)
+| LeadTrack01_F_Heli
+| 02:44
+| {{Name|arma3helicopters}}
+
+|-
+| 130
+| This is War (Marksmen Remix)
+| LeadTrack01_F_Mark
+| 02:38
+| {{Name|arma3marksmen}}
+
+|-
+| 131
+| Marksmen DLC: Lead Track 02 (Into the Sun)
+| LeadTrack02_F_Mark
+| 02:52
+| {{Name|arma3marksmen}}
+
+|-
+| 132
+| Marksmen DLC: Lead Track 03 (Marksmen)
+| LeadTrack03_F_Mark
+| 02:10
+| {{Name|arma3marksmen}}
+
+|-
+| 133
+| This Is War (Apex Remix)
+| LeadTrack01_F_EXP
+| 02:56
+| {{Name|arma3apex}}
+
+|-
+| 134
+| This Is War (Apex Remix) - Part 1
+| LeadTrack01a_F_EXP
+| 00:51
+| {{Name|arma3apex}}
+
+|-
+| 135
+| This Is War (Apex Remix) - Part 2
+| LeadTrack01b_F_EXP
+| 01:12
+| {{Name|arma3apex}}
+
+|-
+| 136
+| This Is War (Apex Remix) - Part 3
+| LeadTrack01c_F_EXP
+| 01:18
+| {{Name|arma3apex}}
+
+|-
+| 137
+| An Unknown Enemy
+| LeadTrack02_F_EXP
+| 02:36
+| {{Name|arma3apex}}
+
+|-
+| 138
+| No Time For Questions
+| LeadTrack03_F_EXP
+| 03:09
+| {{Name|arma3apex}}
+
+|-
+| 139
+| This Is War (Apex Remix - Alternative 1)
+| LeadTrack04_F_EXP
+| 02:04
+| {{Name|arma3apex}}
+
+|-
+| 140
+| Through The Jungle
+| AmbientTrack01_F_EXP
+| 01:52
+| {{Name|arma3apex}}
+
+|-
+| 141
+| Through The Jungle - Part 1
+| AmbientTrack01a_F_EXP
+| 00:54
+| {{Name|arma3apex}}
+
+|-
+| 142
+| Through The Jungle - Part 2
+| AmbientTrack01b_F_EXP
+| 01:12
+| {{Name|arma3apex}}
+
+|-
+| 143
+| Welcome To Tanoa
+| AmbientTrack02_F_EXP
+| 02:23
+| {{Name|arma3apex}}
+
+|-
+| 144
+| Welcome To Tanoa - Part 1
+| AmbientTrack02a_F_EXP
+| 00:33
+| {{Name|arma3apex}}
+
+|-
+| 145
+| Welcome To Tanoa - Part 2
+| AmbientTrack02b_F_EXP
+| 00:40
+| {{Name|arma3apex}}
+
+|-
+| 146
+| Welcome To Tanoa - Part 3
+| AmbientTrack02c_F_EXP
+| 00:43
+| {{Name|arma3apex}}
+
+|-
+| 147
+| Welcome To Tanoa - Part 4
+| AmbientTrack02d_F_EXP
+| 01:19
+| {{Name|arma3apex}}
+
+|-
+| 148
+| Fighter Jets
+| LeadTrack01_F_Jets
+| 03:08
+| {{Name|arma3jets}}
+
+|-
+| 149
+| Air Power
+| LeadTrack02_F_Jets
+| 02:10
+| {{Name|arma3jets}}
+
+|-
+| 150
+| Carrier
+| EventTrack01_F_Jets
+| 00:55
+| {{Name|arma3jets}}
+
+|-
+| 151
+| Flashpoint
+| LeadTrack01_F_Malden
+| 01:51
+| {{Name|arma3malden}}
+
+|-
+| 152
+| Malden
+| LeadTrack02_F_Malden
+| 01:47
+| {{Name|arma3malden}}
+
+|-
+| 153
+| This Is War (Laws of War Remix)
+| LeadTrack01_F_Orange
+| 01:57
+| {{Name|arma3lawsofwar}}
+
+|-
+| 154
+| Laws of War DLC: Remnants of War
+| AmbientTrack02_F_Orange
+| 00:55
+| {{Name|arma3lawsofwar}}
+
+|-
+| 155
+| Laws of War DLC: Escalation
+| EventTrack01_F_Orange
+| 00:59
+| {{Name|arma3lawsofwar}}
+
+|-
+| 156
+| Laws of War DLC: Scenario Completed
+| EventTrack02_F_Orange
+| 00:17
+| {{Name|arma3lawsofwar}}
+
+|-
+| 157
+| Laws of War DLC: Ambient
+| AmbientTrack01_F_Orange
+| 03:14
+| {{Name|arma3lawsofwar}}
+
+|-
+| 158
+| Tac-Ops DLC: Opening 1
+| LeadTrack01_F_Tacops
+| 01:36
+| {{Name|arma3tacops}}
+
+|-
+| 159
+| Tac-Ops DLC: Opening 2
+| LeadTrack02_F_Tacops
+| 01:36
+| {{Name|arma3tacops}}
+
+|-
+| 160
+| Tac-Ops DLC: Opening 3
+| LeadTrack03_F_Tacops
+| 01:36
+| {{Name|arma3tacops}}
+
+|-
+| 161
+| Tac-Ops DLC: Outro
+| LeadTrack04_F_Tacops
+| 01:36
+| {{Name|arma3tacops}}
+
+|-
+| 162
+| Tac-Ops DLC: Ambient 1a
+| AmbientTrack01a_F_Tacops
+| 01:52
+| {{Name|arma3tacops}}
+
+|-
+| 163
+| Tac-Ops DLC: Ambient 1b
+| AmbientTrack01b_F_Tacops
+| 01:52
+| {{Name|arma3tacops}}
+
+|-
+| 164
+| Tac-Ops DLC: Ambient 2a
+| AmbientTrack02a_F_Tacops
+| 01:52
+| {{Name|arma3tacops}}
+
+|-
+| 165
+| Tac-Ops DLC: Ambient 2b
+| AmbientTrack02b_F_Tacops
+| 01:52
+| {{Name|arma3tacops}}
+
+|-
+| 166
+| Tac-Ops DLC: Ambient 3a
+| AmbientTrack03a_F_Tacops
+| 01:59
+| {{Name|arma3tacops}}
+
+|-
+| 167
+| Tac-Ops DLC: Ambient 3b
+| AmbientTrack03b_F_Tacops
+| 01:59
+| {{Name|arma3tacops}}
+
+|-
+| 168
+| Tac-Ops DLC: Ambient 4a
+| AmbientTrack04a_F_Tacops
+| 01:59
+| {{Name|arma3tacops}}
+
+|-
+| 169
+| Tac-Ops DLC: Ambient 4b
+| AmbientTrack04b_F_Tacops
+| 01:59
+| {{Name|arma3tacops}}
+
+|-
+| 170
+| Tac-Ops DLC: Fight 1a
+| EventTrack01a_F_Tacops
+| 00:35
+| {{Name|arma3tacops}}
+
+|-
+| 171
+| Tac-Ops DLC: Fight 1b
+| EventTrack01b_F_Tacops
+| 00:35
+| {{Name|arma3tacops}}
+
+|-
+| 172
+| Tac-Ops DLC: Fight 2a
+| EventTrack02a_F_Tacops
+| 00:35
+| {{Name|arma3tacops}}
+
+|-
+| 173
+| Tac-Ops DLC: Fight 2b
+| EventTrack02b_F_Tacops
+| 00:35
+| {{Name|arma3tacops}}
+
+|-
+| 174
+| Tac-Ops DLC: Fight 3a
+| EventTrack03a_F_Tacops
+| 00:35
+| {{Name|arma3tacops}}
+
+|-
+| 175
+| Tac-Ops DLC: Fight 3b
+| EventTrack03b_F_Tacops
+| 00:35
+| {{Name|arma3tacops}}
+
+|-
+| 176
+| Tanks DLC: This is War (Tanks DLC version)
+| MainTheme_F_Tank
+| 03:40
+| {{Name|arma3tanks}}
+
+|-
+| 177
+| Tanks DLC: Fight for the City
+| LeadTrack01_F_Tank
+| 01:37
+| {{Name|arma3tanks}}
+
+|-
+| 178
+| Tanks DLC: Last Stand
+| LeadTrack02_F_Tank
+| 01:31
+| {{Name|arma3tanks}}
+
+|-
+| 179
+| Tanks DLC: Way Back
+| LeadTrack03_F_Tank
+| 01:48
+| {{Name|arma3tanks}}
+
+|-
+| 180
+| Tanks DLC: Good Neighbors
+| LeadTrack04_F_Tank
+| 00:32
+| {{Name|arma3tanks}}
+
+|-
+| 181
+| Tanks DLC: Wrath of the Giants
+| LeadTrack05_F_Tank
+| 02:01
+| {{Name|arma3tanks}}
+
+|-
+| 182
+| Tanks DLC: Iron Gods
+| LeadTrack06_F_Tank
+| 01:27
+| {{Name|arma3tanks}}
+
+|-
+| 183
+| Tanks DLC: Hidden Enemy
+| AmbientTrack01_F_Tank
+| 01:52
+| {{Name|arma3tanks}}
+
+|-
+| 184
+| Contact: Menu
+| Music_Menu_Contact
+| 15:45
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 185
+| Contact: Transilience (Main Theme)
+| Music_Theme_Contact
+| 04:04
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 186
+| Contact: Transilience (Credits)
+| Music_Credits_Contact
+| 03:41
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 187
+| Contact: Acclivity Dawn
+| Music_Probe_Discovered
+| 00:59
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 188
+| Contact: Wavering Base
+| Music_Arrival
+| 01:02
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 189
+| Contact: Night Eyes Zero-One
+| Music_Roaming_Night
+| 06:42
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 190
+| Contact: Night Eyes Zero-Two
+| Music_Roaming_Night_02
+| 06:42
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 191
+| Contact: Night Eyes (Cut 1)
+| Music_Roaming_Night_Fragment_01_20s
+| 00:21
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 192
+| Contact: Night Eyes (Cut 2)
+| Music_Roaming_Night_Fragment_01_30s
+| 00:26
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 193
+| Contact: Night Eyes (Cut 3)
+| Music_Roaming_Night_Fragment_01_60s
+| 00:58
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 194
+| Contact: Night Eyes (Cut 4)
+| Music_Roaming_Night_Fragment_02_30s
+| 00:26
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 195
+| Contact: Night Eyes (Cut 5)
+| Music_Roaming_Night_Fragment_02_60s
+| 01:04
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 196
+| Contact: Night Eyes (Cut 6)
+| Music_Roaming_Night_Fragment_03_60s
+| 01:10
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 197
+| Contact: Sunrise Zero-One
+| Music_Roaming_Day
+| 04:10
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 198
+| Contact: Sunrise Zero-Two
+| Music_Roaming_Day_02
+| 04:08
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 199
+| Contact: This is War (Cut)
+| Music_Intro_ThisIsWarA
+| 01:14
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 200
+| Contact: Intro 2
+| Music_Intro_02_MissionStart
+| 00:21
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 201
+| N/A
+| Music_Intro_03_MissionStart
+| 00:57
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 202
+| N/A
+| Music_Intro_02_Emp_Tension_01
+| 00:42
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 203
+| Contact: Outro 2
+| Music_Outro2_Ending
+| 02:31
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 204
+| Contact: Hostile
+| Music_Hostile_Drone_Close_01
+| 01:41
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 205
+| Contact: Failed Contact
+| Music_Failed_Contact
+| 00:34
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 206
+| N/A
+| Music_Failed_Contact_02
+| 00:32
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 207
+| Contact: Contact
+| Music_Battle_Alien
+| 03:26
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 208
+| Contact: Infighting
+| Music_Battle_Human
+| 03:28
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 209
+| Contact: Sharper Claws
+| Music_Russian_Theme
+| 04:02
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 210
+| Contact: Contact (Edit 4)
+| Music_Battle_Human_Loop
+| 11:32
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 211
+| Contact: Contact (Edit 1)
+| Music_Battle_Alien_Loop_01
+| 10:26
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 212
+| Contact: Contact (Edit 2)
+| Music_Battle_Alien_Loop_02
+| 10:26
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 213
+| Contact: Contact (Edit 3)
+| Music_Battle_Alien_Loop_03
+| 10:26
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 214
+| Contact: Suspense
+| Music_Suspended_Loop_01
+| 10:17
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 215
+| Contact: Tension
+| Music_Tension_Loop_01
+| 10:08
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 216
+| Contact: Free-Roam 1
+| Music_Freeroam_01_MissionStart
+| 00:23
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 217
+| N/A
+| Music_Freeroam_02_MissionStart
+| 01:19
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 218
+| N/A
+| Music_Freeroam_RootExtract
+| 04:04
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 219
+| Contact: Contact (Free-Roam Edit 1)
+| Music_FreeRoam_Battle_Alien_Loop_01
+| 10:26
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 220
+| Contact: Contact (Free-Roam Edit 2)
+| Music_FreeRoam_Battle_Alien_Loop_02
+| 10:26
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 221
+| Contact: Contact (Free-Roam Edit 3)
+| Music_FreeRoam_Battle_Alien_Loop_03
+| 10:26
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 222
+| Contact: Suspense (Free-Roam Edit)
+| Music_FreeRoam_Suspended_Loop_01
+| 06:42
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 223
+| Contact: Tension (Free-Roam)
+| Music_FreeRoam_Tension_Loop_01
+| 10:08
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 224
+| Contact: Sharper Claws (Free-Roam Edit 1)
+| Music_FreeRoam_Russian_Theme_Loop
+| 04:37
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 225
+| Contact: Sharper Claws (Free-Roam)
+| Music_FreeRoam_Russian_Theme
+| 04:02
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 226
+| Contact: Contact (Free-Roam)
+| Music_FreeRoam_Battle_Alien
+| 03:26
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 227
+| Contact: Infighting (Free-Roam)
+| Music_FreeRoam_Battle_Human
+| 03:28
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 228
+| N/A
+| Music_FreeRoam_Battle_Human_Loop
+| 03:20
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 229
+| Contact: Contact (Free-Roam End)
+| Music_Freeroam_End
+| 03:26
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 230
+| N/A
+| anomaly_07_05_v1
+| 00:53
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 231
+| N/A
+| anomaly_07_05_v2
+| 00:42
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 232
+| This Is War (6th Anniversary Remix)
+| LeadTrack01_F_6th_Anniversary_Remix
+| 02:29
+| {{Name|arma3contact}} (Platform)
+
+|-
+| 233
+| N/A
+| Music_Default
+| 02:58
+| {{Name|arma3apex}}
+
+|-
+| 234
+| N/A
+| Track_C_01
+| 02:58
+| {{Name|arma3apex}}
+
+|-
+| 235
+| N/A
+| Track_C_02
+| 03:18
+| {{Name|arma3apex}}
+
+|-
+| 236
+| N/A
+| Track_C_03
+| 01:29
+| {{Name|arma3apex}}
+
+|-
+| 237
+| N/A
+| Track_C_04
+| 02:09
+| {{Name|arma3apex}}
+
+|-
+| 238
+| N/A
+| Track_C_05
+| 02:36
+| {{Name|arma3apex}}
+
+|-
+| 239
+| N/A
+| Track_C_06
+| 02:10
+| {{Name|arma3apex}}
+
+|-
+| 240
+| N/A
+| Track_C_07
+| 01:36
+| {{Name|arma3apex}}
+
+|-
+| 241
+| N/A
+| Track_C_08
+| 01:52
+| {{Name|arma3apex}}
+
+|-
+| 242
+| N/A
+| Track_C_09
+| 01:52
+| {{Name|arma3apex}}
+
+|-
+| 243
+| N/A
+| Track_C_10
+| 01:06
+| {{Name|arma3apex}}
+
+|-
+| 244
+| N/A
+| Track_C_11
+| 01:34
+| {{Name|arma3apex}}
+
+|-
+| 245
+| N/A
+| Track_C_12
+| 02:40
+| {{Name|arma3apex}}
+
+|-
+| 246
+| N/A
+| Track_C_13
+| 02:49
+| {{Name|arma3apex}}
+
+|-
+| 247
+| N/A
+| Track_C_14
+| 00:38
+| {{Name|arma3apex}}
+
+|-
+| 248
+| N/A
+| Track_C_15
+| 01:20
+| {{Name|arma3apex}}
+
+|-
+| 249
+| N/A
+| Track_C_16
+| 02:17
+| {{Name|arma3apex}}
+
+|-
+| 250
+| N/A
+| Track_C_17
+| 01:28
+| {{Name|arma3apex}}
+
+|-
+| 251
+| N/A
+| Track_C_18
+| 02:47
+| {{Name|arma3apex}}
+
+|-
+| 252
+| N/A
+| Track_C_19
+| 04:19
+| {{Name|arma3apex}}
+
+|-
+| 253
+| N/A
+| Track_C_20
+| 01:32
+| {{Name|arma3apex}}
+
+|-
+| 254
+| N/A
+| Track_D_01
+| 04:10
+| {{Name|arma3apex}}
+
+|-
+| 255
+| N/A
+| Track_D_02
+| 06:28
+| {{Name|arma3apex}}
+
+|-
+| 256
+| N/A
+| Track_D_03
+| 04:11
+| {{Name|arma3apex}}
+
+|-
+| 257
+| N/A
+| Track_M_01
+| 04:07
+| {{Name|arma3apex}}
+
+|-
+| 258
+| N/A
+| Track_M_02
+| 04:00
+| {{Name|arma3apex}}
+
+|-
+| 259
+| N/A
+| Track_M_03
+| 04:33
+| {{Name|arma3apex}}
+
+|-
+| 260
+| N/A
+| News_BackOnline
+| 00:38
+| {{Name|arma3apex}}
+
+|-
+| 261
+| N/A
+| News_CSAT_convoy_attacked
+| 00:24
+| {{Name|arma3apex}}
+
+|-
+| 262
+| N/A
+| News_Infection01
+| 00:18
+| {{Name|arma3apex}}
+
+|-
+| 263
+| N/A
+| News_Jingle
+| 00:08
+| {{Name|arma3apex}}
+
+|-
+| 264
+| N/A
+| News_outbreak_Boise
+| 00:18
+| {{Name|arma3apex}}
+
+|-
+| 265
+| N/A
+| News_outbreak_Galili
+| 00:13
+| {{Name|arma3apex}}
+
+|-
+| 266
+| N/A
+| News_outbreak_Oumere
+| 00:03
+| {{Name|arma3apex}}
+
+|-
+| 267
+| N/A
+| News_outbreak_Savaka
+| 00:14
+| {{Name|arma3apex}}
+
+|-
+| 268
+| N/A
+| News_rebels_attack_Lugganville
+| 00:29
+| {{Name|arma3apex}}
+
+|-
+| 269
+| N/A
+| News_weapons_prohibited
+| 00:31
+| {{Name|arma3apex}}
+
+|-
+| 270
+| N/A
+| News_checkpoints
+| 00:18
+| {{Name|arma3apex}}
+
+|-
+| 271
+| N/A
+| News_aircraft
+| 00:13
+| {{Name|arma3apex}}
+
+|-
+| 272
+| N/A
+| News_arrest
+| 00:20
+| {{Name|arma3apex}}
+
+|-
+| 273
+| N/A
+| News_depot_fail
+| 00:16
+| {{Name|arma3apex}}
+
+|-
+| 274
+| N/A
+| News_depot_success
+| 00:17
+| {{Name|arma3apex}}
+
+|-
+| 275
+| N/A
+| News_depot_success_alone
+| 00:23
+| {{Name|arma3apex}}
+
+|-
+| 276
+| N/A
+| News_execution
+| 00:24
+| {{Name|arma3apex}}
+
+|-
+| 277
+| N/A
+| News_hostels
+| 00:22
+| {{Name|arma3apex}}
+
+|-
+| 278
+| N/A
+| News_house_destroyed
+| 00:15
+| {{Name|arma3apex}}
+
+|-
+| 279
+| N/A
+| News_idap
+| 00:16
+| {{Name|arma3apex}}
+
+|-
+| 280
+| N/A
+| News_malaria_boise_secured
+| 00:19
+| {{Name|arma3apex}}
+
+|-
+| 281
+| N/A
+| News_malaria_galili_secured
+| 00:17
+| {{Name|arma3apex}}
+
+|-
+| 282
+| N/A
+| News_malaria_luganville_secured
+| 00:16
+| {{Name|arma3apex}}
+
+|-
+| 283
+| N/A
+| News_malaria_savaka_secured
+| 00:16
+| {{Name|arma3apex}}
+
+|-
+| 284
+| N/A
+| News_power_plant
+| 00:11
+| {{Name|arma3apex}}
+
+|-
+| 285
+| N/A
+| News_radar_destroyed
+| 00:17
+| {{Name|arma3apex}}
+
+|-
+| 286
+| N/A
+| News_rescued
+| 00:17
+| {{Name|arma3apex}}
+
+|-
+| 287
+| N/A
+| News_sugar_company
+| 00:15
+| {{Name|arma3apex}}
+
+|-
+| 288
+| N/A
+| News_weapons
+| 00:23
+| {{Name|arma3apex}}
+
+|-
+| 289
+| N/A
+| Track_O_01
+| 03:42
+| {{Name|arma3apex}}
+
+|-
+| 290
+| N/A
+| Track_O_02
+| 01:59
+| {{Name|arma3apex}}
+
+|-
+| 291
+| N/A
+| Track_O_03
+| 02:09
+| {{Name|arma3apex}}
+
+|-
+| 292
+| N/A
+| Track_O_04
+| 03:01
+| {{Name|arma3apex}}
+
+|-
+| 293
+| N/A
+| Track_O_05
+| 02:28
+| {{Name|arma3apex}}
+
+|-
+| 294
+| N/A
+| Track_O_06
+| 02:30
+| {{Name|arma3apex}}
+
+|-
+| 295
+| N/A
+| Track_O_07
+| 01:54
+| {{Name|arma3apex}}
+
+|-
+| 296
+| N/A
+| Track_O_08
+| 01:29
+| {{Name|arma3apex}}
+
+|-
+| 297
+| N/A
+| Track_O_09
+| 01:51
+| {{Name|arma3apex}}
+
+|-
+| 298
+| N/A
+| Track_O_10
+| 01:27
+| {{Name|arma3apex}}
+
+|-
+| 299
+| N/A
+| Track_O_11
+| 02:43
+| {{Name|arma3apex}}
+
+|-
+| 300
+| N/A
+| Track_O_12
+| 00:39
+| {{Name|arma3apex}}
+
+|-
+| 301
+| N/A
+| Track_O_13
+| 02:19
+| {{Name|arma3apex}}
+
+|-
+| 302
+| N/A
+| Track_O_14
+| 03:04
+| {{Name|arma3apex}}
+
+|-
+| 303
+| N/A
+| Track_O_15
+| 01:47
+| {{Name|arma3apex}}
+
+|-
+| 304
+| N/A
+| Track_O_16
+| 02:18
+| {{Name|arma3apex}}
+
+|-
+| 305
+| N/A
+| Track_P_01
+| 01:36
+| {{Name|arma3apex}}
+
+|-
+| 306
+| N/A
+| Track_P_02
+| 04:02
+| {{Name|arma3apex}}
+
+|-
+| 307
+| N/A
+| Track_P_03
+| 01:38
+| {{Name|arma3apex}}
+
+|-
+| 308
+| N/A
+| Track_P_04
+| 02:27
+| {{Name|arma3apex}}
+
+|-
+| 309
+| N/A
+| Track_P_05
+| 04:13
+| {{Name|arma3apex}}
+
+|-
+| 310
+| N/A
+| Track_P_06
+| 01:35
+| {{Name|arma3apex}}
+
+|-
+| 311
+| N/A
+| Track_P_07
+| 01:42
+| {{Name|arma3apex}}
+
+|-
+| 312
+| N/A
+| Track_P_08
+| 00:47
+| {{Name|arma3apex}}
+
+|-
+| 313
+| N/A
+| Track_P_09
+| 02:56
+| {{Name|arma3apex}}
+
+|-
+| 314
+| N/A
+| Track_P_10
+| 01:38
+| {{Name|arma3apex}}
+
+|-
+| 315
+| N/A
+| Track_P_11
+| 03:23
+| {{Name|arma3apex}}
+
+|-
+| 316
+| N/A
+| Track_P_12
+| 02:12
+| {{Name|arma3apex}}
+
+|-
+| 317
+| N/A
+| Track_P_13
+| 02:14
+| {{Name|arma3apex}}
+
+|-
+| 318
+| N/A
+| Track_P_14
+| 00:41
+| {{Name|arma3apex}}
+
+|-
+| 319
+| N/A
+| Track_P_15
+| 02:36
+| {{Name|arma3apex}}
+
+|-
+| 320
+| N/A
+| Track_P_16
+| 01:27
+| {{Name|arma3apex}}
+
+|-
+| 321
+| N/A
+| Track_P_17
+| 00:54
+| {{Name|arma3apex}}
+
+|-
+| 322
+| N/A
+| Track_P_18
+| 00:44
+| {{Name|arma3apex}}
+
+|-
+| 323
+| N/A
+| Track_R_01
+| 01:42
+| {{Name|arma3apex}}
+
+|-
+| 324
+| N/A
+| Track_R_02
+| 02:38
+| {{Name|arma3apex}}
+
+|-
+| 325
+| N/A
+| Track_R_03
+| 00:59
+| {{Name|arma3apex}}
+
+|-
+| 326
+| N/A
+| Track_R_04
+| 02:43
+| {{Name|arma3apex}}
+
+|-
+| 327
+| N/A
+| Track_R_05
+| 02:52
+| {{Name|arma3apex}}
+
+|-
+| 328
+| N/A
+| Track_R_06
+| 01:33
+| {{Name|arma3apex}}
+
+|-
+| 329
+| N/A
+| Track_R_07
+| 04:24
+| {{Name|arma3apex}}
+
+|-
+| 330
+| N/A
+| Track_R_08
+| 01:09
+| {{Name|arma3apex}}
+
+|-
+| 331
+| N/A
+| Track_R_09
+| 01:13
+| {{Name|arma3apex}}
+
+|-
+| 332
+| N/A
+| Track_R_10
+| 02:29
+| {{Name|arma3apex}}
+
+|-
+| 333
+| N/A
+| Track_R_11
+| 02:57
+| {{Name|arma3apex}}
+
+|-
+| 334
+| N/A
+| Track_R_12
+| 03:01
+| {{Name|arma3apex}}
+
+|-
+| 335
+| N/A
+| Track_R_13
+| 01:54
+| {{Name|arma3apex}}
+
+|-
+| 336
+| N/A
+| Track_R_14
+| 03:01
+| {{Name|arma3apex}}
+
+|-
+| 337
+| N/A
+| Track_R_15
+| 01:43
+| {{Name|arma3apex}}
+
+|-
+| 338
+| N/A
+| Track_R_16
+| 01:50
+| {{Name|arma3apex}}
+
+|-
+| 339
+| N/A
+| Track_R_17
+| 01:43
+| {{Name|arma3apex}}
+
+|-
+| 340
+| N/A
+| Track_R_18
+| 01:50
+| {{Name|arma3apex}}
+
+|-
+| 341
+| N/A
+| Track_R_19
+| 01:46
+| {{Name|arma3apex}}
+
+|-
+| 342
+| N/A
+| Track_R_20
+| 01:40
+| {{Name|arma3apex}}
+
+|-
+| 343
+| N/A
+| Track_R_21
+| 04:05
+| {{Name|arma3apex}}
+
+|-
+| 344
+| N/A
+| Track_R_22
+| 02:29
+| {{Name|arma3apex}}
+
+|-
+| 345
+| N/A
+| Track_R_23
+| 02:40
+| {{Name|arma3apex}}
+
+|-
+| 346
+| N/A
+| Track_R_24
+| 02:55
+| {{Name|arma3apex}}
+
+|-
+| 347
+| Old Man: Intro
+| OM_Music01
+| 01:44
+| {{Name|arma3apex}}
+
+|-
+| 348
+| Old Man: Ambient Music 01
+| OM_Music02
+| 00:52
+| {{Name|arma3apex}}
+
+|-
+| 349
+| Old Man: Ambient Music 02
+| OM_Music03
+| 01:59
+| {{Name|arma3apex}}
+
+|-
+| 350
+| N/A
+| OM_Intro
+| 01:59
+| {{Name|arma3apex}}
+
+|}
+
+
+== Creator DLC Music ==
+
+
+=== [[Global Mobilization|Global Mobilization - Cold War Germany]] ===
+
+{| class="wikitable sortable" width="100%"
+! width="5%" |No.
+! width="45%" |Title
+! width="40%" |Class Name
+! width="10%" |Duration
+
+|-
+| 1
+| GM: Preparations
+| gm_preprations
+| 83
+
+|-
+| 2
+| GM: Medley
+| gm_medley
+| 257
+
+|-
+| 3
+| GM: Limits
+| gm_limits
+| 119
+
+|-
+| 4
+| GM: Note
+| gm_note
+| 18
+
+|-
+| 5
+| GM: Intermezzo
+| gm_intermezzo
+| 62
+
+|-
+| 6
+| GM: 1983
+| gm_1983
+| 193
+
+|-
+| 7
+| GM: Longplay
+| gm_longplay
+| 517
+
+|-
+| 8
+| GM: Warmup
+| gm_warmup
+| 30
+
+|-
+| 9
+| GM: Uncertain
+| gm_uncertain
+| 112
+
+|-
+| 10
+| GM: Panzerkraft
+| gm_panzerkraft
+| 233
+
+|-
+| 11
+| GM: Leopards
+| gm_leopards
+| 270
+
+|-
+| 12
+| GM: Remaining
+| gm_remaining
+| 254
+
+|-
+| 13
+| GM: Long Strides
+| gm_longstrides
+| 128
+
+|-
+| 14
+| GM: Response
+| gm_response
+| 87
+
+|-
+| 15
+| GM: Scatter
+| gm_scatter
+| 208
+
+|-
+| 16
+| GM: Death
+| gm_death
+| 47
+
+|-
+| 17
+| GM: Motschuetzen
+| gm_motschuetzen
+| 180
+|}
+
+=== [[Western Sahara]] ===
+
+Last updated: {{GVI|arma3|2.10}}
+{| class="wikitable sortable" width="100%1"
+! width="5%" | No.
+! width="35%" | Title
+! width="30%" | Class Name
+! width="15%" | Duration
+
+|-
+| 1
+| Western Sahara: Lead 01
+| LeadTrack01_lxWS
+| 02:25
+
+|-
+| 2
+| Western Sahara: Ambient 01
+| AmbientTrack01_lxWS
+| 00:40
+
+|-
+| 3
+| Western Sahara: Ambient 03a
+| AmbientTrack03a_lxWS
+| 00:33
+
+|-
+| 4
+| Western Sahara: Ambient 03b
+| AmbientTrack03b_lxWS
+| 00:32
+
+|-
+| 5
+| Western Sahara: Ambient 03c
+| AmbientTrack03c_lxWS
+| 00:34
+
+|-
+| 6
+| Western Sahara: Ambient 04
+| AmbientTrack04_lxWS
+| 01:26
+
+|-
+| 7
+| Western Sahara: Jukebox - A1
+| jukebox_a1_lxWS
+| 01:05
+
+|-
+| 8
+| Western Sahara: Jukebox - A2
+| jukebox_a2_lxWS
+| 00:54
+
+|-
+| 9
+| Western Sahara: Jukebox - B1
+| jukebox_b1_lxWS
+| 00:37
+
+|-
+| 10
+| Western Sahara: Jukebox - B2
+| jukebox_b2_lxWS
+| 00:58
+
+|-
+| 11
+| Western Sahara: Jukebox - B3
+| jukebox_b3_lxWS
+| 00:51
+
+|-
+| 12
+| Western Sahara: Jukebox - C1
+| jukebox_c1_lxWS
+| 00:29
+
+|-
+| 13
+| Western Sahara: Jukebox - C2
+| jukebox_c2_lxWS
+| 00:35
+
+|-
+| 14
+| Western Sahara: Jukebox - D1
+| jukebox_d1_lxWS
+| 00:39
+
+|-
+| 15
+| Western Sahara: Jukebox - D2
+| jukebox_d2_lxWS
+| 00:45
+
+|-
+| 16
+| Western Sahara: Jukebox - D3
+| jukebox_d3_lxWS
+| 00:34
+
+|-
+| 17
+| Western Sahara: Jukebox - D4
+| jukebox_d4_lxWS
+| 00:34
+
+|-
+| 18
+| Western Sahara: Jukebox - D5
+| jukebox_d5_lxWS
+| 00:35
+
+|-
+| 19
+| Western Sahara: Jukebox - E1
+| jukebox_e1_lxWS
+| 00:38
+
+|-
+| 20
+| Western Sahara: Jukebox - E2
+| jukebox_e2_lxWS
+| 00:22
+
+|-
+| 21
+| Western Sahara: Jukebox - E3
+| jukebox_e3_lxWS
+| 00:53
+
+|-
+| 22
+| Western Sahara: Jukebox - T3
+| jukebox_t1_lxWS
+| 01:06
+
+|-
+| 23
+| Western Sahara: Jukebox - T2
+| jukebox_t2_lxWS
+| 00:47
+
+|-
+| 24
+| Western Sahara: Jukebox - T3A
+| jukebox_t3a_lxWS
+| 01:04
+
+|-
+| 25
+| Western Sahara: Jukebox - T3B
+| jukebox_t3b_lxWS
+| 01:04
+
+|-
+| 26
+| Western Sahara: Jukebox - T4A
+| jukebox_t4a_lxWS
+| 00:49
+
+|-
+| 27
+| Western Sahara: Jukebox - T4B
+| jukebox_t4b_lxWS
+| 00:47
+
+|-
+| 28
+| Western Sahara: Jukebox - T4C
+| jukebox_t4c_lxWS
+| 00:46
+
+|-
+| 29
+| Western Sahara: Jukebox - T5A
+| jukebox_t5a_lxWS
+| 00:49
+
+|-
+| 30
+| Western Sahara: Jukebox - T5B
+| jukebox_t5b_lxWS
+| 00:48
+
+|-
+| 31
+| Western Sahara: Alchemist - Action 1
+| alchemist_action1_lxWS
+| 01:01
+
+|-
+| 32
+| Western Sahara: Alchemist - Action 2
+| alchemist_action2_lxWS
+| 01:17
+
+|-
+| 33
+| Western Sahara: Alchemist - Action 3
+| alchemist_action3_lxWS
+| 01:08
+
+|-
+| 34
+| Western Sahara: Alchemist - Action 4
+| alchemist_action4_lxWS
+| 00:57
+
+|-
+| 35
+| Western Sahara: Alchemist - Ambient 01v2
+| alchemist_01v2_lxWS
+| 00:41
+
+|-
+| 36
+| Western Sahara: Alchemist - Ambient 02v2
+| alchemist_02v2_lxWS
+| 01:10
+
+|}
+
+{{Wiki|extractionScript}}
+
+
+{{GameCategory|arma3|Reference Lists}}

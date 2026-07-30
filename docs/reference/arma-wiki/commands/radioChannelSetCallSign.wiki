@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/radioChannelSetCallSign
+// revision: 378308 (2026-04-01T22:46:59Z)
+// export sha1: bk2u8wgit20bepi03sfe6ogs5jc8ahb
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: Custom Radio and Chat | Category:Command Group: Radio and Chat | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|arg= global
+|eff= global
+
+|gr1= Radio and Chat
+
+|gr2= Custom Radio and Chat
+
+|descr= Set the custom radio chat channel's callsign / VoN callsign.
+
+|s1= customChannelID [[radioChannelSetCallSign]] callSign
+
+|p1= customChannelID: [[Number]] - [[Channel IDs|custom channel ID]] returned by [[radioChannelCreate]] command
+
+|p2= callSign: [[String]] or {{GVI|arma3|2.22|size= 0.75}} [[Array]] - custom chat callsign or [callSign, callSignVoN]. Available parameters: <spoiler>
+{| class="wikitable"
+! Parameter !! Description !! Example
+|-
+| {{hl|%$KEY}} || Reference a localised text || "%$STR_Q_North" &rarr; "North"
+|-
+| {{hl|%CHANNEL_LABEL}} || The channel's label - see [[radioChannelSetLabel]] || "Q-dance Radio"
+|-
+| {{hl|%UNIT_SIDE}} || Side's name, similar to [[sideRadio]] || "BLUFOR"
+|-
+| {{hl|%UNIT_NAME}} || The '''''player'''''<nowiki/>'s or AI's name - see [[name]] || "John Doe"
+|-
+| {{hl|%UNIT_RANK}} || A shorthand version of the unit's rank || "Sgt"
+|-
+| {{hl|%UNIT_ID}} || The unit's id in the group || "1"
+|-
+| {{hl|%UNIT_REF}} || The unit's log reference || "Unit123456"
+|-
+| {{hl|%UNIT_GRP_NAME}} || The group's name - see [[setGroupId]] || "Alpha 1-1"
+|-
+| {{hl|%UNIT_GRP_LEADER}} || Group leader mention (if the unit is its group's leader) || ", group leader"
+|-
+| {{hl|%UNIT_VEH_NAME}} || Display name of the unit's vehicle || "Hunter"
+|-
+| {{hl|%UNIT_VEH_POSITION}} || Unit's vehicle position, similar to [[vehicleRadio]] || "Gunner"
+|-
+| {{hl|%%}} || To display a normal percentage sign || {{n/a}}
+|}
+</spoiler>
+
+|r1= [[Nothing]]
+
+|x1= <sqf>4 radioChannelSetCallSign "(%UNIT_ID) %UNIT_RANK %UNIT_NAME%UNIT_GRP_LEADER"; // (1) Sgt Ben Kelly, group leader</sqf>
+
+|x2= <sqf>4 radioChannelSetCallSign ["%UNIT_VEH_POSITION, %UNIT_VEH_NAME", "%UNIT_NAME%UNIT_GRP_LEADER"];</sqf>
+
+|seealso= [[radioChannelAdd]] [[radioChannelCreate]] [[radioChannelRemove]] [[radioChannelSetLabel]]
+}}

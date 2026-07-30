@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Mission_Information
+// revision: 139104 (2019-12-03T21:54:17Z)
+// export sha1: jekee1dwen01dwp44p33djmxt92wdz1
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands by Functionality]]
+Read and set parameters for the current mission.

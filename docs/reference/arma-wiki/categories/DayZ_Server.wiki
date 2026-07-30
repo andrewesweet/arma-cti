@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:DayZ:_Server
+// revision: 339010 (2023-04-24T23:15:15Z)
+// export sha1: o9v4n3mr4hn2m66bq9flr7418tx5xpr
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|dayz}}

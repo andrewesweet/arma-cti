@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_CDLCs
+// revision: 370323 (2024-11-26T17:08:52Z)
+// export sha1: 72ieybgyxmaufcwgxath0llonycnbd9
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="valign-top" style="width: 100%"
+| style="padding: 0 2em 2em 0" | <div style="font-size: 0.9em">{{Navbox/CDLCs}}</div>
+
+
+: '''C'''reator '''DLC''' or '''CDLC''' (Formerly known as Third-Party DLC) is brand new additional content for [[:Category:Arma 3|{{arma3}}]], which is made by third-party developers, and published by [[Bohemia Interactive]]. <!--
+-->The goal is to provide more original quality content to players, create an opportunity for outside talent to earn a financial reward, while also making it possible for Bohemia to invest more into the Arma series' long-term future.
+
+
+: See also the {{Link|https://arma3.com/dlc/creator|{{arma3}} FAQ (arma3.com)}}.
+| style="width: 1%" |
+[[image:a3 gm arma3-com steampageimg 600x100 3c.png|500px|link= http://www.arma3.com/dlc/creator]]<br>
+{{Feature|informative|For Official DLCs, see {{Link|Category:Arma 3: DLCs &amp; Expansions|Arma 3: DLCs &amp; Expansions}}.}}
+{| class="wikitable align-center" style="width: 100%"
+! #
+! Name
+! Release date
+! Steam ID
+! Classname
+|-
+| 1
+| [[Global Mobilization]]
+| 2019-04-29
+| {{Link|https://store.steampowered.com/app/1042220/|1042220}}
+| GM
+|-
+| 2
+| [[S.O.G. Prairie Fire]]
+| 2021-05-06
+| {{Link|https://store.steampowered.com/app/1227700/|1227700}}
+| VN
+|-
+| 3
+| [[CSLA Iron Curtain]]
+| 2021-06-16
+| {{Link|https://store.steampowered.com/app/1294440/|1294440}}
+| CSLA
+|-
+| 4
+| [[Western Sahara]]
+| 2021-11-18
+| {{Link|https://store.steampowered.com/app/1681170/|1681170}}
+| WS
+|-
+| 5
+| [[Spearhead 1944]]
+| 2023-07-25
+| {{Link|https://store.steampowered.com/app/1175380/|1175380}}
+| SPE
+|-
+| 6
+| [[Reaction Forces]]
+| 2024-03-26
+| {{Link|https://store.steampowered.com/app/2647760/|2647760}}
+| RF
+|-
+| 7
+| [[Expeditionary Forces]]
+| 2024-11-26
+| {{Link|https://store.steampowered.com/app/2647830/|2647830}}
+| EF
+|}
+|}
+
+
+{{GameCategory|arma3|DLCs & Expansions}}

@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/ArmA:_Armed_Assault:_Beta:_Fixing_Crashes_108
+// revision: 184798 (2021-01-06T16:15:10Z)
+// export sha1: 0kj7cb4jcwik9f4qfp5kjj0h9lr467r
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1|Windows Error Reporting]]
+
+Thank you for sending us the error information. We aim to make the ArmA as stable as possible.
+
+If you are interested, you might want to try a [[ArmA Beta Patch 1.11}} - chance is it might fix the issue for you, and even if not, the information we will get from it will make fixing the issue easier for us, as it contains more focused diagnostics for some common problems. This beta patch is very small and it is installed side by side with the latest stable version, therefore if you are not happy with it, you may continue using the stable version.

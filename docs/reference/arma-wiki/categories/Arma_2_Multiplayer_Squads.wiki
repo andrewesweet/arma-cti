@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Multiplayer_Squads
+// revision: 181654 (2021-01-02T23:49:16Z)
+// export sha1: hjmgk1b7jpr0ehwmvdhi1tiud1dr8v7
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Image:flag_spain.gif|Spanish]] [http://www.88th.es 88th Co."Walking Death" eSports Club]
+{{GameCategory|arma2|Multiplayer}}

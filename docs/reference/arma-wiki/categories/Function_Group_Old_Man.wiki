@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Old_Man
+// revision: 336157 (2022-12-12T09:46:33Z)
+// export sha1: rr7yfu4sjx61k2d3ywsicgu22s8kne4
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions used in the [[Arma 3 Apex: Old Man]] scenario.
+{{Feature|informative|See also [[Arma 3: Old Man Systems]].}}
+
+
+[[Category:Functions by Functionality]]

@@ -1,0 +1,90 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Tools_Installation
+// revision: 369848 (2024-10-16T13:52:01Z)
+// export sha1: hq3o6kp0gki1ga9xdt4sza36lkkpxn9
+// categories: Category:Arma 3: Official Tools Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This page contains all necessary data to install {{arma3}} Tools in your computer.
+
+== Prerequisites ==
+* Preferably don't have BI Tools installed as it conflicts somehow (on Windows registry entries level) with the {{arma3}} Tools from Steam
+* Own a valid Steam account
+* Internet connection
+* At least 1.1 GB free space on your Hard Drive
+
+
+== Step by Step Setup ==
+
+=== Preparation ===
+
+# Open your Steam library (switch the filter to "Tools") - "{{arma3}} Tools"
+# Configure which branch you want to use<br>[[File:a3ct_select_branch.jpg|200px]] 
+## Right click, then click on "Properties" 
+## go into "BETAS" tab 
+## Select the appropriate "beta"<br>''Details about branches are in the point "Details about branches"''
+# Automatic updates, behaviour<br>[[File:a3ct_select_updatesPlan.jpg|200px]] 
+## Go into "UPDATES" tab and select the appropriate value<br>To help you, there is a label under the list box that describes the selected option
+## Be sure that "Enable Steam Cloud synchronization for {{arma3}} Tools" is checked (''prepare the future ;)'')
+
+=== Installation ===
+
+# From the Steam tools library, right click on {{arma3}} Tools and click on "Install Game..."
+# Choose the appropriate location for install if needed
+# Review the general EULA
+# Click "next" and let Steam download the tools
+# Wait for the download to be completed
+
+=== Configuration ===
+
+# Play {{arma3}} Tools from Steam <br>[[File:a3ct_playArma3Tools.jpg|200px]]<br>This step will add all needed registry entries for the rest of tools.
+
+
+== Details about branches ==
+
+=== Default ===
+
+* Update frequency: Same as {{arma3}} main branch
+* Hard drive: 550+ MB free space
+* Changelog: {{Link|http://dev.arma3.com/techrep|{{arma3}} TECHREPs}}
+* Description: 
+: This is the main stable branch, used by the most of users.
+
+=== Development Build ===
+
+* Update frequency: Same as {{arma3}} main branch
+* Hard drive: 700+ MB free space
+* Changelog: {{Link|http://forums.bistudio.com/showthread.php?179347-Tools-Development-Branch-Changelog|Thread on BI Forums}}
+* Description: 
+: This branch contains the latest public version of "{{arma3}} Tools", including features, tools, fixes... and perhaps new issues, you bear the risk of using it.
+: The updates are not daily like the {{arma3}} development branch does, but rather in irregular intervals according to needs and additions by our team.
+: Development branch does not pass internal QA before publication. Stick with main branch (default) if you do not want to deal with the (big) potential issues and frequent data transfers.
+
+=== Huge Data Packages ===
+
+* Update frequency: Same as {{arma3}} main branch
+* Hard drive: 22+ GB free space
+* Changelog: {{Link|http://dev.arma3.com/techrep|{{arma3}} TECHREPs}}
+* Description: 
+: In addition to the tools from the default branch, it will download the {{Link|Category:Public Data|Public Data}}.
+: Be warned, this represents around 22 GB of additional download, but it is downloaded once since it is excluded from the update plan.
+
+
+== Notes ==
+
+=== Uninstall ===
+
+Be aware, if you use the {{arma3}} Tools as P Drive (default location), your P Drive content will be erased.
+In some cases, the content that was added by Steam (I.e. settings.ini or other user files) remains present into the installation directory and should be deleted manually in case of need.
+
+==== Steam solution ====
+# Open your Steam library (switch the filter to "Tools") - "{{arma3}} Tools"
+# right click on {{arma3}} Tools, then click on delete local content
+
+==== Windows solution ====
+# Open the control panel, then go into "Program and Features"
+# Locate "{{arma3}} Tools", do a left click and click uninstall
+# The rest of the process will be handled by Steam, it will have for effect to delete the content of "{{arma3}} Tools" and the registry keys related by the tools
+
+
+{{GameCategory|arma3|Official Tools Manual}}

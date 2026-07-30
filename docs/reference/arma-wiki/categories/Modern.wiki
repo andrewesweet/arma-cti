@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Modern
+// revision: 184803 (2021-01-06T16:16:59Z)
+// export sha1: a8wavfjy4jf94y6f3cveg2ub1dvy502
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma2|Media}}

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/shownUAVFeed
+// revision: 310779 (2022-05-07T20:21:45Z)
+// export sha1: ixnzfcuq68z9pv175m7bd6kgh4ula9k
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Custom Panels | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Remote Control
+
+|gr2= Custom Panels
+
+|descr= Returns [[true]] if video feed transmitted from UAV is shown. A getter for [[showUAVFeed]].
+
+|s1= [[shownUAVFeed]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_bool = shownUAVFeed;</sqf>
+
+|seealso= [[showUAVFeed]] [[allUnitsUAV]] [[getConnectedUAV]] [[UAVControl]] [[connectTerminalToUAV]] [[isUAVConnected]]
+}}

@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/DialogControls-Menu
+// revision: 244192 (2021-02-07T13:38:56Z)
+// export sha1: ktzgyv3cbotegyljg2zhvzg4wp08fyd
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+* [[CT_MENU]]
+* [[CT_MENU_STRIP]]
+* [[CT_CONTEXT_MENU]]

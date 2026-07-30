@@ -1,0 +1,248 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Enhanced_Revive_(ER)
+// revision: 351621 (2023-12-11T09:33:17Z)
+// export sha1: 10zwa7vu00lpcu66ajtv9zcl8q0bjcv
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Enhanced Revive System = 
+
+== Overview ==
+
+The Enhanced Revive system offers several additional features and customization options compared to the vanilla revive system.
+
+This system includes actions like dragging unconscious co-players or NPCs, stabilizing bleeding, and reviving the wounded. Players who are incapacitated can choose to self-revive if they have the necessary items in their inventory, allowing them to rejoin the action. They also have the option to roll over and crawl to safety or towards friendly forces, or they can call for assistance from both AI units and other players. Furthermore, AI units are also capable of reviving each other.
+
+== Detailed information ==
+
+=== Interaction ===
+
+All enhanced revive actions are done through the action menu. Each action, such as reviving, stabilizing, or dragging, will require you to hold down your action key to complete them.
+
+=== For both players and AI ===
+
+All playable or switchable units can be incapacitated through the enhanced revive system. This means that members of your group or other groups on your side may require your or your team's assistance or may come to assist you when unconscious.
+
+=== Calling for help ===
+
+When incapacitated, units will have the option to Call for help. This action will cause your character to yell for help, alerting the nearest AI unit (and players) that can assist you. Be aware that only AI that have enough First Aid Kits or the required medic trait will come to assist you.
+
+Due to the complexity of the game world and situation, there may be some cases where the AI is unable to get to your position within a certain timeframe. If that occurs, the AI will stop trying to assist you.
+
+=== Revive modes ===
+
+There are three modes
+
+==== Basic ====
+
+* When units are injured to the point where they would be killed, they're incapacitated
+* Incapacitated can't be killed when downed - they can only die from bleeding out
+* Less First Aid Kits are required to revive and stabilize units
+* Units take longer to bleed out
+* Reviving takes less time
+
+==== Advanced ====
+
+* When a unit is injured to a certain degree, they're incapacitated and, when injured beyond that amount, will most likely die outright
+* Incapacitated units can be killed when downed, as well as bleed out
+* More First Aid Kits are required to revive and stabilize units
+* Units take less time to bleed out
+* Reviving takes more time
+
+==== Realistic ====
+
+* When a unit gets injured to a point where they would be killed without the system, they will usually die in this mode too
+* Incapacitation will occur only when a unit reaches a point near death
+* Incapacitated units can be killed when downed, as well as bleed out
+* Even more First Aid Kits are required to revive and stabilize units
+* Units take much less time to bleed out
+* Reviving takes much longer
+* Medic trait multiplier is reduced
+* Only units with the medic trait can revive units
+
+== Mission parameters ==
+
+Most default parameters for the enhanced revive system are based on the selected difficulty level by default, but can be customized via the mission parameters or module as mission maker.
+
+Most importantly, the higher the difficulty, the more first aid kits are required and the less time before the injured bleeds out.
+
+The available parameters include:
+
+* Disable the revive system entirely
+* Choose between basic, advanced, and realistic mode (the chance to die outright for the amount of damage taken)
+* Selecting whether or not the medic trait is required to revive a unit
+* A multiplier on how much faster medics operate
+* The time it takes to revive a unit
+* The time it takes to force respawn
+* The time units have until they bleed out from their injuries
+* The amount of First Aid Kits required to revive
+* If stabilizing is required to stop bleeding
+* If 3D icons are displayed to help locate incapacitated units
+* If an unconscious unit is to call for assistance automatically
+* If AI units will automatically withstand their injuries
+
+== Mission Parameter Config ==
+
+[[File: spe_enhanced_revivive_parameters.jpg|500px|right]]
+
+There are several parameters that can be included into the [[description.ext]] to make them available as [[Mission Parameters]]. 
+
+<syntaxhighlight lang="cpp">
+class Params
+{
+	class SPE_ReviveEnabled
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_REVIVE_ENABLED";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_ENABLED","$STR_SPE_UtilityFunctions_Revive_DISABLED"};
+		values[] = {0,1};
+		default = __EVAL([0,1] select (isClass (configFile >> "cfgPatches" >> "ace_medical")));
+	};
+	class SPE_ReviveMode
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_REVIVE_MODE";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DIFFICUILTY_MODE","$STR_SPE_UtilityFunctions_Revive_BASIC","$STR_SPE_UtilityFunctions_Revive_ADVANCED","$STR_SPE_UtilityFunctions_Revive_REALISTIC"};
+		values[] = {0,1,2,3};
+		default = 0;
+	};
+	class SPE_ReviveRequiredTrait
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_REQUIRED_TRAIT";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DIFFICUILTY_TRAIT","$STR_SPE_UtilityFunctions_Revive_REQUIRE_FIRST_AID_KIT","$STR_SPE_UtilityFunctions_Revive_REQUIRE_MEDIC_TRAIT","$STR_SPE_UtilityFunctions_Revive_NONE"};
+		values[] = {0,1,2,3};
+		default = 0;
+	};
+	class SPE_ReviveMedicSpeedMultiplier
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_MEDIC_MULTIPLIER";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DIFFICUILTY_MULTIPLIER","0x","2x","3x","5x","10x"};
+		values[] = {0, 1, 2, 3, 5, 10};
+		default = 0;
+	};
+	class SPE_ReviveDelay
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_REVIVE_TIME_SECONDS";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DIFFICUILTY_REVIVE", "5", "7", "8", "12", "15", "17"};
+		values[] = {0, 5, 7, 8, 12, 15, 17};
+		default = 0;
+	};
+	class SPE_ReviveForceRespawnDelay
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_FORCE_RESPAWN_TIME_SECONDS";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DIFFICUILTY_RESPAWN", "5", "10", "15", "20", "25", "30"};
+		values[] = {0, 5, 10, 15, 20, 25, 30};
+		default = 0;
+	};
+	class SPE_ReviveBleedOutDelay
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_BLEEDOUT_TIME_SECONDS";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DIFFICUILTY_BLEEDOUT", "$STR_SPE_UtilityFunctions_Revive_NEVER", "30", "60", "120", "180", "240", "300"};
+		values[] = {0, 9999, 30, 60, 120, 180, 240, 300};
+		default = 0;
+	};
+	class SPE_ReviveFakAmount
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_FAK_AMOUNT";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DIFFICUILTY_FAK_AMOUNT", "1", "2", "3"};
+		values[] = {0, 1, 2, 3};
+		default = 0;
+	};
+	class SPE_ReviveStabilize
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_STABILIZE_PARAM";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DISABLED","$STR_SPE_UtilityFunctions_Revive_ENABLED"};
+		values[] = {0,1};
+		default = 1;
+	};
+	class SPE_ReviveIcons
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_ICONS_PARAM";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DIFFICUILTY_3D_ICONS", "$STR_SPE_UtilityFunctions_Revive_ENABLED", "$STR_SPE_UtilityFunctions_Revive_MEDIC_ONLY", "$STR_SPE_UtilityFunctions_Revive_DISABLED"};
+		values[] = {0, 1, 2, 3};
+		default = 0;
+	};
+	class SPE_ReviveAutoCall
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_AUTOCALL_PARAM";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DISABLED","$STR_SPE_UtilityFunctions_Revive_ENABLED","$STR_SPE_UtilityFunctions_Revive_CADETONLY"};
+		values[] = {0,1,2};
+		default = 2;
+	};
+	class SPE_ReviveAutoWithstand
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_AUTOWITHSTAND_PARAM";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DISABLED","$STR_SPE_UtilityFunctions_Revive_ENABLED","$STR_SPE_UtilityFunctions_Revive_CADETONLY"};
+		values[] = {0,1,2};
+		default = 2;
+	};
+	class SPE_WithstandExtraFAK
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_WITHSTAND_EXTRA_FAK_PARAM";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DIFFICUILTY_WITHSTAND_EXTRA_FAK","$STR_SPE_UtilityFunctions_Revive_DISABLED", "$STR_SPE_UtilityFunctions_Revive_ENABLED"};
+		values[] = {0,1,2};
+		default = 0;
+	};
+	class SPE_WithstandEnabled
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_WITHSTAND_ENABLED_PARAM";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DIFFICULTY_WITHSTAND_ENABLED","$STR_SPE_UtilityFunctions_Revive_DISABLED", "$STR_SPE_UtilityFunctions_Revive_ENABLED"};
+		values[] = {0,1,2};
+		default = 0;
+	};
+	class SPE_WithstandEnabledAI
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_WITHSTAND_ENABLED_AI_PARAM";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_DIFFICULTY_WITHSTAND_ENABLED_AI","$STR_SPE_UtilityFunctions_Revive_DISABLED", "$STR_SPE_UtilityFunctions_Revive_ENABLED"};
+		values[] = {0,1,2};
+		default = 0;
+	};
+	class SPE_ReviveUnits
+	{
+		title = "$STR_SPE_UtilityFunctions_Revive_UNITS_NAME";
+		texts[] = {"$STR_SPE_UtilityFunctions_Revive_UNITS_PLAYABLE","$STR_SPE_UtilityFunctions_Revive_UNITS_PLAYERS"};
+		values[] = {0,1};
+		default = 0;
+	};
+};
+</syntaxhighlight>
+
+Alternatively, one can also include the following file into the [[description.ext]] as follows:
+
+<syntaxhighlight lang="cpp">
+class Params
+{
+	#if __has_include("\WW2\SPE_Missions_p\UtilityFunctions_f\reviveToksa\reviveToksaDefines.hpp")
+		#include "\WW2\SPE_Missions_p\UtilityFunctions_f\reviveToksa\reviveToksaDefines.hpp"
+	#endif
+};
+</syntaxhighlight>
+
+{{Feature|warning|The {{hl|__has_include}} is necessary to avoid the server crashing from missions in the '''MPMissions''' folder with an include to [[Spearhead 1944]] files, yet the CDLC/SPE is not loaded as mod.}}
+
+== Customization ==
+
+=== Handle recruited AI ===
+
+If you play with an AI recruiting feature, or the mission/game spawns AI mid mission and joins them to the player group, currently the Enhanced Revive system won't handle them.
+
+# Name the revive module in the editor '''My_Revive_Module''' // to access it when calling the revive params function in your scripts
+# Add to {{Link|Event Scripts#initPlayerLocal.sqf|initPlayerLocal.sqf}}
+
+<sqf>
+[] spawn
+{
+	waitUntil { !(isNil "My_Revive_Module") };
+
+	SPE_reviveToksaParams_initialized = false;
+
+	[revive_module] call SPE_MissionUtilityFunctions_fnc_ReviveToksaParams;
+
+	(group player) addEventHandler ["UnitJoined", {
+		params ["_group", "_newUnit"];
+
+		[_newUnit] call SPE_MissionUtilityFunctions_fnc_ReviveToksaInit;
+		[_newUnit] call SPE_MissionUtilityFunctions_fnc_ReviveToksaActionsInit;
+	}];
+};</sqf>
+
+{{Feature|informative|The code sets {{hl|SPE_reviveToksaParams_initialized}} to false to have the revive params function run through completely rather than exiting early}}
+
+[[Category: Spearhead 1944]]

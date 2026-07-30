@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/Operation_Flashpoint:_Flag_Textures
+// revision: 353760 (2024-03-23T14:20:24Z)
+// export sha1: 2upcxra55f1p4mbi4nr4n1nabxh7it5
+// categories: Category:Flag Textures
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Textures available for use with [[setFlagTexture]]. See [[:Category:Command Group: Flags|Command Group: Flags]] for all flag commands.
+
+
+== File Location ==
+
+{{ofp}} comes with an addon called {{hl|Flags.pbo}} which contains all the flags of the world. You can find it in the addons folder.
+
+
+== Flag Textures ==
+
+* "\flags\usa.jpg"
+* "\flags\ussr.jpg"
+* "\flags\fia.jpg"
+
+
+== Flag Texture Files ==
+
+* "usa_vlajka.pac" (US flag)
+* "rus_vlajka.pac" (Soviet Union flag)
+* "guba_vlajka.pac" (Guba's private flag)
+
+
+[[Category:Flag Textures]]

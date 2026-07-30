@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_2.22
+// revision: 376725 (2025-11-12T16:53:56Z)
+// export sha1: jss31rx2qa7q28yrm7yjxj2so44knxw
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with {{arma3}} version 2.22 may be recognised by the appearance of this icon: {{GVI|arma3|2.22}}
+
+{{Feature|informative|This category does not list all changes that were introduced in this version. For a more detailed list of features that were added or expanded such as additional command syntaxes see [[Special:WhatLinksHere/Category:Introduced_with_Arma_3_version_2.22|what links here]]}}
+
+[[Category:Introduced with {{arma3}}|2.22]]

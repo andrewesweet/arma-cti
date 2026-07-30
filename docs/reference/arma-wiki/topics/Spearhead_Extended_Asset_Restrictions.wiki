@@ -1,0 +1,8448 @@
+// source: https://community.bistudio.com/wiki/Spearhead_Extended_Asset_Restrictions
+// revision: 376058 (2025-07-23T16:20:18Z)
+// export sha1: pguh4m10f14ttwh25uqtvk9ylk8vzd4
+// categories: Category:SPEX - Spearhead Extended
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|For more information about how the restrictions work visit [[Arma 3: DLC Restrictions]].}}
+
+{{TopMenu|
+[[Spearhead Extended Asset Restrictions#Equipment|Equipment]]
+[[Spearhead Extended Asset Restrictions#Vehicles|Vehicles]]
+}}
+
+== Equipment ==
+
+{| class="wikitable sortable" width=100%
+|-
+! Type
+! Class Name
+! Display Name
+! Icon
+! Restricted?
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse
+| GER Tropic 1941 Uniform
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_roll
+| GER Tropic 1941 Uniform (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_soc
+| GER Tropic 1941 Uniform Gaiter
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_soc_roll
+| GER Tropic 1941 Uniform Gaiter (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_putti
+| GER Tropic 1941 Uniform Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_putti_roll
+| GER Tropic 1941 Uniform Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_high
+| GER Tropic 1941 Uniform Highboots
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_high_roll
+| GER Tropic 1941 Uniform Highboots (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_high_breech
+| GER Tropic 1941 Uniform Breeches
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_high_breech_roll
+| GER Tropic 1941 Uniform Breeches (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_short
+| GER Tropic 1941 Shorts
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_short_roll
+| GER Tropic 1941 Shorts (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_short_high
+| GER Tropic 1941 Shorts Highboots
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_short_high_roll
+| GER Tropic 1941 Shorts Highboots (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_medic
+| GER Tropic 1941 Uniform (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_medic_high
+| GER Tropic 1941 Uniform Highboots (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_oberschutze
+| GER Tropic 1941 Uniform (Oberschutze)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_oberschutze_high
+| GER Tropic 1941 Uniform Highboots (Oberschutze)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_oberschutze_putti
+| GER Tropic 1941 Uniform Puttees (Oberschutze)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_gefreiter
+| GER Tropic 1941 Uniform (Gefreiter)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_gefreiter_high
+| GER Tropic 1941 Uniform Highboots (Gefreiter)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_gefreiter_putti
+| GER Tropic 1941 Uniform Puttees (Gefreiter)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_uffz
+| GER Tropic 1941 Uniform (Uffz)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_uffz_high
+| GER Tropic 1941 Uniform Highboots (Uffz)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_uffz_putti
+| GER Tropic 1941 Uniform Puttees (Uffz)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42
+| GER Tropic 1942 Uniform
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_roll
+| GER Tropic 1942 Uniform (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_soc
+| GER Tropic 1942 Uniform Gaiter
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_soc_roll
+| GER Tropic 1942 Uniform Gaiter (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_putti
+| GER Tropic 1942 Uniform Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_putti_roll
+| GER Tropic 1942 Uniform Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_high
+| GER Tropic 1942 Uniform Highboots
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_high_roll
+| GER Tropic 1942 Uniform Highboots (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_high_breech
+| GER Tropic 1942 Uniform Breeches
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_high_breech_roll
+| GER Tropic 1942 Uniform Breeches (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_short
+| GER Tropic 1942 Shorts
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_short_roll
+| GER Tropic 1942 Shorts (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_short_high
+| GER Tropic 1942 Shorts Highboots
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_short_high_roll
+| GER Tropic 1942 Shorts Highboots (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_oberschutze
+| GER Tropic 1942 Uniform (Oberschutze)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_oberschutze_high
+| GER Tropic 1942 Uniform Highboots (Oberschutze)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_oberschutze_putti
+| GER Tropic 1942 Uniform Puttees (Oberschutze)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_gefreiter
+| GER Tropic 1942 Uniform (Gefreiter)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_gefreiter_high
+| GER Tropic 1942 Uniform Highboots (Gefreiter)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_gefreiter_putti
+| GER Tropic 1942 Uniform Puttees (Gefreiter)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_uffz
+| GER Tropic 1942 Uniform (Uffz)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_uffz_high
+| GER Tropic 1942 Uniform Highboots (Uffz)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_M42_uffz_putti
+| GER Tropic 1942 Uniform Puttees (Uffz)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_leutnant
+| GER Tropic Officer (Leutnant)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_oberleutnant
+| GER Tropic Officer (Oberleutnant)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_Feldbluse_hauptmann
+| GER Tropic Officer (Hauptmann)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_ART_Feldbluse
+| GER Tropic Artillery Uniform
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_ART_Feldbluse_gefreiter
+| GER Tropic Artillery Uniform (Gefreiter)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_ART_Feldbluse_uffz
+| GER Tropic Artillery Uniform (Uffz)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_ART_Feldbluse_leutnant
+| GER Tropic Artillery Officer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_PZ_Feldbluse
+| GER Tropic Tanker Uniform
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_PZ_Feldbluse_gefreiter
+| GER Tropic Tanker Uniform (Gefreiter)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_PZ_Feldbluse_uffz
+| GER Tropic Tanker Uniform (Uffz)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_DAK_PZ_Feldbluse_leutnant
+| GER Tropic Tanker Officer
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_DAK_Helmet_M35
+| GER Tropic Stahlhelm 1935
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_DAK_Helmet_M35_ns
+| GER Tropic Stahlhelm 1935 (Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_DAK_Helmet_M35_Glasses
+| GER Tropic Stahlhelm 1935 (Glasses)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_DAK_Helmet_M35_Glasses_ns
+| GER Tropic Stahlhelm 1935 (Glasses, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_DAK_Helmet_M35_Utility
+| GER Tropic Stahlhelm 1935 (Breadbag Strap)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_DAK_Helmet_M35_Utility_ns
+| GER Tropic Stahlhelm 1935 (Breadbag, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_DAK_Helmet_M40
+| GER Tropic Stahlhelm 1940
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_DAK_Helmet_M40_ns
+| GER Tropic Stahlhelm 1940 (Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_DAK_Helmet_M40_Glasses
+| GER Tropic Stahlhelm 1940 (Glasses)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_DAK_Helmet_M40_Glasses_ns
+| GER Tropic Stahlhelm 1940 (Glasses, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_DAK_Helmet_M40_Utility
+| GER Tropic Stahlhelm 1940 (Breadbag Strap)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_DAK_Helmet_M40_Utility_ns
+| GER Tropic Stahlhelm 1940 (Breadbag, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP
+| GER Tropic Cap
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_OFFZ
+| GER Tropic Cap (Offz.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_HP
+| GER Tropic Cap (HP)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_HP_OFFZ
+| GER Tropic Cap (Offz. HP)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_ROMMEL
+| GER Tropic Cap (Eyeshields)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_ROMMEL_OFFZ
+| GER Tropic Cap (Offz. Eyeshields)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_HP_ROMMEL
+| GER Tropic Cap (HP Eyeshields)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_HP_ROMMEL_OFFZ
+| GER Tropic Cap (Offz. HP Eyeshields)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_INF
+| GER Tropic Cap (Inf.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_INF_OFFZ
+| GER Tropic Cap (Inf. Offz.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_PZGREN
+| GER Tropic Cap (PzGren.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_PZGREN_OFFZ
+| GER Tropic Cap (PzGren. Offz.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_ART
+| GER Tropic Cap (Art.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_ART_OFFZ
+| GER Tropic Cap (Art. Offz.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_ART_HP
+| GER Tropic Cap (Art. HP)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_ART_HP_OFFZ
+| GER Tropic Cap (Art. Offz. HP)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_PZ
+| GER Tropic Cap (Pz.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_PZ_OFFZ
+| GER Tropic Cap (Pz. Offz.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_PZ_HP
+| GER Tropic Cap (Pz. HP)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_PZ_HP_OFFZ
+| GER Tropic Cap (Pz. Offz. HP)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_PZ_ROMMEL
+| GER Tropic Cap (Pz. Eyeshields)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_PZ_OFFZ_ROMMEL
+| GER Tropic Cap (Pz. Offz. Eyeshields)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_PZ_HP_ROMMEL
+| GER Tropic Cap (Pz. HP Eyeshields)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_CAP_TROP_PZ_HP_OFFZ_ROMMEL
+| GER Tropic Cap (Pz. Offz. HP Eyeshields)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_PITH
+| GER Tropic Pith Helmet
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_PITH_OP
+| GER Tropic Pith Helmet (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_PITH_HEER
+| GER Tropic Pith Helmet (Heer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_PITH_HEER_OP
+| GER Tropic Pith Helmet (Heer, Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_PITH_LW
+| GER LW Tropic Pith Helmet
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_PITH_LW_OP
+| GER LW Tropic Pith Helmet (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_PITH_LW_blau
+| GER LW Blue Pith Helmet
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_GER_DAK_PITH_LW_blau_OP
+| GER LW Blue Pith Helmet (Open)
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_Helmet_chute
+| GER Stahlhelm (Parachute Cover)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_Helmet_chute_OS
+| GER Stahlhelm (Parachute Cover, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_Helmet_chute_band
+| GER Stahlhelm (Parachute Cover Band)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_Helmet_chute_band_ns
+| GER Stahlhelm (Parachute Cover Band, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_VISOR_INF_OFFZ_ROMMEL
+| GER Peaked Cap (Infantry Offz., Eyeshields)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_VISOR_INF_UFFZ_ROMMEL
+| GER Peaked Cap (Infantry Uffz., Eyeshields)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_VISOR_ART_OFFZ_ROMMEL
+| GER Peaked Cap (Artillery Offz., Eyeshields)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_VISOR_ART_UFFZ_ROMMEL
+| GER Peaked Cap (Artillery Uffz., Eyeshields)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_VISOR_PZGREN_OFFZ_ROMMEL
+| GER Peaked Cap (Pzgren Offz., Eyeshields)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_VISOR_PZGREN_UFFZ_ROMMEL
+| GER Peaked Cap (Pzgren Uffz., Eyeshields)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_VISOR_PZ_OFFZ_ROMMEL
+| GER Peaked Cap (Tanker, Offz, Eyeshields)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_VISOR_PZ_UFFZ_ROMMEL
+| GER Peaked Cap (Tanker, Uffz., Eyeshields)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_VISOR_PZ_HP_OFFZ_ROMMEL
+| GER Peaked Cap (Tanker, HP, Uffz., Eyeshields)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_GER_VISOR_PZ_HP_UFFZ_ROMMEL
+| GER Peaked Cap (Tanker, HP, Uffz., Eyeshields)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| Uniform
+| U_SPEX_LW_DAK_Feldbluse
+| GER LW Tropic Flak Uniform
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_LW_DAK_Feldbluse_roll
+| GER LW Tropic Flak Uniform (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_LW_DAK_Feldbluse_scarf
+| GER LW Tropic Flak Uniform (Scarf)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_LW_DAK_Feldbluse_medic
+| GER LW Tropic Flak Uniform (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_LW_DAK_Feldbluse_gefreiter
+| GER LW Tropic Flak Uniform (Gefr.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_LW_DAK_Feldbluse_uffz
+| GER LW Tropic Flak Uniform (Uffz.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_LW_DAK_Feldbluse_leutnant
+| GER LW Tropic Flak Uniform (Leutnant)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_FSJ_DAK_Feldbluse
+| GER FSJ Tropic Uniform
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_FSJ_DAK_Feldbluse_roll
+| GER FSJ Tropic Uniform (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_FSJ_DAK_Feldbluse_scarf
+| GER FSJ Tropic Uniform (Scarf)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_FSJ_DAK_Feldbluse_medic
+| GER FSJ Tropic Uniform (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_FSJ_DAK_Feldbluse_gefreiter
+| GER FSJ Tropic Uniform (Gefr.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_FSJ_DAK_Feldbluse_uffz
+| GER FSJ Tropic Uniform (Uffz.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_FSJ_DAK_Feldbluse_leutnant
+| GER FSJ Tropic Uniform (Leutnant)
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip
+| GER FSJ Jump Smock Zipper
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_roll
+| GER FSJ Jump Smock Zipper (Rolled)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_gloves_pads
+| GER FSJ Jump Smock Zipper (Gloves, Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_gloves
+| GER FSJ Jump Smock Zipper (Gloves)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_pads
+| GER FSJ Jump Smock Zipper (Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_pads_roll
+| GER FSJ Jump Smock Zipper (Pads, Rolled)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_gefr
+| GER FSJ Jump Smock Zipper (Gefr.)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_uffz
+| GER FSJ Jump Smock Zipper (Uffz.)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_uffz_gloves_pads
+| GER FSJ Jump Smock Zipper (Uffz., Gloves, Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_uffz_gloves
+| GER FSJ Jump Smock Zipper (Uffz., Gloves)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_uffz_pads
+| GER FSJ Jump Smock Zipper (Uffz., Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_offz
+| GER FSJ Officer Jump Smock Zipper
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_offz_gloves_pads
+| GER FSJ Officer Jump Smock Zipper (Gloves, Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_offz_gloves
+| GER FSJ Officer Jump Smock Zipper (Gloves)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk1_zip_offz_pads
+| GER FSJ Officer Jump Smock Zipper (Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK
+| GER FSJ Tropic Jump Smock 1940
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_roll
+| GER FSJ Tropic Jump Smock 1940 (Rolled)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_gloves_pads
+| GER FSJ Tropic Jump Smock 1940 (Gloves, Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_gloves
+| GER FSJ Tropic Jump Smock 1940 (Gloves)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_pads
+| GER FSJ Tropic Jump Smock 1940 (Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_pads_roll
+| GER FSJ Tropic Jump Smock 1940 (Pads, Rolled)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_uffz
+| GER FSJ Tropic Jump Smock 1940 (Uffz.)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_uffz_gloves_pads
+| GER FSJ Tropic Jump Smock 1940 (Uffz., Gloves, Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_uffz_gloves
+| GER FSJ Tropic Jump Smock 1940 (Uffz., Gloves)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_uffz_pads
+| GER FSJ Tropic Jump Smock 1940 (Uffz., Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_offz
+| GER FSJ Tropic Officer Jump Smock 1940
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_offz_gloves_pads
+| GER FSJ Tropic Officer Jump Smock 1940 (Gloves, Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_offz_gloves
+| GER FSJ Tropic Officer Jump Smock 1940 (Gloves)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk2_DAK_offz_pads
+| GER FSJ Tropic Officer Jump Smock 1940 (Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK
+| GER FSJ Tropic Jump Smock 1942
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_roll
+| GER FSJ Tropic Jump Smock 1942 (Rolled)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_trop
+| GER FSJ Tropic Jump Smock 1942 (Open)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_trop_roll
+| GER FSJ Tropic Jump Smock 1942 (Open, Rolled)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_gloves_pads
+| GER FSJ Tropic Jump Smock 1942 (Gloves, Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_gloves
+| GER FSJ Tropic Jump Smock 1942 (Gloves)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_pads
+| GER FSJ Tropic Jump Smock 1942 (Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_pads_roll
+| GER FSJ Tropic Jump Smock 1942 (Pads, Rolled)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_uffz
+| GER FSJ Tropic Jump Smock 1942 (Uffz.)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_uffz_gloves_pads
+| GER FSJ Tropic Jump Smock 1942 (Uffz., Gloves, Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_uffz_gloves
+| GER FSJ Tropic Jump Smock 1942 (Uffz., Gloves)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_uffz_pads
+| GER FSJ Tropic Jump Smock 1942 (Uffz., Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_offz
+| GER FSJ Tropic Officer Jump Smock 1942
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_offz_gloves_pads
+| GER FSJ Tropic Officer Jump Smock 1942 (Gloves, Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_offz_gloves
+| GER FSJ Tropic Officer Jump Smock 1942 (Gloves)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_FSJ_Mk3_DAK_offz_pads
+| GER FSJ Tropic Officer Jump Smock 1942 (Pads)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_Helmet_M35
+| GER LW Tropic Stahlhelm 1935 (Clean)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_Helmet_M35_ns
+| GER LW Tropic Stahlhelm 1935 (Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_Helmet_M35_2
+| GER LW Tropic Stahlhelm 1935 (Worn)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_Helmet_M35_2_ns
+| GER LW Tropic Stahlhelm 1935 (Opened,Clean)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_Helmet_M35_3
+| GER LW Tropic Stahlhelm 1935
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_Helmet_M35_3_ns
+| GER LW Tropic Stahlhelm 1935 (Opened,Worn)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_Helmet_M35_Glasses
+| GER LW Tropic Stahlhelm 1935 (Glasses)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_Helmet_M35_Glasses_ns
+| GER LW Tropic Stahlhelm 1935 (Glasses, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_Helmet_M35_Utility
+| GER LW Tropic Stahlhelm 1935 (Breadbag Strap)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_Helmet_M35_Utility_ns
+| GER LW Tropic Stahlhelm 1935 (Breadbag, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| Headgear
+| H_SPEX_LW_DAK_CAP_TROP
+| GER LW Tropic Cap
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_LW_DAK_CAP_TROP_OFFZ
+| GER LW Tropic Cap (Offz.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_LW_DAK_CAP_TROP_HP
+| GER LW Tropic Cap (HP)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_LW_DAK_CAP_TROP_HP_OFFZ
+| GER LW Tropic Cap (Offz. HP)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_LW_DAK_CAP_TROP_ROMMEL
+| GER LW Tropic Cap (Eyeshields)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_LW_DAK_CAP_TROP_ROMMEL_OFFZ
+| GER LW Tropic Cap (Offz. Eyeshields)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_LW_DAK_CAP_TROP_HP_ROMMEL
+| GER LW Tropic Cap (HP Eyeshields)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_LW_DAK_CAP_TROP_HP_ROMMEL_OFFZ
+| GER LW Tropic Cap (Offz. HP Eyeshields)
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_SIDECAP
+| GER LW Tropic Side Cap
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_SIDECAP_OFFZ
+| GER LW Tropic Side Cap (Offz.)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_SIDECAP_2
+| GER LW Tropic Side Cap (Tilt)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_LW_DAK_SIDECAP_2_OFFZ
+| GER LW Tropic Side Cap (Offz., Tilt)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327
+| US AB Helmet, M1 327th
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_ns
+| US AB Helmet, M1 327th (Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_os
+| US AB Helmet, M1 327th (Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_Net
+| US AB Helmet, M1 327th (Net)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_Net_ns
+| US AB Helmet, M1 327th (Net, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_Net_up
+| US AB Helmet, M1 327th (Net, Hooked)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_Net_os
+| US AB Helmet, M1 327th (Net, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_Scrim
+| US AB Helmet, M1 327th (Scrim)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_Scrim_ns
+| US AB Helmet, M1 327th (Scrim, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_Scrim_up
+| US AB Helmet, M1 327th (Scrim, Hooked)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_Scrim_os
+| US AB Helmet, M1 327th (Scrim, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_polar
+| US AB Helmet, M1 327th (No. 1021)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_polar_ns
+| US AB Helmet, M1 327th (No. 1021, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_polar_os
+| US AB Helmet, M1 327th (No. 1021, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_polar_net
+| US AB Helmet, M1 327th (No. 1021, Net)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_polar_net_ns
+| US AB Helmet, M1 327th (No. 1021, Net, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_polar_net_os
+| US AB Helmet, M1 327th (No. 1021, Net, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_polar_Scrim
+| US AB Helmet, M1 327th (No. 1021, Scrim)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_polar_Scrim_ns
+| US AB Helmet, M1 327th (No. 1021, Scrim, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_polar_Scrim_os
+| US AB Helmet, M1 327th (No. 1021, Scrim, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_NCO
+| US AB Helmet, M1 327th (NCO)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_NCO_ns
+| US AB Helmet, M1 327th (NCO, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_NCO_Net
+| US AB Helmet, M1 327th (Net, NCO)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_NCO_Net_ns
+| US AB Helmet, M1 327th (Net, NCO, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_NCO_Scrim
+| US AB Helmet, M1 327th (Scrim, NCO)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_NCO_Scrim_ns
+| US AB Helmet, M1 327th (Scrim, NCO, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_CO
+| US AB Helmet, M1 327th (CO)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_CO_ns
+| US AB Helmet, M1 327th (CO, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_CO_Net
+| US AB Helmet, M1 327th (Net, CO)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_CO_Net_ns
+| US AB Helmet, M1 327th (Net, CO, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_CO_Scrim
+| US AB Helmet, M1 327th (Scrim, CO)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_327_CO_Scrim_ns
+| US AB Helmet, M1 327th (Scrim, CO, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506
+| US AB Helmet, M2 506th
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_ns
+| US AB Helmet, M2 506th (Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_os
+| US AB Helmet, M2 506th (Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_Net
+| US AB Helmet, M2 506th (Net)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_Net_ns
+| US AB Helmet, M2 506th (Net, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_Net_up
+| US AB Helmet, M2 506th (Net, Hooked)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_Net_os
+| US AB Helmet, M2 506th (Net, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_Scrim
+| US AB Helmet, M2 506th (Scrim)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_Scrim_ns
+| US AB Helmet, M2 506th (Scrim, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_Scrim_up
+| US AB Helmet, M2 506th (Scrim, Hooked)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_Scrim_os
+| US AB Helmet, M2 506th (Scrim, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_polar
+| US AB Helmet, M2 506th (No. 1021)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_polar_ns
+| US AB Helmet, M2 506th (No. 1021, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_polar_os
+| US AB Helmet, M2 506th (No. 1021, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_polar_net
+| US AB Helmet, M2 506th (No. 1021, Net)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_polar_net_ns
+| US AB Helmet, M2 506th (No. 1021, Net, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_polar_net_os
+| US AB Helmet, M2 506th (No. 1021, Net, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_polar_Scrim
+| US AB Helmet, M2 506th (No. 1021, Scrim)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_polar_Scrim_ns
+| US AB Helmet, M2 506th (No. 1021, Scrim, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_polar_Scrim_os
+| US AB Helmet, M2 506th (No. 1021, Scrim, Opened)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_NCO
+| US AB Helmet, M2 506th (NCO)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_NCO_ns
+| US AB Helmet, M2 506th (NCO, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_NCO_Net
+| US AB Helmet, M2 506th (Net, NCO)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_NCO_Net_ns
+| US AB Helmet, M2 506th (Net, NCO, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_NCO_Scrim
+| US AB Helmet, M2 506th (Scrim, NCO)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_NCO_Scrim_ns
+| US AB Helmet, M2 506th (Scrim, NCO, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_CO
+| US AB Helmet, M2 506th (CO)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_CO_ns
+| US AB Helmet, M2 506th (CO, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_CO_Net
+| US AB Helmet, M2 506th (Net, CO)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_CO_Net_ns
+| US AB Helmet, M2 506th (Net, CO, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_CO_Scrim
+| US AB Helmet, M2 506th (Scrim, CO)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPE_US_AB_Helmet_506_CO_Scrim_ns
+| US AB Helmet, M2 506th (Scrim, CO, Folded)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| Uniform
+| U_SPEX_AUS_KD_short
+| AUS KD Shorts Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_short_roll
+| AUS KD Shorts Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_short_anklet
+| AUS KD Shorts Anklets
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_short_anklet_roll
+| AUS KD Shorts Anklets (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_short_puttee
+| AUS KD Shorts Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_short_puttee_roll
+| AUS KD Shorts Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_short_medic
+| AUS KD Shorts Anklets (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long
+| AUS KD Trousers Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long_roll
+| AUS KD Trousers Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long_anklet
+| AUS KD Trousers Anklets
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long_anklet_roll
+| AUS KD Trousers Anklets (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long_trop
+| AUS KD Trousers Unbloused
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long_trop_roll
+| AUS KD Trousers Unbloused (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long_medic
+| AUS KD Trousers Gaiters (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_short_burma
+| AUS Jungle KD Shorts Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_short_burma_roll
+| AUS Jungle KD Shorts Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_short_burma_anklet
+| AUS Jungle KD Shorts Anklets
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_short_burma_anklet_roll
+| AUS Jungle KD Shorts Anklets (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_short_burma_puttee
+| AUS Jungle KD Shorts Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_short_burma_puttee_roll
+| AUS Jungle KD Shorts Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long_burma
+| AUS Jungle KD Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long_burma_roll
+| AUS Jungle KD Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long_burma_anklet
+| AUS Jungle KD Anklets
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long_burma_anklet_roll
+| AUS Jungle KD Anklets (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long_burma_trop
+| AUS Jungle KD Unbloused
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_long_burma_trop_roll
+| AUS Jungle KD Unbloused (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_JG_Aertex
+| AUS Jungle Aertex Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_JG_Aertex_roll
+| AUS Jungle Aertex Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_JG_Aertex_1LT
+| AUS Jungle Aertex Gaiters (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_HBT
+| AUS KD HBT Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_HBT_roll
+| AUS KD HBT Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_HBT_trop
+| AUS KD HBT Unbloused
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_HBT_trop_roll
+| AUS KD HBT Unbloused (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_HBT_burma
+| AUS Jungle KD HBT Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_HBT_burma_roll
+| AUS Jungle KD HBT Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_HBT_burma_trop
+| AUS Jungle KD HBT Unbloused
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_AUS_KD_HBT_burma_trop_roll
+| AUS Jungle KD HBT Unbloused (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis
+| CW Airborne Smock Denison Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_tail
+| CW Airborne Smock Denison Gaiters (Tail)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_scarf
+| CW Airborne Smock Denison Gaiters (Scarf)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_scarf_tail
+| CW Airborne Smock Denison Gaiters (Scarf, Tail)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_officer
+| CW Airborne Smock Denison Gaiters Officer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_officer_tail
+| CW Airborne Smock Denison Gaiters Officer (Tail)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_puttee
+| CW Airborne Smock Denison Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_puttee_tail
+| CW Airborne Smock Denison Puttees (Tail)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_puttee_scarf
+| CW Airborne Smock Denison Puttees (Scarf)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_puttee_scarf_tail
+| CW Airborne Smock Denison Puttees (Scarf, Tail)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_puttee_officer
+| CW Airborne Smock Denison Puttees Officer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_puttee_officer_tail
+| CW Airborne Smock Denison Puttees Officer (Tail)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_kd
+| CW Airborne Smock Denison KD
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_kd_tail
+| CW Airborne Smock Denison KD (Tail)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_kd_scarf
+| CW Airborne Smock Denison KD (Scarf)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_kd_scarf_tail
+| CW Airborne Smock Denison KD (Scarf, Tail)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_kd_officer
+| CW Airborne Smock Denison KD Officer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_kd_officer_tail
+| CW Airborne Smock Denison KD Officer (Tail)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_LCPL
+| CW Airborne Smock Denison Gaiters (L/Cpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_CPL
+| CW Airborne Smock Denison Gaiters (Cpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_SGT
+| CW Airborne Smock Denison Gaiters (Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_CSGT
+| CW Airborne Smock Denison Gaiters (C/Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_glider_SGT
+| CW Airborne Smock Denison Glider (Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Denis_glider_officer
+| CW Airborne Smock Denison Glider (Officer)
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_CW_RAF_BD
+| CW RAF BD Serge
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_SPEX_CW_RAF_BD_glove
+| CW RAF BD Serge Gloves
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n61_sten
+| CW P37 No.61 Webbing (Sten)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n61_sten_Canteen
+| CW P37 No.61 Webbing (Sten, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n61_sten_Tin
+| CW P37 No.61 Webbing (Sten, Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_sten_P41
+| CW P37 No.61 Webbing P41 (Sten)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_sten_P41_2
+| CW P37 No.61 Webbing P41 (Sten)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_sten_P41_Canteen
+| CW P37 No.61 Webbing P41 (Sten, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_sten_P41_Tin
+| CW P37 No.61 Webbing P41 (Sten, Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_sten
+| CW P37 No.3 Webbing (Sten)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_sten_Canteen
+| CW P37 No.3 Webbing (Sten, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_sten_Tin
+| CW P37 No.3 Webbing (Sten, Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_sten_P41
+| CW P37 No.3 Webbing P41 (Sten)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_sten_P41_2
+| CW P37 No.3 Webbing P41 (Sten)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_sten_P41_Canteen
+| CW P37 No.3 Webbing P41 (Sten, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_sten_P41_Tin
+| CW P37 No.3 Webbing P41 (Sten, Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_sten
+| CW P37 No.97 Webbing (Sten)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_sten_Canteen
+| CW P37 No.97 Webbing (Sten, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_sten_Tin
+| CW P37 No.97 Webbing (Sten, Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_sten_P41
+| CW P37 No.97 Webbing P41 (Sten)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_sten_P41_2
+| CW P37 No.97 Webbing P41 (Sten)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_sten_P41_Canteen
+| CW P37 No.97 Webbing P41 (Sten, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_sten_P41_Tin
+| CW P37 No.97 Webbing P41 (Sten, Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Vest
+| V_SPEX_CW_RAF_Schwimm
+| CW Life Preserver
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk1
+| CW Helmet Airborne
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk1_op
+| CW Helmet Airborne (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk1_net
+| CW Helmet Airborne Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk1_net_op
+| CW Helmet Airborne Net (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk1_scrim
+| CW Helmet Airborne Scrim
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk1_scrim_op
+| CW Helmet Airborne Scrim (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk2
+| CW Helmet Airborne Mk.I
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk2_op
+| CW Helmet Airborne Mk.I (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk2_net
+| CW Helmet Airborne Mk.I Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk2_net_op
+| CW Helmet Airborne Mk.I Net (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk2_scrim
+| CW Helmet Airborne Mk.I Scrim
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk2_scrim_op
+| CW Helmet Airborne Mk.I Scrim (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk3
+| CW Helmet Airborne Mk.II
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk3_net
+| CW Helmet Airborne Mk.II Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_HSAT_mk3_scrim
+| CW Helmet Airborne Mk.II Scrim
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_CW_RAF_visor
+| CW RAF Service Cap (Officer)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_SPEX_CW_RAF_visor_EM
+| CW RAF Service Cap
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| Uniform
+| U_SPEX_CW_BD
+| CW BD Serge Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_open
+| CW BD Serge Gaiters (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_roll
+| CW BD Serge Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_LCPL
+| CW BD Serge Gaiters (LCpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CPL
+| CW BD Serge Gaiters (Cpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_SGT
+| CW BD Serge Gaiters (Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CSGT
+| CW BD Serge Gaiters (C/Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_medic
+| CW BD Serge Gaiters (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_medic_sb
+| CW BD Serge Gaiters (SB)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_puttee
+| CW BD Serge Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_puttee_open
+| CW BD Serge Puttees (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_puttee_roll
+| CW BD Serge Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_dagger
+| CW BD Serge Knife
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_dagger_open
+| CW BD Serge Knife (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_dagger_roll
+| CW BD Serge Knife (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_dagger_LCPL
+| CW BD Serge Knife (LCpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_dagger_CPL
+| CW BD Serge Knife (Cpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_dagger_SGT
+| CW BD Serge Knife (Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_dagger_CSGT
+| CW BD Serge Knife (C/Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_2LT
+| CW BD Serge Gaiters (2.Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_2LT_puttee
+| CW BD Serge Puttees (2.Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_2LT_dagger
+| CW BD Serge Knife (2.Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_1LT
+| CW BD Serge Gaiters (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_1LT_puttee
+| CW BD Serge Puttees (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_1LT_dagger
+| CW BD Serge Knife (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CPT
+| CW BD Serge Gaiters (Cpt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CPT_puttee
+| CW BD Serge Puttees (Cpt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CPT_dagger
+| CW BD Serge Knife (Cpt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin
+| CW BD Jerkin Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_roll
+| CW BD Jerkin Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_LCPL
+| CW BD Jerkin Gaiters (LCpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_CPL
+| CW BD Jerkin Gaiters (Cpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_SGT
+| CW BD Jerkin Gaiters (Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_CSGT
+| CW BD Jerkin Gaiters (C/Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_medic
+| CW BD Jerkin Gaiters (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_medic_sb
+| CW BD Jerkin Gaiters (SB)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_puttee
+| CW BD Jerkin Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_puttee_roll
+| CW BD Jerkin Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_dagger
+| CW BD Jerkin Knife
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_dagger_roll
+| CW BD Jerkin Knife (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_Officer
+| CW BD Jerkin Officer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_Officer_puttee
+| CW BD Jerkin Officer Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_Jerkin_Officer_dagger
+| CW BD Jerkin Officer Knife
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40
+| CW BD Austerity Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_open
+| CW BD Austerity Gaiters (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_roll
+| CW BD Austerity Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_LCPL
+| CW BD Austerity Gaiters (LCpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_CPL
+| CW BD Austerity Gaiters (Cpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_SGT
+| CW BD Austerity Gaiters (Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_CSGT
+| CW BD Austerity Gaiters (C/Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_puttee
+| CW BD Austerity Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_puttee_open
+| CW BD Austerity Puttees (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_puttee_roll
+| CW BD Austerity Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_2LT
+| CW BD Austerity Gaiters (2.Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_2LT_puttee
+| CW BD Austerity Puttees (2.Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_1LT
+| CW BD Austerity Gaiters (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_1LT_puttee
+| CW BD Austerity Puttees (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_CPT
+| CW BD Austerity Gaiters (Cpt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_P40_CPT_puttee
+| CW BD Austerity Puttees (Cpt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN
+| CDN BD Serge Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_open
+| CDN BD Serge Gaiters (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_roll
+| CDN BD Serge Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_LCPL
+| CDN BD Serge Gaiters (LCpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_CPL
+| CDN BD Serge Gaiters (Cpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_SGT
+| CDN BD Serge Gaiters (Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_CSGT
+| CDN BD Serge Gaiters (C/Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_medic
+| CDN BD Serge Gaiters (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_medic_sb
+| CDN BD Serge Gaiters (SB)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_INV
+| CDN BD Serge Highboot
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_INV_open
+| CDN BD Serge Highboot (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_INV_roll
+| CDN BD Serge Highboot (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_INV_LCPL
+| CDN BD Serge Highboot (LCpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_INV_CPL
+| CDN BD Serge Highboot (Cpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_INV_SGT
+| CDN BD Serge Highboot (Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_INV_CSGT
+| CDN BD Serge Highboot (C/Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_2LT
+| CDN BD Serge (2.Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_2LT_INV
+| CDN BD Serge Highboot (2.Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_1LT
+| CDN BD Serge Gaiters (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_1LT_INV
+| CDN BD Serge Highboot (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_CPT
+| CDN BD Serge Gaiters (Cpt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_CPT_INV
+| CDN BD Serge Highboot (Cpt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin
+| CDN BD Jerkin Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_roll
+| CDN BD Jerkin Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_LCPL
+| CDN BD Jerkin Gaiters (LCpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_CPL
+| CDN BD Jerkin Gaiters (Cpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_SGT
+| CDN BD Jerkin Gaiters (Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_CSGT
+| CDN BD Jerkin Gaiters (C/Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_medic
+| CDN BD Jerkin Gaiters (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_medic_sb
+| CDN BD Jerkin Gaiters (SB)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_INV
+| CDN BD Jerkin Highboot
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_INV_roll
+| CDN BD Jerkin Highboot (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_inv_LCPL
+| CDN BD Jerkin Highboot (LCpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_inv_CPL
+| CDN BD Jerkin Highboot (Cpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_inv_SGT
+| CDN BD Jerkin Highboot (Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_inv_CSGT
+| CDN BD Jerkin Highboot (C/Sgt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_Officer
+| CDN BD Jerkin Officer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_CAN_Jerkin_Officer_INV
+| CDN BD Jerkin Officer Invasion
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_full
+| CW KD Shorts Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_full_roll
+| CW KD Shorts Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_full_puttee
+| CW KD Shorts Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_full_puttee_roll
+| CW KD Shorts Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_full_medic
+| CW KD Shorts Gaiters (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_full_medic_sb
+| CW KD Shorts Gaiters (SB)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long
+| CW KD Trousers Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_roll
+| CW KD Trousers Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_puttee
+| CW KD Trousers Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_puttee_roll
+| CW KD Trousers Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_trop
+| CW KD Trousers Unbloused
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_trop_roll
+| CW KD Trousers Unbloused (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_medic
+| CW KD Trousers Gaiters (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_medic_sb
+| CW KD Trousers Gaiters (SB)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_burma
+| CW Jungle KD Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_burma_roll
+| CW Jungle KD Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_burma_puttee
+| CW Jungle KD Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_burma_puttee_roll
+| CW Jungle KD Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_burma_trop
+| CW Jungle KD Unbloused
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_long_burma_trop_roll
+| CW Jungle KD Unbloused (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_BD
+| CW KD BD Trouser Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_BD_roll
+| CW KD BD Trouser Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_BD_puttee
+| CW KD BD Trouser Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_BD_puttee_roll
+| CW KD BD Trouser Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD
+| CW BD Serge KD Shorts Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_roll
+| CW BD Serge KD Shorts Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_puttee
+| CW BD Serge KD Shorts Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_puttee_roll
+| CW BD Serge KD Shorts Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_long
+| CW BD Serge KD Trousers Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_long_roll
+| CW BD Serge KD Trousers Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_long_open
+| CW BD Serge KD Trousers Gaiters (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_long_puttee
+| CW BD Serge KD Trousers Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_long_puttee_roll
+| CW BD Serge KD Trousers Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_long_puttee_open
+| CW BD Serge KD Trousers Puttees (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_long_trop
+| CW BD Serge KD Trousers Unbloused
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_long_trop_roll
+| CW BD Serge KD Trousers Unbloused (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_long_1LT
+| CW BD Serge KD Trousers Gaiters (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_BD_KD_long_puttee_1LT
+| CW BD Serge KD Trousers Puttees (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_long
+| CW KD Bush Jacket Trousers Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_long_roll
+| CW KD Bush Jacket Trousers Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_long_puttee
+| CW KD Bush Jacket Trousers Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_long_puttee_roll
+| CW KD Bush Jacket Trousers Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_long_trop
+| CW KD Bush Jacket Trousers Unbloused
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_long_trop_roll
+| CW KD Bush Jacket Trousers Unbloused (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_long_1LT
+| CW KD Bush Jacket Trousers Gaiters (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_long_puttee_1LT
+| CW KD Bush Jacket Trousers Puttees (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_short
+| CW KD Bush Jacket Shorts Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_short_roll
+| CW KD Bush Jacket Shorts Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_short_puttee
+| CW KD Bush Jacket Shorts Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_short_puttee_roll
+| CW KD Bush Jacket Shorts Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_short_1LT
+| CW KD Bush Jacket Shorts Gaiters (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_short_puttee_1LT
+| CW KD Bush Jacket Shorts Puttees (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_BD
+| CW KD Bush Jacket BD Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_BD_roll
+| CW KD Bush Jacket BD Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_BD_puttee
+| CW KD Bush Jacket BD Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_BD_puttee_roll
+| CW KD Bush Jacket BD Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_BD_1LT
+| CW KD Bush Jacket BD Gaiters (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_Bush_BD_puttee_1LT
+| CW KD Bush Jacket BD Puttees (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_JG
+| CW Jungle Greens Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_JG_roll
+| CW Jungle Greens Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_JG_puttee
+| CW Jungle Greens Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_KD_JG_puttee_roll
+| CW Jungle Greens Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_JG_Bush
+| CW Jungle Bush Jacket Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_JG_Bush_roll
+| CW Jungle Bush Jacket Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_JG_Bush_puttee
+| CW Jungle Bush Jacket Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_JG_Bush_puttee_roll
+| CW Jungle Bush Jacket Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_JG_Bush_1LT
+| CW Jungle Bush Jacket Gaiters (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_JG_Bush_puttee_1LT
+| CW Jungle Bush Jacket Puttees (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_JG_Aertex
+| CW Jungle Aertex Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_JG_Aertex_roll
+| CW Jungle Aertex Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_JG_Aertex_puttee
+| CW Jungle Aertex Puttees
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_JG_Aertex_puttee_roll
+| CW Jungle Aertex Puttees (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_JG_Aertex_1LT
+| CW Jungle Aertex Gaiters (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_CW_JG_Aertex_puttee_1LT
+| CW Jungle Aertex Puttees (Lt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_bandoleer
+| CW .303 Bandoleer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_bandoleer_2
+| CW .303 Bandoleers
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61
+| CW P37 No.61 Webbing
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Canteen
+| CW P37 No.61 Webbing (Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Tin
+| CW P37 No.61 Webbing (Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_p39
+| CW P37 No.61 Webbing P39
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_P41
+| CW P37 No.61 Webbing P41
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_P41_Canteen
+| CW P37 No.61 Webbing P41 (Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_P41_Tin
+| CW P37 No.61 Webbing P41 (Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_binoc
+| CW P37 No.61 Webbing (Binoculars)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_p39_binoc
+| CW P37 No.61 Webbing P39 (Binoculars)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_P41_binoc
+| CW P37 No.61 Webbing P41 (Binoculars)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_golok
+| CW P37 No.61 Webbing (Machette)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_golok_Canteen
+| CW P37 No.61 Webbing (Machette, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_golok_P41
+| CW P37 No.61 Webbing P41 (Machette)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n61_no1
+| CW P37 No.61 Webbing (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n61_no1_bandoleer
+| CW P37 No.61 Webbing (No.1, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n61_no1_Canteen
+| CW P37 No.61 Webbing (No.1, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_no1_p39
+| CW P37 No.61 Webbing P39 (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_no1_p39_bandoleer
+| CW P37 No.61 Webbing P39 (No.1, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_no1_P41
+| CW P37 No.61 Webbing P41 (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_no1_P41_bandoleer
+| CW P37 No.61 Webbing P41 (No.1, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n61_no4
+| CW P37 No.61 Webbing (No.4)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n61_no4_bandoleer
+| CW P37 No.61 Webbing (No.4, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n61_no4_Canteen
+| CW P37 No.61 Webbing (No.4, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n61_no4_Tin
+| CW P37 No.61 Webbing (No.4, Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_no4_Tin_bandoleer
+| CW P37 No.61 Webbing (No.4, Messtin, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_no4_P41
+| CW P37 No.61 Webbing P41 (No.4)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_no4_P41_2
+| CW P37 No.61 Webbing P41 (No.4,Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_no4_P41_bandoleer
+| CW P37 No.61 Webbing P41 (No.4, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_no4_P41_2_bandoleer
+| CW P37 No.61 Webbing P41 (No.4,Side,Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_no4_P41_Canteen
+| CW P37 No.61 Webbing P41 (No.4, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_no4_P41_Tin
+| CW P37 No.61 Webbing P41 (No.4, Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N61_no4_P41_Tin_bandoleer
+| CW P37 No.61 Webbing P41 (No.4, Messtin, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_offz
+| CW P37 No.61 Officer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_offz_sack
+| CW P37 No.61 Officer (Haversack)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_offz_canteen
+| CW P37 No.61 Officer (Canteen)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_offz_light
+| CW P37 No.61 Webbing (Sidearm)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_rac
+| CW P37 No.61 RAC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_rac_offz
+| CW P37 No.61 RAC Officer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Rifle
+| CW P37 No.61 Cartridges
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Rifle_p39
+| CW P37 No.61 Cartridges P39
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Rifle_P41
+| CW P37 No.61 Cartridges P41
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Rifle_golok
+| CW P37 No.61 Cartridges (Machette)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Rifle_golok_P41
+| CW P37 No.61 Cartridges P41 (Machette)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Rifle_no4
+| CW P37 No.61 Cartridges (No.4)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Rifle_no4_P41
+| CW P37 No.61 Cartridges P41 (No.4)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Rifle_no4_P41_2
+| CW P37 No.61 Cartridges P41 (No.4,Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Rifle_no1
+| CW P37 No.61 Cartridges (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Rifle_no1_p39
+| CW P37 No.61 Cartridges P39 (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N61_Rifle_no1_P41
+| CW P37 No.61 Cartridges P41 (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n61_medical
+| CW P37 No.61 Webbing (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n61_medical_p41
+| CW P37 No.61 Webbing P41 (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97
+| CW P37 No.97 Webbing
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Canteen
+| CW P37 No.97 Webbing (Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Tin
+| CW P37 No.97 Webbing (Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_p39
+| CW P37 No.97 Webbing P39
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_P41
+| CW P37 No.97 Webbing P41
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_P41_Canteen
+| CW P37 No.97 Webbing P41 (Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_P41_Tin
+| CW P37 No.97 Webbing P41 (Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_golok
+| CW P37 No.97 Webbing (Machette)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_golok_Canteen
+| CW P37 No.97 Webbing (Machette, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_golok_P41
+| CW P37 No.97 Webbing P41 (Machette)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_binoc
+| CW P37 No.97 Webbing (Binoculars)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_p39_binoc
+| CW P37 No.97 Webbing P39 (Binoculars)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_P41_binoc
+| CW P37 No.97 Webbing P41 (Binoculars)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n97_no1
+| CW P37 No.97 Webbing (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n97_no1_bandoleer
+| CW P37 No.97 Webbing (No.1, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n97_no1_Canteen
+| CW P37 No.97 Webbing (No.1, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_no1_p39
+| CW P37 No.97 Webbing P39 (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_no1_p39_bandoleer
+| CW P37 No.97 Webbing P39 (No.1, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_no1_P41
+| CW P37 No.97 Webbing P41 (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_no1_P41_bandoleer
+| CW P37 No.97 Webbing P41 (No.1, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n97_no4
+| CW P37 No.97 Webbing (No.4)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n97_no4_bandoleer
+| CW P37 No.97 Webbing (No.4, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n97_no4_Canteen
+| CW P37 No.97 Webbing (No.4, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n97_no4_Tin
+| CW P37 No.97 Webbing (No.4, Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_no4_Tin_bandoleer
+| CW P37 No.97 Webbing (No.4, Messtin, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_no4_P41
+| CW P37 No.97 Webbing P41 (No.4)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_no4_P41_2
+| CW P37 No.97 Webbing P41 (No.4,Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_no4_P41_bandoleer
+| CW P37 No.97 Webbing P41 (No.4, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_no4_P41_2_bandoleer
+| CW P37 No.97 Webbing P41 (No.4,Side,Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_no4_P41_Canteen
+| CW P37 No.97 Webbing P41 (No.4, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_no4_P41_Tin
+| CW P37 No.97 Webbing P41 (No.4, Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N97_no4_P41_Tin_bandoleer
+| CW P37 No.97 Webbing P41 (No.4, Messtin, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_offz
+| CW P37 No.97 Officer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_offz_sack
+| CW P37 No.97 Officer (Haversack)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_offz_canteen
+| CW P37 No.97 Officer (Canteen)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_offz_light
+| CW P37 No.97 Webbing (Sidearm)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_rac
+| CW P37 No.97 RAC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_rac_offz
+| CW P37 No.97 RAC Officer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Rifle
+| CW P37 No.97 Cartridges
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Rifle_p39
+| CW P37 No.97 Cartridges P39
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Rifle_P41
+| CW P37 No.97 Cartridges P41
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Rifle_golok
+| CW P37 No.97 Cartridges (Machette)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Rifle_golok_P41
+| CW P37 No.97 Cartridges P41 (Machette)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Rifle_no4
+| CW P37 No.97 Cartridges (No.4)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Rifle_no4_P41
+| CW P37 No.97 Cartridges P41 (No.4)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Rifle_no4_P41_2
+| CW P37 No.97 Cartridges P41 (No.4,Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Rifle_no1
+| CW P37 No.97 Cartridges (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Rifle_no1_p39
+| CW P37 No.97 Cartridges P39 (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N97_Rifle_no1_P41
+| CW P37 No.97 Cartridges P41 (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n97_medical
+| CW P37 No.97 Webbing (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n97_medical_p41
+| CW P37 No.97 Webbing P41 (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103
+| CW P37 No.3 Webbing
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Canteen
+| CW P37 No.3 Webbing (Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Tin
+| CW P37 No.3 Webbing (Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_p39
+| CW P37 No.3 Webbing P39
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_P41
+| CW P37 No.3 Webbing P41
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_P41_Canteen
+| CW P37 No.3 Webbing P41 (Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_P41_Tin
+| CW P37 No.3 Webbing P41 (Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_binoc
+| CW P37 No.3 Webbing (Binoculars)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_p39_binoc
+| CW P37 No.3 Webbing P39 (Binoculars)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_P41_binoc
+| CW P37 No.3 Webbing P41 (Binoculars)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_golok
+| CW P37 No.3 Webbing (Machette)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_golok_Canteen
+| CW P37 No.3 Webbing (Machette, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_golok_P41
+| CW P37 No.3 Webbing P41 (Machette)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n103_no1
+| CW P37 No.3 Webbing (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n103_no1_bandoleer
+| CW P37 No.3 Webbing (No.1, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n103_no1_Canteen
+| CW P37 No.3 Webbing (No.1, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_no1_p39
+| CW P37 No.3 Webbing P39 (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_no1_p39_bandoleer
+| CW P37 No.3 Webbing P39 (No.1, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_no1_P41
+| CW P37 No.3 Webbing P41 (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_no1_P41_bandoleer
+| CW P37 No.3 Webbing P41 (No.1, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n103_no4
+| CW P37 No.3 Webbing (No.4)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n103_no4_bandoleer
+| CW P37 No.3 Webbing (No.4, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n103_no4_Canteen
+| CW P37 No.3 Webbing (No.4, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n103_no4_Tin
+| CW P37 No.3 Webbing (No.4, Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_no4_Tin_bandoleer
+| CW P37 No.3 Webbing (No.4, Messtin, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_no4_P41
+| CW P37 No.3 Webbing P41 (No.4)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_no4_P41_2
+| CW P37 No.3 Webbing P41 (No.4,Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_no4_P41_bandoleer
+| CW P37 No.3 Webbing P41 (No.4, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_no4_P41_2_bandoleer
+| CW P37 No.3 Webbing P41 (No.4,Side,Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_no4_P41_Canteen
+| CW P37 No.3 Webbing P41 (No.4, Canteens)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_no4_P41_Tin
+| CW P37 No.3 Webbing P41 (No.4, Messtin)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_N103_no4_P41_Tin_bandoleer
+| CW P37 No.3 Webbing P41 (No.4, Messtin, Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_offz
+| CW P37 No.3 Officer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_offz_sack
+| CW P37 No.3 Officer (Haversack)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_offz_canteen
+| CW P37 No.3 Officer (Canteen)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_offz_light
+| CW P37 No.3 Webbing (Sidearm)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_rac
+| CW P37 No.3 RAC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_rac_offz
+| CW P37 No.3 RAC Officer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Rifle
+| CW P37 No.3 Cartridges
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Rifle_p39
+| CW P37 No.3 Cartridges P39
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Rifle_P41
+| CW P37 No.3 Cartridges P41
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Rifle_golok
+| CW P37 No.3 Cartridges (Machette)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Rifle_golok_P41
+| CW P37 No.3 Cartridges P41 (Machette)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Rifle_no4
+| CW P37 No.3 Cartridges (No.4)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Rifle_no4_P41
+| CW P37 No.3 Cartridges P41 (No.4)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Rifle_no4_P41_2
+| CW P37 No.3 Cartridges P41 (No.4,Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Rifle_no1
+| CW P37 No.3 Cartridges (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Rifle_no1_p39
+| CW P37 No.3 Cartridges P39 (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_CW_Vest_P37_N103_Rifle_no1_P41
+| CW P37 No.3 Cartridges P41 (No.1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n103_medical
+| CW P37 No.3 Webbing (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Vest
+| V_SPEX_cw_vest_p37_n103_medical_p41
+| CW P37 No.3 Webbing P41 (Medic)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2
+| CW Helmet Mk.II
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_tilt
+| CW Helmet Mk.II (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_op
+| CW Helmet Mk.II (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_op_tilt
+| CW Helmet Mk.II (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_net
+| CW Helmet Mk.II Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_net_op
+| CW Helmet Mk.II Net (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_net_tilt
+| CW Helmet Mk.II Net (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_net_op_tilt
+| CW Helmet Mk.II Net (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_burlap
+| CW Helmet Mk.II Burlap
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_burlap_op
+| CW Helmet Mk.II Burlap (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_burlap_tilt
+| CW Helmet Mk.II Burlap (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_burlap_op_tilt
+| CW Helmet Mk.II Burlap (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_hessian
+| CW Helmet Mk.II Hessian
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_hessian_op
+| CW Helmet Mk.II Hessian (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_hessian_tilt
+| CW Helmet Mk.II Hessian (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_hessian_op_tilt
+| CW Helmet Mk.II Hessian (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_ifak
+| CW Helmet Mk.II FAK
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_ifak_tilt
+| CW Helmet Mk.II FAK (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_ifak_op
+| CW Helmet Mk.II FAK (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_ifak_op_tilt
+| CW Helmet Mk.II FAK (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_scrim
+| CW Helmet Mk.II Scrim
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_scrim_op
+| CW Helmet Mk.II Scrim (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_scrim_tilt
+| CW Helmet Mk.II Scrim (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_scrim_op_tilt
+| CW Helmet Mk.II Scrim (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_scrim_ifak
+| CW Helmet Mk.II Scrim, FAK
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_scrim_ifak_tilt
+| CW Helmet Mk.II Scrim, FAK (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_scrim_ifak_op
+| CW Helmet Mk.II Scrim, FAK (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_scrim_ifak_op_tilt
+| CW Helmet Mk.II Scrim, FAK (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_desert
+| CW Helmet Mk.II Desert
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_desert_tilt
+| CW Helmet Mk.II Desert (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_desert_op
+| CW Helmet Mk.II Desert (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_desert_op_tilt
+| CW Helmet Mk.II Desert (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_desert_net
+| CW Helmet Mk.II Desert Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_desert_net_op
+| CW Helmet Mk.II Desert Net (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_desert_net_tilt
+| CW Helmet Mk.II Desert Net (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk2_desert_net_op_tilt
+| CW Helmet Mk.II Desert Net (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3
+| CW Helmet Mk.III
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_op
+| CW Helmet Mk.III (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_net
+| CW Helmet Mk.III Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_net_op
+| CW Helmet Mk.III Net (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_ifak
+| CW Helmet Mk.III FAK
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_ifak_tilt
+| CW Helmet Mk.III FAK Side
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_ifak_op
+| CW Helmet Mk.III FAK (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_ifak_op_tilt
+| CW Helmet Mk.III FAK (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_scrim
+| CW Helmet Mk.III Scrim
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_scrim_op
+| CW Helmet Mk.III Scrim (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_scrim_ifak
+| CW Helmet Mk.III Scrim, FAK
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_scrim_ifak_tilt
+| CW Helmet Mk.III Scrim, FAK Side
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_scrim_ifak_op
+| CW Helmet Mk.III Scrim, FAK (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_mk3_scrim_ifak_op_tilt
+| CW Helmet Mk.III Scrim, FAK Side (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_RAC
+| CW Helmet RAC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_Helmet_RAC_no38
+| CW Helmet RAC (Headset)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_mutsdas
+| CW Comforter Cap
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_gs
+| CW Beret General Service
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_cdo
+| CW Beret (Commando)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_cdo_FR
+| FR Beret Kieffer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_pz
+| CW Beret Tanker
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_pz_no38
+| CW Beret Tanker (Headset)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_pz_no38_goggle
+| CW Beret Tanker (Headset, Goggles)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_pz_goggle
+| CW Beret Tanker (Goggles)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_RECCE
+| CW Beret Recce
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_RECCE_no38
+| CW Beret Recce (Headset)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_RECCE_no38_goggle
+| CW Beret Recce (Headset, Goggles)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_RECCE_goggle
+| CW Beret Recce (Goggles)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ARTY
+| CW Beret Royal Artillery
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ARTY_no38
+| CW Beret Royal Artillery (Headset)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ARTY_no38_goggle
+| CW Beret Royal Artillery (Headset, Goggles)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ARTY_goggle
+| CW Beret Royal Artillery (Goggles)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ARTY_GS
+| CW Beret Royal Artillery (GS)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ENG
+| CW Beret (Royal Engineers)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ENG_GS
+| CW Beret (Royal Engineers) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_DCLI
+| CW Beret (DCLI)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_DCLI_GS
+| CW Beret (DCLI) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_KSLI
+| CW Beret (KSLI)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_KSLI_GS
+| CW Beret (KSLI) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_durham
+| CW Beret (Durham L.I.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_durham_green
+| CW Beret (Durham L.I. Green)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_durham_GS
+| CW Beret (Durham L.I.) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_Essex
+| CW Beret (Essex)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_Essex_GS
+| CW Beret (Essex) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_East_Yorks
+| CW Beret (East Yorks)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_East_Yorks_GS
+| CW Beret (East Yorks) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_Welch
+| CW Beret (Welch Rgt.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_Welch_GS
+| CW Beret (Welch Rgt.) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_SOMERSET
+| CW Beret (Somerset)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_SOMERSET_GS
+| CW Beret (Somerset) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_GEWEHR
+| CW Beret (Rifle Bde.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_GEWEHR_GS
+| CW Beret (Rifle Bde.) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_KRRC
+| CW Beret (KRRC)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_KRRC_GS
+| CW Beret (KRRC) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_QUEENS
+| CW Beret (Queen's)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_QUEENS_GS
+| CW Beret (Queen's) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ULSTER
+| CW Beret (Royal Ulster)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ULSTER_PARA
+| CW Beret (Royal Ulster) (Glider)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ULSTER_GS
+| CW Beret (Royal Ulster) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_PARA
+| CW Beret (Para)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ox_bucks
+| CW Beret (Oxf. and Bucks)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ox_bucks_PARA
+| CW Beret (Oxf. and Bucks) (Glider)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_beret_ox_bucks_GS
+| CW Beret (Oxf. and Bucks) GS
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CAN_beret_PPCLI
+| CDN Beret (PPCLI)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CAN_beret_QOR
+| CDN Beret (Queen's Own)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CAN_beret_WINNIPEG
+| CDN Beret (Royal Winnipeg)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CAN_beret_MAISONNEVUE
+| CDN Beret (Maisonnevue)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CAN_beret_REGINA
+| CDN Beret (Royal Regina)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP
+| CW Field Service Cap
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_ENG
+| CW Field Service (Royal Engineers)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_DCLI
+| CW Field Service (DCLI)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_KSLI
+| CW Field Service (KSLI)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_durham
+| CW Field Service (Durham L.I.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_durham_green
+| CW Field Service (Durham L.I. Green)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_Essex
+| CW Field Service (Essex)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_East_Yorks
+| CW Field Service (East Yorks)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_Welch
+| CW Field Service (Welch Rgt.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_SOMERSET
+| CW Field Service (Somerset)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_GEWEHR
+| CW Field Service (Rifle Bde.)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_KRRC
+| CW Field Service (KRRC)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_QUEENS
+| CW Field Service (Queen's)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_ULSTER
+| CW Field Service (Royal Ulster)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_ox_bucks
+| CW Field Service (Oxf. and Bucks)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_ox_bucks_gewehr
+| CW Field Service (Oxf. and Bucks Rifles)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_RAF_EM
+| CW RAF Field Service Cap
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_SIDECAP_RAF_OFFZ
+| CW RAF Field Service (Officer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_hat_felt
+| CW Khaki Fur Felt
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_hat_felt_cl
+| CW Khaki Fur Felt (Closed)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_hat_felt_slouch
+| CW Khaki Fur Felt (Slouched)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_CW_hat_felt_slouch_cl
+| CW Khaki Fur Felt (Slouched, Closed)
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| NVGs
+| SPEX_CW_LE_No4_Signal_Flashlight
+| CW L.E. No.4 Signal Torch
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| NVGs
+| SPEX_CW_LE_No4_Signal_Flashlight_SCC1A
+| CW L.E. No.4 Signal Torch (SCC1A)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| Launcher
+| SPEX_2_Inch_Mk7_Mortar_Slung
+| Two-Inch Mortar
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Launcher
+| SPEX_M2_60_Stand
+| M2 60 mm Tripod
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Launcher
+| SPEX_M2_60_Barrel
+| M2 60 mm Barrel
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Binocular
+| SPEX_K35_PH324
+| Model PH-324 Camera
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Binocular
+| SPEX_Binocular_CW
+| Binoculars (CW)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Item
+| SPEX_CW_FirstAidKit
+| First Aid Kit (CW)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Item
+| SPEX_CW_Medkit
+| Medkit (CW)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Muzzle Attachment
+| SPEX_ACC_No4_Mk2_Bayo
+| No.4 Mk II Bayonet
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Muzzle Attachment
+| SPEX_ACC_P1907_Bayo
+| P1907 Bayonet
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rail Attachment
+| SPEX_ACC_Enfield_No1_Wires
+| Wire wraps
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Muzzle Attachment
+| SPEX_ACC_2HalfInch_GL_CUP
+| 2.5-inch No.1 Mk I Discharger Cup
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rail Attachment
+| SPEX_PIAT_Sleeve
+| PIAT Sling
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Pistol
+| SPEX_Enfield_No2
+| No.2 Mk.I Enfield
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Pistol
+| SPEX_Enfield_No2_late
+| No.2 Mk.I* Enfield
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rifle
+| SPEX_M1928_Thompson
+| M1928 Thompson
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rifle
+| SPEX_M1928A1_Thompson
+| M1928A1 Thompson
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rifle
+| SPEX_Owen_Gun
+| Owen Gun
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rifle
+| SPEX_Owen_Gun_Camo
+| Owen Gun (Camo)
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Rifle
+| SPEX_Sten_Mk5
+| Sten Mk V
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Rifle
+| SPEX_Sten_Mk6_Suppressed
+| Sten Mk VI (Suppressed)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| Rifle
+| SPEX_No4_Mk1_Enfield
+| No.4 Mk.I Enfield
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rifle
+| SPEX_No4_Mk1_Enfield_dunkel
+| No.4 Mk.I Enfield (Walnut)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rifle
+| SPEX_No1_Mk3_Enfield
+| No.1 Mk.III Enfield
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rifle
+| SPEX_No1_Mk3_mid_Enfield
+| No.1 Mk.III* (Converted) Enfield
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rifle
+| SPEX_No1_Mk3_late_Enfield
+| No.1 Mk.III* Enfield
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rifle
+| SPEX_No4_Mk1_Enfield_Scoped
+| No.4 Mk.I (T) Enfield (No.32 Scope)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rifle
+| SPEX_No4_Mk1_Enfield_Scoped_dunkel
+| No.4 Mk.I (T) Enfield (No.32 Scope, Walnut)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Launcher
+| SPEX_PIAT
+| Projector, Infantry, Anti Tank
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Launcher
+| SPEX_PIAT_Brown
+| Projector, Infantry, Anti Tank (Brown)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Rifle
+| SPEX_LMG_303_Mk1
+| Brno-Enfield Mk I
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD
+| PL Inf. BD Serge Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_open
+| PL Inf. BD Serge Gaiters (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_roll
+| PL Inf. BD Serge Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_STRZ
+| PL Inf. BD Serge Gaiters (St. Szer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_KAPR
+| PL Inf. BD Serge Gaiters (Kpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_PLUT
+| PL Inf. BD Serge Gaiters (Plut)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_CHOR
+| PL Inf. BD Serge Gaiters (Chor)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_CDO_BD_dagger
+| PL CDO. BD Serge
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_CDO_BD_dagger_open
+| PL CDO. BD Serge (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_CDO_BD_dagger_roll
+| PL CDO. BD Serge (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_CDO_BD_dagger_STRZ
+| PL CDO. BD Serge (St. Szer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_CDO_BD_dagger_KAPR
+| PL CDO. BD Serge (Kpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_CDO_BD_dagger_PLUT
+| PL CDO. BD Serge (Plut)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_CDO_BD_dagger_CHOR
+| PL CDO. BD Serge (Chor)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_PPOL
+| PL Inf. BD Serge Gaiters (P/Por)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_CDO_BD_PPOL_dagger
+| PL CDO. BD Serge (P/Por)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_POR
+| PL Inf. BD Serge Gaiters (Por)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_CDO_BD_POR_dagger
+| PL CDO. BD Serge (Por)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_KPT
+| PL Inf. BD Serge Gaiters (Kap)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_CDO_BD_KPT_dagger
+| PL CDO. BD Serge (Kap)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_P40
+| PL Inf. BD Austerity Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_P40_open
+| PL Inf. BD Austerity Gaiters (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_P40_roll
+| PL Inf. BD Austerity Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_P40_STRZ
+| PL Inf. BD Austerity Gaiters (St. Szer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_P40_KAPR
+| PL Inf. BD Austerity Gaiters (Kpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_P40_PLUT
+| PL Inf. BD Austerity Gaiters (Plut)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_P40_CHOR
+| PL Inf. BD Austerity Gaiters (Chor)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_P40_PPOL
+| PL Inf. BD Austerity Gaiters (P/Por)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_P40_POR
+| PL Inf. BD Austerity Gaiters (Por)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_INF_BD_P40_KPT
+| PL Inf. BD Austerity Gaiters (Kap)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD
+| PL 1.AD BD Serge Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_open
+| PL 1.AD BD Serge Gaiters (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_roll
+| PL 1.AD BD Serge Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_STRZ
+| PL 1.AD BD Serge Gaiters (St. Szer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_KAPR
+| PL 1.AD BD Serge Gaiters (Kpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_PLUT
+| PL 1.AD BD Serge Gaiters (Plut)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_CHOR
+| PL 1.AD BD Serge Gaiters (Chor)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_PPOL
+| PL 1.AD BD Serge Gaiters (P/Por)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_POR
+| PL 1.AD BD Serge Gaiters (Por)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_KPT
+| PL 1.AD BD Serge Gaiters (Kap)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_P40
+| PL 1.AD BD Austerity Gaiters
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_P40_open
+| PL 1.AD BD Austerity Gaiters (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_P40_roll
+| PL 1.AD BD Austerity Gaiters (Rolled)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_P40_STRZ
+| PL 1.AD BD Austerity Gaiters (St. Szer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_P40_KAPR
+| PL 1.AD BD Austerity Gaiters (Kpl)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_P40_PLUT
+| PL 1.AD BD Austerity Gaiters (Plut)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_P40_CHOR
+| PL 1.AD BD Austerity Gaiters (Chor)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_P40_PPOL
+| PL 1.AD BD Austerity Gaiters (P/Por)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_P40_POR
+| PL 1.AD BD Austerity Gaiters (Por)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Uniform
+| U_SPEX_PL_PZ_BD_P40_KPT
+| PL 1.AD BD Austerity Gaiters (Kap)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2
+| PL Helmet Mk.II
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_tilt
+| PL Helmet Mk.II (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_op
+| PL Helmet Mk.II (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_op_tilt
+| PL Helmet Mk.II (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_net
+| PL Helmet Mk.II Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_net_op
+| PL Helmet Mk.II Net (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_net_tilt
+| PL Helmet Mk.II Net (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_net_op_tilt
+| PL Helmet Mk.II Net (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_ifak
+| PL Helmet Mk.II FAK
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_ifak_tilt
+| PL Helmet Mk.II FAK (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_ifak_op
+| PL Helmet Mk.II FAK (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_ifak_op_tilt
+| PL Helmet Mk.II FAK (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_desert
+| PL Helmet Mk.II Desert
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_desert_tilt
+| PL Helmet Mk.II Desert (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_desert_op
+| PL Helmet Mk.II Desert (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_desert_op_tilt
+| PL Helmet Mk.II Desert (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_desert_net
+| PL Helmet Mk.II Desert Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_desert_net_op
+| PL Helmet Mk.II Desert Net (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_desert_net_tilt
+| PL Helmet Mk.II Desert Net (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_desert_net_op_tilt
+| PL Helmet Mk.II Desert Net (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_SBSK
+| PL Helmet Mk.II SBSK
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_SBSK_tilt
+| PL Helmet Mk.II SBSK (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_SBSK_op
+| PL Helmet Mk.II SBSK (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_SBSK_op_tilt
+| PL Helmet Mk.II SBSK (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_SBSK_net
+| PL Helmet Mk.II SBSK Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_SBSK_net_op
+| PL Helmet Mk.II SBSK Net (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_SBSK_net_tilt
+| PL Helmet Mk.II SBSK Net (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_SBSK_net_op_tilt
+| PL Helmet Mk.II SBSK Net (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_RAC
+| PL Helmet RAC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk1
+| PL Helmet Airborne
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk1_op
+| PL Helmet Airborne (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk1_net
+| PL Helmet Airborne Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk1_net_op
+| PL Helmet Airborne Net (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk1_scrim
+| PL Helmet Airborne Scrim
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk1_scrim_op
+| PL Helmet Airborne Scrim (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk2
+| PL Helmet Airborne Mk.I
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk2_op
+| PL Helmet Airborne Mk.I (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk2_net
+| PL Helmet Airborne Mk.I Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk2_net_op
+| PL Helmet Airborne Mk.I Net (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk2_scrim
+| PL Helmet Airborne Mk.I Scrim
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk2_scrim_op
+| PL Helmet Airborne Mk.I Scrim (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk3
+| PL Helmet Airborne Mk.II
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk3_net
+| PL Helmet Airborne Mk.II Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_HSAT_mk3_scrim
+| PL Helmet Airborne Mk.II Scrim
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_2A
+| PL 2. Corps Helmet Mk.II
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_2A_tilt
+| PL 2. Corps Helmet Mk.II (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_2A_op
+| PL 2. Corps Helmet Mk.II (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_2A_op_tilt
+| PL 2. Corps Helmet Mk.II (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_2A_net
+| PL 2. Corps Helmet Mk.II Net
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_2A_net_op
+| PL 2. Corps Helmet Mk.II Net (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_2A_net_tilt
+| PL 2. Corps Helmet Mk.II Net (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_2A_net_op_tilt
+| PL 2. Corps Helmet Mk.II Net (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_2A_ifak
+| PL 2. Corps Helmet Mk.II FAK
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_2A_ifak_tilt
+| PL 2. Corps Helmet Mk.II FAK (Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_2A_ifak_op
+| PL 2. Corps Helmet Mk.II FAK (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_mk2_2A_ifak_op_tilt
+| PL 2. Corps Helmet Mk.II FAK (Open, Tilt)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_Helmet_RAC_2A
+| PL 2. Corps Helmet RAC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_SIDECAP
+| PL Furazerka
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_beret_Piech
+| PL GS Infantry
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_beret_cdo
+| PL Beret Commando
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_beret_panc
+| PL Beret Armoured
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_beret_panc_no38
+| PL Beret Armoured (Headset)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_beret_panc_no38_goggle
+| PL Beret Armoured (Headset, Goggles)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Headgear
+| H_SPEX_PL_beret_panc_goggle
+| PL Beret Armoured (Goggles)
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_MG_Full_kit
+| GER Field Equipment (MG)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_MG_Full_zelt
+| GER Field Equipment (MG, Zeltbahn)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_erla_MG_Full_kit
+| GER Field Equipment (MG, Gas Cape)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_erla_MG_Full_zelt
+| GER Field Equipment (MG, Gas Cape, Zeltbahn)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_MG_belt_kit
+| GER Field Equipment (MG Belt)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_MG_belt_zelt
+| GER Field Equipment (MG Belt, Zeltbahn)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_erla_MG_belt_kit
+| GER Field Equipment (MG Belt, Gas Cape)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_erla_MG_belt_zelt
+| GER Field Equipment (MG Belt, Gas Cape, Zeltbahn)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_MG_carrier_kit
+| GER Field Equipment (MG Barrel)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_MG_carrier_zelt
+| GER Field Equipment (MG Barrel, Zeltbahn)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_erla_MG_carrier_kit
+| GER Field Equipment (MG Barrel, Gas Cape)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_erla_MG_carrier_zelt
+| GER Field Equipment (MG Barrel, Gas Cape, Zeltbahn)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_camo_MG_Full_kit
+| GER Painted Equipment (MG)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_camo_MG_Full_zelt
+| GER Painted Equipment (MG, Zeltbahn)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_camo_MG_belt_kit
+| GER Painted Equipment (MG Belt)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_camo_MG_belt_zelt
+| GER Painted Equipment (MG Belt, Zeltbahn)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_camo_MG_carrier_kit
+| GER Painted Equipment (MG Barrel)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_camo_MG_carrier_zelt
+| GER Painted Equipment (MG Barrel, Zeltbahn)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_ST_MG_Full_zelt
+| GER ST Field Equipment (MG)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_ST_MG_belt_zelt
+| GER ST Field Equipment (MG Belt)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_ST_MG_carrier_zelt
+| GER ST Field Equipment (MG Barrel)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_ST_erla_MG_Full_zelt
+| GER ST Field Equipment (MG, Gas Cape)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_ST_erla_MG_belt_zelt
+| GER ST Field Equipment (MG Belt, Gas Cape)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_ST_erla_MG_carrier_zelt
+| GER ST Field Equipment (MG Barrel, Gas Cape)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_ST_camo_MG_Full_zelt
+| GER ST Painted Equipment (MG)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_ST_camo_MG_belt_zelt
+| GER ST Painted Equipment (MG Belt)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_GER_ST_camo_MG_carrier_zelt
+| GER ST Painted Equipment (MG Barrel)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_spex_cw_chute_x
+| CW Parachute Troop Mk. X
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_spex_cw_chute_x_mk5
+| CW Parachute Troop Mk. X (Mk.5 Mask)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_spex_cw_chute_x_dday
+| CW Parachute Troop Mk. X (Assault Mask)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SPEX_CW_RAF_Paradrop
+| CW Parachute Quick Release
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| Backpack
+| B_SPEX_CW_Sack_bandoleer_1
+| CW .303 Bandoleer
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_bandoleer_1_left
+| CW .303 Bandoleer (Left)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_bandoleer_1_right
+| CW .303 Bandoleer (Right)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_bandoleer_2
+| CW .303 Bandoleer (Double)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_bandoleer_3
+| CW .303 Bandoleer (Triple)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_PIAT
+| CW Ordnance Bundle
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_PIAT_gas_assault
+| CW Ordnance Bundle (Assault Mask)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61
+| CW P37 No.61 Pack
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_cup
+| CW P37 No.61 Pack (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_PIAT
+| CW P37 No.61 Pack (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_roll_1
+| CW P37 No.61 Pack (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_roll_2
+| CW P37 No.61 Pack (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_roll_3
+| CW P37 No.61 Pack (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_bren_1
+| CW P37 No.61 Pack (Pouches, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_bren_2
+| CW P37 No.61 Pack (Pouches, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_bren_roll_1_front
+| CW P37 No.61 Pack (Pouches, Roll 1, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_bren_roll_1_side
+| CW P37 No.61 Pack (Pouches, Roll 1, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_bren_roll_2_front
+| CW P37 No.61 Pack (Pouches, Roll 2, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_bren_roll_2_side
+| CW P37 No.61 Pack (Pouches, Roll 2, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_bren_roll_3_front
+| CW P37 No.61 Pack (Pouches, Roll 3, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_bren_roll_3_side
+| CW P37 No.61 Pack (Pouches, Roll 3, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_shovel
+| CW P37 No.61 Pack (Shovel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_shovel_roll
+| CW P37 No.61 Pack (Shovel, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_bandoleer
+| CW P37 No.61 Pack (Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_bandoleer_roll
+| CW P37 No.61 Pack (Bandoleer, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_no38
+| CW No.38 Wireless No.61 Pack
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_no38_roll
+| CW No.38 Wireless No.61 Pack (Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault
+| CW P37 No.61 Assault Mask
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_cup
+| CW P37 No.61 Assault Mask (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_PIAT
+| CW P37 No.61 Assault Mask (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_roll_1
+| CW P37 No.61 Assault Mask (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_roll_2
+| CW P37 No.61 Assault Mask (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_roll_3
+| CW P37 No.61 Assault Mask (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_bren_1
+| CW P37 No.61 Assault Mask (Pouches, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_bren_2
+| CW P37 No.61 Assault Mask (Pouches, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_bren_roll_1_front
+| CW P37 No.61 Assault Mask (Pouches, Roll 1, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_bren_roll_1_side
+| CW P37 No.61 Assault Mask (Pouches, Roll 1, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_bren_roll_2_front
+| CW P37 No.61 Assault Mask (Pouches, Roll 2, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_bren_roll_2_side
+| CW P37 No.61 Assault Mask (Pouches, Roll 2, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_bren_roll_3_front
+| CW P37 No.61 Assault Mask (Pouches, Roll 3, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_bren_roll_3_side
+| CW P37 No.61 Assault Mask (Pouches, Roll 3, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_shovel
+| CW P37 No.61 Assault Mask (Shovel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_shovel_roll
+| CW P37 No.61 Assault Mask (Shovel, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_bandoleer
+| CW P37 No.61 Assault Mask (Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_bandoleer_roll
+| CW P37 No.61 Assault Mask (Bandoleer, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_no38
+| CW No.38 Wireless No.61 Assault Mask
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_assault_no38_roll
+| CW No.38 Wireless No.61 Assault Mask (Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_mk5
+| CW P37 No.61 Mk.V Mask
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_mk5_cup
+| CW P37 No.61 Mk.V Mask (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_mk5_PIAT
+| CW P37 No.61 Mk.V Mask (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_mk5_roll_1
+| CW P37 No.61 Mk.V Mask (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_mk5_roll_2
+| CW P37 No.61 Mk.V Mask (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_gas_mk5_roll_3
+| CW P37 No.61 Mk.V Mask (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay
+| CW P37 No.61 Landing
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_cup
+| CW P37 No.61 Landing (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_dday_PIAT
+| CW P37 No.61 Landing (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_roll_1
+| CW P37 No.61 Landing (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_roll_2
+| CW P37 No.61 Landing (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_roll_3
+| CW P37 No.61 Landing (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_bren_1
+| CW P37 No.61 Landing (Pouches, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_bren_2
+| CW P37 No.61 Landing (Pouches, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_bren_roll_1_front
+| CW P37 No.61 Landing (Pouches, Roll 1, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_bren_roll_1_side
+| CW P37 No.61 Landing (Pouches, Roll 1, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_bren_roll_2_front
+| CW P37 No.61 Landing (Pouches, Roll 2, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_bren_roll_2_side
+| CW P37 No.61 Landing (Pouches, Roll 2, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_bren_roll_3_front
+| CW P37 No.61 Landing (Pouches, Roll 3, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_bren_roll_3_side
+| CW P37 No.61 Landing (Pouches, Roll 3, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_shovel
+| CW P37 No.61 Landing (Shovel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_shovel_roll
+| CW P37 No.61 Landing (Shovel, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_no38
+| CW No.38 Wireless No.61 Landing
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_DDay_no38_roll
+| CW No.38 Wireless No.61 Landing (Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope
+| CW P37 No.61 Rope
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_cup
+| CW P37 No.61 Rope (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_PIAT
+| CW P37 No.61 Rope (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_roll_1
+| CW P37 No.61 Rope (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_roll_2
+| CW P37 No.61 Rope (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_roll_3
+| CW P37 No.61 Rope (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_bren_1
+| CW P37 No.61 Rope (Pouches, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_bren_2
+| CW P37 No.61 Rope (Pouches, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_bren_roll_1_front
+| CW P37 No.61 Rope (Pouches, Roll 1, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_bren_roll_1_side
+| CW P37 No.61 Rope (Pouches, Roll 1, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_bren_roll_2_front
+| CW P37 No.61 Rope (Pouches, Roll 2, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_bren_roll_2_side
+| CW P37 No.61 Rope (Pouches, Roll 2, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_bren_roll_3_front
+| CW P37 No.61 Rope (Pouches, Roll 3, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_bren_roll_3_side
+| CW P37 No.61 Rope (Pouches, Roll 3, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_Rope_shovel
+| CW P37 No.61 Rope (Shovel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_Rope_shovel_roll
+| CW P37 No.61 Rope (Shovel, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_bandoleer
+| CW P37 No.61 Rope (Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_bandoleer_roll
+| CW P37 No.61 Rope (Bandoleer, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_no38
+| CW No.38 Wireless No.61 Rope
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N61_rope_no38_roll
+| CW No.38 Wireless No.61 Rope (Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97
+| CW P37 No.97 Pack
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_cup
+| CW P37 No.97 Pack (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_PIAT
+| CW P37 No.97 Pack (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_roll_1
+| CW P37 No.97 Pack (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_roll_2
+| CW P37 No.97 Pack (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_roll_3
+| CW P37 No.97 Pack (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_bren_1
+| CW P37 No.97 Pack (Pouches, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_bren_2
+| CW P37 No.97 Pack (Pouches, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_bren_roll_1_front
+| CW P37 No.97 Pack (Pouches, Roll 1, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_bren_roll_1_side
+| CW P37 No.97 Pack (Pouches, Roll 1, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_bren_roll_2_front
+| CW P37 No.97 Pack (Pouches, Roll 2, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_bren_roll_2_side
+| CW P37 No.97 Pack (Pouches, Roll 2, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_bren_roll_3_front
+| CW P37 No.97 Pack (Pouches, Roll 3, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_bren_roll_3_side
+| CW P37 No.97 Pack (Pouches, Roll 3, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_shovel
+| CW P37 No.97 Pack (Shovel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_shovel_roll
+| CW P37 No.97 Pack (Shovel, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_bandoleer
+| CW P37 No.97 Pack (Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_bandoleer_roll
+| CW P37 No.97 Pack (Bandoleer, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_no38
+| CW No.38 Wireless No.97 Pack
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_no38_roll
+| CW No.38 Wireless No.97 Pack (Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault
+| CW P37 No.97 Assault Mask
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_cup
+| CW P37 No.97 Assault Mask (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_PIAT
+| CW P37 No.97 Assault Mask (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_roll_1
+| CW P37 No.97 Assault Mask (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_roll_2
+| CW P37 No.97 Assault Mask (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_roll_3
+| CW P37 No.97 Assault Mask (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_bren_1
+| CW P37 No.97 Assault Mask (Pouches, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_bren_2
+| CW P37 No.97 Assault Mask (Pouches, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_bren_roll_1_front
+| CW P37 No.97 Assault Mask (Pouches, Roll 1, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_bren_roll_1_side
+| CW P37 No.97 Assault Mask (Pouches, Roll 1, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_bren_roll_2_front
+| CW P37 No.97 Assault Mask (Pouches, Roll 2, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_bren_roll_2_side
+| CW P37 No.97 Assault Mask (Pouches, Roll 2, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_bren_roll_3_front
+| CW P37 No.97 Assault Mask (Pouches, Roll 3, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_bren_roll_3_side
+| CW P37 No.97 Assault Mask (Pouches, Roll 3, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_shovel
+| CW P37 No.97 Assault Mask (Shovel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_shovel_roll
+| CW P37 No.97 Assault Mask (Shovel, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_bandoleer
+| CW P37 No.97 Assault Mask (Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_bandoleer_roll
+| CW P37 No.97 Assault Mask (Bandoleer, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_no38
+| CW No.38 Wireless No.97 Assault Mask
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_assault_no38_roll
+| CW No.38 Wireless No.97 Assault Mask (Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_mk5
+| CW P37 No.97 Mk.V Mask
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_mk5_cup
+| CW P37 No.97 Mk.V Mask (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_mk5_PIAT
+| CW P37 No.97 Mk.V Mask (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_mk5_roll_1
+| CW P37 No.97 Mk.V Mask (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_mk5_roll_2
+| CW P37 No.97 Mk.V Mask (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_gas_mk5_roll_3
+| CW P37 No.97 Mk.V Mask (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay
+| CW P37 No.97 Landing
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_cup
+| CW P37 No.97 Landing (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_PIAT
+| CW P37 No.97 Landing (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_roll_1
+| CW P37 No.97 Landing (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_roll_2
+| CW P37 No.97 Landing (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_roll_3
+| CW P37 No.97 Landing (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_bren_1
+| CW P37 No.97 Landing (Pouches, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_bren_2
+| CW P37 No.97 Landing (Pouches, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_bren_roll_1_front
+| CW P37 No.97 Landing (Pouches, Roll 1, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_bren_roll_1_side
+| CW P37 No.97 Landing (Pouches, Roll 1, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_bren_roll_2_front
+| CW P37 No.97 Landing (Pouches, Roll 2, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_bren_roll_2_side
+| CW P37 No.97 Landing (Pouches, Roll 2, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_bren_roll_3_front
+| CW P37 No.97 Landing (Pouches, Roll 3, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_bren_roll_3_side
+| CW P37 No.97 Landing (Pouches, Roll 3, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_shovel
+| CW P37 No.97 Landing (Shovel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_shovel_roll
+| CW P37 No.97 Landing (Shovel, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_no38
+| CW No.38 Wireless No.97 Landing
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_DDay_no38_roll
+| CW No.38 Wireless No.97 Landing (Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope
+| CW P37 No.97 Rope
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_cup
+| CW P37 No.97 Rope (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_PIAT
+| CW P37 No.97 Rope (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_roll_1
+| CW P37 No.97 Rope (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_roll_2
+| CW P37 No.97 Rope (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_roll_3
+| CW P37 No.97 Rope (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_bren_1
+| CW P37 No.97 Rope (Pouches, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_bren_2
+| CW P37 No.97 Rope (Pouches, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_bren_roll_1_front
+| CW P37 No.97 Rope (Pouches, Roll 1, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_bren_roll_1_side
+| CW P37 No.97 Rope (Pouches, Roll 1, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_bren_roll_2_front
+| CW P37 No.97 Rope (Pouches, Roll 2, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_bren_roll_2_side
+| CW P37 No.97 Rope (Pouches, Roll 2, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_bren_roll_3_front
+| CW P37 No.97 Rope (Pouches, Roll 3, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_bren_roll_3_side
+| CW P37 No.97 Rope (Pouches, Roll 3, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_Rope_shovel
+| CW P37 No.97 Rope (Shovel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_Rope_shovel_roll
+| CW P37 No.97 Rope (Shovel, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_bandoleer
+| CW P37 No.97 Rope (Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_bandoleer_roll
+| CW P37 No.97 Rope (Bandoleer, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_no38
+| CW No.38 Wireless No.97 Rope
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N97_rope_no38_roll
+| CW No.38 Wireless No.97 Rope (Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103
+| CW P37 No.3 Pack
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_cup
+| CW P37 No.3 Pack (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_PIAT
+| CW P37 No.3 Pack (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_roll_1
+| CW P37 No.3 Pack (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_roll_2
+| CW P37 No.3 Pack (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_roll_3
+| CW P37 No.3 Pack (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_bren_1
+| CW P37 No.3 Pack (Pouches, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_bren_2
+| CW P37 No.3 Pack (Pouches, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_bren_roll_1_front
+| CW P37 No.3 Pack (Pouches, Roll 1, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_bren_roll_1_side
+| CW P37 No.3 Pack (Pouches, Roll 1, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_bren_roll_2_front
+| CW P37 No.3 Pack (Pouches, Roll 2, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_bren_roll_2_side
+| CW P37 No.3 Pack (Pouches, Roll 2, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_bren_roll_3_front
+| CW P37 No.3 Pack (Pouches, Roll 3, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_bren_roll_3_side
+| CW P37 No.3 Pack (Pouches, Roll 3, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_shovel
+| CW P37 No.3 Pack (Shovel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_shovel_roll
+| CW P37 No.3 Pack (Shovel, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_bandoleer
+| CW P37 No.3 Pack (Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_bandoleer_roll
+| CW P37 No.3 Pack (Bandoleer, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_no38
+| CW No.38 Wireless No.3 Pack
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_no38_roll
+| CW No.38 Wireless No.3 Pack (Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault
+| CW P37 No.3 Assault Mask
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_cup
+| CW P37 No.3 Assault Mask (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_PIAT
+| CW P37 No.3 Assault Mask (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_roll_1
+| CW P37 No.3 Assault Mask (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_roll_2
+| CW P37 No.3 Assault Mask (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_roll_3
+| CW P37 No.3 Assault Mask (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_bren_1
+| CW P37 No.3 Assault Mask (Pouches, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_bren_2
+| CW P37 No.3 Assault Mask (Pouches, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_bren_roll_1_front
+| CW P37 No.3 Assault Mask (Pouches, Roll 1, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_bren_roll_1_side
+| CW P37 No.3 Assault Mask (Pouches, Roll 1, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_bren_roll_2_front
+| CW P37 No.3 Assault Mask (Pouches, Roll 2, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_bren_roll_2_side
+| CW P37 No.3 Assault Mask (Pouches, Roll 2, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_bren_roll_3_front
+| CW P37 No.3 Assault Mask (Pouches, Roll 3, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_bren_roll_3_side
+| CW P37 No.3 Assault Mask (Pouches, Roll 3, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_shovel
+| CW P37 No.3 Assault Mask (Shovel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_shovel_roll
+| CW P37 No.3 Assault Mask (Shovel, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_bandoleer
+| CW P37 No.3 Assault Mask (Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_bandoleer_roll
+| CW P37 No.3 Assault Mask (Bandoleer, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_no38
+| CW No.38 Wireless No.3 Assault Mask
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_assault_no38_roll
+| CW No.38 Wireless No.3 Assault Mask (Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_mk5
+| CW P37 No.3 Mk.V Mask
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_mk5_cup
+| CW P37 No.3 Mk.V Mask (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_mk5_PIAT
+| CW P37 No.3 Mk.V Mask (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_mk5_roll_1
+| CW P37 No.3 Mk.V Mask (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_mk5_roll_2
+| CW P37 No.3 Mk.V Mask (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_gas_mk5_roll_3
+| CW P37 No.3 Mk.V Mask (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay
+| CW P37 No.3 Landing
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_cup
+| CW P37 No.3 Landing (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_dday_PIAT
+| CW P37 No.3 Landing (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_roll_1
+| CW P37 No.3 Landing (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_roll_2
+| CW P37 No.3 Landing (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_roll_3
+| CW P37 No.3 Landing (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_bren_1
+| CW P37 No.3 Landing (Pouches, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_bren_2
+| CW P37 No.3 Landing (Pouches, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_bren_roll_1_front
+| CW P37 No.3 Landing (Pouches, Roll 1, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_bren_roll_1_side
+| CW P37 No.3 Landing (Pouches, Roll 1, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_bren_roll_2_front
+| CW P37 No.3 Landing (Pouches, Roll 2, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_bren_roll_2_side
+| CW P37 No.3 Landing (Pouches, Roll 2, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_bren_roll_3_front
+| CW P37 No.3 Landing (Pouches, Roll 3, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_bren_roll_3_side
+| CW P37 No.3 Landing (Pouches, Roll 3, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_shovel
+| CW P37 No.3 Landing (Shovel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_shovel_roll
+| CW P37 No.3 Landing (Shovel, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_no38
+| CW No.38 Wireless No.3 Landing
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_DDay_no38_roll
+| CW No.38 Wireless No.3 Landing (Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope
+| CW P37 No.3 Rope
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_cup
+| CW P37 No.3 Rope (Cup)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_PIAT
+| CW P37 No.3 Rope (Ordnance)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_roll_1
+| CW P37 No.3 Rope (Roll 1)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_roll_2
+| CW P37 No.3 Rope (Roll 2)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_roll_3
+| CW P37 No.3 Rope (Roll 3)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_bren_1
+| CW P37 No.3 Rope (Pouches, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_bren_2
+| CW P37 No.3 Rope (Pouches, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_bren_roll_1_front
+| CW P37 No.3 Rope (Pouches, Roll 1, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_bren_roll_1_side
+| CW P37 No.3 Rope (Pouches, Roll 1, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_bren_roll_2_front
+| CW P37 No.3 Rope (Pouches, Roll 2, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_bren_roll_2_side
+| CW P37 No.3 Rope (Pouches, Roll 2, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_bren_roll_3_front
+| CW P37 No.3 Rope (Pouches, Roll 3, Front)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_bren_roll_3_side
+| CW P37 No.3 Rope (Pouches, Roll 3, Side)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_Rope_shovel
+| CW P37 No.3 Rope (Shovel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_Rope_shovel_roll
+| CW P37 No.3 Rope (Shovel, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_bandoleer
+| CW P37 No.3 Rope (Bandoleer)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_bandoleer_roll
+| CW P37 No.3 Rope (Bandoleer, Roll)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_no38
+| CW No.38 Wireless No.3 Rope
+| {{Icon|arma3spex|25}}
+| No
+|-
+| Backpack
+| B_SPEX_CW_Sack_P37_N103_rope_no38_roll
+| CW No.38 Wireless No.3 Rope (Roll)
+| {{Icon|arma3spex|25}}
+| No
+|}
+
+== Vehicles ==
+
+{| class="wikitable sortable" width=100%
+|-
+! Faction
+! Class Name
+! Display Name
+! Icon
+! Restricted?
+|- style="background: #EDD; color: #333"
+| [SPE] US Army
+| SPEX_M4A1_75_DV
+| M4A1 Sherman (Early)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_Sherman_II_Early
+| Sherman II (Early)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_Sherman_II
+| Sherman II (Early)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_Sherman_II_late
+| Sherman II
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_Sherman_I
+| Sherman I
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_Sherman_I_Early
+| Sherman I (Early)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_Sherman_V
+| Sherman V
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_Sherman_V_Early
+| Sherman V (Early)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_Sherman_V
+| Sherman V
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_Sherman_V_Early
+| Sherman V (Early)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_TROP_Sherman_V
+| Sherman V
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_TROP_Sherman_V_Early
+| Sherman V (Early)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_Sherman_I_Hybrid
+| Sherman I (Hybrid)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_Sherman_Ic
+| Sherman IC
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_Sherman_Ic
+| Sherman IC
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_Sherman_Vc
+| Sherman VC
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_Sherman_Vc
+| Sherman VC
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_Sherman_Ic_Hybrid
+| Sherman IC (Hybrid)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_Sherman_Ic_Hybrid
+| Sherman IC (Hybrid)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPE] Wehrmacht
+| SPEX_GER_Sherman_I
+| PzKpfw M4 748(a)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPE] Wehrmacht
+| SPEX_GER_Sherman_Vc
+| PzKpfw M4 748(a) Firefly
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| [SPE] US Army
+| SPEX_LCVP
+| LCVP
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_Humber_MkII
+| Humber Mk.II AC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Polish West Corps
+| SPEX_PL_Humber_MkII
+| Humber Mk.II AC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_Humber_MkII
+| Humber Mk.II AC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_Humber_MkIV_PLM
+| Humber Mk.IV AC PLM
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_Humber_MkIV
+| Humber Mk.IV AC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Polish West Corps
+| SPEX_PL_Humber_MkIV_PLM
+| Humber Mk.IV AC PLM
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Polish West Corps
+| SPEX_PL_Humber_MkIV
+| Humber Mk.IV AC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_Humber_LRC
+| Humber Mk.IIIA LRC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Polish West Corps
+| SPEX_PL_Humber_LRC
+| Humber Mk.IIIA LRC
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_Humber_LRC
+| Humber Mk.IIIA LRC
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_M8_LAC_ringMount
+| M8 Armored Car (M2)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_M8_LAC
+| M8 Armored Car
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| [SPE] US Army
+| SPEX_C47_Skytrain
+| C-47 Skytrain
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] US Army
+| SPEX_CG4_WACO
+| GC-4 Waco
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] US Army
+| SPEX_HORSA
+| AS-51 Horsa (Mk. I)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_C47_Dakota
+| C-47 Dakota
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] US Army
+| SPEX_HORSA_MK2
+| AS-51 Horsa (Mk. II, Cargo)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_HORSA
+| AS-51 Horsa (Mk. I)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_HORSA_MK2
+| AS-51 Horsa (Mk. II, Cargo)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] US Army
+| SPEX_GC4_WACO_Cargo
+| GC-4 Waco (Cargo)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_MKI_HADRIAN
+| Mk.I Hadrian
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_MKI_HADRIAN_Cargo
+| Mk.I Hadrian (Cargo)
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_MG34_Lafette_Deployed
+| MG 34
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_MG34_Lafette_low_Deployed
+| MG 34 (Low)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_MG34_Lafette_Trench_Deployed
+| MG 34 (Trench)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_MG34_Bipod
+| MG 34 (Bipod)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_GrW278_1
+| 8.14 cm GrW 278/1 (f)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| [SPEX] Commonwealth
+| SPEX_SBML_2_Inch_Mk7
+| Ord. SBML Two-inch Mortar
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_SBML_2_Inch_Mk7
+| Ord. SBML Two-inch Mortar
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Polish West Corps
+| SPEX_PL_SBML_2_Inch_Mk7
+| Ord. SBML Two-inch Mortar
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_QF_6_Pounder
+| OQF 6-Pounder
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_QF_6_Pounder
+| OQF 6-Pounder
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_QF_6_Pounder
+| OQF 6-Pounder
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_FlaK_36
+| FlaK 36
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_FlaK_36_AA
+| FlaK 36 (AA)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_FlaK_38
+| FlaK 38
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_FlaK_30
+| FlaK 30
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_leFH18_AT
+| 10.5 cm leFH18 (AT)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_leFH18
+| 10.5 cm leFH18 (Artillery)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| [SPE] US Army
+| SPEX_M2_60
+| M2 60 mm
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_Pak40
+| PaK 40
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_Cromwell_Mk5
+| Cromwell Mk V Type C
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Polish West Corps
+| SPEX_PL_Cromwell_Mk5
+| Cromwell Mk V Type C
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_Cromwell_Mk6
+| Cromwell Mk VI Type C
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Polish West Corps
+| SPEX_PL_Cromwell_Mk6
+| Cromwell Mk VI Type C
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_M10
+| M10 Tank Destroyer
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_M10
+| M10 Tank Destroyer
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_M10
+| M10 Tank Destroyer
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_PzKpfwIII_J
+| PzKpfw III Ausf.J
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_PzKpfwIII_L
+| PzKpfw III Ausf.L
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_PzKpfwIV_G
+| PzKpfw IV Ausf.G
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_PzKpfwVI_H1
+| PzKpfw VI Ausf.H1 Tiger
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_StuG_III_G_Early
+| Sd.Kfz. 142/1 StuG III G (Early)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_StuH_42
+| Sd.Kfz. 142/2 StuH 42
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_Bedford_MWD
+| Bedford MWD 4x2
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_Bedford_MWD_Open
+| Bedford MWD 4x2 (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_Bedford_MWD_Fuel
+| Bedford MWD 4x2 (Fuel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_Bedford_MWD_Repair
+| Bedford MWD 4x2 (Repair)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth
+| SPEX_CW_Bedford_MWD_Ammo
+| Bedford MWD 4x2 (Ammo)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_trop_Bedford_MWD
+| Bedford MWD 4x2
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_trop_Bedford_MWD_Open
+| Bedford MWD 4x2 (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_trop_Bedford_MWD_Fuel
+| Bedford MWD 4x2 (Fuel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_trop_Bedford_MWD_Repair
+| Bedford MWD 4x2 (Repair)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_trop_Bedford_MWD_Ammo
+| Bedford MWD 4x2 (Ammo)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Polish West Corps
+| SPEX_PL_Bedford_MWD
+| Bedford MWD 4x2
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Polish West Corps
+| SPEX_PL_Bedford_MWD_Open
+| Bedford MWD 4x2 (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Polish West Corps
+| SPEX_PL_Bedford_MWD_Fuel
+| Bedford MWD 4x2 (Fuel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Polish West Corps
+| SPEX_PL_Bedford_MWD_Repair
+| Bedford MWD 4x2 (Repair)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Polish West Corps
+| SPEX_PL_Bedford_MWD_Ammo
+| Bedford MWD 4x2 (Ammo)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] Wehrmacht
+| SPEX_GER_Bedford_MWD
+| Bedford MWD 4x2
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] Wehrmacht
+| SPEX_GER_Bedford_MWD_Open
+| Bedford MWD 4x2 (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] Wehrmacht
+| SPEX_GER_Bedford_MWD_Fuel
+| Bedford MWD 4x2 (Fuel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] Wehrmacht
+| SPEX_GER_Bedford_MWD_Repair
+| Bedford MWD 4x2 (Repair)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] Wehrmacht
+| SPEX_GER_Bedford_MWD_Ammo
+| Bedford MWD 4x2 (Ammo)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] Sturmtroopers
+| SPEX_ST_Bedford_MWD
+| Bedford MWD 4x2
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] Sturmtroopers
+| SPEX_ST_Bedford_MWD_Open
+| Bedford MWD 4x2 (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] Sturmtroopers
+| SPEX_ST_Bedford_MWD_Fuel
+| Bedford MWD 4x2 (Fuel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] Sturmtroopers
+| SPEX_ST_Bedford_MWD_Repair
+| Bedford MWD 4x2 (Repair)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] Sturmtroopers
+| SPEX_ST_Bedford_MWD_Ammo
+| Bedford MWD 4x2 (Ammo)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_Bedford_MWD
+| Bedford MWD 4x2
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_Bedford_MWD_Open
+| Bedford MWD 4x2 (Open)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_Bedford_MWD_Fuel
+| Bedford MWD 4x2 (Fuel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_Bedford_MWD_Repair
+| Bedford MWD 4x2 (Repair)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_Bedford_MWD_Ammo
+| Bedford MWD 4x2 (Ammo)
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_CCKW_353
+| G-508 CCKW 353
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_CCKW_353_Open
+| G-508 CCKW 353 (Open)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_CCKW_353_Ammo
+| G-508 CCKW 353 (Ammo)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_CCKW_353_M2
+| G-508 CCKW 353 (M2)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_CCKW_353_Ambulance
+| G-508 CCKW 353 (Ambulance)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_CCKW_353_Repair
+| G-508 CCKW 353 (Repair)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Polish West Corps
+| SPEX_PL_CCKW_353_Fuel
+| G-508 CCKW 353 (Fuel)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_OpelBlitz
+| Sd.Kfz. 305 Blitz
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_OpelBlitz_Open
+| Sd.Kfz. 305 Blitz (Open)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_OpelBlitz_Fuel
+| Sd.Kfz. 305 Blitz (Fuel)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_OpelBlitz_Ambulance
+| Sd.Kfz. 305 Blitz (Ambulance)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_OpelBlitz_Repair
+| Sd.Kfz. 305 Blitz (Repair)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_OpelBlitz_Ammo
+| Sd.Kfz. 305 Blitz (Ammo)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_OpelBlitz_Flak38
+| Sd.Kfz. 305 Blitz (FlaK 38)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_G503_MB
+| G-503 MB 4x4
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_G503_MB_Open
+| G-503 MB 4x4 (Open)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_G503_MB_Ambulance
+| G-503 MB 4x4 (Medical)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_G503_MB_M2
+| G-503 MB 4x4 (M2)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_G503_MB
+| G-503 MB 4x4
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_G503_MB_Open
+| G-503 MB 4x4 (Open)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_G503_MB_Ambulance
+| G-503 MB 4x4 (Medical)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_G503_MB_M2
+| G-503 MB 4x4 (M2)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_R200_Unarmed
+| Pkw.Kfz. 1 R200
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_R200_Hood
+| Pkw.Kfz. 1 R200 (Canopy)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_R200_MG34
+| Pkw.Kfz. 1 R200 (MG34)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|-
+| [SPE] US Army
+| SPEX_T3_Trailer
+| T3 Trailer, 2-Wheel
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] US Army
+| SPEX_T3_Trailer_Ammo
+| T3 Trailer, 2-Wheel (Ammo)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] US Army
+| SPEX_T3_Trailer_Fuel
+| T3 Trailer, 2-Wheel (Fuel)
+| {{Icon|arma3spex|25}}
+| No
+|-
+| [SPE] US Army
+| SPEX_T3_Trailer_Repair
+| T3 Trailer, 2-Wheel (Repair)
+| {{Icon|arma3spex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_M5_Halftrack
+| M5A1 Half-Track
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_M5_Halftrack
+| M5A1 Half-Track
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_M5_Halftrack_Unarmed
+| M5 Half-Track (Unarmed)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_M5_Halftrack_Unarmed
+| M5 Half-Track (Unarmed)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_M5_Halftrack_Unarmed_Open
+| M5 Half-Track (Unarmed, Open)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_M5_Halftrack_Unarmed_Open
+| M5 Half-Track (Unarmed, Open)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_M5_Halftrack_Ammo
+| M5 Half-Track (Ammo)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_M5_Halftrack_Ammo
+| M5 Half-Track (Ammo)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_M5_Halftrack_Fuel
+| M5 Half-Track (Fuel)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_M5_Halftrack_Fuel
+| M5 Half-Track (Fuel)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_M5_Halftrack_Repair
+| M5 Half-Track (Repair)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_M5_Halftrack_Repair
+| M5 Half-Track (Repair)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth
+| SPEX_CW_M5_Halftrack_Ambulance
+| M5 Half-Track (Ambulance)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Commonwealth (Tropic)
+| SPEX_CW_Trop_M5_Halftrack_Ambulance
+| M5 Half-Track (Ambulance)
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|- style="background: #EDD; color: #333"
+| [SPEX] Wehrmacht (Tropic)
+| SPEX_DAK_SdKfz250_1
+| Sd.Kfz. 250/1
+| {{Icon|arma3spex|25}}
+| [[Spearhead 1944]]
+|}
+
+[[Category: SPEX - Spearhead Extended]]

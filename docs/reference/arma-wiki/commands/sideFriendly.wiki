@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/sideFriendly
+// revision: 341634 (2023-06-12T19:02:54Z)
+// export sha1: f97t3vk8m2stctz9x45mg8r8suxhvwp
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Operation Flashpoint version 1.78 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.78
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Sides
+
+|descr= The Friendly side - friendly to all, see [[Side Relations]].
+
+|s1= [[sideFriendly]]
+
+|r1= [[Side]]
+
+|x1= <sqf>if (side player == sideFriendly) then { hint "I feel friendly today!"; };</sqf>
+
+|seealso= [[Side]] [[side]] [[west]] [[east]] [[resistance]] [[civilian]] [[sideLogic]] [[sideUnknown]] [[sideEnemy]] [[playerSide]] [[sideEmpty]] [[sideAmbientLife]] [[Side Relations]]
+}}

@@ -1,0 +1,85 @@
+// source: https://community.bistudio.com/wiki/setLightColor
+// revision: 309010 (2022-04-25T11:42:18Z)
+// export sha1: 9c4f0381w44yg5atpza87n9gazbvjxl
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Lights
+
+|arg= local
+
+|eff= local
+
+|descr= Set diffuse color of light. Illuminates surfaces that are facing the light.
+
+|s1= light [[setLightColor]] [r, g, b]
+
+|p1= light: [[Object]]
+
+|p2= r: [[Number]] - red value in range 0..1
+
+|p3= g: [[Number]] - green value in range 0..1
+
+|p4= b: [[Number]] - blue value in range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myLight setLightColor [0.5,0,0]; // produces red</sqf>
+
+|seealso= [[setLightAmbient]] [[setLightBrightness]] [[lightAttachObject]] [[lightDetachObject]] [[setLightIntensity]] [[setLightAttenuation]] [[setLightUseFlare]] [[setLightFlareSize]] [[setLightFlareMaxDistance]] [[setLightDayLight]] [[setLightIR]]
+}}
+
+{{Note
+|user= Feersum
+|timestamp= 20061201164200
+|text= Light can be created with command [[createVehicleLocal]] with special vehicle class {{hl|"#lightpoint"}}<br>
+for example:
+<sqf>
+_light = "#lightpoint" createVehicleLocal pos;
+_light setLightBrightness 1.0;
+_light setLightAmbient [0.0, 1.0, 0.0];
+_light setLightColor [0.0, 1.0, 0.0];
+_light lightAttachObject [_object, [0,0,0]];
+</sqf>
+}}
+
+{{Note
+|user= ColonelSandersLite
+|timestamp= 20170817071500
+|text= To clarify:
+* [[setLightAmbient]] - Terrain and surrounding objects are bathed in this colour.
+* [[setLightColor]] - Controls the "haze" seen around the lightsource (ex flares).
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140324235800
+|text= 1. In {{arma3}} ver 1.14 [[setLightColor]] will also change the color of the flare when [[setLightUseFlare]], [[setLightFlareSize]] and [[setLightFlareMaxDistance]] were used on the same light source. For example:
+<sqf>
+_light setLightUseFlare true;
+_light setLightFlareSize 2;
+_light setLightFlareMaxDistance 60;
+_light setLightColor [1, 1, 1];
+</sqf><br>
+2. When both [[setLightAmbient]] and [[setLightColor]] are [0,0,0], there won’t be any visual presentation on the light source.
+}}

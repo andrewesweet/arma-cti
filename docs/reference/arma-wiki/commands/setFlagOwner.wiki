@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/setFlagOwner
+// revision: 369375 (2024-09-03T18:43:13Z)
+// export sha1: c7tul8yij9affd9r87smmcurpupkauz
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Flags | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Flags
+|gr2= Object Manipulation
+
+|descr= Sets flag owner. When owner is set to [[objNull]] or any object other than a unit of class [[Models_%26_Classnames:_CfgVehicles_-_Class_Man|man]] or [[Game_Logic|logic]], flag is returned to the flagpole. A flag owned by a logic has no visual representation.
+
+|s1= flag [[setFlagOwner]] owner
+
+|p1= flag: [[Object]]
+
+|p2= owner: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_flag1 setFlagOwner _soldier1;</sqf>
+
+|x2= To return the flag back to the flag pole:
+<sqf>
+//Method 1: (set owner null)
+flag _flagCarrier setFlagOwner objNull;
+//Method 2: (set the flag mast as the owner)
+flag _flagCarrier setFlagOwner flag _flagCarrier;
+</sqf>
+
+|seealso= [[flag]] [[flagOwner]] [[setFlagSide]] [[setFlagTexture]] [[flagSide]] [[flagTexture]] [[forceFlagTexture]] [[getForcedFlagTexture]] [[:Category:Flag Textures|Flag Textures]]
+}}
+
+<dl class="command_description">
+<dt class="note">[[User:Bdfy|Bdfy]]</dt>
+<dd class="note">
+Since flags can not be owned by vehicles, use ''"flag setFlagOwner driver tank1"'' or ''"flag1 setFlagOwner tank1D"'' to assign the flag to the vehicle's driver. The second method will only work if ''tank1'' is the name of a unit, not a variable refering to it. True for OFP&Arma
+
+</dl>

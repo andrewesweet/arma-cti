@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/independent
+// revision: 369132 (2024-09-03T10:34:34Z)
+// export sha1: 94t552qmlclrit7jxb0fr1ryxyg14cd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Sides
+
+|descr= Pre-defined variable for the independent [[Side|side]].
+
+|alias= [[resistance]]
+
+|s1= [[independent]] 
+
+|r1= [[Side]]
+
+|x1= <sqf>
+if (side _unit == independent) then
+{
+	hint "This is a independent unit!";
+};
+</sqf>
+
+|seealso= [[side]] [[civilian]] [[blufor]] [[east]] [[opfor]] [[resistance]] [[west]]
+}}

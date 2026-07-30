@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Object_Manipulation
+// revision: 160384 (2020-09-24T12:34:35Z)
+// export sha1: ktqugskn50lsgsrsl57nh133ig48jq7
+// Vendored snapshot. Do not edit — re-export instead.
+
+Get or set various different properties of units, vehicles and other objects.
+
+[[Category:Scripting Commands by Functionality]]

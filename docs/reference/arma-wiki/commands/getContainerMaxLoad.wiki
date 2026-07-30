@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/getContainerMaxLoad
+// revision: 376219 (2025-09-19T07:31:28Z)
+// export sha1: 8lbnfuba0whvfvp3nhhfickf4ri9duc
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Unit Inventory
+
+|descr= Returns max load value of given uniform, vest or backpack container. For other types of containers, use [[maxLoad]] command
+
+|s1= [[getContainerMaxLoad]] containerClass
+
+|p1= containerClass: [[String]] - uniform, vest or backpack class
+
+|r1= [[Number]] - load value, -1 if not available.
+
+|x1= <sqf>
+private _maxLoadUniform		= getContainerMaxLoad uniform player;
+private _maxLoadVest		= getContainerMaxLoad vest player;
+private _maxLoadBackpack	= getContainerMaxLoad backpack player;
+</sqf>
+
+|seealso= [[load]] [[loadAbs]] [[loadUniform]] [[loadBackpack]] [[loadVest]] [[getMass]] [[weightRTD]]
+}}

@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/ammoOnPylon
+// revision: 347947 (2023-11-07T05:27:04Z)
+// export sha1: sn3iu8hj5erjfmanihw3z42xzlezv86
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Loadouts | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Vehicle Loadouts
+
+|descr= Returns ammo count on given pylon (or [[false]] on failure).
+
+|s1= vehicle [[ammoOnPylon]] pylon
+
+|p1= vehicle: [[Object]]
+
+|p2= pylon: [[String]] or [[Number]] - pylon's name or index
+
+|r1= [[Number]] or [[Boolean]] - [[false]] on failure
+
+|x1= <sqf>private _ammoCount = (vehicle player) ammoOnPylon "pylon1";</sqf>
+
+|x2= <sqf>hint str (vehicle player ammoOnPylon "pylonCenter");</sqf>
+
+|seealso= [[Arma 3: Vehicle Loadouts]] [[setAmmoOnPylon]] [[getCompatiblePylonMagazines]] [[getPylonMagazines]] [[animatePylon]] [[animateBay]] [[setPylonsPriority]] [[setPylonLoadout]]
+}}
+
+{{Note
+|user= Commy2
+|timestamp= 20170818142100
+|text= The pylon indices start at 1 and not at 0.
+}}

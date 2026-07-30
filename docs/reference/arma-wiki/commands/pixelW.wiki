@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/pixelW
+// revision: 348976 (2023-11-08T14:45:44Z)
+// export sha1: rzgvrp77r1jy2yjh7025lupo26wdxgo
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Arma 3 version 1.60 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.60
+
+|gr1= GUI Control - Positioning
+
+|descr= Returns width of one pixel for current resolution.
+
+|s1= '''pixelW'''
+
+|r1= [[Number]] - pixel width
+
+|x1= <sqf>_pixelWidth = pixelW;</sqf>
+
+|seealso= [[pixelGrid]] [[pixelGridBase]] [[pixelGridNoUIScale]] [[pixelH]] [[Pixel Grid System]]
+}}

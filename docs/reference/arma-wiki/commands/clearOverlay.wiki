@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/clearOverlay
+// revision: 376349 (2025-10-07T17:08:59Z)
+// export sha1: crcv8c9qx4q69q86tv9f034xqrgrvi0
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Game 2 Editor | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Game 2 Editor
+
+|descr= Clear the current overlay.
+{{Feature|informative|Some Old Editor Command}}
+
+|s1= [[clearOverlay]] map
+
+|p1= map: [[Control]]
+|r1= [[Nothing]]
+
+|x1= <sqf>clearOverlay _map;</sqf>
+
+|seealso= -
+}}

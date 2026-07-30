@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Database
+// revision: 163960 (2020-09-30T10:22:54Z)
+// export sha1: onn7qqrjf77j1u4o2tfe1d2u7lgqzyu
+// Vendored snapshot. Do not edit — re-export instead.
+
+See [[Arma 3: Scripted Database]] for a tutorial about using the Scripted Database framework.
+
+[[Category:Functions by Functionality]]

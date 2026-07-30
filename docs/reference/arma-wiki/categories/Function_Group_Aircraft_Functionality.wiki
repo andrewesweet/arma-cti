@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Aircraft_Functionality
+// revision: 166441 (2020-10-10T17:12:58Z)
+// export sha1: i4iu44gkom27l6icq5ukdapkigqe1qh
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Function Group: Scripts]]

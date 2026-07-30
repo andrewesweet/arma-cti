@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/displayNull
+// revision: 321054 (2022-05-13T12:16:25Z)
+// export sha1: 5eaybsje42zswtzx8p86f16nfoxv1eq
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Command Group: Variables | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+|gr2= Variables
+
+|descr= A non-existing [[Display]]. To compare non-existent displays use [[isNull]] or [[isEqualTo]]:
+<sqf>
+displayNull == displayNull;		// false
+isNull displayNull;					// true
+displayNull isEqualTo displayNull;	// true
+</sqf>
+
+|s1= [[displayNull]]
+
+|r1= [[Display]]
+
+|x1= <sqf>!isNull displayNull; // false</sqf>
+
+|x2= <sqf>str displayNull; // No display</sqf>
+
+|seealso= [[controlNull]] [[grpNull]] [[locationNull]] [[objNull]] [[taskNull]] [[teamMemberNull]] [[scriptNull]] [[configNull]] [[typeName]] [[isNull]] [[displayParent]]
+}}
+
+{{Note
+|user= 7erra
+|timestamp= 20220205160202
+|text= When used in the [[Arma_3:_Debug_Console|debug console]] or as output in the [[:Category:Command_Group:_Radio_and_Chat|chat]] or [[rpt]] it is displayed as "No display".
+}}

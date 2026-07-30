@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/all3DENEntities
+// revision: 377599 (2026-01-02T07:01:24Z)
+// export sha1: lj6mld13xvblegveswigomijagnhjal
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Returns an array of all currently placed [[Eden Entity|Eden Editor entities]].
+{{Feature|Eden Editor|This information is only available in [[:Category:Eden Editor|Eden Editor]]. If used during mission, it will return {{hl|[<nowiki/>[],[],[],[],[],[],[],[-999]]}}.}}
+
+|s1= [[all3DENEntities]] 
+
+|r1= [[Array of Eden Entities]]
+
+|x1= <sqf>systemChat str all3DENEntities;</sqf>
+
+|x2= <sqf>all3DENEntities params ["_objects", "_groups", "_triggers", "_systems", "_waypoints", "_markers", "_layers", "_comments"];</sqf>
+
+|x3= <sqf>
+// select all Eden entities
+set3DENSelected all3DENEntities;
+</sqf>
+
+|seealso= [[get3DENMouseOver]] [[delete3DENEntities]] [[get3DENEntityID]] [[get3DENSelected]]
+}}

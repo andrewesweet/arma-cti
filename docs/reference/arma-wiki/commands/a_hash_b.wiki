@@ -1,0 +1,77 @@
+// source: https://community.bistudio.com/wiki/a_hash_b
+// revision: 377195 (2026-01-01T10:56:03Z)
+// export sha1: c2gk47wwrbhgexht99407foz6o00ibo
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Arma 3 version 1.82 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|sortKey= #
+
+|game1= arma3
+|version1= 1.82
+
+|gr1= Variables
+
+|descr= Selects an element from an [[Array]], same as [[select]] command for arrays, but has [[Order of Precedence|higher precedence]].
+{{Feature|informative|'''#''' has higher precedence than all binary operators, but it has lower precedence than unary operators (see {{Link|#Example 3}}).}}
+
+|s1= array  [[a_hash_b|#]] index
+
+|p1= array: [[Array]] of [[Anything]]
+
+|p2= index: [[Number]]
+
+|r1= [[Anything]]
+
+|x1= <sqf>[1, 2, 3, 4] # 2;			// result is 3</sqf>
+
+|x2= <sqf>getPosASL player # 2;		// result is Z component of player's position</sqf>
+
+|x3= <sqf>
+// 'getPosASL' is unary; '#' and '+' are binary; precedence is: 'getPosASL' > '#' > '+'
+getPosASL player # 2 + 1; // equivalent to (getPosASL player # 2) + 1, not (getPosASL player)#(2+1)
+</sqf>
+
+|seealso= [[select]] [[selectRandom]] [[selectRandomWeighted]] [[set]] [[resize]] [[reverse]] [[in]] [[find]] [[toArray]] [[toString]] [[forEach]] [[count]] [[deleteAt]] [[deleteRange]] [[append]] [[sort]] [[param]] [[params]] [[splitString]] [[joinString]] [[pushBack]] [[pushBackUnique]] [[apply]]
+}}
+
+{{Note
+|user= KC Grimes
+|timestamp= 20180425005100
+|text= Although not alternative syntax, the below notations work as expected:
+<sqf>
+["A", "B", "C"] # 1;		// B
+["A", "B", "C"] #1;			// B
+["A", "B", "C"]#1;			// B
+["A", "B", ["C", "D"]]#2#0;	// C
+</sqf>
+}}
+
+{{Note
+|user= 7erra
+|timestamp= 20190503154100
+|text= Here is an example of what higher precedence means:
+<sqf>
+[1, 2, 3, 4] select 2 / 2;		// divides 2 with 2, therefore selects the second element at index 1, result = 2
+[1, 2, 3, 4] select (2 / 2);	// same result with brackets
+[1, 2, 3, 4] # 2 / 2;			// selects third element, then divides by 2 = 1.5
+([1, 2, 3, 4] # 2) / 2;			// same result with brackets
+</sqf>
+<br>
+This operator can not be used in conjunction with the #define preprocessor.<br>
+<sqf>
+#define SEL_ERR [0,1,2]#0;			// error
+#define SEL_NOERR [0,1,2] select 0;	// works
+</sqf>
+}}
+
+{{Note
+|user= Fett_li
+|timestamp= 20210402161800
+|text= Beware new-lines when using this operator. I suspect the preprocessor to fail. The following code will not compile without throwing an error:
+<sqf>
+[0]
+# 0;
+</sqf>
+}}

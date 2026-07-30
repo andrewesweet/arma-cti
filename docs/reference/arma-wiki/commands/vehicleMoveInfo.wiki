@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/vehicleMoveInfo
+// revision: 377693 (2026-01-02T09:03:15Z)
+// export sha1: 4kdt5sfkvxis7gnmvka4czryaw7dqc1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Unit Control | Category:Introduced with Arma 3 version 1.98 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.98
+
+|gr1= Object Manipulation
+
+|gr2= Unit Control
+
+|descr= Returns current vehicle move/turn info (a getter for [[sendSimpleCommand]]) in format [moveInfo, turnInfo]. Possible values:
+
+{{{!}} class="wikitable"
+! moveInfo
+! turnInfo
+{{!}}- style="vertical-align: top"
+{{!}} width="50%" {{!}}
+* {{hl|"FORMATION"}} - vehicle is stationary
+* {{hl|"FORWARD"}}  - vehicle is moving forward
+* {{hl|"FAST"}} - vehicle is fast moving forward
+* {{hl|"SLOW"}} - vehicle is slow moving forward
+* {{hl|"STOP"}} - vehicle is stationary
+* {{hl|"BACK"}} - vehicle is reversing
+* {{sic|{{hl|"DirectByComander"}}}} - keyboard pilot is used, i.e. player is in the vehicle and is the [[effectiveCommander]] pressing any driving key (WASD or arrows). 
+* {{hl|"MOVE"}}
+* {{hl|"CONVOY"}}
+* {{hl|"SIMPLE"}}
+{{!}} width="50%" {{!}}
+* {{hl|"LEFT"}} - vehicle is turning left (use [[sendSimpleCommand | "STOPTURNING"]] to cancel)
+* {{hl|"RIGHT"}} - vehicle is turning right (use [[sendSimpleCommand | "STOPTURNING"]] to cancel)
+* {{hl|"NONE"}} - vehicle is not turning (when script command is used)
+* {{hl|"ABS"}} - vehicle is not turning (when keyboard pilot is used)
+{{!}}}
+
+|s1= [[vehicleMoveInfo]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Array]] with [moveInfo, turnInfo]
+* moveInfo: [[String]] - state of vehicle forward/backward movement (see description)
+* turnInfo: [[String]] - state of vehicle left/right turning (see description)
+
+|x1= <sqf>onEachFrame { hintSilent str vehicleMoveInfo vehicle player };</sqf>
+
+|seealso= [[sendSimpleCommand]] [[useAISteeringComponent]] [[effectiveCommander]] [[setEffectiveCommander]] [[enableAI]] [[disableAI]] [[getUnitState]] [[enableAIFeature]]
+}}

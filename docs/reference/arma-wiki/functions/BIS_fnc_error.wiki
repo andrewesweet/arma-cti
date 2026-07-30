@@ -1,0 +1,62 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_error
+// revision: 352467 (2024-02-11T23:23:56Z)
+// export sha1: frn5bqpk253d8yboa3tqyjn13f1fzxs
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Diagnostic
+
+|descr= [[File:BIS_fnc_error.png|300px|right]]
+Logs an error message and shows an ingame error message. The message is shown when either of the following is true:
+
+* In [[2D Editor]]
+* In [[Eden Editor]] via [[BIS_fnc_3DENNotification]]
+* Display {{hl|313}} ([[Eden Editor]] display) is available
+* <sqf inline>profileNamespace getVariable ["BIS_fnc_init_displayErrors", false]</sqf> is set to <sqf inline>true</sqf>.
+
+'''Output format:'''
+
+* In multiplayer ([[isMultiplayer]]) the function will add the [[profileName]] in front of the message
+* If <sqf inline>_fnc_error_exit</sqf> is set to <sqf inline>true</sqf> before the function call, the log message will display {{hl|HALT:}} instead of {{hl|ERROR:}}
+* If function is called from within another function, the name of the parent function will be displayed. This can be overwritten by setting <sqf inline>_fnc_scriptName</sqf> to a custom value
+
+{{Feature|informative|{{hl|[[Description.ext#allowFunctionsLog|allowFunctionsLog]]}} has to be set to '''1''' in [[Description.ext]] for this function to have any effect.}}
+
+|s1= [message, param1, ..., paramN] call [[BIS_fnc_error]]
+
+|p1= message: [[String]] - ([[format]]ted) logged message
+
+|p2= param1..paramN: [[Anything]] - (Optional) [[format]] arguments, if any
+
+|r1= [[Array]] in format: [message, param1..paramN]
+
+|x1= <sqf>["Player is too far away (%1 metres)", round (player distance [0, 0, 0])] call BIS_fnc_error;</sqf>
+
+|x2= <sqf>
+// some useful function cases
+if (!isServer) exitWith { ["This function must run on the server"] call BIS_fnc_error };
+if (!hasInterface) exitWith { ["This function must not run on a headless machine"] call BIS_fnc_error };
+if (!local _vehicle) exitWith { ["This function must run on the vehicle owner's machine"] call BIS_fnc_error };
+</sqf>
+
+|x3= <sqf>
+// Change rpt log to "HALT" indicating that function exited
+private _fnc_error_exit = true;
+if (exitHere) exitWith
+{
+	"Some error message!" call BIS_fnc_error; // Output in rpt: "log: HALT: [BIS_fnc_debugConsoleExec] Some error message!"
+};
+</sqf>
+
+|x4= <sqf>
+private _fnc_scriptName = "My_Awesome_Custom_Function";
+"Some error message!" call BIS_fnc_error; // Output in rpt: "log: ERROR: [My_Awesome_Custom_Function] Some error message!"
+</sqf>
+
+|seealso= [[BIS_fnc_errorMsg]] [[BIS_fnc_log]] [[BIS_fnc_logFormat]] [[BIS_fnc_logFormatServer]]
+}}

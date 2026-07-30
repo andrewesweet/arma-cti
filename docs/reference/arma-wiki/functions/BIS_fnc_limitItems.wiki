@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_limitItems
+// revision: 347985 (2023-11-08T10:05:06Z)
+// export sha1: 5sf92k6yntq2tayu0hqaivp0fmle84m
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Inventory
+
+|descr= Keeps or removes unit's items (including NVGs and binocular/designator) based on probability user sets.
+
+|s1= [unit, chanceNVG, chanceBino, chanceGPS, chanceMap, chanceRadio, chanceCompass, chanceWatch] call [[BIS_fnc_limitItems]]
+
+|p1= unit: [[Object]]
+
+|p2= chanceNVG: [[Number]] - (Optional, default 50) chance to keep NVGs in % (range 0..100)
+* 0 = NVGs are always removed
+* 100 = NVGs are always kept
+
+|p3= chanceBino: [[Number]] - (Optional, default 50) chance to keep binoculars in %
+
+|p4= chanceGPS: [[Number]] - (Optional, default 50) chance to keep GPS in %
+
+|p5= chanceMap: [[Number]] - (Optional, default 50) chance to keep Map in %
+
+|p6= chanceRadio: [[Number]] - (Optional, default 50) chance to keep radio in %
+
+|p7= chanceCompass: [[Number]] - (Optional, default 50) chance to keep compass in %
+
+|p8= chanceWatch: [[Number]] - (Optional, default 50) chance to keep watch in %
+
+|r1= [[Boolean]] - always [[true]]
+
+|x1= <sqf>player call BIS_fnc_limitItems;</sqf>
+
+|x2= <sqf>[player, 0, 15, 30, 45, 60, 75, 90] call BIS_fnc_limitItems;</sqf>
+
+|seealso= [[BIS_fnc_limitWeaponItems]] [[BIS_fnc_limitAmmunition]]
+}}

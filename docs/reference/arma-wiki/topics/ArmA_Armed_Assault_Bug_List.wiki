@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/ArmA:_Armed_Assault:_Bug_List
+// revision: 243904 (2021-02-07T01:08:27Z)
+// export sha1: 13g246pwitc1f8u8d2rtvd0x2l9h36h
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|important| '''BUG TRACKER'''
+
+The ArmA bug tracker is unavailable at this time.}}

@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Heightmap:_ASCII_DEM_Convert
+// revision: 349997 (2023-11-20T22:11:44Z)
+// export sha1: tn4jk4v3te9hrel2u0b3nqpagpvqgv9
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TerrainProcessorManual
+|Heightmap: Create from Geodetic .asc|task=
+|BITasksPlugin.dll|dll=
+|None|geometry=
+|Yes|heightMap=
+|DESCRIPTION=Algorithm creates UTM ASCII heightmap from geodetic .ASC digital elevation models.
+
+[[File:TerrainProcessor_Heightmaps.png]]
+* <span style="color: rgb(255,153,0);"><strong>Orange</strong></span> &nbsp;- regular <strong>geodetic</strong> heightmap
+* <span style="color: rgb(0,0,255);"><strong>Blue</strong></span> - new terrain <strong>UTM</strong> heightmap
+|TASKPARAMETERS=* '''Easting''' - UTM easting coordinate
+* '''Northing''' - UTM northing coordinate
+* '''Zone''' - UTM zone
+* '''Hemisphere''' - UTM hemisphere (Northern, Southern)
+* '''Rows & columns count''' - Rows and columns count
+* '''Cell size''' - Cell size in meters.
+|USAGE=Conversion tool, creating UTM heightmap from Geodetic heightmap.
+|ALGORITHM=# Load geodetic ASCII DEM.
+# Prepare heightmap with size and position in UTM.
+# For each cell in heightmap:
+## Get its UTM coordinate 
+## Convert UTM coordinate to geodetic coordinate.
+## Get height from geodetic ASCII heightmap with bi-cubic spline function.
+}}
+
+
+[[Category:Terrain Processor Manual|Heightmap]]

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_2
+// revision: 79271 (2014-05-31T01:59:15Z)
+// export sha1: c4w476ovmsb9zdh2ekq54u5mwvx6s63
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with Arma 2 may be recognised by the appearance of these icons: {{GVI|arma2|1.00}} {{GVI|arma2|1.02}} {{GVI|arma2|1.03}} {{GVI|arma2|1.04}} {{GVI|arma2|1.05}} {{GVI|arma2|1.06}}
+
+[[Category:Introduced with|{{uc:Arma 2}}]]

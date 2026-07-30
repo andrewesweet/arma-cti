@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Bundesheer
+// revision: 184519 (2021-01-06T13:20:43Z)
+// export sha1: qmm5dincr6kv922v6a1prdssyona608
+// Vendored snapshot. Do not edit — re-export instead.
+
+Austrian Army
+
+{{GameCategory|arma2|Media}}

@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/getAllUnitTraits
+// revision: 377673 (2026-01-02T09:02:33Z)
+// export sha1: 2kp89749qvoevdglfsqvd5m9deuacev
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+<!--
+|arg= local
+-->
+|gr1= Object Manipulation
+
+|descr= Returns unit traits (native or set by [[setUnitTrait]]).
+
+|s1= [[getAllUnitTraits]] unit
+
+|p1= unit: [[Object]] or {{GVI|arma3|2.18|size= 0.75}} [[String]] - a unit or a class name
+
+|r1= [[Array]] of [[Array]]s with [name, value]
+* name: [[String]] - trait's name
+* value [[String]] or [[Boolean]] - trait's value
+
+|x1= <sqf>
+private _playerTraits = getAllUnitTraits player;
+/*
+Could return something like this:
+[
+	["Medic", false],
+	["Engineer", false],
+	["ExplosiveSpecialist", false],
+	["UavHacker", false],
+	["CamouflageCoef", 1],
+	["AudibleCoef", 1],
+	["LoadCoef", 1],
+	["test", "custom"]
+]
+*/
+</sqf>
+
+|x2= <sqf>
+private _unitTraits = getAllUnitTraits _unit;
+private _indexes = [_unitTraits, "Medic"] call BIS_fnc_findNestedElement;
+private _unitCanHeal = _unitTraits select (_indexes select 0) select 1;
+</sqf>
+
+|x3= Since {{GVI|arma3|2.18|size= 0.75}}:
+<sqf>
+hint str getAllUnitTraits "O_Engineer_F";
+/*
+[
+	["Medic", false],
+	["Engineer", true],
+	["ExplosiveSpecialist", true],
+	["UavHacker", false],
+	["CamouflageCoef", 1],
+	["AudibleCoef", 1],
+	["LoadCoef", 1]
+]
+*/
+</sqf>
+
+|seealso= [[getUnitTrait]] [[setUnitTrait]]
+}}
+
+{{Note
+|user= BrettMayson
+|timestamp= 20231127025400
+|text= Local argument assumed, needs confirmation
+}}

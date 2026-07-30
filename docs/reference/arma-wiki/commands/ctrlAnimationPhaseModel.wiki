@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/ctrlAnimationPhaseModel
+// revision: 309213 (2022-05-03T22:27:25Z)
+// export sha1: phpjlmo0qpz2gq6mchlm0dk9vzgyfof
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Object | Category:Introduced with Arma 3 version 1.84 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.84
+
+|gr1= GUI Control - Object
+
+|descr= Returns current animation phase of given source. Similar to [[animationSourcePhase]].
+
+|s1= control [[ctrlAnimationPhaseModel]] source
+
+|p1= control : [[Control]] - 3D control
+
+|p2= source: [[String]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _phase = _control3D ctrlAnimationPhaseModel "Close";</sqf>
+
+|seealso= [[ctrlAnimateModel]] [[ctrlCreate]] [[ctrlDelete]] [[ctrlModel]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlClassName]] [[displayCtrl]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlModelDirAndUp]] [[ctrlSetModelDirAndUp]]
+}}

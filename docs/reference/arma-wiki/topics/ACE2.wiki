@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/ACE2
+// revision: 349826 (2023-11-20T22:10:30Z)
+// export sha1: frjao0uyiy1s6lqqil0u6wyxv6n3u62
+// Vendored snapshot. Do not edit — re-export instead.
+
+== A.C.E. Advanced Combat Environment ==
+
+=== Medical ===
+[[File:Ace2_Medical_Analysis.png]]

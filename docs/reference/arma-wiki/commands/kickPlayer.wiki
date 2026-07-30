@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/kickPlayer
+// revision: 351584 (2023-12-07T18:24:25Z)
+// export sha1: dy8rndax2se9di1do0bo9l14zuctmwi
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|arg= global
+
+|serverExec= server
+
+|gr1= Argo
+
+|descr= Kick the player controlling the provided unit from the server.
+
+|s1= [[kickPlayer]] [unit, kickMessage]
+
+|p1= unit: [[Object]] - the player to kick
+
+|p2= kickMessage: [[String]] - (Optional) shown as disconnect message on the kicked client
+
+|r1= [[Boolean]] - [[true]] on success, [[false]] otherwise
+
+|x1= <sqf>kickPlayer [_teamKiller, "We don't do that here."];</sqf>
+
+|x2= <sqf>
+if (not isPlayerSupporter _dude) then
+{
+	kickPlayer [_dude, "Give money to BI or else!"];
+};
+</sqf>
+
+|seealso= [[getClientState]]
+}}

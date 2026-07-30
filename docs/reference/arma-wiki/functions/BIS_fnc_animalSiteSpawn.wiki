@@ -1,0 +1,62 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_animalSiteSpawn
+// revision: 364276 (2024-05-06T09:38:32Z)
+// export sha1: 66cghuhwq8qvc4u98cp6paxzh99qnj7
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Ambient | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Ambient
+
+|serverExec= server
+
+|descr= Create an area that spawns animals. The animals will be created or deleted if a player is inside or outside the area's radius.
+
+|s1= [animalSite, classnamesToSpawn, radius] call [[BIS_fnc_animalSiteSpawn]]
+
+|p1= animalSite: [[Object]] - the object to create the site around.
+
+|p2= classnamesToSpawn: [[Array]] of [[String]]s - animals that can be spawned.
+
+|p3= radius: [[Number]] - the radius by which animals are created or deleted.
+
+|r1= [[Script Handle]]
+
+|x1= <sqf>[player, ["rabbit_f", "turtle_f", "hen_random_f"], 200] call BIS_fnc_animalSiteSpawn;</sqf>
+
+|seealso= [[Arma 3: CfgVehicles Animals]]
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20141207083700
+|text= The only way to stop the animals from spawning is to delete the object. When using this function, I recommend creating a non-solid object (almost anything from the "Objects (Helpers)" list in the editor, and using [[hideObjectGlobal]] on it. Using [[setVariable]] you can add the animal site to a reference object to find it easily when you want to delete it.
+<sqf>
+private _obj = createVehicle ["Sign_Sphere10cm_F", getPos player, [], 0, "CAN_COLLIDE"];
+hideObjectGlobal _obj;
+player setVariable ["animalSite", _obj];
+_obj = nil;
+</sqf>
+
+There are two hidden variables, "animalCount" and "radius". Use [[setVariable]] on the object to change these.<br>
+animalCount is supposed to limit the amount of animals that can spawn. In the code, the algorithm for this is hard to understand.<br>
+radius refers to how far away from the object the animals can spawn.<br>
+Both are numbers.<br><br>
+The "area" is imaginary. It is not a tangible area defined by trigger or marker radius, the area is only saved as an integer within the function.
+}}
+
+{{Note
+|user= Strangepete
+|timestamp= 20141207092600
+|text= Using the [[Script Handle]] returned, the function can be checked using [[scriptDone]] or killed with [[terminate]]; Existing generated animals will ''not'' be cleaned up when terminated.
+<sqf>
+_handle = [params] call BIS_fnc_animalSiteSpawn;
+
+if !(scriptDone _handle) then {
+	terminate _handle;
+};
+</sqf>
+}}

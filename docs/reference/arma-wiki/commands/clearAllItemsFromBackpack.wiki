@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/clearAllItemsFromBackpack
+// revision: 310196 (2022-05-05T13:10:37Z)
+// export sha1: 4ulocuc6814n92xuj0rp7j6yxvtar24
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Containers
+
+|descr= Removes all items from backpack of a unit.
+
+|s1= [[clearAllItemsFromBackpack]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>clearAllItemsFromBackpack player;</sqf>
+
+|seealso= [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]]
+}}

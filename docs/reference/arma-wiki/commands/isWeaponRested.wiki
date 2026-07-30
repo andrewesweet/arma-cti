@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/isWeaponRested
+// revision: 364113 (2024-05-04T22:05:25Z)
+// export sha1: a1ot3ck6vs9s7n3z98rr0owngayglfm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.42
+
+|arg= local
+
+|gr1= Weapons
+
+|descr= Returns true if weapon is currently rested.
+
+|s1= [[isWeaponRested]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_rest = isWeaponRested player;</sqf>
+
+|seealso= [[isWeaponDeployed]] [[canDeployWeapon]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-07-01 - 16:44 (UTC)</dd>
+<dt class="note">[[User:AgentRev|AgentRev]]</dt>
+<dd class="note">
+You can force a unit out of bipod or resting with:
+<sqf>_unit playMove "";</sqf>
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2015-07-12 - 11:00 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+As of 1.49 <sqf>isWeaponRested player;</sqf> is the only current use of this command. You cannot detect remote player and you cannot detect local unit that is not a player. Might as well be a nullar command without argument.
+</dd>
+
+</dl>

@@ -1,0 +1,192 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Alternate_Reality_Game_2013
+// revision: 363927 (2024-04-26T21:33:53Z)
+// export sha1: 7pw41pcmj8vdw7jrlk9b4uwaw2wddnv
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+'''Welcome to the Community ARG 2013 intiated by SahraniRadio and Jerry Hopper.'''
+
+Stay tuned for the latest updates on the Bohemia Interactive Studio Forums:
+{{Link|http://forums.bistudio.com/showthread.php?146797-ArmA-3-new-ARG-Things-we-know-so-far|{{arma3}}: new ARG - Things we know so far}}
+
+
+----
+Tom Larkin, one of the Larkin brothers has been digging in his father's past.
+In a recent attic cleanup Tom found and unsend letter, which he is determined to deliver.
+'''Wil Tom find the people who knew his father in his youth?
+and who is that mysterious girl from the postcard?'''
+Follow Tom in his travel to the Aegean where he'll spend his adventurous vacation on Altis and Stratis.
+----
+
+
+; What's an Alternate Reality Game?
+: See {{Link|https://en.wikipedia.org/wiki/Alternate_reality_game|Alternate Reality Game}}
+
+; Previous {{arma3}} ARG
+: {{Link|http://forums.bistudio.com/showthread.php?119602-Pre-announcement-ARG-answers-to-questions-discussion&highlight{{=}}ARG+Announcement|Pre-announcement ARG answers to questions discussion}}
+
+
+== Timeline - detected stuff ==
+
+* {{Link|http://m26.node-42.rv4a3.org/|m26.node-42.rv4a3}}
+** '''login: jerryhopper or melteme''', {{Link|https://en.wikipedia.org/wiki/Etesian|Etesian -> Melteme}}
+** message for Jerry Hopper
+** no PW
+** methode for the login: http://www.reddit.com/r/arma/comments/1952ok/possible_arma_3_arg_more_in_comments/c8l07rd
+* {{Link|link= ftp://ofpr.info/ |text= FTP OFPR.info}}
+** with different files and folders
+* [[Armaverse Timeline]]
+* {{Link|RandalHubb92}} is located at Mike 26 B(ravo)
+* {{Link|Tom Larkin}} prepare for a trip to Altis, RandalHubb92, Mike 26B
+* planned construction of Mike26B
+* '''Mike26B''':a Nato radar-post in the Aegean area close to Altis.
+* morse Code on SharahniRadio:
+** MSG1 = ANDARTIKO VA INTELLIGENSE IS COMING - BE READY VA
+** MSG2 = VA ANDARTIKO 39.464764 24.986338 STAND BY FOR INTEL ANDARTIKO OUT
+** '''AndArtIKO''' is probably the Greek word "αντάρτικο" tranlating to partisan.
+** {{Link|https://en.wikipedia.org/wiki/Greek_Resistance#Resistance_in_the_mountains_-_Andartiko|Resistance in the mountains - Andartiko}}
+** something about receiving an intelligence from guerillias
+** VA could be related to Virginia - CIA Headquater, in relation to {{Link|RandalHubb92}}<br>[[File:Ss20130224at112121.jpg|thumb|Nikos Sialmas Monument]]
+** removing the letters, leads to '''39.46764,24.9833''' [https://maps.google.co.uk/maps?q{{=}}39.46764,24.9833&hl{{=}}en&sll{{=}}39.46764,24.9833&sspn{{=}}0.225018,0.528374&t{{=}}m&z{{=}}12 google maps]
+** southern location at Stratis , near Nikos Sialmas Monument
+* PurePassion's (BIForum member) location changed several times: Spctrm_tst=1, Rcvr_bndwth_tst=1, X.25=1
+** {{Link|http://www.ieee.li/pdf/essay/receiver_v_sa.pdf|EMI Measurement}}
+** {{Link|https://en.wikipedia.org/wiki/X.25|X.25}}
+** something '''M26Bravo''' - related ?
+* {{Link|Tom Larkin}} posted a new pic (below)
+** Δαβίδ = David
+** συντριβάνι = fountain
+** David Fountain
+** {{Link|https://twitter.com/FoltynD|David Fountain BIS Developer}}
+** '''David Fountain''' is the name of the person he is going to meet - that's a business card.
+** Room 1530 -> 15:30 ?
+* the wreck of a ship and osprey V22 may a part of the ARG
+** {{Link|RandalHubb92}} in relation to  twitter post: https://twitter.com/RandalHubb92/status/307530080509382657
+* {{Link|Tom Larkin}} is going to meet {{Link|RandalHubb92}} at '''Nikos Sialmas Monument'''
+** meeting in the restaurant of '''the Lighthouse'''
+** arrival on the 5th of March
+** photoshopped picture:
+*** Travel Card:T. Larkin ,Exp date 9/14
+*** Airticket: Gate 14, "LARKIN/TOM MR", "1 MAR", "596287901578-1","LARKIN TOM","01/3/2013","SEQUENCE NO: 3"
+* IONis involved in somewhat: https://twitter.com/RandalHubb92/status/307531282286530560
+* Public Law 83-703, the Atomic Energy Act of 1954
+* new morse signal: "DE ANDARTIKO VA CYBER INTELLIGENCE TEAM IS COMING TUESDAY VA THE PACKAGE NEEDS TO BE EXTRACTED FROM MIKE26 VA MUST ACT BEFORE ALL DIGITAL TRAILS WILL BE WIPED STOP"
+
+
+== Questions/Tasks ==
+
+* @ {{Link|http://m26.node-42.rv4a3.org/|m26.node-42.rv4a3}} login: melteme, pw: ?
+* @ {{Link|http://m26.node-42.rv4a3.org/|m26.node-42.rv4a3}} login: jerryhopper, pw: ?
+* ftp login: melteme, pw: ?
+* what's at 39.46764,24.9833
+* Alpha tasks
+** check the 'Nikos Stavros' monument (presumably the Molon Lave thing) - 39.465742, 24.986343 ( https://maps.google.co.uk/maps?q=39....04128&t=h&z=16 )
+** check the grids on the morse code - 39.46764,24.9833 ( https://maps.google.co.uk/maps?q=39....28374&t=m&z=12 )
+** check the local restaurant - most likely at the location of the phone number on the console - 39.540099,24.988142 ( https://maps.google.co.uk/maps?q=39....04128&t=h&z=17 )
+** check the restaurant at 39.540099,24.988142
+** go diving and search the wrecks for Nikos Stavros
+
+
+== Conclusions ==
+
+* RandalHubb92 tried to bring the guerilla together with the CIA to fight against the IRANs
+* accident with a ship near Mike26B
+* something at 39.46764,24.9833 seems related to the ARG
+
+
+== Characters's Links and Twitters ==
+
+* {{Link|Tom Larkin}} - {{Link|https://twitter.com/Tom__Larkin|twitter Tom Larkin}} - {{Link|http://altis-quest.com/|Tom Larkin Blog}}
+* {{Link|RandalHubb92}} - {{Link|https://twitter.com/RandalHubb92|twitter RandalHubb92}}
+* Scott Miller92 - {{Link|https://twitter.com/Scott_Miller92|twitter Scott_Miller92}}
+* David Fountain - {{Link|https://twitter.com/FoltynD|twitter David Fountain (BIS Developer)}}
+
+
+== Links ==
+
+* more about the ARG: {{Link|http://altis-quest.com/?page_id{{=}}17|altis-quest}}
+* {{Link|http://forums.bistudio.com/showthread.php?146797-ArmA-3-new-ARG-Things-we-know-so-far|{{arma3}}: new ARG - Things we know so far}}
+
+=== The Beginning ===
+
+* {{Link|link= http://forums.bistudio.com/showthread.php?146785-New-ArmA-3-ARG-started&highlight=ARG+Announcement|text= New {{arma3}} ARG started?}}
+
+* Server spotting @ Gamespy
+** {{Link|http://tools.poweredbygamespy.com/masterserver/index.aspx?gamename{{=}}arma3pc|poweredbygamespy}}
+
+[[File:Ss_(2013-02-24_at_09.57.02).png|thumb|Login at m26.node-42.rv4a3.org]]
+* M26.node.rv4a3
+** {{Link|http://m26.node-42.rv4a3.org/|m26.node-42.rv4a3}}
+** a -> Alpha
+** M 26 -> [[Mike 26A/B|Mike 26A/B]]
+** Node 42 -> Hitchhikers guide to Galixy - utimate answer
+** rv4 -> Real Virtual Engine 4
+** a3 -> {{arma3}}
+
+* WarGames
+** {{Link|https://en.wikipedia.org/wiki/WarGames|WarGames}}
+** the ARG is partly based on parts of these story
+
+* WOPR
+** {{Link|https://en.wikipedia.org/wiki/WOPR|WOPR is a fictional military supercomputer}}
+** It is an acronym for '''W'''ar '''O'''peration '''P'''lan '''R'''esponse
+** W.O.P.R. is a form of artificial intelligence, programmed to play numerous strategy and war games, including one called Global Thermonuclear War, the purpose being to enable itself to optimally respond to any possible enemy nuclear attack.
+
+* sahraniradio.com Live Stream
+** {{Link|http://sahraniradio.com/radioplayer/|sahraniradio.com Live Stream}}
+
+=== {{arma}} Universe ===
+
+* altis-quest
+** {{Link|http://altis-quest.com/|altis-quest}}
+** Webblog of the fictoral character of {{Link|Tom Larkin}}
+
+* ION INC
+** {{Link|http://www.ion-inc.com/|ION INC}}
+** ARG PMC DLC by BIS
+** M26 seems to be an ION Computer - connected to {{Link|Tom Larkin}}
+** {{Link|http://www.ion-inc.com/client|special Clientlogin}}
+*** different users/clients
+*** guba/dentist
+*** maybe related to the {{arma3}} universe
+
+
+== Greek Myth - History ==
+
+* {{Link|http://de.wikipedia.org/wiki/Molon_labe|Molon Labe}}
+* {{Link|https://en.wikipedia.org/wiki/Battle_of_Thermopylae|Battle of Thermopylae}}
+* {{Link|https://en.wikipedia.org/wiki/Sparta|Sparta}}
+* Nikos Sialmas Monument
+* Melteme
+** {{Link|https://en.wikipedia.org/wiki/Etesian|Etesian}}
+** Philip II of Macedon used the existence of these winds to his advantage in military campaigns: enemy ships from the south travelling north went much slower during the summer months. I'm being thick here - where is the metaphor?
+
+
+== Media ==
+
+* Screenshots for detections
+<gallery>
+File:BEBViaKCcAAaRwg.png_large.png|twitter post by {{Link|RandalHubb92}}
+File:BECJl0fCEAAujMM.jpg_large.jpg|twitter post by {{Link|Tom Larkin}}
+File:BECfqzmCUAA_a7S.jpg_large.jpg|twitter post by {{Link|RandalHubb92}}
+File:Ticket_greece-300x225.png|Original Ticket|by {{Link|Tom Larkin}}
+File:25871935.jpg|edited Ticket
+File:Ss20130224at112121.jpg|Nikos Sialmas Monument
+File:BETbKqQCMAAkhSQ.jpg_large.jpg|{{arma3}} Coverart - Relation to Mike26B?</gallery>
+* Limnos Readion:
+** {{Link|http://altis-quest.com:8000/limnosradio.m3u|Limnos Radio Live Stream}}
+
+
+== Places ==
+
+<gallery>
+File:Web_stratis_map_overview1.jpg|Stratis
+File:Kae4T0v.png|Stratis - editor
+File:Bigimage.jpg|Stratis - real 3D
+</gallery>
+
+* Stratis
+** Location of Mike 26 Alpha/Beta(Bravo?)
+** Radarbase
+* Nikos Sialmas Monument
+* Altis

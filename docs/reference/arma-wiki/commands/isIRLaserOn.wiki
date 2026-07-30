@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/isIRLaserOn
+// revision: 310267 (2022-05-05T13:11:19Z)
+// export sha1: kqbj31ktmxmmsgbpce2hs2ekw7a6yym
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Lights
+
+|descr= Returns [[true]] if there is a linked and enabled IR on the given weapon.
+
+|s1= unit [[isIRLaserOn]] weapon
+
+|p1= unit: [[Object]]
+
+|p2= weapon: [[String]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>player isIRLaserOn currentWeapon player;</sqf>
+
+|seealso= [[enableIRLasers]] [[enableGunLights]] [[isLightOn]] [[isCollisionLightOn]] [[setPilotLight]] [[setCollisionLight]]
+}}

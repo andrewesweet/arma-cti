@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Timeline_Item_Real
+// revision: 378661 (2026-05-18T16:34:26Z)
+// export sha1: 7oi6gh69bhswnhdzuvm7murkz3ihk1w
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div style="width:50px;text-align:center;">[[File:Icon_History.png|25px]]</div></includeonly><noinclude>[[Category:Historical Templates]]</noinclude>

@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/ctrlShow
+// revision: 370565 (2025-01-09T18:12:50Z)
+// export sha1: 679s30hf1ulvejjxe8v5z4n0fdxk41l
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control
+
+|descr= Shows or hides a control, or group of controls together with all the controls inside that group of controls.<br>
+Read [[Arma: GUI Configuration]] for more information about user dialogs and controls.<br>
+{{ Feature | Informative | Using [[ctrlShow]] on a [[CT_CONTROLS_GROUP|controls group]] will show or hide all controls within the controls group (including controls that are placed in nested controls groups). }}
+
+|s1= [[ctrlShow]] [idc, show]
+
+|p1= idc: [[Number]] - control IDC
+
+|p2= show: [[Boolean]] - [[true]] to show the control, [[false]] to hide it
+
+|r1= [[Nothing]]
+
+|s2= control [[ctrlShow]] show
+
+|p21= control: [[Control]]
+
+|p22= show: [[Boolean]] - [[true]] to show the control, [[false]] to hide it
+
+|r2= [[Nothing]]
+
+|x1= <sqf>ctrlShow [100, false];</sqf>
+
+|x2= <sqf>_control ctrlShow false;</sqf>
+
+|seealso= [[ctrlVisible]] [[ctrlShown]] [[ctrlEnable]]
+}}

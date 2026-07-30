@@ -1,0 +1,143 @@
+// source: https://community.bistudio.com/wiki/moveInTurret
+// revision: 377492 (2026-01-02T06:49:15Z)
+// export sha1: fyrfgzjg3nnablf66c63iyi58zssffx
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Turrets
+
+|descr= Moves the soldier into the vehicle's turret. (Immediately, without animation).
+{{Feature|informative|See [[AI Group Vehicle Management]] for more information.}}
+{{Feature|important|If the unit is already in a vehicle, nothing will happen. You should use [[moveOut]] to move the unit out of his vehicle before trying to move him into a new (or same) vehicle.}}
+
+|s1= unitName [[moveInTurret]] [vehicle, turretPath]
+
+|p1= unitName: [[Object]]
+
+|p2= vehicle: [[Object]]
+
+|p3= turretPath: [[Turret Path]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_soldierOne moveInTurret [_tank, [0, 0]];</sqf>
+
+|seealso= [[allTurrets]] [[fullCrew]] [[assignAsTurret]] [[moveInAny]] [[moveInCargo]] [[moveInCommander]] [[moveInDriver]] [[moveInGunner]] [[assignAsCargo]] [[assignAsCommander]] [[assignAsDriver]] [[assignAsGunner]] [[ArmA:_Actions#GetInTurret|GetInTurret]]
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20080306203100
+|text= To find out which turrets are available on a vehicle ('''edit:''' before [[allTurrets]]), and what the syntax is, you can use {{Link|http://kronzky.info/turrets/index.htm|this little script}}.
+<!-- in case kronzky.info disappears :(
+<sqf>
+_cfg = configFile >> "CfgVehicles" >> typeof _veh >> "turrets";
+_tc = count _cfg;
+if (_tc>0) then {
+	_mtc = count _cfg; // number of main turrets
+	_out = _out + format["Main Turrets: %1\n",count _cfg];
+	
+	for "_mti" from 0 to _mtc-1 do {
+		_mt = (_cfg select _mti);
+		_st = _mt >> "turrets";
+		_stc = count _st; // sub-turrets in current main one
+		_out = _out + format["Turret #%1, %2: [%1]\n",_mti,configName(_mt)];
+		_weaps = getArray(_mt >> "weapons");
+		_out = _out + format[" Weapons:\n"];
+		{_out = _out + format["  %1\n",_x]}forEach _weaps;
+		_aid = player addAction [format["MoveIn: %1 [%2]",configName(_mt),_mti],"vehinfo.sqf",[_veh,_mti,-1]];
+		_actionIDs=_actionIDs + [_aid];
+		for "_sti" from 0 to _stc-1 do {
+			_stp = (_st select _sti);
+			_out = _out + format["Turret #%1, %2: [%1,%3]\n",_mti,configName(_stp),_sti];
+			_weaps = getArray(_stp >> "weapons");
+			_out = _out + format[" Weapons:\n"];
+			{_out = _out + format["  %1\n",_x]}forEach _weaps;
+			_aid = player addAction [format["MoveIn: %1 [%2,%3]",configName(_stp),_mti,_sti],"vehinfo.sqf",[_veh,_mti,_sti]];
+			_actionIDs=_actionIDs + [_aid];
+		};
+	};
+};
+</sqf>
+-->
+}}
+
+{{Note
+|user= hcpookie
+|timestamp= 20140213015600
+|text= Examples for nested turrets:
+
+MainTurret = <sqf>_soldierOne moveInTurret [_tank, [0]];</sqf>
+
+CommanderTurret = <sqf>_soldierOne moveInTurret [_tank, [0, 0]];</sqf>
+
+... where:
+
+MainTurret is the standard BIS MainTurret... e.g:
+<syntaxhighlight lang="cpp">
+class Turrets 
+{
+	class MainTurret {};
+};
+</syntaxhighlight>
+
+CommanderTurret is the standard BIS CommanderTurret located on the MainTurret... e.g:
+<syntaxhighlight lang="cpp">
+class Turrets 
+{
+	class MainTurret
+	{
+		class Turrets 
+		{
+			class CommanderTurret {};
+		};
+	};
+};
+</syntaxhighlight>
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20140319000700
+|text= Here is a small function to find available ''turret paths'' for a given vehicle. It will only search 2 levels deep, hence called ''commonTurrets'':
+<sqf>
+KK_fnc_commonTurrets = {
+	private ["_arr","_trts"];
+	_arr = [];
+	_trts = configFile / "CfgVehicles" / typeOf _this / "Turrets";
+	for "_i" from 0 to count _trts - 1 do {
+		_arr set [count _arr, [_i]];
+		for "_j" from 0 to count (
+			_trts / configName (_trts select _i) / "Turrets"
+		) - 1 do {
+			_arr set [count _arr, [_i, _j]];
+		};
+	};
+	_arr
+};
+</sqf>
+Example call:
+<sqf>hint str (vehicle player call KK_fnc_commonTurrets); // [[0],[0,0]]</sqf>
+See also [[allTurrets]]
+}}

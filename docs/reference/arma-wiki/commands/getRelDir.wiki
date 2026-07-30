@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/getRelDir
+// revision: 364385 (2024-05-12T02:06:56Z)
+// export sha1: nf0t2uo93lv3zcjv3cft94eo9aezc73
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns direction, which is relative to object's current direction, from given object to another object or position in the range from 0 to 360, the equivalent of [[BIS_fnc_relativeDirTo]].
+Taking the current [[direction]] of the object into account.
+
+|s1= object [[getRelDir]] position
+
+|p1= object: [[Object]]
+
+|p2= position: [[Object]], [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_reldir = player getRelDir tank;</sqf>
+
+|x2= <sqf>
+// Set object's direction towards any given position
+_object setDir (getDir _object + (_object getRelDir [_x, _y, _z]))
+</sqf>
+
+|seealso= [[getDir]] [[direction]] [[getDirVisual]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2018-08-07 - 21:50 (UTC)</dd>
+<dt class="note">[[User:Tankbuster|Tankbuster]]</dt>
+<dd class="note">
+To clarify, this returns a relative direction, so objects directly in front are said to be at zero degrees. So, taking example 1 above, if the tank is in front of the player, this function will return 0. If the tank is to the right of the player, it will return 90.
+</dd>
+
+</dl>

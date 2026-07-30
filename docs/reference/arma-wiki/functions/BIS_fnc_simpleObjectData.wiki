@@ -1,0 +1,97 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_simpleObjectData
+// revision: 348543 (2023-11-08T13:06:09Z)
+// export sha1: c5su53syel8tpiyeh7rbodbev7etby8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Object Manipulation
+
+|descr= Get complete data needed for simple object creation.
+
+|s1= [classname] call [[BIS_fnc_simpleObjectData]]
+
+|p1= classname: [[Object]] or [[String]]:
+* [[Object]] - existing object or simple object that will be scanned; if it is a simple object '_reversed' attribute cannot be retrieved<br>
+* [[String]] - Can be either:
+** Classname of the object; data are retrieved from the config definition.
+** Path to the p3d; verifies and fixes model path format and returns it in an array (index 1).<br>It has very limited functionality in this mode as no data can actually be retrieved from model path.
+
+|r1= [[Array]] in format [class, model, reversed, verticalOffset, animationAdjustments, selectionsToHide, verticalOffsetWorld, textures, randomizeAnims, randomizeTexs]:
+* class: [[String]] - (Default "") class name from CfgVehicles
+* model: [[String]] - (Default "") path to the vehicle p3d mode
+* reversed: [[Number]] - (Default 0) reverse value, to fix orientation. 0: no change, 1: reverse
+* verticalOffset: [[Array]] - (Default 0) vertical offset
+* animationAdjustments: [[Array]] - (Default []) animation to animate, every element has this format: [_animationName:string, _animationState:scalar]
+* hiddenSelections: [[Array]] - (Default []) all listed selection will be hidden
+* verticalOffsetWorld: [[Number]] - vertical offset in World coordinates; similar to [[ASL]] but refers to object at [0, 0, 0], not its land contacts
+* textures: [[Array]] - textures currently applied to the object
+* randomizeAnims: [[Boolean]] - (Default false) true if vehicle supports randomization through animations
+* randomizeTexs: [[Boolean]] - (Default false) true if vehicle supports randomization of textures
+
+{{Feature|informative|Return values can directly be used with [[BIS_fnc_adjustSimpleObject]].}}
+
+|x1= <sqf>
+["B_Boat_Armed_01_minigun_F"] call BIS_fnc_simpleObjectData;
+/*
+	[
+		"B_Boat_Armed_01_minigun_F",
+		"A3\Boat_F\Boat_Armed_01\Boat_Armed_01_minigun_F.p3d",
+		1,
+		3.323,
+		[
+			["damagehide", 0],
+			["turret_shake", 0],
+			["turret_shake_aside", 0],
+			["magazine_hide", 0],
+			["mainturret", 0],
+			["damagehideotocvez", 0],
+			["maingun", 0.09],
+			["damagehideotochlaven", 0],
+			["rearturret", -3.16],
+			["reargun", 0.09],
+			["muzzleflash", 0],
+			["zaslehrot", 79],
+			["zasleh2rot", 600],
+			["fuel", 1],
+			["mph", 0],
+			["rpm", 0],
+			["amps_random", 0],
+			["oil_random", 0],
+			["trim_random", 0],
+			["tmp_random", 0],
+			["volt_random", 0],
+			["drivingwheel", 0],
+			["ammobelt_hide", 0],
+			["bullet001_2_hide", 0.33],
+			["bullet002_2_hide", 0.33],
+			["bullet003_2_hide", 0.33],
+			["bullet004_2_hide", 0.33],
+			["bullet005_2_hide", 0.33],
+			["bullet006_2_hide", 0.33],
+			["positionlights", 0],
+			["gun_revolving", 0.33],
+			["muzzleflash2", 0],
+			["reargunner", 0.09]
+		],
+		["zasleh", "p svetlo", "zadni svetlo", "brzdove svetlo", "clan", "podsvit pristroju", "poskozeni"],
+		-0.148,
+		[
+			"\A3\boat_f\Boat_Armed_01\data\Boat_Armed_01_ext_co.paa",
+			"\A3\boat_f\Boat_Armed_01\data\Boat_Armed_01_int_co.paa",
+			"\A3\boat_f\Boat_Armed_01\data\Boat_Armed_01_crows_blufor_co.paa"
+		],
+		false,
+		false
+	]
+*/
+</sqf>
+
+|x2= <sqf>[BIS_boat] call BIS_fnc_simpleObjectData;</sqf>
+
+|seealso= [[createSimpleObject]] [[BIS_fnc_adjustSimpleObject]] [[BIS_fnc_createSimpleObject]]
+}}

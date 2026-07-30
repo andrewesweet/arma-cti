@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/combatBehaviour
+// revision: 351327 (2023-11-27T05:09:56Z)
+// export sha1: bok5d60mrszdnepg92aonbe307f9fcv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Command Group: Groups | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|arg= global
+
+|gr1= AI Behaviour
+
+|gr2= Groups
+
+|descr= Returns combat behaviour of unit or group. To set unit or group behaviour see [[setCombatBehaviour]]. The behaviour is one of:
+
+
+|s1= [[combatBehaviour]] unitOrGroup
+
+|p1= unitOrGroup: [[Object]] or [[Group]] - AI unit or group
+
+|r1= [[String]] - unit behaviour - one of:
+{{Columns|2|
+* "CARELESS"
+* "SAFE"
+* "AWARE"
+* "COMBAT"
+* "STEALTH"
+* "ERROR" - when not available
+}}
+
+|x1= <sqf>
+unit1 setCombatBehaviour "CARELESS";
+combatBehaviour unit1; // "CARELESS"
+</sqf>
+
+|x2= <sqf>
+group unit1 setCombatBehaviour "SAFE";
+combatBehaviour group unit1; // "SAFE"
+</sqf>
+
+|seealso= [[setCombatBehaviour]] [[setBehaviour]] [[setBehaviourStrong]] [[setWaypointBehaviour]] [[combatMode]] [[setCombatMode]] [[skill]] [[setSkill]]
+}}

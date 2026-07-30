@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Template:silica
+// revision: 341614 (2023-06-10T15:51:55Z)
+// export sha1: rpcsl91hg1amzsgidiyoxq0tl9ibius
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|silica}}</includeonly><noinclude>Returns the name {{hl|{{silica}}}}.
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

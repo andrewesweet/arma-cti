@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/boundingBox
+// revision: 377835 (2026-01-03T04:32:05Z)
+// export sha1: hyoidfkpdop26kgoy4zn5l5s19tknak
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Object Manipulation
+
+|descr= [[File:Boundingbox.jpg|right|200px]] Returns a bounding box of given object in model coordinate space, adjusted according to destruction/animation of an object. This command is rather generous on the size estimation, for more precise coordinates use [[boundingBoxReal]].
+{{Feature|informative|In {{GVI|arma3|1.92}} The output of both syntaxes got extended to include bounding sphere diameter. See also [[sizeOf]].}}
+
+|s1= [[boundingBox]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Position#PositionRelative|PositionRelative]] - an array with the extreme points of the model, as well as bounding box sphere diameter.<br>Format [<nowiki/>[xmin, ymin, zmin], [xmax, ymax, zmax], boundingSphereDiameter].
+
+|s2= clippingType [[boundingBox]] object
+
+|s2since= arma3 1.92
+
+|p21= clippingType: [[Number]] - clipping type could be:
+* 0 - ClipVisual (could significantly reduce the size of bounding boxes on buildings)
+* 1 - ClipShadow
+* 2 - ClipGeometry
+* 3 - ClipGeneral (Default, the same type that is used in main syntax)
+
+|p22= object: [[Object]]
+
+|r2= [[Position#PositionRelative|PositionRelative]] - an array with the extreme points of the model bounding box, as well as bounding box sphere diameter.<br>Format [<nowiki/>[xmin, ymin, zmin], [xmax, ymax, zmax], boundingSphereDiameter].
+
+|x1= <sqf>private _box = boundingBox _abrams;</sqf>
+
+|x2= <sqf>hint str (0 boundingBox cursorObject);</sqf>
+
+|seealso= [[sizeOf]] [[boundingBoxReal]] [[boundingCenter]] [[BIS_fnc_boundingBoxDimensions]]
+}}

@@ -1,0 +1,362 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Time_Trials
+// revision: 373209 (2025-04-12T22:20:50Z)
+// export sha1: k8hqzdql9dh1rhrr00afgpnzqocs9uj
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+This guide describes how to design and implement a custom Time Trial Challenge (similar to those available in the vanilla game).
+
+See also: 
+* [[Arma 3: Firing Drills]] (very similar setup and approach)
+
+
+= Terminology =
+
+* '''Time Trial (TT)''' - a simple vehicle race against the clock
+* '''Competitor''' - the actor running the trial
+* '''Marshal''' - the actor observing the trial and providing feedback / guidance
+* '''Checkpoint (CP)''' - a navigation point within a course which a competitor must follow in a fixed sequence (1 consecutive CP may be skipped for a time penalty)
+** The first CP is the '''start'''.
+** The last CP is the '''finish'''.
+* '''Time''' - the time from the start it takes to complete a trial (raw)
+** Time '''penalties''' are added to arrive at the final time.
+** The fastest / lowest time is the best and wins.
+** There are '''bronze''', '''silver''' and '''gold''' '''medal''' times to beat.
+** There may be one '''special''' time to beat (must be faster than gold).
+
+
+= Setup =
+<ol>
+<li>Open the [[:Category:Eden Editor|Eden Editor]] with the terrain of your choice loaded.</li>
+<li>Place a player character named <var>BIS_TT_Competitor</var> (this is a fixed system name).</li>
+<li>Save the scenario with a name that is safe to reference as a config class (i.e. no spaces) - for example ''MyFirstTimeTrial''.
+</li>
+<li>Place an empty vehicle named <var>BIS_TT_Vehicle</var> (this is a fixed system name; not all types of vehicles have been tested, but cars, helicopters and tanks should work).
+</li>
+<li>If the competitor character is not placed inside the vehicle from the start, ensure that this is done upon trial start, for example via competitor init: <sqf inline>this moveInDriver BIS_TT_Vehicle;</sqf>.
+</li>
+<li>Place a unit of type {{hl|C_Marshal_F}} named <var>BIS_rangeOfficer</var> (this is a fixed system name; place the unit in a separate group and at a reasonable distance in order to see the starter pistol firing).
+
+Enter the following in <var>BIS_rangeOfficer</var>'s init field:
+<sqf>
+this disableAI "ANIM";
+BIS_TT_handle = this spawn {
+	waitUntil {time > 0};
+	_this switchMove "Acts_starterPistol_loop";
+};
+</sqf>
+</li>
+<li>Place a ''Time Trial'' module ({{hl|ModuleTimeTrial_F}}). [[File:arma3 tt cp start.jpg|thumb|250px|right|Start CP setup]]</li>
+<li>Insert an ellipse trigger with default properties named <var>BIS_TT</var> (this will be referenced later).
+
+Resize the trigger to encompass the entire trial and a little extra buffer area (make sure to resize it later as the scenario grows). [[File:arma3 tt cp.jpg|thumb|250px|right|CP setup]]
+</li>
+<li>Place a ''Target - Oval (Ground)'' prop.
+# Save the scenario (ensure binarization is disabled).
+# Close the Eden Editor to avoid auto-saves.
+# Open the scenario's SQM file in a text editor.
+# Replace the target's class with {{hl|Land_Target_Oval_NoPop_F}} (all targets need to use the hidden ''NoPop'' variant).
+# Save the SQM.
+# Reopen the scenario in the Eden Editor.
+# Position the target near the finish CP (so that it is visible and accessible to drive to after finishing).
+# Enter the following in the target's ''Texture #0'' field: {{hl|A3\modules_f_beta\data\FiringDrills\restart_orange_ca}} (other colors have corresponding textures - see {{Link|#Colors}}).
+</li>
+<li>Place a trigger with default properties named <var>BIS_TT_restartSelector1</var> (this will be referenced later).
+
+Resize and orient the trigger so that it encompasses the target from the step above and forms a suitable parking spot for <var>BIS_TT_Vehicle</var>.
+</li>
+<li>Copy and paste the restart target.
+# Position it near the first target, typically to the right of it (but spaced to comfortably allow <var>BIS_TT_Vehicle</var> to access both).
+# Enter the following in the target's ''Texture #0'' field: {{hl|A3\modules_f_beta\data\FiringDrills\quit_ca}} (this is a fixed texture no matter the drill color).
+</li>
+<li>Place a trigger with default properties named <var>BIS_TT_quitSelector1</var> (this will be referenced later).
+
+Resize and orient the trigger so that it encompasses the target from the step above and forms a suitable parking spot for <var>BIS_TT_Vehicle</var>. [[File:arma3 tt cp finish.jpg|thumb|250px|right|Finish CP setup]]
+</li>
+<li>For each CP (including start and finish), insert a trigger with default properties named <var>BIS_TT_CP1</var> (this will be referenced later; remember to adjust the index at the end of the name).
+</li>
+* Resizing the trigger does not influence actual CP detection (unlike in Firing Drills), but it can still be resized as a visual aid (see radius configuration below - default 5 meters).
+* It is important to orient most CPs well to determine the valid entry angles (i.e. by rotating it in the direction of the next CP with {{Controls|Shift|LMB}}).
+* Alternatively, 3D helpers can be used as CP objects (circles are commonly used for aerial trials).
+
+{{Feature|informative|<var>BIS_TT_Vehicle</var> needs to start inside <var>BIS_TT_CP1</var> in order for the time trial to work properly.}}
+</li>
+<li>Set up trial properties via [[Description.ext|description.ext]] (see {{Link|#Configuration}}).</li>
+<li>Configure the trial via [[Description.ext|description.ext]] or via CfgTimeTrials and CfgMissions (see {{Link|#Configuration}}).</li>
+</ol>
+
+== Drones ==
+
+A few adjustments are necessary to make a drone trial:
+<ol>
+<li>Place a non-empty (i.e. AI-crewed) drone and name it <var>BIS_TT_Vehicle</var> as above.</li>
+<li>Place a fake player competitor character who is supposedly controlling the drone. Do not name this (or any other) character <var>BIS_TT_Competitor</var>!</li>
+<li>In the trial's init script, execute:
+<sqf>
+enableTeamSwitch false;
+BIS_TT_Competitor = driver BIS_TT_Vehicle;
+selectPlayer BIS_TT_Competitor;
+</sqf>
+</li>
+</ol>
+
+== Common Additions ==
+
+* CP marking objects
+** Recolored objects (road cones and small flags for ground vehicles / 3D helpers for aerial vehicles)
+** Direction indicators (arrow signs)
+* Decorative props
+** Sponsoring (signs and flags)
+** Marshal stations (desks, chairs, computers, pen and paper, etc.)
+** Spectator areas (barricades, chairs, drinks, etc.)
+
+
+= Configuration =
+
+== description.ext ==
+
+<syntaxhighlight lang="cpp">
+#include "\A3\Missions_F_Kart\Challenges\description_custom.inc" // This will set up various system default settings, such as custom debriefings
+
+onLoadName = "TT: My First Trial"; // Name of your trial (normally the same as defined in CfgMissions)
+onLoadMission = "Can you beat my splendid trial?!"; // Overview text of your trial (normally the same as defined in CfgMissions)
+loadScreen = "myfirsttimetrial_overview_CO.paa"; // Overview picture of your trial (normally the same as defined in CfgMissions)
+briefingName = "TT: My First Trial"; // Same name as above
+overviewPicture = "myfirsttimetrial_overview_CO.paa"; // Same picture as above
+overviewText = "Can you beat my splendid trial?!"; // Same text as above
+author = "Marshal Henk"; // You!
+
+doneKeys[] = {"MyFirstTimeTrial_done"}; // Registers having completed (achieved gold or special) your trial
+</syntaxhighlight>
+
+{{Feature|informative|Not all properties in this sample config are needed for every trial; they are included to showcase all options.}}
+<syntaxhighlight lang="cpp">
+// This primary trial configuration can also be implemented via a mod config, but doing so via description.ext is simplest in most cases.}}
+class CfgTimeTrials
+{
+	// When using description.ext, the name of this class does not matter much (the system selects the first class)	
+	// When using a mod config, this class name must correspond to the missionName(Source) (also CfgMissions class)
+	class MyFirstTimeTrial 
+	{
+		displayName = "TT: My First Trial"; // Vanilla trials use a format like this, but it is not enforced
+		// This color is used in many places
+		// It can be any color, but for best results pick a fully supported color (see section below)
+		color[] = {__EVAL(240/255), __EVAL(130/255), __EVAL(49/255), 1};
+		colorName = "orange"; // This version of the color is more restrictive and can only use specific supported colors (see section below)
+		objectTT = "BIS_TT"; // The trial area trigger referenced in the setup guide
+		looped = 1; // Whether the trial will loop when crossing the finish CP (undefined uses 0 - point-to-point race)
+		noDefaultGPS = 1; // Disables showing of the mini-map GPS (undefined uses 0 - showing)
+		//statistic = ""; // Steam stats are not supported for user-generated trials (used for Achievements)
+		//leaderboard = ""; // Steam Leaderboards are not supported for user-generated trials
+		onReset = "reset.sqf"; // This script is executed each time the trial resets (restarts)
+	
+		// List any number of objects that you want to be re-colored to the trial color above (f.e. road cones, small flags, etc.)
+		recolor[] = 
+		{
+			"BIS_TT_recolor1", 
+			"BIS_TT_recolor2"	
+		};
+
+		// Set up objects that should have special decal textures applied (this was more useful before Eden Editor - see vanilla decals below)
+		// This is not used a lot in vanilla trials
+		decals[] =
+		{
+			{ "BIS_TT_decal1", "A3\Missions_F_Beta\data\img\decals\decal_watch_out2_ca", 5 } // Object reference, texture path, hidden selection index
+		};
+
+		// Object references to the 2 special targets for drill mechanics, as defined in the setup guide
+		restartSelectors[] = {"BIS_TT_restartSelector1"};
+		quitSelectors[] = {"BIS_TT_quitSelector1"};
+		
+		timesMedals[] = { 60, 45, 30 }; // Bronze, silver, gold medal times (be sure to follow this order or results may glitch)
+		
+		timeSpecial = 15; // Optional special time that is faster than gold (when defining this, you do need to also provide the data below)
+		nameSpecial = "Nemesis"; // Optional special time label for the HUD
+		colorSpecial = "#ffa500"; // Optional special time color for the HUD
+		iconSpecial = "\A3\Ui_f\data\GUI\Cfg\Ranks\colonel_gs"; // Optional special time icon for the HUD
+		
+		// Legacy class used before Eden Editor to load precise object compositions (should not be needed anymore)
+		// class DynOs 
+		// {
+		//		script = "dyno_myfirsttimetrial.sqf"; // Valid DynO mapper output script
+		//		positionAnchor[] = {500, 500}; // DynO mapper anchor position in the world
+		// };
+	
+		// All of the trials's CPs
+		class CheckPoints 
+		{
+			class CP1 // Start
+			{
+				// The CP trigger referenced in the setup guide
+				// Note that TT CPs don't use these actual triggers for CP detection; they are only used as reference (unlike in Firing Drills)
+				object = "BIS_TT_CP1";
+			};
+			class CP2 // CP #1
+			{
+				object = "BIS_TT_CP2";
+				penaltyMissed = 200; // Increasing the default penalty for skipping this CP to 20 seconds
+			};
+			class CP3 // CP #2
+			{
+				object = "BIS_TT_CP3";
+				radius = 20; // Forces a non-default CP radius in meters (undefined uses 5)
+				height = 300.5; // Only use this ASL forced height for CPs above ground, such as for aerial vehicles
+				onActivate = "CP3_onActivate.sqf"; // Script executed when this CP is activated (passed [CP object])
+				onDeactivate = "CP3_onDeactivate.sqf"; // Script executed when this CP is deactivated (passed [CP object])
+				onClear = "CP3_onClear.sqf"; // Script executed when this CP is cleared (passed [CP object])
+				// Especially aerial trials sometimes need artificial helper objects to visualize a CP in the world
+				// These object references are shown / hidden when the CP is active
+				// Typically use 3D helper objects, such as spheres
+				helpers[] = {"BIS_TT_CP3_Helper1", "BIS_TT_CP3_Helper2", "BIS_TT_CP3_Helper3", "BIS_TT_CP3_Helper4"};
+			};
+			class CP4 // CP #3
+			{
+				object = "BIS_TT_CP4";
+				omnidirectional = 1; // This CP may be entered from any angle (undefined uses 0 - only allowing entry from the correct side)
+				onGround = 1; // This CP requires the vehicle to be on the ground / landed (undefined uses 0 - no ground contact needed)
+				timeout = 3; // This CP requires the vehicle to meet the CP conditions for 3 seconds
+			};
+			class CP5 // CP #4
+			{
+				object = "BIS_TT_CP5";
+				slingLoadLoad = 1; // This CP requires the vehicle to have an externally slung load attached
+				slingLoadObject = "BIS_TT_SL1"; // Object reference for the specific object that must be slung
+			};
+			// Finish
+			// Even for a looped trial, the Start and Finish are separate CPs!
+			class CP6
+			{
+				object = "BIS_TT_CP6";
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+== CfgMissions ==
+
+{{Feature|informative|This is only needed for trials configured via mod config (not via description.ext).}}
+<syntaxhighlight lang="cpp">
+class CfgMissions
+{
+	// This will expose the trial in the SINGLEPLAYER > CHALLENGES > Time Trials menu
+	class Challenges
+	{
+		class Time_Trials
+		{
+			class MyFirstFiringDrill // This class should correspond to the class in CfgTimeTrials above
+			{
+				directory = "myfirsttimetrial.stratis"; // Full path to your trial's scenario folder
+				briefingName = "TT: My First Trial"; // Name of your trial (normally the same as defined in CfgTimeTrials)
+				overviewText = "Can you beat my splendid trial?!"; // Overview text of your trial (idem)
+				overviewPicture = "myfirsttimetrial_overview_CO.paa"; // Overview picture of your trial (idem)
+				overviewScript = "\A3\Modules_F_Beta\FiringDrills\scripts\overviewScript.sqf"; // Standard system script to handle the pause menu properly - don't change
+				author = "Marshal Henk"; // You!
+			};
+
+			// Alternatively you can list your trial in one of the vanilla theme categories: Karts, Helicopters, IDAP, Tanks
+			// class Karts 
+			// {
+			// 		Define your trial here instead for example
+			// };
+	};
+};
+</syntaxhighlight>
+
+== CfgTimeTrials ==
+
+{{Feature|important|The system-level configuration could be adjusted by a mod, but consider if that is not going to confuse players who may be trained on vanilla trials.}}
+<syntaxhighlight lang="cpp">
+class CfgTimeTrials
+{
+	// Below point bonuses and penalties are multiplied by this factor to determine time bonuses and penalties
+	pointTimeMultiplier = 0.1;
+
+	penaltyMissed = 100; // Pentalty for missing / skipping a CP (so this is 10 seconds)
+
+	// HUD icons for the medal times
+	iconsMedals[] =
+	{
+		"A3\modules_f_beta\data\FiringDrills\medal_bronze_ca", // Bronze
+		"A3\modules_f_beta\data\FiringDrills\medal_silver_ca", // Silver
+		"A3\modules_f_beta\data\FiringDrills\medal_gold_ca" // Gold
+	};
+	// HUD colors for the medal times
+	colorsMedals[] =
+	{
+		"#A0522D", // Bronze
+		"#C0C0C0", // Silver
+		"#FFD700" // Gold
+	};
+
+	// Music tracks used in the TT 'jukebox'
+	music[] =
+	{
+		"BackgroundTrack01_F",
+		"BackgroundTrack01_F_EPB",
+		"BackgroundTrack01_F_EPC",
+		"BackgroundTrack02_F_EPC",
+		"BackgroundTrack03_F",
+		"BackgroundTrack04_F_EPC"
+	};
+};
+</syntaxhighlight>
+
+
+= Steam Workshop =
+
+When a trial is self-contained (i.e. configured via [[Description.ext|description.ext]]), it can be published to {{Link|link= https://steamcommunity.com/workshop/browse/?appid=107410|text= Steam Workshop}} as ''Scenario''. When players subscribe to such trial, it will be listed in their ''CHALLENGES'' menu.
+
+* You need to manually add the ''TimeTrial'' tag while publishing to Workshop!
+* Renaming a trial after publication may invalidate stored record times for subscribed players!
+* Your stored record times from Eden Editor testing (during development), will likely differ to those after publication / subscription.
+* Steam Leaderboards are not supported for Workshop trials.
+* A subscribed trial's medal times will not show in the overview until it has been completed at least once.
+
+
+= Run-Time Tools =
+
+{{Feature|informative|Some things are exposed and possible to change or use run-time, f.e. to make special unlocks or events happen.}}
+* ''BIS_TT_hasReset'': code which returns true when the trial has reset, ended, or is ending
+* ''BIS_TT_phase'': 0 - trial pre-init / 1 - trial pre-start / 2 - trial started / 3 - trial terminated / -1 - trial restarting
+
+
+= Colors =
+
+Please see the [[Arma_3_Firing_Drills#Colors|Firing Drills documentation]] for this information.
+* Vanilla tanks trials use a different shade of green ''color'': <syntaxhighlight lang="cpp" inline>__EVAL(173/255), __EVAL(191/255), __EVAL(131/255), 1</syntaxhighlight>
+* Vanilla IDAP trials use a different shade of orange ''color'': <syntaxhighlight lang="cpp" inline>__EVAL(229/255), __EVAL(103/255), __EVAL( 34/255), 1</syntaxhighlight>
+
+
+= Decals =
+
+Please see the [[Arma_3_Firing_Drills#Decals|Firing Drills documentation]] for this information.
+
+
+= Tips =
+
+* Vanilla trials are designed to be somewhat realistic and safe as a competitive racing sport. Try to imagine and implement safety concerns in your prop placement. For example, protect spectator viewing areas using barriers.
+* Consider making route navigation easier for competitors by physically blocking off incorrect routes (unless you want to offer multiple routes of course). Use props like arrow signs to hint at upcoming turns.
+* Since trials allow skipping a CP with a time penalty, make sure this cannot be easily exploited in a way that makes skipping a CP always faster (i.e. tweak CP penalties appropriately).
+** A common situation may be a swerving road down a hill, which may cause the direct route down to be much faster (this may be intentional of course, rewarding creative competitors).
+* While this is subjective, shorter trials are usually more popular. They allow quick repeats to break the best times, especially when also looped.
+* There are several useful variables stored in the scenario and CP objects (but in most cases manipulating them directly will break the system; read them only):
+** ''BIS_TT_CPs'': array of CP object references
+** CP (most configuration parameters are also stored as similarly named variables, f.e. ''"onGround"'')
+*** ''"CP"'': CP index number
+*** ''"active"'': true when activated
+*** ''"clear"'': true when cleared
+* Balancing a trial can be quite hard, since there is a broad range of skills in the playerbase.
+** You should set appropriate medal times.
+** It's recommended to start harder / more difficult, rather than too easy. It's better to nerf later than to go the other way (since you cannot easily undo recorded times).
+** Start by simply playtesting the trial a lot and determining your own best medal times (or invite other playtesters and record their runs / times - video recordings can also be helpful for spotting issues).
+*** Real balancing typically starts towards the end of development, because even slight changes can affect times a lot, let alone adding / removing CPs.
+** Vanilla trials apply the following abstract goals per medal:
+*** Bronze: achievable by doing a clean race (perhaps 1 small collision) but not taking many risks. For a typical user it should take 1-3 attempts.
+*** Silver: achievable by doing a clean race and taking some risks (using maximum acceleration and cutting some corners). Might take 2-5 attempts for example.
+*** Gold: meant to be hard. This needs to be a perfectly clean race, at full speed and taking risks. It may take more than 5 attempts.
+*** Special: designed to be extremely hard. Some may never beat this.
+
+{{GameCategory|arma3|Editing}}

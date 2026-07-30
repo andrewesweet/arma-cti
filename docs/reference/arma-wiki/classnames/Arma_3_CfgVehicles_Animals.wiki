@@ -1,0 +1,380 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgVehicles_Animals
+// revision: 367234 (2024-08-08T15:56:18Z)
+// export sha1: t6nxx1ynpmf9dk639pr90k7me78wwgq
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Navbox/A3Assets}}
+{| class="wikitable sortable" style="font-size:80%; margin: auto"
+! Preview
+! Class Name
+! Display Name
+! Side
+! Category
+! Subcategory
+! Scope
+! DLC
+! Addons
+! Features
+|-
+|
+| <span id="Salema_F">'''Salema_F'''</span>
+| ''Salema''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Aquatic
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Fishes|A3_Animals_F_Fishes]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+
+|-
+|
+| <span id="Ornate_random_F">'''Ornate_random_F'''</span>
+| ''Ornate''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Aquatic
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Fishes|A3_Animals_F_Fishes]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+
+|-
+|
+| <span id="Mackerel_F">'''Mackerel_F'''</span>
+| ''Mackerel''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Aquatic
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Fishes|A3_Animals_F_Fishes]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+
+|-
+|
+| <span id="Tuna_F">'''Tuna_F'''</span>
+| ''Tuna''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Aquatic
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Fishes|A3_Animals_F_Fishes]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+
+|-
+|
+| <span id="Mullet_F">'''Mullet_F'''</span>
+| ''Mullet''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Aquatic
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Fishes|A3_Animals_F_Fishes]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+
+|-
+|
+| <span id="CatShark_F">'''CatShark_F'''</span>
+| ''Catshark''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Aquatic
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Fishes|A3_Animals_F_Fishes]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+
+|-
+| [[File:arma3-rabbit_f.jpg|150px]]
+| <span id="Rabbit_F">'''Rabbit_F'''</span>
+| ''Rabbit''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #c2e1c2" | Public
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Rabbit|A3_Animals_F_Rabbit]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+
+|-
+|
+| <span id="Snake_random_F">'''Snake_random_F'''</span>
+| ''Snake''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Snakes|A3_Animals_F_Snakes]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Snake_vipera_random_F">'''Snake_vipera_random_F'''</span>
+| ''Snake''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Snakes|A3_Animals_F_Snakes]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Turtle_F">'''Turtle_F'''</span>
+| ''Turtle''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Aquatic
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Turtle|A3_Animals_F_Turtle]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+
+|-
+|
+| <span id="Hen_random_F">'''Hen_random_F'''</span>
+| ''Hen''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Chicken|A3_Animals_F_Beta_Chicken]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+
+|-
+|
+| <span id="Cock_random_F">'''Cock_random_F'''</span>
+| ''Cock''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Chicken|A3_Animals_F_Beta_Chicken]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Cock_white_F">'''Cock_white_F'''</span>
+| ''Cock''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Chicken|A3_Animals_F_Beta_Chicken]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Fin_sand_F">'''Fin_sand_F'''</span>
+| ''Dog (Sand)''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Dog|A3_Animals_F_Beta_Dog]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Fin_blackwhite_F">'''Fin_blackwhite_F'''</span>
+| ''Dog (Blackwhite)''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Dog|A3_Animals_F_Beta_Dog]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Fin_ocherwhite_F">'''Fin_ocherwhite_F'''</span>
+| ''Dog (Ocherwhite)''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Dog|A3_Animals_F_Beta_Dog]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Fin_tricolour_F">'''Fin_tricolour_F'''</span>
+| ''Dog (Tricolour)''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Dog|A3_Animals_F_Beta_Dog]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Fin_random_F">'''Fin_random_F'''</span>
+| ''Dog''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Dog|A3_Animals_F_Beta_Dog]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Alsatian_Sand_F">'''Alsatian_Sand_F'''</span>
+| ''Alsatian (Sand)''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Dog|A3_Animals_F_Beta_Dog]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Alsatian_Black_F">'''Alsatian_Black_F'''</span>
+| ''Alsatian (Black)''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Dog|A3_Animals_F_Beta_Dog]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Alsatian_Sandblack_F">'''Alsatian_Sandblack_F'''</span>
+| ''Alsatian (Sandblack)''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Dog|A3_Animals_F_Beta_Dog]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Alsatian_Random_F">'''Alsatian_Random_F'''</span>
+| ''Alsatian''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Dog|A3_Animals_F_Beta_Dog]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Goat_random_F">'''Goat_random_F'''</span>
+| ''Goat''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Goat|A3_Animals_F_Beta_Goat]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|-
+|
+| <span id="Sheep_random_F">'''Sheep_random_F'''</span>
+| ''Sheep''
+| style="background-color: #dac2e1" | Civilian
+| Animals
+| Terrestrial
+| style="background-color: #fff3b2" | Protected
+|
+|
+: [[Arma 3 CfgPatches CfgVehicles#A3_Animals_F_Beta_Sheep|A3_Animals_F_Beta_Sheep]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+
+|}
+<div style="color: grey; font-size: 0.9em; padding: 0.5em; text-align: center">Generated in {{GVI|arma 3|2.16|size= 0.75}} by [[User:R3vo|R3vo]] ([[User talk:R3vo|talk]]) 17:46, 8 August 2024 (CEST)</div>
+{{Navbox/A3Assets}}

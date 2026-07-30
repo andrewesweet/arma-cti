@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/Expression
+// revision: 337051 (2023-01-10T14:32:59Z)
+// export sha1: feux1qiamsu357manbliv5z40h21a8c
+// categories: Category:Syntax
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+An '''expression''' is a piece of code that returns a value.
+
+
+== Expression Types ==
+
+An expression can be:
+
+* [[Variables|variable]]
+* [[Operators|operation]]
+* [[:Category:Scripting Commands|scripting command]]
+* [[Control Structures|control structure]]
+
+=== Variable ===
+
+An expression can be a simple [[Variables|variable]] ([[identifier]]):
+
+'''Examples:'''
+
+<sqs>
+_myVariable
+globalVariable
+</sqs>
+
+=== Operation ===
+
+An expression can be an [[Operators|operation]] including its [[Operand|operands]].
+
+'''Examples:'''
+
+<sqs>
+5 * 6
+a % 2
+b * c
+</sqs>
+
+=== Scripting Command ===
+
+An expression can be a scripting command returning a value including its [[Argument|arguments]].
+
+'''Examples:'''
+
+<sqs>
+count myArray
+position unit1
+</sqs>
+
+=== Control Structure ===
+
+An expression can be a [[Control Structures|control structure]] returning a value.
+
+'''Examples:'''
+
+<sqs>
+; returns myValueA or myValueB
+if (myCondition) then { myValueA } else { myValueB }
+</sqs>
+
+
+[[Category: Syntax]]

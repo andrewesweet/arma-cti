@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_allTurrets
+// revision: 378550 (2026-05-05T15:09:23Z)
+// export sha1: 7uuba7p388soaeycwlc7hqr9d0a6zse
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Object Manipulation
+
+|descr= Returns all vehicle turrets from config with options. Does what [[allTurrets]] command does, except the param is vehicle's config classname.
+
+|s1= vehicleClass call [[BIS_fnc_allTurrets]]
+
+|p1= vehicleClass: [[String]] - classname of the vehicle
+
+|r1= [[Array]] of [[Turret Path]]s
+
+|s2= [vehicleClass, personTurrets] call [[BIS_fnc_allTurrets]]
+
+|p21= vehicleClass: [[String]] - classname of the vehicle
+
+|p22= personTurrets: [[Boolean]] - [[true]] to include FFV (firing from vehicle) turrets, [[false]] to exclude them
+
+|r2= [[Array]] of [[Turret Path]]s
+
+|x1= <sqf>private _allTurrets = "C_Offroad_01_F" call BIS_fnc_allTurrets; // []</sqf>
+
+|x2= <sqf>private _allTurrets = ["C_Offroad_01_F", true] call BIS_fnc_allTurrets; // [[0],[1],[2],[3]]</sqf>
+
+|x3= <sqf>private _allTurrets = ["C_Offroad_01_F", false] call BIS_fnc_allTurrets; // []</sqf>
+
+|seealso= [[allTurrets]] [[BIS_fnc_getTurrets]] [[BIS_fnc_turretConfig]] [[BIS_fnc_vehicleCrewTurrets]]
+}}

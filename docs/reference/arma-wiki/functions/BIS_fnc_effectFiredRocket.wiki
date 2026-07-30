@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_effectFiredRocket
+// revision: 341157 (2023-05-13T22:13:08Z)
+// export sha1: fkbypfk9sh6ob6x2w40f957weealjbb
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Effects | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Effects
+
+|descr= ''N/A''
+
+|s1= <!-- [] call [[BIS_fnc_effectFiredRocket]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_effectFiredRocket;</sqf> -->
+
+|seealso=
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-11-13 - 21:21 (UTC)</dd>
+<dt class="note">[[User:DreadedEntity|DreadedEntity]]</dt>
+<dd class="note">
+This function only makes a puff of smoke come out the back of the vehicle used as input
+'''(A3 1.34.128075)'''
+</dd>
+
+</dl>

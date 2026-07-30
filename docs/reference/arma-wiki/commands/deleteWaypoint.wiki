@@ -1,0 +1,109 @@
+// source: https://community.bistudio.com/wiki/deleteWaypoint
+// revision: 339202 (2023-04-27T17:09:15Z)
+// export sha1: 641zaepsnwzmv81d3ld8v5fwqihongl
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Waypoints
+
+|descr= Removes the specified waypoint.
+{{Feature|informative|
+* When a waypoint is deleted, all other [[group]] [[waypoints]] are immediately re-indexed. See {{Link|#Example 2}} for a deletion of all group's waypoints.
+* Deleting a group's [[currentWaypoint|current waypoint]] will ''not'' stop the group on its tracks.
+}}
+
+|s1= [[deleteWaypoint]] [group, index]
+
+|p1= group: [[Group]]
+
+|p2= index: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>deleteWaypoint [_grp, 2];</sqf>
+
+|x2= Because waypoints get immediately re-indexed when one gets deleted, delete them from last to first:
+<sqf>
+private _group = group _unit;
+for "_i" from (count waypoints _group - 1) to 0 step -1 do
+{
+	deleteWaypoint [_group, _i];
+};
+</sqf>
+or always delete the first one (if you want to delete them all)
+<sqf>
+private _group = group _unit;
+for "_i" from 0 to (count waypoints _group - 1) do
+{
+	deleteWaypoint [_group, 0];
+};
+</sqf>
+or use [[forEachReversed]]:
+<sqf>
+{ deleteWaypoint _x } forEachReversed waypoints _group; // Arma 3 v2.14+ only
+</sqf>
+
+|seealso= [[waypoints]] [[setCurrentWaypoint]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointStatements]] [[setWaypointType]] [[addWaypoint]]
+}}
+
+{{Note
+|user= Saintolaf
+|timestamp= 20080101074800
+|text= In order to change the behavior of a unit currently following some waypoints, it is not enough to use [[deleteWaypoint]].
+To achieve the wanted effect, you should rather use [[setWPPos]] to the unit's current position (thereby stopping the unit), and (after a small delay) use [[deleteWaypoint]] to remove the next [[waypoints]].
+}}
+
+{{Note
+|user= VictorFarbau
+|timestamp= 20081115133700
+|text= Another (more foolproof) method to avoid the problem of non-deleteable waypoints is to introduce another group ([[createGroup]]) and [[join]] all units of the present group. A new group will start without any preset waypoints so you can start setting new WPs all over again.
+Old group is "_combatGroup", new group is "_combatGroup2"
+<sqf>
+_combatGroup2 = createGroup east;
+{ [_x] joinSilent _combatGroup2 } forEach (units _combatGroup);
+_combatGroup2 addWaypoint [getPos player, 25];
+</sqf>
+}}
+
+{{Note
+|user= Mr H.
+|timestamp= 20191117165200
+|text= To have the unit stop on the spot you need to set its current waypoint where it is and add a little delay, as stated above by [[User|Saintolaf]] so:
+
+<sqf>
+group _unit spawn
+{
+	[_this, currentWaypoint _this] setWaypointPosition [getPosASL ((units _this) select 0), -1];
+	sleep 0.1;
+	for "_i" from count waypoints _this - 1 to 0 step -1 do 
+	{
+		deleteWaypoint [_this, _i];
+	};
+};
+</sqf>
+Will stop the group where it is and delete its waypoints.
+}}

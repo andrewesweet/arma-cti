@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Sovetskaya_Armiya
+// revision: 184531 (2021-01-06T13:22:16Z)
+// export sha1: 62ezt7ypraivf6ukh2f297u3i75tt5b
+// Vendored snapshot. Do not edit — re-export instead.
+
+Soviet Army (1922 - 1991)
+
+{{GameCategory|arma2|Media}}

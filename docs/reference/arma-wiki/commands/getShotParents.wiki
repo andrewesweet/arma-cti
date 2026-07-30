@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getShotParents
+// revision: 349222 (2023-11-08T14:50:50Z)
+// export sha1: elwjrt3elf5ll2nqvl40if5ehjeuto8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Weapons
+
+|descr= Returns shot information for the given projectile. If shot was fired by a soldier on foot or in FFV position in vehicle, the soldier is returned for the vehicle.
+
+|s1= [[getShotParents]] projectile
+
+|p1= projectile: [[Object]] - the actual projectile shot
+
+|r1= [[Array]] - [vehicle, instigator] - Where vehicle is the vehicle the shot was fired from, and the instigator is the person who pulled the trigger
+
+|x1= <sqf>_shotParents = getShotParents myProjectile;</sqf>
+
+|x2= <sqf>batmobile addEventHandler ["Fired", {systemChat str getShotParents (_this select 6)}];</sqf>
+
+|seealso= [[setShotParents]]
+}}

@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/Village_Pump_(technical):_New_Users
+// revision: 115072 (2019-01-01T23:43:31Z)
+// export sha1: 62zfzt1lng44pao7lej1jx2wlhznm35
+// categories: Category:Village Pump
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Village Pump]]
+'''What were your first impressions when you came to this Wiki?'''
+
+'''What were the hardest parts?'''
+
+'''Where would you have needed more help?'''

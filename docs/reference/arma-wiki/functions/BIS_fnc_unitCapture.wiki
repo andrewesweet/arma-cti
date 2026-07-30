@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_unitCapture
+// revision: 347970 (2023-11-08T09:41:00Z)
+// export sha1: aayrjyhqt5qmrfuikf321tr38rsojhg
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Scenes | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Scenes
+
+|descr= Records movement data of input unit over a specified period of time. Simplified.
+Pressing the {{Controls|Esc}} key, the duration ending, or the unit dying ends the recording.<br>
+Copies to clipboard an [[Array]] in format [frameTime, unitPosition, unitDirectionVector, unitUpVector, unitVelocity] for each frame.
+
+|s1= [unit, duration, FPS, firing, startTime] spawn [[BIS_fnc_unitCapture]]
+
+|p1= unit: [[Object]] - unit from which to capture movement data
+
+|p2= duration: [[Number]] - capture's maximum duration
+
+|p3= FPS: [[Number]] - (Optional, default 20) frames recorded per second (default 20). Range is 1..100
+
+|p4= firing: [[Boolean]] - (Optional, default [[false]]) if set to [[true]], will record the input unit's weapon fire data as well
+
+|p5= startTime: [[Number]] - (Optional, default 0) starting time offset for the frame time
+
+|r1= [[Script Handle]]
+
+|exec= spawn
+
+|x1= <sqf>[BIS_Vehicle, 50, 30, true, 10] spawn BIS_fnc_unitCapture;</sqf>
+
+|seealso= [[BIS_fnc_unitCaptureFiring]] [[BIS_fnc_unitCaptureSimple]] [[BIS_fnc_unitPlaySimple]] [[BIS_fnc_unitPlayFiring]] [[BIS_fnc_unitPlay]] [[BIS_fnc_scriptedMove]]
+}}
+
+{{Note
+|user= Benargee
+|timestamp= 20140929213100
+|text= Video Tutorial by '''{{Link|https://www.youtube.com/channel/UCY63DNbVREJIaANChQhYDTA|TheJserver}}'''<br>
+{{GVI|arma2oa|1.56}} '''Part 1:''' {{Link|https://www.youtube.com/watch?v{{=}}ryB20wQhSr0}}<br>
+{{GVI|arma2oa|1.56}} '''Part 2:''' {{Link|https://www.youtube.com/watch?v{{=}}ePszdYfMRvc}}<br>
+''Works exactly the same in {{arma3}} in my experience.''
+}}

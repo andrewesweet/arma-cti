@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/forcedMap
+// revision: 377695 (2026-01-02T09:03:18Z)
+// export sha1: tk9fjdf1ogz7gvm6rvkp4rhb7k6i0jf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Command Group: Map | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Map
+
+|gr2= Interaction
+
+|descr= Returns if map was forced by using [[forceMap]] command or [[openMap]] command with force option
+
+|s1= [[forcedMap]]
+
+|r1= [[Array]] with [forceMapForced, openMapForced]
+* forceMapForced: [[Boolean]] - [[true]] if map was forced with [[forceMap]] command
+* openMapForced: [[Boolean]] - [[true]] if map was forced with [[openMap]] command.
+
+|x1= <sqf>
+_forceMapForced = forcedMap select 0;
+_openMapForced = forcedMap select 1;
+</sqf>
+
+|seealso= [[openMap]] [[forceMap]] [[showMap]] [[visibleMap]] [[shownMap]]
+}}

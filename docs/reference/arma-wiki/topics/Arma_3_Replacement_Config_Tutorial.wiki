@@ -1,0 +1,162 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Replacement_Config_Tutorial
+// revision: 369678 (2024-10-02T11:01:42Z)
+// export sha1: t4kc1pnoqzzrmas1kbpdfbkfp8xrh99
+// categories: Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This is a guide how to create an addon to replace the look of a given weapon/unit/vehicle with a different model from another community made addon. To avoid issues the replacement should be of the same type and behavior as close as possible. Generally the goal is to achieve a better visual look or better sound experience.
+
+
+== Required tools ==
+
+* A good text editor; best with {{Link|http://www.regular-expressions.info|regular expression}} support. Recommended: {{Link|http://www.editpadpro.com|EditPadPro}} (and/or {{Link|http://www.powergrep.com|PowerGREP}})
+* Ability to create a [[Arma:_All-in-one_Config|config dump]] from system memory while the game is running
+* A tool to create pbos. Recommended: {{Link|https://mikero.bytex.digital/|mikero's tool suite}} (makePbo)
+
+
+== Overall process ==
+
+=== Basic preparation ===
+
+# Download the desired addon(s) you want to use for the replacement
+# Load it/them via a modfolder
+# Make a config overview for the above mentioned '''config dump''' mission in the editor; '''cfgVehicles''' for infantry or vehicles, '''cfgWeapons''' for weapons (or make subsets like CAManBase, AllVehicles, Tank, Cars, etc); for sounds '''cfgAmmo''' and '''cfgMagazines''' are also relevant and a few other specific classes for UI or terrain sounds
+# Extract the classes of the desired vehicle/infantry/weapon item/set/type/faction to replace
+# Extract the classes of the replacements
+# Clean both their content for all but the relevant parameters (see below for more information); this regex will remove all but the mentioned parameters:
+
+ ^(?!.*?(^\tclass|parameterA|parameterB|etc)).*\r\n
+
+=== Preparing the addon ===
+
+# Create a new folder in your @test\addons modfolder
+# Give the folder a descriptive name like [[Scripting Tags|YourTAG]]_ReplacementSet_With_AddonName
+# Create an empty text file
+# Rename it to config.cpp ({{Link|http://windows.microsoft.com/en-us/windows/show-hide-file-name-extensions#show-hide-file-name-extensions|make sure to have windows show file extensions}})
+# Add a cfgPatches header - see sample below
+## Give it the same name as the folder
+## Add the cfgPatches class dependency of the addon used for the replacement in requiredAddons definition
+# Add the cfgWeapons/cfgVehicles body
+# Add the desired vehicles/infantry/weapons classes you want to replace
+## It should include the base class
+## The definitions should be strip of all unnecessary parameters at this point
+## Disable all the remaining parameters (by adding '//' at the start of each line to comment it out) - they only serve as a reminder what you '''have to''' replace for a given class
+
+Sample config:
+
+<syntaxhighlight lang="cpp">
+class CfgPatches
+{
+	class YourTAG_ReplacementSet_With_AddonName
+	{
+		units[] = {};
+		weapons[] = {};
+		requiredVersion = 0.1;
+		requiredAddons[] = { "DependencyToAddonsCfgPatchesClass" };
+	};
+};
+class CfgVehicles
+{
+	class SoldierWB;
+	class B_Soldier_base_F : SoldierWB
+	{
+//		model = "\A3\characters_F\BLUFOR\b_soldier_01.p3d";
+//		nakedUniform = "U_BasicBody";
+//		uniformClass = "U_B_CombatUniform_mcam";
+//		hiddenSelections[] = { "Camo" };
+//		hiddenSelectionsTextures[] = { "\a3\characters_f\blufor\data\clothing1_co.paa" };
+//		linkedItems[] = { "V_PlateCarrier1_rgr", "H_HelmetB", "ItemMap", "ItemCompass", "ItemWatch", "ItemRadio", "NVGoggles" };
+//		respawnLinkedItems[] = { "V_PlateCarrier1_rgr", "H_HelmetB", "ItemMap", "ItemCompass", "ItemWatch", "ItemRadio", "NVGoggles" };
+//		class Wounds
+//		{
+//			tex[] = {};
+//			mat[] = { "A3\Characters_F\BLUFOR\Data\clothing1.rvmat", ... };
+//		};
+	};
+	class B_Soldier_F : B_Soldier_base_F
+	{
+//		nakedUniform = "U_BasicBody";
+//		uniformClass = "U_B_CombatUniform_mcam";
+	};
+};
+</syntaxhighlight>
+
+=== Defining the replacement ===
+
+# Next you have to select which addon unit should replace each given source class; generally one copies GL over GL, MG over MG and so on
+# You do so by copying the parameters of the addon class into your replacement addon for the given class
+# '''Very important''' is to keep the parameter '''inheritance''' in mind in both addon and source class; in other words you need to check carefully where each required parameter is set and if you need to replace it in the given/specific class or at the base class level
+To make some examples for infantry classes:
+* class Wounds or the model are often set only in the base class; except for specific types like snipers, officer, pilot/crew classes
+* whereas the linkedItems list/array is mostly defined per specific class
+* make sure what parameters are set in the base class of the replacement addon
+
+=== Building the addon ===
+
+# Once each class of has the required parameters set/overwritten with new definitions from the desired addon
+# Check your config for error (brackets, semicolons, etc) - rapify/mikero's tools have the feature to verify a config for correctness
+# Build your addon folder to pbo
+# Load your new pbo in a modfolder, as well as the addon it depends on
+# Verify in the editor that the replacement works as desired and that you have no onscreen errors and none in the [[arma.RPT|rpt]]
+
+== Different types ==
+
+=== Visual replacement ===
+
+==== Infantry ====
+
+Relevant config parameters:
+
+* model
+* hiddenSelections[]
+* hiddenSelectionsTextures[]
+* class Wounds
+* nakedUniform
+* uniformClass
+* linkedItems[]
+* respawnlinkedItems[]
+* backpack (somewhat problematic as it may have gameplay impact - better to replace the backpack look itself in its definition/class)
+
+Sample config:
+
+<syntaxhighlight lang="cpp">
+class CfgPatches
+{
+	class AiA_ModelReplacement_BAF_With_STALKERGBs_BritishInfantry
+	{
+		units[] = {};
+		weapons[] = {};
+		requiredVersion = 0.1;
+		requiredAddons[] = { "AiA_ActivateA3Models_ModelReplacement_CO", "STKR_BritMTP" };
+	};
+};
+class CfgVehicles
+{
+	class SoldierWB;
+
+	class BAF_Soldier_base_EP1 : SoldierWB
+	{
+		model = "\STKR_BritMTP\Rifleman";
+		uniformClass = "STKR_UBACS";
+		backpack = "Brit_MLode";
+		linkedItems[] = { "STKR_Osprey_R", "STKR_MK7_Scrim", "STKR_HMNVS", "ItemMap", "ItemCompass", "ItemWatch", "ItemRadio" };
+		respawnLinkedItems[] = { "STKR_Osprey_R", "STKR_MK7_Scrim", "NVGoggles", "ItemMap", "ItemCompass", "ItemWatch", "ItemRadio" };
+		class Wounds
+		{
+			tex[] = {};
+			mat[] = { /* ... */ };
+		};
+	};
+// ...
+};
+</syntaxhighlight>
+
+==== Vehicles ====
+
+==== Weapons ====
+
+=== Sounds replacement ===
+
+
+{{GameCategory|arma3|Tutorials}}

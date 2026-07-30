@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_AI_Human
+// revision: 166525 (2020-10-11T15:12:57Z)
+// export sha1: 43yeke6srfi1t4z3s9jo68lwd8toi97
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions related to the AI behaviour in the [[Arma 3 Contact]] campaign.
+
+[[Category:Function Group: Contact]]

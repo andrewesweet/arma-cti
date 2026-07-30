@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/preloadSound
+// revision: 376517 (2025-10-22T23:11:17Z)
+// export sha1: 09dp2hvrp99iumducbfgkdgbhz66sdr
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Sounds
+
+|descr= Makes sure that a sound can start playing without any delay once it is needed.
+Command works in {{arma3}} but might not be implemented in earlier {{arma}} installments.
+
+|s1= [[preloadSound]] soundName
+
+|p1= soundName: [[String]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+private _sounds = getArray (missionConfigFile >> "CfgSounds" >> "sounds");
+waitUntil { _sounds findIf { !(preloadSound _x) } == -1 };
+</sqf>
+|seealso= [[preloadTitleRsc]]
+}}

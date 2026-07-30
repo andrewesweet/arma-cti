@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Publishing
+// revision: 174796 (2020-12-29T01:15:53Z)
+// export sha1: 3g2nm5ygr7fkqye2kgaydweh2ykp3mo
+// categories: Category:Eden Editor: Scenario
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Once you have finished creating your scenario, there are several options for sharing it with others.
+
+== Publish to Steam Workshop ==
+To share the scenario online directly, expand '''Scenario''' option in the menu bar and pick the '''Publish to Steam Workshop''' option. A window with upload settings will appear. Make sure to add either '''Singleplayer''' or '''Multiplayer''' tag; it is important for filtering.
+After agreeing with the Workshop license, you are free to publish the scenario and share the link with others.
+[[File:3den publish.gif|center]]
+
+Note that you can also [[Eden Editor: Custom Composition|publish custom compositions to Steam Workshop]].
+
+== Export as PBO ==
+You can also export the scenario into packed '''*.pbo''' format. Expand '''Scenario > Export''' and pick either '''Export to Singleplayer''' or '''Export to Multiplayer'''. The scenario with all files and folders inside will be packed into a *.pbo file. You can find it in the game's root folder in the folders named ''Missions'' and ''MPMissions'' respectively.
+If anyone else places the file in the same folders, they will be able to play the scenario from the main menu.<br><br>
+
+
+'''Before sharing your mission, make sure you read [[Mission Presentation]]!'''
+
+[[Category:Eden Editor: Scenario|Publishing]]

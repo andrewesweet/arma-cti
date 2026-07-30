@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/getAssignedCuratorUnit
+// revision: 369128 (2024-09-03T10:34:33Z)
+// export sha1: hb1guqqnmofpl8mdumkzury8p177w8j
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Returns unit assigned to curator logic.
+
+|s1= [[getAssignedCuratorUnit]] curatorObj
+
+|p1= curatorObj: [[Object]] - curator module.
+
+|r1= [[Object]]
+
+|x1= <sqf>
+_curatorUnit = getAssignedCuratorUnit (allCurators select 0);
+_curatorUnit joinAs [createGroup civilian, 0];
+</sqf>
+
+|seealso= [[getAssignedCuratorLogic]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-08-17 - 17:06 (UTC)</dd>
+<dt class="note">[[User:SilentSpike|SilentSpike]]</dt>
+<dd class="note">
+This command will return [[objNull]] if used immediately after the curator unit is assigned to the logic in question (this includes at mission time 0). To avoid problems use the following beforehand:
+<sqf>waitUntil {!isNull (getAssignedCuratorUnit logic)};</sqf>
+</dd>
+
+</dl>

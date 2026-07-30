@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/isCollisionLightOn
+// revision: 353090 (2024-03-12T12:48:19Z)
+// export sha1: fow6sdxmmkm82wqtxca6174wk0bhhcs
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= Lights
+
+|arg= global
+
+|descr= Returns [[true]] if vehicle collision lights are on otherwise [[false]].
+
+|s1= [[isCollisionLightOn]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Boolean]]
+
+ 
+|x1= <sqf>_collisionLightOn = isCollisionLightOn heli;</sqf>
+
+|seealso= [[isEngineOn]] [[isLightOn]] [[setPilotLight]] [[setCollisionLight]] [[isIRLaserOn]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-04-06 - 08:25 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+Bind Collision light action to UserAction 2
+<sqf>
+this addAction ["", {
+	_this select 1 action [
+		["CollisionLightOn", "CollisionLightOff"] select isCollisionLightOn (_this select 0), 
+		_this select 0
+	];
+}, "", -10, false, true, "User2", "_this == driver _target"];
+</sqf>
+</dd>
+
+</dl>

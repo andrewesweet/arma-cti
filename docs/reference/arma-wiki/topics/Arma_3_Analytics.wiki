@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Analytics
+// revision: 364573 (2024-05-17T12:36:29Z)
+// export sha1: fgcltrsfry9t4ambr535sfejmqj6vbl
+// categories: Category:Arma 3: Official Tools | Category:Introduced with Arma 3 version 1.56
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|1.56}}
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= {{GameCategory|arma3|link= y}}
+
+|DOWNLOAD= Part of {{arma3}} package on Steam
+
+|DESCRIPTION= {{Feature|quote|
+Since the release of {{arma3}}, we've had a general overview of how the game is being played, what game mod(e)s are most popular and what people like or dislike.
+But this information was coming mostly from the vocal part of our community. The feedback on the forums and other channels is great and will still be used as until now.
+Nevertheless, it doesn't give us completely objective and unbiased information and it doesn't include feedback from a considerable part of our players.
+A popular and nowadays broadly used way of gathering data about player behavior is through game analytics.
+This allows us to know better our players (without actually disturbing them while playing), and thanks to that, to build a better gaming experience.<br>
+<br>
+Along with the 1.56 update, we are introducing game analytics into {{arma3}}.
+Its purpose is to collect basic information about the game, such as game settings, enabled mods, favorite scenarios and weapons, player deaths or actual performance, and report them to our analytics server.
+If you don't want to be part of that, you will have an option to disable it in the Launcher options. Fear not however, the amount of data is small and should not affect your gameplay experience in any way.
+It's also all anonymous and the data will be used solely for understanding how {{arma3}} is being played.
+The more data we will gather, the more precisely we will know what you like in the game and how you play it - which in turn will guide us to set our priorities and make the game better for you.<br>
+<br>
+<span style{{=}}"font-style: normal">We'd like to add that we see this as an additional tool for our decision-making process, but we do not intend in any way to let analytics data be our sole or primary input.<!--
+--> We'll continue to engage with players via all channels and your feedback will remain a hugely important part of our development methods.<!--
+--> Analytics will help us with decisions such as the removal of redundant video options, proving that such options are indeed no longer in use.<!--
+--> Or we can use them to learn what parameters to expose more clearly in our Launcher. They may also be used to measure how two approaches to a solution on Dev-Branch work in the actual game for example.</span>
+| '''SITREP #00138'''
+| https://dev.arma3.com/post/sitrep-00138
+}}
+
+|COMMAND= arma3.exe
+
+|OPTIONS= There is an option to opt-out of the analytics by running [[Arma 3: Launcher]], going into Launcher options and de-selecting the ''Enable Analytics'' option.
+<br>
+<br>
+Dedicated Server analytics may be disabled simply by using <syntaxhighlight lang="cpp" inline>statisticsEnabled = 0;</syntaxhighlight> in the [[Arma 3: Server Config File|server configuration file]].
+
+|NOTES=
+
+|EXAMPLE=
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= [[Arma 3: Launcher]]
+}}
+
+
+{{GameCategory|arma3|Official Tools}}
+[[Category:Introduced with Arma 3 version 1.56]]

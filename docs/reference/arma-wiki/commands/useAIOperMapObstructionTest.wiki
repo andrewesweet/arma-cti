@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/useAIOperMapObstructionTest
+// revision: 310172 (2022-05-05T13:10:25Z)
+// export sha1: 2vpllmcpsjy7q6eyl1q1r969rscfgp1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: System | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|branch= diag
+
+|gr1= System
+
+|descr= Toggle secondary obstruction test on road paths.
+
+|s1= [[useAIOperMapObstructionTest]] state
+
+|p1= state: [[Boolean]] - [[true]] to enable, [[false]] to disable
+
+|r1= [[Nothing]]
+
+|x1= <sqf>useAIOperMapObstructionTest true;</sqf>
+
+|seealso= [[forceFollowRoad]] [[setDriveOnPath]] [[setConvoySeparation]]
+}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getIDC
+// revision: 348396 (2023-11-08T13:00:01Z)
+// export sha1: avfbdpv1a4447a4khv7q8i9o2k9etoh
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= Returns IDD of given display.
+
+|s1= [config, ctrlName] call [[BIS_fnc_getIDC]]
+
+|p1= config: [[Config]] - config path to display
+|p2= ctrlName: [[String]] - config name of [[Control|control]]
+
+|r1= [[Number]] - IDC, returns -1 if control was not found
+
+|x1= <sqf>private _IDC = [configFile >> "Display3DENPlace", "ButtonCancel"] call BIS_fnc_getIDC;</sqf>
+
+|seealso= [[configFile]] [[findDisplay]] [[createDisplay]] [[displayCtrl]]
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_VRSpawnEffect
+// revision: 348587 (2023-11-08T13:42:16Z)
+// export sha1: ptz7fptktneqey4nljsgjsv018ue5ih
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: VR | Category:Functions | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= VR
+
+|descr= VR (unit) spawn effect.
+
+|s1= [object, reverse, size] call [[BIS_fnc_VRSpawnEffect]]
+
+|p1= object: [[Object]] - object
+|p2= effectType: [[Boolean]] - (Optional, default [[false]]) reverse effect (hiding)
+|p3= size: [[Number]] - (Optional, default 0) size of the effect
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player, false, 5] call BIS_fnc_VRSpawnEffect;</sqf>
+
+|seealso= [[Arma 3: Virtual Reality Custom Courses|Arma 3 VR Custom Courses]] [[:Category:Function Group: VR|VR functions]]
+}}

@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Village_Pump_(technical)
+// revision: 115056 (2019-01-01T23:31:55Z)
+// export sha1: dvol06s54nbc8tda46p32sl9ewzm249
+// categories: Category:Village Pump
+// Vendored snapshot. Do not edit — re-export instead.
+
+<noinclude>''Ask questions, discuss technical issues, or post useful discoveries about the MediaWiki software.''</noinclude>
+<noinclude>{{villagepumpmenu}}</noinclude>
+[[Category:Village Pump]]

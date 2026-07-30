@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Editing_Tutorials
+// revision: 249875 (2021-02-26T11:27:05Z)
+// export sha1: e016mdt2pb416q9s7iu18w5kfq1igk9
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Arma: Tutorials]]

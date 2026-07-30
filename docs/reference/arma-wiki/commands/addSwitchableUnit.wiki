@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/addSwitchableUnit
+// revision: 325232 (2022-07-04T10:32:04Z)
+// export sha1: tjjwv6e30vkd6pi82gyln60s5z3a4qj
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Team Switch | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Team Switch
+
+|descr= Adds a unit to the list of units available for [[Team_Switch|Team Switch]]. Units marked as [[playableUnits|playable]] in editor are automatically switchable.
+This command adds non-playable unit into array of [[switchableUnits]] and makes them available for [[teamSwitch]]. '''Singleplayer only!'''
+
+|s1= [[addSwitchableUnit]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>addSwitchableUnit bob;</sqf>
+
+|seealso= [[teamSwitch]] [[removeSwitchableUnit]] [[switchableUnits]]
+}}

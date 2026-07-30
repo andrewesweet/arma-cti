@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/allCurators
+// revision: 377003 (2026-01-01T08:15:18Z)
+// export sha1: lbjhqbiq0uaiqzsbjf2zpevftmo5jnb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Command Group: Object Detection | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|gr2= Object Detection
+
+|descr= Returns list of all curator logic units, not the units assigned to the logic.
+
+|s1= '''allCurators'''
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>_allCuratorLogics = allCurators;</sqf>
+
+|seealso= [[allGroups]] [[allDead]] [[playableUnits]] [[switchableUnits]] [[vehicles]] [[allUnitsUAV]] [[allSites]]
+}}
+
+<dl class="command_description">

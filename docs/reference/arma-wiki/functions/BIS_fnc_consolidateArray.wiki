@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_consolidateArray
+// revision: 327950 (2022-07-13T12:58:05Z)
+// export sha1: 7ptfn26hyvn2ufwr2qj2bzaj6h02r7y
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.76
+
+|gr1= Arrays
+
+|descr= Finds duplicates in the given array of anything and consolidates them into an array of sub-arrays
+
+|s1= array call [[BIS_fnc_consolidateArray]]
+
+|p1= array: [[Array]] - array of anything
+
+|r1= [[Array]] - array of sub-arrays in format [<nowiki/>[value, count],...], where:
+* value: [[Anything]] - consolidated element
+* count: [[Number]] - occurrence count
+
+|x1= <sqf>["apple","apple","pear","pear","apple"] call BIS_fnc_consolidateArray; // return: [["apple",3],["pear",2]]</sqf>
+
+|x2= <sqf>["apple","apple",1,1,nil,nil] call BIS_fnc_consolidateArray; // return: [["apple",2],[1,2],[any,2]]</sqf>
+		
+
+|seealso=
+}}

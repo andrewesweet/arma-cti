@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/scriptDone
+// revision: 321342 (2022-05-13T19:10:40Z)
+// export sha1: hgq4yrzbfeoooqcc15bxgphgbrlkh8i
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Program Flow
+
+|descr= Check if a script is finished running using the [[Script Handle]] returned by [[execVM]] or [[spawn]].
+
+|s1= [[scriptDone]] handle
+
+|p1= handle: [[Script Handle]] - handle returned by [[spawn]] or [[execVM]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+_scriptHandle = ["arguments"] execVM "scriptname.sqf";
+waitUntil { scriptDone _scriptHandle };
+</sqf>
+
+|seealso= [[execVM]] [[spawn]] [[terminate]] [[scriptNull]]
+}}
+
+{{Note
+|user= Bn880
+|timestamp= 20090911035400
+|text= A Null Script handle can be created in this manner:
+<sqf>_handle = 0 spawn {};</sqf>
+That is what any [[Script Handle]] becomes when a script is finished running, meaning it will test as [[true]] with: 
+<sqf>scriptDone _handle;</sqf>
+and it returns "<NULL-script>" when converted to string.
+This in turn lets you initialize the variable with a completed [[Script Handle]] and lets you test the variable even though nothing else may have set the handle by creating a script with [[spawn]] or [[execVM]].
+It also lets you store and manage script handles in arrays, and a few other sexy things.
+}}

@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/diag_fps
+// revision: 341165 (2023-05-13T22:13:12Z)
+// export sha1: kbst6a9i0twhaf9vc1cw86ccbhwokpa
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Command Group: Performance Profiling | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Diagnostic
+
+|gr2= Performance Profiling
+
+|descr= Returns average framerate calculated over last 16 frames.
+
+
+|s1= [[diag_fps]]
+
+|r1= [[Number]]
+
+|x1= <sqf>diag_log diag_fps;</sqf>
+
+|seealso= [[diag_fpsMin]] [[diag_frameNo]] [[diag_log]] [[diag_tickTime]] [[diag_deltaTime]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-11-19 - 23:56 (UTC)</dd>
+<dt class="note">[[User:DreadedEntity|DreadedEntity]]</dt>
+<dd class="note">
+The engine will always calculate the last 16 frames without caring if they are frames in which the loading screen was drawn, or actual mission frames.
+</dd>
+
+</dl>

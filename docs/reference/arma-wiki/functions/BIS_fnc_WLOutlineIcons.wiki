@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_WLOutlineIcons
+// revision: 274009 (2021-06-13T01:15:06Z)
+// export sha1: 7delwp0yhuwwc73an33rpumcvybumrs
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Warlords | Category:Functions | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.86
+
+|gr1= Warlords
+
+|descr= <pre>/*
+WARLORDS-SPECIFIC FUNCTION
+
+Author: Josef Zemánek
+
+Description: Handles icons selection visualization in map.
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_WLOutlineIcons]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

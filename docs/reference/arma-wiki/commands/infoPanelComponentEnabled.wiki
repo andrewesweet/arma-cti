@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/infoPanelComponentEnabled
+// revision: 377489 (2026-01-02T06:49:10Z)
+// export sha1: 8q9ys21ah2v4h7xn4prk25b8vdyt34s
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Custom Panels | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= Custom Panels
+
+|descr= Controls availability of component to given object info panel.
+
+|s1= unit [[infoPanelComponentEnabled]] [panelID, componentClassOrType]
+
+|p1= unit: [[Object]] - the concerned vehicle
+
+|p2= panelID: [[String]] - "left" or "right" can be used as panel names
+
+|p3= componentClassOrType: [[String]]
+
+|r1= [[Boolean]] - [[true]] if component was successfully enabled on the panel, [[false]] otherwise (e.g. component is not available for the object)
+
+|s2= [unit, turretPath] [[infoPanelComponentEnabled]] [panelID, componentClassOrType]
+
+|p21= unit: [[Object]] - the concerned vehicle
+
+|p22= turretPath: [[Turret Path]] - turret index
+
+|p23= panelID: [[String]] - "left" or "right" can be used as panel names
+
+|p24= componentClassOrType: [[String]]
+
+|r2= [[Boolean]]
+
+|x1= <sqf>
+// returns true if specific component "SensorDisplay" is enabled on player vehicle's left panel
+_state = [vehicle player, [-1]] infoPanelComponentEnabled ["VehicleSystemsDisplayManagerComponentLeft", "SensorDisplay"];
+</sqf>
+
+|x2= <sqf>
+// returns true if all "SensorsDisplayComponent" components are enabled on player vehicle's left panel, otherwise returns false
+_state = [vehicle player, [-1]] infoPanelComponentEnabled ["VehicleSystemsDisplayManagerComponentLeft", "SensorsDisplayComponent"];
+</sqf>
+
+|seealso= [[Arma 3: Custom Info]] [[infoPanel]] [[infoPanels]] [[setInfoPanel]] [[infoPanelComponents]] [[enableInfoPanelComponent]]
+}}

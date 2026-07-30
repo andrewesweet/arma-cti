@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/objectFromNetId
+// revision: 373126 (2025-04-02T15:43:29Z)
+// export sha1: b8hjlm5mxmgssst0zemea3hfimijjyo
+// categories: Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|game2= arma2oa
+|version2= 1.63
+
+|gr1= Multiplayer
+
+|descr= Get object with given unique ID. For groups, use [[groupFromNetId]].
+
+|mp= Before {{GVI|arma3|2.18|size= 0.75}} it would return [[objNull]] in multiplayer - see [[BIS_fnc_objectFromNetId]]
+
+|s1= [[objectFromNetId]] id
+
+|p1= id: [[String]]
+
+|r1= [[Object]]
+
+|x1= <sqf>objectFromNetId "2:3"</sqf>
+
+|seealso= [[groupFromNetId]] [[netId]] [[BIS_fnc_objectFromNetId]] [[BIS_fnc_netId]] [[BIS_fnc_groupFromNetId]]
+}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Editor_Modules
+// revision: 229628 (2021-02-01T13:32:49Z)
+// export sha1: c6xqsfl6c2cc4xw60vrmrucrh2u06xw
+// Vendored snapshot. Do not edit — re-export instead.
+
+List of official editor modules in {{arma2}}.
+
+[[Category:Editor Modules]]

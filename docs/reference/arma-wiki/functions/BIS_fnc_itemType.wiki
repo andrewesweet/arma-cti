@@ -1,0 +1,123 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_itemType
+// revision: 378153 (2026-02-26T00:02:49Z)
+// export sha1: tlsu5a5ilffp3h7mpeg2s5oa31m7ep6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.08 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.08
+
+|gr1= Inventory
+
+|descr= {{Feature|important|Be very careful with this function as certain mods modify the categories making this function unreliable!}}
+Returns item category and type.
+{{{!}} class="wikitable"
+! Weapon / VehicleWeapon
+! VehicleWeapon
+! Item
+! Equipment
+! Magazine
+! Mine
+{{!}}- style="vertical-align: top"
+{{!}}
+* AssaultRifle
+* BombLauncher
+* Cannon
+* GrenadeLauncher
+* Handgun
+* Launcher
+* MachineGun
+* Magazine
+* MissileLauncher
+* Mortar
+* RocketLauncher
+* Shotgun
+* Throw
+* Rifle
+* SubmachineGun
+* SniperRifle
+{{!}}
+* Horn
+* CounterMeasuresLauncher
+* LaserDesignator
+{{!}}
+* AccessoryMuzzle
+* AccessoryPointer
+* AccessorySights
+* AccessoryBipod
+* Binocular
+* Compass
+* FirstAidKit
+* GPS
+* LaserDesignator
+* Map
+* Medikit
+* MineDetector
+* NVGoggles
+* Radio
+* Toolkit
+* UAVTerminal
+* VehicleWeapon
+* Unknown
+* UnknownEquipment
+* UnknownWeapon
+* Watch
+{{!}}
+* Glasses
+* Headgear
+* Vest
+* Uniform
+* Backpack
+{{!}}
+* Artillery
+* Bullet
+* CounterMeasures
+* Flare
+* Grenade
+* Laser
+* Missile
+* Rocket
+* Shell
+* ShotgunShell
+* SmokeShell
+* UnknownMagazine
+{{!}}
+* Mine
+* MineBounding
+* MineDirectional
+{{!}}}
+
+|s1= weaponClass call [[BIS_fnc_itemType]]
+
+|p1= weaponClass: [[String]] - weapon's class name
+
+|r1= [[Array]] of [[String]]s format [category, type]
+
+|x1= <sqf>"arifle_MX_pointer_F" call BIS_fnc_itemType;</sqf>
+
+|seealso= [[currentWeapon]]
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20170514190300
+|text= More detailed description about some specific Weapons and Vehicle Weapons:
+{{{!}} class="wikitable"
+! Weapon
+! Description
+{{!}}-
+{{!}} GrenadeLauncher {{!}}{{!}} Underbarrel and HGLs.
+{{!}}-
+{{!}} BombLauncher {{!}}{{!}} Aircraft bomb throw weapons.
+{{!}}-
+{{!}} MissileLauncher {{!}}{{!}} Guided missile weapons (alike Titan series).
+{{!}}-
+{{!}} RocketLauncher {{!}}{{!}} Non-guided missile weapons (alike RPG32).
+{{!}}-
+{{!}} Cannon {{!}}{{!}} Main vehicle turret (alike tank cannon).
+{{!}}-
+{{!}} Throw {{!}}{{!}} Throw-like weapons (grenade weapon, melee weapons from mods, etc).
+{{!}}}
+}}

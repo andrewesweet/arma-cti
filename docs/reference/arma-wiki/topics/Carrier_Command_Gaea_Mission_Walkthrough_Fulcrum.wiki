@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Walkthrough/Fulcrum
+// revision: 341585 (2023-06-09T16:29:10Z)
+// export sha1: 3z0pcowbzucj3dg26sx7trop777wt2w
+// categories: Category:Carrier Command: Gaea Mission: Walkthrough
+// Vendored snapshot. Do not edit — re-export instead.
+
+This is a FPS mission that gives Myrick a chance to infiltrate the enemy facilities on Fulcrum and against all odds manage to disable the shield protecting the Command center.
+
+From the gameplay perspective this is achieved by activating three switches in three different enemy installations in a specified order.
+
+FIXME: these waypoints are not in order because I last played the mission a long time ago and do not remember how exacly it went
+
+# Avoid the Coastal Dock<blockquote>This marker is NOT placed at the position of the coastal dock, but at a waypoint that it is necessary to reach.</blockquote>
+# Reach the vantage point
+# Leave the Station
+# Clear access to Shaft {{Feature|informative|Some players reported difficulty with this in the way that this waypoint was not displayed properly and they instead saw a "Leave the Bunker" waypoint. <ref>http://forums.bistudio.com/showthread.php?141194-Deactivate-tthe-shield-mission-Lift-Shaft-help</ref> In any case, at this point find a cabinet placed next to a wall. It is actionable from the side. Pressing use on it leads to Myrick pushing the cabinet away and revealing an lift shaft behind.}}
+# Climb down the Elevator Shaft
+# Leave the Bunker
+# Cross the bridge
+# Disable the Gate
+# Open the Maintenance Door
+# Enter the Control Room
+# Enter the Maintenance Area
+# Enter the Bunker
+# Reach the mountain pass
+# Proceed through the forest
+# Proceed along path
+# Avoid the APA Defenses
+# Current Monitoring System (CMS)
+# Proceed through the Station
+# Get to the Manta LZ
+# Enter the Station
+# Run Security Bypass
+# Remove the Power Socket
+# Open the Vent
+# Disable the CMS
+# Disable the 2nd CMS
+# Reach the Satellite Station
+# Overload the power grid
+# Board the Walrus<blockquote>At the area of impact, the radiation levels are dangerously high and cause damage to Myrick's health. Run quickly.</blockquote>
+# Return to the Carrier
+
+
+== Objectives ==
+
+# OVERRUN FULCRUM
+#* Fulcrum is likely the core of the APA forces in the Dead Zone. If we defeat the enemy there, we've practically incapacitated the APA.
+# DEACTIVATE THE SHIELD
+#* Fulcrum has a large shield protecting the unit production facilities. If I overload the system, it will temporarily deactivate and we'll have enough time to blast the area with the Hammerhead Missile.
+# CURRENT MONITORING SYSTEM NO.1
+#* The first Current Monitoring System (CMS) is in a bunker. I'll need to get in and deactivate it there.
+# CURRENT MONITORING SYSTEM NO.2
+#* The second CMS is in the second bunker, quite a bit from the shore. On the up side it is on the way to the Satellite Station.
+# REACH SATELLITE STATION
+#* The main controls where I can override the shield are in the Satellite Station. I&apos;ll need to reach it and get inside.
+
+Finishing this mission also means completing one of the Chapter II objectives the as Fulcrum is the enemy stockpile island we are to capture.
+
+
+{{GameCategory|carriercommand|Walkthrough}}

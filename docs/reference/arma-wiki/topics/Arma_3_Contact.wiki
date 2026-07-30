@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Contact
+// revision: 378256 (2026-03-26T00:02:56Z)
+// export sha1: 7ijt2sj06mb29pq8zpsja7c90cynuom
+// categories: Category:Arma 3: DLCs & Expansions | Category:Introduced with Arma 3 version 1.94
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= arma3 Contact logo black.png
+|game= arma3
+|version= 1.94
+|releasedate= July 25th, 2019
+|size= 300
+|intro= [[Arma 3 Contact]] is a spin-off expansion to Arma 3 released on July 25th, 2019.
+
+What if humanity suddenly encounters extraterrestrial intelligence on Earth? Bohemia Interactive presents: Arma 3 Contact – a '''spin-off expansion''' about the most important discovery in the history of mankind. As a soldier deployed to [[Livonia|Livonia]]’s militarized Nadbór region, you will be among the first to study our alien visitors and determine their intentions. However, amid the tension and chaos, armed conflict inevitably unfolds. Arma 3 Contact’s military science fiction campaign arrives together with a massive '''new terrain''', and introduces '''new factions, weapons, vehicles, outfits, equipment, and more''' to the wider {{arma3}} sandbox.
+
+|premfeature1= '''Singleplayer Campaign "First Contact"''' – Ever fantasize about what would happen if aliens arrive on Earth? The story-driven “First Contact” campaign places you right at the center of a mysterious event that will forever change the face of human history. As Specialist Aiden Rudwell, you are a NATO drone operator taking part in a military training exercise on Livonia. When a massive alien vessel enters the atmosphere, you are sent on a reconnaissance mission to investigate the extraterrestrial presence. The priority: to learn who or what they are, and find out why they are here. However, with our very existence in the balance, different interpretations fueled by a region-wide blackout quickly prove to be a surefire way to conflict. Over the course of this campaign, you will engage in field science, electronic warfare, and combat recon, in an experience delivered in authentic {{arma3}} style.<br><br>
+
+|premfeature2= '''[[Livonia|Livonia Terrain]]''' – Dense forests, wide open fields, and plenty of interesting landmarks – get ready to explore a fresh temperate summer environment ideally suited for combined arms warfare. Arma 3 Contact’s 163 km<sup>2</sup> Eastern European terrain covers the partly abandoned Nadbór region within the larger Polish-speaking country of Livonia. This landlocked NATO member state shares borders with four other nations, including the Russian exclave Kaliningrad and CSAT partner Belarus, which inherently makes it a place of great geo-strategic importance. Its woodland locale is composed of a big set of completely new structures, props, and natural objects, complemented by objects from other {{Name|bi}} terrains.<br><br>
+
+|premfeature3= '''2 New Factions''' – With the new terrain come two relatively smaller but highly capable new military factions. Specifically, the Livonian Defense Force and Russian Spetsnaz. The LDF equips its soldiers with high-end protective gear in a distinctive woodland ‘geometric’ camouflage design. This includes new fatigues, plate carrier vests, and advanced modular combat helmets with optional ear protectors and so-called ‘Spartan chops’. Meanwhile, the Russian Spetsnaz operators wear a new lightweight two-tone suit, a durable helmet based on CSAT design, and a chest rig which sports a cross-drawn chest holder for sidearms. Each faction is further enhanced by reskinned variants of existing Arma 3 assets, and made complete with new character faces and Polish or Russian radio protocols.<br><br>
+
+|premfeature4= '''5 New Weapons''' – The Contact expansion adds 5 weapons to your {{arma3}} arsenal. The LDF makes use of the Promet Assault Rifle. This modular bullpup rifle is known for its unique detachable carry handle with integrated scope and can be fitted with an under-barrel grenade launcher or shotgun attachment. Then there are two additions to the AK family, which are primarily used by Russian Spetsnaz. The RPK-12 Light Machine Gun features a distinctive 75-round drum magazine, elongated barrel, a modified stock, and added foregrip. The AKU-12 Rifle is a lightweight carbine with a shorter barrel and a special muzzle brake. Lastly, Livonia’s civilian hunting enthusiasts bring in their own two weapons. The Mk14 Classic Hunting Rifle is a single fire walnut stock version of the military-issue Mk14, while the Kozlice Shotgun is a traditional break-barrel 12 gauge that can fire slug or buckshot shells, and comes in a regular and sawed-off variant.<br><br>
+
+|premfeature5= '''2 New Vehicles''' – Say hello to an unlikely pair of new vehicles. First up is the ED-1 Mini UGV (Unmanned Ground Vehicle). This small tracked electric robot is built to traverse complex terrain, and can transmit a live camera feed so that its operator can remotely assess the situation. Wielding its multi-joint swivel arm, the UGV’s two primary uses are CBRN Defense and Explosive Ordnance Disposal. The Science variant, the ED-1E*, is essentially a driving laboratory with sensors, a sampling laser, and a biopsy probe. For military use, the ED-1D variant comes prepared with a mounted Disruptor shotgun; ideal for demining operations and close encounters. On the opposite side of the vehicle spectrum drives the Tractor. This reliable Diesel workhorse from Arma 2 returns with a major upgrade to its model and textures, and might prove unexpectedly useful in certain circumstances.<br><br>
+
+|premfeature6= '''New Gear*''' – In response to First Contact, this spin-off expansion also hands you a variety of new gear. Perhaps most striking is the equipment related to CBRN (Chemical, Biological, Radiological, and Nuclear) defense. This involves an oversuit – available in multiple colors and camouflage designs – and includes Air Purifying Respirator face masks and breathing apparatus backpacks. Another notable addition is the Spectrum Device. This is a handheld transceiver that can act as an electromagnetic spectrum analyzer. It can send and receive a myriad of signals at various frequencies, while – depending on what antenna is fitted – it can also be used for jamming or deception. As such, it is essential when it comes to scientific study, communications, or engaging in electronic warfare. Additionally, there is a radio backpack, prisoner blindfold, and, of course, the most proven measure of defense against alien interference: the tin foil hat.<br><!--
+--><small>''&#42;This gear is primarily cosmetic; limited features are only available in the context of Contact's campaign and gameplay.''</small><br><br>
+
+|premfeature7= '''Classified Intel''' – Little is known about the extraterrestrial visitors, but their largest observed vessel is hard to miss. Presumably employing a form of gravity control, it appears to have little trouble maintaining levitation despite its massive size. It is unclear whether Livonia is the only arrival site on Earth, but the UFO is believed to purposely hover above an underground alien network that spans at least several kilometers. This network’s purpose and origin are entirely unknown, but it appears to be incredibly old since it has gone unnoticed for the longest time. Recent reports also mention sightings of highly advanced car-sized alien entities surveying the UFO’s nearby environment. However, much more information is needed before their true capabilities and purpose can be evaluated.<br><br>
+
+|freefeature1= '''Additional Multiplayer Scenarios''' – Jump into {{arma3}}’s official Zeus Game Master, Combat Patrol, and Warlords multiplayer modes with additional scenarios for the new Livonia terrain.
+|freefeature2= '''NATO Woodland Camouflage''' – NATO troops receive a modest range of gear in woodland camouflage, fitting for Livonia’s forest terrain
+|freefeature3= '''Civilian Clothing''' – Additional character gear helps represent the various civilian groups in the Nadbór region, such as the international Astra scientists, local farmers, and looters
+|freefeature4= '''100+ Decorative & Terrain Objects*''' – Content creators can let their imagination run wild with dozens of new structures and props, many of which are available in multiple color variants. Besides the new assets for the Livonia terrain, this includes objects related to CBRN (sealed transport packaging, a weather station, and more), Decontamination (tents, showers, spill bunds, cleaning equipment, tarps, liquid hoses, and more) and Field Outposts (rugged equipment, terminals, furniture, lamps, solar panels, power cables, cargo platforms, and more)<br><!--
+--><small>''&#42;Some of these marked items might have advanced scripted gameplay functionality within Arma 3 Contact’s singleplayer campaign. However, please be aware that they are purely cosmetic and/or decorative when used across the vanilla Arma 3 sandbox, such as in multiplayer or in the Scenario Editor.''</small>
+|freefeature5= '''Official Soundtrack''' – listen to new music tracks composed specifically for this DLC
+|gallery1= arma3 contact screenshot 01.jpg
+|gallery2= arma3 contact screenshot 02.jpg
+|gallery3= arma3 contact screenshot 03.jpg
+|gallery4= arma3 contact screenshot 16.jpg
+|trailer= ds7RoCrhUyk
+|start1= [[Arma 3 Alien Entity Behavior]]
+|start2= [[Arma 3: Probing Mechanics]]
+|start3= [[Arma 3: CBRN]]
+|start4= [[Arma 3: Spectrum Device]]
+|start5= {{Link|https://arma3.com/contact|Official Website}}
+|start6= {{Link|https://store.steampowered.com/app/1021790/Arma_3_Contact/|Contact on Steam}}
+|isDLC= y
+}}
+
+
+{{GameCategory|arma3|DLCs & Expansions}}

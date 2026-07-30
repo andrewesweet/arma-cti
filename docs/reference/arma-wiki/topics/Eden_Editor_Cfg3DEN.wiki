@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Cfg3DEN
+// revision: 152545 (2020-06-01T12:31:02Z)
+// export sha1: r7k8jxk7v89qifzv8a7q1w1tw7b9uys
+// categories: Category:Eden Editor: Modding
+// Vendored snapshot. Do not edit — re-export instead.
+
+<syntaxhighlight lang="cpp">
+// Editor configuration
+class Cfg3DEN
+{
+	class MyAddon
+	{
+		// Entity settings for each type
+		class Object {};
+		class Group {};
+		class Trigger {};
+		class Waypoint {};
+		class Logic {};
+		class Marker {};
+
+		class Mission {}; // Scenario attributes and global preferences
+		class Layer {}; // Layer settings and attributes
+		class Comment {}; // Comment entity settings and attributes
+		class Attributes {}; // User interface for attributes
+		class Default {}; // General visualization settings
+		class Camera {}; // Camera settings
+		class Connections {}; // Configuration of all connection types
+		class Messages {}; // Pop-up messages
+		class Notifications {}; // Non-interruptive on-screen notifications
+		class EventHandlers {}; // Default event handlers
+		class History {}; // Visualization of history list entries
+		class Updates {}; // Update log configuration
+		class Tutorials {}; // Tutorials and their categories
+	};
+};
+</syntaxhighlight>
+
+[[Category:Eden Editor: Modding|Cfg3DEN]]

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/ctrlModel
+// revision: 310856 (2022-05-07T20:24:08Z)
+// export sha1: 0if5rzb43kqn7srxxgajg0yprugn9j5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Object | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= GUI Control - Object
+
+|descr= Returns model used in 3D-[[Arma: GUI Configuration|Dialog]].
+
+|s1= [[ctrlModel]] control
+
+|p1= control : [[Control]] - 3D control
+
+|r1= [[String]] - model path
+
+|x1= <sqf>_model = ctrlModel _control3D;</sqf>
+
+|seealso= [[ctrlCreate]] [[ctrlDelete]] [[ctrlSetModel]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlClassName]] [[displayCtrl]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlModelDirAndUp]] [[ctrlSetModelDirAndUp]]
+}}

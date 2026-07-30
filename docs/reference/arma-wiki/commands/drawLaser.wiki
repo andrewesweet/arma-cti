@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/drawLaser
+// revision: 377735 (2026-01-03T00:22:18Z)
+// export sha1: 4nh8gmkvm4dzv205c8biarwtoagufvk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Command Group: Lights | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+
+|version1= 2.08
+
+|eff= local
+
+|descr= Draws a laserbeam and a lightpoint at the impact location of the laser.<br>
+This command has to be executed every frame - see {{Link|Arma 3: Mission Event Handlers#Draw3D}}.<br>
+Lasers drawn with this command are subject to the same limitations as weapon attachment lasers. These limitations are defined in the {{hl|CfgIRLaserSettings}} config class.
+
+|gr1= Interaction
+
+|gr2= Lights
+
+|s1= [[drawLaser]] [position, direction, beamColor, dotColor, dotSize, beamThickness, beamMaxLength, isIR]
+
+|p1= position: [[Position#PositionASL|PositionASL]] - the laser's origin position
+
+|p2= direction: [[Array]] of [[Vector3D]] - the laser's direction vector
+
+|p3= beamColor: [[Color|Color (RGB)]] - laser beam color. The values can go way above the usual 0..1 range as they also act as emissivity brightness
+
+|p4= dotColor: [[Color|Color (RGB)]] or [[Array|Empty Array]] - impact dot color. Set to <sqf inline>[]</sqf> to use the same value as ''beamColor''.
+
+|p5= dotSize: [[Number]] - impact dot size; if set to 0 the impact dot will not render
+
+|p6= beamThickness: [[Number]] - laser beam's thickness scale; if set to 0, the beam will not render
+
+|p7= beamMaxLength: [[Number]] - (Optional, default -1) laser beam's maximum length. {{hl|-1}} means maximum length (defined in {{hl|CfgIRLaserSettings}}), {{hl|0}} means no length at all and the command is ignored
+
+|p8= isIR: [[Boolean]] - (Optional, default [[true]]) whether the laser and impact dot are only visible with Night Vision / Thermal Imaging
+
+|r1= [[Nothing]]
+
+|x1= Give the player a laser eye:
+<sqf>
+addMissionEventHandler ["Draw3D", {
+	drawLaser [
+		eyePos player vectorAdd [0, 0, 0.1],
+		getCameraViewDirection player,
+		[1000, 0, 0], // Bright red
+		[],
+		5,
+		20,
+		-1,
+		false
+	];
+}];
+</sqf>
+
+|seealso= [[drawIcon3D]] [[drawLine3D]] {{Link|Arma 3: Mission Event Handlers#Draw3D}}
+}}

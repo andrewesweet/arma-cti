@@ -1,0 +1,96 @@
+// source: https://community.bistudio.com/wiki/camSetDir
+// revision: 377244 (2026-01-02T04:23:26Z)
+// export sha1: 9m4oey5ixsiebztir8ij8rpxbp468q5
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Camera Control
+
+|arg= local
+
+|eff= local
+
+|descr= Sets the orientation of the given camera in the direction of the given vector. Needs [[camCommit]]. Since {{GVI|arma3|0.50}}, only the second syntax with a [[Vector3D]] is available.
+
+|s1= camera [[camSetDir]] azimuth
+
+|p1= camera: [[Object]] - object of type "camera"
+
+|p2= azimuth: [[Number]] - camera azimuth
+
+|r1= [[Nothing]]
+
+|s2= camera [[camSetDir]] direction
+|s2since= arma3 0.50
+
+|p21= camera: [[Object]] - object of type "camera"
+
+|p22= direction: [[Vector3D]] - direction of camera. Must be a valid vector.
+
+|r2= [[Nothing]]
+
+|x1= Since {{arma3}}:
+<sqf>
+private _pos1 = player modelToWorld [0, 5, 5];
+private _pos2 = player modelToWorld [0, 50, 50];
+
+private _cam = "camera" camCreate _pos1;
+_cam cameraEffect ["INTERNAL", "BACK"];
+
+_cam camSetPos _pos2;
+_cam camSetDir (_pos2 vectorFromTo _pos1);
+_cam camCommit 5;
+waitUntil { camCommitted _cam };
+
+_cam camSetPos _pos1;
+_cam camCommit 5;
+</sqf>
+
+|x2= Before {{arma3}}:
+<sqf>
+private _pos1 = player modelToWorld [0, 5, 5];
+private _pos2 = player modelToWorld [0, 50, 50];
+
+private _cam = "camera" camCreate _pos1;
+_cam cameraEffect ["INTERNAL", "BACK"];
+
+_cam camSetPos _pos2;
+_cam camSetDir 180;
+_cam camCommit 5;
+waitUntil { camCommitted _cam };
+
+_cam camSetPos _pos1;
+_cam camCommit 5;
+</sqf>
+
+|seealso= [[direction]] [[setDir]] [[camSetTarget]] [[getCameraViewDirection]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20160509194700
+|text= [[cameraEffect]] "INTERNAL" works better than "EXTERNAL" with this command.
+}}

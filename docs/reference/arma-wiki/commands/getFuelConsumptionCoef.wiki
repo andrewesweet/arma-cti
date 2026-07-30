@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getFuelConsumptionCoef
+// revision: 363320 (2024-03-26T16:41:39Z)
+// export sha1: iaxf5npvhx1o60ruu4zfdp729uw0065
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.16
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns the fuel consumption coefficient, which is a multiplier of the [[CfgVehicles_Config_Reference#fuelConsumptionRate|fuel consumption rate]] in config.
+
+|s1= [[getFuelConsumptionCoef]] vehicle
+
+|p1= vehicle : [[Object]]
+
+|r1= [[Number]] - fuel consumption coefficient
+
+|x1= <sqf>if (getFuelConsumptionCoef myCar > 1) then { hint "You should have a mechanic look at your engine!" }</sqf>
+
+|seealso= [[setFuelConsumptionCoef]]
+}}

@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_helicopterType
+// revision: 348739 (2023-11-08T14:32:10Z)
+// export sha1: 0ns7od1aasdosow7ypsdsn1ebp842l5
+// categories: Category:Arma 3: Functions | Category:Function Group: Helicopters | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Helicopters
+
+|descr= Returns helicopter type.
+
+|s1= [object] call [[BIS_fnc_helicopterType]]
+
+|p1= start: [[Object]] - helicopter to be checked.
+
+|r1= [[Number]] - one of:
+* -1 - Unknown
+* &nbsp;0 - Light
+* &nbsp;1 - Medium
+* &nbsp;2 - Heavy
+
+|x1= <sqf>private _helicopterType = [vehicle player] call BIS_fnc_helicopterType;</sqf>
+
+|seealso= [[typeOf]]
+}}

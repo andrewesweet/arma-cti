@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_completedCuratorChallengesCount
+// revision: 348891 (2023-11-08T14:39:51Z)
+// export sha1: ks6geey29re2izydel9szeet7r5lz6j
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: CuratorChallenges | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= CuratorChallenges
+
+|descr= Return number of completed curator challenges.
+
+|s1= curator call [[BIS_fnc_completedCuratorChallengesCount]]
+
+|p1= curator: [[Object]] - curator module
+
+|r1= [[Number]] - number of completed challenges
+
+|x1= <sqf>curatorModule call BIS_fnc_completedCuratorChallengesCount;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

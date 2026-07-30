@@ -1,0 +1,338 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sensors_Config_Reference
+// revision: 364049 (2024-04-30T11:49:18Z)
+// export sha1: jmojiwtmggftsvqwot9iu1cye0ivu2y
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Vehicle and ammo sensors for target detection and tracking.
+
+
+== Introduction / Components ==
+
+The new Sensor system gets enabled by defining a SensorsManagerComponent class inside the vehicle's [[Arma 3: Components|Components]] class.
+<syntaxhighlight lang="cpp">
+class MyVehicle_F : MyBaseVehicle_F
+{
+	class Components : Components
+	{
+		class SensorsManagerComponent : SensorTemplatePassiveRadar
+		{
+		};
+	};
+};
+</syntaxhighlight>
+
+For simplicity the class can inherit from one of the templates that are available in the configFile root, which allows you to only change the properties you need.
+<syntaxhighlight lang="cpp">
+class SensorTemplatePassiveRadar;
+class SensorTemplateAntiRadiation;
+class SensorTemplateActiveRadar;
+class SensorTemplateIR;
+class SensorTemplateVisual;
+class SensorTemplateMan;
+class SensorTemplateLaser;
+class SensorTemplateNV;
+class SensorTemplateDataLink;
+</syntaxhighlight>
+
+
+== Properties ==
+
+=== componentType ===
+
+Mandatory property that defines the type/spectrum and hardcoded behavior of the sensor.
+Can be one of the following:
+* '''IRSensorComponent''' - detects [[A3_Targeting_config_reference#irTarget|irTarget]]s according to their [[A3_Targeting_config_reference#irTargetSize|irTargetSize]] and their actual heat signature. Sources of heat are engine, tires or the muzzle. To become a detectable target in IR the engine has to be running at least 6 seconds. To become undetectable the vehicle may need to cool down even as long as 1 hour.
+* '''NVSensorComponent''' - detects [[A3_Targeting_config_reference#nvTarget|nvTarget]]s.
+* '''LaserSensorComponent''' - detects [[A3_Targeting_config_reference#laserTarget|laserTarget]]s.
+* '''ActiveRadarSensorComponent''' - detects [[A3_Targeting_config_reference#radarTarget|radarTarget]]s according to their [[A3_Targeting_config_reference#radarTargetSize|radarTargetSize]]. Radar needs to be switched ON via an action (Default {{arma3}} and {{Name|arma3apex}} keybind is {{Controls|Ctrl|R}}). Switching the radar on also makes the owner a detectable target for vehicles or ammo with passive radar component (see below). It's also the only sensor that can provide additional information about the target - its distance, speed and altitude.
+* '''PassiveRadarSensorComponent''' - detects vehicles with active radar switched on at twice their active radar's range.
+* '''VisualSensorComponent''' - detects [[A3_Targeting_config_reference#visualTarget|visualTarget]]s according to their [[A3_Targeting_config_reference#visualTargetSize|visualTargetSize]].
+* '''ManSensorComponent''' - detects targets that inherit from Man class.
+* '''DataLinkSensorComponent''' - in combination with [[A3_Targeting_config_reference#reportRemoteTargets|receiveRemoteTargets]] this allows the vehicle to actively target and track targets from the [[side]]'s Data Link
+<syntaxhighlight lang="cpp">
+componentType = "ActiveRadarSensorComponent";
+</syntaxhighlight>
+
+=== class AirTarget ===
+
+Defines the sensor detection range in look-up conditions, when the target is positioned against a sky background.
+It's possible to cap the range by viewDistance (or its portion) for systems that work within visual range.
+Set the DistanceLimitCoefs to -1 to disable any impact of view distance on the sensor for beyond visual range systems.
+
+'''The actual sensor's range is the smallest of [maxRange, resulting objectViewDistanceLimit, resulting viewDistanceLimit] but never lower than minRange'''
+
+In the following case the sensor will be able to detect targets that are within the object view distance as terrain view distance will always be bigger.
+However if the obj. view distance is set above 5km the sensor won't be able to detect anything above 5km. If it is conversely set below 500m, the sensor will still be able to detect targets at 500m even if they are not visible.
+<syntaxhighlight lang="cpp">
+class AirTarget	// ranges for targets with sky background
+{
+		minRange = 500;		// -1 if undef; in meters
+		maxRange = 5000;	// -1 if undef; in meter
+		viewDistanceLimitCoef	= 1;	// -1 if undef; coefficient, multiplies current view distance as set in player's options. -1 means view distance is not used to limit sensor range.
+		objectDistanceLimitCoef	= 1;	// -1 if undef; coefficient, multiplies current object view distance as set in player's options. -1 means object view distance is not used to limit sensor range.
+
+};
+</syntaxhighlight>
+
+=== class GroundTarget ===
+
+Defines the sensor detection range in look-down conditions, when the target is positioned against ground clutter. Properties are the same as in [[#class_airTarget|airTarget]].
+<syntaxhighlight lang="cpp">
+class GroundTarget			// ranges for targets with ground background
+{
+		minRange = 500;		// -1 if undef; in meters
+		maxRange = 3000;	// -1 if undef; in meters
+
+		viewDistanceLimitCoef = 1;		// -1 if undef; coefficient, multiplies current view distance as set in player's options. -1 means view distance is not used to limit sensor range.
+		objectDistanceLimitCoef = 1;	// -1 if undef; coefficient, multiplies current object view distance as set in player's options. -1 means object view distance is not used to limit sensor range.
+};
+</syntaxhighlight>
+
+=== typeRecognitionDistance ===
+
+Distance in meters at which the sensor recognizes the actual target vehicle type (e.g. Mi-48 Kajman)
+<syntaxhighlight lang="cpp">
+typeRecognitionDistance = 1000; /// -1 if undef
+</syntaxhighlight>
+
+=== angleRangeHorizontal ===
+
+Sensor horizontal (azimuth) coverage (in degrees)
+<syntaxhighlight lang="cpp">
+angleRangeHorizontal = 120;
+angleRangeHorizontal = 90; // if undef
+</syntaxhighlight>
+
+=== angleRangeVertical ===
+
+Sensor vertical (elevation) coverage (in degrees)
+<syntaxhighlight lang="cpp">
+angleRangeVertical = 120;
+angleRangeVertical = 90; // if undef
+</syntaxhighlight>
+
+=== nightRangeCoef ===
+
+A coefficient of sensor's range during night time (used for visual sensors). Goes linearly between full light conditions (daytime) and poor light conditions (dusk). Overcast weather can sometimes move the range down the scale as well.
+<syntaxhighlight lang="cpp">
+nightRangeCoef = 0;		// blind at night
+nightRangeCoef = 0.5;	// range halved at night
+nightRangeCoef = 1;		// full range at night; if undef
+</syntaxhighlight>
+
+=== maxFogSeeThrough ===
+
+A fog threshold, sensor won't be able to see through a fog with higher value than this number.
+<syntaxhighlight lang="cpp">
+maxFogSeeThrough= 0.1;	// sensor blocked by even smallest amount of fog
+maxFogSeeThrough= 0.95;	// approx. the normal visibility in fog (vis. sensor)
+maxFogSeeThrough= -1;	// disable
+</syntaxhighlight>
+
+=== groundNoiseDistanceCoef ===
+
+Portion of sensor->target->ground distance. Below this number the targets become invisible to the sensor even if they are still within the [[#GroundTarget|GroundTarget]] range.
+<syntaxhighlight lang="cpp">
+groundNoiseDistanceCoef = 0.1;	// if distance between vehicle and ground in the direction of the target is 1km then the target won't be detected as long as it stays less than 100m close to the ground background
+groundNoiseDistanceCoef = -1;	// if undef
+</syntaxhighlight>
+
+=== maxGroundNoiseDistance ===
+
+Distance from the ground background in meters, hard cap, above which the target will be visible even if still below [[#groundNoiseDistanceCoef|groundNoiseDistanceCoef]].
+<syntaxhighlight lang="cpp">
+maxGroundNoiseDistance = 50; // in the situation from prev. example the target now becomes detectable whenever it is more than 50m from the ground background and still within the sensor GroundTarget range.
+maxGroundNoiseDistance = -1; // if undef
+</syntaxhighlight>
+
+=== minSpeedThreshold ===
+
+Target speed in m/s above which the target will start to become visible even if below [[#groundNoiseDistanceCoef|groundNoiseDistanceCoef]].
+<syntaxhighlight lang="cpp">
+minSpeedThreshold = 27.7; // following the prev. example if target is 20m from the ground background but it is moving more than 100km/h (27.7m/s) it may still be detected by the sensor.
+minSpeedThreshold = 0; // if undef
+</syntaxhighlight>
+
+=== maxSpeedThreshold ===
+
+target speed above which the target becomes visible even if below [[#groundNoiseDistanceCoef|groundNoiseDistanceCoef]], linearly decreases to [[#minSpeedThreshold|minSpeedThreshold]].
+<syntaxhighlight lang="cpp">
+maxSpeedThreshold = 100; // following the prev. example if target is 20m from the ground background but it is moving more than 360km/h it will be detected by the sensor.
+maxSpeedThreshold = 1000; // if undef
+</syntaxhighlight>
+
+=== minTrackableSpeed ===
+
+Minimum speed (in m/s) of the target that can be detected.
+<syntaxhighlight lang="cpp">
+minTrackableSpeed = -1e10; // if undef; no minimum speed
+minTrackableSpeed = 27.7; // targets slower than 100km/h won't be detected at all
+</syntaxhighlight>
+
+=== maxTrackableSpeed ===
+
+Maximum speed (in m/s) of the target that can be detected.
+<syntaxhighlight lang="cpp">
+maxTrackableSpeed = 1e10; // if undef; no maximum speed
+maxTrackableSpeed = 55; // targets faster than 200km/h won't be detected at all
+</syntaxhighlight>
+
+=== minTrackableATL ===
+
+Minimum altitude above terrain level that can be detected.
+<syntaxhighlight lang="cpp">
+minTrackableATL= -1e10; // if undef; no minimum altitude
+minTrackableATL= 50; // targets flying lower than 50m above ground and ground vehicles (unless jumping or dropped from an airplane) won't be detected at all
+</syntaxhighlight>
+
+=== maxTrackableATL ===
+
+Maximum altitude above terrain level that can be detected.
+<syntaxhighlight lang="cpp">
+maxTrackableATL= 1e10; // if undef; no maximum altitude
+maxTrackableATL= 1; // targets higher than 1m above won't be detected
+</syntaxhighlight>
+
+=== animDirection ===
+
+Model selection to set the sensor direction.
+<syntaxhighlight lang="cpp">
+animDirection = "mainTurret";	// sensor will be aligned with the turret and will rotate together with it
+animDirection = "";				// if undef; sensor will be aligned with vehicle body
+</syntaxhighlight>
+
+=== aimDown ===
+
+Elevation offset in degrees of the sensor from the [[#animDirection|animDirection]].
+<syntaxhighlight lang="cpp">
+aimDown = 35; // sensor will be looking 35° downwards from its original direction given by the animDirection
+aimDown = 0; // if undef
+</syntaxhighlight>
+
+=== allowsMarking ===
+
+Sets whether targets acquired by the sensor can be "marked", having track visualized in 3D and with possibility to use the info for various aiming aids or weapon guidance.
+This has specifically been made for RWR simulation via passive radar, so the active radars pop up on Sensor Display but they can't be marked unless also tracked by another sensor (vehicle or weapon).
+<syntaxhighlight lang="cpp">
+allowsMarking= 1; // default
+allowsMarking= 0; // targets that are tracked by this sensor only won't be target-able
+</syntaxhighlight>
+
+
+== Example Config - full definition ==
+
+<syntaxhighlight lang="cpp">
+class cfgAmmo
+{
+	class MissileCore;
+	class MissileBase : MissileCore
+	{
+		class Components;
+	};
+	class My_Missile_Base : MissileBase
+	{
+		missileLockMaxDistance	= 3500;
+		missileLockMinDistance	= 100;
+		missileLockMaxSpeed		= 680;
+		missileLockCone			= 50;
+		// The properties above limit the locking range, cone and conditions but they are are independent from the sensor.
+		// They don't say what the missile can see and track. In this case they are set to similar values as sensor,
+		// so what the missile seeker can see and track the missile will also be able to lock onto.
+
+		class Components : Components
+		{
+			class SensorsManagerComponent
+			{
+				class Components
+				{
+					class SomeRadarSensorComponent
+					{
+						componentType = "ActiveRadarSensorComponent";
+						class AirTarget		// ranges for targets with sky background
+						{
+							minRange	= 5000;	// minimum possible range in meters
+							maxRange	= 5000;	// maximum possible range in meters
+							objectDistanceLimitCoef	= -1; // range not limited by obj. view distance
+							viewDistanceLimitCoef	= -1; // range not limited by view distance
+						};
+						class GroundTarget	// ranges for targets with ground background
+						{
+							minRange = 3000;
+							maxRange = 3000;
+							objectDistanceLimitCoef = -1;
+							viewDistanceLimitCoef 	= -1;
+						};
+						typeRecognitionDistance = 1000; // distance how far the target type gets recognized
+						angleRangeHorizontal 	= 60;	// sensor azimuth coverage in degrees
+						angleRangeVertical 		= 60;	// sensor elevation coverage in degrees
+						groundNoiseDistanceCoef = 0.5;	// portion of sensor-target-ground distance below which the targets become invisible to the sensor
+						maxGroundNoiseDistance 	= 250;	// distance from the ground in meters, hard cap, above which the target will be visible even if still below groundNoiseDistanceCoef
+						minSpeedThreshold 		= 30;	// target speed in m/s above which the target will start to become visible
+						maxSpeedThreshold 		= 45;	// target speed above which the target becomes visible even if below groundNoiseDistanceCoef, linearly decreases to minSpeedThreshold
+					};
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== Example Config - inheritance from template ==
+
+<syntaxhighlight lang="cpp">
+class SensorTemplateActiveRadar;
+class SensorTemplateIR;
+
+class cfgVehicles
+{
+	class Plane;
+	class Plane_Base_F : Plane
+	{
+		class Components;
+	};
+	class My_Plane_Base : Plane_Base_F
+	{
+		class Components : Components
+		{
+			class SensorsManagerComponent
+			{
+				class Components
+				{
+					class ActiveRadarSensorComponent : SensorTemplateActiveRadar
+					{
+						class AirTarget
+						{
+							minRange = 6000;
+							maxRange = 6000;
+							objectDistanceLimitCoef	= -1;
+							viewDistanceLimitCoef	= -1;
+						};
+						angleRangeHorizontal = 60;
+						angleRangeVertical = 60;
+					};
+
+					class IRSensorComponent : SensorTemplateIR {};
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== See Also ==
+
+* [[Arma 3: Targeting Config Reference]]
+* [[CfgAmmo Config Reference]]
+* [[CfgVehicles Config Reference]]
+* [[Arma 3: Sensors]]
+* [[Arma 3: Custom Info]]
+* [[Arma 3: Targeting]]
+* {{Link|https://dev.arma3.com/post/oprep-sensor-overhaul|Sensor Overhaul OPREP}}
+* {{Link|https://forums.bistudio.com/topic/200467-jets-sensor-overhaul/|Sensor Overhaul thread (Forums)}}
+
+
+{{GameCategory|arma3|Editing}}

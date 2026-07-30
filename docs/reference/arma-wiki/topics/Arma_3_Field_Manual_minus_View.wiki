@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_View
+// revision: 349794 (2023-11-20T22:10:16Z)
+// export sha1: huhfag4ps3fk9t38mdxasmmc7a9yneb
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== View ==
+=== Peripheral Vision ===
+Peripheral vision indicators [[File:a3_fm_cuetexture.png|10px]] represent units outside of your current view. These transparent dots change with the direction and distance of the units.
+
+''On lower difficulties, dots will stick to their units anywhere on the screen, making it easier to distinguish between friends and foes.''
+
+
+=== Night Vision ===
+To use night vision, you need to have night vision optics mounted on a weapon, helmet or vehicle. <br>
+* Press '''[N]''' to cycle through available view modes.
+
+''Use IR flares and laser pointers to mark objects and locations when using night vision. They will remain unseen by the enemy but soldiers with night vision will be able to see them clearly.''
+
+
+=== Tactical View ===
+When you are in command of a squad or vehicle, tap '''[. [NUM]]''' to enable the Tactical view mode. In Tactical view, commanding options from the normal view remain available, but the view is changed to isometric to reveal more of the surroundings and provide better situational awareness. Switch to the Tactical view to better manage your squad in tight situations.
+
+''To use the Tactical view, 3rd Person view must be enabled in your difficulty settings.''
+
+
+=== Third Person View ===
+Third person view can give you an increased tactical awareness of your surroundings.<br>
+* Press '''[Enter [NUM]]''' to switch the camera between 1st person view and 3rd person view.
+
+''Try using '''Free look''' – '''[Left Alt]''' to look around while moving in 3rd person view.''
+
+
+=== Thermal Imaging ===
+Thermal Imaging can provide a valuable tactical advantage. If you have a TI sight or binoculars:<br>
+* Use '''[N]''' to cycle through available TI views.
+
+''TI has two display modes to better distinguish an object from their background: '''White-hot''' and '''Black-hot'''. Heat emitting objects are displayed in a selected color. The image has contrast at night.''
+
+
+{{GameCategory|arma3|Field Manual}}

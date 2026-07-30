@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_infoText
+// revision: 329329 (2022-07-27T10:15:19Z)
+// export sha1: nou66wpgnj6jf50vzwnsg2ijddt8ufr
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= GUI
+
+|eff= local
+
+|descr= [[File:BIS_fnc_infoText.gif|thumb|right|Example (Click to enlarge)]] Display a text in the "mission" GUI area with some effects. Good for the beginning of a mission.<br>
+
+|s1= [string_1, string_2, string_n] spawn [[BIS_fnc_infoText]]
+
+|p1= [[Array]] of [[String]]s
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["Somewhere on Altis", format ["Year %1", date select 0], mapGridPosition player] spawn BIS_fnc_infoText;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_dynamicText]] [[BIS_fnc_textTiles]] [[BIS_fnc_typeText]] [[BIS_fnc_typeText2]] [[BIS_fnc_EXP_camp_SITREP]]
+}}

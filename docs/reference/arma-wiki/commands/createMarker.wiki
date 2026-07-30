@@ -1,0 +1,124 @@
+// source: https://community.bistudio.com/wiki/createMarker
+// revision: 378854 (2026-07-21T08:47:29Z)
+// export sha1: j4jsdoyuu98vl83cw33peoai1gdpjq4
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Markers
+
+|eff= global
+
+|descr= Creates a new map marker at the given position. The marker will be created for every connected player as well as all JIP players. The marker name has to be unique; the command will be ignored if a marker with the given name already exists.
+
+{{Feature|important|
+The marker will be visible only once at least [[markerType]] has been defined:
+<sqf>
+_marker = createMarker ["markername", player]; // Not visible yet.
+_marker setMarkerType "hd_dot"; // Visible.</sqf>
+}}
+
+{{Feature|informative|If the marker position is given in 3D format, the {{hl|z}}-coordinate is stored with the marker and will be used when the marker is passed to commands such as [[createVehicle]], [[createUnit]], [[createAgent]], [[createMine]] or [[setVehiclePosition]].<br>When a marker is manually placed in the editor, {{hl|z}} is always 0, which means the marker is placed on the ground. But when the player places a marker on the map in game, it is placed at sea level, so the {{hl|z}}-coordinate of that marker is <sqf inline>-getTerrainHeightASL markerPos "userMarker";</sqf>.}}
+
+|mp= {{Feature|informative|
+'''Multiplayer optimisation:''' Global marker commands always broadcast the ''entire'' marker state over the network.
+As such, the number of network messages exchanged when creating or editing a marker can be reduced by performing all but the last operation using local marker commands, then using a global marker command for the last change (and subsequent global broadcast of all changes applied to the marker).
+}}
+
+|pr= [[setMarkerDrawPriority]] sorts [[allMapMarkers]] from least to most priority. Before {{GVI|arma3|2.18|size= 0.75}} [[createMarker]]/[[createMarkerLocal]] did '''not''' care about drawing priority and added the created marker to the end of the array, making it top priority. Running [[setMarkerDrawPriority]] again sorted this issue.
+
+|s1= [[createMarker]] [name, position, channel, creator]
+
+|p1= name: [[String]] - the marker's name, used to reference the marker in scripts.
+
+|p2= position: [[Position#Introduction|Position2D]], [[Position#PositionAGL|PositionAGL]] or [[Object]] - In case of an object, the object's model [0,0,0] is used.
+
+|p3= channel: [[Number]] - (Optional, default -1) the marker channel - see [[Channel IDs]] (for multiplayer)
+|p3since= arma3 2.02
+
+|p4= creator: [[Object]] - (Optional, default [[objNull]]) the marker creator (for multiplayer)
+|p4since= arma3 2.02
+
+|r1= [[String]] - the marker's name or empty string if the marker name is not unique.
+
+|x1= <sqf>_marker1 = createMarker ["Marker1", position player];</sqf>
+
+|x2= <sqf>_marker2 = createMarker ["Marker2", player]; // since {{arma3}} 1.50</sqf>
+
+|seealso= [[createMarkerLocal]] [[deleteMarker]] [[BIS_fnc_markerToString]] [[BIS_fnc_stringToMarker]]
+}}
+
+{{Note
+|user= Soldia
+|timestamp= 20150919210200
+|text= [[createMarker]] accepts an object as position parameter as well . You could try this with the following code (both SP/MP)
+
+<sqf>
+_markerstr = createMarker ["markername", player];
+_markerstr setMarkerShape "RECTANGLE";
+_markerstr setMarkerSize [100, 100];
+</sqf>
+|game= arma3
+|version= 1.50
+}}
+
+{{Note
+|user= X39
+|timestamp= 20180528115700
+|text= In {{arma3}}, one can create markers which are deletable by the user by prefixing the name with {{hl|_USER_DEFINED}}.
+
+Example:
+<sqf>createMarker "_USER_DEFINED someMarkerName"</sqf>
+}}
+
+{{Note
+|user= 7erra
+|timestamp= 20190503155300
+|text= There is a new function with which you can create a marker with all settings applied in one step: [[BIS_fnc_stringToMarker]] and [[BIS_fnc_stringToMarkerLocal]]
+|game= arma3
+|version= 1.92
+}}
+
+{{Note
+|user= Tirpitz
+|timestamp= 20210126224200
+|text= When creating a marker with the name format: "_USER_DEFINED #n1/n2/n3".
+n1 can be used to set the owner, n2 I think is an incrementing index to ensure markers are unique, to this end also mangle some more characters onto the end of the string, and n3 is the channel ID the marker is in. 
+<sqf>
+_markerName = format ["_USER_DEFINED #%1/%2/%3" , clientOwner,_index, _ChannelID];
+_marker = createMarkerLocal [_markerName, _pos];
+</sqf>
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20230708160357
+|text= If you use the letter "/" in the name, it may break the channel visibilities (especially in MP).
+Possible reason is described above by Tirpitz, the engine may confuse which channel the marker belongs to after the "/".
+}}
+
+{{Note
+|user= Leopard20
+|timestamp= 20260721084729
+|text= You can use a helper function if you intend to call createMarker with duplicate marker names. It doesn't necessarily guarantee that the marker has been created (e.g. it could fail not due to duplicate name, but due to maximum number of allowed markers reached)
+<sqf>
+private _fnc_createMarkerSafe = { private _marker = _this#0; createMarker _this; _marker };
+private _marker = ["MyMarker", [0,0]] call _fnc_createMarkerSafe; // will return "MyMarker"
+</sqf>
+}}

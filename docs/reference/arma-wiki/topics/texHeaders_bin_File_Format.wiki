@@ -1,0 +1,107 @@
+// source: https://community.bistudio.com/wiki/texHeaders.bin_File_Format
+// revision: 373423 (2025-05-08T11:27:12Z)
+// export sha1: mdupsr1lpy5915he275gqmbx880fs34
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|UnsupportedDoc}}
+= intro =
+TextHeaders.bin is created by [[BI_Tools_2.5|Binpbo personal edition 2.5]] and greater, or, mikero's dos tools.
+
+It was introduced as of the arrowhead engine and builds an internal structure that was previously done by the engine at exe load time. It's basic use is to have an immediate index (in memory) of all mipmaps of all pax files in the game.
+
+This internal structure is used in multiple ways, not just for pax files directly. Some of the settings therefore are constant and have no direct meaning to the pax file being analysed.
+
+The file itself is placed in the primary folder of the addon.pbo, and comprises information from all pax files encountered in that addon. Unlike all other file\references in bis, the ones used here are relative to the location of the texheaders.bin, not, the beginning if the 'P' drive.
+
+== creation ==
+is simple
+
+*BIS:  some\where\binarise  -texheaders  project_folder project_folder
+*MIKERO: detex -C  project_folder
+
+== Conventions ==
+see [[Generic FileFormat Data Types]]
+
+= File Structure =
+ struct TexHeader.bin
+ {
+  MimeType "0DHT" ;    // NOT asciiz. '0' = 0x30. This is mimetype "TexHeaDer0"
+  ulong    version;    // 1
+  ulong    nTextures;  // 
+  TexBody  TexBodies[nTextures];
+ };
+== TexBody ==
+ TexBody
+ {
+  ulong          nColorPallets;      //always 1
+  ulong          Pallet_ptr;         //Always0 (there are none)
+  floats         AverageColor[r,g,b,a];//[[PAA_File_Format#AVGCTAGG|AVGCTAGG]] floating-point equivalent.
+  bytes          AverageColor[b,g,r,a];//[[PAA_File_Format#AVGCTAGG|AVGCTAGG]] in PAx file 
+  bytes          MaxColor[b,g,r,a];    //[[PAA_File_Format#AVGCTAGG|MAXCTAGG]] in PAx file
+  ulong          clampflags;         // always 0
+  ulong          transparentColor;   // always 0xFFFFFFFF
+  byteBool       has_maxCtagg;       // the MaxColor was set by the paa
+                 isAlpha;	     // set if FLAGTAG=1: 'basic transparency'
+                 isTransparent;	     // set if FLAGTAG=2: 'alpha channel is not interpolated'
+                 isAlphaNonOpaque;   // set if isalpha, AND AverageColor alpha <0x80
+  ulong          nMipmaps;           // always same as nMipmapsCopy below
+  ulong          pax_format;         // see below Dxt1,2,3 etc
+  byteBool       littleEndian;       // Always true;
+  byte           isPaa; 	     //file was a .paa not .pac
+  Asciiz         PaaFile[];          // '''Relative''' to the file location of the texheader itself.
+                                     //"data\icons\m4a3_cco_ca.paa"
+                                     //"fnfal\data\fnfal_smdi.paa"
+  ulong          pax_suffix_type;    // _co, _ca, smdi, etc
+  ulong          nMipmapsCopy;       // same as nMipmaps above
+  MipMap         MipMaps[nMipmaps];  // see below
+  ulong          SizeOfPaxFile;      //
+ };
+
+
+===pax_format===(not all values found in a pax file)
+
+0 Index Pallet (P8),
+#Greyscale (AI88),
+#RGB565,
+#ARGB1555,
+#ARGB4444,
+#ARGB8888,
+#DXT1
+#DXT2
+#DXT3,
+#DXT4,
+#DXT5
+
+The same value is also repeated in each mipmap 
+
+===pax_suffix_type=== (not all values found in a pax file)
+
+	0 diffuse color, SRGB color space. the default for anything else
+# diffuse color, linear color space: (_sky, _lco)
+#detail texture, linear color space:(_detail,_cdt,_dt,_mco)
+#normal map: (_nXXX)
+#irradiance map
+#Map with random values from interval <0.5, 1>
+#tree crown calculation texture
+#'macro' object color, SRGB color space: (_mc)
+#ambient shadow layer:  (_as)
+#Specular: amount of layer: (_sm, _smdi)
+#dithering: texture
+#detail specular: (_dtsmdi) amount of layer
+#mask: (_mask) used for texture selection in the multi-shader
+#Thermal Image: (_ti_ca) texture
+=== Color float ===
+ anyfloat= anybyte/255.0;
+*note the order of floats is reverse to the rgba equivalent
+=== mipmap ===
+ MipMap
+ {
+  ushort width,height;            //as per same mipmap in the pax
+  ushort Always0;
+  byte   pax_format;              //same value as above
+  byte   Always3;
+  ulong  dataOffset;              //[[PAA_File_Format#AVGCTAGG|OFFSTAGG]] in PAx file. position of mipmap data in pax file
+ };
+
+[[Category:Real Virtuality File Formats]]

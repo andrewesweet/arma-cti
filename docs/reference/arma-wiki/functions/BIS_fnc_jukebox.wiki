@@ -1,0 +1,93 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_jukebox
+// revision: 352108 (2024-02-01T23:24:56Z)
+// export sha1: j08yfjwhkraci2lsunij33nxm4j32hn
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sound | Category:Functions | Category:Introduced with Arma 3 version 1.08 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.08
+
+|gr1= Sound
+
+|descr= Plays music, depending on the player group status.
+{{Feature|informative|If no music classes are given, the function will get them from config automatically.}}
+
+|s1= [function, parameters] call [[BIS_fnc_jukebox]]
+
+|p1= function: [[String]] - (Optional, default "initialize") can be one of:
+{{Columns|4|
+* "initialize"
+* "terminate"
+* "readContainerFromConfig"
+* "isInitialized"
+* "forceBehaviour"
+* "status"
+* "randomMusic"
+* "selectMusic"
+* "playMusic"
+* "nearEnemies"
+* "hasContact"
+* "isContact"
+* "isStealth"
+* "isCombat"
+* "isSafe"
+* "onEachFrame"
+}}
+
+|p2= parameters: [[Array]] - (Optional)
+
+* '''"initialize"''': [stealthMusics, combatMusics, safeMusics, volume, transition, radius, executionRate, noRepeat]
+** stealthMusics: [[Array]] of [[String]]s
+** combatMusics: [[Array]] of [[String]]s
+** safeMusics: [[Array]] of [[String]]s
+** volume: [[Number]]
+* '''"terminate"''': none
+* '''"readContainerFromConfig"''': [wantedTheme]
+* '''"isInitialized"''': none
+* '''"forceBehaviour"''': [behaviour]
+** behaviour: [[String]] - can be "stealth", "combat" or "safe". Any other value will reset the forced behaviour.
+* '''"status"''': none
+* '''"randomMusic"''': [container]
+** container: [[Array]] of [[String]]s - music list to choose from
+* '''"selectMusic"''': none
+* '''"playMusic"''': [musicName]
+** musicName: [[String]]
+* '''"nearEnemies"''': none
+* '''"hasContact"''': none
+* '''"isContact"''': none
+* '''"isStealth"''': none
+* '''"isCombat"''': none
+* '''"isSafe"''': none
+* '''"onEachFrame"''': none
+
+|r1=
+* [[Array]] for:
+** "readContainerFromConfig"
+** "nearEnemies" - a list of enemies nearby
+
+* [[Boolean]] for:
+** "isInitialized"
+** "hasContact"
+** "isContact"
+** "isStealth"
+** "isCombat"
+** "isSafe"
+
+* [[String]] for:
+** "status" - can be "stealth", "combat", "safe" or "error"
+** "randomMusic" - one of the available musics
+** "selectMusic"
+
+* [[Nothing]] for:
+** "initialize"
+** "terminate"
+** "forceBehaviour"
+** "playMusic"
+** "onEachFrame"
+
+|x1= <sqf>[] call BIS_fnc_jukebox;</sqf>
+
+|seealso= [[playMusic]] [[BIS_fnc_music]]
+}}

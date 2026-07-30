@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/weaponReloadingTime
+// revision: 349603 (2023-11-14T14:16:56Z)
+// export sha1: bqd2l4ojvcpv2gcm63q07d4j1rato2x
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Weapons
+
+|descr= Returns current ammo round reloading phase. For a magazine reloading phase see [[weaponState]] command.
+
+|s1= vehicle [[weaponReloadingTime]] [gunner, muzzleName]
+
+|p1= vehicle: [[Object]]
+
+|p2= gunner: [[Object]] - gunner of desired turret
+
+|p3= muzzleName: [[String]] - muzzle on desired turret
+
+|r1= [[Number]] - ammo round reload phase in range 0..1; -1 when N/A
+
+|seealso= [[setWeaponReloadingTime]] [[weaponState]] [[weaponsInfo]]
+}}

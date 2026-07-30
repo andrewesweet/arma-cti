@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/addWeaponItem
+// revision: 376456 (2025-10-14T21:27:36Z)
+// export sha1: 4xl8nuzthfwak1nscia2jwumtys5h72
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.38 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.38
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Adds a weapon item to the specified weapon. The item can be weapon magazine, in which case the amount of ammo and target muzzle could also be specified. Since Arma 3 2.22 it is possible to add a magazine directly into a 'Throw' muzzle provided it is configured with <syntaxhighlight lang="cpp" inline>keepInInventory = 0;</syntaxhighlight>. To remove such magazine see [[removeWeaponItem]].
+
+|s1= unit [[addWeaponItem]] [weaponName, itemName, instant]
+
+|p1= unit: [[Object]]
+
+|p2= weaponName: [[String]] - name of the weapon to add magazine to
+
+|p3= itemName: [[String]] - class name of the item to add (if magazine, muzzle will be autodetected)
+
+|p4= instant: [[Boolean]] - (Optional, default [[false]]) [[true]] to skip animation
+|p4since= arma3 1.96
+
+|r1= [[Nothing]]
+
+|s2= unit [[addWeaponItem]] [weaponName, [itemName, ammoCount, muzzleName], instant]
+
+|p21= unit: [[Object]]
+
+|p22= weaponName: [[String]] - name of the weapon to add magazine to
+
+|p23= itemName: [[String]] - class name of the item to add (if magazine, muzzle will be autodetected unless specified)
+
+|p24= ammoCount: [[Number]] - (Optional) optional amount of ammo in magazine
+
+|p25= muzzleName: [[String]] - (Optional) optional target muzzle to add magazine to
+
+|p26= instant: [[Boolean]] - (Optional, default [[false]]) [[true]] to skip animation
+|p26since= arma3 1.96
+
+|r2= [[Nothing]]
+
+|x1= <sqf>player addWeaponItem ["arifle_MX_GL_ACO_F", "1Rnd_HE_Grenade_shell"];</sqf>
+
+|x2= <sqf>player addWeaponItem ["arifle_MX_GL_ACO_F", ["1Rnd_HE_Grenade_shell", 1, "GL_3GL_F"]];</sqf>
+
+|x3= <sqf>player addWeaponItem ["LaserDesignator", "LaserBatteries"];</sqf>
+
+|seealso= [[removeWeaponItem]] [[addPrimaryWeaponItem]] [[addSecondaryWeaponItem]] [[addHandgunItem]] [[addBinocularItem]] [[weaponsItems]] [[handgunItems]] [[primaryWeaponItems]] [[secondaryWeaponItems]] [[binocularItems]] [[removePrimaryWeaponItem]] [[removeSecondaryWeaponItem]] [[removeHandgunItem]] [[removeBinocularItem]]
+}}

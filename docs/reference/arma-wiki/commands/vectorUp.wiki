@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/vectorUp
+// revision: 377264 (2026-01-02T06:33:14Z)
+// export sha1: phs0ulwoy8cv0u3x85veff0iydip4qe
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|gr2= Math - Vectors
+
+|descr= [[File:arma3_object-vectors.jpg|thumb|right|An object with its [[vectorDir]], [[vectorUp]] and [[vectorSide]] (vectors not to scale)]]
+Returns an object's up vector in world space.
+
+{{Feature|important|The vector is '''not necessarily [[vectorNormalized|normalized]]'''. The [[vectorMagnitude|magnitude]] of the vector depends on the [[getObjectScale|object's scale]].}}
+
+|s1= [[vectorUp]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Vector3D]]
+
+|x1= <sqf>_vecUp = vectorUp MyObject;</sqf>
+
+|seealso= [[vectorUpVisual]] [[vectorDir]] [[vectorSide]] [[vectorSideVisual]] [[setVectorDir]] [[setVectorUp]] [[setVectorDirAndUp]] [[vectorDiff]] [[vectorAdd]] [[vectorMultiply]] [[vectorCrossProduct]] [[vectorDistance]] [[vectorMagnitudeSqr]] [[vectorDistanceSqr]] [[vectorCos]] [[vectorMagnitude]] [[vectorDotProduct]] [[vectorNormalized]] [[vectorFromTo]] [[BIS_fnc_getPitchBank]] [[BIS_fnc_transformVectorDirAndUp]]
+}}

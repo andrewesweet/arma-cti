@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sceneAreaClearance
+// revision: 349492 (2023-11-08T17:09:09Z)
+// export sha1: 0bzz0j13dbbqnnsv0930zdf7k68ofum
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Scenes | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Scenes
+
+|descr= Removes object clutter within a set trigger, for use within cutscenes.
+
+|s1= [trigger, objects, destination] spawn [[BIS_fnc_sceneAreaClearance]]
+
+|p1= trigger: [[Object]] - trigger to use as center point
+
+|p2= objects: [[Array]] - (Optional, default <sqf inline>[]</sqf>) list of objects that will be kept during cutscene
+
+|p3= destination: [[Array]] in format [[Position]] - (Optional, default [-5000, 10000, 0]) where to move all unwanted objects
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[triggerArea1] spawn BIS_fnc_sceneAreaClearance;</sqf>
+
+|seealso=
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-10-02 - 16:29 (UTC)</dd>
+<dt class="note">[[User:Tryteyker-|Tryteyker-]]</dt>
+<dd class="note">
+In regards to the 'safe position' where the objects get moved, this is how the function handles it (with default values present):
+<sqf>private _savepos = [_unwantedObjectsTempPosition, 0, 100, 20, 0, 60 * (pi / 180), 0] call BIS_fnc_findSafePos;
+if ((_savepos distance (getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"))) == 0) then
+{
+	_savepos = _unwantedObjectsTempPosition;
+};
+_x setPos _savepos;
+</sqf>
+</dd>
+
+</dl>

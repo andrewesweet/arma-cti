@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_returnParents
+// revision: 376400 (2025-10-10T20:44:01Z)
+// export sha1: f2106oauby195j4famm4sgd5e4zka4d
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Configs | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Configs
+
+|descr= Returns list of all parent classes.
+
+|s1= [config, onlyClassNames] call [[BIS_fnc_returnParents]]
+
+|p1= config: [[Config]] - starting config class
+
+|p2= onlyClassNames: [[Boolean]] - (Optional, default [[false]]) [[true]] to return only class names
+
+|r1= [[Array]] - list of all classes (including starting one)
+
+|x1= <sqf>[configFile >> "CfgVehicles" >> "Land_FirePlace_F", true] call BIS_fnc_returnParents;
+//Returns ["Land_FirePlace_F","House_F","House","HouseBase","NonStrategic","Building","Static","All"]</sqf>
+
+|seealso= [[configFile]] [[configHierarchy]] [[BIS_fnc_returnChildren]]
+}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Math_-_Geometry
+// revision: 163226 (2020-09-26T22:23:12Z)
+// export sha1: nhtml6oner7uhyml0x18qj7jdt2zv4f
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands closely related to geometry.
+
+[[Category:Command Group: Math]]

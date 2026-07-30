@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/Template:Preload/Sandbox
+// revision: 296123 (2021-11-17T14:54:31Z)
+// export sha1: 7zt7ac4n1zi2n75zr1f39hl4elg0hnx
+// Vendored snapshot. Do not edit — re-export instead.
+
+<noinclude>
+[[Category:Templates|{{PAGENAME}}]]
+= Usage =
+Insert into empty sandbox page via '''<nowiki>{{subst:Sandbox}}</nowiki>'''
+
+
+= Output =
+</noinclude>
+
+This is your 'Sandbox'.
+
+It is your personal place to experiment with wiki code, keep notes, and to store unfinished articles you are working on.
+
+Feel free to change, replace, or delete whatever is in here.
+
+Please keep in mind to follow the rules you can find in the [[Bohemia_Interactive_Community:Guidelines | Guidelines]], especially to sign your comments with <nowiki>-</nowiki><nowiki>-</nowiki><nowiki>~</nowiki><nowiki>~</nowiki><nowiki>~</nowiki><nowiki>~</nowiki>, and to write in English only.
+
+----
+
+Below are some basic commands that you should know before posting on the wiki.
+
+''The table of content you see at the just below this is automatically created from the section headers (lines surrounded by equal signs).''
+
+== Formatting ==
+:'''bold'''
+::''italic''
+:::Indentation (one position per colon)
+
+== Links ==
+=== Internal Links (pages on this wiki) ===
+
+[[Operation Flashpoint: Easter Eggs]] (use full title for normal pages)
+
+[[Operation Flashpoint: Easter Eggs|Easter Eggs]] (to name a link use [URL | name])
+
+[[:Category:ArmA: Armed Assault|{{arma1}}]] (put colon in first column for category pages)
+
+=== External Links (to other sites) ===
+http://en.wikipedia.org/wiki/Wikipedia:How_to_edit_a_page
+
+[http://meta.wikimedia.org/wiki/Help:Wikitext_examples More wikitext examples] (to name a link use [URL space name])

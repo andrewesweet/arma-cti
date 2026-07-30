@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/Category:Carrier_Command:_Gaea_Mission:_Walkthrough
+// revision: 180404 (2021-01-02T01:18:45Z)
+// export sha1: l30z6fhdempbxuu3u69dn41yoh4kv25
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|none}}
+The campaign is divided into four chapters. This page allows to see what happens in each of those on a high level overview.
+
+{| style="margin: auto; min-width: 80em"
+|- style="vertical-align: top"
+|
+== Chapter I ==
+(forced order)
+# [[Carrier Command: Gaea Mission: Walkthrough/Vulcan|Vulcan]]
+# [[Carrier Command: Gaea Mission: Walkthrough/Arachnid|Arachnid]]
+# [[Carrier Command: Gaea Mission: Walkthrough/Treasure|Treasure]]
+# [[Carrier Command: Gaea Mission: Walkthrough/Frontier|Frontier]]
+# [[Carrier Command: Gaea Mission: Walkthrough/Outpost|Outpost]]
+
+|
+== Chapter II ==
+(in any order)
+* Nemesis
+* Evergreen
+* Beacon
+* Bacchus
+* Endymon
+* Taksavern
+* Garnite
+* Vattland
+* Isolus
+* Ligard
+
+* Fulcrum ('''to be taken last''')
+
+|
+== Chapter III ==
+(in any order)
+* Sanctuary
+* Somnus
+* Medusa
+* Terminus
+* Duessa
+* Archeon
+
+* Thermopylae ('''to be taken last''')
+
+|
+== Chapter IV ==
+* Deadlock
+|}
+
+
+{{GameCategory|carriercommand}}

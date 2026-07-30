@@ -1,0 +1,16 @@
+// source: https://community.bistudio.com/wiki/Template:Preload/IntroductionCategory
+// revision: 337228 (2023-01-11T10:53:19Z)
+// export sha1: 9olramvzyucuktw3jfpyziz2dpjjwei
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>Features introduced with {{subst:#explode:{{subst:PAGENAME}}|with|1}} may be recognised by the appearance of this icon: {{GVI|{{subst:#explode:{{subst:#replace:{{subst:PAGENAME}}|Introduced with|}}|version|0}}|{{subst:#replace:{{subst:#explode:{{subst:PAGENAME}}|version|1}}| |}}}}
+
+[[Category:{{subst:#explode:{{subst:PAGENAME}}|version|0}}|{{subst:#replace:{{subst:#explode:{{subst:PAGENAME}}|version|1}}| |}}]]</includeonly><noinclude>
+== Usage ==
+For preloading the header into "''Introduced with such and such a game version something or other''" Category pages.
+
+== Example ==
+This template is built for preloading and '''cannot''' be used with {{hl|{{<nowiki/>{{PAGENAME}}}}}}; to introduce the same effect manually, copy/paste this:
+<code style="display: block"><nowiki>Features introduced with {{subst:#explode:{{subst:PAGENAME}}|with|1}} may be recognised by the appearance of this icon: {{GVI|{{subst:#explode:{{subst:#replace:{{subst:PAGENAME}}|Introduced with|}}|version|0}}|{{subst:#replace:{{subst:#explode:{{subst:PAGENAME}}|version|1}}| |}}}}
+
+[[Category:{{subst:#explode:{{subst:PAGENAME}}|version|0}}|{{subst:#replace:{{subst:#explode:{{subst:PAGENAME}}|version|1}}| |}}]]</nowiki></code>[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_exportCfgVehicles
+// revision: 327104 (2022-07-12T21:44:50Z)
+// export sha1: mwm5qdqd5jt650uukuqsp3b1dvliywo
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Diagnostic
+
+|descr= Export list of objects for Community Wiki ([[:Category:Arma_3:_Assets|Assets]]).
+
+|s1= [mode,sides,classes,useAI] call [[BIS_fnc_exportCfgVehicles]]
+
+|p1= mode: [[String]] - mode, can be one of:
+* "config" - copy the objects table to clipboard
+* "screenshots" - create objects one by one and take their screenshot. Works only on "[[Render_Worlds|Render]]" terrain.
+* "screenshotsTest" - create objects one by one without taking screen (to verify everything is ok)
+
+|p2= sides: [[Array]] of [[Side]]s - only objects of these sides will be used
+
+|p3= classes: [[Array]]of [[String]]s- list of CfgPatches classes. Only objects belonging to these addons will be used
+
+|p4= useAI: [[Boolean]] - true to use only AI units (soldiers, vehicles), false to use empty ones
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[] call BIS_fnc_exportCfgVehicles;</sqf>
+
+|x2= <sqf>["config", [3], ["A3_Characters_F_Beta","A3_Characters_F_EPA","A3_Characters_F_EPB"], true] call BIS_fnc_exportCfgVehicles;</sqf>
+
+|seealso=
+}}

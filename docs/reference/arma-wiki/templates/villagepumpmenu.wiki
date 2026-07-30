@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/Template:villagepumpmenu
+// revision: 245437 (2021-02-14T11:38:09Z)
+// export sha1: nymi3wbgytna0vs2ko9tmyq8gm236ae
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{| class="wikitable" 
+| align="center" width="14%" valign="top"|'''[[Village Pump|News]]'''<br> <small><span class="plainlinks">[{{fullurl:Village Pump|action=edit&section=new}} post] | [{{fullurl:Village Pump|action=watch}} watch]</span>
+News about BI and this Wiki.</small>
+
+| align="center" width="14%" valign="top"|'''[[Village Pump (policy)|Policy]]'''<br> <small><span class="plainlinks">[{{fullurl:Village Pump (policy)|action=edit&section=new}} post] | [{{fullurl:Village Pump (policy)|action=watch}} watch]</span>
+Discuss existing and proposed, new policies.</small>
+
+| align="center" width="14%" valign="top"|'''[[Village Pump (proposals)|Proposals]]'''<br> <small><span class="plainlinks">[{{fullurl:Village Pump (proposals)|action=edit&section=new}} post] | [{{fullurl:Village Pump (proposals)|action=watch}} watch]</span>
+New proposals that are not policy related.</small>
+
+| align="center" width="14%" valign="top"|'''[[Village Pump (todo)|Things To Do]]''' <br> <small><span class="plainlinks">[{{fullurl:Village Pump (todo)|action=edit&section=new}} post] | [{{fullurl:Village Pump (todo)|action=watch}} watch]</span>
+Areas of the Biki that need attention.</small>
+
+| align="center" width="14%" valign="top"|'''[[Village Pump (assistance)|Assistance]]'''<br> <small><span class="plainlinks">[{{fullurl:Village Pump (assistance)|action=edit&section=new}} post] | [{{fullurl:Village Pump (assistance)|action=watch}} watch]</span>
+Request assistance for the creation and update of content.</small>
+
+| align="center" width="14%" valign="top"|'''[[Village Pump (technical)|Technical]]'''<br> <small><span class="plainlinks">[{{fullurl:Village Pump (technical)|action=edit&section=new}} post] | [{{fullurl:Village Pump (technical)|action=watch}} watch]</span>
+Technical issues related to the MediaWiki software.</small>
+
+| align="center" width="14%" valign="top"|'''[[Village Pump (miscellaneous)|Miscellaneous]]''' <br> <small><span class="plainlinks">[{{fullurl:Village Pump (miscellaneous)|action=edit&section=new}} post] | [{{fullurl:Village Pump (miscellaneous)|action=watch}} watch]</span>
+Topics that do not fit into any other category.</small>
+|}</includeonly><noinclude>
+
+== Usage ==
+{| style="width: 100%"
+|- style="background-color: #EEE"
+! Code
+! Result
+|-
+| <nowiki>{{villagepumpmenu}}</nowiki>
+| {{villagepumpmenu}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

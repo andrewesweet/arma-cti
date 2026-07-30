@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_tridentExecute
+// revision: 348481 (2023-11-08T13:00:28Z)
+// export sha1: 9umirkctc08durzry2ufl7mstmczuoj
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sides
+
+|descr= Execute a code based on Trident relationship.
+
+|s1= [side_1, side_2, codeFriendly, codeEnemy] call [[BIS_fnc_tridentExecute]]
+
+|p1= side_1: [[Side]]
+
+|p2= side_2: [[Side]]
+
+|p3= codeFriendly: [[Code]] - code executed when sides are friendly. Arguments passed to the code are:
+* 0: [[Side]] - Side with higher score (when the score is even, side from param 0 is used)
+* 1: [[Side]] - Side with lower score (when the score is even, side from param 1 is used)
+* 2: [[Boolean]] - [[true]] when the sides are allied
+
+|p4= codeEnemy: [[Code]] - code executed when sides are enemy
+
+|r1= [[Boolean]] - [[true]] when the sides are allied
+
+|x1= <sqf>[west, east, { params ["_higherScore", "_lowerScore", "_areAllied"] }] call BIS_fnc_tridentExecute;</sqf>
+
+|seealso= [[BIS_fnc_tridentGetRelationship]] [[BIS_fnc_tridentHandleDamage]] [[BIS_fnc_tridentSetRelationship]]
+}}

@@ -1,0 +1,79 @@
+// source: https://community.bistudio.com/wiki/airportSide
+// revision: 353294 (2024-03-15T17:11:42Z)
+// export sha1: 3f4m0vu7kipxx4qrz46c7wqrziq92nh
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Roads and Airports | Category:Command Group: Sides | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Sides
+
+|gr2= Roads and Airports
+
+|descr= Gets the side of an airport, set by [[setAirportSide]]. Default side is [[sideUnknown]].
+{{Feature|informative|See [[Arma: Airport IDs]] for a list of airport ids.}}
+|pr= When used on a non-existent airport id:
+* negative numbers will always return [[sideUnknown]]
+* positive numbers may return [[east]], [[west]], [[resistance]], [[sideEmpty]], [[sideUnknown]], [[sideAmbientLife]], or 'ERROR' (see [[#Notes|Notes]]).
+
+|s1= [[airportSide]] id
+
+|p1= id: [[Number]]
+
+|r1= [[Side]]
+
+|s2= [[airportSide]] target
+
+|s2since= arma3 1.68
+
+|p21= target: [[Object]]
+
+|r2= [[Side]]
+
+|x1= <sqf>private _airportSide = airportSide 0;</sqf>
+
+|seealso= [[Arma: Airport IDs]] [[setAirportSide]] [[land]] [[landAt]] [[assignToAirport]] [[allAirports]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2020-03-12 23:01 (UTC)</dd>
+<dt class="note">[[User:Lou Montana|Lou Montana]]</dt>
+<dd class="note">
+Weird behaviour encountered on various ({{arma3}}) terrains ({{hl|n/a}} is 'ERROR'):
+<div style="overflow: auto">
+{| class="wikitable" style="font-size: 0.9em"
+! Terrain !! 0 (airport id) !! 1 !! 2 !! 3 !! 4 !! 5 !! 6 !! 7 !! 8 !! 9 !! 10 !! 11 !! 12 !! 13 !! 14 !! 15 !! 16 !! 17 !! 18 !! 19 !! 20 !! 21 !! 22 !! 23 !! 24 !! 25 !! 26 !! 27 !! 28 !! 29 !! 30 !! 31 !! 32 !! 33 !! 34 !! 35 !! 36 !! 37 !! 38 !! 39 !! 40 !! 41 !! 42 !! 43 !! 44 !! 45 !! 46 !! 47 !! 48 !! 49 !! 50 !! 51 !! 52 !! 53 !! 54 !! 55 !! 56 !! 57 !! 58 !! 59 !! 60 !! 61 !! 62 !! 63 !! 64 !! 65 !! 66 !! 67 !! 68 !! 69 !! 70 !! 71 !! 72 !! 73 !! 74 !! 75 !! 76 !! 77 !! 78 !! 79 !! 80 !! 81 !! 82 !! 83 !! 84 !! 85 !! 86 !! 87 !! 88 !! 89 !! 90 !! 91 !! 92 !! 93 !! 94 !! 95 !! 96 !! 97 !! 98 !! 99
+|-
+| VR || [[sideUnknown]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || [[east]] || {{n/a}} || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]]
+|-
+| Stratis || [[sideUnknown]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[sideUnknown]] || [[east]] || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || {{n/a}} || {{n/a}}
+|-
+| Altis || [[sideUnknown]] || [[sideUnknown]] || [[sideUnknown]] || [[sideUnknown]] || [[sideUnknown]] || [[sideUnknown]] || [[resistance]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || [[sideEmpty]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[west]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]]
+|-
+| Livonia || [[sideUnknown]] || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[resistance]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[sideUnknown]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}}
+|-
+| Malden || [[sideUnknown]] || [[sideUnknown]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[resistance]] || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[sideAmbientLife]] || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || [[east]] || [[east]] || [[resistance]] || [[east]] || {{n/a}} || {{n/a}} || [[east]] || [[east]] || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || {{n/a}}
+|-
+| Tanoa || [[sideUnknown]] || [[sideUnknown]] || [[sideUnknown]] || [[sideUnknown]] || [[sideUnknown]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || [[east]] || {{n/a}} || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || {{n/a}} || {{n/a}} || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || [[west]] || [[east]] || {{n/a}} || {{n/a}} || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || [[east]] || [[east]] || [[east]] || [[east]] || {{n/a}} || {{n/a}} || [[east]] || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}} || [[east]] || {{n/a}} || {{n/a}} || {{n/a}} || {{n/a}}
+|}
+</div>
+</dd>
+
+</dl>

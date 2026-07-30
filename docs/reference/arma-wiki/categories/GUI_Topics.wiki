@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:GUI_Topics
+// revision: 255528 (2021-04-17T08:20:25Z)
+// export sha1: gk4c2frjny2g6u4jxtphvve1sh69nue
+// Vendored snapshot. Do not edit — re-export instead.
+
+Everything related to GUI creation in '''Real Virtuality'''.
+
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}

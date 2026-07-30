@@ -1,0 +1,109 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Modding_Characters
+// revision: 373634 (2025-05-30T04:22:09Z)
+// export sha1: jtrzeosgny7ald0tioh919yjtek65i6
+// categories: Category:ArmA: Armed Assault: Modelling | Category:Arma 2: Tutorials | Category:Arma 3: Editing | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+'''This is an early version of a character model making tutorial for {{arma3}} Alpha. It still relies on the old {{arma2}} tools and only limited example models are provided - may be expanded in the future.''' 
+
+{{Feature|informative|Please be aware of the [[Arma 3: Modding License]].}}
+
+==== Requirements ====
+* {{Link|https://store.steampowered.com/app/233800/Arma_3_Tools}} (object builder, requires a copy of Arma 3)
+* {{Link|https://store.steampowered.com/app/390500/Arma_3_Samples}} (all modding examples, requires a copy of Arma 3)
+* Blender with the Arma 3 Toolbox addon
+<BR>
+
+==== Other useful material ====
+'''{{arma3}} specific'''
+* {{Link|link= http://forums.bistudio.com/showthread.php?148130-Arma3-Characters-Modding-Tutorial&p=2324469&viewfull=1#post2324469|text= Stiltman's excellent guide to existing Arma3 character '''retexturing'''}}
+* {{Link|link= http://forums.bistudio.com/showthread.php?148650-Old-stlye-US-Army-BDU|text= Mondkalb's fully implemented new units}} (this {{Link|http://creativecommons.org/licenses/by-nc-sa/3.0/|license}} applies) {{Link|http://www.armaholic.net/chili/addons/units/mbg_old_usarmy_mlod.7z|2}}
+* {{Link|link= http://forums.bistudio.com/showthread.php?148130-Arma3-Characters-Modding-Tutorial&p=2320156&viewfull=1#post2320156|text= Bad Benson's description on how to export characters from Maya}}
+* {{Link|link= http://forums.bistudio.com/showthread.php?148130-Arma3-Characters-Modding-Tutorial&p=2322957&viewfull=1#post2322957|text= Example vest config by RavenDK}}
+* {{Link|link= http://forums.bistudio.com/showthread.php?148130-Arma3-Characters-Modding-Tutorial&p=2331073&viewfull=1#post2331073|text= Character retexture guide by Scarecrow398}}
+* {{Link|link= http://forums.bistudio.com/showthread.php?166612-ARMA-3-Underwear-modding-guidelines|text= Underwear modding guidelines by pomigit}}
+* {{Link|link= http://forums.bistudio.com/showthread.php?167944-Modders-resource-New-animation-workflow!|text= Modders resource: New animation workflow!}}
+
+
+'''{{arma2}} / {{arma1}} / {{ofp}} / general'''
+* [[Mondkalb's_Addon_Tutorial|Mondkalb's Addon Making Tutorial for Arma2]] (updated version for Arma3 hopefully coming soon)
+* {{Link|link= http://forums.bistudio.com/showthread.php?114036-STALKERGB-s-Weighting-overview|text= STALKERGB's Weighting overview}} (creating skin directly in in Oxygen2)
+* [http://www.ofpec.com/addons_depot/index.php?action{{=}}list&cat{{=}}tu OFPEC (Operation Flashpoint Editing Center) tutorial collection]
+* [http://www.youtube.com/watch?v{{=}}NfliiT2ws_c Oxygen2 tutorial youtube series]
+
+== Creating {{arma3}} Characters from Scratch ==
+
+==== Part 1: character creation in 3dsmax ====
+* open A3_character_template.max and use its skeleton as a base to create your own character in a traditional way. An {{arma3}} character has about 5 LODs and 1 shadow LOD. The typical polycount for LOD1 should be around 10,000 triangles and the final LOD should be small as possible (300 tris). Recommended shadow LOD polycount is 1000, all triangles, no smoothing, and closed geometry.
+* for info on organic modeling and skinning look for tutorials on the interwebz - there are plenty.
+* use only Skin modifier for weighting, use max 4 bones per vertex. You can speed-up the skinning process if you use "Skin Wrap" modifier, and transfer skinning from example character onto yours new one. Google "Skin Wrap 3dsmax" for details on how to use it.
+* if your character contains bare hands, legs or head, it is advised to use the standard {{arma3}} ones for compatibility. Add them later in Oxygen, there's no need to do them in max.
+* to check if skin applies properly, you can apply some poses on the character. Either animate by hand, or Import "A2_animation_poses.fbx" and pick "update scene elements". Arma3 animation poses in FBX will be coming soon.
+
+==== Part 2: Export from 3dsmax====
+* install VM_s-P3D_Export.mcr (included in [[Media:A3_Character_Examples_1.1.zip|A3_Character_Examples_1.1.zip]] ) into 3dsmax (like this: http://www.scriptspot.com/files/Run&Install_MacroScript.wmv , except our groups name is VM's) or Google "installing macroscripts in 3dsmax"
+* make sure the mesh is flawless, no zero faces, isolated vertices etc. Make sure the shadow LOD is closed geometry
+* triangulate your mesh (not mandatory, but provides consistency with normals - O2 likes to flip hidden edges)
+* the export model must be editable mesh or editable poly, with "Skin" modifier on top, with some bones assigned, or you get errors.
+* Run the script, select your character's mesh, pick SaveAs location and hit export
+
+==== Part 3: Import  and check in O2 ====
+''all general rules of arma p3d models, textures and materials apply. If you need help getting oriented in O2, see [http://www.youtube.com/watch?v{{=}}NfliiT2ws_c Gnat's tutorial series]''
+* Run O2, File - Import - Universal Bistudio TXT, pick your file
+* optional - try applying an RTM on the model, to check if it imported correctly (right click Animations window - From matrices all LODs - pick RTM, then scroll through frames) Make sure to discard this and reimport the model again to get rid of the animation after)
+* check mesh for errors (Faces - Degenerated Faces - Check, let them get marked, then go to Points - Merge near - OK) (Points - Select Isolated - press Delete)
+* link textures and materials - drag LMB to select mesh, press "E" and input texture links (a3\characters_f\something\data\something_co.tga, a3\characters_f\something\data\something.rvmat - depends on your addon structure) For texturing and materials info look [[Mondkalb's_Addon_Tutorial#Step_Five:_Creating_the_texture|here]]
+
+==== Part 4: Finalizing in O2 ====
+* Run second O2, open {{arma3}} character template P3D. Observe proxies in LODs (big triangles named "\A3\Characters_F\Proxies\headgear" etc) and some technical LODs, like Memory or Geometry, Fire Geometry etc. Don't touch any of this, add only your visual mesh. For safety, you can select them and press "Ctrl+H" to hide. Ctrl+A and Ctrl+Shift+H unhides all.
+* Ctrl+C Ctrl+V your character mesh into the appropriate visual LODs in the template file. (select in imported O2, ctrl+c, go to the template O2, go to the proper LOD, Ctrl+V)
+* if bare parts (hands, head) are present, then use existing ones already present in the template, just erase redundant faces covered by clothing.
+* copy-paste the shadow model into ShadowVolume 0.00 LOD. This one
+** must be closed geometry (Structure - Topology - Find Non-closed, Structure - Topology - Close)
+** has to be triangulated (select all, press "num/")
+** cannot have any smoothing (select all, Surfaces - Sharp Edges)
+** shouldn't have any material or texture links (select, press "E", erase paths)
+** cannot have any properties set in the Named Property window - delete them if there are any.
+* create injury selections - these function the same as in {{arma2}}, though they are called differently - the new names are "injury_head, injury_hands, injury_body, injury_legs". These mark faces for which the material will be swapped for the injured version. Should be present on visual mesh only, make sure they are not on the Shadow model.
+* check selections "personality" (should contain actual head mesh), "hl" (contains hands and legs), camo, camo1, camo2 (contains clothing - depends on config, may vary from model to model - if not present then config has no influence on character texture)
+* if you don't want the game to display a head, helmet, glasses, vest or backpack on your character, then simply erase those appropriate proxies in all LODs. Note: a head proxy is called \A3\characters_f\Heads\bysta
+* have a cold Pilsner
+
+
+== Porting existing {{arma2}} characters into {{arma3}} ==
+
+''This is for experienced people who already know how to create a character for {{arma2}}, and have their models ready in unbinarized p3d format. Unfortunately, binarized p3d models, like {{arma2}} addons content, cannot be converted for {{arma3}}''
+* open two Oxygens, one with the template scene A3_character_template.p3d, and one with the {{arma2}} character you want to port
+* select only the visual mesh of the {{arma2}} character (only the physical mesh of the actual character, nothing else) and copy-paste it into corresponding LODs in the {{arma3}} template. Discard all {{arma2}} proxies and technical LODs, only copy the visual mesh and mesh from ShadowVolume 0.00.
+* If bare skin is present (typically hands or head) then discard the {{arma2}} mesh, and replace with {{arma3}} parts (included in template). In O2, even the skinned mesh can be freely copy-pasted without trouble.
+* update the names of the injury selections in the LODs. The new names are "injury_head, injury_hands, injury_body, injury_legs"
+* update the material links (default {{arma3}} path is {{hl|a3\characters_f\}})
+* check model for degenerated faces, isolated vertices, split edges, zero UV faces, make sure you transferred Named Properties correctly (there cannot be "lodnoshadow = 1" in Shadow Volume etc)
+* IMPORTANT - If the character already has a vest, head or helmet as a solid part of its mesh, then make sure to erase appropriate proxies (the big triangles named "\A3\Characters_F\Proxies\headgear" etc, so the game doesn't try to put them on.) Usually, at least the helmet can be detached and made into a standalone equipment part - see next section.
+
+
+== Making vests, helmets, backpacks and glasses ==
+
+the procedure is the same as for actual characters, except these accessories are much simpler - they lack all of those proxies and special LODs.
+* see example vest and helmet (A3_vest_example.p3d, A3_headgear_example.p3d)
+* Geometry LOD has to be present, even if it is empty, and has to have "autocenter = 0" set in Named Properties window.
+* helmets and glasses need to have an empty ViewPilot LOD or they would obscure view in 1st person.
+* make sure to model NVG slot on helmets in appropriate position - see A3_headgear_NVGslot.p3d for placement reference.
+* if you want to make chin strap skinned on jawbone, the bone name is "Face_Jawbone"
+* "camo" selections do work, the same as on characters
+* all other character technical rules apply
+
+
+== Getting it all in the game ==
+
+''COMING SOON''
+* meanwhile check {{Link|http://www.armaholic.net/chili/addons/units/mbg_old_usarmy_mlod.7z|Mondkalb's example character addon structure and configs}}, and try to mimic its structure. (or overwrite his models if you are afraid of touching config files)
+* some knowledge can be found here (most still applies in A3){{Link|http://www.aos.armaholic.eu/tutorial2.html|Configuration of Arma1 soldier}}
+* pack the addon using [[Mondkalb's_Addon_Tutorial#Step_Nine:_Getting_the_addon_into_Arma_2|this info]]
+
+
+{{GameCategory|arma3|Editing}}
+{{GameCategory|arma1|Modelling}}
+{{GameCategory|arma2|Tutorials}}
+{{GameCategory|arma3|Tutorials}}

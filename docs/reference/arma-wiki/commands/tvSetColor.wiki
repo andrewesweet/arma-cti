@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/tvSetColor
+// revision: 378383 (2026-04-04T04:48:24Z)
+// export sha1: 0xymx6nstagw58sr9bzxb3z88trq70f
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|descr= Sets text color on given Tree View Item
+
+|s1= [[tvSetColor]] [idc, path, color]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|p3= color: [[Color|Color (RGBA)]]
+
+|r1= [[Nothing]]
+
+|s2= control [[tvSetColor]] [path, color]
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|p23= color: [[Color|Color (RGBA)]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>tvSetColor [101, [0,0], [1,0,0,1]];</sqf>
+
+|x2= <sqf>_ctrl tvSetColor [[0,0], [1,0,0,1]];</sqf>
+
+|seealso= [[tvDelete]] [[tvAdd]] [[tvClear]] [[tvCollapse]] [[tvCount]] [[tvCurSel]] [[tvData]] [[tvExpand]] [[tvPicture]] [[tvSetCurSel]] [[tvSetData]] [[tvSetPicture]] [[tvSetValue]] [[tvSort]] [[tvSortByValue]] [[tvText]] [[tvValue]]
+}}

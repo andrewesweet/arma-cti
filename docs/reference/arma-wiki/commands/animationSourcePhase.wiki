@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/animationSourcePhase
+// revision: 336879 (2023-01-04T16:43:50Z)
+// export sha1: j6oy46pzii8aarm9hcza3bductjwg1i
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Animations
+
+|descr= Returns current animation phase of given source. Similar to [[animationPhase]] or [[doorPhase]] but designed to complement [[animateSource]]. This command could be used to obtain relative turret direction and gun elevation on a vehicle (see {{Link|#Example 2}}).
+
+|s1= object [[animationSourcePhase]] source
+
+|p1= object: [[Object]]
+
+|p2= source: [[String]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _phase = house animationSourcePhase "Door_1_source";</sqf>
+
+|x2= <sqf>
+private _mainturretDirection =	deg (_marshall animationSourcePhase "mainturret"); // relative to Marshall direction
+private _maingunElevation =		deg (_marshall animationSourcePhase "maingun");
+private _obsturretDirection =	deg (_marshall animationSourcePhase "obsturret"); // relative to main turret direction
+private _obsgunElevation =		deg (_marshall animationSourcePhase "obsgun");
+</sqf>
+
+|seealso= [[animateSource]] [[animationNames]] [[animate]] [[animationPhase]] [[animateDoor]] [[doorPhase]]
+}}

@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_fireSupportVirtual
+// revision: 349184 (2023-11-08T14:50:39Z)
+// export sha1: 8bv6fbqxu91untjfx73jl6jyf3kudsc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Supports | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Supports
+
+|descr= Fires virtual mortar/artillery fire support.
+
+|s1= [target, ammo, radius, rounds, delay, conditionEnd, safezone, alt, speed, sounds] spawn [[BIS_fnc_fireSupportVirtual]]
+
+|p1= target: [[Position]], [[Object]] or [[String]] - target position, can be object, position or marker name
+
+|p2= ammo: [[String]] - (Optional, default "Sh_82mm_AMOS") ammunition to be used (if left empty, {{hl|Sh_82mm_AMOS}} ammunition will be used)
+
+|p3= radius: [[Number]] - (Optional, default 100) radius of target area in meters
+
+|p4= rounds: [[Number]] - (Optional, default 10) number of rounds to be fired
+
+|p5= delay: [[Array]] or [[Number]] - (Optional, default 10) delay between rounds
+* [[Array]] [min, max]:
+** min: [[Number]] - min delay
+** max: [[Number]] - max delay
+* [[Number]] - Precise delay
+
+|p6= conditionEnd: [[Code]] - (Optional, default <sqf inline>{ false }</sqf>) condition to end bombardment before all rounds are fired
+
+|p7= safezone: [[Number]] - (Optional, default 0) safezone radius - minimal distance from the target position where shells may be directed at
+
+|p8= alt: [[Number]] - (Optional, default 250) altitude where the shell will be created
+
+|p9= speed: [[Number]] - (Optional, default 150) descending velocity, in m/s. Default is 150, if you use flare as ammo, set it to lower value (1-5) to let it fall down slowly
+
+|p10= sounds: [[Array]] of [[String]]s - (Optional, default [""]) sounds to be played on the incoming shell
+
+|r1= [[Boolean]] - [[true]] if successful
+
+|x1= <sqf>[BIS_Player, "Sh_82mm_AMOS", 100, 24, 10] spawn BIS_fnc_fireSupportVirtual;</sqf>
+
+|x2= <sqf>[[3600, 3600, 0], nil, 100, 24, 10] spawn BIS_fnc_fireSupportVirtual;</sqf>
+
+|x3= <sqf>[BIS_Player, nil, 100, 24, 10, {dayTime > 20}, 50] spawn BIS_fnc_fireSupportVirtual;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_fireSupport]] [[BIS_fnc_fireSupportCluster]] [[BIS_fnc_fire]] [[BIS_fnc_fireSupport]]
+}}

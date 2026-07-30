@@ -1,0 +1,75 @@
+// source: https://community.bistudio.com/wiki/a_%_b
+// revision: 318435 (2022-05-13T07:44:52Z)
+// export sha1: 2m5sccok8unz2ixh5d731la3ks0848z
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|sortKey= #
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Math
+
+|descr= Remainder of ''a'' divided by ''b''.
+
+|alias= [[mod]]
+
+|s1= a [[a % b|%]] b
+
+|p1= a: [[Number]]
+
+|p2= b: [[Number]]
+
+|r1= [[Number]]
+
+|x1= <sqf>4.5 % 3 // result is 1.5</sqf>
+
+|seealso= [[mod]] [[Operators]]
+}}
+
+{{Note
+|user= Hoz
+|timestamp= 20060416013400
+|text= <nowiki/>
+* Remainder is calculated in real domain.
+* [[a % b]] is identical to [[mod]]
+You can use % to round a decimal number down to the nearest whole number. For example: If you wanted to use the command random to generate a whole number between 0 and 5, you could put this in a script: 
+<sqf>
+_rand = random 6;
+_num = _rand - (_rand % 1);
+</sqf>
+In A1, the new commands [[round]], [[floor]] or [[ceil]] would be the easier way to round.
+}}
+
+{{Note
+|user= SilentSpike
+|timestamp= 20150721145500
+|text= Be careful when dealing with negative numbers. The way a modulo operation treats negatives differs between languages. In SQF truncated division is used, hence:
+<sqf>
+-12 % -10 = -2
+-12 %  10 = -2
+ 12 % -10 =  2
+ 12 %  10 =  2
+</sqf>
+}}

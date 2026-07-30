@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Mods_and_Addons
+// revision: 155253 (2020-07-13T07:17:46Z)
+// export sha1: 617q9956sh482gieofejf3b28inb9yh
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands which are used to get information about mods and addons.
+
+[[Category:Scripting Commands by Functionality]]

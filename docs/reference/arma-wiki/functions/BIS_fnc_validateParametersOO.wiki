@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_validateParametersOO
+// revision: 349337 (2023-11-08T14:53:28Z)
+// export sha1: k8u9lcs2x3aho5o0tfl8d01q8hwp1ip
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: OO | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= OO
+
+|descr= Validating the parameters of a certain method in a class.
+
+|s1= [class,method,params] call [[BIS_fnc_validateParametersOO]]
+
+|p1= class: [[String]] - class name
+
+|p2= method: [[String]] - method used for validating (Taken from '''class >> "Methods"''')
+
+|p3= params: [[Array]] - to be validated parameters
+
+|r1= [[Boolean]] - validating flag
+
+|x1= <sqf>["someClass","someMethod",[5,47,"test"]] call BIS_fnc_validateParametersOO;</sqf>
+
+|seealso= [[BIS_fnc_addClassOO]] [[BIS_fnc_createObjectOO]]
+}}

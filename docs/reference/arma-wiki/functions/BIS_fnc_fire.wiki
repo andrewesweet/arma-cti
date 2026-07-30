@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_fire
+// revision: 347331 (2023-09-11T00:28:50Z)
+// export sha1: e6af8bmr64a5d45vcwrck1yhjoho0w9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Combat | Category:Function Group: Object Manipulation | Category:Function Group: Weapons | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.74 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.74
+
+|gr1= Weapons
+
+|gr2= Object Manipulation
+
+|gr3= Combat
+
+|arg= global
+|eff= global
+
+|descr= Makes a unit or a vehicle fire given muzzle. Make sure that there is some ammo to fire, and, in case of a unit, the weapon with given muzzle is already selected. It can be used to fire pretty much any muzzle on unit or vehicle from anywhere. Available weapons could usually be found with [[weapons]], [[weaponsTurret]] and [[allTurrets]] commands.
+
+|mp= The function is global, it is not to be used in unit fields.
+
+|pr= unit will not fire its weapon from FFV position. This is due to [[forceWeaponFire]] command ignoring units in FFV.
+
+|s1= [entity, muzzle, turret] call [[BIS_fnc_fire]]
+
+|p1= entity: [[Object]] - unit or vehicle
+
+|p2= muzzle: [[String]] -  muzzle name of the muzzle to fire
+
+|p3= turret: [[Array]] - (Optional) turret path of the turret with given muzzle (vehicles only)
+
+|r1= [[Boolean]] - in SP and on hosted server in MP or [[Nothing]] on client in MP. When boolean, [[true]] if all checks have passed and muzzle should have fired, [[false]] if there was a problem, like:
+* no ammo
+* non-existing muzzle
+* the muzzle is on a weapon that is not selected
+* the weapon has no unit operating it
+
+|x1= <sqf>
+marshall = "B_APC_Wheeled_01_cannon_F" createVehicle position player;
+createVehicleCrew marshall;
+
+[marshall, "HE"] call BIS_fnc_fire; // fires HE muzzle of the main cannon
+[marshall, "AP"] call BIS_fnc_fire; // fires AP muzzle of the main cannon
+[marshall, "autocannon_40mm_CTWS"] call BIS_fnc_fire; // fires HE muzzle, because it is default
+[marshall, "LMG_M200_body"] call BIS_fnc_fire; // fires machine gun
+[marshall, "SmokeLauncher"] call BIS_fnc_fire; // fires smoke launcher
+[marshall, "TruckHorn"] call BIS_fnc_fire; // beeps the horn
+</sqf>
+
+|x2= <sqf>
+[bob, "SmokeShellMuzzle"] call BIS_fnc_fire;  // bob throws smoke grenade, if he has one
+[bob, "HandGrenadeMuzzle"] call BIS_fnc_fire; // bob throws hand grenade, if he has one
+</sqf>
+
+|x3= <sqf>
+blackfoot = "B_Heli_Attack_01_dynamicLoadout_F" createVehicle position player;
+createVehicleCrew blackfoot;
+
+[blackfoot, "missiles_DAGR"]   call BIS_fnc_fire; // fires missiles
+[blackfoot, "missiles_ASRAAM"] call BIS_fnc_fire; // fires missiles
+[blackfoot, "gatling_20mm"]    call BIS_fnc_fire; // fires machine gun
+[blackfoot, "CMFlareLauncher"] call BIS_fnc_fire; // fires chaff
+</sqf>
+
+|x4= <sqf>[vehicle mortargunner, "mortar_82mm"] call BIS_fnc_fire; // mortargunner fires mortar</sqf>
+
+|seealso= [[fire]] [[fireAtTarget]] [[forceWeaponFire]]
+}}

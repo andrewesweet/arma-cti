@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/Tasks
+// revision: 286859 (2021-06-27T09:55:56Z)
+// export sha1: d85gfs1d2b6899cpbkvp2rwhtso06kf
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|Disamb}}
+
+* [[Arma 3: Task Framework]]
+* [[Arma 3: Task Framework Tutorial]]
+* [[Arma 2: Task Tutorial]]
+* [[:Category:Function Group: Tasks|Function Group: Tasks]]

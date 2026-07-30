@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/soundParams
+// revision: 377672 (2026-01-02T09:02:31Z)
+// export sha1: hcuk0yxwzbij5oxhnkkqpfpn0cq6ece
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|gr1= Sounds
+
+|descr= Returns various params for the given sound
+
+|s1= [[soundParams]] id
+
+|p1= id: [[Number]] - id returned by [[playSoundUI]] and [[playSound3D]] commands, -1 to return all currently playing ids
+
+|r1=
+* ''id'' != -1: [[Array]] with [path, curPos, length, time, volume]
+** path: [[String]] - the path to the played sound file
+** curPos: [[Number]] - current play position in 0...1 range
+** length: [[Number]] - total sound duration in seconds
+** time: [[Number]] - time passed since the start of playback
+** volume: [[Number]] - playback volume
+** {{GVI|arma3|2.22|size= 0.75}} loop: [[Boolean]] - [[true]] if the sound is looping
+* {{GVI|arma3|2.22|size= 0.75}} ''id'' == -1: [[Array]] with [sid1, sid2, sid3..., sidn], where sid is sound id returned by [[playSoundUI]] and [[playSound3D]]
+
+|x1= <sqf>private _params = soundParams 10;</sqf>
+
+|x2= Wait for sound to end:
+<sqf>
+private _sound = playSound3D ["A3\Sounds_F\sfx\blip1.wss", player];
+waitUntil { soundParams _sound isEqualTo [] };
+</sqf>
+
+|seealso= [[playSoundUI]] [[playSound3D]] [[stopSound]]
+}}

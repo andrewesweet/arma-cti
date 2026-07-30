@@ -1,0 +1,87 @@
+// source: https://community.bistudio.com/wiki/getHitPointDamage
+// revision: 377769 (2026-01-03T01:32:16Z)
+// export sha1: 656o36c5qx2pym5nzi6z2tweh0eypzo
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Return current level of damage in range 0..1 for a specific Hit Point (specified by its config class).
+If you need to get damage of a selection instead of hit point, use [[getHit]].
+
+|s1= vehicle [[getHitPointDamage]] hitPointName
+
+|p1= vehicle : [[Object]] - vehicle to be queried
+
+|p2= hitPointName: [[String]] - name of the Hit Point class
+
+|r1= [[Number]] - before {{GVI|arma3|1.94|size= 0.75}}, [[Nothing]] was returned when an invalid ''selection'' was provided (now returns {{hl|0}})
+
+|x1= <sqf>vehicle player getHitPointDamage "hitEngine";</sqf>
+
+|seealso= [[setHitPointDamage]] [[getAllHitPointsDamage]] [[setHit]] [[getHit]] [[setDamage]] [[damage]] [[getHitIndex]] [[setHitIndex]]
+}}
+
+{{Note
+|user= Joris
+|timestamp= 20111125150600
+|text= Common [[Object|ObjectRTD]] {{GameCategory|tkoh|link= y}} Hit Points:
+{{Columns|4|
+* HitEngine (engine #1)
+* HitEngine2 (engine #2)
+* HitEngine3 (engine #3)
+* HitHRotor (main rotor)
+* HitVRotor (tail rotor)
+* HitBatteries (electrical systems)
+* HitLight (landing light)
+* HitHydraulics (entire hydraulics system)
+* HitTransmission (engine transmission)
+* HitGear (landing gear)
+* HitFuel (all fuel tanks)
+* HitHStabilizerL1 (first left horizontal stabilizer)
+* HitHStabilizerR1 (first right horizontal stabilizer)
+* HitVStabilizer1 (first vertical stabilizer)
+* HitTail (tail boom)
+* HitPitotTube (all pitot tubes)
+* HitStaticPort (all static ports)
+* HitStarter1 (starter for engine #1)
+* HitStarter2 (starter for engine #2)
+* HitStarter3 (starter for engine #3)
+* HitAvionics
+* HitHull
+* HitMissiles
+* HitRGlass
+* HitLGlass
+* HitGlass1
+* HitGlass2
+* HitGlass3
+* HitGlass4
+* HitGlass5
+* HitGlass6
+}}
+}}
+
+{{Note
+|user= K.J.
+|timestamp= 20170304012900
+|text= Note that vehicles with multiple turrets have multiple HitTurret and HitGun classes that can't be distinguished based on the Hitpoint class name. They can only be distinguished by their selection names.
+The selection names do not necessarily correspond to a common nomenclature, especially for mod vehicles. There can also be multiple empty Hitpoint Class names on a vehicle or infantry unit.
+They can be hitpoints for vehicle headlights or be the result of a bad config/model, as hitpoints that have an undefined named selection in their config class or are missing their named selection in the model will result in an empty HitPoint class name.
+}}
+
+{{Note
+|user= X3KJ
+|timestamp= 20181005231200
+|text= Note: Since {{Name|arma3tanks}} DLC, Turrets of vanilla vehicles no longer have identical Hitpoint Classes for multiple Turrets.
+Mod vehicles may still have the old issue, but they produces error messages in RPT if they still do (and thus should be enough motivation to fix them).
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Audio/Guidelines
+// revision: 371124 (2025-02-28T13:36:23Z)
+// export sha1: 4mc08yp1xichfmle8g6m5hf48h6t9an
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding|Audio}}

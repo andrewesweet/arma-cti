@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/removeMagazineGlobal
+// revision: 319326 (2022-05-13T09:23:53Z)
+// export sha1: fz4x0465ty1ulwmb1b0murc599ih29z
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.76
+
+|eff= global
+
+|arg= global
+
+|gr1= Unit Inventory
+
+|descr= Removes the magazine from the unit.
+
+|s1= unit [[removeMagazineGlobal]] magazineName
+
+|p1= unit: [[Object]]
+
+|p2= magazineName: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeMagazineGlobal "30Rnd_65x39_caseless_mag";</sqf>
+
+|seealso= [[removeMagazine]] [[removeMagazines]]
+}}

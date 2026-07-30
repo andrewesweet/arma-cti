@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskExists
+// revision: 352030 (2024-02-01T23:24:28Z)
+// export sha1: qzfsfcyzobk0yisf7hi41alae4kq6so
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+|arg= global
+|eff= global
+
+|descr= Return [[true]] if a task exists. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= [taskName] call [[BIS_fnc_taskExists]]
+
+|p1= taskName: [[String]] - task name
+
+|r1= [[Boolean]] - [[true]] if it exists
+
+|x1= <sqf>private _exists = ["MyTask"] call BIS_fnc_taskExists;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

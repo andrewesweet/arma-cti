@@ -1,0 +1,101 @@
+// source: https://community.bistudio.com/wiki/Break_Contact
+// revision: 340294 (2023-04-28T17:20:14Z)
+// export sha1: oxqxrzgdgn304dgz6i66149gfeki6q4
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+===Situation=== 
+You can be moving or stationary. The enemy fires on you effectively in a position where you are at a disadvantage or the mission is endangered. The person in charge orders break contact.
+
+=== Concept ===
+The concept is to move to a position of concealment and cover out of effective fire from the enemy then reassess. 
+
+==== Process ====
+The concept is normally achieved by a form of bounding over-watch in reverse. A base of fire is designated, usually a small powerful unit, it fires on the enemy until the rest of the team can maneuver a short distance away from the contacts, they then in turn provide covering fire for the base of fire unit to move behind them, the process is repeated until contact is broken. The process can be achieved by a form of peel maneuver: 
+
+===== Types of peel =====
+A peel in break contact is like bounding over watch in reverse, where the front unit fires a burst, and then moves to the rear, while the next in front fires their burst as cover to the previous units movement and then them selves move to the rear, with covering/suppressive fire from the unit to the rear of them, this operation is repeated until contact is broken.
+
+====== Diagonal Peel ======
+When in a line you use a kind of diagonal peel this has the advantage of moving away from the enemy and to the flank taking you away from you Line Of March (LOM) thus making it harder for the enemy to predict where you were going and causing you to take a different approach route. This makes it harder for the enemy to track you.
+
+Here are some example videos of the peel concept used in other formations:
+
+====== Center Peel ======
+Used in a staggered column formation.
+{{Link|http://www.youtube.com/watch?v{{=}}I5dsAkpZ6cI|link}}
+
+====== Aussie Peel Back ======
+Used in column formation.
+{{Link|http://www.youtube.com/watch?v{{=}}HDjEYKNMu9o&feature{{=}}related|link}}
+
+===== Other uses for the Peel maneuver =====
+
+====== Using the Peel in Assault ======
+
+The peel can also be used to advance and in counter attack; in particular the Diagonal Peel Forward can be used both to turn the enemies flank and to make the enemy think they are receiving an attack from troops reinforcing you on a flank.
+
+====== Using the Peel when moving in Enemy Territory ======
+
+The Peel can also be used when moving in dead ground in enemy controlled territory where surprise enemy contact to a flank is possible. For example when moving down a coast line to retreat from or advance in to enemy territory. In this case units peel on the seaward side of a column with the tale unit peeling to the front and covering that arc until a unit passes on the seaward side then the former front unit covers to the landward side until it is at the rear again, the whole process then repeats until risk of contact is abated. In a wadi or a stream bed the same process can be used to both flanks when in staggered column formation and center peeling along the dead ground.
+
+=== Right tool for the job ===
+In daylight the best weapon for base of fire is the one with the highest volume of fire but at night the flash from firing an unsuppressed rifle on automatic gives away position. So at night flash bangs, fragmentation and phosphorous are better tools for breaking contact, as they conceal the source of fire. Remember in breaking contact "....the concept is to move to a position of concealment and cover out of effective fire from the enemy..."
+
+=== Actions On ===
+These are the actions to take on deciding or being given the order to break contact.
+
+==== Take Cover ====
+Get down! And/Or in cover! Facing the enemy. So as to reduce your effective target area. Viewed head on a prone target is 2 feet wide and from 6 to 12 inches high, the variation in height is your head bobing up and down; this is smaller than 2 feet wide 6 foot high and so is useful.
+
+==== Individual ====
+Fire accurately to suppress the enemy, then throw frags, Pop Smoke, cease fire on concealment, roll out of firing position, back away 30m to 50m ideally to concealment or better yet to cover. Once over 50m away or behind cover/concealment, you may move facing away from the enemy move from one cover/concealment point to another, keeping the smoke and or object clutter or ideally terrain between you and the enemy, turn frequently to scan for enemy. Move in bounds of three or four steps to begin with then lengthen bounds as you gain more breathing space. Once 200m away; move at a tangent to your line of retreat another 200m. Stop and reassess.
+
+==== Buddy Team ====
+Leader gives the order Break Contact (Center/right/left) Peel; Most powerful weapon fires on enemy and throw frag grenades to their front, Leader pops smoke, when concealed, all cease fire and only return accurate enemy fire, all roll out of firing position, leader covers buddy, while partner moves ~10m to rear on the designated flank. On reaching positions they take a knee or prone position as terrain and enemy fire dictates and say "Covering". Leader backs away on the opposite flank to their buddy, so as not to cross their potential arc of fire until a few metres behind them then cuts behind them to 10m on their flank then pulls back another 10 behind them, the partner repeats the procedure the Leader did. The procedure is repeated until effective enemy fire is reduced, then the buddy team performs an orderly disengagement by 20m bounds to the rear or as terrain and object clutter dictate. Once 200m away from the enemy; the buddy team moves as one with most powerful automatic weapon as lead at a tangent to your line of retreat another 200m. The leader orders stop and reorganisation.
+
+==== Fire Team ====
+Leader gives the order Break Contact (Center/right/left) Peel; Automatic Rifle and rifle man and grenadier fires on enemy and throw frag grenades to their front, Leader pops smoke, when concealed, all cease fire and only return accurate enemy fire, all roll out of firing position, MG and Rifle man back away on the flank ordered by the leader ~10m take a knee or prone position as terrain and enemy fire dictates and say covering. Grenadier and leader buddy team back away on the opposite flank to the Automatic Rifle man buddy team, so as not to cross their potential arc of fire until a few metres behind them then cuts behind them to 10m on their flank then pulls back another 10 behind them, the Automatic Rifle Buddy team repeat the procedure the Leader did. The procedure is repeated until effective enemy fire is reduced, then the fire team performs an orderly disengagement by 20m bounds to the rear or as terrain and object clutter dictate. Once 200m away from the enemy; the team moves as one with automatic rifleman as lead at a tangent to your line of retreat another 200m. The leader orders stop and reorganisation.
+
+==== Squad or platoon ====
+ 
+1. The Officer Commanding (OC) gives the order Break Contact (Center/right/left) Peel; and designates one squad/fire team in contact as "Base of fire" to support the disengagement of the remainder of the unit.
+
+2. The squad leader in contact designates enemy targets and positions, with right click or via markers on the map, or via the normal [[Contact Reports]] methods and reference points. Team leaders do the same. Furthest flank members of the squads/platoons mark their position on the map as (Team ID)LF and (Team ID)RF.
+
+3. The OC designates a Rally Point(RP): either the last waypoint, or a terrain feature, or a distance and direction as per SOP usually 200m away from the contact point and 200m in one tangential direction from the line of retreat. The OC leader marks the the RP via a marker on the map and gives the direction of march to the RP.
+
+4. The base of fire squad/team continues to suppress the enemy with a high volume of fire with squad/team leaders designating targets and ensuring concentrated fire. The OC designates primary targets on the map.
+
+5. The remainder squad/fire teams use fragmentation, and smoke grenades to mask their movement. Depending on the terrain plus volume and accuracy of the enemy fire, the moving squad may need to use fire and movement techniques. They move ~20m to ~50m to the rear on the designated flank and assume an over watch position. 
+
+6. The squad/fire team leader checks the map and assesses the current situation, then designates friendly cover squads positions with compass bearing and distance. All soldiers call out "Seen!" over group net when they see this. Squad/fire team leader then designates primary targets via right click,stating if they are to be suppressed or watched. Each soldiers call out "Seen!" over group net when they see their target. The squad/fire team leader calls "(Team ID) covering" over the command net.
+
+7. The OC orders the base of fire element to move to its next location. They move ~20m to ~50m to the rear on the designated flank and assume an over-watch position flanking to the direction of the Break Contact order. The squad/fire team leader designates line of march via compass and with a marked position on map. Depending on the terrain plus volume and accuracy of the enemy's fire, the moving squad may need to use fire and movement techniques.
+ 
+8. The platoon/squad continues to move away from contact by bounds in this fashion until:
+
+a. It breaks contact with the enemy; fire must be continued until enemy fire is ineffective. <br>
+b. It passes through a position where supporting units will overwhelm the enemy. <br> 
+c. Its squads/fire teams are in the assigned position to conduct the next mission. <br> <br>
+
+9. The OC should consider changing the squad/Platoon direction of march once contact is broken. This will reduce the chance of further contact.
+
+10. If the platoon or squad becomes disrupted loosing the OC or taking high casualties, soldiers stay together as fire teams or in buddy teams if necessary and move to the designated rally point, supporting each other.
+
+11. At the end of the Break Contact a reorganization is necessary, Sit Reps all Squad/Team leaders, medic check, ammo check and redistribution of weapons and ammo etc.
+
+=== Useful Techniques and Tricks in break contact. ===
+Pop smoke but remember firing produces sound and smoke does not stop sound. M203 Marker grenades can both mark the enemy and obscure your movement better as they are closer to the enemy and take up more of their firing arc.
+
+Mines should be placed on line of march when armor is following you. 
+
+Satchel charges with 2 minute time delays are also useful.
+
+When addons and MODs permit Claymores and mines can be scattered on your line of march by the rear element but proper co-ordination and marking of minefields on map is needed.
+
+=== How the Rangers do it ===
+Here is an unclasified video explaining how the US Rangers perform Break Contact, it uses VBS.
+{{Link|http://vimeo.com/27582126|link}}
+
+[[Category:Battle Tactics]]

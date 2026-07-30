@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addRespawnInventory
+// revision: 369448 (2024-09-06T05:10:03Z)
+// export sha1: ela2x6m4is33ekqmn54vny33m0cmbrw
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.60 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.60
+
+|gr1= Respawn
+
+|eff= global
+
+|descr= Add a respawn inventory for [[Arma 3: Respawn#MenuInventory|respawn menu]].<br>
+Available loadouts are defined in [[Description.ext#CfgRespawnInventory|CfgRespawnInventory]]. Or you may use an existing CfgVehicles soldier class as reference.
+
+|s1= [target, inventoryParams] call [[BIS_fnc_addRespawnInventory]]
+
+|p1= target: Receiver of the respawn loadout
+* [[Namespace]] - use [[missionNamespace]] to add the loadout to everyone
+* [[Side]]
+* [[Group]]
+* [[Object]]
+
+|p2= inventoryParams: [[Array]] or [[String]]
+* [[String]] - [[Description.ext#CfgRespawnInventory|CfgRespawnInventory]] class or [[CfgVehicles]] soldier class
+* [[Array]] - format [class, number, limit]
+** class: [[String]] - [[Description.ext#CfgRespawnInventory|CfgRespawnInventory]] class or [[CfgVehicles]] soldier class
+** number: [[Number]] - Number of players who can use this inventory (-1 = no limit, default)
+** limit: [[Number]] - Limit for role assigned to given loadout (-1 = no limit, default) 
+*** Only role or only loadout can be limited at one moment, if there is limit for both, then only role uses limit.
+*** If the limit definition for role is called multiple times with different numbers, then the highest number is used.
+
+|r1= [[Array]] - format [target, id] used in [[BIS_fnc_removeRespawnInventory]]
+
+|x1= <sqf>[west, "WEST1"] call BIS_fnc_addRespawnInventory;</sqf>
+
+|x2= <sqf>private _myRespawnInventory = [missionNamespace, "ATSniper"] call BIS_fnc_addRespawnInventory;</sqf>
+
+|seealso= [[Arma 3: Respawn]] [[BIS_fnc_removeRespawnInventory]] [[BIS_fnc_getRespawnInventories]] [[BIS_fnc_setRespawnInventory]]
+}}

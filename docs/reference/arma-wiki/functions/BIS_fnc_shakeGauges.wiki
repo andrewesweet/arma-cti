@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_shakeGauges
+// revision: 309818 (2022-05-05T12:09:51Z)
+// export sha1: ic6oyik4za2a1x50d5egcr3249wqjhn
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= <pre>/*
+
+	Description:
+	Shake analogue gauges
+
+	Parameter(s):
+	_this select 0 (Optional): NUMBER - shake limit (max distance gauges can move on screen from original position)
+	_this select 1 (Optional): NUMBER - number of repeats
+	_this select 2 (Optional): NUMBER - delay between every position change
+	_this select 3 (Optional): ARRAY - list of IDCs
+
+	Returns:
+	NOTHING
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_shakeGauges]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_shakeGauges;</sqf> -->
+
+|seealso=
+}}

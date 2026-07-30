@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/CT_LISTNBOX_CHECKABLE
+// revision: 170166 (2020-11-29T14:32:53Z)
+// export sha1: plg76cwod8q7f83df32us5ebb6owl3h
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_LISTNBOX_CHECKABLE
+|value = 104
+|description = Unknown control type.
+|gallery=
+|commands =
+|events =
+}}
+
+<!-- {{CT|abc start}}
+
+{{CT|abc end}} -->
+
+{{CT|examples}}
+None

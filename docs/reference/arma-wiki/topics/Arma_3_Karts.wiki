@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Karts
+// revision: 353485 (2024-03-19T12:00:43Z)
+// export sha1: ohx1doj2g054c1p8uny96fvqzjjk74d
+// categories: Category:Arma 3: DLCs & Expansions | Category:Introduced with Arma 3 version 1.20
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= arma3_karts_logo.png
+|game= arma3
+|version= 1.20
+|releasedate= 10th June 2014
+|intro= Karts is a Paid DLC for {{GameCategory|arma3|link= y}} that was announced on the 1st of April, 2014<ref>[https://www.youtube.com/watch?v{{=}}cSAJdRpqltM April fools video]</ref> and has been available since 10th June 2014.<ref>{{Link|http://arma3.com/news/bohemia-interactive-presents-arma-3-dlc-strategy-releases-arma-3-karts-dlc#.VCYVJPldUdA|Arma 3 News: DLC Strategy and Karts Release}}</ref>
+|feature1= A 20hp 4-stroke engine go-kart with four unique liveries and one random color variant.
+|feature2= Matching race drivers wearing dedicated race helmets.
+|feature3= A new form of singleplayer Challenges delivered in 5 Karts Check Point races against the clock.
+|feature4= A racetrack safety coordinator, carrying a special revolver which is used to signal the start of races and fire signaling flares.
+|feature5= Various (plastic) barriers used to build racetracks.
+|gallery1= arma3 dlc karts screenshot 03.jpg
+|gallery2= arma3 dlc karts screenshot 01.jpg
+|gallery3= arma3 dlc karts screenshot 02.jpg
+|gallery4= arma3 dlc karts screenshot 05.jpg
+|trailer= cSAJdRpqltM
+|start1= {{Link|link= http://www.arma3.com/dlc/karts|text= Official Site}}
+|isDLC= y
+}}
+
+{{GameCategory|arma3|DLCs & Expansions}}

@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/ctrlSetFont
+// revision: 323058 (2022-06-28T21:43:11Z)
+// export sha1: gy983xpaodlxhqxhg1e5ppr3g2czplq
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= Sets the font for given control (see [[Fonts#Available_Fonts|available fonts]])
+
+|s1= control [[ctrlSetFont]] fontName
+
+|p1= control: [[Control]]
+
+|p2= fontName: [[String]] - one of the fonts defined in CfgFontFamilies
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetFont "TahomaB";</sqf>
+
+|seealso= [[Fonts#Available_Fonts|Fonts]]
+}}

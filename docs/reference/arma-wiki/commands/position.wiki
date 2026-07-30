@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/position
+// revision: 377525 (2026-01-02T06:52:45Z)
+// export sha1: fx8y30qoim8qpn720bzbphmg47g0eac
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Operation Flashpoint version | Category:Maintenance/RV | Category:Maintenance/RV/Version1 needed | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Positions
+
+|descr= Returns position of an object (alias of [[getPos]]) or location (alias of [[locationPosition]]).
+{{Feature|important|Do '''not''' use this command to get an object's position in 3D. See [[getPos]] for an explanation and alternatives.}}
+|s1= [[position]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Position#PositionAGLS|PositionAGLS]]
+
+|s2= [[position]] location
+
+|p21= location: [[Location]]
+
+|r2= [[Position#PositionAGL|PositionAGL]] - see [[locationPosition]]
+{{Feature|important|This position is the location's position '''regardless of [[attachObject]] usage''' - see {{Link|#Example 3}}.}}
+
+|x1= <sqf>private _pos = position player;</sqf>
+
+|x2= <sqf>_myLocationHomePos = position myLocation;</sqf>
+
+|x3= <sqf>
+private _location = createLocation ["b_inf", [1000, 1000], 1, 1];
+_location attachObject player;
+locationPosition _location;	// [1916.03,5711.98,12.208]
+getPos _location;			// [1916.03,5711.98,12.208]
+position _location;			// [1000,1000,0]
+</sqf>
+
+|seealso= [[getPos]] [[getPosATL]] [[getPosASL]] [[getPosASLW]] [[visiblePosition]] [[getPosVisual]] [[visiblePositionASL]] [[locationPosition]]
+}}

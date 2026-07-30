@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/formationLeader
+// revision: 369160 (2024-09-03T10:34:40Z)
+// export sha1: bldtxidt5423xf1p0kswxzngna8ns0y
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Unit Control
+
+|descr= Return leader of the formation.
+
+|s1= [[formationLeader]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[Object]]
+
+|x1= <sqf>
+if (formationLeader player != leader player) then
+{
+	hint "Formation leader is not the group leader.";
+};
+</sqf>
+
+|seealso= [[commandFollow]] [[doFollow]] [[formLeader]] [[isFormationLeader]] [[leader]] [[selectLeader]] [[setLeader]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2006-12-02 - 00:46</dd>
+<dt class="note">[[User:Kronzky|Kronzky]]</dt>
+<dd class="note">Return value is <NULL-OBJECT> if no group members exist.</dd>
+
+</dl>

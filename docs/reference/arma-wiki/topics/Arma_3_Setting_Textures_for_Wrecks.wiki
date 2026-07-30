@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Setting_Textures_for_Wrecks
+// revision: 364231 (2024-05-06T09:38:14Z)
+// export sha1: qulvywiuc5vn64zynrpipaklwwraoni
+// categories: Category:Arma 3: Editing | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Arma 3: Main Updates#1.56 - Eden Update|Eden Update]] comes with a new functionality allowing setting of hiddenSelections textures (skins) even for wrecks of vehicles.
+This allows content creators to have the same texture used for both main model and the wreck when they want to switch different texture options.
+
+
+== Setting up the model ==
+
+Model for the wreck with changeable skins needs to have two things done in order to work correctly:
+* The changeable selections in object should be named the same way as they are for the main model (e.g. '''camo''' in standard models)
+* The wreck model needs to have its own model.cfg with defined '''sections'''
+
+<syntaxhighlight lang="cpp">
+class Heli_Light_01_wreck_F : Default
+{
+	sections[] = { "camo1" };
+};
+</syntaxhighlight>
+
+
+== Setting up in config ==
+
+Things go a bit harder with the config of the wreck proxy as it needs to be properly defined in '''cfgNonAIVehicles''':
+* The class name should match the '''proxy''' prefix and '''p3d name''' suffix (e.g. if the wreck proxy is called myLittlePlaneWreck.p3d, the config class needs to be called "proxyMyLittlePlaneWreck" - case doesn't matter)
+* This class needs to have the '''model''' property with path to proxy model defined
+* There needs to be proper '''hiddenSelections''' property defined
+
+<syntaxhighlight lang="cpp">
+class CfgNonAIVehicles
+{
+	class ProxyRetex;
+	class ProxyHeli_Light_01_wreck_F : ProxyRetex
+	{
+		hiddenSelections[] = { "camo1" };
+		model = "\A3\Air_F\Heli_Light_01\Heli_Light_01_wreck_F.p3d";
+	};
+};
+</syntaxhighlight>
+
+
+== Actual use of the technology in game ==
+
+This is actually the easiest part - once the wreck model is properly defined, changing textures for the main model (both via hiddenSelectionsTextures in config and setObjectTexture / setObjectTextureGlobal via script should work even for the wreck).
+Easy as that ;-)
+
+
+{{GameCategory|arma3|Editing}}
+{{GameCategory|arma3|Tutorials}}

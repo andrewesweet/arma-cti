@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/getMissionConfigValue
+// revision: 352827 (2024-02-22T21:48:04Z)
+// export sha1: rqjdvj7729gwjcpk436qs5w5v02xslt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Command Group: Mission Information | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Config
+
+|gr2= Mission Information
+
+|descr= Returns value of the given scenario attribute from the 1st tier. Since only config properties have values, the attribute should be config property.
+If it is not found or config class is given, the return is [[nil]]. If the attribute defined in multiple places, the command checks them in the following order:
+# [[Description.ext]] entry
+# [[Eden Editor: Scenario Attributes|Eden Editor]] scenario attribute
+
+So if an attribute exists in both places, the [[Description.ext]] value is used.
+Previously, scenario attributes were extracted from Description.ext using [[missionConfigFile]].
+That still works, but it ignores attributes set directly in the editor and should not be used anymore.
+
+{{Feature|important|This command cannot force return type, it will return the value of the type given in config. Use [[isEqualType]] to additionally reaffirm the correct type if necessary to account for human error.}}
+
+|s1= [[getMissionConfigValue]] attribute
+
+|p1= attribute: [[String]] - attribute name
+
+|r1= [[Number]], [[String]], [[Boolean]] or [[Array]], depending on the attribute value type. [[nil|Nil]] when the attribute is undefined.
+
+|s2= [[getMissionConfigValue]] [attribute, defaultValue]
+
+|p21= attribute: [[String]] - attribute name
+
+|p22= defaultValue: [[Anything]] - value used when the attribute is undefined
+
+|r2= [[Number]], [[String]], [[Boolean]] or [[Array]], depending on the attribute value type. Default value when the attribute is undefined.
+
+|x1= <sqf>
+private _respawnDelay = getMissionConfigValue ["respawnDelay", 0];			// returns the real, defined respawn delay value
+private _respawnDelay = getNumber (missionConfigFile >> "respawnDelay");	// old approach, ignoring the Eden Editor-set value
+</sqf>
+
+|seealso= [[getMissionConfig]] [[missionConfigFile]] [[BIS_fnc_getParamValue]] [[Mission_Parameters]]
+}}

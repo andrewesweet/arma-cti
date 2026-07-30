@@ -1,0 +1,17 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with
+// revision: 281782 (2021-06-16T13:12:11Z)
+// export sha1: 3lbexb13j7a53izak1wxx7nc8l8uosm
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with these games may be recognised by the appearance of icons like these:
+{{GVI|ofp|1.00}}
+{{GVI|ofpe|1.00}}
+{{GVI|arma1|1.00}}
+{{GVI|arma2|1.00}}
+{{GVI|arma2oa|1.50}}
+{{GVI|arma3|0.50}}
+{{GVI|arma3|0.70}}
+{{GVI|arma3|1.00}}
+{{GVI|tkoh|1.00}}
+
+[[Category:Reference Lists]]

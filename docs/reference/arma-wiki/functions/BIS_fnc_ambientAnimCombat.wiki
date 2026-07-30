@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ambientAnimCombat
+// revision: 349315 (2023-11-08T14:52:25Z)
+// export sha1: cka2139jb3qikv94gc0jfzvke0ysb0l
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Ambient | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Ambient
+
+|descr= Play set of ambient animations on given unit AND allows the unit to leave the ambient state and engage enemy or move away.
+{{Feature|informative|Animations can be cancelled using <sqf inline>_unit call BIS_fnc_ambientAnim__terminate</sqf>.}}
+
+|s1= [unit, animationSet, equipmentLevel, condition, behaviour] call [[BIS_fnc_ambientAnimCombat]]
+
+|p1= unit: [[Object]] - unit where the animations will be played
+
+|p2= animationSet: [[String]] - (Optional, default "STAND") the animation set to play. Possible values are:
+* "STAND"
+* "STAND_IA"
+* "SIT_LOW"
+* "KNEEL"
+* "LEAN"
+* "WATCH"
+* "WATCH1"
+* "WATCH2"
+
+|p3= equipmentLevel: [[String]] - (Optional, default "RANDOM") the equipment level of the unit. Possible values are:
+* "NONE"
+* "LIGHT"
+* "MEDIUM"
+* "FULL"
+* "ASIS"
+* "RANDOM"
+
+|p4= condition: [[Code]] or [[String]] - (Optional, default <sqf inline>{ false }</sqf>) condition that if true frees the unit from the animation loop
+
+|p5= behaviour: [[String]] - (Optional, default "COMBAT") behaviour the unit should go to, when freed. Default "COMBAT"
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_unit, "STAND", "FULL", { (player distance _this) < 5 }] call BIS_fnc_ambientAnimCombat;</sqf>
+
+|seealso= [[BIS_fnc_ambientAnim]]
+}}

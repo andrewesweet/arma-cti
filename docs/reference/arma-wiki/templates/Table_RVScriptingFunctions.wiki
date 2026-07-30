@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/Template:Table/RVScriptingFunctions
+// revision: 373601 (2025-05-24T09:59:23Z)
+// export sha1: 9mpy3vjnz5r075emsei7garhsx38d2w
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>
+{| class="wikitable rv-functions" style="margin: auto; font-size:.85em"
+|-
+! colspan="6" | <big>[[Real Virtuality]] Scripting Functions</big>
+|- style="text-align: center"
+! colspan="2" | By Game
+| [[:Category: {{tkoh}}: Functions|{{tkoh}} ]]{{Icon|tkoh|24|link=:Category: {{tkoh}}: Functions}}
+| [[:Category: {{arma2}}: Functions|{{arma2}} ]]{{Icon|arma2|32|link=:Category: {{arma2}}: Functions}}
+| [[:Category: {{arma2oa}}: Functions|{{arma2oa}} ]]{{Icon|arma2oa|32|link=:Category: {{arma2oa}}: Functions}}
+| [[:Category: {{arma3}}: Functions|{{arma3}} ]]{{Icon|arma3|32|link=:Category: {{arma3}}: Functions}}
+|-
+! rowspan="4" | [[:Category:Functions by Functionality|By Functionality]]
+! | A&nbsp;-&nbsp;H
+| colspan="4" | [[:Category:Function Group: Ambient|Ambient]] ● [[:Category:Function Group: Arrays|Arrays]] ● [[:Category:Function Group: Briefing|Briefing]] ● [[:Category:Function Group: Broken Functions|Broken&nbsp;Functions]] ● [[:Category:Function Group: Camera|Camera]] ● [[:Category:Function Group: Campaign|Campaign]] ● [[:Category:Function Group: Combat|Combat]] ● [[:Category:Function Group: CombatPatrol|CombatPatrol]] ● [[:Category:Function Group: Communication Menu|Communication&nbsp;Menu]] ● [[:Category:Function Group: Configs|Configs]] ● [[:Category:Function Group: Contact|Contact]] ● [[:Category:Function Group: Conversations|Conversations]] ● [[:Category:Function Group: Curator|Curator]] ● [[:Category:Function Group: Database|Database]] ● [[:Category:Function Group: Diagnostic|Diagnostic]] ● [[:Category:Function Group: Eden Editor|Eden&nbsp;Editor]] ● [[:Category:Function Group: Effects|Effects]] ● [[:Category:Function Group: Environment|Environment]] ● [[:Category:Function Group: Event Handlers|Event&nbsp;Handlers]] ● [[:Category:Function Group: Feedback|Feedback]] ● [[:Category:Function Group: GUI|GUI]]
+|-
+! | I&nbsp;-&nbsp;N
+| colspan="4" | [[:Category:Function Group: Interaction|Interaction]] ● [[:Category:Function Group: Inventory|Inventory]] ● [[:Category:Function Group: KeyframeAnimation|KeyframeAnimation]] ● [[:Category:Function Group: Live Feed|Live&nbsp;Feed]] ● [[:Category:Function Group: Map and Markers|Map&nbsp;and&nbsp;Markers]] ● [[:Category:Function Group: Math|Math]] ● [[:Category:Function Group: Mission Parameters|Mission Parameters]] ● [[:Category:Function Group: Missions|Missions]] ● [[:Category:Function Group: Modules|Modules]] ● [[:Category:Function Group: Multiplayer|Multiplayer]]
+|-
+! | O&nbsp;-&nbsp;S
+| colspan="4" | [[:Category:Function Group: Object Manipulation|Object Manipulation]] ● [[:Category:Function Group: Old Man|Old Man]] ● [[:Category:Function Group: OO|OO]] ● [[:Category:Function Group: Positions|Positions]] ● [[:Category:Function Group: Priority Queue|Priority&nbsp;Queue]] ● [[:Category:Function Group: Program Flow|Program&nbsp;Flow]] ● [[:Category:Function Group: Radio|Radio]] ● [[:Category:Function Group: Respawn|Respawn]] ● [[:Category:Function Group: Revive|Revive]] ● [[:Category:Function Group: RichCurve|RichCurve]] ● [[:Category:Function Group: Scenes|Scenes]] ● [[:Category:Function Group: Scripts|Scripts]] ● [[:Category:Function Group: Sides|Sides]] ● [[:Category:Function Group: Sound|Sound]] ● [[:Category:Function Group: Spectator|Spectator]] ● [[:Category:Function Group: Strategic|Strategic]] ● [[:Category:Function Group: Strings|Strings]] ● [[:Category:Function Group: Supports|Supports]] ● [[:Category:Function Group: Systems|Systems]]
+|-
+! | T&nbsp;-&nbsp;Z
+| colspan="4" | [[:Category:Function Group: Tasks|Tasks]] ● [[:Category:Function Group: Timeline|Timeline]] ● [[:Category:Function Group: Uncategorised|Uncategorised]] ● [[:Category:Function Group: Variables|Variables]] ● [[:Category:Function Group: Vehicles|Vehicles]] ● [[:Category:Function Group: VR|VR]] ● [[:Category:Function Group: Warlords|Warlords]] ● [[:Category:Function Group: Waypoints|Waypoints]] ● [[:Category:Function Group: Weapons|Weapons]]
+|- style="text-align: center"
+! colspan="2" | By Locality
+| [[:Category:Functions: Local Effect|Local Effect]] {{Icon|localEffect|32}}
+| [[:Category:Functions: Global Effect|Global Effect]] {{Icon|globalEffect|32}}
+| [[:Category:Functions: Server Execution|Server Execution]] {{Icon|serverExec|32}}
+|
+|-
+! colspan="2" | See Also
+| colspan="5" | [[:Category:Functions|All Functions]] ● [[:Category:Scripting Commands|All Scripting Commands]] ● [[:Category:Scripting Commands by Functionality|Scripting Commands by Functionality]] ● [[Function|Functions explained]] ● [[Take On Helicopters: Functions Library]] ● [[Arma 2: Functions Library]] ● [[Arma 3: Functions Library]] ● [[Arma 3: CfgFunctions]]
+|}
+</includeonly><noinclude>
+
+== Usage ==
+{| style="width: 100%"
+|- style="background-color: #EEE"
+! Code
+! Result
+|-
+| <nowiki>{{Table/RVScriptingFunctions}}</nowiki>
+| {{Table/RVScriptingFunctions}}
+|}
+
+[[Category:Templates|{{PAGENAME}}]]</noinclude>

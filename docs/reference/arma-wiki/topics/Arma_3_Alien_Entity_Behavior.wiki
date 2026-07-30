@@ -1,0 +1,447 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Alien_Entity_Behavior
+// revision: 370230 (2024-11-12T23:10:53Z)
+// export sha1: q47xlqa5lufxsg8856wajx1rchakaj1
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 1.94
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+{{Feature|spoiler|"First Contact" campaign of [[Arma 3 Contact]]}}
+{{GVI|arma3|1.94}}
+
+The small Alien Entity (AE - referred to as Drone in technical systems) is used by ET for surveillance, reconnaissance, research, and defense as needed. It is made from unknown and supremely tough materials.
+The entity has local control of gravity, and it moves in pulses. It can collect and utilize almost any type of matter from the local environment. The AE appears to communicate on the broad electromagnetic spectrum.
+
+Around its central solid hull, the entity can hold one or more modules in its orbit. These do not themselves have propulsion, so they cannot move out of the entity's sphere of influence. Various types of module exist:
+
+# Scan Module: used to inspect nearby objects and materials
+# Gravity Tool Module: used to process and launch collected matter in two lethal modes:
+## Matter Shot: a precise single shot of matter
+## Matter Burst: a multi-round burst of matter
+# Matter: used to store collected matter as a resource
+## If it runs out, the entity will collect more from any surface
+## If it gets dislodged from its orbit, it will fall to the ground and decay (there is some danger to those who get close)
+
+The entity also features several countermeasures:
+
+# Anti-Projectile System: this can 'catch' and re-direct various slower speed projectiles (it can be overwhelmed)
+# Audiovisual Deception: this uses light and sound to disorient threats
+# Gravity Matter Swarm: this launches a cluster of semi-guided area denial projectiles
+# Gravity Matter Push: this launches matter in all directions as a less-than-lethal defense against nearby threats
+
+At this time there are no known vulnerabilities to Earth weapons, and the entity typically withdraws before any major damage can be inflicted.
+
+
+== Drone ==
+
+=== Drone Init ===
+
+After an Alien Entity (Small) is placed on the map, you need to execute the following functions before you get your drone fully operational.
+
+==== Setting Movement Grid ====
+Drone is only able to move in a generated grid. It can be generated on-the-fly via '''BIN_fnc_setObjectGrid''' or by using a movement grid module.
+
+[[File:contactMovementGrid.png||600px]]
+
+Syntax:
+<sqf>[drone, positionATL, cellSizeX, cellSizeY, cellSizeZ, resolutionX, resolutionY, resolutionZ] call BIN_fnc_setObjectGrid;</sqf>
+
+Parameters:
+
+* '''drone''': [[Object]] - object to which the grid is attached.
+* '''positionATL''': [[Array]] - [[Position#PositionATL|PositionATL]] where the drone grid should be created.
+* '''cellSizeX''': [[Number]] - (Optional, default 4) size of movement cells in the X axis (meters).
+* '''cellSizeY''': [[Number]] - (Optional, default 4) size of movement cells in the Y axis (meters).
+* '''cellSizeZ''': [[Number]] - (Optional, default 16) size of movement cells in the Z axis (meters).
+* '''resolutionX''': [[Number]] - (Optional, default 20) number of cells in the X axis.
+* '''resolutionY''': [[Number]] - (Optional, default 20) number of cells in the Y axis.
+* '''resolutionZ''': [[Number]] - (Optional, default 3) number of cells in the Z axis.
+
+==== Setting Movement Properties ====
+The way the drone moves can be changed via the following function. A list of all available movement types is listed in the section below.
+
+Syntax:
+<sqf>[bin_drone, movementProperties] call BIN_fnc_setMoveProperties;</sqf>
+
+Parameters:
+
+* '''drone''': [[Object]] - [[Object]] to which the movement properties are attached.
+* '''movementProperties''': [[String]] - Name of the movement class.
+
+==== Initialising Drone Scripted Sound System ====
+Syntax:
+<sqf>[drone] call BIN_fnc_soundDrone;</sqf>
+
+Parameters:
+
+* '''drone''': [[Object]] - [[Object]] to which the sound system is attached.
+
+==== Initialising Drone Behavior System ====
+Syntax:
+<sqf>[drone, behaviorType] call BIN_fnc_behaviorInit;</sqf>
+
+Parameters:
+
+* '''drone''': [[Object]] - [[Object]] to which the movement properties are attached.
+* '''behaviorType''': [[String]] - (Optional, default "Drone") name of the behavior type, can be either "Drone" or "DroneCombat".
+
+==== Example Code ====
+<sqf>
+[bin_drone, "Drone"] call BIN_fnc_behaviorInit;
+[bin_drone, "Drone"] call BIN_fnc_setMoveProperties;
+[bin_drone, getPosATL bin_drone, nil, nil, nil, 5, 5, 3] call BIN_fnc_setObjectGrid;
+[bin_drone] call BIN_fnc_soundDrone;
+</sqf>
+
+=== Switching Behaviors ===
+
+Behaviors listed below can be used with '''BIN_fnc_setBehavior''' & '''BIN_fnc_setBehaviorCoef'''.
+
+'''BIN_fnc_setBehavior''' is using the following syntax:
+<sqf>[drone, behaviorName, parameters, terminateBehaviour, interrupt] call BIN_fnc_setBehavior;</sqf>
+Parameters:
+
+* '''drone''': [[Object]] - object to which the movement properties are attached.
+* '''behaviorName''': [[String]] - (Optional, default "Drone") name of the behavior type. Can be either "Drone" or "DroneCombat".
+* '''parameters''': [[Array]] - (Optional, default []) parameters which can be passed to the behavior.
+* '''terminateBehaviour''': [[Boolean]] - (Optional, default [[false]]) if true, the currently executed behaviour will be terminated and a new one will be executed right after termination of the existing one is completed. The default is false.
+* '''interrupt''': [[Boolean]] - (Optional, default [[false]]) determines if behavior should be terminated immediately. In case of e.g. research behavior it means that instead of gently putting back a scanned object, it will be dropped to the ground right away. The default is false.
+
+Example:
+
+==== List of Available Behaviors ====
+{| class="wikitable"
+! Name
+! Description
+! Available parameters
+|-
+| Patrol
+| Drone will move around looking for enemy contacts
+|
+|-
+| Investigate
+| Drone will look at the nearest unit
+| 0: target (Optional): [[Object]] - object which Drone will look at
+|-
+| GravityCannon
+| If combat modules are are present, Drone will use them to engage either a random nearby target
+| <nowiki/>
+0: target: [[Object]] - (Optional) target for gravity cannon
+
+1: weapon: [[String]] - (Optional) can be {{hl|GravityShotgun_01}}, {{hl|GravityCannon_01}} or {{hl|GravityCannon_01_Precise}}
+|-
+| MissileSwarm
+| Drone will use an area of effect weapon releasing 5 missile like projectiles at nearby targets
+|
+|-
+| Jump
+| Drone will perform a jump to a specified location
+| <nowiki/>
+0: position - [[Array]] or [[String]] - PositionATL - position to move. If a string is provided, Drone will jump to a precalculated grid located in the provided file.
+
+1: charge (Optional) - [[Boolean]] - optional parameters controlling if Drone should be charging power before making a jump. The default is false.
+
+2: fast (Optional) - Drone will jump up straight away if it is set to true; the default is false. If a number is provided, Drone will pick fast jump if the distance is above that value.
+|-
+| Avoid
+| Drone will try to avoid contact with nearby units by moving away from them
+|
+|-
+|Research
+|Drone will perform research behavior on nearby objects
+| <nowiki/>
+0: target (Optional) - [[Object]] - target to scan. If not specified Drone will try to pick some random object in the available grid.
+
+1: endless (Optional) - [[Boolean]] - research will be performed until it is interrupted by script.
+|-
+| Light
+| Drone will use its light burst countermeasure and try to move away from incoming fire
+|
+|-
+| GravityBurst
+| Drone will use gravity burst when units are nearby
+|
+|-
+| CollectMatter
+| Drone will collect 4 matter balls which serve as gravity cannon magazines
+|
+|-
+| Reposition
+| Drone will move 100 meters away from incoming fire
+|
+|}
+
+=== Scripted Event Handlers ===
+
+{| class="wikitable"
+! Name
+! Output
+! Description
+|-
+| behaviorStarted
+| <nowiki/>
+0: [[Object]]
+
+1: Behavior name
+| Triggers when a new behavior FSM is triggered
+|-
+| behaviorCompleted
+| <nowiki/>
+0: [[Object]]
+
+1: Behavior name
+| Triggers when a new behavior FSM is completed. It will be also fired when behavior was interrupted!
+|}
+
+Example code:
+<sqf>
+Drone_EH = [missionNamespace, "behaviorCompleted", {
+	params["_object","_behavior"];
+	systemChat format["Object: %1, Behavior: %2", _object, _behavior];
+}] call BIS_fnc_addScriptedEventHandler;
+</sqf>
+
+=== Editing Move Properties ===
+
+Movement properties can be modified within the game editor. In order to access them, type the following code in console and execute it:
+<sqf>call BIN_fnc_bezierEditor;</sqf>
+
+[[File:contact bezier curve.png|600px]]
+
+You can add points to that graph by double clicking on the middle area. It is possible to move those points once they are created. When you are are ready, press the "Copy" button and paste the result to your config.
+It is not possible to obtain these values from mission files at the moment.
+<spoiler text="Show movement config">
+<syntaxhighlight lang="cpp">
+class Movement
+{
+	class Templates
+	{
+		#define CURVE		{ { 0, 0, 0 }, { 0.3, 0.9, 0 }, { 0.5, 0.9, 0 }, { 0.5, 1.070, 0 }, { 0.5, 1, 0 } }
+		#define CURVE_LONG	{ { 0, 0, 0 }, { 0.3, 0.9, 0 }, { 0.5, 0.9, 0 }, { 0.5, 1.024, 0 }, { 0.5, 1, 0 } }
+		#define CURVE_END	{ { 0, 0, 0 }, { 0.5, 1, 0 }, { 0.7, 1, 0 }, { 1, 1, 0 } }
+		#define CURVE_ROT	{ { 0, 0, 0 }, { 0, 2, 0 }, { 0.9, 1, 0 }, { 1, 1, 0 } }
+
+		class Default
+		{
+			speed = 8;								// average travel speed in m/s
+			pulseDistance = 100;					// distance between pulses
+			maxPulseDistanceFar = 100;				// maximum distance between pulses in long-distance travel
+			maxPulseDistanceClose = 3;				// maximum distance between pulses in short-distance travel
+			altitude = 100;							// altitude above terrain level for long jumps
+			curve[] = { { 0, 0 }, { 1, 1 } };		// movement curve
+			curveEnd[] = { { 0, 0 }, { 1, 1 } };	// movement curve on the last waypoint (smoother settle-in)
+			curveRotation[] = { { 0, 0, 0 }, { 1, 0, 0 }, { 0, 1, 0 }, { 1, 1, 0 } };
+		};
+
+		class Drone : Default
+		{
+			speed = 7;
+			curve[] = CURVE;
+			curveEnd[] = CURVE_END;
+			curveRotation[] = CURVE_ROT;
+		};
+
+		class Drone_Intro3 : Drone
+		{
+			speed = 12;
+			pulseDistance = 550;
+			maxPulseDistanceFar = 550;
+		};
+
+		class Drone_Long : Drone
+		{
+			speed = 14;
+			pulseDistance = 250;
+			maxPulseDistanceFar = 550;
+			curve[] = CURVE_LONG;
+		};
+
+		class CombatDrone : Default
+		{
+			speed = 14;
+			maxPulseDistanceFar = 40;
+			curve[] = CURVE;
+			curveEnd[] = CURVE_END;
+			curveRotation[] = CURVE_ROT;
+		};
+
+		class CombatDrone_Fast : Default
+		{
+			speed = 28;
+			maxPulseDistanceFar = 40;
+			curve[] = CURVE;
+			curveEnd[] = CURVE_END;
+			curveRotation[] = CURVE_ROT;
+		};
+
+		class CombatDrone_Long : Default
+		{
+			speed = 28;
+			pulseDistance = 500;
+			maxPulseDistanceFar = 1000;
+			curve[] = CURVE_LONG;
+			curveEnd[] = CURVE_END;
+			curveRotation[] = CURVE_ROT;
+		};
+
+		class ModularShip : Default
+		{
+			speed = 2;
+			curve[] = CURVE;
+			curveEnd[] = CURVE_END;
+			curveRotation[] = CURVE_ROT;
+		};
+	};
+};
+</syntaxhighlight>
+located in <sqf inline>configFile >> "CfgContact" >> "Movement" >> "Templates"</sqf>.
+</spoiler>
+
+=== Handy Functions List ===
+
+{| class="wikitable"
+! Function
+! Description
+! Notes
+|-
+| <sqf>bin_drone setVariable ["#bD", 1];</sqf>
+| Set danger level on Drone. Danger goes from 0 (no danger) to 1 (maximum danger).
+|
+|-
+| <sqf>bin_drone setVariable ["#bState", "Combat"];</sqf>
+| Sets Drone behavior to the selected state. The currently supported modes are "Safe" & "Combat".
+|
+|-
+| <sqf>bin_drone setVariable ["#bTarget", player];</sqf>
+|Sets a target for Drone's gravity cannon
+|
+|-
+| <sqf>
+[west, 0] call BIN_fnc_setTargetWeight;		// all units from side "west" will be ignored by the targeting system
+[player, 10] call BIN_fnc_setTargetWeight;	// increase player's chance of being targeted by Drone weapons
+[bis_car, 0] call BIN_fnc_setTargetWeight	// vehicle and its crew will be ignored by the targeting system
+</sqf>
+|Coef to target priority - set to 0 to basically exclude Drone from target selection. Function accepts a group, side, vehicle or unit.
+|Applied to the individual unit, side or vehicle - not Drone!
+|-
+| <sqf>[bin_drone, "gravitycannon", [cursorObject, "GravityShotgun_01"] call BIN_fnc_setBehavior;</sqf>
+| Forces Drone to target a specific object
+|
+|-
+| <sqf>[bin_drone, "gravityCannon",10] call BIN_fnc_setBehaviorCoef;</sqf>
+| Change probability of picking a specific behavior
+|
+|-
+| <sqf>[bin_module_01, player, "GravityCannon_01_Precise", false, 1] call BIN_fnc_setDroneModuleTarget;</sqf>
+| Targets and fires module at the player
+| Parameters:
+
+0: '''Module''': [[Object]] - module which should fire
+1: '''Target''': [[Object]] or [[Position]] - where the module should aim at<br>
+2: '''Weapon''': [[String]] - name of the weapon which a module should use. It can be {{hl|GravityShotgun_01}}, {{hl|GravityCannon_01}} or {{hl|GravityCannon_01_Precise}}.<br>
+3: '''Use Charging''': [[Boolean]] - (Optional, default [[true]]) define if charging of a module should be skipped.<br>
+4: '''Timeout delay''': [[Number]] - (Optional, default 1) delay in seconds.
+|-
+| <sqf>[bin_drone, "SwarmMissile_01_launcher_F"] call BIS_fnc_fire;</sqf>
+| Manually trigger a missile swarm
+|
+|}
+
+
+== Modules ==
+
+=== Setup ===
+
+'''Creating module'''
+
+In order to create a module use the following function. You don't need to place a drone module in the world itself!
+
+Syntax: '''_module''' = [drone, moduleClassName, moduleType] call '''BIN_fnc_initDroneModule''';
+
+Parameters:
+
+* '''drone''': [[Object]] - parent object to which modules are attached
+* '''movementProperties''': [[String]] - class name of the vehicle to create. The list of available modules is available below.
+* '''moduleType''': [[String]] - type of module to register - currently "combat", "matter" & "science" are available.
+
+=== Available Modules ===
+
+{| class="wikitable"
+! Classname
+! Name
+! Picture
+|-
+| Alien_MatterBall_01_F
+| Matter Ball
+| [[File:Alien_MatterBall_01_F.jpg|200px]]
+|-
+| <nowiki/>
+B_A_AlienDrone_Module_01_F
+
+O_A_AlienDrone_Module_01_F
+
+I_A_AlienDrone_Module_01_F
+| Scan Module
+
+(can be used to perform '''research''' operations)
+| [[File:B_A_AlienDrone_Module_01_F.jpg|200px]]
+|-
+| <nowiki/>
+B_A_AlienDrone_Module_02_F
+
+O_A_AlienDrone_Module_02_F
+
+I_A_AlienDrone_Module_02_F
+| Gravity Tool Module
+
+(can be used in '''combat''')
+| [[File:B_A_AlienDrone_Module_02_F.jpg|200px]]
+|}
+
+I, B, O are abbreviation for factions - I = '''Independent''', B = '''Blufor''', O = '''Opfor'''
+
+'''Module variables'''
+{| class="wikitable"
+!Name
+!Variable
+!Notes
+|-
+|Interval
+|'''bin_droneModule_interval'''
+|Sets how strictly a module is following Drone. 0 means it is basically out of control
+|-
+|Radius
+|'''bin_droneModule_radius'''
+|Radius of the module orbit (calculated from Drone's center)
+|-
+|Height
+|'''bin_droneModule_height'''
+|Height offset of the module orbit (calculated from Drone's center)
+|-
+|Rotational speed
+|'''bin_droneModule_rotationTime'''
+|How much time it takes to perform one full rotation
+|-
+| Damage
+| '''bin_droneModule_damage'''
+| By default, modules damage is synced to damage status of the parent vehicle. With this variable it is possible to override this behavior and either enable or disable damage completely.
+|}
+
+=== Example ===
+<sqf>
+private _module_1 = [BIN_drone, "I_A_AlienDrone_Module_02_F", "combat"] call BIN_fnc_initDroneModule;
+_module_1 setVariable ["bin_droneModule_interval", 0.75];
+_module_1 setVariable ["bin_droneModule_radius", 4.28683];
+_module_1 setVariable ["bin_droneModule_height", 1.5];
+_module_1 setVariable ["bin_droneModule_rotationTime", 6.5];
+</sqf>
+
+
+== Example Missions ==
+
+* Alien Entity: Combat Behavior example mission - {{Link|https://steamcommunity.com/sharedfiles/filedetails/1819779586}}
+* Alien Entity: Safe Behavior example mission - {{Link|https://steamcommunity.com/sharedfiles/filedetails/1819778427}}
+
+
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 1.94]]

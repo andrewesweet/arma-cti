@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_shakeCuratorCamera
+// revision: 349507 (2023-11-08T17:09:13Z)
+// export sha1: mx8b9gszhtlzgzcv0expw570zuqjzfb
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Shake curator camera.
+
+|s1= [strength,duration,area] spawn [[BIS_fnc_shakeCuratorCamera]]
+
+|p1=strength: [[Number]] - (Optional, default 0.01) shaking strength
+
+|p2= duration: [[Number]] - (Optional, default 0.7) duration in seconds
+
+|p3= area: [[Array]] - (Optional, default <sqf inline>[]</sqf>) shake only when camera is in given distance from center. In format:<br>
+0: [[Position]] - Center<br>
+1: [[Number]] - Radius
+
+|exec= spawn|r1= [[Boolean]]
+
+|x1= <sqf>[] spawn BIS_fnc_shakeCuratorCamera;</sqf>
+
+|x2= <sqf>[0.1, 5, [BIS_explosion_center,500]] spawn BIS_fnc_shakeCuratorCamera;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

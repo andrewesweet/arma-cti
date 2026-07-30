@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/Editing_Websites
+// revision: 339288 (2023-04-28T14:07:05Z)
+// export sha1: cetz2845wwdeomp4mjn5g2tjnndya2a
+// categories: Category:Editing Websites
+// Vendored snapshot. Do not edit — re-export instead.
+
+Sites that contain information about making your own missions in OFP/ArmA.
+
+== Czech ==
+
+*{{Link|http://help.bigames.info|Czech Armed Assault on-line help}}
+*{{Link|http://ofp.valka.cz|OFP.valka.cz Mission Database}}
+*{{Link|http://ofp.ruprt.cz|Ruprt's Mission Depository}} and {{Link|http://ofp.ruprt.cz/forum/index.php|editing forum}} 
+
+== English ==
+
+*{{Link|http://www.armasource.com|ArmA Source}}
+*{{Link|http://www.arma-net.co.uk|ArmA-Net}}
+*{{Link|http://www.armaholic.com|Armaholic.com Editing and scripting}}
+*{{Link|http://www.ofpmdb.net|Armed Assault & OFP Mission Database}}
+*{{Link|http://www.armed-assault-zone.com|Armed-Assault-Zone.com}}
+*{{Link|http://www.armedassault.info|ArmedAssault.info}}<br>
+*{{Link|http://www.armedassault.org|ArmedAssault.org}}
+*[[Mapfact|Mapfact Forums]]
+*{{Link|http://OFPBase.freehostyou.com|OFP Base - Addons, Mods, Missons SP & MP, Campaings, Islands, Utilities}}
+*[[OFPEC|OFPEC - The Editing Center]]
+*{{Link|http://operationreality.org|Operation Reality Mission Building Team}}
+*{{Link|http://www.opflashpoint.org|OpFlashpoint.org}}
+*{{Link|http://tactical.nekromantix.com/|PMC Tactical}}
+*{{Link|http://www.themedicstation.com|The Medic Station Tactical Online Gaming - ArmA Mission & Addon Database}}
+
+== French ==
+
+*{{Link|http://www.arma-fr.net|ArmA-Fr.net (Edition, Tutoriaux, Outils, Aides...)}}
+*{{Link|http://www.armedassault.fr|ArmedAssault.fr}}
+*{{Link|http://edition.armedassault.fr|Edition Center (Fr)}}
+
+== Russian ==
+
+*{{Link|http://arma.at.ua|arma.at.ua and SARMAT}}
+
+== Spanish ==
+
+*{{Link|http://edicion.ffaa.es/|Centro de Edición, por Frankeke- Página dédicada a la edición de partidas.}}
+*{{Link|http://www.checkyour6.org/|Check your Six Simulacion española  ( Edition, Tutorials, Utils, ideas ...)}}
+*{{Link|http://tigersharks.ffaa.es/|XIII COMPAÑIA - Clan dedicado a la edición y al juego cooperativo.}}
+*{{Link|http://www.armados.info/|ARMADOS - Comunidad y Portal de juegos de simulación on-line.}}
+
+== German ==
+
+*{{Link|http://www.assaultmissionstudio.de|Assault Mission Studio.de (Deutsche Editingseite, Missionen, Kampagnen, Scripte und mehr)}}
+
+[[Category:Editing_Websites| ]]

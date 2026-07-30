@@ -1,0 +1,79 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Layer
+// revision: 352005 (2024-02-01T23:24:02Z)
+// export sha1: 5c3k2vzolyv58a0y56s5hol97t0gkjl
+// categories: Category:Eden Editor: Asset Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A layer is like a folder that can contain multiple entities of type [[#Object|object]], [[#Group|group]], [[#Trigger|trigger]], [[#Waypoint|waypoint]], [[#System|system]] or [[#Marker|marker]].
+They can also contain sub-layers. Layers can be useful in various ways such as:
+* Tidying up the editor view while editing by hiding the layers and their entities
+* Grouping certain entities together thematically
+* Preventing a group of entities from being accidentally edited by disabling transformation
+* Dynamically creating the entities within a layer during the scenario
+
+
+== Creating a layer ==
+
+There multiple ways to create layers:<br/>
+# Select entities in the 3D or map view or the entity list (left panel) and press the ''New Layer'' button in the entity list<br/>
+# Use the [[add3DENLayer]] scripting command<br/>
+{{Feature|informative|Pressing the ''New Layer'' button without having entities selected will create an empty layer}}
+[[File:A3 EdenEditor CreateLayer.gif|center|512px]]
+
+
+== Deleting a layer ==
+
+Layers can be deleted by either selecting them in the entity list and pressing the {{Controls|Del}} key or using the ''Delete'' button in the entity list.
+{{Feature|important|Deleting a layer will also delete all sub-layers and entities within it!}}
+
+
+== Dynamically create layer entities ==
+
+One advantage of layers is that they can be used to hide or show all entities within the layer dynamically via [[:Category: Scripting Topics|scripting]] during a scenario.<br/><br/>
+# Create a layer, name it ''NewAO'' and add some objects and markers to it.
+# Select all objects in that layer and uncheck ''Show Model'' and ''Enable Simulation'' in the attributes. In case of markers, set the ''Alpha'' value to {{hl|0}}<br>[[File:A3 EdenEditor HideLayerEntities.gif|center|512px]]
+# Preview the scenario
+# All objects and markers will now be invisible
+# Open the [[Arma 3: Debug Console]] and execute the following code. If you use want to activate the layer via a trigger, make sure to check the ''Server only'' checkbox<sqf>
+getMissionLayerEntities "NewAO" params ["_objects", "_markers"]; // The command returns an array with two arrays. First array contains all objects, second array contains all makers
+_markers apply { _x setMarkerAlpha 1; }; // Show all markers
+_objects apply { _x enableSimulationGlobal true; _x hideObjectGlobal false; }; // Show all entities and enable their simulation
+</sqf>
+
+
+== Attributes ==
+
+<onlyinclude>
+{| class="wikitable sortable"
+! colspan="3" | <big>Info</big>
+! colspan="2" | <big>[[Eden Editor: Setting Attributes|Development]]</big>
+|-
+! Name
+! Category
+! class="unsortable" | Description
+! Property
+! Type
+|-
+| '''Name'''
+| Init
+| Name of the layer set in [[:Category:Eden Editor|Eden Editor]]
+| {{hl|Name}}
+| [[String]]
+|-
+| '''Enable Transformation'''
+| Init
+| If set to [[false]] (unchecked), the layer cannot be modified inside [[:Category:Eden Editor|Eden Editor]].
+| {{hl|Transformation}}
+| [[Boolean]]
+|-
+| '''Enable Visibility'''
+| Init
+| If set to [[false]] (unchecked), the layer will not be shown inside [[:Category:Eden Editor|Eden Editor]]. This '''will not''' affect visibility during the scenario!
+| {{hl|Visibility}}
+| [[Boolean]]
+|}
+</onlyinclude>
+
+
+[[Category: Eden Editor: Asset Types|Layer]]

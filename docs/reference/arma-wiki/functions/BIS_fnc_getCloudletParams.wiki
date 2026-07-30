@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getCloudletParams
+// revision: 349529 (2023-11-08T17:16:25Z)
+// export sha1: c1lvykjboghfixthl2ueqrawcwkak43
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Systems | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Systems
+
+|descr= Return particle params of CfgCloudlets class.
+
+|s1= [cfgCloudletClass] call [[BIS_fnc_getCloudletParams]]
+
+|p1= cfgCloudletClass: [[String]] - wanted class in cfgCloudlets
+
+|r1= [[Array]] - format [<nowiki/>[[setParticleParams]], [[setParticleRandom]], [[setDropInterval]]]<br>
+<spoiler text="Show format">
+ [
+ 	[
+ 		[particleShape, particleFSNtieth, particleFSIndex, particleFSFrameCount, particleFSLoop],
+ 		animationName,
+ 		particleType,
+ 		timerPeriod,
+ 		lifeTime,
+ 		position,
+ 		moveVelocity,
+ 		rotationVelocity,
+ 		weight,
+ 		volume,
+ 		rubbing,
+ 		size,
+ 		color,
+ 		animationSpeed,
+ 		randomDirectionPeriod,
+ 		randomDirectionIntensity,
+ 		onTimerScript,
+ 		beforeDestroyScript,
+ 		"",
+ 		angle,
+ 		onSurface,
+ 		bounceOnSurface,
+ 		emissiveColor
+ 	],
+ 	[
+ 		lifeTimeVar,
+ 		positionVar,
+ 		moveVelocityVar,
+ 		rotationVelocityVar,
+ 		sizeVar,
+ 		colorVar,
+ 		randomDirectionPeriodVar,
+ 		randomDirectionIntensityVar,
+ 		angleVar,
+ 		bounceOnSurfaceVar
+ 	],
+ 	interval
+]</spoiler>
+
+|x1= <sqf>["AmmoLightSmokeParticles"] call BIS_fnc_getCloudletParams;</sqf>
+
+|seealso= [[Arma 3: Particle Effects]] [[setParticleParams]] [[setParticleRandom]] [[setDropInterval]] [[drop]]
+}}

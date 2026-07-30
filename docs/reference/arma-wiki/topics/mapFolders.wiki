@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/mapFolders
+// revision: 364253 (2024-05-06T09:38:20Z)
+// export sha1: axhq7wvw5nn67nhc34g2rxne0wmg9jc
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|COMPATIBILITY= [[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD= {{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= {{Feature|warning|This tool has been replaced by [[Work Drive]] and is now deprecated.}}
+mapFolder is a simple batch script that created symbolic link from and to Arma 3 Tools, Arma 3, Arma 3 GU* and P drive. This has been designed to increase productivity.<br>
+Why a symbolic link rather than a shortcut? Simply because symbolic links are like mounts point, the link can be used in scripts, applications etc... whereas you can't with a shortcut.<br>
+<br>
+''*Copy of the game maintained by [[Game Updater]]''<br>
+<br>
+Hereafter, the diagram of links created (source and link)<br>
+[[File:mapFolders_links.jpg|400px]]
+|COMMAND= mapFolders.bat
+
+|OPTIONS=
+|EXAMPLE= mapFolders.bat
+|NOTES= You must allow mapFolders in your settings from [[Arma 3: Tools Launcher]], "Preferences", "Settings" before running mapFolder.<br>Keep in mind the source directories doesn't move, they stay in their path.
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= [[P drive]], [[P drive/settings|settings.ini]]
+
+}}

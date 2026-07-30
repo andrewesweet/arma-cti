@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_getIDWMapSaveData
+// revision: 309516 (2022-05-05T12:06:41Z)
+// export sha1: 4tfsi0mjo6zoj35xh3r677mbyae2bx1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: IDWMap | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= IDWMap
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Returns array with IDWMap data which is used for saving/loading
+
+	Parameter(s):
+		NONE
+
+	Returns:
+		ARRAY - save data
+		
+	Example:
+		call BIN_fnc_getIDWMapSaveData
+*/
+
+#define MAPDRAWPATTERNINDEX_DEFAULT 0
+#define MAPDRAWCOLORSET_DEFAULT [[0,0,0.514,0.7],[0,0,0.875,0.7],[0,0.247,1,0.7],[0,0.659,1,0.7],[0.035,1,0.961,0.7],[0.443,1,0.553,0.7],[0.843,1,0.153,0.7],[1,0.749,0,0.7],[1,0.357,0,0.7],[0.941,0,0,0.7],[0.522,0,0,0.7]]
+#define MAPDRAWIDC_DEFAULT 51
+
+// if the data was not yet set
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_getIDWMapSaveData]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_getIDWMapSaveData;</sqf> -->
+
+|seealso=
+}}

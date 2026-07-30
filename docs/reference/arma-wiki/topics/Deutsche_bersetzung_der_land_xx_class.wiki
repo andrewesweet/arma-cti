@@ -1,0 +1,62 @@
+// source: https://community.bistudio.com/wiki/Deutsche_Übersetzung_der_land_xx_class
+// revision: 180418 (2021-01-02T01:41:07Z)
+// export sha1: r7ud19b0yqr8mr92uzwzkmvrhwlpcrk
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''disclaimer'''
+
+This Article is no individual content written in another than the allowed english language. It is a translation of an existing english content which can be found [[The_Land_xx_class|here]] on this Wiki Board. The only purpose is to make this original content readable for people with less English skills.
+
+----
+
+Inselbauer sind immer wieder frustriert wenn sie feststellen, das die Gebäude, die sie in mühseeliger Kleinarbeit auf ihrer Map platziert haben nicht funktionieren. Sie sind zwar da, aber die Türen gehen nicht auf, Leitern können nicht erklommen werden  und die Lampen leuchten des Nachts nicht. Komischerweise funktioniert das alles aber wenn dieses Gebäude im Editor platziert wird und nicht auf der Map (als wrp). Dieses Missverständnis führt oft dazu das die Addonbauer ihr Projekt in die Ecke feuern. Dabei ist es eigentlich so einfach.
+Denn damit das alles funktioniert '''muss''' man die '''class land_NameDerP3D'''  und '''model = NameDerP3D''' definiert haben. So einfach ist das
+
+----
+
+Und damit die Animationen überhaupt funktionieren, sei es nun im Editor oder anderswo, muss die Geolod Eigenschaft Deines p3d Objektes mindestens als  class=house definiert sein. Es gibt andere, weniger genutzte Animationsklassen (class) wie z.B. 'housesimulated' und 'fuelstation', aber wenn Du absolut sicher gehen willst, das alles so funktioniert wie Du es Dir vorstellst, dann nutze die '''class=house''' Definition in der Config....so einfach ist das
+
+class vererbte_class; // generell house oder house_f
+ class land_mein_tolles_Gebaeude: house oder house_f
+ {
+     model=\some\location\my_great_building.p3d;
+     ..... der Rest ist uninteressant
+ };
+
+*Merke Dir das Du auch die '''land''' classes (Klassen) für andere P3D Klassentypen (class types) nutzen kannst, dass ist optional. Aber wenn Du diese einzige und besondere Eigenschaft von class=house nutzen willst, dann '''musst''' Du diese mit land_ deklarieren...so einfach ist das
+
+----
+
+Rein von der Mechanik und Funktionsweise der Engine her betrachtet ist es scheißegal wie so ein Objekt heisst. der Name selber spielt absolut keine Rolle, er wird so oder so funktionieren. Damit gab es in Arma 2 manchmal Probleme wenn BIS einen anderen BIS binarize Namen verwendet hatte als der den BIS and die Community ausgegeben hat. BIS Binarize ist zu der Community nicht so freundlich oder vergibt nicht so schnell Fehler. Es sucht auf eine sehr einfach und primitive Weise nach Werten welche 
+
+''NameDerP3D = class land_NameDerP3D''  '''vorraussetzt''' .
+
+Und damit das auch funktioniert muss BIS binarize in der Lage sein die Config zu finden wo land_xx deklariert ist.
+
+Wenn Arma 2 Objekte portiert werden, ob nun BIS eigene Objekte oder die Objekte von Addonbauern, kann es sein das:
+* 1.) dort keine entsprechenden land_xx Definitionen existieren, weil sie nie definiert wurden oder (was sehr sehr sehr viel warscheinlicher ist)
+* 2.) Du hast BIS Binarize nicht gesagt wo es suchen soll
+
+PBOProject von Mikero schaut sich die WRP an, die BIS Binarize erstellt und prüft ob '''JEDE''' P3D mit class=house definiert wurde '''UND''' ob diese Klasse dann auch den entsprechenden '''land_''' Eintrag hat oder nicht. 
+Sollten dort einige Einträge fehlen, so hast Du verschiedene Möglichkeiten:
+
+*Entferne oder zumindest verändere die entsprechende Geolod Eigenschaft nach etwas anderem das dep3d.exe nutzt.
+*Nutze das tool WinGrep um die entsprechende config auf Deinem P laufwerk zu finden und um PBOProject dann den genauen Pfad mitzuteilen (dann kann bis binarize sich auf die Suche machen)
+*erstelle Dir Deine eigene land_xx class in Deiner eigenen Config für diese land_Klasses die allem anschein nach nicht existieren.
+
+'''Die Jagd nach land_xx'''
+Aufgrund der eigentlich ziemlich simplen aber dennoch schlauen Art und Weise wie die Config Architektur funktioniert, kann die relevante land_xx definition irgendwo auf Deinem P Laufwerk liegen
+Für gewöhnlich ist die land_xx definition eng mit dem Name des P3D verbunden. 
+
+Ein Beispiel: 
+
+Das Addon \mein\Elefant.p3d hat ''warscheinlich'' eine Config wo (wenn wir Glück haben) die land_Elefant Klasse definiert ist. Leider ist das aber nicht immer der Fall und um dem ganzen noch die Krone aufzusetzen gehen wir mal von einem Projekt aus, das ziemlich groß ist und wo eine einzige Config alle p3d´s zusammenfasst und...sagen wir mal...\irgend\wo liegt.
+
+Bis binarize verbringt eine lange Zeit damit diese Config zu finden
+
+Standartmässig 'denkt' sich PBOProject ganz einfach wo bis binarize suchen muss. Somit macht es einen guten Job, kann aber niemals perfekt sein. Die eine Sache die PBOProject z.B. ''NICHT'' leisten kann ist Bis binarize zu sagen wo\genau es suchen soll. Denn Euer P laufwerk ist mit allerhand Krams vollgestopft was bis binarize damit quitiert, indem es einfach crasht...ohne Euch gross zu sagen warum.
+Daher ist es so wichtig, dass die Definitionen eindeutig sind und das sind sie nur wenn der ''NameDerP3D'' in der Config mit '''land_NameDerP3D''' definiert wurde. Somit kann es nur eine einzioge Instanz dieses P3D Objektes im ganzen Spiel geben.
+
+Des weiteren musst Du sicherstellen, dass Du jedes einzelne Addon welches land_xx class Definitionen besitzt, vollständig auf Deinem P Laufwerk entpackt hast bevor Du Deine eigene erstellen kannst.
+
+back to [[The Land xx class]] in English language

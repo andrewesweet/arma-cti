@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/setMagazineTurretAmmo
+// revision: 377488 (2026-01-02T06:49:09Z)
+// export sha1: 1elcfguy1oswlwin1ovtk1ij05ovg63
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr2= Turrets
+
+|descr= Sets ammo count to given amount for given turret magazine.
+{{Feature|informative|
+{{GVI|arma3|2.18|size= 0.75}} The magazine is first checked if it is loaded into the turret weapon, if not, the command falls back to old behaviour of selecting the first magazine from the list of available magazines.
+In most cases it will be the loaded magazine.
+}}
+{{Feature|important|The turret itself '''must''' be local (see [[turretLocal]], [[turretOwner]]).}}
+
+|s1= vehicle [[setMagazineTurretAmmo]] [magazineClass, ammoCount, turretPath]
+
+|p1= vehicle: [[Object]]
+
+|p2= magazineClass: [[String]]
+
+|p3= ammoCount: [[Number]]
+
+|p4= turretPath: [[Turret Path]] - [-1] for driver turret is supported
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myMRAP setMagazineTurretAmmo ["200Rnd_127x99_mag_Tracer_Red", 30, [0]];</sqf>
+
+|x2= Set ammo count on commander turret from server:
+<sqf>
+_tank = tank;
+_turret = [0,0];
+_magazine = "200Rnd_127x99_mag_Tracer_Red";
+_ammo = 10;
+[_tank, [_magazine, _ammo, _turret]] remoteExec ["setMagazineTurretAmmo", _tank turretOwner _turret];
+</sqf>
+
+|seealso= [[magazineTurretAmmo]] [[setAmmoOnPylon]] [[turretLocal]] [[turretOwner]]
+}}

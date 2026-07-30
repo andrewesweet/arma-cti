@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/conversationDisabled
+// revision: 349091 (2023-11-08T14:47:27Z)
+// export sha1: gi9k6lp70jf8io67z3qkj8kap2n8t60
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Radio and Chat
+
+|descr= A getter for [[disableConversation]]. 
+
+|s1= [[conversationDisabled]] unit
+
+|p1= unit: [[Object]] 
+
+|r1= [[Boolean]] - returns [[true]] if the status of [[kbTell]]'s ''IsSpeaking'' for the given unit is {{hl|> 0}}. See [[disableConversation]] for more info
+
+|x1= <sqf>if (conversationDisabled soldier1) then { soldier1 disableConversation false };</sqf>
+
+|seealso= [[disableConversation]]
+}}

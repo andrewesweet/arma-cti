@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/set3DENObjectType
+// revision: 364151 (2024-05-05T10:44:17Z)
+// export sha1: 3lbsrwkjvhdr4j75m4cfvw1o6jfjiee
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Sets the classname of one or more given Eden Editor [[Eden Editor: Object|objects]]. For Logic objects use [[set3DENLogicType]].
+
+|s1= objects [[set3DENObjectType]] classname
+
+|p1= objects: [[Array]] of [[Object]]s
+
+|p2= classname: [[String]] - name of the cfgVehicles class
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[get3DENMouseOver select 1] set3DENObjectType "B_crew_F"; // turns object under cursor into a blufor crewman</sqf>
+
+|seealso= [[set3DENLogicType]] [[get3DENMouseOver]] [[add3DENConnection]] [[add3DENEventHandler]] [[all3DENEntities]] [[collect3DENHistory]] [[create3DENComposition]] [[create3DENEntity]] [[current3DENOperation]] [[delete3DENEntities]] [[do3DENAction]] [[get3DENActionState]] [[get3DENAttribute]] [[get3DENCamera]] [[get3DENConnections]] [[get3DENEntityID]] [[get3DENGrid]] [[get3DENIconsVisible]] [[get3DENLinesVisible]] [[get3DENSelected]] [[is3DEN]] [[is3DENMultiplayer]] [[move3DENCamera]] [[remove3DENConnection]] [[remove3DENEventHandler]] [[removeAll3DENEventHandlers]] [[set3DENAttributes]] [[set3DENGrid]] [[set3DENIconsVisible]] [[set3DENLinesVisible]]
+}}

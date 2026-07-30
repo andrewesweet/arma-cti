@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/className
+// revision: 318707 (2022-05-13T09:21:21Z)
+// export sha1: 26or3x3di0jdcuhouud6chu1m7kx2me
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Locations
+
+|descr= Returns short name of location. For config class name, see [[configName]]
+
+|s1= [[className]] location
+
+|p1= location: [[Location]]
+
+|r1= [[String]]
+
+|x1= <sqf>_shortName = className myLocation;</sqf>
+
+|seealso= [[setText]] [[createLocation]] [[deleteLocation]] [[drawLocation]] [[locationPosition]] [[locationNull]] [[nearestLocation]] [[nearestLocations]] [[nearestLocationWithDubbing]] [[name]]
+}}

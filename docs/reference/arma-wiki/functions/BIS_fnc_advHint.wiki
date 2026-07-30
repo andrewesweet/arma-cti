@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_advHint
+// revision: 327971 (2022-07-13T14:30:14Z)
+// export sha1: hvlquipxfdgsaej4yy6l8d6l7e0nz0l
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Shows advanced hint to player.
+
+|s1= [classes, duration1, condition1, duration2, condition2, showing, onlyFullHint, onlyOnce, useSound] call [[BIS_fnc_advHint]]
+
+|p1= '''classes''': [[Array]] - array in format ["hint main class", "hint class"]
+
+|p2= '''duration1''': [[Number]] - (Optional, default 15) duration of short hint in seconds
+
+|p3= '''condition1''': [[String]] - (Optional, default "") condition for hiding the short hint
+
+|p4= '''duration2''': [[Number]] - (Optional, default 35) duration of full hint in seconds
+
+|p5= '''condition2''': [[String]] - (Optional, default "") condition for hiding the full hint
+
+|p6= '''showing''': [[Boolean]] - (Optional, default [[false]]) true shows hint even if tutorial hints are disabled in game settings
+
+|p7= '''onlyFullHint''': [[Boolean]] - (Optional, default [[false]]) true shows full hint without using of short hint
+
+|p8= '''onlyOnce''': [[Boolean]] - (Optional, default [[false]]) show the hint in mission only once (true) or multiple times (false)
+
+|p9= '''useSound''': [[Boolean]] - (Optional, default [[true]]) true plays a sound when the hint is opened
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[["Common", "GPS"]] call BIS_fnc_advHint;</sqf>
+
+|x2= <sqf>[["Common", "GPS"], 15, "", 35, "", false, false, false, true] call BIS_fnc_advHint; // default</sqf>
+
+|seealso= [[Arma 3: Advanced Hints (Field Manual)|Advanced Hints]] [[BIS_fnc_advHintFormat]] [[BIS_fnc_advHintCall]] [[BIS_fnc_advHintArg]]
+}}
+
+{{Note
+|user= Sixtyfour
+|timestamp= 20160813120900
+|text= This command will not do anything for players who have "Tutorial Hints" disabled in their Options > Game difficulty settings or on servers that disable it in their relevant difficulty preset.
+}}

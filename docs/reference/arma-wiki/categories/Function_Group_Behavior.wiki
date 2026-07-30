@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Behavior
+// revision: 166553 (2020-10-11T15:18:17Z)
+// export sha1: 07q3qbg5hbr1ue404dtxzlznyyh70o6
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Function Group: Contact]]

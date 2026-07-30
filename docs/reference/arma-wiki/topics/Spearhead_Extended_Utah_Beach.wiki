@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/Spearhead_Extended_Utah_Beach
+// revision: 376020 (2025-07-21T15:58:10Z)
+// export sha1: 0glwsz5ygdtb4wbk54eyo8tilyvq2mg
+// categories: Category:SPEX - Spearhead Extended
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+[[File:spex_utah_beach_picturemap_ca.jpg|400px|right|Satellite Image|thumb]]
+
+This meticulously crafted 1:2 scale recreation of Utah Beach, captures the vast beaches and pivotal landmarks of the D-Day assault. Key locations, including the iconic towns of Sainte-Mère-Église and Sainte-Marie-du-Mont, the flooded fields, and the fortified stronghold of Brécourt Manor, bring history to life in stunning detail.
+
+Prepare to assault the wide-open beachhead, navigate challenging flooded landscapes, and explore the scenic Normandy countryside. With various detailed, area-specific landscapes and objects, this terrain immerses players in the atmosphere of the Utah Beach landings and the fierce battles that followed.
+
+= Statistics =
+
+{| class="wikitable"
+|-
+| Size || 7.68 km x 7.68 km
+|-
+| Area || 58.98 km<sup>2</sup>
+|-
+| Coordinates || 49°25'58.4" North<br/>
+1°11'39.4" West
+|-
+| Object Count ||
+{{Columns|1|
+* '''TOTAL:''' 430049
+* BUILDING: 389
+* BUNKER: 9036
+* BUSH: 126631
+* CHURCH: 14
+* CROSS: 8
+* FENCE: 48932
+* FORTRESS: 465
+* FOUNTAIN: 44
+* HIDE: 89111
+* HOUSE: 10896
+* MAIN ROAD: 308
+* RAILWAY: 33
+* ROAD: 2
+* ROCK: 502
+* SHIPWRECK: 3
+* TRACK: 10503
+* TREE: 113885
+* VIEW-TOWER: 153
+* WALL: 19131
+* WATERTOWER: 3
+}}
+|}
+
+= High Resolution Map =
+
+A high resolution .svg can be downloaded {{Link/External|link=https://drive.google.com/drive/folders/19pnqIXrccqvsDbbo12YoWTfM1IMBStik?usp=sharing|text=here}}
+
+[[Category: SPEX - Spearhead Extended]]

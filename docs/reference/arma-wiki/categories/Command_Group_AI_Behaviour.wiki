@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_AI_Behaviour
+// revision: 308324 (2022-02-15T19:55:00Z)
+// export sha1: m2ov9xjysh73kd9ehu7pj3aakz12545
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to modify the behaviour of the [[:Category:AI|AI]].
+
+[[Category:Scripting Commands by Functionality]]

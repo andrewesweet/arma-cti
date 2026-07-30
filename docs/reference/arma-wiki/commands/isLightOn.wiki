@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/isLightOn
+// revision: 377881 (2026-01-04T16:20:38Z)
+// export sha1: hwopx88le64blrz7e7cnoytu0nxgjfd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= Lights
+
+|arg= global
+
+|descr= Returns [[true]] if vehicle headlights are on otherwise [[false]].
+
+|s1= [[isLightOn]] vehicle
+
+|p1= vehicle: [[Object]] - vehicle with headlights
+
+|r1= [[Boolean]]
+
+|s2= [[isLightOn]] [vehicle, turret]
+
+|s2since= arma3 1.94
+
+|p21= vehicle: [[Object]] - vehicle with search light on a turret
+
+|p22= turret: [[Turret Path]]
+
+|r2= [[Boolean]]
+
+|x1= <sqf>_headlightsOn = isLightOn vehicle player;</sqf>
+
+|x2= <sqf>_pilotLightOn = isLightOn heli;</sqf>
+
+|x3= <sqf>_searchLightOn = isLightOn [heli, [0]];</sqf>
+
+|seealso= [[setPilotLight]] [[isCollisionLightOn]] [[setCollisionLight]] [[isIRLaserOn]]
+}}

@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/SPEAssets
+// revision: 375834 (2025-07-19T10:21:45Z)
+// export sha1: 5a4ic0wo7bwqf5eqr48cr0yi2z8r4cn
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Navbox
+
+| title = [[Spearhead 1944|Spearhead 1944 Assets]]
+
+| title1 = Factions
+| content1 = [[Spearhead 1944 CfgVehicles WEST|Axis]] {{!}} [[Spearhead 1944 CfgVehicles GUER|Allies]] {{!}} [[Spearhead 1944 CfgVehicles CIV|Civilian]] {{!}} [[Spearhead 1944 CfgGroups|Groups]]
+
+| title2 = Props
+| content2 = [[Spearhead 1944 CfgVehicles Equipment|Equipment]] {{!}} [[Spearhead 1944 CfgVehicles Animals|Animals]] {{!}} [[Spearhead 1944 CfgVehicles Other|Other]]
+
+| title3 = Items
+| content3 = [[Spearhead 1944 CfgWeapons Weapons|Weapons]] {{!}} [[Spearhead 1944 CfgWeapons Vehicle Weapons|Vehicle Weapons]] {{!}} [[Spearhead 1944 CfgMagazines|Magazines]] {{!}} [[Spearhead 1944 CfgWeapons Items|Items]] {{!}} [[Spearhead 1944 CfgWeapons Equipment|Equipment]] {{!}} [[Spearhead 1944 CfgGlasses|Glasses]] {{!}} [[Spearhead 1944 CfgVehicles Backpacks|Backpacks]]
+}}</includeonly><noinclude>
+Shows the [[Spearhead 1944]] Assets menu.
+
+== Usage ==
+{{<nowiki/>Navbox/SPEAssets}}
+
+{| style="width: 100%"
+|+ Examples
+|- style="background-color: #EEE"
+! Code
+! style="width: 80%" | Result
+|-
+| <nowiki>{{Navbox/SPEAssets}}</nowiki>
+| {{Navbox/SPEAssets}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

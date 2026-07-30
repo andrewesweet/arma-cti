@@ -1,0 +1,3135 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Actions
+// revision: 376089 (2025-08-09T20:25:33Z)
+// export sha1: a7e7ikt9ma21rxpmzo8sd4emxtdpibk
+// categories: Category:Actions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side|0.9}}
+{{Feature|informative|
+* See [[ArmA: Armed Assault: Actions]] for an introduction to Actions
+* Not to be confused with [[playAction]]
+}}
+
+
+= General Syntax =
+
+ '''''unit'' [[action]] [''"actionType"'', ''parameter(s)'']'''
+
+:{| class="valign-top"
+|-
+| ''unit'':
+| [[Object#Unit|Object]]. Can be any occupied [[Object#Vehicle|vehicle]] or [[Object#Person|person]] that is not in a vehicle or also a [[Game Logic]].
+|-
+| ''"actionType"'':
+| [[String]]. Name of the action, found in the CfgActions class. Not case sensitive.
+|-
+| ''parameter(s)'':
+| Various [[Data Types|data types]], dependant on the action used. The number of required parameters depends on the action type.
+|}
+
+
+= Actions =
+
+
+== ActiveSensorsOn ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Activates the vehicle's active sensor (radar).
+|-
+! Syntax
+| ''unit'' action ["ActiveSensorsOn", ''vehicle'']
+|-
+|
+|
+|-
+! Example
+| <sqf>player action ["ActiveSensorsOn", vehicle player];</sqf>
+|}
+
+
+== ActiveSensorsOff ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Deactivates the vehicle's active sensor (radar).
+|-
+! Syntax
+| ''unit'' action ["ActiveSensorsOff", ''vehicle'']
+|-
+|
+|
+|-
+! Example
+| <sqf>player action ["ActiveSensorsOff", vehicle player];</sqf>
+|}
+
+
+== AddBag ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a unit to take backpack from another unit/vehicle or weaponholder.
+|-
+! Syntax
+| ''targetUnit'' action ["AddBag", ''sourceUnit'', ''"backpackName"'']
+|-
+|
+| Where ''targetUnit'' is the person to receive a backpack (the action animation will be performed), ''sourceUnit'' is either another unit/vehicle or weaponholder containing the backpack. ''"backpackName"'' is the classname (string) of the backpack to be picked up.
+|-
+! Note
+| Bags can be picked up at any distance. To drop bag use "DropBag" action. If several backpacks of the same class name exist in the container, the oldest will be added first.
+|-
+! Examples
+| <sqf>soldierOne action ["AddBag", soldierTwo, backpack soldierTwo];</sqf>
+
+<sqf>player action ["AddBag", car, typeOf firstBackpack car];</sqf>
+Swap player bag with parachute: <sqf>
+player action ["DropBag", _plane, backpack player];
+player action ["AddBag", _plane, "B_Parachute"];
+</sqf>
+|
+|}
+
+
+== ArtilleryComputer ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Opens up Artillery Computer display just like the one in action menu for a mortar. Unit has to be in gunner position or display will immediately close.
+|-
+! Syntax
+| ''unit'' action ["ArtilleryComputer", ''artillery'']
+|-
+|
+| Where ''unit'' is any unit, and ''artillery'' is the artillery weapon
+|-
+! Example
+| <sqf>soldierOne action ["ArtilleryComputer", mortarOne];</sqf>
+|
+|}
+
+
+== AutoHover ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Toggles auto-hovering on. Note that while the auto-hover status can be toggled on an AI crewed or even an empty vehicle, it will only affect a vehicle controlled by a human pilot.
+|-
+! Syntax
+| ''unit'' action ["AutoHover", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetVehicle'' is any vehicle that is capable of hovering.
+|-
+! Example
+| <sqf>chopperOne action ["AutoHover", chopperOne];</sqf>
+|}
+
+
+== AutoHoverCancel ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Toggles auto-hovering off. Note that while the auto-hover status can be toggled on an AI crewed or even an empty vehicle, it will only affect a vehicle controlled by a human pilot.
+|-
+! Syntax
+| ''unit'' action ["AutoHoverCancel", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetVehicle'' is any vehicle that is capable of hovering.
+|-
+! Example
+| <sqf>driver chopperOne action ["AutoHoverCancel", chopperOne];</sqf>
+|}
+
+
+== BackFromUAV ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Moves player control back from driver/gunner position of connected UAV. Does what "Release UAV controls" UI action does.
+|-
+! Syntax
+| ''unit'' action ["BackFromUAV"]
+|-
+|
+| Where ''unit'' is the connected UAV unit.
+|-
+! Example
+| <sqf>getConnectedUAVUnit player action ["BackFromUAV"];</sqf>
+|}
+
+== CancelAction ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Cancels an action in progress. The target unit will complete it is current animation, although the action itself will not be performed.
+|-
+! Syntax
+| ''unit'' action ["CancelAction", ''targetUnit'']'''
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetUnit'' is any unit that is in the process of performing an action.
+|-
+! Example
+| <sqf>soldierOne action ["CancelAction", soldierOne];</sqf>
+|}
+
+
+== CancelLand ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Cancels autopilot landing for an aircraft, including AI controlled aircraft.
+|-
+! Syntax
+| ''unit'' action ["CancelLand", ''targetVehicle'']'''
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetVehicle'' is any vehicle that is currently performing an autopilot landing.
+|-
+! Example
+| <sqf>driver planeOne action ["CancelLand", planeOne];</sqf>
+|}
+
+
+== CancelTakeFlag ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Cancels taking of a flag. The unit will complete the taking/action animation, but the flag will remain attached to it is current object. This action needs to be executed while the flag is being taken (which happens after the unit completes the taking/action animation) to prevent a unit taking the flag. For example, if a person is taking a flag from a flagpole, then the cancelTakeFlag action should be executed while the flag is descending the flagpole.
+|-
+! Syntax
+| ''unit'' action ["CancelTakeFlag", ''targetFlag'']
+|-
+|
+| Where ''unit'' is any unit that is currently taking a flag (no action animation is performed) and ''targetFlag''' is a flag object.
+|-
+! Example
+| <sqf>westSoldierOne action ["CancelTakeFlag", eastFlag];</sqf>
+|}
+
+
+== CollisionLightOff ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Turns off the collision lights of an air vehicle.
+|-
+! Syntax
+| ''unit'' action ["CollisionLightOff", ''targetVehicle'']'''
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetVehicle'' is a vehicle with lights.
+|-
+! Example
+| <sqf>player action ["CollisionLightOff", vehicle player];</sqf>
+|}
+
+
+== CollisionLightOn ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Turns on the collision lights of an air vehicle.
+|-
+! Syntax
+| ''unit'' action ["CollisionLightOn", ''targetVehicle'']'''
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetVehicle'' is a vehicle with lights.
+|-
+! Example
+| <sqf>player action ["CollisionLightOn", vehicle player];</sqf>
+|}
+
+
+== Deactivate ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a unit to deactivate and take a active satchel charge placed by any unit. This action can be performed upon a satchel object from any distance.
+
+This action also works for landmines created with [[createVehicle]] command:
+<sqf>
+private _mine = "ATMine_Range_Ammo" createVehicle getPosATL player;	// create
+player action ["Deactivate", player, mine];							// deactivate
+</sqf>
+|-
+! Syntax
+| ''unit'' action ["Deactivate", ''targetUnit'', ''targetObject'']
+|-
+|
+| Where ''unit'' is any unit (they will perform the action animation as if deactivating a satchel charge). ''targetUnit'' will have the deactivated satchel charge added to it is inventory. ''targetObject'' is the armed satchel object to be deactivated (class "pipeBomb" or "timeBomb").
+|-
+! Examples
+| <sqf>soldierOne action ["Deactivate", soldierOne, mySatchelCharge];</sqf>
+|-
+|
+| <sqf>soldierOne action ["Deactivate", soldierOne, nearestObject [soldierOne, "pipeBomb"]];</sqf>
+|}
+
+
+== DeactivateMine ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a unit to deactivate any armed landmine that is within about two meters of a unit. Neither unit requires the ability to disable landmines.
+
+NOTE: This action works only with mines that have been spotted by player (marked with triangle). Use "Deactivate" if you need to deactivate any mine.
+
+|-
+! Syntax
+| ''unit'' action ["DeactivateMine", ''targetUnit'']
+|-
+|
+| Where ''unit'' is any unit, who will perform the action animation. The closest landmine to ''targetUnit'' will be deactivated.
+|-
+! Example
+| <sqf>soldierOne action ["DeactivateMine", soldierOne];</sqf>
+|}
+
+
+== Diary ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Use and effects unknown.
+|-
+! Syntax
+| ''unit'' action ["Diary", ''<target>'']
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== Disassemble ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Takes assembled weapon to parts (carry bags). Assembled weapon object reference may need to be kept for assembly. See also: [[enableWeaponDisassembly]]
+|-
+! Syntax
+| ''unit'' action ["Disassemble", ''weapon'']'''
+|-
+|
+| Where ''unit'' is any unit and ''weapon'' is assembled weapon
+|-
+! Example
+| <sqf>soldierOne action ["Disassemble", mortarOne];</sqf>
+|}
+
+
+== DropBag ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a unit to drop a backpack into another unit/vehicle. To drop backpack on the ground, a weaponholder object needs to be created first.
+|-
+! Syntax
+| ''sourceUnit'' action ["DropBag", ''targetUnit'', ''"backpackName"'']
+|-
+|
+| Where ''sourceUnit'' is the person to drop a backpack (the action animation will be performed), ''targetUnit'' is either another unit/vehicle into which the backpack will be dropped or a weaponholder. ''"backpackName"'' is the classname (string) of the backpack to be dropped.
+|-
+! Note
+| Bags can be dropped into other units at any distance. If targetUnit already has a backpack, sourceUnit's backpack will drop to the ground at targetUnit's feet, and be unavailable (for picking up/using).
+|-
+! Examples
+| <sqf>soldierOne action ["DropBag", soldierTwo, backpack soldierOne];</sqf>
+
+<sqf>
+private _gwh = "Weapon_Empty" createVehicle getPosATL player;
+player action ["DropBag", _gwh, typeOf unitBackpack player];
+// the reason "Weapon_Empty" type of weaponholder is used in this case is because
+// unlike other weaponholders it is not autodeleted when empty and will not disappear before the action is complete.
+// you should take care of deleting it after yourself. Alternatively use "PutBag" action.
+</sqf>
+
+<sqf>
+(unitBackpack player) setVariable ["backpackOwner", name player, true];
+player action ["DropBag", car, typeOf unitBackpack player];
+hint ((firstBackpack car) getVariable "backpackOwner");
+</sqf>
+
+Swap player bag with parachute:
+<sqf>
+player action ["DropBag", _plane, backpack player];
+player action ["AddBag", _plane, "B_Parachute"];
+</sqf>
+
+Transfer player's backpack to bob
+<sqf>player action ["DropBag", bob];</sqf>
+|
+|}
+
+
+== DropMagazine ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to drop a magazine either into another unit (both persons and vehicles), or onto the ground (creating a new WeaponHolder object). Magazines can be dropped into other units at any distance.
+|-
+! Syntax
+| ''unit'' action ["DropMagazine", ''targetUnit'', ''"magazineName"'']
+|-
+|
+| Where ''unit'' is the person to drop a magazine (the action animation will be performed), ''targetUnit'' is either another unit into which the magazine will be dropped, or the same unit that is dropping the magazine. ''"magazineName"'' is the classname (string) of the magazine to be dropped (see the [[ArmA:_Weapons|ArmA weapons list]] for magazine classnames).
+|-
+! Examples
+| <sqf>soldierOne action ["DropMagazine", soldierOne, "30Rnd_545x39_AK"];</sqf>
+|-
+|
+| <sqf>soldierOne action ["DropMagazine", ammoCrateOne, "30Rnd_545x39_AK"];</sqf>
+|}
+
+
+== DropWeapon ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to drop a weapon and all associated magazines either into specified vehicle or weaponholder. Weapons can be dropped at any distance.
+|-
+! Syntax
+| ''unit'' action ["DropWeapon", ''targetHolder'', ''"weaponName"'']
+|-
+|
+| Where ''unit'' is the person to drop a weapon (the action animation will be performed), ''targetHolder'' is either a vehicle or weaponholder. ''"weaponName"'' is the classname (string) of the CfgWeapons class.
+|-
+! Examples
+| <sqf>
+private _weaponHolder = "GroundWeaponHolder_Scripted" createVehicle getPosATL player;
+player action ["DropWeapon", _weaponHolder, currentWeapon player];
+</sqf>
+<sqf>
+soldierOne action ["DropWeapon", unitBackpack soldierTwo, currentWeapon soldierOne];
+player action ["DropWeapon", tank, "arifle_MX_ACO_pointer_F"];
+</sqf>
+|-
+|
+|}
+
+
+== Eject ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to eject out of the vehicle they are currently inside. If the unit was the driver of the vehicle, the vehicle will retain it is steering control input and it is engine will remain on. This action has a global effect when used on a local unit in multiplayer. If the vehicle parameter used is an moving aircraft, the ejecting person will use a parachute (and likewise if it is not an moving aircraft, no parachute will be used).
+|-
+! Syntax
+| ''unit'' action ["Eject", ''vehicle'']
+|-
+|
+| Where ''unit'' is the person to eject from their current vehicle, and ''vehicle'' is any vehicle (generally the vehicle ''unit'' is within).
+|-
+! Example
+| <sqf>soldierOne action ["Eject", vehicle soldierOne];</sqf>
+|}
+
+
+== EngineOn ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Turns a vehicle's engine on. This command will not override an AI driver's desires.
+|-
+! Syntax
+| ''unit'' action ["EngineOn", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is any unit, and ''targetVehicle'' is the vehicle to start it is engine.
+|-
+! Example
+| <sqf>soldierOne action ["EngineOn", vehicle soldierOne];</sqf>
+|}
+
+
+== EngineOff ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Turns a vehicle's engine off. This command will not override an AI driver's desires.
+|-
+! Syntax
+| ''unit'' action ["EngineOff", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is any unit, and ''targetVehicle'' is the vehicle to have it is engine turned off.
+|-
+! Example
+| <sqf>soldierOne action ["EngineOff", vehicle soldierOne];</sqf>
+|}
+
+
+== FireInflame ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Ignites a fireplace object (from any distance).
+|-
+! Syntax
+| ''unit'' action ["FireInflame", ''targetObject'']
+|-
+|
+| Where ''unit'' is any unit(the action animation will be performed), and ''targetObject'' is the fireplace to be ignited.
+|-
+! Example
+| <sqf>soldierOne action ["FireInflame", firePlaceOne];</sqf>
+|}
+
+
+== FirePutDown ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Extinguishes a fireplace object (from any distance).
+|-
+! Syntax
+| ''unit'' action ["FirePutDown", ''targetObject'']
+|-
+|
+| Where ''unit'' is any unit (the action animation will be performed), and ''targetObject'' is the fireplace to be extinguished.
+|-
+! Example
+| <sqf>soldierOne action ["FirePutDown", firePlaceOne];</sqf>
+|}
+
+
+== FlapsUp ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Adjusts an aircraft's flaps upwards one notch. AI pilot's will instantly adjust their flaps to whatever setting they feel is suitable.
+|-
+! Syntax
+| ''unit'' action ["FlapsUp", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is any unit (the action animation will not be performed), and ''targetVehicle'' is the aircraft to have it is flaps adjusted.
+|-
+! Example
+| <sqf>harrierOne action ["FlapsUp", harrierOne];</sqf>
+|}
+
+
+== FlapsDown ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Adjusts an aircraft's flaps down one notch. AI pilot's will instantly adjust their flaps to whatever setting they feel is suitable.
+|-
+! Syntax
+| ''unit'' action ["FlapsDown", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is any unit (the action animation will not be performed), and ''targetVehicle'' is the aircraft to have it is flaps adjusted.
+|-
+! Example
+| <sqf>harrierOne action ["FlapsDown", harrierOne];</sqf>
+|}
+
+
+== Gear ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Opens inventory dialog for the player and plays the appropriate animation. The left part of the inventory dialog gets populated with the inventory of the target unit. Player has to be in range of inventory operations with the targetUnit (~ <5m).
+|-
+! Syntax
+| ''unit'' action ["Gear", ''targetUnit'']
+|-
+|
+| Where ''unit'' is a player, and ''targetUnit'' is another player, vehicle or container.
+|-
+! Examples
+| <sqf>player action ["Gear", "GroundWeaponHolder" createVehicle position player];</sqf>
+|-
+|
+| |<sqf>player action ["Gear", objNull];</sqf>
+|-
+|
+| |<sqf>player action ["Gear", soldier1];</sqf>
+|-
+|
+| |<sqf>player action ["Gear", cursorTarget];</sqf>
+|}
+
+
+== GetInCargo ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Instantly moves a person to the appropriate boarding position of a vehicle, then they attempt to board the vehicle as cargo, in a specific cargo position if given as an optional parameter, otherwise in the first available cargo position. If the specific position is already occupied, the person will board in the first available cargo position. If the all cargo positions are already occupied by living persons, or no cargo position exists, the boarding will fail. This action works only with cargo positions that have no person turret, i.e. if player cannot shoot his rifle from them. If position is cargo but also person turret, it will be ignored. Use <sqf inline>fullCrew [_veh, "cargo", true]</sqf> to determine which positions are compatible cargo. Alternatively, use [[moveInCargo]] command instead, which has no such limitation.
+|-
+! Syntax
+| ''unit'' action ["GetInCargo", ''targetVehicle'']
+|-
+|
+| ''unit'' action ["GetInCargo", ''targetVehicle'', ''positionNumber'']
+|-
+|
+| Where ''unit'' is the person to board, and ''targetVehicle'' is the vehicle to be boarded. ''positionNumber is a specific cargo position index number.
+|-
+! Examples
+| <sqf>soldierOne action ["GetInCargo", truckOne];</sqf>
+|-
+|
+| <sqf>soldierOne action ["GetInCargo", truckOne, 0];</sqf>
+|}
+
+
+== GetInCommander ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Instantly moves a person (who is not already in a vehicle) to the appropriate boarding position of a vehicle, they then attempt to board the vehicle as the commander. The boarding will fail if the position is already occupied or does not exist.
+|-
+! Syntax
+| ''unit'' action ["GetInCommander", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is the person to board, and ''targetVehicle'' is the vehicle to be boarded.
+|-
+! Example
+| <sqf>soldierOne action ["GetInCommander", tankOne];</sqf>
+|}
+
+
+== GetInDriver ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Instantly moves an person (who is not already in a vehicle) to the appropriate boarding position of a vehicle, then they attempt to board the vehicle as the driver/pilot. The boarding will fail if the position is already occupied or does not exist.
+|-
+! Syntax
+| ''unit'' action ["GetInDriver", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is the person to board, and ''targetVehicle'' is the vehicle to be boarded.
+|-
+! Example
+| <sqf>soldierOne action ["GetInDriver", carOne];</sqf>
+|}
+
+
+== GetInGunner ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Instantly moves a person (who is not already in a vehicle) to the appropriate boarding position of a vehicle, then they attempt to board the vehicle as the primary gunner. If the gunner position is already occupied by another living person or it does not exist, the boarding will fail. Also see [[#GetInTurret|getInTurret]].
+|-
+! Syntax
+| ''unit'' action ["GetInGunner", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is the person to board, and ''targetVehicle'' is the vehicle to be boarded.
+|-
+! Example
+| <sqf>soldierOne action ["GetInGunner", mySpotlight];</sqf>
+|}
+
+
+== GetInPilot ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | This action is identical to [[#GetInDriver|getInDriver]]. It instantly moves an person (who is not already in a vehicle) to the appropriate boarding position of a vehicle, then they attempt to board the vehicle as the driver/pilot. The boarding will fail if the position is already occupied or does not exist.
+|-
+! Syntax
+| ''unit'' action ["GetInPilot", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is the person to board, and ''targetVehicle'' is the vehicle to be boarded.
+|-
+! Example
+| <sqf>pilotOne action ["GetInPilot", chopperOne];</sqf>
+|}
+
+
+== GetInTurret ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Instantly moves a person (who is not already in a vehicle) to the appropriate boarding position of a vehicle, then they attempt to board the vehicle as the specified turret user. If the turret position is already occupied by another living person the boarding will fail. If the turret position does not exist, ArmA may crash. See also [[#GetInGunner|getInGunner]].
+|-
+! Syntax
+| ''unit'' action ["GetInTurret", ''targetVehicle'', ''turretArray'']
+|-
+|
+| Where ''unit'' is the person to board, and ''targetVehicle'' is the vehicle to be boarded, and ''turretArray'' is an array defining the turret. For example, ''[1]'' would be a vehicle's second turret, and ''[0, 2, 1]'' is the second turret of the third turret of the first turret. A vehicle's turret order is defined in it is class CfgVehicles of the Config.
+|-
+! Examples
+| <sqf>gunnerTwo action ["GetInTurret", myUH60MG, [1]];</sqf>
+|-
+|
+| <sqf>tankCommanderOne action ["GetInTurret", myT72, [0,1]];</sqf>
+|}
+
+
+== GetOut ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to disembark from a vehicle, without a parachute in the case of aircraft. See also [[#Eject|eject]].
+|-
+! Syntax
+| ''unit'' action ["GetOut", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is the person to disembark, and ''targetVehicle'' is the vehicle to disembark from.
+|-
+! Example
+| <sqf>soldierOne action ["GetOut", carOne];</sqf>
+|}
+
+
+== HandGunOn ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to ready their hand gun (if equiped). This action may not work if the unit does not have a primary rifle.
+|-
+! Syntax
+| ''unit'' action ["HandGunOn", ''targetUnit'']
+|-
+|
+| Where ''unit'' is any unit (who will not play the action animation), and ''targetUnit'' is the unit who will ready their pistol.
+|-
+! Example
+| <sqf>soldierOne action ["HandGunOn", soldierOne];</sqf>
+|}
+
+
+== HandGunOff ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to return a readied pistol to it is holster, then switch to the primary rifle. This action may not work if the unit does not have a primary rifle.
+|-
+! Syntax
+| ''unit'' action ["HandGunOff", ''targetUnit'']
+|-
+|
+| Where ''unit'' is any unit (who will not play the action animation), and ''targetUnit'' is the person to holster it is pistol.
+|-
+! Example
+| <sqf>soldierOne action ["HandGunOff", soldierOne];</sqf>
+|}
+
+
+== Heal ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Instantly teleports a person unit to the target medic. The target medic then heals the unit. If the target unit is not a medic, the animations will still be played, but no healing occurs. If the medic is within a vehicle, no teleporting will occur and the wounded unit will only be healed if they are already within healing range (a few meters).
+|-
+! Syntax
+| ''unit'' action ["Heal", ''targetUnit'']
+|-
+|
+| Where ''unit'' is a wounded person, and ''targetUnit'' is the medic to do the healing.
+|-
+! Example
+| <sqf>soldierOne action ["Heal", medicOne];</sqf>
+|}
+
+
+== HealSoldier ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Performs one soldier healing of another soldier. Needs to have MedKit or FAK (first aid kit) in the inventory, which gets used.
+|-
+! Syntax
+| ''unit'' action ["HealSoldier", ''targetUnit'']
+|-
+|
+| Where ''unit'' is the unit to perform treatment, and ''targetUnit'' is the unit to receive treatment.
+|-
+! Example
+| <sqf>player action ["HealSoldier", soldier1];</sqf>
+|}
+
+
+== HealSoldierSelf ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Performs one soldier healing of another soldier. In case the target is the same unit, the soldier performs treatment on himself. Needs to have FAK (first aid kit) in the inventory, which gets used.
+|-
+! Syntax
+| ''unit'' action ["HealSoldierSelf", ''targetUnit'']
+|-
+|
+| Where ''unit'' is the unit to perform treatment, and ''targetUnit'' is the unit to receive treatment.
+|-
+! Example
+| <sqf>player action ["HealSoldierSelf", soldier1];</sqf>
+|}
+
+
+== HideBody ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to bend down and hide (bury) a body in the ground. The body is automatically deleted within a few seconds. The person performing the action does not require the ability to hide bodies, and may be any distance from the body.
+|-
+! Syntax
+| ''unit'' action ["HideBody", ''targetUnit'']
+|-
+|
+| Where ''unit'' is a person, and ''targetUnit'' is a dead person.
+|-
+! Example
+| <sqf>soldierOne action ["HideBody", soldierTwo];</sqf>
+|}
+
+
+== InGameMenu ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Use and effects unknown.
+|-
+! Syntax
+| ''unit'' action ["InGameMenu", ''<target>'']
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== LadderDown ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to play an animation as if mounting the top of a ladder, then instantly teleport onto the specified ladder in the specified position. If the person is controlled by AI, they will automatically climb up or down the ladder. If the 2 parameter syntax is used, the person will become stuck in the ladder mounting animation state until the [[#ladderOff|ladderOff]] action is executed upon them. It may also crash ArmA (pre 1.09).
+|-
+! Syntax
+| ''unit'' action ["LadderDown", ''targetObject'']
+|-
+|
+| ''unit'' action ["LadderDown", ''targetObject'', ''ladderNumber'', ''positionNumber'']
+|-
+|
+| Where ''unit'' is any person unit, ''targetObject'' is an object with a ladder, ''ladderNumber'' is a number defining the desired ladder, and ''positionNumber'' is a number defining the desired position.
+|-
+! Example
+| <sqf>soldierOne action ["LadderDown", (position soldierOne nearestObject 452221), 0, 1];</sqf>
+|}
+
+
+== LadderUp ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to play an animation as if mounting the bottom of a ladder, then instantly teleport onto the specified ladder in the specified position. If the person is controlled by AI, they will automatically climb up or down the ladder. If the 2 parameter syntax is used, the person will become stuck in the ladder mounting animation state until the [[#ladderOff|ladderOff]] action is executed upon them. It may also crash ArmA (pre 1.09).
+|-
+! Syntax
+| ''unit'' action ["LadderUp", ''targetObject''] '''!!!Warning!!! This syntax causes Arma 3 to freeze'''
+|-
+|
+| ''unit'' action ["LadderUp", ''targetObject'', ''ladderNumber'', ''positionNumber'']
+|-
+|
+| Where ''unit'' is any person unit, ''targetObject'' is an object with a ladder, ''ladderNumber'' is a number defining the desired ladder, and ''positionNumber'' is a number defining the desired position (0 - bottom, 1 - top). All numbers in between get rounded towards 1 or 0.
+|-
+! Example
+| <sqf>soldierOne action ["LadderUp", (position soldierOne nearestObject 452221), 0, 0];</sqf>
+|}
+
+
+== LadderOff ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to dismount from any ladder of the specified object they may be happen to be on. The alternative 3 parameter syntax expects a number, the use of which is not known.
+|-
+! Syntax
+| ''unit'' action ["LadderOff", ''targetObject'']
+|-
+|
+| ''unit'' action ["LadderOff", ''targetObject'', ''unknownNumber'']
+|-
+|
+| Where ''unit'' is any person unit, ''targetObject'' is the object with a ladder that the person is currently upon, ''unknownNumber'' is a number.
+|-
+! Example
+| <sqf>soldierOne action ["LadderOff", (position soldierOne nearestObject 452221)];</sqf>
+|}
+
+
+== LadderOnDown ==
+
+:{| class="valign-top"
+|-
+| '''Description''': This action appears to be identical to [[#LadderDown|LadderDown]].
+|}
+
+
+== LadderOnUp ==
+
+:{| class="valign-top"
+|-
+| '''Description''': This action appears to be identical to [[#LadderUp|LadderUp]].
+|}
+
+
+== Land ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Turns on autopilot landing for an aircraft, including AI controlled aircraft. The aircraft will land at the closest airfield.
+|-
+! Syntax
+| ''unit'' action ["Land", ''targetVehicle'']'''
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetVehicle'' is a vehicle that can perform an autopilot landing.
+|-
+! Example
+| <sqf>driver planeOne action ["Land", planeOne];</sqf>
+|}
+
+
+== LandGear ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Lowers the landing gear of an aircraft. In the case of AI-controlled aircraft, it has to be used in an each-frame loop to override the AI behavior (otherwise they'll raise the landing gear when they take off).
+|-
+! Syntax
+| ''unit'' action ["LandGear", ''targetVehicle'']'''
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetVehicle'' is a vehicle that can perform an autopilot landing.
+|-
+! Example
+| <sqf>driver planeOne action ["LandGear", planeOne];</sqf>
+|}
+
+== LandGearUp ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Raises the landing gear of an aircraft. In the case of AI-controlled aircraft, it has to be used in an each-frame loop to override the AI behavior (otherwise they'll lower the landing gear when they're close to the ground).
+|-
+! Syntax
+| ''unit'' action ["LandGearUp", ''targetVehicle'']'''
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetVehicle'' is a vehicle that can perform an autopilot landing.
+|-
+! Example
+| <sqf>driver planeOne action ["LandGearUp", planeOne];</sqf>
+|}
+
+
+== LightOff ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Turns off the headlights of an empty vehicle. If the vehicle is AI-controlled (either as the lone driver, or as the commander/gunner) then the light status depends on the AI's [[behaviour]] mode ("combat" or "stealth" = lights off, any other mode = lights on).
+|-
+! Syntax
+| ''unit'' action ["LightOff", ''targetVehicle'']'''
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetVehicle'' is a vehicle with lights.
+|-
+! Example
+| <sqf>player action ["LightOff", vehicle player];</sqf>
+|}
+
+
+== LightOn ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Turns on the headlights of an empty vehicle. If vehicle is AI-controlled, see notes under the {{Link|#LightOff}} action.
+|-
+! Syntax
+| ''unit'' action ["LightOn", ''targetVehicle'']'''
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetVehicle'' is a vehicle with lights.
+|-
+! Example
+| <sqf>player action ["LightOn", vehicle player];</sqf>
+|}
+
+
+== LoadMagazine ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Plays a reload weapon animation.
+|-
+! Syntax
+| ''unit'' action ["LoadMagazine", target, magazineCreator, ''number1'', ''number2'', weaponName, muzzleName]
+|-
+|
+| Expects a 7 elements array:
+|-
+|
+| target: [[Object]] - unit to perform the reload action.
+|-
+|
+| magazineCreator: [[Object]] - unknown. Can be objNull.
+|-
+|
+| ''number1'': [[Number]] - cr - see [[magazinesDetail]]. For characters it is mainly 0
+|-
+|
+| ''number2'': [[Number]] - id - magazine ID - can be obtained via [[magazinesDetail]]. With 0, it only plays the reload animation. With values from 1 up, it actually reloads the magazine. If the number becomes too high (meaning of the upper limit is also unknown), the action will no longer be performed.
+|-
+|
+| weaponName: [[String]] - weapon to reload. Must not be selected, but may cause weapon not to reload to the full amount.
+|-
+|
+| muzzleName: [[String]] - weapon's muzzle to reload.
+|-
+! Example
+| <sqf>player action ["LoadMagazine", player, player, 0, 1 , "vbs2_us_m16a2_iron_gla", "vbs2_us_m16a2_iron_gla"];</sqf>
+|}
+
+
+== LockVehicleControl ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Locks co-pilot controls, removes {{Link|#TakeVehicleControl}} action. [[enableCopilot]] must be set true to function.
+|-
+! Syntax
+| ''unit'' action ["LockVehicleControl", ''vehicle'']
+|-
+|
+| Where ''unit'' is any unit, and ''vehicle'' is any vehicle with co-pilot controls.
+|-
+! Example
+| <sqf>player action ["LockVehicleControl", vehicle player];</sqf>
+|}
+
+
+== ManualFire ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Enables manual fire mode for a player unit that is driver or commander of a vehicle. This action toggled manual fire mode in old versions of ArmA. (See also [[isManualFire]])
+|-
+! Syntax
+| ''unit'' action ["ManualFire", ''targetVehicle'']'''
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetVehicle'' is the vehicle in which manual fire mode is to be enabled.
+|-
+! Example
+| <sqf>player action ["ManualFire", vehicle player];</sqf>
+|}
+
+
+== ManualFireCancel ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Disables manual fire mode for a player unit that is driver or commander of a vehicle. (See also [[isManualFire]])
+|-
+! Syntax
+| ''unit'' action ["ManualFireCancel", ''targetVehicle'']'''
+|-
+|
+| Where ''unit'' is any unit (no action animation is performed) and ''targetVehicle'' is the vehicle in which manual fire mode is to be disabled.
+|-
+! Example
+| <sqf>player action ["ManualFireCancel", vehicle player];</sqf>
+|}
+
+
+== MarkEntity ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Use and effects unknown. Same as {{Link|#MarkWeapon}} action.
+|-
+! Syntax
+| ''unit'' action ["MarkEntity", <target>]
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== MoveToCargo ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Move a unit to the chosen cargo position within a vehicle. If another unit is already in that position, the units will swap positions.
+This works only with cargo positions that have no person turret, i.e. if player cannot shoot his rifle from them.
+If position is cargo but also person turret, it will be ignored.
+Use <sqf inline>fullCrew [_veh, "cargo", true]</sqf> to determine which positions are compatible cargo.
+|-
+! Syntax
+| ''unit'' action ["MoveToCargo", ''targetVehicle'', ''cargoPosition'']
+|-
+|
+| Where ''unit'' is a unit within ''targetVehicle'', and ''cargoPosition'' is the number of the desired cargo position (0 being the first).
+|-
+! Example
+| <sqf>player action ["MoveToCargo", vehicle player, 2];</sqf>
+|}
+
+
+== MoveToCommander ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Move a unit to the commander's position within a vehicle. If another unit is already in that position, the units will swap positions.
+|-
+! Syntax
+| ''unit'' action ["MoveToCommander", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is a unit within ''targetVehicle''.
+|-
+! Example
+| <sqf>player action ["MoveToCommander", vehicle player];</sqf>
+|}
+
+
+== MoveToDriver ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Move a unit to the driver's position within a vehicle. If another unit is already in that position, the units will generally swap positions, although in some scenarios this action may not work (although having the existing driver move always works).
+|-
+! Syntax
+| ''unit'' action ["MoveToDriver", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is a unit within ''targetVehicle''.
+|-
+! Example
+| <sqf>player action ["MoveToDriver", vehicle player];</sqf>
+|}
+
+
+== MoveToGunner ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Move a unit to the primary gunner's position within a vehicle. If another unit is already in that position, the units will swap positions. See also [[#MoveToTurret|moveToTurret]].
+|-
+! Syntax
+| ''unit'' action ["MoveToGunner", ''targetVehicle'']
+|-
+|
+| Where ''unit'' is a unit within ''targetVehicle''.
+|-
+! Example
+| <sqf>player action ["MoveToGunner", vehicle player];</sqf>
+|}
+
+
+== MoveToPilot ==
+
+:{| class="valign-top"
+|-
+| '''Description''': Identical to [[#MoveToDriver|moveToDriver]].
+|}
+
+
+== MoveToTurret ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Move a unit to the chosen turret position within a vehicle. If another unit is already in that position, the units will swap positions.
+|-
+! Syntax
+| ''unit'' action ["MoveToTurret", ''targetVehicle'', ''turretArray'']
+|-
+|
+| Where ''unit'' is a unit within ''targetVehicle'', and ''turret Array'' is an array referring to the desired turret (for example, [0,1,2] refers to the third turret of the second turret of the first turret of the vehicle).
+|-
+! Examples
+| <sqf>player action ["MoveToTurret", vehicle player, [0]];</sqf>
+|-
+|
+| <sqf>player action ["MoveToTurret", vehicle player, [0,1]];</sqf>
+|}
+
+
+== None ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Use and effects unknown.
+|-
+! Syntax
+| ''unit'' action ["None", ''<target>'']
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== NVGoggles ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a unit to put on it is night vision goggles. AI controlled units will automatically put on and take off goggles depending on daylight.
+|-
+! Syntax
+| ''unit'' action ["NvGoggles", ''<anything>'']
+|-
+|
+| Where ''unit'' is the unit to put on NVGoggles, and ''<anything>'' can be anything (it seems to not be used at all, but the action parameter array must contain at least two elements).
+|-
+! Example
+| <sqf>player action ["NvGoggles", player];</sqf>
+|}
+
+
+== NVGogglesOff ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a unit to take off it is night vision goggles. AI controlled units will automatically put on and take off goggles depending on daylight.
+|-
+! Syntax
+| ''unit'' action ["NvGogglesOff", ''<anything>'']
+|-
+|
+| Where ''unit'' is the unit to put on goggles, and ''<anything>'' can be anything (it seems not to be used at all, but the action parameter array must contain at least two elements).
+|-
+! Example
+| <sqf>player action ["NvGogglesOff", player];</sqf>
+|}
+
+
+== OpenParachute ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Opens unit's parachute. Unit must have parachute backpack.
+|-
+! Syntax
+| ''unit'' action ["OpenParachute", ''unit'']
+|-
+|
+| Where ''unit'' is the unit with parachute backpack.
+|-
+! Example
+| <sqf>player action ["OpenParachute", player];</sqf>
+|}
+
+
+== PutBag ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes ''sourceUnit'' to bend over and put target backpack on the ground. If the ''targetUnit'' param is omitted or it is the same as ''sourceUnit'', the ''sourceUnit'' will drop own backpack. If ''targetUnit'' is another unit, ''sourceUnit'' will bend over but ''targetUnit'' will drop its backpack at its feet.
+|-
+! Syntax
+| ''sourceUnit'' action ["PutBag", ''targetUnit'']
+|-
+|
+| ''targetUnit'' is optional
+|-
+! Note
+| To pick the backpack from the ground use "AddBag" action.
+|-
+! Examples
+| <sqf>
+player action ["PutBag"];
+unit1 action ["PutBag", unit2];
+</sqf>
+|
+|}
+
+
+== Rearm ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes an occupied vehicle or person to rearm from any object with some ammoCargo (generally an ammo truck) in the case of vehicles, or some magazines in it is cargo in the case of a rearming person. The rearming vehicle/person can be any distance from the rearming object. Rearming vehicles takes some time and will be interrupted if the vehicle starts to move. A rearming person will bend down as if picking up something.
+|-
+! Syntax
+| ''unit'' action ["Rearm", ''reamingObject'']
+|-
+|
+| Where ''unit'' is the occupied vehicle or person to be rearmed, and ''rearmingObject'' is the object from which to rearm.
+|-
+! Examples
+| <sqf>tankOne action ["Rearm", ammoTruckOne];</sqf>
+|-
+|
+| <sqf>soldierOne action ["Rearm", ammoTruckOne];</sqf>
+|}
+
+
+== Refuel ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes an occupied vehicle to refuel from any object with some fuelCargo (generally an refueling truck). The refueling object can be any distance from the vehicle. Refueling takes some time and will be interrupted if the vehicle starts to move.
+|-
+! Syntax
+| ''vehicle'' action ["Refuel", ''refuelingObject'']
+|-
+|
+| Where ''vehicle'' is the occupied vehicle to be refueled, and ''refuelingObject'' is the object from which to refuel.
+|-
+! Example
+| <sqf>tankOne action ["Refuel", refuelTruckOne];</sqf>
+|}
+
+
+== Repair ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes an occupied vehicle to repair from any object with some repairCargo (generally an repair truck). The repair object can be any distance from the vehicle. Repairing takes some time and will be interrupted if the vehicle starts to move.
+|-
+! Syntax
+| ''vehicle'' action ["Repair", ''repairingObject'']
+|-
+|
+| Where ''vehicle'' is the occupied vehicle to be repaired, and ''repairingObject'' is the object from which to repair.
+|-
+! Example
+| <sqf>tankOne action ["Repair", repairTruckOne];</sqf>
+|}
+
+
+== ReturnFlag ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to return a flag from a nearby dead person back to it is flagpole. As of ArmA v1.12 this action is bugged and can not be used upon flags attached to destroyed vehicles.
+|-
+! Syntax
+| ''unit'' action ["ReturnFlag", ''targetObject'']
+|-
+|
+| Where ''unit'' is any person, and ''targetObject'' is the dead person with a flag to be returned.
+|-
+! Example
+| <sqf>soldierOne action ["ReturnFlag", westFlag];</sqf>
+|}
+
+
+== RepairVehicle ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes an Engineer unit to repair an object using their Engineer Repair ability (from v1.54). The Engineer can be any distance from the vehicle. Repairing takes some time. If ''unit'' is not the Engineer class no repairs are made but the animation will still play.
+|-
+! Syntax
+| ''unit'' action ["RepairVehicle", ''vehicle'']
+|-
+|
+| Where ''unit'' is an Engineer unit, and ''vehicle'' is the object to repair.
+|-
+! Example
+| <sqf>engineerOne action ["RepairVehicle", truckOne];</sqf>
+|}
+
+
+== Salute ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to salute. AI controlled units will only make a momentary salute, unless the AI is in safe or careless behaviour mode.
+|-
+! Syntax
+| ''unit'' action ["Salute", ''targetUnit'']
+|-
+|
+| Where ''unit'' is any unit (no animation is performed), and ''targetUnit'' is the person to make the salute.
+|-
+! Example
+| <sqf>soldierOne action ["Salute", soldierOne];</sqf>
+|}
+
+
+== ScudCancel ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | There is no Scud Launcher in ArmA, however this action (probably) remains in the engine from the days of Operation Flashpoint.
+|-
+! Syntax
+| ''unit'' action ["ScudCancel", ''targetVehicle'']
+|-
+|
+| Syntax unknown.
+|-
+! Example
+|
+|}
+
+
+== ScudLaunch ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | There is no Scud Launcher in ArmA, however this action (probably) remains in the engine from the days of Operation Flashpoint.
+|-
+! Syntax
+| ''unit'' action ["ScudLaunch", ''targetVehicle'']
+|-
+|
+| Syntax unknown.
+|-
+! Example
+|
+|}
+
+
+== ScudStart ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | There is no Scud Launcher in ArmA, however this action (probably) remains in the engine from the days of Operation Flashpoint.
+|-
+! Syntax
+| ''unit'' action ["ScudStart", ''targetVehicle'']
+|-
+|
+| Syntax unknown.
+|-
+! Example
+|
+|}
+
+
+== SearchlightOff ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Turns off the vehicle's searchlight.
+{{Feature|informative|Out of all the vanilla vehicles, only the [[Arma 3: CfgVehicles GUER#I_Heli_light_03_F|WY-55 Hellcat]] has a searchlight and the action should be used on the copilot seat. See {{Link|Arma 3: Lights#Search Light}}.}}
+|-
+! Syntax
+| ''unit'' action ["SearchlightOff", ''vehicle'']
+|-
+! Example
+| hellcatCopilot action ["SearchlightOff", vehicle hellcatCopilot]
+|}
+
+
+== SearchlightOn ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Turns on the searchlight.
+{{Feature|informative|Out of all the vanilla vehicles, only the [[Arma 3: CfgVehicles GUER#I_Heli_light_03_F|WY-55 Hellcat]] has a searchlight and the action should be used on the copilot seat. See {{Link|Arma 3: Lights#Search Light}}.}}
+|-
+! Syntax
+| ''unit'' action ["SearchlightOn", ''vehicle'']
+|-
+! Example
+| hellcatCopilot action ["SearchlightOn", vehicle hellcatCopilot]
+|}
+
+
+== SetTimer ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Soldier 'unitOne' plays the action animation. UnitTwo activates and adds 40 seconds to the timer for a satchel charge. Neither unit needs to be near the satchel.
+Charge has to be placed first using ''unitname [[Fire]] ["pipebombmuzzle", "pipebombmuzzle", "pipebomb"]'' or [[createMine]] command.
+
+|-
+! Syntax
+| ''unitOne'' action ["SetTimer", ''unitTwo'', ''bombName'']
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== SitDown ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Causes a person to sit down on the ground (or get up, if already sitting). AI controlled units will only stay seated if they are in safe or careless behaviour mode.
+|-
+! Syntax
+| ''unit'' action ["SitDown", ''targetUnit'']
+|-
+|
+| Where ''unit'' is any unit (no animation is performed), and ''targetUnit'' is the person who is to sit down.
+|-
+! Example
+| <sqf>soldierOne action ["SitDown", soldierOne];</sqf>
+|}
+
+
+== StrokeFist ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Does nothing. There is no punch animation in {{arma1}} and later titles, however this action remains in the engine from the days of {{ofp}}.
+|-
+! Syntax
+| ''unit'' action ["StrokeFist", ''targetVehicle'']
+|-
+|
+| Syntax unknown.
+|-
+! Example
+|
+|}
+
+
+== StrokeGun ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Does nothing (other than making a person twitch a little). There is no suitable animation for this action in {{arma1}} and later titles, however this action remains in the engine from the days of {{ofp}}.
+|-
+! Syntax
+| ''unit'' action ["StrokeGun", ''targetVehicle'']
+|-
+|
+| Syntax unknown.
+|-
+! Example
+|
+|}
+
+
+== Surrender ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Makes unit to put weapon on shoulder and put hands behind the head temporarily. For the lasting effect all weapons from the unit should be removed first.
+|-
+! Syntax
+| ''unit'' action ["Surrender", ''targetUnit'']
+|-
+|
+| Where ''unit'' is any unit, and ''targetUnit'' is the unit to surrender.
+|-
+! Example
+| <sqf>soldierOne action ["Surrender", soldierTwo];</sqf>
+|}
+
+
+== SuspendVehicleControl ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Release vehicle controls from co-pilot. Control immediately returns to pilot.
+|-
+! Syntax
+| ''unit'' action ["SuspendVehicleControl", ''vehicle'']
+|-
+|
+| Where ''unit'' is any unit, and ''vehicle'' is any vehicle with co-pilot controls.
+|-
+! Example
+| <sqf>player action ["SuspendVehicleControl", vehicle player];</sqf>
+|}
+
+
+== SwitchMagazine ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Target unit switches to the given firing mode index. This allows selection of any firing mode for any weapon carried by a soldier, or mounted on a weapon. First are the firing modes for the primary weapon (index 0 upwards), then secondary weapon, then optics, then pistol, then thrown and placed weapons. Changing to NVGoggles just plays an animation, not actually setting NV mode. Unfortunately, the list of firing modes seems to only be created when a soldier is initiated; modes are removed from the list when a weapon is dropped and not re-added when a weapon is picked up. Thus, only use this during the initiation phase of the soldier. On vehicles, where the weapons are not likely to be changed, this action might be useful after the vehicle has been initiated.
+|-
+|
+| If the mode index is higher than available indices, it assumes index 0. If you just want to change the muzzle used, rather than the firing mode, the standard command [[selectWeapon]] is generally more useful.
+|-
+! Syntax
+| ''unit'' action ["SwitchMagazine", ''targetVehicle'', ''targetUnit'', ''mode index'']
+|-
+|
+|
+|-
+! Example
+| <sqf>
+gameLogic action ["SwitchMagazine", unit1, unit1, 3];
+gameLogic action ["SwitchMagazine", m1a1, gunner m1a1, 1];
+</sqf>
+|}
+
+
+== SwitchWeapon ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | UnitOne plays the action animation. Target unit switches to the given muzzle/mode index. Target unit can also be a vehicle. The weapons array is a list of all weapon modes specific to each weapon, muzzle and firing mode combination.
+|-
+! Syntax
+| ''unit'' action ["SwitchWeapon", ''targetUnit'', ''targetUnit'', ''muzzle index'']
+|-
+|
+|
+|-
+! Example
+| <sqf>
+unit2 action ["SwitchWeapon", unit1, unit1, 7];
+player action ["SwitchWeapon", player, player, 3];			// switching personal weapon
+player action ["SwitchWeapon", vehicle player, player, 3];	// switching vehicle weapon
+</sqf>
+|-
+|
+| <sqf>player action ["SwitchWeapon", player, player, weaponIndex];</sqf>
+Result => weaponIndex: [[weaponState]] for "B_soldier_LAT_F"
+
+ 0: ["arifle_MX_ACO_pointer_F", "arifle_MX_ACO_pointer_F", "Single", "30Rnd_65x39_caseless_mag",30]
+ 1: ["arifle_MX_ACO_pointer_F", "arifle_MX_ACO_pointer_F", "FullAuto", "30Rnd_65x39_caseless_mag",30]
+ 2: ["arifle_MX_ACO_pointer_F", "arifle_MX_ACO_pointer_F", "fullauto_medium", "30Rnd_65x39_caseless_mag",30]
+ 3: ["arifle_MX_ACO_pointer_F", "arifle_MX_ACO_pointer_F", "single_medium_optics1", "30Rnd_65x39_caseless_mag",30]
+ 4: ["arifle_MX_ACO_pointer_F", "arifle_MX_ACO_pointer_F", "single_far_optics2", "30Rnd_65x39_caseless_mag",30]
+ 5: ["launch_NLAW_F", "launch_NLAW_F", "launch_NLAW_F", "NLAW_F",1]
+ 6: ["hgun_P07_F", "hgun_P07_F", "hgun_P07_F", "16Rnd_9x21_Mag",16]
+ 7: ["Throw", "HandGrenade_Stone", "HandGrenade_Stone", "",0]
+ 8: ["Throw", "HandGrenadeMuzzle", "HandGrenadeMuzzle", "",0]
+ 9: ["Throw", "MiniGrenadeMuzzle", "MiniGrenadeMuzzle", "",0]
+ 10: ["Throw", "MiniGrenadeMuzzle", "MiniGrenadeMuzzle", "",0]
+ 11: ["Throw", "SmokeShellYellowMuzzle", "SmokeShellYellowMuzzle", "",0]
+ 12: ["Throw", "SmokeShellYellowMuzzle", "SmokeShellYellowMuzzle", "",0]
+ 13: ["Throw", "SmokeShellRedMuzzle", "SmokeShellRedMuzzle", "",0]
+ 14: ["Throw", "SmokeShellPurpleMuzzle", "SmokeShellPurpleMuzzle", "",0]
+ 15: ["Throw", "SmokeShellOrangeMuzzle", "SmokeShellOrangeMuzzle", "",0]
+ 16: ["Throw", "SmokeShellBlueMuzzle", "SmokeShellBlueMuzzle", "",0]
+ 17: ["Throw", "SmokeShellBlueMuzzle", "SmokeShellBlueMuzzle", "",0]
+ 18: ["Throw", "ChemlightRedMuzzle", "ChemlightRedMuzzle", "",0]
+ 19: ["Throw", "ChemlightYellowMuzzle", "ChemlightYellowMuzzle", "",0]
+ 20: ["Throw", "ChemlightBlueMuzzle", "ChemlightBlueMuzzle", "",0]
+ 21: ["Throw", "IRGrenade", "IRGrenade", "",0]
+ 22: ["Put", "DemoChargeMuzzle", "DemoChargeMuzzle", "",0]
+ 23: ["Put", "PipeBombMuzzle", "PipeBombMuzzle", "",0]
+ 24: ["Put", "MineMuzzle", "MineMuzzle", "",0]
+ 25: ["Put", "ClassicMineRangeMuzzle", "ClassicMineRangeMuzzle", "",0]
+ 27: ["Put", "BoundingMineRangeMuzzle", "BoundingMineRangeMuzzle", "",0]
+ 28: ["Put", "DirectionalMineRangeMuzzle", "DirectionalMineRangeMuzzle", "",0]
+ 29: ["Put", "ClassicMineWireMuzzle", "ClassicMineWireMuzzle", "",0]
+
+
+As of '''2.10''', [[weaponsInfo]] is better suited for finding the desired weapon index.
+|}
+
+
+== SwitchToUAVDriver ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Moves player control into driver position of connected UAV. Does what "Take UAV controls" UI action does.
+|-
+! Syntax
+| ''unit'' action ["SwitchToUAVDriver", ''uav'']
+|-
+|
+| Where ''unit'' is a player and ''uav'' is the connected UAV.
+|-
+! Example
+| <sqf>player action ["SwitchToUAVDriver", getConnectedUAV player];</sqf>
+|}
+
+
+== SwitchToUAVGunner ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Moves player control into gunner position of connected UAV. Does what "Take UAV turret controls" UI action does.
+|-
+! Syntax
+| ''unit'' action ["SwitchToUAVGunner", ''uav'']
+|-
+|
+| Where ''unit'' is a player and ''uav'' is the connected UAV.
+|-
+! Example
+| <sqf>player action ["SwitchToUAVGunner", getConnectedUAV player];</sqf>
+|}
+
+
+== TakeFlag ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Soldier 'unitname' takes control of 'flag1'. He must be close to the flagpole and it must belong to an enemy side.
+|-
+! Syntax
+| ''unit'' action ["TakeFlag", ''flag1'']
+|-
+|
+|
+|-
+! Example
+| <sqf>player action ["TakeFlag", FlagOne];</sqf>
+|}
+
+
+== TakeMagazine ==
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Soldier 'unit' takes one magazine of specified type from the ground (Weaponholder) or from named vehicle (ammo box, car, etc.) Transfer happens immediately and via teleportation. Unit plays pickup animation at its current position, no matter where magazine is. Since Arma 3 v2.06.147667 optional param 'forcePutInBackpack' is added allowing to store picked up magazine in backpack. By default the magazine will go to any unit container with space, starting with uniform.
+|-
+! Syntax
+| ''unit'' action ["TakeMagazine", ''weaponholder'', ''magazineName'', (''forcePutInBackpack'')]
+|-
+|
+| Where ''unit'' is any unit, and ''weaponholder'' is storage container.
+|-
+! Example1
+| <sqf>player action ["TakeMagazine", ammoBox, "RPGLauncher"];</sqf>
+|-
+! Example2
+| Drop Magazine, then make your buddy Bob come and take magazine and put it in backpack:
+<sqf>
+0 spawn
+{
+	private _wh = "Weapon_Empty" createVehicle (player getRelPos [2, 0]);
+	private _mag = currentMagazine player;
+	player action ["PutMagazine", _wh, _mag];
+	private _bob = group player createUnit ["B_Soldier_F", player getRelPos [10, 0], [], 0, "NONE"];
+	_bob addBackpack "B_AssaultPack_blk";
+	_bob doMove position _wh;
+	waitUntil { unitReady _bob };
+	_bob action ["TakeMagazine", _wh, _mag, true];
+};
+</sqf>
+|}
+
+
+== TakeWeapon ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Soldier 'unitname' takes weapon of specified type ([[:Category: Weapons|see list]]) from the ground (Weaponholder) or from named vehicle (ammo box, car, etc.) Transfer happens immediately and via teleportation. Unit1 plays pickup animation at its current position, no matter where weapon is.
+|-
+|
+| ''unit'' action ["TakeWeapon", ''vehicle'', ''weaponName'']
+|-
+|
+| Where ''unit'' is any unit, and ''vehicle'' is any unit or vehicle.
+|-
+! Example
+| <sqf>player action ["TakeWeapon", SoldierTwo, currentWeapon player];</sqf>
+|}
+
+
+== TakeMine ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Unit will perform pick up action animation. The closest mine that is within two meters of the target unit will be placed into the target unit's inventory. The mine has to be active for this action to succeed. If there is not enough room in the target inventory, the mine will still be picked up but will not appear in inventory. See [[createMine]] for how to place explosive by script.
+|-
+! Syntax
+| ''unit'' action ["TakeMine", ''targetUnit'']
+|-
+|
+|
+|-
+! Example
+| <sqf>player action ["TakeMine", player];</sqf>
+|}
+
+
+== TakeVehicleControl ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | In case of a helicopter, copilot will take flying controls, even if [[enableCopilot]] is disabled and [[isCopilotEnabled]] is [[false]].
+| Use {{Link|#SuspendVehicleControl}} action to release control.
+|-
+! Syntax
+| ''unit'' action ["TakeVehicleControl", ''vehicle'']
+|-
+|
+| Where ''unit'' is any unit, and ''vehicle'' is any vehicle with co-pilot controls.
+|-
+! Example
+| <sqf>player action ["TakeVehicleControl", vehicle player];</sqf>
+|}
+
+
+== Talk ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Use and effects unknown.
+|-
+! Syntax
+| ''unit'' action ["Talk", ''target'']
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== TeamSwitch ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Opens the normal team-switch dialog. <current unit> will be greyed out in the list and thus unselectable.
+The effect of the second array element is unknown, but it must be a unit.
+Works in single-player game only (in MP games, will just momentarily show the mouse cursor without the team-switch window being shown).
+|-
+! Syntax
+| ''currentUnit'' action ["TeamSwitch", ''unit'']
+|-
+|
+|
+|-
+! Example
+| <sqf>player action ["TeamSwitch", player];</sqf>
+|}
+
+
+== TouchOff ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Soldier 'unitOne' plays the action animation. UnitTwo's satchels are "touched off".
+UnitTwo must be within range (300m) of his satchels to touch them off. See [[createMine]] for how to place explosives with script.
+|-
+! Syntax
+| ''unitOne'' action ["TouchOff", ''unitTwo'']
+|-
+|
+|
+|-
+! Example
+| <sqf>player action ["TouchOff", player];</sqf>
+|}
+
+
+== TurnIn ==
+== TurnOut ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Crew of 'vehiclename' turns in/out (gets in and out of hatches).
+UnitName must be a player in effective commander of vehicleName. AI will automatically turn in/out based on their current behaviour mode.
+Only to be used on positions that have the turnIn/turnOut capability (otherwise it breaks the cargo anim).
+|-
+! Syntax
+| ''unit'' action ["TurnIn", ''vehicle'']
+|-
+|
+| ''unit'' action ["TurnOut", ''vehicle'']
+|-
+|
+|
+|-
+! Example
+| <sqf>
+commander TankOne action ["TurnIn", TankOne];
+player action ["TurnOut", vehicle player];
+</sqf>
+|}
+
+
+== UAVTerminalHackConnection ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Hacks into given UAV. Does what "Hack UAV" UI action does. Player has to be in normal UI action proximity to the UAV for this action to work. {{Feature|informative|Controlling a UAV/UGV in Arma 3 is done via [[remoteControl | remote controlling]] the invisible driver or gunner AI. These AI units have to be on the same [[side]] as player. "Hacking" is essentially placing own AI into the UAV/UGV, either replacing existing AI, or creating own AI in empty positions (for example when UAV/UGV is placed 'without crew')}}
+|-
+! Syntax
+| ''unit'' action ["UAVTerminalHackConnection", ''uav'']
+|-
+|
+| Where ''unit'' is any unit (enemy to the drone) and ''uav'' is the UAV to hack.
+|-
+! Example
+| <sqf>player action ["UAVTerminalHackConnection", drone];</sqf>
+|}
+
+== UAVTerminalMakeConnection ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Connects player to chosen UAV. Does what "Connect terminal to UAV" UI action does.
+
+'''NOTE''': Player has to be in normal UI action proximity to the UAV for this action to work.
+To connect to far away UAV use connectTerminalToUAV command instead.
+|-
+! Syntax
+| ''unit'' action ["UAVTerminalMakeConnection", ''uav'']
+|-
+|
+| Where ''unit'' is a player and ''uav'' is UAV to be connected to.
+|-
+! Example
+| <sqf>player action ["UAVTerminalMakeConnection", allUnitsUAV select 0];</sqf>
+|}
+
+
+== UAVTerminalOpen ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Opens UAV Terminal UI. Player must have UAV Terminal item in GPS slot of inventory. Does what "Open UAV Terminal" UI action does.
+|-
+! Syntax
+| ''unit'' action ["UAVTerminalOpen", ''unit'']
+|-
+|
+| Where ''unit'' is a player.
+|-
+! Example
+| <sqf>player action ["UAVTerminalOpen", player];</sqf>
+|}
+
+
+== UAVTerminalReleaseConnection ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Disconnects player from connected UAV. Does what "Disconnect terminal from UAV" UI action does.
+
+'''NOTE''': Unlike with "UAVTerminalMakeConnection", player can be far away from the UAV. Notice how the passed params are swapped around for this action.
+|-
+! Syntax
+| ''uav'' action ["UAVTerminalReleaseConnection", ''unit'']
+|-
+|
+| Where ''uav'' is the connected UAV and ''unit'' is the player controlling it.
+|-
+! Example
+| <sqf>getConnectedUAV player action ["UAVTerminalReleaseConnection", player];</sqf>
+|}
+
+== UnlockVehicleControl ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Unlocks co-pilot controls, shows {{Link|#TakeVehicleControl|Take Control}} action. enableCopilot must be set true to function.
+|-
+! Syntax
+| ''unit'' action ["UnlockVehicleControl", ''vehicle'']
+|-
+|
+| Where ''unit'' is any unit, and ''vehicle'' is any vehicle with co-pilot controls.
+|-
+! Example
+| <sqf>player action ["UnlockVehicleControl", vehicle player];</sqf>
+|}
+
+
+== UseMagazine ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Loads a weapon with magazine with known id and fires that weapon. The weapon is selected based on magazine type. Details for <cr> and <id> can be found with magazinesDetail command (not 100% about <cr> but it seems 0 works for all weapons)
+|-
+! Syntax
+| ''logic'' action ["UseMagazine", ''target'', ''magazine creator'', ''<cr>'', ''<id>'']
+|-
+|
+|
+|-
+! Example
+|
+<sqf>
+private _logic = createGroup west createUnit ["Logic", [0,0,0], [], 0, "NONE"];
+hint str magazinesDetail player; // loaded mags not shown
+/*[
+"6.5mm 30Rnd STANAG Mag(30/30)[id/cr:3/0]",
+"Smoke Round (White)(1/1)[id/cr:121/0]",
+"Smoke Round (White)(1/1)[id/cr:122/0]",
+"9mm 16Rnd Mag(16/16)[id/cr:11/0]"
+]*/
+_logic action ["UseMagazine", player, player, 0, 3];	// loads rifle with mag id 3 and fires
+_logic action ["UseMagazine", player, player, 0, 11];	// loads pistol with mag id 11 and fires from inventory
+_logic action ["UseMagazine", player, player, 0, 121];	// throws smoke grenade with id 121
+</sqf>
+|}
+
+
+== User ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Soldier 'unitName' does nothing. Executes the custom action with the given index of the the target unit. Indexes are based upon the order in which the actions are added to the unit. See addAction.
+|-
+! Syntax
+| ''unitName'' action ["User", ''target unit'', ''action index'']
+|-
+|
+|
+|-
+! Example
+| <sqf>gameLogic action ["User", player, 3];</sqf>
+|}
+
+
+== UserType ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | As of ArmA version 1.08, using this action type will cause ArmA to crash to desktop.
+|-
+! Syntax
+| ''unit'' action ["UserType", ''target'', ''action index'']
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== UseWeapon ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Soldier 'unitOne' will play the action animation. Target unit will fire the specified unit's position in the target vehicle's (can be the unit itself) weapon mode index. The indexes seem to be based upon the order in which weapons are added to the unit/vehicle, with each weapon's muzzle's fire mode having an unique index. Weapons can be fired in this way from a not-readied position (eg, firing a rifle on a soldiers back). Pistols will fire from the current weapon's proxy. It can also be used to sound the horn on AI controlled vehicles.
+|-
+|
+| '''NOTE:''' If 'unitOne' is player object, the player goes into pick up animation before action is performed. If 'unitOne' is a game logic, the action is performed immediately with no animation.
+|-
+! Syntax
+| ''unitOne'' action ["UseWeapon", ''target vehicle'', ''target unit'', ''weapon index'']
+|-
+|
+|
+|-
+! Example
+| <sqf>
+_logic = createGroup west createUnit ["Logic", [0,0,0], [], 0, "NONE"];
+_logic action ["UseWeapon", player, player, 0];	// player fires single shot
+_logic action ["UseWeapon", player, player, 2];	// player fires 3 round burst
+_logic action ["UseWeapon", player, player, 5];	// player fires pistol from inventory
+_logic action ["UseWeapon", player, player, 7];	// player throws hand grenade
+_logic action ["UseWeapon", car, car, 0];		// car sounds its horn
+// more examples
+gameLogic action ["UseWeapon", unit1, unit1, 16];
+gameLogic action ["UseWeapon", vehicle unit1, unit1, 0];
+gameLogic action ["UseWeapon", myTank, gunner myTank, 1];
+gameLogic action ["UseWeapon", myTank, commander myTank, 0];
+</sqf>
+|}
+
+
+== VectoringDown ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | If VTOL auto-vectoring is off, incremental forward tilt of engine nacelles.
+|-
+! Syntax
+| ''unit'' action ["VectoringDown", ''vehicle'']
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== VectoringUp ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | If VTOL auto-vectoring is off, incremental upward tilt of engine nacelles.
+|-
+! Syntax
+| ''unit'' action ["VectoringUp", ''vehicle'']
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== VTOLVectoring ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Toggles '''off''' VTOL auto-vectoring (manual mode)
+|-
+! Syntax
+| ''unit'' action ["VTOLVectoring", ''vehicle'']
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== VTOLVectoringCancel ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Toggles '''on''' VTOL auto-vectoring (forward mode)
+|-
+! Syntax
+| ''unit'' action ["VTOLVectoringCancel", ''vehicle'']
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== WeaponInHand / WeaponOnBack ==
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Soldier 'unitName' does nothing, 'target unit' moves his weapon from/to the safety position (gun held across chest pointing at the ground).
+Change is persistent with player, but AI units will change back to suit their current setBehaviour|behaviour mode. AI generally keep their rifles safe unless moving or targeting.
+<!-- (''VBS2 calls this action "PutWeaponOnBack"'') -->
+|-
+! Syntax
+| ''unitName'' action ["WeaponInHand", ''target unit'']
+|-
+|
+| ''unitName'' action ["WeaponOnBack", ''target unit'']
+|-
+|
+|
+|-
+! Example
+| <sqf>SoldierOne action ["WeaponOnBack", SoldierTwo];</sqf>
+|}
+
+
+== WheelsBrakeOn ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Engages wheels brakes on RTM helicopter
+|-
+! Syntax
+| ''unit'' action ["WheelsBrakeOn", ''vehicle'']
+|-
+|
+|
+|-
+! Example
+| <sqf>player action ["WheelsBrakeOn", heli];</sqf>
+|}
+
+
+== WheelsBrakeOff ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Disengages wheels brakes on RTM helicopter
+|-
+! Syntax
+| ''unit'' action ["WheelsBrakeOff", ''vehicle'']
+|-
+|
+|
+|-
+! Example
+| <sqf>player action ["WheelsBrakeOff", heli];</sqf>
+|}
+
+
+= Unsorted actions found in UI.pbo/config.bin =
+
+
+== LoadOtherMagazine ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== LoadEmptyMagazine ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== PutWeapon ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Is alias of DropWeapon
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+| <sqf>_wh = "GroundWeaponHolder_Scripted" createVehicle position player;
+player action ["PutWeapon", _wh, currentWeapon player];</sqf>
+|}
+
+
+== PutMagazine ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | is synonym for DropMagazine (same syntax)?
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== StartTimer ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | is synonym for SetTimer (same syntax) ?
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== HideWeapon ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+| unit action ["HideWeapon", <object>, <object>, <Number>]
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== MarkWeapon ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Something to do with campaign. Campaign param "WeaponPool" has to be enabled as well as mission param "MarkWeapons". Possibly related to "MarkEntity" action as well.
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== HandGunOffStand ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== HandGunOnStand ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== TakeDropMagazine ==
+
+:{| class="valign-top"
+|-
+| '''Description''': Redundant even if works, use {{Link|#TakeMagazine}}
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+== TakeDropWeapon ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+== Assemble ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+| <sqf>_unit action ["Assemble", nearestObject [_unit, "Tripod_Bag"]];</sqf>
+|}
+
+
+== FirstAid ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== GetOver ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== GunLightOff ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+| <sqf>player action ["GunLightOff", player];</sqf>
+|}
+
+
+== GunLightOn ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+| <sqf>player action ["GunLightOn", player];</sqf>
+|}
+
+
+== IRLaserOff ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+| <sqf>player action ["IRLaserOff", player];</sqf>
+|}
+
+
+== IRLaserOn ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+| <sqf>player action ["IRLaserOn", player];</sqf>
+|}
+
+
+== OpenBag ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Opens inventory UI with backpack of a unit (another unit). Unit must be in proximity.
+|-
+! Syntax
+| unit1 action ["OpenBag", unit2];
+|-
+|
+|
+|-
+! Example
+| player action ["OpenBag", bob];
+|}
+
+
+== TakeBag ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | Unit takes specified backpack from the ground.
+|-
+! Syntax
+| _unit action ["TakeBag", _bag];
+|-
+|
+|
+|-
+! Example
+|
+<sqf>
+player addEventHandler ["WeaponDisassembled",
+{
+	_this spawn {
+		_unit = _this select 0;
+		_bag1 = _this select 1;
+		_bag2 = _this select 2;
+
+		_currBag = unitBackpack _unit;
+		titleText ["You are not allowed to disassemble static weapons.", "PLAIN DOWN", 0.5];
+		_unit action ["TakeBag", _bag1];
+
+		_time = time + 3;
+		waitUntil { unitBackpack _unit == _bag1 || time > _time };
+
+		_unit action ["Assemble", _bag2];
+		if (!isNull _currBag) then { _unit action ["TakeBag", _currBag] };
+	};
+}];
+</sqf>
+|}
+
+
+== Tell ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== APUOn ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== APUOff ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== BatteriesOn ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== BatteriesOff ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== StarterOn<#> ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | StarterOn(1-3)
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== StarterOff<#> ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | StarterOff(1-3)
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== ThrottleFull<#> ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | ThrottleFull(1-3)
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== ThrottleIdle<#> ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | ThrottleIdle(1-3)
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== ThrottleOff<#> ==
+
+:{| class="valign-top"
+|-
+! Description
+| style="width: 99%" | ThrottleOff(1-3)
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== RotorBrakeOn ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== RotorBrakeOff ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== AIAssemble ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== ListLeftVehicleDisplay ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== ListRightVehicleDisplay ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== ListPrevLeftVehicleDisplay ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== ListPrevRightVehicleDisplay ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== CloseLeftVehicleDisplay ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== CloseRightVehicleDisplay ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== NextModeLeftVehicleDisplay ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== NextModeRightVehicleDisplay ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== UnloadUnconsciousUnits ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== HookCargo ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== UnhookCargo ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== LoadVehicle ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== UnloadVehicle ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+== UnloadAllVehicles ==
+
+:{| class="valign-top"
+|-
+! Description
+|
+|-
+! Syntax
+|
+|-
+|
+|
+|-
+! Example
+|
+|}
+
+
+[[Category:Actions]]

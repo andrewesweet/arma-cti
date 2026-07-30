@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Merge_Requests
+// revision: 322271 (2022-05-27T16:02:52Z)
+// export sha1: 6n5xms3la5mi22ftel7s7e3gr38rsfc
+// Vendored snapshot. Do not edit — re-export instead.
+
+Merge requests created by {{hl|[[Template:Wiki|<nowiki>{{Wiki|Merge}}</nowiki>]]}} usage.
+
+
+[[Category:Maintenance]]

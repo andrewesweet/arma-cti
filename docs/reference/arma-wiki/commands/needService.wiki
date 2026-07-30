@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/needService
+// revision: 377624 (2026-01-02T08:52:02Z)
+// export sha1: jw4wky8bs0sb82qmslyock4xmbhwwa1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|gr1= Object Manipulation
+
+|descr= Returns array with how much vehicle needs repairing, refueling and rearming.
+
+|s1= [[needService]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Array]] with [repair, refuel, rearm]. Values are in range 0..1: 0: no need, 1: maximum need
+
+|x1= <sqf>needService tank params ["_needRepair", "_needRefuel", "_needRearm"];</sqf>
+
+|x2= <sqf>onEachFrame { hintSilent str needService vehicle player };</sqf>
+
+|seealso= [[allowService]] [[allowedService]] [[needReload]]
+}}

@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/addMagazineCargo
+// revision: 376381 (2025-10-09T02:13:28Z)
+// export sha1: qsve03r78wvtthhvp07662syx748lnx
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Containers
+
+|arg= global
+
+|eff= local
+
+|descr= Add magazines to the cargo space of vehicles, which can be taken out by infantry units. Once the magazine cargo space is filled up, any further addMagazineCargo commands are ignored.
+{{Feature|arma3|In {{arma3}}, arguments for this command must be local ({{Icon|localArgument|32}}). For the global variant see [[addMagazineCargoGlobal]].}}
+
+|s1= vehicleName [[addMagazineCargo]] [magazineName, count]
+
+|p1= vehicleName: [[Object]] - vehicle to add the magazines to
+
+|p2= magazineName: [[String]] - magazine name. See [[:Category:Weapons]] for reference about possible values.
+
+|p3= count: [[Number]] - number of magazines to add. {{GVI|arma3|2.14|size= 0.75}} negative count will remove magazines.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_truck addMagazineCargo ["M16", 5];</sqf>
+ 
+|seealso= [[addMagazineCargoGlobal]] [[addMagazine]] [[addMagazineGlobal]] [[addMagazines]] [[addMagazinePool]] [[addMagazineTurret]] [[clearMagazineCargo]] [[addWeaponCargo]] [[clearWeaponCargo]] [[getMagazineCargo]] [[addItemCargo]] [[addItemCargoGlobal]] [[addMagazineAmmoCargo]]
+}}

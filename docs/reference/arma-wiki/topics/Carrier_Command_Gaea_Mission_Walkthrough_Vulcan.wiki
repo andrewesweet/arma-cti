@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Walkthrough/Vulcan
+// revision: 341573 (2023-06-09T16:02:32Z)
+// export sha1: ifcz48t487tfzpf6di2ux2z8zah5qks
+// categories: Category:Carrier Command: Gaea Mission: Walkthrough
+// Vendored snapshot. Do not edit — re-export instead.
+
+This mission starts just as the Myrick's team crash-lands on the island Vulcan. After they recuperate, they observe another landing pod being destroyed. Then they go and secure the perimeter '''(#2)'''. The team splits up. Anderson and Okoro go to secure the Carrier, while Myrick and Essi go to take the Command center '''(#3)'''. They find the path to the Command center blocked by a wreck, so they need to take a path around it '''(#4)'''. As Myrick enters the junk yard, the gate suddenly falls and Myrick and Essi get separated. Myrick continues ahead, traverses an old facility '''(#5)''' and survives a timed run on a train track '''(#6)'''. At the end of the run, he rejoins Essi and they continue together to the Command center. After Myrick secures the area '''(#7)''' Essi hacks the Command center. Then they take a near by Walrus and use it to ride to the Carrier other team members secured.
+
+Other team members go to Carriers bridge, while Myrick decides to search the Carrier and kill any remaining enemy droids, finishing the main objective '''(#1)'''.
+
+
+== Patch 1.3 ==
+
+The direct path to the command center was unblocked in this patch, so now it is possible to take a shortcut and skip objectives 5 and 6.
+
+
+== Objectives ==
+
+* VULCAN BLUES
+Vulcan - a bloody wasteland. No backup, stranded, and no means of getting back, we now have no choice but to press on with the mission. Time to buckle up and get ready for the ride.
+# GET THE CARRIER
+#* Vulcan's shipyard holds an old, decommissioned Carrier that we need to get our hands on. It should only be lightly guarded, and could turn the tide of the war. We must get it at all costs.
+# CLEAR PATH FOR ESSI
+#* Clear the path ahead for Essi while she searches for Aurora's pod.
+# TAKE THE COMMAND CENTER
+#* We need the Carrier access codes and they're in the Command Center's database. Thus, we need to take the Command Center as well.
+# JUNKYARD DETOUR
+#* The path to the Command Center is blocked, so we'll have to take a detour through the junkyard. It should be safe, and at least Essi won't get shot at.
+# TRAVERSE THE OLD FACILITY
+#* There's an old facility which Essi said I can use to get through to the base of the Command Center.
+# SURVIVE THE TRAIN TUNNEL
+#* Essi never mentioned trains. I hate trains. There's no way around, so I'll have to get through using the tracks.
+# COMMAND CENTER ASSAULT
+#* This is it. Artillery, droids and barricades. I'll have to fight my way through and reach the base of the Command Center.
+
+
+== The hidden Droid mission ==
+
+ Comm link open... Service unit 051 online.
+
+In one of the dark carrier corridor Myrick can enter a door labeled Engineering. After going downstairs and activating a console in the end of the corridor, the control moves to a droid that the player can control <ref>http://forums.bistudio.com/showthread.php?142346-Droid-Mission-on-Vulcan-is-it-an-Easter-Egg-I-missed-it-twice!</ref>. The goal in this short mission is to activate lights in the storage compartment and kill any droid that would try to prevent that. The light activating console is reached by going to the other end of the storage room, through a tunnel and left afterwards.
+
+There are no further consequences from either failing or succeeding in this side mission.
+
+
+== Hints ==
+
+To '''Survive the train run''', Myrick must run inside the tracks in the direction the trains are taking, using the conveniently spaced trenches as a cover. <ref>http://forums.bistudio.com/showthread.php?140763-Survive-The-Train-Tunnel-Mission-How</ref> It is only possible to move from one trench to the next between the passes of trains. In the first trench, there is a switch that will shut down a force field that stays in the way. In the second or third trench, there is an enemy droid that needs to be shot down.
+
+
+{{GameCategory|carriercommand|Walkthrough}}

@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Parallax_Map
+// revision: 351623 (2023-12-11T09:33:17Z)
+// export sha1: ss287orcopb3179dgh5rqxlvjgo1aiq
+// categories: Category:Arma 3: Editing | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+==Parallax Map for Arma 3==
+This page describes changes in parallax technology that are going to go into main branch of Arma 3 with Eden update (estimated Q1 2016), originally written by Pavel Guglava.
+The technology shouldn't affect vehicles at all, it is for the terrain and its surfaces.
+
+=== Why did we upgraded a ground parallax technology ===
+
+New parallax technology:
+* Eliminates the ugly artifacts
+* There is a better scale of the effect
+* Bigger range of height / depth of the effect (1:0.0325)
+
+=== How prepare a texture for improved parallax technology ===
+Normal map textures contain different information in RGB and Alpha channels:
+
+[[File:displaceTest_middle_nopx_a.jpg]]
+
+Normal map RGB
+
+[[File:displaceTest_middle_nopx_b.jpg]]
+
+Height map Alpha
+
+The way of making a height map and normal map is similar to the way it was done before. The biggest change is a change of basic level (the mesh surface of ground) in the height map. Basic level means a grade of gray in texture, which is mapped to a model of ground. The other levels are made by shader and its only a fake effect. Attached picture represents it easier than words:
+
+[[File:paralaxmapImprove.jpg]]
+
+A basic level is middle gray now (procedural) which means, if you work on a surface without bump details, just make procedural normal map with middle gray in an alpha channel.
+
+  Procedural nopx texture
+  texture="#(argb,8,8,3)color(0.5,0.5,1,0.5,nopx)";
+  How height in the game is white or black color in the height map
+
+For parallax map height of effect is calculated by a coefficient. This coefficient is 1:0.0325, which means if your ground image has size 3 m in the game (3x3 m tile) your parallax will be max 10 cm.
+
+=== How to fix the current parallax map ===
+
+[[File:paralaxmapImprove_QuickFix.jpg]]
+
+Because there is a bigger range of height of parallax effect, your current parallax maps are maybe bigger than you want them to be. The quick fix is using a levels tool in your favorite image editor. As you can see at the picture above, you are able to set the max and min values of height by grade of gray, whether your context of texture is too big in the game, move the darkness pixels closer to middle gray value, and the same process apply to brightness pixels, move them closer to middle gray value.
+
+{{GameCategory|arma3|Editing}}
+{{GameCategory|arma3|Tutorials}}

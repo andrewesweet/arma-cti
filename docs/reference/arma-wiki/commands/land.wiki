@@ -1,0 +1,81 @@
+// source: https://community.bistudio.com/wiki/land
+// revision: 373721 (2025-06-23T00:49:43Z)
+// export sha1: o97jq4gfui584ph9e10t8eeo32rn4pd
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Control
+
+|descr= Forces a helicopter landing. If there is a helipad nearby, the helicopter will attempt to land on it. VTOL he other hand will just land somewhere. To make helicopter or VTOL land on a specific helipad use [[landAt]].
+
+|s1= helicopter [[land]] mode
+
+|p1= helicopter: [[Object]] helicopter or VTOL
+
+|p2= mode: [[String]] - can be one of:
+* "LAND" - Complete stop
+* "GET IN" - Hovering very low, for another unit to get in
+* "GET OUT" - Hovering low, for another unit to get out
+* {{GVI|arma2|1.00|size= 0.75}} "NONE" - Cancel a landing
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_cobraOne land "LAND";</sqf>
+
+|seealso= [[landAt]] [[allAirports]]
+}}
+
+{{Note
+|user= Hardrock
+|timestamp= 20060804105600
+|text= ''Notes from before the conversion:''
+Helos will land at the nearest "H" or "Invisible H", if there is one around (within 500m in {{arma1}}).
+}}
+
+{{Note
+|user= SNKMAN
+|timestamp= 20100926120200
+|text= To make a helicopter LAND correctly and not hovering over the landing position use [[unitReady]] to check if the helicopter already has reached his destination.
+You can fix a landing bug by using a short delay bevore checking the [[unitReady]] command.
+
+<sqf>
+_helicopter move getPosATL _destination;
+sleep 3;
+while { alive _helicopter && not unitReady _helicopter } do
+{
+	sleep 1;
+};
+
+if (alive _helicopter) then
+{
+	_helicopter land "LAND";
+};
+</sqf>
+}}

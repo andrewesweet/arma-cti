@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/clear3DENAttribute
+// revision: 364152 (2024-05-05T10:44:17Z)
+// export sha1: 0h1s4l65bcm677ewaza2q2hgpz5o7td
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Clears the value of the given entity's [[Eden_Editor:_Entity_Attributes|attribute]] in [[:Category:Eden Editor|Eden Editor]]. An attribute is identified by its {{hl|property}} ({{hl|data}} when it is engine-drive attribute) value in config. For the list of all attributes with their properties, see [[Eden_Editor:_Setting_Attributes#Attributes|Setting Attributes]].
+
+{{Feature|important|Attributes are available only within the Eden Editor workspace. You cannot access them in scenario preview or exported scenario!}}
+
+|s1= entity [[clear3DENAttribute]]  attribute
+
+|p1= entity: [[Eden Entity]] or [[Eden ID]]
+
+|p2= attribute: [[String]] - attribute property
+
+|r1= [[Boolean]] - [[true]] on success
+
+|x1= <sqf>0 clear3DENAttribute "name";</sqf>
+
+|seealso= [[set3DENAttribute]] [[set3DENAttributes]] [[set3DENMissionAttributes]] [[get3DENMissionAttribute]] [[get3DENAttribute]]
+}}

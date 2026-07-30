@@ -1,0 +1,77 @@
+// source: https://community.bistudio.com/wiki/ArmA:_Armed_Assault:_Warfare/1.1
+// revision: 336619 (2023-01-04T15:23:28Z)
+// export sha1: 6ppusy2ut6afpdntrmf8nad4t5js6rf
+// Vendored snapshot. Do not edit — re-export instead.
+
+<<[[ArmA_Warfare|ArmA Warfare]]
+
+ARMA WARFARE 1.1 BETA README
+
+
+Copyright © 2008 {{Link|link= http://www.bistudio.com|text= Bohemia Interactive}}.  All rights reserved.
+
+This archive contains interim update of ArmA Warfare to version 1.1
+
+'''YOU CAN BUY AND DOWNLOAD ARMA: GOLD EDITION (THE ORIGINAL GAME ARMED ASSAULT / COMBAT OPERATIONS INCLUDING THE OFFICIAL EXPANSION PACK QUEEN'S GAMBIT) VERSION 1.08 NOW DIRECTLY FROM THE DEVELOPERS AT SPROCKETIDEA.COM'''
+
+=== SYSTEM REQUIREMENTS ===
+
+* ANY ORIGINAL VERSION OF ARMA 1.14.
+
+Visit {{Link|link= http://www.armedassault.com/dwnl_update.html|text= updates section at armedassault.com}} to update your ArmA as necessary.
+
+=== HOW TO INSTALL ARMA WARFARE 1.1 ===
+
+If you want to host a game with ArmA Warfare 1.1, you need to copy WarfareV11beta.SaraLite.pbo (or (Warfare32V11beta.SaraLite.pbo
+for 32 player version) to your MPMissions folder in the main server game directory (default is c:\program files\bohemia interactive or c:\program files\atari). Clients do not need to install the mission as it should be downloaded from the server automatically.
+
+=== NEW FEATURES ===
+
+==== Team Status ====
+In the Team Menu, click on Team Status. You can see
+the condition of your troops and disband them and to unflip vehicles.
+
+==== Command Teams ====
+You can respawn an AI team back at the base by
+selecting it and clicking the Respawn button.
+
+
+== MANUAL ERRATA ==
+
+Warfare 1.1 changes pricing of the following items to:
+
+$9000 - KA50
+$8000 - AH1Z
+$2500 - M119/D30
+2000 Supplies - Aircraft Factory
+
+
+=== CHANGELOG ===
+
+Changes:
+* Fast Travel safety check for enemy presence now slightly less strict.
+* Now requires enough supplies to deploy MHQ when packing up.
+* Restricted deploying MHQ too close to a town depot.
+* Increased Aircraft Factory cost to 2000 supplies.
+* Increased KA50 cost to $9000.
+* Increased AH1Z cost to $8000.
+* Increased artillery cost to $2500.
+* Increased delay between fire missions to 4 minutes.
+* Increased town/camp capture rewards by 50%.
+* Decreased kill rewards by 50%.
+* Increased starting distance between sides by 50%.
+* Increased salvager travel distance.
+* Added respawn AI team option to Command Teams UI.
+* Added Unflip vehicles option to Team Menu.
+* Added Disaband Unit option to Team Menu.
+* Added Team Status to Team Menu.
+* Fixed JIP bug where player would receive money if joining a slot used by a previous player.
+* Fixed JIP bug where player did not see current status of captured depots and camps.
+* Possible fix for end-game bug when packing MHQ.
+
+
+= LINKS =
+* {{Link|link= http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?act=SF;f=81|text= BIS forum}}
+* {{Link|link= http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?act=ST;f=81;t=74073|text= BIS forum thread}}
+* [[Warfare_1_-_Editing_Guide|Editing Guide]]
+* [[ArmA_Warfare/1.1/Issues|Issues]]

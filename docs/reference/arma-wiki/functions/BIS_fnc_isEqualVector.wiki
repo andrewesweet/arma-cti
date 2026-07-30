@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isEqualVector
+// revision: 349270 (2023-11-08T14:51:09Z)
+// export sha1: tvnb6obeco3zwdyew79zarsnb7j982v
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vectors | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Vectors
+
+|descr= Checks whether two vectors are equal with given tolerance.
+
+|s1= [vector1, vector2, tolerance] call [[BIS_fnc_isEqualVector]]
+
+|p1= vector1: [[Array]] - vector 1
+
+|p2= vector2: [[Array]] - vector 2
+
+|p3= tolerance: [[Number]] - the tolerance
+
+|r1= [[Boolean]] - returns [[true]] if in tolerance, otherwise [[false]]
+
+|x1= <sqf>[[1,1,1], [2,2,2], 1] call BIS_fnc_isEqualVector; // returns true</sqf>
+
+|seealso= [[isEqualTo]] [[isEqualTypeAny]]
+}}

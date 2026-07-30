@@ -1,0 +1,359 @@
+// source: https://community.bistudio.com/wiki/ArmA:_Armed_Assault:_Warfare/1.1/Issues
+// revision: 295996 (2021-11-17T14:39:24Z)
+// export sha1: g26gvamgzep42drk91adg11sruz71vt
+// Vendored snapshot. Do not edit — re-export instead.
+
+<<[[ArmA_Warfare/1.1|ArmA Warfare/1.1]]
+Add a bug/wish using this schema in your edit<pre>==it's broken!==
+*fix it
+:+1 yes it is! ~~~~</pre>
+(two = per side and four ~ at the end)<br>
+The +/-1 for mimic a vote template like in other wikis.<br>
+The : is for clean indent.
+= Bugs =
+== Gear ==
+*Laser marker in rocket launcher slot
+== Non player controlled AI in AA pods ==
+[[Talk:ArmA_Warfare/1.1/Issues#Non_player_controlled_AI_in_AA_pods|Discussion]]>>
+*They don't fire at targets
+== JIP ==
+*'''FIXED IN 1.1''' correctly identifies status of camps and Town Supply depots.
+: -1 seems to show only your side structures, not the enemy's. to verify. [[User:Alef|alef]] 17:33, 24 June 2008 (CEST)
+
+= Wishes =
+[[Talk:ArmA_Warfare/1.1/Issues#Wishes|Discussion]]>><br>
+(Copied over from the BIS forum section "Warfare" under the topic "Warfare 1.0" section at the request of Alef)
+There's always room for more "versions" of CTI.  I'd say give MM two weeks well deserved holiday then hit him up for some addition features.
+== Countermeasure Flares ==
+* for aircraft and helicopters. Limit of 3, and 10 seconds to reset per discharge.
+
+== New structures ==
+=== Base flag ===
+*max 3 deployed
+*Deployed by MHQ or Command APC
+*If any one of these flags is captured by the enemy, this side loses (90seconds to capture)
+
+=== Radar tower ===
+*Avail after radar upgrade
+*Range 1km at start. Upgradeable to 6km in 1km steps on Aircraft detection (does not detect aircraft below 50m)
+*Builds ECM HUMMV/UAZ and Recon trucks.
+*Commander buys troops and veh for human players here.
+*AI units must be able to Fast Travel to the town supply depot closest to your position, and fast travel costs must be paid by cash on hand prior to departure.
+*reports approximate (large map grid) location of incoming artillery source.
+
+=== Payroll Vault/Bank ===
+*Pay is issued to the bank, and you must withdraw from the Bank to cash on hand to purchase units
+**Damage to the structure means monetary loss to your account
+*A friendly town supply depot can deposit only your cash on hand, but you cannot withdraw money from it
+*Cash on hand needed for Supply depot menu (rearm/refuel/repair/jeep/motorcycle), fast travel costs, AI fast travel costs
+*When you die/respawn, you lose your cash on hand
+
+=== Helipad and large tent ===
+*To rearm and refuel (fast rate, costs money, losing tent = loosing resupply ability)
+*Acts like town supply depot
+
+=== Command Bunker ===
+*Acts like town supply depot for land vehicles (fast rate, closed roof to avoid abuse, costs money, no wpns)
+*Allows Fast Travel destination option in "T" menu
+*Order troops and vehicles from factories. Must pay for Fast Travel costs with cash on hand before departure.
+*Allows cash deposit, but no withdrawl from player accounts.
+== Victory condition ==
+*Change from destruction of MHQ and surrounding factories 300m to:
+**capturing any one of the enemy Base Flag
+**must hold for 90 seconds countdown.
+*No more artillery wins
+
+== Upgrades ==
+=== Airlift ===
+*Every defensive structure weapon and vehicle except MHQ and MBT's
+=== Paradrop/HALO upgrade ===
+*DC-3 shows up in airspace over marked map location deploying your troops using Fast Travel script
+=== Medical upgrade ===
+*Medical vehicles builds large Mash and can order para-jumping medics from Medical M113/BMP
+=== Support upgrade ===
+*Support APC from light fact to unflip any vehicle
+*Option to hitch damaged vehicle and move via towing
+=== Aircraft Ammo upgrade ===
+*AT missile (default 1.25km range)
+*+250m AT range (max 2.5km)
+*LGB
+*Cluster (+50% area LGB)
+*Thermobaric (+50% dmg LGB)
+*Nuke
+=== Airstrike upgrade ===
+*Need radio as equipment
+*precision AT strike
+*Cluster bomb vs Armor
+*Napalm vs infantry and folliage/vegetation.
+*Bomblet minefield vs infantry only
+*UAV Laser Designator
+*UAV 2 x Hellfire/Vikhr
+=== AA upgrade ===
+*AA Stryker/BRDM armed with 8 AA missiles (1 set of reloads)
+*default 2km range on AA weapons, +250m range, max 4km range
+*Chromatic Thermal shielding; AA tanks unlockable by AT lock on missiles
+=== Artillery upgrade ===
+*Chemical vs infantry
+*Nuclear
+*Thermobaric +50% damage radius
+*Range +1km (max 5 levels)
+*GPS +1km range (artillery only up to +3km)
+*Bunker-buster +25 damage per round
+*Smoke + Illumination
+
+=== Nuke upgrade ===
+*Allows artillery and aircraft ammo upgrade
+*MHQ and Command APC immune
+
+=== Radar upgrade ===
+*Enemy aircraft detection starting at 1km range.
+*Upgrade Levels I-V. Each level increases range by 1km.
+*Artillery detection map grid coord. Eg "enemy artillery detected @ E6".
+
+== ECM upgrade ==
+*level I gets you ECM HUMMV/UAZ built at Radar tower. default 100m radius effect. 30m altitude.
+*No targets inside radius can be locked on by AA or AT missiles.
+*Upgrade levels I - V
+*100% per level difference in radius. eg Level 2 radar vs level 1 ECM = 50m radius. 300m max. 
+*works on satchel detonators.  
+*Alternate is to build Radar obscuring smoke generating HUMMV/UAZ vehicles, as seen on "Futureweapons"
+*ECM switches off when airlifted
+
+== Boat dock ==
+*CRRC's, upgrade to RHIB, Fast travel option to other docks or coastal town. Dock must be next to water
+== Minimum build distance from MHQ to town supply depot 500m ==
+*upgrade option to 500m? default 1km away
+== Minimum supply truck reload time for supplies ==
+*2 min.
+== Decrease kill reward by 90% ==
+*'''ADDRESSED IN 1.1'''
+*eg $45 for killing a M113, not $450.
+== Maximum number of Barracks and Light veh Fact. ==
+*5 total
+*Build strategies here for this, [[ArmA_Warfare/1.1/Issues#Maximum_number_of_dock.2C_Heavy_veh_and_Air_Fact|this]] and [[ArmA_Warfare/1.1/Issues#Maximum_number_of_Radar_towers.2C_Helipad.2C_Command_bunker|this]] point
+== Maximum number of dock, Heavy veh and Air Fact ==
+*3 total
+== Maximum number of Radar towers, Helipad, Command bunker ==
+*3 total
+
+== Voting ==
+=== Vote on commander default ===
+*0 ai, 0 player: default lowest ping player = 1
+
+=== Vote on viewdistance ===
+*Default 1250m, lower setting wins on tie
+*Average setting used from all votes
+*Increments of 250m. max 2.5km.
+=== Vote on max ai controlled by human ===
+*Each human player max set by commander; default 12 per player
+*Total# on each side compared
+*Side with lower total gets funds equal to difference x50 per minute
+
+== Each player can order ai through the town supply depot or command bunker ==
+*Units must fast travel to the player's town position or command bunker
+*Simpler system would be to allow non-truck vehicles to have radio access to AI production
+== Commander build macros ==
+=== Defensive structures ===
+*2-4 defensive structures built simultaneously. Eg. 2xAA mount and GL, 2xAT + MG nest... 4 MG nests facing NSEW...
+=== AA and Armor ===
+*@ 150% cost,  3 shilkas show up; 2 MBT and BMP/Stryker show up
+== Command APC, not MHQ ==
+*Respawn point for players
+*Allows fast travel at $500 from nearest town
+*Allows troops only via fast travel
+*Deploys mortars, not cannons
+*Deploys base flags
+*max 3 command APC's
+
+== Remove lock-on land veh for AA missiles ==
+*(abused in earlier CTI's)
+== Option to convert ammo truck to ammo crate ==
+*Crate contains;
+**small arms, or missile launcher+ammo
+**fuel truck to fuel cans.
+*Limited supply vs command bunker
+== Ammo truck, Fuel truck, Repair truck ==
+*Time counter when in use (slow rate, money charge when meter on, like $4 a gallon for 50 bullets/1xTOW...   : P )
+*Option to convert to structure of equal function (flag for repair, fuel drums for fuel, ammo crate for vehicle wpn ammo).
+== Camo netting covered sandbag defense ==
+*Person size (observation post)
+*Veh size (front view only)
+== New vehicle ==
+=== Light Fact ===
+*4x4 Civillian with build option for cammo netting only (SAS/SF observation post)
+*Tractor or M113/BMP
+**Bulldoze your own factory and construction structures
+**No effect on civillian structures and enemy factories
+**Can affect enemy defensive structures
+**Retrieve 25% original cost of friendly or enemy defensive structures.
+== U shaped dirt wall defense, veh size (tank bunker) ==
+== Tree shaped watchtower/large rock duckblind/telephone pole platform ==
+*For AA spotters and snipers on artificially higher ground.
+== Bush shaped "duck blind" ==
+*For snipers
+== Commander only can build attack helos (Cobra/Kamov/Hind/Apache) ==
+*4 limit per side.
+== Upon death ==
+*option to respawn at nearest town camp, MHQ,  or Command APC.
+*respawn time is 10 sec + fast travel to player selected town camp, MHQ, or Command APC. Minimum 20 seconds.
+*note that respawn option is not available at base flags or command bunkers
+
+== Medical M113/BMP builds MASH tents ==
+*Upgrade allows Medics to build large MASH tents with healing radius (for veh), and order up AI medics @$2000, which parachutes in.
+== Fast transport costs money ==
+*$100 per town per 10 supply point value. prevents supply truck abuse. eg. FT to a 60 supply point town = $600.
+== New "defense" structure 81mm mortar ==
+*3x less accurate than cannons
+*Decoys for Radar detection.
+== Switching sides will result in screen blanking ==
+[[Talk:ArmA_Warfare/1.1/Issues#Switching_sides_will_result_in_screen_blanking|Discussion]]>>
+*Lack of map access
+*Banana room penalty box
+*Teleported to corner of map
+*No action menu access
+*No "T" option
+
+== Ranges ==
+*Mortar range 1km (upgradeable in 1km steps to 6km)
+*Cannon range 2km (upgradeable in 1km steps to 7km, +3km GPS)
+*AA missiles minimum range 600m. Max range at 4Km
+*Increase AA tank range 2Km default minimum
+**This overrides the viewdistance bidding "duel" by vote or commander's upgrades.
+
+== Repair trucks, camps, Command APC,  commander/MHQ can deploy mortars ==
+== Triple the cannon cost ==
+*'''ADDRESSED IN 1.1'''
+*increase the reload time 4 times
+*Both artillery types fire a volley of 3 (mortars reload time 90 sec. Cannons  reload time 6 min)
+== Commander only one able to build cannons ==
+*5 cannon limit
+== Mortar shells ==
+*each cost $10
+*Cannon shells each cost $50
+== Cannon and mortar ammo ==
+*purchased in pallets of 30 round salvos
+== Ammo pallets ==
+*Must be delivered from base or town supply depot by supply truck
+*Drops from supply truck when delivered
+*Ammo pallet disappears when ammo used up.
+== AirFact new options ==
+*"Buy airborne";  Fixed wing aircraft starts at altitude 600 and is manned by AI.
+*"Buy as pilot";  Fixed wing aircraft starts at 600m altitude with you as pilot.
+*Fly off edge of map to rearm/refuel/resupply, or a fixed location at one map edge.
+== Release ai units from your control ==
+*'''ADDRESSED IN 1.1'''
+== New equipment ==
+*Recon truck that deploys and controls UAV for players and commanders
+*Upgrade by Airstrike upgrade option allows Laser Designator and Hellfire mounts
+*Transport truck with hitch, transport troops, static defenses, artillery around map
+== Factory construction completed message identifying customer ==
+*Ordered vehicle is locked until buyer unlocks
+*Lo-jack option to disable vehicle remotely and eject all aboard
+*Vehicle option to see who is the owner
+*Owner has keys to lock/unlock vehicle
+== Role Missions ==
+*Assigned by commander
+*Complete any role mission assigned by commander and receive reward of 500 supply and $2000 cash
+=== SUPPLY ===
+*Deliver supplies to 10 towns or 10 mortar/artillery ammo pallets to artillery at least 500m distance away (fast travel resets counter)
+=== REPAIR ===
+**15 damaged vehicles (with more than 50% damage or immobile)
+=== SALVAGE ===
+*20 vehicles
+=== ANTI-TANK ===
+**12 Tanks (BMP/Shilka/Stryker/Vulcan/non-tank vehicles counts as 0.5)
+=== SNIPER ===
+**30 soldiers
+=== ARMOR ===
+**Kill 15 tanks with a tracked vehicle
+=== ARTILLERY ===
+**48 points
+=== ANTI-AIRCRAFT ===
+**6 confirmed kills
+=== RECON ===
+**Spot 36 points for arty/airstrikes
+**Find the enemy MHQ for 9 points
+=== SPECIAL FORCES ===
+**demo/mine kill 20 points
+=== PILOT ===
+**120 points kills with aircraft weapons
+=== MARITIME ===
+**15 points kills from RHIB
+=== MEDIC ===
+**Heal 12 soldiers. para option to medical M113 with medical upgrade for $1000
+=== TRANSPORT ===
+**move 60 soldiers, 20 static defenses (3), 12 artillery pieces (5), minimum distance 1km (Fast travel resets counter)
+== Income update ==
+*A toggle "request balance" in the "T" menu to get your account balance if you're not getting income, and re-cook the script so you get your paycheque
+*Possible splitting of funds like in Sahrani Life to separate cash on hand vs Banked account funds+possible Vault base structure
+== Commander designated mission/battle town ==
+*Normal income very low, and when commander designates a town as the current objective, enemy killed or destroyed income is doubled or tripled until town captured
+**Say $10 normally reward for enemy soldier killed, vs $30-$50 per soldier killed when the town is the Commander's designated mission/battle objective
+== Loss ==
+*If you lose an AI under your command, or lose a vehicle you're driving/flying, your bank balance is reduced also a %. (ouch)
+== "Gear" option ==
+*"Gear" option at town camps not available until town is supplied by a friendly supply truck
+*Remove artillery option
+*Add mortar option
+
+== Introduce 20 sec delay to Vikhr lock-on ==
+*Add pulsing locking tone during 20 seconds, and solid tone for lock-on with diamond lock HUD
+
+== Salvage truck ==
+*Option to salvage abandoned, damaged, stuck vehicles, not just destroyed hulks
+**Will help clean up stuck supply/salvage truck traffic jams
+*Option to salvage weapons and gear from dead bodies. I think a menu command would be best for this, or else it could be abused to strip equipment from alive AI and players!!!
+
+== Capturing Towns ==
+*Capturing the town Supply Depot does not flip all camps to your side.
+*Side with the most camps (over 50.5%) gets a fraction of the supply and monetary awards.
+*Missing 1 camp=50%, missing 2 camps=25%.
+
+== Ending ==
+*Show the reason of the victory in the ending screen (time elapsed, more towns captured)
+
+= RBT/BE version =
+*You can purchase units away from factory
+*Upgrades to factories possible by commander if a command center is active
+*Commander can upgrade artillery range, unit camera, paratroopers, apc paradrop, satellite camera
+*Command Centers are spawn points and FT points
+*Commanders can order Napalm/Cluster bomb/Carpet bomb/Nuke air strikes on map marker
+*Recycle rates are 2min/2min/3min/4min.
+*Improved aircraft with Napalm/Cluster bomb/24xGBU level bomber
+*UH-60/Mi-17 can airlift, MH-6/AH-6 can airlift trucks and HUMMV/UAZ
+
+== Voting for Commander ==
+*Problem with players not voting for the human commander.
+*reduce the vote success requirement to 3 players, not 50%.
+
+== MHQ/Fake MHQ build location ==
+*make towns with higher supply values have wider radius where you cannot deploy the MHQ/Fake MHQ
+*display the non-build radius for the commander. 
+*Cannot build factories/CC within the radius.
+
+== FARP Officer ==
+*Bottom slot player is the FARP officer. Large tents placed by FARP officer for $5000 are spawn points with a 1 km radius
+*Problem with abuse where the player places the tent inside solid buildings, or bottom of tent is not visible, rendering the FARP indestructible
+
+== Rearming Kamov/Modified wpn at town bunkers ==
+*Cannot rearm Hellfire armed Kamov's/Stinger armed Cobras at town bunkers. Only possible with ammo trucks
+
+== Improving FPS during full server ==
+*When FPS drops during full games, decreasing view distance to 600 improves FPS
+
+== Hellfire/SA-7/Stinger Ranges ==
+*AT/AA wpn mounts range at 1.3-1.8, aircraft/helo wpn range at 4.4-5.2km
+
+== Wall abuse at camps ==
+*players will wall up camps blocking access to camps/roads at camps and repair trucks
+*problem with too many structures built, resulting in lag and eventual server crash
+*fix introduced in ver.0082 so minimum radius from camps for build is 10 meters
+**Option A: WACO behavior so building at camps not possible unless town SV is raised to 20/50/120
+**Option B: Economy. Each wall built increases cost for next wall
+**Option C: Limits; maximum of 30 walls for each side.
+
+== Victory Conditions ==
+*Destroying the MHQ during early game makes for fast games.
+**Option A: MHQ regenerates; Enemy must have 10 towns or 500 supply value to cancel MHQ regeneration
+**Option B: Command Tower or Command bunker, where you must satchel to destroy the spawn point. Impervious to all other wpns.
+**Option C: Must kill the commander to win the game.

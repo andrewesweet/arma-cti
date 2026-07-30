@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/preloadTitleObj
+// revision: 363768 (2024-04-19T08:56:31Z)
+// export sha1: 7msdu9hz7xb17pemm95e0e39rbjwvev
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= GUI Control
+
+|descr= Preloads data for the given resource object.
+
+|s1= [[preloadTitleObj]] [name, type, speed, showInMap]
+
+|p1= name: [[String]] - defined in <sqf inline>configFile >> "CfgTitles" >> name</sqf>
+
+|p2= type: [[String]] - see [[Title Effect Type]]s
+
+|p3= speed: [[Number]] - (Optional, default -1)
+
+|p4= showInMap: [[Boolean]] - (Optional, default [[true]])
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_ok = preloadTitleObj ["BISLogo", "PLAIN"];</sqf>
+
+|seealso= [[cutObj]]
+}}

@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/setTriggerText
+// revision: 319703 (2022-05-13T09:24:44Z)
+// export sha1: 2egqmi1t3hgdo697rome1uo8k8xqfjf
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Triggers
+
+|descr= Sets the text label attached to the trigger object. This is used for example as a radio slot label for radio activated triggers.
+
+|s1= trigger [[setTriggerText]] text
+
+|p1= trigger: [[Object]]
+
+|p2= text: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>trigger setTriggerText "Call for support";</sqf>
+
+|seealso= [[triggerText]] [[createTrigger]] [[setTriggerActivation]] [[setTriggerArea]] [[setTriggerStatements]] [[setTriggerTimeout]] [[setTriggerType]] [[triggerInterval]] [[setTriggerInterval]] [[enableSimulation]] [[simulationEnabled]]
+}}

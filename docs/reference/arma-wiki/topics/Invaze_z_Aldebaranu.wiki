@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/Invaze_z_Aldebaranu
+// revision: 339388 (2023-04-28T14:08:38Z)
+// export sha1: 2qo3awc16mubiwawrx9ujq8g1e8avxj
+// categories: Category:Before Flashpoint | Category:Projects
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image = Img1x.jpg
+|intro = '''Invaze z Aldebaranu''' was released in 1992 for Atari ST. It is a clone of Space Invaders. The game was {{Link|http://www.oldgames.sk/mag/narsil-4/page/9/|reviewed}} in Narsil but gained 42%.
+A Windows PC port can be played as a part of [[Take On Mars: Gravon|{{tkom}}]].
+}}
+
+[[Category:Before Flashpoint]]

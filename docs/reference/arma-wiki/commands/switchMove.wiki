@@ -1,0 +1,186 @@
+// source: https://community.bistudio.com/wiki/switchMove
+// revision: 378292 (2026-04-01T13:01:19Z)
+// export sha1: gplylu649q8gutspyur58m3tx9pv7fc
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Animations
+
+|descr= Immediately applies given animation to the unit. For a smooth transition from the current animation (by connecting animations successively, e.g {{hl|CurrentAnim -> Intermediate1 -> Intermediate2 -> TargetAnim}}), use [[playMove]] or [[playMoveNow]].
+{{Feature|informative|see [[:Category:Moves]] for respective games animations.}}
+
+This command first resets the unit's animation states (including aiming state, gesture state, etc.) then puts the unit in the first frame of the animation (therefore showing no transition).
+If an invalid animation is provided, the unit's animations will be reset but no new animation will be played (see {{Link|#Example 3}}).
+
+{{Feature|informative|It is a good practice to always use [[playMoveNow]] after [[switchMove]] to make sure the animation plays correctly when using the first syntax:
+<sqf>
+_unit switchMove "myMove";
+_unit playMoveNow "myMove";
+</sqf>
+The alternative syntax does this automatically.
+}}
+
+|mp= This command has a global effect when executed locally to the unit and will synchronise properly for JIP.
+In this case the animation on the executing machine is immediate while on remote machines it will be transitional.
+In order for the animation to change immediately on every PC in multiplayer, use global remote execution (see {{Link|#Example 2}}).
+When the argument is remote, the animation change on the executing PC is only temporary.
+
+|s1= person [[switchMove]] moveName
+
+|p1= person: [[Object]] - unit
+
+|p2= moveName: [[String]] - animation state (see [[animationState]])
+
+|r1= [[Nothing]]
+
+|s2= person [[switchMove]] [moveName, time, blendFactor, resetAim]
+
+|s2since= arma3 2.18
+
+|p21= person: [[Object]] - unit
+
+|p22= moveName: [[String]] - entry from {{hl|"CfgMovesMaleSdr" >> "states"}} or {{hl|"CfgGesturesMale" >> "states"}}
+
+|p23= time: [[Number]] - (Optional, default 0) normalized time, in range 0..1, where 0 = beginning of the animation, and 1 = end of the animation
+
+|p24= blendFactor: [[Number]] - (Optional, default 1) how much to blend the current animation with the new animation, in range 0..1, where 0 = current animation, and 1 = new animation. When 1 is used, the switching is instant (not smooth), similar to the first syntax.
+
+|p25= resetAim: [[Boolean]] - (Optional, default true) whether the aim/head direction should be reset after switching
+
+|r2= [[Nothing]]
+
+|x1= Prone:
+<sqf>player switchMove "AmovPpneMstpSrasWrflDnon";</sqf>
+
+|x2= Sit player immediately and globally:
+<sqf>[player, "AmovPsitMstpSlowWrflDnon"] remoteExec ["switchMove"];</sqf>
+
+|x3= Resets unit's animation:
+<sqf>_unit switchMove "";</sqf>
+
+|x4= <sqf>
+// Create a dummy agent that copies your moves
+ai1 = createAgent [typeOf player, getPosATL player, [], 0, "NONE"];
+ai1 disableAI "ALL";
+onEachFrame
+{
+	ai1 setAnimSpeedCoef getAnimSpeedCoef player;
+	ai1 setVectorDir vectorDir player;
+	private _m = animationState player;
+	private _g = gestureState player;
+	private _i = getUnitMovesInfo player;
+	private _a = getUnitMovesInfo ai1;
+	
+	if (animationState ai1 != _m || abs(_i#1 - _a#1) > 0.1) then
+	{
+		ai1 switchMove [_m, _i#0, _i#3, false];
+	};
+
+	if ((gestureState ai1 != _g || abs(_i#6 - _a#6) > 0.1) && (_g != "<none>" && _g find "_player" < 0)) then
+	{
+		ai1 switchGesture [_g, _i#5, _i#8, false];
+	};
+}
+</sqf>
+
+|seealso= [[switchGesture]] [[playMove]] [[playMoveNow]] [[switchAction]] [[playAction]] [[playActionNow]] [[animationState]] [[getUnitMovesInfo]]
+}}
+
+{{Note
+|user= Hurricane
+|timestamp= 20070325234800
+|text= In some cases the movement won't stay. I.e. AI hostages that put their hands behind their heads (_hostage [[switchMove]] "AmovPercMstpSsurWnonDnon") won't hold their hands up, unless you first use [[disableAI]] "autoTarget" on them. They mostly put their hands down because they 'noticed' unknown objects.
+}}
+
+{{Note
+|user= Killswitch
+|timestamp= 20080803224300
+|text= This command will not cause an [[ArmA:_Event_Handlers#AnimChanged|AnimChanged]] or [[ArmA:_Event_Handlers#AnimDone|AnimDone]] event. However, [[playMove]] will.
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20161112201100
+|text= When using this command on the [[player]] unit outside [[Scheduler#Unscheduled_Environment|unscheduled]] UI contexts, it will cause a minor camera glitch for a single frame.<br>
+For example,  [[Arma 3: Mission Event Handlers#Draw3D|Draw3D]] and [[displayAddEventHandler|KeyDown]] are UI contexts and so are not affected by the glitch, but [[Arma 3: Mission Event Handlers#EachFrame|EachFrame]] and [[Scheduler#Scheduled_Environment|scheduled]] scripts are not UI contexts and are affected by the glitch.
+}}
+
+{{Note
+|user= Leopard20
+|timestamp= 20210808155900
+|text= If the animation you're trying to use with this command has no connection/interpolation to the unit's base animation (usually "AmovPercMstpSrasWrflDnon"), the move might not play using [[switchMove]] alone. In such cases you have to do this:
+<sqf>_unit switchMove _move; _unit playMoveNow _move;</sqf>
+This must run in '''[[Scheduler|unscheduled environment]]''' (see [[isNil]])<br/>
+Alternatively, just use the second syntax:
+<sqf>_unit switchMove [_move];</sqf>
+}}
+
+{{Note
+|user= Leopard20
+|timestamp= 20251104094403
+|text= You can loop an animation using a function like this (it's recommended to do {{hl|ai disableAI "ANIM"}} first)
+<sqf>
+// TAG_fnc_loopAnim
+params ["_unit", "_anim"];
+
+// remove old EH
+_unit removeEventHandler ["AnimStateChanged", _unit getVariable ["TAG_AnimStateChangedEH", -1]];
+
+private _EH = -1;
+// if anim is empty, just stop looping
+if (_anim != "") then
+{
+	_EH = _unit addEventHandler ["AnimStateChanged", {  
+		params ["_unit", "_anim"]; 
+		private _loopedAnim = _unit getVariable ["TAG_LoopedAnim", ""];
+		if (alive _unit && _anim != _loopedAnim) then {
+			_unit switchMove [_loopedAnim, 0, 0, false];
+		};
+	}];
+};
+
+_unit setVariable ["TAG_AnimStateChangedEH", _EH];
+_unit setVariable ["TAG_LoopedAnim", _anim];
+
+// start the anim
+_unit switchMove [_anim, 0, 0, false];
+</sqf>
+
+Then use the above code in a function, either by defining it in the function library or by doing <sqf>TAG_fnc_loopAnim = { above code }</sqf>
+
+How to use the function:
+<sqf>
+// start looping
+[testUnit, "HubSittingChairUA_move1"] call TAG_fnc_loopAnim;
+
+// stop looping
+[testUnit, ""] call TAG_fnc_loopAnim;
+</sqf>
+}}

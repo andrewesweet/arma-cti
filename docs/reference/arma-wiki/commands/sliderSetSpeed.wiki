@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/sliderSetSpeed
+// revision: 376729 (2025-11-15T04:49:49Z)
+// export sha1: ecbxgjgbedzoefn70iltgaq8r1ke8ww
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Operation Flashpoint version 1.85 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.85
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= GUI Control
+
+|descr= Sets slider line step and page step delta amount as well as optional step amount of [[CT_SLIDER]] or [[CT_XSLIDER]] with given idc of topmost user [[dialog]]. 
+* Click to arrow - move by line
+* Click to scale outside thumb - move by page.
+
+{{Feature|informative|[[CT_XSLIDER]] does not use the ''page'' parameter, it acts as scrollbar when clicked on the bar. It also can only be horizontal.}}
+
+|s1= [[sliderSetSpeed]] [idc, line, page, step]
+
+|p1= idc: [[Number]] - control's idc
+
+|p2= line: [[Number]] - value delta to move the slider when clicking on the outer arrows
+
+|p3= page: [[Number]] - value delta to move the slider when clicking inside the slider bar
+
+|p4= step: [[Number]] - (Optional, default 0) slider step
+
+|r1= [[Nothing]]
+
+|s2= control [[sliderSetSpeed]] [line, page, step]
+
+|p21= control: [[Control]]
+
+|p22= line: [[Number]] - value delta to move the slider when clicking on the outer arrows
+
+|p23= page: [[Number]] - value delta to move the slider when clicking inside the slider bar
+
+|p24= step: [[Number]] - (Optional, default 0) slider step
+
+|r2= [[Nothing]]
+
+|x1= <sqf>sliderSetSpeed [101, 0.5, 2];</sqf>
+
+|seealso= [[sliderSpeed]]
+}}

@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Asset_Samples
+// revision: 377925 (2026-01-11T16:13:25Z)
+// export sha1: is98bctz6fl8wzgaqj9adllnvnc8ja9
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+|VERSION=
+|COMPATIBILITY= {{GameCategory|arma3|link= y}}
+|DOWNLOAD= {{Link|link= http://store.steampowered.com/app/390500/|text= Part of Arma 3 Samples package on Steam}}
+|DESCRIPTION= Formerly part of Arma 3 Tools, this application contains all necessary samples to get started with Arma 3 content creation. The collection covers a broad spectrum of topics, from scenario design to mod making. Along with every sample comes commented code and relevant documentation to allow you to understand how they work.
+
+{{Feature|informative|These samples are meant to be used with Arma 3 Tools.}}
+
+The samples are separated into several categories:
+* '''Addons''': samples of Addons that can be packed by Addon Builder and tested in-game.
+* '''Art''': contains art assets as textures or icons to provide an example and basis for your own work.
+* '''Content Licensing''': everything about Content Licensing (i.e. mod presentation).
+* '''Programming''': how to build extensions for Arma 3 or use SDKs for the tools.
+* '''Scenario Design''': everything about scenario design, game modes and the usage of systems.
+* '''Tools''' usage of the tools included in Arma 3 Tools, for example, batch processing.
+|NOTES=
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]], [[Licenses]].
+Some samples have a specific license, such license is provided in the folder of the given sample.
+|SEEALSO= [[Arma 3 Cars Config Guidelines]], [[Arma 3 Tanks Config Guidelines]], [[Arma 3: Weapon Config Guidelines]]
+}}
+
+
+{{GameCategory|arma3|Official Tools}}

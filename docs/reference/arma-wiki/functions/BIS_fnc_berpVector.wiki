@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_berpVector
+// revision: 348150 (2023-11-08T11:32:41Z)
+// export sha1: dfv8ss3cx43b9kfqce2uzjjnxxvg8jq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interpolation | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Interpolation
+
+|descr= Wrapper for [[BIS_fnc_berp]] applying to each respective element of current and target vectors.
+
+|s1= [a, b, delta] call [[BIS_fnc_berpVector]]
+
+|p1= a: [[Array]] format [[Vector3D]] - (Optional, default [0,0,0]) the current vector 
+
+|p2= b: [[Array]] format [[Vector3D]] - (Optional, default [0,0,0]) the target vector
+
+|p3= delta: [[Number]] - (Optional, default 0) the delta time in range 0..1
+
+|r1= [[Array]] - the interpolated vector
+
+|x1= <sqf>private _vector = [[1,2,3], [11,12,13], 0.1] call BIS_fnc_berpVector;</sqf>
+
+|seealso= [[BIS_fnc_berp]]
+}}

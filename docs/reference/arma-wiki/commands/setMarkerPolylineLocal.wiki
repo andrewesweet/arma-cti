@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/setMarkerPolylineLocal
+// revision: 378527 (2026-05-04T01:57:41Z)
+// export sha1: 3uqnz2kjplobfzzsg3eon4zwcwwhtd1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|eff= local
+
+|gr1= Markers
+
+|descr= Sets a polyline marker's path. Works only on the computer that executes this command.
+
+|s1= marker [[setMarkerPolylineLocal]] path
+
+|p1= marker: [[String]]
+
+|p2= path: [[Array]] of [[Number]]s - {{hl|[x1, y1, x2, y2, ... xn, yn]}}
+
+|r1= [[Nothing]]
+
+|x1= Changes {{hl|"marker_1"}} into a polyline and draws a sine curve on your position:
+<sqf>
+"marker_1" setMarkerShape "polyline";
+private _return = [] ;
+
+for "_i" from 0 to 100 step 0.1 do
+{
+	_return pushBack (_i + getPos player#0);
+	_return pushBack ((sin (_i*10))*10 + getPos player#1);
+} ;
+
+"marker_1" setMarkerPolylineLocal _return;
+</sqf>
+
+|seealso= [[markerPolyline]] [[setMarkerPolyline]]
+}}

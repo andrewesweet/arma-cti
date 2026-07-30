@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/DialogControls-Text
+// revision: 244187 (2021-02-07T13:37:34Z)
+// export sha1: msq1vx74qsdhykeda9bq606343cwnyu
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+* [[CT_STATIC]]
+* [[CT_STRUCTURED_TEXT]]
+* [[CT_HTML]]

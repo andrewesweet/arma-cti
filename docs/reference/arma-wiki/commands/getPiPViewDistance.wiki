@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getPiPViewDistance
+// revision: 309130 (2022-05-03T11:41:51Z)
+// export sha1: 4j0jk7vssugsy0lgxd3w16vtkhbgc31
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|eff= local
+
+|descr= Get the set PiP (Picture-in-Picture) view distance (that can be set by [[setPiPViewDistance]]).
+
+|gr1= System
+
+|s1= [[getPiPViewDistance]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _pipViewDistance = getPiPViewDistance;</sqf>
+
+|x2= <sqf>private _pipViewDistanceRatio = getPiPViewDistance / viewDistance;</sqf>
+
+|seealso= [[setPiPViewDistance]] [[setViewDistance]] [[setObjectViewDistance]] [[viewDistance]] [[getObjectViewDistance]]
+}}

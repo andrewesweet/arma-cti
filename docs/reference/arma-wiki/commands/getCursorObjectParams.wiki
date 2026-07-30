@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/getCursorObjectParams
+// revision: 364830 (2024-06-16T09:59:43Z)
+// export sha1: 1711x9vzhliy26b6exfyelqv3luyrff
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Object Detection
+
+|descr= Returns object and named selections under cursor and distance to object's surface (to the point cursor points at). If object surface is further away than 50 meters, selections are always an empty array and distance is 1e10 (10^10).
+
+|s1= '''getCursorObjectParams'''
+
+|r1= [[Array]] with [cursorObject, selections, distance]
+* cursorObject: [[Object]]
+* selections: [[Array]] of [[String]]s
+* distance: [[Number]] - distance to object's surface (to the point cursor points at)
+
+|x1= <sqf>hint str getCursorObjectParams;</sqf>
+
+|seealso= [[cursorObject]] [[cursorTarget]]
+}}

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getPhysicsCollisionFlag
+// revision: 373902 (2025-06-26T12:11:11Z)
+// export sha1: 0wbyfddb3ij1puv8642uv5rc4m6ysg4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|arg= global
+
+|gr1= PhysX
+
+|descr= Returns the currently set physics collision flags.
+
+|s1= [[getPhysicsCollisionFlag]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Array]] of [[Boolean]]s - array of collision flags (only one value is returned for now)
+
+|seealso= [[hideObject]] [[isObjectHidden]] [[setPhysicsCollisionFlag]] [[disableCollisionWith]] [[enableCollisionWith]]
+}}

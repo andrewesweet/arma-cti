@@ -1,0 +1,140 @@
+// source: https://community.bistudio.com/wiki/createHashMapObject
+// revision: 377952 (2026-01-15T10:26:48Z)
+// export sha1: fqdgx1hxppr1ffj7tkb8pywf3jxtxad
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: HashMap | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|gr1= HashMap
+
+|descr= Create a [[HashMap]] with an {{Link|https://en.wikipedia.org/wiki/Object-oriented_programming|Object-Oriented Programming}} behaviour.<br>
+Inside a object, Methods (if they are called correctly, either by engine or via {{Link|call#Syntax 3}}) will have the objects instance inside the <sqf inline>_self</sqf> variable.<br>
+The Destructor ("#delete" method) will be executed when the last reference to the objects variable gets deleted. (Except when the mission is ended and all variables are deleted at once)<br>
+<br>
+Inheritance: HashMap objects support a simple form of Inheritance.<br>
+It behaves similar to the [[merge]] command with overwriteExisting enabled. Sub-class methods and properties with same name, overwrite their Base-class values.<br>
+Constructor/Destructor/Clone methods will be merged together and executed in sequence.<br>
+Flags entry will use overwrite behaviour.
+
+|s1= [[createHashMapObject]] [classDefinition, constructorArguments]
+
+|p1= classDefinition: [[HashMap]] or [[Array]] of [[Array]]s, format [name, value]:
+''name'' can be anything like any other [[HashMap]], but it must be a [[String]] for it to be used like an OOP object method (see {{Link|call#Syntax 3}}).<br>
+Some special values, starting with {{hl|#}}, are reserved and expect a specific ''value'' type (they are all optional):
+* {{hl|"#create"}}: [[Code]] - this is the hashmap object's constructor
+* {{hl|"#clone"}}: [[Code]] - this is code happening when cloning is done on this hashmap object
+* {{hl|"#delete"}}: [[Code]] - this is the hashmap object's destructor. It will always be executed inside [[missionNamespace]].
+* {{hl|"#str"}}: [[Code]] - code that is used to evaluate what is displayed when the [[str]] function is called on the object - '''must''' return [[String]]
+* {{hl|"#flags"}}: [[Array]] of [[String]]s - case-''in''sensitive flags regarding this hashmap object
+** "noCopy": forbids copying, <sqf inline>+_hashMapObject</sqf> will throw an error
+** "sealed": prevents from adding and removing any keys - key values can still be edited
+** "unscheduled": all methods (including {{hl|#clone}} and {{hl|#create}}) will be executed in {{Link|Scheduler#Unscheduled Environment|unscheduled environment}}
+* {{hl|"#base"}}: [[Array]] or [[HashMap]] - declaration of base class for inheritance
+* {{hl|"#type"}}: [[String]] - can be used to give a object a "type name", on inheritance types will be merged into an [[Array]]
+Note that all entries beginning with {{hl|#}} are reserved, the engine might use these internally without their use being documented.
+
+|p2= constructorArguments: [[Anything]] - (Optional, default [[Nothing]]) passed as <sqf inline>_this</sqf> argument to the "#create" method.
+
+|r1= [[HashMap]]
+
+|x1= <sqf>
+private _declaration = [
+	["#flags", ["sealed"]],
+	["#create", { hint "Hello!" }],
+	["#clone", { hint "We were copied!" }],
+	["#delete", { hint "Goodbye" }],
+	["#str", { "My HashMap Object" }],
+	["Method", { hint "Method has been called" }]
+];
+
+private _hashMapObject = createHashMapObject [_declaration];	// hints "Hello!"
+_hashMapObject call ["Method"];									// hints "Method has been called"
+hint str _hashMapObject;										// hints "My HashMap Object"
+private _shallowCopy = _hashMapObject;							// no hint
+private _deepCopy = +_hashMapObject;							// hints "We were copied!"
+// at the end of the scope, _hashMapObject is deleted and hints "Goodbye"
+</sqf>
+
+
+|x2= Inheritance constructor/destructor/copy orderings: <sqf>
+private _animalDeclaration = [
+	["#type", "IAnimal"],
+	["#create", { systemChat "Animal Init" }],
+	["#clone", { systemChat "Animal Copied" }],
+	["#delete", { systemChat "Animal Bye" }]
+];
+
+private _pigDeclaration = [
+	["#base", _animalDeclaration],
+	["#type", "Pig"],
+	["#create", { systemChat "Pig Init" }],
+	["#clone", { systemChat "Pig Copied" }],
+	["#delete", { systemChat "Pig Bye" }]
+];
+
+private _smolPigDeclaration = [
+	["#base", _pigDeclaration],
+	["#type", "SmolPig"],
+	["#create", { systemChat "SmolPig Init" }],
+	["#clone", { systemChat "Smol Copied" }],
+	["#delete", { systemChat "Smol Bye" }]
+];
+
+private _smolPigInstance = createHashMapObject [_smolPigDeclaration]; // prints "Animal Init", "Pig Init", "SmolPig Init"
+private _copy = +_smolPigInstance; // prints "Animal Copied", "Pig Copied", "SmolPig Copied"
+_copy = nil; // prints "SmolPig Bye", "Pig Bye", "Animal Bye"
+</sqf>
+
+|x3= Inheritance type checking:
+<sqf>
+private _animalDeclaration = [
+	["#type", "IAnimal"],
+	["FurType", { "None" }] // default implementation
+];
+
+private _pigDeclaration = [
+	["#base", _animalDeclaration],
+	["#type", "Pig"],
+	["FurType", { "Bristles" }] // override the base class method
+];
+
+private _catDeclaration = [
+	["#base", _animalDeclaration],
+	["#type", "Cat"],
+	["FurType", { "Hair" }] // override the base class method
+];
+
+private _instance = createHashMapObject [selectRandom [_pigDeclaration, _catDeclaration]];
+
+if ("IAnimal" in (_instance get "#type")) then // check if a object instance is or inherits from a specific type
+{
+	_instance call ["FurType"]; // now that we know it implements IAnimal, we know that "FurType" method will be present
+};
+</sqf>
+
+|x4= Destructor: <sqf>
+private _temporaryVehicle = [
+	["#create", {
+		params ["_vehicleType", "_vehiclePos", "_lifetimeSeconds"]; // handle constructor arguments
+		private _newVehicle = _vehicleType createVehicle _vehiclePos;
+		_self set ["MyVehicle", _newVehicle]; // Store the vehicle inside the object for later
+
+		// because _self is passed as parameter, it will be referenced by the spawned script until it ends.
+		[_lifetimeSeconds, _self] spawn { params ["_lifetimeSeconds", "_self"]; sleep _lifetimeSeconds; };
+	}],
+	["#delete", {
+		deleteVehicle (_self get "MyVehicle"); // delete the vehicle when we go away
+	}],
+	["MyVehicle", objNull] // placeholder, this is not needed
+];
+
+// create a temporary RoadCone, at player position, that will delete itself after 5 seconds.
+createHashMapObject [_temporaryVehicle, ["RoadCone_F", getPos player, 5]];
+</sqf>
+
+|seealso= [[call]] [[createHashMap]]
+}}

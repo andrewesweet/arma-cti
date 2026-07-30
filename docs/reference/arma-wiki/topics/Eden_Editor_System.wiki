@@ -1,0 +1,126 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_System
+// revision: 338898 (2023-04-16T14:04:40Z)
+// export sha1: 4tpvd4hsojv0qtjc53q4ziv870bu1qa
+// categories: Category:Eden Editor: Asset Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A system is a virtual object which can help expand your scenario with a new functionality.
+
+== Modules ==
+A '''module''' provides complex functionality which would otherwise have to be scripted. It can usually be configured using custom attributes, and can sometimes be affected by '''synchronization''' connections. For example, many modules are activated only once all the synchronized triggers are active. To see more about the individual modules, explore their attributes.
+
+== Logic Entities ==
+A '''logic entity''' is simply a virtual object without any inherent functionality. It is mainly used in cooperation with modules or scripts, for example, to mark positions and their relations.
+
+== Virtual Entities ==
+Some '''virtual entities''' are playable. They are used in multiplayer for abstract roles such as a spectator or headless client.
+
+
+Be sure to investigate all the available systems, especially [[Modules]]. Because each has its own rules, do not forget to also check their attributes.
+
+== Attributes ==
+<onlyinclude>
+<!-- Exported from the game by BIS_fnc_3DENExportAttributes. Manual edits may be replaced by future exports. -->
+{| class="wikitable sortable"
+! colspan="3" | <big>Info</big>
+! colspan="2" | <big>[[Eden Editor: Setting Attributes|Development]]</big>
+|-
+! Name
+! Category
+! class="unsortable" | Description
+! Property
+! Type
+|-
+| '''Type'''
+| Type
+| 
+| <small>{{hl|itemClass}}</small>
+| [[String]]
+|-
+| '''Variable Name'''
+| Init
+| Unique system name. Can contain only letters, numbers and underscore. The name is not case sensitive, so 'someName' and 'SOMENAME' are treated as the same variables.
+| <small>{{hl|Name}}</small>
+| [[String]]
+|-
+| '''Init'''
+| Init
+| Expression called upon at start. In multiplayer, it is called on every machine and for each player who joins in the progress. The variable 'this' refers to the affected object.
+| <small>{{hl|Init}}</small>
+| [[String]]
+|-
+| '''Position'''
+| Transformation
+| World coordinates in meters. X goes from West to East, Y from South to North and Z is height above terrain.
+| <small>{{hl|position}}</small>
+| [[Position#Introduction|Position3D]]
+|-
+| '''Rotation'''
+| Transformation
+| Local rotation in degrees. X is pitch, Y is roll and Z is yaw.
+| <small>{{hl|rotation}}</small>
+| [[Array]]
+|-
+| '''Size'''
+| Transformation
+| Area size in meters.
+| <small>{{hl|size2}}</small>
+| [[Array]]
+|-
+| '''Size'''
+| Transformation
+| Area size in meters.
+| <small>{{hl|size3}}</small>
+| [[Array]]
+|-
+| '''Shape'''
+| Transformation
+| Area shape.
+Available options:
+* '''Ellipse'''
+* '''Rectangle'''
+
+| <small>{{hl|IsRectangle}}</small>
+| [[Boolean]]
+|-
+| '''Placement Radius'''
+| Transformation
+| Placement radius in meters. The entity will start at a random position within the radius.
+| <small>{{hl|placementRadius}}</small>
+| [[Number]]
+|-
+| '''Player'''
+| Control
+| Player in singleplayer. When enabled, the character will also be available in multiplayer and team switch ('Playable' status cannot be disabled individually in such case).
+| <small>{{hl|ControlSP}}</small>
+| [[Boolean]]
+|-
+| '''Playable'''
+| Control
+| When enabled, the character will appear as a slot in the multiplayer scenario lobby and in the list of roles available for team switch.
+| <small>{{hl|ControlMP}}</small>
+| [[Boolean]]
+|-
+| '''Role Description'''
+| Control
+| Multiplayer role description visible in the multiplayer lobby. When undefined, the object type name will be used by default.
+| <small>{{hl|description}}</small>
+| [[String]]
+|-
+| '''Probability of Presence'''
+| Presence
+| Probability of presence evaluated at the scenario start. When it fails, the object is not created at all.
+| <small>{{hl|presence}}</small>
+| [[Number]]
+|-
+| '''Condition of Presence'''
+| Presence
+| Condition of presence evaluated at the scenario start, must return boolean expression. When false, the object is not created at all.
+| <small>{{hl|presenceCondition}}</small>
+| [[String]]
+|}
+
+</onlyinclude>
+
+[[Category:Eden Editor: Asset Types|Systems]]

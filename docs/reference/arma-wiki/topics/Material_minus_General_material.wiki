@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Material_-_General_material
+// revision: 227519 (2021-01-31T19:30:39Z)
+// export sha1: fwckxn6132ggl5bvru5ae36g62sfyjy
+// Vendored snapshot. Do not edit — re-export instead.
+
+=== Basic material ===
+
+ PixelShaderID="Normal";
+ VertexShaderID="Basic";
+
+Not using any stages.

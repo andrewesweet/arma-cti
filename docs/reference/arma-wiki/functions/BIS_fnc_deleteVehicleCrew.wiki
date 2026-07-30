@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_deleteVehicleCrew
+// revision: 327416 (2022-07-12T22:11:59Z)
+// export sha1: cqb58cyrsvpmmcm2ayejawnnwkhgpvt
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Vehicles
+
+|descr= Deletes specific crew member directly from the vehicle.
+
+|s1= [vehicle, crewMember] call [[BIS_fnc_deleteVehicleCrew]]
+
+|p1= vehicle: [[Object]]
+
+|p2= crewMember: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[BIS_tank, gunner BIS_tank] call BIS_fnc_deleteVehicleCrew;</sqf>
+
+|seealso= [[crew]]
+}}

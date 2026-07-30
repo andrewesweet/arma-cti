@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/diag_activeSQFScripts
+// revision: 363594 (2024-04-07T18:45:53Z)
+// export sha1: j505rjyinuqbxgu7tiqgp609e3cy28n
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.44 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.44
+
+|gr1= Diagnostic
+
+|descr= Returns information about active [[SQF Syntax|SQF]] scripts. To see number of all scripts currently in the scheduler use [[diag_activeScripts]].
+
+|s1= [[diag_activeSQFScripts]]
+
+|r1= [[Array]] of [[Array]]s - to format [<nowiki/>[scriptName, fileName, isRunning, currentLine], ...]:
+* scriptName: [[String]] - Returns:
+** Script name set with [[scriptName]]
+** File name if script name is empty
+** <spawn> + first 100 characters if script name and file name are both empty
+* filePath: [[String]] - path of the parent script
+* isRunning: [[Boolean]]
+* currentLine: [[Number]] - line currently executing
+
+|x1= <sqf>0 spawn { hint str diag_activeSQFScripts; }; // displays [["<spawn> hint str diag_activeSQFScripts;", "", true, 1]]</sqf>
+
+|x2= <sqf>
+0 spawn {
+	hint str diag_activeSQFScripts; // displays [["<spawn> hint str diag_activeSQFScripts;", "", true, 2]]
+};
+</sqf>
+
+|x3= <sqf>
+0 spawn {
+	scriptName "aScript";
+	hint str diag_activeSQFScripts; // displays [<nowiki/>["aScript", "", true, 3]]
+};
+</sqf>
+
+|seealso= [[diag_log]] [[diag_fps]] [[diag_fpsmin]] [[diag_frameNo]] [[diag_tickTime]] [[diag_activeSQSScripts]] [[diag_activeMissionFSMs]] [[diag_activeScripts]] [[execVM]] [[spawn]]
+}}

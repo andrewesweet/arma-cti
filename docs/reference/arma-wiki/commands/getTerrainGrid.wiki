@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/getTerrainGrid
+// revision: 353047 (2024-03-12T12:19:53Z)
+// export sha1: nwzri5ouec8hir7ccg6xsg1v8yglllv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Command Group: System | Category:Introduced with Arma 3 version 1.60 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.60
+
+|gr1= System
+
+|gr2= Environment
+
+|descr= A getter for [[setTerrainGrid]], returns the current terrain grid.
+
+|s1= [[getTerrainGrid]]
+
+|r1= [[Number]] - terrain grid value
+
+|x1= <sqf>_terrainGrid = getTerrainGrid;</sqf>
+
+|x2= <sqf>
+if (getTerrainGrid < 50) then
+{
+	hint "Grass is enabled";
+};
+</sqf>
+
+|seealso= [[setTerrainGrid]] [[viewDistance]] [[diag_getTerrainGrid]]
+}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Magic_Types
+// revision: 245326 (2021-02-10T23:44:18Z)
+// export sha1: qokrkeyahah04t9tpgqdkxgj7ewj6mi
+// Vendored snapshot. Do not edit — re-export instead.
+
+Magic data types are not really data types, as they do not describe any particular value.
+
+[[Category: Data Types]]

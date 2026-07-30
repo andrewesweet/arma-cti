@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/getCruiseControl
+// revision: 377878 (2026-01-04T15:56:01Z)
+// export sha1: 2mfttxn0flwgztyu1mymxkll0lh7ie4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Unit Control | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|arg= local
+
+|eff= local
+
+|descr= Returns cruise control settings set with [[setCruiseControl]] command.
+
+|gr1= Unit Control
+
+|gr2= Object Manipulation
+
+|s1= [[getCruiseControl]] vehicle 
+
+|p1= vehicle: [[Object]] - the vehicle
+
+|r1= [[Array]] with [speedLimit, cruiseControlActive]
+* speedLimit: [[Number]] - defined speed limit
+* cruiseControlActive: [[Boolean]] - [[true]] if cruise control is enabled, [[false]] if only speed was limited
+
+|x1= <sqf>getCruiseControl vehicle player params ["_speedLimit", "_cruiseControlActive"];</sqf>
+
+|seealso= [[setCruiseControl]] [[limitSpeed]] [[forceSpeed]] [[setAirplaneThrottle]]
+}}

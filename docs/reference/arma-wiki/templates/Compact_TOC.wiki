@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Compact_TOC
+// revision: 341297 (2023-05-20T18:53:24Z)
+// export sha1: j3ii74jrc5x0n8ekqxctds29fs35c4n
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{TOC|abc}}</includeonly><noinclude>See [[Template:TOC|TOC Template]].[[Category:Historical Templates]]</noinclude>

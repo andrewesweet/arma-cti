@@ -1,0 +1,76 @@
+// source: https://community.bistudio.com/wiki/comment
+// revision: 363597 (2024-04-07T18:56:13Z)
+// export sha1: i5hmpqgv18v0gzf3ynw6z46utjslcxq
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Introduced with Operation Flashpoint version 1.85 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.85
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Strings
+
+|descr= Defines a comment. See {{Link|SQF Syntax#Comments}} to learn more about comments.
+{{Feature|warning|
+This command is evaluated during execution, and as such is infinitely slower than other SQF comment methods (<sqf inline>// comment</sqf> or <sqf inline>/* comment */</sqf>) which get preprocessed and do not exist at runtime).
+See [[SQF Syntax|SQF Syntax]] for additional documentation on comments.
+}}
+{{Feature|informative|
+This command is only used to place comments in unpreprocessed codes, such as trigger On Activation field, object init field, etc.
+Alternatively, one can use a plain string followed by a semicolon as a way to comment; e.g <sqf inline>"Some comment";</sqf>.
+}}
+
+|s1= [[comment]] text
+
+|p1= text: [[String]] - the comment
+
+|r1= [[Nothing]]
+
+|x1= In a preprocessed SQF script (e.g. when doing <sqf inline>execVM "myScript.sqf"</sqf>)
+<sqf>
+comment "This is a commented line";		// bad
+"This is a commented line";				// slightly better
+// This is a commented line				// perfect
+</sqf>
+
+
+|x2= In an object init field (in editor):
+<sqf>
+comment "This comment works";
+"This comment works too";
+// This doesn't work
+/* This doesn't work either */
+</sqf>
+
+|seealso= [[Control Structures]]
+}}
+
+{{Note
+|user= Tom_48_97
+|timestamp= 20090912195000
+|text= Like {{arma1}}, you can not use brackets to make a multi-lines comment. But, in a sqf file, you can make a comment as follow :
+<sqf>
+comment "
+ first line
+ seconde line";
+</sqf>
+}}

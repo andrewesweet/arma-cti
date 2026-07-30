@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/squint
+// revision: 138462 (2019-11-11T16:56:41Z)
+// export sha1: loeefml0x272gh8634vn1hk4sneawkg
+// categories: Category:Community Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+Squint is an sqf and cpp editor and error-checker. The homepage is https://sites.google.com/site/macsarmatools/squint
+
+[[Category:Community Tools]]

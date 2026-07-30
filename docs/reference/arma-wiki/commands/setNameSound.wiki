@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/setNameSound
+// revision: 363769 (2024-04-19T09:01:30Z)
+// export sha1: d2g091ls3jg6rsn8qb2u0tz7vwz7i8k
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Identity | Category:Introduced with Arma 3 version 1.02 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.02
+
+|arg= global
+
+|eff= local
+
+|gr1= Unit Identity
+
+|descr= Sets the [[nameSound]] of a person. By default, when giving orders, the units are addressed by their number.
+When nameSound is set, it will be used instead to address the unit. For example instead of "Two, hold fire!", one can have "Miller, hold fire!".
+
+{{Feature|informative|
+See {{Link|Arma 3: CfgIdentities#NameSounds}} for common values.<br>
+Note that any word from <sqf inline>configFile >> "RadioProtocolENG" >> "Words"</sqf> is accepted (e.g {{hl|"veh_infantry_Sniper_s"}}).
+}}
+
+|s1= person [[setNameSound]] name
+
+|p1= person: [[Object]]
+
+|p2= name: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>unit1 setNameSound "dixon";</sqf>
+
+|x2= <sqf>unit1 setNameSound ""; // will reset to default behaviour</sqf>
+
+|x3= <sqf>
+_name = "Masood";
+unit1 setNameSound _name;
+unit1 setName _name;
+</sqf>
+
+|seealso= [[nameSound]] [[name]] [[setName]] [[setIdentity]]
+}}
+
+
+{{Note
+|user= Lou Montana
+|timestamp= 201312221908
+|text= setting an incorrect value like "0" or "randomString" will remove the callsign (" ''/* 2, */'' fall back")
+}}

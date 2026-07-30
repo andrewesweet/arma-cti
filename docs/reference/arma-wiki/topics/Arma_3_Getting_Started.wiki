@@ -1,0 +1,213 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Getting_Started
+// revision: 378437 (2026-04-08T13:33:05Z)
+// export sha1: krjh0rax6t5ajeceszws64ve9zrnuty
+// categories: Category:Arma 3 | Category:Hints & Tips
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{TopMenu|[[#Buying {{arma3}}|Buying {{arma3}}]][[#Starting with the game|Starting with the game]][[#Playing in Single Player|Playing in Single Player]][[#Playing in Multiplayer|Playing in Multiplayer]][[#Finding players, communities and help|Finding players]]}}
+
+
+== Buying {{arma3}} ==
+
+'''{{arma3}}''' is a {{Link|https://store.steampowered.com/|Steam}} platform exclusive game and can be bought on the {{Link|https://store.steampowered.com/app/107410/Arma_3/|{{arma3}} Steam page}}.
+
+=== Editions ===
+
+{{arma3}} has some Editions and bundles to purchase. Bundles are always cheaper than purchasing products separately.
+* '''{{arma3}} Gold Edition''' ({{Link|https://store.steampowered.com/app/107410/Arma_3/|Steam page}}) contains the base game, {{Name|arma3apex|short}}, {{Name|arma3contact|short}}, the {{Name|arma3karts|short}} DLC, and art (soundtrack, digital artworks, maps, tactical guide).
+* '''{{arma3}} Platinum Edition''' ({{Link|https://store.steampowered.com/app/107410/Arma_3/|Steam page}}) contains the base game, every expansions and every DLCs by {{Name|bi}}, and art.
+
+
+[[File:arma3-gold_platinum_edition_comparison.png|350px|thumb|The main two editions allowing you to enjoy {{arma3}}.]]
+{| class="wikitable align-center" style="margin: auto"
+|+ Edition Details
+{{Feature|warning|Note that no [[:Category:Arma 3 CDLCs|Creator DLCs (CDLCs)]] are included in these editions!}}
+! Content
+! {{Link|https://store.steampowered.com/app/107410/Arma_3/|Gold Edition}}
+! {{Link|https://store.steampowered.com/app/107410/Arma_3/|Platinum Edition}}
+|- style="background-color: #FCF3E4"
+| '''{{Link|https://store.steampowered.com/app/107410/Arma_3/|{{arma3}}}}'''
+| {{Icon|checked}}
+| {{Icon|checked}}
+|- style="background-color: #FEF"
+| '''{{Link|https://store.steampowered.com/app/249860/Arma_3_Soundtrack/|Soundtrack}}''' ("Bonus" directory)
+| {{Icon|checked}}
+| {{Icon|checked}}
+|- style="background-color: #FEF"
+| '''{{Name|bi|short}} 25th Anniversary''' (Steam soundtrack)
+| {{Icon|checked}}
+| {{Icon|checked}}
+|- style="background-color: #FEF"
+| '''Digital Artworks'''
+| {{Icon|checked}}
+| {{Icon|checked}}
+|- style="background-color: #FEF"
+| '''Maps'''
+| {{Icon|checked}}
+| {{Icon|checked}}
+|- style="background-color: #FEF"
+| '''Tactical Guide'''
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| {{Link|https://store.steampowered.com/app/288520/Arma_3_Karts/|{{Name|arma3karts|short}}}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| {{Link|https://store.steampowered.com/app/304380/Arma_3_Helicopters/|{{Name|arma3helicopters|short}}}}
+|
+| {{Icon|checked}}
+|-
+| {{Link|https://store.steampowered.com/app/332350/Arma_3_Marksmen/|{{Name|arma3marksmen|short}}}}
+|
+| {{Icon|checked}}
+|- style="background-color: #E1F7E5"
+| '''{{Link|https://store.steampowered.com/app/395180/Arma_3_Apex/|{{Name|arma3apex|short}}}}'''
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| {{Link|https://store.steampowered.com/app/571710/Arma_3_Laws_of_War/|{{Name|arma3low|short}}}}
+|
+| {{Icon|checked}}
+|-
+| {{Link|https://store.steampowered.com/app/601670/Arma_3_Jets/|{{Name|arma3jets|short}}}}
+|
+| {{Icon|checked}}
+|-
+| {{Link|https://store.steampowered.com/app/744950/Arma_3_TacOps_Mission_Pack/|{{Name|arma3tacops|short}}}}
+|
+| {{Icon|checked}}
+|-
+| {{Link|https://store.steampowered.com/app/798390/Arma_3_Tanks/|{{Name|arma3tanks|short}}}}
+|
+| {{Icon|checked}}
+|- style="background-color: #E4EDF6"
+| '''{{Link|https://store.steampowered.com/app/1021790/Arma_3_Contact/|{{Name|arma3contact|short}}}}'''
+| {{Icon|checked}}
+| {{Icon|checked}}
+|}
+
+=== Buying DLCs ===
+
+You may wonder if you need to buy DLCs. You do not ''need'' anything to enjoy playing {{arma3}} (but the base game), but depending on which experience you are after the common recommendations change:
+* For a '''Singleplayer''' experience, the base campaign, [[{{Name|arma3low}}]] and in an other style [[{{Name|arma3contact}}]] singleplayer campaigns are considered among the best singleplayer moments. If you can afford it too, see also the [[{{Name|arma3tacops}}]] for a combat experience from multiple points of view.
+* For a '''Multiplayer''' experience, it is recommended to at least own [[{{Name|arma3apex}}]] to be able to play with its assets and have access to the [[Tanoa]] terrain. The cooperation campaign is good to play through too.
+* Every asset such as weapons and vehicles provided by {{Name|bi}} are free to test in [[Arsenal]] (TUTORIALS > VIRTUAL ARSENAL). If you wonder if the DLC is worth your money, it is possible to try it for free.
+{{Feature|informative|
+* For a list of {{arma3}} available DLCs and extensions, see {{GameCategory|arma3|link= y}}, [[:Category:Arma 3 DLCs & Expansions|Arma 3 DLCs & Expansions]].
+* For information about DLC assets restrictions, see [[Arma 3: DLC Restrictions]].}}
+{{Feature|important|[[:Category:Arma 3 CDLCs|Creator DLCs (CDLCs)]] are not always available to test for free and their assets are never included into the base game. You must purchase them or install the compatibility Mod for it (if exists) before using them.}}
+
+
+<h2 id="Starting_with_the_game">Starting With the Game</h2><!-- backward compatibility with old-casing links --><!-- PS: Whether it is The Game or the Game, you lost it -->
+
+You bought the game, downloaded it, installed it, configured it via the [[Arma 3: Launcher|launcher]], started it: now what?<br>
+If you are not familiar with the {{arma}} series, a usual recommendation is to access the main menu and select Tutorial, you can find choices such as:
+* Read the '''{{Link|https://arma3.com/assets/pdf/arma3_manual.pdf|Game Manual}}'''
+* Read the '''{{Link|http://cdn.akamai.steamstatic.com/steam/apps/107410/manuals/Arma_3_keylayout_ENG.pdf|Default Keyboard Layout Cheatsheet}}''' (printable and foldable)
+* Head on the '''Game Options''' and change key bindings, [[Stringtable.xml#Arma 3|languages]] and difficulty
+** See [[Arma 3: Performance Optimisation]] for more information on the settings
+* Read the in-game '''[[:Category:Arma 3: Field Manual|Field Manual]]''' ('''TUTORIAL > FIELD MANUAL''')
+* Watch '''Community Guide''' videos ({{Link|https://store.steampowered.com/app/544940/2/14/|Steam page}} / {{Link|https://www.youtube.com/playlist?list{{=}}PLfUcrRpCM_fLrk4KKLkQKrlTBh7txPaO3|YouTube}})
+* Read and watch [[Dslyecxi's Tactical Guides]] {{Link|https://ttp3.dslyecxi.com/|(direct link to TTP3)}}
+
+
+then…
+
+
+== Playing in Single Player ==
+
+[[File:Arma_3_TUTORIALS_-_VIRTUAL_ARSENAL_location.png|thumb|right|500px|The Virtual Arsenal allows to try even non-owned DLC content.]]
+=== In-Game Training ===
+
+* Play the '''VR Training''' missions to understand the principles
+* Play the '''Showcases''' to apply these principles in real action
+* Play the '''{{Link|https://arma3.com/bootcamp|Bootcamp}} campaign'''
+* Practice weapons and vehicles in the '''[[Arma 3: Arsenal|Virtual Arsenal]]'''
+* Discover the available [[:Category:Arma 3: Terrains|Terrains]] in [[:Category:Eden Editor|Eden Editor]]
+
+=== Fighting ===
+
+* Play the Single Player campaign "The East Wind" to learn to work in a team
+* Play the other Single Player content, according to your [[:Category:Arma 3 DLCs & Expansions|DLC]] list:
+** [[{{Name|arma3tacops}}]]
+** [[{{Name|arma3low}}]]'s campaign
+** [[{{Name|arma3contact}}]]'s campaign
+
+
+== Playing in Multiplayer ==
+
+{{Feature|informative|Playing in Multiplayer is ''way'' different from Single Player; an AI can be ''predicted'', its skill ''altered'', its behaviour ''planned'',<br>
+whereas an experienced human being ''will'' keep you on your toes and make you change tactics… under the threat of imminent death!}}
+* If you own [[{{Name|arma3apex}}]], play its Multiplayer campaign "Apex Protocol" with experienced friends
+* Hours of practice will help you:
+** Find the kind of game you like, among the various [[Multiplayer Game Types|Multiplayer game types]]
+** Getting different experiences no training can bring (situational awareness, reflexes, specific cases)
+* If possible, try to play on multiple servers with friends or an {{Link|https://units.arma3.com/|{{arma3}} Unit}}!
+
+=== Joining a Modded Server ===
+
+A non-official server may require mods to play. The game itself cannot download the mods and will only tell you what is missing.<br>
+Joining a server from the [[Arma 3: Launcher|Launcher]] can download the required mods ''before'' launching the game; see more information at {{Link|Arma 3: Launcher#Servers}}.
+
+
+== Steam Workshop 101 ==
+
+{{arma3}} does support {{Link|https://steamcommunity.com/app/107410/workshop/|Steam Workshop}}. You can find mods (a.k.a addons) that add some assets, features and experiences that don't exist in vanilla (addon-free) {{arma3}}, or user-made scenarios providing another game experience.
+
+To add and install Workshop items, follow these steps:
+
+=== Download and Play a Scenario ===
+
+# Open the {{Link|http://steamcommunity.com/workshop/browse/?appid{{=}}107410|{{arma3}} Steam Workshop}} and select the '''Scenario''' tag.
+# Find a scenario you like.
+# Click subscribe on [[File:Steam SubscribeButton.png]] to subscribe to a scenario. It will automatically download when the game is started.
+# Open the game and navigate to '''SINGLEPLAYER > SCENARIOS'''. If the mission has a '''Multiplayer/Co-Op''' tag on the workshop, you have to go to '''MULTIPLAYER > QUICK PLAY > HOST SERVER''' to see it.
+# The subscribed mission will be downloaded and found under the Steam Subscribed Content.
+
+=== Download and Activate a Mod ===
+
+# Open the {{Link|http://steamcommunity.com/workshop/browse/?appid{{=}}107410|{{arma3}} Steam Workshop}} and select the '''Mod''' tag.
+# Find a mod you like.
+# Click subscribe on [[File:Steam SubscribeButton.png]] to subscribe to a mod.
+# Start {{arma3}} from your Steam Library, that will open [[Arma 3: Launcher]].
+# Subscribed mods will be downloaded automatically.
+# Click the '''[[Arma 3: Launcher#Mods|MODS]]''' tab.
+# Downloaded mods are automatically loaded. If you need to unload a mod, click the checkbox.
+# Press '''PLAY''' to launch {{arma3}} with selected mods. 
+
+{{Feature|informative|These tutorials and others (publishing to the workshop) can also be found on the {{arma3}} website: {{Link|https://arma3.com/workshop101|{{arma3}} Workshop 101}}.}}
+
+
+== Finding Players, Communities and Help ==
+
+=== Official communication channels ===
+
+* {{Link|https://forums.bohemia.net/forums/forum/107-arma-3-main/|{{arma3}} Official Forums}}
+* {{Link|https://discord.gg/arma|{{arma3}} Official Discord}}
+** {{hl|#looking_for_game}} channel if you are looking for players
+** {{hl|#looking_for_squad}} channel if you are looking for squads
+** {{hl|#communities_arma}} channel if you are looking for communities
+** {{hl|#singleplayer}} channel for… Single Player content advices and discussion
+** {{hl|#scripting}} channel for help in scripting, as well as [[:Category:Scripting Commands Arma 3|{{arma3}} Scripting Commands]]
+** {{hl|#community_wiki}} channel where discussions about articles on this wiki happen
+** And for '''all your other questions''', {{hl|#ask_questions_here}} is the channel to be!
+
+=== Common Game Modes Servers ===
+
+* {{Link|https://discord.gg/FMkqWpF|Exile Discord}}
+* {{Link|https://discord.gg/UyhtEBh|Epoch Discord}}
+* {{Link|https://discord.gg/NJR6tGS|Antistasi Discord}}
+* {{Link|https://discord.gg/ajGUDSH|Arma RPG Life Discord}}
+* {{Link|https://discord.gg/wskoth|King Of The Hill / Wasteland Discord}}
+
+=== See Also ===
+
+* {{Link|https://www.reddit.com/r/arma/wiki/index|Reddit {{arma3}} Wiki}}
+* {{Link|https://www.reddit.com/r/arma/comments/30cbdb/welcome_to_arma_iii_heres_how_you_can_get_started/|Reddit {{arma3}} tips &amp; performance tweaks}}
+* {{Link|https://arma3.com/workshop101|{{arma3}} Workshop 101}}
+
+
+{{GameCategory|arma3}}
+[[Category:Hints & Tips]]

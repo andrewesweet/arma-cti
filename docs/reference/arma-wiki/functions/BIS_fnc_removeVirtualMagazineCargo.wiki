@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_removeVirtualMagazineCargo
+// revision: 363530 (2024-04-03T23:02:44Z)
+// export sha1: 7i9jwwannn07xulaeh74hqm7b49q5uf
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= Inventory
+
+|descr= Remove virtual magazines from an object (e.g., ammo box). Virtual items can be selected in the [[Arsenal]].
+
+|s1= [object, magClasses, removeGlobally] call [[BIS_fnc_removeVirtualMagazineCargo]]
+
+|p1= object: [[Object]] - object from which items will be removed
+
+|p2= magClasses: [[Boolean]], [[String]] or [[Array]] of [[String]]s - magazine classes
+
+|p3= removeGlobally: [[Boolean]] - (Optional, default [[false]]) [[true]] to remove items globally
+
+|r1= [[Array]] of [[Array]]s of all virtual items in objects's space in format [items, weapons, magazines, backpacks]<!--:
+* 0: [[Array]] - Items
+* 1: [[Array]] - Weapons
+* 2: [[Array]] - Magazines
+* 3: [[Array]] - Backpacks
+-->
+
+|x1= <sqf>[BIS_ammoBox, ["class_1", "class_2"], true] call BIS_fnc_removeVirtualMagazineCargo;</sqf>
+
+|seealso= [[Arsenal]] [[BIS_fnc_addVirtualBackpackCargo]] [[BIS_fnc_addVirtualItemCargo]] [[BIS_fnc_addVirtualMagazineCargo]] [[BIS_fnc_addVirtualWeaponCargo]] [[BIS_fnc_arsenal]] [[BIS_fnc_getVirtualBackpackCargo]] [[BIS_fnc_getVirtualItemCargo]] [[BIS_fnc_getVirtualMagazineCargo]] [[BIS_fnc_getVirtualWeaponCargo]] [[BIS_fnc_removeVirtualBackpackCargo]] [[BIS_fnc_removeVirtualItemCargo]] [[BIS_fnc_removeVirtualWeaponCargo]]
+}}

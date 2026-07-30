@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Control_Types
+// revision: 294054 (2021-11-10T11:54:21Z)
+// export sha1: sclc0vhfl9x8woilpjwyj4ivuha3ys0
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists the documentation of all control types, short CT.
+{{Navbox/CT}}
+
+[[Category:GUI Topics|GUI Topics]]

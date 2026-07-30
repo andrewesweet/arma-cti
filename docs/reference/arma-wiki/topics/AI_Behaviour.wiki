@@ -1,0 +1,20 @@
+// source: https://community.bistudio.com/wiki/AI_Behaviour
+// revision: 372967 (2025-03-02T17:42:48Z)
+// export sha1: bxblxrk9nos9lb6627j5ke9svlrygjq
+// categories: Category:AI
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Behaviour paths.gif|thumb|600px|Difference in path between different behaviours]]
+A group's [[behaviour]] determines how its units move from one point to another, behave when idle, and how they engage an enemy. This setting can override [[2D_Editor:_Waypoints#Combat_Mode|Combat Mode]], [[2D_Editor:_Waypoints#Formation|Formation]], and [[2D_Editor:_Waypoints#Speed|Speed]]. As with those three modes, this setting also takes effect as the waypoint becomes active. Behaviour effects are most obvious in infantry groups. 
+
+The [[setBehaviour]] and [[setWaypointBehaviour]] commands can be used to change group behaviour. 
+
+* '''No Change''' - The group will continue to behave in its current state.
+* '''Careless''' - Careless behaviour will cause the group to move and behave in a very non-combat manner. The group will form into a ''Compact Column''-like formation, where each unit will directly follow the man in front rather than moving in a formation. Soldiers will carry their weapons in a safe, lowered position (rifles across body, pistols holstered) and walk slowly. Infantry will not fire on enemy targets (unless they have wounded legs), but vehicles will still fire on enemies. Vehicle occupants will be turned out when able. Groups in careless mode do not switch to a more alert mode if enemies are encountered. All unit types show preference moving along roads whenever possible.
+* '''Safe''' - Similar to ''Careless'', except the group will change behaviour to ''Aware'' upon detecting an enemy unit.
+* '''Aware''' - This is the default behaviour mode. The group will move at moderate speed, with soldiers generally standing upright and making some occasional efforts to use cover when available. Most unit types still prefer to travel along roads and vehicles will travel in convoy irrespective of their current formation type. Tracked vehicles will not use headlights, and will drive across any surface with no preference given to staying on roads. Air units will not use lights. When enemies are known to be in the area, troops will disembark from any of their group's wheeled transport vehicles and the group will move on foot while carrying out "{{Link|https://en.wikipedia.org/wiki/Bounding_Overwatch|bounding}}" maneuvers, making stronger use of available cover. As of Arma 3 v1.36, AI Infantry appear to avoid being on the road directly, but will usually stay somewhat close to the road if possible.
+* '''Combat''' - This behaviour mode will result in a much higher combat performance than ''Aware''. Infantry groups will always move using bounding maneuvers, and will normally keep crouched or prone unless moving. They will make some use of available cover, choosing to spend some time crawling when in cover. They will call out contact reports more frequently. They seem to occasionally send out one unit ahead of the group as a scout. No vehicles will use headlights at night. If enemy units are known to be in the area, infantry groups will move is a more cautious manner. The "DISMISS" waypoint is cancelled. All lights are turned off. The limited speed waypoint parameter gets ignored. AI will eject from damaged vehicles. As of Arma 3 v1.36, AI seem to take about a full minute to get across roads.
+* '''Stealth''' - Stealth mode will cause a group to behave in a very cautious manner. Infantry groups will move via cover whenever possible, spending much of their time prone or moving along cover. When they need to cross open ground, they appear to occasionally choose to send scouts running ahead to reach the cover ahead as quickly as possible. A stealthy infantry formation can tend to end up quite fractured. Wheeled vehicles will still follow roads if available, but no longer convoy. Tanks will avoid knocking down trees. If enemy units are known to be in the area, infantry groups will move more closely together and spend even more time prone.
+
+
+[[Category:AI]]

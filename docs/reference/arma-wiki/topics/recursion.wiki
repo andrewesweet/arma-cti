@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/recursion
+// revision: 291488 (2021-08-07T19:47:33Z)
+// export sha1: mz8gcml71nsy3ahpfybob02wzzrksyl
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Hatnote|Did you mean: <span class{{=}}"plainlinks">'''[{{fullurl:{{FULLPAGENAME}}}} recursion]'''</span>}}
+
+
+There is currently no text in this page. You can [[Special:Search/recursion|search for this page title]] in other pages, <span class="plainlinks">[{{fullurl:Special:Log|page=recursion}} search the related logs]</span>, or <span class="plainlinks">[{{fullurl:{{FULLPAGENAME}}|action=edit}} create this page]</span>.

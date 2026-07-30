@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:Preload/User
+// revision: 322833 (2022-06-25T00:23:37Z)
+// export sha1: t7mgwjmurfrw9r6bal0j9vqiwhfgygc
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{UserDefaultPage}}</includeonly><noinclude>{{Doc/Template
+|descr= Used by the wiki preload system for functions (adds the {{Template|UserDefaultPage}} template).
+|example1= <nowiki>{{Preload/User}}</nowiki>
+|result1= <div>{{Preload/User}}</div>
+}}</noinclude>

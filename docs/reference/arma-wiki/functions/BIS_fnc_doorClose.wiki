@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_doorClose
+// revision: 364843 (2024-06-17T11:13:02Z)
+// export sha1: 3syynvsszdbgtxpnc2b6sxf00ozlfr1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Scripts | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Scripts
+
+|arg= global
+
+|eff= global
+
+|descr= Close a door with an animated doorhandle.
+
+|s1= [building, doorAnimation, handleDownAnimation, doorHandleUpAnimation, animationPhase] call [[BIS_fnc_doorClose]]
+
+|p1= building: [[Object]] - (Optional, default [[objNull]]) building
+
+|p2= doorAnimation: [[String]] - (Optional, default "") name of the door animation
+
+|p3= handleDownAnimation: [[String]] - (Optional, default "") animation source of handle down
+
+|p4= doorHandleUpAnimation: [[String]] - (Optional, default "") animation source of handle up
+
+|p5= animationPhase: [[Number]] - (Optional, default 0) value from 0-1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[building, "doorAnimation", "animationUp", "animationDown", 1] call BIS_fnc_doorClose;</sqf>
+
+|seealso= [[animate]] [[animateSource]] [[BIS_fnc_door]]
+}}

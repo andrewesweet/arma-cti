@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Take_On_Mars_Craters
+// revision: 72611 (2013-08-18T21:00:07Z)
+// export sha1: 1ezvim9q8i45bdx8krwfwx0009oko4w
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Take On Mars: Locations]]

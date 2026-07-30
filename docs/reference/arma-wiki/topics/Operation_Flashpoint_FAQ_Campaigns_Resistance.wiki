@@ -1,0 +1,122 @@
+// source: https://community.bistudio.com/wiki/Operation_Flashpoint:_FAQ:_Campaigns:_Resistance
+// revision: 339493 (2023-04-28T14:09:04Z)
+// export sha1: lqgdrljcaawb2c60udtglccp1k15kcg
+// Vendored snapshot. Do not edit — re-export instead.
+
+==How many missions are there in the Resistance campaign?==
+
+The Resistance campaign contains 20 missions:
+
+:1. Invasion
+:2. Crossroad
+:3. Contact
+::or
+:4. No Turning Back
+:5. Ammo Low
+:6. Scrap
+:7. Field Exercise
+:8. First Strike
+:9. Hostages
+:10. Information
+:11. Occupation (A)
+::or
+:12. Occupation (B)
+:13. Counterattack
+:14. Contraband
+:15. Reckoning
+:16. Fireworks
+:17. The Pass
+:18. Hunting
+:19. Trap
+:20. Fire Fight
+
+Whether you get to play the Contact or the No Turning Back mission is dependent on the outcome of the previous mission, Crossroad.
+
+Whether you get to play the Occupation (A) or the Occupation (B) mission is dependent on the outcome of the previous mission, Information.
+
+
+== Why isn't my weapons inventory carrying over to the next mission? ==
+
+This is a known bug in OFP: Resistance version 1.75 - and a very critical one at that! One of the big benefits of OFP: Resistance is the ability to collect or pool weapons and equipment in one mission that will be carried over to the following missions. Several players are reporting that sometimes their weapons inventory is virtually gone when they start playing the following mission.
+
+To resolve this problem, simply upgrade to version 1.85 or higher. However, if you can't upgrade for some reason, BIS' lead OFP programmer, Ondřej Španěl, says there are actually two bugs that can lead to lost weapons and two ways to avoid the problem:
+
+:'''REVERT/CONTINUE bug'''
+
+:You will loose your weapons pool whenever you click on REVERT or CONTINUE in the following missions:
+
+::* First Strike
+::* Fireworks
+
+:Note: Your weapons will be lost when you press CONTINUE if you abort either of these missions before they start (by pressing on CANCEL during the briefing). You will not loose your weapons if your mission has already started and you want to continue playing it.
+
+:How to avoid the REVERT/CONTINUE bug
+
+:For the First Strike mission, you'll have to REVERT back to mission Field Exercise. For the Fireworks mission, instead of clicking on CONTINUE, REVERT back to the preceding cutscene.
+
+:'''Transfer to WeaponPool bug'''
+
+:Mission command functions addWeaponPool/addMagazinePool do not work at all. In several campaign missions your weapons or weapons of your AI teammates should be transferred to the weapons pool. Instead the player always receives default equipment for the mission. As as result, the weapons inventory is lost. This applies to the following missions:
+
+::* Contact (player's weapons are lost)
+::* No Turning Back (player's weapons are lost)
+::* Contraband (player's weapons are lost)
+::* Trap (both player's and AI teammate's weapons are lost)
+
+:How to avoid Transfer to WeaponPool bug
+
+:Before ending any of the missions above, store your weapons in a car or in an ammo crate and command your AI teammates to do the same.
+
+
+== Please don't laugh at me - how do I get through the first mission, Invasion? ==
+
+Ha-ha-ha-ha-ha-ha-ha-ha-ha-ha! OK, I'll cut it out.
+
+There are three times that you gain control during the many cutscenes that make up the Invasion mission. The first time you get to play in the mission, you've been dropped off in a town. All you have to do is wait patiently for a bus to arrive. You might want to expedite its arrival by hitting the time acceleration key ("=") twice. When the bus comes, just approach the door and use the ACTION MENU to board. Enjoy the ride.
+
+Eventually, after several radio broadcasts and some shmoozing between the passengers and the driver, you'll arrive in another town, where your player's office is located. When you depart from the bus, cross the street and keep heading down towards the plaza at the end of the street with the statue. Approach the building at the end of the plaza. This should trigger the next cutscene.
+
+While you're in the office, the Soviets will start their little invasion. You'll need to escape. Run down the stairs and go out the back of the building. You'll see Russian troops. Don't worry. Just make a left and head straight north out of town. Eventually the next cutscene will be triggered.
+
+There! Don't you feel silly now asking me?!
+
+
+== Take the Jawa 354/03 motorcycle for a spin in the Invasion mission. ==
+
+Wanna do some wheelies, Easy Rider? OFP player Hoss says the new motorbike is easy to find in the Resistance campaign's first mission, Invasion
+
+In the first town, where you are dropped off to wait for the bus, just cross the street and go to the backyard behind the apartment complex. There is a friend waiting with the repaired motorcycle. He tells you to take it to the nearest gas station where you will just happen to listen to a radio news broadcast about the invasion.
+
+
+== Why won't the Occupation mission ever end? ==
+
+Many players are reporting this problem.
+
+One OFP player claims that there are 2 snipers that you must finish off. One of the snipers may be in the woods nearest the base to the north.
+
+OFP player Nyles postulates that the only tricky thing was to take the camp in the ruins at the end of the mission, coordinating the attack with your two supporting tanks. He had to wait several minutes after the area was secure and then a small counterattack had to be fought back.
+
+For OFP players Greg Nichols, Seed and others, the problem was caused by two BMPs, at around coordinates EE33, approaching the camp from the northeast that were getting stuck driving up a hill. They were stuck about half to 3/4 of the way to a village in the northeaster named Dolina. After taking out the two BMPs, the mission ended for these players. OFP player Louis Carresi believes that the BMPs only get stuck if your TERRAIN DETAIL video setting is set above NORMAL. User Janne Paalijarvi witnessed the bug on Occupation with stuck BMPs and made a video about ending the game here: http://www.youtube.com/watch?v=d-SJf1WuUwk
+
+If that doesn't solve your problem, you're simply going to have to either use the [[Operation_Flashpoint:_FAQ:_SinglePlayer#Are_there_any_single-player_cheats_for_OFP.3F|ENDMISSION cheat]] or install a complete copy of the {{Link|http://kronzky.info/theofpfaq/downloads/ofpr_resistance.sqc.zip|RESISTANCE.SQC}} file and revert to the next mission, Counterattack.
+
+== The RESISTANCE.SQC file. ==
+
+{{Link|http://kronzky.info/theofpfaq/downloads/ofpr_resistance.sqc.zip|This zipped copy of the RESISTANCE.SQC file}}, which OFP player Snake Man forwarded to me, was taken from his completed Resistance campaign. Using it, you can revert back to any campaign mission you want to. Of course, the file reflects someone else's campaign scores.
+
+Your existing RESISTANCE.SQC file can be found on your PC in the following location:
+
+:<OperationFlashpoint>\Users\<your_player_name>\Saved\Tmp
+
+Before replacing your old copy with the new one, make a backup copy of your old RESISTANCE.SQC file. Then simply unzip the downloaded file and replace as a new copy of the RESISTANCE.SQC file.
+
+When you go back into the OFP Campaign Book, you will now see a complete list of all the Resistance campaign missions available. You can now play any of them at will. However, by doing so you will spoil for yourself the campaign story and sequence. My personal suggestion to everyone is to select the mission after the last one you successfully played and click on REVERT. This will return you back to where you last left off in the campaign and require you to successfully complete each mission in order to advance in the campaign.
+
+
+== Are there any walkthroughs for the Resistance campaign? ==
+
+Yes here they are:
+
+*[[Walkthrough:Resistance]]
+*{{Link|http://db.gamefaqs.com/computer/doswin/file/operation_flashpoint_resistance.txt|Unsub's walkthrough}}
+*[[Walkthrough:Resistance-Pynaple's]] (incomplete)

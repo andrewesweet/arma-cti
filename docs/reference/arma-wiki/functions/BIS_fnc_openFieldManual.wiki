@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_openFieldManual
+// revision: 348478 (2023-11-08T13:00:27Z)
+// export sha1: flp9t24s85f8py82kclirtpizxh0p7e
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Systems | Category:Functions | Category:Introduced with Arma 3 version 1.36 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.36
+
+|gr1= Systems
+
+|descr= Opens Field Manual in briefing (SP, MP Server, MP Client) and players's map or journal.
+Selects the topic and hint passed as parameters.
+Can apply a (search) filter if desired.
+
+|s1= [topic, hint, display, filter] call [[BIS_fnc_openFieldManual]]
+
+|p1= topic: [[String]] - class name of a topic that will be selected in the opened Field Manual (e.g. "Damage")
+
+|p2= hint: [[String]] - class name of a hint that will be selected in the opened Field Manual (e.g. "HitDamage")
+
+|p3= display: [[Display]] - (Optional) desired parent [[Display]] to open the Field Manual display under
+
+|p4= filter: [[String]] - (Optional) pre-filled search field filter in the opened Field Manual (recommended to use localized string)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["Damage", "HitDamage"] call BIS_fnc_openFieldManual;</sqf>
+
+|seealso=
+}}

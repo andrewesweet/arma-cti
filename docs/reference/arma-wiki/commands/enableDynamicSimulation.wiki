@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/enableDynamicSimulation
+// revision: 378012 (2026-01-21T18:54:03Z)
+// export sha1: idd3lnu2xr30q9mh66hzkg04voywxkn
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Dynamic Simulation | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|arg= global
+|eff= local
+
+|serverExec= y
+
+|gr1= Dynamic Simulation
+
+|descr= Enables or disables [[Arma 3: Dynamic Simulation]] for an object or group.
+
+{{Feature|important|Dynamic simulation for AI units operates on [[Group]]s:
+<sqf>
+_unit enableDynamicSimulation true; // Does not work
+group _unit enableDynamicSimulation true; // Works
+</sqf>
+It is not possible to enable dynamic simulation for groups that contain a player unit.
+}}
+
+{{Feature|informative|This command has no effect on ''mines''!}}
+
+|s1= target [[enableDynamicSimulation]] enable
+
+|p1= target: [[Object]] or [[Group]]
+|p2= enable: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_myObject enableDynamicSimulation true;</sqf>
+
+|seealso= [[enableDynamicSimulationSystem]] [[dynamicSimulationSystemEnabled]] [[dynamicSimulationEnabled]] [[setDynamicSimulationDistance]] [[dynamicSimulationDistance]] [[setDynamicSimulationDistanceCoef]] [[dynamicSimulationDistanceCoef]] [[triggerDynamicSimulation]] [[canTriggerDynamicSimulation]] [[enableSimulation]] [[simulationEnabled]] [[enableSimulationGlobal]] [[Arma 3: Dynamic Simulation]]
+}}
+
+{{Note
+|user= ansin11
+|timestamp= 20260121184100
+|game= arma3
+|version= 2.20
+|text= According to Discord user Marko, dynamic simulation for vehicles has to be enabled before the vehicle is crewed. Calling <sqf inline>_vehicle enableDynamicSimulation true</sqf> on a vehicle that already has a crew does not enable dynamic simulation for the vehicle (even if dynamic simulation for the crew is already enabled).
+
+The following example illustrates how a crewed vehicle with working dynamic simulation is created:
+<sqf>
+private _vehicle = createVehicle ["B_APC_Wheeled_01_cannon_F", [0,0,0], [], 0, "NONE"]; 
+_vehicle enableDynamicSimulation true;
+
+private _group = createGroup west;
+[_vehicle, _group] call BIS_fnc_spawnCrew; 
+_group enableDynamicSimulation true;
+</sqf>
+}}

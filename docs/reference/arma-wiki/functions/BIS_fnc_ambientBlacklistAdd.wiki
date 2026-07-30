@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ambientBlacklistAdd
+// revision: 349185 (2023-11-08T14:50:39Z)
+// export sha1: 6g2kfbftu8icmzscu166ke83u2c6cz7
+// categories: Category:Arma 3: Functions | Category:Function Group: Ambient | Category:Function Group: Positions | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Ambient
+
+|gr2= Positions
+
+|descr= Add a new ambient blacklist trigger
+
+|s1= [trigger] call [[BIS_fnc_ambientBlacklistAdd]]
+
+|p1= trigger: [[Object]] - trigger
+
+|r1= [[Boolean]] - returns [[true]] if it was added successfully
+
+|x1= <sqf>[BIS_trigger] call BIS_fnc_ambientBlacklistAdd;</sqf>
+
+|seealso= [[BIS_fnc_ambientBlacklist]]
+}}

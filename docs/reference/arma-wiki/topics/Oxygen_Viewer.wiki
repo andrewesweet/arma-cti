@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/Oxygen_Viewer
+// revision: 364103 (2024-05-04T21:55:27Z)
+// export sha1: 342od6gwde4ewhzpc8o2iwzt74jacny
+// categories: Category:Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= [[:Category:Operation Flashpoint|Operation Flashpoint]]
+
+|DOWNLOAD=Since ArmA this viewer is integrated in the game executable, used with [[ArmA: Startup Parameters|command line option]] -buldozer.
+
+|DESCRIPTION=
+Oxygen Viewer is a model / island viewing tool. 
+
+It is also known as [[Buldozer]] since {{arma1}} era. This same viewer is used together with [[Visitor 2]].
+
+|NOTES=
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO=
+
+}}
+
+
+[[Category:Official Tools]]

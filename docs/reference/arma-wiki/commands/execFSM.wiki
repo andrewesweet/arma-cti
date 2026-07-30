@@ -1,0 +1,73 @@
+// source: https://community.bistudio.com/wiki/execFSM
+// revision: 363581 (2024-04-07T14:49:31Z)
+// export sha1: stwn7y2zgwkn23xqthxm5kmtpwpk6yr
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Program Flow
+
+|descr= Execute scripted [[FSM]] and return the FSM handle or 0 when failed. The FSM file is first searched in the mission folder, then in the campaign scripts folder and finally in the global scripts folder. Argument (if any) are available in {{hl|_this}} variable inside FSM. Variables set inside FSMs can be read/modified externally, using [[setFSMVariable]] and [[getFSMVariable]] commands.<br>
+<br>
+The return value is the FSM handle; it can be used to determine (via [[completedFSM]]) when the FSM has finished.
+{{Feature|arma3|In Arma 3, the FSM handle is also available within the FSM through the {{hl|_thisFSM}} variable.}}
+<br>
+Scripted FSMs are added into the scheduler just like [[exec]] scripts, [[execVM]] scripts and [[spawn]] scripts.<br>
+To see what FSMs are currently in the scheduler, use [[diag_activeMissionFSMs]] command.
+{{Feature|important|While the code placed into any of the sections of FSM cannot be suspended ([[canSuspend]] is false), the FSM itself is suspended every simulation between the state's {{hl|init}} and {{hl|precondition}} (exception is the '''init state'''). This is the only place where scripted FSM is suspended/resumed.
+The usual difference between the state's {{hl|init}} and {{hl|precondition}} is 1 frame but if the scheduler is busy it can take longer. See [[FSM]] for more information about FSM's structure.}}
+
+|s1= arguments [[execFSM]] fsmFilePath
+
+|p1= arguments: [[Anything]] - arguments accessible as {{hl|_this}} in the FSM
+
+|p2= fsmFilePath: [[String]] - file with FSM code
+
+|r1= [[Number]] - FSM handle (also available as {{hl|_thisFSM}} in the FSM)
+
+|s2= [[execFSM]] fsmFilePath
+
+|p21= fsmFilePath: [[String]] - file with FSM code
+
+|r2= [[Number]] - FSM handle (also available as {{hl|_thisFSM}} in the FSM)
+
+
+|s3= arguments [[execFSM]] [fsmFilePath, allowTermination]
+|s3since= arma3 2.18
+
+|p41= arguments: [[Anything]] - arguments accessible as {{hl|_this}} in the FSM
+
+|p42= fsmFilePath: [[String]] - file with FSM code
+|p43= allowTermination: [[Boolean]] - [[true]] to allow FSM termination with [[terminate]] command. Optional, default [[false]]
+
+|r3= [[Number]] - FSM handle (also available as {{hl|_thisFSM}} in the FSM)
+
+|s4= [[execFSM]] [fsmFilePath, allowTermination]
+|s4since= arma3 2.18
+
+|p61= fsmFilePath: [[String]] - file with FSM code
+|p62= allowTermination: [[Boolean]] - [[true]] to allow FSM termination with [[terminate]] command. Optional, default [[false]]
+
+|r4= [[Number]] - FSM handle (also available as {{hl|_thisFSM}} in the FSM)
+
+|x1= <sqf>_id = player execFSM "test.fsm";</sqf>
+
+|x2= <sqf>_handle = [_a, _b, _c] execFSM "test.fsm";</sqf>
+
+|x3= <sqf>_handle = execFSM "test.fsm";</sqf>
+
+|seealso= [[FSM]] [[FSM Editor Manual]] [[execVM]] [[call]] [[spawn]] [[exec]] [[commandFSM]] [[completedFSM]] [[doFSM]] [[getFSMVariable]] [[setFSMVariable]]
+}}

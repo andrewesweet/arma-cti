@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_removeRespawnInventory
+// revision: 327903 (2022-07-13T11:42:18Z)
+// export sha1: jz01jna57uv3at0jk7xmsmt5mebk99w
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.60 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.60
+
+|gr1= Respawn
+
+|eff= global
+
+|descr= Remove a respawn inventory added by [[BIS_fnc_addRespawnInventory]].
+
+|s1= [target, id] call [[BIS_fnc_removeRespawnInventory]]
+
+|p1= target: [[Namespace]], [[Side]], [[Group]] or [[Object]]
+
+|p2= id: [[Number]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[west, 1] call BIS_fnc_removeRespawnInventory;</sqf>
+
+|x2= <sqf>
+private _myRespawnInventory = [missionNamespace,"ATSniper"] call BIS_fnc_addRespawnInventory;
+_myRespawnInventory call BIS_fnc_removeRespawnInventory;
+</sqf>
+
+|seealso= [[Arma 3: Respawn]] [[BIS_fnc_addRespawnInventory]] [[BIS_fnc_getRespawnInventories]] [[BIS_fnc_setRespawnInventory]]
+}}
+
+{{Note
+|user= Krzmbrzl00
+|timestamp= 20160701172900
+|text= To remove all inventories that are currently available you can use the following:<br>
+<sqf>
+{
+	[missionNamespace, _x] call BIS_fnc_removeRespawnInventory;
+} forEach ([missionNamespace, true] call BIS_fnc_getRespawnInventories;
+</sqf>
+If all available inventories are removed, the default inventory for the current unit (as it would be placed in the editor) will be added automatically.
+}}

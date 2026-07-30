@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/diag_resetShapes
+// revision: 310721 (2022-05-07T19:53:41Z)
+// export sha1: pvbp0jpiozmsn0oen6udusoffk97pgu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+
+|branch= diag
+
+|version1= 1.70
+
+|gr1= Diagnostic
+
+|descr= Reload models on-the-fly without the need of restarting the game.
+Changes applied by '''diag_resetShapes''' are applied to all new entities so restart of mission is not necessarily  required - spawning vehicle again or changing back forth weapon should usually do the trick.
+It works only with {{hl|[[Arma 3: Startup Parameters#Developer Options|-filePatching]]}} in combination with local data. Command will reload '''only''' models present in local data.
+{{Feature|informative|Limitation: {{hl|CfgSkeletons}} (inside {{hl|model.cfg}}) cannot be reloaded.}}
+
+|s1= [[diag_resetShapes]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>diag_resetShapes;</sqf>
+
+|seealso=
+}}

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_unitAddon
+// revision: 349389 (2023-11-08T16:27:00Z)
+// export sha1: 4q5to5ljr1fdzo8994y0y4h2v9obhjp
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Configs | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Configs
+
+|descr= Return addon from CfgPatches to which a given object belongs to.
+
+|s1= [object] call [[BIS_fnc_unitAddon]]
+
+|p1= object: [[Object]] - object whose addon should be returned
+
+|r1= [[String]] - addon class
+
+|x1= <sqf>[player] call BIS_fnc_unitAddon;</sqf>
+
+|seealso= [[unitAddons]] [[activatedAddons]]
+}}

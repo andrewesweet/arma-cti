@@ -1,0 +1,90 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_endMission
+// revision: 341330 (2023-05-22T00:44:50Z)
+// export sha1: qmgida73mbzc7fcr5l8xbqgzui519up
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Missions | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 0.50 | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TabView
+
+|selected= 2
+
+|title1= {{TabView/GameTitle|tkoh}}
+|content1=
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|eff= local
+
+|gr1= Missions
+
+|descr= Ends mission with the specified ending. Always ends with a 4 seconds black out effect.
+{{Feature|informative|''nextMission'' and ''endingId'' parameters are assembled together to define which ending is called, in format {{hl|nextMission_endType}}.}}
+
+|s1= [nextMission, endingId, displayText, isSuccess, code] call [[BIS_fnc_endMission]]
+
+|p1= nextMission: [[String]] - (Optional, default [[worldName]])
+
+|p2= endingId: [[Number]] - (Optional, default 1)
+
+|p3= displayText: [[String]] - (Optional, default "") text displayed on black out
+
+|p4= isSuccess: [[Boolean]] - (Optional, default [[true]]) [[true]] to [[endMission]], [[false]] to [[failMission]]
+
+|p5= successCode: [[Code]] - code executed right before mission ends, only if ''isSuccess'' is set to [[true]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>["mission2", 1, "You won"] call BIS_fnc_endMission; // endMission "mission2_1"</sqf>
+
+|x2= <sqf>["mission2", 1, "You lose", false] call BIS_fnc_endMission; // failMission "mission2_1"</sqf>
+
+|seealso= [[Debriefing]] [[endMission]] [[failMission]]
+}}
+
+|title2= {{TabView/GameTitle|arma3}}
+|content2=
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+
+|gr1= Missions
+
+|descr= Ends mission with a signature shot or a fade effect, marks it finished for Steam and activates a key in format <sqf inline>activateKey format ["BIS_%1.%2_done", missionName, worldName];</sqf>.
+
+{{Feature|important|This function should always be used instead of the simple [[endMission]]/[[failMission]] commands or trigger endings; otherwise, singleplayer scenarios will not properly be marked as played/finished in the game and on Steam!}}
+
+|s1= [endName, isVictory, fadeType, playMusic, cancelTasks] call [[BIS_fnc_endMission]]
+
+|p1= endName (Optional, default "end1"):
+* [[String]] - end type from <sqf inline>configFile >> "CfgDebriefing"</sqf>. Same as with [[endMission]] and [[failMission]]
+* [[Array]] - in format [endName, ID], will be composed to "endName_ID" string
+
+|p2= isVictory: [[Boolean]] - (Optional, default [[true]]) [[true]] for successful end, false for failed end
+
+|p3= fadeType: [[Boolean]] or [[Number]] - (Optional, default [[true]]) true for signature [[Debriefing|closing shot]]. When number, simple fade to black of given duration is used
+
+|p4= playMusic: [[Boolean]] - (Optional, default [[true]]) [[false]] to disable automatic music during [[Debriefing|closing shot]]
+
+|p5= cancelTasks: [[Boolean]] - (Optional, default [[false]]) [[true]] to cancel all pending tasks
+
+|r1= [[Boolean]]
+
+|x1= <sqf>"end1" call BIS_fnc_endMission;</sqf>
+
+|x2= <sqf>["epicFail", false, 2] call BIS_fnc_endMission;</sqf>
+
+|seealso= [[BIS_fnc_endMissionServer]] [[Debriefing]] [[endMission]] [[markAsFinishedOnSteam]]
+}}
+
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20160321111200
+|text= To end a multiplayer mission one can use <sqf inline>["end1", true] remoteExecCall ["BIS_fnc_endMission"];</sqf> - see also [[BIS_fnc_endMissionServer]].
+}}

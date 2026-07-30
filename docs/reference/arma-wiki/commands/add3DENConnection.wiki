@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/add3DENConnection
+// revision: 378561 (2026-05-08T15:48:16Z)
+// export sha1: rw13mmaz6qv2q0r21bbv2z0gpq8xpnl
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= [[Eden Editor: Connecting|Connect]] entities together. Be aware to select the correct type of [[Eden Entity|Eden Entities]] for the connection type.
+
+|s1= [[add3DENConnection]] [type, from, to]
+
+|p1= type: [[String]] - connection class from <sqf inline>"Cfg3DEN" >> "Connections"</sqf>:
+{{Columns|2|
+* {{hl|Group}}
+* {{hl|RandomStart}}
+* {{hl|Sync}}
+* {{hl|TriggerOwner}}
+* {{hl|WaypointActivation}}
+}}
+
+|p2= from: [[Array]] of [[Eden Entity|Eden Entities]] - entities which are being connected
+
+|p3= to: [[Eden Entity]] - entity to which entities will be connected to
+
+|r1= [[Boolean]] - [[true]] If the connection was made
+
+|x1= <sqf>add3DENConnection ["RandomStart", get3DENSelected "Object", "marker_0"];// Set random start on marker "marker_0" for all selected objects.</sqf>
+
+|x2= <sqf>
+// Group all selected units to the first selected group
+private _group = get3DENSelected "Group" param [0, grpNull];
+private _units = get3DENSelected "Objects";
+
+add3DENConnection ["Group", _units, _group];
+</sqf>
+
+|seealso= [[remove3DENConnection]] [[get3DENConnections]]
+}}

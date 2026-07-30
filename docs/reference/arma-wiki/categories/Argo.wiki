@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/Category:Argo
+// revision: 351560 (2023-12-07T13:43:46Z)
+// export sha1: 8eza6q0jggis7rj07c2d80jy5gccgfu
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|EAdate = 2016-11-01
+|releasedate = 2017-06-22
+|enddate = 2018-06-26
+|image = argo-logo.png
+|size = 250
+|intro = {{Feature|obsolete|This game has been discontinued on June 26th 2018.}}
+|trailer = 459VNYwtuS4
+|feature1 = '''Clouds vs Flames''' - Take on the role of a mercenary and be contracted by one of two rival factions. Start out as a rookie operator and gain experience to unlock new weapons, attachments, and gear.
+|feature2 = '''Malden 2035''' - Be deployed to the 62 km² Mediterranean island of Malden - a modern re-imagination of a classic {{Name|bi}} terrain. Ranging from dense urban areas, to wide open plains, and other unique points of interests, Malden features a variety of combat zones that have been built to provide an optimal experience for each game mode.
+|feature3 = '''3 Competitive Game Modes''' - Compete as part of a 5-man unit across 3 different competitive game modes. In Clash, two units battle over territory in a series of combat engagements. In Link, the objective is to capture a chain of points before the enemy takes control. Raid tasks one unit to find a data terminal while the other unit needs to defend the three possible locations.
+|feature4 = '''Combat Patrol Co-op Mode''' - Team up with up to 10 hired guns, and fight against AI opponents in an open-world setting. Thanks to the randomized objectives and procedural generation of enemy forces, each session of Combat Patrol is different. Success depends on your ability to plan, work together, and adapt to new challenges.
+|feature5 = '''3D Scenario Editor''' - Build and play your own missions using a built-in Scenario Editor. With its intuitive interface, you can place entities, assign waypoints, set triggers, and much more, in just a few simple steps. Creating your own content is more fun than ever before.
+|gallery1 = argo-screenshot_1.jpg
+|gallery2 = argo-screenshot_2.jpg
+|gallery3 = argo-screenshot_3.jpg
+|gallery4 = argo-screenshot_4.jpg
+|gallery5 = argo-screenshot_5.jpg
+|gallery6 = argo-screenshot_6.jpg
+|dlcs= <!-- add paid content? -->
+|start1 = {{Link|https://store.steampowered.com/app/530700|Steam page}}
+|social1 = {{Link|https://incubator.bohemia.net/argo|{{Name|argo}}'s Incubator website}}
+|social2 = {{Link|https://www.bohemia.net/blog/argo-deploys-on-june-22|{{Name|bi}} release blog post}}
+}}

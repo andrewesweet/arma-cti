@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_halt
+// revision: 348819 (2023-11-08T14:38:18Z)
+// export sha1: ift4yib39998er7ar9s6361vt5vim2c
+// categories: Category:Arma 3: Functions | Category:Function Group: Program Flow | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Program Flow
+
+|descr= Halts current function and all its parents and logs an error message.
+
+|s1= [param1, param2, ..., param10] call [[BIS_fnc_halt]]
+
+|p1= param1: [[String]] - logged message ([[format|formatted]])
+
+|p2= param2 - param10: [[Anything]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>["You are now supposed to be %1", rank player] call BIS_fnc_halt;</sqf>
+
+|seealso=
+}}

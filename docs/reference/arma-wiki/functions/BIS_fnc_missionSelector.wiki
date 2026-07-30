@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_missionSelector
+// revision: 349497 (2023-11-08T17:09:09Z)
+// export sha1: tvh00fpxwpryjegdyv5efllh4luidv0
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Systems | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Systems
+
+|eff= local
+
+|descr= Function that draws clickable, hoverable and animated icons on the map that execute a user-defined code when pressed.
+
+|s1= [area, mapCenter, missionsArray] call [[BIS_fnc_missionSelector]]
+
+|p1= area: [[Array]] of [[Number]] - (Optional, default [100,100]) used to determine map's zoom, format [width, height]
+
+|p2= mapCenter: [[Position#Introduction|Position2D]] - (Optional, default [0,0]) center position where the map camera will be positioned
+
+|p3= missionsArray: [[Array]] - (Optional, default <sqf inline>[]</sqf>) list of selectable missions and their parameters, to format [pos, text, tooltip, picture, code]:
+* pos: [[Array]] - where the clickable marker will be placed
+* text: [[String]] - text that should be displayed next to the icon
+* tooltip: [[String]] - text to be displayed in the tooltip (on mouse over)
+* picture: [[String]] - location of the picture to be displayed in the tooltip
+* code: [[Code]] - code spawned when the icon is clicked
+
+|r1= [[Number]] - index of the chosen mission
+
+|x1= <sqf>
+private _area = [750, 400];
+private _missionsList =
+[
+	[
+		getMarkerPos "BIS_briefMarkerINFANTRY",
+		"Infantry",
+		"Your mission is to do stuff",
+		"AnimBriefing\intro_stage1a_CA.paa",
+		{ hint "infantry mission selected" }
+	],
+	[
+		getMarkerPos "BIS_briefMarkerSPECIALFORCES",
+		"Special Forces",
+		"Your mission is to do stuff but in a more special way",
+		"AnimBriefing\intro_stage1a_CA.paa",
+		{ hint "special forces mission selected" }
+	]
+];
+
+private _index = [_area, getMarkerPos "BIS_cameraCenter", _missionsList] call BIS_fnc_missionSelector;
+private _missionDetails = _missionsList select _index;
+</sqf>
+
+|seealso= [[playMission]]
+}}

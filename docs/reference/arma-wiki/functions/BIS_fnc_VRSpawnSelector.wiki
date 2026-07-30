@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_VRSpawnSelector
+// revision: 349414 (2023-11-08T16:27:28Z)
+// export sha1: k3d1n155ua3imxnwqycdyoxnocwvac5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: VR | Category:Functions | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= VR
+
+|descr= Spawns the course selector (used primarily for VR missions).
+
+|s1= [center, type] call [[BIS_fnc_VRSpawnSelector]]
+
+|p1= center: [[Position]]
+|p2= type: [[String]] - (Optional, default "default") can be:<br>
+"default" (blue)<br>
+"incomplete" (orange)<br>
+"complete" (dark orange)<br>
+"exit" (red)
+
+|r1= [[Object]] - created object for easy deletion
+
+|x1= <sqf>[[0,0,0], "exit"] call BIS_fnc_VRSpawnSelector;</sqf>
+
+|seealso= [[Arma 3: Virtual Reality Custom Courses|Arma 3 VR Custom Courses]] [[:Category:Function Group: VR|VR functions]]
+}}

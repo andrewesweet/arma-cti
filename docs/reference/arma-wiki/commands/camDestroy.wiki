@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/camDestroy
+// revision: 369081 (2024-09-02T20:36:38Z)
+// export sha1: gfcgh5hjlwro3g1a63hb64l0ag4hek3
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Camera Control
+
+|arg= local
+
+|eff= local
+
+|descr= Destroys camera object created with [[camCreate]]. This command doesn't need [[camCommit]]. 
+{{Feature | important | Destroying camera object does not terminate camera effect automatically, use [[cameraEffect]] prior to deleting the camera (see Example 2)}}
+
+|s1= [[camDestroy]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>camDestroy _cam;</sqf>
+|x2= <sqf>
+_cam cameraEffect ["terminate","back"];
+camDestroy _cam;
+</sqf>
+
+|seealso= [[camCreate]] [[cameraEffect]]
+}}

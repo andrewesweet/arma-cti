@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_counter
+// revision: 363648 (2024-04-11T15:43:06Z)
+// export sha1: 0cj9haoo63k88h5ndfn22x0zwqu4aeq
+// categories: Category:Arma 3: Functions | Category:Function Group: Systems | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Systems
+
+|descr= Modify the given counter, create it if does not exist.
+{{Feature|important|It is '''not''' possible to broadcast the counter (like [[setVariable]] does) with this function.}}
+
+|s1= [varName, add, modulo] call [[BIS_fnc_counter]]
+
+|p1= varName: [[String]] or [[Array]] format [varName, namespace] - default namespace is [[missionNamespace]]
+
+|p2= add: [[Number]] - (Optional, default 0) the value to be added
+
+|p3= modulo: [[Number]] - (Optional, default -1) the [[mod]]ulo to use for counter cycle, applied after the addition
+
+|r1= [[Number]] the new counter value
+
+|x1= <sqf>[["TAG_Score", player], 1] call BIS_fnc_counter;</sqf>
+
+|seealso= [[BIS_fnc_deleteCounter]]
+}}

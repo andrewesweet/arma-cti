@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/jsonToGameValue
+// revision: 351580 (2023-12-07T17:42:12Z)
+// export sha1: eru5jf73l6mz6nu9epq9dvvcymue1yl
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|gr1= Argo
+
+|descr= Try to convert the provided JSON to game value.
+
+|s1= [[jsonToGameValue]] json
+
+|p1= json: [[String]]
+
+|r1= [[Anything]]
+
+
+|x1= <sqf>
+_num = jsonToGameValue "3.14";
+_arrOfKeyValues = jsonToGameValue "{ 'key0': false, 'key1': 'value', 'key2', 2 }";
+</sqf>
+
+|seealso= [[gameValueToJson]] [[toString]] [[str]] [[parseSimpleArray]]
+}}

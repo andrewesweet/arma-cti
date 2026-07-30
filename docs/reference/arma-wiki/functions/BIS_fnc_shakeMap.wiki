@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_shakeMap
+// revision: 348853 (2023-11-08T14:39:12Z)
+// export sha1: 92hrl2g692kyq8fwssmed9rhygprxa8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Map and Markers
+
+|descr= "Camera shake" function for the map. Shakes the map for a given amount of time with a given amount of force around the given camera center. Exits if map is not open.
+
+|s1= [duration, magnitude, center] call [[BIS_fnc_shakeMap]]
+
+|p1= duration: [[Number]] - duration of the effect
+
+|p2= magnitude: [[Number]] - magnitude of the shaking force
+
+|p3= center: [[Array]] - center [[Position|position]] of the effect
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[2,20,getMarkerPos "BIS_markerExtraction0"] call BIS_fnc_shakeMap;</sqf>
+
+|x2= <sqf>[2,20,getPos player] call BIS_fnc_shakeMap;</sqf>
+
+|seealso= [[BIS_fnc_shakeMapEH]]
+}}

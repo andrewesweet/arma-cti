@@ -1,0 +1,119 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Lights
+// revision: 349831 (2023-11-20T22:10:31Z)
+// export sha1: 14qu4yvt08yzlz8hninkn4fk17wcf46
+// categories: Category:Arma 3: Editing | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Wiki|stub}}
+= Vehicle Lights =
+== Overview ==
+=== Headlights ===
+[[File:head_lights.jpg|right|thumb|Qilin with headlights on]] If a vehicle has headlights, they are usually available for the driver of the vehicle and if the driver is a human player, the headlights could be operated via keyboard binding (normally {{hl|L}}) or scroll action menu. If the driver is AI, it will operate the headlights depending on some preset condition. For example it will turn the lights at night and turn them off in the day time. The exact time when AI may decide to use the lights can be obtained via the following formula (⚠ current formula but [[Talk:Arma_3_Lights#Previous_lights_on_randomization_formula | could change]]):
+<sqf>private _isTimeForLightsOn = [0,0,0] getEnvSoundController "night" > 0.7;</sqf>
+
+From scripts the headlights could be operated via either the script command [[setPilotLight]] or the [[action]]s {{hl|"LightOn"}} and {{hl|"LightOff"}}. To check if headlights are on or off use [[isLightOn]] command. 
+
+If a human player is the driver/pilot, the commands will work unconditionally. However if AI is driving or piloting, then it might resist lights status change. Whether or not AI will attempt to operate the headlights depends on the time of the day and AI's [[lifeState]] or [[behaviour]] mode. An unconscious/incapacitated AI and AI in the {{hl|STEALTH}}, {{hl|COMBAT}} or {{hl|AWARE}} modes will not operate the headlights and hence won't resist the changes.
+==== Overriding ====
+Since {{arma3}} v1.92 it is possible to override AI ability of operating vehicle headlights by using new {{hl|"LIGHTS"}} directive with [[disableAI]]/[[enableAI]] commands.
+<sqf>
+_vehicle disableAI "LIGHTS"; // override AI
+_vehicle setCollisionLight false; // force switch collision lights off
+</sqf>
+
+==== Config Related ====
+It is possible to set initial state of the headlights in a vehicle config, so that when vehicle is spawned it has headlights either on or off.
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	// ...
+	class MyVehicle
+	{
+		// ...
+		pilotLight = true; // true - spawn with headlights on, false - spawn with headlights off. Default: false;
+		// ...
+	};
+	// ...
+};
+</syntaxhighlight>
+
+=== Collision Lights ===
+
+[[File:collision_lights.jpg|right|thumb|Collision lights on the Speedboat]] Normally used in air and naval vehicles.
+
+==== Overriding ====
+Since {{arma3}} v1.92 it is possible to override AI ability of operating vehicle collision lights by using new {{hl|"LIGHTS"}} directive with [[disableAI]]/[[enableAI]] commands.
+<sqf>
+_vehicle disableAI "LIGHTS"; // override AI
+_vehicle setCollisionLight false; // force switch collision lights off
+</sqf>
+
+==== Config Related ====
+It is possible to set initial state of the collision lights in a vehicle config, so that when vehicle is spawned it has collision lights either on or off.
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	// ...
+	class MyVehicle
+	{
+		// ...
+		collisionLight = true; // true - spawn with collision lights on, false - spawn with collision lights off. Default: false;
+		// ...
+	};
+	// ...
+};
+</syntaxhighlight>
+
+=== Search Light ===
+
+[[File:search_light.jpg|right|thumb|WY-55 Hellcat with the search light activated]] At the moment, the WY-55 Hellcat helicopter is the only vehicle in vanilla Arma 3 game that has the search light implemented on the observer turret. This light could only be operated manually either by human player via the scroll action menu or via scripted [[action]]s {{hl|"SearchLightOn"}} and {{hl|"SearchLightOff"}}, in which case it could also be switched on/off with AI on the observer turret. To get the status of the search light use [[isLightOn]] command with turret path.
+<sqf>
+_heli turretUnit [0] action ["SearchLightOn", _heli];
+_heli turretUnit [0] action ["SearchLightOff", _heli];
+</sqf>
+The turret could be rotated and the search light elevated. To get the orientation of the search light beam:
+<sqf>
+private _searchLightRotation = deg (_heli animationSourcePhase "obsTurret");
+private _searchLightElevation = deg (_heli animationSourcePhase "obsGun");
+</sqf>
+The search light is model's VolumeLight proxy that is revealed or hidden by the engine, following user action.
+
+=== Other Light Sources ===
+== Examples ==
+= Unit Lights =
+== Overview ==
+Some weapons in Arma 3 allow attachments in form of flashlight or IR laser. Both could be used by human players and AI units. 
+=== Flashlight ===
+[[File:flash_light.jpg|right|thumb|A FIA soldier with the gun flashlight]] When equipped, the flashlight could normally be operated by pressing {{hl|L}} if the player is human or via {{hl|"GunLightOn"}} and {{hl|"GunLightOff"}} [[action]]s. The status of the flashlight could be checked with [[isFlashlightOn]] command. Flashlights might need to be explicitly enabled for a group before they could be used. 
+==== Enabling/Disabling ====
+Flashlights could only be enabled or disabled for a group. The [[enableGunLights]] command can have 3 options: {{hl|"ForceOn"}}, {{hl|"ForceOff"}} and {{hl|"Auto"}}. Passing {{hl|"Auto"}} will let AI automatically switch flashlight on and off depending on combat mode. If force enabled, the individual unit flashlight state could be controlled with {{hl|"GunLightOn"}} and {{hl|"GunLightOff"}} [[action]]s:
+<sqf>
+_unit enableGunLights "ForceOn"; // enables flashlight for the _units's group
+_unit action ["GunLightOff", _unit]; // switches flashlight off for the _unit only
+</sqf>
+Enabling and disabling works only for AI units, human player can always operate flashlight regardless of the mode.
+
+=== IR Laser ===
+
+==== Enabling/Disabling ====
+
+
+== Examples ==
+
+
+= Street Lights =
+
+[[File:street_light.jpg|right|thumb|A street light on Malden]]
+
+
+= Particle Light Sources =
+
+
+== See Also ==
+
+* [[Arma 3: CfgLights]]
+* [[Light Source Tutorial]]
+
+
+{{GameCategory|arma3|Editing}}

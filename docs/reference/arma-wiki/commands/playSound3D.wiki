@@ -1,0 +1,100 @@
+// source: https://community.bistudio.com/wiki/playSound3D
+// revision: 377465 (2026-01-02T06:47:43Z)
+// export sha1: 6kehdepvbnp5u6xgpywdnyi53y1o11k
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Sounds
+
+|descr= Plays positional sound with given ''filename'' on every computer on network. To stop the sound use [[stopSound]]
+
+|s1= [[playSound3D]] [filename, soundSource, isInside, soundPosition, volume, soundPitch, distance, offset, local, loop]
+
+|p1= filename: [[String]] - see [[Arma 3: Sound Files]] for available file names or {{Link|#Example 3}} to use mission files
+
+{{Feature|important|
+Since {{GVI|arma3|2.10|size= 0.75}} the file name can start with a leading backslash {{hl|'''\'''a3\...}}.<br>
+However a leading backslash must '''not''' be used for an '''addon''' sound file.
+}}
+
+|p2= soundSource: [[Object]] - the object emitting the sound. If ''soundPosition'' below is specified this parameter is ignored
+
+|p3= isInside: [[Boolean]] - (Optional, default [[false]]) - [[true]] to simulate a sound played inside a building or similar
+
+|p4= soundPosition: [[Position#PositionASL|PositionASL]] - (Optional, default [0,0,0]) position for sound emitter, overrides ''soundSource''. [[Object]] is also supported (see note below).
+{{Feature|informative|If a following parameter has to be used, simply use <sqf inline>getPosASL _soundSource</sqf> for ''soundPosition'' instead of <sqf inline>_soundSource</sqf> for ''soundSource''.}}
+{{Feature|important|This parameter also takes [[Object]] but their [[Position#PositionAGL|AGL]] position is used instead of [[Position#PositionASL|ASL]] resulting in sound source being underground if they're above ground, always use [[Position#PositionASL|PositionASL]] instead.}}
+
+|p5= volume: [[Number]] - (Optional, default 1) sound volume. A value greater than 5 gets capped
+
+|p6= soundPitch: [[Number]] - (Optional, default 1)
+* 1.0 &rarr; normal 
+* 0.5 &rarr; Darth Vader
+* 2.0 &rarr; Chipmunks
+
+|p7= distance: [[Number]] - (Optional, default 0) how far the sound is audible, in meters. {{hl|0}} means no maximum distance
+
+|p8= offset: [[Number]] - (Optional, default 0) offset in seconds. Same as with [[playMusic]] (ignored if sound is set to play repeatedly, see 'loop')
+|p8since= arma3 2.00
+
+|p9= local: [[Boolean]] - (Optional, default [[false]]) if [[true]] the sound will not be broadcast over network
+|p9since= arma3 2.06
+
+|p10= loop: [[Boolean]] - (Optional, default [[false]]) if [[true]] the sound will repeat indefinitely. In MP, requires 'local' to be set to [[true]]. Use [[stopSound]] to stop.
+|p10since= arma3 2.22
+
+|r1= [[Number]] - id of the sound (0..65535) (was [[Nothing]] before {{GVI|arma3|2.12|size= 0.75}})
+
+|x1= <sqf>playSound3D ["A3\Sounds_F\sfx\blip1.wss", player];</sqf>
+
+|x2= <sqf>playSound3D ["A3\Sounds_F\sfx\blip1.wss", player, false, getPosASL player, 1, 1, 0];</sqf>
+
+|x3= <sqf>playSound3D [getMissionPath "mySound.ogg", player]; // to play a mission directory sound</sqf>
+
+|x4= Sound file extension must be specified even if a config entry has none:
+<sqf>
+playSound3D ["A3\Sounds_F\sfx\alarm_independent", player];		// no sound
+playSound3D ["A3\Sounds_F\sfx\alarm_independent.wss", player];	// alarm
+</sqf>
+
+|seealso= [[say3D]] [[playSound]] [[say2D]] [[say]] [[createSoundSource]] [[setRandomLip]] [[getMissionPath]] [[playSoundUI]] [[stopSound]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20140926091800
+|text= Currently, [[playSound3D]] is not JIP compatible, so joining players will not hear the sound if is started before and is still playing when player joins.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20141108214800
+|text= When object is supplied but not a position, the position is taken from object, otherwise the position is taken from supplied position. That doesn't mean that when position is taken from object it is going to follow object when it changes position. The sound is generated at object position and it stays there.<br><br>
+One other important note: If <i>soundSource</i> param is [[objNull]] then this command develops the same bug with first person view as [[createSoundSource]] and [[say3D]]. If ''soundSource'' is [[player]] then the bug is inverted. It seems that passing [[vehicle]] [[player]] as <i>soundSource</i> param is the only way to make it behave correctly when vehicles involved.
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20201007122400
+|text= The sound will be distorted according to the {{Link|https://en.wikipedia.org/wiki/Doppler_effect}} when passing by the sound source quickly.
+}}
+
+{{Note
+|user= Hypoxic125
+|timestamp= 20230514135752
+|text= Wait for sound to end:
+
+<sqf>
+private _sound = playSound3D ["A3\Sounds_F\sfx\blip1.wss", player];
+waitUntil { soundParams _sound isEqualTo [] };
+</sqf>
+}}

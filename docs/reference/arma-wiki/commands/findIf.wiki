@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/findIf
+// revision: 376518 (2025-10-22T23:13:13Z)
+// export sha1: 825j31n0o7wqq7e4c0te35ravu2ccfz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Introduced with Arma 3 version 1.82 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.82
+
+|gr1= Arrays
+
+|descr= Searches for an element within array for which the code evaluates to true. Returns the zero-based index on success or -1 if not found.<br>
+Code on the right side of the command is evaluated for each element of the array, processed element can be referenced in code as [[Magic Variables#x|_x]].
+{{Feature|informative|
+[[findIf]] terminates as soon as it finds an element that fulfills the condition, thus it is more efficient than [[count]] in scenarios where a check for presence / absence of at least one element should be done (See {{Link|#Example 2}}).
+}}
+
+|s1= array [[findIf]] code
+
+|p1= array: [[Array]] - array to search in
+
+|p2= code: [[Code]] - code defining an element to find, processed element can be referenced within the code as [[Magic Variables#x|_x]]
+
+|r1= [[Number]] - zero-based position of the first array element for which the code evaluate to true, -1 if not found
+
+|x1= <sqf>private _firstDead = [unit1, unit2, unit3] findIf { not alive _x }; // return index of the first dead unit</sqf>
+
+|x2= <sqf>
+// two ways how to 'wait for all units to be dead':
+waitUntil { [unit1, unit2, unit3] findIf { alive _x } == -1 };	// fast, terminates as soon as it finds a living unit
+waitUntil { { alive _x } count [unit1, unit2, unit3] == 0 };	// slow, always goes through all array elements
+</sqf>
+
+|seealso= [[find]] [[count]]
+}}

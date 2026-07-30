@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_vectorMultiply
+// revision: 327959 (2022-07-13T13:15:38Z)
+// export sha1: in2dgckxdwi76txa7mysklke892nzj9
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Vectors | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Vectors
+
+|descr= Multiplies 3D vector by a scalar. {{Feature|arma3|Use [[vectorMultiply]] instead.}}
+
+|s1= [vector, factor] call [[BIS_fnc_vectorMultiply]]
+
+|p1= vector: [[Array]] of [[Number]]s - to format [x,y,z]
+
+|p2= factor: [[Number]]
+
+|r1= [[Array]] of [[Number]]s - result vector
+
+|x1= <sqf>private _newVector = [[1,2,3], 3] call BIS_fnc_vectorMultiply; // returns [3,6,9]</sqf>
+
+|seealso= [[vectorMultiply]] [[BIS_fnc_vectorDivide]]
+}}

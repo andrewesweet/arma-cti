@@ -1,0 +1,543 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_DLC_Content_Licensing
+// revision: 373223 (2025-04-12T22:20:52Z)
+// export sha1: suif6iqel6z884xol2b11611iu3mr3e
+// categories: Category:Arma 3: DLCs & Expansions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+There are various places in vanilla Arma 3 where DLC and premium content can and will be promoted (to non-owners especially).
+For DLC not created by Bohemia Interactive, please make that clear in the texts and media (style guidelines are available for Creator DLC developers).
+
+{{Feature|informative|This documentation is mostly useful to {{Link|https://arma3.com/dlc/creator|Creator DLC}} developers, although some selected parts can be applied to community mods as well.}}
+
+* '''Content Marking'''
+** There are 2 levels of associating content with a DLC.
+*** Regular: any content packaged in an addon that is injected with a specific [[:Category:Arma 3: DLCs %26 Expansions|Steam appID]] (of your DLC)
+**** This content is shown with your DLC's icon next to it in a lot of the game's UI.
+*** Premium: any content itself injected with a specific Steam appID (configured in ''CfgMods'' - see details below)
+**** Injecting must happen during content binarization (P3D / WRP)
+**** Scenarios can have their appID added in the Eden Editor general attributes (SQM).
+**** This content is restricted in its usage for non-owners (for example by triggering promotional messaging or restricting some types of access).
+* '''Main Menu'''
+** There are rows of mod and DLC icons in the main menu (clicking them opens the DLC Content Browser or Steam store page in most cases):
+*** Owned DLC
+*** Non-owned DLC
+*** Mods
+** '''Spotlight Tiles'''
+*** Content spotlight tiles allow promoting a specific piece of playable content (typically a DLC's campaign or similar) and to access it immediately.
+*** The center tile of the main menu is configurable (custom tiles with conditions can be added in [[Arma 3: Main Menu|CfgMainMenuSpotlight]] - see details below).
+* '''DLC Content Browser'''
+** This is a data-driven promotional / informational overview of every DLC and their contents (Left Shift + P).
+** It is configured in ''CfgMods'' (see details below).
+** Asset usage session / total time values require Steam stats in Arma 3 vanilla, which cannot be added outside of Bohemia Interactive.
+* '''Field Manual'''
+** Vanilla Arma 3 DLC has 1 record with a content overview in the Premium Content section (configured in [[Arma 3: Advanced Hints (Field Manual)|CfgHints]] - see details below).
+** Each premium weapon, vehicle, or explosive has an individual asset overview record (configured in [[Arma 3: Advanced Hints (Field Manual)|CfgHints]] - see details below).
+*** These are dynamically updated to be slightly different to non-owners.
+** 2 special DLC system records are used (configured in [[Arma 3: Advanced Hints (Field Manual)|CfgHints]] - see details below).
+* '''Expansions Menu'''
+** This is an old menu that still does show basic details of DLC and mods, but importantly also their load order in the game.
+** Its data is pulled from ''CfgMods'' as well (see details below).
+* '''Singleplayer Menus'''
+** Listings of various types of (singleplayer) playable content show DLC associations and can also be restricted for non-owners (Campaigns / Showcases / Challenges / Scenarios).
+** Scenarios on a premium DLC terrain cannot be loaded without owning the corresponding DLC (a DLC ribbon will also be automatically shown).
+*** However, scenarios can and should be more directly associated with a specific DLC and be configured as free or premium.
+** This is configured via ''CfgMissions'' and the ''mission.sqm'' file (via Eden Editor - see details below).
+*** You may also have to configure some properties in each scenario's ''description.ext'' in duplicate.
+* '''Loading Screens'''
+** Vanilla loading screens will display DLC promotions to non-owners when a scenario is detected to be using premium content.
+** Its data is pulled from ''CfgMods'' as well (see details below).
+* '''Debriefing Screen'''
+** When a scenario has detected usage of non-owned premium content, it will insert a special debriefing page with countdown lock (based on the DLC Content Browser).
+** Its data is pulled from ''CfgMods'' as well (see details below).
+* '''Premium Usage Promotions'''
+** When non-owned premium content is used, a time-based promotion system kicks in.
+** The longer the content is used in the session, the less subtle the promotions become:
+*** DLC icon watermark in the lower-right of the UI
+*** Temporary full-screen watermark mosaic using the DLC icon
+*** DLC asset watermark gallery in the lower-right of the UI
+*** Center screen DLC pop-up message
+** Their data is pulled from ''CfgMods'' as well (see details below).
+
+{{Feature|informative|Use the [[:Category:Command Group: DLC|DLC scripting commands]] to diagnose Content Licensing issues.}}
+
+
+== CfgMainMenuSpotlights ==
+
+General information on configuring Main Menu Spotlight Tiles can be found [[Arma 3: Main Menu|here]]. They are typically configured in ''UI_F_'' addons in the vanilla data.
+
+<syntaxhighlight lang="cpp">
+// Spotlight sample
+class CfgMainMenuSpotlight
+{
+	class MyDLC_MyCampaign // Your new class
+	{
+		text = "My Campaign"; // Centered text shown over the tile
+		picture = "\A3\UI_F_MyDLC\Data\Displays\RscDisplayMain\myDLC_spotlight_co.paa"; // Spotlight tile picture (see details below)
+		video = "\A3\UI_F_MyDLC\Video\myDLC_spotlight.ogv"; // Spotlight tile on-hover video (see details below)
+		// Script code to execute when pressing the tile
+		// In this example a filter is initialized for the campaign selection interface, and then that interface is opened with the campaign selected
+		action = "uiNamespace setVariable ['RscDisplayCampaignLoad_filter', 'MyCampaign']; ctrlActivate ((ctrlParent (_this select 0)) displayCtrl 101);";
+		actionText = "$STR_A3_RscDisplayMain_Spotlight_Play"; // Localized string reference to "Play" (used to be shown on-hover of the tile - deprecated)
+		// Script code that should return true or false to determine whether the tile should be shown
+		// In this example it is shown when the referenced DLC is owned, and its campaign data is loaded
+		condition = "(123456789 in (getDLCs 1)) && ((configName (configFile >> 'CfgPatches' >> 'A3_Missions_F_MyDLC')) != '')";
+		textIsQuote = 1; // Add double quotes to 'text' or not (typically used for campaign titles)
+	};
+};
+</syntaxhighlight>
+
+{{Feature|informative|You can also consider adding a new User Interface color preset for your DLC via ''CfgUIColors.GUI.Presets''}}
+
+{{Feature|informative|Another way of promoting your DLC's content to players is a custom Welcome Screen.}}
+
+
+== CfgHints ==
+
+General information on configuring records in the Field Manual can be found [[Arma 3: Advanced Hints (Field Manual)|here]].
+They are typically configured in ''Language_F_'' addons in the vanilla data.
+
+<syntaxhighlight lang="cpp">
+// Premium Record Sample
+class CfgHints
+{
+	class PremiumContent // Existing record class for this type of record
+	{
+		class PremiumMyDLC // Your new class
+		{
+			displayName = "My First DLC"; // Record title (in this case the full name of your DLC)
+			// Record body text (in this case using a header image as argument; typically containing the DLC overview text and a listing of highlighted content)
+			// %11 refers to the first custom argument
+			// %1 is a linebreak
+			// %2 is a bullet point
+			description = "Have fun playing with all the new toys included in this most splendid DLC.%11%1%2My Campaign - have fun!";
+			tip = "$STR_A3_CfgHints_PremiumContent_PremiumKarts2"; // Record footer (this generic localized string is the one typically used for Arma 3 vanilla)
+			// List of arguments which can be used in 'description' (typically images or control bindings)
+			arguments[] =
+			{
+				"""<img size='9' shadow='0' image='A3\Data_F_MyDLC\Images\myDLC_FM_overview_co' />"""
+			};
+			image = "\A3\Data_F_MyDLC\Logos\myDLC_hint_icon_ca"; // Record icon (typically the DLC icon for this type of record)
+			logicalOrder = 99; // Determines the order of this record in its category
+		};
+	};
+};
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+// Asset Record Sample
+class CfgHints
+{
+	// Existing record classes for these types of assets
+	// WeaponList
+	// ExplosivesList
+	class VehicleList
+	{
+		class MyVehicle // Your new class
+		{
+			// The argument-based configuration is used in vanilla to mainly make it clear that existing localized strings are used
+			displayName = "%11";
+			description = "%12";
+			tip = "";
+
+			arguments[] =
+			{
+				{ "My First Vehicle" },
+				{ "This is literally the most splendid vehicle ever seen in Arma 3." }
+			};
+
+			image = "\A3\UI_F\Data\GUI\Cfg\Hints\Miss_icon_ca.paa"; // Generic Arma 3 Field Manual icon (can be a custom icon as well)
+			dlc = 123456789;			// Reference to your DLC's Steam appID
+			vehicle = "MyVehicle_F";	// Specific asset class (used to display the actual 3D model preview) - 'weapon' for weapon records / 'ammo' for explosive records
+			modelScale = 4;				// 3D preview model scale multiplication factor (typically kept as 1, but can be used to enhance small assets)
+			logicalOrder = 99;
+		};
+	};
+};
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+// System Record Samples
+class CfgHints
+{
+	// Existing record class for these system records
+	// The game may use these special hints in the Content Licensing tech
+	class DlcMessage
+	{
+		class Dlc123456789 // Your new class (use the same format: "Dlc" and the Steam appID)
+		{
+			displayName = "My First DLC"; // Full DLC name
+			description = "$STR_A3_CFGHINTS_DLCMESSAGE_DLC2885201"; // String reference to a generic message used in Arma 3 vanilla (incorrect appID in the string reference is OK)
+			tip = "$STR_A3_CFGHINTS_DLCMESSAGE_DLC28852002"; // As 'description'
+
+			arguments[] =
+			{
+				{ { "OpenDlcScreen" } } // Reference to a mapped control binding to open the DLC Content Browser
+			};
+
+			image = "\A3\Data_F_MyDLC\Logos\myDLC_hint_icon_ca"; // Typically the same icon as used for the premium content record above
+			dlc = -1; // Hiding the system record
+		};
+
+		class Dlc123456789FM // Your new class (use the same format: "Dlc", the Steam appID, and "FM")
+		{
+			displayName = "My First DLC";
+			description = "$STR_A3_CFGHINTS_DLCMESSAGE_DLC2885201";
+			tip = "$STR_A3_CFGHINTS_DLCMESSAGE_DLC28852002";
+
+			arguments[] =
+			{
+				{ { "OpenDlcScreen" } }
+			};
+
+			image = "\A3\Data_F_MyDLC\Logos\myDLC_hint_icon_ca";
+			dlc = -1;
+		};
+	};
+};
+</syntaxhighlight>
+
+{{Feature|informative|It is recommended to use stringtables with string references even when not localizing, so that you can easily use the same texts multiple times.}}
+
+
+== CfgMissions ==
+
+Here we will focus only on those entries relevant to DLC configuration of playable content. This is typically configured in ''Missions_F_'' addons in the vanilla data.
+
+Most importantly, in Eden Editor under ''Attributes'' > ''General'', select which DLC a scenario belongs to and whether it should be free (optional) or premium (required - box checked).
+This should result in the DLC ''appID'' being added in the ''mission.sqm'' file. In case of non-required DLC, there will also be the ''assetType="Free"'' entry.
+
+<syntaxhighlight lang="cpp">
+// CfgMissions Sample
+class CfgMissions
+{
+	class Showcases
+	{
+		class MyShowcase1 // Your new class
+		{
+			// Most standard entries were excluded in this sample
+			overviewPicture = "\A3\Missions_F_MyDLC\Data\Img\myshowcase1_overview_co.paa"; // Regular overview image
+			overviewPictureUnowned = "\A3\Missions_F_MyDLC\Data\Img\myshowcase1_overview_blackwhite_co.paa"; // Overview image for non-owners (typically a grayscale version of the regular one)
+			assetType = "Free"; // Only used for free content, don't use for premium scenarios!
+			author = "Your (Team) Name"; // Author(s) of your DLC
+		};
+	};
+};
+</syntaxhighlight>
+
+{{Feature|informative|Be sure to also define the ''briefingName'' and ''author'' entries in the ''mission.sqm'', so the title shows in the interrupt menu ({{Controls|Esc}}) and the scenario is credited.
+These are easily set in Eden Editor via ''Attributes'' > ''General''.}}
+
+
+== CfgMods ==
+
+This is the primary configuration of a DLC (or technically a mod) and its Content Licensing for premium content. It is typically configured in ''Data_F_'' addons in the vanilla data.
+
+<syntaxhighlight lang="cpp">
+// DLC Sample
+class CfgMods
+{
+	class MyDLC // Your new class
+	{
+		dir = "MyDLC"; // The mod data directory (the same as used to launch the game with -mod=MyDLC)
+		
+		// A Steam appID reference (a critical parameter which links all premium content to this DLC - typically found in the URL to the Steam page)
+		// Also used to build specific purchase URLs to the Steam store
+		// Without this parameter, the 'mod' is not recognized as DLC
+		appID = 123456789;
+		
+		name = "My First DLC";	// Full name of your DLC
+		nameShort = "My DLC";	// Short version of your DLC's name (used e.g. as title over the DLC Content Browser listing tile - 'name' is used when not defined)
+		author = "Your (Team) Name"; // Author(s) of your DLC
+		tooltip = "My First DLC is now available. Click to purchase."; // Tooltip shown to non-owners (e.g. on-hover of the Main Menu icon)
+		tooltipOwned = "My First DLC"; // Tooltip shown to owners (typically configured to be the full DLC name)
+		overview = "Have fun playing with all the new toys included in this most splendid DLC."; // DLC's main overview text (recommended to keep short and snappy - typically one sentence)
+		fieldManualTopicAndHint[] = { "PremiumContent", "PremiumMyDLC" };	// Reference to a DLC overview hint in the Field Manual (used to be opened when clicking the main menu icon - deprecated - opens DLC Content Browser now)
+		dlcColor[] = { __EVAL(255/255), __EVAL(0/255), __EVAL(0/255), 1 };	// Primary RGBA color of your DLC (used as highlight in various UI places)
+
+		action = "https://arma3.com/dlc/creator"; // Website URL opened in an external browser when clicking the WEBSITE button in the EXPANSIONS menu
+
+		artwork = "\A3\Data_F_MyDLC\Logos\myDLC_artwork.jpg";		// DLC artwork shown as tile in the DLC Content Browser (see details below)
+		picture = "\A3\Data_F_MyDLC\Logos\myDLC_picture_ca.paa";	// Large DLC icon shown in the EXPANSIONS menu (see details below)
+		logo = "\A3\Data_F_MyDLC\Logos\myDLC_logo_ca.paa";			// Small DLC icon shown in the Main Menu, scenario listings, loading screens, etc. (see details below)
+		logoOver = "\A3\Data_F_MyDLC\Logos\myDLC_logoOver_co.paa";	// On-hover variant of the small DLC icon (see details below)
+		logoSmall = "\A3\Data_F_MyDLC\Logos\myDLC_logoSmall_ca.paa";	// Smallest DLC icon shown in the editor, Field Manual, inventory, etc. (see details below)
+		logoTitle = "\A3\Data_F_MyDLC\Logos\myDLC_logoTitle_ca.paa";	// DLC product logo shown as header in the DLC Content Browser overview (see details below)
+		video = "\A3\Data_F_MyDLC\Videos\preview_myDLC.ogv";		// DLC video shown on-hover in the DLC Content Browser tile (see details below)
+
+		hideName = 1; // Hides your DLC's name from the Main Menu (recommended to be 1 - hidden - for Arma 3)
+		hidePicture = 0; // Hides your DLC's icon from the Main Menu (recommended to be 0 - shown - for Arma 3)
+
+		overviewPicture = "\A3\Data_F_MyDLC\Images\myDLC_overviewPicture_co.paa";						// Standard DLC overview image (see details below)
+		overviewText = "Have fun playing with all the new toys included in this most splendid DLC.";	// Same main DLC overview text as above
+
+		// Text appended to the bottom of premium DLC content overviews for non-owners
+		overviewFootnote = ""<br><br><t color='#999999'>This content is exclusive to My First DLC.<br>Press <t /><t color='#19d3ff'>Left Shift + P<t /><t color='#999999'> to open the store page for more information.<t />"";
+		contentBrowserPicture = "\A3\Data_F_MyDLC\Images\myDLC_contentBrowserPicture_co.paa";	// Similar to 'overviewPicture' but smaller (see details below)
+		popupMsgPicture = "\A3\Data_F_MyDLC\Images\myDLC_popupMsgPicture_ca.paa";				// Pop-up image shown center-screen as DLC promotion when trying to use premium non-owned content (see details below)
+
+		popupMsgText = "You are using premium content. Please purchase My First DLC to remove these messages.";	// Text for the pop-up shown center-screen as DLC promotion when trying to use premium non-owned content
+		vehPrevMsgText = "This vehicle is part of My First DLC. Please purchase the DLC to enter as crew.";		// Text shown when trying to enter a non-owned premium vehicle
+		vehPrevNotifText = "This vehicle is part of My First DLC. Please purchase the DLC to enter as crew.";	// Text shown in the action menu when trying to enter a non-owned premium vehicle
+		itemPrevNotifText = "This item is part of My First DLC. Please purchase the DLC to use it.";			// Text shown when trying to pick up a non-owned premium item
+		dronePrevNotifText = "This drone is part of My First DLC. Please purchase the DLC to control it.";		// Text shown when trying to connect to a non-owned premium drone
+		weaponPrevMsgText = "This weapon is part of My First DLC. Please purchase the DLC to use it.";			// Text shown when trying to equip a non-owned premium weapon
+
+		// Text shown when trying to connect to a multiplayer server that has a scenario loaded on a non-owned premium terrain
+		terrainPrevMsgText = "The scenario takes place in My Terrain, which is part of the non-owned My First DLC. Please purchase it to be able to join.";
+
+		// Any number of watermark promotional images shown on the edge of the screen to non-owners after some time of premium asset usage (as an alternating gallery - see details below)
+		infoPages[] =
+		{
+			"\A3\Data_F_MyDLC\Images\myDLC_infoPage01_ca",
+			"\A3\Data_F_MyDLC\Images\myDLC_infoPage02_ca"
+		};
+
+		// Overview of any assets (terrains, vehicles, weapons, gear, props, etc.) to promote in the ASSETS section of the DLC Content Browser
+		// When a section is not configured, it is not shown in the DLC Content Browser
+		class Assets
+		{
+			// Each class represents a separate entry in the ASSETS library
+			// It can cover 1 asset or a set of assets
+			class MyAsset
+			{
+				displayName = "My First Vehicle"; // Asset title shown in the gallery (can also be used to override a referenced asset's name)
+				description = "This is literally the most splendid vehicle ever seen in Arma 3."; // Asset description text shown in the gallery (can also be used to override a referenced asset's description)
+				overviewPicture = "\A3\Data_F_MyDLC\Images\MyAsset_ca"; // Overview image for the asset (see details below)
+				dlcType = "MyDLC"; // Forcing premium content marking for a specific DLC via its CfgMods class (e.g. used when the asset cannot be referenced to handle this automatically)
+			};
+
+			// Ideally asset entries reference actual configured game assets and their data
+			class MyReferencedAsset
+			{
+				reference[] = { "CfgVehicles", "MyVehicle_Base_F" }; // Reference to a config class parent and sub-classes (see details below)
+				// displayName is fetched from the referenced asset's actual displayName, but can be overridden (for example when too specific - Red Car versus Cars)
+				// description is fetched from the referenced asset's class Library.libTextDesc, but can be overridden
+				overviewPicture = "\A3\Data_F_MyDLC\Images\MyReferencedAsset_ca"; // Overview image for the asset (see details below)
+
+				tryAsset[] = { 1, "B_W_Soldier_F", "MyVehicle_F" }; // Parameters to enable a TRY button that will load the asset in Virtual Arsenal / Garage (see details below)
+			};
+		};
+
+		// Overview of any content to promote in the SINGLEPLAYER section of the DLC Content Browser
+		class Singleplayer
+		{
+			class MyCampaign
+			{
+				// displayName, description, and overviewPicture are automatically taken from the referenced content (equivalent parameters)
+				reference[] = { "CfgMissions", "Campaigns", "MyCampaign" };
+			};
+
+			class MyShowcase
+			{
+				// Example use case: a showcase scenario is part of the premium DLC data, but we want it to be free for everyone
+				// Using reference would automatically mark it as premium for your DLC, so we manually configure it instead
+				// reference[] = { "CfgMissions", "Showcases", "MyShowcase" }; // Not used
+				displayName = "Showcase My DLC";
+				description = "In this showcase we demonstrate all the splendid content of our DLC.";
+				overviewPicture = "\A3\Missions_F_MyDLC\Data\Img\MyShowcase_overview_ca.paa"; // Still referencing the existing overview image for the showcase
+			};
+		};
+
+		// Overview of any content to promote in the MULTIPLAYER section of the DLC Content Browser
+		// In this example the section is hidden for being empty
+		class Multiplayer
+		{
+
+		};
+
+		// Overview of any features to promote in the FEATURES section of the DLC Content Browser
+		class Features
+		{
+			class MyFeature
+			{
+				displayName = "My First Feature";
+				description = "How did you ever play Arma 3 without this splendid feature?";
+				overviewPicture = "\A3\Data_F_MyDLC\Images\MyFeature_ca";
+			};
+		};
+
+		// Overview of any Steam Achievements to promote in the ACHIEVEMENTS section of the DLC Content Browser
+		// Steam Achievements cannot be added outside of Bohemia Interactive
+		class Achievements
+		{
+			class AchMyAchievement
+			{
+				displayName = "My First Achievement";
+				description = "Finished My First DLC's campaign at least once.";
+				overviewPicture = "\A3\Data_F_MyDLC\Images\AchMyAchievement_ca";
+				achievement = "MyDLCMyCampaignCompleted"; // Reference to the actual Steam Achievement stat (not possible to add outside of Bohemia Interactive)
+				achievementHidden = 1; // 1 to hide the Steam Achievement when still locked
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Reference ===
+
+A reference to a specific config parent class and sub-class(es). The parameter is composed of an Array of Strings, with the class name of each level of hierarchy (a path).
+
+* It is scanned to fetch displayName, description, and overviewPicture:
+** ''displayName'': overviewName, displayName, or briefingName (in that order)
+** ''description'': description, or Library.libTextDesc (in that order)
+** ''overviewPicture'': overviewPicture
+
+<syntaxhighlight lang="cpp">
+// Examples
+// It is recommended to use parent base classes as reference in case of variants
+reference[] = { "CfgVehicles", "MyVehicle_Base_F" };		// Vehicle
+reference[] = { "CfgWeapons", "hgun_MyPistol_F" };			// Weapon
+reference[] = { "CfgVehicles", "MyCharacter_F" };			// Character Uniform
+reference[] = { "CfgWeapons", "H_MyHelmet_F" };				// Character Headgear
+reference[] = { "CfgWeapons", "V_MyVest_F" };				// Character Vest
+reference[] = { "CfgGlasses", "G_MyGlasses_F" };			// Character Facewear
+reference[] = { "CfgVehicles", "B_MyBackpack_F" };			// Character Backpack
+reference[] = { "CfgMissions", "Campaigns", "MyCampaign" };	// Campaign
+reference[] = { "CfgMissions", "Showcases", "MyShowcase" };	// Showcase
+reference[] = { "CfgMissions", "Challenges", "Time_Trials", "MyTTs", "SP_MyTT1" };	// Time Trial Challenge
+</syntaxhighlight>
+
+=== tryAsset ===
+
+Parameters to enable a TRY button that will load the asset in Virtual Arsenal / Garage.
+
+# Number: Arsenal (0) or Garage (1)
+# String: Arsenal asset class or Array [String: Arsenal asset class, Array [Strings: Arsenal items]]
+## The Array option uses the format of an Arsenal item array (weapons can be also an Array of Strings, where the first item is the weapon class, and the rest are attachment classes in any order):
+##* 0 - Primary Weapon
+##* 1 - Launcher
+##* 2 - Sidearm
+##* 3 - Uniform
+##* 4 - Vest
+##* 5 - Backpack
+##* 6 - Headgear
+##* 7 - Facewear
+##* 8 - NVGs
+##* 9 - Binoculars
+##* 10 - Map
+##* 11 - GPS
+##* 12 - Radio
+##* 13 - Compass
+##* 14 - Watch
+##* 15 - Face
+##* 16 - Voice
+##* 17 - Insignia
+##* 25 - Bipod
+# String: Garage asset class
+
+<syntaxhighlight lang="cpp">
+// Examples
+tryAsset[] = { 0, "MySoldier__F", "" };				// Opens Arsenal with the specific character (and all its configured default gear) loaded, without any vehicle
+tryAsset[] = { 1, "MySoldier_F", "MyVehicle_F" };	// Opens Garage with the specific character loaded inside the specific vehicle
+tryAsset[] = { 0, { "MySoldier_F", { "", "", "", "U_MyUniform_F", "", "", "", "", "" } }, "" };			// Opens Arsenal with the specific character with all gear removed and only a specific Uniform added, without any vehicle
+tryAsset[] = { 0, { "MySoldier_F", { "nil", "nil", "nil", "nil", "nil", "nil", "H_MyHat_F" } }, "" };	// Opens Arsenal with the specific character with all default gear except a specific Headgear added, without any vehicle
+</syntaxhighlight>
+
+{{Feature|informative|Check the in-game Config Viewer tool to see more examples of existing configurations in vanilla Arma 3 (EDITOR > Tools > Config Viewer...).}}
+
+
+== Media ==
+
+* ''artwork'':
+** Recommended resolution: 724x1024 px (portrait)
+** Recommended type: JPG
+** Recommended content: colored DLC key art without logos or text (these will be super-imposed) and with a darker bottom quarter
+** Recommended effects (vanilla): interlacing / vignette / dirt
+[[File:arma3 cl artwork.jpg|thumb|none|''artwork'']]
+* ''picture'':
+** Recommended resolution: 256x256
+** Recommended type: PNG > PAA (alpha)
+** Recommended content: DLC primary abstract icon as hard white shape(s) and on a transparent background (don't fill the image to the edges, leave a ~25 px margin)
+** Recommended effects (vanilla): none
+[[File:arma3 cl picture ca.png|thumb|none|''picture'']]
+* ''logo'':
+** Recommended resolution: 128x128
+** Recommended type: PNG > PAA (alpha)
+** Recommended content: as picture but 50% in size
+** Recommended effects (vanilla): none
+[[File:arma3 cl logo ca.png|thumb|none|''logo'']]
+* ''logoOver'':
+** Recommended resolution: 128x128
+** Recommended type: PNG > PAA
+** Recommended content: as logo but instead of on a transparent background filled with the DLC color
+** Recommended effects (vanilla): none
+[[File:arma3 cl logoOver co.png|thumb|none|''logoOver'']]
+* ''logoSmall'':
+** Recommended resolution: 32x32
+** Recommended type: PNG > PAA (alpha)
+** Recommended content: as picture but 12.5% in size
+** Recommended effects (vanilla): none
+[[File:arma3 cl logoSmall ca.png|thumb|none|''logoSmall'']]
+* ''logoTitle'':
+** Recommended resolution: 1024x512 (landscape)
+** Recommended type: PNG > PAA (alpha)
+** Recommended content: DLC primary logo on a transparent background
+** Recommended effects (vanilla): none
+[[File:arma3 cl logoTitle ca.png|thumb|none|''logoTitle'']]
+* ''video'':
+** Recommended resolution: 512x1024 (portrait)
+** Recommended type: OGV
+** Recommended framerate: 30
+** Recommended duration: ~15 s
+** Recommended content: collage of quick overview scenes of in-game DLC footage
+** Recommended effects (vanilla): hard cuts (no fades) / no sounds / no music
+* ''overviewPicture'' (DLC):
+** Recommended resolution: 1024x512 (landscape)
+** Recommended type: PNG > PAA
+** Recommended content: an impressive in-game colored overview screenshot to highlight your DLC
+** Recommended effects (vanilla): none
+[[File:arma3 cl overviewPicture dlc co.png|thumb|none|''overviewPicture'' (DLC)]]
+* ''contentBrowserPicture'':
+** Recommended resolution: 512x256 (landscape)
+** Recommended type: PNG > PAA
+** Recommended content: an impressive in-game colored overview screenshot to highlight your DLC (can be the same as overviewPicture but 50% in size)
+** Recommended effects (vanilla): none
+[[File:arma3 cl contentBrowserPicture co.png|thumb|none|''contentBrowserPicture'']]
+* ''popupMsgPicture'':
+** Recommended resolution: 1024x512 (landscape)
+** Recommended type: PNG > PAA (alpha)
+** Recommended content: an impressive in-game colored overview screenshot to highlight your DLC
+** Recommended effects (vanilla): top half cut out with a transparent background (e.g. removing the sky part of a landscape)
+[[File:arma3 cl popupMsgPicture ca.png|thumb|none|''popupMsgPicture'']]
+* ''infoPages'':
+** Recommended resolution: 256x256
+** Recommended type: PNG > PAA (alpha)
+** Recommended content: a colored cut out of a premium DLC asset on a transparent background (often captured on monochromatic Render Worlds with Bloom disabled, or in front of a User Texture 3DEN Editor object with a procedural ** color assigned instead of a texture) - don't fill the image to the edges, leave a ~15 px margin)
+** Recommended effects (vanilla): none
+[[File:arma3 cl infoPage ca.png|thumb|none|''infoPages'']]
+* ''overviewPicture'' (asset):
+** Recommended resolution: 512x256 (landscape)
+** Recommended type: PNG > PAA (alpha)
+** Recommended content: a colored cut out of a premium DLC asset on a transparent background (often captured on monochromatic Render Worlds - don't fill the image to the edges, leave a ~15 px margin)
+** Recommended effects (vanilla): none
+[[File:arma3 cl overviewPicture asset ca.png|thumb|none|''overviewPicture'' (asset)]]
+* ''picture'' (spotlight):
+** Recommended resolution: 512x512
+** Recommended type: PNG > PAA
+** Recommended content: an impressive in-game colored overview image to promote the spotlight content (fully filled)
+** Recommended effects (vanilla): none
+[[File:arma3 cl picture spotlight co.png|thumb|none|''picture'' (spotlight)]]
+* ''video'' (spotlight):
+** Recommended resolution: 1024x1024
+** Recommended type: OGV
+** Recommended framerate: 30
+** Recommended duration: ~10 s
+** Recommended content: collage of quick overview scenes of in-game spotlight content footage
+** Recommended effects (vanilla): hard cuts between scenes (no fades) / quick fade to black at the end / no sounds / no music
+* ''overview'' (FM):
+** Recommended resolution: 1024x512 (landscape)
+** Recommended type: PNG > PAA
+** Recommended content: an impressive in-game colored overview screenshot to highlight your DLC
+** Recommended effects (vanilla): none
+[[File:arma3 cl overview FM co.png|thumb|none|''overview'' (FM)]]
+* ''image'' (FM):
+** Recommended resolution: 256x256
+** Recommended type: PNG > PAA (alpha)
+** Recommended content: as picture but inverse (the icon is alpha, and there is a rounded white tile around it - leaving a ~10 px margin)
+** Recommended effects (vanilla): none
+[[File:arma3 cl image FM ca.png|thumb|none|''image'' (FM)]]
+
+
+{{GameCategory|arma3|DLCs & Expansions}}

@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/forceAddUniform
+// revision: 318837 (2022-05-13T09:21:54Z)
+// export sha1: 2c90w0dwyuwxt4fx511b75ilz3l4ruz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr1= Containers
+
+|arg= global
+
+|eff= global
+
+|gr2= Unit Inventory
+
+|descr= Create a new uniform and hard link it into slot (without any restrictions).
+
+|s1= unit [[forceAddUniform]] type
+
+|p1= unit: [[Object]]
+
+|p2= type: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_unit forceAddUniform "U_B_CombatUniform_mcam";</sqf>
+
+|seealso= [[addUniform]] [[isUniformAllowed]] [[removeUniform]] [[uniform]]
+}}

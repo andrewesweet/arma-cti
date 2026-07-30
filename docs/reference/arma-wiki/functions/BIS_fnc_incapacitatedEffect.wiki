@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_incapacitatedEffect
+// revision: 352197 (2024-02-01T23:26:01Z)
+// export sha1: ai7c6odcmxfcvtkqwu01rwu2b1v400t
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Broken Functions | Category:Function Group: Feedback | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Broken Functions
+
+|gr2= Feedback
+
+|descr= A draft of incapacitated effects function. {{Feature|warning|Does nothing, as the whole code is commented out.}}
+
+|s1= call [[BIS_fnc_incapacitatedEffect]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_incapacitatedEffect;</sqf>
+
+|seealso= [[BIS_fnc_damageChanged]] [[BIS_fnc_healthEffects]]
+}}

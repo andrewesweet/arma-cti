@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/removeMagazines
+// revision: 373502 (2025-05-18T11:00:18Z)
+// export sha1: n7oqw2y5azdvvjy7x3hxeopvvk38kgk
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Removes all magazines of given type from the unit. If magazine class does not exist, nothing happens, not even .rpt message, unlike with [[addMagazine]] command.
+
+|s1= unitName [[removeMagazines]] magazineName
+
+|p1= unitName: [[Object]]
+|p2= magazineName: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeMagazines "30Rnd_556x45_Stanag";</sqf>
+
+|seealso= [[removeAllMagazines]] [[addMagazine]] [[magazines]] [[removeMagazine]] [[removeWeapon]] [[removeMagazinesTurret]] [[removeMagazineTurret]] [[setVehicleAmmo]]
+}}
+
+{{Note
+|user= Pyro05x
+|timestamp= 20070127034600
+|text= Though BIS did not provide a command to remove '''all''' magazines of every type, it can still be accomplished using [[forEach]] [[magazines]].
+example:
+<sqf>{ player removeMagazine _x } forEach magazines player;</sqf>
+
+'''edit:''' <sqf inline>removeAllMagazines player;</sqf> now exists since {{GVI|arma3|2.20|size= 0.75}}.
+}}

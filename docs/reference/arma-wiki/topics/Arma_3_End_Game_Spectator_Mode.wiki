@@ -1,0 +1,220 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_End_Game_Spectator_Mode
+// revision: 370196 (2024-11-06T12:04:06Z)
+// export sha1: fu1wp691ms4wzyp2vaezmrrjndzy8k2
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The Nexus Update has introduced a new spectator mode which should improve the way players can observe a match.
+While this new scenario viewing mode was introduced with [[Arma 3: MP End Game|End Game]] it can be used outside of the multiplayer mode, open to community members to use in their own missions.
+
+
+== Camera Perspectives ==
+
+* 1st Person Perspective
+* Free Perspective (Optional)
+* 3rd Person Perspective (Optional)
+
+
+== Vision Modes ==
+
+* Normal
+* Night Vision (in 1PP depends on the unit's current state)
+* Thermal Vision (in 1PP depends on the unit's current state)
+
+
+== Flashlight Mode ==
+
+Point lights are created at the camera location and at the cursor location in world.
+
+
+== Custom Map ==
+
+A custom map designed for the spectator mode, allowing for fast but precise map navigation and changing focused unit.
+
+[[File:BIS Arma3 EDEN VirtualSpectator 4.jpg|400px]]
+
+
+== Controls ==
+
+'''For a full list see the ingame control hints'''
+{| class="wikitable sortable"
+! Keybinding
+! Action
+|-
+| {{Controls|W}}/{{Controls|S}}
+| Free Perspective movement forward / backward
+|-
+| {{Controls|A}}/{{Controls|D}}
+| Free Perspective movement left / right
+|-
+| {{Controls|Q}}/{{Controls|Z}}
+| Free Perspective movement up / down
+|-
+| {{Controls|Shift|W/A/S/D/Q/Z}}
+| Free Perspective fast speed
+|-
+| {{Controls|Alt|W/A/S/D/Q/Z}}
+| Free Perspective very fast speed
+|-
+| {{Controls|Alt|Shift|W/A/S/D/Q/Z}}
+| Free Perspective ultra fast speed
+|-
+| {{Controls|RMB}}
+|
+* Look in Free Perspective
+* Rotate in 3 Person Perspective
+|-
+| {{Controls|LMB}}
+| Select / Deselect spectator focused unit / vehicle
+|-
+| {{Controls|Mouse}} || Look / Rotate Around
+|-
+| {{Controls|Backspace}} || Hide / Show spectator interface
+|-
+| {{Controls|Space}} || If spectator has a unit focused it changes through the available camera modes
+|-
+| {{Controls|L}} || Flashlight mode
+|-
+| {{Controls|M}} || Map
+|-
+| {{Controls|N}} || Night Vision
+|-
+| {{Controls|Ctrl|F1}}..{{Controls|F10}} || Save currently selected soldier
+|-
+| {{Controls|F1}}..{{Controls|F10}} || Select saved soldier
+|-
+| {{Controls|Ctrl|0}}..{{Controls|9}} || Save current Free Perspective camera position
+|-
+| {{Controls|0}}..{{Controls|9}} || Select Free Perspective camera position
+|-
+| {{Controls|NumEnter}}/{{Controls|Num0}}/{{Controls|Num.}} || Select camera view
+|-
+| {{Controls|O}} || Draw projectiles
+|-
+| {{Controls|Page Up}} || View Distance +250 m
+|-
+| {{Controls|Page Down}} || View Distance -250 m
+|}
+
+== Scenario Implementation ==
+
+=== Debug Spectator Mode ===
+
+It is possible to access the Spectator Mode while previewing in the Editor / EDEN Editor by pressing Esc and clicking Spectator, to close you can repeat previous step.
+
+[[File:BIS Arma3 EDEN VirtualSpectator 3.jpg|400px]]
+
+=== Respawn Type ===
+
+In certain respawn types, the Spectator Mode is automatically executed upon death and replaces the old mode.
+It works automatically with respawn 1 ("Bird") and 5 ("Side" if there's no AI left).
+For more information on the available respawn types and their specific behavior see {{Link|Arma 3: Respawn#Respawn Types}}.
+
+<syntaxhighlight lang="cpp">respawn = 1;</syntaxhighlight>
+
+=== Full Control ===
+
+In case you would like to control when a player starts / stops spectating, you can use the built-in functions to do exactly that.
+See [[BIS_fnc_EGSpectator]] for more information.
+
+=== Spectate When Dead ===
+
+If you are using a respawn type different then 1 ("Bird"), you may want to execute the spectator mode when a player dies, then stop the spectator when the player respawns, this could be achieved in many ways, such as the one below, which will make every player start spectating when dead, and stop spectating when he respawns, 60 seconds after:
+
+'''Description.ext'''
+<syntaxhighlight lang="cpp">
+respawn = 3;
+respawnDelay = 60;
+</syntaxhighlight>
+
+'''onPlayerKilled.sqf'''
+<sqf>["Initialize", [player, [], true]] call BIS_fnc_EGSpectator;</sqf>
+
+'''onPlayerRespawn.sqf'''
+<sqf>["Terminate"] call BIS_fnc_EGSpectator;</sqf>
+
+=== Virtual Spectator ===
+
+The new Spectator mode also brings a new special object that can be controlled by a player and will give the controlling player the Spectator Mode control, just drop it in a scenario and start spectating that easily.
+If you are accessing the Virtual Spectator from EDEN Editor, you will see custom attributes to control certain parts of the Virtual Spectator functionality within EDEN.
+
+[[File:BIS Arma3 EDEN VirtualSpectator 1.jpg|400px]]
+[[File:BIS Arma3 EDEN VirtualSpectator 2.jpg|400px]]
+
+=== Mission Configuration ===
+
+Set the following variables in the [[player]]'s namespace, preferable in [[Event Scripts|initPlayerLocal.sqf]] to configure the specatator UI.
+
+<sqf>
+player setVariable ["AllowAi", false]; //Can the player view AI units
+player setVariable ["AllowFreeCamera", false]; //Is free camera allowed
+player setVariable ["Allow3PPCamera", false]; //Is third person camera allowed
+player setVariable ["ShowFocusInfo", false]; //Will the focus info widget be shown if a player selects an entity
+player setVariable ["ShowCameraButtons", false]; //Will camera buttons be shown. These allow to change camera mode, same as pressing "space". Keep in mind that these buttons overlap with the respawn UI
+player setVariable ["ShowControlsHelper", true]; //Should control hints be shown. Be aware that pressing "F1" will not bring them up any longer if disabled
+player setVariable ["ShowHeader", true]; //Should mission time be shown at the top
+player setVariable ["ShowLists", true]; //Should entity and location lists be shown
+player setVariable ["WhitelistedSides", ["WEST"]]; //Which sides can be watched
+</sqf>
+
+==== Overwriting Random Insignias ====
+[[File: arma3 spectator insignia.png|thumb|350px]]
+By default, spectator assigns a random insignia for each group. This leads to issues where western forces have eastern insignias and so on.
+With the following script one can force a certain insignia per side. Of course, this script can be adjusted to your needs. The script needs to be executed for every [[player]] preferably in [[Event Scripts|initPlayerLocal.sqf]].
+
+<sqf>
+#define INSIGNIA_DEFAULT				missionNamespace getVariable ["Spectator_Default_Insignia", "a3\3den\data\displays\display3den\panelright\side_empty_ca.paa"]
+#define INSIGNIA_DEFAULT_WEST			missionNamespace getVariable ["Spectator_Default_Insignia_West", "a3\3den\data\displays\display3den\panelright\side_west_ca.paa"]
+#define INSIGNIA_DEFAULT_INDEPENDENT	missionNamespace getVariable ["Spectator_Default_Insignia_Independent", "a3\3den\data\displays\display3den\panelright\side_guer_ca.paa"]
+#define INSIGNIA_DEFAULT_EAST			missionNamespace getVariable ["Spectator_Default_Insignia_East", "a3\3den\data\displays\display3den\panelright\side_east_ca.paa"]
+#define INSIGNIA_DEFAULT_CIVILIAN		missionNamespace getVariable ["Spectator_Default_Insignia_Civilian", "a3\3den\data\displays\display3den\panelright\side_civ_ca.paa"]
+
+//Set default insignia shown in spectator mode for every newly created group
+addMissionEventHandler ["GroupCreated",
+{
+	params ["_group"];
+
+	private _insignia = switch (side _group) do
+	{
+		case west:			{ INSIGNIA_DEFAULT_WEST; };
+		case independent:	{ INSIGNIA_DEFAULT_INDEPENDENT; };
+		case east:			{ INSIGNIA_DEFAULT_EAST; };
+		case civilian:		{ INSIGNIA_DEFAULT_CIVILIAN; };
+		default				{ INSIGNIA_DEFAULT; };
+	};
+	_group setVariable ["BIS_dynamicGroups_lastinsignia", _insignia];
+}];
+
+//Set default insignia shown in spectator mode for every existing group at mission start
+allGroups apply
+{
+	private _insignia = switch (side _x) do
+	{
+		case west:			{ INSIGNIA_DEFAULT_WEST; };
+		case independent:	{ INSIGNIA_DEFAULT_INDEPENDENT; };
+		case east:			{ INSIGNIA_DEFAULT_EAST; };
+		case civilian:		{ INSIGNIA_DEFAULT_CIVILIAN; };
+		default				{ INSIGNIA_DEFAULT; };
+	};
+	_x setVariable ["BIS_dynamicGroups_lastinsignia", _insignia];
+};
+
+true
+</sqf>
+
+
+== Game Phase Setup ==
+
+The spectator UI can display different game phases.
+These can be set by executing 
+<sqf>["SetGamePhase", ["PHASE III"]] call (uiNamespace getVariable ["RscDisplayEGSpectator_script", {}]);</sqf> 
+where "PHASE III" can be any string describing the phase.
+
+The current game phase can be retrieved with
+<sqf>
+["GetGamePhase"] call (uiNamespace getVariable ["RscDisplayEGSpectator_script", {}]); // "PHASE III"
+</sqf>
+
+
+{{GameCategory|arma3|Editing}}

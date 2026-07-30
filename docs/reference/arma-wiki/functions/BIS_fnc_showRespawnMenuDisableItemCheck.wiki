@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_showRespawnMenuDisableItemCheck
+// revision: 309800 (2022-05-05T12:09:50Z)
+// export sha1: kpbd1dg68abiqbc7klzsveeas3uxh8i
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= ''N/A''
+
+|s1= <!-- [] call [[BIS_fnc_showRespawnMenuDisableItemCheck]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_showRespawnMenuDisableItemCheck;</sqf> -->
+
+|seealso=
+}}

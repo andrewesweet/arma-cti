@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_richCurve_getSimulatedObjects
+// revision: 278985 (2021-06-13T21:47:23Z)
+// export sha1: mk1it4k1p8zs78bmmyn3pibxj4cwm7f
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: RichCurve | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= RichCurve
+|descr= <pre>/*
+	Author: Nelson Duarte <@Nelson_G_Duarte>
+
+	Description:
+	Returns a curve's simulated objects
+
+	Parameter(s):
+	_this select 0: Object - The curve
+
+	Returns:
+	Array - List of objects simulated by given curve
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_richCurve_getSimulatedObjects]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

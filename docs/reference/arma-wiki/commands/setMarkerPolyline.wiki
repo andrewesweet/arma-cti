@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/setMarkerPolyline
+// revision: 370043 (2024-10-28T20:28:37Z)
+// export sha1: pn9vuc6lhaeojajt6a3nxdyfav359w5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|eff= global
+
+|gr1= Markers
+
+|descr= Sets a polyline marker's path.
+{{Feature|informative|
+'''Multiplayer optimisation:''' Global marker commands always broadcast the ''entire'' marker state over the network.
+As such, the number of network messages exchanged when creating or editing a marker can be reduced by performing all but the last operation using local marker commands, then using a global marker command for the last change (and subsequent global broadcast of all changes applied to the marker).
+}}
+
+|s1= marker [[setMarkerPolyline]] path
+
+|p1= marker: [[String]]
+
+|p2= path: [[Array]] of pairs [[Number]], [[Number]] - {{hl|[x1, y1, x2, y2, ... xn, yn]}}
+{{Feature|important|
+Be aware that this command expects an array with a minimum array size of 4 and that the array count always needs to be dividable by 2 and return a whole number. Code:
+<sqf>count path >= 4 && count path mod 2 == 0; // true → valid path</sqf>
+}}
+
+|r1= [[Nothing]]
+
+|x1= Changes {{hl|"marker_1"}} into a polyline and draws a sine curve on [[player]]'s position:
+<sqf>
+// createMarker ["marker_1", [0,0,0]];
+"marker_1" setMarkerShape "polyline";
+private _return = [] ;
+
+for "_i" from 0 to 100 step 0.1 do
+{
+	_return pushBack (_i + getPosASL player # 0);
+	_return pushBack ((sin (_i * 10)) * 10 + getPosASL player # 1);
+} ;
+
+"marker_1" setMarkerPolyline _return;
+</sqf>
+
+|seealso= [[markerPolyline]] [[setMarkerPolylineLocal]]
+}}

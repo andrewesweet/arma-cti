@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/lbData
+// revision: 364197 (2024-05-05T10:46:54Z)
+// export sha1: h6wh6rn5wpgc9lrwvj0f043cpns3k4w
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control - ListBox
+
+|descr= Returns the data set in given index of the [[CT_LISTBOX]] or [[CT_COMBO]].
+
+|s1= [[lbData]] [idc, index]
+
+|p1= idc: [[Number]] - control's IDC
+
+|p2= index: [[Number]]
+
+|r1= [[String]]
+
+|s2= control [[lbData]]  index
+
+|p21= control: [[Control]]
+
+|p22= index: [[Number]]
+
+|r2= [[String]]
+
+|x1= <sqf>_data = lbData [101, 0];</sqf>
+
+|x2= <sqf>_data = _control lbData 0;</sqf>
+
+|seealso= [[lbSetData]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140910162800
+|text= More information on the [[CT_LISTBOX]] command family can be found [[CT_LISTBOX#Scripting_Example|here]].
+}}

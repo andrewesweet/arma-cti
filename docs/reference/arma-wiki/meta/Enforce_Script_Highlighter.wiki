@@ -1,0 +1,263 @@
+// source: https://community.bistudio.com/wiki/Extension:Enforce_Script_Highlighter
+// revision: 376869 (2025-12-09T17:37:30Z)
+// export sha1: qqrqq4u3mle666ihs3fmdfx5mzh6ykg
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable float-right"
+! colspan="2" style="padding: 1.5em" | Enforce Script Highlighter
+|-
+! Description
+| Highlights Enforce Script code.
+|-
+! Author
+| {{User|Lou Montana}}
+|-
+! Project Start
+| 2022-07-30: Project start
+|-
+! Release Date
+|
+* 2022-07-30: "v0" (0.00a), first upload, Syntaxhighlight's C# syntax wrapper
+* 2023-06-15: v0.95, first custom lexer with {{Link|Arma Reforger:Script Editor|Script Editor}}'s theme
+* 2023-11-02: v0.96, allow some wiki formatting in comments
+|-
+! Version
+| 0.96
+|}
+This extension highlights {{GameCategory|armaR|Modding|Scripting|Guidelines|text= Enforce Script Syntax}} using the appropriate game's {{Link|Arma Reforger:Script Editor|Script Editor}} theme.
+
+{{Feature|informative|
+See also:
+* {{Link|DayZ:Enforce Script Syntax}}
+* {{Link|Arma Reforger:Enforce Script Syntax}}
+}}
+
+
+{{TOC}}
+{{Clear}}
+<enforce class="float-right" style="margin: 0 0 0.5em 1.5em">
+#ifdef WORKBENCH
+//! A demonstration full of class - see also {{Link|SQF Syntax}}
+class SCR_EnforceScriptDemonstration
+{
+	static void SendMessage(string message = "Hello there")
+	{
+		Print(message, LogLevel.NORMAL);
+	}
+}
+#endif
+</enforce>
+<h2 style="margin-top: 0">Features</h2>
+
+* {{GameCategory|armaR|Modding|Scripting|Guidelines|text= Enforce Script Syntax}} support
+** Links to game classes using {{hl|enfusion://}} link
+** Auto-detects class/enum declarations in script snippet e.g <enforce inline>class ABC {} ABC.MyMethod();</enforce>
+** Slight styling for {{hl|m_}}/{{hl|s_}} variables, {{hl|ALL_CAPS}} constants
+* "Copy code to clipboard" button on hover
+* Partial wiki formatting in comments: {{hl|<nowiki>''italic''</nowiki>}}, {{hl|<nowiki>'''bold'''</nowiki>}}, {{hl|<nowiki><s>striked</s></nowiki>}}, {{hl|<nowiki><u>underlined</u></nowiki>}}, {{hl|<nowiki>[[links|even styled ones]]</nowiki>}}, {{hl|<nowiki>{{templates}}</nowiki>}}
+* Enforce Script tag button in the wiki edit toolbar (next to '''B''' and '''''I''''')
+* Options:
+** {{hl|inline}} for inline code
+** {{hl|notrim}} to remove the auto trim (lines themselves will always be right-trimmed)
+** {{hl|1= game="armaR"}} (default per wiki namespace, case-insensitive) used to force which game links should be used - can be one of {{hl|dayz}}, {{hl|armaR}}, {{hl|arma4}}
+** {{hl|1= classes="SCR_ClassA SCR_ClassB"}} (case-sensitive) additional classes to be declared (if outside the example)
+** {{hl|1= methods="Rpc_MyMethod AnotherMethod_S"}} (case-sensitive) additional methods to be declared (if unclear)
+** {{hl|noGuess}} to disable guessing unknown token as classes as false positives can happen - use {{hl|classes}} in that case<br><!--
+-->Class guess regex: {{hl|^([A-Z][A-Z0-9]{1,7}_)?E?[A-Z][a-z][A-Za-z0-9_]*$}} as per {{Link|Arma Reforger:Scripting: Conventions#Tag|script tag guidelines}}
+** {{hl|noLinks}} to disable class-linking
+** support for {{hl|class}} and {{hl|style}} HTML attributes<!-- is it a good idea though? -->
+
+
+== Installation ==
+
+* Unzip the directory to {{hl|wiki/extensions/EnforceScriptHighlighter}}
+* Add <syntaxhighlight lang="php" inline>wfLoadExtension( 'EnforceScriptHighlighter' );</syntaxhighlight> to {{hl|LocalSettings.php}}
+* Settings can be found in {{hl|extension.json}}:
+** Game-Namespace relationship
+** Game class-link pairs
+** keywords, native types, preprocessor commands, etc.
+
+
+== Usage ==
+
+Using <syntaxhighlight lang="html" inline><enforce></syntaxhighlight> tags will auto-generate syntax highlighting.
+
+{| class="wikitable valign-top" style="min-width: 50em"
+|+ Examples
+! Code
+! Result
+|-
+| <syntaxhighlight lang="html"><enforce/></syntaxhighlight>
+| <enforce/>
+|-
+| <syntaxhighlight lang="html"><enforce></enforce></syntaxhighlight>
+| <enforce></enforce>
+|-
+| <syntaxhighlight lang="html"><enforce> </enforce></syntaxhighlight>
+| <enforce> </enforce>
+|-
+| <syntaxhighlight lang="html"><enforce>int i = 3;</enforce></syntaxhighlight>
+| <enforce>int i = 3;</enforce>
+|-
+| <syntaxhighlight lang="html">
+<enforce>
+#ifdef WORKBENCH
+class ABC
+{
+}
+
+class DEF : ABC
+{
+	// unreachable
+	protected static void Print(string text)
+	{
+		Print(text + 42, LogLevel.NORMAL);
+	}
+}
+#endif
+</enforce>
+</syntaxhighlight>
+| <enforce>
+#ifdef WORKBENCH
+class ABC
+{
+}
+
+class DEF : ABC
+{
+	// unreachable
+	protected static void Print(string text)
+	{
+		Print(text + 42, LogLevel.NORMAL);
+	}
+}
+#endif
+</enforce>
+|-
+| <syntaxhighlight lang="html">
+This is <enforce inline>int i = 0; i++;</enforce> absolutely inline.<br>
+And here comes another <enforce inline>float value = 0.1;</enforce> inline text.<br>
+And another one <enforce inline>array<string> = {};</enforce>
+</syntaxhighlight>
+|
+This is <enforce inline>int i = 0; i++;</enforce> absolutely inline.<br>
+And here comes another <enforce inline>float value = 0.1;</enforce> inline text.<br>
+And another one <enforce inline>array<string> = {};</enforce>
+|-
+| <syntaxhighlight lang="html">
+<enforce notrim>
+
+	Print("Hello there");
+
+
+</enforce>
+</syntaxhighlight>
+| <enforce notrim>
+
+	Print("Hello there");
+
+
+</enforce>
+|-
+| Where game is "ofp", "dayz", "armaR" and "arma4"
+<syntaxhighlight lang="html">
+<enforce game="xxx" noGuess>
+string s = "ok";
+int a = 42;
+PlayerBase pb;
+RplComponent comp;
+</enforce>
+</syntaxhighlight>
+| <enforce game="ofp" noGuess>string s = "ok"; int a = 42; PlayerBase pb; RplComponent comp;</enforce>
+<enforce game="dayz" noGuess>string s = "ok"; int a = 42; PlayerBase pb; RplComponent comp;</enforce>
+<enforce game="armaR" noGuess>string s = "ok"; int a = 42; PlayerBase pb; RplComponent comp;</enforce>
+<enforce game="arma4" noGuess>string s = "ok"; int a = 42; PlayerBase pb; RplComponent comp;</enforce>
+|-
+| <syntaxhighlight lang="html">
+<enforce classes="SCR_abc SCR_jkl v2">
+SCR_abc v1;
+SCR_def v2;
+SCR_ghi v3;
+SCR_jkl v4;
+</enforce>
+</syntaxhighlight>
+| <enforce classes="SCR_abc SCR_jkl v2">
+SCR_abc v1;
+SCR_def v2;
+SCR_ghi v3;
+SCR_jkl v4;
+</enforce>
+|-
+| <syntaxhighlight lang="html">
+<enforce>Rpc(Rpc_MyMethod, parameter1, parameter2);</enforce>
+<enforce noGuess>Rpc(Rpc_MyMethod, parameter1, parameter2);</enforce>
+<enforce methods="Rpc_MyMethod">Rpc(Rpc_MyMethod, parameter1, parameter2);</enforce>
+</syntaxhighlight>
+| <enforce>Rpc(Rpc_MyMethod, parameter1, parameter2);</enforce>
+<enforce noGuess>Rpc(Rpc_MyMethod, parameter1, parameter2);</enforce>
+<enforce methods="Rpc_MyMethod">Rpc(Rpc_MyMethod, parameter1, parameter2);</enforce>
+|-
+| <syntaxhighlight lang="html">
+<enforce>MyClass.MyMethod()</enforce>
+<enforce noGuess>MyClass.MyMethod()</enforce>
+</syntaxhighlight>
+| <enforce>MyClass.MyMethod()</enforce>
+<enforce noGuess>MyClass.MyMethod()</enforce>
+|-
+| <syntaxhighlight lang="html">
+<enforce>RplComponent</enforce>
+<enforce noLinks>RplComponent</enforce>
+</syntaxhighlight>
+| <enforce>RplComponent</enforce>
+<enforce noLinks>RplComponent</enforce>
+|-
+| <syntaxhighlight lang="html">
+<enforce class="float-right" style="border: 0.5em dashed #CDF">Print("OK");</enforce>
+</syntaxhighlight>
+| <enforce class="float-right" style="border: 0.5em dashed #CDF">Print("OK");</enforce>
+|-
+| <syntaxhighlight lang="html">
+<enforce>
+/*
+	I like ''{{dayz}}'', <u>{{armaR}}</u> and '''{{GameCategory|arma4|link= y}}'''!
+	(not <s>OFP</s>DR)
+	[[Enfusion]] [https://enfusionengine.com EnfusionEngine.com]
+	https://google.com [https://google.com Google.com]
+	{{Link|https://google.com|template link}}
+*/
+</enforce>
+</syntaxhighlight>
+| <enforce>
+/*
+	I like ''{{dayz}}'', <u>{{armaR}}</u> and '''{{GameCategory|arma4|link= y}}'''!
+	(not <s>OFP</s>DR)
+	[[Enfusion]] [https://enfusionengine.com EnfusionEngine.com]
+	https://google.com [https://google.com Google.com]
+	{{Link|https://google.com|template link}}
+*/
+</enforce>
+|}
+
+
+== Known Issues ==
+
+{| class="wikitable sortable"
+! class="unsortable" | Version
+! class="unsortable" | Issue
+! Report Date
+! Fix Date
+|-
+! 0.00a
+| colspan="3" {{n/a}}
+|-
+! 0.95
+| colspan="3" {{n/a}}
+|-
+! 0.96
+| colspan="3" {{n/a}}
+|}
+
+{{Feature|informative|Report issues on {{Link|https://discord.gg/arma|Discord}}, in the {{hl|#community_wiki}} channel!}}
+
+
+[[Category: MediaWiki Extension]]

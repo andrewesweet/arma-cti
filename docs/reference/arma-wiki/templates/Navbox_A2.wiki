@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/A2
+// revision: 296446 (2021-12-11T17:00:27Z)
+// export sha1: ihqklhtsy6tgsg3ikt41wydpdiit5ee
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Navbox
+| title = Factions in [[:Category:Arma 2|{{arma2}}]]
+
+| content1 = [[USMC]] {{!}} [[Arma 2: US Armed Forces|US Army]] {{!}} [[Russian Armed Forces|Russian Army]] {{!}} [[Chernarussian Defence Forces|CDF]] {{!}} [[Chernarussian Movement of the Red Star|ChDKZ]] {{!}} [[National Party|NAPA]] {{!}} [[Takistan Army]] {{!}} [[United Nations|UNO/NATO]] {{!}} [[British Armed Forces|BAF]] {{!}} [[ION Incorporated|ION]] {{!}} [[Army of the Czech Republic|ACR]] {{!}} [[Civilians]]
+}}</includeonly><noinclude>
+Adds an [[:Category:Arma 2|{{arma2}}]] faction navbox.
+
+== Usage ==
+{{<nowiki/>Faction footer}}
+
+{| style="width: 100%"
+|+ Examples
+|- style="background-color: #EEE"
+! Code
+! Result
+|-
+| <nowiki>{{Navbox/A2}}</nowiki>
+| {{Navbox/A2}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

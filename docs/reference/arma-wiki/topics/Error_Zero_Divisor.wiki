@@ -1,0 +1,18 @@
+// source: https://community.bistudio.com/wiki/Error_Zero_Divisor
+// revision: 184829 (2021-01-06T16:26:53Z)
+// export sha1: nrwcx8egi23d9v7h6ggw09bbb9vy6da
+// categories: Category:Common Scripting Errors
+// Vendored snapshot. Do not edit — re-export instead.
+
+=== Description ===
+This error occurs when you attempt to divide a variable by 0.
+It also occurs when you attempt to access an element of an array which does not exist.
+
+=== Compatibility ===
+Version '''1.96'''
+
+=== Example ===
+ _myVar = 15 / 0
+ _myVar = [1,2,3] [[select]] 15
+
+[[Category:Common Scripting Errors]]

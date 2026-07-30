@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Argo
+// revision: 351595 (2023-12-07T20:03:00Z)
+// export sha1: 66usvinywyb1mbbrjq0ej55wawyr7tg
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with {{Name|argo}} may be recognised by the appearance of this icon: {{GVI|argo|1.00}}
+
+[[Category:Introduced with|{{uc:{{Name|argo}}}}]]

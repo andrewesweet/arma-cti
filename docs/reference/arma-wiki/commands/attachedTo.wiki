@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/attachedTo
+// revision: 369107 (2024-09-03T10:27:31Z)
+// export sha1: atex4tt5mwwkr9wzlal28mu48ykvrnp
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.14
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns object the given object is attached to or [[objNull]] if the given object is not attached to anything.
+
+|s1= [[attachedTo]] obj
+
+|p1= obj: [[Object]] - given object
+
+|r1= [[Object]] - object the given object is attached to
+
+|x1= <sqf>
+if (isNull attachedTo _obj1) then
+{
+	hint "_obj1 is not attached to anything.";
+};
+</sqf>
+
+|seealso= [[attachObject]] [[attachTo]] [[attachedObjects]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[lightAttachObject]] [[triggerAttachVehicle]] [[attachedObject]] [[detach]]
+}}

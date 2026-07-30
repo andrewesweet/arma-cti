@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/roadsConnectedTo
+// revision: 369200 (2024-09-03T10:34:49Z)
+// export sha1: 88fk7snnfobfcmyfafrxf4pd3wq3ekg
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Roads and Airports | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Roads and Airports
+
+|descr= Find the road segments connected to the given road segment.
+{{Feature|important|
+* Pedestrian roads such as {{hl|"TRAIL"}}s are missing connection information by design, therefore the primary syntax will return empty array for those - use the alternative syntax to return pedestrian roads.
+* Road connection is not bidirectional; e.g road segment Y can be connected to road segment Z, but road segment Z can lack a connection with road segment Y.
+}}
+
+|s1= [[roadsConnectedTo]] roadSegment
+
+|p1= roadSegment: [[Object]] - road segment
+
+|r1= [[Array]] of [[Object]]s - connected road segments
+
+|s2= [[roadsConnectedTo]] [roadSegment, extended]
+
+|s2since= arma3 2.00
+
+|p21= roadSegment: [[Object]] - road segment
+
+|p22= extended: [[Boolean]] - (Optional, default [[false]]) when [[true]], performs a more thorough search on top of base behaviour, slower but returns pedestrian and other missing road segments
+
+|r2= [[Array]] of [[Object]]s - connected road segments
+
+|x1= <sqf>
+_road = (player nearRoads 50) select 0;
+_connectedRoads = roadsConnectedTo _road;
+</sqf>
+
+|x2= <sqf>
+_road = (player nearRoads 50) select 0;
+_connectedRoadsIncPedestrian = roadsConnectedTo [_road, true];
+</sqf>
+
+|seealso= [[nearRoads]] [[isOnRoad]] [[roadAt]] [[surfaceIsWater]] [[getRoadInfo]] [[nearestTerrainObjects]]
+}}

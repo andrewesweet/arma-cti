@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_curatorWaypointPlaced
+// revision: 348724 (2023-11-08T14:31:30Z)
+// export sha1: rml8bywx2ajibcv8wrrlcpt1jyxpbjm
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Code executed when curator waypoint is placed.
+
+|s1= [object, waypointGroup, waypointID] call [[BIS_fnc_curatorWaypointPlaced]]
+
+|p1= object: [[Object]] - curator module '''Isn't used in the function'''
+
+|p2= waypointGroup: [[Array]] - group owning the edited waypoint
+
+|p3= waypointID: [[Number]] - ID of the edited waypoint
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[curatorModule, group player, 5] call BIS_fnc_curatorWaypointPlaced;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

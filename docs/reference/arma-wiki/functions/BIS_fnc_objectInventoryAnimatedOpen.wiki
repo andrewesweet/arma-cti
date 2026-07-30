@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_objectInventoryAnimatedOpen
+// revision: 348567 (2023-11-08T13:42:07Z)
+// export sha1: 63aqqq1edyqgr5y8sym19g8ze96orxv
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Scripts | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Scripts
+
+|arg= global
+
+|eff= global
+
+|descr= Animates an object being opened, for example a drawer. It also sets a counter which prevents animation to be played multiple time if more than one player accesses that drawer.
+
+|s1= [object, animationArray] call [[BIS_fnc_objectInventoryAnimatedOpen]]
+
+|p1= object: [[Object]] - object
+
+|p2= animationArray: [[Array]] - an Array in form of:<br>
+0: [[String]] - Animation Name<br>
+1: [[Number]] - Animation phase
+
+|r1= [[Nothing]]
+
+|seealso= [[BIS_fnc_objectInventoryAnimatedClose]]
+}}

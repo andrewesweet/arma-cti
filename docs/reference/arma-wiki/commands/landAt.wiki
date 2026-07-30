@@ -1,0 +1,105 @@
+// source: https://community.bistudio.com/wiki/landAt
+// revision: 378376 (2026-04-03T17:00:56Z)
+// export sha1: 7qqx82kvlwz84lhxi227xuydtvlitq7
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Roads and Airports | Category:Command Group: Unit Control | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Control
+
+|gr2= Roads and Airports
+
+|descr= Order an AI airplane to land at a given airport. '''ID''' is the number to identify which map airport you want the airplane to land at. See [[Arma: Airport IDs]] for more information. See also [[land]].
+{{Feature|arma3|
+* {{GVI|arma3|1.68|size= 0.75}} it is possible to also make the airplane land at a [[Arma 3: Dynamic Airport Configuration|dynamic airport]] [[object]] (e.g. aircraft carrier, makeshift runway...) – see {{Link|#Example 2}}
+* {{GVI|arma3|2.18|size= 0.75}} it is also possible to make a helicopter land at a specific helipad.
+}}
+{{Feature|informative| Since {{GVI|arma3|2.20|size= 0.75}} [[landAt]] command has been extended. Helicopter can now be landed not only on a helipad but also at arbitrary position, provided that it is empty and can accomodate the helicopter. In "Land" landing mode the helicopter lands permanently, while in "GetIn" and "GetOut" landing mode the helicopter performs a short touch down before going to the next waypoint. In order to make helicopter wait, the 'waitTime' param can be used. Landing mode "None" cancels both, the landing in progress and waiting in progress. <br> Waiting time is available with [[landAt]] getter variant. When helicopter is landing, the time shown is the set time for wating, however when helicopter is landed, this time start counting down to 0, after which helicopter will take off if it has a waypoint to go to. The AI pilot state can be monitored with [[getUnitState]] command. The helicopter has to be [[local]] to the machine executing the command. VTOL waiting time is not supported}}
+
+|s1= plane [[landAt]] ID
+
+|p1= plane: [[Object]] - a plane
+
+|p2= ID: [[Number]] - [[Arma: Airport IDs|Airport ID]]
+
+|r1= [[Nothing]]
+
+|s2= plane [[landAt]] airportObject
+
+|s2since= arma3 1.68
+
+|p21= plane: [[Object]]
+
+|p22= airportObject: [[Object]]
+
+|r2= [[Nothing]]
+
+|s3= heli [[landAt]] [position, mode, waitTime, putOnSurface]
+
+|s3since= arma3 2.18
+
+|p41= heli: [[Object]] - Helicopter/VTOL aircraft
+
+|p42= position: [[Object]] or {{GVI|arma3|2.20|size= 0.75}} [[PositionWorld]] - a helipad object of helipad type (can be an invisible helipad) or [[PositionWorld]] to land at.
+
+|p43= mode: [[String]] - one of "None", "Get In", "Get Out", "Land" and since {{GVI|arma3|2.20|size= 0.75}} also "GetIn", "GetOut".
+|p44= waitTime: [[Number]] - (Optional) (Helicopter type only) time to wait after touch down in "GetIn"/"GetOut" mode before taking off to the next waypoint. Default: -1.
+|p44since= arma3 2.20
+|p45= putOnSurface: [[Boolean]] - (Optional) when true, the given land position will be adjusted to the nearest surface underneath. Default: [[false]].
+|p45since= arma3 2.20
+
+
+|r3= [[Boolean]] - Returns [[true]] if landing command was processed successfully, [[false]] if failed.
+
+|s4= [[landAt]] heli
+
+|s4since= arma3 2.20
+
+|p61= heli: [[Object]] - Helicopter/VTOL aircraft
+
+|r4= [[Array]] with [landMode, landResult, landPosition, waitTime, autopilotState]
+* landMode: [[String]] - one of the following: "None", "Land", "GetIn", "GetOut" or "".
+* landResult: [[String]] - one of the following: "Found", "NotFound", "NotReady" or "".
+* landPosition: [[PositionWorld]] - land position or [0,0,0].
+* waitTime: [[Number]] - (Helicopter type only) before heli is landed - wait time set for "GetIn"/"GetOut" mode, after heli is landed - remaining time before take off to the next waypoint or -1.
+* autopilotState: [[String]] - one of the following: "FAR", "BRAKE", "NEAR", "ALIGN", "REACHED", "LOITER", "FOLLOW" or "".
+
+|x1= <sqf>_plane1 landAt 1;</sqf>
+
+|x2= <sqf>
+_dynamicAirport1 = "DynamicAirport_01_F" createVehicle position player;
+_plane1 landAt _dynamicAirport1;
+</sqf>
+
+|x3= <sqf>
+_hpad = "Land_HelipadEmpty_F" createVehicle [0,0,0];
+_hpad setPosASL _pos;
+heli landAt [_hpad, "LAND"];
+</sqf>
+
+|x4= <sqf>
+heli landAt [getPosWorld player vectorAdd [10,10,0], "GetIn", 30];
+</sqf>
+
+|seealso= [[Arma: Airport IDs]] [[land]] [[setAirportSide]] [[assignToAirport]] [[allAirports]]
+}}

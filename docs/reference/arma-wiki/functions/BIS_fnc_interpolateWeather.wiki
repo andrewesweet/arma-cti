@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_interpolateWeather
+// revision: 309835 (2022-05-05T12:09:52Z)
+// export sha1: p6ubu8yzlzmnrlmx2zpjjxpligz7tiq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Environment | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Environment
+
+|descr= <pre>/*
+
+	Description:
+	Interpolate weather (overcast and fog) according to 2 boundry dates and their weather conditions.
+
+	Parameter(s):
+	_this select 0: array	- _date1 	[_year1,_month1,_day1,_hour1,_min1]
+	_this select 1: array	- _weather1	[_overcast1,_fog1]
+	_this select 2: array	- _date2 	[_year2,_month2,_day2,_hour2,_min2]
+	_this select 3: array	- _weather2	[_overcast2,_fog2]
+	_this select 4: array	- _subjectDate 	[_year,_month,_day,_hour,_min] (default: current date)
+
+	Returns:
+	[_interpolatedOvercast,_interpolatedFog]
+
+	Example:
+	[_overcast,_fog] = [[2035,1,5,24,00],[0.1,0.5],[2035,1,10,24,00],[0.3,0.2],[2035,1,7,24,00]] call BIS_fnc_interpolateWeather;
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_interpolateWeather]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_interpolateWeather;</sqf> -->
+
+|seealso=
+}}

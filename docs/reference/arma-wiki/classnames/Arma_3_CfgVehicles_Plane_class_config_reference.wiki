@@ -1,0 +1,547 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgVehicles_Plane_class_config_reference
+// revision: 378498 (2026-04-28T09:09:07Z)
+// export sha1: l3217zexnq10vdm5sb8ho6ousjobpcm
+// categories: Category:Arma 3: Vehicle Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+All config values related to Plane class configuration can be found here.
+
+== [[CfgVehicles_Config_Reference|CfgVehicles]] ==
+
+=== A ===
+
+==== aileronCoef ====
+Graph array, defines the influence of the ailerons control surface depending on the current speed. Each position in the array is a percentage of maxSpeed. First value is 0% of maxSpeed, last value is 150% of maxSpeed.
+
+[[TokenNameValueTypes#Arrays|Array]] - Graph array of float values, related to maxSpeed
+<syntaxhighlight lang="cpp">
+aileronCoef[] = { 0, 0.5, 1, 1.2, 1.4, 1.5, 1.6 };		// V-44 Blackfish
+aileronCoef[] = { 0.6, 1, 0.95, 0.9, 0.85, 0.8, 0.75 };	// A-164 Wipeout
+aileronCoef[] = {
+	0,		// At 0 % of maxSpeed, this is the influence of the aileron
+	0.4,	// 12.5 %
+	0.8,	// 25 %
+	0.8,	// 37.5 %
+	0.9,	// 50 %
+	1.0,	// 62.5 %
+	1.0,	// 75 %
+	1.1,	// 87.5 %
+	1.1,	// 100 %
+	1.2,	// 112.5 %
+	1.2,	// 125 %
+	1.2,	// 137.5 %
+	1.3		// 150 %
+};
+</syntaxhighlight>
+
+==== aileronControlsSensitivityCoef ====
+Sensitivity of the player roll (aileron) input - how fast the control surface reaches it is max. extent. (does not affect AI).
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+aileronControlsSensitivityCoef = 1;		// V-44 Blackfish
+aileronControlsSensitivityCoef = 3.6;	// Caesar BTT
+aileronControlsSensitivityCoef = 3;		// A-164 Wipeout
+</syntaxhighlight>
+
+==== aileronSensitivity ====
+Aileron authority. Lower values make the airplane bank slower, allowing to simulate heavier aircraft.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+aileronSensitivity = 0;			// No bank
+aileronSensitivity = 0.5;		// V-44 Blackfish
+aileronSensitivity = 0.75;		// A-164 Wipeout
+aileronSensitivity = 0.85;		// Caesar BTT
+aileronSensitivity = 1;			// Fast bank
+</syntaxhighlight>
+
+==== airBrake ====
+Defines if the aircraft has airbrakes. Also linked to "SpeedBrake" animation source.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+airBrake = 0;	// No airbrakes
+airBrake = 1;	// Most aircrafts
+</syntaxhighlight>
+
+==== airBrakeFrictionCoef ====
+Defines the "braking power" / friction of airbrakes.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+airBrakeFrictionCoef = 2.4;
+</syntaxhighlight>
+
+==== airFrictionCoefs ====
+Air friction depending on velocity 2, 1 and 0 powers in {X, Y, Z} axes in the model space.
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+airFrictionCoefs2[] = { 0.00100, 0.00050, 0.00006 };
+airFrictionCoefs1[] = { 0.100, 0.050, 0.006 };
+airFrictionCoefs0[] = { 0.0, 0.0, 0.0 };
+</syntaxhighlight>
+
+==== altFullForce ====
+Altitude value in meters at which the aircraft starts to progressively lose thrust influence until altNoForce is reached. Below this altitude, thrust influence is always at its maximum.
+Simulates effect of thinning air on engine performace.
+
+[[TokenNameValueTypes|Integrer]]
+<syntaxhighlight lang="cpp">
+altFullForce = 6000;	// Caesar BTT
+altFullForce = 2000;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== altNoForce ====
+Altitude value in meters at which the aircraft loses its thrust influence completely. Below this altitude, thrust influence is progressively lost as soon as altFullForce is reached.
+Simulates effect of thinning air on engine performace.
+
+[[TokenNameValueTypes|Integrer]]
+<syntaxhighlight lang="cpp">
+altNoForce = 7500;	// Caesar BTT
+altNoForce = 7000;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== angleOfIndicence ====
+{{sic|angleOfIndicence|angleOfIncidence}}
+
+{{Link|https://en.wikipedia.org/wiki/Angle of incidence (aerodynamics)}}
+
+Relates to envelope, affects lift properties and ev. view from the cabin.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+angleOfIndicence = -2 * 3.1415 / 180; // Buzzard
+</syntaxhighlight>
+
+=== C ===
+
+==== cabinOpening ====
+Once the engine shut down, opens the cabin using "cabin" animation source.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+cabinOpening = 1;	// Caesar BTT or A-164 Wipeout
+cabinOpening = 0;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== cargoCanEject ====
+Allows the cargo passengers to jump out even if the aircraft is moving.
+Not a plane-specific value, but it is important to allow parachute jumps.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+cargoCanEject = 1;	// Cargo can eject
+cargoCanEject = 0;	// Cargo cannot eject
+</syntaxhighlight>
+
+=== D ===
+
+==== draconicForceXCoef ====
+Force that affects the horizontal (X in model space) component of its velocity vector. Low values together with strong rudder authority will lead to skidding.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+draconicForceXCoef = 7.4;	// A-164 Wipeout
+draconicForceXCoef = 7.5;	// Caesar BTT
+draconicForceXCoef = 15;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== draconicForceYCoef ====
+Force that affects the vertical (Y in model space) component of its velocity vector. Bigger values allow for faster and sharper elevator turns.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+draconicForceYCoef = 3;		// A-164 Wipeout
+draconicForceYCoef = 1;		// Caesar BTT
+draconicForceYCoef = 0.5;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== draconicForceZCoef ====
+Force that affects the forward (Z in model space) component of its velocity vector.
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+draconicForceZCoef = 0.1;	// A-164 Wipeout
+draconicForceZCoef = 2.5;	// Caesar BTT
+draconicForceZCoef = 0.2;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== draconicTorqueXCoef ====
+Force that keeps the airplane aligned according to a horizontal (X in model space) component of its velocity vector (model space). Makes the airplane turn in banked flight, affects how fast lower wing in a knife flight drops.
+Bigger values also need to be balanced by a stronger rudder authority and draconicForceXCoef, otherwise the player won't be able to control the airplane in yaw. Good balancing with rudderCoef and draconicForceXCoef will allow good yaw authority in leveled flight, but disallow a sustained knife flight or too good turning just by using the rudder.
+
+Can be also defined as an array.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+draconicTorqueXCoef = 1.2;	// A-164 Wipeout
+draconicTorqueXCoef[] =		// Caesar BTT
+{
+	14.0,	// 0 %
+	12.0,	// 15 %
+	11.2,	// 30 %
+	10.6,	// 45 %
+	9.9,	// 60 %
+	9.6,	// 75 %
+	9.7,	// 90 %
+	10.5,	// 105 %
+	11.0,	// 120 %
+	11.5,	// 135 %
+	12.0	// 150 %
+};
+</syntaxhighlight>
+
+==== draconicTorqueYCoef ====
+Force that keeps the airplane aligned according to a vertical (Y in model space) component of its velocity vector. Makes the airplane go nose up when climbing and nose down when there's not enough lift.
+Should be strong enough to make the aircraft go nose down in stall conditions as Arma does not simulate stalling of wings individually.
+Bigger values also need to be balanced by a stronger elevator authority and draconicForceYCoef, otherwise the player won't be able to control the airplane in pitch.
+
+Can be also defined as an array.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+draconicTorqueYCoef = 3;	// A-164 Wipeout
+draconicTorqueYCoef[] =		// Caesar BTT
+{
+	7.0,	// 0 %
+	6.3,	// 15 %
+	4.0,	// 30 %
+	3.3,	// 45 %
+	3.0,	// 60 %
+	2.7,	// 75 %
+	2.5,	// 90 %
+	2.3,	// 105 %
+	2.1,	// 120 %
+	1.9,	// 135 %
+	1.8		// 150 %
+};
+</syntaxhighlight>
+
+==== driveOnComponent ====
+Defines the geometry LOD shapes on which the vehicle can roll without damage. (obsolete, from 1.68 use PhysX wheels and suspension)
+
+[[TokenNameValueTypes#Arrays|Array]] - Strings linked to the geometry LOD shapes
+<syntaxhighlight lang="cpp">
+driveOnComponent[] = { "Gear_1_damper", "Gear_2_damper", "Gear_3_damper" };			// A-164 Wipeout
+driveOnComponent[] = { "wheel_f", "wheel_r", "wheel_l" };							// Caesar BTT
+driveOnComponent[] = {																// V-44 Blackfish
+	"Wheel_1_1", "Wheel_1_2",
+	"Wheel_2_1", "Wheel_2_2", "Wheel_2_3",
+	"Wheel_3_1", "Wheel_3_2", "Wheel_3_3"
+};
+</syntaxhighlight>
+
+=== E ===
+
+==== ejectSpeed ====
+Defines the ejection speed and vector for all seats (driver, gunners and cargo).
+
+[[TokenNameValueTypes#Arrays|Array]] - Values of velocity in m/s, [x, y, z]
+<syntaxhighlight lang="cpp">
+ejectSpeed[] = { 0, 60, 0 };	// A-164 Wipeout, pilot is ejected upwards
+ejectSpeed[] = { 0, 0, 3 };		// Caesar BTT, passengers are ejected frontwards (needs confirmation)
+ejectSpeed[] = { 0, -2, 0 };	// V-44 Blackfish, passengers are ejected downwards
+</syntaxhighlight>
+
+==== elevatorCoef ====
+Coefficient of the elevator authority according to a given speed.
+
+[[TokenNameValueTypes#Arrays|Array]] - Graph array of values, see aileronCoef
+<syntaxhighlight lang="cpp">
+elevatorCoef[] = { 0.6, 0.9, 0.5, 0.4, 0.35, 0.3, 0.3 };	// A-164 Wipeout
+elevatorCoef[] = { 0, 1, 1.2, 1.4, 1.5, 1.6, 1.6 };			// V-44 Blackfish
+</syntaxhighlight>
+
+==== elevatorControlsSensitivityCoef ====
+Sensitivity of the player pitch (elevator) input - how fast the control surface reaches it is max. extent. (does not affect AI).
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+elevatorControlsSensitivityCoef = 4;	// A-164 Wipeout
+elevatorControlsSensitivityCoef = 2;	// Caesar BTT
+elevatorControlsSensitivityCoef = 3;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== elevatorSensitivity ====
+Elevator authority. Lower values make the airplane pitch slower.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+elevatorSensitivity = 1.9;	// A-164 Wipeout
+elevatorSensitivity = 0.3;	// Caesar BTT
+elevatorSensitivity = 0.5;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== envelope ====
+The lift properties (G) of the wing dependent of the actual speed of the aircraft. Each of the positions in the array corresponds to a relative
+speed expressed as a proportion of the 125% of maxSpeed of the vehicle.
+Relates directly to angleOfIndicence and airplane's mass and can be used to simulate various wing sizes and camber.
+
+[[TokenNameValueTypes#Arrays|Array]] - Graph array of values, see aileronCoef
+<syntaxhighlight lang="cpp">
+envelope[] = { 0.1, 0.1, 0.9, 2.8, 3.5, 3.7, 3.8, 3.8, 3.6, 3.3, 2.7 };				// A-164 Wipeout
+envelope[] = { 0, 0.15, 1.05, 1.8, 2.8, 3.3, 3.5, 3.2, 2.6, 2, 1.5, 1, 0.5, 0 };	// Caesar BTT
+envelope[] = { 0, 0.01, 0.5, 1.5, 3.5, 4.4, 4.6, 4.8, 5, 5.1, 5.2, 5.3, 5.3, 1 };	// V-44 Blackfish
+</syntaxhighlight>
+
+=== F ===
+
+==== flaps ====
+Defines if the aircraft has flaps. Uses "flap" animation source.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+flaps = 1;	// Flaps
+flaps = 0;	// No flaps
+</syntaxhighlight>
+
+==== flapsFrictionCoef ====
+Friction coefficient of flaps. Increases drag and lift. Relates to envelope.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+flapsFrictionCoef = 0.5;	// A-164 Wipeout
+flapsFrictionCoef = 0.4;	// Caesar BTT
+flapsFrictionCoef = 0.2;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== gearDownTime ====
+Only if gearRetracting = 1;, defines the time in seconds it takes to extract the gear.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+gearDownTime = 2;	// Most aircrafts
+</syntaxhighlight>
+
+==== gearRetracting ====
+Defines if the aircraft has retracting landing gear. Uses "gear" animation source.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+gearRetracting = 1;	// A-164 Wipeout, retractable landing gear
+gearRetracting = 0;	// Caesar BTT, fixed landing gear
+</syntaxhighlight>
+
+==== gearUpTime ====
+Only if gearRetracting = 1;, defines the time in seconds it takes to retract the gear.
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+gearUpTime = 3.33;	// Most aircrafts
+</syntaxhighlight>
+
+==== gearsUpFrictionCoef ====
+Defines the additional friction when the landing gear is open.
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+gearsUpFrictionCoef = 0.5;
+</syntaxhighlight>
+
+=== L ===
+
+==== landingAoa ====
+Advised landing angle of attack for AI and autopilot. (Make sure to check functionality in game. The angles of glideslopes of airports and airstrips in Arma vary from 3-5°, finding a good AoA is often a compromise.)
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+landingAoa = 0.174533;			// A-164 Wipeout
+landingAoa = "rad 3";			// Caesar BTT
+landingAoa = "1*3.1415/180";	// V-44 Blackfish
+</syntaxhighlight>
+
+==== landingSpeed ====
+Advised landing speed for AI and autopilot.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+landingSpeed = 195;	// A-164 Wipeout
+landingSpeed = 110;	// Caesar BTT
+landingSpeed = 230;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== lightOnGear ====
+Defines if the lights are on the landing gear, thus only shining when the gear is down.
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+lightOnGear = 1;	// A-164 Wipeout
+lightOnGear = 0;	// Caesar BTT
+</syntaxhighlight>
+
+==== maxSpeed ====
+Maximum speed. Doesn't limit the speed the aircraft is able to reach. Value is used mainly for the AI and thrust, envelope and control surfaces coefficients.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+maxSpeed = 706;	// A-164 Wipeout
+maxSpeed = 435;	// Caesar BTT
+maxSpeed = 550;	// V-44 Blackfish
+</syntaxhighlight>
+
+=== R ===
+
+==== rudderCoef ====
+Defines the authority of the rudder in a given speed.
+
+[[TokenNameValueTypes#Arrays|Array]] - Graph array of floats, see aileronsCoef
+<syntaxhighlight lang="cpp">
+rudderCoef[] = { 0.6, 1, 1, 0.9, 0.8, 0.7, 0.6 };								// A-164 Wipeout
+rudderCoef[] = { 0, 0.4, 1, 1.4, 1.8, 2, 2.2, 2.3, 2.4, 2.5, 2.5, 2.5, 2.6 };	// V-44 Blackfish
+</syntaxhighlight>
+
+==== rudderControlsSensitivityCoef ====
+Sensitivity of the player yaw (rudder) input - how fast the control surface reaches it is max. extent. (does not affect AI).
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+rudderControlsSensitivityCoef = 4;		// A-164 Wipeout
+rudderControlsSensitivityCoef = 2;		// Caesar BTT
+rudderControlsSensitivityCoef = 1.5;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== rudderInfluence ====
+Cos of the angle in which rudder can turn the aircraft. Lower values mean less yaw extent and authority. Relates to rudderCoef, draconicTorqueXCoef and draconicForceXCoef.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+rudderInfluence = 0.01;		// A-164 Wipeout
+rudderInfluence = 0.3;		// Caesar BTT
+rudderInfluence = 0.9396;	// V-44 Blackfish
+</syntaxhighlight>
+
+=== S ===
+
+==== simulation ====
+[[TokenNameValueTypes#Strings|String]] - Must be "airplaneX" for a plane
+<syntaxhighlight lang="cpp">
+simulation = "airplanex";
+</syntaxhighlight>
+
+==== stallSpeed ====
+Advised stall speed. Used for AI, {{Link|#stallWarningTreshold}} in instruments and animation sources.
+
+{{Feature|informative| This param is not read by the engine, instead stallSpeed is calculated based on maxSpeed. To force the uses of static config value, use 'stallSpeedForced' (below)}}
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+stallSpeed = 180;	// V-44 Blackfish
+</syntaxhighlight>
+
+{{ArgTitle|4|stallSpeedForced|{{GVI|arma3|2.22|branch=perf}}}}
+Advised stall speed. Used for AI, {{Link|#stallWarningTreshold}} in instruments and animation sources.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+stallSpeedForced = 33;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== stallWarningTreshold ====
+{{sic|stallWarningTreshold|stallWarningThreshold}}
+
+Threshold of the stall warning - relates to display sources (i.e. airspeed indicated in red color).
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+stallWarningTreshold = 0.2;	// A-164 Wipeout
+stallWarningTreshold = 0.2;	// Caesar BTT
+stallWarningTreshold = 0.5;	// V-44 Blackfish
+</syntaxhighlight>
+
+=== T ===
+
+==== thrustCoef ====
+Used to define available thrust vs. airspeed.
+
+[[TokenNameValueTypes#Arrays|Array]] - Graph array of floats, see aileronsCoef
+<syntaxhighlight lang="cpp">
+thrustCoef[] = { 0.9, 0.8, 0.9, 1.3, 1.2, 1.2, 1.1, 1, 0.9, 0.2, 0.1, 0, 0 };					// A-164 Wipeout
+thrustCoef[] = { 1.3, 1.1, 1.2, 1.3, 1.5, 1.7, 1.6, 0.6, 0.46, 0.33, 0.2, 0.066, 0, 0, 0, 0 };	// Caesar BTT
+thrustCoef[] = { 1.1, 1.1, 1, 1, 0.9, 0.8, 0.7, 0.5, 0.3, 0, 0, 0, 0 };							// V-44 Blackfish
+thrustCoef[] =
+{
+	1.2,	// At 0 % of maxSpeed, thrust energy will be 1.2
+	1.2,	// 12.5 %
+	1.1,	// 25 %
+	1.1,	// 37.5 %
+	1.0,	// 50 %
+	0.9,	// 62.5 %
+	0.8,	// 75 %
+	0.7,	// 87.5 %
+	0.5,	// 100 %
+	0.2,	// 112.5 %
+	0.0,	// 125 %
+	0.0,	// 137.5 %
+	0		// 150 %
+};
+</syntaxhighlight>
+
+=== V ===
+
+==== vtol ====
+Requires "airplanex" simulation.<br>
+
+Type of VTOL :
+
+All types allow manual vectoring up/down to certain limits described under that type.
+
+0 - No VTOL capacity
+
+1 - VTOL<br>
+default 1.0 vectoring (nozzles/nacelles horizontal @ 0°)
+
+2 - STOVL, vectoring limitation on slow speed<br>
+default 1.0 vectoring (nozzles/nacelles horizontal @ 0°)<br>
+limited 0.0 maximum vectoring (nozzles/nacelles horizontal @ 0°) below 5 km/h
+
+3 - VTOL, vectoring limitation near ground<br>
+default 0.7 vectoring (nozzles/nacelles medium @ ~60°)<br>
+limited 0.7 minimum vectoring (nozzles/nacelles medium @ ~60°) below 5 meters altitude
+
+4 - VTOL, opposite of 1<br>
+default 1.0 vectoring (nozzles/nacelles vertical @ 90°)
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+vtol = 0;	// A-164 Wipeout, not a VTOL aircraft
+vtol = 1;	// F-35B, Vertical Take Off and Landing, Start horizontal (nozzles/nacelles @ 0°)
+vtol = 2;	// AV-8B Harrier, Short Take Off/Vertical Landing
+vtol = 3;	// V-44 Blackfish, VTOL using a vectoring near the ground (to avoid blades collision with ground)
+vtol = 4;	// Y-32 Xi'an, Vertical Take Off and Landing, Start vertical (nozzles/nacelles @ 90°)
+</syntaxhighlight>
+
+==== VTOLPitchInfluence ====
+Once in hover flight, defines influence of pitch input.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+VTOLPitchInfluence = 3.0;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== VTOLRollInfluence ====
+Once in hover flight, defines influence of roll input.
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+VTOLRollInfluence = 10.0;	// V-44 Blackfish
+</syntaxhighlight>
+
+==== VTOLYawInfluence ====
+Once in hover flight, defines influence of yaw input.
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+VTOLYawInfluence = 6.0;	// V-44 Blackfish
+</syntaxhighlight>
+
+=== W ===
+
+==== wheelSteeringSensitivity ====
+Once landed, defines the radius of steering with nose/tail wheel (same action as rudder).
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+wheelSteeringSensitivity = 1;	// A-164 Wipeout
+wheelSteeringSensitivity = 1.2;	// Caesar BTT
+wheelSteeringSensitivity = 0.8;	// V-44 Blackfish
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Vehicle Configuration}}

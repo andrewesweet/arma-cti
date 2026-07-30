@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_destroyer01EdenDelete
+// revision: 286034 (2021-06-20T17:24:36Z)
+// export sha1: a1dni4271aw8rde1698lf4222ktd6bs
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Destroyer | Category:Functions | Category:Introduced with Arma 3 version 1.84 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.84
+
+|gr1= Destroyer
+
+|descr= <pre>/*
+	Author: Bravo Zero One development
+	- John_Spartan
+
+	Description:
+	- This is a sub function designed to delete dynamic ships (multi-part structure) in EDEN editor. Ship consists of multiple sub-objects that are linked together based on precise memory point positions in 3D space.
+	Function will delete ship parts in EDEN editor after main object is deleted.
+
+	Execution:
+	- Call from EH on the main ship base model (blank model with memory points and reference config).
+
+		Example:
+		class Eventhandlers
+		{
+			init = "_this call BIS_fnc_Destroyer01Init";								//main init fnc, will assemble ship in game
+			AttributesChanged3DEN = "_this call BIS_fnc_Destroyer01EdenInit";			//function to update objects position in EDEN editor if attributes changed by player
+			Dragged3DEN = "_this call BIS_fnc_Destroyer01PosUpdate";					//function to update objects position in EDEN editor if attributes changed by player
+			RegisteredToWorld3DEN = "_this call BIS_fnc_Destroyer01EdenInit";			//initial EDEN init fnc (main init is still called)
+			UnregisteredFromWorld3DEN = "_this call BIS_fnc_Destroyer01EdenDelete";		//function  to delete all ship objects in EDEN editor
+		};
+
+	Requirements:
+	- An array of ship parts/objects as a variable attached to main ship base. This array is created by main BIS_fnc_Destroyer01Init.
+
+	Parameter(s):
+		_this select 0: mode (Scalar)
+		0: ship Base/object
+		and
+		1: array of objects in variable in base objects name-space ["bis_carrierParts", []];
+
+	Returns: nothing
+	Result: Ship's parts are deleted in EDEN editor.
+
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_destroyer01EdenDelete]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

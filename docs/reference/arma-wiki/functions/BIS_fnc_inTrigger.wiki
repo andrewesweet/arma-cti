@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_inTrigger
+// revision: 369527 (2024-09-15T18:22:20Z)
+// export sha1: m789yv6tnq2p43pf6t5w0y2bie6wp2p
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Detects whether position is within area '''or''' calculates distance to the nearest edge of trigger area by using optional params.
+{{Feature|arma3|Since {{arma3}} v1.58 [[inArea]] is available for an area check.}}
+
+|s1= [area, position, returnDistance, includeFloorCeiling] call [[BIS_fnc_inTrigger]]
+
+|p1= area: [[Object]], [[String]], [[Location]] or [[Array]]
+* [[Object]] - trigger
+* [[String]] - marker
+* [[Location]] - location
+* [[Array]] - in format [center, distance] or [center, [a, b, angle, rect]] or [center, [a, b, angle, rect, height]]
+
+|p2= position: [[Object]] or [[Array]] - position to check (e.g. [[player]]) or [[Position]]
+
+|p3= returnDistance: [[Boolean]] - (Optional, default [[false]]) [[true]] to return distance to nearest edge of trigger area
+
+|p4= includeFloorCeiling: [[Boolean]] - (Optional, default [[false]]) to include trigger area floor and ceiling in calculation when calculating distance to nearest edge
+
+|r1=
+* [[Boolean]] - [[true]] when position is in area, false if not
+* [[Number]] - (when ''returnDistance'' is [[true]]) - distance from closest border: negative distance - from inside, positive distance - from outside
+
+|x1= <sqf>
+private _trigger = createTrigger ["EmptyDetector", getPosATL player];
+_trigger setTriggerArea [10, 10, 0, false];
+_inTrigger = [_trigger, player] call BIS_fnc_inTrigger; // _inTrigger = true
+</sqf>
+
+|seealso= [[createTrigger]] [[createMarker]] [[setTriggerArea]] [[setMarkerSize]] [[triggerArea]] [[markerSize]] [[inArea]] [[inAreaArray]] [[BIS_fnc_getArea]]
+}}

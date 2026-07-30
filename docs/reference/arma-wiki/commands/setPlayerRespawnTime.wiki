@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/setPlayerRespawnTime
+// revision: 378018 (2026-01-22T12:47:44Z)
+// export sha1: sqw9l9guiavttk9latg83wnxt2cuwxd
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 2: Operation Arrowhead version 1.57 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.57
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|eff= local
+
+|gr1= Multiplayer
+
+|descr= Sets the time interval (in seconds) that the player must wait before respawn, for the next respawn only.
+It resets to mission default on mission start.
+In Single Player or when respawn type is GROUP or SIDE in Multiplayer, setting player respawn time has no effect, and [[playerRespawnTime]] will always return -1.
+
+|s1= [[setPlayerRespawnTime]] interval
+
+|p1= interval: [[Number]] - respawn time in seconds
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setPlayerRespawnTime 5; // next respawn (and only this one) will happen 5s after death</sqf>
+
+|x2= Set the respawn duration through variable:
+<sqf>
+player addEventHandler ["Killed", {
+	setPlayerRespawnTime (player getVariable ["TAG_RespawnDelay", 10]);
+}];
+</sqf>
+
+Somewhere else, e.g on objective completion:
+<sqf>
+player setVariable ["TAG_RespawnDelay", 5];
+</sqf>
+or if that player is on another machine:
+<sqf>
+waitUntil { not alive _target };
+_thatPlayer setVariable ["TAG_RespawnDelay", 5, true];
+</sqf>
+
+|x3= Increase respawn duration every death:
+<sqf>
+player addEventHandler ["Killed", {
+	private _respawnTime = player getVariable ["TAG_RespawnDelay", 8];
+	setPlayerRespawnTime _respawnTime;
+	player setVariable ["TAG_RespawnDelay", _respawnTime + 1]; // don't die too many times
+}];
+</sqf>
+
+|seealso= [[playerRespawnTime]] [[respawnVehicle]]
+}}

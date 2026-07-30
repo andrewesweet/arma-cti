@@ -1,0 +1,213 @@
+// source: https://community.bistudio.com/wiki/setGroupId
+// revision: 376660 (2025-11-03T17:32:23Z)
+// export sha1: 8uli5zg87bnrcoov4sxz376l98ouqk1
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Groups
+
+|arg= global
+
+|eff= local
+
+|descr= Sets the group radio callsign, how it will be displayed in radio chat. Two groups on the same side '''cannot''' have the same callsign (possible on different sides) - see {{Link|#Example 4}}.<br>
+The identity setup can consist of format keywords (marked with '''%''') and param keywords taken from '''CfgWorlds''' config.
+Formatting is almost like using the [[format]] command but with some special group keywords (see {{Link|#Example 2}}).
+<br>
+<spoiler text="Show Arma 3 values table">
+{{{!}} class="wikitable"
+! %GroupSquad
+! %GroupPlatoon
+! %GroupCompany
+! %GroupNames
+! %GroupColors
+{{!}}- style="vertical-align: top"
+{{!}}
+* "Squad1" &rarr; 1
+* "Squad2" &rarr; 2
+* "Squad3" &rarr; 3
+* "Squad4" &rarr; 4
+{{!}}
+* "Platoon1" &rarr; 1
+* "Platoon2" &rarr; 2
+* "Platoon3" &rarr; 3
+* "Platoon4" &rarr; 4
+{{!}}
+{{Columns|2|
+* "CompanyAlpha" &rarr; Alpha
+* "CompanyBravo" &rarr; Bravo
+* "CompanyCharlie" &rarr; etc.
+* "CompanyDelta"
+* "CompanyEcho"
+* "CompanyFoxtrot"
+* "CompanyGolf"
+* "CompanyHotel"
+* "CompanyIndia"
+* "CompanyKilo"
+* "CompanyLima"
+* "CompanyMike"
+* "CompanyNovember"
+* "CompanyOscar"
+* "CompanyPapa"
+* "CompanyQuebec"
+* "CompanyRomeo"
+* "CompanySierra"
+* "CompanyTango"
+* "CompanyUniform"
+* "CompanyVictor"
+* "CompanyWhiskey"
+* "CompanyXray" &rarr; X-Ray
+* "CompanyYankee"
+* "CompanyZulu"
+}}
+{{!}}
+{{Columns|2|
+* "Alpha"
+* "Bravo"
+* "Charlie"
+* "Delta"
+* "Echo"
+* "Foxtrot"
+* "Golf"
+* "Hotel"
+* "November"
+* "Kilo"
+* "Yankee"
+* "Zulu"
+* "Convoy"
+* "Buffalo"
+* "Guardian"
+* "Two"
+* "Three"
+* "Fox"
+}}
+{{!}}
+* "GroupColor0" &rarr; (nothing)
+* "GroupColor1" &rarr; Black
+* "GroupColor2" &rarr; Red
+* "GroupColor3" &rarr; Green
+* "GroupColor4" &rarr; Blue
+* "GroupColor5" &rarr; Yellow
+* "GroupColor6" &rarr; Orange
+* "GroupColor7" &rarr; Pink
+* "Six" &rarr; Six
+{{!}}}
+</spoiler>
+<spoiler text="Show OFP values table">
+{{{!}} class="wikitable"
+! Letter
+! Colour
+{{!}}- style="vertical-align: top"
+{{!}}
+{{Columns|2|
+* "Alpha"
+* "Bravo"
+* "Charlie"
+* "Delta"
+* "Echo"
+* "Foxtrot"
+* "Golf"
+* "Hotel"
+* "Kilo"
+* "Yankee"
+* "Zulu"
+* "Buffalo"
+* "Convoy"
+* "Guardian"
+* "November"
+* "Two"
+* "Three"
+* "Fox"
+}}
+{{!}}
+* "GroupColor0" &rarr; (nothing)
+* "GroupColor1" &rarr; Black
+* "GroupColor2" &rarr; Red
+* "GroupColor3" &rarr; Green
+* "GroupColor4" &rarr; Blue
+* "GroupColor5" &rarr; Yellow
+* "GroupColor6" &rarr; Orange
+* "GroupColor7" &rarr; Pink
+* "Six" &rarr; Six
+{{!}}}
+</spoiler>
+{{Feature | ofp |
+* In '''{{ofp}}''', the group ID cannot be freely decided and format must be [letter, colour, picture] or [letter, colour] - ''nameFormat'' '''cannot''' be a custom text - see {{Link|#Example 3}}.
+* The radio callsign strings can be overwritten in a mission by writing [[Stringtable.csv|Stringtable]] entries of the same name. Some entry names: <spoiler>
+* STR_CFG_''GRPNAMES''_'''ALPHA'''
+* STR_CFG_''GRPNAMES''_'''FOX'''
+* STR_CFG_''GRPCOL''_'''BLACK'''
+* STR_CFG_''GRPNAMES''_'''SIX''' (unlike its name suggests, this is a "group colour")
+* STR_CFG_FIREFLYBASE
+* STR_CFG_PAPABEAR
+* STR_CFG_HQ_BASE</spoiler>}}
+
+|mp= For the global variant of this command see [[setGroupIdGlobal]].
+
+|s1= group [[setGroupId]] [nameFormat, nameParam1, nameParam2, ...]
+
+|p1= group: [[Object]] or [[Group]]
+
+|p2= nameFormat: [[String]] - format template (%keyword1 - %keyword2...etc)
+
+|p3= nameParamN: [[String]] - param keyword
+
+|r1= [[Nothing]]
+
+|x1= '''{{arma3}}''':
+<sqf>
+group player setGroupId ["Some name for the group"];
+hint groupId group player;	// "Some name for the group"
+player sideChat "lalala";	// Some name for the group (KK): "lalala"
+</sqf>
+
+|x2= '''{{arma3}}''':
+<sqf>
+group player setGroupId ["%GroupNames :=: %GroupColors", "Alpha", "GroupColor2"];
+hint groupId group player;	// "Alpha :=: Red"
+player sideChat "lalala";	// Alpha :=: Red (KK): "lalala"
+</sqf>
+
+|x3= '''{{arma1}} / {{arma2}} / {{arma3}}''':
+<sqf>group player setGroupId ["First Assault Recon Team"];</sqf>
+'''{{ofp}}''':
+<sqf>_group1 setGroupId ["Delta", "GroupColor4"]</sqf>
+
+|x4= When trying to apply the same callsign to two groups of the same side, the callsigns will simply be swapped, e.g:
+<sqf>
+group1 setGroupId ["Active Group"];
+group2 setGroupId ["Inactive Group"];
+group2 setGroupId ["Active Group"]; // group1 is "Inactive Group" now
+</sqf>
+
+|seealso= [[setGroupIdGlobal]] [[groupId]] [[group]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150421232100
+|text= {{Wiki|extractionScript|CfgWorlds/Group*}}
+}}

@@ -1,0 +1,148 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Frontline_Function
+// revision: 373504 (2025-05-18T12:22:20Z)
+// export sha1: b85jq0qjcd5s6zvfirl2fk4l6g3kgm7
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:SPE Frontline Ingame.png|right|500px]]
+
+== Tutorial ==
+
+This page explains how to draw a frontline on the map similar to how it is done in the Operation Cobra campaign of the [[Spearhead 1944]] CDLC.
+{{Feature|informative|As this system is used on the offical Operation Cobra campaign it might undergo changes!}}
+
+=== 1. Create Layer ===
+
+Create a layer in Eden Editor called {{hl|Frontline Control Points}}. This layer is referenced by the function to generate the frontline data points.
+
+=== 2. Start Preview ===
+
+Execute the following code in the [[Arma 3: Debug Console]] from within [[Eden Editor]] to create a real-time preview of the frontline. Close the window that shows up for now. We will need it later.
+
+<sqf>[[], nil, "preview"] call SPE_MISSIONUTILITYFUNCTIONS_fnc_generateFrontline;</sqf>
+
+[[File:SPE Frontline CodeExecution.png|400px]]
+
+=== 3. Create Markers ===
+
+Inside the layer {{hl|Frontline Control Points}}, create as many markers as needed to shape the frontline (The wavy black line).
+These markers act as control points for Bézier interpolation and their position will influence the curvature.
+The markers will automatically be hidden at mission start.
+
+{{Feature|warning|The more markers you place, the more accurate your frontline will be, but the calculation will be more expensive and generating the data will take longer.}}
+
+=== 4. Shape Frontline ===
+
+Now drag the previously placed markers to shape the frontline. You can also add new markers by copy and pasting an existing one.
+{{Feature|informative|Don't forget the undo/redo feature of [[Eden Editor]]!}}
+
+=== 5. Generate Data ===
+
+Once you are happy with the shape of the frontline, execute the following code again in the [[Arma 3: Debug Console]] from within [[Eden Editor]]. Instead of "preview" quality, use "high", "very high" or "ultra" instead.
+{{Feature|warning|Data generation can take several minutes depending on your hardware. It is recommended to not go above "high" quality!}}
+
+<sqf>[[], nil, "high"] call SPE_MISSIONUTILITYFUNCTIONS_fnc_generateFrontline;</sqf>
+
+=== 6. Create Data File ===
+
+Once the data was generated a window will show. Copy the content of the window and paste it into a script file. Place this script file into your mission folder.
+In our case we call it ''frontline_data.sqf'' and place it into the root of our test scenario.
+
+[[File:SPE Frontline Data.png|400px]]
+
+=== 7. Add Code ===
+
+Add code that creates frontline for every client to the [[init.sqf]]. The script has local effect and thus needs to be run on every connecting client.
+Clients without [[hasInterface|interface]] are automatically excluded ([[Arma 3: Headless Client|headless clients]], [[isDedicated|dedicated server]]).
+
+'''init.sqf'''
+<sqf>
+[
+	call compile preprocessFileLineNumbers "frontline_data.sqf",
+	false,			// Don't draw axis area (outside area)
+	nil,			// Preview mode is not needed so we ignore it
+	"ColorRed",		// Fill area color
+	"ColorBlue",	// Outside area color (if enabled)
+	0.5,			// Alpha of inside fill markers
+	0.3				// Alpha of ourside fill markers
+] call SPE_MISSIONUTILITYFUNCTIONS_fnc_generateFrontline;
+</sqf>
+
+{{Feature|informative|If you wanna change the frontline later on you have to repeat step 2 to step 6.}}
+
+
+== Function Syntax ==
+
+=== Description ===
+
+Previews a frontline in Eden Editor, or depending on parameter, generates data for it so it can be created during runtime.
+
+=== Syntax ===
+
+<sqf>
+[
+	data,
+	drawOutsideArea,
+	frontlineQuality,
+	insideMarkerColor,
+	outsideMarkerColor,
+	insideMarkerAlpha,
+	outsideMarkerAlpha,
+	interpolationQuality
+] call SPE_MISSIONUTILITYFUNCTIONS_fnc_generateFrontline;
+</sqf>
+
+=== Parameters ===
+
+{| class="wikitable"
+! Parameter Name !! Index !! Data type !! Description !! Default value
+|-
+| data || 0 || [[Array]] || Data for placing the fill markers inside frontline. If this data is provided the function assumes that the frontline should be created during mission runtime. Leave this empty for previewing in the Editor || []
+|-
+| drawOutsideArea || 1 || [[Boolean]] || True to draw axis area, false to not || false
+|-
+| frontlineQuality || 2 || [[String]] || Quality setting of the exported data
+* "preview" - Used for preview, resolution is 500 m
+* "very low" - Resolution 32 m
+* "low" - Resolution 16 m
+* "normal" - Resolution 8 m
+* "high" - Resolution 4 m - WARNING: Generating data can take several minutes!
+* "very high" - Resolution 2 m - WARNING: Generating data can take several minutes!
+* "ultra" - Resolution 1 m - WARNING: Generating data can take several minutes!
+|| "preview"
+|-
+| insideMarkerColor || 3 || [[String]] || CfgMarker color of the inside fill || "SPE_ColorAllies"
+|-
+| outsideMarkerColor || 4 || [[String]] || CfgMarker color of the outside fill || "SPE_ColorAxis"
+|-
+| insideMarkerAlpha || 5 || [[Number]] || Alpha of inside marker || 0.6
+|-
+| outsideMarkerAlpha || 6 || [[Number]]  || Alpha of outside marker || 0.6
+|-
+| interpolationQuality || 7 || [[Number]] || Interpolation quality of the border. Lower value means it is smoother, but generates more data || 0.002
+|}
+
+
+== Example Scenario ==
+
+* {{Link/External|link=https://drive.google.com/drive/folders/1A0gSMkaNi7Xx7FadH8D9TKrIbFC3UTaz|text=Download}}
+
+
+== Limitatons ==
+
+As of [[Spearhead 1944]] v1 there are some limitations:
+
+* Only one frontline can be drawn
+
+
+== Example Frontlines ==
+
+<gallery mode="slideshow" showthumbnails>
+SPE_Frontline_Example_1.png
+SPE_Frontline_Example_2.png
+SPE_Frontline_Example_3.png
+SPE_Frontline_Example_4.png
+</gallery>
+
+
+[[Category: Spearhead 1944]]

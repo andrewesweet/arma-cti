@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/serverNamespace
+// revision: 351793 (2024-01-11T04:51:36Z)
+// export sha1: ha5mx4j5jt2q6yp1fnc85xuo9tf1ctd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Command Group: Namespaces | Category:Command Group: Variables | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Namespaces
+
+|gr2= Variables
+
+|gr3= Multiplayer
+
+|serverExec= server
+
+|descr= Returns server's [[Namespace|namespace]].
+This namespace is only available on the server for the server's uptime duration (same as [[uiNamespace]]).<br>
+All [[Arma 3: Server Side Scripting|server event handlers]], which are available in [[Arma 3: Server Config File|server config]], use this namespace.
+
+|s1= [[serverNamespace]]
+
+|r1= [[Namespace]] on the server, [[Nothing]] on clients or in single-player.
+
+|x1= <sqf>
+if (isServer) then
+{
+	hint str allVariables serverNamespace;
+}
+else
+{
+	hint "you do not have permission!";
+};
+</sqf>
+
+|seealso= [[missionNamespace]] [[setVariable]] [[getVariable]] [[allVariables]]
+}}

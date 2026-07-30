@@ -1,0 +1,85 @@
+// source: https://community.bistudio.com/wiki/vehicles
+// revision: 377110 (2026-01-01T10:06:56Z)
+// export sha1: 4c4v6xoxvmq26btz1ihhhsf4twy1oah
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|eff= local
+
+|gr1= Object Detection
+
+|descr= Returns an array of all vehicles available to current client. This command returns both empty and crewed vehicles <u>but not soldiers</u>. It will also return "WeaponHolderSimulated" of dead bodies (weapon on the ground). Vehicles created with [[createVehicleLocal]] will only be returned on the client that created them.
+
+|s1= [[vehicles]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>_vehicles = vehicles;</sqf>
+
+|seealso= [[allGroups]] [[allUnits]] [[units]] [[entities]] [[agents]] [[playableUnits]] [[switchableUnits]] [[allPlayers]] [[allDead]] [[allDeadMen]] [[allUnitsUAV]] [[allCurators]] [[allObjects]] [[allMissionObjects]] [[allSimpleObjects]] [[allMines]]
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20240618061800
+|text= This command returns a lot of crap that is not really a vehicle in a common sense - simulated weapon holders, clutter cutters, etc. It also skips "out" vehicles (disassembled drones and statics). Be careful iterating through it as it may be expensive.
+
+Here is a list of most vehicle simulations that are returned by this command:
+<sqf>
+airplanex
+artillerymarker
+car
+carx
+fire
+helicopterrtd
+lasertarget
+motorcycle
+nvmarker
+parachute
+paraglide
+rope
+shipx
+submarinex
+suppresstarget
+tankx
+thing
+thingx
+</sqf>
+Generated using this code bit:
+<sqf>
+private _sims = createHashMap;
+{
+	private _sim = toLowerANSI getText(_x >> "simulation");
+	if!(_sim in _sims) then {
+		_sims set [_sim, configName _x];
+	};
+} forEachReversed ("getNumber(_x >> 'scope') > 0" configClasses (configFile >> "CfgVehicles"));
+
+private _used_sims = [];
+{
+	if(createVehicle [_y, [random 1e5,random 1e5,random 1e5], [], 0, "CAN_COLLIDE"] in vehicles) then {
+		_used_sims pushBack _x;
+	};
+} forEach _sims;
+
+_used_sims sort true;
+copyToClipboard (_used_sims joinString toString [10]);</sqf>
+There is probably more simulations not listed like non-x versions of vehicle simulations but these are ones actually used in A3.
+}}

@@ -1,0 +1,92 @@
+// source: https://community.bistudio.com/wiki/2D_Editor:_External
+// revision: 353557 (2024-03-19T12:01:40Z)
+// export sha1: pm4rp4t8ff6ck5nkej914wlhm0lzhn5
+// categories: Category:2D Editor
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Mission Editor]] provides majority of tools required for designing a mission, but finishing touches are usually made outside of it. Briefings, custom scripts, multiplayer settings or final packing are only handled by separate files programs. 
+
+{{TOC|horizontal}}
+
+
+== Mission Folder ==
+
+[[File:editor folder.jpg|thumb|Mission folder with the most common files]]
+=== Folder Name ===
+
+Missions are stored as folders with name composed of mission name set in [[Mission_Editor#Save|Save window]] and world name:
+ {{Color|green|missionName}}.{{Color|darkorange|worldName}}
+Examples:
+ {{Color|green|TopGun}}.{{Color|darkorange|abel}}
+ {{Color|green|SpyGame}}.{{Color|darkorange|Chernarus}}
+ {{Color|green|Domino}}.{{Color|darkorange|ProvingGrounds_PMC}}
+ {{Color|green|This.is.Sparta}}.{{Color|darkorange|Altis}}
+World names match classes present in ''CfgWorlds''.
+
+=== Folder Directory ===
+
+You can find all missions in your [[Profile]] directory.
+
+Single player missions are located in ''Missions'' folder, multiplayer missions can be found in ''MPMissions'' folder in same directory.
+
+=== Subfolders ===
+
+Within the mission folder, you can create as many subfolders as desired. As paths in mission are relative, you can refer to such subfolder using:
+ \subFolderName\desiredFile.sqf
+
+
+== Files ==
+
+[[File:editor folder mission.jpg|thumb|Example of mission.sqm]]
+=== Mission.sqm ===
+
+''Main article: [[Mission.sqm]]''
+
+{{Clear}}
+[[File:editor folder description.jpg|thumb|Example of Description.ext]]
+=== Description.ext ===
+
+''Main article: [[Description.ext]]''
+
+{{Clear}}
+[[File:editor folder init.jpg|thumb|Example of an *.sqf file]]
+=== Scripts ===
+
+''Main article: [[Script File]]''
+
+External script files are executed by filename, so they can have any filename the author chooses. There are however several special [[Event Scripts]] that are automatically executed by the game engine at certain times during the mission.
+
+{{Clear}}
+[[File:editor folder fsm.jpg|thumb|Example of an *.fsm file]]
+=== FSM ===
+
+''Main article: [[FSM]]''
+
+{{Clear}}
+[[File:editor folder overview.jpg|thumb|Example of overview.html]]
+=== Overview.html ===
+
+''Main article: [[Overview.html]]''
+
+The overview.html contains simple mission description and picture visible in main menu mission selection.
+
+{{Clear}}
+=== Briefing.html ===
+
+''Main article: [[Briefing.html]]''
+
+File loaded automatically when the mission begins, providing mission plan and notes.
+
+The briefing is broken into 4 main sections:
+
+* Notes
+* Plan
+* Objectives
+* Endings
+
+To preview your briefing whilst in the editor, hold SHIFT while clicking 'Preview'.
+
+Since {{GameCategory|arma2|link= y}}, briefing.html is only used for the debriefing text. For more information see [[briefing|Arma 2 Briefing creation]].
+
+
+[[Category: 2D Editor]]

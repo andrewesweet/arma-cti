@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_findExtreme
+// revision: 327983 (2022-07-13T15:22:38Z)
+// export sha1: jn3vy9mtznr74na5no3tk7st1v4zizt
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Arrays | Category:Function Group: Math | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Arrays
+
+|gr2= Math
+
+|descr= Returns the minimum or maximum value in an array of numbers.
+
+|s1= [numbers, mode] call [[BIS_fnc_findExtreme]]
+
+|p1= numbers: [[Array]] - a set of numbers
+
+|p2= mode: [[Number]] - 0 (find minimum) or 1 (find maximum)
+
+|r1= [[Number]]
+
+|x1= <sqf>
+private _result = [[1,4,5,8,3,7], 1] call BIS_fnc_findExtreme; // returns 8
+_result = [[1,4,5,8,3,7], 0] call BIS_fnc_findExtreme; // returns 1
+</sqf>
+
+|seealso= [[BIS_fnc_lowestNum]] [[BIS_fnc_greatestNum]] [[selectMin]] [[selectMax]]
+}}

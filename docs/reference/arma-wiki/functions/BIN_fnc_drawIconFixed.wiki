@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_drawIconFixed
+// revision: 309619 (2022-05-05T12:07:45Z)
+// export sha1: sg3ualqcu8nd1he7ec1jbg60tofhreg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diary | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Diary 
+
+|descr= <pre>/*
+
+	Description:
+		Set fixed size marker to be drawn in main map
+
+	Parameter(s):
+		0: STRING - unique marker ID
+		1:
+			ARRAY - marker parameters in format used by drawIcon command
+			BOOL - delete the marker
+
+	Returns:
+		BOOL - true if successful
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_drawIconFixed]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_drawIconFixed;</sqf> -->
+
+|seealso=
+}}

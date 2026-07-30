@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/systemTimeUTC
+// revision: 378414 (2026-04-04T08:38:50Z)
+// export sha1: e696jt3sxd7z2q7u0xutr3y0hfin5je
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Time | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Time
+
+|descr= Returns [[systemTime]] according to '''U'''niversal '''T'''ime '''C'''oordinated time scale.
+
+|s1= [[systemTimeUTC]]
+
+|r1= [[Array]] with [year, month, day, hour, minute, second, millisecond]
+* year: [[Number]]
+* month: [[Number]]
+* day: [[Number]]
+* hour: [[Number]]
+* minute: [[Number]]
+* second: [[Number]]
+* millisecond: [[Number]]
+
+|x1= <sqf>private _UKTime = systemTimeUTC;</sqf>
+
+|x2= <sqf>systemTimeUTC apply { if (_x < 10) then { "0" + str _x } else { str _x } }; // ["2021","05","03","14","09","37","593"]</sqf>
+
+|x3= <sqf>
+private _timeUTC = systemTimeUTC;
+private _time = systemTime;
+private _timeDiffH = (_time select 3) - (_timeUTC select 3);
+private _timeDiffM = (_time select 4) - (_timeUTC select 4);
+if (_timeDiffM < 0) then
+{
+	_timeDiffH = _timeDiffH - 1;
+	_timeDiffM = _timeDiffM + 60;
+};
+if (_timeDiffH < -12) then
+{
+	_timeDiffH = _timeDiffH + 24;
+};
+if (_timeDiffH > 12) then
+{
+	_timeDiffH = _timeDiffH - 24;
+};
+private _timeZone = [_timeDiffH, _timeDiffM]; // hour (_timeDiffH) is in range -12..+12
+</sqf>
+
+|seealso= [[systemTime]] [[date]] [[time]] [[dayTime]] [[diag_tickTime]] [[serverTime]] [[missionStart]] [[diag_deltaTime]]
+}}

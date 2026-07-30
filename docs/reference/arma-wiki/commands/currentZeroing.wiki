@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/currentZeroing
+// revision: 378508 (2026-05-03T17:08:03Z)
+// export sha1: 7o5mp4hk64o4g290e0kbdtdxfu7fsv0
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= local
+
+|gr1= Weapons
+
+|descr= Returns current zeroing.
+
+|s1= [[currentZeroing]] object
+
+|p1= object: [[Object]] - unit (vehicles are not supported)
+
+|r1= [[Number]]
+
+|s2= object [[currentZeroing]] [weaponClass, muzzleClass]
+
+|s2since= arma3 2.04
+
+|p21= object: [[Object]] - unit (vehicles are not supported)
+
+|p22= weaponClass: [[String]] - class name of weapon
+
+|p23= muzzleClass: [[String]] - (Optional, default currently active muzzle or first that is found) muzzle classname
+
+|r2= [[Array]] with [distance, zeroingIndex]
+* distance: [[Number]] - distance in meters, Since {{GVI|arma3|2.20|size= 0.75}} supports laser rangefinder value
+* zeroingIndex: [[Number]] - 0 ≙ 50 m, 1 ≙ 100 m, 2 ≙ 150 m, ..., -1 for laser rangefinding
+
+|x1= <sqf>private _zeroing = currentZeroing player;</sqf>
+
+|x2= <sqf>(player currentZeroing ["arifle_MX_GL_F", "GL_3GL_F"]) params ["_distance", "_zeroingIndex"];</sqf>
+
+|x3= <sqf>
+private _zeroing = currentZeroing myVehicle; // does not work
+private _zeroing = currentZeroing gunner myVehicle; // works
+</sqf>
+
+|seealso= [[setWeaponZeroing]]
+}}

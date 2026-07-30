@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/inputAction
+// revision: 369187 (2024-09-03T10:34:46Z)
+// export sha1: q4df2pd6jmysa0gr4wi9z2t2nvrudm1
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Interaction
+
+|descr= Return the state of input devices mapped to given input action.
+<br>
+For Arma 3 inputActions and its bindings see: [[{{PAGENAME}}/actions]].
+<br>
+For earlier Arma editions  see [[:Category:Key Actions]].
+
+|s1= [[inputAction]] name
+
+|p1= name: [[String]] - name of the action
+
+|r1= [[Number]]
+
+|x1= <sqf>inputAction "leanLeft";</sqf> Returns 1 if the button mapped to "leanLeft" is pressed currently else 0.
+
+|x2= <sqf>
+0 spawn {
+	waitUntil {inputAction "reloadMagazine" > 0};
+	hint "Reload Key Pressed";
+};
+</sqf>
+
+|seealso= [[inputMouse]] [[inputController]] [[actionKeys]] [[actionKeysImages]] [[actionKeysNames]] [[actionIDs]] [[actionParams]] [[addAction]] [[setUserActionText]] [[inGameUISetEventHandler]] [[showHUD]] [[removeAction]] [[removeAllActions]] [[action]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 07:38, 15 October 2010 (CEST)</dd>
+<dt class="note">[[User:Worldeater|Worldeater]]</dt>
+<dd class="note">
+This command also returns values other than 0 and 1 (like 0.02 or 1.3). Any value greater than zero usually signals that the key or button is pressed. [[inputAction]] does not work reliably when used in RscDisplayMission's onKeyDown event handler (the same is probably true for other input related event handlers).
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-05-08 - 15:18 (UTC)</dd>
+<dt class="note">[[User:FlannelMouth|FlannelMouth]]</dt>
+<dd class="note">
+[[inputAction]] does not return the actual state of the queried key when a dialog screen is open. Instead, it will always return 0. 
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2015-07-31 - 05:33 (UTC)</dd>
+<dt class="note">[[User:Waffle SS.|Waffle SS.]]</dt>
+<dd class="note">
+'''inputAction''' is capable of returning the state of analog inputs. This includes mouse, joystick, and even TrackIR. A joystick axis will return a value from 0 to 1, while mouse movement returns the rate of change, which can be > 1.
+<br><br>
+Right mouse click is currently not supported, but right mouse hold is: https://feedback.bistudio.com/T83382
+</dd>
+
+</dl>

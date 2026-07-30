@@ -1,0 +1,91 @@
+// source: https://community.bistudio.com/wiki/displayAddEventHandler
+// revision: 369069 (2024-09-02T20:24:59Z)
+// export sha1: ppb45qe85ckm3uxue1njb53fzjbsdri
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: GUI Control - Event Handlers | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= GUI Control - Event Handlers
+
+|gr2= Event Handlers
+
+|descr= Adds an event handler to the given display. See [[User Interface Event Handlers]] for the full list of event names.
+If applicable, see [[DIK_KeyCodes]] for a list of key code constants, which are relevant to key related user interface events like: [[User Interface Event Handlers#onKeyDown|KeyDown]] & [[User Interface Event Handlers#onKeyUp|KeyUp]].
+{{Feature|important|Display EHs are processed from last to first added; an input override should be set up in the first added EH.}}
+{{Feature|informative|The event handler ID can be accessed inside the event handler code using the <sqf inline>_thisEventHandler</sqf> [[Magic_Variables#thisEventHandler|magic variable]].}}
+
+|s1= display [[displayAddEventHandler]] [eventName, code]
+
+|p1= display: [[Display]]
+
+|p2= eventName: [[String]] - event name
+{{Feature|important|When using the event names listed [[User Interface Event Handlers|here]] with the [[ctrlAddEventHandler]], [[ctrlSetEventHandler]], [[displayAddEventHandler]] or [[displaySetEventHandler]] commands, the prefix "on" in the event name must be removed (e.g. ''''ButtonDown'''' instead of ''''onButtonDown'''').}}
+
+|p3= code: [[String]] or {{GVI|arma3|1.06|size= 0.75}} [[Code]] - the code which gets executed when event is triggered. Returning [[true]] in event handler code will override default engine handling for keyboard events.
+Several [[Magic Variables]] are available:
+* Event Handler parameters are accessible via {{hl|_this}}
+* The Event Handler type is available as {{hl|_thisEvent}}
+* The Event Handler index is available as {{hl|_thisEventHandler}}
+
+|r1= [[Number]] - index of the newly added event handler or {{hl|-1}} if creation failed
+
+|x1= <sqf>moduleName_keyDownEHId = findDisplay 46 displayAddEventHandler ["KeyDown", "hint str _this;"];</sqf>
+
+|x2= <sqf>moduleName_keyDownEHId = findDisplay 46 displayAddEventHandler ["KeyDown", { hint str _this }];</sqf>
+
+|seealso= [[disableSerialization]] [[displayRemoveAllEventHandlers]] [[displayRemoveEventHandler]] [[displaySetEventHandler]] [[ctrlAddEventHandler]] [[User_Interface_Event_Handlers|UI Event Handlers]] [[findDisplay]] [[DIK_KeyCodes|DIK Key Codes]] [[keyName]]
+}}
+
+{{Note
+|user= Axyl
+|timestamp= 20140310145200
+|text= From within an Addon, you must assign the events from a spawned script.  e.g. <sqf>0 spawn { findDisplay 46 displayAddEventHandler ["KeyDown", "_this call my_KeyDownFunctionhandler"]; };</sqf>
+}}
+
+{{Note
+|user= Pigneedle
+|timestamp= 20160122081500
+|text= Be sure to wait until the main display is initialized before using this command by using:
+<sqf>waitUntil { !isNull (findDisplay 46) };</sqf>
+}}
+
+{{Note
+|user= Nelis75733126
+|timestamp= 20170528113200
+|text= use ({{Link|PreProcessor_Commands##define|#define}}) if you want <sqf inline>displayAddEventHandler</sqf> to use data defined in the same script. You can then integrate that data either directly, or by applying {{Link|format|format}} to the second parameter.
+}}
+
+{{Note
+|user= DrSova
+|timestamp= 20170807150800
+|text= Using '''KeyUp''' you can't override default engine action by returning '''true'''
+|game= arma3
+|version= 1.72
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20210626161700
+|text= To prevent a display from getting closed by pressing ESC, add the following event handler.
+<sqf>
+#include "\a3\ui_f\hpp\definedikcodes.inc"
+_display displayAddEventHandler ["KeyDown",
+{
+	params ["", "_key"];
+	_key == DIK_ESC; // ESC pressed while dialog is open, overwrite default behaviour
+}];
+</sqf>
+}}

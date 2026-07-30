@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/P_drive
+// revision: 339718 (2023-04-28T16:20:11Z)
+// export sha1: s042i9hcoarjjs4w80bfug4rt78vj11
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|obsolete|This tool has been replaced by [[Work Drive]] and is now deprecated.}}
+
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= [[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD= 
+
+{{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= P Drive is a set of simple batches to prepare a substituted P: drive ready to use Buldozer in Object Builder and Terrain Builder, this has been added based on popular demand. The same could be done even without P: drive but would require higher skills and more time.
+
+|NOTES=
+
+|COMMAND= DevP.bat
+
+
+|OPTIONS= You can change the paths used by '''DevP.bat''' by defining your own paths in '''[[P drive/settings|settings.ini]]''' or editing the registry key "HKCU\SOFTWARE\Bohemia Interactive\P Drive" (but, not recommended). By default, Arma 3 Tools path and Arma 3 game path are used.
+
+|EXAMPLE= DevP.bat<br>DevP.bat -DEBUG
+
+|SEEALSO= [[P drive/settings|settings.ini]], [[FuturaToP]]
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+}}
+
+=== Additional information ===
+
+==== How to use it ====
+Simply run the Arma 3 Tools package on Steam and select "''Prepare virtual P: Drive''" from the Steam launcher or Play Arma 3 Tools, select ''P: Drive (DevP)'' then ''default''. The batches prepare P: drive with content required for using Arma 3 Buldozer in Addon builder and Terrain Builder if you have Arma 3 installed.
+
+
+DevP can take one of the following parameters:
+* "DevP.bat '''-DEBUG'''": Only display the paths and values used, no action will be made.
+* "DevP.bat '''-clearInstall'''": Remove almost every files or references made by DevP
+* "DevP.bat '''-cleanInstall'''": Perform "clearInstall", then, execute DevP in normal state.
+* "DevP.bat '''-mapDiskOnly'''": Just map the P drive and ignore all the rest
+
+mapDisk.bat and mapDisk also handle the -DEBUG parameter.
+
+==== In case of problem ====
+The behavior of DevP may differ from a machine to another, making it hard to fix in some cases, so, in case of problem, we invite you to run {{Link|link= http://tom4897.info/?attachment_id=2238 Arma3Tools_diag_retail] and post a new {{Link|link= http://feedback.arma3.com/|text= ticket}} or a [http://forums.bistudio.com/forumdisplay.php?174-ARMA-3-BI-TOOLS-TROUBLESHOOTING|text{{=}} thread}} with the result of the diagnostic script.
+
+==== How to remove it ====
+To simply remove P: drive, Open command prompt and enter
+ subst p: /d
+To remove all data added by DevP, Open command prompt in your Arma 3 Tools directory and enter
+ DevP.bat -clearInstall

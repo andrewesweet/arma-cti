@@ -1,0 +1,21 @@
+// source: https://community.bistudio.com/wiki/ModHashCalculator
+// revision: 336616 (2023-01-04T15:23:25Z)
+// export sha1: dshl3w6c9ie1tz3wl4g331pza5s8t9z
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+|VERSION=
+|COMPATIBILITY= [[:Category:Arma_3:_Official_Tools|Arma 3 Tools]]
+|DOWNLOAD= {{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+|DESCRIPTION=Mod Hash Calculator is a tool designed to calculate short and long hash of the selected mod folders. The result can be exported to a file or the to the clipboard.
+|NOTES=
+|COMMAND=ModHashCalculator.exe
+|OPTIONS=
+|EXAMPLE=
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+|SEEALSO= 
+}}
+
+{{GameCategory|arma3|Official Tools}}

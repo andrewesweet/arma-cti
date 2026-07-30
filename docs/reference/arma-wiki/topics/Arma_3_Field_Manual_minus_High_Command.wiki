@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_High_Command
+// revision: 349871 (2023-11-20T22:10:47Z)
+// export sha1: 6vjcy4o9ln4nil1j9ay11tw684etka1
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== High Command ==
+=== High Comm. Waypoints ===
+Give units multiple waypoints:<br>
+* Switch to High command mode '''[Left Ctrl+Space]'''.<br>
+* Select the unit with '''[LMB]'''.<br>
+* Hold down '''[Left Ctrl]''' while setting waypoints.<br>
+* Edit the waypoint properties. Click on it with '''[RMB]''' and change group's formation or combat style.
+
+
+=== High Command ===
+High command enables commanding squads in the same way that squad command works for subordinates. If you are allowed to take the role of a high commander, switch to High command using '''[Left Ctrl+Space]'''.<br>
+Units are represented by NATO markers that vary according to group type and size.<br>
+You can assign command either in 3D view or on a map. The map offers more possibilities.
+
+
+=== Group Type Markers ===
+In High Command, various unit types are indicated by an icon. The most common symbols are:<br>
+[[File:a3_fm_b_inf.png|24px]] – Infantry<br>
+[[File:a3_fm_b_armor.png|24px]] – Armor<br>
+[[File:a3_fm_b_motor_inf.png|24px]] – Motorized Infantry<br>
+[[File:a3_fm_b_mech_inf.png|24px]] – Mechanized Infantry<br>
+[[File:a3_fm_b_uav.png|24px]] – UAV<br>
+[[File:a3_fm_b_artillery.png|24px]] – Artillery<br>
+[[File:a3_fm_b_recon.png|24px]] – Recon<br>
+[[File:a3_fm_b_air.png|24px]] – Helicopters<br>
+[[File:a3_fm_b_plane.png|24px]] – Airplanes<br>
+Marks are further labeled by size:<br>
+[[File:a3_fm_group_0.png|24px]] – Fireteam (2-4)<br>
+[[File:a3_fm_group_1.png|24px]] – Section (> 4)<br>
+[[File:a3_fm_group_2.png|24px]] – Squad (> 12)<br>
+[[File:a3_fm_group_3.png|24px]] – Platoon (> 25)<br>
+[[File:a3_fm_group_4.png|24px]] – Company (> 60)
+
+
+{{GameCategory|arma3|Field Manual}}

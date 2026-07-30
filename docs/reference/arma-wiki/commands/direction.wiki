@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/direction
+// revision: 376966 (2026-01-01T05:58:04Z)
+// export sha1: hxpkqe3kdzq1j4h1tibldre4mzkoa7c
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+|gr2= Locations
+
+|descr= Returns the direction an object or a location is facing (differs from [[getDir]] in that this also works with locations).
+
+|s1= [[direction]] object
+
+|p1= object: [[Object]] or [[Location]]
+
+|r1= [[Number]] in range 0..360 - Direction in degrees
+
+|x1= <sqf>
+player setDir 90;
+_d = direction player;//returns 90
+</sqf>
+
+|seealso= [[getDir]] [[getDirVisual]] [[setDir]] [[setDirection]]
+}}

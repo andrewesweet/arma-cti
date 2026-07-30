@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_importImageLinks
+// revision: 369461 (2024-09-06T08:51:22Z)
+// export sha1: fg0x78yccmac263e9yj5vzusyy727cz
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.08 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.08
+
+|gr1= Diagnostic
+
+|descr= Imports CfgVehicles image links from the Community Wiki ({{Link|https://community.bistudio.com/|https://community.bistudio.com/}}).
+# Run the script. It will copy a text into clipboard
+# Open your [[Special:MyPage/Sandbox|Sandbox]] and paste the text into edit field
+# '''Preview''' the page (do not save it)
+# Copy the resulting text and use it in your scripts
+
+Result is in the following format:
+<sqf>
+_imagesCfgVehicles = [
+	"papercar","https://community.bistudio.com/wikidata/images/8/85/Arma3_CfgVehicles_PaperCar.jpg",
+	"firesectortarget","",
+	"building","",
+	// etc
+];
+</sqf>
+
+{{Feature|important|Be wary that this function is '''CPU-demanding''' and may lock your computer for 5-10 seconds.}}
+
+|s1= call [[BIS_fnc_importImageLinks]]
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>call BIS_fnc_importImageLinks;</sqf>
+
+|seealso= [[Special:Upload|Upload a File on the Wiki]]
+}}

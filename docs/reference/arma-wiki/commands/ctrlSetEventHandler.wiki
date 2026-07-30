@@ -1,0 +1,62 @@
+// source: https://community.bistudio.com/wiki/ctrlSetEventHandler
+// revision: 369343 (2024-09-03T18:43:02Z)
+// export sha1: ksxhdn2mww45s1l9wmdccdbvq1skwqn
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: GUI Control - Event Handlers | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - Event Handlers
+|gr2= Event Handlers
+
+|descr= {{Feature|obsolete|Use [[ctrlAddEventHandler]] instead as it can stack event handlers.|arma2|1.00}}
+Sets given event handler of given control: any previously added event handler is removed.
+
+{{Feature|informative|
+* See [[User Interface Event Handlers]] for the full list of handler names
+* See also [[DIK KeyCodes]] for a list of key code constants relevant to key-related events like [[User_Interface_Event_Handlers#onKeyDown|KeyDown]] and [[User_Interface_Event_Handlers#onKeyUp|KeyUp]]
+}}
+
+{{Feature|important|When using the event names listed [[User Interface Event Handlers|here]] with the [[ctrlAddEventHandler]], [[ctrlSetEventHandler]], [[displayAddEventHandler]] or [[displaySetEventHandler]] commands, the prefix "on" in the event name must be removed (e.g. ''''ButtonDown'''' instead of ''''onButtonDown'''').}}
+
+|s1= controlName [[ctrlSetEventHandler]] [handlerName, function]
+
+|p1= controlName: [[Control]]
+
+|p2= handlerName: [[String]]
+
+|p3= function: [[String]] - should return a [[Boolean]] indicating that the event has handled this event fully or not and whether the engine should execute its default code or not afterwards
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetEventHandler ["KeyDown", ""];</sqf>
+
+|x2= <sqf>(_display displayCtrl 108) ctrlSetEventHandler ["LBSelChanged","['ListChange',_this] call FireEvents"];</sqf>
+
+|seealso= [[displaySetEventHandler]] [[ctrlAddEventHandler]] [[ctrlRemoveEventHandler]] [[User_Interface_Event_Handlers|UI Event Handlers]] [[DIK KeyCodes]]
+}}
+
+{{Note
+|user= pierremgi
+|timestamp= 20210428195900
+|text= This command doesn't work on map.
+<sqf>
+waitUntil { !isNull (findDisplay 12 displayCtrl 51) };
+(findDisplay 12 displayCtrl 51) ctrlSetEventHandler ["MouseButtonDblClick", "hint str _this; true"]; // doesn't skip the marker dialog as it should.
+</sqf>
+}}

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/weaponsItemsCargo
+// revision: 378085 (2026-02-12T12:40:27Z)
+// export sha1: gkgy7opty572gtatd0t8x8t0p58sdd5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr1= Containers
+
+|gr2= Vehicle Inventory
+
+|descr=Returns an array with subarrays contains class names and also names of connected items of all the vehicle's cargo weapons in [[weaponsItems]] format. If weapon has no magazine, an empty array [] is returned instead of magazine info. If the argument is a vehicle with weapons, vehicles cargo is searched, unlike with [[weaponsItems]] command, which will return vehicle's weapons instead.
+{{Feature|informative|
+Since {{arma3}} v1.96 the returned array always contains secondary muzzle magazine info and is consistent with [[getUnitLoadout]] format for weapon items.
+}}
+
+|s1= [[weaponsItemsCargo]] vehicle
+
+|p1= vehicle: [[Object]] ammobox or vehicle
+
+|r1= [[Array]] - see [[weaponsItems]]
+
+|s2= [[weaponsItemsCargo]] [vehicle, extended]
+|s2since= arma3 2.14
+
+|p21= vehicle: [[Object]] - ammobox or vehicle
+
+|p22= extended: [[Boolean]] - [[true]] to include muzzle information
+
+|r2= [[Array]] - see [[weaponsItems]]
+
+|x1= <sqf>weaponsItemsCargo vehicle player;</sqf>
+
+|x2= <sqf>weaponsItemsCargo _weaponholder;</sqf>
+
+|seealso= [[weaponsItems]] [[primaryWeaponItems]] [[secondaryWeaponItems]] [[handgunItems]] [[addPrimaryWeaponItem]] [[addSecondaryWeaponItem]] [[addHandgunItem]] [[primaryWeapon]] [[secondaryWeapon]] [[handgunWeapon]] [[weaponAccessories]] [[weaponAccessoriesCargo]] [[addWeaponWithAttachmentsCargoGlobal]]
+}}

@@ -1,0 +1,95 @@
+// source: https://community.bistudio.com/wiki/Wargames:Help_Site:Customize_WGL:Config_Base
+// revision: 243879 (2021-02-07T01:08:05Z)
+// export sha1: 2jozey1dp4d5cqbsydg228400ryvz77
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Config Base =
+
+== Background Story ==
+
+The idea of the config base system is to give the user the possiblity to customize certain aspects of his Wargames installation by easily editing the content of one file. Config base is mainly an abstract layer for some changes to make them understandable and easily changable by the common user.
+In the config base everything besides models related stuff is located. See models_base for changing the apperance of units.
+
+{{Feature|important|NOTE: Config base is only a setup file - no user based additions possible.}}
+
+
+== File Location And Structure ==
+
+In your local WGL installation check the bin folder (''..\@wgl5\bin\'') for a file called '''config_base.hpp'''. You can open this with any program able to read text files like notepad. The file is devided into several parts. '''For the common user only the upper part is of importance.'''
+
+At the beginning there are some comments about the available settings. Next part is the important one to customize the settings. See below how to change them.
+
+All below the comment:
+
+ // ## DONT EDIT ANYTHING BELOW THIS ! ##
+
+'''may NOT be edited!'''
+
+Otherwise your local WGL installation might not work anymore.
+
+You can always download the unedited version of the config_base.hpp file.
+//TODO: add link
+
+
+== Available Settings ==
+
+=== Editor Settings ===
+
+* HIDE_BIS_VEHICLES:
+
+Makes all 'BIS vehicles' disappear in the editor.
+
+* HIDE_WGL_VEHICLES:
+
+Makes all 'Wargames vehicles' disappear in the editor.
+
+* HIDE_WGL_RADAR_VEHICLES:
+
+Makes all 'Wargames radar vehicles' disappear in the editor.
+
+* HIDE_ADD_VEHICLES:
+
+Makes all 'Addons vehicles' disappear in the editor.
+
+=== GUI Settings ===
+
+* ENABLE_GUI_LARGE:
+
+Use BIS size for certain list windows (=larger).
+
+* CHANGE_UI_COLOR_TO_GREY:
+
+Change the userinterface's color from yellow to grey.
+
+=== Gameplay Settings ===
+
+* ENABLE_AI_VOICES:
+
+Enables AI voices again.
+
+=== Visual Changes ===
+
+* HIDE_CARTRIDGE_AT_CONTACT:
+
+Makes Cartridges disappear at contact to save FPS.
+
+
+
+== How To De- / Activate Settings ==
+
+* Activate a setting:
+
+'''Remove''' the two frontslashes ('//') before the expression:
+ #define HIDE_BIS_VEHICLES
+
+* Deactivate a setting:
+
+'''Add''' two frontslashes ('//') before the expression:
+ //#define HIDE_BIS_VEHICLES
+
+
+== How To Enforce Settings ==
+
+(for dedicated server play)
+
+//TODO: add description

@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_showMarker
+// revision: 348848 (2023-11-08T14:39:11Z)
+// export sha1: jvtytzr5be2mqxd7xp77ev71id4nljf
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|eff=global
+
+|gr1= Map and Markers
+
+|descr= Gradual revealing of a marker by setting its alpha to its original alpha or to a user-specified alpha.
+
+|s1= [marker, duration, finalAlpha] spawn [[BIS_fnc_showMarker]]
+
+|p1= marker: [[String]] - marker name
+
+|p2= duration: [[Number]] - (Optional, default 1) duration of revealing
+
+|p3= finalAlpha: [[Number]] - (Optional, default 1) final alpha while showing is finished
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["BIS_marker",2] spawn BIS_fnc_showMarker;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_blinkMarker]] [[BIS_fnc_colorMarker]] [[BIS_fnc_moveMarker]]
+}}

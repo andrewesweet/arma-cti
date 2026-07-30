@@ -1,0 +1,16 @@
+// source: https://community.bistudio.com/wiki/Template:=
+// revision: 329352 (2022-07-27T12:12:21Z)
+// export sha1: 14whvv0qk2fjm0xz7j2kaxec3ucsjos
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>=</includeonly><noinclude>{{Doc/Template
+|descr= Use to transclude the equals symbol into template parameters, where the normal use of the symbol would provoke the parsing of the parameter's text, assigning the text to the right of the symbol as the value of a variable named by the text to the left.
+
+e.g {{hl|<nowiki>{{hl|_foo = true;}}</nowiki>}} tells the wiki "use the {{Template|hl}} template with {{hl|_foo}} parameter using {{hl|true}} as an argument". Using {{Template|{{=}}}} solves this issue.
+
+{{Feature|informative|Another quick solution to solve the equals issue would be telling the wiki that the first (1) argument is our content: {{hl|<nowiki>{{hl|1= _foo = true;}}</nowiki>}}.}}
+
+|example1= <nowiki>{{=}}</nowiki>
+|result1= {{=}}
+
+}}</noinclude>

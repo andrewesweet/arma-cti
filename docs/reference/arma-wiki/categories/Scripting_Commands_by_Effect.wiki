@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Scripting_Commands_by_Effect
+// revision: 294033 (2021-11-05T21:08:36Z)
+// export sha1: 0nkumn0jt0gac1kff3oju64bxjwckno
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands]]

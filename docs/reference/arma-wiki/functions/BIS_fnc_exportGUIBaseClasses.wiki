@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_exportGUIBaseClasses
+// revision: 347871 (2023-10-30T17:00:13Z)
+// export sha1: rqvhfbeykyv6e8pgpwja3xqp5l61pue
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Broken Functions | Category:Function Group: Diagnostic | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|gr2= Diagnostic
+
+|gr3= Broken Functions
+
+|descr= Export GUI macros and base classes to the clipboard.
+{{Feature|obsolete|the [[import (Config)|import]] keyword was introduced.|arma3|2.01.146644}}
+{{Feature|warning|
+The exported the Eden Editor base classes have several inheritance issues.
+If you need the base classes you can get them {{Link|https://github.com/LarrowZurb/A3_GUI_Defines|'''here'''}}.
+}}
+
+|s1= mode call [[BIS_fnc_exportGUIBaseClasses]]
+
+|p1= mode: [[String]] - mode, '''case-sensitive'''; can be one of:
+* {{hl|"Default"}} - classic base classes like {{hl|RscText}} or {{hl|RscPicture}}
+* {{hl|"3DEN"}} - [[:Category:Eden Editor|Eden Editor]] base classes like {{hl|ctrlStatic}} or {{hl|ctrlStaticPicture}}
+* {{hl|"all"}} - all GUI base classes, including more exotic ones
+{{Feature|important|
+All modes are case sensitive. If the capitalisation is disregarded the function will default to the "all" mode.
+In fact there is no explicit "all" mode, rather it is the fallback if the mode is not one of "Default" or "3DEN".
+}}
+
+|r1= [[String]] - {{hl|.hpp}} file content to be included in [[Description.ext]], also copied to the clipboard
+
+|x1= <sqf>"all" call BIS_fnc_exportGUIBaseClasses;</sqf>
+
+|seealso= [[Arma: GUI Configuration]] [[Arma 3: Utilities]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20180928143700
+|text= You can use [[Arma 3: Utilities]] to get the base class for your mission config.
+For example if you need {{hl|RscPicture}} base, enter '''utils 2''' in the debug console and click '''LOCAL EXEC''', type {{hl|RscPicture}} and press Enter, check '''Include Inherited''' box, then click '''COPY'''.
+The config is now copied to Clipboard and you can paste it in your [[Description.ext|description.ext]] and then derive your class from it.
+}}

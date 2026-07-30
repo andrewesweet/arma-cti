@@ -37,6 +37,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   marked as Phase 1 work.
 - Vendored snapshot of the Bohemia wiki (`docs/reference/arma-wiki/`), because the live wiki is
   unreachable from this project's environment and Arma 3 has been static at 2.20 for over a year.
+  Now the whole wiki rather than nine hand-picked pages: 6,690 pages across scripting commands,
+  functions, engine topics, class-name tables and the templates needed to read `{{RV}}` markup.
+  Pages are bucketed by subject at predictable paths (`commands/setDamage.wiki`), each carries its
+  categories in the header — they are template-generated, so grepping the wikitext finds none —
+  and `MANIFEST.json` is the authoritative title-to-file lookup plus the redirect alias map.
 - Lint-after-edit hook enabled for SQF, config and Rust edits — advisory only; `just check`
   remains the gate.
 

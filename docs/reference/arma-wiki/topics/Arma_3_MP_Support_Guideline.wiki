@@ -1,0 +1,150 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_MP_Support_Guideline
+// revision: 255773 (2021-04-24T18:48:26Z)
+// export sha1: hh3ri89dh0ahyqqr498wly7pkomgspy
+// categories: Category:Arma 3: MP Modes | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+==Info==
+Most of the work involved in creating your own Support mission consists of simply inserting and synchronizing several modules and game logics in the Editor. We'll take a look at how it is done in this step-by-step guide.
+
+For easier orientation, <font color="006600"><b>Modules</b></font> (<i>F7</i>), <font color="0033FF"><b>Synchronizing</b></font> (<i>F5</i>) <font color="CC0000"><b>Triggers</b></font> (<i>F3</i>) and <font color="993300"><b>Units</b></font> (<i>F1</i>) will be highlighted as such.
+
+To enable respawning, you also need to include a description.ext file with respawn definitions in your mission folder. You can download an example file here.
+
+=== Example ===
+You can find the example in the '''Arma 3 Tools''' (accessible from Steam):
+
+''\Steam\steamapps\common\Arma 3 Tools\Samples_F\Example_Supports_Mission\MP_GroundSupport01.Altis\''
+
+== Basic settings ==
+Once you've finished with the basics - inserting playable units, naming and saving the mission, setting the time of day, etc. - you have to add the core of the Support game type.
+* Insert the <font color="006600"><b>Support</b></font> module (<i>Modules > Gameplay Modes > Support</i>)
+Now you have to define the '''2''' sides that will be fighting each other.
+* Insert the respective <font color="993300"><b>Game Logics</b></font> (<i>Units > Game Logic > Sides > '''BLUFOR/OPFOR/INDEPENDENT'''</i>) of your chosen sides and <font color="0033FF"><b>synchronize</b></font> them with <font color="006600"><b>your Support</b></font> module
+
+[[File:GS_001.jpg]]
+
+You then need to set the number of tickets for each side and the conditions and quantity of the ticket bleeding.
+* Insert the <font color="006600"><b>Respawn Tickets</b></font> module (<i>Modules > Scenario Flow > Respawn Tickets</i>) and set the desired number of tickets for both sides.
+* You can also set the minimum, maximum and default amount of tickets in the description.ext. This will allow you to change the number of the tickets on the server before each game.
+
+[[File:GS_010.jpg|500px]]
+
+* Next, insert the <font color="006600"><b>Bleed Tickets</b></font> module (<i>Modules > Scenario Flow > Bleed Tickets</i>) and adjust your settings accordingly.
+
+[[File:GS_003.jpg|500px]]
+
+
+As HQ will be giving you regular updates on the situation, you need to insert an HQ module for all 3 possible sides. Don't worry about your mission only using 2 sides, the system simply needs all 3 HQ modules in order to work properly.
+* Insert the <font color="006600"><b>Headquarters Entity</b></font> module (<i>Modules > Intel > Headquarters Entity</i>) for each side (<i>BLUFOR, OPFOR and Independent</i>).
+* Set the Name of the HQ module depending on its side: BIS_hqWest, BIS_hqEast, BIS_hqGuer
+
+[[File:GS_011.jpg|500px]]
+
+
+'''Base Icon:''' To assist with situational awareness, an icon (<i>similar to sector icons</i>) will be displayed above a side's flagpole positioned within their base.
+* Place a <font color="993300"><b>flag</b></font> (<i>Empty > Objects (Flags</i>) > Flag NATO/CSAT/AAF) within both side's bases.
+* If you do not place a flag object within the base's radius, one will be created and positioned automatically.
+'''Group Icons:''' All friendly groups have their icon displayed in the 3D world and on the map (<i>the 3D world icons can be toggled on and off by pressing "U"</i>).
+
+== Creating sectors ==
+Then you need to define the sectors that can be captured - just like your typical "Sector Control" game type.
+* Insert the <font color="006600"><b>Sector module</b></font> (<i>Modules > Multiplayer > Sector</i>) onto the map. You can set its name and adjust other settings
+* <font color="0033FF"><b>Synchronize</b></font> the sector to the <font color="006600"><b>Support module</b></font>
+Now you need to define the sector's area.
+* Insert the <font color="993300"><b>Area</b></font> logic (<i>Units > Game Logic > Locations > Area</i>)
+* <font color="0033FF"><b>Synchronize</b></font> it to the <font color="006600"><b>Sector module</b></font>
+* Insert an empty <font color="FF0000"><b>Trigger</b></font> onto the map and set its position, direction and size to represent the properties of your sector
+* <font color="0033FF"><b>Synchronize</b></font> the <font color="FF0000"><b>Trigger</b></font> to the <font color="993300"><b>Area</b></font> logic
+
+[[File:GS_004.jpg|500px]]
+
+* You can also give each sector a unique name (<i>which will be used for the mission's Tasks</i>), either naming it based on its location (<i>Pyrgos, Molos airfield etc.</i>) or by giving it a codename of your choice (<i>Checkpoint Alpha, Point Victor etc.</i>).
+
+
+This way you can set as many sectors as you wish.
+
+== Setting Bases ==
+Each side needs a base where the players will respawn.
+* Insert the <font color="006600"><b>Support: Base</b></font> module (<i>Modules > Gameplay Modes > Support: Base</i>) and set its side accordingly. <u>All playable units, and most of the objects in the base, need to be synchronized to this module in order for the system to function correctly</u>.
+* The position of the module is important as it is used to determine the center of the base area.
+
+[[File:GS_005.jpg|500px]]
+
+* Insert the <font color="006600"><b>Respawn Position</b></font> module (<i>Modules > Multiplayer > Respawn Position</i>) at each base and adjust its settings: Side: BLUFOR/OPFOR/INDEPENDENT, Type: Infantry
+Now you also need to place your helicopters and set their respective respawn positions. To avoid potential conflicts, the Respawn Point game logic is used here instead of the Respawn module.
+* Insert <font color="993300"><b>empty helicopters</b></font> for each side at their respective bases and <font color="0033FF"><b>synchronize</b></font> them with their <font color="006600"><b>Base modules</b></font>
+* Create <font color="993300"><b>Respawn Points</b></font> (<i>Units > Game logic > Locations > Respawn Point</i>) for each <font color="993300"><b>helicopter</b></font> (<i>or more, to avoid possible respawn issues</i>) and <font color="0033FF"><b>synchronize</b></font> them with the <font color="006600"><b>Base modules</b></font>. Set their azimuth according to how you want the helicopter to spawn.
+
+
+[[File:GS_Helicopters.jpg|500px]]
+
+
+To allow the resupplying, rearming, and replacing of dead crew, you need to place <font color="993300"><b>Resupply Point</b></font>s.
+* Insert <font color="993300"><b>Resupply Point</b></font> game logics (<i>Units > Game Logic > Locations > <font color="993300"><b>Resupply Point</b></font></i>) and <font color="0033FF"><b>synchronize</b></font> it with the <font color="006600"><b>Base module</b></font>.
+* To mark the resupply points for players you should place the appropriate <font color="993300"><b>helipad</b></font> object on top of every <font color="993300"><b>Resupply Point</b></font>.
+** We couldn't do that automatically as in some situations there could be a <font color="993300"><b>helipad</b></font> already in the map and you would end up with 2 overlapping helipad textures.
+** Additionally, a helipad light will spawned automatically on every <font color="993300"><b>Resupply Point</b></font> so that the point is visible even if playing at night.
+For greater authenticity, we recommend you add some resupply vehicles nearby. Synchronizing them to the module will remove their own supplies and will leave the maintenance functionality to the <font color="993300"><b>Resupply Point</b></font>. They will also become indestructible.
+* Insert your <font color="993300"><b>supply vehicles</b></font> (<i>Units > Empty > Supports > </i>) and synchronize them to the <font color="993300"><b>Resupply Points</b></font>. 
+** Placing them is purely optional but, if you use them, synchronizing is highly recommended.
+
+You also need to set an Evac Point to have a place where injured units - those requesting Medevac - need to be transported.
+* Insert an <font color="993300"><b>Evac Point</b></font> game logic (<i>Units > Game Logic > Locations > Evac Point</i>) and <font color="0033FF"><b>synchronize</b></font> it with the Base module.
+* To mark the evac points for players you should place the appropriate helipad object on top of each <font color="993300"><b>Evac Point</b></font>.
+** We couldn't do that automatically as in some situations there could be a helipad already in the map and you would end up with 2 overlapping helipad textures.
+** Additionally, a helipad light will spawned automatically on every <font color="993300"><b>Evac Point</b></font> so that the point is visible even if playing at night.
+As the units taken to the base must be treated (<i>and deleted afterwards</i>), you need to place a empty medical truck nearby (<i>technically, any vehicle can be used, but we recommend a medical one</i>).
+* Create <font color="993300"><b>medical truck</b></font> nearby and <font color="0033FF"><b>synchronize</b></font> it with the <font color="993300"><b>Evac Point</b></font>.
+** Unlike resupply, this vehicle is required for medevac tasks and automatic unit garbage collection to work correctly!
+
+
+[[File:GS_ResupplyMedevac.jpg|500px]]
+
+
+Now you have a fully functional base. You can also insert <font color="993300"><b>helipads</b></font> (<i>Units > Empty > Objects (signs</i>) > Helipad variants), <font color="006600"><b>Smoke shell modules</b></font>, <font color="006600"><b>Chemlight modules</b></font> (<i>Modules > Effects > </i>) to mark them.
+
+A simple base for two players should now look something like the picture below.
+
+
+[[File:GS_BaseForTwo.jpg|500px]]
+
+
+== AI Spawnings and Tactics ==
+Now we need to set up the AI, their respawn positions, and insert the module that will control their behavior. Each side will have its own <font color="006600"><b>Spawn AI</b></font> and <font color="006600"><b>Spawn AI: Spawnpoint</b></font> modules, where you need to define the rate and maximum cap of units that can be spawned, and the chance of spawning each unit type (<i>infantry, motorized, mechanized and armored</i>). After you insert the Spawn AI: Sector Tactics module, the AI will start capturing nearby sectors and, if they're infantry, will board your helicopter if you land close enough to them. Delivering units to sectors will decrease the time it takes to capture them.
+* Insert your Spawn AI modules (<i>Modules > Mics > Spawn AI</i>) and set their correct sides, manpower caps and respawn delays.
+* The unit manpower cost measures how dangerous and tough the unit is.
+* To get a very rough idea of the costs of units, here are a few examples:
+** a rifleman costs about 0.5
+** an AA/AT soldier about 6
+** a MRAP about 6
+** an APC about 12
+** a tank about 27
+* All the values are calculated using the cost and threat values defined in the unit's config. As long as those values are accurate, the resulting manpower cost should be correct.
+
+
+[[File:GS_007.jpg|500px]]
+
+
+This module serves as a base for unit respawning. You can leave the unit type ratios at 0 (<i>the next module is designed specifically for this</i>). What you need to concern yourself with the most is the manpower cap limit - the modules will spawn units at a given rate at random spawnpoints until this cap is reached. You can also blacklist groups (<i>as defined in the Config Viewer under cfgGroups</i>) you don't want to use (<i>AA, tank platoon etc.</i>).
+Now it is time to insert modules for group respawns, in which you'll set the weighted ratio of unit types.
+* Insert your <font color="006600"><b>Spawn AI: Spawnpoint</b></font> modules (<i>Modules > Mics > Spawn AI: Spawnpoint</i>) wherever you want AI groups to spawn
+Set the weighted ratio of each module - infantry, motorized, mechanized or armor - and <font color="0033FF"><b>synchronize</b></font> it with the <font color="006600"><b>Spawn AI</b></font> module. The maximum manpower cap set in the Spawn AI module applies to all synchronized Spawnpoints. This way, you can have several completely different types of unit spawns.
+
+
+[[File:GS_008.jpg|500px]]
+
+
+As the battlefield would otherwise be empty at the start, you can also insert some groups yourself in the Editor. If you <font color="0033FF"><b>synchronize</b></font> them with the Spawn AI module, they will be added to the manpower cap, preventing there from being too many AI on the battlefield at the same time.
+
+Now for their '''tactics''' - each group, no matter their type, will check for the nearest sector and try to capture it. However, as you also have some transport helicopters at you disposal, you can transport the infantry groups closer to the sectors. Just land nearby, let them in, take off and land near one of the sectors - they will get out and try to capture the sector. Please note that if the group is within 500m of their objective, or is fighting in a sector, they will not board your helicopter.
+* Insert the <font color="006600"><b>Spawn AI: Sector Tactics</b></font> module (<i>Modules > Mics > Spawn AI: Sector Tactics</i>). No synchronization needed
+
+
+[[File:GS_009.jpg|500px]]
+
+
+Now you have a fully playable scenario.
+
+{{GameCategory|arma3|Tutorials}}
+{{GameCategory|arma3|MP Modes}}

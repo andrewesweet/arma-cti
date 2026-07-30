@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/removeWeaponAttachmentCargo
+// revision: 352122 (2024-02-01T23:25:04Z)
+// export sha1: f8210tmi3dtlz75vh35n3xfx1jaudie
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr1= Vehicle Inventory
+
+|descr= Remove attachment linked to a weapon from the vehicle cargo space. 
+{{Feature|warning|This is unofficial documentation. All Information here is as it exists in the Engine. It might not reflect the reality.}}
+
+|s1= object [[removeWeaponAttachmentCargo]] [weaponID,creatorID,attachment]
+
+|p1= object: [[Object]] - vehicle or ammo box
+
+|p2= weaponID: [[Number]]
+|p3= creatorID: [[Number]]
+|p4= attachment: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>rearmTruckOne removeWeaponAttachmentCargo [weaponID, creatorID, "attachment"];</sqf>
+
+|seealso= [[removeWeaponCargo]] [[weaponAccessoriesCargo]]
+}}

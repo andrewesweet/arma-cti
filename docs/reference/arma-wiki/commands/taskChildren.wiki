@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/taskChildren
+// revision: 377724 (2026-01-02T09:28:47Z)
+// export sha1: jk74s31yvqud6lpl1gkammbbch8c85o
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Briefing
+
+|descr= Return the child tasks of the specified task.
+
+|s1= [[taskChildren]] task
+
+|p1= task: [[Task]]
+
+|r1= [[Array]] of [[Task]]s
+
+|x1= <sqf>_children = taskChildren someTask;</sqf>
+
+|seealso= [[BIS_fnc_taskCreate]] [[BIS_fnc_taskCurrent]] [[BIS_fnc_taskExists]] [[BIS_fnc_taskParent]] [[BIS_fnc_taskType]] [[BIS_fnc_taskTypeIcon]] [[BIS_fnc_taskVar]] [[Arma 3: Task Framework]] {{Link|Arma 3: Task Framework#Task Overhaul}}
+}}

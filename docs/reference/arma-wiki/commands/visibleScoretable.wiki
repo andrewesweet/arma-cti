@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/visibleScoretable
+// revision: 310767 (2022-05-07T20:21:40Z)
+// export sha1: ju5jlzm4b2fbk9b7j20qak0ou6gjl81
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|gr1= Interaction
+
+|descr= Checks whether the score table is visible.
+
+|s1= [[visibleScoretable]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_visible = visibleScoretable;</sqf>
+
+|seealso= [[showScoretable]] [[shownScoretable]]
+}}

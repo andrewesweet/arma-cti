@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/debriefingText
+// revision: 318861 (2022-05-13T09:21:57Z)
+// export sha1: fal7z29njgz0r6vzebhg7n2oplg79ra
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Briefing
+
+|descr= Returns debriefing text of provided end.
+
+|s1= [[debriefingText]] end
+
+|p1= end: [[String]]
+
+|r1= [[String]] - ''end'' debriefing text. If it does not exist in config, empty string is returned.
+
+|x1= <sqf>_deathText = debriefingText "endDeath";</sqf>
+
+|seealso= [[setDebriefingText]] [[disableDebriefingStats]] [[enableDebriefingStats]]
+}}

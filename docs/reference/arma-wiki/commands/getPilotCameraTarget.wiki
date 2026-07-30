@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/getPilotCameraTarget
+// revision: 378360 (2026-04-03T16:01:12Z)
+// export sha1: 1pnvu6pahiiw9vkvc06abkk2d1idh7e
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Pilot Camera | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|arg= local
+
+|gr1= Pilot Camera
+
+|descr= Returns the target of the object airplane or helicopter [[Arma 3: Targeting config reference#class pilotCamera|pilotCamera]] tracking. Returns <sqf inline>[false, [0,0,0], objNull]</sqf> if camera is not in a tracking mode or if object has no [[Arma 3: Targeting config reference#class pilotCamera|pilotCamera]].
+
+|s1= [[getPilotCameraTarget]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Array]] with [isTracking, targetPosition, targetObject]
+* isTracking: [[Boolean]] - returns whether the camera is in a tracking mode 
+* targetPosition: [[Position#PositionASL|PositionASL]] - returns the position of the tracked area or object
+* targetObject: [[Object]] - returns the tracked object, [[objNull]] if camera is only tracking an area
+
+
+|x1= <sqf>getPilotCameraTarget vehicle player params ["_pilotCamTracking", "_pilotCamTargetPos", "_pilotCamTarget"];</sqf>
+
+|seealso= [[hasPilotCamera]] [[getPilotCameraPosition]] [[getPilotCameraDirection]] [[getPilotCameraRotation]] [[setPilotCameraDirection]] [[setPilotCameraRotation]] [[setPilotCameraTarget]]
+}}

@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/ctrlSetTooltip
+// revision: 369134 (2024-09-03T10:34:34Z)
+// export sha1: p8pauowg7q0vljn10oan5ii474bfmlp
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= Sets tooltip text of given control.
+{{Feature|informative|If control supports URL property, like {{hl|RscActiveText}} for example, and the URL is set, tooltip text displayed on mouse over will be appended with URL text.}}
+
+|s1= control [[ctrlSetTooltip]] text
+
+|p1= control: [[Control]] - any [[Dialogs|control type]], (except for CT_STATIC & CT_STRUCTURED_TEXT, although Arma 3 now supports these too)
+
+|p2= text: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetTooltip "tooltip";</sqf>
+|x2= <sqf>findDisplay 10000 displayCtrl 10001 ctrlSetTooltip "ThisIsAGoodTip";</sqf>
+
+|x3= <sqf>
+with uiNamespace do 
+{
+	bar = findDisplay 46 createDisplay "RscDisplayEmpty" ctrlCreate ["RscProgress", -1];
+	bar ctrlSetPosition [0,0,1,0.01];
+	bar ctrlCommit 0;
+	bar progressSetPosition 0.75;
+	bar ctrlSetTooltip "lalalalalalalala";
+};
+</sqf>
+
+|seealso= [[ctrlSetTooltipColorBox]] [[ctrlSetTooltipColorShade]] [[ctrlSetTooltipColorText]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2017-09-26 - 08:08 (UTC)</dd>
+<dt class="note">[[User:Demellion|Demellion]]</dt>
+<dd class="note">
+'''NOTE''': If you want to receive a multi-line tooltip, you can simply input newline escape symbol in your text:
+<sqf>_ctrl ctrlSetTooltip "Your text\nYour text on next line";</sqf> 
+Localization files (stringtable.xml) also supports that.
+</dd>
+
+</dl>

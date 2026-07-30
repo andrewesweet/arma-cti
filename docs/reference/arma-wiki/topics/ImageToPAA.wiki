@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/ImageToPAA
+// revision: 364106 (2024-05-04T21:57:07Z)
+// export sha1: d71c5sui13qh11k5ko8f062d54gminm
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|VERSION=
+
+|COMPATIBILITY= 
+
+[[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD= 
+{{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION=ImageToPAA is a command line tool for texture conversion. The conversion engine is identical to [[TexView 2]]. See [[Arma: Texture Naming Rules]] (also available in the tools) for more information about the conversion process.
+
+ImageToPAA also has an interface which allows batch processing from multiple source directories, error output in case of failure and some other feature.
+<br><br>
+[[File:arma3tools_imagetopaagui.jpg|350px]]
+|NOTES=
+
+|COMMAND=
+    ImageToPAA.exe [saveoptions] source [<destination>]<br>
+    ImageToPaaGUI.exe
+
+|OPTIONS=
+Size of the texture output
+* -size=<n>
+
+|EXAMPLE=
+ImageToPAA.exe X:\MySourceFolder\*.tga
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= [[TexView 2]], [[Pal2PacE]]
+
+}}
+
+=== Additional information ===
+==== Supported formats ====
+Input:
+* JPG
+* TGA (24 bit / 32 bit with alpha channel )
+* PNG (with or without alpha channel)
+* PAA
+* PAC
+
+'''Important note''': All input textures must have resolution 2^x / 2^y (e.g. 16 / 16, 32 / 32, 64 / 64, 256 /256). The largest texture size commonly supported by graphics cards and RV engine is 4096x4096, in future, larger could be possible and it is already supported in Pal2PacE. However, some textures which don't respect these rules might be converted via [[TexView 2]] (right click, open with TexView).
+
+Also, if ImageToPAA fails to convert a texture which appears to be valid, please, consider switching your source file to 8bits. 
+
+Output:
+* PAA/PAC
+* TGA (32 bit with alpha channel)
+* PNG (with alpha channel)
+
+
+{{GameCategory|arma3|Official Tools}}

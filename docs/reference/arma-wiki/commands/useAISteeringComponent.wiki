@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/useAISteeringComponent
+// revision: 352369 (2024-02-08T14:10:38Z)
+// export sha1: oleoqdnavz568askc2kq6ltosg2ofin
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Introduced with Arma 3 version 1.60 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.60
+
+|eff= global
+
+|arg= local
+
+|gr1= AI Behaviour
+
+|descr= Enable the new {{Link|link= https://forums.bistudio.com/topic/191515-ai-driving-feedback-topic/|text= AI driving}}, used to test the old and new AI driving.
+{{Feature|important|[[setDriveOnPath]] does not work if the vehicle doesn't have an AI steering component or if it's disabled.}}
+|s1= [[useAISteeringComponent]] enabled
+
+|p1= enabled: [[Boolean]]
+
+|r1= [[Nothing]]
+ 
+|s2= vehicle [[useAISteeringComponent]] enabled
+|s2since= arma3 2.18
+|p21=vehicle: [[Object]] - the vehicle to enable/disable the feature for
+|p22=enabled: [[Boolean]]
+|r2=
+|x1= <sqf>useAISteeringComponent true;</sqf>
+|x2= <sqf>myTank useAISteeringComponent false;</sqf>
+|seealso= [[isUsingAISteeringComponent]] [[isAISteeringComponentEnabled]] [[sendSimpleCommand]] [[enableAI]] [[disableAI]] [[enableAIFeature]] [[vehicleMoveInfo]]
+}}

@@ -1,0 +1,1246 @@
+// source: https://community.bistudio.com/wiki/Bohemia_Interactive_Community:Formatting
+// revision: 352063 (2024-02-01T23:24:34Z)
+// export sha1: anv1d41op6im9vxdozhnnx359rj69jg
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Community Wiki]]<br clear="all">
+[[File:BIKI Editor Help.PNG|thumb|The text editor comes with some basic text formatting tips|500px]]
+
+== Text formatting markup ==
+
+{| class="wikitable" width = "100%"
+! Description
+! width="40%" | You type
+! width="40%" | You get
+|-
+! colspan="3" style="background: #ABE" | Character (inline) formatting – ''applies anywhere''
+|-
+| Italic text
+| <pre>
+''italic''
+</pre>
+|
+''italic''
+|-
+| Bold text
+| <pre>
+'''bold'''
+</pre>
+|
+'''bold'''
+|-
+| Bold and italic
+| <pre>
+'''''bold & italic'''''
+</pre>
+|
+'''''bold & italic'''''
+|-
+| Colored text
+| <pre>
+<span style="color: red;">Colour</span>
+</pre>
+|
+<span style="color: red;">Colour</span>
+|-
+| Spoiler
+| <pre>
+<spoiler text="Click me!">spoiler</spoiler>
+</pre>
+|
+<spoiler text="Click me!">spoiler</spoiler>
+|-
+| Escape wiki markup
+| <pre>
+&lt;nowiki&gt; no ''markup''&lt;/nowiki&gt;
+</pre>
+|
+ <nowiki>no ''markup''</nowiki>
+|-
+|Small chunks of source code within a line of normal text.
+Code is displayed in a monospace font.
+|<pre>
+function <code>int m2()</code> is nice.
+</pre>
+|function <code>int m2()</code> is nice.
+|-
+|Small text
+|<pre>
+Text can be made <small>smaller like this</small>
+</pre>
+|Text can be made <small>smaller like this</small>
+|-
+|Big text
+|<pre>
+Text can be made <big>bigger like this</big>
+</pre>
+|Text can be made <big>bigger like this</big>
+|-
+|Teletype (using {{Template|hl}})
+|<pre>
+Highlight {{hl|TAG_someVariable}} in a text
+</pre>
+|Highlight {{hl|TAG_someVariable}} in a text
+|-
+! colspan="3" style="background: #ABE" | Section formatting – ''only at the beginning of the line''
+|-
+| Section Headings of different levels
+| <pre>
+== Level 2 ==
+
+=== Level 3 ===
+
+==== Level 4 ====
+
+===== Level 5 =====
+
+====== Level 6 ======
+</pre>
+----
+{{Feature|important|
+* Do not put any text on the same line after the ending equal signs.
+* An article with 4 or more headings automatically creates a '''T'''able '''o'''f '''C'''ontents (ToC) - unless setting the magic word {{hl|<nowiki>__NOTOC__</nowiki>}}.
+* You can use a right-side ToC with the [[Template:TOC|{{<nowiki/>TOC|side}} template]].
+* Recommended spacing:
+** Add spaces between the title itself and the equal signs
+** '''Two''' empty lines before a '''Level 2''' title, one after
+** '''One''' empty line before a '''Level 3''' title, one after
+** '''One''' empty line before a '''Level 4..6''' title, '''none''' after.
+}}
+|
+<!-- using HTML markup to avoid creating new sections -->
+<span style="font-family:Georgia;font-size:18pt">Level 2</span>
+----
+
+
+<span style="font-family:arial;font-size:12pt">'''Level 3'''</span>
+----
+
+<span style="font-family:arial;font-size:11pt">'''Level 4'''</span>
+----
+
+<span style="font-family:arial;font-size:11pt">'''Level 5'''</span>
+----
+
+<span style="font-family:arial;font-size:11pt">'''Level 6'''</span>
+----
+|-
+| Horizontal rule
+| <pre>
+ Text before
+----
+ Text after
+</pre>
+|
+ Text before
+----
+ Text after
+|-
+|Line Breaks
+|<pre>
+A single newline here has no effect on the layout.
+
+But an empty line starts a new paragraph, or ends a list or an indented part.
+Lines can be forced to break <br> like this.
+</pre>
+|A single newline here has no effect on the layout.
+But an empty line starts a new paragraph,
+
+or ends a list or an indented part.
+
+Lines can be forced to break
+
+like this.
+|-
+| Indent text
+| <pre>
+: Single indent
+:: Double indent
+::::: Multiple indent
+</pre>
+----
+{{Feature|informative|This workaround may harm accessibility.}}
+|
+
+: Single indent
+:: Double indent
+::::: Multiple indent
+
+|-
+| Mixture of different types of list
+|
+<pre>
+# one
+# two
+#* two point one
+#* two point two
+# three
+#; three item one
+#: three def one
+# four
+#: four def one
+#: this looks like a continuation
+#: and is often used
+#: instead <br />of &lt;nowiki><br />&lt;/nowiki>
+# five
+## five sub 1
+### five sub 1 sub 1
+## five sub 2
+</pre>
+----
+{{Feature|informative|The usage of <code>#:</code> and <code>*:</code> to break a line within an item may also harm accessibility.}}
+|
+
+# one
+# two
+#* two point one
+#* two point two
+# three
+#; three item one
+#: three def one
+# four
+#: four def one
+#: this looks like a continuation
+#: and is often used
+#: instead <br />of <nowiki><br /></nowiki>
+# five
+## five sub 1
+### five sub 1 sub 1
+## five sub 2
+
+|-
+| Preformatted text
+| <pre>
+Start each line with a space.
+ Text is '''preformatted''' and
+ ''markups'' '''''can''''' be done.
+</pre>
+----
+{{Feature|informative|This way of preformatting only applies to section formatting. Character formatting markups are still effective.}}
+|
+Start each line with a space.
+ Text is '''preformatted''' and
+ ''markups'' '''''can''''' be done.
+
+|-
+| Preformatted text blocks
+| <pre> &lt;nowiki&gt;
+Start with a space in the first column,
+(before the <tvar|1>&lt;nowiki&gt;</>).
+
+
+Then your block format will be
+    maintained.
+
+
+This is good for copying in code blocks:
+
+
+def function():
+    """ documentation string"""
+
+    if True:
+        print True
+    else:
+        print False&lt;nowiki&gt;
+</pre>
+|
+ {{#tag:nowiki|
+       Start with a space in the first column,
+       (before the &lt;nowiki&gt;).
+       
+       
+       Then your block format will be
+           maintained.
+       
+       
+       This is good for copying in code blocks:
+       
+       
+       def function():
+           """ documentation string"""
+       
+           if True:
+               print True
+           else:
+               print False
+       }}
+|}
+
+
+== HTML tags ==
+
+{| class="wikitable" width = "100%"
+! Description
+! width="40%" | You type
+! width="40%" | You get
+|-
+| Inserted <br />(Displays as underline in most browsers)
+| <syntaxhighlight lang="html"><ins> Inserted</ins></syntaxhighlight>
+
+or
+
+<syntaxhighlight lang="html"><u>Underline</u></syntaxhighlight>
+</pre>
+|
+<ins>Inserted</ins>
+
+or
+
+<u>Underline</u>
+|-
+| Deleted <br />(Displays as strikethrough in most browsers)
+| <syntaxhighlight lang="html"><s>Struck out</s></syntaxhighlight>
+
+ or
+
+<syntaxhighlight lang="html"><del>Deleted</del></syntaxhighlight>
+|
+<s>Struck out</s>
+
+ or
+
+<del>Deleted</del>
+|-
+| Blockquotes
+| <syntaxhighlight lang="html">
+ Text before
+<blockquote> Blockquote</blockquote>
+ Text after
+</syntaxhighlight>
+|
+Text before
+<blockquote> Blockquote</blockquote>
+Text after
+|-
+| Quotes
+| <syntaxhighlight lang="html"><q>This is a quotation</q></syntaxhighlight>
+{{Feature|important|The q element '''must not''' be used in place of quotation marks that do not represent quotes; for example, it is inappropriate to use the q element for marking up sarcastic statements.<ref>[https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-q-element HTML Living Standard—The &lt;'''q'''&gt; element]</ref>}}
+| <q>This is a quotation</q>
+|-
+| Comment
+| <syntaxhighlight lang="html">
+<!-- This is a comment -->
+Comments are visible only
+in the edit zone.
+</syntaxhighlight>
+|
+<!-- This is a comment -->
+Comments are visible only
+in the edit zone.
+
+|-
+| Completely preformatted text
+| <syntaxhighlight lang="html">
+<pre>
+
+Text is '''preformatted''' and
+''markups'' '''''cannot''''' be done</pre>
+</syntaxhighlight>
+----
+{{Feature|informative|For marking up of preformatted text, check the "Preformatted text" entry at the end of the previous table.}}
+|
+<pre>
+
+Text is '''preformatted''' and
+''markups'' '''''cannot''''' be done
+</pre>
+|-
+| '''Customized''' preformatted text
+| <syntaxhighlight lang="html">
+<pre style="color: red">
+
+Text is '''preformatted'''
+with a style and
+''markups'' '''''cannot''''' be done
+</pre>
+</syntaxhighlight>
+----
+{{Feature|informative|A CSS style can be defined within the <code>style</code> attribute.}}
+|
+<pre style="color: red">
+
+Text is '''preformatted'''
+with a style and
+''markups'' '''''cannot''''' be done
+</pre>
+|}
+
+continued:
+{| class="wikitable" style="table-layout: fixed; width: 100%" |
+! Description
+! width="40%" | You type
+! width="40%" | You get
+|-
+| '''Default''' preformatted text has a CSS attribute (<syntaxhighlight lang="css" inline>white-space: pre-wrap;</syntaxhighlight>) to wrap the text according to available width
+| <pre>
+<pre>
+ This long sentence is used to demonstrate text wrapping. This additional sentence makes the text even longer. This additional sentence makes the text even longer.
+&lt;/pre>
+</pre>
+|
+<pre>
+ This long sentence is used to demonstrate text wrapping. This additional sentence makes the text even longer. This additional sentence makes the text even longer.
+</pre>
+|-
+| '''Customized''' preformatted text with '''disabled''' text wrapping
+| <pre>
+<pre style="white-space: pre;">
+ This long sentence is used to demonstrate text wrapping. This additional sentence makes the text even longer. This additional sentence makes the text even longer.
+&lt;/pre>
+</pre>
+|
+<pre style="white-space: pre;">
+ This long sentence is used to demonstrate text wrapping. This additional sentence makes the text even longer. This additional sentence makes the text even longer.
+</pre>
+|}
+
+== Inserting symbols ==
+
+Symbols and other special characters not available on your keyboard can be inserted in a multitude of ways.
+Many [http://www.howtogeek.com/210824/how-to-quickly-type-special-characters-on-any-computer-smartphone-or-tablet/ Operating Systems and browsers] allow you to insert special characters through a menu option or Operating System panel.
+
+
+As a last resort, you can use a special sequence of characters. Those sequences are called HTML entities. For example, the following sequence (entity) '''&amp;rarr;''' when inserted will be shown as <ins>right arrow</ins> HTML symbol &rarr; and '''&amp;mdash;''' when inserted will be shown as an <ins>em dash</ins> HTML symbol &mdash;.
+----
+{{Feature|informative|Hover over any character to find out the symbol that it produces. Some symbols not available in the current font will appear as empty squares.}}
+
+{| class="wikitable" width="100%" align="center"
+! colspan="32" | HTML symbol entities
+|- align="center"
+| '''<span title="&amp;Aacute;">&Aacute;</span>'''
+| '''<span title="&amp;aacute;">&aacute;</span>'''
+| '''<span title="&amp;Acirc;">&Acirc;</span>'''
+| '''<span title="&amp;acirc;">&acirc;</span>'''
+| '''<span title="&amp;acute;">&acute;</span>'''
+| '''<span title="&amp;AElig;">&AElig;</span>'''
+| '''<span title="&amp;aelig;">&aelig;</span>'''
+| '''<span title="&amp;Agrave;">&Agrave;</span>'''
+| '''<span title="&amp;agrave;">&agrave;</span>'''
+| '''<span title="&amp;alefsym;">&alefsym;</span>'''
+| '''<span title="&amp;Alpha;">&Alpha;</span>'''
+| '''<span title="&amp;alpha;">&alpha;</span>'''
+| '''<span title="&amp;amp;">&amp;</span>'''
+| '''<span title="&amp;and;">&and;</span>'''
+| '''<span title="&amp;ang;">&ang;</span>'''
+| '''<span title="&amp;Aring;">&Aring;</span>'''
+| '''<span title="&amp;aring;">&aring;</span>'''
+| '''<span title="&amp;asymp;">&asymp;</span>'''
+| '''<span title="&amp;Atilde;">&Atilde;</span>'''
+| '''<span title="&amp;atilde;">&atilde;</span>'''
+| '''<span title="&amp;Auml;">&Auml;</span>'''
+| '''<span title="&amp;auml;">&auml;</span>'''
+| '''<span title="&amp;bdquo;">&bdquo;</span>'''
+| '''<span title="&amp;Beta;">&Beta;</span>'''
+| '''<span title="&amp;beta;">&beta;</span>'''
+| '''<span title="&amp;brvbar;">&brvbar;</span>'''
+| '''<span title="&amp;bull;">&bull;</span>'''
+| '''<span title="&amp;cap;">&cap;</span>'''
+| '''<span title="&amp;Ccedil;">&Ccedil;</span>'''
+| '''<span title="&amp;ccedil;">&ccedil;</span>'''
+| '''<span title="&amp;cedil;">&cedil;</span>'''
+| '''<span title="&amp;cent;">&cent;</span>'''
+|- align="center"
+| '''<span title="&amp;Chi;">&Chi;</span>'''
+| '''<span title="&amp;chi;">&chi;</span>'''
+| '''<span title="&amp;circ;">&circ;</span>'''
+| '''<span title="&amp;clubs;">&clubs;</span>'''
+| '''<span title="&amp;cong;">&cong;</span>'''
+| '''<span title="&amp;copy;">&copy;</span>'''
+| '''<span title="&amp;crarr;">&crarr;</span>'''
+| '''<span title="&amp;cup;">&cup;</span>'''
+| '''<span title="&amp;curren;">&curren;</span>'''
+| '''<span title="&amp;dagger;">&dagger;</span>'''
+| '''<span title="&amp;Dagger;">&Dagger;</span>'''
+| '''<span title="&amp;darr;">&darr;</span>'''
+| '''<span title="&amp;dArr;">&dArr;</span>'''
+| '''<span title="&amp;deg;">&deg;</span>'''
+| '''<span title="&amp;Delta;">&Delta;</span>'''
+| '''<span title="&amp;delta;">&delta;</span>'''
+| '''<span title="&amp;diams;">&diams;</span>'''
+| '''<span title="&amp;divide;">&divide;</span>'''
+| '''<span title="&amp;Eacute;">&Eacute;</span>'''
+| '''<span title="&amp;eacute;">&eacute;</span>'''
+| '''<span title="&amp;Ecirc;">&Ecirc;</span>'''
+| '''<span title="&amp;ecirc;">&ecirc;</span>'''
+| '''<span title="&amp;Egrave;">&Egrave;</span>'''
+| '''<span title="&amp;egrave;">&egrave;</span>'''
+| '''<span title="&amp;empty;">&empty;</span>'''
+| '''<span title="&amp;emsp;">&emsp;</span>'''
+| '''<span title="&amp;ensp;">&ensp;</span>'''
+| '''<span title="&amp;Epsilon;">&Epsilon;</span>'''
+| '''<span title="&amp;epsilon;">&epsilon;</span>'''
+| '''<span title="&amp;equiv;">&equiv;</span>'''
+| '''<span title="&amp;Eta;">&Eta;</span>'''
+| '''<span title="&amp;eta;">&eta;</span>'''
+|- align="center"
+| '''<span title="&amp;ETH;">&ETH;</span>'''
+| '''<span title="&amp;eth;">&eth;</span>'''
+| '''<span title="&amp;Euml;">&Euml;</span>'''
+| '''<span title="&amp;euml;">&euml;</span>'''
+| '''<span title="&amp;euro;">&euro;</span>'''
+| '''<span title="&amp;exist;">&exist;</span>'''
+| '''<span title="&amp;fnof;">&fnof;</span>'''
+| '''<span title="&amp;forall;">&forall;</span>'''
+| '''<span title="&amp;frac12;">&frac12;</span>'''
+| '''<span title="&amp;frac14;">&frac14;</span>'''
+| '''<span title="&amp;frac34;">&frac34;</span>'''
+| '''<span title="&amp;frasl;">&frasl;</span>'''
+| '''<span title="&amp;Gamma;">&Gamma;</span>'''
+| '''<span title="&amp;gamma;">&gamma;</span>'''
+| '''<span title="&amp;ge;">&ge;</span>'''
+| '''<span title="&amp;gt;">&gt;</span>'''
+| '''<span title="&amp;harr;">&harr;</span>'''
+| '''<span title="&amp;hArr;">&hArr;</span>'''
+| '''<span title="&amp;hearts;">&hearts;</span>'''
+| '''<span title="&amp;hellip;">&hellip;</span>'''
+| '''<span title="&amp;Iacute;">&Iacute;</span>'''
+| '''<span title="&amp;iacute;">&iacute;</span>'''
+| '''<span title="&amp;Icirc;">&Icirc;</span>'''
+| '''<span title="&amp;icirc;">&icirc;</span>'''
+| '''<span title="&amp;iexcl;">&iexcl;</span>'''
+| '''<span title="&amp;Igrave;">&Igrave;</span>'''
+| '''<span title="&amp;igrave;">&igrave;</span>'''
+| '''<span title="&amp;image;">&image;</span>'''
+| '''<span title="&amp;infin;">&infin;</span>'''
+| '''<span title="&amp;int;">&int;</span>'''
+| '''<span title="&amp;Iota;">&Iota;</span>'''
+| '''<span title="&amp;iota;">&iota;</span>'''
+|- align="center"
+| '''<span title="&amp;iquest;">&iquest;</span>'''
+| '''<span title="&amp;isin;">&isin;</span>'''
+| '''<span title="&amp;Iuml;">&Iuml;</span>'''
+| '''<span title="&amp;iuml;">&iuml;</span>'''
+| '''<span title="&amp;Kappa;">&Kappa;</span>'''
+| '''<span title="&amp;kappa;">&kappa;</span>'''
+| '''<span title="&amp;Lambda;">&Lambda;</span>'''
+| '''<span title="&amp;lambda;">&lambda;</span>'''
+| '''<span title="&amp;lang;">&lang;</span>'''
+| '''<span title="&amp;laquo;">&laquo;</span>'''
+| '''<span title="&amp;larr;">&larr;</span>'''
+| '''<span title="&amp;lArr;">&lArr;</span>'''
+| '''<span title="&amp;lceil;">&lceil;</span>'''
+| '''<span title="&amp;ldquo;">&ldquo;</span>'''
+| '''<span title="&amp;le;">&le;</span>'''
+| '''<span title="&amp;lfloor;">&lfloor;</span>'''
+| '''<span title="&amp;lowast;">&lowast;</span>'''
+| '''<span title="&amp;loz;">&loz;</span>'''
+| '''<span title="&amp;lrm;">&lrm;</span>'''
+| '''<span title="&amp;lsaquo;">&lsaquo;</span>'''
+| '''<span title="&amp;lsquo;">&lsquo;</span>'''
+| '''<span title="&amp;lt;">&lt;</span>'''
+| '''<span title="&amp;macr;">&macr;</span>'''
+| '''<span title="&amp;mdash;">&mdash;</span>'''
+| '''<span title="&amp;micro;">&micro;</span>'''
+| '''<span title="&amp;middot;">&middot;</span>'''
+| '''<span title="&amp;minus;">&minus;</span>'''
+| '''<span title="&amp;Mu;">&Mu;</span>'''
+| '''<span title="&amp;mu;">&mu;</span>'''
+| '''<span title="&amp;nabla;">&nabla;</span>'''
+| '''<span title="&amp;nbsp;">&nbsp;</span>'''
+| '''<span title="&amp;ndash;">&ndash;</span>'''
+|- align="center"
+| '''<span title="&amp;ne;">&ne;</span>'''
+| '''<span title="&amp;ni;">&ni;</span>'''
+| '''<span title="&amp;not;">&not;</span>'''
+| '''<span title="&amp;notin;">&notin;</span>'''
+| '''<span title="&amp;nsub;">&nsub;</span>'''
+| '''<span title="&amp;Ntilde;">&Ntilde;</span>'''
+| '''<span title="&amp;ntilde;">&ntilde;</span>'''
+| '''<span title="&amp;Nu;">&Nu;</span>'''
+| '''<span title="&amp;nu;">&nu;</span>'''
+| '''<span title="&amp;Oacute;">&Oacute;</span>'''
+| '''<span title="&amp;oacute;">&oacute;</span>'''
+| '''<span title="&amp;Ocirc;">&Ocirc;</span>'''
+| '''<span title="&amp;ocirc;">&ocirc;</span>'''
+| '''<span title="&amp;OElig;">&OElig;</span>'''
+| '''<span title="&amp;oelig;">&oelig;</span>'''
+| '''<span title="&amp;Ograve;">&Ograve;</span>'''
+| '''<span title="&amp;ograve;">&ograve;</span>'''
+| '''<span title="&amp;oline;">&oline;</span>'''
+| '''<span title="&amp;Omega;">&Omega;</span>'''
+| '''<span title="&amp;omega;">&omega;</span>'''
+| '''<span title="&amp;Omicron;">&Omicron;</span>'''
+| '''<span title="&amp;omicron;">&omicron;</span>'''
+| '''<span title="&amp;oplus;">&oplus;</span>'''
+| '''<span title="&amp;or;">&or;</span>'''
+| '''<span title="&amp;ordf;">&ordf;</span>'''
+| '''<span title="&amp;ordm;">&ordm;</span>'''
+| '''<span title="&amp;Oslash;">&Oslash;</span>'''
+| '''<span title="&amp;oslash;">&oslash;</span>'''
+| '''<span title="&amp;Otilde;">&Otilde;</span>'''
+| '''<span title="&amp;otilde;">&otilde;</span>'''
+| '''<span title="&amp;otimes;">&otimes;</span>'''
+| '''<span title="&amp;Ouml;">&Ouml;</span>'''
+|- align="center"
+| '''<span title="&amp;ouml;">&ouml;</span>'''
+| '''<span title="&amp;para;">&para;</span>'''
+| '''<span title="&amp;part;">&part;</span>'''
+| '''<span title="&amp;permil;">&permil;</span>'''
+| '''<span title="&amp;perp;">&perp;</span>'''
+| '''<span title="&amp;Phi;">&Phi;</span>'''
+| '''<span title="&amp;phi;">&phi;</span>'''
+| '''<span title="&amp;Pi;">&Pi;</span>'''
+| '''<span title="&amp;pi;">&pi;</span>'''
+| '''<span title="&amp;piv;">&piv;</span>'''
+| '''<span title="&amp;plusmn;">&plusmn;</span>'''
+| '''<span title="&amp;pound;">&pound;</span>'''
+| '''<span title="&amp;prime;">&prime;</span>'''
+| '''<span title="&amp;Prime;">&Prime;</span>'''
+| '''<span title="&amp;prod;">&prod;</span>'''
+| '''<span title="&amp;prop;">&prop;</span>'''
+| '''<span title="&amp;Psi;">&Psi;</span>'''
+| '''<span title="&amp;psi;">&psi;</span>'''
+| '''<span title="&amp;quot;">&quot;</span>'''
+| '''<span title="&amp;radic;">&radic;</span>'''
+| '''<span title="&amp;rang;">&rang;</span>'''
+| '''<span title="&amp;raquo;">&raquo;</span>'''
+| '''<span title="&amp;rarr;">&rarr;</span>'''
+| '''<span title="&amp;rArr;">&rArr;</span>'''
+| '''<span title="&amp;rceil;">&rceil;</span>'''
+| '''<span title="&amp;rdquo;">&rdquo;</span>'''
+| '''<span title="&amp;real;">&real;</span>'''
+| '''<span title="&amp;reg;">&reg;</span>'''
+| '''<span title="&amp;rfloor;">&rfloor;</span>'''
+| '''<span title="&amp;Rho;">&Rho;</span>'''
+| '''<span title="&amp;rho;">&rho;</span>'''
+| '''<span title="&amp;rlm;">&rlm;</span>'''
+|- align="center"
+| '''<span title="&amp;rsaquo;">&rsaquo;</span>'''
+| '''<span title="&amp;rsquo;">&rsquo;</span>'''
+| '''<span title="&amp;sbquo;">&sbquo;</span>'''
+| '''<span title="&amp;Scaron;">&Scaron;</span>'''
+| '''<span title="&amp;scaron;">&scaron;</span>'''
+| '''<span title="&amp;sdot;">&sdot;</span>'''
+| '''<span title="&amp;sect;">&sect;</span>'''
+| '''<span title="&amp;shy;">&shy;</span>'''
+| '''<span title="&amp;Sigma;">&Sigma;</span>'''
+| '''<span title="&amp;sigma;">&sigma;</span>'''
+| '''<span title="&amp;sigmaf;">&sigmaf;</span>'''
+| '''<span title="&amp;sim;">&sim;</span>'''
+| '''<span title="&amp;spades;">&spades;</span>'''
+| '''<span title="&amp;sub;">&sub;</span>'''
+| '''<span title="&amp;sube;">&sube;</span>'''
+| '''<span title="&amp;sum;">&sum;</span>'''
+| '''<span title="&amp;sup;">&sup;</span>'''
+| '''<span title="&amp;sup1;">&sup1;</span>'''
+| '''<span title="&amp;sup2;">&sup2;</span>'''
+| '''<span title="&amp;sup3;">&sup3;</span>'''
+| '''<span title="&amp;supe;">&supe;</span>'''
+| '''<span title="&amp;szlig;">&szlig;</span>'''
+| '''<span title="&amp;Tau;">&Tau;</span>'''
+| '''<span title="&amp;tau;">&tau;</span>'''
+| '''<span title="&amp;there4;">&there4;</span>'''
+| '''<span title="&amp;Theta;">&Theta;</span>'''
+| '''<span title="&amp;theta;">&theta;</span>'''
+| '''<span title="&amp;thetasym;">&thetasym;</span>'''
+| '''<span title="&amp;thinsp;">&thinsp;</span>'''
+| '''<span title="&amp;THORN;">&THORN;</span>'''
+| '''<span title="&amp;thorn;">&thorn;</span>'''
+| '''<span title="&amp;tilde;">&tilde;</span>'''
+|- align="center"
+| '''<span title="&amp;times;">&times;</span>'''
+| '''<span title="&amp;trade;">&trade;</span>'''
+| '''<span title="&amp;Uacute;">&Uacute;</span>'''
+| '''<span title="&amp;uacute;">&uacute;</span>'''
+| '''<span title="&amp;uarr;">&uarr;</span>'''
+| '''<span title="&amp;uArr;">&uArr;</span>'''
+| '''<span title="&amp;Ucirc;">&Ucirc;</span>'''
+| '''<span title="&amp;ucirc;">&ucirc;</span>'''
+| '''<span title="&amp;Ugrave;">&Ugrave;</span>'''
+| '''<span title="&amp;ugrave;">&ugrave;</span>'''
+| '''<span title="&amp;uml;">&uml;</span>'''
+| '''<span title="&amp;upsih;">&upsih;</span>'''
+| '''<span title="&amp;Upsilon;">&Upsilon;</span>'''
+| '''<span title="&amp;upsilon;">&upsilon;</span>'''
+| '''<span title="&amp;Uuml;">&Uuml;</span>'''
+| '''<span title="&amp;uuml;">&uuml;</span>'''
+| '''<span title="&amp;weierp;">&weierp;</span>'''
+| '''<span title="&amp;Xi;">&Xi;</span>'''
+| '''<span title="&amp;xi;">&xi;</span>'''
+| '''<span title="&amp;Yacute;">&Yacute;</span>'''
+| '''<span title="&amp;yacute;">&yacute;</span>'''
+| '''<span title="&amp;yen;">&yen;</span>'''
+| '''<span title="&amp;yuml;">&yuml;</span>'''
+| '''<span title="&amp;Yuml;">&Yuml;</span>'''
+| '''<span title="&amp;Zeta;">&Zeta;</span>'''
+| '''<span title="&amp;zeta;">&zeta;</span>'''
+| '''<span title="&amp;zwj;">&zwj;</span>'''
+| '''<span title="&amp;zwnj;">&zwnj;</span>'''
+|}
+
+{| class="wikitable"
+! Description
+! width="40%" | You type
+! width="40%" | You get
+|-
+| Copyright symbol
+| class="mw-code" | &amp;copy;
+|
+:::'''&copy;'''
+|-
+| Greek delta letter symbol
+| class="mw-code" |&amp;delta;
+|
+:::'''&delta;'''
+|-
+| Euro currency symbol
+| class="mw-code" |&amp;euro;
+|
+:::'''&euro;'''
+|}
+
+== HTML tags and symbol entities displayed themselves (with and without interpreting them) ==
+
+:<code>&amp;amp;euro;</code> &nbsp;&rarr; '''&amp;euro;'''
+
+:<code style="display: block">&lt;span style="color: red; text-decoration: line-through;"> Typo to be corrected&lt;/span></code> &nbsp;&rarr; '''<span style="color: red; text-decoration: line-through;"> Typo to be corrected</span>'''
+
+:<code style="display: block"> <nowiki>&amp;lt;span style="color: red; text-decoration: line-through;">Typo to be corrected</span></nowiki></code> &nbsp;&rarr; '''&lt;span style="color: red; text-decoration: line-through;"> Typo to be corrected&lt;/span>'''
+
+=== Nowiki for HTML ===
+
+<<nowiki/>nowiki /> can prohibit (HTML) tags:
+* <nowiki><<</nowiki>nowiki />pre> &nbsp;&rarr; <<nowiki/>pre>
+ But ''not'' &amp; symbol escapes:
+* &<<nowiki/>nowiki />amp; &nbsp;&rarr; &amp;
+
+To print &amp; symbol escapes as text, use "<code style="display: block">&amp;amp;</code>" to replace the "&" character (eg. type "<code style="display: block">&amp;amp;nbsp;</code>", which results in "<code style="display: block">&amp;nbsp;</code>")
+
+== Code Formatting ==
+
+{| class="wikitable" width = "100%"
+|-
+! Description !! You type !! You get
+|-
+| Code block (no highlighting)
+| <pre>Lorem ipsum ...
+<code style="display: block">player setPosASL [0, 0, 0];
+player setDamage 0;</code>
+... dolor sit amet.</pre>
+| <div>Lorem ipsum ...<code style="display: block">player setPosASL [0, 0, 0];
+player setDamage 0;</code>... dolor sit amet.</div>
+
+|-
+| Code inline-block (no highlighting)
+| <pre>Lorem ipsum ... <code style="display: inline-block">player setPosASL [0, 0, 0];
+player setDamage 0;</code> ... dolor sit amet.</pre>
+| <div>Lorem ipsum ... <code style="display: inline-block">player setPosASL [0, 0, 0];
+player setDamage 0;</code> ... dolor sit amet.</div>
+
+
+|-
+| [[Template:cc|Single-line code comment]] (should only be used inside <code>&lt;code&gt;</code> tags where the usage of <code>&lt;sqf&gt;</code> tags is not possible)
+| <pre><code style="display: block">[[player]] setPos{{Color|red|ASL}} [0, 0, 0]; {{cc|teleports the player}}</code></pre>
+| <code style="display: block">[[player]] setPos{{Color|red|ASL}} [0, 0, 0]; {{cc|teleports the player}}</code>
+|-
+<!-- The template {{codecomment}} adds no real value.
+| [[Template:codecomment|Code comment]] || <pre>{{codecomment|// Code comment}}</pre> || {{codecomment|// Code comment}}
+|-
+-->
+| Config code block (uses C++ highlighting)
+| <pre><syntaxhighlight lang="cpp">
+class ExampleClass
+{
+	value1 = 1; // Lorem ipsum dolor sit amet.
+	value2 = "value2";
+};
+</syntaxhighlight></pre>
+| <syntaxhighlight lang="cpp">
+class ExampleClass
+{
+	value1 = 1; // Lorem ipsum dolor sit amet.
+	value2 = "value2";
+};
+</syntaxhighlight>
+|-
+| [[SQS Syntax|SQS]] code block
+| <pre><sqs>
+#Label1
+hint "repeating"
+goto "Label1"
+</sqs></pre>
+| <sqs>
+#Label1
+hint "repeating"
+goto "Label1"
+</sqs>
+|-
+| Inline SQS code || <pre>Lorem ipsum <sqs inline>[player, _jeep] exec "getin.sqs"</sqs> dolor sit amet.</pre> || Lorem ipsum <sqs inline>[player, _jeep] exec "getin.sqs"</sqs> dolor sit amet.
+|-
+| [[SQF Syntax|SQF]] code block 
+| <pre><sqf>
+private _pos = [0, 0, 0];
+player setPosASL _pos;
+player setDamage 0; // Heals the player
+</sqf></pre>
+| <sqf>
+private _pos = [0, 0, 0];
+player setPosASL _pos;
+player setDamage 0; // Heals the player
+</sqf>
+|-
+| Inline SQF code || <pre>Lorem ipsum <sqf inline>player setPosASL [0, 0, 0]</sqf> dolor sit amet.</pre> || Lorem ipsum <sqf inline>player setPosASL [0, 0, 0]</sqf> dolor sit amet.
+|-
+| Enforce Script code block
+| <pre>
+<enforce>
+string text = "Hello World!";
+Print(text); // Prints "Hello World!".
+</enforce>
+</pre>
+| <enforce>
+string text = "Hello World!";
+Print(text); // Prints "Hello World!".
+</enforce>
+|-
+| Inline Enforce Script code (uses C# highlighting) || <pre>Lorem ipsum <enforce inline>string text = "Hello World!"</enforce> dolor sit amet.</pre> || Lorem ipsum <enforce inline>string text = "Hello World!"</enforce> dolor sit amet.
+|}
+
+'''Notes:'''
+* To render an equals sign ({{hl|{{=}}}}) or a pipe ({{hl|{{!}}}}) within a template without breaking the page, use the [[Template:=|equals template]] ({{hl|<nowiki>{{=}}</nowiki>}}) and the [[Template:!|pipe template]] ({{hl|<nowiki>{{!}}</nowiki>}}) or wrap the symbols with {{hl|<<nowiki/>nowiki>}} tags. Example:
+** {{hl|<nowiki>{{hl|_myNumber = 5;}}</nowiki>}} - This will not render properly.
+** {{hl|<nowiki>{{hl|_myNumber {{=}} 5;}}</nowiki>}} - This renders properly.
+* Use the [[Template:hl|highlight template]] ({{hl|<nowiki>{{hl}}</nowiki>}}) or {{hl|<nowiki><var></nowiki>}} tags for inline variables (e.g. "The variable <var>_myNumber</var> has the value 5").
+* Use tabs for indentation, not spaces (tick the box ''Allow tabulations usage'' in the Editing Area if necessary).
+* Maintain spacing between symbols and items, for example: <syntaxhighlight lang="cpp">
+class ExampleClass
+{
+	stringValue="value";			// bad (no space around the equals sign)
+	stringValue = "value";			// good
+
+	arrayValue = {0,0.5,0,1};		// bad (no space between the numbers)
+	arrayValue = { 0, 0.5, 0, 1 };	// good
+};
+</syntaxhighlight>
+
+{{Feature|informative|At the root level of the page (i.e. not within templates and tables), text indented by one space renders the same way as text wrapped in {{hl|<nowiki><code style="display: block"></nowiki>}} tags.}}
+
+== Lists ==
+
+Do not leave blank lines between items in a list unless there is a reason to do so, since this causes the MediaWiki software to interpret each item as beginning a new list.
+
+=== Unordered lists ===
+
+<table style="table-layout:fixed; width:100%; margin-top:0;margin-left:0; border-width:medium; padding:0;"><tr>
+<th scope="col" style="width:50%;">Markup</th>
+<th scope="col" style="width:50%;">Renders as
+</th></tr>
+<tr>
+<td style="width:50%; background:#f9f9f9; border-width:1px;border-style:solid none none solid;border-color:#ddd; padding:9px 5px 5px; vertical-align:top;"><pre style="margin:0;border:none;padding:0; word-wrap:break-word; white-space:-moz-pre-wrap;white-space:-o-pre-wrap;white-space:-pre-wrap;white-space:pre-wrap;">* Item1
+* Item2
+* Item3
+* Item4
+** Sub-item 4 a)
+*** Sub-item 4 a) 1.
+**** Sub-item 4 a) 1. i)
+**** Sub-item 4 a) 1. ii)
+** Sub-item 4 b)
+* Item5</pre>
+</td>
+<td style="width:50%; background:#f9f9f9; border-width:1px;border-style:solid solid none solid;border-color:#ddd; padding:5px; vertical-align:top;"><div style="">
+<p></p>
+<ul><li>Item1</li>
+<li>Item2</li>
+<li>Item3</li>
+<li>Item4
+<ul><li>Sub-item 4 a)
+<ul><li>Sub-item 4 a) 1.
+<ul><li>Sub-item 4 a) 1. i)</li>
+<li>Sub-item 4 a) 1. ii)</li></ul></li></ul></li>
+<li>Sub-item 4 b)</li></ul></li>
+<li>Item5</li></ul>
+</div>
+</td></tr>
+<tr>
+<td style="width:50%; border-width:1px;border-style:solid none none none;border-color:#ddd; padding:5px; vertical-align:top;"></td>
+<td style="width:50%; border-width:1px;border-style:solid none none none;border-color:#ddd; padding:5px; vertical-align:top;"></td></tr></table>
+
+====  Unordered, multi column, list ====
+
+<table style="table-layout:fixed; width:100%; margin-top:0;margin-left:0; border-width:medium; padding:0;"><tr>
+<th scope="col" style="width:50%;">Markup</th>
+<th scope="col" style="width:50%;">Renders as
+</th></tr>
+<tr>
+<td style="width:50%; background:#f9f9f9; border-width:1px;border-style:solid none none solid;border-color:#ddd; padding:9px 5px 5px; vertical-align:top;"><pre style="margin:0;border:none;padding:0; word-wrap:break-word; white-space:-moz-pre-wrap;white-space:-o-pre-wrap;white-space:-pre-wrap;white-space:pre-wrap;">
+<div style="columns: 3">
+* {{arma3}}
+* {{arma2}}
+* {{arma1}}
+* {{ofp}}
+</div></pre>
+</td>
+<td style="width:50%; background:#f9f9f9; border-width:1px;border-style:solid solid none solid;border-color:#ddd; padding:5px; vertical-align:top;"><div style="">
+<p></p>
+<div style="columns: 3">
+* {{arma3}}
+* {{arma2}}
+* {{arma1}}
+* {{ofp}}
+</div>
+</td></tr>
+<tr>
+<td style="width:50%; border-width:1px;border-style:solid none none none;border-color:#ddd; padding:5px; vertical-align:top;"></td>
+<td style="width:50%; border-width:1px;border-style:solid none none none;border-color:#ddd; padding:5px; vertical-align:top;"></td></tr></table>
+
+=== Ordered lists ===
+
+<table style="table-layout:fixed; width:100%; margin-top:0;margin-left:0; border-width:medium; padding:0;"><tr>
+<th scope="col" style="width:50%;">Markup</th>
+<th scope="col" style="width:50%;">Renders as
+</th></tr>
+<tr>
+<td style="width:50%; background:#f9f9f9; border-width:1px;border-style:solid none none solid;border-color:#ddd; padding:9px 5px 5px; vertical-align:top;"><pre style="margin:0;border:none;padding:0; word-wrap:break-word; white-space:-moz-pre-wrap;white-space:-o-pre-wrap;white-space:-pre-wrap;white-space:pre-wrap;"># Item1
+# Item2
+# Item3
+# Item4
+## Sub-item 1
+### Sub-sub-item
+#### Sub-sub-sub-item
+## Sub-item 2
+# Item5
+</pre>
+</td>
+<td style="width:50%; background:#f9f9f9; border-width:1px;border-style:solid solid none solid;border-color:#ddd; padding:5px; vertical-align:top;"><div style="">
+<p></p>
+<ol><li>Item1</li>
+<li>Item2</li>
+<li>Item3</li>
+<li>Item4
+<ol><li>Sub-item 1
+<ol><li>Sub-sub-item
+<ol><li>Sub-sub-sub-item</li></ol></li></ol></li>
+<li>Sub-item 2</li></ol></li>
+<li>Item5</li></ol>
+</div>
+</td></tr>
+<tr>
+<td style="width:50%; border-width:1px;border-style:solid none none none;border-color:#ddd; padding:5px; vertical-align:top;"></td>
+<td style="width:50%; border-width:1px;border-style:solid none none none;border-color:#ddd; padding:5px; vertical-align:top;"></td></tr></table>
+
+=== Description lists ===
+
+To list terms and definitions, start a new line with a semicolon (;) followed by the term. Then, type a colon (:) followed by a definition. The format can also be used for other purposes, such as make and models of vehicles, etc.
+
+''Description lists''<!--HTML5 name--> (formerly ''definition lists''<!--HTML4 name-->, and a.k.a. ''association lists''<!--draft HTML5 name-->) consist of group names corresponding to values. Group names (terms) are in bold. Values (definitions) are indented. Each group <em>must</em> include one or more definitions. For a single or first value, the <code style="display: block">:</code> can be placed on the same line after <code style="display: block">;</code> – but subsequent values must be placed on separate lines.
+
+'''Do not use a semicolon (;) simply to bold a line without defining a value using a colon (:). This usage renders invalid HTML5 and creates issues with screen readers.'''
+
+<table style="table-layout:fixed; width:100%; margin-top:0;margin-left:0; border-width:medium; padding:0;"><tr>
+<th scope="col" style="width:50%;">Markup</th>
+<th scope="col" style="width:50%;">Renders as
+</th></tr>
+<tr>
+<td style="width:50%; background:#f9f9f9; border-width:1px;border-style:solid none none solid;border-color:#ddd; padding:9px 5px 5px; vertical-align:top;"><pre style="margin:0;border:none;padding:0; word-wrap:break-word; white-space:-moz-pre-wrap;white-space:-o-pre-wrap;white-space:-pre-wrap;white-space:pre-wrap;">; Term : Definition1</pre>
+</td>
+<td style="width:50%; background:#f9f9f9; border-width:1px;border-style:solid solid none solid;border-color:#ddd; padding:5px; vertical-align:top;"><div style="">
+<p></p>
+<dl><dt>Term&nbsp;</dt>
+<dd>Definition1</dd></dl>
+</div>
+</td></tr>
+<tr>
+<td style="width:50%; background:#f9f9f9; border-width:1px;border-style:solid none none solid;border-color:#ddd; padding:9px 5px 5px; vertical-align:top;"><pre style="margin:0;border:none;padding:0; word-wrap:break-word; white-space:-moz-pre-wrap;white-space:-o-pre-wrap;white-space:-pre-wrap;white-space:pre-wrap;">; Term
+: Definition1
+: Definition2
+: Definition3
+: Definition4</pre>
+</td>
+<td style="width:50%; background:#f9f9f9; border-width:1px;border-style:solid solid none solid;border-color:#ddd; padding:5px; vertical-align:top;"><div style="">
+<p></p>
+<dl><dt>Term</dt>
+<dd>Definition1</dd>
+<dd>Definition2</dd>
+<dd>Definition3</dd>
+<dd>Definition4</dd></dl>
+</div>
+</td></tr>
+<tr>
+<td style="width:50%; border-width:1px;border-style:solid none none none;border-color:#ddd; padding:5px; vertical-align:top;"></td>
+<td style="width:50%; border-width:1px;border-style:solid none none none;border-color:#ddd; padding:5px; vertical-align:top;"></td></tr></table>
+
+HTML equivalent: <nowiki><dl>, <dt> <dd>, <dl></nowiki>
+
+
+== Links ==
+
+Most links can be created through the {{Template|Link}} feature, it should be used as much as possible at least for external links:
+{| class="wikitable"
+! colspan="2" style="width: 50%" | Internal Link
+! colspan="2" style="width: 50%" | External Link
+|-
+|
+<syntaxhighlight lang="html+handlebars">
+{{Link|https://www.bohemia.net/}}
+{{Link|https://www.bohemia.net/|link text}}
+{{Link|https://www.bohemia.net/?page{{=}}1|link text}}
+{{Link|https://en.wikipedia.org/wiki/Arma_2}}
+</syntaxhighlight>
+|
+* {{Link|https://www.bohemia.net/}}
+* {{Link|https://www.bohemia.net/|link text}}
+* {{Link|https://www.bohemia.net/?page{{=}}1|link text}}
+* {{Link|https://en.wikipedia.org/wiki/Arma_2}}
+|
+<syntaxhighlight lang="html+handlebars">
+{{Link|setDir}}
+{{Link|setDir#Syntax 1}}
+{{Link|setDir#Syntax 1|link text}}
+</syntaxhighlight>
+|
+* {{Link|setDir}}
+* {{Link|setDir#Syntax 1}}
+* {{Link|setDir#Syntax 1|link text}}
+|}
+
+=== Internal Links ===
+
+In most wikis, internal links are used in wikitext markup instead of regular urls to simplify linking and reading
+
+{| class="wikitable" width = "100%"
+! Description
+! width="40%" | You type
+! width="40%" | You get
+|-
+| Internal link
+| <pre>Arma is made by [[Bohemia Interactive]].</pre>
+| Arma is made by [[Bohemia Interactive]].
+|-
+| Renamed link
+| <pre>Ylands is also made by [[Bohemia Interactive|BI]].</pre>
+| Ylands is also made by [[Bohemia Interactive|BI]].
+|-
+! colspan="3" | Auto renamed links (pipe trick)
+|-
+| Auto renamed link (pipe trick)
+| <pre>[[:Category:Scripting Commands|]]</pre>
+| [[:Category:Scripting Commands|Scripting Commands]]
+|-
+| Automatically hide stuff in parentheses
+| <pre>[[raP (ArmA)|]]</pre>
+| [[raP (ArmA)|raP]]
+|-
+| Automatically hide the comma and following text
+| <pre>[[Seattle, Washington|]]</pre>
+| [[Seattle, Washington|Seattle]]
+|-
+| Automatically hide namespace
+| <pre>[[Wikipedia:Village pump|]]</pre>
+| [[Wikipedia:Village pump|Village pump]]
+|-
+| Or both
+| <pre>[[Wikipedia:Manual of Style (headings)|]]</pre>
+| [[Wikipedia:Manual of Style (headings)|Manual of Style]]
+|-
+| Does not work for section links
+| <pre>[[Wikipedia:Manual of Style#Links|]]</pre>
+| <nowiki>[[Wikipedia:Manual of Style#Links|]]</nowiki>
+|-
+|}
+
+==== Link to a section of a page ====
+You can add the specific section you want to link by adding the seciton title to the link after a # (hash).
+{| class="wikitable" width = "100%"
+!Description
+! width="40%" | You type
+! width="40%" | You get
+|-
+| Link to a section within another page
+| <pre>[[Wikipedia:Manual of Style#Italics]]</pre>
+| [[Wikipedia:Manual of Style#Italics]]
+|-
+| Piped link to a section within another page.
+| <pre>[[Wikipedia:Manual of Style#Italics|Italics]]</pre>
+| [[Wikipedia:Manual of Style#Italics|Italics]].
+|-
+|}
+
+==== Blended links ====
+{| class="wikitable" width = "100%"
+! Description
+! width="40%" | You type
+! width="40%" | You get
+|-
+| Blending active
+| <pre>San Francisco also has [[public transport]]ation. Examples include [[bus]]es, [[taxicab]]s, and [[tram]]s.</pre>
+| San Francisco also has [[public transport]]ation. Examples include [[bus]]es, [[taxicab]]s, and [[tram]]s.
+|-
+| Blending supressed
+| <pre>A [[micro-]]<nowiki />second.</pre>
+| A [[micro-]]<nowiki/>second.
+|-
+|}
+
+=== Redirects ===
+
+Redirects are used to redirect specific pages to another page.
+{| class="wikitable" width = "100%" 
+! width="20%" |  Description
+! width="80%" |  You type
+|-
+| Redirect to an article
+| <code style="display: block"><nowiki>#REDIRECT [[United States]] </nowiki></code>
+|-
+| Redirect to a section
+| <code style="display: block"><nowiki>#REDIRECT [[United States#History]]</nowiki></code>
+|-
+| Link to another namespace
+| <code style="display: block"><nowiki>See the [[Wikipedia:Manual of Style]].</nowiki></code>
+| See the [[Wikipedia:Manual of Style]].
+|}
+
+=== Categories ===
+
+{| class="wikitable" width = "100%"
+!Description
+! width="40%" | You type
+! width="40%" | You get
+|-
+| Add article to category
+| <code style="display: block"><nowiki>[[Category:Character sets]]</nowiki></code>
+|
+|-
+| Link to a category
+| <code style="display: block"><nowiki>[[:Category:Character sets]]</nowiki></code>
+| [[:Category:Character sets]]
+|-
+| Without prefix.
+| <code style="display: block"><nowiki>[[:Category:Character sets|]]</nowiki></code>
+| [[:Category:Character sets|Character sets]]
+|}
+
+=== External links ===
+
+External links link to external websites other than the Biki. These links are in url format.
+
+{| class="wikitable" width = "100%"
+!Description
+! width="40%" | You type
+! width="40%" | You get
+|-
+| Named link with an external link icon
+| <code><nowiki>[http://www.wikipedia.org Wikipedia]</nowiki></code>
+| [http://www.wikipedia.org Wikipedia]
+|-
+| Unnamed link
+
+(Used only within article body for footnotes)
+|
+<code><nowiki>[http://www.wikipedia.org]</nowiki></code>
+|
+[http://www.wikipedia.org]
+|-
+| Bare URL
+
+(Bad style)
+
+use <nowiki>&lt;nowiki&gt;</nowiki>&lt;/nowiki&gt; to keep this bad style from showing
+|
+<code style="display: block"><nowiki>http://www.wikipedia.org</nowiki></code>
+|
+http://www.wikipedia.org
+|-
+|
+Link without arrow
+
+(Not often used)
+|
+<code style="display: block"><nowiki><span class="plainlinks">[http://www.wikipedia.org Wikipedia]</span></nowiki></code>
+|
+<span class="plainlinks"> [http://www.wikipedia.org Wikipedia]</span>
+|}
+
+== Images ==
+
+{| class="wikitable" width = "100%"
+!Description
+! width="40%" | You type
+! width="40%" | You get
+|-
+| Simple image without description
+| <pre>[[File:Logo_A3_black.png]]</pre> or <pre>[[Image:Logo_A3_black.png]]</pre>
+{{Feature|important|<code>File:</code> is to be preferred.}}
+| [[File:Logo_A3_black.png]]
+|-
+| Thumb image with description, defined size and aligned right. Size can by any number. Alignment can be (left, right and center)
+| <pre>[[File:Logo_A3_black.png|thumb|right|100px|Some description]]</pre>
+| [[File:Logo_A3_black.png|thumb|right|100px|Some description]]
+|}
+
+== Tables ==
+
+There are multiple ways to make tables in wikitext. Recommended are:
+* Table tool in the text editor
+* [https://www.tablesgenerator.com/mediawiki_tables Table Generator]
+
+{{Feature|informative|Make sure the raw text is well formatted so it is easier to edit later.}}
+
+== Useful templates ==
+
+{{Feature|informative|Visit [[:Category:Templates]], to see a complete list of available templates.}}
+
+{| class="wikitable"  width = "100%"
+! Template
+! width="40%" | You type
+! width="40%" | You get
+|-
+| rowspan="4" | [[Template:Wiki]]
+| <pre>{{Wiki|delete|reason}}</pre>
+| {{Messagebox|'''This article has been submitted for''' <big>deletion</big>'''.''' '''The reason given was:''' reason'''.'''|🗙|#F00}}
+|-
+| <pre>{{Wiki|merge}}</pre>
+| {{Messagebox|This article has been proposed to merge with [[Main Page]].|<div style{{=}}"font-size: .75em; line-height: .6em">↘<br>↗</div><!--↣-->|blueviolet}}
+|-
+| <pre>{{Wiki|stub}}</pre>
+| <div class="notice metadata" id="stub">''This article is a [[:Category:Stubs|Stub]]. You can help BI Community Wiki by <span class="plainlinks">[{{fullurl:{{FULLPAGENAME}}|action=edit}} expanding it]</span>.''</div>
+|-
+| <pre>{{Wiki|WIP}}</pre>
+| {{Messagebox|This article is a '''work in progress'''!|🏗|dodgerblue}}
+|-
+| rowspan="6" | [[Template:Feature]]<br>See {{Template|Feature}} for all the available types.
+| <pre>{{Feature|arma3|text}}</pre>
+| {{Feature|arma3|text}}
+|-
+| <pre>{{Feature|informative|text}}</pre>
+| {{Feature|informative|text}}
+|-
+| <pre>{{Feature|important|important text}}</pre>
+| {{Feature|important|text}}
+|-
+| <pre>{{Feature|warning|text}}</pre>
+| {{Feature|warning|text}}
+|-
+| <pre>{{Feature|obsolete}}</pre>
+| {{Feature|obsolete}}
+|-
+| <pre>{{Feature|quote|Gastovski, out!|James Gastovski
+|https://www.youtube.com/watch?v{{=}}TGKFY1QiIGA}}</pre>
+| {{Feature|quote|Gastovski, out!|James Gastovski|https://www.youtube.com/watch?v{{=}}TGKFY1QiIGA}}
+|-
+| [[Template:GVI]]
+| <pre>{{GVI|arma3|version}}</pre>
+| {{GVI|arma3|1.96}}
+|-
+| [[Template:cn]]
+| <pre>{{cn}}</pre>
+<pre>{{cn|Miller is a nice guy}}</pre>
+| {{cn}}<br>
+{{cn|Miller is a nice guy}}
+|-
+| [[Template:Icon]]
+| <pre>{{Icon|serverExec|32}}
+{{Icon|globalArgument|32}}
+{{Icon|localArgument|32}}
+{{Icon|globalEffect|32}}
+{{Icon|localEffect|32}}</pre>
+|
+{{Icon|serverExec|32}}
+{{Icon|globalArgument|32}}
+{{Icon|localArgument|32}}
+{{Icon|globalEffect|32}}
+{{Icon|localEffect|32}}
+|}
+
+
+[[Category:Community Wiki]]

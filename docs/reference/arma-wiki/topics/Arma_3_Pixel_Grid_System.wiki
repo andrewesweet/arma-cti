@@ -1,0 +1,143 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Pixel_Grid_System
+// revision: 339206 (2023-04-28T12:38:09Z)
+// export sha1: qxtswds4u3tvfs43hkb1j7axlyxq1sy
+// categories: Category:GUI Topics | Category:Introduced with Arma 3 version 1.60
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|1.60}}
+{{Feature|informative|
+When working with Pixel Grid System the following macros might be of use:
+* <syntaxhighlight lang="cpp" inline>#include "\a3\3DEN\UI\macros.inc"</syntaxhighlight>
+* <syntaxhighlight lang="cpp" inline>#include "\a3\3DEN\UI\macroexecs.inc"</syntaxhighlight>
+}}
+Real Virtuality offers the ability to configure and draw HUD and UI elements, through the use of engine supported control types and configuration parameters.
+HUDs can be designed and implemented to show information relevant to the game, offer the ability to create unique interactive systems, along with some elements capable of being drawn in 3D space, to apply towards spatial or even diegetic UI opportunities.
+UI classes are configured using control types defined in engine.
+These control types include Text, Images, Combo-boxes, List-boxes, Check-boxes, etc. Control types can be configured with their individual parameters, while being positioned and scaled using the following:
+
+'''x''' - Horizontal position<br>
+'''y''' - Vertical position<br>
+'''w''' - Width<br>
+'''h''' - Height<br>
+
+These dictate the position in screenspace coordinates that a control should be; however placing a control in the top-left corner of the screen isn't as easy as setting the control to 0,0.
+
+When RV was first developed, it was during a time where 4:3 monitors were the norm.
+Our screen-space coordinate system was then based on this concept, with the origin being the top-left corner of a 4:3 screen, with the entire screen inheriting a 4:3 ratio as default.
+However, this meant that upon the introduction of different aspect ratios, with the common being 16:9 for 1080p, the origin now existed part way into the screen.
+Not only this, but as resolutions increase, the size of the UI also needs to scale, as it is not ideal for the same "percentage" of the screen to be taken up by the UI at higher resolutions as it is at lower ones.
+This meant that we had to introduce new script commands, which find the top-left corner origin at any resolution and aspect ratio, safeZoneX and safeZoneY.
+Obviously, this also meant that the screen width and height changed, so subsequent commands were added for that also, safeZoneW and safeZoneH.
+
+The main downside of this system is that UI elements are drawn in arbitrary "percentage" values of screen space. For example, at 1080p / 16:9 / Interface Size "Normal", the following is true:
+
+ [[safeZoneX]] = -0.452381
+ [[safeZoneY]] = -0.214286
+ [[safeZoneW]] = 1.90476
+ [[safeZoneH]] = 1.42857
+
+This is a downside because it means we turn the number of pixels on the screen into a percentage of available space to utilize.
+As an example, if we centralise a square in the centre of the screen, we would position it at (0.5,0.5), which never changes, and adjust for the width and height of the square itself.
+The width and height of the square would be specified as some number, like 0.15 or even an evaluation of some formulated grid system ((safeZoneX + safeZoneW) / desiredMaxGridSize).
+The problem here is that this number is not in pixels, it is in a percentage.
+This means the control could be drawn in between two pixels on the screen, which means the engine needs to then "guess" which pixel it should draw it in; often being not what the designer wanted.
+This leads to strange offsets across all controls on the screen, that can lead to crooked positioning, blurry text, perceived artefacts, and generally results in an unprofessional portrayal of the game and visual experience.
+
+
+== Pixel Accuracy ==
+
+In order to offer a potential solution to this problem, we have created some new script commands which offer the infrastructure to start building UI in pixel space.
+The two main script commands are pixelW and pixelH, which return an accurate size for one pixel width and height, based on the current resolution.
+It is therefore possible to use these commands to draw in exact pixels.
+To draw a single dot in the center of the screen, you could configure it like this:
+
+<syntaxhighlight lang="cpp">
+class RscText
+{
+	x = 0.5;
+	y = 0.5;
+	w = "pixelW"; // one pixel width
+	h = "pixelH"; // one pixel height
+};
+</syntaxhighlight>
+
+However, configuring UI using nothing but precise pixels would be very clumsy, and we also need a way to scale our UI up with resolution, in order to maintain visual screen space.
+To achieve this, we added the Pixel Grid System.<br>
+<br>
+The Pixel Grid System uses two base config parameters to determine what pixel grid size should be used:<br>
+'''uiScaleMaxGrids''': an integer, which is used to divide the current screen height resolution.
+<sqf>getNumber (configFile >> "uiScaleMaxGrids")</sqf>
+
+'''uiScaleFactor''': the resulting use of uiScaleMaxGrids is then used to find an appropriate grid size, using the closest multiple of uiScaleFactor when factoring in the screen resolution and interface size.
+<sqf>getNumber (configFile >> "uiScaleFactor")</sqf>
+
+The following three commands offer different variants of the pixelGrid:
+* [[pixelGridBase]] - returns grid size based on screen resolution.
+* [[pixelGridNoUIScale]] - returns grid size based on screen resolution and configs
+* [[pixelGrid]] - returns grid size based on screen resolution, interface size and configs
+
+By combining the pixelW and pixelH commands with pixelGrid, it is possible to configure displays that will scale correctly with resolutions and interface sizes.
+To configure a centralized rectangle of 12x6 grids, the following can be used:
+
+<syntaxhighlight lang="cpp">
+class RscText
+{
+	x = "0.5 - pixelW * pixelGrid * 6";	// centre minus half width
+	y = "0.5 - pixelH * pixelGrid * 3";	// centre minus half height
+	w = "pixelW * pixelGrid * 12";		// 12 Grid Width
+	h = "pixelH * pixelGrid * 6";		// 6 Grid Height
+};
+</syntaxhighlight>
+
+{{Feature|important|
+It is very important to remember that in order to maintain pixel accuracy, developers must only multiply grid sizes which result in a whole number of pixels.
+To ensure this, it is best to multiply grids by <code>n / uiScaleFactor</code>.
+}}
+
+
+== Pixel Configuration and Anchoring ==
+
+In order to make life a little easier, macro definitions can be used in place of the script commands for general management of UI construction and configuration.
+The obvious benefit of being able to quickly mass adjust scale consistency to differentiate UI design templates and for greater config readability.
+
+<syntaxhighlight lang="cpp">
+// pixel grids macros
+#define UI_GRID_W (pixelW * pixelGrid)	// one grid width
+#define UI_GRID_H (pixelH * pixelGrid)	// one grid height
+#define UI_GUTTER_W (pixelW * 2)		// gutter width  of 2 pixels
+#define UI_GUTTER_H (pixelH * 2)		// gutter height of 2 pixels
+
+// sizes for our control
+#define BOX_W (UI_GRID_W * 12) // control is 12 grids wide
+#define BOX_H (UI_GRID_H * 5)  // control is 5 grids high
+
+// create a box in the top right corner, with gutter spacing from the screen edge
+class RscText
+{
+	x = safeZoneX + safeZoneW - (BOX_W + UI_GUTTER_W);	// right side of screen minus box width and gutter
+	y = safeZoneY + UI_GUTTER_H;						// top of screen plus gutter
+	w = BOX_W;											// width of control
+	h = BOX_H;											// height of control
+};
+</syntaxhighlight>
+
+It is also important to know that as resolution changes, the number of available grids may fluctuate:
+
+<syntaxhighlight lang="cpp">
+uiScaleMaxGrids = 64;
+uiScaleFactor = 4;
+</syntaxhighlight>
+
+'''1080p'''
+ 1080 / uiScaleMaxGrids = 16.875 (pixelGrid rounds to 16)
+ 1080 / 16 = 67.5 available grids
+
+'''1440p'''
+ 1440 / uiScaleMaxGrids = 22.5 (pixelGrid rounds to 24)
+ 1440 / 24 = 60 available grids
+
+'''With this in mind, it is always best to try and configure UI by anchoring to SafeZones based values'''.
+
+
+[[Category:GUI Topics||Pixel Grid System]]
+[[Category:Introduced with Arma 3 version 1.60]]

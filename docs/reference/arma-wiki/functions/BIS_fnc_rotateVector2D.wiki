@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_rotateVector2D
+// revision: 348898 (2023-11-08T14:39:55Z)
+// export sha1: ayc2hg5k7tip9y8jp4061uwlrm4c73r
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Vectors | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Vectors
+
+|descr= This function returns a 2D vector rotated a specified number of degrees around the origin.
+
+|s1= [vector2D, angle] call [[BIS_fnc_rotateVector2D]]
+
+|p1= vector2D: [[Array]] - 2D vector
+
+|p2= angle: [[Number]] - angle in degree
+
+|r1= [[Array]] - new vector
+
+|x1= <sqf>[[5,3], 60] call BIS_fnc_rotateVector2D;//Returns[-0.0980766,5.83013]</sqf>
+
+|seealso= [[BIS_fnc_crossProduct]] [[BIS_fnc_magnitudeSqr]] [[BIS_fnc_vectorFromXToY]]
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20150121141500
+|text= Be careful when using this function in conjunction with [[getDir]] or [[BIS_fnc_dirTo]], which return a clockwise angle, while the rotation is done counterclockwise as per trigonometric conventions.<br>
+To counter this, simply negate their output:
+<sqf>
+[[0,1,0], -(getDir _object)] call BIS_fnc_rotateVector2D;
+[[0,1,0], -([_unit, _vehicle] call BIS_fnc_dirTo)] call BIS_fnc_rotateVector2D;
+</sqf>
+}}

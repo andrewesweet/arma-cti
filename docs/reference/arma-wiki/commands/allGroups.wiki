@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/allGroups
+// revision: 377010 (2026-01-01T08:18:18Z)
+// export sha1: 6rfsmukkzfzj6ms7lqez61qdvf9drb8
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Command Group: Object Detection | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Groups
+
+|gr2= Object Detection
+
+|descr= Return a list of all groups created on the following sides [[east]], [[west]], [[resistance]]/[[independent]] and [[civilian]] only. Does not contain groups of [[sideLogic]].
+
+|s1= [[allGroups]]
+
+|r1= [[Array]] of [[Group]]s
+
+|x1= <sqf>{ leader _x sideChat "Go ! Go ! Go !" } forEach allGroups;</sqf>
+
+|x2= All groups with players:
+<sqf>
+private _allGroupsWithPlayers = [];
+{ _allGroupsWithPlayers pushBackUnique group _x } forEach allPlayers;
+</sqf>
+
+|seealso= [[group]] [[groups]] [[units]] [[allCurators]] [[allDead]] [[playableUnits]] [[switchableUnits]] [[vehicles]] [[allUnitsUAV]]
+}}

@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_MPexec
+// revision: 363814 (2024-04-22T18:52:30Z)
+// export sha1: 1yjg1n9jsnnlylb04f3ur4l6cq3i11i
+// categories: Category:Arma 3: Functions | Category:Function Group: Multiplayer | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Multiplayer
+
+|descr= Execute received remote execution. This function is used by [[BIS_fnc_MP]] and should not be called directly.
+{{Feature|arma3|Obsolete and entirely effectless (empty file) since {{GVI|arma3|1.52}} and the introduction of [[remoteExec]]/[[remoteExecCall]].}}
+
+|s1= [packetName, packetValue] call [[BIS_fnc_MPexec]]
+
+|p1= packetName: [[String]] - packet variable name - always "BIS_fnc_MP_packet" (not used in the function)
+
+|p2= packetValue: [[Array]] format [params, functionName, target, isSpawn, isPersistent] - packet sent by [[BIS_fnc_MP]]; see its page for more details
+
+|r1= [[Boolean]] - true if function was executed successfully
+
+|x1= <sqf>["BIS_fnc_MP_packet", ["Hello World", "hint", true, true]] call BIS_fnc_MPexec;</sqf>
+
+|seealso= [[BIS_fnc_MP]] [[remoteExec]] [[remoteExecCall]]
+}}

@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_missileLaunchPositionFix
+// revision: 349286 (2023-11-08T14:51:15Z)
+// export sha1: mp1y06su6nh6xar21gw3fk4ykm1niu6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Vehicles
+
+|descr= Workaround fix for ATGM/SAM launch positions
+
+|s1= [vehicle, projectile, selection, projectileType] call [[BIS_fnc_missileLaunchPositionFix]]
+
+|p1= vehicle: [[Object]] - vehicle
+
+|p2= projectile: [[Object]] - projectile
+
+|p3= selection: [[Object]] - selection to adjust the missile's position to
+
+|p4= projectileType: [[Object]] - type of projectile that should be adjusted
+
+|r1= [[Boolean]] - returns [[true]] if successful
+
+|x1= <sqf>[_vehicle,_missile,"missile_move","MissileBase"] call BIS_fnc_missileLaunchPositionFix;</sqf>
+
+|seealso= [[missileTarget]] [[missileTargetPos]]
+}}

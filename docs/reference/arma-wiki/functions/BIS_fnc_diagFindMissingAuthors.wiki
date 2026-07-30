@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagFindMissingAuthors
+// revision: 309317 (2022-05-05T12:04:26Z)
+// export sha1: fsxutsjyr67nhrxal95tea7wl0iyy3m
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Copies a list of objects to the clipboard which miss the author attribute.
+
+|s1= call [[BIS_fnc_diagFindMissingAuthors]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_diagFindMissingAuthors;</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic|Diag functions]]
+}}

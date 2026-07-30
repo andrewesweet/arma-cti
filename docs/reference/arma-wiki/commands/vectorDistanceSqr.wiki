@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/vectorDistanceSqr
+// revision: 378368 (2026-04-03T16:47:13Z)
+// export sha1: 63az9bd92pdl1277q4fhuld6zs91yla
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr2= Math - Vectors
+
+|descr= Squared distance between two 3D vectors.
+
+|s1= vector1 [[vectorDistanceSqr]] vector2
+
+|p1= vector1: [[Vector3D]] or [[Vector2D]] - 3D or {{GVI|arma3|2.00|size= 0.75}} 2D vector (z coordinate is defaulted to 0)
+
+|p2= vector2: [[Vector3D]] or [[Vector2D]] - 3D or {{GVI|arma3|2.00|size= 0.75}} 2D vector (z coordinate is defaulted to 0)
+
+|r1= [[Number]]
+
+|x1= <sqf>_distSqr = getPos player vectorDistanceSqr [0,0,2];</sqf>
+
+|seealso= [[vectorAdd]] [[vectorDiff]] [[vectorCrossProduct]] [[vectorDotProduct]] [[vectorCos]] [[vectorMagnitude]] [[vectorMagnitudeSqr]] [[vectorMultiply]] [[vectorDistance]] [[vectorDir]] [[vectorUp]] [[setVectorDir]] [[setVectorUp]] [[setVectorDirAndUp]] [[distanceSqr]] [[vectorNormalized]] [[vectorFromTo]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140628085000
+|text= Algorithm:
+<sqf>
+_vector1 = [x1,y1,z1];
+_vector2 = [x2,y2,z2];
+_result = (x2 - x1) ^ 2 + (y2 - y1) ^ 2 + (z2 - z1) ^ 2;
+</sqf>
+|game= arma3
+|version= 1.22
+}}

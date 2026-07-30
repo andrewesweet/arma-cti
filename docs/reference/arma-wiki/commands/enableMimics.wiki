@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/enableMimics
+// revision: 310253 (2022-05-05T13:11:11Z)
+// export sha1: 2u8f3dwqvu95orah5xyj3rnywl2xc44
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr1= Object Manipulation
+
+|descr=Enables/disables mimics on a given unit.
+
+|s1= unit [[enableMimics]] enabled
+
+|p1= unit: [[Object]]
+
+|p2= enabled: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>cursorTarget enableMimics false;</sqf>
+
+|seealso= [[setMimic]]
+}}

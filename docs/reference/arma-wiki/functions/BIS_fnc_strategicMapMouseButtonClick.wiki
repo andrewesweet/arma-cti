@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_strategicMapMouseButtonClick
+// revision: 324833 (2022-07-01T12:03:12Z)
+// export sha1: lmah4djhz6dtym2maxo4uveg52x0i5a
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strategic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strategic
+
+|descr= Internal function used by [[BIS_fnc_strategicMapOpen]].
+
+|s1= -
+
+|r1= -
+
+|x1= -
+
+|seealso= [[ORBAT Viewer]] [[BIS_fnc_ORBATAddGroupOverlay]] [[BIS_fnc_ORBATAnimate]] [[BIS_fnc_ORBATConfigPreview]] [[BIS_fnc_ORBATGetGroupParams]] [[BIS_fnc_ORBATOpen]] [[BIS_fnc_ORBATRemoveGroupOverlay]] [[BIS_fnc_ORBATSetGroupFade]] [[BIS_fnc_ORBATSetGroupParams]] [[BIS_fnc_ORBATTooltip]] [[BIS_fnc_strategicMapAnimate]]
+}}

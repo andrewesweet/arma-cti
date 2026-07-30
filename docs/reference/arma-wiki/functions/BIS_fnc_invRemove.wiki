@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_invRemove
+// revision: 349422 (2023-11-08T16:27:33Z)
+// export sha1: oqkwwoa4f5amgny5fgx427y4escrpng
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Inventory
+
+|descr=Removes from inventory. Given number of items. Returns actually removed items count.
+
+|s1= [object,class,count] call [[BIS_fnc_invRemove]]
+
+|p1=object: [[Object]]
+
+|p2=class: [[String]] - item class to be added
+
+|p3=count: [[Number]] - (Optional, default 1) number of items to be removed
+
+|r1= [[Number]] - number of items which were removed
+
+|x1= <sqf>[player,"someClass",5] call BIS_fnc_invRemove;</sqf>
+
+|seealso= [[BIS_fnc_invCodeToArray]] [[BIS_fnc_invString]] [[BIS_fnc_invSlots]] [[BIS_fnc_invSlotsEmpty]] [[BIS_fnc_invSlotType]] [[BIS_fnc_invAdd]]
+}}

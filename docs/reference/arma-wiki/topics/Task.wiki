@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/Task
+// revision: 179426 (2020-12-31T21:28:07Z)
+// export sha1: bkvor85gakrq52rqrr8lvkqmnbeczho
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable" style="float: right; margin: 0 0 1em 1.5em"
+|+ Possible values
+! Task Type !! Task Icon ([[taskHint]])
+|-
+| "Succeeded" || "taskDone"
+|-
+| "Failed" || "taskFailed"
+|-
+| "Canceled" || "taskFailed"
+|-
+| "Created" || "taskNew"
+|-
+| "Current" || "taskCurrent"
+|}
+A [[Task]] is a [[:Category:Data Types|Data Type]] that contains a task's details, such as location, title and description.<br>
+It was introduced with {{arma2}}; before that, games used ''objectives'' defined in [[Briefing.html]]. A null task is of [[taskNull]] value.
+
+* For {{arma3}} tasks, see [[Arma 3: Task Framework]] and its [[Arma 3: Task Framework Tutorial|Tutorial]].
+* For {{arma2}} tasks, see [[Arma 2: Task Tutorial]]
+
+
+== See Also ==
+
+* [[:Category:Briefing|Briefing]]
+
+
+[[Category: Data Types]]

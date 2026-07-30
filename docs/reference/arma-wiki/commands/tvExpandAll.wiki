@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/tvExpandAll
+// revision: 330358 (2022-09-03T09:09:58Z)
+// export sha1: thf2woim5xxn488zfuxi4228z2a1wmi
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|arg= local
+
+|eff= local
+
+|descr= Expands all tree items for the given Tree View.
+
+|s1= [[tvExpandAll]] idc
+
+|p1= idc: [[Number]]
+
+|r1= [[Nothing]]
+
+|s2= [[tvExpandAll]] control
+
+|p21= control: [[Control]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>tvExpandAll 101;</sqf>
+
+|x2= <sqf>tvExpandAll _ctrl;</sqf>
+
+|seealso= [[tvExpand]] [[tvCollapse]] [[tvCollapseAll]]
+}}

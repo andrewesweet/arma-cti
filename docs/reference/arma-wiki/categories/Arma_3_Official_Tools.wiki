@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Official_Tools
+// revision: 183784 (2021-01-05T17:45:26Z)
+// export sha1: 7nh03gjidtoxg11s7sfrxdeav446fl3
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category contains official tools created by Bohemia Interactive. These tools are provided to the community under the terms that allows free use of the tools for any non commercial purposes. Any commercial use of the tools is strictly prohibited without permission from BI. You must agree to the terms of [[End User License Agreement for BI's Tools|End User License Agreement]] for BI's Tools before using any of the tools.
+
+The tools package is available for free [http://store.steampowered.com/app/233800/ in the Steam store]
+
+{{GameCategory|arma3|Editing}}
+[[Category: Official Tools]]

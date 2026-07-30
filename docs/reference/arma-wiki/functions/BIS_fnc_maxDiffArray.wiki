@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_maxDiffArray
+// revision: 327956 (2022-07-13T13:05:24Z)
+// export sha1: sftxfwskktf9urihrvhzbrqqtr1t22m
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Arrays
+
+|descr= Function to return the maximum difference between all values in an array.
+
+|s1= [arrayOfNumbers] call [[BIS_fnc_maxDiffArray]]
+
+|p1= arrayOfNumbers: [[Array]] - numbers to be tested
+
+|r1= [[Number]] - the biggest difference
+
+|x1= <sqf>private _maxDiff = [[0, 5, 10, -5]] call BIS_fnc_maxDiffArray; // will return 15 (-5 to 10)</sqf>
+
+|seealso=
+}}

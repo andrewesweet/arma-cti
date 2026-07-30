@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/canSuspend
+// revision: 353403 (2024-03-17T20:47:33Z)
+// export sha1: hyftbnyij91fjmtdsmyz5w3hz6jn7ml
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr2= Program Flow
+
+|descr= Returns [[true]] if [[sleep]], [[uiSleep]] or [[waitUntil]] commands can be used in the current scope.
+Usually when suspension is not allowed but used, for example when code is executed in [[Scheduler#Unscheduled Environment|unscheduled environment]], the script engine would ignore any suspension command and throw error: "Suspending not allowed in this context".
+Using [[canSuspend]] command allows to detect the correct environment for the code.
+
+{{Feature|informative|
+The definition of [[Scheduler#Scheduled Environment|scheduled]] and [[Scheduler#Unscheduled Environment|unscheduled environment]] is not the same as whether or not the script execution can or cannot be suspended.
+For example while .''sqs'' and .''fsm'' scripts are [[Scheduler#Scheduled_Environment|scheduled]] (i.e. added to the [[Scheduler|scheduler]]:
+[[diag_activeSQSScripts]], [[diag_activeMissionFSMs]]), they cannot use [[sleep]] or be suspended like [[execVM]] or [[spawn]] scripts can, therefore [[canSuspend]] for these types of scripts will return [[false]].
+}}
+
+|s1= [[canSuspend]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+onEachFrame
+{
+	systemChat str canSuspend;			// false
+	0 spawn { hint str canSuspend };	// true
+	onEachFrame {};
+};
+</sqf>
+
+|x2= Make sure the function code is always spawned even when called:
+<sqf>
+private _sleepingCode =
+{
+	if (!canSuspend) exitWith { _this spawn _sleepingCode };
+	sleep _this;
+	hint ("slept " + str _this);
+};
+
+5 call _sleepingCode;
+</sqf>
+
+|seealso= [[sleep]] [[uiSleep]] [[waitUntil]] [[call]] [[spawn]] [[execVM]] [[isRemoteExecuted]] [[isRemoteExecutedJIP]] [[remoteExecutedOwner]] [[isUIContext]] [[isGamePaused]] [[isGameFocused]]
+}}

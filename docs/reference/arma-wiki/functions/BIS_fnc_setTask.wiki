@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setTask
+// revision: 352179 (2024-02-01T23:25:46Z)
+// export sha1: owaztmbo60nmfjtcw1sw26pv8judfla
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|arg= global
+|eff= global|gr1= Tasks
+
+|descr= Set task parameters.
+<br>Create the task when it doesn't exist. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= [taskId, target, description, (destination, state, priority, showNotification, isGlobal, type, visibleIn3D)] call [[BIS_fnc_setTask]]
+
+|p1= '''taskId''':
+<br>[[String]] - Task ID
+<br>[[Array]] -  In the format of [task ID, parent task ID]
+|p2= '''target''': Task owner(s)
+<br>[[Boolean]] - true to set task of all playable units
+<br>[[Object]] - set task of a specific object
+<br>[[Group]] - set tasks of all objects in the group
+<br>[[Side]] - set tasks of all objects of the given side
+<br>[[Array]] - collection of above types
+|p3= '''description''':
+<br>[[Array]] - Task description in the format ["description", "title", "marker"]
+<br>[[String]] - [[Description.ext#CfgTaskDescriptions|CfgTaskDescriptions]] class name, if empty string is used then [[Description.ext#CfgTaskDescriptions|CfgTaskDescriptions]] is searched for a class matching the tasks TaskID
+|p4= '''destination''' (Optional): Task destination
+<br>[[Object]]
+<br>[[Array]] - either position in format [x,y,z], or [object,precision] as used by setSimpleTaskTarget command
+|p5= '''state''' (Optional): Task state
+<br>[[String]] - can be one of following:
+<br>"CREATED"
+<br>"ASSIGNED"
+<br>"AUTOASSIGNED" ("ASSIGNED" when no task is assigned yet, otherwise "CREATED")
+<br>"SUCCEEDED"
+<br>"FAILED"
+<br>"CANCELED"
+<br>[[Boolean]] - true to set the task as current
+|p6= '''priority''' (Optional): [[Number]] - priority. When a current task is completed, system select a next one with the larges priority >{{=}} 0
+|p7= '''showNotification''' (Optional): [[Boolean]] - true to show notification (default), false to disable it
+|p8= '''isGlobal''' (Optional): [[Boolean]] - true to set task globally (default), false to set it only locally
+|p9= '''type''' (Optional): [[String]] - task type from CfgTaskTypes, if not defined, type "" is being used
+|p10= '''visibleIn3D''' (Optional): [[Boolean]] - true to make task always visible in 3D (default: false)
+
+|r1= [[String]] - task ID
+
+|x1= <sqf>["Task_01", true, ["Protect the respawn point.","Respawn Point West","respawn_west"], [MHQ,false], "ASSIGNED", 5, true, true, "Defend", true] call BIS_fnc_setTask;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

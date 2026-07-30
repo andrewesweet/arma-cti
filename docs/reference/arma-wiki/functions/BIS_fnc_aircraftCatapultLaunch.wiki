@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_aircraftCatapultLaunch
+// revision: 329426 (2022-07-27T15:50:17Z)
+// export sha1: fjbn3fmlzogopynm32o0fnrj28u8var
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Aircraft Carrier | Category:Functions | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.68
+
+|arg= local
+
+|gr1= Aircraft Carrier
+
+|descr= Accelerates an aircraft off the aircraft carrier. For this to work the aircraft must be properly configured in config. See [[Arma 3: Aircraft Systems]] for information about needed config changes.
+
+|s1= [aircraft, direction] call [[BIS_fnc_aircraftCatapultLaunch]]
+
+|p1= aircraft: [[Object]] - the aircraft that should be launched
+
+|p2= direction: [[Number]] - (optional, default <sqf inline>direction _aircraft</sqf>) direction to launch the aircraft off to
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_plane] call BIS_fnc_aircraftCatapultLaunch;</sqf>
+
+|seealso= [[BIS_fnc_aircraftTailhook]]
+}}

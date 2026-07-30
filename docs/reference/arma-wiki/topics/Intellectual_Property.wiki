@@ -1,0 +1,352 @@
+// source: https://community.bistudio.com/wiki/Intellectual_Property
+// revision: 364957 (2024-07-03T16:44:22Z)
+// export sha1: go2ihs87mcewr2i8eh6t78n37geps5m
+// categories: Category:Public Data
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This page covers many questions some users may have about what they can and cannot do about {{Name|bi}}'s or other licenses '''for a free, non-commercial use'''.
+
+
+== Definitions ==
+
+{| class="wikitable"
+! Term !! Definition
+|-
+| License
+| {{Link|https://en.wikipedia.org/wiki/License}}
+|-
+| End-User License Agreement (EULA)
+| {{Link|https://en.wikipedia.org/wiki/End-user_license_agreement}}
+|-
+| Intellectual Property (IP)
+| {{Link|https://en.wikipedia.org/wiki/Intellectual_property}}
+|-
+| Fair Use
+| {{Link|https://en.wikipedia.org/wiki/Fair_use}}&nbsp;/&nbsp;{{Link|https://en.wikipedia.org/wiki/Fair_dealing}}&nbsp;/&nbsp;{{Link|https://fairuse.stanford.edu/overview/fair-use/what-is-fair-use/|Stanford uni link}}
+|-
+| Digital Millennium Copyright Act (DMCA)
+| {{Link|https://en.wikipedia.org/wiki/DMCA}}&nbsp;/&nbsp;{{Link|https://www.copyright.gov/legislation/dmca.pdf|US Summary}}
+|}
+
+=== Fair Use ===
+
+{{Feature|quote|You keep using that word, I do not think it means what you think it means|Iñigo Montoya|https://www.youtube.com/watch?v{{=}}G2y8Sx4B2Sk}}
+
+
+"Fair Use" is very often called as the ideal line of defense regarding copyright infringement.<br>
+Alas for its subscribers, Fair Use most likely means allowed '''''for research and educational purpose''''', under which gaming/modding does not fall.
+It is also a '''personal, non-commercial''' "default license" that cannot cover a mod team nor Steam distribution of such work.
+
+For more information, see the Wikipedia articles {{Link|https://en.wikipedia.org/wiki/Fair_use}}&nbsp;/&nbsp;{{Link|https://en.wikipedia.org/wiki/Fair_dealing}} above.
+
+=== Personal Use ===
+
+"Personal Use", as "Fair Use", is also frequently used to justify illegal IP usage.<br>
+Personal use means '''for oneself only'''. Personal use does '''not''' cover group usage (e.g friends, clans), let alone '''reuploads'''.
+
+
+== {{Name|bi}} ==
+
+{{Feature|armaR|For {{armaR}}, see {{GameCategory|armaR|Modding|Official Tools|text= Workbench}}'s {{Link|https://store.steampowered.com/eula/1874910_eula_1|EULA}} and its {{Link|https://reforger.armaplatform.com/news/eula-faq|FAQ}}.}}
+
+{{Messagebox/BI
+| Important:
+| Regarding BI Tools usage, '''anything that went through [[:Category:Official Tools|{{Name|bi|short}} Tools]] can NOT be sold''' by default, without '''express authorisation''' from {{Name|bi}}.
+See [[End User License Agreement for BI%27s Tools|BITools EULA]] for more information.
+}}
+
+{| class="wikitable"<!-- cannot use align-center-col-3 due to present rowspan -->
+! Category
+! Action
+! Allowed
+! Conditions
+|-
+| rowspan="4" | Mods &amp; PBO
+| Buying/Selling mods
+| style="text-align: center" | {{Icon|unchecked}}
+| [[End User License Agreement for BI%27s Tools|BITools EULA]]
+|-
+| Buying/Selling '''pbo''' files
+| style="text-align: center" | {{Icon|unchecked}}
+| [[End User License Agreement for BI%27s Tools|BITools EULA]]
+|-
+| Porting {{Name|bi|short}} games' reverse-engineered content to other titles
+| style="text-align: center" | {{Icon|unchecked}}
+| [[End User License Agreement for BI%27s Tools|BITools EULA]]
+|-
+| Forward-porting previous {{Name|bi|short}} games' {{Link|https://www.bohemia.net/community/licenses/licensed-data-packages|Licensed Data Package}} content to newer {{Name|bi|short}} titles
+| style="text-align: center" | {{Icon|checked}}
+| [[End User License Agreement for BI%27s Tools|BITools EULA]]
+|-
+| rowspan="3" | 3D Models
+| Buying/Selling '''p3d''' 3D models
+| style="text-align: center" | {{Icon|unchecked}}
+| [[End User License Agreement for BI%27s Tools|BITools EULA]]
+|-
+| Buying/Selling '''non-p3d''' 3D models
+| style="text-align: center" | {{Icon|checked}}
+| {{n/a}}
+|-
+| Buying/Selling '''non-p3d''' to '''p3d''' conversion service
+| style="text-align: center" | {{Icon|unchecked}}
+| [[End User License Agreement for BI%27s Tools|BITools EULA]]
+|-
+| rowspan="3" | Textures
+| Buying/Selling '''paa''' textures
+| style="text-align: center" | {{Icon|unchecked}}
+| [[End User License Agreement for BI%27s Tools|BITools EULA]]
+|-
+| Buying/Selling '''non-paa''' textures
+| style="text-align: center" | {{Icon|checked}}
+| {{n/a}}
+|-
+| Buying/Selling '''non-paa''' to '''paa''' conversion service
+| style="text-align: center" | {{Icon|unchecked}}
+| [[End User License Agreement for BI%27s Tools|BITools EULA]]
+|-
+| rowspan="3" | Text content
+| Buying/Selling '''sqf''' scripts
+| style="text-align: center" | {{Icon|checked}}
+| {{n/a}}
+|-
+| Buying/Selling '''cpp''' (config) files
+| style="text-align: center" | {{Icon|checked}}
+| {{n/a}}
+|-
+| Buying/Selling '''bin''' (binarised config) files
+| style="text-align: center" | {{Icon|unchecked}}
+| [[End User License Agreement for BI%27s Tools|BITools EULA]]
+|-
+| rowspan="2" | Monetising in-game content
+| Giving/Taking money for {{arma3}} server content
+| style="text-align: center" | {{Icon|checked}}
+| {{Link|https://www.bohemia.net/monetization|Monetisation Rules}}
+|-
+| Giving/Taking money for {{dayz}} server content
+| style="text-align: center" | {{Icon|checked}}
+| {{Link|https://www.bohemia.net/monetization|Monetisation Rules}}
+|-
+| rowspan="1" | Media Monetising
+| Monetising a video of {{Name|bi|short}} game(s)
+| style="text-align: center" | {{Icon|checked}}
+| {{Link|https://www.bohemia.net/community/game-content-usage-rules/monetization-youtube|Monetisation Rules}}
+|}
+
+See also:
+* [[Meta:General disclaimer]]
+* [[Bohemia Interactive Community:Guidelines]]
+
+=== {{arma}} ===
+
+* Data provided in [[Arma Licensed Data Pack]]:
+** '''can''' be modified and/or used to make an {{arma}} mod
+** '''cannot''' be modified nor used in other games
+* Data that is '''not''' listed in [[Arma Licensed Data Pack]] '''cannot''' be modified nor used in any way.
+
+=== {{tkoh}} ===
+
+* Data provided in [[Take On Helicopters Data Pack]]:
+** '''can''' be modified and/or used to make an {{arma}} mod (or a {{tkoh}} one)
+** '''cannot''' be modified nor used in other games
+* Data that is '''not''' listed in [[Take On Helicopters Data Pack]] '''cannot''' be modified nor used in any way.
+
+
+== Steam EULA ==
+
+{{Link|link= https://store.steampowered.com/subscriber_agreement/|text= Steam Subscriber Agreement}} ({{Link|link= https://store.steampowered.com/subscriber_agreement/#6|text= User Generated Content paragraph}})
+* items '''must''' be uploaded by the creator/owner/group account '''or''' the uploader must have been authorised to do so by the aforementioned creator(s). It is '''forbidden''' to upload an item that was made by someone else otherwise.
+
+
+== Other Intellectual Properties ==
+
+In a general manner, companies do not agree to usage of their Intellectual Property without a license agreement.
+Here are some licenses detailed '''for a free, non-commercial use'''.
+
+{{Messagebox/BI
+| Important:
+| Please note that this table is provided '''as an assistance''' and should in no way be considered a legal reference.<br>
+{{Name|bi}} '''cannot''' and '''will not''' be held responsible for any license misuse you may commit.<br>
+'''You and only you''' will be held responsible for your actions. As a general rule of thumb, '''read and abide by each company's EULA'''.<br>
+<br>
+'''Use the provided information at your own risk!'''
+}}
+
+{{Feature|informative|This table was last updated on '''2024-05-30''' and may be obsolete at the time of reading.
+* '''Read the respective EULA''' to be sure, as '''your''' personal responsibility is involved!
+* You can provide additional information on the {{Link|https://discord.gg/arma|Arma Discord Server}}, in the {{hl|#community_wiki}} channel.
+}}
+
+
+{| class="wikitable align-center-col-2 align-center-col-5" style="margin: auto"
+! License !! Owned by !! EULA !! Agreement-less<br>usage !!  Licensing contact
+|-
+! Babylon 5
+| {{Link|https://www.warnerbros.com/|Warner Bros<br>Licensing Company of America}}
+| {{n/a}}
+| {{Colorball|grey|1.25}} Unknown
+| {{Link|https://www.warnerbros.com/studio/services/clip-and-still-licensing|Contact info}}
+|-
+! {{Link|https://www.syfy.com/battlestar-galactica|BattleStar Galactica}}
+| {{Link|https://www.universalstudios.com/|Universal Studios}}
+| {{n/a}}
+| {{Colorball|red|1.25}} No
+| {{n/a}}
+|-
+! {{Link|https://www.battletech.com/|BattleTech}} / {{Link|https://mechwarrior.com/|MechWarrior}}
+| {{Link|https://www.topps.com/|The Topps Company}}
+| {{n/a}}
+| {{Colorball|red|1.25}} No
+| {{n/a}}
+|-
+! {{Link|https://www.ea.com/games/command-and-conquer|Command and Conquer}}
+| {{Link|https://www.ea.com/|Electronic Arts}}
+| {{Link|https://www.ea.com/terms-of-service|Terms of Service}}
+| {{Colorball|#AACCFF|1.25}} ''Seems'' to be tolerated
+| {{n/a}}
+|-
+! DC Comics
+| {{Link|https://www.warnerbros.com/|Warner Bros}}
+| {{n/a}}
+| {{Colorball|grey|1.25}} Unknown
+| {{Link|https://www.warnerbros.com/studio/services/clip-and-still-licensing|Contact info}}
+|-
+! {{Link|https://fallout.bethesda.net/|Fallout}}
+| {{Link|https://bethesda.net/|Bethesda}}
+| {{Link|https://bethesda.net/en/document/terms-of-service|Zenimax Media Terms of Service}}
+| {{Colorball|red|1.25}} No
+| {{Link|https://www.zenimax.com/more|Contact info}}
+|-
+! {{Link|https://gearsofwar.com/|Gears of War}}
+| {{Link|https://www.microsoft.com/|Microsoft Studios}}
+| {{Link|https://www.xbox.com/en-US/developers/rules|Dev Rules}}
+| {{Colorball|#AACCFF|1.25}} ''Seems'' to be accepted
+| {{n/a}}
+|-
+! {{Link|https://www.halowaypoint.com/|Halo}}
+| {{Link|https://www.microsoft.com/|Microsoft Studios}}
+| {{Link|https://www.xbox.com/en-US/developers/rules|Dev Rules}}
+| {{Colorball|#AACCFF|1.25}} ''Seems'' to be accepted
+| {{n/a}}
+|-
+! Marvel Comics
+| {{Link|https://www.disneystudiolicensing.com/who-do-i-contact-to-license-content-from-marvel-films/|The&nbsp;Walt&nbsp;Disney&nbsp;Company<br>Marvel}}
+|
+* {{Link|https://www.disneystudiolicensing.com/|Walt Disney Studios Licensing}}
+* {{Link|https://disneytermsofuse.com/english/|Terms of Use}}
+| {{Colorball|red|1.25}} No
+|
+{{Link|https://www.disneystudiolicensing.com/who-do-i-contact-to-license-content-from-marvel-films/|Contact info 1}}<br>
+{{Link|https://www.marvel.com/help/category/11|Contact info 2}}
+|-
+! {{Link|https://www.metalgearsolid.com/|Metal Gear Solid}}
+| {{Link|https://www.konami.com/|Konami}}
+| {{n/a}}
+| {{Colorball|grey|1.25}} Unknown
+| {{n/a}}
+|-
+! {{Link|http://www.scpwiki.com/|SCP Foundation}}
+| {{Link|http://www.scpwiki.com/|SCP wiki}}
+| {{Link|http://www.scpwiki.com/licensing-guide|SCP Licensing Guide}} ({{Link|https://creativecommons.org/licenses/by-sa/2.0/|CC-BY-SA}})
+| {{Colorball|#AACCFF|1.25}} ''Seems'' to be tolerated<br>
+: {{GVI|arma3|1.00|size= 0.75}} '''not''' to be uploaded to [[Steam]]'s Workshop as it would go against EULA<br>
+: {{GVI|armaR|1.0.0|size= 0.75}} {{Link|Arma Reforger:Workshop|Workshop}} upload is OK with a custom license
+| {{Link|http://05command.wikidot.com/license-experts-main|Contact info}}
+|-
+! {{Link|https://www.stalker-game.com/|S.T.A.L.K.E.R}}
+| {{Link|https://www.gsc-game.com/|GSC Game}}
+|
+* {{Link|https://www.gsc-game.com/eula/|EULA}}
+* {{Link|https://www.gsc-game.com/guidelines/|Fan Content Creation Guidelines}}
+| {{Colorball|red|1.25}} No
+|
+{{Link|mailto:support@gsc-game.com|support@gsc-game.com}}<br>
+{{Link|mailto:legal@gsc-game.com|legal@gsc-game.com}}
+|-
+! {{Link|https://www.mgm.com/franchise/stargate|Stargate}}
+| {{Link|https://www.mgm.com/|Metro-Goldwyn-Mayer Studios}}
+| {{n/a}}
+| {{Colorball|red|1.25}} No
+| {{n/a}}
+|-
+! {{Link|http://www.starshiptroopers.com/|Starship Troopers}}
+| {{Link|https://www.sonypictures.com/|Sony Pictures Home Entertainement}}
+| {{n/a}}
+| {{Colorball|grey|1.25}} Unknown
+| {{n/a}}
+|-
+! {{Link|https://www.startrek.com/|Star Trek}}
+| {{Link|https://intl.startrek.com/licensees|CBS Entertainment}}
+| {{Link|https://cbsinteractive.com/legal/cbsi/terms-of-use/|Terms of Use}}
+| {{Colorball|#AACCFF|1.25}} ''Seems'' to be tolerated
+| {{n/a}}
+|-
+! {{Link|https://www.starwars.com/|Star Wars}}
+| {{Link|https://www.disneystudiolicensing.com/who-do-i-contact-to-license-content-from-lucasfilm-ltd/| The&nbsp;Walt&nbsp;Disney&nbsp;Company<br>LucasFilm Ltd.}}
+|
+* {{Link|https://www.disneystudiolicensing.com/|Walt Disney Studios Licensing}}
+* {{Link|https://disneytermsofuse.com/english/|Terms of Use}}
+| {{Colorball|red|1.25}} No
+| {{Link|https://www.disneystudiolicensing.com/who-do-i-contact-to-license-content-from-lucasfilm-ltd/|Contact info}}
+|-
+! {{Link|https://www.games-workshop.com/Warhammer-Age-of-Sigmar|Warhammer}}
+| {{Link|https://www.games-workshop.com/|Games Workshop}}
+| {{Link|https://www.games-workshop.com/Intellectual-Property-Policy|Intellectual Property Policy}}
+| {{Colorball|orange|1.25}} Unsure about distribution
+| {{Link|https://www.games-workshop.com/Intellectual-Property-Policy|Contact info}}
+|}
+
+
+{{Feature|informative|<div style{{=}}"font-size: 1.1em; min-height: 3em; text-align: center">
+The above table is about '''agreement-less''' usage; keep in mind it is always possible to '''ask''' owners for their '''permission''' to adapt their intellectual properties in {{arma}}.<br>
+You may already have a "no", but all you risk is a "yes"!
+</div>
+}}
+
+
+== Frequently Asked Questions ==
+
+{{Messagebox/BI
+| Important:
+| Please note that this FAQ is provided '''as an assistance''' and should in no way be considered a legal reference.<br>
+{{Name|bi}} '''cannot''' and '''will not''' be held responsible for any license misuse you may commit.<br>
+'''You and only you''' will be held responsible for your actions. As a general rule of thumb, '''read and abide by each company's EULA'''.<br>
+<br>
+'''Use the provided information at your own risk!'''
+}}
+
+
+; {{Color|green|Can I use models from a game of my favourite franchise? I will give credits!}}
+: '''Not if these models have been ripped (extracted from the game)
+: '''Not without permission''' of both the model's rights owner '''and''' the franchise's intellectual property owner. Giving credits without permission is legally meaningless.
+
+
+; {{Color|green|All the models are made from the ground up, so I can use the universe of my favourite Intellectual Property, correct?}}
+: '''No.''' Using '''copyrighted material''' (the universe, terms, lore) without permission is not allowed. Ask for permission or do not, there is no try.
+
+
+; {{Color|green|I use models for a free videogame usage, this goes under Fair Use?}}
+: '''No.''' In short, Fair Use is valid for a creation's '''criticism''' or '''studying''' and not for public release of any sort. Refer to {{Link|#Fair Use}} to know more about why claiming Fair Use is wrong regarding modding.
+
+
+; {{Color|green|So, in order to do anything, what do I need?}}
+: '''Two''' conditions are required:
+:* to have the Intellectual Property owner's '''permission''':
+:** the permission can be implicit (the EULA can allow modders to create content without specifically asking)
+:** the permission can be explicit (the EULA states that by default no content can be created unless approved)
+:* to have models:
+:** the models ''can'' come from another game - provided the model rights' owner provided an implicit or explicit '''permission'''
+:** the models must otherwise be created from scratch
+
+Anything else is intellectual property (copyright, trademark) infringement.
+
+
+== See Also ==
+
+* {{Link|https://fairuse.stanford.edu/overview/}} - Stanford University's information page about "Fair Use"
+* {{Link|https://sqi.workshopcrawler.com/}} - an unofficial Steam workshop tool that detects reuploads
+* {{Link|https://arma3practicalipguide.blogspot.com/}} - Practical guide to IP in {{arma3}}
+* {{Link|https://soundcloud.com/armahosts-llc/ep-37-intellectual-property}} - a {{Link|https://www.radioarma.com/|Radio Arma}} podcast on the matter
+
+
+[[Category:Public Data]]

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Conversations
+// revision: 163957 (2020-09-30T10:22:25Z)
+// export sha1: 2kv6c1yoae1cop6mbxt42oxociro8xk
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions related to [[Conversations]]. See also the [[:Category:Command Group: Conversations|Conversations Command Group]].
+
+[[Category:Functions by Functionality]]

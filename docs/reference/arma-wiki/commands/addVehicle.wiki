@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/addVehicle
+// revision: 330327 (2022-08-31T15:18:42Z)
+// export sha1: bdpo9r099hwpn6ky61it5b6kmeux1ct
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.05
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|gr1= Object Manipulation
+
+|descr= Adds a specified vehicle for use by a specified AI led group.
+{{Feature|informative|See [[AI Group Vehicle Management]] for more information.}}
+
+|s1= groupName [[addVehicle]] vehicleName
+
+|p1= groupName: [[Group]]
+
+|p2= vehicleName: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_grp addVehicle _vehicle;</sqf>
+
+|x2= Using on crewed vehicle:
+<sqf>group tank addVehicle tank;</sqf>
+
+|seealso= [[leaveVehicle]] [[unassignVehicle]] [[createVehicleCrew]] [[assignedVehicles]] [[assignedGroup]] [[fullCrew]]
+}}

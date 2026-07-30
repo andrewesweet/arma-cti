@@ -1,0 +1,75 @@
+// source: https://community.bistudio.com/wiki/assignTeam
+// revision: 340282 (2023-04-28T17:04:36Z)
+// export sha1: haq6gub00c6pikfqdkzh312sc3538ku
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Groups
+
+|arg= global
+
+|eff= global
+
+|descr= {{{!}} class="wikitable float-right align-center"
+! Team
+! Value
+{{!}}-
+{{!}} White
+{{!}} "MAIN"
+{{!}}-
+{{!}} Red
+{{!}} "RED"
+{{!}}-
+{{!}} Green
+{{!}} "GREEN"
+{{!}}-
+{{!}} Blue
+{{!}} "BLUE"
+{{!}}-
+{{!}} Yellow
+{{!}} "YELLOW"
+{{!}}}
+Assigns the unit (in case of a vehicle, its commander) to the given team. Team is an option in group control (unit management) menu that allows to split player group in teams and then give bulk order to separate teams.
+In order to operate properly, the command requires specific conditions:
+* the command requires [[player]] to be fully initialised
+* the unit getting assigned must be either player himself or a unit in player's group
+The colour of the assigned team for a unit is seen on the group management UI as well as squad radar.
+
+
+{{Feature|important|In older versions of the game ({{arma2}}?) the effect of this command is '''local''' {{Icon|localEffect|32}}.}}
+
+|s1= unit [[assignTeam]] team
+
+|p1= unit: [[Object]]
+
+|p2= team: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_soldier2 assignTeam "RED";</sqf>
+
+|x2= In a unit's init script in the editor [[spawn]] should be used, otherwise a {{Link|https://en.wikipedia.org/wiki/Race_condition|race condition}} may be experienced:
+<sqf>this spawn { _this assignTeam "RED" };</sqf>
+
+|seealso= [[assignedTeam]] [[dissolveTeam]] [[unassignTeam]]
+}}

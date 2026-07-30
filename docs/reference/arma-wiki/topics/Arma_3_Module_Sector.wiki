@@ -1,0 +1,177 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Module:_Sector
+// revision: 376174 (2025-09-11T18:38:21Z)
+// export sha1: oq4hcwxoi293t03t7u0aorp6ba9x5xc
+// categories: Category:Arma 3: Editor Modules
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:A3_moduleSector.jpg|400px|thumb]]
+{{Name|bi}}'s sector module allows you to easily create sector control missions.
+The side with the strongest force within the area (calculated by number and type of the units) will be capturing it.
+
+[[deleteVehicle|Delete]] or [[enableSimulation|disable]] the sector module to "finalise" the sector.
+Once done, capturing will be disabled and the last owner will retain the control forever.
+
+
+== Properties ==
+
+The sector and its behavior can be modified by changing the properties either in the module editor or by using [[setVariable]] on the sector.
+Use [[BIS_fnc_moduleSector]] to edit the sector after it has been created.
+{| class="wikitable sortable"
+! Property (Module Attributes)
+! Variable Name
+! Variable Type
+! Description
+! Default Value
+|-
+| Name
+| "Name"
+| [[String]]
+| Sector name visibile on a map, in a task and in a notification.
+| Next NATO Phonetic Alphabet Letter (see [[BIS_fnc_phoneticalWord]])
+|-
+| Designation
+| "Designation"
+| [[String]]
+| Single letter visible in the sector icon (when empty, first letter of the name will be used).
+| First letter of "Name"
+|-
+| Ownership Limit
+| "OwnerLimit"
+| [[Number]]
+| How much a side needs to be dominant in order to capture a sector. Value is in range <0,1>, where 1 is full dominance.
+| {{hl|"0"}}
+|-
+| Expression
+| "OnOwnerChange"
+| [[Code]]
+| Code executed when the ownership changes. Passed arguments are: <sqf>params ["_sector", "_owner", "_ownerOld"];</sqf>
+| {{hl|"true"}}
+|-
+|
+| "CaptureCoef"
+| [[Number]]
+| Speed at which any unit captures the zone.
+| {{hl|"0.05"}}
+|-
+| Infantry cost
+| "CostInfantry"
+| [[Number]]
+| Ratio of how fast infantry units will capture the sector.
+| {{hl|"1"}}
+|-
+| Wheeled vehicle cost
+| "CostWheeled"
+| [[Number]]
+| Ratio of how fast wheeled vehicles will capture the sector.
+| {{hl|"1"}}
+|-
+| Tracked vehicle cost
+| "CostTracked"
+| [[Number]]
+| Ratio of how fast tracked vehicles will capture the sector.
+| {{hl|"1"}}
+|-
+| Naval cost
+| "CostWater"
+| [[Number]]
+| Ratio of how fast naval vehicles will capture the sector.
+| {{hl|"1"}}
+|-
+| Aircraft cost
+| "CostAir"
+| [[Number]]
+| Ratio of how fast aircraft will capture the sector.
+| {{hl|"1"}}
+|-
+| Players cost
+| "CostPlayers"
+| [[Code]]
+| Ratio of how fast players will capture the sector, combined with other costs.
+| {{hl|"1"}}
+|-
+| Default Owner
+| "DefaultOwner"
+| [[Number]]
+| Default sector owner, even if he has no units in the sector (see [[BIS_fnc_sideID]]).
+| {{hl|"-1"}}
+|-
+| Task Owners
+| "TaskOwner"
+| [[Number]]
+| Sides which will receive the tasks. Values from 0 to 3 are accepted.
+* 0: No one
+* 1: Everyone
+* 2: Only default sector owner
+* 3: Everyone except the default sector owner
+| {{hl|0}}
+|-
+| Task title
+| "TaskTitle"
+| [[String]]
+| Title of the automatically added task. Use %1 to add the sector name. When empty, no task will be added.
+| {{hl|"%1"}}
+|-
+| Task description
+| "TaskDescription"
+| [[String]]
+| Description of automatically added task. Use %1 to insert the sector name, %2 to enter sector rewards (e.g. unlocked vehicles or respawn points), %3 to insert description of capturing costs.
+| {{hl|"%1%2%3"}}
+|-
+| Seize Reward
+| "ScoreReward"
+| [[Number]]
+| Score awarded to the side which captured the sector.
+| {{hl|0}}
+|}
+
+
+== How To ==
+
+# Open the editor and create the module '''ModuleSector_F'''.
+# Add a name to the sector and set the properties as you want them to be.
+# Create a '''location''' game logic next to the module.
+# Create a new '''trigger''' and set the activation mode to ''everyone''. The trigger's size and position represents the area of the sector.
+# Synchronise the trigger with the ''location object''.
+# Synchronise the ''location object'' with the sector module.
+# Create the ''bluefor'' and ''opfor'' game logics and synchronise them with the sector module as well.
+Now you have created a sector that can be captured by Blufor and Opfor at the trigger position. Test your mission!
+
+
+== Scripted Sector Module Creation ==
+
+[[SQF Syntax|SQF]] can be used to create a sector by creating a logic group, by creating a unit of class "ModuleSector_F" then using [[BIS_fnc_moduleSector]] to initialise it:
+<sqf>
+// [[createGroup]] and [[createUnit]] are needed to create modules
+// creating them with [[createVehicle]] will not work
+private _group = createGroup sideLogic;
+private _sector = _group createUnit ["ModuleSector_F", _position, [], 0, "CAN_COLLIDE"]; // _position is [x, y, z]
+
+// it is possible to change the sector's parameters using [[setVariable]]
+_sector setVariable ["Name", "My Sector", true];
+_sector setVariable ["Designation", "S", true];
+_sector setVariable ["sides", [west, east], true];
+_sector setVariable ["DefaultOwner", 0, true];
+
+[_sector] call BIS_fnc_moduleSector; // initialises the sector
+
+// after initialisation, sync an area trigger to the module, it will be the capture area
+private _area = createTrigger ["EmptyDetector", _position];
+_area setTriggerArea [10, 10, 0, false]; // change values depending on the size you want
+_area setTriggerActivation ["ANY", "PRESENT", false];
+_sector setVariable ["areas", [_area], true];
+</sqf>
+
+
+== Useful Resources ==
+
+* {{Link|https://www.youtube.com/watch?v{{=}}p0AGI49H9Qg|Video Tutorial by pickinthatbanjo}}
+* {{Link|http://steamcommunity.com/sharedfiles/filedetails/?id{{=}}179946163|Steam guide by MuD}}
+
+
+== See Also ==
+
+* [[BIS_fnc_moduleSector]]
+* [[BIS_fnc_bleedTickets]] for creating a sector mission based on a ticket system
+
+
+{{GameCategory|arma3|Editor Modules}}

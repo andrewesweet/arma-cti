@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Instructions
+// revision: 296199 (2021-11-17T17:47:51Z)
+// export sha1: 2obyntrdbtsvuscyed3w1e9dgeygqd1
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Script tiles]]
+{{Navbox/Ylands}}

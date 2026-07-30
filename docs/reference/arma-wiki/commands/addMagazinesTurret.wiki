@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/addMagazinesTurret
+// revision: 377487 (2026-01-02T06:49:07Z)
+// export sha1: m5vud43lxomdr7upqrlpr0rv6p7v5cc
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 2.20 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1=2.20
+
+|arg= local
+
+|eff= global
+
+|gr1= Turrets
+
+|descr= Adds given number of a magazine to the given turret. Use turret path {{hl|[-1]}} for driver's turret.
+
+|s1= vehicle [[addMagazinesTurret]] [magazineName, turretPath, quantity]
+
+|p1= vehicle: [[Object]]
+
+|p2= magazineName: [[String]]
+
+|p3= turretPath: [[Turret Path]]
+
+|p4= quantity: [[Number]] - desired number of the magazines
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_tank addMagazinesTurret ["20Rnd_120mmSABOT_M1A2", [0], 10];</sqf>
+
+
+|seealso= [[addMagazineTurret]] [[addMagazineGlobal]] [[addMagazine]] [[loadMagazine]] [[addMagazines]] [[addMagazineCargo]] [[addMagazineCargoGlobal]] [[addMagazinePool]] [[magazinesTurret]] [[removeMagazinesTurret]] [[removeMagazineTurret]] [[weaponsTurret]] [[addMagazineAmmoCargo]] [[addWeaponTurret]] [[removeWeaponTurret]] [[turretLocal]]
+}}

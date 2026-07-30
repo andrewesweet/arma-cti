@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Template_usage_error
+// revision: 353799 (2024-03-23T18:02:43Z)
+// export sha1: izyo6cohsxdhjgsgb2bi27w06lxw9k4
+// Vendored snapshot. Do not edit — re-export instead.
+
+All the categories listed here must be marked {{hl|(empty)}}, otherwise it means an existing issue is to be solved.
+
+
+[[Category:Maintenance]]

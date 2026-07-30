@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/High_Command
+// revision: 370538 (2025-01-02T19:29:39Z)
+// export sha1: hb14wstmqv6tg2f24evddrc4ia7l53c
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+* {{Link|Arma 2: High Command}}
+* {{Link|Arma 3: High Command}}

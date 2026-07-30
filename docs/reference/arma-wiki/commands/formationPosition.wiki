@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/formationPosition
+// revision: 309288 (2022-05-05T01:47:09Z)
+// export sha1: hxhlxwcxlkkqfvoqhd14wwt3alb1i9d
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Positions
+
+|descr= Return position of unit in the formation.
+
+|s1= [[formationPosition]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Position]]
+
+|x1= <sqf>_pos = formationPosition _unit;</sqf>
+
+|x2= <sqf>
+// Reposition entire group to a new position (ground level)
+private _group = group player;
+private _leader = leader _group;
+
+// Set the leader to the spawn position
+_leader setPosATL markerPos "spawn_position";
+
+// Reposition all units of the group except the leader
+{
+	private _formationPos = formationPosition _x;
+	_formationPos set [2, 0];
+	_x setPosATL _formationPos;
+} forEach (units _group - [_leader]);
+</sqf>
+
+|seealso= [[formation]]
+}}

@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/ArmA:_Armed_Assault:_Tips_and_Strategies
+// revision: 336590 (2023-01-04T15:23:11Z)
+// export sha1: kfa1kw8ho8i03ceep02cr233yk7bvb7
+// categories: Category:Hints & Tips
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Hints & Tips]]
+= Game play =
+==== General Battle strategy ====
+* [[Tri-Factor Theory|Speed, Stealth and Skill]]
+* [[Infantry Tips|Soldier Ranks]]
+
+==== Infantry ====
+* [[Battle Drills]] - Coordinated efforts of soldier squads in combat
+* [[Combat tips]] - Tips to combat in the ArmA game
+* [[Firing sniper rifles]] - How to hit things from a distance
+* [[Effective use of grenades]] - How to aim like a pro
+
+==== Vehicles ====
+* [[ArmA: Flying Helicopters|Flying Helicopters]] - Don't leave it just to the fly boys!
+* [[Operating armoured vehicles]]
+** [[Hull-down]]
+
+==== Misc ====
+* [[ArmA: Armed Assault: Cheats]]
+* {{Link|link= http://forums.bistudio.com/showthread.php?t=58797|text= Collection of Undocumented/Lesser-Known Features}}
+
+=== Tip pages from prior versions ===
+''It would be good to translate these across to ArmA as we determine which are still relevant to ArmA''
+
+* [[Operation Flashpoint: Elite: Hints & Tips]]
+* [[Operation Flashpoint: Hints & Tips]]
+
+== Armory ==
+*The [[Armory]].
+
+= Setup =
+[[Arma: Mod Folders]]

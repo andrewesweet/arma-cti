@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/set3DENIconsVisible
+// revision: 342174 (2023-07-09T12:26:58Z)
+// export sha1: i551hhgy9sf5qwwsq7x5cjnob7p2ohk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Toggle visibility of [[:Category:Eden Editor|Eden Editor]] icons.
+
+|s1= [[set3DENIconsVisible]] [showMap, showScene]
+
+|p1= showScene: [[Boolean]] - visibility in the scene
+
+|p2= showMap : [[Boolean]] - visibility in the map
+
+|r1= [[Nothing]]
+
+|x1= <sqf>set3DENIconsVisible [false, false]; // Hide all icons</sqf>
+
+|seealso= [[get3DENIconsVisible]] [[set3DENLinesVisible]] [[get3DENLinesVisible]] [[set3DENModelsVisible]]
+}}

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/getHitIndex
+// revision: 340842 (2023-05-10T13:57:50Z)
+// export sha1: 1ysd0xsgu06mvdo0nolnh9rmumy1rs8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Return current level of damage for a specific Hit Point (specified by its hit part index). All hit points can be obtained with [[getAllHitPointsDamage]] command.
+* 0: no damage
+* 1: full damage
+
+|s1= vehicle [[getHitIndex]] hitPartIndex
+
+|p1= vehicle : [[Object]] - vehicle to be queried
+|p2= hitPartIndex: [[Number]] - hit part index of the Hit Point
+
+|r1= [[Number]] - before {{GVI|arma3|1.94|size= 0.75}}, [[Nothing]] was returned when an invalid ''selection'' was provided (now returns {{hl|0}})
+
+|x1= <sqf>vehicle player getHitIndex 3;</sqf>
+
+|seealso= [[getAllHitPointsDamage]] [[setHitIndex]] [[setHitPointDamage]] [[getHitPointDamage]] [[setHit]] [[getHit]] [[setDamage]] [[damage]]
+}}

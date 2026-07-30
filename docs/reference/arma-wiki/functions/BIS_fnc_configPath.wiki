@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_configPath
+// revision: 327973 (2022-07-13T14:34:58Z)
+// export sha1: hz8j5ymzjlb48okr5gu53rg7gforszm
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Configs | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Configs
+
+|descr= Returns config path to given entry in given format.
+
+|s1= [config, format, strict] call [[BIS_fnc_configPath]]
+
+|p1= config: [[Array]], [[String]] or [[Config]] - input config
+
+|p2= format: [[Array]], [[String]] or [[Config]] - (Optional, default <sqf inline>[]</sqf> or <sqf inline>configNull</sqf> if ''config'' is [[Array]] - see {{Link|#Example 1}}) desired format of output
+
+|p3= strict: [[Boolean]] - (Optional, default [[false]]) if false, the function will not attempt to construct a valid config before certain format conversions (see {{Link|#Example 2}}).
+Set this param to [[true]] to invoke the strict mode
+
+|r1= [[Array]], [[String]] or [[Config]]
+
+|x1= <sqf>["configFile >> ""CfgVehicles"" >> ""Car"""] call BIS_fnc_configPath; // ["configFile","CfgVehicles","Car"]</sqf>
+
+|x2= <sqf>[["mary", "had", "a", "little", "lamb"], ""] call BIS_fnc_configPath; // "mary >> ""had"" >> ""a"" >> ""little"" >> ""lamb"""</sqf>
+
+|x3= <sqf>[["configFile","CfgVehicles","Car"]] call BIS_fnc_configPath; // bin\config.cpp/CfgVehicles/Car</sqf>
+
+|x4= <sqf>["bin\config.cpp/CfgVehicles/Car"] call BIS_fnc_configPath; // ["configFile","CfgVehicles","Car"]</sqf>
+
+|x5= <sqf>[configFile >> "CfgVehicles" >> "Car", ""] call BIS_fnc_configPath; // "configFile >> ""CfgVehicles"" >> ""Car"""</sqf>
+
+|x6= <sqf>["bin\config.cpp/CfgVehicles/Car", "", true] call BIS_fnc_configPath; // "configFile >> ""CfgVehicles"" >> ""Car"""</sqf>
+
+|x7= <sqf>["bin\config.cpp/CfgVehicles/Car", ""] call BIS_fnc_configPath; // "bin\config.cpp/CfgVehicles/Car"</sqf>
+
+|x8= <sqf>[["mary", "had", "a", "little", "lamb"], "", true] call BIS_fnc_configPath; // "" invalid config</sqf>
+
+|seealso= [[configHierarchy]]
+}}

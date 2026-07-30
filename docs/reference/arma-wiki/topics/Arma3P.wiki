@@ -1,0 +1,73 @@
+// source: https://community.bistudio.com/wiki/Arma3P
+// revision: 85277 (2014-10-12T23:19:10Z)
+// export sha1: sklx4hljk96f8n2kwdz5qfv93t4k305
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+          
+'''Arma3 to P:\ from mikero'''
+
+ 
+ WARNING: Arma3P will overwrite (some) arma2 folders. Ensure, this is a separate p drive
+
+ 
+<u>'''Installation'''</u><br> <br>
+a no nonsense auto installer saving you sweat and tears.
+ 
+'''Caveats:'''
+
+* YOU MUST HAVE a P:\ drive
+** It is your responsibility to create one and be aware that it is incompatible with an existing a2 p drive.
+* YOU MUST have COPIES OF
+** [[ExtractPbo]] '''auto installer'''
+** [[DeRap]] '''auto installer'''
+** [[DePbo]] '''auto installer'''
+* These packages can be found at [[dev-heaven]]
+ 
+None of this is earth shattering stuff. The only use of 
+this batch file is because you're already using the above tools anyway.<br>
+
+PAY ATTENTION to the final dos screen message. You either have
+
+*No Error(s) Success
+
+'''or'''
+
+*something went bang
+
+ Ignoring this simple fact is entirely your choice.
+
+
+'''Usage'''
+
+Simply click on the cmd file and go make coffee, feed the cat, or hell, talk to your wife.
+
+Be aware that extracting '''some''' pbo's such as dubbing can take several minutes. 
+ 
+
+'''Implementation'''
+
+ 
+*'''ALL''' relevant rapified files (configs,missions,rvmats, bisurfs,bins) are converted back to humanly readable text.<br> <br>
+*Your P drive is setup with all necessary dll's and buldozer in order to run Terrain Builder / Object Builder.
+
+ 
+This batch file '''currently''' extracts to the following folders
+
+ 
+* P:\A3
+* P:/dta -&gt; P:\
+ 
+* Arma3P removes   P:\A3, bin, core, and language_xx  before extractions begin.
+* No other   folders are AFFECTED
+ 
+Subsequent upgrades to Arma3 will '''probably''' alter this list. It is outside the control of this batch file (but it will be updated as appropriate).
+
+
+
+'''WRP_PROJECTS'''
+
+ 
+unlike arma2p, this folder is no longer produced as copying 'ca configs' is not necessary if using [[pboProject]]
+
+[[Category:Mikero Tools]]

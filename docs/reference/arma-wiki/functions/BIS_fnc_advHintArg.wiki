@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_advHintArg
+// revision: 348204 (2023-11-08T11:40:13Z)
+// export sha1: he3jl3ynf2la1alutuoa8n5of0m198e
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Advanced hint arguments preprocess.
+
+|s1= [arguments, HTMLColour, hintClass] call [[BIS_fnc_advHintArg]]
+
+|p1= arguments: [[Array]]
+
+|p2= HTMLColour: [[String]] - HTML colour for highlighted text
+
+|p3= hintClass: [[String]] - (Optional, default "") class of hint (in case of warning or error is used in logged info)
+
+|r1= [[Array]] - arguments
+
+|x1=
+
+|seealso= [[BIS_fnc_advHint]] [[BIS_fnc_advHintFormat]] [[BIS_fnc_advHintCall]]
+}}

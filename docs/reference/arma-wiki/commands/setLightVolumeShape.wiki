@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/setLightVolumeShape
+// revision: 378534 (2026-05-04T02:22:29Z)
+// export sha1: mrjpwmz5atwd9ghi3a0q7emhcl9p5fj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Lights
+
+|arg= local
+
+|eff= local
+
+|descr= Sets the {{hl|#lightreflector}}'s volume shape. An empty shape will switch the light off.
+
+|s1= lightReflector [[setLightVolumeShape]] [shapePath, scale]
+
+|p1= lightReflector : [[Object]] - object of class {{hl|#lightreflector}})
+
+|p2= shapePath: [[String]] - "" to turn the light off 
+
+|p3= scale: [[Array]] with [sizeX, sizeY, sizeZ]
+{{Columns|3|
+* sizeX: [[Number]]
+* sizeY: [[Number]]
+* sizeZ: [[Number]]
+}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_light setLightVolumeShape ["a3\data_f\VolumeLightFlashlight.p3d", [1, 1, 1]];</sqf>
+
+|seealso= [[setLightColor]] [[setLightAmbient]] [[setLightBrightness]] [[lightAttachObject]] [[lightDetachObject]] [[setLightIntensity]] [[setLightAttenuation]] [[setLightUseFlare]] [[setLightFlareSize]] [[setLightFlareMaxDistance]] [[setLightDayLight]] [[setLightIR]]
+}}

@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/isPlayer
+// revision: 363376 (2024-03-29T08:30:20Z)
+// export sha1: cwc1jmi3ntrwvqx125m1hwel80o584c
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Multiplayer
+
+|arg= global
+
+|descr= Checks if given person is a [[player]]. Returns [[true]] for headless clients as well.
+
+{{Feature|informative|Prior to {{arma3}} v2.02, in some cases the identity of certain player units could fail to propagate to other clients and the server, which caused [[isPlayer]] and [[getPlayerUID]] to incorrectly return {{hl|[[false]]}} and {{hl|""}} respectively, where the affected units were [[not]] [[local]]. See {{Link|https://github.com/michail-nikolaev/task-force-arma-3-radio/issues/1096|this GitHub bug report}} for more info. Remain vigilant toward potential false negatives.}}
+
+{{Feature|important|When used on vehicles, this command will return [[true]] if [[effectiveCommander]] of the vehicle is player. Just because it returns [[true]] does not automatically mean we have a [[player]] unit. Unlike main syntax, alternative syntax always returns [[false]] when used on vehicles, even if they're controlled by a player.}}
+
+|s1= [[isPlayer]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Boolean]]
+
+|s2= [[isPlayer]] [person]
+
+|s2since= arma3 2.06
+
+|p21= person: [[Object]] - dead or alive unit
+
+|r2= [[Boolean]] - [[true]] if is/was player '''and''' the identity still exists on the (dead) body
+
+|x1= <sqf>
+if (isPlayer _Soldier1) then
+{
+	_soldier1 setDamage 1;
+};
+</sqf>
+
+|x2= <sqf>_playerCount = { isPlayer _x } count playableUnits;</sqf>
+
+|x3= <sqf>private _wasPlayer = isPlayer [_deadBody]; // returns true if _deadBody's identity still exists and was controlled by a player</sqf>
+
+|seealso= [[player]] [[playableSlotsNumber]] [[playableUnits]] [[playersNumber]]
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20060801
+|text= This is not the same as testing object == [[player]], because in MP it tests for any player, not only for the local one. If object is a vehicle, the test is done for the vehicle commander.
+}}

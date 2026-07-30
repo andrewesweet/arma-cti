@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/terrainIntersectAtASL
+// revision: 377440 (2026-01-02T06:46:49Z)
+// export sha1: ff8mie8667esxpzpz6akh45k7xda15p
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Geometry | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Math - Geometry
+
+|descr= Checks for intersection of terrain between two ASL positions. Same as [[terrainIntersectASL]] but returns the intersection ASL position.
+
+|s1= [[terrainIntersectAtASL]] [start, end]
+
+|p1= start: [[Position#PositionASL|PositionASL]] - start position
+
+|p2= end: [[Position#PositionASL|PositionASL]] - end position
+
+|r1= [[Position#PositionASL|PositionASL]] - intersect position
+
+|x1= <sqf>_posASL = terrainIntersectAtASL [eyePos player, getPosASL chopper];</sqf>
+
+|seealso= [[terrainIntersectASL]] [[lineIntersectsSurfaces]] [[intersect]] [[lineIntersects]] [[lineIntersectsWith]] [[terrainIntersect]] [[lineIntersectsObjs]] [[checkVisibility]]
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20231210085523
+|text= This command will tell you that it finds an intersect if either of argument position is under the sea eg {{hl|[0,0,-10]}} even if there is no clear intersection with a terrain surface between them.
+}}

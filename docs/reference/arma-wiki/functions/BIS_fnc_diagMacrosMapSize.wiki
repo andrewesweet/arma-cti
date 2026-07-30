@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagMacrosMapSize
+// revision: 309506 (2022-05-05T12:06:33Z)
+// export sha1: 90zn34zwlmajbfetv729ge3c6ijy9bv
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= <pre>/*
+
+	Description:
+	Prints mapSize values based on real object size and copies it to clipboard.
+	Mission has to be running on order to get the values.
+
+	Parameter(s):
+		0: CONFIG or ARRAY - either config container, or list of classes or classnames
+		1: STRING - output mode, can be on of following:
+			"wiki" - wiki table
+			"config" - #define macros with model dimension values
+			"config_current" - #define macros with current config values
+		2: ARRAY - list of classnames which will be excluded from the scan
+
+	Returns:
+	STRING
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_diagMacrosMapSize]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_diagMacrosMapSize;</sqf> -->
+
+|seealso=
+}}

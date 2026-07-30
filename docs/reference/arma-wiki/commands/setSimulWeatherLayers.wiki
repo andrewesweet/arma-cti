@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/setSimulWeatherLayers
+// revision: 370511 (2024-12-30T12:00:46Z)
+// export sha1: l35f0x6nxjl0gghp1jym5qot96o4ilq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Environment
+
+|descr= Sets number of simul weather layers, affects quality of simul weather clouds.
+
+|pr= Prior to Arma 3 v2.20 the effect of this command seems to be persistent across the game instance, e.g. restarting a mission will not reset it.
+
+|s1= [[setSimulWeatherLayers]] layers
+
+|p1= layers: [[Number]] - cloud layers. -1 to reset to defaults (since 2.20), 0 to disable simul weather. 
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setSimulWeatherLayers 0; // Very flat clouds</sqf>
+
+|seealso= [[simulCloudDensity]] [[simulCloudOcclusion]] [[simulInClouds]]
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20220801120941
+|text= You can revert clouds back to volumetric ones by executing this script:
+<sqf>
+private _display_menu = findDisplay 46 createDisplay "RscDisplayInterrupt"; // ESC menu
+ctrlActivate (_display_menu displayCtrl 301); // Pressing "Video" button
+ctrlActivate (findDisplay 5 displayCtrl 2); // Pressing "Cancel" in Video menu
+_display_menu closeDisplay 2; // Closing ESC menu
+</sqf>
+Pressing "Cancel" button in Video menu makes engine re-init the clouds, reverting results of this command. Make sure its in unscheduled environment, otherwise players might see flashing menu and you'll have a serialization error message.
+}}

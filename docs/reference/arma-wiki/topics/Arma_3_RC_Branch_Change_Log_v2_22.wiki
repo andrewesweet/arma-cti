@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_RC-Branch_Change_Log_v2.22
+// revision: 378866 (2026-07-29T14:48:54Z)
+// export sha1: 5uvdhx5vmoyfe8j86driby0lat716i9
+// categories: Category:Arma 3: RC-Branch Change Logs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+= 01-07-2026 =
+We're opening public Release Candidate testing for Arma 3 platform '''update 2.22'''.
+* Steam beta branch access code: ''Arma3Update222RC''
+* Download sizes: ~3.1 GB (client) / ~1.1 GB (server)
+
+
+Pseudo-changelog:
+* MH-80 (Assault / Direct Action Penetrator) Ghost Hawks
+* ECM / Radar / Camera / Searchlight pylon pods
+* 12.7mm Minigun pylon weapon
+* H-80 External fuel tank jettisoning
+* Bulgarian, Hungarian, Ukrainian, Slovak, and Latin*
+* Miscellaneous fixes and tweaks
+
+{{Feature|informative|&ast;These languages were experimentally translated using an AI model. The quality of these translations is not guaranteed, and they may contain mistakes. Separate issues are unlikely to be fixed, but full regenerations using improved models may occur. All other existing languages were translated by a team of human translators.}}
+
+=== 08-07-2026 ===
+Notable changes:
+* Fixed: Missing strings for the ECM pod in the HUD
+* Tweaked: 12.7mm Minigun pylon weapon is now actually firing the correct caliber rounds
+* Added: Damage materials to various MH-80 components
+* Tweaked: Radar and Searchlight pods are now possible to operate from the copilot seat too
+* Fixed: Various other MH-80, pylon and passenger seat issues
+* Fixed: [[setPylonLoadout]] to remove a generic pylon, which would not propagate in multiplayer
+* Fixed: Camera pylon pods were not being displayed in the camera HUD panels
+* Added: "SetOpenBay" / "GetOpenBay" commands to [[pylonAction]]
+* Fixed: Crash after removing a camera pod while a different pod also has a camera (when switching to the other pod, the wrong pylon index was used)
+* Added: Config entry ''turretsAvailable'' in vehicle pylons, which allows restricting pylon assignment to specific vehicle seats
+* Fixed: Changing pylon loadout in [[3DEN]] could remove default weapons
+
+=== 14-07-2026 ===
+Notable changes:
+* Fixed: 12.7mm Minigun pylon display name in HUD
+* Fixed: Swapped speed and altitude fields in the camera pod UI
+* Added: Explosion sounds to 12.7x99mm HEIAP rounds
+* Fixed: [[3DEN]] would allow putting units into locked seats if all other seats were full
+* Fixed: Zeus would allow putting units into locked seats
+* Fixed: [[moveInAny]] did not respect get-in ordering (''getInProxyOrder'' config entry)
+* Fixed: Some weapons were not returned with [[compatibleWeapons]] for known magazines
+* Fixed: HUD could show incorrect (empty) weapons after changing from default pylon weapons
+* Fixed: Various potential crashes
+
+=== 29-07-2026 ===
+Notable changes:
+* Added: Translations for new strings in update 2.22
+* Tweaked: A vehicle's ''unitInfoType'' ''IDC_IGUI_DRIVER_OPTICS_GROUP'' is now hidden if a pylon with ''CameraComponent'' and ''cameraInfoType'' is present
+* Fixed: Network synchronization for pylon camera orientation if controlled by a non-pilot turret
+* Fixed: MH-80 DIRCM laser being not visible in multiplayer
+* Tweaked: Small tweaks and fixes (clipping text) to new camera pylon pods UI
+* Fixed: Little holes in the mesh left by removed miniguns on the MH-80 DAP variant
+
+{{GameCategory|arma3|RC-Branch Change Logs}}

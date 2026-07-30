@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_loadInventory
+// revision: 349482 (2023-11-08T17:09:03Z)
+// export sha1: kuj254zgx9mcn74ua2dkodp37thdyzj
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 0.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.58
+
+|gr1= Inventory
+
+|descr= Adds a predefined loadout (either via {{hl|CfgVehicles}}, {{hl|CfgRespawnInventory}}, or a custom inventory saved via [[BIS_fnc_saveInventory]]) to a specified unit.
+
+|s1= param call [[BIS_fnc_loadInventory]]
+
+|p1= [[Object]] - unit to receive the loadout
+|p2= [[Config]] or [[Array]] - can be one of:
+* [[Config]]: config entry of loadout found in either {{hl|CfgVehicles}} or {{hl|CfgRespawnInventory}}
+* [[Array]] in format [<nowiki/>[[Namespace]], [[Group]] or [[Object]], [[String]]] or [[BIS_fnc_saveInventory]]'s output
+
+|p3= [[Array]] - (Optional, default <sqf inline>[]</sqf>) array of [[String]]s that define what part of the loadout to ignore, e.g ["weapons", "uniform"]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_loadout = [player, configFile >> "CfgVehicles" >> "B_Soldier_SL_F"] call BIS_fnc_loadInventory; // gives BLUFOR Squad Leader's loadout to player unit</sqf>
+
+|x2= to save and load the inventory:
+<sqf>
+[player, [missionNamespace, "TAG_SavedInventory"]] call BIS_fnc_saveInventory;	// save it
+[player, [missionNamespace, "TAG_SavedInventory"]] call BIS_fnc_loadInventory;	// load it
+</sqf>
+
+|seealso= [[BIS_fnc_saveInventory]] [[BIS_fnc_exportInventory]] [[BIS_fnc_deleteInventory]] [[setUnitLoadout]]
+}}
+
+{{Note
+|user= Ilias38rus
+|timestamp= 20200802152100
+|text= Doesn't work for backpacks in backpack, unlike [[setUnitLoadout]].
+}}

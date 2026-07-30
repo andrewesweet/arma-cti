@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_reviveEhHandleHeal
+// revision: 349306 (2023-11-08T14:52:21Z)
+// export sha1: 9x8py65fyy2wzovo3fj64fatds16dcu
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Revive | Category:Functions | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Revive
+
+|descr= Handles healing of unit. Unit gets fully healed after 10 seconds if current damage is smaller than initial damage, e.g. a medic healed the unit.
+
+|s1= [unit] call [[BIS_fnc_reviveEhHandleHeal]]
+
+|p1= unit: [[Object]] - unit to be healed
+
+|r1= [[Boolean]] - if revive is enabled for given unit it always returns [[false]], if revive is disabled it returns [[Nothing]]
+
+|x1= <sqf>[BIS_unit] call BIS_fnc_reviveEhHandleHeal;
+</sqf>
+
+|seealso= [[Arma 3: Revive]] [[BIS_fnc_disableRevive]] [[BIS_fnc_reenableRevive]] [[BIS_fnc_reviveAllowed]] [[BIS_fnc_reviveBleedOut]] [[BIS_fnc_reviveDamageReset]] [[BIS_fnc_reviveDebug]] [[BIS_fnc_reviveEhDammaged]] [[BIS_fnc_reviveEhHandleDamage]] [[BIS_fnc_reviveEhKilled]] [[BIS_fnc_reviveEhRespawn]] [[BIS_fnc_reviveEnabled]] [[BIS_fnc_reviveGet3dIcons]] [[BIS_fnc_reviveGetActionIcon]] [[BIS_fnc_reviveIconControl]] [[BIS_fnc_reviveInit]] [[BIS_fnc_reviveIsValid]] [[BIS_fnc_reviveIsValidSecure]] [[BIS_fnc_reviveOnBeingRevived]] [[BIS_fnc_reviveOnForcingRespawn]] [[BIS_fnc_reviveOnState]] [[BIS_fnc_reviveOnStateJIP]] [[BIS_fnc_reviveSecureUnit]]
+}}

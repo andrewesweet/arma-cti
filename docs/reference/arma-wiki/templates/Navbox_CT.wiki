@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/CT
+// revision: 368952 (2024-08-20T15:38:54Z)
+// export sha1: 78mhrarnav8mstfsnk84thg7cc6nxox
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Navbox
+|title		= Control Types / MACRO (TYPE VALUE)
+
+|title1		= Text/Image/Video
+|content1	= [[CT_STATIC]] (0) {{!}} [[CT_EDIT]] (2) {{!}} [[CT_HTML]] (9) {{!}} [[CT_STRUCTURED_TEXT]] (13)
+
+|title2		= Buttons
+|content2	= [[CT_BUTTON]] (1) {{!}} [[CT_ACTIVETEXT]] (11) {{!}} [[CT_SHORTCUTBUTTON]] (16) {{!}} [[CT_CHECKBOX]] (77) {{!}} [[CT_XBUTTON]] (41)
+
+|title3		= Lists
+|content3	= [[CT_COMBO]] (4) {{!}} [[CT_TOOLBOX]] (6) {{!}} [[CT_CHECKBOXES]] (7) {{!}} [[CT_TREE]] (12) {{!}} [[CT_CONTROLS_TABLE]] (19) {{!}} [[CT_XCOMBO]] (44) {{!}} [[CT_LISTBOX]] (5) {{!}} [[CT_LISTNBOX]] (102) {{!}} [[CT_LISTNBOX_CHECKABLE]] (104) {{!}} [[CT_XLISTBOX]] (45)
+
+|title4		= 3D Objects
+|content4	= [[CT_OBJECT]] (80) {{!}} [[CT_OBJECT_ZOOM]] (81) {{!}} [[CT_OBJECT_CONTAINER]] (82) {{!}} [[CT_OBJECT_CONT_ANIM]] (83)
+
+|title5		= Maps
+|content5	= [[CT_MAP]] (100) {{!}} [[CT_MAP_MAIN]] (101)
+
+|title6		= Meta
+|content6	= [[CT_SLIDER]] (3) {{!}} [[CT_XSLIDER]] (43) {{!}} [[CT_PROGRESS]] (8) {{!}} [[CT_CONTROLS_GROUP]] (15) {{!}} [[CT_WEBBROWSER]] (106)  {{!}} [[CT_EXTENSION]] (107) 
+
+|title7		= Menu
+|content7	= [[CT_CONTEXT_MENU]] (14) {{!}} [[CT_MENU]] (46) {{!}} [[CT_MENU_STRIP]] (47)
+
+|title8		= Unknown
+|content8	= [[CT_STATIC_SKEW]] (10) {{!}} [[CT_HITZONES]] (17) {{!}} [[CT_VEHICLETOGGLES]] (18) {{!}} [[CT_XKEYDESC]] (40) {{!}} [[CT_ANIMATED_TEXTURE]] (45) {{!}} [[CT_LINEBREAK]] (98) {{!}} [[CT_USER]] (99) {{!}} [[CT_ITEMSLOT]] (103) {{!}} [[CT_VEHICLE_DIRECTION]] (105)
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Navigation box displaying all control types.
+|example1= <nowiki>{{Navbox/CT}}</nowiki>
+|result1=<nowiki/>
+{{Navbox/CT}}
+}}</noinclude>

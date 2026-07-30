@@ -1,0 +1,137 @@
+// source: https://community.bistudio.com/wiki/Sahrani_Town_list
+// revision: 58818 (2010-11-19T12:45:35Z)
+// export sha1: 4i9xrnain2r9pywwwosoz7o1luciidx
+// Vendored snapshot. Do not edit — re-export instead.
+
+Sahrani Counts a total of 41 Towns/Cities. 18 on the northern part of the island, 22 on the southern part of the island and Carazol which is Central.  There are also numerous inabited [[Sahrani Islands list|islands]] and rocky outcrops off the coast of Sahrani.
+
+{| class="wikitable" style="text-align:center"
+|+List of Towns/Cities
+|-
+! Name !! Town/City !! North/South !! Coordinates !! Height 
+|-
+! Ambergris
+| Town || South || D5 || 6m
+|-
+! Arcadia
+| Town || South || D7 || 12m
+|-
+! Bagango (North Capital)
+| City || North || H3-H4 || 40m
+|-
+! Balmopan
+| Town || South ||  ||
+|-
+! Benoma
+| Town || North || H3 ||
+|-
+! Bonanza
+| Town || South ||  ||
+|-
+
+! Carmen
+| Town || North || G3 ||
+|-
+! Cayo
+| Town || South || E7 ||
+|-
+! Cedras
+| Town || South ||  ||
+|-
+! Chantico
+| Town || South || E5 ||
+|-
+! Corazol
+| Town || Central || G5 ||
+|-
+! Corinto
+| Town || South ||  ||
+|-
+! Dolores
+| Town || South || F7 ||
+|-
+! Eponia
+| Town || North || G2 ||
+|-
+! Estrella
+| Town || South || D6 ||
+|-
+! Everon
+| Town || North || I5 ||
+|-
+! Gaula
+| Town || North || H5 ||
+|-
+! Geraldo
+| Town || South ||  ||
+|-
+! Gulan
+| Town || South || E6 ||
+|-
+! Hunapu
+| Town || North || D2 ||
+|-
+! Iguana
+| Town || South || F7 ||
+|-
+! Ixel
+| Town || North ||  ||
+|-
+! Masbete
+| Town || North || I3 ||
+|-
+! Mataredo
+| Town || North || F2 ||
+|-
+! Mercalillo
+| Town || North || G4 ||
+|-
+! Modesta
+| Town || North || H5 ||
+|-
+! Obregan
+| Town || North || H4 ||
+|-
+! Ortego
+| City || South ||  ||
+|-
+! Pacamac
+| Town || North || E3 ||
+|-
+! Paraiso (South Capital)
+| City || South || F5 ||
+|-
+! Parato
+| Town || South ||  ||
+|-
+! Pesto
+| Town || South ||  ||
+|-
+! Pita
+| Town || North || J3 ||
+|-
+! Rahmadi
+| Town || Island || A8 ||
+|-
+! Rashidah
+| Town || South || E4 ||
+|-
+! Somato
+| Town || South ||  ||
+|-
+! Tandag
+| Town || North || F3 ||
+|-
+! Tiberia
+| Town || South || E7 ||
+|-
+! Tlaloc
+| Town || North || F3 ||
+|-
+! Valor
+| Town || North || H5 ||
+|-
+! Yoro
+| Town || South ||  ||
+|-
+|}

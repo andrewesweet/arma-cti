@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Particle_System
+// revision: 255850 (2021-04-24T18:49:48Z)
+// export sha1: p2eqwiu2w177qz1763wv0tvox5tux4g
+// Vendored snapshot. Do not edit — re-export instead.
+
+Everything realated to particles.
+
+{{GameCategory|arma1| Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}

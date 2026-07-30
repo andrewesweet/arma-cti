@@ -1,0 +1,218 @@
+// source: https://community.bistudio.com/wiki/Category:Take_On_Helicopters:_New_Scripting_Commands
+// revision: 336804 (2023-01-04T15:30:32Z)
+// export sha1: i7js6uakqykhl2dfkkw1i0b4ce7cs5h
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+List of all new commands in [[Take On Helicopters]]
+
+
+== Notes ==
+
+1. The data is extracted with the help of [[supportInfo]] and {{Link|link= http://dev-heaven.net/projects/cca/wiki/CBA|text= CBA}}.
+
+ [supportInfo ""] call cba_fnc_debug
+
+2. It seems all 3D editor commands have been removed. '''Speculation''': They have been merged into the engine for ArmA III.
+
+3. Many new commands end with '''RTD'''. This is short for [http://rtdynamics.com/ RTDynamics], who are the developers of RotorLib - the library used for the [[Helicopter_Flight_Model_Config_(XML)|TKOH flight model]].
+
+== Version 82161 ==
+
+=== Changed ===
+
+ b:OBJECT camSetDir SCALAR => b:OBJECT camSetDir ARRAY
+
+=== Added ===
+ <spoiler>
+ b:ARRAY ropeAttachTo OBJECT
+ b:OBJECT [[assignAsCargo]] ARRAY
+ b:OBJECT customRadio ARRAY
+ b:OBJECT [[enableAutoStartUpRTD]] BOOL
+ b:OBJECT [[enableAutoTrimRTD]] BOOL
+ b:OBJECT [[enableCoPilot]] BOOL
+ b:OBJECT [[getHitPointDamage]] STRING
+ b:OBJECT ropeDettach OBJECT
+ b:OBJECT [[setActualCollectiveRTD]] SCALAR
+ b:OBJECT [[setAPURTD]] ARRAY
+ b:OBJECT [[setBatteryChargeRTD]] SCALAR
+ b:OBJECT [[setBatteryRTD]] BOOL
+ b:OBJECT [[setBrakesRTD]] ARRAY
+ b:OBJECT [[setCustomWeightRTD]] SCALAR
+ b:OBJECT [[setEngineRPMRTD]] ARRAY
+ b:OBJECT [[setHitPointDamage]] ARRAY
+ b:OBJECT [[setRotorBrakeRTD]] SCALAR
+ b:OBJECT [[setStarterRTD]] ARRAY
+ b:OBJECT [[setThrottleRTD]] ARRAY
+ b:OBJECT [[setWantedRPMRTD]] ARRAY
+ b:OBJECT setWingforceScaleRtd ARRAY
+ b:SCALAR [[radioChannelAdd]] ARRAY
+ b:SCALAR [[radioChannelRemove]] ARRAY
+ b:SCALAR [[radioChannelSetCallSign]] STRING
+ b:SCALAR [[radioChannelSetLabel]] STRING
+ b:SCALAR setForceGeneratorRtd ARRAY
+ b:SCALAR setWindforce SCALAR
+ b:STRING [[setPiPEffect]] ARRAY
+ n:airDensitycurveRtd
+ n:clearForcesRtd
+ n:localCoordinateSystemCenterRtd
+ n:[[profileNamespace]]
+ n:[[saveProfileNamespace]]
+ n:[[systemOfUnits]]
+ n:windRtd
+ u:actionName STRING
+ u:addForceGeneratorRtd ARRAY
+ u:airDensityRtd SCALAR
+ u:ambientRoadCreate ARRAY
+ u:[[batteryChargeRTD]] OBJECT
+ u:className LOCATION
+ u:[[collectiveRTD]] OBJECT
+ u:enginesIsOnRtd OBJECT
+ u:enginesRPMRtd OBJECT
+ u:forceAtPositionRtd ARRAY
+ u:forceGeneratorRtd SCALAR
+ u:getEngineTargetRpmRtd OBJECT
+ u:getRotorBrakeRtd OBJECT
+ u:getShadowDistance ANY
+ u:getTrimOffsetRtd OBJECT
+ u:getWingsPositionRtd OBJECT
+ u:hasAPURtd OBJECT
+ u:isAPUOnRtd OBJECT
+ u:isAutoStartupEnabledRtd OBJECT
+ u:isAutoTrimOnRtd OBJECT
+ u:isBatteryOnRtd OBJECT
+ u:isCoPilotEnabled OBJECT
+ u:isObjectRtd OBJECT
+ u:isSimulatedRtd OBJECT
+ u:isStarterOnRtd OBJECT
+ u:isTouchingGround OBJECT
+ u:lineIntersects ARRAY
+ u:lineIntersectsWith ARRAY
+ u:makeAirborne OBJECT
+ u:[[numberOfEnginesRTD]] OBJECT
+ u:[[radioChannelCreate]] ARRAY
+ u:[[ropeCreate]] ARRAY
+ u:ropeCut ARRAY
+ u:[[ropeDestroy]] ARRAY
+ u:ropes OBJECT
+ u:ropeUnwind ARRAY
+ u:rotorsForcesRtd OBJECT
+ u:rotorsRpmRtd OBJECT
+ u:setDefaultHazeDistance SCALAR
+ u:setDesiredLuminanceCoef SCALAR
+ u:setDetailMapBlendPars ARRAY
+ u:setHazeDistCoef SCALAR
+ u:setHazeFogCoef SCALAR
+ u:setHDRLuminancErectCoef SCALAR
+ u:setObjectViewDistance ARRAY
+ u:setObjectViewDistance SCALAR
+ u:setSatNormalMapBlendPars ARRAY
+ u:setShadowDistance SCALAR
+ u:setSystemOfUnits SCALAR
+ u:stopEngineRtd OBJECT
+ u:[[throttleRTD]] OBJECT
+ u:velocityModelSpace OBJECT
+ u:weightRtd OBJECT
+ u:wingsforcesRtd OBJECT
+</spoiler>
+== 1.01.85675 ==
+
+=== Removed ===
+
+ u:ambientroadcreate ARRAY
+ u:makeairborne OBJECT
+
+=== Changed ===
+
+ b:OBJECT [[assignAsCargo]] ARRAY => b:OBJECT [[assignAsCargoIndex]] ARRAY
+ b:OBJECT ropedettach OBJECT => b:OBJECT [[ropeDetach]] OBJECT
+ u:[[ropeDestroy]] ARRAY => u:[[ropeDestroy]] OBJECT
+
+=== Added ===
+<spoiler>
+ b:OBJECT disablecollisionwith OBJECT
+ b:OBJECT doorphase STRING
+ b:OBJECT enablecollisionwith OBJECT
+ b:OBJECT fastrope ARRAY
+ b:OBJECT setuseractiontext ARRAY
+ n:freelook
+ n:hudmovementlevels
+ n:[[isPiPEnabled]]
+ n:isstressdamageenabled
+ n:isuseractionenabled
+ n:savejoysticks
+ n:simulweathersync
+ u:addmissioneventhandler ARRAY
+ u:ctrltextheight CONTROL
+ u:decreasetenginetemperaturertd OBJECT
+ u:enablesimulweather BOOL
+ u:enablestressdamage BOOL
+ u:[[enableTraffic]] BOOL
+ u:enableuseractions BOOL
+ u:enginestemperaturertd OBJECT
+ u:removeallmissioneventhandlers STRING
+ u:removemissioneventhandler ARRAY
+ u:resetsubgroupdirection OBJECT
+ u:[[ropeSetCargoMass]] ARRAY
+ u:ropeunwound OBJECT
+ u:sethudmovementlevels ARRAY
+ u:setsimulweatherrendermode SCALAR
+ u:[[setTrafficDensity]] ARRAY
+ u:[[setTrafficDistance]] SCALAR
+ u:[[setTrafficGap]] ARRAY
+ u:[[setTrafficSpeed]] ARRAY
+ u:simulclouddensity ARRAY
+ u:simulcloudocclusion ARRAY
+ u:simulinclouds ARRAY
+ u:simulloadseq STRING
+ u:simulsetalphasharpness SCALAR
+ u:simulsetambientlightresponse SCALAR
+ u:simulsetatmospherethickness SCALAR
+ u:simulsetcentrex SCALAR
+ u:simulsetcentrey SCALAR
+ u:simulsetcloudbasez SCALAR
+ u:simulsetcloudheight SCALAR
+ u:simulsetcloudlength SCALAR
+ u:simulsetcloudwidth SCALAR
+ u:simulsetdiffusivity SCALAR
+ u:simulsetextinction SCALAR
+ u:simulsetfog ARRAY
+ u:simulsetfractalamplitude SCALAR
+ u:simulsetfractalwavelength SCALAR
+ u:simulsetgridheight SCALAR
+ u:simulsetgridlength SCALAR
+ u:simulsetgridwidth SCALAR
+ u:simulsethaze SCALAR
+ u:simulsethazebaseheightkm SCALAR
+ u:simulsethazescaleheightkm SCALAR
+ u:simulsethelperdetail ARRAY
+ u:simulsethelpergrid ARRAY
+ u:simulsethelpernearcloudfade SCALAR
+ u:simulsethumidity SCALAR
+ u:simulsetlightdetail SCALAR
+ u:simulsetlightresponse SCALAR
+ u:simulsetmieasymmetry SCALAR
+ u:simulsetmieeccentricity SCALAR
+ u:simulsetminimumlightelevationdegrees SCALAR
+ u:simulsetnoiseoctaves SCALAR
+ u:simulsetnoiseperiod SCALAR
+ u:simulsetnoisepersistence SCALAR
+ u:simulsetnoiseresolution SCALAR
+ u:simulsetopticaldensity SCALAR
+ u:simulsetovercast SCALAR
+ u:simulsetovercastbasekm SCALAR
+ u:simulsetovercastrangekm SCALAR
+ u:simulsetrandomseed SCALAR
+ u:simulsetsecondarylightresponse SCALAR
+ u:simulsetselfshadowscale SCALAR
+ u:simulsetthinlayer BOOL
+ u:simulsetwrap BOOL
+ u:size LOCATION
+</spoiler>
+== 1.02.86094 ==
+
+=== Added ===
+
+ u:isLocalized STRING
+
+{{GameCategory|tkoh|Scripting Commands}}

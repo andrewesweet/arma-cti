@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/confirmSensorTarget
+// revision: 310881 (2022-05-07T20:25:14Z)
+// export sha1: hh59wwhte5ajt9r2y4j70zsiktgynpd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sensors | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Sensors
+
+|descr= Sets for which [[Side]] the entity becomes a "confirmed hostile" target - a target that becomes highlighted red on the sensors display.
+
+|s1= vehicle [[confirmSensorTarget]] [side, isConfirmed]
+
+|p1= vehicle: [[Object]]
+
+|p2= side: [[Side]]
+
+|p3= isConfirmed: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player confirmSensorTarget [blufor, true];</sqf>
+
+|seealso= [[setVehicleRadar]] [[setVehicleReportRemoteTargets]] [[vehicleReportRemoteTargets]] [[vehicleReceiveRemoteTargets]] [[setVehicleReceiveRemoteTargets]] [[vehicleReportOwnPosition]] [[setVehicleReportOwnPosition]] [[reportRemoteTarget]]
+}}

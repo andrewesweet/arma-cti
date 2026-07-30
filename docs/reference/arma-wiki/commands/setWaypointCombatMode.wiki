@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/setWaypointCombatMode
+// revision: 377750 (2026-01-03T00:58:04Z)
+// export sha1: 47t0979pfllaoyauugeilejltczmzhp
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Waypoints
+
+|descr= Changes a group's combat mode when the waypoint becomes active.
+
+|s1= waypoint [[setWaypointCombatMode]] mode
+
+|p1= waypoint: [[Waypoint]]
+
+|p2= mode: [[String]] - can be:
+* "NO CHANGE"
+* "BLUE"
+* "GREEN"
+* "WHITE"
+* "YELLOW"
+* "RED"
+|r1= [[Nothing]]
+
+|x1= <sqf>[_grp, 2] setWaypointCombatMode "RED";</sqf>
+
+|seealso= [[Combat Modes]] [[setWaypointBehaviour]]
+}}

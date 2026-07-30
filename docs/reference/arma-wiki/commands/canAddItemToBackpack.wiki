@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/canAddItemToBackpack
+// revision: 369124 (2024-09-03T10:33:08Z)
+// export sha1: brrp1jxyh6b6z2aeet7ic2u68rw955l
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|gr1= Containers
+
+|descr= Checks if given object can be stored into soldier's backpack.
+
+{{Feature|important|
+Avoid passing an empty string <sqf inline>""</sqf> to this command as it will create a warning dialog:
+[[File:a3 warning badvehicletype.jpg|none|alt= Warning Message: Bad vehicle type|Warning Message: Bad vehicle type]]
+This message will show once per mission restart.
+}}
+
+|s1= unit [[canAddItemToBackpack]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Boolean]]
+
+|s2= unit [[canAddItemToBackpack]] [item, count, ignoreSoldierMaxLoad]
+
+|s2since= arma3 1.56
+
+|p21= unit: [[Object]]
+
+|p22= item: [[String]]
+
+|p23= count: [[Number]]
+
+|p24= ignoreSoldierMaxLoad: [[Boolean]] - (Optional, default [[false]]) [[true]] to ignore 'soldierMaxLoad' param, container [[maxLoad]] is still counted.
+|p24since= arma3 2.18
+
+|r2= [[Boolean]]
+
+|x1= <sqf>if (player canAddItemToBackpack "HandGrenade") then { player addItemToBackpack _item } else { hint "no room!" };</sqf>
+
+|seealso= [[canAdd]] [[canAddItemToUniform]] [[canAddItemToVest]] [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]]
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20220329045658
+|text= This command is very unreliable, along with all other [[canAdd]] commands. For example, in the inventory screen, an empty {{hl|"B_Bergen_dgtl_F"}} backpack can fit a total of 30 {{hl|"5Rnd_127x108_APDS_Mag"}} mags. However, <sqf inline>player canAddItemToBackpack "5Rnd_127x108_APDS_Mag"</sqf> starts returning [[false]] once there are 17 in the backpack. Furthermore, if the player has equipped an empty PCML launcher (without any missile in his inventory), the command starts returning [[false]] once there are only 11, despite the fact that the launcher has no effect on backpack space...<br>
+I wrote a function almost 9 years ago to bypass this (surprisingly still existing) bug. You can check it {{Link|https://github.com/A3Wasteland/ArmA3_Wasteland.Altis/blob/dev/client/functions/fn_fitsInventory.sqf|here}}, with a usage example {{Link|https://github.com/A3Wasteland/ArmA3_Wasteland.Altis/blob/dc41623f154d6c5be683374784aba201a0628e60/client/functions/addWeaponInventory.sqf#L18-L20|here}}.
+}}

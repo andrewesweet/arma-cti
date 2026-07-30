@@ -1,0 +1,211 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgRemoteExec
+// revision: 369492 (2024-09-06T17:55:01Z)
+// export sha1: 1fr3qi2k8i8v2c9ixo27t854ci3zk0p
+// categories: Category:Arma 3: Remote Execution | Category:Introduced with Arma 3 version 1.50
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+CfgRemoteExec defines rules for the remote execution of functions and commands. These rules only apply to clients. The server is not subject to any limitations, everything is enabled and allowed for it.
+
+{{Feature|informative|
+As usual, the more local config takes precedence: [[Description.ext|Mission Description.ext]] ([[missionConfigFile]]) &gt; [[Campaign Description.ext]] ([[campaignConfigFile]]) &gt; Game / Mod Config ([[configFile]]).
+If several definitions for {{hl|CfgRemoteExec}} exist, the {{hl|mode}} attribute will be overridden by the last parsed config and whitelisted functions and commands will be merged.<br>
+<br>
+To allow for a mission's mod compatibility, see {{Link|#Mission Compatibility With Mods}}.
+}}
+
+See [[Arma 3: Remote Execution]] for more information about remote execution.
+
+
+== Format ==
+<syntaxhighlight lang="cpp" class="float-right" style="min-width: 30em">
+class CfgRemoteExec
+{
+	class Functions
+	{
+		mode = 2;
+		jip = 1;
+
+		class BIS_fnc_someFunction
+		{
+			allowedTargets = 0;
+			jip = 0;
+		};
+	};
+
+	class Commands
+	{
+		mode = 1;
+
+		class setDir
+		{
+			allowedTargets = 2;
+			jip = 0;
+		};
+	};
+};
+</syntaxhighlight>
+In a <syntaxhighlight lang="cpp" inline>class CfgRemoteExec</syntaxhighlight> block, two objects can be defined:
+* Functions
+** children of this object are named like the [[:Category:Functions|function]] they filter (e.g <syntaxhighlight lang="cpp" inline>class BIS_fnc_showSubtitle</syntaxhighlight>)
+* Commands
+** children of this object are named like the [[:Category:Scripting Commands|command]] they filter (e.g <syntaxhighlight lang="cpp" inline>class setDir</syntaxhighlight>)
+
+Both main objects can be configured using the following values:
+* {{hl|mode}} - operation mode
+** 0 - remote execution is blocked
+** 1 - only whitelisted functions / commands are allowed
+** 2 - remote execution is fully allowed, ignoring the whitelist (default, because of backward compatibility)
+* {{hl|jip}} - {{Link|Multiplayer Scripting#Join In Progress|Join In Progress}} settings
+** 0 - JIP flag can not be set
+** 1 - JIP flag can be set (default)
+
+Their elements (functions, commands) can be configured with the following values:
+* {{hl|allowedTargets}} - which machine can be reached by it
+** 0 - can target all machines (default)
+** 1 - can only target clients, execution on the server is denied
+** 2 - can only target the server, execution on clients is denied
+* {{hl|jip}} - {{Link|Multiplayer Scripting#Join In Progress|Join In Progress}} settings parent override
+** 0 - JIP flag can not be set
+** 1 - JIP flag can be set
+
+
+== Safe Config ==
+
+This config only allows required default game functions (see {{Link|#Notes}}).
+<syntaxhighlight lang="cpp">
+class CfgRemoteExec
+{
+	class Functions
+	{
+		mode = 1;	// whitelist only
+		jip = 0;	// JIP flag not allowed
+
+		class BIS_fnc_effectKilledAirDestruction	{ allowedTargets = 0; jip = 0; };
+		class BIS_fnc_effectKilledSecondaries		{ allowedTargets = 0; jip = 0; };
+		class BIS_fnc_fire							{ allowedTargets = 0; jip = 0; };
+		class BIS_fnc_objectVar						{ allowedTargets = 0; jip = 0; };
+		class BIS_fnc_setCustomSoundController		{ allowedTargets = 0; jip = 0; };
+
+/*
+		class BIS_fnc_debugConsoleExec				{ allowedTargets = 0; }; //Allow debug console (optional)
+*/
+	};
+};
+</syntaxhighlight>
+
+
+{{ArgTitle|2|Mission Compatibility With Mods|{{GVI|arma3|2.14}}}}
+
+A mod can define its own {{hl|CfgRemoteExec}} to allow its own functions. If a mission defines it too, the mission overrides all the existing settings.
+
+To circumvent that, use {{Link|import (Config)|import}} in the mission's [[Description.ext]]:
+<syntaxhighlight lang="cpp">
+import CfgRemoteExec as CfgRemoteExecMod;
+
+class CfgRemoteExec : CfgRemoteExecMod
+{
+	// your settings
+};
+</syntaxhighlight>
+
+
+== initPlayerServer.sqf ==
+
+If [[execVM]] is not whitelisted, [[Event Scripts|initPlayerServer.sqf]] will not be executed.
+To have it functional without allowing [[execVM]], use the following workaround through [[Arma 3: Functions Library|CfgFunctions]]:
+<syntaxhighlight lang="cpp">
+class CfgFunctions
+{
+	class TAG
+	{
+		class Category
+		{
+			class initPlayerServer { file = "initPlayerServer.sqf"; };
+		};
+	};
+};
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+class CfgRemoteExec
+{
+	class Functions
+	{
+		mode = 1;
+		class TAG_fnc_initPlayerServer { allowedTargets = 2; };
+	};
+};
+</syntaxhighlight>
+Then execute it from [[Event Scripts|init.sqf]]:
+<sqf>
+if (hasInterface) then
+{
+	[] spawn {
+		waitUntil {!isNull player};
+		[player, didJIP] remoteExec ["TAG_fnc_initPlayerServer", 2];
+	};
+};
+</sqf>
+
+
+== Default Config ==
+
+{{Feature|informative|The default {{hl|CfgRemoteExec}} in the game's main config uses an outdated format and is left for backward compatibility only (it was used directly by [[BIS_fnc_MP]]). The {{hl|Client}} and {{hl|Server}} classes are obsolete now. The new [[Arma_3:_Remote_Execution#Remote_Execution_Framework|Remote Execution Framework]] ignores it (by default, all functions and commands are allowed).}}
+This is the default [[config.cpp]] entry (obsolete):
+<spoiler>
+<syntaxhighlight lang="cpp">
+class CfgRemoteExec
+{
+	class Server
+	{
+		class Functions
+		{
+			mode = 2;
+		};
+		class Commands
+		{
+			mode = 2;
+		};
+	};
+	class Client
+	{
+		class Functions
+		{
+			mode = 2;
+		};
+		class Commands
+		{
+			mode = 2;
+		};
+	};
+};
+</syntaxhighlight>
+</spoiler>
+
+
+== Notes ==
+
+{{Note
+|user= AgentRev
+|timestamp= 20160102052800
+|text= <nowiki/>
+* As [[BIS_fnc_MP]] now uses [[remoteExec]], there are some functions spontaneously called by the game core that require whitelisting in order to work if {{hl|class Functions}} is set to {{hl|c= mode = 1}}: <syntaxhighlight lang="cpp">
+class BIS_fnc_effectKilledAirDestruction {};
+class BIS_fnc_effectKilledSecondaries {};
+class BIS_fnc_fire {};
+class BIS_fnc_objectVar {};
+class BIS_fnc_setCustomSoundController {};
+</syntaxhighlight>
+* For [[Event Scripts|initPlayerServer.sqf]] to work, [[BIS_fnc_execVM]] would need to be whitelisted, but that should be avoided at all costs, as it allows hackers to bypass the whitelist. Use {{Link|https://www.reddit.com/r/armadev/comments/8fkitd/initplayerserversqf_therefore_initplayerserversqf/dy5k5pf/|this method}} instead.
+* For the debug console to be able to execute anything (even locally), [[BIS_fnc_debugConsoleExec]] must be whitelisted. This function only works when its [[remoteExecutedOwner]] is [[admin]], so it is safe to whitelist for everyone.
+* [[remoteExec]] and [[remoteExecCall]] are filtered by BattlEye's remoteexec.txt, the string analyzed by BE is formatted the same way as the following example's output: <sqf>
+format ["%1 %2", functionName, str arguments]</sqf><!--
+-->The following remoteexec.txt exclusion can be used to safely allow all whitelisted *_fnc_* functions taking an array as parameter to go through: <sqf>!="\w+?_fnc_\w+? \[[\S\s]*\]"</sqf><!--
+-->Any attempt to exploit this exclusion using other RE methods like [[createUnit]] will run into "Error Missing ;" without any malicious code being executed.<!--
+--> Mod makers should refrain from remote-executing raw commands from clients, as they require individual exclusions, and instead use *_fnc_* functions taking an array as parameter, which are covered by the above exclusion.
+}}
+
+
+{{GameCategory|arma3|Remote Execution}}
+[[Category:Introduced with Arma 3 version 1.50]]

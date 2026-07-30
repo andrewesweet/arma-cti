@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_radialRed
+// revision: 328484 (2022-07-13T16:11:13Z)
+// export sha1: qfis5yb9ucw45kkygipdsb5suq0i8re
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Feedback | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Feedback
+
+|descr= Red radial postprocess (hit damage, fire damage). Parameters are the same as the first four of [[Arma_3:_Event_Handlers#HandleDamage|HandleDamage EH]].
+
+|s1= [victim, bodyPart, damage, shooter] call [[BIS_fnc_radialRed]]
+
+|p1= victim: [[Object]] - unit who gets damage
+
+|p2= bodyPart: [[String]] - body part which gets damage
+
+|p3= damage: [[Number]] - received damage amount
+
+|p4= shooter: [[Object]] - (Optional, default objNull) requested only if ''bodyPart'' is not empty string
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player addEventHandler ["HandleDamage", { _this call BIS_fnc_radialRed; }];</sqf>
+
+|seealso= [[Arma_3:_Event_Handlers#HandleDamage|HandleDamage EH]] [[BIS_fnc_radialRedOut]]
+}}

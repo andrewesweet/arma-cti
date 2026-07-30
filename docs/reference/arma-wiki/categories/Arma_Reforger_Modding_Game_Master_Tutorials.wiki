@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Game_Master/Tutorials
+// revision: 371158 (2025-02-28T17:20:17Z)
+// export sha1: qp5n2ak0b2effbls7tam4a4qjq7n4ei
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding|Game Master}}

@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/vectorLinearConversion
+// revision: 377894 (2026-01-05T17:41:49Z)
+// export sha1: h0jbihqqvc6yc8zny9dawizlqz7uy5w
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.92
+
+|gr2= Math - Vectors
+
+|descr= Interpolates vector between the given ''vectorFrom'' and ''vectorTo'' value according to the given range value.
+
+|s1= [[vectorLinearConversion]] [rangeFrom, rangeTo, rangeValue, vectorFrom, vectorTo, clip]
+
+|p1= rangeFrom: [[Number]] - start "from" range
+
+|p2= rangeTo: [[Number]] - end "to" range
+
+|p3= rangeValue: [[Number]] - variable range value
+
+|p4= vectorFrom: [[Vector3D]] - start "from" vector
+
+|p5= vectorTo: [[Vector3D]] - end "to" vector
+
+|p6= clip: [[Boolean]] - (Optional, default [[false]]) if [[true]], range value will be clipped to stay within "from" - "to" range
+
+|r1= [[Vector3D]] - interpolated vector
+
+|x1= <sqf>vectorLinearConversion [0, 1, 0.5, [0,0,0], [25,50,100], false];	// [12.5,25,50]</sqf>
+
+|x2= <sqf>vectorLinearConversion [0, 1, 100, [0,0,0], [25,50,100], true];	// [25,50,100]</sqf>
+
+|x3= <sqf>vectorLinearConversion [0, 1, 100, [0,0,0], [25,50,100], false];	// [2500,5000,10000]</sqf>
+
+|seealso= [[linearConversion]] [[bezierInterpolation]] [[matrixMultiply]] [[matrixTranspose]]
+}}

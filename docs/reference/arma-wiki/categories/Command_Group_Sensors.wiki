@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Sensors
+// revision: 336186 (2022-12-13T21:09:21Z)
+// export sha1: qf1oz9keq7zhx3wty3ry7ni1xm2bjjm
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands related to [[Arma 3: Sensors|{{arma3}} sensors]].
+
+
+[[Category:Scripting Commands by Functionality]]

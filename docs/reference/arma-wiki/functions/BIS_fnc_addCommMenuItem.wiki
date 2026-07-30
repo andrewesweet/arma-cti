@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addCommMenuItem
+// revision: 376524 (2025-10-23T22:35:51Z)
+// export sha1: na4lzlqlegqabdys6weppvmm5jh71f8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Communication Menu | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+|arg= local
+
+|gr1= Communication Menu
+
+|descr= Add [[Arma 3: Communication Menu|communication menu]] to the given unit.
+
+The item will be available in the Communication menu and visualized in comm menu icon area.
+
+|s1= [owner, itemClass, textArguments, expressionArguments, notification] call [[BIS_fnc_addCommMenuItem]]
+
+|p1= '''owner''': [[Object]] - object to which the item belongs
+
+|p2= '''itemClass''': [[String]] - {{hl|CfgCommunicationMenu}} class
+
+|p3= '''textArguments''': [[Anything]] - (Optional) additional info to display in the {{hl|text}} attribute. {{hl|%1}} will be replaced by the first array element, {{hl|%2}} with the second and so on.
+
+|p4= '''expressionArguments''': [[Anything]] - (Optional) similar to '''textArguments''', just this time in the {{hl|expression}} attribute.
+
+|p5= '''notification''': [[String]] - (Optional) notification class from {{hl|CfgNotifications}}. Empty string will disabled the notification.
+
+|r1= [[Number]] - item ID, used in [[BIS_fnc_removeCommMenuItem]]
+
+|x1= <sqf>
+private _supportHeli = [player, "Support_Request_CAS_Heli"] call BIS_fnc_addCommMenuItem;
+_supportHeli = [player, "Support_Request_CAS_Heli", nil, nil, ""] call BIS_fnc_addCommMenuItem; // do not show notification
+</sqf>
+
+|seealso= [[BIS_fnc_removeCommMenuItem]] [[Arma 3: Communication Menu]]
+}}

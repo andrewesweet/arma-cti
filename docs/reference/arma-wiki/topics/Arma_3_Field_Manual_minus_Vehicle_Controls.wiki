@@ -1,0 +1,186 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Vehicle_Controls
+// revision: 349839 (2023-11-20T22:10:38Z)
+// export sha1: iwsbhg6x4are2758tz1mnjxza8rzloe
+// categories: Category:Arma 3: Controls | Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Vehicle Controls ==
+=== Commanding ===
+The commander in vehicles issues orders to the driver and gunner. Commands are displayed in the message log for crew-members to carry them out.<br>
+* Issue move commands by pressing move buttons '''[W]''', '''[S]''', '''[A]''', '''[D]'''.<br>
+* Control acceleration with '''[W+Left Shift]''', '''[W+Left Ctrl]'''.<br>
+* Issue fire commands by pointing at a target and pressing '''[R]'''.
+
+''* Switch the gunner's weapons with '''[Left Ctrl+F]'''.<br>
+* The commander is able to acquire '''manual fire''' - '''[']'''.<br>
+* This is best combined with the optics view '''[Sec. Mouse Btn.]'''.<br>
+Other important commands for the driver:<br>
+* '''[1-1-1]''' Stay in formation. The driver follows your commanding vehicle, maintaining the formation. <br>
+* '''[1-1-9]''' Move to the next waypoint. The driver moves to your current waypoint.''
+
+
+=== Countermeasures ===
+As a commander or a pilot, you are in control of a vehicle's countermeasures. Press '''[C]''' to launch countermeasures when you see an incoming missile or when a missile lock warning appears.
+
+''* Press '''[Left Ctrl+C]''' to switch the countermeasure fire-mode''
+
+
+=== Driving ===
+In ground vehicles<br>
+* '''[W]''' and '''[S]''' are used for acceleration.<br>
+* '''[A]''' and '''[D]''' are used for steering.<br>
+* You can also use '''[W+Left Ctrl]''' or '''[W+Left Shift]''' for a steady slow speed or fast forward acceleration.
+
+''Third person view and free look might be particularly useful when driving.<br>
+* Switch to the third person camera with '''[Enter [NUM]]'''.<br>
+* Or use free look with '''[Left Alt]'''.''
+
+
+=== Entering a Vehicle ===
+To enter a vehicle:<br>
+* Point the cursor at it until the icon [[File:a3_fm_getindriver.png|24px]] appears.<br>
+* Use default action '''[Space]'''.<br>
+Alternatively:<br>
+* Open the action menu '''[Mouse wheel down]'''.<br>
+* Select '''Enter'''.<br>
+You will be given a seat associated with a role in the vehicle. For example enter as a driver to drive, enter as a gunner to shoot. Certain roles might not be available for some vehicles.
+
+''Different roles in a vehicle have a different action icon indicating the default action [[File:a3_fm_getindriver.png|24px]] [[File:a3_fm_getincargo.png|24px]] [[File:a3_fm_getincommander.png|24px]] [[File:a3_fm_getingunner.png|24px]]. Use them to quickly determine the role you are taking by entering the vehicle.''
+
+
+=== Get out or Eject ===
+There are two ways to exit a vehicle, both accessible from the action menu.<br>
+* '''Get out''' [[File:a3_fm_getout.png|24px]] stands for a proper exit, when the vehicle is at a full stop and it is safe to get out.<br>
+* '''Eject''' [[File:a3_fm_eject.png|24px]] can be used to exit anytime, including when moving or in the air. Obviously, '''Eject''' might come with some situational consequences.
+
+''Like falling from the plane without a parachute.''
+
+
+=== Weapons ===
+Weapons in vehicles works similarly to infantry weapons.<br>
+* Fire with '''[Prim. Mouse Btn.]'''.<br>
+* Zoom with '''[+ [NUM]]''', '''[- [NUM]]'''.<br>
+* Go to optics with '''[Sec. Mouse Btn.]'''.<br>
+* Switch weapons and fire-modes with '''[F]'''.<br>
+* Reload different ammo with '''[Mouse wheel down]'''.
+
+''Some vehicles have guided weapons. To mark a target, point at it and press '''[T]'''. Use '''[R]''' to cycle targets.''
+
+
+=== Radar ===
+Most vehicles contain a top-down radar, which provides information on the orientation of the vehicle's turrets, targets and incoming threats.<br>
+* The relative heading of the turret is displayed with a light cone.<br>
+Targets are marked as colored icons. <br>
+Red [[File:a3_fm_targetTexture_enemy.png|24px]] – enemy<br>
+Green [[File:a3_fm_targetTexture_ally.png|24px]] – ally<br>
+Grey [[File:a3_fm_targetTexture_unknown.png|24px]] – unknown<br>
+Square [[File:a3_fm_targetTexture.png|24px]] – ground<br>
+Triangle [[File:a3_fm_targetAirTexture.png|24px]] – air
+
+
+=== Switching Seats ===
+While in a vehicle, you can change your seat and role:<br>
+* Open the action menu '''[Mouse wheel down]'''.<br>
+* Select a different position.<br>
+Usually you can choose from driver, commander and gunner. When in a vehicle, remember to use the optics '''[Sec. Mouse Btn.]'''. They differ for each role and can provide a significant advantage.
+
+''Some positions might not be available in certain vehicles. Switching is not available while in the air or in similar conditions.''
+
+
+=== Helicopters Take-off ===
+* Start the engine by pressing '''[Left Shift]'''.<br>
+* Hold '''[Left Shift]''' to increase throttle and gain altitude.<br>
+* Hold '''[Z]''' to decrease throttle and lose altitude.<br>
+* Maneuver the helicopter sideways with '''[A]''' and '''[D]'''.<br>
+* Pull the nose down '''[W]''' to gain speed and up '''[S]''' to lose it.<br>
+* Use the rudder '''[Q]''' and '''[E]''' to rotate left/right.<br>
+* Use the '''mouse''' to control the helicopter smoothly.
+
+
+=== Guided Missiles ===
+Guided missiles are only useful when a target is locked. As a gunner, point at the target and press '''[T]''' to lock the target. Normal targets have a square sign [[File:a3_fm_known_target.png|24px]], the locked target has an additional diamond mark [[File:a3_fm_lock_target.png|24px]]. To switch to the next target, press '''[R]'''.
+
+''Guided missiles are best fired from a distance. Flying over the target is not necessary.''
+
+
+=== Changing Ammunition ===
+Some vehicles come with different ammunition types for varying uses. To change the ammunition type:<br>
+* Open the action menu '''[Mouse wheel down]'''.<br>
+* Select the option to '''reload''' the desired ammunition type.
+
+
+=== Vehicle Info ===
+In the top left corner is the vehicle info panel. It displays the name of the vehicle, damage indications [[File:a3_fm_eng.png|24px]] [[File:a3_fm_hull.png|24px]] [[File:a3_fm_whl.png|24px]], fuel bar and current speed, heading and altitude.
+
+''Damage indicators are split between vehicle hull, instruments, tracks, wheel, engine or rotors. Damage is indicated by a color. Once the icon turns red, the corresponding part of the vehicle is no longer functional. If a gas tank is damaged, the vehicle might even explode.''
+
+
+=== Refuel and Rearm ===
+Vehicles are rearmed and refueled anytime they happen to be in a vicinity of a fuel truck or repair truck.
+
+
+=== Repairs ===
+You have to be an '''Engineer''' or a '''Repair Specialist''' and have a '''Toolkit''' to repair a vehicle. If you meet those conditions, then a '''repair''' option will become available near damaged vehicles.
+
+''A vehicle will be repaired automatically when in the proximity of a repair truck or an APC.''
+
+
+=== Unguided Rockets ===
+Unguided rockets are fired directly in front of the vehicle. As a pilot, you have to adjust vehicle position or angle to change the aim of unguided rockets.
+
+
+=== Countermeasures ===
+As a commander or a pilot, you are in control of a vehicle's countermeasures. Press '''[C]''' to launch countermeasures when you see an incoming missile or when a missile lock warning appears.
+
+
+=== SDV ===
+* Operate the SDV with '''[W]''', '''[S]''', '''[A]''', '''[D]'''.<br>
+* Use '''[X]''' and '''[Z]''' to ascend and descend.<br>
+Access the action menu for '''periscope commands'''. When the periscope is up, its view is available via commander's optics '''[Hold Sec. Mouse Btn.]'''.
+
+
+=== Fixed-wing take-off ===
+Standard horizontal take-off for a fixed winged aircraft follows this procedure:<br>
+* Increase thrust with '''[Left Shift]''' to bring the engine to full power.<br>
+* When speed is high enough, pull the nose up with '''[S]'''.
+
+''You can use flaps '''[Right Ctrl+K]''' to increase generated lift and decrease ground roll, but at the cost of the climb rate.''
+
+
+=== Plane Controls ===
+Thank you for choosing Arma Airlines.<br>
+* Control the nose of the aircraft with '''[S]''' for up and '''[W]''' for down.<br>
+* Hold '''[Left Shift]''' to increase throttle, hold '''[Z]''' to decrease throttle.<br>
+* Bank left/right with '''[A]'''/'''[D]'''.<br>
+* Use the rudder '''[Q]''' and '''[E]''' to steer left/right.
+
+''Specific actions accessible from the action menu are available when in aircraft. Use the action menu to control flaps, landing gear or fire control.''
+
+
+=== Landing ===
+Landing with a non-VTOL aircraft is challenging. <br>
+1. Decrease your speed '''[Z]''' while carefully decreasing altitude '''[W]'''.<br>
+2. Open the landing gear and turn flaps down using the '''action menu'''.<br>
+3. Carefully approach the landing strip while further decreasing speed and altitude.<br>
+4. Keep your plane steady and land.<br>
+5. Continue decreasing speed until you reach a full stop. Good luck.
+
+''You can always use the '''auto landing''' option from the action menu. The computer will then take over and execute the landing procedure.''
+
+
+=== Turrets ===
+Turret machine-guns and grenade launchers are support weapons to provide covering fire for infantry. Usually, they are handled by two man teams, who are able to assemble and dismantle the weapon in a short time. This gives infantry a quick and flexible cover fire option.
+
+
+=== VTOL Take-off ===
+Vertical take-off and landing aircraft are easy to operate.<br>
+* Select '''Auto hover''' [[File:a3_fm_autohover.png|24px]] from the action menu. This will stabilize the vehicle.<br>
+* Use '''[Left Shift]''' to increase thrust and go up.<br>
+* Use '''[Z]''' to decrease thrust and go down.
+
+''For non-VTOL aircraft, follow a standard procedure:<br>
+* Gain speed with increasing thrust '''[Left Shift]''' and pulling the nose up '''[S]'''.<br>
+* You can move flaps up to increase the upward lift and shorten the take-off '''[Right Ctrl+K]'''.''
+
+
+{{GameCategory|arma3|Field Manual}}{{GameCategory|arma3|Controls}}

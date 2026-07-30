@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/radioChannelRemove
+// revision: 377811 (2026-01-03T04:09:28Z)
+// export sha1: gqx3rjexb9uwobmsjp0ai1imry23zaf
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: Custom Radio and Chat | Category:Command Group: Radio and Chat | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Radio and Chat
+
+|gr2= Custom Radio and Chat
+
+|descr= Remove the units from the custom radio channel.
+
+|s1= customChannelID [[radioChannelRemove]] units
+
+|p1= customChannelID: [[Number]] - [[Channel IDs|custom channel ID]] returned by [[radioChannelCreate]] command
+
+|p2= units: [[Array]] of [[Object]]s - units
+
+|r1= [[Nothing]]
+
+|x1= <sqf>3 radioChannelRemove [blufor_unit_1, blufor_unit_2];</sqf>
+
+|seealso= [[radioChannelAdd]] [[radioChannelCreate]] [[radioChannelSetCallSign]] [[radioChannelSetLabel]]
+}}

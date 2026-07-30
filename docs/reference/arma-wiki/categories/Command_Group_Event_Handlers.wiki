@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Event_Handlers
+// revision: 156569 (2020-08-26T00:15:19Z)
+// export sha1: bx6wxda7t7u8o5gil5tb4ado5lihych
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands related to event handlers.
+
+
+[[Category:Scripting Commands by Functionality]]

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_bounceInOut
+// revision: 273883 (2021-06-13T01:12:50Z)
+// export sha1: 4duqylbqwk3kc597vl5yvbhvz1ix8us
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interpolation | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Interpolation
+
+|descr= ''N/A''
+
+|s1= [] call [[BIS_fnc_bounceInOut]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

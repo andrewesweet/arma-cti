@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sideID
+// revision: 341625 (2023-06-12T19:02:21Z)
+// export sha1: g3f7m4l04tx6iravddpwrcim6bl45ry
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sides
+
+|descr= Return config side number.
+{{Columns|4|
+* 0 {{=}} [[opfor]] ([[east]])
+* 1 {{=}} [[blufor]] ([[west]])
+* 2 {{=}} [[independent]] ([[resistance]])
+* 3 {{=}} [[civilian]]
+* 4 {{=}} [[sideUnknown]]
+* 5 {{=}} [[sideEnemy]]
+* 6 {{=}} [[sideFriendly]]
+* 7 {{=}} [[sideLogic]]
+* 8 {{=}} [[sideEmpty]]
+* 9 {{=}} [[sideAmbientLife]]
+}}
+
+|s1= testedSide call [[BIS_fnc_sideID]]
+
+|p1= testedSide: [[Side]] - the tested side (west, east, etc.)
+
+|r1= [[Number]]
+
+|x1= <sqf>west call BIS_fnc_sideID; // returns 1</sqf>
+
+|x2= <sqf>hint format ["Your side (%1) ID is %2", playerSide, playerSide call BIS_fnc_sideID];</sqf>
+
+|seealso= [[BIS_fnc_sideType]] [[side]] [[countSide]] [[CfgVehicles Config Reference#side|CfgVehicles side value]] [[Side]] [[playerSide]] [[west]] [[east]] [[resistance]] [[civilian]] [[sideLogic]] [[sideFriendly]] [[sideEnemy]] [[sideUnknown]] [[sideEmpty]] [[sideAmbientLife]] [[Side Relations]]
+}}

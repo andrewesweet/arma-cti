@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_dbValueIndex
+// revision: 327204 (2022-07-12T22:11:45Z)
+// export sha1: qcymya7kx8gqpekbii6e1mcr3pupict
+// categories: Category:Arma 3: Functions | Category:Function Group: Database | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Database
+
+|descr= Returns indexes leading to given value.
+
+|s1= [database, path] call [[BIS_fnc_dbValueIndex]]
+
+|p1= database - [[Array]]: Database array
+|p2= path - [[Array]]: Path leading to value entry
+
+|r1= [[Array]]: List of indexes
+
+|x1=
+
+|seealso= [[:Category:Function Group: Database|Database functions]] [[BIS_fnc_dbClassCheck]] [[BIS_fnc_dbClassId]] [[BIS_fnc_dbClassIndex]] [[BIS_fnc_dbClassList]] [[BIS_fnc_dbClassRemove]] [[BIS_fnc_dbClassReturn]] [[BIS_fnc_dbClassSet]] [[BIS_fnc_dbConfigPath]] [[BIS_fnc_dbImportConfig]] [[BIS_fnc_dbImportXML]] [[BIS_fnc_dbisClass]] [[BIS_fnc_dbisValue]] [[BIS_fnc_dbPrint]] [[BIS_fnc_dbSymbolClass]] [[BIS_fnc_dbSymbolValue]] [[BIS_fnc_dbValueCheck]] [[BIS_fnc_dbValueId]] [[BIS_fnc_dbValueList]] [[BIS_fnc_dbValueRemove]] [[BIS_fnc_dbValueReturn]] [[BIS_fnc_dbValueSet]]
+}}

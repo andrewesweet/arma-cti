@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/showUAVFeed
+// revision: 364255 (2024-05-06T09:38:21Z)
+// export sha1: 1rfxczykd6jn9v2lzhcmbsxjnkxv3v5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Custom Panels | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Remote Control
+
+|gr2= Custom Panels
+
+|descr= Shows/hides video feed transmitted from UAV in [[Arma 3: Custom Info|its custom info panel]].
+
+|s1= [[showUAVFeed]] show
+
+|p1= show: [[Boolean]]
+
+|r1= [[Boolean]] - always [[true]] unless error
+
+|x1= <sqf>showUAVFeed true;</sqf>
+
+|seealso= [[shownUAVFeed]] [[allUnitsUAV]] [[getConnectedUAV]] [[UAVControl]] [[connectTerminalToUAV]] [[isUAVConnected]] [[BIS_fnc_liveFeed]]
+}}

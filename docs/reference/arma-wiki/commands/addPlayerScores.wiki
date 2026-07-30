@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/addPlayerScores
+// revision: 376997 (2026-01-01T08:05:12Z)
+// export sha1: g73kj8km9lncjjzy4ds5eonn1gndutz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|serverExec= server
+
+|gr1= Object Manipulation
+
+|gr2= Multiplayer
+
+|descr= MP server only: Adds player score.
+{{{!}} class="wikitable align-center"
+! Kill Type
+{{!}} infantry	{{!}}{{!}} soft	{{!}}{{!}} armor	{{!}}{{!}} air	{{!}}{{!}} killed
+{{!}}-
+! Score Points
+{{!}} 1		{{!}}{{!}} 2	{{!}}{{!}} 3		{{!}}{{!}} 5	{{!}}{{!}} -1
+{{!}}}
+
+|s1= unit [[addPlayerScores]] values
+
+|p1= unit: [[Object]]
+|p2= values: [[Array]] with [killsInfantry, killsSoft, killsArmor, killsAir, score]
+* killsInfantry: [[Number]] - number of infantry units killed
+* killsSoft: [[Number]] - number of soft vehicles killed
+* killsArmor: [[Number]] - number of armored vehicles killed
+* killsAir: [[Number]] - number of air vehicles killed
+* score: [[Number]] - total score
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player addPlayerScores [0, 1, 0, 0, 1];</sqf>
+
+|seealso= [[addScore]] [[addScoreSide]] [[getPlayerScores]] [[score]] [[scoreSide]]
+}}
+
+{{Note
+|user= Beno 83au
+|timestamp= 20170502014800
+|text= As this command will add the given number to a player's score, a little bit of thought needs to be given to friendly-fire if it is for something like a deathmatch or a FFA, due to friendly-fire incurring negative points.
+So to counter this just add 2 points every time a player kills a unit from the same side:
+<sqf>player addPlayerScores [2, 0, 0, 0, 0];</sqf>
+The 2 points will add 1 point to counter the negative friendly-fire point and 1 point to add correctly to the score.
+}}

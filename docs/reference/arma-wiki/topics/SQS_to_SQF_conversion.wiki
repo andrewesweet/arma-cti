@@ -1,0 +1,190 @@
+// source: https://community.bistudio.com/wiki/SQS_to_SQF_conversion
+// revision: 377918 (2026-01-11T15:31:56Z)
+// export sha1: f9g7vklodlvln4kp9q29tfwhugm8nk6
+// categories: Category:Syntax
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOEDITSECTION__
+{{TOC|side}}
+[[SQF Syntax]] has been introduced in {{ofpr}} v1.85 and is the {{arma}} series' main scripting language until {{arma3}}.
+The main differences with [[SQS Syntax]] are:
+
+* '''[[execVM]]''' is used (instead of [[exec]] for SQS)
+* Every command has to end with a semicolon (<sqf inline>;</sqf>)
+* the following commands disappeared:
+** [[goto]]/{{Link|SQS Syntax#Label|#label}} (Note, [[a hash b|#]] is a command in itself in {{arma3}})
+** [[exit]] - a partial SQF equivalent can be found in [[exitWith]]
+* Line returns do not impact code
+* SQF can return a variable, where SQS cannot
+
+
+== Conversion Examples ==
+
+{| class="wikitable valign-top"
+! <big>SQS</big>
+! <big>SQF</big>
+|-
+! colspan="2" |
+=== Comment ===
+|-
+| <sqs>; This is a comment</sqs>
+<sqs notrim>
+
+; This is a
+; multiline
+; comment
+
+</sqs>
+<sqs>comment "this is a comment";</sqs>
+<sqs>"this is a comment";</sqs>
+|
+<sqf>// This is single-line comment</sqf>
+<sqf>
+/*
+	This is a
+	multiline
+	comment
+*/
+</sqf>
+<sqf>comment "this is a comment";</sqf>
+<sqf>"this is a comment";</sqf>
+|-
+! colspan="2" |
+=== Conditional Wait ===
+|-
+|
+<sqs>@CONDITION</sqs>
+<sqs>@ not alive player</sqs>
+|
+<sqf>waitUntil { CONDITION };</sqf>
+<sqf>waitUntil { not alive player };</sqf>
+|-
+! colspan="2" |
+=== Delay ===
+|-
+|
+<sqs>~DELAY</sqs>
+<sqs>~5</sqs>
+|
+<sqf>sleep DELAY;</sqf>
+<sqf>sleep 5;</sqf>
+|-
+! colspan="2" |
+=== Conditional Command ===
+|-
+|
+<sqs>? CONDITION : COMMAND</sqs>
+<sqs>? alive player : player setDammage 1</sqs>
+|
+<sqf>if (CONDITION) then { COMMAND };</sqf>
+<sqf>if (alive player) then { player setDammage 1 };</sqf>
+|-
+! colspan="2" |
+=== Multi-Conditional Command ===
+|-
+|
+<sqs>
+? CONDITION : goto "SKIP"
+ COMMAND_2
+goto "END"
+#SKIP
+ COMMAND_1
+ #END
+</sqs>
+|
+<sqf>
+if (CONDITION) then
+{
+	COMMAND_1
+}
+else
+{
+	COMMAND_2
+};
+</sqf> 
+|-
+! colspan="2" |
+=== Cycle ===
+|-
+| <sqs>
+#loop
+COMMAND
+~DELAY
+? CONDITION : goto "LOOP"
+</sqs>
+|
+<sqf>
+while { CONDITION } do
+{
+	COMMAND;
+	sleep DELAY;
+};
+</sqf>
+|-
+! colspan="2" |
+=== Cycle With Step ===
+|-
+| <sqs>
+_i = 0
+#LOOP
+ COMMAND
+ _i = _i + 1;
+? _i < COUNT : goto "LOOP"
+</sqs>
+| <sqf>
+for "_i" from 0 to COUNT -1 do
+{
+	COMMAND;
+};
+</sqf>
+|-
+! colspan="2" |
+=== Structured Conditional Command ===
+|-
+| <sqs>
+? VARIABLE == VALUE_1: goto "SKIP_1"
+? VARIABLE == VALUE_2: goto "SKIP_2"
+ DEFAULT_COMMAND
+ goto "END"
+#SKIP_1
+ COMMAND_1
+ goto "END"
+#SKIP_2
+ COMMAND_2
+#END
+</sqs>
+| <sqf>
+switch (VARIABLE) do
+{
+	case VALUE_1:
+		{ COMMAND_1 };
+	case VALUE_2:
+		{ COMMAND_2 };
+	default
+		{ DEFAULT_COMMAND };
+};
+</sqf>
+|-
+! colspan="2" |
+=== Exiting ===
+|-
+| <sqs>
+? CONDITION : COMMAND_2
+? CONDITION : exit
+ COMMAND_1
+</sqs>
+| <sqf>
+if (CONDITION) exitWith { COMMAND_2; };
+COMMAND_1;
+</sqf>
+|}
+
+
+== See Also ==
+
+* [[SQF Syntax]]
+* [[SQS Syntax]]
+* [[Introduction to Arma Scripting]]
+
+
+[[Category:Syntax]]

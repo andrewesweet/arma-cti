@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/loadStatus
+// revision: 319462 (2022-05-13T09:24:07Z)
+// export sha1: 6dxxv557ukzl0v3sewkxinz03fgoflw
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Command Group: Weapon Pool | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Weapon Pool
+
+|gr2= Mission Information
+
+|descr= Loads object's properties from [[Objects.sav]] file in campaign directory (from entry name).
+
+|mp= This command does not work in Multiplayer.
+
+|s1= object [[loadStatus]]  entryName
+
+|p1= object: [[Object]]
+
+|p2= entryName: [[String]]
+
+|r1= [[Boolean]] - [[true]] if successfull, otherwise [[false]]
+
+|x1= <sqf>_ok = player loadStatus "playerState";</sqf>
+
+|seealso= [[saveStatus]]
+}}

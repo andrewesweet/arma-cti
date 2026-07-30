@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/enableGunStabilization
+// revision: 378545 (2026-05-05T10:44:45Z)
+// export sha1: ntblaikt34f35c2u3jfrz6nva2zouow
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|arg=
+|eff=
+
+|gr1= Camera Control
+|gr2= Turrets
+
+|descr= Enables/disables turret gun stabilisation.
+
+|s1= vehicle [[enableGunStabilization]] [mode, turretPath]
+
+|p1= vehicle: [[Object]]
+
+|p2= mode: [[Number]] - can be one of:
+* -1 - clear override
+* 0 - no stabilisation
+* 1 - elevation stabilisation
+* 2 - traverse stabilisation
+* 3 - both
+
+|p3= turretPath: [[Turret Path]]
+
+|r1= [[Number]] - the previous mode, also returns -1 on error
+
+|x1= <sqf>vehicle player enableGunStabilization [3, [0]];</sqf>
+
+|seealso= [[enableDirectionStabilization]] [[directionStabilizationEnabled]] [[lockCameraTo]]
+}}

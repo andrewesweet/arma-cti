@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/setPlateNumber
+// revision: 353037 (2024-03-12T11:54:25Z)
+// export sha1: 52aywprwa6kwbvlowp27rkxzltuhupm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.82 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.82
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Change the license plates on any vehicle which has plates configured. Max 15 characters are allowed!
+
+|s1= vehicle [[setPlateNumber]] string
+
+|p1= vehicle: [[Object]]
+
+|p2= string: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player setPlateNumber "K2000";</sqf>
+
+|x2= Reset plate to the world's randomised template:
+<sqf>
+private _return = "";
+private _cfg = (configFile >> "CfgWorlds" >> worldName);
+
+{
+	_return = _return + (call {
+		if (_x == "$") exitWith {
+			selectRandom (getText (_cfg >> "plateLetters") splitString "")
+		};
+		if (_x == "#") exitWith {
+			selectRandom ["0","1","2","3","4","5","6","7","8","9"]
+		};
+		_x
+	});
+} forEach (getText (_cfg >> "plateFormat") splitString "");
+
+_car setPlateNumber _return;
+</sqf>
+
+|seealso= [[getPlateNumber]]
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20180419053400
+|text= '''NOTICE''': If this command is performed where the argument is remote, the plate will change and [[getPlateNumber]] will also return the new value, until vehicle owner sync it back to original in ~10 seconds after.
+}}

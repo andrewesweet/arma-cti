@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/setObjectMaterialGlobal
+// revision: 370027 (2024-10-27T23:19:13Z)
+// export sha1: tulc241mk78zlxxj56l5j2mcv6j99dg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|arg= global
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Set the material of the given selection on all computers in a network session.
+
+|s1= obj [[setObjectMaterialGlobal]] [selection, material]
+
+|p1= obj: [[Object]]
+
+|p2= selection: [[Number]] or {{GVI|arma3|2.10|size= 0.75}} [[String]]
+
+|p3= material: [[String]] - material path. Since {{GVI|arma3|2.20}} using '''"#reset"''' would reset to default material.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setObjectMaterialGlobal [0, "A3\Structures_F\Data\Windows\window_set.rvmat"];</sqf>
+
+|seealso= [[setObjectTexture]] [[setObjectTextureGlobal]] [[getObjectTextures]] [[setObjectMaterial]] [[getObjectMaterials]]
+}}

@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_localize
+// revision: 308934 (2022-04-18T19:33:30Z)
+// export sha1: g47nn1jd3pczrbnyxgx0upbwzutf9p7
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strings | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strings
+
+|descr= Checks if passed string is localization key and if so, return the localized text. Else, returns the passed string itself.
+
+|s1= localizationString call [[BIS_fnc_localize]]
+
+|p1= localizationString: [[String]]
+
+|r1= [[String]] - the localized text behind the key or the key itself (if not localized).
+
+|x1= <sqf>
+// assuming the stringtable contains a key "STR_someString" with the value "Hello world"
+"STR_someString" call BIS_fnc_localize; // returns "Hello world"
+
+// assuming the stringtable does not contain a key "STR_anotherString"
+"STR_anotherString" call BIS_fnc_localize; // returns "STR_anotherString"
+</sqf>
+
+|seealso= [[isLocalized]] [[localize]] [[Stringtable.xml]]
+}}
+
+{{Note
+|user= Vincent H.
+|timestamp= 20171229000300
+|text= Unfortunately [[localize]] does not exactly do the same as [[BIS_fnc_localize]].<br>
+[[BIS_fnc_localize]] also checks if it the input string [[isLocalized]] while [[localize]] will return an empty string if the input parameter is not localized.
+}}

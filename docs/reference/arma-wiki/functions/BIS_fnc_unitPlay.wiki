@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_unitPlay
+// revision: 349483 (2023-11-08T17:09:03Z)
+// export sha1: orp5kowsm0aidpwxaxhbw3zg3a74an2
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Scenes | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Scenes
+
+|descr= Plays back input movement data on input unit.
+
+|s1= [unit, data, varDone, stateIgnore, obsolete_1, obsolete_2, skipTime] spawn [[BIS_fnc_unitPlay]]
+
+|p1= unit: [[Object]] - unit to play movement data on
+
+|p2= data: [[Array]] - movement data recorder by [[BIS_fnc_unitCapture]]
+
+|p3= varDone: [[Array]] - (Optional, default <sqf inline>[]</sqf>) variable to set on specified Object once playback has finished in format:
+* 0: [[Object]] - Target object
+* 1: [[String]] - Variable name
+
+|p4= stateIgnore: [[Boolean]] - (Optional, default [[false]]) whether to ignore if the Unit is dead and/or cannot move
+
+|p5= obsolete_1: [[Nothing]] - obsolete param, preserved because of backward compatibility
+
+|p6= obsolete_2: [[Nothing]] - obsolete param, preserved because of backward compatibility
+
+|p7= skipTime: [[Number]] - (Optional, default 0) amount of time to skip at the start of playback. For example if you wish to play the data from halfway instead of the start.
+
+|r1= [[Boolean]] - always [[true]]
+
+|exec= spawn
+
+|x1= <sqf>[vehicle player, _unitCaptureData] spawn BIS_fnc_unitPlay</sqf>
+
+|seealso= [[BIS_fnc_unitCaptureFiring]] [[BIS_fnc_unitCaptureSimple]] [[BIS_fnc_unitPlaySimple]] [[BIS_fnc_unitPlayFiring]] [[BIS_fnc_unitCapture]]
+}}

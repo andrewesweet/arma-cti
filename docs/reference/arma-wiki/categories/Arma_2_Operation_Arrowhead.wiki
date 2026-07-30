@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Operation_Arrowhead
+// revision: 351563 (2023-12-07T16:11:59Z)
+// export sha1: f7jq4g0cr0herwyi5fa4eshgixbta83
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|releasedate= 2010-06-29
+|latestversion= 1.64
+|image = arma_2_operation_arrowhead_box_art.jpg
+|intro = Three years after the conflict in [[Chernarus]], portrayed in the original [[:Category:Arma 2|{{arma2}}]], a new flashpoint in the Green Sea region heats up and coalition forces led by the US Army are sent to [[Takistan]] to quickly restore peace and prevent further civilian casualties.
+Set into the new, visually attractive environment of hilly central Asia, Operation Arrowhead offers a realistic combat simulation experience in a modern day setting with unprecedented freedom of movement, actions and tactics. Players will enlist into various roles within the US Army, from basic infantrymen, through special operatives, to pilots and tank crew in this new installment in the award winning line up of military simulators for PC from Bohemia Interactive.
+|feature1 = '''New playable content''' - New story campaign for both SP and MP gameplace. Wide range of new tutorials, single scenarios and multiplayer modes.
+|feature2 = '''Massive game world''' - Three brand new Central Asia-style large maps including expansive urban, desert and mountainous terrain featuring a fully destructible and interactive environment.
+|feature3 = '''Ultimate war experience''' - Fully integrates with the original Arma 2 for unmatched warfare simulation.
+|feature4 = '''Unique gameplace elements''' - Detachable backpacks with equipment, advanced weapon optics, material penetration modelling, remote real-time simulation of Unmanned Arial Vehicles (UAV), freedom of decision and repercussive actions.
+|feature5 = '''Extra units and vehicles''' - Multiple factions for all sides including US Army, United Nations, Takistani Army and Guerrillas making a collection of 300+ new units, weapons and vehicles.
+|feature6 = '''Mission editor''' - Design your own missions by the intuitive, easy-to-use mission editor and become part of one of the biggest and most creative PC gaming community ever.
+|feature7 = '''Game modification''' - Create Your own custom game content with complete editing tools suite (freeware SDK kit) and modify the game in ways where the only limitation is Your own imagination.
+|feature8 = '''Extensive multiplayer''' - lay the campaign missions in cooperative mode or join duty in the massive multiplayer battles with up to 50 players.
+|feature9 = '''Cheat protection''' - Optional anti-cheat BattlEye (http://www.battleye.com) available to help secure dedicated servers. In addition BE adds 'RCON' (remote control) for game's dedicated server software.
+|feature11 = '''Dedicated server''' - To support smooth multi-player experience there is 'dedicated server software' available for Windows (included with game) and Linux (download-able from game's website).
+|gallery1 = arma_2_operation_arrowhead_ingame_shot_01.jpg
+|gallery2 = arma_2_operation_arrowhead_ingame_shot_02.jpg
+|gallery3 = arma_2_operation_arrowhead_ingame_shot_03.jpg
+|gallery4 = arma_2_operation_arrowhead_ingame_shot_04.jpg
+|dlc1 = [[Arma 2: British Armed Forces]]
+|dlc2 = [[Arma 2: Private Military Company]]
+|dlc3 = Arma 2: Army of the Czech Republic
+|start1 = [[Arma 2: Hints and Tips| Hints and Tips]]
+|start2 = [[Arma 2: Editing| Editing]]
+|start3 = [http://www.arma2.com/demo/arma-2-operation-arrowhead-demo_en.html Demo]
+}}

@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Marksmen
+// revision: 363212 (2024-03-25T22:25:35Z)
+// export sha1: eutmj9rexf594bi5ybesh43db90z0i3
+// categories: Category:Arma 3: DLCs & Expansions | Category:Introduced with Arma 3 version 1.42
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image = arma3_marksmen_logo.png
+|game= arma3
+|version= 1.42
+|releasedate= April 8, 2015
+|intro = Marksmen is a Paid DLC for {{arma3}} that was announced on 1st May 2014.
+|premfeature1 = '''ASP-1 Kir''' - NATO designated marksmen rifle with built in supressor that fires 12.7x54mm ammunition. 
+|premfeature2 = '''Mk-I EMR''' - NATO DMR that fires 7.62x51 NATO ammunition.
+|premfeature3 = '''MAR-10''' - NATO DMR that fires .338 Lapua Magnum ammunition.
+|premfeature4 = '''CYRUS''' - CSAT DMR that fires 9.3x64mm ammunition - Made in [[Chernarus]].
+|premfeature5 = '''SPMG''' - NATO belt fed light machine gun that fires .338 Norma Magnum ammunition.
+|premfeature6 = '''NAVID''' - CSAT belt fed LMG that fires 9.6x64mm ammunition.
+|premfeature7 = '''Mk14''' - FIA DMR that fires 7.62x51mm ammunition.
+|freefeature1 = Weapon resting
+|freefeature2 = Bipods
+|freefeature3 = New and improved weapon sounds
+|gallery1 = CTRG DMR v6 prototype.jpg
+|gallery2 = a3 marksmen 1.jpg
+|gallery3 = marksmen missions modes header.jpg
+|gallery4 = scopes header.jpg
+|trailer= _q_PNBILtHY
+|start1 = {{Link|https://arma3.com/marksmen-challenge|Marksmen Challenge}}
+|start2 = {{Link|https://www.youtube.com/watch?v{{=}}wES_nmzX13c|{{arma3}} Livestream - Marksmen DLC First Look - Youtube}}
+|start3 = {{Link|https://forums.bistudio.com/forumdisplay.php?198-ARMA-3-ZEUS|Bohemia Interactive Forums - Zeus}}
+|start4 = {{Link|https://dev.arma3.com/post/oprep-marksmen-weapons|Oprep Marksmen Weapons}}
+|start5 = {{Link|https://arma3.com/dlc/marksmen|Official Site}}
+|isDLC = y
+}}
+
+
+{{GameCategory|arma3|DLCs & Expansions}}

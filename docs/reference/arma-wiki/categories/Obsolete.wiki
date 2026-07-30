@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Obsolete
+// revision: 351522 (2023-12-06T11:02:53Z)
+// export sha1: amq04liv2iqh3xki4ql14d2upu7pezz
+// Vendored snapshot. Do not edit — re-export instead.
+
+If a page is obsolete, consider:
+* marking it with <syntaxhighlight lang="handlebars" inline>{{Feature|obsolete}}</syntaxhighlight>
+* merging it with another page <syntaxhighlight lang="handlebars" inline>{{Wiki|merge|another page}}</syntaxhighlight>
+* deleting it. <syntaxhighlight lang="handlebars" inline>{{Wiki|delete}}</syntaxhighlight>
+
+[[Category:Maintenance]]

@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/isDamageAllowed
+// revision: 336947 (2023-01-04T16:44:11Z)
+// export sha1: 0bwd2ebtcvoqyjighppin9e91igmccj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|arg= global
+
+|eff= local
+
+|gr1= Object Manipulation
+
+|descr= A getter for [[allowDamage]] command. The command indicates if damage is allowed at current [[local]]ity, hence local effect of the command.
+For complete solution for being able to tell whether or not an object can be damaged at current locality see {{Link|#Example 1}}.
+
+|s1= [[isDamageAllowed]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _canBeDamaged = local _obj && isDamageAllowed _obj;</sqf>
+
+|seealso= [[allowDamage]] [[setDamage]] [[setHit]]
+
+|mp= Always returns [[false]] when called on non-local objects
+}}

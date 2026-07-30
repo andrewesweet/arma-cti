@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/removeMagazineTurret
+// revision: 377469 (2026-01-02T06:48:35Z)
+// export sha1: 07k2mxzinviq7zn0m8p52l4mxnozwu9
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 2: Operation Arrowhead version 1.52 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.52
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Turrets
+
+|descr= Removes the magazine from the turret. Use turret path [-1] for driver's turret.
+
+Note: you may create invalid combinations by using this function. When doing so, application behaviour is undefined.
+
+|s1= vehicle [[removeMagazineTurret]] [magazineName, turretPath]
+
+|p1= vehicle: [[Object]]
+
+|p2= magazineName: [[String]]
+
+|p3= turretPath: [[Turret Path]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player removeMagazineTurret ["60rnd_cmflaremagazine",[-1]];</sqf>
+
+|x2= <sqf>_tank removeMagazineTurret ["20Rnd_120mmSABOT_M1A2",[0]];</sqf>
+
+|seealso= [[addMagazineTurret]] [[magazinesTurret]] [[removeMagazinesTurret]] [[weaponsTurret]] [[addWeaponTurret]] [[removeWeaponTurret]] [[turretLocal]] [[removeMagazine]]
+}}

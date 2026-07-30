@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/setAperture
+// revision: 340862 (2023-05-12T17:05:48Z)
+// export sha1: ewajoudcvhjjufeopax7yrftvek6mt1
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Command Group: Lights | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|eff= local
+
+|gr1= Camera Control
+
+|gr2= Lights
+
+|descr= Sets custom eye accommodation camera aperture.
+
+{{Feature|informative|
+If HDR is enabled, when [[setAperture]] {{hl|value}} is used it also forces [[setApertureNew]] to the following values: [{{hl|value}}, {{hl|value}}, {{hl|value}}, 1].
+Execute [[setApertureNew]] after [[setAperture]] to override this default mechanic.
+}}  
+{{Feature|important|
+The aperture is set to default by the engine at the mission start. If you set it before the mission started it will reset like it never happened.
+Make sure you set it at the right time (see {{Link|#Example 2}}).
+}}
+
+|s1= [[setAperture]] aperture
+
+|p1= aperture: [[Number]] - aperture value; a value {{hl|c= <= 0}} will set the aperture automatically. Maximum value which has an effect seems to be {{hl|100}}.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setAperture 0.3;</sqf>
+
+|x2= <sqf>0 spawn { sleep 0.1; setAperture 100 };</sqf>
+
+|seealso= [[setApertureNew]] [[apertureParams]]
+}}
+
+{{Note
+|user= Namikaze
+|timestamp= 20090317194300
+|text= The aperture value to simulate typical daylight (outdoor) conditions is 50. The aperture value to simulate typical daylight (indoor) conditions is 30.
+Setting the value to less than 20 will result in a very bright scene, suitable for night conditions.
+The closer the number is to 0, the more light will be let into the lens, to carry on the aperture metaphor.
+Different lighting/weather conditions can change the actual indoor and outdoor aperture values. Experiment and test to be sure.
+}}

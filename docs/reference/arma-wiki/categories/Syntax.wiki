@@ -1,0 +1,20 @@
+// source: https://community.bistudio.com/wiki/Category:Syntax
+// revision: 376867 (2025-12-09T16:18:31Z)
+// export sha1: rxp6gqa49zk1f5jp2yghous8kkdc55s
+// Vendored snapshot. Do not edit — re-export instead.
+
+A '''syntax''' is a set of rules for the layout of scripting code. It ensures that the game engine can read and understand the code by defining its rules and [[Control Structures]].
+
+{| class="wikitable"
+|+ Syntax game support
+! Game || {{GVI|ofp|1.00}} || {{GVI|ofpr|1.85}} || {{GVI|arma1|1.00}} || {{GVI|arma2|1.00}} || {{GVI|arma2oa|1.50}} || {{GVI|arma3|1.00}} || {{GVI|tkoh|1.00}} || {{GVI|tkom|1.00}} || {{GVI|dayz|1.00}} || {{GVI|armaR|1.00}}
+|-
+! [[SQF Syntax]] || {{Icon|unchecked}} || colspan="6" | {{Icon|checked}} || colspan="3" | {{Icon|unchecked}}
+|-
+! [[SQS Syntax]] || colspan="7" | {{Icon|checked}} || colspan="3" | {{Icon|unchecked}}
+|-
+! {{Link|DayZ:Enforce Script Syntax|Enforce}} {{Link|Arma Reforger:Enforce Script Syntax|Script}} || colspan="7" | {{Icon|unchecked}} || colspan="3" | {{Icon|checked}}
+|}
+
+
+[[Category: Scripting Topics]]

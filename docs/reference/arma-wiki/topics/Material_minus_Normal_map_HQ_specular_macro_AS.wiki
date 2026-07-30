@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/Material_-_Normal_map_HQ_specular_macro_AS
+// revision: 363219 (2024-03-25T22:46:48Z)
+// export sha1: 4jxve807k6u324qsuhm5896csldosil
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''NOHQ+MC+AS+SM'''
+
+<syntaxhighlight lang="cpp">
+specular[] = { 0.5, 0.5, 0.5, 0 };
+specularPower = 10;
+PixelShaderID = "NormalMapMacroASSpecularMap";
+VertexShaderID = "NormalMapAS";
+
+class Stage1
+{
+	texture = "temp\domek\normmap_NOHQ.tga";
+	uvSource = "tex";
+};
+
+class Stage2
+{
+	texture = "temp\domek\test02_MC.tga";
+	uvSource = "tex1";
+};
+
+class Stage3
+{
+	texture = "temp\domek\TestUV2_AS.tga";
+	uvSource = "tex1";
+};
+
+class Stage4
+{
+	texture = "temp\domek\specmap_SM.tga";
+	uvSource = "tex";
+};
+</syntaxhighlight>

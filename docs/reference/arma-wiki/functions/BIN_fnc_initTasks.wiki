@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_initTasks
+// revision: 364939 (2024-07-02T16:08:08Z)
+// export sha1: cmnur52u72diqc18194ee11pmo1mo9d
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Contact | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Contact 
+
+|descr= <pre>//--- Obsolete, replace dby BIN_fnc_initQuests</pre>
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_initTasks]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_initTasks;</sqf> -->
+
+|seealso=
+}}

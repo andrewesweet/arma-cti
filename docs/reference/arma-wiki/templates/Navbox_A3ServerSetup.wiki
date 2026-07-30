@@ -1,0 +1,21 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/A3ServerSetup
+// revision: 364144 (2024-05-04T22:24:49Z)
+// export sha1: kb3bgd94e8omt3s6rwd2bg8aul1c15k
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{| class="wikitable"
+! colspan="5" | {{arma3}} Server Configuration Overview
+|-
+! Setup
+| [[Arma 3: Dedicated Server]]
+|-
+! Files
+| [[Arma 3: Server Config File]] ● [[Arma 3: Basic Server Config File]] ● [[Arma 3: Server Profile]]
+|-
+! Other
+| [[Multiplayer Server Commands]] ● [[Arma 3: Mission voting]] ● [[Arma 3: Headless Client]] ● [[BattlEye]]
+|}</includeonly><noinclude>{{Doc/Template
+|descr= Displays an {{arma3}} Server Configuration overview navbox.
+|example1= <nowiki>{{Navbox/A3ServerSetup}}</nowiki>
+|result1= <nowiki/>{{Navbox/A3ServerSetup}}
+}}</noinclude>

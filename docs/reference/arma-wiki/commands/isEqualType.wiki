@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/isEqualType
+// revision: 325195 (2022-07-01T14:49:21Z)
+// export sha1: edtlv1836vr9omppex28ykphenh0fxs
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|gr1= Variables
+
+|descr= Compares two values' types. A much faster alternative to <sqf inline>typeName a == typeName b</sqf>.
+
+|s1= val1 [[isEqualType]] val2
+
+|p1= val1: [[Anything]]
+
+|p2= val2: [[Anything]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+private _var = [1,2,3];
+_var isEqualType 0; // false
+_var isEqualType []; // true
+</sqf>
+
+|seealso= [[isEqualTypeAll]] [[isEqualTypeArray]] [[isEqualTypeAny]] [[isEqualTypeParams]] [[param]] [[params]] [[isEqualTo]] [[typeName]]
+}}

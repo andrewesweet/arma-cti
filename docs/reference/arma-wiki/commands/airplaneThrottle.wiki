@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/airplaneThrottle
+// revision: 310739 (2022-05-07T20:12:21Z)
+// export sha1: p5b594d54eav3jn04k5dj206web1sko
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Object Manipulation
+
+|descr= Returns throttle position. Works only on player's vehicle.
+
+|s1= [[airplaneThrottle]] airplane
+
+|p1= airplane: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _throttle = airplaneThrottle objectParent player;</sqf>
+
+|seealso= [[setAirplaneThrottle]]
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20200104101800
+|text= The value that set by [[setAirplaneThrottle]] =/= the value that can be get by [[airplaneThrottle]] when the plane's config ''throttleToThrustLogFactor'' isn't 1.<br>
+There're two planes in Vanilla {{arma3}} that the value isn't 1, which are V-44 Blackfish and Y-32 Xi'an.
+
+<sqf>
+vehicle player setAirplaneThrottle 0.5;
+airplaneThrottle vehicle player;	// 0.793701 if the value is 3
+airplaneThrottle vehicle player^(getNumber (configFile >> "CfgVehicles" >> typeOf vehicle player >> "throttleToThrustLogFactor"));	// 0.5
+</sqf>
+}}

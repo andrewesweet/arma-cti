@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_curatorObjectPlaced
+// revision: 349408 (2023-11-08T16:27:27Z)
+// export sha1: nn85n7ynvrxx27uj4apssit0qsaspwm
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Code executed when curator object is placed.
+
+|s1= [module,object] call [[BIS_fnc_curatorObjectPlaced]]
+
+|p1= module: [[Object]] - [[Arma 3: Curator]] module
+
+|p2= object: [[Object]] - object which was edited
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[curatorModule, player] call BIS_fnc_curatorObjectPlaced;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

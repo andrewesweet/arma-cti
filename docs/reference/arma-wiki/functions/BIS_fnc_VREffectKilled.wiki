@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_VREffectKilled
+// revision: 349396 (2023-11-08T16:27:25Z)
+// export sha1: pk02wv5snzciwmpvljhccxpopw458p5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: VR | Category:Functions | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|exec= spawn
+|gr1= VR
+
+|descr= Delete body of a virtual soldier after he's killed.
+
+|s1= [object, instant, delay] call [[BIS_fnc_VREffectKilled]]
+
+|p1= object: [[Object]] - object
+|p2= instant: [[Boolean]] - (Optional, default [[false]]) [[true]] to delete the body right away, [[false]] to add '''killed''' [[addEventHandler|EH]] which will delete it after death
+|p3= delay: [[Number]] - (Optional, default 10) time in seconds before the body disappears
+
+|r1= [[Boolean]] - [[true]] when the function is done
+
+|x1= <sqf>[player] call BIS_fnc_VREffectKilled;</sqf>
+|x2= <sqf>[player, true, 5] spawn BIS_fnc_VREffectKilled;</sqf>
+
+|seealso= [[Arma 3: Virtual Reality Custom Courses|Arma 3 VR Custom Courses]] [[:Category:Function Group: VR|VR functions]]
+}}

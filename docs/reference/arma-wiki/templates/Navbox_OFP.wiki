@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/OFP
+// revision: 245093 (2021-02-08T09:21:34Z)
+// export sha1: h3asar1hzh8clgfhe6spe7zp65btacb
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Navbox
+
+|title= [[:Category:Operation Flashpoint|{{ofp}}]] sides
+
+|title1= Sides
+|content1= [[Operation Flashpoint: USA| USA]] {{!}} [[Operation Flashpoint: Red Army| Red Army]] {{!}} [[Operation Flashpoint: FIA| FIA]] {{!}} ''Civilians''
+
+|title2= Men
+|content2= [[Soldier]] {{!}} [[Grenadier]] {{!}} ''Medic'' {{!}} ''Machinegunner'' {{!}} ''LAW Soldier'' {{!}} ''AT Soldier {{!}} ''Sniper'' {{!}} ''Saboteur'' {{!}} ''Officer'' {{!}} [[Crew]] {{!}} ''Special''
+
+|title3= Car
+|content3= [[Jeep]] {{!}} [[5t truck{{!}}5ton Truck]] {{!}} [[UAZ]] {{!}} [[Ural]] {{!}} ''Skoda'' {{!}} ''PV3S'' {{!}} ''Tractor'' {{!}} ''Mini'' {{!}} ''Trabant'' {{!}} ''SCUD'' {{!}} ''Bus'' {{!}} [[HMMWV]]
+
+|title4= Armored
+|content4= [[M113]] {{!}} [[M1A1]] {{!}} [[M60 (Tank){{!}}M60]] {{!}} [[M2A2]] {{!}} [[Russian BMP series#BMP-1{{!}}BMP]] {{!}} [[BRDM]] {{!}} [[Russian T-Tank series#T-72{{!}}T72]] {{!}} [[Russian T-Tank series#T-80{{!}}T80]] {{!}} [[Russian T-Tank series#T-55{{!}}T55]] {{!}} [[Shilka]]{{!}} ''Boats'' {{!}} ''Static Weapons''
+
+|title5= Air
+|content5= [[AH1]] {{!}} [[AH64]] {{!}} [[A10]] {{!}} [[UH60]] {{!}} [[OH58]] {{!}} [[CH47D]] {{!}} [[Su25]] {{!}} [[Mi24]] {{!}} [[Mi17]] {{!}} [[Ka50]] {{!}} [[Cessna]] {{!}} [[Camel]]
+
+|title6= Support
+|content6= [[5ton Truck]] {{!}} [[Ural]] {{!}} ''PV3S'' {{!}} [[M113{{!}}M113 Ambulance]] {{!}} [[Russian BMP series#BMP-1{{!}}BMP ambulance]] {{!}} [[UAZ]]
+}}
+<noInclude>[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noInclude>

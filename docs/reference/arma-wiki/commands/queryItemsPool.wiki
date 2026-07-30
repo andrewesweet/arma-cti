@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/queryItemsPool
+// revision: 319415 (2022-05-13T09:24:03Z)
+// export sha1: 6kmsjy2wjtr12kka47gpndi0wuvpdsb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapon Pool | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+
+|gr1= Weapon Pool
+
+|descr= Returns the number of items of type in the weapon pool (used in campaigns to transfer weapons to the next mission).
+
+|s1= [[queryItemsPool]] name
+
+|p1= name: [[String]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _amountOfFAKgiven = queryItemsPool "FirstAidKit";</sqf>
+
+|seealso= [[:Category:Command Group: Weapon Pool|Command Group: Weapon Pool]] [[queryWeaponPool]]
+}}

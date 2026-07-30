@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Patches_&_Updates
+// revision: 182674 (2021-01-04T18:16:02Z)
+// export sha1: czkqs44ntfij04zt3ztod3690nu69w1
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma2}}

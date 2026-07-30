@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Eden_Editor:_Asset_Types
+// revision: 92082 (2015-09-30T12:33:28Z)
+// export sha1: dop046w8lmzcc94i0x3o9zq8f6kba8g
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Eden Editor|Asset Types]]

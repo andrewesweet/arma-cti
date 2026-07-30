@@ -1,0 +1,202 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_UVAnimations
+// revision: 376475 (2025-10-16T22:33:38Z)
+// export sha1: f2e3inr11hhhr1ojgukayro8j65rju8
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 1.84
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}{{GVI|arma3|1.84}}
+
+UV animations, in contrast to regular animations, are not part of model.cfg but main vehicle configuration.
+
+Their usage is pretty similar to typical animation created in model.cfg (see [[Model Config]]) but there are few differences:
+* translation, rotation & scale is supported
+* [[animate]] and [[animationPhase]] are not supported by this tech - use [[animateSource]] and [[animationSourcePhase]] instead
+* it is using sections instead of bones
+* UV animations can be stacked - animating same section by multiple animations will result in multiplication of matrices
+* order of UV animation matters in case single section is animated by multiple animations
+
+
+== Configuration ==
+
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class TestVehicle
+	{
+		// UV animations are defined in vehicle config & they are not baked to p3d in contrast to regular animations
+		class UVAnimations
+		{
+			// You can name it whatever you like since it is not working with animationPhase or animate command
+			class TestAnimation_01
+			{
+				type			= "translation";
+				// name of source, either custom one, defined in AnimationSources class or regular model.cfg source
+				// It can be animated with animateSource & value can be retrieved via animationSourcePhase
+				source			= "Test_Source";
+				// section name from model.cfg sections[] array
+				section			= "camo1";
+				minValue		= 0;
+				maxValue		= 1;
+				// Transformation of UV coordinates
+				offset0[]		= { 0, 0 };
+				offset1[]		= { 0, 1 };
+			};
+
+			// Example animation using gmeter sources
+			class TestAnimation_02
+			{
+				type			= "translation";
+				source			= "gmeter";
+				sourceAddress	= "loop";
+				section			= "camo2";
+				minValue		= 0;
+				maxValue		= 1;
+				offset0[]		= { 0, 0 };
+				offset1[]		= { 1, 0 };
+			};
+
+			// Example rotation animation
+			class TestAnimation_03
+			{
+				type			= "rotate";
+				source			= "Test_Source";
+				section			= "camo2";
+				minValue		= 0;
+				maxValue		= 1;
+				// [x, y] - coordinates defining center of rotation
+				center[]		= { 0.5, 0.5 };
+				// angles are in radians just like in model.cfg
+				angle0			= 0;
+				angle1			= rad 30; // rotate by 30 degrees
+			};
+
+			// Example scale
+			class TestAnimation_04
+			{
+				type			= "scale";
+				source			= "Test_Source2";
+				section			= "camo2";
+				minValue		= 0;
+				maxValue		= 1;
+				// [x, y] - coordinates defining center of rotation
+				center[]		= { 0.5, 0.5 };
+				// 1 means that there will be no change to the UV
+				scale0[]		= { 1, 1 };
+				scale1[]		= { 2, 2 }; // make UV map twice as large
+			};
+		};
+
+		class AnimationSources
+		{
+			class Test_Source
+			{
+				source			= "user";
+				initPhase		= 1;
+				animPeriod		= 0.3;
+			};
+
+			class Test_Source2 : Test_Source {};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== Example ==
+
+In the following example you can see how the Kart's chain animation was done.
+UV animation is synced with right rear wheel via animation sources creation tech which was introduced with [[Arma 3 Jets]]' PhysX suspension.
+It is possible to get damper values too this way.
+
+=== config.cpp ===
+
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class Kart_01_Base_F : Car_F
+	{
+		class AnimationSources : AnimationSources
+		{
+			class Wheel_2_2_source
+			{
+				source = "wheel";
+				wheel = "RR";
+			};
+		};
+
+		class UVAnimations
+		{
+			class Chain
+			{
+				type			= "translation";
+				source			= "Wheel_2_2_source";
+				sourceAddress	= "loop";
+				section			= "Chain";
+				minValue		= 0;
+				maxValue		= 1;
+				offset0[]		= { 0, 0 };
+				offset1[]		= { -1, 0 };
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Model Config ===
+
+Note the "chain" section!
+<syntaxhighlight lang="cpp">
+class CfgModels
+{
+	class Vehicle;
+	class Car : Vehicle
+	{
+		class Animations {};
+	};
+
+	class Kart_01_F : Car
+	{
+		sections[] =
+		{
+			"camo", "camo2",
+			"zbytek",
+			"Number_a", "Number_b",
+			"wheel_1_1_hide", "wheel_1_2_hide", "wheel_2_1_hide", "wheel_2_2_hide",
+			"chain"
+			// here
+		};
+
+		class Animations : Animations
+		{
+			// Example of custom animation source using it
+			class wheel_shaft_2
+			{
+				type			= "rotation";
+				source			= "wheel_2_2_source";
+				sourceAddress	= "loop";
+				selection		= "wheel_shaft_2";
+				axis			= "wheel_shaft_2_axis";
+				minValue		= 0;
+				maxValue		= 1;
+				angle0			= (rad -0);
+				angle1			= (rad +360);
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== Scripting ==
+
+* [[animateSource]]
+* [[animationSourcePhase]]
+
+
+== See Also ==
+
+* [[Model Config]]
+
+
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 1.84]]

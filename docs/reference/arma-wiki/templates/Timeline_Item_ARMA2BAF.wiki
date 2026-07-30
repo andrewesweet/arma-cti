@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Timeline_Item_ARMA2BAF
+// revision: 378655 (2026-05-18T16:29:59Z)
+// export sha1: spmwdyskdyfl5d072eme6xx9p5g4862
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>[[File:Logo_A2BAF.png|50px|link=Category:Arma_2:_Operation_Arrowhead]]</includeonly><noinclude>[[Category:Historical Templates]]</noinclude>

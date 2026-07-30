@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_1.90
+// revision: 176985 (2020-12-30T02:05:59Z)
+// export sha1: j8vixosuj2vrzalobcj1s7s6gd50ffh
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with {{arma3}} version 1.90 may be recognised by the appearance of this icon: {{GVI|arma3|1.90}}
+
+[[Category:Introduced with Arma 3|1.90]]

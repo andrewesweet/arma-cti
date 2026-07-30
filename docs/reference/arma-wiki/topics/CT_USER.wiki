@@ -1,0 +1,87 @@
+// source: https://community.bistudio.com/wiki/CT_USER
+// revision: 258325 (2021-05-25T09:02:07Z)
+// export sha1: 7910glf3nvmxhzjr61jcexlp56dmxjl
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_USER
+|value = 99
+|description = This control type is used by the engine for [[Performance Profiling]] and has probably no use outside of it.
+[[File:Performance_Profiling_04.png|thumb|diag_captureFrame sample output with custom subtree|center|400px]]
+|commands =
+|events =
+}}
+
+{{CT|abc start}}
+=== C ===
+{{CT|attribute
+|name=colorBar
+|type1=Array
+|value1={0.8,0.8,0.8,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorLines
+|type1=Array
+|value1={0,0,0,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSelection
+|type1=Array
+|value1={1,0,0,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorShadow
+|type1=Array
+|value1={0,0,0,0.5}
+|description=
+}}
+
+=== F ===
+{{CT|attribute
+|name=fixedWidth
+|type1=Number
+|value1=0
+|description=
+}}
+
+=== L ===
+{{CT|attribute
+|name=linespacing
+|type1=Number
+|value1=1
+|description=
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== TimeLines ===
+<syntaxhighlight lang="cpp">
+class TimeLines
+{
+  type = CT_USER;
+  style = 0;
+  idc = 102;
+  shadow = 0;
+  x = "0.03 + 0.02";
+  y = 0.53;
+  w = "0.90 - 0.04";
+  h = 0.26;
+  class Scrollbar{};
+  font = "TahomaB";
+  colorLines[] = {0,0,0,1};
+  colorBackground[] = {1,1,1,1};
+  colorBar[] = {0.8,0.8,0.8,1};
+  colorSelection[] = {1,0,0,1};
+};
+</syntaxhighlight>

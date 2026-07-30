@@ -1,0 +1,110 @@
+// source: https://community.bistudio.com/wiki/a_==_b
+// revision: 369426 (2024-09-03T18:48:52Z)
+// export sha1: 9yykgjnvro5zaqiko8hh8p3th7tck1r
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Command Group: Variables | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|sortKey= #
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Math
+|gr2= Variables
+
+|descr= Check if ''a'' is equal to ''b''. String comparison is case-'''in'''sensitive  - use [[isEqualTo]] if case sensitivity is needed.
+{{Feature|important|''a'' and ''b'' types '''must''' match: comparing e.g [[String]] with [[Number]] is invalid.}}
+
+|s1= a [[a == b|==]] b
+
+|p1= a:
+{{{!}} class="wikitable"
+! Introduced in
+! colspan="5" {{!}} {{GVI|ofp|1.00}}
+! colspan="4" {{!}} {{GVI|arma1|1.00}}
+! {{GVI|arma1|1.08}}
+! colspan="3" {{!}} {{GVI|arma3|2.00}}
+{{!}}-
+! Possible Type
+{{!}} [[Number]]
+{{!}} [[Side]]
+{{!}} [[String]]
+{{!}} [[Object]]
+{{!}} [[Group]]
+{{!}} [[Structured Text]]
+{{!}} [[Config]]
+{{!}} [[Display]]
+{{!}} [[Control]]
+{{!}} [[Location]]
+{{!}} [[Diary Record]]
+{{!}} [[Namespace]]
+{{!}} [[Boolean]]
+{{!}}}
+
+|p2= b: identical to ''a''<nowiki/>'s type
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+if (player == leader group player) then
+{
+	hint "You are the leader of your group.";
+}
+else
+{
+	hint "Someone else is the boss";
+};
+</sqf>
+
+|x2= <sqf>"MyRabbit" == "MYRABBIT"; // returns true</sqf>
+
+|x3= <sqf>if (alive _unit1 == alive _unit2) then { hint "Both units are either dead or both alive" };</sqf>
+
+|seealso= [[a != b|!=]] [[Operators]] [[isEqualTo]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140415101300
+|text= For script comparison we need to detect whether scripts are running in advance, then compose both into string:
+<sqf>if (scriptDone _var0) then [{false},{(str _var0) == (str _var1)}];</sqf>
+ 
+It is recommended to use [[isEqualTo]] for all types comparison, which is more functional and as fast as operator.
+For multiple comparisons:
+<sqf>
+fnc_areEqual = {
+	private ["_b", "_var1", "_var2"];
+	_b = true;
+	for [{ _i = 1 }, { _i < (count _this) && _b }, { _i=_i + 1 }] do {
+		_var1 = _this select (_i-1);
+		_var2 = _this select _i;
+		if (!(_var1 isEqualTo _var2)) then { _b = false; };
+	};
+	_b
+};
+["A","a","a"] call fnc_areEqual; // false
+</sqf>
+And we can use such workaround instead of using [[BIS_fnc_arrayCompare]] or [[BIS_fnc_areEqual]]
+}}
+
+</dl>

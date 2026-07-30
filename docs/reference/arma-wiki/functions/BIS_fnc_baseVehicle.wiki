@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_baseVehicle
+// revision: 310379 (2022-05-05T18:02:57Z)
+// export sha1: 2eihlzfi4x2xfdnvnbgd958kxogvyc6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Configs | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Configs
+
+|gr2= Vehicles
+
+|descr= Returns base vehicle (i.e., vehicle which is not just derivative of other with different textures / animations).
+
+|s1= class call [[BIS_fnc_baseVehicle]]
+
+|p1= class: [[String]] - vehicle class
+
+|r1= class: [[String]] - base vehicle class
+
+|x1= <sqf>["O_MBT_04_cannon_F"] call BIS_fnc_baseVehicle;</sqf>
+
+|seealso= [[typeOf]]
+}}

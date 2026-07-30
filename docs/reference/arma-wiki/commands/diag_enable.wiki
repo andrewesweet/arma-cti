@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/diag_enable
+// revision: 349134 (2023-11-08T14:49:45Z)
+// export sha1: 81budz3qpzv0m6kbvj1vldw3ddttsmz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|branch= diag
+
+|gr1= Diagnostic
+
+|descr= Toggles various diagnostics.
+
+|s1= mode [[diag_enable]]  state
+
+|p1= mode: [[String]] - see [[Arma 3: Diagnostics Exe]]
+
+|p2= state: [[Boolean]] - [[true]] to enable diag mode, [[false]] to disable it
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"All" diag_enable true;</sqf>
+
+|seealso= [[Arma 3: Diagnostics Exe]] [[diag_toggle]]
+}}

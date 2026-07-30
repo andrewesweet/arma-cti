@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_ControlPoint3DEN
+// revision: 164569 (2020-10-05T07:54:17Z)
+// export sha1: e0zebq9rozxvs6s5qcz0dwg5fgvbsbh
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions used by the [[Arma 3 Key Frame Animation]] system.
+
+[[Category:Function Group: KeyframeAnimation]]

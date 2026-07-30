@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/Example_Code:_Reveal_Units_Temporarily
+// revision: 330100 (2022-08-20T21:18:54Z)
+// export sha1: qvi7ot5oaaazfwdwsoy1oqeaqisrdb0
+// categories: Category:Example Code
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|1.92}}
+
+<sqf>
+/*
+	Author: Revo
+
+	Description:
+	Reveals units in a defined area temporarily.
+
+	Parameter(s):
+	See defines below
+	Returns:
+	BOOLEAN - true
+*/
+
+// replace here
+#define CENTER player	// the area around this object will be scanned
+#define RADIUS 100		// radius of the area
+#define DELETE_TIME 5	// how long will the units be revealed in seconds
+#define TOLERANCE 5		// accuracy of the units positions in meters
+#define DELAY 1			// delay in between reveal of units in seconds (60 units take 60 seconds to show)
+// replace end
+
+[CENTER, RADIUS, DELETE_TIME, TOLERANCE, DELAY] spawn 
+{
+	params ["_center", "_radius", "_deleteTime", "_tolerance", "_delay"];
+	private _nearestUnits = nearestObjects [_center, ["CAManBase"], _radius];
+
+	systemChat "Scanning in progress...";
+
+	createMarker ["areaBorderTemp", _center];
+	"areaBorderTemp" setMarkerShape "ELLIPSE";
+	"areaBorderTemp" setMarkerSize [_radius, _radius];
+	"areaBorderTemp" setMarkerBrush "Border";
+
+	{
+		private _marker = createMarker [format ["tempMarker_%1", _forEachIndex], _x getPos [_tolerance, random 360]];
+		_marker setMarkerType "o_unknown";
+		_marker setMarkerColor "ColorUNKNOWN";
+		_marker setMarkerSize [0.5, 0.5];
+		sleep _delay;
+	} forEach _nearestUnits;
+
+	systemChat format ["%1 entities found.", count _nearestUnits];
+	systemChat format ["Position tolerance: %1 m", _tolerance];
+
+	sleep _deleteTime;
+
+	for "_i" from 0 to (count _nearestUnits) - 1 do
+	{
+		deleteMarker format ["tempMarker_%1", _i];
+		sleep _delay;
+	};
+
+	deleteMarker "areaBorderTemp";
+};
+
+true;
+</sqf>
+
+
+[[Category: Example Code]]

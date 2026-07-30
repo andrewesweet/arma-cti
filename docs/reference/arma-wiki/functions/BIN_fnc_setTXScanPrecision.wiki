@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_setTXScanPrecision
+// revision: 281249 (2021-06-14T09:06:38Z)
+// export sha1: r38tn5zo6r5t8k0ij9rnaw4b60ss7bd
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: TXScan | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= TXScan
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Sets TXScan precision
+
+	Parameter(s):
+		0: STRING - scan name
+		1: NUMBER - cone precision
+		
+	Returns:
+		BOOL - true on success
+		
+	Example:
+		["MyScan", 0.1] call BIN_fnc_setTXScanPrecision
+
+*/</pre>
+{{Wiki|placeholder}}
+{{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_setTXScanPrecision]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

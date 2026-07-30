@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/Template:Test
+// revision: 337304 (2023-01-13T12:14:37Z)
+// export sha1: 4epz9sumax7ugcyidrr1tl357rnunfq
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Template|Test}} template usage: p1= {{{1|none - mandatory!}}}, p2= {{{2|none (optional)}}}</includeonly><noinclude>{{Doc/Template
+|descr= Template description
+|param1= parameter1
+|descr1= this is the first parameter
+|param2= parameter2
+|descr2= (Optional) this is the second parameter
+|example1= <nowiki>{{Test}}</nowiki>
+|result1= {{Test}}
+|example2= <nowiki>{{Test|Hello there!}}</nowiki>
+|result2= {{Test|Hello there!}}
+}}<templatedata>
+{
+	"description": "Test Template's description",
+	"format": "inline",
+	"params": {
+		"1": {
+			"label": "Label 1",
+			"description": "Description 1",
+			"type": "string",
+			"required": true,
+			"default": "Default Value 1",
+			"aliases": [
+				"parameter1"
+			]
+		},
+		"2": {
+			"label": "Label 2",
+			"description": "Description 2",
+			"type": "string",
+			"required": false,
+			"default": null,
+			"aliases": [
+				"parameter2"
+			]
+		}
+	}
+}
+</templatedata></noinclude>

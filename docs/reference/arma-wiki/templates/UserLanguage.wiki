@@ -1,0 +1,192 @@
+// source: https://community.bistudio.com/wiki/Template:UserLanguage
+// revision: 352854 (2024-02-26T22:29:45Z)
+// export sha1: 5hvb921yqhq1mze5h45xlab749xg160
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+| {{{!}} style="border-collapse: collapse; width: 20em; {{#switch:{{{2|5}}}
+| 1 = background-color: #EEE; border: 0.125em solid #EEE
+| 2 = background-color: #CEF; border: 0.125em solid #CEF
+| 3 = background-color: #FEA; border: 0.125em solid #FEA
+| 4 = background-color: #CD5; border: 0.125em solid #CD5
+
+| 6 = background-color: gold; border: 0.125em solid gold
+|     background-color: #ADA; border: 0.125em solid #ADA
+}}"
+{{!}} class="plainlinks" style="font-size: 1.5em; min-height: 2em; min-width: 3em; padding: 0.5em; text-align:center" {{!}} '''{{#switch:{{lc:{{{1|}}}}}
+| ar = {{Link|https://en.wikipedia.org/wiki/Arabic|ar-{{#sub:{{{2|5}}}|0|1}}}}
+| cs = {{Link|https://en.wikipedia.org/wiki/Czech_language|cs-{{#sub:{{{2|5}}}|0|1}}}}
+| da = {{Link|https://en.wikipedia.org/wiki/Danish_language|da-{{#sub:{{{2|5}}}|0|1}}}}
+| de = {{Link|https://en.wikipedia.org/wiki/German_language|de-{{#sub:{{{2|5}}}|0|1}}}}
+| el = {{Link|https://en.wikipedia.org/wiki/Greek_language|el-{{#sub:{{{2|5}}}|0|1}}}}
+| en = {{Link|https://en.wikipedia.org/wiki/English_language|en-{{#sub:{{{2|5}}}|0|1}}}}
+| es = {{Link|https://en.wikipedia.org/wiki/Spanish_language|es-{{#sub:{{{2|5}}}|0|1}}}}
+| fi = {{Link|https://en.wikipedia.org/wiki/Finnish_language|fi-{{#sub:{{{2|5}}}|0|1}}}}
+| fr = {{Link|https://en.wikipedia.org/wiki/French_language|fr-{{#sub:{{{2|5}}}|0|1}}}}
+| it = {{Link|https://en.wikipedia.org/wiki/Italian_language|it-{{#sub:{{{2|5}}}|0|1}}}}
+| ja = {{Link|https://en.wikipedia.org/wiki/Japanese_language|ja-{{#sub:{{{2|5}}}|0|1}}}}
+| nl = {{Link|https://en.wikipedia.org/wiki/Dutch_language|nl-{{#sub:{{{2|5}}}|0|1}}}}
+| pa = {{Link|https://en.wikipedia.org/wiki/Punjabi_language|pa-{{#sub:{{{2|5}}}|0|1}}}}
+| pl = {{Link|https://en.wikipedia.org/wiki/Polish_language|pl-{{#sub:{{{2|5}}}|0|1}}}}
+| pt = {{Link|https://en.wikipedia.org/wiki/Portuguese_language|pt-{{#sub:{{{2|5}}}|0|1}}}}
+| ru= {{Link|https://en.wikipedia.org/wiki/Russian_language|ru-{{#sub:{{{2|5}}}|0|1}}}}
+| sk = {{Link|https://en.wikipedia.org/wiki/Slovak_language|sk-{{#sub:{{{2|5}}}|0|1}}}}
+| sl = {{Link|https://en.wikipedia.org/wiki/Slovene_language|sl-{{#sub:{{{2|5}}}|0|1}}}}
+| sv = {{Link|https://en.wikipedia.org/wiki/Swedish_language|sv-{{#sub:{{{2|5}}}|0|1}}}}
+| th = {{Link|https://en.wikipedia.org/wiki/Thai_language|th-{{#sub:{{{2|5}}}|0|1}}}}
+| tr = {{Link|https://en.wikipedia.org/wiki/Turkish_language|tr-{{#sub:{{{2|5}}}|0|1}}}}
+| zh = {{Link|https://en.wikipedia.org/wiki/Chinese_language|zh-{{#sub:{{{2|5}}}|0|1}}}}
+|      {{#sub:{{lc:{{{1}}}}}|0|2}}-{{#sub:{{{2|5}}}|0|1}}
+}}'''
+{{!}} style="background-color: #FFF; font-size: .8em; padding: .5em; line-height:1.25em" {{!}} This user is able to contribute with {{#switch:{{{2|5}}}
+| 1 = a '''basic'''
+| 2 = an '''intermediate'''
+| 3 = an '''advanced'''
+| 4 = a '''near-native'''
+| 6 = a '''professional'''
+|     a '''native'''
+}} level of '''{{#switch:{{lc:{{{1}}}}}
+| ar = Arabic
+| cs = Czech
+| da = Danish
+| de = German
+| el = Greek
+| en = English
+| es = Spanish
+| fi = Finnish
+| fr = French
+| it = Italian
+| ja = Japanese
+| nl = Dutch
+| pa = Punjabi
+| pl = Polish
+| pt = Portuguese
+| ru = Russian
+| sk = Slovak
+| sl = Slovene
+| sv = Swedish
+| th = Thai
+| tr = Turkish
+| zh = Chinese
+|      {{uc:{{#sub:{{{1}}}|0|2}}}}
+}}'''.
+{{!}}}
+|-no language specified-}}</includeonly><noinclude>
+== Usage ==
+{{<nowiki/>UserLanguage|'''''language'''''|'''''level'''''}}
+* language: {{Link|https://en.wikipedia.org/wiki/ISO_639-1}} language code (full list available {{Link|https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes|here}}). Supported so far: {{hl|ar}}, {{hl|cs}}, {{hl|da}}, {{hl|de}}, {{hl|el}}, {{hl|en}}, {{hl|es}}, {{hl|fi}}, {{hl|fr}}, {{hl|it}}, {{hl|ja}}, {{hl|nl}}, {{hl|pa}}, {{hl|pl}}, {{hl|pt}}, {{hl|ru}}, {{hl|sk}}, {{hl|sl}}, {{hl|sv}}, {{hl|th}}, {{hl|tr}}, {{hl|zh}}.
+
+* level: (Optional, default 5) a number in range 1..6:
+*# basic level
+*# intermediate level
+*# advanced level
+*# near-native level
+*# native level
+*# professional level
+
+{|
+|+ Examples
+|- style="background-color: #EEE"
+! Code
+! Result
+|-
+| <nowiki>{{UserLanguage}}</nowiki>
+| {{UserLanguage}}
+|-
+| <nowiki>{{UserLanguage||2}}</nowiki>
+| {{UserLanguage||2}}
+|-
+| <nowiki>{{UserLanguage|en}}</nowiki>
+| {{UserLanguage|en}}
+|-
+| colspan="2" style="text-align: center" | ''Below are all '''levels''' of language''
+|-
+| <nowiki>{{UserLanguage|en|1}}</nowiki>
+| {{UserLanguage|en|1}}
+|-
+| <nowiki>{{UserLanguage|en|2}}</nowiki>
+| {{UserLanguage|en|2}}
+|-
+| <nowiki>{{UserLanguage|en|3}}</nowiki>
+| {{UserLanguage|en|3}}
+|-
+| <nowiki>{{UserLanguage|en|4}}</nowiki>
+| {{UserLanguage|en|4}}
+|-
+| <nowiki>{{UserLanguage|en|5}}</nowiki>
+| {{UserLanguage|en|5}}
+|-
+| <nowiki>{{UserLanguage|en|6}}</nowiki>
+| {{UserLanguage|en|6}}
+|-
+| colspan="2" style="text-align: center" | ''Below are all '''supported''' languages''
+|-
+| <nowiki>{{UserLanguage|ar}}</nowiki>
+| {{UserLanguage|ar}}
+|-
+| <nowiki>{{UserLanguage|cs}}</nowiki>
+| {{UserLanguage|cs}}
+|-
+| <nowiki>{{UserLanguage|da}}</nowiki>
+| {{UserLanguage|da}}
+|-
+| <nowiki>{{UserLanguage|de}}</nowiki>
+| {{UserLanguage|de}}
+|-
+| <nowiki>{{UserLanguage|el}}</nowiki>
+| {{UserLanguage|el}}
+|-
+| <nowiki>{{UserLanguage|en}}</nowiki>
+| {{UserLanguage|en}}
+|-
+| <nowiki>{{UserLanguage|es}}</nowiki>
+| {{UserLanguage|es}}
+|-
+| <nowiki>{{UserLanguage|fi}}</nowiki>
+| {{UserLanguage|fi}}
+|-
+| <nowiki>{{UserLanguage|fr}}</nowiki>
+| {{UserLanguage|fr}}
+|-
+| <nowiki>{{UserLanguage|it}}</nowiki>
+| {{UserLanguage|it}}
+|-
+| <nowiki>{{UserLanguage|ja}}</nowiki>
+| {{UserLanguage|ja}}
+|-
+| <nowiki>{{UserLanguage|nl}}</nowiki>
+| {{UserLanguage|nl}}
+|-
+| <nowiki>{{UserLanguage|pa}}</nowiki>
+| {{UserLanguage|pa}}
+|-
+| <nowiki>{{UserLanguage|pl}}</nowiki>
+| {{UserLanguage|pl}}
+|-
+| <nowiki>{{UserLanguage|pt}}</nowiki>
+| {{UserLanguage|pt}}
+|-
+| <nowiki>{{UserLanguage|ru}}</nowiki>
+| {{UserLanguage|ru}}
+|-
+| <nowiki>{{UserLanguage|sk}}</nowiki>
+| {{UserLanguage|sk}}
+|-
+| <nowiki>{{UserLanguage|sl}}</nowiki>
+| {{UserLanguage|sl}}
+|-
+| <nowiki>{{UserLanguage|sv}}</nowiki>
+| {{UserLanguage|sv}}
+|-
+| <nowiki>{{UserLanguage|th}}</nowiki>
+| {{UserLanguage|th}}
+|-
+| <nowiki>{{UserLanguage|tr}}</nowiki>
+| {{UserLanguage|tr}}
+|-
+| <nowiki>{{UserLanguage|zh}}</nowiki>
+| {{UserLanguage|zh}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

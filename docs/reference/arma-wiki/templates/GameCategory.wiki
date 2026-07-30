@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/Template:GameCategory
+// revision: 347896 (2023-11-01T22:32:23Z)
+// export sha1: tky55h3z409j2f8zt9plxkyzcak9zdd
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#switch:{{lc:{{{1|}}}}}
+	|#default= {{#if:{{{2|}}}
+		| {{#if:{{{link|}}}{{{text|}}}
+			| [[:Category: {{Name|{{{1}}}|cat}}: {{{2}}} |{{{text|{{Name|{{{1}}}|cat}}: {{{2}}}}}}]]<!-- no space otherwise <a> linkWithSpace</a> -->
+			| [[ Category: {{Name|{{{1}}}|cat}}: {{{2}}} | {{#if:{{{sortKey|}}} | {{uc:{{{sortKey}}}}} | {{GameCategory/SortKey|{{Name|{{{1}}}|cat}}|{{PAGENAME}}}}}}]]
+		}}
+		| {{#if:{{{link|}}}{{{text|}}}
+			| [[:Category: {{Name|{{{1}}}|cat}} |{{{text|{{Name|{{{1}}}|cat}}}}}]]<!-- same -->
+			| [[ Category: {{Name|{{{1}}}|cat}} | {{#if:{{{sortKey|}}} | {{uc:{{{sortKey}}}}} | {{GameCategory/SortKey|{{Name|{{{1}}}|cat}}|{{PAGENAME}}}}}}]]
+		}}
+	}}
+	|armar
+	|arma4= {{#if:{{{link|}}}{{{text|}}}
+		| [[:Category: {{Concat|/|{{Name|{{{1}}}|cat}}|{{{2|}}}|{{{3|}}}|{{{4|}}}|{{{5|}}}|{{{6|}}}}} |{{{text|{{Concat|/|{{Name|{{{1}}}|cat}}|{{{2|}}}|{{{3|}}}|{{{4|}}}|{{{5|}}}|{{{6|}}}}}}}}]]<!-- same -->
+		| [[ Category: {{Concat|/|{{Name|{{{1}}}|cat}}|{{{2|}}}|{{{3|}}}|{{{4|}}}|{{{5|}}}|{{{6|}}}}} | {{uc:{{{sortKey|{{SUBPAGENAME}}}}}}}]]
+	}}
+	|= -no [[Template:GameCategory|category]] provided-{{TemplateCase||[[Category:GameCategory template usage error]]}}
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Adds a game (sub-)category to the proper format and finds the page Category Sort key (e.g {{hl|Arma 2: Editing}} gets sorted as {{hl|EDITING}}).<br>
+Uses {{Template|Name}}, {{Template|Concat}} and {{Template|GameCategory/SortKey}}.
+
+|param1= game
+|descr1= game id, see {{Template|Name}}
+
+|param2= subCategory
+|descr2= (Optional, default empty) sub-category (e.g Editing) - for &ge; {{armaR}} can be up to 5 sub-levels
+
+|param3= link
+|descr3= (Optional, default empty - named argument) {{hl|y}} to make it a link '''to''' the category
+
+|param4= text
+|descr4= (Optional, default empty - named argument) requires ''link''. The link's text (otherwise, the category name will be used) - activates {{hl|link}} as well
+
+|param5= sortKey
+|descr5= (Optional, default {{hl|{{<nowiki/>uc:{{<nowiki/>PAGENAME}}}}}} (see {{Template|GameCategory/SortKey}}) or {{hl|{{<nowiki/>SUBPAGENAME}}}} (for &ge; {{armaR}}) - named argument) category sort key - will be uppercased
+
+|example1= <nowiki>{{GameCategory}}</nowiki>
+|result1= {{hl|{{GameCategory}}}}
+
+|example2= <nowiki>{{GameCategory|ofpr}}</nowiki>
+|result2= {{hl|<nowiki>[[Category: {{Name|ofpr|cat}}|PAGENAME]]</nowiki>}}<br>End result: {{hl|[[<nowiki/>Category: {{Name|ofpr|cat}}|PAGENAME]]}}
+
+|example3= <nowiki>{{GameCategory|ofpr|link= y}}</nowiki>
+|result3= {{hl|{{GameCategory|ofpr|link= y}}}}
+
+|example4= <nowiki>{{GameCategory|arma2|sortKey= the sort key}}</nowiki>
+|result4= {{hl|<nowiki>[[Category: {{Name|arma2|cat}}|THE SORT KEY]]</nowiki>}}<br>End result: {{hl|[[<nowiki/>Category: {{Name|arma2|cat}}|THE SORT KEY]]}}
+
+|example5= <nowiki>{{GameCategory|arma1}}</nowiki>
+|result5= {{hl|<nowiki>[[Category: {{Name|arma1|cat}}|PAGENAME]]</nowiki>}}<br>End result: {{hl|[[<nowiki/>Category: {{Name|arma1|cat}}|PAGENAME]]}}
+
+|example6= <nowiki>{{GameCategory|arma1qg}}</nowiki>
+|result6= {{hl|<nowiki>[[Category: {{Name|arma1qg|cat}}|PAGENAME]]</nowiki>}}<br>End result: {{hl|[[<nowiki/>Category: {{Name|arma1qg|cat}}|PAGENAME]]}}
+
+|example7= <nowiki>{{GameCategory|arma3|Editing}}</nowiki>
+|result7= {{hl|<nowiki>[[Category: {{Name|arma3|cat}}/Editing|PAGENAME]]</nowiki>}}<br>End result: {{hl|[[<nowiki/>Category: {{Name|arma3|cat}}: Editing|PAGENAME]]}}
+
+|example8= <nowiki>{{GameCategory|armaR|Editing|Scripting}}</nowiki>
+|result8= {{hl|<nowiki>[[Category: {{Name|armaR|cat}}/Editing/Scripting|PAGENAME]]</nowiki>}}<br>End result: {{hl|[[<nowiki/>Category: {{Name|armaR|cat}}/Editing/Scripting|PAGENAME]]}}
+
+|example9= <nowiki>{{GameCategory|arma3|Editing|Scripting|link= y}}</nowiki><br><nowiki>{{GameCategory|arma4|0|1|2|3|4|5|6|7|8|9|10|link= y}}</nowiki>
+|result9= {{hl|{{GameCategory|arma3|Editing|Scripting|link= y}}}}<br>{{hl|{{GameCategory|arma4|0|1|2|3|4|5|6|7|8|9|10|link= y}}}}
+
+|example10= <nowiki>{{GameCategory|ofp|link= y|text= OFP!}}</nowiki><br><nowiki>{{GameCategory|arma2|text= Game 2}}</nowiki><br><nowiki>{{GameCategory|arma4|link= y|text= A4 is great :)}}</nowiki>
+|result10= {{GameCategory|ofp|link= y|text= OFP!}}<br>{{GameCategory|arma2|text= Game 2}}<br>{{GameCategory|arma4|link= y|text= A4 is great :)}}
+}}

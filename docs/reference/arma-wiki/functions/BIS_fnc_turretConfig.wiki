@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_turretConfig
+// revision: 378551 (2026-05-05T15:09:52Z)
+// export sha1: lpa8bkhuzaupfjg0kgusumtndkmdawj
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Object Manipulation
+
+|descr= Returns vehicle turret config for the turret given by the turret path. 
+
+|s1= [vehicle, turret] call [[BIS_fnc_turretConfig]]
+
+|p1= vehicle: [[Object]] or [[String]] - vehicle or vehicle type
+
+|p2= turret: [[Turret Path]]
+
+|r1= [[Config]] - turret config or [[configNull]]. Using {{hl|[-1]}} for turret path returns vehicle config
+
+|x1= <sqf>getNumber (["B_APC_Wheeled_01_cannon_F", [0,0]] call BIS_fnc_turretConfig >> "hasGunner") > 0;</sqf>
+
+|x2= <sqf>getNumber ([car1, [-1]] call BIS_fnc_turretConfig >> "hasDriver") > 0;</sqf>
+
+|seealso= [[BIS_fnc_vehicleCrewTurrets]] [[BIS_fnc_allTurrets]]
+}}

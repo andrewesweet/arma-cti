@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Actions
+// revision: 138862 (2019-11-21T23:39:31Z)
+// export sha1: r9d03sn548id51tl2vjarlfnvgv4313
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Topics]]

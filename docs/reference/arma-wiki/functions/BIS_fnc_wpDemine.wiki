@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_wpDemine
+// revision: 310701 (2022-05-06T11:19:11Z)
+// export sha1: 8sjdir6js9ft92knwnahj9bqy2rtib4
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Waypoints | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Waypoints
+
+|descr= Scripted "CLEAR MINES" [[Waypoints|Advanced Waypoint]].
+The script needs a unit with the abiility to demine (engineer or explosive specialist [[getUnitTrait|trait]] '''and''' a toolkit).
+
+|s1= [group, position, target, clearUnknownMines] call [[BIS_fnc_wpDemine]]
+
+|p1= group: [[Group]] - a group with a mine expert
+
+|p2= position: [[Position]] - the demining centre. Demining radius is defined by [[waypointCompletionRadius]], and defaults to 50 if set to 0
+
+|p3= target: [[Anything]] - (Optional, default [[objNull]]) unused parameter
+
+|p4= clearUnknownMines: [[Boolean]] - (Optional, default [[true]]) should the group demine all mines or only the one [[detectedMines|its side knows about]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[group player, getMarkerPos "mineField", objNull, false] call BIS_fnc_wpDemine;</sqf>
+
+|seealso= [[Waypoints]] [[:Category:Command_Group:_Waypoints|Waypoints Command Group]]
+}}

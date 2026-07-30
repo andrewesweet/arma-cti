@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/lbPictureRight
+// revision: 319142 (2022-05-13T09:23:15Z)
+// export sha1: ehagvc405qp6cqne5a9dkjhptuuhgmc
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Operation Flashpoint version | Category:Maintenance/RV | Category:Maintenance/RV/Version1 needed | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1=
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= GUI Control - ListBox
+
+|descr= Returns the right picture name of the item with the given index of the listbox or combobox with id idc of the topmost user [[dialog]].
+
+|s1= [[lbPictureRight]] [idc, index]
+
+|p1= idc: [[Number]] - idc of control
+
+|p2= index: [[Number]]
+
+|r1= [[String]]
+
+|s2= control [[lbPictureRight]] index
+
+|p21= control: [[Control]]
+
+|p22= index: [[Number]]
+
+|r2= [[String]]
+
+|x1= <sqf>_picture = lbPictureRight [101, 0];</sqf>
+
+|x2= <sqf>_picture = _control lbPictureRight 0;</sqf>
+
+|seealso= [[lbAdd]] [[lbClear]] [[lbColor]] [[lbCurSel]] [[lbData]] [[lbDelete]] [[lbIsSelected]] [[lbSelection]] [[lbSetColor]] [[lbSetCurSel]] [[lbSetData]] [[lbSetPicture]] [[lbSetSelected]] [[lbSetTooltip]] [[lbSetValue]] [[lbSize]] [[lbSort]] [[lbSortByValue]] [[lbText]] [[lbValue]]
+}}

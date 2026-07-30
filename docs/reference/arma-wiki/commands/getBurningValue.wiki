@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getBurningValue
+// revision: 319274 (2022-05-13T09:23:29Z)
+// export sha1: pb2t4u958lof0m7uz4qhvcnfw142ik6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|descr= Returns how much the unit is exposed to fire damage.
+
+|gr1= Object Manipulation
+
+|s1= [[getBurningValue]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _fireDamage = getBurningValue player;</sqf>
+
+|seealso= [[inflame]] [[inflamed]] [[damage]]
+}}

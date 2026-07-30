@@ -1,0 +1,162 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_CfgMissions_MPMissions
+// revision: 368957 (2024-08-21T07:56:42Z)
+// export sha1: 657yonsi7a34cyewkycqxbdijwfck6t
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+== MPMissions ==
+
+<syntaxhighlight lang="cpp">
+class CfgMissions
+{
+	class MPMissions
+	{
+		class SPE_HoW_MPMissions
+		{
+			briefingName = "[SPE] Operation Cobra";
+			class SPE_M00_Operation_Cobra_Prologue
+			{
+				briefingName = "[SPE] OpCobra - M0: Prologue";
+				directory = "WW2\SPE_Missions_p\Campaigns_p\SPE_Operation_Cobra\Missions\SPE_M00_Operation_Cobra_Prologue.SPE_Normandy";
+			};
+			class SPE_M01_Liberation_of_Saint_Gilles
+			{
+				briefingName = "[SPE] OpCobra - M1: Liberation of Saint-Gilles";
+				directory = "WW2\SPE_Missions_p\Campaigns_p\SPE_Operation_Cobra\Missions\SPE_M01_Liberation_of_Saint_Gilles.SPE_Normandy";
+			};
+			class SPE_M02_Liberation_of_Canisy
+			{
+				briefingName = "[SPE] OpCobra - M2: Liberation of Canisy";
+				directory = "WW2\SPE_Missions_p\Campaigns_p\SPE_Operation_Cobra\Missions\SPE_M02_Liberation_of_Canisy.SPE_Normandy";
+			};
+			class SPE_M03_Quibou_Dangy_March
+			{
+				briefingName = "[SPE] OpCobra - M3: Quibou Dangy March";
+				directory = "WW2\SPE_Missions_p\Campaigns_p\SPE_Operation_Cobra\Missions\SPE_M03_Quibou_Dangy_March.SPE_Normandy";
+			};
+			class SPE_M04_Defense_of_Pont_Brocard
+			{
+				briefingName = "[SPE] OpCobra - M4: Defense of Pont-Brocard";
+				directory = "WW2\SPE_Missions_p\Campaigns_p\SPE_Operation_Cobra\Missions\SPE_M04_Defense_of_Pont_Brocard.SPE_Normandy";
+			};
+			class SPE_M05_Villebaudon_March
+			{
+				briefingName = "[SPE] OpCobra - M5: Villebaudon March";
+				directory = "WW2\SPE_Missions_p\Campaigns_p\SPE_Operation_Cobra\Missions\SPE_M05_Villebaudon_March.SPE_Normandy";
+			};
+			class SPE_M07_Liberation_of_Saint_Denis_le_Gast
+			{
+				briefingName = "[SPE] OpCobra - M6: Liberation of Saint Denis-le-Gast";
+				directory = "WW2\SPE_Missions_p\Campaigns_p\SPE_Operation_Cobra\Missions\SPE_M07_Liberation_of_Saint_Denis_le_Gast.SPE_Normandy";
+			};
+			class SPE_M08_Defense_of_Saint_Denis_le_Gast
+			{
+				briefingName = "[SPE] OpCobra - M7: Defense of Saint Denis-le-Gast";
+				directory = "WW2\SPE_Missions_p\Campaigns_p\SPE_Operation_Cobra\Missions\SPE_M08_Defense_of_Saint_Denis_le_Gast.SPE_Normandy";
+			};
+			class SPE_M09_Operation_Cobra_Epilogue
+			{
+				briefingName = "[SPE] OpCobra - M8: Epilogue";
+				directory = "WW2\SPE_Missions_p\Campaigns_p\SPE_Operation_Cobra\Missions\SPE_M09_Operation_Cobra_Epilogue.SPE_Normandy";
+			};
+		};
+
+		class SPE_CO4_Der_Zahnarzt
+		{
+			author = "Heavy Ordnance Works";
+			dlc = "SPE";
+			displayName = "[SPE] COOP 04 Der Zahnarzt";
+			briefingName = "[SPE] COOP 04 Der Zahnarzt";
+			directory = "WW2\SPE_Missions_p\Scenarios_p\SPE_CO4_Der_Zahnarzt.SPE_Normandy";
+		};
+		class SPE_CO6_Attack_on_Mortain
+		{
+			author = "Heavy Ordnance Works";
+			dlc = "SPE";
+			displayName = "[SPE] COOP 06 Attack on Mortain";
+			briefingName = "[SPE] COOP 06 Attack on Mortain";
+			directory = "WW2\SPE_Missions_p\Scenarios_p\SPE_CO6_Attack_on_Mortain.SPE_Mortain";
+		};
+		class SPE_CO6_Panzerkampfwagen
+		{
+			author = "Heavy Ordnance Works";
+			dlc = "SPE";
+			displayName = "[SPE] COOP 06 Panzerkampfwagen";
+			briefingName = "[SPE] COOP 06 Panzerkampfwagen";
+			directory = "WW2\SPE_Missions_p\Scenarios_p\SPE_CO6_Panzerkampfwagen.SPE_Mortain";
+		};
+
+		class CO_10_SPE_Combat_Patrol_SPE_Normandy
+		{
+			briefingName = "[SPE] COOP 10 Combat Patrol";
+			directory = "WW2\SPE_Missions_p\GameModesBI_p\CO_10_SPE_Combat_Patrol.SPE_Normandy";
+		};
+		class CO_10_SPE_Combat_Patrol_SPE_Mortain
+		{
+			briefingName = "[SPE] COOP 10 Combat Patrol";
+			directory = "WW2\SPE_Missions_p\GameModesBI_p\CO_10_SPE_Combat_Patrol.SPE_Mortain";
+		};
+
+		class CO_10_SPE_Escape_SPE_Normandy
+		{
+			briefingName = "[SPE] COOP 10 Escape";
+			directory = "WW2\SPE_Missions_p\GameModesBI_p\CO_10_SPE_Escape.SPE_Normandy";
+		};
+		class CO_10_SPE_Escape_SPE_Mortain
+		{
+			briefingName = "[SPE] COOP 10 Escape";
+			directory = "WW2\SPE_Missions_p\GameModesBI_p\CO_10_SPE_Escape.SPE_Mortain";
+		};
+
+		class WL_16_SPE_Warlords_SPE_Normandy
+		{
+			briefingName = "[SPE] WL 16 Warlords";
+			directory = "WW2\SPE_Missions_p\GameModesBI_p\WL_16_SPE_Warlords.SPE_Normandy";
+		};
+		class WL_16_SPE_Warlords_SPE_Mortain
+		{
+			briefingName = "[SPE] WL 16 Warlords";
+			directory = "WW2\SPE_Missions_p\GameModesBI_p\WL_16_SPE_Warlords.SPE_Mortain";
+		};
+
+		class ZGM_50_SPE_Zeus_GameMaster_1_SPE_Normandy
+		{
+			briefingName = "[SPE] Zeus GameMaster [Normandy]";
+			directory = "WW2\SPE_Missions_p\GameModesBI_p\ZGM_50_SPE_Zeus_GameMaster_1.SPE_Normandy";
+		};
+		class ZGM_50_SPE_Zeus_GameMaster_1_SPE_Mortain
+		{
+			briefingName = "[SPE] Zeus GameMaster [Mortain]";
+			directory = "WW2\SPE_Missions_p\GameModesBI_p\ZGM_50_SPE_Zeus_GameMaster_1.SPE_Mortain";
+		};
+		class ZGM_18_SPE_Zeus_GameMaster_1_GER_Wehrmacht_SPE_Normandy
+		{
+			briefingName = "[SPE] Zeus GameMaster GER Wehrmacht [Normandy]";
+			directory = "WW2\SPE_Missions_p\GameModesBI_p\ZGM_18_SPE_Zeus_GameMaster_1_GER_Wehrmacht.SPE_Normandy";
+		};
+		class ZGM_18_SPE_Zeus_GameMaster_1_GER_Wehrmacht_SPE_Mortain
+		{
+			briefingName = "[SPE] Zeus GameMaster GER Wehrmacht [Mortain]";
+			directory = "WW2\SPE_Missions_p\GameModesBI_p\ZGM_18_SPE_Zeus_GameMaster_1_GER_Wehrmacht.SPE_Mortain";
+		};
+		class ZGM_18_SPE_Zeus_GameMaster_1_US_Army_SPE_Normandy
+		{
+			briefingName = "[SPE] Zeus GameMaster US Army [Normandy]";
+			directory = "WW2\SPE_Missions_p\GameModesBI_p\ZGM_18_SPE_Zeus_GameMaster_1_US_Army.SPE_Normandy";
+		};
+		class ZGM_18_SPE_Zeus_GameMaster_1_US_Army_SPE_Mortain
+		{
+			briefingName = "[SPE] Zeus GameMaster US Army [Mortain]";
+			directory = "WW2\SPE_Missions_p\GameModesBI_p\ZGM_18_SPE_Zeus_GameMaster_1_US_Army.SPE_Mortain";
+		};
+	};
+};
+</syntaxhighlight>
+
+== Mission Rotation ==
+
+If you want your [[Arma_3:_Dedicated_Server|dedicated server]] to automatically select/run missions, you need to define a ''mission rotation'' via <syntaxhighlight lang="cpp" inline>class Missions</syntaxhighlight> in the [[Arma_3:_Server_Config_File|server.cfg]]. You can also adjust the '''default''' [[difficulty]] or [[Mission_Parameters|mission parameter]] '''defaults''' per mission that way.
+
+See [[Arma_3:_Server_Config_File#Mission_Rotation|Arma 3: Server Config File - Mission Rotation]] for more information.
+
+[[Category: Spearhead 1944]]

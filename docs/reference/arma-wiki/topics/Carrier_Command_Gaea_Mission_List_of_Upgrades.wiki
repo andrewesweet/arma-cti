@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_List_of_Upgrades
+// revision: 341581 (2023-06-09T16:21:09Z)
+// export sha1: t6a5cu8fp0zjjli5rh6j6tqeyvyxfe1
+// categories: Category:Carrier Command: Gaea Mission
+// Vendored snapshot. Do not edit — re-export instead.
+
+Even though the dialogue in the Campaign suggests otherwise, the newly acquired upgrades are automatically retrofitted in previously manufactured vehicles. <ref>http://forums.bistudio.com/showthread.php?141087-Afterburner-%28campaign%29</ref>
+
+
+== Walrus & Manta ==
+
+* Volcanic upgrade
+* Icelands upgrade
+* Marshes upgrade
+
+=== Walrus ===
+
+* Turbo
+The Turbo module boosts engine output, causing an increase in speed for a short period of time.
+
+=== Manta ===
+
+* Afterburners
+The Afterburners inject fuel into the Manta's exhaust, increasing speed for a short period of time.
+
+
+{{GameCategory|carriercommand}}

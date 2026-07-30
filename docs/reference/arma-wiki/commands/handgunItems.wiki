@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/handgunItems
+// revision: 321090 (2022-05-13T13:46:43Z)
+// export sha1: adqjhl3uh7fv3ktsll4g6pl4stoa6v5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|gr1= Unit Inventory
+
+|descr= Returns array with all items assigned to the [[handgunWeapon]] except magazines. Use [[handgunMagazine]] command for the latter. This command is used for infantry weapons only.
+
+|s1= [[handgunItems]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] - [silencer, laserpointer/flashlight, optics, bipod]
+
+|x1= <sqf>
+handgunItems player;
+/*
+[
+	"muzzle_snds_L",	// silencer
+	"",					// laser
+	"",					// optics
+	""					// bipod
+]
+*/
+</sqf>
+
+|seealso= [[addHandgunItem]] [[removeHandgunItem]] [[removeAllHandgunItems]] [[weaponAccessories]] [[weaponAccessoriesCargo]] [[primaryWeaponItems]] [[secondaryWeaponItems]] [[weaponsItems]] [[binocularItems]] [[weaponsItemsCargo]]
+}}

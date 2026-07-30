@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Moves
+// revision: 139084 (2019-12-03T21:36:26Z)
+// export sha1: gf3h96msll2k2vnt18c37jxkgta02b2
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists everything related to character animations. See also: [[playMove]] and [[switchMove]].
+
+
+[[Category: Reference Lists]]

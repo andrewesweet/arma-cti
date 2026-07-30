@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Official_Tools
+// revision: 164085 (2020-09-30T23:12:24Z)
+// export sha1: 84n16h7f33eydeggaa04w7abok6zjja
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category contains official tools created by Bohemia Interactive. These tools are provided to the community under the terms that allows free use of the tools for any non commercial purposes. Any commercial use of the tools is strictly prohibited without permission from BI. You must agree to the terms of End User License Agreement for BI's Tools before using any of the tools.
+
+[[Category:Arma_2:_Editing|Official Tools]]
+[[Category: Official Tools]]

@@ -1,0 +1,73 @@
+// source: https://community.bistudio.com/wiki/weapons
+// revision: 369614 (2024-09-26T21:03:08Z)
+// export sha1: qxgw70yl4ksvkvaitwp61qrjexkzfkh
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Command Group: Vehicle Inventory | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Unit Inventory
+
+|gr2= Vehicle Inventory
+
+|descr= Returns array of names of all unit's weapons.
+
+|s1= [[weapons]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[String]]s - weapon class names
+
+|x1= <sqf>_wArray = weapons player;</sqf>
+
+|seealso= [[magazines]] [[weaponsTurret]] [[assignedVehicleRole]] [[weaponState]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 12:07, 20 January 2007</dd>
+<dt class="note">[[User:Bdfy|Bdfy]]</dt>
+<dd class="note">
+{{GVI|arma1|1.02}} This command returns only weapons defined for the primary turret of the vehicle. 
+for ex. only ["D81", "PKT"] for t72, not ["D81", "PKT","DSHKM"]
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 06:01, 3 March 2007 (CET)</dd>
+<dt class="note">[[User:Donnervogel|Donnervogel]]</dt>
+<dd class="note">''weapons'' never returns the weapon "Throw" which all soldier units have have to throw hand grenades. You'd have to use [[hasWeapon]] to verify it. Also hand grenades are not listed since they are magazines. Use [[magazines]] for that.
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 11 March 2011</dd>
+<dt class="note">[[User:.kju|.kju]]</dt>
+<dd class="note">
+Use [[weaponsTurret]] to determine the weapons of a non gunner/turret position.
+<dt><dt>
+<dd class="notedate">Posted on 25 November 2011</dd>
+<dt class="note">[[User:Dr_Eyeball|Dr_Eyeball]]</dt>
+<dd class="note">
+This command does not include non-turret weapons, such as smoke, flare or chaff launchers which are usually declared in the root of the vehicle's class, rather than in the Turrets hierarchy. (Unsure whether it excludes it because it is not in the turret or because these are not considered true weapons via some property.)
+</dl>

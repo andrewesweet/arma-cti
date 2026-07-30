@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getBorderMarkers
+// revision: 309405 (2022-05-05T12:04:36Z)
+// export sha1: h93nq36i4bwg1lh0b4ldcp8c38qsg3j
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Map and Markers
+
+|descr= Retrieves marker names used in the border restrictions module.
+
+|s1= call [[BIS_fnc_getBorderMarkers]]
+
+|r1= [[Array]] of [[String]]s - list of markers
+
+|x1= <sqf>call BIS_fnc_getBorderMarkers;</sqf>
+
+|seealso= [[BIS_fnc_moveMarker]]
+}}

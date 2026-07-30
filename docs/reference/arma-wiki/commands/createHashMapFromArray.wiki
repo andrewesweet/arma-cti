@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/createHashMapFromArray
+// revision: 377214 (2026-01-02T00:12:06Z)
+// export sha1: o73jt871gz62p3k2sj6eblcu4xiyley
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: HashMap | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= HashMap
+
+|gr2= Arrays
+
+|descr= Creates a new [[HashMap]] and initializes it from a key-value pair array
+
+|s1= [[createHashMapFromArray]] [<nowiki/>[key1, value1], [key2, value2], ...] 
+
+|p1= keyN: [[HashMapKey]]
+
+|p2= valueN: [[Anything]]
+
+|r1= [[HashMap]]
+
+|s2= keys [[createHashMapFromArray]] values
+
+|s2since= arma3 2.04
+
+|p21= keys: [[Array]] of [[HashMapKey]]s
+
+|p22= values: [[Array]] of [[Anything]]
+{{Feature|informative|Size of ''keys'' and size of ''values'' arrays do not need to be equal. Missing values will be filled with [[nil]].}}
+
+|r2= [[HashMap]]
+
+|x1= <sqf>createHashMapFromArray [["a", 1], ["b", 2], ["c", 3]];</sqf>
+
+|x2= <sqf>[1, 2, 3, 4] createHashMapFromArray []; // returns [[1, <null>], [2, <null>], [4, <null>], [3, <null>]]</sqf>
+
+|x3= <sqf>[1, 2, 3] createHashMapFromArray ["one", "two", "three", "four"]; // returns [[1, "one"], [2, "two"], [3, "three"]]</sqf>
+
+|seealso= [[createHashMap]]
+}}

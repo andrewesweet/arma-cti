@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/dissolveTeam
+// revision: 322979 (2022-06-28T21:42:55Z)
+// export sha1: cs3prtgrdlyxwrf7dcwpu8ni2h7gv48
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Groups
+
+|arg= local
+
+|descr= Dissolves the given team. All members become members of the main team.
+
+|s1= [[dissolveTeam]] teamColor
+
+|p1= teamColor: [[String]] - can be one of:
+* "RED"
+* "GREEN"
+* "BLUE"
+* "YELLOW"
+
+|r1= [[Nothing]]
+
+|x1= <sqf>dissolveTeam "RED";</sqf>
+
+|seealso= [[assignTeam]] [[unassignTeam]]
+}}

@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/setWaypointName
+// revision: 319666 (2022-05-13T09:24:40Z)
+// export sha1: 6zwohka3ipmmletaiwookyb83147o8i
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Waypoints
+
+|descr= Changes the waypoint name.
+
+|s1= waypoint [[setWaypointName]] name
+
+|p1= waypoint: [[Waypoint]]
+
+|p2= name: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_grp,2] setWaypointName "myName";</sqf>
+|seealso= [[addWaypoint]] [[waypointName]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointDescription]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointLoiterRadius]] [[setWaypointLoiterType]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointTimeout]] [[setWaypointType]] [[setWaypointVisible]]
+}}

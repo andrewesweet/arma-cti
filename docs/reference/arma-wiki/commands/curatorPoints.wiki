@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/curatorPoints
+// revision: 376976 (2026-01-01T06:06:14Z)
+// export sha1: i8p564bnz9x6j2arctrr5k8hy2epfy0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Returns number of points that curator have.
+
+|s1= [[curatorPoints]] curatorObj
+
+|p1= curatorObj: [[Object]] - curator module.
+
+|r1= [[Number]] in range 0..1
+
+|x1= <sqf>_points = curatorPoints myCurator;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[addCuratorPoints]]
+}}

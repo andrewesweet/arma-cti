@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Prof-Branch_Change_Log_v2.18
+// revision: 378262 (2026-03-26T11:57:32Z)
+// export sha1: 166ki9m9jgm1znbro6mqbdnhtxbv9rq
+// categories: Category:Arma 3: Prof-Branch Change Logs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|informative|Changes prior to March 2025 can be found on the {{Link|https://forums.bohemia.net/forums/topic/160288-arma-3-stable-server-218-profiling-performance-binary-feedback/|Bohemia Interactive forums}}.}}
+
+= 19-05-2025 =
+'''2.18.152893''' new PROFILING branch with PERFORMANCE binaries, '''v32''', server and client, windows 64-bit, linux server 64-bit
+* Added: -cpuAffinity command line parameter
+* Fixed: Config parsing errors would be reported with wrong line number if the file had empty lines at the start
+* Added: -cpuMainThreadAffinity command line parameter
+* Added: getServerInfo command now forwards "PublicSettings" class from server.cfg
+* Added: OnMissionInit/OnMarkerCreated/HandleChatMessage server-side events
+* Added: spawn server-side script command
+
+= 13-05-2025 =
+'''2.18.152881''' new PROFILING branch with PERFORMANCE binaries, '''v31''', server and client, windows 64-bit, linux server 64-bit
+* Tweaked: Improved performance of engine closing files (could in some cases cause lag spikes) (Thanks ''thegamecracks'')
+* Fixed: Microfreeze when pressing "Next Target" key - https://feedback.bistudio.com/T191741
+* Fixed: Potentially fixed sometimes missing particle effects (Please report if it happens again)
+
+= 07-05-2025 =
+'''2.18.152860''' new PROFILING branch with PERFORMANCE binaries, '''v30''', server and client, windows 64-bit, linux server 64-bit
+* Tweaked: Improved game start speed
+* Fixed: Multithreading related crash (Thanks ''Schaer'')
+* Fixed: Crash while ADS and switching to spectrum device while remote controlling a unit (Thanks ''Rook'')
+* Fixed: Animation hitching (Thanks ''clbt'')
+
+= 28-04-2025 =
+'''2.18.152839''' new PROFILING branch with PERFORMANCE binaries, '''v29''', server and client, windows 64-bit, linux server 64-bit
+* Tweaked: Netcode optimizations (No iterating linked lists, no garbage collect, faster CRC, more efficient retransmission queue, fast-retransmit on packet loss)
+* Fixed: Flare's did not apply the Attenuation config to their light emitter
+* Fixed: Potentially fixed sometimes missing particle effects (Please report if it happens again)
+
+= 09-04-2025 =
+'''2.18.152799''' new PROFILING branch with PERFORMANCE binaries, '''v28''', server and client, windows 64-bit, linux server 64-bit
+* Added: Listbox sorting is now multithreaded - https://feedback.bistudio.com/T184005
+* Tweaked: Improved efficiency of listbox sorting - https://feedback.bistudio.com/T184005
+* Fixed: Accidental netcode change in v27
+
+= 07-04-2025 =
+'''2.18.152785''' new PROFILING branch with PERFORMANCE binaries, '''v27''', server and client, windows 64-bit, linux server 64-bit
+* Added: "AIThinkOnlyLocal" to setMissionOptions
+* Added: Some basic.cfg network parameters can now be provided as strings
+* Added: [[connectToServer]] command and serverbrowser direct-connect now supports resolving SRV records - https://feedback.bistudio.com/T127943
+* Added: HTTP header support for HTTP mission file downloads
+* Tweaked: Netcode adjustments (Don't send animation updates for objects that have no animations, don't send "stats" updates when stats haven't changed)
+* Tweaked: General netcode performance improvements
+* Changed: Networking bandwidth estimation behavior of Min/MaxBandwidth (MinBandwidth is now unused on profiling branch)
+* Fixed: Non-exploding missile hit would do too much damage
+* Fixed: Forced game crash when addon requires addon that was skipped due to 'skipWhenMissingDependencies' (Thanks ''Dart'')
+* Fixed: URL encoding for HTTP mission file downloads
+
+= 20-03-2025 =
+'''2.18.152744''' new PROFILING branch with PERFORMANCE binaries, '''v26''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Incorrect laser marker positioning on and around water - https://feedback.bistudio.com/T188547
+* Fixed: Laser target marker would get stuck on objects - https://feedback.bistudio.com/T71322
+* Fixed: Reverted part of AI optimization ([[cursorTarget]] now works on static objects again, but only for the player unit)
+* Fixed: Crash when playing a sound more than 255 times at once
+* Fixed: Server would get stuck at "Waiting for Server..." if one player did not select a role
+* Fixed: Fired Event Handler in multiplayer would receive the wrong projectile for countermeasures - https://feedback.bistudio.com/T190141
+
+{{GameCategory|arma3|Prof-Branch Change Logs}}

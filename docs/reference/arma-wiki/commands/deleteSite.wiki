@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/deleteSite
+// revision: 364517 (2024-05-16T20:46:22Z)
+// export sha1: nim7lyz55vho4rvzgx4a6sawlz1f9tl
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Broken Commands
+
+|descr= Removes the site.
+{{Feature|warning|This command is considered deprecated and is no longer supported}}
+
+|s1= [[deleteSite]] site
+
+|p1= site: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= -
+
+|seealso= [[createSite]] [[allSites]]
+}}

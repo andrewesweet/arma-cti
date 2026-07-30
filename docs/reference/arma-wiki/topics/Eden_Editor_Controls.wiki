@@ -1,0 +1,191 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Controls
+// revision: 339187 (2023-04-27T16:04:25Z)
+// export sha1: cuoxwzdqi9hcs3b0ajgiqu8nubq263a
+// categories: Category:Eden Editor: Getting Started
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This page lists [[:Category:Eden Editor|Eden Editor]] controls based on pressed (or not) modifiers.
+
+{{Feature|informative|A modifier is a key that changes another key behaviour when pressed in a combination; in Eden Editor such keys are {{Controls|Ctrl}}, {{Controls|Shift}} and/or {{Controls|Alt}}.}}
+
+{{Clear}}
+== No Modifier ==
+
+Actions performed after pressing the given key directly, without modifier.
+
+{{Keyboard
+
+|Escape = Exit
+|F1 = [[Eden Editor: Object|Objects]]
+|F2 = [[Eden Editor: Group|Groups]]
+|F3 = [[Eden Editor: Trigger|Triggers]]
+|F4 = [[Eden Editor: Waypoint|Waypoints]]
+|F5 = [[Eden Editor: System|Systems]]
+|F6 = [[Eden Editor: Marker|Markers]]
+
+|Tilde = [[Arma 3: Debug Console|Debug Console]]
+|Key1 = [[Eden Editor: Transformation Widget|No Widget]]
+|Key2 = [[Eden Editor: Transformation Widget#Translation Widget|Translation Widget]]
+|Key3 = [[Eden Editor: Transformation Widget#Rotation Widget|Rotation Widget]]
+|Key4 = [[Eden Editor: Transformation Widget#Area Scaling Widget|Scaling Widget]]
+|Key5 = [[Eden Editor: Transformation Widget#Area Widget|Area Widget]]
+
+|Tab = Toggle [[Eden Editor: Asset Browser|Submode]]
+|Q = Cam Up
+|W = Cam Forward
+|E = Toggle [[Eden Editor: Asset Browser|Asset Browser]]
+|R = Toggle Entity List
+|LBracket = Decrease Grid Size
+|RBracket = Increase Grid Size
+|Backslash = Toggle [[Eden Editor: Entity Transforming|Surface Snap]]
+
+|A = Cam Left
+|S = Cam Back
+|D = Cam Right
+|F = Center on Entity
+|L = Toggle Flashlight
+|Semicolon = Toggle Grid
+|Apostrophe = Toggle [[Eden Editor: Entity Transforming|Vertical Mode]]
+|Enter = [[Eden Editor: Preview|Preview]] Scenario
+
+|LShift = [[Eden Editor: Entity Transforming|Rotation]] Modifier
+|Z = Cam Down
+|N = Toggle Vision Mode
+|M = Toggle Map
+|Slash = Toggle [[Eden Editor: Waypoint|Waypoint Snap]]
+
+|LCtrl = Selection Modifier
+|LAlt = [[Eden Editor: Entity Transforming|Altitude]] Modifier
+|Space = Toggle [[Eden Editor: Transformation Widget|Widget]]
+
+|Delete = Delete Entity
+|Home = Center on Player
+
+|NumEnter = [[Eden Editor: Preview|Preview]] Scenario
+
+|colorEscape = PaleGreen
+|colorF1 = PaleGreen
+|colorF2 = PaleGreen
+|colorF3 = PaleGreen
+|colorF4 = PaleGreen
+|colorF5 = PaleGreen
+|colorF6 = PaleGreen
+
+|colorTilde = PaleGreen
+|colorKey1 = PaleGreen
+|colorKey2 = PaleGreen
+|colorKey3 = PaleGreen
+|colorKey4 = PaleGreen
+|colorKey5 = PaleGreen
+
+|colorTab = PaleGreen
+|colorQ = PaleTurquoise
+|colorW = PaleTurquoise
+|colorE = PaleGreen
+|colorR = PaleGreen
+|colorLBracket = PaleGreen
+|colorRBracket = PaleGreen
+|colorBackslash = PaleGreen
+
+|colorA = PaleTurquoise
+|colorS = PaleTurquoise
+|colorD = PaleTurquoise
+|colorF = PaleGreen
+|colorL = PaleGreen
+|colorSemicolon = PaleGreen
+|colorApostrophe = PaleGreen
+|colorEnter = PaleGreen
+
+|colorLShift = PaleGreen
+|colorZ = PaleTurquoise
+|colorN = PaleGreen
+|colorM = PaleGreen
+|colorSlash = PaleGreen
+
+|colorLCtrl = PaleGreen
+|colorLAlt = PaleGreen
+|colorSpace = PaleGreen
+
+|colorDelete = PaleGreen
+|colorHome = PaleGreen
+
+|colorNumEnter = PaleGreen
+
+|color1 = PaleGreen
+|color1desc = Hard-coded keys
+
+|color2 = PaleTurquoise
+|color2desc = Keys assigned in ''Editor Camera'' controls category
+
+}}
+
+
+== Ctrl Modifier ==
+
+Actions performed after pressing the given key while holding Ctrl ({{Controls|Ctrl|<Key>}})
+
+{{Keyboard
+
+|R = Center on Random Position
+|T = Toggle Map Textures
+|Y = Redo
+|O = Open Scenario
+
+|A = Select All on Screen
+|S = Save Scenario
+|F = Search in Asset Browser
+|G = Toggle Vegetation
+|K = Open Preferences
+
+|Z = Undo
+|X = Cut Entities
+|C = Copy Entities
+|V = Paste Entities
+|N = New Scenario
+|M = Merge Scenarios
+
+
+|colorR = PaleGreen
+|colorT = PaleGreen
+|colorY = PaleGreen
+|colorO = PaleGreen
+
+|colorA = PaleGreen
+|colorS = PaleGreen
+|colorF = PaleGreen
+|colorG = PaleGreen
+|colorK = PaleGreen
+
+|colorZ = PaleGreen
+|colorX = PaleGreen
+|colorC = PaleGreen
+|colorV = PaleGreen
+|colorN = PaleGreen
+|colorM = PaleGreen
+
+}}
+
+
+== Ctrl+Shift Modifier ==
+
+Actions performed after pressing the given key while holding Ctrl and Shift ({{Controls|Ctrl|Shift|<Key>}})
+
+{{Keyboard
+
+|F = Search in entities
+|S = Save As
+|V = {{Link|Eden Editor: Actions#PasteUnitOrig|Raw-paste entities}}
+|Enter = [[Eden Editor: Preview#Singleplayer at Camera Position|Preview from camera position]]
+|NumEnter = [[Eden Editor: Preview#Singleplayer at Camera Position|Preview from camera position]]
+
+|colorF = PaleGreen
+|colorS = PaleGreen
+|colorV = PaleGreen
+|colorEnter = PaleGreen
+|colorNumEnter = PaleGreen
+
+}}
+
+
+[[Category:Eden Editor: Getting Started|Controls]]

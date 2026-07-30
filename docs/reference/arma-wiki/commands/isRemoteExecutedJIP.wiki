@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/isRemoteExecutedJIP
+// revision: 365041 (2024-07-14T13:23:02Z)
+// export sha1: p84xviq8orb5ibmh67gc8rd6ghhsikj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Remote Execution | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Multiplayer
+
+|descr= Returns [[true]] if the code context is being remote executed from the JIP queue by [[remoteExec]] or [[remoteExecCall]] (when JIP param was set). It is a subset of [[isRemoteExecuted]]:
+
+:{{{!}} class="wikitable align-center align-left-col-1 align-center-row-1"
+! rowspan="2" {{!}} command
+! rowspan="2" {{!}} Single Player
+! colspan="2" {{!}} Multiplayer
+{{!}}-
+! Direct remoteExec
+! JIP remoteExec
+{{!}}-
+{{!}} [[isRemoteExecuted]]
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|checked}}
+{{!}}-
+{{!}} [[isRemoteExecutedJIP]]
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|checked}}
+{{!}}}
+
+|s1= [[isRemoteExecutedJIP]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+if (isRemoteExecutedJIP) then
+{
+	waitUntil { sleep 0.1; not isNull player };
+	hint "Welcome... the battlefield did not wait for you!";
+}
+else
+{
+	hint "You are present and that's good!";
+};
+</sqf>
+
+|seealso= [[isRemoteExecuted]] [[remoteExec]] [[remoteExecCall]] [[canSuspend]] [[remoteExecutedOwner]] [[isUIContext]] [[isGamePaused]] [[isGameFocused]] [[remoteExecutedJIPID]]
+}}
+
+
+{{GameCategory|arma3|Remote Execution}}

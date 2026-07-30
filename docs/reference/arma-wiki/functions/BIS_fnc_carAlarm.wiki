@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_carAlarm
+// revision: 327206 (2022-07-12T22:11:45Z)
+// export sha1: k0n90xszc1lalepzccln059zw8c940q
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Object Manipulation
+
+|descr= Play car alarm effect.
+
+|s1= [mode, car] call [[BIS_fnc_carAlarm]]
+
+|p1= mode: [[String]] - can be one of:
+* "init": add "Hit" and "GetIn" event handler on the car
+* "play": play the alarm effect
+
+|p2= car: [[Object]] - vehicle protected by alarm
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["init", myCar] call BIS_fnc_carAlarm;</sqf>
+
+|seealso= [[Arma_3:_Event_Handlers|Arma 3 Event Handlers]]
+}}

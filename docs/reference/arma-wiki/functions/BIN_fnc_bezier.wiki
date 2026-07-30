@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_bezier
+// revision: 363588 (2024-04-07T18:16:46Z)
+// export sha1: okw6q96usg47cj4hpdxqpl6k1twqzeg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interpolation | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Interpolation 
+
+|descr= <pre>/*
+
+	Description:
+	Calculate bezier curve
+
+	Parameter(s):
+		0: ARRAY - list of control points in format [x,y,z], can be any number of them
+		1: NUMBER - progress in range 0 to 1
+
+	Returns:
+	ARRAY - position curve in format [x,y,z]
+*/
+</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_bezier]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_bezier;</sqf> -->
+
+|seealso=
+}}

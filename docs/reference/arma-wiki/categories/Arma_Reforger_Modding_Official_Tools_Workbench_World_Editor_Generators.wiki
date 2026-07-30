@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Official_Tools/Workbench/World_Editor_Generators
+// revision: 371053 (2025-02-26T12:37:26Z)
+// export sha1: 79mkxrj339d4pu7bkt8az7aot5vssgh
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding|Official Tools|Workbench}}

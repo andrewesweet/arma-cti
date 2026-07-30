@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/backpackContainer
+// revision: 321069 (2022-05-13T13:06:42Z)
+// export sha1: 7mxyfzaq2m1x5o3vb8rubl2aoqvrgrg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|gr1= Containers
+
+|descr= Returns a cargo container of a unit's backpack.
+
+|s1= [[backpackContainer]] unit
+
+|p1= unit: [[Object]] - a soldier
+
+|r1= [[Object]] - cargo container or [[objNull]]
+
+|x1= <sqf>hint str backpackContainer player; // 1a5f7900# 163944: backpack_fast.p3d</sqf>
+
+|x2= <sqf>
+hint str getMagazineCargo backpackContainer player;
+/*
+	returns e.g
+	[
+		[
+			"APERSBoundingMine_Range_Mag",
+			"ClaymoreDirectionalMine_Remote_Mag",
+			"SLAMDirectionalMine_Wire_Mag",
+			"DemoCharge_Remote_Mag"
+		],[
+			3,
+			2,
+			2,
+			1
+		]
+	]
+*/
+</sqf>
+
+|x3= <sqf>(backpackContainer player) addWeaponCargoGlobal [weapons player select 0, 1];</sqf>
+
+|seealso= [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]] [[uniformContainer]] [[vestContainer]] [[everyContainer]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140429151900
+|text= In {{arma3}} ver 1.16, we can use either [[backpackContainer]] or [[unitBackpack]] at present since both of them enjoy same operand type and return value.
+}}

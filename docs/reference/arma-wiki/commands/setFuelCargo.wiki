@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/setFuelCargo
+// revision: 376961 (2026-01-01T05:53:10Z)
+// export sha1: iudtzgokwvo8iv9id0dq0urbj4nh5pi
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Vehicle Inventory
+
+|descr= Sets fuel amount in cargo space of refuel vehicles. Note that the carrying capacity of each side's refuel trucks differ.
+
+|s1= vehicle [[setFuelCargo]] amount
+
+|p1= vehicle : [[Object]]
+
+|p2= amount : [[Number]] in range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_refuelTruck setFuelCargo 0;</sqf>
+
+|seealso= [[getFuelCargo]] [[fuel]] [[setFuel]] [[setAmmoCargo]] [[setRepairCargo]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-07-10 - 19:33 (UTC)</dd>
+<dt class="note">[[User:Waffle SS.|Waffle SS.]]</dt>
+<dd class="note">
+{{GVI|arma3|1.44}} '''setFuelCargo''' will have no effect if the vehicle doesn't support [[getFuelCargo]].
+</dd>
+
+</dl>

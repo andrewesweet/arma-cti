@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/remoteExecCall
+// revision: 369336 (2024-09-03T18:43:00Z)
+// export sha1: aluz8wbh802mu1owffsmiup99ytgarh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Remote Execution | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|gr1= Multiplayer
+
+|descr= [[Scheduler|Unscheduled]] version of [[remoteExec]]. The only difference between [[remoteExec]] and [[remoteExecCall]] is that [[remoteExecCall]] will run '''functions''' in [[Scheduler#Unscheduled Environment|unscheduled environment]].
+{{Feature|important|
+The "Call" in [[remoteExecCall]] only means that the remote execution will take place in [[Scheduler#Unscheduled Environment|unscheduled environment]] and does '''not''' mean it will happen right away (see {{Link|#Example 3}}).}}
+
+|s1= see [[remoteExec]]
+
+|p1= see [[remoteExec]]
+
+|r1= see [[remoteExec]]
+
+|x1= <sqf>
+["hello"] remoteExec ["hint"];		// runs unscheduled
+["hello"] remoteExecCall ["hint"];	// no difference at all
+</sqf>
+
+|x2= <sqf>
+["my message"] remoteExec ["BIS_fnc_infoText"];		// correct
+["my message"] remoteExecCall ["BIS_fnc_infoText"];	// wrong - BIS_fnc_infoText needs a scheduled environment, see its spawn need
+</sqf>
+
+|x3= <sqf>
+remoteExecCall ["fnc1"];
+call fnc2;	// fnc1 may or may not be executed after fnc2
+
+call fnc1;
+call fnc2;	// fnc2 will be executed after fnc1
+</sqf>
+
+|seealso= [[remoteExec]] [[remoteExecutedOwner]] [[isRemoteExecuted]] [[isRemoteExecutedJIP]] [[Arma 3: Remote Execution]] [[canSuspend]] [[BIS_fnc_MP]] [[remoteExecutedJIPID]]
+}}
+
+
+{{GameCategory|arma3|Remote Execution}}

@@ -1,0 +1,159 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Custom_Memory_Allocator
+// revision: 378857 (2026-07-22T10:32:51Z)
+// export sha1: e8796lhiazmi12vpk6pdjy3ptaotwtl
+// categories: Category:Startup Parameters
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|arma2|This page is about {{arma3}} functionality. For similar functionality in {{arma2}}, see [[Arma 2: Custom Memory Allocator]].}}
+
+The memory allocator is a very important component, which significantly affects both performance an stability of the game.
+The purpose of is to allow the allocator to be developed independently on the application, allowing both [[Bohemia Interactive]] and community to fix bugs and improve performance without having to modify the core game files.
+
+
+== Default ==
+
+Default allocator used by the engine is based on Intel TBB 4 (see details about <b>tbb4malloc_bi</b> below)
+
+
+== Specifying a custom allocator ==
+
+The allocator is a dll placed in a directory named "dll" located next to the game executable. Allocator search order is:
+
+* tbb4malloc_bi - based on {{Link|http://threadingbuildingblocks.org|Intel TBB 4}}, distributed under {{Link|https://www.apache.org/licenses/LICENSE-2.0|Apache 2.0}} + {{Link|http://gcc.gnu.org/onlinedocs/libstdc++/manual/bk01pt01ch01s02.html|RE}} ({{Link|https://github.com/BohemiaInteractive/TBB4|source code}}) based on {{Link|https://www.threadingbuildingblocks.org/download#stable_releases|tbb2017_20160916oss}}
+* jemalloc_bi - based on {{Link|http://www.canonware.com/download/jemalloc/|JEMalloc}}, distributed under {{Link|http://www.canonware.com/jemalloc/license.html|BSD-derived license source code}} ({{Link|https://github.com/BohemiaInteractive/JEMalloc|source code}}) based on {{Link|http://www.canonware.com/download/jemalloc/jemalloc-4.3.1.tar.bz2|jemalloc-4.3.1.tar.bz2}}
+* customMalloc_bi - not provided, feel free to plug-in your own
+
+If no allocator dll is found, functions _aligned_malloc/ _aligned_free (using Windows Heap functions) are used as a fallback <i>note: Windows 7 allocator seems to be quite good, and it may therefore make sense for some users to delete all custom allocators on Windows 7 or newer).</i>
+
+You can select an allocator via [[Arma_3:_Startup_Parameters#malloc|malloc]] command line below or ''deleting other allocators'' from the \dll\ folder.
+
+=== Command line parameter ===
+
+You can specify a particular allocator from a command line, like:
+* -malloc=tbb4malloc_bi
+* -malloc=jemalloc_bi
+or
+* -malloc=mybestmalloc_bi
+* -malloc=system ''can be used to force using Windows allocator even when allocator dlls are present''
+{{Feature|informative|Dll directory and extension are appended automatically, the allocator must not be located in other directory and its name must not contain any dots before the .dll extension.}}
+
+To enable allocator to use Large Pages instead of Small Pages start game with commandline switch '''-hugepages'''
+
+=== Dedicated server ===
+
+You can specify allocator for Windows dedicated server the same way as for client binary,<br>
+with specifically adjusted memory allocator you may experience performance gains,<br>
+for example with Large Pages support or ability define huge pre-allocation memory regions to lessen allocation load.
+
+Linux dedicated server uses allocator provided by operating system. '''There are NO plans to allow its customization yet'''.
+
+== DLL Interface ==
+
+The dll interface is as follows:
+
+<syntaxhighlight lang="cpp">
+extern "C" {
+	__declspec(dllexport) size_t __stdcall MemTotalCommitted();					// _MemTotalCommitted@0 on x86
+	__declspec(dllexport) size_t __stdcall MemTotalReserved();						// _MemTotalReserved@0 on x86
+	__declspec(dllexport) size_t __stdcall MemFlushCache(size_t size);				// _MemFlushCache@4 on x86
+	__declspec(dllexport) void __stdcall MemFlushCacheAll();						// _MemFlushCacheAll@0 on x86
+	__declspec(dllexport) size_t __stdcall MemSize(void *mem);						// _MemSize@4 on x86
+	__declspec(dllexport) void *__stdcall MemAlloc(size_t size);					// _MemAlloc@4 on x86
+	__declspec(dllexport) void __stdcall MemFree(void *mem);						// _MemFree@4 on x86
+	__declspec(dllexport) size_t __stdcall MemSizeA(void *mem, size_t aligment);	// _MemSizeA@8 on x86
+	__declspec(dllexport) void *__stdcall MemAllocA(size_t size, size_t aligment);	// _MemAllocA@8 on x86
+	__declspec(dllexport) void __stdcall MemFreeA(void *mem);						// _MemFreeA@4 on x86
+	__declspec(dllexport) void __stdcall EnableHugePages();						// _EnableHugePages@0 on x86
+};
+</syntaxhighlight>
+
+Note: besides of the interface above, if the allocator is performing any per-thread caching, it will typically want to perform a cleanup of per-thread data on DLL_THREAD_DETACH event sent to [http://msdn.microsoft.com/en-us/library/windows/desktop/ms682583(v{{=}}vs.85).aspx DllMain function].
+
+===  MemTotalCommitted() ===
+
+Total memory committed by the allocator (should correspond to VirtualAlloc with MEM_COMMIT)
+
+===  MemTotalReserved() ===
+
+Total memory reserved by the allocator (should correspond to VirtualAlloc with MEM_RESERVE)
+
+===  MemFlushCache(size_t size) ===
+
+Try to flush at least "size" bytes of memory from caches and working areas, return how much memory was flushed. Called by game when memory needs to be trimmed to reduce virtual memory use.
+
+===  MemFlushCacheAll() ===
+
+Flush all memory held in caches and working areas. Called by game when memory needs to be trimmed to reduce virtual memory use.
+
+===  MemSize(void *mem) ===
+
+Return allocated size of given memory block.
+
+===  MemAlloc(size_t size) ===
+
+Allocate at least size bytes of memory, return the allocated memory. If the size is 16 B or more, the memory must be 16 B -aligned, so that it is usable to hold SSE data.
+
+===  MemFree(void *mem) ===
+
+Free given memory block.
+
+===  MemSizeA(void *mem, size_t alignment) ===
+
+Return allocated size of given memory block allocated via MemAllocA. Aligment must be the same as when MemAllocA was called.
+
+===  MemAllocA(size_t size, size_t alignment) ===
+
+Allocate at least size bytes of memory, return the allocated memory aligned to "aligment" bytes.
+
+===  MemFreeA(void *mem) ===
+
+Free a given memory block allocated via MemAllocA.
+
+===  EnableHugePages() ===
+
+Called '''before''' the first allocation to enable Huge/Large Pages. Implementing this function is optional.
+
+
+== Observed Behaviour ==
+
+=== API Usage ===
+
+{{Feature|informative|The following information is based on various tests that should reflect how {{arma3}} actually uses the memory allocator.}}
+
+'''MemTotalCommitted()''' and '''MemFlushCache(size_t size)''' are called dozens of times per second, almost every frame.
+They should return as soon as possible to avoid blocking the caller thread.
+Avoid putting extra stuff (especially mutex) and be careful about the performance!
+However, they seem not to affect game's behaviour at all, returning 0 would be okay even on the long run.
+
+'''MemTotalReserved()''' is apparently never called.
+
+'''MemFlushCacheAll()''' is apparently only called when the game finished loading and is about to show the main rendering window.
+
+'''MemAlloc(size_t size)''' and '''MemAllocA(size_t size, size_t alignment)''' are called when the game needs more memory space.
+Once they are called, a corresponding '''MemSize(void *mem)''' or '''MemSizeA(void *mem, size_t alignment)''' would be called to ensure it gets the memory it needs.
+If not, the game would repeat the procedure until it gets all it wants.
+When the procedure executes, it is likely that {{arma3}} is loading things into memory (starting a mission, spawning various new entities, etc).
+They should be performance critical too, or it may cause freezes when the game allocates new memory blocks.
+
+{{Feature|important|Ideally, no mutex or lock should be used in any of these API but for debug purpose.}}
+
+=== Server and Client ===
+
+The {{arma3}} client rarely takes more than 8GB of active physical memory, while a server rarely takes more than 2GB. If reserved huge pages are implement in CMA, these values may be used as references.
+
+{{Feature|quote|Arma has multiple internal allocators. The pool allocator used for all of scripting does not respect large pages flag, but these don't allocate that often.|{{User|Dedmen}}|https://discord.com/channels/105462288051380224/105466848958513152/924708352901152819}}
+These aspects would not take advantage of a Custom Memory Allocator.
+
+A Dedicated server may not take advantage of custom allocator as well, as the total page size allocated by server is always equal to {{hl|reserved huge pages size + active physical memory}}, which means it does not allocate through CMA at all.
+
+
+== Examples ==
+
+Here are some examples that may be useful:
+* '''rpmalloc''' by {{Link|https://github.com/GoldJohnKing|GoldJohnKing}}: https://github.com/GoldJohnKing/rpmalloc/blob/Arma-3/cma/cma_api.cpp
+* {{arma3}} CMA API implementation example for '''Microsoft'''<nowiki/>'s mimalloc: https://github.com/GoldJohnKing/mimalloc/blob/Arma-3-v2.0.3/src/cma/cma_api.cpp
+* {{arma3}} CMA API implementation example for '''Intel'''<nowiki/>'s tbbmalloc: https://github.com/GoldJohnKing/oneTBB/blob/Arma-3-v2021.5.0/src/tbbmalloc/cma/cma_api.cpp
+
+
+[[Category:Startup Parameters]]

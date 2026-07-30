@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/setWaypointTimeout
+// revision: 377755 (2026-01-03T00:58:12Z)
+// export sha1: di9p6a6f34jua94kjur30rbm27ky4wn
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Waypoints
+
+|descr= Defines the time between condition satisfaction and waypoint finish (randomly from min to max, with an average value mid).
+
+|s1= waypoint [[setWaypointTimeout]] [min, mid, max]
+
+|p1= waypoint: [[Waypoint]]
+
+|p2= min: [[Number]]
+
+|p3= mid: [[Number]]
+
+|p4= max: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_grp, 2] setWaypointTimeout [5, 10, 6];</sqf>
+
+|seealso= [[waypoints]] [[deleteWaypoint]] [[copyWaypoints]] [[setCurrentWaypoint]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointDescription]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointType]] [[setWaypointVisible]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[setWaypointLoiterRadius]] [[waypointLoiterRadius]] [[addWaypoint]] [[setWaypointLoiterType]] [[waypointTimeoutCurrent]] [[waypointSpeed]]
+}}
+
+{{Note
+|user= Lucky44
+|timestamp= 20101212003200
+|text= The example doesn't seem to make sense, according to the listed syntax. It seems to set a Max time greater than the Mid time.
+}}
+
+{{Note
+|user= Tom 48 97
+|timestamp= 20101212033000
+|text= If mid is greater than max, the result will be really near the mid value.
+Results with the values of the example: 8.237, 9.383, 10.425, 9.417, 9.43401, 10.425, 9.90601, 9.96701, 9.42401, 9.42502, 9.96698, 9.89999...
+}}

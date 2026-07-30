@@ -1,0 +1,160 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Introduction
+// revision: 342221 (2023-07-09T12:27:26Z)
+// export sha1: e3n0kacesrg9d3zxjhj0kmdd5wg79hl
+// categories: Category:Eden Editor: Getting Started
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Eden Editor is scenario editor introduced in {{GameCategory|arma3|link= y}}. It replaces previous [[2D Editor]], sharing many of its features, but also adding a wide range of new ones.
+
+
+== Starting Eden Editor ==
+
+Eden Editor can be used for designing both singleplayer and multiplayer scenarios. A singleplayer scenario can be tested directly on your computer, but previewing a multiplayer one requires server running in the background. While it is possible to host a server and start multiplayer preview of any scenario straight from the editor, you can also create a server before launching the editor.
+{| class="valign-top"
+|-
+| style="width:50%" |
+=== Singleplayer ===
+# Press '''EDITOR'''
+#:[[File:3den mainmenu1.jpg|300px]]
+# Select a terrain and press '''3D EDITOR'''
+#:[[File:3den mainmenu2.jpg|300px]]
+
+|
+=== Multiplayer ===
+# Press '''PLAY''' and then '''MULTIPLAYER''' to open server list
+#:[[File:3den mainmenu mp1.jpg|300px]]
+# Press '''NEW''' to host a server
+#:[[File:3den mainmenu mp2.jpg|300px]]
+# Set server parameters (or leave defaults) and confirm by '''OK'''
+#:[[File:3den mainmenu mp3.jpg|300px]]
+# The server is now created and you can see a list of scenarios for each terrain. To start a new scenario, pick '''<<New - 3D Editor>>''' option from the list and press '''PLAY''' or simply double-click on it.
+#:[[File:3den mainmenu mp4.jpg|300px]]
+|}
+
+
+== Navigating the Scene ==
+
+[[File:3den workspace3D.jpg|480px|center]]
+When the editor is opened, you'll be first greeted by a 3D '''Scene'''. The camera starts at randomized position, so you may sometimes discover completely unexpected locations.
+
+The scene is useful for various scenario editing operations:
+* Building [[Eden_Editor:_Objects|object]] compositions
+* Setting [[Eden_Editor:_Scenario_Atttributes|weather and time of day]]
+* Tactical planning
+
+The camera controls are based on character or vehicle controls in the game:
+{| class="wikitable"
+! Control
+! Action
+|-
+| {{Controls|RMB|Mouse}}
+| Look around with the camera
+|-
+| {{Controls|MMB}} up / down
+| Move the camera towards / away from the screen center
+|-
+| {{Controls|W}}{{Controls|S}}{{Controls|A}}{{Controls|D}}
+| Move the camera forward/backward/left/right
+|-
+| {{Controls|Q}}{{Controls|Z}}
+| Move the camera up/down
+|-
+| {{Controls|NUM8}}{{Controls|NUM2}}{{Controls|NUM4}}{{Controls|NUM6}}
+| Look up/down/left/right
+|}
+
+
+== Navigating the Map ==
+
+[[File:3den workspace2D.jpg|480px|center]]
+You can also toggle a 2D topographic '''Map'''. Its appearance is the same as the map available when playing, including markers and entity icons.
+
+The map is especially useful for following scenario editing operations:
+* Setting scenario logic, e.g., [[Eden_Editor:_Triggers|triggers]], [[Eden_Editor:_Waypoints|waypoints]] or [[Eden_Editor:_Systems|systems]], where clear overview is more important than precise positioning
+* Placing [[Eden_Editor:_Markers|markers]]
+* Strategic planning
+
+The controls are shared with map controls everywhere else in the game:
+{| class="wikitable"
+! Control
+! Action
+|-
+| {{Controls|RMB|Mouse}}
+| Move the map around
+|-
+| {{Controls|MMB}} up / down
+| Zoom the map in / out
+|-
+| {{Controls|W}}{{Controls|S}}{{Controls|A}}{{Controls|D}}<br>
+{{Controls|NUM8}}{{Controls|NUM2}}{{Controls|NUM4}}{{Controls|NUM6}}
+| Move the camera forward/backward/left/right
+|}
+
+
+== Creating a New Scenario ==
+
+[[File:3den_newscenario.jpg|480px|center]]
+'''Scenario''' is a name for the project you'll be working on. It's set on a specific terrain, contains entities you'll place, has [[Eden_Editor:_Scenario_Atttributes|settings like weather or description]], and is saved to a [[Eden_Editor:_Scenario_Folder|scenario folder]] where you can add external files.
+
+After opening the editor, you already start in a clean scenario. If you want to anytime start another one manually, select '''Scenario > New''' from the [[Eden_Editor:_Menu_Bar|menu bar]] or click on '''New''' icon on the [[Eden_Editor:_Toolbar|toolbar]].
+Select a terrain here and confirm by clicking on the '''NEW SCENARIO''' button.
+
+If you have unsaved changes in the current scenario, you will be prompted to either save or abandon them first.
+
+
+== Placing New Entities ==
+
+[[File:3den placing.jpg|480px|center]]
+Scenario consists of entities - characters, vehicles, props, waypoints, markers, etc. Before an entity is placed, it is available as an asset in the '''[[Eden Editor: Asset Browser|Asset Browser]]'''.
+
+Steps for placing an entity:
+# Select '''Asset Type''', for example an Object.
+# Select '''Asset Sub-type''', which further categorizes the type. For objects, these sub-types are sides to which the object can belong to (e.g., BLUFOR, OPFOR, Civilians, etc.)
+# Pick an object from the list (e.g., "Rifleman") by clicking on it with left mouse button.
+# Click left mouse button in the scene or on the map to place it.
+
+First placed character will automatically become a player, but you can change this status later in [[Eden Editor: Entity Attributes|Attributes]].
+
+
+== Editing Entities ==
+
+Once an entity is placed, it cane bed edited using various operations
+{| class="wikitable"
+! Control
+! Action
+|-
+| {{Controls|LMB|Mouse}}
+| '''Move''' entity
+|-
+| {{Controls|Alt|LMB|Mouse}}
+| Change '''altitude'''
+|-
+| {{Controls|Shift|LMB|Mouse}}
+| '''Rotate''' entity
+|-
+| {{Controls|Ctrl|LMB|Mouse}}
+| '''[[Eden Editor: Connecting|Group]]''' entity to another entity. Available only for characters and manned vehicles.
+|-
+| {{Controls|Shift|RMB}}
+| '''Place a waypoint'''. Available only when a character or a group is selected.
+|-
+| 2&times; {{Controls|LMB}}
+| Open '''[[Eden Editor: Entity Attributes|Attributes]]'''
+|}
+
+
+== Previewing Scenario ==
+
+[[File:3den_play.jpg|480px|center]]
+To preview the scenario as players will experience it, press PLAY button in the bottom right corner. You will start from the beginning, taking role of the unit marked as player (red circle around its icon).
+
+You can play as long as you wish, but when you return back to the Workspace, the state of the scenario will return back to the initial state.
+
+
+== End Result ==
+
+Now when you started your own scenario, it is time to finish it. Visit the main '''[[:Category:Eden Editor|Eden Editor]]''' portal, where you can find links to many specialized tutorials.
+
+
+[[Category:Eden Editor: Getting Started|Introduction]]

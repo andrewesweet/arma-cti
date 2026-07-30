@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/setShadowDistance
+// revision: 321940 (2022-05-22T12:55:27Z)
+// export sha1: 3ktywxzw0st29aelhiro919vtvwbtc2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Command Group: System | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+
+|gr1= System
+
+|gr2= Environment
+
+|descr= Sets the shadows rendering distance.
+
+|s1= [[setShadowDistance]] value
+
+|p1= value: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setShadowDistance 200;</sqf>
+
+|seealso= [[getShadowDistance]] [[isPipEnabled]]
+}}

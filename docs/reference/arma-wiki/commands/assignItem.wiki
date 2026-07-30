@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/assignItem
+// revision: 369096 (2024-09-03T10:25:27Z)
+// export sha1: 3m33p5lpmzfidjvjfuf75m7ik6mucm3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Assigns existing item from inventory (uniform, vest, backpack) to a correct slot. If the slot is occupied by another item, it gets replaced. See also [[linkItem]].
+
+|s1= unit [[assignItem]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+bluforUnit addItem "NVGoggles";
+bluforUnit assignItem "NVGoggles";
+opforUnit addItem "NVGoggles_OPFOR";
+opforUnit assignItem "NVGoggles_OPFOR";
+independentUnit addItem "NVGoggles_INDEP";
+independentUnit assignItem "NVGoggles_INDEP";
+</sqf>
+
+|seealso= [[unassignItem]] [[addItem]] [[removeItem]] [[linkItem]] [[unlinkItem]] [[assignedItems]] [[removeAllAssignedItems]]
+}}

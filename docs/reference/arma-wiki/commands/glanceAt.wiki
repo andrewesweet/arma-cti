@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/glanceAt
+// revision: 377158 (2026-01-01T10:39:40Z)
+// export sha1: lm7obwch6icfnsc6xhv116g79c49pst
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Unit Control
+
+|descr= Control what the unit(s) is/are glancing at (target or [[Position]]). If target is used, it will get revealed fully.
+
+How frequently the unit(s) is/are glancing there depends on behaviour.
+
+|s1= unit(s) [[glanceAt]] position
+
+|p1= unit(s): [[Object]] or [[Array]] of [[Object]]s
+
+|p2= position: [[Object]] or [[Position]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_someSoldier glanceAt _otherSoldier;</sqf>
+|x2= <sqf>[_someSoldier, _otherSoldier] glanceAt markerPos "markerOne";</sqf>
+
+|seealso= [[lookAt]] [[commandWatch]] [[doWatch]]
+}}

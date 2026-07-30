@@ -1,0 +1,137 @@
+// source: https://community.bistudio.com/wiki/LITE_mod_version_creation_guide
+// revision: 363715 (2024-04-16T18:27:14Z)
+// export sha1: jydqiy135vceehntdhi5irc54envgf2
+// categories: Category:ArmA: Armed Assault: Editing Tutorials | Category:ArmA: Armed Assault: Texturing | Category:Arma: Tutorials | Category:Arma 2: Editing | Category:Arma 2: Tutorials | Category:Arma 3: Editing | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+This guide describes briefly the process to create a LITE version of a pbo.
+
+Notes:
+* LITE refers to reduced quality usually.
+
+
+== Benefit ==
+
+# Smaller pbo size.
+# Faster game loading time.
+# Reduced GPU requirements.
+
+The main use is for '''dedicated servers'''.
+
+{{Feature|informative|This cannot be used in multiplayer ''as a player'' unless the [[ArmA: Addon Signatures|signature checking system]] is disabled, or the LITE version has been signed and the key is added to the server.}}
+
+
+== Scope ==
+
+# This is not an absolute beginners guide.
+# This is not about creating textures.
+# This is not about explaining tools setup.
+# This guide only handles textures. There is also sounds, scripts, mission files.
+
+
+== Process ==
+
+Brief summary:
+
+# Install [[Arma 3: Tools Installation|Arma 3 Tools]]
+# Install {{Link|https://forums.bistudio.com/topic/113852-mikeros-dos-tools|mikero's tools}}
+# Create a text file named {{hl|CreateLITE.bat}}
+# Open with a text editor
+# Copy & paste the '''code below''' in it and save
+# '''Adjust the paths at the top''' and save
+# '''Optional''': Adjust the desired '''texture resolution''' at the top and save
+# Execute the batch file
+
+In case of error, check the created log file.
+
+=== CreateLITE.bat ===
+
+<spoiler text="Show file content">
+<syntaxhighlight lang="batch">
+rem ### Configure paths ###
+
+set _SOURCE_PATH=x:\SourceFolder
+set _TARGET_PATH=x:\TargetFolder
+
+set _TEMP_PATH=x:\TempFolder
+
+rem ### Configure desired texture resolution ###
+
+set _TEXTURE_QUALITY=128
+
+rem ### Configure tools path ###
+
+set _MIKERO_DEPBOTOOLS=C:\Program Files (x86)\Mikero\DePboTools
+set _STEAM=c:\Program Files (x86)\Steam
+
+
+
+rem ### DONT TOUCH ###
+
+set _MYTAG_YEAR=%date:~-4%
+set _MYTAG_MONTH=%date:~-7,2%
+set _MYTAG_DAY=%date:~-10,2%
+
+rem ---
+
+set _EXTRACTPBO_EXE=%_MIKERO_DEPBOTOOLS%\bin\ExtractPboDos.exe
+set _MAKEPBO_EXE=%_MIKERO_DEPBOTOOLS%\bin\MakePbo.exe
+
+set _PAL2PACE_EXE=%_STEAM%\SteamApps\common\Arma 3 Tools\ImageToPAA\ImageToPAA.exe
+
+rem ----
+
+SETLOCAL ENABLEDELAYEDEXPANSION
+
+rem ---
+
+@echo off
+call :sub >>LITE_%_MYTAG_YEAR%_%_MYTAG_MONTH%_%_MYTAG_DAY%.log 2>&1
+exit /b
+
+rem ---
+
+:sub
+
+for /R %_SOURCE_PATH% %%i in (*.pbo) do (
+
+	"%_EXTRACTPBO_EXE%" -RPK "%%i" "%_TEMP_PATH%"
+
+	for /R "%_TEMP_PATH%" %%j in (*.paa) do (
+
+		"%_PAL2PACE_EXE%" -size=%_TEXTURE_QUALITY% "%%j" "%%j"
+	)
+
+	for /D %%j in ("%_TEMP_PATH%\*.*") do (
+
+		if /I not "%%j" == "%_TEMP_PATH%\TEMP" (
+
+			if /I not "%%j" == "%_TEMP_PATH%\cache" (
+
+				"%_MAKEPBO_EXE%" -UPDN -$ "%%j" %_TARGET_PATH%
+
+				RD "%%j" /Q /S
+			)
+		)
+	)
+)
+</syntaxhighlight>
+</spoiler>
+
+
+== Credits ==
+
+* BI
+* T_D
+* mikero
+
+
+{{GameCategory|arma1|Texturing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+[[Category:Arma: Tutorials]]
+{{GameCategory|arma1|Editing Tutorials}}
+{{GameCategory|arma2|Tutorials}}
+{{GameCategory|arma3|Tutorials}}

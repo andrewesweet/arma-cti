@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagMissionPositions
+// revision: 327911 (2022-07-13T11:55:05Z)
+// export sha1: 4qdhyqtylf9xa9k9tur7kj1qyawcd7r
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Displays positions of units from all missions
+
+|s1= [configPath, allUnits, isCampaign] call [[BIS_fnc_diagMissionPositions]]
+
+|p1= configPath: [[Config]] - (Optional, default <sqf inline>configFile >> "CfgMissions"</sqf>)
+
+|p2= allUnits: [[Boolean]] - (Optional, default [[false]]) [[true]] to display all units, [[false]] to display only player positions
+
+|p3= isCampaign: [[Boolean]] - (Optional, default [[false]]) [[true]] for the scan to perceive the main folder as campaign (required when ''configPath'' is direct path to campaign)
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>[configFile >> "CfgMissions", true, false] call BIS_fnc_diagMissionPositions;</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic|Diagnostic Function Group]]
+}}

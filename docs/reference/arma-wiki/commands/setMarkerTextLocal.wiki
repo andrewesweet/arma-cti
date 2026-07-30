@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/setMarkerTextLocal
+// revision: 319570 (2022-05-13T09:24:29Z)
+// export sha1: t1sdqkoop1gxezbkec27tcp5inqz59x
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Armed Assault version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.04
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Markers
+
+|eff= local
+
+|descr= Sets the text label of an existing marker.
+
+|s1= markerName [[setMarkerTextLocal]] text
+
+|p1= markerName: [[String]]
+
+|p2= text: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"Marker1" setMarkerTextLocal "You are here.";</sqf>
+
+|seealso= [[setMarkerBrush]] [[setMarkerColor]] [[setMarkerDir]] [[setMarkerPos]] [[setMarkerShape]] [[setMarkerSize]] [[setMarkerType]]
+}}

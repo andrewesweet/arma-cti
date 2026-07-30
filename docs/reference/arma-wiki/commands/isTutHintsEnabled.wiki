@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/isTutHintsEnabled
+// revision: 310279 (2022-05-05T13:11:24Z)
+// export sha1: pdtidbjjxycnommzp8m3lx0orhipkc8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Difficulty | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Difficulty
+
+|descr= Returns the status of TUTORIAL HINTS setting in UI (OPTIONS >> GAME >> GENERAL >> TUTORIAL HINTS).
+
+|s1= '''isTutHintsEnabled'''
+
+|r1= [[Boolean]]
+
+|x1= <sqf>hint str isTutHintsEnabled;</sqf>
+
+|seealso= [[isInstructorFigureEnabled]] [[isStreamFriendlyUIEnabled]]
+}}

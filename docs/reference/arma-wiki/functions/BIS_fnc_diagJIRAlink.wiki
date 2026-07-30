@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagJIRAlink
+// revision: 274097 (2021-06-13T01:16:35Z)
+// export sha1: rduho7zw7c2osx4bg9nujbnt31ukaik
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= ''N/A''
+
+|s1= [] call [[BIS_fnc_diagJIRAlink]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/limitSpeed
+// revision: 378640 (2026-05-15T17:05:16Z)
+// export sha1: evepadj5uovko4zq0p6n0vb4zjuk6fy
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Unit Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Unit Control
+
+|gr2= Object Manipulation
+
+|descr= Limit the speed of an AI-driven vehicle or AI person to given value. It has continuous effect and AI will not break through the speed limitation until one is contacted, engaged or regrouped.
+
+|pr= Since {{GVI|tkoh|1.00|size= 0.75}} and as of {{GVI|arma3|2.14|size= 0.75}}, using any negative value on a helicopter will not reset the speed limit, but will force it to fly in reverse.
+
+|s1= objectName [[limitSpeed]] speed
+
+|p1= objectName: [[Object]]
+
+|p2= speed: [[Number]] (or [[Boolean]] since Arma 3 2.22) - in km/h; By default, it's {{hl|2 * maxSpeed}} of the vehicle/unit (which is defined in config). See Example 1.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+leader player limitSpeed 5;		// set to walking speed
+sleep 30;
+leader player limitSpeed (2 * getNumber(configOf leader player >> "maxSpeed"));	// remove the limit
+</sqf>
+
+|x2= <sqf>
+addMissionEventHandler ["OnEachFrame", { hintSilent format ["myVehicle's speed: %1 km/h", speed myVehicle toFixed 2] }];
+sleep 5;
+myVehicle limitSpeed 5;
+</sqf>
+
+|x3= <sqf>
+// it was necessary to use limitSpeed repeatedly before Arma 3 1.24
+_this setVariable ["speedLimit", 50];
+_this spawn {
+	while { sleep 0.1; canMove _this } do
+	{
+		_this limitSpeed (_this getVariable "speedLimit");
+	};
+};
+sleep 10;
+_this setVariable ["speedLimit", 100]; // update the speed limit
+</sqf>
+
+|x4= Since Arma 3 2.22: <sqf>_heli limitSpeed false; // reset to default</sqf>
+
+|seealso= [[speed]] [[setCruiseControl]] [[forceSpeed]]
+}}

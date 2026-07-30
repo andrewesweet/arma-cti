@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/ArmA:_Armed_Assault:_Difficulty
+// revision: 363904 (2024-04-24T21:47:21Z)
+// export sha1: 6o20wdapoq2njlqoklu84p6yqmeiu17
+// categories: Category:AI
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{arma1}} is not an easy game; there are several ways of tuning it to suit your own abilities and preferences.
+
+
+== Difficulty Levels ==
+
+There are two difficulty modes in {{arma1}}; 'Cadet' and 'Veteran'. However, you can fine-tune exactly what is meant by 'Cadet' and by 'Veteran'.
+This is done on the Difficulty screen of the {{Name|arma1|short}} interface. The {{Name|arma1|short}} manual does a reasonable job of explaining that interface.
+
+When you start a (multiplayer) mission, you can select which of the two difficulty modes you want to play in. All of the settings you configured for that mode will be in force.
+
+=== AI Difficulty ===
+
+One of the settings you can adjust for both Cadet and Veteran modes is the AI difficulty. You can separately adjust the difficulty of friendly and enemy AI units.
+
+Adjusting the AI skill level will affect a number of AI characteristics simultaneously. Factors that are known to be affected are:
+* Aiming Accuracy
+* Aiming Speed
+* Endurance
+* Speed and range to spot opposing forces
+* Morale
+* Speed of reloading
+* Tactical ability
+Most of these attributes scale linearly from 0% to 100%, corresponding to the value you set of the skill slider.
+A few are limited; for example, aiming speed is never less than 50%, while spotting speed is never greater than 70%.
+It is the [[CfgAISkill]] settings in [[Config.bin]], buried in the ArmA [[PBO]] files control how these atttributes scale.
+
+=== Tweaking AI Difficulty ===
+
+The fact that the AI skill level sliders adjust all settings at once is a limitation that makes it harder to tune the game to your liking. Luckily, there are at least two additional options for AI tuning available.
+
+==== Adjusting Accuracy Separately ====
+One key factor that can be adjusted individually is the AI shooting accuracy, separately from their other skills. This can be done by modifying your [[Profile]] file.
+
+To do this, you must first ensure that the necessary settings have been written to your Profile file.
+Go into the {{Name|arma1|short}} interface, Difficulty section, and set the AI skill levels to 'Custom', and adjust the slider bars slightly.
+This will ensure the necessary entries are written into your Profile file.
+
+You will find your Profile file in your My Documents, {{Name|arma1|short}}, folders. Open the Profile file in Notepad, and look for the settings 'precisionFriendly', 'skillFriendly', 'precisionEnemy' and 'skillEnemy'.
+You will find these settings twice; once for Cadet and once for Veteran.
+Changing the numbers here is equivalent to adjusting the sliders in the Difficulty screen, but you will see that you can adjust the precision setting separately from the other 'skill' setting.
+
+What values you choose depends on your personal preferences and ability. To make the game less difficult, you can generally leave the 'skill' settings at their default values, but lower the 'accuracy' values.
+To be fair you should set both the friendly and enemy accuracy to be the same, and adjust it so that the AI's accuracy feels about the same as your own. A value of 0.2 is a good starting point for people new to {{Name|arma1|short}}.
+
+==== Adjusting Individual Characteristics ====
+To go further, and start adjusting individual characteristics such as morale, tactical skill, etc, you will need to delve into the [[Config.bin]] file and modify the [[CfgAISkill]] settings.
+
+
+[[Category:AI]]

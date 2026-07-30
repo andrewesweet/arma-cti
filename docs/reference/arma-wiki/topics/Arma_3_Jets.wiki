@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Jets
+// revision: 339308 (2023-04-28T14:08:09Z)
+// export sha1: tgfhck013i13d5tnga0ud62gtjrv277
+// categories: Category:Arma 3: DLCs & Expansions | Category:Introduced with Arma 3 version 1.70
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= arma3_jets_logo.png
+|game= arma3
+|version= 1.70
+|releasedate= May 16th, 2017
+|intro = Fight in the sky with brand new air-superiority jets and use advanced targeting systems to shoot down the enemy in the Arma 3 Jets DLC.
+|premfeature1= '''F/A-181 Black Wasp II''' – a fifth-generation NATO carrier-based fighter jet
+|premfeature2= '''A-149 Gryphon''' – an advanced fourth-generation AAF fighter jet
+|premfeature3= '''To-201 Shikra''' – a fifth-generation CSAT air superiority fighter jet
+|premfeature4= '''Sentinel''' – a NATO carrier-based Unmanned Combat Air Vehicle
+|premfeature5= '''Deck Crew Vests''' – colored vests for various character roles on the carrier
+|premfeature6= '''Showcase Fighter Jets''' – take to the skies over Altis and engage in Air-to-Air and Air-to-Ground operations
+|freefeature1= '''USS Freedom (CVN-83)''' – a static functional aircraft carrier that can be placed as an object in Eden Editor
+|freefeature2= '''Surface-to-Air''' – 3 autonomous systems designed to accompany the carrier and serve as its self-defense package
+|freefeature3= '''Showcase VTOL''' – use the Y-32 Xi'an aircraft to support friendly troops on Tanoa against NATO forces (bonus for Apex owners)
+|freefeature4= '''Official Soundtrack''' – a new music track befitting the jets theme
+|freefeature5= '''Achievements''' – a set of extra Steam Achievements
+|gallery1= a3 jets 1.jpg
+|gallery2= a3 jets 2.jpg
+|gallery3= a3 jets 3.jpg
+|gallery4= a3 jets 4.jpg
+|trailer= 9-26S5BApk8
+|start1= {{Link|link= https://www.bistudio.com/blog/arma-3-jets-dlc-now-available|text= Developer´s Blog}}
+|start2= {{Link|https://arma3.com/dlc/jets|Official Site}}
+|start3= {{Link|link= http://store.steampowered.com/app/601670/Arma_3_Jets/|text= Jets DLC on Steam}}
+|isDLC= y
+}}
+
+{{GameCategory|arma3|DLCs & Expansions}}

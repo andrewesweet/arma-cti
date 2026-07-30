@@ -1,0 +1,63 @@
+// source: https://community.bistudio.com/wiki/countSide
+// revision: 378522 (2026-05-04T01:53:42Z)
+// export sha1: 1ppobmcfs543yjhnpo6dbjz8w011rwa
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Command Group: Sides | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Sides
+
+|gr2= Object Detection
+
+|descr= Returns how many units in the given array belong to given side. 
+
+|s1= side [[countSide]]  array
+
+|p1= side: [[Side]]
+
+|p2= array: [[Array]] of [[Object]]s or [[Group]]s
+{{Feature|informative|If the object in passed array is a [[Group]], the leader of the group will be counted.}}
+
+|r1= [[Number]]
+
+|x1= <sqf>_num = west countSide list _triggerOne;</sqf>
+
+|x2= <sqf>_numCivPlayable = civilian countSide playableUnits;</sqf>
+
+|seealso= [[countFriendly]] [[countEnemy]] [[countUnknown]] [[count]] [[countType]] [[playersNumber]] [[units]] [[allUnits]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2014-10-19 - 01:00 (UTC)</dd>
+<dt class="note">[[User:AgentRev|AgentRev]]</dt>
+<dd class="note">
+This command considers [[captive]] units as civilians, regardless of their group's side.
+</dd>
+
+</dl>

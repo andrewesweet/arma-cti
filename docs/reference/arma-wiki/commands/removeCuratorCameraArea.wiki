@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/removeCuratorCameraArea
+// revision: 348426 (2023-11-08T13:00:09Z)
+// export sha1: pz072nvdywwaep48mc5rgl9hr4z4uqo
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|serverExec= server
+
+|descr= Removes curator camera area.
+
+|s1= curatorObj [[removeCuratorCameraArea]] cameraAreaID
+
+|p1= curatorObj: [[Object]] - curator module.
+
+|p2= cameraAreaID: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myCurator removeCuratorCameraArea 3;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[addCuratorCameraArea]] [[removeAllCuratorCameraAreas]] [[curatorCameraArea]]
+
+}}

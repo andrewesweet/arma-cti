@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_curatorPinged
+// revision: 349428 (2023-11-08T16:27:34Z)
+// export sha1: 59mueagi0pjqc137wbwo1wfm2eg552e
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Show effects when player pings [[Curator|curator]]. Icon and entity list highlighting is handled by engine
+
+|s1= [module, player] call [[BIS_fnc_curatorPinged]]
+
+|p1= module: [[Object]] - [[Arma 3: Curator]] module
+
+|p2= player: [[Object]] - [[player|Player]] entity
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[module_curator, player] call BIS_fnc_curatorPinged;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

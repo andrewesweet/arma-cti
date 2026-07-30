@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isInsideArea
+// revision: 349465 (2023-11-08T16:49:17Z)
+// export sha1: fjqcjvf3psha5jqislhajjx5p27vpcv
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Geometry | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Geometry
+
+|descr= Detects whether a position is within a square area of given size about center.
+
+|s1= [center, size, position] call [[BIS_fnc_isInsideArea]]
+
+|p1= center: [[Array]] - center [[Position]] of area to check
+|p2= size: [[Array]] - [x,y] offsets from center
+
+|p3= position: [[Array]] - [[Position]] to check
+
+|r1= [[Boolean]] - true when position is in area, false otherwise
+
+|x1= <sqf>// Check an area, centered on the player that is 10m wide and 10m tall
+_size = [5, 5];
+_checkPos = getPos player;
+_inArea = [_checkPos, _size, _checkPos] call BIS_fnc_isInsideArea;</sqf>
+
+|seealso= [[createTrigger]] [[createMarker]] [[setTriggerArea]] [[setMarkerSize]] [[triggerArea]] [[markerSize]] [[BIS_fnc_inAngleSector]]
+}}

@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_HUDLimits
+// revision: 327970 (2022-07-13T14:25:56Z)
+// export sha1: 5t9s8vb2kyprsrzyatld5ucc69l92ot
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= Set helicopter advanced flight model HUD limits and prevents overwriting existing values. See also [[setHUDMovementLevels]].
+{{Feature|informative|
+* default value is 0, which means no limits were assigned
+* using 0 in min or max value will hide the corresponding limit
+* same or higher priority will replace currently set priority
+* using a negative priority will reset the values if absolute value is same or higher than current level
+}}
+
+|s1= [speedLimit, altLimit, dirLimit] call [[BIS_fnc_HUDLimits]]
+
+|p1= speedLimit: [[Array]] in format [priority, min, max]:
+* priority: [[Number]]
+* min: [[Number]]
+* max: [[Number]]
+
+|p2= altLimit: [[Array]] in format [priority, min, max]:
+* priority: [[Number]]
+* min: [[Number]]
+* max: [[Number]]
+
+|p3= dirLimit: [[Array]] in format [priority, min, max, target]:
+* priority: [[Number]]
+* min: [[Number]] - you can set a "negative" value by adding 360 (e.g using 270 instead of -90)
+* max: [[Number]]
+* target: [[Position]] or [[Object]] - (Optional, default [0,0,0]) the direction relative target
+
+|r1= [[Array]] - current value of [[HUDMovementLevels]]
+
+|x1= <sqf>[[0,0,0], [1, 0, 50], [0,0,0]] call BIS_fnc_HUDLimits; // limits altitude on HUD to 50m max</sqf>
+
+|x2= <sqf>[[0,0,0], [0, 0, 0], [1,330,30, myTarget]] call BIS_fnc_HUDLimits; // limits orientation towards myTarget by ±30°</sqf>
+
+|seealso= [[HUDMovementLevels]] [[setHUDMovementLevels]]
+}}

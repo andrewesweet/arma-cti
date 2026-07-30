@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_codePerformance
+// revision: 349499 (2023-11-08T17:09:10Z)
+// export sha1: 9i06rmdhdauxa6i8q8289pnu32j57rs
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Diagnostic
+
+|descr= [[File:BIS_fnc_codePerformance.png|300px|right]]
+Measures how much time it takes to execute given expression.
+Results may vary based on overall performance; use this function to compare alternative scripting approaches rather than to measure specific values.
+Upon function execution, window with results is opened. The user then has a choice to copy the result into clipboard or not.<br>
+This function is using [[diag_codePerformance]] command.
+
+{{Feature|informative|Use [[toString]] to stringify [[Code]], as [[str]] adds curly braces - See {{Link|#Example 2}}.}}
+
+|s1= [expression, arguments, cycles, display] call [[BIS_fnc_codePerformance]]
+
+|p1= expression: [[String]] - tested expression
+
+|p2= arguments: [[Anything]] - (Optional, default <sqf inline>[]</sqf>) arguments to pass into the code
+
+|p3= cycles: [[Number]] - (Optional, default 10000) number of wanted cycles
+
+|p4= display: [[Display]] - (Optional, default <sqf inline>findDisplay 46</sqf>) display in which the message window with results will be opened. Use [[displayNull]] to disable the window
+
+|r1= [[Number]] - average execution time of the expression
+
+|x1= <sqf>
+// compare three methods of adding elements into array
+testArray = [];
+["testArray = testArray + [1]"] call BIS_fnc_codePerformance;
+testArray = [];
+["testArray set [count testArray, 1]"] call BIS_fnc_codePerformance;
+testArray = [];
+["testArray pushBack 1"] call BIS_fnc_codePerformance;
+</sqf>
+
+|x2= <sqf>[toString { hint "Hello there" }] call BIS_fnc_codePerformance;</sqf>
+
+|seealso= [[diag_codePerformance]]
+}}

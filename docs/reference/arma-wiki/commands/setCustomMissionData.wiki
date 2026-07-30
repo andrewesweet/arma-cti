@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/setCustomMissionData
+// revision: 377102 (2026-01-01T09:58:54Z)
+// export sha1: 8inty7cee0b6me7if78fovkr5b72dul
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Defines custom mission text that is sent to [[Arma 3: Analytics]].
+
+|s1= [[setCustomMissionData]] data
+
+|p1= data: [[Array]] of [[String]]s - A maximum of five strings is allowed, each string with a maximum length of 16 characters
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setCustomMissionData ["someData", "someMoreData"];</sqf>
+
+|seealso= -
+}}

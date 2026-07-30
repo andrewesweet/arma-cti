@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/getHideFrom
+// revision: 378610 (2026-05-13T16:46:20Z)
+// export sha1: 34zfabmbmsilvox559d3ja4r04g3cgv
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns the [[Position]] where object believes the enemy to be.
+If there is no direct line of sight between the object and the enemy, this position is extrapolated based on the last known position and speed of the enemy.
+A returned position of [0,0,0] implies that object does not [[knowsAbout[know about]] enemy.
+If enemy is null it is some position in front of the object or enemy position.
+
+|s1= object [[getHideFrom]] enemy
+
+|p1= object: [[Object]]
+
+|p2= enemy: [[Object]]
+
+|r1= [[Array]] - [[ASLToATL]] representation of the believed [[aimPos]] of the enemy object
+
+|x1= <sqf>_pos = player getHideFrom _enemy;</sqf>
+
+|seealso= [[findCover]] [[setHideBehind]] [[isHidden]] [[knowsAbout]] [[forgetTarget]]
+}}
+
+{{Note
+|user= Benargee
+|timestamp= 20150425071500
+|text= This command is definitely not broken, at least not in A3 1.42. It functions exactly as the description says it does.
+The reason why the Z value is elevated is because it represents the units torso. When the unit is prone and spotted, the Z value is much less.
+Here you can see a perfectly working example of this command [[Talk:getHideFrom#Operation Script Sample]].
+}}

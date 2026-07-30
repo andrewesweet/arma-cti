@@ -1,0 +1,185 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Probing_Mechanics
+// revision: 349873 (2023-11-20T22:10:48Z)
+// export sha1: 8q7vhpuh31i52qep502iwaghs5a1y07
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 1.94
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|spoiler|[[Arma 3 Contact]]'s "First Contact" campaign}}
+
+
+
+{{Clear}}
+{{GVI|arma3|1.94}}
+== ED-1E Mini UGV ==
+
+[[File:miniugv tracklock.jpg|right|200px]]
+=== Track Lock Indicator ===
+
+The track lock indicator (when the tracks are prevented from moving the vehicle) can be triggered with the following code.
+This concerns the UI indicator only, actual track locking is done by attaching the Mini UGV to e.g. a game logic in order to stop it.
+<sqf>nameOfVehicle setVariable ["BIN_ugv_trackLock", true];</sqf>
+
+
+{{Clear}}
+[[File:miniugv mfds.gif|right|600px]]
+=== Mini UGV MFD Animations ===
+
+The following animations can be used with the '''animateSource''' script command to control the exterior MFD statuses. Most of these animations are hidden by default. In order to unhide them, you have to animate them to 0 phase.
+{| class="wikitable sortable"
+! Animation Name
+! Functionality
+! Selection
+|-
+| Detector1Light1_Green
+| Hiding the green light on the gas detector (top light)
+| 3
+|-
+| Detector1Light1_Red
+| Hiding the red light on the gas detector (top light)
+| 3
+|-
+| Detector1Light2_Green
+| Hiding the green light on the gas detector (bottom light)
+| 4
+|-
+| Detector1Light2_Red
+| Hiding the red light on the gas detector (bottom light)
+| 4
+|-
+| Detector2Aux_hide
+| Hiding the icon for the auxiliary attachment on the side MFD
+| 1
+|-
+| Detector2Speaker_Off
+| Hiding the 'Speakers Off' icon on the side MFD
+| 2
+|-
+| Detector2Speaker_On
+| Hiding the 'Speakers On' icon on the side MFD
+| 2
+|-
+| ChemDetectorLight
+| Hiding the threat detected light on the chemical detector
+| 6
+|-
+| ChemDetectorLevel1
+| Hiding the chemical detector's 1st status bar
+| 7
+|-
+| ChemDetectorLevel2
+| Hiding the chemical detector's 2nd status bar
+| 7
+|-
+| ChemDetectorLevel3
+| Hiding the chemical detector's 3rd status bar
+| 7
+|-
+| BiopsyCapacity
+| Setting the biopsy probe capacity (goes from 1 to 100)
+| 5
+|}
+
+Example code to unhide all elements:
+<sqf>
+{
+	ugv animateSource [_x, 0, true];
+} forEach [
+	"Detector1Light1_Green",
+	"Detector1Light1_Red",
+	"Detector1Light2_Green",
+	"Detector1Light2_Red",
+	"Detector2Aux_hide",
+	"Detector2Speaker_Off",
+	"Detector2Speaker_On",
+	"ChemDetectorLight",
+	"ChemDetectorLevel1",
+	"ChemDetectorLevel2",
+	"ChemDetectorLevel3"
+];
+ugv animateSource ["BiopsyCapacity", 100];
+</sqf>
+
+
+== Probing Event Handlers ==
+
+=== probingStarted ===
+
+Event handler returns following information:
+
+* 0. '''object''': Object - object which was scanned
+* 1. '''material''': String - name of the material
+* 2. '''completion''': Number - how much information about that material was gathered (from 0 to 100)
+
+<sqf>
+BIN_ProbeEvent_1 = [missionNamespace, "probingStarted", {
+	params["_object", "_data", "_completion"];
+
+	if (_object isEqualTo Probe_2) then
+	{
+		if (_data isEqualTo "alien") then
+		{
+			hint "Probing started, hold left mouse button until the scan is completed.";
+		} else {
+			hint "Try pointing at the center of the probe when the cover is open.";
+		};
+	} else {
+		// ...
+	};
+}] call BIS_fnc_addScriptedEventHandler;
+</sqf>
+
+=== probingEnded ===
+
+* 0. '''data''': Array - array containing following information:<br>
+** 0. '''object''': Object - object which was scanned
+** 1. '''material''': String - name of the material
+** 2. '''completion''': Number - how much information about that material was gathered (from 0 to 100)
+* 1. '''success''': Boolean - returns true if probing was fully completed (meaning laser probing was not interrupted for example)
+
+<sqf>
+BIN_ProbeEvent_2 = [missionNamespace, "probingEnded", {
+	params ["_data", "_success"];
+
+	if (_success && {(_data # 0 == Probe_2) && (_data # 1 == "ALIEN")}) then
+	{
+		hint "Scan completed";
+
+		player setCurrentTask (simpleTasks player # 2);
+		(simpleTasks player # 1) setTaskState "Succeeded";
+		["BIN_tskProbe1", "SUCCEEDED"] call BIS_fnc_taskSetState;
+		"BIN_tskProbe2" call BIS_fnc_taskSetCurrent;
+		[missionNamespace, "probingStarted", BIN_ProbeEvent_1] call BIS_fnc_removeScriptedEventHandler;
+		[missionNamespace, "probingEnded",   BIN_ProbeEvent_2] call BIS_fnc_removeScriptedEventHandler;
+	};
+}] call BIS_fnc_addScriptedEventHandler;
+</sqf>
+
+
+== Probe Tip Animations ==
+
+Note that the Probe is referred to as "Alien Network" in the game. Probe tips can be animated with the following function:
+
+<sqf>[nameOfProbe, state, speedFactor, soundTypes] call BIN_fnc_probeAnim;</sqf>
+Parameters:
+* '''nameOfProbe''': Object - name of the probe you would like to animate
+* '''state:''' Number - 0 or 1 where 1 means that the inner tissue will be expanded
+* '''speedFactor''' (''Optional''): Number - animation speed factor (default is 1)
+* '''soundTypes''' (''Optional''): Number - custom sounds for probe tip animations (default ["'''SoundSetSource_Sfx_Probe_Retract_01'''","'''SoundSetSource_Sfx_Probe_Expand_01'''"])
+
+Example code:
+<sqf>[nameOfProbe, 1] call BIN_fnc_probeAnim;</sqf>
+
+
+== Example Mission ==
+
+* https://steamcommunity.com/sharedfiles/filedetails/?id=1841970902
+
+
+== See Also ==
+
+* [[:Category:Function Group: Probe|Function Group: Probe]]
+
+
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 1.94]]

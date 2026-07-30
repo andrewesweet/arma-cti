@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/removeMPEventHandler
+// revision: 364089 (2024-05-03T19:34:19Z)
+// export sha1: 8y746rx08d714x77pbjovola5zxtxin
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: Multiplayer | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Multiplayer
+
+|gr2= Event Handlers
+
+|arg= global
+
+|eff= global
+
+|descr= Removes MP event handler added by [[addMPEventHandler]].
+
+|s1= unitName [[removeMPEventHandler]] [event, index]
+
+|p1= unitName: [[Object]]
+
+|p2= event: [[String]]
+
+|p3= index: [[Number]] - index returned by [[addMPEventHandler]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeMPEventHandler ["MPKilled", 0];</sqf>
+
+|seealso= [[:Category:Event Handlers|EventHandlers list]] [[addMPEventHandler]] [[removeAllMPEventHandlers]]
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20110725194100
+|text= At least for MPKilled it needs to be executed where the target unit is local. The effect (the removal) is global.
+}}

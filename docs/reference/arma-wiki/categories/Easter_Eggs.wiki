@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Easter_Eggs
+// revision: 238958 (2021-02-04T18:11:50Z)
+// export sha1: fjjta0nbljzrkqyx5k8wlfjz5tl7e6n
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|quote|While the term Easter egg has been used to mean a hidden object for some time, in reference to an Easter egg hunt, it has come to be more commonly used to mean a message, image, or feature hidden in a video game, movie, or other, usually electronic, medium. The term used in this manner was coined around 1979 by Steve Wright, the then Director of Software Development in the Atari Consumer Division, to describe a hidden message in the Atari video game Adventure.|Wikipedia|https://en.wikipedia.org/wiki/Easter_egg_(media)}}

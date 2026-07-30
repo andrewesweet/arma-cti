@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/tvSetText
+// revision: 321506 (2022-05-17T11:22:38Z)
+// export sha1: ievcvlpfdgir20rsigcpndstxats7gj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= GUI Control - Tree View
+
+|descr= Sets string text to item on given path. IDC means id of parent Tree View.
+
+|s1= [[tvSetText]] [idc, path, text]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Array]] of [[Number]]s
+
+|p3= text: [[String]]
+
+|r1= [[Nothing]]
+
+|s2= control [[tvSetText]] [path, text]
+
+|p21= control: [[Control]]
+
+|p22= path: [[Array]] of [[Number]]s
+
+|p23= text: [[String]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>tvSetText [101, [0], "Test data"];</sqf>
+
+|x2= <sqf>_ctrl tvSetText [[0,0,0], "Test data"];</sqf>
+
+|seealso= [[tvAdd]] [[tvClear]] [[tvCollapse]] [[tvCount]] [[tvCurSel]] [[tvData]] [[tvDelete]] [[tvExpand]] [[tvPicture]] [[tvSetCurSel]] [[tvSetPicture]] [[tvSetValue]] [[tvSort]] [[tvSortByValue]] [[tvText]] [[tvValue]]
+}}

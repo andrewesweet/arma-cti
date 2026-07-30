@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/addBackpackCargo
+// revision: 376385 (2025-10-09T02:14:45Z)
+// export sha1: 57rlg6on4dlj07pyhz5kksgpin8d8iw
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Containers
+
+|descr= Add backpack(s) to the cargo space of vehicle. Classname list of available backpacks is [[Arma 2: Operation Arrowhead: Backpacks|here]].
+For a list of possible backpacks, see:
+* {{GVI|arma2|1.50}} [[Arma 2: Operation Arrowhead: Backpacks]]
+* {{GVI|arma3|1.00}} [[Arma 3: CfgVehicles Equipment]] (starting with {{hl|B_}})
+{{Feature|arma3|In {{arma3}}, arguments for this command are local {{Icon|localArgument|32}}. For the global variant, see [[addBackpackCargoGlobal]].}}
+
+|s1= vehicle [[addBackpackCargo]] [backpackClassName, count]
+
+|p1= vehicle: [[Object]] - vehicle to add the backpack to
+
+|p2= backpackClassName: [[String]] - backpack classname
+
+|p3= count: [[Number]] - number of backpacks to add. {{GVI|arma3|2.14|size= 0.75}} negative count will remove backpacks.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>this addBackpackCargo ["TK_RPG_Backpack_EP1", 2];</sqf>
+
+|x2= <sqf>_apc addBackpackCargo ["US_Patrol_Pack_EP1", 4];</sqf>
+
+|seealso= [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]]
+}}

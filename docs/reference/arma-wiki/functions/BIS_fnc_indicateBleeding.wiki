@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_indicateBleeding
+// revision: 328551 (2022-07-13T17:02:20Z)
+// export sha1: os1xj633a95l3e685de1laj9ek0est7
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Feedback | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Feedback
+
+|descr= Shows a PP effect which indicates bleeding.<br> {{Feature|important|Do not use,WIP!}}
+
+|s1=  call [[BIS_fnc_indicateBleeding]]
+
+|r1= [[Nothing]] ('''BIS_applyPP7''' returns [[true]])
+
+|x1= <sqf>call BIS_fnc_indicateBleeding;</sqf>
+
+|seealso=  [[BIS_fnc_bloodEffect]]
+}}

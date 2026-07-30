@@ -1,0 +1,89 @@
+// source: https://community.bistudio.com/wiki/commandingMenu
+// revision: 337562 (2023-02-10T01:04:40Z)
+// export sha1: 3wryakgoz27mrs4xumvv1pmndcgaoij
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Interaction
+
+|descr= Returns the name of the topmost commanding menu or "" if the menu is closed. For action menu visibility check see [[isActionMenuVisible]]. See {{Link|#Notes}} for {{arma2}}/{{arma3}} structure.
+
+|s1= [[commandingMenu]]
+
+|r1= [[String]]
+
+|x1= <sqf>
+waitUntil { sleep 0.1; commandingMenu == "RscStatus" };
+hint "Press 4, I'm bleeding !";
+</sqf>
+
+|x2= <sqf>if (commandingMenu != "") then { hint "Command menu is opened" };</sqf>
+
+|seealso= [[showCommandingMenu]] [[isActionMenuVisible]] [[BIS_fnc_addCommMenuItem]] [[BIS_fnc_removeCommMenuItem]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20090715122100
+|text= {{arma2}} possible values are:
+* '''""''' - means the menu is closed
+* '''"RscMainMenu"''' - Main menu, by pressing backspace
+** '''"RscMoveHigh"''' - Move menu (1)
+** '''"#WATCH"''' - Watch menu (2)
+*** '''"#WATCH0"''' - Watch menu - next page (2-0)
+** '''"RscWatchDir"''' - Engage menu (3)
+*** '''"RscWatchMoreDir"''' - Engage menu - watch a direction (3-8)
+** '''"#GET_IN"''' - Mount menu (4)
+** '''"RscStatus"''' - Status menu (5)
+*** '''"RscCallSupport"''' - Mount menu - call support (5-1)
+** '''"#ACTION"''' - Action menu (6)
+** '''"RscCombatMode"''' - Combat mode menu (7)
+** '''"RscFormations"''' - Formation menu(8)
+** '''"RscTeam"''' - Team menu (9)
+*** '''"RscSelectTeam"''' - Team menu - select team (0-5)
+** '''"RscReply"''' - Reply menu (0)
+*** '''"#User:BIS_Menu_GroupCommunication"''' - Communication menu (0-8)
+*** '''"#CUSTOM_RADIO"''' - Custom sounds menu (0-9)
+** '''"RscRadio"''' - Radio menu (0-0)
+* '''"RscGroupRootMenu"''' - "simplified" menu
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20210802074200
+|text= {{arma3}} possible values (thanks to '''RCA3'''):
+* '''""''' - means the menu is closed
+* '''"RscGroupRootMenu"''' Group menu root
+** '''"RscMenuMove"''' (1) Move menu
+** '''"#WATCH"''' (2) Watch menu
+*** '''"#WATCH1"''' (2-0) Watch menu - next page
+** '''"RscMenuEngage"''' (3) Engage menu 
+*** '''"RscMenuWatchDir"''' (3-8) Engage menu - watch a direction
+** '''"#GET_IN"''' (4) Mount menu
+** '''"RscMenuStatus"''' (5) Status menu
+*** '''"RscCallSupport"''' (5-1) Status menu - call support
+** '''"#ACTION"''' (6) Action menu Action menu
+** '''"RscMenuCombatMode"''' (7) Combat mode menu
+** '''"RscMenuFormations"''' (8) Formation menu
+** '''"RscMenuTeam"''' (9) Team menu
+*** '''"RscMenuSelectTeam"''' (9-9) Team menu - select team
+** '''"RscMenuReply"''' (0) Reply menu
+*** '''"#User:BIS_fnc_addCommMenuItem_menu"''' (0-8) BIS Supports
+*** '''"#CUSTOM_RADIO"''' (0-9) Custom radio
+*** '''"RscRadio"''' (0-0) Radio menu
+** '''"RscMainMenu"''' (Backspace) Main menu
+}}

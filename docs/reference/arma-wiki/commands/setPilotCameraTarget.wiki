@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/setPilotCameraTarget
+// revision: 377764 (2026-01-03T01:00:05Z)
+// export sha1: 50ece4fpgadtjyi4onbcf3rqcuxm4tn
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Pilot Camera | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|arg= local
+
+|gr1= Pilot Camera
+
+|descr= Sets an area or target to be tracked by the object airplane or helicopter [[A3_Targeting_config_reference#class_pilotCamera|pilotCamera]]. 
+To track an object the vehicle has to have appropriate sensors ([[A3_Targeting_config_reference#CfgVehicles|scanners]]) that can detect the given target type.
+Using [[objNull]] will unlock the camera
+
+|s1= object [[setPilotCameraTarget]] target
+
+|p1= object: [[Object]]
+
+|p2= target: [[Object]] or [[Position#PositionASL|PositionASL]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_pilotCamTrack = vehicle player setPilotCameraTarget [2100,4200,4.2];</sqf>
+
+|x2= <sqf>_pilotCamTrack = vehicle player setPilotCameraTarget BIS_Edita;</sqf>
+
+|seealso= [[hasPilotCamera]] [[getPilotCameraPosition]] [[getPilotCameraDirection]] [[getPilotCameraRotation]] [[getPilotCameraTarget]] [[setPilotCameraDirection]] [[setPilotCameraRotation]]
+}}

@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/ArmA_Theatre_of_War
+// revision: 339354 (2023-04-28T14:08:31Z)
+// export sha1: 95xi8u23ya8d5kana1pup8psuqdmcxl
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''ArmA: Theater of War''' (ArmA-ToW or AToW) is a mature Arma 2 community dedicated to providing a large, persistent, multiplayer campaign.  The campaign is fought on a mix of terrain, ranging from urban towns to dense forests, all on the Chernarus land mass.  A linked objective system and forward spawning mean that the combat is always focused.  Infantry rarely have to wait for a transport, and there is always action to be had just over the horizon!
+
+== The Tournament ==
+Welcome to AtoW. Please take your time and read the following information.
+
+Our mission is to deliver the best possible Arma 2 Tournament. But what makes a tournament the best?
+
+In our opinion it is players
+
+Not just people who turn up and play, but people who get involved. A collection of players all passionate about the same thing, playing Arma 2 at it is very best.
+
+We also strive to include new and exciting features to bring a new level of immersion and challenge. These are either created by our in house team or by working closely with many of the talented authors within the ArmA community.
+
+== Our Organization ==
+There is no owner, no one person in control. The tournament is overseen by the players council, responsible for developing and evolving the tournament in accordance with the players wishes.
+
+We want to get as many players as possible involved directly in the running of the tournament. We have a highly talented mod team who work on our in house coding projects along with a balance team to continuously examine existing and upcoming features to ensure they only enhance the game play experience. There is a UN team to run and administer the Battle-day as well as teams to handle web/forum development and recruitment/advertising.
+
+There is also the opportunity to become part of the organization for your army, assist in training, planning, reconnaissance help ensure that you side is in a position to win.
+
+But even if you can only commit to being involved as a player you are a valued part of the tournament and can still feel like your voice is important and your opinion matters.
+
+Join Theater of War and be part of the Player Tournament 
+
+== The Teams ==
+There are two teams in ArmA-ToW: the Unites States Marine Corps and the Russian Army.  The USMC and the Russians are further subdivided into Infantry, Armor, Air, and Recon units.
+
+=== United States Marine Corps ===
+The USMC side borrows it is command structure from the real life 2nd Marine Expeditionary Force.  The ranks go from Private to Lieutenant General, promotions being based on time in the tournament as well as ability to communicate and command. The AToW 2MEF Divisions consist of Infantry, Armor, Recon and the Air Wing.
+
+=== The Russians ===
+Coming soon
+
+== The United Nations ==
+The united nations is a third "team", comprising only a couple of members.  Their job is to watch over the battle, and make sure there is no foul play.
+
+== Campaigns, Tours, and Battles ==
+The main competition takes place during a "Campaign".  Each campaign is fought in two "Tours".  Each tour is seven to twelve "Battles".  The sides switch positions on the island between tours.
+
+== Objectives ==
+ArmA: Theater of War splits part of the Chernarus landmass up into various blocks. Within these blocks are various zones. At any one time only two zones are available to capture, each zone having two objectives. To capture a zone, the attacker has to capture the enemies two zones before being able to progress further. This objective system creates a front line of fighting which leads to some very intense infantry firefights and tactics.
+
+== Forward Spawning ==
+In order to keep soldiers in the thick of the fighting, each team has designated pilots running troops to the front lines either for touch-down inserts or parachute drops. Each team has one zone which is their designated forward spawn zone; lose this and they lose the ability to forward spawn. By the time the attacking force reaches the enemy's forward spawn zone, the defender will have a massive advantage in terms of troops reaching the front lines. This leads to an interesting dynamic in terms of firefights and tactics. 
+
+== Resources and Equipment ==
+Holding on to objectives gives each army Resources in the forms of Man Power, Fuel and Ammo.  These are counted up as the armies hold possession of the objectives.  At the end of the battle the amount of resources is tallied up, and each teams Commander uses these resources to purchase equipment for the next battle.
+
+The team that holds the most territory for longest, and is most careful with their equipment, will soon see more resources than there enemy, giving them an advantage on the battlefield.  It is this AToW specific Objective System which puts a value on all items used for combat and helps immerse the individual soldier in the war.  Earning resources through the objective system can only be accomplished through team work.  No individual soldier wins a war and the AToW Objective System assures the army with the best overall teamwork is victorious at the end of a Campaign.
+
+== Links ==
+{{Link|http://www.arma-tow.com|ArmA: Theater of War Website}}
+== Notes ==
+At the time of writing, the Arma 2 Campaign has been in full swing with Campaign 1 Tour 1 Just ending (29/11/09) with the Marines victorious. Tour 2 is due to start early in December while the teams work out their tactics and train up new recruits.

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Eden_Editor:_Scenario
+// revision: 92150 (2015-10-01T08:24:35Z)
+// export sha1: ns8zarjl2c7w5x6yt25us60dhcuzart
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Eden Editor|Scenario]]

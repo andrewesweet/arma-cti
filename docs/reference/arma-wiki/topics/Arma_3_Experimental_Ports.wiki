@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Experimental_Ports
+// revision: 341730 (2023-06-20T14:56:43Z)
+// export sha1: 0izjz2s5z18vcsm587of2nzay99nu9w
+// categories: Category:Arma 3
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Please visit {{Link|http://dev.arma3.com/ports|this '''overview page'''}} to learn more about our experimental client ports to '''Mac''' and options for '''Linux''', including the limitations and F.A.Q.
+
+== Installation ==
+
+# Check the {{Link|http://dev.arma3.com/ports|limitations overview}} to decide whether you find them acceptable.
+# Check the {{Link|http://dev.arma3.com/ports|minimal requirements}} to determine whether your system is able to run {{arma3}} on other platforms than Windows.
+
+=== Mac ===
+
+Please see the [[Arma 3: Play on Mac]] article for both non-native and native solutions.
+
+=== Linux ===
+
+Please see the [[Arma 3: Play on Linux]] article for a Proton-based solution.
+
+
+== Joysticks & Gamepads ==
+
+Unfortunately, Steam’s standard only supports standard Xbox and Windows XInput gamepad schemes, which means that more sophisticated schemes present in {{arma3}}, and using DirectInput and allowing reconfiguration of gamepads and joysticks in-game, had to be turned off in the ports.
+It is possible to reconfigure them by modifying the mapping text, but it is not intuitive. Alternatively you can try to remap your keybinding using third-party software (e.g. AntiMicro).
+
+
+{{GameCategory|arma3}}

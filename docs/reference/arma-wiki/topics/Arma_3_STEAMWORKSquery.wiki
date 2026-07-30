@@ -1,0 +1,569 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_STEAMWORKSquery
+// revision: 364584 (2024-05-17T12:40:32Z)
+// export sha1: ds4pokni8fb8f8uxdaehe7xaxlfpym3
+// categories: Category:Arma 3: Multiplayer
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Available Functionality ==
+
+Steam API provides an ability to register a game server to Steam master server for players to find it and get its ip and port, that is later used by the client to directly connect to the game server.<br>
+In order to players find/select server they want the game server has to send an information about itself to Steam master server.<br>
+This information could be used to filter out server the player is not interested in.
+
+== Server Query ==
+
+Available means to set information about the server (what can be set to Steam master server and be retrieved by clients from Steam).<br>
+Values set by (marked by the ''orange italic underlined text '') functions are accessible by the clients, rest is used only by the Steam master server.
+
+=== Main Table ===
+
+{| class="wikitable"
+! Function/variable
+! type
+! max. size
+! description
+! what value is set by the Arma3 server
+
+|-
+| ''SteamGameServer_Init''
+|
+|
+| Initialize steam server object, and set server properties which may not be changed.
+
+Sets the version of the server.
+| To set version of the server
+
+|-
+| SetProduct()
+| string
+|
+| Game product identifier. Identifies to what Steam game the session belongs.
+| constant string "Arma3" for all sessions
+
+|-
+| ''SetGameDescription()''
+| string
+| 64 chars
+| Description of the game.
+
+This is a required field and is displayed in the steam server browser
+| mission name
+
+|-
+| ''SetModDir()''
+| string
+| 32 chars
+| If your game is a "mod," pass the string that identifies it.
+| constant string "Arma3" for all sessions
+
+|-
+| SetDedicatedServer()
+| bool
+| true/false
+| Is this is a dedicated server? The default value is false.
+| set to true if server is dedicated, false otherwise
+
+|-
+| ''SetMaxPlayerCount''
+| int
+|
+| Max player count that will be reported to server browser and client queries
+| maximum possible number of players in the mission
+
+|-
+| ''SetBotPlayerCount''
+| int
+|
+| Number of bots. Default value is zero
+| not used
+
+|-
+| ''SetServerName''
+| string
+| 64 chars
+| Set the name of server as it will appear in the server browser
+| game session name
+
+|-
+| ''SetMapName''
+| string
+| 32 chars
+| Set name of map to report in the server browser
+| name of the map (altis, stratis...)
+
+|-
+| ''SetPasswordProtected''
+| bool
+| true/false
+| If session is password protected
+| set to true if server is password protected
+
+|-
+| SetSpectatorPort
+| int
+|
+| Spectator server. The default value is zero, meaning the service is not used.
+| not used
+
+|-
+| SetSpectatorServerName
+| char
+| 32 chars
+| Name of the spectator server. (Only used if spectator port is nonzero.)
+| not used
+
+|-
+| ''SetGameTags''
+| char
+| 128 chars
+| Sets a string defining the "gametags" for this server, this is optional,
+
+but if it is set it allows users to
+
+filter in the matchmaking/server-browser interfaces based on the value
+| used for various parameters, described below.
+
+|-
+| SetGameData
+| char
+| 2048 chars
+| Sets a string defining the "gamedata" for this server, this is optional,
+
+but if it is set it allows users
+
+to filter in the matchmaking/server-browser interfaces based on the valuedon't set this unless it actually changes,
+
+it's only uploaded to the master once (when acknowledged)
+| not used
+
+|-
+| SetRegion
+| char
+|
+| Region identifier.
+
+This is an optional field, the default value is empty, meaning the "world" region
+| not used
+
+|-
+| ''SetKeyValue''
+| char, char
+| 127 chars per pair
+
+max 1300 for all pairs
+| sets key/value pair for the session.
+
+All pairs can't take more than 1300 characters (about 11 pairs max).
+| used for storing:
+
+* GLoadedContentHash (1 pair),
+* modHashes (2 pairs),
+* modNames (2 pairs),
+* sigNames (2 pairs),
+* param1 (1 pair),
+* param2 (1 pair),
+* timeLeft (1 pair),
+* country (1 pair).
+
+|}
+
+== SetGameTags ==
+
+{{arma3}} is currently using SetGameTags parameter to pass multiple information about the session.<br>
+All these parameters are encoded into the single string, each parameters is separated by the colon.
+
+=== Values ===
+* BattleEye - bool flag
+* EqualModRequired - bool flag
+* RequiredVersion - value
+* RequiredBuildNo - value
+* GameType - int
+* ServerState - int
+* Dedicated - bool flag
+* Lock - bool flag
+* VerifySignatures - bool flag
+* Language
+* Difficulty
+* Platform - windows/linux
+* LongLat - position of the server
+
+=== Table ===
+
+first character of each tag defines it is type, rest is a value.
+
+{| class="wikitable"
+! Value in the string
+! identifier
+! value
+! meaning
+! internal id
+
+|-
+| bt,
+| b
+| true
+| BattleEye
+| 0
+
+|-
+| r120,
+| r
+| 1.20
+| RequiredVersion
+| 2
+
+|-
+| n0,
+| n
+| 0
+| RequiredBuildNo
+| 3
+
+|-
+| s1,
+| s
+| 1
+| ServerState
+| 5
+
+|-
+| i2,
+| i
+| 2
+| Difficulty
+| 10
+
+|-
+| mf,
+| m
+| false
+| EqualModRequired
+| 1
+
+|-
+| lf,
+| l
+| false
+| Lock
+| 7
+
+|-
+| vt,
+| v
+| true
+| VerifySignatures
+| 8
+
+|-
+| dt,
+| d
+| true
+| Dedicated
+| 6
+
+|-
+| ttdm
+| t
+| tdm
+| GameType
+| 4
+
+|-
+| g65545,
+| g
+| 65545
+| Language
+| 9
+
+|-
+| c0-52,
+| c
+| long.=0 lat.=52
+| LongLat
+| 12
+
+|-
+| pw
+| p
+| Windows
+| Platform
+| 11
+
+|-
+| h281d1fec
+| h
+| 281d1fec
+| LoadedContentHash
+| 13
+
+|-
+| oDE
+| o
+| Germany
+| Country
+| 14
+
+|-
+| e15
+| e
+| 15 minutes
+| timeLeft
+| 15
+
+|-
+| j0
+| j
+| ?
+| [[Description.ext#Mission_parameters|param1]]
+| 16
+
+|-
+| k0
+| k
+| ?
+| [[Description.ext#Mission_parameters|param2]]
+| 17
+
+|-
+| f1
+| f
+| true
+| allowedFilePatching
+| 18
+
+|-
+| y?
+| y
+| ?
+| island? (unimplemented)
+| 19
+
+|}
+
+==== Game Type ====
+See {{hl|CfgMPGameTypes}}. Note that max game tag length seems to be 8 chars.
+
+* {{hl|tapex}} - Apex: "Campaign - Apex Protocol"
+* {{hl|tcoop}} - Coop: "Cooperative Mission"
+* {{hl|tctf}} - CTF: "Capture The Flag"
+* {{hl|tcti}} - CTI: "Capture The Island"
+* {{hl|tdm}} - DM: "Deathmatch"
+* {{hl|tendgame}} - EndGame: "End Game"
+* {{hl|tescape}} - Escape: "Escape"
+* {{hl|tkoth}} - KOTH: "King Of The Hill"
+* {{hl|tlastman}} - LastMan: "Last Man Standing"
+* {{hl|tpatrol}} - Patrol: "Combat Patrol"
+* {{hl|trpg}} - RPG: "Role-Playing Game"
+* {{hl|tsandbox}} - Sandbox: "Sandbox"
+* {{hl|tsc}} - SC: "Sector Control"
+* {{hl|tsupport}} - Support: "Support"
+* {{hl|tsurvive}} - Survive: "Survival"
+* {{hl|ttdm}} - TDM: "Team Deathmatch"
+* {{hl|tunknown}} - Unknown: "Undefined Game Mode"
+* {{hl|tvanguar}} - Vanguard: "Vanguard"
+* {{hl|twarlord}} - Warlords: "Warlords"
+* {{hl|tzeus}} - Zeus: "Zeus"
+
+==== Server State ====
+'''s''' param (see above table)
+* s0 - {{hl|"NONE"}} /* no server */
+* s1 - {{hl|"SELECTING MISSION"}} /* server created, no mission selected */
+* s2 - {{hl|"EDITING MISSION"}} /* mission is in editing phase */
+* s3 - {{hl|"ASSIGNING ROLES"}} /* mission is selected, assigning roles */
+* s4 - {{hl|"SENDING MISSION"}} /* mission is in sending phase*/
+* s5 - {{hl|"LOADING GAME"}} /* game (island, vehicles etc.) is loading */
+* s6 - {{hl|"BRIEFING"}} /* prepared to launch game */
+* s7 - {{hl|"PLAYING"}} /* game is launched */
+* s8 - {{hl|"DEBRIEFING"}} /* game is finished */
+* s9 - {{hl|"MISSION ABORTED"}} /* game is aborted */
+
+=== Example ===
+
+ gameTags = bt,r120,n0,s1,i2,mf,lf,vt,dt,ttdm,g65545,c0-52,pw,
+Another example of GameTags returned by API for an official server: {{hl|bt,r192,n145639,s3,i0,mf,lf,vt,dt,tapex,g65545,hf694848c,f0,c14-50,pw,e0,j0,k0,}}
+
+
+== STEAMWORKS vs GameSpy ==
+
+{| class="wikitable"
+! GS param
+! Steam equivalent
+! Description
+
+|-
+| "numteams"
+| none
+| in GS always set to 0
+
+|-
+| "password"
+| SetPasswordProtected
+|
+
+|-
+| "param1"
+| SetKeyValue
+|
+
+|-
+| "param2"
+| SetKeyValue
+|
+
+|-
+| "equalModRequired"
+| SetGameTags
+|
+
+|-
+| "reqSecureId"
+| none
+| A3 no longer uses cd keys
+
+|-
+| "dedicated"
+| SetGameTags
+|
+
+|-
+| "sv_battleye"
+| SetGameTags
+|
+
+|-
+| "gamever"
+|
+|
+
+|-
+| "timelimit"
+|
+|
+
+|-
+| "currentVersion"
+| SteamGameServer_Init
+|
+
+|-
+| "requiredVersion"
+| SetGameTags
+|
+
+|-
+| "difficulty"
+| SetGameTags
+|
+
+|-
+| "verifySignatures"
+| SetGameTags
+|
+
+|-
+| "numplayers"
+| none
+| this value is update by Steam automatically
+
+|-
+| "maxplayers"
+| SetMaxPlayerCount
+|
+
+|-
+| "language"
+| SetGameTags
+|
+
+|-
+| "hash"
+| SetKeyValue
+|
+
+|-
+| "gameState"
+| SetGameTags
+| now under serverState
+
+|-
+| "reqBuild"
+| SetGameTags
+|
+
+|-
+| "mod"
+| SetKeyValue
+|
+
+|-
+| "mapname"
+| SetMapName
+|
+
+|-
+| "gametype"
+| SetGameTags
+|
+
+|-
+| "mission"
+| SetGameDescription
+|
+
+|-
+| "gamename"
+| SetProduct()
+|
+
+|-
+| "signatures"
+| SetKeyValue
+|
+
+|-
+| "modhash"
+| SetKeyValue
+|
+
+|-
+| "gamemode"
+| none
+|
+
+|-
+| "platform"
+| SetGameTags
+|
+
+|}
+
+== Additional Details ==
+
+=== Server ===
+
+Read details about (customizable) [[Arma 3: Server Config File#Arma_2:_Operation_Arrowhead_.26_Arma_3_-_STEAM_ports_configuration|STEAM ports]] on server.
+{{Feature|informative|
+reportingIP is obsolete and deprecated option in server.cfg, STEAM ports will be fixed value in relation to gameport in upcoming update (+1 query +2 report to master).
+}}
+
+=== Client ===
+
+For hosting MP game locally (so called listen server) behind NAT please ensure the default [[Arma 3: Server Config File#Arma_2:_Operation_Arrowhead_.26_Arma_3_-_STEAM_ports_configuration|STEAM ports]] are forwarded and open!
+
+When you have issues with the in-game server browser then try to '''use the STEAM client server browser''' instead.<br>
+'''STEAM > menu View > Servers > at bottom in filters choose game "Arma 3" > pick server and play '''<br>
+note: Try to join password protected server via STEAM client's server browser returns wrong password, will be fixed next patch/hotfix
+
+
+== External Documentation ==
+
+* https://developer.valvesoftware.com/wiki/Server_queries#Implementations
+* https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol
+
+== Server Browser Protocol ==
+
+For details about SBP, see [[Arma 3: ServerBrowserProtocol3]].
+
+
+{{GameCategory|arma3|Multiplayer}}

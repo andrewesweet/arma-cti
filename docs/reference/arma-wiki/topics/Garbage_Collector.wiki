@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Garbage_Collector
+// revision: 376307 (2025-10-06T11:07:27Z)
+// export sha1: tbebpozj4adsmt8askkiz974q14g6qv
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+* For {{arma2}}, see [[Arma 2: Garbage Collector]]
+* For {{arma3}}, see {{Link|Description.ext#Corpse and Wreck Management}}

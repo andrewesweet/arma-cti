@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EGSpectatorCameraSetTarget
+// revision: 278672 (2021-06-13T21:38:27Z)
+// export sha1: 358kaom2gfp3wx0x1erz8ezmzhsvi1o
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Spectator | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Spectator
+
+|descr= {{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_EGSpectatorCameraSetTarget]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/menuShortcut
+// revision: 378341 (2026-04-02T16:31:19Z)
+// export sha1: 8xvqcin54poo5tlftgdzzilt3dafe06
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= GUI Control - Menu
+
+|descr= Returns shortcut related to menu entry on given path in form of a bitflag. To get the shortcut text use [[menuShortcutText]].
+
+|s1= [[menuShortcut]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|r1= [[Number]]
+
+|s2= control [[menuShortcut]] path
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|r2= [[Number]]
+
+|x1= <sqf>findDisplay 313 displayCtrl 120 menuShortcut [0, 1];</sqf>
+
+|seealso= [[menuShortcutText]] [[menuSetURL]]
+}}

@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/windStr
+// revision: 319970 (2022-05-13T09:25:48Z)
+// export sha1: 332t0of4j8sh0ca3cjv1tyce99jlpf7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|descr= Returns the current wind strength.
+
+|s1= '''windStr'''
+
+|r1= [[Number]]
+
+|x1= <sqf>10 setWindStr (0.5 * windStr);</sqf>
+
+|seealso= [[setWindStr]] [[gusts]] [[setGusts]] [[setWind]] [[setWindDir]] [[setWindForce]] [[wind]] [[windDir]]
+}}

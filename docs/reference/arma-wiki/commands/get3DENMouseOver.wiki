@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/get3DENMouseOver
+// revision: 377713 (2026-01-02T09:03:54Z)
+// export sha1: hx12px2es50hnf6vp62wi06mzixei2t
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Returns the [[Eden Entity]] the mouse is hovering over in [[:Category:Eden Editor|Eden Editor]].
+
+|s1= [[get3DENMouseOver]]
+
+|r1= [[Array]] with [type, entity]
+
+* type: [[String]] - can be one of:
+** "Object"
+** "Group"
+** "Trigger"
+** "Logic"
+** "Waypoint"
+** "Marker"
+* entity: [[Eden Entity]]
+
+|x1= <sqf>systemChat str get3DENMouseOver; // returns e.g ["Object", B Alpha 1-1:1]</sqf>
+
+|seealso= [[add3DENConnection]] [[add3DENEventHandler]] [[all3DENEntities]] [[collect3DENHistory]] [[create3DENComposition]] [[create3DENEntity]] [[current3DENOperation]] [[delete3DENEntities]] [[do3DENAction]] [[get3DENActionState]] [[get3DENAttribute]] [[get3DENCamera]] [[get3DENConnections]] [[get3DENEntityID]] [[get3DENGrid]] [[get3DENIconsVisible]] [[get3DENLinesVisible]] [[get3DENSelected]] [[is3DEN]] [[is3DENMultiplayer]] [[move3DENCamera]] [[remove3DENConnection]] [[remove3DENEventHandler]] [[removeAll3DENEventHandlers]] [[set3DENAttributes]] [[set3DENGrid]] [[set3DENIconsVisible]] [[set3DENLinesVisible]] [[set3DENObjectType]]
+}}

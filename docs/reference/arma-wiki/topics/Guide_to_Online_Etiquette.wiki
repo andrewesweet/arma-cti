@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/Guide_to_Online_Etiquette
+// revision: 363403 (2024-03-29T18:31:14Z)
+// export sha1: 04nlx58f3f5f571z2cxore2du8qrums
+// categories: Category:Multiplayer Hints and Tips
+// Vendored snapshot. Do not edit — re-export instead.
+
+New {{arma}} titles always bring a lot of new player into a long established and successful community.
+While this is good for the health of the community, it also brings a few issues with inexperienced players rubbing shoulders with long term veterans.
+
+This guide to {{arma}} etiquette is designed to reduce the friction and make a new players transition into {{arma2}} multiplayer games as painless as possible, whenever you join a public server, please observe the following to ensure you are always invited back:
+
+=== ALWAYS: ===
+
+* Try to locate a manual for the game type you are playing and read it before playing; several game forms also have video walkthroughs on YouTube
+* Read the mission briefing '''before''' you start playing, otherwise you will not know what you are doing and end up getting in everyone's way (and getting yourself shot in the process). Worse, you may waste mission-critical resources, ruining everybody's mission.
+* Take time to orient yourself immediately after you spawn. A quick spin and check you compass {{Controls|k}} check your map {{Controls|m}} for any markers. Work out who's who, what's where; double-check which team you are actually on by pressing {{Controls|P}} and also check what the good-guys' uniforms look like ;)
+* Apologise if you accidentally kill/wound a team-mate (press {{Controls|/}} to talk, use {{Controls|<}} or {{Controls|>}} to switch to global or side channel, or press and hold {{Controls|Caps Lock}} for voice chat).
+* Ask permission to board somebody else's vehicle as crew (esp. driver or gunner). Some players will gladly let you on board, others prefer to crew vehicles alone and it is not up to you to prevent them from doing so. Remember, respect other players' right to enjoy their game too!
+* Reply when you are spoken to on chat/voice comms. It is very bad form to just blank teammates and can really hamper the mission (it's also rude). If you don't understand because you don't speak the language of the server, just reply briefly in your own language; that way you've acknowledged your team-mates and they will understand what the problem is :) 
+* Say thanks when somebody heals or help you. Goes without saying; it is just good manners.
+* Give teammates a lift in your vehicle if they will otherwise be stranded on foot. C'mon, nobody likes a long, long walk to the party (we've all been there).
+
+=== NEVER: ===
+
+* Test fire your weapon by firing near the feet/head of a team-mate. 
+* Test fire in the spawn it gives away position of the spawn and yourself and can result in indirect fire being received.
+* Test fire a weapon without giving your team warning first!
+* Accidentally discharge without owning up by saying "Misfire misfire".
+* Move somebody else's vehicle without asking them - especially if they are firing from it! Imagine, they just spent 10 mins manoevering their lovely .50 cal Hummer into the PERFECT spot to cover that enemy-held village, then you jumped in and drove out in front of the T90 hiding around the corner...
+* In Co-op or Team games, never use mission-critical assets without first asking, especially '''choppers''', '''planes''' or '''mobile spawn vehicles'''. The use of these should '''always''' be agreed and co-ordinated with your team-mates (nothing upsets people more than inexperienced players foolishly destroying MHQs or choppers).
+* Refuse to heal/revive a fallen team-mate if you are in a position to do so (i.e. unless it is very likely you will get killed doing so). Do unto others as you would have done to yourself!
+* Flood the chat with irrelevant messages, use abusive language against players you don't know very well, or persistently use languages which are not permitted by the server rules. 
+* Kill/wound team-mates. If you're not sure if they're enemy, hold fire, check map, even ask them via chat! (I'm serious).
+* Kill/wound team-mates to steal their vehicles. The height of selfish lameness. You will be banned.
+* Kill/wound team-mates to steal their gear (in a ranked game). They have earned what they use, wait untill you do the same.
+* Kill/wound team-mates who annoyed you by not giving you a lift last time. Maybe they didn't see you or were full, ever think of that? You will be banned.
+* Kill/wound team-mates or destroy friendly resources 'as a joke' right before you disconnect. It's really not funny. Oh, and you will be banned.
+* In Evolution / Domination modes, never climb the Radiotower. It might sound silly, but just don't do it.
+* Fly an aircraft online if you have never done so before; practise in the editor untill you're sure you will be able to survive for more than 5 minutes on an ACTIVE battlefield.
+* Use vehicles (air or ground) as your own personal transport.
+* Use repair vehicles purely for transport - these are often scarce and desperately needed to REPAIR damaged assets.
+* Take off in a chopper without waiting for others to get in (not personal transport).
+* Leave vehicles in the middle of nowhere.
+* Place an MHQ in enemy territory or in dangerously exposed locations (remember those Kamovs!)
+* Fly over enemy territory / go in for a landing when there is still AA around the area (ask the players already in the area if enemy ADFs are still active). This will not only get you (and your passengers) killed, you will also waste valuable assets.
+* In Domination missions, never drive off in an MHQ WITHOUT first loading the Ammo Box (there is nothing worse than running out of ammo in the middle of a battle, and not being able to reload).
+* Use wreck choppers for transport, if there are any on the server you play on, they are a ONE PURPOSE ONLY vehicle (retrieving wrecks).
+* Fire the gun on an MHQ when you're nearing enemy territory, unless the driver says you can. (there's nothing worse than trying to get an MHQ into a good / close / safe spot while an idiot is firing the gun and giving away your position in the process).
+* Be disrespectful to the ones in charge of a server. You are a VISITOR, not an OWNER and what the admin / clan says is what goes. If you disagree with the admin's running of the game you have two simple choices: stay or leave.
+
+It is hoped that this guide will be read in the spirit in which it was written; i.e. as a way to promote the health and development of the expanding ArmA II online community. Remember, the chief goal of playing online is to have '''fun''', and to achieve this a certain amount of co-operation between players is essential.
+
+It is also hoped that by following the above guidelines new members of the community will soon discover that ArmA II Multiplayer is truly a unique experience, in many respects outshining any other game ever made.
+
+Thanks to all that added several good points to this guide, and to all that will do so in the future.
+
+
+[[Category:Multiplayer Hints and Tips]]

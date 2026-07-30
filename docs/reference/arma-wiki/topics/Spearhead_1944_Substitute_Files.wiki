@@ -1,0 +1,173 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Substitute_Files
+// revision: 378685 (2026-05-25T18:58:28Z)
+// export sha1: i19kocjk0677atwf94t4xkv4dfdrx9b
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+In order to create a custom terrain using [[Spearhead 1944]] assets you will need the ''origami'' representations of the objects for your [[P drive]].
+Due to  [[:Category: Arma 3: CDLCs|CDLC's]] being distributed in EBO format which cannot be unpacked; like the regular "vanilla" PBO's, substitute files are required to act as a representation of the real models for both [[Terrain Builder]] use and for the binarization process of a terrains WRP.
+
+The substitute files, also known as ''origami'' files, are an untextured approximation of both the visual and geometry lods of the model.
+Instructions for how to use these files are contained in a '''readme file''' within the download.
+
+
+== Contents ==
+
+The substitue files contains the following folders:
+
+* SPE_Structures\Civilian
+* SPE_Structures\Commercial
+* SPE_Structures\Data
+* SPE_Structures\Industrial
+* SPE_Structures\Infrastructure
+* SPE_Structures\Items
+* SPE_Structures\Military
+* SPE_Structures\Ruins
+* SPE_Structures\SPE_A3_Agriculture
+* SPE_Structures\SPE_A3_Camps
+* SPE_Structures\SPE_A3_Cultural
+* SPE_Structures\SPE_A3_Props_exp
+* SPE_Structures\SPE_A3_Walls
+* SPE_Structures\Walls
+* SPE_Vegetation\Bocage
+* SPE_Vegetation\Trees
+* SPE_Water\Pond
+* SPE_Water\RiverDetails
+
+New with 1.1
+
+* SPE_Structures2\Civilian
+* SPE_Structures2\Commercial
+* SPE_Structures2\Cultural
+* SPE_Structures2\Industrial
+* SPE_Structures2\Infrastructure
+* SPE_Structures2\Items
+* SPE_Structures2\Military
+* SPE_Structures2\Ruins
+* SPE_Structures2\Signs
+* SPE_Vegetation2\Bocage
+
+Additionally these supporting files are also provided:
+
+Terrain Builder template libraries for all the included models.
+
+{{Feature|important|At this time we are not including substitute files for the models used to construct the rivers found on Normandy, this is due to them being placed via a custom setup outside of the "normal" terrain making workflow which if you are missing makes using the objects a practical impossibility.}} 
+
+
+== Understanding the Bocage Objects ==
+
+The bocage models used in [[Spearhead 1944]] can be broken into two categories: High bocage, and low bocage. The low bocage is simple. It is functionally a wall with slope behaviour rather than full land conform. 
+
+The high bocage however is a two part solution. The dirt mounds are one set of models and the bush elements above them are a separate model. The high bocage is designed to be placed as matching sets. This means that when you place down {{hl|SPE_bocage_long_mound_LC}} it is designed to match up with corresponding {{hl|SPE_Bocage_Long_LC}} above it. 
+Mixing and matching bush elements and mound elements is a bad idea for multiple reasons: 
+
+Firstly, in the case of the ''tree'' versions that have gaps in them to allow infantry to cross through, the gaps will not align up causing AI to walk through solid bushes. 
+
+Secondly the high bocage has a destruction system built into it, which involved models being swapped out under certain conditions and this can lead to bush elements changing positions, which might not work as intended if elements are being used in the wrong combinations.
+
+The naming scheme for the high bocage models is as follows (where TYPE describes the particular piece, E.G Long, Short, etc):
+
+* {{hl|SPE_Bocage_TYPE_LC}} - Bush element
+* {{hl|SPE_Bocage_TYPE_mound_LC}} - In tact mound element
+* {{hl|SPE_Bocage_TYPE_mound_exp_LC}} - Mound element in its ''explosive'' damage state
+* {{hl|SPE_Bocage_TYPE_mound_rn_LC}} - Mound element in its ''Rhino'' damage state
+
+Note that some elements have both an ''LC'' and non ''LC'' versions. 
+
+The ''exp'' and ''rn'' models are part of the destruction system, and can be placed directly into a terrain if you chose, but is not really advisable. They do not have a matching bush model because the bush element is contained within the same model for technical reasons.
+
+=== Placement ===
+
+In terms of how to place the high bocage efficiently this is a recommended way to proceed:
+
+# Place all of your mound elements via your preferred object placement tools. I.E [[Buldozer]], [[Eden Editor]], Plopper, etc.
+# Import the mounds to Terrain builder if applicable.
+# Export the mounds out of Terrain builder into a text file.
+# Open the text file in your text editor of choice.
+# Mass edit the file to remove the "mound" from each line. E.G {{hl|SPE_Bocage_Short_Mound_LC}} >>> {{hl|SPE_Bocage_Short_LC}}
+# Import the edited file back into Terrain builder.
+
+You will now have matching bush elements sitting perfectly on top of your mound elements.
+
+{{Feature|informative|You do not need to artificially adjust the height of bush elements, this is already a part of the model.}}
+
+As a final note, the high bocage was originally designed to make use of ''end caps'': {{hl|SPE_Mound_End_01_LC}} and/or {{hl|SPE_Mound_End_02_LC}}. 
+Originally this was because the mounds had open faces on their ends that needed to be covered, during development of the destruction system this changed. However aesthetically it does usually look better with end caps, so you may chose to employ those with the help of snap points in [[Terrain Builder]].
+
+=== New Low Bocage ===
+
+With the 1.1 content update new low bocage pieces were added in the library {{hl|SPE_Vegetation2_Bocage}}. These pieces are low versions of the "tree" pieces from the high set with the infantry crossing points. Due to the interesting nature of how vegetation is handled in the engine, they will not allow AI to cross through the gaps with the bush alone. Each piece comes with a separate matching "path" object, for the best results the path object needs to be overlaid directly on top of the bocage object. The easiest way to implement this is as follows:
+
+# Place your desired low bocage via your preferred toolset.
+# Export the following object classes into a text file: {{hl|SPE_bocage_low_tree_01_LC}}, {{hl|SPE_bocage_low_tree_02_LC}}, {{hl|SPE_bocage_low_tree_03_LC}}
+# Open the export in your text editor of choice and replace {{hl|_LC}} with {{hl|_path}}.
+# Import the edited file back into terrain builder, either onto an existing or dedicated layer for the bocage paths.
+
+You now have matching path objects directly on top of their vegetation counterparts which the AI can now use.
+
+{{Feature|informative|The Origami versions of the path objects have a "debug" lod enabled to allow you to visually see the path objects in buldozer, this is not present in game.}}
+
+
+== Bridges ==
+
+A number of changes were made to bridges with the 1.1 update to support the new feature of all spearhead bridges now being destructible. In order to use these correctly a number of elements need to be understood. Firstly it is important that any '''existing''' bridges placed on your terrains will now be broken in two ways,  they will be several meters lower than originally placed and will not actually be functional bridges from the AI's perspective. 
+
+Due to a variety of engine limitations and quirks the bridge objects themselves are no longer bridges from a functional perspective. The elements and properties of the model that made them a bridge have been stripped out. So in practice now they are basically a house that looks like a bridge. This means they no longer contribute to your road network, will not display as such on the map and AI will not drive over them safely. 
+
+The elements and properties of the bridge models that made them work from a functional perspective have been moved into a separate object corresponding to each bridge piece. These are all located in {{hl|SPE_Structures2\Infrastructure\Bridges}} however they have also been added to an update copy of the {{hl|SPE_Structures_Bridges}} template provided in the origami package. These "pathlod" objects need to be overlaid over the top of the matching bridge model, they only contain the data needed to make the AI "see" a bridge all the collisions and surface information will be provided by the bridge model, the "pathlod" object is just forcing the AI to move over the bridge object.
+
+The following bridge models have a ruined version and as a result now need a corresponding "pathlod" object to make them functional:
+
+* SPE_Bridge_Stone_01
+* SPE_Bridge_Stone_01_Down
+* SPE_Bridge_Stone_01_Up
+* SPE_Bridge_Wood_01
+* SPE_Bridge_Wood_02
+* SPE_Bridge_Wood_03
+
+{{Feature|informative|{{hl|SPE_Bridge_Wood_03}} is a custom replacement for the Apex model {{hl|BridgeWooden_01_F}}.}}
+
+=== Placement ===
+
+Placing these bridges down fresh will require a similar process to placing high bocage or the new low bocage objects in that the "pathlod" objects need to have the same transformation values as the bridge object it is paired with. The easiest way to do this in bulk is as follows:
+
+# Place the bridge objects using your placement tools of choice.
+# Export all destructible bridge objects to a text file.
+# Open the text file in an editor of your choice.
+# Append {{hl|_pathlod}} to the end of each classname.
+# Import your edited file back into terrain builder onto the same layer as your bridges.
+# Open buldozer and load the roads debug mode via the buldozer tools package.
+
+{{Feature|informative|A copy of the models roadway has been made visible in the origami version of the "pathlod" objects. This is to allow you to better visualize the position and boundaries of the objects when you are editing. In game the "pathlod" objects are invisible.}}
+
+=== Adjusting existing bridges ===
+
+For any content where bridges already exist on your map you have two choices in how to fix their placement. Firstly you could delete all your bridges and place them all fresh following the instructions above. Alternatively if you would prefer not to go through placement again you can use the following steps to correct the existing placement:
+
+# Select all bridges of a single type by right clicking the template in the library manager and selecting the "Select all objects" option.
+# Enable the {{hl|Relative mode}} checkbox in the object properties.
+# Depending on the model you have selected '''add''' the corresponding '''relative height'''
+#* SPE_Bridge_Stone_01: 3m
+#* SPE_Bridge_Stone_01_Down: 3m
+#* SPE_Bridge_Stone_01_Up: 3m
+#* SPE_Bridge_Wood_01: 2.2m
+#* SPE_Bridge_Wood_02: 2m
+#* SPE_Bridge_Wood_03: 2.5m
+# Continue the instructions from the placement section from step 2 onwards.
+ 
+The end point positions of your polylines may need some slight tweaks as well. The blue/red debug dots show in buldozer are produced by the "pathlod" object, if you are to adjust the position of the bridge you need to move both objects as one. In practice it is recommended to place the final polyline node on top of the blue/red dot that marks the start of the bridge. This has produced the cleanest and most consistent connections on Mortain and Normandy.
+
+
+== Snap Points ==
+
+Within the substitute files package is a folder called {{hl|Snap Points}}. This folder contains unbinarised Origami versions of objects in the package that we used snap points to aid in their placement. The binarisation process disables snap points from working for some reason, which makes certain placement tasks more difficult than they need to be for anyone not working with the source models.
+ 
+When working in Terrain builder or buldozer if needed you can swap in the unbinned versions from the {{hl|Snap Points}} into your {{hl|P Drive}}. However it is important to revert this once you are finished and going to pack your terrain. It is very likely that tools such as pboProject will not like the fact that you have unbinned models and will want to force you to binarise them which requires configs and such that are not provided in the substitue files. So when packing you need to use the normal binarised origami files.
+
+
+== Download ==
+
+* 1.1: {{Link/External|link=https://drive.google.com/file/d/19RTlnWngHzzYrVc1BFm6DqM3SnK44V1u/view?usp=sharing|text=Spearhead 1944 - Origami Map Objects.zip}}
+
+
+[[Category: Spearhead 1944]]

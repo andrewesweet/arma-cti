@@ -1,0 +1,323 @@
+// source: https://community.bistudio.com/wiki/AnimationTitles
+// revision: 364475 (2024-05-16T20:41:55Z)
+// export sha1: 7jz1qvsrsf5pzfalhjy24ms8u49kaxn
+// categories: Category:Moves
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The animation name consist of series of prefixes describing the contents of the move.<br>
+If the animation is a translation from one pose to another, the name contains both, the source and the destination moves, separated by an underscore.
+
+{{Feature|informative|Not all games contain all prefixed fields.}}
+
+
+== Animation naming ==
+
+{|
+| colspan="2" | An animation name can look like this: '''A'''mov'''P'''erc'''M'''run'''S'''low'''W'''rfl'''D'''f
+|-
+| The "APMSWD" prefixes stand for:
+* '''A'''ction - General action (e.g move, cargo, weapon operation)
+* '''P'''ose - Unit stance (e.g erect, prone)
+* '''M'''ovement - Movement style/speed (e.g stop, walk, run)
+* '''S'''tance - Weapon position (e.g raised, lowered)
+* '''W'''eapon - Weapon in use (e.g rifle, pistol)
+* '''D'''irection - Where the character moves (e.g front, left)
+| Therefore, A'''mov'''P'''erc'''M'''run'''S'''low'''W'''rfl'''D'''f''' stands for:
+* Action '''mov'''ement
+* Posture '''er'''e'''c'''t
+* Movement '''run'''
+* Stance (of weapon) '''low'''
+* Weapon '''r'''i'''fl'''e
+* Direction '''f'''orward.
+|}
+
+
+== Prefixes ==
+
+=== Action ===
+
+{| class="wikitable sortable"
+|+ {{Feature|informative|'''A''' prefix}}
+! Short name !! Full name !! Description
+|-
+| mov
+| move
+| stand, walk, run, with or without weapon. Firing itself not included here.
+|-
+| idl
+| idle
+| when character stands for a while on a place with no action – looking around
+|-
+| crg
+| cargo
+| cargo animations in a vehicle including mount/dismount - deprecated as it is stored at each car's folder for now
+|-
+| inj
+| injury
+| injury of a character - the injured one from a pair
+|-
+| cin
+| carry injured
+| injury of a character - the healthy holding injured
+|-
+| dth
+| death
+| death of a character
+|-
+| inv
+| inventory
+| inventory actions, baggage
+|-
+| cts
+| cutscenes
+| special for cutscenes
+|-
+| swm
+| swim
+| swimming
+|-
+| sig
+| signals
+| signaling - hand signals, saluting, military parade poses
+|-
+| wop
+| operate a weapon
+| moves dedicated to firing + reloading various weapons, eg. moves for launcher etc. - includes binuculars
+|-
+| adj
+| adjust
+| adjustment animations - slighlty lower/hier, left/right shoulder, etc ({{arma3}})
+|-
+| bdv
+| bottom dive
+| swimming under water with diving equipment ({{arma3}})
+|-
+| bsw
+| bottom swim
+| swimming under water ({{arma3}})
+|-
+| dve
+| dive
+| ({{arma3}})
+|-
+| fds
+| firing drills
+| ({{arma3}})
+|-
+| ovr
+| over obstacle
+| movements over obstacles like fences or low walls ({{arma3}})
+|-
+| pan
+| panic
+| walking/running in panic, eg. run with hands over head ({{arma3}})
+|-
+| sdv
+| surface dive
+| swimming at surface level with diving equipment ({{arma3}})
+|-
+| ssw
+| surface swim
+| swimming at surface level ({{arma3}})
+|-
+| fal
+| falling
+| ({{arma3}})
+|-
+| par
+| parachute
+| ({{arma3}})
+|}
+
+=== Pose ===
+
+{| class="wikitable sortable"
+|+ {{Feature|informative|'''P''' prefix}}
+! Short name !! Full name !! Description
+|-
+| erc
+| erect
+| erect, standing.
+|-
+| knl
+| kneel
+| crouched down, when stopped, so kneeling.
+|-
+| pne
+| prone
+| prone on a ground
+|-
+| sit
+| sit
+| sitting – e.g for cutscenes etc. Can't fire from heavy weapons (rifle+), must lay first.
+|-
+| fal
+| fall
+| free falling from a obstacle, wall.. body pose with hands probably above a head.
+|-
+| crh
+| crouched
+| crouched unit ({{arma3}})
+|-
+| inc
+| incapacitated
+| incapacitated animation from [[Arma 3: Revive|Revive]] ({{arma3}})
+|}
+
+=== Movement ===
+
+{| class="wikitable sortable"
+|+ {{Feature|informative|'''M''' prefix}}
+! Short name !! Full name !! Description
+|-
+| stp
+| stop
+| man not moving, standing in place.
+|-
+| wlk
+| walk
+| common relaxed move, a walk. N/A in prone!
+|-
+| run
+| run
+| run, still possible to shoot with aimed weapon. Note - prone is either stop, run or sprint.
+|-
+| spr
+| sprint
+| very intense sprint, impossible to shoot
+|-
+| eva
+| evasive
+| evasive moves - e.g from lowered walk suddenly jump away and raise the gun - reaction under unexpected fire.
+|-
+| tac
+| tactical
+| tactical pace - e.g looking down the sights while moving ({{arma3}})
+|-
+| lmp
+| limping
+| limping animation - when legs are hurt ({{arma3}})
+|}
+
+=== Stance ===
+
+{| class="wikitable sortable"
+|+ {{Feature|informative|'''S''' prefix}}
+! Animation prefix !! Short name !! Full name !! Description
+|-
+| rowspan="5" | '''Amov'''
+| ras
+| raised
+| aimed weapon ready for fire in horizontal position
+|-
+| low
+| lowered
+| weapon in ready state, not aimed 
+|-
+| opt
+| optics
+| looking through optics / sight or binoculars
+|-
+| sur
+| surrender
+| character surrenders
+|-
+| non
+| no weapon
+| '''S'''non'''W'''non for empty hands
+|-
+| rowspan="1" | '''Awop'''
+| gth
+| grenade throw
+| grenade throw, over the shoulder
+|}
+
+=== Weapon ===
+
+{| class="wikitable sortable"
+|+ {{Feature|informative|'''W''' prefix}}
+! Animation prefix !! Short name !! Full name !! Description
+|-
+| rowspan="2" | '''Acts'''
+| una
+| unarmed
+| nothing in hands
+|-
+| mag
+| machinegun
+| heavy gun impossible to put to aimed stance, firing from lower position
+|-
+| rowspan="4" | '''Amov'''
+| pst
+| pistol
+| one hand weapon, probably empty hands will suffice.
+|-
+| rfl
+| rifle
+| two hand rifle
+|-
+| lnr
+| launcher
+| laucher
+|-
+| non
+| no weapon
+| '''S'''non'''W'''non for empty hands
+|-
+| rowspan="1" | '''Awop'''
+| bin
+| binocular
+| binocular moves
+|}
+
+=== Direction ===
+
+{| class="wikitable sortable"
+|+ {{Feature|informative|'''D''' prefix}}
+! Short name !! Full name !! Description
+|-
+| non
+| none
+| direction not specified
+|-
+| f
+| forward
+| rowspan="8" {{n/a}}
+|-
+| fl
+| forward-left
+|-
+| fr
+| forward-right
+|-
+| l
+| left
+|-
+| r
+| right
+|-
+| b
+| back
+|-
+| bl
+| back-left
+|-
+| br
+| back-right
+|-
+| up
+| up
+| ladder, climbing, parachute
+|-
+| dn
+| down
+| ladder, climbing, parachute
+|-
+| mul
+| multiple
+| for FBX only, not for RTM – more takes in one file
+|}
+
+
+[[Category:Moves]]

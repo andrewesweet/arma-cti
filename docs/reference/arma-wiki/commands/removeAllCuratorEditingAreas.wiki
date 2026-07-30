@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/removeAllCuratorEditingAreas
+// revision: 348470 (2023-11-08T13:00:25Z)
+// export sha1: iyr2x1ea580wlqa087tev1iudzgz8f1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|serverExec= server
+
+|gr1= Curator
+
+|descr= Delete all curator edit areas.
+
+|s1= [[removeAllCuratorEditingAreas]] curatorObj
+
+|p1= curatorObj: [[Object]] - curator module.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>removeAllCuratorEditingAreas myCurator;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[addCuratorEditingArea]] [[removeCuratorEditingArea]] [[curatorEditingArea]]
+}}

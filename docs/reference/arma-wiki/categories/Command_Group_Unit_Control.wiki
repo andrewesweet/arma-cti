@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Unit_Control
+// revision: 161860 (2020-09-25T08:24:56Z)
+// export sha1: 39wz8fz9ahnyxo198v1wm47tub958zk
+// Vendored snapshot. Do not edit — re-export instead.
+
+Controls the behaviour of your troops.
+
+[[Category:Scripting Commands by Functionality]]

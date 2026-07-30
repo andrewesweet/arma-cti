@@ -1,0 +1,177 @@
+// source: https://community.bistudio.com/wiki/Unit_Loadout_Array
+// revision: 322627 (2022-06-20T04:44:27Z)
+// export sha1: edhy0xj8l8i0xfv9z1gt6pgfwcu1fn9
+// categories: Category:Arrays
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable"
+! Index
+! Element
+! Description
+|- style="vertical-align: top"
+| 0
+| [[primaryWeapon|Primary Weapon]]
+| style="font-size: .95em" |
+* classname
+* suppressor
+* pointer
+* optics
+* muzzle 1's magazine and ammunition
+* muzzle 2's magazine and ammunition
+* bipod
+|- style="vertical-align: top"
+| 1
+| [[secondaryWeapon|Secondary Weapon]]
+| style="font-size: .95em" |
+* classname
+* suppressor
+* pointer
+* optics
+* muzzle 1's magazine and ammunition
+* muzzle 2's magazine and ammunition
+* bipod
+|- style="vertical-align: top"
+| 2
+| [[handgunWeapon|Handgun Weapon]]
+| style="font-size: .95em" |
+* classname
+* suppressor
+* pointer
+* optics
+* muzzle 1's magazine and ammunition
+* muzzle 2's magazine and ammunition
+* bipod
+|- style="vertical-align: top"
+| 3
+| [[uniform|Uniform]]
+|
+* classname
+* Array of:
+** If item: items name and count
+** If magazine: magazines name, count, and their ammo count
+** If weapon: weapon detail (see the {{hl|Primary Weapon}}) and count
+** If container (backpack/vest/uniform): container name and whether it's a backpack (backpacks are defined in {{hl|CfgVehicles}}, and vests and uniforms in {{hl|CfgWeapons}})
+|- style="vertical-align: top"
+| 4
+| [[vest|Vest]]
+|
+* classname
+* Array of:
+** If item: items name and count
+** If magazine: magazines name, count, and their ammo count
+** If weapon: weapon detail (see the {{hl|Primary Weapon}}) and count
+** If container (backpack/vest/uniform): container name and whether it's a backpack (backpacks are defined in {{hl|CfgVehicles}}, and vests and uniforms in {{hl|CfgWeapons}})
+|- style="vertical-align: top"
+| 5
+| [[backpack|Backpack]]
+|
+* classname
+* Array of:
+** If item: items name and count
+** If magazine: magazines name, count, and their ammo count
+** If weapon: weapon detail (see the {{hl|Primary Weapon}}) and count
+** If container (backpack/vest/uniform): container name and whether it's a backpack (backpacks are defined in {{hl|CfgVehicles}}, and vests and uniforms in {{hl|CfgWeapons}})
+|- style="vertical-align: top"
+| 6
+| [[headgear|Headgear]]
+| classname ([[String]])
+|- style="vertical-align: top"
+| 7
+| [[goggles|Goggles/Facewear]]
+| classname ([[String]])
+|- style="vertical-align: top"
+| 8
+| [[binocular|Binoculars]]
+| style="font-size: .95em" |
+* classname
+* suppressor
+* pointer
+* optics
+* muzzle 1's magazine and ammunition
+* muzzle 2's magazine and ammunition
+* bipod
+|- style="vertical-align: top"
+| 9
+| [[assignedItems|Assigned Items]]
+* in a different order<br>than [[assignedItems]]
+* no binoculars
+| style="font-size: .95em" |
+* Map
+* GPS/UAV terminal
+* Radio
+* Compass
+* Watch
+* [[hmd|NVG]]
+|}
+
+This array format is used with [[getUnitLoadout]] and [[setUnitLoadout]] commands. Its format is described in the side table.
+{{Feature|informative|'''Weapons''' listed as storage items are always listed at the end of the array, but are displayed at the top of the list in the UI.}}
+
+
+== Examples ==
+
+These are examples of Unit Loadout Array structures (see [[getUnitLoadout]], [[setUnitLoadout]]). 
+
+=== B_soldier_AT_F ===
+
+<syntaxhighlight lang="cpp">
+[
+	/* primary weapon */	["arifle_MXC_Holo_pointer_F", "", "acc_pointer_IR", "optic_Holosight", ["30Rnd_65x39_caseless_mag", 30], [], ""],
+	/* secondary weapon */	["launch_B_Titan_short_F", "", "", "", ["Titan_AT", 1], [], ""],
+	/* handgun weapon */	["hgun_P07_F", "", "", "", ["16Rnd_9x21_Mag", 16], [], ""],
+	/* uniform */			["U_B_CombatUniform_mcam", [["FirstAidKit", 1], ["30Rnd_65x39_caseless_mag", 2, 30], ["Chemlight_green", 1, 1]]],
+	/* vest */				["V_PlateCarrier1_rgr", [["30Rnd_65x39_caseless_mag", 3, 30], ["16Rnd_9x21_Mag", 2, 16], ["SmokeShell", 1 ,1], ["SmokeShellGreen", 1, 1], ["Chemlight_green", 1, 1]]],
+	/* backpack */			["B_AssaultPack_mcamo_AT",[["Titan_AT", 2, 1]]],
+	/* items */				"H_HelmetB_light_desert", "G_Bandanna_tan",[],
+	/* items */				["ItemMap", "", "ItemRadio", "ItemCompass", "ItemWatch", "NVGoggles"]
+]
+</syntaxhighlight>
+
+=== Misc ===
+
+<syntaxhighlight lang="cpp">
+[
+	[
+		"arifle_MX_GL_F","muzzle_snds_H", "acc_pointer_IR", "optic_Aco",	// Primary weapon, (weapon items) silencer, pointer, optic
+		["30Rnd_65x39_caseless_mag", 30],									// Loaded mag in primary muzzle, ammo count
+		["1Rnd_HE_Grenade_shell", 1],										// Loaded mag in secondary muzzle, ammo count
+		""	// Bipod
+	],
+	[],	// Secondary weapon info (see primary above)
+	[	// handGun info (see primary above)
+		"hgun_P07_F", "", "", "",
+		["16Rnd_9x21_Mag", 16],
+		[],
+		""
+	],
+	[	// Uniform
+		"U_B_CombatUniform_mcam", // Uniform Type
+		[	// Uniform Items
+			["FirstAidKit", 1],	// Type, count
+			["30Rnd_65x39_caseless_mag", 2, 30] // Magazines are: Type, count, ammo
+		]
+	],
+	[	// Vest Info
+		"V_PlateCarrierGL_rgr",	// Vest Type
+		[	// Vest Items
+			["30Rnd_65x39_caseless_mag", 3, 30]
+		]
+	],
+	[   // Backpack Info
+        "B_Carryall_ocamo",                    // Backpack type
+		[	// Backpack Items
+			["B_Carryall_khk", true],          // A backpack inside the backpack (isBackpack is true, so item is defined in CfgVehicles)
+            ["U_B_CombatUniform_mcam", false], // A uniform inside the backpack (isBackpack is false, so item is defined in CfgWeapons)
+            // A weapon inside the backpack
+            [["arifle_MX_ACO_pointer_F", "", "acc_pointer_IR", "optic_Aco", [], [], ""], 1]
+		]
+    ],
+	"H_HelmetSpecB_blk",					// Helmet
+	"G_Tactical_Clear",						//Facewear glasses/bandanna etc
+	["Binocular", "", "", "", [], [], ""],	// Weapon Binocular (follows same layout as other weapons above)
+	["ItemMap", "ItemGPS", "ItemRadio", "ItemCompass", "ItemWatch", "NVGoggles"]	// AssignedItems ItemGPS can also be a UAV Terminal
+]
+</syntaxhighlight>
+
+
+[[Category: Arrays]]

@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/alive
+// revision: 337581 (2023-02-12T15:50:13Z)
+// export sha1: n9ia67h3tpocu1kd50h85xqq0e4g6i3
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Check if given vehicle/person/building is alive (i.e. not dead or destroyed).
+
+|s1= [[alive]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Boolean]] - [[true]] if alive, [[false]] if dead/destroyed
+
+|x1= SQS:
+<sqs>? not alive player : exit</sqs>
+
+|x2= SQF:
+<sqf>if (!alive player) exitWith {};</sqf>
+
+|x3= <sqf>alive objNull; // returns false</sqf>
+
+|seealso= [[setDamage]] [[damage]] [[waterDamaged]]
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20151019234800
+|text= Alive or not could be the question! in multi-player, missions come with respawn module(s). When a player is dead shot, <sqf inline>alive player</sqf> will return false, then almost immediately true if the "revive" respawn template is enabled, then could turn to false again if time for assistance is elapsed or if the player activates the respawn menu before; and finally true after player respawns.
+Just be aware that in that case (respawn + revive enabled), the status of the player is toggling: true &rarr; false &rarr; true &rarr; false &rarr; true. Then, alive status while player is waiting for being rescued could lead to some script errors as player is supposed to be alive but is in limbo and the dead entity "player" gets passed to server.
+}}

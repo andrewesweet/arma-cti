@@ -1,0 +1,311 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Creating_an_Addon
+// revision: 373354 (2025-04-23T04:15:27Z)
+// export sha1: ihsnu287dr3361cuovbxaxchzkvv3dz
+// categories: Category:Arma 3: Tutorials | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This page explains the steps required to create an addon ([[PBO File Format|PBO]] file).
+
+
+== Prerequisites ==
+
+* An addon making tool such as:
+* {{Link|:Category:Arma 3: Official Tools|Arma 3 Tools}}
+* {{Link|https://mikero.bytex.digital/|Mikero's Tools}}
+* {{Link|https://hemtt.dev/|HEMTT}} ({{Link|https://github.com/BrettMayson/HEMTT|GitHub}})
+* A text editor, such as Notepad++ or Visual Studio Code.
+
+
+== Preparing the Addon ==
+
+Place all required files (scripts, textures, fonts, models, etc.) in an empty folder, which hereafter will be referred to as the '''Addon folder'''.<br>
+It is recommended to organize the files into subfolders to avoid clutter.
+
+In order to make this addon fully functional, at least two additional steps are required, which are explained in further detail in the subsequent sections:
+
+* A file named {{Link|#Config.cpp|config.cpp}} should be created in the root of the Addon Folder for the game to be able to recognize the addon contents.
+* Paths to all files in the addon, such as script paths, model paths, etc. should be adjusted with respect to the {{Link|#Addon Prefix}}.
+
+
+== Addon Prefix ==
+
+In simple terms, Addon Prefix is a virtual (in-game) path to the root folder of an addon. The game uses the addon prefix to find the files in the addon. This virtual path should preferably be unique to prevent collision with other addon files.
+The addon prefix is added to the [[PBO_File_Format#Arma_PBO|PBO properties]] by the packing tool.
+
+The addon prefix is typically a single word:
+ {{Color|purple|Addon_Name}}
+
+
+It is also possible to use a directory-like prefix (where each pseudo-directory is separated by {{hl|\}}). This prefix format is typically used by mods that contain several addons:
+ {{Color|purple|Mod_Name}}\{{Color|purple|Addon_Name}}\{{Color|purple|Category}}\...
+For example:
+ {{Color|purple|My_Faction_Mod}}\{{Color|purple|Faction_Name}}\{{Color|purple|Vehicles}}
+
+It is also possible to use the same Addon Prefix in multiple addons (for example, to split an addon into smaller ones)
+However, note that their class names in [[#Config.cpp|CfgPatches]] must be different.
+
+
+Once the addon prefix is set, the path to addon files will be as follows:
+ {{Color|purple|Addon_Prefix}}\{{Color|darkorange|Folder}}\{{Color|teal|File.format}}
+
+
+For example, assume a file called '''car.p3d''' exists in the Addon Folder as follows:
+
+ {{Color|purple|Addon_Folder}}      {{cc|Addon folder}}
+ |__{{Color|darkorange|models}}         {{cc|A folder in Addon Folder called "models"}}
+    |__{{Color|teal|car.p3d}}     {{cc|A p3d (3D model) file}}
+
+Let's assume we've set the addon prefix to "My_Awesome_Car_Mod". In '''config.cpp''', the model path should be:
+ model = "{{Color|purple|My_Awesome_Car_Mod}}\{{Color|darkorange|models}}\{{Color|teal|car.p3d}}";
+
+In other words, instead of using {{hl|Addon_Folder}}, every path should now start from the Addon Prefix.<br>
+
+
+{{Feature|important|The addon prefix can only contain '''English letters''', '''numbers''', '''underscore ({{hl|_}})''' and backslash ({{hl|\}}). Note that '''spaces are not allowed'''!}}
+
+=== Setting the Addon prefix ===
+
+There are several ways to set the addon prefix, depending on the packing tool used. The instructions for two commonly used tools, namely {{Link|Addon Builder}}, Mikero's Tools, and HEMTT, are explained.
+
+==== Using Addon Builder ====
+To set the addon prefix using {{Link|Addon Builder}}, simply navigate to "Options" and modify the "Addon prefix" edit box.
+
+==== Using Mikero's pboProject ====
+To set the addon prefix using Mikero's pboProject, create a text file called {{hl|$PBOPREFIX$.txt}} in the root of the addon folder, and type the addon prefix in the file.
+
+==== Using HEMTT ====
+To set the addon prefix using HEMTT, create a text file called {{hl|$PBOPREFIX$}} in the root of the addon folder, and type the addon prefix in the file.
+For more information on using HEMTT, see the {{Link|https://hemtt.dev/|"HEMTT Book"}}.
+
+== Config.cpp ==
+
+When the game loads an addon, it looks for a file called '''config.cpp''' to determine how to process the addon contents. Without this file, the addon will be ignored by the game.
+In other words, '''config.cpp''' is the hub through which '''all of the addon contents''' (such as vehicles, weapons, sounds, functions, etc.) will be processed and applied to the game.
+
+This file should be created in the root of the Addon Folder. It is also possible to place additional '''config.cpp''' files in the subfolders of the addon, in which case the subfolders will be treated as separate addons by the game.
+
+At the bare minimum, the '''config.cpp''' file requires a [[CfgPatches|CfgPatches]] class.
+This will allow the game to determine what external addons are required by this addon, what objects/weapons are being added, as well as miscellaneous information about the addon such as the author, version, etc.
+
+All added/patched classes should be added to this file in order to be recognized and configured by the game.
+
+=== Config Modifications ===
+
+To add new content or modify existing ones, you typically need to create a sub-class into designated classes for that type of content.
+
+For example, to add a new vehicle or modify an existing one, a new sub-class is created under {{hl|CfgVehicles}}:
+<syntaxhighlight lang="cpp">
+// CfgVehicles is a special class that contains all object classes that are meant for AI/player interaction, such as Vehicles, Buildings, etc.
+class CfgVehicles
+{
+    // Forward-declaration of class Car
+    // This tells the game that this class is an existing class in CfgVehicles and we're just importing it to use it in our own config
+    class Car;
+
+    // Inherit the class Car
+    // Note that if MyNewVehicle already exists, instead of creating a new one, we just end up modifying (i.e. patching) it
+    class MyNewVehicle : Car
+    {
+        // All properties of MyNewVehicle will be identical to Car, except for the model property which we just modified
+        model = "...";
+    };
+};
+</syntaxhighlight>
+The above config is just an example for demonstration purposes. For more details on how to create vehicles, weapons, etc. please refer to the existing documentations and the [[Arma_3:_Asset_Samples|Arma 3 Samples]] (available on Steam).
+{{Feature|informative| Visit [[Class_Inheritance|this page]] to learn more about config classes.}}
+
+
+All added/modified config classes, such as [[CfgVehicles]] (objects, backpacks), [[CfgWeapons]] (weapons, weapon attachments, uniforms, vests, etc.), [[CfgMagazines]] (magazines, grenades, mines, etc.), [[CfgAmmo]] (projectiles, submunition, etc.), [[CfgFunctions]] (registered scripts), [[CfgCloudlets]] (particles), [[GUI_Tutorial|GUI elements]], etc. need to be added to this file.<br>
+If the {{hl|config.cpp}} file gets too big (which happens a lot with large mods), it is recommended to split it into separate files (e.g. {{hl|CfgFunctions.hpp}} for CfgFunctions, etc.), and [[PreProcessor_Commands#.23include|#include]] them in the '''config.cpp''' file:
+<syntaxhighlight lang="cpp">
+// All addons must have this class
+class CfgPatches
+{
+	// ...
+};
+// These files are sitting next to config.cpp in the current folder
+#include "cfgFunctions.hpp"
+#include "cfgVehicles.hpp"
+#include "some_other_file.hpp"
+// This file is in the folder "ui"
+#include "ui\gui.hpp"
+// etc.
+</syntaxhighlight>
+
+=== Scripts ===
+
+{{Feature|informative|It is recommended to register your scripts as functions in the [[Arma_3:_Functions_Library|CfgFunctions]] class, especially if they are expected to be executed many times during the mission.}}
+
+Scripts can be executed through appropriate classes in '''config.cpp'''. There are several ways to execute scripts, depending on when the execution take place.<br>
+
+For example, scripts that need to be executed upon the start of the mission can be added to the [[Arma_3:_Functions_Library|CfgFunctions]] class with an init flag, such as <syntaxhighlight lang="cpp" inline>preInit = 1</syntaxhighlight>.
+
+Scripts that need to be executed when a certain event takes place (e.g. object creation, death, bullet impact, damage, etc.) can use [[Arma_3:_Event_Handlers|Event Handlers]], if applicable. Vehicles, weapons, projectiles, etc. can use configs to add event handlers once the object is created. It is also possible to add event handlers using scripts at a later point in the game.
+
+In the case of scenarios (i.e. missions), scripts can be executed using [[Event_Scripts|Event Scripts]] (e.g. {{hl|init.sqf}}), using object init fields in 3DEN, triggers and waypoint statements, or {{hl|CfgFunctions}} similar to addons (except instead of {{hl|config.cpp}}, the classes are placed in [[Description.ext]])
+
+Some community modifications, such as '''Community Base Addons 3 (CBA)''', add more ways to execute scripts, such as executing a script every time a unit is created (object init event handlers)
+
+
+== Signing the Addon (optional) ==
+
+Signing an addon allows it to be used in multiplayer servers that check for addon signatures. A private key is required for signing the addon.
+
+=== Keys and Signatures ===
+
+There are two types of keys involved in signing addon: '''Private''' keys and '''Public''' keys.
+
+==== Private Key ====
+A private key is a file in  {{hl|.biprivatekey}} format. It is used by the mod publisher to sign their addons.
+{{Feature|important|The private keys, as the name suggests, should never be given to the public!}}
+
+==== Public Key ====
+A public key is a file in {{hl|.bikey}} format. It is used by the server to check the addon signatures. <br>
+It is safe to give these files to the public (typically published with the mod itself; see {{Link|#Mod Folder Structure}}).
+
+==== Signature ====
+A signature is a file placed next to the PBO file, to verify its contents.<br>
+They are named as {{hl|addon_name.pbo.key_name.bisign}}
+
+=== Creating the Keys ===
+
+To create the private and public keys, use the [[DSUtils]] program in Arma 3 Tools.
+
+{{Feature|informative|There is no need to create a new key with every version of an addon. That would require all servers using the addon to update the key after every update, which can be inconvenient. }}
+
+{{Wiki|stub}}
+
+
+== Building the Addon ==
+
+=== Addon Builder ===
+
+'''Main interface'''
+[[File:Addon Builder Folder Setup.png|frameless|right|Folder Setup in Addon Builder]]
+* '''Addon source directory:''' Should be the path to the Addon folder
+* '''Destination directory or filename:''' The output folder which will contain the PBO file, as well as the signature (if "Sign output PBO" is checked)
+* '''Sign Output PBO:''' See {{Link|#Signing the Addon (optional)|Signing the Addon}}
+* '''Binarize:''' Binarized configs are loaded faster by the game. They will also be checked for syntax errors during the packing process.
+'''Options'''
+* '''List of files to copy directly:''' By default, only '''.cpp''' files are included in the addon. If other files need to be copied to the addon (e.g. scripts, models, etc.), add them to the list, separated by {{hl|;}} or {{hl|,}}. It is also possible to use the wildcard character {{hl|*}} instead of the file names/formats. For example:
+ *.p3d;*.paa;*.sqf;*.fxy;*.xml;*.bisurf;*.rvmat;*.h
+All files will be copied in their original folder structure with respect to the Addon Folder.
+{{Feature|informative|When the "Binarize" option is checked, all [[PreProcessor_Commands#.23include|#include]]d '''.hpp''' files in '''config.cpp''' will be added to '''config.bin''' file. Therefore there is no need to add '''*.hpp''' to the list of files to add (unless they're used elsewhere in the mod, such as scripts)}}
+* '''Addon Prefix:''' See {{Link|#Addon Prefix}}
+* '''Path to private key file:''' Set this path to the private key file (if "Sign output PBO" is checked)
+
+Other options can be left at their default values. 
+
+Finally, click on "Pack" to start the packing process.
+
+=== Mikero's pboProject ===
+
+Simply set the paths and click on Crunch. If the {{Link|#Addon Prefix}} is not defined, it will be set the same as the input folder name by default<br>
+Note that pboProject requires all files referenced in the config to be physically present in the P drive, even if they come from other mods. (for example, if you use a vanilla asset in your addon, such as {{hl|A3\Data_F\Something.format}}, you must copy that file to P drive: {{hl|P:\A3\Data_F\Something.format}})
+
+=== HEMTT ===
+
+{{Link|https://github.com/BrettMayson/HEMTT|HEMTT}} is a build system for addons.
+It has the great advantage of handling multiple addons at once as well as being able to be used in CLI environments like {{Link|link=https://github.com/arma-actions/hemtt|text=GitHub Actions}}.
+The [[:Category:Arma_3:_Official_Tools|Arma 3 Tools]] have to be installed for it to binarize files. After installing hemtt you can get information about the usage with {{hl|hemtt help}}. For a basic setup follow these steps:
+
+In the command line enter the following command:
+ hemtt init
+If you get an error that hemtt was not found make sure that the executable is in the project folder or the hemtt directory is part of your %PATH% variable. Fill out the prompts.
+Then create a folder called "addons". Inside of this folder create another folder called "main". Then create the following files:
+* [[PBOPREFIX|$PBOPREFIX$]]
+  \z\prefix\addons\main
+
+* config.cpp
+<syntaxhighlight lang="cpp">
+#include "script_component.hpp"
+
+class CfgPatches
+{
+	class ADDON
+{
+		name = CSTRING(component);
+		units[] = {};
+		weapons[] = {};
+		requiredVersion = REQUIRED_VERSION;
+		requiredAddons[] = { "CBA_main" };
+		author = "You";
+		url = "https://community.bistudio.com/wiki";
+		VERSION_CONFIG;
+	};
+};
+</syntaxhighlight>
+
+* script_component.hpp
+<syntaxhighlight lang="cpp">
+#define COMPONENT main
+#include "script_mod.hpp"
+
+#ifdef DEBUG_ENABLED_MAIN
+	#define DEBUG_MODE_FULL
+#endif
+
+#ifdef DEBUG_SETTINGS_MAIN
+	#define DEBUG_SETTINGS DEBUG_SETTINGS_MAIN
+#endif
+
+#include "script_macros.hpp"
+</syntaxhighlight>
+
+* script_mod.hpp
+The MAINPREFIX defaults to "z", the PREFIX is the one you entered during setup.
+<syntaxhighlight lang="cpp">
+#define MAINPREFIX z
+#define PREFIX prefix
+
+#include "script_version.hpp"
+
+#define VERSION MAJOR.MINOR.PATCH
+#define VERSION_AR MAJOR,MINOR,PATCH
+
+#define REQUIRED_VERSION 1.88
+</syntaxhighlight>
+
+* script_macros.hpp
+This will add CBA as a dependency.
+<syntaxhighlight lang="cpp">#include "\x\cba\addons\main\script_macros_common.hpp"</syntaxhighlight>
+* script_version.hpp
+Keep track of your mod's version in this file. Follows {{Link|link=https://semver.org/lang/de/|text=semantic versioning}}.
+<syntaxhighlight lang="cpp">
+#define MAJOR 0
+#define MINOR 0
+#define PATCH 0
+</syntaxhighlight>
+
+Now you should be able to run
+ hemtt build
+The pbos are placed in the "addons" folder.
+
+For more advanced setups and more examples check {{Link|link=https://github.com/CBATeam/CBA_A3|text=CBA's git repository}} as well as {{Link|link=https://github.com/BrettMayson/HEMTT|text=hemtt's GitHub}} page for documentation.
+
+# Numbered list item
+
+
+== Mod Folder Structure ==
+
+The mod folder contents should be in a certain structure to be correctly recognized by the game, as well as when uploaded to the Steam Workshop using the Publisher tool.<br>
+The following tree list shows the general folder structure. Notice that some of these files/folders are optional, such as .bikey and .bisign files.
+It is possible to ship other contents in the mod folder as well, such as documentation and changelog files.
+ {{Color|purple|@My_Mod}}                                 {{cc|Mod folder. The @ sign is not required, but it helps distinguish mods from official content.}}
+ |__{{Color|darkorange|Addons}}                               {{cc|Addons folder, containing all addons and their signatures (if signed)}}
+ |  |__{{Color|teal|addon_name.pbo}}
+ |  |__{{Color|teal|addon_name.pbo.key_name.bisign}}
+ |  |__{{Color|teal|other_addon.pbo}}
+ |  |__{{Color|teal|other_addon.pbo.key_name.bisign}}
+ |
+ |__{{Color|darkorange|Keys}}                                 {{cc|Keys folder (if the mod is signed)}}
+ |  |__{{Color|teal|key_name.bikey}}
+ |
+ |__{{Color|teal|mod.cpp}}                              {{cc|(Optional) [[Mod.cpp/bin_File_Format#mod.cpp.2Fbin|mod.cpp]] contains the mod description, icon, hover icon, etc.}}
+ |__{{Color|teal|mod.paa}}                              {{cc|(Optional) mod icon}}
+ |__{{Color|teal|my_extension.dll}}                     {{cc|(Optional) [[Extensions|extension]] that was created as part of the mod, if any}}
+ |__{{Color|teal|my_mod_readme.pdf}}                    {{cc|(optional) Documentation file (not loaded by the game)}}
+
+
+{{GameCategory|arma3|Tutorials}}

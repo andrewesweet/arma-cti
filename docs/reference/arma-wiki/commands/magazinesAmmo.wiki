@@ -1,0 +1,79 @@
+// source: https://community.bistudio.com/wiki/magazinesAmmo
+// revision: 369329 (2024-09-03T18:43:00Z)
+// export sha1: 6aiudw09djhxbrt1vra604gm7uy5q4h
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.76
+
+|gr1= Unit Inventory
+
+|gr2= Vehicle Inventory
+
+|descr= Returns all vehicle's magazines and their ammo count (also works on supply boxes). When applied to a unit (soldier), the command behaves differently and will omit magazines already loaded into unit's weapons. Use [[magazinesAmmoFull]] to return all magazines.
+
+|s1= [[magazinesAmmo]] vehicle
+
+|p1= vehicle: [[Object]] - unit or vehicle or container. When transport is supplied, the command returns vehicle's magazines not the cargo. When container is supplied, the command behaves identically to [[magazinesAmmoCargo]]
+
+|r1= [[Array]] of [[Array]]s in format:
+* [[String]]: magazine class name
+* [[Number]]: magazine ammo count
+
+|s2= [[magazinesAmmo]] [vehicle, includeEmpty]
+
+|s2since= arma3 2.00
+
+|p21= vehicle: [[Object]] - unit or vehicle.
+
+|p22= includeEmpty: [[Boolean]] - (Optional, default [[false]]) [[true]] to include empty magazines
+
+|r2= [[Array]] of [[Array]]s in format:
+* [[String]]: magazine class name
+* [[Number]]: magazine ammo count
+ 
+|x1= <sqf>
+_magazinesAmmo = magazinesAmmo player;
+/*
+[
+	["30Rnd_65x39_caseless_mag",30],
+	["30Rnd_65x39_caseless_mag",30],
+	["16Rnd_9x21_Mag",16],
+	["SmokeShellGreen",1],
+	["Chemlight_green",1],
+	["HandGrenade",1]
+]
+*/
+</sqf>
+
+|x2= <sqf>
+_magazinesAmmo = magazinesAmmo Mi_48;
+/*
+[
+	["250Rnd_30mm_APDS_shells",250],
+	["250Rnd_30mm_HE_shells",250],
+	["8Rnd_LG_scalpel",8],
+	["38Rnd_80mm_rockets",38]
+]
+*/
+</sqf>
+
+|seealso= [[magazinesAmmoFull]] [[magazinesAmmoCargo]] [[magazinesDetail]] [[magazines]] [[magazinesTurret]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-12-20 - 14:41 (UTC)</dd>
+<dt class="note">[[User:Actium|Actium]]</dt>
+<dd class="note">
+When used on vehicles this will only return all magazines associated with a single turretPath (which one depends on the actual armament of the vehicle, usually the first armed turretPath or alternatively turretPath [-1]). <br>
+If you want to get all turrets' magazines, use [[allTurrets]] and [[magazinesTurret]].
+--[[User:Actium|Actium]] ([[User talk:Actium|talk]]) 15:41, 20 December 2014 (CET)
+</dd>
+
+
+</dl>

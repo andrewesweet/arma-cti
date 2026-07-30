@@ -1,0 +1,125 @@
+// source: https://community.bistudio.com/wiki/skipTime
+// revision: 369075 (2024-09-02T20:25:00Z)
+// export sha1: nhm6kd14brk520fipm8sovllkyzn3kn
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Command Group: Time | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Server Execution | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|serverExec= server
+
+|gr1= Time
+
+|gr2= Environment
+
+|descr= Jumps the specified number of hours forward or backward.<br>The time of day and tides are adjusted, but no changes are made to any units. If present, the lower level of clouds instantly jump to the position they would be in if time had passed normally.
+
+|mp= In {{arma3}} (around v1.14) [[skipTime]] executed on the server will get synced in 5 seconds or so with all the clients. It will also be [[Multiplayer Scripting#Join In Progress|JIP]] compatible. [[skipTime]] executed on a client will change time on client for about 5 seconds after which it will sync back to server time.<br>
+For other games' behaviour, see {{Link|Multiplayer Scripting#Join In Progress}}.
+
+{{Feature|important|Since {{GVI|arma3|2.10}} [[skipTime]] is limited to max +/- 1000 hours per skip for game stability. The command is intended for short time jumps. For large intervals, use [[setDate]].}}
+
+|s1= [[skipTime]] duration
+
+|p1= duration: [[Number]] - hours to skip. A positive value will create a forward time jump, a negative value will jump backwards.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>skipTime 5;</sqf>
+
+|x2= <sqf>skipTime (5/60); // be sure to use parentheses, otherwise here (skipTime 5)/60 will happen</sqf>
+
+|x3= <sqf>
+while {true} do 
+{
+	skipTime 0.00333;
+	sleep 0.1; // smooth time transition
+};
+</sqf>
+
+|x4= <sqf>skipTime ((_timeToSkipTo - dayTime + 24) % 24); // skip forward to a specific time, irrespective of the current mission time</sqf>
+
+|seealso= [[setDate]] [[accTime]] [[setTimeMultiplier]] [[timeMultiplier]] [[BIS_fnc_setDate]]
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20070417040100
+|text= In ArmA & OFP, skipTime does not actually estimate weather changes beyond moving the clouds across the sky.
+Weather counters continue as if no time has passed.
+The [[setDate]] command can be used instead of skiptime to change the time ''without'' the visual give-away of the lower clouds jumping.
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20111102220600
+|text= I cannot confirm this for OA 1.60 beta (85889):
+MP: Even though the immediate effect of skipTime is only local,
+the new time will propagate through the network after 30 seconds or so.
+Instead the [[date]], which includes time, is synced automatically for new JIP clients - NOT for present instances.
+So one has to apply skipTime on all instances in MP (server + all present clients).
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20130825024500
+|text= This command is blocking and in some cases it may take up to 1.5 seconds (probably depends on CPU) for it to calculate the changes to the environment, during which the game will microfreeze. It largely depends on weather changes, which are quite random. However one thing remains consistent, [[skipTime]] 24 hours is always almost instant. This is quite helpful when used in conjunction with commands such as [[setOvercast]] for instant and seamless effect. To try it yourself use this script:
+<sqf>
+0 spawn {
+	for "_i" from 1 to 24 do {
+		_time = diag_tickTime;
+		skipTime _i;
+		diag_log  [_i, diag_tickTime - _time];
+		sleep 3;
+	};
+};
+</sqf>
+One of the results (results will vary depending on weather conditions):<br>
+<spoiler text="Show results">
+<pre>[1,1.44507]
+[2,1.46118]
+[3,1.33105]
+[4,1.396]
+[5,0.0310059]
+[6,1.37891]
+[7,1.4502]
+[8,1.37817]
+[9,1.37695]
+[10,1.37012]
+[11,1.448]
+[12,1.32593]
+[13,1.45508]
+[14,1.448]
+[15,0.0349121]
+[16,0.0368652]
+[17,1.25903]
+[18,1.38599]
+[19,1.4519]
+[20,0.052002]
+[21,0.0400391]
+[22,0.0490723]
+[23,1.35205]
+[24,0.0151367] // this is always the lowest</pre>
+</spoiler>
+}}

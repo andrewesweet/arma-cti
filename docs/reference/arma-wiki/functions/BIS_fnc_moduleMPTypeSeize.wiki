@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleMPTypeSeize
+// revision: 309813 (2022-05-05T12:09:51Z)
+// export sha1: 8rx748363c89hzad4te924wxvnyux9j
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|descr= ''N/A''
+
+|s1= <!-- [] call [[BIS_fnc_moduleMPTypeSeize]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_moduleMPTypeSeize;</sqf> -->
+
+|seealso=
+}}

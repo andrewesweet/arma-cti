@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_removeDestroyedCuratorEditableObjects
+// revision: 348994 (2023-11-08T14:45:49Z)
+// export sha1: ca0aw1hb733febve9fh9gis0vg1kmu6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Make destroyed curator objects non-editable.
+
+|s1= [object, parentClasses] call [[BIS_fnc_removeDestroyedCuratorEditableObjects]]
+
+|p1= object: [[Object]] - curator module or objects to be removed after death
+
+|p2= parentClasses: [[Array]] of [[String]]s - parent classes of objects to be removed (e.g., "Man")
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[curatorModule, ["Man"]] call BIS_fnc_removeDestroyedCuratorEditableObjects;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

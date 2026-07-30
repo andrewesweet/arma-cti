@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Line:_Random
+// revision: 201598 (2021-01-17T20:16:02Z)
+// export sha1: hnbyw2bzobpe3roc7l4vgxj3xrsryxp
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Line]]
+{{TerrainProcessorManual|Line: Random|BITasksPlugin.dll|Polyline, PolylineM, PolylineZ|No
+|DESCRIPTION=Random placement of multiple objects on linear shapes specified in the given shapefile. Very easy, random positions only one condition - minimal distance from another objects.
+|TASKPARAMETERS=* '''RANDOM SEED''' - number used to initialize pseudorandom number generator.
+* '''MAXDISTANCE''' - maximal object distance  from centreline.
+* '''DENSHA''' - The density of the filling in number of objects for hectare. For example 100 objects for hectare means an average distance of about 10 meters between objects. 
+* '''Spline interpolation''' - Use bezier spline instead of original polyline.
+|OBJECTPROTOTYPEPARAMETERS=* '''OBJECT''' - Object's prototype name
+* '''PROB''' - Object's probability
+* '''MINHEIGHT''' - Minimal size in %
+* '''MAXHEIGHT''' - Maximal size in %
+* '''MINDIST''' - Minimal distance in meters  
+|USAGE=Very simple algorithm, it places objects randomly on linear shape. Can be used for sparse positioning of trees along a line, or for creating random strings of bushes (e.g. in the forests).
+|ALGORITHM=For each shape (linear) do :
+# instances_count = shape_length * LDENSITY
+# For instances_count try to find position :
+## Random parameter in range 0 ... shape_length
+## Compute real coordinate for parameter
+## Random distance from line in range 0 ... MAXDISTANCE
+## Random angle
+## newCoordinate = coordinate_on_line + angle * random_distance
+## If newCoordinate is in collision with other instances, go to a.
+## Insert newCoordinate with object prototype in output.
+|SAMPLE=
+}}

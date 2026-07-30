@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:CfgGroups
+// revision: 152606 (2020-06-02T19:58:38Z)
+// export sha1: f6fiox71ov5nlhngr8jnb45xda462c2
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Reference Lists]]

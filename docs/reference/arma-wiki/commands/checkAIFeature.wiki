@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/checkAIFeature
+// revision: 369971 (2024-10-22T12:51:32Z)
+// export sha1: b8jncle98mhjicuwx6k6gfntnefttgh
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Introduced with Arma 2 version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.05
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= AI Behaviour
+
+|descr= Checks if the given AI feature is currently enabled.
+
+|s1= [[checkAIFeature]] feature
+
+|p1= feature: [[String]] - can be one of:
+* {{hl|"AwareFormationSoft"}}
+* {{hl|"CombatFormationSoft"}}
+* AI skill - see {{Link|disableAI#Syntax 1}} (since {{arma3}} v1.96)
+
+|r1= [[Boolean]] - [[true]] if is enabled
+
+|s2= unit [[checkAIFeature]] feature
+
+|s2since= arma3 1.96
+
+|p21= unit: [[Object]] - unit to test AI feature for
+
+|p22= feature: [[String]] - [[disableAI]] / [[enableAI]] feature
+
+|r2=[[Boolean]] - [[true]] if is enabled
+
+|x1= <sqf>_featureUsed = checkAIFeature "AwareFormationSoft";</sqf>
+
+|x2= <sqf>_autotargetOn = bob checkAIFeature "AUTOTARGET";</sqf>
+
+|seealso= [[enableAIFeature]] [[enableAI]] [[getUnitState]] [[disableAI]]
+}}

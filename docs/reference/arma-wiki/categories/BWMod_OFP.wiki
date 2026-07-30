@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:BWMod_(OFP)
+// revision: 110284 (2018-11-07T08:25:02Z)
+// export sha1: 0mltfmt4v92gyh6yntvfz05yj9qfg0e
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Bundeswehr (OFP)]]

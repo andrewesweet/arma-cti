@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_cfgSoundCurves
+// revision: 339055 (2023-04-24T23:45:58Z)
+// export sha1: jhbio1vezlnejrdxkgk5jr6xvcx53i4
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+== CfgSoundCurves ==
+
+Instead of having to define many points every time you need to define a curve (for example for the rangeCurve in a SoundShader) you can use the class CfgSoundCurves to define specific sound curves and then just use the names of these soundCurves in your sound configurations.
+
+Let's look at an example CfgSoundCurves entry:
+
+<syntaxhighlight lang="cpp">
+class CfgSoundCurves
+{
+	class closureVolumeCurve
+	{
+		points[] =
+		{
+			{ 0.0, 1.0 },
+			{ 0.5, 0.7 },
+			{ 1.0, 0.0 }
+		};
+	};
+};
+</syntaxhighlight>
+
+This entry uses relative distance values (0 = 0m, 1 = maximum range) and is called "closureVolumeCurve".
+So in an example SoundShader we can use: '''rangeCurve = closureVolumeCurve''' because we have defined it in cfgSoundCurves.
+
+
+{{GameCategory|arma3|Sound}}

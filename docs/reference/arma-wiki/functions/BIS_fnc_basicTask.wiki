@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_basicTask
+// revision: 275426 (2021-06-13T11:58:12Z)
+// export sha1: tk6whc6gehgpnsxgv1vs7t0oh4olm6i
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|descr= {{Feature|arma3|Internally used '''.fsm'''.}}
+
+|s1=
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

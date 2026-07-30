@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_reviveOnStateJIP
+// revision: 274408 (2021-06-13T01:22:08Z)
+// export sha1: 1v2trpggl9oew1q57cbu1496pwv6f4x
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Revive | Category:Functions | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Revive
+
+|descr= <pre>/*
+	Author: Jiri Wainar
+
+	Description:
+	Used to execute state specific code localy on client that is JIPping.
+
+	Parameters:
+		_this select 0: STRING - Variable that carries the state value over the network, defined by macro VAR_TRANSFER_STATE.
+		_this select 1: SCALAR - State.
+		_this select 2: OBJECT - Unit to set the status for.
+
+	Returns:
+	True if successful, false if not.
+
+	States:
+		#define STATE_RESPAWNED			0
+		#define STATE_REVIVED			1
+		#define STATE_INCAPACITATED		2
+		#define STATE_DEAD				3
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_reviveOnStateJIP]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

@@ -1,0 +1,78 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_playVideo
+// revision: 351834 (2024-01-13T09:28:32Z)
+// export sha1: k49pdsqeh6xac7kz0uugra4krq7y1ji
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 2: Operation Arrowhead version 1.56 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.56
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= GUI
+
+|eff= local
+
+|descr= Plays in-game video with a range of options. The function can be [[call]]ed or [[spawn]]ed. If [[spawn]]ed, [[scriptDone]] command can be used to see if video is stopped or finished. If [[call]]ed in scheduled environment, the next line of code will not process until the video is stopped or finished.<br>
+The function also calls {{hl|"BIS_fnc_playVideo_started"}} and {{hl|"BIS_fnc_playVideo_stopped"}} Scripted Event Handlers in [[missionNamespace]] - see [[BIS_fnc_addScriptedEventHandler]] and [[Arma 3: Scripted Event Handlers]].
+
+{{Feature|informative|
+* to play the video on an object, e.g an in-game screen, see {{Link|#Example 3}}
+* the video can be stopped in a variety of ways - see {{Link|#Example 4}}
+* see [[OGV File Format]] for format and conversion information.
+}}
+
+|s1= [content, size, color, skipVarName, bgColor, keepAspect] spawn [[BIS_fnc_playVideo]]
+
+|p1= content: [[String]] - full path to {{hl|.ogv}} file
+
+|p2= size: [[Array]] of [[Number]]s - (Optional, default [<nowiki/>[[safeZoneX]], [[safeZoneY]], [[safeZoneW]], [[safeZoneH]]]) screen size in format [x, y, w, h]
+{{Feature|informative|If the aspect ratio of the size parameter is not the same as the aspect ratio of the video file, black bars will be visibile. The video will not be stretched}}
+
+|p3= color: [[Array]] of [[Number]]s - (Optional, default [1,1,1,1]) foreground color in format [r, g, b, a]
+
+|p4= skipVarName: [[String]] - (Optional, default "BIS_fnc_playVideo_skipVideo") [[missionNamespace]] variable to skip the video when variable is [[true]]
+
+|p5= bgColor: [[Array]] format [[Color|Color (RGBA)]] - (Optional, default: [0,0,0,1]) background color in format [r, g, b, a]
+
+|p6= keepAspect: [[Boolean]] - (Optional, default [[true]]) [[true]] to keep original video aspect ratio (background color will fill the void), [[false]] to stretch
+
+|r1= [[Boolean]] - [[true]]
+
+|x1= <sqf>private _video = ["A3\Missions_F_EPA\video\A_in_intro.ogv"] spawn BIS_fnc_playVideo;</sqf>
+
+|x2= <sqf>private _video = ["\a3\missions_f_exp\video\exp_m04_v01.ogv"] call BIS_fnc_playVideo;</sqf>
+
+|x3= <sqf>
+_video = "a3\missions_f_exp\video\exp_m07_vout.ogv";
+_screen = "Land_TripodScreen_01_large_F" createVehicle (player modelToWorld [0,10,0]);
+_screen setObjectTexture [0, _video];
+[_video, [10, 10]] call BIS_fnc_playVideo;
+</sqf>
+
+|x4= How to stop the video:
+* call or spawn the function with an empty string: <sqf>[""] call BIS_fnc_playVideo;</sqf>
+* call or spawn the function with another video: <sqf>["\a3\missions_f_exp\video\exp_m04_v02.ogv"] call BIS_fnc_playVideo;</sqf>
+* set the variable "BIS_fnc_playVideo_skipVideo" to [[true]]: <sqf>missionNamespace setVariable ["BIS_fnc_playVideo_skipVideo", true];</sqf>
+* set the custom skip variable (''skipVarName'') to [[true]]: <sqf>
+missionNamespace setVariable ["MyCustomSkipVar", true];
+sleep 1;
+missionNamespace setVariable ["MyCustomSkipVar", nil]; // so it can be reused later
+</sqf>
+
+|seealso= [[Functions Library]]
+}}
+
+{{Note
+|user= Dedmen
+|timestamp= 20191111183100
+|text= Example ffmpeg command to encode a ogv video which can be played back.
+<sqf>ffmpeg -i input.mp4 -c:v libtheora -q:v 7 -c:a libvorbis -q:a 4 intro.ogv</sqf>
+See [[OGV File Format]].
+}}

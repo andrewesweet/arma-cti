@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/Template:User
+// revision: 292578 (2021-08-10T12:51:25Z)
+// export sha1: i7uqpoed22w2ws4gx3r8n2dopvriq51
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}|[[User:{{{1}}}|{{{1}}}]]|-Username not defined-}}</includeonly><noinclude>
+Returns a user profile link.
+
+== Usage ==
+{{<nowiki/>User|'''''username'''''}}
+* username: the user's name
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{User}}</nowiki>
+| {{User}}
+|-
+| <nowiki>{{User|Lou Montana}}</nowiki>
+| {{User|Lou Montana}}
+|}
+
+
+[[Category: Templates]]
+</noinclude>

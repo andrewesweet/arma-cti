@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_functionMeta
+// revision: 330725 (2022-11-01T15:16:55Z)
+// export sha1: fbw1e5semia741551qdhvigtap40f13
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Returns function's meta data.
+
+|s1= functionName call [[BIS_fnc_functionMeta]]
+
+|p1= functionName: [[String]] - (Optional, default parent function's name) function name, e.g., "[[BIS_fnc_stalk]]"
+
+|r1= [[Array]] to format [fileLocation, extension, headerType, preInit, postInit, recompile, game, category, name]:
+* fileLocation: [[String]]
+* extension: [[String]] - to format ".extension", e.g ".sqf", ".fsm"
+* headerType: [[Number]] - one of:
+** 0: No Debug - header saves parent script name and current script name into variables
+** 1: Save script Map - header additionaly save an array of all parent scripts into variable
+** 2: Save and log script map - apart from saving into variable, script map is also logged through debugLog
+* preInit: [[Boolean]]
+* postInit: [[Boolean]]
+* recompile: [[Boolean]]
+* game: [[String]]
+* category: [[String]]
+* name: [[String]] - simple name, without TAG_fnc
+
+|x1= <sqf>// returns ["A3\functions_f\Debug\fn_functionMeta.sqf", ".sqf", 0, false, false, false, "A3", "Debug", "functionMeta"]
+"BIS_fnc_functionMeta" call BIS_fnc_functionMeta;</sqf>
+
+|x2= <sqf>// returns ["", "", 0, false, false, false, "", "", ""]
+"unknownFunction" call BIS_fnc_functionMeta;</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic | Diagnostic Functions]] [[BIS_fnc_exportFunctionsToWiki]]
+}}

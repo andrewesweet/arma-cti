@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getAngleDelta
+// revision: 349127 (2023-11-08T14:49:40Z)
+// export sha1: 9j7o2ij1sycgx0j5rxjmrl9cakj9w93
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Geometry | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Geometry
+
+|descr= Returns the smallest difference between two angles in degrees.
+
+|s1= [angleA, angleB] call [[BIS_fnc_getAngleDelta]]
+
+|p1= angleA: [[Number]] - first angle
+|p2= angleB: [[Number]] - second angle
+
+|r1= [[Number]] - angle delta
+
+|x1= <sqf>private _delta = [90,193] call BIS_fnc_getAngleDelta;//-103</sqf>
+
+|seealso= [[tan]] [[cos]] [[sin]]
+}}

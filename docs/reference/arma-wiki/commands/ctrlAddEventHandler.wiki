@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/ctrlAddEventHandler
+// revision: 376337 (2025-10-07T13:17:20Z)
+// export sha1: bktuvmv0zkx7qldwdipoeq7udbp1uhk
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: GUI Control - Event Handlers | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= GUI Control - Event Handlers
+
+|gr2= Event Handlers
+
+|descr= Add an event handler to the given control.
+
+{{Feature|important|
+* Control event handlers are processed in reversed order, i.e. last added: first, first added: last. So if you have an override it should be set up in the 1st added EH.
+* When using the event names listed [[User Interface Event Handlers|here]] with the [[ctrlAddEventHandler]], [[ctrlSetEventHandler]], [[displayAddEventHandler]] or [[displaySetEventHandler]] commands, the prefix "on" in the event name must be removed (e.g. ''''ButtonDown'''' instead of ''''onButtonDown'''').
+}}
+
+|s1= control [[ctrlAddEventHandler]] [handler, function]
+
+|p1= control: [[Control]]
+
+|p2= handler: [[String]] - handler name, see [[User Interface Event Handlers]]
+
+|p3= function: [[String]], since {{GVI|arma3|1.06}} also [[Code]] - script. Several [[Magic Variables]] are available:
+* Event Handler parameters are accessible via {{hl|_this}}
+* The Event Handler type is available as {{hl|_thisEvent}}
+* The Event Handler index is available as {{hl|_thisEventHandler}}
+
+|r1= [[Number]] - handler ID or -1 if failed
+
+|x1= <sqf>_map ctrlAddEventHandler ["Draw", "_this call BIS_fnc_strategicMapOpen_draw"];</sqf>
+
+|x2= <sqf>_map ctrlAddEventHandler ["Draw", { hintSilent str _this }];</sqf>
+
+|x3= <sqf>findDisplay 12 displayCtrl 51 ctrlAddEventHandler ["Draw", { hintSilent str _this }]; //Arma 3 map control</sqf>
+
+|seealso= [[displayAddEventHandler]] [[ctrlRemoveEventHandler]] [[ctrlRemoveAllEventHandlers]]
+}}

@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Custom_Panels
+// revision: 106839 (2018-04-26T22:05:08Z)
+// export sha1: 9g29megr91ihty017674a899utj5x6v
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to control Custom Panels introduced in [[Arma 3 Jets]].
+
+''See also [[Arma 3 Custom Info]]''
+
+[[Category:Scripting Commands by Functionality]]

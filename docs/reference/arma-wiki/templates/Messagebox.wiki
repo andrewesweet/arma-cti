@@ -1,0 +1,149 @@
+// source: https://community.bistudio.com/wiki/Template:Messagebox
+// revision: 370074 (2024-10-30T17:03:25Z)
+// export sha1: f6lim8773wk1ghvsz21wxrbvwsc627a
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div class="biki-messagebox{{#if:{{{class|}}}|<nowiki/> {{{class}}}}}"{{#if:{{{3|}}}|<nowiki/> style{{=}}"background-color:{{{3}}}}}"><!--
+--><div>{{{2|i}}}</div><!--
+--><div>{{#if:{{Trim|{{{1|}}}}}|{{Trim|{{{1|}}}}}|-Text not defined-}}</div><!--
+--></div></includeonly><noinclude>Displays a standardised message box.
+Base of messageboxes, used by <span class="plainlinks">[{{SERVER}}/wiki?title=Special%3AWhatLinksHere&target=Template%3AMessagebox&namespace=10 many other templates]</span>.
+
+== Usage ==
+{{<nowiki/>Messagebox|'''''message'''''|'''''icon'''''|'''''colour'''''|'''''class='''''}}
+* message: the message to display
+* icon: (Optional, default "i") symbol to the left, a letter (written in white) or an image (format {{hl|[[<nowiki/>File]])
+* colour: (Optional, default #025D00) box HTML colour, can be one of:
+** HTML colour name - ''red'', ''darkgrey'', etc.
+** HTML colour format - '''#RGB''' or '''#RRGGBB'''
+** rgb format - '''rgb(255, 0, 0)'''
+** rgba format - '''rgba(255, 0, 0, 0.5)'''
+** hsl format - '''hsl(120, 100%, 50%)'''
+** hsla format - '''hsla(120, 60%, 70%, 0.3)'''
+* class: (Optional, default none) makes it possible to add a CSS class
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{Messagebox}}</nowiki>
+| {{Messagebox}}
+|-
+| <nowiki>{{Messagebox|Hello there!}}</nowiki>
+| {{Messagebox|Hello there!}}
+|-
+| <nowiki>{{Messagebox|Hello there!|✔}}</nowiki>
+| {{Messagebox|Hello there!|✔}}
+|-
+| <nowiki>{{Messagebox|Hello there!|✔|orange}}</nowiki>
+| {{Messagebox|Hello there!|✔|orange}}
+|-
+| <nowiki>{{Messagebox|Hello there!|✔|#CDF}}</nowiki>
+| {{Messagebox|Hello there!|✔|#CDF}}
+|-
+| <nowiki>{{Messagebox|Text:</nowiki><br>Hello there!<br>General Kenobi!<br><nowiki>}}</nowiki>
+| {{Messagebox|Text:
+Hello there!
+General Kenobi!
+}}
+|-
+| <nowiki>{{Messagebox|Text:</nowiki><br>Hello there!<br><br>General Kenobi!<br><nowiki>}}</nowiki>
+| {{Messagebox|Text:
+Hello there!
+
+General Kenobi!
+}}
+|-
+|
+; Known Issues
+<pre>
+{{Feature|informative|Before}}
+* First
+: {{Feature|informative|indented}}
+: {{Feature|informative| {{GVI|arma3}}indented
+two lines}}
+* {{Feature|informative|Second,
+line return,
+
+double line return}}
+* {{Feature|informative|
+Third,
+line return,
+
+double line return}}
+* list {{Feature|informative|
+* list 1
+* list 2
+}}
+: {{Feature|informative|Indented messagebox list:
+* indented 1
+* indented 2
+}}
+* Last
+{{Feature|informative|
+* After 1
+* After 2
+}}
+</pre>
+|
+{{Feature|informative|Before}}
+* First
+: {{Feature|informative|indented}}
+: {{Feature|informative| {{GVI|arma3}}indented
+two lines}}
+* {{Feature|informative|Second,
+line return,
+
+double line return}}
+* {{Feature|informative|
+Third,
+line return,
+
+double line return}}
+* list {{Feature|informative|
+* list 1
+* list 2
+}}
+: {{Feature|informative|Indented messagebox list:
+* indented 1
+* indented 2
+}}
+* Last
+{{Feature|informative|
+* After 1
+* After 2
+}}
+|-
+| <nowiki>{{Messagebox|Yep|Unreadable!|#EEE}}</nowiki>
+| {{Messagebox|Yep|Unreadable!|#EEE}}
+|-
+| <nowiki>{{Messagebox|{{arma3}} logo|[[File:Arma 3_logo_black.png|300px|center]]|#888}}</nowiki>
+| {{Messagebox|{{arma3}} logo|[[File:Arma 3_logo_black.png|300px|center]]|#888}}
+|-
+| <nowiki>{{Messagebox|[[File:Arma 3_logo_black.png|300px|center]]|{{arma3}} logo|#333}}</nowiki>
+| {{Messagebox|[[File:Arma 3_logo_black.png|300px|center]]|{{arma3}} logo|#333}}
+|-
+| <nowiki>{{Messagebox|{{ofp}}<br>{{arma1}}<br>{{arma2}}<br>{{arma3}}|A|#333}}</nowiki>
+| {{Messagebox|{{ofp}}<br>{{arma1}}<br>{{arma2}}<br>{{arma3}}|A|#333}}
+|-
+| <nowiki>{{Messagebox|{{arma3}}|a<br>b<br>c<br>d|#333}}</nowiki>
+| {{Messagebox|{{arma3}}|a<br>b<br>c<br>d|#333}}
+|-
+| <nowiki>{{Messagebox|One line text|{{arma3}}|#FDA}}</nowiki>
+| {{Messagebox|One line text|{{arma3}}|#FDA}}
+|-
+| <nowiki>{{Messagebox|{{Wiki|lorem}}|{{arma3}}|#FDA}}</nowiki>
+| {{Messagebox|{{Wiki|lorem}}|{{arma3}}|#FDA}}
+|}
+
+== Source ==
+<syntaxhighlight lang="html">
+<div class="biki-messagebox{{#if:{{{class|}}}|<nowiki/> {{{class}}}}}" style="background-color:{{{3|#025D00}}}"><!--
+--><div>{{{2|i}}}</div><!--
+--><div>{{#if:{{Trim|{{{1|}}}}}|{{Trim|{{{1|}}}}}|-Text not defined-}}</div><!--
+--></div>
+</syntaxhighlight>
+
+[[Category:Templates|{{uc:messagebox}}]]
+</noinclude>

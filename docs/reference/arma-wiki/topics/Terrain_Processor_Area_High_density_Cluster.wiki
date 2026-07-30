@@ -1,0 +1,74 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Area:_High-density_Cluster
+// revision: 377917 (2026-01-11T15:23:24Z)
+// export sha1: 4u52pu0m5lzfdnaipydfnlrlljg8gx6
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TerrainProcessorManual
+|Area: Hight-density Cluster|BITasksPlugin.dll|Polygon, PolygonM, PolygonZ|No|DESCRIPTION=
+Random placement of multiple objects inside the polygons specified in the given shapefile.
+First step is to create lifegrid.
+Lifegrid is 2D table where every cell has information about its Object prototype.
+Algorithm puts some first seeds. Counts and types of seeds depends on input parameters. Ideal for high density areas like forest.
+See {{Link|#Example}} below.
+|TASKPARAMETERS=
+* '''Random seed''' - number used to initialise pseudorandom number generator.
+* '''Hectare density''' - density of the filling, in number of objects for hectare. For example 100 objects per hectare means an average distance of 10 metres between each object.
+* '''Fraction''' - initial seeds count for smallest probability object prototype on hectare.
+* '''Blend distance''' - distance to get object prototype.
+|OBJECTPROTOTYPEPARAMETERS=
+* '''OBJECT''' - Object's prototype name
+* '''PROB''' - Object's probability
+* '''MINHEIGHT''' - Minimal size in %
+* '''MAXHEIGHT''' - Maximal size in %
+* '''MINDIST''' - Minimal distance in metres
+|USAGE= Use for areas with high objects density, where particular object types tend to aggregate in groups, e.g. in mixed forests.
+|ALGORITHM= For each shape (areal) do:
+# Create and populate "lifegrid"
+## Find shape bounding.
+## Create empty "lifegrid" for this area.
+## Generate base seeds (for each object prototype)
+### seeds_count =  HECTARES * CDENSHA
+### Randomly generate seeds_count in shape and set this grid item prototype.
+# instances_count = HECTARES * DENSHA
+# For instances_count try to find position:
+## Random position in bounding box.
+## If position is not inside shape, restart
+## If minimal distance to other objects is not ok, restart
+## Find object prototype - random grid item in radius 50 metres. This grid item has information about object prototype.
+If this loop has no new output for the last 100 attempts, area is considered full and iteration of this shape will end.
+|SAMPLE=
+}}
+
+=== Example ===
+
+{| class="wikitable"
+|+ Example with '''85%''' spruce, '''10%''' pine, '''5%''' larch
+! Preview<br>[[File:TerrainProcessor_HightFragLegend.png]]
+| [[File:TerrainProcessor_HightFrag1.png]]
+| [[File:TerrainProcessor_HightFrag2.png]]
+| [[File:TerrainProcessor_HightFrag3.png]]
+|-
+! Fragmentation
+| 1
+| 2
+| 5
+|-
+! Spruce seeds count
+| 17
+| 34
+| 85
+|-
+! Pine seeds count
+| 2
+| 4
+| 10
+|-
+! Larch seeds count
+| 1
+| 2
+| 5
+|}
+
+
+[[Category:Terrain Processor Manual|Area]]

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/Example_Code:_Get_Center
+// revision: 308807 (2022-04-02T17:43:10Z)
+// export sha1: sb34z9krjmp1lssonnzvh2u9q6wvtcu
+// categories: Category:Example Code
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|1.92}}
+
+<sqf>/*
+   Author: R3vo
+
+   Date: 2019-08-18
+
+   Description:
+   Returns the center position of given coordinates or objects.
+
+   Parameter(s):
+   0: ARRAY -  Array of positions, objects, markers, groups or locations.
+
+   Returns:
+   ARRAY - Array of center in form [x,y,z]
+*/
+
+params [
+	["_entities", [], [[]]] // array of positions, objects, markers, groups or locations
+];
+
+private _sumPositions = [0,0,0];
+
+if (_entities isEqualTo []) exitWith { _sumPositions };
+
+{
+	_sumPositions = _sumPositions vectorAdd (_x call BIS_fnc_position);
+} forEach _entities;
+
+// return center position
+_sumPositions vectorMultiply (1 / count _entities);
+</sqf>
+
+
+[[Category: Example Code]]

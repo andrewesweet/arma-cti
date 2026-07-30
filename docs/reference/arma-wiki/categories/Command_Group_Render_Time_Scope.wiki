@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Render_Time_Scope
+// revision: 338722 (2023-03-31T07:45:45Z)
+// export sha1: ey1nrs1t4uo7o0u596suht6gtk5v5y4
+// Vendored snapshot. Do not edit — re-export instead.
+
+Render time scope was introduced with '''{{arma2oa}} 1.60''' and is available in '''{{tkoh}}''' and '''{{arma3}}'''.
+
+
+== Overview of Scripting Commands ==
+
+These scripting commands work in render time scope rather than simulation time scope.
+
+{| class="wikitable" width="100%"
+! Render Time Scope
+! Simulation Time Scope
+! Description
+|-
+| [[getPosVisual]] / [[visiblePosition]]
+| [[getPos]] / [[position]]
+| z = 0 on objects with roadways, terrain, water + waves
+|-
+| [[getPosATLVisual]]
+| [[getPosATL]]
+| z = 0 on terrain
+|-
+| [[getPosASLVisual]] / [[visiblePositionASL]]
+| [[getPosASL]]
+| z = 0 on water
+|-
+| {{n/a}}
+| [[getPosASLW]]
+| z = 0 on water + waves
+|-
+| [[AGLToASL]] + [[modelToWorldVisual]] [0,0,0]
+| [[getPosWorld]]
+| z = 0 on water. Calculated to true model center instead of land contact or bounding center
+|-
+| [[modelToWorldVisual]]
+| [[modelToWorld]]
+| z = 0 on objects with roadways, terrain, water + waves
+|-
+| [[worldToModelVisual]]
+| [[worldToModel]]
+| z = 0 on objects with roadways, terrain, water + waves
+|-
+| [[getRelPos]]
+| N/A
+| Only when attached object is using animated selection as anchor
+|}
+
+== See also ==
+
+* [[Simulation vs Render Time Scope]] for more information.
+* [https://www.bohemia.net/blog/experimental-betas-interpolating-the-future Original dev blog post] from June 15, 2011 during {{arma2oa}} development
+
+
+[[Category:Scripting Commands by Functionality]]

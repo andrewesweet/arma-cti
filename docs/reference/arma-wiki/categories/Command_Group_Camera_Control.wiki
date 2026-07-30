@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Camera_Control
+// revision: 342087 (2023-07-09T12:24:19Z)
+// export sha1: 6jcrqn87iz7qu5weclk598vr0sepv3o
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands to manipulate the camera for intros, outros and cut-scenes. See also [[Camera Tutorial]]. 
+
+Commands related to [[:Category:Eden Editor|Eden Editor]] and [[Curator|Zeus]] camera are not listed here. See [[:Category: Command Group: Eden Editor|Command Group: Eden Editor]] and [[:Category: Command Group: Curator|Command Group: Curator]].
+
+[[Category:Scripting Commands by Functionality]]

@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/assignedGroup
+// revision: 338335 (2023-02-28T14:34:19Z)
+// export sha1: hsiv78yszz99fo0oc56ktlysukx9tx5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+|gr1= Groups
+
+|descr= Returns [[Group]] to which the given vehicle was added last with [[addVehicle]]. To update [[assignedGroup]] to the current group, run [[addVehicle]] to the current group again.
+
+|s1= [[assignedGroup]] vehicle
+
+|p1= vehicle: [[Object]] - transport
+
+|r1= [[Group]]
+
+|x1= <sqf>_group = assignedGroup vehicle player;</sqf>
+
+|seealso= [[assignedVehicle]] [[assignedVehicles]] [[addVehicle]] [[assignAsDriver]] [[assignAsCargo]] [[assignAsCommander]] [[assignAsGunner]] [[assignAsTurret]] [[assignAsCargoIndex]] [[unassignVehicle]] [[leaveVehicle]] [[fullCrew]]
+}}

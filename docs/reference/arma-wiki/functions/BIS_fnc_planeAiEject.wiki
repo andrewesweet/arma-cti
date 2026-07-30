@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_planeAiEject
+// revision: 376187 (2025-09-13T15:54:56Z)
+// export sha1: 8gd8ligw5emxj4bausppmr4mbq5mqbu
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Aircraft Functionality | Category:Functions | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Aircraft Functionality
+
+|descr= <pre>/*
+	Author: Bravo Zero One development
+	- John_Spartan
+
+	Description:
+	- This function is designed as part of set of functions to implement semi-authenthic ejection system on fixed wing aircrfat that have such functionality enabled/configured.
+	- AI behaviour handler.
+
+	Exucution:
+	- Call the function via attached EH to the aircrfat itself.
+
+		Example:
+		class Eventhandlers : Eventhandlers
+		{
+			Hit = "_this call BIS_fnc_planeAiEject";
+		};
+
+	Requirments:
+	- Compatible aircrfat must have a config definition for all subsytems that will be invoked by ejection system (see BIS_fnc_PlaneEjection).
+
+	Parameter(s):
+		_this select 0: mode (Scalar)
+		0: plane/object
+
+	Returns: nothing
+	Result: AI pilot will be forced to eject from aircrfat upon damage treshold reached. Semi-authenthic behaviour.
+
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= plane call [[BIS_fnc_planeAiEject]]
+
+|p1= plane: [[Object]] - living vehicle with a pilot and with ejection systems set up in its config
+
+|r1= [[Nothing]] if plane was invalid or no ejection was needed, otherwise [[Script Handle]] - script handle of spawned [[BIS_fnc_planeEjection]]
+
+|x1= <sqf>_myPlane call BIS_fnc_planeAiEject;</sqf>
+
+|seealso= [[BIS_fnc_planeEjection]] [[BIS_fnc_planeEjectionFX]] [[BIS_fnc_ejectionSeatRelease]]
+}}

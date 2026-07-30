@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_activateAddons
+// revision: 348644 (2023-11-08T13:48:23Z)
+// export sha1: g6ma3wkwiomsfaktvc1s3szsrj87fnb
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Systems | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Systems
+
+|serverExec= server
+
+|descr= Activate addons upon mission start. Doesn't work when the mission is already running.
+
+|s1= [addons] call [[BIS_fnc_activateAddons]]
+
+|p1= addons: [[Array]] of [[String]]s - addon classes from CfgPatches or object classes from CfgVehicles
+
+|r1= [[Array]] of [[String]]s - activated addons
+
+|x1= <sqf>["class_1","class_2"] call BIS_fnc_activateAddons;</sqf>
+
+|seealso= [[activateAddons]] [[unitAddons]] [[activatedAddons]]
+}}

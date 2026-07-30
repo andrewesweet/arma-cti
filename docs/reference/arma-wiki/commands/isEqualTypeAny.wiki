@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/isEqualTypeAny
+// revision: 377153 (2026-01-01T10:37:25Z)
+// export sha1: neo7t1i6xzb6zysv9r6whe5slrku9xw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|gr1= Variables
+
+|descr= Compares type of given value to every type in the given array and if match is found, [[true]] is returned.
+
+|s1= val [[isEqualTypeAny]] types
+
+|p1= val: [[Anything]]
+|p2= types: [[Array]] of [[Anything]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+_var = [1, 2, 3];
+_var isEqualTypeAny [0, "", objNull]; //false
+_var isEqualTypeAny [0, "", objNull, []]; //true
+</sqf>
+
+|seealso= [[isEqualType]] [[isEqualTypeAll]] [[isEqualTypeArray]] [[isEqualTypeParams]] [[param]] [[params]] [[isEqualTo]] [[typeName]]
+}}

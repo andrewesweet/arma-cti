@@ -1,0 +1,410 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Object
+// revision: 376305 (2025-10-05T13:13:47Z)
+// export sha1: bg5k681qs2zcevv02sfcxbm8rw9cqce
+// categories: Category:Eden Editor: Asset Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+An object is an entity with physical representation in the world. The player can see it as a model with textures, while the game recognizes its technical properties like the simulation type, collision geometry or damage.
+
+Objects can be divided into three main categories as listed below.
+
+== Characters ==
+A '''Character''' is a living entity controlled either by a player, or by an '''AI''' (Artificial Intelligence; sometimes also known as NPC - Non-Playable Character).
+[[File:3den objectCharacters.jpg|center]]
+
+== Vehicles ==
+A '''Vehicle''' is an object which can have a crew composed of characters. A crewed vehicle has an effective commander, who can issue orders to the rest of the crew. The vehicle also inherits the side of the commander (i.e., BLUFOR pilot will render a helicopter BLUFOR as well).
+[[File:3den objectVehicles.jpg|center]]
+
+== Props ==
+A '''Prop''' is any other object without special functionality, for example, houses, fences or signs. Empty vehicles are not props. Animals are, mainly because they cannot be considered characters.
+[[File:3den objectProps.jpg|center]]
+
+
+The object is the entity type you will be editing the most, so make sure to familiarize yourself with all its options.
+
+== Attributes ==
+<onlyinclude>
+<!-- Exported from the game by BIS_fnc_3DENExportAttributes. Manual edits may be replaced by future exports. -->
+{| class="wikitable sortable"
+! colspan="3" | <big>Info</big>
+! colspan="2" | <big>[[Eden Editor: Setting Attributes|Development]]</big>
+|-
+! Name
+! Category
+! class="unsortable" | Description
+! Property
+! Type
+|-
+| '''Type'''
+| Type
+| Object type. Can be changed only to another type of the same side,
+e.g., you can change BLUFOR Car to BLUFOR Helicopter, but not to OPFOR Car or a Prop.
+| <small>{{hl|ItemClass}}</small>
+| [[String]]
+|-
+| '''Variable Name'''
+| Init
+| Unique system name. Can contain only letters, numbers and underscore. The name is not case sensitive, so 'someName' and 'SOMENAME' are treated as the same variables.
+| <small>{{hl|Name}}</small>
+| [[String]]
+|-
+| '''Init'''
+| Init
+| Expression called upon at start. In multiplayer, it is called on every machine and for each player who joins in the progress. The variable 'this' refers to the affected object.
+| <small>{{hl|Init}}</small>
+| [[String]]
+|-
+| {{n/a}}
+| Pylons Settings
+| 
+| <small>{{hl|Pylons}}</small>
+| 
+|-
+| '''Position'''
+| Transformation
+| World coordinates in meters. X goes from West to East, Y from South to North and Z is height above terrain.
+| <small>{{hl|position}}</small>
+| [[Position3D]]
+|-
+| '''Rotation'''
+| Transformation
+| Local rotation in degrees. X is pitch, Y is roll and Z is yaw.
+| <small>{{hl|rotation}}</small>
+| [[Number]]
+|-
+| '''Size'''
+| Transformation
+| Area size in meters.
+| <small>{{hl|size3}}</small>
+| [[Array]]
+|-
+| '''Shape'''
+| Transformation
+| Area shape.
+Available options:
+* '''Ellipse'''
+* '''Rectangle'''
+
+| <small>{{hl|IsRectangle}}</small>
+| [[Boolean]]
+|-
+| '''Placement Radius'''
+| Transformation
+| Placement radius in meters. The entity will start at a random position within the radius.
+| <small>{{hl|placementRadius}}</small>
+| [[Number]]
+|-
+| '''Player'''
+| Control
+| Player in singleplayer. When enabled, the character will also be available in multiplayer and team switch ('Playable' status cannot be disabled individually in such case).
+| <small>{{hl|ControlSP}}</small>
+| [[Boolean]]
+|-
+| '''Playable'''
+| Control
+| When enabled, the character will appear as a slot in the multiplayer scenario lobby and in the list of roles available for team switch.
+| <small>{{hl|ControlMP}}</small>
+| [[Boolean]]
+|-
+| '''Role Description'''
+| Control
+| Multiplayer role description visible in the multiplayer lobby. When undefined, the object type name will be used by default.
+| <small>{{hl|description}}</small>
+| [[String]]
+|-
+| '''Lock'''
+| States
+| Vehicle lock. When locked, characters outside of the vehicle will be unable to get in and those already inside will be forbidden from leaving.
+Available options:
+* '''Unlocked''' - Anyone can get in
+* '''Default''' - Group leaders and anyone who was ordered in by their group leader can get in
+* '''Locked''' - No one can get in
+* '''Locked for players''' - Anyone except for players can get in
+
+| <small>{{hl|lock}}</small>
+| [[Number]]
+|-
+| '''Skill'''
+| States
+| General AI skill. The attribute does not allow for decreasing it below 20%, because AI behavior would be too simplified.
+| <small>{{hl|skill}}</small>
+| [[Number]]
+|-
+| '''Health / Armor'''
+| States
+| Object health / armor. When close to 0%, the object will be destroyed.
+| <small>{{hl|Health}}</small>
+| [[Number]]
+|-
+| '''Fuel'''
+| States
+| Vehicle fuel.
+| <small>{{hl|fuel}}</small>
+| [[Number]]
+|-
+| '''Ammunition'''
+| States
+| General vehicle ammo state.
+| <small>{{hl|ammo}}</small>
+| [[Number]]
+|-
+| '''Rank'''
+| States
+| Character rank. When a group leader is killed, the subordinate with the highest rank will take over.
+Available options:
+* '''Private'''
+* '''Corporal'''
+* '''Sergeant'''
+* '''Lieutenant'''
+* '''Captain'''
+* '''Major'''
+* '''Colonel'''
+
+| <small>{{hl|rank}}</small>
+| [[String]]
+|-
+| '''Stance'''
+| States
+| 
+Available options:
+* '''Default Stance'''
+* '''Lie Down'''
+* '''Crouch'''
+* '''Stand Up'''
+
+| <small>{{hl|unitPos}}</small>
+| 
+|-
+| '''Enable Dynamic Simulation'''
+| Special States
+| Entity simulation is enabled only if the player or an enemy unit is nearby.
+
+Note: Does not work on simple objects and it overwrites basic simulation settings.
+| <small>{{hl|dynamicSimulation}}</small>
+| [[Boolean]]
+|-
+| '''Wake-Up Dynamic Simulation'''
+| Special States
+| Controls unit capability to activate dynamically simulated entities.
+| <small>{{hl|addToDynSimGrid}}</small>
+| [[Number]]
+|-
+| '''Enable Simulation'''
+| Special States
+| When disabled, the object will freeze and ignore any input or collisions.
+
+Note: This option does not have any effect on dynamically simulated objects.
+| <small>{{hl|enableSimulation}}</small>
+| [[Boolean]]
+|-
+| '''Simple Object'''
+| Special States
+| When enabled, the object will behave like a map object (e.g. rocks or trees), which significantly saves performance. This option is available only for objects where it leads to improved performance.
+
+Warning: If set, the setting is enforced at the start of the scenario and is irreversible during its runtime!
+| <small>{{hl|objectIsSimple}}</small>
+| [[Boolean]]
+|-
+| '''Show Model'''
+| Special States
+| Show model and collisions. Even when disabled, the object will be simulated normally (e.g., soldiers will still be able to move and shoot).
+| <small>{{hl|hideObject}}</small>
+| [[Boolean]]
+|-
+| '''Enable Damage'''
+| Special States
+| Set if the object can receive any damage. When a vehicle is invincible, its crew can still be killed.
+| <small>{{hl|allowDamage}}</small>
+| [[Boolean]]
+|-
+| '''Enable Stamina'''
+| Special States
+| Set whether the character should become tired when moving or not. When disabled for player, the stamina bar will be hidden completely.
+| <small>{{hl|enableStamina}}</small>
+| [[Boolean]]
+|-
+| '''Revive Enabled'''
+| Special States
+| Enable revive for this unit.
+| <small>{{hl|EnableRevive}}</small>
+| [[Boolean]]
+|-
+| '''Doors States'''
+| Special States
+| Set closed, locked or opened state for terrain object doors.
+
+LMB - cycle between states
+RMB - close door (reset to default state)
+LMB + Alt - open door
+LMB + Shift - lock door
+LMB + Ctrl - close door
+| <small>{{hl|DoorStates}}</small>
+| 
+|-
+| '''Local Only'''
+| Special States
+| When enabled, the object will exist as a local instance on every client. It will not be synchronized over the network. Use this primarily for static (decorative) objects in order to optimize large-scale scenarios.
+| <small>{{hl|isLocalOnly}}</small>
+| [[Boolean]]
+|-
+| '''Name'''
+| Identity
+| Character name, by default automatically generated based on faction.
+| <small>{{hl|unitName}}</small>
+| [[String]]
+|-
+| '''Face'''
+| Identity
+| Character face.
+| <small>{{hl|face}}</small>
+| [[String]]
+|-
+| '''Call Sign'''
+| Identity
+| Call sign used in radio protocol (e.g., leader will order 'Kerry, fall back' instead of generic '2, fall back'). It does not affect character's actual name; consider changing it as well so they match together.
+Available options:
+{{Columns|6|
+* '''No Call Sign'''
+* '''Miller'''
+* '''Reynolds'''
+* '''Armstrong'''
+* '''Nichols'''
+* '''Tanny'''
+* '''Frost'''
+* '''Lacey'''
+* '''Larkin'''
+* '''Kerry'''
+* '''Jackson'''
+* '''McKendrick'''
+* '''Levine'''
+* '''James'''
+* '''McKay'''
+* '''Hardy'''
+* '''Northgate'''
+* '''Adams'''
+* '''Bennett'''
+* '''Campbell'''
+* '''Dixon'''
+* '''Everett'''
+* '''Franklin'''
+* '''Givens'''
+* '''Hawkins'''
+* '''Lopez'''
+* '''Martinez'''
+* '''OConnor'''
+* '''Ryan'''
+* '''Patterson'''
+* '''Sykes'''
+* '''Taylor'''
+* '''Walker'''
+* '''Amin'''
+* '''Masood'''
+* '''Fahim'''
+* '''Habibi'''
+* '''Kushan'''
+* '''Jawadi'''
+* '''Nazari'''
+* '''Siddiqi'''
+* '''Takhtar'''
+* '''Wardak'''
+* '''Yousuf'''
+* '''Anthis'''
+* '''Costa'''
+* '''Dimitirou'''
+* '''Elias'''
+* '''Gekas'''
+* '''Kouris'''
+* '''Leventis'''
+* '''Markos'''
+* '''Nikas'''
+* '''Nicolo'''
+* '''Panas'''
+* '''Petros'''
+* '''Rosi'''
+* '''Samaras'''
+* '''Stavrou'''
+* '''Ghost'''
+* '''Stranger'''
+* '''Fox'''
+* '''Snake'''
+* '''Razer'''
+* '''Jester'''
+* '''Nomad'''
+* '''Viper'''
+* '''Korneedler'''
+}}
+
+| <small>{{hl|NameSound}}</small>
+| [[String]]
+|-
+| '''Voice'''
+| Identity
+| Radio voice used in group communication (e.g., target reporting).
+| <small>{{hl|speaker}}</small>
+| [[String]]
+|-
+| '''Voice Pitch'''
+| Identity
+| Voice pitch. Higher number means higher voice.
+| <small>{{hl|pitch}}</small>
+| [[Number]]
+|-
+| '''Insignia'''
+| Identity
+| Left shoulder insignia. Right shoulder insignia is reserved for a squad logo and cannot be changed by the scenario.
+| <small>{{hl|unitInsignia}}</small>
+| [[String]]
+|-
+| '''Probability of Presence'''
+| Presence
+| Probability of presence evaluated at the scenario start. When it fails, the object is not created at all.
+| <small>{{hl|presence}}</small>
+| [[Number]]
+|-
+| '''Condition of Presence'''
+| Presence
+| Condition of presence evaluated at the scenario start, must return boolean expression. When false, the object is not created at all.
+| <small>{{hl|presenceCondition}}</small>
+| [[String]]
+|-
+| '''Equipment Storage'''
+| Equipment Storage
+| 
+| <small>{{hl|ammoBox}}</small>
+| [[String]]
+|-
+| '''Data Link Send'''
+| Electronics & Sensors
+| Vehicle will broadcast targets tracked by its sensors to any other unit on the same side with Data Link enabled.
+| <small>{{hl|ReportRemoteTargets}}</small>
+| [[Boolean]]
+|-
+| '''Data Link Receive'''
+| Electronics & Sensors
+| Vehicle will receive targeting and positional data from any other broadcasting vehicle on the same side.
+| <small>{{hl|ReceiveRemoteTargets}}</small>
+| [[Boolean]]
+|-
+| '''Data Link Position'''
+| Electronics & Sensors
+| Vehicle will broadcast its own position to any other unit on the same side with Data Link enabled.
+| <small>{{hl|ReportOwnPosition}}</small>
+| [[Boolean]]
+|-
+| '''Emission Control'''
+| Electronics & Sensors
+| Radar EMCON rules for the AI
+Available options:
+* '''Default''' - AI will use the Radar when in Aware or Combat behavior.
+* '''Active''' - AI will keep the Radar active and emitting at all times
+* '''Off''' - AI will keep Radar silent at all times
+
+| <small>{{hl|RadarUsageAI}}</small>
+| [[String]]
+|}
+</onlyinclude>
+
+
+[[Category:Eden Editor: Asset Types|Objects]]

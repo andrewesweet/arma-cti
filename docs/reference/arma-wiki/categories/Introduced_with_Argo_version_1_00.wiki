@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Argo_version_1.00
+// revision: 351593 (2023-12-07T19:59:46Z)
+// export sha1: 1dyyo4z5ubg8t78sn2gkn7td7v2ouxk
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with {{Name|argo}} version 1.00 may be recognised by the appearance of this icon: {{GVI|argo|1.00}}
+
+[[Category:Introduced with Argo|1.00]]

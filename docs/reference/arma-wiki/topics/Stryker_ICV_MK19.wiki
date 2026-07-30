@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Stryker_ICV_(MK19)
+// revision: 34116 (2007-05-15T05:02:14Z)
+// export sha1: rq9hco1ra8w8oqtnzgdniaqj1afl15b
+// Vendored snapshot. Do not edit — re-export instead.
+
+The Stryker ICV is a wheeled, armored troop transport. It is armed with a Mk19 grenade launcher.

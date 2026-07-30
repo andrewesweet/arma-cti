@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/actionIDs
+// revision: 377718 (2026-01-02T09:15:47Z)
+// export sha1: th392rog7nhfeheocvtcxtw75o7cf7e
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|arg= global
+
+|eff= local
+
+|gr1= Interaction
+
+|descr= 
+
+|s1= [[actionIDs]] entity
+
+|p1= entity: [[Object]] - entity with added user actions
+
+|r1= [[Array]] of [[Number]]s - IDs of all user actions added to given entity with [[addAction]] command
+
+|x1= <sqf>_actions = actionIDs player;</sqf>
+|seealso= [[actionParams]] [[addAction]] [[setUserActionText]] [[inGameUISetEventHandler]] [[showHUD]] [[inputAction]] [[removeAction]] [[removeAllActions]] [[action]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2018-04-22 - 14:19 (UTC)</dd>
+<dt class="note">[[User:KC Grimes|KC Grimes]]</dt>
+<dd class="note">The argument for this command can be global (ie, not local to the executing machine), however the returned array will only contain action IDs for locally executed [[addAction]].</dd>
+
+</dl>

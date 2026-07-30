@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_preload
+// revision: 309413 (2022-05-05T12:04:36Z)
+// export sha1: t3x4e6gvpjtpuvy9gcbci85n0007k50
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Start automatic loading screen upon mission start.
+On client, it will finish only when server is finished.
+
+|s1= call [[BIS_fnc_preload]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>call BIS_fnc_preload;</sqf>
+
+|seealso=
+}}

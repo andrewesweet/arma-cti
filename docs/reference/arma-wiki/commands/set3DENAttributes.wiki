@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/set3DENAttributes
+// revision: 321117 (2022-05-13T14:15:26Z)
+// export sha1: 72kzcxj3kdxmpam4cdflijp0pns79j1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Set entity [[Eden Editor: Entity Attributes|attributes]].
+An attribute is identified by its {{hl|property}} ({{hl|data}} when it is engine-drive attribute) value in config.
+For the list of all attributes with their properties, see [[Eden_Editor:_Setting_Attributes#Attributes|Setting Attributes]].
+
+{{Feature|important|Attributes are available only within the Eden Editor workspace and cannot be accessed in scenario preview or exported scenario!}}
+
+|s1= [[set3DENAttributes]] [<nowiki/>[entities1, class1, value1], [entities2, class2, value2], ...]
+
+|p1= entitiesN: [[Array]] of [[Eden Entity]] or [[Eden ID]]
+
+|p2= classN: [[String]] - attribute name
+
+|p3= valueN: [[Anything]] - new attribute value
+
+|r1= [[Boolean]] - [[true]] if the value was set
+
+|x1= <sqf>
+// Set all selected objects as playable
+set3DENAttributes [[get3DENSelected "Object", "ControlMP", true]];
+</sqf>
+
+|seealso= [[get3DENAttribute]] [[clear3DENAttribute]]
+}}

@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/isWalking
+// revision: 364111 (2024-05-04T22:02:54Z)
+// export sha1: hnxu3kspx288xaxhqetwnc3txg2af8d
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns [[true]] if walk is '''toggled''' (default {{Controls|W|S}} in {{arma3}}).
+{{Feature|informative|This command can still return true when the unit is sprinting or stopped; it only returns the '''toggle''' value of walking, not if the unit is walking right now.}}
+
+|s1= [[isWalking]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_bool = isWalking player;</sqf>
+
+|seealso= [[forceWalk]] [[isForcedWalk]] [[forceSpeed]] [[getSpeed]]
+}}
+
+
+{{Note
+|user= Benargee
+|timestamp= 20150308210300
+|text= To expand on the limited description, this command doesn't necessarily say whether or not the unit is currently walking. All it says is that walking is toggled on or off.
+This command can still return true when the unit is sprinting. When walking is toggled on, the unit will return to walking pace when not sprinting.
+When walking is toggled off, the unit will return to jogging pace when not sprinting. This command is not intended to gauge a units current movement speed.
+}}

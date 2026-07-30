@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_liveFeed
+// revision: 328590 (2022-07-13T17:02:28Z)
+// export sha1: sc3zkzaou2lyvlqv3nt7e5p1xftqpej
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Live Feed | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Live Feed
+
+|descr= Display a live feed.
+
+|s1= [source, target, receiver, effect] call [[BIS_fnc_liveFeed]]
+
+|p1= source: [[Object]] or [[Position]] - live feed source
+
+|p2= target: [[Object]] or [[Position]] - live feed target
+
+|p3= receiver: [[Object]] - player that will see the feed - if not [[Multiplayer Scripting#Locality|local]], function will do nothing
+
+|p4= effect: [[Number]] - (Optional, default 0)  live feed effect. Can be one of:
+* -1: reset
+* &nbsp;0: normal
+* &nbsp;1: night vision
+* &nbsp;2: thermal imaging
+
+|r1= [[Boolean]] - [[true]] if successful, [[false]] if not
+
+|x1= <sqf>[myUAV, player, player, 2] call BIS_fnc_liveFeed;</sqf>
+
+|x2= live feed display:
+<sqf>private _UAVFeedDisplay = uiNamespace getVariable "BIS_fnc_PIP_RscPIP";</sqf>
+
+|seealso=     [[BIS_fnc_liveFeedEffects]] [[BIS_fnc_liveFeedSetSource]] [[BIS_fnc_liveFeedSetTarget]] [[BIS_fnc_liveFeedTerminate]]
+}}

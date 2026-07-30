@@ -1,0 +1,326 @@
+// source: https://community.bistudio.com/wiki/Arma_2:_Startup_Parameters
+// revision: 365033 (2024-07-11T22:19:36Z)
+// export sha1: kgk1zt37qku2uts4b1tequ99qk7q3f2
+// categories: Category:Startup Parameters
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+These parameters can be configured by creating a new shortcut on your desktop and then adding the appropriate option in the target line.
+
+For Steam version:
+# Choose the game shortcut in Library
+# Right click on the game 
+# Select properties 
+# Hit "Set launch options"
+
+; Example: {{hl|c= "C:\arma2\arma2.exe" -nosplash -mod=test;x\test;c:\arma2\test2}}
+
+
+== Available parameters ==
+
+=== Display Options ===
+
+{| class="wikitable"
+| {{hl|c= -window}} || Displays Arma windowed instead of full screen. Screen resolution / window size are set in [[arma2.cfg]].
+|}
+
+=== Game Loading Speedup ===
+
+{| class="wikitable"
+| {{hl|c= -nosplash}} || Disables splash screens.
+|-
+| {{hl|c= -world=<string>}} || Select a world loaded by default. Example: -world=Utes.<br> For faster game loading (no default world loaded and world intro in the main menu, ''only at game start'', disabled): -world=empty.
+|-
+| {{hl|c= -skipIntro}} || {{GVI|arma2oa|1.55|size= 0.75}} Disables world intros in the main menu permanently.
+|}
+
+=== Performance ===
+
+{| class="wikitable"
+| {{hl|c= -maxMem=<number>}} || Defines memory allocation limit to number (in MegaBytes). <br>256 is hard-coded minimum (anything lower falls backs to 256). 2047 is hard-coded maximum (anything higher falls back to 2047). <br>Engine uses automatic values (512-1536 MB) w/o maxMem parameter. <br>yet FileCache was always excluded from the virtual address limit, see our developers blog: http://www.bistudio.com/index.php/company/developers-blog/85-breaking-the-32-bit-barrier
+|-
+| {{hl|c= -maxVRAM=<number>}} || Defines Video Memory allocation limit to number (in MegaBytes). Use to resolve e.g. Windows problem: http://support.microsoft.com/kb/2026022/en-us?p=1
+128 is hard-coded minimum (anything lower falls backs to 128). 2047 is soft-coded maximum , any value over 2GB might result into unforseen consequences!
+|-
+| {{hl|c= -winxp}} || Forces the game to use Direct3D version 9 only, not the extended Vista / Win7 Direct3D 9Ex http://msdn.microsoft.com/en-us/library/windows/desktop/ee890072(v=vs.85).aspx<br> - the most visible feature the Direct3D 9Ex version offers is a lot faster alt-tabing. May help with problems using older drivers on multi-GPU systems.
+|-
+| {{hl|c= -noCB}} || Turns off multicore use. It slows down rendering but may resolve visual glitches.
+|-
+| {{hl|c= -cpuCount=<number>}} || Change to a number less or equal than numbers of available cores. This will override auto detection (which equate to native cores). [[Arma 2: Startup Parameters#cpuCount|Details below]].
+|-
+| {{hl|c= -exThreads=<number>}} || Change to a number 0,1,3,5,7. This will override auto detection (which use 3 for dualcore and 7 for quadcore). [[Arma 2: Startup Parameters#exThreads|Details below]].
+|-
+| {{hl|c= [[Arma 2: Custom Memory Allocator|-malloc]]=<string>}} || {{GVI|arma2oa|1.60|size= 0.75}} Set the particular allocator to be used. Significantly affects both performance and stability of the game.  [[Arma 2: Custom Memory Allocator|More details]]. !!! DOES NOT WORK ON BE SERVERS!!!
+|-
+| {{hl|c= -noLogs}} || {{GVI|arma3|0.76|size= 0.75}} {{GVI|arma2oa|1.63|size= 0.75}} More details {{Link|link= http://forums.bistudio.com/showthread.php?159155-quot-nologs-quot-may-improve-performance-no-stuttering-read-details|text= here}}.
+Be aware this means none errors saved to RPT file (report log). Yet in the case of a crash the fault address block info is saved.
+|}
+
+=== Profile Options ===
+
+{| class="wikitable"
+| {{hl|c= -name=<string>}} || Profile name.
+|-
+| {{hl|c= -profiles=<path>}} || Location of user-profile folder. 
+{| class="wikitable"
+ |-
+ ! Path Definition !! Explanation
+ |-
+ | {{hl|c= -profiles=c:\games\myProfiles}} || -
+ |-
+ | {{hl|c= "-profiles=c:\My Profiles\profiles"}} || If the profile path contains spaces, the whole parameter should be enclosed by quotation marks.
+ |-
+ | {{hl|c= -profiles=profiles}} || The path defined in the argument can also be interpreted ''relative'' to the game's path. Resulting path would be {{hl|c:\<gamefolder>\profiles\Users\<playername>}}.
+ |-
+ | {{hl|c= -profiles=.}} || Would put the user profiles ''directly'' into the game folder: {{hl|c:\<gamefolder>\Users\<playername>}}.
+ |}
+|}
+
+=== Developer Options ===
+
+{| class="wikitable"
+| {{hl|c= -noPause}} || Allow the game running even when its window does not have focus (i.e. running in the background)
+|-
+| {{hl|c= -showScriptErrors}} || Introduced to show errors in scripts on-screen. 
+|-
+| {{hl|c= -noFilePatching}} || Ensures that only PBOs are loaded and NO unpacked data. For more info see [[CMA:DevelopmentSetup]].
+|-
+| {{hl|c= -init=<command>}} || Run scripting command once in the main menu. For example to start a certain SP mission of choice automatically. Example: -init=playMission["","M04Saboteur.Sara"]. See also [[playMission]]. The Mission has to reside in the "arma2\Missions" folder, NOT the user directory.
+|-
+| {{hl|c= "<path>\mission.sqm"}} || Load a mission directly in the editor. Example: "c:\arma2\users\myUser\missions\myMission.intro\mission.sqm"
+|-
+| {{hl|c= "<path>\mission.biedi"}} || Load a mission directly in the 3D editor. Example: "c:\arma2\users\myUser\missions\nextMission.intro\mission.biedi"
+|-
+| {{hl|c= -autotest}} || Loads automatically a series of defined missions and on error writes to a log file. See below for details.
+|-
+| {{hl|c= -beta=<string>}} || Loads the specified beta sub-folders. Separated by semi-colons. Absolute path and multiple stacked folders are possible.<br>'''In Linux''' multiple folders arguments need the following separation syntax: -mod=betamod1\;betamod2\;betamod3<br>This allows use of beta build w/o disabling in-game mod/extension management (in UI menu).
+|-
+| {{hl|c= -checkSignatures}} || Introduced in {{GVI|arma2oa|1.60}} to provide thorough test of all signatures of all loaded banks at the start game. Output is in .rpt file.
+|}
+
+=== Misc. ===
+
+{| class="wikitable"
+| {{hl|c= -buldozer}} || Starts [[Buldozer]] mode.
+|-
+| {{hl|c= -noLand}} || Starts with no world loaded. (Used for [[Buldozer]])
+|-
+| {{hl|c= -noSound}} || Disables sound output.
+|-
+| {{hl|c= -donothing}} || Engine closes immediately after detecting this option.
+|-
+| {{hl|c= /secuexp}} || Starts securom support for troubleshooting.
+|}
+
+=== Modifications ===
+
+{| class="wikitable"
+| {{hl|c= [[Arma: Mod Folders|-mod]]=<string>}} || Loads the specified sub-folders for different mods. Separated by semi-colons. Absolute path and multiple stacked folders are possible.<br>'''In Linux''' multiple folders arguments need the following separation syntax: -mod=mod1\;mod2\;mod3<br>This setting always auto-disable in-game mod/extension management (in UI menu).
+|}
+
+;Complex example: {{hl|c= -mod=test;x\test;c:\arma2\test2}}
+
+* '''"test"''' is located in the arma2 installation folder ("Arma 2\test") (relative path)
+* '''"x\test"''' is in the installation folder ("Arma 2\x\test") (relative path; subfolder)
+* '''"c:\arma2\test2"''' is in "c:\arma2\test2" (absolute path)
+
+"Relative path" starts from, or is rooted at, the directory from where the arma2 executable has been started, and is not always the same  where the executable is, like in betas. Usually this is the same as the installation path and the same of what's written in Windows registry. But if you copy or symlink the necessary file and folders, you may have different roots. It's useful when have more dedicated server.
+
+=== Client Network Options ===
+
+{| class="wikitable"
+| {{hl|c= -connect=<ip>}} || Server IP to connect to.
+|-
+| {{hl|c= -port=<number>}} || Server port to connect to.
+|-
+| {{hl|c= -password=<string>}} || Server password to connect to.
+|-
+| {{hl|c= -host}} || Start a non-dedicated multiplayer host.
+|}
+
+=== Server Options ===
+
+{| class="wikitable"
+| {{hl|c= -server}} || Start a [[ArmA: Dedicated Server|dedicated server]]. Not needed for the dedicated server exe.
+|-
+| {{hl|c= -port=<number>}} || Port to have dedicated server listen on.
+|-
+| {{hl|c= -pid=<filename>}} || File to write the server's PID (process ID) to. The file is removed automatically when the exe is stopped. Only works for dedicated servers.
+|-
+| {{hl|c= -ranking=<filename>}} || Generates a ranking file. See below for details.
+|-
+| {{hl|c= -netlog}} || Enables multiplayer network traffic logging. For more details see [[ArmA:_Server_configuration|server configuration]].
+|-
+| {{hl|c= -cfg=<filename>}} || Selects the [[basic.cfg|Server Basic Config file]]. Config file for server specific settings like network performance tuning.
+{{Feature|important|Using this parameter overrides the game config ({{hl|Documents\Arma 2\Arma2.cfg}}/{{hl|Arma2OA.cfg}}); use at your own risk on clients.}}
+|-
+| {{hl|c= -config=<filename>}} || Selects the [[Arma 3: Server Config File|Server Config File]]. Config file for server specific settings like admin password and mission selection.
+|- 
+| {{hl|c= -BEpath=<path>}} || If you are running [[BattlEye]] this allows you to specify a separate path for the BattlEye auto updates - this is required if you are running multiple dedicated servers.
+|-
+| {{hl|c= -ip=<nnn.nnn.nnn.nnn>}} || Command to enable support for Multihome servers. Allows server process to use defined available IP address. (b1.57.76934)
+|-
+| {{hl|c= -par=<filename>}} || Command to read startup parameters from a file. For more details see [[Startup_Parameters_Config_File|Startup parameters config file]]
+|}
+
+=== Use unknown ===
+
+{| class="wikitable"
+| {{hl|c= -download}} || Use unknown. (Possibly set auto download of missing Mod pbo's from server.)
+|-
+| {{hl|c= -generateShaders}} || Use unknown. (Possibly for use with [[Buldozer]])
+|-
+| {{hl|c= -disableProgramDrawing}} || Use unknown. (Possibly for use with [[Buldozer]])
+|-
+| {{hl|c= -useProgramDrawing}} || Use unknown. (Possibly for use with [[Buldozer]])
+|-
+| {{hl|c= -gamerTag=}} || Use unknown.
+|-
+| {{hl|c= -benchmark}} || Intended for automated benchmarking, but was never finished and is not working.
+|-
+| {{hl|c= -noTexHeaders}} || Use unknown. (does seem to prevent error messages like 'Failed to load TextureHeaderManager from file "ca\provinggrounds_pmc\texheaders.bin" - failed to open the file.' on linux dedicated server)
+|}
+
+== Closer Description ==
+
+=== Path info ===
+
+There are a few basics to keep in mind when defining path as part of a parameter.
+
+==== Spaces ====
+When your path contains spaces, you need to enclose it with quotes, like:
+
+: {{hl|c= "-profiles=c:\arma 2\profiles"}}
+
+==== Relative vs Absolute ====
+You can define most, if not all path in both ways.
+
+; Relative: {{hl|c= -profiles=profiles}}
+
+; Absolute: {{hl|c= -profiles=C:\arma2\profiles}}
+
+The relative path is normally based on the game main folder, where the exe resides in. Using beta patches does NOT change this!
+However when you use -profiles, some commands use this path defined there as base.
+
+=== config ===
+
+The option '''''-config ''''' allows you to specify a specific [[Arma 3: Server Config File|server config]] file.
+
+=== profiles ===
+
+'''-profiles''' is a startup option allowing you to choose an alternate location for the user profile files, such as downloaded missions and .cfg files.
+
+The windows user account would need permissions to write to the folder of choice.
+
+;An example might be like this: {{hl|c= "C:\arma2\Arma2.exe" -profiles=C:\arma2\Profiles}}
+;or: {{hl|c= "C:\arma2\Arma2.exe" -profiles=Profiles}}
+would store all your profiles/configs/downloaded content into your ROOT ArmA folder under the folder name "Profiles"
+
+=== ranking ===
+
+'''-ranking''' is a startup option allowing you to output ranking info or othewise know as player stats.
+
+The windows user account would need permissions to write to the folder of choice.
+
+; An example might be like this: {{hl|c= "C:\arma2\Arma2.exe" -ranking=C:\arma2\ranking.log}}
+
+'''Output sample:'''
+
+<syntaxhighlight lang="cpp">
+class Player1
+{
+	name = "PlayerName";
+	killsInfantry = 71;
+	killsSoft = 3;
+	killsArmor = 5;
+	killsAir = 5;
+	killsPlayers = 0;
+	customScore = 0;
+	killsTotal = 84;
+	killed = 3;
+};
+</syntaxhighlight>
+
+=== nosplash ===
+
+'''-nosplash''' is a startup option that allows you to bypass the splash screens on startup of Arma2.
+
+Note: Real speed-up gained with this is likely to be negligible with Arma2, as the loading screens are handled in parallel with the game data being loaded, and the loading itself takes quite long thanks to the amount of data needed.
+
+=== cpuCount ===
+
+'''-cpuCount=''' is option which allows define number of CPUs/cores available. 
+
+The best way to simulate dual core on quad core is to use -cpuCount=2 when you run the game and then change the affinity to 2 cores to make sure additional cores can never be used when some over-scheduling happens. It might be also possible to set the affinity in the OS before you launch the process, that would work as well.
+
+=== exThreads ===
+
+'''-exThreads=''' is option to define extra threads. 
+
+All file operations go through a dedicated thread. This offloads some processing from the main thread, however it adds some overhead at the same time. The reason why threaded file ops were implemented was to serve as a basement for other threads ops. When multiple threads are running at the same time, OS is scheduling them on different cores. Geometry and Texture loading (both done by the same thread) are scheduled on different cores outside the main rendering loop at the same time with the main rendering loop.
+
+
+{| class="wikitable" style="text-align: center; width: 200px; height: 200px;"
+|+ Ex(tra)threads table
+|-
+! Number !! Geometry loading !! Texture loading !! File operations
+|-
+! 0
+| 0 || 0 || 0
+|-
+! 1
+| 0 || 0 || 1
+|-
+! 3
+| 0 || 1 || 1
+|-
+! 5
+| 1 || 0 || 1
+|-
+! 7
+| 1 || 1 || 1
+|-
+|}
+
+=== autotest ===
+
+The parameter can be used to automatically run a series of test missions. For example FPS measurement or scripting validation.
+
+* The game runs in special mode. It runs all missions from the given list.
+* If any mission fails (ends with other than END1), it is logged into the [[arma.RPT|rpt file]] (search: <autotest).
+* In case of any fail, the game also returns an errorlevel to DOS. This can be used to issue an notification by a secondary application.
+
+; Launch arma with: {{hl|c= -autotest=c:\arma2\autotest\autotest.cfg}}
+
+'''The autotest.cfg looks like:'''
+
+<syntaxhighlight lang="cpp">
+class TestMissions
+{
+	class TestCase01
+	{
+		campaign = "";
+		mission = "autotest\TestCase01.Desert_E";//relative path to the arma directory
+	};
+	class TestCase02
+	{
+		campaign = "";
+		mission = "c:\arma2\autotest\TestCase02.Desert_E";//absolute path
+	};
+};
+</syntaxhighlight>
+
+{{Feature|important|NOTE: If you use -profiles, the relative path is relative to your specificity path.}}
+
+'''Rpt entry:'''
+<syntaxhighlight lang="html">
+<AutoTest result="FAILED">
+	EndMode = LOSER
+	Mission = autotest\TestCase01.Desert_E
+</AutoTest>
+</syntaxhighlight>
+
+If possible use simple worlds, like Desert, to keep the loading times short. The [[startLoadingScreen|loading screen]] command might be useful as well to speed up task that need no rendering.
+
+
+[[Category:Startup Parameters]]

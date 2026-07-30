@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/currentTasks
+// revision: 377084 (2026-01-01T09:42:58Z)
+// export sha1: 1f7q03nyp71onrplb7q192nainoefzx
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Command Group: Teams | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Briefing
+
+|gr2= Teams
+
+|descr= Returns array with all [[taskCompleted | uncompleted]] tasks for the given agent.
+[[getVariable]] could be used on [[Task]] to get the following special local variables from the task:
+* {{hl|"_this"}} [[Team Member]] - the [[teamMember]] [[agent]] the task is assigned to
+* {{hl|"_taskType"}} [[String]] - the name of the task (see [[registeredTasks]])
+* {{hl|"_thisCreated"}} [[Number]] - 1 or 0
+* {{hl|"_thisRunning"}} [[Number]] - 1 or 0
+* {{hl|"_totalCreated"}} [[Number]] - total number of tasks
+* {{hl|"_totalRunning"}} [[Number]] - total number of running tasks
+* {{hl|"_task"}}[[Task]] - often null
+
+|s1= [[currentTasks]] teamMember
+
+|p1= teamMember: [[Team Member]] - [[teamMember]] [[agent]]
+
+|r1= [[Array]] of [[Task]]s
+
+|x1= <sqf>currentTasks teamMember _agent;</sqf>
+
+|seealso= [[taskCompleted]] [[registerTask]] [[registeredTasks]] [[unregisterTask]] [[sendTask]] [[createTask]]
+}}

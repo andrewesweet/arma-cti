@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_tasksUnit
+// revision: 352094 (2024-02-01T23:24:49Z)
+// export sha1: nmioyvo06cki2qghdllbfbra0poagpv
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|arg= global
+
+|descr= Grab all tasks currently created for a given unit. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= target call [[BIS_fnc_tasksUnit]]
+
+|p1= target: [[Object]]
+
+|r1= [[Array]] - array with task names
+
+|x1= <sqf>player call BIS_fnc_tasksUnit;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/Template:Table/RVScripting
+// revision: 341258 (2023-05-18T17:32:52Z)
+// export sha1: g57vj9t3ufw908aauuzembly8nqqaxf
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{| class="wikitable" style="margin:auto; font-size:.85em"
+|-
+! colspan="3" | <big>[[Real Virtuality]] Scripting</big>
+|-
+! colspan="2" | Terminology
+| [[Argument]] ● [[Identifier]] ● [[Expression]] ● [[Operand]] ● [[Operators]] ● [[Parameter]] ● [[Statement]] ● [[Variables]] ● [[Magic Variables]] ● [[Function]]
+|-
+! colspan="2" | Syntax
+| [[SQF Syntax]] ● [[SQS Syntax]] ● [[Order of Precedence]] ● [[Control Structures]]
+|-
+! colspan="2" | Tutorials
+| [[Introduction to Arma Scripting]] ● [[Code Best Practices]] ● [[:Category:Example Code|Example Code]] ● [[Code Optimisation]] ● [[Mission Optimisation]] ● [[Multiplayer Scripting]] ● [[SQS to SQF conversion|SQS → SQF]]
+|-
+! rowspan="2" | Data Types
+! General
+| [[Array]] ● [[Boolean]] ● [[Code]] ● [[Config]] ● [[Control]] ● [[Diary Record]] ● [[Display]] ● [[Eden Entity]] ● [[Eden ID]] ● [[Editor Object]] ● [[Group]] ● [[HashMap]] ● [[Location]] ● [[Namespace]] ● [[Number]] ● [[Object]] ● [[Script Handle]] <br> [[Side]] ● [[String]] ● [[Structured Text]] ● [[Task]] ● [[Team]] ● [[Team Member]] ● [[NaN]] ● [[Anything]] ● [[Nothing]] ● [[Void]] ● [[Switch Type]] ● [[While Type]] ● [[With Type]] ● [[For Type]] ● [[If Type]]
+|-
+! Special Arrays
+| [[Array of Eden Entities]] ● [[Color]] ● [[Date]] ● [[ParticleArray]] ● [[Position]] ● [[Unit Loadout Array]] ● [[Vector3D]] ● [[Waypoint]]
+|-
+! colspan="2" | Scripting Commands
+| [[:Category:Scripting Commands|Scripting Commands]] ● [[:Category:Scripting Commands by Functionality|Scripting Commands by Functionality]]
+|-
+! colspan="2" | Scripting Functions
+| [[:Category:Functions|Scripting Functions]] ● [[:Category:Functions by Functionality|Functions by Functionality]]
+|-
+! colspan="2" | Debugging
+| [[:Category:Common Scripting Errors|Common Scripting Errors]] ● [[Debugging Techniques]] ● [[Exception handling]]
+|-
+! colspan="2" | Advanced
+| [[Event Scripts]] ● [[:Category:Event Handlers|Event Handlers]] ● [[PreProcessor Commands]] ● [[Initialisation Order]] ● [[Performance Profiling]]
+|}</includeonly><noinclude>
+
+== Usage ==
+{| style="width: 100%"
+|- style="background-color: #EEE"
+! Code
+! Result
+|-
+| <nowiki>{{Table/RVScripting}}</nowiki>
+| {{Table/RVScripting}}
+|}
+
+[[Category:Templates|{{PAGENAME}}]]</noinclude>

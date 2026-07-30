@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/get3DENGrid
+// revision: 348872 (2023-11-08T14:39:45Z)
+// export sha1: 7ek723cmf9p7ub0m5bge1p2b591w1vk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Returns the grid increment for the given transformation type.
+
+|s1= [[get3DENGrid]]  type
+
+|p1= type: [[String]] - name of transformation type. Can be:
+* {{hl|"r"}} - Rotation
+* {{hl|"t"}} - Translation
+* {{hl|"s"}} - Scale 
+
+|r1= [[Number]]
+
+|x1= <sqf>_currentIncrement = get3DENGrid "t";</sqf>
+
+|seealso= [[set3DENGrid]]
+}}

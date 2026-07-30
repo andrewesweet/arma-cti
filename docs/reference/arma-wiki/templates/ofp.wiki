@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:ofp
+// revision: 322482 (2022-06-13T10:34:20Z)
+// export sha1: nao057g4ln8djh996zuitvu2kcrzzsc
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|ofp}}</includeonly><noinclude>{{Doc/Template
+|descr= Returns {{hl|{{ofp}}}}.
+|example1= <nowiki>{{ofp}}</nowiki>
+|result1= {{ofp}}
+}}</noinclude>

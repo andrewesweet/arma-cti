@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/composeText
+// revision: 336896 (2023-01-04T16:43:56Z)
+// export sha1: eqcrmgrvtninfaifkk17eklwo8yocio
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Command Group: Structured Text | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Strings
+
+|gr2= Structured Text
+
+|descr= Creates a [[Structured Text]] by joining the given [[Structured Text | structured]] or [[String | plain]] text arguments.
+
+|s1= [[composeText]] arguments
+
+|p1= arguments: [[Array]] of [[String]] and/or [[Structured Text]] - use [[Structured Text]] where necessary (see {{Link|#Example 2}})
+
+|r1= [[Structured Text]]
+
+|x1= <sqf>hint composeText ["Image: ", image "\a3\Data_f\Flags\flag_Altis_co.paa"];</sqf>
+
+|x2= <sqf>
+hint composeText ["line1", "<br/>", "line2"];		// result displayed in one line
+hint composeText ["line1", lineBreak, "line2"];	// result displayed in two lines
+</sqf>
+
+|seealso= [[Structured Text]] [[formatText]] [[image]] [[lineBreak]] [[parseText]] [[text]] [[setAttributes]]
+}}

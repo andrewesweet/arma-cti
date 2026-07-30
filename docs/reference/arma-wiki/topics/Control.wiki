@@ -1,0 +1,14 @@
+// source: https://community.bistudio.com/wiki/Control
+// revision: 149017 (2020-03-10T21:05:08Z)
+// export sha1: kgbr0jcadvsdg7ouqlwtp32zxp3c0ac
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Description:'''
+Control UI object.
+
+Introduced with Armed Assault, does not refer to Cold War Crisis or Resistance.
+
+More information can be found on the [[Arma: GUI Configuration]] page.
+
+[[Category: Data Types]]

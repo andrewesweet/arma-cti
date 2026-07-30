@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_phoneticalWord
+// revision: 349006 (2023-11-08T14:46:14Z)
+// export sha1: ex776rixded7cj7t73ymcr107wae731
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strings | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strings
+
+|descr= Convert number to NATO phonetical alphabet word (e.g. 2 becomes "Bravo") or letter of alphabet.
+
+|s1= [integer, short] call [[BIS_fnc_phoneticalWord]]
+
+|p1= integer: [[Number]] - any integer from 1 to 26.
+
+|p2= short: [[Boolean]] - (Optional, default [[false]]) [[true]] for the short version, [[false]] for the long version.
+
+|r1= [[String]] - phonetical word or letter of alphabet. In case of full word the returned string [[isLocalized|is localised]].
+
+|x1= <sqf>[1] call BIS_fnc_phoneticalWord; // returns "Alpha"</sqf>
+
+|x2= <sqf>[1, true] call BIS_fnc_phoneticalWord; // returns "A"</sqf>
+
+|seealso= [[BIS_fnc_ordinalNumber]] [[BIS_fnc_romanNumeral]]
+}}

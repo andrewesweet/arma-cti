@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/sentencesEnabled
+// revision: 349008 (2023-11-08T14:47:05Z)
+// export sha1: bvui7i5lh0uwvgcpabqdbpvh6t8sjoh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Radio and Chat
+
+|descr= A getter for [[enableSentences]].
+
+|s1= [[sentencesEnabled]]
+
+|r1= [[Boolean]] - returns [[true]] if sentences are enabled
+
+|x1= <sqf>
+if (sentencesEnabled) then
+{
+	hint "sentences are enabled; changing that now";
+	enableSentences false;
+};
+</sqf>
+
+|seealso= [[enableSentences]]
+}}

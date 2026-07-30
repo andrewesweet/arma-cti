@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_kbSkip
+// revision: 328421 (2022-07-13T16:00:50Z)
+// export sha1: 876oa19d3s3ghith8xkwwigfe64te5i
+// categories: Category:Arma 3: Functions | Category:Function Group: Conversations | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Conversations
+
+|descr= Skip a conversation started with [[BIS_fnc_kbTell]]. Currently played sentence will be finished.
+
+|s1= [topicName, mission, wait] call [[BIS_fnc_kbSkip]]
+
+|p1= topicName: [[String]] or [[Object]] - either topic name or the person currently talking
+
+|p2= mission: [[String]] - (Optional, default [[missionName]])
+
+|p3= wait: [[Boolean]] or [[Array]] or [[Number]]
+
+|r1= [[Boolean]] or [[Number]]
+
+|x1= <sqf>["topic1", "currentMission"] call BIS_fnc_kbSkip;</sqf>
+
+|x2= <sqf>[player] call BIS_fnc_kbSkip;</sqf>
+
+|seealso= [[BIS_fnc_kbTell]] [[Conversations]] [[:Category:Function Group: Conversations|Function Group: Conversations]]
+}}

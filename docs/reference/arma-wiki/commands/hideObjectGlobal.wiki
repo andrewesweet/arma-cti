@@ -1,0 +1,74 @@
+// source: https://community.bistudio.com/wiki/hideObjectGlobal
+// revision: 369350 (2024-09-03T18:43:03Z)
+// export sha1: cyfy0i96bnsh71ckru2zmx76nebdlxy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+
+|arg= global
+
+|eff= global
+|serverExec= server
+
+|gr1= Object Manipulation
+
+|descr= This command is designed for MP. Hides object on all connected clients as well as JIP. Can be used on static objects. In singleplayer this command behaves just like [[hideObject]].
+
+|s1= [[hideObjectGlobal]] object
+
+|p1= object: [[Object]] - object to hide
+
+|r1= [[Nothing]]
+
+|s2= object [[hideObjectGlobal]]  hidden
+
+|p21= object: [[Object]]
+
+|p22= hidden: [[Boolean]] - [[true]] &rarr; hidden; [[false]] &rarr; visible
+
+|r2= [[Nothing]]
+
+|x1= <sqf>
+hideObjectGlobal myObject; // hides myObject
+hideObjectGlobal nearestBuilding [2500, 2500, 0];
+</sqf>
+
+|x2= <sqf>
+myObject hideObjectGlobal true;	// hides myObject
+myObject hideObjectGlobal false;	// shows myObject
+</sqf>
+
+|x3= <sqf>[myObject, true] remoteExec ["hideObjectGlobal", 2]; // remote-executes hideObjectGlobal from a client to the server</sqf>
+
+|seealso= [[hideObject]] [[isObjectHidden]] [[deleteCollection]]
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20150627181400
+|text= [[hideObject]] and [[hideObjectGlobal]] disable object collision in addition to rendering. '''A3 1.45.131175'''
+(tested by hiding buildings and running through, driving through, flying through, and shooting through where the building used to be)
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20160901120400
+|text= As of '''A3 1,62.134494''' running '''hideObjectGlobal''' in big loop may cause some objects not to be hidden for a players already connected or passed '''JIP'''. To avoid players rendering desync consider running that in '''preInit''' schedule of a server.
+}}
+
+{{Note
+|user= DrSova
+|timestamp= 20170807124400
+|text= In '''A3 1.72.142342''' when you hide object via [[hideObjectGlobal]], model sounds still be audible. 
+For e.g. if you delete apex house from map, you still hear a conditioner sound at this spot
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20181013183600
+|text= Eventhandlers such as "explosion" will work on hidden objects
+}}

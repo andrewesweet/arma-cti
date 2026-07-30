@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/setLightFlareSize
+// revision: 310116 (2022-05-05T12:25:32Z)
+// export sha1: kqbcslvxxxsbabhlhhgn8kycqw555ql
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Lights
+
+|arg= local
+
+|eff= local
+
+|descr= Sets relative size of the flare for the light.
+
+|s1= light [[setLightFlareSize]] size
+
+|p1= light: [[Object]]
+
+|p2= size: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myLight setLightFlareSize 5;</sqf>
+
+|seealso= [[setLightAmbient]] [[setLightColor]] [[lightAttachObject]] [[lightDetachObject]] [[setLightIntensity]] [[setLightAttenuation]] [[setLightUseFlare]] [[setLightBrightness]] [[setLightFlareMaxDistance]] [[setLightDayLight]]
+}}

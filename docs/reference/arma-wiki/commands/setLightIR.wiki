@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/setLightIR
+// revision: 310362 (2022-05-05T17:39:18Z)
+// export sha1: 1l1h0ofuuzi46kd5kvk0beougy16sxp
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Lights
+
+|arg= local
+
+|eff= local
+
+|descr= Sets lightpoint in infrared range.
+
+|s1= light [[setLightIR]] value
+
+|p1= light: [[Object]] - object of class {{hl|"#lightpoint"}} or similar
+
+|p2= value: [[Boolean]] - [[true]] to make it visible ''only'' with night vision goggles, [[false]] to make it a normal light
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myLight setLightIR true; // visible with NVG only!</sqf>
+
+|seealso= [[setLightColor]] [[setLightAmbient]] [[setLightBrightness]] [[lightAttachObject]] [[lightDetachObject]] [[setLightIntensity]] [[setLightAttenuation]] [[setLightUseFlare]] [[setLightFlareSize]] [[setLightFlareMaxDistance]] [[setLightDayLight]]
+}}

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/get3DENParent
+// revision: 370441 (2024-12-09T16:33:11Z)
+// export sha1: 7g00d4n3qoh5psm7n9abc0llsspq2q3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Eden Editor
+
+|descr= Obtains the provided entity's parent.
+
+|s1= [[get3DENParent]] entity
+
+|p1= entity: [[Object]], [[Group]], [[Array]], [[Number]], [[String]] - [[Eden Entity]]
+
+|r1= [[Object]], [[Array]], [[Number]] - Returns [[Eden Entity]] or the [[Eden ID]] representing it. -1 for system layers such as ''BLUFOR'', ''OPFOR'' etc.
+
+|x1= <sqf>private _parent = get3DENParent _myObject;</sqf>
+
+|seealso= [[create3DENEntity]] [[delete3DENEntities]]
+}}

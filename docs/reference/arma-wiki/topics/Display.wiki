@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Display
+// revision: 149025 (2020-03-10T21:07:04Z)
+// export sha1: hloa0lixluy20z0rh99r7jzootnndfy
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Display''' is a UI object that holds [[Arma: GUI Configuration|Dialogs]] and [[Control]]s. Similar to how controls are identified by IDCs, displays and dialogs are identified by IDDs. If the IDD is available, displays (and dialogs) can be accessed with [[findDisplay]]. The existence of a distinction between displays and dialogs becomes apparent at time of creation and closing. A display uses the functions [[createDisplay]] and [[closeDisplay]], whereas a dialog uses [[createDialog]] and [[closeDialog]].
+
+Introduced with Armed Assault, does not refer to Cold War Crisis or Resistance.
+
+[[Category: Data Types]]

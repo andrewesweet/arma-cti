@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Event_Handlers
+// revision: 363542 (2024-04-05T18:34:34Z)
+// export sha1: 8tnih1ucv8jujc1qew55h6j4kv7gpl1
+// Vendored snapshot. Do not edit — re-export instead.
+
+Event handlers are available for various game entities such as [[Group|groups]], [[Display|displays]], [[Control|controls]], [[Object|objects]] and the mission itself. See [[:Category:Command Group: Event Handlers|Command Group: Event Handlers]] for all related commands.
+
+[[Category: Reference Lists]]
+[[Category: Scripting Topics]]

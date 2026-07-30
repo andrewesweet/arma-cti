@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/getDammage
+// revision: 376971 (2026-01-01T06:02:13Z)
+// export sha1: avyxxxpwbuz6d52zjxwv86zdzwhd3fd
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns the object damage.
+
+|alias= [[damage]]
+
+|s1= [[getDammage]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Number]] in range 0..1
+
+|x1= <sqf>private _damage = getDammage player;</sqf> 
+
+|seealso= [[damage]] [[setDamage]] [[setDammage]] [[setHit]] [[getHit]] [[getHitIndex]] [[setHitIndex]] [[getHitPointDamage]] [[setHitPointDamage]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2011-05-09 - 13:10 (CEST)</dd>
+<dt class="note">[[User:Demonized|Demonized]]</dt>
+<dd class="note">
+[[getDammage]] and [[damage]] work fine when used on damaged vehicles after a repair from a repair truck when used in {{arma2oa}} patch 1.59.
+<dt><dt>
+<dd class="notedate">Posted on 2007-01-31 - 04:25 (CEST)</dd>
+<dt class="note">[[User:Ceeeb|Ceeeb]]</dt>
+<dd class="note">
+In '''{{ofp}} 1.96''', it is possible for a unit to be dead and still return a getDammage value well below 1. Use ![[alive]] to check if a unit is dead.
+<dt><dt>
+<dd class="notedate">Posted on 13 August 13, 2006  - 12:29 (CEST)</dd>
+<dt class="note">[[User:UNN|UNN]]</dt>
+<dd class="note">
+'''In {{ofp}}''' vehicles repaired in game with the Repair trucks e.t.c never get completely repaired. After being repaired, rather than returning 0 when the [[damage]] command is called. They return a value equal to or less than 0.09. 
+
+Consequently any vehicle flagged as immobile (as indicated by the [[canMove]] command), remains so. At least as far as the AI are concerned. The AI will refuse to board an immobile vehicle or eject straight after boarding. Players remain unaffected and can drive the vehicle as normal. To circumvent this, use [[setDamage]] 0 on the vehicle in question, to allow the AI to board.
+
+</dl>

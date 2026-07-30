@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_weaponsEntityType
+// revision: 327745 (2022-07-13T10:53:31Z)
+// export sha1: 33jtnwn7to5ia0hcqaev6sjqrk257tl
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Weapons | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Weapons
+
+|descr= Return object's weapons as defined in config. Scans also turrets and pylons.
+
+|s1= class call [[BIS_fnc_weaponsEntityType]]
+
+|p1= class: [[String]] or [[Array]] of [[String]]s - entity classes
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>
+["B_Soldier_GL_F"] call BIS_fnc_weaponsEntityType;
+// returns e.g ["arifle_MX_GL_ACO_F","hgun_P07_F","Throw","Put"]
+</sqf>
+
+|x2= <sqf>
+"B_Plane_CAS_01_dynamicLoadout_F" call BIS_fnc_weaponsEntityType;
+/*
+	returns e.g
+	[
+		"Gatling_30mm_Plane_CAS_01_F",
+		"Laserdesignator_pilotCamera",
+		"CMFlareLauncher",
+		"Missile_AA_04_Plane_CAS_01_F",
+		"Rocket_04_HE_Plane_CAS_01_F",
+		"Missile_AGM_02_Plane_CAS_01_F",
+		"Bomb_04_Plane_CAS_01_F",
+		"Rocket_04_AP_Plane_CAS_01_F"
+	]
+*/
+</sqf>
+
+|seealso= [[weapons]] [[weaponsTurret]]
+}}

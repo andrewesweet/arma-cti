@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/assignToAirport
+// revision: 352096 (2024-02-01T23:24:49Z)
+// export sha1: k01sb7im8cgtaycoy4hmlmyiwai07ya
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Roads and Airports | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Roads and Airports
+
+|descr= Assigns a plane to an airport ID or object.
+
+|pr= {{Feature|warning|This command is not implemented in '''{{arma1}}''', use [[landAt]] instead.}}
+
+|s1= plane [[assignToAirport]] id
+
+|p1= plane: [[Object]] - plane
+
+|p2= id: [[Number]] - airport id
+
+|r1= [[Nothing]]
+
+|s2= plane [[assignToAirport]] target
+
+|s2since= arma3 1.68
+
+|p21= plane: [[Object]] - plane
+
+|p22= target: [[Object]] - airport object. For example an aircraft carrier, see [[Arma 3: Dynamic Airport Configuration]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>plane1 assignToAirport 0;</sqf>
+
+|x2= <sqf>plane1 assignToAirport carrier1;</sqf>
+
+|seealso= [[airportSide]] [[setAirportSide]] [[land]] [[landAt]] [[allAirports]] [[Arma: Airport IDs]]
+}}

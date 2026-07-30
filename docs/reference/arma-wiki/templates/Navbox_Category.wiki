@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/Category
+// revision: 323152 (2022-07-01T09:45:33Z)
+// export sha1: 3k8n6xoowiwa4lgsw9gak4v5epbpv7b
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+| {{Navbox
+	|title= Pages in the "[[:Category:{{{1}}}|{{{1}}}]]" category
+	|content1= {{#categorytree:{{{1}}}|hideroot|mode=pages|depth=0|class=navbox-category}}
+}}
+|-no category specified-{{TemplateCase||[[Category:Navbox template usage error]]}}
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Create a navbox with links to all pages in the provided category. The [[MediaWiki:Common.css|CSS]] hides categories and adds a pipe between pages.
+
+|param1= category
+|descr1= category name (without the {{hl|Category:}} prefix)
+
+|example1= <nowiki>{{Navbox/Category}}</nowiki>
+|result1= {{Navbox/Category}}
+
+|example2= <nowiki>{{Navbox/Category|test}}</nowiki>
+|result2= <nowiki/>{{Navbox/Category|test}}
+
+|example3= <nowiki>{{Navbox/Category|{{armaR}}}}</nowiki>
+|result3= <nowiki/>{{Navbox/Category|{{armaR}}}}
+
+|example4= <nowiki>{{Navbox/Category|Introduced with Arma 3 version 1.96}}</nowiki>
+|result4= <nowiki/>{{Navbox/Category|Introduced with Arma 3 version 1.96}}
+}}</noinclude>

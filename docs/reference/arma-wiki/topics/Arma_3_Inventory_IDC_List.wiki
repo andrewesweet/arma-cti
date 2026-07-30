@@ -1,0 +1,144 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Inventory_IDC_List
+// revision: 378065 (2026-02-06T11:03:46Z)
+// export sha1: jbkybq8l8okxbcwwt6yu7hbcyeory23
+// categories: Category:GUI Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|See also: {{Link|Arma 3: IDD List}}, {{Link|Arma 3: Display3DEN IDCs}}.}}
+
+* 62** IDCs target slot items
+* 63** IDCs target slot container items (uniform, vest, backpack)
+
+{| class="wikitable sortable"
+! ID name
+! IDD
+|-
+| IDC_FG_PRIMARY
+| 610
+|-
+| IDC_FG_SECONDARY
+| 611
+|-
+| IDC_FG_HANDGUN
+| 612
+|-
+
+<!-- 62** means slot items -->
+| IDC_FG_MAP
+| 6211
+|-
+| IDC_FG_COMPASS
+| 6212
+|-
+| IDC_FG_WATCH
+| 6213
+|-
+| IDC_FG_RADIO
+| 6214
+|-
+| IDC_FG_GPS
+| 6215
+|-
+| IDC_FG_GOGGLES
+| 6216
+|-
+| IDC_FG_HMD
+| 6217
+|-
+| IDC_FG_BINOC
+| 6238
+|-
+| IDC_FG_BACKPACK2
+| 6239
+|-
+| IDC_FG_HEADGEAR
+| 6240
+|-
+<!-- 63** means slot container items (uniform, vest, backpack) -->
+| IDC_FG_UNIFORM_SLOT
+| 6301
+|-
+| IDC_FG_VEST_SLOT
+| 6302
+|-
+| IDC_FG_BACKPACK_SLOT
+| 6303
+|-
+| IDC_FG_UNIFORM_LOAD
+| 6304
+|-
+| IDC_FG_VEST_LOAD
+| 6305
+|-
+| IDC_FG_BACKPACK_LOAD
+| 6306
+|-
+| IDC_FG_GROUND_LOAD
+| 6307
+|-
+| IDC_FG_TOTAL_LOAD
+| 6308
+|-
+| IDC_FG_MAGAZINES
+| 618
+|-
+<!-- primary weapon -->
+| IDC_FG_PW_MUZZLE
+| 620
+|-
+| IDC_FG_PW_OPTICS
+| 621
+|-
+| IDC_FG_PW_FLASHLIGHT
+| 622
+|-
+| IDC_FG_PW_MAGAZINE
+| 623
+|-
+<!-- secondary weapon -->
+| IDC_FG_SW_MUZZLE
+| 624
+|-
+| IDC_FG_SW_OPTICS
+| 625
+|-
+| IDC_FG_SW_FLASHLIGHT
+| 626
+|-
+| IDC_FG_SW_MAGAZINE
+| 627
+|-
+<!-- handgun -->
+| IDC_FG_HG_MUZZLE
+| 628
+|-
+| IDC_FG_HG_OPTICS
+| 629
+|-
+| IDC_FG_HG_FLASHLIGHT
+| 630
+|-
+| IDC_FG_HG_MAGAZINE
+| 631
+|-
+| IDC_FG_GROUND_ITEMS
+| 632
+|-
+| IDC_FG_CHOSEN_CONTAINER
+| 640
+|-
+| IDC_FG_PW_UNDERBARREL
+| 641
+|-
+| IDC_FG_SW_UNDERBARREL
+| 642
+|-
+| IDC_FG_HG_UNDERBARREL
+| 643
+|-
+| IDC_FG_PW_MAGAZINE_GL
+| 644
+|}
+
+
+[[Category:GUI Topics]]

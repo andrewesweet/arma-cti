@@ -1,0 +1,253 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Display3DEN_IDCs
+// revision: 378066 (2026-02-06T11:05:54Z)
+// export sha1: qj64wvf5s2lx63wce5czzxwsri522ey
+// categories: Category:Eden Editor: Modding | Category:GUI Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|See also: {{Link|Arma 3: IDD List}}, {{Link|Arma 3: Inventory IDC List}}.}}
+
+{| class="wikitable sortable"
+! Config Name !! IDC !! Config Path
+|-
+| {{hl|ContextMenu}} || 1100 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "ContextMenu"</sqf></spoiler>
+|-
+| {{hl|Map}} || 51 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "ControlsBackground" >> "Map"</sqf></spoiler>
+|-
+| {{hl|MouseArea}} || 52 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "ControlsBackground" >> "MouseArea"</sqf></spoiler>
+|-
+| {{hl|ScrollBlockTop}} || 46 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "ControlsBackground" >> "ScrollBlockTop"</sqf></spoiler>
+|-
+| {{hl|ScrollBlockLeft}} || 47 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "ControlsBackground" >> "ScrollBlockLeft"</sqf></spoiler>
+|-
+| {{hl|ScrollBlockRight}} || 48 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "ControlsBackground" >> "ScrollBlockRight"</sqf></spoiler>
+|-
+| {{hl|ScrollBlockBottom}} || 49 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "ControlsBackground" >> "ScrollBlockBottom"</sqf></spoiler>
+|-
+| {{hl|NavigationWidget}} || 87 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "ControlsBackground" >> "NavigationWidget"</sqf></spoiler>
+|-
+| {{hl|Black}} || 998 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "ControlsBackground" >> "Black"</sqf></spoiler>
+|-
+| {{hl|ButtonExit}} || 2 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "ButtonExit"</sqf></spoiler>
+|-
+| {{hl|MissionName}} || 76 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "MissionName"</sqf></spoiler>
+|-
+| {{hl|MenuStrip}} || 120 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "MenuStrip"</sqf></spoiler>
+|-
+| {{hl|Toolbar}} || 1000 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar"</sqf></spoiler>
+|-
+| {{hl|ToolbarBackground}} || 1001 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "ToolbarBackground"</sqf></spoiler>
+|-
+| {{hl|File}} || 1002 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "File"</sqf></spoiler>
+|-
+| {{hl|New}} || 1006 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "File" >> "Controls" >> "New"</sqf></spoiler>
+|-
+| {{hl|Open}} || 1007 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "File" >> "Controls" >> "Open"</sqf></spoiler>
+|-
+| {{hl|Save}} || 1008 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "File" >> "Controls" >> "Save"</sqf></spoiler>
+|-
+| {{hl|Publish}} || 10091 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "File" >> "Controls" >> "Publish"</sqf></spoiler>
+|-
+| {{hl|History}} || 1003 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "History"</sqf></spoiler>
+|-
+| {{hl|Undo}} || 1010 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "History" >> "Controls" >> "Undo"</sqf></spoiler>
+|-
+| {{hl|Redo}} || 1011 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "History" >> "Controls" >> "Redo"</sqf></spoiler>
+|-
+| {{hl|Widget}} || 1004 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Widget"</sqf></spoiler>
+|-
+| {{hl|WidgetNone}} || 10041 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Widget" >> "Controls" >> "WidgetNone"</sqf></spoiler>
+|-
+| {{hl|WidgetTranslation}} || 10042 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Widget" >> "Controls" >> "WidgetTranslation"</sqf></spoiler>
+|-
+| {{hl|WidgetRotation}} || 10043 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Widget" >> "Controls" >> "WidgetRotation"</sqf></spoiler>
+|-
+| {{hl|WidgetScaling}} || 10044 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Widget" >> "Controls" >> "WidgetScaling"</sqf></spoiler>
+|-
+| {{hl|WidgetArea}} || 10045 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Widget" >> "Controls" >> "WidgetArea"</sqf></spoiler>
+|-
+| {{hl|Interaction}} || 1005 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Interaction"</sqf></spoiler>
+|-
+| {{hl|WidgetCoord}} || 1016 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Interaction" >> "Controls" >> "WidgetCoord"</sqf></spoiler>
+|-
+| {{hl|VerticalToggle}} || 1017 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Interaction" >> "Controls" >> "VerticalToggle"</sqf></spoiler>
+|-
+| {{hl|SurfaceSnapToggle}} || 1018 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Interaction" >> "Controls" >> "SurfaceSnapToggle"</sqf></spoiler>
+|-
+| {{hl|Grid}} || 1024 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Grid"</sqf></spoiler>
+|-
+| {{hl|Translation}} || 1025 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Grid" >> "Controls" >> "Translation"</sqf></spoiler>
+|-
+| {{hl|TranslationValue}} || 1026 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Grid" >> "Controls" >> "TranslationValue"</sqf></spoiler>
+|-
+| {{hl|Rotation}} || 1027 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Grid" >> "Controls" >> "Rotation"</sqf></spoiler>
+|-
+| {{hl|RotationValue}} || 1028 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Grid" >> "Controls" >> "RotationValue"</sqf></spoiler>
+|-
+| {{hl|Scaling}} || 1029 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Grid" >> "Controls" >> "Scaling"</sqf></spoiler>
+|-
+| {{hl|ScalingValue}} || 1030 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Grid" >> "Controls" >> "ScalingValue"</sqf></spoiler>
+|-
+| {{hl|Mission}} || 10301 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Mission"</sqf></spoiler>
+|-
+| {{hl|Intel}} || 10302 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Mission" >> "Controls" >> "Intel"</sqf></spoiler>
+|-
+| {{hl|Map}} || 10303 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Mission" >> "Controls" >> "Map"</sqf></spoiler>
+|-
+| {{hl|Flashlight}} || 10305 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Mission" >> "Controls" >> "Flashlight"</sqf></spoiler>
+|-
+| {{hl|Vision}} || 10304 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Mission" >> "Controls" >> "Vision"</sqf></spoiler>
+|-
+| {{hl|Workspace}} || 10306 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Mission" >> "Controls" >> "Workspace"</sqf></spoiler>
+|-
+| {{hl|Help}} || 10251 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Help"</sqf></spoiler>
+|-
+| {{hl|Tutorial}} || 10310 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Toolbar" >> "Controls" >> "Help" >> "Controls" >> "Tutorial"</sqf></spoiler>
+|-
+| {{hl|Notification}} || 10312 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "Notification"</sqf></spoiler>
+|-
+| {{hl|TabLeftToggle}} || 1031 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "TabLeftToggle"</sqf></spoiler>
+|-
+| {{hl|PanelLeft}} || 1019 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft"</sqf></spoiler>
+|-
+| {{hl|TabLeftToggle}} || 1032 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "TabLeftToggle"</sqf></spoiler>
+|-
+| {{hl|TabLeftSections}} || 1033 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "TabLeftSections"</sqf></spoiler>
+|-
+| {{hl|PanelLeftBackground}} || 1020 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftBackground"</sqf></spoiler>
+|-
+| {{hl|PanelLeftEdit}} || 1037 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftEdit"</sqf></spoiler>
+|-
+| {{hl|SearchEdit}} || 80 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftEdit" >> "Controls" >> "SearchEdit"</sqf></spoiler>
+|-
+| {{hl|SearchEditButton}} || 81 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftEdit" >> "Controls" >> "SearchEditButton"</sqf></spoiler>
+|-
+| {{hl|Edit}} || 55 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftEdit" >> "Controls" >> "Edit"</sqf></spoiler>
+|-
+| {{hl|Delete}} || 85 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftEdit" >> "Controls" >> "EditPanel" >> "Controls" >> "Delete"</sqf></spoiler>
+|-
+| {{hl|EditLayer}} || 84 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftEdit" >> "Controls" >> "EditPanel" >> "Controls" >> "EditLayer"</sqf></spoiler>
+|-
+| {{hl|RemoveLayer}} || 86 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftEdit" >> "Controls" >> "EditPanel" >> "Controls" >> "RemoveLayer"</sqf></spoiler>
+|-
+| {{hl|EnableLayer}} || 1065 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftEdit" >> "Controls" >> "EditPanel" >> "Controls" >> "EnableLayer"</sqf></spoiler>
+|-
+| {{hl|ShowLayer}} || 1064 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftEdit" >> "Controls" >> "EditPanel" >> "Controls" >> "ShowLayer"</sqf></spoiler>
+|-
+| {{hl|PanelLeftLocations}} || 1038 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftLocations"</sqf></spoiler>
+|-
+| {{hl|SearchLocations}} || 800 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftLocations" >> "Controls" >> "SearchLocations"</sqf></spoiler>
+|-
+| {{hl|SearchLocationsButton}} || 810 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftLocations" >> "Controls" >> "SearchLocationsButton"</sqf></spoiler>
+|-
+| {{hl|Locations}} || 820 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelLeft" >> "Controls" >> "PanelLeftLocations" >> "Controls" >> "Locations"</sqf></spoiler>
+|-
+| {{hl|TabRightToggle}} || 1034 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "TabRightToggle"</sqf></spoiler>
+|-
+| {{hl|PanelRight}} || 1021 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight"</sqf></spoiler>
+|-
+| {{hl|TabRightToggle}} || 1034 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "TabRightToggle"</sqf></spoiler>
+|-
+| {{hl|TabRightSections}} || 1036 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "TabRightSections"</sqf></spoiler>
+|-
+| {{hl|PanelRightBackground}} || 1022 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightBackground"</sqf></spoiler>
+|-
+| {{hl|PanelRightCreate}} || 1039 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate"</sqf></spoiler>
+|-
+| {{hl|ModeLabels}} || 1060 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "ModeLabels"</sqf></spoiler>
+|-
+| {{hl|Modes}} || 53 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Modes"</sqf></spoiler>
+|-
+| {{hl|Sides}} || 54 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Sides"</sqf></spoiler>
+|-
+| {{hl|Create}} || 1049 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create"</sqf></spoiler>
+|-
+| {{hl|ModsButton}} || 4242 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "ModsButton"</sqf></spoiler>
+|-
+| {{hl|SearchCreate}} || 82 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "SearchCreate"</sqf></spoiler>
+|-
+| {{hl|SearchCreateButton}} || 83 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "SearchCreateButton"</sqf></spoiler>
+|-
+| {{hl|CreateObjectWEST}} || 56 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateObjectWEST"</sqf></spoiler>
+|-
+| {{hl|CreateObjectEAST}} || 57 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateObjectEAST"</sqf></spoiler>
+|-
+| {{hl|CreateObjectGUER}} || 58 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateObjectGUER"</sqf></spoiler>
+|-
+| {{hl|CreateObjectCIV}} || 59 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateObjectCIV"</sqf></spoiler>
+|-
+| {{hl|CreateObjectEMPTY}} || 60 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateObjectEMPTY"</sqf></spoiler>
+|-
+| {{hl|CreateGroupWEST}} || 61 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateGroupWEST"</sqf></spoiler>
+|-
+| {{hl|CreateGroupEAST}} || 62 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateGroupEAST"</sqf></spoiler>
+|-
+| {{hl|CreateGroupGUER}} || 63 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateGroupGUER"</sqf></spoiler>
+|-
+| {{hl|CreateGroupCIV}} || 64 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateGroupCIV"</sqf></spoiler>
+|-
+| {{hl|CreateGroupEMPTY}} || 65 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateGroupEMPTY"</sqf></spoiler>
+|-
+| {{hl|CreateGroupCUSTOM}} || 71 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateGroupCUSTOM"</sqf></spoiler>
+|-
+| {{hl|CreateTrigger}} || 68 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateTrigger"</sqf></spoiler>
+|-
+| {{hl|CreateWaypoint}} || 6.9e+006 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateWaypoint"</sqf></spoiler>
+|-
+| {{hl|CreateObjectLogic}} || 66 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateObjectLogic"</sqf></spoiler>
+|-
+| {{hl|CreateObjectModule}} || 67 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateObjectModule"</sqf></spoiler>
+|-
+| {{hl|CreateMarkerIcon}} || 69 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateMarkerIcon"</sqf></spoiler>
+|-
+| {{hl|CreateMarkerArea}} || 70 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CreateMarkerArea"</sqf></spoiler>
+|-
+| {{hl|VehiclePanel}} || 1062 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "VehiclePanel"</sqf></spoiler>
+|-
+| {{hl|ToggleEmpty}} || 1063 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "VehiclePanel" >> "Controls" >> "ToggleEmpty"</sqf></spoiler>
+|-
+| {{hl|CustomCompositionPanel}} || 1061 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CustomCompositionPanel"</sqf></spoiler>
+|-
+| {{hl|Add}} || 90 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CustomCompositionPanel" >> "Controls" >> "Add"</sqf></spoiler>
+|-
+| {{hl|Edit}} || 91 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CustomCompositionPanel" >> "Controls" >> "Edit"</sqf></spoiler>
+|-
+| {{hl|Publish}} || 93 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CustomCompositionPanel" >> "Controls" >> "Publish"</sqf></spoiler>
+|-
+| {{hl|Delete}} || 92 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightCreate" >> "Controls" >> "Create" >> "Controls" >> "CustomCompositionPanel" >> "Controls" >> "Delete"</sqf></spoiler>
+|-
+| {{hl|PanelRightHistory}} || 1040 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightHistory"</sqf></spoiler>
+|-
+| {{hl|History}} || 74 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "PanelRight" >> "Controls" >> "PanelRightHistory" >> "Controls" >> "History"</sqf></spoiler>
+|-
+| {{hl|EditorPreviewGroup}} || 98 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "EditorPreviewGroup"</sqf></spoiler>
+|-
+| {{hl|EditorPreview}} || 99 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "EditorPreviewGroup" >> "Controls" >> "EditorPreview"</sqf></spoiler>
+|-
+| {{hl|ButtonPlay}} || 1023 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "ButtonPlay"</sqf></spoiler>
+|-
+| {{hl|ControlsHint}} || 1044 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "ControlsHint"</sqf></spoiler>
+|-
+| {{hl|StatusBar}} || 1050 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "StatusBar"</sqf></spoiler>
+|-
+| {{hl|StatusBarBackground}} || 1051 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "StatusBar" >> "Controls" >> "StatusBarBackground"</sqf></spoiler>
+|-
+| {{hl|ValueX}} || 1052 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "StatusBar" >> "Controls" >> "ValueX"</sqf></spoiler>
+|-
+| {{hl|ValueY}} || 1053 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "StatusBar" >> "Controls" >> "ValueY"</sqf></spoiler>
+|-
+| {{hl|ValueZ}} || 1054 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "StatusBar" >> "Controls" >> "ValueZ"</sqf></spoiler>
+|-
+| {{hl|ValueDis}} || 1055 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "StatusBar" >> "Controls" >> "ValueDis"</sqf></spoiler>
+|-
+| {{hl|Version}} || 1057 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "StatusBar" >> "Controls" >> "Version"</sqf></spoiler>
+|-
+| {{hl|Mod}} || 1058 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "StatusBar" >> "Controls" >> "Mod"</sqf></spoiler>
+|-
+| {{hl|Server}} || 1059 || <spoiler text="Show config path"><sqf>configFile >> "Display3DEN" >> "Controls" >> "StatusBar" >> "Controls" >> "Server"</sqf></spoiler>
+|}
+
+{{Wiki|extractionScript}}
+
+
+[[Category: Eden Editor: Modding]]
+[[Category:GUI Topics]]

@@ -1,0 +1,263 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Terminology
+// revision: 353519 (2024-03-19T12:01:20Z)
+// export sha1: 8ixupp3zoppu4dl78fzcutmaradoons
+// categories: Category:Eden Editor: Getting Started
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+__NOEDITSECTION__
+
+A list of commonly used terms related to the [[:Category:Eden Editor|Eden Editor]] documentation.
+
+{| class="wikitable"
+! Term
+! Description
+! See Also
+|-
+|
+====== AI ======
+| Artificial Intelligence - [[#Object|Object]] controlled by the computer. Similar to [[#Character|character]], but not limited to humans (e.g., can include animals).
+| [[Eden Editor: Object|Object]]
+|-
+|
+====== Area Marker ======
+| Special kind of [[#Marker|marker]], which is not represented by an icon, but the elliptic or rectangular area.
+| [[Eden Editor: Marker|Marker]]
+|-
+|
+====== Area Scaling======
+| Action of [[Eden_Editor:_Transformation_Widget|changing size]] of an entity area.
+| Eden Editor: Area Scaling
+|-
+|
+====== Asset ======
+| Content available for [[#Placing|placing]]. Once placed, it becomes an [[#Entity|entity]].
+| 
+|-
+|
+====== Asset Sub-type ======
+| Minor categorization of the [[#Asset_Browser|asset browser]]. Available sub-types are based on currently selected [[#Asset_Type|asset type]] (e.g., for [[#Object|objects]], sub-types are sides like BLUFOR, OFPOR, etc.)
+| 
+|-
+|
+====== Asset Type ======
+| Major categorization of the [[#Asset_Browser|asset browser]]. Formerly known as ''editing mode'' in the 2D editor. Modes are  [[#Object|objects]], [[#Composition|compositions]], [[#Trigger|triggers]], [[#Waypoint|waypoints]], [[#System|systems]] and [[#Marker|markers]].
+| 
+|-
+|
+====== Asset Browser ======
+| A list of all assets available for [[#Placing|placing]]. Categorized by [[#Asset_Type|asset type]] and [[#Asset_Sub-type|asset sub-type]].
+| 
+|-
+|
+====== Attribute ======
+| Individual setting of an entity (e.g., [[#Object|object]] attributes are position, name, fuel, etc.)
+| [[Eden Editor: Entity Attributes|Attributes]]
+|-
+|
+====== Briefing ======
+| Text-based introduction to the [[#Scenario|scenario]]. It is shown before Scenario phase starts, but only after [[#Intro|intro]] ends. Can be disabled completely.
+| [[Eden Editor: Scenario Phases|Scenario Phases]]
+|-
+|
+====== Character ======
+| A person, e.g., soldier, civilian, etc. It's a type of [[#Object|object]].
+| [[Eden Editor: Object|Object]]
+|-
+|
+====== Composition ======
+| Collection of [[#Object|objects]]. When the objects are [[#Character|characters]], the composition is also known as [[#Group|group]].
+| [[Eden Editor: Composition|Composition]]
+|-
+|
+====== Connecting ======
+| Action of [[Eden_Editor:_Connecting|connecting]] one or more entities to another entity, using specific connection type.
+| [[Eden Editor: Connecting|Connecting]]
+|-
+|
+====== Context Menu ======
+| Menu opened by clicking '''Right Mouse Button''' on an [[#Entity|entity]]. Will show only options related to selected entities.
+| | [[Eden Editor: Entity Context Menu|Context Menu]]
+|-
+|
+====== Entity ======
+| An editable element. Can be [[#Object|object]], [[#Group|group]], [[#Trigger|trigger]], [[#Waypoint|waypoint]], [[#System|system]] or [[#Marker|marker]]. All entities are represented by an icon in the [[#View|view]] and by an entry in the entity list. Before [[#Placing|placing]], an entity is an [[#Asset|asset]] available in the [[#Asset_Browser|asset browser]].
+| 
+|-
+|
+====== Entity List ======
+| A list of all [[#entities|entities]] currently in the [[#Scenario|scenario]].
+| | Entity List
+|-
+|
+====== Group ======
+| [[Eden Editor: Group|Group]] [[#Entity|entity]] type. A group consists of [[#Character|characters]] and has one leader, who's able to issue orders to others.
+| [[Eden Editor: Group|Group]]
+|-
+|
+====== Grouping ======
+| Action of [[#Connecting|connecting]] one AI [[#Character|character]] to another Character or a [[#Group|group]].
+| [[Eden Editor: Connecting|Connecting]]
+|-
+|
+====== Intro ======
+| Opening [[#Phase|phase]] of the [[#Scenario|scenario]], performed before the scenario itself (including [[#Briefing|briefing]]) starts. It's available only in singleplayer and player cannot control it.
+| [[Eden Editor: Scenario Phases|Scenario Phases]]
+|-
+|
+====== Logic ======
+| Dummy [[#System|system]] which doesn't have any existing functionality on its own, but can be used together with other systems.
+| [[Eden Editor: System|System]]
+|-
+|
+====== Map ======
+| 2D [[#View|view]] where environment and [[#Entity|entities]] are visible. 3D part of the view is the [[#Scene|scene]].
+| 
+|-
+|
+====== Marker ======
+| [[Eden Editor: Marker]] [[#Entity|entity]] type. Marker is symbol or an [[#Marker_Area|area]] drawn only in the [[#Map|map]]. 
+| | [[Eden Editor: Marker|Marker]]
+|-
+|
+====== Menu Bar ======
+| Menus structure which lists almost all available actions and tools with their keyboard shortcuts.
+| [[Eden Editor: Menu Bar|Menu Bar]]
+|-
+|
+====== Mission ======
+| See [[#Scenario|Scenario]]. Mission is an older name that was used until {{GameCategory|arma2|link= y}}, but may still appear in some cases.
+| 
+|-
+|
+====== Module ======
+| Advanced [[#System|system]] which executes pre-defined functionality (e.g., sector module, save game module, etc.) It can be often configured using custom [[#Attribute|attributes]].
+| [[Eden Editor: System|System]]
+|-
+|
+====== Object ======
+| [[Eden Editor: Object|Object]] [[#Entity|entity]] type. It's basic entity type, usually with a model, textures and some sort of simulation (e.g., car, house, etc.) It's further divided to [[#Character|characters]], [[#Vehicle|vehicles]] and [[#Prop|props]].
+| [[Eden Editor: Object|Object]]
+|-
+|
+====== Outro ======
+| Closing [[#Phase|phase]] of the [[#Scenario|scenario]], performed after the scenario ends. It has Win and Lose versions, only one of them is selected based on outcome of the scenario. It's available only in singleplayer and player cannot control it.
+| [[Eden Editor: Scenario Phases|Scenario Phases]]
+|-
+|
+====== Phase ======
+| [[#Scenario|Scenario]] section, launched sequentially in order [[#Intro|Intro]] > Scenario > [[#Outro|Outro]] (either Win or Lose version). 
+| [[Eden Editor: Scenario Phases|Scenario Phases]]
+|-
+|
+====== Placing ======
+| Action of [[Eden_Editor:_Entity_Placing|adding]] one or more entities to the [[#Scenario|scenario]] from the [[#Asset_Browser|asset browser]]
+| 
+|-
+|
+====== Player ======
+| [[#Character|Character]] controlled by the user once the [[#Scenario|scenario]] starts.
+| [[Eden Editor: Object|Object]]
+|-
+|
+====== Preview ======
+| Playing a [[#Scenario|scenario]] from the editor to see how it performs.
+| 
+|-
+|
+====== Prop ======
+| Static decoration, e.g., house, chair, etc. It's a type of [[#Object|object]].
+| [[Eden Editor: Object|Object]]
+|-
+|
+====== Rotating ======
+| Action of changing entity angle around X, Y or Z axis.
+| [[Eden Editor: Entity Transforming|Transforming]]
+|-
+|
+====== Scenario ======
+| Most commonly the name of the whole project, where all [[#Entity|entities]] or scenario [[#Attribute|attributes]] are saved. The final scenario can be exported to PBO and shared, or published to Steam Workshop.
+
+Alternatively, Scenario can refer to a [[#Phase|phase]] where all interactive gameplay happens.
+| [[Eden Editor: Scenario Phases|Scenario Phases]]
+|-
+|
+====== Scene ======
+| 3D [[#View|view]] where environment and [[#Entity|entities]] are visible. 2D part of the view is the [[#Map|map]].
+| 
+|-
+|
+====== Status Bar ======
+| Non-interactive bar providing user with various debugging information.
+| | [[Eden Editor: Status Bar|Status Bar]]
+|-
+|
+====== Synchronizing ======
+| See [[#Syncing|Syncing]].
+| [[Eden Editor: Connecting|Connecting]]
+|-
+|
+====== Syncing ======
+| Action of [[#Connecting|connecting]] one or more [[#Entity|entities]] to another entity using general connection type.
+| [[Eden Editor: Connecting|Connecting]]
+|-
+|
+====== System ======
+| [[Eden Editor: System|System]] [[#Entity|entity]] type. System is a virtual object with specific purpose, and can be a [[#Logic|logic]] or a [[#Module|module]].
+| [[Eden Editor: System|System]]
+|-
+|
+====== Toolbar ======
+| A bar with icons for quick access to the most commonly used actions and tools. They can also be found in the [[#Menu_Bar|menu bar]].
+| [[Eden Editor: Toolbar|Toolbar]]
+|-
+|
+====== Transformation Widget ======
+| Interactive helper model for precise [[#Transforming|transformation]], [[#Rotation|rotation]] and area scaling.
+| [[Eden Editor: Transformation Widget|Transformation Widget]]
+|-
+|
+====== Transforming ======
+| Action of direct manipulation of entities in the [[#View|view]], can be [[#Translating|translating]], [[#Rotating|rotating]], area scaling or [[#Connecting|connecting]]
+| 
+|-
+|
+====== Translating ======
+| Action of changing X, Y or Z coordinates of an entity.
+| [[Eden Editor: Entity Transforming|Transforming]]
+|-
+|
+====== Trigger ======
+| [[Eden Editor: Trigger|Trigger]] [[#Entity|entity]] type. A trigger is an event called once a specific set of conditions is met. It can have a volume and check for presence of [[#Object|objects]] in it.
+| [[Eden Editor: Trigger|Trigger]]
+|-
+|
+====== <strike style="color:grey;">Unit</strike> ======
+| An older name for characters and vehicles, i.e., objects player or AI can control. Should not be used anymore to avoid confusion with {{Link|link= http://units.arma3.com/|text= Multiplayer Units}}.
+| 
+|-
+|
+====== Vehicle ======
+| A vehicle, e.g., car, helicopter, etc. It's a type of [[#Object|object]].
+| [[Eden Editor: Object|Object]]
+|-
+|
+====== View ======
+| Representation of scenario environment, can be 3D [[#Scene|scene]] or 2D [[#Map|map]]
+| 
+|-
+|
+====== Waypoint ======
+| [[Eden Editor: Waypoint|Waypoint]] [[#Entity|entity]] type. Waypoint belongs to a [[#Group|group]], and tells it to perform some operation. When the group has multiple waypoints, it will go through them in a pre-defined order.
+| [[Eden Editor: Waypoint|Waypoint]]
+|-
+|
+====== Widget ======
+| See [[#Transformation_Widget|Transformation Widget]].
+| [[Eden Editor: Transformation Widget|Transformation Widget]]
+|-
+|
+====== Workspace ======
+| Working environment, contains the [[#View|view]] and all main user interface elements - [[#Menu_Bar|menu bar]], [[#Toolbar|toolbar]], entity list, [[#Asset_Browser|asset browser]] and [[#Status_Bar|status bar]].
+|}
+[[Category:Eden Editor: Getting Started|Terminology]]

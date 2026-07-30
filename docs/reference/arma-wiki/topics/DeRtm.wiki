@@ -1,0 +1,91 @@
+// source: https://community.bistudio.com/wiki/DeRtm
+// revision: 156916 (2020-09-07T16:55:19Z)
+// export sha1: lgf0xv7qd3imzpfguq9sapoc1xf6ezx
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+         
+Dertm Version 1.xx by Mikero<br>
+Dual Dos/Windows exe<br>
+see readmegeneral.txt
+
+ 
+see fixes<br>
+
+ 
+----
+ 
+two exes are provided:<br> <br>
+DeRtm.exe is a dual, windows gui / dos tool.<br> <br>
+DeRtmDos.exe is a dos only speed freak.<br> <br>
+--------<br> <br>
+DeRtm analyses the content of *any* rtm file and does a few consistency checks.<br> <br>
+In it is basic mode, it will show the bone names, frametimes, or, (if applicable) 
+sounds inside the rtm.
+
+ 
+<br>
+This is generally sufficient for simply identifying the content and typeof rtm 
+under the hammer.<br> <br>
+DeRtm can scan entire folder(s).<br> <br>
+In this mode, it is a powerful tool to verify the integrity of ALL rtms in a 
+project.<br> <br>
+DeRtm *ALSO* provides a mechanism to convert binarised rtm back to plain jane. 
+See below for important details.<br> <br>
+------------<br> <br>
+Syntax:<br> <br>
+DeRtm [-options] &lt;any\folder or nameof[.rtm]&gt; [&lt;output&gt;[.rtm]] &lt;skeleton&gt;.p3d|cfg] ]<br> <br>
+options: (case insensitive)<br>
+None: Show Basic header<br>
+-F: Show Frametimes<br>
+-B: Show bone names (default)<br>
+-S: Show Sounds (if any)<br>
+-P: don't pause on error<br>
+-C: convert to unbinarised<br>
+-CV: verify after write<br> <br>
+if simply sniffing at rtm's: neither skeleton or output params are required (and 
+are ignored if stated)<br> <br>
+===========<br>
+Conversion<br>
+===========<br> <br> <br>
+when debinarising: [&lt;output&gt;[.rtm]] &lt;skeleton&gt;.p3d|cfg] ]<br> <br>
+1) An output file MUST be specified (and must be a different name or path to the 
+input). This to prevent over-write of a binarised p3d.<br> <br> '''2) EITHER a 'model'.cfg, OR a p3d that contains the relevant skeleton MUST be 
+specified'''<br>
+----<br>
+
+ 
+<u>'''Human Skeletons'''</u>
+
+ 
+The skeleton required for *this* rtm is ''almost'' inevitably ANY *binarised* 
+human p3d (of the relevant engine)<br> <br>
+As a convenience to the user, correctly cased 'model'.cfg's are 
+supplied for human skeletons in the rtm\docs folder for arma1,2 and 3.
+
+ 
+For other skeletons you require an appropriate 'model'.cfg 
+or p3d of your own.
+
+ 
+Hint: you can list the actual bones declared with DeRtm -B 
+and thereby determine the type of skeleton to apply.
+
+ 
+<br> <br> '''Limitations:'''
+
+ 
+Unless a correctly cased 'model'.cfg is supplied to DeRtm, it can only 
+produce lower case bone names because both the rtm and a binary p3d only contain 
+lower case. Oxygen2 is case sensitive.
+
+ 
+You are advised to generate a correctly cased model.cfg by using eliteness to 
+generate the raw skeleton from a binarised p3d and edit accordingly.
+
+  
+<br>
+
+
+
+[[Category:Mikero Tools]]

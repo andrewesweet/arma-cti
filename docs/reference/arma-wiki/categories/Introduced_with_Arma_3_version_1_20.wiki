@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_1.20
+// revision: 86926 (2014-12-13T18:09:23Z)
+// export sha1: c5otgn7pnd33wa3us493tlm4lntbi8s
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with Arma 3 version 1.20 may be recognised by the appearance of this icon: {{GVI|arma3|1.20}}
+Release date: June 10, 2014<br>
+[http://dev.arma3.com/post/spotrep-00026 SPOTREP 00026]
+[[Category:Introduced with Arma 3|1.20]]

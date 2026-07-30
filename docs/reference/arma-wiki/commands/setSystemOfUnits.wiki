@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/setSystemOfUnits
+// revision: 339090 (2023-04-26T10:54:08Z)
+// export sha1: kozkzjs9yr5quoppagi7b1qugwsb9bf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+
+|gr1= System
+
+|gr2= Broken Commands
+
+|descr= Set system of units. This will only impact gauges from advanced flight model.
+{{Feature|important|This command is buggy: any value other than 0 (metric) will display both units at the same time.}}
+
+|s1= [[setSystemOfUnits]] value
+
+|p1= value: [[Number]] - possible values are:
+* 0 - metric
+* 1 - mixed
+* 2 - imperial
+
+|r1= [[Nothing]]
+
+|x1= <sqf>if (player in _myHelicopter) then { setSystemOfUnits 2; };</sqf>
+
+|seealso= [[Description.ext#forceRotorLibSimulation|forceRotorLibSimulation]] [[Advanced Helicopter Flight Model in Arma3|Advanced Helicopter Flight Model]] [[:Category:Command_Group:_RTD|RotorLib commands]] [[systemOfUnits]]
+}}

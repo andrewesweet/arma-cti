@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_traceBullets
+// revision: 329387 (2022-07-27T13:25:25Z)
+// export sha1: mix832qh4s4l5f85xc75zw7bp6d6xnu
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Visualise unit's bullet trajectories. Can only be used on one shooter in a single instance.<br>
+If you want to change the unit, first set <sqf inline>BIS_tracedShooter = nil</sqf> ''then'' execute the script again.
+
+|s1= [unit, number] call [[BIS_fnc_traceBullets]]
+
+|p1= unit: [[Object]]
+
+|p2= number: [[Number]] - (Optional, default 20) maximum displayed trajectories
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player] spawn BIS_fnc_traceBullets;</sqf>
+
+|x2= <sqf>[player, 50] spawn BIS_fnc_traceBullets;</sqf>
+
+|x3= <sqf>[player, 0] spawn BIS_fnc_traceBullets; // remove bullet tracing</sqf>|seealso= [[drawLine3D]]
+}}
+
+{{Note
+|user= Benargee
+|timestamp= 20150326232500
+|text= Shooting bullets over water will show wavy lines that move with motion of the waves. This is probably due to using the wrong getPos variants when drawing 3D lines.
+|game= arma3
+|version= 1.40
+}}

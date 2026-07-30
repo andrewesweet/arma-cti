@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_trimString
+// revision: 340879 (2023-05-13T21:38:38Z)
+// export sha1: c2n202sc2ad8r7apvilpax259jxkhjo
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strings | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strings
+
+|descr= Get a substring out of the string.
+{{Feature|arma3|Use [[select#Alternative Syntax 3|select]] instead.}}
+
+|s1= [someText, beginning, length] call [[BIS_fnc_trimString]]
+
+|p1= someText: [[String]] - source string
+
+|p2= beginning: [[Number]] (Optional, default 0) - start index; indexing starts at 0
+
+|p3= length: [[Number]] (Optional, default end of string) - end index. A negative number means X chars ''from the string end''
+
+|r1= [[String]]
+
+|x1= <sqf>["dreaded_is_the_man", 0, 6] call BIS_fnc_trimString;	// will return "dreaded"</sqf>
+
+|x2= <sqf>["dreaded_is_the_man", 15] call BIS_fnc_trimString;	// will return "man"</sqf>
+
+|x3= <sqf>["dreaded_is_the_man"] call BIS_fnc_trimString;		// will return "dreaded_is_the_man"</sqf>
+
+|seealso= [[select]]
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20170824154500
+|text= <sqf>
+"test" select [0, 4];						// 0.0007 ms
+["test", 0, 4] call BIS_fnc_trimString;	// 0.013 ms
+</sqf>
+
+The first method is about '''18 times faster'''.
+}}

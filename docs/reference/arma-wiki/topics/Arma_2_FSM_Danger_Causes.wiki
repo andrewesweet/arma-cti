@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/Arma_2:_FSM_Danger_Causes
+// revision: 226039 (2021-01-31T17:33:29Z)
+// export sha1: n1wc1h72rc85wxgnbe5i16b2mqoo5gs
+// Vendored snapshot. Do not edit — re-export instead.
+
+==DCEnemyDetected (0)==
+The first enemy detected.
+
+Send to all units in a group which was not aware of any enemies once an enemy is detected.
+
+== DCFire (1) ==
+A unit firing at another unit was seen.
+
+Notes:
+- one "firing" can be seen by multiple units
+- when unit is firing several bullets, one event is sent for each bullet
+
+== DCHit (2) ==
+A vehicle hit was by a shot.
+
+== DCEnemyNear (3) ==
+Unit knows it was seen ("disclosed") by an enemy (the enemy knows about the unit)
+
+== DCExplosion (4) ==
+Ammo impact (explosion or a bullet hit) detected (seen or heard).
+
+== DCDeadBodyGroup (5) ==
+Dead soldier from my group found, or a kill seen of a soldier in my group.
+
+Notes:
+- when a dead body is found, triggered by the first unit seeing the body
+- when kill is seen, event is sent to each unit seeing the kill
+
+== DCDeadBody (6) ==
+Dead soldier not from my group found. It can be triggered either by encountering a dead body, or by seeing a unit being killed.
+
+Notes:
+- when a dead body is found, this event is triggered by a first unit in each group which has seen a body
+- when a kill is seen, this event is triggered for each unit seeing the kill
+
+== DCScream (7) ==
+Scream heard (a non-head hit produces scream, useful to detect a silenced weapon attacks)
+
+== DCCanFire (8) ==
+A new firing opportunity available. Reported when a unit can fire an enemy for the first time (was not know before, or was hidden behind a cover).

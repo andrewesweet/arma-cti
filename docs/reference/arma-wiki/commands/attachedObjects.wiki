@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/attachedObjects
+// revision: 369106 (2024-09-03T10:27:01Z)
+// export sha1: 8t0ddqzj23kkkjqrdcqvecqcjo66c46
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.14
+
+|gr1= Object Manipulation
+
+|descr= Returns a list of objects attached to the given object.
+
+|s1= [[attachedObjects]] obj
+
+|p1= obj: [[Object]] - given object
+
+|r1= [[Array]] of [[Object]]s attached to the given object
+
+|x1= <sqf>
+{ detach _x } forEach attachedObjects player;
+</sqf>
+
+|x2= <sqf>
+if (count attachedObjects player == 0) then
+{
+	hint "There are no objects attached to player";
+};
+</sqf>
+
+|seealso= [[attachObject]] [[attachTo]] [[attachedTo]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[lightAttachObject]] [[triggerAttachVehicle]] [[attachedObject]] [[detach]]
+}}

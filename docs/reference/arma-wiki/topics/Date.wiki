@@ -1,0 +1,150 @@
+// source: https://community.bistudio.com/wiki/Date
+// revision: 351270 (2023-11-26T10:15:57Z)
+// export sha1: ag5yht9t5mbi7g44ldpi9qirj5x8oi0
+// categories: Category:Arrays
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable sortable" style="float: right; margin: 0 0 0.5em 1.5em"
+|+ Default [[Mission Editor]] [[:Category: Arma: Terrains|Terrains]] dates
+! [[:Category:Projects|Game]] !! [[:Category: Arma: Terrains|Terrain]] !! DateTime
+|-
+! rowspan="4" | {{GameCategory|ofp|text= {{Name|ofp|short}}}}
+| [[Everon]]
+| rowspan="4" | 1985-05-10 07:30
+|-
+| [[Malden]]
+|-
+| [[Kolgujev]]
+|-
+| [[Desert Island]]
+|-
+! {{GameCategory|ofpr|text= {{Name|ofpr|short}}}}
+| [[Nogova]]
+| 1985(?)-05-10 07:30
+|-
+! rowspan="3" | {{GameCategory|arma1|text= {{Name|arma1|short}}}}
+| [[Sahrani]]
+| rowspan="3" | 2007-06-07 08:30
+|-
+| [[Southern Sahrani]]
+|-
+| [[Rahmadi]]
+|-
+! rowspan="2" | [[{{Name|arma1qg}}|{{Name|arma1qg|short}}]]
+| [[United Sahrani]]
+| 2008-06-24 15:30
+|-
+| [[Porto]]
+| 2008-06-24 15:30
+|-
+! rowspan="2" | {{GameCategory|arma2|link= y}}
+| [[Utes]]
+| rowspan="2" | 2008-10-11 14:20
+|-
+| [[Chernarus]]
+|-
+! rowspan="3" | {{GameCategory|arma2oa|text= {{Name|arma2oa|short}}}}
+| [[Takistan]]
+| 2009-05-28 16:20
+|-
+| [[Zargabad]]
+| 2009-05-29 11:30
+|-
+| [[Desert]]
+| 2012-06-24 07:30
+|-
+! {{Link|{{Name|arma2baf}}|{{Name|arma2baf|short}}}}
+| [[Shapur]]
+| 2012-07-24 10:00
+|-
+! {{Link|{{Name|arma2pmc}}|{{Name|arma2pmc|short}}}}
+| [[Proving Grounds]]
+| 2012-06-24 13:00
+|-
+! rowspan="3" | {{Link|{{Name|arma2acr}}|{{Name|arma2acr|short}}}}
+| [[Bukovina]]
+| 2008-10-11 09:20
+|-
+| [[Takistan]] (cut out)
+| 2009-05-28 16:20
+|-
+| [[Bystrica]]
+| 2010-07-06 10:00
+|-
+! rowspan="4" | {{GameCategory|arma3|link= y}}
+| [[Stratis]]
+| 2035-06-06 12:00
+|-
+| [[Altis]]
+| 2035-06-24 12:00
+|-
+| [[Malden 2035]]
+| 2035-06-24 12:00
+|-
+| [[Virtual Reality]]
+| 2035-05-28 13:37
+|-
+! [[{{Name|arma3apex}}]]
+| [[Tanoa]]
+| 2035-06-06 12:00
+|-
+! [[{{Name|arma3contact}}]]
+| [[Livonia]]
+| 2035-06-24 10:00
+|-
+! rowspan="2" | [[Global Mobilization|Global<br>Mobilization]]
+| [[Global Mobilization Weferlingen|Weferlingen]]
+| 1983-08-03 09:15
+|-
+| [[Global Mobilization Weferlingen|Weferlingen (Winter)]]
+| 1984-01-19 10:45
+|-
+! rowspan="3" | {{GameCategory|tkoh|text= {{Name|tkoh|short}}}}
+| [[Oil Rig]]
+| 2011-01-04 09:20
+|-
+| [[Seattle]]
+| 2013-05-08 11:20
+|-
+| [[South Asia]]
+| 2012-06-01 10:20
+|}
+'''Format:'''
+
+[year, month, day, hour, minute]
+
+{{Feature|important|Please note that this array format does not contain seconds. See [[dayTime#Examples|daytime examples]] for an alternative.}}
+
+
+'''Description:'''
+all values are [[Number]]s. ''month'' and ''day'' start at 1:
+* year - year set in the game (see side table)
+* month - a number from 1 to 12 
+* day - a number from 1 to 31
+* hour - a number from 0 to 23
+* minute - a number from 0 to 59
+
+{| class="valign-top" style="min-width: 80em"
+|
+; Commands
+* [[date]]
+* [[setDate]]
+* [[dateToNumber]]
+* [[numberToDate]]
+|
+; Functions
+{{Columns|2|
+* [[BIS_fnc_setDate]]
+* [[BIS_fnc_calculateDateTime]]
+* [[BIS_fnc_calculateDateTime]]
+* [[BIS_fnc_compareDateTimes]]
+* [[BIS_fnc_fixDate]]
+* [[BIS_fnc_isDateTimeNewer]]
+* [[BIS_fnc_isLeapYear]]
+* [[BIS_fnc_monthDays]]
+* [[BIS_fnc_sunriseSunsetTime]]
+}}
+|}
+
+
+[[Category:Arrays]]

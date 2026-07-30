@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/isThrowable
+// revision: 369755 (2024-10-08T15:08:55Z)
+// export sha1: kdaapv05oiwtzioophgqxsep044fzn8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Weapons
+
+|gr2= Unit Inventory
+
+|descr= Returns [[true]] if the given magazine is a throwable.
+
+|s1= [[isThrowable]] magazine
+
+|p1= magazine: [[String]]
+
+|r1= [[Boolean]] - [[true]] if throwable
+
+|x1= <sqf>isThrowable "HandGrenade"; // true</sqf>
+
+|seealso= [[selectThrowable]] [[currentThrowable]] [[throwables]] [[selectWeapon]] [[currentWeapon]] [[currentMagazine]] [[currentMuzzle]] [[BIS_fnc_isThrowable]]
+}}

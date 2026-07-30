@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/setGroupOwner
+// revision: 364895 (2024-06-29T14:38:33Z)
+// export sha1: ojeppiuctgsc3hwad2u7zkrktytqv0t
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.40 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.40
+
+|gr1= Multiplayer
+
+|serverExec= server
+
+|descr= Changes the ownership of a group (and all its units) to a given client. The group leader must not be a player. This command only works when called from the server. Returns true if locality was changed. For [[agents]] use [[setOwner]] command.
+
+|s1= group [[setGroupOwner]] clientID
+
+|p1= group: [[Group]]
+|p2= clientID: [[Number]] - the [[Multiplayer_Scripting#Machine_network_ID | machine network ID]] of the new [[owner]].
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_localityChanged = _someGroup setGroupOwner (owner _playerObject);</sqf>
+
+|seealso= [[owner]] [[setOwner]] [[groupOwner]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-07-30 - 12:49 (UTC)</dd>
+<dt class="note">[[User:Nelis75733126|Nelis75733126]]</dt>
+<dd class="note">
+In Arma 3 1.48, setGroupOwner only works if the group has units in it.
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2020-04-28 - 22:58 (UTC)</dd>
+<dt class="note">{{Link|link= https://forums.bohemia.net/profile/1117131-tmzulu/|text= TMZulu}}</dt>
+<dd class="note">
+The [[setGroupOwner]] command will dismount the unit leader of a vehicle if the vehicle is stationary, likely due to the dummy waypoint used in the transfer.<br>
+[[lock|Locking]] the vehicle during transfer can counter this behavior.
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2020-04-30 - 21:15 (UTC)</dd>
+<dt class="note">[[User:TMZulu|TMZulu]]</dt>
+<dd class="note">
+Using '''setGroupOwner''' may cause AI to have their loadout removed. This typically occurs when transferring multiple groups in sequence without delay. This occurs on seemingly random AI in groups. The simple but finicky solution to this is to add a sufficient delay between the transfer of groups. Alternatively, one could have the units' loadouts saved and then reloaded if the unit is shown as naked. Both of these methods may be combined as well.
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2020-04-30 - 21:58 (UTC)</dd>
+<dt class="note">[[User:TMZulu|TMZulu]]</dt>
+<dd class="note">
+Locality dependent commands such as '''forceSpeed''' will no longer work after transfer and must be reapplied on the owning client.
+</dd>
+
+</dl>

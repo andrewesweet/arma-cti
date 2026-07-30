@@ -1,0 +1,270 @@
+// source: https://community.bistudio.com/wiki/Structured_Text
+// revision: 364507 (2024-05-16T20:42:02Z)
+// export sha1: nnndob3hxrn4cyrysxa8h7ta7lynn6j
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Structured Text is a [[Data Types|Data Type]] that has been introduced with {{arma1}}. It is a '''rich text''', which is able to include images and formatting. It can be created using XML-like syntax, as seen [[#Markup|below]]. However, using XML-like syntax alone is not going to turn a normal string into structured text, it should be converted to TEXT first.
+
+{{Feature|important|
+This type is not meant to be used with remote execution. Executing <sqf inline>[parseText "test"] remoteExec ["hint"];</sqf> will result in the following rpt message:<br>
+{{hl|Performance warning: SimpleSerialization::Write 'params' is using type of ',TEXT' which is not optimized by simple serialization, falling back to generic serialization, use generic type or ask for optimizations for these types}}<br>
+Parse the text on the receiving client instead.
+}}
+
+
+== Commands ==
+
+* See [[:Category:Command Group: Structured Text|Command Group: Structured Text]] for all related commands.
+
+
+== Markups ==
+
+=== Syntax ===
+
+All attribute values should be encapsulated in double {{hl|"..."}} or single {{hl|'...'}} quotes. Both of the following are correct:
+<syntaxhighlight lang="html">
+<t size="2.0">Large text</t>
+<t size='2.0'>Large text</t>
+</syntaxhighlight>
+
+{{Feature|warning|The following will log an ''.rpt'' error {{hl|Unknown attribute .0}} and only number 2 would be taken into account:
+<syntaxhighlight lang="html">
+<t size=2.0>Large text</t>
+</syntaxhighlight>
+}}
+
+=== Text ===
+
+Texts could be created with the following markup:
+<syntaxhighlight lang="html">
+<t>Hello World!</t>
+</syntaxhighlight>
+Or could also be inserted via the [[composeText]] / [[formatText]] and [[text]] commands.
+
+==== Special characters ====
+To insert special characters, such as {{hl|<}}, {{hl|>}}, etc. you can use the {{Link|https://dev.w3.org/html5/html-author/charref|HTML representation}} of that character, e.g.:
+{| class="wikitable"
+|-
+! Character !! HTML
+|-
+| < || {{hl|&amp;lt;}}
+|-
+| > || {{hl|&amp;gt;}}
+|-
+| non-breaking space || {{hl|&amp;#160;}}
+|-
+| ... || ...
+|}
+{{Feature|important|Using a special character directly will result in it being displayed as "?" or, in the case of writing "<TEXT>", will result in an error in the [[RPT]]: {{hl|Wrong text element 'TEXT'}}
+}}
+
+=== Line break ===
+
+Line breaks could be created with either of the following markups:
+<syntaxhighlight lang="html">
+<br/>
+<br />
+<br></br>
+</syntaxhighlight>
+Or could also be inserted via the [[composeText]] / [[formatText]] and [[lineBreak]] commands.
+
+=== Image ===
+
+Images could be created with either of the following markups:
+<syntaxhighlight lang="html">
+<img image='\a3\Data_f\Flags\flag_Altis_co.paa'/>
+<img image='\a3\Data_f\Flags\flag_Altis_co.paa' />
+<img image='\a3\Data_f\Flags\flag_Altis_co.paa'></img>
+</syntaxhighlight>
+Or could also be inserted via the [[composeText]] / [[formatText]] and [[image]] commands.
+
+{{ArgTitle|3|Hyperlink|{{GVI|arma3}}}}
+
+Clickable links, similar to HTML hyperlinks, could be created with the following markup:
+<syntaxhighlight lang="html">
+<a href='http://arma3.com'>Arma 3</a>
+</syntaxhighlight>
+By default the links are not underlined or have a different color to stand out. These attributes should be added separately.<br>
+Note: ''&'' should be escaped by ''&amp;amp;''.
+<syntaxhighlight lang="html">
+<a href='https://arma3.com/?foo&bar'>Example URL A</a> <!-- will not work -->
+<a href='https://arma3.com/?foo&amp;bar'>Example URL B</a> <!-- will work -->
+</syntaxhighlight>
+
+
+== Attributes ==
+
+The following inline attributes are supported:
+{{Columns|4|
+* {{hl|size}}
+* {{hl|color}}
+* {{hl|font}}
+* {{hl|align}}
+* {{hl|valign}}
+* {{hl|underline}}
+* {{hl|shadow}}
+* {{hl|shadowColor}}
+* {{hl|shadowOffset}}
+* {{hl|colorLink}}
+* {{hl|href}}
+* {{hl|image}}
+}}
+
+=== Size ===
+
+The structured text {{hl|size}} attribute is a multiplier for the value of control config property {{hl|size}}. Default is 1, meaning that the height of letters will be equal to the value set in config. Setting this to 2 will make letters 2 times the size, 0.5 will make them half the size, etc. If the control is defined as follows:
+
+<syntaxhighlight lang="cpp">
+class MyStructuredText : RscStructuredText 
+{
+	...
+	text = "Hello!";
+	size = 0.04;
+	...
+};
+</syntaxhighlight>
+
+Then the structured text:
+<sqf>_control ctrlSetStructuredText parseText "<t size='2'>Hello!</t>";</sqf>
+Will result in a total text size of 0.04 * 2 = 0.08. Unfortunately, there is no script command to set or get the value of config {{hl|size}} property dynamically.
+
+=== Color ===
+
+The {{hl|color}} attribute is similar to HTML hex color and could either have format {{Link|https://en.wikipedia.org/wiki/RGB|<nowiki>#RRGGBB</nowiki>}} or {{Link|https://en.wikipedia.org/wiki/ARGB|<nowiki>#AARRGGBB</nowiki>}}.
+<syntaxhighlight lang="html">
+<t color='#ff0000'>Red text</t>
+<t color='#99ffffff'>Semi-transparent white text</t>
+</syntaxhighlight>
+
+=== Font ===
+
+The value for the {{hl|font}} attribute could be found in {{hl|CfgFontFamilies}} config. Some of the {{arma3}} fonts:
+{{Columns|4|
+* {{hl|EtelkaMonospacePro}}
+* {{hl|EtelkaMonospaceProBold}}
+* {{hl|EtelkaNarrowMediumPro}}
+* {{hl|LCD14}}
+* {{hl|LucidaConsoleB}}
+* {{hl|PuristaBold}}
+* {{hl|PuristaLight}}
+* {{hl|PuristaMedium}}
+* {{hl|PuristaSemibold}}
+* {{hl|RobotoCondensed}}
+* {{hl|RobotoCondensedBold}}
+* {{hl|RobotoCondensedLight}}
+* {{hl|TahomaB}}
+}}
+<syntaxhighlight lang="html">
+<t font='PuristaBold'>Bold Text</t>
+<t font='LCD14'>Wicked looking text</t>
+</syntaxhighlight>
+
+=== Horizontal Alignment ===
+
+The {{hl|align}} attribute controls horizontal text alignment and could be one of the following:
+* {{hl|left}}
+* {{hl|center}}
+* {{hl|right}}
+<syntaxhighlight lang="html">
+<t align='right'>Text displayed to the right</t>
+</syntaxhighlight>
+
+=== Vertical Alignment ===
+
+The {{hl|valign}} attribute controls vertical text alignment and could be one of the following:
+* {{hl|top}}
+* {{hl|middle}}
+* {{hl|bottom}}
+<syntaxhighlight lang="html">
+<t valign='bottom'>Text displayed at the bottom</t>
+</syntaxhighlight>
+
+=== Underline ===
+
+The {{hl|underline}} attribute underlines each individual word in text. The normal spaces are not underlined.
+<syntaxhighlight lang="html">
+<t underline='1'>Underlined Text</t>
+</syntaxhighlight>
+{{Feature|informative|
+If you would like to have a continuous underline between words, use non-breaking spaces. This could be achieved in several ways:
+* Insertion from keyboard: {{Link|https://en.wikipedia.org/wiki/Non-breaking_space#Keyboard_entry_methods|Alt+255}}
+* Scripted method: 
+<sqf>hint parseText format ["<t underline='1'>%1</t>", "Underlined Text" splitString " " joinString toString [160]]</sqf>
+* Using HTML code:
+<sqf>hint parseText "<t underline='1'>Underlined&amp;#160;Text</t>";</sqf>
+}}
+
+=== Shadow ===
+
+The {{hl|shadow}} attribute controls the appearance of shadow/outline around text and could be one of the following:
+* {{hl|0}} - normal text
+* {{hl|1}} - classic shadow (text ghosting below and to the right)
+* {{hl|2}} - outline (slight, always black, outline around characters)
+<syntaxhighlight lang="html">
+<t shadow='0'>Text with no shadow</t>
+<t shadow='1'>Text with default black shadow</t>
+<t shadow='2'>Text with default black outline</t>
+</syntaxhighlight>
+
+=== Shadow Color ===
+
+The {{hl|shadowColor}} attribute controls the color of the shadow (not the outline, which is always black for some reason)
+<syntaxhighlight lang="html">
+<t shadow='1' shadowColor='#ff0000'>Text with red shadow</t>
+</syntaxhighlight>
+
+=== Shadow Offset ===
+
+The {{hl|shadowOffset}} attribute controls how far is the shadow offset from the text source (has no effect on the outline)
+<syntaxhighlight lang="html">
+<t shadow='1' shadowColor='#ff0000' shadowOffset='0.5'>Text with red shadow, which is offset by half character size</t>
+</syntaxhighlight>
+
+=== Link Color ===
+
+Will change the color of the text if the text is a link, otherwise the text color is unaffected.
+<syntaxhighlight lang="html">
+<t colorLink='#0000ff'><a href='http://www.arma3.com/'>Blue text</a></t>
+<a colorLink='#0000ff' href='http://www.arma3.com/'>Blue text too</a>
+<t colorLink='#0000ff'>Normal text color</t>
+</syntaxhighlight>
+
+=== Hyperlink Reference ===
+
+The {{hl|href}} attribute is essential part of the {{hl|<nowiki><a></nowiki>}} tag and should contain URL of the destination (See [[#Hyperlink | Hyperlink]]).
+
+=== Image Reference ===
+
+The {{hl|image}} attribute is essential part of the {{hl|<nowiki><img></nowiki>}} tag and should contain filepath to the image (See [[Structured_Text#Image | Image]]).
+
+
+== SQF Code Examples ==
+
+{{hl|align}} {{hl|valign}} demo:
+<sqf>hint parseText "<t size='3'><t size='1' valign='top' align='right'>Top Right</t> <t size='1' valign='middle' align='center'>Middle Center</t> <t size='1' valign='bottom' align='left'>Bottom Left</t></t>";</sqf>
+{{Feature|informative|Sometimes an extra space is required when outputting to [[hint]]. In the above example spaces between {{hl|<nowiki><t></nowiki>}}s inside another {{hl|<nowiki><t></nowiki>}} wrapper ensure that the hint will be 3 lines tall}}
+
+Create clickable image:
+<sqf>
+_ctrl = findDisplay 46 createDisplay "RscDisplayEmpty" ctrlCreate ["RscStructuredText", -1];
+_ctrl ctrlSetPosition [0,0,1,1];
+_ctrl ctrlCommit 0;
+_ctrl ctrlSetStructuredText parseText "<a color='#00FF00' size='5' href='http://arma3.com'><img image='\A3\weapons_f\ammoBoxes\data\ui\map_AmmoBox_F_CA.paa' /></a>";
+</sqf>
+
+The use of [[composeText]]: 
+<sqf>
+_separator = parseText "<br />------------------------<br />";
+_image = "\a3\Data_f\Flags\flag_Altis_co.paa";
+_txt1 = text "left";
+_txt1 setAttributes ["align", "left"];
+_txt2 = text "right";
+_txt2 setAttributes ["align", "right"];
+_structuredText = composeText [image _image, lineBreak, lineBreak, text "Heading Text", _separator, _txt1, _txt2];
+hint _structuredText;
+</sqf>
+
+
+[[Category:Data Types]]

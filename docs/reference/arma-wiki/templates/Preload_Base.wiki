@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Template:Preload/Base
+// revision: 194809 (2021-01-14T23:52:31Z)
+// export sha1: 2ldvgx0tnl1wqdj5jtvtc75z9holnth
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>$1</includeonly><noinclude>{{Doc/Template
+|descr= This is a blank template to use with [https://www.mediawiki.org/wiki/Manual:Creating_pages_with_preloaded_text#Using_parameters preload parameters]. It is '''not''' to be used manually.
+}}</noinclude>

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/markerShadow
+// revision: 349196 (2023-11-08T14:50:41Z)
+// export sha1: 2pm778iqpofds6g4lbftso9bferhfmu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|descr= Returns if the marker is drawn with shadow enabled.
+
+|pr= [[setMarkerType]] will reset the shadow value to the one defined in marker type.
+
+|gr1= Markers
+
+|s1= [[markerShadow]] marker
+
+|p1= marker: [[String]] - the marker
+
+|r1= [[Boolean]]: [[true]] if marker is enabled, [[false]] if not
+
+|x1= <sqf>private _shadowEnabled = markerShadow _myMarker;</sqf>
+
+|seealso= [[setMarkerShadow]] [[setMarkerShadowLocal]]
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Assets/Weapon_Creation/Tutorials
+// revision: 371127 (2025-02-28T15:45:39Z)
+// export sha1: r9rzfry4l1qbeasjgkejhaexf6dks5c
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding|Assets|Weapon Creation}}

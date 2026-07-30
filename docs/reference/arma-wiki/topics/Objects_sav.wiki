@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/Objects.sav
+// revision: 292565 (2021-08-10T12:50:54Z)
+// export sha1: ialt1bf6ioyl7cbqtci5fjw1j2ukk3s
+// categories: Category:ArmA: Armed Assault: Editing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Operation Flashpoint: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+The [[Objects.sav]] file is the save/load location of the following commands:
+* [[saveIdentity]] / [[loadIdentity]]
+* [[saveStatus]] / [[loadStatus]]
+It was first introduced in '''{{ofpr}}''' campaign.
+
+== Location ==
+{| class="wikitable"
+!Game
+!Campaign
+!Directory
+|-
+|{{GVI|ofpr|1.75}}
+|'''Resistance'''
+|''<ofpDirectory>''\Users\''<username>''\Saved
+|-
+|{{GVI|arma1|1.00}}
+|'''Royal Flush'''
+|Documents\ArmA\Saved\campaigns\Merc
+|-
+|rowspan="3"|{{GVI|arma2|1.00}}
+|'''Harvest Red'''
+|Documents\Arma 2\Saved\ca\missions\campaign
+|-
+|'''BAF'''
+|Documents\Arma 2\Saved\ca\missions_baf\campaign
+|-
+|'''PMC'''
+|Documents\Arma 2\Saved\ca\missions_pmc\campaign
+|-
+|rowspan="3"|{{GVI|arma3|1.00}}
+|'''The East Wind - Chapter A'''
+|Documents\Arma 3\Saved\a3\Missions_F_EPA
+|-
+|'''The East Wind - Chapter B'''
+|Documents\Arma 3\Saved\a3\Missions_F_EPB
+|-
+|'''The East Wind - Chapter C'''
+|Documents\Arma 3\Saved\a3\Missions_F_EPC
+|}
+
+
+{{GameCategory|ofp|Editing}}
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}

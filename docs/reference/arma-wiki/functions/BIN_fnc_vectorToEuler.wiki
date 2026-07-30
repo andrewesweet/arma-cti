@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_vectorToEuler
+// revision: 364352 (2024-05-06T10:36:38Z)
+// export sha1: 8uk396hpot446opc2gl2re7dr0180du
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Contact | Category:Function Group: Vectors | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Vectors
+
+|gr2= Contact
+
+|descr= {{Wiki|placeholder}}
+{{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_vectorToEuler]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

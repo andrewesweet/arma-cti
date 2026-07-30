@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_exportCfgVehiclesAssetDB
+// revision: 353262 (2024-03-15T10:56:18Z)
+// export sha1: b6s8yhzscvr550evn5a9bfa0diqv8d8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Copies [[:Category:CfgVehicles|CfgVehicles]] information to clipboard in wiki format.
+
+|s1= [side, category] call [[BIS_fnc_exportCfgVehiclesAssetDB]]
+
+|p1= side: [[Array]] or [[Number]]s - (Optional, default <sqf inline>[4,5,6,7,8,9]</sqf>) [[side]] selection, can be:
+{{Columns|2|
+* 0: OPFOR / CSAT
+* 1: BLUFOR / NATO
+* 2: Independent / Guerrilla
+* 3: Civilian
+* 4: Unknown
+* 5: Enemy
+* 6: Friendly
+* 7: Logic
+* 8: Empty
+* 9: AmbientLife
+}}
+
+|p2= category: [[Number]] - (Optional, default 0 if ''side'' is a number, always reverts to 1 if ''side'' an array) only used when ''side'' is set to '''3'''.<br>
+Can be one of the following:
+{{Columns|2|
+* 0: civilian units
+* 1: structures
+* 2: ruins and wrecks
+* 3: equipment
+* 4: objects
+* 5: VR
+* 6: animals
+}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+[0]   spawn BIS_fnc_exportCfgVehiclesAssetDB;	// exports {{Link|Arma 3: CfgVehicles EAST}}
+[1]   spawn BIS_fnc_exportCfgVehiclesAssetDB;	// exports {{Link|Arma 3: CfgVehicles WEST}}
+[2]   spawn BIS_fnc_exportCfgVehiclesAssetDB;	// exports {{Link|Arma 3: CfgVehicles GUER}}
+[3,0] spawn BIS_fnc_exportCfgVehiclesAssetDB;	// exports {{Link|Arma 3: CfgVehicles CIV}}
+[3,1] spawn BIS_fnc_exportCfgVehiclesAssetDB;	// exports {{Link|Arma 3: CfgVehicles Structures}}
+[3,2] spawn BIS_fnc_exportCfgVehiclesAssetDB;	// exports {{Link|Arma 3: CfgVehicles Ruins & Wrecks}}
+[3,3] spawn BIS_fnc_exportCfgVehiclesAssetDB;	// exports {{Link|Arma 3: CfgVehicles Equipment}}
+[3,4] spawn BIS_fnc_exportCfgVehiclesAssetDB;	// exports {{Link|Arma 3: CfgVehicles EMPTY}}
+[3,5] spawn BIS_fnc_exportCfgVehiclesAssetDB;	// exports {{Link|Arma 3: CfgVehicles VR Objects}}
+[3,6] spawn BIS_fnc_exportCfgVehiclesAssetDB;	// exports {{Link|Arma 3: CfgVehicles Animals}}
+[]    spawn BIS_fnc_exportCfgVehiclesAssetDB;	// exports {{Link|Arma 3: CfgVehicles Other}}
+												// Unknown, Enemy, Friendly, Modules, Empty, Ambient Life
+</sqf>
+
+|exec= spawn
+
+|seealso= [[side]] [[CfgVehicles_Config_Reference#side|CfgVehicles config side value]] [[BIS_fnc_exportCfgGroups]] [[BIS_fnc_exportCfgHints]] [[BIS_fnc_exportCfgMagazines]] [[BIS_fnc_exportCfgPatches]] [[BIS_fnc_exportCfgVehicles]] [[BIS_fnc_exportCfgWeapons]]
+}}

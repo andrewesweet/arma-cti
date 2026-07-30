@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_GUI_Control_-_Object
+// revision: 163016 (2020-09-26T15:50:59Z)
+// export sha1: ljnmmqegbxt9c4am295f71ff6c2njj6
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands to manipulate [[DialogControls-Objects|Object / CT_OBJECT, CT_OBJECT_ZOOM, CT_OBJECT_CONTAINER, CT_OBJECT_CONT_ANIM]] controls.
+
+[[Category:Command Group: GUI Control]]

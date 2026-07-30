@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/allDead
+// revision: 377005 (2026-01-01T08:15:58Z)
+// export sha1: hti2bajfay7ia7ck22vqannj1eipzq6
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 2: Operation Arrowhead version 1.57 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.57
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Detection
+
+|descr= Return a list of all dead units including agents and destroyed vehicles. Dead units may be in vehicles.
+
+|s1= [[allDead]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>{ deleteVehicle _x } forEach allDead;</sqf>
+
+|x2= allAlive:
+<sqf>
+_all = allUnits + vehicles;
+{
+	_all pushBack agent _x;
+} forEach (agents - [teamMemberNull]);
+allAlive = _all - allDead;
+</sqf>
+
+|seealso= [[allDeadMen]] [[allUnits]] [[allGroups]] [[playableUnits]] [[switchableUnits]] [[units]] [[vehicles]] [[allCurators]]
+}}
+
+{{Note
+|user= Ebay
+|timestamp= 20170406154000
+|text= This also returns bodies hidden with [[hideBody]] until they are deleted. Tested in A2OA 1.63.131129
+}}

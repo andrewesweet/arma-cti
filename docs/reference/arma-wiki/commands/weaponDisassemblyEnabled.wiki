@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/weaponDisassemblyEnabled
+// revision: 347215 (2023-09-05T16:49:02Z)
+// export sha1: 3mkbd5c7hpswvgh8p82n27f9kdtcgba
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|arg= global
+
+|gr1= Weapons
+
+|descr= Returns if weapon disassembly is enabled. As disassembly can be enabled/disabled on both player and weapon, it might be necessary to check both.
+
+{{Feature|important|
+Beware that when the weapon disassembly is disabled on the player, it is tracking the unit itself.
+If the player leaves the server and another player joins into the same playable unit, they will not have the option to disassemble either.
+}}
+
+|s1= [[weaponDisassemblyEnabled]] entity
+
+|p1= entity: [[Object]] - [[player]] or weapon
+
+|r1= [[Boolean]] - [[true]] if enabled
+
+|x1= <sqf>private _enabled = weaponDisassemblyEnabled player && weaponDisassemblyEnabled _weapon;</sqf>
+
+|seealso= [[enableWeaponDisassembly]] [[weapons]] [[action]] [[inGameUISetEventHandler]]
+}}

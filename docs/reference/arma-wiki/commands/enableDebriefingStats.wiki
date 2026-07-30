@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/enableDebriefingStats
+// revision: 318957 (2022-05-13T09:22:06Z)
+// export sha1: 1gfk7w0kae9rjx4ih34ue8776w66kkk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Briefing
+
+|descr= Enable debriefing score table.
+
+|s1= [[enableDebriefingStats]] [left, top, width, height]
+
+|p1= left: [[Number]]
+
+|p2= top: [[Number]]
+
+|p3= width: [[Number]]
+
+|p4= height: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>enableDebriefingStats [0.1, 0.1, 0.8, 0.8];</sqf>
+
+|seealso= [[disableDebriefingStats]]
+}}

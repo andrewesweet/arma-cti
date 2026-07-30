@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/SQF_Bytecode
+// revision: 370227 (2024-11-12T18:44:27Z)
+// export sha1: nmufgug7f7y49xly85r9ppt0xdtscxm
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+An [[SQF Syntax|SQF]] {{Link|https://en.wikipedia.org/wiki/Bytecode|bytecode}} is a file that contains the instructions to be executed in an SQF script.
+The bytecode is obtained after parsing the SQF script, which is written in a human-readable text-based file. Unlike an SQF script, SQF bytecode is not human-readable.
+
+As of {{arma}} 3 v2.04, it is possible to use SQF bytecode files (with the {{hl|.sqfc}} extension) as compilation sources of in-game scripts instead of normal .sqf scripts, using the [[compileScript]] command.
+The [[Arma 3: Functions Library|Functions Library]] has also been modified to use this command.
+
+
+{| class="wikitable valign-top" style="margin: auto; max-width: 80em"
+|+ Using bytecode as opposed to raw scripts
+! style="width: 66%" | Pros
+! Cons
+|-
+| style="padding-right: 3em" |
+
+* Since the script is already parsed, parsing is skipped during compilation, which reduces compilation time. This improvement can be quite significant if the script uses [[PreProcessor Commands]].
+* Certain optimisations - that would take a long time to detect by the in-game compiler - can be detected and included in the bytecode, which improves execution performance.
+|
+* A bytecode is not human-readable and thus cannot be easily modified.
+|}
+
+
+== How to use SQF Bytecode ==
+
+In order to use bytecode, a SQF script compiler is needed. See {{Link|https://github.com/dedmen/ArmaScriptCompiler|Dedmen's Arma Script Compiler}} for an example of an SQF compiler.
+
+
+To compile an SQF script into SQF Bytecode using Arma Script Compiler:
+# Mount the [[P drive]] (called "Mount the Project Drive" in [[Arma 3: Tools Installation|Arma 3 Tools]])
+# Copy the script files into a folder on the P drive. They can be organized into sub-folders if needed.
+# Download {{Link|https://github.com/dedmen/ArmaScriptCompiler/releases|Arma Script Compiler}} and extract the files into a folder.
+# Create a '''sqfc.json''' file next to the script compiler's executable file ('''ArmaScriptCompiler.exe''').
+# Edit the '''sqfc.json''' file according to the following template:<syntaxhighlight lang="json">
+{
+	"inputDirs": [
+		"P:/folder1/",
+		"P:/folder2/"
+	],
+	"includePaths": [
+		"P:/"
+	],
+	"excludeList": [
+		"subfolder1",
+		"subfolder2",
+		"subfolder3/subfolder4"
+	],
+	"outputDir": "P:/",
+	"workerThreads": 8
+}
+</syntaxhighlight>
+#* inputDirs: List of folders that should be searched for .sqf scripts. Search is performed recursively (sub-folders are searched as well)
+#* includePaths: list of paths that contain the [[PreProcessor Commands#.23include|#include]]d files into the scripts. This should be set the same as the P drive path {{hl|P:\}} to work correctly. If an external file is being [[PreProcessor Commands#.23include|#include]]d by the .sqf script, such as <syntaxhighlight lang="cpp" inline>#include "\a3\ui_f\hpp\definedikcodes.inc"</syntaxhighlight>, you need to create that file on the P drive, such as: {{hl|P:\a3\ui_f\hpp\definedikcodes.inc}}
+#* outputDir: Set this the same as P drive if you want the .sqfc files to be created next to each .sqf file.
+#* excludeList: List of folders to be excluded from searching.
+#* workerThreads: How many threads will compile the scripts. Each thread will compile one file at a time
+# Execute '''ArmaScriptCompiler.exe'''. It will compile the scripts and create an '''.sqfc''' file next to each '''.sqf''' file.
+# In order to use the bytecode as compilation source in the game, use the [[compileScript]] command, or the [[Arma_3:_Functions_Library|Functions Library]].
+
+
+{{GameCategory|arma3|Editing}}

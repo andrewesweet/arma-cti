@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/actionKeysEx
+// revision: 377679 (2026-01-02T09:02:44Z)
+// export sha1: 4qemhorf570u10k5mlz301l032vesnb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+
+|gr1= Interaction
+
+|descr= Gives a broken down version of [[actionKeys]] return. Returns an [[Array]] containing the breakdowns of the [[DIK_KeyCodes|dikCodes]] of keys, buttons and combos assigned to the given user action.<br>
+Action names can be found in config class ControllerSchemes or [[:Category:Key Actions|user action names]] or user profile (see {{Link|#Example 1}}).<br>
+In addition, some of the actions are also listed here: [[inputAction/actions]]
+
+The Key Device can be one of several types:
+{{Columns|3|
+* {{hl|"KEYBOARD"}}
+* {{hl|"MOUSE_BUTTON"}}
+* {{hl|"MOUSE_AXIS"}}
+* {{hl|"JOYSTICK_BUTTON"}}
+* {{hl|"JOYSTICK_AXIS"}}
+* {{hl|"JOYSTICK_POV"}}
+* {{hl|"XINPUT"}} - (Xbox) Controller Input
+* {{hl|"TRACKER"}} - Motion Tracking (TrackIR, Tobii etc)
+}}
+
+|s1= [[actionKeysEx]] userAction
+
+|p1= userAction: [[String]] - user action name (see [[inputAction/actions]])
+
+|r1= [[Array]] of [[Array]]s in format [mainKeyArray, comboKeyArray, isDoubleTap]:
+* mainKeyArray: [[Array]] with [dikCode, device, deviceId]
+** dikCode: [[Number]]
+** device: [[String]]
+** deviceId: [[Number]] - only given if the device is a Joystick type
+* comboKeyArray: [[Array]] identical to ''mainKeyArray'' - filled only if the action key is a key combination
+** dikCode: [[Number]]
+** device: [[String]]
+** deviceId: [[Number]] - identical to ''mainKeyArray''<nowiki/>'s ''deviceId'' as it is impossible to use two different Joystick devices in a key combination
+* isDoubleTap: [[Boolean]] - is the action key a double-tap. In case of a combination key this applies to the main key.
+
+|x1= To retrieve the following key's data, use the property name without 'key':
+<syntaxhighlight lang="cpp">keyWatch[] = { 24 };</syntaxhighlight>
+<sqf>actionKeysEx "Watch"; // [[[24, "KEYBOARD"], [], false]]</sqf>
+
+|x2= <sqf>private _result = actionKeysEx "OpticsMode"; // [[[129,"MOUSE_BUTTON"],[29,"KEYBOARD"],false],[[181,"KEYBOARD"],[],false]]</sqf>
+
+|seealso= [[actionKeys]] [[actionKeysNames]] [[actionKeysNamesArray]]
+}}

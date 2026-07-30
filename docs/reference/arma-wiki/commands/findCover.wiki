@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/findCover
+// revision: 377600 (2026-01-02T07:01:58Z)
+// export sha1: 0xj5295uslsuos7aztsh7sm2o3qk5hc
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Broken Commands
+
+|descr= Returns the object around where the unit finds cover. The minDist, visibilityPosition and ignoreObject parameters are optional.
+{{Feature|important|Not implemented in {{arma2}} and later titles (always returns [[objNull]]).}}
+
+|s1= object [[findCover]] [position, hidePosition, maxDist, minDist, visibilityPosition, ignoreObject]
+
+|p1= object: [[Object]]
+
+|p2= position: [[Position]]
+
+|p3= hidePosition: [[Position#PositionATL|PositionATL]] - [[getHideFrom]]-like position from which the unit should hide
+
+|p4= maxDist: [[Number]]
+
+|p5= minDist: [[Number]] - (Optional)
+
+|p6= visibilityPosition: [[Position]] - (Optional) used to select cover that unit can see in that direction from
+
+|p7= ignoreObject: [[Object]] - (Optional) ignore this object in visibility check
+
+|r1= [[Object]] - always [[objNull]]
+
+|x1= <sqf>unit1 findCover [ASLToATL aimPos unit2, 30];</sqf>
+
+|seealso= [[getHideFrom]] [[setHideBehind]] [[isHidden]]
+}}
+
+{{Note
+|user= SnowSky
+|timestamp= 20150704220100
+|text= An alternative function in Arma 3 might be [[BIS_fnc_findSafePos]].
+}}

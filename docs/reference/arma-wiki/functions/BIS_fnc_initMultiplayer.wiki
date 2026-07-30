@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_initMultiplayer
+// revision: 309299 (2022-05-05T12:04:14Z)
+// export sha1: kq0jl7hx4c3x77kmrv48pcsu7rxd2ro
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Multiplayer | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Multiplayer
+
+|descr= Multiplayer mission init, executed automatically upon mission start. {{Feature|arma3|This is an internal function.}}
+
+|s1= call [[BIS_fnc_initMultiplayer]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_initMultiplayer;</sqf>
+
+|seealso= [[Event Scripts]]
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_CWR2
+// revision: 184805 (2021-01-06T16:17:14Z)
+// export sha1: a8wavfjy4jf94y6f3cveg2ub1dvy502
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma2|Media}}

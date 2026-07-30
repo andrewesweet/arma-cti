@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getRespawnPositions
+// revision: 349355 (2023-11-08T15:35:07Z)
+// export sha1: 642348k2wz8q8o1pvp24upu6mol0grf
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Return scripted respawn positions available for the given unit.
+
+|s1= input call [[BIS_fnc_getRespawnPositions]]
+
+|p1= input: [[Object]], [[Group]], [[Side]] or [[Namespace]] - where the respawn positions are saved
+
+|r1= [[Array]] - array of respawn positions ([[Position]], [[Object]] or [[String]]) - see [[BIS_fnc_addRespawnPosition]])
+
+|x1= <sqf>private _respawnPositions = missionNamespace call BIS_fnc_getRespawnPositions; // can be e.g [bis_o1, [1337, 4200, 0.01], "myMarker", myVehicle]</sqf>
+
+|seealso= [[:Category:Function Group: Respawn|Respawn functions]]
+}}

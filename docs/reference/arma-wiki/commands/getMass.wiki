@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/getMass
+// revision: 373891 (2025-06-26T11:00:13Z)
+// export sha1: nkcf5kqfz222f6wg8xcqhjdfie9qk00
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+
+|arg= global
+
+|gr1= PhysX
+
+|descr= Returns mass of a PhysX object.
+
+|s1= [[getMass]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_mass = getMass _myCar;</sqf>
+
+|seealso= [[getCenterOfMass]] [[setCenterOfMass]] [[setMass]] [[load]] [[weightRTD]] [[getModelInfo]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-04-15 - 20:15 (UTC)</dd>
+<dt class="note">[[User:Pierre MGI|Pierre MGI]]</dt>
+<dd class="note">
+This function will return 0 for infantry AI units. That means a manned Blufor Hunter has the same mass than an empty one (8306.63).
+Crates return their initial mass, but if you empty them or load items, magazines and weapons, the mass remains the same. In fact, none of these (non-physx) objects has a mass.
+</dd>
+
+</dl>

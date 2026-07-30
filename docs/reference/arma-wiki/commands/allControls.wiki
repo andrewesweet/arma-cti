@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/allControls
+// revision: 352271 (2024-02-04T22:03:55Z)
+// export sha1: pjuwjb1g7jep42ly4k1bozlefotwoyc
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.38 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.38
+
+|gr1= GUI Control
+
+|descr= Returns a list of all controls in the provided display or controls group, including "sub"-controls from other [[CT_CONTROLS_GROUP]]s.
+
+|s1= [[allControls]] display
+
+|p1= display: [[Display]]
+
+|r1= [[Array]] of [[Control]]s
+
+|s2= [[allControls]] controlsGroup
+
+|s2since= arma3 2.04
+
+|p21= controlsGroup: [[Control]] - [[CT_CONTROLS_GROUP]]
+
+|r2= [[Array]] of [[Control]]s
+
+|x1= <sqf>_allCtrls = allControls findDisplay 46;</sqf>
+
+|x2= <sqf>_allSubCtrls = allControls _myControlsGroup;</sqf>
+
+|seealso= [[allDisplays]] [[controlsGroupCtrl]] [[ctrlCreate]] [[allVariables]] [[allCurators]] [[allGroups]] [[allDead]] [[allDeadMen]]
+}}

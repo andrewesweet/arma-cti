@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/Product.Bin_File_Format
+// revision: 373418 (2025-05-08T11:27:12Z)
+// export sha1: 0cci6fzf40g8v4ex207up0nq1iphf2a
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|UnsupportedDoc}}
+== intro ==
+dta\product.bin is a class text config file like any other.
+ //class product.cpp
+ //{
+== Arma & Buldozer ==
+ profilePathDefault = "ArmA";
+ profilePathCommon = "ArmA Other Profiles";
+ extensionSave = "ArmASave";
+ extensionProfile = "ArmAProfile";
+ extensionWizardMission = "ArmAWizardMission";
+ extensionAddon = "ArmAAddon";
+== Arma2 ==
+ profilePathDefault = "Arma 2";
+ profilePathCommon = "Arma 2 Other Profiles";
+ extensionSave = "ArmA2Save";
+ extensionProfile = "ArmA2Profile";
+ extensionWizardMission = "ArmA2WizardMission";
+ extensionAddon = "ArmA2Addon";
+== OA ==
+ profilePathDefault = "Arma 2";
+ profilePathCommon = "Arma 2 Other Profiles";
+ extensionSave = "ArmA2OASave";
+ extensionProfile = "ArmA2OAProfile";
+ extensionWizardMission = "ArmA2OAWizardMission";
+ extensionAddon = "ArmA2OAAddon";
+ defaultMods = "expansion;baf";
+ //};
+
+[[Category:Real Virtuality File Formats]]

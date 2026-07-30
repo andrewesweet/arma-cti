@@ -1,0 +1,87 @@
+// source: https://community.bistudio.com/wiki/The_Unsung_MOD
+// revision: 363394 (2024-03-29T17:43:03Z)
+// export sha1: 1bufgr3kbtq97lrqkqxz25wcw6q5pen
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:ArmA_OFP_Unsung.JPG|right|The Unsung Vietnam War Mod]]
+
+== '''THE UNSUNG VIET NAM WAR MOD''' ==
+
+== Introduction ==
+
+[[File:Main_unsung_banner_sized_down.jpg | 500px]]
+
+{{Link|http://armanam.eu/|The Unsung Website}}
+
+
+The Unsung Vietnam War Mod was the effort of a few OFP (Operation Flashpoint) fans and Vietnam War enthusiasts. In the early days of OFP the idea came forth that with this ultimate war simulation, the Vietnam War could be brought into the gaming world like never before. And with the gathering of a few talented members willing to go the painstaking road of working from the ground up in releasing this Mod, The Unsung was born.
+
+
+'''Operation Flashpoint (OFP)'''
+ '''Project Lead''' - Drow
+
+'''OFP Team'''
+ Cj 525 - CSJ - Hawkins - Mehman - Pgi - redkid Joker - Sim - Sgt_savage - Warrior X
+
+2004 saw the coming of the first website for The Unsung mod. And it had finally a face. Yet with lots of work to be done and fewer members of the team able to carry on, the team slowly fell apart and The Unsung started to fade away into history. Two community members didn't want to let the Mod die and took over where the previous team could no more. And The Unsung rose again from the ashes. It took yet again some time for new members to show up and join the at that point 2 man team. But once new possible members saw and heard, the team started expanding and has now a very capable team of modders working for it that is growing larger still. Since the re-birth of The Unsung, the mod achieved it is first two Demo releases for OFP. They show the quality and capabilities of the hard work of all Unsung members to date. Finally all the hard work of the first team and the current team came to realization. No work has gone unnoticed in the process of making it all happen.
+As hard work and countless hours of dedication to the Mod brought more and more beautiful creations we found ourselves at a turning point for the project once more. ArmA (Armed Assault) was at the horizon, and the team was asking itself what to do next as we were working to a full release. But the minds and thoughts were the same, all the work done so far and unreleased were to go on into ArmA including the work for what was to be the full release for OFP! The Unsung Vietnam War Mod continued on into the next title.
+
+
+'''Armed Assault'''
+ '''Project Lead''' -  Cj 525
+
+'''Armed Assault Team'''
+ CSJ -  Pgi - Sim - Sgt_savage - south Saturn delta' - Bigstone -  Yac
+
+In 2006, Bohemia Interactive released Armed Assault the successor to the beloved title, OFP. And with this release came many new fresh faces to the Unsung Development Team and with it the launch of the R1 (alpha) release. R1 brought three new maps to the Mod along with a vast range of new content including United States Special Forces, The Vietcong (VC) and the North Vietnamese Army (NVA).
+
+
+'''Arma 2: CO'''
+ '''Project Lead''' -  Sgt_Savage
+
+'''Arma 2: CO Team'''
+ Bigstone - Columdrum - hcpookie - Eggbeast - Von Knudenberg - Spock - Showmaker
+
+In 2009 Bohemia Interactive released the second Armed Assault title and standalone DLC the following year. The arrival of Arma 2 brought with it a boom in the Community, and the Unsung team where back at it, bringing their previous content to the newest title and improved engine. Arma 2 Unsung can be seen as being a turning point in the Mod where huge improvements and an extremely large amount of new content was created. This turning point created one of the most authentic, realistic and enjoyable Vietnam era Experiences available.
+
+
+'''Arma 3'''
+ '''Project Lead''' - Sgt_Savage
+
+'''Arma 3 Team'''
+Razorback - Eggbeast - TeTeT - Bigstone - londo - devilslayersbane - hcpookie - Dra@gon - RamaMarines - Barden - Howells - Joe Wall - Crash - OpenDome - SuperOps - Jones - Shockley
+
+
+In 2013 Arma 3 Alpha was launched yet the game didn't reach "Full Release" until 2015. The team had started work early behind closed doors and the project was considered abandoned by the community, until the unexpected release of Unsung 3.0 in December of 2015 took the community by surprise.
+Since then there have been sequential updates at approximately 6 month intervals:
+
+{{Link|link= https://forums.bistudio.com/forums/topic/186586-the-unsung-vietnam-war-mod-v30-alpha-released/|text= Unsung ALPHA}} - December2015
+
+{{Link|link= https://forums.bistudio.com/forums/topic/191070-the-unsung-vietnam-war-mod-30b-bravo-released/|text= Unsung BRAVO}} - May 2016 
+
+{{Link|link= https://forums.bistudio.com/forums/topic/193364-the-unsung-vietnam-war-mod-30c-charlie-released/|text= Unsung CHARLIE}} - August 2016 
+
+{{Link|link= https://forums.bistudio.com/forums/topic/200396-the-unsung-vietnam-war-mod-30d-delta-released/|text= Unsung DELTA}} - December 2016
+
+{{Link|link= https://forums.bistudio.com/forums/topic/176893-the-unsung-vietnam-mod-30-wip-thread/|text= Unsung ECHO}} - eta June 2017
+
+There have been many challenges working with the new Arma 3 engine, and especially ponds in {{arma2}} maps, PhysX and new sounds.
+The mod team has so far imported most of the materials from {{arma2}}, while upgrading every one of its 200+ weapons models and adding new islands and content.
+
+'''Mission'''
+
+The Unsung plans to replicate the Vietnam War and the factions that where involved along side their respective military armaments. events from the Viet Nam War, between the mid 1960's - the early 1970's. 
+Most of the overall project will encompass the years in which US involvement in more than a funding and advisory role was no longer secret, this being 1965 - 1973. This was a very significant period in time for the United States of America. It was an engagement spanning ten years, where attitudes and tactics changed. It could be argued that America lost this War, this was their longest War, and yet, it was not a War at all. 
+It was also the coming of the age of the helicopter, the creation of advanced tactics to combat a foe unlike any before encountered, in a country that held no front lines, no battle fields, it was the battlefield, its deep jungles and high mountains became the ever shifting sea of front lines. The US military quickly established various strategic bases, these were to provide support for the ground troops who would seek out and destroy the enemy where ever he may be.
+
+
+'''Enlisting'''
+
+Joining up for The Unsung MOD is always possible. If you are really interested into working dedicated for the Mod and are willing to learn/teach with other members and work towards that goal of bringing the Vietnam War into both games then you can always ask.
+New applicants will have to show their work and skills, some skill is required to join up as 0 skill applicants would draw to much time and effort away to keep working on our main goal. 
+New applicants must be able to work alone to a certain degree. The new applicants work and themselfs will be judged upon by the entire team in order to see if they will fit into the team and if they are as dedicated as the rest.
+The main vibe within the Mod is that all team members will help each other out and teach each other what they know. If you are willing to learn, we are willing to teach. In that way we preserve and naturally expand our knowledge and bring the Mod to a higher level.
+
+New applicants can contact either Bigstone or Sgt Savage through PM via BI forums
+
+Under Construction

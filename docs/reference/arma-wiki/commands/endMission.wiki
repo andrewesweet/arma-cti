@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/endMission
+// revision: 338926 (2023-04-17T15:26:24Z)
+// export sha1: 37yrp1jpqxgih1ebsmrgvw4mg59lgto
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= Mission Information
+
+|descr= Finish the mission.
+'''Mission saves are deleted'''. Use [[failMission]] if they should not be.
+{{Feature|arma3|To maintain {{arma3}} visual style, it is recommended to use [[BIS_fnc_endMission]] instead.}}
+
+|mp= To end mission properly so that everyone goes to debriefing at the same time, this command should be executed on every machine (see {{Link|#Example 2}}).
+
+|s1= [[endMission]] endType
+
+|p1= endType: [[String]] - can be a custom one {{GVI|arma3|1.00|size= 0.75}}, or one of:
+{{Columns|2|
+* "CONTINUE" (does nothing)
+* "KILLED"
+* "LOSER"
+* "END1"
+* "END2"
+* "END3"
+* "END4"
+* "END5"
+* "END6"
+}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>endMission "END1";</sqf>
+
+|x2= <sqf>["END1"] remoteExec ["endMission", 0, true]; // Arma 3</sqf>
+
+|seealso= [[missionEnd]] [[failMission]] [[forceEnd]]
+}}

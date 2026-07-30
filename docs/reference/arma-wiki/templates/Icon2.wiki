@@ -1,0 +1,97 @@
+// source: https://community.bistudio.com/wiki/Template:Icon2
+// revision: 295935 (2021-11-16T09:34:54Z)
+// export sha1: kddqxy77yhlulfotgtmfxvh6q70c9oe
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}{{{2|}}}
+| {{LinkWrap|1=<span class="icon2 {{#if:{{{verbose|}}}|icon2-verbose}}" style="{{#if:{{{size|}}}|{{#if:{{{verbose|}}}||font-size: {{#expr:{{{size}}}*0.725}}em; height: {{#expr:{{{size}}}*32}}px; width: {{#expr:{{{size}}}*32}}px;}}}}{{#ifexpr:{{#len:{{{width|}}}}} and {{#len:{{{verbose|}}}}}|<nowiki/> width: {{#expr:{{{width}}} * 64 round 2}}px}}" alt="{{ucFirst:{{Trim|{{{1|}}} {{{2|}}}}}}}" title="{{ucFirst:{{Trim|{{{1|}}} {{{2|}}}}}}}"><span class="background"><span class="letter-1"{{#if:{{{3|}}}|<nowiki/> style="color: {{{3}}}"}}>{{#ifexpr:{{#len:{{{line1|}}}}} and {{#len:{{{verbose|}}}}} > 0
+| {{uc:{{{1|}}}}}</span>
+| {{#sub:{{uc:{{{1|}}}}}|0|1}}</span>{{#if:{{{verbose|}}}|{{#sub:{{uc:{{{1|}}}}}|1}}}}
+}}{{#if:{{{verbose|}}}|<br>}}<span class="letter-2">{{#ifexpr:{{#len:{{{line2|}}}}} and {{#len:{{{verbose|}}}}} > 0
+| {{uc:{{{2|}}}}}</span>
+| {{#sub:{{uc:{{{2|}}}}}|0|1}}</span>{{#if:{{{verbose|}}}|{{#sub:{{uc:{{{2|}}}}}|1}}}}
+}}</span>{{#if:{{{verbose|}}}||<span class="subtext">{{ucFirst:{{{1|}}}}}</span>}}</span>|2={{{link|}}}}}
+| -no arguments provided-
+}}</includeonly><noinclude>Template '''''Icon2''''' - should appear inline {{Icon2|local|argument|blue}} when in a paragraph.
+
+== Usage ==
+{{<nowiki/>Icon2|'''''firstWord'''''|'''''secondWord'''''|'''''secondLetterColor'''''|'''''link='''''|'''''size='''''|'''''verbose='''''|'''''width='''''|'''''line1='''''|'''''line2='''''}}
+* firstWord: first letter word, e.g "argument"
+* secondWord: second letter word, e.g "local"
+* firstLetterColor: (Optional, default {{hl|blue}}) CSS color
+* link: (Optional, default empty) icon link
+* size: (Optional, default 1) size factor. Does '''not''' work with ''verbose''
+* verbose: (Optional, default empty) if filled, shows the wide version of this icon (with full text) and unlocks the following parameters.
+* width: (Optional, default 1) width factor
+* line1: (Optional, default empty) if filled, colours and resize the whole first line
+* line2: (Optional, default empty) if filled, colours and resize the whole second line
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| {{hl|<nowiki>{{Icon2}}</nowiki>}}
+| {{Icon2}}
+|-
+| {{hl|<nowiki>{{Icon2|local|argument|blue}}</nowiki>}}
+| {{Icon2|local|argument|blue}}
+|-
+| {{hl|<nowiki>{{Icon2|N/A|argument|grey}}</nowiki>}}
+| {{Icon2|N/A|argument|grey}}
+|-
+| {{hl|<nowiki>{{Icon2|global|argument|darkorange}}</nowiki>}}
+| {{Icon2|global|argument|darkorange}}
+|-
+| {{hl|<nowiki>{{Icon2|local|effect|blue}}</nowiki>}}
+| {{Icon2|local|effect|blue}}
+|-
+| {{hl|<nowiki>{{Icon2|N/A|effect|grey}}</nowiki>}}
+| {{Icon2|N/A|effect|grey}}
+|-
+| {{hl|<nowiki>{{Icon2|global|effect|darkorange}}</nowiki>}}
+| {{Icon2|global|effect|darkorange}}
+|-
+| {{hl|<nowiki>{{Icon2|server|execution|green}}</nowiki>}}
+| {{Icon2|server|execution|green}}
+|-
+| {{hl|c= <nowiki>{{Icon2|server|execution|green|size=2}}</nowiki>}}
+| {{Icon2|server|execution|green|size=2}}
+|-
+! colspan="2" | the following presentations need the ''verbose'' argument
+|-
+| {{hl|c= <nowiki>{{Icon2|global|argument|darkorange|verbose=y}}</nowiki>}}
+| {{Icon2|global|argument|darkorange|verbose=y}}
+|-
+| {{hl|c= <nowiki>{{Icon2|global|argument|darkorange|verbose=y|size=3}}</nowiki>}}
+| {{Icon2|global|argument|darkorange|verbose=y|size=3}}
+|-
+| {{hl|c= <nowiki>{{Icon2|N/A|effect|grey|verbose=y|line1=y}}</nowiki>}}
+| {{Icon2|N/A|effect|grey|verbose=y|line1=y}}
+|-
+| {{hl|c= <nowiki>{{Icon2|smol|box|red|verbose=y|width=0.5}}</nowiki>}}
+| {{Icon2|smol|box|red|verbose=y|width=0.5}}
+|-
+| {{hl|c= <nowiki>{{Icon2|loc|arg|verbose=y|width=0.5}}</nowiki>}}
+| {{Icon2|loc|arg|verbose=y|width=0.5}}
+|-
+| {{hl|c= <nowiki>{{Icon2|loc|arg|verbose=y|width=0.75}}</nowiki>}}
+| {{Icon2|loc|arg|verbose=y|width=0.75}}
+|-
+| {{hl|c= <nowiki>{{Icon2|loc|arg|verbose=y|width=0.75|line1=y}}</nowiki>}}
+| {{Icon2|loc|arg|verbose=y|width=0.75|line1=y}}
+|-
+| {{hl|c= <nowiki>{{Icon2|loc|arg|verbose=y|width=0.75|line2=y}}</nowiki>}}
+| {{Icon2|loc|arg|verbose=y|width=0.75|line2=y}}
+|-
+| {{hl|c= <nowiki>{{Icon2|loc|arg|verbose=y|width=0.75|line1=y|line2=y}}</nowiki>}}
+| {{Icon2|loc|arg|verbose=y|width=0.75|line1=y|line2=y}}
+|-
+| {{hl|c= <nowiki>{{Icon2|server|execution|green|verbose=y|link=Multiplayer Scripting}}</nowiki>}}
+| {{Icon2|server|execution|green|verbose=y|link=Multiplayer Scripting}}
+|-
+| {{hl|c= <nowiki>{{Icon2|server|execution|green|verbose=y|width=1.5|link=Multiplayer Scripting}}</nowiki>}}
+| {{Icon2|server|execution|green|verbose=y|width=1.5|link=Multiplayer Scripting}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

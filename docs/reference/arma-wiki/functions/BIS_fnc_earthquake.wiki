@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_earthquake
+// revision: 378184 (2026-03-09T19:48:10Z)
+// export sha1: mxtcw07lvnx0eyj3g9wvkiemrc0t6rw
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Environment | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|eff= local
+
+|gr1= Environment
+
+|descr= Earthquake simulated through camera shake and sound. [[Arma 3: Stamina|Stamina]] is impacted by the earthquake too.
+Earthquake will last between 13 and 20 seconds. While earthquake is in progress [[missionNamespace]] variable {{hl|BIS_fnc_earthquake_inprogress}} will be [[true]].
+
+|exec= spawn
+
+|s1= [intensity] spawn [[BIS_fnc_earthquake]]
+
+|p1= intensity: [[Number]] - (Optional, default 2) can be 1, 2, 3 or 4. Any other value will fall back to the default value
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[4] spawn BIS_fnc_earthquake;</sqf>
+
+|seealso= [[addCamShake]]
+}}

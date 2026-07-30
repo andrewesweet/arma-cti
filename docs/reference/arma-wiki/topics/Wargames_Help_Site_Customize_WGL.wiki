@@ -1,0 +1,21 @@
+// source: https://community.bistudio.com/wiki/Wargames:Help_Site:Customize_WGL
+// revision: 177326 (2020-12-30T05:16:08Z)
+// export sha1: 3k0y8ylsv6ycmit8drx9qmo1it10gjh
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Customizing WGL5 =
+
+WGL5 gives the user the option to customize his WGL installation smoothly via the @wgl5 mod folder. The idea is to offer certain options to the user over an official system, so that there is the ability to customize WGL up to a certain point while keeping standardization easy for league play.
+
+== Available Interfaces ==
+
+* [[Wargames:Help_Site:Customize_WGL:WGL_Settings_sqf|WGL Settings sqf]]
+* [[Wargames:Help_Site:Customize_WGL:Config_Base|Config Base]]
+* [[Wargames:Help_Site:Customize_WGL:Models_Base|Models Base]]
+* [[Wargames:Help_Site:Customize_WGL:Sky_Packs|Sky Packs]]
+* ''Wargames:Help_Site:Customize_WGL:WGL_UI|WGL UI''
+* [[Wargames:Help_Site:Customize_WGL:What_is_WGLInitSP_sqs|What is WGLInitSP sqs]]
+
+== Dedicated Server Administration ==
+
+* [[Wargames:Help_Site:Customize_WGL:wglinitds_script|wglinitds script]]

@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Cargo_Platform
+// revision: 168180 (2020-10-13T08:48:17Z)
+// export sha1: 6ob06piq348784mu513x138o13ejz8e
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File: A3_CargoPlaftorm_01_green_F.jpg|400px|right|thumb|Military Cargo Platform (Green) with adjustable legs]]
+Functions used to manipulate the CargoPlaftorm_01_green_F and similar.
+
+[[Category:Function Group: Object Manipulation]]

@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/removeAllUserActionEventHandlers
+// revision: 322842 (2022-06-27T07:33:49Z)
+// export sha1: 3jh4iyqbwxi1mfq4dizua3mbqwgaz92
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|eff= local
+
+|gr1= Event Handlers
+
+|descr= Removes all UserAction event handlers of the given type which were added by [[addUserActionEventHandler]].
+
+{{Feature|important|This command also resets the Event Handler creation index to 0.}}
+
+|s1= [[removeAllUserActionEventHandlers]] [keyName, eventType]
+
+|p1= keyName: [[String]] - see [[inputAction/actions]]
+
+|p2= eventType: [[String]] - event name; see [[Arma 3: Event Handlers#UserAction Event Handlers|UserAction Event Handlers]]. Can be one of:
+* "Activate"
+* "Deactivate"
+* "Analog"
+
+|r1= [[Nothing]]
+
+|x1= <sqf>removeAllUserActionEventHandlers ["Reload", "Activate"];</sqf>
+
+|seealso= [[addUserActionEventHandler]] [[removeUserActionEventHandler]] [[Arma 3: Event Handlers#UserAction Event Handlers|UserAction Event Handlers]]
+}}

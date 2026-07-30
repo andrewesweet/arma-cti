@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_inverseLerp
+// revision: 349097 (2023-11-08T14:49:33Z)
+// export sha1: 5fdue0hwinxdhp0i59d1cpvfj80sk2b
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interpolation | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Interpolation
+
+|descr= Inverse of [[BIS_fnc_lerp]].
+
+|s1= [currentValue, targetValue, alpha] call [[BIS_fnc_inverseLerp]]
+
+|p1= currentValue: [[Number]] - start
+
+|p2= targetValue: [[Number]] - end
+
+|p3= alpha: [[Number]] - alpha
+
+|r1= [[Number]] - interpolated value
+
+|x1= <sqf>[10,20,0.5] call BIS_fnc_inverseLerp;</sqf>
+
+|seealso= [[BIS_fnc_clerp]] [[BIS_fnc_slerp]] [[BIS_fnc_lerp]] [[BIS_fnc_lerpVector]]
+}}

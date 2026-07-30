@@ -1,0 +1,75 @@
+// source: https://community.bistudio.com/wiki/Template:ArgTitle
+// revision: 377948 (2026-01-14T13:32:32Z)
+// export sha1: se3z3icxm3pxqpfshjdhd2hnin1lxkf
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#switch: {{{2}}}
+|1
+|2
+|3
+|4
+|5
+|6= {{#if:{{{2|}}}|<div style="display: flex; align-items: baseline">{{#if:{{{3|}}}|<div style="margin-right: 0.5em">{{{3}}}</div>}}<div style="flex-grow: 1">
+{{#switch: {{{2}}}
+|1= =
+|2= ==
+|3= ===
+|4= ====
+|5= =====
+|6= ======}} {{{1}}} {{#switch: {{{2}}}
+|1= =
+|2= ==
+|3= ===
+|4= ====
+|5= =====
+|6= ======}}
+</div>{{#if:{{{4|}}}|<div style="margin-left: 0.5em">{{{4}}}</div>}}
+</div>|-no title defined!-{{TemplateCase||[[Category:ArgTitle template usage error]]}}}}
+
+|#default= {{#if:{{{2|}}}|<div style="display: flex; align-items: baseline">{{#if:{{{3|}}}|<div style="margin-right: 0.5em">{{{3}}}</div>}}<div style="flex-grow: 1">
+{{#switch: {{{1}}}
+|1= =
+|#default
+|2= ==
+|3= ===
+|4= ====
+|5= =====
+|6= ======}} {{{2}}} {{#switch: {{{1}}}
+|1= =
+|#default
+|2= ==
+|3= ===
+|4= ====
+|5= =====
+|6= ======}}
+</div>{{#if:{{{4|}}}|<div style="margin-left: 0.5em">{{{4}}}</div>}}
+</div>|-no title defined!-{{TemplateCase||[[Category:ArgTitle template usage error]]}}}}
+
+}}</includeonly><noinclude>__NOTOC__{{Doc/Template
+|descr= Defines a wiki title (e.g {{hl|c= === Title ===}})
+|param1= level
+|descr1= (Optional, default 2) 1..6 number (number of "{{=}}" in wiki wode for title, e.g <syntaxhighlight lang="html+handlebars" inline>== title H2 ==</syntaxhighlight>)
+|param2= title
+|descr2= title text
+|param3= left
+|descr3= (Optional, default empty) any text that should be on the left of the title text (usually {{Template|GVI}} or {{Template|Icon}})
+|param4= right
+|descr4= (Optional, default empty) any text that should be on the right of the title text (usually {{Template|GVI}} or {{Template|Icon}})
+|example1= style="min-width: 15em" {{!}} <nowiki>{{ArgTitle}}</nowiki>
+|result1= style="min-width: 15em" {{!}} {{ArgTitle}}
+|example2= <nowiki>{{ArgTitle|4}}</nowiki>
+|result2= {{ArgTitle|4}}
+|example3= <nowiki>{{ArgTitle|4|My Title}}</nowiki>
+|result3= {{ArgTitle|4|My Title}}
+|example4= <nowiki>{{ArgTitle|4|My Title|Left}}</nowiki>
+|result4= {{ArgTitle|4|My Title|Left}}
+|example5= <nowiki>{{ArgTitle|4|My Title||Right}}</nowiki>
+|result5= {{ArgTitle|4|My Title||Right}}
+|example6= <nowiki>{{ArgTitle|4|My Title|Left|Right}}</nowiki>
+|result6= {{ArgTitle|4|My Title|Left|Right}}
+|example7= <nowiki>{{ArgTitle|4|Test|{{GVI|ofp|1.00}}|{{Icon|serverExec|32}}}}</nowiki>
+|result7= <br><br>{{ArgTitle|4|Test|{{GVI|ofp|1.00}}|{{Icon|serverExec|32}}}}<br><br>
+|example8= <nowiki>{{ArgTitle|My Title|4}}</nowiki><br>
+<nowiki>{{ArgTitle|My Title|4|{{GVI|ofp|1.00}}}}</nowiki>
+|result8= {{ArgTitle|My Title|4}}<br>{{ArgTitle|My Title|4|{{GVI|ofp|1.00}}}}
+}}</noinclude>

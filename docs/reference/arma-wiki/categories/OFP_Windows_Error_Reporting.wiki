@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:OFP:_Windows_Error_Reporting
+// revision: 187210 (2021-01-08T13:13:24Z)
+// export sha1: efhsk2o4z9d6bjnckes1522bdpy0lxa
+// Vendored snapshot. Do not edit — re-export instead.
+
+Windows Error Reporting responses for [[:Category:Operation Flashpoint|{{ofp}}]] crashes.
+
+{{GameCategory|ofp|Troubleshooting}}

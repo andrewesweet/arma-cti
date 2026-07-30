@@ -1,0 +1,91 @@
+// source: https://community.bistudio.com/wiki/targetsAggregate
+// revision: 377663 (2026-01-02T09:02:16Z)
+// export sha1: ptgcvv0pkc5p95n8eba2ne4mo2tg32x
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|descr= Aggregate candidates.
+
+|gr1= Object Manipulation
+
+|s1= [speaker, side, classname, position, timeMax] [[targetsAggregate]] candidates
+
+|p1= speaker: [[Object]]
+
+|p2= side: [[Side]] - if provided, a target with a side matching ''side'' will see it replaced by {{hl|"$"}}
+
+|p3= classname: [[String]] - {{hl|CfgVehicles}} classname - if provided, a target with a type matching ''classname'' will see it replaced by {{hl|"$"}}
+
+|p4= position: [[Position]] (Z-value is ignored) - centre of a hardcoded 200m radius
+
+|p5= timeMax: [[Number]] - max age of the target
+
+|p6= candidates: [[Array]] of [[Array]]s with [accuracy, target, targetSide, targetType, targetPosition, targetAge]
+* accuracy: [[Number]] - a coefficient, which reflects how close the returned result to the query filter. Range: 0..1, 1 being the best match
+* target: [[Object]] - the actual target object
+* targetSide: [[Side]] - side of the target
+* targetType: [[String]] - target [[typeOf]]
+* targetPosition: [[Position#Introduction|Position2D]] - [x,y] of the target 
+* targetAge: [[Number]] - the actual target age in seconds (can be negative)
+{{Feature|informative|See [[targetsQuery]] format.}}
+
+|r1= [[Array]] with [countInfo, sideInfo, unitInfo, placeInfo, timeInfo, uCountInfo, uTypeInfo]
+* countInfo: [[Array]] - [<nowiki/>[[format]] ["COUNT%1", index], count on index]
+* sideInfo: [[Array]] - [<nowiki/>[[format]] ["SIDE%1", index], side or string] if string then $ == "equal to queried"
+* unitInfo: [[Array]] - [<nowiki/>[[format]] ["UNIT%1", index], string]  $ == "equal to queried", otherwise the "type" of the unit? Should be CfgVehicles config type I think
+* placeInfo: [[Array]] - [<nowiki/>[[format]] ["PLACE%1", index], [[centerX, centerY], radius]]
+* timeInfo: [[Array]] - [<nowiki/>[[format]] ["TIME%1", index], string or array] if string then $ == "equal to queried", otherwise [timeMin, timeMax]
+* uCountInfo: [[Array]] - [<nowiki/>[[format]] ["UCOUNT%1", index], scalar count]
+* uTypeInfo: [[Array]] - [<nowiki/>[[format]] ["UTYPE%1", index], string name] a classname? Will be format ["*%1", classname] if count &gt; 1
+
+|x1= <sqf>_aggregation = [player, sideEnemy, "", [], 0] targetsAggregate (player targetsQuery [objNull, sideUnknown, "", [], 0]);
+/*
+	returns e.g
+	[
+		[
+			["COUNT0", 1],
+			["SIDE0", WEST],
+			["UNIT0", "B_Soldier_F"],
+			["PLACE0", [[<null>,<null>], 0, <null>]],
+			["TIME0", [-0.9, -0.9]],
+			["UCOUNT0", 1],
+			["UTYPE0", ...
+		]
+	]
+*/
+</sqf>
+with e.g
+* one Orca Helicopter
+* one T-100 Varsuk tank
+* one T-140K Angara tank
+* one MBT-52 Kuma tank (independent, set as enemy to blufor)
+<sqf>
+/*
+	[
+		[["COUNT0",1],["SIDE0",EAST],["UNIT0","O_Heli_Light_02_dynamicLoadout_F"],["PLACE0",[[<null>,<null>],0,<null>]],["TIME0",[-0.982,-0.982]],["UCOUNT0",1],["UTYPE0","O_Heli_Light_02_dynamicLoadout_F"]],
+		[["COUNT1",1],["SIDE1",GUER],["UNIT1","I_MBT_03_cannon_F"],["PLACE1",[[<null>,<null>],0,<null>]],["TIME1",[-0.982,-0.982]],["UCOUNT1",1],["UTYPE1","I_MBT_03_cannon_F"]],
+		[["COUNT2",2],["SIDE2",EAST],["UNIT2","*Tank_F"],["PLACE2",[[<null>,<null>],4.34554,<null>]],["TIME2",[-0.982,-0.982]],["UCOUNT2",2],["UTYPE2","*O_MBT_02_cannon_F"]]]
+	[
+		[["COUNT0",1],["SIDE0",EAST],["UNIT0","O_Heli_Light_02_dynamicLoadout_F"],["PLACE0",[[<null>,<null>],0,<null>]],["TIME0",[-1,-1]],["UCOUNT0",1],["UTYPE0","O_Heli_Light_02_dynamicLoadout_F"]],
+		[["COUNT1",1],["SIDE1",GUER],["UNIT1","I_MBT_03_cannon_F"],["PLACE1",[[<null>,<null>],0,<null>]],["TIME1",[-1,-1]],["UCOUNT1",1],["UTYPE1","I_MBT_03_cannon_F"]],
+		[["COUNT2",2],["SIDE2",EAST],["UNIT2","*Tank_F"],["PLACE2",[[<null>,<null>],4.34565,<null>]],["TIME2",[-1,-1]],["UCOUNT2",2],["UTYPE2","*O_MBT_02_cannon_F"]]
+	]
+*/
+</sqf>
+
+|seealso= [[targets]] [[targetsQuery]] [[nearTargets]] [[targetKnowledge]] [[knowsAbout]] [[reveal]] [[forgetTarget]] [[setTargetAge]] [[getHideFrom]]
+}}

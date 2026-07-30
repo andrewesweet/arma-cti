@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/addForce
+// revision: 377384 (2026-01-02T06:43:53Z)
+// export sha1: t68a6oqr30xw2g1lgseyb1z0dvvvh3b
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.72
+
+|arg= global
+
+|eff= global
+
+|gr1= PhysX
+
+|descr= Applies given force for one frame (essentially an impulse) to unit or given PhysX object at given position.
+{{Feature|informative|For more information see {{Link|http://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/apireference/files/classPxRigidBody.html|NVIDIA docs}}.}}
+
+|s1= object [[addForce]] [force, position, setUnconscious]
+
+|p1= object: [[Object]] - PhysX object or {{GVI|arma3|2.04|size= 0.75}}{{Icon|localargument|24}} unit, in which case the unit must be local and will be [[setUnconscious|set unconscious]]
+
+|p2= force: [[Vector3D]] - force vector in '''world''' space; force is expressed in
+{{Link|https://en.wikipedia.org/wiki/Newton-second|newton-seconds}} (used by {{Link|https://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/apireference/files/structPxForceMode.html|PxForceMode::eIMPULSE}})
+
+|p3= position: [[Position#PositionRelative|PositionRelative]] - relative to object
+
+|p4= setUnconscious: [[Boolean]] - (Optional, default [[true]]) only applies to "CAManBase" ''object''; set to [[false]] to keep the person conscious
+|p4since= arma3 2.18
+
+|r1= [[Nothing]]
+
+|x1= Apply force [0,1000,0] defined in world space (not factoring object actual positioning) to object position [1,0,0]:
+<sqf>_object addForce [[0,1000,0], [1,0,0]];</sqf>
+
+|x2= Apply force [0,1000,0] defined in model space (relative to object) to object position [1,0,0]:
+<sqf>_object addForce [_object vectorModelToWorld [0,1000,0], [1,0,0]];</sqf>
+
+|x3= Can be used on units since {{arma3}} v2.04:
+<sqf>
+if (local bob) then
+{
+	0 spawn 
+	{
+		bob addForce [bob vectorModelToWorld [0,-200,0], bob selectionPosition "rightfoot"];
+		sleep 5;
+		bob setUnconscious false;
+	};
+};
+</sqf>
+
+|x4= <sqf>
+player addForce [player vectorModelToWorld [0, -1, 0], [0, 1, 0], false]; // not unconscious
+</sqf>
+
+|seealso= [[addTorque]] [[awake]] [[isAwake]] [[vectorModelToWorld]] [[vectorModelToWorldVisual]] [[selectionPosition]] [[disableBrakes]] [[brakesDisabled]]
+}}

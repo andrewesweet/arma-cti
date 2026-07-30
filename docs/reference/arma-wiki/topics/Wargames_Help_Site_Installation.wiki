@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/Wargames:Help_Site:Installation
+// revision: 336769 (2023-01-04T15:24:50Z)
+// export sha1: jarfhlh52e6ky4zen9xcz17u9ggabyi
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Step-By-Step Instructions =
+
+1. Make sure to have downloaded the latest Wargames MOD version by checking the link in the [[Wargames:Help_Site:Download|Download]] section.
+
+{{Feature|important|NOTE: You can get the version by comparing the '''file naming of the rar packages''' with the '''version.txt''' in your local installation (/@wgl5).}}
+
+2. Extract (unpack) that RAR archive into your OFP game folder, thereby creating a folder '''@wgl5'''.
+
+{{Feature|important|NOTE: You ''may NOT rename'' the mod folder - it must be ''@wgl5''.}}
+
+3. Create a new shortcut to the OFP game executable ('''FLASHPOINTRESISTANCE.EXE''') and edit the shortcut. Add these parameters to the '''Target''' field of the shortcut:
+
+ -nosplash -nomap -mod=@wgl5
+
+4. Play OFP with WGL 5 and have fun!
+
+Check out the following pages to get to know more about additional WGL content and how to customize your WGL installation:
+
+* [[Wargames:Help_Site:Additional Info|Additional Info]]
+* [[Wargames:Help_Site:Customize WGL|Customize WGL]]
+* [[Wargames:Help_Site:Missions|Missions]]
+
+= Linux Server Installation =
+
+These instructions assume that you already have a working Linux OFP server installation and that you are somewhat experienced in Linux matters. You can refer to this thread in the official BIS forums for more help:
+{{Link|link= http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?act=ST;f=2;t=38678|text= Linux server setup HOWTO}}.
+
+1. Follow steps 1 and 2 above.
+
+2. In order for the Linux {{ofp}} server to start, one has to create a symbolic link to the folder ''@wgl5/bin'' as follows. We will assume that you have the {{ofp}} server installed into ''/opt/ofp'', so adjust according to your actual setup:
+
+ $ cd /opt/ofp
+ $ ln -s \@wgl5/bin \@wgl5\\bin
+
+3. Due to a bug in the OFP server program for linux, we need to create an empty folder named '''scripts''' in the server's home folder. Again, as an example, if you have the OFP server installed in /opt/ofp, do this:
+
+ $ cd /opt/ofp
+ $ mkdir scripts
+
+4. Edit the start script, ''ofpserver'' to add ''-mod=@wgl5'' to the line that starts the server.

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/setRandomLip
+// revision: 310244 (2022-05-05T13:11:05Z)
+// export sha1: 13uv140oquymb05mkcu8e3d7l74r9nz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Object Manipulation
+
+|descr= Enables/Disables random lip. When enabled, the unit continuously moves its lips as if it is talking.
+
+|s1= unit [[setRandomLip]] bool
+
+|p1= unit: [[Object]]
+
+|p2= bool: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setRandomLip true;</sqf>
+
+|seealso= [[say]] [[setMimic]] [[setFaceAnimation]] [[setFace]]
+}}

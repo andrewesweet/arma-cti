@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/commandFSM
+// revision: 377186 (2026-01-01T10:51:44Z)
+// export sha1: s3ne5ees2dcaztr99rxui59heplpeko
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Unit Control
+
+|descr= Orders a unit to process command defined by [[FSM]] file (via the radio).
+
+|s1= unitName [[commandFSM]] [fsmFile, position, target]
+
+|p1= unitName: [[Object]] or [[Array]] of [[Object]]s
+
+|p2= fsmFile: [[String]]
+
+|p3= position: [[Position]]
+
+|p4= target: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_soldierOne commandFSM ["move.fsm", position player, player];</sqf>
+
+|seealso= [[FSM]] [[FSM_Editor_Manual]] [[execFSM]] [[completedFSM]] [[doFSM]] [[getFSMVariable]] [[setFSMVariable]]
+}}

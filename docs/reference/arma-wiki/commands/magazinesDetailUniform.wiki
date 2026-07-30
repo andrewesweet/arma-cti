@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/magazinesDetailUniform
+// revision: 377202 (2026-01-01T11:36:50Z)
+// export sha1: n7e2bxj8vd411e0mrhutab0qi8fr71c
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|gr1= Unit Inventory
+
+|descr= Returns an array with the type names of all the unit's uniform magazines.
+
+|s1= [[magazinesDetailUniform]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[String]]s
+
+|s2= [[magazinesDetailUniform]] [unit, includeEmpty, includeLoaded]
+
+|s2since= arma3 2.00
+
+|p21= unit: [[Object]] - unit
+
+|p22= includeEmpty: [[Boolean]] - (Optional, default [[false]]) [[true]] to include empty magazines
+|p23= includeLoaded: [[Boolean]] - (Optional, default [[false]]) [[true]] to include magazines loaded in weapons (Since Arma 3 v2.07.148195)
+
+|r2= [[Array]] of [[String]]s
+
+|x1= <sqf>
+magazinesDetailUniform player;
+/*
+[
+	"6.5 mm 30Rnd Sand Mag(30/30)[id/cr:10000003/0]",
+	"Chemlight (Green)(1/1)[id/cr:10000020/0]"
+]
+*/
+</sqf>
+
+|seealso= [[magazinesDetail]] [[magazinesDetailVest]] [[magazinesDetailBackpack]]
+}}
+
+{{Note
+|user= Leopard20
+|timestamp= 20210912220751
+|text= To return the ammo count in each magazine, you can use this code:
+<sqf>
+magazinesDetailUniform player apply {
+	private _reverse = reverse _x;
+	private_i1 = (_reverse find "[)") + 1;
+	private_i2 = (_reverse find ["/", _id1]) + 1;
+	private_i3 = _reverse find ["(", _id2];
+	parseNumber reverse (_reverse select [_i2, _i3 - _i2]); // return cnt
+};
+</sqf>
+}}

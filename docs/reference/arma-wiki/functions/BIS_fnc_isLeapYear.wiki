@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isLeapYear
+// revision: 326986 (2022-07-12T21:44:43Z)
+// export sha1: tkiv9h6rsstv1f6k557138zdz6nu0ek
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Environment | Category:Function Group: Math | Category:Functions | Category:Introduced with Arma 3 version 1.10 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.10
+
+|gr1= Math
+
+|gr2= Environment
+
+|descr= Returns true if given year is a leap year, otherwise false.
+
+|s1= year call [[BIS_fnc_isLeapYear]]
+
+|p1= year: [[Number]] - a non-decimal number (a.k.a integer)
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _isLeapYear = 2035 call BIS_fnc_isLeapYear;</sqf>
+
+|x2= <sqf>private _isLeapYear = 2036 call BIS_fnc_isLeapYear; // 2036 is a leap year</sqf>
+
+|seealso= [[date]]
+}}

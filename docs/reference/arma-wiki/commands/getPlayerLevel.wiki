@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/getPlayerLevel
+// revision: 369243 (2024-09-03T10:35:40Z)
+// export sha1: 43h60pmasvkxa6joc783s6htuezovkp
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|arg= global
+
+|gr1= Argo
+
+|descr= Return the level of the provided player.
+
+|mp= {{Feature|important|Only works in multiplayer (on both server and clients).}}
+
+|s1= [[getPlayerLevel]] unit
+
+|p1= unit: [[Object]] - a player-controlled unit
+
+|r1= [[Number]] - the provided player's level or -1 on error (unreachable servers, not a player, etc)
+
+|x1= <sqf>
+player addEventHandler ["Killed", {
+	_killer = _this select 1;
+	if (getPlayerLevel _killer < getCurrentPlayerLevel) then
+	{
+		hint "oooooooooh!";
+	};
+}];
+</sqf>
+
+|seealso= [[getCurrentPlayerLevel]] [[isPlayerSupporter]]
+}}

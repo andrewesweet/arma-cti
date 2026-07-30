@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_registerCuratorObject
+// revision: 376684 (2025-11-04T22:53:26Z)
+// export sha1: lsoof60amri9ut7w8tb4a2yrq1kd6tl
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Get individual cost of an object.
+{{Feature|important|This function is obsolete.}}
+
+|s1= [class, status, cost] call [[BIS_fnc_registerCuratorObject]]
+
+|p1= class: [[String]] - object class
+
+|p2= status: [[Boolean]] - [[true]] to show status
+
+|p3= cost: [[Number]] - default cost
+
+|r1= [[Array]] in format:
+# show
+# cost
+# cost
+
+|x1= <sqf>["someClass", true, 5] call BIS_fnc_registerCuratorObject;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

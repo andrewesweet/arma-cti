@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diaryHints
+// revision: 309702 (2022-05-05T12:08:50Z)
+// export sha1: q1cub3wqmuytr1d3n2ds5itvexquvxt
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= <pre>#define DIARY_CATEGORY	"BIS_fnc_diaryHints"
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_diaryHints]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_diaryHints;</sqf> -->
+
+|seealso=
+}}

@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/ropeSegments
+// revision: 364777 (2024-06-10T12:28:27Z)
+// export sha1: jtblp6x0u6366wvblta0iaw91pz9wb9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|descr= Returns provided rope's segments.<br>
+{{GVI|arma3|2.12|size= 0.75}} use [[objectParent]] to return the rope parent from a rope segment.
+
+|gr1= Ropes and Sling Loading
+
+|s1= [[ropeSegments]] rope
+
+|p1= rope: [[Object]]
+
+|r1= [[Array]] of [[Object]]s - the rope's segments
+
+|x1= <sqf>private _segments = ropeSegments _myRope;</sqf>
+
+|seealso= [[ropeCreate]] [[ropeLength]] [[ropeCut]] [[ropeEndPosition]]
+}}

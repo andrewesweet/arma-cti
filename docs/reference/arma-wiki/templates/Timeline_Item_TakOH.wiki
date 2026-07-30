@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Timeline_Item_TakOH
+// revision: 378658 (2026-05-18T16:32:25Z)
+// export sha1: qq8g6e8400soz1l5fsk6lkzc4s1srr3
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>[[File:Logo_TakOH.png|50px|link=Category:Take_On_Helicopters]]</includeonly><noinclude>[[Category:Historical Templates]]</noinclude>

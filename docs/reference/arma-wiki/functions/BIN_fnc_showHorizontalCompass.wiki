@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_showHorizontalCompass
+// revision: 281284 (2021-06-14T09:07:32Z)
+// export sha1: e7jkd9zvjckyd7wz8rg6dp02r8zvyk9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= GUI
+
+|descr= <pre>/*
+
+	Description:
+		Show or hide horizontal compass
+
+	Parameter(s):
+		0: BOOL - true to show, false to hide
+
+	Returns:
+		NOTHING
+*/</pre>
+
+{{Wiki|placeholder}}
+{{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_showHorizontalCompass]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

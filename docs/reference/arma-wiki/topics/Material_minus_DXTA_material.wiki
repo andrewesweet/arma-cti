@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Material_-_DXTA_material
+// revision: 227530 (2021-01-31T19:31:08Z)
+// export sha1: ay1vq1wu6he4g1y5uj3ooafb3yt3x26
+// Vendored snapshot. Do not edit — re-export instead.
+
+=== DXTA material ===
+
+If you want to get rid of dark edges on texture with discrete alpha then use this modified general material.
+
+ PixelShaderID="NormalDXTA";
+ VertexShaderID="Basic";

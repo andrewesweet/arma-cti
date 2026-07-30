@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/reportRemoteTarget
+// revision: 310923 (2022-05-07T20:45:37Z)
+// export sha1: h00f3niwl75lbubxc1g8fu8zvds8dh0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sensors | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Sensors
+
+|arg= local
+
+|descr= Shares the target vehicle via datalink to the [[Side]] center for a given time.
+
+|s1= side [[reportRemoteTarget]] [target, time]
+
+|p1= side: [[Side]]
+
+|p2= target: [[Object]]
+
+|p3= time: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>blufor reportRemoteTarget [vehicle player, 60];</sqf>
+
+|seealso= [[setVehicleRadar]] [[vehicleReportRemoteTargets]] [[setVehicleReportRemoteTargets]] [[vehicleReceiveRemoteTargets]] [[setVehicleReceiveRemoteTargets]] [[vehicleReportOwnPosition]] [[setVehicleReportOwnPosition]]
+}}
+
+{{Note
+|user= Freddo3000
+|timestamp= 20210214110500
+|text= This command cannot be used on projectiles, such as IR Grenades.
+}}

@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/lightDetachObject
+// revision: 309932 (2022-05-05T12:16:58Z)
+// export sha1: sh2ft48freaf0jk2vkw3jhxqe6wcekw
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Lights
+
+|descr= Detach light from object.
+
+|s1= [[lightDetachObject]] light
+
+|p1= light: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>lightDetachObject _light;</sqf>
+
+|seealso= [[setLightAmbient]] [[setLightBrightness]] [[lightAttachObject]] [[setLightColor]] [[setLightIntensity]] [[setLightAttenuation]] [[setLightUseFlare]] [[setLightFlareSize]] [[setLightFlareMaxDistance]] [[setLightDayLight]]
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/get
+// revision: 348437 (2023-11-08T13:00:13Z)
+// export sha1: sy3g3sqh74togt2zkgcvj1os3m0ystw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: HashMap | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= HashMap
+
+|descr= Retrieves a value out of a [[HashMap]] after looking it up by its key.
+
+|s1= hashMap [[get]] key
+
+|p1= hashMap: [[HashMap]]
+
+|p2= key: [[HashMapKey]] - case sensitive key
+
+|r1= [[Anything]], or [[Nothing]] if ''key'' is not found
+
+|x1= <sqf>private _myValue = _myHashMap get "a";</sqf>
+
+|seealso= [[HashMap]] [[getOrDefault]]
+}}

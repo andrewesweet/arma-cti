@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_controlPoint_getOwnerKey
+// revision: 348611 (2023-11-08T13:45:20Z)
+// export sha1: c596zvfoj7qcr1to7998fzv92mg2uxf
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: ControlPoint | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= ControlPoint
+
+|descr= Returns the key owner of given control point.
+
+|s1= [controlPoint] call [[BIS_fnc_controlPoint_getOwnerKey]]
+
+|p1= controlPoint: [[Object]] - the control point
+
+|r1= [[Object]] - the key
+
+|x1= <sqf>private _key = [controlPoint] call BIS_fnc_controlPoint_getOwnerKey;</sqf>
+
+|seealso= [[BIS_fnc_controlPoint_isArrive]] [[BIS_fnc_controlPoint_compute]] [[BIS_fnc_controlPoint_computeOwnerKey]] [[BIS_fnc_controlPoint_setIsArrive]]
+}}

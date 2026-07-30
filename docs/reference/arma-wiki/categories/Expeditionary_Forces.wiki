@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Expeditionary_Forces
+// revision: 370324 (2024-11-26T17:29:49Z)
+// export sha1: qhtodf28kx1d5g5gx4tz1476ec9p7xj
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|CDLCs}}

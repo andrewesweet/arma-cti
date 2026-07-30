@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_CampaignManager
+// revision: 165214 (2020-10-09T15:06:45Z)
+// export sha1: 42cqlkkkdn0uil3a2ap0wr63eyl6s7n
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions used for the [[Arma 3 Apex|Apex Protocol]] campaign.
+
+[[Category:Function Group: Campaign]]

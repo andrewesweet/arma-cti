@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_markerPath
+// revision: 328423 (2022-07-13T16:00:50Z)
+// export sha1: he8bs4lompkaw0zwjr3bc52utd3ekty
+// categories: Category:Arma 3: Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Map and Markers
+
+|eff= global
+
+|descr= Create marker(s) between two points.
+
+|s1= [start, end, spacing, params] call [[BIS_fnc_markerPath]]
+
+|p1= start: [[Position]], [[Waypoint]], [[Object]], [[Location]] or [[String]]:
+* [[Position]] - position [x,y] or [x,y,z]
+* [[Waypoint]] - format [group, index]
+* [[Object]] - object's position
+* [[Location]] - location's position
+* [[String]] - marker name
+
+|p2= end: same as ''start''
+
+|p3= spacing: [[Number]] - (Optional, default 1000) distance between markers. When value is negative, line marker is used instead with thickness of this value
+
+|p4= params: [[Array]] - (Optional, default ["BIS_fnc_markerPath_marker_''#''", "mil_triangle", "colorgreen"]) marker params (see [[BIS_fnc_markerCreate]] for details)
+
+|r1= [[Array]] - list of created markers
+
+|x1= <sqf>["markerStart", "markerEnd"] call BIS_fnc_markerPath;</sqf>
+
+|x2= <sqf>[player, nearestLocation [getPos player, "nameCity"]] call BIS_fnc_markerPath;</sqf>
+
+|seealso= [[createMarker]] [[BIS_fnc_markWaypoints]]
+}}

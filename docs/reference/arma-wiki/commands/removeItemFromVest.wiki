@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/removeItemFromVest
+// revision: 376274 (2025-09-23T06:13:45Z)
+// export sha1: 89nnvri4to0rvxsmr4gxy1su49y36pi
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+|arg= global
+|eff= global
+
+|gr1= Containers 
+
+|descr= Removes item from soldier's vest.
+
+|s1= unit [[removeItemFromVest]] item
+
+|p1= unit: [[Object]]
+|p2= item: [[String]]
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeItemFromVest "itemWatch";</sqf>
+
+|seealso= [[addItemToVest]] [[removeItemFromUniform]] [[removeItemFromBackpack]] [[removeItemFromPrimaryWeapon]]
+}}

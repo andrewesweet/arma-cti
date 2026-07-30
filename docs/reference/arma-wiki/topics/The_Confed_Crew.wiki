@@ -1,0 +1,16 @@
+// source: https://community.bistudio.com/wiki/The_Confed_Crew
+// revision: 244921 (2021-02-07T23:16:38Z)
+// export sha1: e7t3dsq97kmgdnd4hqmtdq5g8jwa8fh
+// Vendored snapshot. Do not edit — re-export instead.
+
+== The Confed Crew ==
+{{Infobox/Squad
+|title = TCC
+|image =ArmA_The_Confed_Decal.gif
+|members =Shadow411
+Firepaw6666
+|former_members = 
+|successes = 0
+|founded = 2/19/08
+|link = 
+}}

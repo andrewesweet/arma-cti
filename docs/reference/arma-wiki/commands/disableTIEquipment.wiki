@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/disableTIEquipment
+// revision: 353363 (2024-03-15T17:11:56Z)
+// export sha1: 9mke9v07o3gtryxr8k5g1cfm1l60k75
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 2: Operation Arrowhead version 1.54 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.54
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Weapons
+
+|descr= Disables TI (Thermal Imaging) equipment for given vehicle.
+{{Feature|informative|In older versions of Arma this command would also disable NV (Night Vision), but since Arma 3 v1.54 this command disables only TI. Use [[disableNVGEquipment]] to disable NV.}}
+
+|s1= vehicle [[disableTIEquipment]] state
+
+|p1= vehicle: [[Object]]
+
+|p2= state: [[Boolean]] - true to turn TI off, false to turn TI on
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player disableTIEquipment true;</sqf>
+
+|x2= <sqf>_tank disableTIEquipment true;</sqf>
+
+|seealso=  [[equipmentDisabled]] [[disableNVGEquipment]] [[currentVisionMode]] [[setCamUseTI]] [[camUseNVG]]
+}}

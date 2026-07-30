@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Broken_Commands
+// revision: 157525 (2020-09-15T15:28:19Z)
+// export sha1: t2h9wrp0tj2lqjrwy7607q8oddmzqw9
+// Vendored snapshot. Do not edit — re-export instead.
+
+This page shows [[:Category:Scripting Commands|scripting commands]] that...
+* ...have no effect at all or
+* ...do not fully work as intended or
+* ...were not implemented
+
+[[Category:Scripting Commands by Functionality]]

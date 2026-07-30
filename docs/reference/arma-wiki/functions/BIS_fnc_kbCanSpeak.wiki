@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_kbCanSpeak
+// revision: 327091 (2022-07-12T21:44:49Z)
+// export sha1: a7extpuoflavln51ubsqvxuy00wmz2b
+// categories: Category:Arma 3: Functions | Category:Function Group: Conversations | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Conversations
+
+|descr= Check if person is not locked by some [[Conversations|conversation]].
+
+|s1= unit call [[BIS_fnc_kbCanSpeak]]
+
+|p1= unit: [[Object]] - checked person
+
+|r1= [[Boolean]] - if the person can speak
+
+|x1= <sqf>private _canPlayerTalk = player call BIS_fnc_kbCanSpeak;</sqf>
+
+|seealso= [[Conversations]] [[BIS_fnc_kbTell]]
+}}

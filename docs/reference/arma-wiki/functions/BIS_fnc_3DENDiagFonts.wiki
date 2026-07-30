@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENDiagFonts
+// revision: 342196 (2023-07-09T12:27:13Z)
+// export sha1: l95kc5khmpqje7qsm2tla3gf4fk71xc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= [[File:BIS_fnc_3DENDiagFonts example.jpg|thumb|This display is opened when the function is called in Eden.]]
+Displays given font in various different sizes. The fontID is the index of the font in <sqf inline>configFile >> "CfgFontFamilies"</sqf>.<br>
+Fonts for {{GVI|arma3|2.00}}:
+<ol start="0" style="column-count: 3">
+<li>LucidaConsoleB
+<li>TahomaB
+<li>EtelkaMonospacePro
+<li>LCD14
+<li>EtelkaMonospaceProBold
+<li>EtelkaNarrowMediumPro
+<li>PuristaBold
+<li>PuristaLight
+<li>PuristaMedium
+<li>PuristaSemibold
+<li>RobotoCondensed
+<li>RobotoCondensedBold
+<li>RobotoCondensedLight
+<li>Caveat
+</ol>
+
+|s1= fontID call [[BIS_fnc_3DENDiagFonts]]
+
+|p1= fontID: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>2 call BIS_fnc_3DENDiagFonts;</sqf>
+
+|seealso= [[:Category:Eden Editor|Eden Editor]] [[BIS_fnc_3DENCamera]] [[BIS_fnc_3DENControlsHint]] [[BIS_fnc_3DENDiagCreateList]] [[BIS_fnc_3DENDiagMouseControl]] [[BIS_fnc_3DENDrawLocations]] [[BIS_fnc_3DENEntityMenu]] [[BIS_fnc_3DENExportAttributes]] [[BIS_fnc_3DENExportOldSQM]] [[BIS_fnc_3DENExportTerrainBuilder]] [[BIS_fnc_3DENFlashlight]] [[BIS_fnc_3DENGrid]] [[BIS_fnc_3DENIntel]] [[BIS_fnc_3DENInterface]] [[BIS_fnc_3DENListLocations]] [[BIS_fnc_3DENMissionPreview]] [[BIS_fnc_3DENModuleDescription]] [[BIS_fnc_3DENShowMessage]] [[BIS_fnc_3DENStatusBar]] [[BIS_fnc_3DENToolbar]] [[BIS_fnc_3DENTutorial]] [[BIS_fnc_3DENVisionMode]]
+}}
+
+{{Note
+|user= 7erra
+|timestamp= 20201101153600
+|text= Code used to generate list:
+<sqf>
+_version = str(productVersion select 2);
+_version = format["%1.%2", _version select [0,1], _version select [1, count _version]];
+_firstLine = format ["Fonts for {{GVI|arma3|%1}}:
+", _version];
+_s = [_firstLine, "<ol start{{=}}""0"" style=""column-count: 3"">"];
+_cfgFonts = configProperties [configfile >> "cfgfontfamilies","isclass _x"];
+_cfgFonts apply {
+	_s pushBack format["<li>%1</li>", configName _x];
+};
+_s pushBack "</ol>";
+_s = _s joinString endl;
+copyToClipboard _s;
+_s;
+</sqf>
+}}

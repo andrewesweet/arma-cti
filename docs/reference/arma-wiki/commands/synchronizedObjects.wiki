@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/synchronizedObjects
+// revision: 377127 (2026-01-01T10:22:42Z)
+// export sha1: oid94808k8tbw08lky1v31a2tcnlcyp
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= local
+
+|gr1= Object Manipulation
+
+|descr= Return the list of objects synchronized with the given unit.
+{{Feature|Informative|[[synchronizedObjects]] only works on triggers and entities with AI (logics, soldiers/players, or vehicles that contain soldiers as the effective commander)}}
+
+|s1= [[synchronizedObjects]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>_objects = synchronizedObjects _logic;</sqf>
+
+|seealso= [[synchronizeObjectsAdd]] [[synchronizeObjectsRemove]] [[synchronizedTriggers]] [[synchronizedWaypoints]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted 07:13, 11 November 2010 (UTC)</dd>
+<dt class="note">[[User:Turrican|Turrican]]</dt>
+<dd class="note">
+This command only returns the effective commander of a vehicle that is synchronized. You have to use the "vehicle"
+command to select the actual vehicle.
+
+This command only returns the synchronized objects when used on intelligent objects such as units or
+logic objects. All other objects returns an empty array.
+
+In MP this command returns only values when the object is local. otherwise it returns an empty array.
+</dd>
+
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-02-26 - 18:03 (UTC)</dd>
+<dt class="note">[[User:Bull A|Bull A]]</dt>
+<dd class="note">
+When returning the synchronized objects, they are returned in the order that they were placed on the map
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2016-10-27 - 18:52 (UTC)</dd>
+<dt class="note">[[User:BobTheHunted|BobTheHunted]]</dt>
+<dd class="note">
+In Eden you can synchronize both units and their vehicles separately by syncing the gamelogic (or whatever) to the vehicle itself, and then the driver (or whatever other passengers) of the vehicle.  To use an entire group, just sync all units within that group to the gamelogic (not just the leader or group icon).  By doing this you can execute commands on each unit in a group and just the crew/single unit of a vehicle, or just the vehicle and not the crew, or both the vehicle and the crew.
+</dd>
+
+</dl>

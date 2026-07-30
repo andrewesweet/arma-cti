@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/moveToFailed
+// revision: 369920 (2024-10-19T12:26:25Z)
+// export sha1: m4ep5e7fjh0nk3mt9hw3fz02wqsayfh
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Unit Control
+
+|descr= Check if latest low level [[moveTo]] command failed. 
+
+|s1= [[moveToFailed]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Boolean]] - NOT IMPLEMENTED, ALWAYS [[false]]
+
+|x1= <sqf>private _hasFailed = moveToFailed _unit;</sqf>
+
+|seealso= [[moveTo]] [[moveToCompleted]]
+}}

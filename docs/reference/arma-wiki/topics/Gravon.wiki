@@ -1,0 +1,18 @@
+// source: https://community.bistudio.com/wiki/Gravon
+// revision: 337970 (2023-02-23T21:10:59Z)
+// export sha1: scyibjsd4yc3q3qs6ng7nj6m7agu6yf
+// categories: Category:Before Flashpoint
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Before Flashpoint]]
+[[image:Img2x.jpg|thumb|350px|Screen shot of Gravon]]
+[[image:Gravon02.JPG|thumb|350px|Screen shot of Gravon]]
+[[image:Gravon03.jpg|thumb|350px|Screen shot of Gravon]]
+
+A 3D action/simulation game for {{Link|https://en.wikipedia.org/wiki/Atari_Falcon|Atari Falcon030}}. It is considered to be the spiritual pedeccesor to [[:Category:Operation Flashpoint|{{ofp}}]]. The game was released in 1995. It was positively received by reviews in Narsil (88%) and Level.
+
+Available to download from:
+
+http://translate.google.com/translate?u=http://christophe.bray.free.fr/informatique/falcon/falcon_jeux.htm&langpair=fr%7Cen&hl=en&ie=UTF8
+
+A Windows PC port can be played [[Take On Mars: Gravon|as a part of Take On Mars game]].

@@ -1,0 +1,1528 @@
+// source: https://community.bistudio.com/wiki/Config_Properties_Megalist
+// revision: 376481 (2025-10-20T11:47:09Z)
+// export sha1: eob3q45pdr4uhqv7ojpkll5tf5u6sj1
+// categories: Category:ArmA: Armed Assault: Addon Configuration | Category:Arma 3: Vehicle Configuration | Category:Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+<div class="mw-collapsible">
+Arma 3 documentation is scattered to the 4 winds, and this applies to config file properties as much as anything.
+This is an attempt to make a single master list of properties '''with links to [sources]'''.
+Yes, there are other partial lists but they have limitations: short/confusing "official" descriptions, obsolete information, and no links to further sources.
+So rather than wreak havoc with those lists, this article is an attempt to make an easier-to-digest resource.
+
+(P.S. This list was initially compiled in Fall of 2014, and should be up-to-date as of that point.)
+
+=== Existing Config Pages ===
+
+Here is a list of existing config pages on the Biki. They tend to contain semi-official descriptions of properties (though some entries have detailed descriptions). Unfortunately, the 'official' descriptions tend to be short, incomplete, and/or confusing--particularly for new modders:
+
+* [[CfgVehicles Config Reference]]
+* [[Turret Config Reference]]
+* [[CfgAmmo Config Reference]]
+* [[CfgMagazines Config Reference]]
+* [[CfgWeapons Config Reference]]
+* [[Model Config]]
+
+This page is like a "Config Properties for Dummies" or a "Config Properties Explained". If you want the official description, go to the linked pages. If you want an explanation in plain English, use this page.
+
+(Once this page is complete, a sensible route may be to integrate its information into the existing pages to reduce redundancy).
+
+=== How Do Configs Work? ===
+
+All configs get merged into one big config in memory when the game starts. Where duplicates exist, which config takes precedence depends on load order - the last config loaded "wins" by overwriting any previous value(s). Load order is determined by mod folder order, PBO name, but most importantly/properly by the "requiredAddons" section of the CfgPatches class.
+
+=== CfgPatches & requiredAddons ===
+
+The requiredAddons array in CfgPatches is how you control the load order of configs. "requiredAddons" means "load these other config files before you load this one." (And "this one" means the name of the class containing the requiredAddons statement). {{Link|link= http://forums.bistudio.com/showthread.php?162880-Little-question-about-cfgpatches|text= A}}
+
+=== How Many Config Files? ===
+
+One consequence of the above discussion is the fact that you can ''technically'' spread your configs across tons of little files or ball them up into one big one or anything in between--with some exceptions^ (which are discussed further below). Barring those exceptions, there is no iron-clad rule that requires certain classes (e.g. CfgAmmo, CfgVehicles, etc.) to be separated or located within particular filenames. It is essentially a matter of clarity, ease of editing, and consistency to help others understand your work.
+
+Known exceptions:
+# #include'd .h/.hpp files are usually in the same folder or a subfolder of the #include'ing config, but apparently they can be anywhere as long as you #include "pathtofile".
+# CfgSkeleton & CfgModels classes should be in either: a "model.cfg" file or a "[same-name-as-P3D].cfg" file. Unlike other config classes, these ones should not be thrown into random files.
+# The model.cfg file must be in the same folder as--or in a parent folder of--the object (P3D) it configures.
+
+=== Config Properties ProTips ===
+
+A few tips and things to watch out for in config properties:
+*"epe" in a property name refers to "external physics engine", i.e. NVIDIA's PhysX API.
+*"Gunner" is often used in a propety name as a catch-all term that refers to whichever crewmember is in control of a turret/view (e.g. the commander is the "gunner" in the commander's turret).
+*A few properties have somewhat misleading names, in that the common English meaning of a word is not what the property actually refers to (e.g. "caliber", "explosive").
+*Inconsistent units: it is not uncommon for related properties to use different units for no good reason (e.g. radians per second vs. revolutions per minute). At least almost everything is in metric.
+</div>
+
+= WEAPON Configs =
+<div class="mw-collapsible">
+For understandable reasons, weapons data is scattered across several different config classes. Defining a weapon properly requires working with all these classes.
+
+== CfgAmmo ==
+Most projectile-specific properties are located here. Some relevant properties you might expect to find here however--muzzle velocity for example--are located in the other weapon classes (either CfgMagazines or CfgWeapons).
+
+=== airFriction ===
+{{hl|'''float'''}}
+
+How much the projectile slows down as it travels through the air. (A way of expressing aerodynamic drag).
+
+This and initSpeed define a projectile's trajectory in Arma (for unpowered ones like Bullets and Shells. Rockets and Missiles have additional rocket thrust features that influence their flight). As soon as an unpowered projectile is fired, it starts to slow down due to drag. The formula is:
+
+{{hl|c= airFriction = deceleration / velocity<sup>2</sup>}}
+
+A projectile with a muzzle velocity of 1,640 m/s which slows down with 94 m/s<sup>2</sup> has an airFriction of:
+
+{{hl|-94 m/s<sup>2</sup> / (1,640 m/s)<sup>2</sup> &asymp; -0.000035 1/m}}
+
+(This property appears to be equivalent to Bird-Livingston's "ballistic K factor" * 1e-7).
+
+^A different formula based on bulletPenetrability & caliber is applied to slow projectiles passing through solid targets (fire geometry).
+
+[[Weapons settings|A]], {{Link|link= http://forums.bistudio.com/showthread.php?153417-airFriction|text= B}}, "WW2 Ballistics: Armor and Gunnery" (Bird-Livingston, 2001)
+
+For self-propelled rockets and missiles use this one:
+
+{{hl|c=  -0.002 * f = a / v<sup>2</sup>}} (finding in {{Link|link= https://forums.bistudio.com/forums/topic/189449-solved-simulate-rocket-flight-airfriction-correction-thrust-in-cfgammo-is-equal-to-acceleration/?do=findComment&comment=3002852|text= BI forum}})
+
+f - airFriction
+
+a - acceleration
+
+v - velocity
+
+=== airLock ===
+{{hl|'''bool'''}}
+
+Whether this ammo type (& AI using it) can lock onto airborne targets.
+
+Provided the related CfgWeapons also has locking capability--"canLock" is true. Unlike irLock & laserLock--which have corresponding CfgVehicles properties that they lock onto, airborne targets are identified in some other way. (see "irLock", "laserLock"). 
+
+{{Link|link= https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgAmmo/amm_airLock.htm?Highlight=airlock|text= A}}, [[A3 Locking Review#airLock|B]], {{Link|link= http://forums.bistudio.com/showthread.php?47996-Airlock-only|text= C}}.
+
+=== caliber ===
+{{hl|'''float&ge;0'''}}
+
+Ability of the projectile to penetrate through target fire geometry (buildings, vehicle armor and components, people, etc.).
+
+Penetration power is dependent on caliber and the projectile's speed--higher = more penetration. The formula for mm of penetration is:
+
+{{hl|(projectile speed / 1000)x(caliber)x(bulletPenetrability of the target BISURF)}}
+
+So--as you would expect--penetration decreases as the projectile slows down during its flight. Restating the formula:
+
+{{hl|c= caliber = (mm penetration @speedX)*1000 / (bulletPenetrability * speedX)}}
+
+(A value of 1 is standardized as 15mm of RHA penetration at 1000m/s.) Note! Adding caliber values to missile or rockets is bugged and results in missiles flying through targets.
+
+{{Link|http://resources.bisimulations.com/wiki/Damage_Modeling:_Simulation#Penetration|A}}
+
+=== cost ===
+{{hl|'''int''', ~$, (AI only)}}
+
+A "monetary" value for each weapon.
+
+This helps AI units decide on whether a weapon is worth using. Presumably AI does not waste high-cost weapons on low-threat or otherwise inappropriate targets. Seems to be vaguely calibrated in units of 1/3-1/4 $USD.
+
+[[CfgAmmo_Config_Reference#cost|A]], {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgAmmo/amm_cost.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CcfgAmmo%7C_____12|B}} (contradictory)
+
+=== deflecting ===
+{{hl|'''90&ge;int&ge;0''', angle in degrees}}
+
+Determines how much a projectile ricochets.
+
+When the ammo impacts something at this angle or less, there is a ''chance'' it will ricochet--bouncing off the target and doing less than full kinetic damage. Impact angles greater than this will not ricochet. If deflecting = 0, the projectile will never ricochet, while a value of 90 gives all impacts a chance to ricochet. Ricochets occur from impacts to targets or the ground.
+
+Note: all projectiles get a slight random velocity change after completely penetrating a piece of fire geometry. This is a different, hardcoded behavior--not "deflecting".
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgAmmo/amm_deflecting.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CcfgAmmo%7C_____15|A}}
+
+=== explosive ===
+{{hl|'''1&ge;float&ge;0'''}}
+
+The proportion of the projectile's damage that is explosive (rather than kinetic).
+
+Unlike kinetic damage, explosive damage does ''not'' fall off as the projectile gradually loses speed. A value of 1 means the damage is fully explosive, while 0 means fully kinetic. (This property has nothing to do with the colloquial sense of an explosion as 'splash' damage--that property is covered by "indirectHit"). NOTE! Values >=0.7 nullify the penetration capability of the projectile, so keep values ''below'' this if you want the projectile to be able to penetrate armor at all. (See "hit", "typicalSpeed").
+
+=== hit ===
+{{hl|'''float>0'''}}
+
+The damage done by a direct hit from this projectile.
+
+Damage is applied to global hitpoints ("armor" int) as well as locational ones ("armor" float). (The actual formula for applying damage is somewhat complex, so there is not necessarily a one-to-one application of hit value against hitpoints). {{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage|A}}
+
+=== indirectHit ===
+{{hl|'''float&ge;0'''}}
+
+'Splash' damage done by a near miss from this projectile.
+
+Projectiles with indirectHit values do damage within a sphere around their impact point (whether they hit the ground or an object). The size of the sphere is determined by "indirectHitRange" and targets within the sphere receive damage. 
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage|A}}
+
+=== indirectHitRange ===
+{{hl|'''float&ge;0''', meters}}
+
+Describes the range of a projectile's 'splash' damage.
+
+This is the ''base'' radius within which indirectHit damage is applied. indirectHit damage is actually applied '''''out to 4x this radius''''', with linear falloff starting at indirectHit and ending at 0. (See "indirectHit"). Note: for standard HE weapons (e.g. tank HE-frag, artillery HE, grenades), this value seems to correspond roughly to the weapon's officially rated "lethal radius" in m.
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage|A}}
+
+=== initTime ===
+{{hl|'''float&ge;0''', seconds, (Missiles only)}}
+
+How long it takes the missile's rocket motor to start producing thrust after launch.
+
+Missiles are launched at initSpeed. After initTime, the missile starts accelerating based on its thrust parameters. (see "thrust", "thrustTime").
+
+=== irLock ===
+{{hl|'''bool'''}}
+
+Whether this ammo type (& AI using it) can lock onto radar targets (CfgVehicles.irTarget = true).
+
+irTarget vehicles are ones that are config'ed to show up on the game's simple "radar" overlay--i.e. tanks, trucks, etc., not humans. (You'd think "ir" would refer to infrared, but it actually refers to radar). (Provided the related CfgWeapons also has locking capability--"canLock" is true).
+
+[[A3_Locking_Review#irLock|A]].
+
+=== laserLock ===
+{{hl|'''bool'''}}
+
+Whether this ammo type (& AI using it) can lock onto "laser targets", i.e. a laser designator dot (CfgVehicles.laserTarget = true). (Provided the related CfgWeapons also has locking capability--"canLock" is true). 
+
+[[A3_Locking_Review#laserLock|A]], {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgAmmo/amm_laserLock.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CcfgAmmo%7C_____40|B}}.
+
+=== manualControl ===
+{{hl|'''bool''', (Missiles only)}}
+
+A type of missile guidance.
+
+True means the missile has SACLOS guidance (i.e. it continuously adjusts to fly toward wherever the player's crosshairs point).
+
+[[CfgAmmo_Config_Reference#manualControl|A]], {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgAmmo/amm_manualControl.htm?Highlight{{=}}manualcontrol|B}}
+
+=== maneuvrability ===
+{{hl|'''float>0''', (Missiles only)}}
+
+Affects missile turning ability.
+
+Higher is more maneuverable. It's claimed very high values (>30) may cause missiles to over-maneuver and spin out of control.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgAmmo/amm_maneuvrability.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CcfgAmmo%7C_____45|A}}, [[CfgAmmo_Config_Reference#maneuvrability|B]]
+
+=== maxControlRange ===
+{{hl|'''int>0''', meters, (Missiles only)}}
+
+Maximum range for guided missile flight--whatever the guidance type--after which the missile spins out of control. (See "timeToLive").
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgAmmo/amm_maxControlRange.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CcfgAmmo%7C_____47|A}}, [[CfgAmmo_Config_Reference#maxControlRange|B]]
+
+=== maxSpeed ===
+{{hl|'''float>0''', m/s, (Missiles only)}}
+
+Missile speed limit.
+
+This value imposes an upper limit to the speed at which a missile can travel, regardless of its thrust properties. (see "thrust", "thrustTime").
+
+=== "muzzle velocity" ===
+Surprise! Muzzle velocity for a projectile is ''not'' found in CfgAmmo at all! Instead it is defined in the relevant CfgMagazines class and the property is called "initSpeed".
+
+=== nvgOnly ===
+{{hl|'''bool'''}}
+
+Whether tracer is visible using NVG optics only.
+
+If false, the projectile's tracer is normal and can be seen with unaided optics as well as when using NVG (infrared or thermal) optics. If true, the tracer is invisible unless the viewer is using NVG optics.
+
+=== simulationStep ===
+{{hl|'''float>0''', seconds(?)}}
+
+How often the game updates the ammo's trajectory in flight.
+
+The default appears to be between 0.05 (visible in "Splendid Config Viewer" though it is not clear where this is defined?). If you assign a ''lower'' value, the game tracks the projectile ''more often'', giving a finer grained precision to its trajectory. This is presumably useful for things like fast moving projectiles, fast maneuvering guided missiles, projectiles with a high airFriction value, etc. A ''higher'' value tracks the projectile with ''less detail''. The results can be a bit unpredictable (e.g. values less than 0.001 can cause bizarre trajectories), so experimentation with a {{Link|link= http://forums.bistudio.com/showthread.php?164294-Quick-and-fun-projectile-path-tracing!|text= projectile tracing script}} is useful if you feel like there may be something wrong with your projectile's trajectory.
+
+Contrary to the information in the VBS documentation linked below, this property can be assigned to a projectile of any simulation type, not just missiles.
+
+Note: advanced modders should be aware that low simulationStep values appear to result in excessive firings of eventhandlers like "hitPart"--e.g. multiple events fired when a projectile hits a single surface. Try turning up simulationStep in cases like this.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-6/devref/Content/Config_Manual/CfgAmmo/amm_simulationStep.htm|A}}
+
+=== thrust ===
+{{hl|'''float>0'''}}
+
+Engine power of missiles and rockets. (See "thrustTime").
+
+[[Weapons_settings|A]], [[CfgAmmo_Config_Reference#thrustTime|B]]
+
+=== thrustTime ===
+{{hl|'''float>0''', seconds, (Missiles only)}}
+
+How many seconds the rocket motor will produces thrust before dying out.
+
+(Keep in mind that regardless of these thrust properties, "maxSpeed" puts a ceiling on missile speed). 
+
+[[Weapons_settings|A]], [[CfgAmmo_Config_Reference#thrustTime|B]], {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgAmmo/amm_thrustTime.htm?Highlight{{=}}thrusttime|C}}
+
+=== timeToLive ===
+{{hl|'''float>0''', seconds}}
+
+Maximum lifetime for the projectile until it is culled by the game engine.
+
+After a projectile is fired and this time has elapsed, the projectile is deleted from the game for optimization purposes; most projectiles simply disappear at this point, although certain types of explosive projectiles explode instead of vanishing.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgAmmo/amm_timeToLive.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CcfgAmmo%7C_____76|A}}
+
+=== typicalspeed ===
+{{hl|'''int>0''', m/s}}
+
+Influences how much damage the projectile does when it hits.
+
+Speed at which the projectile produces full "hit" damage; anything lower produces proportionately less damage (exception: any "explosive" damage component is always full value regardless of the impact speed). Note that this property does ''nothing'' to influence the projectile velocity, it used only in the damage calculation. (See "initSpeed", "explosive").
+
+=== visibleFire ===
+{{hl|'''float''', meters?, "(AI only)}}
+
+Distance from projectile that AI units will notice it. (See "visibleFireTime").
+
+Not clear if this refers to the projectile in flight, when fired, at impact, or all three.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgAmmo/amm_visibleFire.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CcfgAmmo%7C_____85|A}}
+
+=== visibleFireTime ===
+{{hl|'''float''', seconds, "(AI only)}}
+
+How long AI units will notice the projectile. (See "visibleFireTime").
+
+Values less than 5 supposedly cause problems because there can be 5 seconds between AI attention tests.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgAmmo/amm_visibleFireTime.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CcfgAmmo%7C_____86|A}}, [[CfgAmmo_Config_Reference#visibleFireTime|B]]
+
+== CfgMagazines ==
+Magazine properties plus some projectile-specific stuff that gets stored here instead of CfgAmmo.
+=== initSpeed ===
+{{hl|'''int>0''', m/s}}
+
+Sets the muzzle velocity of ammo fired from this Magazine.
+
+Updated in Q1 2015: InitSpeed in weapons - zero value in weaponType::initSpeed means that magazineType::initSpeed will be used (initSpeed set to positive values in a weapon means a constant speed of the weapon independent on its magazine. Negative values mean a multiplier for initSpeed set in the magazine. Setting it to 0 means that the speed is going to be taken from magazine, this equals to setting initSpeed in the weapon to -1).
+
+(Not to be confused with typicalSpeed, which does not affect projectile speed at all and is instead used for damage calculation only).
+
+== CfgWeapons ==
+Gun/launcher-specific properties.
+
+=== aiDispersionCoefX/Y ===
+{{hl|'''float&ge;1.0''', (AI only)}}
+
+AI unit inaccuracy using this weapon (in X/Y).
+
+These two properties are ''coefficients'' multiplied by the inherent weapon "dispersion" value. These are maximum values for inexperienced AI; as AI experience goes up, these values are shifted toward 1.0 (no extra dispersion). Supposedly there are other factors that influence AI inaccuracy besides these dispersion properties. (See "dispersion").
+
+[[Weapons_settings#AI|A]]
+
+=== autoFire ===
+{{hl|'''bool'''}}
+
+Whether the weapon will continue to fire if you hold down the trigger.
+
+{{Link|https://manuals.bisimulations.com/vbs2/2-00/devref/Content/Config_Manual/CfgWeapons/wpn_autoFire.htm|A}}
+
+=== ballisticsComputer ===
+
+=== canLock ===
+{{hl|'''bool'''}}
+
+Whether the weapon can lock on to a target (e.g. when a player hits the TAB key)
+
+Must be true for any of the other lock modes to work (airLock, irLock, laserLock). 0 = never, 1 = in cadet mode only, 2 = always.
+
+[[A3_Locking_Review#canLock|A]], {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgWeapons/wpn_canLock.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgWeapons%7C_____18|B}}
+
+=== dispersion ===
+{{hl|'''float>0'''}}
+
+Basic weapon accuracy.
+
+This is the inherent accuracy of the weapon^. It affects all projectiles fired from this weapon independent of other effects like AI skill, etc. It describes the weapon's dispersion in radians (1 milliradian = 1 angular mil = 0.001 dispersion, 1 MOA = 0.000290888 dispersion).
+
+^IRL these are things like straightness of the barrel, consistency of the ammunition powder charge, etc.--dispersion should actually be different per ammunition type, but in Arma it is a weapon property only.
+
+=== initSpeed ===
+{{hl|'''int''', m/s}}
+
+This allows you to override or modify the initSpeed (muzzle velocity) set in CfgMagazines.
+
+New feature added in Q1 2015: zero value in weaponType::initSpeed means that magazineType::initSpeed will be used (initSpeed set to positive values in a weapon means a constant speed of the weapon independent of its magazine. Negative values mean a multiplier for initSpeed set in the magazine. Setting it to 0 means that the speed is going to be taken from magazine, this equals to setting initSpeed in the weapon to -1).
+
+=== max/mid/minRange ===
+{{hl|'''int>0''', m/s, (AI only)}}
+
+Determines the tendency of AI units to use this weapon based on their range to target.
+
+At this range down to the previous __Range, an AI unit will attack with the corresponding __RangeProbab probability. Think of the three pairs of values (__Range, __RangeProbab) as creating a graph of attack probability at different ranges. (See "max/mid/minRangeProbab").
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgWeapons/wpn_maxRange.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgWeapons%7C_____67|A}}
+
+=== max/mid/minRangeProbab ===
+{{hl|'''float>0''', (AI only)}}
+
+Determines the tendency of AI units to use this weapon based on their range to target.
+
+At this __Range down to the previous __Range, an AI unit will attack with the corresponding __RangeProbab probability. Think of the three pairs of values (__Range, __RangeProbab) as creating a graph of attack probability at different ranges. (See "max/mid/minRangeProbab").
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgWeapons/wpn_maxRange.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgWeapons%7C_____67|A}}
+
+=== weaponLockSystem ===
+{{hl|'''cumulative int'''}}
+
+How this weapon triggers a target vehicle's warning system.
+
+What type(s) of lockDetectionSystem is set off in a vehicle targeted by this weapon: 0 = none, 1 = CM_Lock_Visual, 2 = CM_Lock_IR, 4 = CM_Lock_Laser, 8 = CM_Lock_Radar. Presumably canLock must = 1 for this to be relevant. 
+
+[[A3_Locking_Review#weaponLockSystem|A]].
+</div>
+
+= VEHICLE Configs =
+<div class="mw-collapsible">
+Vehicle properties are numerous and are contained both in the CfgVehicles class (usually in its own file), as well as CfgSkeletons & CfgModels (usually combined into a single file called model.cfg). CfgVehicles describes the vehicle's gameplay features, while CfgSkeletons & CfgModels describe its P3D model file.
+
+Keep in mind that just about every major actor belongs to the "Vehicle" class in Arma, from planes to tanks to humans.
+
+== CfgVehicles ==
+<div class="mw-collapsible">
+=== animationSource___ ===
+{{hl|'''string''', model.cfg Animations class name, (Turret class)}}
+
+Defines the animating portions of a turret (_Body, _Gun, _Hatch, _Roll).
+
+This property appears to serve as a shortcut to defining an AnimationSources "custom" source. Instead of needing to do that, BI has created a few preset source properties that serve the same effect using a single line (as opposed to a whole class entry in AnimationSources). The name used as a value is one of the "class Animations" source names in the vehicle's model.cfg.
+e.g.
+<syntaxhighlight lang="cpp">
+class YourModel : InheritedFromSomeWhere
+{
+	class Animations : Animations
+	{
+		class MainTurret
+		{
+			type = "rotationY";		// type of movement involved
+			source = "mainTurret";	// The controller that provides input above
+			selection = "OtocVez";	// The name of the skeleton bone used.
+			axis = "OsaVeze";		// name of the axis in the P3D model.
+			...
+</syntaxhighlight>
+
+The typical uses are as follows. _Body controls the basic slewing/left-right motion of the turret. _Gun controls weapon elevation/up-down movement. _Hatch controls hatch movement (if any) for a crewmember turning in/out. _Roll presumably controls tilting motion of the turret (if any).
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/A_cpp/cpp_animSourceBody.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____31|A}}, [[Turret_Config_Reference#A|B]]
+
+=== armor (global) ===
+{{hl|'''int>0'''}}
+
+Overall hit points/'health' for the vehicle. Once fully depleted by damage, the vehicle blows up killing its occupants.
+
+You will often see this property referred to as "armor (int)". Supposedly object radius somehow modifies this value, although the formulas offered by BI don't make much sense. Note that locational hit-points are derived from this value--determined by each HitPoint class's own "armor" (float) value. So the lower this value, the weaker all the vehicle's corresponding location HitPoints will also be (i.e. the more damage a location takes with each hit).
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage_Modeling:_Objects#armor|A}}, [[CfgVehicles_Config_Reference#armor_.28integer.29|B]], [[Damage|C]].
+
+=== armorStructural ===
+{{hl|'''int>0'''}}
+
+This makes global health resistant to damage, without affecting local health.
+
+The value is used as a divisor to global damage; the higher the value (beyond 1), the less global damage ("armor"/"hit points") occurs whenever the vehicle gets hit. HitPoints class location damage is ''not'' affected by this property; the location takes damage from the hit without being affected by this property. Extremely high values practically nullify the (in)famous cumulative "hit points" system of vehicle damage (e.g. plinking a tank to death with a rifle).
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage_Modeling:_Objects#armorStructural|A}}.
+
+=== brakeIdleSpeed ===
+{{hl|'''float>0''', meters/second, (PhysX)}}
+
+Speed below which brakes are automatically applied to slow the vehicle to a stop.
+
+If the value is too low, it will make the vehicle very difficult to bring to a complete stop. If it is too high, the vehicle will brake while you are trying to drive slowly.
+
+[[Arma_3_Cars_Config_Guidelines#PhysX_3_integration|A]], {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/B_cpp/cpp_brakeIdleSpeed.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____53|B}}
+
+=== cost ===
+{{hl|'''int>0''', (AI only)}}
+
+Tells the AI how valuable this vehicle is to attack relative to others.
+
+From VBS link: "This value reflects how important a unit/vehicle is for enemy AI to kill. When all other considerations are equal. For instance, a soldier is not interested in Air [targets, due to his "threat[]" property], despite it is highly attractive cost values. On the other hand, he is interested in a machinegunner, since a machinegunner (in normal configs) has a relatively higher cost, than other [infantry threat types], including the officer, even though the machinegunner's cost is much lower than an airplane."
+
+(See "threat[]").
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/C_cpp/cpp_cost.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____92|A}}
+
+=== changeGearMinEffectivity[] ===
+{{hl|'''float array''', (PhysX)}}
+
+Tells the transmission when to switch gears. (All transmissions in Arma 3 behave as if automatic).
+
+Note that there is a value for every GearboxRatios value (usu. starting with reverse, then neutral, etc).
+In BI configs, this array never seems to vary much from the default: 0.95 for everything except neutral which is 0.15 (so it gets switched out of very quickly) and reverse which is 0.5.
+BI says "if there is [a] better gear and effectivity is below this value then [the game] change[s] gear"--not very clear what this means.
+However, reading NVIDIA documentation suggests the array values may simply represent the proportion of max engine RPM rather than some abstract "effectivity" value; in that case once the engine revs above(below) the RPM value, the game will shift one gear up(down).
+
+[[Arma_3_Cars_Config_Guidelines#Differential_parameters|A]], {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehicleautoboxdata|B}}
+
+=== clutchStrength ===
+{{hl|'''float>0''', (PhysX)}}
+
+How 'tight' the clutch is--how quickly gear changes affect vehicle speed.
+
+Low values will mean more 'slippage' and slower acceleration after gear changes, higher values mean less slippage and quicker delivery of power to the wheels after a gear shift. BI recommends starting with a value of 10 (for CarX anyway, TankX config values are typically closer to 100). (See "thrustDelay").
+
+[[Arma_3_Cars_Config_Guidelines#Differential_parameters|A]], {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehicleclutchdata|B}}
+
+=== crewExplosionProtection ===
+{{hl|'''float>0'''}}
+
+It's controlling how much indirectHit damage crew will take.
+
+reyhard: It is also affecting EPE impulses (crashes) if I remember correctly since those are treated as indirect damage.
+
+
+[ {{Link|link= http://forums.bistudio.com/showthread.php?149636-Development-Branch-Changelog&p=2818157&viewfull=1#post2818157||text= A}} ]
+
+=== crewVulnerable ===
+{{hl|'''bool''', (AI only)}}
+
+If true, AI units will shoot at the vehicle to wound exposed crewmembers even if damageResistance is too high for them to otherwise bother attacking. (See "damageResistance").
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/C_cpp/cpp_crewVulnerable.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____95|A}}
+
+=== damageResistance ===
+{{hl|'''float>0''', (AI only)}}
+
+Tells AI units how resistant this vehicle is to damage (so they can decide whether or not to bother attacking based on the weapons they are carrying). The calculation appears to be based only on the target's global armor and size, along with the weapon's hit value; armor & penetration are not factors. The formula for deriving this value is supposedly:
+
+{{hl|(minHit^2) * (1/armor) * ([0.27/tgtRadius]^2)}}
+
+where "miHit" is the "hit" value for the ''weakest weapon that the AI should find useful against the vehicle''. How exactly the value is used by the game is a mystery. Possibly the AI check their weapon with this formula and compare it to the config value. Simplifying, one could say the AI checks it is weapon "hit" value against the minimum useful "hit" value the config has defined; if the AI weapon is >= the minimum value, the AI will consider attacking. If the AI's weapon is weaker, it won't.
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage_Modeling:_Objects#damageResistance|A}}, {{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage|B}},{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/D_cpp/cpp_damageResistance.htm?Highlight{{=}}damageresistance|C}}
+
+=== destrType ===
+{{hl|'''string'''}}
+
+Sets the destruction type for the object.
+*“DestructDefault” // Default destruct type, engine auto detects during object loading: vehicles are set to "DestructEngine" and everything else is set to "DestructBuilding"(?)
+*“DestructNo” // No destruction effects, makes object invulnerable to weapons
+*“DestructMan” // Destruct as man (no shape animation)
+*“DestructEngine” // Destruct as vehicle (explosion, shape animation)
+*“DestructWreck” // Destruct as wreck, similar to DestructEngine, but with wreck replacement
+*“DestructBuilding” // Destruct as building, requires destructionEffects class
+*“DestructTree” // Destruct as tree, falls over by rotating about axis defined in model
+*“DestructTent” // Destruct as tent, object collapses on itself (shape animation) (for bushes, tents, poles, etc)
+*“DestructWall” // Destruct as wall, falls over only forward or backward
+
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage_Modeling:_Objects#destrType|A}}, {{Link|https://manuals.bisimulations.com/vbs3/3-4/devref/#Config_Manual/CfgVehicles/D_cpp/cpp_destrType.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____110|B}}
+
+=== discreteDistance[] ===
+{{hl|'''int array''', meters}}
+
+These are the available weapon range settings for this Optics/Turret view. (i.e. what you switch through with the PgUp/PgDown key).
+
+=== discreteDistanceInitIndex ===
+{{hl|'''int'''}}
+
+This is the array index of the default range setting from discreteDistance[]. (Remember all arrays are "zero-based"--that is, the first entry is #0).
+
+=== epeImpulseDamageCoef ===
+{{hl|'''int&ge;0''', (PhysX) }}
+
+<?>Undocumented: the name suggests this is a coefficient influencing how much damage the vehicle takes from physics-controlled impacts (i.e. crashing into a wall, another vehicle, etc.). Higher numbers suggest the vehicle takes more damage from such events.
+
+[undocumented]
+
+=== engineLosses ===
+{{hl|'''int&ge;0''', Newton-meters, (PhysX) }}
+
+A force that helps bleed speed from the vehicle (presumably most noticeable as the vehicle coasts).
+
+engineLosses bleed energy from the vehicle due to inefficiencies in the engine. As such, they are multiplied by the gear ratio (unlike transmissionLosses). (See "transmissionLosses").
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/E_cpp/cpp_engineLosses.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____139|A}}
+
+=== enginePower ===
+{{hl|'''int>0''', kilowatts, (PhysX)}}
+
+Engine power in kW. (hp * 0.745699872 = kW).
+
+[[Arma_3_Cars_Config_Guidelines#Engine_parameters|A]]
+
+=== explosionShielding (global) ===
+{{hl|'''float&ge;0'''}}
+
+Modifies how global vehicle health is affected by 'splash' damage (indirectHit).
+
+This works the same way as explosionShielding for HitPoint locations: indirectHit damage received is multiplied by this value.
+
+(This property is 10-24-14 devbranch only currently)
+
+=== forceHide__ ===
+{{hl|'''bool'''}}
+
+Whether a crewmember has the ability to "turn out" or not. (1 = cannot turn out, 0 = can turn out).
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/F_cpp/cpp_forceHideCommander.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____153|A}}
+
+=== extCameraPosition[] ===
+{{hl|'''float array''', meters}}	
+
+These are the XYZ coordinates of the 3rd person camera view for this vehicle.
+
+The 3 members of the array represent coordinates in meters [X,Y,Z] = (side-to-side, vertical, close/forward-far/back.) The distances are calculated relative to the center of the vehicle.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/E_cpp/cpp_extCameraPosition.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____141|A}}
+
+=== __Fov ===
+{{hl|c= '''float&ge;0''', 1=120 degrees}}
+
+Field of View / magnification for the Optics class it is found in.
+
+"init__", "min__", "max__" with "initFov" being the default. Smaller values mean a ''narrower'' FOV and thus a ''higher'' magnification.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/I_cpp/cpp_initFov.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____234|A}}
+
+=== fuelCapacity ===
+{{hl|'''int>0''', liters}}
+
+Vehicle fuel capacity.
+
+(While VBS3 uses 0.1 liter units, Arma 3 appears to use 1 liter units based on config values). Regardless, the fuel consumption model in the game is very simplified so real-world values--while a useful starting point--may need tweaking in order to translate them into good in-game values.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/F_cpp/cpp_fuelCapacity.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____162|A}}
+
+=== gunnerOpticsModel ===
+{{hl|'''string'''}}
+
+P3D model used when for this turret when crewmember is "turned in". (filename should include path).
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/G_cpp/cpp_gunnerOpticsModel.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____197|A}}
+
+=== gunnerOutOpticsModel ===
+{{hl|'''string'''}}
+
+P3D model used when for this turret when crewmember is "turned out". (filename should include path).
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/G_cpp/cpp_gunnerOutOpticsModel.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____202|A}}
+
+=== gunnerOpticsEffect[] ===
+{{hl|'''string'''}}
+
+Optical effects overlay (blur, etc.) applied to this turret in "turned in" mode.
+
+=== gunnerHasFlares ===
+{{hl|'''bool'''}}
+
+<??>Whether the crewmember at this Turret can launch the vehicle's countermeasures, if such are available (aircraft flares, AFV smoke grenades).
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/G_cpp/cpp_gunnerHasFlares.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____192|A}}, (comment in "Samples_F\Test_Tank_01\CfgVehicles.hpp")
+
+=== hiddenSelections[] ===
+{{hl|'''string array'''}}
+
+HiddenSelections lets you swap texture & material in-game on specified parts of your vehicle. 
+
+The names in the array must correspond to: 1) named selection(s) in the P3D file, 2) identically named entries in the model.cfg file under class CfgModel { sections[] }, e.g.
+<syntaxhighlight lang="cpp">
+class CfgModels
+{
+	class Jeep
+	{
+		sectionsInherit = ""; // (let's assume there is no inheritance in this example)
+
+		sections[] =
+		{
+			// names must match named selection sets in the P3D model file
+			// you should use the same selection set names across all the visual LOD's in the P3D
+			"spareTire",
+			"flag"
+		};
+</syntaxhighlight>
+The purpose of listing certain sections here is to create variety within a single model by allowing the parts to be hidden and/or have alternate textures swapped out for variety. (Arma 3 uses it commonly to generate random texture variation during spawn).
+
+Using hiddenSelections gives you the ability to change the sections' textures and materials via script with the [[setObjectMaterial|setObjectMaterial]] and [[setObjectTexture|setObjectTexture(/Global)]] commands. (Note that changing an object's material does ''not'' appear to change its associated bisurf properties--this system is intended for changing visual appearance only; you can't use it to cleverly change fire geometry properties--use the "hide" Animation for that purpose [see damageHide later in this section].)
+
+Note: hiddenSelections are ''not'' intended for hiding or texture-swapping ''damaged hit locations''; there are built-in ways to handl that with [http://tactical.nekromantix.com/wiki/doku.php?id{{=}}arma:modeling:damage_model the 'damageHide' process] and/or the CfgVehicles>Damage class.
+
+See also: [[#hiddenSelectionsTextures&#91;&#93;]]
+
+[ {{Link|link= https://manuals.bisimulations.com/vbs3/3-0/devref/Content/Config_Manual/CfgVehicles/H_cpp/cpp_hiddenSelections.htm|text= A}}, {{Link|link= http://forums.bistudio.com/showthread.php?93033-Hidden-Selections|text= B}}, {{Link|link= http://fab.ofp.free.fr/Tutorials/Hidden_Selections.htm|text= C}}, {{Link|link= http://tactical.nekromantix.com/wiki/doku.php?id=arma2:texturing:hiddenselectionstextures|text= D}} [[ArmA: Howto Model Config#sectionsInherit_.3D_.22.22.3B|E]]]
+
+=== hiddenSelectionsTextures[] ===
+{{hl|'''string array'''}}
+
+A list of (pathed) textures for use with hiddenSelections[]. The textures are assigned to the hiddenSelections[] elements in the order they are listed (first texture goes to the first element, and so on). hiddenSelections[] elements with no texture listed will be hidden at game startup, while those with a texture will be displayed and use the texture assigned. Note: even though hiddenSelection has a material (rvmat) assigned to it that would normally make it visible, leaving out its texture in this property will hide it entirely.
+
+This might be a little confusing so let's use an example. Imagine we are using the vehicle in the hiddenSelections[] example above. Let's look at different ways hiddenSelections might be configured:
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class Jeep_base
+	{
+		// this vehicle has both the "spareTire" and "flag" sections showing whenever the vehicle is spawned
+		// they are referred to using commands like setObjectMaterial by array # (0 = spareTire, 1 = flag)
+		// textures are assigned to the hiddenSelections in order (tire gets tire.paa, flag gets flag.paa)
+		hiddenSelections[] = {"spareTire","flag"};
+		hiddenSelectionsTextures[] = {"jeepMod\textures\tire.paa","jeepMod\textures\flag.paa"};
+	}
+	class Jeep_cheap : Jeep_base
+	{
+		// because "flag" is not included here, it is hidden--you also don't have access to it via script either
+		hiddenSelections[] = {"spareTire"};
+		hiddenSelectionsTextures[] = {"jeepMod\textures\tire.paa"};
+	}
+	class Jeep_fancy : Jeep_base
+	{
+		// both sections are available via script, but spareTire is hidden by giving it no texture ("")
+		hiddenSelections[] = {"spareTire","flag"};
+		hiddenSelectionsTextures[] = {"","jeepMod\textures\flag.paa"};
+	}
+</syntaxhighlight>
+
+See also: [[#hiddenSelections&#91;&#93;]]
+
+=== hideWeapons__ ===
+{{hl|'''bool'''}}
+
+If true, the game hides any weapons being carried by the crewmember/passenger when he is riding in the vehicle.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/H_cpp/cpp_hideWeaponsGunner.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____222|A}}, {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/H_cpp/cpp_hideWeaponsDriver.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____221|B}}, {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/H_cpp/cpp_hideWeaponsCommander.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____220|C}}, {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/H_cpp/cpp_hideWeaponsCargo.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____219|D}}
+
+=== idleRpm ===
+{{hl|'''int>0''', RPM (revolutions per minute)}}
+
+RPM level when engine is idling--this affects the engine sound. (See "redRpm").
+
+[[Arma_3_Tanks_Config_Guidelines#Engine_parameters|A]]
+
+=== inGunnerMayFire ===
+{{hl|'''bool'''}}
+
+If true, the crewmember at this turret can move the view and fire any attached weapon when he is "turned in".
+
+"Gunner" is used to mean whichever crewmember has access to this turret/view (e.g. the Commander is the "Gunner" in the Commander's turret).
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/I_cpp/cpp_inGunnerMayFire.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____230|A}}
+
+=== latency ===
+
+=== lockDetectionSystem ===
+
+=== magazines[] ===
+{{hl|'''string array'''}}
+
+List of magazines available to the weapons at this turret. (Magazine names come from CfgMagazines class[es]).
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/M_cpp/cpp_magazines.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____277|A}}
+
+=== maxOmega ===
+{{hl|'''int>0''', radians per second, (PhysX)}}
+
+Maximum rotational speed of engine. (revolutions-per-minute * 0.104719755 = radians-per-second).
+
+[[Arma_3_Cars_Config_Guidelines#Engine_parameters|A]], {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehicleenginedata|B}}
+
+=== minTotalDamageTreshold ===
+{{hl|'''float&ge;0'''}}
+
+Protects global vehicle health from damage.
+
+This works the same way as minimalHit does for HitPoint locations: damage received below this value is ignored. This is just the global version of "minimalHit".
+
+(This property is 10-24-14 devbranch only currently)
+
+=== normalSpeedForwardCoef ===
+{{hl|'''float>0'''}}
+
+<?> Proportion of top speed that is considered "normal speed" (as opposed to "fast speed" or "slow speed"). Not at all sure what this does in the game, read the cryptic description in the link and see what you can decipher from it...
+
+[[Arma_3_Cars_Config_Guidelines#Different_amount_of_torque|A]]
+
+=== outGunnerMayFire ===
+{{hl|'''bool'''}}
+
+If true, the crewmember at this turret can move the view and fire any attached weapon when he is "turned out".
+
+"Gunner" is used to mean whichever crewmember has access to this turret/view (e.g. the Commander is the "Gunner" in the Commander's turret). Note: apparently the game engine assumes helicopter crew are "turned out", so this property should be set to true for helicopters.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/Content/Config_Manual/CfgVehicles/O_cpp/cpp_outGunnerMayFire.htm|A}}
+
+=== peakTorque ===
+{{hl|'''int>0''', Newton-meters, (PhysX)}}
+
+Maximum engine torque. ({{hl|c= =enginePower*1000/maxOmega}}).
+
+[[Arma_3_Cars_Config_Guidelines#Engine_parameters|A]], {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehicleenginedata|B}}
+
+=== radarType ===
+
+=== redRpm ===
+{{hl|'''int>0''', RPM (revolutions per minute)}}
+
+Maximum engine RPM--this affects the engine sound; just use "maxOmega" translated into RPM (multiply by ~9.5493). (See "idleRpm").
+
+[[Arma_3_Tanks_Config_Guidelines#Engine_parameters|A]]
+
+=== secondaryExplosion ===
+{{hl|'''float'''}}
+
+Determines the strength of the explosion effect when the vehicle is destroyed.
+
+*secondaryExplosion = -1; // When negative number is set, "explosion power is calculated from fuel and ammo cargo, multiplied by absolute secondaryExplosion value"
+*secondaryExplosion = 0; // When set to 0, secondary explosion is disabled, vehicle will burn when destroyed (if destrType is "DestructDefault" or "DestructEngine") but not produce an explosive effect.
+*secondaryExplosion = 1; // When positive number is set, "explosion power is taken from hit property defined for FuelExplosion class in CfgAmmo. For this FuelExplosion needs to be defined. The name FuelExplosion is hardcoded and can not be changed"
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage_Modeling:_Objects#secondaryExplosion|A}}, {{Link|http://resources.bisimulations.com/wiki/Damage_Modeling:_Objects#armor|B}}, {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/S_cpp/cpp_secondaryExplosion.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____424|C}}
+
+=== simulation ===
+{{hl|'''string'''}}
+
+Which simulation type governs this vehicle's physical behavior--for most vehicles this is generally one of the PhysX systems ("TankX", "CarX", "ShipX", "HelicopterX", "AirplaneX", <?>).
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/S_cpp/cpp_simulation.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____447|A}}
+
+=== smokeLauncherAngle ===
+{{hl|'''int&ge;0''', degrees}}
+
+The angular spread/arc in which the countermeasure smoke grenades are launched.
+
+The orientation of the spread is determined by "smokeLauncherOnTurret". The game will evenly distribute the number of grenades (smokeLauncherGrenadeCount) over this arc. Apparently the in-game angle tends to be smaller than this value, so the Samples_F comment suggests increasing the angle somewhat beyond the IRL value.
+
+[(comment in "Samples_F\Test_Tank_01\CfgVehicles.hpp")]
+
+=== smokeLauncherGrenadeCount ===
+{{hl|'''int&ge;0'''}}
+
+Total number of smoke grenades launched when the countermeasure is used. (See the other "smokeLauncher__" properties for more details on how the smokescreen is generated).
+
+[(comment in "Samples_F\Test_Tank_01\CfgVehicles.hpp"), {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/S_cpp/cpp_smokeDischarger_grenadesPerUse.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____449|B}}]
+
+=== smokeLauncherOnTurret ===
+{{hl|'''bool'''}}
+
+Whether the smoke grenades countermeasure launches from the turret or the body of the vehicle.
+
+1= launcher on turret, grenades fire in direction turret is facing (this is typical for tanks). 2= launcher on hull, grenades fire in direction hull is facing.
+
+[,{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/S_cpp/cpp_smokeDischarger_onturret.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____450|B}}]
+
+=== smokeLauncherVelocity ===
+{{hl|'''int&ge;0''', m/s}}
+
+Speed at which the grenades are launched. <?>Perhaps this affects height or distance of the resulting smokescreen.
+
+[(comment in "Samples_F\Test_Tank_01\CfgVehicles.hpp"), ]
+
+=== tankTurnForce ===
+{{hl|'''int>0''', (PhysX)}}
+
+How well a tank can turn, higher = better turning ability.
+
+This is possibly some kind of coefficient that generates turning power for a TankX vehicle. The value apparently needs to be very high, on the order of 20-30 * vehicle weight (in kg) or more<?>.
+
+[(comment in "Samples_F\Test_Tank_01\CfgVehicles.hpp"), [[Arma_3_Tanks_Config_Guidelines#Engine_parameters|A]]]
+
+=== thermalMode[] ===
+{{hl|'''int array'''}}
+
+Defines color modes available for thermal sights.
+
+If a Turret has "TI" in its visionMode[], it can list one or more thermalMode[]'s. Any thermalMode[]'s are added to the "N"-key vision mode toggle set. The following modes are available: 0=white-hot, 1=black-hot, 2=green-hot,3=green/black-hot, 4=red-hot, 5=red/black-hot, (others?). (See "visionMode[]").
+
+=== thermalNoise[] {{GVI|arma3|2.10}} ===
+{{hl|'''float array'''}}
+
+See [[Post_Process_Effects#FilmGrain|FilmGrain]] Post Processing effect. 
+This defines thermal noise effect.
+A 8 element array (Two more arguments than filmgrain)
+intensity, sharpness, grainSize, intensityX0, intensityX1, monochromatic, static, blurCoef
+the static parameter is a bool (1=static, 0=random) specifiying if the noise is randomly generated and different each frame, or if its randomized once and stays static.
+the blurCoef (default 0.5) specifies how blurry the result image is.
+
+If you leave this array empty or undefined, engine will use default values.
+
+
+{{ArgTitle|3|thermalResolution[]|{{GVI|arma3|2.10}}}}
+
+{{hl|'''float array'''}}
+
+Defines screen resolutions at specific zoom steps.
+Zoom between defined steps will be linearly interpolated.
+The array is a sequence of X,Y values, X being the zoom between 0-1 (maxFov to minFov of the optic) and Y being the vertical resolution in pixels.
+This value is only used if there are thermalMode[]'s defined.
+It can be used to simulate digital zoom in thermal optics.
+
+Ranges of resolution are only used for "smooth" zoom optics (or weapons with discreteFov[]), for discrete step's you can use single element arrays to set the resolution for the current step.
+
+The conversion from fov to zoom percentage uses this formula:
+<syntaxhighlight lang="cpp">
+delta = atan(maxFov) * 2 - atan(minFov) * 2;
+zoom = 1 - (atan(currentFov) * 2 - atan(minFov) * 2) / delta
+</syntaxhighlight>
+
+The engine internally converts the zoom values to corresponding fov and uses that to linearly interpolate between the two closet values.
+
+The list of needs to be sorted by zoom in ascending order.
+It has to start with 0.0 zoom, and it has to end with 1.0 zoom. Values smaller than 0 or larger than 1.0 are not allowed.
+The resolutions have no constraints. If the resolution is larger than the players vertical render resolution, it will be clamped.
+Providing a negative value as a resolution, will cause the engine to convert it to the players actual vertical render resolution. You can use -1 to mean "100% of players resolution"
+The horizontal resolution is calculated based on vertical resolution and the players aspect ratio (See "Resolution" PostProcessing effect).
+
+Note: Nightvision googles (with integrated thermal) don't support zoom resolutions, they only support a single fixed resolution.
+
+Examples:
+<syntaxhighlight lang="cpp">
+thermalResolution[]={ 0.0, 2048, 1.0, 512 }; // 2048px vertical resolution at 0% zoom (maxFov), linearly reducing down to 512px vertical resolution at 100% zoom (minFov)
+thermalResolution[]={ 512 }; // 512 pixels, independent of zoom. Usually used when having a different optic class per zoom step
+thermalResolution[]={ 0.0, 2048, 0.5, 2048, 1.0, 128 }; // A combination optical/digital zoom. Optical zoom with no resolution loss during the first 50% of zooming, and rapid resolution loss in the last 50%
+</syntaxhighlight>
+
+=== threat[] ===
+{{hl|'''float array''', 1&ge;values&ge;0, (AI only)}}
+
+How important it is for {AI Infantry, AI Armor, AI Aircraft} to attack this vehicle.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/T_cpp/cpp_Threat.htm%3FTocPath%3D4%20Configuration%20Manual%7CCfgVehicles%7C_____455|A}}
+
+=== thrustDelay ===
+{{hl|'''int&ge;0''', seconds, (PhysX)}}
+
+Time it takes for engine to send power to the wheels from a stop.
+
+This property does not affect already moving vehicles (see "clutchStrength" for something along those lines). Values >0 are suggested to reduce the chance that the vehicle's wheels slip every time it starts from a stop.
+
+[[Arma_3_Cars_Config_Guidelines#PhysX_3_integration|A]]
+
+=== torqueCurve[] ===
+{{hl|'''float array''', (PhysX)}}
+
+An array describing how much torque the engine generates at various rotational speeds.
+
+The values are normalized (0-1) so any units can be used to derive these values. The array consists of pairs of values in the form { {rotation1,torque1},{rotation2, torque2}, ...}. The first value in each pair tells the game how far along the RPM curve we are, the second value tells it how much to scale the peakTorque output. These are used to create a virtual graph which the game uses to determine engine power at various rotational speeds.
+
+[[Arma_3_Cars_Config_Guidelines#Engine_parameters|A]], {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehicleenginedata|B}}
+
+=== transmissionLosses ===
+{{hl|'''int&ge;0''', Newton-meters, (PhysX) }}
+
+A force that helps bleed speed from the vehicle (presumably most noticeable as the vehicle coasts).
+
+transmissionLosses bleed energy from the vehicle due to inefficiencies in the transmission system. As such, they are not multiplied by the gear ratio (unlike engineLosses). (See "engineLosses").
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/T_cpp/cpp_transmissionLosses.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____490|A}}
+
+=== transportSoldier ===
+{{hl|'''int&ge;0'''}}
+
+How many passengers the vehicle can carry as cargo. (Crewmembers--gunner, driver, etc.--are not included in this value).
+
+The vehicle's P3D model must also contain this number of proxies in the cargo area.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/T_cpp/cpp_transportSoldier.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____499|A}}
+
+=== viewGunnerInExternal ===
+{{hl|'''bool'''}}
+
+Controls whether the crewmember (at this turret) is rendered ''and damageable''.
+
+1= render crewmember when he is buttoned/"turned in", 0= render crewmember only when unbuttoned. Apparently this needs to be set =1 in order for crew to be damaged by penetrating hits (i.e. if crew is not rendered, they cannot be damaged).
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Adding_Models/How_to/AMHT_Turrets_Parameters.htm%3FTocPath%3D2%2520How%2520to...%7CTurrets%7C_____2|A}}
+
+=== visionMode[] ===
+{{hl|'''string array'''}}
+
+Which vision types are available to toggle through ("N" key) in this optics view. Options are "Normal" (regular vision),"TI" (thermal imaging view),"NVG" (infrared/ambient light enhancement view).
+
+Note that multiple thermalMode[] values add extra toggle steps to vision mode switching. (See "thermalMode[]").
+
+=== waterPPInVehicle ===
+{{hl|'''bool'''}}
+
+Whether passenger area floods when vehicle is swimming (i.e. passengers see water in their interior view).
+
+If false(?), the interior of the vehicle does not flood when swimming--passengers don't see themselves underwater.
+
+{{Link|http://www.arma3.fr/actu-4366-spotrep_|A}}
+
+=== weapons[] ===
+{{hl|'''string array'''}}
+
+List of weapons at this turret. (Weapon names come from CfgWeapons class[es]).
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/W_cpp/cpp_weapons.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____550|A}}
+
+</div>
+=== ''class AnimationSources'' ===
+This class is an optional component to produce animation in a vehicle. The other components needed are:
+*The bones in model.cfg>CfgSkeletons>skeletonBones[].
+*The animations in model.cfg>CfgModels>Animations.
+*Named Selections in the visual/shadow/fire-geometry LOD's of P3D file which are identical to bone names above; this is how the bone knows which geometry moves with it.
+*Axes (consisting of two verts each) in the Memory LOD of the P3D file; this is how the bone knows where it is located and the axis it moves/rotates on. Axes are only necessary for translation or rotation bones (e.g. bones with nothing but a "hide" animation do not need any axis)
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Model_Config#AnimationSources|A}}
+==== source ====
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Model_Config#Animation_sources|A}}
+
+=== ''class complexGearbox'' ===
+A series of PhysX properties grouped under the "complex Gearbox" class.
+
+==== driveString ====
+==== gearBoxMode ====
+==== GearboxRatios[] ====
+==== moveOffGear ====
+==== neutralString ====
+==== reverseString ====
+==== transmissionDelay ====
+==== TransmissionRatios[] ====
+
+=== ''class Damage'' ===
+This class is solely for the purpose of swapping certain vehicle textures as parts of the vehicle get damaged.
+
+==== mat[] ====
+{{hl|'''string array'''}}
+
+An array of RVMAT materials in groups of three. These are used to swap textures (or rather, materials) based on the damage state of a hit location. This is a complex process that requires configuration beyond the Damage class itself.
+
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class myVehicleName
+	{
+		class Damage
+		{
+			tex[] = {};	// the texture component seems to always be unused, perhaps it is deprecated
+			mat[] =		// good use of the Enter key makes the groupings clear
+			{
+				"A3\Armor_F_Gamma\MBT_02\Data\MBT_02.rvmat",			// the first entry is displayed in the low-damage state (~0-50% damage)
+				"A3\Armor_F_Gamma\MBT_02\Data\MBT_02_damage.rvmat",		// the second entry is displayed in the medium-damage state (~50-99% damage)
+				"A3\Armor_F_Gamma\MBT_02\Data\MBT_02_destruct.rvmat",	// the third entry is displayed in the high-damage state (100% damage)
+	
+				"A3\Armor_F_Gamma\MBT_02\Data\MBT_02_body.rvmat",
+				"A3\Armor_F_Gamma\MBT_02\Data\MBT_02_body.rvmat",		// you can simply duplicate an entry in the list if you do not have all 3
+				"A3\Armor_F_Gamma\MBT_02\Data\MBT_02_body_destruct.rvmat",
+
+				"myMod\myVehicleDir\Data\glass_screen_base.rvmat",
+				"myMod\myVehicleDir\Data\glass_screen_damaged.rvmat",
+				"myMod\myVehicleDir\Data\glass_screen_destroyed.rvmat"
+			 };
+		};
+	};
+};
+</syntaxhighlight>
+
+Creating a texture swap requires several more steps:
+* The geometry whose material will be swapped
+** must exist as a "section" in model.cfg
+** must have the base material applied to it in the P3D.
+* The link between the hit location and the material group is defined via the ''section'' name--it goes in the [[#visual|''visual'']] property of the HitPoint class.
+* This leaves only the listing of the material groups for the Damage class.
+
+Warning, these links contain incomplete and (some) obsolete information: {{Link|http://tactical.nekromantix.com/wiki/doku.php?id{{=}}arma:modeling:damage_model|A],|[[Vehicle_Damage|B}}]
+
+==== tex[] ====
+{{hl|'''string array''', [deprecated?]}}
+
+This property work like mat[], but for texture files. It uses pairs of textures - intact and damaged. In case extension of missing texture path, .pac is assumed!
+
+=== ''class DestructionEffects'' ===
+
+This class is used to create an array of visual and audio effects for when the vehicle--''or hit location''--is destroyed:
+*if the class is placed under CfgVehicles, it applies when the whole vehicle is destroyed.
+*if the class is placed under a hit location (e.g. class HitHull), it applies when that ''location'' is destroyed.
+
+(Just about all Arma objects inherit from a few default versions--e.g. all vehicles seem to use the same fireball effect, etc.).
+
+This class is multi-layered. Instead of all the effects being contained within the class--it refers to other effects classes contained in separate config files (see "simulation" below).
+
+Instead of just using numerical values for the properties (e.g. lifetime = 10;), you can create variation and even randomness by including certain variable names (e.g. lifetime = "intensity * 5 + (random 10)";).
+Here is [[Arma 3: Particle Effects: Config Parameters|a list of some key variable names]], although there are possibly many more which are undocumented.
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage_Modeling:_Objects#DestructionEffects_class|A}}, [[Arma_3_Particle_Effects|B]], {{Link|https://manuals.bisimulations.com/vbs3/3-4/devref/#Config_Manual/CfgVehicles/P_cpp/cpp_Particle_Effects.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____374|C}}
+
+==== intensity ====
+{{hl|float}}
+
+==== intensity ====
+{{hl|float}}
+
+==== position ====
+{{hl|string}}
+
+The position the effect comes from. This can be any named vertex from the vehicle's Memory LOD.
+
+(BI tends to use some sort of default positions named things like "destructionEffect1" and "destructionEffect2"--it's not clear where these are defined or whether they are hardcoded somewhere; it is also possible that they were intended to be used but were never implemented in vehicle configs and that the default behavior when a name has no corresponding memory point in the vehicle is to simply place the effect at the vehicle's centerpoint).
+
+==== simulation ====
+{{hl|string}}
+
+What type of effect entry this is.
+
+Known values:
+*“Particles” uses class defined under CfgCloudlets as effect type; default location is ''a3\data_f\ParticleEffects\config.cpp''.
+*“Light” uses class defined under CfgLights as effect type; default location is ''a3\data_f\ParticleEffects\config.cpp''
+*“Sound” uses class defined under [[CfgSFX]] as effect type; default location is ''a3\sounds_f\config.cpp''.
+*“Ruin” uses class defined under CfgVehicles as ruin model type; generally found within a given building's config.cpp.
+*“Destroy” uses class defined under CfgDestroyPos as effect type; ??
+*“DamageAround” uses class defined under CfgDamageAround as effect type; there's only one tiny instance of this found in ''a3\structures_f\config.cpp''.
+
+=== ''class HitPoints'' ===
+Although these classes are typically separated into sub-classes (e.g. turret hitpoints under the Turrets class)--the game does ''not'' appear to require this in practice. Because hitpoints are attached to bones via the {{hl|name}} property, hitpoint classes can be defined all at the same hierarchical level, anywhere in CfgVehicles--and in fact this practice would be preferable when you are making use of the {{hl|depends}} property (which cannot reference hitpoint classes defined at different levels of the config).
+
+==== armor (local) ====
+{{hl|'''float>0'''}}
+
+Proportion of global health assigned to this location.
+
+You will often see this property referred to as "armor (float)". The formula for determining location health appears to be simple:
+
+{{hl|c= location health = ("armor" local) * ("armor" global)}}
+
+(if we assume the mysterious vehicle size measurement does not play a role). (See "armor (global)").
+
+==== depends ====
+{{hl|'''string'''}}
+
+Allows one location to apply its damage to another.
+
+Formulas can be used to enhance this effect. e.g.
+<syntaxhighlight lang="cpp">
+class HitTurret
+{...};
+class HitGun
+{	...
+	//for every point of damage HitTurret receives, HitGun gets 5
+	depends = "5 * HitTurret";
+};
+</syntaxhighlight>
+
+Another requirement of this property is that the '''dependant/subordinate''' class (HitGun in this example) must be listed '''''after''''' the '''dominant''' class (HitTurret).
+
+[recent feature, undocumented]
+
+==== explosionShielding ====
+{{hl|'''float&ge;0'''}}
+
+Modifies how global vehicle health is affected by 'splash' damage (indirectHit).
+
+A factor applied to indirectHit damage. Values < 1 make a location resistant to indirectHit damage. Values > 1 make the location more sensitive.
+
+See also: [[#explosionShielding (global)]].
+
+[ [[Arma_3_Weapon_Config_Guidelines#Explosion_shielding|A]], [[Arma_3_Tanks_Config_Guidelines#New_attributes|B]] ].
+
+==== material ====
+{{hl|'''int''', [deprecated]}}
+
+Darkens material based on damage state. Deprecated--all Arma 3 configs disable it by setting it to -1. If you want to read about how it works, follow this link: {{Link|http://fab.ofp.free.fr/Tutorials/Damaged_Tank.htm|link}}.
+
+==== minimalHit ====
+{{hl|'''float'''}}
+
+Protects the location from damage.
+
+Damage received below this value is ignored. A value of 0 means the location acts 'normally' and even the slightest damage will reduce its health. (See "armor (local)", "minTotalDamageThreshold"). If negative value is used, then damage that is applied reduced by minimalHit value. 
+
+Example: armor = -100;minimalHit = -0.5;
+* Case A: If projectile with damage 50 or lower will hit the hitpoint, then no damage will be applied (same as with positive minimalHit)
+* Case B: If projectile with damage 51 will hit the hitpoint, then only 1 damage point will be applied. In contrast, if minimalHit would be positive number, then hitpoint would be reduced by 51 points.
+* Case C: Similar, if hit value is 90, then hitpoint will be reduced by only 40.
+
+==== name ====
+{{hl|'''string'''}}
+
+The value is a named selection containing vertices in the P3D's HitPoints LOD. This way, the game knows what vertex/vertices in the model go with what hit location. Additionally, the set name should be the same as a CfgSkeletons bone (so the game also knows which verts move with which vehicle part). (See also [[#visual]]).
+
+==== passThrough ====
+{{hl|'''1&ge;float&ge;0'''}}
+
+Proportion of damage to this location that is passed on to damage global vehicle hit points. 0 = the location can be destroyed without affecting overall vehicle health (unless it is a [[#class HitPoints names|special hit location with hardcoded properties]]) . This ''cannot'' be used to make a location cause extra global damage (since values over 1 are treated as = 1). (For that feature, see [[#depends]]).
+
+==== radius ====
+{{hl|'''float&ge;0'''}}
+
+Defines the size of the HitPoint vertices in this location of the vehicle's P3D model. The radius creates a "sphere" of effect around each vertex. When fire geometry within this sphere is hit, the location takes damage^.
+
+[[Arma_3_Tanks_Config_Guidelines#New_attributes|A]].
+
+^It's actually a bit more complex than this. It appears that the game applies some damage to ''all'' locations based on their distance from the hit, with the nearest location taking the most damage of course.
+
+==== visual ====
+{{hl|'''string'''}}
+
+The name should match a "section" (from CfgModels). If the hit location is not associated with any section, it should be empty (''visual = "";''). Assigning a section to a hit location is optional. It is used by game to swap textures based on damage state (via the [[#class Damage|Damage class]]). (See also: [[#name]], [[#class Damage]]).
+
+[Samples_F\Test_Tank_01\CfgVehicles.hpp].
+
+==== ''class HitPoints names'' ====
+* Existing HitPoints classes being used in the game have certain hard-coded properties that you should be aware of.
+* Sadly, certain vehicle types (TankX, CarX, etc.) are only given certain hard-coded properties.
+** So, for example, you cannot use the HitFuel effect in a tank, but you can use it in a car. :(
+
+===== HitHull =====
+Used in tracked vehicles, this location automatically '''destroys''' the vehicle when depleted (''regardless'' of remaining global health/"armor").
+
+===== HitFuel =====
+Used in wheeled vehicles, this location automatically '''destroys''' the vehicle when depleted (''regardless'' of remaining global health/"armor"). Also depletes Fuel state as damage is accumulated.
+
+===== HitTrack =====
+Restricts mobility when depleted. Because these locations are not protected by armor plates, they extremely vulnerable to damage unless protected by tweaking explosionShielding (<1) and(/or) minimalHit (>0).
+
+===== HitWheel =====
+Restricts mobility when depleted. Because these locations are not protected by armor plates, they extremely vulnerable to damage unless protected by tweaking explosionShielding (<1) and(/or) minimalHit (>0).
+
+===== HitTurret =====
+Prevents the turret (turret optics view) from rotating when depleted.
+
+===== HitGun =====
+Gun (turret optics view) is stuck at minimum elevation when depleted.
+
+===== HitAmmo =====
+Ammo locations are not used in vanilla Arma 3, but could be added. Because it has no hard-coded properties, the only way to make it destroy a vehicle is to use the "depends" property to pass on its damage to HitHull/HitFuel.
+
+===== HitEngine =====
+Restricts mobility when depleted.
+
+===== HitAvionics =====
+Used in aircraft, it makes the HUD display flicker and disappear when depleted.
+
+===== HitVRotor =====
+Used in helicopters to represent the tail rotor, it causes the aircraft to spin out of control when depleted.
+
+===== HitHRotor =====
+Used in helicopters to represent the main rotor, the aircraft loses power when this location is depleted.
+
+=== ''class Wheels'' ===
+A series of PhysX properties grouped under the "Wheels" class.
+<div class="mw-collapsible">
+
+==== boneName ====
+{{hl|'''string''', (PhysX)}}
+
+The name of the bone used for wheel & suspension animations in the model's P3D/model.cfg file.
+
+[[Arma_3_Cars_Config_Guidelines#General_parameters|A]]
+
+==== boundary ====
+{{hl|'''string''', (PhysX)}}
+
+Refers to a vertex in the model's P3D file used to determine wheel radius. The vertex is usually place on the ground plane in the P3D file.
+
+[[Arma_3_Cars_Config_Guidelines#Model_requirements_.7Bp3d.7D|A]]
+
+==== center ====
+{{hl|'''string''', (PhysX)}}
+
+The axis of wheel's rotation in the model's P3D/model.cfg file.
+
+In the P3D file, 2 vertices are combined in a named selection set and are used to define the axis of the wheel's rotation.
+
+[[Arma_3_Cars_Config_Guidelines#Model_requirements_.7Bp3d.7D|A]]
+
+==== damping ====
+{{hl|'''float>0''', (PhysX)}}
+
+Shock-absorber strength, it diminishes vehicle bounciness defined by the spring__ properties.
+
+Presumably this property works with the other 3 spring properties to control vehicle bounciness ([[#springMass]], [[#springStrength]], [[#springDamperRate]]). (Not to be confused with the other "damping__" properties, which appear to be torque or rotation coefficients).
+
+{{Link|https://manuals.bisimulations.com/vbs2/2-00/devref/Content/Adding_Models/How_to/AMHT_Physx.htm|A}}, {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/D_cpp/cpp_damping.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____104|B}}
+
+==== dampingRate ====
+{{hl|'''float>0''', (PhysX)}}
+
+Spinning friction of the Wheel (the rate at which it slows down).
+
+Higher equals more friction/harder to move. All the damping__ properties appear to be coefficients affecting the friction of the Wheel against the ground. (Presumably different ground materials influence final friction). BI recommends values between 0.25-2 (for CarX anyway)
+
+{{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehiclewheeldata|A}}, [[Arma_3_Cars_Config_Guidelines#Wheel_PX_parameters|B]]
+
+==== dampingRateDamaged ====
+{{hl|'''float>0''', (PhysX)}}
+
+Spinning friction of the Wheel (the rate at which it slows down) when it is damaged.
+
+Higher equals more friction/harder to move; this value should be higher than dampingRate but less than dampingRateDestroyed. All the damping__ properties appear to be coefficients affecting the friction of the Wheel against the ground. (Presumably different ground materials influence final friction). (see "dampingRate", "dampingRateDestroyed").
+
+{{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehiclewheeldata|A}}, [[Arma_3_Cars_Config_Guidelines#Wheel_PX_parameters|B]]
+
+==== dampingRateDestroyed ====
+{{hl|'''float>0''', (PhysX)}}
+
+Spinning friction of the Wheel (the rate at which it slows down) when it has been destroyed.
+
+Higher equals more friction/harder to move; this value should be higher than dampingRateDamaged. All the damping__ properties appear to be coefficients affecting the friction of the Wheel against the ground. (Presumably different ground materials influence final friction). (see "dampingRate", "dampingRateDamaged").
+
+{{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehiclewheeldata|A}}, [[Arma_3_Cars_Config_Guidelines#Wheel_PX_parameters|B]]
+
+==== dampingRateInAir ====
+{{hl|'''float>0''', (PhysX)}}
+
+Related to the mass of the Wheel, this property influences spin-slippage and acceleration.
+
+This property is used (somehow<?>) with MOI to determine maximum speed for tanks. (See "MOI"). Theoretically, this is the rate at which the wheel slows down when spinning freely with the vehicle suspended in the air. As you increase MOI to prevent initial-wheel-spinning, you may need to counteract the speed boost(?) this creates by increasing dampingRateInAir. BI says only "tweak [dampingRateInAir] together with MOI to adjust maximum speed".
+
+[[Arma_3_Tanks_Config_Guidelines#Wheel_PX_parameters|A]]
+
+==== frictionVsSlipGraph[] ====
+{{hl|'''float array''', (PhysX)}}
+
+This array helps define Wheel (tire) traction when turning.
+
+This array creates a simple 3-point virtual graph of friction (2nd #) at different levels of longitudinal slip (1st #). The friction values are applied as a coefficient on ground friction values--values below 1 make the vehicle more slippery, while values over 1 give it extra traction. Typically a tire would have a friction peak somewhere in the middle of the slip axis with lower values on either side. (You will often find this not to be the case in BI configs, however, where they tend to set friction quite high at all slip levels--at least with tracked vehicles).
+
+[[File:PhysX-slip-graph.JPG|300px]]
+
+[[Arma_3_Cars_Config_Guidelines#Tire_parameters|A]], {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehicletiredata|B}}
+
+==== latStiffX/Y ====
+{{hl|'''int>0''', stiffness per unit of lateral slip in radians, (PhysX)}}
+
+These two properties help define Wheel traction when turning. 
+
+"latStiffX" & "latStiffY" describe "tire lateral stiffness". They create a simple virtual graph describing the tire's lateral (side-to-side) stiffness. Roughly speaking, higher values are supposed to create better turning ability.
+
+[[File:PhysX-stiffness-graph.JPG|300px]]
+
+[[Arma 3: Cars Config Guidelines#Tire parameters|A]], {{Link|link= http://forums.bistudio.com/showthread.php?149027-Primer-for-new-vehicle-simulation&p=2493741&viewfull=1#post2493741|text= B}}, {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehicletiredata|C}}
+
+==== longitudinalStiffnessPerUnitGravity ====
+{{hl|'''int>0''', stiffness per unit of longitudinal slip in radians, (PhysX)}}
+
+Influences braking & acceleration performance.
+
+Tire longitudinal (front-back) stiffness. Higher roughly = more responsive braking & acceleration.
+
+[[Arma_3_Cars_Config_Guidelines#Tire_parameters|A]], {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehicletiredata|B}}
+
+==== mass ====
+{{hl|'''int>0''', kg, (PhysX)}}
+
+Weight of this Wheel in kilograms.
+
+Appears to be redundant with "weight" property. Used somehow in the PhysX simulation.
+
+See also: [[#weight]]
+
+{{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehiclewheeldata|A}}, [[Arma_3_Cars_Config_Guidelines#Wheel_PX_parameters|B]]
+
+==== maxBrakeTorque ====
+{{hl|'''int>0''', Newton-meters?, (PhysX)}}
+
+Wheel braking power.
+
+This is the maximum braking power. Appears to be roughly equal to peakTorque * 2 in some BI configs.
+
+{{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehiclewheeldata|A}}, [[Arma_3_Cars_Config_Guidelines#Wheel_PX_parameters|B]]
+
+==== maxDroop ====
+{{hl|'''float>0''', meters, (PhysX)}}
+
+The maximum distance the wheel will hang (by its suspension) down from the body of the vehicle.
+
+(Imagine picking the vehicle up off the ground with a crane: how far do the wheels hang down?).
+
+See also: [[#maxCompression]].
+
+[[Arma_3_Cars_Config_Guidelines#Suspension_parameters|A]], {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehiclesuspensiondata|B}}
+
+==== maxCompression ====
+{{hl|'''float>0''', meters, (PhysX)}}
+
+The maximum distance the wheel can get pushed up into the body of the vehicle when it is being compressed.
+
+See also: [[#maxDroop]].
+
+[[Arma_3_Cars_Config_Guidelines#Suspension_parameters|A]], {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehiclesuspensiondata|B}}
+
+==== MOI ====
+{{hl|'''int>0''', kg square meters, (PhysX)}}
+
+Related to the mass of the Wheel, this property influences spin-slippage and acceleration (as well as tank max speed somehow).
+
+"Moment of Inertia". Low = wheels spin & slip easily, high = wheels spin more slowly and slow acceleration. This property is used (somehow<?>) with dampingRateInAir to determine maximum speed for tanks. Technically you can derive MOI = Mass * (radius in meters)^2, but BI recommends you use this only as a starting point. (See "dampingRateInAir").
+
+[[Arma_3_Tanks_Config_Guidelines#Wheel_PX_parameters|A]]
+
+==== side ====
+{{hl|'''string''', "left"/"right", (PhysX)}}
+
+Which side of the vehicle the wheel is on. ("left" = port side?)<?>
+
+[[Arma_3_Cars_Config_Guidelines#General_parameters|A]]
+
+==== springDamperRate ====
+{{hl|'''int>0''', (PhysX)}}
+
+How fast the suspension loses energy as it bounces.
+
+You can derive the "damping ratio" using this formula:
+
+{{hl|c= damping ratio = springdamperRate / [2*SQRT(springStrength * sprungMass) ]}}
+
+Use it to determine whether a spring is over-damped (>1), just-damped (1), or under-damped (<1); BI says a typical family car is slightly over-damped with a damping ratio of just over 1.0.
+
+See also: [[#springStrength]], [[#sprungMass]].
+
+[[Arma_3_Cars_Config_Guidelines#Suspension_parameters|A]], {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehiclesuspensiondata|B}}
+
+==== springStrength ====
+{{hl|'''int>0''', Newtons/meter, (PhysX)}}
+
+Strength of the suspension spring.
+
+You can derive the "natural frequency" (bounces per second) of the spring using this formula:
+
+{{hl|c= natural frequency = SQRT(springStrength / sprungMass)}}
+
+BI says a typical family car has a natural frequency of 5-10.
+
+[[Arma_3_Cars_Config_Guidelines#Suspension_parameters|A]], {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehiclesuspensiondata|B}}
+
+==== sprungMass ====
+{{hl|'''int>0''', kg, (PhysX)}}
+
+Mass supported by the suspension spring.
+
+Total vehicle mass is distributed across all the wheels/springs. Note that if the vehicle's center of mass is not at its midpoint, some springs should carry more mass than others.
+
+[[Arma_3_Cars_Config_Guidelines#Suspension_parameters|A]], {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html#pxvehiclesuspensiondata|B}}
+
+==== steering ====
+{{hl|'''bool''', (PhysX)}}
+
+Whether or not the Wheel turns when driver turns the steering-wheel. True = turns, false = does not turn.
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/S_cpp/cpp_steering.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____475|A}}
+
+==== weight ====
+{{hl|'''int>0''', kg, (PhysX), [obsolete?]}}
+
+Weight of this Wheel in kilograms.
+
+Appears to be redundant with "mass" property (given same value). Not clear whether this property is actually used, while "mass" does appear to play a role in the PhysX simulation.
+
+See also: [[#mass]].
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/W_cpp/cpp_wheelWeight.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____557|A}}, {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Config_Manual/CfgVehicles/W_cpp/cpp_weight.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____552|B}}]
+
+</div>
+
+== Model.cfg ==
+A game model is defined by its P3D file and an associated model.cfg config file that describes the model's components. It consists of two classes: CfgSkeletons & CfgModels.
+
+[ [[Model_Config|A]], [[ArmA:_Howto_Model_Config|B]], {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/Content/Adding_Models/AM_Model_cfg.htm|C}}, {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/Content/Config_Manual/Model_cfg/Model_cfg.htm|D}} ]
+
+=== CfgSkeletons ===
+
+=== CfgModels ===
+==== class Animations ====
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Model_Config#Animation_Properties|A}}, {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Adding_Content/Animations/AM_Animation_Parameters.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CAnimations%7C_____3|B}}
+===== type =====
+{{hl|'''string'''}}
+
+The type of animation that will occur. Choose from one of the preset animation types (rotation, translation, hide, etc.)
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Model_Config#Animation_types|A}}, {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Adding_Content/Animations/AM_Animation_Types.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CAnimations%7C_____1|B}}
+
+===== source =====
+{{hl|'''string'''}}
+
+What property the animation is dependent on. This may be one of the many preset sources tracked by the game (damage, speed, etc.). Or it may be a custom source defined in config.cpp>CfgVehicles >AnimationSources. A custom source can be something as simple as another bone with its own standard preset source, or as complex as a user script. However, the most common use of a 'custom' source in CfgVehicles is for the purpose of hiding a damaged hit location (e.g. vehicle glass) {{Link|https://resources.bisimulations.com/w/index.php?title{{=}}How_to_create_destroyable_wheels#Animation_sources|link}}.
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Model_Config#Animation_sources|A}}, {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/Content/Adding_Content/Animations/AM_Custom_Controllers.htm|B}}
+
+===== selection =====
+{{hl|'''string'''}}
+
+The thing which is animated. This must be a '''bone''' defined in CfgSkeletons (along with corresponding geometry in an identically Named Selection in the P3D).
+
+{{Link|https://manuals.bisimulations.com/vbs3/3-6/devref/Content/Adding_Content/AM_Model_cfg.htm|A}}
+
+===== axis =====
+{{hl|'''string'''}}
+
+The Named Selection of the axis for the animation. An axis is defined by two vertices within a Named Selection in the P3D file's "Memory" LOD. (Think of this as defining the axis of a bone that's been defined in CfgSkeletons. Incidentally, the first vertex placed when the axis is created indicates the +ve 'direction' of the axis for translation animation <? See link B>).
+
+Remember, Arma's modeler (aka Oxygen) is not as advanced as standard 3D modeling software. In the later, you would define a hierarchy of bones visually, and each bone automatically gets an axis created along with it. In Arma you define ''only'' the bone hierarchy in CfgSkeletons; the bone axes and positions must be defined in Oxygen using vertices in the "Memory" LOD.
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}How_to_animate_a_model#Example_4|A}}, {{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Adding_Content/Animations/AM_Animation_Parameters.htm|B}}
+
+===== hideValue =====
+{{Link|https://manuals.bisimulations.com/vbs3/3-0/devref/#Adding_Content/Animations/AM_Animation_Parameters.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CAnimations%7C_____3|A}}
+
+===== unHideValue =====
+[[Arma_3_Weapon_Config_Guidelines#Model_config_changes_.7Bmodel.cfg.7D|A]]
+</div>
+
+= ARMOR/MATERIAL Configs =
+<div class="mw-collapsible">
+== ''BISURF properties'' ==
+BISURF material files are assigned to fire geometry in a vehicle's P3D file. They define the physical properties of whatever geometry they've been assigned to. Critical among these properties is armor value as defined by bulletPenetrability (or bulletPenetrabilityWithThickness & Thickness).
+
+{{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage_Modeling:_Objects#Surface_definitions|A}}
+
+=== bulletPenetrability ===
+{{hl|'''int>0'''}}
+
+Material strength in terms of how well it resists penetration: lower is stronger.
+
+This is based on how far in mm a BI-standard "7.62mm NATO round" travelling at 1000m/s will penetrate the material. For example, RHA = 15.
+
+=== bulletPenetrabilityWithThickness ===
+{{hl|'''int>0'''}}
+
+If the material has a "thickness" property specified, put its bulletPenetrability value here instead. (See "bulletPenetrability").
+
+=== deflection ===
+{{hl|'''??'''}}
+
+<?> Speculation: refines the ricochet system by letting materials affect the final deflection probability. (See [[#deflecting|CfgAmmo "deflecting"]]).
+
+{{Link|link= http://forums.bistudio.com/showthread.php?149636-Development-Branch-Changelog&p=2812544&viewfull=1#post2812544|text= A}}
+(new undocumented property as of 11-6-2014 devbranch)
+
+=== Density ===
+
+=== dust ===
+(possibly related only to the movement/physX sim--nothing to do with ballistics/armor)
+
+=== friction ===
+(possibly related only to the movement/physX sim--nothing to do with ballistics/armor)
+
+=== impact ===
+
+=== isWater ===
+
+=== restitution ===
+
+=== rough ===
+(possibly related only to the movement/physX sim--nothing to do with ballistics/armor)
+
+=== soundEviron ===
+
+=== soundHit ===
+
+=== Thickness ===
+{{hl|'''int>0'''}}
+
+Sets a ''thickness ceiling'' to the geometry (the purpose being to make it easier to model small or thin pieces of fire geometry).
+
+If the fire geometry is ''thinner'' than the Thickness value, the actual geometry thickness is used instead. If the fire geometry is thicker, the Thickness value overrides it and is used. The game ''does'' take into account LOS thickness by evaluating an incoming projectile's angle-of-incidence (relative to the geometry normal).
+</div>
+
+= EFFECTS Configs =
+<div class="mw-collapsible">
+== CfgCloudlets ==
+CfgCloudlets is BI's odd name for a particle definition class. By default, it is found exclusively in {{hl|a3\data_f\ParticleEffects\config.cpp}}.
+
+[[Arma_3_Particle_Effects|A]], [[Arma_3_Particle_Effects:_Config_Parameters|B]], {{Link|https://manuals.bisimulations.com/vbs3/3-4/devref/#Config_Manual/CfgVehicles/P_cpp/cpp_Particle_Effects.htm%3FTocPath%3D4%2520Configuration%2520Manual%7CCfgVehicles%7C_____374|C}}
+
+</div>
+
+{{GameCategory|arma1|Addon Configuration}}
+{{GameCategory|arma3|Vehicle Configuration}}
+
+[[Category: Reference Lists]]

@@ -1,0 +1,75 @@
+// source: https://community.bistudio.com/wiki/isEqualTo
+// revision: 336361 (2022-12-29T09:01:58Z)
+// export sha1: odndbfg40r169a48nqcknpncgj96hnk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Variables
+
+|descr= Performs strict comparison between var1 and var2 and returns [[true]] if equal, otherwise [[false]]. Strict means that it would check that both arguments are of the same data type and then compare the values.<br><br>
+Some differences between [[isEqualTo]] and [[==]]:
+* It performs case sensitive comparison on [[String]]s
+* It doesn't throw error when comparing different types, i.e. ("eleven" [[isEqualTo]] 11)
+* It can compare [[Array]]s, [[Script Handle]]s and [[Boolean]]s ([[alive]] [[player]] [[isEqualTo]] [[true]])
+* It can compare non-existent game objects ([[grpNull]] [[isEqualTo]] [[grpNull]])
+* It is slightly faster than [[==]], especially when comparing [[String]]s
+* {{GVI|arma3|1.48|size= 0.75}} It can compare [[Namespace]]s
+
+{{Feature|informative|A compiled code is not equal to the same compiled code made final: <sqf>_a = compile "123"; _b = compileFinal "123"; _a isEqualTo _b; // false</sqf>}}
+{{Feature|warning|When comparing [[Array]]s, if an array contains [[nil]] element, the comparison will return [[false]]. For example:<br>
+<sqf>
+private _array1 = [1, nil, 2];
+private _array2 = [1, nil, 2];
+_array1 isEqualTo _array2; // false
+</sqf>
+<u>UNLESS</u> the compared arrays are the same array:
+<sqf>
+private _array1 = [1, nil, 2];
+private _array2 = _array1;
+_array1 isEqualTo _array2; // true
+</sqf>
+See: [[isEqualRef]] and [[BIS_fnc_areEqual]] vs [[BIS_fnc_areEqualNotNil]]
+}}
+
+|s1= val1 [[isEqualTo]] val2
+
+|p1= val1: [[Anything]]
+
+|p2= val2: [[Anything]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+_arr1 = [1, [2, [3]]];
+_arr2 = [1, [2, [3]]];
+if (_arr1 isEqualTo _arr2) then { hint "Arrays match!" };
+</sqf>
+
+|x2= <sqf>
+if (a isEqualTo b) then { hint "a is equal to b" };
+if !(a isEqualTo b) then { hint "a is not equal to b" };
+</sqf>
+
+|seealso= [[isNotEqualTo]] [[isEqualRef]] [[isEqualTypeAll]] [[isEqualTypeAny]] [[isEqualType]] [[isEqualTypeParams]] [[isEqualTypeArray]] [[a == b]] [[Operators]]
+}}
+
+{{Note
+|user= Tajin
+|datetime= 20141203131100
+|text= Simply put, "isEqualTo" is a binary comparison. Therefor it is very fast but only accepts '''100%''' identical matches. In some other languages this is known as "&#61;&#61;&#61;" instead of "&#61;&#61;".
+}}
+
+{{Note
+|user= Dedmen
+|datetime= 20161103023900
+|text= When comparing with nil result is [[Nothing]].
+<sqf>nil isEqualTo player;</sqf>
+Returns [[Nothing]] instead of expected [[false]]
+<sqf>diag_log [nil isEqualTo player];</sqf>
+Will print {{hl|[bool]}}
+}}

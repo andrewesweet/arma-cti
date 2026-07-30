@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/OGV_File_Format
+// revision: 373411 (2025-05-08T11:27:11Z)
+// export sha1: gs4zn3dka2hyvsg0mhhygkwkekk97na
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+The '''OGV''' format is a video format that is playable in {{arma2oa}} and {{arma3}} (through e.g [[BIS_fnc_playVideo]]).
+
+{{Feature|warning|
+The ffmpeg tool provides a conversion output that works in {{arma3}} up until ffmpeg's '''4.0.2''' version
+(4.1 and above versions have a documented bug regarding this feature: {{Link|https://trac.ffmpeg.org/ticket/8471|bug report}}).
+}}
+
+
+<div style="display: flex; flex-wrap: wrap; gap: 1em">
+<div>
+== How To ==
+
+{{Youtube|MPV7JXTWPWI|||800}}
+</div>
+<div>
+== Download ==
+
+See {{Link|https://ffmpeg.org/}} to {{Link|https://ffmpeg.org/download.html|download}} ffmpeg;<br>
+See {{Link|https://ffmpeg.org/releases/}} to obtain older ffmpeg release sources.
+
+'''binaries''' downloads (from https://www.videohelp.com/software/ffmpeg/old-versions):
+* {{Link|https://www.videohelp.com/download/ffmpeg-4.0.2-win64-static.zip|ffmpeg-4.0.2-win64-static.zip (62.7 MB)}}
+* {{Link|https://www.videohelp.com/download/ffmpeg-4.0.2-win32-static.zip|ffmpeg-4.0.2-win32-static.zip (52.4 MB)}}
+* {{Link|https://www.videohelp.com/download/ffmpeg-4.0.1-win64-static.zip|ffmpeg-4.0.1-win64-static.zip (60.4 MB)}}
+* {{Link|https://www.videohelp.com/download/ffmpeg-4.0.1-win32-static.zip|ffmpeg-4.0.1-win32-static.zip (52.3 MB)}}
+<!--
+'''source''' downloads (from https://ffmpeg.org/releases/):
+* {{Link|https://ffmpeg.org/releases/ffmpeg-4.0.1.tar.bz2|ffmpeg-4.0.1.tar.bz2 (9.9 MB)}}
+* {{Link|https://ffmpeg.org/releases/ffmpeg-4.0.1.tar.gz |ffmpeg-4.0.1.tar.gz (12.4 MB)}}
+* {{Link|https://ffmpeg.org/releases/ffmpeg-4.0.1.tar.xz |ffmpeg-4.0.1.tar.xz (8.3 MB)}}
+-->
+
+
+== Example ==
+
+ ffmpeg -i input.mp4 -c:v libtheora -q:v 7 -c:a libvorbis -q:a 4 intro.ogv
+</div>
+</div>
+
+
+[[Category:Real Virtuality File Formats]]

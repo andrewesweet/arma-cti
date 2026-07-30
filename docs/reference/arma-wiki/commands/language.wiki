@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/language
+// revision: 365028 (2024-07-10T19:28:46Z)
+// export sha1: p1mj3ak6pu7ebhsujomd7sgg5o0flf4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= System
+
+|descr= Returns current game language.
+
+|s1= [[language]]
+
+|r1= [[String]] - see [[Stringtable.xml#Supported_Languages|supported languages]] for possible values
+
+|x1= <sqf>_myLanguage = language; // will return "English" if game language is set to English</sqf>
+
+|seealso= [[Stringtable.xml]] [[getTextRaw]] [[localize]] [[isLocalized]] [[diag_localized]] [[BIS_fnc_localize]]
+}}

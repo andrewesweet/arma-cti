@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_halo
+// revision: 327955 (2022-07-13T13:04:47Z)
+// export sha1: 4lvfjeg8cgjwjvbp48662kah6w46nxq
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Systems | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Systems
+
+|descr= Makes a High Altitude Low Opening (HALO) parachute jump.
+{{Feature|arma3|HALO feature is already implemented in {{arma3}}. Using this function will result in incorrect behaviour and animation.}}
+
+|s1= [unit, altitude] call [[BIS_fnc_halo]]
+
+|p1= unit: [[Object]] - the HALO-performing unit
+
+|p2= altitude: [[Number]] - (Optional, default 0) altitude added to the unit before HALO
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player] call BIS_fnc_halo; // instantly parachutes the player object</sqf>
+
+|x2= <sqf>[player, 100] call BIS_fnc_halo; // increases the altitude of player by 100 before HALO</sqf>
+
+|seealso= [[setUnitFreefallHeight]] [[getUnitFreefallInfo]]
+}}

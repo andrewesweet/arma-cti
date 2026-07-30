@@ -1,0 +1,539 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Hitpoints
+// revision: 293060 (2021-08-17T22:57:43Z)
+// export sha1: rb4yzx8sgovy5r4enudalh4tiri2254
+// categories: Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__ {{Wiki|extractionScript}}
+{| class="wikitable sortable"
+|-
+! No. !! Hit Point !! Name
+|-
+| 1 || #cam_gunner || Camera Gunner
+|-
+| 2 || #gear_1_light_1_hit || Gear #01 (Light #01)
+|-
+| 3 || #gear_1_light_2_hit || Gear #01 (Light #02)
+|-
+| 4 || #gear_2_light_1_hit || Gear #02 (Light #01)
+|-
+| 5 || #gear_2_light_2_hit || Gear #02 (Light #02)
+|-
+| 6 || #gear_3_light_1_hit || Gear #03 (Light #01)
+|-
+| 7 || #gear_3_light_2_hit || Gear #03 (Light #02)
+|-
+| 8 || #gear_f_lights || Gear Light (Front)
+|-
+| 9 || #glass11 || Window #11
+|-
+| 10 || #hitlight1 || Light #01
+|-
+| 11 || #hitlight2 || Light #02
+|-
+| 12 || #hitlight3 || Light #03
+|-
+| 13 || #l svetlo || Light (Left)
+|-
+| 14 || #light_1 || Light #01
+|-
+| 15 || #light_1_hit || Light #01
+|-
+| 16 || #light_1_hitpoint || Light #01
+|-
+| 17 || #light_2 || Light #02
+|-
+| 18 || #light_2_hit || Light #02
+|-
+| 19 || #light_2_hitpoint || Light #03
+|-
+| 20 || #light_3_hit || Light #03
+|-
+| 21 || #light_3_hitpoint || Light #03
+|-
+| 22 || #light_4_hit || Light #04
+|-
+| 23 || #light_4_hitpoint || Light #04
+|-
+| 24 || #light_hitpoint || Light
+|-
+| 25 || #light_l || Light (Left)
+|-
+| 26 || #light_l2 || Light (Left #02)
+|-
+| 27 || #light_l2_flare || Light (Left #02)
+|-
+| 28 || #light_l_flare || Light (Left)
+|-
+| 29 || #light_l_hitpoint || Light (Left)
+|-
+| 30 || #light_r || Light (Right)
+|-
+| 31 || #light_r2 || Light (Right #02)
+|-
+| 32 || #light_r2_flare || Light (Right #02)
+|-
+| 33 || #light_r_flare || Light (Right)
+|-
+| 34 || #light_r_hitpoint || Light (Right)
+|-
+| 35 || #light_spotlight_hit || Spotlight
+|-
+| 36 || #p svetlo || Licht (Links)
+|-
+| 37 || #pos_gear_front_light || Gear Light (Front)
+|-
+| 38 || #wing_left_light || Wing Light (Left)
+|-
+| 39 || #wing_right_light || Wing Light (Right)
+|-
+| 40 || glass_10_hitpoint || Window #10
+|-
+| 41 || glass_11_hitpoint || Window #11
+|-
+| 42 || glass_12_hitpoint || Window #12
+|-
+| 43 || glass_13_hitpoint || Window #13
+|-
+| 44 || glass_14_hitpoint || Window #14
+|-
+| 45 || glass_15_hitpoint || Window #15
+|-
+| 46 || glass_16_hitpoint || Window #16
+|-
+| 47 || glass_17_hitpoint || Window #17
+|-
+| 48 || glass_18_hitpoint || Window #18
+|-
+| 49 || glass_19_hitpoint || Window #19
+|-
+| 50 || glass_1_hitpoint || Window #01
+|-
+| 51 || glass_20_hitpoint || Window #20
+|-
+| 52 || glass_21_hitpoint || Window #21
+|-
+| 53 || glass_22_hitpoint || Window #22
+|-
+| 54 || glass_23_hitpoint || Window #23
+|-
+| 55 || glass_24_hitpoint || Window #24
+|-
+| 56 || glass_25_hitpoint || Window #25
+|-
+| 57 || glass_26_hitpoint || Window #26
+|-
+| 58 || glass_27_hitpoint || Window #27
+|-
+| 59 || glass_28_hitpoint || Window #28
+|-
+| 60 || glass_29_hitpoint || Window #29
+|-
+| 61 || glass_2_hitpoint || Window #02
+|-
+| 62 || glass_30_hitpoint || Window #30
+|-
+| 63 || glass_31_hitpoint || Window #31
+|-
+| 64 || glass_32_hitpoint || Window #32
+|-
+| 65 || glass_33_hitpoint || Window #33
+|-
+| 66 || glass_34_hitpoint || Window #34
+|-
+| 67 || glass_35_hitpoint || Window #35
+|-
+| 68 || glass_36_hitpoint || Window #36
+|-
+| 69 || glass_37_hitpoint || Window #37
+|-
+| 70 || glass_38_hitpoint || Window #38
+|-
+| 71 || glass_39_hitpoint || Window #39
+|-
+| 72 || glass_3_hitpoint || Window #03
+|-
+| 73 || glass_40_hitpoint || Window #40
+|-
+| 74 || glass_41_hitpoint || Window #41
+|-
+| 75 || glass_42_hitpoint || Window #42
+|-
+| 76 || glass_43_hitpoint || Window #43
+|-
+| 77 || glass_44_hitpoint || Window #44
+|-
+| 78 || glass_45_hitpoint || Window #45
+|-
+| 79 || glass_46_hitpoint || Window #46
+|-
+| 80 || glass_47_hitpoint || Window #47
+|-
+| 81 || glass_48_hitpoint || Window #48
+|-
+| 82 || glass_49_hitpoint || Window #49
+|-
+| 83 || glass_4_hitpoint || Window #04
+|-
+| 84 || glass_50_hitpoint || Window #50
+|-
+| 85 || glass_51_hitpoint || Windoe #51
+|-
+| 86 || glass_52_hitpoint || Window #52
+|-
+| 87 || glass_53_hitpoint || Window #53
+|-
+| 88 || glass_54_hitpoint || Window #54
+|-
+| 89 || glass_55_hitpoint || Window #55
+|-
+| 90 || glass_56_hitpoint || Windoe #56
+|-
+| 91 || glass_57_hitpoint || Window #57
+|-
+| 92 || glass_58_hitpoint || Window #58
+|-
+| 93 || glass_59_hitpoint || Window #59
+|-
+| 94 || glass_5_hitpoint || Window #05
+|-
+| 95 || glass_60_hitpoint || Window #60
+|-
+| 96 || glass_61_hitpoint || Window #61
+|-
+| 97 || glass_62_hitpoint || Window #62
+|-
+| 98 || glass_6_hitpoint || Window #06
+|-
+| 99 || glass_7_hitpoint || Window #07
+|-
+| 100 || glass_8_hitpoint || Window #08
+|-
+| 101 || glass_9_hitpoint || Window #09
+|-
+| 102 || glass_pod_01_hitpoint || 
+|-
+| 103 || glass_pod_02_hitpoint || 
+|-
+| 104 || glass_pod_03_hitpoint || 
+|-
+| 105 || glass_pod_04_hitpoint || 
+|-
+| 106 || glass_pod_05_hitpoint || 
+|-
+| 107 || glass_pod_06_hitpoint || 
+|-
+| 108 || glass_pod_07_hitpoint || 
+|-
+| 109 || glass_pod_08_hitpoint || 
+|-
+| 110 || glass_pod_09_hitpoint || 
+|-
+| 111 || hand_l || Hand (Left)
+|-
+| 112 || hand_r || Hand Right)
+|-
+| 113 || hit_light_1 || Light #01
+|-
+| 114 || hit_light_1_flare || Light Flare #01
+|-
+| 115 || hit_light_2 || Light #02
+|-
+| 116 || hit_light_3 || Light #03
+|-
+| 117 || hit_light_4 || Light #04
+|-
+| 118 || hitabdomen || Abdomen
+|-
+| 119 || hitammo || Ammunition
+|-
+| 120 || hitarms || Arms
+|-
+| 121 || hitavionics || Avionics
+|-
+| 122 || hitbattery_l || Battery (Left)
+|-
+| 123 || hitbattery_r || Battery (Right)
+|-
+| 124 || hitbody || Body
+|-
+| 125 || hitchest || Chest
+|-
+| 126 || hitcomgun || Commander Gun
+|-
+| 127 || hitcomturret || Commander Turret
+|-
+| 128 || hitdiaphragm || Diaphragm
+|-
+| 129 || hitengine || Engine
+|-
+| 130 || hitengine1 || Engine #01
+|-
+| 131 || hitengine2 || Engine #02
+|-
+| 132 || hitengine3 || Engine #03
+|-
+| 133 || hitengine4 || Engine #04
+|-
+| 134 || hitera_back || Era (Back)
+|-
+| 135 || hitera_front || Era (Front)
+|-
+| 136 || hitera_left || Era (left)
+|-
+| 137 || hitera_left_1 || Era (Left, #01)
+|-
+| 138 || hitera_left_2 || Era (Left, #02)
+|-
+| 139 || hitera_left_3 || Era (Left, #03)
+|-
+| 140 || hitera_left_4 || Era (Left, #04)
+|-
+| 141 || hitera_right || Era (Right)
+|-
+| 142 || hitera_right_1 || Era (Right, #01)
+|-
+| 143 || hitera_right_2 || Era (Right, #02)
+|-
+| 144 || hitera_right_3 || Era (Right, #03)
+|-
+| 145 || hitera_right_4 || Era (Right, #04)
+|-
+| 146 || hitera_top || Era (Top)
+|-
+| 147 || hitera_top_front || Era (Top, Front)
+|-
+| 148 || hitera_top_left || Era (Top, Left)
+|-
+| 149 || hitera_top_left_1 || Era (Top, Left, #01)
+|-
+| 150 || hitera_top_left_2 || Era (Top, Left, #02)
+|-
+| 151 || hitera_top_right || Era (Top, Right)
+|-
+| 152 || hitera_top_right_1 || Era (Top, Right, #01)
+|-
+| 153 || hitera_top_right_2 || Era (Top, Right, #02)
+|-
+| 154 || hitface || Face
+|-
+| 155 || hitfuel || Fuel Tank
+|-
+| 156 || hitfuel2 || Fuel Tank #02
+|-
+| 157 || hitfuel_lead_left || Fuel Lead (Left)
+|-
+| 158 || hitfuel_lead_right || Fuel Lead (Right)
+|-
+| 159 || hitfuel_left || FuelTank (Left)
+|-
+| 160 || hitfuel_right || Fuel Tank (Right)
+|-
+| 161 || hitfuell || Fuel Tank (Left)
+|-
+| 162 || hitfuelr || Fuel Tank (Right)
+|-
+| 163 || hitfueltank || Fuel Tank
+|-
+| 164 || hitgear || Gear
+|-
+| 165 || hitglass1 || Window #01
+|-
+| 166 || hitglass10 || Window #10
+|-
+| 167 || hitglass11 || Window #11
+|-
+| 168 || hitglass12 || Window #12
+|-
+| 169 || hitglass13 || Window #13
+|-
+| 170 || hitglass14 || Window #14
+|-
+| 171 || hitglass15 || Window #15
+|-
+| 172 || hitglass16 || Window #16
+|-
+| 173 || hitglass17 || Window #17
+|-
+| 174 || hitglass18 || Window #18
+|-
+| 175 || hitglass19 || Window #19
+|-
+| 176 || hitglass1a || Window 1A
+|-
+| 177 || hitglass1b || Window 1B
+|-
+| 178 || hitglass2 || Window #02
+|-
+| 179 || hitglass20 || Window #20
+|-
+| 180 || hitglass3 || Window #03
+|-
+| 181 || hitglass4 || Window #04
+|-
+| 182 || hitglass5 || Window #05
+|-
+| 183 || hitglass6 || Window #06
+|-
+| 184 || hitglass7 || Window #07
+|-
+| 185 || hitglass8 || Window #08
+|-
+| 186 || hitglass9 || Window #09
+|-
+| 187 || hitgun || Gun
+|-
+| 188 || hithands || Hands
+|-
+| 189 || hithead || Head
+|-
+| 190 || hithrotor || Main rotor
+|-
+| 191 || hithstabilizerl1 || Horizontal Stabilizer (Left)
+|-
+| 192 || hithstabilizerr1 || Horizontal Stabilizer (Right)
+|-
+| 193 || hithull || Hull
+|-
+| 194 || hithydraulics || Hydraulics
+|-
+| 195 || hitlaileron || Left Aileron
+|-
+| 196 || hitlaileron_link || Aileron Link (Left)
+|-
+| 197 || hitlbwheel || 4th axle left wheel
+|-
+| 198 || hitlcelevator || Left Elevator
+|-
+| 199 || hitlcrudder || Left Rudder
+|-
+| 200 || hitlegs || Legs
+|-
+| 201 || hitlf2wheel || 2nd axle left wheel
+|-
+| 202 || hitlfwheel || 1st axle left wheel
+|-
+| 203 || hitlglass || Window (Left)
+|-
+| 204 || hitlight || Light
+|-
+| 205 || hitlightback || Light (Back)
+|-
+| 206 || hitlightfront || Light (Front)
+|-
+| 207 || hitlightl || Light (Left)
+|-
+| 208 || hitlightr || Light (Right)
+|-
+| 209 || hitlmwheel || 3rd axle left wheel
+|-
+| 210 || hitltrack || Left track
+|-
+| 211 || hitmissiles || Missiles
+|-
+| 212 || hitneck || Neck
+|-
+| 213 || hitoptic || Optic
+|-
+| 214 || hitoptics || Optics
+|-
+| 215 || hitpelvis || Pelvis
+|-
+| 216 || hitpitottube || Pitot Tube
+|-
+| 217 || hitraileron || Right Aileron
+|-
+| 218 || hitraileron_link || Aileron Link (Right)
+|-
+| 219 || hitrbwheel || 4th axle right wheel
+|-
+| 220 || hitrelevator || Right Elevator
+|-
+| 221 || hitreservewheel || Reserve Wheel
+|-
+| 222 || hitrf2wheel || 2nd axle right wheel
+|-
+| 223 || hitrfwheel || 1st axle right wheel
+|-
+| 224 || hitrglass || Window (Right)
+|-
+| 225 || hitrmwheel || 3rd axle right wheel
+|-
+| 226 || hitrotor || Rotor
+|-
+| 227 || hitrotorvirtual || Rotor (Virtual)
+|-
+| 228 || hitrrudder || Right Rudder
+|-
+| 229 || hitrtrack || Right track
+|-
+| 230 || hitslat_back || Slat Armour (Back)
+|-
+| 231 || hitslat_front || Slat Armour (Front)
+|-
+| 232 || hitslat_left || Slat (Left)
+|-
+| 233 || hitslat_left_1 || Slat Armour (Left, #01)
+|-
+| 234 || hitslat_left_2 || Slat Armour (Left, #02)
+|-
+| 235 || hitslat_left_3 || Slat Armour (Left, #03)
+|-
+| 236 || hitslat_right || Slat (Right)
+|-
+| 237 || hitslat_right_1 || Slat Armour (Right, #01)
+|-
+| 238 || hitslat_right_2 || Slat Armour (Right, #02)
+|-
+| 239 || hitslat_right_3 || Slat Armour (Right, #03)
+|-
+| 240 || hitslat_top_back || Slat Armour (Top back)
+|-
+| 241 || hitslat_top_left || Slat Armour (Top left)
+|-
+| 242 || hitslat_top_right || Slat Armour (Top right)
+|-
+| 243 || hitstarter1 || Starter #01
+|-
+| 244 || hitstarter2 || Starter #02
+|-
+| 245 || hitstarter3 || Starter #03
+|-
+| 246 || hitstaticport || Static Port
+|-
+| 247 || hittail || Tail
+|-
+| 248 || hittransmission || Transmission
+|-
+| 249 || hitturret || Turret
+|-
+| 250 || hitvrotor || Tail Rotor
+|-
+| 251 || hitvstabilizer1 || Vertical Stabilizer #01
+|-
+| 252 || hitwinch || Winch
+|-
+| 253 || hitzone_1_hitpoint || Hitzone #01
+|-
+| 254 || hitzone_2_hitpoint || Hitzone #02
+|-
+| 255 || hitzone_3_hitpoint || Hitzone #03
+|-
+| 256 || hitzone_4_hitpoint || Hitzone #04
+|-
+| 257 || incapacitated || Incapacitated
+|-
+| 258 || leg_l || Leg (Left)
+|-
+| 259 || leg_r || Leg (Right)
+|-
+| 260 || light_1_hitpoint || Light #01
+|-
+| 261 || light_2_hitpoint || Light #02
+|-
+| 262 || light_3_hitpoint || Light #03
+|-
+| 263 || light_4_hitpoint || Light #04
+|}
+
+{{GameCategory|arma3|Reference Lists}}

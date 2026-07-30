@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/setLightDayLight
+// revision: 319755 (2022-05-13T09:24:49Z)
+// export sha1: ngzqwgppdl9kpt3pm461frykfeea598
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Lights
+
+|arg= local
+
+|eff= local
+
+|descr= Sets if light can be used during the day.
+
+|s1= light [[setLightDayLight]] bool
+
+|p1= light: [[Object]]
+
+|p2= bool: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myLight setLightDayLight true;</sqf>
+
+|seealso= [[setLightAmbient]] [[setLightColor]] [[lightAttachObject]] [[lightDetachObject]] [[setLightIntensity]] [[setLightAttenuation]] [[setLightUseFlare]] [[setLightFlareSize]] [[setLightFlareMaxDistance]] [[setLightBrightness]]
+}}

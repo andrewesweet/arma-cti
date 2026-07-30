@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Forsvaret
+// revision: 184526 (2021-01-06T13:21:28Z)
+// export sha1: pt8tgihqembdwekysr2fv6fgicg3i0k
+// Vendored snapshot. Do not edit — re-export instead.
+
+Norwegian Army
+
+{{GameCategory|arma2|Media}}

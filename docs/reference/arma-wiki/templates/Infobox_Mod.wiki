@@ -1,0 +1,146 @@
+// source: https://community.bistudio.com/wiki/Template:Infobox/Mod
+// revision: 363585 (2024-04-07T18:04:19Z)
+// export sha1: 06vidyqs0dmimrc3oexvsmov3fsjprw
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{| class="wikitable float-right align-left align-center-row-1" style="font-size: 0.95em; line-height: 140%; width: 286px"
+! colspan="2" style="background-color: #444; color: #FFF; font-size: 120%; padding: 0.5em" | {{{Name|{{PAGENAME}}}}}
+|-
+{{#if: {{{picture|}}}|
+	{{!}} colspan="2" style="background-color: #FFF; margin-top: 3px" {{!}}
+	[[Image:{{{picture}}}|{{{size|286px}}}|frameless|center]]
+}}
+|-
+{{#if: {{{leader|}}}|
+	{{!}} colspan="2" style="line-height: 120%; text-align:center; font-size:90%; padding: 5px; background-color: #EEE" {{!}}
+	{{{leader}}}
+}}
+|-
+{{#if: {{{2D|}}}|
+	! 2D
+	{{!}} {{{2D}}}
+}}
+|-
+{{#if: {{{3D|}}}|
+	! 3D
+	{{!}} {{{3D}}}
+}}
+|-
+{{#if: {{{script|}}}|
+	! Script
+	{{!}} {{{script}}}
+}}
+|-
+{{#if: {{{code|}}}|
+	! Code
+	{{!}} {{{code}}}
+}}
+|-
+{{#if: {{{island|}}}|
+	! Island
+	{{!}} {{{island}}}
+}}
+|-
+{{#if: {{{missions|}}}|
+	! Missions
+	{{!}} {{{missions}}}
+}}
+|-
+{{#if: {{{other|}}}|
+	! Other
+	{{!}} {{{other}}}
+}}
+|-
+{{#if: {{{betatest|}}}|
+	! Betatest
+	{{!}} {{{betatest}}}
+}}
+|-
+{{#if: {{{external|}}}|
+	! External
+	{{!}} {{{external}}}
+}}
+|-
+{{#if: {{{released|}}}|
+	! Released
+	{{!}} {{{released}}}
+}}
+|-
+{{#if: {{{releasedate|}}}|
+	! Release date
+	{{!}} {{{releasedate}}}
+}}
+|-
+{{#if: {{{version|}}}|
+	! Version
+	{{!}} {{{version}}}
+}}
+|-
+{{#if:{{{ingame|}}} |
+	{{!}} colspan="2" style="font-size: 0.9em; text-align: center" {{!}}
+	[[File:{{{ingame}}}|rand|center|{{#if:{{{size|}}} | {{{size}}} | 250x200px}}|alternativetext=|{{{description}}}]] {{{description}}}
+}}
+|-
+{{#if: {{{web|}}}|
+	! Web
+	{{!}} {{{web}}}
+}}
+|-
+{{#if: {{{link|}}}|
+	! Link
+	{{!}} {{{link}}}
+}}
+|}</includeonly><noinclude>
+== Usage ==
+See below.
+
+{|
+|- style="background-color: #EEE"
+! Code
+! Result
+|- style="vertical-align: top"
+| style="padding: 1em" | <pre>{{Infobox/Mod
+|picture= Arma 3 logo black.png
+|leader= Me
+|2D= A guy
+|3D= Another guy
+|script= Script guy
+|code= Code guy
+|island= terrain guy
+|missions= mission guy
+|other= that guy
+|betatest= no
+|external= maybe
+|released= yes
+|releasedate= 2001-06-22
+|version= 1.00
+|ingame= arma3 zeus logo.png
+|description= Some description
+|web= https://www.arma3.com
+|link= https://www.arma3.com?equalSignTest=true
+}}</pre>
+
+| style="padding: 1em" | {{Infobox/Mod
+|picture= Arma 3 logo black.png
+|leader= Me
+|2D= A guy
+|3D= Another guy
+|script= Script guy
+|code= Code guy
+|island= terrain guy
+|missions= mission guy
+|other= that guy
+|betatest= no
+|external= maybe
+|released= yes
+|releasedate= 2001-06-22
+|version= 1.00
+|ingame= arma3 zeus logo.png
+|description= Some description
+|web= https://www.arma3.com
+|link= https://www.arma3.com?equalSignTest=true
+}}
+
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

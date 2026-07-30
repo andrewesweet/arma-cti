@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Custom_Waypoints
+// revision: 363965 (2024-04-28T09:28:46Z)
+// export sha1: c1a4d7h9efeu0yx1vl3bws0if8xx1ba
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Spearhead 1944]] adds some custom waypoints that help with controlling AI movement.
+
+= Infantry Rush = 
+Makes AI group charge enemy positions while randomly shooting. While the waypoint is active, certain AI features might be disabled.
+
+'''Script File:''' {{hl|WW2\SPE_Core_f\System_Curator_f\waypoints\fn_wprush.sqf}}
+
+= Vehicle Path =
+Sets vehicle to drive exact path without stopping. Usually used for short distances between point A to point B. Multiple path waypoints can be added to a vehicle. Only group leader vehicle follows the path. 
+
+'''Script File:''' {{hl|WW2\SPE_Core_f\System_Curator_f\waypoints\fn_wptankpath.sqf}}
+
+{{Feature|important|The waypoint has no effect if a [[player]] is [[effectiveCommander|effective]] commander.}}
+
+= Vehicle Path Calculated =
+Sets vehicle to drive calculated path without stopping. Behaviour and speed setting affects the path.
+Vehicle path is first calculated, see [[Arma_3:_Event_Handlers#PathCalculated| PathCalculated Event Handler]] for more information.
+Only group leader vehicle follows the path.
+
+'''Script File:''' {{hl|WW2\SPE_Core_f\System_Curator_f\waypoints\fn_wptankpathcalculated.sqf}}
+
+{{Feature|important|The waypoint has no effect if a [[player]] is [[effectiveCommander|effective]] commander.}}
+
+[[Category: Spearhead 1944]]

@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_planeEjectionFX
+// revision: 376189 (2025-09-13T16:49:05Z)
+// export sha1: 4m0s2ulytb2s545k9eekitpezmcumlv
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Aircraft Functionality | Category:Functions | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Aircraft Functionality
+
+|descr= <pre>/*
+	Author: Bravo Zero One development
+	- John_Spartan
+
+	Description:
+	- This function is designed as part of set of functions to implement semi-authenthic ejection system on fixed wing aircrfat that have such functionality enabled/configured.
+	- Function created to add FX (sound/particles) for ejection feature.
+
+	Exucution:
+	- Call from within the main ejection fnc (on demand).
+
+		Example:
+		[_plane, _ejectionSeat] spawn BIS_fnc_planeEjectionFX;
+
+	Requirments:
+	- Compatible ejector seat must have a hide animation for rocket motor flash and position for FX to be attached. (TO DO PARAMETARIZE)
+		Inehector seats model.cfg
+		class Animations
+		{
+
+			class Rocket_Flash_hide
+			{
+				type = "hide";
+				source = "user";
+				selection = "rocket_flash";
+				sourceAddress = "mirror";
+				minValue = -1.5;
+				maxValue = 0;
+				hideValue = 0.99;
+
+			};
+		};
+
+	Parameter(s):
+		_this select 0: mode (Scalar)
+		0: plane/object
+		1: ejector seat/object
+
+	Returns: nothing
+	Result: Set of particle FX and sound FX will be aplied to ejection feature.
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= [plane, ejectionSeat] spawn [[BIS_fnc_planeEjectionFX]]
+
+|p1= plane: [[Object]] - vehicle with ejection system (plane part) set up in its config
+
+|p2= ejectionSeat: [[Object]] - vehicle with ejection system (seat part) set up in its config
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_myPlane, _myEjectionSeat] spawn BIS_fnc_planeEjectionFX;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_planeEjection]] [[BIS_fnc_planeAiEject]] [[BIS_fnc_ejectionSeatRelease]]
+}}

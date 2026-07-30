@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_curatorChallengeGetInVehicle
+// revision: 272966 (2021-06-13T00:35:27Z)
+// export sha1: 6c99tri2hvcgc0t5tbu5iybtrnutryp
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: CuratorChallenges | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= CuratorChallenges
+
+|descr= ''N/A''
+
+|s1= <!-- [] call [[BIS_fnc_curatorChallengeGetInVehicle]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

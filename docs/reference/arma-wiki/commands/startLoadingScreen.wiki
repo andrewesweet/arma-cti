@@ -1,0 +1,222 @@
+// source: https://community.bistudio.com/wiki/startLoadingScreen
+// revision: 369458 (2024-09-06T08:44:54Z)
+// export sha1: 3wkhozc1vtdouutnk18ajyrrhft7vjc
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= System
+
+|descr= Shows loading screen with the given text, using the given resource.
+While loading screen is shown, simulation and scene drawing is disabled, user control is disabled, mouse cursor is hidden, scripts run at full speed (50ms per frame instead of 3ms per frame for [[Scheduler|Scheduled Scripts]]).
+
+{{Feature|informative|2=
+By default, [[startLoadingScreen]] will use "RscDisplayNotFreeze" resource.<br>
+A custom resource can be defined in [[Description.ext]], and a full black background will be used by default - the following controls are supported by the engine:
+* idc = 101 - text (type = 0) or picture (type = 48). The text will be set to the value provided by the command argument.
+* idc = 103 - progress (type = 8) or animated texture (type = 45). This control indicates global hardcoded mission loading progress and is useless after the mission is loaded.
+* idc = 104 - progress (type = 8). This control's progress is initially set to 0 and can be manipulated with [[progressLoadingScreen]] command. 
+
+Resource can be defined in [[Description.ext]]; it must NOT be defined as {{hl|RscTitles}}!
+<spoiler text="See config example">
+<syntaxhighlight lang="cpp">
+// basic defines - pre "import" keyword in v2.02
+class RscText
+{
+	type = 0;
+	idc = -1;
+	x = 0;
+	y = 0;
+	h = 0.037;
+	w = 0.3;
+	style = 0x100;
+	font = Zeppelin32;
+	SizeEx = 0.03921;
+	colorText[] = { 1, 1, 1, 1 };
+	colorBackground[] = { 0, 0, 0, 0 };
+	linespacing = 1;
+};
+
+class RscPicture
+{
+	access = 0;
+	type = 0;
+	idc = -1;
+	style = 48;
+	colorBackground[] = { 0, 0, 0, 0 };
+	colorText[] = { 1, 1, 1, 1 };
+	font = "TahomaB";
+	sizeEx = 0;
+	lineSpacing = 0;
+	text = "";
+};
+
+class RscLoadingText : RscText
+{
+	style = 2;
+	x = 0.323532;
+	y = 0.666672;
+	w = 0.352944;
+	h = 0.039216;
+	sizeEx = 0.03921;
+	colorText[] = { 0.543, 0.5742, 0.4102, 1.0 };
+};
+
+class RscProgress
+{
+	x = 0.344;
+	y = 0.619;
+	w = 0.313726;
+	h = 0.0261438;
+	texture = "\ca\ui\data\loadscreen_progressbar_ca.paa";
+	colorFrame[] = { 0, 0, 0, 0 };
+	colorBar[] = { 1, 1, 1, 1 };
+};
+
+class RscProgressNotFreeze
+{
+	idc = -1;
+	type = 45;
+	style = 0;
+	x = 0.022059;
+	y = 0.911772;
+	w = 0.029412;
+	h = 0.039216;
+	texture = "#(argb,8,8,3)color(0,0,0,0)";
+};
+
+// end of basic defines
+
+class WIKI_loadingScreen
+{ 
+	idd = -1;
+	duration = 10e10;
+	fadein = 0;
+	fadeout = 0;
+	name = "loading screen";
+	class controlsBackground
+	{
+		class blueBackground : RscText // covers the black screen
+		{
+			x = safezoneXAbs;
+			y = safezoneY;
+			w = safezoneWAbs;
+			h = safezoneH;
+			text = "";
+			colorText[] = { 0, 0, 0, 0 };
+			colorBackground[] = { 0, 0, 1, 1 };
+		};
+
+		class nicePic : RscPicture
+		{
+			style = 48 + 0x800; // ST_PICTURE + ST_KEEP_ASPECT_RATIO
+			x = safezoneX + safezoneW/2 - 0.25;
+			y = safezoneY + safezoneH/2 - 0.2;
+			w = 0.5;
+			h = 0.4;
+			text = "img\nicePic.paa";
+		};
+	};
+
+	class controls
+	{
+		class Title1 : RscLoadingText
+		{
+			text = "$STR_LOADING"; // "Loading" text in the middle of the screen
+		};
+
+		class CA_Progress : RscProgress // progress bar, has to have idc 104
+		{
+			idc = 104;
+			type = 8; // CT_PROGRESS
+			style = 0; // ST_SINGLE
+			texture = "\ca\ui\data\loadscreen_progressbar_ca.paa";
+		};
+
+		class CA_Progress2 : RscProgressNotFreeze // progress bar that will go reverse
+		{
+			idc = 103;
+		};
+
+		class Name2 : RscText // the text on the top-left
+		{
+			idc = 101;
+			x = 0.05;
+			y = 0.029412;
+			w = 0.9;
+			h = 0.04902;
+			text = "";
+			sizeEx = 0.05;
+			colorText[] = { 0.543, 0.5742, 0.4102, 1.0 };
+		};
+	};
+};
+</syntaxhighlight>
+</spoiler>
+}}
+
+{{Feature|warning|
+* The loading screen does '''not''' end by itself and absolutely needs a call to [[endLoadingScreen]] command
+* Game simulation is disabled during Loading Screen operation (at least in single player):
+** do '''not''' use the [[sleep]] command between [[startLoadingScreen]] and [[endLoadingScreen]] as '''it may freeze the game''' - use [[uiSleep]] instead
+** [[waitUntil]] ''can'' be used to wait for variable initialisation or script loading
+}}
+{{Feature|arma3|
+* Use [[BIS_fnc_startLoadingScreen]] to prevent potential usage conflicts.
+* The loading screen can be force-ended with the {{Link|Arma 3: Cheats#ENDLOAD|ENDLOAD cheat code}}.
+}}
+
+|s1= [[startLoadingScreen]] [text, resource]
+
+|p1= text: [[String]]
+
+|p2= resource: [[String]] - (Optional)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>startLoadingScreen ["Loading My Mission, please wait..."];</sqf>
+
+|x2= <sqf>startLoadingScreen ["Can't skip loading time...", "MyLoadingRsc"];</sqf>
+
+|x3= <sqf>
+startLoadingScreen ["Loading My Mission"];
+// code
+progressLoadingScreen 0.5;
+// code
+endLoadingScreen;
+</sqf>
+
+|x4= <sqf>
+// this structure prevents error-prone or lengthy code to miss endLoadingScreen.
+private _maxTime = diag_tickTime + 30; // max 30s of loading
+
+startLoadingScreen ["Loading"];
+private _handle = 0 spawn {
+	// code that may crash or take too long
+};
+
+waitUntil { uiSleep .1; scriptDone _handle || diag_tickTime > _maxTime };
+endLoadingScreen;
+</sqf>
+
+|seealso= [[endLoadingScreen]] [[progressLoadingScreen]] [[BIS_fnc_startLoadingScreen]] [[import (Config)]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20151121183800
+|text= The default {{arma3}} loading screen has no control to display text.
+}}

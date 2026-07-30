@@ -1,0 +1,321 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Damage_Description
+// revision: 363298 (2024-03-26T11:04:56Z)
+// export sha1: ohf31lmvtnvfjfej0044xnizes8rcal
+// categories: Category:Arma 3: Tutorials | Category:Arma 3: Vehicle Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+An ongoing investigation on how damage and armor actually work in {{arma3}}. This page was initially based on [[User:Olds|Olds]] ([[User talk:Olds|talk]]) research during the creation of the Real Armor Mod ("RAM").
+
+Sometime in Q1 of 2015, the RAM information will be removed from this page and relocated to its own wiki.
+
+
+== Damage vs. Penetration ==
+
+It's important to understand that penetration and damage are not exactly the same thing in {{arma3}} - they have a slightly indirect relationship. For damage to occur, a vehicle must have:
+* [[LOD#Fire_Geometry|Fire Geometry]] modeled in its P3D file and
+* [[LOD#Hit-points|HitPoints]] defined in its config.cpp file
+
+'''In Simple terms: an attack must ''simultaneously'' penetrate ''both'' fire geometry and a hitpoint radius to cause the most damage to a vehicle.'''
+
+[[File:damage summary diag 2.JPG]]
+
+In the diagram above, attacks A-D are examples of direct attacks (indirectHit & indirectHitRange = 0). Attack E is an example of an indirectHit attack. As the diagram shows, armor (in the form of fire geometry) can protect against direct damage--but indirectHit damage can easily occur ''without'' penetration (especially when indirectHitRange is large). Only a hitpoint's minimalHit and explosionShielding values can protect against indirectHit reaching through armor to cause damage.
+
+'''Case B''': The projectile does not penetrate through the entire FG. In this case the Hitpoint will receive 100% of the directDamage (directDamage = (Hit - indirectHit)*speedmodifier ) of the projectile
+
+'''Case A''': In contrary to Case B, the projectile completely penetrates the FG. Only a portion of the directDamage of the projectile will be dealt to the Hitpoint. The portion of damage depends on the amount of speed the projectile lost during penetration. The formula for this is unknown and also seems to be nonlinear. This means that very thin firegeometry will cause low amount of damage in most cases (as many projectiles will fully penetrate).
+
+''Example: A projectile (simulation=shotShell or shotBullet) with hit=1 impacts on a block with armor=1 (means one hit kills in best case). If the projectile has caliber=0 (no penetration) it will outright "kill". If the caliber value is > 0, but not high enough to penetrate through the block's material, it will also kill. If the projectile has just about enough penetration to penetrate the block, so that it is exit speed is < 0.1 m/s (means it falls straight to the ground after exit) the damage dealt will not be 1.0, but somewhere around 0.22. A fifth of the damage, just because the last mm of material was penetrated... If the bullet would lose less speed in the block, damage would be even lower''
+
+'''Case C''': The projectile impacts, but does not reach the hitpoint. However, the Hitpoint can still be damaged by this, as projectiles have an "internal indirect damage radius", independant of indirectHit and indirectHitRange. The size of this radius depends on directDamage value of the projectile. The higher the resulting directDamage value is, the larger the radius (and also damage) will be to surrounding Hitpoints, even if the projectile didn't enter the HitPoint radius. This means that very high hit values can cause total damage to all hitpoints, even without any penetration. The same is true if the projectile fully penetrates (as with Case A), but does not penetrate the Hitpoint-radius. This means that precise damage modelling is very difficult (if not impossible) to achieve
+
+The consequences of the damage system for armor modeling is discussed [[#Armor_Methods_.26_Recommendations|later in this page]].
+
+== The Typical Damage Process ==
+This is how damage usually transpires with stock {{arma}} vehicles (and most mod content as well, since it tends to conform to BI standards of vehicle creation).
+
+[[File:Olds damage diagram sm.gif]]
+
+
+=== Pre-impact ===
+
+A projectile is headed for the target. (For our discussion let's assume its a kinetic round on track for a direct hit vs. an AFV)
+
+=== Initial Impact ===
+
+The projectile impacts the target. It has not penetrated any armor yet. And if it doesn't have the ballistics to go further it will terminate here doing only this initial damage. Regardless, the following things happen:
+Every major location on the target takes some damage. The location nearest the impact point gets the most, and it falls off geometrically.
+The target's global health is generally damaged the most.
+Several factors affect the amount of damage taken: obviously the hit value of the weapon is important, but various weapon & target config values are also involved (minimalHit, explosive, etc.).
+That's right, some damage has already been done regardless of whether it is pistol-round vs. tank or sabot vs. bunny.
+If the hit values are high enough, this initial impact alone can destroy the target (essentially by knocking out global health) ...regardless of penetration!
+
+=== Penetrating Damage ===
+
+''If'' the projectile can penetrate the target's armor, it will continue moving and doing damage as it goes. Here's what happens:
+Every major location continues to take damage as in step 2. But something new happens as well...
+...as the projectile travels past the armor it starts doing much more damage to the area immediately around itself.
+Global health continues to get damaged and can really get clobbered now. BTW, this happens even if every passThrough value is set to zero(!).
+The projectile will terminate here or travel on through the target if it has penetration power remaining to do so.
+
+Keep in mind there are (sometimes significant) variations to how this works for things like explosive weapons, indirectHit, deflections, etc. More on those below.
+And, yes, this description holds true for human targets (shoot someone in the hand, and their head will take some damage).
+
+
+== Indirect(Hit) & "Explosive" Damage ==
+
+=== IndirectHit ===
+
+[[File:Olds_iHit_diagram_sm.gif]]
+
+IndirectHit represents damage from explosions (not to be confused with the BIS "explosive" property).
+IndirectHit damage is applied whenever a weapon with that config property hits something (you, the ground, etc.)
+It causes damage out to 4x it is indirectHitRange (which is a radius). The damage is dealt with the following rules:
+* Within 1x iHR: full iH damage is dealt to Hitlocations
+* Range >1xiHR and <4xiHR: iH damage dealt to Hitlocations falls off and can be calculated with iH_mod = iH / x^4 where x is the range expressed in multiples of iHR
+* Range >4xiHR: No iH damage is dealt
+If a target is within range (our trusty tank in the above diagram), it takes the same all-location damage described in part A. (The location closest to the impact takes the most damage and so on...). Due to damage to all locations, damage to global health can be very high and somewhat hard to calculate. Ranged indirectHit damage bypasses your armor (firegeometry) and damages you anyway. Only the explosionShielding (and minimalHit) property can mitigate this.
+
+Note 1: the indirectHit 'explosion' radius effect appears to occur whenever a new surface is hit. This can occur just once when the ground is hit, or multiple times if the projectile has a high "caliber" and passes through several pieces of fire geometry. It also occurs when the projectile is deflected due to too high angle of impact (provided explosive value is < 0.7).
+
+Note 2: since 1/4^4 is not 0, certain indirectHit values will kill certain targets at the entire Radius of 4xiHR. For example, iH=85 is enough to kill any human target without bodyarmor (iH_mod required = 0.33) within 4xiHR.
+
+The indirectHit damage falloff looks like this:
+
+[[File:indirectDamage_Falloff.png]]
+
+=== Explosive ===
+
+Not the "explosion" effect you're thinking of--that's indirectHit. This weapon property does only one thing: it controls how much hit damage falls off with speed. Weapons with no or 0 explosive value are considered fully 'kinetic' and lose hit value as they slow below their typicalSpeed.
+Weapons with explosive=1 are considered fully 'explosive' and do full damage regardless of the projectile speed. Values between 0 and 1 control the ratio of kinetic-to-explosive damage (i.e. explosive = 0.5 means half the damage falls off with speed and half does not).
+<!> QUIRK! Values >=0.7 nullify a weapon's armor penetrating ability (as if caliber=0)!. Use values <0.7 if you want your weapon to have normal penetration behavior!
+
+
+== Penetration & Ballistics ==
+
+=== Bullet/Shell ===
+
+Bullet/Shell ballistics are very simple and quite accurate. The only properties that influence trajectory are initSpeed (CfgMagazines), airFriction (CfgAmmo) and coefGravity (CfgAmmo, default=1).
+Such projectiles travel based on their muzzle velocity (initSpeed) and aerodynamic drag (airFriction), along with gravity-induced vertical drop.
+Penetration is simply a factor of [remaining projectile speed at impact] and [CfgAmmo>"caliber"].
+
+Projectile slowing through armor (or any other kind of fire geometry), appears to be handled purely by the projectile's speed & "caliber" and the fire geometry's bulletPenetrability(WithThickness).
+"airFriction" ceases to be a factor unless the projectile makes it is way through the target back out into open air. No other target material properties (Density, etc.) appear to factor in to the simulation.
+
+=== Missile/Rocket ===
+
+Missile/Rocket ballistics are more complex (let's call them M/R's for short). However, unlike Bullet/Shell penetration--which works quite well--M/R penetration is broken in the {{arma3}} code.
+BI ignores penetration effects for these weapons and relies on exaggerated hit/indirectHit values to cause target damage. (RAM fixes this bug/limitation--and adds some new features along the way--with some scripting).
+
+==== Unguided ====
+These projectiles still use the same two properties as Bullet/Shells to determine their trajectories, but add some more (all in CfgAmmo): initTime, thrust, thrustTime, and maxSpeed.
+The four new properties account for the additional effect of a rocket motor: after "initTime", "thrust" is added to accelerate the projectile until it runs out ("thrustTime"), while "maxSpeed" puts a cap on the projectile's top speed.
+"sideAirFriction" & "maneuvrability" (from CfgAmmo) and mass (from the P3D model) get honorable mention here. But it is not clear that they add anything to the simulation of unguided M/R trajectories.
+
+==== Guided ====
+These projectiles work as unguided M/R's above, but with added properties to account for the fact that they manuever to track a target.
+"sideAirFriction" is used like airFriction to create drag, but in the lateral axes (as the missile turns to follow a target).
+"manuevrability" controls the rate of turning ability (mass may also play a role here - in that higher mass M/R's have a harder time turning due to momentum--but testing is required to confirm this).
+There are also a few simple properties that pertain to how tracking is achieved, but they are beyond the scope of this discussion.
+
+=== Ballistics and Network Code ===
+
+Unguided Bullets, Shells, and Rockets (simulation = "shotRocket") ballistics are calculated locally/on the client only. They do not cause undue network traffic in multiplayer. Guided missiles on the other hand (simulation = "maverickweapon") broadcast their trajectory over the network, generating much more data traffic in multiplayer every time one is in flight. Think of guided missiles as little airplanes, clogging up the network with traffic as they fly around.
+
+=== Limits & Peculiarities of the Penetration Sim ===
+
+{{arma}} fully simulates the trajectory through a piece of fire geometry only for projectiles that make it all the way through. The game does not really simulate movement ''within'' fire geometry. If a projectile is stopped by a piece of fire geometry, the game essentially^ treats it as if it stopped at the surface. (This is noticeable if you fire weapons while using a projectile tracing script).
+
+Furthermore, if you fire a sufficiently high "caliber" bullet at a series of plates with setAccelTime set very low, you will notice a related curiosity. The bullet will slowly approach the plates and then appear to 'zip' through them in rapid succession, only slowing back down when travelling through air. This is also a consequence of the penetration code 'shortcut'. A bullet's travel time while ''inside'' a piece of fire geometry is ''not'' represented. As soon as the bullet impacts the geometry, the game calculates whether it has enough penetration to make it through. If it does, the bullet is ''instantly teleported'' to the other side of the geometry. (If it doesn't--as discussed above--it stops at the surface).
+
+^There is one exception to this "shortcut": hitpoint damage. The game ''does'' (instantly) calculate the precise depth of a partial penetration for the purpose of determining whether any hitpoint radii were hit.
+
+
+== Armor Methods & Recommendations ==
+
+This section contains advice about designing your vehicle's fire geometry ("FG") and hitpints based on the research presented in this elsewhere on this page.
+
+=== Fire Geometry Placement ===
+
+Some 'rules of thumb' regarding the preparation of vehicle FG:
+
+* Use the most detailed and accurate armor data you can when creating your vehicle's P3D FG (armor). Correctly calibrated weapons are only going to give realistic results if your armor settings are realistic.
+** Use accurate thicknesses, accurate angles, and accurate materials. {{arma}}'s penetration simulation is very detailed and takes all these factors into account to generate an accurate "line-of-sight" path of a projectile through vehicle materials/armor.
+** Of course, the FG model is simplified and does not need to contain every little piece of geometry. Use just enough detail to capture the key armor areas of the vehicle (the Samples_F T-72 tank is a reasonably good example--although it could be just a bit more detailed).
+* The material used for armor pieces should usually be "armour.rvmat" (with thickness is defined by your model geometry). Preset-thickness materials ("armour_plate", etc.) respect LOS thickness, so you can use those where necessary.
+** Regardless of what the real vehicle uses for armor (aluminum, composite, etc.), the best practice is to translate them into RHA-equivalent thickness. (To be specific, we are speaking here of "RHAe-KE": the equivalent thickness of rolled homogenous armor steel vs. kinetic attack).
+* Very thin components/armor (below 10mm thickness of the convex component) should be modelled thicker physically and reduced in "effective thickness" via plate materials, as the penetration accuracy for full material like "armour.rvmat" is not enough for such thin components.
+* Internal structure should be blocked in for receiving damage--see [[#Hitpoint Placement for Damage Consistency]] below.
+* Avoid overlapping FG. {{arma}} projectiles can skip through interpenetrating pieces of FG without noticing some of them. {{arma}} projectiles tend to only "notice" the ''first'' piece of FG they hit if other FG is embedded within it. The greater the interpenetration, the more likely the error.
+**In fact, it is ''desirable'' to leave some space--at least a few cm--between pieces of FG that don't need to be directly touching.
+
+=== General Hitpoint Placement & Armor ===
+
+[[#Damage vs. Penetration|As discussed earlier]], Hitpoints are required for a vehicle to take damage. The style of hitpoint placement affects how a vehicle takes damage with respect to things like armor and penetration. One of the reasons that (stock) {{arma}} vehicles take damage [[#The Typical Damage Process|in the somewhat puzzling way that they do]] is due to their choice of hitpoint placement.
+
+==== Hitpoint Radii ====
+
+Recall from the [[#Damage vs. Penetration|"Damage vs. Penetration section]] that an attack must simultaneously affect both fire geometry and a hitpoint to produce damage.
+
+Consider the following two approaches to hitpoint placement for the same vehicle--the front view of a simplified AFV. The polygons represent FG and the purple circles represent the virtual spheres created by hitpoint vertices and their radii.
+
+'''Old {{arma}} Approach'''
+
+[[File:armor-hp-1.jpg|300px]]
+
+'''Modified "Internal" Approach'''
+
+[[File:armor-hp-2.jpg|300px]]
+
+In the first approach, the vehicle will take major damage from non-penetrating hits. This is because the hitpoint spheres poke through the vehicle's FG. In the second approach, the hitpoints are constrained to be inside the armor layer (blue polygons). The second vehicle will take only trivial damage from non-penetrating hits.
+
+Obviously, if you have non-armored parts of a vehicle that ''should'' be damaged by non-penetrating hits (tires, glass windscreens, unarmored vehicle parts, etc.), then their hitpoint spheres ''should'' "poke through" the FG in the "old" manner.
+
+==== Hitpoint Stacking ====
+Now let's consider two different approaches to hitpoint "stacking":
+
+'''Old {{arma}} Approach to Stacking'''
+
+[[File:armor-hp-4.jpg|300px]]
+
+'''Modified "Overlapping" Approach'''
+
+[[File:armor-hp-3.jpg|300px]]
+
+In the first example, hitpoint spheres are stacked so they do not overlap. This occurs frequently in {{arma3}} vehicles. The second approach allows the spheres to overlap, with two resulting benefits:
+*Generally a smaller number of (higher-radius) spheres can be used to define a volume.
+*There are less "holes" between the spheres where a projectile can pass through without causing damage.
+There don't appear to be any negative side effects to the overlapping approach; for example, overlapping spheres do not cause "extra" damage when a projectile penetrates through the overlap. BI itself increasingly has been using overlapped hitpoints in their models, so this approach should be considered safe.
+
+==== Hitpoint Placement Recommendations ====
+
+'''In summary: combine the two "modified" approaches for improved armor and damage performance:'''
+*''All'' hitpoint spheres should be '''"overlapping"''', and
+*Any hitpoint spheres ''protected by armor'' should be '''"internal"'''
+
+Note: BI itself has been moving away from the "Old {{arma}}" method of hitpoint placement. Looking at recent revisions of the game (2015), you will notice that their tanks in particular largely follow the "modified" approach.
+
+=== Hitpoint Placement for Damage Consistency ===
+
+The previous section focused on general hitpoint placement with respect to armor and the penetration sim. But your FG must also accommodate the way the ''damage'' sim works. It is '''''extremely''''' easy to get '''''very random''''' damage results if you don't build your damage-receiving fire geometry and hitpoint (spheres) according to some very specific rules.
+
+[[File:hitpoint guide.JPG]]
+
+The diagram above shows 3 different methods of assigning hitpoint spheres to fire geometry ("FG"). The red FG represents an area you want to receive damage, while the blue FG represents armor that should not cause damage when hit. The purple circles represent hitpoint spheres (P3D vertices with radii defined by hitpoint class config file).
+
+* '''A''' is the recommended way to handle FG. The damage-FG is separate from the armor FG and is '''''evenly encased within hitpoint spheres'''''. Whenever the damage-FG is hit, it will receive consistent, predictable damage.
+** To reiterate: the damage-FG should be fully ''inside'' the hitpoint spheres.
+** While you could accomplish this with one giant hitpoint sphere, that would likely overlap with lots of other FG/armor. So a greater number of smaller-radius spheres are preferable.
+* '''B''' is not ideal but can still work. It is not as predictable in its damage results as "A". In this case, the area without hitpoint spheres is intended to function as armor--receiving minimal/no damage. The rest of the geometry is encased in hitpoint spheres as in "A".
+* '''C''' is '''''not''''' an acceptable approach. It combines several problems, and hits on geometry like this will produce very inconsistent damage results:
+** the damage FG is not fully encased in spheres
+** the spheres are not evenly placed within the FG
+** several of the spheres are submerged inside the FG
+
+=== Hitpoint Properties ===
+
+The recommendations above will do nothing to make a vehicle safe from explosive damage--termed "indirectHit" damage in {{arma}} terminology. IndirectHit damage reaches freely through fire geometry to damage hitpoints.
+
+The only way to protect a vehicle from such damage is by adjusting ''minimalHit'' and ''explosionShielding'' properties. (These properties apply to hitpoint locations--BI has also recently added equivalent properties for global vehicle health called ''minTotalDamageThreshold'' and ''explosionShielding''). Armored vehicles in particular should have a large enough minimalHit and small enough explosionShielding value to protect against minor indirectHit weapons. But they should not be so heavily protected that they are immune to large-scale indirectHit weapons (IED's, laser-guided-bombs, etc.).
+
+
+== Damage Formula ==
+
+=== Standard Hit Damage ===
+
+(damage taken in %) = hit / armor
+* hit = "hit" value from cfgAmmo
+** hit is modified by the current speed of the projectile: ''hit'' = ''hit'' * (speed / ''typicalSpeed'')
+** ammo with an "explosive" value > 0 only has the (1 - ''explosive'') portion of its ''hit'' modified by ''typicalSpeed'' as described above
+* armor =
+** Global "health": cfgVehicles global "armor" value
+** Local ('hitpoint' location) "health": [location armor value] = [cfgVehicles global "armor" value] x [HitPoints class "armor" coefficient]
+* Remember: cfgVehicles "armorStructural" value acts as a divisor to global damage.
+* How exactly global damage is applied specifically is still a mystery. In theory, a hitpoint location receives damage. This damage is applied to global damage as well, but reduced via passthrough value on the hitlocation and the global armorStructural value. However, test results indicate that this is not true in every case, not matching any formula that has been floating around on various other damage related pages.
+
+
+=== Formula for indirectHit Damage ===
+
+* Direct damage: same as hit above
+** i.e. (damage taken in %) = Hit / armor
+* Indirect damage:
+** Everything withing a radius of indirectHitRange receives full indirectHit damage.
+** For distances to the target >indirectHitRange and <4*indirectHitRange the damage falls off and can be calculated with indirectHit_mod = indirectHit * 1/ x^4, where x is the distance to the target expressed in multiples of indirectHitRange.
+** For distances > 4*indirectHitRange, the indirect damage is 0. The fall off rate is hardcoded and independant of other variables.
+
+=== Weapons Combining Hit and indirectHit ===
+
+* Direct damage: uses ''whichever property is larger'', the two values are ''not'' added together
+* Indirect damage: same as indirectHit above
+** i.e. it is based on indirectHit value only (hit value does not affect it).
+
+
+== Concluding Remarks on Armor & Penetration in {{arma3}} ==
+
+* In vanilla A3, the effects of armor are largely ignored by the damage system.
+* More accurately: armor penetration is present, but its significance is overwhelmed by the global hitpoint effect
+** this due in part to the way hitpoint "spheres" are placed in many {{arma}} vehicles
+** the effects are particularly dramatic for high damage-value weapons and for indirectHit weapons.
+* Caliber-based ballistics work very well, but caliber is bugged for rockets & missiles (it can't be added).
+* Nor can the submunition feature be used as a workaround (it is also bugged for missiles, and limited/unreliable for anything other than high-trajectory artillery shells).
+* A script-based approach must be used to enable those weapon types to penetrate armor correctly. RAM contains such an approach.
+
+
+== Adjusting Config Properties for RAM ==
+
+<spoiler text="Show summary">
+(See the [[Config_Properties_Megalist|Config Properties Mega-List]] for an explanation of the properties themselves. This information is somewhat old and will be replaced with a new wiki for the RAM update coming in Q1 of 2015.)
+
+=== Weapon-related Config Properties ===
+
+==== airFriction, caliber ====
+RAM adjusts caliber & airFriction values based on real-world data whenever possible. This yields accurate penetration values and ballistic trajectory.
+It corrects the Missile/Rocket penetration bug by editing those weapon types to create regular (bullet/shell based) projectile submunitions on impact, restoring penetration ability.
+(Rocket & Missile improvement cannot be achieved by adjusting vanilla configs - this requires script adjustment)
+
+==== explosive ====
+RAM either caps explosive values at <0.7 to prevent the no-penetration bug, or creates a penetrating submunition (e.g. HEAT warheads).
+
+==== hit ====
+BI tends to greatly exaggerate hit values for large caliber weapons, while RAM generally reduces them values to prevent armor-overwhelming damage.
+
+=== Vehicle Config Properties ===
+
+==== Global ====
+
+===== armorStructural =====
+RAM generally ramps up these values to more or less cancel out the effect of global damage. (BI seems to have taken up the idea, and is creeping up armorStructural values in more recent configs).
+
+==== Hit Location ====
+
+===== explosionShielding =====
+These values are usually much lower in RAM than vanilla A3 (i.e. more protection against indirectHit).
+
+===== passThrough =====
+These tend to be zeroed out in RAM.
+
+===== radius =====
+[#>0,m?] the radius (in m?) of the location's hitpoint vertices in the vehicle's P3D model.
+The idea here is to spread the vertices throughout the internal structure such that they do not spill out into or beyond the vehicle's armor plates.
+Unless you have control over the P3D source file, you probably don't want to mess with this value.
+
+===== HitTrack =====
+[location class] Keeping in mind that this location generally has no armor geometry protecting it and is thus easily damaged by the slightest hit, RAM generally increases the protective properties of explosionShielding and minimalHit to make tracks more resistant to minor weapons.
+</spoiler>
+
+
+== Useful Links ==
+
+(The VBS links are very useful, but do contain some obsolete/irrelevant information)
+
+* {{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage_Modeling:_Objects|VBS:Damage Modeling:Objects}}
+* {{Link|https://resources.bisimulations.com/w/index.php?title{{=}}CfgAmmo_Config_Reference|VBS:CfgAmmo Reference}}
+* {{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage|VBS:Damage Flowchart}}
+* {{Link|https://resources.bisimulations.com/w/index.php?title{{=}}Damage_Modeling:_Simulation|VBS:Damage Modeling:Simulation Formulas}}
+
+{{Link|Config Properties Megalist}}
+
+
+{{GameCategory|arma3|Tutorials}}
+{{GameCategory|arma3|Vehicle Configuration}}

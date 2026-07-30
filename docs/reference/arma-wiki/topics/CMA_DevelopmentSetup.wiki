@@ -1,0 +1,185 @@
+// source: https://community.bistudio.com/wiki/CMA:DevelopmentSetup
+// revision: 340175 (2023-04-28T16:31:55Z)
+// export sha1: 895jxt2ngaghaaxrf5u8n7f8ggfbs8n
+// categories: Category:ArmA: Armed Assault: Editing | Category:Arma 2: Editing | Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+= Development setup =
+This site focuses on getting your work ingame, as well as all aspects of addon, pbos as a subset, development.
+
+= Motivation =
+* Correct setup to use binarize to track down errors and improve the quality.
+* Best addon design for easy recognition, updating and quality.
+* Dev setup to work with least time and resource effort.
+
+= Related topics =
+* [[CMB:SimplifyTesting#Minimal_Addons_Setup|Minimal Addons Setup]]
+
+= Unpacking {{arma1}} / {{arma2}} =
+
+== Motivation ==
+For non simple addons you have references to BI configs, textures or proxies. More specially the BI namespace '''CA'''. Binarze is trying to locate these references during the optimization process.
+In other words without these files available binarize is unable to do its job properly.
+
+The models referenced by other models or wrp files can be both MLOD or ODOL format.
+
+== Process ==
+=== Virtual partition P ===
+We will create a '''virtual partition P:''' to map your arma folder.<br>
+This is required by the BI toolset and allows easy access to the arma folder.<br>
+It is recommended to create a link on your desktop or quicklaunch bar to P.
+
+As a sidenote, at the same time you should create one central folder with<br>
+all your arma related tools in it. Map this one to T.
+
+=== Are two {{arma}} installations necessary ===
+The BI tools create by default a separate folder/location called ''ArmAWork''. This may or may not be needed.
+
+Considerations:
+* Two separate folder/locations to keep your play-install clean.
+* Duplication of files may be needed for two separate.<br> Possible to avoid with {{Link|link= http://dev-heaven.net/wiki/heaven/Virtual_folders_and_files|text= Junctions}}, if both are on the same HDD.
+* Both play and dev combined in one folder avoids messing around.<br> You only need to keep your folder structure well designed.<br> You can ensure that only PBOs, and NO unpacked data, are loaded via
+
+ -noFilePatching
+
+Done via [[ArmA: Startup Parameters]].
+
+=== Create P drive ===
+# Create a file called mapGameFolderToP.bat.<br>
+ Add the line and adapt the path your arma folder:<br>
+ subst p: "D:\Games\arma"
+ Move the file to the autostart location. IE (XP32b):<br>
+ C:\Documents and Settings\YourUserAccount\Start Menu\Programs\Startup
+ or 
+ C:\Documents and Settings\All Users\Start Menu\Programs\Startup
+
+== Extract files from the PBOs ==
+There are several PBO tools out there to do the job.<br>
+Personally I recommend you {{Link|link= http://dev-heaven.net/projects/list_files/mikero-pbodll|text= ExtractPbo.exe}} made by mikero<br>
+as part of the {{Link|link= http://dev-heaven.net/projects/show/mikero-pbodll|text= PBOdll suite}}.
+
+ .\ExtractPbo.exe -a -d -y .\pathToArmA\arma\addons\PboFileName.pbo
+
+Do this for each PBO in .\arma\addons and all PBOs in .\arma\dta.
+
+Move the files in the appropriate place:
+
+== Result ==
+The folders of the unpacked PBOs should be moved to .\arma to look like:
+
+ .\arma\ca\config.cpp
+ .\arma\ca\ca\*
+ .\arma\ca\a10\*
+ ...
+
+For the dta PBOs:
+
+ .\arma\bin
+ .\arma\core
+ ...
+
+== One Click Complete Extraction ==
+mikero has built a batch to extract all {{arma}} pbos from BI in one go to the P drive:
+{{Link|link= http://dev-heaven.net/projects/mikero-pbodll/wiki/InstallArmA2P|text= InstallArmA2P}}
+
+You find the batch in the {{Link|link= http://dev-heaven.net/projects/mikero-pbodll/files|text= files section}}, as well as the dll and extractPbo.exe.
+
+= Addon development =
+== Use namespaces ==
+
+In {{ofp}} the engine rebuild the file-folder structure in the memory from the folder naming of the addons: ''.\ofp\addons\MyAddon.pbo''.
+Results in the path in the memory: ''MyAddon\*.''
+
+{{arma1}} / {{arma2}} support the ''namespace'' or also called (pbo)prefix.<br>
+It is not required to use it, yet it is '''BAD''' practice not to use it!<br>
+The namespace is defined in a file called '''$PBOPREFIX$'''.<br>
+The ''$PBOPREFIX$'' site directly in your addons location: ''.\myAddon\$PBOPREFIX$''.<br>
+The ''$PBOPREFIX$'' is basically a text file with no file extension.
+
+It allows you to name your pbo independent from the future in memory structure:<br>
+
+PBO location and name: ''.\arma\myMod\addons\myTag_PboName_2009_06_02.pbo''<br>
+$PBOPREFIX$: ''x\myMod\addons\myPboName''
+
+=== Create a PBOPREFIX file ===
+{{Feature|informative|$PBOPREFIX$ has been superseded in later tools by $PBOPREFIX$.txt for hopefully obvious reasons. Both names remain compatible and achieve same result.}}
+
+1. New file -> text file.
+2. Rename to '''$PBOPREFIX$'''. No file extension!
+   Make sure your [http://www.google.de/search?q{{=}}windows+show+file+extensions&btnG{{=}}Google-Suche&meta{{=}}&aq{{=}}f&oq{{=}} windows OS displays all file extensions].
+3. Open the ''$PBOPREFIX$'' with your favorite text editor.
+4. Add your namespace:
+
+ myMod\myAddon
+
+Or better (see more info below):
+
+ x\myMod\addons\myAddon
+
+5. '''No newline, no space before or after the namespace'''!<br>
+6. Save the file.<br>
+7. Move the ''$PBOPREFIX$'' file to the root of your addon: .\myAddon\$PBOPREFIX$.<br> '''NOT''' in a subfolder of your addon!
+
+=== Benefits ===
+* Different pbo to memory naming (the later is the namespace).
+* Use version/date tag for the pbo and have same inner namespace without it for every release.
+* Define your ''own home'' via the prefix: myMod\.. instead of just myAddon, <br>or worse to use the BI CA namespace - '''NEVER do this'''!
+* Avoid addon (model/texture/sound) path conflicts with your own namespace.
+
+In addition it allows you to utilize it for a few design and development tricks:
+
+== Develop with unpacked data ==
+Note that the system also works for non development, yet it is not recommended.
+
+Binarized files loaded faster and give better performance.
+PBOs are needed to have the verifySignatures system work.
+
+=== Benefits ===
+Let's start with the benefits this time:
+
+* Only re-pack PBOs if you are adding new files (more details to below).
+* Ability to modify unpacked data during runtime. Readable; always possible<br>to modify a file's content (except configs); modifications available live<br>or via mission restart.
+* Nicely manageable system to decide which addons are active in your dev setup:
+** Have both PBO and unpacked data to have the unpacked data loaded.
+** Delete the PBO to have it disabled.
+** Create PBO again to have the unpacked data loaded.
+* If you have both your dev env combined with binarize env, you can easily<br>binarize your addons during dev to see, if that works or check the log<br>for errors.
+
+In short:
+# You work with the unpacked data.
+# You create a PBO to have it active.
+# You repack a PBO if you add new files (and restart the game).
+# You binarize it in the same setup to get the log and to have it available<br> optimized once (the current version/release is) complete.
+# You can ensure that only PBOs, and NO unpacked data, are loaded via
+
+ -noFilePatching in ArmA2
+
+Done via [[ArmA: Startup Parameters]].
+
+Mikero provides an excellent {{Link|link= http://dev-heaven.net/projects/show/mikero-pbodll|text= pbo and rapify toolset}} to make the handling very enjoyable.
+
+=== Basics ===
+The key to understand that if you have $PBOPREFIX$ defined, the engine looks<br>
+for the data unpacked in the same place:
+
+$PBOPREFIX$ contains: x\myMod\addons\myPboName<br>
+The engine looks at .\arma\x\myMod\addons\myPboName for the data.
+
+If it finds data there, it will replace all data in the namespace,<br>
+x\myMod\addons\myPboName here, with the unpacked data found at the path.
+
+=== Setup ===
+# You are recommended to use a subfolder with one char for your dev env. x is easy to type.
+# You are very much advised to use your ofpec tag as namespace in the next level.
+# To be able to have both PBO and unpacked data in the same folder, to have the string ''addons'' as 3rd folder level.
+# Finally PBO name is the last folder level.
+
+=== Considerations ===
+You can have the PBO and unpacked data in the same directory. This makes it easier to re-pack or delete the PBO if needed. At the same time it can become messy with lots of PBOs in one folder.
+
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+
+{{GameCategory|arma3|Editing}}

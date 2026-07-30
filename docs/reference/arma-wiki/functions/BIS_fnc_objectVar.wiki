@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_objectVar
+// revision: 328361 (2022-07-13T16:00:47Z)
+// export sha1: 9uy3xxcrk6rvxybkraxzrdwwml8y2uc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Return a unique object variable. The variable is preserved after unit respawn.
+
+|s1= [object, varNameRoot] call [[BIS_fnc_objectVar]]
+
+|p1= object: [[Object]]
+
+|p2= varNameRoot: [[String]] - (Optional, default "bis_o") - variable name root - a number will be added behind it
+
+|r1= [[String]] - generated variable name
+
+|x1= <sqf>hint str (player call BIS_fnc_objectVar); // "bis_o1"
+hint str (player == (missionNamespace getVariable "bis_o1")); // true</sqf>
+
+|seealso= [[netId]] [[objectFromNetId]] [[setVariable]] [[setVehicleVarName]]
+}}

@@ -1,0 +1,83 @@
+// source: https://community.bistudio.com/wiki/ctrlSetStructuredText
+// revision: 321026 (2022-05-13T11:32:18Z)
+// export sha1: hapv7cz7am7h35rax7yhfo6dci4ps7m
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Command Group: Structured Text | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|gr2= Structured Text
+
+|descr= Set the [[Structured Text]] which will be displayed in [[DialogControls-Text#CT_STRUCTURED_TEXT.3D13|structured text control]].
+
+|pr= Using this command will modify the provided ''structuredText'' - a way to circumvent this issue is to [[parseText]] in-line. See [[#Notes|Notes]].
+
+|s1= control [[ctrlSetStructuredText]] structuredText
+
+|p1= control: [[Control]]
+
+|p2= structuredText: [[Structured Text]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetStructuredText parseText "First line<img image=data\isniper.paa /><br />Second line"</sqf>
+
+|x2= To adjust text vertically, add extra line above with blank space (&amp;#160;) and set its size accordingly:
+<sqf>
+with uiNamespace do {
+	button = findDisplay 46 ctrlCreate ["RscShortcutButton", -1];
+	button ctrlSetPosition [0,0,0.3,0.1];
+	button ctrlCommit 0;
+	button ctrlSetStructuredText parseText 
+	"<t size='0.5'>&#160;</t><br/><t size='1' align='center'>Button Text&#160;&#160;</t>";
+};
+</sqf>
+
+|x3= There is a bug with {{hl|valign}} that requires adding 1 extra trailing space per line to the displayed text in order to keep it centered horizontally:
+<sqf>
+disableSerialization;
+private _ctrl = findDisplay 46 ctrlCreate ["RscStructuredText", -1];
+_ctrl ctrlSetPosition [0, 0, 0.5, 0.5];
+_ctrl ctrlSetBackgroundColor [0, 0, 0, 1];
+_ctrl ctrlCommit 0;
+private _lineHeight = getNumber (configFile >> "RscStructuredText" >> "size");
+private _linesTotal = (ctrlPosition _ctrl select 2) / _lineHeight;
+private _trailingSpace = "";
+for "_i" from 1 to _linesTotal do { _trailingSpace = _trailingSpace + " " };
+_ctrl ctrlSetStructuredText parseText format ["<t size='%1'><t size='1' align='center' valign='middle'>%2%3</t> </t>", _linesTotal, "------ Centered Text ------", _trailingSpace];
+</sqf>
+
+|seealso= [[Structured Text]] [[composeText]] [[parseText]] [[text]]
+}}
+
+{{Note
+|user= Dscha
+|timestamp= 20200320194800
+|text= When using [[parseText]] on an RscStructuredText control, with '''custom Attributes''' set (extra config Class), it needs to be in the same line as [[ctrlSetStructuredText]]:
+<sqf>
+_text = "abc";
+_ctrl ctrlSetStructuredText parseText _text;
+</sqf><br>
+The following Code would use '''none''' of the custom Attributes of the selected Control, instead it falls back to Standard Values (Font, Size, Color, Align, etc)
+<sqf>
+_text = parseText "abc";
+_ctrl ctrlSetStructuredText _text;
+</sqf>
+}}

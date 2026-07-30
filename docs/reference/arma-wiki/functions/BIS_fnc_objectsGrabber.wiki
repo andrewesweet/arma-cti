@@ -1,0 +1,75 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_objectsGrabber
+// revision: 330763 (2022-11-01T15:44:49Z)
+// export sha1: ivwocyd4now0yeylpkb6gx8171cn1ec
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Converts a set of placed objects to an object array ('''as a [[String]]''') for the [[BIS_fnc_objectsMapper|DynO mapper]].<br>
+Format is the following. First, the header:
+<sqf>
+/*
+Grab data:
+Mission: TheMissionName
+World: Stratis
+Anchor position: [3781.59, 3289.67]
+Area size: 50
+Using orientation of objects: yes/no
+*/
+</sqf>
+
+Then, data:
+<sqf>
+[
+	["B_UAV_01_F",[-5.23706,-0.183594,-0.00126648],167.39,1,0,[0.605018,-0.575293],"","",true,false], 
+	["C_Offroad_01_F",[-4.25903,4.62158,0.0630951],224.14,1,0,[0.812812,0.190543],"","",true,false]
+]
+</sqf>
+
+or, if object orientation is not used:
+<sqf>
+[
+	["B_UAV_01_F",[-5.23706,-0.183594,-0.00126648],167.39,1,0,[],"","",true,false], 
+	["C_Offroad_01_F",[-4.25903,4.62158,0.0630951],224.14,1,0,[],"","",true,false]
+]
+</sqf>
+
+|s1= [position, size, objectOrientation] call [[BIS_fnc_objectsGrabber]]
+
+|p1= position: [[Position]] - (Optional, default [0,0]) 2D or 3D position, center of the "grabbing" area
+
+|p2= size: [[Number]] - (Optional, default 50) size (radius) of the "grabbing" area
+
+|p3= objectOrientation: [[Boolean]] - (Optional, default [[false]]) capture object orientation or not. Format [[BIS_fnc_getPitchBank]]
+
+|r1= [[String]] - arrays are in format [classname, relPos, azimuth, fuel, damage, pitchBankResult, vehicleVarName, initCommands, simulationEnabled, isASL]:
+* classname: [[String]]
+* relPos: [[Array]]
+* azimuth: [[Number]]
+* fuel: [[Number]]
+* damage: [[Number]]
+* pitchBankResult: [[Array]] - return from [[BIS_fnc_getPitchBank]] (only if ''objectOrientation'' is true)
+* vehicleVarName: [[String]]
+* initCommands: [[String]]
+* simulationEnabled: [[Boolean]]
+* isASL: [[Boolean]]
+
+|x1= <sqf>[getPos player, 20, true] call BIS_fnc_objectsGrabber;</sqf>
+
+|seealso= [[BIS_fnc_objectsMapper]] [[BIS_fnc_getPitchBank]] [[BIS_fnc_setPitchBank]]
+}}

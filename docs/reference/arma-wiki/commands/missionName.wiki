@@ -1,0 +1,63 @@
+// source: https://community.bistudio.com/wiki/missionName
+// revision: 364087 (2024-05-03T19:33:29Z)
+// export sha1: 30o2e96bwf0og66g369iqdp0xzqzdgw
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Operation Flashpoint version 1.80 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.80
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Mission Information
+
+|descr= Return currently loaded mission file (path to mission.pbo, relative to game exe).
+
+|s1= [[missionName]]
+
+|r1= [[String]]
+
+|x1= <sqf>hint format ["You are playing mission ""%1""", missionName];</sqf>
+
+|seealso= [[missionNameSource]] [[worldName]] [[briefingName]] [[serverName]] [[worldSize]]
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20100802101900
+|text= Only works in SP and on the MP Host/DS. It returns the mission pboprefix if available, otherwise the pboname. For clients it returns '__cur_mp'.
+}}
+
+{{Note
+|user= Kenoxite
+|timestamp= 20140925080500
+|text= Prior to {{GVI|ofp|1.96}} it returns the mission filename. Since {{GVI|ofp|1.99}}, it returns the briefing name instead when in multiplayer. The string displayed is that set in the Intel section of the mission editor.
+|game= ofp
+|version= 1.99
+}}
+
+{{Note
+|user= NikkoJT
+|timestamp= 20210612193100
+|text= Testing suggests it does now work on clients in the current {{arma3}} version.
+|game= arma3
+|version= 2.06
+}}

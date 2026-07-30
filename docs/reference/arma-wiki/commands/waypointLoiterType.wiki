@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/waypointLoiterType
+// revision: 323061 (2022-06-28T21:43:11Z)
+// export sha1: taf8fj9hnd45xnwas7dnxal3ray8fyl
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Waypoints
+
+|descr= Gets the waypoint loiter type. Waypoint uses format [[Waypoint]].
+
+|s1= [[waypointLoiterType]] waypoint
+
+|p1= waypoint: [[Waypoint]]
+
+|r1= [[String]]
+
+|x1= <sqf>_type = waypointLoiterType [groupOne, 1];</sqf>
+
+|seealso= [[waypoints]] [[deleteWaypoint]] [[copyWaypoints]] [[setCurrentWaypoint]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointTimeout]] [[setWaypointType]] [[setWaypointVisible]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[setWaypointLoiterRadius]] [[waypointLoiterRadius]] [[addWaypoint]] [[setWaypointLoiterType]] [[waypointSpeed]]
+}}

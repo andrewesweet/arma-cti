@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Script:_How_To
+// revision: 343664 (2023-07-09T18:12:32Z)
+// export sha1: dbp72cycewr9ch8qosz4rjzbig4z4wu
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Navbox/Ylands}}
+
+
+{{GameCategory|ylands}}

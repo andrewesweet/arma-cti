@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Area:_Local_Maximum_Cluster
+// revision: 201505 (2021-01-17T20:11:59Z)
+// export sha1: 7k5i4cmun7nnty9fo4ozx81z51zfajw
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Area]]
+{{TerrainProcessorManual|Area: Local Maximum Cluster|BITasksPlugin.dll|Polygon, PolygonM, PolygonZ|Yes
+|DESCRIPTION=Random placement of multiple objects onto local terrain peaks inside the polygons. It creates linear clusters.
+|TASKPARAMETERS=* '''Random seed''' - number used to initialize pseudorandom number generator.
+|OBJECTPROTOTYPEPARAMETERS=* '''OBJECT''' - Object's prototype name
+* '''MINHEIGHT''' - Minimal size in %
+* '''MAXHEIGHT''' - Maximal size in %
+* '''MINDIST''' - Minimal distance in meters  
+* '''GROUPID''' - Cluster group id.
+* '''MINCOUNT''' - Minimal instances count.
+* '''MAXCOUNT''' - Maximal instances count.
+* '''MINRADIUS''' - Minimal occurence radius.
+* '''MAXRADIUS''' - Maxima occurence radius.
+|USAGE=Use it for placing objects in local maximum areas clusters like trees or stones on top of the terrain wave.
+|ALGORITHM=# Find local maximals.
+# Populate linear cluster as usual.
+|SAMPLE=
+}}

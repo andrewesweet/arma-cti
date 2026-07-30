@@ -1,0 +1,111 @@
+// source: https://community.bistudio.com/wiki/DeRap
+// revision: 226370 (2021-01-31T17:57:30Z)
+// export sha1: cquvjeu9wlcvi38tqva6f7ge7bdagiz
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+         
+DeRap Version 1.xx by Mikero.
+
+ 
+See ReadMeGeneral and fixes
+
+ 
+----
+ 
+* DeRap  is the dual dos/windows app.
+* DeRapDos is supplied as a speed-freak dos only version.
+ 
+DeRap is aware of all binarised text files (known internally as raP) for all engine types and all extensions. Flashpoint , Xbox, Arma, Arrowhead, rvmat, bisurf,. etc etc. All binary types will be converted into standard text class statements. With a #define to declare what engine-target '''this''' text must have been made for.
+
+#define _ARMA_
+#define _XBOX_
+#define _OFP_
+
+The resulting text output (known by Bis as paramfile data) is the same for all engines. The #define is merely a convenience for [[Rapify]].exe when converting back to binary, since the binary equivalents are different for each engine.
+
+As a auto-documenting convenience, DeRap always produces an informational banner stating the time '''this''' text was produced and the file and filetime it came from. A big bonus when dealing with potentially updated source you were unaware of.
+
+
+ DeRap is one of the most heavily used support exes for the major Mikero tools such as [[pboProject]], [[Eliteness]] and [[Arma3P]]
+
+It illustrates the benefit of using one, single, well proven, algorithm (and application) for every possible combination of the need to debinarise data. Only it is revised and updated, as appropriate, '''not''' the dozens of batch files and other exes that need extracted text.
+
+The same philsophy is internal to [[dePbo]].dll. There is one place in the source code where all-things-rap, are accessed.
+
+It is also the reason why there is only one location on your pc that '''this''' application can exist. You are not given the chance to use stale copies from 'some\where\else'.
+
+
+== Usage ==
+
+ 
+=== Gui ===
+
+ 
+Drag n drop any file onto the gui, or use it is browse button
+
+ 
+Plain Jane text is shown in the window. It can be saved anywhere that gives you a thrill, or cut 'n pasted into whatever might give you a thrill.
+
+ 
+Be aware that to protect you from real nasty surprises, the default output is renamed to .txt. 
+This to save you the embarrassment of overwriting the original file
+
+ 
+Rename the output suit your circumstance.
+
+  
+=== Command line ===
+DeRap [-options] whateverFileOrFolder [whereverFileOrFolder]<br> <br>
+-n noisy <br>
+-s silent (default)<br>
+-t do NOT use tabbed output (use space)<br>
+-P do not pause
+
+ 
+-Q test if file is in fact rapified.
+
+ 
+ syntax: derap -Q nameOfFile
+
+ 
+note a israp.bat is supplied to achieve same
+
+   
+==== Input file versus input folder ====
+
+ 
+DeRap will search the specified folder '''and all subfolders '''for rapified files.
+
+ 
+The actual names of the files in the folders are immaterial. DeRap will examine all of them for mime-type rap. Those that are not rapped are ignored.
+
+ 
+Hopefully obvious: if a destination is specified, it clearly must be a folder. DeRap will make that folder if not present (and all subsequent subfolders if any)
+
+  
+<u>'''Output file or folder'''</u>
+
+  
+*GOLDEN RULE: *.bin is ALWAYS output as *.cpp irrespective of destination.
+
+ 
+<br> <br>
+*if no destination is specified:<br> <br>
+**output is to same folder as source AND output name appended with .txt<br> <br> <br>
+*When a destination is specified:<br> <br>
+**if a folder is specified (with or without trailing \)<br> <br>
+output name == input name <br> <br>
+**if a folder\file is specified<br> <br>
+output name == folder\file name<br> <br> <br>
+A check however is made that source and destination are not the same thru 
+inadvertence (eg specifying same destination folder), if so output is appended with .txt
+
+ 
+=== No Pause ===
+
+normally the exe will pause before exiting so that the user can 'see' the result. In a dos bat application this is not always wanted or desired (the bat file can or should do the pausing instead)<br>
+
+
+
+[[Category:Mikero Tools]]

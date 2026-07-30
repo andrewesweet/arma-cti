@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_admin
+// revision: 364585 (2024-05-17T12:40:33Z)
+// export sha1: 5s0etmtlutvgq1g0ugemewp646nlzxk
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Multiplayer | Category:Functions | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Multiplayer
+
+|descr= Returns the admin state of a client the function is called on. Complements [[admin]] script command and used for self check on a local client.
+
+|s1= call [[BIS_fnc_admin]]
+
+|r1= [[Number]]  - admin state of current client:
+* 0 - client is not an admin
+* 1 - client is admin that is [[Arma 3: Server Config File#Voted_In_Admin|voted in]]
+* 2 - client is admin that is [[Arma 3: Server Config File#Logged_In_Admin|logged in]]
+
+|x1= <sqf>private _adminState = call BIS_fnc_admin;</sqf>
+
+|seealso= [[admin]]
+}}

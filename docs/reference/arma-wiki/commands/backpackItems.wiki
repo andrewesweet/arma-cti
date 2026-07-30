@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/backpackItems
+// revision: 377191 (2026-01-01T10:54:17Z)
+// export sha1: ldqe5efily6a1bk10evpbke2c5ixh9n
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Containers
+
+|descr= Get array with all items (of any kind, even weapons) in backpack of the given unit.
+
+|s1= [[backpackItems]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>backpackItems player; // returns e.g ["hgun_P07_F", "Titan_AT"]</sqf>
+
+|seealso= [[uniformItems]] [[vestItems]] [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]]
+}}

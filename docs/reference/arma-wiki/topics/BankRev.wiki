@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/BankRev
+// revision: 336659 (2023-01-04T15:23:37Z)
+// export sha1: iriyqctic11hef36ns3c8tm4zolc616
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= [[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD= {{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= BankRev is a simple tool to extract content of PBOs
+
+|NOTES=
+
+|COMMAND= BankRev.exe 
+
+
+|OPTIONS= [-f / -folder destination] [-t / -time] PBO_file [PBO_file_2 ...]<br>
+or -d / -diff PBO_file1 PBO_file2 (compare two PBOs)<br>
+or -l / -log PBO_file (write to stdout list of files in archive)<br>
+or -lf / -logFull PBO_file (write to stdout list of files in archive, path with prefix)<br>
+or -p / -properties PBO_file (write out PBO properties)<br>
+or -hash PBO_file (write out hash of PBO)<br>
+or -statistics PBO_file (write the statistics of files lengths)<br>
+or -prefix (the output folder will be set according to the PBO prefix)<br>
+or -t / -time (keep file time from archive)<br>
+
+|EXAMPLE= Bankrev.exe -f o:\Addons\ "e:\Steam\steamapps\common\Arma 3\Addons\A3.pbo"
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+}}
+
+=== Additional information ===
+
+==== Supported formats ====
+Input:
+* PBO (RV Engine package)
+
+Output:
+* Directory with PBO content (binarized)
+
+==== How to use it ====
+BankRev is a simple command line tool, -f option is optional and specifies the destination where unpacked content is going to be, current directory is taken if nothing else is defined. Name(s) of addon(s) could be listed in both absolute and relative path, the tool allows using of masks (eg. *.pbo).
+
+
+{{GameCategory|arma3|Official Tools}}

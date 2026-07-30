@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/sizeOf
+// revision: 349136 (2023-11-08T14:49:45Z)
+// export sha1: 7tni9byeeo04z78hc4h9t7nva7ofulq
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+|gr1= Object Manipulation
+
+|descr= Returns the diameter of bounding sphere of the object of given classname in meters. If you need to estimate the size of the object more precisely, use [[boundingBox]] or [[boundingBoxReal]].
+{{Feature | important | At least one object of the given classname has to be present in the current mission otherwise zero will be returned.}}
+
+|s1= [[sizeOf]] classname
+
+|p1= classname: [[String]]
+
+|r1= [[Number]] - size returned is usually bigger than the biggest size of the object along any of the axes. For example if object is 10 x 4 x 5 the [[sizeOf]] value returned expected to be around 10.
+
+|x1= <sqf>_dimension = sizeOf "M1Abrams"; // Returns 10.7833</sqf>
+
+|seealso= [[boundingBox]] [[boundingBoxReal]] [[boundingCenter]]
+}}

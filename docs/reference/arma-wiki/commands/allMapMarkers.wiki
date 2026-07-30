@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/allMapMarkers
+// revision: 352645 (2024-02-17T18:05:11Z)
+// export sha1: nxfvn2s4ndf7tqjkvi4qceh7uiiakre
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Markers
+
+|descr= Returns all map marker names, including user-placed markers.
+
+{{Feature|informative|
+* {{GVI|arma3|1.58|size= 0.75}} User-defined markers have the following name format: {{hl|_USER_DEFINED #<PlayerID>/<MarkerID>/<ChannelID>}}, where:
+** <PlayerID> - unique network id of the player in [[String]] format, also available as [[String]] in the 6th param in [[Arma 3: Mission Event Handlers#PlayerConnected | "PlayerConnected"]] and [[Arma 3: Mission Event Handlers#PlayerDisconnected|"PlayerDisconnected"]] Event Handlers
+** <MarkerID> - an incrementing marker counter id
+** <ChannelID> - id of the chat channel in which the marker was placed (see [[currentChannel]])
+* To obtain the custom waypoint's (set with {{Controls|LShift|LMB}}) position, see [[customWaypointPosition]].
+}}
+
+|s1= [[allMapMarkers]]
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>_markers = allMapMarkers; // returns e.g ["marker1", "_USER_DEFINED #2/0"]</sqf>
+
+|x2= <sqf>
+{
+	private "_a";
+	_a = toArray _x;
+	_a resize 15;
+	if (toString _a == "_USER_DEFINED #") then
+	// or if (_x select [0, 15] == "_USER_DEFINED #") since {{arma3}} v1.28
+	{
+		deleteMarker _x;
+	};
+} forEach allMapMarkers;
+</sqf>
+
+|x3= <sqf>
+if (_someString in allMapMarkers) then
+{
+	hint (_someString + " is an existing marker");
+};
+</sqf>
+
+|seealso= [[createMarker]] [[deleteMarker]] [[customWaypointPosition]]
+}}

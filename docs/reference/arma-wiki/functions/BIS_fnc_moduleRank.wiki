@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleRank
+// revision: 348277 (2023-11-08T11:40:38Z)
+// export sha1: t5ea2xsrqvtqfw9wnrb9zhm7y3irp24
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|descr= Used by the Set Rank module.
+
+|s1= [logic, units, activated] call [[BIS_fnc_moduleRank]]
+
+|p1= logic: [[Object]] - logic
+
+|p2= units: [[Array]] - units to set rank to
+
+|p3= activated: [[Boolean]] - (Optional, default [[true]]) if [[false]] nothing will happen
+
+|r1= [[Boolean]] - always [[true]]
+
+|x1= <sqf>[rankLogic, [player]] call BIS_fnc_moduleRank;</sqf>
+
+|seealso= [[Modules]]
+}}

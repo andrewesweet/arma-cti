@@ -1,0 +1,110 @@
+// source: https://community.bistudio.com/wiki/Arma2P
+// revision: 351960 (2024-01-30T10:08:34Z)
+// export sha1: pm53w5g2yofawnkrdtx6z2gvgw4jgmf
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+Arma2P from mikero
+
+Inspired by Dwarden scripts. To whom, all honor and glory.
+-----------------------------------------------------------
+== Description ==
+Arma 2 P: does what it says it does. It will extract all official pbo's to the correct folders on your p: drive.
+
+If you have placed unofficial pbo's in official arma addon folders, it is your problem. Learn to use mods= properly.
+
+a2p detects ALL official pbos from Arma2, Operation Arrowhead, Combined Operations, and ANY betas accompanying those packages whether from cd or Steam.
+
+Any detected beta expansions are guaranteed to over-extract onto the existing package(s). 
+
+Pbo over-extraction is a bit tricky because of the convoluted pathing bi use and the necessary (and utterly essential) correct mod = loading order required for a2+oa
+
+Multiple instances of the same-name pbo abound as a result. Arma2p handles the fussy details of ensuring THE pbo to extract is the correct one. Reflecting YOUR pc's game.
+
+Genuine paid-for PMC and BAF extensions are NOT extracted. Bis proprietary is respected. Lite pmc and Lite baf ARE extracted. This means you can confidently use your p: drive with pmc/baf addons.
+
+You are recommended to use this bat file on any subsequent patch or update from bi
+
+== Installation ==
+
+Extract the rar package to anywhere that gives you a thrill
+
+you also require extractpbo auto-installer and depbo.dll from dev-heaven
+
+latest versions should always be retrieved from dev-heaven.http://dev-heaven.net/projects/mikero-pbodll/files
+
+
+== Personal Tools 2.5.1 ==
+
+ You must have personal tools installed before running Arma2P
+
+Arma2p assumes you have correctly installed Bi's personal tools. You only have to do this once. Arma2p does NOT require personal tools to be RE installed.
+
+
+
+
+== Usage ==
+
+Simply double click on arma2p, go make coffee, feed the cat, or hell, talk to the wife!
+
+=== The P drive ===
+
+ ********** YOU MUST HAVE P: set *******************
+
+=== WARNING WARNING WARNING ===
+
+Arma2P removes any relevant P:\folder before extractions begin.
+*P:\ca
+*P:\bin
+*p:\langaugecore
+*p:\core
+*p:\ION_RTE
+*p:\ION_RTE_dta
+*Users P:\folders are NOT AFFECTED
+
+
+=== binarised configs et al ===
+
+*ALL* relevant rapified files (configs,missions,rvmats, bisurfs) are derapified back to humanly readable text.
+
+=== MLOD ROADS ===
+
+Bis Binarise requires roads to be in mlod format to be used 'correctly' when it builds islands. To that end, Bis provide these mlods in personal tools and are intended to replace the binary equivalents of the game, for the purpose of building wrps.
+
+To that end, arma2p assumes that roads already existent on the p drive are mlods and will preserve them, rather than over-write them with genuine game p3d's
+
+specifically Roads2,Roads_E and roads_pmc. If they are not mlods, it is up to you to put the proper ones from bi's personal tools ~armaworks folder in there. 
+
+Note that ca\roads from arma1 is useless and removed unconditionally.
+
+Note that subfolders of Roads2 reflect the current engine extraction (bridges and dams)
+
+=== WRP_PROJECTS ===
+
+BINPBO and islands
+
+ This is unnecessary if you are using the pboProject.exe (which replaces binPbo)
+
+
+A wrp_Projects\ca\*\config.cpp is created
+
+If you are working with islands, you require a copy of ca IN your projects folder. Don't blame me.
+
+arma2p creates P:\WRP_PROJECTS for your convenience. use it as a template for any of your new projects or copy the ca folder to your old ones
+
+if you are using win7 you can simply MKLINK and ignore above
+
+
+=== LANGUAGECORE ===
+
+A minor quirk of bis's languagecore.pbo is also accounted for.
+=== (dta)bin\config.cpp ===
+
+this file MUST reflect the engine it comes from. (oa/ca/a2) in order to compile configs, in general, correctly.
+
+this clashes with buldozer which uses an earlier version. The net effect is viewing models or islands in oxygen/visitor will cause a 'missing blah'.
+
+live with that annoyance, or, recopy personal tools config.cpp to bin. Choice is yours, caveat emptor
+
+
+[[Category:Mikero Tools]]

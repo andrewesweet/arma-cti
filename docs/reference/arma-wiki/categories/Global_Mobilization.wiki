@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Global_Mobilization
+// revision: 178170 (2020-12-30T13:30:39Z)
+// export sha1: jkrnm0pnf02dfolbjha3nws8p38e3gy
+// Vendored snapshot. Do not edit — re-export instead.
+
+This page serves as a container that lists all pages on the Community Wiki that are related to Global Mobilization.
+
+{{GameCategory|Arma 3|CDLCs}}

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/ctSetCurSel
+// revision: 310076 (2022-05-05T12:25:08Z)
+// export sha1: l8hnrgwsfougjjnlq9gwc26mwzfqbjh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+|arg= local
+|eff= local
+
+|gr1= GUI Control - Controls Table
+
+|descr= Selects the line with the given index. Will take only rows, but not headers into account. -1 deselects all. Returns Nothing.
+
+|s1= control [[ctSetCurSel]] index
+
+|p1= control: [[Control]]
+|p2= index: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctSetCurSel 0;</sqf>
+
+|seealso= [[ctAddRow]] [[ctAddHeader]] [[ctClear]] [[ctCurSel]] [[ctRowControls]] [[ctHeaderControls]] [[ctRowCount]] [[ctHeaderCount]] [[ctSetValue]] [[ctValue]] [[ctSetData]] [[ctData]] [[ctFindRowHeader]] [[ctFindHeaderRows]] [[ctRemoveRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}

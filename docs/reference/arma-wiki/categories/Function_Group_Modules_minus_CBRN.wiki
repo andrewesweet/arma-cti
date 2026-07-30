@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Modules_-_CBRN
+// revision: 167874 (2020-10-12T16:55:16Z)
+// export sha1: 54noe52nl6sit3qh067ggibgc7ni2z9
+// Vendored snapshot. Do not edit — re-export instead.
+
+The CBRN system was never fully implemented in {{arma3}} and is '''not''' functional.
+
+[[Category:Function Group: Modules]]

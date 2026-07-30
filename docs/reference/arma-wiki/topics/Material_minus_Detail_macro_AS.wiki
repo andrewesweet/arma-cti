@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/Material_-_Detail_macro_AS
+// revision: 369580 (2024-09-24T13:27:21Z)
+// export sha1: i7elgpx35xxlgs2ejqwyrlm3i1aq2z6
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''DT+MC+AS'''
+<syntaxhighlight lang="cpp">
+PixelShaderID = "DetailMacroAS";
+VertexShaderID = "BasicAS";
+
+class Stage1
+{
+	texture = "temp\domek\Omitka1_detail.paa";
+	uvSource = "tex";
+	class uvTransform
+	{
+		aside[]	= { 16, 0, 0 };
+		up[]	= { 0, 16, 0 };
+		dir[]	= { 0, 0, 16 };
+		pos[]	= { 0, 0, 0 };
+	};
+};
+
+class Stage2
+{
+	texture = "temp\domek\test02_MC.tga";
+	uvSource = "tex1"; // coordinates from 2.UV set
+};
+
+class Stage3
+{
+	texture = "temp\domek\TestUV2_AS.tga";
+	uvSource = "tex1"; // coordinates from 2.UV set
+};
+
+</syntaxhighlight>

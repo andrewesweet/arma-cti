@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/objNull
+// revision: 330232 (2022-08-27T15:02:35Z)
+// export sha1: k1wazuuexo8utzxnuirppmp222cm1nd
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Variables
+
+|descr= A non-existent [[Object]]. To compare non-existent objects use [[isNull]] or [[isEqualTo]]:
+<sqf>
+objNull == objNull;			// false
+isNull objNull;				// true
+objNull isEqualTo objNull;	// true
+</sqf>
+
+|s1= [[objNull]]
+
+|r1= [[Object]]
+
+|x1= <sqf>player == player; // false if player is null</sqf>
+
+|x2= <sqf>isNull player; // true if player is null</sqf>
+
+|x3= <sqf>str objNull // <NULL-object></sqf>
+
+|x4= <sqf>position objNull // [0,0,0]</sqf>
+
+|seealso= [[controlNull]] [[displayNull]] [[grpNull]] [[locationNull]] [[taskNull]] [[teamMemberNull]] [[scriptNull]] [[configNull]] [[typeName]] [[isNull]]
+}}

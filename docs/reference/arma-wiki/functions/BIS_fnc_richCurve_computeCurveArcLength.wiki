@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_richCurve_computeCurveArcLength
+// revision: 363953 (2024-04-27T20:37:33Z)
+// export sha1: am29akx9c98dznscf4jal31ytf6odrz
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: RichCurve | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= RichCurve
+|descr= <pre>/*
+	Author: Nelson Duarte <@Nelson_G_Duarte>
+
+	Description:
+	Computes curve arc length
+
+	Parameter(s):
+	_this select 0: Object 	- The curve
+
+	Returns:
+	Float - The curve arc length
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_richCurve_computeCurveArcLength]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

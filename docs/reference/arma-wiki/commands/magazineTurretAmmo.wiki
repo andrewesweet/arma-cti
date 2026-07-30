@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/magazineTurretAmmo
+// revision: 377502 (2026-01-02T06:49:31Z)
+// export sha1: 9s57wvrgv9c04bfqb1awo8n4hxhs72f
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr2= Turrets
+
+|descr= Returns ammo count of given magazine from given turret (see [[setMagazineTurretAmmo]] for more info)
+
+|s1= vehicle [[magazineTurretAmmo]] [magazineClass, turretPath]
+
+|p1= vehicle: [[Object]]
+
+|p2= magazineClass: [[String]]
+
+|p3= turretPath: [[Turret Path]] - [-1] for driver turret is supported
+
+|r1= [[Number]]
+
+|x1= <sqf>vehicle player magazineTurretAmmo ["cls", [0]];</sqf>
+
+|seealso= [[setMagazineTurretAmmo]] [[magazinesAllTurrets]] [[ammoOnPylon]]
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20240504113840
+|text= Returns ammo for first magazine, not loaded magazine.
+}}

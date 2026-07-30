@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/scriptNull
+// revision: 363804 (2024-04-21T18:03:23Z)
+// export sha1: rgxsq82ws2vwev1q6m1rxu3l318ruwf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= Variables
+
+|descr= A non-existing or [[scriptDone|completed]] [[Script Handle]]. To compare non-existent scripts use [[isNull]] or [[isEqualTo]]:
+<sqf>
+scriptNull == scriptNull;			// ERROR! == cannot be used with script object
+isNull scriptNull;					// true
+scriptNull isEqualTo scriptNull;	// true
+</sqf>
+
+|s1= [[scriptNull]]
+
+|r1= [[Script Handle]] - NULL script
+
+|x1= Wait until previous script is finished before starting a new one:
+<sqf>
+0 spawn
+{
+	_script = scriptNull;
+	for "_i" from 1 to 10 do
+	{
+		waitUntil { isNull _script };
+		_script = _i spawn
+		{
+			hint format ["script %1 started", _this];
+			sleep 1;
+			hint format ["script %1 finished", _this];
+			sleep 0.2;
+		};
+	};
+};
+</sqf>
+
+|x2= <sqf>
+if (scriptDone (_obj getVariable ["TAG_objScript", scriptNull])) then
+{
+	_scriptHandle = _obj spawn { waitUntil { damage _this > 0.9 }; hint "Critical Damage!"; };
+	_obj setVariable ["TAG_objScript", _scriptHandle];
+};
+</sqf>
+
+|x3= <sqf>str scriptNull; // <NULL-script></sqf>
+
+|seealso= [[controlNull]] [[displayNull]] [[grpNull]] [[locationNull]] [[objNull]] [[taskNull]] [[teamMemberNull]] [[configNull]] [[typeName]] [[isNull]] [[scriptDone]] [[spawn]] [[execVM]]
+}}

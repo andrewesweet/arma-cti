@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_unitCaptureSimple
+// revision: 347971 (2023-11-08T09:42:41Z)
+// export sha1: spcyuvwr9cf81ww7ydrau58olyrkihu
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Scenes | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Scenes
+
+|descr= Records movement data of input unit over a specified period of time. Simplified.
+Pressing the {{Controls|Esc}} key, the duration ending, or the unit dying ends the recording.
+
+|s1= [unit, duration, FPS, firing, startTime] spawn [[BIS_fnc_unitCaptureSimple]]
+
+|p1= unit: [[Object]] - unit to capture movement data from
+
+|p2= duration: [[Array]] - duration to capture for
+
+|p3= FPS: [[Number]] - (Optional, default 20) frames recorded per second (default 20). Limit is 1 - 100
+
+|p4= firing: [[Boolean]] - (Optional, default [[false]])  if [[true]], will record the input unit's weapon fire data as well
+
+|p5= startTime: [[Number]] - (Optional, default 0) starting time offset for the frame time
+
+|r1= [[Script Handle]]
+{{Feature|informative|
+{{Link|copyToClipboard|Copies to clipboard}} an [[Array]] of [[Array]]s in format [frameTime, unitPosition, unitDirection] for each frame.
+}}
+
+|exec= spawn
+
+|x1= <sqf>[BIS_Vehicle, 50, 30, true, 10] spawn BIS_fnc_unitCaptureSimple;</sqf>
+
+|seealso= [[BIS_fnc_unitCaptureFiring]] [[BIS_fnc_unitPlaySimple]] [[BIS_fnc_unitPlayFiring]] [[BIS_fnc_unitCapture]] [[BIS_fnc_unitPlay]]
+}}

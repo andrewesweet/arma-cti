@@ -1,0 +1,318 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Vehicle_Customisation
+// revision: 363627 (2024-04-08T16:20:15Z)
+// export sha1: 6b5zcgpb6f9ndoid0wly080tb3wuprs
+// categories: Category:Arma 3: Vehicle Configuration | Category:Introduced with Arma 3 version 1.42
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GVI|arma3|1.42}}
+The '''V'''e'''h'''icle '''C'''ustomisation (VhC) is the system responsible for the customisation of vehicles, either, defined or randomised.
+It consists of a set of config properties and classes and a set of functions.
+It has been introduced in {{arma3}} v1.42 in order to replace the old system which consisted in a set of scripts.
+
+
+== Usage ==
+
+Read [[BIS_fnc_initVehicle]] to find out how it works. Use [[BIS_fnc_saveVehicle]] to save a vehicle customisation and [[BIS_fnc_loadVehicle]] to load a previously saved appearance.
+
+== Implementation ==
+
+=== Missions ===
+
+The system offers a simple way to define your own deliveries and to prevent randomisation of a given vehicle, its class or even its kind. Here an example of mission configuration file.
+
+==== Prevent randomisation ====
+<syntaxhighlight lang="cpp">
+// No action will be taken regarding the following vehicles (either, names, classes or kind)
+disableRandomization[] =
+{
+	// "AllVehicles",		// No randomisation at all
+	// "Air",				// No randomisation at all for air vehicles
+	// "land",				// No randomisation at all for land vehicles
+	// "Ship",				// No randomisation at all for sea vehicles
+	"air_f",				// There won't be any randomisation on every air vehicles
+	"C_Hatchback_01_F",		// No random on Hatchbacks
+	"truck_withoutRandom"	// No random for this given vehicle
+};
+</syntaxhighlight>
+
+==== Add your own liveries ====
+To do so, a new mission config file has been introduced - CfgVehicleTemplates. It regroups every variants used from the main function (BIS_fnc_initVehicle)
+
+<syntaxhighlight lang="cpp">
+class CfgVehicleTemplates
+{
+</syntaxhighlight>
+
+This variant has a ''textureList'' property, a list of texture sources directly defined from an addon, at the config level.
+If there is more than 1 entry in the texture list, a weighted random will be performed between them.
+Having one entry means this entry will be picked up on every call of the function.
+
+<syntaxhighlight lang="cpp">
+class BIS_Offroad_01_default
+{
+	vehicles[] =  // It is used by the [[:Category:Eden Editor|Eden Editor]] to determine which vehicle classes can be supposed with use this template
+	{
+		"classNameA",
+		"classNameB"
+	};
+
+	displayName = "Default";		// <optional> Could be handy if you plan to add some UI, not used by the VhC
+	author = "Bohemia Interactive";	// <optional> Could be handy if you plan to add some UI, not used by the VhC
+	factions[] =					// This template will be available for the following factions
+	{
+		"BLU_F", "BLU_G_F",	// Side Blufor
+		"OPF_F", "OPF_G_F",	// Side Opfor
+		"IND_F", "IND_G_F",	// Side independent
+		"CIV_F"				// Side civilian
+	};
+
+	// List of texture sources defined in ConfigFile >> "CfgVehicles" >> "VehicleClass" >> "TextureSources"
+	// Only on source will be chosen within the following by a weighted random
+	textureList[] =
+	{
+		"guerilla_01", 1,
+		"guerilla_02", 1,
+		"guerilla_03", 1,
+		"guerilla_04", 1
+	};
+
+	// Animation sources
+	animationList[] =
+	{
+		"HideBumper1", 1,	// Class of an animation source, probabily (wherein 1 means 100% to set the phase to 1)
+		"HideBumper2", 1,
+		"HideConstruction", 1,
+		"HideDoor1", 0,		// The phase of the animation source will always be set to 1
+		"HideDoor2", 0,
+		"HideGlass2", 0,
+		"HideBackpacks", 1,
+		"HideDoor3", 0.33 	// There is a 33% chance that this animation source phease is set to 1
+	};
+};
+</syntaxhighlight>
+
+The following has textures[] instead of textureList[], meaning the function will define these texture files and won't search for texture sources.
+
+<syntaxhighlight lang="cpp">
+class BIS_Offroad_01_stripped
+{
+	displayName = "Stripped";
+	author = "Bohemia Interactive";
+	textures[] =
+	{
+		"\A3\Soft_F\Offroad_01\Data\Offroad_02_ext_CO.paa", //Must with extension!
+		"\A3\Soft_F\Offroad_01\Data\Offroad_02_ext_CO.paa"
+	};
+
+	materials[] =
+	{
+		"", // Material to use for the first texture (ignore if the string is empty)
+		"\A3\Structures_F\Data\Windows\window_set.rvmat" // Material to use for the second texture
+	};
+
+	animationList[] =
+	{
+		"HideBumper1", 1,
+		"HideBumper2", 1,
+		"HideConstruction", 1,
+		"HideDoor1", 1,
+		"HideDoor2", 1,
+		"HideGlass2", 1,
+		"HideBackpacks", 1,
+		"HideDoor3", 0.33
+	};
+};
+</syntaxhighlight>
+
+The following class interstates from "BIS_Offroad_01_default" which has a textureList, meaning this class contains textureList and textures.
+In this case, the textures property will be used and textureList will be ignored.
+
+<syntaxhighlight lang="cpp">
+class hotpink : BIS_Offroad_01_default
+{
+	displayName = "hotpink (ugly test)";
+	author = "Tom_48_97";
+	textures[] = { "#(rgb,8,8,3)color(1,0.411,0.705,1)" };
+};
+</syntaxhighlight>
+
+... and the {{hl|CfgVehicleTemplates}} closure bracket
+
+<syntaxhighlight lang="cpp">
+};
+</syntaxhighlight>
+
+=== Addon ===
+
+In the best case of use, the below classes and information should be defined in the base config class of the vehicle, but obviously, this is not always possible.
+
+==== Base class ====
+<syntaxhighlight lang="cpp">
+class Dummy_vehicle_base_F : Helicopter_Base_H
+{
+	scope = 0; // A base class should has scope = 0 (private)
+	model = "\A3\Dummy\Dummy_vehicle\dummy.p3d";
+
+	class EventHandlers : EventHandlers
+	{
+		// (_this select 0): the vehicle
+		// """" Random texture source (pick one from the property textureList[])
+		// []: randomise the animation sources (accordingly to the animationList[] property)
+		// false: Don't change the mass even if an animation source has a defined mass
+		postInit = "if (local (_this select 0)) then { [(_this select 0), """", [], false] call BIS_fnc_initVehicle; };";
+	};
+
+	/*---------------------------------------------------------------------------
+		Animation sources
+	---------------------------------------------------------------------------*/
+	class animationSources : animationSources
+	{
+		class animationSource1
+		{
+			// name of the animation / element (displayed in the Virtual Garage)
+			displayName = "Add source...";
+			// Author of the textures (displayed in the Virtual Garage)
+			author = "$STR_A3_Bohemia_Interactive";
+			source = "user";
+			animPeriod = 0.000001;
+			initPhase = 0;
+
+			// if the animation phase is 0, then the given cargo indexes (lockCargo) will be locked
+			// if undefined, default value of lockCargoAnimationPhase is 0
+			lockCargoAnimationPhase = 0;
+			lockCargo[] = { 0, 1, 5 };
+
+			// if forceAnimatePhase is equal to the phase of this animation sources, every sources from forceAnimate will be changed with their given phase
+			forceAnimatePhase = 0;
+			// animationSource1, phase, animationSource2, phase... No probabilities here, only true or false
+			forceAnimate[] = { "animationSource1", 0, "animationSource2", 1 };
+
+			// The following code is called by BIS_fnc_initVehicle each time the phase is changed
+			onPhaseChanged = "if ((_this select 1) == 1) then { /* run if the phase is 1 */ } else { /* run if the phase is 0 */ };";
+
+			// Mass of the source, can be negative or positive
+			// If the phase is 1, the given mass will be added, otherwise, it will be subtracted
+			mass = 20;
+		};
+
+		class animationSource2 : animationSource1 {};
+		class animationSource3 : animationSource1 {};
+		class animationSource4 : animationSource1 {};
+	};
+
+	/*---------------------------------------------------------------------------
+		Texture sources
+	---------------------------------------------------------------------------*/
+	class textureSources
+	{
+		// This texture source will be available for every defined factions
+		class white
+		{
+			// Display name of the texture
+			displayName = "White";
+			// Author of the texture
+			author = "$STR_A3_Bohemia_Interactive";
+			// Paths to the texture files, in the same order as the hidden selections
+			textures[] = { "\A3\Dummy\Dummy_vehicle\dummy_vehicle_ext_1_co.paa" };
+			// This source should be available for the following factions
+			factions[] =
+			{
+				"BLU_F", "BLU_G_F",	// Side Blufor
+				"OPF_F", "OPF_G_F",	// Side Opfor
+				"IND_F", "IND_G_F",	// Side independent
+				"CIV_F"				// Side civilian
+			};
+		};
+
+		// This texture source will be available for every factions (currents and futures)
+		class black
+		{
+			displayName = "Black";
+			author = "$STR_A3_Bohemia_Interactive";
+			textures[] = { "\A3\Dummy\Dummy_vehicle\dummy_vehicle_ext_1_co.paa" };
+			factions[] = {};
+		};
+
+		// This texture source will be available only for the FIA (whatever its side)
+		class yellow
+		{
+			displayName = "Yellow";
+			author = "$STR_A3_Bohemia_Interactive";
+			textures[] = { "\A3\Dummy\Dummy_vehicle\dummy_vehicle_ext_1_co.paa" };
+			factions[] =
+			{
+				"BLU_G_F",
+				"OPF_G_F",
+				"IND_G_F"
+			};
+		};
+		
+		// This texture source will be available only for the BLU_F faction
+		class red
+		{
+			displayName = "Red";
+			author = "$STR_A3_Bohemia_Interactive";
+			textures[] = { "\A3\Dummy\Dummy_vehicle\dummy_vehicle_ext_1_co.paa" };
+			factions[] =
+			{
+				"BLU_F"
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+==== Variants / derivatives ====
+<syntaxhighlight lang="cpp">
+class B_dummy_vehicle_F : Dummy_vehicle_1_base_F
+{
+	displayName = "I'm nothing";
+	author = "$STR_A3_Bohemia_Interactive";
+
+	scope = 2;
+	scopeCurator = 2;
+
+	side = 1;
+	faction = BLU_F;
+
+	textureList[] =
+	{
+		"White", 1,
+		"Black", 0.5,
+		"Red", 0.5,
+		"Yellow", 0.5
+	};
+
+	/* Random animations, also used to determine the allowed animation sources
+	1 means 100% - This state of the given source WILL BE set to 1, 0 means the opposite
+	[_animationSource1, probability1, _animationSource2, probability2, ...] */
+	animationList[] =
+	{
+		"animationSource1", 0.5,
+		"animationSource2", 0.5,
+		"animationSource3", 0.5,
+		"animationSource4", 0.5
+	};
+};
+
+/*---------------------------------------------------------------------------
+	Dummy vehicle used by the initVehicle function, for pre defined variants
+---------------------------------------------------------------------------*/
+class B_dummy_vehicle_red_F : B_dummy_vehicle_F
+{
+	CFGVEHICLES_VARIANT_DISPLAYNAME("B_dummy_vehicle_F", "Red")
+	CFGVEHICLES_VARIANT_DUMMY
+	textureList[] = { "Red", 1 };
+	animationList[] =
+	{
+		"animationSource2", 1,
+		"animationSource3", 1,
+		"animationSource4", 0.3
+	};
+};
+</syntaxhighlight>
+
+
+[[Category:Introduced with Arma 3 version 1.42]]
+{{GameCategory|arma3|Vehicle Configuration}}

@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_adjustSimpleObject
+// revision: 349493 (2023-11-08T17:09:09Z)
+// export sha1: bxcl38ks62q5vg1ms5lj3s2mr6u67np
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Object Manipulation
+
+|descr=Adjust simple object vertical position, animations and selection according to provided data.<br>
+In case both adjustment data and class are being used, data has higher priority and only undefined parts are filled from config.
+
+{{Feature|important|This function is automatically called by [[BIS_fnc_createSimpleObject]].}}
+
+|s1= [object, [class, model, reversed, verticalOffset, animAdjustments, selectionToHide]] call [[BIS_fnc_adjustSimpleObject]]
+
+|p1= object: [[Object]] - simple object that will be adjusted
+
+|p2= class: [[String]] - (Optional, default "") asset {{hl|CfgVehicles}} config class ('''at least either ''model'' or ''class'' must be provided, ideally both''')
+
+|p3= model: [[String]] - (Optional, default "") path to the vehicle p3d model; needs to start without backslash and must end with the proper file extension ".p3d"
+
+|p4= reversed: [[Number]] - (Optional, default 0) some objects, usually vehicles, are reveresed in p3d; valid values are:
+* &nbsp;0: no change
+* &nbsp;1: reverse
+* -1: unknown (behaves as 0)
+
+|p5= verticalOffset: [[Array]] - (Optional, default 0) fix for non-existant physX; usually needed only for vehicles
+
+|p6= animationAdjustments: [[Array]] - (Optional, default <sqf inline>[]</sqf>) animation that need to be animated to given state, in format [animationName, animationState]:
+* animationName: [[String]] - animation name
+* animationState: [[Number]] - animation state
+
+|p7= selectionsToHide: [[Array]] - (Optional, default <sqf inline>[]</sqf>) all listed selections will be hidden
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[myCar, ["B_MyCar_F", "path\to\file.p3d"]] call BIS_fnc_adjustSimpleObject;</sqf>
+
+|seealso= [[createSimpleObject]] [[BIS_fnc_createSimpleObject]] [[BIS_fnc_simpleObjectData]]
+}}

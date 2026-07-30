@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_loadTXScanState
+// revision: 309617 (2022-05-05T12:07:44Z)
+// export sha1: bedsao8tn65s0zqrorm5ax9rc17iulm
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: TXScan | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= TXScan 
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Loads TXScan data from global saved variables into extension
+
+	Parameter(s):
+		NONE
+
+	Returns:
+		BOOL - true on success
+		
+	Example:
+		call BIN_fnc_loadTXScanState
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_loadTXScanState]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_loadTXScanState;</sqf> -->
+
+|seealso=
+}}

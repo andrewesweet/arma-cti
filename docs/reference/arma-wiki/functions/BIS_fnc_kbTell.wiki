@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_kbTell
+// revision: 370523 (2025-01-01T18:16:34Z)
+// export sha1: 6kacqfr7upvh1u6aftz5jfnwu380g55
+// categories: Category:Arma 3: Functions | Category:Function Group: Conversations | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Conversations
+
+|exec= spawn
+
+|descr= Play given sentence/conversation. Script terminates itself when conversation is finished.<br>
+Conversation must be declared in [[Description.ext#CfgSentences|Description.ext/CfgSentences]].
+{{Feature|informative|This function can also be executed with [[call]]. Doing so will make it internally [[spawn]] since it needs to be able suspend its execution.}}
+
+|s1= [topic, container, section, radioMode, code, speakers, soundVolume, radioProtocol] spawn [[BIS_fnc_kbTell]]
+
+|p1= topic: [[String]] - topic name
+
+|p2= container: [[String]] - (Optional, default [[missionName]]) container name ([[Description.ext#CfgSentences|CfgSentences]] sub-category)
+
+|p3= section: [[Array]] or [[String]] - (Optional, default "") section to be played. Elements can be:
+* [[String]] - "variant" - play specific variant
+* [[Array]]
+** [startingSentence(, endingSentence)] - play all sentences between specific start and end
+*** startingSentence and endingSentence can be in format:
+**** [[String]] - full sentence name (example: "04_intro_team_PLA_0")
+**** [[Array]] - [<actorID>(, <sentenceID>)] (example: ["PLA", 0] or just ["PLA_0"])
+**** [[Boolean]] - true to play random sentence, false to play first sentence
+**** default - first sentence for startingSentence, last sentence for endingSentence
+* default: play everything
+
+|p4= radioMode: [[Boolean]], [[String]], [[Object]] or [[Code]] - (Optional, default: [[false]]) can be:
+* [[Boolean]] - true to force radio
+* [[String]] - name of radio channel ("DIRECT" or "VEHICLE")
+* [[Number]] - [[radioChannelCreate|custom]] radio channel
+* [[Object]] - listener's channel
+* [[Code]] - returned value of code
+
+|p5= code: [[Code]] or [[Array]] - (Optional, default <sqf inline>{ true }</sqf>) can be:
+* [[Code]] - executed at the start of every sentence (arguments are same as in kbAddTopic event handler)
+* [[Array]] - code with arguments in format [code, arguments]
+
+|p6= speakers: [[Array]] or [[Boolean]] - (Optional, default <sqf inline>[]</sqf>) can be:
+* [[Array]] - replacement units for those defined in .bikb file (in chronological order)
+* [[Boolean]] - when true, dummy logics will be created for all actor units which doesn't exist (default: false or value of 'BIS_fnc_kbTell_createDummy' variable)
+
+|p7= soundVolume: [[Number]] - (Optional, default {{GVI|tkoh|1.00|size= 0.75}} 0.2, {{GVI|arma3|1.00|size= 0.75}} -1) music and sound volumes lowering ratio during the conversation, range 0..1 (e.g 0 = no music, 0.25 = a quarter of the current volume, 1 or out of range = no change)
+
+|p8= radioProtocol: [[Boolean]] - (Optional, default [[true]]) true to disable radio protocol message while the conversation is playing
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["01_Wave", "A_in", nil, "SIDE", nil, nil, 1, false] spawn BIS_fnc_kbTell;</sqf>
+
+|seealso= [[Conversations]] [[kbTell]] [[BIS_fnc_kbCanSpeak]] [[BIS_fnc_kbCreateDummy]] [[BIS_fnc_kbIsSpeaking]] [[BIS_fnc_kbMenu]] [[BIS_fnc_kbPriority]] [[BIS_fnc_kbSentence]] [[BIS_fnc_kbSkip]] [[BIS_fnc_kbTellLocal]] [[BIS_fnc_kbTopicConfig]]
+}}

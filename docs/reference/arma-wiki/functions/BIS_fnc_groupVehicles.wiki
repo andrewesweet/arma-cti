@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_groupVehicles
+// revision: 327945 (2022-07-13T12:50:35Z)
+// export sha1: o1zcv8d9iu0y3ttau0nl1lvjgmt0vfj
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.76
+
+|gr1= Vehicles
+
+|descr= Returns all vehicles a group possesses, assigned vehicles can be included.
+
+|s1= [target, assignedVeh] call [[BIS_fnc_groupVehicles]]
+
+|p1= target: [[Object]] or [[Group]] - the unit or group to check, if unit is given it is group is then used
+
+|p2= assignedVeh: [[Boolean]] - if assigned vehicles should also be returned (vehicles that unit's may not be inside of but assigned to)
+
+|r1= [[Array]] - list of all vehicles in control/assigned to the group, empty if group has none
+
+|x1= <sqf>[group player, true] call BIS_fnc_groupVehicles;</sqf>
+
+|seealso= [[group]] [[createVehicle]]
+}}

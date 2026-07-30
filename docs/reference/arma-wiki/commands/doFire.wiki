@@ -1,0 +1,74 @@
+// source: https://community.bistudio.com/wiki/doFire
+// revision: 378648 (2026-05-17T15:10:41Z)
+// export sha1: sc83rbmv43bvgq0hnv8mpwoo6u2l25a
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Control
+
+|descr= Order the given unit(s) to fire on the given target (without radio messages).
+
+The target is set with [[doTarget]] or [[commandTarget]].
+
+The target can be a unit or a vehicle, but not an object.
+
+|s1= unit [[doFire]] target
+
+|p1= unit: [[Object]] or [[Array]] of [[Object]]s
+
+|p2= target: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_ESoldier1 doFire _WSoldier1;</sqf>
+
+|seealso= [[fire]] [[commandFire]] [[canFire]] [[fireAtTarget]] [[forceWeaponFire]] [[commandArtilleryFire]] [[commandSuppressiveFire]] [[doArtilleryFire]] [[doSuppressiveFire]] [[isManualFire]]
+}}
+
+{{Note
+|user= Hardrock
+|timestamp= 20060803143100
+|text= ''Notes from before the conversion:''
+
+It is often helpful to use [[doTarget]] first.
+}}
+
+{{Note
+|user= Hurricane
+|timestamp= 20070325231700
+|text= A unit will not execute this command when his behaviour is set to "careless".
+}}
+
+{{Note
+|user= Sakura_chan
+|timestamp= 20120607140500
+|text= <sqf inline>unitName doFire objNull</sqf> does not work like it does in <sqf inline>commandFire</sqf>.
+Target var has to be real ({{Name|arma2oa|short}}) might be different in other versions.
+}}

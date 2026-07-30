@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_createRuin
+// revision: 347313 (2023-09-10T15:21:43Z)
+// export sha1: fzyr61vy5lrc1o7za4nascj9opfxl59
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Environment | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Environment
+
+|descr= Create a building ruin and hide the original object.
+
+|s1= building call [[BIS_fnc_createRuin]]
+
+|p1= building: [[Object]] - building to "destroy"
+
+|r1= [[Object]] - the created ruin
+
+|x1= <sqf>aBuilding call BIS_fnc_createRuin;</sqf>
+
+|x2= <sqf>
+// will destroy every building in a 50m radius around the player
+private _nearBuildings = player nearObjects ["House", 50];
+{ _x call BIS_fnc_createRuin } forEach _nearBuildings;
+</sqf>
+
+|seealso= [[setDamage]]
+}}
+
+{{Note
+|user= Beno_83au
+|timestamp= 20190601131400
+|text= In MP this function doesn't hide the building globally, so other clients will see both the original building ''AND'' the newly created ruined building - {{Link|https://feedback.bistudio.com/T140045}}.
+To get around this I've been hiding the object manually on all other clients:
+<sqf>
+_building call BIS_fnc_createRuin;
+[_building, true] remoteExecCall ["hideObject", -clientOwner];
+</sqf>
+This will run [[hideObject]] on all other clients besides the client (or server) that this was executed from.
+}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/allowCuratorLogicIgnoreAreas
+// revision: 348345 (2023-11-08T12:59:49Z)
+// export sha1: 2gr6yzelg5ylpllcvhowjae5faqmnie
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|serverExec= server
+
+|descr= Allows curator placing and working with modules outside of edit areas.
+
+|s1= curatorObj [[allowCuratorLogicIgnoreAreas]] allow
+
+|p1= curatorObj: [[Object]] - curator module.
+
+|p2= allow: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>curatorModule allowCuratorLogicIgnoreAreas true;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[addCuratorEditingArea]] [[removeCuratorEditingArea]] [[removeAllCuratorEditingAreas]] [[curatorEditingArea]]
+}}

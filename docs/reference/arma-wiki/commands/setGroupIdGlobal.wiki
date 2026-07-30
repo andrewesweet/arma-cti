@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/setGroupIdGlobal
+// revision: 369314 (2024-09-03T18:42:56Z)
+// export sha1: ogv812ufesf62elgejmn9pcja4h5fc4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.48
+
+|gr1= Groups
+
+|arg= global
+
+|eff= global
+
+|descr= A [[Multiplayer Scripting#Locality|global]] equivalent of  [[setGroupId]].
+
+|s1= group [[setGroupIdGlobal]] [format, keyword1, keyword2, ...]
+
+|p1= group: [[Object]] or [[Group]]
+
+|p2= format: [[String]] - format template (e.g "%keyword1 - %keyword2 / %keyword4 (%keyword3)")
+
+|p3= keywordN: [[String]] - keyword value
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+group player setGroupIdGlobal ["PAPA BEAR"];
+hint groupId group player; // "PAPA BEAR"
+</sqf>
+
+|seealso= [[setGroupId]] [[groupId]] [[group]]
+}}

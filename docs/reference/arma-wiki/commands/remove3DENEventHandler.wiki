@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/remove3DENEventHandler
+// revision: 369147 (2024-09-03T10:34:38Z)
+// export sha1: 8t60erguysjv1l1cnbo1lbli69se81d
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Command Group: Event Handlers | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+|gr2= Event Handlers
+
+|descr= Removes Eden Editor event handler of given type and ID.
+<br><br>
+See the list of all [[Arma_3:_Event_Handlers:_Eden_Editor|Eden Editor Event Handlers]].
+
+|s1= [[remove3DENEventHandler]] [type,id]
+
+|p1= type: [[String]] - name of event handler
+|p2= id: [[Number]] - ID of event handler, returned by [[add3DENEventHandler]]
+|r1= [[Nothing]]
+
+|x1= <sqf>
+eh = add3DENEventHandler ["onUndo",{systemChat "Zip..."}];
+remove3DENEventHandler ["onUndo",eh];
+</sqf>
+
+|seealso= 
+[[add3DENEventHandler]]
+[[removeAll3DENEventHandlers]]
+}}

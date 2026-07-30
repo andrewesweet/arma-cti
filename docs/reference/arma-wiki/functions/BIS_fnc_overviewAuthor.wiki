@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_overviewAuthor
+// revision: 336914 (2023-01-04T16:43:59Z)
+// export sha1: j85pd5yvze4jupjn9xhgfoqe1n92ce3
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= Returns the mission author's name preceded by "by", e.g "by Username". See {{Link|Description.ext#author}}.
+
+|s1= [config, control] call [[BIS_fnc_overviewAuthor]]
+
+|p1= config: [[Config]] - (Optional, default [[configFile]]) where the function will look for '''author''' entry
+
+|p2= control: [[Control]] - (Optional, default [[controlNull]]) if provided, will be filled with author's name
+
+|r1= [[String]]
+
+|x1= <sqf>hint format ["%1, %2", briefingName, call BIS_fnc_overviewAuthor];</sqf>
+
+|x2= <sqf>hint format ["%1, %2", briefingName, [missionConfigFile] call BIS_fnc_overviewAuthor];</sqf>
+
+|seealso= {{Link|Description.ext#author}} [[briefingName]]
+}}

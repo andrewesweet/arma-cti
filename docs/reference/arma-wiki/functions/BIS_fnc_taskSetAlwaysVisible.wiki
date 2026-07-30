@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskSetAlwaysVisible
+// revision: 376121 (2025-08-31T21:33:19Z)
+// export sha1: fovwa9ak8aytre1brzvwyzcwzpwf6sg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.58
+
+|arg= global
+|eff= global
+
+|gr1= Tasks
+
+|descr= Flags task to be or not to be always visible. {{Feature|informative|See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= [taskID, alwaysVisible] call [[BIS_fnc_taskSetAlwaysVisible]]
+
+|p1= taskID: [[String]] - task ID
+
+|p2= alwaysVisible: [[Boolean]] - [[true]] for always visible [[false]] if not
+
+|r1= [[String]] - task ID.
+
+|x1= <sqf>["BIS_Task_01", true] call BIS_fnc_taskSetAlwaysVisible;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

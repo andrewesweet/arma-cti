@@ -1,0 +1,999 @@
+// source: https://community.bistudio.com/wiki/PROPER:Mod
+// revision: 378185 (2026-03-10T10:28:26Z)
+// export sha1: r4tzxs73d1cvhkpvei0q479pv5yb88h
+// Vendored snapshot. Do not edit — re-export instead.
+
+by the [[PROPER:Mod#PROPER_Mod_Team|PROPER Mod Team]]
+
+== Mod Info ==
+Welcome to the PROPER Mod by the [[PROPER:Mod#PROPER_Mod_Team|PROPER Mod Team]].<br>
+<br>
+
+== Hosted by armaholic ==
+{{Link|http://www.proper.armaholic.eu/|PROPER Mod project page}} (temporary design)<br>
+Our earnest thanks to the '''{{Link|link= http://www.armaholic.com/|text= armaholic}} team''' for hosting our page and projects!
+
+== Projects ==
+* [[PROPER:Mod#PROPER_UI|PROPER UI]]
+* [[PROPER:Mod#PROPER_Gameplay|PROPER Gameplay]]
+* [[PROPER:Mod#PROPER_Anims|PROPER Anims]]
+* [[PROPER:Mod#PROPER_World|PROPER World]]
+* [[PROPER:Mod#PROPER_Effects|PROPER Effects]]
+
+== Learn from the configs ==
+
+=== Preface ===
+
+Not many people are doing config editing for OFP / ArmA.<br>
+'''However configs are actually a very powerful tool to tweak the engine to your liking.'''
+'''Even better writing configs is quite simple.'''
+
+There are three general problems though:
+* You cannot make screenshots from your config work most times. Yet the actual player will give you props way more than pure visual changes or additions. Even more important apart from pure reskins, missions, scripts and simple file replacements configs are an essential part of any addon!
+* Beginners can easily get overstrained by the amount of content in configs. In addition you can get puzzled by topics like config structure, inheritance, testing process and effect validation. Especially as BI made the overall config structure with bin.pbo in dta and the various configs in the addons folder very complicated and hard to handle.
+* You even found your way to the BIKI. BI did a good start with the BIKI in terms of engine documentation. However you will soon find out that configs is the topic was least documentation. So prepare yourself to do a lot of testing and forum research.
+
+'''You can influence the engine and game very direct and effective by config editing. Don't give up easily and enjoy!'''
+
+=== Special features of the PROPER Mod ===
+
+Every addon released by the PROPER Mod team has a special structure to allow people analyze our work and learn from it.<br>
+Features in detail:
+* Simple, feature specific addon. <br>This means that every logical change is separated into one single pbo to make the changes very clear and easy to understand.
+* Advanced inner structure. <br>Each addon contains a single config.cpp. This file only points to the rest of the content via [[PreProcessor_Commands#Preprocessor_commands|#include]] statements. Textures, sounds, config values are separated into various subfolders. Configs are separated into at least into cfgPatches.hpp and Core.hpp.
+* Documentation. <br>The Core.hpp (to be found in the '''\h''' subfolder) contains (technical) comments at the top about the changes done by the addon. Sometimes even additional information about config values are described.
+* Study and learn. <br>PROPER Mod addons aim for high (technical) quality and (hopefully) no errors to be found in the [[arma.RPT|ArmA.RPT]]. So for example more complex topics like working class inheritance and properly updating existing class can be found in our work. 
+
+== Installation ==
+
+=== Preface ===
+
+'''NEVER ever put addons (pbo files) in the ArmA\addons folder!'''<br>
+
+
+ NOT RECOMMENDED TO BE USED IN MULTIPLAYER! THIS WILL BE CONSIDER CHEATING!
+ NOT TESTED IN MULTIPLAYER - THERE IS ALWAYS THE CHANCE TO CRASH THE SERVER WITH
+ MODIFIED DATA - DON'T USE IT IN MP. PERIOD.
+
+ If the server and all clients would use it, it is a different matter of course.
+
+=== Instructions ===
+
+Just put the single pbo file from any PROPER Mod addon in a [[Arma: Mod Folders|Modfolder's]] addon folder. Like
+ ..\ArmA\@PROPER\addons\PROPER_example.pbo
+
+=== Additional information ===
+
+* Every addon of the PROPER Mod can be used '''independently''' from the other PROPER Mod addons. Of course some addons are meant to be used in combination.<br>
+* Conflicts with other peoples' addons / work should be very unlikely due to the way our work is made (config structure / config inheritance).<br>
+* '''Addons are loaded alphabetically in terms of modfolder and PBO name. Way more important are requiredAddons dependencies of cfgPatches though. They determine which addon (or more precise down to each config value) is used / active, as the config is only loaded once all requiredAddons have been loaded. So a lot of dependencies make the addon loaded late'''.
+
+== Server key file ==
+
+You can find the {{Link|http://www.proper.armaholic.eu/download/proper/proper.bikey|proper.bikey here}}.<br>
+This file is needed on the dedicated server in .\ArmA\keys
+
+== BISign ==
+
+You can download each bisign file individually too. Just add a '''.PROPER.bisign''' extension to the pbo download link. Like<br>
+
+ PROPER_Gameplay_RadioProtocol_Fixed.pbo
+ PROPER_Gameplay_RadioProtocol_Fixed.pbo.PROPER.bisign
+
+However you can download all bisign files available {{Link|http://www.proper.armaholic.eu/download/proper/PROPER_All_BISign.rar|here (PROPER_All_BISign.rar)}} too.
+
+== Linux server ==
+
+For better readability the files still use case sensitivity.
+
+{{Feature|important|Do not forget to make all files lower case only on a linux server machine!}}
+
+== What about AI and PVP tags? ==
+
+These two tags can sometimes be found at the end of an addon / pbo. Meaning:
+
+* '''AI''' tag means the addon is recommended '''only''' for sp or coop.
+* '''PvP''' tag means the addon is recommended '''only''' for human vs human (''no AI'') play.
+
+== Obsolete PROPER addons in 1.14 ==
+
+Due to changes or integration you are NOT recommended to use these PROPER addons in 1.14:
+
+* PROPER_Anims_Fast_Forward_Transition (integrated - sort of)
+* PROPER_Anims_Move_Transition (integrated)
+* PROPER_Anims_Working_Healing_Animation (integrated)
+* PROPER_Gameplay_Sound_Mine_Explosion_Sound_Effect_Added (integrated)
+* PROPER_Gameplay_Vehicle_InsideSoundCoef (integrated - sort of via engine changes)
+* PROPER_Gameplay_Vehicle_Tank_Armor (integrated - a little bit different)
+* PROPER_UI_MPTable_Redesign (new server side option to hide the scores table)
+
+== PROPER packages ==
+
+For busy people with limited time you can download two packages now:
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/PROPER_UI_Redesign.rar|PROPER UI Redesign.rar (click to download)}}
+* {{Link|http://www.proper.armaholic.eu/download/proper/PROPER_Gameplay.rar|PROPER Gameplay.rar (click to download)}}
+
+Note that a few PROPER addons are not in both packages like PVP and AI addons and certain addons which are not favored by the common user.
+Unfortunately you have to check yourself which PROPER addons are NOT in there.
+
+Don't forget about the [[PROPER:Mod#PROPER_Effects_Damage_And_Sea_Texture_Replacement_Sakura_Chan|PROPER Effects Damage And Sea Texture Replacement Sakura Chan]] addon. It is a single PBO download (~30MB).
+
+== PROPER UI ==
+
+=== PROPER UI Audio Options Dialog Redesign ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Audio_Options_Dialog_Redesign.pbo|(click to download)}}
+** Redesign of the old audio options dialog. Design goal is to make it look clean, well structured: {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Audio_Options_Dialog_Redesign_New.jpg|new audio options dialog}} [[File:Image icon.png|20 px]].
+
+=== PROPER UI B Side Fix ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_B_Side_Fix.pbo|(click to download)}}
+** Removes an error messages in the ArmA.rpt.
+
+=== PROPER UI Campaigns Dialog Redesign ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Campaigns_Dialog_Redesign.pbo|(click to download)}}
+** Redesign of the old campaigns dialog. Design goal is to make it look clean, well structured: {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Campaigns_Dialog_Redesign_New.jpg|new campaigns dialog}} [[File:Image icon.png|20 px]].
+
+=== PROPER UI Compass Size Expanded ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Compass_Size_Expanded.pbo|(click to download)}}
+** Rescaled the {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Compass_Size_Expanded_Old.jpg|compass object}} [[File:Image icon.png|20 px]] to make it far {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Compass_Size_Expanded_New.jpg|better readable}} [[File:Image icon.png|20 px]].
+
+=== PROPER UI Difficulty Options Dialog Redesign ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Difficulty_Options_Dialog_Redesign.pbo|(click to download)}}
+** Redesign of the old difficulty dialog. Design goal is to make it look clean, well structured: {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Difficulty_Options_Dialog_Redesign_New.jpg|new difficulty dialog}} [[File:Image icon.png|20 px]].
+
+=== PROPER UI Gear Dialog Redesign ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Gear_Dialog_Redesign.pbo|(click to download)}}
+** Complete redesign of the old gear dialog. Design goal is to make it convenient to use and not block the the players view as much as possible: {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Gear_Dialog_Redesign_New.jpg|new gear dialog}} [[File:Image icon.png|20 px]].
+
+=== PROPER UI GPS Watch Compass Radio Model Reworked ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_GPS_Watch_Compass_Radio_Model_Reworked.pbo|(click to download)}}
+** Redesign of the GPS, compass and clock model. Design goal is to make it convenient to use and not block the the players view as much as possible: {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Compass_Size_Expanded_New.jpg|better readable}} [[File:Image icon.png|20 px]].
+
+=== PROPER UI GroupDir Size Reduced ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_GroupDir_Size_Reduced.pbo|(click to download)}}
+** Design goal is to make it convenient to use and not block the the players view too much possible.
+
+=== PROPER UI InGameUI Cursor Color Changed ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_InGameUI_Cursor_Color_Changed.pbo|(click to download)}}
+** Changed the {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_InGameUI_Cursor_Color_Changed_Old.jpg|selection and leader cursor color}} [[File:Image icon.png|20 px]] to yellow and expanded the cursors size to make it {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_InGameUI_Cursor_Color_Changed_New.jpg|easier to perceive}} [[File:Image icon.png|20 px]] it.
+** Credits to the unkown initial addon maker of this idea!
+
+=== PROPER UI Instant Map Object Zoom ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Instant_Map_Object_Zoom.pbo|(click to download)}}
+** Changed {{Link|http://www.proper.armaholic.eu/download/proper/ui/media/PROPER_UI_Instant_Map_Object_Zoom_Old.avi|zoom duration}} [[File:Video icon.png|20 px]] of map objects to {{Link|http://www.proper.armaholic.eu/download/proper/ui/media/PROPER_UI_Instant_Map_Object_Zoom_New.avi|instant}} [[File:Video icon.png|20 px]].
+
+=== PROPER UI Key Configuration Dialog Redesign ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Key_Configuration_Dialog_Redesign.pbo|(click to download)}}
+** Redesign of the old key configuration dialog. Design goal is to make it look clean, well structured: {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Key_Configuration_Dialog_Redesign_New.jpg|new key configuration dialog}} [[File:Image icon.png|20 px]].
+
+=== PROPER UI Main Menu Dialog Redesign ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Main_Menu_Dialog_Redesign.pbo|(click to download)}}
+** Complete redesign of the {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Main_Menu_Dialog_Redesign_Main_Menu_Old.jpg|old main menu dialog}} [[File:Image icon.png|20 px]].
+** Design goal is to make it look clean, well structured and to be able to access all sub menus instantly and directly (without an animation): {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Main_Menu_Dialog_Redesign_Main_Menu_New.jpg|new main menu dialog}} [[File:Image icon.png|20 px]].
+
+=== PROPER UI Menu Click Sound ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Menu_Click_Sound.pbo|(click to download)}}
+** Removed sound of clicking buttons and entering menus ({{Link|http://ofpc.de/wargames/files/arma/proper/ui/sounds/PROPER_UI_Menu_Click_Sound_MOUSE2.wav|MOUSE2.wav}} [[File:Sound icon.png|20 px]] and {{Link|http://ofpc.de/wargames/files/arma/proper/ui/sounds/PROPER_UI_Menu_Click_Sound_MOUSE3.wav|MOUSE3.wav}} [[File:Sound icon.png|20 px]]).
+** Instead you will only hear this {{Link|http://ofpc.de/wargames/files/arma/proper/ui/sounds/PROPER_UI_Menu_Click_Sound_NEW1.wav|NEW1.wav}} [[File:Sound icon.png|20 px]] sound.
+
+=== PROPER UI Missions Dialog Redesign ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Missions_Dialog_Redesign.pbo|(click to download)}}
+** Redesign of the old missions dialog. Design goal is to make it look clean, well structured: {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Missions_Dialog_Redesign_New.jpg|new missions dialog}} [[File:Image icon.png|20 px]].
+
+=== PROPER UI MP Lobby Dialog Redesign ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_MP_Lobby_Dialog_Redesign.pbo|(click to download)}}
+** Complete redesign of the {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_MP_Lobby_Dialog_Redesign_MP_Lobby_Dialog_Old.jpg|old MP lobby dialog}} [[File:Image icon.png|20 px]].
+** Design goal is to make it look clean and well structured. In addition the dialog should display as much information as possible and still remain tidy (broader colums; more colums; selected server view at the very end (server name; selected mission and island; difficulty setting; server version and country) : {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_MP_Lobby_Dialog_Redesign_MP_Lobby_Dialog_New.jpg|new MP lobby dialog}} [[File:Image icon.png|20 px]].
+** '''Todo / Bug''': As you can see the player listing on the right side doesn't work as desired yet. Any advice is appreciated a lot!
+
+=== PROPER UI MPTable Redesign ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_MPTable_Redesign.pbo|(click to download)}}
+** Design goal is the complete removal of the {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_MPTable_Redesign_MPTable_Old.jpg|MPTable / scores screen}} [[File:Image icon.png|20 px]] to make people concentrate more on playing rather than statistics.
+** '''Todo / Bug''': As you can see on this {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_MPTable_Redesign_MPTable_New.jpg|screenshot}} [[File:Image icon.png|20 px]] the is still a small piece left of the dialog. Any advice how to get rid of it completely is appreciated a lot!
+
+=== PROPER UI No ActionIcons ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_No_ActionIcons.pbo|(click to download)}}
+** Design goal is the complete removal of the {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_No_ActionIcons_Console_Action_Markers_Removed.jpg|console like action markers}} [[File:Image icon.png|20 px]] and {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_No_ActionIcons_Console_Tank_Marker_Removed.jpg|tank marker}} [[File:Image icon.png|20 px]]. The action menu in the lower right corner should do the trick even better.
+** In addition the {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_No_ActionIcons_Action_Menu_Priority_Reworked.jpg|action menu priorities}} [[File:Image icon.png|20 px]] have been reworked for better playability (more useful sequence). Check the two action menu priorities tables at the very end of this page:
+*** [[PROPER:Mod#PROPER_UI_Action_Menu_Priority_Infantry|PROPER UI Action Menu Priority Infantry]]
+*** [[PROPER:Mod#PROPER_UI_Action_Menu_Priority_Vehicles|PROPER UI Action Menu Priority Vehicles]]
+
+=== PROPER UI No Loading Anim ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_No_Loading_Anim.pbo|(click to download)}}
+** Design goal is the removal of the {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_No_Loading_Anim_Old.jpg|loading animation (radar)}} [[File:Image icon.png|20 px]]. We found it annoying and without real use.
+
+=== PROPER UI No LoadingPic ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_No_LoadingPic.pbo|(click to download)}}
+** Design goal is the complete removal of the {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_No_LoadingPic_Old.jpg|loading pictures (like this)}} [[File:Image icon.png|20 px]]. We found it annoying after a while and without real use. Black screen all the way.
+
+=== PROPER UI No PeripheralVision ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_No_PeripheralVision.pbo|(click to download)}}
+** Design goal is the removal of the {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_No_PeripheralVision_Enemy_Indicator.jpg|enemy / friendly / neutral peripheral vision indicator}} [[File:Image icon.png|20 px]] at the edge of the screen. It might be an experiment to simulate peripheral vision. However to us it seems more like a console feature. People should learn to get a proper awareness of the game world without artificial tools for themselves.
+** In addition the console like {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_No_PeripheralVision_Blood_Splash.jpg|blood splash}} [[File:Image icon.png|20 px]] at the center of the screen was removed as well. Awareness should come from natural visuals and sounds, '''not''' from artificial tools.
+
+=== PROPER UI No Progress Bar ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_No_Progress_Bar.pbo|(click to download)}}
+** Removes the {{Link|http://www.proper.armaholic.eu/download/proper/ui/media/PROPER_UI_No_Progress_Bar_Old.avi|progress bar animation}} [[File:Video icon.png|20 px]] for all dialogs apart from the map download progress bar ({{Link|http://www.proper.armaholic.eu/download/proper/ui/media/PROPER_UI_No_Progress_Bar_New.avi|no progress bar demo video}}) [[File:Video icon.png|20 px]].
+
+=== PROPER UI SelectIslands Dialog Redesign ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_SelectIslands_Dialog_Redesign.pbo|(click to download)}}
+** Redesign of the old select islands dialog. Design goal is to make it look clean, well structured: {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_SelectIslands_Dialog_Redesign_New.jpg|new select islands dialog}} [[File:Image icon.png|20 px]].
+
+=== PROPER UI Solid Black Ingame Menus Background CSL ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Solid_Black_Ingame_Menus_Background_CSL.pbo|(click to download)}}
+** Replaced the {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Solid_Black_Ingame_Menus_Background_CSL_Old.jpg|ingame menu background}} [[File:Image icon.png|20 px]] with {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Solid_Black_Ingame_Menus_Background_CSL_New.jpg|solid black}} [[File:Image icon.png|20 px]]. This makes the menus and dialogs a lot more convenient to read.
+** Full credit to ColonelSandersLite for this great replacement! Thanks dude :-)
+
+
+=== PROPER UI Speedup Gear ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Speedup_Gear.pbo|(click to download)}}
+** The addon is meant to speedup the gear dialog. The initial loading lag should be eliminated.
+
+=== PROPER UI Speedup RscMapControl ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Speedup_RscMapControl.pbo|(click to download)}}
+** The addon is meant to speedup the display of the map and map objects like the compass. The initial loading lag should be eliminated or significantly reduced.
+
+=== PROPER UI Transparent Ingame Menus Background CSL ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Transparent_Ingame_Menus_Background_CSL.pbo|(click to download)}}
+** Replaced the {{Link|http://www.proper.armaholic.eu/download/proper/ui/pictures/PROPER_UI_Solid_Black_Ingame_Menus_Background_CSL_Old.jpg|ingame menu background}} [[File:Image icon.png|20 px]] with a transparent one. This makes the menus and dialogs a lot less distracting. Similar to the PROPER UI Solid Black Ingame Menus Background CSL addon. You can only use one of the at a time.
+** Full credit to ColonelSandersLite for this great replacement! Thanks dude :-)
+
+=== PROPER UI Video Options Redesign ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/ui/PROPER_UI_Video_Options_Redesign.pbo|(click to download)}}
+** Complete redesign of the {{Link|http://ofpc.de/wargames/files/arma/proper/ui/pictures/PROPER_UI_Video_Options_Redesign_video_options_old.jpg|old video options dialog}} [[File:Image icon.png|20 px]].
+** Design goal is to be able to actually see the changes while changing your settings. <br>You can now instantly (without an animation) switch between {{Link|http://ofpc.de/wargames/files/arma/proper/ui/pictures/PROPER_UI_Video_Options_Redesign_video_options_new01.jpg|basic settings}} [[File:Image icon.png|20 px]] or {{Link|http://ofpc.de/wargames/files/arma/proper/ui/pictures/PROPER_UI_Video_Options_Redesign_video_options_new02.jpg|advanced settings}} [[File:Image icon.png|20 px]] or hide the dialog altogether (not new).
+
+== PROPER Gameplay ==
+
+=== PROPER Gameplay No AT Use Vs Men By AI ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_No_AT_Use_Vs_Men_By_AI.pbo|(click to download)}}
+** Makes AI soldiers NOT use the AT launchers vs hostile infantry. Works only for infantry in your group in MP. Otherwise the server and all other players need to have it too.
+
+=== PROPER Gameplay Object SupplyRadius Expanded ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Object_SupplyRadius_Expanded.pbo|(click to download)}}
+** Tripled supplyRadius for all objects to make it more convenient ({{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Object_SupplyRadius_Expanded.avi|expanded supplyRadius demo video}}). [[File:Video icon.png|20 px]]
+
+=== PROPER Gameplay RadioProtocol Fixed ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_RadioProtocol_Fixed.pbo|(click to download)}}
+** Removes the xmit error in the ArmA.rpt.
+
+=== PROPER Gameplay Sound Mine Explosion Sound Effect Added ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Sound_Mine_Explosion_Sound_Effect_Added.pbo|(click to download)}}
+** Added the good old timebomb explosion sound for a mine detonation in ArmA. :-) ({{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Sound_Mine_Explosion_Sound_Effect_Added_timebomb.wav|timebomb.wav}}). [[File:Sound icon.png|20 px]]<br>Credits: Goeth of Finnish Defence Forces Mod for the config structure.
+
+=== PROPER Gameplay Sound SoundFly Reworked ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Sound_SoundFly_Reworked.pbo|(click to download)}}
+** Sound levels of all weapons and ammo types reworked. Assigned a few different sounds from the weapons.pbo for soundFlys.<br> Credits: Values are based on Jinef's research back in the times of WGLZ, thanks mate!
+*** {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Sound_SoundFly_Reworked_at7_Rocket_Missile_Loop.wav|AT7 Rocket Missile}}. [[File:Sound icon.png|20 px]]
+*** {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Sound_SoundFly_Reworked_bullet_noise_1.wav|Bullet noise}}. [[File:Sound icon.png|20 px]]
+*** {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Sound_SoundFly_Reworked_Fly_missile1.wav|Fly missile}}. [[File:Sound icon.png|20 px]]
+*** {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Sound_SoundFly_Reworked_noise.wav|Reworked Noise}}. [[File:Sound icon.png|20 px]]
+*** {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Sound_SoundFly_Reworked_rocket_fly1.wav|Rocket fly}}. [[File:Sound icon.png|20 px]]
+*** {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Sound_SoundFly_Reworked_rocketflying.wav|Rocketflying}}. [[File:Sound icon.png|20 px]]
+
+=== PROPER Gameplay Sound SupersonicCrack Effect Removed ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Sound_SupersonicCrack_Effect_Removed.pbo|(click to download)}}
+** All supersonic sounds removed. They are annoying in our view and make it almost impossible to locate the source of the projectile / reduce the sound awareness as infantry significantly. We prefer gameplay over 'realism' here ({{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Sound_SupersonicCrack_Effect_Removed_supersonic_crack_close.wav|supersonic crack wav}}). [[File:Sound icon.png|20 px]].
+
+=== PROPER Gameplay Sound TreeHit Added ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Sound_TreeHit_Added.pbo|(click to download)}}
+** Added the missing treeHit sound. Used the former OFP sound hit: {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Sound_TreeHit_Added_treehit1.wav|treehit wav}}. [[File:Sound icon.png|20 px]].
+** Possibly NON functional. Feedback needed!
+
+=== PROPER Gameplay Vehicle All White Radar Signature PvP ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Vehicle_All_White_Radar_Signature_PvP.pbo|(click to download)}}
+** '''PvP only''': Makes all vehicles have a {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Vehicle_All_White_Radar_Signature_PvP_New.avi|white radar signature}} [[File:Video icon.png|20 px]] {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/pictures/PROPER_Gameplay_Vehicle_All_White_Radar_Signature_PvP_New.jpg|(Screenshot)}} [[File:Image icon.png|20 px]]. Therefore this disables radar / tab locking completely. {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Vehicle_All_White_Radar_Signature_PvP_No_Tab_Rader_Lock.avi|Direct click}} [[File:Video icon.png|20 px]] and auomated AA launcher locking still works though. Former green / red radar targets: {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Vehicle_All_White_Radar_Signature_PvP_Old.avi|video}} [[File:Video icon.png|20 px]], {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/pictures/PROPER_Gameplay_Vehicle_All_White_Radar_Signature_PvP_Old.jpg|screenshot}} [[File:Image icon.png|20 px]]
+
+=== PROPER Gameplay Vehicle GetInRadius Expanded ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Vehicle_GetInRadius_Expanded.pbo|(click to download)}}
+** Doubled getInRadius for all vehicles to make it more convenient ({{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Vehicle_GetInRadius_Expanded.avi|expanded getInRadius demo video}}). [[File:Video icon.png|20 px]]
+
+=== PROPER Gameplay Vehicle InsideSoundCoef ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Vehicle_InsideSoundCoef.pbo|(click to download)}}
+** It reduces sound volume inside vehicles significantly.
+** '''Todo''': Add example video.
+
+ If you dislike the fact that the (engine sound in particular) sound is way too
+ loud if you are inside vehicles, you will love this one.<br>
+ You will be happy to go easy on with your ears again and have a good voice chat
+ with your buddies while being in some vehicle.<br>
+ Note that the volume is still good in order to  hear all the things around you.
+ Especially in the combination with the "PROPER_Gameplay_Vehicle_OccludeAndObstructSounds"
+ addon... it is more like the sound is very pleasantly dampened.
+
+=== PROPER Gameplay Vehicle Lock AI ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Vehicle_Lock_AI.pbo|(click to download)}}
+** '''AI only''': To make vehicle combat vs AI more enjoyable again, the tab/radar locking is re'enabled for all vehicle weapons as a workaround {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Vehicle_Lock_AI_All_Vehcile_Weapons_CanLock.avi|(example video for DShKM)}} [[File:Video icon.png|20 px]].
+
+ However you need to be the _weapon commanding guy_ in the vehicle.<br>
+ You either need to activate manual control or switch to gunner for a moment as
+ group leader to get the _weapon commanding guy_ status.
+ After that the tab/radar locking also works for driver or commander in ground
+ vehicles without commander slot present in the vehicle (these almost all
+ besides M1Abrams, T72 and BMP2).
+
+=== PROPER Gameplay Vehicle No Lock PvP ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Vehicle_No_Lock_PvP.pbo|(click to download)}}
+** '''PvP only''': To make vehicle combat in PvP less based on clicking and knowledge but rather more based on skill and make it more enjoyable locking is disabled for all vehicle weapons. {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Vehicle_No_Lock_PvP_Only_Guided_CanLock.avi|Guided missiles}} [[File:Video icon.png|20 px]] like Strela, AA can still lock vehicles of course.
+
+=== PROPER Gameplay Vehicle No Alarm Sound ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Vehicle_No_Alarm_Sound.pbo|(click to download)}}
+** Disables the annoying {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Vehicle_No_Alarm_Sound_alarm_loop1.wav|alarm sound}} [[File:Sound icon.png|20 px]] when being hit as a vehicle.
+** '''Todo''': Add example video.
+
+=== PROPER Gameplay Vehicle No Eject Action ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Vehicle_No_Eject_Action.pbo|(click to download)}}
+** Removes the {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Vehicle_No_Eject_Action_Old.jpg|Eject action}} [[File:Image icon.png|20 px]] {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Vehicle_No_Eject_Action_New.jpg|menu entry}} [[File:Image icon.png|20 px]] and the shortcut key.
+** This is a gameplay change. You can now only getOut of vehicles. This means you need to wait until the vehicle has halted. No more quick eject from driving vehicles possible.
+
+=== PROPER Gameplay Vehicle No Switch Seat Action ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Vehicle_No_Switch_Seat_Action.pbo|(click to download)}}
+** Removes the {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Vehicle_No_Switch_Seat_Action_Old.jpg|switchToXXX action}} [[File:Image icon.png|20 px]] {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Vehicle_No_Switch_Seat_Action_New.jpg|menu entry}} [[File:Image icon.png|20 px]] and the shortcut key.
+** This is a gameplay change. This should promote the use of 2/3 manned vehicles as a single guy has to getout and board the vehicle to switch to a different position now.
+
+=== PROPER Gameplay Vehicle OccludeAndObstructSounds ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Vehicle_OccludeAndObstructSounds.pbo|(click to download)}}
+** Improve audio-visual awareness inside vehicles significantly.
+** '''Todo''': Add example video.
+
+ Well, did you ever felt lost in ArmA tanks - I am sure you did!<br>
+ This is primarily due to the limited audio-visual awareness inside vehicles
+ (compared to OFP in particular).<br>
+ BI tried to introduce a fancy realism effect... as a result inside vehicles
+ you are almost completely deaf. In other words unable to hear the surrounding
+ sound scenery properly, like immediate hostile fire or even direct impacts at
+ your vehicle.<br>
+ This is a good day for you! With this addon, you shall become happy again!
+
+=== PROPER Gameplay Vehicle StartEngine Disabled ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Vehicle_StartEngine_Disabled.pbo|(click to download)}}
+** Disables the effect that the vehicle engine is activated once you turn the turret (as gunner or commander).
+** '''Todo''': Add example video.
+
+
+
+=== PROPER Gameplay Vehicle Transport Limit Expanded ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Vehicle_Transport_Limit_Expanded.pbo|(click to download)}}
+** Transport limit of all vehicles largely increased to avoid the ammo spilling bug.
+
+=== PROPER Gameplay Weapon AA Launcher ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Weapon_AA_Launcher.pbo|(click to download)}}
+** Reduces the maneuvrability and hit percentage of AA rockets. Works only for infantry in your group in MP. Otherwise the server and all other players need to have it too. You may want to use NWD_RocketBallistics instead as its more comprehensive - yet it has still very high maneuvrability and hit rate for Stinger and Sidewinder rockets.
+
+=== PROPER Gameplay Weapon Disperion Disabled ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Weapon_Disperion_Disabled.pbo|(click to download)}}
+** Reduced and unified the infantry weapon dispersion for all weapons. It is now again: {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Weapon_Disperion_Disabled_New.avi|"where you aim, there you hit"}} [[File:Video icon.png|20 px]] principle. Very satisfying comparted to the {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Weapon_Disperion_Disabled_Old.avi|high disperion}} [[File:Video icon.png|20 px]] ArmA weapons like AK74PSO.
+** Meant to be used in combination with [[PROPER:Mod#PROPER_Gameplay_Weapon_Sway_Reworked|PROPER Gameplay Weapon Sway Reworked]].
+
+=== PROPER Gameplay Weapon Dot Crosshair hedcrusha ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Weapon_Dot_Crosshair_hedcrusha.pbo|(click to download)}}
+** Replaces the {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/pictures/PROPER_Gameplay_Weapon_Dot_Crosshair_hedcrusha_Old.jpg|weapon cursor}} [[File:Video icon.png|20 px]] for rifles, pistols and machine guns with a {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/pictures/PROPER_Gameplay_Weapon_Dot_Crosshair_hedcrusha_New.jpg|dot}} [[File:Video icon.png|20 px]].
+** Full credit to hedcrusha for this great replacement! Thanks dude :-)
+
+=== PROPER Gameplay Weapon HandGrenadeTimed Explosion OnImpact ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Weapon_HandGrenadeTimed_Explosion_OnImpact.pbo|(click to download)}}
+** Disabled timed effect of the grenade and made in non bouncing ({{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Weapon_HandGrenadeTimed_Explosion_OnImpact.avi|expanded getInRadius demo video}}). [[File:Video icon.png|20 px]]
+
+=== PROPER Gameplay Weapon No Dexterity ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Weapon_No_Dexterity.pbo|(click to download)}}
+** Reduces vertical weapon sway for all infantry weapons besides launcher type weapons. Horizontal weapon sway does hardly exist (or not at all) for non launcher type weapons. So the delay is mainly / solely related to ones mouse sensitivity settings. Gives the player a lot more direct mouse control over the weapon.
+*** {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Weapon_No_Dexterity_Old.avi|Old y-axis weapon delay / sluggishness}}. [[File:Video icon.png|20 px]]
+*** {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Weapon_No_Dexterity_New01.avi|More precise weapon control demo video}}. [[File:Video icon.png|20 px]]
+*** {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Weapon_No_Dexterity_New02.avi|More precise weapon control demo video2}}. [[File:Video icon.png|20 px]]
+*** {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Weapon_No_Dexterity_Launcher.avi|Launcher weapons are still hard to handle}}. [[File:Video icon.png|20 px]]
+
+ In addition you are recommended to double the y axis sensitivity value
+ (mouseSensitivityY) based on your x axis value (mouseSensitivityX).
+ The values are to be found in your "YourUser.ArmAprofile" file.
+ Thanks to Ryan for the tip!
+
+ The floatingZoneArea should be set to the very left (equals zero) too
+ floatingZoneArea=0.000000;
+ in order to get the best direct mouse control over the weapon.
+
+=== PROPER Gameplay Weapon Sway Reworked ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/gameplay/PROPER_Gameplay_Weapon_Sway_Reworked.pbo|(click to download)}}
+** Infantry weapon sway reworked. Expanded all default ArmA values a little bit ({{Link|http://www.proper.armaholic.eu/download/proper/gameplay/media/PROPER_Gameplay_Weapon_Sway_Reworked_New.avi|demo video}}) [[File:Video icon.png|20 px]]
+** Values might get an expanded even more in future updates.
+** Meant to be used in combination with [[PROPER:Mod#PROPER_Gameplay_Weapon_Disperion_Disabled|PROPER Gameplay Weapon Disperion Disabled]].
+
+== PROPER Anims ==
+
+=== PROPER Anims Fast Forward Transition ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/anims/PROPER_Anims_Fast_Forward_Transition.pbo|(click to download)}}
+** Sprint transitions are quite broken in ArmA. The idea is to replace sprint with run gameplay wise. This addon doubles the diagonal forward and straightforward run speed to make it equal to the sprint speed. In addition the diagonal forward and straightforward walk is accelerated by 150 percent to make it more useful. More info in the BI forum in the thread: {{Link|link= http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?act=ST;f=69;t=69548;st=0|text=  Very buggy sprint (fast forward) transition..., What about a workaround?}}
+
+
+
+== PROPER World ==
+
+=== PROPER World Desert Island Instant IntroAnims ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/world/PROPER_World_Desert_Island_Instant_IntroAnims.pbo|(click to download)}}
+** The intro missions in the main menu for {{Link|link= http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?act=ST;f=70;t=62937;st=0|text= OFP Desert Island in ArmA by Solus}} are reworked.
+
+=== PROPER World Sahrani Rahmadi Instant IntroAnims ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/world/PROPER_World_Sahrani_Rahmadi_Instant_IntroAnims.pbo|(click to download)}}
+** The intro missions in the main menu from Sahrani and Rahmadi are reworked. With this addon {{Link|http://www.proper.armaholic.eu/download/proper/world/media/PROPER_World_Sahrani_Rahmadi_Instant_IntroAnims_New.avi|the same second}} [[File:Video icon.png|20 px]] you exit the editor, you are back in the main menu. Without it can take  {{Link|http://www.proper.armaholic.eu/download/proper/world/media/PROPER_World_Sahrani_Rahmadi_Instant_IntroAnims_Old.avi|several seconds}} [[File:Video icon.png|20 px]].
+
+== PROPER Effects ==
+
+=== PROPER Effects Damage And Sea Texture Replacement Sakura Chan ===
+
+* {{Link|http://www.proper.armaholic.eu/download/proper/PROPER_Effects_Damage_And_Sea_Texture_Replacement_Sakura_Chan.rar|(click to download)}}
+** This addon replaces most {{Link|http://www.proper.armaholic.eu/download/proper/effects/pictures/PROPER_Effects_Damage_And_Sea_Texture_Replacement_Sakura_Chan_Damage_Texture_New.jpg|damage textures}} [[File:Image icon.png|20 px]] of vehicles. The {{Link|http://www.proper.armaholic.eu/download/proper/effects/pictures/PROPER_Effects_Damage_And_Sea_Texture_Replacement_Sakura_Chan_Damage_Texture_Old.jpg|rusty ones}} [[File:Image icon.png|20 px]] are exchanged by very transparent one with a few impact holes.
+** In addition the {{Link|http://www.proper.armaholic.eu/download/proper/effects/pictures/PROPER_Effects_Damage_And_Sea_Texture_Replacement_Sakura_Chan_Water_Old.jpg|water color}} [[File:Image icon.png|20 px]] is replaced by a new {{Link|http://www.proper.armaholic.eu/download/proper/effects/pictures/PROPER_Effects_Damage_And_Sea_Texture_Replacement_Sakura_Chan_Water_New.jpg|brigher more light color}} [[File:Image icon.png|20 px]].
+** Full credit to Sakura Chan - all textures are her work!
+** This is merely a repack. Permission was kindly granted by Sakura Chan.
+** The updated version is now a full PBO and does NOT need any further fiddling.
+
+== Additional information ==
+
+=== PROPER UI Action Menu Priority Infantry ===
+
+{| class="wikitable"
+|-
+! Command
+! Priority
+! Hidden
+|-
+| LadderOnDown
+| 10
+| 
+|-
+| LadderOnUp
+| 10
+| 
+|-
+| Heal
+| 9,9
+| 
+|-
+| CancelAction
+| 8,6
+| 
+|-
+| CancelTakeFlag
+| 8,5
+| 
+|-
+| Deactivate
+| 8,4
+| 
+|-
+| DeactivateMine
+| 8,3
+| 
+|-
+| ReturnFlag
+| 8
+| 
+|-
+| SetTimer
+| 7,9
+| 
+|-
+| StartTimer
+| 7,9
+| 
+|-
+| TakeFlag
+| 5,9
+| 
+|-
+| TakeDropWeapon
+| 5,6
+| 
+|-
+| TakeWeapon
+| 5,6
+| 
+|-
+| TakeDropMagazine
+| 5,5
+| 
+|-
+| TakeMagazine
+| 5,5
+| 
+|-
+| DropMagazine
+| 5,3
+| 
+|-
+| PutMagazine
+| 5,3
+| 
+|-
+| PutWeapon
+| 5,3
+| 
+|-
+| TakeMine
+| 5,2
+| 
+|-
+| LadderOff
+| 5
+| 
+|-
+| GetInDriver
+| 4,8
+| 
+|-
+| GetInTurret
+| 4,6
+| 
+|-
+| GetInPilot
+| 4,5
+| 
+|-
+| GetInCommander
+| 4,15
+| 
+|-
+| GetInCargo
+| 4,1
+| 
+|-
+| LoadEmptyMagazine
+| 4
+| 
+|-
+| LoadMagazine
+| 4
+| true
+|-
+| LoadOtherMagazine
+| 4
+| 
+|-
+| DropWeapon
+| 3,2
+| 
+|-
+| HideWeapon
+| 3,0
+| 
+|-
+| Talk
+| 2
+| 
+|-
+| WeaponInHand
+| 2
+| true
+|-
+| User
+| 1,5
+| 
+|-
+| UserType
+| 1,4
+| 
+|-
+| Gear
+| 1
+| 
+|-
+| FireInflame
+| 0,99
+| 
+|-
+| FirePutDown
+| 0,99
+| 
+|-
+| MarkEntity
+| 0,5199
+| true
+|-
+| MarkWeapon
+| 0,5199
+| true
+|-
+| UseMagazine
+| 0,519
+| 
+|-
+| TouchOff
+| 0,515
+| 
+|-
+| NVGoggles
+| 0,511
+| true
+|-
+| NVGogglesOff
+| 0,511
+| true
+|-
+| HideBody
+| 0,51
+| 
+|-
+| UseWeapon
+| 0,5
+| 
+|-
+| HandGunOff
+| 0,4
+| 
+|-
+| HandGunOffStand
+| 0,4
+| 
+|-
+| HandGunOn
+| 0,4
+| 
+|-
+| HandGunOnStand
+| 0,4
+| 
+|-
+| WeaponOnBack
+| 0,3
+| true
+|-
+| Salute
+| 0,11
+| true
+|-
+| SitDown
+| 0,1
+| true
+|-
+| StrokeFist
+| 0,1
+| 
+|-
+| StrokeGun
+| 0,1
+| 
+|-
+| LadderDown
+| 0
+| 
+|-
+| LadderUp
+| 0
+| 
+|-
+| None
+| 0
+| 
+|-
+| TeamSwitch
+| 0
+| true
+|-
+|Diary
+| -1
+| 
+|-
+|IngameMenu
+| -1
+| 
+|-
+|}
+
+=== PROPER UI Action Menu Priority Vehicles ===
+
+{| class="wikitable"
+|-
+! Command
+! Priority
+! Hidden
+|-
+| MoveToGunner
+| 4,35
+|
+|-
+| MoveToCommander
+| 4,25
+|
+|-
+| GetInGunner
+| 4,2
+|
+|-
+| MoveToTurret
+| 4,2
+|
+|-
+| MoveToPilot
+| 4,15
+|
+|-
+| MoveToDriver
+| 4,05
+|
+|-
+| MoveToCargo
+| 4,0
+|
+|-
+| LoadEmptyMagazine
+| 4
+|
+|-
+| LoadMagazine
+| 4
+| true
+|-
+| LoadOtherMagazine
+| 4
+|
+|-
+| SwitchMagazine
+| 3,0
+|
+|-
+| SwitchWeapon
+| 3,0
+|
+|-
+| EngineOff
+| 2,0
+|
+|-
+| EngineOn
+| 2,0
+|
+|-
+| Gear
+| 1
+|
+|-
+| ManualFire
+| 1
+|
+|-
+| ManualFireCancel
+| 1
+|
+|-
+| TurnIn
+| 0,95
+|
+|-
+| CancelLand
+| 0,9
+|
+|-
+| Land
+| 0,9
+|
+|-
+| LandGear
+| 0,8
+|
+|-
+| LandGearUp
+| 0,8
+|
+|-
+| FlapsDown
+| 0,7
+|
+|-
+| FlapsUp
+| 0,7
+|
+|-
+| TurnOut
+| 0,6
+|
+|-
+| MarkEntity
+| 0,5199
+| true
+|-
+| MarkWeapon
+| 0,5199
+| true
+|-
+| NVGoggles
+| 0,511
+| true
+|-
+| NVGogglesOff
+| 0,511
+| true
+|-
+| LightOff
+| 0,3
+|
+|-
+| LightOn
+| 0,3
+|
+|-
+| ScudLaunch
+| 0,04
+|
+|-
+| ScudStart
+| 0,04
+|
+|-
+| ScudCancel
+| 0,039
+|
+|-
+| Repair
+| 0,023
+|
+|-
+| Rearm
+| 0,022
+|
+|-
+| Refuel
+| 0,021
+|
+|-
+| AutoHover
+| 0,015
+|
+|-
+| AutoHoverCancel
+| 0,015
+|
+|-
+| Eject
+| 0,011
+|
+|-
+| GetOut
+| 0,010
+|
+|-
+| None
+| 0
+|
+|-
+|}
+
+== PROPER Mod Team ==
+
+* Members:
+** The-F
+** Q
+* Contact:
+** [mailto:contact_PROPER_MOD@web.de contact_PROPER_MOD@web.de]
+* Page:
+** http://www.proper.armaholic.eu/
+
+
+== Updates on PROPER projects ==
+
+=== 2008-07-27 ===
+
+* Removed PROPER_Anims_Working_Healing_Animation (integrated in 1.14)
+* Removed PROPER_Gameplay_Vehicle_Tank_Armor (integrated in 1.14) 
+
+=== 2008-01-03 ===
+
+* Updated all projects:
+** CfgAddons added to avoid missing addon error messages upon mission load.
+** better inner structure (relative includes).
+** version.txt with date tag instead of version number in the version.sqf.
+* Added [[PROPER:Mod#BISign|BISign]] files for all pbos and the [[PROPER:Mod#Server key file|PROPER.bikey]] to support signature checking. Unfortunately to sign each individual addon with another key is quite some work. We will do so only on request.
+* Added [[PROPER:Mod#PROPER_Gameplay_No_AT_Use_Vs_Men_By_AI|PROPER Gameplay No AT Use Vs Men By AI]]
+* Added [[PROPER:Mod#PROPER_Gameplay_RadioProtocol_Fixed|PROPER Gameplay RadioProtocol Fixed]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Vehicle_Tank_Armor|PROPER Gameplay Vehicle Tank Armor]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Vehicle_Transport_Limit_Expanded|PROPER Gameplay Vehicle Transport Limit Expanded]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Weapon_AA_Launcher|PROPER Gameplay Weapon AA Launcher]]
+* Added [[PROPER:Mod#PROPER_UI_B_Side_Fix|PROPER UI B Side Fix]]
+* Added [[PROPER:Mod#PROPER_UI_GPS_Watch_Compass_Radio_Model_Reworked|PROPER UI GPS Watch Compass Radio Model Reworked]]
+* Added [[PROPER:Mod#PROPER_UI_GroupDir_Size_Reduced|PROPER UI GroupDir Size Reduced]]
+* Updated [[PROPER:Mod#PROPER_Effects_Damage_And_Sea_Texture_Replacement_Sakura_Chan|PROPER Effects Damage And Sea Texture Replacement Sakura Chan]]<br>Full PBO version now available for download.
+* Updated maybe a few others .. cannot remember..
+* Added a note about [[PROPER:Mod#Obsolete_PROPER_addons_in_1.09_beta|Obsolete PROPER addons in 1.09 beta]].
+* Added package
+
+=== 2007-11-18 ===
+
+* Added [[PROPER:Mod#PROPER_UI_Gear_Dialog_Redesign|PROPER UI Gear Dialog Redesign]]
+* Added [[PROPER:Mod#PROPER_Anims_Fast_Forward_Transition|PROPER Anims Fast Forward Transition]]
+* Fixed [[PROPER:Mod#PROPER_Gameplay_Vehicle_InsideSoundCoef|PROPER Gameplay Vehicle InsideSoundCoef]]<br>Sound inside armored vehicles reduced even more.
+* Fixed [[PROPER:Mod#PROPER_Gameplay_Vehicle_No_Alarm_Sound|PROPER Gameplay Vehicle No Alarm Sound]]<br>Removed the alarm sound for helicopters and planes as well.
+* Fixed [[PROPER:Mod#PROPER_Gameplay_Vehicle_No_Lock_PvP|PROPER Gameplay Vehicle No Lock PvP]]<br>Su is one-seater now. The pilot can control all weapons by default and lock with the guided rockets again (fix).<br>The AH-1W pilot has now control of guided and unguided missiles and therefore can lock with guided rockets again (fix).
+* Fixed [[PROPER:Mod#PROPER_Gameplay_Weapon_Disperion_Disabled|PROPER Gameplay Weapon Disperion Disabled]]<br>Vehicle recoil returned to ArmA default values.
+
+=== 2007-11-10 ===
+
+* Added [[PROPER:Mod#PROPER_Gameplay_Sound_TreeHit_Added|PROPER Gameplay Sound TreeHit Added]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Vehicle_No_Eject_Action|PROPER Gameplay Vehicle No Eject Action]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Vehicle_No_Switch_Seat_Action|PROPER Gameplay Vehicle No Switch Seat Action]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Weapon_Disperion_Disabled|PROPER Gameplay Weapon Disperion Disabled]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Weapon_Dot_Crosshair_hedcrusha|PROPER Gameplay Weapon Dot Crosshair hedcrusha]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Weapon_Sway_Reworked|PROPER Gameplay Weapon Sway Reworked]]
+* Added [[PROPER:Mod#PROPER_UI_Compass_Size_Expanded|PROPER UI Compass Size Expanded]]
+* Added [[PROPER:Mod#PROPER_UI_InGameUI_Cursor_Color_Changed|PROPER UI InGameUI Cursor Color Changed]]
+* Added [[PROPER:Mod#PROPER_UI_Instant_Map_Object_Zoom|PROPER UI Instant Map Object Zoom]]
+* Added [[PROPER:Mod#PROPER_UI_Solid_Black_Ingame_Menus_Background_CSL|PROPER UI Solid Black Ingame Menus Background CSL]]
+* Added [[PROPER:Mod#PROPER_UI_Speedup_RscMapControl|PROPER UI Speedup RscMapControl]]
+* Fixed [[PROPER:Mod#PROPER_Gameplay_Vehicle_No_Lock_PvP|PROPER Gameplay Vehicle No Lock PvP]]<br>Finally all non guided weapon can no longer be locked. All guided (missiles) can.
+
+=== 2007-11-02 ===
+
+* Added [[PROPER:Mod#PROPER_Gameplay_Object_SupplyRadius_Expanded|PROPER Gameplay Object SupplyRadius Expanded]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Sound_Mine_Explosion_Sound_Effect_Added|PROPER Gameplay Sound Mine Explosion Sound Effect Added]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Sound_SoundFly_Reworked|PROPER Gameplay Sound SoundFly Reworked]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Sound_SupersonicCrack_Effect_Removed|PROPER Gameplay Sound SupersonicCrack Effect Removed]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Vehicle_GetInRadius_Expanded|PROPER Gameplay Vehicle GetInRadius Expanded]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Weapon_HandGrenadeTimed_Explosion_OnImpact|PROPER Gameplay Weapon HandGrenadeTimed Explosion OnImpact]]
+* Added [[PROPER:Mod#PROPER_Gameplay_Weapon_No_Dexterity|PROPER Gameplay Weapon No Dexterity]]
+* Added [[PROPER:Mod#PROPER_UI_Audio_Options_Dialog_Redesign|PROPER UI Audio Options Dialog Redesign]]
+* Added [[PROPER:Mod#PROPER_UI_Campaigns_Dialog_Redesign|PROPER UI Campaigns Dialog Redesign]]
+* Added [[PROPER:Mod#PROPER_UI_Difficulty_Options_Dialog_Redesign|PROPER UI Difficulty Options Dialog Redesign]]
+* Added [[PROPER:Mod#PROPER_UI_Gear_Dialog_Redesign|PROPER UI Gear Dialog Redesign]]
+* Added [[PROPER:Mod#PROPER_UI_Key_Configuration_Dialog_Redesign|PROPER UI Key Configuration Dialog Redesign]]
+* Fixed [[PROPER:Mod#PROPER_UI_Main_Menu_Dialog_Redesign|PROPER UI Main Menu Dialog Redesign]]
+* Added [[PROPER:Mod#PROPER_UI_Missions_Dialog_Redesign|PROPER UI Missions Dialog Redesign]]
+* Fixed [[PROPER:Mod#PROPER_UI_No_PeripheralVision|PROPER UI No PeripheralVision]]: blood splash was not completely removed (small transparent black square texture was still visible).
+* Added [[PROPER:Mod#PROPER_UI_No_Progress_Bar|PROPER UI No Progress Bar]]
+* Added [[PROPER:Mod#PROPER_UI_SelectIslands_Dialog_Redesign|PROPER UI SelectIslands Dialog Redesign]]
+* Added [[PROPER:Mod#PROPER_World_Desert_Island_Instant_IntroAnims|PROPER World Desert Island Instant IntroAnims]]
+
+=== 2007-10-30 ===
+
+* Added [[PROPER:Mod#PROPER_World_Sahrani_Rahmadi_Instant_IntroAnims|PROPER World Sahrani Rahmadi Instant IntroAnims]]
+* Fixed [[PROPER:Mod#PROPER_Anims_Working_Healing_Animation|PROPER Anims Working Healing Animation]]:<br>Wrong include path made it completely non functional. Sorry about that!

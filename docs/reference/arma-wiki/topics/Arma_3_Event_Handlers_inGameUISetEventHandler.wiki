@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Event_Handlers/inGameUISetEventHandler
+// revision: 329058 (2022-07-21T22:47:14Z)
+// export sha1: hrozke44guc1ffjrjqd6irlwl7yxdi6
+// categories: Category:Introduced with Armed Assault version 1.00
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+In Game UI Event Handlers trigger when user scrolls or activates in game action menu. Additionally a [[Boolean]] or [[Nothing]] is expected to be returned by the assigned code. If the assigned EH code returns [[true]], default engine action is overridden. For all other available EHs see the [[Arma_3:_Event_Handlers|main page]].
+
+{{Feature|important|Arguments were introduced with {{GVI|arma3|1.50}}.}}
+
+
+== Related Commands ==
+
+* [[inGameUISetEventHandler]]
+
+
+== Examples ==
+
+<sqf>
+inGameUISetEventHandler ["Action", "hint 'Lights, Camera, Action!'"];	// add EH
+inGameUISetEventHandler ["Action", ""];									// remove EH
+</sqf>
+
+
+== Events ==
+
+{| class="wikitable"
+! Class
+! Description
+! Arguments - since {{GVI|arma3|1.50}}
+
+|-
+|
+==== PrevAction ====
+| Triggers on mouse wheel scroll up.
+| rowspan="3" |
+<sqf>params ["_target", "_caller", "_index", "_name", "_text", "_priority", "_showWindow", "_hideOnUse", "_shortcut", "_visibility", "_eventName"];</sqf>
+* [[Object]] - target object to which action is attached
+* [[Object]] - caller object, basically [[player]]
+* [[Number]] - index of the action in action menu (0 - top most)
+* [[String]] - engine based action name ("User" for user added actions)
+* [[String]] - [[localize]]d action plain text as seen by the caller
+* [[Number]] - action ''priority'' value
+* [[Boolean]] - action ''showWindow'' value
+* [[Boolean]] - action ''hideOnUse'' value
+* [[String]] - action ''shortcut'' name or ""
+* [[Boolean]] - action menu visibility (on first scroll or action press the menu is still invisible, so no action is performed, only menu is shown)
+* [[String]] - EH event name
+
+|-
+|
+==== Action ====
+| Triggers on action key press.
+
+|-
+|
+==== NextAction ====
+| Triggers on mouse wheel scroll down.
+
+|}
+
+
+[[Category:Introduced with Armed Assault version 1.00]]

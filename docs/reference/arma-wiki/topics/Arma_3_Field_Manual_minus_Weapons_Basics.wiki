@@ -1,0 +1,100 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Weapons_Basics
+// revision: 349733 (2023-11-20T22:09:56Z)
+// export sha1: l79t3czw1rd3hn3u3iw7tbdphtl1a5o
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Weapons (Basics) ==
+=== Fire-mode ===
+Many weapons have several fire-modes such as semi-automatic and burst.<br>
+* Use '''[F]''' to switch between the fire-modes. (semiautomatic/burst/full auto or Direct/Top Attack for ATGMs)<br>
+While in a vehicle as a gunner, use the switch key '''[F]''' to switch between vehicle weapons.
+
+
+=== Launchers ===
+Launchers give infantry a way to neutralize armored vehicles. <br>
+* Equip the launcher by pressing '''[Right Ctrl+;]'''.<br>
+* You can press '''[Hold Sec. Mouse Btn.]''' to see through the launcher's optics.<br>
+* Point at the target.<br>
+* Shoot with '''[Prim. Mouse Btn.]'''.<br>For launchers armed with guided missiles, press '''[T]''' to lock the target [[File:a3_fm_lock_target.png|24px]] before firing. For missiles with Top Attack option, press '''[F]''' to toggle Direct/Top Attack modes before firing.
+
+''You can switch between weapons by opening the action menu '''[Mouse wheel down]''' and selecting the weapon.''
+
+
+=== Lowering Weapons ===
+Press '''[2xLeft Ctrl]''' to lower your weapon. It will be raised again after clicking '''[Prim. Mouse Btn.]''' or pressing '''[2xLeft Ctrl]''' again.
+
+''A lowered weapon makes movement slower and less tiring.''
+
+
+=== Recoil ===
+Recoil is a backward momentum when a gun is fired. The stronger the gun cartridge, the bigger the kick. Recoil and the anticipation of it can negatively affect shooting precision. This applies even more while shooting in bursts or in full-automatic mode.<br>
+To lower the effect recoil has on your accuracy, try moving the aim down between the consecutive shots. Increasing your stability also helps, crouch '''[X]''' or go prone '''[Z]'''.
+
+
+=== Reload ===
+An empty magazine is indicated by the magazine icon in the center of the screen.<br>
+* Press '''[R]''' to reload anytime.<br>
+Alternatively, use the default action '''[Space]''' to reload your weapon when the icon [[File:a3_fm_reload.png|24px]] is present.
+
+''The Action menu also gives you a selection of all magazines possible to reload. This is useful when you need to use some utility ammo.''
+
+
+=== Rifles ===
+Rifles are primary weapons with great fire-power, magazine capacity, range and accuracy. Rifles can be fitted with various accessories such as pointers, suppressors or optics to customize them for specific situations.
+
+''Some rifles come in versions with underslung grenade launchers.''
+
+
+=== Scopes ===
+Scopes enhance weapon aiming. To equip a scope:<br>
+* Open your Inventory '''[I]'''.<br>
+* '''Drag and drop''' the scope onto your rifle.<br>
+This is also possible if the weapon has an upper accessory slot.
+
+''Scopes are not usable together with a head-mounted display like NVG. But some scopes offer their own optics mode.<br>
+* Press '''[N]''' to switch available optics modes.''
+
+
+=== Focus and Fire ===
+Press '''[Prim. Mouse Btn.]''' to fire your weapon. You can hold '''[Hold Sec. Mouse Btn.]''' to focus and zoom in a little more for more accurate aiming.
+
+'''''[Hold Sec. Mouse Btn.]''' means focusing and holding your breath. This will help to reduce weapon movement for a short while and give you an opportunity to hit your target more precisely. But it will increase your fatigue.''
+
+
+=== Handguns ===
+Handguns are secondary weapons, used in a close combat or for self-defense.<br>
+* Use '''[;]''' to quickly switch to the handgun.
+
+''You can also switch between weapons via the action menu '''[Mouse wheel down]'''.''
+
+
+=== Grenades ===
+Use grenades to quickly dispatch enemies behind cover.<br>
+* Throw a grenade by pressing '''[G]'''.<br>
+* Cycle between grenade and chemlight types by pressing '''[Left Ctrl+G]'''.<br>
+The angle of the throw has a great influence on its distance.
+
+
+=== Weapon Info ===
+Weapon info (in the upper right corner) shows the name of the weapon, selected ammunition, remaining magazines, zeroing of the weapon and most importantly, the selected fire-mode. The more squares in fire-mode, the higher the fire rate.
+
+''Weapon info reappears anytime the state of the weapon changes. So you can either fire a bullet or switch weapons or fire-mode to trigger it. Or press '''[Prim. Mouse Btn.]''' to show it.''
+
+
+=== Switch Weapons ===
+Switch between the primary and secondary weapon with '''[Right Ctrl+;]'''. Switch to the handgun by using '''[;]'''.
+
+''You can switch between weapons by opening the action menu '''[Mouse wheel down]''' and selecting the weapon.''
+
+
+=== Optics ===
+Optics help you aim more precisely.<br>
+* Use '''[Hold Sec. Mouse Btn.]''' to switch to iron sights or optics.<br>
+* You can choose between alternative optic sights with the optics mode key '''[Left Ctrl+Sec. Mouse Btn.]'''.<br>
+* Use '''[Hold Sec. Mouse Btn.]''' to switch back to normal view.
+
+''While not using optics, you can focus by holding '''[Hold Sec. Mouse Btn.]''' to zoom in a little more for more accurate aiming. While looking through the optics, '''[+ [NUM]]''' and '''[- [NUM]]''' zoom in/out. This also works in vehicles.''
+
+
+{{GameCategory|arma3|Field Manual}}

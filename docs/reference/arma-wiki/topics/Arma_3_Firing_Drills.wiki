@@ -1,0 +1,650 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Firing_Drills
+// revision: 373230 (2025-04-12T22:20:52Z)
+// export sha1: terp9pakh9fqs0badpc26tlcm1ljnr2
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+This guide will describe how to design and implement a custom Firing Drill Challenge as available in the vanilla game.
+
+See also:
+* [[Arma 3: Field Manual - Firing Drills]] (for players)
+* [[Arma 3: Time Trials]] (very similar setup and approach)
+
+
+== Terminology ==
+
+* '''Firing Drill (FD)''' - a live-fire exercise in which a competitor is graded for tactically moving through a course while engaging a set of targets
+* '''Competitor''' - the actor performing the drill
+* '''Range Officer (RO)''' - the actor observing the drill and providing feedback / guidance
+* '''Course of Fire (CoF)''' - the physical space and layout in which the drill is performed
+* '''Checkpoint (CP)''' - a navigation point within a course which a competitor must follow in a fixed sequence (if so defined as a rule - see below)
+** The first CP is the '''start'''.
+** The last CP is the '''finish'''.
+** A strict CP contains '''shooting boxes''' (marked areas) from which to fire.
+* '''Target''' - an artificial object shot to complete a drill or to receive time bonuses
+** '''Appearing''' targets appear and disappear based on activation triggers (see below).
+** '''Accuracy''' targets contain zones corresponding to extra time bonuses.
+** '''Moving''' targets travel on rails between positions.
+** '''No-shoot''' targets are not allowed be hit (adding a time penalty).
+** '''Bonus''' targets are optional (rewarding a time bonus).
+* '''Rule''' - these help to determine the completion and scoring conditions for a drill
+** '''Training''' rules - a rule-set allowing familiarization of the CoF (targets at CPs do not need to be shot to move on)
+** '''Competitive''' rules - a rule-set used for Achievements / Leaderboards (targets at CPs need to be shot to move on)
+* '''Time''' - the time from the start it takes to complete a drill (raw)
+** Time '''bonuses''' / '''penalties''' are substracted / added to arrive at the final time.
+** The fastest / lowest time is the best and wins.
+** There are '''bronze''', '''silver''' and '''gold''' '''medal''' times to beat.
+** There may be one '''special''' time to beat (must be faster than gold).
+
+
+== Setup ==
+
+# Open [[:Category:Eden Editor|Eden Editor]] with the terrain of your choice loaded.
+# Insert a player character named {{hl|BIS_FD_Competitor}} ''(Fixed system name)''
+# Now is a good time to save your scenario a first time. Ideally use a name that is safe to reference as config class, so no spaces - f.e. {{hl|MyFirstFiringDrill}} ''(Referenced later)''
+# Insert a NPC ''Range Master'' character of type ''B_RangeMaster_F'' named {{hl|BIS_rangeOfficer}} ''(Fixed system name / place in a separate group)''
+# Insert a ''Firing Drill'' module (''ModuleFiringDrill_F''). [[File:arma3 fd cp start.jpg|thumb|250px|right|Start CP setup]]
+# Insert an ellipse trigger with default properties named f.e. {{hl|BIS_FD_COF}} ''(Referenced later)''
+## Re-size the trigger to encompass your entire CoF and a little extra buffer area (you'll likely re-size it later as you progress).
+# For each CP (including start and finish), insert a trigger with default properties named f.e. {{hl|BIS_FD_CP1}} ''(Referenced later)''
+## Re-size the trigger to meet your CP activation expectations. [[File:arma3 fd cp finish.jpg|thumb|250px|right|Finish CP setup]]
+## For each optional shooting box within the CP, insert a trigger with default properties named f.e. {{hl|BIS_FD_CP2_Box}} ''(Referenced later)''
+# Insert a ''Target - Oval (Ground)'' prop named {{hl|BIS_FD_ruleSelector1}} ''(Referenced later)''
+## Save the scenario (be sure binarization is disabled via the checkbox or preferences).
+## Close Eden Editor to avoid auto-saves.
+## Open the scenario SQM file in a text editor.
+## Replace the target's class by ''Land_Target_Oval_NoPop_F'' (all targets need to use their hidden ''NoPop'' variant).
+## Save the SQM.
+## Re-open the scenario in Eden Editor.
+## Position this target in comfortable shooting range / direction from the start CP (a few meters at most, oriented to be clearly visible and safe).
+## In the target's ''Texture #0'' field, enter: {{hl|A3\modules_f_beta\data\FiringDrills\training_red_ca}} ''(Other colors have corresponding textures - see below)''
+# Copy and paste the first rule target and name it {{hl|BIS_FD_ruleSelector2}} ''(Referenced later)''
+## Position it near the first rule target, typically right from it. [[File:arma3 fd cp.jpg|thumb|250px|right|CP setup with some targets and a shooting box]]
+## In the target's ''Texture #0'' field, enter: {{hl|A3\modules_f_beta\data\FiringDrills\competitive_red_ca}} ''(Other colors have corresponding textures - see below)''
+# Copy and paste a rule target and name it {{hl|BIS_FD_restartSelector1}} ''(Referenced later)''
+## Position it near the finish CP (a few meters from it, oriented to be clearly visible and safe).
+## In the target's ''Texture #0'' field, enter: {{hl|A3\modules_f_beta\data\FiringDrills\restart_red_ca}} ''(Other colors have corresponding textures - see below)''
+# Copy and paste a rule target and name it {{hl|BIS_FD_quitSelector1}} ''(Referenced later)''
+## Position it near the restart target, typically right from it.
+## In the target's ''Texture #0'' field, enter: {{hl|A3\modules_f_beta\data\FiringDrills\quit_ca}} ''(Fixed texture no matter the drill color)''
+# For each target at each CP, generally do the following (more specifics detailed below):
+## Insert the desired target object named f.e. {{hl|BIS_FD_target2_1}} ''(Referenced later (apply a logical naming pattern, such as numbering based on CP index and target index))''
+## Using a similar workflow as above, manually replace its class name with the corresponding ''NoPop'' variant (see the look-up table below).
+## Note that targets do not need to be inside a CP's trigger area (and in many cases probably should not be).
+# Set up drill properties via [[Description.ext|description.ext]] (see below).
+# Configure your drill via [[Description.ext|description.ext]] or via ''CfgFiringDrills'' and ''CfgMissions'' (see below).
+
+=== Moving Targets ===
+
+The easiest approach for moving targets is to place the correct moving pop-up target variant (mind the direction variant too: sideways or forward) in the scene. These moving variants use the same target type profiles as regular pop-up targets. Then use 3D helper objects (that you hide later) as your visual waypoint references used in configuration (see below). Use logical naming conventions to easily match targets to waypoints, such as having the same name as the target with postfix ''_WP1''.
+
+You should also manually lay target rails. One way of doing that is to insert the first piece and manually setting its position / orientation value exactly as your moving target. Next, switch the entity move widget to object space, and slide the rails in only the directional axis you need. After a few pieces, copy and paste multiple to lay increasingly long segments ({{Controls|Ctrl|Shift|V}} to preserve the exact position). End your rails with the separate end piece in the same way. Unfortunately you cannot achieve perfectly aligned rails on sloped terrain, so keep that in mind or accept this.
+
+=== Randomized Targets ===
+
+Positionally randomized targets can be achieved in a similar way, by using 3D helper objects are your visual references. You can then use these named references in the configuration (below). Using the various trigger and chance properties allows you to achieve more randomization. However, consider how much randomization is desired. Too much randomization can defeat repeat training and muscle memory. Different drills may have different objectives in this regard.
+
+=== Common Additions ===
+
+* CP marking objects
+** Recolored objects (road cones, small flags, and multi-color poles for shooting boxes)
+** Direction indicators (arrow signs)
+* Start whiteboard (with CoF layout and tips)
+* Weapon and ammunition containers
+* Decorative props
+** Sponsoring (signs and flags)
+** Range Officer stations (desks, chairs, computers, pen and paper, shot timer, etc.)
+
+
+== Configuration ==
+
+=== description.ext ===
+
+<syntaxhighlight lang="cpp">
+#include "\A3\Missions_F_Beta\Challenges\description_custom.inc" // This will set up various system default settings, such as custom debriefings
+
+onLoadName = "CoF: My First Drill";						// Name of your drill (normally the same as defined in CfgMissions)
+onLoadMission = "Can you beat my splendid drill?!";		// Overview text of your drill (normally the same as defined in CfgMissions)
+loadScreen = "MyFirstFiringDrill_overview_CO.paa";		// Overview picture of your drill (normally the same as defined in CfgMissions)
+briefingName = "CoF: My First Drill";					// Same name as above
+overviewPicture = "myfirstfiringdrill_overview_CO.paa";	// Same picture as above
+overviewText = "Can you beat my splendid drill?!";		// Same text as above
+author = "Range Officer Bob";							// You!
+
+doneKeys[] = { "MyFirstFiringDrill_done" }; // Registers having completed (achieved competitive gold or special) your drill
+</syntaxhighlight>
+
+{{Feature|informative|Not all properties in this sample config are needed for every drill; they are included to showcase all options.}}
+<syntaxhighlight lang="cpp">
+// This primary drill configuration can also be implemented via a mod config, but doing so via description.ext is simplest in most cases.
+class CfgFiringDrills
+{
+	// When using description.ext, the name of this class does not matter much (the system selects the first class)
+	// When using a mod config, this class name must correspond to the missionName(Source) (also CfgMissions class)
+	class MyFirstFiringDrill
+	{
+		displayName = "CoF: My First Drill"; // Vanilla drills use a format like this, but it is not enforced
+		// This color is used in many places
+		// It can be any color, but for best results pick a fully supported color (see section below)
+		color[] = { __EVAL(177/255), __EVAL(51/255), __EVAL(57/255), 1 };
+		colorName = "red";			// This version of the color is more restrictive and can only use specific supported colors (see section below)
+		objectCOF = "BIS_FD_COF";	// The CoF trigger referenced in the setup guide
+		// statistic = "";			// Steam stats are not supported for user-generated drills (used for Achievements)
+		// leaderboard = "";		// Steam Leaderboards are not supported for user-generated drills
+		onReset = "reset.sqf";		// This script is executed each time the drill resets (restarts)
+
+		// List any number of objects that you want to be re-colored to the drill color above (f.e. road cones, small flags, etc.)
+		recolor[] =
+		{
+			"BIS_FD_recolor1",
+			"BIS_FD_recolor2"
+		};
+
+		// Set up objects that should have special decal textures applied (this was more useful before Eden Editor - see vanilla decals below)
+		// In vanilla drills these are often graffiti on wooden shoot house walls
+		decals[] =
+		{
+			{ "BIS_FD_decal1", "A3\Missions_F_Beta\data\img\decals\decal_sidearm1_ca", 5 } // Object reference, texture path, hidden selection index
+		};
+
+		// Object references to the 4 special targets for drill mechanics, as defined in the setup guide
+		ruleSelectors[] =
+		{
+			"BIS_FD_ruleSelector1",
+			"BIS_FD_ruleSelector2"
+		};
+
+		restartSelectors[] = { "BIS_FD_restartSelector1" };
+		quitSelectors[] = { "BIS_FD_quitSelector1" };
+
+		containersWeapons[] = { "BIS_weaponsFD1" };				// All containers that should be filled with the drill weapons
+		containersMagazines[] = { "BIS_ammoFD1_1", "BIS_ammoFD1_2", "BIS_ammoFD1_3", "BIS_ammoFD1_4" }; // All containers that should be filled with the drill ammunition
+		containersMagazinesCount[] = { 10, 10 };				// The count of magazines of each type in the containers
+		weapons[] = { "SMG_02_ACO_F", "hgun_Rook40_F" };		// The legal weapons for this drill (retrieve via Virtual Arsenal export f.e.)
+		magazines[] = { "30Rnd_9x21_Mag", "16Rnd_9x21_Mag" };	// The legal magazines for this drill
+		weaponsCompetitor[] = { "SMG_02_ACO_F", "hgun_Rook40_F" }; // Starting weapons for the competitor
+		magazinesCompetitor[] = { "30Rnd_9x21_Mag", "16Rnd_9x21_Mag" }; // Starting magazines for the competitor
+		magazinesCompetitorCount = 6;							// The starting magazine count per weapon for the competitor
+		competitorStart = "BIS_rangeOfficer1A";					// Marker reference to a non-default (re)starting position for the competitor
+																// (used for the special intro in CoF: Green)
+
+		timesMedals[] = { 60, 45, 30 }; // Bronze, silver, gold medal times (be sure to follow this order or results may glitch)
+
+		timeSpecial = 15;			// Optional special time that is faster than gold (when defining this, you do need to also provide the data below)
+		nameSpecial = "Nemesis";	// Optional special time label for the HUD
+		colorSpecial = "#ffa500";	// Optional special time color for the HUD
+		iconSpecial = "\A3\Ui_f\data\GUI\Cfg\Ranks\colonel_gs"; // Optional special time icon for the HUD
+
+		// Rule-set parameters for competitive and training
+		// All vanilla drills use these same settings
+		// It is possible to tweak these values, but that will likely create confusion for players!
+		class RuleSets
+		{
+			// CP mode: 1 - CPs on but targets don't need shooting / 2 - CPs on and all non-optional targets need shooting
+			// Target randomization: rule not used - ignored
+			// Weapons used: 1 - any weapon can be used everywhere / 2 - CPs may define a required weapon (or incur a time penalty)
+			// Shooting boxes: 1 - shooting boxes in CPs are ignored / 2 - shooting boxes in CPs are forced (shooting outside of them incurs a time penalty)
+			// Stances used: 1 - any stance can be used everywhere / 2 - CPs may define a required stance (or incur a time penalty)
+			// Medals: 0 - medal times are not tracked / 1 - medal times are tracked and feedback is given
+			competitive[] = { 2, 0, 2, 2, 2, 1 };
+			training[] = { 1, 2, 1, 1, 1, 0 };
+		};
+
+		// Legacy class used before Eden Editor to load precise object compositions (should not be needed anymore)
+		// class DynOs
+		// {
+		//		script = "dyno_myfirstfiringdrill.sqf"; // Valid DynO mapper output script
+		//		positionAnchor[] = { 500, 500 }; // DynO mapper anchor position in the world
+		// };
+
+		// All of the drill's CPs
+		class CheckPoints
+		{
+			class CP1 // Start
+			{
+				object = "BIS_FD_CP1"; // The CP trigger referenced in the setup guide
+			};
+
+			class CP2 // CP #1
+			{
+				object = "BIS_FD_CP2";
+
+				// Normally targets (positions) are only randomized once on starting a drill, not when restarting it in the same session
+				// This changes that (undefined uses 0)
+				resetRandomizeTargets = 1;
+				disableFeedback = 1;	// Disables the default Range Officer radio feedback for this CP (undefined uses 0)
+				height = 5;				// Only use this ASL forced height for CPs above ground, such as on top of a movement obstacle or inside a building on a raised floor
+				onActivate = "CP2_onActivate.sqf";		// Script executed when this CP is activated (passed [CP object])
+				onDeactivate = "CP2_onDeactivate.sqf";	// Script executed when this CP is deactivated (passed [CP object])
+				onClear = "CP2_onClear.sqf";			// Script executed when this CP is cleared (passed [CP object])
+				weapons[] = { "hgun_Rook40_F" };		// Makes this the required weapon(s) to use at this CP when strict / competitive rules are used
+				stances[] = { "crouch" };		// Makes this the required stance(s) to use at this CP when strict / competitive rules are used (prone / crouch / stand)
+				shootingBoxes[] = { "BIS_FD_CP2_Box" };	// Trigger reference to one or more shooting boxes within the CP when strict / competitive rules are used
+				binocularCompetitor = "Binocular";		// Optionally defining a non-default binocular class (this is the default)
+				nvgCompetitor = "";						// Optionally defining a non-default NVG class (this is the default so no NVG)
+
+				// Configuring all targets associated with this CP
+				class Targets
+				{
+					class T1
+					{
+						object = "BIS_FD_target2_1";	// Object reference for the target placed as in the setup guide
+						type = "PopUp_Acc1";			// Target type profile as defined in the central CfgFiringDrills (see vanilla targets below)
+						upTime = 5; // How long in seconds does the target stay active before counting as missed (if not hit)?
+					};
+
+					class T2 : T1
+					{
+						object = "BIS_FD_target2_2";
+						trigger = "BIS_FD_target2_1"; // Reference to another target which must be hit for this one to activate
+						triggerTime = 2; // How long in seconds after triggering this target does it actually activate?
+
+						// Marker or object references to positions and directions used (in pairs) to randomize the target
+						// Normally it would happen once when starting, but for this CP every time you restart
+						positions[] =
+						{
+							"BIS_FD_target2_2",
+							"BIS_FD_target2_2_Pos2"
+						};
+
+						directions[] =
+						{
+							"BIS_FD_target2_2",
+							"BIS_FD_target2_2_Pos2"
+						};
+					};
+
+					class T3
+					{
+						object = "BIS_FD_target2_3";
+						type = "PopUp";
+						trigger[] = { "BIS_FD_target2_1", "BIS_FD_target2_2" }; // Triggers can also be multiple other targets to have hit
+
+						// Marker or object position references to form a chain of movement waypoints for this target
+						// These are matched to the times in seconds for each segment of movement
+						positionsMove[] =
+						{
+							"BIS_FD_target2_3_WP1"
+						};
+
+						timesMove[] =
+						{
+							3
+						};
+
+						hitCondition = "targets_hitCondition.sqf"; 	// Special compiled script called when the target is hit,
+																	// which can determine if the hit is legal or not (return true to count as hit, false otherwise)
+					};
+
+					class T4
+					{
+						object = "BIS_FD_target2_4";
+						type = "PopUp_Acc2";
+						upTime = 10;
+						triggerChance = 0.5; // Chance to trigger this target at all (0 - 1, so 50% in this case)
+					};
+
+					class T5
+					{
+						object = "BIS_FD_target2_5";
+						type = "PopUp";
+
+						// Chance for this trigger to even spawn at all (0 - 1, so 80% in this case)
+						// Be careful not to create impossible situations, where this target is a trigger for another target!
+						chance = 0.8;
+					};
+
+					class NoShoot1
+					{
+						object = "BIS_FD_noShoot2_1";
+						noShoot = 1;		// Makes this target illegal to hit (incurring a time penalty if hit)
+					};
+
+					class Bonus1
+					{
+						object = "BIS_FD_bonus2_1";
+						optional = 1;		// Makes this an optional target that does not need shooting even on strict / competitive rules
+						noRecolor = 1;		// By default most optional targets get recolored to the drill color, but here you can disable that (undefined uses 0)
+						bonus = 5;			// Defines the bonus points received for hitting this target (translates to -5 seconds)
+						type = "Balloon";	// Some vanilla target type profiles are well-suited as optional, such as this one
+						onActivate = "targets_onActivate.sqf";		// Script executed when this target activates (passed [target object])
+						onDeactivate = "targets_onDeactivate.sqf";	// Script executed when this target deactivates (passed [target object])
+						onHit = "targets_onHit.sqf";				// Script executed on hitting this target
+																	// (passed [target, projectile velocity array, hit selections array, shooter object])
+						onReset = "targets_onReset.sqf";			// Script executed when this target resets (passed [target object])
+					};
+				};
+			};
+
+			class CP3 // Finish
+			{
+				object = "BIS_FD_CP3";
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+=== CfgMissions ===
+
+{{Feature|informative|This is only needed for drills configured via mod config (not via description.ext).}}
+<syntaxhighlight lang="cpp">
+class CfgMissions
+{
+	// This will expose the drill in the SINGLEPLAYER > CHALLENGES > Firing Drills menu
+	class Challenges
+	{
+		class Firing_Drills
+		{
+			class MyFirstFiringDrill // This class should correspond to the class in CfgFiringDrills above
+			{
+				directory = "myFirstFiringDrill.stratis";				// Full path to your drill's scenario folder
+				briefingName = "CoF: My First Drill";					// Name of your drill (normally the same as defined in CfgFiringDrills)
+				overviewText = "Can you beat my splendid drill?!";		// Overview text of your drill (idem)
+				overviewPicture = "myfirstfiringdrill_overview_CO.paa";	// Overview picture of your drill (idem)
+				overviewScript = "\A3\Modules_F_Beta\FiringDrills\scripts\overviewScript.sqf"; // Standard system script to handle the pause menu properly - don't change
+				author = "Range Officer Bob";							// You!
+			};
+
+			// Alternatively you can list your drill in one of the vanilla color categories: Red, Blue, Orange, Purple
+			// class Blue
+			// {
+			// 		Define your drill here instead for example
+			// };
+		};
+	};
+};
+</syntaxhighlight>
+
+=== CfgFiringDrills ===
+
+{{Feature|important|The system-level configuration could be adjusted by a mod, but consider if that is not going to confuse players who may be trained on vanilla drills.}}
+<syntaxhighlight lang="cpp">
+class CfgFiringDrills
+{
+	// Below point bonuses and penalties are multiplied by this factor to determine time bonuses and penalties
+	pointTimeMultiplier = 0.1;
+
+	bonusWeapon = 1;		// Bonus for using the correct weapon at a CP (never awarded - disabled)
+	bonusShootingBox = 3;	// Bonus for shooting from shooting boxes at a CP (never awarded - disabled)
+	bonusStance = 1.5;		// Bonus for using the correct stance at a CP (never awarded - disabled)
+	penaltyWeapon = 3;		// Penalty for engaging using an incorrect weapon at a CP
+	penaltyShootingBox = 5;	// Penalty for engaging from outside a shooting box at a CP
+	penaltyStance = 2;		// Penalty for engaging from the incorrect stance at a CP
+	penaltyNoShoot = 50;	// Penalty for hitting a no-shoot target (so this is 5 seconds)
+	penaltyMissed = 25;		// Penalty for failing to hit an activated target
+
+	// HUD icons for the medal times
+	iconsMedals[] =
+	{
+		"A3\modules_f_beta\data\FiringDrills\medal_bronze_ca",	// Bronze
+		"A3\modules_f_beta\data\FiringDrills\medal_silver_ca",	// Silver
+		"A3\modules_f_beta\data\FiringDrills\medal_gold_ca"		// Gold
+	};
+
+	// HUD colors for the medal times
+	colorsMedals[] =
+	{
+		"#A0522D",	// Bronze
+		"#C0C0C0",	// Silver
+		"#FFD700"	// Gold
+	};
+
+	// The vanilla configuration defines several common target type profiles
+	// This example configures a theoretical new one
+	class Targets
+	{
+		class MyFirstTarget
+		{
+			selectionsHit[] = { "target" };						// All named selections on the model that count as valid hit
+			onReset = "myFirstTarget_onReset.sqf";				// Optional script executed when the target is reset
+			onActivate = "myFirstTarget_onActivate.sqf";		// Optional script executed when the target is activated
+			onDeactivate = "myFirstTarget_onDeactivate.sqf";	// Optional script executed when the target is deactivated
+			onHit = "myFirstTarget_onHit.sqf";					// Optional script executed when the target is hit while activated
+			downTime = 0.5;	// An extra delay in seconds before a valid target hit is registered (i.e. onHit is executed - undefined uses 0)
+			noRecolor = 1;	// This target is never re-colored by the drill color (mainly applies to optional targets - undefined uses 0)
+
+			// Certain targets over 200 meters away from the competitor will open a Picture-in-Picture camera feed to show hits
+			cameraPos[] = { 0, -1.5, 0.5 };		// Relative camera position from the target center
+			cameraTarget[] = { 0, 0, 1 };		// Relative camera target from the target center
+			cameraFOV = 0.4;					// Camera Field of View setting (zoom)
+
+			// Accuracy (bonus) hit zones
+			class Zones
+			{
+				class Top
+				{
+					center[] = { 0, 0, 0.5 };	// Relative center position of the zone from the target center
+					maxDistances[] =			// Radii in meters of accuracy rings within this zone
+					{
+						0.15,
+						0.25
+					};
+
+					bonuses[] =					// Bonuses associated to the rings defined above
+					{
+						6,
+						3
+					};
+				};
+			};
+
+			// In some cases the same target model has several texture variants with different accuracy zones
+			// These can be overridden within the same target profile by creating a sub-class of the same class as the specific target itself
+			// In that sub-class, define only the relevant class Zones
+			// class MyTargetType
+			// {
+			// 	class Zones { ... };
+			// };
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== Targets ==
+
+{{Feature|informative|These are the vanilla target type profiles you can reference in your drill's ''CfgFiringDrills'' class.}}
+
+{| class="wikitable"
+|-
+! Target Type !! Profile !! Description !! Notes
+|-
+| [[File:arma3 fd target popup.jpg|150px]] || '''PopUp''' || Classic human-shaped pop-up targets (all target picture variants) || Simulation on / damage on / ''NoPop'' variant
+|-
+| [[File:arma3 fd target popup acc1.jpg|150px]] || '''PopUp_Acc1''' || The same targets, but with the accuracy zones || Simulation on / damage on / ''NoPop'' variant
+|-
+| [[File:arma3 fd target popup zom acc1.jpg|150px]] || '''PopUp_Zom_Acc1''' || Zombie-variant of the target with accuracy zones || Simulation on / damage on / ''NoPop'' variant
+|-
+| [[File:arma3 fd target popup acc2.jpg|150px]] || '''PopUp_Acc2''' || The same targets, but with the bull's eye paper || Simulation on / damage on / ''NoPop'' variant
+|-
+| [[File:arma3 fd target swivel.jpg|150px]] || '''Swivel''' || Swivel variants of the pop-up targets ||
+* Simulation on / damage on / ''NoPop'' variant
+* Use <sqf inline>this setVariable ["BIS_angleMin", 90];</sqf> or <sqf inline>this setVariable ["BIS_angleMax", 120];</sqf> to change the rotation range
+|-
+| [[File:arma3 fd target popup oval.jpg|150px]] || '''PopUp_Oval''' || Simple round metal plate pop-up targets ||
+* Simulation on / damage on / ''NoPop'' variant
+* {{hl|A3\Modules_F_Beta\data\FiringDrills\target_oval_ca}} as ''Texture #0'' to mark it as yellow target
+|-
+| [[File:arma3 fd target duel.jpg|150px]] || '''Duel''' || Dueling tree target (this one effectively requires setting up ''hitCondition'' and other event scripts to work well) || Simulation on / damage on / ''NoPop'' variant
+|-
+| [[File:arma3 fd target skeet.jpg|150px]] || '''Skeet''' || Clay skeets || Simulation off (also set <sqf inline>this setVariable ["BIS_DynO_simulation", false];</sqf> for legacy reasons) / damage on / ''NoPop'' variant
+|-
+| [[File:arma3 fd target metal pole skeet.jpg|150px]] || '''Metal_Pole_Skeet''' || Metal poles with a clay skeet mounted to them || Simulation on / damage on / ''NoPop'' variant
+|-
+| [[File:arma3 fd target steel plate.jpg|150px]] || '''Steel_Plate''' || The simplest of standing steel plates || Simulation on / damage off
+|-
+| [[File:arma3 fd target balloon.jpg|150px]] || '''Balloon''' ||
+* Simulation off (also via code above) / damage on / ''NoPop'' variant without ''Land_''
+* Often used above the ground, so use <sqf inline>this setVariable ["BIS_DynO_ASL", true];</sqf> to support that
+|-
+| [[File:arma3 fd target orange.jpg|150px]] || '''Orange''' || Fruit (often used as optional bonus) || Simulation off (also via code above) / damage on / ''NoPop'' variant
+|-
+| [[File:arma3 fd target pumpkin.jpg|150px]] || '''Pumpkin''' || Fruit (often used as optional bonus) || Simulation off (also via code above) / damage on / ''NoPop'' variant
+|-
+| [[File:arma3 fd target aftershave.jpg|150px]] || '''Aftershave''' || "Arma" Eau de Combat (often used as optional bonus) || Simulation off (also via code above) / damage on / ''NoPop'' variant
+|-
+| || '''VR_Entity''' || special-purpose in CoF: Gray ||
+|-
+| || '''VR_Skeet''' || special-purpose in CoF: Gray ||
+|}
+
+== Steam Workshop ==
+
+When a drill is self-contained (i.e. configured via [[Description.ext|description.ext]]), it can be published to the {{Link|https://steamcommunity.com/workshop/browse/?appid{{=}}107410|Steam Workshop}} as ''Scenario''.
+When players subscribe to such drill, it will be listed in their ''CHALLENGES'' menu.
+
+* You need to manually add the ''FiringDrill'' tag while publishing to Workshop!
+* Renaming a drill after publication may invalidate stored record times for subscribed players!
+* Your stored record times from Eden Editor testing (during development), will likely differ to those after publication / subscription.
+* Steam Leaderboards are not supported for Workshop drills.
+* A subscribed drill's medal times will not show in the overview until it has been completed at least once.
+
+
+== Run-Time Tools ==
+
+{{Feature|informative|Some things are exposed and possible to change or use run-time, f.e. to make special unlocks or events happen.}}
+* ''BIS_FD_weaponsCompetitor'': an array of weapon classes provided to the competitor when the drill (re)starts
+* ''BIS_FD_magazinesCompetitor'': an array of magazine classes provided to the competitor when the drill (re)starts
+* ''BIS_FD_magazinesCompetitorCount'': the amount of magazines per type provided to the competitor when the drill (re)starts - default is 5
+* ''BIS_FD_targetHitCode'': code which can be called with dummy parameters to simulate a fake target hit for special events (expects ''hitPart'' Event Handler parameters)
+* ''BIS_FD_hasReset'': code which returns true when the drill has reset, ended, or is ending
+* ''BIS_FD_phase'': 0 - drill pre-init / 1 - drill selecting rules / 2 - drill started / 3 - drill terminated / -1 - drill restarting
+
+
+== Colors ==
+
+{{Feature|important|
+While you can define any color you want for a drill, only several are fully supported.
+These colors are used for: object recoloring, HUD, frangible target hit VFX, map markers, etc. If you want to use another ''color'', consider selecting the nearest matching ''colorName''.
+}}
+* colorName: '''"red"''' - multi-gun
+** color: <syntaxhighlight lang="cpp" inline>__EVAL(177/255), __EVAL(51/255), __EVAL(57/255), 1</syntaxhighlight>
+** Training rules selector: ''A3\modules_f_beta\data\FiringDrills\training_red_ca''
+** Competitive rules selector: ''A3\modules_f_beta\data\FiringDrills\competitive_red_ca''
+** Restart selector: ''A3\modules_f_beta\data\FiringDrills\restart_red_ca''
+* colorName: '''"green"''' - introduction / tutorial
+** color: <syntaxhighlight lang="cpp" inline>__EVAL(173/255), __EVAL(191/255), __EVAL(131/255), 1</syntaxhighlight>
+** Training rules selector: ''A3\modules_f_beta\data\FiringDrills\training_green_ca''
+** Competitive rules selector: ''A3\modules_f_beta\data\FiringDrills\competitive_green_ca''
+** Restart selector: ''A3\modules_f_beta\data\FiringDrills\restart_green_ca''
+* colorName: '''"orange"''' - long-range
+** color: <syntaxhighlight lang="cpp" inline>__EVAL(240/255), __EVAL(130/255), __EVAL(49/255), 1</syntaxhighlight>
+** Training rules selector: ''A3\modules_f_beta\data\FiringDrills\training_orange_ca''
+** Competitive rules selector: ''A3\modules_f_beta\data\FiringDrills\competitive_orange_ca''
+** Restart selector: ''A3\modules_f_beta\data\FiringDrills\restart_orange_ca''
+* colorName: '''"blue"''' - Close Quarters Combat
+** color: <syntaxhighlight lang="cpp" inline>__EVAL(103/255), __EVAL(139/255), __EVAL(155/255), 1</syntaxhighlight>
+** Training rules selector: ''A3\modules_f_beta\data\FiringDrills\training_blue_ca''
+** Competitive rules selector: ''A3\modules_f_beta\data\FiringDrills\competitive_blue_ca''
+** Restart selector: ''A3\modules_f_beta\data\FiringDrills\restart_blue_ca''
+* colorName: '''"purple"''' - specialist marksman
+** color: <syntaxhighlight lang="cpp" inline>__EVAL(176/255), __EVAL(64/255), __EVAL(167/255), 1</syntaxhighlight>
+** Training rules selector: ''A3\modules_f_beta\data\FiringDrills\training_purple_ca''
+** Competitive rules selector: ''A3\modules_f_beta\data\FiringDrills\competitive_purple_ca''
+** Restart selector: ''A3\modules_f_beta\data\FiringDrills\restart_purple_ca''
+* colorName: '''"gray"''' - CTRG
+** color: <syntaxhighlight lang="cpp" inline>__EVAL(90/255), __EVAL(89/255), __EVAL(90/255), 1</syntaxhighlight>
+** Training rules selector: ''A3\modules_f_beta\data\FiringDrills\training_gray_ca''
+** Competitive rules selector: ''A3\modules_f_beta\data\FiringDrills\competitive_gray_ca''
+** Restart selector: ''A3\modules_f_beta\data\FiringDrills\restart_gray_ca''
+* colorName: '''"white"''' - not used / supported in vanilla
+
+
+== Decals ==
+
+{{Feature|informative|
+* These are graffiti decals available in vanilla data. There are a few more, but those are highly specific.
+* All of these are available in the above colors. Replace the number in the texture path:
+{{Columns|3|
+# red
+# orange
+# green
+# blue
+# purple
+# gray
+}}
+}}
+{| class="wikitable"
+|-
+! Decal !! Texture Path !! Usage Tips
+|-
+| [[File:arma3 fd decal crawl1 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_crawl1_ca'' || Crawl to pass obstacle
+|-
+| [[File:arma3 fd decal crouch2 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_crouch2_ca'' || Crouch stance CP requirement
+|-
+| [[File:arma3 fd decal kneel3 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_kneel3_ca'' || Kneel here
+|-
+| [[File:arma3 fd decal lean left4 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_lean_left4_ca'' || Lean left here
+|-
+| [[File:arma3 fd decal lean right5 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_lean_right5_ca'' || Lean right here
+|-
+| [[File:arma3 fd decal move left6 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_move_left6_ca'' || Move left to pass obstacle
+|-
+| [[File:arma3 fd decal move right1 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_move_right1_ca'' || Move right to pass obstacle
+|-
+| [[File:arma3 fd decal noshoot target2 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_noshoot_target2_ca'' || Behind this obstacle: no-shoot target (left) / target (right)
+|-
+| [[File:arma3 fd decal penetrate3 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_penetrate3_ca'' || Penetrate this obstacle to hit targets
+|-
+| [[File:arma3 fd decal prone4 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_prone4_ca'' || Prone stance CP requirement
+|-
+| [[File:arma3 fd decal rifle5 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_rifle5_ca'' || Rifle-type weapon CP requirement
+|-
+| [[File:arma3 fd decal sidearm6 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_sidearm6_ca'' || Sidearm-type weapon CP requirement
+|-
+| [[File:arma3 fd decal stand1 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_stand1_ca'' || Stand here
+|-
+| [[File:arma3 fd decal target noshoot2 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_target_noshoot2_ca'' || Behind this obstacle: target (left) / no-shoot target (right)
+|-
+| [[File:arma3 fd decal target right3 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_target_right3_ca'' || Behind this obstacle: nothing (left) / target (right)
+|-
+| [[File:arma3 fd decal target target4 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_target_target4_ca'' || Behind this obstacle: target (left) / target (right)
+|-
+| [[File:arma3 fd decal vault5 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_vault5_ca'' || Vault this obstacle to pass
+|-
+| [[File:arma3 fd decal watch out6 ca.png|150px]] || ''A3\missions_f_beta\data\img\decals\decal_watch_out6_ca'' || Warning!
+|}
+
+
+== Tips ==
+
+* Vanilla CoFs are designed to be somewhat realistic and safe as a non-lethal competitive shooting training / sport. Try to imagine and implement range safety concerns in your target and prop placement. For example, don't place targets in a line of sight of the start, Range Officer, or other spectators. Generally try to solidly block off areas behind targets where possible.
+* For random / moving target position references, use small colored helper spheres in Eden Editor. Just remember to hide them all in an init script for example: <sqf inline>{ hideObject _x } forEach (allMissionObjects "Sign_Sphere10cm_F");</sqf>
+* In special cases you may wish for a more complex target trigger. Do this by placing a dummy trigger object (f.e. a Game Logic) with named reference. Configure this reference as the target's ''trigger''. When you want to trigger this target, execute in any script environment: <sqf inline>YourTriggerObject setVariable ["state", 3];</sqf>
+* There are several useful variables stored in the scenario and CP / target objects (but in most cases manipulating them directly will break the system; read them only):
+** ''BIS_FD_CPs'': array of CP object references
+** CP
+*** ''"CP"'': CP index number
+*** ''"activated"'': true when activated
+*** ''"clear"'': true when cleared
+** Target (most configuration parameters are also stored as similarly named variables, f.e. ''"optional"'')
+*** ''"state"'': 0 - spawned / 1 - will trigger / 2 - triggered / 3 - hit / 4 - missed
+*** ''"targets"'': array of all CP target object references
+* In order to make targets that are not positioned on the ground work well (especially after drill resets), you will need to execute on them: <sqf inline>this setVariable ["BIS_DynO_ASL", true]</sqf>
+* While designing a drill, you may wish to use function ''BIS_fnc_moduleFDAutoTraining'', which let's you quickly go to a specific CP.
+** <sqf inline>[5, true] spawn BIS_fnc_moduleFDAutoTraining</sqf> ''(Skip instantly to CP with index 5 (using false will teleport between CPs until reaching the specified one))''
+[[File:arma3 fd target no-shoot.jpg|thumb|150px|right|Typical no-shoot target]]
+* Vanilla no-shoot targets are using the ''Simple Target'' (''Target_F'') with init: <sqf inline>this setObjectTexture [0, ""]; this setObjectTexture [1, "#(argb,8,8,3)color(0.4,0.0,0.5,1.0,co)"];</sqf>
+* Balancing a drill can be quite hard, since there is a broad range of skills in the playerbase.
+** You should set appropriate medal times.
+** It's recommended to start harder / more difficult, rather than too easy. It's better to nerf later than to go the other way (since you cannot easily undo recorded times).
+** Start by simply playtesting the drill a lot and determining your own best medal times (or invite other playtesters and record their runs / times - video recordings can also be helpful for spotting issues).
+*** Real balancing typically starts towards the end of development, because even slight changes can affect times a lot, let alone adding / removing CPs or targets.
+** You can also attempt to mathematically balance a drill (this is not fool-proof, but it may help validate your times):
+*** Start by sprinting the quickest route possible through all CPs to get a baseline time.
+*** Tally all possible bonuses (optional targets and accuracy bonuses).
+*** Tally all non-optional targets and multiply by a reasonable time-on-target.
+**** Take into account also target triggers and other time factors.
+*** Combine the data above to arrive at a final time.
+**** This still does not completely simulate the best possible time of course; for example weapon reloads are not included.
+** Vanilla drills apply the following abstract goals per medal:
+*** Bronze: achievable by doing a casual drill (perhaps missing a few targets) but not taking many risks. For a typical user it should take 1-3 attempts.
+*** Silver: achievable by doing a good drill and taking some risks (sprinting and cutting some corners). Might take 2-5 attempts for example.
+*** Gold: meant to be hard. This needs to be a perfectly run drill, at full speed and taking risks. It may take more than 5 attempts.
+*** Special: designed to be extremely hard. Some may never beat this.
+
+
+{{GameCategory|arma3|Editing}}

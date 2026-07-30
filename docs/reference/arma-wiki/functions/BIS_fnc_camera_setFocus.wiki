@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera_setFocus
+// revision: 348055 (2023-11-08T11:29:08Z)
+// export sha1: l7dh6v7djp8wdf6ohhuit4usm3hlisq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Camera | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Camera
+
+|descr= Sets camera focus.
+
+|s1= [camera, focusValues] call [[BIS_fnc_camera_setFocus]]
+
+|p1= camera: [[Object]] - the camera
+
+|p2= focusValues: [[Array]] - (Optional, default [-1, -1]) focus values in format [distance, blur]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[BIS_camera, [0.5,0.5]] call BIS_fnc_camera_setFocus;</sqf>
+
+|seealso= [[BIS_fnc_camera_getFocus]]
+}}

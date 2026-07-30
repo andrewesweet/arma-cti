@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Spearhead_1944_War_Diary_Images
+// revision: 368920 (2024-08-12T22:28:41Z)
+// export sha1: lxfqke2070lrtqjvs69gy8h0va05dlm
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Spearhead 1944 Images]]

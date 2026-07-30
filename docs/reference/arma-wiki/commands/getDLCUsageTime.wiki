@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getDLCUsageTime
+// revision: 319195 (2022-05-13T09:23:21Z)
+// export sha1: 1i5s1yac3sje9la5y9731ao6mrot3ic
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: DLC | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= DLC
+
+|descr= Returns total time the assets of the given DLC have been used. See [[:Category:Arma 3 DLCs & Expansions|Arma 3 DLCs & Expansions]] for a list of DLCs and ids.
+
+|s1= [[getDLCUsageTime]] appId
+
+|p1= appId: [[Number]] - DLC's Steam appId
+
+|r1= [[Number]] - DLC assets usage time in seconds
+
+|x1= <sqf>private _kartsUsage = getDLCUsageTime 288520;</sqf>
+
+|seealso= [[getDLCs]] [[getObjectDLC]] [[getPersonUsedDLCs]] [[getMissionDLCs]] [[getDLCAssetsUsageByName]] [[getDLCAssetsUsage]] [[getAssetDLCInfo]]
+}}

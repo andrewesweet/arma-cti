@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/uniqueUnitItems
+// revision: 310366 (2022-05-05T17:43:22Z)
+// export sha1: 17lxgoeqkyz9puspgmkcg6vhxuasnkj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|arg= global
+
+|eff=
+
+|descr= Returns hashmap of all items in units inventory as [classname, count] pairs.
+{{Feature|informative|
+* ''weaponItems'', ''uniformItems'', ''vestItems'', ''backpackItems'' arguments use the following [[Number]] values:
+** 0: do not return value
+** 1: returns container only (weapon or container)
+** 2: returns container and its content
+* weapons/containers that are stored inside containers (e.g weapon in backpack) always return all contents if contents for the parent container are enabled.
+}}
+
+|gr1= Unit Inventory
+
+|s1= [[uniqueUnitItems]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[HashMap]] in format itemClassname ([[String]]) &rarr; amount ([[Number]])
+
+|s2= [[uniqueUnitItems]] [unit, weaponsItems, uniformItems, vestItems, backpackItems, assignedItems]
+
+|p21= unit: [[Object]]
+
+|p22= weaponsItems: [[Number]] - (Optional, default 2) weapons (including binoculars) and their accessories (flashlight etc), loaded magazines
+
+|p23= uniformItems: [[Number]] - (Optional, default 2)
+
+|p24= vestItems: [[Number]] - (Optional, default 2)
+
+|p25= backpackItems: [[Number]] - (Optional, default 2)
+
+|p26= assignedItems: [[Boolean]] - (Optional, default [[true]]) returns [[assignedItems]] as well as [[headgear]] and [[hmd|goggles]]
+
+|r2= [[HashMap]] in format itemClassname ([[String]]) &rarr; amount ([[Number]])
+
+|x1= <sqf>
+private _unitUniqueItems = uniqueUnitItems [player, 0, 2, 2, 2, true];
+if (_unitUniqueItems getOrDefault ["FirstAidKit", 0] > 5) then { hint "I'm rich of FAK to give!"; };
+</sqf>
+
+|x2= <sqf>private _unitUniqueItems = uniqueUnitItems [cursorObject];</sqf>
+
+|seealso= [[getUnitLoadout]]
+}}

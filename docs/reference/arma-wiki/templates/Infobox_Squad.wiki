@@ -1,0 +1,75 @@
+// source: https://community.bistudio.com/wiki/Template:Infobox/Squad
+// revision: 343749 (2023-07-15T22:01:09Z)
+// export sha1: tgkr6su1ol9ze2yzx95hn9zh7luexfu
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{| class="float-right" style="background-color: #F9F9F9; border: 1px solid #DDD; border-collapse: collapse; font-size: 0.9em; width: 23em"
+! style="font-size:120%" | {{{title}}}{{#if: {{{image|}}} | <br>[[Image:{{{image}}}|center|230px]] }}
+{{#if: {{{members|}}}
+|
+{{!}}-
+! style="background-color: #DDD" {{!}} Members
+{{!}}-
+{{!}} style="padding: 0.3em" {{!}} {{{members}}}
+}}
+{{#if: {{{former_members|}}}
+|
+{{!}}-
+! style="background-color: #DDD" {{!}} Former members
+{{!}}-
+{{!}} style="padding: 0.3em" {{!}} {{{former_members}}}
+}}
+{{#if: {{{successes|}}}
+|
+{{!}}-
+! style="background-color: #DDD" {{!}} Successes
+{{!}}-
+{{!}} style="padding: 0.3em" {{!}} {{{successes}}}
+}}
+{{#if: {{{founded|}}}
+|
+{{!}}-
+! style="background-color: #DDD" {{!}} Founded
+{{!}}-
+{{!}} style="padding: 0.3em" {{!}} {{{founded}}}
+}}
+{{#if:{{{link|}}}
+|
+{{!}}-
+! style="text-align: center;background-color: #DDD" {{!}} Website
+{{!}}-
+{{!}} style="padding: 0.3em" {{!}} {{{link}}}
+}}
+|}</includeonly><noinclude>{{Infobox/Squad
+|title = title
+|image = 
+|members = members list
+|former_members = former members
+|successes = successes
+|founded = 22/06/2001
+|link = <nowiki>http://mysite.com</nowiki>
+}}
+
+This template displays a squad/group/clan/community details on the page's side.
+
+== Usage ==
+{{Infobox/Squad}}
+
+<pre style="display: inline-block; min-width: 20em">
+{{Infobox/Squad
+|title = 
+|image = 
+|members = 
+|former_members = 
+|successes = 
+|founded = 
+|link = 
+}}
+</pre>
+
+* Picture thumbnail width is '''230px'''. Image must be in format {{hl|imagename.jpg}}, without any wiki tags
+* Links in this template must not use the equal {{hl|{{=}}}} symbol. Use {{Template|{{=}}}} in their place (e.g {{hl|{{!}}link {{=}} <nowiki>http://example.org/query.php?foo{{=}}bar&this{{=}}that</nowiki>}})
+
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

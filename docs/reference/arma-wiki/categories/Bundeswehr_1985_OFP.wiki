@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Bundeswehr_1985_(OFP)
+// revision: 110271 (2018-11-07T08:18:11Z)
+// export sha1: 0mltfmt4v92gyh6yntvfz05yj9qfg0e
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Bundeswehr (OFP)]]

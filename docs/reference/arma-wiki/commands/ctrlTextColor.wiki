@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/ctrlTextColor
+// revision: 377354 (2026-01-02T06:40:18Z)
+// export sha1: g4c0l1m5iooszfocs7m67d53jove7fr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= GUI Control
+
+|descr= Returns control's text color
+
+|s1= [[ctrlTextColor]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Color|Color (RGBA)]] - text color
+
+|x1= <sqf>ctrlTextColor _control;</sqf>
+
+|seealso= [[ctrlSetTextColor]] [[ctrlText]]
+}}

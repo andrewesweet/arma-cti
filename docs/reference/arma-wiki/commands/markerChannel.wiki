@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/markerChannel
+// revision: 369657 (2024-10-01T12:04:41Z)
+// export sha1: fcnnwsrh70n5zzmk5u3pna59j6yf3iv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Markers
+
+|descr= Returns the channel to which a marker belongs.
+
+|s1= [[markerChannel]] marker
+
+|p1= marker: [[String]]
+
+|r1= [[Number]]
+
+|x1= <sqf>markerChannel "marker_1";</sqf>
+
+|seealso= [[createMarker]] [[Channel IDs]]
+}}

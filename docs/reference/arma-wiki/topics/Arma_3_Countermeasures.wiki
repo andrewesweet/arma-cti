@@ -1,0 +1,109 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Countermeasures
+// revision: 364265 (2024-05-06T09:38:29Z)
+// export sha1: j89d752asu9rr0zr4s8pi3bythfsxzu
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+Countermeasures, detection of locking, tracking and missiles in flight.
+
+
+== Mechanics ==
+
+{{Feature|informative|Ground vehicles with Incoming Missile Detection ability use the same SENS display as air vehicles to display threats. See the '''[[Arma 3: Custom Info|Custom Panels]]''' page for details.}}
+
+{| class="wikitable"
+| [[File:Arma 3 Countermeasures RWR old.png|frameless|upright=0.5|Different types of targets on the radar]]
+| Player's vehicle is being locked by an enemy
+| ammo [[A3_Targeting_config_reference#weaponLockSystem|weaponLockSystem]]
+''matches''
+
+vehicle [[A3_Targeting_config_reference#lockDetectionSystem|lockDetectionSystem]]
+|-
+| [[File:Arma 3 Countermeasures MWR old.png|frameless|upright=0.5|Different types of targets on the radar]]
+| A guided munition is homing on the player's vehicle
+| ammo [[A3_Targeting_config_reference#weaponLockSystem|weaponLockSystem]]
+''matches''
+
+vehicle [[A3_Targeting_config_reference#incomingMissileDetectionSystem|incomingMissileDetectionSystem]]
+|}
+
+
+== Configuration ==
+
+The following properties of Ammo, Weapon and Vehicle can use basically any {{Link|https://forums.bistudio.com/topic/189734-targeting-improvements/page-13#entry3062179|bitmask value}} (See also [[BIS_fnc_bitflagsCheck]]).
+
+BI uses the following convention
+{| class="wikitable align-center"
+|-
+! scope="col" |
+! scope="col" | ammo
+! scope="col" | ammo (countermeasure)
+! scope="col" | weapon
+! scope="col" colspan="2" | vehicle
+|-
+|-
+! scope="col" | System
+! scope="col" | [[A3_Targeting_config_reference#weaponLockSystem|weaponLockSystem]]
+! scope="col" | [[A3_Targeting_config_reference#weaponLockSystem|weaponLockSystem]]
+! scope="col" | [[A3_Targeting_config_reference#weaponLockSystem_2|weaponLockSystem]]
+! scope="col" | [[A3_Targeting_config_reference#lockDetectionSystem|lockDetectionSystem]]
+! scope="col" | [[A3_Targeting_config_reference#incomingMissileDetectionSystem|incomingMissileDetectionSystem]]
+|-
+! scope="row" | 0 - N/A
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! scope="row" | 1 - Visual
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+! scope="row" | 2 - IR
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+! scope="row" | 4 - Laser
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|-
+! scope="row" | 8 - Radar
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+! scope="row" | 16 - Missile
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+|-
+|}
+
+
+== Related ==
+
+* [[CfgAmmo_Config_Reference|CfgAmmo]]
+* [[CfgWeapons_Config_Reference|CfgWeapons]]
+* [[CfgVehicles_Config_Reference|CfgVehicles]]
+* [[Arma 3: Sensors]]
+* [[Arma 3: Targeting]]
+* [[A3 Targeting config reference]]
+* {{Link|https://forums.bistudio.com/topic/200467-jets-sensor-overhaul/|Sensor Overhaul thread}}
+* {{Link|https://forums.bistudio.com/topic/189734-targeting-improvements/page-13#entry3062179|Targeting thread}}
+
+
+{{GameCategory|arma3|Editing}}

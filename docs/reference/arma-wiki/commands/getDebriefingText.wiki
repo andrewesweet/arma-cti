@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/getDebriefingText
+// revision: 377320 (2026-01-02T06:38:51Z)
+// export sha1: fzd906mxpuofjh6cei4gv6qhdsn2gjt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Briefing
+
+|descr= A getter for [[setDebriefingText]].
+
+|s1= [[getDebriefingText]] end
+
+|p1= end: [[String]] - end type
+
+|r1= [[Array]] format:
+* [text, title] if old syntax of [[setDebriefingText]] was used)
+* [text, title, subtitle, picture, background] if [[setDebriefingText]]'s alternative syntax was used
+* empty array if [[setDebriefingText]] was not used
+
+|x1= <sqf>private _debriefingTextDeath = getDebriefingText "endDeath";</sqf>
+
+|seealso= [[setDebriefingText]] [[disableDebriefingStats]] [[enableDebriefingStats]] [[endMission]] [[failMission]] [[missionEnd]]
+}}

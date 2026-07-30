@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_gravityCannon_01_ai
+// revision: 286102 (2021-06-20T17:25:48Z)
+// export sha1: ozhhsnllqv2fu1kko3ce5majf1eqidz
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Contact | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Contact 
+
+|descr= <pre>/*
+	BIN_fnc_gravityCannon_01_AI
+*/</pre>
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_gravityCannon_01_ai]]; --> 
+
+|p1=
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

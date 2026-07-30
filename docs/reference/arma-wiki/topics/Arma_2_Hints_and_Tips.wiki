@@ -1,0 +1,219 @@
+// source: https://community.bistudio.com/wiki/Arma_2:_Hints_and_Tips
+// revision: 363985 (2024-04-29T23:16:52Z)
+// export sha1: 259y15geh5q9lgiunafqf3lvivo2gv2
+// categories: Category:Hints & Tips
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GameCategory|arma2|link= y}} is not like other FPS's, it is a simulation. Most, if not all that you learned in other FPS's is wrong.
+You cannot stand out in the middle of an open street or field or run around blasting away and expect to survive long in a real battle or in a simulation of real battle.
+Bouncing around in full kit in real battle does not stop you getting shot; you simply get tired quickly, attract the wrong kind of attention, and would probably break your ankles; so just as you would not do it in real life you cannot do it in {{arma2}}.
+You have no uber body armor, no magical medipacks, no bunny hop rocket boots. It is just you, and what ever weapons you are carrying.
+If you get shot any where important you are going to die, often right away.
+
+If you are a new player you are going to die and you are going to die a lot. This is simply part of the learning curve, there are ways however you can get over the hump faster.
+That is what this section of the biki will help you with.
+
+You are going to have learn the basic battle drills and the difference between cover and concealment. There is a lot to learn but it can be fun.
+Surviving in {{arma2}} is hard, but one day you may find yourself with a bunch of your buddies hunting T90s like stone age humans hunting mammoths.
+
+=== Sources of help ===
+
+There are many sources of information for {{arma2}}<br>
+The {{Link|http://www.arma2.com|{{arma2}} Official Website}} includes descriptions of factions, weapons, vehicles and different official Areas of Operations (AO) or islands:
+
+==== Official {{arma2}} Training Videos ====
+There is an official {{arma2}} YouTube channel with videos under the Developer Diary title, describing basic controls, the use of the editor, commanding teams etc.<br>
+{{Link|http://www.youtube.com/user/ARMA2official|{{arma2}} YouTube Channel}}
+
+==== Official {{arma2}} Manuals ====
+There is a manual that comes with all copies of {{arma2}}. If you have not got one contact the publisher and report it to {{Name|bi}}.
+For {{arma2}} Free players there should be a manual in the install folder default:''X:\Program Files\Bohemia Interactive\Arma 2 Free''
+
+For those with steam the US version can be downloaded here:
+{{Link|http://store.steampowered.com/manual/33900/|PDF {{arma2}} manual for Steam customers}}
+
+==== OFP and {{arma}} hints and tips ====
+There is a Hints and Tips link on the index page of this wiki; it leads to this link which is [[:Category:Hints %26 Tips|OFP and ArmA hints]] and tips. Most still apply!
+
+==== The {{arma2}} Bible ====
+Dslyecxi's {{arma2}} Tactics, Techniques, and Procedures Guide is considered to be the bible of {{arma2}} play.
+Much of it applies to both Single Player and Multi Player but it has sections that apply to Multi-player PvP and others that particularly apply to the Coop game form.<br>
+{{Link|http://ttp2.dslyecxi.com/|Dslyecxi's {{arma2}} Tactics, Techniques, and Procedures Guide}}
+
+==== Battle Drills ====
+This page links to the basic [[Battle Drills]].<br>
+
+Battle Drills are the basic moves to perform in battle, they are a subset of Standard Operating Procedures (SOP), that are trained in the military to replace the normal human reaction to threat, those of Fight, Flight or Freeze.
+The Fight, Flight, Freeze, response is default coded into to your amygdala; a part of your brain comparible to the BIOS of a computer.
+
+The Amygdala reacts much faster than the conscious brain and can thus short circuit it.
+The Amygdala is also comparable to a computer BIOS in that it can be reprogrammed by in the case of BIOS by flashing it; in the case of a human brain by the use of operant conditioning.
+Part of Basic Training in the military uses operant conditioning to replace the Fight, Flight, Freeze responses<br>
+
+The idea of training a Battle Drill or SOP is to replace these Fight, Flight, Freeze responses with the following useful actions:
+ 
+* The ''Freeze Response'' is not always beneficial, freezing in the same spot that the enemy is putting down effective fire on you, does not stop the bullets, the ''Freeze Response'' is replaced with [[The Basic Drill]].
+* Firing blindly may kill your buddies who are likely to be closer and thus occupying a larger percentage of your Arc, thus the ''Fight Response'' is replaced with the [[React to Contact]] drill.
+* Altering the ''Flight Response'' so that you do not get shot in the back is also useful, the highest casualties in war happen during head long retreat, it is very hard to fire over your shoulder while running in the opposite direction, so the Battle Drill that replaces head long retreat is the [[Break Contact]] drill.
+
+=== Don't Get Shot! ===
+
+The key to survival in {{arma}} is to not get shot. When you say it like that it sounds simple.
+Surprisingly virtually every other First Person Shooter (FPS) you may have played, never ever teaches this!
+Magic health packs, super body armor, uber stamina, super player speed, unlimited respawns close to where you got killed, and the imbecilic, short sighted, inaccurate AI in all those other FPS teach you to stand up in the open blasting away, it's safe; yeah right.
+
+In {{arma}} there are four defenses to being shot:
+* Make yourself a small target
+* Shoot at them! This will make them scared so they will shake, dither and miss and you might even hit them and wound them or even kill them.
+* Don't let your self be seen. Concealment! (If they cannot see you the only way they can shoot you is by guess work; but beware of educated guesses!)
+* Best of all get behind something thick. Cover! (Fat Stupid Generals do have their uses)
+
+==== Making yourself small ====
+There are two ways to make your self small:
+* Go horizontal (also know as crawling)
+* Distance 
+
+===== Learn to crawl! =====
+The first thing to do when being shot at is to get down and face the enemy! This is the first lesson of {{arma}}.
+Survival time increases exponentially after you learn this vital lesson, that is only bested by true cover.
+By lying down face toward the enemy you turn a 2m high by 0.7m wide target into 0.5 high by 0.7m wide target.
+You have reduced your target size to quarter of what it was! And if you are facing them it makes it easier to shoot at them!
+
+Repeat the {{arma}} mantra after me: "Crawl, Crawl, Crawl, Crawl, Crawl!"
+Once you have learned to Crawl you can graduate to the second mantra "I am up, he sees me, I am down" bounds of the [[The Basic Drill]].
+
+===== Distance =====
+Stay a long way away from nasty men with big guns. Bullets are fired in a grouping affected by both the gun and the person firing.
+{{Link|http://www.rifleman.org.uk/Fuller_group_diagnosis.htm|link}} Distance increases the dispersion of that grouping.
+
+Close up that grouping will be tight; the further the target is away from the muzzle, the looser the grouping becomes and the more space there is between the bullets impact points for you to get missed in.
+Every meter you are away from the source of fire on you, decreases the percentage of bullet grouping ellipse you occupy for the gun and soldier firing it at you, and decrease the power with which round will hit you.
+Most Assault Rifles are ineffective beyond about 350m without optics, 500m for MGs. Optics add another 300m to both. 
+
+Depending on the round, the energy in its impact will be spent on pushing its way through the air; by the time it reaches you if you beyond 200m to 400m for CQB or silenced weapon with subsonic rounds, 650m for an assault rifle, and 1000m for an MG; they are more likely to wound than kill at progressively longer ranges.
+Heavy Sniper rifles can touch you right out to 2000m and there are several MP players who can and do make those shots, AI less so.
+Explosive rounds don't need to be as accurate and kill just as well far away as close up, and weight of fire adds rounds to the bullet grouping ellipse so beware.
+Learn weapons ranges and characteristics in the {{arma2}} editor.
+
+==== Shooting at them ====
+Shooting at the enemy makes them duck preventing them from moving toward you and from looking at you to aim, this causes inaccuracy.
+Further it scares them making any aim they do take shake, another thing known to cause inaccuracy.
+It also makes them think which wastes their time and brain energy, this has a fancy name called dithering.
+You may even hit them which can wound them once again decreasing their accuracy and number of shots fired, it is much harder to aim if one is occupied with rolling around on the floor screaming.
+And being dead has been known to prevent the dead person from firing at you. The whole thing also has a fancy military name it is called suppressive fire.
+Surprisingly as well as working on human players in MP this all works against {{arma2}}'s AI as well.
+
+==== The difference between cover and concealment ====
+Cover is something that prevents you being shot. In the military cover is often referred to as [[Defilade]].
+
+Concealment is something that prevents you being seen. In the military concealment can involve [[Camouflage]].
+
+Concealment once busted is no longer concealment. Shooting or moving around, making a noise, or sky-lining your self, all bust concealment.<br> 
+'''Examples'''
+* A bush is concealment not cover. Bushes do not stop bullets. That said unlike other games [http://www.youtube.com/watch?v{{=}}n-oYzp2iyqQ The {{arma2}} AI does not see through bushes]. but running behind a bush, does not magically make you concealed from an enemy that saw you run behind it. Most of us learn this with the peekaboo blankie game as babies. Also all the other concealment busters apply, shooting from a bush and missing means the bush and you get it full auto.
+* A tree less than two foot thick is neither concealment nor cover. An AT rocket or pair of shoulders, beer gut, your fat backside, or rucksack; sprouting jauntily out of the side of a tree, attracts curious stares from both human players and AI, usually followed by bullets; which incidentally any thing less than a two foot wide tree will not stop. Interestingly even with a two foot thick tree, only one foot of a tree in cross section is near two foot thick in the line of fire, as you move to the edges the thickness of wood decreases exponentially.
+* A single brick wall is concealment not cover, bullets of 7.62 calibre and above will go straight through most houses.
+** [http://www.youtube.com/watch?v{{=}}dKhMOfaYwvE You Tube video Concealment does NOT equal Cover, Pt. 1]
+** [http://www.youtube.com/watch?v{{=}}w22M1DAQ59I You Tube video Concealment does NOT equal Cover, Pt. 2]
+* Being inside a large moving noisy Main Battle Tank (MBT) can in some circumstances be considered cover, but it cannot really by considered concealment; as everyone can see, hear and smell where it is, and thus where you are. Concealment of tanks is a fine art that taxes even the finest military minds; their blocky shape, noisy attitude, dust they raise, stinky smoke and IR signature all make hiding a tank a difficult task. The value of a tanks cover is also somewhat reduced by the effectiveness of modern AT weapons and tank hunting air weapons platforms. Thus interest in better ways of concealing tanks, and the continuing respect for drivers and commanders who understand the concepts of Camouflage and Defilade.
+* A recently damaged vehicle is bad cover as they have a tendency to blow up, and secondary explosions can and usually will kill or wound you.
+
+True cover is: 
+* Multiple walls of say more than one house.<br>
+* Thick lumps of terrain such as mountains and hill crests. These last two make excellent cover. 
+
+There is a further detailed discussion here of {{Link|link= http://forums.bistudio.com/showthread.php?t=73139&page=23|text= the difference between cover and concealment}} on the BI forums.
+
+==== Flank! ====
+When flanking go wide, same as the AI does. Circle round enemies to a point of defilade. Charging the enemy from the front is rarely a good idea.
+
+Flanking the enemy means moving from their direction of march to a side 90 degrees from the way they are looking. This has lots of advantages!
+* The enemy is not looking at you or pointing their weapons at you.
+* This places the enemy in file to you:
+** Those furthest from you have to fire past their own troops thus risking BLUE on BLUE.
+** The width of enemy fire is reduced, thus making any cover you have more effective.
+** Conversely the target area you have to cover reduces.
+* If you are working as a team; one part flanking while the other part suppresses from the front, creates cross fire thus negating most cover.
+
+
+== Learning to shoot! ==
+
+Shooting is almost as big a part of battle simulation as running around. Unlike most FPS games {{arma}} has a model of a real weapon you hold in your hands, that is subject to a ballistic physics simulation.
+ 
+=== Shake rattle and roll, but no run and gun ===
+
+In most FPS; your weapon is a simulated laser that originates from between your eyes while you move around in a camera on rails, as you can guess, this means such games are NOT a very good simulation of shooting.
+In {{arma}} {{Name|bi}} try to make the ballistics a little more realistic.
+So Shooting in {{arma}}, as well as being closer to reality, is an incredible shock to most people who have only played FPS arcade games before.
+In the {{arma}} your bullets appear from the muzzle of your gun; it is subject to muzzle rise with each shot fired, which must be corrected; and because they are held by a simulated body the muzzle shakes depending on what you have been and are doing, your stance, whether your arm has been wounded, whether you have been running or exerting yourself in other ways, and all the other little nuances that programmers can cram in.
+In {{arma}} you cannot 'run and gun' your bullets will end up sprayed all over a barn even at 25 feet, with a chance you would hit the target in front of you, a realistic near zero if you attempt it.
+
+=== Bullet Drop and Zeroing ===
+
+And when that bullet finally leaves the barrel gravity, air resistance and a whole bunch of other factors affect it and with some MODs such as ACE so does wind.
+Because of bullet drop unlike in Arcade FPS the cross hairs of a sight are only correct at the range they are zeroed at; just as they are in reality.
+This means that close up a bullet aimed at the target will pass over it where as once you are past the zero point the bullet will begin to drop below the aim point with each extra metre. 
+
+To help cope with all this many weapon sights have graduations for different distances.
+In some cases sights are factory set or armoury issued with a particular zeroing and in fact even when a soldier can alter the zeroing, most infantry soldiers zero their weapon at a range and never change it.
+Most weapons are zeroed at the expected distance of use, pistols are zeroed at anything from 10m to 25m; for CQB weapons that is between 50m and 200m; general assault weapons it is between 200m to 300m and on up through MGs and sniper rifles.
+
+Some weapons in {{arma2}} since the release of Operation Arrowhead include a zeroing capability accessed via your default {{Controls|Ctrl|PageUp}} and {{Controls|Ctrl|PageDown}} keys. 
+
+It is normal for the zero of a sight to be set, so that bullet rises after an initial zero point and then will drop down to second usualy more pertinent zero point, so a sight may be zeroed at both 32m and 300m, as with say an M16 iron sight.
+This is because bullets follow a parabola like a thrown ball, we get the word Ballistics from the Greek word {{Link|http://www.myetymology.com/greek/ballein.html|ballein, βάλλω (to throw)}}, also the same root where we get ball and ballista from.
+
+==== Sights ====
+{{arma2}} has several shooting modes, from the hip; with and without cross-hairs, depending on difficulty settings.
+The default {{Controls|V}} key, also double click {{Controls|RMB}} or {{Controls|num0}} on the number pad all bring up or put down your main sights.
+Main sights can be of several kind from your basic iron sights, mostly in 3D nowadays unlike BI's old {{ofp}} and {{arma1}} days, optical sights of various patterns from red dot and holographic variants magnification sights of various descriptions up to and including FLIR and zoom capabilities, the latter often also include CQB iron sight sub options using the default {{Controls|num/}} key on your Number Pad. 
+ 
+==== Range Tables ====
+It is all so complicated you scream, but do not worry Daniel_Malloy a community member created these range tables to help you.
+
+{{Link|http://wolverine.cameron.edu/~ac113448/ARMA2/ARMA2WeaponRangingAndCorrectionGuide.pdf|Daniel_Malloy's {{arma2}} Range Tables}} 
+{{Link|http://www.armaholic.com/page.php?id{{=}}6462|Mirror at Armaholic}}
+
+You can read more in the community forum thread on the subject please feel free to enter the discussion add your wisdom and questions in places like this in the BI forums; it adds to all the communities knowledge.
+{{Link|http://forums.bistudio.com/showthread.php?t{{=}}80754|BI community forum thread about range tables}}
+
+
+== Working as a team ==
+
+The key factor to staying alive is down to working as a team. You do not have eyes in the back of your head.
+First up, two pairs of eyes are better than one, so a buddy is your first line of defense.
+
+=== Buddy Team ===
+
+A buddy team is the basic military formation from which all others are built. A buddy is the person who has your back.
+They are the person who, shoots at the enemy who shoots at you, medics you up if you are wounded, shares ammo with you, makes sure you are connected with everyone else.
+
+=== Fire Team ===
+
+If two pairs of eyes are better than one pair, then four pairs of eyes are better still!
+If some one is giving you first aid then they ain't firing at the enemy, hence more people equals more security.
+So why not just go for a a 1000 man team, well kind of you do, it is called a battalion, though modern battalions are generally less than 1000 people; the problem is that 1000 people all speaking on the radio at once is as you might think impossible.
+So the military spent a lot of money working out the optimal number people there should be in one fire team. 
+
+US doctrine is for 3 x 4(5) person fire teams making one squad.
+
+=== How the US Rangers do it ===
+
+Unclassified video of how the Rangers organize basic fire teams and formations:
+
+{{Link|http://vimeo.com/26882553|link}}
+
+
+== AI Squad Command ==
+
+There is quick guide to controlling AI in {{arma2}} by rotkeps that has been copied to this wiki here:
+
+[[Arma 2: AI Squad Command]]
+
+=== Multiplayer Hints and Tips ===
+
+There are additional [[:Category:Multiplayer Hints and Tips|Multiplayer Hints and Tips]] here.
+
+
+[[Category: Hints & Tips]]

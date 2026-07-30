@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/Template:GVI
+// revision: 378694 (2026-05-28T12:46:23Z)
+// export sha1: 8n80t9otyra5aiucs1xbezyqmidvu0b
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+| <span class="gvi2 gvi-{{Name|{{{1|}}}|id}}{{#switch:{{lc:{{{1}}}}}
+|arma3= {{#if:{{#pos:{{{2|}}}|.}}
+	|
+		{{#ifexpr:{{{2}}} < 0.7|<nowiki/> gvi-alpha}}
+		{{#ifexpr:{{{2}}} >= 0.7 and {{{2}}} < 1|<nowiki/> gvi-beta}}
+		{{#ifexpr:{{{2}}} > 2.20|<nowiki/> gvi-dev}}							<!-- Arma 3 latest stable version set here -->
+		{{#if:{{#pos:{{lc:{{{branch|}}}{{{2|}}}}}|dev}}|<nowiki/> gvi-dev}}
+		{{#if:{{#pos:{{lc:{{{branch|}}}{{{2|}}}}}|diag}}|<nowiki/> gvi-diag}}
+		{{#if:{{#pos:{{lc:{{{branch|}}}{{{2|}}}}}|perf}}|<nowiki/> gvi-perf}}
+	| <!-- not an x.yy version -->
+		{{#if:{{#pos:{{lc:{{{branch|}}}{{{2|}}}}}|dev}}|<nowiki/> gvi-dev}}
+		{{#if:{{#pos:{{lc:{{{branch|}}}{{{2|}}}}}|diag}}|<nowiki/> gvi-diag}}
+		{{#if:{{#pos:{{lc:{{{branch|}}}{{{2|}}}}}|perf}}|<nowiki/> gvi-perf}}
+}}
+|armar= {{#if:{{#pos:{{{2|}}}|.}}
+	|
+		{{#ifeq:{{#sub:{{{2|}}}|0|2}}|0.
+			| <nowiki/> gvi-alpha
+			| {{#ifexpr: {{#explode:{{{2|}}}|.|0}} > 1							<!-- Arma Reforger latest stable version set here -->
+				or {{#explode:{{{2|}}}|.|1}} > 7
+				| <nowiki/> gvi-dev}}
+		}}
+}}
+|arma4= <nowiki/> gvi-alpha
+}}"{{#if:{{{size|}}}|<nowiki/> style="font-size: {{#ifexpr:({{{size}}}*0.5+0.5)*12<24|{{#expr:({{{size}}}*0.5+0.5)*12}}|24}}px; height: {{#expr:{{{size}}}*32}}px; width: {{#expr:{{{size}}}*32}}px"
+}}><!--
+--><span class="icon">{{Icon|{{Name|{{{1}}}|id}}|{{#if:{{{size|}}}|{{#expr:floor({{{size}}}*32-2)}}|30}}|link={{#switch:{{lc:{{{1}}}}}
+|armar
+|arma4= :Category:{{Name|{{{1}}}}}/Version {{{2|1.0.0}}}
+|#default= :Category:Introduced with {{Name|{{{1}}}}} version {{lc:{{{2|1.00}}}}}
+}}}}</span><!--
+--><span class="version"{{#ifexpr:{{#len:{{{2|}}}}} > 4|<nowiki/> style="font-size: 0.9em"}}>{{#switch:{{lc:{{{1}}}}}
+|armar
+|arma4= {{Link|:Category:{{Name|{{{1}}}}}/Version {{{2|1.0.0}}}|{{{2|1.0.0}}}}}
+|#default= {{Link|:Category:Introduced with {{Name|{{{1}}}}} version {{lc:{{{2|}}}}}|{{#if:{{{2|}}}|{{uc:{{{2}}}}}|?}}}}
+}}</span><!--
+--></span>
+| -no game provided- {{TemplateCase||[[Category:GVI template usage error]]}}
+}}</includeonly><noinclude>{{GVI/doc}}</noinclude>

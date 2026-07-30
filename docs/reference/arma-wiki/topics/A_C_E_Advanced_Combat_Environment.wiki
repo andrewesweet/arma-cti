@@ -1,0 +1,494 @@
+// source: https://community.bistudio.com/wiki/A.C.E_Advanced_Combat_Environment
+// revision: 369463 (2024-09-06T09:15:49Z)
+// export sha1: 3n3z7738eaz30q741hk4zccjeu9oc89
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[File:Acebanner.jpg]]
+
+'''You can find {{Link|http://ace.dev-heaven.net|A.C.E. for {{arma2}} Here}}'''
+
+
+== General ==
+
+*Advanced Combat Environment (ACE) is a full conversion modification for Armed Assault.
+The overarching philosophy of ACE is to provide its users with a combat simulation that is both realistic and enjoyable.
+Our primary mission is to create a wide variety of real world weapons, vehicles, equipment, and tactics so that those playing the ACE modification will be able to better simulate combined arms combat on a modern battlefield.
+ACE is designed from the bottom up with the goal of encouraging its users to employ real world tactics and strategy (fighting as a team) in order to accomplish realistic military objectives.
+We strive to create hyper-realism without losing sight that the mod must be playable by the “advanced” user.
+Our focus is not only on creating coding and scripting which highlights realism but on creating realistic missions on which one may experience the full spectrum of virtual combat.
+
+* Advanced Combat Environment (ACE) allows casual to hard-core gamers the opportunity to experience realistic military weapons, equipment, and tactics while still maintaining an environment that is enjoyable to play.
+* Advanced Combat Environment (ACE) provides the most realistic, comprehensive, and tactical first-person military simulation available for the civilian PC market.
+* Advanced Combat Environment (ACE) is a mod in progress for {{arma1}} that is being done by the core crew that was responsible for the excellent Wargames League (WGL) mod for Operation Flashpoint (OFP). There are many exciting teamwork- and gameplay-enhancing features planned for ACE; it should be the mod-of-choice for any groups interested in increasing their realism, teamwork, and gameplay at the same time.
+
+
+== Actual Status ==
+
+Public Beta v1.09, developers builds still under extensive testing 
+* ShackTac Gaming Community {{Link|http://www.shacktactical.com|http://www.shacktactical.com}}
+* USMC Warriors {{Link|http://www.usmc-warriors.org/|http://www.usmc-warriors.org/}}
+* ARMA:Theatre of War {{Link|http://www.theatre-of-war.com|http://www.theatre-of-war.com}}
+
+
+== Get involved ==
+
+We are currently looking for skilled:
+
+* Coder GUI
+* Texture Artists
+* Scripters
+* Modellers
+* Island Makers
+
+New challenges and opportunities lie ahead - share your ideas
+and take the chance to realize them.
+
+The development of ACE will continue in the future and
+we are looking for decent and dedicated people!
+
+ACE is based on a strong PvP and Coop Community and
+is supported by various groups and people.
+Based on a good internal development surrounding (subversion, ftp, skype, forum)
+everyone contributes to the development as far as ones own available time,
+motivation and skills in an organized and coordinated process.
+
+Yet we are not solely looking for core developers - anyone's help is appreciated.
+
+Take the opportunity and join the ranks
+
+
+Basically it is about you - what can you do / where are you good at / what you like to do.
+So these are just suggestions - we love to hear your ideas how to contribute!
+
+* Core development ({{arma1}} editing)
+* Bug finding
+* Feature suggesting - own ideas as well scan other addons / mods
+* Helping with administration of our forum
+* Communications guy - scan ArmA pages / forums / clans to advertise ACE; find complaints about ACE / feedback and make it visible in our Project Tools.
+* Media guy - screens, addworks, promo videos for ACE.
+* Mission guy - make ACE training missions or find some which are worth to convert / adapt.
+* Beta testing guy / crew - test the most recent development version.
+** Especially double check changes and test features implemented, as well as give overall feedback
+
+==== Leave a message ====
+If you leave a message at our {{Link|http://dev-heaven.net/boards/20/topics/show/224|forums}} we will get back to you.
+
+
+== Requesting Permission ==
+
+In case you would like to use parts of our work in your own works, please create a ticket at our Project Tracker: {{Link|http://dev-heaven.net/projects/ace-mod/issues/new}}
+Set tracker to "Task" and category to "Permission Request".
+This will make it visible to the correct manager, and he will take care of the rest (confirming permission approval with the Author of the addon, and handling communication between you and Author).
+
+
+== ACE Features ==
+
+Feel free to add information regarding features listed and not listed there, as long as the information is concise and to the point
+
+A full list of features can be found in {{Link|ACE Features}}.
+
+<!--
+== Supplemental Documents ==
+
+Longer articles that go more into the details of some aspect of ACE.
+
+[[ACE Marksmanship Guide|Guide to Better Marksmanship using ACE]]
+-->
+
+== Releases ==
+
+=== ACE Mod ===
+
+'''Full install''':
+These can be used to (re) install the Mod completely. You should only have to download a full mod once, afterwards you can uses the updates.
+
+
+'''Updater''':
+You can download the updates manually from this page, or you can use the included sixarma-updater.exe (Link is available in the Mod's start menu, and in ArmA\@ACE\Tools).
+
+In case you use the included updater, if it complains about sixarma-updater.exe being in use, please close the black dos window
+
+
+'''Server files''':
+For server admins who can only access dedicated servers via Remote Access. Instructions: Download server only files to your dedicated server and unzip into your ArmA directory. 
+
+<spoiler text="See releases changelog">
+==== Release 1.09 ====
+(26/05/2009) - {{Link|http://dev-heaven.net/versions/show/126|Release Notes & Changelog}}
+
+
+<u>Client files</u>
+
+Updater - 183MB :
+* {{Link|http://www.defconservers.com/game-server-patch.html|DefconServers.com}}
+* {{Link|http://www.armaholic.com/page.php?id{{=}}5727|Armaholic.com}}
+* {{Link|http://www.armedassault.info/index.php?game{{=}}0&cat{{=}}addons&id{{=}}909|Armedassault.info}}
+* {{Link|http://www.moddb.com/mods/ace-advanced-combat-environment/downloads/ace-client-updater-109|Mod DB}}
+* {{Link|http://games.on.net/file/26897/ACE_Armed_Assault_Mod_1.09_patchhotfix|Games On Net}}
+
+
+<u>Server files</u>
+
+Updater :
+* {{Link|http://www.defconservers.com/game-server-patch.html|DefconServers.com}}
+
+
+----
+
+==== Release 1.08 ====
+(18/05/2009) - {{Link|http://dev-heaven.net/versions/show/69|Release Notes & Changelog}}
+
+
+<u>Client files</u>
+
+Updater - 394MB :
+* {{Link|http://www.defconservers.com/game-server-patch.html|DefconServers.com}}
+* {{Link|http://www.armaholic.com/page.php?id{{=}}8427|Armaholic.com}}
+* {{Link|http://www.armedassault.info/index.php?game{{=}}0&cat{{=}}addons&id{{=}}900|Armedassault.info}}
+* {{Link|http://www.flashpoint.ru/data/ArmA/Addons/ACE-ArmA_Mod_v1.08update.exe|Flashpoint.ru}}
+* {{Link|http://games.on.net/file/26655/ACE_Armed_Assault_Mod_Patch_v1.08|Games On Net}}
+
+Full install - 843MB :
+* {{Link|http://www.armaholic.com/page.php?id{{=}}4443|Armaholic.com}}
+* {{Link|http://www.armedassault.info/index.php?game{{=}}0&cat{{=}}addons&id{{=}}901|Armedassault.info}}
+* {{Link|http://www.flashpoint.ru/data/ArmA/Addons/ACE-ArmA_Mod_v1.08full.exe|Flashpoint.ru}}
+* {{Link|http://www.moddb.com/mods/ace-advanced-combat-environment/downloads/ace-full-install-108|Mod DB}}
+
+
+<u>Server files</u>
+
+Updater :
+* {{Link|http://www.defconservers.com/game-server-patch.html|DefconServers.com}}
+
+
+----
+
+==== Release 1.07 ====
+(20/04/2009) - {{Link|http://dev-heaven.net/versions/show/67|Release Notes & Changelog}}
+
+
+<u>Client files</u>
+
+Updater - 370MB :
+* {{Link|http://www.defconservers.com/game-server-patch.html|DefconServers.com}}
+* {{Link|http://www.armaholic.com/page.php?id{{=}}5373|Armaholic.com}}
+* {{Link|http://www.armedassault.info/index.php?game{{=}}0&cat{{=}}addons&id{{=}}869|Armedassault.info}}
+* {{Link|http://www.flashpoint.ru/data/ArmA/Addons/ACE-ArmA_Mod_v1.07update.exe|Flashpoint.ru}}
+* {{Link|http://games.on.net/file/25989/Armed_Assault_A.C.E_Mod_1.06-1.07_Update|Games On Net}}
+
+Full install - 843MB :
+* {{Link|http://www.armaholic.com/page.php?id{{=}}4443|Armaholic.com}}
+* {{Link|http://www.armedassault.info/index.php?game{{=}}0&cat{{=}}addons&id{{=}}871|Armedassault.info}}
+* {{Link|http://www.flashpoint.ru/data/ArmA/Addons/ACE-ArmA_Mod_v1.07full.exe|Flashpoint.ru}}
+* {{Link|http://games.on.net/file/26006/Armed_Assault_A.C.E_Mod_1.07_Full_Install|Games On Net}}
+
+
+<u>Server files</u>
+
+Updater :
+* {{Link|http://www.defconservers.com/game-server-patch.html|DefconServers.com}}
+
+
+
+----
+
+==== Release 1.06 ====
+(16/03/2009) - {{Link|http://dev-heaven.net/wiki/ace-mod/Version_106|Release Notes & Changelog}}
+
+
+<u>Client files</u>
+
+Updater - 72MB :
+* {{Link|http://www.defconservers.com/game-server-patch.html|DefconServers.com}}
+* {{Link|http://www.armaholic.com/page.php?id{{=}}5078|Armaholic.com}}
+* {{Link|http://www.armedassault.info/index.php?game{{=}}0&cat{{=}}addons&id{{=}}838|Armedassault.info}}
+* {{Link|http://www.flashpoint.ru/data/ArmA/Addons/ACE-ArmA_Mod_v1.06update.exe|Flashpoint.ru}}
+* {{Link|http://games.on.net/file/25546/A.C.E_Armed_Assault_Mod_1.05-1.06_update|Games On Net}}
+
+
+<u>Server files</u>
+
+Updater :
+* {{Link|http://www.defconservers.com/game-server-patch.html|DefconServers.com}}
+
+
+
+----
+
+==== Release 1.05 ====
+(16/03/2009) - {{Link|http://dev-heaven.net/wiki/ace-mod/Version_105|Release Notes & Changelog}}
+
+
+<u>Client files</u>
+
+Updater - 519MB :
+* {{Link|http://www.armaholic.com/page.php?id{{=}}5069|Armaholic.com}}
+* {{Link|http://www.armedassault.info/index.php?game{{=}}0&cat{{=}}addons&id{{=}}837|Armedassault.info}}
+* {{Link|http://www.flashpoint.ru/data/ArmA/Addons/ACE-ArmA_Mod_v1.05update.exe|Flashpoint.ru}}
+* {{Link|http://games.on.net/file/25548/A.C.E_Armed_Assault_Mod_1.04-1.05_update|Games On Net}}
+
+
+Full Install - 780MB :
+* {{Link|http://www.armedassault.info/index.php?cat{{=}}addons&id{{=}}836|Armedassault.info}}
+* {{Link|http://www.flashpoint.ru/data/ArmA/Addons/ACE-ArmA_Mod_v1.05full.exe|Flashpoint.ru}}
+* {{Link|http://games.on.net/file/25547/A.C.E_Armed_Assault_Mod_1.05_Full_Install|Games On Net}}
+
+
+
+----
+
+==== Release 1.04 ====
+(16/02/2009) - {{Link|http://dev-heaven.net/wiki/ace-mod/Version_104|Release Notes & Changelog}}
+
+
+<u>Client files</u>
+
+Updater - 12MB :
+* {{Link|http://www.armaholic.com/page.php?id{{=}}4837|Armaholic.com}}
+* {{Link|http://www.armedassault.info/download.php?cat{{=}}addons&id{{=}}799|Armedassault.info}}
+* {{Link|http://www.flashpoint.ru/data/ArmA/Addons/ACE-ArmA_Mod_v1.04update.exe|Flashpoint.ru}}
+* {{Link|http://games.on.net/file/24245/A.C.E._Mod_v1.04_Update|Games On Net}}
+
+
+----
+
+==== Release 1.03 ====
+(16/02/2009) - {{Link|http://dev-heaven.net/wiki/ace-mod/Version_103|Release Notes & Changelog}}
+
+
+<u>Client files</u>
+
+Updater - 186MB :
+* {{Link|http://www.armaholic.com/page.php?id{{=}}4835|Armaholic.com}}
+* {{Link|http://www.armedassault.info/download.php?cat{{=}}addons&id{{=}}798|Armedassault.info}}
+* {{Link|http://www.flashpoint.ru/data/ArmA/Addons/ACE-ArmA_Mod_v1.03update.exe|Flashpoint.ru}}
+* {{Link|http://games.on.net/file/24244/A.C.E._Mod_v1.03_Update|Games On Net}}
+
+
+----
+
+==== Release 1.02 ====
+(09/02/2009) - {{Link|http://dev-heaven.net/wiki/ace-mod/Version_102|Release Notes & Changelog}}
+
+
+<u>Client files</u>
+
+Updater - 592MB :
+* {{Link|http://www.armaholic.com/page.php?id{{=}}4657|Armaholic.com}}
+* {{Link|http://www.armedassault.info/index.php?cat{{=}}addons&id{{=}}783|ArmedAssault.info}}
+* {{Link|http://games.on.net/file/24090/A.C.E_Mod_v1.02_Update__for_Armed_Assault|Games On Net}}
+
+Full Install - 702MB :
+* {{Link|http://www.armedassault.info/index.php?cat{{=}}addons&id{{=}}784|ArmedAssault.info}}
+* {{Link|http://www.flashpoint.ru/data/ArmA/Addons/ACE-ArmA_Mod_v1.02full.exe|Flashpoint.ru}}
+
+
+----
+
+==== Release 1.01 ====
+(19/01/2009) - {{Link|http://dev-heaven.net/wiki/ace-mod/Version_101|Release Notes & Changelog}}
+
+
+<u>Client files</u>
+
+Full install - 649MB :
+* {{Link|http://www.armedassault.info/download.php?cat{{=}}addons&id{{=}}710|ArmedAssault.info}}
+* {{Link|http://games.on.net/file/23999/A.C.E_Mod_v1.01_for_Armed_Assault|Games On Net}}
+
+
+----
+
+==== Public Beta Release 1.00 ====
+(24/12/2008) - {{Link|http://dev-heaven.net/wiki/ace-mod/Version_100|Release Notes & Changelog}}
+
+
+<u>Client files</u>
+
+Full install - 634MB :
+* {{Link|http://operationflashpoint.filefront.com/file/ACE_Advanced_Combat_Environment;96837#Download|Filefront}}
+* {{Link|http://games.on.net/file/23222/Armed_Assualt__ACE_Mod_Client|Games On Net}}
+</spoiler>
+
+=== Missions ===
+
+==== ACE Missions Pack ====
+{{Link|http://www.moddb.com/mods/ace-advanced-combat-environment/addons|More than 100 missions sorted by Game Mode and Islands / Lands}}
+
+==== WarFare Cooperative (WACO) ====
+{{Link|http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?act{{=}}ST;f{{=}}81;t{{=}}75627|By Doomguy}}
+
+==== Domination ====
+{{Link|http://dev-heaven.net/projects/show/domination|By Xeno}}
+
+==== Vehicle DM ====
+{{Link|http://dev-heaven.net/wiki/ace-ip/Vehicle_DM|By kju}}
+
+==== 6thSense.eu Battle Center ====
+{{Link|http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?act{{=}}ST;f{{=}}70;t{{=}}76693|Dynamic Coop by Sickboy, with DAC (By Silola)}}
+
+
+== Support, bugs and other issues ==
+
+We would appreciate everyone reporting their issues and problems on our Project Site
+
+Tracking issues is much easier for both Developers and Users this way.
+
+=== Ticket Reporting ===
+
+'''Authorised Users (need an account)'''
+
+{{Link|http://dev-heaven.net/projects/ace-mod/issues|ACE Trouble Ticket Reports}} (Click "New Issue" in the top)
+
+=== FAQ ===
+
+Frequently asked questions about ACE can be found [[ACE FAQ|here]].
+
+
+== Links ==
+
+* ACE Homepage - {{Link|http://www.acemod.net/wiki/Main_Page|http://www.acemod.net/wiki/Main_Page}}
+* ACE Forum - {{Link|http://dev-heaven.net/projects/ace-mod/boards|http://dev-heaven.net/projects/ace-mod/boards}}
+* DefconServers ArmA Server Rental {{Link|http://www.defconservers.com|http://www.defconservers.com}}
+* Dev-Heaven {{Link|http://dev-heaven.net/projects|http://dev-heaven.net/projects}}
+* ShackTac Gaming Community {{Link|http://www.shacktactical.com|http://www.shacktactical.com}}
+* Shack Tactical ArmA Tactical Guide {{Link|http://www.dslyecxi.com/armattp.html|http://www.dslyecxi.com/armattp.html}}
+* 6thSense.eu {{Link|http://6thsense.eu|http://6thsense.eu}}
+* USMC Warriors {{Link|http://www.usmc-warriors.org/|http://www.usmc-warriors.org/}}
+* GamingSA.com {{Link|http://www.GamingSA.com|http://www.GamingSA.com}}
+
+
+== MOD Cooperation Links ==
+
+* ADF - {{Link|http://adfmod.ifastnet.com/index.php|http://adfmod.ifastnet.com/index.php}}
+* AAW - {{Link|http://aaw.xtremedefenceforce.com/|http://aaw.xtremedefenceforce.com/}}
+* ESP - {{Link|http://ofp-zeus.com/nuke/modules.php?name{{=}}Forums&file{{=}}viewforum&f{{=}}34|http://ofp-zeus.com/nuke/modules.php?name{{=}}Forums&file{{=}}viewforum&f{{=}}34}}
+* OFrP - {{Link|http://www.ofrp.net/|http://www.ofrp.net/}}
+* PUKF - {{Link|http://www.pukf.net/|http://www.pukf.net/}}
+* RSKL - {{Link|http://www.rkslstudios.info/|http://www.rkslstudios.info/}}
+* VTE - {{Link|http://tactical.nekromantix.com/vte/index.php|http://tactical.nekromantix.com/vte/index.php}}
+* IMW - {{Link|http://www.imwmod.com/|http://www.imwmod.com/}}
+* 6thSense - {{Link|http://6thsense.eu/|http://6thsense.eu/}}
+* RHS - Red Hammer Studios
+
+
+== The Team ==
+
+{| class="valign-top"
+| style="width: 25%" |
+==== ACE Lead Staff ====
+* rocko
+* Sickboy
+* ViperMaul 
+| style="width: 25%" |
+==== ACE Developers ====
+{{Columns|2|
+* Aushilfe
+* Inkompetent
+* KingHomer
+* MadDogX
+* q1184
+* PuFu
+* rocko
+* Scubaman3D
+* SerapH
+* Sickboy
+* Squelch
+* teaCup
+* the_f
+* tpM
+* ViperMaul
+* zGuba
+}}
+| style="width: 25%" |
+==== ACE Contributors ====
+{{Columns|2|
+* ardvarkdb
+* Dasquade
+* Durg78
+* gTGeneral
+* Headspace
+* Joel
+* jonny 
+* kevb0
+* Loyalguard
+* Maddmatt
+* messiah
+* NSXr
+* Pillage
+* ProPilot
+* Rg7621
+* RKSL-Rock
+* RyanKaplan
+* Ryujin
+* Sonsalt
+* Spooner
+* Strango
+* SWAT-guy
+* Terox
+}}
+| style="width: 25%" |
+==== Former Team Members ====
+* Sig 
+* Q
+* Phaeden
+|}
+
+Thanks guys!
+
+==== Beta Testers ====
+* 6thSense.eu Community, GOL Clan, Kellys Heroes, LSD Clan, OFCRA, ShackTactical, Theatre-of-War Tournament, Community, Zeus Community
+* Aussie Dave, mr.g-c 
+
+==== Public Relations Content Providers ====
+* ArmAVidz
+
+
+== ACE Credits ==
+
+* andersson for his magazine replacements.
+* Cameron McDonald for his US 101st Airborne textures
+* DaSquade for 'CAR', 'HuntIR' and 'MRAP' models
+* Ebud for his SF texture (nomex).
+* GMJamez for the ideas in his 'Sight adjustment' script.
+* granQ and Mechastalin for helping fixing the BIS SPG-9 mode
+* Jonny for his MARPAT texture, USMC and Special Forces Units
+* Kary Black ({{Link|http://www.karyblack.com|http://www.karyblack.com}}) for the M32 render shot for the equipment picture
+* Kegetys for his 'Spectating Script', 'cpbo' and 'unRap'.
+* Kenji/RHS for 'T80' models.
+* LeftSkidLow for his 'Helicopter Sounds'.
+* Lethals for his 'Wingtiptrails' and other 'plane FX' scripts.
+* lwlooz (ESP MOD) for his 'IslandMap' and 'RscMapControl' (color) improvement.
+* Mandoble for his 'mando_ejectunit.sqf', 'mando_getpos.sqf', 'mando_my_weapon.sqf', 'OFPEC ILS', 'Mando Missiles suite', 'Mando Javelin'.
+* MapFact and Marco-Polo-IV for Mapfact Air 1.0.
+* Marco-Polo-IV for helping us with some models ;)
+* Mikero for his 'MikeroDosTools' and 'Eliteness'.
+* NonWonderDog for his 'GLTDII Rangefinder', 'ScopeFix' and 'Ballistics'.
+* norrin for his HuntIR script
+* OFPEC and Mandoble for the 'SP fast rope script'.
+* OFPEC for OFPEC Light Bulbs v1.0 by Mandoble, Planck, and Loyalguard.
+* Panda[PL] for his HK416/417 and M14/M21 packs
+* Pingu for the Claymore addon.
+* Rastavovich for steerable chute.
+* Rommel for AI suppression script.
+* ShadowNX/RHS for AK, RPG22, RPG27, VSS, Val, Pecheneg models.
+* Sig[USMC] for texturing of Scuba's original SCARS, Ryujin Strykers and the MRAP. Various minor model adjustments here and there
+* Solus and Killswitch for the 'Extended EventHandlers' system.
+* Solus for 'ACE_EngineStart_FX', 'CAManBase hit', 'several AI values', 'dragging', 'blood', 'animations', 'better head view', some other scripting ideas.
+* Shole for his Extended displayEventhandler for KeyUp and KeyDown.
+* Spooner for his 'Rangefinder'.
+* Timamas for his 'Russian Voices'.
+* Timamas/ORCS for T90 {{ofp}} model.
+* Törni for the M60 tank and ZU23 cannon.
+* Lester (Mapfact) for his Advance Transportation System (ATS)
+* SLX for animated BIS vehicles.
+* Fishkopp/Inquisitor for the M1A2 SEP model/textures.
+* Yakavetta/BigDaddy5 for the '31st MEU replacement reticles'.
+* Twinke Masta, Anti-Death, Defeat, Shiban, Bullet_Head, Fub, Kimono, Hav0c, Ettubrutesbro, Millenia, The_AntiPirate, Spydr, Splinter, RobertHammer - for 'RH pistol pack'.
+* Snark, Twninke Masta, Schmung, Stoke, Grizzly, Expert, Thanez, Geno for the MP5 models and textures
+
+
+== Special Thanks ==
+
+To the USMC-Warriors for being one of the main supporters of ACE, thank you for supplying us with a home!
+* {{Link|http://www.usmc-warriors.org|http://www.usmc-warriors.org}}

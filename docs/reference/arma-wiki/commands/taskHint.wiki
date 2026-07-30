@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/taskHint
+// revision: 377725 (2026-01-02T09:36:56Z)
+// export sha1: njsna9u0vlpanxjlmw9loe9jm31ajqu
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Briefing
+
+|eff= local
+
+|descr= Shows info about new, changed or failed task. The text can contain several lines. {{hl|\n}} is used to set a line return.
+{{Feature|arma3|It is recommended to use [[BIS_fnc_showNotification]] in order to maintain {{arma3}}'s visual style.}}
+
+|s1= [[taskHint]] [text, color, icon]
+
+|p1= text: [[String]]
+
+|p2= color: [[Color|Color (RGBA)]]
+
+|p3= icon: [[String]] - one of:
+{{Columns|2|
+* "taskNew"
+* "taskCurrent"
+* "taskDone"
+* "taskFailed"
+}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>taskHint ["Task failed.\nBad job!", [1, 0, 0, 1], "taskFailed"];</sqf>
+
+|seealso= [[BIS_fnc_showNotification]] [[Task]]
+}}
+
+{{Note
+|user= Kylania
+|timestamp= 20110715033700
+|text= Here are the BIS colors:
+<sqf>
+taskHint ["New Task!\nHere's your new task!",	[1, 1, 1, 1],					"taskNew"];
+taskHint ["Task Assigned!\nDo this now!",		[1, 1, 1, 1],					"taskCurrent"];
+taskHint ["Task Succeeded!\nGood job!",			[0.60,0.839215,0.466666,1],		"taskDone"];
+taskHint ["Task Failed!\nBad job!",				[0.972549,0.121568,0,1],		"taskFailed"];
+taskHint ["Task Canceled!\nNever mind!",		[0.75,0.75,0.75,1],				"taskFailed"];
+</sqf>
+}}

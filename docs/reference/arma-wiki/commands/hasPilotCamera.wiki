@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/hasPilotCamera
+// revision: 310236 (2022-05-05T13:10:59Z)
+// export sha1: r9mrhlh7e2sozt5oqzxpndyjlnvbk55
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Pilot Camera | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|arg= global
+
+|gr1= Pilot Camera
+
+|descr= Returns true if the object airplane or helicopter has a [[A3_Targeting_config_reference#class_pilotCamera|pilotCamera]].
+
+|s1= [[hasPilotCamera]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>hasPilotCamera vehicle player;</sqf>
+
+|seealso= [[getPilotCameraPosition]] [[getPilotCameraDirection]] [[getPilotCameraRotation]] [[getPilotCameraTarget]] [[setPilotCameraDirection]] [[setPilotCameraRotation]] [[setPilotCameraTarget]]
+}}

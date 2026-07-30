@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/menuSetAction
+// revision: 378340 (2026-04-02T16:31:17Z)
+// export sha1: 1qvnr16vdnev8a454y1un10u4w6zjzk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= GUI Control - Menu
+
+|descr= Sets new action into menu entry on given path.
+
+|s1= [[menuSetAction]] [idc, path, action]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|p3= action: [[String]] - expression that should be executed when entry is clicked
+
+|r1= [[Nothing]]
+
+|s2= control [[menuSetAction]] [path, action]
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|p23= action: [[String]] - expression that should be executed when entry is clicked
+
+|r2= [[Nothing]]
+
+|x1= <sqf>findDisplay 313 displayCtrl 120 menuSetAction [[0, 1], "systemChat 'Hello World!'"];</sqf>
+
+|seealso= [[menuAction]]
+}}

@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_GUI_Control_-_Menu
+// revision: 342089 (2023-07-09T12:24:19Z)
+// export sha1: 5ruilgobhtuhbm64t8fyhpaolwjmyhe
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands to manipulate [[CT_MENU_STRIP]], [[CT_MENU]], [[CT_CONTEXT_MENU]] controls. [[CT_MENU_STRIP]] and [[CT_CONTEXT_MENU]] were introduced with [[:Category:Eden Editor|Eden Editor]]. See [[Eden Editor: Entity Context Menu| Entity Context Menu]] and [[Eden Editor: Configuring Menu Bar| Configuring Menu Bar]] to find out how to configure these menus in [[:Category:Eden Editor|Eden Editor]].
+
+'''Example for [[:Category:Eden Editor|Eden Editor]]''' 
+
+<sqf>
+// create main folder
+disableSerialization;
+private _ctrlMenuStrip = findDisplay 313 displayCtrl 120;
+private _indexMain = _ctrlMenuStrip menuAdd [[], "Custom Tools"];
+ 
+// create first subentry which is not checkable but has an action
+private _indexUncheckable = _ctrlMenuStrip menuAdd [[_indexMain], "This entry can not be checked"];
+_ctrlMenuStrip menuSetAction [[_indexMain, _indexUncheckable], "systemChat 'Hello World!'"];
+
+// create second subentry which is checkable and has an action
+private _indexCheckable = _ctrlMenuStrip menuAdd [[_indexMain], "This entry is checkable"];
+_ctrlMenuStrip menuSetAction [[_indexMain, _indexCheckable], "systemChat 'Hello World!'"];
+_ctrlMenuStrip menuSetCheck [[_indexMain, _indexCheckable], true];
+
+// create third subentry which shows an image and has an action
+private _indexPicture = _ctrlMenuStrip menuAdd [[_indexMain], "This entry has a picture"];
+_ctrlMenuStrip menuSetAction [[_indexMain, _indexPicture], "systemChat 'Hello World!'"];
+_ctrlMenuStrip menuSetPicture [[_indexMain, _indexPicture], "\a3\modules_f\data\iconunlock_ca.paa"];
+
+// create a fourth entry which will destroy itself once clicked
+private _indexDelete = _ctrlMenuStrip menuAdd [[_indexMain], "This entry will be deleted once clicked"];
+_ctrlMenuStrip menuSetAction [[_indexMain, _indexDelete], "findDisplay 313 displayCtrl 120 menuDelete (menuHover (findDisplay 313 displayCtrl 120)); systemChat 'Entry gone!'"];
+
+// create a fifth entry which will return its data once clicked
+private _indexData = _ctrlMenuStrip menuAdd [[_indexMain], "This entry will print its data to system chat when clicked"];
+_ctrlMenuStrip menuSetData [[_indexMain, _indexData], "<nowiki>[</nowiki>objNull,'Some String',true]"];
+_ctrlMenuStrip menuSetAction [[_indexMain, _indexData], "systemChat (findDisplay 313 displayCtrl 120 menuData (menuHover (findDisplay 313 displayCtrl 120)));"];
+</sqf>
+
+{{Feature|informative|To remove the custom menu, just restart [[:Category:Eden Editor|Eden Editor]].}}
+
+
+[[Category:Command Group: GUI Control]]

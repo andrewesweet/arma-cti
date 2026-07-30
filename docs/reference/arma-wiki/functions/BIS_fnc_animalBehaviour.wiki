@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_animalBehaviour
+// revision: 364314 (2024-05-06T09:38:46Z)
+// export sha1: 58u8pj7r2am88b067bzolepfpdw06uh
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Ambient | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Ambient
+
+|descr= Animal behaviour control. Called by {{hl|Animals_F\Data\Scripts\main.fsm}}.
+
+|s1= [animal] call [[BIS_fnc_animalBehaviour]]
+
+|p1= animal: [[Object]] - the controlled animal
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[animal] call BIS_fnc_animalBehaviour;</sqf>
+
+|seealso= [[Arma 3: Animals: Override Default Animal Behaviour Via Script | Animal Behaviour]] [[createAgent]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-09-29 - 19:38 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">To override, add <sqf>_agent setVariable ["BIS_fnc_animalBehaviour_disable", true];</sqf> right after agent creation.</dd>
+
+</dl>

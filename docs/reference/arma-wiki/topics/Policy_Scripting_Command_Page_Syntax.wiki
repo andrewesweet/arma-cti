@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/Policy:_Scripting_Command_Page_Syntax
+// revision: 226623 (2021-01-31T18:11:37Z)
+// export sha1: oiqr9gk2hmbf5qhtkoviqmh0jqruuzi
+// Vendored snapshot. Do not edit — re-export instead.
+
+This page should contain the rules about how scripting command documentation pages should be written.
+
+Currently it contains almost no rules, as none were agreed yet. Feel free to visit discussion page.
+
+Those interested are invited to join the discussion, submit alternative or improved, ...proposals, ...
+
+== Command Template ==
+All scripting command pages must use the {{Template|RV}} template

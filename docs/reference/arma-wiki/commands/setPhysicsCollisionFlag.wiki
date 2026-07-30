@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/setPhysicsCollisionFlag
+// revision: 373888 (2025-06-26T10:59:15Z)
+// export sha1: euscr1lzito6gbzlnkicagjqfvbkxdj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|arg= global
+|eff= local
+
+|gr1= PhysX
+
+|descr= Sets physics collision flags for PhysX and geometry LODs. Roadway LOD interactions remain.<br>
+For example, if collision is disabled for a house, it is now possible to walk through its walls but still possible to walk on its floors.
+{{Feature|informative|Use the [[allLODs]] command to check if an object has a roadway LOD (normally, if an object is intended to be walkable, it does have a roadway LOD).}}
+
+|s1= object [[setPhysicsCollisionFlag]] value
+
+|p1= object: [[Object]]
+
+|p2= value: [[Boolean]] - [[true]] to enable collision, [[false]] to disable it
+
+|r1= [[Nothing]]
+
+|seealso= [[hideObject]] [[isObjectHidden]] [[getPhysicsCollisionFlag]] [[disableCollisionWith]] [[enableCollisionWith]]
+}}

@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/getItemCargo
+// revision: 378322 (2026-04-02T16:23:27Z)
+// export sha1: hpv90k0bfmwlwfgt2qmphp6f7hpl5od
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|gr1= Vehicle Inventory
+
+|descr= Returns all items names and count from ammo box (or any general weapon holder container).
+
+|s1= [[getItemCargo]] box
+
+|p1= box: [[Object]]
+
+|r1= [[Array]] with [classes, counts]
+* classes: [[Array]] of [[String]]s - Item class names
+* counts: [[Array]] of [[Number]]s - Item counts
+
+|x1= <sqf>
+getItemCargo cursorTarget;
+/*
+	returns e.g
+	[
+        ["5ItemA", "10ItemB"]
+        [5, 10]
+	]
+*/
+</sqf>
+
+|seealso= [[itemCargo]] [[addItemCargo]] [[addItemCargoGlobal]] [[clearItemCargo]] [[clearItemCargoGlobal]]
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Eden_Editor:_Editing
+// revision: 92081 (2015-09-30T12:18:33Z)
+// export sha1: kbtnd8fpfmm5o02n0abq22x3mx1vwwm
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Eden Editor|Editing]]

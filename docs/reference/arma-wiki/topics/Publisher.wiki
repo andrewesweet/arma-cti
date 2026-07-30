@@ -1,0 +1,77 @@
+// source: https://community.bistudio.com/wiki/Publisher
+// revision: 364246 (2024-05-06T09:38:18Z)
+// export sha1: e74cocyt31f1kts5sq1x6rsnn6352o5
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR=
+[[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY=[[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD={{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= Publisher is a content publishing tool created by Bohemia Interactive.
+
+The purpose of this tool is to publish  whole Mods onto {{Link|link= http://steamcommunity.com/workshop/browse/?appid=107410|text= Steam Workshop}} to be used with the game.
+
+|COMMAND=
+    Publisher.exe<br>
+	
+|OPTIONS=
+<!--
+    [-pbo PBO_file] - pre-selects a PBO to be published
+-->
+|EXAMPLE=
+<!--
+    Publisher.exe -pbo="pathToPBOFile.pbo"	
+--> 
+
+|NOTES=
+
+    Running Publisher with -pbo parameter containing non-existent PBO could cause it is crash to desktop
+
+|LICENSING=
+[[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO=
+[[Addon Builder]], [[A3 Launcher]], [[Arma 3: Publisher| Publisher, user manual]]
+
+}}
+
+=== Command Line Interface ===
+==== Command ====
+: <code style="display: block">PublisherCmd update /id:<workshop id> {/changeNote:<change note>|/changeNoteFile:<path to a text file>} /path:<folder with mod content> [/nologo] [/nosummary]</code>
+==== Options ====
+: /id             - Id of the workshop item to update (required).<br>
+: /changeNote     - Text describing the update (required).<br>
+: /changeNoteFile - Path to a file with change note (required).<br>
+: /path           - Path to the folder with new mod content (required).<br>
+: /nologo         - Suppresses display of the sign-on banner.<br>
+: /nosummary      - Suppresses display of the parameter summary.<br>
+
+==== Return code ====
+Zero means the operation has completed successfully, non-zero value means something went wrong. Please consult the documentation for the error codes.
+
+: 0: Success.<br>
+: 0x0001: Unknown command.<br>
+: 0x0002: Invalid parameters.<br>
+: 0x0003: Change note is not set and change note file is empty.<br>
+: 0x0004: Change note file can't be accessed.<br>
+: 0x0010: Unable to initialize Steam API (generic error).<br>
+: 0x0011: Steam client is not running.<br>
+: 0x0012: Steam client is offline.<br>
+: 0x0013: Steam API initialization failed.<br>
+: 0x0100: Generic publishing error.<br>
+: 0x0101: Details about Workshop item can't be retrieved.<br>
+: 0x0102: Workshop item doesn't have the MOD tag.<br>
+: 0x0103: Content validation has failed, the content is not a valid mod.<br>
+: 0x02XX: Steam Error 0xXX.<br>
+: 0xFFFF: Fatal failure.
+
+
+{{GameCategory|arma3|Official Tools}}

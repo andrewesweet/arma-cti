@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_kbMenu
+// revision: 309849 (2022-05-05T12:09:52Z)
+// export sha1: ktedyj7rh0karswlu52bi4z24lprc3o
+// categories: Category:Arma 3: Functions | Category:Function Group: Conversations | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Conversations
+
+|descr= <pre>/*
+
+	Description:
+	Opens conversation menu. Script terminates itself when menu selection is finished.
+
+	Parameter(s):
+	_this select 0: ARRAY or STRING - List of responses (of type ARRAY) or Menu name
+		Responses are in format:
+		_response select 0: STRING or ANY - Display name when STRING, otherwise used as default option when menu is closed without selecting anything.
+		_response select 1:
+			STRING - expression
+			ARRAY - BIS_fnc_kbTell params
+
+	Returns:
+	NUMBER - ID of select option
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_kbMenu]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_kbMenu;</sqf> -->
+
+|seealso=
+}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/setUserMFDText
+// revision: 309223 (2022-05-04T10:05:28Z)
+// export sha1: qowxilb770dszsk3kazl4okwvwgeom7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= GUI Control
+
+|descr= Stored user text value in MFD, limit is 50, user0...user49
+
+|s1= vehicle [[setUserMFDText]] [index, value]
+
+|p1= vehicle: [[Object]] - vehicle with MFD
+
+|p2= index: [[Number]]
+
+|p3= value: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_vehicle setUserMFDText [0, "some text"];</sqf>
+
+|seealso= [[getUserMFDText]] [[setUserMFDValue]] [[getUserMFDValue]]
+}}

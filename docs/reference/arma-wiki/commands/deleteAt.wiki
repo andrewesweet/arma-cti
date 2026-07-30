@@ -1,0 +1,115 @@
+// source: https://community.bistudio.com/wiki/deleteAt
+// revision: 378389 (2026-04-04T07:34:56Z)
+// export sha1: 09l6o3hg4fruyfiy6lya9dl3cbcwayc
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: HashMap | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= Arrays
+
+|gr2= HashMap
+
+|descr= Removes array element at the given index and returns removed element (modifies the original array, just like [[resize]] or [[set]]).
+{{Feature|informative| For the main [[Array]] variant, if the index is a negative [[Number]], no error will appear, making it ideal for using with [[find]] (see {{Link|#Example 2}}) or [[findIf]] (see {{Link|#Example 3}}).}}
+
+|s1= array [[deleteAt]] index
+
+|p1= array: [[Array]] of [[Anything]]
+
+|p2= index: [[Number]] - see the note in description
+
+|r1= [[Anything]] or [[Nothing]] - returns the deleted element if one existed
+
+|s2= hashMap [[deleteAt]] key
+
+|s2since= arma3 2.02
+
+|p21= hashMap: [[HashMap]]
+
+|p22= key: [[HashMapKey]]
+
+|r2= [[Anything]]
+
+|s3= array [[deleteAt]] indexes
+
+|s3since= arma3 2.18
+
+|p41= array: [[Array]] of [[Anything]]
+
+|p42= indexes: [[Array]] of [[Number]]s - multiple indexes, negative indexes are supported and would remove elements counting from the end of array (see {{Link|#Example 4}}).
+
+|r3= [[Array]] of [[Anything]] - deleted elements in order of user supplied indexes
+
+|x1= <sqf>
+_arr = [1,2,3];
+_rem = _arr deleteAt 1;
+hint str [_rem, _arr]; // [2, [1, 3]]
+</sqf>
+
+|x2= <sqf>
+_arr = [1,2,3];
+_arr deleteAt (_arr find 0); // non existent item
+hint str _arr; // [1,2,3]
+_arr deleteAt (_arr find 2); // existent item
+hint str _arr; // [1,3]
+</sqf>
+
+|x3= <sqf>
+_arr = [1,2,3];
+_arr deleteAt (_arr findIf {(_x % 5) == 0}); // Remove first number that's divisible by 5
+hint str _arr; // [1,2,3]
+_arr deleteAt (_arr findIf {(_x % 2) == 0}); // Remove first number that's divisible by 2
+hint str _arr; // [1,3]
+</sqf>
+
+|x4= <sqf>
+_arr = [1,2,3,4];
+_res = _arr deleteAt [-1, 0]; // Remove the last and the first array element
+systemchat str [_res, _arr]; // [[4,1],[2,3]]
+</sqf>
+
+|seealso= [[deleteRange]] [[set]] [[resize]] [[select]] [[in]] [[find]] [[findIf]] [[toArray]] [[toString]] [[forEach]] [[count]] [[pushBack]] [[pushBackUnique]] [[apply]] [[append]] [[sort]] [[param]] [[params]] [[arrayIntersect]] [[splitString]] [[joinString]]
+}}
+
+{{Note
+|user= Heeeere's Johnny!
+|timestamp= 20141015165500
+|text= <sqf>_array deleteAt 0;</sqf> is almost 60x faster than <sqf>_array = _array - [_array select 0]</sqf> (Tested with an array of 10.000 strings, iterating through it using a for-from-to-do loop)
+}}
+
+{{Note
+|user= Highhead
+|timestamp= 20160304155800
+|text= Deleting from an array with foreach and _foreachIndex variable is tricky.
+The array is being altered, the _foreachIndex won't keep up and other elements in the array will be skipped and in worst case not being deleted.
+If you delete elements from an array in descending order (using while or for) it will work.
+}}
+
+{{Note
+|user= Igneous01
+|timestamp= 20170209224500
+|text= To expand on Highheads comment above - this is because forEach implements iterators to traverse a collection, which are read only by definition. 
+The variable _x is an iterator that points to the current item in the collection. Trying to alter _x will have no effect. 
+<sqf>
+private _array = [1,2,3,4,5,6,7,8];
+{ _x = 2; } forEach _array
+// _array is still [1,2,3,4,5,6,7,8]
+</sqf>
+When trying to use deleteAt inside forEach, the behaviour would be undefined as you are invalidating the iterator reference, and it will not know how to traverse to the next element. 
+In short, only use forEach when reading data from an array.
+For more info about iterators, see C++ Iterators.
+}}
+
+{{Note
+|user= Freghar
+|timestamp= 20210201180600
+|text= As you would expect from a simple array implementation,
+<sqf>array deleteAt (count array - 1);</sqf>
+is virtually zero cost (0.0005ms on an array of 1000000 elements), while
+<sqf>array deleteAt 0;</sqf>
+is very performance heavy (0.7ms on the same huge array).
+}}

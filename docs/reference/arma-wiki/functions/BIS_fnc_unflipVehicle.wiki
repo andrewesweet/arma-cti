@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_unflipVehicle
+// revision: 352643 (2024-02-17T15:56:50Z)
+// export sha1: stlbsl9ek3od3kyuc0229p4sd4i4wyc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 2.02 <!-- 2021-04-01 (not a joke) -->
+
+|gr1= Vehicles
+
+|descr= Can be used to unflip a vehicle or a turret, without transition.
+
+|s1= [veh] call [[BIS_fnc_unflipVehicle]]
+
+|p1= veh: [[Object]] - the vehicle/turret that should be flipped
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[quad1] call BIS_fnc_unflipVehicle;</sqf>
+
+|seealso= [[BIS_fnc_unflipThing]]
+}}

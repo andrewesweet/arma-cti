@@ -1,0 +1,109 @@
+// source: https://community.bistudio.com/wiki/serverCommandAvailable
+// revision: 370060 (2024-10-29T14:40:43Z)
+// export sha1: mga6w3j5h5jij3rq82drqwz5aa68r94
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 2 version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.05
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Multiplayer
+
+|descr= Returns [[true]] if given [[serverCommand]] is available on current machine, [[false]] if not.
+
+{{Feature|informative|
+Execution via [[BattlEye#RCon|RCon]] is basically being '''logged-in''' as [[admin]] in terms of permissions.
+}}
+
+{{{!}} class="wikitable align-center"
+! rowspan="2" {{!}} {{arma3}} [[Multiplayer Server Commands]]
+! colspan="4" {{!}} Available to
+{{!}}-
+! Client
+! Voted [[admin|Admin]]
+! Logged [[admin|Admin]]
+! [[isServer|Server Host]]
+{{!}}-
+{{!}} {{hl|#login}}, {{hl|#userlist}}, {{hl|#beclient}}, {{hl|#vote}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|checked}}
+{{!}}-
+{{!}} {{hl|#kick}}, {{hl|#debug}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|checked}}
+{{!}}-
+{{!}} {{hl|#lock}}, {{hl|#unlock}}, {{hl|#maxping}}, {{hl|#maxdesync}}, {{hl|#maxpacketloss}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|checked}}
+{{!}}-
+{{!}} {{hl|#logout}}, {{hl|#restart}}, {{hl|#mission}}, {{hl|#missions}}, {{hl|#reassign}}, {{hl|#monitor}}, {{hl|#init}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|unchecked}}
+{{!}}-
+{{!}} {{hl|#shutdown}}, {{hl|#restartserver}}, {{hl|#restartserveraftermission}}, {{hl|#shutdownaftermission}}, {{hl|#dctimeout}}, {{hl|#exec}}, {{hl|#monitords}}, {{hl|#beserver}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|unchecked}}
+{{!}}-
+{{!}} {{hl|#logentities}}, {{hl|#exportjipqueue}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|checked}}
+{{!}}-
+{{!}} Profiling type builds only: {{hl|#captureframe}}, {{hl|#captureslowframe}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|checked}}
+<!--
+{{!}}-
+{{!}} Disabled: {{hl|#admin}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|unchecked}}
+-->
+{{!}}}
+
+To check if a [[Multiplayer Server Commands|server command]] can be executed in the current environment, use [[serverCommandExecutable]].
+
+{{Feature|informative|The table above does not apply to the command's password variant on a dedicated server as everything is available to it.}}
+
+|s1= [[serverCommandAvailable]] command
+
+|p1= command: [[String]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_can = serverCommandAvailable "#kick";</sqf>
+
+|x2= <sqf>
+if (serverCommandAvailable "#logout") then 
+{
+	hint "You are a some sort of admin";
+};
+</sqf>
+
+|seealso= [[serverCommand]] [[serverCommandExecutable]] [[admin]] [[isServer]] [[Multiplayer Server Commands]]
+}}

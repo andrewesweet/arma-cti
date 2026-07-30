@@ -1,0 +1,105 @@
+// source: https://community.bistudio.com/wiki/USAF_Mod/Aircraft
+// revision: 226524 (2021-01-31T18:07:58Z)
+// export sha1: qrialmdywgi5hvhnzpburcccdmr8kus
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Ground Attack ==
+<div style="float:right;"> __TOC__ </div>
+=== AC-130U Spooky II ===
+; Status: Released
+
+[[file:arma3_USAF_AC_130.jpg]]
+
+
+AC-130U Spooky II
+
+    1× General Dynamics 25 mm (0.984 in) GAU-12/U Equalizer 5-barreled Gatling cannon
+    1× 40 mm (1.58 in) L/60 Bofors cannon
+    1× 105 mm (4.13 in) M102 howitzer
+
+== Strategic Bombers ==
+=== B-52 Stratofortress ===
+; Status: Not Released
+
+=== B-1B Lancer ===
+; Status: Released
+
+[[file:arma3_USAF_B1B.jpg]]
+
+Armament
+
+    Hardpoints: six external hardpoints for 50,000 pounds (23,000 kg) of ordnance (use for weapons restricted by arms treaties[94]) and three internal bomb bays for 75,000 pounds (34,000 kg) of ordnance.
+    Bombs:
+        84× Mk-82 Air inflatable retarder (AIR) general purpose (GP) bombs
+
+=== B-2A Spirit ===
+; Status: Not Released
+
+== Cargo Transport ==
+=== C-5 Galaxy ===
+; Status: Released
+
+[[file:arma3_USAF_C5.jpg]]
+
+=== C-17A Globemaster III ===
+; Status: Not Released
+
+[[file:arma3_USAF_C17.jpg]]
+
+=== C-130J Super Hercules ===
+; Status: Released
+
+[[file:arma3_USAF_c130j.jpg]]
+
+=== CV-22B Osprey ===
+; Status: Not Released
+
+[[file:arma3_USAF_CV22.jpg]]
+
+=== MC-130J Commando II ===
+; Status: Released
+
+[[file:arma3_USAF_MC130J.jpg]]
+
+== Special Electronic ==
+=== E-3 Sentry ===
+; Status: Not Released
+
+[[file:arma3_USAF_E3.jpg]]
+
+== Fighter ==
+=== F-15C Eagle ===
+; Status: Not Released
+
+=== F-16 Fighting Falcon ===
+; Status: Not Released
+
+=== F-22 Raptor ===
+; Status: Not Released
+
+=== F-35 Lightning II ===
+; Status: Not Released
+
+== Tanker ==
+=== KC-135 Stratotanker ===
+; Status: Released
+
+[[file:arma3_USAF_KC135.jpg]]
+
+== UAV ==
+=== MQ-1 Predator ===
+; Status: Not Released
+
+=== MQ-9 Reaper ===
+; Status: Not Released
+
+[[file:arma3_USAF_MQ9.jpg]]
+
+=== RQ-4A Global Hawk ===
+; Status: Not Released
+
+[[file:arma3_USAF_RQ4A.jpg]]
+
+== Trainer ==
+=== T-6A Texan II ===
+; Status: Not Released

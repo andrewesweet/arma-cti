@@ -1,0 +1,17 @@
+// source: https://community.bistudio.com/wiki/Village_Pump
+// revision: 349802 (2023-11-20T22:10:19Z)
+// export sha1: 60a2rj2ghbrh5tf5nd3y9ko2noxwn25
+// categories: Category:Village Pump
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+<center>
+[[File:StaffMeeting.jpg]]
+</center>
+<br clear="all">
+
+'''Welcome''' to the '''Village Pump'''. This is the place for editors and sysops to meet, and talk about technical issues, policies, as well as ongoing and upcoming projects. Please use the table below to find the most appropriate section to post in, or use the miscellaneous section.<br>If you want a quick overview, you can also view [[Village Pump (all)|all sections at once]]. 
+
+{{villagepumpmenu}}
+
+[[Category:Village Pump]]

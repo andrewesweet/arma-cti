@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/setWaypointCompletionRadius
+// revision: 377571 (2026-01-02T06:56:23Z)
+// export sha1: a8q50wpnd2yfmkmav555qu2r2xzkrqw
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Waypoints
+
+|descr= The completion radius allows units to call the waypoint completed once they are inside of the given circle. If the given radius is less than unit’s or vehicle’s configured 'precision' then the latter is used. For example tank precision is 10m, if the given radius is 5m, the final radius will be 10m. For units in [[player]]’s group there is an additional multiplier x5 to the configured precision. Units that are [[fleeing]] and are not in [[player]]'s [[Group]] will ignore the completion radius and would not be able to complete by proximity until they stop fleeing.
+
+|s1= waypoint [[setWaypointCompletionRadius]] radius
+
+|p1= waypoint:  [[Waypoint]]
+
+|p2= radius: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[grp, 2] setWaypointCompletionRadius 30;</sqf>
+
+|seealso= [[waypoints]] [[deleteWaypoint]] [[copyWaypoints]] [[setCurrentWaypoint]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointDescription]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointTimeout]] [[setWaypointType]] [[setWaypointVisible]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[setWaypointLoiterRadius]] [[waypointLoiterRadius]] [[addWaypoint]] [[setWaypointLoiterType]] [[waypointSpeed]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 29 January 2010, 14:12</dd>
+<dt class="note">[[User:Laking|Laking]]</dt>
+<dd class="note">
+* The completion radius is currently important for units moving in the Combat mode. 
+* With default completion radius = 0 the leader always finishes in the exact location of the waypoint. 
+* By providing a completion radius you allow him to plan his road to a cover nearby instead.
+* This does not necessarily mean the waypoint is complete once they are inside of the circle. 
+* The way it works now it is complete once unit is inside and does not think it would be reasonable to move any closer. 
+</dl>

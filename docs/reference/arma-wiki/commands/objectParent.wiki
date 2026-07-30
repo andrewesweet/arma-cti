@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/objectParent
+// revision: 363381 (2024-03-29T13:23:37Z)
+// export sha1: 2ag762grzt267vhyiz8r0sjyva5mrw6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|gr1= Object Manipulation
+
+|descr= [[File:objectParent.jpg|right|500px]]
+Returns the parent of an object if said object is a proxy.
+
+{{Feature|important|
+Use [[objectParent]] instead of [[vehicle]] to get a soldier's vehicle.
+Apart from being faster it is also more reliable, as when used on dead [[crew]], [[vehicle]] command may surprisingly return the unit itself.
+}}
+
+{{Feature|informative|
+Since {{arma3}} v2.18 [[objectParent]] can return the creator of a weaponholder if the weaponholder was created through some user action.
+}}
+
+|s1= [[objectParent]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Object]]
+
+|x1= <sqf>
+_isOnFoot = isNull objectParent player;							// check if the player is on foot
+_isCommander = player isEqualTo commander objectParent player;	// check if the player is in a vehicle and is its commander
+
+_holder = objectParent _myBackpack;								// return:
+																// - the weapon holder of a dropped backpack
+																// - the cargo space of a vehicle holding this backpack
+																// - the dead unit holding the backpack
+																// works for a backpack, a vest or a uniform
+
+_isDeployed = isNull objectParent _deployableStaticMG;			// true if deployed, false if in a backpack
+
+_ropeParent = objectParent _ropeSegment;						// since {{arma3}} v2.12
+_creatorUnit = objectParent _weaponholder;						// since {{arma3}} v2.18
+</sqf>
+
+|x2= Create and place a created backpack in front of player:
+<sqf>
+_backpackContainer = "B_TacticalPack_rgr" createVehicle [0, 0, 0];
+_weaponHolder = objectParent _backpackContainer;
+_weaponHolder setPosWorld (player modelToWorldWorld [0, 5, 0]);
+</sqf>
+
+|seealso= [[backpackContainer]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]] [[vehicle]] [[getCorpse]]
+}}

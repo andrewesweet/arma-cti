@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_File_Formats
+// revision: 373425 (2025-05-08T11:27:12Z)
+// export sha1: set2ol8hskwoz3uedsqyebglpzh791k
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Real Virtuality File Formats]]

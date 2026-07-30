@@ -1,0 +1,80 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Tree_View_Path
+// revision: 338770 (2023-04-05T16:50:45Z)
+// export sha1: a5udkm4erk5qukzv49kgy0as0fpk1wy
+// categories: Category:Arrays | Category:Introduced with Arma 3 version 0.74
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:treeview.jpg|thumb|600px|Tree View arrays in action]]
+Tree View path for referencing Tree View item is not the same as the path used for adding items to the Tree View.
+This may cause quite a bit of confusion as to the usage of the Tree View commands.
+In short, when adding new items to the Tree View, one needs to give the path of the parent item to which the item is added and not the desired path for the new item.
+The command will then return index of added item relative to the parent item. If parent item doesn't exist (happens when item is added to the main trunk of the tree), the parent path needs to be an empty array <sqf inline>[]</sqf>.
+
+This is only relevant to the [[tvAdd]] command. All other Tree View commands reference the actual item path. So here are 2 examples for [[tvAdd]] and [[tvDelete]]:
+<sqf>
+_index1   = _ctrl tvAdd [[], "Item1"];		// adds "Item1" to main branch. Item path [_index1] or [0]  
+_index1_1 = _ctrl tvAdd [[0], "Item1_1"];	// adds "Item1_1" to "Item1". Item path [0,_index1_1] or [0,0]
+_index1_2 = _ctrl tvAdd [[0], "Item1_2"];	// adds "Item1_2" to "Item1". Item path [0,_index1_2] or [0,1]
+_index2_1 = _ctrl tvAdd [[0,0], "Item2_1"];	// adds "Item2_1" to "Item1_1". Item path [0,0,_index2_1] or [0,1,0]
+</sqf>
+
+
+As you can see, the parent item path is referenced in each [[tvAdd]] command. Let's look at [[tvDelete]]. The item path will be the actual path to the item. 
+<sqf>
+_ctrl tvDelete [0,0]; // deletes "Item1_1"
+_ctrl tvDelete [0,1]; // doesn't delete "Item1_2"
+</sqf>
+
+
+The reason "Item1_2" is not deleted is because its path changed from [0,1] to [0,0] after we deleted "Item1_1".
+<sqf>_ctrl tvDelete [0,0]; // deletes "Item1_2"</sqf>
+
+Now "Item1_2" is also deleted because the path for it is now correct.
+
+
+{{Clear}}
+Code used to generate the Tree View thumbnail: <spoiler>
+<sqf>
+_disp = findDisplay 46 createDisplay "RscDisplayEmpty";
+_bg = _disp ctrlCreate ["RscText", -1];
+_bg ctrlSetPosition [safeZoneX, safeZoneY, safeZoneW, safeZoneH];
+_bg ctrlSetBackgroundColor [0.5, 0.5, 0.5, 1];
+_bg ctrlCommit 0;
+_ctrl = _disp ctrlCreate ["RscTree", -1];
+_ctrl ctrlSetPosition [0, 0, 1, 1];
+_ctrl ctrlCommit 0;
+_ctrl ctrlSetFontHeight 0.03;
+_ctrl ctrlSetFont "PuristaMedium";
+for "_i" from 0 to 1 do 
+{
+	_color = [1, 1, 1, 1];
+	_ctrl tvAdd [[], format ["Parent Path: %1 | Item Path: %2", [], [_i]]];
+	_ctrl tvSetColor [[_i], _color];
+	for "_j" from 0 to 1 do 
+	{
+		_color = [1, 0, 0, 1];
+		_ctrl tvAdd [[_i], format ["Parent Path: %1 | Item Path: %2", [_i], [_i, _j]]];
+		_ctrl tvSetColor [[_i, _j], _color];
+		for "_k" from 0 to 1 do 
+		{
+			_color = [0, 1, 0, 1];
+			_ctrl tvAdd [[_i, _j], format ["Parent Path: %1 | Item Path: %2", [_i, _j], [_i, _j, _k]]];
+			_ctrl tvSetColor [[_i, _j, _k], _color];
+			for "_n" from 0 to 1 do 
+			{
+				_color = [0, 0, 1, 1];
+				_ctrl tvAdd [[_i, _j, _k], format ["Parent Path: %1 | Item Path: %2", [_i, _j, _k], [_i, _j, _k, _n]]];
+				_ctrl tvSetColor [[_i, _j, _k, _n], _color];
+			};
+		};
+	};
+};
+
+tvExpandAll _ctrl;
+_ctrl ctrlAddEventHandler ["TreeSelChanged", { hint format ["Item Path: %1", _this select 1] }];
+</sqf>
+</spoiler>
+
+
+[[Category:Arrays]]
+[[Category:Introduced with Arma 3 version 0.74]]

@@ -1,0 +1,62 @@
+// source: https://community.bistudio.com/wiki/createMissionDisplay
+// revision: 368962 (2024-08-21T08:48:56Z)
+// export sha1: b7acqu73x8fsiyk75e1zogly2nuu5m8
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= Create single missions display as a child of given display. The mission dialog will be set to the directory given as an argument "root".
+
+|s1= display [[createMissionDisplay]] missionRootDirectoryString
+
+|p1= display: [[Display]]
+
+|p2= missionRootDirectoryString: [[String]]
+
+|r1= [[Display]]
+
+|s2= display [[createMissionDisplay]] [missionRootDirectoryString, cfgMissionsClass]
+
+|p21= display: [[Display]]
+
+|p22= missionRootDirectoryString: [[String]] - root direction from {{hl|\Arma 3\Missions\ROOT}}
+
+|p23= cfgMissionsClass: [[String]] - cfgMissions class to use
+
+|r2= [[Display]]
+
+|x1= <sqf>_ChildDisplay = _Rootdisplay createMissionDisplay "Tutorial";</sqf>
+
+|x2= In {{arma3}} this creates the scenarios UI:
+<sqf>findDisplay 46 createMissionDisplay "";</sqf>
+
+|x3= Other options for {{arma3}}:
+<sqf>
+private _missionDisplay = findDisplay 46;
+_missionDisplay createMissionDisplay ["", "Cutscenes"];
+_missionDisplay createMissionDisplay ["", "Campaigns"];
+_missionDisplay createMissionDisplay ["", "MPMissions"];
+_missionDisplay createMissionDisplay ["", "Challenges"];
+_missionDisplay createMissionDisplay ["", "Showcases"];
+</sqf>
+
+|seealso= [[createMPCampaignDisplay]] [[playMission]] [[playScriptedMission]] [[hostMission]]
+}}

@@ -1,0 +1,390 @@
+// source: https://community.bistudio.com/wiki/Stringtable.xml
+// revision: 378639 (2026-05-15T15:31:37Z)
+// export sha1: s9fggptz21m7oro4frn1wtif8mymuuw
+// categories: Category:ArmA: Armed Assault: Editing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|informative|[[Stringtable.xml]] was introduced with {{arma1}}. For {{ofp}}, see [[Stringtable.csv]].}}
+String tables are used to make internationalization easier for the game. They are used in addons, missions, and scripts, and are located in the root of the mission or addon folders.
+
+Any strings that are used in the game can be kept separate from the code, and can therefore easily be edited and expanded into different languages. Instead of using strings directly in the code, you are using a variable. This variable will then contain the actual string, read from stringtable.xml, with the language that is being read depending on the game settings.
+
+
+== Stringtable Editors ==
+
+It is strongly recommended to use a tool to edit the XML file;
+a selection of Stringtable [[:Category:Community Tools|Community Tools]] can be found in the [[:Category:Community Tools#Localisation Tools|Community Tools - Localisation Tools]] page section.
+
+
+== Example ==
+
+<spoiler text="Show Stringtable.xml example">
+<syntaxhighlight lang="xml">
+<?xml version="1.0" encoding="utf-8" ?>
+<Project name="Any Name">
+	<Package name="Mission One">
+		<Container name="Some Words">
+			<Key ID="STR_TAG_Yes">
+				<Original>yes</Original>
+				<English>yes</English>
+				<Czech>ano</Czech>
+				<French>oui</French>
+				<German>ja</German>
+				<Italian>sì</Italian>
+				<Polish>tak</Polish>
+				<Portuguese>sim</Portuguese>
+				<Russian>да</Russian>
+				<Spanish>sí</Spanish>
+				<Korean>네</Korean>
+				<Japanese>はい</Japanese>
+				<Chinesesimp>是</Chinesesimp>
+				<Chinese>是（繁體）</Chinese>
+			</Key>
+			<Key ID="STR_TAG_No">
+				<Original>no</Original>
+			</Key>
+		</Container>
+		<Container name="Another Container">
+			<Key ID="STR_TAG_formatted">
+				<Original>Hello, %1.</Original>
+			</Key>
+			<Key ID="STR_TAG_structuredText">
+				<Original>Some text &lt;t color='%1'&gt;%2&lt;/t&gt;</Original>
+			</Key>
+		</Container>
+	</Package>
+</Project>
+</syntaxhighlight>
+</spoiler>
+
+{{Feature|informative|{{hl|Package}} and {{hl|Container}} "groups" are only helpful for organisation and have no impact on the translations; use them for your own sanity.}}
+{{Feature|important|[[Stringtable.xml]] must be saved with '''UTF-8 Encoding''' for international characters to display and save correctly.}}
+
+
+== Supported Languages ==
+
+{| class="valign-top" style="margin: auto"
+|
+
+{| class="wikitable" style="margin-right: 2em"
+|+ {{arma2}} &amp; {{arma2oa}}
+! className
+! In-game name
+! Note
+|-
+| English
+| '''English'''
+|
+|-
+| Czech
+| '''Čeština'''
+|
+|-
+| French
+| '''Français'''
+|
+|-
+| Spanish
+| '''Español'''
+|
+|-
+| Italian
+| '''Italiano'''
+|
+|-
+| Polish
+| '''Polski'''
+|
+|-
+| Russian
+| '''Русский'''
+|
+|-
+| German
+| '''Deutsch'''
+|
+|-
+| Hungarian
+| '''Magyar'''
+| Partially supported
+|-
+| Portuguese
+| '''Portuguese'''
+| Not available in-game
+|}
+
+|
+
+{| class="wikitable"
+|+ {{arma3}}
+! className
+! In-game name
+! Note
+|-
+| English
+| '''English'''
+|
+|-
+| Czech
+| '''Čeština'''
+|
+|-
+| French
+| '''Français'''
+|
+|-
+| Spanish
+| '''Español'''
+|
+|-
+| Italian
+| '''Italiano'''
+|
+|-
+| Polish
+| '''Polski'''
+|
+|-
+| Portuguese
+| '''Português do Brasil'''
+|
+|-
+| Russian
+| '''Русский'''
+|
+|-
+| German
+| '''Deutsch'''
+|
+|-
+| Korean
+| '''한국어'''
+|
+|-
+| Japanese
+| '''日本語'''
+|
+|-
+| Chinese
+| '''繁體中文'''
+| Chinese Traditional
+|-
+| Chinesesimp
+| '''简体中文'''
+| Chinese Simplified
+|-
+| Turkish
+| '''Türkçe'''
+|
+|-
+| Slovak
+| '''Slovinčina'''
+| Translated by AI
+|-
+| {{GVI|arma3|2.18|size= 0.75}} Ukrainian
+| '''українська'''
+| Translated by AI
+|-
+| {{GVI|arma3|2.22|size= 0.75}} Latin
+| '''Latina'''
+| Translated by AI
+|-
+| {{GVI|arma3|2.22|size= 0.75}} Bulgarian
+| '''български'''
+| Translated by AI
+|-
+| Hungarian
+| '''Magyar'''
+| Translated by AI
+|-
+| Swedish
+| rowspan="10" | Cannot be set in-game.<br>Edit '''arma3.cfg''' to use that language.
+|-
+| SerboCroatian
+| {{n/a}}
+|-
+| Norwegian
+| {{n/a}}
+|-
+| Icelandic
+| {{n/a}}
+|-
+| Greek
+| {{n/a}}
+|-
+| Finnish
+| {{n/a}}
+|-
+| Dutch
+| {{n/a}}
+|}
+
+|}
+
+=== CfgLanguages ===
+Languages defined in '''CfgLanguages''' will show up in the languages combo box in the game options menu. However, only languages that are supported by the engine, see [[#Supported Languages|Supported Languages]] can be added. By default, vanilla {{arma3}} has only added the languages that are actually used by the base game.
+
+<syntaxhighlight lang="cpp">
+// Languages defined in Arma 3 2.20
+class CfgLanguages
+{
+	class Original		{ name = "Original";					};
+	class English		{ name = "$STR_LANG_ENGLISH";			};
+	class French		{ name = "$STR_LANG_FRENCH";			};
+	class Spanish		{ name = "$STR_LANG_SPANISH";			};
+	class Italian		{ name = "$STR_LANG_ITALIAN";			};
+	class German		{ name = "$STR_LANG_GERMAN";			};
+	class Czech			{ name = "$STR_LANG_CZECH";				};
+	class Polish		{ name = "$STR_LANG_POLISH";			};
+	class Russian		{ name = "$STR_LANG_RUSSIAN";			};
+	class Portuguese	{ name = "$STR_LANG_PORTUGUESE";		};
+	class Korean		{ name = "$STR_LANGUAGE_KOREAN";		};
+	class Japanese		{ name = "$STR_LANGUAGE_JAPANESE";		};
+	class Chinese		{ name = "$STR_LANGUAGE_CHINESETRAD";	};
+	class Chinesesimp	{ name = "$STR_LANGUAGE_CHINESESIMP";	};
+	class Turkish		{ name = "$STR_LANG_TURKISH";			};
+};
+</syntaxhighlight>
+
+==== Custom Language ====
+A new language can be added by a ''hack''. One can reuse a supported but not used language to add a custom language.
+
+<syntaxhighlight lang="cpp">
+class CfgLanguages
+{
+    class Dutch
+    {
+        name = "Arabic";
+    };
+};
+</syntaxhighlight>
+
+The ''Dutch'' language will now show up in the game options menu as ''Arabic''. Now one can fill that with an arabic translation via ''stringtable.xml''
+
+<syntaxhighlight lang="xml">
+<Key ID="STR_ENH_MAIN_ZEUSADDONS_INVERT">
+    <Dutch>My Arabic Translation</Dutch>
+</Key>
+</syntaxhighlight>
+
+{{Feature|important|Be aware that this will break other mods if these actually implemented the language that is being overwritten!}}
+
+=== Unsupported language English in stringtable ===
+
+See [[Crash_Files#Common_Errors_and_Warnings|Common Errors and Warnings]].
+
+== Key Naming Convention ==
+
+Same as [[Identifier#Recommendations|global variables]], it is recommended to use a '''{{Color|purple|TAG}}''' to prevent translation collision between mods (e.g {{hl|STR_{{Color|purple|TAG}}_helloThere}}).
+
+
+== String Formats ==
+
+Strings stored in the stringtable can be in the following formats:
+* Normal text, such as {{hl|Hello there}}
+* [[format]] text, such as {{hl|Hello %1}}
+* [[Structured Text]], such as {{hl|c= <t size='2'>Hello</t> there}}, '''but''':<br><!--
+-->{{Feature | important | The HTML tag characters {{hl|&lt;}} and {{hl|&gt;}} must respectively be encoded as {{hl|&amp;lt;}} and {{hl|&amp;gt;}}.}}<!--
+-->{{hl|c= <t size='2'>Hello</t> there}} would then become {{hl|c= &amp;lt;t size='2'&amp;gt;Hello&amp;lt;/t&amp;gt; there}}.
+
+
+== Usage ==
+
+=== Script ===
+
+A translation can be retrieved and used in a script by using the [[localize]] command:
+<sqf>
+hint localize "STR_TAG_Yes"; // returns "Yes" in English, "Oui" in French, etc.
+hint format [localize "STR_TAG_formatted", name player];
+hint localize "str_TAG_structuredText"; // casing in scripting does not matter
+</sqf>
+
+=== Config ===
+
+Whether it is in [[Description.ext]], [[Campaign Description.ext]], Dialogs etc., a translated [[Config]] entry '''must''' use the {{hl|$}} prefix (to an '''uppercase''' {{hl|STR}}) for the engine to look the translation key up:
+
+<syntaxhighlight lang="cpp">
+onLoadName = "$STR_TAG_missionName";
+overviewText = "$str_TAG_overviewText";		// invalid, will display "$str_TAG_overviewText" (with the $ sign)
+onLoadMission = $STR_TAG_loadMissionText;	// works without quotes but this is NOT recommended
+</syntaxhighlight>
+
+The preprocessor will replace {{hl|$STR}} entries with their corresponding Stringtable value.
+
+==== Translated Sounds ====
+The Stringtable can be used to use different voices depending on the user's language setting:
+<syntaxhighlight lang="cpp">
+class CfgRadio
+{
+	class TAG_V01
+	{
+		name = "$STR_TAG_V01_name";
+		sound[] = { "$STR_TAG_V01_path", 1, 1 };
+		title = "$STR_TAG_V01_subtitle";
+	};
+};
+</syntaxhighlight>
+the Stringtable's entries looking like this:
+<syntaxhighlight lang="xml">
+<Key ID="STR_V01_name">
+	<English>"Hello There" by OWK</English>
+	<French>"Salut à tous" par OWK</French>
+</Key>
+<Key ID="STR_V01_path">
+	<English>Sound\EN\v01.ogg</English>
+	<French>Sound\FR\v01.ogg</French>
+</Key>
+<Key ID="STR_V01_subtitle">
+	<English>Hello There!</English>
+	<French>Salut à tous !</French>
+</Key>
+</syntaxhighlight>
+Then using it in-game:
+<sqf>player sideRadio "TAG_V01";</sqf>
+
+=== Editor ===
+
+In markers and other [[:Category:Eden Editor|Eden Editor]] fields (e.g Mission Name), translation keys should be prefixed with {{hl|@}}, without any quotes around - e.g {{hl|@STR_myMarkerName}}. Casing does not matter here.
+
+
+== Multiplayer ==
+
+[[Multiplayer Scripting]] should consider that the translation implementation ''should'' ideally happen client-side; clients and server are likely to be configured in a different language, as a server-side call to [[Multiplayer Scripting#Locality|global effect]] text commands (such as [[setMarkerText]]) would set the text in the server's language to everyone.
+
+Example of client-side translation of a server message:
+<sqf>
+// Server-side
+if (isServer) then
+{
+	[nil, nil, rHINT, localize "STR_TAG_myMessage"] call RE;			// Arma 2 - server language
+	[nil, nil, rSPAWN, { hint localize "STR_TAG_myMessage" }] call RE;	// Arma 2 - client language
+	["STR_TAG_myMessage"] remoteExecCall ["TAG_fnc_localHint"];			// Arma 3
+};
+
+// Client-side executed function
+TAG_fnc_localHint = {
+	if (hasInterface) then
+	{
+		// hintSilent parseText (localize _this);				// Arma 2
+		hintSilent parseText (_this call BIS_fnc_localize);		// Arma 3
+	};
+};
+</sqf>
+
+
+== Commands & Functions ==
+
+See also [[:Category:Command Group: Localization|Command Group: Localization]]:
+
+* {{GVI|ofp|1.00|size= 0.75}} [[localize]]
+* {{GVI|arma3|0.50|size= 0.75}} [[isLocalized]]
+* {{GVI|arma3|1.00|size= 0.75}} [[BIS_fnc_localize]]
+* {{GVI|arma3|2.02|size= 0.75}} [[getTextRaw]]
+* {{GVI|arma3|2.04|size= 0.75}} [[diag_localized]]
+
+
+[[Category:Real Virtuality File Formats]]
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}

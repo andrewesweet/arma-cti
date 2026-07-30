@@ -1,0 +1,74 @@
+// source: https://community.bistudio.com/wiki/lineIntersects
+// revision: 377702 (2026-01-02T09:03:32Z)
+// export sha1: c791vs33usimm6ofy3z8e7i15wtna37
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Geometry | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|gr1= Math - Geometry
+
+|descr= Checks for object intersection with a virtual line between two positions. Since {{GVI|arma3|2.20|size= 0.75}}, there is an alternative syntax that does multiple checks in parallel, faster than multiple calls.
+{{Feature|informative|
+* Does not work under water.
+* Max hardcoded distance is 1000m.
+}}
+
+|s1= [[lineIntersects]] [begPos, endPos, objIgnore1, objIgnore2]
+
+|p1= begPos: [[Position#PositionASL|PositionASL]]
+
+|p2= endPos: [[Position#PositionASL|PositionASL]]
+
+|p3= objIgnore1: [[Object]] - (Optional, default [[objNull]]) object to ignore. When testing intersections from an object/unit/vehicle, pass that object here to prevent intersections inside of the object
+
+|p4= objIgnore2: [[Object]] - (Optional, default [[objNull]]) another object to ignore. When testing intersections of a line between two objects, pass the second object here to prevent intersections inside of it being reported
+
+|r1= [[Boolean]] - [[true]] if an intersection happens with an object (not with terrain)
+
+|s2= [[lineIntersects]] <nowiki>[[</nowiki>element1, element2, ...<nowiki>]]</nowiki>
+
+|s2since= arma3 2.20
+
+|p21= elementN: [[Array]] with [begPos, endPos, objIgnore1, objIgnore2]
+* begPos: [[Position#PositionASL|PositionASL]]
+* endPos: [[Position#PositionASL|PositionASL]]
+* objIgnore1: [[Object]] - (Optional, default [[objNull]]) object to ignore. When testing intersections from an object/unit/vehicle, pass that object here to prevent intersections inside of the object
+* objIgnore2: [[Object]] - (Optional, default [[objNull]]) another object to ignore. When testing intersections of a line between two objects, pass the second object here to prevent intersections inside of it being reported
+
+|r2= [[Array]] with [result1, result2, ...] - [[true]] if an intersection happens with an object (not with terrain) for the Nth element
+
+|x1= <sqf>private _hasStraightLineToChopper = lineIntersects [eyePos player, aimPos chopper, player, chopper];</sqf>
+
+|x2= Alternative syntax to check intersections in parallel:
+<sqf>
+private _enemies = units opfor;
+private _enemyDataArray = _enemies apply { [eyePos player, aimPos _x, player, _x] };
+private _result = lineIntersects [_enemyDataArray];
+</sqf>
+
+|seealso= [[lineIntersectsSurfaces]] [[lineIntersectsObjs]] [[lineIntersectsWith]] [[terrainIntersect]] [[terrainIntersectASL]] [[terrainIntersectAtASL]] [[intersect]] [[cursorObject]] [[cursorTarget]] [[checkVisibility]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20120531104600
+|text= Please note the difference:
+* [[terrainIntersect]]
+* [[terrainIntersectASL]]
+* [[lineIntersects]]
+* [[lineIntersectsWith]]
+* [[lineIntersectsObjs]] 
+* [[intersect]]
+}}

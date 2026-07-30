@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/forceRespawn
+// revision: 320952 (2022-05-13T10:04:47Z)
+// export sha1: 0ujuziud5c0l213pqsf7kmgq4w37ils
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|arg= local
+
+|eff= global
+
+|gr1= Multiplayer
+
+|descr= Forces the unit to respawn. The effect is as if the player pressed the RESPAWN button in the game pause menu; the unit is killed but there is no "X was killed" message and no score adjustment.
+
+|s1= [[forceRespawn]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>forceRespawn player;</sqf>
+
+|seealso= [[playerRespawnTime]] [[setPlayerRespawnTime]]
+}}

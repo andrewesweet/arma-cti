@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/environmentEnabled
+// revision: 377680 (2026-01-02T09:02:45Z)
+// export sha1: r9szgpyzuzei02t0bgr8anw4x0j9y76
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Environment
+
+|gr2= Sounds
+
+|descr= Returns status of [[enableEnvironment]] command
+
+|s1= [[environmentEnabled]]
+
+|r1= [[Array]] with [ambientLife, ambientSound, windyCoef]
+* ambientLife: [[Boolean]] 
+* ambientSound: [[Boolean]]
+* {{GVI|arma3|2.12|size= 0.75}} windyCoef: [[Number]] - see [[enableEnvironment]]
+
+|x1= <sqf>private _enabled = environmentEnabled;</sqf>
+
+|seealso= [[enableEnvironment]] [[fadeEnvironment]] [[environmentVolume]] [[initAmbientLife]] [[sideAmbientLife]] [[getAllEnvSoundControllers]] [[getEnvSoundController]] [[setSoundEffect]]
+}}

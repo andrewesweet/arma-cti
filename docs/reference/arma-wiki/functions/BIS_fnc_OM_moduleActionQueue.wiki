@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_OM_moduleActionQueue
+// revision: 278847 (2021-06-13T21:43:50Z)
+// export sha1: 7f2dsodonegjhvhml3pgwcuor8wd7j5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Old Man | Category:Functions | Category:Introduced with Arma 3 version 1.98 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.98
+
+|gr1= Old Man
+
+|descr= {{Feature|arma3oldman}}
+
+|s1= <!-- [] call [[BIS_fnc_OM_moduleActionQueue]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/setCameraInterest
+// revision: 310118 (2022-05-05T12:25:32Z)
+// export sha1: 5lf0kj5gpcmtkzw80jbz62po2gzmtgx
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Camera Control
+
+|descr= Set camera interest for given entity. Camera interest is by default 0. Any unit which is speaking has its camera interest raised to 50. Camera interest is used to focus camera to control depth of field in cutscenes. Combination of camera interest, unit position of the screen, unit movement, unit type, and some other properties is used to determine which unit to focus at. Higher camera interest increases the chance of the unit being focused.
+
+|s1= entity [[setCameraInterest]] interest
+
+|p1= entity: [[Object]]
+|p2= interest: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_soldier setCameraInterest 50;</sqf>
+
+|seealso= [[cameraInterest]]
+}}

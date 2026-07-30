@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskSetDestination
+// revision: 347338 (2023-09-11T00:28:50Z)
+// export sha1: 5huxssokoqo9pnjxzfx2mztf7sxtcjm
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|arg= global
+|eff= global
+
+|descr= Set a task's destination. {{Feature|informative|See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= [taskName, destination] call [[BIS_fnc_taskSetDestination]]
+
+|p1= taskName: [[String]]
+
+|p2= destination: [[Object]], [[Array]], [[Position]] or [[String]] - task destination:
+* [[Object]] - task will be displayed on the object if player knows about it, otherwise it will be on estimated position or even hidden
+* [[Array]] format [object, forceRealPosition]:
+** object: [[Object]] - same as above
+** forceRealPosition: [[Boolean]] - whether or not the task will be on exact object position even if the player does not know about the object
+* [[Position]] - task will be on given positon
+* [[String]] - marker name. Task will be at markers current position (Won't update if marker was moved)
+
+|r1= [[String]] - task ID
+
+|x1= <sqf>["BIS_task_01", [1337, 1337, 0]] call BIS_fnc_taskSetDestination;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

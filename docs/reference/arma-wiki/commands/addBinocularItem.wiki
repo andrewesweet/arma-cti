@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/addBinocularItem
+// revision: 309278 (2022-05-04T15:19:43Z)
+// export sha1: cjgmniszzsm5zaz592vyt0xin8nz0xb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|arg= local
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Adds weapon item, including magazine, directly to the [[binocular]] weapon. This is used for infantry weapons.
+
+|s1= unit [[addBinocularItem]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player addBinocularItem "Laserbatteries";</sqf>
+
+|seealso= [[addWeaponItem]] [[removeBinocularItem]] [[removeAllBinocularItems]] [[addPrimaryWeaponItem]] [[addSecondaryWeaponItem]] [[addHandgunItem]] [[weaponsItems]] [[binocularItems]] [[primaryWeaponItems]] [[secondaryWeaponItems]] [[handgunItems]]
+}}

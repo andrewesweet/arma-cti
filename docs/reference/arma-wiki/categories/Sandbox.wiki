@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Sandbox
+// revision: 69149 (2012-08-26T10:21:37Z)
+// export sha1: hwtso487ia8b4go6re633k8ir2sex3f
+// Vendored snapshot. Do not edit — re-export instead.
+
+Any sandboxes go here so that they do not clutter Uncategorized pages overview.
+
+[[Category:Community Wiki]]

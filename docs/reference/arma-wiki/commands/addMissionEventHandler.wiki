@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/addMissionEventHandler
+// revision: 377813 (2026-01-03T04:12:00Z)
+// export sha1: 8ree433htc56g1k9pp1i7o3wrsgcmft
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+
+|gr1= Event Handlers
+
+|descr= Adds event handler attached to the current mission and returns event handler handle. For the list of available mission event handlers see: [[Arma 3: Mission Event Handlers]]
+
+|s1= [[addMissionEventHandler]] [event, expression, arguments]
+
+|p1= event: [[String]] - event name
+
+|p2= expression: [[Code]] or [[String]] - expression that will be executed in [[missionNamespace]] when event handler fires.
+* If the event handler has some data to return upon activation they are stored in the {{hl|_this}} variable
+* {{GVI|arma3|1.64|size= 0.75}} the event handler's handle is stored in {{hl|_thisEventHandler}} variable and is available during event handler code execution
+* {{GVI|arma3|2.04|size= 0.75}} it is possible to pass additional arguments to the EH code via optional param. The ''args'' are stored in {{hl|_thisArgs}} variable
+{{Feature|important|Only arguments of simple types get proper serialization. [[Object]]s, [[Group]]s etc will not serialize and appear as NULLs on game load.}}
+* {{GVI|arma3|2.06|size= 0.75}} the event's name is available from {{hl|_thisEvent}} variable
+
+|p3= arguments: [[Array]] of [[Anything]] - (Optional, default <sqf inline>[]</sqf>) additional arguments to be passed to the EH code. Available during code execution via {{hl|_thisArgs}} variable.
+|p3since= arma3 2.04
+
+|r1= [[Number]] - the index of the currently added mission event handler is returned
+
+|x1= <sqf>_id = addMissionEventHandler ["PlayerDisconnected", { systemChat str _this }];</sqf>
+
+|x2= <sqf>_id = addMissionEventHandler ["EachFrame", { systemChat str [_thisArgs, time] }, [time]];</sqf>
+
+|seealso= [[removeMissionEventHandler]] [[removeAllMissionEventHandlers]] [[getEventHandlerInfo]]
+}}

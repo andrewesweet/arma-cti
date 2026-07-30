@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Pages_with_SQF_errors
+// revision: 330493 (2022-09-21T10:35:53Z)
+// export sha1: 874k7ww0jhmyu1vqzugu41qkdpolvrw
+// Vendored snapshot. Do not edit — re-export instead.
+
+Pages with [[SQF Syntax]] errors (categorised by [[Extension:SQFHighlighter]]).
+
+
+[[Category:Maintenance]]

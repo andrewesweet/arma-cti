@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/doTarget
+// revision: 378351 (2026-04-02T16:33:07Z)
+// export sha1: b0nkkomz78kz54wcrywol18kkuj0khw
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Control
+
+|descr= Order the given unit(s) to target the given target (without radio messages).<br>Targeting can be stopped by <sqf>_unit doWatch objNull;</sqf> or<sqf>_unit commandWatch objNull;</sqf>
+
+|s1= unit [[doTarget]] target
+
+|p1= unit: [[Object]] or [[Array]] of [[Object]]s - a single unit or array of units
+
+|p2= target: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_ESoldier1 doTarget _WSoldier1;</sqf>
+
+|seealso= [[assignedTarget]] [[commandTarget]] [[doWatch]] [[doFire]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2017-03-28 - 08:18 (UTC)</dd>
+<dt class="note">[[User:Joris|Joris]]</dt>
+<dd class="note">
+Targeting may not work as expected when trying to target a unit on the same side (friendly).
+</dd>
+
+</dl>

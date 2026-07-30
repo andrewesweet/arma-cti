@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_limitWeaponItems
+// revision: 348030 (2023-11-08T11:26:29Z)
+// export sha1: 67hlehvyby8z55ou1q0bxo67oauk4qc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Inventory
+
+|descr= Keeps or remove unit's weapon attachments based on probability user sets. Apply for primary, secondary or handgun weapon separately.
+
+|s1= [unit, mode, chanceOptics, chanceAttach, chanceMuzzle, chanceUnderbarrel] call [[BIS_fnc_limitWeaponItems]]
+
+|p1= unit: [[Object]] - target unit
+
+|p2= mode: [[Number]] - (Optional, default 0) can be:
+* 1 = primary weapon
+* 2 = secondary weapon
+* 3 = handgun
+
+|p3= chanceOptics: [[Number]] or [[Array]] in format ["itemClass", chance] - (Optional, default 50) chance to keep optics from 0 to 100%
+
+* if ["itemClassname", number] is used, the function will add that attachment if it passes the check. If not, the current attachment will be removed.
+
+|p4= chanceAttach: [[Number]] or [[Array]] in format ["itemClass", chance] - (Optional, default 50) chance to keep side attachments from 0 to 100%
+
+|p5= chanceMuzzle: [[Number]] or [[Array]] in format ["itemClass", chance] - (Optional, default 50) chance to keep muzzle attachment from 0 to 100%
+
+|p6= chanceUnderbarrel: [[Number]] or [[Array]] in format ["itemClass",chance] - (Optional, default 50) chance to keep underbarrel attachment from 0 to 100%
+
+|r1= [[Boolean]]
+
+|x1= <sqf>player call BIS_fnc_limitWeaponItems;</sqf>
+
+|x2= <sqf>[[player, 0, 25, 50, 75, 100]]  call BIS_fnc_limitWeaponItems;</sqf>
+
+|x3= <sqf>[[player, 0, ["optic_lrps", 100], ["acc_pointer_ir", 100], ["muzzle_snds_B", 100], ["bipod_01_F_blk", 100]]] call BIS_fnc_limitWeaponItems;</sqf>
+
+|seealso= [[BIS_fnc_limitAmmunition]] [[BIS_fnc_limitItems]]
+}}

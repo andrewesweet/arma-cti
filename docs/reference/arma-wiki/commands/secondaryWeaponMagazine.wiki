@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/secondaryWeaponMagazine
+// revision: 377135 (2026-01-01T10:28:04Z)
+// export sha1: qbitjhdgqkcy6hx0cj7eabnxbk87k6a
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.70
+
+|gr1= Unit Inventory
+
+|descr= Collects all loaded [[magazines]] from all [[secondaryWeapon]] muzzles and returns them in [[Array]], otherwise it returns []. This command is used for infantry weapons only.
+
+|s1= [[secondaryWeaponMagazine]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>hint str secondaryWeaponMagazine player; //["NLAW_F"]</sqf>
+
+|x2= <sqf>
+_array = secondaryWeaponMagazine player;
+if (count _array > 0) then {
+	hint ("Secondary weapon is loaded with " + (_array select 0) + "!");
+} else {
+	if (secondaryWeapon player != "") then {
+		hint "Secondary weapon is not loaded!";
+	} else {
+		hint "Player doesn't have a secondary weapon!";
+	};
+};
+</sqf>
+
+|seealso= [[secondaryWeapon]] [[secondaryWeaponItems]] [[addSecondaryWeaponItem]] [[primaryWeaponMagazine]] [[handgunMagazine]] [[binocularMagazine]]
+}}

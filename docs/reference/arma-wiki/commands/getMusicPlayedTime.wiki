@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/getMusicPlayedTime
+// revision: 309232 (2022-05-04T10:20:06Z)
+// export sha1: fem94mau34uo0kxe53c8zd6r17lgbcz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Sounds
+
+|descr= Returns elapsed time in seconds for currently playing music track.
+
+|s1= [[getMusicPlayedTime]]
+
+|r1= [[Number]]
+
+|x1= <sqf>
+playMusic ["LeadTrack06_F_Tank", 0];
+onEachFrame {hintSilent str getMusicPlayedTime};
+</sqf>
+
+|seealso= [[addMusicEventHandler]] [[playMusic]]
+}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/move3DENCamera
+// revision: 377459 (2026-01-02T06:47:27Z)
+// export sha1: gxegfy0d1pcgalhzn4az7pu9zzsxh7i
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Moves the [[get3DENCamera|Eden Editor camera]].
+
+|s1= [[move3DENCamera]] [position, useOffset]
+
+|p1= position: [[Position#PositionASL|PositionASL]] - new position
+
+|p2= useOffset: [[Boolean]]
+* if [[true]] the camera will move to the ''position'', add the offset defined in <sqf inline>configFile >> "Cfg3DEN" >> "Camera" >> "moveOffset"</sqf> and look at the ''position''.  Default camera offset: {{hl|[0, -25, 25]}}
+* if [[false]], the camera will be moved to the exact ''position''
+
+|r1= [[Nothing]]
+
+|x1= <sqf>move3DENCamera [getPosASL player, true];</sqf>
+
+|seealso= [[get3DENCamera]]
+}}

@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_getCinematicMode
+// revision: 309366 (2022-05-05T12:04:31Z)
+// export sha1: 01up6fagu4c6xukfe0bfiao48drhu9k
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Functions | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Campaign
+
+|descr= Returns whether or not player is in cinematic mode.
+
+|s1=
+
+|r1= [[Boolean]] - [[true]] if in cinematic mode, [[false]] if not
+
+|x1= <sqf>call BIS_fnc_EXP_camp_getCinematicMode;</sqf>
+
+|seealso= [[BIS_fnc_EXP_camp_setCinematicMode]]
+}}

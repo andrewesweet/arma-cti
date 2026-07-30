@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_kbTellLocal
+// revision: 376832 (2025-11-23T15:25:57Z)
+// export sha1: a621mxvxqf4a8rv19zon5cpu3fyosew
+// categories: Category:Arma 3: Functions | Category:Function Group: Conversations | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|arg= global
+
+|eff= local|gr1= Conversations
+
+|descr= Play given sentence, disable radio and/or lower sounds. Will use [[BIS_fnc_showSubtitle]] for better effects if channel is DIRECT or VEHICLE. The function calls "BIS_fnc_kbTellLocal_played" scripted Event Handler, if it returns [true], the radio item check in inventory will be overridden. 
+{{Feature | important | This function is intended to be used by [[BIS_fnc_kbTell]] only.}}
+
+|s1= [mode, parameters] call [[BIS_fnc_kbTellLocal]]
+
+|p1= mode: [[String]] - can be either "sentence", "conversationStart" or "conversationEnd"
+
+|p2= parameters: [[Array]] - depends on the mode:
+
+* "sentence": same parameters as [[kbTell]] (receiver, topicName etc.)
+
+* "conversationStart": [volumeCoef, disableRadio]
+** volumeCoef: [[Number]] - a volume multiplier to reduce other sounds but the chat (0.1 = environment volume set to 10%)
+** disableRadio: [[Boolean]] - should the radio chat be disabled
+
+* "conversationEnd": [volumeCoefUsedInStart, disableRadioUsedInStart]
+** volumeCoefUsedInStart: [[Number]] - a volume multiplier, shouldn't be used - if < 0 or >= 1, the volume won't be restored
+** disableRadioUsedInStart: [[Boolean]] - has the radio chat been disabled and should be restored
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["sentence", [player, [BIS_HQ, "myTopic", "playerSentence1"]]] call BIS_fnc_kbTellLocal;</sqf>
+
+|x2= <sqf>["conversationStart", [0.5, true]] call BIS_fnc_kbTellLocal;</sqf>
+
+|x3= <sqf>["conversationEnd", [0.5, true]] call BIS_fnc_kbTellLocal;</sqf>
+
+|seealso= [[Conversations]] [[kbTell]] [[BIS_fnc_kbCanSpeak]] [[BIS_fnc_kbCreateDummy]] [[BIS_fnc_kbIsSpeaking]] [[BIS_fnc_kbMenu]] [[BIS_fnc_kbPriority]] [[BIS_fnc_kbSentence]] [[BIS_fnc_kbSkip]] [[BIS_fnc_kbTell]] [[BIS_fnc_kbTopicConfig]]
+}}

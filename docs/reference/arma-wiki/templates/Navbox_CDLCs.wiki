@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/CDLCs
+// revision: 373614 (2025-05-24T20:25:38Z)
+// export sha1: r2c9qtp9kn7yhh02e8diqzti51nmg3z
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>
+{| class="mw-collapsible align-center" style="border: solid 0.125em #CCC; border-radius: .25em; padding: .1em; width: 100%"
+|- style="background-color: #EEE"
+! colspan="7" | [[:Category:Arma 3: CDLCs|{{arma3}} Creator DLCs]]
+|-
+| [[File:gm_picture_ca.png|100px|link=Global Mobilization]]
+| [[File:arma3 cdlc sog prairiefire logo.png|80px|link=S.O.G. Prairie Fire]]
+| [[File:csla_dlc_logotitle.jpg|80px|link=CSLA Iron Curtain]]
+| [[File:arma3-cdlc-western_sahara_black-256x256.png|80px|link=Western Sahara]]
+| [[File:arma3_cdlc-spearhead-1944_normandy_256x256.png|80px|link=Spearhead 1944]]
+| [[File:arma3_cdlc-reaction_forces_256x256.png|80px|link=Reaction Forces]]
+| [[File:arma3_cdlc-expeditionary_forces_256x256.png|80px|link=Expeditionary Forces]]
+|-
+! [[Global Mobilization]]
+! [[S.O.G. Prairie Fire]]
+! [[CSLA Iron Curtain]]
+! [[Western Sahara]]
+! [[Spearhead 1944]]
+! [[Reaction Forces]]
+! [[Expeditionary Forces]]
+|}
+</includeonly><noinclude>{{Doc/Template
+|descr= This template generates a pseudo navbox with links to all {{arma3}} CDLCs.
+|example1= <nowiki>{{Navbox/CDLCs}}</nowiki>
+|result1= See below
+}}
+{{Navbox/CDLCs}}</noinclude>

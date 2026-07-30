@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_titlecard
+// revision: 348972 (2023-11-08T14:45:44Z)
+// export sha1: ixhyf9jxwcuhxzq8jaqfv4evyqem9nh
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Display a mission-specific titlecard before the mission begins. Only works the first time it is called.
+
+|s1= [path, subtitle] call [[BIS_fnc_titlecard]]
+
+|p1= path: [[String]] - path to video
+
+|p2= subtitle: [[String]] - (Optional, default "") subtitle displayed|r1= [[Boolean]]
+
+|x1= <sqf>["\a3\missions_f_epb\video\b_out2_quotation.ogv", "your translation"] call BIS_fnc_titlecard;</sqf>
+
+|seealso= [[allCutLayers]] [[titleRsc]] [[cutText]] [[cutObj]] [[cutFadeOut]] [[setTitleEffect]]
+}}

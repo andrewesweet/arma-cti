@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/selectWeaponTurret
+// revision: 377503 (2026-01-02T06:49:33Z)
+// export sha1: 7cl3tya5eqh0qmb6sarfoafvlqs79n3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+
+|gr1= Turrets
+
+|descr= Selects the given weapon on the specified turret. Use turret path [-1] for the driver's turret.
+
+|s1= vehicle [[selectWeaponTurret]] [weapon, turretPath, muzzle, firemode]
+
+|p1= vehicle: [[Object]]
+
+|p2= weapon: [[String]] - weapon class name or (since {{GVI|arma3|1.64|size= 0.75}}) muzzle class name
+
+|p3= turretPath: [[Turret Path]]
+
+|p4= muzzle: [[String]] - (Optional) muzzle name
+|p4since= arma3 2.08
+
+|p5= firemode: [[String]] - (Optional) firemode name
+|p5since= arma3 2.08
+
+|r1= [[Nothing]]
+
+|x1= <sqf>MBT_Kuma selectWeaponTurret ["LMG_coax",[0]];</sqf>
+
+|x2= <sqf>Kamysh selectWeaponTurret ["missiles_titan", [0], "missiles_titan", "topdown"];</sqf>
+
+|seealso= [[removeWeaponTurret]] [[weaponState]] [[turretLocal]] [[addMagazineTurret]] [[magazinesTurret]] [[removeMagazinesTurret]] [[removeMagazineTurret]] [[weaponsTurret]] [[currentMagazineDetailTurret]] [[currentMagazineTurret]] [[currentWeaponTurret]] [[addWeaponTurret]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20170213165400
+|text= The command will treat weapon or muzzle param like a weapon first. If no such weapon is found then it will try to find muzzle with such name. For example AMV-7 Marshall APC has main gun "autocannon_40mm_CTWS" which has 2 muzzles "HE" and "AP". Default muzzle is "HE". So if you try to select weapon by the name "autocannon_40mm_CTWS" you will always get "HE" muzzle selected. However if you pass "AP" as param, it will correctly select "AP" muzzle, since no "AP" weapon exists on this turret it will continue searching for a muzzle with this name and will find it eventually.
+}}

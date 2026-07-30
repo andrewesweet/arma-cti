@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/isActionMenuVisible
+// revision: 378567 (2026-05-08T21:15:48Z)
+// export sha1: 52n5owu0ssnw1nyie1ojqqbk07a0dl5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.96
+
+|gr1= Interaction
+
+|descr= Returns [[true]] if scroll menu is visible.
+
+|s1= [[isActionMenuVisible]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (isActionMenuVisible) then { hint "Scroll menu is opened" };</sqf>
+
+|seealso= [[inGameUISetEventHandler]] [[commandingMenu]] [[showCommandingMenu]] [[shownAction]] [[BIS_fnc_addCommMenuItem]] [[BIS_fnc_removeCommMenuItem]]
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20210912035906
+|text= To force close Action Menu, use [[showCommandingMenu]].
+<sqf>
+showCommandingMenu "RscGroupRootMenu";
+showCommandingMenu "";
+</sqf>
+}}

@@ -1,0 +1,84 @@
+// source: https://community.bistudio.com/wiki/addWaypoint
+// revision: 377574 (2026-01-02T06:56:28Z)
+// export sha1: kguc8r3u7np5jadal26yhknjblye69l
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Waypoints
+
+|descr= Adds (or inserts when index is given) a new waypoint to a group.
+
+The waypoint is placed randomly within a circle with the given center and radius.
+
+{{Feature|informative|For older titles and prior to {{arma3}} v1.90, use [[setWaypointPosition]] if you need exact waypoint placement.}}
+
+|s1= groupName [[addWaypoint]] [center, radius, index, name]
+
+|p1= groupName: [[Group]]
+
+|p2= center: [[Position#PositionAGL|PositionAGL]] ([[Position#PositionASL|PositionASL]] if ''radius'' is negative!) or [[Object]]
+
+|p3= radius: [[Number]] - random waypoint placement within ''radius'' from ''center''; {{GVI|arma3|1.90|size= 0.75}} -1 can be used for exact waypoint placement
+
+|p4= index: [[Number]] - (Optional, default -1) can be used to insert a waypoint in between existing waypoints; if it is invalid, the waypoint will be added at the end
+
+|p5= name: [[String]] - (Optional, default "") [[waypointName]]
+
+|r1= [[Waypoint]]
+
+|x1= <sqf>_wp = _grp addWaypoint [position player, 0];</sqf>
+
+|x2= <sqf>
+_wp = _grp addWaypoint [position player, 0];			// imprecise, placed like [[setVehiclePosition]]'s "NONE" placement
+_wp setWaypointPosition [getPosASL player, -1];			// from {{ofpe}} to {{arma3}} v1.88
+
+private _wp = _grp addWaypoint [getPosASL player, -1];	// {{arma3}} v1.90+: precise placement
+</sqf>
+
+|seealso= [[waypoints]] [[createGuardedPoint]] [[deleteWaypoint]] [[copyWaypoints]] [[move]] [[setCurrentWaypoint]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointDescription]] [[setWaypointHousePosition]] [[setWaypointPosition]] [[currentWaypoint]] [[waypointName]] [[waypointSpeed]] [[setWPPos]]
+}}
+
+{{Note
+|user= Tijmenjoppe
+|timestamp= 20091126180700
+|text= In game versions prior to {{arma3}} v1.22:
+If you add a waypoint to your group and then want them to start moving to that waypoint, make sure to call [[setWaypointType]] "MOVE" on your waypoint.
+}}
+
+{{Note
+|user= Giova
+|timestamp= 20140621223800
+|text= if you want to create a waypoint of type "MOVE" and set it as actual waypoint, you can use the [[move]] command that does everything for you with only one line of code !<br>
+Be aware that [[move]] command intercepts multiple waypoints and it will not line up in waypoints queue.
+In other word it is a quick solution if you want your group to get only one waypoint, but for several waypoints you'll have to use addwaypoint and all setwaypointXXXXXX commands around.<br>see [[move]] command.
+}}
+
+{{Note
+|user= OdinViking
+|timestamp= 20140805014900
+|text= The waypoint may not be created exactly at the center position even if radius is zero. The position will be moved away if there are e.g. rocks at the center position or if it is placed at the edge of water on a shore.
+}}

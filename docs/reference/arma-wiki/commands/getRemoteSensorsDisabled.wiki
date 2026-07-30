@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/getRemoteSensorsDisabled
+// revision: 310752 (2022-05-07T20:21:31Z)
+// export sha1: c47uaw4kvtkt29rya9euhx5313ebaq4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sensors | Category:Introduced with Arma 3 version 1.52 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.52
+
+|gr1= Sensors
+
+|descr= Get status of disabled raycasts for remote entities. See [[disableRemoteSensors]] for detailed description.
+
+|s1= [[getRemoteSensorsDisabled]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_status = getRemoteSensorsDisabled;</sqf>
+
+|seealso= [[disableRemoteSensors]]
+}}

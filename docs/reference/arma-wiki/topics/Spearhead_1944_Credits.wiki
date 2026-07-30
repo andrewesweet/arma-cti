@@ -1,0 +1,375 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Credits
+// revision: 365191 (2024-08-06T13:43:17Z)
+// export sha1: e96o9jv5zmrm5h4o1v9qfap1d3ie35n
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| style="width: 100%;"
+| colspan="2" style="text-align: center; padding: 10em;" | [[File: spe_credits_picture.png|700px]]
+|-
+| colspan="2" style="text-align: center; padding-bottom: 10em;" | <span style="font-size: larger; padding-bottom: 2.5em">Who should dare to write their praise<br/>Do so in the plainest phrase,<br/>Few names last, where many lie,<br/>Even names of battles die.<br/>... Yvor Winters<br/><br/>In solemn memory of all those involved in World War II.<br/>With deepest respect, we remember.</span>
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">PROJECT DIRECTOR</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Quirin 'kju' Eberle
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">CREATIVE DIRECTORS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Ben Shimadry<br/>Nathan 'Dmitry Yuri' Smyth<br/>Michael 'Instant Muffin' Cochrane<br/>Daryl 'Kerc' Hawkins<br/>Alex 'HeadUp' Koplin
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">NARRATIVE DIRECTOR</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Jan 'Prababička' Polák
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">PRODUCER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Markus 'Bob Murphy' Esser
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">PRODUCTION MANAGER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Quirin 'kju' Eberle
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ART DIRECTORS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Ben Shimadry<br/>Michael 'Instant Muffin' Cochrane
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">GAMEPLAY DIRECTORS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Pierre 'El Tyranos' Azuelos<br/>Daryl 'Kerc' Hawkins<br/>Quirin 'kju' Eberle
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">BRAND AND MARKETING MANAGER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Toby 'stabcon' Connolly
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">LEAD MEDIA PRODUCER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Jed 'Mayhem' Hutchinson
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">CREATIVE VISION AND ORIGINAL CONCEPT BY</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Jeg0r<br/>Daryl 'Kerc' Hawkins<br/>Pierre 'El Tyranos' Azuelos<br/>Justin Nijs<br/>Joe Neeves<br/>Jan 'Prababička' Polák
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ART RESEARCHER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Julian 'yooles' Łada
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">HISTORICAL ADVISORS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Daryl 'Kerc' Hawkins<br/>Felix 'SteamboatMonkee' Ungermann<br/>Jakša 'Jaki' Gabrić<br/>Jan 'Prababička' Polák<br/>Joachim Coupland<br/>Julian 'yooles' Łada<br/>Justin LeClair<br/>Michael 'Instant Muffin' Cochrane<br/>Zachary Wood
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">QA LEAD</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Markus 'Bob Murphy' Esser
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">QA MANAGERS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Ben Shimadry<br/>Nathan 'Dmitry Yuri' Smyth<br/>Daryl 'Kerc' Hawkins<br/>Quirin 'kju' Eberle
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ASSISTANT QA MANAGER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Dmytro 'DMorok' Moroka
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">LEAD ENVIRONMENT ARTIST</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Ben Shimadry
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ENVIRONMENT ARTISTS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | AugCph<br/>Ewan 'Morriski' Morris<br/>Julian 'yooles' Łada<br/>Miro 'Immonen' Lackman<br/>Ramiro Nicolás Gil<br/>Rick de Mooij<br/>Teemu 'Temppa' Mikkilä<br/>Tuomas 'HorribleGoat' Tuomala
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ADDITIONAL ENVIRONMENT ARTISTS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | 'Crazy' Mike Circelli<br/>Dan 'DL++' Leigh<br/>Holland 'Hololand' Thomas<br/>iron_excelsior<br/>Jeg0r<br/>Joe Neeves<br/>Jones.S<br/>Lado 'IceBreakr' Crnologar<br/>Shaun 'swurvin' Elkin
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">CAMPAIGN DESIGN</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Jan 'Prababička' Polák<br/>Alex 'HeadUp' Koplin<br/>Julian 'yooles' Łada<br/>Quirin 'kju' Eberle<br/>Tomi 'Toksa' Oksa
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ADDITIONAL CAMPAIGN DESIGN</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Burns<br/>Nathan 'Dmitry Yuri' Smyth<br/>Robert 'R3vo' Seibel
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">MULTIPLAYER GAME DESIGNERS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Quirin 'kju' Eberle<br/>Pierre 'El Tyranos' Azuelos<br/>Daryl 'Kerc' Hawkins
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">PLAYABLE CONTENT DESIGNER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Alex 'HeadUp' Koplin<br/>ALIAS<br/>Atom_Monky<br/>Burns<br/>D. 'Denzosho' Graham<br/>François 'CaoSaoVang' André<br/>Jaksa 'Jaki' Gabric<br/>Jan 'Prababička' Polák<br/>Julian 'yooles' Łada<br/>Lance Harthoorn<br/>Luca Balser<br/>Nathan 'Dmitry Yuri' Smyth<br/>Noah 'AIRB0RNE' Ludwig<br/>PIONEER<br/>Quirin 'kju' Eberle<br/>Rinze Ramon 'Waxbutter' Kluft<br/>Robert 'R3vo' Seibel<br/>Tim 'UD1E' Cutler<br/>Tiwaz<br/>Tomi 'Toksa' Oksa<br/>Witold 'Rydygier' Narwojsz
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">SYSTEMS DESIGNERS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Alessandro Romanelli<br/>Connor 'ConnorAU' Mead<br/>Daryl 'Kerc' Hawkins<br/>Ethan 'Asaayu' Johnson<br/>Hayashi 'POLPOX' Takeyuki<br/>Jan 'Prababička' Polák<br/>Nathan 'Dmitry Yuri' Smyth<br/>Quirin 'kju' Eberle<br/>Robert 'R3vo' Seibel<br/>Tomi 'Toksa' Oksa<br/>Witold 'Rydygier' Narwojsz
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">PROGRAMMING CONSULTING</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Filip 'veteran29' Maciejewski<br/>Martin Stanjek<br/>Mike 'Mikero' Andrew
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">SERVER BROWSER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Alessandro Romanelli<br/>Connor 'ConnorAU' Mead<br/>Dahlgren<br/>Dscha<br/>Frédéric 'Heyoxe' Arroyo<br/>Jaaziah 'Jaaziar' Chan<br/>Jonas 'jokoho482' Hoffmann<br/>Łukasz 'Stack' Taczuk<br/>Peter 'Terra' Gausmann<br/>Quirin 'kju' Eberle<br/>Torsten 'TeTeT' Spindler
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">UI DESIGN</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Alex 'HeadUp' Koplin<br/>Burns<br/>Connor 'ConnorAU' Mead<br/>Daryl 'Kerc' Hawkins<br/>Hayashi 'POLPOX' Takeyuki<br/>Jeg0r<br/>Robert 'R3vo' Seibel
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">GRAPHIC DESIGN</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Alex 'HeadUp' Koplin<br/>Alvina Von Rhein<br/>Gabu Milford<br/>Julian 'yooles' Łada<br/>Toby 'stabcon' Connolly
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">CINEMATICS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Alex 'HeadUp' Koplin<br/>Beachhead<br/>Gabu Milford<br/>Jan 'Prababička' Polák<br/>Jed 'Mayhem' Hutchinson<br/>Jef Leeson<br/>Jeg0r<br/>Julian 'yooles' Łada<br/>Nikos 'Flawless War Gamer' Antonakis<br/>Sebastian 'Ceb.Cin' Eriksen<br/>Tyler 'Coldfront15' Bashaw
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ENCODING LEAD</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Quirin 'kju' Eberle
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ENCODERS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Ben Shimadry<br/>Connor 'ConnorAU' Mead<br/>Daryl 'Kerc' Hawkins<br/>Hammad 'Casper_TFG' Arkan<br/>Hayden 'NZDF_Crash' Lockett<br/>Leon 'LAxemann' Beilmann<br/>Michael 'Instant Muffin' Cochrane<br/>Nathan 'Dmitry Yuri' Smyth<br/>Pierre 'El Tyranos' Azuelos<br/>Robert 'R3vo' Seibel<br/>Witold 'Rydygier' Narwojsz
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">VEHICLE ART LEAD</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Michael 'Instant Muffin' Cochrane<br/>Pierre 'El Tyranos' Azuelos
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">WEAPON ART LEAD</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Michael 'Instant Muffin' Cochrane<br/>Pierre 'El Tyranos' Azuelos
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">CHARACTER ART LEAD</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Michael 'Instant Muffin' Cochrane<br/>Hammad 'Casper_TFG' Arkan<br/>Justin Nijs
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ASSET ARTISTS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Alessandro 'Chair' Anello<br/>Andrea 'Dontshootme' Giacometti<br/>Andrew Baxter<br/>Daryl 'Kerc' Hawkins<br/>Dustin 'dustypeek' Peekeekoot<br/>Dwayne Hicks<br/>Evgeniy 'Ignisum' Mikhailov<br/>Felix 'SteamboatMonkee' Ungermann<br/>Gustavo Martins<br/>Hammad 'Casper_TFG' Arkan<br/>Jacob 'Valentine' Lengfelder-DeCriscio<br/>Jakub 'Sokolonko' Palmowski<br/>jujurat<br/>Justin Nijs<br/>Lennard<br/>Leon 'LAxemann' Beilmann<br/>Arthur Pin<br/>Luca 'Punished Raccoon' Berro<br/>Martin 'shifty' Kutik<br/>Matthew 'Buck' Kirkham<br/>Michael 'Instant Muffin' Cochrane<br/>Petr Tlach<br/>Retro242<br/>Rodrigo Arantes<br/>Simon 'norrin' Louis<br/>Simon 'simonow' Wik<br/>Steven 'Helion4' Taylor<br/>Szilárd 'Weber' Takács<br/>Tomás 'Jove Chiere' Álvarez<br/>Tyler 'Coldfront15' Bashaw<br/>Vlad 'Slow' Bessudnov
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ANIMATION LEAD</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Michael 'Instant Muffin' Cochrane
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ANIMATORS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Daryl 'Kerc' Hawkins<br/>Gustavo Martins<br/>Leon 'LAxemann' Beilmann<br/>Michael 'Instant Muffin' Cochrane
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">VISUAL EFFECTS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Daryl 'Kerc' Hawkins<br/>ALIAS
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">LEAD OBJECT ARTISTS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Ben Shimadry
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">OBJECT ARTISTS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Allen Sampaga<br/>Ben Shimadry<br/>Damir Turkić<br/>Hayden 'NZDF_Crash' Lockett<br/>Jacob 'Lost' St-louis<br/>Michael 'Kulrich' Kulrich<br/>Murphy<br/>Nathan 'Dmitry Yuri' Smyth<br/>Rylan<br/>Taneli 'HorribleHog' Tuomala<br/>Tuomas 'HorribleGoat' Tuomala<br/>Tyler 'Coldfront15' Bashaw
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ASSISTANT OBJECT ARTISTS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | A26mike<br/>Quenty Davy<br/>Jones.S<br/>Lawz<br/>LordJudicator<br/>Vincent Lamy
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">MARKETING LEAD</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Toby 'stabcon' Connolly
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ASSISTANT MARKETING LEAD</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Julian 'yooles' Łada
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">MEDIA PRODUCTION MANAGER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Jed 'Mayhem' Hutchinson
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">MARKETING/MEDIA ARTISTS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | AugCph<br/>Alex 'HeadUp' Koplin<br/>ALIAS<br/>Beachhead<br/>Jan 'Prababička' Polák<br/>Jed 'Mayhem' Hutchinson<br/>Jef Leeson<br/>Jeg0r<br/>Julian 'yooles' Łada<br/>Leon 'LAxemann' Beilmann<br/>Nikos 'Flawless War Gamer' Antonakis<br/>Rick de Mooij<br/>Pedro 'Whiplash' Rodrigues<br/>Sebastian 'Ceb.Cin' Eriksen<br/>Shaun 'swurvin' Elkin<br/>Toby 'stabcon' Connolly<br/>Tyler 'Coldfront15' Bashaw
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">SOUND DESIGNER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Leon 'LAxemann' Beilmann
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">VOICE DIRECTOR</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Jef Leeson
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">DIALOGUE EDITOR AND MIXING ENGINEER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Jef Leeson
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">AUDIO CUTTER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Randy Greer<br/>Sterling Matthew Oliver<br/>Ramiro Nicolás Gil<br/>Jef Leeson
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">VOICE ACTORS (CAMPAIGN)</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Daniel C Johnson<br/>Jef Leeson<br/>Michael Berry<br/>Alex Koplin<br/>Antonin Gayet<br/>Tom 'Gydias' Laurent
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">VOICE ACTORS (RADIO PROTOCOL)</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Felix Borrmann<br/>Himmel 'Rejenorst' Stossen<br/>Łukasz 'Stack' Taczuk<br/>Marco Rheindorf<br/>Michael Rempel<br/>Tom 'Gydias' Laurent
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ADDITIONAL VOICE ACTORS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | AJ Deane<br/>Alex Koplin<br/>Antonin Gayet<br/>Ben Couch<br/>Caner Kaya<br/>Christian 'Chris' Diehl<br/>Daniel C Johnson<br/>Daniel J. McLean<br/>Eduardo Riedel<br/>Felix Borrmann<br/>Jacob Wilson<br/>James Francis Markert<br/>Jef Leeson<br/>Jose Berrios<br/>Joseph 'Outwardpanicjoe' Welch<br/>Justin Cabanting<br/>Levi Squier<br/>Luke Nemitz<br/>Marco Rheindorf<br/>Michael Berry<br/>Michael Rempel<br/>Mike Christensen<br/>Patrick Arthur<br/>Patrick 'MaugriM' Lühder<br/>Phillip Sacramento<br/>Randy Greer<br/>Sterling Matthew Oliver<br/>Tim Siewert<br/>Tom 'Gydias' Laurent<br/>Vinny Schultz<br/>Yan Rütten
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">SCRIPT WRITERS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Patrick 'MaugriM' Lühder<br/>Kyle 'Keric' Perkins<br/>Joseph 'Outwardpanicjoe' Welch<br/>Jef Leeson<br/>Jed 'Mayhem' Hutchinson<br/>Jan 'Prababička' Polák<br/>Daryl 'Kerc' Hawkins<br/>Alex 'HeadUp' Koplin
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">VOICE SCRIPT TRANSLATORS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Alvina Von Rhein (French)<br/>Patrick 'MaugriM' Lühder (German)<br/>Tom 'Gydias' Laurent (French)
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">PUBLISHING SUPPORT</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Paul Statham
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">LOCALIZATION PRODUCER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Vojtěch Schubert<br/>Quirin 'kju' Eberle<br/>Markus 'Bob Murphy' Esser
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">LOCALIZATION</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Daryl 'Kerc' Hawkins<br/>François 'CaoSaoVang' André<br/>Luca Balser<br/>Pankie Panic<br/>Ramiro Nicolás Gil<br/>Tom 'Gydias' Laurent (French)<br/>Uganda
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">EXTERNAL LOCALIZATION</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Dennis Häringer<br/>Dmitry Kornyukhov<br/>Fernando Moreiras<br/>Goulven Le Goff<br/>Igor V. Savenkov<br/>Liu Dasheng<br/>Marco Piccinnu<br/>Mathilde Sperduto<br/>Ramón Méndez González<br/>Raphaël Rouby<br/>Scott Liang
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">MUSIC DIRECTOR</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Jan 'Prababička' Polák
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">MUSIC COMPOSERS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Luke Nemitz<br/>Daniel Patras
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">IT SYSTEMS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Dahlgren<br/>Elie 'Catsy' Janin<br/>Justin Waters<br/>Łukasz 'Stack' Taczuk
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">COMMUNITY MANAGERS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Toby 'stabcon' Connolly<br/>Pedro 'Whiplash' Rodrigues<br/>Joe Neeves<br/>Jef Leeson<br/>Julian 'yooles' Łada<br/>Rick de Mooij<br/>AugCph
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">COMMUNITY BETA TESTERS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | .jeza<br/>[OFrP] TigerForce<br/>29j2003 | Julius<br/>Alex Hamon<br/>Andy 'R0adki11' Howell<br/>Ashley 'Wenza' Wensor<br/>baermitumlaut<br/>Barden<br/>Bardosy<br/>Barry<br/>Baton<br/>Ben 'snoops' Englishby<br/>Björn Dahlgren<br/>boberro<br/>Boomer [48th MI]<br/>bux578<br/>Chris 'Jaxsin' Jackson<br/>Chris Tate<br/>Christopher 'Ducky' Crossman<br/>Coffee Maker<br/>Corey 'Wee' Turner<br/>Daniel 'WelshDan' Buck<br/>darrelljman<br/>Davidson<br/>DcBlast<br/>DFU.Andersen<br/>diwako<br/>Dominik Solski<br/>Domokun<br/>dpd29<br/>Ducky<br/>dukemcmillion<br/>enfield14<br/>Evin 'Dozer' Thurston<br/>Finn Biermann<br/>fuxna<br/>generallawless<br/>GetThatCat<br/>ghostfr.<br/>Gunter Severloh<br/>h-<br/>Hazer_AL<br/>Hoffmann<br/>hund<br/>Ivan Bear<br/>Jacob 'Jabo' Wells<br/>Jake 'Jakerod' Pauling<br/>James 'Bluey' Cain<br/>John 'johnnyboy' Ueckert<br/>jpspider<br/>jujurat<br/>Kelsey Katerberg<br/>Kreidelheim<br/>Krieg<br/>kylania<br/>Linus K.<br/>Lloyd 'WookieeDavidson' Purnell<br/>marceldev89<br/>meyotice<br/>Michi 'Holiday Neko'<br/>michipower<br/>MOBiER<br/>mr.john88<br/>Nathan 'CrAzY' Monks<br/>Panduhh<br/>PatoDuck<br/>Patryk 'Padraig' Rolnik<br/>Paul 'Pi123263' Klein<br/>Pear<br/>Pvt. Partz<br/>rampage1836<br/>Reaper121212<br/>Rett<br/>RiHibs<br/>Roderick 'Rowdied' Tchir<br/>Rory 'Craic' Fraser<br/>Samuel 'Sherman' Schuurmans<br/>Scruffy<br/>Sean 'Palp' Bell<br/>Soapy<br/>StRiKeR<br/>thecornishknight<br/>thehussman<br/>Thomas 'Warzen' Lullier<br/>tin988<br/>TinyDM<br/>Tom 'Hammer' De Meester<br/>Tony 'Inferno' Smith<br/>Twiznak<br/>uganda_streaming<br/>VandeVoordePascal<br/>Voodoo<br/>Whale
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">COMMUNITY DEVELOPERS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 3em" | 
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ACE</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Tyler 'Coldfront15' Bashaw<br/>Brett
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ACRE</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Arthur Hesford
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ALIVE</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Darrell 'Jman' Martin
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ANTISTASI</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Ellis 'killerswin2' Nielsen<br/>John Jordan<br/>Lazejun<br/>Markus 'Bob Murphy' Esser
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">AREA DENIAL</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Tim 'UD1E' Cutler
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ARMA COMMANDER</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | AnarchCassius
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">BECTI</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Steven 'dukee' Löwig
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">CLASHPOINT</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Luca Balser
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">DIRECT ACTION</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | BillyEatWorld<br/>Felix 'Icekraks' Hu
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ENDGAME</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Paul 'Pi123263' Klein
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">EPOCH</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Grahame Curtis
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ESCAPE</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Captain P. Star<br/>Scruffy
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">EXILE</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Andrew_S90
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">GUNGAME</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Connor 'ConnorAU' Mead
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">KOTH</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Andrey 'SaMatra' Zanin<br/>RoidRage
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">LIBERATION</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Tyler 'Coldfront15' Bashaw<br/>Luca Balser
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">MIKEFORCE</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Baihong 'Michael' Ye<br/>Christopher 'DeGraymis' DeGarmo<br/>Cypher<br/>David 'Cerebral' Piper<br/>Handy Andy
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">OVERRUN</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | UselessFodder
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">RIS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Jan 'Kámen' Zípek
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">TANK TDM</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Tim 'UD1E' Cutler
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">TFAR</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Dedmen
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">VINDICTA</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Maciej 'MatrikSky' Mazur<br/>BoinkStoinkMcGee
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">WARMACHINE</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 3em" | Jan 'IvosH' Pešák
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">SPECIAL THANKS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: any" | Everybody at Bohemia Interactive<br/>Open Group Management<br/>All Internal and Closed Beta Testers<br/>The Arma 3 Modders and the whole amazing Community
+|-
+|}
+
+<gallery mode="slideshow" showthumbnails>
+french_army_liberation.jpg
+fw_formation.jpg
+german_soldiers_standing_in_formation.jpg
+german_soldiers_surrendering.jpg
+m4_76_final.jpg
+p47_prepartion.jpg
+plane_dogfight.jpg
+sherman_on_the_move.jpg
+us_soldiers_clearing_trenches.jpg
+us_soldiers_relaxing.jpg
+</gallery>
+
+[[Category: Spearhead 1944]]

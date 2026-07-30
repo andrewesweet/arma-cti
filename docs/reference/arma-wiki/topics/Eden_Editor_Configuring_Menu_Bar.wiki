@@ -1,0 +1,167 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Configuring_Menu_Bar
+// revision: 347885 (2023-10-31T13:12:43Z)
+// export sha1: fnvix8husf1orambcf5bh0wn4g9usbe
+// categories: Category:Eden Editor: Modding
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[Eden Editor: Menu Bar|Menu Bar]] is the central control element of the [[:Category:Eden Editor|Eden Editor]], where all available options and tools are available.
+When adding a new functionality to the editor, you should strongly consider listing the feature there.
+
+The menu bar is configured as a [[CT_MENU_STRIP]], and it is possible to freely modify it from an addon.
+Because anyone can access the configuration, remember to tag your class names to make them unique (i.e., '''{{Color|purple|TAG}}_AwesomeTool''' instead of just '''AwesomeTool''').
+
+Following code examples will show the most common ways how to extend the menu bar.
+
+
+== Tool ==
+
+When adding a tool which has its own isolated functionality, '''Tools''' section is the best place where to put it.
+
+=== Single ===
+
+[[File:3den menuBar tool.jpg|468px]]
+<syntaxhighlight lang="cpp">
+class ctrlMenuStrip;
+class display3DEN
+{
+	class Controls
+	{
+		class MenuStrip : ctrlMenuStrip
+		{
+			class Items
+			{
+				class Tools
+				{
+					items[] += { "TAG_MyTool" }; // += must be used; you want to expand the array, not override it!
+				};
+
+				class TAG_MyTool
+				{
+					text = "My Awesome Tool"; // Item text
+					picture = "\MyAddon\data\myAwesomeTool_ca.paa"; // Item picture
+					action = "[] call TAG_fnc_MyAwesomeTool;"; // Expression called upon clicking; ideally, it should call your custom function
+					opensNewWindow = 1;// Adds '...' to the name of the menu entry, indicating the user that a new window will be opened.
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Folder ===
+
+If your feature is more complex and one menu item would not be enough to control it, you can instead add a folder with all required options inside.
+
+[[File:3den menuBar toolFolder.jpg|468px]]
+<syntaxhighlight lang="cpp">
+class ctrlMenuStrip;
+class display3DEN
+{
+	class Controls
+	{
+		class MenuStrip : ctrlMenuStrip
+		{
+			class Items
+			{
+				class Tools
+				{
+					items[] += {"TAG_MyFolder"};
+				};
+
+				class TAG_MyFolder
+				{
+					text = "My Awesome Folder...";
+					items[] = { "TAG_MyTool1", "TAG_MyTool1" }; // Links to items inside the folder
+				};
+
+				class TAG_MyTool1
+				{
+					text = "My Awesome Tool 1";
+				};
+
+				class TAG_MyTool2
+				{
+					text = "My Awesome Tool 1";
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Separators ===
+
+To ensure the user is not overwhelmed by the sheer amount of tools it is recommended to not only use folders, but also '''separators'''. You can add a separator like so:
+
+<syntaxhighlight lang="cpp">
+class ctrlMenuStrip;
+class display3DEN
+{
+	class Controls
+	{
+		class MenuStrip : ctrlMenuStrip
+		{
+			class Items
+			{
+				class Tools
+				{
+					items[] += { "TAG_MyFolder" };
+				};
+
+				class TAG_MyFolder
+				{
+					text = "My Awesome Folder...";
+					items[] = { "TAG_MyTool1", "Separator", "TAG_MyTool1" }; // The separator is treated like any other tool
+				};
+
+				class TAG_MyTool1
+				{
+					text = "My Awesome Tool 1";
+				};
+
+				class TAG_MyTool2
+				{
+					text = "My Awesome Tool 1";
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== Scenario Attributes ==
+
+When you add a new window with scenario attributes (see [[Eden_Editor:_Configuring_Attributes#Scenario|Attributes Modding]] to learn how it can be achieved), the user will still need a way how to access it.
+The best way is to add a link to the window at the end of '''Attributes''' option.
+
+[[File:3den menuBar attributes.jpg|468px]]
+<syntaxhighlight lang="cpp">
+class ctrlMenuStrip;
+class display3DEN
+{
+	class Controls
+	{
+		class MenuStrip : ctrlMenuStrip
+		{
+			class Items
+			{
+				class Attributes
+				{
+					items[] += { "TAG_MyAttributes" };
+				};
+
+				class TAG_MyAttributes
+				{
+					text = "My Awesome Attributes";
+					action = "edit3DENMissionAttributes 'MyScenarioAttributes';";
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+[[Category:Eden Editor: Modding|Menu Bar: Modding]]

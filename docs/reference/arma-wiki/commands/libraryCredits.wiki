@@ -1,0 +1,88 @@
+// source: https://community.bistudio.com/wiki/libraryCredits
+// revision: 369338 (2024-09-03T18:43:01Z)
+// export sha1: 201avzogkiqsin9t3u6zq8yk595j2ag
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= System
+
+|descr= Returns the credits for the libraries used by the game.
+
+|s1= '''libraryCredits'''
+
+|r1= [[Array]] - [array1, array2, (..), arrayN] all under the form [libraryName, credits]
+
+|x1= <sqf>
+hint str libraryCredits; // as of Arma 2 OA 1.62.95208
+
+/*
+[
+	[
+		"Botan",
+		"1999-2012 Jack Lloyd, 2001 Peter J Jones, 2004-2007 Justin Karneges, 2004 Vaclav Ovsik, 2005 Matthew Gregan, 2005-2006 Matt Johnston, 2006 Luca Piccarreta, 2007 Yves Jerschow, 2007-2008 FlexSecure GmbH, 2007-2008 Technische Universitat Darmstadt, 2007-2008 Falko Strenzke, 2007-2008 Martin Doering, 2007 Manuel Hartl, 2007 Christoph Ludwig, 2007 Patrick Sona, 2010 Olivier de Gaalon"
+	],
+	[
+		"rapidjson",
+		"2011 Milo Yip"
+	],
+	[
+		"libcurl",
+		"Copyright (c) 1996 - 2012, Daniel Stenberg"
+	],
+	[
+		"GameSpy",
+		"2009 GameSpy Industries, Inc."
+	],
+	[
+		"Theora",
+		"2002-2009 by the Xiph.Org Foundation http://www.xiph.org/"
+	],
+	[
+		"OggVorbis",
+		"1994-2002 by the Xiph.Org Foundation http://www.xiph.org/"
+	],
+	[
+		"Intel JPEG Library",
+		"1998 Intel Corporation"
+	],
+	[
+		"Matrix Template Library",
+		"2001-2005 The Trustees of Indiana University"
+	],
+	[
+		"Matrix Template Library",
+		"1998-2001 University of Notre Dame"
+	],
+	[
+		"Speex",
+		"2002-2006 Jean-Marc Valin"
+	],
+	[
+		"LZO Professional",
+		"1996-2011 Markus Franz Xaver Johannes Oberhumer"
+	],
+	[
+		"NVIDIA FXAA by TIMOTHY LOTTES",
+		"2010, 2011 NVIDIA CORPORATION"
+	],
+	[
+		"Jimenez's MLAA",
+		"2012 2011 by Jorge Jimenez, Belen Masia, Jose I. Echevarria, Fernando Navarro and Diego Gutierrez"
+	]
+]
+*/
+</sqf>
+
+|seealso= [[libraryDisclaimers]]
+}}

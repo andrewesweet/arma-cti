@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getName
+// revision: 378438 (2026-04-12T00:54:47Z)
+// export sha1: 6siff7euibxycd6ajjr2x2qncik6m2u
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Returns name of a unit. Name of unit is stored in it is namespace so it can be retrieved later, mainly for when unit dies. Name is stored in the variable '''BIS_fnc_getName_name'''.
+
+If the unit is alive, this function does [[name]] and returns the result, and saves the result to the variable on the unit. If the unit is dead, the function tries to retrieve the saved name from the variable on the unit, and returns "" if none is saved, unless forcedWhenDead is set to [[true]].
+
+|s1= [object] call [[BIS_fnc_getName]]
+
+|p1= object: [[Object]] - object whose name should be returned
+
+|p2= forcedWhenDead: [[Boolean]] - (Optional, default [[false]]) forces the function to do [[name]] on the unit if it's dead and has no name saved in the variable. Might have inconsistent results.
+
+|p3= maxCharacters: [[Number]] - (Optional, default -1) the name returned will be limited to this length. -1 for no limit. The name saved to the variable is not limited.
+
+|r1= [[String]] - unit's name
+
+|x1= <sqf>[player] call BIS_fnc_getName;</sqf>
+
+|seealso= [[name]]
+}}

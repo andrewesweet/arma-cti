@@ -1,0 +1,93 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_scriptedMove
+// revision: 347664 (2023-10-08T19:35:39Z)
+// export sha1: rs59fk57yvpiaolvl8crx8m4qeqnw8j
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+<!--
+{{TabView
+
+|selected= 2
+
+|title1= {{TabView/GameTitle|arma2oa}}
+|content1=
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Force a unit to turn towards and walk to provided destination(s).
+{{Feature|arma3|This syntax is '''broken''' in {{arma3}} as its code relies on [[Arma 2: Multiplayer Framework]] and only works since {{GVI|arma3|2.10}} (see other tab).}}
+
+|s1= [unit, waypoints, code, walkAnim, animLength] call [[BIS_fnc_scriptedMove]]
+
+|p1= unit: [[Object]]
+
+|p2= waypoints: [[Array]] of [[Position]]s
+
+|p3= code: [[Code]] - (Optional, default <sqf inline>{}</sqf>) code to run after waypoint completion
+
+|p4= walkAnim: [[String]] - (Optional, default "AmovPercMwlkSnonWnonDf")
+
+|p5= animLength: [[Number]] - ('''required''' if ''walkAnim'' is defined) distance made by ''walkAnim'' animation
+
+|r1= [[Script Handle]]
+
+|x1= <sqf>[myUnit, [getMarkerPos "wp1", getMarkerPos "wp2", getMarkerPos "wp3"]] call BIS_fnc_scriptedMove;</sqf>
+
+|seealso= [[move]] [[setDriveOnPath]]
+}}
+
+|title2= {{TabView/GameTitle|arma3}}
+|content2=
+
+-->{{RV|type=function
+
+|game1= arma3
+|version1= 2.10
+
+
+|arg= global
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Forces a unit to turn towards and walk to provided destination(s). Will not work on [[player]]. When [[Group]] is used as argument, the function will be automatically executed for each unit in the group.
+
+{{Feature|informative|When using ''endAnim'', make sure it is able to break ''walkAnim'' (not all animations are compatible). When code is executed, it receives the following params: [unit, waypoints, currentIndex, userArgs].}}
+
+|s1= [unitOrGroup, waypoints, code, walkAnim, completionRadius, endAnim] call [[BIS_fnc_scriptedMove]]
+
+|p1= unitOrGroup: [[Object]] or [[Group]] - unit or group of units of the class "Man"
+
+|p2= waypoints: [[Array]] of [[Position]]s in format [pos1, pos2, ...] or [<nowiki/>[pos1, completionRadius1, turnSpeedCoef1], [pos2, completionRadius2, turnSpeedCoef2], ...]
+
+|p3= code: [[Code]] or [[Array]] - (Optional, default <sqf inline>{}</sqf>) code to run after each waypoint completion. Format {code} or <nowiki>[</nowiki>[params], {code}]
+
+|p4= walkAnim: [[String]] - (Optional, default "AmovPercMwlkSnonWnonDf") walking animation to be played in a loop
+
+|p5= completionRadius: [[Number]] - (Optional, default 0.5) how far from waypoint center to consider waypoint completion. Global value. The completionRadius given with individual waypoint position overrides global value
+
+|p6= turnSpeedCoef: [[Number]] - (Optional, default 1.0) how quickly the unit turns towards next waypoint (fast 0.1 ... 10 slow). The turnSpeedCoef given with individual waypoint position overrides global value
+
+|p7= endAnim: [[Number]] - (Optional, default [[animationState]] of the unit prior to function execution) when unit reaches last point, this is the animation to be played immediately. Use "" to let last walkAnim run in full
+
+|r1= [[Script Handle]] or [[String]] or [[Nothing]] - depends on execution (local/remote/error);
+
+|x1= <sqf>[myUnit, [getMarkerPos "wp1", getMarkerPos "wp2", getMarkerPos "wp3"]] call BIS_fnc_scriptedMove;</sqf>
+
+|seealso= [[move]] [[setDriveOnPath]] [[BIS_fnc_unitCapture]]
+}}
+
+<!--
+}}
+-->

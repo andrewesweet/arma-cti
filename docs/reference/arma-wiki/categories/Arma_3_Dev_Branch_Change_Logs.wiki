@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Dev-Branch_Change_Logs
+// revision: 378005 (2026-01-21T14:52:40Z)
+// export sha1: 35qn0ns0qnaivb9lc47z351xzibfp2h
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|Change logs for {{Link|https://dev.arma3.com/dev-branch|Dev-Branch}} have historically been posted to the {{Link|https://forums.bohemia.net/forums/topic/140837-development-branch-changelog/|Bohemia Interactive forums}}, but those have been offline or in read-only mode since 2025. Therefore, any logs since then will be shared here. The {{Link|https://discord.com/invite/arma|Arma Discord}} is another channel to learn about changes and to discuss them (''#dev_rc_branch'').}}
+
+{{GameCategory|arma3|Change Logs}}

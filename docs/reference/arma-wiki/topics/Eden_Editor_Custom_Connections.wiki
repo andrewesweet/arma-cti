@@ -1,0 +1,103 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Custom_Connections
+// revision: 378459 (2026-04-19T16:10:22Z)
+// export sha1: r4p8libqpjkk5r9xp1lctlsol3seusz
+// categories: Category:Eden Editor: Modding
+// Vendored snapshot. Do not edit — re-export instead.
+
+Since {{GVI|Arma3|2.10}} it is possible to create custom connections.
+
+== Config ==
+
+<syntaxhighlight lang="cpp">
+class Cfg3DEN
+{
+	class Connections
+	{
+		class TAG_CustomConnection
+		{
+			displayName = "Set Custom Connection";
+			condition1 = "marker * script1";
+			condition2 = "objectAI";
+			scriptedCondition1 = "markerType _this == 'hd_dot'";
+			property = "TAG_CustomConnection";
+			data = "TAG_CustomConnection";
+			color[] = { 1, 0, 1, 1 };
+			cursor = "3DENConnectSync";
+			expression = "hint str [_entity0, _entity1, _type];";
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Properties ===
+
+{| class="wikitable"
+! Property !! Description !! Data type
+|-
+| displayName || Display name of the connection shown in the context menu || [[String]]
+|-
+| condition1 || [[#Simple_Expressions|Simple expression]]|| [[String]]
+|-
+| condition2 || [[#Simple_Expressions|Simple expression]] || [[String]]
+|-
+| {{GVI|arma3|2.22}} conditionScript1 || Scripted condition that needs to return a [[Boolean]]. It is only evaluated if simple expression {{hl|script1}} is used inside {{hl|condition1}} || [[String]]
+|-
+| {{GVI|arma3|2.22}} conditionScript2 || Scripted condition that needs to return a [[Boolean]]. It is only evaluated if simple expression {{hl|script2}} is used inside {{hl|condition2}} || [[String]]
+|-
+| property || Custom property name. Must be unique || [[String]]
+|-
+| data || Needs to be the same as the class name. It is passed to event handlers and used in [[add3DENConnection]] as well as inside the _data variable in the expression || [[String]]
+|-
+| color[] || Color || [[Array]]
+|-
+| cursor || Cursor that is shown when connecting entities || [[String]]
+|-
+| expression || ''_this'' is array of source entities, ''_target'' is target entity. The expression is [[call]]ed on the server after all other entity expressions. 
+* _entity0: [[Object]] or [[String]] - The entity the connection started from
+* _entity1: [[Object]] or [[String]] - The second entity 
+* _type: [[String]] - The {{hl|data}} entry from the connection's config
+| [[String]]
+|-
+| value || An internal bit flag. Set it to 0 to always show the item in the root of the config menu. Otherwise ignore it || [[Number]]
+|-
+|}
+
+== Simple Expressions ==
+Simple expressions for custom connections.
+
+{| class="wikitable sortable"
+! Condition
+! class="unsortable" | Description
+|-
+| Object
+| Any object
+|-
+| ObjectBrain
+| Object with simulation "soldier" or "UAVpilot" 
+|-
+| ObjectVehicle
+| Any vehicle
+|-
+| Group
+| Any group
+|-
+| Trigger
+| Any trigger
+|-
+| Waypoint
+| Any waypoint
+|-
+| Logic
+| Any logic or system
+|-
+| Marker
+| Any marker
+|-
+| {{GVI|arma3|2.22}} Script1
+| Contains sqf condition defined in {{hl|scriptedCondition1}} property
+|-
+| {{GVI|arma3|2.22}} Script2
+| Contains sqf condition defined in {{hl|scriptedCondition2}} property
+|}
+
+[[Category:Eden Editor: Modding|Custom Connections]]

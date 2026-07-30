@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/current3DENOperation
+// revision: 348917 (2023-11-08T14:44:04Z)
+// export sha1: ckazf0fefxw8iqdfp6vf0g9p2cz0p15
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Returns the currently performed editing operation in [[:Category:Eden Editor|Eden Editor]].
+
+|s1= [[current3DENOperation]] 
+
+|r1= [[String]] - operation name. Can be:
+{{Columns|2|
+* {{hl|""}} (no operation)
+* {{hl|"CreateObject"}}
+* {{hl|"CreateMarker"}}
+* {{hl|"CreateTrigger"}}
+* {{hl|"MoveItems"}}
+* {{hl|"RotateItems"}}
+* {{hl|"ScaleItems"}}
+* {{hl|"SyncWith"}}
+* {{hl|"GroupWith"}}
+* {{hl|"SetTriggerOwner"}}
+* {{hl|"AddRandomStart"}}
+}}
+|x1= <sqf>if (current3DENOperation == "MoveItems") then { hint "Moving things are we"; };</sqf>
+
+|seealso= [[do3DENAction]] [[get3DENActionState]]
+}}

@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Modding
+// revision: 342225 (2023-07-09T12:27:28Z)
+// export sha1: hhx5kx32tr0we695azuxpi5y4bsmhbo
+// categories: Category:Eden Editor: Modding
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[:Category:Eden Editor|Eden Editor]] is a powerful modding tool for designing scenarios, but what makes it truly unique is that the editor itself is moddable. Custom addons can add or modify almost all features, using configs, user interface controls, scripting commands and event handlers.
+
+{{Feature|important|While the public name is ''Eden Editor'', the system name is <u>''3DEN''</u>.*}}
+:<sup>''<nowiki>*</nowiki> The system name is different because during the development, a neutral technical name had to be used while public name was not selected yet. 3DEN is acronym for '''3D''' '''E'''ditor '''N'''ew''.</sup>
+
+== Workspace ==
+Editor Workspace is a standard scenario where editing takes places. [[timeMultiplier|Time simulation]] is paused, but everything else works exactly like in an other scenario - it can contain [[Object|objects]], [[Eden Editor: Marker|markers]] and other entities, scripts can be executed there, weather can be set, etc.
+
+However, this state is not permanent. When preview starts, the workspace scenario is closed and is replaced by preview scenario. Returning back to the editor ends the preview and opens the workspace scenario again, but completely fresh - for example none of previously saved variables will be available again. The same happens when a new terrain is loaded.
+[[File:3den workspace mission.png|center]]
+
+
+Because of this, you have to be really careful when working with scenario-specific data. All of the following information will be lost when scenario ends:
+* [[missionNamespace]] (global) and object variables
+* [[addEventHandler|Object]] and [[addMissionEventHandler|mission]] event handlers
+* [[Scheduler#Scheduled_Environment|Scheduled]] scripts
+* Anything which is not set and saved by the editor (e.g., objects created by [[createVehicle]], weather set by [[setOvercast]], etc.)
+
+== Addon ==
+Any extension of the Eden Editor has to be configured in an addon, not in a scenario (e.g., in [[Description.ext]] or scenario scripts). The reason is obvious - Eden edits scenarios, not the other way around. 
+A scenario can be edited with two kinds of addons installed:
+* '''Standard addon''' - pretty much anything you use place or activate in the scenario - soldiers, vehicles, terrains, gameplay enhancements, etc.
+* '''Editor addon''' - editor plug-in, like new [[Eden_Editor:_Configuring_Attributes|attributes]], tools, etc.
+When you publish a mission, standard addons are still required. When you place a soldier from a specific addon, player still needs to have that addon installed to see the soldier. However, editor addons are not required anymore. They add some functionality for the scenario designer, but player doesn't care about them.
+[[File:3den_addons.png|center]]
+
+=== Addon Configuration ===
+When expanding or modifying Eden Editor configs, make sure you have '''3DEN''' addon in the list of required addons. Without it, the game could load your addon before the 3DEN addon, which could in turn lead to unpredictable issues.
+
+When scenario designer uses some object from an addon, that addon will be automatically added to the list of addons required by the scenario. Make sure your editor plug-ins don't contain any objects which can be placed in the editor!
+<syntaxhighlight lang="cpp">
+class CfgPatches
+{
+	class My3DENAddon
+	{
+		units[] = {}; // No objects must belong to the addon. CfgVehicles should ideally not be present at all.
+		weapons[] = {};
+		requiredVersion = 1.0;
+		requiredAddons[] = {3DEN}; // 3DEN must be among required addons!
+		is3DENmod = 1;	/* IMPORTANT! This will mark the missions saved with modded editor, so that when such missions are loaded into unmodded 3DEN,
+						the user will get a warning of possible loss of custom attributes and prompted to install missing editor mod(s) */
+	};
+};
+</syntaxhighlight>
+{{Feature|important|At this moment, required addons are calculated only based on objects used in the scenario. In the future, other assets like weapons, equipment, etc. might be checked as well.}}
+
+== Configuration ==
+Following pages explain selected options in detail:
+* [[Eden Editor: Cfg3DEN|Cfg3DEN]]
+* [[Eden_Editor:_Setting_Attributes|Setting Attributes]]
+* [[Eden_Editor:_Configuring_Attributes|Configuring Attributes]]
+* [[Eden_Editor:_Configuring_User_Interface|Configuring User Interface]]
+* [[Eden_Editor:_Configuring_Menu_Bar|Configuring Menu Bar]]
+*[[Eden_Editor:_Entity_Context Menu|Configuring Context Menu]]
+* [[Eden_Editor:_Configuring_Attributes:_Controls|Available Attribute Controls]]
+* [[:Category:Command_Group:_Eden_Editor|Eden Scripting Commands]]
+* [[Arma_3:_Event_Handlers:_Eden_Editor|Eden Event Handlers]]
+* [[Eden Editor: Actions|Eden Actions]]
+* [[Eden Editor: Configuring Tutorials| Configuring Tutorials]]
+
+[[Category:Eden Editor: Modding|Modding]]

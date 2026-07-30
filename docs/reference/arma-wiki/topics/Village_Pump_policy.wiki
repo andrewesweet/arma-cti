@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Village_Pump_(policy)
+// revision: 163896 (2020-09-29T16:49:58Z)
+// export sha1: 4932bxdunypx7dj5860wpdn5jjdpj8z
+// categories: Category:Village Pump
+// Vendored snapshot. Do not edit — re-export instead.
+
+<noinclude>''Discuss existing and proposed policies.''</noinclude>
+<noinclude>{{villagepumpmenu}}</noinclude>
+[[Category:Village Pump]]

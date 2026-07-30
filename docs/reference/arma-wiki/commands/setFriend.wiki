@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/setFriend
+// revision: 341629 (2023-06-12T19:02:54Z)
+// export sha1: ez6jc6978irmkn8olefk1tgkx5g8jg4
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Scripting Commands: Server Execution | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|eff= global
+
+|serverExec= server
+
+|gr1= Sides
+
+|descr= Sets how friendly a side is with another. The friendliness is set for one side, not for the other.  See also [[Side Relations]].
+
+{{Feature|arma3|Since {{arma3}} this command can be used mid-mission. Before that it was intended to be used on mission start only, as changing value during mission could cause unexpected errors in AI behaviour (especially for groups already knowing about "switched to enemy" groups).
+}}
+
+|s1= side1 [[setFriend]] [side2, value]
+
+|p1= side1: [[Side]]
+
+|p2= side2: [[Side]]
+
+|p3= value: [[Number]] - a value smaller than 0.6 results in being enemy, otherwise ''side1'' is friendly to ''side2''
+
+|r1= [[Nothing]]
+
+|x1= <sqf>west setFriend [resistance, 0]; // west will not like resistance from now on</sqf>
+
+|x2= <sqf>
+resistance setFriend [east, 0];
+east setFriend [resistance, 0]; // both are enemies
+
+resistance setFriend [east, 1];
+east setFriend [resistance, 0]; // resistance likes east, but east does not like resistance
+</sqf>
+
+|x3= <sqf>west setFriend [west, 0]; // free for all deathmatch! works with west/blufor, east/opfor, independent/resistance and civilian</sqf>
+
+|seealso= [[getFriend]] [[BIS_fnc_sideIsFriendly]] [[BIS_fnc_sideIsEnemy]] [[Side Relations]]
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20071130112500
+|text= Setting the [[civilian]] [[side]] to be the enemy of any other side will result in the other side attacking inanimate mission editor placed objects such as empty vehicles and static objects, since these objects belong to the civilian side.
+|game= arma1
+}}

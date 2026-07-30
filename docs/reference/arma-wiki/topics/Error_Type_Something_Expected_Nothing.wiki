@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/Error_Type_Something_Expected_Nothing
+// revision: 55496 (2010-01-18T21:01:47Z)
+// export sha1: 4gbwgt1x4rfoe4sdm2sk1ys12fyk01e
+// categories: Category:Common Scripting Errors
+// Vendored snapshot. Do not edit — re-export instead.
+
+This error usually occurs when a statement is incomplete, malformed, or non-existent.
+
+
+
+'''Compatibility:'''
+
+Version '''1.96'''
+
+
+
+'''Example (non-existent statement):'''
+
+7 + 6 * 5
+
+'''Example (malformed statement):'''
+
+3 = 4
+
+'''Example (incomplete statement):'''
+
+_myVariable
+
+[[Category:Common Scripting Errors]]

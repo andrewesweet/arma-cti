@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sunriseSunsetTime
+// revision: 327149 (2022-07-12T21:45:23Z)
+// export sha1: gu7d5v5632beqon4bv9opvll2npme59
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Environment | Category:Functions | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Environment
+
+|descr= Calculate sunrise and sunset time.
+
+|s1= date call [[BIS_fnc_sunriseSunsetTime]]
+
+|p1= date: [[Array]]  - date in format [[Date]]
+
+|r1= [[Array]] of [[Number]] - [sunriseTime, sunsetTime]. Returns special values when the world position is behind the polar cicle: [0,-1] - polar summer (i.e., no sunset), [-1,0] - polar winter (i.e., no sunrise).
+
+|x1= <sqf>private _sunriseSunsetTime = date call BIS_fnc_sunriseSunsetTime; // get sunrise/sunset time for the current date</sqf>
+
+|seealso= [[sunOrMoon]]
+}}

@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_reviveOnState
+// revision: 328509 (2022-07-13T16:26:08Z)
+// export sha1: tihgdyyqld1q8uuay6dixnntyn46bao
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Revive | Category:Functions | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Revive
+
+|descr= <pre>/*
+	Author: Jiri Wainar
+
+	Description:
+	Used to execute specific code localy on every client whenever unit's state changes.
+
+	Parameters:
+		_this select 0: STRING - Variable that carries the state value over the network, defined by macro VAR_TRANSFER_STATE.
+		_this select 1: SCALAR - State.
+		_this select 2: OBJECT - Unit to set the status for.
+
+	Returns:
+	True if successful, false if not.
+
+	States:
+		#define STATE_RESPAWNED			0
+		#define STATE_REVIVED			1
+		#define STATE_INCAPACITATED		2
+		#define STATE_DEAD				3
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_reviveOnState]]
+
+|p1= 
+
+|r1=
+
+|x1= <sqf>{ [objNull, 1, _x] call BIS_fnc_reviveOnState; } forEach (curatorSelected select 0);</sqf>
+
+|seealso=
+}}

@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleFuel
+// revision: 352070 (2024-02-01T23:24:40Z)
+// export sha1: 6clqqolalrvn8l0ye3suo49vkcxhsdl
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|arg= local|eff= global
+
+|descr= Set fuel of linked units' '''vehicles'''.
+{{Feature|informative|Regarding locality: unit's '''vehicle''' must be local to the machine, the unit itself can be remote.}}
+
+|s1= [logic, units, isActivated] call [[BIS_fnc_moduleFuel]]
+
+|p1= logic: [[Object]] - the logic. Possible [[setVariable]] parameter:
+* "value": [[Number]] - (Optional, default 0) wanted fuel level, in range 0..1
+
+|p2= units: [[Array]] of [[Object]]s - list of units
+
+|p3= isActivated: [[Boolean]] - (Optional, default [[true]]) if [[true]], the fuel is set
+
+|r1= [[Boolean]] - [[true]] when done, even if ''isActivated'' equals [[false]]
+
+|x1= <sqf>[myLogic, [unit1, unit2, vehicle1], true] call BIS_fnc_moduleFuel;</sqf>
+
+|seealso= [[fuel]] [[setFuel]]
+}}

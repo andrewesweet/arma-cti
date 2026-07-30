@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Line:_Regular
+// revision: 350019 (2023-11-20T22:11:56Z)
+// export sha1: s2rz8ou5i1ahmmycy2tm5ej5seo9l3n
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Line]]
+{{TerrainProcessorManual|Line: Regular|BITasksPlugin.dll|Polyline, PolylineM, PolylineZ|No
+|DESCRIPTION=Regular placement of multiple objects on linear shapes specified in the given shapefile. 
+|TASKPARAMETERS=* '''Objects distance''' - Distance between objects.
+* '''Centerline offset''' - Offset from center line to objects line
+* '''Spline interpolation''' - Use Bezier spline instead of original polyline.
+|OBJECTPROTOTYPEPARAMETERS=* '''OBJECT''' - Object's prototype name
+* '''PROB''' - Object's probability
+* '''MINHEIGHT''' - Minimal size in %
+* '''MAXHEIGHT''' - Maximal size in %
+* '''MINDIST''' - Minimal distance in meters  
+* '''RANDROT''' - Random rotation ?
+* '''ROTATION''' - Rotation offset in °
+[[File:TerrainProcessor_LinearRegular.png|500px]]
+|USAGE=You can use this task for regular objects placing on linear shapes, like verge poles around road, street lights or strings of bush fences.
+|ALGORITHM=
+|SAMPLE=
+}}

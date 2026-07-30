@@ -1,0 +1,415 @@
+// source: https://community.bistudio.com/wiki/Arma_Licensed_Data_Pack
+// revision: 336550 (2023-01-04T15:22:49Z)
+// export sha1: t4e36w2iekbdmki2syzx70wg92qjpo5
+// categories: Category:Public Data
+// Vendored snapshot. Do not edit — re-export instead.
+
+==Description==
+Binarized data from the Arma series (from [[:Category:Operation_Flashpoint|CWC]] to [[Arma_2:_Operation_Arrowhead|A2:CO]]) in PBO files. The purpose of this package is to clearly identify which game data is licensed for public use and modification, and what are the related conditions and requirements.<br>
+Note that files indicated as "parts" are separate archives which can be unpacked independently from the other parts of the package, the data was split only for the purpose of easier manipulation with the files.
+
+== Package content ==
+{{Feature|important|We recommend to download the data using the torrent. Due to high demand the direct download links may be overloaded.}}
+
+Selected PBOs in ZIP archives are divided according to the licenses applied, with the following subdivisions:
+=== Cold War Crisis ===
+==== ALDP_CWC_PBOs_DPL_APL.zip ====
+: https://tr4.bistudio.com/ALDP_CWC_PBOs_DPL_APL.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_CWC_PBOs_APL.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* 6G30
+* Abox
+* Anim
+* anims
+* Apac
+* BISCamel
+* Bizon
+* BMP2
+* Brdm
+* Data
+* Data3D
+* DTAEXT
+* Flags
+* G36a
+* humr
+* Hunter
+* ch47
+* KOLO
+* kozl
+* LandText
+* LaserGuided
+* M2A2
+* Merged
+* MINI
+* Misc
+* Mm-1
+* O_WP
+* oh58
+* Sound
+* Steyr
+* su25
+* trab
+* vulcan
+* XMS
+|}
+
+==== ALDP_CWC_PBOs_ADPL-SA_APL-SA.zip ====
+: https://tr4.bistudio.com/ALDP_CWC_PBOs_ADPL-SA_APL-SA.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_CWC_PBOs_APL-SA.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* Missions
+* MPMissions
+* SPTemplates
+* Templates
+* Worlds
+* 1985
+* Abel
+* Cain
+* Eden
+* Music
+* Noe
+* O
+* resistance
+* scripts
+* Voice
+|}
+
+=== Arma: Armed Assault ===
+==== ALDP_A1_PBOs_APL_part1.zip ====
+: https://tr4.bistudio.com/ALDP_A1_PBOs_APL_part1.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A1_PBOs_APL_part1.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* a10
+* air
+* air3
+* animals
+* anims
+* buildings
+* Ca
+* cti_buildings
+* dbe1
+* hotfix
+* hotfix_dbe1
+* hotfix_qg
+|}
+
+==== ALDP_A1_PBOs_APL_part2.zip ====
+: https://tr4.bistudio.com/ALDP_A1_PBOs_APL_part2.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A1_PBOs_APL_part2.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* characters
+* sounds
+* tracked
+* ui
+* usmcd
+* water
+* weapons
+* weapons3
+* wheeled
+* wheeled3
+|}
+
+==== ALDP_A1_PBOs_ADPL-SA_APL-SA_part1.zip ====
+:https://tr4.bistudio.com/ALDP_A1_PBOs_ADPL-SA_APL-SA_part1.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A1_PBOs_ADPL-SA_APL-SA_part1.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* Campaigns
+* Missions
+* MPMissions
+* MPTemplates
+* Templates
+* cutsceneAnims
+* desert
+* desert2
+* introAnims
+* language
+* misc
+* missions
+* models_DBE1
+|}
+
+==== ALDP_A1_PBOs_ADPL-SA_APL-SA_part2.zip ====
+: https://tr4.bistudio.com/ALDP_A1_PBOs_ADPL-SA_APL-SA_part2.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A1_PBOs_APL-SA_part2.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* plants
+* roads
+* rocks
+* sara
+* Sara_DBE1
+* saralite
+* signs
+* voice
+* warfare
+|}
+
+=== Arma 2 ===
+==== ALDP_A2_PBOs_APL_part1.zip ====
+: https://tr4.bistudio.com/ALDP_A2_PBOs_APL_part1.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A2_PBOs_APL_part1.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* a10
+* ah64
+* air
+* air2
+* air3
+* animals
+* animals2
+* anims
+* Ca
+|}
+
+==== ALDP_A2_PBOs_APL_part2.zip ====
+: https://tr4.bistudio.com/ALDP_A2_PBOs_APL_part2.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A2_PBOs_APL_part2.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* characters
+* characters2
+* sounds
+|}
+
+==== ALDP_A2_PBOs_APL_part3.zip ====
+: https://tr4.bistudio.com/ALDP_A2_PBOs_APL_part3.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A2_PBOs_APL_part3.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* tracked
+* tracked2
+* ui
+* warfare2vehicles
+* water
+* water2
+* weapons
+* weapons2
+* wheeled
+* wheeled2
+* wheeled3
+|}
+
+==== ALDP_A2_PBOs_ADPL-SA_APL-SA_part1.zip ====
+: https://tr4.bistudio.com/ALDP_A2_PBOs_ADPL-SA_APL-SA_part1.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A2_PBOs_APL-SA_part1.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* buildings
+* buildings2
+* buildings2_Ind_CementWorks
+* dubbing
+|}
+
+==== ALDP_A2_PBOs_ADPL-SA_APL-SA_part2.zip ====
+: https://tr4.bistudio.com/ALDP_A2_PBOs_ADPL-SA_APL-SA_part2.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A2_PBOs_APL-SA_part2.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* editor
+* chernarus
+* chernarus_Data
+* chernarus_Data_Layers
+* language
+* languagemissions
+* misc
+* misc_fix
+* misc2
+* misc3
+* missions
+* missions_ew
+* modules
+* music
+* plants2_Bush
+* plants2_Clutter
+* plants2_misc
+* plants2_Plant
+* plants2_Tree
+|}
+
+==== ALDP_A2_PBOs_ADPL-SA_APL-SA_part3.zip ====
+: https://tr4.bistudio.com/ALDP_A2_PBOs_ADPL-SA_APL-SA_part3.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A2_PBOs_APL-SA_part3.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* roads2
+* rocks2
+* signs2
+* soundmissions
+* structures
+* utes
+* warfare2
+|}
+
+=== Arma 2: Operation Arrowhead ===
+==== ALDP_A2OA_PBOs_APL_part1.zip ====
+: https://tr4.bistudio.com/ALDP_A2OA_PBOs_APL_part1.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A2OA_PBOs_APL_part1.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* air_e
+* animals_e
+* anims_e
+* ca_e
+* characters_e
+* l39
+* sounds_e
+|}
+
+==== ALDP_A2OA_PBOs_APL_part2.zip ====
+: https://tr4.bistudio.com/ALDP_A2OA_PBOs_APL_part2.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A2OA_PBOs_APL_part2.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* tracked_e
+* ui
+* weapons_e
+* wheeled_e
+|}
+
+==== ALDP_A2OA_PBOs_ADPL-SA_APL-SA.zip ====
+: https://tr4.bistudio.com/ALDP_A2OA_PBOs_ADPL-SA_APL-SA.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A2OA_PBOs_APL-SA.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* desert_e
+* dubbing_e
+* dubbingradio_e
+* language
+* language_e
+* languagemissions
+* languagemissions_e
+* misc_e
+* missions_e
+* modules_e
+* mp_armory
+* music_e
+* plants_e
+* roads_e
+* rocks_e
+* signs_e
+* soundmissions_e
+* structures_e
+* takistan
+* takistan_data
+* takistan_data_layers
+* warfare2
+* warfare2_e
+* zargabad
+|}
+
+=== Arma 2: Operation Arrowhead DLCs (BAF, PMC, ACR) ===
+==== ALDP_A2OADLC_PBOs_DPL_APL.zip ====
+: https://tr4.bistudio.com/ALDP_A2OADLC_PBOs_DPL_APL.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A2OADLC_PBOs_APL.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* OA_ACR
+** air_acr
+** ca_acr
+** characters_acr
+** sounds_acr
+** tracked_acr
+** weapons_acr
+** wheeled_acr
+* OA_BAF
+** air_d_baf
+** data_baf
+** characters_d_baf
+** characters_w_baf
+** sounds_baf
+** tracked_d_baf
+** tracked_w_baf
+** weapons_baf
+** wheeled_d_baf
+** wheeled_w_baf
+* OA_PMC
+** air_pmc
+** ca_pmc
+** characters_pmc
+** sounds_pmc
+** weapons_pmc
+** wheeled_pmc
+|}
+
+==== ALDP_A2OADLC_PBOs_ADPL-SA_APL-SA.zip ====
+: https://tr4.bistudio.com/ALDP_A2OADLC_PBOs_ADPL-SA_APL-SA.zip
+: {{Link|link= https://www.bistudio.com/licenseddata/ALDP_A2OADLC_PBOs_APL-SA.zip.torrent|text= Torrent}}
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content&nbsp;
+|-
+|
+* OA_ACR
+** bootcamp_acr
+** dubbing_acr
+** dubbingradio_acr
+** language_acr
+** languagemissions_acr
+** misc_acr
+** missions_acr
+** missions_acr_data
+** modules_acr
+** Mountains_ACR
+** plants_e2
+** Woodland_ACR
+* OA_BAF
+** dubbing_baf
+** language_baf
+** languagemissions_baf
+** missions_2_baf
+** missions_baf
+** shapur_baf
+* OA_PMC
+** dubbing_pmc
+** dubbingradio_pmc
+** language_pmc
+** languagemissions_pmc
+** missions_pmc
+** missions_pmc_data
+** missions2_pmc
+** modules_pmc
+** music_pmc
+** plants_pmc
+** provinggrounds_pmc
+** roads_pmc
+** structures_pmc
+** video_pmc
+|}
+
+[[Category:Public_Data]]

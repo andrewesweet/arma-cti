@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/Hull-down
+// revision: 349925 (2023-11-20T22:11:12Z)
+// export sha1: r55ifirbf82iuz2mqcem50t6pbqihm4
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Battle Tactics]]
+A '''Hull-Down''' is an armor tactic that uses terrain to provide cover for a tank. During this period only the tank turret is visible protruding from a hilltop. Minimizing the silhouette of the vehicle and giving significant concealment. Especially when done before high brush, trees, forestry, and other forms of concealment or cover.
+
+[[File:HD01.JPG|thumb|An M1A1 demonstrating a hull-down; notice the cover behind the turret]]
+
+
+== How to Perform ==
+
+To perform a hull-down you must have a vehicle that has the ability for the muzzle to depress; meaning the tank must be able to aim down. Simply put, just drive up to a small hill and have the gunner of the vehicle aim the muzzle down as far as possible. Have the driver roll slowly up the hill until the gunner realizes the muzzle is aiming directly at the hill. Reverse the vehicle until the muzzle is effectively aiming over the hill or just above.
+
+
+== The AI Bug ==
+
+For some reason in [[OFP]], AI tanks will not fire at the concealed tanks. Same problem with tanks using this tactic; they will not fire at exposed tanks. This can give a huge advantage to human players.
+
+== Tips and Special Notes ==
+
+This tactic varies in effect with different vehicles. For example, a vehicle with a smaller depression will have more of a silhouette. This is because the vehicle will have to be closer to the hilltop to be able to fire over it. Most vehicles provided by BIS have limited this tactic to select conditions. Such as the gradient or slope of the terrain must be minute or very small. If the slope of the hill is too high the vehicle can no longer fire at targets approaching it position. For better results perform at a location where there is some sort of terrain depression in front of you (i.e. a valley or small dip). This will give you a vantage to fire at incoming targets and give you time to advance or relocate. It is suggested that if you encounter larger numbers that you have a valley or large dip in front of you. As stated above this will give you time to reverse out of position and retreat or maneuver around the incoming targets to fire at their flanks. Giving the illusion that there are more vehicles than in reality. This maneuver is very effective against infantry elements if correctly executed due to cover and concealment. But remember: the conditions have to be right for the tactic to be executed properly, and the odds of this of happening is greatly hindered by the ability of the armor.
+
+== External links ==
+{{Link|https://en.wikipedia.org/wiki/Hull-down|Hull-down on Wikipedia}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_paramWeather
+// revision: 348935 (2023-11-08T14:44:07Z)
+// export sha1: n4olvafzx1d5egdr27xkripuwjpawvz
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Mission Parameters | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Mission Parameters
+
+|serverExec= server
+
+|descr= Sets overcast using [[BIS_fnc_setOvercast]].
+
+|s1= [0] call [[BIS_fnc_paramWeather]]
+
+|p1= [[Number]] - overcast value. ''Multiplied by 0.01 inside the function. Default value is '''current overcast value'''.''
+
+|r1= [[Number]] - overcast value (ranging from 0 to 1).
+
+|x1= <sqf>overCastValue = [1] call BIS_fnc_paramWeather;</sqf>
+
+|seealso= [[BIS_fnc_setOvercast]] [[overcast]] [[setOvercast]]
+}}

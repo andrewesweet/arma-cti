@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/ASLToATL
+// revision: 377532 (2026-01-02T06:53:16Z)
+// export sha1: 68urs38ccdr2izhrkf1m74f99thehos
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Positions
+
+|descr= Converts a position from [[Position#PositionASL|PositionASL]] to [[Position#PositionATL|PositionATL]]
+
+|s1= [[ASLToATL]] pos
+
+|p1= pos: [[Position#PositionASL|PositionASL]] - position to convert
+
+|r1= [[Position#PositionATL|PositionATL]]
+
+|x1= <sqf>ASLToATL getPosASL player isEqualTo getPosATL player;</sqf>
+
+|seealso= [[ATLToASL]] [[AGLToASL]] [[ASLToAGL]] [[getPos]] [[getPosATL]] [[getPosASL]] [[visiblePosition]] [[visiblePositionASL]]
+}}

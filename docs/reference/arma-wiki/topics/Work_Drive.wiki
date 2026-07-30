@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/Work_Drive
+// revision: 336770 (2023-01-04T15:24:50Z)
+// export sha1: pxdmgooe5etvbtnov0o1gcvs8tj3l48
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+|COMPATIBILITY= 
+[[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD= 
+{{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= 
+WorkDrive is a tool designed to replace the previous scripted systems in order to provide a more reliable way to manage the work drive (P) and its content 
+
+|COMMAND=
+	WorkDrive.exe <option><br>
+<br>
+        /debug: Display the output<br>
+        /Mount [drive letter] [source]: Mount the work drive<br>
+        /Dismount [drive letter]: Dismount the work drive<br>
+        /InstallBuldozer [game path] [destination path]: Install and configure Buldozer<br>
+        /BuldozerNoP: Use the game as Buldozer program (needs to be combined with /InstallBuldozer)<br>
+        /UninstallBuldozer [install path]: Uninstall Buldozer<br>
+        /purgeGameData [target path]: Will purge all extracted data<br>
+        /extractGameData [game path] [target path]: Will extract the game data from the game to the target directory<br>
+        /unlinkFolders: Will remove the symbolic links previously created<br>
+        /linkFolders: Will create the symbolic links as described [[mapFolders|here]]<br>
+        /extract [file path] [destination]: Will extract the given PBO and unbinarize relevant files 
+
+|OPTIONS=
+
+|EXAMPLE=
+WorkDrive.exe /Mount /InstallBuldozer /extractGameData
+
+|LICENSING= 
+[[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO=
+{{Link|link= https://forums.bistudio.com/topic/190585-project-space-work-drive-and-game-data/|text= Additional information}}, [[Buldozer]], [[Buldozer Configurator]], [[P drive/settings]]
+}}
+=== Additional information ===
+
+==== Returned codes ====
+* Success
+** 0x0
+* Internal
+** 0x00000001: User cancellation
+** 0x30098001: Elevated process without parent.
+** 0x50098101-5: Args flagged as incompatible.
+* Project Drive
+** 0x50001001: The Project Drive path is invalid.
+** 0x50001002: Failed to mount the work drive.
+** 0x50001003: Failed to unmount the work drive.
+* SYMLINKS
+** 0x50002001: Failed to create Symbolic Links.
+* Buldozer
+** 0x50003001: Failed to install Buldozer.
+** 0x50003002: Failed to uninstall Buldozer.
+** 0x50003003: The parameters source and destination are invalid.
+** 0x50003004: Invalid source directory.
+* Game Data
+** 0x50004001: Failed to populate the destination directory.
+** 0x50004002: Failed to extra game data.
+** 0x50004003: The source is not a valid install of the game.
+** 0x50004004: The destination directory cannot be the same as the tools directory.
+
+
+{{GameCategory|arma3|Official Tools}}

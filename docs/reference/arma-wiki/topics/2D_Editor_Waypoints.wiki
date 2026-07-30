@@ -1,0 +1,181 @@
+// source: https://community.bistudio.com/wiki/2D_Editor:_Waypoints
+// revision: 353561 (2024-03-19T12:01:41Z)
+// export sha1: slcgx0rlt50ed3lf1h768hchrj9skth
+// categories: Category:2D Editor
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+<div style="float: left; margin: 0 1.5em -1em -1.5em">[[File:icon map waypoint.jpg|thumb|Waypoints]]</div>
+[[Waypoint|Waypoints]] are used to define the route and behaviour of a group during the mission.
+At any point in time a group will have one active waypoint (generally the waypoint they are to move towards).
+Once a waypoint's conditions have been met, it will become complete and the group's next waypoint automatically becomes active.
+Some of a waypoint's settings will take place as the waypoint becomes active, others when the waypoint is complete.
+
+Waypoints are a property of their group - only one group can use each waypoint, and if that group is deleted all of its waypoints are deleted (both in the mission editor and in the mission).
+Waypoints can be placed either spatially (created in empty space), or attached to an object (directly placed on an object).
+Waypoints can only be attached to objects with a class definition (for example, all mission placed objects, and houses can be used, but rocks, fences and trees can not).
+
+Several waypoint types only function correctly if the waypoint is spatial, some only work if it is attached to an object, and others behave differently depending on the placement type.
+Spatial waypoints can be moved as desired in the same manner as moving units, while object linked waypoints remain attached to the object, even if the object moves while the mission is running.
+It is interesting to note that a non-editable waypoint is automatically created at every group leader's initial position.
+
+Waypoints are represented by a black dot within a circle, joined together with black arrows.
+To create a waypoint, first select any unit of the group you wish to create waypoints for. Then double left click in either empty space, or on the desired object.
+Multiple waypoints can be attached to the same object by holding down shift and double left clicking on the object.
+Once a waypoint has been created, it is placement can not be swapped between a spatial waypoint and an attached waypoint (unless the attached object is deleted).
+
+{{Feature | arma3 | For information regarding {{GameCategory|arma3|link= y}} and [[:Category:Eden Editor|Eden Editor]], refer to [[Eden Editor: Waypoint|Eden Editor - Waypoints]]}}
+
+<gallery>
+File:OFP_editor_waypoints.jpg|[[Arma: Cold War Assault]]
+File:ArmA_editor_waypoint.jpg|[[:Category:ArmA: Armed Assault|{{Name|arma1|short}}]]
+File:Arma2 editor waypoint.jpg|{{GameCategory|arma2|link= y}}
+File:tkoh editor waypoints.jpg|[[Take On Helicopters]]
+</gallery>
+
+{{ArgTitle|2|Category|{{GVI|tkoh|1.00}}}}
+
+For [[Take On Helicopters]], use to select between default engine waypoints and scripted waypoints provided by specific official or community projects.
+Scripted waypoints can be added in ''CfgWaypoints''.
+
+
+== Select Type ==
+
+Defines what happens when a waypoint's conditions was fullfilled. See [[Waypoints]] for a full list.
+
+
+== Waypoint Attributes ==
+
+{{ArgTitle|3|Height|{{GVI|tkoh|1.00}}}}
+
+Set waypoint height above terrain. AI will still behave as if waypoint would be placed on ground, but icon in player's view will be placed in correct height.
+
+=== Waypoint Order ===
+
+In this drop down menu, you can choose the number that the currently edited waypoint will be. It is possible to insert a new waypoint between two existing waypoints by changing this to the desired waypoint number in the new waypoint's menu. The order in which existing waypoints will be carried out can also be changed.
+
+=== Description ===
+
+Text in this box will be displayed on the HUD when the waypoint is currently active. If left blank, the waypoints type shall be used. When the group is close to the waypoint, but it requires conditions that are not satisfied to be completed, the HUD text will always change to "Wait".
+
+=== Combat Mode ===
+
+The group's combat mode can be defined in this drop down box. Combat Modes change as the waypoint becomes the group's current active waypoint, rather than when the group completes the waypoint. Note if the group is lead by a player, these changes will not automatically take place. See [[Combat Modes]] for a list of combat modes and their descriptions.
+
+=== Formation ===
+
+This will specify which formation the group should enter as the waypoint becomes active. Unless specified otherwise, all groups start a mission in the default formation ''Wedge''. Formations are normally formed around unit 1 (normally also the group leader) and each unit will normally keep in the same formation position as his number. For these descriptions, infantry units have been used. As a rough guide, each adjacent land or sea vehicle seems to use an additional "width" spacing of approximately twice the normal spacing, and an additional three times the "depth" (behind or in front) spacing. Air units will keep about five times the width, and ten times the depth spacing. The effect is cumulative, so that two helicopters will keep twice as far apart as one helicopter will stay from one soldier. Some [[#Behaviour|behaviour]] modes can override the formation setting. Some large formation types may have trouble moving through object rich areas such as towns.
+
+* '''No Change''' - The group will continue under with it is current formation.
+* '''Column''' - The group will line up in a single file behind unit 1, five meters apart.
+* '''Staggered Column''' - The group will form into two columns separated by a width of five meters. The right column is staggered five meters behind the left, unit 1 leads the left column.
+* '''Wedge''' - The group will form into a wedge shape, with unit 1 at the forward point. Each following unit will stay five meters behind and five meters further left or right from the man in front. All even units will be on the right side of the formation leader, all odd units on the left.
+* '''Echelon L(eft)''' - The group will form into a line behind and to the left of unit 1. Each unit is five meters behind and further left than the previous unit.
+* '''Echelon R(ight)''' - Same as Echelon L(eft), except the formation will be to the right.
+* '''Vee''' - Similar to ''Wedge'', but inversed. Each unit stands five meters in front of and further to the left or right of the nearest man.
+* '''Line''' - The group will form a line perpendicular to the facing of unit 1. Each man stands five meters apart.
+* '''Delta''' - This formation will form into three columns behind the formation leader. The outside columns are each 2.5 meters behind the middle column and 2.5 meters to either side.'''Not in Arma 3'''
+* '''Column (compact)/File''' - This formation is the same as ''Column'', except only 2.5 meters between each unit.
+
+====Formation preview pictures (Arma 3)====
+
+<gallery>
+File:A3_Formation_Column.jpg|Column
+File:A3_Formation_StaggColumn.jpg|Staggered Column
+File:A3_Formation_Wedge.jpg|Wedge
+File:A3_Formation_EchelonL.jpg|Echelon L.
+File:A3_Formation_EchelonR.jpg|Echelon R.
+File:A3_Formation_Vee.jpg|Vee
+File:A3_Formation_Line.jpg|Line
+File:A3_Formation_File.jpg|File
+</gallery>
+
+=== Speed ===
+
+This setting will define the movement speed of the group. Changes will take place as the waypoint becomes active, rather than when the waypoint is completed.
+In ''Normal'' or ''Limited'' mode, the group leader will slow his movement rate to allow his units to keep up with the formation.
+Note that a leader in an aircraft will not be able to move slowly enough to allow slow ground units to keep up.
+
+* '''No Change''' - Group will continue moving in it is current speed mode
+* '''Limited''' - Soldiers will walk to their destination. Vehicles will move at a low speed.
+* '''Normal''' - This is the default movement speed. Soldiers will jog, vehicles move at moderate speed.
+* '''Full''' - The group leader will move as quickly as possible to the waypoint. He will make no effort to slow himself down to allow the formation to keep up. Any units that might be able to travel faster than the leader will not do so, instead they will stay in formation.
+
+=== Behaviour ===
+
+For more information about behaviour, see [[AI Behaviour]].
+
+=== Placement Radius ===
+
+This option works in a similar way to a objects placement radius. The waypoint will be placed at random within a circle of the given radius, in meters.
+Note that the waypoint's position is set during mission initialization, so a group that uses a ''Cycle'' loop to go to a waypoint with a placement radius more than once will always move to the same location. If the waypoint is attached to an object, the waypoint HUD marker will appear at a random location for players, until they know of the object it is attached to, when the HUD marker will reposition itself onto the object.
+AI leaders will always move directly to the object.
+
+{{ArgTitle|3|Completion Radius|
+{{GVI|arma2|1.00}}
+{{GVI|arma2oa|1.50}}
+{{GVI|tkoh|1.00}}
+}}
+
+The distance to the waypoint at which the waypoint is considered as reached/completed.
+This can be used to set a "close enough" range, so that the unit doesn't need to go right on top of the waypoint position/center.
+When the group leader is a player, the required distance to a waypoint in automatically increased compared to an AI leader.
+
+=== Position In House ===
+
+This option is only available if the waypoint is attached to an object with a defined path "Level Of Detail" (LOD) with [[buildingPos|positions]].
+Most enterable buildings should have these, and only infantry units can use them. The positions are often near doorways and windows, although since the numbering system follows no simple rule a lot of trial and error will be needed to place the waypoint in the desire location.
+Path LODs allow units to ignore clipping, allowing them to walk through anything.
+If you send a multi-unit group to a position, they will all move to that position, standing inside each other!
+A move type waypoint set to a building position will never be considered complete without scripting. More than one waypoint can be set on the same building.
+
+As of the introduction of [[:Category:Eden Editor|Eden]] in '''{{arma3}}''' this waypoint type is only available via scripting. see [[waypointAttachObject]] and [[setWaypointHousePosition]]
+
+=== Timeout Counters ===
+
+Despite it is name, this counter works in a similar manner to the Trigger ''Countdown'' counter.
+Once the waypoint would normally be considered complete, the waypoint will wait for the specified time period before it becomes complete and the group is allowed to continue to the next waypoint.
+The conditions of completion do '''not''' have to remain true for the duration of this time period.
+The ''Min'', ''Mid'' and ''Max'' fields define the possible delay in seconds between the Min and Max values, gravitating towards the Mid value.
+For example, if all three values are set to 10, then the waypoint delay will always be 10 seconds, without any variation between mission play-throughs.
+If Min was 5, Mid was 10 and Max 15, the delay would be somewhere between 5 and 15 seconds, most likely being close to 10.
+
+=== Condition ===
+
+This script code block allows creation of additional conditions before the waypoint will be completed.
+While the block's return value is false, the waypoint's type will be changed to type "Wait", which can not be completed.
+The group will move to the waypoints position (irrespective of whether they would normally do this for the waypoint's true type!), generally waiting until the ''Condition'' block returns true before carrying out the waypoint's type actions (but not for all types).
+If the ''Condition'' block is left empty, the waypoint will never complete. Within the ''Condition'' block, ''this'' refers to the group leader, and ''thisList'' refers to an array containing each unit in the group.
+
+=== On Activation ===
+
+Another script code block, executed when the waypoint is completed. Within this block, ''this'' refers to the group leader, and ''thisList'' refers to an array containing each unit in the group.
+Any [[Expression|expressions]] in the On Act. field must return [[Nothing|nothing]], or an error message will prevent the waypoint dialogue from closing.
+
+=== Script ===
+
+This block will only be used if the waypoint is of type ''Scripted''. See that waypoint type description above for details.
+
+=== Never Show/Show in Cadet/Always Show ===
+
+Choose whether or not you wish this specific waypoint to visible on the mission map during gameplay. Waypoints will only be visible to units within their group.
+If any waypoint is shown, the group leader's initial position in the mission editor will also be drawn (this position is set before any changes made during initialization take place).
+Lines are drawn between the shown waypoints, irrespective of how many non-shown waypoints lie between them.
+
+=== Effects ===
+
+The waypoint effects menu allows for audio and visual effects to be created as the waypoint is completed, immediately after the trigger's ''On Activation'' code block is executed.
+The menu is almost identical to the [[Mission_Editor:_Triggers#Effects|Trigger Effects]] menu.
+
+=== Scripting  ===
+
+See [[:Category:Command_Group:_Waypoints|Command Group: Waypoints]] for list of all waypoints-related commands.
+
+
+== See Also ==
+
+* [[Waypoints]]
+* [[Eden Editor: Waypoint]]
+
+
+[[Category: 2D Editor]]

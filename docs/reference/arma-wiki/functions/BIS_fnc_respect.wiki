@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_respect
+// revision: 323931 (2022-07-01T11:58:28Z)
+// export sha1: dpogg0el0y1clgszc63phy80txrh604
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Sides
+
+|descr= RESpect - The Effective Calculation Process.
+
+|s1= [mode, param1, param2, param3] call [[BIS_fnc_respect]]
+
+|p1= mode: [[String]] - '''case-sensitive''', can be one of "SET", "ADD", "MODIFY", "KILLED"
+
+|p2= depending on ''mode'':
+* "SET" - set respect default values
+** param1: [[Nothing]] or [[Object]] (see '''Return value''')
+* "ADD" - add respect values depending on global town respect
+** param1: [[Object]] - unit to which is given respect from assigned town with random difference defined in third argument
+** param2: [[Number]] - range of random difference
+* "MODIFY" - change given respect value
+** param1: [[Object]] - unit of which respect value will be changed
+** param2: [[String]] - [[faction]] of which respect will be changed
+** param3: [[String]] - [[Code|code]] which defines formula for change (current respect value is stored in variable _r) - e.g. "_r / 2"
+* "KILLED" - modify global town respect after civilian has been killed
+** param1: [[Object]] - killer
+** param2: [[Object]] - town logic
+** param3: [[Number]] - change coefficient
+
+|r1=
+* "SET": [[Array]] with zero respect values  (if [[Object]] is passed as argument, 1 is on place of object's faction)
+* "ADD": unit's respect values
+* "MODIFY": modified respect value
+* "KILLED": modified town respect value
+
+|x1=
+
+|seealso= [[addRating]] [[Ambient Civilians]]
+}}

@@ -1,0 +1,16 @@
+// source: https://community.bistudio.com/wiki/Target
+// revision: 238943 (2021-02-04T16:50:09Z)
+// export sha1: rxxudrqjbwp773lrwh4yt70gwkd26h1
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Description:''' n/a.
+
+{{Feature|obsolete|this was never implemented and related commands got removed in later titles.|arma1|1.00}}
+
+Introduced with {{arma1}}, does not refer to any other titles.
+
+See also:
+* [[createTarget]]
+* [[moveTarget]]
+* [[deleteTarget]]
+<!-- [[Category:Data Types]] -->

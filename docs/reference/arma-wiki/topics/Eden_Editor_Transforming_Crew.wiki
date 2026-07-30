@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Transforming_Crew
+// revision: 352230 (2024-02-01T23:26:09Z)
+// export sha1: qa7dp4h9woommm6nh4lja4y5l9ootwt
+// categories: Category:Eden Editor: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Overview ==
+Characters can become vehicle crew members, while still being independently editable entities.
+The available vehicle roles are:
+* [[File:3den crew driver.png]] '''Driver / Pilot''' - controls vehicle movement
+* [[File:3den crew commander.png]] '''Commander''' - can issue orders to other crew members.
+* [[File:3den crew turret.png]] '''Turret''' - any other active crew member, such as the gunner, co-pilot, or passenger with the ability to shoot from the vehicle
+* [[File:3den crew cargo.png]] '''Passenger''' - passive role, just takes a ride
+
+== Crew in the editor interface ==
+When you hover over a vehicle, a panel with all the crew icons will be shown next to the vehicle's icon.
+[[File:3den crewInfo.gif|center]]
+
+
+The additional icon is shown on the crew members which are rendered in the scene (i.e., the car driver, but not a tank driver who is hidden inside).
+[[File:3den crewIcons.gif|center]]
+
+== Moving crew into a vehicle ==
+To move a character into a vehicle, '''drag it''' onto the vehicle's icon or model. If there is no space left, the character will only be moved to the vehicle's position.
+{{Feature|informative|You will be notified when attempting to drag a character into an enemy vehicle. While it is possible, it can cause problems in the scenario.}}
+[[File:3den crewMoveIn.gif|center]]
+
+== Removing crew from a vehicle ==
+To move the character out, drag its icon out again.
+[[File:3den crewMoveOut.gif|center]]
+
+== Changing Seats ==
+You can change the seat of a crew member. Click '''right mouse button''' on the crew member, expand '''Change Seat''' option and pick the new seat from the list.
+If someone else is sitting on the desired seat, the crew members will swap seats.
+[[File:3den_crewSeat.gif|center]]
+
+[[Category:Eden Editor: Editing|Transforming Crew]]

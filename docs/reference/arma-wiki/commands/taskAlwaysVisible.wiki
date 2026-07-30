@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/taskAlwaysVisible
+// revision: 339143 (2023-04-26T10:55:03Z)
+// export sha1: ewayfpf1a9a2kyxfln9vaqxcu7bsbbj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Briefing
+
+|descr= Returns true if the task is flagged to be always visible or false if not.
+
+|s1= [[taskAlwaysVisible]] task
+
+|p1= task: [[Task]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_isAlwaysVisible = taskAlwaysVisible (currentTask player);</sqf>
+
+|seealso= [[setSimpleTaskAlwaysVisible]] [[taskType]] [[BIS_fnc_taskSetAlwaysVisible]] [[BIS_fnc_taskAlwaysVisible]] [[Arma 3: Task Framework#Task Overhaul|Tasks Overhaul]]
+}}

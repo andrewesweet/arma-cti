@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/setWindStr
+// revision: 370475 (2024-12-16T18:10:00Z)
+// export sha1: 6crwnu2sy7l1b1x39udzs6teyfns5dt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|descr= Changes the wind strength smoothly during the given time (in seconds). A time of zero means there will be an immediate change.
+
+|s1= time [[setWindStr]] value
+
+|p1= time: [[Number]]
+
+|p2= value: [[Number]] - new value in range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>60 setWindStr 0.8; // set the wind strength to 0.8 gradually over the next 60 seconds</sqf>
+
+|seealso= [[setWind]] [[setWindForce]]
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20220801093946
+|text= This weird command affects `setFog` by limiting maximum number of fogValue you can have. If you do <sqf inline>0 setWindStr 1</sqf>, setting any fog with time > 0 will reduce the fog to 0 over provided time. Setting fog instantly with time = 0 will set the desired value properly though. The formula is: max fogValue = 1 - windStr
+}}

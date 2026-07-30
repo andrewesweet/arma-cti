@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/moveToCompleted
+// revision: 369921 (2024-10-19T12:27:30Z)
+// export sha1: dsspge79puko3nf7vvx4oehbwdlmx7v
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Unit Control
+
+|descr= Check if latest low level moveTo command is finished. Returns true if given AI pilot unit state == COMPLETED
+
+|s1= [[moveToCompleted]]  person
+
+|p1= person: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_isCompleted = moveToCompleted _unit;</sqf>
+
+|seealso= [[moveTo]] [[moveToFailed]]
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20220402203147
+|text= This command can also check the status of [[doMove]] and [[commandMove]] (A3 2.08.149102)
+This is handy to make your script wait until a unit has moved to some position:
+<sqf>waitUntil {moveToCompleted _unit};</sqf>
+}}

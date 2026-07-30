@@ -1,0 +1,89 @@
+// source: https://community.bistudio.com/wiki/inheritsFrom
+// revision: 349770 (2023-11-20T22:10:08Z)
+// export sha1: t9ga86d91lsrm2h4u1llj4xrwi4fx2b
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Config
+
+|descr= Returns base entry of config entry.
+
+|s1= [[inheritsFrom]] config
+
+|p1= config: [[Config]]
+
+|r1= [[Config]]
+
+|x1= <sqf>_base = inheritsFrom (configFile >> "CfgVehicles" >> "Car"); // returns "LandVehicle" Config entry</sqf>
+
+|x2= [[File:inheritsFrom.jpg|right|300px]]
+Print parent tree of given config class:
+<sqf>
+fnc_printParents =
+{
+	disableSerialization;
+	if (!isClass _this) exitWith { hint "Argument is not a config Class" };
+
+	private _parents = [];
+
+	while { !isNull _this } do
+	{
+		_parents pushBack configName _this;
+		_this = inheritsFrom _this;
+	};
+
+	reverse _parents;
+
+	private _tv = findDisplay 46 createDisplay "RscDisplayEmpty" ctrlCreate ["RscTree", -1];
+	_tv ctrlSetPosition [0,0,1,1];
+	_tv ctrlSetBackgroundColor [0,0,0,0.5];
+	_tv ctrlCommit 0;
+
+	private _path = [];
+	{
+		_tv tvAdd [_path, _x];
+		_path pushBack 0;
+	}
+	forEach _parents;
+
+	tvExpandAll _tv;
+};
+
+// Example:
+(configFile >> "CfgVehicles" >> typeOf player) call fnc_printParents;
+</sqf>
+
+|seealso= [[configFile]] [[a / b]] [[configName]] [[count]] [[getArray]] [[getText]] [[getNumber]] [[isArray]] [[isClass]] [[isNumber]] [[isText]] [[select]] [[configHierarchy]] [[isKindOf]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140402171100
+|text= (A3 1.14) Use [[BIS_fnc_returnParents]] if a parents' collection of the given entry is needed.
+<sqf>
+[configFile >> "CfgVehicles" >> "Land_Atm_02_F", true] call BIS_fnc_returnParents;
+// return: ["Land_Atm_02_F", "House_Small_F", "House_F", "House", "HouseBase", "NonStrategic", "Building", "Static", "All"]
+</sqf>
+Not all entries have parent, and please differ parents from path.
+<sqf>
+inheritsFrom (configFile >> "CfgUIColors" >> "IGUI" >> "Presets" >> "PresetA1" >> "Variables");
+// return: Nothing
+</sqf>
+}}

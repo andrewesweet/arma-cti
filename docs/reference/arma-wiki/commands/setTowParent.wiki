@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/setTowParent
+// revision: 373896 (2025-06-26T11:04:54Z)
+// export sha1: f7b7klisaeuse85bnqzcvmg97rjtv20
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: PhysX | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|arg= local
+|eff= global
+
+|descr=
+{{{!}} class="wikitable float-right align-center-col-2 align-center-col-3"
+! Simulation
+! Towable
+! Can Tow
+{{!}}-
+{{!}} CarX
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|checked}}
+{{!}}-
+{{!}} TankX
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|checked}}
+{{!}}-
+{{!}} AirplaneX
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|unchecked}}
+{{!}}-
+{{!}} BoatX
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|unchecked}}
+{{!}}}
+
+Allows a vehicle to be towed by another. This loosens the towed vehicle's brakes and turns its steering wheels toward the towing vehicle.
+Supposed to be used together with a rope connecting both vehicles.
+
+|mp= {{Feature|warning|
+If a [[player]] enters the towing vehicle, the towed one will try to change its locality to be local to that [[player]].<!--
+--> This might be problematic if there is another [[player]] already in the towed vehicle.<!--
+--> It is recommended to not have anyone in the towed vehicle!
+}}
+
+|gr1= PhysX
+
+|gr2= Ropes and Sling Loading
+
+|s1= towedVehicle [[setTowParent]] towingVehicle
+
+|p1= towedVehicle: [[Object]] - vehicle of type CarX (no tanks, no aircrafts, no boats)
+
+|p2= towingVehicle: [[Object]] - vehicle of type CarX or TankX (no aircrafts, no boats)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+{ moveOut _x } forEach crew _towedVehicle;	// make sure nobody is in the towed vehicle
+_towedVehicle lock true;					// make sure everybody stays out of it
+ropeCreate [_bobcat, [0,-5,0], _towedVehicle, [0,2,0]];
+_towedVehicle setTowParent _bobcat;
+</sqf>
+
+|seealso= [[getTowParent]] [[ropeCreate]]
+}}

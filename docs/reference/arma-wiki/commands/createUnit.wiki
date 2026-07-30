@@ -1,0 +1,205 @@
+// source: https://community.bistudio.com/wiki/createUnit
+// revision: 377516 (2026-01-02T06:50:26Z)
+// export sha1: a0wmzplazfhletdmamqg6bdvt0j59yj
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.34 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.34
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Create a unit of the provided [[:Category:CfgVehicles|CfgVehicles]] class.
+
+{{Feature|warning|
+The unit will not be created if the passed group does not exist (a.k.a [[grpNull]]);
+this can happen if [[createGroup]] fails because the '''group limit has been reached''' (see [[createGroup]] for respective game limits).
+}}
+
+{{{!}} class="wikitable" style="width: 100%"
+!
+! style="width: 50%" {{!}} {{Link|#Syntax 1}}
+! style="width: 50%" {{!}} {{Link|#Syntax 2}}
+{{!}}-
+! Group's&nbsp;locality
+{{!}} the provided group ''can'' be non-[[Multiplayer Scripting#Locality|local]], but a warning will be logged
+{{!}} the provided group '''must''' be [[Multiplayer Scripting#Locality|local]]
+{{!}}-
+! Unit's [[side]]
+{{!}} using a classname from a different side than the provided group will result in the unit itself being of a (config-defined) side inside a group of another side - see {{Link|#Example 6}} for more information
+{{!}} using a classname from a different side than the provided group will result in the unit being of the same side as the provided group
+{{!}}-
+! Other
+{{!}} the unit's init code will execute after a slight delay if the provided group is not local
+{{!}} this syntax does '''not''' return a reference to the created unit (see {{Link|#Example 7}})
+{{!}}}
+
+{{Feature|arma1|
+{{GVI|ofp|1.34}} {{GVI|arma1|1.00}} This command was sometimes bugged in {{ofp}} or {{arma1}}; an additional [[join]] may solve the problem.<br>
+However, some commands such as [[setUnitPos]] only work if run before the [[join]].
+}}
+
+|mp= It is recommended to create the unit where the group is '''[[Multiplayer Scripting#Locality|local]]''' - use [[remoteExec]] if needed.
+
+|s1= group [[createUnit]] [type, position, markers, placement, special]
+
+|p1= group: [[Group]] - existing group new unit will join; if the group is not [[local]], a warning will be logged
+
+|p2= type: [[String]] - classname of unit to be created as per [[CfgVehicles]]
+
+|p3= position: [[Object]], [[Group]] or [[Position]] or [[Position#Introduction|Position2D]] - location where to create the unit. In case of [[Group]], the [[group]] [[leader]]'s position is used. The Z component of the position is ignored and the unit is always placed on the surface.
+
+|p4= markers: [[Array]] - placement markers
+
+|p5= placement: [[Number]] - placement radius
+
+|p6= special: [[String]] - unit placement special, one of:
+* {{hl|"NONE"}} - The unit will be created at the first available free position nearest to given position
+* {{hl|"FORM"}} - Not implemented, currently functions the same as "NONE"
+* {{hl|"CAN_COLLIDE"}} - The unit will be created exactly at the provided position
+* {{hl|"CARGO"}} - The unit will be created in cargo of the group's vehicle, regardless of the passed position (see {{Link|#Example 5}}).<!--
+--> If group has no vehicle or there is no cargo space available, the unit will be placed according to {{hl|"NONE"}}.<!--
+--> {{hl|"CARGO"}} placement excludes cargo positions with personal FFV turrets. To check available cargo space use:
+{{{!}} style="width: 100%"
+! {{GVI|arma3|1.34}} FFV
+{{!}} <sqf>private _hasCargo = { isNull (_x select 0) } count (fullCrew [_veh, "cargo", true]) > 0;</sqf>
+{{!}}-
+! before
+{{!}} <sqf>_hasCargo = _veh emptyPositions "CARGO" > 0;</sqf>
+{{!}}}
+
+|r1= [[Object]] - the created unit
+
+|s2= type [[createUnit]] [position, group, init, skill, rank]
+
+|p21= type: [[String]] - classname of unit to be created as per [[CfgVehicles]]
+
+|p22= position: [[Object]], [[Group]] or [[Position]] or [[Position#Introduction|Position2D]] - location at which the unit is created. In case of [[Group]] position of the [[group]] [[leader]] is used
+
+|p23= group: [[Group]] - existing group the new unit will join
+
+|p24= init: [[String]] - (Optional, default "") unit init statement, similar to unit init field in the editor. The code placed in unit init will run upon unit creation for every client on network, present and future.
+The code itself receives the reference to the created unit via local variable [[Magic Variables#this_2|this]].
+{{Feature|warning|
+* Do not use global effect commands in a unit's ''init'' as it runs on every client (local effect ones are OK, e.g [[setIdentity]]).
+* Do not use local variables inside the init code as they are not available in multiplayer.}}
+ 
+
+|p25= skill: [[Number]] - (Optional, default 0.5) unit [[skill]]
+
+|p26= rank: [[String]] - (Optional, default "PRIVATE") unit [[rank]]
+
+|r2= {{Feature|warning|'''[[Nothing]]''' - this syntax does '''not''' return a unit reference! See {{Link|#Example 7}} for a workaround.}}
+
+|x1= <sqf>_unit = group player createUnit ["B_RangeMaster_F", position player, [], 0, "NONE"];</sqf>
+
+|x2= <sqf>"B_RangeMaster_F" createUnit [position player, group player];</sqf>
+
+|x3= <sqf>"B_RangeMaster_F" createUnit [getMarkerPos "barracks", _groupAlpha];</sqf>
+
+|x4= <sqf>
+"B_RangeMaster_F" createUnit [
+	getMarkerPos "marker_1",
+	_groupAlpha,
+	"loon1 = this; this addWeapon 'BAF_L85A2_RIS_SUSAT'",
+	0.6,
+	"corporal"
+];
+</sqf>
+
+|x5= <!-- referenced in parameters (p6) -->
+<sqf>
+_veh = "O_Quadbike_01_F" createVehicle (player getRelPos [10, 0]);
+_grp = createVehicleCrew _veh;
+_unit = _grp createUnit [typeOf driver _veh, _grp, [], 0, "CARGO"];
+</sqf>
+
+|x6= <!-- referenced in the description -->Creating a unit from a different side may lead to issues:
+<sqf>
+_grp = createGroup east;
+hint str side _grp; // EAST
+_ap = _grp createUnit ["C_man_p_beggar_F", position player, [], 0, "NONE"];
+hint str side _ap; // CIV, not EAST
+
+// workaround
+[_ap] joinSilent _grp;
+hint str side _ap; // EAST
+</sqf>
+
+|x7= <!-- referenced in alternative result (r2) -->
+Reference the created unit through a global variable:
+<sqf>
+_myUnit = "B_RangeMaster_F" createUnit [position player, group player];			// wrong - this syntax does not return a reference
+
+"B_RangeMaster_F" createUnit [position player, group player, "myUnit = this"];	// correct - the unit is myUnit (NOT _myUnit!)
+</sqf>
+
+|seealso= [[createCenter]] [[createGroup]] [[createVehicle]] [[setVehiclePosition]] [[create3DENEntity]]
+}}
+
+{{Note
+|user= oOKexOo
+|timestamp= 20181208215700
+|text= Since {{GVI|arma3|1.86}}: If you want to place a module with [[createUnit]], you have to ensure that the module gets activated automatically by setting '''[[BIS_fnc_initModules]]_disableAutoActivation''' to [[false]], ''e.g'':
+<sqf>
+private _grp = createGroup sideLogic;
+"ModuleSmokeWhite_F" createUnit [
+	getPos player,
+	_grp,
+	"this setVariable ['BIS_fnc_initModules_disableAutoActivation', false, true];"
+];
+</sqf>
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20190318193100
+|text= Alt Syntax is the older syntax and differs in functionality from the main, newer syntax. The main difference is that the older syntax '''does not''' return unit reference.
+This is because the unit created with Alt Syntax is created strictly where passed [[group]] is [[Multiplayer Scripting#Locality|local]].
+This means that if the group is remote the unit will be created on the different client than the one the command was executed on and therefore it is not possible to return created unit reference immediately.
+In contrast, the newer syntax allows creating units in remote groups while returning unit reference immediately, which could be unsafe and the appropriate warning is logged into ''.rpt'' file: {{hl|Warning: Adding units to a remote group is not safe. Please use [[setGroupOwner]] to change the group owner first.}}<br><br>
+Another very important difference is that the older syntax (Alt Syntax) will create unit of the same [[side]] as the side of the [[group]] passed as argument.
+For example, if the group is WEST and the unit faction is OPFOR of type, say {{hl|"O_Soldier_GL_F"}}, the unit created will be on the WEST side as well.
+In contrast, newer syntax will create the same unit on the EAST side in the WEST group, which will be treated as hostile by other group members and eliminated.
+{{Feature|warning|
+Beware that in MP if unit is created in remote group with older syntax, the unit init will execute on calling client sometime in the future, after the unit is created on remote client, therefore the following code will fail:
+<sqf>
+// real example of the bad code
+"O_Soldier_AR_F" createUnit [position player, someRemoteGroup, "thisUnit = this"];
+publicVariable "thisUnit";
+hint str isNil "thisUnit"; // true!
+// the unit reference is nil because init statement has not been executed on this client yet
+</sqf>
+}}
+}}
+
+{{Note
+|user= fusselwurm
+|timestamp= 20200619101300
+|text= {{GVI|arma3|1.98}} note that even when setting the ''placement special'' parameter to "NONE", 3DEN-placed objects are being ignored when looking for a free position.
+In other words: units will spawn within editor-placed rocks or under houses.
+}}

@@ -1,0 +1,77 @@
+// source: https://community.bistudio.com/wiki/getVideoOptions
+// revision: 376476 (2025-10-17T09:37:32Z)
+// export sha1: fww616c0ica7ie2i92dvx3xvch3rh8o
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|gr1= System
+
+|descr= Obtain the current system's video settings.
+
+|s1= [[getVideoOptions]]
+
+|r1= [[HashMap]] - all video settings, the key is always a [[String]], the value can be a [[String]], [[Number]], [[Boolean]] or [[Array]] (see {{Link|#Example 1}}).
+{{Feature|important|{{hl|vramInfo}} and {{hl|monitorResolution}} keys presence is not guaranteed.}}
+
+|x1= <sqf>
+private _videoOptions = getVideoOptions;
+/*
+[
+	["aspectRatioName", "Auto (Stretch)"],
+	["brightness", 1.1],
+	["cloudQualityName", "VeryHigh"],
+	["displayModeName", "FullScreenWindow"],
+	["dynLightsCount", 32],
+	["dynLightsQualityName", "VeryHigh"],
+	["gamma", 1],
+	["guiScale", 0.7],
+	["guiScaleName", "Normal"],
+	["hdrQuality", 16],
+	["hdrQualityName", "Normal"],
+	["monitorResolution", [0, 0, 2304, 1440]],							// presence not guaranteed [x, y, width, height]
+	["objectVisibility", 6000],
+	["objQualityName", "VeryHigh"],
+	["overallPresetName", "Custom"],
+	["overallVisibility", 8000],
+	["overrideHazeQuality", -1],
+	["particleQualityName", "High"],
+	["pipQuality", 2048],
+	["pipQualityName", "VeryHigh"],
+	["pipVisibility", 3000],
+	["ppBloom", 1],
+	["ppBrightness", 1],
+	["ppCausticsQualityName","Enabled"],								// fixed in 2.18
+	["anisotropicFiltering","VeryHigh"],								// fixed in 2.18
+	["atocQuality","All"],												// fixed in 2.18
+	["ppColorPresetName", "Custom"],
+	["ppContrast", 1],
+	["ppDOF", 1],
+	["ppFSAA", 1],
+	["ppHazeQualityName", "Standard"],
+	["ppPPAAQualityName", "CMAANormal"],
+	["ppRadialBlur", 1],
+	["ppRotationBlur", 1],
+	["ppSaturation", 1.25],
+	["ppSharpenFilter", 0.75],
+	["ppSSAOQualityName", ""],
+	["refreshRate", 60],
+	["samplingPercentage", 100],
+	["shadowQualityName", "VeryHigh"],
+	["shadowVisibility", 200],
+	["terrainQuality", 3.125],
+	["terrainQualityName", "VeryHigh"],
+	["texQualityName", "VeryHigh"],
+	["vramInfo", ["5.9 GiB", "16 GiB", "0 B", "978 MiB", "5.6 GiB"]],	// presence not guaranteed [installedVram, sharedVram, systemVram(, used, max)]
+	["vsync", true],
+	["waterReflectionQualityName", "High"]
+]
+*/
+</sqf>
+
+|seealso= [[getResolution]] [[getAudioOptionVolumes]] [[getSubtitleOptions]] [[getMissionOptions]]
+}}

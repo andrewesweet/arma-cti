@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Module:_Cover_Map
+// revision: 378272 (2026-03-30T16:29:55Z)
+// export sha1: 9b5aree1drmcedctltsy12bk0eiv92l
+// categories: Category:Arma 3: Editor Modules
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:CoverMapExample1.png|thumb|In-editor appearance|280px]]
+[[File:CoverMapExample2.png|thumb|In-game appearance|280px]]
+Highlights area of operation in the map by enclosing it and covering the unused part.
+
+
+== Synchronisation Chart ==
+
+{| class="valign-top"
+| [[File:CoverMapModule1.png]]
+| [[File:CoverMapModule2.png]]
+|-
+| [[File:CoverMapModule3.png]]
+| [[File:CoverMapModule4.png]]
+|}
+
+
+{{GameCategory|arma3|Editor Modules}}

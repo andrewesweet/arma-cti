@@ -1,0 +1,87 @@
+// source: https://community.bistudio.com/wiki/setVectorUp
+// revision: 377596 (2026-01-02T07:00:50Z)
+// export sha1: 8j9fa6bolughox1fb9py31n0v6zm78p
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= local
+|eff= global
+
+|gr2= Math - Vectors
+
+|descr= Set object's up vector. Direction of the object remain unchanged. Default object's [[vectorUp]] is [0,0,1].
+
+|s1= object [[setVectorUp]] vectorUp
+
+|p1= object: [[Object]]
+
+|p2= vectorUp: [[Vector3D]] (normalised)
+
+|r1= [[Nothing]]
+
+|x1= Turn object upside down:
+<sqf>_obj setVectorUp [0, 0, -1];</sqf>
+
+|x2= Align object with the terrain underneath:
+<sqf>_obj setVectorUp surfaceNormal getPosASL _obj;</sqf>
+
+|seealso= [[vectorDir]] [[vectorUp]] [[setVectorDir]] [[setVectorDirAndUp]] [[vectorDiff]] [[vectorAdd]] [[vectorMultiply]] [[vectorCrossProduct]] [[vectorDistance]] [[vectorMagnitudeSqr]] [[vectorDistanceSqr]] [[vectorCos]] [[vectorMagnitude]] [[vectorDotProduct]] [[vectorNormalized]] [[vectorFromTo]]
+}}
+
+{{Note
+|user= General Barron
+|timestamp= 20090303210700
+|text= [[setVectorUp]] can only influence an object's bank. It can not influence pitch. Example:
+<sqf>player setVectorUp [0, 1, 0]</sqf>
+If the player is facing 0 degrees (north), then this will do NOTHING.<br>
+If the player is facing 90 degrees (east), then this will make him bank 90 degrees to his left.
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20070322050700
+|text= An in-depth discussion on the concept of vectors is available {{Link|http://forums.bistudio.com/showthread.php?t{{=}}50914|here}}.
+}}
+
+{{Note
+|user= Str
+|timestamp= 20080316094900
+|text= Command can be also used to rotate camera in all three axis (which also mean it is possible to set camera bank).
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20131003090400
+|text= It is possible to change both pitch and bank of an object ([[surfaceNormal]] application for instance).
+Assuming an ammo box in the following example is facing North (default direction is 0):
+<sqf>
+_ammobox setVectorUp [0, 1, 0]; // box is pitched 90 degrees forward
+_ammobox setVectorUp [1, 0, 0]; // box is banked 90 degrees to the right
+</sqf>
+However the above will stop working as soon as you attach the box to something. The following trick however will work in this case:
+<sqf>
+_ammobox attachTo [player, [0, 2, 1]];
+_ammobox setVectorUp [0, 0.99, 0.01]; // box is pitched ~90 degrees forward
+_ammobox setVectorUp [0.99, 0, 0.01]; // box is banked ~90 degrees to the right
+</sqf>
+}}

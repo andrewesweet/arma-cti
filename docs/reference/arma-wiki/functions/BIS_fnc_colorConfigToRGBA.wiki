@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_colorConfigToRGBA
+// revision: 327483 (2022-07-12T22:17:18Z)
+// export sha1: rr7kq02yolocwb4o4tdqzul8dwphkuv
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Arrays
+
+|descr= Converts config color format to RGBA array of numbers.
+
+|s1= configColor call [[BIS_fnc_colorConfigToRGBA]]
+
+|p1= configColor: [[Array]] - config color
+
+|r1= [[Array]] format [[Color|Color (RGBA)]]
+
+|x1= <sqf>["0.5 + 0.25",0,0,1] call BIS_fnc_colorConfigToRGBA; // returns [0.75,0,0,1]</sqf>
+
+|seealso= [[Color|Color (RGBA)]] [[BIS_fnc_colorRGBtoHTML]] [[BIS_fnc_colorRGBAtoHTML]] [[BIS_fnc_colorRGBAtoTexture]]
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/set3DENLogicType
+// revision: 310924 (2022-05-07T20:45:59Z)
+// export sha1: l73nuwnbgh8tv9krrpbkdy78ayxybde
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Eden Editor
+
+|descr= Sets the new type of Logic object(s). For other objects use [[set3DENObjectType]].
+
+|s1= objects [[set3DENLogicType]] classname
+
+|p1= objects: [[Array]] of [[Object]]s
+
+|p2= classname: [[String]] - name of the cfgVehicles class
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[get3DENSelected "logic" select 0] set3DENLogicType "MiscOR_F";</sqf>
+
+|seealso= [[set3DENObjectType]] [[get3DENMouseOver]] [[add3DENConnection]] [[add3DENEventHandler]] [[all3DENEntities]] [[collect3DENHistory]] [[create3DENComposition]] [[create3DENEntity]] [[current3DENOperation]] [[delete3DENEntities]] [[do3DENAction]] [[get3DENActionState]] [[get3DENAttribute]] [[get3DENCamera]] [[get3DENConnections]] [[get3DENEntityID]] [[get3DENGrid]] [[get3DENIconsVisible]] [[get3DENLinesVisible]] [[get3DENSelected]] [[is3DEN]] [[is3DENMultiplayer]] [[move3DENCamera]] [[remove3DENConnection]] [[remove3DENEventHandler]] [[removeAll3DENEventHandlers]] [[set3DENAttributes]] [[set3DENGrid]] [[set3DENIconsVisible]] [[set3DENLinesVisible]]
+}}

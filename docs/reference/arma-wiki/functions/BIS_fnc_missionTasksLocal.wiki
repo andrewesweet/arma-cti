@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_missionTasksLocal
+// revision: 364502 (2024-05-16T20:42:03Z)
+// export sha1: 9rdr1tkzz6uf7mf8e2tycdj8a22vcva
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Broken Functions | Category:Function Group: Tasks | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|gr2= Broken Functions
+
+|descr= {{Feature|informative|This function is blank and does nothing.}}
+
+|s1= call [[BIS_fnc_missionTasksLocal]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_missionTasksLocal;</sqf>
+
+|seealso= [[Arma 3: Task Framework]] [[BIS_fnc_missionTasks]]
+}}

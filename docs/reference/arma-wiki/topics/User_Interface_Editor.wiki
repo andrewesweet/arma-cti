@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/User_Interface_Editor
+// revision: 244211 (2021-02-07T14:12:26Z)
+// export sha1: 9kele2q4z4mh9cbxekntbkxaxx6934r
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+User Interface Editor may refer to:
+* [[Arma 3: User Interface Editor]]
+* [[Arma 2: User Interface Editor]]

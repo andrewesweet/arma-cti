@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Spectating
+// revision: 349912 (2023-11-20T22:11:05Z)
+// export sha1: m757ibhnu6tmo44ubtr2tscp0ejnfzv
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Spectating ==
+=== Spectating 101 ===
+Spectator camera is a tool for watching the game whilst you cannot or do not want to play directly. It's often available after your death, when you wait for a respawn. It's also available on pre-defined playable slots for users who wish to observe a mission or even stream its progress.
+
+
+=== Camera Controls ===
+* Use '''[Space]''' to switch between unit view and free camera.<br>
+* Use '''[Arrow left]''', '''[Arrow right]''' to scroll through watchable soldiers. The selected one is marked with an icon [[File:a3_fm_select.png|24px]].<br>
+* Tap '''[M]''' to open the map. <br>
+* Clicking '''[LMB]''' anywhere on the map will move the free camera under the cursor position.<br>
+* Press '''[N]''' to toggle night vision.
+
+''Use '''[Ctrl + F1–F10]''' to save the currently selected soldier.<br>
+Press '''[F1–F10]''' to recall to a saved soldier.''
+
+
+=== Camera Views ===
+Use '''[Enter [NUM]]''', '''[Hold Sec. Mouse Btn.]''' or '''[. [NUM]]''' to switch between camera views. This is consistent with other views in the game.
+
+
+=== Camera Free View ===
+* Move the camera with '''[W]''', '''[A]''', '''[S]''', '''[D]''', '''[Q]''' and '''[Z]'''.<br>
+* Use mouse and Numpad numbers to look around.<br>
+* Tap '''[Num *]''' to toggle between moving and looking around with the mouse.<br>
+* Press '''[Delete]''' to toggle a floating mode.<br>
+* Use '''[F]''' to focus the camera on a cursor target or a position.<br>
+* Press '''[L]''' to hide the crosshair.<br>
+* Tap '''[Left Alt]''' to move the camera to selected unit's position.
+
+''Use '''[Ctrl + 0–9]''' to save current camera coordinates.<br>
+Press '''[0–9]''' to load saved camera coordinates.''
+
+
+{{GameCategory|arma3|Field Manual}}

@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/say2D
+// revision: 364817 (2024-06-16T09:10:27Z)
+// export sha1: bvou7x52e451ty538k120scv09eer1t
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Sounds
+
+|descr= Plays given sound in 2D.
+
+|s1= from [[say2D]] sound
+
+|p1= from: One of
+* [[Object]] - the sound source
+* [[Array]] with [from, to]
+** from: [[Object]] - sound source
+** to: [[Object]] - target
+
+|p2= sound: One of
+* [[String]] - class name of the sound to be played. Defined in CfgSounds including [[Description.ext]]
+* [[Array]] with [sound, maxTitlesDistance, speed]
+** sound: [[String]] - class name of the sound to be played. Defined in CfgSounds including [[Description.ext]]
+** maxTitlesDistance: [[Number]] (Optional, default 100) - max. distance in meters at which the sound can be heard
+** speed: [[Number]] (Optional, default 1) - pitch of the sound
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player say2D "HelloThere";</sqf>
+
+|x2= <sqf>[player, _officer] say2D ["HelloThere", 50, 0.9];</sqf>
+
+|seealso= [[say]] [[say3D]] [[playSound]] [[createSoundSource]] [[playSoundUI]]
+}}

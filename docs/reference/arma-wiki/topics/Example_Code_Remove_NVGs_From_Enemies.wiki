@@ -1,0 +1,77 @@
+// source: https://community.bistudio.com/wiki/Example_Code:_Remove_NVGs_From_Enemies
+// revision: 364504 (2024-05-16T20:42:04Z)
+// export sha1: mkg2h7pie3oep08xqc7pwls60hh6zo1
+// categories: Category:Example Code
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+{{ArgTitle|2|{{arma3}}|{{GVI|arma3|2.02}}}}
+{{Feature | Informative |
+* [[units]] ''side'' has been introduced in {{GVI|arma3|2.02}}
+}}
+
+<sqf>
+{
+	_x unlinkItem hmd _x;										// removal of each unit's hmd
+} forEach units opfor;											// code is to be executed for each enemy
+</sqf>
+
+
+{{ArgTitle|2|{{arma3}}|{{GVI|arma3|1.56}}}}
+{{Feature | Informative |
+* [[opfor]] has been introduced in {{GVI|arma3|0.50}}
+* <sqf inline>_array select _code</sqf> has been introduced in {{GVI|arma3|1.56}}
+}}
+
+<sqf>
+private _enemySide = opfor;										// definition of the enemy side
+private _enemies = allUnits select { side _x == _enemySide; };	// selection of all enemy units from allUnits
+{
+	_x unlinkItem hmd _x;										// removal of each unit's hmd
+} forEach _enemies;												// code is to be executed for each enemy
+</sqf>
+
+
+{{ArgTitle|2|{{arma2}}|{{GVI|arma2|1.00}}}}
+{{Feature | Informative |
+* [[allUnits]] has been introduced in {{GVI|arma2|1.00}}
+}}
+
+<sqf>
+private "_enemySide";					// private definition of the _enemySide variable
+_enemySide = east;						// value attribution to _enemySide
+{
+	if (side _x == _enemySide) then		// if the unit is on the _enemySide, process the next step
+	{
+		_x removeWeapon "NVGoggles";	// removal of the enemy unit's NVG
+	}
+} forEach allUnits;						// going through -all- units
+</sqf>
+
+
+{{ArgTitle|2|{{arma1}}&nbsp;/&nbsp;{{ofpr}}|{{GVI|arma1|1.00}}&nbsp;{{GVI|ofpr|1.85}}}}
+{{Feature | Informative |
+* [[SQF Syntax]] has been introduced in {{GVI|ofpr|1.85}}
+}}
+
+<sqf>
+private "_enemySide";					// private definition of the _enemySide variable
+_enemySide = east;						// value attribution to _enemySide
+{
+	if (side _x == _enemySide) then		// if the unit is on the _enemySide, process the next step
+	{
+		_x removeWeapon "NVGoggles";	// removal of the enemy unit's NVG
+	}
+} forEach _unitsArray;					// going through provided units - allUnits has been introduced in Arma 2
+</sqf>
+
+
+{{ArgTitle|2|{{ofp}}|{{GVI|ofp|1.00}}}}
+{{Feature|informative|This is an [[SQS Syntax]] example.}}
+<sqs>
+; remove its NVG for each provided enemy units
+"_x removeWeapon ""NVGoggles""" forEach _enemyUnitsArray
+</sqs>
+
+
+[[Category: Example Code]]

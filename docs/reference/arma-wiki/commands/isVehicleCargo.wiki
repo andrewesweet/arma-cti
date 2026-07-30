@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/isVehicleCargo
+// revision: 349517 (2023-11-08T17:15:53Z)
+// export sha1: cg6ne0ajp71vsbun5u4qm63aertwayv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle in Vehicle Transport | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Vehicle in Vehicle Transport
+
+|descr= Despite a misleading name, returns the vehicle that is transporting given vehicle in cargo. If the given vehicle is not in vehicle cargo, [[objNull]] is returned.
+
+|s1= [[isVehicleCargo]] cargo
+
+|p1= cargo: [[Object]] - vehicle in cargo
+
+|r1= [[Object]] - transporting vehicle
+
+|x1= Blackfish with given variable name blackfish, with a vehicle inside called quad
+<sqf>_transportingVehicle = isVehicleCargo quad; //returns blackfish</sqf>
+|x2= Vehicle called quad that is not being transported as cargo
+<sqf>_transportingVehicle = isVehicleCargo quad; //returns objNull</sqf>
+
+|seealso= [[Arma 3: Vehicle in Vehicle Transport| Vehicle in Vehicle Transport]] [[canVehicleCargo]] [[setVehicleCargo]] [[enableVehicleCargo]] [[getVehicleCargo]] [[vehicleCargoEnabled]]
+}}

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/roleDescription
+// revision: 329074 (2022-07-21T23:46:21Z)
+// export sha1: gn2zj1o7u0mv7q7yxt4zcuncvd6e5n2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.48
+
+|gr1= Object Manipulation
+
+|gr2= Multiplayer
+
+|descr= Returns unit description set in the editor and visible on role selection screen in multiplayer.
+
+|pr= '''Does not''' work in single player.
+
+|s1= [[roleDescription]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[String]]
+
+|x1= <sqf>_playerRole = roleDescription player;</sqf>
+
+|seealso= [[name]] [[getPlayerUID]] [[vehicleVarName]] [[worldName]] [[briefingName]] [[missionName]] [[serverName]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150629120500
+|text= One thing you should know about roles. When switching to units placed in editor on the fly in MP, it could mess up the role of the player. Could be bug, could be intended, but I would not recommend doing this. Create new unit dynamically if you need to switch to. Anyway, if role of the unit is messed up so is [[roleDescription]]. 
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20170526011000
+|text= [[roleDescription]] works for playableUnits only. That means not on AI disabled in lobby and not in SP (even for player).
+}}

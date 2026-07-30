@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/clearRadio
+// revision: 370204 (2024-11-06T23:34:35Z)
+// export sha1: d61zqzs0zfkv6x5xnqtruc64q8jc96c
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|eff= local
+
+|gr1= Radio and Chat
+
+|descr= Clean up the content of radio protocol history.
+
+|s1= [[clearRadio]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+for "_i" from 3 to 1 step -1 do
+{
+	systemChat format ["The chat history will disappear in %1", _i];
+	sleep 1;
+};
+
+clearRadio;			// removes previous messages
+enableRadio false;	// disables the chat
+</sqf>
+
+|seealso= [[enableRadio]]
+}}

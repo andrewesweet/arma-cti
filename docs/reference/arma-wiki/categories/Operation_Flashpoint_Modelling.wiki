@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Modelling
+// revision: 227163 (2021-01-31T18:55:40Z)
+// export sha1: t652tu9haxqga8s5bkiu5k2esofv4o4
+// Vendored snapshot. Do not edit — re-export instead.
+
+Operation Flashpoint has a wide range of vehicles and other models available in-game. However, many fans wanted to expand the OFP experience with different aspects of war and other fun modifications. Bohemia Interactive responded and have created their own modelling tools called [[Oxygen Light]] (or O² for short), and a model previewer called [[Oxygen Viewer|Oxygen Viewer]] (also referred to as ''Buldozer'').
+
+If you are looking to learn modelling in OFP then you can view some tutorials and example models on the [http://www.flashpoint1985.com/breathe/ Breathe page] or on the [[Modelling Tutorials | tutorial page]].
+
+
+=== Basic information ===
+Model detail in Operation Flashpoint has practically no limits, but for the sake of keeping game-play fluid staying under 5000 polygons is advisable.
+
+No model in OFP can have more then 32,767 faces or vertices. Vertices somewhat correspond to O² points, but there are usually more vertices than points, due to different UV mapping or Normals.
+
+Flashpoint uses a "[[LOD]]" (Level of Detail) system. The concept of LODs comes down to having different models for different view distances (the greater the distance, the less detailed the model). It is up to the addon designer to create and optimize these model variations. LODs are also used for other purposes, such as identifying solid mass, walkable areas, hitzones, shadows, etc.
+
+Flashpoint uses textures with dimensions that are sized 2^* (such as 32, 64, 128..., up to 4096). Commonly, texture sizes of 512 and 1024 are used. An addon-maker should attempt to use as few textures as possible.
+
+Note: a texture of 512x1024 has a texture ratio of 2 ( 2x512=1024). If the texture ratio gets above 8, chances are that Operation Flashpoint will have trouble dealing with this texture. This is still under investigation after dedicated servers crashed when using an addon which contained such a texture.
+
+{{GameCategory|ofp|Editing}}
+{{GameCategory|arma1|Modelling}}

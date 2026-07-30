@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/get3DENLayerEntities
+// revision: 369163 (2024-09-03T10:34:40Z)
+// export sha1: cmjrcih3tf4i6byif2xczeokkxmv78l
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Return all entities and sub-layer in [[Eden Entity]] layer. In order to get all layer entities during a scenario use [[getMissionLayerEntities]].
+
+|s1= [[get3DENLayerEntities]] layerID
+
+|p1= layerID: [[Number]] - layer ID as returned by [[add3DENLayer]] command
+
+|r1= [[Array]] of [[Eden Entity|Eden Entities]]
+
+|x1= <sqf>
+_myLayer = -1 add3DENLayer "CTRG";
+player set3DENLayer _myLayer;
+_entities = get3DENLayerEntities _myLayer;
+</sqf>
+
+|seealso= [[add3DENLayer]] [[remove3DENLayer]] [[set3DENLayer]] [[getMissionLayerEntities]] [[getMissionLayers]]
+}}

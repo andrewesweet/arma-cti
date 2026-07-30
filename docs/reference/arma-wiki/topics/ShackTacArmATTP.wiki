@@ -1,0 +1,15 @@
+// source: https://community.bistudio.com/wiki/ShackTacArmATTP
+// revision: 339629 (2023-04-28T14:11:56Z)
+// export sha1: etoybfacx6k37dhywehfhgf204gnh2m
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Shack Tactical's ArmA Tactics, Techniques, and Procedures Guide ==
+Released on April 27th, 2007, the {{Link|http://www.dslyecxi.com/armattp.html|Shack Tactical ArmA TTP}} was created to provide "a comprehensive tactical virtual warfighting guide that would both serve as doctrine for the [[Shack Tactical]] community as well as act as a general tactical resource for other groups to learn from and adapt as they see fit". It was used to great success in the [[Shack Tactical]] community throughout 2007 and has continued to provide a strong foundation to the community's tactical cohesion in 2008. 
+
+== In Print ==
+The {{Link|http://www.dslyecxi.com/armattp.html|Shack Tactical ArmA TTP}} is available in printed form via Lulu.com, and can be purchased from {{Link|http://www.lulu.com/dslyecxi|the Dslyecxi storefront}} in either black-and-white or full-color form. 
+
+== Words of Praise ==
+"In our debut PC title Operation Flashpoint and now after a few years in ArmA, we tried to deliver a complex tactical experience, and this guide provides the best summary and advice how to play it in such manner and not only as just another first person shooter. We focused very much on many aspects of simulation that may not be obvious instantly and it is great to see this explanatory and informative resource. This guide also does great job in staying in the boundaries of tactical computer gaming and does not try just to repeat excerpts of real world field manuals which are not always so valuable in the realm of tactical gaming. It is definitelly the most comprehensive overview of various aspects of the simulation provided in ArmA published to date and we at Bohemia Interactive are delighted to see it published just in time for the imminent US release of ArmA."
+
+'''Marek Španěl, CEO of Bohemia Interactive'''

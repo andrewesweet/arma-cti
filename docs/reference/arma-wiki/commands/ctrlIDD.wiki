@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/ctrlIDD
+// revision: 376847 (2025-12-05T16:57:27Z)
+// export sha1: 3wmuhyptgptw8etn73pwxw6ko5mex3j
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= GUI Control
+
+|descr= Returns display IDD.
+
+|s1= [[ctrlIDD]]  display
+
+|p1= display: [[Display]]
+
+|r1= [[Number]]
+
+|x1= <sqf>
+_display = findDisplay 46;
+ctrlIDD _display; // 46
+</sqf>
+
+|seealso= [[displayCtrl]] [[findDisplay]]
+}}

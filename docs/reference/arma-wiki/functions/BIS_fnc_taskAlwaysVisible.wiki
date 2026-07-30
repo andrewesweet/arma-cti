@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskAlwaysVisible
+// revision: 352047 (2024-02-01T23:24:30Z)
+// export sha1: ggn9z28hf1bdzs49sxbtrl760gj44zp
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|arg= global|gr1= Tasks
+
+|descr= Returns [[true]] if task is forced to be always visible (default: [[false]]). {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= taskID call [[BIS_fnc_taskAlwaysVisible]]
+
+|p1= taskID: [[String]] - ID of the task
+
+|r1= [[Boolean]] - returns [[true]] if forced visible, otherwise [[false]]
+
+|x1= <sqf>private _isForcedVisible = "task_1" call BIS_fnc_taskAlwaysVisible;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

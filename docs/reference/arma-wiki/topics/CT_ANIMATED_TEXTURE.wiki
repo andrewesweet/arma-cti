@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/CT_ANIMATED_TEXTURE
+// revision: 170214 (2020-12-02T12:23:56Z)
+// export sha1: bf73646nki2aeckm6ssqlbe5gumen3b
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_ANIMATED_TEXTURE
+|value = 45
+|description = Unknown control type.
+|commands =
+|events =
+}}
+
+{{CT|abc start}}
+=== C ===
+{{CT|attribute
+|name=colorBar
+|type1=Array
+|value1={1,0,0,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorFrame
+|type1=Array
+|value1={0,0,0,1}
+|description=
+}}
+
+=== T ===
+{{CT|attribute
+|name=texture
+|type1=String
+|value1="#(argb,8,8,3)color(0,0,1,1)"
+|description=
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscProgressNotFreeze ===
+<syntaxhighlight lang="cpp">
+class RscProgressNotFreeze
+{
+	deletable = 0;
+	fade = 0;
+	idc = -1;
+	type = 45;
+	style = 0;
+	shadow = 0;
+	x = 0;
+	y = 0;
+	w = 0.5;
+	h = 0.1;
+	texture = "#(argb,8,8,3)color(0,0,0,0)";
+};
+</syntaxhighlight>

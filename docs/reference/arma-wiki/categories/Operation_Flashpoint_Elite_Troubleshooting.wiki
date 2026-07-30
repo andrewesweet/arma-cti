@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Elite:_Troubleshooting
+// revision: 227116 (2021-01-31T18:48:38Z)
+// export sha1: tpnlgtryybuka38m767vm93kuqg834p
+// Vendored snapshot. Do not edit — re-export instead.
+
+
+
+There are very few known problems with Operation Flashpoint: Elite.  If you have the answer to a problem or solution that other players may benifit from then please add some topics.
+
+{{GameCategory|ofpe}}

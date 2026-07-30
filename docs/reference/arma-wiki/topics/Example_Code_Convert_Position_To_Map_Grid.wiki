@@ -1,0 +1,87 @@
+// source: https://community.bistudio.com/wiki/Example_Code:_Convert_Position_To_Map_Grid
+// revision: 378162 (2026-02-28T20:46:00Z)
+// export sha1: 8x10em7qcz92u9ql95o1spo92czfv7y
+// categories: Category:Example Code
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+{{ArgTitle|2|{{arma3}}|{{GVI|arma3|1.00}}&nbsp;{{GVI|arma2|1.04}}}}
+{{Feature|informative|
+* [[mapGridPosition]] has been introduced in {{GVI|arma2|1.04}}
+}}
+
+<sqf>private _mapGridPosition = mapGridPosition player;</sqf>
+
+
+{{ArgTitle|2|{{arma2}}|{{GVI|arma2|1.00}}}}
+{{Feature|informative|
+* [[BIS_fnc_posToGrid]] has been introduced in {{GVI|arma2|1.00}}
+}}
+
+<sqf>local _mapGridPosition = player call BIS_fnc_posToGrid;</sqf>
+
+
+{{ArgTitle|2|{{arma1}}|{{GVI|arma1|1.00}}}}
+{{Feature|informative|
+* [[floor]] has been introduced in {{GVI|arma1|1.00}}
+}}
+
+<sqf>
+private ["_gridSize", "_yOffset", "_xPos", "_yPos"]
+private ["_letter1Index", "_letter2Index", "_letter1Choice", "_letter2Choice", "_letter1", "_letter2"]
+private ["_numbers", "_mapGridPosition"]
+
+_gridSize = 200; // given grid squares are 200 × 200
+_yOffset = -280; // position [0,0,0] is somewhere in the middle of second big grid on Y axis
+
+_xPos = floor ((_this select 0) / _gridSize);
+_yPos = floor (((_this select 1) + _yOffset) / _gridSize);
+
+_letter1Index = floor (_xPos / 10);
+_letter2Index = floor (_xPos % 10);
+_letter1Choice = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+_letter2Choice = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
+_letter1 = _letter1Choice select _letter1Index;
+_letter2 = _letter2Choice select _letter2Index;
+
+_numbers = 100 - _yPos; // coordinate numbers start from top-left of the map
+
+_mapGridPosition = format ["%1%2%3", _letter1, _letter2, _numbers];
+</sqf>
+
+
+{{ArgTitle|2|{{ofp}}|{{GVI|ofp|1.00}}}}
+
+<sqs>
+private ["_gridSize", "_yOffset", "_xPos", "_yPos"]
+private ["_letter1Index", "_letter2Index", "_letter1Choice", "_letter2Choice", "_letter1", "_letter2"]
+private ["_numbers", "_mapGridPosition"]
+
+; given grid squares are 200 × 200
+_gridSize = 200
+
+; position [0,0,0] is somewhere in the middle of second big grid on Y axis
+_yOffset = -280
+
+_xPos = (_this select 0) / _gridSize
+_yPos = ((_this select 1) + _yOffset) / _gridSize
+_xPos = _xPos - (_xPos mod 1)
+_yPos = _yPos - (_yPos mod 1)
+
+_letter1Index = _xPos / 10
+_letter2Index = _xPos % 10
+_letter1Index = _letter1Index - (_letter1Index mod 1)
+_letter2Index = _letter2Index - (_letter2Index mod 1)
+_letter1Choice = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+_letter2Choice = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+_letter1 = _letter1Choice select _letter1Index
+_letter2 = _letter2Choice select _letter2Index
+
+; coordinate numbers start from top-left of the map
+_numbers = 100 - _yPos
+
+_mapGridPosition = format ["%1%2%3", _letter1, _letter2, _numbers]
+</sqs>
+
+
+[[Category:Example Code]]

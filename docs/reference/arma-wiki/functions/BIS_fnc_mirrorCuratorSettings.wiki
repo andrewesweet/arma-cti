@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_mirrorCuratorSettings
+// revision: 352620 (2024-02-16T20:51:49Z)
+// export sha1: 46jrig39o8isp7ug2h4u0z6xy7d03wd
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|serverExec= server
+
+|descr= Mirrors settings from one curator to another.
+
+|s1= [from, to, modes, shareType] call [[BIS_fnc_mirrorCuratorSettings]]
+
+|p1= from: [[Object]] or [[Array]] of objects - curators(s) from which settings are taken
+
+|p2= to: [[Object]] or [[Array]] of objects - curators(s) to which settings are applied to
+
+|p3= modes: [[Array]] of [[String]]s - copy modes, can be:
+* "addons"
+* "objects"
+* "coefs"
+All three modes can be combined.
+
+|p4= shareType: [[Boolean]] - [[true]] to share settings both ways, [[false]] to make second curator slave to the first one
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[
+	[curator_1, curator_2], 
+	[curator_3, curator_4], 
+	["addons", "objects", "coefs"] 
+] call BIS_fnc_mirrorCuratorSettings;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

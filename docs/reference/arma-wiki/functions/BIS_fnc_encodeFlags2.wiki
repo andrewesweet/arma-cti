@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_encodeFlags2
+// revision: 337995 (2023-02-23T21:11:09Z)
+// export sha1: hjmzvrxak22bb2hv142tkdozjgaebxy
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Bitwise | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Bitwise
+
+|descr= Encodes array of unique binary flags (zeroes or ones) into a single scalar.
+{{Feature | important | Note that the input array is in {{Link|https://en.wikipedia.org/wiki/Endianness#Definition|Big Endian}}, meaning that the smallest value is '''to the left'''.}}
+
+|s1= arrayOfNumbers call [[BIS_fnc_encodeFlags2]]
+
+|p1= arrayOfNumbers: [[Array]] of [[Number]]s - "boolean" flags where 0 = false and 1 = true
+
+|r1= [[Number]] - the calculated number
+
+|x1= <sqf>private _result = [1,0,1,1] call BIS_fnc_encodeFlags2;
+hint str _result; // Displays 13</sqf>
+
+|seealso= [[BIS_fnc_encodeFlags]] [[BIS_fnc_encodeFlags4]] [[BIS_fnc_encodeFlags8]]
+[[BIS_fnc_decodeFlags]] [[BIS_fnc_decodeFlags2]] [[BIS_fnc_decodeFlags4]] [[BIS_fnc_decodeFlags8]]
+}}

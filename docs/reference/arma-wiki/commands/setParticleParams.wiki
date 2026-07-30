@@ -1,0 +1,89 @@
+// source: https://community.bistudio.com/wiki/setParticleParams
+// revision: 377766 (2026-01-03T01:02:12Z)
+// export sha1: 8u0hmj6ld5k5v8469arudd7ftvf0hvd
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Particles | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Particles
+
+|descr= Set parameters to particle source. Array is in format [[ParticleArray]]. <br>
+
+Since Arma 3 version 1.11.114706 you can use this command to overwrite many values set by [[setParticleClass]], particularity those defined in [[ParticleArray]]. Correspondence between CfgCloudlets class param names and command array of params:
+<sqf>
+particleSource setParticleParams
+[
+	/*
+		String or Array - If string then the name of the particleShape. And following default values are used:
+			particleFSNtieth = 1
+			particleFSIndex = 0
+			particleFSFrameCount = 1
+			particleFSLoop = 1
+	*/
+	[
+		particleShape,			/* String */
+		particleFSNtieth,		/* Number */
+		particleFSIndex,		/* Number */
+		particleFSFrameCount,	/* Number */
+		particleFSLoop			/* Optional - Number. Default: 1 */
+	],
+	animationName,				/* String */
+	particleType,				/* String - Enum: Billboard, SpaceObject */
+	timerPeriod,				/* Number */
+	lifeTime,					/* Number */
+	pos3D,						/* 3D Array of numbers as relative position to particleSource or (if object at index 18 is set) object. 
+									Or (if object at index 18 is set) String as memoryPoint of object. */
+	moveVelocity,				/* 3D Array of numbers. */
+	rotationVelocity,			/* Number */
+	weight,						/* Number */
+	volume,						/* Number */
+	rubbing,					/* Number */
+	sizeOverLifetime,			/* Array of Numbers */
+	color,						/* Array of Array of RGBA Numbers */
+	animationSpeed,				/* Array of Number */
+	randomDirectionPeriod,		/* Number */
+	randomDirectionIntensity,	/* Number */
+	onTimerScript,				/* String */
+	beforeDestroyScript,		/* String */
+	obj,						/* Object */
+	angle,						/* Optional Number - Default: 0 */
+	onSurface,					/* Optional Boolean - Default: true */
+	bounceOnSurface,			/* Optional Number - Default: -1 */
+	emissiveColor,				/* Optional Array of Array of RGBA Numbers - Default [0,0,0,0] */
+	vectorDirOrVectorDirAndUp	/* Optional vector dir or [vectorDir, vectorUp]
+		Since Arma 3 v1.92 it is possible to set the initial direction of the SpaceObject
+		Since Arma 3 v2.12 it is possible to use a [vectorDir, vectorUp] array */
+];
+</sqf>
+
+|s1= particleSource [[setParticleParams]] array
+
+|p1= particleSource: [[Object]]
+
+|p2= array: [[ParticleArray]]
+
+|r1= [[Nothing]]
+
+|x1= see [[ParticleArray]]
+
+|seealso= [[Arma 3: Particle Effects]] [[ParticleArray]] [[setParticleClass]] [[setParticleRandom]] [[setParticleCircle]] [[setParticleFire]] [[setDropInterval]] [[drop]]
+}}

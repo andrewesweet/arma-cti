@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/setMarkerType
+// revision: 370037 (2024-10-28T20:28:34Z)
+// export sha1: nn7kff0l09wrrkqhby4829dyo5fkbx5
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Markers
+
+|eff= global
+
+|descr= Sets marker type. Marker type is a class name from [[CfgMarkers]].
+{{Feature|informative|
+'''Multiplayer optimisation:''' Global marker commands always broadcast the ''entire'' marker state over the network.
+As such, the number of network messages exchanged when creating or editing a marker can be reduced by performing all but the last operation using local marker commands, then using a global marker command for the last change (and subsequent global broadcast of all changes applied to the marker).
+}}
+
+|s1= markerName [[setMarkerType]] type
+
+|p1= markerName: [[String]]
+
+|p2= type: [[String]] - see [[CfgMarkers]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"MarkerOne" setMarkerType "Warning";</sqf>
+
+|seealso= [[CfgMarkers]] [[setMarkerDrawPriority]] [[setMarkerTypeLocal]] [[markerType]] [[setMarkerAlphaLocal]] [[setMarkerBrush]] [[setMarkerColor]] [[setMarkerDir]] [[setMarkerPos]] [[setMarkerShape]] [[setMarkerSize]] [[setMarkerText]] [[createMarker]]
+}}

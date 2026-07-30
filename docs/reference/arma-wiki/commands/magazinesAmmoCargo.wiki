@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/magazinesAmmoCargo
+// revision: 378412 (2026-04-04T08:33:25Z)
+// export sha1: 199os30217ni5ctscwvhdj6u3dwt949
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr1= Vehicle Inventory
+
+|descr=Returns an array of subarrays with the type names and ammo left of all the vehicle's cargo or container magazines.
+
+|s1= [[magazinesAmmoCargo]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Array]] of [[Array]]s with [class, ammo]
+* class: [[String]] - Class name of the magazine
+* ammo: [[Number]] - Number of rounds loaded
+
+|x1= <sqf>magazinesAmmoCargo vehicle player;</sqf>
+|x2= <sqf>magazinesAmmoCargo uniformContainer player;</sqf>
+<sqf>
+// returns:
+[
+	["30Rnd_65x39_caseless_mag",30],
+	["30Rnd_65x39_caseless_mag",30],
+	["Chemlight_green",1]
+]
+</sqf>
+
+|seealso= [[magazinesAmmo]] [[magazinesAmmoFull]]
+}}

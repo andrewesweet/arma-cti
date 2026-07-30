@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_findInPairs
+// revision: 348806 (2023-11-08T14:37:38Z)
+// export sha1: d3ai4ert6odo7d0houhjlrk37xoe8ea
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.76
+
+|gr1= Arrays
+
+|descr= Searches the associative array for the first occurance of the key string and returns its index. Seach is not case-sensitive.
+
+|s1= [array, key] call [[BIS_fnc_findInPairs]]
+
+|p1= array: [[Array]] - array to search through
+
+|p2= key: [[String]] - key to search for
+
+|r1= [[Number]] - index of first occurence
+
+|x1= <sqf>[[["apple",3],["pear",2]],"apple"] call BIS_fnc_findInPairs; // Returns 0</sqf>
+
+|seealso= [[find]] [[findIf]] [[BIS_fnc_getFromPairs]] [[BIS_fnc_addToPairs]] [[BIS_fnc_removeFromPairs]] [[BIS_fnc_setToPairs]]
+}}

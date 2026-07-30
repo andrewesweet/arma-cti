@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/diag_activeScripts
+// revision: 318940 (2022-05-13T09:22:04Z)
+// export sha1: pu09caez4twd5ymq1vyqy08gscc766p
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|gr1= Diagnostic
+
+|descr= Returns 4 element array with numbers of currently running scripts in format: [<nowiki/>[[spawn]]-ed, [[execVM]]-ed, [[exec]]-ed, [[execFSM]]-ed]
+
+|s1= [[diag_activeScripts]]
+
+|r1= [[Array]]
+
+|x1= <sqf>hint str diag_activeScripts; //[0,0,0,1]</sqf>
+ 
+
+|seealso= [[diag_log]] [[diag_fps]] [[diag_fpsmin]] [[diag_frameno]] [[diag_tickTime]] [[diag_activeSQFScripts]] [[diag_activeSQSScripts]] [[diag_activeMissionFSMs]]
+}}

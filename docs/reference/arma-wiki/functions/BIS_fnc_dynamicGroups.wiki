@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_dynamicGroups
+// revision: 327978 (2022-07-13T15:12:52Z)
+// export sha1: qg90432euz17pfh4uz8p3svh7ajgtgp
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Systems | Category:Functions | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Systems
+
+|descr= Function that adds dynamic groups to the mission as seen in End Game. Function needs to be initialized on server and client. Clients can then use action TeamSwitch ("U" by default) to access the Dynamic Groups interface.
+
+|s1= [mode, params] call [[BIS_fnc_dynamicGroups]]
+
+|p1= mode: [[String]] - mode, can be:
+* "Initialize" - Initializes dynamic groups on the server
+* "Terminate" - Terminates dynamic groups on the server
+* "InitializePlayer" - Does client side initialization
+* "TerminatePlayer" - Does client side termination
+* "IsInitialized" - Checks whether dynamic groups was initialized
+* "RegisterGroup" - Registers a group
+* "UnregisterGroup" - Unregisters a group
+* "IsGroupRegistered" - Whether a group was already registered or not
+* "SetName" - Sets the name of the group, in future, will also update GroupId of the group
+* "SetPrivateState" - Set the private state of a group
+* "SwitchLeader" - Switches the leader of given group to the given player
+* "AddGroupMember" - Add a group member to group
+* "RemoveGroupMember" - Switches a player from one group to another
+* "KickPlayer" - Kicks a player from group, player wont be able to join the group unless invited or is unkicked using UnKickPlayer
+* "UnKickPlayer" - Unkicks a player from a group
+* "WasPlayerKickedFrom" - Whether given player was kicked from given group
+* "GetAllGroups" - Returns all registered and valid groups
+
+|p2= params: [[Array]] - parameter changes according to {{hl|mode}}. Check the function in the Functions Viewer for detailed information
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["Initialize"] call BIS_fnc_dynamicGroups; // exec on Server</sqf>
+
+|x2= <sqf>["InitializePlayer", [player]] call BIS_fnc_dynamicGroups; // exec on client</sqf>
+
+|seealso= [[Dynamic Groups]]
+}}

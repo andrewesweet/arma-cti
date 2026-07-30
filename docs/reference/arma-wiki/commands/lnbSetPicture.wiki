@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/lnbSetPicture
+// revision: 352055 (2024-02-01T23:24:34Z)
+// export sha1: isof0ohf6msfbhyt7ksop4l1u5uql4h
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= GUI Control - ListNBox
+
+|descr= Sets the picture in the item with the given position of the 2D listbox.The picture is searched in the mission, directory, the dtaExt subdirectory of the campaign directory, and the dtaExt directory and the data bank (or directory).
+
+|s1= [[lnbSetPicture]] [idc, [row, column], picturePathOrName]
+
+|p1= idc: [[Number]]
+
+|p2= row: [[Number]]
+
+|p3= column: [[Number]]
+
+|p4= picturePathOrName: [[String]]
+
+|r1= [[Nothing]]
+
+|s2= ctrl [[lnbSetPicture]] [<nowiki/>[row, column], picturePathOrName]
+
+|p21= ctrl: [[Control]]
+
+|p22= row: [[Number]]
+
+|p23= column: [[Number]]
+
+|p24= picturePathOrName: [[String]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lnbSetPicture [1, [0, 0], "Picture"];</sqf>
+
+|x2= <sqf>_ctrl lnbSetPicture [[0, 0], "\A3\Ui_f\data\GUI\Cfg\Ranks\lieutenant_gs.paa"];</sqf>
+
+|seealso= [[lnbPicture]] [[lnbSetPictureRight]] [[lnbPictureRight]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2021-04-06 - 07:35 (UTC)</dd>
+<dt class="note">[[User:R3vo|R3vo]]</dt>
+<dd class="note">
+{{Feature|informative|Adding pictures to lists is very slow. In order to prevent the filling of the list to be slowed down, add the pictures in the '''scheduled''' environment. One drawback of that method is, that sorting the entries is not easily possible.
+<sqf>
+private _path = _ctrlTV tvAdd [[], "Some Entry"];
+[_ctrlTV, _path] spawn {
+	(_this select 0) tvSetPictureRight [[_this select 1], "someImage.paa"];
+};
+</sqf>
+}}
+</dd>
+
+</dl>

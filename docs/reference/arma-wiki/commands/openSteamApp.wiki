@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/openSteamApp
+// revision: 309224 (2022-05-04T10:07:21Z)
+// export sha1: 7b18afi0za9qsf2ljef554i6qy57g6q
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= System
+
+|descr= Opens a Steam application, returns false if it was not possible to run the application.
+
+|s1= [[openSteamApp]] appID
+
+|p1= appID: [[Number]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>openSteamApp 553228;</sqf>
+
+|seealso= [[getSteamFriendsServers]] [[openYoutubeVideo]]
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20180802142600
+|text= It seems like it was limited to bohemia stuff. Like launching 'Arma 3 Community Guide Series: Zeus DLC'.
+}}

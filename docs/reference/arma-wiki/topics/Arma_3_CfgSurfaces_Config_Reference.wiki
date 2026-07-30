@@ -1,0 +1,340 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgSurfaces_Config_Reference
+// revision: 373231 (2025-04-12T22:20:50Z)
+// export sha1: tluru2lh9u4lccw88518c2ueyb4njfs
+// categories: Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|warning|This reference page was created for {{arma3}} v1.60+, some fields may not exist in prior games and versions.}}
+=== A ===
+
+==== access ====
+[[TokenNameValueTypes#Integers|Integer]]: Determines the manipulability of the class.
+
+{| class="wikitable"
+! Value			!! Type				!! Description
+|-
+| {{hl|0}}	|| ReadAndWrite		|| Additional values can be added
+|-
+| {{hl|1}}	|| ReadAndCreate	|| Only adding new class members is allowed
+|-
+| {{hl|2}}	|| ReadOnly			|| No modifications enabled
+|-
+| {{hl|3}}	|| ReadOnlyVerified || No modifications enabled
+|}
+
+All ''BIS'' classes are '''ReadOnlyVerified''' and can only be inherited into a new class
+
+<syntaxhighlight lang="cpp">
+access = 2; // ReadOnly
+</syntaxhighlight>
+
+==== AIAvoidStance ====
+{{GVI|arma3|1.60}}
+[[TokenNameValueTypes#Integers|Integer]]: Allows restricting the AI from entering prone with two levels of emphasis
+
+{| class="wikitable"
+! Value			!! Description
+|-
+| {{hl|0}}	|| No change in behavior
+|-
+| {{hl|1}}	|| Less preference for going prone - avoid prone (unless stealth or suppressed or *)
+|-
+| {{hl|2}}	|| Almost never going prone - never prone (unless *)
+|}
+
+ * means commanded, injured, animated, forced, ...
+
+=== C ===
+
+==== character ====
+[[TokenNameValueTypes#Strings|String]]: Points to a corresponding [[CfgSurfaceCharacters]] entry, which defines the clutter on this surface.
+<syntaxhighlight lang="cpp">
+character = "Empty";		// No clutter will be used on this surface
+character = "SeabedClutter";	// SeabedClutter defined in CfgSurfaceCharacters will be used on this surface
+</syntaxhighlight>
+
+=== D ===
+
+==== dust ====
+[[TokenNameValueTypes#Floats|Float]]: Amount of dust vehicles will create on this surface (higher value = more dust)
+<syntaxhighlight lang="cpp">
+dust = 0.75;	// High amount of dust, used for GdtStratisDryGrass
+dust = 0.05;	// Almost no dust, used for GdtConcrete
+</syntaxhighlight>
+
+=== F ===
+
+==== files ====
+[[TokenNameValueTypes#Strings|String]]: Defines which ground texture and [[LOD#Roadway|roadway]] texture filenames this surface will apply to
+<syntaxhighlight lang="cpp">
+files = "gdt_grass_green_*";	// Tells the ground texture what surface it corresponds to
+files = "surfint_wood_*";		// Tells the texture used in the roadway LOD what surface it corresponds to
+</syntaxhighlight>
+
+From commented configs of BI (binarize\bin)
+
+ Caution: wildcard pattern "files" is matched using special purpose matching
+ 
+ * may be used only as last character of the pattern
+ * matches any string in filename
+ ? matches any single character in filename
+ 
+ when six trailing question-marks are detected "??????", two patterns are matched:
+ full pattern and short pattern with ?????? omitted
+
+==== friction ====
+
+Seems obsolete
+
+[[TokenNameValueTypes#Floats|Float]]: Unknown
+
+<syntaxhighlight lang="cpp">
+friction = 0.9;	// Default value, used by all A3 surfaces
+</syntaxhighlight>
+
+=== G ===
+
+==== grassCover ====
+[[TokenNameValueTypes#Floats|Float]]: Reduces visibleSize (taken from CfgMovesBasic) of unit for AI visibility movement computations (cannot make fully invisible) - it is NOT about visual drawing
+<syntaxhighlight lang="cpp">
+grassCover = 0;		// Used by GdtStratisConcrete, there will be no simulated grass cover at a distance
+grassCover = 0.05;	// Used by GdtStratisGreenGrass, there will be some simulated grass cover at a distance
+</syntaxhighlight>
+
+=== I ===
+==== impact ====
+[[TokenNameValueTypes#Strings|String]]: Defines what particle effect is shown when the surface is hit by a bullet, points to a corresponding entry in [[CfgAmmo_Config_Reference#HitEffects|CfgAmmo]]
+<syntaxhighlight lang="cpp">
+impact = "hitGroundHard";	// Used by GdtStony, particle effect will be chunks of rock flying when hit
+impact = "hitGroundSoft";	// Used by GdtStratisDirt, particle effect will be dirt flying when hit
+</syntaxhighlight>
+
+
+Check the spoiler for impact values used in vanilla A3 in 1.68:
+<spoiler>
+<pre>
+default_Mat
+hitWater
+hitGroundHard
+hitConcrete
+hitGroundSoft
+hitVirtual
+HitGroundRed
+hitGroundRed
+</spoiler>
+
+==== isWater ====
+[[TokenNameValueTypes#Integers|Integer]]: Declares whether the surface is water
+<syntaxhighlight lang="cpp">
+isWater = 1;	// Used by SurfWater, declares the surface as water
+isWater = 0;	// Used by Default, declares the surface is not water
+</syntaxhighlight>
+
+=== L ===
+
+==== lucidity ====
+[[TokenNameValueTypes#Floats|Float]]: how hard to detect a mine on this surface. Default: 1
+<syntaxhighlight lang="cpp">
+lucidity = 0.3;	// Used by GdtStratisConcrete
+lucidity = 3.5;	// Used by GdtStratisForestPine
+lucidity = 150;	// Used by GdtStratisSeabed
+</syntaxhighlight>
+
+=== M ===
+
+==== maxClutterColoringCoef ====
+[[TokenNameValueTypes#Floats|Float]]: Defines the maximal coefficient of difference between the color of the surface and clutter (must be greater than or equal to 1)
+<syntaxhighlight lang="cpp">
+maxClutterColoringCoef = 1.35;	// Used by GdtStratisConcrete
+maxClutterColoringCoef = 1.5;	// Used by GdtBeach
+</syntaxhighlight>
+
+==== maxSpeedCoef ====
+[[TokenNameValueTypes#Floats|Float]]: Defines the maximum speed coefficient on that surface for carEPE simulation. Default is 1
+<syntaxhighlight lang="cpp">
+maxSpeedCoef = 1;	// Used by GdtStratisConcrete, no change in speed
+maxSpeedCoef = 0.9;	// Used by GdtStratisGreenGrass, 10% reduction in speed
+maxSpeedCoef = 0.8;	// Used by GdtStratisForestPine, 20% reduction in speed
+</syntaxhighlight>
+
+For cars also limited by terrainCoef factor defined in cfgVehicles. Max reduction is 50%.
+
+=== R ===
+
+==== restitution ====
+
+Seems obsolete
+
+[[TokenNameValueTypes#Floats|Float]]: Unknown
+<syntaxhighlight lang="cpp">
+restitution= 0;	// Used by every surface
+</syntaxhighlight>
+
+==== rough ====
+
+Seems disabled in A3.
+
+[[TokenNameValueTypes#Floats|Float]]: Defines the roughness of the surface when driving over it in a vehicle (higher value = more bumps). Seems to limit also speed of tanks somewhat
+
+<syntaxhighlight lang="cpp">
+rough = 0.05;	// Used by GdtStratisConcrete, minimal bumps
+rough = 0.15;	// Used by GdtMud, fairly bumpy
+</syntaxhighlight>
+
+=== S ===
+
+==== soundEnviron ====
+[[TokenNameValueTypes#Strings|String]]: Defines the sound played when walking or driving a vehicle on the surface, points to sounds defined in [[CfgVehicles_Config_Reference#SoundEnvironExt_Class|SoundEnvironExt]]
+<syntaxhighlight lang="cpp">
+soundEnviron = "drygrass";	// Used by GdtGrassDry, dry grass sound
+soundEnviron = "gravel";	// Used by SurfRoadDirt, gravel sound
+soundEnviron = "int_wood";	// Used by SurfIntWood, weapons fired while on this surface will have a reverb effect.
+</syntaxhighlight>
+This value also determines the sound for footsteps inside of a building corresponding for the [[LOD#Roadway|roadway]] LOD. It is important to use corresponding textures for surfaces that are indoors or outdoors, as it has an effect on the sound when firing weapons on that surface.
+
+Relates also the [[Arma_3_Sound:_SoundControllers|sound controllers]]
+
+Check the spoiler for soundEnviron values used in vanilla A3 in 1.68:
+<spoiler>
+<pre>
+normalExt
+
+water
+seabed_exp
+
+road - SurfSoundAsphalt
+tarmac - SurfSoundAsphalt
+concrete - SurfSoundAsphalt
+concrete_exp
+int_concrete
+int_concrete_exp
+asphalt_exp
+pavement_exp
+int_pavement_exp
+
+gravel - SurfSoundGravel
+gravel_exp
+normal - SurfSoundGravel
+debris - SurfSoundGravel
+stony - SurfSoundGravel, SurfSoundGrass, SurfSoundDirt
+stones_exp
+
+rock - SurfSoundRock
+
+sand - SurfSoundSand
+sand_exp
+
+grass - SurfSoundGrass
+grass_exp
+grasstall_exp
+drygrass - SurfSoundGrass
+
+forest - SurfSoundDirt, SurfSoundGrass
+forest_exp
+wood
+int_wood
+softwood_exp
+int_softwood_exp
+
+mud - SurfSoundDirt
+mud_exp
+dirt - SurfSoundDirt
+dirt_exp
+
+metal
+int_metal
+metalplate_exp
+int_metalplate_exp
+metalplatepressed_exp
+steel_exp
+gridmetal_exp
+wavymetal
+wavymetal_exp
+roof_tiles
+rooftiles_exp
+int_tiles
+tiling
+
+virtual
+
+int_solidwood_exp
+int_carpet_exp
+int_mat_exp
+straw_exp
+lino_exp
+int_lino_exp
+</spoiler>
+
+==== soundHit ====
+[[TokenNameValueTypes#Strings|String]]: Defines the sound played when the surface is struck by a bullet
+<syntaxhighlight lang="cpp">
+soundHit = "concrete";		// Used by GdtStratisConcrete, sound of bullet hitting concrete is played when this surface is hit
+soundHit = "soft_ground";	// Used by GdtStratisDirt, sound of dirt is played when this surface is hit
+</syntaxhighlight>
+
+Seemingly valid values:
+* body
+* building
+* concrete
+* default
+* foliage
+* glass
+* glass_armored
+* hard_ground
+* iron
+* metal
+* metal_plate
+* plastic
+* rubber
+* soft_ground
+* water
+* wood
+
+Check the spoiler for soundHit values used in vanilla A3 in 1.68:
+<spoiler>
+<pre>
+hard_ground
+concrete
+soft_ground
+building
+</spoiler>
+
+==== surfaceFriction ====
+[[TokenNameValueTypes#Floats|Float]]: Defines the surface friction on this surface (lower value = more friction)
+<syntaxhighlight lang="cpp">
+surfaceFriction = 2.5;	// Used by SurfRoadTarmac, highest surface friction value
+surfaceFriction = 2;	// Used by SurfRoadConcrete, above average surface friction value
+surfaceFriction = 1.8;	// Used by GdtDirt, below average surface friction value
+surfaceFriction = 1.5;	// Used by GdtMarsh, low end of surface friction values
+</syntaxhighlight>
+
+=== T ===
+
+
+==== terrainClutterFactor ====
+[[TokenNameValueTypes#Integers|Integer]]: Can enable clutter on roadway when above 0
+<syntaxhighlight lang="cpp">
+terrainClutterFactor = 0;	// Default value used by all surfaces, except for Water = 1
+</syntaxhighlight>
+
+==== tracksAlpha ====
+
+Seems obsolete
+
+[[TokenNameValueTypes#Integers|Integer]]: Defines the alpha value of vehicle tracks
+<syntaxhighlight lang="cpp">
+tracksAlpha = 1;	// Default value used by all surfaces
+</syntaxhighlight>
+
+==== transparency ====
+[[TokenNameValueTypes#Integers|Integer]] 1: fully transparent. 0 and lower: fully opaque
+<syntaxhighlight lang="cpp">
+transparency = -1;	// Default value used by surfaces if this property is not defined
+</syntaxhighlight>
+Used in the viewGeometry LOD to determine how transparent the surface is to the AI view.
+In vanilla {{arma3}}, this property seems to be only used by [[Arma_3:_Vegetation_P3D#.5BViewGeometry.5D|APEX DLC vegetations]]: "a3\vegetation_f_exp\data\foliage_sparse.bisurf" (<syntaxhighlight lang="cpp" inline>transparency = 0.2</syntaxhighlight>) and "a3\vegetation_f_exp\data\foliage_dense.bisurf" (<syntaxhighlight lang="cpp" inline>transparency = 0.01</syntaxhighlight>).
+
+
+
+
+{{GameCategory|arma3|Reference Lists}}

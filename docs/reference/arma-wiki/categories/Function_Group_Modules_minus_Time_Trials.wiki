@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Modules_-_Time_Trials
+// revision: 330750 (2022-11-01T15:22:48Z)
+// export sha1: 38blo8mi2qqn9xn04u8wkgi52miaunu
+// Vendored snapshot. Do not edit — re-export instead.
+
+Module functions used for time trails.
+
+[[Category:Function Group: Modules]]

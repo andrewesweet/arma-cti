@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_monthDays
+// revision: 328404 (2022-07-13T16:00:49Z)
+// export sha1: pl1kc7p77gq8nz8dpq9kv8o6ppzij8z
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Environment | Category:Function Group: Math | Category:Functions | Category:Introduced with Arma 3 version 1.10 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.10
+
+|gr1= Math
+
+|gr2= Environment
+
+|descr= Returns number of days in given month. Takes in account for leap year.
+
+|s1= [year, month] call [[BIS_fnc_monthDays]]
+
+|p1= year: [[Number]] - a non-decimal number
+
+|p2= month: [[Number]] - a non-decimal number in range 1..12
+
+|r1= [[Number]] - number of days in given month
+
+|x1= <sqf>private _daysInThisMonth = [date select 0, date select 1] call BIS_fnc_monthDays;</sqf>
+
+|seealso= [[date]] [[BIS_fnc_showTime]] [[BIS_fnc_secondsToString]]
+}}

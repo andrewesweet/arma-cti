@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Uncategorised
+// revision: 169106 (2020-10-20T13:00:31Z)
+// export sha1: krzzekdeb89xb1hqvnkilr6evkj4k3n
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands without defined [[:Category:Functions by Functionality|function group]]. '''This category should always be empty!'''
+
+[[Category:Functions by Functionality]]
+[[Category:Maintenance]]

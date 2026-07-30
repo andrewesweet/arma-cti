@@ -1,0 +1,319 @@
+// source: https://community.bistudio.com/wiki/Iron_Front:_Weapons
+// revision: 292566 (2021-08-10T12:51:12Z)
+// export sha1: rek6pglltryxtyk5zul3zu8jr223b1m
+// categories: Category:CfgWeapons
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+=== German Weapons ===
+{| class="wikitable" width = 80%
+!width="200"|Weapon Classname
+!width="200"|Magazine Classnames
+!width="200"|Muzzle Classname
+!width="200"|Ammo Classnames
+
+
+|-
+| LIB_P38
+| lib_8Rnd_9x19
+| ---
+| B_9x19_Ball
+
+|-
+| LIB_M1908
+| lib_8Rnd_9x19
+| ---
+| B_9x19_Ball
+
+|-
+| LIB_FLARE_PISTOL
+| lib_1Rnd_flare_white<br>lib_1Rnd_flare_red<br>lib_1Rnd_flare_green<br>lib_1Rnd_flare_yellow
+| ---<br>---<br>---<br>---
+| F_40mm_White<br>F_40mm_Red<br>F_40mm_Green<br>F_40mm_Yellow
+
+|-
+| LIB_MP40
+| LIB_32Rnd_9x19
+| ---
+| B_9x19_Ball
+
+|-
+| LIB_K98
+| lib_5Rnd_792x57
+| ---
+| B_792x57_Ball_NoCartridge
+
+|-
+| LIB_K98ZF39
+| lib_5Rnd_792x57
+| ---
+| B_792x57_Ball_NoCartridge
+
+|-
+| LIB_MP44
+| lib_30Rnd_792x33
+| ---
+| B_792x33_Ball
+
+|-
+| LIB_G43
+| lib_10Rnd_792x57<br>lib_5Rnd_792x57
+| ---<br>---
+| B_792x57_Ball
+
+|-
+| LIB_MG42
+| lib_50Rnd_792x57
+| ---<br>---
+| B_792x57_Ball
+
+|-
+| LIB_MLMG42
+| lib_250Rnd_792x57
+| ---<br>---
+| B_792x57_Ball
+
+|-
+| LIB_PzFaust_30m
+| 1Rnd_LIB_PzFaust_30m
+| ---
+| LIB_PzFaust_30m
+
+|-
+| LIB_RPzB
+| LIB_1Rnd_RPzB
+| ---
+| LIB_R_88mm_RPzB
+
+|}
+
+=== German Vehicle & Static Weapons ===
+
+{| class="wikitable" width = 80%
+!width="200"|Weapon Classname
+!width="200"|Magazine Classnames
+!width="200"|Muzzle Classname
+!width="200"|Ammo Classnames
+
+
+|-
+| LIB_MG42_Tripod
+| lib_250Rnd_792x57
+| ---
+| B_792x57_Ball
+
+|-
+| LIB_MG42_veh
+| lib_250Rnd_792x57
+| ---
+| B_792x57_Ball
+
+|-
+| LIB_GRWR34
+| LIB_8Rnd_81mmHE_GRWR34<br>ARTY_LIB_8Rnd_81mmHE_GRWR34
+| ---<br>---
+| LIB_Sh_81_HE<br>ARTY_LIB_Sh_81_HE
+
+|-
+| LIB_Pak40
+| LIB_40x_PzGr39_Pak40_AP<br>LIB_10x_PzGr40_Pak40_APCR<br>LIB_50x_SprGr34_Pak40_HE<br>LIB_PzGr39_KWK40_AP<br>LIB_PzGr40_KWK40_APCR<br>LIB_SprGr34_KWK40_HE
+| ---<br>---<br>---<br>---<br>---<br>---
+| 
+
+|}
+
+=== Soviet Weapons ===
+{| class="wikitable" width = 80%
+!width="200"|Weapon Classname
+!width="200"|Magazine Classnames
+!width="200"|Muzzle Classname
+!width="200"|Ammo Classnames
+
+
+|-
+| LIB_TT33
+| lib_8Rnd_762x25
+| ---
+| B_762x25_Ball
+
+|-
+| LIB_M1895
+| lib_7Rnd_762x38
+| ---
+| B_762x25_Ball
+
+|-
+| LIB_PPSh41_m
+| lib_35Rnd_762x25
+| ---
+| B_762x25_Ball
+
+|-
+| LIB_PPSh41_d
+| lib_71Rnd_762x25
+| ---
+| B_762x25_Ball
+
+|-
+| LIB_M9130
+| lib_5Rnd_762x54
+| ---
+| B_762x54_Ball_NoCartridge
+
+|-
+| LIB_M9130PU
+| lib_5Rnd_762x54
+| ---
+| B_762x54_Ball_NoCartridge
+
+|-
+| LIB_SVT_40
+| lib_10Rnd_762x54<br>lib_5Rnd_762x54
+| ---<br>---
+| B_762x54_Ball
+
+|-
+| LIB_DP28
+| lib_47Rnd_762x54
+| ---
+| B_762x54_Ball
+
+|-
+| LIB_DT
+| lib_63Rnd_762x54
+| ---
+| B_762x54_Ball
+
+|-
+| LIB_DT_OPTIC
+| lib_63Rnd_762x54
+| ---<br>---
+| B_762x54_Ball
+
+|}
+
+=== Soviet Vehicle & Static Weapons ===
+{| class="wikitable" width = 80%
+!width="200"|Weapon Classname
+!width="200"|Magazine Classnames
+!width="200"|Muzzle Classname
+!width="200"|Ammo Classnames
+
+
+|-
+| lib_maxim_m30
+| lib_250rnd_7_62x54R_maxim
+| ---
+| B_762x54_Ball
+
+|-
+| LIB_BM37
+| LIB_8Rnd_82mmHE_BM37<br>ARTY_LIB_8Rnd_82mmHE_BM37<br>LIB_8Rnd_81mmHE_GRWR34<br>ARTY_LIB_8Rnd_81mmHE_GRWR34
+| ---<br>---<br>---<br>---
+| LIB_Sh_82_HE<br>ARTY_LIB_Sh_82_HE<br>LIB_Sh_81_HE<br>ARTY_LIB_Sh_81_HE
+
+|-
+| LIB_BM13
+| ARTY_40Rnd_120mmHE_BM21<br>LIB_16Rnd_BM13
+| ---<br>---
+| R_BM13<br>R_BM13
+
+|-
+| M2
+| 100Rnd_127x99_M2
+| ---<br>---
+| B_127x99_Ball
+
+|-
+| LIB_61k
+| LIB_5x_61k
+| ---<br>---
+| B_37mm_AA
+
+|}
+
+=== Soviet Items ===
+{| class="wikitable" width = 80%
+! width="200"|Weapon Classname
+! width="200"|Magazine Classnames
+! width="200"|Muzzle Classname
+! width="200"|Ammo Classnames
+
+|-
+| LIB_Binocular_SU
+| ---
+| ---
+| ---
+|}
+=== US Weapons ===
+{| class="wikitable" width = 80%
+! width="200"|Weapon Classname
+! width="200"|Magazine Classnames
+! width="200"|Muzzle Classname
+! width="200"|Ammo Classnames
+
+|-
+| LIB_Colt_M1911
+| LIB_7Rnd_45ACP
+| ---
+| B_45ACP_Ball
+
+|-
+| LIB_M1_Garand
+| LIB_8Rnd_762x63
+| ---
+| B_762x63_Ball
+
+|-
+| LIB_M1_Carbine
+| LIB_15Rnd_762x33
+| ---
+| B_762x33_Ball
+
+|-
+| LIB_M1903A4_Springfield
+| LIB_5Rnd_762x63
+| ---
+| B_762x63_Ball_NoCartridge
+
+|-
+| LIB_M1A1_Thompson
+| LIB_30Rnd_45ACP
+| ---
+| B_45ACP_Ball
+
+|-
+| LIB_M1918A2_BAR
+| LIB_20Rnd_762x63
+| ---
+| B_762x63_Ball
+
+|-
+| LIB_M1A1_Bazooka
+| LIB_1Rnd_60mm_M6
+| ---
+| LIB_60mm_M6
+
+|-
+| LIB_w
+| LIB_US_M1A1_ATMINE_mag<br>LIB_US_M3_MINE_mag<br>LIB_US_TNT_4pound_mag<br>LIB_US_BM10_PM_mag
+| LIB_US_M1A1_ATMINE_Muzzle<br>LIB_US_M3_Muzzle<br>LIB_US_TNT_4pound_Muzzle<br>LIB_US_BM10_PM_Muzzle
+| LIB_US_M1A1_ATMINE_mag<br>LIB_US_M3_MINE_mag<br>LIB_US_TNT_4pound_mag<br>LIB_US_BM10_PM_mag
+
+|}
+
+=== General Weapons ===
+{| class="wikitable" width = 80%
+! width="200"|Weapon Classname
+! width="200"|Magazine Classnames
+! width="200"|Muzzle Classname
+! width="200"|Ammo Classnames
+
+|-
+| Throw
+| lib_shg24<br>lib_shg24x7<br>lib_m39<br>lib_f1<br>lib_rg42<br>lib_rpg6<br>lib_pwm<br>lib_nb39<br>LIB_US_Mk_2<br>LIB_US_M18<br>LIB_US_M18_Red<br>LIB_US_M18_Green<br>LIB_US_M18_Yellow
+| HandGrenadeMuzzle<br>HandGrenadeMuzzle<br>HandGrenadeMuzzle<br>HandGrenadeMuzzle<br>HandGrenadeMuzzle<br>HandGrenadeMuzzle<br>HandGrenadeMuzzle<br>SmokeShellMuzzle<br>HandGrenadeMuzzle<br>SmokeShellMuzzle<br>SmokeShellMuzzle<br>SmokeShellMuzzle<br>SmokeShellMuzzle
+| lib_SHG24<br>lib_SHG24x7<br>lib_m39<br>lib_f1<br>lib_rg42<br>lib_rpg6<br>lib_PWM<br>lib_nb39<br>LIB_US_Mk_2<br>LIB_US_M18<br>LIB_US_M18_Red<br>LIB_US_M18_Green<br>LIB_US_M18_Yellow
+|}
+
+[[Category: CfgWeapons]]

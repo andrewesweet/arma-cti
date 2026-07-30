@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/configSourceModList
+// revision: 369411 (2024-09-03T18:43:26Z)
+// export sha1: 4unafrleadms0mjqop7t0zckssl8v0o
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mods and Addons | Category:Introduced with Arma 3 version 1.40 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.40
+
+|gr1= Mods and Addons
+
+|descr= Returns an array of mods (CfgMods) in which the given config class is defined.
+
+|s1= [[configSourceModList]] config
+
+|p1= config: [[Config]]
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>
+_mods = configSourceModList (configFile >> "CfgVehicles" >> "Man");
+hint str _mods; // ["A3","curator","heli"]
+</sqf>
+
+|seealso= [[configFile]] [[configSourceMod]] [[configSourceAddonList]] [[modParams]]
+}}

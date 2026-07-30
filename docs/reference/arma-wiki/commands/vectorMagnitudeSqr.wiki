@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/vectorMagnitudeSqr
+// revision: 373023 (2025-03-18T15:34:37Z)
+// export sha1: 0xivjzc7vx1rit38iby4zmk0geu61zs
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr2= Math - Vectors
+
+|descr=Squared magnitude of a 3D vector.<br>
+{{Feature|GVI|arma3|2.14|Since {{GVI|arma3|2.14|size= 0.75}} any count of numbers is valid.<br>
+Before {{GVI|arma3|2.14|size= 0.75}}, the argument had to be vector 3D, or {{GVI|arma3|2.00|size= 0.75}} 2D (With z coordinate defaulted to 0)}} 
+
+|s1= [[vectorMagnitudeSqr]] vector
+
+|p1= vector: [[Array]] of [[Number]]s
+
+|r1= [[Number]]
+
+|x1= <sqf>_sizeSqr = vectorMagnitudeSqr [0,3,4]; // returns 25</sqf>
+
+|seealso= [[vectorAdd]] [[vectorDiff]] [[vectorCrossProduct]] [[vectorDotProduct]] [[vectorCos]] [[vectorMagnitude]] [[vectorMultiply]] [[vectorDistance]] [[vectorDistanceSqr]] [[vectorDir]] [[vectorUp]] [[setVectorDir]] [[setVectorUp]] [[setVectorDirAndUp]] [[vectorNormalized]] [[vectorFromTo]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 28 Jun, 2014</dd>
+<dt class="note">[[User:ffur2007slx2_5| ffur2007slx2_5]]</dt>
+<dd class="note">
+{{GVI|arma3|1.22}} Algorithm:
+<sqf>
+Vector = [x,y,z];
+Result = (x ^ 2) + (y ^ 2) + (z ^ 2);
+</sqf>
+It is recommended to use [[vectorMagnitudeSqr]] instead of [[BIS_fnc_magnitudeSqr]].
+</dl>

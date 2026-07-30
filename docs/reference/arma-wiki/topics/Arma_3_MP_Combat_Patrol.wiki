@@ -1,0 +1,132 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_MP_Combat_Patrol
+// revision: 341785 (2023-06-23T12:36:41Z)
+// export sha1: 7s9iq5ybtt1wgvpzxli80xds22utqja
+// categories: Category:Arma 3: MP Modes | Category:Introduced with Arma 3 version 1.72
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI| arma3|1.72}}
+
+'''Combat Patrol''' is a game mode which can be easily set up on any map and offers short, randomized CQB scenarios on a location selected by the players. The system scans for any predefined map locations like towns or villages and allows players to vote for them. Custom locations can also be added.
+
+
+== Creating custom scenarios ==
+
+{{Feature|informative|While it is technically possible to play Combat Patrol in singleplayer, it is recommended to set up a multiplayer scenario instead, mainly due to respawn.}}
+
+# Open the mission editor.
+# Set respawn setting to Custom Position (Attributes > Multiplayer > Respawn > Respawn on Custom Position). Set the Respawn Delay in the same window to any wanted value, preferably &gt; 0 seconds.
+# In the Rulesets directly below, check "Show respawn counter" and "Substract respawn tickets".
+# (Optional) Enable Revive.
+# (Optional) Uncheck "Enable AI" in the Lobby section.
+# Place playable units (the team conducting the patrol) somewhere far from any possible target locations. Make sure they are all in the same group. As of build 1.94, full support for all factions is available.
+# Place the Combat Patrol Init module. It can be found under Systems (F5) > Combat Patrol.
+# Save the scenario in MPMissions.
+
+Now the scenario is ready to be played - see below for further scenario customisation possibilities.
+
+
+== Combat Patrol modules description ==
+
+Apart from the aforementioned Combat Patrol Init, here are other modules that can be used:
+
+* '''Combat Patrol Azimuth Blacklist:''' Blacklists the nearest location's (1000m radius) azimuth range so it can't be used for the starting / ending position or reinforcements spawning points. Imagine a location that has very steep hills to the North - climbing up while exfiltrating or see enemy reinforcements trying to find their way down is not desired, it is therefore possible to place this module near this location and blacklist North using azimuth arrays. In this case that would be <nowiki>[[330,30]]</nowiki>.
+* '''Combat Patrol Location Add:''' Adds a new selectable location to the map. Its name and relative size (which is used to determine how big the AO is and how many units are stationed inside) can be customised.
+* '''Combat Patrol Location Remove:''' Removes the nearest (1000m radius) location from the selection screen.
+* '''Combat Patrol Location Reposition:''' Moves the nearest (1000m radius) location to this module's position. The location keypoints are sometimes placed quite far from the actual location center so the name is properly visible in the map; this module allows to fix such cases.
+
+
+== Using Scenario Parameters ==
+
+Parameters are editable in the MP lobby and offer even more control over various scenario rules. To be able to use them in a scenario, find the scenario directory (usually in {{hl|Documents\Arma 3\MPMissions}}) and create a new file inside it. Name this file {{hl|[[Description.ext|description.ext]]}} and put this inside:
+<spoiler>
+<syntaxhighlight lang="cpp">
+class Params
+{
+	class BIS_CP_startingDaytime
+	{
+		title = "$STR_A3_CombatPatrol_params_1";
+		values[] = { -1, 0, 1, 2, 3, 4 };
+		texts[] = {
+			"$STR_A3_BIS_fnc_RespawnMenuPosition_random",
+			"$STR_A3_CombatPatrol_params_2",
+			"$STR_A3_CombatPatrol_params_3",
+			"$STR_A3_CombatPatrol_params_4",
+			"$STR_A3_CombatPatrol_params_5",
+			"$STR_A3_CombatPatrol_params_6"
+		};
+
+		default = 1;
+	};
+
+	class BIS_CP_weather
+	{
+		title = "$STR_A3_rscattributeovercast_title";
+		values[] = { -1, 0, 1, 2, 3 };
+		texts[] = { "$STR_A3_BIS_fnc_RespawnMenuPosition_random", "$STR_A3_CombatPatrol_params_7", "$STR_A3_CombatPatrol_params_8", "$STR_A3_CombatPatrol_params_9", "$STR_A3_CombatPatrol_params_10" };
+		default = 1;
+	};
+
+	class BIS_CP_garrison
+	{
+		title = "$STR_A3_CombatPatrol_params_11";
+		values[] = { 0, 1, 2 };
+		texts[] = { "$STR_A3_CombatPatrol_params_12", "$STR_A3_CombatPatrol_params_13", "$STR_A3_CombatPatrol_params_14" };
+		default = 0;
+	};
+
+	class BIS_CP_reinforcements
+	{
+		title = "$STR_A3_CombatPatrol_params_15";
+		values[] = { 0, 1, 2 };
+		texts[] = { "$STR_A3_CombatPatrol_params_12", "$STR_A3_CombatPatrol_params_13", "$STR_A3_CombatPatrol_params_16" };
+		default = 0;
+	};
+
+	class BIS_CP_showInsertion
+	{
+		title = "$STR_A3_CombatPatrol_params_17";
+		values[] = { 1, 0 };
+		texts[] = { "$STR_A3_CfgVehicles_ModuleStrategicMapImage_f_arguments_shadow_values_yes_0", "$STR_A3_CfgVehicles_ModuleStrategicMapImage_f_arguments_shadow_values_no_0" };
+		default = 0;
+	};
+
+	class BIS_CP_tickets
+	{
+		title = "$STR_A3_CombatPatrol_params_18";
+		values[] = { 5, 10, 20, 50, 100 };
+		texts[] = { "5", "10", "20", "50", "100" };
+		default = 20;
+	};
+
+	class BIS_CP_enemyFaction
+	{
+		title = "$STR_A3_CombatPatrol_params_19";
+		values[] = { 0, 1, 2 };
+		texts[] = { "$STR_A3_CfgFactionClasses_OPF_f0", "$STR_A3_CfgFactionClasses_IND_f0", "$STR_A3_BIS_fnc_RespawnMenuPosition_random" };
+		default = 2;
+	};
+
+	class BIS_CP_locationSelection
+	{
+		title = "$STR_A3_CombatPatrol_params_20";
+		values[] = { 0, 1 };
+		texts[] = { "$STR_A3_CombatPatrol_params_21", "$STR_A3_BIS_fnc_RespawnMenuPosition_random" };
+		default = 0;
+	};
+
+	class BIS_CP_objective
+	{
+		title = "$STR_A3_CombatPatrol_params_22";
+		values[] = {-1, 1, 2, 3 };
+		texts[] = { "$STR_A3_BIS_fnc_RespawnMenuPosition_random", "$STR_A3_CombatPatrol_params_26", "$STR_A3_CombatPatrol_params_27", "$STR_A3_CombatPatrol_params_28" };
+		default = -1;
+	};
+};
+</syntaxhighlight>
+</spoiler>
+
+Not all of the settings have to be used; check in-game to see what they offer and feel free to add/remove the wanted ones.
+
+
+{{GameCategory|arma3|MP Modes}}
+[[Category:Introduced with Arma 3 version 1.72]]

@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_balanceGroup
+// revision: 274055 (2021-06-13T01:15:56Z)
+// export sha1: gvl08k3rrs0najxciuik59gtnn7l08k
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Functions | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Campaign
+
+|descr= <pre>/*
+	Author: Nelson Duarte
+
+	Description:
+	Balances a group depending on the amount of connected players
+
+	Parameters:
+		_group: The group to balance
+		_minCount: The minimal count of units group must end up with
+		_bExcludeVehicleRoles: Whether to exclude units in important vehicle roles (driver, gunner, commander)
+
+	Returns:
+		Nothing
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_EXP_camp_balanceGroup]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/Object
+// revision: 352059 (2024-02-01T23:24:36Z)
+// export sha1: i4igqcz21tr7mkqb40fuubmey77fut0
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Object''' refers to a building block within a scenario. In general when using this term the author refers to the representation of an object (soldier, house, crate, etc.) that can be manipulated when in the 3D environment via the scripting language. As there is a special representation that is used in the mission editor, one might distinguish between a 'game object' (this article) and an 'editor object' (see [[Editor Object]]).
+
+
+== Object Type ==
+
+An Object in the scripting language is a generic reference for a soldier, vehicle or building. Such an object can be animated (a house, a tank), can have AI associated with it (a soldier), or, simply be a rock. Various commands in the scripting language can refer as equally to generic (e.g. Object) types, as much as specific sub-types.
+<sqf>
+_posAGL = getPos player;
+_posATL = getPosATL _house;
+</sqf>
+
+
+== Sub-types ==
+
+In this wiki, when describing commands, various 'subtypes' of an object are distinguished. Although in general the commands accept parameters of type 'object', when a subtype is listed, the use of subtypes indicates that the command might not make sense or might not work on all objects.
+
+{| class="wikitable"
+! Sub-type !! Description !! Only for
+|-
+| Vehicle || A vehicle is an object such as a tank, car, helicopter or jet. || -
+|-
+| ObjectRTD, HelicopterRTD || A helicopter using the [[Arma 3: Advanced Helicopter Flight Model|advanced flight model]]. || {{arma3}}, {{tkoh}}
+|-
+| Game Logic || If a game logic is created via scripting after mission start, then the logic will be local to the client that created it. A logic is an invisible object with no model. It has a namespace like every object and it has simulation like most objects. {{Feature|informative|In multiplayer, a game logic will always be local to the host computer, if it was placed in the mission editor. This works on both dedicated and player-hosted servers.}} || -
+|-
+| Person || A human || -
+|-
+| Animal || An animal such as dog and goat. || -
+|-
+| Rope || A rope is flexible and is connected to another object at one or both ends. See [[ropeCreate]] || {{arma3}}, {{tkoh}}
+|-
+| Unit || A unit is either a person or a vehicle. || -
+|-
+| Units || Units are an [[Array]] of type unit. || -
+|-
+| Unit(s) || Unit(s) refers to either an [[Array|array]] of type unit, a single unit or a [[Group]]. This distinction in the command reference refers to very different types, any of which could be used in the same command syntax. || -
+|-
+| Building || When used in the command reference, this object specifically refers to a non AI type model, such as a house, a rock or any other static object. || -
+|-
+| Container || A container can hold items such as weapons, magazines and uniforms.
+
+{| class="wikitable"
+|-
+! colspan="3" | Container
+|-
+! Sub-type !! Command usually contains !! Example
+|-
+| Vehicle with inventory || {{hl|cargo*}} || <sqf>clearWeaponCargo _truck;</sqf>
+|-
+| Backpack || {{hl|backpack*}}|| <sqf>clearAllItemsFromBackpack player;</sqf>
+|-
+| Vest || {{hl|vest*}}|| <sqf>vestContainer player;</sqf>
+|-
+| Uniform || {{hl|uniform*}} || <sqf>uniformContainer player;</sqf>
+|-
+| Scripted weapon holder || {{hl|cargo*}} || <sqf>backpackCargo _ammoBox;</sqf>
+|-
+| Ammo box, supply box || {{hl|cargo*}} || <sqf>backpackCargo _ammoBox;</sqf>
+|}
+| -
+|}
+
+
+[[Category: Data Types]]

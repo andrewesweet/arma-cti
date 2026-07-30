@@ -1,0 +1,2073 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Radio_Protocol
+// revision: 341348 (2023-05-22T16:59:43Z)
+// export sha1: evtnva9s6751fmzmyiku8luysi6flbs
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Overview of the radio protocol technology.
+
+
+== Voice ==
+
+'''Units' identities:'''
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class myVehicleEN
+	{
+		identityTypes[] = { "myIdentityEN" };
+	};
+	class myVehicleCZ
+	{
+		identityTypes[] = { "myIdentityCZ" };
+	};
+};
+</syntaxhighlight>
+'''Voices:'''<br>
+''Note: In OFP, there were no multiple radio protocols and all definitions (Words, sentences) were placed here. This is reason for some unusual config structures and many obsolete params.''
+ class CfgVoice
+ {
+ 	{{cc|List of used voices.}}
+ 	voices[] = {{{Color|darkorange|myVoiceEN}}, {{Color|darkorange|myVoiceCZ}}};
+ 	{{cc|Words player after every radio message.}}
+ 	micOuts[] = {micOut1, micOut2, micOut3};
+ 	{{cc|Sound file played as preview in profile options menu.}}
+ 	{{cc|When not format is given, *.wss is used.}}
+ 	preview = "EN\combat\FireInTheHoleE.ogg";
+ 	{{cc|Default speaker}}
+ 	{{cc|When not defined or incorrect, first entry of voices[] is used instead}}
+ 	default = "{{Color|darkorange|myVoiceEN}}";
+ 
+ 	class {{Color|darkorange|myVoiceEN}}
+ 	{
+ 		{{cc|[[#Protocol|Protocol]] class.}}
+ 		protocol = RadioProtocol{{Color|DeepSkyBlue|ENG}};
+ 		{{cc|Path to audio files based on 'singleVoice' param in profile (default 0 selects first entry.)}}
+ 		{{cc|Second value is obsolete, was once used for limited demo which contained only one voice.}}
+ 		directories[] = {
+ 			"\ca\Dubbing_Radio_F\RADIO\myVoiceFolder\",
+ 			"\ca\Dubbing_Radio_F\RADIO\myVoiceFolder\"
+ 		};
+ 		{{cc|Filter - what units can use this voice}}
+ 		identityTypes[] = {"{{Color|green|myIdentityEN}}"};
+ 		{{cc|Availability for CfgVoiceTypes}}
+ 		scope = 2;
+ 
+ 		{{cc|Discontinued.}}
+ 		voiceType = "";
+ 		variants[] = {1};
+ 	};
+ 	class {{Color|darkorange|myVoiceCZ}}: myVoiceEN
+ 	{
+ 	};
+ 
+ 	{{cc|Discontinued.}}
+ 	femaleVoices[] = {};
+ 	voicePlayer = "";
+ };
+'''Profile menu:'''
+ class CfgVoiceTypes
+ {
+ 	class {{Color|teal|myProfileVoice}}
+ 	{
+ 		{{cc|UI text}}
+ 		name = "James G.";
+ 		{{cc|Reference to CfgVoice}}
+ 		voices[] = {{{Color|darkorange|myVoiceEN}}, {{Color|darkorange|myVoiceCZ}}};
+ 		{{cc|Preview voice played in profile menu.}}
+ 		{{cc|When not defined or incorrect, first entry of CfgVoice >> voices is used instead}}
+ 		preview = "{{Color|darkorange|myVoiceEN}}";
+ 		{{cc|Alternative CfgVoiceType class searched after this one (in case some params were wrong)}}
+ 		alternative = "";
+ 	};
+ 	class {{Color|teal|myProfileVoice2}}
+ 	{
+ 		name = "David A.";
+ 		voices[] = {};
+ 		preview = "";
+ 		alternative = "{{Color|teal|myProfileVoice}}";
+ 	};
+ };
+
+
+== Protocol ==
+
+* Engine automatically calls predefined sentences
+** Any newly added sentence has to be either supported by engine or linked by other sentence.
+* Sentence can have two different sets of array params, both of them in format ''{class1, probability1, class2, probability2, ..., classN, probabilityN}''
+** '''class''':
+*** ''sentences'' - class of other {{Color|darkviolet|sentence}}.
+*** ''variants'' - class of {{Color|green|version}} within current sentence.
+** '''probability'''
+*** Classes within array are selected randomly, taking into account probability weights. See [[#Simple_Expressions|Simple Expressions]] section for more info about supported expressions.
+* Sound files are combination of following values:
+**''[CfgVoice >> myVoice >> directories]'' + ''[RadioProtocolENG >> Words >> myWord]''
+** e.g. ''\ca\Dubbing_Radio_F\RADIO\myVoiceFolder\'''stealth\myWord1.ogg''''' (based on examples above and below)
+* ''gesture'' contains link to action in animation config. Execution is same as using [[playAction]] command.
+* Protocol is named in format ''RadioProtocol{{Color|DeepSkyBlue|ISO}}'', where ''{{Color|DeepSkyBlue|ISO}}'' is {{Link|https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes|ISO 639-2/B}} language code of the faction to which protocol belongs.
+
+ class RadioProtocol{{Color|DeepSkyBlue|ENG}}
+ {
+ 	class Words
+ 	{
+ 		{{Color|darkorange|myWord1}}[] = {"myWord1.ogg"};
+ 		{{Color|darkorange|myWord2}}[] = {"myWord2.ogg"};
+ 
+ 		class {{Color|teal|StealthWords}}
+ 		{
+ 			{{Color|deeppink|myWord1}}[] = {"stealth\myWord1.ogg"};
+ 			{{Color|deeppink|myWord2}}[] = {"stealth\myWord2.ogg"};
+ 		};
+ 	};
+ 	class SelectMySentence
+ 	{
+ 		sentences[] =
+ 		{
+ 			"{{Color|darkviolet|SentMySentenceA}}", "(1 - Stealth)",
+ 			"{{Color|darkviolet|SentMySentenceB}}", "(Stealth)"
+ 		};
+ 	};
+ 	class {{Color|darkviolet|SentMySentenceA}}
+ 	{
+ 		versions[] =
+ 		{
+ 			"{{Color|green|Version1}}", 0.3,
+ 			"{{Color|green|Version2}}", 0.7
+ 		};
+ 		class {{Color|green|Version1}}
+ 		{
+ 			text = "";
+ 			speech[] = {{{Color|darkorange|myWord1}}, {{Color|darkorange|myWord2}}};
+ 			gesture = "myGesture";
+ 		};
+ 		class {{Color|green|Version2}}
+ 		{
+ 			text = "";
+ 			speech[] = {{{Color|darkorange|myWord1}}};
+ 		};
+ 	};
+ 	class {{Color|darkviolet|SentMySentenceB}}
+ 	{
+ 		versions[] =
+ 		{
+ 			"{{Color|green|Version1}}", 1,
+ 		};
+ 		class {{Color|green|Version1}}
+ 		{
+ 			text = "";
+ 			wordsClass = "{{Color|teal|StealthWords}}";
+ 			speech[] = {%1, {{Color|deeppink|myWord2}}};
+ 		};
+ 	};
+ };
+
+
+=== Words ===
+
+List of words required by engine.
+
+{| width="100%" cellpadding="3px"
+|-
+| valign="top" width="25%" |
+'''Background noise, defined in RadioChannels'''
+ loop
+'''???'''
+ pause
+'''Transmit a message to AI'''
+ xmit
+'''Multiple targets separator'''
+ and
+
+'''Numbers (used as units' call-signs)'''
+ zero
+ one
+ two
+ three
+ four
+ five
+ six
+ seven
+ eight
+ nine
+ ten
+ eleven
+ twelve
+ thirteen
+ fourteen
+ fifteen
+ sixteen
+ seventeen
+ eighteen
+ nineteen
+ twenty
+ thirty
+ forty
+ fifty
+ sixty
+ seventy
+ eighty
+ ninety
+ hundred
+
+'''Addressing to a group of units'''
+ all
+ allGroup
+ whiteTeam
+ redTeam
+ greenTeam
+ blueTeam
+ yellowTeam
+
+| valign="top" width="25%" |
+'''Spelling (digits + phonetic alphabet)'''
+ zero2
+ one2
+ two2
+ three2
+ four2
+ five2
+ six2
+ seven2
+ eight2
+ nine2
+ ten2
+ eleven2
+ twelve2
+ 
+ alpha
+ bravo
+ charlie
+ delta
+ echo
+ foxtrot
+ golf
+ hotel
+ india
+ juliet
+ kilo
+ lima
+ mike
+ november
+ oscar
+ papa
+ quebec
+ romeo
+ sierra
+ tango
+ uniform
+ victor
+ whiskey
+ xray
+ yankee
+ zulu
+
+'''Target side'''<br>
+Texts in "STR_WORD_<wordParam>"
+ unknown
+ enemy
+ friendly
+ neutral
+
+'''Map objects''' for movement orders (defined in Object::GetNameSound)
+ obj_tree
+ obj_bush
+ obj_building
+ obj_house
+ obj_forest
+ obj_church
+ obj_cross
+ obj_rock
+
+| valign="top" width="25%" |
+'''Direction'''<br>
+Texts in "STR_WORD_<wordParam>"
+ at10
+ at11
+ at12
+ at1
+ at2
+ at3
+ at4
+ at5
+ at6
+ at7
+ at8
+ at9
+
+'''Distances'''<br>
+Texts in "STR_WORD_<wordParam>"
+ dist50
+ dist100
+ dist200
+ dist500
+ dist1000
+ dist2000
+ far
+|}
+
+
+==== Vehicle Words ====
+ class CfgVehicles
+ {
+ 	class myVehicle
+ 	{
+ 		textSingular = "My Vehicle";
+ 		textPlural = "My Vehicles";
+ 		speechSingular[] = {};
+ 		speechPlural[] = {};
+ 		{{cc|SpeechVariants is used only when root speechSingular and speechPlural params are empty.}}
+ 		class SpeechVariants
+ 		{
+ 			class {{Color|darkviolet|Default}}
+ 			{
+ 				speechSingular[] = {"{{Color|green|wordMyVehicle}}"};
+ 				speechPlural[] = {"{{Color|green|wordMyVehicles}}"};
+ 			};
+ 		};
+ 		{{cc|nameSound is still used in some cases.}}
+ 		nameSound = "{{Color|green|wordMyVehicle}}";
+ 	};
+ };
+ class RadioProtocolENG
+ {
+ 	class Words
+ 	{
+ 		{{Color|green|wordMyVehicle}}[] = {"DEFAULT\path\wordMyVehicle.ogg"};
+ 		{{Color|green|wordMyVehicles}}[] = {"DEFAULT\path\wordMyVehicles.ogg"};
+ 	};
+ 	class Arguments
+ 	{
+ 		class AggrTargets
+ 		{
+ 			modes[] = {"{{Color|darkviolet|Default}}"};
+ 		};
+ 	};
+ };
+
+==== Weapon Words ====
+Property ''nameSound'' defines what word will be used for weapons.
+ class CfgWeapons
+ {
+ 	class myWeapon
+ 	{
+ 		nameSound = "{{Color|green|wordWeapon}}";
+ 	};
+ };
+In protocol, matching word has to be defined
+ class RadioProtocolENG
+ {
+ 	class Words
+ 	{
+ 		{{Color|green|wordWeapon}}[] = {"DEFAULT\path\wordWeapon.ogg"};
+ 	};
+ };
+''displayName'' param of the weapon is displayed in radio message.
+
+==== Location Words ====
+Map locations containing ''speech'' are evaluated and can be used in position reporting:
+ class CfgWords
+ {
+ 	class myWorld
+ 	{
+ 		class Names
+ 		{
+ 			class myLocation
+ 			{
+ 				speech[] = {"{{Color|green|wordMyLocation}}"};
+ 			};
+ 		};
+ 	};
+ };
+
+ class RadioProtocolENG
+ {
+ 	class Words
+ 	{
+ 		{{Color|green|wordMyLocation}}[] = {"DEFAULT\path\wordMyLocation.ogg"};
+ 	};
+ };
+Such locations can be detected by '''DistanceToLocation''' expression (see below) and [[nearestLocationWithDubbing]] scripting command.
+
+
+=== Arguments ===
+* '''Direction'''
+** %{{Color|darkviolet|v}} (%8)
+** %{{Color|darkviolet|v}}.{{Color|orangered|n}} (%8.2)
+** %{{Color|darkviolet|v}}.{{Color|green|m}}0{{Color|orangered|n}} (%8.102)
+*** {{Color|darkviolet|v}} - variable
+*** {{Color|green|m}} - mode
+**** 0 - ''class Relative'' (default)
+**** 1 - ''class Compass''
+**** 2 - Procedural "o'clock" system (e.g., "2 O'CLOCK")
+*** {{Color|orangered|n}} - Arguments ID (default is 1)
+* '''Distance'''
+** %{{Color|darkviolet|v}} (%7)
+** %{{Color|darkviolet|v}}.{{Color|orangered|n}} (%7.2)
+** %{{Color|darkviolet|v}}.{{Color|green|m}}0{{Color|orangered|n}} (%7.101)
+*** {{Color|darkviolet|v}} - variable
+*** {{Color|green|m}} - mode
+**** 0 - ''class Distance'' (default)
+**** >0 - Procedural metres system (e.g., "100 m").
+*** {{Color|orangered|n}} - Arguments ID (default is 1)
+
+ class RadioProtocolENG
+ {
+ 	class Arguments
+ 	{
+ 		{{cc|Class names corresponds to azimuth (in degrees).}}
+ 		class Direction
+ 		{
+ 			class {{Color|green|Compass}}{{Color|OrangeRed|1}}
+ 			{
+ 				class 0		{text = "$STR_Q_NORTH"; speech[] = {North};};
+ 				class 45	{text = "$STR_Q_NORTH_EAST"; speech[] = {NorthEast};};
+ 				class 90	{text = "$STR_Q_EAST"; speech[] = {East};};
+ 				class 135	{text = "$STR_Q_SOUTH_EAST"; speech[] = {SouthEast};};
+ 				class 180	{text = "$STR_Q_SOUTH"; speech[] = {South};};
+ 				class 225	{text = "$STR_Q_SOUTH_WEST"; speech[] = {SouthWest};};
+ 				class 270	{text = "$STR_Q_WEST"; speech[] = {West};};
+ 				class 315	{text = "$STR_Q_NORTH_WEST"; speech[] = {NorthWest};};
+ 			};
+ 			class {{Color|green|Relative}}{{Color|OrangeRed|1}}
+ 			{
+ 				class 0		{text = "in front of"; speach[] = {InFrontOf};};
+ 				class 90	{text = "right of"; speach[] = {RightOf};};
+ 				class 180	{text = "behind"; speach[] = {Behind};};
+ 				class 270	{text = "left of"; speach[] = {LeftOf};};
+ 			};
+ 		};
+ 		{{cc|Class names corresponds to three possible levels of distance (group territory, effective fight distance, far)}}
+ 		class {{Color|green|Distance}}{{Color|OrangeRed|1}}
+ 		{
+ 			class Level0	{text = "$STR_DISTANCE_DANGER_CLOSE_TO"; speech[] = {DangerCloseTo};};
+ 			class Level1	{text = "$STR_DISTANCE_NOT_FAR_FROM"; speech[] = {NotFarFrom};};
+ 			class Level2	{text = "$STR_DISTANCE_FAR_FROM"; speech[] = {FarFrom};};
+ 		};
+ 		class AggrTargets
+ 		{	
+ 			modes[] = {"Default"};
+ 		};
+ 	};
+ };
+
+
+=== Simple Expressions ===
+''Full article about operations - [[Simple Expression]]''
+{| border="0" cellpadding="3px"
+|-
+| '''Rank'''
+| 0 when sender is Private, 1 when he is Colonel (see [[rank]]).
+|-
+| '''Captive'''
+| 1 when sender is captive of unconscious.
+|-
+| '''Safe'''
+| 1 when sender is in safe mode.
+|-
+| '''Combat'''
+| 1 when sender is in combat mode.
+|-
+| '''Stealth'''
+| 1 when sender is in stealth mode.
+|-
+| '''Morale'''
+| sender's [[morale]] interpolated from interval <-1, 1> to <0, 1>.
+|-
+| '''Danger'''
+| perceived danger (ToDo: Find out more, located in ''AIBrain::GetSEDanger'').
+|-
+| '''UnderWater'''
+| 1 when sender is underwater and has no re-breather.
+|-
+| '''GroupCompactness'''
+| 1 if 80% of the group is in formation, 0 otherwise.
+|-
+| '''DistanceToUnit'''
+| distance [m] from ordered unit to its issued destination (SelectCmdMoveSentence) or to aggrTargetList (SelectEnemyDetectedSentence).
+|-
+| '''DistanceToSender'''
+| distance [m] between sender and aggrTargetList (SelectEnemyDetectedSentence). Always 1 in SelectCmdMoveSentence.
+|-
+| '''DistanceToGroup'''
+| distance [m] from group center to issued destination (SelectCmdMoveSentence) or to aggrTargetList (SelectEnemyDetectedSentence).
+|-
+| '''DistanceToLocation'''
+| distance [m] from nearest location with ''speech'' param defined to issued destination (SelectCmdMoveSentence) or to aggrTargetList (SelectEnemyDetectedSentence).
+|-
+| '''GroupCoreRadius'''
+| distance [m] between the group formation center and the most distant member of the group.
+|-
+| '''UnitDistanceFactor'''
+| distance of the closest unit from the aggrTargetList divided by the distance of the second one. Only for SelectEnemyDetectedSentence.
+|-
+| '''InsideLocation'''
+| 1 when inside location with ''speech'' param defined. "Inside" is based on size defined by ''radiusA'', ''radiusB'' and ''angle'' params of the location.
+|-
+| '''MoveToObject'''
+| 1 if the movement target has an Object nearby. In that case parameter %8 of the movement order returns a valid value. Only in SelectCmdMoveSentence.
+|-
+| '''DistanceToRecipients'''
+| distance [m] from group center to message recipient. Only in SelectCmdMoveSentence.
+|-
+| '''RecipientsRadius'''
+| returns always 1 for single selected unit's movement orders and for several units, theoretically returns the radius of the circle containing most of the recipients in the formation of the affected units. Only in SelectCmdMoveSentence.
+|-
+| '''FireBurst'''
+| number of artillery rounds fired by artillery.
+|}
+
+=== Full list of words ===
+
+As of {{GVI|arma3|1.98}}:
+
+{| class="wikitable sortable mw-collapsible mw-collapsed"
+! Word	|| Category	|| Description
+|-
+| two	|| Callsign/Name	||
+|-
+| Hardy	|| Callsign/Name	||
+|-
+| McKay	|| Callsign/Name	||
+|-
+| James	|| Callsign/Name	||
+|-
+| veh_unknown_s		|| Infantry/Vehicle	||
+|-
+| veh_infantry_s	|| Infantry/Vehicle	||
+|-
+| veh_infantry_AT_s	|| Infantry/Vehicle	||
+|-
+| veh_infantry_MG_s	|| Infantry/Vehicle	||
+|-
+| veh_infantry_Sniper_s	|| Infantry/Vehicle	||
+|-
+| veh_infantry_officer_s	|| Infantry/Vehicle	||
+|-
+| veh_infantry_SF_s	|| Infantry/Vehicle	||
+|-
+| veh_infantry_pilot_s	|| Infantry/Vehicle	||
+|-
+| veh_infantry_civilian_s	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_s	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_car_s	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_armedcar_s	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_truck_s	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_armor_s	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_APC_s	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_tank_s	|| Infantry/Vehicle	||
+|-
+| veh_air_s	|| Infantry/Vehicle	||
+|-
+| veh_air_helicopter_s	|| Infantry/Vehicle	||
+|-
+| veh_air_gunship_s	|| Infantry/Vehicle	||
+|-
+| veh_air_plane_s	|| Infantry/Vehicle	||
+|-
+| veh_air_parachute_s	|| Infantry/Vehicle	||
+|-
+| veh_ship_s	|| Infantry/Vehicle	||
+|-
+| veh_ship_boat_s	|| Infantry/Vehicle	||
+|-
+| veh_ship_attackBoat_s	|| Infantry/Vehicle	||
+|-
+| veh_ship_submarine_s	|| Infantry/Vehicle	||
+|-
+| veh_static_s	|| Infantry/Vehicle	||
+|-
+| veh_Static_MG_s	|| Infantry/Vehicle	||
+|-
+| veh_static_AA_s	|| Infantry/Vehicle	||
+|-
+| veh_static_AT_s	|| Infantry/Vehicle	||
+|-
+| veh_Static_mortar_s	|| Infantry/Vehicle	||
+|-
+| veh_static_GL_s	|| Infantry/Vehicle	||
+|-
+| veh_static_cannon_s	|| Infantry/Vehicle	||
+|-
+| veh_infantry_AA_s	|| Infantry/Vehicle	||
+|-
+| veh_infantry_medic_s	|| Infantry/Vehicle	||
+|-
+| veh_infantry_diver_s	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_ugv_s	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_mrap_s	|| Infantry/Vehicle	||
+|-
+| veh_air_uav_s	|| Infantry/Vehicle	||
+|-
+| Stranger	|| Callsign/Name	||
+|-
+| at12	|| Direction	||
+|-
+| at11	|| Direction	||
+|-
+| at10	|| Direction	||
+|-
+| at9	|| Direction	||
+|-
+| at8	|| Direction	||
+|-
+| at7	|| Direction	||
+|-
+| at6	|| Direction	||
+|-
+| at5	|| Direction	||
+|-
+| at4	|| Direction	||
+|-
+| at3	|| Direction	||
+|-
+| at2	|| Direction	||
+|-
+| at1	|| Direction	||
+|-
+| front	|| Direction	||
+|-
+| right	|| Direction	||
+|-
+| left	|| Direction	||
+|-
+| back	|| Direction	||
+|-
+| grid_move_to_zero		|| ||
+|-
+| grid_move_to_one		|| ||
+|-
+| grid_move_to_two		|| ||
+|-
+| grid_move_to_three	|| ||
+|-
+| grid_move_to_four		|| ||
+|-
+| grid_move_to_five		|| ||
+|-
+| grid_move_to_six		|| ||
+|-
+| grid_move_to_seven	|| ||
+|-
+| grid_move_to_eight	|| ||
+|-
+| grid_move_to_nine		|| ||
+|-
+| grid_zero		|| ||
+|-
+| grid_one		|| ||
+|-
+| grid_two		|| ||
+|-
+| grid_three	|| ||
+|-
+| grid_four		|| ||
+|-
+| grid_five		|| ||
+|-
+| grid_six		|| ||
+|-
+| grid_seven	|| ||
+|-
+| grid_eight	|| ||
+|-
+| grid_nine		|| ||
+|-
+| grid_zero_2	|| ||
+|-
+| grid_one_2	|| ||
+|-
+| grid_two_2	|| ||
+|-
+| grid_three_2	|| ||
+|-
+| grid_four_2	|| ||
+|-
+| grid_five_2	|| ||
+|-
+| grid_six_2	|| ||
+|-
+| grid_seven_2	|| ||
+|-
+| grid_eight_2	|| ||
+|-
+| grid_nine_2	|| ||
+|-
+| grid_zero_3	|| ||
+|-
+| grid_one_3	|| ||
+|-
+| grid_two_3	|| ||
+|-
+| grid_three_3	|| ||
+|-
+| grid_four_3	|| ||
+|-
+| grid_five_3	|| ||
+|-
+| grid_six_3	|| ||
+|-
+| grid_seven_3	|| ||
+|-
+| grid_eight_3	|| ||
+|-
+| grid_nine_3	|| ||
+|-
+| whiteTeam		|| Sub-team	||
+|-
+| redTeam		|| Sub-team	||
+|-
+| greenTeam		|| Sub-team	||
+|-
+| blueTeam		|| Sub-team	||
+|-
+| yellowTeam	|| Sub-team	||
+|-
+| zero	|| Callsign/Name	||
+|-
+| one	|| Callsign/Name	||
+|-
+| Northgate	|| Callsign/Name	||
+|-
+| three	|| Callsign/Name	||
+|-
+| four	|| Callsign/Name	||
+|-
+| five	|| Callsign/Name	||
+|-
+| six	|| Callsign/Name	||
+|-
+| seven	|| Callsign/Name	||
+|-
+| eight	|| Callsign/Name	||
+|-
+| nine	|| Callsign/Name	||
+|-
+| ten	|| Callsign/Name	||
+|-
+| eleven	|| Callsign/Name	||
+|-
+| twelve	|| Callsign/Name	||
+|-
+| thirteen	|| Callsign/Name	||
+|-
+| fourteen	|| Callsign/Name	||
+|-
+| fifteen	|| Callsign/Name	||
+|-
+| sixteen	|| Callsign/Name	||
+|-
+| seventeen	|| Callsign/Name	||
+|-
+| eighteen	|| Callsign/Name	||
+|-
+| nineteen	|| Callsign/Name	||
+|-
+| twenty	|| Callsign/Name	||
+|-
+| thirty	|| Callsign/Name	||
+|-
+| forty		|| Callsign/Name	||
+|-
+| fifty		|| Callsign/Name	||
+|-
+| sixty	|| Callsign/Name	||
+|-
+| seventy	|| Callsign/Name	||
+|-
+| eighty	|| Callsign/Name	||
+|-
+| ninety	|| Callsign/Name	||
+|-
+| hundred	|| Callsign/Name	||
+|-
+| Reynolds		|| Callsign/Name	||
+|-
+| Armstrong		|| Callsign/Name	||
+|-
+| Nichols		|| Callsign/Name	||
+|-
+| Tanny			|| Callsign/Name	||
+|-
+| Frost			|| Callsign/Name	||
+|-
+| Lacey			|| Callsign/Name	||
+|-
+| Larkin		|| Callsign/Name	||
+|-
+| Kerry			|| Callsign/Name	||
+|-
+| Jackson		|| Callsign/Name	||
+|-
+| Miller		|| Callsign/Name	||
+|-
+| McKendrick	|| Callsign/Name	||
+|-
+| Levine		|| Callsign/Name	||
+|-
+| dist75	|| Distance	||
+|-
+| dist100	|| Distance	||
+|-
+| dist200	|| Distance	||
+|-
+| dist300	|| Distance	||
+|-
+| dist400	|| Distance	||
+|-
+| dist500	|| Distance	||
+|-
+| dist600	|| Distance	||
+|-
+| dist700	|| Distance	||
+|-
+| dist800	|| Distance	||
+|-
+| dist1000	|| Distance	||
+|-
+| dist1500	|| Distance	||
+|-
+| dist2000	|| Distance	||
+|-
+| dist2500	|| Distance	||
+|-
+| Korneedler	|| Callsign/Name	||
+|-
+| Viper			|| Callsign/Name	||
+|-
+| Fox			|| Callsign/Name	||
+|-
+| Snake			|| Callsign/Name	||
+|-
+| Razer			|| Callsign/Name	||
+|-
+| Jester		|| Callsign/Name	||
+|-
+| Ghost			|| Callsign/Name	||
+|-
+| reportFront	|| Direction	||
+|-
+| reportRight	|| Direction	||
+|-
+| reportLeft	|| Direction	||
+|-
+| reportBack	|| Direction	||
+|-
+| Adams		|| Callsign/Name	||
+|-
+| Bennett	|| Callsign/Name	||
+|-
+| Franklin	|| Callsign/Name	||
+|-
+| Everett	|| Callsign/Name	||
+|-
+| Dixon		|| Callsign/Name	||
+|-
+| Campbell	|| Callsign/Name	||
+|-
+| Givens	|| Callsign/Name	||
+|-
+| Hawkins	|| Callsign/Name	||
+|-
+| Lopez		|| Callsign/Name	||
+|-
+| Martinez	|| Callsign/Name	||
+|-
+| OConnor	|| Callsign/Name	||
+|-
+| Ryan		|| Callsign/Name	||
+|-
+| Patterson	|| Callsign/Name	||
+|-
+| Sykes		|| Callsign/Name	||
+|-
+| Taylor	|| Callsign/Name	||
+|-
+| Walker	|| Callsign/Name	||
+|-
+| Anthis	|| Callsign/Name	||
+|-
+| Costa		|| Callsign/Name	||
+|-
+| Kouris	|| Callsign/Name	||
+|-
+| Gekas		|| Callsign/Name	||
+|-
+| Elias		|| Callsign/Name	||
+|-
+| Dimitirou	|| Callsign/Name	||
+|-
+| Leventis	|| Callsign/Name	||
+|-
+| Markos	|| Callsign/Name	||
+|-
+| Nikas		|| Callsign/Name	||
+|-
+| Nicolo	|| Callsign/Name	||
+|-
+| Panas		|| Callsign/Name	||
+|-
+| Petros	|| Callsign/Name	||
+|-
+| Rosi		|| Callsign/Name	||
+|-
+| Samaras	|| Callsign/Name	||
+|-
+| Stavrou	|| Callsign/Name	||
+|-
+| Thanos	|| Callsign/Name	||
+|-
+| Vega		|| Callsign/Name	||
+|-
+| Amin		|| Callsign/Name	||
+|-
+| Masood	|| Callsign/Name	||
+|-
+| Jawadi	|| Callsign/Name	||
+|-
+| Kushan	|| Callsign/Name	||
+|-
+| Habibi	|| Callsign/Name	||
+|-
+| Fahim		|| Callsign/Name	||
+|-
+| Nazari	|| Callsign/Name	||
+|-
+| Siddiqi	|| Callsign/Name	||
+|-
+| Takhtar	|| Callsign/Name	||
+|-
+| Wardak	|| Callsign/Name	||
+|-
+| Yousuf	|| Callsign/Name	||
+|-
+| __1	|| ||
+|-
+| __2	|| ||
+|-
+| __6_CMPS	|| ||
+|-
+| EnemyDetected	|| Situation Report	||
+|-
+| _eGRPDIR_102	|| ||
+|-
+| Clear	|| Situation Report	||
+|-
+| AreaClear	|| Situation Report	||
+|-
+| IAmTheNewActual	|| Situation Report	||
+|-
+| TakingCommand	|| Situation Report	||
+|-
+| ReadyToFire	|| Situation Report	||
+|-
+| TargetInSight	|| Situation Report	||
+|-
+| TargetAcquired	|| Situation Report	||
+|-
+| EyesOnTarget	|| Situation Report	||
+|-
+| Ready	|| Situation Report	||
+|-
+| Waiting	|| Situation Report	||
+|-
+| StandingBy	|| Situation Report	||
+|-
+| Negative	|| Situation Report	||
+|-
+| NoCanDo	|| Situation Report	||
+|-
+| CantGetThere	|| Situation Report	||
+|-
+| NegativeCantMakeItThere	|| Situation Report	||
+|-
+| ScratchOne	|| Situation Report	||
+|-
+| TargetIsDown	|| Situation Report	||
+|-
+| TargetEliminated	|| Situation Report	||
+|-
+| HeIsDown	|| Situation Report	||
+|-
+| IVeGotHim	|| Situation Report	||
+|-
+| HostileDown	|| Situation Report	||
+|-
+| __1_1	|| ||
+|-
+| Sitrep	|| Leader order - General	||
+|-
+| ReportIn	|| Leader order - General	||
+|-
+| ReportPosition	|| Leader order - General	||
+|-
+| WhatIsYourLocationQ	|| Situation Report	||
+|-
+| SayAgainOver	|| Situation Report	||
+|-
+| RepeatLastOver	|| Situation Report	||
+|-
+| Confirmation1	|| Situation Report	||
+|-
+| Confirmation2	|| Situation Report	||
+|-
+| Supporting	|| Situation Report	||
+|-
+| OnTheWay	|| Situation Report	||
+|-
+| CannotFire	|| Situation Report	||
+|-
+| CopyIAmOnHim	|| Situation Report	||
+|-
+| Engaging	|| Situation Report	||
+|-
+| EngagingTarget	|| Situation Report	||
+|-
+| Attacking	|| Situation Report	||
+|-
+| HealthInjured	|| Situation Report	||
+|-
+| HealthSomebodyHelpMe	|| Situation Report	||
+|-
+| HealthNeedHelp	|| Situation Report	||
+|-
+| HealthWounded	|| Situation Report	||
+|-
+| HealthMedic	|| Situation Report	||
+|-
+| CriticalDamage	|| Situation Report	||
+|-
+| FuelCritical	|| Situation Report	||
+|-
+| FuelLow	|| Situation Report	||
+|-
+| AmmoCritical	|| Situation Report	||
+|-
+| AmmoLow	|| Situation Report	||
+|-
+| OutOfFirstAidKits	|| Situation Report	||
+|-
+| ManDownE	|| Situation Report	||
+|-
+| WeLostOneE	|| Situation Report	||
+|-
+| WeGotAManDownE	|| Situation Report	||
+|-
+| IAmReady	|| Situation Report	||
+|-
+| ReadyForOrders	|| Situation Report	||
+|-
+| AwaitingOrders	|| Situation Report	||
+|-
+| HealthINeedHelpNow	|| Situation Report	||
+|-
+| HealthIAmBadlyHurt	|| Situation Report	||
+|-
+| HealthINeedSomeHelpHere	|| Situation Report	||
+|-
+| HealthNeedMedicNow	|| Situation Report	||
+|-
+| HealthIAmWounded	|| Situation Report	||
+|-
+| HeIsHitE	|| ||
+|-
+| Fire	|| Leader order - General	||
+|-
+| GetInThatVehicle	|| Leader order - General	||
+|-
+| _mGRPDIS_300	|| ||
+|-
+| FallBack	|| Leader order - General	||
+|-
+| MineDetected	|| Situation Report	||
+|-
+| BombDetected	|| Situation Report	||
+|-
+| ExplosiveDetected	|| Situation Report	||
+|-
+| TargetIsNeutralized	|| Situation Report	||
+|-
+| RepairThatVehicle	|| Leader order - Action	||
+|-
+| HealThatSoldier	|| Leader order - Action	||
+|-
+| PatchYourself	|| Leader order - Action	||
+|-
+| RequestingSupport	|| ||
+|-
+| HeIsDeadE	|| ||
+|-
+| OnTheMove	|| Situation Report	||
+|-
+| HelpThatSoldier	|| Leader order - Action	||
+|-
+| CarryThatSoldier	|| Leader order - Action	||
+|-
+| OpenThatDoor	|| Leader order - Action	||
+|-
+| LightThatFire	|| Leader order - Action	||
+|-
+| PutOutThatFire	|| Leader order - Action	||
+|-
+| CloseThatDoor	|| Leader order - Action	||
+|-
+| DropTheWeapon	|| Leader order - Action	||
+|-
+| DropThatMagazine	|| Leader order - Action	||
+|-
+| TakeThatWeapon	|| Leader order - Action	||
+|-
+| TakeThatMagazine	|| Leader order - Action	||
+|-
+| SetCharge	|| Leader order - Action	||
+|-
+| DetonateCharge	|| Leader order - Action	||
+|-
+| SetTheTimer	|| Leader order - Action	||
+|-
+| DeactivateCharge	|| Leader order - Action	||
+|-
+| DisarmThatMine	|| Leader order - Action	||
+|-
+| TakeThatMine	|| Leader order - Action	||
+|-
+| GoToThatMedic	|| Leader order - Action	||
+|-
+| RefuelThatVehicle	|| Leader order - Action	||
+|-
+| Rearm	|| Leader order - Action	||
+|-
+| GetSupport	|| Leader order - Action	||
+|-
+| AssembleThatWeapon	|| Leader order - Action	||
+|-
+| DisassembleThatWeapon	|| Leader order - Action	||
+|-
+| FlashlightsOn	|| Leader order - Action	||
+|-
+| FlashlightsOff	|| Leader order - Action	||
+|-
+| PointersOn	|| Leader order - Action	||
+|-
+| PointersOff	|| Leader order - Action	||
+|-
+| TakeThatPack	|| Leader order - Action	||
+|-
+| DropYourPack	|| Leader order - Action	||
+|-
+| OpenUpYourPack	|| Leader order - Action	||
+|-
+| Attack	|| Leader order - General	||
+|-
+| Engage	|| Leader order - General	||
+|-
+| NoTarget	|| Leader order - General	||
+|-
+| CancelTarget	|| Leader order - General	||
+|-
+| CannotComply	|| Situation Report	||
+|-
+| veh_unknown_p	|| Infantry/Vehicle	||
+|-
+| veh_infantry_p	|| Infantry/Vehicle	||
+|-
+| veh_infantry_AT_p	|| Infantry/Vehicle	||
+|-
+| veh_infantry_MG_p	|| Infantry/Vehicle	||
+|-
+| veh_infantry_Sniper_p	|| Infantry/Vehicle	||
+|-
+| veh_infantry_officer_p	|| Infantry/Vehicle	||
+|-
+| veh_infantry_SF_p	|| Infantry/Vehicle	||
+|-
+| veh_infantry_pilot_p	|| Infantry/Vehicle	||
+|-
+| veh_infantry_civilian_p	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_p	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_car_p	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_armedcar_p	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_truck_p	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_armor_p	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_APC_p	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_tank_p	|| Infantry/Vehicle	||
+|-
+| veh_air_p	|| Infantry/Vehicle	||
+|-
+| veh_air_helicopter_p	|| Infantry/Vehicle	||
+|-
+| veh_air_gunship_p	|| Infantry/Vehicle	||
+|-
+| veh_air_plane_p	|| Infantry/Vehicle	||
+|-
+| veh_air_parachute_p	|| Infantry/Vehicle	||
+|-
+| veh_ship_p	|| Infantry/Vehicle	||
+|-
+| veh_ship_boat_p	|| Infantry/Vehicle	||
+|-
+| veh_ship_attackBoat_p	|| Infantry/Vehicle	||
+|-
+| veh_ship_submarine_p	|| Infantry/Vehicle	||
+|-
+| veh_static_p	|| Infantry/Vehicle	||
+|-
+| veh_Static_MG_p	|| Infantry/Vehicle	||
+|-
+| veh_static_AA_p	|| Infantry/Vehicle	||
+|-
+| veh_static_AT_p	|| Infantry/Vehicle	||
+|-
+| veh_Static_mortar_p	|| Infantry/Vehicle	||
+|-
+| veh_static_GL_p	|| Infantry/Vehicle	||
+|-
+| veh_static_cannon_p	|| Infantry/Vehicle	||
+|-
+| veh_infantry_AA_p	|| Infantry/Vehicle	||
+|-
+| veh_infantry_diver_p	|| Infantry/Vehicle	||
+|-
+| veh_infantry_medic_p	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_ugv_p	|| Infantry/Vehicle	||
+|-
+| veh_vehicle_mrap_p	|| Infantry/Vehicle	||
+|-
+| veh_air_uav_p	|| Infantry/Vehicle	||
+|-
+| ReturnToFormation	|| Leader order - General	||
+|-
+| JoinThatGroup	|| Leader order - General	||
+|-
+| Halt	|| Leader order - General	||
+|-
+| TakeCover	|| Leader order - General	||
+|-
+| Stop	|| Leader order - General	||
+|-
+| Advance	|| Leader order - General	||
+|-
+| FormOnMe	|| Leader order - General	||
+|-
+| Regroup	|| Leader order - General	||
+|-
+| StayBack	|| Leader order - General	||
+|-
+| FlankLeft	|| Leader order - General	||
+|-
+| FlankRight	|| Leader order - General	||
+|-
+| EngageAtWill	|| Leader order - General	||
+|-
+| FreeToEngage	|| Leader order - General	||
+|-
+| Disengage	|| Leader order - General	||
+|-
+| FormColumn	|| Leader order - Formation	||
+|-
+| FormStaggeredColumn	|| Leader order - Formation	||
+|-
+| FormWedge	|| Leader order - Formation	||
+|-
+| FormEcholonLeft	|| Leader order - Formation	||
+|-
+| FormEcholonRight	|| Leader order - Formation	||
+|-
+| FormVee	|| Leader order - Formation	||
+|-
+| FormLine	|| Leader order - Formation	||
+|-
+| FormFile	|| Leader order - Formation	||
+|-
+| FormDiamond	|| Leader order - Formation	||
+|-
+| GoProne	|| Leader order - Stance	||
+|-
+| WatchThatTarget	|| ||
+|-
+| StayLow	|| Leader order - Stance	||
+|-
+| OnYourFeet	|| Leader order - Stance	||
+|-
+| CopyMyStance	|| Leader order - Stance	||
+|-
+| __4_CMPS	|| ||
+|-
+| ObserveThatPosition	|| ||
+|-
+| ScanHorizon	|| ||
+|-
+| __6_ABS	|| ||
+|-
+| __7_CLCK	|| ||
+|-
+| KeepFormation	|| Leader order - General	||
+|-
+| StayInFormation	|| Leader order - General	||
+|-
+| CeaseFire	|| Leader order - General	||
+|-
+| VehForward	|| Leader order - Vehicle	||
+|-
+| VehStop	|| Leader order - Vehicle	||
+|-
+| VehBackward	|| Leader order - Vehicle	||
+|-
+| VehFast	|| Leader order - Vehicle	||
+|-
+| VehSlow	|| Leader order - Vehicle	||
+|-
+| VehLeft	|| Leader order - Vehicle	||
+|-
+| VehRight	|| Leader order - Vehicle	||
+|-
+| ManualFire	|| Leader order - Vehicle	||
+|-
+| CancelManualFire	|| Leader order - Vehicle	||
+|-
+| GetInThatVehicleGunner	|| Leader order - Vehicle	||
+|-
+| GetInThatVehicleCommander	|| Leader order - Vehicle	||
+|-
+| GoToTheMedic	|| Leader order - General	||
+|-
+| GetInThatVehicleDriver	|| Leader order - Vehicle	||
+|-
+| GetInThatVehiclePilot	|| Leader order - Vehicle	||
+|-
+| BoardThatVehicle	|| Leader order - Vehicle	||
+|-
+| Dismount	|| Leader order - Vehicle	||
+|-
+| Eject	|| Leader order - Vehicle	||
+|-
+| RoundsComplete	|| ||
+|-
+| CannotExecuteOutsideEnvelope	|| ||
+|-
+| CannotExecuteAdjustCoordinates	|| ||
+|-
+| SwitchToDriver	|| Leader order - Vehicle	||
+|-
+| SwitchToGunner	|| Leader order - Vehicle	||
+|-
+| SwitchToCommander	|| Leader order - Vehicle	||
+|-
+| MoveToCargo	|| Leader order - Vehicle	||
+|-
+| RepairTheVehicle	|| Leader order - Action	||
+|-
+| RefuelTheVehicle	|| Leader order - Action	||
+|-
+| TakeTheWeapon	|| Leader order - Action	||
+|-
+| TakeTheMagazine	|| Leader order - Action	||
+|-
+| SupportRequestRGCASBombing	|| Support - Request	||
+|-
+| SupportRequestRGCASHelicopter	|| Support - Request	||
+|-
+| SupportRequestRGSupplyDrop	|| Support - Request	||
+|-
+| SupportRequestRGUAV	|| Support - Request	||
+|-
+| SupportRequestRGArty	|| Support - Request	||
+|-
+| SupportRequestRGTransport	|| Support - Request	||
+|-
+| RequestAcknowledgedSGCASBombing	|| Support - Acknowledgement	||
+|-
+| RequestAcknowledgedSGCASHelicopter	|| Support - Acknowledgement	||
+|-
+| RequestAcknowledgedSGSupplyDrop	|| Support - Acknowledgement	||
+|-
+| RequestAcknowledgedSGUAV	|| Support - Acknowledgement	||
+|-
+| RequestAcknowledgedSGArty	|| Support - Acknowledgement	||
+|-
+| RequestAcknowledgedTransport	|| Support - Acknowledgement	||
+|-
+| UnitDestroyedHQCASBombing	|| Support - Destroyed	||
+|-
+| UnitDestroyedHQSupplyDrop	|| Support - Destroyed	||
+|-
+| UnitDestroyedHQUAV	|| Support - Destroyed	||
+|-
+| UnitDestroyedHQArty	|| Support - Destroyed	||
+|-
+| UnitDestroyedHQTransport	|| Support - Destroyed	||
+|-
+| RequestAccomplishedSGCASBombing	|| Support - Done	||
+|-
+| RequestAccomplishedSGCASHelicopter	|| Support - Done	||
+|-
+| RequestAccomplishedSGSupplyDrop	|| Support - Done	||
+|-
+| RequestAccomplishedSGUAV	|| Support - Done	||
+|-
+| RequestAccomplishedSGArty	|| Support - Done	||
+|-
+| RequestAccomplishedSGTransport	|| Support - Done	||
+|-
+| SupportAddedDuringMission	|| Support	||
+|-
+| ArtySGSupportRoundsComplete	|| ||
+|-
+| TransportSGWelcomeAboard	|| ||
+|-
+| TransportSGLZCoordinatesSelected	|| ||
+|-
+| __4	|| ||
+|-
+| __6_3	|| ||
+|-
+| __7_CMPS	|| ||
+|-
+| __3	|| ||
+|-
+| __6	|| ||
+|-
+| FireAtWill	|| Leader order - Combat Mode	||
+|-
+| WeaponsFree	|| Leader order - Combat Mode	||
+|-
+| CombatOpenFire	|| Leader order - Combat Mode	||
+|-
+| HoldFire	|| Leader order - Combat Mode	||
+|-
+| DoNotFire	|| Leader order - Combat Mode	||
+|-
+| __2_1	|| ||
+|-
+| CheckYourFire	|| Situation Report	||
+|-
+| Safe	|| Leader order - Behaviour	||
+|-
+| Relax	|| Leader order - Behaviour	||
+|-
+| KeepFocused	|| Leader order - Behaviour	||
+|-
+| StayAlert	|| Leader order - Behaviour	||
+|-
+| PrepareForContact	|| ||
+|-
+| GetReadyToFight	|| ||
+|-
+| LockAndLoad	|| ||
+|-
+| Danger	|| ||
+|-
+| Silence	|| ||
+|-
+| DownAndQuiet	|| ||
+|-
+| CommStealth	|| ||
+|-
+| CoverMeE	|| ||
+|-
+| CoveringE	|| ||
+|-
+| SuppressingE	|| ||
+|-
+| ReloadingE	|| ||
+|-
+| ThrowingSmokeE_1	|| Situation Report	||
+|-
+| ThrowingGrenadeE_1	|| Situation Report	||
+|-
+| ThrowingGrenadeE_2	|| Situation Report	||
+|-
+| ThrowingGrenadeE_3	|| Situation Report	||
+|-
+| ThrowingSmokeE_2	|| Situation Report	||
+|-
+| IncomingGrenadeE_1	|| Situation Report	||
+|-
+| IncomingGrenadeE_2	|| Situation Report	||
+|-
+| IncomingGrenadeE_3	|| Situation Report	||
+|-
+| ContactE_1	|| ||
+|-
+| ContactE_2	|| ||
+|-
+| ContactE_3	|| ||
+|-
+| CombatGenericE	|| ||
+|-
+| ScreamingE	|| ||
+|-
+| CheeringE	|| ||
+|-
+| WitnessKilledE	|| ||
+|-
+| UnderFireE	|| ||
+|-
+| EndangeredE	|| ||
+|-
+| moveUp	|| Leader order - Move	||
+|-
+| moveRight	|| Leader order - Move	||
+|-
+| moveLeft	|| Leader order - Move	||
+|-
+| moveBack	|| Leader order - Move	||
+|-
+| move_dist500	|| Leader order - Move	||
+|-
+| move_dist400	|| Leader order - Move	||
+|-
+| move_dist300	|| Leader order - Move	||
+|-
+| move_dist200	|| Leader order - Move	||
+|-
+| move_dist100	|| Leader order - Move	||
+|-
+| move_dist75	|| Leader order - Move	||
+|-
+| move_dist600	|| Leader order - Move	||
+|-
+| move_dist700	|| Leader order - Move	||
+|-
+| move_dist800	|| Leader order - Move	||
+|-
+| move_dist1000	|| Leader order - Move	||
+|-
+| move_dist1500	|| Leader order - Move	||
+|-
+| move_dist2000	|| Leader order - Move	||
+|-
+| move_dist2500	|| Leader order - Move	||
+|-
+| northEast	|| Direction	||
+|-
+| northWest	|| Direction	||
+|-
+| south	|| Direction	||
+|-
+| southEast	|| Direction	||
+|-
+| southWest		|| Direction	||
+|-
+| east			|| Direction	||
+|-
+| west			|| Direction	||
+|-
+| north			|| Direction	||
+|-
+| bearing000	|| Direction	||
+|-
+| bearing015	|| Direction	||
+|-
+| bearing030	|| Direction	||
+|-
+| bearing045	|| Direction	||
+|-
+| bearing060	|| Direction	||
+|-
+| bearing075	|| Direction	||
+|-
+| bearing090	|| Direction	||
+|-
+| bearing105	|| Direction	||
+|-
+| bearing120	|| Direction	||
+|-
+| bearing135	|| Direction	||
+|-
+| bearing150	|| Direction	||
+|-
+| bearing165	|| Direction	||
+|-
+| bearing180	|| Direction	||
+|-
+| bearing195	|| Direction	||
+|-
+| bearing210	|| Direction	||
+|-
+| bearing225	|| Direction	||
+|-
+| bearing240	|| Direction	||
+|-
+| bearing255	|| Direction	||
+|-
+| bearing270	|| Direction	||
+|-
+| bearing285	|| Direction	||
+|-
+| bearing300	|| Direction	||
+|-
+| bearing315	|| Direction	||
+|-
+| bearing330	|| Direction	||
+|-
+| bearing345	|| Direction	||
+|-
+| bearing360	|| Direction	||
+|-
+| alpha		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| bravo		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| charlie	|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| delta		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| echo		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| foxtrot	|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| golf		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| hotel		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| india		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| juliet	|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| kilo		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| lima		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| mike		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| november	|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| oscar		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| papa		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| quebec	|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| romeo		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| sierra	|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| tango		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| uniform	|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| victor	|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| whiskey	|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| xray		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| yankee	|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| zulu		|| Coded location	|| '''not''' "&lt;NATOletter&gt;", but "Move to point &lt;NATOletter&gt;"
+|-
+| obj_church		|| Terrain location	||
+|-
+| obj_fortress		|| Terrain location	||
+|-
+| obj_lighthouse	|| Terrain location	||
+|-
+| obj_transmitter	|| Terrain location	||
+|-
+| obj_powerwind		|| Terrain location	||
+|-
+| obj_powersolar	|| Terrain location	||
+|-
+| dloc_base	|| ||
+|-
+| dloc_RV	|| ||
+|-
+| loc_village	|| Terrain location	||
+|-
+| loc_town	|| Terrain location	||
+|-
+| loc_city	|| Terrain location	||
+|-
+| loc_forest	|| Terrain location	||
+|-
+| loc_beach	|| Terrain location	||
+|-
+| Contact	|| ||
+|-
+| GenReinforcementsConfirmed1	|| Battle General	||
+|-
+| GenReinforcementsRejected1	|| Battle General	||
+|-
+| GenReinforcementsArrived1	|| Battle General	||
+|-
+| GenLeavingAO1	|| Battle General	||
+|-
+| GenTime1	|| Battle General	||
+|-
+| GenLosing1	|| Battle General	||
+|-
+| GenLost1	|| Battle General	||
+|-
+| GenComplete1	|| Battle General	||
+|-
+| GenCmdSeize1	|| Battle General	||
+|-
+| GenCmdDefend1	|| Battle General	||
+|-
+| GenCmdRTB1	|| Battle General	||
+|-
+| GenCmdTargetNeutralize1	|| Battle General	||
+|-
+| GenCmdTargetProtect1	|| Battle General	||
+|-
+| GenCmdTargetEscort	|| Battle General	||
+|-
+| GenCmdTargetFind1	|| Battle General	||
+|-
+| GenIncoming1	|| Battle General	||
+|-
+| GenBaseUnlockRespawn1	|| Battle General	||
+|-
+| GenBaseUnlockVehicle1	|| Battle General	||
+|-
+| GenBaseSideFriendlyWEST	|| Battle General	||
+|-
+| heat	|| Weapon/Ammo selection	||
+|-
+| sabot	|| Weapon/Ammo selection	||
+|-
+| cannon	|| Weapon/Ammo selection	||
+|-
+| cannonLow	|| Weapon/Ammo selection	||
+|-
+| cannonHigh	|| Weapon/Ammo selection	||
+|-
+| RocketsPairs	|| Weapon/Ammo selection	||
+|-
+| RocketsSalvo	|| Weapon/Ammo selection	||
+|-
+| Bombs	|| Weapon/Ammo selection	||
+|-
+| Flares	|| Weapon/Ammo selection	||
+|-
+| missiles	|| Weapon/Ammo selection	||
+|-
+| Rockets	|| Weapon/Ammo selection	||
+|-
+| mgun	|| Weapon/Ammo selection	||
+|-
+| FXBreathingSlow	|| Sound effect	||
+|-
+| FXBreathingFast	|| Sound effect	||
+|-
+| FXHit	|| Sound effect	||
+|-
+| FXDeath	|| Sound effect	||
+|-
+| FXHurt	|| Sound effect	||
+|-
+| FXEffort	|| Sound effect	||
+|-
+| FXDrowning	|| Sound effect	||
+|-
+| RallyUp	|| ||
+|-
+| GenReinforcementsConfirmed2	|| Battle General	||
+|-
+| GenReinforcementsRejected2	|| Battle General	||
+|-
+| GenReinforcementsArrived2	|| Battle General	||
+|-
+| GenLeavingAO2	|| Battle General	||
+|-
+| GenLeavingAO3	|| Battle General	||
+|-
+| GenTime2	|| Battle General	||
+|-
+| GenTime3	|| Battle General	||
+|-
+| GenLosing2	|| Battle General	||
+|-
+| GenLosing3	|| Battle General	||
+|-
+| GenLost2	|| Battle General	||
+|-
+| GenLost3	|| Battle General	||
+|-
+| GenComplete2	|| Battle General	||
+|-
+| GenComplete3	|| Battle General	||
+|-
+| GenCmdSeize2	|| Battle General	||
+|-
+| GenCmdDefend2	|| Battle General	||
+|-
+| GenCmdRTB2	|| Battle General	||
+|-
+| GenCmdTargetNeutralize2	|| Battle General	||
+|-
+| GenCmdTargetProtect2	|| Battle General	||
+|-
+| GenCmdTargetFind2	|| Battle General	||
+|-
+| GenIncoming2	|| Battle General	||
+|-
+| GenIncoming3	|| Battle General	||
+|-
+| GenBaseUnlockRespawn2	|| Battle General	||
+|-
+| GenBaseUnlockRespawn3	|| Battle General	||
+|-
+| GenBaseUnlockVehicle2	|| Battle General	||
+|-
+| GenBaseUnlockVehicle3	|| Battle General	||
+|-
+| GenBaseSideFriendlyEAST	|| Battle General	||
+|-
+| GenBaseSideFriendlyGUER	|| Battle General	||
+|-
+| GenBaseSideEnemyWEST	|| Battle General	||
+|-
+| GenBaseSideEnemyEAST	|| Battle General	||
+|-
+| GenBaseSideEnemyGUER	|| Battle General	||
+|-
+| Target	|| ||
+|-
+| __5	|| ||
+|-
+| __7	|| ||
+|-
+| __8	|| ||
+|-
+| __9	|| ||
+|-
+| __10	|| ||
+|-
+| __11	|| ||
+|-
+| __12	|| ||
+|-
+| __13	|| ||
+|-
+| __14	|| ||
+|-
+| __15	|| ||
+|-
+| Suppressing	|| Situation Report	||
+|-
+| SuppressiveFire	|| ||
+|}
+
+Code used:<spoiler>
+<sqf>
+private _propertyNames = configProperties [configFile >> "RadioProtocolENG" >> "Words" >> "Normal"] apply { configName _x };
+private _result = "{| class=""wikitable sortable""" + endl;
+_result = _result + "! Word	|| Category	|| Description" + endl;
+{
+	_result = format ["%1| %2	|| -	|| -%3|-%3", _result, _x, endl];
+} forEach _propertyNames;
+_result = _result + "|}";
+
+copyToClipboard _result;
+</sqf>
+</spoiler>
+
+
+== Channels ==
+
+''See also [[radioChannelCreate]]''
+<syntaxhighlight lang="cpp">
+class RadioChannels
+{
+	class GroupChannel
+	{
+		// Priority
+		level = 1;
+		// Word class of background noise
+		noise = "loop";
+		// Link to CfgVoice param with sounds played after every sentence
+		micOuts = "micOuts";
+
+		// Pause after every word in sentence's ''speech'' param
+		pauseAfterWord = 0;
+		// Pause between numbers (e.g., when spelling a grid position)
+		pauseInNumber = 0;
+		// Pause after direction numbers (e.g., "1 O'CLOCK,_ENEMY SOLDIER")
+		pauseAfterNumber = 0;
+		// Pause between numbers of selected members (e.g., "2,_3,_4, RETURN TO FORMATION"))
+		pauseInUnitList = 0;
+		// Pause after numbers of selected members(e.g., "2, 3, 4,_RETURN TO FORMATION")
+		pauseAfterUnitList = 0.05;
+	};
+	class GlobalChannel {};
+	class SideChannel {};
+	class CommandChannel {};
+	class GroupChannel {};
+	class VehicleChannel {};
+	class DirectSpeakingChannel {};
+};
+</syntaxhighlight>
+
+
+== User Interface ==
+
+* '''RscChatListMission''' - in mission
+* '''RscChatListMap''' - in-game map
+* '''RscChatListBriefing''' - in-game map before mission starts
+
+Supported params:
+
+{| class="valign-top"
+|
+
+{| class="wikitable"
+! Standard UI params
+|-
+| x, y, w, h
+|-
+| font
+|-
+| size
+|-
+| rows
+|-
+| shadow
+|-
+| shadowColor
+|-
+| colorBackground
+|}
+
+|
+
+{| class="wikitable" style="background-color: #333; font-weight: bold"
+! Chat list specific params
+|-
+| {{Color|#9A9A9A|colorGlobalChannel}}
+|-
+| {{Color|#46D3FC|colorSideChannel}}
+|-
+| {{Color|#FFFF46|colorCommandChannel}}
+|-
+| {{Color|#B4F762|colorGroupChannel}}
+|-
+| {{Color|#FFD000|colorVehicleChannel}}
+|-
+| {{Color|#FFF|colorDirectChannel}}
+|-
+| {{Color|#F00|colorSystemChannel}}
+|}
+
+|
+
+{| class="wikitable"
+! Obsolete params
+|-
+| colorPlayerBackground
+|-
+| iconPlayerMessage
+|-
+| iconNormalMessage
+|}
+
+|}
+
+* '''RscDisplayChannel''' - notification about a current channel
+* '''RscDisplayVoiceChat''' - notification about VOIP being active
+* '''RscDisplayChat''' - text entry of MP chat
+
+
+== Key Actions ==
+
+{| class="wikitable"
+! Class
+! Label
+|-
+| '''prevChannel'''
+| ''Previous channel''
+|-
+| '''nextChannel'''
+| ''Next channel''
+|-
+| '''chat'''
+| ''Chat''
+|-
+| '''pushToTalk'''
+| ''Push to Talk''
+|-
+| '''voiceOverNet'''
+| ''Voice Over Net''
+|-
+| '''PushToTalkAll'''
+| ''Talk on Global channel''
+|-
+| '''PushToTalkSide'''
+| ''Talk on Side channel''
+|-
+| '''PushToTalkCommand'''
+| ''Talk on Command channel''
+|-
+| '''PushToTalkGroup'''
+| ''Talk on Group channel''
+|-
+| '''PushToTalkVehicle'''
+| ''Talk on Vehicle channel''
+|-
+| '''PushToTalkDirect'''
+| ''Talk on Direct channel''
+|}
+
+
+== Options ==
+
+Following settings have effect on how sentences are played and/or displayed.
+
+{| class="wikitable"
+! Param name
+! Menu
+! Name
+! Name space
+! Description
+|-
+| ''language''
+| Game Options
+| ''Language''
+| Arma3.cfg
+| Selects what language will be used in text (does not affect voice).
+|-
+| ''showRadio''
+| Game Options
+| ''Radio subtitles''
+| *.Arma3Profile
+| When disabled, radio subtitles are not shown (but sound is still played).
+|-
+| ''volumeSpeech''
+| Audio Options
+| ''Speech volume''
+| *.Arma3Profile
+| Selects volume level of all sentences (including direct channel).
+|-
+| ''clockIndicator''
+| Difficulty
+| ''Clock indicator''
+| *.Arma3Profile
+| When enabled, visual clock indicator is shown when enemy in direction from group's center is reported.
+|-
+| ''autoSpot''
+| Difficulty
+| ''Auto report''
+| *.Arma3Profile
+| When enabled, player's avatar automatically reports same events as AI team-mates (e.g., reporting enemy, announcing casualties, etc.)
+|}
+
+
+{{GameCategory|arma3|Editing}}

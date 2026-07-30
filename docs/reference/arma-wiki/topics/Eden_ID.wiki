@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Eden_ID
+// revision: 257605 (2021-05-16T21:14:21Z)
+// export sha1: 4vr5ce2e2g4et4uvd1m6v51osaqse0d
+// categories: Category:Eden Editor: Modding
+// Vendored snapshot. Do not edit — re-export instead.
+
+Eden ID is unique index of an [[Eden Entity]]. This [[Number]] remains the same even after saving and loading the scenario. [[add3DENLayer|Editor layers]] and [[Eden_Editor:_Comment|Editor comments]] are always represented by their Eden ID
+
+[[Category:Eden Editor: Modding]]

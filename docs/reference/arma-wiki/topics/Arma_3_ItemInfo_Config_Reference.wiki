@@ -1,0 +1,338 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_ItemInfo_Config_Reference
+// revision: 373234 (2025-04-12T22:20:55Z)
+// export sha1: 47e60xzrhyuzgc235ypodujnk335jct
+// categories: Category:Arma 3: Reference Lists | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|stub}}
+{{Feature|informative|Note that this is the relevant page for {{arma3}} ItemInfo configuration. Implementations for older Arma titles differ somewhat, but are irrelevant for {{arma3}}.}}
+
+
+== ItemInfo ==
+
+=== A ===
+
+==== allowedSlots[] ====
+;Used with: All items other than Weapons
+;Type: [[TokenNameValueTypes#Arrays|Array]]
+;Default: {}
+;Description: Parameter which defines which cargo slots an item is allowed in. {{cn}}
+
+<syntaxhighlight lang="cpp">
+allowedSlots[] = 
+{
+    605, // Headgear
+    701, // Vest
+    801, // Uniform
+    901  // Backpack
+};
+</syntaxhighlight>
+
+==== alternativeFire ====
+;Used with: Muzzle attachments
+;Type: [[TokenNameValueTypes#Strings|String]]
+;Default: "Zasleh2"
+
+==== AmmoCoef ====
+;Used with: Muzzle attachments
+;Type: Class
+;Description: Contains a number coefficients applied when firing with the muzzle attached
+
+===== artilleryDispersionCoef ======
+;Type: [[TokenNameValueTypes#Floats|Float]]
+;Default: 1.0
+;Description: Coefficient applied to weaponMode artilleryDispersion property
+
+===== dispersionCoef =====
+;Type: [[TokenNameValueTypes#Floats|Float]]
+;Default: 1.0
+;Description: Coefficient applied to [[CfgWeapons_Config_Reference#dispersion.3D0.002|ModeClass dispersion]] property
+
+===== fireLightCoef =====
+;Type: [[TokenNameValueTypes#Floats|Float]]
+;Default: 1.0
+;Description: Coefficient applied to [[CfgWeapons_Config_Reference#fireLightIntensity.3D0.012|fireLightIntensity]] weapon property
+
+===== min/mid/maxRange...Coef =====
+;Type: [[TokenNameValueTypes#Floats|Float]]
+;Default: 1.0
+;Description: Coefficients applied to [[CfgWeapons_Config_Reference#min.2Fmid.2FmaxRange...|corresponding]] weapon properties
+
+<syntaxhighlight lang="cpp">
+minRangeCoef = 1.0;
+minRangeProbabCoef = 1.0;
+midRangeCoef = 1.0;
+midRangeProbabCoef = 1.0;
+maxRangeCoef = 1.0;
+maxRangeProbabCoef = 1.0;
+</syntaxhighlight>
+
+===== recoilCoef =====
+;Type: [[TokenNameValueTypes#Floats|Float]]
+;Default: 1.0
+;Description: Coefficient applied to weapon recoil
+
+===== recoilProneCoef =====
+;Type: [[TokenNameValueTypes#Floats|Float]]
+;Default: 1.0
+;Description: Coefficient applied to weapon recoil when prone
+
+=== C ===
+
+==== containerClass ====
+;Used with: Uniforms, Vests, Backpacks
+;Type: [[TokenNameValueTypes#Strings|String]]
+;Default: "Supply0"
+;Description: Capacity of a container, corresponding to SupplyXX CfgVehicles classes. 
+
+The classes for various capacity are already defined in the game config, so in most cases, SupplyXX can be used with XX replaced by the desired capacity value. The defined capacities are 0–10, then 10–250 with an increment of 10, then 300, 350, 380, 400, 420, 440, 450, 480, and 500. Should another value be needed, it is defined in cfgVehicles as follows: 
+<syntaxhighlight lang="cpp">
+/// New Supply definition ///
+
+class cfgVehicles
+{
+	class ContainerSupply;
+	class SupplyXX : ContainerSupply		// The class name does not really matter, but for clarity, it should be SupplyXX, where XX is the desired capacity value.
+	{
+		maximumLoad = XX;				// Replace XX with the desired capacity value.
+	};
+};
+</syntaxhighlight>
+
+=== D ===
+
+==== deployedPivot ====
+;Used with: Bipod attachments
+;Type: [[TokenNameValueTypes#Strings|String]]
+;Default: "bipod"
+
+=== F ===
+
+==== FlashLight ====
+;Used with: Flashlight attachments
+;Type: Class
+;Description: Defines flashlight parameters
+
+===== ambient[] =====
+;Type: [[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+ambient[] = {0.9,0.81,0.7}; // acc_flashlight
+</syntaxhighlight>
+
+===== Attenuation =====
+;Type: Subclass
+
+====== start ======
+;Type: [[TokenNameValueTypes#Floats|Float]]{{cn}}
+<syntaxhighlight lang="cpp">
+start = 0; // acc_flashlight
+</syntaxhighlight>
+
+====== constant ======
+;Type: [[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+constant = 0.5; // acc_flashlight
+</syntaxhighlight>
+
+====== linear ======
+;Type: [[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+linear = 0.1; // acc_flashlight
+</syntaxhighlight>
+
+====== quadratic ======
+;Type: [[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+quadratic = 0.2; // acc_flashlight
+</syntaxhighlight>
+
+====== hardLimitStart ======
+;Type: [[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+hardLimitStart = 27; // acc_flashlight
+</syntaxhighlight>
+
+====== hardLimitEnd ======
+;Type: [[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+hardLimitEnd = 34; // acc_flashlight
+</syntaxhighlight>
+
+===== color[] =====
+;Type: [[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+color[] = {180,160,130}; // acc_flashlight
+</syntaxhighlight>
+
+===== coneFadeCoef =====
+;Type: [[TokenNameValueTypes#Floats|Float]]{{cn}}
+<syntaxhighlight lang="cpp">
+coneFadeCoef  = 8.0; // acc_flashlight
+</syntaxhighlight>
+
+===== dayLight =====
+;Type: [[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+dayLight = false; // acc_flashlight
+</syntaxhighlight>
+
+===== direction =====
+;Type: [[TokenNameValueTypes#Strings|String]]
+;Description: Direction proxy name
+<syntaxhighlight lang="cpp">
+direction = "flash"; // acc_flashlight
+</syntaxhighlight>
+
+===== flareMaxDistance =====
+;Type: [[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+flareMaxDistance = 100; // acc_flashlight
+</syntaxhighlight>
+
+===== flareSize =====
+;Type: [[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+flareMaxDistance = 1.4; // acc_flashlight
+</syntaxhighlight>
+
+===== innerAngle =====
+;Type: [[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+innerAngle = 5; // acc_flashlight
+</syntaxhighlight>
+
+===== intensity =====
+;Type: [[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+intensity = 100; // acc_flashlight
+</syntaxhighlight>
+
+===== outerAngle =====
+;Type: [[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+outerAngle = 100; // acc_flashlight
+</syntaxhighlight>
+
+===== position =====
+;Type: [[TokenNameValueTypes#Strings|String]]
+;Description: Source position proxy name
+<syntaxhighlight lang="cpp">
+position = "flash dir"; // acc_flashlight
+</syntaxhighlight>
+
+===== scale[] =====
+;Type: [[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+scale[] = {0}; // acc_flashlight
+</syntaxhighlight>
+
+===== size =====
+;Type: [[TokenNameValueTypes#Floats|Float]]{{cn}}
+<syntaxhighlight lang="cpp">
+size = 1; // acc_flashlight
+</syntaxhighlight>
+
+===== useFlare =====
+;Type: [[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+useFlare = true; // acc_flashlight
+</syntaxhighlight>
+
+=== H ===
+
+==== hasBipod ====
+;Used with: Bipod attachments
+;Type: [[TokenNameValueTypes#Boolean|Boolean]]
+;Default: false
+
+==== hiddenSelections[] ====
+;Used with: Headgear, Vests, 
+;Type: [[TokenNameValueTypes#Arrays|Array]]
+;Default: {}
+
+==== HitpointsProtectionInfo ====
+;Used with: Headgear, Vests, Uniforms
+;Type: Class
+;Description: See [[Arma 3: Soldier Protection]]
+
+=== M ===
+
+==== magazineCoef ====
+;Used with: Muzzle attachments
+;Type: Class
+;Description: Contains a coefficients applied when firing with the muzzle attached
+
+===== initSpeed =====
+;Type: [[TokenNameValueTypes#Floats|Float]]
+;Default: 1.0
+;Description: Coefficient applied to [[CfgMagazines Config Reference#initSpeed.3D900|CfgMagazines initSpeed]] when firing.
+
+==== mass ====
+;Used with: All items (including Weapons)
+;Type: [[TokenNameValueTypes#Integers|Integer]]
+;Default: 0
+;Description: Property defining how much an item weighs and how much inventory space it will use.
+
+<syntaxhighlight lang="cpp">
+mass = 8;  // FirstAidKit
+mass = 30; // H_HelmetB
+mass = 40; // U_B_CombatUniform_mcam
+mass = 80; // V_PlateCarrier1_rgr
+mass = 80; // ToolKit
+</syntaxhighlight>
+
+==== [[CfgWeapons Config Reference#modelOptics.3D.22.5B.p3d.5D.22|modelOptics]] ====
+;Used with: Optic attachments
+;Type: [[TokenNameValueTypes#Arrays|Array]]
+;Default: {}
+
+==== modelSides[] ====
+
+==== mountAction ====
+
+==== MuzzleCoef ====
+
+==== muzzleEnd ====
+
+=== O ===
+
+==== opticType ====
+;Used with: Optics
+;Type: [[TokenNameValueTypes#Integers|Integer]]
+;Default: 0
+;Description: Parameter which defines opticType of given optics. It is used together [[CfgWeapons_Config_Reference#requiredOpticType.3D-1|requiredOpticType]] to create additional fire modes with higher engagement ranges
+
+opticType = 1 is typically assigned for optics with magnification level between 2.5 - 5x
+
+opticType = 2 is typically used for scopes with high magnification (>5x)
+
+==== OpticsModes ====
+
+=== P ===
+
+==== priority ====
+
+=== S ===
+
+==== soundBipod... ====
+
+==== soundTypeIndex ====
+
+=== T ===
+
+==== type ====
+
+=== U ===
+
+==== uniformClass ====
+
+==== uniformModel ====
+
+==== unmountAction ====
+
+=== Z ===
+
+==== zeroingSound[] ====
+
+
+{{GameCategory|arma3|Reference Lists}}

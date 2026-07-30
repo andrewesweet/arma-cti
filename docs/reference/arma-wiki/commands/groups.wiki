@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/groups
+// revision: 338341 (2023-02-28T14:38:39Z)
+// export sha1: l504j0xpmawyieendj7e2f8ncodmr1e
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|gr1= Groups
+
+|descr= Returns an array with all groups of given side.
+
+|s1= [[groups]] side
+
+|p1= side: [[Side]]
+
+|r1= [[Array]] of [[Group]]s
+
+|x1= <sqf>private _allBluforGroups = groups blufor; // equivalent of allGroups select { side _x == blufor };</sqf>
+
+|seealso= [[group]] [[allGroups]] [[units]] [[allUnits]]
+}}

@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/enableInfoPanelComponent
+// revision: 378366 (2026-04-03T16:46:18Z)
+// export sha1: 3bn2w72gcyy55g9n6ol01xh6gq0bg5x
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Custom Panels | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= Custom Panels
+
+|descr= Controls availability of component to given object info panel.
+
+|s1= unit [[enableInfoPanelComponent]] [panelID, componentClassOrType, enable]
+
+|p1= unit: [[Object]] - the concerned vehicle
+
+|p2= panelID: [[String]] - "left" or "right" can be used as panel names
+
+|p3= componentClassOrType: [[String]]
+
+|p4= enable: [[Boolean]]
+
+|r1= [[Boolean]] - [[true]] if component was successfully enabled on the panel, [[false]] otherwise (e.g. component is not available for the object)
+
+|s2= [unit, turretPath] [[enableInfoPanelComponent]] [panelID, componentClassOrType, enable]
+
+|p21= unit: [[Object]] - the concerned vehicle
+
+|p22= turretPath: [[Turret Path]] - turret index
+
+|p23= panelID: [[String]] - "left" or "right" can be used as panel names
+
+|p24= componentClassOrType: [[String]]
+
+|p25= enable: [[Boolean]]
+
+|r2= [[Boolean]] - [[true]] if component was successfully enabled on the panel, [[false]] otherwise (e.g. component is not available for the object)
+
+|x1= <sqf>
+// enables slingload assistant on player's vehicle right panel at driver position
+[vehicle player, [-1]] enableInfoPanelComponent ["VehicleSystemsDisplayManagerComponentRight", "SlingLoadDisplay", true];
+</sqf>
+
+|seealso= [[Arma 3: Custom Info]] [[infoPanel]] [[infoPanels]] [[setInfoPanel]] [[infoPanelComponents]] [[infoPanelComponentEnabled]]
+}}

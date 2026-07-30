@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/diag_getTerrainGrid
+// revision: 322636 (2022-06-20T11:53:38Z)
+// export sha1: 1jrb0y6bfi1jemnsfe0bxu87ra6t0xm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|branch= diag
+
+|gr1= Diagnostic
+
+|descr= Returns terrain cell size (size of each grid cell in the Heightmap).
+{{Feature|obsolete|This command is subject to be removed and replaced with: [[getTerrainInfo]]|arma3|2.10}}
+
+|s1= [[diag_getTerrainGrid]]
+
+|r1= [[Number]] - terrain grid
+
+|x1= <sqf>private _terrainGrid = diag_getTerrainGrid;</sqf>
+
+|seealso= [[diag_getTerrainSegmentOffset]] [[getTerrainGrid]]
+}}

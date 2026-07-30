@@ -1,0 +1,63 @@
+// source: https://community.bistudio.com/wiki/camCreate
+// revision: 377423 (2026-01-02T06:45:34Z)
+// export sha1: c0qa5s43wr70pbdb051cd7x4azgls7d
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Camera Control
+
+|eff= local
+
+|descr= Create a camera or a seagull object on the given position. The creation happens immediately and doesn't wait for [[camCommit]].<br>
+Among other commands, [[cameraEffect]] must be used to enter the camera's view and [[camDestroy]] to delete the created camera. See also [[:Category:Command Group: Camera Control|Camera Control]].
+{{Feature|important|
+* Other objects can be created this way, but vehicles created with [[camCreate]] cannot be entered
+* Any unit created with [[camCreate]] will remain static
+* Unlike [[createVehicle]], objects are created exactly at the given position, without consideration of the surrounding objects.
+}}
+
+|s1= type [[camCreate]] position
+
+|p1= type: [[String]] - camera type, one of the following:
+* "camera"
+* "seagull" (a crow in {{arma2}})
+* "camconstruct"
+* "camcurator" (Since {{Name|arma3zeus}})
+* "crowe" (crow - {{arma3}})
+* or any vehicle class suitable to be spawned with camera
+
+|p2= position: [[Position#PositionAGL|PositionAGL]] - position at which to create the object
+
+|r1= [[Object]] - the created camera
+
+|x1= <sqf>_cam = "camera" camCreate (ASLToAGL eyePos player);</sqf>
+
+|x2= <sqf>_flr = "flare" camCreate (position _myPlane); // works too</sqf>
+
+|mp= camCreated objects are only visible locally (meaning they are client-side effects).
+
+|seealso= [[camCommand]] [[camDestroy]] [[camSetFocus]] [[camCommit]] [[setPiPEffect]] [[createVehicle]] [[createUnit]] [[showCinemaBorder]] [[cameraEffect]] [[cameraEffectEnableHUD]]
+}}

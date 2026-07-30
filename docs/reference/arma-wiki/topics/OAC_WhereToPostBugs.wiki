@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/OAC:WhereToPostBugs
+// revision: 349872 (2023-11-20T22:10:48Z)
+// export sha1: o7aa88jipm4uj82o4fbxpjnp11g3dl1
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Banner biki.jpg]]
+
+=# IV. Where to post bugs=
+
+Please post bugs related to OAC project only at the {{Link|link= http://dev-heaven.net/projects/oac/issues|text= OAC issue tracker}}.<br>
+
+Possible problems:
+
+* Non working missions or campaigns
+* Problems with the installation
+* Problems with the updating
+
+Please keep your bug reports '''as specific and as precise as possible'''.<br>
+Adding '''screenshots''', '''videos''' or the errors from the [[arma.RPT]] help to visualize
+the problem.<br>
+
+A rough description of the '''steps to reproduce''' or the '''mission and its savegame'''<br>
+are another good addition to track the problem down.
+
+Recommended tools for recording:
+
+* {{Link|http://www.planetgamecam.com/?locid{{=}}download|GameCam}}
+* {{Link|http://www.fraps.com/download.php|Fraps}}
+* {{Link|http://www.howiesfunware.com/loadSideBarMiscSoftware.html|Howie's Quick Screen Capture Tool}}
+
+= Back to OAC Home =
+
+[[OAC:Project#Subpage_link_overview|The seven roads to OAC - subpage link overview]]

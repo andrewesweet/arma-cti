@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound
+// revision: 373289 (2025-04-14T23:41:09Z)
+// export sha1: 94i947314mnj2wutopu08lkw1q5ilsu
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:A3_SoundMainScheme.jpg|right]]
+== General Sound Configuration ==
+
+* [[Arma 3: Sound: SoundShader|SoundShader]]
+* [[Arma 3: Sound: SoundSet|SoundSet]]
+* [[Arma 3: Sound: Sound Curves|Sound Curves]]
+* [[Arma 3: Sound: SoundShapes|SoundShapes]]
+* [[Arma 3: Sound: Filters|Filters]]
+* [[Arma 3: Sound: Processing Types|Processing Types]]
+* [[Arma 3: Sound: Global Sound Parameters|Global Sound Parameters]]
+
+
+{{arma3}}'s sound system became much more complex with the release of the {{Link|link= https://dev.arma3.com/post/sitrep-00144|text= Eden Update}}. Sound is not anymore a single sample (array respectively) with parameters, but a structure assembled from several layers with embedded audio features.
+
+Process of sound configuration unification is still in progress (not all gameplay features use this system), information about new implementations will be continuously updated.
+
+'''This wiki page serves as a hub - linking you to the different elements of the system.'''
+
+{{Clear}}
+{{Feature|informative|
+You may at some point find volume defined with '''db''' (e.g {{hl|db-40}}). The formula for db-based volume is: {{hl|10^(''number''*(1/20))}}.<br>
+The db value is expressed in dBFS ({{Link|https://en.wikipedia.org/wiki/DBFS|Decibels relative to full scale}}). See also {{Link|Arma 3 Sound: cfgSoundShaders#volume}}.
+}}
+
+=== See Also ===
+
+* An [[Arma 3: Sound: ExampleWeaponConfig|example configuration]] for a weapon
+* An [[Arma 3: Sound: SoundControllers|overview on SoundControllers]] which can be used to build [[Simple Expression]]d for volume/frequency calculation.
+
+
+{{GameCategory|arma3|Sound}}

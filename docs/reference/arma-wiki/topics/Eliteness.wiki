@@ -1,0 +1,618 @@
+// source: https://community.bistudio.com/wiki/Eliteness
+// revision: 211283 (2021-01-18T10:52:46Z)
+// export sha1: n49q7e8d08lfzie3sxuofizxww0n25t
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+        
+Eliteness Version 3.xx
+
+ 
+This document has been (partly) revised as of version.3.10
+
+ 
+Please note that 'version 3' is '''not''' a new ballgame, i simply ran out 
+of numbers after the release of 2.99
+
+ 
+''Fixes: see fixes and readme general''
+
+ 
+General inspection and play tool by
+[[Mikero@norfolk.nf]]
+
+ 
+''Originally designed to assist with Flashpoint : '''Elite''' for 
+the xbox and developed as such by '''Mikero''' and '''Hoz'''. We have 
+become rather fond of the name, even though it is a much more capable tool than 
+simply handling Xbox files.''
+
+ 
+''Appreciation to Ofpec, Planck. Hoz, Jahve, Raedor, 
+Phaeden, Q, Kegs, and many others, for support and encouragement in both using 
+and testing this tool.''
+
+ 
+''Particular thanks to dev-heaven.''
+
+ 
+----
+ 
+Eliteness accommodates unique features found in almost all BI engines
+
+ 
+* Cold War Crisis
+* Resistance
+* Xbox Elite
+* Armed Assault
+* Arrowhead / Baf / PMC
+* IFA
+* Dayz
+* Toh
+* vbs2 lite
+ 
+Eliteness does not work with the VBS1 &amp; 2 engines.
+
+ 
+''This tool has '''no ''' association with 
+Bohemia Interactive and '''no''' approval, warranty, implied use, or permission 
+has been given by them. Nor is that ever likely to be the case. Use this tool at 
+own risk. If thru using this tool, your mother in law drops down dead or 
+you wife runs off with your secretary, well hell. Sue me.''
+
+ 
+<u>Installation instructions.</u>
+
+ 
+This exe like all other pbo tools comes with it is own, 
+no-brainer, self installer. You are advised to use it. Many tools interact 
+with each other and need common registry settings and common file locations to 
+do so.
+
+ 
+If you choose to roll your own:
+
+ 
+* Place the gui anywhere that gives you a thrill
+* Place the separately supplied DePbo.dll into the same   folder, or, as a convenience, locate it in the windows/system32 directory (or   wow64)
+** The 2nd option allows this dll to be used for all   Mikero tools using the dll via a single reference, and also allows you to put   the exe 'somewhere else' whenever it suits you.
+*
+* Enjoy
+ 
+----
+ 
+'''General Functionality. '''
+
+ 
+* Makes and Unmakes pbo files for all engine types.
+* drag n drop any folder or file to the folder browser   window for quick navigation
+* raPifies (binarises) and Derapifies mission.sqm /   description.ext / config.bin (cpp) and rvmat files for all engine types.
+* Lint checking. (Error checking of syntax) within pbo's   and direct source text files.
+* Scans (lists)  pbo content and makeup.
+* Decodes and views any raP encoded file. rvmat, bisurf,   etc etc.
+* lists pac/paa content.
+* Decodes most other bis files such as fxy, rtm, wss, wrp   and etc
+ 
+'''OFP Elite Functions:'''
+
+ 
+* Change a User Profile in a OFP:Elite mission Save
+* Change SP mission to MP mission
+* Change the name of the mission
+* Port PC mission to OFP:Elite Xbox mission from a PC   mission
+* Sign OFP:Elite files
+* Accounts for Pbo checksum
+ 
+'''Arma Functions'''
+
+ 
+* Accommodates prefix directory header info inside pbo.
+* Accounts for pbo signed keys.
+* All other esoteric arma pbo wrinkles
+ 
+<u>Notes:</u>
+
+ 
+This is a multi-purpose tool for all engine varieties as 
+noted above.
+
+ 
+When decoding, the dll determines the engine type the file 
+is intended for.
+
+ 
+When creating files and exporting, the engine type 
+intended is arbitrary. For this reason you need to set the target engine in the 
+options panel. On installation the default is Arma.
+
+ 
+Use the options panel in the gui to explicitly MAKE pbo's, 
+or, raPified (binarised) files for a given engine. Settings are preserved on 
+exit.
+
+ 
+'''Rapified Files'''
+
+ 
+'''Config.bin (eg)'''<u> Rapification for Armed Assault and Elite.</u>
+
+ 
+Binarised files for Armed Assault and Elite use a newer 
+method of raPification. To convert a config.cpp (eg) to a config.bin for THESE 
+engines, the tool must explicitly know which method to use since nothing in the 
+text file (mission.sqm eg) tells it which way to encode.
+
+ 
+The type of raPification is implicitly defined in the 
+options panel, via the engine selection. Eg, Selecting resistance, will binarise 
+using the older encoding.
+
+ 
+The type of raPification can be explicitly defined in the 
+text file concerned by stating
+
+ 
+#define _ARMA_ '''or'''<br>
+#define _XBOX_ ''' ['''withSignature'''] or<br>
+#define _OFP_'''
+
+ 
+'''<br> '''Without the define, text files are assumed to be for 
+Arma. This means no files from and for Arma require any modification but you are 
+advised to state it explicitly. We don't know when bis will change the target 
+output format again. There are no performance losses doing this or any 
+incompatibility issues with other tools or the bis engine itself.
+
+ 
+All debinned files insert one of the above defines 
+automatically, and as a future convenience for you.
+
+ 
+<u>'''XBOX Signatures'''</u>
+
+ 
+Mission,pars, header.bins and other files intended for the 
+Xbox (and unique to the xbox) require correct signatures inserted into them by 
+this tool.
+
+ 
+The macro
+
+ 
+#define XBOX withSignature // or #pragma XBOX 
+withSignature
+
+ 
+is required in the mission.par text file and similarly the 
+header.bin text file for this to take place automatically.
+
+ 
+Any file derapified by this tool automatically has the 
+above #defines inserted, as appropriate.
+
+ 
+----
+ 
+'''Options Panel'''
+
+ 
+To cater for the various engines available, certain features are enabled / disabled 
+according to selection.
+
+ 
+For instance, since file signatures are only applicable to 
+Elite, the options dealing with this (verification or creation) are only enabled 
+when Elite is selected as the engine.
+
+ 
+The drop down engine selection has particular significance when 
+creating pbo's. or creating rapified files.
+
+ 
+Elite pbo's cannot, for instance, be compressed. All {{ofp}} 
+files can, and only some Arma files. Let the dll decide, but setting the correct 
+engine type.
+
+ 
+'''<u>No Make/Create confirmation</u>'''
+
+ 
+Creating and extracting pbo's can, naturally, be a 
+dangerous process, simply because it creates files. Normally, you would want to 
+be asked first. The option exists to turn this confirmation off, if you find it 
+annoying.
+
+ 
+'''<u>No Query on Delete</u>'''
+
+ 
+Similar comment
+
+ 
+'''<u>Show CD Drives</u>'''
+
+ 
+Since these devices are read only, and since, filling the 
+explorer tree can take some time, normally, cd drives are not shown in the 
+navigation window.
+
+ 
+'''When creating a pbo....'''
+
+ 
+None of the following options affect the external files. 
+Thumbs.db however is '''never''' installed in a pbo.
+
+ 
+<u>Do nothing Special</u>
+
+ 
+No file is inspected or altered. The pbo creates a mirror 
+of files in the target folder (except for thumbs.db)
+
+ 
+<u>Automatically Lintcheck</u>
+
+ 
+When creating pbo's, this application can check the syntax 
+of description.ext, config.cpp, and mission.sqm rvmat files for errors before making the pbo.
+
+ 
+Alternatively, you can manually check these files via the 
+right click in the file window.
+
+ 
+<u>Automatically Rapify</u>
+
+ 
+config.cpp, and mission.sqm and all rvmat files can be installed in the pbo as 
+binarised. This can significantly improve engine load times, to say nothing of 
+the implicit error free state of successfully binarised text.
+
+ 
+<u>Automatically Rapify Keep Text</u>
+
+ 
+When enabled, the original mission.sqm text file (eg) is 
+renamed <u>in the pbo</u> as mission.sqm.txt
+
+ 
+Similar comment for config.cpp
+
+ 
+If you are distributing your mission campaign or addon, 
+NOT including the original text files is a mild form of intellectual property 
+right protection.
+
+  
+----
+ 
+'''<u>Ask For Prefix deprecated</u>'''
+
+ 
+Eliteness automatically assigns the correct prefix in the pbo 
+header, when appropriate.
+
+ 
+'''<u>Compress Files</u>'''
+
+ 
+When enabled, files are compressed inside the pbo. The 
+exception list provides for typical file extensions (such as jpg) that have no 
+benefit in doing so and only increase engine load times.
+
+ 
+Note that the dll itself decides whether files are worthy 
+of compression.
+
+ 
+* The result must be better than the input
+* Certain files are never compressed dependent on engine   type and dependent on how they are used.
+ 
+lzss Compression has been deprecated by Bis (actually, 
+they've just plain forgot it is still in the engine). This compression method 
+offers you a mild form of protection against extraction. most other tools throw 
+their hands in the air if encountered.
+
+ 
+----
+ 
+'''RAPIFY and DERAPIFY controls'''
+
+ 
+<u>DeRapfiy </u>
+
+ 
+The application is aware of specific file extensions that 
+are (or might be) in rap format. Examples
+
+ 
+* mission.sqm
+* config.bin / cpp
+* mission.par (elite only)
+* header.bin (elite only)
+* *.rvmat (arma only)
+ 
+right clicking, '''or''', double clicking on these files 
+types (among others) allows the option of 
+decoding them. When attempting to open these types of files as text (the default 
+'action' when double clicking), the application automatically checks first if, 
+in fact, it contains raPified content and treats them appropriately.
+
+ 
+'''General Lint Options'''
+
+ 
+* Allow Missing SemiColons
+ 
+Prior to release 2.28 of eliteness, lack of semicolons at 
+end of line was 'acceptable'. The {{ofp}} engine (versus arma) accepts an 'assumed' 
+semicolon where end of line is reached.
+
+ 
+Due to the pernickedness of Arma, and the fact that it is 
+'not a good idea' anyway, the default for arma, is to scream if these items are 
+missing.
+
+ 
+* Disallow Array Semicolons
+ 
+Desctription.ext is notorious for the following:
+
+ 
+titles[] = <br>
+{<br>
+0, $STRD_DX02v01;<br>
+13, $STRD_DX02v01a<br>
+};<br>
+
+ 
+the semicolon is not rapifiable (which is one reason why desc.ext cannot be binarised)
+
+ 
+The default for this is to allow the semicolon to pass 
+thru un checked. Not a good idea, but too many desc files have this structure 
+and would cause lint to scream a little too much.
+
+ 
+* Force Arma Rap
+ 
+this is the default for Arma and Elite selection, so the 
+the #define _ARMA_ macro is not required (but it is good practice anyway to state 
+it)
+
+   
+----
+ 
+'''PBO CREATION'''
+
+ 
+'''Create a bikey (arma only)'''
+
+ 
+An Arma pbo contains an MD5 checksum signature at the end 
+of the file.
+
+ 
+'''This''' signature does nothing more (or less) than 
+verify the integrity of the pbo. It is ignored by the arma engine and need not 
+be present at all!
+
+ 
+However, this same signature '''is''' used to generate 
+the bikey used for MP play.
+
+ 
+The bikey is generated from a combination of an author's '''
+private''' key and the pbo's MD5 checksum.
+
+ 
+Enabling the above check, causes a bikey for THIS 'unique' 
+pbo, to be generated.
+
+ 
+Be aware, that if you choose to generate a bikey at all:
+
+ 
+'''no two pbos can 
+ever have identical MD5 checksums due to timestamps. If you recreate your pbo, 
+even with, identical data, you need , a new bikey.'''
+
+ 
+Note that the separate tool 'extractpbo' and 'makepbo' can make un-datestamped 
+pbo's avoiding the above issue.
+
+ 
+-----------
+
+ 
+The following functionality is a feature of the 
+accompanying DLL. The Eliteness tool exposes these features.
+
+ 
+<u>'''Special file handling.'''</u>
+
+ 
+'''thumbs.db'''
+
+ 
+* this annoying file is created on the fly by Microsoft   when indexing picture files. It is '''never''' included in a pbo.
+ 
+'''$PBOPREFIX$[.txt] or PboPrefix.txt'''
+
+ 
+Eliteness attempts to maintain compatibility with other 
+tools trying to wrestle with unique features of Armed Assault.
+
+ 
+$PBOPREFIX$ is an inconvenient and early attempt by 
+kegetys and myself to wrestle the xbox to the floor. The much more power packed 
+
+$PBOPREFIX$ .txt replaces it.
+
+ 
+The dll will accept either of these files.
+
+ 
+In essence, an arma/elite pbo uses the resistance header 
+to contain file prefix information. The prefix is used for other addons to 
+access this one.
+
+ 
+* For extraction, if this file is erroneously encountered in the pbo,   it is ignored. It  has no effect, serves no purpose at all, <u>   and is invisible to all extraction methods</u>.
+* For extraction, a $'''PboPrefix$.txt''' will be created in the folder  if Eliteness detects an arma/elite header.
+* '''For creation, if''' encountered in the folder, it is text contents are   used as the prefix header for Armed Assault and Elite style pbo's.
+** Note that there is now a great deal more information   packed in arrowhead pbo's of the var=value type. With exceptions, the dll will   copy this information into the pbo.
+** Note most carefully, this is essential for you when   creating pbo's specific to and only for, Arma3 or IFA or vbs2lite
+*
+ 
+''The following comments apply when the full features of 
+the dll are employed to automate the process of creating binarised missions and 
+addons. To create plain vanilla pbo's with no special handling (eg just like any 
+other pbo tool) simply select do nothing, in the options panel.''
+
+ 
+'''description.ext'''
+
+ 
+* Any of the panel options to AutoLint or AutoRap, check   this file for syntax correctness.
+ 
+'''config.cpp'''
+
+ 
+* AutoLint: This file is checked for syntax correctness.
+* AutoRap..: This file is Lint checked and binarised to   config.bin and installed in the pbo '''instead''' of config.cpp .
+** After pbo creation, the folder will '''also'''     contain this config.bin.
+*
+ 
+'''confg.cpp.txt'''
+
+ 
+Following comments apply <u>only</u> if AutoRap Keep Text 
+option selected. Otherwise this file is treated 'normally'.
+
+ 
+* For makepbo: The original config.cpp text file is   renamed internally in the pbo to config.cpp.txt. It is '''not''' generated in   the folder.
+** If the same filename happens to be present in the     folder during creation''', '''that file is ignored.
+*
+* For Depbo: It can of course  be extracted to a    folder, from the depbo process.  It is up to the user to manually rename   it config.cpp as appropriate to the need.
+ 
+'''config.bin'''
+
+ 
+* This file is overwritten if it exists and an Autorap   option selected. It is unconditionally included irrespective of options.
+ 
+'''mission.sqm'''
+
+ 
+* AutoLint: This file is checked for syntax correctness.
+* AutoRap..: This file is Lint checked and binarised and   replaces the text file in the pbo.
+** It is installed in the pbo as mission.sqm
+** a copy is generated in the folder as mission.bin
+*
+ 
+'''mission.sqm.txt'''
+
+ 
+* Identical commentary to config.cpp.txt above.
+ 
+'''mission.bin'''
+
+ 
+* is never installed in a pbo
+ 
+<u>'''*.rvmat'''</u>
+
+ 
+* AutoLint: This file is checked for syntax correctness.
+* AutoRap..: This file is Lint checked and binarised and   replaces the text file in the pbo.
+ 
+----
+ 
+'''External file checks'''
+
+ 
+The most powerful feature of the dll, and consequently 
+Eliteness, is it is ability to discover bad file references in your files 
+(plural)
+
+ 
+This feature will, indeed, save you hours of agony, start/ 
+check /crash, fix, start/ check/ crash..........
+
+ 
+The dll will simply not permit a pbo to be created if a file is missing in 
+ANY reference. This includes references in wrps, references in bisurf, rvmat, 
+p3d's, in fact any file included in the pbo of ANY type is examined for external 
+file references. Mission.sqm and desc.ext as well. In fact, '''any '''file.
+
+ 
+The same can be said for any syntax errors. the dll goes out of it is way to
+'''prevent''' a bad pbo being created.
+
+ 
+The 'key' to success however is that you must have established a 'p' drive. 
+the drive must contain the extracted contents of the engine. A useful utility 
+called arma2p (or arma3p) will do this for you.
+
+ 
+The reason for this requirement is files in the engine cannot be 'anywhere' 
+on the windows os. they ALL are relative to the linux root folder /. and 
+to achieve that, you require a p:\ drive to emulate it.
+
+ 
+Quite frankly, if you have not established a p: drive, you simply are not 
+serious. You don't need, and my tools are not, useful to you. Live with your 
+crash to desktops until you bite the bullet.
+
+ 
+Sundry Extras
+
+ 
+Eliteness is a one stop shop for '''examining''' bis 
+files. Separate utilities such as DeP3d will '''create''' files. With the 
+exception of making pbo's, Eliteness is not in the same game. It is an 
+inspection tool to check results.
+
+ 
+'''Sundry extras '''is my attempt at documenting the 
+added goodies to eliteness as time permits
+
+ 
+DeRtm
+
+ 
+Despite the above comments about non-creation. the dertm 
+panel within Eliteness is full featured and equivalent to it is external 
+namesake.
+
+ 
+You can drag and drop any p3d, rtm or skeleton text file 
+onto that panel as appropriate, or imply use it is browse buttons
+
+ 
+DeRtm analyses and displays the contents of any binarised, 
+or unbinarised rtm. Up to and including Arma3
+
+ 
+As an added feature it can export binarised rtm back to 
+plain jane.
+
+ 
+Be aware that for this to happen, the dll requires an 
+appropriate skeleton to work with. This is almost inevitably ofp2_manskeleton. 
+Animated destructions require their own unique skeleton for their own unique 
+p3d.
+
+ 
+In all cases, you can provide A skeleton from '''any''' 
+binarised soldier p3d eg, '''or, ''' text equivalent of model.cfg (the 
+file name is not important providing it contains the appropriate skeleton.cfg)
+
+ 
+As stated the 'appropriate' skeleton is almost always 
+ofp2_manskeleton, obtainable in '''any ''' human p3d
+
+
+
+[[Category:Mikero Tools]]

@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/breakTo
+// revision: 364900 (2024-06-29T14:38:35Z)
+// export sha1: 0e4wupvn6h2rmo9dcmjjc016izygcqr
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Program Flow
+
+|descr= Breaks block to scope named ''name''.
+
+Scope name can be assigned using the [[scopeName]] command.
+
+|s1= [[breakTo]] name
+
+|p1= name: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+scopeName "main";
+while { true } do
+{
+	scopeName "loop1";
+	while { true } do
+	{
+		scopeName "loop2";
+		if (condition1) then { breakTo "main" };	// breaks all scopes and return to "main"
+		if (condition2) then { breakOut "loop2" };	// breaks scope named "loop2"
+		sleep 1;
+	};
+	sleep 1;
+};
+</sqf>
+
+|seealso= [[scopeName]] [[breakOut]] [[exitWith]]
+}}
+
+{{Note
+|user= Nelis75733126
+|timestamp= 20170518181900
+|text= I wish to clarify the behaviour of this command by saying that the <sqf inline>breakTo</sqf> command will literally break the scope in which it has been placed, and continue reading whatever is after and outside of that scope.<br>
+Example:
+<sqf>
+scopeName "something";
+if true then
+{
+	breakTo "something";
+	_v = 0;	// this line will be skipped
+};
+
+_a = 0;		// this is where script execution will jump to.
+</sqf>
+}}

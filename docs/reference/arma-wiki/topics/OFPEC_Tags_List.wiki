@@ -1,0 +1,11351 @@
+// source: https://community.bistudio.com/wiki/OFPEC_Tags_List
+// revision: 378273 (2026-03-30T16:58:17Z)
+// export sha1: ms6axx4cpbdfqwc7zxe42t3c4u2nnzi
+// categories: Category:ArmA: Armed Assault: Editing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Arma 4/Modding/Scripting/Guidelines | Category:Arma Reforger/Modding/Scripting/Guidelines | Category:Operation Flashpoint: Editing | Category:Operation Flashpoint: Elite: Editing | Category:Take On Helicopters: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+This list is a copy of {{Link|https://www.ofpec.com/tags/?action{{=}}list|OFPEC's tag list}} (with the addition of {{Name|bi}}'s {{hl|BI_}}/{{hl|BIN_}}/{{hl|BIS_}}/{{hl|SCR_}} prefixes) as a mirror backup.
+
+{{Feature|informative|For details about this list and how to add your own tags, see [[Scripting Tags]].}}
+
+
+{{TOC|abc}}
+
+<div style="columns: 3">
+=== A ===
+
+{| class="wikitable sortable" style="width: 100%"
+! TAG !! Owner
+|-
+| A139 || Kostas2413
+|-
+| A140 || kevinb
+|-
+| A1618 || nesmonartis
+|-
+| A165 || Limeisland
+|-
+| A177 || Jona
+|-
+| A1L1P || prestonchism5
+|-
+| A1PJ || Jona
+|-
+| A2020 || Aeneas2020
+|-
+| A2203 || Big_Al
+|-
+| A2B || Snake@A2B
+|-
+| A2C || Laxentis
+|-
+| A2HOE || maxenzo2
+|-
+| A2M || a2m
+|-
+| A2S || A2Script
+|-
+| A2TS3 || NouberNou
+|-
+| A32ND || CTLondon501st
+|-
+| A375E || tchou
+|-
+| A3B || WeißeFeder_Bruuudis
+|-
+| A3BL || TheIrishTrinity
+|-
+| A3DAN || Danerzz
+|-
+| A3DM || TRIPDEPALS
+|-
+| A3DS || TRIPDEPALS
+|-
+| A3FDEV || Freezer
+|-
+| A3HL || Tom Squirrel
+|-
+| A3L || Дмитруй
+|-
+| A3LFE || jonnyetiz
+|-
+| A3LIF || A3LifeBlue
+|-
+| A3M || Skeltoras
+|-
+| A3PH || Arma Philippines
+|-
+| A3PL || KokaKolaA3
+|-
+| A3PMC || sy4
+|-
+| A3R || acurlyninja
+|-
+| A3RES || Pillord
+|-
+| A3RO || Rangooo1337
+|-
+| A3RP || Michael Swiss
+|-
+| A3RU || Blender
+|-
+| A3S || FunkFest
+|-
+| A3SRX || SAYREX
+|-
+| A3TC || Tomcat_1995
+|-
+| A3TP || W0lle
+|-
+| A3YCA || YanCosta
+|-
+| A40K || ladie from hell
+|-
+| A455 || Andy455
+|-
+| A4L || A.Deubelskerl [DBK]
+|-
+| A4RP || A.Deubelskerl [DBK]
+|-
+| A506 || Margiotta
+|-
+| A5221 || TiernanTheMan
+|-
+| A6105 || hairston630
+|-
+| A69 || SandX
+|-
+| A974 || Christopher974
+|-
+| A999 || DoctorSparks
+|-
+| AAA || Sama
+|-
+| AAAAA || QwertQ9
+|-
+| AAC || Boiorix
+|-
+| AACF || ONI
+|-
+| AAD || Sabelzahntiger
+|-
+| AAF || eagles talon
+|-
+| AAK || Ala Ad Kabeer
+|-
+| AAL || al_liga
+|-
+| AALM || Ace
+|-
+| AAM || teratino
+|-
+| AAP || Dimitri_Harkov
+|-
+| AAS || Aasgeier
+|-
+| AAT || Bloberg
+|-
+| AAW || Australians At War
+|-
+| AB82 || Pollitt
+|-
+| ABASH || Abash
+|-
+| ABATO || Abartho
+|-
+| ABCDE || Broadsword
+|-
+| ABDDN || mrzachhigginsofficial
+|-
+| ABED || Abel
+|-
+| ABG || Sheildsy
+|-
+| ABI || JingaDinga
+|-
+| ABIP || RichesMaps
+|-
+| ABN13 || ThatArmaGuy
+|-
+| ABNOE || Wolfpack_Neko
+|-
+| ABO || Alph@bravo
+|-
+| ABR || Aberrunto
+|-
+| ABS || Abs_01
+|-
+| ABT || coolcl
+|-
+| ABU || Abuu
+|-
+| ABYSS || AdeptAbyss
+|-
+| ABZ || Whitedan
+|-
+| ACA || acoustic
+|-
+| ACAVE || th3flyboy
+|-
+| ACDSU || d4n1ch
+|-
+| ACE || Advanced Combat Environment
+|-
+| ACERO || @CERO
+|-
+| ACES || Aircraft and Chopper Equipment Standard
+|-
+| ACF || ACF
+|-
+| ACH || Apache (AKA Dark Soldier)
+|-
+| ACHN || ItsYaBoiJabool
+|-
+| ACI || LiveFastDieFree
+|-
+| ACID || acidioussoul
+|-
+| ACL || razoraresharp
+|-
+| ACMM || antoniocarlosmaia
+|-
+| ACOLYTE || MemphisAcolyte
+|-
+| ACOM || OneMysteryMan
+|-
+| ACPL || zGuba
+|-
+| ACR || TheSun
+|-
+| ACS || razoraresharp
+|-
+| ACSE || Advanced Combat Sound Environment
+|-
+| ACTRG || Marksman1942
+|-
+| ACU || Zerro
+|-
+| ACW || Kumariashamaki
+|-
+| ADAM || castell
+|-
+| ADC || cmndr_andi
+|-
+| ADDON || rodhalberd
+|-
+| ADE || Adelemphii
+|-
+| ADENF || AdenFlorian
+|-
+| ADEQU || AderQ
+|-
+| ADF || Australian Defence Force Mod
+|-
+| ADFT || mahtt
+|-
+| ADFU || pastor399
+|-
+| ADG || tipster1
+|-
+| ADL || ADLewis1975
+|-
+| ADLER || GAdler
+|-
+| ADLP || Andy455
+|-
+| ADM || iAd4m
+|-
+| ADMS || Adams (16AA)
+|-
+| ADNG || Thoron
+|-
+| ADR || AmerikanSn1p3r
+|-
+| ADS || admiralducksauce
+|-
+| ADT || DT_Holding
+|-
+| ADVIC || advictoriam
+|-
+| ADX || .:mazed:.
+|-
+| AE608 || AE-6080
+|-
+| AED || eldstal
+|-
+| AEDIT || pastor399
+|-
+| AEDS || rodhalberd
+|-
+| AEG || Loyalguard
+|-
+| AEGIS || Aegis
+|-
+| AEKO || Aeko
+|-
+| AER || rodhalberd
+|-
+| AERDF || jello100
+|-
+| AEREO || rodhalberd
+|-
+| AERO || rodhalberd
+|-
+| AFB || afbrad
+|-
+| AFD || affraid
+|-
+| AFF || affraid
+|-
+| AFFRA || affraid
+|-
+| AFFRD || affraid
+|-
+| AFG || DarkFenix100
+|-
+| AFG80 || granQ
+|-
+| AFGHA || Afghanka
+|-
+| AFMC || CSLA Mod
+|-
+| AFMOD || ArmA Francais Mission Development
+|-
+| AFRD || affraid
+|-
+| AFS || teamwolf
+|-
+| AFSF2 || coremanite
+|-
+| AFSR || EMSI
+|-
+| AFTL || Insane
+|-
+| AFUK || Uro
+|-
+| AFVET || Fire_Medic
+|-
+| AFW || mecharius
+|-
+| AG9 || ageA9
+|-
+| AGAR || ignotus17
+|-
+| AGG || Matthijs
+|-
+| AGGF || Jack6366
+|-
+| AGITATOR || DogmatistAgitator
+|-
+| AGM || andersgrim
+|-
+| AGN || Attoric Games
+|-
+| AGP || Anglo Greek Pole Productions
+|-
+| AGR || AGERSTONE
+|-
+| AGRPG || Triebtaeter
+|-
+| AGS || ag_smith
+|-
+| AGUA || Agua
+|-
+| AHA || AugustoHA
+|-
+| AHK || jelrite346
+|-
+| AHOST || seytan69
+|-
+| AIA || Allies In Arms
+|-
+| AIBG || MasterJ
+|-
+| AIC23 || AICA
+|-
+| AIGAM || Danite
+|-
+| AIM || Typhon
+|-
+| AIOC || Noahd99
+|-
+| AIR || Assassinator
+|-
+| AIRBO || DLocker
+|-
+| AIS || Fen
+|-
+| AJB || BiggAndrew24
+|-
+| AJM || angusjm
+|-
+| AJN || McGling
+|-
+| AJS || Abuu & Jonno Studios
+|-
+| AJSK || AJS
+|-
+| AK3 || AK_A3
+|-
+| AKA || kAk
+|-
+| AKE || Jayhawk
+|-
+| AKIRA || NevsZA
+|-
+| AKL || AK_A3
+|-
+| AKO || Akolex
+|-
+| AKU || Akugagi
+|-
+| AKVA || Celgus
+|-
+| ALA46 || GrayFox
+|-
+| ALB92 || ALB92
+|-
+| ALC || Alcore
+|-
+| ALD15 || Aldo15
+|-
+| ALDI || alderous
+|-
+| ALE || Ale
+|-
+| ALEXA || alexa.hunts
+|-
+| ALEXK || alex-krug
+|-
+| ALEXS || Hasmat2815
+|-
+| ALF || Rikugun
+|-
+| ALFA || AlexAltea
+|-
+| ALG || ITZSESHH
+|-
+| ALI || Alipali
+|-
+| ALIEN || Digital Carbon
+|-
+| ALJ0D || aljd
+|-
+| ALK || Linus
+|-
+| ALL || Arma Ladder/Liga
+|-
+| ALMAMONS || Shuljamac
+|-
+| ALO || Xtreme
+|-
+| ALPH0 || merauder146
+|-
+| ALPHY || Alphawolfun
+|-
+| ALR || EthanB0527
+|-
+| ALRP || AlexisFR
+|-
+| ALTF || sport308
+|-
+| ALTF4 || Brycie
+|-
+| ALU || Alukard
+|-
+| ALV || AlexVestin
+|-
+| ALW || a-lone-wolf
+|-
+| ALWA || Alwandy
+|-
+| ALXMA || AlexanderHoraitis
+|-
+| ALZ || angry_lizard
+|-
+| AM92 || AnimalMother92
+|-
+| AMA || TopHatt
+|-
+| AMB || Hairy Primate
+|-
+| AMB11 || Smootch
+|-
+| AMC || Anmac
+|-
+| AMF || Legion Tactical
+|-
+| AMH || TRG_Holicer
+|-
+| AMM || ianbanks
+|-
+| AMMO || rodhalberd
+|-
+| AMOD || ArmA Modifications
+|-
+| AMORE || The Avon Lady
+|-
+| AMPER || Amperloom
+|-
+| AMR || ThePhysGun
+|-
+| AMR28 || 4yDiK
+|-
+| AMRG || Coldfront15
+|-
+| AMS || Assault Mission Studio
+|-
+| AMS66 || Moeller88DK
+|-
+| AMS88 || Moeller88DK
+|-
+| AMT || AustriaMod
+|-
+| AMU || jotel
+|-
+| AMUR || 4yDiK
+|-
+| AMUT || Raango
+|-
+| AMWAY || Mr_Amway
+|-
+| ANA || TriTard
+|-
+| ANATO || anatomix
+|-
+| ANC || giraffe
+|-
+| ANCH || Angeloh111
+|-
+| AND || AND
+|-
+| AND2 || AND
+|-
+| ANDE || ande
+|-
+| ANDOR || andrewor
+|-
+| ANDY || andersson
+|-
+| ANDY1 || little_andy
+|-
+| ANG || ocramweb
+|-
+| ANGEL || MRANGELL96/David Angel
+|-
+| ANK || gonzai
+|-
+| ANN || AnotherNormalNick
+|-
+| ANNIE || WildAnnie
+|-
+| ANOE || ALEX.50
+|-
+| ANON || AnonAustria13
+|-
+| ANT || LtMadine
+|-
+| ANTH || Anthariel
+|-
+| ANTHA || Anthariel
+|-
+| ANTI || Antiprotestant
+|-
+| ANZ || anzacsas
+|-
+| AOA || TESHUB
+|-
+| AOH || ParryJD
+|-
+| AOI || th3flyboy
+|-
+| AOS || Ambient Occlusion Studios
+|-
+| AOT || Roaban
+|-
+| APAN || keivlech
+|-
+| APBW || GamingPanthers
+|-
+| APD || Aspide
+|-
+| APE || Apecengo
+|-
+| APEX1 || apexgames
+|-
+| APH || ahunn
+|-
+| APOC || Muppet1856
+|-
+| APS || Australian Phantom Soldiers
+|-
+| APT || Cpt-Fred
+|-
+| APU || Apouh
+|-
+| APX || apexgaming
+|-
+| AQUIS || Aquis
+|-
+| AR308 || chayfo
+|-
+| ARA || Australian Regular Army
+|-
+| ARAB || damnbino
+|-
+| ARAKA || Arakatonga
+|-
+| ARAR || affraid
+|-
+| ARB || Aerobat14
+|-
+| ARC || Archaine
+|-
+| ARCH || TemplarVX
+|-
+| ARCHI || Archi49
+|-
+| ARCTO || Arctor
+|-
+| ARD || Aidas
+|-
+| ARDIN || Aridin
+|-
+| ARES || Clayman
+|-
+| ARG || ZoTTiixX
+|-
+| ARGO || ArgoChris
+|-
+| ARICP || Ariussin
+|-
+| ARK || Arctor
+|-
+| ARM4LIFE || MrRatSuper
+|-
+| ARMA || OFPEC
+|-
+| ARMA3MO || Redays
+|-
+| ARMAG || Giorgy
+|-
+| ARMAS || rodhalberd
+|-
+| ARMAT || ArMaTec
+|-
+| ARMEC || Aramec
+|-
+| ARMPT || onlybaldwin16
+|-
+| ARMST || Dragster
+|-
+| ARN || Hotbrass
+|-
+| ARO || Aron
+|-
+| ARP || thedog
+|-
+| ARPA || MidShip
+|-
+| ARPL || MRANGELL96
+|-
+| ARRON || Arronax
+|-
+| ARROW || baca85
+|-
+| ARS || Ares
+|-
+| ARST1 || hfuser1
+|-
+| ART || Ragnar
+|-
+| ARTIC || blazester
+|-
+| ARU || Spyke
+|-
+| ARW || theArdboegamer
+|-
+| ARWEN || dobermann91
+|-
+| AS2 || FunkFest
+|-
+| ASB || Buehgler_AS
+|-
+| ASC || ASC
+|-
+| ASCT || CyDoN
+|-
+| ASCW || Julian2990
+|-
+| ASD || asd163255
+|-
+| ASDG || AlphaSquad.net
+|-
+| ASE || Advanced Sound Environment
+|-
+| ASEOB || obliv1on
+|-
+| ASF || David Berka
+|-
+| ASFF || firefly2442
+|-
+| ASG || Gnome
+|-
+| ASH || AaronAsh
+|-
+| ASI || Vigilante
+|-
+| ASIN || Toaster
+|-
+| ASITA || joshpier3
+|-
+| ASL || Vigilante
+|-
+| ASM || asmodeus
+|-
+| ASO || Picasso
+|-
+| ASP || ASP
+|-
+| ASPE || Asperche
+|-
+| ASRX || SAYREX
+|-
+| ASS || SnowSky
+|-
+| AST || astatine
+|-
+| ASTA || astast
+|-
+| ASTBY || mariusvnh
+|-
+| ASTHMA || Asthma
+|-
+| ASTR || STALKERGB
+|-
+| ASTRO || ionpara
+|-
+| ASV || Aramis
+|-
+| ASX || Assasin X
+|-
+| ASY || Stiltman
+|-
+| ASZ || arremba
+|-
+| ATC || Unnamed
+|-
+| ATDEF || SmokeDef
+|-
+| ATF || AustriaTacticalForce
+|-
+| ATG || Attoric Games
+|-
+| ATH || Math
+|-
+| ATHM || Marseille77
+|-
+| ATK || toadeater
+|-
+| ATL || Atlas123
+|-
+| ATM || nolips71
+|-
+| ATMK || FraP-zsz
+|-
+| ATN || Atunero
+|-
+| ATOW || ArmA: Theatre of War Tournament
+|-
+| ATPN || bytopin
+|-
+| ATRO || Atrocittus
+|-
+| AUG || august_nox
+|-
+| AUNA || KarbineR
+|-
+| AURI || nate6631
+|-
+| AUS || Foxhound
+|-
+| AUSIM || ausimus
+|-
+| AUSMD || austin_medic
+|-
+| AUST || AusTac
+|-
+| AUT || Blackii93
+|-
+| AUXIL || Auxilirate
+|-
+| AVERS || mhodgson89
+|-
+| AVO || dartist
+|-
+| AVON || The Avon Lady
+|-
+| AVS || Atom_Monky
+|-
+| AW0012 || Theawsome0012
+|-
+| AWA || annihilator825
+|-
+| AWAS || Authentic Warfare Addon Studio
+|-
+| AWM || Airwolf Mod
+|-
+| AWS || aws188
+|-
+| AX2D || Grizlyian
+|-
+| AX4 || axhacker4
+|-
+| AXL || Axyl
+|-
+| AXP || Alex.XP
+|-
+| AXXE || axxe
+|-
+| AYBAB || theonciest
+|-
+| AYM || Andymon
+|-
+| AZE || altazure
+|-
+| AZIZ || Abdulaziz Alashaikh
+|-
+| AZK || Pyrospastiac
+|-
+| AZP || AngeredZeus
+|-
+| AZR || Azraell_X
+|-
+| AZRYV || Y0an
+|-
+| AZT || Aztechnology
+|-
+| AZY || Azy
+|}
+
+=== B ===
+
+{| class="wikitable sortable" style="width: 100%"
+| B0SS || AnotherNormalNick
+|-
+| B10 || b101uk
+|-
+| B182 || Bebop182
+|-
+| B2P || Chere
+|-
+| B2Z || Bravo 2 Zero Campaign Addons: spider_ipc
+|-
+| B33 || Sgt.James
+|-
+| B3N || cebus
+|-
+| B45 || Berlin1945 Staff
+|-
+| B4609 || Bread
+|-
+| B47 || BrendoB47
+|-
+| B500 || Falcon
+|-
+| B851678 || Failiatus
+|-
+| BAAD || BrookeAnne
+|-
+| BAAL || baalzebuv
+|-
+| BABE || Bad_Benson
+|-
+| BABS || Zeak
+|-
+| BABYZ || Gigantobaby
+|-
+| BAC || CCrAsHH
+|-
+| BAD || B.A.D.
+|-
+| BADBOY || ruanbadboy
+|-
+| BADGR || FlattestGuitar
+|-
+| BADR || omarelrussi
+|-
+| BAE || Zim
+|-
+| BAEM || BAEM
+|-
+| BAER || unbrauchbaer
+|-
+| BAF || pathy
+|-
+| BAFS || Infiltrator_2K
+|-
+| BAGE || RoyalCabbage
+|-
+| BAGEL || Nuufa
+|-
+| BAGPE || bagdigger_actual
+|-
+| BAJ || baj1991
+|-
+| BAK || Backoff
+|-
+| BAK0 || Bak0
+|-
+| BAKFT || zhestyr
+|-
+| BAKH || byalexeykh
+|-
+| BAL || Gamefreak2ful
+|-
+| BALI || bali0025
+|-
+| BALIS || Ballisticd8
+|-
+| BALSK || wcnones
+|-
+| BAM || Brazilian Army Mod
+|-
+| BAMSE || Bamse
+|-
+| BANG || johnbangs
+|-
+| BAR || BarCode
+|-
+| BAR31 || barakokula31
+|-
+| BART || bartkusa
+|-
+| BAS || Ballistic Addon Studio
+|-
+| BASE || rodhalberd
+|-
+| BASIC || Basic_Infantry
+|-
+| BAT || Ekengren
+|-
+| BATTL || rodhalberd
+|-
+| BATTY || batboyx2
+|-
+| BATZ || AlexDovoski
+|-
+| BAUER || Schwarzbauer
+|-
+| BAV || B.A.Verrecus
+|-
+| BAZ || KevBaz
+|-
+| BAZBO || Bazooka_Boy
+|-
+| BAZEF || ENGENER
+|-
+| BBA || Black Baron Austria
+|-
+| BBB || bL4s
+|-
+| BBE || =[BBE]= MOD
+|-
+| BBEAR || bigdancingbear3
+|-
+| BBEM || BBE Squad
+|-
+| BBM || General_Bacon_965
+|-
+| BBOY || BladderBoy
+|-
+| BBP || Big Ben
+|-
+| BBR || ak12546
+|-
+| BBRR || boberro
+|-
+| BBWV147 || bachbwv147
+|-
+| BBY || BB128
+|-
+| BC6 || bravo 6
+|-
+| BCA3 || that1drifter
+|-
+| BCCAN || Cyanide1973
+|-
+| BCD || darkmol12
+|-
+| BCK || blue chook
+|-
+| BCM || beatzcraft
+|-
+| BCO || brando
+|-
+| BCRPG || B.Johnson
+|-
+| BCT || bobcatt666
+|-
+| BDE || beedee
+|-
+| BDEF || bcdeforest
+|-
+| BDH || monk76
+|-
+| BDK || bundook
+|-
+| BDKR || baedeker
+|-
+| BDM || Bloody Days Mod
+|-
+| BDN || Bandana
+|-
+| BDO || Baddo
+|-
+| BDOG || Scheintot
+|-
+| BDP || Backoff & DeaDMeaT Productions
+|-
+| BDPS || badpapasmurf
+|-
+| BDPSF || badpapasmurf
+|-
+| BDS || ryogugu
+|-
+| BEAR || GodsFist
+|-
+| BEAUSHAR || Mellowluva88
+|-
+| BEB || bebbakhuis
+|-
+| BED || LordBen
+|-
+| BEDCR || Imatisis
+|-
+| BEDZ || DeliveryService
+|-
+| BEEF || WhereIsBeef
+|-
+| BEEP || banini
+|-
+| BEER || GodsFist
+|-
+| BEL || battlestar255
+|-
+| BEL28 || Warrior
+|-
+| BEN || bennyboy
+|-
+| BENNZ || Ben.NZ
+|-
+| BENQ || BenQ
+|-
+| BENTDEV || malfar
+|-
+| BEO || MBMC
+|-
+| BEOB || 404 Dave Not Found
+|-
+| BEPO || McLupo
+|-
+| BERG || berghoff1 (aka Berghoff)
+|-
+| BERN || Bern
+|-
+| BERNO || Berno
+|-
+| BERT || albertoesponera
+|-
+| BES || Black Element Studio
+|-
+| BET || Beton
+|-
+| BETA || Betaknight
+|-
+| BETO || Beto
+|-
+| BETTY || Jona
+|-
+| BEW || Bullseyeworks
+|-
+| BFI || super-truite
+|-
+| BFM || Gurk
+|-
+| BFS || LoupVert
+|-
+| BFSGF || klinGiii
+|-
+| BG || Zelik and Mojo
+|-
+| BGA || bmgarcangel
+|-
+| BGBR || Bugbear44
+|-
+| BGG || Biggs25
+|-
+| BGI || scottieo321
+|-
+| BGLEN || bglen
+|-
+| BGM || BritishGM
+|-
+| BGP || bloodyzyy
+|-
+| BGT || tini
+|-
+| BHAZ || Bhaz
+|-
+| BHB || bauerhousebourne
+|-
+| BHC || Thomas
+|-
+| BHD || Linker Split
+|-
+| BHG || ChaseTheFun
+|-
+| BHZ || BadHabitz
+|-
+| '''BI''' || '''{{Name|bi}}'''
+|-
+| BIALY || Ziemek
+|-
+| BIB || Bibmi
+|-
+| BIBO || Bibo164
+|-
+| BIF || Belle Ile France
+|-
+| BIG || martynfromholland
+|-
+| BIGGS || Biggs25
+|-
+| BIGL || BigLebowski
+|-
+| BIGPH || ebrand
+|-
+| BIGT || bigtony
+|-
+| BIH || cluster
+|-
+| BILA || turbo2
+|-
+| ''BIN'' || Binesi
+|-
+| '''BIN''' || '''{{Name|bi|short}} Netherlands''' ([[Arma 3 Contact]] [[:Category:Function Group: Contact|functions]])
+|-
+| BINF || alxntc2
+|-
+| BINK || Binkowski
+|-
+| BIO || bio138
+|-
+| BIOC || CD8-T-Lymphocyte
+|-
+| BIOPEG || BioPegasus
+|-
+| BIP || BipBip
+|-
+| BIR || Black1ron
+|-
+| BIRD || thebird
+|-
+| '''BIS''' || '''{{Name|bi}}''' ({{Name|arma2|short}}, {{Name|arma2oa|short}}, {{Name|tkoh|short}}, {{Name|arma3|short}})
+|-
+| BIW || Biwi
+|-
+| BJAX || Banjaxed
+|-
+| BJD || Grekain1
+|-
+| BJM || bombajack
+|-
+| BJP || bombajack
+|-
+| BJS || purefocus
+|-
+| BK12 || bk1276
+|-
+| BKD || blackdog
+|-
+| BKF || BKFighter
+|-
+| BKH || lBlackDeathl
+|-
+| BKM || BKM Mod
+|-
+| BKR || BurgerKingRetard
+|-
+| BKS || 1B1KSniper
+|-
+| BL5KA || baltushka
+|-
+| BLACK || Blackflash
+|-
+| BLAZE || Blaze F22A
+|-
+| BLB || Blackblood
+|-
+| BLCKL1ST || Blacklist370
+|-
+| BLD || BLADE
+|-
+| BLE || Blender
+|-
+| BLEF || Bleff
+|-
+| BLF || black_feather
+|-
+| BLG || Bloberg
+|-
+| BLG14 || bloodsheddt
+|-
+| BLIND || rodhalberd
+|-
+| BLIV || TheBliveon
+|-
+| BLIVE || TheBliveon
+|-
+| BLK || Blacknite
+|-
+| BLKAD || Blackadder
+|-
+| BLKCL || Blackclaw
+|-
+| BLKFS || blackfisch
+|-
+| BLKRV || Blackraven93
+|-
+| BLND || Blindside
+|-
+| BLNW || blaunarwal
+|-
+| BLO || JussiPik
+|-
+| BLOOD || -Blood-
+|-
+| BLOW || thelobotomobile
+|-
+| BLP || Bloppo
+|-
+| BLRPG || musicshaggy
+|-
+| BLT || Blunt
+|-
+| BLTMC || TheBliveon
+|-
+| BLU || bluebottle
+|-
+| BLUE || ShadowBlue
+|-
+| BLW || SchleckDieNudel
+|-
+| BLX || cleggy
+|-
+| BLYAM || Blyamps
+|-
+| BLZ || blazero
+|-
+| BLZE || Blaze
+|-
+| BMC || BMCha
+|-
+| BMI || Bambi
+|-
+| BMICK || billy12822
+|-
+| BMP || BM Production
+|-
+| BMR || BeAMer
+|-
+| BMRF || NotCorsair
+|-
+| BMS || daniellovatt
+|-
+| BNC || BoNeCoLLeCToR
+|-
+| BND || Bond006
+|-
+| BNDR || bending_unit_22
+|-
+| BNG || Bongo Bongo
+|-
+| BNI || BeenIdle
+|-
+| BNM || Challenger3
+|-
+| BNSN || Benson
+|-
+| BOAT || rodhalberd
+|-
+| BOB || Ranger Bob
+|-
+| BOC || BoNeCoLLeCToR
+|-
+| BODE || Bode
+|-
+| BOE || Fokker
+|-
+| BOF || Rebel Man
+|-
+| BOFD || Rebel Man
+|-
+| BOG || bog819
+|-
+| BOGEY || mkfester923
+|-
+| BOH || Project:Battle Over Hokkaido
+|-
+| BOI || Mahboison
+|-
+| BOL || bol398
+|-
+| BOMB || BeetleBomb
+|-
+| BON || TheBonBon
+|-
+| BOO || booRadley
+|-
+| BOOM || Boomotang
+|-
+| BOON || BoonChi
+|-
+| BOOP || Henri
+|-
+| BOOZ || booz
+|-
+| BOP || Blackop
+|-
+| BOPMA || *BOP*Matt
+|-
+| BOR || Bases Over Rahmadi
+|-
+| BORG || Borgamagos
+|-
+| BORGMAN || BorgerMan
+|-
+| BOROS || House Boros
+|-
+| BOS || Bases Over Sahrani
+|-
+| BOUNT || BountyXY
+|-
+| BOX || boxter
+|-
+| BOXY || Boxfinate
+|-
+| BOZO || BoZo_135
+|-
+| BPC || tom_48_97
+|-
+| BPS || [PTS] Panthers
+|-
+| BPX || BlackPixxel
+|-
+| BQC || curiousinternals
+|-
+| BRA || bracer
+|-
+| BRAD || TuszPro
+|-
+| BRADY || aefbrady319
+|-
+| BRAF || Bran Flakes
+|-
+| BRANF || Bran Flakes
+|-
+| BRANK || lalote
+|-
+| BRAS || rodhalberd
+|-
+| BRASR || minimus
+|-
+| BRDT || Brandt
+|-
+| BREAD || SlicedBread
+|-
+| BRF || Brutal Force
+|-
+| BRG || berghoff1 (aka Berghoff)
+|-
+| BRGDA || Brigandia36
+|-
+| BRH || Boborish
+|-
+| BRIG || TuszPro
+|-
+| BRIT || British89
+|-
+| BRKT || GrooveByte
+|-
+| BRMOD || Battle Royale Mod
+|-
+| BRN || SgtBarnes73
+|-
+| BRN73 || tgm0
+|-
+| BRNDT || Brandt
+|-
+| BRO || BeerOps
+|-
+| BROAD || Broadsword
+|-
+| BROK || xpt0x
+|-
+| BRON || brontal77
+|-
+| BRONX || kyoshofreak
+|-
+| BRP || Batdog
+|-
+| BRPG || BritishLifeRPG
+|-
+| BRS || BRAS
+|-
+| BRT || BraTTy
+|-
+| BRT96 || Its_imp
+|-
+| BRUH || koptwo
+|-
+| BRW || Battleredwing
+|-
+| BRX || Braxel
+|-
+| BRZ || rodhalberd
+|-
+| BS3 || BeefSunda3
+|-
+| BSA || Burning Sands: Africa 42
+|-
+| BSC || The Plague Healer
+|-
+| BSCT || Jack00
+|-
+| BSD || BraveSteelDragon
+|-
+| BSF || TroyT
+|-
+| BSFC || TroyT
+|-
+| BSFM || Flax
+|-
+| BSH || Bishop
+|-
+| BSH19 || peter1415
+|-
+| BSK || Bounty
+|-
+| BSLK || Sanchez00
+|-
+| BSOC || Bastard Sons of Cannon Fodder
+|-
+| BSQ || icausecancer
+|-
+| BSQN || tomtucka
+|-
+| BSR || BrockLee
+|-
+| BSS || Abel
+|-
+| BSW || BusStopWilly
+|-
+| BT || BeeTee
+|-
+| BT153 || birdman
+|-
+| BTA || BTA-horrific
+|-
+| BTC || Giallustio
+|-
+| BTD || bTd Clan
+|-
+| BTH || BobTheHunted
+|-
+| BTHBC || BobTheHunted
+|-
+| BTP || Target Practice
+|-
+| BTS || BlackBat
+|-
+| BTYR || Reddagger36
+|-
+| BUCE || ms1v
+|-
+| BUCK || buckfast
+|-
+| BUG || Joe Lemonade PSC
+|-
+| BUILD || rodhalberd
+|-
+| BUK || Buckerooski
+|-
+| BUKA || Buuka7
+|-
+| BULB || GreenLightbulb
+|-
+| BUN || BUNTRO
+|-
+| BUNLU || bun76
+|-
+| BURES || Burkal
+|-
+| BURRD || burrd
+|-
+| BURT || BadLuckBurt
+|-
+| BUSH || Bushlurker
+|-
+| BUSH1 || Bushbeater
+|-
+| BUST || BUST1
+|-
+| BUTCH || TheButcher
+|-
+| BUTT || InquisitorL
+|-
+| BUTT1 || InquisitorL
+|-
+| BUUKA || Buuka
+|-
+| BW2 || SAAF
+|-
+| BWB || Black Watch Battalion
+|-
+| BWC || Bush Wars Conflict Mod
+|-
+| BWC1 || Rumplestiltz
+|-
+| BWCRO || bwcrow
+|-
+| BWE || kyoshofreak
+|-
+| BWF || Le_CuLtO
+|-
+| BWG || BWGw
+|-
+| BWINT || adios113
+|-
+| BWMOD || Bundeswehr Mod
+|-
+| BWPH || bwph4273
+|-
+| BWPP || BattlePOWER
+|-
+| BXX || Bioxx
+|-
+| BYB || Yellow Basterd
+|-
+| BYD || bydolg
+|-
+| BYR || DaBayer
+|-
+| BYRNE || Byrne
+|-
+| BZK || BerZerK
+|-
+| BZLY || Beazley
+|-
+| BZS || deroxaxe
+|}
+
+=== C ===
+
+{| class="wikitable sortable" style="width: 100%"
+| C094 || Cerberus094
+|-
+| C130 || OperationSoulReaper
+|-
+| C15 || wantafanta
+|-
+| C1896 || Connorwarman
+|-
+| C1976 || Dimitri_Harkov
+|-
+| C1987 || Christian.1987
+|-
+| C2K || Hamo
+|-
+| C3RB || Cerberus
+|-
+| C404 || Concept404
+|-
+| C47 || crook47
+|-
+| C4N || ChaseTheFun
+|-
+| C4TV || C4TVAtlas
+|-
+| C555 || CringleBerry
+|-
+| C76 || Camaro76
+|-
+| C7K || c7kizer
+|-
+| C8X || Earl
+|-
+| CAA || alex.caa
+|-
+| CAA1 || kju
+|-
+| CAB || cabal0428
+|-
+| CABLE || Cablebox
+|-
+| CACHE || bcashin
+|-
+| CAD || MajorElimRawne
+|-
+| CAEDE || Ahadiel
+|-
+| CAF || Edgecrusher
+|-
+| CAFT || Moofins
+|-
+| CAG || TheCaptain
+|-
+| CAIRS || kju
+|-
+| CAKES || Fail Cakes
+|-
+| CAL || calamity
+|-
+| CAL68 || burns
+|-
+| CALIM || diveyez
+|-
+| CAM || rodhalberd
+|-
+| CAME || camealeon
+|-
+| CAMP || rodhalberd
+|-
+| CAMUH || camuhflage
+|-
+| CAN || Can35
+|-
+| CANMN || CANMAN
+|-
+| CAP || Captain
+|-
+| CAPP || The_Sprite
+|-
+| CAPPY || Cappylock
+|-
+| CAPRY || CapryCorn
+|-
+| CAPS || CAPTNCAPS
+|-
+| CAPTN || Captain Courageous
+|-
+| CAR || jano20
+|-
+| CAR69 || Carthaginian_Reaper
+|-
+| CARL || SugarFreek
+|-
+| CAROL || FileEditor97
+|-
+| CAS || Crazy addons studio
+|-
+| CASCO || Cablebox
+|-
+| CASH || ColeAshford
+|-
+| CASKT || CaspianKT
+|-
+| CASP || kju
+|-
+| CASS || Cassandras Addon Studio
+|-
+| CASSI || Cassius
+|-
+| CAT || CAT SHIT ONE MM
+|-
+| CATAR || CatArmour
+|-
+| CAU || Caucasus Crisis Mod
+|-
+| CAV || tierdisogni
+|-
+| CAV25 || veers13
+|-
+| CAVS || MDI
+|-
+| CAW || BloodyRaiden907
+|-
+| CAZ || Cazalla
+|-
+| CB3 || Apollo
+|-
+| CBA || Code Blue Addons
+|-
+| CBCP || kju
+|-
+| CBF || CBFASI
+|-
+| CBM || Code Blue MOD
+|-
+| CBN || chrisbobnorwich
+|-
+| CBO || kingfisher
+|-
+| CBR || CareyBear
+|-
+| CBT || Clan COMBAT!
+|-
+| CBW || Foxhound_ca
+|-
+| CC4 || Capt_Colt45
+|-
+| CC45 || Capt_Colt45
+|-
+| CCC || DESTINY0ne
+|-
+| CCG || justJenkins
+|-
+| CCH || clarkhalf
+|-
+| CCHOW || Yin0105
+|-
+| CCM || Crime City Mod
+|-
+| CCO || Carol Cray
+|-
+| CCP || CatCaptain
+|-
+| CCR || 200rabbits
+|-
+| CCRPG || Avery Foutz
+|-
+| CCS || creepycrappyshow
+|-
+| CCT || cctoide
+|-
+| CDAH || Lotzo
+|-
+| CDC || x2dezjohn
+|-
+| CDE || Chernarus.de
+|-
+| CDEE || CodeE
+|-
+| CDHM || crazyDHarrison2
+|-
+| CDM || ApocalypseDan
+|-
+| CEB || SlimShadII
+|-
+| CEEB || Ceeb
+|-
+| CEG || Loyalguard
+|-
+| CEL || Cell
+|-
+| CELO || celoush
+|-
+| CELTR || celltsar
+|-
+| CEP || CEP
+|-
+| CFD || CFD_Spectre
+|-
+| CFE || Chinese Fonts Engine
+|-
+| CFS || cfsfirefighter
+|-
+| CFSG || cfsjrandazzo
+|-
+| CFTEX || Captain Fantastic
+|-
+| CFX || CfX
+|-
+| CGB || CGB
+|-
+| CGC1 || CG-Robo
+|-
+| CGF1 || Chaingunfighter
+|-
+| CGI || Central Graphics and Imaging
+|-
+| CGR || christian2526
+|-
+| CH2R || Ch2rly
+|-
+| CH35 || christoph35
+|-
+| CH974 || Christopher974
+|-
+| CHA || Chairborne
+|-
+| CHAD || chaddlesg
+|-
+| CHAF1 || Chickensky
+|-
+| CHAL || Challenger
+|-
+| CHANG || BakerChang
+|-
+| CHAR || Charlie Howarth
+|-
+| CHD || Chris Death
+|-
+| CHE || Cheetah
+|-
+| CHEF || chefd261
+|-
+| CHGMS || Cyrokrypto
+|-
+| CHILE || Fabiantronc
+|-
+| CHILI || chillagin
+|-
+| CHIZ || Chizdna
+|-
+| CHK || chkilroy
+|-
+| CHL || Fabiantronc
+|-
+| CHMOD || Christophorus Mod
+|-
+| CHN || Charon Productions
+|-
+| CHO || Chonee
+|-
+| CHOYA || ChoYaYa
+|-
+| CHP || Jona
+|-
+| CHR || chris330
+|-
+| CHRIS || chris4335
+|-
+| CHRO || Chromegus
+|-
+| CHS || ChaosStudios
+|-
+| CHSCJ || Cj93Play
+|-
+| CHT || Crazy Hussars Team
+|-
+| CHUCK || cyckuan
+|-
+| CHUD || Chudlik
+|-
+| CHUMY || chumymalo
+|-
+| CHUP || ChupChup
+|-
+| CIA || Comrades in Arms
+|-
+| CIDF || Craggy Island Defence Force
+|-
+| CIL || Caillou
+|-
+| CIPE || HateDread
+|-
+| CIT || Citali
+|-
+| CIV || Sariel
+|-
+| CIVF || Flax
+|-
+| CIVIL || CivilityRP
+|-
+| CJ5 || cj525
+|-
+| CJACK || jackjack
+|-
+| CJF || Popinjay_John
+|-
+| CJJ || jarv
+|-
+| CKMES || TimRambo
+|-
+| CKRU || Capt Krüger
+|-
+| CKY || cyckuan
+|-
+| CL3 || R3411y
+|-
+| CLA || Robster
+|-
+| CLAUS || pplluuttoo
+|-
+| CLEGG || Knobee
+|-
+| CLHK || leungkaho_p54
+|-
+| CLI || clivewil
+|-
+| CLICK || ClicheUsername
+|-
+| CLINT || cring0
+|-
+| CLON || Clon
+|-
+| CLR || xZeven
+|-
+| CLY || Celery
+|-
+| CMA || kju
+|-
+| CMC || Fsxcrone
+|-
+| CMCARTHY || C.McCarthy
+|-
+| CMCD || CameronMcDonald
+|-
+| CMCTD || Eckzy
+|-
+| CMD || Evalach
+|-
+| CMDBR || PedroLuigi
+|-
+| CMDO || capitao_commando
+|-
+| CME || Bigsmok
+|-
+| CMF || AtinAkiri
+|-
+| CMG || Panadur
+|-
+| CMGE || Zkorpyun
+|-
+| CMINF || Commander Infinty
+|-
+| CML || Jeringo
+|-
+| CMP || CymPatheeY
+|-
+| CMPB || XSparky
+|-
+| CMPGN || SULcorp
+|-
+| CMR || Commander
+|-
+| CMS || raptor 6 actual
+|-
+| CMT || Capt MacTavish
+|-
+| CMW || AlcapurriaPR
+|-
+| CMY || CrimyStickR
+|-
+| CN4 || ChaseTheFun
+|-
+| CNC || ThorWedd
+|-
+| CNCTE || HorribleGoat
+|-
+| CNGM || ChaseTheFun
+|-
+| CNM || Bravo93
+|-
+| CNNT || hobart
+|-
+| CNO || Costno
+|-
+| CNR || Conroy
+|-
+| CNS || PewPewStraykbol
+|-
+| CNT || Capt MacTavish
+|-
+| CNW || Chrisnw
+|-
+| CO284 || cool2844
+|-
+| COA || BadAss
+|-
+| COC || The Chain of Command
+|-
+| CODE || CodeBugd
+|-
+| CODI || Coding
+|-
+| CODY || CaptainCody
+|-
+| COE || FFAA Mod
+|-
+| COG || CognitoCon
+|-
+| COH || Coward_Heart
+|-
+| COL || ClawOfLight
+|-
+| COLEJ || colej_uk
+|-
+| COLH || saltybear
+|-
+| COLIX || ColibriX
+|-
+| COLLO || FloatStreak
+|-
+| COLSH || Col_Sherman
+|-
+| COLT || SoldierEPilot
+|-
+| COLUM || columdrum
+|-
+| COM || XSparky
+|-
+| COMET || BierAIG Comet
+|-
+| COMMA || Commandante
+|-
+| CON || Sgt.Ace
+|-
+| CONC || Concurssi
+|-
+| COOP || gYMO
+|-
+| COR2A || antonescu
+|-
+| CORAX || Corax
+|-
+| CORE || Methusalem
+|-
+| CORI || csudab
+|-
+| CORN || cornman
+|-
+| CORPS || Zycorpse
+|-
+| COS || Thyrrus
+|-
+| COTH || Cory-C
+|-
+| COU || Couga
+|-
+| COUL || Coulson
+|-
+| COV || CoValent
+|-
+| COW || W1nn13
+|-
+| COWS || MutatedJackal
+|-
+| COY || Coyota
+|-
+| CPC || Sparfell_19
+|-
+| CPF || complete_freak
+|-
+| CPJ || arles2464
+|-
+| CPS || chops
+|-
+| CPT || CptCox
+|-
+| CPTBI || cptbirdseye
+|-
+| CPTN || Nick van der Lee
+|-
+| CPTVI || CPTVIEIRA
+|-
+| CQB || CQB
+|-
+| CRA || Craziks
+|-
+| CRAW || Crawliiee
+|-
+| CRB || wolffy.au
+|-
+| CRBR || crimsonbrother
+|-
+| CRCK || wildTangent
+|-
+| CREAL || Santa Cruz
+|-
+| CREEP || creeper
+|-
+| CREPR || Creeper
+|-
+| CRESP || AlbertoSGM
+|-
+| CREW || Rave
+|-
+| CRF || Mang
+|-
+| CRG || Divinitize
+|-
+| CRING || cring0
+|-
+| CRIPP || Crippler
+|-
+| CRL || CarlW
+|-
+| CRM || krulsalomon
+|-
+| CRMIS || crmish
+|-
+| CRNY || Corny, but no jokes
+|-
+| CRO || crobarr
+|-
+| CROC || Crocuta
+|-
+| CROD || cronet
+|-
+| CROFT || Croftyy
+|-
+| CRONI || camilo
+|-
+| CROSS || Cross
+|-
+| CROWE || Crowe2Extreme
+|-
+| CRP || cockney_reeper
+|-
+| CRPSY || Crippsey
+|-
+| CRS || Christoph
+|-
+| CRSDR || lostcrusader93
+|-
+| CRT || CRThumper
+|-
+| CRUE || TehDango
+|-
+| CRUVI || joaol
+|-
+| CRX || Corax
+|-
+| CRYPT || cryptonat
+|-
+| CRZDH || crazyDHarrison2
+|-
+| CRZM || crazyDHarrison2
+|-
+| CSA || Chritopher S. Atkins
+|-
+| CSA38 || petrlach
+|-
+| CSALTY || CFisk
+|-
+| CSAUK || TheDesertFox
+|-
+| CSC || Dan
+|-
+| CSF || CSF_Carlo
+|-
+| CSIG || babylonstew
+|-
+| CSJ || Scud
+|-
+| CSL || ColonelSandersLite
+|-
+| CSL || ColonelSandersLite
+|-
+| CSLA || MAA
+|-
+| CSLA2 || CSLA Mod
+|-
+| CSLA3 || CSLA Mod
+|-
+| CSM || MacGyver
+|-
+| CSM2 || Protegimus
+|-
+| CSM3 || Protegimus
+|-
+| CSMIT || csmith51637
+|-
+| CSNOW || Cpt.Snow
+|-
+| CSS || Denisko-Redisko
+|-
+| CSSA3 || Cyrokrypto
+|-
+| CSSP || kju
+|-
+| CST || Shelestov
+|-
+| CSU || Doc. Caliban
+|-
+| CSV || Azamo
+|-
+| CSW || comradesythar
+|-
+| CSWP || Polish Army Addon
+|-
+| CTBAN || TreeoM
+|-
+| CTBS || TreeoM
+|-
+| CTC || CasualTheoryCrafters
+|-
+| CTGBA || Balu R.I.P
+|-
+| CTI44 || Der Blaue Wolf
+|-
+| CTITC || Coward_Heart
+|-
+| CTKEY || TreeoM
+|-
+| CTL || Contrails
+|-
+| CTOAD || CaneToad
+|-
+| CTRG || Flax
+|-
+| CTRO || Aitor
+|-
+| CTU || CTU Miguel
+|-
+| CUB || Cubitron
+|-
+| CUBA || tulkazurf
+|-
+| CUI || cuisinart8
+|-
+| CULTO || Le_CuLtO
+|-
+| CUNT || randomdude
+|-
+| CUP || kju
+|-
+| CUS || JimBOB
+|-
+| CUSMC || CoyoteUSMC
+|-
+| CUSP || darwinscusp
+|-
+| CUSTOM || customseaglass
+|-
+| CVG || bobtom
+|-
+| CVL || Gulogulo
+|-
+| CVM || cavemanmods
+|-
+| CVP || TheMadMan24
+|-
+| CW40K || Macser
+|-
+| CWAK || ChrisWithAKube
+|-
+| CWE || Cold War Expansion
+|-
+| CWK || Colonel_Klink
+|-
+| CWM || CRIONYK
+|-
+| CWR || Hoz
+|-
+| CWR2 || W0lle
+|-
+| CWR3 || Mikero
+|-
+| CWW || CWWSonic
+|-
+| CYB || Cybersoft
+|-
+| CYBP || Cyborg11
+|-
+| CYCK || cyckuan
+|-
+| CYMIA || CommanderYuri
+|-
+| CYNO || cynobill
+|-
+| CYP || Chris Young Productions
+|-
+| CYPA3 || Ethan Cartwright
+|-
+| CYPE || CypeRevenge
+|-
+| CYT01 || CMB Unit 01
+|-
+| CYURI || CommanderYuri
+|-
+| CZM || Conflict Zone Mindanao
+|-
+| CZS || haroon1992
+|-
+|}
+
+=== D ===
+
+{| class="wikitable sortable" style="width: 100%"
+| D1404 || vip08
+|-
+| D1A || Delta 1 Actual
+|-
+| D1H || d1haus
+|-
+| D3DO || Design-3Do
+|-
+| D3LTA || d3lta481
+|-
+| D3P || F2F_BHO
+|-
+| D41 || Cosmo
+|-
+| D5211 || Dyer
+|-
+| DAA || Deejay1979
+|-
+| DAB || blitzer
+|-
+| DAC || DaCoroner
+|-
+| DAE || Daeron
+|-
+| DAEMON || daemonspring
+|-
+| DAF || Danish Armed Forces Mod
+|-
+| DAFTI || Flamm
+|-
+| DAG || setman590
+|-
+| DAGA1 || Dagarul
+|-
+| DAGON || Methusalem1982
+|-
+| DAK || Deutsche Afrika Korps
+|-
+| DAKA || Pusztuljka/DaKa
+|-
+| DAKKA || dakkafex
+|-
+| DAKM || Dakmor
+|-
+| DALE || dale0404
+|-
+| DAM || DeadActionMan
+|-
+| DAMN || Renz
+|-
+| DAMO || dev75
+|-
+| DAN || DanAK47
+|-
+| DANA || Dans
+|-
+| DANF || damianfiocca
+|-
+| DANL || dan-levi
+|-
+| DANL2 || DanL2mx
+|-
+| DANS || Dans
+|-
+| DANV || DanielV
+|-
+| DANY || face_smasher
+|-
+| DANYL || Danielle_rva
+|-
+| DAP || fizzyrocketeer
+|-
+| DAR || RichardsD
+|-
+| DARE || DarkSoldier
+|-
+| DARK || Darktower
+|-
+| DARKY || Barotall/Darky
+|-
+| DARTH || Darthfab
+|-
+| DASH || SoldierEPilot
+|-
+| DASHI || Bak0
+|-
+| DAT || parabola949
+|-
+| DATC || Datcoder
+|-
+| DAV || Dudeman44
+|-
+| DAVID || David Ostman
+|-
+| DAVR || redoper
+|-
+| DAX || Duke Dax, aka Dax, aka ])a)(
+|-
+| DAY0 || corey88
+|-
+| DAYI || galaxyblast
+|-
+| DAYZ || thepnarinch
+|-
+| DAYZG || dayzgo
+|-
+| DAYZS || Rekh0n
+|-
+| DAZ || Matijs
+|-
+| DBD || Axedup
+|-
+| DBE || BIS
+|-
+| DBFV || DerpyBlade
+|-
+| DBG || ukloadtoad
+|-
+| DBHBH || TeamZero
+|-
+| DBK || A.Deubelskerl
+|-
+| DBM || acurlyninja
+|-
+| DBO || DeanosBeano
+|-
+| DBY || DutchBoY
+|-
+| DC39 || DC39
+|-
+| DCB || zsa_zsa_rasputin
+|-
+| DCP || DraigCoch
+|-
+| DCR || dreadnought
+|-
+| DCS || dcs_daryn
+|-
+| DCU || DC
+|-
+| DCV || DaChevs
+|-
+| DDAM || Danish Defence Army Mod
+|-
+| DDD || Ddriod
+|-
+| DDL || Daddldiddl (aka Joltan)
+|-
+| DDM || Darthdrunken
+|-
+| DDOG || Ddog-nz-
+|-
+| DDR || NVA-Mod Team
+|-
+| DDRS || Deaders
+|-
+| DDS || Knipper
+|-
+| DDZ || DangerousDiz
+|-
+| DEA || Deadeye
+|-
+| DEADF || DeadlyFreeze
+|-
+| DEATH || DeathmagnetiK
+|-
+| DEBUG || Worldeater
+|-
+| DED || gotdead
+|-
+| DEE || Deejay1979
+|-
+| DEF || Deftoner
+|-
+| DEF0 || Defocus
+|-
+| DEFUK || defsco
+|-
+| DEG || drowelf23
+|-
+| DEGA || deltagamer
+|-
+| DEIN || Localhost
+|-
+| DEJAY || Deejay1979
+|-
+| DEL || CaptainCheesecake
+|-
+| DELA || Max Delaney | The Irish Ace | NPMproductions13
+|-
+| DELTA || DELTA_STO
+|-
+| DELVO || Delvo_Boss
+|-
+| DEMI || demicanadian
+|-
+| DEMP || demsoft
+|-
+| DENUT || Denuth
+|-
+| DEOX || DeoX
+|-
+| DERK || Derkiantor
+|-
+| DERNG || Chasir01
+|-
+| DERP || Bhaz / Hellrazor collaborative
+|-
+| DES || destiny14
+|-
+| DESK || Desktop
+|-
+| DESPE || OPK-Desperado
+|-
+| DEST || destruktoid
+|-
+| DEUS || YouAreBamboozled
+|-
+| DEV || hk
+|-
+| DEV2 || kju
+|-
+| DEV49 || Devint
+|-
+| DEVH || kju
+|-
+| DEVS || The Negotiator
+|-
+| DEW || Dewsader
+|-
+| DEX || DeZzErX
+|-
+| DEZ || Dez
+|-
+| DFC || [D.F] Pat Cpt.
+|-
+| DFL || Daffles
+|-
+| DFNT || arma3reed@gmail.com
+|-
+| DFO || DeltaForce
+|-
+| DFP || Dpesce
+|-
+| DFRAG || deFRAGer
+|-
+| DFS || Deadfast
+|-
+| DFX || DesertFox
+|-
+| DG5 || DragonGurdian5
+|-
+| DGAL || Domination Gaming
+|-
+| DGB || Doughboi
+|-
+| DGC || DGC
+|-
+| DGFX || darkgiver
+|-
+| DGGR || ColonialDagger
+|-
+| DGH || danimalhanke
+|-
+| DGZ || J3SUSM4N
+|-
+| DHC || dhc
+|-
+| DHL || I Can Explain
+|-
+| DHM || crazyDHarrison2
+|-
+| DHU || Deaths Head Unit
+|-
+| DIAOS || JPDIAOSI
+|-
+| DICK || cunico
+|-
+| DIGI || digitaldeath
+|-
+| DIH || Dimitri_Harkov
+|-
+| DIIZ || Diizmo
+|-
+| DIK || 4yDiK
+|-
+| DIKDN || DickDanitz
+|-
+| DILON || cpldillon
+|-
+| DING || Schrödinger
+|-
+| DINO || pdinosaur
+|-
+| DIP || 11thSven
+|-
+| DIRT || DirtySanchezHUN
+|-
+| DIRTLORD || GRUBBYGRIMM
+|-
+| DIRTY || dirtyrazor01
+|-
+| DISCI || discipulo
+|-
+| DISCO || tnayeatssavan
+|-
+| DISIDENT || DtheDissident
+|-
+| DITH || TheDragon117
+|-
+| DIZZY || Dizzmaal
+|-
+| DJB || djbarney
+|-
+| DJD || donjuandavis
+|-
+| DJICH || DjIch1
+|-
+| DJL || D_J_LMeyer
+|-
+| DJLF || SrDaju
+|-
+| DJMAP || Djalmajrr
+|-
+| DJOLE || djole94hns
+|-
+| DK12 || dkopl
+|-
+| DK7 || VAXPLAY
+|-
+| DKM || Xi Relax
+|-
+| DKMM || Decisive Killing Machines Mod
+|-
+| DKS || Doutor Suco
+|-
+| DKW || Dropkiwi
+|-
+| DLA || Drty_Windshield
+|-
+| DLB || Dozette
+|-
+| DLCNL || CrabNipples
+|-
+| DLL || rundll
+|-
+| DLM || DeLiltMon
+|-
+| DLPP || DL++
+|-
+| DLS || Lukas Smith
+|-
+| DLSMS || Phil!
+|-
+| DLT8 || [MSK]Delta8
+|-
+| DLXY || Dalaxy
+|-
+| DMA || Dynamic Mission Alliance
+|-
+| DMC || Demon Cleaner
+|-
+| DMI || Dmitri
+|-
+| DMK || Doomek
+|-
+| DMM || dragula
+|-
+| DMN || dmn
+|-
+| DMS || J_Murphy
+|-
+| DMX || deadmeatxm2
+|-
+| DMY || dolomighty
+|-
+| DNA || colddna
+|-
+| DND || DND
+|-
+| DNF || damianfiocca
+|-
+| DNG || ding_jimmy
+|-
+| DNGEATER || Dung_eater
+|-
+| DNK || slamdunk
+|-
+| DNL || dnl04
+|-
+| DNS || DonSucio
+|-
+| DNTFM || daniel1060
+|-
+| DNZ || Denz
+|-
+| DOA || Disciples OFP Studio
+|-
+| DOARB || Doa.
+|-
+| DOARG || DaOarge
+|-
+| DOBO || Dobo
+|-
+| DOBY || JDoberman
+|-
+| DOC || Doc_69
+|-
+| DOD || zer0_us
+|-
+| DOE || I-DOE-I
+|-
+| DOF || Drunken Officer
+|-
+| DOFP || Department of Funky Proxies / Peacepunk
+|-
+| DOG || dogigniter
+|-
+| DOLF || Dolfrang
+|-
+| DOMTARO || Domtaro
+|-
+| DON || DonDon
+|-
+| DONG || InquisitorL
+|-
+| DONGS || InquisitorL
+|-
+| DONK || DoNKaNaLi3
+|-
+| DOO || Doolittle
+|-
+| DOS || dose
+|-
+| DOT || SoldierEPilot
+|-
+| DOUZI || 豆子Doge
+|-
+| DOV || Donnervogel
+|-
+| DOVEV || Dovev
+|-
+| DOW || Flowan
+|-
+| DPKEY || davipedroza
+|-
+| DPS || Das Penguin Studios
+|-
+| DPSEL || Select
+|-
+| DPT || dumpytom
+|-
+| DPTT || dpatt711
+|-
+| DQC || dimitriqc
+|-
+| DR3AM || DR3AM
+|-
+| DRA || Dragunov
+|-
+| DRACK || DrackIxus
+|-
+| DRAM || Dramier
+|-
+| DREAD || Dread
+|-
+| DREAM || DreamRebel
+|-
+| DREX || Waveridr
+|-
+| DRF || DragoFire
+|-
+| DRG || Nightstalker Mod
+|-
+| DRGD || DaringD
+|-
+| DRGS || Dragster
+|-
+| DRI || Drill
+|-
+| DRIFT || That1Drifter
+|-
+| DRJ || Jona
+|-
+| DRK || sherbo
+|-
+| DRKSS || Darren Kesselman
+|-
+| DRKY || darkypunch
+|-
+| DRO || Drofseh
+|-
+| DRPRO || DreamRebel
+|-
+| DRS || Death Recon Squad
+|-
+| DRU || DrummFreak
+|-
+| DRWMS || Drewmaster
+|-
+| DS1 || Dutch_Sapper
+|-
+| DS7 || dragonslayer
+|-
+| DSA || Drill Sergeant
+|-
+| DSB || dsonbill
+|-
+| DSC || killick
+|-
+| DSD || Huntah
+|-
+| DSF || Deepsmeg & Frost
+|-
+| DSK || RedSmookey
+|-
+| DSL || Diesel
+|-
+| DSP || dr_strangepete
+|-
+| DST || TheDarkstar
+|-
+| DST1 || ocramweb
+|-
+| DSTPL || Dusty
+|-
+| DSV || diseva
+|-
+| DSW || dw5533
+|-
+| DTC || datoco
+|-
+| DTLAB || DiabolicaTrix
+|-
+| DTM || Dirtman
+|-
+| DTNRW || Gooswin
+|-
+| DTT || CrabNipples
+|-
+| DTY || Dusty
+|-
+| DUCK || hducke
+|-
+| DUD || Dudestin
+|-
+| DUE || boulderer
+|-
+| DUTCH || dutchy
+|-
+| DUX || DuckVanDyke
+|-
+| DVDM1 || djazz
+|-
+| DVH || crazyDHarrison2
+|-
+| DVPOL || SamCantCu
+|-
+| DVS || oneshot
+|-
+| DW316 || Daemonwulff316
+|-
+| DWARD || Dwarden
+|-
+| DWCZ || DarkWolf
+|-
+| DWG || DeadWalking
+|-
+| DWK || soldier2390
+|-
+| DWP || Sgt.Ace
+|-
+| DWR || Rhino592
+|-
+| DWS || Vixer
+|-
+| DYBRO || kewin bertel
+|-
+| DYER || Dyer
+|-
+| DYHA || DynamiteHarry
+|-
+| DYNA || Deejay1979
+|-
+| DYS || Dysproxia
+|-
+| DYZA || Dyzalonius
+|-
+| DZ || cebus
+|-
+| DZG || ikea_in_flames
+|-
+| DZK || Psyfer
+|-
+| DZM || KatzSmile
+|-
+| DZT || Dazitt
+|-
+|}
+
+=== E ===
+
+{| class="wikitable sortable" style="width: 100%"
+| E1000 || E1000
+|-
+| E1K || e1k
+|-
+| E2411 || smithy2411
+|-
+| E3D || bioxx
+|-
+| E4R || Echo4Romeo
+|-
+| E502 || 502_Entertainment
+|-
+| E76 || el76
+|-
+| E7S36UAR || CallMeSnake
+|-
+| EA6 || Eagle-6
+|-
+| EAF || East Asia Forces
+|-
+| EAGL || Blood Eagle
+|-
+| EAGLE || eagle_dev
+|-
+| EAL || Erik Master / Exclusiv Altis Life
+|-
+| EARTH || Thezigginator
+|-
+| EAX || ErazorX
+|-
+| EAZY || EAZY
+|-
+| EBA || rodhalberd
+|-
+| EBB || 8bitbilly
+|-
+| EBD || Ebud
+|-
+| EBE || EBEALIEN
+|-
+| EBIN || juhansson
+|-
+| EBK || Saber154
+|-
+| EBO || ebolarama
+|-
+| EBR || Eric Brunik Reis Strambeque
+|-
+| EBV || rodhalberd
+|-
+| ECA || WWIIEC
+|-
+| ECAT || Ecatom
+|-
+| ECB || FW200
+|-
+| ECH01 || echel0n1234
+|-
+| ECHO || Evil_Echo
+|-
+| ECKLE || Eckle
+|-
+| ECL || everoncartel
+|-
+| ECLAP || bakzz
+|-
+| ECLPS || ECLYPSE_JAN
+|-
+| ECM || theonciest
+|-
+| ECO || Ecoalfa
+|-
+| ECP || Enhanced OFP Config Project
+|-
+| ECS || Enhanced Configuration System
+|-
+| ED102 || Mikero
+|-
+| ED88 || ed88
+|-
+| EDAV || Davis237
+|-
+| EDC || imemyself/edc
+|-
+| EDEN || GamingAstronamy
+|-
+| EDG || Edge OF The World
+|-
+| EDL || flui1989
+|-
+| EDS || FishBop
+|-
+| EDU || Eduzumaki
+|-
+| EFF || Eff3ct1v
+|-
+| EFFGT || Eff3ct1v
+|-
+| EFL || terox
+|-
+| EFM || Zettrus
+|-
+| EFP || [EliteFraggers] PuNkRoCkEr
+|-
+| EFT || ReDDinG
+|-
+| EFW || enfusion-framework
+|-
+| EGN || ExiledVibe
+|-
+| EGO || Zeak
+|-
+| EGOX || Zeak
+|-
+| EGY || sherbo
+|-
+| EHC || EH_Chaser
+|-
+| EHD || EHDSeven
+|-
+| EHJ || einherj
+|-
+| EIRE || Irishpride92
+|-
+| EJB || TGG
+|-
+| EJL || ejlemaire
+|-
+| EJW || EJ Will
+|-
+| ELAYSIA || squag__
+|-
+| ELCA || elcabronazo
+|-
+| ELECH || elechos
+|-
+| ELECO || elechos
+|-
+| ELFO || raca20
+|-
+| ELITE || Elite051
+|-
+| ELLI || EliteWarfare
+|-
+| ELW || Elliot
+|-
+| EMC || edgemaster
+|-
+| EMFA || rodhalberd
+|-
+| EMS || Lukas.Spohn
+|-
+| EMSI || EMSI
+|-
+| ENDY || Endymion
+|-
+| ENEX || enex
+|-
+| ENF || enfusion-framework
+|-
+| ENFW || enfusion-framework
+|-
+| ENG || rodhalberd
+|-
+| ENGEN || rodhalberd
+|-
+| ENGIN || rodhalberd
+|-
+| ENI || eniac94
+|-
+| ENNFO || Ennfo Merrow
+|-
+| ENT || entspeak
+|-
+| ENTR || Entaryn
+|-
+| ENV || Vespade
+|-
+| EOOQE || EOOQE
+|-
+| EPD || epd140
+|-
+| EPIC || lbatalha
+|-
+| EPL || Epeli
+|-
+| EPOCH || theonciest
+|-
+| EPP || ExtracTioN & Pappy Bpyington Productions
+|-
+| EPWFL || EpicWaffles
+|-
+| EQU || Equalizer
+|-
+| EQUA || Hawk
+|-
+| EQW || Doglord
+|-
+| ERAL || grimmeral
+|-
+| ERAZ || ERazgriz13
+|-
+| ERBUS || Erebus
+|-
+| ERCMT || ERC Modding Team
+|-
+| ERD || erik_red
+|-
+| ERETZ || TGG
+|-
+| ERGO || ergonsale
+|-
+| ERS || Erson
+|-
+| ERSON || Erson
+|-
+| ESF || [CSG] El Scheffe
+|-
+| ESG || EgilSandfeld
+|-
+| ESH || esham
+|-
+| ESK || Eskandare
+|-
+| ESL || Electronic Sports League
+|-
+| ESP || Esprit de Corps
+|-
+| ESPOO || floof
+|-
+| ESQN || Indisus
+|-
+| ESTER || Castor Willis
+|-
+| ESZO || Eszo
+|-
+| ETCH || Outdatedkero
+|-
+| ETDG || eltitodg
+|-
+| ETP || patomarin
+|-
+| ETQC || SpandexQc
+|-
+| EUBG || Smootch
+|-
+| EUCL || European Combat League
+|-
+| EUFOR || Nilia
+|-
+| EURO || Smootch
+|-
+| EUROF || Aplion
+|-
+| EUS || XtremeMikel
+|-
+| EUT || EUT.FakeTaxiDriver
+|-
+| EVE || Mikado
+|-
+| EVERON || cebus
+|-
+| EVI || Eviscerator
+|-
+| EVIL || e-VIL-loR-d
+|-
+| EVK || evoke
+|-
+| EVO || Evolutionary Productions
+|-
+| EVOG || Finex
+|-
+| EWD || Invasion of France/Europe
+|-
+| EWE || thumper
+|-
+| EWP || Yahoo
+|-
+| EXB || rodhalberd
+|-
+| EXBR || rodhalberd
+|-
+| EXBRA || rodhalberd
+|-
+| EXG || Rodeostar42
+|-
+| EXI || Exiled Vibe
+|-
+| EXILE || HalusmNation
+|-
+| EXLPR || slimeenergy
+|-
+| EXO || IkåR
+|-
+| EXOP || _matteo_c
+|-
+| EXPLO || rodhalberd
+|-
+| EXPW || ROFLer
+|-
+| EXR || Ex-RoNiN
+|-
+| EXTRE || Marksman
+|-
+|}
+
+=== F ===
+
+{| class="wikitable sortable" style="width: 100%"
+| F00 || JamesF1
+|-
+| F11N || f11n_7
+|-
+| F1200 || Tarkus
+|-
+| F18 || Pennywise
+|-
+| F1977 || Novaline
+|-
+| F1RE || Firestorm4204
+|-
+| F2F || TheFirst2Fight
+|-
+| F2FBH || F2FBHO
+|-
+| F2FUN || F2F Unkn0wn
+|-
+| F3WX || Schoeler
+|-
+| F4MM || Dragnipur47
+|-
+| FAAB || Faab
+|-
+| FAB || FAB
+|-
+| FABS || fabian
+|-
+| FAC || Fenix Alliance
+|-
+| FACP || ms1v
+|-
+| FAG || Adumb
+|-
+| FAKED || FakeDeath
+|-
+| FAL || falconsan
+|-
+| FAP || fapret
+|-
+| FAR || Farside
+|-
+| FARN || farmerno1
+|-
+| FAS || Fascist
+|-
+| FAT || fat-erik
+|-
+| FATAL || Gibster
+|-
+| FATEX || Mr Fatex
+|-
+| FAVOR || Favorlock
+|-
+| FBC || FenelBangcracker
+|-
+| FBG || scottieo321
+|-
+| FBG12 || scottieo321
+|-
+| FBS || Darkstar
+|-
+| FCF || Flashpoint Combat Force (GalComT)
+|-
+| FCS || Unnamed
+|-
+| FCZI || Ferenczi
+|-
+| FDA || olympicman
+|-
+| FDD || Doyle
+|-
+| FDEV || Fantasma
+|-
+| FDF || Finnish Defence Forces Modification
+|-
+| FDFHG || ruarai
+|-
+| FDG || 5dgaming
+|-
+| FDKTZ || fredkatz
+|-
+| FDM || Smootch
+|-
+| FDZ || CartoonrBOY
+|-
+| FEAN || feanix
+|-
+| FECNI || Nightmare
+|-
+| FEL || Felan
+|-
+| FELE || Feler
+|-
+| FELIZ || Feliz
+|-
+| FEN || Fen
+|-
+| FENG || Firewall233
+|-
+| FENOY || Fenoy
+|-
+| FERCHU || Zeus1810
+|-
+| FETTZERO || alphahomer15@gmail.com
+|-
+| FEVER || Jungle Fever
+|-
+| FEW || scud
+|-
+| FEX || Feuerex
+|-
+| FFD || FacuFeca
+|-
+| FFE || DanBonehill
+|-
+| FFFF || Puggerz
+|-
+| FFG || TheManDude
+|-
+| FFN || Fight For Nogova MOD by TonyRanger
+|-
+| FFR || justinn
+|-
+| FFS || FF Studio
+|-
+| FFS056 || ttanev056
+|-
+| FFW || FFW-Helifreak
+|-
+| FG2 || l4ndl0rd
+|-
+| FGA || Gunny
+|-
+| FGC || SilverKnight
+|-
+| FGD || FatGod
+|-
+| FGDC || DmitryAlekseyev
+|-
+| FGF || DmitryAlekseyev
+|-
+| FGS || FugaS
+|-
+| FGSF || DmitryAlekseyev
+|-
+| FGSV || DmitryAlekseyev
+|-
+| FHA || AndyH
+|-
+| FHI || foxhoundinternational
+|-
+| FHPT || FourthPoint
+|-
+| FHQ || Varanon, Alwarren
+|-
+| FHT || JustNothing
+|-
+| FHW || deralky
+|-
+| FIA || Aeon & Edge
+|-
+| FIAL || FIAL Mod
+|-
+| FIC || Fiedelc
+|-
+| FICO || nirtulys
+|-
+| FIDEL || Fidel Tiger
+|-
+| FIFOX || FirefoxZeroOne
+|-
+| FIL || Filip5
+|-
+| FILIN || Filin
+|-
+| FILO || [FILO] HuBBa
+|-
+| FIN || Blaster
+|-
+| FINCH || PlagueRaven_
+|-
+| FIR || Firewill
+|-
+| FIRE || rocky_peter99
+|-
+| FIREW || brfire1980
+|-
+| FIRMA || jano20
+|-
+| FISK1 || CFisk36
+|-
+| FIST || GodsFist
+|-
+| FIZ || PsychD
+|-
+| FJT || Temme & Lagus
+|-
+| FKMAP || [FK] Fred
+|-
+| FL || Fountain Life
+|-
+| FLA || Flatline
+|-
+| FLAN || flanders25
+|-
+| FLAY || mrflay
+|-
+| FLB || Floobie
+|-
+| FLBBQ || spartan31337
+|-
+| FLC || mathematix
+|-
+| FLF || F.Lundin "Fox"
+|-
+| FLINT || AustinFlint
+|-
+| FLK || Falklands MOD
+|-
+| FLO || floosy
+|-
+| FLP || FlipeR
+|-
+| FLPI || ThePenguin
+|-
+| FLS || flashist
+|-
+| FLT || frankltcol
+|-
+| FLY || McFly
+|-
+| FMD || DmitryAlekseyev
+|-
+| FMFG || red281gt
+|-
+| FMODS || [FK] Fred
+|-
+| FMP || SagaraSousuke
+|-
+| FMS || FullMetalSoldier
+|-
+| FMT || Santa Cruz
+|-
+| FN07 || Mr Fatex
+|-
+| FNC || Fincuan
+|-
+| FNIX || Fnixer
+|-
+| FNK || FatNinjaKid
+|-
+| FNXD || mattiascibien
+|-
+| FOA || Alucard_Voss
+|-
+| FOCK || mikiej
+|-
+| FOF || Falloutfun
+|-
+| FOL || Folgore
+|-
+| FOLEY || Foley
+|-
+| FOLP || FossoresLP
+|-
+| FOO || JamesF1
+|-
+| FOR || Fordy
+|-
+| FORCE || CSF_Carlo
+|-
+| FOS || Novaline
+|-
+| FOSCO || FoSCo
+|-
+| FOSSY || Novaline
+|-
+| FOU || Unnamed
+|-
+| FOUNTAIN || Fountain Life
+|-
+| FOUZ || Acecombat
+|-
+| FOW || Mathues82nd
+|-
+| FOX || Foxhound
+|-
+| FOX07 || Foxone007
+|-
+| FOX1 || FOXONE
+|-
+| FOX2 || Fox2
+|-
+| FOXUS || fox
+|-
+| FOXY || Foxy
+|-
+| FOZZ || foxernator
+|-
+| FPS || SoldierEPilot
+|-
+| FPSH || fps_holland
+|-
+| FR3EM || Fr3eMan
+|-
+| FR4 || Fr4nKy
+|-
+| FR83 || freeman83
+|-
+| FRA || FragileTNT
+|-
+| FRAG || Fragsta
+|-
+| FRAN || Le sicilien
+|-
+| FRAN6 || FragileTNT
+|-
+| FRB || Frostbite
+|-
+| FRC || Pcorp
+|-
+| FRD || Freddo3000
+|-
+| FRE || vixen
+|-
+| FRE19 || Fred19
+|-
+| FRED || Fred bystrong
+|-
+| FREEX || MrFreex
+|-
+| FREEZ || Enfreez
+|-
+| FREGI || Zomblard
+|-
+| FRG || Fragorl
+|-
+| FRK || FREAK
+|-
+| FRL || FRL-Myke
+|-
+| FRM || Freshman
+|-
+| FRMAN || Freeman
+|-
+| FRO || froesch
+|-
+| FROMZ || Polo Fromz
+|-
+| FROST || Frost993
+|-
+| FRP || Operation FrenchPoint
+|-
+| FRS || Frost
+|-
+| FRST || Frost
+|-
+| FRT || Forrestal
+|-
+| FRUMP || Frumpus
+|-
+| FRXA || freexavier
+|-
+| FRZ || frzburn
+|-
+| FSB || First Scots Brigade
+|-
+| FSCHJ || CrosShadow
+|-
+| FSG || Floof
+|-
+| FSH || Fishion
+|-
+| FSMC || XxFri3ndlyxX
+|-
+| FSQ || FatSquirrel
+|-
+| FSS || FlySimy Studios
+|-
+| FSTPC || SpawnThrasher
+|-
+| FT || leba101
+|-
+| FTA || Fallen01135
+|-
+| FTB || M. Lee
+|-
+| FTL || failtolawl
+|-
+| FTR || fighter
+|-
+| FTS || Sniperwolf572
+|-
+| FTS27 || FTS27boyscout
+|-
+| FUD || Fudo
+|-
+| FUHAC || Dylmar
+|-
+| FUIN || Refurius
+|-
+| FULLY || Fully
+|-
+| FUN || Chain of Command Function Library Element
+|-
+| FUNC || Worldeater
+|-
+| FUNK || defunkt
+|-
+| FUNKY || FunkyBunch
+|-
+| FUS || HitmanFF
+|-
+| FUT || Futek
+|-
+| FUZZY || MikeD
+|-
+| FVL || halfgamer
+|-
+| FVN || DilutedSalt
+|-
+| FVRIO || viarty
+|-
+| FVT || Finlanders Vietnam Team
+|-
+| FWA || FW200
+|-
+| FWB || FatWombat
+|-
+| FWS || FailWithStyle
+|-
+| FWW || Finnish Winter War modification
+|-
+| FWW2 || h-
+|-
+| FX2 || Fox2
+|-
+| FX2K || FX2K
+|-
+| FX303 || FeliX303
+|-
+| FXL || LaserWiesel
+|-
+| FXY69 || Foxy
+|-
+| FY2 || Foxhound948
+|-
+| FZA || Franze
+|-
+| FZY || MikeD
+|-
+|}
+
+=== G ===
+
+{| class="wikitable sortable" style="width: 100%"
+| G1M3L || grimmeral
+|-
+| G1RRL || grimmeral
+|-
+| G2DX || .:mazed:.
+|-
+| G2R || jasox54
+|-
+| G3698 || grimmeral
+|-
+| G3NTL || G3nt13psyc0
+|-
+| G404 || deadbeat91
+|-
+| GA || The Gator
+|-
+| GA2 || ga2
+|-
+| GAD || Aldo15
+|-
+| GAF || German Armed Forces Mod
+|-
+| GAFFA || gaffa
+|-
+| GAGE || Jsniper650
+|-
+| GAIA || Gaia
+|-
+| GALVY || galvvy
+|-
+| GAM || gamma
+|-
+| GAMMO || paul gammage
+|-
+| GANG || arsagang
+|-
+| GAO || Gaosax
+|-
+| GAP || Kalle
+|-
+| GARB || Jacob_Mango
+|-
+| GARE || SabreSharks
+|-
+| GARR || Garritos
+|-
+| GAS || Gastovski
+|-
+| GAT || Gatsworth
+|-
+| GAW || Galaxy At War Team
+|-
+| GAZZA || Gazza
+|-
+| GBA || GreenBeret
+|-
+| GBAT || EckoMoire
+|-
+| GBCO || Gbco
+|-
+| GBL || Glowbal
+|-
+| GBO || gabiroska12
+|-
+| GBR || GreenBeret
+|-
+| GBS || GRUBES
+|-
+| GC101 || Guy Cutler
+|-
+| GCA || g3015867
+|-
+| GDC || Warzen
+|-
+| GDI || RicoADF
+|-
+| GDLD || Craziks
+|-
+| GDR || NVA-Mod Team
+|-
+| GDS || Geo-Dev Studios
+|-
+| GDY || gordy
+|-
+| GEARF || Flax
+|-
+| GECKO || Gecko6
+|-
+| GEHCK || Gehock
+|-
+| GEHOC || Gehock
+|-
+| GEM || GemStar
+|-
+| GENB || General Barron
+|-
+| GEO || helpgeo5
+|-
+| GEOD || Jakerod
+|-
+| GEOD5 || Jakerod
+|-
+| GEOG || Jakerod
+|-
+| GER || Gerben127
+|-
+| GEWS || Gews
+|-
+| GFM || GodFather
+|-
+| GFST || Ghost Forces Sniper Team
+|-
+| GFX || GrayFox
+|-
+| GGR || GeeGeeRaffe
+|-
+| GGTP || geduardae
+|-
+| GH05T || LaserWiesel
+|-
+| GH0ST || LaserWiesel
+|-
+| GHBBT || GodlikeHobbit
+|-
+| GHCK || Gehock
+|-
+| GHEN || Ghengis Khan Designs
+|-
+| GHG || Jutka_GHG
+|-
+| GHK || Bloberg
+|-
+| GHORT || Ghorthor
+|-
+| GHOST || radical.ghost
+|-
+| GHOST79 || GH0ST
+|-
+| GHOZA || fgfghoza
+|-
+| GHS || GhostTeam1818
+|-
+| GHST || Ghost644
+|-
+| GHT || geoh13
+|-
+| GIAN || Giampy
+|-
+| GIB || Gibbet
+|-
+| GICVT || captnmericah
+|-
+| GID || Lynx
+|-
+| GIG || Ghost in the Grass
+|-
+| GIJO || Aboode
+|-
+| GIJOE || Gijoe775
+|-
+| GIL || fosko
+|-
+| GILA || Gilatar
+|-
+| GILIS || stuphor
+|-
+| GILS || Gil Shannon
+|-
+| GIM || grimmeral
+|-
+| GIMP || Jona
+|-
+| GIMP1 || Jona
+|-
+| GINSU || Ginsu
+|-
+| GISA || gug
+|-
+| GIT || trinec
+|-
+| GITM || Toppskillz
+|-
+| GIX || Giorox
+|-
+| GK || GameKnighted
+|-
+| GKA || Gourka
+|-
+| GKB || Gekkibi
+|-
+| GLA || Glaedar
+|-
+| GLAED || Glaedar
+|-
+| GLAGINA || gulagina
+|-
+| GLD || LegoUnicorn
+|-
+| GLG || Athan
+|-
+| GLR || Taskmaster65
+|-
+| GLT || Legislator
+|-
+| GLTCH || TehGlitch
+|-
+| GLTOP || Likeboss
+|-
+| GLTOR || Likeboss
+|-
+| GLUIP || Gluipertje
+|-
+| GLXXY || Glxxyaj
+|-
+| GM404 || Infoulein
+|-
+| GMAN || gmangavin
+|-
+| GMC || ADOGMC
+|-
+| GMCN || GlitchedMan
+|-
+| GME || gameer_77
+|-
+| GMEO || W0lle
+|-
+| GMI || Gummi
+|-
+| GMJ || gmJamez
+|-
+| GMK || TheGmork
+|-
+| GMM || GUSMARME
+|-
+| GMO || GuantanaMo
+|-
+| GMP || Gimplord
+|-
+| GMR || goldmember13
+|-
+| GMRAL || grimmeral
+|-
+| GMRAL || grimmeral
+|-
+| GMRE || ghoulishpeach
+|-
+| GMRL || grimmeral
+|-
+| GMRR || grimmeral
+|-
+| GMS || gms
+|-
+| GMX || GeminiX
+|-
+| GNB || Green and Blue Clan
+|-
+| GNCIN || GenCincinnatus
+|-
+| GNG || GNGNUT
+|-
+| GNO || gnosis
+|-
+| GNOVA || Gazpa Nova
+|-
+| GNT || Gnat
+|-
+| GNV || Gone Native
+|-
+| GOAL || podjaa
+|-
+| GOAT || Mr White
+|-
+| GOBBL || THEGOBBLER
+|-
+| GOBEL || Gobelgobel
+|-
+| GOD || armygod
+|-
+| GOE || PepinKr
+|-
+| GOES || Teodosio Alforja
+|-
+| GOG || Gogs
+|-
+| GOGY || Gogy
+|-
+| GOL || GOL Clan
+|-
+| GOLD || NZXSHADOWS
+|-
+| GOON || gibfender
+|-
+| GOONS || GOON
+|-
+| GOT2 || .:mazed:.
+|-
+| GPA || Henrik
+|-
+| GR33N || gREENbERRY
+|-
+| GRACE || Grace
+|-
+| GRAVE || Mr.Hatchet
+|-
+| GRB || grazyboy
+|-
+| GRCON || DeltaGhost
+|-
+| GREAL || grimmreal
+|-
+| GREEN || Greenman
+|-
+| GRENA || Greenaa
+|-
+| GREY || Soldierman
+|-
+| GRF || GRFoxhound
+|-
+| GRH || grhayes
+|-
+| GRIFFY || Griff587
+|-
+| GRIM || grimesy
+|-
+| GRK || Grokk
+|-
+| GRL || grimmeral
+|-
+| GRM || Grimfist
+|-
+| GRML || grimmeral
+|-
+| GRMRL || grimmeral
+|-
+| GRN || GreenMonster
+|-
+| GRNTS || Grunts1996
+|-
+| GRO || DilutedSalt
+|-
+| GROTO || GGRotor
+|-
+| GRRAL || grimmeral
+|-
+| GRRL || grimmeral
+|-
+| GRRR || grrrrobots
+|-
+| GRRTH || Gauroroth
+|-
+| GRSTR || grester
+|-
+| GRT || Grotsky
+|-
+| GRTR || grester
+|-
+| GRU || massi
+|-
+| GRUNT || Choctaw
+|-
+| GRX || Gore
+|-
+| GSAVA || GuySavage
+|-
+| GSE || Fox2
+|-
+| GSEP || Green Sea Expansion Project
+|-
+| GSF || Mr. Goodstuff
+|-
+| GSG9 || Grenzshutzgruppe 9
+|-
+| GSH || Gunnery sergent Highway
+|-
+| GSRI || www.gsri.team
+|-
+| GST || Ghost
+|-
+| GSTE || Vibes
+|-
+| GSTUD || Gunther01
+|-
+| GSW || Lt_Phoenix
+|-
+| GTA || ztrund
+|-
+| GTBR || tuszynski
+|-
+| GTF || inblow,jasox
+|-
+| GTM || Ghostman
+|-
+| GTOE || 22gtoe
+|-
+| GTOWN || capn_blastoff
+|-
+| GTV || HetzerGTV
+|-
+| GTV2 || Esro
+|-
+| GTWP || Evalach
+|-
+| GUARD || Guardian
+|-
+| GULAG || Warrior24
+|-
+| GUMA3 || Mr.M98
+|-
+| GUNIT || 50CENT
+|-
+| GUNN || SGTGunner
+|-
+| GURU || Guru Bear
+|-
+| GUSTY || Gustyy21
+|-
+| GVKEY || gvn
+|-
+| GW || Leone
+|-
+| GW2 || Gulf War 2 Mod
+|-
+| GWA || gwa2100
+|-
+| GWAR || Sham-13
+|-
+| GWD || coyote39
+|-
+| GWF || XxFri3ndlyxX
+|-
+| GWN || Gwnsystems
+|-
+| GWNAK || ZogMadDog
+|-
+| GWP || shawm3
+|-
+| GWS || gonk
+|-
+| GXW || Falk
+|-
+| GZREP || GamerZ Repository
+|-
+|}
+
+=== H ===
+
+{| class="wikitable sortable" style="width: 100%"
+| H34 || headup
+|-
+| H3H || SaschQuasch
+|-
+| H3K || h3killa
+|-
+| H69 || Hellrazor69
+|-
+| HAAD || Tomek
+|-
+| HAAS || Drofseh
+|-
+| HAB || Hablos
+|-
+| HAC || Hellenic ArmA Community
+|-
+| HACV || Aplion
+|-
+| HAF || Ex-RoNiN
+|-
+| HAFM || Aplion
+|-
+| HAGEN || Hagesol
+|-
+| HAHN || Micaelhahn
+|-
+| HAIZ || Haizor
+|-
+| HAL || Blockdude
+|-
+| HALF || Halftone
+|-
+| HAM || HAMMY
+|-
+| HAMM || Hammer
+|-
+| HAMO || Hamo
+|-
+| HAMU || chorodai
+|-
+| HANDD || Harold_Hoffmann
+|-
+| HAPPY || sebbe284
+|-
+| HAR || hartreinn2015
+|-
+| HARD || pochmann
+|-
+| HARDY || Hardy
+|-
+| HART || Hartwich
+|-
+| HARZ || Harzach
+|-
+| HAS || HoRi
+|-
+| HASE || Schokohase
+|-
+| HAT || Hattricx
+|-
+| HATE || HateDread
+|-
+| HAVE || TheDoctor63
+|-
+| HAVEN || utomnia
+|-
+| HAW || Hawkins
+|-
+| HAWAI || ArmedGaming
+|-
+| HAWK || Hawk
+|-
+| HAWKES || HawkesTFS
+|-
+| HAX || Stanov
+|-
+| HAZ || Hazjibab
+|-
+| HAZC || HazardousChurch
+|-
+| HAZCK || hazckar
+|-
+| HAZE || Diablohaze
+|-
+| HAZZR || Hazzr
+|-
+| HBC || EggMcDragon
+|-
+| HBF || Hunter Bluefire
+|-
+| HBL || Herbal
+|-
+| HBNJ || HoboNinja
+|-
+| HBV || Humbugbananavan
+|-
+| HC || leba101
+|-
+| HC1 || Hell's Circus
+|-
+| HCC || cartmen180
+|-
+| HCMOD || SoldierEPilot
+|-
+| HCOLL || cunamo
+|-
+| HCP || Headcase9675
+|-
+| HCRHH || Hellcow_2RHh
+|-
+| HCRT1 || hcrt1@hotmail.com
+|-
+| HCX || HitCorp/Captain Kirby
+|-
+| HDB03 || HDBrosky
+|-
+| HDBW || Adler
+|-
+| HDR || Hardrock
+|-
+| HDS || Elliot Carver
+|-
+| HDT || Linker Split
+|-
+| HDV || House Divided mod
+|-
+| HEA || Head
+|-
+| HEAD || Jona
+|-
+| HEAVY || Nullfati
+|-
+| HED || Hedcrusha
+|-
+| HED || Hedcrusha
+|-
+| HEDO || hedoniix
+|-
+| HEDU || Helmut Duregger
+|-
+| HEG || ILLUXN
+|-
+| HEH || Denisko-Redisko
+|-
+| HEJ || HeliJunkie
+|-
+| HEL || Helvete
+|-
+| HEL4 || Helion4
+|-
+| HELI || rodhalberd
+|-
+| HELLF || Hellfire
+|-
+| HELYO || Heliioss
+|-
+| HEM || pvtHenk
+|-
+| HER || heros
+|-
+| HERB || herb0021
+|-
+| HERO || MrHero55
+|-
+| HEX || HeX|Fate
+|-
+| HEXA || IkåR
+|-
+| HEXOM || Hexomanya
+|-
+| HEXRP || HexReaper
+|-
+| HEY || ferio29
+|-
+| HFF || HitmanFF
+|-
+| HFM || Feldmann
+|-
+| HFP || L0rd Vetinari
+|-
+| HFPL || halfapple
+|-
+| HFR || Helifreak
+|-
+| HGFS || Konchjaz
+|-
+| HGH || HenrikGH
+|-
+| HGR || Foxy
+|-
+| HGS || Ransid
+|-
+| HH101 || headedhorseman101
+|-
+| HHSIR || HHSirbone
+|-
+| HIA3 || btmoon17
+|-
+| HIC || Hiesc
+|-
+| HIDE || hide86
+|-
+| HILL || Henrik
+|-
+| HIM || Him-Self
+|-
+| HIP || cunico
+|-
+| HIPPO || couplewavylines
+|-
+| HIS77 || Jona
+|-
+| HIZ || Hinkkiz
+|-
+| HJLA || Hejila
+|-
+| HKA || Hunter Killers Addons
+|-
+| HKK || Hawkkster
+|-
+| HKS || Hara Kiri
+|-
+| HLF || Hellfire257
+|-
+| HLO || Hailo2
+|-
+| HLS || Hawk_Silk
+|-
+| HMADE || human626
+|-
+| HMFA || crazyDHarrison2
+|-
+| HMFA3 || crazyDHarrison2
+|-
+| HMG || Mast3r
+|-
+| HMJ || Mayor
+|-
+| HMLGT || Himmelsgott
+|-
+| HMM || JamesF1
+|-
+| HMN || HumanNic
+|-
+| HMO || Jimpy
+|-
+| HMRMC || TemplarVX
+|-
+| HMXS || Haych
+|-
+| HNEG || h-
+|-
+| HNG || thevisad
+|-
+| HNK || hoink
+|-
+| HNTR || JackalopeHunter
+|-
+| HOB || Hobnob
+|-
+| HOBO || HoboPacifist
+|-
+| HOER || Soultakerl996
+|-
+| HOGS || hogscraper
+|-
+| HOHO || HossHooray
+|-
+| HOJO || HomerJohnston
+|-
+| HOK || RavenDK
+|-
+| HOL || PsychoChicken
+|-
+| HOLDL || darpeyface
+|-
+| HOLI || Holibu
+|-
+| HOLIB || Holibu
+|-
+| HOLY || Inblow
+|-
+| HOME || spacenavy90
+|-
+| HOMJ || Homer Johnston
+|-
+| HON || Hondobot
+|-
+| HOP || Hoplite
+|-
+| HOPL || Raven
+|-
+| HOR || horrido
+|-
+| HORDE || Das Attorney
+|-
+| HORVA || Horvath
+|-
+| HOSS || captainjack42
+|-
+| HOTZE || Hotzenplotz
+|-
+| HOZ || Hoz
+|-
+| HPS || Hooah! Production Studios
+|-
+| HQR || Leo
+|-
+| HRBLS || Hairballs
+|-
+| HRD || SGTHardcore
+|-
+| HRF || HRF_avenger
+|-
+| HRG || ByteWad
+|-
+| HRN || haroon1992
+|-
+| HRV || Hrvoje
+|-
+| HRY || harry)))
+|-
+| HRZ || Horizon
+|-
+| HSP || humansteak
+|-
+| HST || Mozz
+|-
+| HTC || Hugo the Clown
+|-
+| HTDM || Hektor_The_Dead_Medic
+|-
+| HTGO || Helikaon
+|-
+| HTK || Herratik
+|-
+| HTM || Hitman0956
+|-
+| HTN || Norse_Harold
+|-
+| HTR || h-
+|-
+| HTR1 || frednaar
+|-
+| HTRDW || Hotrodw
+|-
+| HTRX || HunTRaX
+|-
+| HUBBA || hubba
+|-
+| HULK || HulkingUnicorn
+|-
+| HUMPH || humphrey
+|-
+| HUNTA || HuNtA
+|-
+| HUSKY || Husky
+|-
+| HVBS || Muzz123321
+|-
+| HWM || Hellenic Warfare Mod
+|-
+| HWP || wizzywig/Hobbit
+|-
+| HWZ || HOWZ1T
+|-
+| HX001 || lululau8
+|-
+| HX002 || lululau8
+|-
+| HX003 || lululau8
+|-
+| HX1 || VUSN042
+|-
+| HYB || Hybrid
+|-
+| HYPER || bijx
+|-
+| HYPR || HarryPlobber
+|-
+| HYRO || Hyronos
+|-
+|}
+
+=== I ===
+
+{| class="wikitable sortable" style="width: 100%"
+| I2HI || LegaliseCheese
+|-
+| I420 || smittyjergensen
+|-
+| I44 || Invasion 1944
+|-
+| I444 || kekwood
+|-
+| I878 || Lizardpile
+|-
+| IAC || Gummybear_Qc
+|-
+| IAN || Ian Malcolm
+|-
+| IAP || RKSL-Rock
+|-
+| IBER || Sovietzug
+|-
+| IBL || AllowedRaven | Aka: Hugo_Bishop
+|-
+| IBR || IceBreakr
+|-
+| IBULL || Irish_Bu11et
+|-
+| IBUX || ibux
+|-
+| ICA || International Conflict:Armed Assault
+|-
+| ICA3 || IC-Hit
+|-
+| ICARG || TheIcarus
+|-
+| ICE || Dr Eyeball
+|-
+| ICEP || englishbullox
+|-
+| ICET || iCEtIMed
+|-
+| ICK || IceColdKilla
+|-
+| ICKYN || ickynk
+|-
+| ICM || Darylsteak
+|-
+| ICO || Iconoclast
+|-
+| ICP || ORCS Development Studios
+|-
+| ICY || Icy
+|-
+| IDA || IPDarby
+|-
+| IDFH || idfhayal
+|-
+| IDM || dragonsyr
+|-
+| IEC9 || LinuxMaster9
+|-
+| IEG || Soul_Assassin
+|-
+| IFEXP || jagy
+|-
+| IGRX || IguanasaurusRex
+|-
+| IGT || ingametek Studios
+|-
+| IGW || walker
+|-
+| IIW || Burt
+|-
+| IJA || Itsjustale
+|-
+| IKAR || IkÃƒÂ¥R
+|-
+| IKE || Ike
+|-
+| IKG || ikillglitch
+|-
+| IKRS || Anthall
+|-
+| IKSE || IKSE-Phoenix
+|-
+| IKY || [icarus_uk]
+|-
+| IKZ || ikiilzom
+|-
+| ILL || TheIllest57
+|-
+| ILMAR || Ilmars
+|-
+| ILS || Kammorne
+|-
+| ILYA || ilya.erokha
+|-
+| ILZ || redeye
+|-
+| IMA || Reimarus
+|-
+| IMB || Bremmer
+|-
+| IMBEL || rodhalberd
+|-
+| IMD || AAB
+|-
+| IMF || Morgan Montiel
+|-
+| IMIKE || iReckonItzMike
+|-
+| IMUC || Iraqi Mod: Unforeseen Circumstances
+|-
+| INACI || Inacio
+|-
+| INC || Increment
+|-
+| INCA || Le sicilien
+|-
+| IND || Indieboi918
+|-
+| INDIE || Indie
+|-
+| INF || infinity
+|-
+| INFA || TheInfamousNA
+|-
+| INFI || Infidel
+|-
+| INK || Ink_25
+|-
+| INKO || Inkompetent
+|-
+| INL || Inlesco
+|-
+| INQ || InQUisiToR
+|-
+| INR || iNeaR
+|-
+| INRDF || International Rapid Deployment Force
+|-
+| INS || Instructor
+|-
+| INSET || InsetJesux
+|-
+| INSNE || Insane
+|-
+| INSOMNIA || Insomnia
+|-
+| INT || Intruder
+|-
+| INTER || interoth
+|-
+| INV || Invasion 1944
+|-
+| IOH || Invasion of Holland
+|-
+| IOM || McCabe
+|-
+| ION || i0n0s
+|-
+| IOSKY || Foxtrotter
+|-
+| IOWAR || IO Warrior
+|-
+| IPL || EddyStark
+|-
+| IQQ || Synchronized
+|-
+| IR0N || ir0n
+|-
+| IR0N1 || Ir0n1E
+|-
+| IRA || The_MusswaH
+|-
+| IRDF || Irish Defence forces
+|-
+| IRE || IrregularElements
+|-
+| IRISH || Irishpride
+|-
+| IRM || Sariel
+|-
+| IRMA || saffuan666
+|-
+| IRO || Ironsight
+|-
+| IRON || Ironman
+|-
+| IRONX || ironxbay
+|-
+| IRP || Phelps
+|-
+| IRS || Imal rai Shakeen
+|-
+| IRZ || I-RZ#
+|-
+| ISAF || NZXSHADOWS
+|-
+| ISCP || ISCP
+|-
+| ISIL || Isildur
+|-
+| ISIS || ISIS
+|-
+| ISK || Mac Spliff
+|-
+| ISKY || isky
+|-
+| ISL || Buba
+|-
+| ISLES || Willliam
+|-
+| ISLSK || Foxtrotter
+|-
+| ISMA || Isma22.
+|-
+| ISN1P || isn1p3r
+|-
+| ISO || iso111
+|-
+| ISOS || Isoterik
+|-
+| ISOTE || Isoterik
+|-
+| ISR || johnny0964
+|-
+| ISS || Schubi
+|-
+| ISSK || Foxtrotter
+|-
+| ISSKE || Foxtrotter
+|-
+| ISSKY || Foxtrotter
+|-
+| IST || Gruul
+|-
+| ITA || colorchanger
+|-
+| ITC || Scott Marshall(Nodrog1061)
+|-
+| ITD || Bhaz
+|-
+| ITLA || Itla
+|-
+| ITZ || iTzREAPER
+|-
+| IVH || [_PcE_]Bastian
+|-
+| IWAS || iwasinnamuknow
+|-
+| IWS || Iron Warriors
+|-
+| IXWXI || IIxWALSHxII
+|-
+| IZLK || iZunLeK
+|-
+| IZU || Izu
+|-
+| IZULK || iZunLeK
+|-
+|}
+
+=== J ===
+
+{| class="wikitable sortable" style="width: 100%"
+| J117 || J117
+|-
+| J198 || jens198
+|-
+| J1FZ || technicalow
+|-
+| J23 || jthil23
+|-
+| J2464 || James2464
+|-
+| J33 || Jonpas
+|-
+| J45 || James45-Youtube
+|-
+| J4CK || J4ckInTheB0x
+|-
+| J4P || mp5gosu
+|-
+| J6392 || crow
+|-
+| J791 || J791
+|-
+| JAAJ || ARNPIK
+|-
+| JAB || MrFlibbleUK
+|-
+| JACK || Jackson.M
+|-
+| JACO || JacoJazz
+|-
+| JAD || gastovski
+|-
+| JAE || Jaentzen
+|-
+| JAFFA || Jaffa
+|-
+| JAFKR || Jaffa
+|-
+| JAH || Jahve
+|-
+| JAKAL || JKL_
+|-
+| JAKE || Leehr_19
+|-
+| JALBY || yoomama
+|-
+| JAM || JAM
+|-
+| JAM1 || jam1234
+|-
+| JAMES || J_Goodwin16
+|-
+| JAN || D.Jankovic
+|-
+| JANIN || polskimacerator
+|-
+| JAP || jimbop
+|-
+| JARNO || jarno1227
+|-
+| JASDF || Japan Air Self Defence Force Project
+|-
+| JASS || DoktorDauerfeuer
+|-
+| JAX || jaxCDN
+|-
+| JAXX || Jaaxxxxon
+|-
+| JAY || alan9413
+|-
+| JAYCD || JayCodes
+|-
+| JAZZP || HotJazzCP
+|-
+| JBAD || M1lkm8n and Smokedog
+|-
+| JBCPP || Brendan
+|-
+| JBOY || johnnyboy
+|-
+| JBTO || Jabato
+|-
+| JBU || JACKBU
+|-
+| JBX || JoelBoiaX
+|-
+| JBY || Jellybelly
+|-
+| JC128 || JC128
+|-
+| JCA || jack4607 (Jimmy Bulmer)
+|-
+| JCB || Cobra
+|-
+| JCK || Jock
+|-
+| JDAM || Spyder001
+|-
+| JDF || DiFool
+|-
+| JDG || JDog
+|-
+| JDGAR || jdgaravito
+|-
+| JDO || JDoberman
+|-
+| JDOE || JohnDoe
+|-
+| JDP || JoeyD
+|-
+| JED || Jedra
+|-
+| JEDAN || Jesper
+|-
+| JEFFS || jeffs
+|-
+| JELLO || Jellow
+|-
+| JELME || windo
+|-
+| JELON || xarxil
+|-
+| JEQ || JanusEQ
+|-
+| JER || J3RICO
+|-
+| JEREM || jelrite346
+|-
+| JERRY || jerryyou
+|-
+| JESS || Scarletmaunka
+|-
+| JESSE || jesse3339
+|-
+| JETKR || Jetkar
+|-
+| JETS || Theflyingjets
+|-
+| JEX || Colonel Jex
+|-
+| JEY || JeyR
+|-
+| JEZ || jez_CreepingDeath
+|-
+| JF1 || JamesF1
+|-
+| JFK || foglemark
+|-
+| JFL || JFL
+|-
+| JFLEX || JFL
+|-
+| JGAME || jgames
+|-
+| JGBTL || Grey Wolf
+|-
+| JGKP || Onizuka
+|-
+| JGSDF || gachopin
+|-
+| JHONK || LORDJHONKAS
+|-
+| JHPPR || jerryhopper
+|-
+| JHPR || joelbhv
+|-
+| JICL || CornerWookie
+|-
+| JJA || juanchoad
+|-
+| JJB || The Jub-Jub Bird
+|-
+| JJC || -----jayjayc-----
+|-
+| JJH || Rellikplug
+|-
+| JJS || Jenkins
+|-
+| JJS87 || Ignor_Uhallus
+|-
+| JKL || Junklord
+|-
+| JKN || JKNuke12
+|-
+| JKR || Joker303
+|-
+| JKRPT || jKrapotke
+|-
+| JLO || JohnO
+|-
+| JMAD || MichaelJMAD
+|-
+| JMADG || MichaelJMAD
+|-
+| JMAN || Jona
+|-
+| JMAP || Jsniper650
+|-
+| JMAS || Jochem
+|-
+| JMB || JmB314
+|-
+| JMG || Scanger
+|-
+| JMGJ || midgetgrimm
+|-
+| JMN || j-man
+|-
+| JMS || Herr Doktor
+|-
+| JMS7 || jonassm
+|-
+| JMSDF || gachopin
+|-
+| JNA || Jona33
+|-
+| JNEEV || JNeeves
+|-
+| JNGLZ || AnointedServant
+|-
+| JNK || justJenkins
+|-
+| JNS || Jonpas
+|-
+| JNSN || Jensen, 16AA
+|-
+| JOAOL || joaol
+|-
+| JOAR || Joarius
+|-
+| JOC || Mew_AG
+|-
+| JODO || JohnDoe
+|-
+| JOE || Joe Lemonade PSC
+|-
+| JOE11 || jostler11
+|-
+| JOEL || joelbhv
+|-
+| JOF || JorgF
+|-
+| JOFB || John & FAB's work
+|-
+| JOG || JesterOfGods
+|-
+| JOH || Jonny
+|-
+| JOHNS || sharkeye
+|-
+| JON || Jonno
+|-
+| JONA || Jona
+|-
+| JONA7 || Jona
+|-
+| JONAS || Jona
+|-
+| JONS || Jonpas
+|-
+| JORG || jorgchamorro
+|-
+| JOSGC || JONeill
+|-
+| JOTEL || jotel
+|-
+| JPAJ || Jona
+|-
+| JPH || jphacken
+|-
+| JPJ || Jona
+|-
+| JPL || James Lucas
+|-
+| JPP || Japan Police Project
+|-
+| JPS || SoldiA
+|-
+| JPS1 || Juanp15
+|-
+| JPT || JahBit
+|-
+| JPTIG || jptiger
+|-
+| JR40 || juragan
+|-
+| JRE || jelrite346
+|-
+| JRED || Jarob22
+|-
+| JREH || jelrite346
+|-
+| JRG || Jormangeud
+|-
+| JRH || JRH
+|-
+| JRS || JerStone
+|-
+| JRS2 || Josep02
+|-
+| JSAW || James Sawyer
+|-
+| JSDF || JSDF
+|-
+| JSF || Grace
+|-
+| JSF10 || Grace
+|-
+| JSFHV || JSF 223 Havoc
+|-
+| JSK || jusk
+|-
+| JSN || Jonsson, 16AA
+|-
+| JSP || Jakerod
+|-
+| JSPH || Joseph
+|-
+| JSRS || JSRSMod
+|-
+| JSS || SultanJS
+|-
+| JSY || Juisy
+|-
+| JTAK || Takelmeifter
+|-
+| JTD || JTD
+|-
+| JTF2 || Psycho
+|-
+| JTL || JackalTeamLeader
+|-
+| JTOG || [1st JTOG] Cypher
+|-
+| JTP || jtp54
+|-
+| JTR || jthered
+|-
+| JUCIY || JuciyFruity
+|-
+| JUDGE || Judge_Niklas
+|-
+| JULIU || Arquilius
+|-
+| JURA || Wollmilchsau
+|-
+| JUTKA || Jutka_GHG
+|-
+| JVG || asf
+|-
+| JVS || Josef
+|-
+| JW23 || kizio001
+|-
+| JWC || JW Custom
+|-
+| JWMT || JWMissionTeam
+|-
+| JWTG || JustWayTooGangster
+|-
+| JYB || Yoshi
+|-
+| JYK || Jekyll
+|-
+| JYL || M. Vind
+|-
+| JYNX || Jynx
+|-
+| JZR || Jezuro
+|-
+|}
+
+=== K ===
+
+{| class="wikitable sortable" style="width: 100%"
+| K000 || Ceary Gaska
+|-
+| K10 || Killer10
+|-
+| K1920 || Reign19k
+|-
+| K1MOD || kill1ng4nl
+|-
+| K432 || Ceary Gaska
+|-
+| K444 || Ceary Gaska
+|-
+| KAAR || kaar
+|-
+| KAG || KillerAussie
+|-
+| KAH || Sneaky_elephant
+|-
+| KAI || Kaiser
+|-
+| KAIN || Kain_Lowsta
+|-
+| KAL || Kaliyuga
+|-
+| KALE || kalelele
+|-
+| KALEL || fOkStROt
+|-
+| KAM || reyemlrak
+|-
+| KAN || Kanny
+|-
+| KANOR || seytan69
+|-
+| KANZZ || canoekovski
+|-
+| KAO || Ka-Oz
+|-
+| KAP || Pr0t0s
+|-
+| KARR || Karrmann
+|-
+| KAT || kot
+|-
+| KATE || Katekarin
+|-
+| KATS || Katastrophenschutzmod
+|-
+| KAUE || Kaue1996
+|-
+| KAUE2 || Kaue1996
+|-
+| KAZ || Ka-Oz
+|-
+| KBC || SirClarks
+|-
+| KBG || KaBoNG
+|-
+| KBS || snajdan
+|-
+| KCD || mrkarp
+|-
+| KCT || Smootch
+|-
+| KDL || König_der_Leere
+|-
+| KDOKP || Insane / 7. Kommando Kompanie
+|-
+| KDUBS || KDubs
+|-
+| KEEF || KeefVCB
+|-
+| KEG || Kegetys
+|-
+| KEH || Kehlian
+|-
+| KEHL || Bier AIG Kehlenschnitt
+|-
+| KEIF || keif149
+|-
+| KEIKA || KantanKei
+|-
+| KELLY || Cross
+|-
+| KEN || kenta
+|-
+| KENYA || puffadder
+|-
+| KERN || KernalPanic
+|-
+| KEXFM || ZOOmbi
+|-
+| KEY || KeyCat
+|-
+| KFC || GodTookMyKFC
+|-
+| KGM || KailGale
+|-
+| KH1 || ianbanks
+|-
+| KHA || King Homer
+|-
+| KHALI || Khalise
+|-
+| KHAN || Ghengis Khan Designs
+|-
+| KHI || ianbanks
+|-
+| KHNTR || koalahunter
+|-
+| KHOVA || Khovanet
+|-
+| KHP || KansasHellPrairie
+|-
+| KHS || Khayes
+|-
+| KIA || Jona
+|-
+| KIB || kiba3x
+|-
+| KIII || Ceary Gaska
+|-
+| KILO || KiloJules
+|-
+| KIM || Beyrunn
+|-
+| KIN || Kinnon
+|-
+| KING || King_Pyrrhus
+|-
+| KINGG || King_of_Gondor12
+|-
+| KINGT || KingTsunami
+|-
+| KIO || Kiory
+|-
+| KIR || Kirthi Iyer
+|-
+| KIRU || Kirumy
+|-
+| KISL || Ceary Gaska
+|-
+| KISLA || Ceary Gaska
+|-
+| KITRA || KillTrader
+|-
+| KITTY || GetThatCat
+|-
+| KIVEC || Kivech
+|-
+| KIVI || Kivi
+|-
+| KK44 || Ceary Gaska
+|-
+| KKA3 || KokaKola
+|-
+| KKB || KKB
+|-
+| KKEIF || kaptinkeiff
+|-
+| KKK || BlinkDog
+|-
+| KKK4 || Ceary Gaska
+|-
+| KKM || Kabala Konflikt Mod
+|-
+| KKV || KokaKola
+|-
+| KKY || Kronzky
+|-
+| KLA || klavan
+|-
+| KLAM || klamacz
+|-
+| KLD || Klan_Destino
+|-
+| KLEDO || k2
+|-
+| KLG || klgreload
+|-
+| KLJ || excelsior
+|-
+| KLL || kikill
+|-
+| KLMK || Klamauk
+|-
+| KLS || Killswitch
+|-
+| KLU || klubargutan
+|-
+| KMA || Smootch
+|-
+| KMD || RainDrop
+|-
+| KMDR || Kmdrfarsight
+|-
+| KMK || Kammak
+|-
+| KMP || the-f
+|-
+| KMT || Krzycu
+|-
+| KMZ || Kamizz
+|-
+| KN7 || KimsterN7
+|-
+| KNDR || kondor
+|-
+| KNG8 || king8bit
+|-
+| KNO || knoedelsalat
+|-
+| KNP || KP
+|-
+| KNR || Keneraali
+|-
+| KNT || kevsnotrev
+|-
+| KNV || Knoxville
+|-
+| KNX || Knoxxius
+|-
+| KOBLD || TinfoilHate
+|-
+| KOBRA || Zapata
+|-
+| KOH || Alucard88
+|-
+| KOHL || icekohl
+|-
+| KOJAK || Kojack
+|-
+| KOM || Kombatkow
+|-
+| KOMA || KomaKommander
+|-
+| KOMP || Kompetenzz
+|-
+| KOND || Ceary Gaska
+|-
+| KONDO || Ceary Gaska
+|-
+| KOR || Khorne
+|-
+| KORB || Korbelz
+|-
+| KORBI || Lt. Korbi
+|-
+| KORVA || korvalaakari
+|-
+| KOS || K0s
+|-
+| KOSEI || NekoSensei
+|-
+| KOT || SoldierEPilot
+|-
+| KOZ || kozak
+|-
+| KOZA || Kozach
+|-
+| KPFS || Marseille77
+|-
+| KPH || Kill_Phil
+|-
+| KRA || Hans von Zettour
+|-
+| KRCE || Kristiyan Tsenov
+|-
+| KRDKY || LinuxMaster9
+|-
+| KREM || Striborg
+|-
+| KRG || Krieg
+|-
+| KRGB || kbernges
+|-
+| KRIJG || Krijag
+|-
+| KRK || -=Kriesen Reaktions KrÃƒÂ¤fte=-
+|-
+| KRL || Karlos
+|-
+| KRNIS || MrFreex
+|-
+| KROK || Krok
+|-
+| KRON || Kronzky
+|-
+| KRONI || Kronik
+|-
+| KRP || TheLexoPlexx
+|-
+| KRSJ || Kresjah
+|-
+| KRY || Krynoc
+|-
+| KRYPT || Kryptonite
+|-
+| KRZ || KraveZ
+|-
+| KRZYC || Krzyciu
+|-
+| KSA || EleGhost
+|-
+| KSH || Katla_Haddock
+|-
+| KSN || Ksanatos
+|-
+| KSR || kaiser_5sm
+|-
+| KSZ || ks0908
+|-
+| KTE || KTottE
+|-
+| KUANG || kuangmk11
+|-
+| KUB || kuba
+|-
+| KUNAR || raptor_aviation
+|-
+| KUP || kuplion
+|-
+| KUR || Kuro
+|-
+| KURAS || AhegaoMyEggao
+|-
+| KUS || SmartGun [KUSARI]
+|-
+| KVBDF || Vendaar
+|-
+| KVS || Komplex
+|-
+| KYL || kylania
+|-
+| KZBK || 4Shades
+|-
+| KZO || krzychuzokecia
+|-
+|}
+
+=== L ===
+
+{| class="wikitable sortable" style="width: 100%"
+| L01 || LoserOne
+|-
+| L2K || Legionary2000
+|-
+| L4145 || Liberation 1941-1945
+|-
+| L4Z0R || l4z0rr0b0tz
+|-
+| L86 || Lifted86
+|-
+| LABS || luk108
+|-
+| LAC || Lacota
+|-
+| LAE || Laertes
+|-
+| LAF || Aidas
+|-
+| LAGGY || laggy
+|-
+| LAGNS || nigeyuk
+|-
+| LAKOS || Laikos_Vidar
+|-
+| LAMB || lambert
+|-
+| LAN || Landdon
+|-
+| LAND || Motra
+|-
+| LARIS || Pierson
+|-
+| LARS || Larrow
+|-
+| LAST || Last Aussie
+|-
+| LAT || l4t3
+|-
+| LATIG || black.dragoncr18
+|-
+| LATIN || StreetDog
+|-
+| LAUTS || laustrike
+|-
+| LAX || Laxentis
+|-
+| LAZY || lambofgodz
+|-
+| LBM || LBmaster
+|-
+| LBT || Totor Jenkins
+|-
+| LCA || Luca
+|-
+| LCD || LCD
+|-
+| LCDF || Lokiro
+|-
+| LCK33 || luckywin3
+|-
+| LCO || LeadCommando
+|-
+| LDA || Roaban
+|-
+| LDG || Loc-Dog
+|-
+| LDL || LurchiDerLurch
+|-
+| LDN || Double Doppler
+|-
+| LDTM || LtDanTheArmyMan
+|-
+| LEARS || learsi0013
+|-
+| LEB || unknownx9
+|-
+| LECHO || elechos
+|-
+| LEE || Lulee
+|-
+| LEGIN || Legin88
+|-
+| LEGIO || Emiuz97
+|-
+| LEGIT || polskimacerator
+|-
+| LEGS || LuckyLegs
+|-
+| LEH || lendrom
+|-
+| LEL || Barazin
+|-
+| LEM || SubsidedLemon
+|-
+| LEMIL || Felipe Leclerc
+|-
+| LEN || LennyD
+|-
+| LEO || Leonardus
+|-
+| LEO1 || Leo_666_1
+|-
+| LEON || leonz2019
+|-
+| LEP || Lefterboy123
+|-
+| LES || Lester
+|-
+| LESH || Leshrack
+|-
+| LETH || Lethio
+|-
+| LFMR || moonracer1313
+|-
+| LFN || LucaGER
+|-
+| LFOV || FreddyCruger
+|-
+| LG666 || [Gen]F.Larry-12thACR
+|-
+| LG83 || Logan83
+|-
+| LGD || Loyalguard
+|-
+| LHA || Laurenzl33
+|-
+| LIB || Liberation 1941-1945
+|-
+| LIBZ || Libz0rzz
+|-
+| LILG || JasonO
+|-
+| LILJE || thielbmw
+|-
+| LINCE || Fr4nKy
+|-
+| LIQD7 || liquid-7
+|-
+| LIS || lis
+|-
+| LITTL || Littledog
+|-
+| LIZ || Lizard
+|-
+| LJPDZ || Proaf0
+|-
+| LK108 || luk108
+|-
+| LK40 || Skeltoras
+|-
+| LKD || Kinch
+|-
+| LKS || Vortex
+|-
+| LKY || Locky
+|-
+| LLAMA || Llama
+|-
+| LLOBU || llobu
+|-
+| LM || [[User:Lou Montana|Lou Montana]]
+|-
+| LMC || LimeCordial
+|-
+| LMP || 33OF11PE00
+|-
+| LMS || Lockheed Martin$ch
+|-
+| LNB || Lean Bear
+|-
+| LNWH || loki72
+|-
+| LNX || Lanix
+|-
+| LOBO || Lost Brothers Mod
+|-
+| LOC || Lockers
+|-
+| LOCKE || Locke@Germany
+|-
+| LOEL || Hoyt
+|-
+| LOGI || logi
+|-
+| LOK || unloco
+|-
+| LOKE || Loki
+|-
+| LOKI || loki72
+|-
+| LOKII || Lokiro
+|-
+| LOKIL || Lokiro
+|-
+| LOKYI || Lokyi
+|-
+| LOL || windo
+|-
+| LOLMA || Smiffy
+|-
+| LOLO || Mr Fatex
+|-
+| LOLWHAT || WhatThe
+|-
+| LON || vilnil
+|-
+| LONDO || CTLondon501st
+|-
+| LOP || Loopez
+|-
+| LOR || Lorelei
+|-
+| LOU || 2lou2
+|-
+| LOV || Mikjall
+|-
+| LOVE || WonderMike
+|-
+| LOW || LonelyWarrior
+|-
+| LOWP || ajlex
+|-
+| LPR || Diesel
+|-
+| LQG || candle088
+|-
+| LRD || LORDREMCOK
+|-
+| LRS || larsen
+|-
+| LSD || sxpra
+|-
+| LSGSP || Sportyha11
+|-
+| LSI || Liquid_Silence
+|-
+| LSR || Laser
+|-
+| LST || Lost_ofp
+|-
+| LSTF || Nojuxxs
+|-
+| LSW || liammanator
+|-
+| LT1 || Lieutenant
+|-
+| LTH || Lt HuNTeR
+|-
+| LTK || LoTekK
+|-
+| LTM || Lt.Meerkatflyer
+|-
+| LTS || A8B7C6
+|-
+| LTU || ofpartizan
+|-
+| LTZK || latzka
+|-
+| LUCA || lucasmelo
+|-
+| LUCAS || SeriouK1LLS
+|-
+| LUCCI || rodhalberd
+|-
+| LUFT || Starluft
+|-
+| LUGS || Softpoint
+|-
+| LUKIS || lukis_spectre
+|-
+| LUM || Lumme
+|-
+| LUMA || Eluminate
+|-
+| LUMOD || LupusTheCanine
+|-
+| LUNAR || Lunarrabi
+|-
+| LUPO || McLupo
+|-
+| LURCH || LurchiDerLurch
+|-
+| LUT || lut
+|-
+| LV412 || Saethkept
+|-
+| LVH || LokiVH
+|-
+| LVW || Lovwyr
+|-
+| LWOF || lobo
+|-
+| LWOLF || lobo
+|-
+| LWP || LWP MOD
+|-
+| LWRET || Lost World Returns
+|-
+| LWZ || LegaWarz
+|-
+| LYGD || Loyalguard
+|-
+| LYNX || TinfoilHate
+|-
+| LYNXM || Lynx
+|-
+| LYRA || LyraGuy1985
+|-
+| LZK || LizardKing
+|-
+| LZONE || antonin86
+|-
+| LZX || LizardX
+|-
+|}
+
+=== M ===
+
+{| class="wikitable sortable" style="width: 100%"
+| M0100 || Michael0100
+|-
+| M10ER || Mountaineer
+|-
+| M152 || MachinistG
+|-
+| M1J66 || mjdigit
+|-
+| M1LK || M1lkm8n
+|-
+| M1X || M1XT3NZ
+|-
+| M2033 || konna
+|-
+| M225 || AlexMcClaine
+|-
+| M2OP || Sgt Mix
+|-
+| M3M || mcmatrix
+|-
+| M3TAZ || Mootaz20Khelifi
+|-
+| M4XD || M4xD
+|-
+| M59 || Mysterion59
+|-
+| M64 || massi64
+|-
+| M720 || m720
+|-
+| M90 || granQ
+|-
+| MAA || MAA
+|-
+| MAALL || mja2106
+|-
+| MAAM || Mutually Accepted Ammo & Magazines
+|-
+| MAATZ || Maatz
+|-
+| MAC || Samu
+|-
+| MACAM || macamur2
+|-
+| MACD || mattmac76
+|-
+| MACE || SoldierEPilot
+|-
+| MACEC || flup52
+|-
+| MACG || macguba
+|-
+| MACH || fragmachine
+|-
+| MAD || mollusc
+|-
+| MAD3 || fogu
+|-
+| MADL || Cowboy
+|-
+| MADQC || Madelinot
+|-
+| MAF || MAAC & MARFY
+|-
+| MAFF || iiMaffasouras
+|-
+| MAFIA || luckyluciano
+|-
+| MAG || alimag
+|-
+| MAG01 || Gizmo258963
+|-
+| MAGBJ || Benjellio
+|-
+| MAGUM || Magnum
+|-
+| MAHP || mahp
+|-
+| MAHT || Maht
+|-
+| MAJ || McHide
+|-
+| MAJAR || Majarkin
+|-
+| MAJO || majoess
+|-
+| MAJOO || Majoolwip
+|-
+| MAK || Makhno
+|-
+| MAKAR || Makarenko
+|-
+| MALIC || Malicidus
+|-
+| MALKE || malkekoen
+|-
+| MALYN || Scott Malyn
+|-
+| MAN || M4NUM4N
+|-
+| MANA || Manason
+|-
+| MANAP || exitbrexit
+|-
+| MANDI || KlosTher
+|-
+| MANDO || Mandoble
+|-
+| MANGO || MangoAU
+|-
+| MANNY || kingmanatea
+|-
+| MANX || vaida
+|-
+| MAO || Mangoo
+|-
+| MAP || Mapfact
+|-
+| MAP1 || ItsCane
+|-
+| MAPL || Santa Cruz
+|-
+| MAPLE || Maple_Syrup32
+|-
+| MAPZ || owej
+|-
+| MAR || Meatball0311
+|-
+| MARC || Marcooo
+|-
+| MARF || Manyack
+|-
+| MARGE || Dealbreaker Jones
+|-
+| MARKY || markypea
+|-
+| MARLA || MarineLayer
+|-
+| MARO || MattRoch
+|-
+| MARQ || hugoomarques
+|-
+| MARS || Rastafa
+|-
+| MARSU || goldfinger
+|-
+| MART || PhonicStudios
+|-
+| MARTI || MartinFrost
+|-
+| MAS || massi
+|-
+| MASH || masheads
+|-
+| MAT || McLupo
+|-
+| MAT56 || matty5665
+|-
+| MATH || Maddmatt
+|-
+| MATT || Mad
+|-
+| MATTY || matty45
+|-
+| MATZ || Matt_T
+|-
+| MAU || Maurin080
+|-
+| MAUR || Maur
+|-
+| MAV || Maverick
+|-
+| MAW || mwise
+|-
+| MAX || max
+|-
+| MAXVI || Maxvil
+|-
+| MAXZ || MaxZ
+|-
+| MAY || mayrhofen
+|-
+| MAYD || mayday simulations
+|-
+| MBART || mikebart
+|-
+| MBG || Mondkalb
+|-
+| MBK || The Milky Bar Kid
+|-
+| MBM || Martin_BM
+|-
+| MBMC || MBMC
+|-
+| MBOI || Mahboison
+|-
+| MBRAS || rodhalberd
+|-
+| MBT || rodhalberd
+|-
+| MC134 || maca134
+|-
+| MC225 || AlexMcClaine | Philipp S.
+|-
+| MC5TH || Sablerno
+|-
+| MC9 || Macko
+|-
+| MCAR || mcar engine
+|-
+| MCB || McBeardy
+|-
+| MCC || Bloberg
+|-
+| MCCL || AlexMcClaine
+|-
+| MCDEE || sapharion
+|-
+| MCG || McGough
+|-
+| MCGEE || McGee
+|-
+| MCH || McHale
+|-
+| MCK || Macolik
+|-
+| MCL || mattaust
+|-
+| MCLU || McLupo
+|-
+| MCMC || McMonkeycho
+|-
+| MCOM || Mission Command
+|-
+| MCON || Max Conway
+|-
+| MCORD || matheuscordeiro
+|-
+| MCP || MrCrispPacket
+|-
+| MCR || MasterCipher
+|-
+| MCRD || raptor 6 actual
+|-
+| MCS || Semajnad
+|-
+| MCSR || Macser
+|-
+| MCSS || Mad_Cheese
+|-
+| MCY || MercenaryS
+|-
+| MDA || US Marine and Deadsoldier
+|-
+| MDAYZ || xdeejaycrazyx
+|-
+| MDCD || Michael Dorosh
+|-
+| MDF || Smootch
+|-
+| MDG || mdavidg
+|-
+| MDI || Magen David Industries
+|-
+| MDK || Elffi & too_Frosty of Marduk
+|-
+| MDO || Marek779
+|-
+| MDR || mdr
+|-
+| MDS || MadDuck Studios
+|-
+| MDS17 || Fossil
+|-
+| MDSA || MenaceMedusa
+|-
+| MDSL || Mauricio_Souza_Leon
+|-
+| MDT || Maddmatt
+|-
+| MDX || MadDogX
+|-
+| MEA || Makad
+|-
+| MEATY || ChristmasMeat
+|-
+| MEB || Munk-E-Boi
+|-
+| MEC || Mendip Editing Consortium
+|-
+| MECHA || Mechanite
+|-
+| MED || Denisko-Redisko
+|-
+| MEDI || SyntaxMedium
+|-
+| MEE || Oxigeno
+|-
+| MEF || Mattastic
+|-
+| MEFA || Melissa
+|-
+| MEH || MehMan
+|-
+| MEI || todschlaeger
+|-
+| MEKA || Meka
+|-
+| MEL || Mellis
+|-
+| MEMO || alex31535
+|-
+| MERCS || AK-Chester and AK-George
+|-
+| MERCY || Mercy
+|-
+| MERCZ || Merczateers
+|-
+| MERIC || mericerenler
+|-
+| MERL || Merlin
+|-
+| MES || messiah
+|-
+| MESH || meshcarver
+|-
+| MET || Double Doppler
+|-
+| METRO || Hazckar
+|-
+| MEU || 11thMEU Kavinsky
+|-
+| MEU13 || Degray
+|-
+| MEWLE || mewle
+|-
+| MEX || "México en Guerra" Mod
+|-
+| MEXT || MexterInfinite
+|-
+| MEZ || Itsmez
+|-
+| MFAF || Mod Armée Française
+|-
+| MFB || Major Fubar
+|-
+| MFMP || MrFarmer
+|-
+| MFOUR || Maxvil
+|-
+| MFP || The_MusswaH
+|-
+| MGA || warlord
+|-
+| MGG || Messiah and Greatgraddage Productions
+|-
+| MGI || Pierre MGI
+|-
+| MGS || Metal Gear Mod
+|-
+| MHE || Fumbles
+|-
+| MHJ || MaHuJa
+|-
+| MHL || Mikhail
+|-
+| MIA || MadAussie
+|-
+| MIC || michiyl
+|-
+| MIDF || The_Blink
+|-
+| MIG || mig
+|-
+| MIHKL || TheMihikle
+|-
+| MIK || M.K.
+|-
+| MIKE || freda
+|-
+| MIKEB || HellfireVevo
+|-
+| MIKEY || ciscomikey
+|-
+| MIKRO || Mike Andrew
+|-
+| MIL || Forest
+|-
+| MILER || mileredit
+|-
+| MINER || Minermail01
+|-
+| MINF || Minf
+|-
+| MINT || mintblackbeard
+|-
+| MIP || micropilot
+|-
+| MIQ || miq
+|-
+| MIR4G || Miragexl
+|-
+| MIROS || nico100
+|-
+| MIS || Misch
+|-
+| MISU || Misu
+|-
+| MISU1 || Castiel
+|-
+| MIW || annihilator825
+|-
+| MIZOU || Mingala
+|-
+| MJB || Blath
+|-
+| MJD || Marshal_Jud
+|-
+| MJDI || mjdigit
+|-
+| MJDIG || mjdigit
+|-
+| MJDII || mjdigit
+|-
+| MJR || MJRamon
+|-
+| MJW || Major Woody
+|-
+| MK4 || mikey
+|-
+| MK5 || Mk5
+|-
+| MKD || vasmkd
+|-
+| MKD3 || MKD
+|-
+| MKEY || CRUDER
+|-
+| MKH || Elfogadodhe
+|-
+| MKK || xorforever
+|-
+| MKM || Marksman
+|-
+| MKP || monkeyking
+|-
+| MKVMC || Kursius
+|-
+| MKY || m0nkey
+|-
+| ML559 || MiffedLyric559
+|-
+| MLI345 || Bread Boi
+|-
+| MLK || Milkduster
+|-
+| MLM || Mellem
+|-
+| MLOS || Marlos
+|-
+| MLV || MOD Malvinas
+|-
+| MLW || MakeLoveWork
+|-
+| MM100 || Minimedic100
+|-
+| MMH || MMHTsunami
+|-
+| MMK || MorMel reKreations
+|-
+| MMP || Military Mod Project
+|-
+| MMS || Marccom
+|-
+| MMT || sgtjonn
+|-
+| MMU || Mission Makers Unit
+|-
+| MMX || Madus Maximus
+|-
+| MMXX || .:mazed:.
+|-
+| MNICK || mnickels
+|-
+| MNKY || Jona
+|-
+| MNKY || Jona
+|-
+| MNKY || Jona
+|-
+| MNKY || Jona
+|-
+| MNN || marcosfnjf
+|-
+| MNYET || monyetswa
+|-
+| MOACH || moach
+|-
+| MOBY || Pro X
+|-
+| MOD || rodhalberd
+|-
+| MODBR || rodhalberd
+|-
+| MODEM || modEmMaik
+|-
+| MOK || bruteforce
+|-
+| MOKKA || Mokka
+|-
+| MOLO || Antonio Molo
+|-
+| MOM || Mother
+|-
+| MONS || BlueMonstro
+|-
+| MONSI || tjmonsi
+|-
+| MOO || mooncaine
+|-
+| MOOF || Moofins
+|-
+| MOOG || Moog
+|-
+| MOON || moonunit42
+|-
+| MOPS || CfX
+|-
+| MOR || Morloc
+|-
+| MORI || Moriquendi
+|-
+| MORS || 5133p39
+|-
+| MORTS || Morts
+|-
+| MOS || mossy
+|-
+| MOSH || Mosh
+|-
+| MOT || Motan
+|-
+| MOTIN || Motionman2008
+|-
+| MOTO || BigBen
+|-
+| MOTOR || rodhalberd
+|-
+| MOU || Bell.K
+|-
+| MOW || Machines of War
+|-
+| MOX || MOXYJR
+|-
+| MP15 || Mantis
+|-
+| MP62 || Martinp62
+|-
+| MPC || MultiPlayerCampaign
+|-
+| MPJ || Alezil
+|-
+| MPMC || GTR-34
+|-
+| MPS || Double Doppler
+|-
+| MPU28 || kilroy952
+|-
+| MPY || Moppy
+|-
+| MQS || muriloqsiqueira
+|-
+| MR85 || Master85
+|-
+| MRAB || madrabbit711
+|-
+| MRB || burns
+|-
+| MRC || Mrc
+|-
+| MRCA || MarcAlecai
+|-
+| MRCHO || MrChow
+|-
+| MRCMP || MrCappuccino
+|-
+| MRF || MrFata
+|-
+| MRG || Mrgascat
+|-
+| MRK || Operation Merkur MOD
+|-
+| MRM || Mr-Murray
+|-
+| MRMP || MrCappuccino
+|-
+| MRO || MisterO
+|-
+| MROM || Mromson
+|-
+| MROP || MrOwl
+|-
+| MRR || mikro
+|-
+| MRS || MrSherenai
+|-
+| MRSOC || MrSocomDude
+|-
+| MRT || MRT Accessory Functions team
+|-
+| MRVL || 2020Visionbut
+|-
+| MRY || Cadilakor
+|-
+| MRZ || MarcesscoMalkyre
+|-
+| MS || Dragnipur47
+|-
+| MSA || Petie
+|-
+| MSALT || MashedSalt
+|-
+| MSBR || TRStinky
+|-
+| MSD || MustDie
+|-
+| MSDA || MrSocomDude
+|-
+| MSFIT || MisfitMaid
+|-
+| MSH || Messiah
+|-
+| MSK || Morthon
+|-
+| MSKEY || DineiDevos
+|-
+| MSMAP || brunoroseni
+|-
+| MSOT8 || Stump
+|-
+| MSP || Schilp
+|-
+| MSS || Spence
+|-
+| MST || Mostly
+|-
+| MSTEV || MRsteve
+|-
+| MSTH || [25th]Mountain Sheep
+|-
+| MSTK || KaulTheMystic
+|-
+| MSWD || Thereal-Chaseman
+|-
+| MT6 || Kokuroku
+|-
+| MTAC || Helikaon
+|-
+| MTB || MintyBoy
+|-
+| MTBR || fuchsmulder
+|-
+| MTCS || TheodoreM
+|-
+| MTEST || defusL
+|-
+| MTF || SenorMeltyface
+|-
+| MTG || lifeman
+|-
+| MTH || motho38
+|-
+| MTI || Mokka/MokTech Industries
+|-
+| MTL || Metal Productions (Mads Furuvald)
+|-
+| MTM || Mr.ThunderMakeR
+|-
+| MTN || MaxQ
+|-
+| MTP || flaber
+|-
+| MTS || Tojo
+|-
+| MTY || Matyboy
+|-
+| MUD || Mud_Spike
+|-
+| MUG || GodsFist
+|-
+| MUHO || FDFj
+|-
+| MUKI || loki72
+|-
+| MULF || TheSlufs
+|-
+| MUN || robert.munsey
+|-
+| MUNKE || Mun_key
+|-
+| MUPLA || multplaneta
+|-
+| MUR || J_Murphy
+|-
+| MURU || MugRuncher
+|-
+| MUX || MiauX
+|-
+| MVH || Mad Vince
+|-
+| MVR || mav
+|-
+| MWD || mwd2
+|-
+| MWDOD || MWDodo
+|-
+| MWILL || M.Wills
+|-
+| MX || CRUDER
+|-
+| MXB || Mikeyxb
+|-
+| MXRY || Mixuray
+|-
+| MXY || MOXY
+|-
+| MYM || MightyMouse
+|-
+| MYMAP || orcadontist
+|-
+| MYN || MooN
+|-
+| MYT || Foley
+|-
+| MYUH || Jerimiah
+|-
+| MYZ || Yazza
+|-
+| MZA || Milky Bar Kid and Zippy Productions
+|-
+| MZP || MiszczuZPolski
+|-
+|}
+
+=== N ===
+
+{| class="wikitable sortable" style="width: 100%"
+| N0VA || novadose
+|-
+| N19 || Nano19
+|-
+| N21 || At.St_Walker
+|-
+| N4DZ || namco-4
+|-
+| N4P || XylofonKobra414
+|-
+| N9NE || Midnightorder
+|-
+| NAAKK || naakkaparturi
+|-
+| NAAXA || naaksa
+|-
+| NAC || Larner6903
+|-
+| NAF || Nogovan Armed Forces Mod
+|-
+| NAIL || Nailbomb72
+|-
+| NAK || Vile Ace
+|-
+| NAKED || burtnaked
+|-
+| NALKSTUF || Nalkarauke
+|-
+| NAM || GodsFist
+|-
+| NANAT || DilutedSalt
+|-
+| NAPPA || GHoST_NApPA
+|-
+| NARA || Naranox
+|-
+| NARD || Nardypants
+|-
+| NAS || Ylguf
+|-
+| NASCO || Nascosta
+|-
+| NASSF || Black_Mantis
+|-
+| NATE || NAtionale Anti Terror Einheit
+|-
+| NATO || moritus
+|-
+| NAVAL || rodhalberd
+|-
+| NAZ || Rednaz
+|-
+| NBELL || Nicholas Bell
+|-
+| NBW || Nathan White
+|-
+| NCA || Nica
+|-
+| NCAFF || NCaffrey
+|-
+| NCE90 || NickEd90
+|-
+| NCK || nick15654
+|-
+| NDAC || nikos85
+|-
+| NDJ || affraid
+|-
+| NDRN || Frostie
+|-
+| NDS || Neddles
+|-
+| NEA || NeoArmageddon
+|-
+| NEAL || nealsch
+|-
+| NEKO || kuroneko
+|-
+| NEL || Nelios
+|-
+| NEM || Nemesis
+|-
+| NEO || beowulf2014
+|-
+| NERD || MrBoolean
+|-
+| NEREF || nÃ©rÃ©flo
+|-
+| NERO || Nero1986
+|-
+| NETRS || George V
+|-
+| NEU || qba69
+|-
+| NEURO || luckyluciano
+|-
+| NEW97 || sampmapper
+|-
+| NEWLF || Roran
+|-
+| NEWOR || burrd
+|-
+| NEXUSZ || sebafreitas
+|-
+| NEY || Neymeyer
+|-
+| NEZEL || hassenhoff
+|-
+| NF || h-
+|-
+| NF404 || Help_Im_Lost
+|-
+| NFACE || rodhalberd
+|-
+| NFC || Sauce, Mr_Sulli_Van
+|-
+| NFC3 || rodhalberd
+|-
+| NFCW || h-
+|-
+| NFS || Nfshotrods
+|-
+| NGG || Greatgraddage
+|-
+| NGL || NextGen
+|-
+| NGM48 || NGM48
+|-
+| NGP || tipster1;Thomas White;Greg Smith;Floyd
+|-
+| NGS || JustKidding
+|-
+| NHK || lordkezlar
+|-
+| NHS3A || TheHutch
+|-
+| NIBB || fivenine
+|-
+| NIGHT || Nightwish1978
+|-
+| NIK || nik
+|-
+| NIKE || TheNiki
+|-
+| NILCO || Nilcoireion
+|-
+| NIM || Northern Ireland Mod
+|-
+| NIN || GirrTheNinja
+|-
+| NIS || ejlemaire
+|-
+| NIT || NITRO
+|-
+| NIX || Nixer
+|-
+| NJDR || affraid
+|-
+| NKI || LEGION-Niki
+|-
+| NKM || x2dezjohn
+|-
+| NKNWN || Unknown
+|-
+| NKT || NekoTracker
+|-
+| NLAF || VXR
+|-
+| NLBS || ItsJustStan
+|-
+| NLD44 || Tuttie
+|-
+| NLDAF || OfficerGek
+|-
+| NLDO || Smootch
+|-
+| NLF || killmito
+|-
+| NLK || Filisecond
+|-
+| NLM || Fishu
+|-
+| NLRP || Guy Cutler
+|-
+| NLS || nameless
+|-
+| NMA || Noma
+|-
+| NME || neomagus00
+|-
+| NML || No Man's Land
+|-
+| NMM || Nuclear_Man
+|-
+| NMMOD || Nuclear_Man
+|-
+| NNA || NNA
+|-
+| NNM || Bloberg
+|-
+| NNYA || MacBoy
+|-
+| NOAF || Stiltman
+|-
+| NOBAF || burns
+|-
+| NOBL1 || NoblGaming
+|-
+| NOF || freddern
+|-
+| NOLAG || nominesine, Laggy
+|-
+| NOM || Norwegian Mod team
+|-
+| NOMAD || Nomad Mod
+|-
+| NOMEX || Nomexe
+|-
+| NOMIN || nominesine
+|-
+| NOMM || FearsomeFenrir
+|-
+| NON || Noone
+|-
+| NONEL || Nonel
+|-
+| NOOK || el_P
+|-
+| NOOKA || el_P
+|-
+| NOOR || noordo
+|-
+| NOOVA || Novaline
+|-
+| NOQ || NoQuarter
+|-
+| NOR || NoRSu
+|-
+| NORAC || norac145
+|-
+| NORAF || SceneryExplosion
+|-
+| NORD || Nordbo
+|-
+| NORG || NorGear Norwegian Armed Forces
+|-
+| NORRN || norrin
+|-
+| NORTH || h-
+|-
+| NOSE || Nosebai
+|-
+| NOT || Notorious
+|-
+| NOU || NouberNou
+|-
+| NOVA || RattSplat
+|-
+| NOVAL || Novaline
+|-
+| NPAM || Nam Pack Air Module
+|-
+| NPC || SoldierEPilot
+|-
+| NPCIT || Chuck Lebug
+|-
+| NPE || nick103
+|-
+| NPM || SBSmac
+|-
+| NPTO || Not_PotatOS
+|-
+| NPTW || Napoleonm97d
+|-
+| NPW || GioSoupnazi
+|-
+| NRC || enarcy
+|-
+| NRPG || Nerds RPG
+|-
+| NRPL || SrDaju
+|-
+| NSBM || Blood Eagle
+|-
+| NSC || RobertJonesNSC
+|-
+| NSH || NSha1D0W
+|-
+| NSN || NotSoNinja
+|-
+| NSOF || Proxno
+|-
+| NSS || feb199
+|-
+| NST || Sumrak
+|-
+| NSW || NinjaSayWhat
+|-
+| NSWC || VUSN042
+|-
+| NSZ || CartoonrBOY
+|-
+| NTHB || NotaHappyBunneh
+|-
+| NTM || NATOMOD
+|-
+| NTMO || Notmo
+|-
+| NTX || nuttex
+|-
+| NUGS || Nuggit
+|-
+| NUKAF || Nikeleye
+|-
+| NUKE || NukePlant
+|-
+| NUM1 || rpoltera
+|-
+| NUN || NunoArstotzka
+|-
+| NUT || The KMan 3000
+|-
+| NUTT || NuttyRabbit
+|-
+| NUTWK || NUTWORKS
+|-
+| NUX || nuxil
+|-
+| NV1 || Natversion1
+|-
+| NVA || NVA-Mod Team
+|-
+| NVB || NavyBauer
+|-
+| NVBX || Nevbox
+|-
+| NVCHK || novacheck
+|-
+| NVTS || Legenden
+|-
+| NWD || NonWonderDog
+|-
+| NWDUL || j.ty.hall
+|-
+| NWF || spacecadett
+|-
+| NWO || NonovUrbizniz
+|-
+| NWOLF || Nightwolf
+|-
+| NX576 || RSF_Horn
+|-
+| NXG || NxG_Anima
+|-
+| NXS || sebafreitas
+|-
+| NYLON || CoreNylon
+|-
+| NYP || Singapore Home Grown MOD
+|-
+| NZB || Botanicus
+|-
+| NZBT || Botanicus
+|-
+| NZDF || New Zealand Defence Force Pack
+|-
+| NZDF2 || NZDF CRASH
+|-
+| NZDF3 || NZDF CRASH
+|-
+| NZDFX || A6 Intruder
+|-
+| NZL || almostOVERDOSE
+|-
+| NZLIF || iTzZJas0n
+|-
+| NZX || MR.B
+|-
+| NZX1 || NZXSHADOWS
+|-
+| NZX2 || NZXSHADOWS
+|-
+| NZX3 || NZXSHADOWS
+|-
+|}
+
+=== O ===
+
+{| class="wikitable sortable" style="width: 100%"
+| O1S || osol1tair3
+|-
+| O311 || Cavs0311
+|-
+| O3T || [L2K]s German Addon Tutorial Vers. 3 (ArmA)
+|-
+| O521 || theforeseen
+|-
+| OAC || kju
+|-
+| OAP || respawn
+|-
+| OAW || The Omega & a-lone-wolf
+|-
+| OBE || moberfel
+|-
+| OBL || obliv1on
+|-
+| OBO || Onkel Bo
+|-
+| OC1 || spartancain
+|-
+| OCD || Nixon
+|-
+| OCF || MOODQX
+|-
+| OCR || ocramweb Team =DST=
+|-
+| OCRAM || ocramweb
+|-
+| OCT || Octavian
+|-
+| OCU || 0cular
+|-
+| ODIN || cabewz
+|-
+| ODN || j-man
+|-
+| OEMOD || TomNedry
+|-
+| OFC || hdchristopher
+|-
+| OFCRA || OFCRA
+|-
+| OFD || OFP_f3d3
+|-
+| OFFG || oifriendlyfire
+|-
+| OFP || todschlaeger
+|-
+| OFPDB || Operation Flashpoint Mission Database
+|-
+| OFPEC || OFPEC
+|-
+| OFPIP || the-f
+|-
+| OFPL || PL Mod
+|-
+| OFPS || SoldierEPilot
+|-
+| OFPTF || MI_Fred
+|-
+| OFR || einstein44
+|-
+| OFRP || OperationFrenchPoint
+|-
+| OG420 || Stickyfingaz
+|-
+| OGD || SpikyPlatypus
+|-
+| OGI || obren2obren
+|-
+| OGR || DavidAtheist
+|-
+| OGRE || OldGit
+|-
+| OGRM || outlookgrim
+|-
+| OHL || K9
+|-
+| OKA956 || Oka956
+|-
+| OKI || antoniv
+|-
+| OKO || okoman
+|-
+| OKT || oktane
+|-
+| OKTY || Oktyabr
+|-
+| OKW || Vernichtend
+|-
+| OLDBR || OldBear
+|-
+| OLLI || Peter Haroski
+|-
+| OLY || olympi
+|-
+| OMA || OMaHTLD
+|-
+| OMAHA || seethingword
+|-
+| OMB || Cryptid87
+|-
+| OME || Omega
+|-
+| OMG || The Omega
+|-
+| OMGI || NonovUrbizniz
+|-
+| OMP || Pillord
+|-
+| ONE || p1
+|-
+| ONE8 || oNe8s3v3N
+|-
+| ONFS || operation flashpoint need for speed team
+|-
+| ONIX || DBR_ONIX
+|-
+| ONK || Onkel Bo
+|-
+| ONS || Abs
+|-
+| ONU || sonoboss
+|-
+| ONY || VivaLaViper
+|-
+| OO9 || mag009
+|-
+| OOG || Oogieboogie
+|-
+| OOO || IMASoft
+|-
+| OORAH || JamesGarrison
+|-
+| OP1 || jimdangle
+|-
+| OP4 || ViperMcgee
+|-
+| OPB || Operation : Barbarossa team
+|-
+| OPEF || Operation Enduring Freedom
+|-
+| OPF || mr_shady
+|-
+| OPFG || bob123
+|-
+| OPFL || Goschie
+|-
+| OPFOR || LoupVert
+|-
+| OPG || overpricedgorilla
+|-
+| OPGWC || Leone
+|-
+| OPJ || Jona
+|-
+| OPK || Frandsen
+|-
+| OPKID || Aldrone
+|-
+| OPP || Jona
+|-
+| OPT || Ultimatum
+|-
+| OPTRE || thedog
+|-
+| OPX || Opteryx
+|-
+| ORBX || BinaryPi
+|-
+| ORC || Orcinus
+|-
+| ORCUT || Firsk
+|-
+| ORDER || TheOrdersMaster
+|-
+| ORE || DavidAtheist
+|-
+| ORF || Macko
+|-
+| ORION || Orion
+|-
+| ORLY || OrlyNO
+|-
+| ORM || oRobin
+|-
+| ORNG || AppleOrange72
+|-
+| ORS || orsone
+|-
+| ORUST || Vargen
+|-
+| ORWEL || Orwell
+|-
+| OS11 || hupfer
+|-
+| OSCER || OscerMike
+|-
+| OSE || Operation Snakeyes MOD
+|-
+| OSH || oshovah
+|-
+| OSK || Oskar
+|-
+| OSKO || Russellocean
+|-
+| OSS || GingaWRATH
+|-
+| OSSR || Faly
+|-
+| OTCP || Sgt. Anderson/Trident Team
+|-
+| OTE || otectg
+|-
+| OTI || banini
+|-
+| OTL7 || Outlawz7
+|-
+| OTT || Ottie
+|-
+| OUB || OutbreakeR
+|-
+| OUF || Operation Urgent Fury Mod
+|-
+| OUT || Outlander
+|-
+| OUTER || OUTER GAMER
+|-
+| OVAS || ovas11
+|-
+| OVI || Ovibag
+|-
+| OVT || aaronstatic
+|-
+| OW3 || Overwatch3
+|-
+| OWAR || Cienias
+|-
+| OWL || O:W:L
+|-
+| OWN || Mellis
+|-
+| OWNER || LaserWiesel
+|-
+| OWP || Our Weapons Project (Nashe Orujie)
+|-
+| OWWW || OwwwThatHurts
+|-
+| OXI || Oxi
+|-
+| OYMAN || oyman
+|-
+| OZ || KatataFish
+|-
+| OZ3D || Ozono
+|-
+| OZR || DragoMican
+|-
+|}
+
+=== P ===
+
+{| class="wikitable sortable" style="width: 100%"
+| P0INT || p0int
+|-
+| P11 || podvoxx
+|-
+| P1350 || Phoenix1350
+|-
+| P141 || itzphi
+|-
+| P3P || PepperMenthe
+|-
+| P613 || xXExiledPandaXx
+|-
+| P77 || Jona
+|-
+| P82 || CimaleX
+|-
+| P88 || Fuggschen
+|-
+| PABLO || PabloDiablo
+|-
+| PAC || zGuba
+|-
+| PACK || thepackett
+|-
+| PACP || zGuba
+|-
+| PAF || Pafetik Bazerka
+|-
+| PAJ || Jona
+|-
+| PAK || Pakman
+|-
+| PAL || Paladin
+|-
+| PALO || Palono
+|-
+| PANDA || [K.I.A.murcia] PandaPilot
+|-
+| PANIC || FranticPanic
+|-
+| PANTH || panthera283
+|-
+| PANTS || Pants_Johnson
+|-
+| PANTZ || SilentPantz
+|-
+| PAR || johnparker
+|-
+| PARA || Paralyzed
+|-
+| PARAS || Stealth_Alpha
+|-
+| PARSC || parsec
+|-
+| PARTZ || Pvt. Partz
+|-
+| PAS || People's Army Studio
+|-
+| PASKA || Laur1x
+|-
+| PATAG || cptnnick
+|-
+| PATCH || patchs
+|-
+| PATHF || thecleaner
+|-
+| PAULS || Pauliesss
+|-
+| PAVE || allergic2life
+|-
+| PAYRO || Payrot
+|-
+| PAZ || pazzze
+|-
+| PAZE || Paze
+|-
+| PBC || pbcrazy
+|-
+| PBIT || paritybit
+|-
+| PBJ || suhsjake
+|-
+| PBL || Paintball Mod
+|-
+| PBM || Paintball MOD
+|-
+| PCA3 || PolyCat
+|-
+| PCANE || pcaneto
+|-
+| PCP || BBaY
+|-
+| PCRPG || SpawnThrasher
+|-
+| PCV || pcverden
+|-
+| PDB || Pandoras Box
+|-
+| PDC || MiraJu
+|-
+| PDG || XianGrim
+|-
+| PDH || PanDemiHuman
+|-
+| PDT || Fawks
+|-
+| PEACE || peacebob
+|-
+| PEARL || seethingword
+|-
+| PEB || Prancer
+|-
+| PEC || lucapec
+|-
+| PED || Predator
+|-
+| PEDRO || Pedro
+|-
+| PEE || needaweeman
+|-
+| PEER || Peer
+|-
+| PEG6 || BrenGun
+|-
+| PEGY || PegarosCZ
+|-
+| PEK || Pek
+|-
+| PEN || pennyworth
+|-
+| PENG || PenguinInATuxedo
+|-
+| PENIS || Sydcul
+|-
+| PER || Pachacutec
+|-
+| PERC || Colonel_Moustache
+|-
+| PERCD || PerceptionD
+|-
+| PERGR || PervasiveGroove
+|-
+| PERP || Perpetual
+|-
+| PERRY || perry_rhodan
+|-
+| PESTIS || Bilgecrank
+|-
+| PET || Russellocean
+|-
+| PET17 || peter1415
+|-
+| PET24 || Petrich
+|-
+| PETNC || prestonchism5
+|-
+| PEUH || 11004757
+|-
+| PFE || TheWaltsu
+|-
+| PFH || Pfhaota
+|-
+| PFLP || LCD
+|-
+| PFU || PuFu
+|-
+| PFVK || paulofvkbo
+|-
+| PFWD || ThePointForward
+|-
+| PGKGH || eniac94
+|-
+| PGS || pablogsalto
+|-
+| PH1 || Palehorse1
+|-
+| PHA || Phantom
+|-
+| PHAHX || bluu
+|-
+| PHE || Phemetrix
+|-
+| PHER || pherik
+|-
+| PHIL || phillyb
+|-
+| PHU || Phusck
+|-
+| PIE || pi123263
+|-
+| PIERS || Pierson
+|-
+| PIKE || pike713
+|-
+| PILOT || Student Pilot
+|-
+| PINGU || pingu
+|-
+| PINV3 || mortdurone
+|-
+| PIRAT || PIRAT
+|-
+| PIXEL || Chicago
+|-
+| PJ1 || Jona
+|-
+| PJ111 || Jona
+|-
+| PJ12 || Jona
+|-
+| PJ77 || Jona
+|-
+| PJA || pjarnold
+|-
+| PJE || PatriotJake
+|-
+| PJETU || Pjetu
+|-
+| PJJ || Jona
+|-
+| PJJ77 || Jona
+|-
+| PJL || Pjlom
+|-
+| PKM || SoldierEPilot
+|-
+| PKO || PakoAry
+|-
+| PKR || Parker
+|-
+| PKW || YacieK
+|-
+| PLA || PLA MOD
+|-
+| PLAN || _William
+|-
+| PLAS || callumw2
+|-
+| PLC || SpawnThrasher
+|-
+| PLD || Palador
+|-
+| PLDSA || PedroLuigi
+|-
+| PLK || Planck
+|-
+| PLP || poolpank
+|-
+| PLR || Prowler
+|-
+| PLS || Aarronious
+|-
+| PLUM || PlummerHD
+|-
+| PLXYABLE || PLXYABLE Team
+|-
+| PLZ || PolariZ
+|-
+| PMA || FlamedBanana
+|-
+| PMB || Pedro
+|-
+| PMC || InsetJesux
+|-
+| PMDR || paladinmcdragon
+|-
+| PMRV || PacmanRv
+|-
+| PMS || Phantom Modification Studio
+|-
+| PN915 || Person915
+|-
+| PND || djp4nd4
+|-
+| PNL || Pekuru
+|-
+| PNMOD || OnyxPhoenix
+|-
+| PNWMP || Neoluminum
+|-
+| PO1 || fallujahmedic
+|-
+| POC || Linkyman
+|-
+| POCEK || darkus
+|-
+| POD || Mikkelsen
+|-
+| POL || polat
+|-
+| POLI || SgtPoli
+|-
+| POLO || ehpolo
+|-
+| POLOK || Polok
+|-
+| POLU || ItsAkea
+|-
+| POO || GhostRanger
+|-
+| POP || otto
+|-
+| POPE || the_pope
+|-
+| POR || Skaven
+|-
+| PORSH || Porshen
+|-
+| PORTA || JosephPorta
+|-
+| POTAT || NightPotato
+|-
+| POUL || Poulern
+|-
+| POW || GodsFist
+|-
+| POWER || PowerBOX
+|-
+| POX || smallpox
+|-
+| POZU || pozuelo
+|-
+| PPP || Platoon Patton Projects
+|-
+| PPT || AlphaNeoFight
+|-
+| PQDPQ || pqdpq
+|-
+| PR3S0 || prestonchism5
+|-
+| PR9IN || PR9INICHEK
+|-
+| PRA || -Para-
+|-
+| PRA3 || Project Reality
+|-
+| PRAA || DeanosBeano
+|-
+| PRAAA || Deadfast
+|-
+| PRACS || wld427
+|-
+| PRAE || trapw0w
+|-
+| PRC || Kareca
+|-
+| PRCM || highlandff7
+|-
+| PRD || PRDxcm
+|-
+| PRE || preca
+|-
+| PRECH || prestonchism5
+|-
+| PREFIX || YouAreBamboozled
+|-
+| PRERP || NatanBrody
+|-
+| PRES || prestonchism5
+|-
+| PRES5 || prestonchism5
+|-
+| PRESH || phresh
+|-
+| PRF || Profecy
+|-
+| PRIM || Primzon
+|-
+| PRIME || gprime87
+|-
+| PRJ || Piraj
+|-
+| PRL || A.Deubelskerl [DBK]
+|-
+| PRO || silesian
+|-
+| PROAF || Proaf0
+|-
+| PROG || progamler
+|-
+| PROPE || PROPER MOD Team
+|-
+| PROWL || Prowler
+|-
+| PROX || TermiKiller
+|-
+| PRP || Private-Pile
+|-
+| PRSC || parsec
+|-
+| PRTK || parataku
+|-
+| PRY0 || primey0
+|-
+| PSC || PSC
+|-
+| PSERV || Xaneas
+|-
+| PSG || Forry
+|-
+| PSNI || DrDank
+|-
+| PSORA || PsychOrange
+|-
+| PSQDM || kinhos
+|-
+| PST || Pochyst
+|-
+| PST30 || pastito30
+|-
+| PSY || Psychic Productions
+|-
+| PSYFX || Psyfox
+|-
+| PSZ || zGuba
+|-
+| PT2 || leba101
+|-
+| PTA || Smootch
+|-
+| PTG || Mutal
+|-
+| PTMAO || PowderedToastMan
+|-
+| PTR || [PTS] Panthers
+|-
+| PTS || Partisan.
+|-
+| PTSA || PipoTheSailor
+|-
+| PTW || PTW-105
+|-
+| PTX || paleo
+|-
+| PTY || Pathfinder
+|-
+| PTZ || Partizan
+|-
+| PUB || TheLocalPub
+|-
+| PUB1 || TheLocalPub
+|-
+| PUD || Puddleflop
+|-
+| PUDD || Puddingdwarf
+|-
+| PUFIN || RagingPufindail
+|-
+| PUG || KainIronmonger
+|-
+| PUK || ProjectUK
+|-
+| PUL || Pringles
+|-
+| PULSE || Cobra@Pulse
+|-
+| PUN || Punk
+|-
+| PUNK || Lorelei
+|-
+| PUP22 || Puppa
+|-
+| PUPZ || Kefvski
+|-
+| PUREG || vicious
+|-
+| PURGA || CoffeeFluff
+|-
+| PURP || drewdevelops
+|-
+| PUSH || Pushtan
+|-
+| PVDV1 || TheHelmetHead
+|-
+| PVP || sbsmac
+|-
+| PVPFW || Conroy
+|-
+| PVT60 || Pvt. Partz
+|-
+| PVTGN || PRIVATE_GREEN
+|-
+| PWA || Umbarion
+|-
+| PWE || PENNYWISE
+|-
+| PWR || Poweruser
+|-
+| PX1 || Richie
+|-
+| PXH || pixelhenne
+|-
+| PXMO || iTrAmPzi
+|-
+| PXS || Pixel Art Studio
+|-
+| PYN || pynaple
+|-
+| PYP || SOPMOD
+|-
+| PYR || pyrofriendie
+|-
+| PYRO || pyro05x
+|-
+| PZ23 || T.Muller
+|-
+| PZB || PizzaBoytjuh
+|-
+| PZE || Paze
+|-
+| PZF || Pizzafreak5
+|-
+|}
+
+=== Q ===
+
+{| class="wikitable sortable" style="width: 100%"
+| Q11 || Q1184
+|-
+| QAZ || qazwsxal
+|-
+| QKG || quakergamer
+|-
+| QNICO || Cunico
+|-
+| QRK || GrandNagusQuark
+|-
+| QTZ || CRUDER
+|-
+| QUA || SamWarren
+|-
+| QUAD || QuadBLScopes
+|-
+| QUAG || McQuag
+|-
+| QUAN || Motra
+|-
+| QUEL || quelphath
+|-
+| QUI || Quinncunx
+|-
+| QUK || quantum
+|-
+| QWERT || Qwertyalex
+|-
+| QZG || GooseQZG
+|-
+|}
+
+=== R ===
+
+{| class="wikitable sortable" style="width: 100%"
+| R0CK || Rockoria
+|-
+| R2112 || 00doubleoh
+|-
+| R25 || Chris1986
+|-
+| R34L || Steezy
+|-
+| R3D || ScotG
+|-
+| R3F || clint
+|-
+| R4L || J117
+|-
+| R974 || Christopher974
+|-
+| R98 || redoper
+|-
+| R981 || redoper
+|-
+| RA256 || RusselAngelos
+|-
+| RAA || riksuFIN
+|-
+| RAB || Rabidus
+|-
+| RAB18 || 18Rabbit
+|-
+| RABB || rabbity
+|-
+| RABIT || R@bbiT
+|-
+| RABS || Rabs
+|-
+| RACKY || Racky
+|-
+| RACS || FA Dalai Lamar
+|-
+| RAD || Hudson & Pennywise
+|-
+| RADAR || Radarcontact
+|-
+| RAE || raedor
+|-
+| RAF || NZXShadows
+|-
+| RAFAS || shoXy
+|-
+| RAFO || Rafo23
+|-
+| RAFT || Grimlock
+|-
+| RAFTY || Rafters
+|-
+| RAG || {442}RangerNick
+|-
+| RAGE || RagingPufindail
+|-
+| RAGE4 || RagingPufindail
+|-
+| RAGEP || RagingPufindail
+|-
+| RAGES || Rage
+|-
+| RAGEZ || PinkLegacy
+|-
+| RAIZE || Raizer91
+|-
+| RAL || ralian
+|-
+| RALLY || escortrally
+|-
+| RAM || Ramzi Sah
+|-
+| RAMA || ramissin
+|-
+| RAMC || Royal Army Medical Corps
+|-
+| RAMP || DutchMuffin
+|-
+| RAN || Rancid
+|-
+| RANCO || Rancorusia
+|-
+| RANG2 || theranger12
+|-
+| RAO || Ogrinho83
+|-
+| RAOA || Ogrinho83
+|-
+| RAP || Rapter
+|-
+| RAPT || RaptorBravo5
+|-
+| RAS || Rastavovich
+|-
+| RASH || Rashomon
+|-
+| RAT || shinRaiden
+|-
+| RATS || rats404
+|-
+| RAV || ravetree
+|-
+| RAVE || corvus
+|-
+| RAVEN || Raven3.14
+|-
+| RAW || REAL ADDON WORKSHOPS
+|-
+| RAX || RaXaR
+|-
+| RAY || ran (the.yan)
+|-
+| RAYK || RayK
+|-
+| RAZOR || razoraresharp
+|-
+| RAZR || stolzerrabe
+|-
+| RAZZ || Razzolution
+|-
+| RB211 || rorybateman
+|-
+| RBB || Ranger Bob
+|-
+| RBB83 || robborobbo
+|-
+| RBL || SoulRebel18
+|-
+| RBLM || Rebel Man
+|-
+| RBM || Rhodesian Bushwar Mini-mod
+|-
+| RBN || Roaban
+|-
+| RBRE || ribera1945e
+|-
+| RBRS || rbrs
+|-
+| RBS || ruhigBlut
+|-
+| RCC || 1RCC Kay
+|-
+| RCD || Redcloud
+|-
+| RCDC || redleouf
+|-
+| RCFG || joemoemino
+|-
+| RCHT || RatchetTheWusky
+|-
+| RCIR || zandhaas
+|-
+| RCK || Rockeye
+|-
+| RCO || RicoADF
+|-
+| RCP || Nahuel
+|-
+| RCT || Nasogx
+|-
+| RCX || rodhalberd
+|-
+| RDAM || Faab
+|-
+| RDC || Bod57
+|-
+| RDD || Stiltman
+|-
+| RDF || Royal Danish Forces
+|-
+| RDGUN || redgun
+|-
+| RDI || Rhodes
+|-
+| RDK || RaoulJWZ
+|-
+| RDLS || venter08
+|-
+| RDP || 11RDP
+|-
+| RDS || Reyhard Addons
+|-
+| RDW || mhodgson89
+|-
+| RDX || raid3n
+|-
+| RE974 || Christopher974
+|-
+| REACH || Leshrack
+|-
+| REAL || RA_Thirias
+|-
+| REALDO || Realdo
+|-
+| REALQ || vovi
+|-
+| REBEL || RebelCid
+|-
+| REBO || MrRebo
+|-
+| REBOR || Ltc-Bullet
+|-
+| REBUS || Rebus
+|-
+| RECON || Sniper Recon
+|-
+| RECON2 || RedRecon
+|-
+| RED || RED
+|-
+| RED1 || redoper
+|-
+| RED11 || REDDAWG 1
+|-
+| REDB || RedBeard
+|-
+| REDBA || red_bandit
+|-
+| REDO || redoper
+|-
+| REDOP || redoper
+|-
+| REE || Resident Emil
+|-
+| REEP || Cockney Reeper
+|-
+| REFRB || RefinedRubbr
+|-
+| REH || reh052965
+|-
+| REI || reiler cardoso
+|-
+| REIDY || Reidy
+|-
+| REIT || Reitherfuzi
+|-
+| RELS || A.Deubelskerl [DBK]
+|-
+| REM || Lt. Hawkins
+|-
+| REM41 || REM41
+|-
+| REN || Cpt_Overlord_
+|-
+| RENG || Renegade Gaming Management
+|-
+| RENZ || Renz
+|-
+| REOX || reox
+|-
+| REP || gogus12
+|-
+| REPZ || Repz
+|-
+| RES || BIS
+|-
+| RESR || Planck
+|-
+| RESTK || ReStrooke
+|-
+| RETR || fsxfreak
+|-
+| RETRD || Spire1812
+|-
+| REUST || reustonium
+|-
+| REV || revellion
+|-
+| REV1 || super-truite
+|-
+| REVEN || Reven_Darkwood
+|-
+| REVN || Revan9190
+|-
+| REVO || Real Men of Genius
+|-
+| REX || Rastic & Eamoe
+|-
+| REXS || RASmith1030
+|-
+| REXX || Rexxenexx
+|-
+| REY || reyemlrak
+|-
+| REZ || rezende2352
+|-
+| RFFAZ || AzzaR4
+|-
+| RFL || shoXyRafael
+|-
+| RFLO || RFlorea
+|-
+| RFLY || Airfly
+|-
+| RFR31 || RavenFR31
+|-
+| RFV || registered_fugitiv
+|-
+| RFX || cc114
+|-
+| RGBOB || Bobby_McDangle
+|-
+| RGE || Rageman
+|-
+| RGM || RG_Murphy
+|-
+| RGMS || RaccoonGaming
+|-
+| RGN || bitto
+|-
+| RGO || Darkstar
+|-
+| RGR || Evan Kev
+|-
+| RGR21 || bjacobs9944
+|-
+| RGT || Rangerteam
+|-
+| RGTF || TheIcarus
+|-
+| RGY || ryguy
+|-
+| RH96 || rustyhook96
+|-
+| RHA || BbGunroo
+|-
+| RHARP || Cots
+|-
+| RHB || RichUK
+|-
+| RHENN || rhennigan
+|-
+| RHI || RobertHammer
+|-
+| RHO || rhodesy_77
+|-
+| RHOD || RhodesianScout
+|-
+| RHP || NyremC
+|-
+| RHR || RedheadedRed
+|-
+| RHS || Red Hammer Studios
+|-
+| RHSCA || Abaddon
+|-
+| RHX || rodhalberd
+|-
+| RHZM || rhzm23
+|-
+| RIA || Liam McKendrick
+|-
+| RIBER || ribera1945e
+|-
+| RIC98 || Herpyderpy987
+|-
+| RID || Walthzer
+|-
+| RIGGI || GRSteelers
+|-
+| RINJ || RinJ
+|-
+| RIO || MyransGhost
+|-
+| RIP || randyandy
+|-
+| RIVAL || Rosellonsito
+|-
+| RJDEV || Ronald
+|-
+| RJM || RjM
+|-
+| RJS || Robert James Sullivan
+|-
+| RJT || nindall
+|-
+| RKKA || badanov
+|-
+| RKN || Runekn
+|-
+| RKSL || Rockape
+|-
+| RKT || footmunch
+|-
+| RKTCO || Rocket Taco
+|-
+| RLK || FA Dalai Lamar
+|-
+| RLP || kinhos
+|-
+| RLRPG || CreedSun
+|-
+| RLS || Denisko-Redisko
+|-
+| RM104 || Rom104
+|-
+| RMC || rm_snipe
+|-
+| RMCTJ || ipagewebsite
+|-
+| RMG || ramgee
+|-
+| RMM || Rommel
+|-
+| RMMU || RMMU_Gibbs
+|-
+| RMO || jamick94
+|-
+| RMP || Romnipotent
+|-
+| RMR || Reimarus
+|-
+| RMS || rm_snipe
+|-
+| RMY || Orakel78
+|-
+| RN974 || Christopher974
+|-
+| RNBAM || RazMan83
+|-
+| RNE || Escobar_RN
+|-
+| RNJ || nordvang
+|-
+| RNK || GerDeBuX
+|-
+| RNM || Williamson
+|-
+| RNY || Rainey
+|-
+| RO4 || Roaban
+|-
+| ROA || Roach
+|-
+| ROAB || Roaban
+|-
+| ROB || ausimus
+|-
+| ROB21 || Rob21C_UK
+|-
+| ROBB || Roaban
+|-
+| ROC || Macko
+|-
+| ROCH || Caillou
+|-
+| ROCK || SoldierEPilot
+|-
+| ROCKO || rocko
+|-
+| ROD || rodhalberd
+|-
+| RODEO || Rodeostar42
+|-
+| RODI || FlintForossa
+|-
+| ROF || rofice
+|-
+| ROFL || roflpie
+|-
+| ROFL8 || ROFLer
+|-
+| ROHO || Bastet
+|-
+| ROJ || Yourry
+|-
+| ROK || rokket
+|-
+| ROKM || RokMelon
+|-
+| ROKME || RokMelon
+|-
+| ROM || romanze87
+|-
+| ROMEO || Romeo Foxtrot
+|-
+| ROMM || Rommel92
+|-
+| RONE || affraid
+|-
+| RONIN || Dotanuki
+|-
+| ROOK || Moses
+|-
+| ROOT || xMidnightSnowx
+|-
+| ROPEY || Ropeytwo
+|-
+| ROR || ROR
+|-
+| ROS || Régiment des Operations spéciales
+|-
+| ROSEB || matthew.sm
+|-
+| ROSS || rossoe
+|-
+| ROW || Robnewww
+|-
+| ROX || [ROX]Rocku
+|-
+| ROY || roykingtree
+|-
+| ROYAL || RoyalTS
+|-
+| ROYSC || Royal351
+|-
+| ROZC || ROZC team
+|-
+| RPG || rolandinho
+|-
+| RPL || RangerPL
+|-
+| RPM || Raptor-Man
+|-
+| RPS || Schwimmfreak1
+|-
+| RPT || Raptorsaurus
+|-
+| RPTR || EmRaptor
+|-
+| RRB || RabsRincon
+|-
+| RRCJM || JamesMason
+|-
+| RRL || grimmeral
+|-
+| RRYD || RedRyder
+|-
+| RSA || rubaka
+|-
+| RSF || Royal Silver Falcons
+|-
+| RSG || Scoobz187
+|-
+| RSK || Raserisk
+|-
+| RSK2003 || Ryski
+|-
+| RSKEW || Siuqram_
+|-
+| RSKY || Ryski
+|-
+| RSL || Radiosilence
+|-
+| RSLO || Riouken
+|-
+| RSO || SpookyGnu
+|-
+| RSP || Raging Storm Productions
+|-
+| RSQ || AWildBrian
+|-
+| RSS || Red Star Studio
+|-
+| RST || Volk
+|-
+| RSTM || TheodoreM
+|-
+| RSTTV || Soda_
+|-
+| RSW || Raven Sheep Wolf
+|-
+| RTA || Jakerod
+|-
+| RTF || Rastafa
+|-
+| RTF42 || Fr4nKy
+|-
+| RTI || The War of Last Man
+|-
+| RTK || Rutek
+|-
+| RTMS || Goschie
+|-
+| RTR || RTR_Commander
+|-
+| RU23 || Iexpertman
+|-
+| RUB || RubberKite
+|-
+| RUBE || ruebe (rÃ¼be)
+|-
+| RUEB || Rübenritter
+|-
+| RUF || Ruffled Grouse
+|-
+| RUG || Wolfrug
+|-
+| RUIZ || Sklaven
+|-
+| RUK || rexehuk
+|-
+| RUM || Meatball0311
+|-
+| RUMP || DrRumpPhD
+|-
+| RUND || rund
+|-
+| RUS || AND
+|-
+| RUSK || D_J_LMeyer
+|-
+| RUSS || Dakir
+|-
+| RUTLAND || Landfaller
+|-
+| RUUL || live:.cid.af0d27413f371e0
+|-
+| RVCS || Yuri
+|-
+| RVN || Raven
+|-
+| RW18 || Razorwings18
+|-
+| RWC || raid3n
+|-
+| RWD || Zelik
+|-
+| RWF || Rathwulf
+|-
+| RWM || Crytech
+|-
+| RWS || joshpier3
+|-
+| RWT || longbow
+|-
+| RWTS || longbow
+|-
+| RX8 || msiarx8
+|-
+| RXO || Rxo
+|-
+| RXO01 || Rxo
+|-
+| RYAKR || ryakr
+|-
+| RYAN || Ryan
+|-
+| RYANL || ryry_208
+|-
+| RYD || jackryder
+|-
+| RYJMC || ryanjmcmanus
+|-
+| RZN || Rezin's Addons
+|-
+| RZT || Razzmatazz
+|-
+|}
+
+=== S ===
+
+{| class="wikitable sortable" style="width: 100%"
+| S0120 || steven00120
+|-
+| S117 || SIDNESS
+|-
+| S13 || Sierra 13
+|-
+| S2040 || s2040
+|-
+| S2300 || Sgt.Toaster
+|-
+| S47KA || mkfester923
+|-
+| S4G || Cunico
+|-
+| S63 || Spectre-63
+|-
+| S73OB || s73obrien
+|-
+| S75R || Seavea
+|-
+| S76 || #76
+|-
+| S76S || #76
+|-
+| S8B || Soldier8Boy
+|-
+| S8S || [S8S] Vapor
+|-
+| SAAF || Floosy
+|-
+| SAB || Sabelzahntiger
+|-
+| SABAS || SABAS
+|-
+| SABB || Dr.Death JM
+|-
+| SABER || SoldierEPilot
+|-
+| SAD || sad
+|-
+| SADGG || thegoatman
+|-
+| SADIZ || CT-7567
+|-
+| SAF || Mellis
+|-
+| SAFAR || Safari
+|-
+| SAFFG || prestonchism5
+|-
+| SAG || JemsKeks
+|-
+| SAGE || sagefhopkins
+|-
+| SAGO || Sago
+|-
+| SAH || Sahbazz
+|-
+| SAHEH || Sasc_
+|-
+| SAIGN || Saigon Flashback
+|-
+| SAK || Hateboarder
+|-
+| SAKS || sakstoki
+|-
+| SAKU || SaschQuasch
+|-
+| SAL || Sabre, Ardvarkdb and Lennard
+|-
+| SALAD || koalasalad
+|-
+| SALB || gamersasa
+|-
+| SALT || zisb
+|-
+| SALTY || Salty McHaggis
+|-
+| SAM || Stiltman
+|-
+| SAM1 || samwardle1
+|-
+| SAMA || Sama
+|-
+| SAMAX || Samax
+|-
+| SAML || samotion
+|-
+| SAMR || samir17864
+|-
+| SAN || Sanchez00
+|-
+| SANDF || hellfish6.2
+|-
+| SANDI || Sandiford
+|-
+| SANDY || SandyBandy
+|-
+| SANDZ || Sandz
+|-
+| SANZ || Sanzhere
+|-
+| SAP || Sgt.Ace
+|-
+| SAPP || Sapper
+|-
+| SAR || The KMan 3000
+|-
+| SARO || Sarogahtyp
+|-
+| SAS || Smart Ass Scripters
+|-
+| SASC || Sasc_
+|-
+| SASM || SASMOD
+|-
+| SASR || Anmac
+|-
+| SAT || Atsche
+|-
+| SATR || Satire
+|-
+| SAU || Sauen
+|-
+| SAV || steggieav
+|-
+| SAVOT || Savot
+|-
+| SAW || shaneuk
+|-
+| SAX || SAX
+|-
+| SAY || SniperAndy
+|-
+| SB101 || SteveBuchanan
+|-
+| SBAC || SBacon
+|-
+| SBAY || ScriptingBay
+|-
+| SBE || sabre19
+|-
+| SBFR || www.shark-bambi.fr
+|-
+| SBG || savedbygrace
+|-
+| SBJ || Team SBJ
+|-
+| SBLK || SomeBloke
+|-
+| SBR || saber3
+|-
+| SBS || Flax
+|-
+| SBT || Smootch
+|-
+| SBW || SabinoWess
+|-
+| SC9 || scars09
+|-
+| SCA || Scaatis
+|-
+| SCANIA || PentiumD
+|-
+| SCANY || Flames09
+|-
+| SCB || ScottyB
+|-
+| SCC || CollCreper
+|-
+| SCE || Reidond
+|-
+| SCF || vektorboson
+|-
+| SCG || DragonGurdian5
+|-
+| SCHEP || Drake Vhett
+|-
+| SCHS || Howl Shepard
+|-
+| SCHTZ || Schultz
+|-
+| SCJ || ScouseJedi
+|-
+| SCM || scabstermooch
+|-
+| SCN || SCFan42
+|-
+| SCO || [= M Troops =]scouter
+|-
+| SCOM || TheCaptain
+|-
+| SCOO || Scoo Studios
+|-
+| SCOOB || Scoob
+|-
+| SCOR || DSV
+|-
+| SCOTT || Scotty1207
+|-
+| SCOUT || proeteus
+|-
+| SCPAR || Tyran
+|-
+| '''SCR''' || '''{{Name|bi}}''' ({{Name|armaR|short}})
+|-
+| SCRIM || sgeour
+|-
+| SCT || reconscout
+|-
+| SCU || xneilyox
+|-
+| SCUBA || sgtscuba
+|-
+| SCY || Scythax
+|-
+| SD48 || sleepydragon4888
+|-
+| SDJ || RDL109
+|-
+| SDK || ShAdOwKiller
+|-
+| SDL || Shaun Lepisto (aka TheShadow)
+|-
+| SDM || Sodom
+|-
+| SDMF || krik killer
+|-
+| SDN || Sandman
+|-
+| SDOC || sdoc
+|-
+| SDP || Sudden Death Projects
+|-
+| SDR || silderoy
+|-
+| SEA || Sefe
+|-
+| SEAD || Sefe
+|-
+| SEALS || rocha amry 3
+|-
+| SEB || SelectThis/ebud
+|-
+| SEB01 || Seb
+|-
+| SEB11 || Sawyer11
+|-
+| SEB3 || seb3sec
+|-
+| SEBA || sebandrez
+|-
+| SEBAS || SebasSalazar
+|-
+| SEC || Somerset Editing Consortium
+|-
+| SED || physhack
+|-
+| SEF || Sefe
+|-
+| SEFE || Sefe
+|-
+| SEH || seedhe
+|-
+| SEJAR || Nizo117
+|-
+| SEK || Sekra
+|-
+| SELRK || Selrahk
+|-
+| SEOW || 4Shades
+|-
+| SER || Serializer
+|-
+| SERC || Serclaes
+|-
+| SERO || seroktika
+|-
+| SES || Wildgoose
+|-
+| SETH || JustSeth
+|-
+| SEV || SEV
+|-
+| SEV07 || sev501cc7001
+|-
+| SFC || sfc.itzhak
+|-
+| SFF1 || SFF
+|-
+| SFG || SFG
+|-
+| SFM || Spetsnaz Mod
+|-
+| SFP || Swedish Forces Pack
+|-
+| SFTY || SafetyCatch
+|-
+| SFUK || Pxzys
+|-
+| SFX || Silent Fox
+|-
+| SGA || BTK
+|-
+| SGB || sgtbarnes73
+|-
+| SGC || SGCTrooper
+|-
+| SGCA3 || Ace
+|-
+| SGCOL || Jutka
+|-
+| SGF || sgt-franko
+|-
+| SGH || sgtGunneryHighway
+|-
+| SGL || SigiL
+|-
+| SGM || Master0r0
+|-
+| SGM82 || SniperGhost
+|-
+| SGMAP || frizensami
+|-
+| SGN || Sgt_Nathan
+|-
+| SGP || AcadianCrusader
+|-
+| SGREG || praguado
+|-
+| SGRT || ScreamingRobot
+|-
+| SGS || Sarge
+|-
+| SGT || tgm0
+|-
+| SGTB || SgtBryne
+|-
+| SGTEV || Sgt Eversman
+|-
+| SGTF || SgtFlyer
+|-
+| SGTW || SGTWilliams
+|-
+| SGUN || SmokingGun
+|-
+| SGW || someguywho
+|-
+| SGWD || SGTWilliams_Daddy
+|-
+| SGWZ || Sturmgrenadier Warzone
+|-
+| SHA || Shakal
+|-
+| SHAD || shadow64
+|-
+| SHADC || ShadowCola
+|-
+| SHADO || aviax
+|-
+| SHAE || shaeone
+|-
+| SHAKA || shaka
+|-
+| SHAL || shalazan
+|-
+| SHANG || Ketzl
+|-
+| SHAW || Shadow1
+|-
+| SHAY1 || Shayamal
+|-
+| SHB || jockeyboy2_0
+|-
+| SHED || shed
+|-
+| SHEEP || fallingsheep1985
+|-
+| SHEZ || shezan74
+|-
+| SHG || Shogun
+|-
+| SHGL || Bob Winser
+|-
+| SHIP || rodhalberd
+|-
+| SHK || ShakI
+|-
+| SHL || sheltem
+|-
+| SHM || Shamwill
+|-
+| SHNK || Shennko
+|-
+| SHOE || w33n33s
+|-
+| SHOK || CaptainWalker
+|-
+| SHOW || showmaker
+|-
+| SHP || MyersTheShape
+|-
+| SHREK || DavidAtheist
+|-
+| SHRTB || short boi
+|-
+| SHRTY || Shorty
+|-
+| SHS || ShadeySam
+|-
+| SHY || Shockley
+|-
+| SHZ || Shiza
+|-
+| SIA || Liam McKendrick
+|-
+| SIA3F || Soldiers In Arms
+|-
+| SIC || SiC
+|-
+| SICUK || SiC_UK
+|-
+| SID || Sidthesloth
+|-
+| SIG || EAGLE_Sigurd
+|-
+| SIGDT || SiGclan
+|-
+| SIGE || SiegeToaster
+|-
+| SIGHT || CFSight
+|-
+| SIGM || EckoMoire
+|-
+| SIL || silderoy
+|-
+| SILASP || Petrich
+|-
+| SILOS || bstocks32
+|-
+| SILV || spSilver
+|-
+| SIM || Simonpro
+|-
+| SIMHQ || Wepps
+|-
+| SIN13 || Fugitive2013
+|-
+| SING || singlot
+|-
+| SINGL || singlot
+|-
+| SINK || Sniki
+|-
+| SINO || hiddenzone
+|-
+| SINON || Sinon50BMG
+|-
+| SINOP || koptwo
+|-
+| SIR || SirDude
+|-
+| SIRK || sirklejerk
+|-
+| SIS || siredwin24
+|-
+| SITC || Quinncunx
+|-
+| SITHX || sithixc
+|-
+| SIV || Sivutle
+|-
+| SIXX || Neko
+|-
+| SJB || Jackal326
+|-
+| SJDVD || SSJDiVaD
+|-
+| SJH || mesh
+|-
+| SJK || sojaku
+|-
+| SJM || SanjuromackOFP
+|-
+| SJM50 || SJM505427
+|-
+| SJOUL || sjoulbak
+|-
+| SK1 || Sigie
+|-
+| SK3Y || Sk3y
+|-
+| SKA || Ska1ix
+|-
+| SKB || Skeltoras
+|-
+| SKBOZ || theworrior
+|-
+| SKBT || Bareen
+|-
+| SKC || Skaircro
+|-
+| SKE || Special Kodo Edition
+|-
+| SKEG || skeg_man
+|-
+| SKEL || Skeltoras
+|-
+| SKEYE || skeye
+|-
+| SKI || skiline5
+|-
+| SKIRA || GENPrice10
+|-
+| SKIS || Foxtrotter
+|-
+| SKM || Skumball
+|-
+| SKN || Mr.Skellington
+|-
+| SKRS || Fire Vine
+|-
+| SKS || ViconX
+|-
+| SKSE || SK-SE
+|-
+| SKT || SilvesterKilledTweety
+|-
+| SKULL || Ginsu
+|-
+| SKUNK || skunk
+|-
+| SKW || Skewballzz
+|-
+| SKY || stankywizzleteets
+|-
+| SKYE || SkyeGuy
+|-
+| SLAP || Slapstick
+|-
+| SLAT || SlatDogg
+|-
+| SLAW || slawterer
+|-
+| SLAY || slayercccp
+|-
+| SLIMY || theycallmehslimy
+|-
+| SLIVE || steviedlive
+|-
+| SLK || Solski
+|-
+| SLNSH || SlaaneshiBoi
+|-
+| SLOTH || wantafanta
+|-
+| SLOTHA || HowSloth
+|-
+| SLOW || Slowrider8
+|-
+| SLP || Sleepingbag
+|-
+| SLR || ArmA-RPG
+|-
+| SLRHK || Selrahk
+|-
+| SLS || S. Snake
+|-
+| SLT || Silent_64
+|-
+| SLX || Solus
+|-
+| SLYNX || SlovakianLynx
+|-
+| SMAG || swissMAG
+|-
+| SMANG || sMangust
+|-
+| SMB || Sock Monkey Brigade
+|-
+| SMBD || Some_Belgian_Dude
+|-
+| SMBJS || BJS
+|-
+| SMC || Smoking Cloud
+|-
+| SMCB || Scouty_McBird
+|-
+| SMD || NonovUrbizniz
+|-
+| SMDC || Rapter
+|-
+| SMES || dech81
+|-
+| SMF || sneakymcfox
+|-
+| SMG || Scumbag
+|-
+| SMHL || smalhill
+|-
+| SMITH || Igor "Smith" Petruchek
+|-
+| SMK || XWP-Smoke
+|-
+| SMKS || smurkus
+|-
+| SML || Smile89
+|-
+| SMM || AAB
+|-
+| SMO || Smokeylope
+|-
+| SMOKE || SmokeDog
+|-
+| SMOON || salamouis
+|-
+| SMP || Sandro M. Passos
+|-
+| SMPR || Semperfid
+|-
+| SMR || shlomo
+|-
+| SMS || Syrtis Major Studios
+|-
+| SMT || Pennyworth
+|-
+| SMW || Sage
+|-
+| SMY || smallfly
+|-
+| SN4 || thesn4k3
+|-
+| SN90 || spacenavy90
+|-
+| SNA || snafu
+|-
+| SNACK || Snack
+|-
+| SNAFU || indecimal
+|-
+| SNAKE || Snakeater
+|-
+| SNB || SirPsychoBerg
+|-
+| SNBN || SeenBeen
+|-
+| SNBZ || Skullnbonez
+|-
+| SNC || -Sonic-
+|-
+| SNCHZ || Sanchez
+|-
+| SND || Sandman
+|-
+| SNEAK || SneakyBeaver
+|-
+| SNEAKY || SneakyAzWhat
+|-
+| SNFO || nfosam
+|-
+| SNK || SolidSnake-(SNK)
+|-
+| SNLNG || Sneling
+|-
+| SNO || LeahSnow
+|-
+| SNOW || Snowflake
+|-
+| SNS || Stormtrooper and Skaven
+|-
+| SNW || Snekw
+|-
+| SNWO || NonovUrbizniz
+|-
+| SNY || snYpir
+|-
+| SO9 || Spec Op 9
+|-
+| SOAP || soapboxsubmarine
+|-
+| SOAPY || thediscript
+|-
+| SOAS || WarLord554
+|-
+| SOB || Sobric
+|-
+| SOBS || Guardian
+|-
+| SOC || Meatball0311
+|-
+| SOC36 || 36SOC
+|-
+| SOCAL || BarnesBL0278
+|-
+| SOCOM || radicalatheart
+|-
+| SOD || Trash Can Man
+|-
+| SODS || Nalv Arrac
+|-
+| SOEP || Jesper
+|-
+| SOFMF || sofmisfortune
+|-
+| SOFS || Camouflage
+|-
+| SOG || DirtDiver
+|-
+| SOGC || JDubbSOG
+|-
+| SOI || solomani
+|-
+| SOLTG || 1(nld)soltg
+|-
+| SOPROTIV || studzy
+|-
+| SOSP || bigpickle
+|-
+| SOTD || sotdyeti
+|-
+| SOTO || Tomms123
+|-
+| SOUL || Spiedr
+|-
+| SOULY || souly
+|-
+| SOUTH || southy
+|-
+| SOW || CrashDome
+|-
+| SOYU || Soyunidota
+|-
+| SPA || aulero
+|-
+| SPACE || spacerules
+|-
+| SPAG || Lord_Spag
+|-
+| SPAIN || pozuelo
+|-
+| SPAIS || Spaceballcookie
+|-
+| SPANK || SpankFrank
+|-
+| SPAR || Sparib
+|-
+| SPARTA || TheSparta
+|-
+| SPB || Spackenbremse
+|-
+| SPC || Scorpio
+|-
+| SPC4 || cunico
+|-
+| SPD || spider
+|-
+| SPDY || Speedy
+|-
+| SPEC || spec
+|-
+| SPEC4 || cunico
+|-
+| SPECE || JSpectre
+|-
+| SPECT || SpectrumWarrior
+|-
+| SPEED || Speedy1978
+|-
+| SPENC || marsuk21
+|-
+| SPF || spiffalski
+|-
+| SPG || switchplategaming
+|-
+| SPG44 || Verus12b
+|-
+| SPGDZ || Spounge84
+|-
+| SPHD || Spearhead
+|-
+| SPI || Almightyom
+|-
+| SPICY || Scoob256
+|-
+| SPIF || spifmo
+|-
+| SPIL || Victor94,Bamupa,SpainIsLife Team
+|-
+| SPIRIT || kaiotcp1
+|-
+| SPK || Spyke
+|-
+| SPKEY || kaiotcp1
+|-
+| SPKG || SpookyGnu
+|-
+| SPM || Isardy
+|-
+| SPM8R || spamin8r
+|-
+| SPN || scorpion
+|-
+| SPNY || spacenavy90
+|-
+| SPON || Spooner
+|-
+| SPOTT || spottersblink
+|-
+| SPR || SparK
+|-
+| SPRK || Dreager
+|-
+| SPRUT || Spruten
+|-
+| SPS || Stalker Production Studios
+|-
+| SPT || patr1
+|-
+| SPTFR || Spitfire1102
+|-
+| SPUDS || McSpuds
+|-
+| SPUR || Spur
+|-
+| SPV || Supervenio
+|-
+| SPWE || Remus111VADT
+|-
+| SPWNH || Spooneh
+|-
+| SPY || Spyder001
+|-
+| SPYLO || spylon
+|-
+| SPYR || parsec
+|-
+| SPZ || Spetznatz
+|-
+| SQD || ubersquid
+|-
+| SQL || Squelch
+|-
+| SQU || Squeeze
+|-
+| SQUIL || onepantsuman
+|-
+| SQUIZ || squizzy
+|-
+| SQY || squidy08
+|-
+| SR5 || Crasso
+|-
+| SRA || Marseille77
+|-
+| SRAF || Jastreb
+|-
+| SRAT || Spac3Rat
+|-
+| SRB || Radnik
+|-
+| SRG || Sergei_Q
+|-
+| SRK || Serial Killer
+|-
+| SRL || surrealalucard
+|-
+| SRM || Devilsartist
+|-
+| SRP || Sr.Pomidor
+|-
+| SRRA || SRPSKI RATNIK
+|-
+| SRSGS || Jutka_GHG
+|-
+| SRSR || StonedRhino
+|-
+| SRT || ScreamingRobot
+|-
+| SRU || Spackenbremse
+|-
+| SRV || BTK
+|-
+| SRX || shinraiden
+|-
+| SS3 || CaboVieira
+|-
+| SS38 || Cowboy
+|-
+| SS9 || SickSidewinder9
+|-
+| SSA || SirSmok@lot
+|-
+| SSAL || ssalaza
+|-
+| SSC || SScrivener
+|-
+| SSDD || Darkhorse-1-6
+|-
+| SSG || SSG Squad Modworks
+|-
+| SSGAR || SoYouDie
+|-
+| SSK || lilmock22
+|-
+| SSM || minuzed
+|-
+| SSQD || TheG4Gaming
+|-
+| SSS || Spanish Sniper Squad
+|-
+| SST || Starship Troopers Mod
+|-
+| SSTRM || SandstormA3
+|-
+| SSV || Sole
+|-
+| ST3 || st3rv
+|-
+| ST6 || Joey King
+|-
+| STA2 || Abs
+|-
+| STAF || Moony
+|-
+| STAHL || CYXAPNK
+|-
+| STAOS || Staos
+|-
+| STAR || startrekern
+|-
+| STARF || Starfanger
+|-
+| STARG || TheSenate
+|-
+| STASH || St5ashy
+|-
+| STAT || Staticky
+|-
+| STBE || Stickie
+|-
+| STBIA || lieutenantlz
+|-
+| STD || Swatdog
+|-
+| STDR || Sparfell_19
+|-
+| STE || SelectThis, Ebud
+|-
+| STE86 || Ste86
+|-
+| STEAK || humansteak
+|-
+| STEIN || SteinTroll
+|-
+| STEOT || StealthyOtter
+|-
+| STERK || sterkt
+|-
+| STEYR || Liberator
+|-
+| STFU || Vixer
+|-
+| STG || Woods
+|-
+| STGN || STGN
+|-
+| STGST || Stormgast
+|-
+| STH || Solttuh
+|-
+| STI || Stiltman
+|-
+| STICK || Br
+|-
+| STIVI || [SONAF]stivik
+|-
+| STK || stijniman
+|-
+| STKR || STALKERGB
+|-
+| STL || STEELE
+|-
+| STLGD || ph_enix
+|-
+| STO || Strike Tactical Operations
+|-
+| STONE || stonecold
+|-
+| STOO || stoo65
+|-
+| STORK || kuba14063
+|-
+| STOSN || Arioio
+|-
+| STOV || Storied.Veterans
+|-
+| STP || ShrewdTactician
+|-
+| STPMC || Spartan Tactical Group
+|-
+| STPUP || fence
+|-
+| STR || Stress2
+|-
+| STR8 || Str8jackitz
+|-
+| STRA || Gaia ArmA Missions
+|-
+| STRAT || Strat
+|-
+| STREE || michelvanw
+|-
+| STRM || stormridge
+|-
+| STS || Status_cz
+|-
+| STSDE || Deathhood98
+|-
+| STSU || EroMusha
+|-
+| STT || SelectThis
+|-
+| STTH || Steffen Thomsen
+|-
+| STTS || SauronTs
+|-
+| STU || StuKa
+|-
+| STUBB || stubbies
+|-
+| STUMP || Stump
+|-
+| STURM || Sturmovik
+|-
+| STY || styles2304
+|-
+| STZ || Steezy
+|-
+| SUB || subminuentisch
+|-
+| SUBAR || subarulibtard
+|-
+| SUCH || suchey
+|-
+| SUD || sudden
+|-
+| SUKH || CYXAPNK
+|-
+| SUL || SULcorpÃ‚Â©
+|-
+| SULLY || Sully
+|-
+| SULO || Soolie
+|-
+| SUM || Beton
+|-
+| SUOMI || wuffe
+|-
+| SUP || Superchaschper
+|-
+| SUPER || super-truite
+|-
+| SURPH || surpher
+|-
+| SVD || Dragunovska
+|-
+| SVG || StrohVogel
+|-
+| SVN || Sven2157
+|-
+| SWAF || Exodus_SWAF
+|-
+| SWAG || bozott
+|-
+| SWAGG || swaggy
+|-
+| SWAGU || Chazillor
+|-
+| SWAMP || swampy
+|-
+| SWC || shadow552
+|-
+| SWE || granQ
+|-
+| SWEC || Coward_Heart
+|-
+| SWEDE || Swede295
+|-
+| SWEE2 || Seaweed
+|-
+| SWEED || Seaweed
+|-
+| SWF || swordfish
+|-
+| SWFLA || shockwaveflash
+|-
+| SWI || PicVert
+|-
+| SWIFTPAW || Fox Swiftpaw
+|-
+| SWISS || Bibo164
+|-
+| SWM || Switzerland Mod
+|-
+| SWO || SilverWolf
+|-
+| SWORD || SoldierEPilot
+|-
+| SWP || Patrik.91
+|-
+| SWR || Soviet War Rebellion
+|-
+| SWRSW || JarredT1029
+|-
+| SWT || SWIFT88
+|-
+| SWU || Turnip Dreams
+|-
+| SX69 || Schneidex69
+|-
+| SY4 || sy4
+|-
+| SYD || Syd Zedler
+|-
+| SYDD || Sydney
+|-
+| SYF || syphboy
+|-
+| SYG || sygsky
+|-
+| SYM || Synide
+|-
+| SYN || Synide
+|-
+| SYNA || Syna
+|-
+| SYNC || Syncing
+|-
+| SYNCO || SYNCO
+|-
+| SYNCY || Syncy34
+|-
+| SYNDE || Synide
+|-
+| SYNG || jester
+|-
+| SYNWR || SynWreck
+|-
+| SYNXE || Synxe
+|-
+| SYP || syphobia
+|-
+| SZE || Szephi
+|-
+| SZEPY || SzepyCZ
+|-
+| SZM || Tow. Szumek
+|-
+| SZRP || zGuba
+|-
+| SZWAGIER || Szwagier
+|-
+| SZY || Szymanski
+|-
+|}
+
+=== T ===
+
+{| class="wikitable sortable" style="width: 100%"
+| T0BI || T0bi
+|-
+| T0MMY || Tommy
+|-
+| T147 || TITO147
+|-
+| T1CW || Spyder001
+|-
+| T2P || t2p
+|-
+| T3D || volchara
+|-
+| T3G || DarthWeasel
+|-
+| T4G || TGG
+|-
+| T4TH || combs
+|-
+| T5051 || Finnoraven
+|-
+| T69 || tanin69
+|-
+| T6CL || CliffracerX
+|-
+| T9988 || timo9988
+|-
+| TABOU || equipier_sas
+|-
+| TAC || Theseus Inc.
+|-
+| TACD || Tactical Distractions
+|-
+| TACDB || Tac
+|-
+| TACER || atacticalerror
+|-
+| TACG || Cat Harsis
+|-
+| TACGT || Theseus Incorporated
+|-
+| TACHI || th3flyboy
+|-
+| TACO || YarX
+|-
+| TACP || tacplay
+|-
+| TACRG || Armaholicer & Shorty
+|-
+| TACS || Theseus Services
+|-
+| TACSO || Theseus Incorporated
+|-
+| TACT || Tactician
+|-
+| TACTG || Unkl
+|-
+| TACTR || PeenerShot
+|-
+| TAFM || Bread Boi
+|-
+| TAG || Nixon
+|-
+| TAGBL || BigLebowski
+|-
+| TAGD || Dickcheney
+|-
+| TAGR || Missile Magnet
+|-
+| TAGTC || BigLebowski
+|-
+| TAGTS || BigLebowski
+|-
+| TAH || Snakeater
+|-
+| TAHO || Snakeater
+|-
+| TALI || TALIHAM
+|-
+| TALIT || thomasbeech123
+|-
+| TALLTEX || TallTexGuy
+|-
+| TALM || alminator
+|-
+| TALOS || Tristanxh
+|-
+| TAM || synQ
+|-
+| TANK || rodhalberd
+|-
+| TANK6 || Tank615
+|-
+| TAOST || t0ast
+|-
+| TARI || Tari
+|-
+| TARMA || TurmaApe
+|-
+| TAROV || Nickarma3
+|-
+| TAS || Thomas
+|-
+| TAS88 || Schrödinger
+|-
+| TASM || AlphaSquad
+|-
+| TASMA || Tasman83
+|-
+| TASO || CYXAPNK
+|-
+| TASRPT || DooieHaai
+|-
+| TAST || Team Alpha Studios
+|-
+| TAT || pointblank
+|-
+| TATER || Tatertot
+|-
+| TATH || Tath
+|-
+| TAV || Tavish
+|-
+| TAW || JonBons
+|-
+| TBA || Tom_Anger
+|-
+| TBC || kraftholocism24
+|-
+| TBLST || Tablesalt
+|-
+| TBM || NatherAylomen
+|-
+| TBN || T_Bone
+|-
+| TBO || T-BO
+|-
+| TBR || thebarricade
+|-
+| TBS || tbsthug
+|-
+| TBST || Tablesalt
+|-
+| TBW || DaaRuski
+|-
+| TC6 || Rubble_Maker
+|-
+| TCA || Masterofdie
+|-
+| TCE || SoldierEPilot
+|-
+| TCGE || thecubegaming
+|-
+| TCGM || TaurusCGM
+|-
+| TCGN || thecubegaming
+|-
+| TCGNO || thecubegaming
+|-
+| TCM || The Corps Mod
+|-
+| TCN || TheCaptain
+|-
+| TCOTS || Cots
+|-
+| TCP || teaCup
+|-
+| TCR || TheCrazyRussian
+|-
+| TCRAT || justinstroud@gmail.com
+|-
+| TCUBE || thecubegaming
+|-
+| TCVM || tcvm
+|-
+| TCW || Frogstar
+|-
+| TD3 || ThreeDots
+|-
+| TDARK || TomDark
+|-
+| TDM || Porshen
+|-
+| TDMC || Mr.Ben
+|-
+| TDMG || Total Damage
+|-
+| TDNL || michelvanw
+|-
+| TEAJ || Tea_jaey
+|-
+| TED || teddy
+|-
+| TEDDY || knaaarfel
+|-
+| TEET || Jona
+|-
+| TEI || spacenavy90
+|-
+| TEIM || Teimir
+|-
+| TEL || Telson1968
+|-
+| TEM || Temppa
+|-
+| TEMPLAR || CroatianTemplar91
+|-
+| TEN || Sniperwolf572
+|-
+| TENDG || Tendgar
+|-
+| TENTH || NeoShadowdream
+|-
+| TER || TeRpEnTiN
+|-
+| TERRA || rodhalberd
+|-
+| TEST || rodhalberd
+|-
+| TEST91 || Piter91
+|-
+| TESTH || Havanna
+|-
+| TETE || ngttrojo
+|-
+| TEX || texaschainsaw01
+|-
+| TEXAS || texaschainsaw01
+|-
+| TEXT || rodhalberd
+|-
+| TEZZA || Terramesa
+|-
+| TF168 || ICEMAN3668
+|-
+| TF47 || Costo
+|-
+| TF47A || audiocustoms
+|-
+| TF47M || meat147
+|-
+| TF63P || ZogMadDog
+|-
+| TFB || UGLY58
+|-
+| TFBS || cilerc
+|-
+| TFD || christian2526
+|-
+| TFG || The Forgotten Guard
+|-
+| TFH || Chris1986 , Task Force Helmand
+|-
+| TFP || TheFallingPlane
+|-
+| TFR || J. Andrews
+|-
+| TFS || KamikazeXeX
+|-
+| TFSA || Collision
+|-
+| TFSU || iiMaffasouras
+|-
+| TFT || Trenchfeet
+|-
+| TFW || bmgarcangel
+|-
+| TFWC || Rave808
+|-
+| TGA || The Great Ape
+|-
+| TGA4567 || Bread Boi
+|-
+| TGG || The Guild Gaming
+|-
+| TGGUK || TGG
+|-
+| TGI || ToW:GI
+|-
+| TGL || Neborno
+|-
+| TGM || tgm0
+|-
+| TGM0 || tgm0
+|-
+| TGM73 || tgm0
+|-
+| TGNJ || Two Guys Named Jim
+|-
+| TGO || TheGoldyOne
+|-
+| TGS || Tigg@lot
+|-
+| TGWPS || Ghostworrior
+|-
+| TGX || TugeX
+|-
+| TGZ || Teags
+|-
+| THB || thomsonb
+|-
+| THC || TheCounter54231
+|-
+| THE || TheBliveon
+|-
+| THEA || chrisbobnorwich
+|-
+| THEIM || Forumtroll
+|-
+| THEOD || theodean
+|-
+| THERO || therob
+|-
+| THEV || theveninja
+|-
+| THG || Skyshift
+|-
+| THINQ || thinq
+|-
+| THIRD || Third Infantry Division
+|-
+| THOR || ThorWedd
+|-
+| THP || THP
+|-
+| THPAR || theparagon
+|-
+| THR || Thorne
+|-
+| THS || TheShadow
+|-
+| THY || Thyreos
+|-
+| THYED || Thy_English_DeViiL
+|-
+| TIA || The Irish Ace
+|-
+| TIAD || Ghost77788
+|-
+| TIGER || Tigerwulf
+|-
+| TIJAI || Tijai
+|-
+| TIKA || tikakino
+|-
+| TIL || NathanRulez213
+|-
+| TIMMY || TIMSTONe
+|-
+| TIMOY || timothefisherboy
+|-
+| TIN || Tinnuculus
+|-
+| TINF || D.Bowling[3RD]
+|-
+| TIP || tipster1
+|-
+| TIRP || Tirpitz93
+|-
+| TIS || Drunken Cheetah
+|-
+| TISPI || Thomas Helledi
+|-
+| TIT || Tito
+|-
+| TITO || titodumortier
+|-
+| TJM || cartman69
+|-
+| TJOBO || tjobo
+|-
+| TJP || Tigershark/JellyBelly Productions
+|-
+| TKA || tomtucka
+|-
+| TKGAM || TKGamer01
+|-
+| TKM || TKM
+|-
+| TKO || SoldierEPilot
+|-
+| TKY || Tankbuster
+|-
+| TKZ || Tuerkas
+|-
+| TLA || droogs
+|-
+| TLC || io-oi
+|-
+| TLF || toadlife
+|-
+| TLOW || birdistdaswort
+|-
+| TLP || Teller
+|-
+| TM2 || kingcoran
+|-
+| TM21 || the_master_21
+|-
+| TMAN || TMan10K
+|-
+| TMB || Tomb
+|-
+| TMD || TomiD
+|-
+| TMDBN || TimidBun
+|-
+| TME || Temme
+|-
+| TMF || Tyrghen
+|-
+| TMH || The-Mad_Hatter
+|-
+| TMI || TheMinion
+|-
+| TMJ || Tha_Masta_Joo
+|-
+| TMK || TeMaK
+|-
+| TMM || Captain Winters
+|-
+| TMN || TMN_Fr33d0m
+|-
+| TMS || TabloMaxos
+|-
+| TMYK || Team Yankee
+|-
+| TNDR || Thunder
+|-
+| TNK || Tawnik
+|-
+| TNL || Deadfast
+|-
+| TNOR || TNOR
+|-
+| TNRL || madsl
+|-
+| TNW || TheNoobWar
+|-
+| TOAST || iwanttoasty
+|-
+| TOB || tOBdavian
+|-
+| TOBS || TobsA13
+|-
+| TOBSA || TobsA13
+|-
+| TOC || ToC
+|-
+| TOD || todschlaeger
+|-
+| TOF || Russellocean
+|-
+| TOFU || lolo
+|-
+| TOHO || pizywizy506
+|-
+| TOKES || FapperDanMan
+|-
+| TOM || Toma
+|-
+| TOMA || wizzywig
+|-
+| TOMEU || KantanKei
+|-
+| TOMLV || tomislav
+|-
+| TOMMY || tommyelgamer
+|-
+| TOMTE || Tomtefan
+|-
+| TOMZO || Tomzo
+|-
+| TON || LegendaryShark
+|-
+| TONE || AlbertONEx
+|-
+| TONG || rodhalberd
+|-
+| TONY || VladimirY
+|-
+| TOON || Jona
+|-
+| TOP || Tactical Operation
+|-
+| TOP1 || Tactical Operation
+|-
+| TOP2 || Tactical Operation
+|-
+| TOP21 || topster21
+|-
+| TOP23 || Top2323
+|-
+| TOR || Patrik.91
+|-
+| TORTI || torti
+|-
+| TOUR || The Tour Of Teamrespawn
+|-
+| TOW || Tales of War
+|-
+| TOWJC || Tales of War: Joint Command
+|-
+| TP || TuszPro
+|-
+| TPA || osymann
+|-
+| TPG || ThePhysGun
+|-
+| TPIST || osymann
+|-
+| TPZ || Salbei
+|-
+| TQP || Pathy
+|-
+| TR || TonyRanger
+|-
+| TR8 || Travis One
+|-
+| TRA || dmakatra
+|-
+| TRAC || TRACY
+|-
+| TRAU || Trauzer
+|-
+| TRB || TheRob
+|-
+| TRBLR || TROFIM BLACK
+|-
+| TRCNR || Tracnor
+|-
+| TRDUK || z5342x
+|-
+| TRE || nyqbgcd
+|-
+| TREE || Treelor
+|-
+| TREND || treendy
+|-
+| TRENT || Trento
+|-
+| TRG || TriggerHappy
+|-
+| TRGU || Fizz and Rabidus
+|-
+| TRH || Burt77
+|-
+| TRI || trident
+|-
+| TRIBE || Tribe
+|-
+| TRICO || tricolo
+|-
+| TRIODOS || mendys
+|-
+| TRIT || MSG Trit
+|-
+| TROLL || Trollgaard
+|-
+| TRON || Jona
+|-
+| TRONE || Tyrone144
+|-
+| TROP || TROPtastic
+|-
+| TRRH || CornerWookie
+|-
+| TRS || nigeysuk
+|-
+| TRSP || FreakPsych
+|-
+| TRT || paolo.trotta
+|-
+| TRUBB || trubb
+|-
+| TRUE || cheap_truth
+|-
+| TRUPE || Trupe
+|-
+| TRUPP || Trupper1990
+|-
+| TRX || TraX
+|-
+| TRY || Taray
+|-
+| TRYZN || Tryzen
+|-
+| TS2 || DineiDevos
+|-
+| TSBMA || ModAddict
+|-
+| TSC || Plage
+|-
+| TSF || tyra314
+|-
+| TSG || Toppskillz
+|-
+| TSH || Tigershark
+|-
+| TSI || The_Sanctuary_Island
+|-
+| TSM || Kefvski
+|-
+| TSN || TheSun
+|-
+| TSP || Satchel, PSC
+|-
+| TSRP || Sylver
+|-
+| TST || TST
+|-
+| TSTAG || DineiDevos
+|-
+| TTI || Skullman
+|-
+| TTLOR || TheTrueLor
+|-
+| TTP || TTP_nutcase
+|-
+| TTT || TeTeT
+|-
+| TUB || Tubal
+|-
+| TUC || Plutonium
+|-
+| TUCKA || tomtucka
+|-
+| TUG || Tug2000
+|-
+| TUKA || ReverseTV
+|-
+| TUMOD || Turkish Union Mod - Armed Forces
+|-
+| TUP || Tupolov
+|-
+| TURSU || TurboSulttaani
+|-
+| TUT || Filip5
+|-
+| TUTO || tutoveenee
+|-
+| TUVEI || Vegard
+|-
+| TVR || PK
+|-
+| TWA || wedge
+|-
+| TWADD || TheWaltsu
+|-
+| TWAM || wedge
+|-
+| TWC || The Wrecking Crew
+|-
+| TWD || Tom Daniels (Tomfool)
+|-
+| TWG || Twyggy
+|-
+| TWIRL || twirly
+|-
+| TWK || sciencetweak
+|-
+| TWL || JamesCatra
+|-
+| TWLI || lien0233
+|-
+| TWN || Twean
+|-
+| TWOC || CERDIP
+|-
+| TWOOD || TwoodZ
+|-
+| TWP || NathanRulez213
+|-
+| TWS || TheWaltsu
+|-
+| TXCT || toxiccat
+|-
+| TXH || Tristanxh
+|-
+| TXU || Terox Utilities
+|-
+| TYB || tybriel
+|-
+| TYG || Tyger
+|-
+| TYNE || Revlim
+|-
+| TYPEO || CommanderSalamander
+|-
+| TYR || Tyrryal
+|-
+| TYTL || Bctytler
+|-
+| TZR || 2kohm
+|-
+| TZU || Ash2501
+|-
+|}
+
+=== U ===
+
+{| class="wikitable sortable" style="width: 100%"
+| UAMRC || Methusalem
+|-
+| UBE || subarulibtard
+|-
+| UBERU || overunity
+|-
+| UBR || soccermiles
+|-
+| UBUTO || Ubuto
+|-
+| UBZ || Urbeltz
+|-
+| UCE || UceeFin
+|-
+| UCG || Tuitor
+|-
+| UD45P || Shana-Chan
+|-
+| UDL || udaloy
+|-
+| UELS || jÜffLoS
+|-
+| UETF || Yuuki
+|-
+| UGAF || G-Man
+|-
+| UGG || Ugga
+|-
+| UGM || UglyMogly
+|-
+| UIOX || uiox
+|-
+| UK2SG || J_Murphy
+|-
+| UK3CB || Apollo
+|-
+| UKAF || madkaddy
+|-
+| UKBL || Sabergaming
+|-
+| UKF || Project-UKForces
+|-
+| UKL || Double Doppler
+|-
+| UKO || Roku
+|-
+| UKPR || kngpig
+|-
+| UKR || UkrMOD
+|-
+| UKRP || Double Doppler
+|-
+| UKRPG || Double Doppler
+|-
+| UKRPVP || gmomo
+|-
+| UKSF || Markus Fisher/TemplarVX
+|-
+| UKT || UrKeT
+|-
+| UL || Jat1ya
+|-
+| UL2 || MUMIA
+|-
+| ULF || Proxno
+|-
+| ULT || ultima
+|-
+| ULT1M || Ult1mateForce
+|-
+| ULTIM || ultima911
+|-
+| ULTRA || RonhillUltra
+|-
+| ULU || Jat1ya
+|-
+| ULV || Steiner
+|-
+| UMB || Umbarion
+|-
+| UMBRE || Methusalem
+|-
+| UMI || umi
+|-
+| UNA || UNA-Dark
+|-
+| UNBR || rodhalberd
+|-
+| UNC || Zeak
+|-
+| UND || Undeceived
+|-
+| UNL || Jat1ya
+|-
+| UNN || Unnamed
+|-
+| UNPNG || Unknown.png
+|-
+| UNS || The Unsung
+|-
+| UNSC || AkulaSerona
+|-
+| UNX || Dimitri_Harkov
+|-
+| UPO || NOPROBLEMFOME
+|-
+| UPR || GRUBES
+|-
+| UPSL || upsl
+|-
+| URA || URANIOM
+|-
+| URAN || uranoxyd
+|-
+| URBAN || Jonposo
+|-
+| URBCN || urban__concepts
+|-
+| URC || Larner6903
+|-
+| URO || Uro
+|-
+| URRP || TristenBill
+|-
+| URS || Ursidae
+|-
+| URX || uranoxyd
+|-
+| US101 || columdrum
+|-
+| USA || NZXSHADOWS
+|-
+| USAC || Bubby
+|-
+| USASS || zenrevolt
+|-
+| USCAD || Cadman
+|-
+| USD || AmerikanSn1p3r
+|-
+| USEC || Rocket
+|-
+| USM || Bennett
+|-
+| USM1 || usm1
+|-
+| USMC || NZXSHADOWS
+|-
+| USMC || Phaeden
+|-
+| USS || ussmarines
+|-
+| USSR || USSRsniper
+|-
+| UST || Urist
+|-
+| USUKR || PewPewStraykbol
+|-
+| USW || Jenkins
+|-
+| UTDS || Matt_T
+|-
+| UTG || Jonpas
+|-
+| UTOM || utomnia
+|-
+| UVA || Angelocasali007
+|-
+| UVQQ || UmVeadoQualquer
+|-
+| UWAR || Unscripted War
+|-
+| UXPB || uranoxyd
+|-
+| UXR || Larner6903
+|-
+|}
+
+=== V ===
+
+{| class="wikitable sortable" style="width: 100%"
+| V0ID || void
+|-
+| V200 || Viper200
+|-
+| V29 || veteran29
+|-
+| V3LLU || V3LLU
+|-
+| VA123 || Voodoo_Actual
+|-
+| VAA || Mat11155
+|-
+| VAC || Varick
+|-
+| VAD3R || VaD_3r
+|-
+| VADER || NeoShadowdream
+|-
+| VAKE || VAKE
+|-
+| VAL || valdark
+|-
+| VAN || vanhouten.cz
+|-
+| VANRA || Vanra
+|-
+| VARG || Vargen
+|-
+| VAS || Vastiny
+|-
+| VASF || jeffs
+|-
+| VAUL || Vaultin
+|-
+| VAXBR || VAXPLAY
+|-
+| VBI || Verbii
+|-
+| VBRAS || rodhalberd
+|-
+| VBS || Virtual Battlefield Systems
+|-
+| VBS1 || NZXSHADOWS
+|-
+| VBS2 || NZXSHADOWS
+|-
+| VBW || vBundeswehr
+|-
+| VBWA3 || vBundeswehr
+|-
+| VCA || VBS Commuity Addon
+|-
+| VCB || SteveVCB
+|-
+| VCL || Morpheus
+|-
+| VCTM || Victim913
+|-
+| VDA || Flax
+|-
+| VDE || VoRtHaX
+|-
+| VDMJ || Denisko-Redisko
+|-
+| VDPL || VeryCaptain
+|-
+| VEF || mecharius
+|-
+| VEGA || Vega Paradox
+|-
+| VEK || vek0611
+|-
+| VELIK || birdistdaswort
+|-
+| VEN || Venom
+|-
+| VENUS || BiGangEnbyGang
+|-
+| VEP || Sim
+|-
+| VER || Verox
+|-
+| VERTO || verto
+|-
+| VES || Vespade
+|-
+| VET || [VE] (OF-4) Tilliboy
+|-
+| VET1 || mzerby
+|-
+| VFL || IronmentalisT
+|-
+| VFX || bizibiz
+|-
+| VGH || Vaaghoofd
+|-
+| VGN || TwisT
+|-
+| VIA || viking and angusjm
+|-
+| VIBE || Vibe
+|-
+| VIBI || vilas
+|-
+| VICE || heli_pilot
+|-
+| VICFA || VictorFarbau
+|-
+| VICKO || vicko
+|-
+| VICTA || ODSTGeneral
+|-
+| VICWW || VIPER[CWW]
+|-
+| VIDORTX || FaLL1726
+|-
+| VIET || Aixie
+|-
+| VIF || Viking
+|-
+| VIG || Vigilante
+|-
+| VIGAM || Violator Gaming
+|-
+| VIGH || Vigilante & GodHammer
+|-
+| VIK || Vikingo
+|-
+| VIK22 || Viking22
+|-
+| VIKIN || pplluuttoo
+|-
+| VIL || vilas
+|-
+| VILAK || Kaike123
+|-
+| VILAS || vilas
+|-
+| VILE || Vile Ace
+|-
+| VIP || Vipersheart
+|-
+| VIPER || viper169th
+|-
+| VIPRR || VIPER[CWW]
+|-
+| VIRUZ || sigwar
+|-
+| VIS || Mandible
+|-
+| VIT || AKM74
+|-
+| VIX || Vixer
+|-
+| VIZOR || Scott Malyn
+|-
+| VJO || von Jo
+|-
+| VKU || Vosku
+|-
+| VLA || Vladimir
+|-
+| VLPNK || VoltairePunk
+|-
+| VMA || A6 Intruder
+|-
+| VMC || domasgim
+|-
+| VME || Virtual Military Engineers
+|-
+| VMZA || Vleismasjien
+|-
+| VN || Savage Game Design
+|-
+| VNDF || Arne
+|-
+| VNEM || vNeMeSiiSsx - Harman Uppal
+|-
+| VNX || Savage Game Design
+|-
+| VOID || burrywog
+|-
+| VONR || Von Rundstedt
+|-
+| VOO || Voodoo
+|-
+| VOR || The Raven Guard Chapter
+|-
+| VORES || voorhees
+|-
+| VOWS || desrat
+|-
+| VOXER || VoXeR
+|-
+| VPM || VATICAN PSYCHO
+|-
+| VPR || VIPeR2511
+|-
+| VPSA || VATICAN PSYCHO
+|-
+| VPSC || VATICAN PSYCHO
+|-
+| VRASI || Vrasin
+|-
+| VRS || Verse
+|-
+| VSD || wired
+|-
+| VSS || Hayden.T
+|-
+| VSUK || froggy333
+|-
+| VSW || R. Diveyez Neff
+|-
+| VTE || Vietnam: The Experience
+|-
+| VTG || PixelMonkey
+|-
+| VTN || udaloy
+|-
+| VTP || Izu
+|-
+| VTR || Tyrghen
+|-
+| VTS || Izu
+|-
+| VTT || ClunkiestPage8
+|-
+| VTX || vortex3d
+|-
+| VVW || viktortw
+|-
+| VWM || Dude96
+|-
+| VXBW || ViconX-Bionic
+|-
+| VXR || VXR
+|-
+| VZL || ElvisDS
+|-
+| VZM || sigwar
+|-
+|}
+
+=== W ===
+
+{| class="wikitable sortable" style="width: 100%"
+| W0L || W0lle
+|-
+| W39 || petrlach
+|-
+| W4Y || W4lly63
+|-
+| WAB || Wabbit
+|-
+| WACKY || WackyIraqi
+|-
+| WAF || wantafanta
+|-
+| WAFEL || DirtyShoes
+|-
+| WAG || Wagons
+|-
+| WAITW || g3015867
+|-
+| WAK || Jona
+|-
+| WAKER || 654wak654
+|-
+| WAKO || Jona
+|-
+| WAL || Col Bob
+|-
+| WALC || Claymore
+|-
+| WALOP || wallop
+|-
+| WALSH || IIxWALSHxII
+|-
+| WALTS || Walts
+|-
+| WAM || Jona
+|-
+| WANG || DehKushGuy420
+|-
+| WANTA || wantafanta
+|-
+| WAR || Worldeater
+|-
+| WARFX || opticalsnare
+|-
+| WARLO || WarLord554
+|-
+| WARS || 7angel7
+|-
+| WAS || wastul
+|-
+| WASCI || DinapeS
+|-
+| WASTE || Zelik and Mojo
+|-
+| WATER || Waterman
+|-
+| WATS || wats
+|-
+| WAX || Waxbutter
+|-
+| WB22 || will221996
+|-
+| WBB || themoosemasoose
+|-
+| WBC || WanderingBear
+|-
+| WBE || wolfbane
+|-
+| WBG || warbirdguy1
+|-
+| WBJR || bennyman71
+|-
+| WBT || Wildebeest
+|-
+| WCG || usmc2847
+|-
+| WCM || Rave808
+|-
+| WDB || willdebohun
+|-
+| WDJN || WoodyJohnson
+|-
+| WDL || Lockers
+|-
+| WDM || Wardking
+|-
+| WDS || tmthwoods
+|-
+| WDW || Who Dares Wins
+|-
+| WDY || Artharon
+|-
+| WEAP || rodhalberd
+|-
+| WEAST || Zkull
+|-
+| WEED || indaweed
+|-
+| WEEDY || deroxaxe
+|-
+| WEF || mhodgson89
+|-
+| WEK || Walter_E_Kurtz
+|-
+| WES || WesleyS
+|-
+| WES28 || wihardy
+|-
+| WESSX || wessix
+|-
+| WESTI || WestDevs
+|-
+| WESTS || wests
+|-
+| WESTY || Westy
+|-
+| WGL || WarGames League
+|-
+| WHA || Whale
+|-
+| WHALE || Whale
+|-
+| WHB || wobbleyheadedbob
+|-
+| WHD || walkinghd
+|-
+| WHIS || WhisperOFP
+|-
+| WHM || WolfhoundActual
+|-
+| WHSKY || Whiskey.S
+|-
+| WHT || wh1ten3ss
+|-
+| WIA3 || btmoon17
+|-
+| WIEL || Harold_Hoffmann
+|-
+| WIKED || Wiked Bubble
+|-
+| WIL || Cliger
+|-
+| WILK || JohnWildkins
+|-
+| WILL || Willsdorf
+|-
+| WILLS || torak289
+|-
+| WILLY || Chill
+|-
+| WIN || Windfeld
+|-
+| WINCON || umibato
+|-
+| WINDO || jelmer50
+|-
+| WING7 || wing70
+|-
+| WIP || charles wipman
+|-
+| WIR || Wires
+|-
+| WISKY || wiskey
+|-
+| WITEKPPL || Witek.PL
+|-
+| WIZ || wizzywig
+|-
+| WKF || Wikfin
+|-
+| WL5 || WarLord554
+|-
+| WLD || greyhound32
+|-
+| WLF || LoneWulf
+|-
+| WLFLB || WolfePatches
+|-
+| WLK || Walrusking
+|-
+| WLLE || joelbhv
+|-
+| WLM || william1
+|-
+| WLRUS || Walrus
+|-
+| WLY || B.Poncho
+|-
+| WM61 || 2Alpha
+|-
+| WMC || Nightwolf
+|-
+| WMP || WesMP
+|-
+| WNB || Williamson
+|-
+| WNTRS || Winters
+|-
+| WODS || Woodstock21
+|-
+| WODZU || Wodzu
+|-
+| WOLF || XxTRUExxWOLFxX
+|-
+| WOLFE || Wolfenburgz
+|-
+| WOLFG || gaffa
+|-
+| WOM || BrokenWombat
+|-
+| WOODS || Woods
+|-
+| WOODY || Artharon
+|-
+| WORKING || panzersniper
+|-
+| WOTAN || LaserWiesel
+|-
+| WOUPY || woupypoupy
+|-
+| WP2 || zGuba
+|-
+| WPL || Razor (Worthy Platoon)
+|-
+| WPS || zGuba
+|-
+| WQG || wanderley
+|-
+| WR5 || WinteR5
+|-
+| WRATH || Wraith68
+|-
+| WRECC || Wrecca
+|-
+| WRG || teejza
+|-
+| WRN || Mike Styles
+|-
+| WRSUN || Warrior
+|-
+| WRW || +Werewolf+
+|-
+| WSC || SGTGunner
+|-
+| WSI || SGTGunner
+|-
+| WSK || WhiskeyWarrior
+|-
+| WSL || WhiteSkyline
+|-
+| WSS || WarriorScholar
+|-
+| WSTLD || Agent_jetz
+|-
+| WT7 || Wytetyger7
+|-
+| WTF || WiredTiger
+|-
+| WUB || wubz
+|-
+| WUD || Wudy
+|-
+| WUFPK || BNS130
+|-
+| WUK || trippingtourist
+|-
+| WVNT || Williamson
+|-
+| WW1 || No Man's Land
+|-
+| WW2 || Operation WW2
+|-
+| WW2EC || WWIIEC
+|-
+| WW2MA || WW2 Mod Alliance
+|-
+| WW2W || WW2Weasel
+|-
+| WWA || White Wolf Addons
+|-
+| WWAF || Nightwolf
+|-
+| WWAR || Makad
+|-
+| WWB || Worgal
+|-
+| WWM || Silva
+|-
+| WYS || wysterine
+|-
+| WYVER || zSchlopp
+|-
+| WYW || newiy/WYWY
+|-
+| WZN || Wizzen
+|-
+| WZR || WZR
+|-
+|}
+
+=== X ===
+
+{| class="wikitable sortable" style="width: 100%"
+| X29A || VirtualReal
+|-
+| X2D || x2dezjohn
+|-
+| X2RGT || ChoYaYa
+|-
+| XAN || Xankriegor
+|-
+| XAS || Extreme Addon Studios
+|-
+| XAVO || xavo
+|-
+| XCOM || X-COM
+|-
+| XDSJ || koptwo
+|-
+| XEN || Xeno
+|-
+| XES || owen250708
+|-
+| XESS || DarkXess
+|-
+| XFX || xFURYx
+|-
+| XHK || x_Horst
+|-
+| XIII || MOC_XIII
+|-
+| XIM || x00010
+|-
+| XIMEN || ximenjia
+|-
+| XKHDX || xKurtHDx
+|-
+| XLA || Alexander (ImperialAlex)
+|-
+| XM29 || XM29
+|-
+| XNO || Xeno
+|-
+| XOR || SoldierEPilot
+|-
+| XOTO || Xotodazo
+|-
+| XOW || OnyxWyvern
+|-
+| XPO || Expostech
+|-
+| XPS || xpsion
+|-
+| XRA || Xram
+|-
+| XRFLO || XRflo
+|-
+| XRO || Xer0
+|-
+| XRP || Whip
+|-
+| XSF || StormForce
+|-
+| XSHDX || xXShrekHDXx
+|-
+| XSQS || Texx
+|-
+| XSX || nidaroz
+|-
+| XTA || xT._AnGeLr!pPeR_.Tx
+|-
+| XTR || dev1ceR6
+|-
+| XULAT || Xulat
+|-
+| XWO || ocramweb
+|-
+| XWX || turk3y
+|-
+| XXX || Joe Lemonade PSC
+|-
+| XYV || Xyvern
+|-
+| XZE || xZeven
+|-
+|}
+
+=== Y ===
+
+{| class="wikitable sortable" style="width: 100%"
+| YAA || Jona
+|-
+| YAB || YouAreBamboozled
+|-
+| YAH || silderoy
+|-
+| YAMA || Jona
+|-
+| YAMUA || Yamuar
+|-
+| YANKI || Ben_Nachos
+|-
+| YANKO || Yanko
+|-
+| YAS || SargeantCannoot
+|-
+| YAZZA || Yazza
+|-
+| YB || YouAreBamboozled
+|-
+| YB3 || Nagual
+|-
+| YBA || SchleckDieNudel
+|-
+| YBS || yosarin
+|-
+| YCAA3 || yancosta01
+|-
+| YDE || framedyannick
+|-
+| YEB || Yeb
+|-
+| YEIIJ || Yeiij
+|-
+| YETI || TheYeti
+|-
+| YGO2 || rezin
+|-
+| YHM || Yearhoo
+|-
+| YLS || yannis
+|-
+| YMAN || YesmanY
+|-
+| YOL || Yol96
+|-
+| YOUNG || youngTriceps
+|-
+| YOWL || alexyowl
+|-
+| YP27 || YEETpotato27
+|-
+| YPA || mawr
+|-
+| YRRY || Yourry
+|-
+| YRUN || Hooty
+|-
+| YSA || YetheSamartaka
+|-
+| YSB || coronelcortez
+|-
+| YSL || Yoshilus
+|-
+| YSP || Yanshuo Production
+|-
+| YSTER || Ysterfeis
+|-
+| YTRPG || zitrone475
+|-
+| YUG || Vojo_Kecman
+|-
+| YUP || yurapetrov
+|-
+| YURTX || Yurtex
+|-
+| YVL || Yuval
+|-
+| YVL || Yuval
+|-
+| YWN || Yawnathan
+|-
+|}
+
+=== Z ===
+
+{| class="wikitable sortable" style="width: 100%"
+| Z0M || Z0MBiE
+|-
+| Z3D || Zjajo
+|-
+| ZADE || DerZade
+|-
+| ZAGOR || Askanio
+|-
+| ZAK || Zak
+|-
+| ZAKT || zman6258
+|-
+| ZAM || Zetho
+|-
+| ZAMO || Zulu-Alpha Mods Office
+|-
+| ZAP || ZAP
+|-
+| ZAR || Oldnick
+|-
+| ZARV || zarvona
+|-
+| ZASAR || Kikiobi
+|-
+| ZAV || zavodnyrichard
+|-
+| ZAY || Zayfod
+|-
+| ZCD || Zeus
+|-
+| ZCOW || zippycow
+|-
+| ZDC || medicalzombiez
+|-
+| ZDGC || jobey44
+|-
+| ZDGS || rodhalberd
+|-
+| ZDRK || ZephyrDark
+|-
+| ZEAK || Zeak
+|-
+| ZEB || zebra1993
+|-
+| ZED || Placeholder Interactive
+|-
+| ZEDZ || Smoozilla
+|-
+| ZEEP || Jona
+|-
+| ZEL || Zelik
+|-
+| ZEN || Zen Llama
+|-
+| ZEN77 || Jona
+|-
+| ZENIT || rodhalberd
+|-
+| ZERO || Kikiobi
+|-
+| ZERO6 || ZeroSix
+|-
+| ZEROT || Fugitive09
+|-
+| ZEROX || MrZeroX
+|-
+| ZET || Zethre
+|-
+| ZETA || Zeedious
+|-
+| ZEU || Protegimus
+|-
+| ZEUS || Pimmelorus
+|-
+| ZFJKP || knaaarfel
+|-
+| ZGB || zGuba
+|-
+| ZGM || ZeroG
+|-
+| ZHOST || PoweredByte
+|-
+| ZIJ || Ziijej
+|-
+| ZIP || Zippy
+|-
+| ZIPNG || Zipang
+|-
+| ZISB || zisb
+|-
+| ZJA || Zjajo
+|-
+| ZKB || zkb1325
+|-
+| ZKJ1 || droogs
+|-
+| ZLT || Zealot
+|-
+| ZLX || ZileX
+|-
+| ZLXEN || zloxen
+|-
+| ZMX || Terox
+|-
+| ZNDR || vlekzandr
+|-
+| ZOCK || J3r3my1337
+|-
+| ZOD || Zodd
+|-
+| ZOM || l552342444
+|-
+| ZONA || Bravo Wilco
+|-
+| ZONAP || zukera2
+|-
+| ZONE || Welcome_To_Hell
+|-
+| ZOOL || Jona
+|-
+| ZOOM || Jona
+|-
+| ZOOT || Jona
+|-
+| ZOOT || Jona
+|-
+| ZOOT || Jona
+|-
+| ZOPS || MasterCraftyMonster
+|-
+| ZOR || xorzizten
+|-
+| ZORG || ZorgBot
+|-
+| ZOU || zouloum
+|-
+| ZOV || Zovirl
+|-
+| ZP5 || Zipper5
+|-
+| ZPP || Zippy
+|-
+| ZRDP || 11RDP
+|-
+| ZRG || ZRG
+|-
+| ZRO || zaro
+|-
+| ZRU || rpoltera
+|-
+| ZRW || Lucifer
+|-
+| ZSF || Zelik
+|-
+| ZSO || morox
+|-
+| ZTLOV || voltz
+|-
+| ZUL99 || Zul99
+|-
+| ZULU || SoldierEPilot
+|-
+| ZUMBI || Jonathan30
+|-
+| ZUMO || zumorc
+|-
+| ZUP || soupie von soup
+|-
+| ZUSERZ || zzusernamezz
+|-
+| ZVS || zwobot
+|-
+| ZWA || zwadar
+|-
+| ZWEAR || Zwear1
+|-
+| ZYAD || rando
+|-
+| ZZR || Zsa_Zsa_Rasputin
+|-
+| ZZZ || Jona
+|}
+</div>
+
+
+{{GameCategory|ofp|Editing}}
+{{GameCategory|ofpe|Editing}}
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+{{GameCategory|armaR|Modding|Scripting|Guidelines}}
+{{GameCategory|arma4|Modding|Scripting|Guidelines}}
+{{GameCategory|tkoh|Editing}}

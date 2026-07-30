@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/addMagazineGlobal
+// revision: 318776 (2022-05-13T09:21:28Z)
+// export sha1: afxd2z9b2gt96qhq7tdnn5zhsdyqzho
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.76
+
+|arg= global
+
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Adds magazine to a unit regardless of locality. This command can also be used to add magazine to a vehicle, like a static gun, for example.
+
+|mp= Before {{arma3}} v2.00 this command was broken in MP and duplicated items per the number of clients.
+
+|s1= unit [[addMagazineGlobal]] magazineName
+
+|p1= unit: [[Object]]
+
+|p2= magazineName: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player addMagazineGlobal "30Rnd_65x39_caseless_mag";</sqf>
+
+|seealso= [[addMagazine]] [[addMagazines]] [[addMagazineCargo]] [[addMagazineCargoGlobal]] [[addMagazinePool]] [[addMagazineTurret]] [[addMagazineAmmoCargo]]
+}}

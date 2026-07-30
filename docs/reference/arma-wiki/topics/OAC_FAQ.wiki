@@ -1,0 +1,154 @@
+// source: https://community.bistudio.com/wiki/OAC:FAQ
+// revision: 349956 (2023-11-20T22:11:25Z)
+// export sha1: ja2o95d2h8c07gb073k36e896hed93m
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Banner biki.jpg]]
+
+
+=Is the OAC CWC/RES campaign conversion good for me?=
+
+Simply put. If you expect perfect quality, skip OAC and wait for CWR.<br>
+If you are fine with minor issues (like non perfect camera scenes),<br>
+or even want to help improving the available content, OAC is for you.<br>
+
+OAC is fully compatible to CWR, can be combined with the latest release of CWR (the CWR demo).<br>
+Once CWR 1.0 and their CWC campaign is out, you can bet you will enjoy the campaign with CWR once again.
+
+
+=Why do you release now the CWC/RES campaign conversion?=
+
+We felt happy with the result and it is done in agreement with CWR project leader W0lle.
+
+
+=Why are both CWR and OAC working on a CWC/RES campaign conversion?=
+
+Basically CWR does convert the OFP elite version of the CWC/RES campaign,<br>
+while OAC uses the PC addition as the base.
+
+We like the PC voices, that are different to the OFP elite ones which had to<br>
+be rerecorded for the game.
+
+
+=Why am I not able to install the OAC CWC/RES campaign conversion?=
+
+Marek made it a required to OAC to have a registry check for the presence of<br>
+a OFP/RES key entry.<br>
+You have to install OFP/RES again to be able to install it.
+
+
+=Why does the OAC CWC/RES campaign conversion not include the voice files?=
+
+Codemasters did not give OAC (or anyone else) the permission to distribute<br>
+the voices files. We accept this decision.
+
+That said, you can easily unpack the OFP version of the CWC/RES campaign,<br>
+delete all but the .ogg, .wss and .wav files and copy the voices files into<br>
+the OAC CWC/RES campaign conversion.
+
+ .\arma\campaigns\1985\
+
+ .\arma\campaigns\resistance\
+
+Here is a step-by-step guide.
+
+# Goto the ''.\OFP\campaigns'' / ''.\OFP\res\campaigns'' folder.
+# Unpack the 1985.pbo / Resistance.pbo with any of the [[OFP:_Community_Tools#PBO_Editing|OFP PBO tools]] (WinPBO or Eliteness recommended).
+# Open the unpacked 1985/resistance folder.
+# Use windows search (F3 -> enter) to find all files.
+# Sort by type and delete all files but ogg, wav and wss.
+# Copy the 1985/resistance folder inside the .\ArmA\campaigns folder.
+# OK to overwrite all.
+# Done. Enjoy the excellent atmosphere.
+
+=Can I uninstall the OAC CWC/RES campaign?=
+
+No the current installer does not have this feature.<br>
+Yet the installer does '''NOT''' create registry or start menu entries so far.<br>
+You can simply remove it by deleting the given campaign and the #OAC folder:
+
+ .\arma\#oac
+ .\arma\campaigns\1985 
+ .\arma\campaigns\resistance
+
+
+=Where is an exe installer version to take care of everything for me?=
+
+There will be an exe installer version released in the next couple of days,<br>
+if all goes well.
+
+
+=I have encountered a bug, you suck?=
+
+Alright. Back to school to improve your wording and learn proper behavior.
+
+
+=I have encountered a bug, what should I do?=
+
+Please check [[OAC:WhereToPostBugs|this short instruction help]].
+
+
+=How do I get the replacement configs working?=
+
+Please check [[OAC:ReplacementAddons|this page]].<br>
+If you are still stuck, head over to the {{Link|link= http://dev-heaven.net/projects/oac/boards|text= OAC forum}} and explain your problem.
+
+
+=Can I use the replacement configs even without OAC?=
+
+The replacement configs are also useful without playing OFP missions/campaigns.<br>
+Most replacement configs can be used without modification for 'standard' ArmA.<br>
+
+You are recommended to load the '''ofp_compatibility_addon.pbo''' addon <br>
+along with the replacement addons, even if you are not playing OFP missions.<br>
+The addon is found in ''.\arma\x\oac\oac_core\addons''.
+
+The alternative is to edit the replacement config yourself and remove the<br>
+dependency to the ofp_compatibility_addon cfgPatches class and define the<br>
+correct cfgPatches dependency yourself.<br>
+An easy approach is to define a dependency to ''CA_Hotfix'' instead of the<br>
+''ofp_compatibility_addon'' cfgPatches class.
+
+
+=How do I update OAC?=
+
+Please read [[OAC:DownloadAndPlay#Update_OAC|this section]]. If you are still stuck, head over to the {{Link|link= http://dev-heaven.net/projects/oac/boards|text= OAC forum}} and explain your problem.
+
+
+= How do I update the OAC CWC/RES campaign =
+
+You have to download and install the latest version again and again.<br>
+You will find the campaigns in the {{Link|link= http://dev-heaven.net/projects/list_files/oac|OAC|text= files section}} for download
+
+
+=I am dying all the time - what should I do?=
+
+The missions are quite hard at times. Play more causiously.
+
+You can always skip a mission with the [[ArmA: Armed Assault: Cheats |'endmission'|cheat]].
+ 
+
+=Can I load my favorite addon with OAC?=
+
+You can use '''any sort of ArmA addon''' along with OAC.<br>
+Like addons to improve the standard game by model, texture, sound replacement, AI mods etc etc.
+ 
+ 
+=How do I get involved?=
+
+Read the [[OAC:Project#The_seven_roads_to_OAC|The|seven roads to OAC]].<br>
+
+
+=Will you update or support OAC?=
+
+Bugs will be fixed as soon as possible and the updates released on a daily basis.
+
+
+=Any you further plans?=
+
+Please look at the {{Link|link= http://dev-heaven.net/projects/roadmap/oac|OAC|text= roadmap}}.
+
+
+=Do you play to convert OAC to A2?=
+
+Yes. OAC will make OFP and A1 missions playable in A2.

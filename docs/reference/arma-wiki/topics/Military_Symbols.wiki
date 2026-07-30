@@ -1,0 +1,187 @@
+// source: https://community.bistudio.com/wiki/Military_Symbols
+// revision: 377934 (2026-01-11T16:52:03Z)
+// export sha1: 4jb7gnzbgik2akoikvsj5hf419b9h5z
+// categories: Category:Arma 2: Editor Modules | Category:Arma 3: Editor Modules
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[Military Symbols]] allow to display units' military symbol in real time either in-game (above units), on map or both.
+
+== Initialization ==
+
+=== Module Location ===
+
+* {{arma2}}: Modules (F7)
+* {{arma3}} [[:Category:Eden Editor|Eden Editor]]: Systems (F5) > Modules > Other > Military Symbols
+
+=== Enable Icons ===
+
+Place the "Military Symbols" module and include the following code in the init line: <sqf>setGroupIconsVisible [true /* markers on map */, true /* 3D markers */];</sqf>
+
+=== Set up Module ===
+
+==== Set variables to BIS_marta_mainscope with desired values ====
+* '''rules = <array>;''' - custom settings which defines how will be each side/faction shown. Array contains of array in format [<prefix>,<markercolor>]. Prefix is one of NATO marker prefixes ("b_" for BLUFOR,"o_" for OPFOR or "n_" for NEUTRAL) and markercolor is color of marker from CfgMarkerColors. If number of array items is 4, it is applied to sides. Otherwise it is applied to factions.
+:: Example: <sqf>BIS_marta_mainscope setVariable ["rules", [["o_", "colorred"], ["b_", "colorgreen"], ["n_", "colorgreen"], ["n_", "coloryellow"]]];</sqf>
+:: Default value: [["o_", "colorred"], ["b_", "colorgreen"], ["n_", "colorgreen"], ["n_", "coloryellow"]]
+
+To set up colors in RGB format put the following into module`s init line:
+:: Example: <sqf>this setVariable ["rules", [["o_", [0.00001, 1, 0, 1]], ["b_", [1, 0, 0, 1]], ["n_", [0, 0.7, 0, 1]], ["n_", [0.8, 0.8, 0, 0]]], true]</sqf>
+Where array after prefix has format : [Red, Green, Blue, Alpha (transparency)]
+
+* '''delay = <number>;''' - Refresh delay in seconds
+:: Example: <sqf>BIS_marta_mainscope setVariable ["delay", 0.1];</sqf>
+:: Default value: 0.5
+<!--
+* '''step = <number>;''' - Time in which are all markers refreshed (0 will halt program until all markers are refreshed, which can cause lag when number of groups is large).
+:: Example: <sqf>BIS_marta_mainscope setVariable ["step", 1];</sqf>
+:: Default value: 0.5
+-->
+* '''duration = <number>;''' - duration defines how long will be markers shown after group get out from detection area (destroyed groups will have 1/10 of this duration)
+:: Example: <sqf>BIS_marta_mainscope setVariable ["duration", 600];</sqf>
+:: Default value: 300 (5 minutes)
+
+* '''minSize = <number>;''' - Minimal size of group which is requested to draw a marker.
+:: Example: <sqf>BIS_marta_mainscope setVariable ["minSize", 3];</sqf>
+:: Default value: 1
+<!--
+* '''offset = <number>;''' - defines how inaccurate will be enemy marker position. Value is maximal possible distance in metres.
+:: Example: <sqf>BIS_marta_mainscope setVariable ["offset", 100];</sqf>
+:: Default: 50
+-->
+* '''WPgroups = <array>;''' - Set which groups will have displayed waypoints.
+:: Example: <sqf>BIS_marta_mainscope setVariable ["WPgroups", [group soldier1, group player]];</sqf>
+:: Default value: empty array
+
+=== Set up groups ===
+
+* '''MARTA_customIcon = <string>;''' - Define custom marker class for given group
+:: Example: <sqf>(group player) setVariable ["MARTA_customIcon", "b_recon"];</sqf>
+
+* '''MARTA_WP_isText = <boolean>;''' - true if waypoints numbers are to be displayed
+:: Example: <sqf>(group ruOfficer) setVariable ["MARTA_WP_isText", true];</sqf>
+
+=== Set up units ===
+
+* '''MARTA_showRules = <array>;''' - Custom show rules of specific unit for given faction (1 is always show, 0 means automatic detection when spotted, -1 is never show).
+:: Example: <sqf>player setVariable ["MARTA_showRules", ["USMC", 1, "CDF", 0]];</sqf>
+:: (GeneralCarver, 11/27/10) - As of Arma 2 v1.7 and Operation Arrowhead v1.55 this command seems to be ignored in multiplayer, but works in single player.
+:: A complete list of factions can be found here: [[faction]]
+
+
+* '''MARTA_reveal = <array>;''' - Groups which will be always visible for given unit.
+:: Example: <sqf>player setVariable ["MARTA_reveal", [group ruTarget]];</sqf>
+
+* '''MARTA_hide = <array>;''' - Groups which will be always hidden for given unit.
+:: Example: <sqf>player setVariable ["MARTA_hide", [group usmcPatrol]];</sqf>
+
+
+== Functions ==
+
+{{Feature | important | In {{arma2}} you have to use <sqf inline>waitUntil { not isNil "BIS_fnc_init" };.</sqf>.}}
+
+=== Get visible groups ===
+
+<sqf>[centre, radius] call BIS_Marta_getVisibleGroups;</sqf>
+* centre, radius - none (using whole map data) or both arguments
+* Returned value: list of groups that have visible NATO marker (in given circle)
+* Returned value: Group - marker associated with group
+
+<!--
+=== Find group by marker ===
+
+ ["GROUP", <marker>] [[call]] [[BIS_Marta_getParams]]
+* <marker> - one of "BIS_Marta_#" markers
+* Returned value: Group - marker associated with group
+
+=== Find marker by group ===
+
+ ["MARKER", <group>] [[call]] [[BIS_Marta_getParams]]
+* <marker> - group
+* Returned value: String - group associated with marker
+
+=== Get list of all markers ===
+
+ ["MARKERS"] [[call]] [[BIS_Marta_getParams]]
+* Returned value: Array containing all Marta markers
+
+=== Add zone with forced detection ===
+
+ ["ADD", <zone>, <factions>, <types>] [[call]] [[BIS_Marta_zone]]
+* <zone> - Array or Object - can be array with [center,radius] or trigger
+* <factions> - Array - array of sides or factions which will have zone available (can contain both, e.g. [resistance,"INS"])
+* <types> - Array - Optional param - Filter witch defines what unit classes and subclasses will be detected in zone.
+* Returned value: ID used for deleting zone
+
+=== Remove zone with forced detection ===
+
+ ["REMOVE", <id>] [[call]] [[BIS_Marta_zone]]
+* <id> - Number - ID of zone
+* Returned value: True
+
+=== Check if some unit is in zone ===
+
+ ["CHECK", <unit>] [[call]] [[BIS_Marta_zone]]
+* <unit> - Object or Group - Checked unit
+* Returned value: Boolean (true if unit is in one of zones)
+-->
+
+
+== Marker list ==
+[[File:APP-6.jpg|right|]]
+
+Icon name consists of '''prefix''' and '''name'''. Prefix is used to define side and can be one of following:
+
+{| class="wikitable"
+! Value !! Description
+|-
+| b_ || BLUFOR
+|-
+| o_ || OPFOR
+|-
+| n_ || neutral
+|}
+
+Name defines purpose of the icon. See picture on the right or code below to get visual list of icons:
+
+{| class="wikitable"
+! Value !! Description
+|-
+| inf || Infantry
+|-
+| motor_inf || Motorized infantry
+|-
+| mech_inf || Mechanized infantry
+|-
+| armor || Armored platoon
+|-
+| air || Rotary wing aircraft
+|-
+| maint || Maintanance group
+|-
+| hq || Headquarters
+|-
+| supply || Supply convoy
+|-
+| plane || Fixed wing aircraft
+|-
+| art || Artillery
+|-
+| mortar || Mortar
+|-
+| med || Medical
+|-
+| recon || Reconnaissance team
+|-
+| uav || Unmanned Aerial Vehicle
+|-
+| empty || Unknown
+|}
+
+For example, to set icon of enemy artillery, use prefix {{hl|o_}} and type {{hl|art}} to get {{hl|o_art}} icon type.
+
+Icons are defined in ''cfgGroupIcons'' section.
+
+
+{{GameCategory|arma2|Editor Modules}}
+{{GameCategory|arma3|Editor Modules}}

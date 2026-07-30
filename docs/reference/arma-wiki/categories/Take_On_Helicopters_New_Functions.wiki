@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Take_On_Helicopters:_New_Functions
+// revision: 194728 (2021-01-12T23:32:45Z)
+// export sha1: leojv2fi5sj85dorrpmn4a5waedq68j
+// Vendored snapshot. Do not edit — re-export instead.
+
+List of all new [[:Category:Functions|Functions]] in {{tkoh}}.
+
+
+[[Category:Take On Helicopters: Functions|New Functions List]]

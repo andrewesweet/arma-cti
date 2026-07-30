@@ -1,0 +1,161 @@
+// source: https://community.bistudio.com/wiki/findDisplay
+// revision: 369048 (2024-09-02T20:24:49Z)
+// export sha1: fzjmdgqstiaf0xebuzp108pg4ecs4g6
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= Finds a display by its IDD which can either be defined in [[missionConfigFile]] ([[Description.ext|description.ext]]) or [[configFile]] ([[config.cpp]]) or by its [[Procedural Textures#UI On Texture|UI On Texture]]'s unique name (see [[displayUniqueName]]).<br>
+If the specified display cannot be found, [[displayNull]] is returned.
+{{Feature|important|
+Dedicated servers and [[Arma 3: Headless Client|headless clients]] do not have a primary display (e.g <sqf inline>findDisplay 46</sqf> will return [[displayNull]]).<br>
+Detect both with the [[hasInterface]] command.
+}}
+
+{{Feature|informative|For a list of (almost) all {{arma3}}'s IDDs, see [[Arma 3: IDD List]].}}
+
+|s1= [[findDisplay]] idd
+
+|p1= idd: [[Number]]
+
+|r1= [[Display]]
+
+|s2= [[findDisplay]] displayName
+
+|s2since= arma3 2.12
+
+|p21= displayName: [[String]]
+
+|r2= [[Display]]
+
+|x1= <sqf>
+0 spawn
+{
+	waitUntil { !isNull findDisplay 46 };
+	hint "Mission Display is now available!";
+};
+</sqf>
+
+|x2= <sqf>_display = findDisplay 1;</sqf>
+
+|x3= <sqf>private _display = findDisplay "RscDisplayRenderTest";</sqf>
+
+|seealso= [[allDisplays]] [[displayCtrl]] [[createDisplay]] [[createDialog]] [[dialog]] [[displayNull]] [[controlNull]] [[isNull]] [[createDisplay]] [[ctrlCreate]] [[displayParent]] [[displayUniqueName]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20190707122000
+|text= Common IDDs:
+* 46: Mission display
+* 312: Zeus display
+* 49: Pause menu
+* 602: Inventory
+* 24: Chat box
+* 300: Weapon state
+* 12: Map
+* 160: UAV Terminal
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20090615191000
+|text= [[findDisplay]] does ''not'' find displays defined under RscTitles (even when they are visible).<br>
+To access those types of displays, either assign the resource to a global variable, or pass its [[Magic Variables#this_2|this]] value to a script, during the onLoad event:
+e.g. <syntaxhighlight lang="cpp">
+class RscTitles
+{
+	class MyRsc
+	{
+		onLoad = "myDisplay = (_this select 0)";
+		// or
+		// onLoad = "_this execVM 'myDialog.sqf'";
+		// ...
+	};
+};
+</syntaxhighlight>
+You can then use the stored value as you would for regular dialogs:
+<sqf>(myDisplay displayCtrl 1111) ctrlSetText "hello there");</sqf>
+}}
+
+{{Note
+|user= Nelis75733126
+|timestamp= 20170625093200
+|text= I have tested the behavior of this command and I found out that <sqf inline>findDisplay</sqf> appears to only return the display AFTER any {{Link|User_Interface_Event_Handlers#onLoad|onLoad}} event handler of that display is done.<br>
+Meaning: using [[findDisplay]] inside the code of an onLoad event handler is useless.
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20170814122200
+|text= There are some specific cases, where [[findDisplay]] will not be able to find an existing display. Here's the cases and how to act on them:<br>
+<syntaxhighlight lang="cpp">
+// Your display has IDD= -1.
+class RscDisplayNew
+{
+	idd = -1;
+	scriptName = "RscDisplayNew";
+	// ...
+};
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+// Your display doesn't have IDD
+class RscDisplayNew
+{
+	scriptName = "RscDisplayNew";
+	// ...
+};
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+// Your display doesn't have scriptname with IDD = -1
+class RscDisplayNew
+{
+	idd = -1;
+	// ...
+};
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+// Your display doesn't have scriptname, neither IDD
+class RscDisplayNew
+{
+	// ...
+};
+</syntaxhighlight>
+
+# You actually can find a -1 display, but this means finding a display with this IDD might be a problem, when there are a few displays marked as -1.<!--
+-->So as you can see, theres an entry called '''scriptName'''. You can get a reference to this display by using [[uiNamespace]]:<!--
+--><sqf>(uiNamespace getVariable "RscDisplayNew")</sqf><!--
+-->'''NOTE''': Variables are overwritten with a reference of the last declared display under the same scriptName entry. Take a look at case 3 for solution.
+# Displays without IDDs can actually exist. They can be manipulated only in a way described in the first case using [[uiNamespace]].
+# You can really have this display seeking it manually in a [[allDisplays]] return. This is experimental, but working option.
+# You will have a problem finding this display, since this display doesn't exist even in [[allDisplays]](?) return. Behaviour unknown.
+}}
+
+{{Note
+|user= AVespade
+|timestamp= 20230507025558
+|text= Since findDisplay is case-sensitive, and any [[Procedural_Textures#UI_On_Texture|UI On Texture]] unique names defined inside a p3d file will always be forced to lowercase, the unique name you search for with findDisplay will need to be lowercase.
+
+<sqf>private _display = findDisplay "rscdisplayrendertest";</sqf>
+
+Use of [[toLower]] may be useful to improve legibility or flow, especially in cases where a UI On Texture's unique name is the same as the class name.
+<sqf>private _display = findDisplay (toLower "RscDisplayRenderTest");</sqf>
+}}

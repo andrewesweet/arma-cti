@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/Material_-_Basic_glass_reflectance
+// revision: 227510 (2021-01-31T19:30:17Z)
+// export sha1: 5uapadzlz7t2osbakhflfo49uqy1530
+// Vendored snapshot. Do not edit — re-export instead.
+
+=== Simple glass with enviromental reflection ===
+
+[[Static Environmental Reflections]]
+
+Alpha inside diffusion texture in combination with this shader controls not only transparency but also reflection.
+The more transparent the more surface will be reflecting enviromental map.
+If hoewer appear extreme small alpha value (0) inside glass texture then whole texel stops to draw fully (nothing will reflect on that place and it will look like "hole in glass").
+
+Shader can be used also for simple coating paints, mirrors and chrome surfaces.
+Instead procedural fresnel texture use black color in stage 1.
+Alpha of this stage then controls how much of reflection is visible. Yet if basic diffuse texture is colored then reflection will be tint and darker.
+
+Environmental texture is relevant to global coordinates (it's not possible to create specific one for interier of vehicle where it would be possible to see it is parts)
+ 
+ ambient[]={1.000000,1.000000,1.000000,0.000000};
+ diffuse[]={1.000000,1.000000,1.000000,0.000000};
+ forcedDiffuse[]={0.000000,0.000000,0.000000,0.000000};
+ emmisive[]={0.000000,0.000000,0.000000,0.000000};
+ specular[]={1.000000,1.000000,1.000000,0.000000};
+ specularPower=10.000000;
+ renderFlags[]=
+ {
+ 	"'''NoAlphaWrite'''"
+ };
+ '''nextPass'''="ofp2\Data\glass_2pass.rvmat";
+ PixelShaderID="'''Glass'''";
+ VertexShaderID="'''Glass'''";
+ class '''Stage1'''
+ {
+ 	texture="#(ai,64,64,1)'''fresnelGlass'''()"; ''//procedural Fresnel map ''
+          ''// it may be replaced by black procedural color where alpha controls visibility of reflections''
+ 	uvSource="none";
+ };
+ class '''Stage2'''
+ {
+ 	texture="ofp2\Data\'''env_co'''.tga"; ''//environmental reflection''
+ 	uvSource="none";
+ };

@@ -1,0 +1,415 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Steam_Game_Recording
+// revision: 376706 (2025-11-10T09:42:53Z)
+// export sha1: oh9poezuelvf81wbxq6yz532uuwzo8a
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 2.20
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|2.20}}
+
+{{arma3}} supports the {{Link|https://partner.steamgames.com/doc/features/timeline|Steam Timeline}} feature as part of {{Link|https://store.steampowered.com/gamerecording|Steam Game Recording}}.
+
+The game has implemented timeline events for:
+* Various events in general gameplay
+* [[Arma 3: Time Trials]]
+* [[Arma 3: Firing Drills]]
+* [[Arma 3: Invaders]]
+
+Scenarios and mods are able to also trigger (custom) events! This is primarily done via the [[steamGameRecordingEvent]] script command.
+
+
+== Events ==
+
+Event configs can be in Mission description.ext or mod config. The description.ext takes priority.
+In mod config's the events are in "SteamManagerConfig >> GameRecording".
+In description.ext the events are in "SteamGameRecording"
+
+
+Adding custom events in a mod config:
+<syntaxhighlight lang="cpp">
+class SteamManagerConfig
+{
+	class GameRecording 
+	{
+		class YourEvent //Class name referenced in the event trigger by script
+		{
+			scope = 2; //Accessor scope (2: public)
+			title = "Your Event"; //Title text
+			description = "Your event has triggered at %1."; //Description text (possibly with parameters)
+			icon = "a3_steam_x"; //Icon from the list below
+			priority = 100; //Priority relative to other events near the same time (0 - 1000)
+			clipPriority = 2; //1: None, 2: Standard, 3: Featured
+		};
+	};
+};
+</syntaxhighlight>
+
+Disabling default Events in a mission description.ext:
+<syntaxhighlight lang="cpp">
+class SteamGameRecording
+{
+	class UnitKilled
+	{
+		scope = 0; //Accessor scope (0: private)
+	};
+	class VehicleKilled
+	{
+		scope = 0;
+	};
+};
+</syntaxhighlight>
+
+
+== Special Utilities ==
+
+While [[steamGameRecordingEvent]] is primarily used to trigger events defined in configs, it can also be used for triggering special utilities. These can mark game phases, set phase tags / attributes, and more. Explore the scripts and FSMs for the content listed above for inspiration (UI_F, Modules_F_Beta and Modules_F_Kart). Here are various examples to help get started:
+
+<sqf>steamGameRecordingEvent ["StartGamePhase", "Your Game Phase ID"]; //Start a game phase, separately presented in the clip listing</sqf>
+<sqf>steamGameRecordingEvent ["EndGamePhase"]; //End a game phase</sqf>
+<sqf>steamGameRecordingEvent ["SetGamePhaseTag", "TagName", "TagGroup", "a3_steam_x"]; //Apply a tag with associated icon in the current game phase</sqf>
+<sqf>steamGameRecordingEvent ["SetGamePhaseAttribute", "AttributeName", "AttributeGroup"]; //Apply an attribute in the current game phase</sqf>
+<sqf>steamGameRecordingEvent ["SetTooltip", "TooltipText"(, StartOffset)]; //Apply a tooltip to the timeline</sqf>
+<sqf>steamGameRecordingEvent ["ClearTooltip"(, StartOffset)]; //Clear tooltip from the timeline</sqf>
+
+
+== Icons ==
+
+While Steam itself has a {{Link|https://partner.steamgames.com/doc/features/timeline|set of icons available}}, {{arma3}} has a (larger) set available as well.
+This includes a duplication of the Steam set, which are better visually consistent with the rest of the icons (prefixed with "a3_'''steam'''_", see list below).
+
+{| class="wikitable"
+! Icon ID
+! style="min-width: 32px" | Preview
+|-
+| ''a3_aow''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 aow.png|32px]]</div>
+|-
+| ''a3_grenade_throw''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 grenade throw.png|32px]]</div>
+|-
+| ''a3_armad''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 armad.png|32px]]</div>
+|-
+| ''a3_explosive_trigger''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 explosive trigger.png|32px]]</div>
+|-
+| ''a3_arsenal''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 arsenal.png|32px]]</div>
+|-
+| ''a3_revive''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 revive.png|32px]]</div>
+|-
+| ''a3_heal''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 heal.png|32px]]</div>
+|-
+| ''a3_respawn''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 respawn.png|32px]]</div>
+|-
+| ''a3_icon''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 icon.png|32px]]</div>
+|-
+| ''a3_curator''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 curator.png|32px]]</div>
+|-
+| ''a3_kart''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 kart.png|32px]]</div>
+|-
+| ''a3_heli''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 heli.png|32px]]</div>
+|-
+| ''a3_mark''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 mark.png|32px]]</div>
+|-
+| ''a3_expansion''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 expansion.png|32px]]</div>
+|-
+| ''a3_jets''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 jets.png|32px]]</div>
+|-
+| ''a3_argo''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 argo.png|32px]]</div>
+|-
+| ''a3_orange''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 orange.png|32px]]</div>
+|-
+| ''a3_tacops''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 tacops.png|32px]]</div>
+|-
+| ''a3_tank''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 tank.png|32px]]</div>
+|-
+| ''a3_enoch''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 enoch.png|32px]]</div>
+|-
+| ''a3_dlc''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 dlc.png|32px]]</div>
+|-
+| ''a3c_gm''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3c gm.png|32px]]</div>
+|-
+| ''a3c_vn''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3c vn.png|32px]]</div>
+|-
+| ''a3c_csla''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3c csla.png|32px]]</div>
+|-
+| ''a3c_ws''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3c ws.png|32px]]</div>
+|-
+| ''a3c_spe''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3c spe.png|32px]]</div>
+|-
+| ''a3c_rf''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3c rf.png|32px]]</div>
+|-
+| ''a3c_ef''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3c ef.png|32px]]</div>
+|-
+| ''a3_artillery''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 artillery.png|32px]]</div>
+|-
+| ''a3_radio''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 radio.png|32px]]</div>
+|-
+| ''a3_supply_drop''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 supply drop.png|32px]]</div>
+|-
+| ''a3_camera''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 camera.png|32px]]</div>
+|-
+| ''a3_task_success''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 task success.png|32px]]</div>
+|-
+| ''a3_task_failure''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 task failure.png|32px]]</div>
+|-
+| ''a3_challenge_timer''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 challenge timer.png|32px]]</div>
+|-
+| ''a3_challenge_cp''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 challenge cp.png|32px]]</div>
+|-
+| ''a3_challenge_target''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 challenge target.png|32px]]</div>
+|-
+| ''a3_challenge_finish''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 challenge finish.png|32px]]</div>
+|-
+| ''a3_challenge_bronze''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 challenge bronze.png|32px]]</div>
+|-
+| ''a3_challenge_no_bronze''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 challenge no bronze.png|32px]]</div>
+|-
+| ''a3_challenge_silver''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 challenge silver.png|32px]]</div>
+|-
+| ''a3_challenge_no_silver''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 challenge no silver.png|32px]]</div>
+|-
+| ''a3_challenge_gold''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 challenge gold.png|32px]]</div>
+|-
+| ''a3_challenge_no_gold''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 challenge no gold.png|32px]]</div>
+|-
+| ''a3_challenge_no_special''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 challenge no special.png|32px]]</div>
+|-
+| ''a3_invaders''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 invaders.png|32px]]</div>
+|-
+| ''a3_zeus''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 zeus.png|32px]]</div>
+|-
+| ''a3_rank_captain''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 rank captain.png|32px]]</div>
+|-
+| ''a3_rank_colonel''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 rank colonel.png|32px]]</div>
+|-
+| ''a3_rank_corporal''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 rank corporal.png|32px]]</div>
+|-
+| ''a3_rank_general''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 rank general.png|32px]]</div>
+|-
+| ''a3_rank_lieutenant''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 rank lieutenant.png|32px]]</div>
+|-
+| ''a3_rank_major''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 rank major.png|32px]]</div>
+|-
+| ''a3_rank_private''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 rank private.png|32px]]</div>
+|-
+| ''a3_rank_sergeant''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 rank sergeant.png|32px]]</div>
+|-
+| ''a3_reload''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 reload.png|32px]]</div>
+|-
+| ''a3_inventory''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 inventory.png|32px]]</div>
+|-
+| ''a3_take''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 take.png|32px]]</div>
+|-
+| ''a3_vehicle_driver''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 vehicle driver.png|32px]]</div>
+|-
+| ''a3_vehicle_passenger''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 vehicle passenger.png|32px]]</div>
+|-
+| ''a3_vehicle_commander''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 vehicle commander.png|32px]]</div>
+|-
+| ''a3_vehicle_gunner''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 vehicle gunner.png|32px]]</div>
+|-
+| ''a3_vehicle_pilot''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 vehicle pilot.png|32px]]</div>
+|-
+| ''a3_eject''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 eject.png|32px]]</div>
+|-
+| ''a3_steam_achievement''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam achievement.png|32px]]</div>
+|-
+| ''a3_steam_attack''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam attack.png|32px]]</div>
+|-
+| ''a3_steam_bolt''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam bolt.png|32px]]</div>
+|-
+| ''a3_steam_bookmark''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam bookmark.png|32px]]</div>
+|-
+| ''a3_steam_bug''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam bug.png|32px]]</div>
+|-
+| ''a3_steam_cart''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam cart.png|32px]]</div>
+|-
+| ''a3_steam_caution''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam caution.png|32px]]</div>
+|-
+| ''a3_steam_chat''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam chat.png|32px]]</div>
+|-
+| ''a3_steam_checkmark''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam checkmark.png|32px]]</div>
+|-
+| ''a3_steam_chest''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam chest.png|32px]]</div>
+|-
+| ''a3_steam_circle''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam circle.png|32px]]</div>
+|-
+| ''a3_steam_combat''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam combat.png|32px]]</div>
+|-
+| ''a3_steam_completed''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam completed.png|32px]]</div>
+|-
+| ''a3_steam_crown''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam crown.png|32px]]</div>
+|-
+| ''a3_steam_death''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam death.png|32px]]</div>
+|-
+| ''a3_steam_defend''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam defend.png|32px]]</div>
+|-
+| ''a3_steam_diamond''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam diamond.png|32px]]</div>
+|-
+| ''a3_steam_edit''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam edit.png|32px]]</div>
+|-
+| ''a3_steam_effect''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam effect.png|32px]]</div>
+|-
+| ''a3_steam_explosion''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam explosion.png|32px]]</div>
+|-
+| ''a3_steam_fix''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam fix.png|32px]]</div>
+|-
+| ''a3_steam_flag''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam flag.png|32px]]</div>
+|-
+| ''a3_steam_gem''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam gem.png|32px]]</div>
+|-
+| ''a3_steam_group''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam group.png|32px]]</div>
+|-
+| ''a3_steam_heart''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam heart.png|32px]]</div>
+|-
+| ''a3_steam_info''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam info.png|32px]]</div>
+|-
+| ''a3_steam_invalid''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam invalid.png|32px]]</div>
+|-
+| ''a3_steam_marker''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam marker.png|32px]]</div>
+|-
+| ''a3_steam_minus''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam minus.png|32px]]</div>
+|-
+| ''a3_steam_pair''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam pair.png|32px]]</div>
+|-
+| ''a3_steam_person''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam person.png|32px]]</div>
+|-
+| ''a3_steam_plus''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam plus.png|32px]]</div>
+|-
+| ''a3_steam_purchase''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam purchase.png|32px]]</div>
+|-
+| ''a3_steam_question''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam question.png|32px]]</div>
+|-
+| ''a3_steam_ribbon''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam ribbon.png|32px]]</div>
+|-
+| ''a3_steam_screenshot''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam screenshot.png|32px]]</div>
+|-
+| ''a3_steam_scroll''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam scroll.png|32px]]</div>
+|-
+| ''a3_steam_square''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam square.png|32px]]</div>
+|-
+| ''a3_steam_star''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam star.png|32px]]</div>
+|-
+| ''a3_steam_starburst''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam starburst.png|32px]]</div>
+|-
+| ''a3_steam_timer''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam timer.png|32px]]</div>
+|-
+| ''a3_steam_transfer''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam transfer.png|32px]]</div>
+|-
+| ''a3_steam_triangle''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam triangle.png|32px]]</div>
+|-
+| ''a3_steam_trophy''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam trophy.png|32px]]</div>
+|-
+| ''a3_steam_view''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam view.png|32px]]</div>
+|-
+| ''a3_steam_x''
+| <div style="background:#282b31" align="center">[[File:arma3 sgr a3 steam x.png|32px]]</div>
+|}
+
+[[Category:Introduced with Arma 3 version 2.20]]
+{{GameCategory|arma3|Editing}}

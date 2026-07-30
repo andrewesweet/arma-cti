@@ -1,0 +1,180 @@
+// source: https://community.bistudio.com/wiki/MoveObject
+// revision: 211285 (2021-01-18T10:52:46Z)
+// export sha1: qwtl17oy66f12d3qqaliy36viwanbdx
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+         
+MoveObject Version 1.xx by Mikero<br>
+
+ 
+read genreadme.txt<br>
+see [[fixes.htm]]
+
+ 
+-------------------------------------------------------<br> <br>
+MoveObject will rename file paths inside *any*
+
+ 
+* wrp,
+* rvmat,
+* pew,
+* p3d,
+* All pbo types
+* folder
+ 
+whether binarised or plain.<br>
+
+ 
+* In the case of a pbo or folder,  the above  file types are worked on  inside the pbo / folder.
+* Pbo's are considered to be ifa,pbo,xbo,ebo
+* In the case of a folder, an additional check is made to   alter the contents of any of the accepted $PBOPREFIX$.txt's<br>
+ 
+The intention of moveobject is that you should be able to extract ANY of 
+these file types from one addon, and place it in another addon without fuss. <br> <br> <br>
+For anyone who's been there and dun that, hand editing the path names inside 
+individual p3d's, let alone 30 or so p3d's, well, frankly, just throw money
+
+ 
+There are two classes of usage using moveobject. Listing 
+content, and separately, renaming content.<br>
+--------<br> <br> usage
+
+ 
+<br> <br> '''MoveObject [-options...] NameOfFile[.ext] [from] [to]<br>
+MoveObject [-options...] NameOfFolder [from] [to]<br>
+MoveObject NameOfFile[.ext] replacementlist<br>
+MoveObject NameOfFolder replacementlist'''<br> <br> <br>
+[.ext] is p3d by default. Any other file type (wrp eg) must be specified<br>
+
+                              
+{| border="1"
+|-
+|
+    options (case insensitive)
+| 
+|-
+|-P
+|don't pause
+|-
+|'''-F'''
+|output list to NameOf'''F'''ile.lst, not 
+    screen
+|-
+|'''-R '''
+|Remove old p3d user flags (no replacement 
+    list required)
+|-
+|'''-X '''
+|unconditionally replace all file 
+    references with lower case (does not affect any that ARE all lowercase)
+|-
+|'''-W'''
+|allow land_xxx class changes in binary 
+    wrps (see below)
+|-
+| 
+| 
+|} 
+----
+ 
+======================================================<br> '''Wrp Land_XXX classes :::Applies ONLY to arma binary 
+wrps'''<br>
+=====================================================<br>
+
+ 
+moving objects from one path to another is fine.
+
+ 
+Renaming p3d's is NOT.<br> <br>
+The reason being the binary wrp contains embedded information about that p3d in 
+it's classed models. If you change to another model, that information is 
+invalid. The dll checks for the special case of a 'classed model' being renamed 
+(not the path, the model). There is no affect in renaming ordinary p3d's. only 
+those that are land_classed.<br> <br>
+There is of course an exception to above where, in fact, you have *also* renamed 
+the p3d! In that special circumstance, the wrp information remains valid, and 
+you genuinely do want to call it something different.<br> <br>
+-W allows this.<br>
+=====================================================<br> <br> <br> -List examples<br> <br>
+'''MoveObject NameOfRVmat.rvmat '''
+
+ 
+'''Moveobject folder &gt;pipe.txt 2&gt;&amp;1 // 
+full folder tree'''<br> <br>
+the list option is used to<br> <br>
+a) check what paths are in the model to change<br>
+b) check the change took place<br> <br> Rename Example<br> <br> <br>
+'''MoveObject MyOldP3d MyGreatAddon\somewhere\data MyNewAddon\Henry\Marbles\wherever\you\want'''<br> <br>
+Note that on success, the original file(s) are not preserved. It is your 
+responsibility to tuck them away safely somewhere.
+
+ 
+The target file is NOT altered if an error is encountered.
+
+  
+<br>
+The two tandem batch files in the package are examples of how to make a global 
+change to all files in a given folder<br>
+
+ 
+There usage may not be necessary with the folder option 
+introduced at a revision i don't now recall. They are preserved for your 
+interest.
+
+ 
+----
+ 
+<br> <br> Notes:<br> <br> All renaming must be from start\of\folder.<br>
+
+ 
+* renaming marbles will not work.
+* renaming some\folder\marbles will work
+ 
+if you specify a leading slash, it will be ignored. It is 
+neither correct, nor incorrect to do so. It is however, extremely convenient to 
+use dos tabbing to fill out the full pathway. Similarly (because of dos tabbing) 
+a drive: specifier is also ignored.<br> <br>
+Bis have made their usual cock up of hard versus relative 
+addressing in their file structures. They are unlikely to ever fix what is 
+beyond their abilities. No matter what, no if's and no maybe's. ALL 
+bis addressing is \hard\path. So thi makes ooops object modelling a frustrating 
+and pointless waste of effort.
+
+ 
+However, because of their own internal mess, *some* 
+path specifications must have a preceding slash, some must *not* have, and other 
+types don't care. Move object takes care of which is what without you worrying 
+about it.
+
+ 
+Where you have differing child paths, (and most models have lots 
+of differing child paths) you need to successively invoke MoveObject until 
+you are complete starting with children then parents. MoveObject eases this by 
+accepting a txt file of iterative lists.<br> <br> '''Restrictions:'''<br> <br>
+ofp unbinarised p3d's (odol-sp3x) cannot have
+
+ 
+* more than 32 character default path<br>   more than 32 character texture names<br>   more than 58 character proxy names<br>
+ 
+Wrp unbinarised {{ofp}} files (4WVR) cannot have
+
+ 
+* more than 32 character texture names<br>   p3d model names &gt; 76<br>   p3d model names &lt;3<br>
+ 
+wrp unbinarised arma files (8WVR) cannot have
+
+ 
+* less that 3 characters for p3d model names<br>
+ 
+Be prepared to wait a very long time on 1gig wrp files<br> <br> Parameter List:<br> <br>
+the text file must contain the following format (as if each line were passed on 
+the command line)<br> <br>
+OldName1 space NewName1<br>
+OldName2 space NewName2<br> <br>
+the parser for this is very primitive and very unforgiving<br> <br>
+Enjoy<br>
+
+
+
+[[Category:Mikero Tools]]

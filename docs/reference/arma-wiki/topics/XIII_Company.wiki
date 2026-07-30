@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/XIII_Company
+// revision: 373482 (2025-05-13T23:34:23Z)
+// export sha1: h5duim5hypy4rqsn338ri9joxe0c27x
+// categories: Category:Arma 3: Multiplayer Squads
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:logo.jpg]]
+
+== XIII COMPANY==
+<p>[XIII] XIII Company likes to play only cooperative (PVE) missions.. 
+Began its history over there in 2000, its founders were several friends who were engaged in on-line to play different games, reached its highest peak when he began to devote himself almost exclusively to the OFP, reaching almost to his staff 30 players active for almost 5 years, the clan have gone through nearly 50 colleagues, some of them now have their own clan and even manage a community, after the OFP, we continue on the weapon, where we remain today. </p>
+<p>'''WE SPEAK SPANISH ONLY'''. </p>
+
+== MODIFICATIONS ==
+<p> THE XIII, apart from being a gaming clan, also opted to become more involved in what is the configuration and modification of the game, where some of its members collaborate and integrate, the change in the Spanish Armed Assault, the famous'' '''Armed Forces MOD', both for the OFP for the gun. </p>
+
+<p> The gameplay is almost only cooperative, the items are produced exclusively by the group editing of the clan, which use specially selected addons MOD and the Armed Forces, edited for maximum playability and realism that allows the simulator. </p>
+
+<p> Also used some scripts exclusive made by staff of the clan. </p>
+
+<p> XIII organizes multi interclanes items, to 30 players in coop. </p> 
+
+<p> XIII also offers its server to the entire community as well as TeamSpeak 2. </p>
+
+<p>LA XIII COMPAÑIA</p>
+
+=== Server ArmA ===
+[[File:B_560x95.JPG]]
+
+
+=== Server Teamspeak ===
+[[File:Banner_560x95.JPG]]
+
+== ENLACES ==
+
+[XIII] {{Link|http://xiii.ffaa.es/|Homepage}}
+
+[FFAA] {{Link|http://www.ffaa.es/|Homepage}}
+
+{{GameCategory|arma3|Multiplayer Squads}}

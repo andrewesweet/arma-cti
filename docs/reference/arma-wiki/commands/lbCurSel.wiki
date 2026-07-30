@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/lbCurSel
+// revision: 349157 (2023-11-08T14:49:50Z)
+// export sha1: 3bb8igtb43zphsh8t86xm9abc8n7lxc
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= GUI Control - ListBox
+
+|descr= Returns the index of the selected item of the [[CT_LISTBOX]], [[CT_LISTNBOX]], [[CT_COMBO]] or [[CT_TOOLBOX]]. For [[CT_LISTBOX]] with multi selection enabled use [[lbSelection]].
+
+|s1= [[lbCurSel]]  idc
+
+|p1= idc: [[Number]]
+
+|r1= [[Number]] - selected index (row) or -1 if nothing is selected
+
+|s2= [[lbCurSel]]  control
+
+|p21= control: [[Control]]
+
+|r2= [[Number]] - selected index (row) or -1 if nothing is selected
+
+|x1= <sqf>_index = lbCurSel 101;</sqf>
+
+|x2= <sqf>lbCurSel _ctrl;</sqf>
+
+|seealso= [[lbIsSelected]] [[lbSelection]] [[lbSetCurSel]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted: Sep 10 2014</dd>
+<dt class="note">[[User:ffur2007slx2_5|ffur2007slx2_5]]</dt>
+<dd class="note">More information on the [[CT_LISTBOX]] command family can be found [[CT_LISTBOX#Scripting_Example|here]].
+</dl>

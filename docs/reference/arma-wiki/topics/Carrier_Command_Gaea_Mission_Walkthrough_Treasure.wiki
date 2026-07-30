@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Walkthrough/Treasure
+// revision: 296041 (2021-11-17T14:40:29Z)
+// export sha1: bohfl5nu9mfxyf3h8d7fzh4srm2y7dc
+// categories: Category:Carrier Command: Gaea Mission: Walkthrough
+// Vendored snapshot. Do not edit — re-export instead.
+
+This is the third island in the Tutorial Campaign
+
+Here the player liberates enough fuel from the refinery to allow them to proceed with the campaign. Also, he gets a Manta into the Carrier arsenal.
+
+= Tutorial =
+*Hacking a Building complex
+*Difficult terrain
+*Manta
+
+= Achievement =
+For skipping the objective '''(#3)''' and overpowering the defenses of the Command center complex by conventional means, an achievement is awarded.
+
+= Objectives =
+#LIQUID TREASURE
+#*Treasure is an island rich in raw materials, namely unrefined fuel. These resources will definitely come in handy. We need to take the island and make uses of its riches.
+#HACK THE COMMAND CENTER
+#*Once we hack the Command Center, the island is ours.
+#DEACTIVATE THE ISLAND'S DEFENSES
+#*If both parabolas are aimed at the Command Center, the resulting feedback loop should disable the island&apos;s defenses for a while.
+#SEARCH THE REFINERY
+#*This island is used for refining fuel for use in vehicles and ships. Perhaps the Refinery will have fuel for our Carrier, which we really need to continue north.
+
+= Hints =
+'''The parabolas''' need '''not''' to be activated in the same time or in any specified order. In doing task '''(#3)''', I suggest activating the more remote parabola, one near the refinery, first.
+
+
+{{GameCategory|carriercommand|Walkthrough}}

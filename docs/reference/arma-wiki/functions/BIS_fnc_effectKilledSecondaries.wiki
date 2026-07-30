@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_effectKilledSecondaries
+// revision: 309837 (2022-05-05T12:09:52Z)
+// export sha1: e9s5i4n1i00neipokng3ralqtpf9ett
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Effects | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Effects
+
+|serverExec= server
+
+|descr= <pre>//Small secondary fuel explosions
+//By Maddmatt for Arma 2
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_effectKilledSecondaries]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_effectKilledSecondaries;</sqf> -->
+
+|seealso=
+}}

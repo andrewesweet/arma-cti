@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/toJSON
+// revision: 370177 (2024-11-04T16:34:52Z)
+// export sha1: aebqnv6v4907c9c9pk3dzbair85371a
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Strings
+
+|descr= Converts data to {{Link|https://en.wikipedia.org/wiki/JSON|JSON}}.
+
+|s1= [[toJSON]] data
+
+|p1= data - Only certain [[Data Types]] are supported:
+* [[Boolean]] - serialized as JSON boolean
+* [[Number]] - serialized as JSON number (floating-point)
+* [[String]] - serialized as JSON string
+* [[Array]] - Serialized as JSON array. Unsupported elements (e.g. [[Object]]s) are converted to JSON null.
+* [[HashMap]] - Serialized as JSON object. Only [[String]] keys are supported, other keys are ignored. Unsupported values (e.g. [[Object]]s) are converted to JSON null.
+* [[nil]] - serialized as JSON null {{Feature|important|The [[nil]] value can only be passed as a member of an [[Array]] or [[HashMap]]. It cannot be passed directly as the command would simply not execute.}}
+
+|r1= [[String]] - JSON string
+
+|x1= <sqf>
+private _result = toJSON ["this", "is", "an", "array"];
+</sqf>
+Result:
+<syntaxhighlight lang="json">
+["this","is","an","array"]
+</syntaxhighlight>
+
+|x2= <sqf>
+private _hashMap = createHashMap;
+_hashMap set ["bKey", true];
+_hashMap set ["sKey", "Hello there"];
+_hashMap set ["oKey", player];
+_hashMap set ["nKey", 42];
+_hashMap set ["hKey", ["key1", "key2", "yolo"] createHashMapFromArray ["General Kenobi", true, "Hello it's me"]];
+toJSON _hashMap;
+</sqf>
+Result (formatted for readability):
+<syntaxhighlight lang="json">
+{
+	"bKey": true,
+	"sKey": "Hello there",
+	"oKey": null,
+	"nkey": 42,
+	"hKey": {
+		"key1": "General Kenobi",
+		"key2": true,
+		"yolo": "Hello it's me"
+	}
+}
+</syntaxhighlight>
+
+|x4= <sqf>
+private _jsonPlayer = toJSON player; // empty string - [[Object]] is not supported
+</sqf>
+
+|seealso= [[fromJSON]] [[toString]] [[str]]
+}}

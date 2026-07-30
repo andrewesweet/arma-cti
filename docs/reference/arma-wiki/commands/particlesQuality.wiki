@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/particlesQuality
+// revision: 310765 (2022-05-07T20:21:39Z)
+// export sha1: gmrphphrcprsu1kjfx9blhzsnvy6ga3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Particles | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+
+|gr1= Particles
+
+|descr= Returns current user settings for particles quality (configure->video->general->particles). 0-low, 1-normal, 2-high
+
+|s1= '''particlesQuality'''
+
+|r1= [[Number]]
+
+|x1= <sqf>_currentQuality = particlesQuality;</sqf>
+
+|seealso= [[setParticleCircle]] [[setParticleParams]] [[setParticleRandom]] [[ParticleTemplates]] [[setParticleClass]] [[setParticleFire]]
+}}

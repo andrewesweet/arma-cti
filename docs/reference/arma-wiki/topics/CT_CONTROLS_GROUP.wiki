@@ -1,0 +1,337 @@
+// source: https://community.bistudio.com/wiki/CT_CONTROLS_GROUP
+// revision: 351492 (2023-12-06T09:58:27Z)
+// export sha1: 7n04us7s69y3pdg6dwouwitlaqvbkv1
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{CT|intro
+
+|macro = CT_CONTROLS_GROUP
+|value = 15
+|description = Container control for other controls. The child controls have to be defined in the '''controls''' subclass. The child controls' positions are calculated relatively to the control group, so {{hl|x {{=}} 0;}} and {{hl|y {{=}} 0;}} moves the child control to the top left corner of the controls group. However, that does not mean that {{hl|x {{=}} 1;}} and {{hl|y {{=}} 1;}} will move it to the bottom right corner since the height and width of the control can be {{hl|> 1}}! If the position or height/width of any child controls cause any part of the child control to fall outside the dimensions of the controls group then scrollbars will become visible. This allows for the creation of scrollable text controls for example. Any commands operating on the Controls Group also affect the child controls. For example <sqf inline>_ctrlGroup ctrlShow false</sqf> will also hide the children of the group. Control groups are not visible by themselves, therefore most of the common attributes, eg. colorBackground, do not apply.
+{{Feature|important|A generalised screw-up occurs in Arrowhead rscControlGroup where color is not specified for V and H scrollbars and shadow should not have been specified. As a result any deriving class: 
+* a) cannot inherit the existing scrollbar
+* b) must repeat the entire thing with the addition of color.}}
+|gallery=
+|commands =
+|events =
+}}
+
+{{CT|abc start}}
+
+=== C ===
+{{CT|attribute
+|name=controls
+|type1=Class
+|value1=class controls
+{
+	class Subcontrol : RscText
+	{
+		text = "This is a sub control";
+		x = 0;
+		y = 0;
+		w = 10 * GUI_GRID_W;
+		h = 1 * GUI_GRID_H;
+	};
+};
+|description=Any user added [[Arma: GUI Configuration#Controls|controls]] to be contained within the controls group.
+}}
+
+=== H ===
+{{CT|attribute
+|name=HScrollbar
+|type1=Class
+|value1=class HScrollbar
+{
+	height = 0;
+	color[] = {1,1,1,1};
+	colorActive[] = {1,1,1,1};
+	colorDisabled[] = {1,1,1,0.3};
+	thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+	arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+	arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+	border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+	shadow = 0;
+	scrollSpeed = 0.06;
+	width = 0;
+	autoScrollEnabled = 0;
+	autoScrollSpeed = -1;
+	autoScrollDelay = 5;
+	autoScrollRewind = 0;
+};
+|description=Settings relatied to the horizontal (↔) scrollbar.
+All available properties of '''VScrollbar''' and '''HScrollbar'''. Not all available properties make sense for each of these as outlined below.
+{{{!}}class="wikitable" border="1" align="left" cellpadding="3" cellspacing="0" {{!}}
+! colspan="6" {{!}} Properties
+{{!}}-
+! Name
+! Type
+! Remark
+! Scrollbar
+! VScrollbar
+! HScrollbar
+
+{{!}}-
+{{!}} '''color'''
+{{!}} [[Color{{!}}color array]]
+{{!}} Color of thumb and arrow heads, also arrow backgrounds when pressed.
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}}-
+{{!}} '''colorActive'''
+{{!}} [[Color{{!}}color array]]
+{{!}} Color when the scrollbar is focused.
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}}-
+{{!}} '''colorDisabled'''
+{{!}} [[Color{{!}}color array]]
+{{!}} Color when the scrollbar is deactivated.
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}}-
+{{!}} '''width'''
+{{!}} [[Number]]
+{{!}} Width of the controlsGroup's scroll bars  in [[GUI_Coordinates{{!}}screen space dimensions]]. Setting to 0 will cause no scrollbar to be shown even if a child falls outside the controlsGroup's dimensions
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}} 
+{{!}}-
+{{!}} '''height'''
+{{!}} [[Number]]
+{{!}} Height of the controlsGroup's scroll bars  in [[GUI_Coordinates{{!}}screen space dimensions]]. Setting to 0 will cause no scrollbar to be shown even if a child falls outside the controlsGroup's dimensions
+{{!}} <center>x</center>
+{{!}} 
+{{!}} <center>x</center>
+{{!}}-
+{{!}} '''autoScrollEnabled'''
+{{!}} [[Number]]
+{{!}} 1 - enabled, 0 - disabled, auto-scrolling does not work when the control group or one of its parents is in focus ([[ctrlSetFocus]] or clicking on the control group)
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}}
+{{!}}-
+{{!}} '''autoScrollSpeed'''
+{{!}} [[Number]]
+{{!}} Default -1, smaller numbers scroll faster, '''cannot''' be forced to scroll backwards by supplying negative numbers. Setting to < 0 disables auto-scrolling
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}}
+{{!}}-
+{{!}} '''autoScrollDelay'''
+{{!}} [[Number]]
+{{!}} Time in seconds before autoScroll starts, restarts after user input and time before rewind happens when the end has been reached
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}}
+{{!}}-
+{{!}} '''autoScrollRewind'''
+{{!}} [[Number]]
+{{!}} 0 - disable, 1 - enabled : If autoScroll reaches the bottom of the controlsGroup it will wait '''autoScrollDelay''' then fade out, scroll back to the top, fade back in, wait '''autoScrollDelay''' before proceeding to start auto scrolling again.
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}}
+{{!}}-
+{{!}} '''thumb'''
+{{!}} [[String]]
+{{!}} Path to texture or [[Procedural_Textures#color{{!}}Procedural Texture]] "#(argb,8,8,3)color(1,1,1,1)";
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}}-
+{{!}} '''arrowEmpty/Full'''
+{{!}} [[String]]
+{{!}} Path to texture or [[Procedural_Textures#color{{!}}Procedural Texture]] "#(argb,8,8,3)color(1,1,1,1)";
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}}-
+{{!}} '''border'''
+{{!}} [[String]]
+{{!}} Path to texture or [[Procedural_Textures#color{{!}}Procedural Texture]] "#(argb,8,8,3)color(1,1,1,1)";
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}}-
+{{!}} '''shadow'''
+{{!}} [[Number]]
+{{!}}
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}}-
+{{!}} '''scrollSpeed'''
+{{!}} [[Number]]
+{{!}} Default 0.06 : Speed of user vertical scroll input when using the mouse wheel, can be set to 0 to disable the user from being able to scroll, can be set to negative number to reverse scroll direction.
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}} <center>x</center>
+{{!}}-
+{{!}}}<br clear="all">
+}}
+
+=== S ===
+<!-- This should probably be moved as default values for displays? -->
+{{CT|attribute
+|name=scriptName
+|type1=String
+|value1="RscHorizontalCompass"
+|description= Used along with scriptPath to compile a UI's script at preStart.
+scriptName is both the actual name of the file #.sqf and the name of the compiled function in uinamespace #_script.
+<br/>UI's only have their scripts compiled if they exist in one of...
+* configFile
+* configFile >> RscTitles
+* configFile >> RscInGameUI
+* configFile >> CfgEden >> Attributes
+at preStart.
+<br/>UI's that have had their scripts compiled in this way can then use an onLoad event with BIS_fnc_initDisplay to call the function when the display is created.
+}}
+
+<!-- This should probably be moved as default values for displays? -->
+{{CT|attribute
+|name=scriptPath
+|type1=String
+|value1="EnochCommon"
+|description= Used along with scriptName to compile UI's script at preStart.
+The string value is not the path itself but instead is a lookup from CfgScriptPaths. 
+<br/>UI's only have their scripts compiled if they exist in one of...
+* configFile
+* configFile >> RscTitles
+* configFile >> RscInGameUI
+* configFile >> CfgEden >> Attributes
+at preStart.
+<br/>UI's that have had their scripts compiled in this way can then use an onLoad event with BIS_fnc_initDisplay to call the function when the display is created.
+}}
+
+=== V ===
+{{CT|attribute
+|name=VScrollbar
+|type1=Class
+|value1=class VScrollbar
+{
+	width = 0;
+	color[] = {1,1,1,1};
+	autoScrollEnabled = 1;
+	colorActive[] = {1,1,1,1};
+	colorDisabled[] = {1,1,1,0.3};
+	thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+	arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+	arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+	border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+	shadow = 0;
+	scrollSpeed = 0.06;
+	height = 0;
+	autoScrollSpeed = -1;
+	autoScrollDelay = 5;
+	autoScrollRewind = 0;
+};
+|description=Settings relatied to the vertical (↕) scrollbar. For details see [[#HScrollbar]]
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscControlsGroup ===
+<syntaxhighlight lang="cpp">
+class RscControlsGroup
+{
+	deletable = 0;
+	fade = 0;
+	class VScrollbar : ScrollBar
+	{
+		color[] = {1,1,1,1};
+		width = 0.021;
+		autoScrollEnabled = 1;
+	};
+	class HScrollbar : ScrollBar
+	{
+		color[] = {1,1,1,1};
+		height = 0.028;
+	};
+	class Controls
+	{
+	};
+	type = CT_CONTROLS_GROUP;
+	idc = -1;
+	x = 0;
+	y = 0;
+	w = 1;
+	h = 1;
+	shadow = 0;
+	style = ST_MULTI;
+};
+</syntaxhighlight>
+
+== Other examples ==
+<syntaxhighlight lang="cpp">
+class Dialog
+{
+	idd = -1;
+	class Controls
+	{
+		class _CT_CONTROLS_GROUP
+		{
+			type = 15;
+			idc = -1;
+			style = 16;
+			x = 0;
+			y = 0;
+			w = 1;
+			h = 1;
+			shadow = 0;
+			class ScrollBar
+			{
+				color[] = {1,1,1,0.6};
+				colorActive[] = {1,1,1,1};
+				colorDisabled[] = {1,1,1,0.3};
+				thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+				arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+				arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+				border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+			};
+			class VScrollbar : ScrollBar
+			{
+				width = 0.021;
+				autoScrollSpeed = -1;
+				autoScrollDelay = 5;
+				autoScrollRewind = 0;
+				shadow = 0;
+			};
+			class HScrollbar : ScrollBar
+			{
+				height = 0.028;
+				shadow = 0;
+			};
+			class Controls
+			{
+				class _CT_EDIT
+				{
+					idc = -1;
+					onLoad = "params ['_ctrl']; _ctrl ctrlSetText loadFile 'A3\functions_f\Actions\fn_packStaticWeapon.sqf'";
+					type = 2;
+					style = 16;
+					autocomplete = "";
+					canModify = 1;
+					colorBackground[] = {0,0,0,0.5};
+					colorText[] = {1,1,1,1};
+					colorDisabled[] = {1,1,1,0.25};
+					colorSelection[] = {"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.77])","(profilenamespace getvariable ['GUI_BCG_RGB_G',0.51])","(profilenamespace getvariable ['GUI_BCG_RGB_B',0.08])",1};
+					text = "";
+					x = 0;
+					y = 0;
+					w = 2;
+					h = 2;
+					sizeEx = 0.05;
+					font = "RobotoCondensedLight";
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+[[Category: Control Types]]

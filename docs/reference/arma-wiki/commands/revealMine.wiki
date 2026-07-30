@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/revealMine
+// revision: 369185 (2024-09-03T10:34:46Z)
+// export sha1: qld22fcrqd3fyydgd8t9qk80ppch0ot
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mines | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Mines
+
+|descr= Sets given mine as known to the side. (Knowledge about a mine is always shared across all units in a side.)
+
+|s1= side [[revealMine]] mine
+
+|p1= side: [[Side]]
+
+|p2= mine: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>west revealMine _mine;</sqf>
+
+|seealso= [[allMines]] [[detectedMines]] [[mineDetectedBy]] [[createMine]] [[mineActive]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2017-09-10 - 21:59 (UTC)</dd>
+<dt class="note">[[User:AgentRev|AgentRev]]</dt>
+<dd class="note">
+Manual mine detection introduced in A3 v1.76 can be overridden with something like this:
+<sqf>
+0 spawn
+{
+	while {true} do
+	{
+		if ("MineDetector" in items player) then
+		{
+			{
+				if (mineActive _x && !(_x mineDetectedBy playerSide)) then
+				{
+					playerSide revealMine _x;
+				};
+			} forEach (player nearObjects ["MineBase", 10]);
+
+			uiSleep 0.1;
+		}
+		else
+		{
+			uiSleep 3;
+		};
+	};
+};
+</sqf>
+</dd>
+
+</dl>

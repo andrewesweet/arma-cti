@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/allDiarySubjects
+// revision: 377670 (2026-01-02T09:02:28Z)
+// export sha1: eu28l4rpylnf0z97df3nbohc2xr5vux
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|arg= global
+
+|eff= local
+
+|gr1= Briefing
+
+|descr= Returns array with all [[Diary]] subjects available to the given person. See [[Diary]] for the explanation on the available subjects and their structure.
+
+|s1= [[allDiarySubjects]] person
+
+|p1= person: [[Object]] - unit
+
+|r1= [[Array]] with [name, displayName, picture, countRecords, isReadOnly, isSelected]
+* name: [[String]] - internal subject reference
+* displayName: [[String]] - visible name
+* picture: [[String]] - subject icon
+* countRecords: [[Number]] - number of records in this subject
+* isReadOnly: [[Boolean]] - whether or not the records could be added
+* isSelected: [[Boolean]] - [[true]] if subject is currently selected
+
+|x1= <sqf>allDiarySubjects player;</sqf>
+
+|seealso= [[createDiarySubject]] [[removeDiarySubject]] [[diarySubjectExists]] [[selectDiarySubject]] [[setDiarySubjectPicture]] [[allDiaryRecords]] [[Diary]]
+}}

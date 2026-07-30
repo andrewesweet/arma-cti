@@ -1,0 +1,132 @@
+// source: https://community.bistudio.com/wiki/Multiplayer_Game_Types
+// revision: 295478 (2021-11-15T22:55:22Z)
+// export sha1: cxbm763c4av6qcgrifk08eo11ab5oio
+// categories: Category:Mission Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Game type''' is a simplified category describing what a mission is about. It helps player to navigate through potentially large number of available missions and pick the one they would like to play.
+
+Number of available types is limited to a range of well recognized and easily understandable entries like Deathmatch or Sector Control.
+
+<gallery mode="packed-hover" heights=200px>
+File:MissionTypesQuickPlay.jpg.jpg|Names visible in the quick play menu
+File:MissionTypes_serverList.jpg|Shortcuts visible in the server browser
+File:MissionTypes_filters.jpg|Names visible in the server filter
+File:MissionTypes_loading.jpg|Name visible above the mission name in the loading screen
+</gallery>
+
+=== Mission Configuration ===
+
+Game type can be defined [[Eden_Editor:_Scenario_Attributes|Eden  Editor scenario attributes]] or in [[Description.ext]] file.
+<syntaxhighlight lang="cpp">
+class Header
+{
+	gameType =  CTF;	// Game type
+	minPlayers =  1;	// minimum number of players the mission supports
+	maxPlayers = 10;	// maximum number of players the mission supports
+};
+</syntaxhighlight>
+When type is not defined or misconfigured (e.g., using non-existent type), default "Unknown" is used instead.
+
+=== Available Types ===
+
+Icon denotes version in which changes were introduced. Game types are defined in {{hl|CfgMPGameTypes}} 
+{| class=""
+! {{GVI|arma3|2.00}}
+! {{GVI|ofp|1.00}}{{GVI|arma1|1.00}}{{GVI|arma2|1.00}}{{GVI|arma2oa|1.50}}{{GVI|TKOH|1.00}}
+|- style="vertical-align:top"
+
+|
+
+{| class="wikitable"
+! Class !! Name !! Shortcut
+|-
+| {{hl|Unknown}} || Undefined Game Mode || Undefined
+|-
+| {{hl|DM}} || Deathmatch || DM
+|-
+| {{hl|CTF}} || Capture The Flag || CTF
+|-
+| {{hl|Coop}} || Cooperative Mission || Coop
+|-
+| {{hl|CTI}} || Capture The Island || CTI
+|-
+| {{hl|SC}} || Sector Control || SC
+|-
+| {{hl|TDM}} || Team Deathmatch || TDM
+|-
+| {{hl|RPG}} || Role-Playing Game || RPG
+|-
+| {{hl|Sandbox}} || Sandbox || Sandbox
+|-
+| {{hl|KOTH}} || King Of The Hill || KOTH
+|-
+| {{hl|LastMan}} || Last Man Standing || Last Man
+|-
+| {{hl|Survive}} || Survival || Survival
+|-
+| {{hl|Zeus}} || [[Arma 3 Curator|Zeus]] || Zeus
+|-
+| {{hl|Support}} || Support || Support
+|-
+| {{hl|EndGame}} || [[Arma 3 MP End Game|End Game]] || End Game
+|-
+| {{hl|Apex}} || Campaign - Apex Protocol || Apex Protocol
+|-
+| {{hl|Escape}} || Escape || Escape
+|-
+| {{hl|Patrol}} || [[Arma 3 MP Combat Patrol|Combat Patrol]] || Patrol
+|-
+| {{hl|Vanguard}} || [[Arma 3 MP Vanguard|Vanguard]] || Vanguard
+|-
+| {{hl|Warlords}} || [[Arma 3 MP Warlords|Warlords]] || Warlords
+|}
+
+|
+
+{| class="wikitable"
+! Class
+! Name	
+! Shortcut
+|-
+| {{hl|Unknown}}
+| Unknown
+| Unknown
+|-
+| {{hl|Coop}}
+| Cooperative Mission
+| Coop
+|-
+| {{hl|DM}}
+| Death Match
+| DM
+|-
+| {{hl|Team}}
+| Team Mission
+| Team
+|-
+| {{hl|CTF}}
+| Capture the Flag
+| CTF
+|-
+| {{hl|SCont}}
+| Sector Control
+| Scontrol
+|-
+| {{hl|CTI}}
+| Capture The Island
+| CTI
+|-
+| {{hl|FF}}
+| Flag Fight
+| FF
+|-
+| {{hl|Hold}}
+| Hold Location
+| Hold
+|}
+
+|}
+
+
+[[Category:Mission Editing]]

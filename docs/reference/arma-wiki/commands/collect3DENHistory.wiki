@@ -1,0 +1,92 @@
+// source: https://community.bistudio.com/wiki/collect3DENHistory
+// revision: 376415 (2025-10-11T01:38:31Z)
+// export sha1: 9am5o8gpg8lrr4dlk73azj70jep3pz2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Execute a block of code in which all Eden Editor operations will be recorded as one history step. For example creating an entity, setting its attributes and then connections would normally be recorded as three different steps. Calling them all within single '''collect3DENHistory''' block will group them together and the user will need to undo only once to revert the changes. Use [[ignore3DENHistory]] to ignore history entry creation.
+
+{{Feature|informative|In order to only change the 2nd or 3rd parameter of the alternative syntax use [[nil]] as the preceding parameters.}}
+Some useful icons are:
+<spoiler text="Show texture paths">
+* {{hl|"\a3\3den\data\cfg3den\history\addtolayer_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\changeattributes_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\changeseat_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\connectitems_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\create_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\createcomment_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\deleteitems_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\disconnectitems_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\makenewlayer_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\missionnew_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\moveitems_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\multipleoperations_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\pasteitems_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\removefromlayer_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\rotateitems_ca.paa"}}
+* {{hl|"\a3\3den\data\cfg3den\history\scaleitems_ca.paa"}}
+</spoiler>
+
+|s1= [[collect3DENHistory]] code
+
+|p1= code: [[Code]] - code that is executed in '''[[Scheduler#Unscheduled_Environment|Unscheduled Environment]]'''
+
+|r1= [[Nothing]]
+
+|s2= [text, tooltip, icon] [[collect3DENHistory]] code
+
+|s2since= arma3 2.06
+
+|p21= text: [[String]] or [[Nothing]] - text of the entry that is added to the history list
+
+|p22= tooltip: [[String]] - (Optional, default "Batch Change" ([[isLocalized|localized]])) - tooltip of the entry
+
+|p23= icon: [[String]] - (Optional, default "a3\3den\data\cfg3den\history\multipleoperations_ca.paa") - path to the icon that is displayed left of the ''text''. '''Must not start with a {{hl|\}}!'''
+
+|p24= code: [[Code]] - code that is executed in '''[[Scheduler#Unscheduled_Environment|Unscheduled Environment]]'''
+
+|r2= [[Nothing]]
+
+|x1= <sqf>
+collect3DENHistory 
+{
+	_logic = create3DENEntity ["Logic", "Logic", position player];
+	add3DENConnection ["Sync", [_logic], player];
+}; // Creates a logic and connects it to player in one history step.
+</sqf>
+
+|x2= <sqf>
+["Create Entity", "B_Soldier_F", "a3\3den\data\cfg3den\history\create_ca.paa"] collect3DENHistory 
+{
+	create3DENEntity ["Object","B_Soldier_F", screenToWorld [0.5,0.5]];
+};
+</sqf>
+
+|x3= <sqf>
+[nil, nil, "a3\3den\data\cfg3den\history\moveitems_ca.paa"] collect3DENHistory 
+{
+	create3DENEntity ["Object","B_Soldier_F", screenToWorld [0.5,0.5]];
+}; // Change only the icon
+</sqf>
+
+|seealso= [[ignore3DENHistory]] [[add3DENConnection]] [[create3DENComposition]] [[create3DENEntity]] [[delete3DENEntities]] [[do3DENAction]] [[remove3DENConnection]] [[set3DENAttributes]] [[set3DENObjectType]]
+}}
+
+{{Note
+|user= 7erra
+|timestamp= 20201026011500
+|text= Contrary to other code block structures ([[call]], [[if]]/[[then]]/[[exitWith]], [[switch]]/[[case]]/[[default]], etc.) the code block of [[collect3DENHistory]] will not return any value:
+<sqf>
+_unit = collect3DENHistory {
+	create3DENEntity ["Object", "C_Protagonist_VR_F", screenToWorld [0.5, 0.5]];
+};
+_unit // <null>
+</sqf>
+}}

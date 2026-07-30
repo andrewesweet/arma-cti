@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Flags
+// revision: 157220 (2020-09-09T18:33:24Z)
+// export sha1: f2pc24jeiwcjwpph242xdynce6s6ilq
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands about flags.
+
+
+[[Category:Scripting Commands by Functionality]]

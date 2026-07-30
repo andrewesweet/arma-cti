@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/Sahrani_Islands_list
+// revision: 58817 (2010-11-19T12:45:25Z)
+// export sha1: jzytdovce54x93ca9yyk2mt579qd05i
+// Vendored snapshot. Do not edit — re-export instead.
+
+Off the coast of the main island of Sahrani are numerous islands and rocky outcrops, some of which are inhabited.
+
+{| class="wikitable" style="text-align:center"
+|+List of Islands
+|-
+! Name !! Coordinates 
+|-
+! Antigua
+| I0, J0, I1, J1
+|-
+! El Gordo
+| I8
+|-
+! Isla De La Caja
+| A9
+|-
+! Isla De Libertad
+| G4
+|-
+! Isla De Los Tojos
+| I7
+|-
+! Isla De Matey
+| C2
+|-
+! Isla De Vassal
+| C2
+|-
+! Isla De Victoria
+| F1
+|-
+! Isla De Vida
+| C2
+|-
+! Isla Des Compadres
+| F1
+|-
+! Isla Verda
+| G5
+|-
+! Islas Gatunas
+| G6
+|-
+! Monte Asharah
+| J8
+|-
+! Monte Galassi
+| C2
+|-
+! Parvulo
+| B0
+|-
+! Rahmadi
+| B8, B9
+|-
+! Rocara
+| A1
+|-
+! San Tomas
+| E8
+|-
+! Trelobada
+| D2, E2, D3, E3
+|-
+|}

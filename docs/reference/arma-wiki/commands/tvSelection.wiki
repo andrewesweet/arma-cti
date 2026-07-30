@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/tvSelection
+// revision: 378378 (2026-04-04T04:45:23Z)
+// export sha1: lq23bhhxnbioeekg3qs7tdyuitc2fjf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= GUI Control - Tree View
+
+|descr= Returns array of paths to selected items.
+
+|s1= [[tvSelection]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Tree View Path]]
+
+|x1= <sqf>private _selection = tvSelection _ctrlTV;</sqf>
+
+|seealso= [[tvSetSelected]] [[tvIsSelected]]
+}}

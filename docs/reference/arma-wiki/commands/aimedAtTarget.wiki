@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/aimedAtTarget
+// revision: 363498 (2024-04-01T11:17:25Z)
+// export sha1: i7s4ozr5w2k1wdzpnoaasvwdmpedrbo
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Weapons | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Manipulation
+
+|gr2= Weapons
+
+|descr= Returns how good a vehicle's weapon is aimed at the target.
+
+|s1= vehicle [[aimedAtTarget]] [target, weapon]
+
+|p1= vehicle: [[Object]] - vehicle only, not unit
+
+|p2= target: [[Object]]
+
+|p3= weapon: [[String]] - (Optional) if not provided, checks all weapons; if provided, checks that weapon only
+
+|r1= [[Number]] in range 0..1 - 0 if no weapons or if ''weapon'' was provided and not found
+
+|x1= <sqf>_aimingQuality = heli aimedAtTarget [target];</sqf>
+
+|x2= <sqf>_aimingQuality = heli aimedAtTarget [target, "M197"];</sqf>
+
+|seealso= [[fireAtTarget]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20131119150200
+|text= The command doesn't work with soldier weapons, only vehicle weapons (in {{arma3}} at least). The return value is either 1 or 0, very rarely the value falls in between.
+1 doesn't mean you are going to hit the target, while 0 means you're definitely off.
+}}

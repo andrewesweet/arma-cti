@@ -1,0 +1,1342 @@
+// source: https://community.bistudio.com/wiki/Arma_2:_Operation_Arrowhead:_CfgGroups
+// revision: 293071 (2021-08-17T23:38:53Z)
+// export sha1: l92bstmq10st55qkwg1a4ydd60l86iq
+// categories: Category:CfgGroups
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|horizontal|||y}}
+
+== BLUFOR ==
+
+config: West
+
+=== U.S. Army ===
+
+config: BIS_US
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Rifle Squad'''<br>config: US_RifleSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_SL_EP1
+# US_Soldier_TL_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_AR_EP1
+# US_Soldier_AT_EP1
+# US_Soldier_TL_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_AR_EP1
+# US_Soldier_AAR_EP1
+</div></div>
+| <div style="white-space: pre">'''Weapons Squad'''<br>config: US_WeaponsSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_SL_EP1
+# US_Soldier_MG_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_AMG_EP1
+# US_Soldier_MG_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_AMG_EP1
+# US_Soldier_LAT_EP1
+</div></div>
+| <div style="white-space: pre">'''Team'''<br>config: US_Team</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_TL_EP1
+# US_Soldier_AR_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_AAR_EP1
+</div></div>
+| <div style="white-space: pre">'''Team (MG)'''<br>config: US_TeamMG</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_TL_EP1
+# US_Soldier_MG_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_AMG_EP1
+</div></div>
+| <div style="white-space: pre">'''Team (AT)'''<br>config: US_TeamAT</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_TL_EP1
+# US_Soldier_AT_EP1
+# US_Soldier_AT_EP1
+# US_Soldier_AAT_EP1
+</div></div>
+|-
+| <div style="white-space: pre">'''Team (Support)'''<br>config: US_TeamSupport</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_TL_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_Marksman_EP1
+# US_Soldier_Medic_EP1
+</div></div>
+| <div style="white-space: pre">'''Heavy AT Team'''<br>config: US_HeavyATTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_HAT_EP1
+# US_Soldier_HAT_EP1
+# US_Soldier_AHAT_EP1
+</div></div>
+| <div style="white-space: pre">'''Sniper Team'''<br>config: US_SniperTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_Sniper_EP1
+# US_Soldier_Sniper_EP1
+# US_Soldier_Spotter_EP1
+</div></div>
+| <div style="white-space: pre">'''Delta Force Team'''<br>config: US_DeltaForceTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Delta_Force_TL_EP1
+# US_Delta_Force_MG_EP1
+# US_Delta_Force_Assault_EP1
+# US_Delta_Force_Marksman_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized</div>
+| <div style="white-space: pre">'''Motorized Section'''<br>config: US_MotorizedSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_SL_EP1
+# HMMWV_M1151_M2_DES_EP1
+# HMMWV_MK19_DES_EP1
+# US_Soldier_AT_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_AAT_EP1
+# US_Soldier_Marksman_EP1
+</div></div>
+| <div style="white-space: pre">'''Motorized Section (AT)'''<br>config: US_MotorizedSectionAT</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_SL_EP1
+# HMMWV_TOW_DES_EP1
+# HMMWV_TOW_DES_EP1
+# US_Soldier_AR_EP1
+</div></div>
+| <div style="white-space: pre">'''Delta Patrol (ATV)'''<br>config: US_DeltaPatrolATV</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Delta_Force_TL_EP1
+# ATV_US_EP1
+# ATV_US_EP1
+# US_Delta_Force_Assault_EP1
+</div></div>
+| <div style="white-space: pre">'''Delta Patrol (HMMMX)'''<br>config: US_DeltaPatrolHMMWV</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Delta_Force_TL_EP1
+# HMMWV_M998A2_SOV_DES_EP1
+# US_Delta_Force_Assault_EP1
+# US_Delta_Force_Marksman_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Mechanized Infantry
+<div style="font-weight: normal">config: Mechanized</div>
+| <div style="white-space: pre">'''Mechanized Infantry Squad (ICV M2)'''<br>config: US_MechanizedInfantrySquadICVM2</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_SL_EP1
+# M1126_ICV_m2_EP1
+# US_Soldier_TL_EP1
+# US_Soldier_AR_EP1
+# US_Soldier_AT_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_TL_EP1
+# US_Soldier_AR_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_Marksman_EP1
+</div></div>
+| <div style="white-space: pre">'''Mechanized Infantry Squad (ICV MK19)'''<br>config: US_MechanizedInfantrySquadICVMK19</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_SL_EP1
+# M1126_ICV_mk19_EP1
+# US_Soldier_TL_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_AR_EP1
+# US_Soldier_AT_EP1
+# US_Soldier_TL_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_AR_EP1
+# US_Soldier_Marksman_EP1
+</div></div>
+| <div style="white-space: pre">'''Mechanized Recon Section'''<br>config: US_MechanizedReconSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# US_Soldier_TL_EP1
+# M2A3_EP1
+# US_Soldier_AR_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_GL_EP1
+# US_Soldier_AT_EP1
+# US_Soldier_LAT_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Armor
+<div style="font-weight: normal">config: Armored</div>
+| <div style="white-space: pre">'''Stryker MGS Platoon'''<br>config: US_MGSPlatoon</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# M1128_MGS_EP1
+# M1128_MGS_EP1
+# M1128_MGS_EP1
+</div></div>
+| <div style="white-space: pre">'''M1A2 Platoon'''<br>config: US_M1A2Platoon</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# M1A2_US_TUSK_MG_EP1
+# M1A2_US_TUSK_MG_EP1
+# M1A2_US_TUSK_MG_EP1
+# M1A2_US_TUSK_MG_EP1
+</div></div>
+| <div style="white-space: pre">'''M1A1 Platoon'''<br>config: US_M1A1Platoon</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# M1A1_US_DES_EP1
+# M1A1_US_DES_EP1
+# M1A1_US_DES_EP1
+# M1A1_US_DES_EP1
+</div></div>
+| <div style="white-space: pre">'''M1A2 Section'''<br>config: US_M1A2Section</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# M1A2_US_TUSK_MG_EP1
+# M1A2_US_TUSK_MG_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Air
+<div style="font-weight: normal">config: Air</div>
+| <div style="white-space: pre">'''A-10 flight'''<br>config: US_A10Flight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# A10_US_EP1
+# A10_US_EP1
+</div></div>
+| <div style="white-space: pre">'''AH-64D flight'''<br>config: US_AH64DFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# AH64D_EP1
+</div></div>
+| <div style="white-space: pre">'''AH-6J flight'''<br>config: US_AH6JFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# AH6J_EP1
+# AH6J_EP1
+</div></div>
+| <div style="white-space: pre">'''AH-6X flight'''<br>config: US_AH6XFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# AH6X_EP1
+</div></div>
+| <div style="white-space: pre">'''C-130J flight'''<br>config: US_C130JFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# C130J_US_EP1
+</div></div>
+|-
+| <div style="white-space: pre">'''CH-47F flight'''<br>config: US_CH47FFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CH_47F_EP1
+</div></div>
+| <div style="white-space: pre">'''MH-6J flight'''<br>config: US_MH6JFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# MH6J_EP1
+# MH6J_EP1
+</div></div>
+| <div style="white-space: pre">'''MQ-9 flight'''<br>config: US_MQ9Flight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# MQ9PredatorB_US_EP1
+</div></div>
+| <div style="white-space: pre">'''UH-60M flight'''<br>config: US_UH60MFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# UH60M_EP1
+# UH60M_EP1
+</div></div>
+|-
+|}
+=== ACR ===
+
+config: BIS_CZ
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Infantry Patrol'''<br>config: ACR_InfantryPatrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CZ_Soldier_SL_DES_EP1
+# CZ_Soldier_MG_DES_EP1
+# CZ_Soldier_AT_DES_EP1
+# CZ_Soldier_AMG_DES_EP1
+</div></div>
+| <div style="white-space: pre">'''Special Forces Team'''<br>config: ACR_SpecialForcesTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CZ_Special_Forces_TL_DES_EP1
+# CZ_Special_Forces_MG_DES_EP1
+# CZ_Special_Forces_GL_DES_EP1
+# CZ_Special_Forces_DES_EP1
+# CZ_Special_Forces_DES_EP1
+# CZ_Special_Forces_Scout_DES_EP1
+</div></div>
+| <div style="white-space: pre">'''Team (woodland)'''<br>config: ACR_InfantryTeam_WDL</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CZ_Soldier_Leader_Wdl_ACR
+# CZ_Soldier_805g_Wdl_ACR
+# CZ_Soldier_MG2_Wdl_ACR
+# CZ_Soldier_805_Wdl_ACR
+# CZ_Sharpshooter_Wdl_ACR
+# CZ_Soldier_RPG_Wdl_ACR
+# CZ_Soldier_RPG_Ass_Wdl_ACR
+# CZ_Soldier_Medic_Wdl_ACR
+</div></div>
+| <div style="white-space: pre">'''Team (desert)'''<br>config: ACR_InfantryTeam_DST</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CZ_Soldier_SL_DES_EP1
+# CZ_Soldier_805g_Dst_ACR
+# CZ_Soldier_MG2_Dst_ACR
+# CZ_Soldier805_DES_ACR
+# CZ_Sharpshooter_DES_ACR
+# CZ_Soldier_RPG_Dst_ACR
+# CZ_Soldier_RPG_Ass_Dst_ACR
+# CZ_Soldier_medik_DES_EP1
+</div></div>
+| <div style="white-space: pre">'''Infantry patrol (woodland)'''<br>config: ACR_InfantryPatrol_WDL</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CZ_Soldier_Leader_Wdl_ACR
+# CZ_Soldier_MG2_Wdl_ACR
+# CZ_Sharpshooter_Wdl_ACR
+# CZ_Soldier_805_Wdl_ACR
+# CZ_Soldier_Engineer_Wdl_ACR
+# CZ_Soldier_Medic_Wdl_ACR
+</div></div>
+|-
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized</div>
+| <div style="white-space: pre">'''Motorized Patrol'''<br>config: ACR_MotorizedPatrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CZ_Soldier_SL_DES_EP1
+# LandRover_CZ_EP1
+# CZ_Soldier_MG_DES_EP1
+# CZ_Soldier_DES_EP1
+</div></div>
+| <div style="white-space: pre">'''Special Forces Patrol (Land Rover)'''<br>config: ACR_SpecialForcesPatrolLandRover</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CZ_Special_Forces_TL_DES_EP1
+# LandRover_Special_CZ_EP1
+# CZ_Special_Forces_GL_DES_EP1
+</div></div>
+| <div style="white-space: pre">'''Special Forces Patrol (ATV)'''<br>config: ACR_SpecialForcesPatrolATV</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CZ_Special_Forces_TL_DES_EP1
+# ATV_CZ_EP1
+# ATV_CZ_EP1
+# CZ_Special_Forces_Scout_DES_EP1
+</div></div>
+| <div style="white-space: pre">'''Inf. section (woodland)'''<br>config: ACR_MotorizedSection_WDL</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CZ_Soldier_Leader_Wdl_ACR
+# Pandur2_ACR
+# CZ_Soldier_MG2_Wdl_ACR
+# CZ_Soldier_RPG_Wdl_ACR
+# CZ_Soldier_MG2_Wdl_ACR
+# CZ_Sharpshooter_Wdl_ACR
+# CZ_Soldier_805_Wdl_ACR
+# CZ_Soldier_Medic_Wdl_ACR
+</div></div>
+| <div style="white-space: pre">'''Inf. section (desert)'''<br>config: ACR_MotorizedSection_DST</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CZ_Soldier_SL_DES_EP1
+# BMP2_Des_ACR
+# CZ_Soldier_MG_DES_EP1
+# CZ_Sharpshooter_DES_ACR
+# CZ_Soldier_RPG_Dst_ACR
+# CZ_Soldier_RPG_Ass_Dst_ACR
+# CZ_Soldier_medik_DES_EP1
+</div></div>
+|-
+| <div style="white-space: pre">'''Patrol (woodland)'''<br>config: ACR_MechanizedRecon_WDL</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CZ_Soldier_805g_Wdl_ACR
+# Dingo_WDL_ACR
+# CZ_Soldier_MG2_Wdl_ACR
+# CZ_Soldier_805_Wdl_ACR
+# CZ_Soldier_805_Wdl_ACR
+# CZ_Soldier_Medic_Wdl_ACR
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Air
+<div style="font-weight: normal">config: Air</div>
+| <div style="white-space: pre">'''Mi-171Sh flight'''<br>config: ACR_Mi171ShFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Mi171Sh_CZ_EP1
+# Mi171Sh_CZ_EP1
+</div></div>
+| <div style="white-space: pre">'''Mi-171Sh (rockets) flight'''<br>config: ACR_Mi171Sh_RocketsFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Mi171Sh_rockets_CZ_EP1
+</div></div>
+|-
+|}
+=== Germany ===
+
+config: BIS_GER
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''KSK Team'''<br>config: KSKTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GER_Soldier_TL_EP1
+# GER_Soldier_MG_EP1
+# GER_Soldier_EP1
+# GER_Soldier_Scout_EP1
+# GER_Soldier_EP1
+# GER_Soldier_Medic_EP1
+</div></div>
+|-
+|}
+=== BAF ===
+
+config: BIS_BAF_MTP
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Infantry (MTP)
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Section'''<br>config: BAF_Section_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_SL_MTP
+# BAF_Soldier_TL_MTP
+# BAF_Soldier_GL_MTP
+# BAF_Soldier_AR_MTP
+# BAF_Soldier_Marksman_MTP
+# BAF_Soldier_GL_MTP
+# BAF_Soldier_AR_MTP
+# BAF_Soldier_AAR_MTP
+</div></div>
+| <div style="white-space: pre">'''Fireteam'''<br>config: BAF_Fireteam_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_MTP
+# BAF_Soldier_GL_MTP
+# BAF_Soldier_AR_MTP
+# BAF_Soldier_Marksman_MTP
+</div></div>
+| <div style="white-space: pre">'''Fireteam (support)'''<br>config: BAF_Support_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_MTP
+# BAF_Soldier_FAC_MTP
+# BAF_Soldier_Medic_MTP
+# BAF_Soldier_EN_MTP
+</div></div>
+| <div style="white-space: pre">'''Fireteam (MG)'''<br>config: BAF_MG_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_MTP
+# BAF_Soldier_GL_MTP
+# BAF_Soldier_MG_MTP
+# BAF_Soldier_AMG_MTP
+</div></div>
+| <div style="white-space: pre">'''Fireteam (AT)'''<br>config: BAF_AT_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_MTP
+# BAF_Soldier_GL_MTP
+# BAF_Soldier_AT_MTP
+# BAF_Soldier_AAT_MTP
+</div></div>
+|-
+| <div style="white-space: pre">'''Tankbusters'''<br>config: BAF_HAT_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_AT_MTP
+# BAF_Soldier_HAT_MTP
+# BAF_Soldier_AHAT_MTP
+# BAF_Soldier_AAT_MTP
+</div></div>
+| <div style="white-space: pre">'''Sniper Team'''<br>config: BAF_Snipers_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_Sniper_MTP
+# BAF_Soldier_SniperH_MTP
+# BAF_Soldier_spotter_MTP
+</div></div>
+| <div style="white-space: pre">'''Sniper Team (night)'''<br>config: BAF_SnipersN_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_SniperN_MTP
+# BAF_Soldier_SniperN_MTP
+# BAF_Soldier_spotterN_MTP
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Infantry (desert)
+<div style="font-weight: normal">config: Infantry_DDPM</div>
+| <div style="white-space: pre">'''Section'''<br>config: BAF_Section_DDPM</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_SL_DDPM
+# BAF_Soldier_TL_DDPM
+# BAF_Soldier_GL_DDPM
+# BAF_Soldier_AR_DDPM
+# BAF_Soldier_Marksman_DDPM
+# BAF_Soldier_GL_DDPM
+# BAF_Soldier_AR_DDPM
+# BAF_Soldier_AAR_DDPM
+</div></div>
+| <div style="white-space: pre">'''Fireteam'''<br>config: BAF_Fireteam_DDPM</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_DDPM
+# BAF_Soldier_GL_DDPM
+# BAF_Soldier_AR_DDPM
+# BAF_Soldier_Marksman_DDPM
+</div></div>
+| <div style="white-space: pre">'''Fireteam (support)'''<br>config: BAF_Support_DDPM</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_DDPM
+# BAF_Soldier_FAC_DDPM
+# BAF_Soldier_Medic_DDPM
+# BAF_Soldier_EN_DDPM
+</div></div>
+| <div style="white-space: pre">'''Fireteam (MG)'''<br>config: BAF_MG_DDPM</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_DDPM
+# BAF_Soldier_GL_DDPM
+# BAF_Soldier_MG_DDPM
+# BAF_Soldier_AMG_DDPM
+</div></div>
+| <div style="white-space: pre">'''Fireteam (AT)'''<br>config: BAF_AT_DDPM</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_DDPM
+# BAF_Soldier_GL_DDPM
+# BAF_Soldier_AT_DDPM
+# BAF_Soldier_AAT_DDPM
+</div></div>
+|-
+| <div style="white-space: pre">'''Tankbusters'''<br>config: BAF_HAT_DDPM</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_AT_DDPM
+# BAF_Soldier_HAT_DDPM
+# BAF_Soldier_AHAT_DDPM
+# BAF_Soldier_AAT_DDPM
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Infantry (woodland)
+<div style="font-weight: normal">config: Infantry_W</div>
+| <div style="white-space: pre">'''Section'''<br>config: BAF_Section_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_SL_W
+# BAF_Soldier_TL_W
+# BAF_Soldier_GL_W
+# BAF_Soldier_AR_W
+# BAF_Soldier_Marksman_W
+# BAF_Soldier_GL_W
+# BAF_Soldier_AR_W
+# BAF_Soldier_AAR_W
+</div></div>
+| <div style="white-space: pre">'''Fireteam'''<br>config: BAF_Fireteam_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_W
+# BAF_Soldier_GL_W
+# BAF_Soldier_AR_W
+# BAF_Soldier_Marksman_W
+</div></div>
+| <div style="white-space: pre">'''Fireteam (support)'''<br>config: BAF_Support_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_W
+# BAF_Soldier_FAC_W
+# BAF_Soldier_Medic_W
+# BAF_Soldier_EN_W
+</div></div>
+| <div style="white-space: pre">'''Fireteam (MG)'''<br>config: BAF_MG_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_W
+# BAF_Soldier_GL_W
+# BAF_Soldier_MG_W
+# BAF_Soldier_AMG_W
+</div></div>
+| <div style="white-space: pre">'''Fireteam (AT)'''<br>config: BAF_AT_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_W
+# BAF_Soldier_GL_W
+# BAF_Soldier_AT_W
+# BAF_Soldier_AAT_W
+</div></div>
+|-
+| <div style="white-space: pre">'''Tankbusters'''<br>config: BAF_HAT_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_AT_W
+# BAF_Soldier_HAT_W
+# BAF_Soldier_AHAT_W
+# BAF_Soldier_AAT_W
+</div></div>
+| <div style="white-space: pre">'''Sniper Team'''<br>config: BAF_Snipers_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_Sniper_W
+# BAF_Soldier_SniperH_W
+# BAF_Soldier_spotter_W
+</div></div>
+| <div style="white-space: pre">'''Sniper Team (night)'''<br>config: BAF_SnipersN_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_SniperN_W
+# BAF_Soldier_SniperN_W
+# BAF_Soldier_spotterN_W
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized_MTP</div>
+| <div style="white-space: pre">'''Motorized Patrol (desert)'''<br>config: BAF_MPatrol_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_SL_MTP
+# BAF_Soldier_TL_MTP
+# BAF_Soldier_GL_MTP
+# BAF_Soldier_GL_MTP
+# BAF_Soldier_AR_MTP
+# BAF_Soldier_AR_MTP
+# BAF_Soldier_Marksman_MTP
+# BAF_Offroad_D
+</div></div>
+| <div style="white-space: pre">'''Jackal Team (desert)'''<br>config: BAF_MTeam_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_MTP
+# BAF_Soldier_GL_MTP
+# BAF_Jackal2_L2A1_D
+</div></div>
+| <div style="white-space: pre">'''Jackal Section (desert)'''<br>config: BAF_MSection_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_SL_MTP
+# BAF_Soldier_GL_MTP
+# BAF_Jackal2_L2A1_D
+# BAF_Soldier_TL_MTP
+# BAF_Soldier_GL_MTP
+# BAF_Jackal2_L2A1_D
+</div></div>
+| <div style="white-space: pre">'''Motorized Patrol (woodland)'''<br>config: BAF_MPatrol_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_SL_W
+# BAF_Soldier_TL_W
+# BAF_Soldier_GL_W
+# BAF_Soldier_GL_W
+# BAF_Soldier_AR_W
+# BAF_Soldier_AR_W
+# BAF_Soldier_Marksman_W
+# BAF_Offroad_W
+</div></div>
+| <div style="white-space: pre">'''Jackal Team (woodland)'''<br>config: BAF_MTeam_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_TL_W
+# BAF_Soldier_GL_W
+# BAF_Jackal2_L2A1_W
+</div></div>
+|-
+| <div style="white-space: pre">'''Jackal Section (woodland)'''<br>config: BAF_MSection_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_SL_W
+# BAF_Soldier_GL_W
+# BAF_Jackal2_L2A1_W
+# BAF_Soldier_TL_W
+# BAF_Soldier_GL_W
+# BAF_Jackal2_L2A1_W
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Mechanized Infantry
+<div style="font-weight: normal">config: Mechanized</div>
+| <div style="white-space: pre">'''Mech. Inf. Section (desert)'''<br>config: BAF_MechSec_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_SL_MTP
+# BAF_Soldier_TL_MTP
+# BAF_Soldier_GL_MTP
+# BAF_Soldier_GL_MTP
+# BAF_Soldier_AR_MTP
+# BAF_Soldier_Marksman_MTP
+# BAF_FV510_D
+</div></div>
+| <div style="white-space: pre">'''Mech. AT Section (desert)'''<br>config: BAF_MechAT_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_AT_MTP
+# BAF_Soldier_AT_MTP
+# BAF_Soldier_HAT_MTP
+# BAF_Soldier_AAT_MTP
+# BAF_Soldier_AAT_MTP
+# BAF_Soldier_AHAT_MTP
+# BAF_FV510_D
+</div></div>
+| <div style="white-space: pre">'''Mech. Inf. Section (woodland)'''<br>config: BAF_MechSec_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_SL_W
+# BAF_Soldier_TL_W
+# BAF_Soldier_GL_W
+# BAF_Soldier_GL_W
+# BAF_Soldier_AR_W
+# BAF_Soldier_Marksman_W
+# BAF_FV510_W
+</div></div>
+| <div style="white-space: pre">'''Mech. AT Section (woodland)'''<br>config: BAF_MechAT_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Soldier_AT_W
+# BAF_Soldier_AT_W
+# BAF_Soldier_HAT_W
+# BAF_Soldier_AAT_W
+# BAF_Soldier_AAT_W
+# BAF_Soldier_AHAT_W
+# BAF_FV510_W
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Armour
+<div style="font-weight: normal">config: Armored</div>
+| <div style="white-space: pre">'''Warrior Platoon (desert)'''<br>config: BAF_WPlatoon_MTP</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_FV510_D
+# BAF_FV510_D
+# BAF_FV510_D
+# BAF_FV510_D
+</div></div>
+| <div style="white-space: pre">'''Warrior Platoon (woodland)'''<br>config: BAF_WPlatoon_W</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_FV510_W
+# BAF_FV510_W
+# BAF_FV510_W
+# BAF_FV510_W
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Air
+<div style="font-weight: normal">config: Air</div>
+| <div style="white-space: pre">'''Chinook HC4 Squadron'''<br>config: BAF_CH47FFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CH_47F_BAF
+</div></div>
+| <div style="white-space: pre">'''Wildcat AH11 Squadron'''<br>config: BAF_AW159LynxFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# AW159_Lynx_BAF
+</div></div>
+| <div style="white-space: pre">'''Apache AH1 Squadron'''<br>config: BAF_AH1DFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Apache_AH1_D
+# BAF_Apache_AH1_D
+</div></div>
+| <div style="white-space: pre">'''Merlin HC3 Squadron'''<br>config: BAF_HC3DMerlinFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BAF_Merlin_HC3_D
+</div></div>
+|-
+|}
+
+
+== OPFOR ==
+
+config: East
+
+=== Takistan Army ===
+
+config: BIS_TK
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Infantry Squad'''<br>config: TK_InfantrySquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Soldier_SL_EP1
+# TK_Soldier_MG_EP1
+# TK_Soldier_AT_EP1
+# TK_Soldier_GL_EP1
+# TK_Soldier_MG_EP1
+# TK_Soldier_LAT_EP1
+# TK_Soldier_GL_EP1
+# TK_Soldier_AAT_EP1
+# TK_Soldier_AMG_EP1
+</div></div>
+| <div style="white-space: pre">'''Infantry Section'''<br>config: TK_InfantrySection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Soldier_MG_EP1
+# TK_Soldier_GL_EP1
+# TK_Soldier_EP1
+# TK_Soldier_EP1
+</div></div>
+| <div style="white-space: pre">'''Infantry Section (AT)'''<br>config: TK_InfantrySectionAT</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Soldier_HAT_EP1
+# TK_Soldier_HAT_EP1
+# TK_Soldier_AT_EP1
+# TK_Soldier_AT_EP1
+# TK_Soldier_AAT_EP1
+</div></div>
+| <div style="white-space: pre">'''Infantry Section (AA)'''<br>config: TK_InfantrySectionAA</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Soldier_AA_EP1
+# TK_Soldier_AA_EP1
+# TK_Soldier_AA_EP1
+</div></div>
+| <div style="white-space: pre">'''Infantry Section (MG)'''<br>config: TK_InfantrySectionMG</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Soldier_MG_EP1
+# TK_Soldier_MG_EP1
+# TK_Soldier_AT_EP1
+# TK_Soldier_GL_EP1
+# TK_Soldier_AMG_EP1
+</div></div>
+|-
+| <div style="white-space: pre">'''Sniper Team'''<br>config: TK_SniperTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Soldier_SniperH_EP1
+# TK_Soldier_Spotter_EP1
+</div></div>
+| <div style="white-space: pre">'''Special Purpose Squad'''<br>config: TK_SpecialPurposeSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Special_Forces_TL_EP1
+# TK_Special_Forces_MG_EP1
+# TK_Special_Forces_EP1
+# TK_Special_Forces_EP1
+# TK_Special_Forces_MG_EP1
+# TK_Special_Forces_EP1
+# TK_Special_Forces_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized</div>
+| <div style="white-space: pre">'''Motorized Infantry Squad'''<br>config: TK_MotorizedInfanterySquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Soldier_SL_EP1
+# V3S_Open_TK_EP1
+# TK_Soldier_MG_EP1
+# TK_Soldier_AT_EP1
+# TK_Soldier_GL_EP1
+# TK_Soldier_EP1
+# TK_Soldier_MG_EP1
+# TK_Soldier_LAT_EP1
+# TK_Soldier_GL_EP1
+# TK_Soldier_AMG_EP1
+</div></div>
+| <div style="white-space: pre">'''Motorized Recon Section'''<br>config: TK_MotorizedReconSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Soldier_SL_EP1
+# UAZ_MG_TK_EP1
+# UAZ_AGS30_TK_EP1
+# TK_Soldier_AT_EP1
+</div></div>
+| <div style="white-space: pre">'''Motorized Patrol'''<br>config: TK_MotorizedPatrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Soldier_GL_EP1
+# UAZ_Unarmed_TK_EP1
+# TK_Soldier_MG_EP1
+# TK_Soldier_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Mechanized Infantry
+<div style="font-weight: normal">config: Mechanized</div>
+| <div style="white-space: pre">'''Mechanized Infantry Squad (BMP-2)'''<br>config: TK_MechanizedInfantrySquadBMP2</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Soldier_SL_EP1
+# BMP2_TK_EP1
+# TK_Soldier_MG_EP1
+# TK_Soldier_GL_EP1
+# TK_Soldier_AT_EP1
+# TK_Soldier_MG_EP1
+# TK_Soldier_LAT_EP1
+# TK_Soldier_AAT_EP1
+</div></div>
+| <div style="white-space: pre">'''Mechanized Infantry Squad (BTR-60)'''<br>config: TK_MechanizedInfantrySquadBTR60</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Soldier_SL_EP1
+# BTR60_TK_EP1
+# TK_Soldier_MG_EP1
+# TK_Soldier_GL_EP1
+# TK_Soldier_AT_EP1
+# TK_Soldier_MG_EP1
+# TK_Soldier_GL_EP1
+# TK_Soldier_LAT_EP1
+# TK_Soldier_EP1
+</div></div>
+| <div style="white-space: pre">'''Mechanized Special Squad'''<br>config: TK_MechanizedSpecialSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Special_Forces_TL_EP1
+# BTR60_TK_EP1
+# TK_Special_Forces_MG_EP1
+# TK_Special_Forces_MG_EP1
+# TK_Special_Forces_MG_EP1
+# TK_Special_Forces_EP1
+# TK_Special_Forces_EP1
+# TK_Special_Forces_EP1
+# TK_Special_Forces_EP1
+</div></div>
+| <div style="white-space: pre">'''Mechanized Recon Section'''<br>config: TK_MechanizedReconSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_Soldier_SL_EP1
+# BRDM2_TK_EP1
+# BRDM2_TK_EP1
+# TK_Soldier_MG_EP1
+# TK_Soldier_AR_EP1
+# TK_Soldier_AT_EP1
+# TK_Soldier_GL_EP1
+# TK_Soldier_EP1
+</div></div>
+| <div style="white-space: pre">'''Mechanized Recon Section (AT)'''<br>config: TK_MechanizedReconSectionAT</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# BRDM2_ATGM_TK_EP1
+# BRDM2_ATGM_TK_EP1
+</div></div>
+|-
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Armor
+<div style="font-weight: normal">config: Armored</div>
+| <div style="white-space: pre">'''T-72 Platoon'''<br>config: TK_T72Platoon</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# T72_TK_EP1
+# T72_TK_EP1
+# T72_TK_EP1
+</div></div>
+| <div style="white-space: pre">'''T-55 Platoon'''<br>config: TK_T55Platoon</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# T55_TK_EP1
+# T55_TK_EP1
+# T55_TK_EP1
+</div></div>
+| <div style="white-space: pre">'''T-34 Platoon'''<br>config: TK_T34Platoon</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# T34_TK_EP1
+# T34_TK_EP1
+# T34_TK_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Air
+<div style="font-weight: normal">config: Air</div>
+| <div style="white-space: pre">'''An-2 flight'''<br>config: TK_An2Flight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# An2_TK_EP1
+</div></div>
+| <div style="white-space: pre">'''Mi-24D flight'''<br>config: TK_Mi24_DFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Mi24_D_TK_EP1
+</div></div>
+| <div style="white-space: pre">'''Mi-8 flight'''<br>config: TK_Mi_17Flight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Mi17_TK_EP1
+# Mi17_TK_EP1
+</div></div>
+| <div style="white-space: pre">'''Su-25 flight'''<br>config: TK_Su25Flight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Su25_TK_EP1
+# Su25_TK_EP1
+</div></div>
+| <div style="white-space: pre">'''UH-1H flight'''<br>config: TK_UH1HFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# UH1H_TK_EP1
+# UH1H_TK_EP1
+</div></div>
+|-
+|-
+|}
+=== Takistani Republican Militia ===
+
+config: BIS_TK_INS
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Militia Group'''<br>config: TK_INS_Group</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_INS_Soldier_TL_EP1
+# TK_INS_Soldier_MG_EP1
+# TK_INS_Soldier_2_EP1
+# TK_INS_Soldier_AT_EP1
+# TK_INS_Soldier_EP1
+# TK_INS_Soldier_MG_EP1
+# TK_INS_Soldier_AR_EP1
+# TK_INS_Soldier_Sniper_EP1
+# TK_INS_Soldier_3_EP1
+# TK_INS_Soldier_4_EP1
+</div></div>
+| <div style="white-space: pre">'''Militia Patrol'''<br>config: TK_INS_Patrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_INS_Soldier_2_EP1
+# TK_INS_Soldier_AR_EP1
+# TK_INS_Soldier_EP1
+# TK_INS_Soldier_3_EP1
+# TK_INS_Soldier_4_EP1
+</div></div>
+| <div style="white-space: pre">'''Militia Team (AA)'''<br>config: TK_INS_AATeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_INS_Soldier_AA_EP1
+# TK_INS_Soldier_AA_EP1
+# TK_INS_Soldier_AA_EP1
+</div></div>
+| <div style="white-space: pre">'''Militia Team (AT)'''<br>config: TK_INS_ATTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_INS_Soldier_TL_EP1
+# TK_INS_Soldier_AT_EP1
+# TK_INS_Soldier_AT_EP1
+# TK_INS_Soldier_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized</div>
+| <div style="white-space: pre">'''Technicals'''<br>config: TK_INS_Technicals</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_INS_Soldier_TL_EP1
+# LandRover_SPG9_TK_INS_EP1
+# LandRover_MG_TK_INS_EP1
+# TK_INS_Soldier_AT_EP1
+</div></div>
+| <div style="white-space: pre">'''Motorized Group'''<br>config: TK_INS_MotorizedGroup</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_INS_Soldier_TL_EP1
+# V3S_TK_EP1
+# TK_INS_Soldier_MG_EP1
+# TK_INS_Soldier_2_EP1
+# TK_INS_Soldier_AT_EP1
+# TK_INS_Soldier_4_EP1
+# TK_INS_Soldier_TL_EP1
+# TK_INS_Soldier_MG_EP1
+# TK_INS_Soldier_AR_EP1
+# TK_INS_Soldier_Sniper_EP1
+# TK_INS_Soldier_EP1
+</div></div>
+| <div style="white-space: pre">'''Motorized Patrol (BTR-40)'''<br>config: TK_INS_MotorizedPatrolBTR40</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_INS_Soldier_TL_EP1
+# BTR40_MG_TK_INS_EP1
+# TK_INS_Soldier_MG_EP1
+# TK_INS_Soldier_MG_EP1
+# TK_INS_Soldier_AT_EP1
+# TK_INS_Soldier_4_EP1
+# TK_INS_Soldier_3_EP1
+</div></div>
+|-
+|}
+
+
+== Independent ==
+
+config: Guerrila
+
+=== Guerillas (Takistan) ===
+
+config: BIS_TK_GUE
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Group'''<br>config: TK_GUE_Group</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_GUE_Soldier_TL_EP1
+# TK_GUE_Soldier_MG_EP1
+# TK_GUE_Soldier_4_EP1
+# TK_GUE_Soldier_Sniper_EP1
+# TK_GUE_Soldier_5_EP1
+# TK_GUE_Soldier_AT_EP1
+# TK_GUE_Soldier_MG_EP1
+# TK_GUE_Soldier_4_EP1
+# TK_GUE_Soldier_2_EP1
+# TK_GUE_Soldier_5_EP1
+</div></div>
+| <div style="white-space: pre">'''Group (Weapons)'''<br>config: TK_GUE_GroupWeapons</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_GUE_Soldier_TL_EP1
+# TK_GUE_Soldier_MG_EP1
+# TK_GUE_Soldier_AT_EP1
+# TK_GUE_Soldier_MG_EP1
+# TK_GUE_Soldier_HAT_EP1
+# TK_GUE_Soldier_4_EP1
+</div></div>
+| <div style="white-space: pre">'''Patrol'''<br>config: TK_GUE_Patrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_GUE_Soldier_EP1
+# TK_GUE_Soldier_EP1
+# TK_GUE_Soldier_3_EP1
+# TK_GUE_Soldier_2_EP1
+</div></div>
+| <div style="white-space: pre">'''Team (AT)'''<br>config: TK_GUE_ATTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_GUE_Soldier_TL_EP1
+# TK_GUE_Soldier_HAT_EP1
+# TK_GUE_Soldier_AT_EP1
+# TK_GUE_Soldier_AAT_EP1
+</div></div>
+| <div style="white-space: pre">'''Team (AA)'''<br>config: TK_GUE_AATeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_GUE_Soldier_AA_EP1
+# TK_GUE_Soldier_AA_EP1
+# TK_GUE_Soldier_AA_EP1
+</div></div>
+|-
+| <div style="white-space: pre">'''Sniper Team'''<br>config: TK_GUE_SniperTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_GUE_Soldier_Sniper_EP1
+# TK_GUE_Soldier_Sniper_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized</div>
+| <div style="white-space: pre">'''Technicals'''<br>config: TK_GUE_Technicals</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_GUE_Soldier_TL_EP1
+# Offroad_DSHKM_TK_GUE_EP1
+# Offroad_SPG9_TK_GUE_EP1
+# Pickup_PK_TK_GUE_EP1
+# TK_GUE_Soldier_AT_EP1
+# TK_GUE_Soldier_EP1
+</div></div>
+| <div style="white-space: pre">'''Motorized Group'''<br>config: TK_GUE_MotorizedGroup</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_GUE_Soldier_TL_EP1
+# V3S_TK_GUE_EP1
+# TK_GUE_Soldier_MG_EP1
+# TK_GUE_Soldier_4_EP1
+# TK_GUE_Soldier_Sniper_EP1
+# TK_GUE_Soldier_3_EP1
+# TK_GUE_Soldier_AT_EP1
+# TK_GUE_Soldier_MG_EP1
+# TK_GUE_Soldier_4_EP1
+# TK_GUE_Soldier_EP1
+# TK_GUE_Soldier_2_EP1
+# TK_GUE_Soldier_EP1
+# TK_GUE_Soldier_3_EP1
+# TK_GUE_Soldier_3_EP1
+</div></div>
+| <div style="white-space: pre">'''Motorized Patrol (BTR-40)'''<br>config: TK_GUE_MotorizedPatrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_GUE_Soldier_TL_EP1
+# BTR40_MG_TK_GUE_EP1
+# TK_GUE_Soldier_MG_EP1
+# TK_GUE_Soldier_MG_EP1
+# TK_GUE_Soldier_AT_EP1
+# TK_GUE_Soldier_4_EP1
+# TK_GUE_Soldier_2_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Mechanized Infantry
+<div style="font-weight: normal">config: Mechanized</div>
+| <div style="white-space: pre">'''Mechanized Patrol'''<br>config: TK_GUE_MechanizedPatrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_GUE_Soldier_4_EP1
+# BRDM2_TK_GUE_EP1
+# TK_GUE_Soldier_4_EP1
+# TK_GUE_Soldier_AT_EP1
+</div></div>
+| <div style="white-space: pre">'''Mechanized Group (BTR-40)'''<br>config: TK_GUE_MechanizedGroup</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_GUE_Soldier_TL_EP1
+# BTR40_MG_TK_GUE_EP1
+# BTR40_MG_TK_GUE_EP1
+# TK_GUE_Soldier_AR_EP1
+# TK_GUE_Soldier_MG_EP1
+# TK_GUE_Soldier_AT_EP1
+# TK_GUE_Soldier_EP1
+# TK_GUE_Soldier_3_EP1
+# TK_GUE_Soldier_2_EP1
+# TK_GUE_Soldier_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Armor
+<div style="font-weight: normal">config: Armored</div>
+| <div style="white-space: pre">'''T-55 Section'''<br>config: TK_GUE_T55Section</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# T55_TK_GUE_EP1
+# T55_TK_GUE_EP1
+</div></div>
+| <div style="white-space: pre">'''T-34 Platoon'''<br>config: TK_GUE_T34Platoon</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# T34_TK_GUE_EP1
+# T34_TK_GUE_EP1
+# T34_TK_GUE_EP1
+# T34_TK_GUE_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Air
+<div style="font-weight: normal">config: Air</div>
+| <div style="white-space: pre">'''UH-1H Squadron'''<br>config: TK_GUE_UH1HFlight</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# UH1H_TK_GUE_EP1
+</div></div>
+|-
+|}
+=== UNO ===
+
+config: BIS_UN
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Infantry Patrol'''<br>config: UN_Patrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# UN_CDF_Soldier_Guard_EP1
+# UN_CDF_Soldier_EP1
+# UN_CDF_Soldier_AT_EP1
+# UN_CDF_Soldier_MG_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized</div>
+| <div style="white-space: pre">'''Motorized Patrol'''<br>config: UN_MotorizedPatrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# UN_CDF_Soldier_Guard_EP1
+# UAZ_Unarmed_UN_EP1
+# UN_CDF_Soldier_EP1
+# UN_CDF_Soldier_MG_EP1
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Mechanized Infantry
+<div style="font-weight: normal">config: Mechanized</div>
+| <div style="white-space: pre">'''Mechanized Patrol (BMP-2)'''<br>config: UN_MechanizedPatrolBMP2</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# UN_CDF_Soldier_SL_EP1
+# BMP2_UN_EP1
+# UN_CDF_Soldier_AT_EP1
+# UN_CDF_Soldier_AT_EP1
+# UN_CDF_Soldier_MG_EP1
+# UN_CDF_Soldier_MG_EP1
+# UN_CDF_Soldier_EP1
+# UN_CDF_Soldier_EP1
+</div></div>
+| <div style="white-space: pre">'''Mechanized Patrol (M113)'''<br>config: UN_MechanizedPatrolM113</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# UN_CDF_Soldier_SL_EP1
+# M113_UN_EP1
+# UN_CDF_Soldier_AT_EP1
+# UN_CDF_Soldier_MG_EP1
+# UN_CDF_Soldier_MG_EP1
+# UN_CDF_Soldier_EP1
+# UN_CDF_Soldier_EP1
+</div></div>
+|-
+|}
+=== PMC ===
+
+config: PMC_BAF
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''VIP Bodyguard'''<br>config: PMC_VIP_Bodyguard</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Soldier_TL_PMC
+# Soldier_Bodyguard_AA12_PMC
+# Soldier_Bodyguard_M4_PMC
+</div></div>
+| <div style="white-space: pre">'''Field Security Patrol'''<br>config: PMC_Field_Security_Patrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Soldier_GL_PMC
+# Soldier_GL_M16A2_PMC
+# Soldier_M4A3_PMC
+# Soldier_M4A3_PMC
+</div></div>
+| <div style="white-space: pre">'''Field Security Team'''<br>config: PMC_Field_Security_Team</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Soldier_TL_PMC
+# Soldier_Sniper_PMC
+# Soldier_AT_PMC
+# Soldier_MG_PMC
+# Soldier_GL_PMC
+# Soldier_M4A3_PMC
+</div></div>
+| <div style="white-space: pre">'''Security Detail'''<br>config: PMC_Security_Detail</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Soldier_TL_PMC
+# Soldier_Sniper_PMC
+# Soldier_AT_PMC
+# Soldier_MG_PMC
+# Soldier_MG_PKM_PMC
+# Soldier_GL_PMC
+# Soldier_GL_M16A2_PMC
+# Soldier_M4A3_PMC
+# Soldier_PMC
+# Soldier_PMC
+</div></div>
+| <div style="white-space: pre">'''Security Specialists'''<br>config: PMC_Security_Specialists</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Soldier_TL_PMC
+# Soldier_Sniper_KSVK_PMC
+# Soldier_AT_PMC
+# Soldier_MG_PMC
+# Soldier_PMC
+</div></div>
+|-
+| <div style="white-space: pre">'''Field Support Team'''<br>config: PMC_Field_Support_Team</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Soldier_GL_M16A2_PMC
+# Soldier_GL_PMC
+# Soldier_Engineer_PMC
+# Soldier_Medic_PMC
+</div></div>
+| <div style="white-space: pre">'''Team Sword'''<br>config: PMC_Team_Sword</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Reynolds_PMC
+# Dixon_PMC
+# Tanny_PMC
+# Poet_PMC
+# Ry_PMC
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized</div>
+| <div style="white-space: pre">'''Patrol'''<br>config: PMC_Patrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Soldier_Bodyguard_M4_PMC
+# SUV_PMC
+# Soldier_Bodyguard_AA12_PMC
+</div></div>
+| <div style="white-space: pre">'''Tactical Patrol'''<br>config: PMC_Tactical_Patrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Soldier_TL_PMC
+# SUV_PMC
+# SUV_PMC
+# Soldier_Sniper_PMC
+# Soldier_AT_PMC
+# Soldier_Bodyguard_AA12_PMC
+# Soldier_GL_PMC
+# Soldier_M4A3_PMC
+</div></div>
+| <div style="white-space: pre">'''Armored Patrol'''<br>config: PMC_Armored_Patrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Soldier_TL_PMC
+# ArmoredSUV_PMC
+# ArmoredSUV_PMC
+# Soldier_Sniper_PMC
+# Soldier_Bodyguard_M4_PMC
+# Soldier_MG_PKM_PMC
+# Soldier_GL_PMC
+# Soldier_GL_PMC
+</div></div>
+|-
+|}
+
+
+== Civilian ==
+
+config: Civilian
+
+=== Takistanis ===
+
+config: BIS_TK_CIV
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Civilian Groups
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Crowd 1'''<br>config: TK_CIV_Crowd1</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_CIV_Takistani01_EP1
+# TK_CIV_Takistani02_EP1
+# TK_CIV_Takistani03_EP1
+# TK_CIV_Takistani05_EP1
+# TK_CIV_Woman01_EP1
+# TK_CIV_Takistani06_EP1
+</div></div>
+| <div style="white-space: pre">'''Crowd 2'''<br>config: TK_CIV_Crowd2</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# TK_CIV_Woman01_EP1
+# TK_CIV_Woman02_EP1
+# TK_CIV_Woman03_EP1
+</div></div>
+|-
+|}
+
+{{Wiki|extractionScript|CfgGroups}}
+
+
+[[Category: CfgGroups]]

@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/ctrlAnimateModel
+// revision: 329860 (2022-08-07T23:03:59Z)
+// export sha1: 54atynevpfg8ghq2pf5so8vor7xae8z
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Object | Category:Introduced with Arma 3 version 1.84 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.84
+
+|gr1= GUI Control - Object
+
+|descr= Process an animation of 3D [[Arma: GUI Configuration]]. Command uses name defined by source property and works similar like [[animateSource]] command.
+
+|s1= control [[ctrlAnimateModel]] [source, phase, speed]
+
+|p1= control : [[Control]] - 3D control
+
+|p2= source: [[String]] - common source
+
+|p3= phase: [[Number]] - wanted animation phase
+
+|p4= speed: [[Boolean]] or [[Number]] - (Optional, default [[false]])
+* [[Boolean]] - when set to [[true]], animation is instant
+* {{GVI|arma3|1.66|size= 0.75}} [[Number]] - > 0 is treated as config speed value multiplier
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control3D ctrlAnimateModel ["Close", 1];</sqf>
+
+|x2= <sqf>_ctrlLaptop ctrlAnimateModel ["Lid", 1, 2];</sqf>
+
+|seealso= [[ctrlAnimationPhaseModel]] [[ctrlCreate]] [[ctrlDelete]] [[ctrlModel]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlClassName]] [[displayCtrl]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlModelDirAndUp]] [[ctrlSetModelDirAndUp]]
+}}

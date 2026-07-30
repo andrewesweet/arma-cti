@@ -1,0 +1,168 @@
+// source: https://community.bistudio.com/wiki/disableAI
+// revision: 378709 (2026-05-30T13:14:09Z)
+// export sha1: 2w1rf2p0kskitxqq0ue3x13yh8l3ky1
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= AI Behaviour
+
+|descr= Disables parts of the AI behaviour to get a better control over the actions of a unit. If the unit changes locality, this command might need to be executed again at the new locality to maintain effect.
+
+{{Feature|warning|This command might cause unexpected behaviour when used on a player-controlled unit.}}
+
+|mp= {{Feature|important|
+The locality of this command is peculiar: the disabling will be stored ''locally'' and will apply '''if''' the AI is local or becomes local (e.g taking the lead, driving, etc).
+If the AI changes locality again, that machine's AI setup will prevail.
+}}
+
+|s1= unit [[disableAI]] feature
+
+|p1= unit: [[Object]] - AI unit
+
+|p2= feature: [[String]] - possible values are:
+{{Columns|4|
+* {{GVI|arma3|1.66|size= 0.75}}  "ALL"
+* "AUTOTARGET"
+* "MOVE"
+* "TARGET"
+* "TEAMSWITCH"
+* "WEAPONAIM"
+* {{GVI|ofp|1.99|size= 0.75}} "ANIM"
+* {{GVI|arma2oa|1.60|size= 0.75}} "FSM"
+* {{GVI|arma3|1.42|size= 0.75}}  "AIMINGERROR"
+* {{GVI|arma3|1.42|size= 0.75}}  "SUPPRESSION"
+* {{GVI|arma3|1.54|size= 0.75}}  "CHECKVISIBLE"
+* {{GVI|arma3|1.56|size= 0.75}}  "AUTOCOMBAT"
+* {{GVI|arma3|1.56|size= 0.75}}  "COVER"
+* {{GVI|arma3|1.62|size= 0.75}}  "PATH"
+* {{GVI|arma3|1.76|size= 0.75}}  "MINEDETECTION"
+* {{GVI|arma3|1.92|size= 0.75}}  "LIGHTS"
+* {{GVI|arma3|1.92|size= 0.75}}  "NVG"
+* {{GVI|arma3|1.96|size= 0.75}}  "RADIOPROTOCOL"
+* {{GVI|arma3|2.18|size= 0.75}}  "FIREWEAPON"
+* {{GVI|arma3|2.22|size= 0.75}}  "HEARING"
+}}
+
+
+<spoiler text="Show feature details">
+{{{!}} class="wikitable align-center-col-3"
+{{!}}-
+! Feature !! Description !! Since
+{{!}}-
+{{!}} "ALL" {{!}}{{!}} Disables all features. {{!}}{{!}} {{GVI|arma3|1.66}}
+{{!}}-
+{{!}} "AIMINGERROR" {{!}}{{!}} Prevents AI's aiming from being distracted by its shooting, moving, turning, reloading, hit, injury, fatigue, suppression or concealed / lost target. {{!}}{{!}} {{GVI|arma3|1.42}}
+{{!}}-
+{{!}} "ANIM" {{!}}{{!}} Disables all animations of the unit. Completely freezes the unit, including breathing and blinking. No move command works until the unit is unfrozen. {{!}}{{!}} {{GVI|ofp|1.99}}
+{{!}}-
+{{!}} "AUTOCOMBAT" {{!}}{{!}} Disables autonomous switching to "COMBAT" [[AI Behaviour]] when in [[Arma_2:_FSM_Danger_Causes|danger]]. {{!}}{{!}} {{GVI|arma3|1.56}}
+{{!}}-
+{{!}} "AUTOTARGET" {{!}}{{!}} Essentially makes single units without a group "deaf". The unit still goes prone and combat ready if it hears gunfire. It will not turn around when gunfire comes from behind, but if an enemy walks in front of it it will target the enemy and fire as normal. '''Does not work for grouped units as the leader will assign targets to the units, effectively reenabling this feature.''' {{!}}{{!}} -
+{{!}}-
+{{!}} "CHECKVISIBLE" {{!}}{{!}} Disables visibility raycasts. Useful in PvP missions where these raycasts are not needed. {{!}}{{!}} {{GVI|arma3|1.54}}
+{{!}}-
+{{!}} "COVER" {{!}}{{!}} Disables usage of cover positions by the AI. {{!}}{{!}} {{GVI|arma3|1.56}}
+{{!}}-
+{{!}} "FSM" {{!}}{{!}} Example {{!}} Disables the attached FSM scripts which are responsible for the AI behaviour. Enemies react slower to enemy fire and the enemy stops using hand signals. Disabling FSM can give the impression of untrained units as they react slower and are more disorganized compared to when FSM is enabled. {{!}}{{!}}{{!}} {{GVI|arma2oa|1.60}}
+{{!}}-
+{{!}} "LIGHTS" {{!}}{{!}} Stops AI from operating vehicle headlights and collision lights. {{!}}{{!}} {{GVI|arma3|1.92}}
+{{!}}-
+{{!}} "MINEDETECTION" {{!}}{{!}} Disable AI's mine detection. {{!}}{{!}} {{GVI|arma3|1.76}}
+{{!}}-
+{{!}} "MOVE" {{!}}{{!}} This will stop units from turning and moving, including vehicles. Units will still change stance and fire at the enemy if the enemy happens to walk right in front of the barrel. Units will watch enemies that are in their line of sight, but will not turn their bodies to face the enemy, only their head. Works for grouped units as well. Good for staging units and holding them completely still. Movement can not be controlled via script either, this feature has to be reenabled for that. The unit will still be able to aim within its cone of fire. {{!}}{{!}} -
+{{!}}-
+{{!}} "NVG" {{!}}{{!}} Stops AI from putting on NVGs (but not from taking them off). {{!}}{{!}} {{GVI|arma3|1.92}}
+{{!}}-
+{{!}} "PATH" {{!}}{{!}} Stops the AI's movement but not the target alignment. {{!}}{{!}} {{GVI|arma3|1.62}}
+{{!}}-
+{{!}} "RADIOPROTOCOL" {{!}}{{!}} Stops AI from talking and texting while still being able to issue orders. {{!}}{{!}} {{GVI|arma3|1.96}}
+{{!}}-
+{{!}} "SUPPRESSION" {{!}}{{!}} Prevents AI from being suppressed. See [[Arma 3: Suppression]]. {{!}}{{!}} {{GVI|arma3|1.42}}
+{{!}}-
+{{!}} "TARGET" {{!}}{{!}} Prevents units from engaging targets. Units still move around for cover, but will not hunt down enemies. Works in groups as well. Excellent for keeping units inside bases or other areas without having them flank or engage anyone. They will still seek good cover if something is close by. {{!}}{{!}} -
+{{!}}-
+{{!}} "TEAMSWITCH" {{!}}{{!}} This will disable AI unit when teamswitching. When used on vehicles they might no longer follow waypoints and appear stuck. {{!}}{{!}} -
+{{!}}-
+{{!}} "WEAPONAIM" {{!}}{{!}} Disables weapon aiming. {{!}}{{!}} -
+{{!}}-
+{{!}} "FIREWEAPON" {{!}}{{!}} Disables weapon firing. {{!}}{{!}} {{GVI|arma3|2.18}}
+{{!}}-
+{{!}} "HEARING" {{!}}{{!}} Disables AI's ability to hear. {{!}}{{!}} {{GVI|arma3|2.22}}
+{{!}}}
+</spoiler><br><br>
+
+|r1= [[Nothing]]
+
+|x1= <sqf>MyUnit disableAI "AUTOTARGET";</sqf>
+
+|seealso= [[enableAI]] [[checkAIFeature]] [[enableAIFeature]] [[getUnitState]] [[disableRemoteSensors]] [[vehicleMoveInfo]]
+}}
+
+{{Note
+|user= Hardrock
+|timestamp= 20060803143100
+|text= ''Notes from before the conversion:''
+
+The "TARGET" section of the AI is likely different than what you would think. Normally, when an AI group is standing still and sees an enemy, the group will break formation and start moving towards the enemy. If you disable the "TARGET" AI, then the AI units will stay where they are at. Even if you disable the "MOVE" AI, the units will still move out to attack the enemy, unless you disable the "TARGET" AI. Disabling both these AI sections is useful when placing units in defensive positions. This way, you can have them stay behind their cover, and not run out into the open. 
+
+This command has also a bug: after mission save or load the effect will be no longer active and you must set it again. It's also good way to detect number of saves and loads (loads can be recognized using [[time]] command).
+}}
+
+{{Note
+|user= GeneralCarver
+|timestamp= 20090207143100
+|text=  ''Multiplayer Use as of ArmA v1.14:''
+Contrary to the post above, using this command WILL disable A.I. movement ability if used with the "MOVE" parameter. Works even when the A.I. is grouped with other units. I use this command to set up stationary targets at objectives all the time. Works on a dedicated server.
+}}
+
+{{Note
+|user= Kenoxite
+|timestamp= 20150919090000
+|text= Beware that disabling "TARGET" AI to units in the player's group will disable the ability to execute engage orders issued by the player.
+}}
+
+{{Note
+|user= James
+|timestamp= 20160926193400
+|text= Command is buggy in version 1.64.138497 as it disables the ability to drive vehicles for players. Tested with <sqf inline>player disableAI "move"</sqf>. Entering a vehicle is possible, but not starting the engine. <sqf inline>player enableAI "move"</sqf> enables the player to drive again.
+Feedback Tracker ticket: https://feedback.bistudio.com/T120346
+}}
+
+{{Note
+|user= zwobot
+|timestamp= 20180605192900
+|text= In '''{{ofp}}/Cold War Assault''', the disabled units are reset after a [[saveGame]] is executed or the user manually saves the mission, i. e. the units will behave as if the [[disableAI]] command was never applied to them. Also in {{ofp}} there is no way to undo this command.
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20230430101256
+|text= Disabled or enabled AI features have no synchronization over the network what so ever, you have to do everything yourself on each client, including JIP. This also applies to [[setAutonomous]] which is pretty much multi-call disableAI command for specific set of features.
+}}

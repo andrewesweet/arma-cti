@@ -1,0 +1,15 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Scripting/Guidelines
+// revision: 378825 (2026-07-02T13:21:43Z)
+// export sha1: i874e0p624zbjxrkb7mfcahni7tfyk8
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{armaR}}'s [[Doxygen]] documentation is provided with {{Link|https://store.steampowered.com/app/1874910/Arma_Reforger_Tools/|{{armaR}} Tools}} in {{hl|Workbench\docs}} and can be viewed on the wiki:
+* {{Link|https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/|ArmaReforgerScriptAPIPublic}}
+* {{Link|https://community.bistudio.com/wikidata/external-data/arma-reforger/EnfusionScriptAPIPublic/|EnfusionScriptAPIPublic}}
+Current version: '''1.7.0.54'''
+
+
+{{Feature|informative|See also {{GameCategory|armaR|Modding|Scripting|Tutorials|text= Scripting Tutorials}}.}}
+
+
+{{GameCategory|armaR|Modding|Scripting}}

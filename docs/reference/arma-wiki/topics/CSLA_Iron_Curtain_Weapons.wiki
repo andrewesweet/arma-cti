@@ -1,0 +1,2166 @@
+// source: https://community.bistudio.com/wiki/CSLA_Iron_Curtain_Weapons
+// revision: 376111 (2025-08-22T21:12:18Z)
+// export sha1: 6hww0xbnce97jsouem217yacthkzkx1
+// categories: Category:CSLA: Iron Curtain | Category:Pages with broken file links
+// Vendored snapshot. Do not edit — re-export instead.
+
+This page contains a list of CSLA:IC weapon classes. Weapons are in only two categories as Independent side uses weapons from both of them.
+{{TOC|side}}
+== CSLA WEAPONS ==
+=== Personal Weapons ===
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br />
+! Class<br />
+! Name<br />
+! Inventory description<br />
+! Magazines<br />
+! Accessories<br />
+! Used by<br />
+|-
+| [[File:csla_pi52.png|150px|&nbsp;]]
+| <span id="CSLA_Pi52" >'''CSLA_Pi52'''</span>
+| ''Pi-52''
+| ''Pistol<br/>Caliber: 7.62 TT''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Pi52_8rnd_7_62Pi52|CSLA_Pi52_8rnd_7_62Pi52]]
+:[[Arma 3 CfgMagazines#CSLA_Pi52_8rnd_7_62PiCv52|CSLA_Pi52_8rnd_7_62PiCv52]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_mrUK59|CSLA_mrUK59]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrUK59L|CSLA_mrUK59L]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrUK59T|CSLA_mrUK59T]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rUK59L|CSLA_rUK59L]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rUK59T|CSLA_rUK59T]]
+|-
+| [[File:csla_pi82.png|150px|&nbsp;]]
+| <span id="CSLA_Pi82" >'''CSLA_Pi82'''</span>
+| ''Pi-82''
+| ''Pistol<br/>Caliber: 9mm Makarov''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+:[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9PiCv82|CSLA_Pi82_12rnd_9PiCv82]]
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles EAST#CSLA_cmdBase|CSLA_cmdBase]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrCmd|CSLA_mrCmd]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrOfc|CSLA_mrOfc]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrOfcStb|CSLA_mrOfcStb]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrOP63|CSLA_mrOP63]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrOP63Ghillie|CSLA_mrOP63Ghillie]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rOfc|CSLA_rOfc]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rOfcStb|CSLA_rOfcStb]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rOP63|CSLA_rOP63]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptOfc|CSLA_ptOfc]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptOP63|CSLA_ptOP63]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptUK59|CSLA_ptUK59]]
+:[[Arma 3 CfgVehicles EAST#CSLA_uaOfcCap|CSLA_uaOfcCap]]
+:[[Arma 3 CfgVehicles EAST#CSLA_uaOfcCapStb|CSLA_uaOfcCapStb]]
+:[[Arma 3 CfgVehicles EAST#CSLA_uaOfcPt|CSLA_uaOfcPt]]
+:[[Arma 3 CfgVehicles EAST#CSLA_Policeman|CSLA_Policeman]]
+:[[Arma 3 CfgVehicles GUER#FIA_Policeman|FIA_Policeman]]
+:[[Arma 3 CfgVehicles CIV#CSLA_CIV_Policeman|CSLA_CIV_Policeman]]
+|}
+|-
+| [[File:csla_sa61.png|150px|&nbsp;]]
+| <span id="CSLA_Sa61" >'''CSLA_Sa61'''</span>
+| ''Sa-61''
+| ''SMG<br/>Caliber: 7.65 Browning''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+:[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65PiCv27|CSLA_Sa61_20rnd_7_65PiCv27]]
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrCmd|CSLA_lrrCmd]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrOfc|CSLA_lrrOfc]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrSnp|CSLA_lrrSnp]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrSnpG|CSLA_lrrSnpG]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrSptG|CSLA_lrrSptG]]
+:[[Arma 3 CfgVehicles EAST#CSLA_tnkEnl|CSLA_tnkEnl]]
+:[[Arma 3 CfgVehicles EAST#CSLA_tnkDrM|CSLA_tnkDrM]]
+:[[Arma 3 CfgVehicles EAST#CSLA_tnkOfc|CSLA_tnkOfc]]
+:[[Arma 3 CfgVehicles EAST#CSLA_tnkCmd|CSLA_tnkCmd]]
+:[[Arma 3 CfgVehicles EAST#CSLA_pltCbt_base|CSLA_pltCbt_base]]
+:[[Arma 3 CfgVehicles EAST#CSLA_pltCbt|CSLA_pltCbt]]
+:[[Arma 3 CfgVehicles EAST#CSLA_pltCbtM|CSLA_pltCbtM]]
+:[[Arma 3 CfgVehicles EAST#CSLA_pltIntrM|CSLA_pltIntrM]]
+:[[Arma 3 CfgVehicles EAST#CSLA_uaLrrSa61|CSLA_uaLrrSa61]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ECh2|CSLA_ECh2]]
+|}
+|-
+| [[File:csla_sa61t.png|150px|&nbsp;]]
+| <span id="CSLA_Sa61t" >'''CSLA_Sa61t'''</span>
+| ''Sa-61 with silencer''
+| ''SMG<br/>Caliber: 7.65 Browning''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+:[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65PiCv27|CSLA_Sa61_20rnd_7_65PiCv27]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_Sa61tlm|CSLA_Sa61tlm]]
+| 
+|-
+| [[File:csla_rsa61.png|150px|&nbsp;]]
+| <span id="CSLA_rSa61" >'''CSLA_rSa61'''</span>
+| ''Sa-61 with rifle butt''
+| ''SMG<br/>Caliber: 7.65 Browning''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+:[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65PiCv27|CSLA_Sa61_20rnd_7_65PiCv27]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_PolicemanSa61|CSLA_PolicemanSa61]]
+:[[Arma 3 CfgVehicles GUER#FIA_PolicemanSa61|FIA_PolicemanSa61]]
+:[[Arma 3 CfgVehicles CIV#CSLA_CIV_PoliceManSa61|CSLA_CIV_PoliceManSa61]]
+|-
+| 
+| <span id="CSLA_rSa61t" >'''CSLA_rSa61t'''</span>
+| ''Sa-61 with rifle butt and silencer''
+| ''SMG<br/>Caliber: 7.65 Browning''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+:[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65PiCv27|CSLA_Sa61_20rnd_7_65PiCv27]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_Sa61tlm|CSLA_Sa61tlm]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#FIA_mcSa61|FIA_mcSa61]]
+|-
+| [[File:csla_sa58p.png|150px|&nbsp;]]
+| <span id="CSLA_Sa58P" >'''CSLA_Sa58P'''</span>
+| ''Sa-58P''
+| ''Assault rifle<br/>Caliber: 7.62x39''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Cv43|CSLA_Sa58_30rnd_7_62Cv43]]
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles EAST#CSLA_engBase|CSLA_engBase]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrSa58P|CSLA_mrSa58P]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrSgt|CSLA_mrSgt]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrRPG75|CSLA_mrRPG75]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrUK59a|CSLA_mrUK59a]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrUK59m|CSLA_mrUK59m]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrM52g|CSLA_mrM52g]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrM52a|CSLA_mrM52a]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrM52m|CSLA_mrM52m]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrT21a|CSLA_mrT21a]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mr9M113|CSLA_mr9M113]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrRPG7|CSLA_mrRPG7]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrRPG7a|CSLA_mrRPG7a]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrRF10|CSLA_mrRF10]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrMedi|CSLA_mrMedi]]
+:[[Arma 3 CfgVehicles EAST#CSLA_engLA|CSLA_engLA]]
+:[[Arma 3 CfgVehicles EAST#CSLA_engSapper|CSLA_engSapper]]
+:[[Arma 3 CfgVehicles EAST#CSLA_engMiner|CSLA_engMiner]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rEnl|CSLA_rEnl]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rSa58P|CSLA_rSa58P]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rSgt|CSLA_rSgt]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rRPG75|CSLA_rRPG75]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rUK59a|CSLA_rUK59a]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rUK59m|CSLA_rUK59m]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rM52g|CSLA_rM52g]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rM52a|CSLA_rM52a]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rM52m|CSLA_rM52m]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rT21|CSLA_rT21]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rT21a|CSLA_rT21a]]
+:[[Arma 3 CfgVehicles EAST#CSLA_r9P135M|CSLA_r9P135M]]
+:[[Arma 3 CfgVehicles EAST#CSLA_r9M113|CSLA_r9M113]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rRPG7|CSLA_rRPG7]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rRPG7a|CSLA_rRPG7a]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rRF10|CSLA_rRF10]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rMedi|CSLA_rMedi]]
+:[[Arma 3 CfgVehicles GUER#FIA_mcSa58|FIA_mcSa58]]
+|}
+|-
+| [[File:csla_sa58pp.png|150px|&nbsp;]]
+| <span id="CSLA_Sa58Pp" >'''CSLA_Sa58Pp'''</span>
+| ''Sa-58P with ZD 4x8''
+| ''Assault rifle with riflescope<br/>Caliber: 7.62x39''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Cv43|CSLA_Sa58_30rnd_7_62Cv43]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_ZD4x8|CSLA_ZD4x8]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_mrSa58Pp|CSLA_mrSa58Pp]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rSa58Pp|CSLA_rSa58Pp]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptSa58Pp|CSLA_ptSa58Pp]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrSptG|CSLA_lrrSptG]]
+|-
+| [[File:csla_sa58ppb.png|150px|&nbsp;]]
+| <span id="CSLA_Sa58Ppb" >'''CSLA_Sa58Ppb'''</span>
+| ''Sa-58Pp with bipod''
+| ''Assault rifle with riflescope and bipod<br/>Caliber: 7.62x39''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Cv43|CSLA_Sa58_30rnd_7_62Cv43]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_ZD4x8|CSLA_ZD4x8]]
+| 
+|-
+| [[File:csla_sa58pn.png|150px|&nbsp;]]
+| <span id="CSLA_Sa58Pn" >'''CSLA_Sa58Pn'''</span>
+| ''Sa-58P with NSPU''
+| ''Assault rifle with night riflescope<br/>Caliber: 7.62x39''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Cv43|CSLA_Sa58_30rnd_7_62Cv43]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_NSPU|CSLA_NSPU]]
+| 
+|-
+| 
+| <span id="CSLA_Sa58Pnb" >'''CSLA_Sa58Pnb'''</span>
+| ''Sa-58P with NSPU and bipod''
+| ''Assault rifle with night riflescope and bipod<br/>Caliber: 7.62x39''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Cv43|CSLA_Sa58_30rnd_7_62Cv43]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_NSPU|CSLA_NSPU]]
+| 
+|-
+| [[File:csla_sa58v.png|150px|&nbsp;]]
+| <span id="CSLA_Sa58V" >'''CSLA_Sa58V'''</span>
+| ''Sa-58V''
+| ''Assault rifle with folding stock<br/>Caliber: 7.62x39''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Cv43|CSLA_Sa58_30rnd_7_62Cv43]]
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles EAST#CSLA_mrCmd|CSLA_mrCmd]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrOfc|CSLA_mrOfc]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrOfcStb|CSLA_mrOfcStb]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrSa58V|CSLA_mrSa58V]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrT21|CSLA_mrT21]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mr9P135M|CSLA_mr9P135M]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mr9K32|CSLA_mr9K32]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrCrw|CSLA_mrCrw]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrDrM|CSLA_mrDrM]]
+:[[Arma 3 CfgVehicles EAST#CSLA_engCJt|CSLA_engCJt]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rOfc|CSLA_rOfc]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rOfcStb|CSLA_rOfcStb]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rSa58V|CSLA_rSa58V]]
+:[[Arma 3 CfgVehicles EAST#CSLA_r9K32|CSLA_r9K32]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptBaseman|CSLA_ptBaseman]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptOfc|CSLA_ptOfc]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptSgt|CSLA_ptSgt]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptRPG75|CSLA_ptRPG75]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptRF10|CSLA_ptRF10]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptMedi|CSLA_ptMedi]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptDrv|CSLA_ptDrv]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptSpr|CSLA_ptSpr]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrBaseman|CSLA_lrrBaseman]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrCmd|CSLA_lrrCmd]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrOfc|CSLA_lrrOfc]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrMedi|CSLA_lrrMedi]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrSpr|CSLA_lrrSpr]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrRTO|CSLA_lrrRTO]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrDrM|CSLA_lrrDrM]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rcnCrw|CSLA_rcnCrw]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrCrw|CSLA_lrrCrw]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rcnDrM|CSLA_rcnDrM]]
+:[[Arma 3 CfgVehicles EAST#CSLA_crw|CSLA_crw]]
+:[[Arma 3 CfgVehicles EAST#CSLA_drM|CSLA_drM]]
+:[[Arma 3 CfgVehicles EAST#CSLA_svc|CSLA_svc]]
+:[[Arma 3 CfgVehicles EAST#CSLA_engCrw|CSLA_engCrw]]
+:[[Arma 3 CfgVehicles EAST#CSLA_pltMi8|CSLA_pltMi8]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ECh1a|CSLA_ECh1a]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ECh2|CSLA_ECh2]]
+:[[Arma 3 CfgVehicles GUER#FIA_mcSa58v|FIA_mcSa58v]]
+:[[Arma 3 CfgVehicles GUER#FIA_mcRPG7|FIA_mcRPG7]]
+:[[Arma 3 CfgVehicles GUER#FIA_mc9K32|FIA_mc9K32]]
+:[[Arma 3 CfgVehicles GUER#FIA_mrDrM|FIA_mrDrM]]
+|}
+|-
+| [[File:csla_sa58gl.png|150px|&nbsp;]]
+| <span id="CSLA_VG70" >'''CSLA_VG70'''</span>
+| ''Sa-58 VG-70''
+| ''Assault rifle with integrated grenade launcher<br/>Caliber: 7.62x39, 26.5mm''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Cv43|CSLA_Sa58_30rnd_7_62Cv43]]
+:[[Arma 3 CfgMagazines#CSLA_26_5vz70|CSLA_26_5vz70]]
+:[[Arma 3 CfgMagazines#CSLA_26_5sigB1a|CSLA_26_5sigB1a]]
+:[[Arma 3 CfgMagazines#CSLA_26_5sigCv1a|CSLA_26_5sigCv1a]]
+:[[Arma 3 CfgMagazines#CSLA_26_5sigZl1a|CSLA_26_5sigZl1a]]
+:[[Arma 3 CfgMagazines#CSLA_26_5sigCrD|CSLA_26_5sigCrD]]
+:[[Arma 3 CfgMagazines#CSLA_26_5sigOrD|CSLA_26_5sigOrD]]
+:[[Arma 3 CfgMagazines#CSLA_26_5sigMD|CSLA_26_5sigMD]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_mrVG70|CSLA_mrVG70]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rVG70|CSLA_rVG70]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptVG70|CSLA_ptVG70]]
+|-
+| [[File:csla_svd.png|150px|&nbsp;]]
+| <span id="CSLA_OP63" >'''CSLA_OP63'''</span>
+| ''OP-63''
+| ''Sniper rifle<br/>Caliber: 7.62x54R''
+| 
+:[[Arma 3 CfgMagazines#CSLA_OP63_10rnd_7_62Odst59|CSLA_OP63_10rnd_7_62Odst59]]
+:[[Arma 3 CfgMagazines#CSLA_OP63_10rnd_7_62Cv59|CSLA_OP63_10rnd_7_62Cv59]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_PSO1_OP63|CSLA_PSO1_OP63]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_mrOP63|CSLA_mrOP63]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrOP63Ghillie|CSLA_mrOP63Ghillie]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rOP63|CSLA_rOP63]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptOP63|CSLA_ptOP63]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrSnp|CSLA_lrrSnp]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrSnpG|CSLA_lrrSnpG]]
+|-
+|
+| <span id="CSLA_OP63n" >'''CSLA_OP63n'''</span>
+| ''OP-63 (NSPU)''
+| ''Sniper rifle<br/>Caliber: 7.62x54R''
+| 
+:[[Arma 3 CfgMagazines#CSLA_OP63_10rnd_7_62Odst59|CSLA_OP63_10rnd_7_62Odst59]]
+:[[Arma 3 CfgMagazines#CSLA_OP63_10rnd_7_62Cv59|CSLA_OP63_10rnd_7_62Cv59]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_NSPU_OP63|CSLA_NSPU_OP63]]
+| 
+|-
+| [[File:csla_huntingrifle.png|150px|&nbsp;]]
+| <span id="CSLA_HuntingRifle" >'''CSLA_HuntingRifle'''</span>
+| ''Hunting rifle''
+| ''Rifle<br/>Caliber: 7.62x54R''
+| 
+:[[Arma 3 CfgMagazines#CSLA_10Rnd_762hunt|CSLA_10Rnd_762hunt]]
+| 
+|-
+| [[File:Arma3 CfgWeapons CSLA_Pu52p.jpg|150px|&nbsp;]]
+| <span id="CSLA_Pu52p" >'''CSLA_Pu52p'''</span>
+| ''Pu-52 with ZD 4x8°''
+| ''Automatic rifle<br/>Caliber: 7.62x45''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Pu52_10rnd_7_62vz52|CSLA_Pu52_10rnd_7_62vz52]]
+:[[Arma 3 CfgMagazines#CSLA_Pu52_10rnd_7_62Sv52|CSLA_Pu52_10rnd_7_62Sv52]]
+:[[Arma 3 CfgMagazines#CSLA_Pu52_10rnd_7_62Cv52|CSLA_Pu52_10rnd_7_62Cv52]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_ZD4x8_Pu52|CSLA_ZD4x8_Pu52]]
+| 
+|-
+| [[File:Arma3 CfgWeapons CSLA_Pu57.jpg|150px|&nbsp;]]
+| <span id="CSLA_Pu57" >'''CSLA_Pu57'''</span>
+| ''Pu-52/57''
+| ''Automatic rifle<br/>Caliber: 7.62x45''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Pu57_10rnd_7_62vz43|CSLA_Pu57_10rnd_7_62vz43]]
+:[[Arma 3 CfgMagazines#CSLA_Pu57_10rnd_7_62Sv43|CSLA_Pu57_10rnd_7_62Sv43]]
+:[[Arma 3 CfgMagazines#CSLA_Pu57_10rnd_7_62Cv43|CSLA_Pu57_10rnd_7_62Cv43]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles GUER#FIA_cldsPu57|FIA_cldsPu57]]
+:[[Arma 3 CfgVehicles GUER#FIA_mcPu57DES|FIA_mcPu57DES]]
+|-
+| [[File:Arma3 CfgWeapons CSLA_Pu57p.jpg|150px|&nbsp;]]
+| <span id="CSLA_Pu57p" >'''CSLA_Pu57p'''</span>
+| ''Pu-52/57 with ZD 4x8°''
+| ''Automatic rifle<br/>Caliber: 7.62x45''
+| 
+:[[Arma 3 CfgMagazines#CSLA_Pu57_10rnd_7_62vz43|CSLA_Pu57_10rnd_7_62vz43]]
+:[[Arma 3 CfgMagazines#CSLA_Pu57_10rnd_7_62Sv43|CSLA_Pu57_10rnd_7_62Sv43]]
+:[[Arma 3 CfgMagazines#CSLA_Pu57_10rnd_7_62Cv43|CSLA_Pu57_10rnd_7_62Cv43]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_ZD4x8_Pu52|CSLA_ZD4x8_Pu52]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#FIA_mcPu57|FIA_mcPu57]]
+|-
+| [[File:Arma3 CfgWeapons CSLA_OP54.jpg|150px|&nbsp;]]
+| <span id="CSLA_OP54" >'''CSLA_OP54'''</span>
+| ''OP-54''
+| ''Sniper rifle<br/>Caliber: 7.62x54R''
+| 
+:[[Arma 3 CfgMagazines#CSLA_OP54_5rnd_7_62TzOdst59|CSLA_OP54_5rnd_7_62TzOdst59]]
+:[[Arma 3 CfgMagazines#CSLA_OP54_5rnd_7_62Odst59|CSLA_OP54_5rnd_7_62Odst59]]
+:[[Arma 3 CfgMagazines#CSLA_OP54_5rnd_7_62PZ59|CSLA_OP54_5rnd_7_62PZ59]]
+:[[Arma 3 CfgMagazines#CSLA_OP54_5rnd_7_62Cv59|CSLA_OP54_5rnd_7_62Cv59]]
+| 
+| 
+|-
+| [[File:Arma3 CfgWeapons CSLA_OP54p.jpg|150px|&nbsp;]]
+| <span id="CSLA_OP54p" >'''CSLA_OP54p'''</span>
+| ''OP-54 (PD-54)''
+| ''Sniper rifle<br/>Caliber: 7.62x54R''
+| 
+:[[Arma 3 CfgMagazines#CSLA_OP54_5rnd_7_62TzOdst59|CSLA_OP54_5rnd_7_62TzOdst59]]
+:[[Arma 3 CfgMagazines#CSLA_OP54_5rnd_7_62Odst59|CSLA_OP54_5rnd_7_62Odst59]]
+:[[Arma 3 CfgMagazines#CSLA_OP54_5rnd_7_62PZ59|CSLA_OP54_5rnd_7_62PZ59]]
+:[[Arma 3 CfgMagazines#CSLA_OP54_5rnd_7_62Cv59|CSLA_OP54_5rnd_7_62Cv59]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_PD54|CSLA_PD54]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#FIA_mcSnp|FIA_mcSnp]]
+|-
+| [[File:csla_uk59.png|150px|&nbsp;]]
+| <span id="CSLA_UK59L" >'''CSLA_UK59L'''</span>
+| ''UK-59L''
+| ''Universal machine gun<br/>Caliber: 7.62x54R''
+| 
+:[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62vz59|CSLA_UK59_50rnd_7_62vz59]]
+:[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62Sv59|CSLA_UK59_50rnd_7_62Sv59]]
+:[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62PZ59|CSLA_UK59_50rnd_7_62PZ59]]
+:[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62Tz59|CSLA_UK59_50rnd_7_62Tz59]]
+:[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62TzSv59|CSLA_UK59_50rnd_7_62TzSv59]]
+:[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62Cv59|CSLA_UK59_50rnd_7_62Cv59]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_mrUK59|CSLA_mrUK59]]
+:[[Arma 3 CfgVehicles EAST#CSLA_mrUK59L|CSLA_mrUK59L]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rUK59L|CSLA_rUK59L]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptUK59|CSLA_ptUK59]]
+:[[Arma 3 CfgVehicles GUER#FIA_mcUK59L|FIA_mcUK59L]]
+|-
+| [[File:csla_uk59p.png|150px|&nbsp;]]
+| <span id="CSLA_UK59Lp" >'''CSLA_UK59Lp'''</span>
+| ''UK-59L with ZD 4x8''
+| ''Universal machine gun with scope<br/>Caliber: 7.62x54R''
+| 
+:[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62vz59|CSLA_UK59_50rnd_7_62vz59]]
+:[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62Sv59|CSLA_UK59_50rnd_7_62Sv59]]
+:[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62PZ59|CSLA_UK59_50rnd_7_62PZ59]]
+:[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62Tz59|CSLA_UK59_50rnd_7_62Tz59]]
+:[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62TzSv59|CSLA_UK59_50rnd_7_62TzSv59]]
+:[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62Cv59|CSLA_UK59_50rnd_7_62Cv59]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_UK59_ZD4x8|CSLA_UK59_ZD4x8]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_mrUK59T|CSLA_mrUK59T]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rUK59T|CSLA_rUK59T]]
+|-
+| [[File:csla_rpg75.png|150px|&nbsp;]]
+| <span id="CSLA_RPG75" >'''CSLA_RPG75'''</span>
+| ''RPG-75''
+| ''Disposable Rocket-propelled Grenade Launcher<br/>Caliber: 68mm''
+| 
+:[[Arma 3 CfgMagazines#CSLA_RPG75_Mag|CSLA_RPG75_Mag]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_mrRPG75|CSLA_mrRPG75]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rRPG75|CSLA_rRPG75]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptSgt|CSLA_ptSgt]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ptRPG75|CSLA_ptRPG75]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrCmd|CSLA_lrrCmd]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrOfc|CSLA_lrrOfc]]
+:[[Arma 3 CfgVehicles EAST#CSLA_lrrSpr|CSLA_lrrSpr]]
+:[[Arma 3 CfgVehicles EAST#CSLA_ECh2|CSLA_ECh2]]
+|-
+| [[File:csla_rpg75.png|150px|&nbsp;]]
+| <span id="CSLA_RPG75empty" >'''CSLA_RPG75empty'''</span>
+| ''RPG-75 Used''
+| ''Disposable Rocket-propelled Grenade Launcher<br/>Caliber: 68mm''
+| 
+| 
+| 
+|-
+
+|-
+| [[File:Arma3 CfgWeapons CSLA_LK57_25.jpg|150px|&nbsp;]]
+| <span id="CSLA_LK57_25" >'''CSLA_LK57_25'''</span>
+| ''LK vz. 52/57''
+| ''Lehký kulomet vzor 52/57 (Light machine gun M1952/1957) is the Czechoslovak 7.62x39 caliber machine gun.''
+| 
+:[[Arma 3 CfgMagazines#CSLA_LK57_25rnd_7_62vz43|CSLA_LK57_25rnd_7_62vz43]]
+:[[Arma 3 CfgMagazines#CSLA_LK57_25rnd_7_62Sv43|CSLA_LK57_25rnd_7_62Sv43]]
+:[[Arma 3 CfgMagazines#CSLA_LK57_25rnd_7_62PZ43|CSLA_LK57_25rnd_7_62PZ43]]
+:[[Arma 3 CfgMagazines#CSLA_LK57_25rnd_7_62Cv43|CSLA_LK57_25rnd_7_62Cv43]]
+| 
+| 
+|-
+| [[File:Arma3 CfgWeapons CSLA_LK57_50.jpg|150px|&nbsp;]]
+| <span id="CSLA_LK57_50" >'''CSLA_LK57_50'''</span>
+| ''LK vz. 52/57''
+| ''Lehký kulomet vzor 52/57 (Light machine gun M1952/1957) is the Czechoslovak 7.62x39 caliber machine gun.''
+| 
+:[[Arma 3 CfgMagazines#CSLA_LK57_50rnd_7_62vz43|CSLA_LK57_50rnd_7_62vz43]]
+:[[Arma 3 CfgMagazines#CSLA_LK57_50rnd_7_62Sv43|CSLA_LK57_50rnd_7_62Sv43]]
+:[[Arma 3 CfgMagazines#CSLA_LK57_50rnd_7_62PZ43|CSLA_LK57_50rnd_7_62PZ43]]
+:[[Arma 3 CfgMagazines#CSLA_LK57_50rnd_7_62Cv43|CSLA_LK57_50rnd_7_62Cv43]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles GUER#FIA_mcLK57|FIA_mcLK57]]
+:[[Arma 3 CfgVehicles GUER#FIA_cdLK57|FIA_cdLK57]]
+:[[Arma 3 CfgVehicles GUER#FIA_cldsLK57|FIA_cldsLK57]]
+:[[Arma 3 CfgVehicles GUER#FIA_mcLK57DES|FIA_mcLK57DES]]
+|-
+| [[File:Arma3 CfgWeapons CSLA_LK52_25.jpg|150px|&nbsp;]]
+| <span id="CSLA_LK52_25" >'''CSLA_LK52_25'''</span>
+| ''LK vz. 52''
+| ''Lehký kulomet vzor 52 (Light machine gun M1952) is the Czechoslovak 7.62x45 caliber machine gun.''
+| 
+:[[Arma 3 CfgMagazines#CSLA_LK52_25rnd_7_62vz52|CSLA_LK52_25rnd_7_62vz52]]
+:[[Arma 3 CfgMagazines#CSLA_LK52_25rnd_7_62Sv52|CSLA_LK52_25rnd_7_62Sv52]]
+:[[Arma 3 CfgMagazines#CSLA_LK52_25rnd_7_62PZ52|CSLA_LK52_25rnd_7_62PZ52]]
+:[[Arma 3 CfgMagazines#CSLA_LK52_25rnd_7_62Cv52|CSLA_LK52_25rnd_7_62Cv52]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles GUER#FIA_mcLK52|FIA_mcLK52]]
+:[[Arma 3 CfgVehicles GUER#FIA_cdLK52|FIA_cdLK52]]
+:[[Arma 3 CfgVehicles GUER#FIA_cldsLK52|FIA_cldsLK52]]
+:[[Arma 3 CfgVehicles GUER#FIA_mcLK52DES|FIA_mcLK52DES]]
+|-
+
+| [[File:csla_rpg7.png|150px|&nbsp;]]
+| <span id="CSLA_RPG7" >'''CSLA_RPG7'''</span>
+| ''RPG-7''
+| ''Rocket-propelled Grenade Launcher<br/>Caliber: 40mm''
+| 
+:[[Arma 3 CfgMagazines#CSLA_PG7M110|CSLA_PG7M110]]
+:[[Arma 3 CfgMagazines#CSLA_PG7M110V|CSLA_PG7M110V]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles GUER#FIA_mcRPG7|FIA_mcRPG7]]
+|-
+| [[File:csla_rpg7v.png|150px|&nbsp;]]
+| <span id="CSLA_RPG7V" >'''CSLA_RPG7V'''</span>
+| ''RPG-7V''
+| ''Rocket-propelled Grenade Launcher<br/>Caliber: 40mm''
+| 
+:[[Arma 3 CfgMagazines#CSLA_PG7M110|CSLA_PG7M110]]
+:[[Arma 3 CfgMagazines#CSLA_PG7M110V|CSLA_PG7M110V]]
+| 
+:[[Arma 3 CfgWeapons Items#CSLA_PGO7|CSLA_PGO7]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_mrRPG7|CSLA_mrRPG7]]
+:[[Arma 3 CfgVehicles EAST#CSLA_rRPG7|CSLA_rRPG7]]
+|-
+
+| [[File:Arma3 CfgWeapons CSLA_P27.jpg|150px|&nbsp;]]
+| <span id="CSLA_P27" >'''CSLA_P27'''</span>
+| ''P27 ATGL''
+| ''Anti-Tank Grenade Launcher P27''
+| 
+:[[Arma 3 CfgMagazines#CSLA_NbP27|CSLA_NbP27]]
+|
+|-
+
+| [[File:csla_9k32.png|150px|&nbsp;]]
+| <span id="CSLA_9K32" >'''CSLA_9K32'''</span>
+| ''9K32 Strela-2''
+| ''Surface-to-air Missile<br/>Caliber: 72mm''
+| 
+:[[Arma 3 CfgMagazines#CSLA_9M32M|CSLA_9M32M]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_mr9K32|CSLA_mr9K32]]
+:[[Arma 3 CfgVehicles EAST#CSLA_r9K32|CSLA_r9K32]]
+:[[Arma 3 CfgVehicles GUER#FIA_mc9K32|FIA_mc9K32]]
+|}
+
+=== Explosives & Throwable ===
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br />
+! Class<br />
+! Name<br />
+! Description<br />
+! Side<br />
+! Faction<br />
+
+
+|-
+| [[File:csla_rg4o.png|150px|&nbsp;]]
+| <span id="CSLA_RG4o" >'''CSLA_RG4o'''</span>
+| ''RG4 grenade (Defensive)''
+| ''RG4 grenade with shrapnel case on (Impact)''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+|-
+| [[File:csla_rg4u.png|150px|&nbsp;]]
+| <span id="CSLA_RG4u" >'''CSLA_RG4u'''</span>
+| ''RG4 grenade (Offensive)''
+| ''RG4 grenade without shrapnel case (Impact)''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+|-
+| [[File:csla_urg86.png|150px|&nbsp;]]
+| <span id="CSLA_URG86o" >'''CSLA_URG86o'''</span>
+| ''URG86 grenade (Defensive)''
+| ''URG86 grenade set to time fuse''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+|-
+| [[File:csla_urg86.png|150px|&nbsp;]]
+| <span id="CSLA_URG86u" >'''CSLA_URG86u'''</span>
+| ''URG86 grenade (Offensive)''
+| ''URG86 grenade set to impact fuse''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+|-
+| [[File:csla_f1.png|150px|&nbsp;]]
+| <span id="CSLA_F1" >'''CSLA_F1'''</span>
+| ''F1 grenade''
+| ''F1 grenade (Time)''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+|-
+| 
+| <span id="CSLA_dymB" >'''CSLA_dymB'''</span>
+| ''CSLA smoke grenade (white)''
+| ''CSLA smoke grenade (white)''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+|-
+| 
+| <span id="CSLA_dymC" >'''CSLA_dymC'''</span>
+| ''CSLA smoke grenade (red)''
+| ''CSLA smoke grenade (red)''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+|-
+| 
+| <span id="CSLA_dymZ" >'''CSLA_dymZ'''</span>
+| ''CSLA smoke grenade (green)''
+| ''CSLA smoke grenade (green)''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+|-
+| 
+| <span id="CSLA_dymZl" >'''CSLA_dymZl'''</span>
+| ''CSLA smoke grenade (yellow)''
+| ''CSLA smoke grenade (yellow)''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+|-
+| 
+| <span id="CSLA_PtMiBa3_mag" >'''CSLA_PtMiBa3_mag'''</span>
+| ''PtMiBaIII AT mine''
+| ''Pressure triggered AT mine''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+|-
+| 
+| <span id="CSLA_PPMiNa_mag" >'''CSLA_PPMiNa_mag'''</span>
+| ''PpMiNa AP mine''
+| ''Pressure triggered AP mine''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+
+|-
+| 
+| <span id="CSLA_IVZ" >'''CSLA_IVZ'''</span>
+| ''Satchel charge''
+| ''Satchel filled with smaller TNT charges and ČaRoZ iniciator''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+|-
+| 
+| <span id="CSLA_TNT0100g" >'''CSLA_TNT0100g'''</span>
+| ''Small TNT charge''
+| ''200g (regardless of theclassname) TNT charge and ČaRoZ iniciator''
+| style='background-color:#e1c2c2;' | EAST
+| CSLA
+
+|}
+
+=== Static Weapons ===
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br />
+! Class<br />
+! Name<br />
+! Side<br />
+! Faction<br />
+! Category<br />
+! Weapons<br />
+! Magazines<br />
+
+|-
+| [[File:csla_uk59_high_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_UK59T_Stat" >'''CSLA_UK59T_Stat'''</span>
+| ''UK-59T''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Static
+
+| 
+:[[Arma 3: CfgWeapons Weapons#FakeWeapon|FakeWeapon]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_UK59T|CSLA_UK59T]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#FakeWeapon|FakeWeapon]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62TzSv59|CSLA_250rnd_7_62TzSv59]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62PZ59|CSLA_250rnd_7_62PZ59]]
+
+
+|-
+| [[File:csla_uk59_low_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_UK59L_Stat" >'''CSLA_UK59L_Stat'''</span>
+| ''UK-59L''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Static
+
+| 
+:[[Arma 3: CfgWeapons Weapons#FakeWeapon|FakeWeapon]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_UK59V|CSLA_UK59V]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#FakeWeapon|FakeWeapon]]
+:15x&nbsp;[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62PZ59|CSLA_UK59_50rnd_7_62PZ59]]
+
+
+
+|-
+| [[File:csla_m52_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_M52_Stat" >'''CSLA_M52_Stat'''</span>
+| ''M-52''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Static
+
+| 
+:[[Arma 3: CfgWeapons Weapons#FakeWeapon|FakeWeapon]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_M52|CSLA_M52]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#FakeWeapon|FakeWeapon]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_8rnd_82EOM52|CSLA_8rnd_82EOM52]]
+
+
+|-
+| [[File:csla_t21_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_T21_Stat" >'''CSLA_T21_Stat'''</span>
+| ''T21''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Static
+
+| 
+:[[Arma 3: CfgWeapons Weapons#FakeWeapon|FakeWeapon]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_T21|CSLA_T21]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#FakeWeapon|FakeWeapon]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_6rnd_82JOFZ47|CSLA_6rnd_82JOFZ47]]
+
+
+
+
+|-
+| [[File:csla_at5_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_9K113_Stat" >'''CSLA_9K113_Stat'''</span>
+| ''9K113 Konkurs''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Static
+
+| 
+:[[Arma 3: CfgWeapons Weapons#FakeWeapon|FakeWeapon]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_9K113|CSLA_9K113]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#FakeWeapon|FakeWeapon]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_9M113|CSLA_9M113]]
+
+
+
+|-
+| [[File:csla_m53_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_PLdvK59_Stat" >'''CSLA_PLdvK59_Stat'''</span>
+| ''PLDvK-53/59''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Static
+
+| 
+:[[Arma 3: CfgWeapons Weapons#FakeWeapon|FakeWeapon]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_PLdvK59|CSLA_PLdvK59]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#FakeWeapon|FakeWeapon]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_100rnd_30JPZSv53|CSLA_100rnd_30JPZSv53]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_100rnd_30JOFSv53|CSLA_100rnd_30JOFSv53]]
+
+
+|}
+
+=== Vehicle Weapons ===
+
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Class<br />
+! Name<br />
+! Inventory description<br />
+! Magazines<br />
+! Used by<br />
+
+|-
+| <span id="CSLA_autoCannon" >'''CSLA_autoCannon'''</span>
+| ''''
+| ''Base class''
+| 
+| 
+|-
+| <span id="CSLA_RocketPods" >'''CSLA_RocketPods'''</span>
+| ''''
+| ''Base class''
+| 
+| 
+|-
+| <span id="CSLA_MissileLauncher" >'''CSLA_MissileLauncher'''</span>
+| ''''
+| ''Base class''
+| 
+| 
+|-
+| <span id="CSLA_T21" >'''CSLA_T21'''</span>
+| ''T21''
+| ''Recoilless rifle<br/>Caliber: 82 mm''
+| 
+:[[Arma 3 CfgMagazines#CSLA_82JOFZ47|CSLA_82JOFZ47]]
+:[[Arma 3 CfgMagazines#CSLA_3rnd_82JOFZ47|CSLA_3rnd_82JOFZ47]]
+:[[Arma 3 CfgMagazines#CSLA_6rnd_82JOFZ47|CSLA_6rnd_82JOFZ47]]
+:[[Arma 3 CfgMagazines#CSLA_12rnd_82JOFZ47|CSLA_12rnd_82JOFZ47]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_T21_Stat|CSLA_T21_Stat]]
+:[[Arma 3 CfgVehicles EAST#CSLA_OT65A|CSLA_OT65A]]
+:[[Arma 3 CfgVehicles EAST#CSLA_OT65A_lrr|CSLA_OT65A_lrr]]
+:[[Arma 3 CfgVehicles EAST#CSLA_OT62|CSLA_OT62]]
+:[[Arma 3 CfgVehicles GUER#FIA_AZU_T21|FIA_AZU_T21]]
+
+|-
+| <span id="CSLA_M52" >'''CSLA_M52'''</span>
+| ''M-52''
+| ''Mortar<br/>Caliber: 82 mm''
+| 
+:[[Arma 3 CfgMagazines#CSLA_8rnd_82EOM52|CSLA_8rnd_82EOM52]]
+:[[Arma 3 CfgMagazines#CSLA_4rnd_82EOM52|CSLA_4rnd_82EOM52]]
+:[[Arma 3 CfgMagazines#CSLA_82EOM52|CSLA_82EOM52]]
+:[[Arma 3 CfgMagazines#CSLA_3rnd_82EOM52|CSLA_3rnd_82EOM52]]
+:[[Arma 3 CfgMagazines#CSLA_6rnd_82EOM52|CSLA_6rnd_82EOM52]]
+|
+:[[Arma 3 CfgVehicles EAST#CSLA_M52_Stat|CSLA_M52_Stat]]
+
+|-
+| <span id="CSLA_UK59T" >'''CSLA_UK59T'''</span>
+| ''UK59T''
+| ''UK59 machinegun with heavy barrel''
+| 
+				CSLA_250rnd_7_62vz59 <br />
+				CSLA_250rnd_7_62Sv59 <br />
+				CSLA_250rnd_7_62PZ59 <br />
+				CSLA_250rnd_7_62Tz59 <br />
+				CSLA_250rnd_7_62TzSv59 <br />
+				CSLA_250rnd_7_62Cv59 <br />
+| 
+CSLA_OT65A
+CSLA_OT62
+
+|-
+| <span id="CSLA_UK59T_2" >'''CSLA_UK59T_2'''</span>
+| ''UK59T''
+| ''UK59 machinegun with heavy barrel''
+| 
+				CSLA_250rnd_7_62vz59 <br />
+				CSLA_250rnd_7_62Sv59 <br />
+				CSLA_250rnd_7_62PZ59 <br />
+				CSLA_250rnd_7_62Tz59" <br />
+				CSLA_250rnd_7_62TzSv59 <br />
+				CSLA_250rnd_7_62Cv59 <br />
+| 
+CSLA_Mi17mg
+|-
+| <span id="CSLA_UK59V" >'''CSLA_UK59V'''</span>
+| ''UK59''
+| ''Standard UK59 machinegun mounted on vehicles''
+| 
+				CSLA_UK59_50rnd_7_62vz59 <br />
+				CSLA_UK59_50rnd_7_62PZ59 <br />
+				CSLA_UK59_50rnd_7_62Tz59 <br />
+				CSLA_UK59_50rnd_7_62TzSv59 <br />
+				CSLA_UK59_50rnd_7_62Cv59<br />
+| 
+CSLA_Mi17mg
+|-
+| <span id="CSLA_UK59V_2" >'''CSLA_UK59V_2'''</span>
+| ''UK59''
+| ''Standard UK59 machinegun mounted on vehicles (different gun particles)''
+| 
+				CSLA_UK59_50rnd_7_62vz59<br />
+				CSLA_UK59_50rnd_7_62PZ59<br />
+				CSLA_UK59_50rnd_7_62Tz59<br />
+				CSLA_UK59_50rnd_7_62TzSv59<br />
+				CSLA_UK59_50rnd_7_62Cv59<br />
+| 
+CSLA_RM70
+|-
+| <span id="CSLA_PKT" >'''CSLA_PKT'''</span>
+| ''PKT''
+| ''7.62mm Vehicle PKT machinegun''
+| 
+				CSLA_250rnd_7_62vz59 <br />
+				CSLA_250rnd_7_62Sv59 <br />
+				CSLA_250rnd_7_62PZ59 <br />
+				CSLA_250rnd_7_62Tz59 <br />
+			    CSLA_250rnd_7_62TzSv59 <br />
+				CSLA_250rnd_7_62Cv59 <br />
+| 
+CSLA_BPzV
+CSLA_BVP1
+CSLA_OT64C
+|-
+| <span id="CSLA_PKT_T72" >'''CSLA_PKT_T72'''</span>
+| ''PKT''
+| ''7.62mm PKT machinegun used as coax in T72''
+| 
+				CSLA_250rnd_7_62vz59 <br />
+				CSLA_250rnd_7_62Sv59 <br />
+				CSLA_250rnd_7_62PZ59 <br />
+				CSLA_250rnd_7_62Tz59 <br />
+				CSLA_250rnd_7_62TzSv59 <br />
+				CSLA_250rnd_7_62Cv59 <br />
+| 
+CSLA_T72
+CSLA_T72M
+CSLA_T72M1
+|-
+| <span id=" CSLA_DSKM" >''' CSLA_DSKM'''</span>
+| ''DShKM''
+| ''12.7mm DShKM heavy machinegun''
+| 
+				CSLA_50rnd_12_7PSv44 <br />
+				CSLA_50rnd_12_7PZSv44 <br />
+				CSLA_50rnd_12_7Cv44 <br />
+| 
+CSLA_ShKH77
+|-
+| <span id=" CSLA_DSKM_veh" >'''CSLA_DSKM_veh'''</span>
+| ''DShKM''
+| ''12.7mm DShKM heavy machinegun used on vehicles''
+| 
+				CSLA_50rnd_12_7PSv44 <br />
+				CSLA_50rnd_12_7PZSv44 <br />
+				CSLA_50rnd_12_7Cv44 <br />
+| 
+FIA_BTR40_DSKM
+FIA_AZU_DSKM
+|-
+| <span id="CSLA_NSV" >'''CSLA_NSV'''</span>
+| ''NSV machinegun''
+| ''12.7mm NSV heavy machinegun''
+| 
+				CSLA_50rnd_12_7PSv44 <br />
+				CSLA_50rnd_12_7PZSv44 <br />
+				CSLA_50rnd_12_7Cv44 <br />
+| Not used
+
+|-
+| <span id="CSLA_NSV_T72" >'''CSLA_NSV_T72'''</span>
+| ''NSVT''
+| ''12.7mm NSVT heavy machinegun used on T72''
+| 
+				CSLA_50rnd_12_7PSv44 <br />
+				CSLA_50rnd_12_7PZSv44 <br />
+				CSLA_50rnd_12_7Cv44 <br />
+|
+CSLA_T72
+CSLA_T72M
+CSLA_T72M1
+|-
+| <span id="CSLA_JakB12_7" >'''CSLA_JakB12_7'''</span>
+| ''YakB''
+| ''12.7mm YakB heavy machinegun''
+| 
+				CSLA_1470rnd_12_7PSv44 <br />
+				CSLA_1470rnd_12_7PZSv44 <br />
+				CSLA_1470rnd_12_7Cv44 <br />
+| 
+Not used
+|-
+| <span id="CSLA_KPVT" >'''CSLA_KPVT'''</span>
+| ''KPVT''
+| ''14.5mm KPVT heavy machinegun''
+| 
+				CSLA_100rnd_14_5PZSv41 <br />
+				CSLA_100rnd_14_5TZSv41 <br />
+				CSLA_100rnd_14_5Cv41 <br />
+| 
+CSLA_OT64C	
+
+|-
+| <span id="CSLA_PLdvK59" >'''CSLA_PLdvK59'''</span>
+| ''PLDvK-53/59''
+| ''AA cannon vz. 53/59''
+| 
+:[[Arma 3 CfgMagazines#CSLA_100rnd_30JPZSv53|CSLA_100rnd_30JPZSv53]]
+:[[Arma 3 CfgMagazines#CSLA_100rnd_30JOFSv53|CSLA_100rnd_30JOFSv53]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_PLdvK59_Stat|CSLA_PLdvK59_Stat]]
+:[[Arma 3 CfgVehicles EAST#CSLA_PLdvK59V3S|CSLA_PLdvK59V3S]]
+|-
+| <span id="CSLA_2A42" >'''CSLA_2A42'''</span>
+| ''2A42''
+| ''2A42''
+| 
+:[[Arma 3 CfgMagazines#230Rnd_30mmAP_2A42|230Rnd_30mmAP_2A42]]
+:[[Arma 3 CfgMagazines#230Rnd_30mmHE_2A42|230Rnd_30mmHE_2A42]]
+:[[Arma 3 CfgMagazines#250Rnd_30mmAP_2A42|250Rnd_30mmAP_2A42]]
+:[[Arma 3 CfgMagazines#250Rnd_30mmHE_2A42|250Rnd_30mmHE_2A42]]
+:[[Arma 3 CfgMagazines#CSLA_160rnd_30JPSv|CSLA_160rnd_30JPSv]]
+:[[Arma 3 CfgMagazines#CSLA_160rnd_30Igla|CSLA_160rnd_30Igla]]
+:[[Arma 3 CfgMagazines#CSLA_340rnd_30JOFZ|CSLA_340rnd_30JOFZ]]
+:[[Arma 3 CfgMagazines#CSLA_340rnd_30JOSv|CSLA_340rnd_30JOSv]]
+:[[Arma 3 CfgMagazines#CSLA_340rnd_30JOCvSv|CSLA_340rnd_30JOCvSv]]
+| Not used
+|-
+| <span id="CSLA_GS23" >'''CSLA_GS23'''</span>
+| ''GSh-23''
+| ''GSh-23''
+| 
+:[[Arma 3 CfgMagazines#CSLA_150rnd_23x115BRT|CSLA_150rnd_23x115BRT]]
+:[[Arma 3 CfgMagazines#CSLA_150rnd_23x115OFZT|CSLA_150rnd_23x115OFZT]]
+:[[Arma 3 CfgMagazines#CSLA_150rnd_23x115PUT|CSLA_150rnd_23x115PUT]]
+| Not used
+|-
+| <span id="CSLA_GS301" >'''CSLA_GS301'''</span>
+| ''GSh-30-1''
+| ''GSh-30-1''
+| 
+:[[Arma 3 CfgMagazines#CSLA_150rnd_30JPSv|CSLA_150rnd_30JPSv]]
+:[[Arma 3 CfgMagazines#CSLA_150rnd_30Igla|CSLA_150rnd_30Igla]]
+:[[Arma 3 CfgMagazines#CSLA_150rnd_30JOFZ|CSLA_150rnd_30JOFZ]]
+:[[Arma 3 CfgMagazines#CSLA_150rnd_30JOSv|CSLA_150rnd_30JOSv]]
+:[[Arma 3 CfgMagazines#CSLA_150rnd_30JOCvSv|CSLA_150rnd_30JOCvSv]]
+| Not used
+|-
+| <span id="CSLA_GS302" >'''CSLA_GS302'''</span>
+| ''GSh-30-2''
+| ''GSh-30-2''
+| 
+:[[Arma 3 CfgMagazines#CSLA_750rnd_30JPSv|CSLA_750rnd_30JPSv]]
+:[[Arma 3 CfgMagazines#CSLA_750rnd_30Igla|CSLA_750rnd_30Igla]]
+:[[Arma 3 CfgMagazines#CSLA_750rnd_30JOFZ|CSLA_750rnd_30JOFZ]]
+:[[Arma 3 CfgMagazines#CSLA_750rnd_30JOSv|CSLA_750rnd_30JOSv]]
+:[[Arma 3 CfgMagazines#CSLA_750rnd_30JOCvSv|CSLA_750rnd_30JOCvSv]]
+| Not used
+|-
+| <span id="CSLA_2A28" >'''CSLA_2A28'''</span>
+| ''2A28''
+| ''2A28''
+| 
+:[[Arma 3 CfgMagazines#CSLA_PG15V|CSLA_PG15V]]
+:[[Arma 3 CfgMagazines#CSLA_20rnd_PG15V|CSLA_20rnd_PG15V]]
+:[[Arma 3 CfgMagazines#CSLA_40rnd_PG15V|CSLA_40rnd_PG15V]]
+:[[Arma 3 CfgMagazines#CSLA_76rnd_PG15V|CSLA_76rnd_PG15V]]
+:[[Arma 3 CfgMagazines#CSLA_OG15vV|CSLA_OG15vV]]
+:[[Arma 3 CfgMagazines#CSLA_16rnd_OG15vV|CSLA_16rnd_OG15vV]]
+:[[Arma 3 CfgMagazines#CSLA_36rnd_OG15vV|CSLA_36rnd_OG15vV]]
+:[[Arma 3 CfgMagazines#CSLA_40rnd_OG15vV|CSLA_40rnd_OG15vV]]
+:[[Arma 3 CfgMagazines#CSLA_76rnd_OG15vV|CSLA_76rnd_OG15vV]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_BVP1|CSLA_BVP1]]
+:[[Arma 3 CfgVehicles EAST#CSLA_BPzV|CSLA_BPzV]]
+|-
+| <span id="CSLA_2A18M" >'''CSLA_2A18M'''</span>
+| ''2A18M''
+| ''2A18M''
+| 
+:[[Arma 3 CfgMagazines#CSLA_BK6M|CSLA_BK6M]]
+:[[Arma 3 CfgMagazines#CSLA_6rnd_BK6M|CSLA_6rnd_BK6M]]
+:[[Arma 3 CfgMagazines#CSLA_12rnd_BK6M|CSLA_12rnd_BK6M]]
+:[[Arma 3 CfgMagazines#CSLA_OF81|CSLA_OF81]]
+:[[Arma 3 CfgMagazines#CSLA_6rnd_OF81|CSLA_6rnd_OF81]]
+:[[Arma 3 CfgMagazines#CSLA_60rnd_OF81|CSLA_60rnd_OF81]]
+:[[Arma 3 CfgMagazines#CSLA_3OF56|CSLA_3OF56]]
+:[[Arma 3 CfgMagazines#CSLA_6rnd_3OF56|CSLA_6rnd_3OF56]]
+| Not used
+|-
+| <span id="CSLA_2A46" >'''CSLA_2A46'''</span>
+| ''2A46''
+| ''2A46''
+| 
+:[[Arma 3 CfgMagazines#CSLA_3BM22|CSLA_3BM22]]
+:[[Arma 3 CfgMagazines#CSLA_8rnd_3BM22|CSLA_8rnd_3BM22]]
+:[[Arma 3 CfgMagazines#CSLA_3BM29|CSLA_3BM29]]
+:[[Arma 3 CfgMagazines#CSLA_8rnd_3BM29|CSLA_8rnd_3BM29]]
+:[[Arma 3 CfgMagazines#CSLA_3BM26|CSLA_3BM26]]
+:[[Arma 3 CfgMagazines#CSLA_8rnd_3BM26|CSLA_8rnd_3BM26]]
+:[[Arma 3 CfgMagazines#CSLA_3BK21B|CSLA_3BK21B]]
+:[[Arma 3 CfgMagazines#CSLA_12rnd_3BK21B|CSLA_12rnd_3BK21B]]
+:[[Arma 3 CfgMagazines#CSLA_18rnd_3BK21B|CSLA_18rnd_3BK21B]]
+:[[Arma 3 CfgMagazines#CSLA_3BK25|CSLA_3BK25]]
+:[[Arma 3 CfgMagazines#CSLA_12rnd_3BK25|CSLA_12rnd_3BK25]]
+:[[Arma 3 CfgMagazines#CSLA_3OF26|CSLA_3OF26]]
+:[[Arma 3 CfgMagazines#CSLA_18rnd_3OF26|CSLA_18rnd_3OF26]]
+|
+
+:[[Arma 3 CfgVehicles EAST#CSLA_T72|CSLA_T72]]
+|-
+| <span id="CSLA_2A46M" >'''CSLA_2A46M'''</span>
+| ''2A46M''
+| ''2A46M''
+| 
+:[[Arma 3 CfgMagazines#CSLA_3BM22|CSLA_3BM22]]
+:[[Arma 3 CfgMagazines#CSLA_8rnd_3BM22|CSLA_8rnd_3BM22]]
+:[[Arma 3 CfgMagazines#CSLA_3BM29|CSLA_3BM29]]
+:[[Arma 3 CfgMagazines#CSLA_8rnd_3BM29|CSLA_8rnd_3BM29]]
+:[[Arma 3 CfgMagazines#CSLA_3BM26|CSLA_3BM26]]
+:[[Arma 3 CfgMagazines#CSLA_8rnd_3BM26|CSLA_8rnd_3BM26]]
+:[[Arma 3 CfgMagazines#CSLA_3BK21B|CSLA_3BK21B]]
+:[[Arma 3 CfgMagazines#CSLA_12rnd_3BK21B|CSLA_12rnd_3BK21B]]
+:[[Arma 3 CfgMagazines#CSLA_18rnd_3BK21B|CSLA_18rnd_3BK21B]]
+:[[Arma 3 CfgMagazines#CSLA_3BK25|CSLA_3BK25]]
+:[[Arma 3 CfgMagazines#CSLA_12rnd_3BK25|CSLA_12rnd_3BK25]]
+:[[Arma 3 CfgMagazines#CSLA_3OF26|CSLA_3OF26]]
+:[[Arma 3 CfgMagazines#CSLA_18rnd_3OF26|CSLA_18rnd_3OF26]]
+:[[Arma 3 CfgMagazines#CSLA_9M112|CSLA_9M112]]
+:[[Arma 3 CfgMagazines#CSLA_6rnd_9M112|CSLA_6rnd_9M112]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_T72M|CSLA_T72M]]
+:[[Arma 3 CfgVehicles EAST#CSLA_T72M1|CSLA_T72M1]]
+
+|-
+| <span id="CSLA_9K51" >'''CSLA_9K51'''</span>
+| ''9K51''
+| ''9K51 (9M22U)''
+| 
+:[[Arma 3 CfgMagazines#CSLA_9M22U|CSLA_9M22U]]
+:[[Arma 3 CfgMagazines#CSLA_40rnd_9M22U|CSLA_40rnd_9M22U]]
+:[[Arma 3 CfgMagazines#40Rnd_GRAD|40Rnd_GRAD]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#CSLA_RM70|CSLA_RM70]]
+
+|-
+| <span id="CSLA_UB16" >'''CSLA_UB16'''</span>
+| ''UB-16''
+| ''UB-16 Base class''
+| 
+| 
+
+|-
+| <span id="CSLA_UB16pylons" >'''CSLA_UB16pylons'''</span>
+| ''UB-16''
+| ''UB-16 PylonRack''
+| 
+:[[Arma 3 CfgMagazines#PylonRack_16Rnd_57mm_rockets|PylonRack_16Rnd_57mm_rockets]]
+| Mi-17
+|-
+| <span id="CSLA_UB32" >'''CSLA_UB32'''</span>
+| ''UB-32''
+| ''UB-32 PylonRack''
+| 
+:[[Arma 3 CfgMagazines#PylonRack_32Rnd_57mm_rockets|PylonRack_32Rnd_57mm_rockets]]
+| Mi-17
+|-
+| <span id="CSLA_B8V20" >'''CSLA_B8V20'''</span>
+| ''B-8V-20''
+| ''B-8V-20 PylonRack''
+| 
+:[[Arma 3 CfgMagazines#PylonRack_20Rnd_80mm_rockets|PylonRack_20Rnd_80mm_rockets]]
+| Mi-17
+|}
+
+== US WEAPONS ==
+=== Personal Weapons ===
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br />
+! Class<br />
+! Name<br />
+! Inventory description<br />
+! Magazines<br />
+! Accessories<br />
+! Used by<br />
+|-
+| [[File:us85_m1911.png|150px|&nbsp;]]
+| <span id="US85_1911" >'''US85_1911'''</span>
+| ''M1911''
+| ''Pistol<br/>Caliber: .45 cal.''
+| 
+:[[Arma 3 CfgMagazines#US85_1911_7Rnd_045ACP|US85_1911_7Rnd_045ACP]]
+:[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles WEST#US85_mcM21Ghillie|US85_mcM21Ghillie]]
+:[[Arma 3 CfgVehicles WEST#US85_sfBaseman|US85_sfBaseman]]
+:[[Arma 3 CfgVehicles WEST#US85_sfGL|US85_sfGL]]
+:[[Arma 3 CfgVehicles WEST#US85_sfLAW|US85_sfLAW]]
+:[[Arma 3 CfgVehicles WEST#US85_sfAR|US85_sfAR]]
+:[[Arma 3 CfgVehicles WEST#US85_sfDrv|US85_sfDrv]]
+:[[Arma 3 CfgVehicles WEST#US85_sfSpr|US85_sfSpr]]
+:[[Arma 3 CfgVehicles WEST#US85_sfMdc|US85_sfMdc]]
+:[[Arma 3 CfgVehicles WEST#US85_sfRTO|US85_sfRTO]]
+:[[Arma 3 CfgVehicles WEST#US85_sfM21|US85_sfM21]]
+:[[Arma 3 CfgVehicles WEST#US85_sfM21G|US85_sfM21G]]
+:[[Arma 3 CfgVehicles WEST#US85_sfSptG|US85_sfSptG]]
+:[[Arma 3 CfgVehicles WEST#US85_sfMPV|US85_sfMPV]]
+:[[Arma 3 CfgVehicles WEST#US85_ptOfc|US85_ptOfc]]
+:[[Arma 3 CfgVehicles WEST#US85_ptM21|US85_ptM21]]
+:[[Arma 3 CfgVehicles WEST#US85_pltIntrM|US85_pltIntrM]]
+:[[Arma 3 CfgVehicles WEST#CSLA_WCh1|CSLA_WCh1]]
+:[[Arma 3 CfgVehicles GUER#FIA_mcSnp|FIA_mcSnp]]
+|}
+|-
+| [[File:us85_m9.png|150px|&nbsp;]]
+| <span id="US85_M9" >'''US85_M9'''</span>
+| ''M9''
+| ''Pistol<br/>Caliber: 9mm Luger''
+| 
+:[[Arma 3 CfgMagazines#US85_M9_15Rnd_9Luger|US85_M9_15Rnd_9Luger]]
+:[[Arma 3 CfgMagazines#US85_15Rnd_9x19|US85_15Rnd_9x19]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_mcM21|US85_mcM21]]
+:[[Arma 3 CfgVehicles WEST#US85_uaOfc|US85_uaOfc]]
+:[[Arma 3 CfgVehicles WEST#US85_uaOfcArmy|US85_uaOfcArmy]]
+|-
+| [[File:us85_mpv.png|150px|&nbsp;]]
+| <span id="US85_MPVN" >'''US85_MPVN'''</span>
+| ''MPV-N''
+| ''Submachine Gun</>Caliber: 9mm Luger''
+| 
+:[[Arma 3 CfgMagazines#US85_MPV_30Rnd_9Luger|US85_MPV_30Rnd_9Luger]]
+:[[Arma 3 CfgMagazines#US85_MPV_30Rnd_9x19|US85_MPV_30Rnd_9x19]]
+:[[Arma 3 CfgMagazines#30Rnd_9x21_Mag|30Rnd_9x21_Mag]]
+:[[Arma 3 CfgMagazines#30Rnd_9x21_Red_Mag|30Rnd_9x21_Red_Mag]]
+:[[Arma 3 CfgMagazines#30Rnd_9x21_Yellow_Mag|30Rnd_9x21_Yellow_Mag]]
+:[[Arma 3 CfgMagazines#30Rnd_9x21_Green_Mag|30Rnd_9x21_Green_Mag]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_plt|US85_plt]]
+:[[Arma 3 CfgVehicles WEST#US85_pltCbt|US85_pltCbt]]
+|-
+| [[File:us85_mpvsd.png|150px|&nbsp;]]
+| <span id="US85_MPVSD" >'''US85_MPVSD'''</span>
+| ''MPV-SD''
+| ''Submachine Gun with Integrated Silencer<br/>Caliber: 9mm Luger''
+| 
+:[[Arma 3 CfgMagazines#US85_MPV_30Rnd_9Luger|US85_MPV_30Rnd_9Luger]]
+:[[Arma 3 CfgMagazines#US85_MPV_30Rnd_9x19|US85_MPV_30Rnd_9x19]]
+:[[Arma 3 CfgMagazines#30Rnd_9x21_Mag|30Rnd_9x21_Mag]]
+:[[Arma 3 CfgMagazines#30Rnd_9x21_Red_Mag|30Rnd_9x21_Red_Mag]]
+:[[Arma 3 CfgMagazines#30Rnd_9x21_Yellow_Mag|30Rnd_9x21_Yellow_Mag]]
+:[[Arma 3 CfgMagazines#30Rnd_9x21_Green_Mag|30Rnd_9x21_Green_Mag]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_sfMPV|US85_sfMPV]]
+|-
+| [[File:us85_m16.png|150px|&nbsp;]]
+| <span id="US85_M16A2" >'''US85_M16A2'''</span>
+| ''M16A2''
+| ''Assault Rifle<br/>Caliber: 5.56 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:[[Arma 3 CfgMagazines#30Rnd_556x45_Stanag|30Rnd_556x45_Stanag]]
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles WEST#US85_mcM16|US85_mcM16]]
+:[[Arma 3 CfgVehicles WEST#US85_mcOfc|US85_mcOfc]]
+:[[Arma 3 CfgVehicles WEST#US85_mcSgt|US85_mcSgt]]
+:[[Arma 3 CfgVehicles WEST#US85_mcLAW|US85_mcLAW]]
+:[[Arma 3 CfgVehicles WEST#US85_mcM136|US85_mcM136]]
+:[[Arma 3 CfgVehicles WEST#US85_mcSMAW|US85_mcSMAW]]
+:[[Arma 3 CfgVehicles WEST#US85_mcCG|US85_mcCG]]
+:[[Arma 3 CfgVehicles WEST#US85_mcM47|US85_mcM47]]
+:[[Arma 3 CfgVehicles WEST#US85_mcStinger|US85_mcStinger]]
+:[[Arma 3 CfgVehicles WEST#US85_mcCprs|US85_mcCprs]]
+:[[Arma 3 CfgVehicles WEST#US85_mcDrv|US85_mcDrv]]
+:[[Arma 3 CfgVehicles WEST#US85_mcEng|US85_mcEng]]
+:[[Arma 3 CfgVehicles WEST#US85_mcMnr|US85_mcMnr]]
+:[[Arma 3 CfgVehicles WEST#US85_mcIED|US85_mcIED]]
+:[[Arma 3 CfgVehicles WEST#US85_mcRTO|US85_mcRTO]]
+:[[Arma 3 CfgVehicles WEST#US85_sfSptG|US85_sfSptG]]
+:[[Arma 3 CfgVehicles WEST#US85_ptBaseman|US85_ptBaseman]]
+:[[Arma 3 CfgVehicles WEST#US85_ptOfc|US85_ptOfc]]
+:[[Arma 3 CfgVehicles WEST#US85_ptSgt|US85_ptSgt]]
+:[[Arma 3 CfgVehicles WEST#US85_ptM136|US85_ptM136]]
+:[[Arma 3 CfgVehicles WEST#US85_ptMdc|US85_ptMdc]]
+:[[Arma 3 CfgVehicles WEST#US85_ptDrv|US85_ptDrv]]
+:[[Arma 3 CfgVehicles WEST#US85_ptEng|US85_ptEng]]
+:[[Arma 3 CfgVehicles WEST#US85_ptRTO|US85_ptRTO]]
+:[[Arma 3 CfgVehicles GUER#FIA_mcM16|FIA_mcM16]]
+:[[Arma 3 CfgVehicles GUER#FIA_mcSvc|FIA_mcSvc]]
+:[[Arma 3 CfgVehicles GUER#FIA_mcLA|FIA_mcLA]]
+|}
+|-
+| [[File:us85_m16.png|150px|&nbsp;]]
+| <span id="US85_M16A2o" >'''US85_M16A2o'''</span>
+| ''M16A2 with 4x20 scope''
+| ''Assault Rifle<br/>Caliber: 5.56 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:[[Arma 3 CfgMagazines#30Rnd_556x45_Stanag|30Rnd_556x45_Stanag]]
+| 
+:[[Arma 3 CfgWeapons Items#US85_sc4x20_M16|US85_sc4x20_M16]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_ptM16|US85_ptM16]]
+|-
+| [[File:us85_m16a2car.png|150px|&nbsp;]]
+| <span id="US85_M16A2CAR" >'''US85_M16A2CAR'''</span>
+| ''M16 Car.''
+| ''Carbine<br/>Caliber: 5.56 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:[[Arma 3 CfgMagazines#30Rnd_556x45_Stanag|30Rnd_556x45_Stanag]]
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles WEST#US85_sfBaseman|US85_sfBaseman]]
+:[[Arma 3 CfgVehicles WEST#US85_sfLAW|US85_sfLAW]]
+:[[Arma 3 CfgVehicles WEST#US85_sfDrv|US85_sfDrv]]
+:[[Arma 3 CfgVehicles WEST#US85_sfSpr|US85_sfSpr]]
+:[[Arma 3 CfgVehicles WEST#US85_sfMdc|US85_sfMdc]]
+:[[Arma 3 CfgVehicles WEST#US85_sfRTO|US85_sfRTO]]
+:[[Arma 3 CfgVehicles WEST#US85_crw|US85_crw]]
+:[[Arma 3 CfgVehicles WEST#US85_crwDrv|US85_crwDrv]]
+:[[Arma 3 CfgVehicles WEST#US85_crwCmd|US85_crwCmd]]
+:[[Arma 3 CfgVehicles WEST#US85_crwOfc|US85_crwOfc]]
+:[[Arma 3 CfgVehicles WEST#US85_svc|US85_svc]]
+:[[Arma 3 CfgVehicles WEST#CSLA_WCh1|CSLA_WCh1]]
+|}
+|-
+| [[File:us85_m16m203.png|150px|&nbsp;]]
+| <span id="US85_M16A2GL" >'''US85_M16A2GL'''</span>
+| ''M16A2 + M203 GL''
+| ''Assault Rifle with Grenade Launcher<br/>Caliber: 5.56 NATO, 40mm NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:[[Arma 3 CfgMagazines#30Rnd_556x45_Stanag|30Rnd_556x45_Stanag]]
+:[[Arma 3 CfgMagazines#US85_1Rnd_HE|US85_1Rnd_HE]]
+:[[Arma 3 CfgMagazines#US85_M406|US85_M406]]
+:[[Arma 3 CfgMagazines#US85_M583A1|US85_M583A1]]
+:[[Arma 3 CfgMagazines#1Rnd_HE_M203|1Rnd_HE_M203]]
+:[[Arma 3 CfgMagazines#US85_G_40mm_FW|US85_G_40mm_FW]]
+:[[Arma 3 CfgMagazines#US85_G_40mm_FG|US85_G_40mm_FG]]
+:[[Arma 3 CfgMagazines#US85_G_40mm_FR|US85_G_40mm_FR]]
+:[[Arma 3 CfgMagazines#US85_G_40mm_FY|US85_G_40mm_FY]]
+:[[Arma 3 CfgMagazines#1Rnd_Smoke_M203|1Rnd_Smoke_M203]]
+:[[Arma 3 CfgMagazines#1Rnd_SmokeRed_M203|1Rnd_SmokeRed_M203]]
+:[[Arma 3 CfgMagazines#1Rnd_SmokeGreen_M203|1Rnd_SmokeGreen_M203]]
+:[[Arma 3 CfgMagazines#1Rnd_SmokeYellow_M203|1Rnd_SmokeYellow_M203]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_mcM16GL|US85_mcM16GL]]
+:[[Arma 3 CfgVehicles WEST#US85_ptM16GL|US85_ptM16GL]]
+|-
+| [[File:us85_m16a2carm203.png|150px|&nbsp;]]
+| <span id="US85_M16A2CARGL" >'''US85_M16A2CARGL'''</span>
+| ''M16 Car. + M203 GL''
+| ''Carbine with Grenade Launcher<br/>Caliber: 5.56 NATO, 40mm NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:[[Arma 3 CfgMagazines#30Rnd_556x45_Stanag|30Rnd_556x45_Stanag]]
+:[[Arma 3 CfgMagazines#US85_1Rnd_HE|US85_1Rnd_HE]]
+:[[Arma 3 CfgMagazines#US85_M406|US85_M406]]
+:[[Arma 3 CfgMagazines#US85_M583A1|US85_M583A1]]
+:[[Arma 3 CfgMagazines#1Rnd_HE_M203|1Rnd_HE_M203]]
+:[[Arma 3 CfgMagazines#US85_G_40mm_FW|US85_G_40mm_FW]]
+:[[Arma 3 CfgMagazines#US85_G_40mm_FG|US85_G_40mm_FG]]
+:[[Arma 3 CfgMagazines#US85_G_40mm_FR|US85_G_40mm_FR]]
+:[[Arma 3 CfgMagazines#US85_G_40mm_FY|US85_G_40mm_FY]]
+:[[Arma 3 CfgMagazines#1Rnd_Smoke_M203|1Rnd_Smoke_M203]]
+:[[Arma 3 CfgMagazines#1Rnd_SmokeRed_M203|1Rnd_SmokeRed_M203]]
+:[[Arma 3 CfgMagazines#1Rnd_SmokeGreen_M203|1Rnd_SmokeGreen_M203]]
+:[[Arma 3 CfgMagazines#1Rnd_SmokeYellow_M203|1Rnd_SmokeYellow_M203]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_sfGL|US85_sfGL]]
+|-
+| [[File:us85_m21.png|150px|&nbsp;]]
+| <span id="US85_M21" >'''US85_M21'''</span>
+| ''M21''
+| ''Sniper Rifle<br/>Caliber: 7.62 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_20Rnd_762x51|US85_20Rnd_762x51]]
+:[[Arma 3 CfgMagazines#20Rnd_762x51_Mag|20Rnd_762x51_Mag]]
+:[[Arma 3 CfgMagazines#10Rnd_762x51_Mag|10Rnd_762x51_Mag]]
+| 
+:[[Arma 3 CfgWeapons Items#US85_scM21|US85_scM21]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_mcM21Ghillie|US85_mcM21Ghillie]]
+:[[Arma 3 CfgVehicles WEST#US85_mcM21|US85_mcM21]]
+:[[Arma 3 CfgVehicles WEST#US85_sfM21|US85_sfM21]]
+:[[Arma 3 CfgVehicles WEST#US85_sfM21G|US85_sfM21G]]
+:[[Arma 3 CfgVehicles WEST#US85_ptM21|US85_ptM21]]
+|-
+| [[File:us85_fal.png|150px|&nbsp;]]
+| <span id="US85_FAL" >'''US85_FAL'''</span>
+| ''FAL''
+| ''Assault Rifle<br/>Caliber: 7.62 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_20Rnd_762x51|US85_20Rnd_762x51]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles GUER#FIA_mcFAL|FIA_mcFAL]]
+:[[Arma 3 CfgVehicles GUER#CSLA_FCh1|CSLA_FCh1]]
+|-
+| [[File:us85_falf.png|150px|&nbsp;]]
+| <span id="US85_FALf" >'''US85_FALf'''</span>
+| ''FAL (folding)''
+| ''7.62 NATO foldable Assault Rifle<br/>Caliber: ''
+| 
+:[[Arma 3 CfgMagazines#US85_20Rnd_762x51|US85_20Rnd_762x51]]
+| 
+| 
+|-
+| [[File:us85_m249.png|150px|&nbsp;]]
+| <span id="US85_M249" >'''US85_M249'''</span>
+| ''M249''
+| ''Squad Automatic Weapon<br/>Caliber: 5.56 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_200Rnd_556x45|US85_200Rnd_556x45]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_mcM249|US85_mcM249]]
+:[[Arma 3 CfgVehicles WEST#US85_sfAR|US85_sfAR]]
+:[[Arma 3 CfgVehicles WEST#US85_ptM249|US85_ptM249]]
+|-
+| [[File:us85_m60.png|150px|&nbsp;]]
+| <span id="US85_M60" >'''US85_M60'''</span>
+| ''M60''
+| ''Machine Gun<br/>Caliber: 7.62 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_100Rnd_762x51|US85_100Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_M60_100Rnd_762x51|US85_M60_100Rnd_762x51]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_mcM60|US85_mcM60]]
+:[[Arma 3 CfgVehicles WEST#US85_ptM60|US85_ptM60]]
+|-
+| [[File:us85_law72.png|150px|&nbsp;]]
+| <span id="US85_LAW72" >'''US85_LAW72'''</span>
+| ''M72 LAW''
+| ''Light Anti-tank Weapon<br/>Caliber: 66mm''
+| 
+:[[Arma 3 CfgMagazines#US85_LAW72_Mag|US85_LAW72_Mag]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_mcLAW|US85_mcLAW]]
+:[[Arma 3 CfgVehicles WEST#US85_sfLAW|US85_sfLAW]]
+:[[Arma 3 CfgVehicles WEST#US85_ptSgt|US85_ptSgt]]
+|-
+| [[File:us85_law72e.png|150px|&nbsp;]]
+| <span id="US85_LAW72empty" >'''US85_LAW72empty'''</span>
+| ''M72 used''
+| ''M72 used''
+| 
+| 
+| 
+|-
+| [[File:us85_m136.png|150px|&nbsp;]]
+| <span id="US85_M136" >'''US85_M136'''</span>
+| ''M136''
+| ''Unguided Portable Single-shot Recoilless Smoothbore AT weapon<br/>Caliber: 84mm''
+| 
+:[[Arma 3 CfgMagazines#US85_M136_Mag|US85_M136_Mag]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_mcM136|US85_mcM136]]
+:[[Arma 3 CfgVehicles WEST#US85_ptM136|US85_ptM136]]
+|-
+| [[File:us85_m136.png|150px|&nbsp;]]
+| <span id="US85_M136empty" >'''US85_M136empty'''</span>
+| ''M136 used''
+| ''M136 used''
+| 
+| 
+| 
+|-
+| [[File:us85_smaw.png|150px|&nbsp;]]
+| <span id="US85_SMAW" >'''US85_SMAW'''</span>
+| ''SMAW''
+| ''Shoulder-Launched Multipurpose Assault Weapon<br/>Caliber: 84mm''
+| 
+:[[Arma 3 CfgMagazines#US85_SMAW_HEAA|US85_SMAW_HEAA]]
+:[[Arma 3 CfgMagazines#US85_SMAW_HEDP|US85_SMAW_HEDP]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_mcSMAW|US85_mcSMAW]]
+|-
+| 
+| <span id="US85_MAAWS" >'''US85_MAAWS'''</span>
+| ''MAAWS''
+| ''Multi-role Anti-armor Anti-tank Weapon System<br/>Caliber: 84mm''
+| 
+:[[Arma 3 CfgMagazines#US85_MAAWS_HEAT|US85_MAAWS_HEAT]]
+:[[Arma 3 CfgMagazines#US85_MAAWS_HEDP|US85_MAAWS_HEDP]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_mcCG|US85_mcCG]]
+|-
+| [[File:us85_m47.png|150px|&nbsp;]]
+| <span id="US85_M47" >'''US85_M47'''</span>
+| ''M47 Dragon''
+| ''Type: ATGM<br/>Rounds:1<br/>Used in: M47''
+| 
+:[[Arma 3 CfgMagazines#US85_M47_Mag|US85_M47_Mag]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_mcM47|US85_mcM47]]
+|-
+| [[File:us85_fim92.png|150px|&nbsp;]]
+| <span id="US85_FIM92" >'''US85_FIM92'''</span>
+| ''FIM-92''
+| ''Type: SAM<br/>Rounds: 1<br/>FIM-92''
+| 
+:[[Arma 3 CfgMagazines#US85_FIM92_Mag|US85_FIM92_Mag]]
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_mcFIM92|US85_mcFIM92]]
+|}
+
+=== Explosives & Throwable ===
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br />
+! Class<br />
+! Name<br />
+! Description<br />
+! Side<br />
+! Faction<br />
+
+
+|-
+| [[File:us85_m67.png|150px|&nbsp;]]
+| <span id="US85_M67" >'''US85_M67'''</span>
+| ''M67 grenade''
+| ''M67 grenade (Time)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+|-
+| [[File:us85_m18white.png|150px|&nbsp;]]
+| <span id="US85_dymB" >'''US85_dymB'''</span>
+| ''US smoke grenade (white)''
+| ''US smoke grenade (white)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+|-
+| [[File:us85_m18red.png|150px|&nbsp;]]
+| <span id="US85_dymC" >'''US85_dymC'''</span>
+| ''US smoke grenade (red)''
+| ''US smoke grenade (red)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+|-
+| [[File:us85_m18green.png|150px|&nbsp;]]
+| <span id="US85_dymZ" >'''US85_dymZ'''</span>
+| ''US smoke grenade (green)''
+| ''US smoke grenade (green)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+|-
+| [[File:us85_m18yellow.png|150px|&nbsp;]]
+| <span id="US85_dymZl" >'''US85_dymZl'''</span>
+| ''US smoke grenade (yellow)''
+| ''US smoke grenade (yellow)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+|-
+| 
+| <span id="US85_M14Mine_mag" >'''US85_M14Mine_mag'''</span>
+| ''US M14 AT Mine''
+| ''Pressure triggered AT mine''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+|}
+
+=== Static Weapons ===
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br />
+! Class<br />
+! Name<br />
+! Side<br />
+! Faction<br />
+! Category<br />
+! Weapons<br />
+! Magazines<br />
+|-
+| [[File:csla_m2_low_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M2l" >'''US85_M2l'''</span>
+| ''M2HB (low mount)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Static
+
+| 
+:[[Arma 3: CfgWeapons Weapons#FakeWeapon|FakeWeapon]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M2|US85_M2]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#FakeWeapon|FakeWeapon]]
+:6x&nbsp;[[Arma 3 CfgMagazines#US85_100Rnd_127x99|US85_100Rnd_127x99]]
+
+
+
+|-
+| [[File:csla_m2_high_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M2h" >'''US85_M2h'''</span>
+| ''M2HB (high mount)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Static
+
+| 
+:[[Arma 3: CfgWeapons Weapons#FakeWeapon|FakeWeapon]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M2|US85_M2]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#FakeWeapon|FakeWeapon]]
+:6x&nbsp;[[Arma 3 CfgMagazines#US85_100Rnd_127x99|US85_100Rnd_127x99]]
+
+
+
+|-
+| [[File:csla_m252_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M252_Stat" >'''US85_M252_Stat'''</span>
+| ''M252''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Static
+
+| 
+:[[Arma 3: CfgWeapons Weapons#FakeWeapon|FakeWeapon]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M252|US85_M252]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#FakeWeapon|FakeWeapon]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_8Rnd_81mmHE|US85_8Rnd_81mmHE]]
+
+
+|-
+| [[File:csla_tow_ca.jpg|150px|&nbsp;]]
+| <span id="US85_TOW_Stat" >'''US85_TOW_Stat'''</span>
+| ''TOW''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Static
+
+| 
+:[[Arma 3: CfgWeapons Weapons#FakeWeapon|FakeWeapon]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_TOW|US85_TOW]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#FakeWeapon|FakeWeapon]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_TOW_Mag|US85_TOW_Mag]]
+ 
+
+
+|}
+
+=== Vehicle Weapons ===
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Class<br />
+! Name<br />
+! Inventory description<br />
+! Magazines<br />
+! Used by<br />
+|-
+| <span id="US85_MissileLauncher" >'''US85_MissileLauncher'''</span>
+| ''''
+| ''Base class''
+| 
+| 
+
+|-
+| <span id="US85_RocketPods" >'''US85_RocketPods'''</span>
+| ''''
+| ''Base class''
+| 
+| 
+
+|-
+| <span id="US85_BombLauncher" >'''US85_BombLauncher'''</span>
+| ''Bombs''
+| ''Base class''
+| 
+:[[Arma 3 CfgMagazines#US85_GBU12|US85_GBU12]]
+| 
+Not used
+
+|-
+| <span id="US85_autoCannon_Base" >'''US85_autoCannon_Base'''</span>
+| ''''
+| ''Base class''
+| 
+| 
+
+|-
+| <span id="US85_M240_veh" >'''US85_M240_veh'''</span>
+| ''M240''
+| ''Machine Gun<br/>Caliber: 7.62 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_440Rnd_762x51|US85_440Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_220Rnd_762x51|US85_220Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_100Rnd_762x51|US85_100Rnd_762x51]]
+| 
+Not used
+|-
+| <span id="US85_M240_veh_MG_Nest" >'''US85_M240_veh_MG_Nest'''</span>
+| ''M240''
+| ''Machine Gun<br/>Caliber: 7.62 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_100Rnd_762x51|US85_100Rnd_762x51]]
+| 
+Not used
+|-
+| <span id="US85_M60_veh" >'''US85_M60_veh'''</span>
+| ''M60''
+| ''Machine Gun<br/>Caliber: 7.62 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_100Rnd_762x51|US85_100Rnd_762x51]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_M1025_M60|US85_M1025_M60]]
+:[[Arma 3 CfgVehicles WEST#US85_M1043_M60|US85_M1043_M60]]
+:[[Arma 3 CfgVehicles WEST#US85_M998SFGT|US85_M998SFGT]]
+
+|-
+| <span id="US85_M240_M1A1_coax" >'''US85_M240_M1A1_coax'''</span>
+| ''M240''
+| ''Machine Gun<br/>Caliber: 7.62 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_2000Rnd_762x51|US85_2000Rnd_762x51]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_M1IP|US85_M1IP]]
+:[[Arma 3 CfgVehicles WEST#US85_M1A1|US85_M1A1]]
+
+|-
+| <span id="US85_M240_M1A1_loader" >'''US85_M240_M1A1_loader'''</span>
+| ''M240''
+| ''Machine Gun<br/>Caliber: 7.62 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_100Rnd_762x51|US85_100Rnd_762x51]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_M1IP|US85_M1IP]]
+:[[Arma 3 CfgVehicles WEST#US85_M1A1|US85_M1A1]]
+
+|-
+| <span id="US85_M240_LAV25_commander" >'''US85_M240_LAV25_commander'''</span>
+| ''M240''
+| ''Machine Gun<br/>Caliber: 7.62 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_440Rnd_762x51|US85_440Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_220Rnd_762x51|US85_220Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_100Rnd_762x51|US85_100Rnd_762x51]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_LAV25|US85_LAV25]]
+
+|-
+| <span id="US85_M240_LAV25_coax" >'''US85_M240_LAV25_coax'''</span>
+| ''M240''
+| ''Machine Gun<br/>Caliber: 7.62 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_440Rnd_762x51|US85_440Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_220Rnd_762x51|US85_220Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_100Rnd_762x51|US85_100Rnd_762x51]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_LAV25|US85_LAV25]]
+
+|-
+| <span id="US85_M240_UH60_L" >'''US85_M240_UH60_L'''</span>
+| ''M240''
+| ''Machine Gun<br/>Caliber: 7.62 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_440Rnd_762x51|US85_440Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_220Rnd_762x51|US85_220Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_100Rnd_762x51|US85_100Rnd_762x51]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_UH60M240|US85_UH60M240]]
+
+|-
+| <span id="US85_M240_UH60_R" >'''US85_M240_UH60_R'''</span>
+| ''M240''
+| ''Machine Gun<br/>Caliber: 7.62 NATO''
+| 
+:[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_440Rnd_762x51|US85_440Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_220Rnd_762x51|US85_220Rnd_762x51]]
+:[[Arma 3 CfgMagazines#US85_100Rnd_762x51|US85_100Rnd_762x51]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_UH60M240|US85_UH60M240]]
+
+|-
+| <span id="US85_M2" >'''US85_M2'''</span>
+| ''M2HB''
+| ''M2HB 12.7x99 Heavy Machine Gun''
+| 
+:[[Arma 3 CfgMagazines#US85_100Rnd_127x99|US85_100Rnd_127x99]]
+| 
+:[[Arma 3 CfgVehicles WEST#US85_M2l|US85_M2l]]
+:[[Arma 3 CfgVehicles WEST#US85_M2h|US85_M2h]]
+
+|-
+| <span id="US85_M2_veh" >'''US85_M2_veh'''</span>
+| ''M2HB''
+| ''M2HB 12.7x99 Heavy Machine Gun - Vehicle base class''
+| 
+:[[Arma 3 CfgMagazines#US85_100Rnd_127x99|US85_100Rnd_127x99]]
+| 
+Not used
+
+|-
+| <span id="US85_M2_M113" >'''US85_M2_M113'''</span>
+| ''M2HB''
+| ''M2HB 12.7x99 Heavy Machine Gun''
+| 
+:[[Arma 3 CfgMagazines#US85_100Rnd_127x99|US85_100Rnd_127x99]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_M113|US85_M113]]
+
+|-
+| <span id="US85_M2_M1A1_commander" >'''US85_M2_M1A1_commander'''</span>
+| ''M2HB''
+| ''M2HB 12.7x99 Heavy Machine Gun''
+| 
+:[[Arma 3 CfgMagazines#US85_100Rnd_127x99|US85_100Rnd_127x99]]
+| 
+:[[Arma 3 CfgVehicles WEST#US85_M1IP|US85_M1IP]]
+:[[Arma 3 CfgVehicles WEST#US85_M1A1|US85_M1A1]]
+
+|-
+| <span id="US85_M85" >'''US85_M85'''</span>
+| ''M85''
+| ''M85 12.7x99''
+| 
+:[[Arma 3 CfgMagazines#US85_100Rnd_127x99|US85_100Rnd_127x99]]
+| 
+Not used
+|-
+| <span id="US85_M252" >'''US85_M252'''</span>
+| ''M252''
+| ''M252 82mm Mortar''
+| 
+:[[Arma 3 CfgMagazines#US85_M43A1|US85_M43A1]]
+:[[Arma 3 CfgMagazines#US85_4Rnd_M43A1|US85_4Rnd_M43A1]]
+:[[Arma 3 CfgMagazines#US85_8Rnd_81mmHE|US85_8Rnd_81mmHE]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_M252_Stat|US85_M252_Stat]]
+
+|-
+| <span id="US85_M134_L_minigun" >'''US85_M134_L_minigun'''</span>
+| ''2x M134 Minigun 7.62 mm''
+| ''''
+| 
+:[[Arma 3 CfgMagazines#5000Rnd_762x51_Belt|5000Rnd_762x51_Belt]]
+:[[Arma 3 CfgMagazines#5000Rnd_762x51_Yellow_Belt|5000Rnd_762x51_Yellow_Belt]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_MH60M134|US85_MH60M134]]
+:[[Arma 3 CfgVehicles WEST#US85_UH60M134|US85_UH60M134]]
+
+|-
+| <span id="US85_M134_R_minigun" >'''US85_M134_R_minigun'''</span>
+| ''2x M134 Minigun 7.62 mm''
+| ''''
+| 
+:[[Arma 3 CfgMagazines#5000Rnd_762x51_Belt|5000Rnd_762x51_Belt]]
+:[[Arma 3 CfgMagazines#5000Rnd_762x51_Yellow_Belt|5000Rnd_762x51_Yellow_Belt]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_MH60M134|US85_MH60M134]]
+:[[Arma 3 CfgVehicles WEST#US85_UH60M134|US85_UH60M134]]
+
+|-
+| <span id="US85_M134_2x_minigun" >'''US85_M134_2x_minigun'''</span>
+| ''2x M134 Minigun 7.62 mm''
+| ''''
+| 
+:[[Arma 3 CfgMagazines#5000Rnd_762x51_Belt|5000Rnd_762x51_Belt]]
+:[[Arma 3 CfgMagazines#5000Rnd_762x51_Yellow_Belt|5000Rnd_762x51_Yellow_Belt]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_MH60FFAR|US85_MH60FFAR]]
+:[[Arma 3 CfgVehicles WEST#US85_UH60FFAR|US85_UH60FFAR]]
+
+|-
+| <span id="US85_autoCannon_40mm" >'''US85_autoCannon_40mm'''</span>
+| ''Cannon 40 mm''
+| ''''
+| 
+:[[Arma 3 CfgMagazines#60Rnd_40mm_GPR_shells|60Rnd_40mm_GPR_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_40mm_GPR_Tracer_Red_shells|60Rnd_40mm_GPR_Tracer_Red_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_40mm_GPR_Tracer_Green_shells|60Rnd_40mm_GPR_Tracer_Green_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_40mm_GPR_Tracer_Yellow_shells|60Rnd_40mm_GPR_Tracer_Yellow_shells]]
+:[[Arma 3 CfgMagazines#40Rnd_40mm_APFSDS_shells|40Rnd_40mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#40Rnd_40mm_APFSDS_Tracer_Red_shells|40Rnd_40mm_APFSDS_Tracer_Red_shells]]
+:[[Arma 3 CfgMagazines#40Rnd_40mm_APFSDS_Tracer_Green_shells|40Rnd_40mm_APFSDS_Tracer_Green_shells]]
+:[[Arma 3 CfgMagazines#40Rnd_40mm_APFSDS_Tracer_Yellow_shells|40Rnd_40mm_APFSDS_Tracer_Yellow_shells]]
+| 
+Not used
+|-
+| <span id="US85_M242" >'''US85_M242'''</span>
+| ''M242 Gun''
+| ''M242 25 mm Bushmaster Chain Gun''
+| 
+:[[Arma 3 CfgMagazines#US85_210Rnd_M791|US85_210Rnd_M791]]
+:[[Arma 3 CfgMagazines#US85_210Rnd_M792|US85_210Rnd_M792]]
+:[[Arma 3 CfgMagazines#US85_210Rnd_M791|US85_210Rnd_M791]]
+:[[Arma 3 CfgMagazines#US85_210Rnd_M792|US85_210Rnd_M792]]
+:[[Arma 3 CfgMagazines#US85_210Rnd_M791|US85_210Rnd_M791]]
+:[[Arma 3 CfgMagazines#US85_210Rnd_M792|US85_210Rnd_M792]]
+:[[Arma 3 CfgMagazines#US85_210Rnd_M791|US85_210Rnd_M791]]
+:[[Arma 3 CfgMagazines#US85_210Rnd_M792|US85_210Rnd_M792]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_LAV25|US85_LAV25]]
+
+|-
+| <span id="US85_M39A2" >'''US85_M39A2'''</span>
+| ''M39A2''
+| ''''
+| 
+:[[Arma 3 CfgMagazines#US85_280rnd_M53|US85_280rnd_M53]]
+:[[Arma 3 CfgMagazines#US85_280rnd_M56A3|US85_280rnd_M56A3]]
+| 
+Not used
+|-
+| <span id="US85_M197" >'''US85_M197'''</span>
+| ''M197''
+| ''''
+| 
+:[[Arma 3 CfgMagazines#US85_750rnd_M56A3|US85_750rnd_M56A3]]
+:[[Arma 3 CfgMagazines#US85_500rnd_M56A3|US85_500rnd_M56A3]]
+:[[Arma 3 CfgMagazines#US85_750rnd_M53|US85_750rnd_M53]]
+:[[Arma 3 CfgMagazines#US85_250rnd_M53|US85_250rnd_M53]]
+|
+Not used 
+|-
+| <span id="US85_GAU8" >'''US85_GAU8'''</span>
+| ''GAU-8/A''
+| ''''
+| 
+:[[Arma 3 CfgMagazines#US85_1150Rnd_PGU14|US85_1150Rnd_PGU14]]
+:[[Arma 3 CfgMagazines#US85_1150Rnd_PGU13|US85_1150Rnd_PGU13]]
+| 
+Not used
+|-
+| <span id="US85_2x_M260" >'''US85_2x_M260'''</span>
+| ''M260''
+| ''M260''
+| 
+:[[Arma 3 CfgMagazines#US85_M151|US85_M151]]
+:[[Arma 3 CfgMagazines#US85_19x_M151|US85_19x_M151]]
+:[[Arma 3 CfgMagazines#US85_38x_M151|US85_38x_M151]]
+| 
+Not used
+|-
+| <span id="US85_2x_M261" >'''US85_2x_M261'''</span>
+| ''M261''
+| ''M261''
+| 
+:[[Arma 3 CfgMagazines#US85_M151|US85_M151]]
+:[[Arma 3 CfgMagazines#US85_19x_M151|US85_19x_M151]]
+:[[Arma 3 CfgMagazines#US85_38x_M151|US85_38x_M151]]
+| 
+Not used
+|-
+| <span id="US85_M261" >'''US85_M261'''</span>
+| ''M261''
+| ''M261''
+| 
+:[[Arma 3 CfgMagazines#US85_M151|US85_M151]]
+:[[Arma 3 CfgMagazines#US85_19x_M151|US85_19x_M151]]
+:[[Arma 3 CfgMagazines#US85_38x_M151|US85_38x_M151]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_MH60FFAR|US85_MH60FFAR]]
+:[[Arma 3 CfgVehicles WEST#US85_UH60FFAR|US85_UH60FFAR]]
+
+|-
+| <span id="US85_AIM9M" >'''US85_AIM9M'''</span>
+| ''AIM-9M''
+| ''AIM-9M Air-to-Air Anti-Aircraft Missile''
+| 
+:[[Arma 3 CfgMagazines#US85_AIM9M|US85_AIM9M]]
+| 
+Not used
+|-
+| <span id="US85_AGM65" >'''US85_AGM65'''</span>
+| ''AGM-65''
+| ''AGM-65 Air-to-Ground Anti-Tank Missile''
+| 
+:[[Arma 3 CfgMagazines#US85_AGM65|US85_AGM65]]
+| 
+Not used
+|-
+| <span id="US85_TOW" >'''US85_TOW'''</span>
+| ''TOW ATML''
+| ''BGM-71 TOW Anti-tank Missile Launcher''
+| 
+:[[Arma 3 CfgMagazines#US85_TOW_Mag|US85_TOW_Mag]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_TOW_Stat|US85_TOW_Stat]]
+
+|-
+| <span id="US85_M68" >'''US85_M68'''</span>
+| ''Cannon 105 mm''
+| ''''
+| 
+:[[Arma 3 CfgMagazines#US85_30rnd_105mm_APFSDS|US85_30rnd_105mm_APFSDS]]
+:[[Arma 3 CfgMagazines#US85_33rnd_105mm_HEAT_MP|US85_33rnd_105mm_HEAT_MP]]
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS|40Rnd_105mm_APFSDS]]
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS|40Rnd_105mm_APFSDS]]
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS_T_Red|40Rnd_105mm_APFSDS_T_Red]]
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS_T_Green|40Rnd_105mm_APFSDS_T_Green]]
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS_T_Yellow|40Rnd_105mm_APFSDS_T_Yellow]]
+:[[Arma 3 CfgMagazines#20Rnd_105mm_HEAT_MP|20Rnd_105mm_HEAT_MP]]
+:[[Arma 3 CfgMagazines#20Rnd_105mm_HEAT_MP_T_Red|20Rnd_105mm_HEAT_MP_T_Red]]
+:[[Arma 3 CfgMagazines#20Rnd_105mm_HEAT_MP_T_Green|20Rnd_105mm_HEAT_MP_T_Green]]
+:[[Arma 3 CfgMagazines#20Rnd_105mm_HEAT_MP_T_Yellow|20Rnd_105mm_HEAT_MP_T_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_M1IP|US85_M1IP]]
+
+|-
+| <span id="US85_M256" >'''US85_M256'''</span>
+| ''Cannon 120 mm''
+| ''''
+| 
+:[[Arma 3 CfgMagazines#US85_20rnd_120mm_APFSDS|US85_20rnd_120mm_APFSDS]]
+:[[Arma 3 CfgMagazines#US85_20Rnd_120mm_HE|US85_20Rnd_120mm_HE]]
+:[[Arma 3 CfgMagazines#32Rnd_120mm_APFSDS_shells|32Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#32Rnd_120mm_APFSDS_shells_Tracer_Red|32Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#32Rnd_120mm_APFSDS_shells_Tracer_Green|32Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#32Rnd_120mm_APFSDS_shells_Tracer_Yellow|32Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_APFSDS_shells|30Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_APFSDS_shells_Tracer_Red|30Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_APFSDS_shells_Tracer_Green|30Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_APFSDS_shells_Tracer_Yellow|30Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_HE_shells|30Rnd_120mm_HE_shells]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_HE_shells_Tracer_Red|30Rnd_120mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_HE_shells_Tracer_Green|30Rnd_120mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_HE_shells_Tracer_Yellow|30Rnd_120mm_HE_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#16Rnd_120mm_HE_shells|16Rnd_120mm_HE_shells]]
+:[[Arma 3 CfgMagazines#16Rnd_120mm_HE_shells_Tracer_Red|16Rnd_120mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#16Rnd_120mm_HE_shells_Tracer_Green|16Rnd_120mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#16Rnd_120mm_HE_shells_Tracer_Yellow|16Rnd_120mm_HE_shells_Tracer_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_M1A1|US85_M1A1]]
+
+|-
+| <span id="US85_M269" >'''US85_M269'''</span>
+| ''227 mm Rocket''
+| ''''
+| 
+:[[Arma 3 CfgMagazines#US85_12Rnd_M26|US85_12Rnd_M26]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_M270|US85_M270]]
+
+|-
+| <span id="US85_M61" >'''US85_M61'''</span>
+| ''M61''
+| ''M61 20mm Six-barrel Gatling-style Rotary Cannon''
+| 
+:[[Arma 3 CfgMagazines#US85_2100Rnd_M53|US85_2100Rnd_M53]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#US85_M163|US85_M163]]
+
+
+|}
+
+
+
+
+[[Category:CSLA: Iron Curtain]]

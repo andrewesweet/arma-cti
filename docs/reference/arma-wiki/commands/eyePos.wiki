@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/eyePos
+// revision: 377435 (2026-01-02T06:46:41Z)
+// export sha1: 6vjuolcs5t98ezsrq5m2eh5il3pnc2a
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|gr1= Positions
+
+|descr= Returns the object's eyes / main turret position.
+
+|s1= [[eyePos]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Position#PositionASL|PositionASL]]
+
+|x1= <sqf>_eyesPos = eyePos player;</sqf>
+
+|seealso= [[eyeDirection]] [[getPosASL]] [[setPosASL]] [[setPosASL2]] [[getCameraViewDirection]] [[positionCameraToWorld]]
+}}

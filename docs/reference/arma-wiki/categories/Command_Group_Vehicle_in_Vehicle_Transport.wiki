@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Vehicle_in_Vehicle_Transport
+// revision: 254235 (2021-04-07T19:02:05Z)
+// export sha1: g7zdb8sm5ckcsqwy0t1aqu53rk1rzw7
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands related to [[Arma 3: Vehicle in Vehicle Transport]].
+
+[[Category:Scripting Commands by Functionality]]

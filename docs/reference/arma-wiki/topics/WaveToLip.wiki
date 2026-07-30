@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/WaveToLip
+// revision: 377915 (2026-01-11T14:49:12Z)
+// export sha1: c2j5k8w4ls5tuewji23d7zgj650efmn
+// categories: Category:ArmA: Armed Assault: Official Tools | Category:Arma 2: Official Tools | Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= {{GameCategory|ofp|link= y}}, {{GameCategory|arma1|link= y}}, {{GameCategory|arma2|link= y}}, {{GameCategory|arma3|link= y}}
+
+|DOWNLOAD= {{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= WavToLip is an application that generates a lip files (*.lip) from wav files (*.wav).
+
+|NOTES= '''Usage:'''<br>
+A lip file accompanies a sound file meant for spoken words in a mission. The file lip-syncs the mouth of the character to the spoken words in a sound file. It shares the same name of the sound file and must be in the same folder.<br>
+<br>
+'''Example:'''
+* talking1.ogg
+* talking1.lip
+<br>
+'''Known issues:'''<br>The tool cannot process files with spaces in the name or path. Files on the desktop cannot be process for most users because of this.
+
+|COMMAND= WaveToLip.exe source
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= [[Sound Tools]]
+}}
+
+
+<!-- {{GameCategory|ofp|Official Tools}} -->
+{{GameCategory|arma1|Official Tools}}
+{{GameCategory|arma2|Official Tools}}
+{{GameCategory|arma3|Official Tools}}

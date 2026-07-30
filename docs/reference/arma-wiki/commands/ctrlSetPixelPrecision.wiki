@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/ctrlSetPixelPrecision
+// revision: 309215 (2022-05-03T22:40:41Z)
+// export sha1: ordrec2bocuwp8cducre7awvq199dtw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Arma 3 version 1.82 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.82
+
+|gr1= GUI Control - Positioning
+
+|descr= Switches mode of pixel precision (rounding) in a given control interface.
+
+|s1= control [[ctrlSetPixelPrecision]] mode
+
+|p1= control: [[Control]]
+
+|p2= mode: [[Number]] or [[String]] - can be one of the following:
+* 0 / "AUTO" - control position (x, y, w, h) is always rounded to whole pixels (game default)
+* 1 / "ON" - control position (x, y, w, h) is rounded to whole pixels only when not animating
+* 2 / "OFF" - control position (x, y, w, h) is always precise, no pixel rounding applies here
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetPixelPrecision 2; // Enables pixel precision of the given control</sqf>
+
+|seealso= [[ctrlCommit]] [[ctrlCreate]] [[ctrlDelete]] [[ctrlModel]] [[ctrlSetModel]] [[ctrlPosition]] [[ctrlClassName]] [[displayCtrl]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlModelDirAndUp]] [[ctrlSetModelDirAndUp]] [[ctrlSetPosition]]
+}}

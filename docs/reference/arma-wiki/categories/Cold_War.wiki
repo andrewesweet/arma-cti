@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Cold_War
+// revision: 184804 (2021-01-06T16:17:05Z)
+// export sha1: a8wavfjy4jf94y6f3cveg2ub1dvy502
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma2|Media}}

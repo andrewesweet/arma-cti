@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_WLSectorHandleServer
+// revision: 273915 (2021-06-13T01:13:19Z)
+// export sha1: 3oxsfs0ql9j5as8xdyva9reuc0fkozz
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Warlords | Category:Functions | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.86
+
+|gr1= Warlords
+
+|descr= ''N/A''
+
+|s1= [] call [[BIS_fnc_WLSectorHandleServer]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

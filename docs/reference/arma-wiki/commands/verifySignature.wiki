@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/verifySignature
+// revision: 319877 (2022-05-13T09:25:38Z)
+// export sha1: kpy6pf989yutnjz0nkh24i2emy3gaeu
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mods and Addons | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Mods and Addons
+
+|descr= Check if file is signed by any key present in game keys folders. On clients, it does not check against the keys accepted by server.
+
+|s1= [[verifySignature]] filename
+
+|p1= filename: [[String]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>verifySignature "@MyAddon\Addons\SomeAddon.pbo";</sqf>
+
+|x2= <sqf>verifySignature "@MyAddon\Somefnc.dll";</sqf>
+
+|seealso= [[ArmA: Addon Signatures]]
+}}

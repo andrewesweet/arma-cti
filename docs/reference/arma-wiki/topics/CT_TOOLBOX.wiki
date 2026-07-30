@@ -1,0 +1,169 @@
+// source: https://community.bistudio.com/wiki/CT_TOOLBOX
+// revision: 268260 (2021-06-12T11:04:18Z)
+// export sha1: 0mc0ytzdi73y8dluijn6osgh1xb4pbw
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_TOOLBOX
+|value = 6
+|description =A Toolbox is a set of options, ordered by columns and rows. Only one can be active at a time and one is always selected (the first one by default). For Toolbox with multiple selections see [[CT_CHECKBOXES]].<br>
+|gallery=File:CToolBox.jpg{{!}}A [[CT_TOOLBOX]] control with the 5th entry selected.
+File:CToolBox_picture.jpg{{!}}The toolbox can be set to display images instead too.
+|commands =
+* [[:Category:Command_Group:_GUI_Control_-_ListBox|Commands: Listbox]]
+|events =
+* [[User_Interface_Event_Handlers#Listbox_events|Events: Listbox]]
+}}
+
+{{CT|abc start}}
+=== C ===
+{{CT|attribute
+|name=checked_strings
+|type1=Array
+|value1={"[Entry 1]","[Entry 2]","[Entry 3]","[Entry 4]","[Entry 5]","[Entry 6]"}
+|description=Options texts to display when an option is selected.
+}}
+
+{{CT|attribute
+|name=color
+|type1=Array
+|value1={0.95,0.95,0.95,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorBackground
+|type1=Array
+|value1={0.95,0.95,0.95,1}
+|description=Color of the background when option is not selected.
+}}
+
+{{CT|attribute
+|name=colorDisable
+|type1=Array
+|value1={0,0,0,0}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSelect
+|type1=Array
+|value1={0.95,0.95,0.95,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSelectedBg
+|type1=Array
+|value1={"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.13])","(profilenamespace getvariable ['GUI_BCG_RGB_G',0.54])","(profilenamespace getvariable ['GUI_BCG_RGB_B',0.21])",0.5}
+|description=Color of the background when option is selected.
+}}
+
+{{CT|attribute
+|name=colorTextDisable
+|type1=Array
+|value1={0.4,0.4,0.4,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorTextSelect
+|type1=Array
+|value1={1,1,1,1}
+|description=Color of the selected option text.
+}}
+
+{{CT|attribute
+|name=columns
+|type1=Number
+|value1=3
+|type2=String
+|value2="4 - 1"
+|description=Amount of columns to arrange options into.
+}}
+
+=== N ===
+{{CT|attribute
+|name=names
+|type1=Array
+|value1={"MOVE","GETOUT","UNLOAD","TR UNLOAD","%1/cfgWaypoints/A3/Land","%1/cfgWaypoints/A3/Artillery","UNHOOK"}
+|description=
+}}
+
+=== R ===
+{{CT|attribute
+|name=rows
+|type1=Number
+|value1=2
+|description=Amount of rows to arrange options into.
+}}
+
+=== S ===
+{{CT|attribute
+|name=strings
+|type1=Array
+|value1={"100m","200m","500m"}
+|description=Options texts to display.
+}}
+
+=== T ===
+{{CT|attribute
+|name=tooltips
+|type1=Array
+|value1={"Objects","Compositions","Triggers","Systems","Markers"}
+|description=Tooltips for each option.
+}}
+
+=== V ===
+{{CT|attribute
+|name=values
+|type1=Array
+|value1={0,1,2,3,4,5,6}
+|description=Numerical values associated with items. Can be retrieved or set with [[lbValue]] and [[lbSetValue]].
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscExample ===
+<syntaxhighlight lang="cpp">
+class RscToolbox
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_TOOLBOX;
+	style = ST_CENTER;
+	colorText[] = {0.95,0.95,0.95,1};
+	color[] = {0.95,0.95,0.95,1};
+	colorTextSelect[] = {0.95,0.95,0.95,1};
+	colorSelect[] = {0.95,0.95,0.95,1};
+	colorTextDisable[] = {0.4,0.4,0.4,1};
+	colorDisable[] = {0.4,0.4,0.4,1};
+	colorSelectedBg[] =
+	{
+		"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.13])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_G',0.54])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_B',0.21])",
+		0.5
+	};
+	shadow = 0;
+	strings[] =
+	{
+		"",
+		""
+	};
+	x = 0;
+	y = 0;
+	w = 0.3;
+	h = 0.025;
+	rows = 1;
+	columns = 2;
+	font = "RobotoCondensed";
+	sizeEx = GUI_TEXT_SIZE_SMALL;
+};
+</syntaxhighlight>

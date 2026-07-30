@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/tvSetCurSel
+// revision: 369062 (2024-09-02T20:24:55Z)
+// export sha1: 0falnceuxjpweqeyy9n09usgp1r2his
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|descr= Sets cursor to given item on given path. IDC means id of parent Tree View. To deselect all items use [-1] for the path param (''available since Arma 3 v1.56'')
+
+|s1= [[tvSetCurSel]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Array]] of [[Number]]s
+
+|r1= [[Nothing]]
+
+|s2= control [[tvSetCurSel]] path
+
+|p21= control: [[Control]]
+
+|p22= path: [[Array]] of [[Number]]s
+
+|r2= [[Nothing]]
+
+|x1= <sqf>tvSetCurSel [101, [0]];</sqf>
+
+|x2= <sqf>_ctrl tvSetCurSel [0,0,0];</sqf>
+
+|x3= <sqf>
+0 spawn
+{
+	disableSerialization;
+	_CT_TREE = findDisplay 46 ctrlCreate ["RscTree", -1];
+	_CT_TREE ctrlSetPosition [0,0,0.3,1];
+	_CT_TREE ctrlCommit 0;
+	_CT_TREE tvAdd [[],"Parent_A"];
+	_CT_TREE tvAdd [[0],"Child_A"];
+	_CT_TREE tvAdd [[0,0],"Grandchild_A"];
+	_CT_TREE tvAdd [[],"Parent_B"];
+	_CT_TREE tvAdd [[1],"Child_B"];
+	sleep 1;
+	hint "SELECT [0,0,0]";
+	_CT_TREE tvSetCurSel [0,0,0];
+	sleep 2;
+	hint "DESELECT ALL";
+	_CT_TREE tvSetCurSel [-1];
+};
+</sqf>
+
+|seealso= [[tvAdd]] [[tvClear]] [[tvCollapse]] [[tvCount]] [[tvCurSel]] [[tvData]] [[tvDelete]] [[tvExpand]] [[tvPicture]] [[tvSetData]] [[tvSetPicture]] [[tvSetValue]] [[tvSort]] [[tvSortByValue]] [[tvText]] [[tvValue]]
+}}

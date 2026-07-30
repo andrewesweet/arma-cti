@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/setWingForceScaleRTD
+// revision: 377776 (2026-01-03T01:32:29Z)
+// export sha1: fb4c1vk0vw7nt93t3viakscchsg0pnw
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/See also needed | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+<!-- TKOH version might be wrong -->
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2=1.34
+
+|gr1= RTD
+
+|descr= Set effectivity of wings. {{Feature|afm}}
+
+|s1= helicopterRTD [[setWingForceScaleRTD]] [leftHorizontal, rightHorizontal, vertical]
+
+|p1= helicopterRTD: [[Object|ObjectRTD]] - helicopter
+
+|p2= leftHorizontal: [[Number]]
+
+|p3= rightHorizontal: [[Number]]
+
+|p4= vertical: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1=
+
+|seealso=
+}}

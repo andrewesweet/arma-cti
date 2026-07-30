@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:PUKF_(OFP)
+// revision: 183147 (2021-01-05T07:05:38Z)
+// export sha1: 3aaaftbq5knn9ixh9q1pez692226ywz
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|ofp|Media}}

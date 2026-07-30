@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/productVersion
+// revision: 377698 (2026-01-02T09:03:25Z)
+// export sha1: tmqbacf87pnoq99srqvvh6mhj6egaxo
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= System
+
+|descr= Returns the product's friendly name, identifier, version and build number.
+{{Feature|arma3|The command has been upgraded to also returns branch identifier, whether or not the game was launched using mods, the platform and the architecture.}}
+
+|s1= [[productVersion]]
+
+|r1= [[Array]] with [name, nameShort, version, buildNumber, buildType, isModded, platform, architecture, steamBranchName]
+* name: [[String]] - product name
+* nameShort: [[String]] - product short name
+* version: [[Number]] - product version number
+* buildNumber: [[Number]] - product build number
+* {{GVI|arma3|1.00|size= 0.75}} buildType: [[String]] - build type, can be {{hl|"Stable"}}, {{hl|"Development"}}, {{hl|"Diag"}} or {{hl|"Profile"}}
+* {{GVI|arma3|1.00|size= 0.75}} isModded: [[Boolean]] - is the product running with mods ([[true]]) or vanilla ([[false]])
+* {{GVI|arma3|1.00|size= 0.75}} platform: [[String]] - can be {{hl|"Windows"}}, {{hl|"Linux"}} or {{hl|"OSX"}}
+* {{GVI|arma3|1.68|size= 0.75}} architecture: [[String]] - {{hl|"x64"}} for 64bit or {{hl|"x86"}} for 32bit
+* {{GVI|arma3|2.20|size= 0.75}} steamBranchName: [[String]] - {{hl|""}} (for default/public branch), {{hl|"profiling"}} or {{hl|"development"}}
+
+|x1= <sqf>hint str productVersion; // would return ["Arma 2 OA", "arma2oa", 162, 95208] on Arma 2 OA 1.62.95208</sqf>
+
+|x2= <sqf>hint str productVersion; // ["Arma 3", "Arma3", 137, 128764, "Development", false, "Windows"]</sqf>
+
+|x3= <sqf>format ["%1.%2", (productVersion select 2) * 0.01 toFixed 2, productVersion select 3]; // returns version e.g.: "2.00.146773"</sqf>
+
+|x4= <sqf>productVersion params ["_name", "_nameShort", "_version", "_buildNumber", "_buildType", "_isModded", "_platform", "_architecture", "_steamBranchName"];</sqf>
+
+|seealso= [[supportInfo]] [[requiredVersion]]
+}}

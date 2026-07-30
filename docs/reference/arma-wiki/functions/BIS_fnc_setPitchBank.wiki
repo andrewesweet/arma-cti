@@ -1,0 +1,94 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setPitchBank
+// revision: 328367 (2022-07-13T16:00:47Z)
+// export sha1: 9hammkkgyc08cfg5dynnhwilcmxk6bl
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Rotate an object, giving it the specified pitch and bank, in degrees.<br>
+'''Pitch''' is 0 when the object is level; 90 when pointing straight up; and -90 when pointing straight down.<br>
+'''Bank''' is 0 when level; 90 when the object is rolled to the right, -90 when rolled to the left, and 180 when rolled upside down.<br>
+Note that the object's '''yaw''' can be set with the [[setDir]] command, which should be issued before using this function, if required.<br>
+The pitch/bank can be leveled out (set to 0) by using the [[setDir]] command.
+
+|s1= [object, pitch, bank] call [[BIS_fnc_setPitchBank]]
+
+|p1= object: [[Object]]
+
+|p2= pitch: [[Number]]
+
+|p3= bank: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player, 45, -45] call BIS_fnc_setPitchBank;</sqf>
+
+|seealso= [[BIS_fnc_getPitchBank]] [[vectorDir]] [[vectorUp]] [[setVectorDirAndUp]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140804133500
+|text= {{Feature|informative|See also [[BIS_fnc_setObjectRotation]].}}
+
+(A3 1.24) [[attachTo]] limits [[BIS_fnc_setPitchBank]], here’s an alternative function to break that limitation (code originated from [[bapedibupa]]):
+<sqf>
+_obj attachTo [_logic,[0,0,2]];
+[_obj,[120,-78,37]] call fnc_SetPitchBankYaw; // pitch: 120, bank: -78, yaw: 37
+</sqf>
+<sqf>
+fnc_SetPitchBankYaw = { 
+	private ["_object","_rotations","_aroundX","_aroundY","_aroundZ","_dirX","_dirY","_dirZ","_upX","_upY","_upZ","_dir","_up","_dirXTemp",
+	"_upXTemp"];
+	_object = _this select 0;
+	_rotations = _this select 1;
+	_aroundX = _rotations select 0;
+	_aroundY = _rotations select 1;
+	_aroundZ = (360 - (_rotations select 2)) - 360;
+	_dirX = 0;
+	_dirY = 1;
+	_dirZ = 0;
+	_upX = 0;
+	_upY = 0;
+	_upZ = 1;
+	if (_aroundX != 0) then { 
+		_dirY = cos _aroundX;
+		_dirZ = sin _aroundX;
+		_upY = -sin _aroundX;
+		_upZ = cos _aroundX;
+	};
+	if (_aroundY != 0) then { 
+		_dirX = _dirZ * sin _aroundY;
+		_dirZ = _dirZ * cos _aroundY;
+		_upX = _upZ * sin _aroundY;
+		_upZ = _upZ * cos _aroundY;
+	};
+	if (_aroundZ != 0) then { 
+		_dirXTemp = _dirX;
+		_dirX = (_dirXTemp* cos _aroundZ) - (_dirY * sin _aroundZ);
+		_dirY = (_dirY * cos _aroundZ) + (_dirXTemp * sin _aroundZ);
+		_upXTemp = _upX;
+		_upX = (_upXTemp * cos _aroundZ) - (_upY * sin _aroundZ);
+		_upY = (_upY * cos _aroundZ) + (_upXTemp * sin _aroundZ);
+	};
+	_dir = [_dirX,_dirY,_dirZ];
+	_up = [_upX,_upY,_upZ];
+	_object setVectorDirAndUp [_dir,_up];
+};
+</sqf>
+}}

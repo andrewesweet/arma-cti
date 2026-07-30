@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_WLSmoothText
+// revision: 326960 (2022-07-12T21:44:41Z)
+// export sha1: g802igpnqpcbaaurqw8opglwvzdpkxd
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Function Group: Warlords | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.86
+
+|gr1= Warlords
+
+|gr2= GUI
+
+|eff= local
+
+|descr= Display given text smoothly.
+
+|s1= [text, nbOfLines, duration, color, outline] call [[BIS_fnc_WLSmoothText]]
+
+|p1= text: [[String]] - text to display
+
+|p2= nbOfLines: [[Number]] - (Optional, default 3) maximum number of lines to be shown at the same time
+
+|p3= duration: [[Number]] - (Optional, default 5) on-screen duration
+
+|p4= color: [[Color|Color (RGBA)]] - (Optional, default [1,1,1,1]) text color
+
+|p5= outline: [[Boolean]] - (Optional, default [[true]]) [[true]] to outline the text, [[false]] not to
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["Hello, hidden FX", 2, 3, [1,0,0,1], true] spawn BIS_fnc_WLSmoothText; // no sounds, letters appear in a smooth transition</sqf>
+
+|exec= spawn
+
+|seealso= [[Arma 3: Notification]] [[BIS_fnc_titleText]] [[BIS_fnc_typeText]] [[BIS_fnc_typeText2]]
+}}

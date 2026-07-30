@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/camSetRelPos
+// revision: 377388 (2026-01-02T06:43:59Z)
+// export sha1: ivvnobqn21hvb22sg4obu6fbwuuw1wd
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Camera Control
+
+|arg= local
+
+|eff= local
+
+|descr= Sets the position of the given camera relative to its target, set with [[camSetTarget]]. Needs a call to [[camCommit]] to be conducted.{{Feature | important |Since it sets relative position to the target, the [[camSetTarget]] command should be executed already, before [[camSetRelPos]].}}
+
+|s1= camera [[camSetRelPos]] position
+
+|p1= camera: [[Object]] - object of type "camera"
+
+|p2= position: [[Position#PositionRelative|PositionRelative]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_cam camSetTarget _car;
+_cam camSetRelPos [0,10,8];
+</sqf>
+
+|seealso= [[camSetPos]]
+}}
+
+<dl class="command_description">
+
+<dt class="note">Unknown <dd class="note">The location of the camera will depend on the direction the target object is facing.
+The camera does not bank with the target (bug?).
+
+</dl>

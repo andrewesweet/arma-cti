@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/setMarkerColor
+// revision: 370055 (2024-10-29T12:42:44Z)
+// export sha1: j3kltv8u2ozgwjutxi6jyzfmhup5dvs
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Operation Flashpoint version 1.21 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.21
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Markers
+
+|eff= global
+
+|descr= Set marker's colour. {{arma3}}'s marker colour names and their corresponding RGBA values can be found here: [[Arma 3: CfgMarkerColors]].
+{{Feature|informative|
+'''Multiplayer optimisation:''' Global marker commands always broadcast the ''entire'' marker state over the network.
+As such, the number of network messages exchanged when creating or editing a marker can be reduced by performing all but the last operation using local marker commands, then using a global marker command for the last change (and subsequent global broadcast of all changes applied to the marker).
+}}
+
+|s1= markerName [[setMarkerColor]] colour
+
+|p1= markerName: [[String]]
+
+|p2= colour: [[String]]
+* {{hl|{{Link|Arma 3: CfgMarkerColors|CfgMarkerColors}}}}'s class name
+* {{GVI|arma3|2.20|size= 0.75}} direct colour definition in one of the following formats (values in range 0..1):
+** "#(r,g,b)" (e.g {{hl|"#(1,0,1)"}}, {{hl|#FF00FF}} equivalent)
+** "#(r,g,b,a)" (e.g {{hl|"#(0.678,0.749,0.514,0.5)"}}, {{hl|#ADBF8380}} equivalent). Alpha 'a' in this format is independent of [[markerAlpha]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"MarkerOne" setMarkerColor "ColorBlack";</sqf>
+
+|x2= <sqf>"MarkerOne" setMarkerColor "#(1,0,0,1)"; // red color - since {{arma3}} v2.20</sqf>
+
+|seealso= [[setMarkerColorLocal]] [[markerColor]] [[getMarkerColor]] [[setMarkerBrush]] [[createMarker]] [[setMarkerDir]] [[setMarkerPos]] [[setMarkerShape]] [[setMarkerSize]] [[setMarkerText]] [[setMarkerType]] [[setMarkerAlpha]]
+}}

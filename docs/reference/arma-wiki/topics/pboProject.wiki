@@ -1,0 +1,721 @@
+// source: https://community.bistudio.com/wiki/pboProject
+// revision: 377930 (2026-01-11T16:24:47Z)
+// export sha1: sqv2r823sc84rsczdhd3bbqput1g9w4
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Link|https://mikero.bytex.digital/api/download?filename{{=}}pboProject.2.63.7.45.Installer.exe|PboProject}} Version 2.xx by Mikero<br>
+see {{Link|https://mikero.bytex.digital/api/download?filename{{=}}aaaReadMeGeneral.htm|aaaReadMeGeneral}} and fixes
+
+
+----
+
+For dos mode, see the accompanying document.
+
+
+'''Installation:'''
+
+
+The self installer ensures that this tool is integrated
+with other Mikero PboTools. It is not designed for manual installation.
+
+
+This tool '''also''' requires:
+
+
+1) '''Mikero's tools'''
+
+* DePBO.dll
+* MakePBO.exe
+* Rapify.exe
+* DeOgg.exe
+
+{{Link|https://mikero.bytex.digital/Downloads|Grab the self installers for these here}}
+
+2) '''Bis tools'''
+
+
+'''Either:'''
+
+
+* Personal Tools 2.5.1 for   Arrowhead  '''OR'''
+* Steam Tools for Arma3 '''OR'''
+* OfpTools package from [[ofpec]] for Ofp/Resistance '''   OR'''
+* XboxTools package from [[ofpec]] for Elite '''OR'''
+* All of above.
+
+3) '''Microsoft dll's '''
+[http://www.microsoft.com/en-us/download/confirmation.aspx?id{{=}}30679 Visual C++ Redistributable for Visual Studio 2012 Update 4 (64 bit)]
+
+* You will need the '''32BIT'''   [[VSU3\vcredist_x86.exe]]
+
+It may already be installed on your system
+via other application downloads unrelated to ''these'' tools.<br>
+
+
+----
+
+'''What is pboProject?'''
+
+
+All mention of
+'binpbo' '''also''' means 'addon builder' for a3
+
+
+'''pboProject '''is binPbo on steroids. It has been in
+existence for some years as the tool behind cwr2. A mod that packs dozens of pbos for
+distribution.
+
+
+pboProject allows you to build one, or dozens of pbos in
+one operation.
+
+
+(A 'pbo' is an .xbo, .ebo, .ifa, or .pbo, dependent on
+engine type selected)
+
+
+The basic philosophy is:
+
+
+P:/MyProject<br>
+P:/MyProject/MyObjects<br>
+P:/MyProject/MyObjects/MyPlants<br>
+P:/MyProject/MyObjects/MyBuildings<br>
+P:/MyProject/MyObjects/MyRoads<br>
+P:/MyProject/MyObjects/MyIsland<br>
+P:/MyProject/MyMissions<br>
+P:/MyProject/MyMissions/MissionOne<br>
+P:/MyProject/MyMissions/MissionTwo<br>
+P:/MyProject/MyMissions/MyCampaign
+
+
+* For your interest, this '''is''' the topology used by BIS with their chained model.cfgs. Advanced model makers will already be using this architecture and they '''now''' have a packer they can use.
+* For your interest, this '''is''' the method of providing patch pbos. So called hotpatch. One huge pbo later followed by smaller ones only containing a child folder or three.
+
+Selecting any one of the above 'Source Folders' will
+generate one, or, multiple pbos determined by the content of that source folder
+and it is children (if any)
+
+
+Selecting:
+
+
+* P:/MyProject -&gt; (re)builds everything
+* P:/MyProject/MyMissions-&gt; (re)builds all the missions   only
+* P:/MyProject/MyObjects/MyPlants-&gt;(re) builds a single   'plants' pbo
+
+* There is no restriction in depth. MyPlants, could be   separated into (at least) two other pbos MyPlants,/MyBushes, and MyPlants/MyTrees
+* For simple use, clearly, if there are no child folders   <u>of consequence</u> in MyProject, then only MyProject.pbo is built.
+
+<u>Folders of consequence</u>: The presence of a config.cpp/bin,
+mission.sqm. or desc.ext (for campaign) marks the beginning of a pbo for '''that'''
+folder and all it is children (if any).
+
+
+Note that any subsequent configs in child folders are NOT
+pbo's in their own right. They become part of the classic, 'multiple addons
+within a single pbo'. This is the method by which you initially release one big
+pbo, and for subsequent patches to plants (eg) you merely repack plants!!!
+
+
+The other major features of pboProject are:
+
+
+* Exhaustive file reference checking in any file   containing them. (configs, bisurfs, rvmats,   wrps and p3d's etc)
+* Ability to have any mix of pre-binarised/pre-rapped AND   plain Jane files in the source folder.
+* Binary animations other than ofp2_manskeleton
+* No requirement to have a copy of ca\ (or any other 'addon') in   '''your_projects''' folder
+* No requirement to have p3d helper p3d's to pack   textures that are only   referenced by configs (icons eg)
+* Absolute certainty that a mixture of all texture types   (tga,png, pac, pax) produce the very latest paa file.
+* strips the log file of irrelevant messages making it   readable again for locating problems with your p3d
+* The full power of dePbo.dll including compression, and all the other good   stuff hidden away and transparent to the user.
+* Automatic delivery of the target pbo(s) into the   correct location of an @mod folder
+* Automatic detection of the typeof pbos required. Any   mix of addon, mission, and campaign pbos.
+* Implementation of Bi's += array syntax for configs.
+
+Be aware: '''All''' mikero's
+tools
+'''will''' initially frustrate you. The '''intent''' is to PREVENT
+you building crap. Better to frustrate you before you load Arma, than constant
+crash to desktops. You will come to prefer professional results over persistent,
+build, start game, wait crash, build start game, wait crash, build....., ask on
+the forums, get a silly answer, build, crash, ask again, build wait a long time,
+crash only if in corner of the map. Aaaaaaaaaargh!
+
+
+The dll is quite likely to give you a specific reason for
+the bad result, and it expects you to fix it. 'Errors' range from simple typos
+to known, under-the-covers issues with the engines(plural) that break if you
+create a p3d with no geolod (exaggerated licence used).
+
+
+The most
+forbidding of all errors is your addon works, but unknown to you at the time, destroys
+all others. The dll wont let you. Expect to be frustrated and thank me later.
+
+
+----
+
+'''Operation:'''
+
+
+<u>'''Bis tool sets:'''</u>
+
+
+'''pboProject '''autodetects the location of bi's, and
+other, mikero tools. It utilises pal2pace, dssSignFile, and binarize.exe
+and (dsCreateKey if discovered).
+
+
+pboProject distinguishes the difference in tools between
+Arrowhead 2.5.1 and Steam. Both are accommodated.
+
+
+pboProject only uses bis binarise.exe for '''UN'''binarised p3'ds, wrps and rtm. All other file
+types
+are handled by the dll.
+
+
+<u>'''Pbo Types:'''</u>
+
+<blockquote>
+pboProject distinguishes between:
+
+
+* Addons (any folder containing a config.cpp/bin)
+* Missions (any folder containing a mission.sqm '''and     no config)'''
+* Campaigns (any folder containing a desc.ext '''and no     mission or config''')
+
+The differences result in:
+
+
+* pbos with/without prefixes
+* pbos sent to different parts of the mod folder
+</blockquote>
+<u>'''Internal packing characteristics'''</u>
+
+
+* '''All''' relevant bi files are transparently checked   and packed.  All non relevant files are not packed. There is no need to specify   exclude, or include lists.
+* '''All''' relevant files are   binarised (or rapified if they can be rapified). Examples are config.cpp, rvmats, bisurfs, texheander.bin, wrp, p3d.
+* The packer analyses specific file types for errors.   Typo's in mission.sqms, bad references in p3ds, missing classes in configs.....
+* tga pax and png files are checked for staleness. Unlike   binPbo it is an almost-certainty that the correct filedate is worked with.   Picture files intended only for configs or missions are fully accounted for.
+
+<u>'''The Gui Dialogs'''</u>
+
+
+<u>'''Main Panel'''</u>
+
+
+<u>'''Mod Folder : AnyDrive:\any\where'''</u>
+
+<blockquote>
+This is the '''mod''' folder. It is
+NOT the
+destination of the pbo, it is the root of the destination(s).
+
+
+The mod folder can be '''anywhere. '''It is intended to
+be the same specification as you supply to the arma -mod= command line
+
+
+The packer will create pbo's in
+
+<blockquote>
+@myMod\Addons<br>
+@myMod\Campaigns<br>
+@myMod\Missions\@MyMod<br>
+@myMod\mpMissions
+
+</blockquote>
+as appropriate.
+
+
+''Also see the setup panel for creating a mod.cpp for
+your entire mod.''
+
+</blockquote>
+<u>'''Source folder: workspace\your_tag\some\where'''</u>
+
+
+Is always specified from the root drive. '''
+workspace '''must match the workspace in setup.
+
+
+the 'workspace' can be as simple as p:\ The
+workspace defines the start of the engine's virtual address space.
+
+<blockquote>
+PboProject successively scans the Source Folder looking
+for pbo's to make.
+
+</blockquote>
+examples are shown in the foreword above
+
+
+There are variations on this simple folder topology based mostly on
+your own creativity and imagination.
+
+
+Note that configs within configs are not deemed to be
+pbo's in their own right. It is a reasonably common practice to have multiple
+addons (configs) in the same pbo.
+
+
+The practice of BI to sometimes NOT provide a cfgPatches class in a pbo is
+unacceptable.
+It prevents crash to desktops and assists in
+correct loading order.
+
+
+If you wish to build '''addons''' without configs,
+without a cfgpatches class, this quality tool is not for you.
+
+
+The detection of a config establishes the prefix of the pbo
+(but see comments re $pboprefx$.txt at end of document)
+
+
+<u>'''Crunch: '''</u>
+
+<blockquote>
+Should be obvious.
+
+</blockquote>
+<u>'''View Output '''</u>
+
+
+You can view the output with mild interest to see whether specific files are
+being compressed eg, or rapified eg, or simply being excluded. At the end of the
+day, EITHER, you get no errors, OR, you will get an error listed as
+the last message on the console and an accompanying messageBox to warn you of
+the failure.
+
+
+bis binarize.exe has never been fixed by
+Bis to return anything except good status. As a result, the packer can only assume everything is ok.
+Fortunately, binarize does show a halt gui to warn you. (but is of no use for a
+calling program or dos batch file)
+
+
+<u>'''View BinLog(s): '''</u>
+
+<blockquote>
+This only applies
+to p3ds wrps and rtms.
+
+
+Similar to binPbo, a .log is .generated for each pbo it
+binarises.
+
+
+The location of these logs are in '''workspace'''\temp
+
+
+As a convenience, individually processed pbo's can be
+viewed here. The button cannot (obviously) view multiple pack logs and will
+display the folder of logs instead
+
+</blockquote>
+<u>Options</u>
+
+
+'''Noisy Output: '''
+
+<blockquote>
+Should only be used when you strike trouble to
+locate '''the''', offending error via '''View Output. '''It should not be used
+for normal packing. The output content is enormous and consequently ties up a
+lot of processing time.
+
+</blockquote>
+'''Strip log: '''
+
+<blockquote>
+Since arrowhead, bi broke a great deal of binarize.exe and
+it produces erroneous class conflicts and missing stringtables. This because
+binarize no longer respects the cfgpatches class for load order. Perhaps a
+necessary evil to speed processing up since it is only scanning for land classes,
+each one of which is unique.
+
+
+In additon, bis binarize produces a great deal of
+(unimportant) st warnings.
+
+
+The end result is that the .log is too noisy to find REAL
+errors.
+
+
+striplog removes this noise.
+
+
+'''Striplog.bat: '''
+
+<blockquote>
+StripLog.bat is installed in mikero's pbotools folder.
+
+
+You can tailor it to suit your needs by adding / removing
+phrases that you don't/ do want appearing in the log. As suppled, it removes 99%
+of noise.
+
+</blockquote> </blockquote>
+'''Sign Pbos:'''
+
+<blockquote>
+the pbo is signed after transfer to the mod folder.
+
+
+An invalid, or lack of, a privatebikey results in an error
+
+</blockquote>
+'''Full Build'''
+
+<blockquote>
+Identical in intent to binPbo's clean temp. Essentially an 'all bets
+are off, rebuild everything' check box.
+
+
+Unlike binpbo some files are '''always '''rebuilt'''.
+'''You can safely do a full build, once, using this packer. And, faster-rebuild
+steps for subsequent alterations. The packer is very aware of all nuances of tga
+/ png files and the need to include them even when they are not used by a p3d or
+wrp. It is very sensitive to changes of source files that binpbo ignores.
+
+</blockquote>
+'''Check Externals: '''
+
+<blockquote>
+Uses the dll to scan all file references in all files of
+the pbo to ensure they are valid.
+
+
+This presumes you have all necessary pbo's extracted to your
+'''workspace'''. And for almost all creations (such as visitor and oxygen, this
+will be the case anyway).
+
+</blockquote>
+'''Mission Folder is?'''
+
+<blockquote>
+pboProject cannot distinguish between SP and MP missions.
+You need to tell it where to place the resulting pbo in the mod folder.
+
+</blockquote>
+----
+
+<u>'''Setup...'''</u>
+
+<blockquote>
+sets less used parameters that are not normally changed
+between sessions such as location of your private bikey and which engine you're
+compiling for.
+
+</blockquote>
+'''Engine:'''
+
+
+Establishes the correct 'pbo' as required:
+
+
+* '''Arrowhead''': Produces arma files as generated by   Personal Tools 2.5.1
+* '''Arma3''': produces arma 3 files as per steam tools.
+* '''Operation Flashpoint''': a different Rapifier and different file referencing (almost as brain dead as the current method, but they had an excuse   back then).
+* '''Xbox''':, a different checksum (and unicode output)
+* '''Ifa''': produces arma pbo's with ifa extensions.
+* '''vsblite: '''produces xbo, pbo files with   appropriate encryption
+
+'''Workspace:'''
+
+
+Normally set to P:\ You can however set it to
+\any\where.
+
+
+Any\where becomes the start of 'what the engine sees'.
+
+
+'''Private Key : AnyDrive:\any\where\YourTag'''.'''biprivatekey'''
+
+<blockquote>
+specify your biprivatekey if signing pbo's
+
+
+you can create a personal key using the createkey button.
+pboProject comes with it is own copy of dssignfile if none can be found.
+
+</blockquote>
+'''Addon folders: Island builds only'''
+
+<blockquote>
+'''AnyDrives:\any\where\paths-to-configs'''
+
+
+The packer ignores
+
+
+* Source\*.*
+
+The packer '''only'''
+use this for wrp creation. Ignoring it for all other pack types which dramatically
+increases throughput.
+
+
+There is now, no
+requirement to copy configs into your project area (which was, frankly,
+ridiculous).
+
+
+'''When creating island wrps,''' bis binarize needs to locate
+the land_p3d class for each p3d encountered in the wrp (if any). This to enable
+animations (such as doors) to happen IN an island. (identical editor placed
+objects ON and island behave differently).
+
+
+Binarize locates the land_p3d class by scanning configs. It is your responsibility to provide (a series of)
+extracted addons that contain configs that contain p3d references for objects
+'''you''' use on '''your''' island. Hardly a difficult task, since in
+order to add objects to islands you've already extracted those folders!
+
+
+pboProject simply synchronises the &quot;workspace&quot; you're already
+using in an understandable manner.
+
+
+The config can be a config.bin or a config.cpp
+
+
+The default addon is '''workspace'''\ca which, by inference contains '''
+all''' addons in the official bis pbos. Much the same could be said for '''
+workspace'''\a3
+if you are building islands for Arma3. Neither are relevant to '''your''' island if none of
+your island objects derive from ca (or a3) p3d's !!!
+
+
+What '''will''' be relevant is a comma separated list of paths to
+all addon(s) used on '''your''' island.
+
+
+EG: If you're using some
+custom buildings on your terrain,
+and they, '''and their config,''' are located in '''workspace\MyTag\CustomStuff''',
+then you'd ADD that folder to the &quot;Addon Folder(s)&quot; list simply by clicking the
+Addon Folder(s) button and navigating to the required location.
+
+
+This will ensure your
+custom building classes are located
+and any animations, etc your buildings may have will be properly implemented.
+
+
+You can add as many 'addons' as required. Note that the
+more precise the list, the less time is spent by binarize.exe in scanning.
+
+
+'''Clear'''
+
+<blockquote>
+Allows you to rebuild the comma separate list of paths to
+scan.
+
+</blockquote> </blockquote>
+'''MOD.CPP'''
+
+
+mod.cpp is a file placed directly in the root of your
+@mods folder. It provides various displayable elements about you and your mod in
+the game engine.
+
+
+the panel should be fairly self explanatory.
+
+
+'''When things go bang.'''
+
+
+Use the View Output button.
+
+
+Simply select the noisy option and reprocess. The exact
+cause of the problem and it is location in a file is pretty verbose.
+
+
+'''technical notes'''
+
+
+the packer is hard-wired to use '''workspace'''\temp to store files for
+bis binarise
+
+
+The 'temp' folder behaves in identical manner to binPbo.
+It is a place to store intermediate files for packing.
+
+
+The temp folder is
+only used if bis binarize.exe is invoked and pboProject tries to avoid doing so.
+
+
+'''Using $PBOPREFIX$.txt : Optional'''
+
+
+Bis have made increasing use of var=something in the
+header of pbo's to expand the meaning of that pbo. These strings are called
+token pairs. (bis binarize calls them -properties)
+
+
+Such examples are
+
+<blockquote>
+prefix=my\folder\some\where
+
+
+product=ifa // a pbo intended only for ifa engines
+
+
+product=a3 // ditto
+
+
+svn= 1567 // a vbs2lite encryption key
+
+
+version=21;
+
+
+author=somebody
+
+</blockquote>
+These token pairs are as numerous (and as long) as a piece
+of string. There is no limit to their quantity. Anything not understood / not
+looked for, in the header is ignored by the various engines. Most token pairs
+even if understood are optional (even prefix=)
+
+
+$PBOPREFIX$.txt''' if present''' in the same folder as
+the root config.cpp (eg the root folder of the intended pbo) is examined for
+token pairs
+
+
+such pairs are inserted into the header of the pbo.
+
+
+This mechanism works via the dll and is unconditional. It
+is not dependent on bis binarize or any other tool.
+
+
+If you place (or leave after extraction) a
+prefix.txt in the folder, it is contents will be reflected into the new pbo.
+
+
+Thus, if you were making a pbo intended solely for arma3,
+you would state
+
+
+* product=a3
+
+you could just as easily state
+
+
+* Author= I am famous
+
+It is quite legal to have multiple $prefixes$ in child
+subfolders (with attendant configs). They are ignored.
+
+
+They are used at the time you choose to issue only a pbo
+of that subfolder. It is the subject of pbo patching and outside the scope of
+this document.
+
+
+<u>'''Historical $PBOPREFIX$'''</u>
+
+
+$PBOPREFIX$.txt is an alias for any of the following file
+names
+
+
+* $PBOPREFIX$
+* $PBOPREFIX$.txt
+* pboPrefix.txt
+
+The reasons for the different names are a progression from
+the early dayz of xbox elite to the present time. The dll recognises any of them
+as being valid.
+
+
+<u>'''Rtm Skeletons'''</u>
+
+
+'''All''' animation.rtm's can be binarised (for engines
+arrowhead and beyond). BinPbo can only binarise ofp2_manskeleton. This packer
+does better.
+
+
+pboPacker examines the rtm for the 'correct' skeleton to
+use. By default, this is '''ofp2_manskeleton'''.
+
+
+For all other skeletons pboPacker reads the model.cfg of
+'''this''' pbo and uses the last (or only) class cfgskeletons entry.
+
+
+example:
+
+
+//model.cfg in '''this''' pbo folder
+
+
+class CfgSkeletons<br>
+{<br>
+class Default;
+
+
+.........
+
+
+<br>
+class BridgeSkel : Default<br>
+{<br>
+skeletonInherit = &quot;Default&quot;;<br>
+skeletonBones[] =<br>
+{<br>
+&quot;1&quot;,&quot;&quot;, //components that will animate on
+destruction<br>
+&quot;2&quot;,&quot;&quot;,<br>
+&quot;3&quot;,&quot;&quot;,<br>
+&quot;4&quot;,&quot;&quot;<br>
+};<br>
+};<br>
+};
+
+
+For whatever reason the packer cannot binarise the rtm, there is
+no ill effect, the rtm simply appears in the pbo as a plain jane.
+
+
+For this mechanism to work the following rules
+apply:
+
+
+* Only rtms containing a common skeleton can be binarised in   '''this''' pbo. You can have any number of p3ds and any nubner of skeleton   classes pertaining to those p3d's in the model.cfg for this pbo, but the '''last'''   skeleton class must pertain to this pbo's collection of rtms (and potentially   p3d's as well)..
+* The first model.cfg encountered in a reverse traverse   is the model.cfg used by pboProject to binarise rtm's
+* A reverse traverse occurs in identical manner to bis.   There need not be a model.cfg in the pbo folder, but one just behind it, or   just behind that, and etc.
+
+Reading the above rules, it should be obvious that you
+can't have soldier.p3d's and bridge.p3d's in the same pbo.
+
+
+As a general rule, there is no issue here, since, in
+general, a pbo contains nothing but one or several variations of the same tank,
+bridge, building or spotted girraffe.
+
+
+----
+
+Enjoy
+
+
+Mike Andrew, Norfolk Island, Oct 2013
+
+
+[[Category:Mikero Tools]]

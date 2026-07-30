@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/The_Basic_Drill
+// revision: 219015 (2021-01-19T12:41:21Z)
+// export sha1: 05t81wsn0q164i8dndw4z7qjp2d3m1h
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+The '''Basic Drill''' is what all individual soldiers are supposed to perform if they come under "effective fire".
+
+The basic drill goes as follows:
+
+#run two or three steps 
+#drop to the ground or into cover 
+#crawl a few yards (or move under concealment/cover) 
+#observe 
+#shoot (identified targets of opportunity within effective range) 
+#move 
+#observe 
+#shoot 
+#move 
+*repeat until issued orders 
+
+The basic drill is designed to get a soldier into cover, move him from the last position where they were likely to be seen by the enemy, and get him engaging any targets within range that he can see. For example, to provide a few simple steps for him to follow under stress that will keep him alive and positively engaged until his commander makes an appreciation and issues instructions.
+
+A useful mantra to say to your self for how long to run in a bound is "I am up, he sees me, I am down."
+
+The reason you limit bounds to being so short is that 3 to 5 seconds is how long it takes for the enemy to spot you and take an aimed shot.
+
+[[Category:Battle Tactics]]

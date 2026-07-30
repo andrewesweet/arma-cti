@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Preview
+// revision: 296497 (2021-12-20T10:48:25Z)
+// export sha1: qrs0ub0ufrkkmigs7fjvqlprcdr4xrz
+// categories: Category:Eden Editor: Scenario
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+When designing a scenario, it is important to periodically preview it from the player's point of view. This will give you a better picture about what the scenario looks like, how difficult it is and if it is actually fun.
+
+
+When you return from the preview, the scenario will be in the same state in which you started it. Anything that happened during the preview (e.g. you moving or killing enemies) is reverted.
+
+
+== Preview Types ==
+
+=== Singleplayer ===
+
+The most basic type of preview is '''Play In Singleplayer'''. It starts the scenario from the beginning, starting where the player is placed in the editor. By default, this preview starts after pressing {{Controls|Enter}}.
+[[File:3den previewSP.gif|center]]
+
+=== Singleplayer with Briefing ===
+
+'''Play In SP with Briefing''' is a variant of singleplayer preview which will show the briefing before the scenario starts, the same as when you start a scenario from the main menu. Please note that the briefing will not appear when you restart the preview from the pause menu.
+[[File:3den previewBriefing.gif|center]]
+
+=== Multiplayer ===
+
+'''Play In Multiplayer''' allows you to try the scenario on the hosted server, and the other players will be able to join you. If no server exists as yet, you will be prompted to host one before continuing.
+After the first use, the {{Controls|Enter}} key will be assigned to the multiplayer preview instead.
+
+
+When you return to the editor from the multiplayer preview, the server will keep running and already connected players will not be kicked out. However, running a singleplayer preview afterwards will terminate the server.
+
+=== Singleplayer at Camera Position ===
+
+'''Play In SP at Camera Position''' is a debugging option which will start the preview in singleplayer, but teleport the player to the position of the editor camera. If the player is not in a flying vehicle (i.e., a plane or helicopter), the position on the ground below the camera will be picked instead.
+[[File:3den_previewCamera.gif|center]]
+
+
+== Preview from the context menu ==
+
+Context menu available after clicking the '''right mouse button''' in the scene offers additional debugging preview options.
+
+=== Empty Space ===
+
+When clicked on an empty space, '''Play from Here''' will start the singleplayer preview and move the player on the selected position on the ground.
+:[[File:3den previewPosition.gif|center]]
+
+=== Character ===
+
+When clicked on a character, '''Play as the Character''' will also trigger the singleplayer preview, but allow the player to control the selected entity instead of his default one.
+[[File:3den previewCharacter.gif|center]]
+
+
+[[Category:Eden Editor: Scenario|Preview]]

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/ctData
+// revision: 309082 (2022-04-30T15:25:34Z)
+// export sha1: 5wiwu7836guhnghravb3v8kvpldrtix
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+|arg= local
+|eff= local
+
+|gr1= GUI Control - Controls Table
+
+|descr= Returns metadata associated with a particular row of a [[CT_CONTROLS_TABLE]] control.
+
+|s1= ctrl [[ctData]] row
+
+|p1= ctrl: [[Control]] - the respective control
+|p2= row: [[Number]] - the row index
+
+|r1= [[String]]
+
+|x1= <sqf>private _data = _ctrl ctData 0;</sqf>
+
+|seealso= [[ctAddRow]] [[ctAddHeader]] [[ctClear]] [[ctCurSel]] [[ctSetCurSel]] [[ctRowControls]] [[ctHeaderControls]] [[ctRowCount]] [[ctHeaderCount]] [[ctSetValue]] [[ctValue]] [[ctSetData]] [[ctFindRowHeader]] [[ctFindHeaderRows]] [[ctRemoveRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}

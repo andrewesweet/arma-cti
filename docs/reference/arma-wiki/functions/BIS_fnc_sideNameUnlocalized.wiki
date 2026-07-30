@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sideNameUnlocalized
+// revision: 349297 (2023-11-08T14:52:17Z)
+// export sha1: thb0fdklgnuh2t5o244x0j0glk0md1f
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sides
+
+|descr= Returns unlocalized side name.
+
+|s1= input call [[BIS_fnc_sideNameUnlocalized]]
+
+|p1= input: [[Number]] or [[Side]] - side ID or [[side]]
+
+|r1= [[String]] - unlocalized name
+
+|x1= <sqf>west call BIS_fnc_sideNameUnlocalized;//Returns "WEST"</sqf>
+
+|x2= <sqf>0 call BIS_fnc_sideNameUnlocalized;//Returns "EAST"</sqf>
+
+|seealso= [[side]]
+}}

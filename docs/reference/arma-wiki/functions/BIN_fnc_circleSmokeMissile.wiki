@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_circleSmokeMissile
+// revision: 309557 (2022-05-05T12:07:06Z)
+// export sha1: l805frnwnrjo2gfnv5gx332uuxofw4l
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Effects | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Effects 
+
+|descr= <pre>/*
+	BIN_fnc_circleSmokeMissile
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_circleSmokeMissile]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_circleSmokeMissile;</sqf> -->
+
+|seealso=
+}}

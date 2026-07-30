@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_fireSupport
+// revision: 349210 (2023-11-08T14:50:46Z)
+// export sha1: mnx1btceqolupqd3v3x140ge4thcgsr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Combat | Category:Function Group: Supports | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Supports
+
+|gr2= Combat
+
+|descr= Mortar/artillery fire support.
+
+|s1= [arty,target,mag,radius,rounds,delay,conditionEnd,safezone] spawn [[BIS_fnc_fireSupport]]
+
+|p1= arty: [[Object]] - artillery unit.
+
+|p2= target: [[Position]] or [[Object]] or [[String]] - target position, can be object/position 3D or marker name
+
+|p3= mag: [[String]] - magazine (if left empy, first magazine available will be used)
+
+|p4= radius: [[Number]] - radius of target area in meters
+
+|p5= rounds: [[Number]] - number of rounds to be fired
+
+|p6= delay: [[Array]] or [[Number]] - delay between rounds:
+* [[Array]]
+** 1: Min delay
+** 2: Max delay
+* [[Number]] - Precise delay
+
+|p7= conditionEnd: [[Code]] - condition to end bombardment before all rounds are fired
+
+|p8= safezone: [[Number]] - safezone radius - minimal distance from the target position where shells may be directed at
+
+|r1= [[Boolean]] - [[true]] if successful
+
+|x1= <sqf>[BIS_Mortar, [3600,3600,0], "", 100, 24, 10] spawn BIS_fnc_fireSupport;</sqf>
+
+|x2= <sqf>[BIS_Mortar, BIS_Player, "8Rnd_82mm_Mo_shells", 100, 24, 10] spawn BIS_fnc_fireSupport;</sqf>
+
+|x3= <sqf>[BIS_Mortar, "BIS_mrkTargetArea", "8Rnd_82mm_Mo_shells", 100, 24, 10, { BIS_Player distance BIS_EscapeZone < 100 }] spawn BIS_fnc_fireSupport;</sqf>
+
+|seealso= [[BIS_fnc_fireSupportCluster]] [[BIS_fnc_fire]] [[BIS_fnc_fireSupportVirtual]]
+}}

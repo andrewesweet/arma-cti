@@ -1,0 +1,233 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox
+// revision: 311086 (2022-05-09T10:35:43Z)
+// export sha1: tmin6bxm1km97c073jceyi3x9yvi17i
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>
+{{#if:
+	{{{title|}}}
+	{{{title1|}}}{{{content1|}}}
+	{{{title2|}}}{{{content2|}}}
+	{{{title3|}}}{{{content3|}}}
+	{{{title4|}}}{{{content4|}}}
+	{{{title5|}}}{{{content5|}}}
+	{{{title6|}}}{{{content6|}}}
+	{{{title7|}}}{{{content7|}}}
+	{{{title8|}}}{{{content8|}}}
+|
+	{{{!}} class{{=}}"navboxWiki{{#if:{{{sub|}}}||<nowiki/> mw-collapsible{{#if:{{{collapsed|}}}|<nowiki/> mw-collapsed}}{{#if:{{{minWidth|}}}|" style{{=}}"min-width: {{{minWidth}}}}}}}"
+	{{#if:{{{sub|}}}||
+		{{!}}-
+		! {{#if:{{{color|}}}|style{{=}}"background-color: {{{color}}}"}} colspan{{=}}"2" {{!}} {{{title|}}}<br>
+		{{!}}-
+	}}
+
+	{{#if:{{{title1|}}}{{{content1|}}}
+	|
+		{{#if:{{{title1|}}}
+		| ! {{#if:{{{color1|}}}|style{{=}}"background-color: {{{color1}}}" {{!}}}} {{{title1}}}
+			{{!}}
+			{{{content1|}}}
+		| {{!}} colspan{{=}}"2" {{!}} {{{content1|}}}
+		}}
+		{{!}}-
+	}}
+
+	{{#if:{{{title2|}}}{{{content2|}}}
+	|
+		{{#if:{{{title2|}}}
+		| ! {{#if:{{{color2|}}}|style{{=}}"background-color: {{{color2}}}" {{!}}}} {{{title2}}}
+			{{!}}
+			{{{content2|}}}
+		| {{!}} colspan{{=}}"2" {{!}} {{{content2|}}}
+		}}
+		{{!}}-
+	}}
+
+	{{#if:{{{title3|}}}{{{content3|}}}
+	|
+		{{#if:{{{title3|}}}
+		| ! {{#if:{{{color3|}}}|style{{=}}"background-color: {{{color3}}}" {{!}}}} {{{title3}}}
+			{{!}}
+			{{{content3|}}}
+		| {{!}} colspan{{=}}"2" {{!}} {{{content3|}}}
+		}}
+		{{!}}-
+	}}
+
+	{{#if:{{{title4|}}}{{{content4|}}}
+	|
+		{{#if:{{{title4|}}}
+		| ! {{#if:{{{color4|}}}|style{{=}}"background-color: {{{color4}}}" {{!}}}} {{{title4}}}
+			{{!}}
+			{{{content4|}}}
+		| {{!}} colspan{{=}}"2" {{!}} {{{content4|}}}
+		}}
+		{{!}}-
+	}}
+
+	{{#if:{{{title5|}}}{{{content5|}}}
+	|
+		{{#if:{{{title5|}}}
+		| ! {{#if:{{{color5|}}}|style{{=}}"background-color: {{{color5}}}" {{!}}}} {{{title5}}}
+			{{!}}
+			{{{content5|}}}
+		| {{!}} colspan{{=}}"2" {{!}} {{{content5|}}}
+		}}
+		{{!}}-
+	}}
+
+	{{#if:{{{title6|}}}{{{content6|}}}
+	|
+		{{#if:{{{title6|}}}
+		| ! {{#if:{{{color6|}}}|style{{=}}"background-color: {{{color6}}}" {{!}}}} {{{title6}}}
+			{{!}}
+			{{{content6|}}}
+		| {{!}} colspan{{=}}"2" {{!}} {{{content6|}}}
+		}}
+		{{!}}-
+	}}
+
+	{{#if:{{{title7|}}}{{{content7|}}}
+	|
+		{{#if:{{{title7|}}}
+		| ! {{#if:{{{color7|}}}|style{{=}}"background-color: {{{color7}}}" {{!}}}} {{{title7}}}
+			{{!}}
+			{{{content7|}}}
+		| {{!}} colspan{{=}}"2" {{!}} {{{content7|}}}
+		}}
+		{{!}}-
+	}}
+
+	{{#if:{{{title8|}}}{{{content8|}}}
+	|
+		{{#if:{{{title8|}}}
+		| ! {{#if:{{{color8|}}}|style{{=}}"background-color: {{{color8}}}" {{!}}}} {{{title8}}}
+			{{!}}
+			{{{content8|}}}
+		| {{!}} colspan{{=}}"2" {{!}} {{{content8|}}}
+		}}
+		{{!}}-
+	}}
+
+	{{!}}}
+| -no navbox defined-
+}}
+</includeonly><noinclude>
+== Usage ==
+{{<nowiki/>Navbox|'''''title'''''|'''''color'''''|'''''minWidth'''''|'''''title''#'''|'''''color''#'''|'''''content''#'''|'''''sub'''''|'''''collapsed'''''}}
+* title: (Optional) navbox title
+* color: (Optional, default {{hl|#}})
+* minWidth: (Optional, default {{hl|80%}})
+* title'''#''': (Optional, default empty) # in range 1..8: row 1..8 title
+* color'''#''': (Optional, default {{hl|#DDDDDD}}) # in range 1..8: row 1..8 title colour
+* content'''#''': (Optional, default empty) # in range 1..8: row 1..8 cell content
+* sub: (Optional, default empty) {{hl|y}} defines if border and collapsible are shown
+* collapsed: (Optional, default empty) {{hl|y}} defines if the navbox is collapsed by default - incompatible with '''''sub'''''
+
+
+{| style="border: 1px solid #AAA; border-collapse: collapse; border-radius: .25em; width: 100%"
+|+ '''Examples'''
+|- style="background-color: #DDD"
+! Code
+! style="min-width: 50%" | Result
+|-
+| <nowiki>{{Navbox}}</nowiki>
+| {{Navbox}}
+|-
+| <nowiki>{{Navbox|Hello there!}}</nowiki>
+| {{Navbox|Hello there!}}
+|- style="vertical-align: top"
+| <pre>{{Navbox
+	|title1= Title 1
+	|content1= Hello, first content!
+}}</pre>
+| {{Navbox
+	|title1= Title 1
+	|content1= Hello, first content!
+	|title2= Title 2
+	|content2= Hello, second content!
+}}
+|- style="vertical-align: top"
+| <pre>{{Navbox
+	|title= title displays collapse option
+	|title1= category
+	|content1= content that is displayed here
+}}</pre>
+| {{Navbox
+	|title= title displays collapse option
+	|title1= category
+	|content1= content that is displayed here
+}}
+|- style="vertical-align: top"
+| <pre>{{Navbox
+	|title= NAVBOX TITLE
+	|color= #DAD
+	|title1= Title 1
+	|color1= #AAF
+	|content1= Hello, first content!
+	|content2= Wait… no title?
+	|title3= hahaha
+	|content3= Yep, no title.
+}}</pre>
+| {{Navbox
+	|title= NAVBOX TITLE
+	|color= #DAD
+	|title1= Title 1
+	|color1= #AAF
+	|content1= Hello, first content!
+	|content2= Wait… no title?
+	|title3= hahaha
+	|content3= Yep, no title.
+}}
+|- style="vertical-align: top"
+| <pre>{{Navbox
+	|title= NAVBOX TITLE
+	|color= #CDF
+	|title1= Title 1
+	|content1=
+		{{Navbox
+			|sub= y
+			|title1= title1
+			|content1= content1
+			|title2= title2
+			|color2= #FAA
+			|content2= content2
+			|title3= title3
+			|content3=
+				{{Navbox
+					|sub= y
+					|title1= wait…
+					|content1= stop!
+					|title2= enough!
+					|content2= I said.
+				}}
+		}}
+	}}</pre>
+| {{Navbox
+	|title= NAVBOX TITLE
+	|color= #CDF
+	|title1= Title 1
+	|content1=
+		{{Navbox
+			|sub= y
+			|title1= title1
+			|content1= content1
+			|title2= title2
+			|color2= #FAA
+			|content2= content2
+			|title3= title3
+			|content3=
+				{{Navbox
+					|sub= y
+					|title1= wait…
+					|content1= stop!
+					|title2= enough!
+					|content2= I said.
+				}}
+		}}
+	}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

@@ -1,0 +1,310 @@
+// source: https://community.bistudio.com/wiki/Template:Icon/doc
+// revision: 351553 (2023-12-07T13:21:58Z)
+// export sha1: spzt8ys3rlhdlge84gofj2lu34ocudi
+// Vendored snapshot. Do not edit — re-export instead.
+
+<div class="float-right" style="max-height: 95vh; overflow: auto; padding: 0 0.25em 0 1em">
+'''Examples'''
+{| class="wikitable sortable align-center-col-1"
+! Preview
+! Additional Information
+|-
+! colspan="2" style="background-color:#BDBDBD" | Errors
+|-
+| {{Icon}}
+| <syntaxhighlight lang="handlebars">{{Icon}}</syntaxhighlight>
+|-
+| {{Icon|lol}}
+| <syntaxhighlight lang="html+handlebars">{{Icon|lol}} <!-- wrong argument --></syntaxhighlight>
+|-
+! colspan="2" style="background-color:#BDBDBD" | Dimensions
+|-
+| {{Icon|ofp}}
+| <syntaxhighlight lang="html+handlebars">{{Icon|ofp}} <!-- default is 48 (px) --></syntaxhighlight>
+|-
+| {{Icon|ofp|12}}
+| <syntaxhighlight lang="handlebars">{{Icon|ofp|12}}</syntaxhighlight>
+|-
+| {{Icon|ofp|24}}
+| <syntaxhighlight lang="handlebars">{{Icon|ofp|24}}</syntaxhighlight>
+|-
+| {{Icon|ofp|72}}
+| <syntaxhighlight lang="handlebars">{{Icon|ofp|72}}</syntaxhighlight>
+|-
+| {{Icon|ofp|100}}
+| <syntaxhighlight lang="handlebars">{{Icon|ofp|100}}</syntaxhighlight>
+|-
+! colspan="2" style="background-color: #BDBDBD" | {{Name|bi}}
+|-
+| {{Icon|bi}}
+| bi, bohemiainteractive
+|-
+| style="background-color: #555" | {{Icon|bi_alt}}
+| bi_alt, bohemiainteractive_alt
+|-
+! colspan="2" style="background-color:#BDBDBD" | {{ofp}}
+|-
+| {{Icon|ofp}}
+| ofp, cwa, arma0
+|-
+| {{Icon|ofpr}}
+| ofpr
+|-
+| {{Icon|ofpe}}
+| ofpe
+|-
+! colspan="2" style="background-color:#BDBDBD" | {{arma}}
+|-
+| {{Icon|arma1}}
+| arma1
+|-
+| style="background-color: #555" | {{Icon|arma1_alt}}
+| arma1_alt
+|-
+! colspan="2" style="background-color:#BDBDBD" | {{arma2}}
+|-
+| {{Icon|arma2}}
+| arma2, a2
+|-
+| {{Icon|arma2oa}}
+| arma2oa, oa, arrowhead, operation arrowhead
+|-
+| {{Icon|arma2acr}}
+| arma2acr, acr
+|-
+| {{Icon|arma2baf}}
+| arma2baf, baf
+|-
+| {{Icon|arma2pmc}}
+| arma2pmc, pmc
+|-
+! colspan="2" style="background-color:#BDBDBD" | {{arma3}}
+|-
+| {{Icon|arma3}}
+| arma3, a3
+|-
+| {{Icon|arma3zeus}}
+| arma3zeus, curator, zeus
+|-
+| {{Icon|arma3karts}}
+| arma3karts, kart, karts
+|-
+| {{Icon|arma3helicopters}}
+| arma3helicopters, heli, helicopter, helicopters
+|-
+| {{Icon|arma3marksmen}}
+| arma3marksmen, mark, marks, marksmen
+|-
+| style="background-color: #555" | {{Icon|arma3marksmen_alt}}
+| arma3marksmen_alt, mark_alt
+|-
+| {{Icon|arma3eden}}
+| arma3eden
+|-
+| {{Icon|arma3apex}}
+| arma3apex, expansion, apex
+|-
+| {{Icon|arma3jets}}
+| arma3jets, jets
+|-
+| {{Icon|arma3malden}}
+| arma3malden, malden
+|-
+| {{Icon|arma3lawsofwar}}
+| arma3lawsofwar, orange, low, laws of war
+|-
+| {{Icon|arma3tacops}}
+| arma3tacops, tacop, tac-op, tac-ops
+|-
+| {{Icon|arma3tanks}}
+| arma3tanks, tank, tanks
+|-
+| {{Icon|arma3contact}}
+| arma3contact, enoch, contact
+|-
+| {{Icon|arma3artofwar}}
+| arma3artofwar, aow, artofwar
+|-
+| {{Icon|arma3oldman}}
+| arma3oldman, oldman
+|-
+| style="background-color: #555" | {{Icon|arma3oldman_alt}}
+| arma3oldman_alt, oldman_alt
+|-
+! colspan="2" style="background-color:#BDBDBD" | {{Name|argo}}
+|-
+| {{Icon|argo}}
+| argo
+|-
+! colspan="2" style="background-color:#BDBDBD" | {{armaR}}
+|-
+| {{Icon|armaR}}
+| armar
+|-
+| style="background-color: #555" | {{Icon|armaR_alt}}
+| armaR_alt
+|-
+! colspan="2" style="background-color:#BDBDBD" | {{arma4}}
+|-
+| {{Icon|arma4}}
+| arma4
+|-
+| style="background-color: #555" | {{Icon|arma4_alt}}
+| arma4_alt
+|-
+! colspan="2" style="background-color:#BDBDBD" | Take On
+|-
+| {{Icon|tkoh}}
+| tkoh
+|-
+| {{Icon|tkoh_alt}}
+| tkoh_alt
+|-
+| {{Icon|tkom}}
+| tkom
+|-
+| {{Icon|tkom_alt}}
+| tkom_alt
+|-
+! colspan="2" style="background-color:#BDBDBD" | Other Games
+|-
+| {{Icon|carriercommand}}
+| carriercommand, carrier command, cc
+|-
+| {{Icon|dayz}}
+| dayz
+|-
+| style="background-color: #000" | {{Icon|dayz_alt}}
+| dayz_alt
+|-
+| {{Icon|silica}}
+| rowspan="3" | silica
+|-
+| style="background-color: #555" | {{Icon|silica}}
+|-
+| style="background-color: #000" | {{Icon|silica}}
+|-
+| {{Icon|vigor}}
+| rowspan="3" | vigor
+|-
+| style="background-color: #555" | {{Icon|vigor}}
+|-
+| style="background-color: #000" | {{Icon|vigor}}
+|-
+| {{Icon|ylands}}
+| ylands
+|-
+! colspan="2" style="background-color:#BDBDBD" | Multiplayer Definitions
+|-
+| {{Icon|globalArgument}}
+| globalArgument
+|-
+| {{Icon|localArgument}}
+| localArgument
+|-
+| {{Icon|globalEffect}}
+| globalEffect
+|-
+| {{Icon|localEffect}}
+| localEffect
+|-
+| {{Icon|serverExec}}
+| serverExec
+|-
+! colspan="2" style="background-color:#BDBDBD" | Timeline
+|-
+| {{Icon|aan}}
+| aan
+|-
+| {{Icon|person}}
+| person
+|-
+| {{Icon|real}}
+| real
+|-
+! colspan="2" style="background-color: #BDBDBD" | Others
+|-
+| style="background-color: #555" | {{Icon|afm}}
+| afm
+|-
+! colspan="2" style="background-color: #BDBDBD" | Controls
+|-
+| {{Icon|mouseL}}
+| mouseL
+|-
+| {{Icon|mouseL2}}
+| mouseL2
+|-
+| {{Icon|mouseR}}
+| mouseR
+|-
+| {{Icon|mouseM}}
+| mouseM
+|-
+| {{Icon|mouseSW}}
+| mouseSW
+|-
+| {{Icon|mouseSWU}}
+| mouseSWU
+|-
+| {{Icon|mouseSWD}}
+| mouseSWD
+|-
+| {{Icon|mouseN}}
+| mouse, mouseN
+|-
+| {{Icon|controller}}
+| gamepad, controller
+|-
+| {{Icon|keyboard}}
+| keyboard
+|-
+| {{Icon|kbm}}
+| kbm
+|-
+! colspan="2" style="background-color:#BDBDBD" | Wiki
+|-
+| {{Icon|disamb}}
+| disamb
+|-
+| {{Icon|unchecked}}
+| unchecked
+|-
+| {{Icon|checked}}
+| checked
+|-
+| {{Icon|warning}}
+| warning
+|-
+| {{Icon|unknown}}
+| unknown
+|-
+! colspan="2" style="background-color:#BDBDBD" | Misc
+|-
+| {{Icon|Steam}}
+| steam
+|-
+| {{Icon|xbox}}
+| xbox
+|-
+| {{Icon|playstation}}
+| playstation
+|-
+| {{Icon|switch}}
+| switch
+|}
+</div>
+One template to rule them all (icons). Icons {{Icon|localArgument|24}} should {{Icon|globalEffect|24}} appear {{Icon|serverExec|24}} inline.<br>
+It also adds the page to the [[:Category:Icon template usage error|Icon template usage error]] category on usage error.
+
+== Usage ==
+{{<nowiki/>Icon|'''''iconName'''''|'''''size'''''|'''''link='''''}}
+* iconName: (case-insensitive) - see table below
+* size: (Optional, default 48 but for exceptions below) size in pixel
+** Default value is 32 for ''mouseL'', ''mouseL2'', ''mouseM'', ''mouse''/''mouseN'', ''mouseR''
+** Default value is 24 for ''checked'', ''unchecked''
+** ''unknown'' is not (yet?) an image
+* link: (Optional, default game category, image link or nothing) link accessed on click, format {{hl|page address}} or {{hl|page address <nowiki>{{!}}</nowiki> hover text}}
+
+
+[[Category: Templates|{{uc:{{PAGENAME}}}}]]

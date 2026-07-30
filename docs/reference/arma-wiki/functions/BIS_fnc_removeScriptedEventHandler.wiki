@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_removeScriptedEventHandler
+// revision: 327930 (2022-07-13T12:30:39Z)
+// export sha1: 2s4wrwtnztls9ja9gmmk2m0n8p1nl48
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Event Handlers | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Event Handlers
+
+|descr= Removes scripted event handler with given name and id.
+Additionally "ScriptedEventHandlerRemoved" scripted EH is called.
+{{Feature|informative|For a list of available scripted event handlers, see [[Arma 3: Scripted Event Handlers]].}}
+
+|s1= [namespace, name, id] call [[BIS_fnc_removeScriptedEventHandler]]
+
+|p1= namespace: [[Namespace]], [[Object]], [[Group]], [[Location]], [[Boolean]], [[Control]] or [[Display]] - namespace in which handler is saved
+
+|p2= name: [[String]] - handler name
+
+|p3= id: [[Number]] - EH id
+
+|r1= [[Boolean]] - [[true]] if removed, [[false]] if didn't exist
+
+|x1= <sqf>[missionNamespace, "event", 2] call BIS_fnc_removeScriptedEventHandler;</sqf>
+
+|seealso= [[BIS_fnc_callScriptedEventHandler]] [[BIS_fnc_addScriptedEventHandler]] [[BIS_fnc_removeAllScriptedEventHandlers]]
+}}

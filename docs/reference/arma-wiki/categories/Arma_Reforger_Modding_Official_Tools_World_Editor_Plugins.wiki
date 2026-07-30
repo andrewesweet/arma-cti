@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Official_Tools/World_Editor_Plugins
+// revision: 352594 (2024-02-15T18:36:43Z)
+// export sha1: j0lawi1r5ercvc969te303jdf822sd1
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding|Official Tools}}

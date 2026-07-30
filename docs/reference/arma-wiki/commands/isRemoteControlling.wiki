@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/isRemoteControlling
+// revision: 347218 (2023-09-05T16:49:02Z)
+// export sha1: 250f0sh5f8cdxby2tre8wd5tta8hml6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|arg= local
+|gr1= Remote Control
+
+|descr= Returns [[true]] if the given player is remote-controlling a unit.
+{{Feature|important|See also [[Remote Control Tutorial]].}}
+
+|s1= [[isRemoteControlling]] person
+
+|p1= person: [[Object]] - a player 
+
+|r1= [[Boolean]] - [[true]] if the given player is remote controlling a unit
+
+|x1= <sqf>
+if (isRemoteControlling player) then
+{
+	hint format ["You are controlling %1", remoteControlled player];
+}
+else
+{
+	hint "Why not remote-control something?";
+};
+</sqf>
+
+|seealso= [[remoteControl]] [[remoteControlled]]
+}}

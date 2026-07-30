@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/namedProperties
+// revision: 338564 (2023-03-20T14:40:54Z)
+// export sha1: js4xvsjdu7mvxxft6kmejeguje3vpx7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Object Manipulation
+
+|descr= Returns a list of named properties on Geometry LOD.
+
+|s1= [[namedProperties]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Array]] of [[Array]]s of [[String]]s, in format: <nowiki>[</nowiki>[namedProperty1, propertyValue1], [namedProperty2, propertyValue2], ...]
+
+|s2= object [[namedProperties]] [LOD]
+
+|s2since= arma3 2.14
+
+|p21= object: [[Object]]
+
+|p22= LOD: [[String]] or [[Number]] - can be one of:
+* {{hl|"Memory"}}
+* {{hl|"Geometry"}}
+* {{hl|"FireGeometry"}}
+* {{hl|"LandContact"}}
+* {{hl|"HitPoints"}}
+* {{hl|"ViewGeometry"}}
+When [[Number]] is used, command searches for a LOD with the similar [[LOD resolutions|LOD resolution]]
+
+|r2= [[HashMap]]
+
+|x1= <sqf>private _properties = namedProperties _object; // [["sbsource","shadowvolume"],["prefershadowvolume","1"],["reversed","1"],["buoyancy","1"]]</sqf>
+
+|x2= <sqf>private _namedProperties = cursorObject namedProperties ["FireGeometry"];</sqf>
+
+|seealso= [[selectionNames]] [[animationNames]] [[Arma 3: Named Properties]] [[allLODs]]
+}}

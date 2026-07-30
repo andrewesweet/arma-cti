@@ -1,0 +1,94 @@
+// source: https://community.bistudio.com/wiki/isTouchingGround
+// revision: 376406 (2025-10-11T00:58:13Z)
+// export sha1: e4adh07lk0zbjz4br7kmlmd5ikfx6rl
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns true if object is touching the ground.
+
+|s1= [[isTouchingGround]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (isTouchingGround player) then { hint "Terraferma!" };</sqf>
+
+|x2= A full "is safely parked" method for air, ground and water vehicles:
+<sqf>
+// get if a vehicle is properly parked - covers e.g helicopter landed on a building, boat (beached or not) and underwater or not submarine
+// return false on null, disabled or destroyed vehicle
+private _isSafelyParked = {
+	params [
+		["_vehicle", objNull, [objNull]],				// 0: OBJECT - vehicle - a null object returns false
+		["_altitudeTolerance", 0.1, [0]],				// 1: NUMBER - altitude tolerance - in metre
+		["_velocityTolerance", 0.01, [0]]				// 2: NUMBER - velocity tolerance - in km/h
+	];
+
+	if (not canMove _vehicle) exitWith { false };		// returns false for null as well
+
+	if (_vehicle isKindOf "Ship") then
+	{
+		// surfaceIsWater getPosASL _vehicle						// a beached boat is fine
+		velocity _vehicle params ["_velX", "_velY"];
+		sqrt (_velX * _velX + _velY * _velY) < _velocityTolerance	// only 2D speed matters (think waves)
+		&& {
+			getPosASLW _vehicle select 2 < _altitudeTolerance				// underwater submarines are OK
+			|| { getPos _vehicle select 2 < _altitudeTolerance }	// beached boat
+		};
+	}
+	else
+	{
+		// over -a- ground and not over ocean
+		(isTouchingGround _vehicle || {
+			getPosASLW _vehicle select 2 >= _altitudeTolerance		// not in water
+			&& { getPos _vehicle select 2 < _altitudeTolerance }
+		})
+		&& { vectorMagnitude velocity _vehicle * 3.6 < _velocityTolerance }
+	}
+};
+
+objectParent player call _isSafelyParked;
+</sqf>
+
+|seealso= [[underwater]]
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20140601012300
+|text= If you are using this command as a validation method, it should not be the sole thing you are checking for, as the result is often inaccurate.
+For example, it returns false for some helicopters when landed on the roof of certain buildings, and it always returns false for boats, even if they are beached.
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20160929082800
+|text= In addition to previous statement: That behaviour is true, simply because [[isTouchingGround]] applied to a player unit (or any unit) is frozen to a last state when unit enters vehicle.
+To get proper return from this command you should go for units [[vehicle]]: 
+<sqf>
+_var = isTouchingGround player;				// unreliable
+_var = isTouchingGround (vehicle player);	// pretty reliable
+</sqf>
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20161110205700
+|text= This command returns always true if the falling object is attached to some other object with the [[attachTo]] command, like for vehicle air drop with parachute.
+}}
+
+{{Note
+|user= Gippo
+|timestamp= 20170426200200
+|text= Be aware: it is not reliable on remote objects.
+}}

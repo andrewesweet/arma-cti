@@ -1,0 +1,79 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Virtual_Reality_Custom_Courses
+// revision: 351470 (2023-12-06T09:58:11Z)
+// export sha1: 9ufk14ve9y5r2il92jvdtw60m8wt5f2
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+Here is a basic guide on how to configure your own VR training courses. If there are some community Courses configured, a new selector will appear with a list of the Courses. This selector will have different colour than the official ones.
+
+=== Config ===
+
+<syntaxhighlight lang="cpp">
+class CfgVRCourses
+{
+	class Default;
+	class MyCourse1 : Default
+	{
+		title = "Course Name";
+		icon = "\A3\Structures_F_Bootcamp\VR\Helpers\Data\VR_Symbol_default_CA.paa";
+		class Stages
+		{
+			class Stage1
+			{
+				title = "Stage 1 Name";
+				function = "BIS_fnc_VRFunctionName1";
+			};
+			class Stage2
+			{
+				title = "Stage 2 Name";
+				function = "BIS_fnc_VRFunctionName2";
+			};
+			class Stage3
+			{
+				title = "Stage 3 Name";
+				function = "BIS_fnc_VRFunctionName3";
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+'''icon:''' Path to icon that will be shown on a billboard throughout the Course.
+
+'''title:''' Text that will be shown ingame during Course selection or when loading a Stage.
+
+'''function:''' Function to run for each Stage. Must be defined in cfgFunctions (see [[Arma 3: Functions Library#Adding_a_Function|the Arma 3 functions library]], VR functions are usually defined in category "VR").
+
+=== Functions ===
+
+Stage functions are typically FSMs (you can get the FSM Editor [[FSM Editor|here]]). There are certain '''guidelines''' to follow:
+
+* player's starting coordinates are always ''markerPos "BIS_center"''
+** you should use coordinates relative to this one for spawning your assets
+* there is a brief timeout before player gains control in a Stage - you can spawn all your assets during this period
+** you can determinate the moment player gains control by checking variable ''BIS_interruptable'' for ''TRUE''
+** any mission tasks or hints should be created after this period, once player is actually ingame
+* there is a logic unit used for icon helper (group icon) - ''BIS_icon'' and its group, ''BIS_iconGrp''
+** do not delete these!<br>Example of use: <sqf>
+BIS_icon attachTo [BIS_UAV, [0, 0, -3.5]];
+BIS_iconGrp setGroupIconParams [BIS_TT_colorWarning, "", 1, true];
+</sqf>
+* if player wanders too far away from his starting position, he is automatically moved back - default allowed radius is 100m
+** this can be changed via variable ''BIS_stageArea'' in a Stage function.<br>Example of use: <sqf>BIS_stageArea = 150;</sqf>
+* any assets you spawn will be deleted automatically when the Stage ends
+* a Stage is completed by using this code: <sqf>call BIS_fnc_VR_stageDone;</sqf>
+* always make sure you've properly terminated your function upon Stage end; keep in mind player can fail a Stage too
+** for Stage failure, use code before you terminate the function: <sqf>[] spawn BIS_fnc_VR_stageFailed;</sqf>
+** condition to check player's "death" or him leaving the Stage: <sqf>damage player > 0.015 || !BIS_interruptable</sqf>
+** you don't need to call any code in this case, just make sure to properly terminate the function
+
+=== Stage function example ===
+
+To help you understand how a typical Stage FSM may look like, here's a link to a basic Stage function (it's a slightly tweaked Stage 2 of the Launchers Course):
+* https://www.dropbox.com/s/5429wbhsl4f0sky/fn_VRCourseExample.fsm
+
+The End!
+{{Feature|quote|I hope I covered everything here. Have fun creating your own VR Courses!|{{User|Jezuro}}}}
+
+
+{{GameCategory|arma3|Editing}}

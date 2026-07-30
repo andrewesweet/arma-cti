@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/enableEngineArtillery
+// revision: 310205 (2022-05-05T13:10:41Z)
+// export sha1: 7enraj0k00flddffoqk43arg6jrxi1l
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Artillery | Category:Introduced with Arma 2: Operation Arrowhead version 1.54 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.54
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|eff= local
+
+|gr1= Artillery
+
+|descr= Enable/disable the artillery engine. This allows the user to use the artillery computer on mortar/artillery, and for AI to use it for indirect fire.
+
+|s1= [[enableEngineArtillery]] enabled
+
+|p1= enabled: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>enableEngineArtillery false;</sqf>
+
+|seealso= [[shownArtilleryComputer]] [[getArtilleryAmmo]] [[commandArtilleryFire]] [[doArtilleryFire]] [[getArtilleryComputerSettings]] [[getArtilleryETA]] [[inRangeOfArtillery]]
+}}

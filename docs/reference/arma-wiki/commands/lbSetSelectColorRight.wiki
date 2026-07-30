@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/lbSetSelectColorRight
+// revision: 377808 (2026-01-03T04:08:08Z)
+// export sha1: 8306xrc77uf6yszrqm7xcvgravokfcl
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Arma 3 version 1.46 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.46
+
+|gr1= GUI Control - ListBox
+
+|descr= Sets the select color of the of the secondary text (right aligned) of the item with the given index of the listbox or combobox with id idc of the topmost user [[dialog]] to color.
+
+|s1= [[lbSetSelectColorRight]] [idc, index, color]
+
+|p1= idc: [[Number]]
+
+|p2= index: [[Number]]
+
+|p3= color: [[Color|Color (RGBA)]]
+
+|r1= [[Nothing]]
+
+|s2= control [[lbSetSelectColorRight]] [index, color]
+
+|p21= control: [[Control]]
+
+|p22= index: [[Number]]
+
+|p23= color: [[Color|Color (RGBA)]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lbSetSelectColorRight [101, 0, [0, 1, 0, 0.5]];</sqf>
+
+|x2= <sqf>_control lbSetSelectColorRight [0, [0, 1, 0, 0.5]];</sqf>
+
+|seealso= [[lbSetSelectColor]] [[lbSetColor]] [[lbAdd]] [[lbClear]] [[lbColor]] [[lbCurSel]] [[lbData]] [[lbDelete]] [[lbIsSelected]] [[lbPicture]] [[lbSelection]] [[lbSetCurSel]] [[lbSetData]] [[lbSetPicture]] [[lbSetSelected]] [[lbSetTooltip]] [[lbSetValue]] [[lbSize]] [[lbSort]] [[lbSortByValue]] [[lbText]] [[lbValue]]
+}}
+
+<dl class="command_description">
+<dt></dt>
+<dd class="notedate">Posted: Sep 10 2014</dd>
+<dt class="note">[[User:ffur2007slx2_5|ffur2007slx2_5]]</dt>
+<dd class="note">More information on the LB command family can be found [[List_Box|here]]
+</dl>

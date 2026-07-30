@@ -1,0 +1,222 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_SoundSet
+// revision: 258363 (2021-05-25T09:11:17Z)
+// export sha1: 31691xw37346ixugoep8e8aedzvmemh
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|Sound}}
+== SoundSet ==
+
+SoundSet is second level of sound configuration. It contains array of SoundShaders to be mixed and parameters for advanced features and options.
+
+All SoundSets have to be configured in the base class '''CfgSoundSets'''.
+
+{{Feature | informative
+|
+* SoundSet in fact represents one single submixed sound, with the length of the longest sample used in the submix.
+* Actual range of SoundSet is the highest range parameter value of all SoundShaders used within SoundSet and SoundSet's volumeCurve is applied (scaled) to that range.
+* Use the same frequency wave files defined within single SoundSet (SoundShader respectively).
+* For vehicles: soundSets must have only one soundShader for soundShader simple expressions to be updated all the time. Reatime-update does not work if there are more than 1 soundShader in soundSet.
+}}
+
+{| class="wikitable"
+
+|-
+! Parameter
+! Unit/values
+! Default
+! Description
+
+|-
+! ''soundShaders''
+
+|
+{SoundShader1, ...}
+
+|
+none
+
+|
+* array of SoundShader names to be submixed
+
+|-
+! ''soundShadersLimit''
+| (0..n)
+| 0 (no limit)
+|
+* number of SoundShaders (with parameter limitation set to true) to be submixed in order from the highest volume. Volume here is ment to be output volume value after it is expression evaluation and applied rangeCurve
+* SoundShaders with limitation parameter set to false will be processed always
+
+|-
+! ''volumeFactor''
+| float (0..n) or dBx
+| 1
+|
+* multiplication factor for volume, both float and dBx values are possible
+* ''volumeFactor = 0.5'' is the same as ''volumeFactor = db-6''
+
+|-
+! ''volumeCurve''
+| {{d0, v0}, {d1, v1}, ... } or Class name
+| ''defaultVolumeCurve''
+defined in CfgSoundGlobals
+| 
+* array of points or class name defined in [[Arma_3_Sound:_Sound_Curves|CfgSoundCurves]]
+* generally the same as rangeCurve, but applied on submix output sample and scaled to the highest range value of all SoundShaders defined within soundShaders array parameter (literally "defined", not actually playing)
+
+|-
+! ''volumeRandomizer''
+| (0..6dB) [dB]
+| 0
+|
+* random multiplication factor for volume, calculated during each playback of SoundSet
+* (volume = volume + random(-volumeRandomizer, volumeRandomizer))
+
+|-
+! ''volumeRandomizerMin''
+| (0..6dB) [dB]
+| 0
+|
+* the lowest possible generated value of volumeRandomizer
+
+|-
+! ''frequencyFactor''
+| (0..n)
+| 1
+|
+* multiplication factor for frequency
+
+
+|-
+! ''frequencyRandomizer''
+| (0..12) [semitones]
+| 0
+|
+* random multiplication factor for frequency, calculated during each playback of SoundSet
+* frequency = frequency * pow(2, ''frequencyRandomizer''/12)
+* 12 semitones = 1 octave = double/half speed
+
+|-
+! ''frequencyRandomizerMin''
+| (0..12) [semitones]
+| 0
+|
+* the lowest possible generated value of frequencyRandomizer
+* use it to guarantee a specific amount of pitch change on the next playback
+
+|-
+! ''loop''
+| {0, 1} or boolean
+| 0
+|
+* defines looping of SoundSet
+* play/stop of loop is handled by gameplay feature (engine)
+
+|-
+! ''playTrigger''
+| simple expression
+| 0
+|
+* soundSet is triggered, once simple expression goes above 0
+* good for engine burst sounds (example: accelleration, use "thrust-0.1" to trigger)
+
+|-
+! ''shape''
+| class name
+| none
+|
+* name of soundShape configured in [[Arma_3_Sound:_SoundShapes|CfgSoundShapes]]
+* will make sound louder/quieter depending on what side of asset is facing listener (bottom, front, back, left/right)
+
+|-
+! ''delay''
+| [s]
+| 0
+|
+* time before next SoundSet is played (triggers feature of repeating playback of SoundSet)
+* if set to nonzero value, loop parameter is automatically set to false
+
+|-
+! ''delayRandomizer''
+| [s]
+| 0
+|
+* defines random time range <''delay''-''delayRandomizer''; ''delay''+''delayRandomizer''> for repeating playback (normal distribution)
+
+|-
+! ''distanceFilter''
+| Class name / "none"
+| ''defaultDistanceFilter''
+defined in CfgSoundGlobals
+|
+* distance frequency attenuation filter
+* distanceFilter = "none"; removes filter from soundSet
+
+|-
+! ''sound3DProcessingType''
+| Class name / "none"
+| ''defaultSound3DProcessingType''
+defined in CfgSoundGlobals
+|
+* [[Arma_3_Sound:_Processing_Types|sound processing type]]
+* sound3DProcessingType = "none"; forces the engine to handle audio "the old way", stereo files are downmixed to mono and placed in the world
+
+|-
+! ''spatial''
+| {0, 1} or boolean
+|
+|
+* switch for sound spatialization (positional vs ambient sound)
+
+|-
+! ''doppler''
+| {0, 1} or boolean
+|
+|
+* switch for Doppler Effect filter
+
+|-
+! ''speedOfSound''
+| {0, 1} or boolean
+|
+|
+* switch for simulation of delay based on distance
+
+|-
+! ''occlusionFactor''
+| (0..1)
+|
+|
+* ''occVolumeFactor = 1-(1-GetOcclusion)*occlusionFactor;'' where GetOcclusion is value calculated from the scene
+
+|-
+! ''obstructionFactor''
+| (0..1)
+|
+|
+* ''obsVolumeFactor = 1-(1-GetObstruction)*obstructionFactor;'' where GetObstruction is value calculated from the scene
+|}
+
+<syntaxhighlight lang="cpp">
+class CfgSoundSets
+{
+	class Rifle_Shot_Base_SoundSet
+	{
+		soundShaders[] = 
+		{
+			MX_Closure_SoundShader,
+			MX_closeShot_SoundShader,
+			MX_midShot_SoundShader,
+			MX_distShot_SoundShader,
+			MX_tailInterior_SoundShader
+		};
+		volumeFactor = 1.6;
+		volumeCurve = InverseSquare2Curve;
+		sound3DProcessingType = WeaponMediumShot3DProcessingType;
+		distanceFilter = weaponShotDistanceFreqAttenuationFilter;
+		spatial = 1;
+		doppler = 0;
+		loop = 0;
+	};
+};
+</syntaxhighlight>

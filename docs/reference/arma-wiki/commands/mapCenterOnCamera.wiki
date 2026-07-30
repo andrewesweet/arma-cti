@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/mapCenterOnCamera
+// revision: 377461 (2026-01-02T06:47:30Z)
+// export sha1: s0cgqknaskj7o4q8h9u60blla7if93q
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Arma 2 version 1.02 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.02
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= GUI Control - Map
+
+|descr= The main syntax enables/disables continuous centering of the main map type control on the camera position. Needs to be executed once.<br>
+The alternative syntax centers mini map type control on camera. Needs to be executed each frame (preferably inside an {{hl|onDraw}} event handler).
+
+|s1= mainmap [[mapCenterOnCamera]] enable
+
+|p1= mainmap: [[Control]]
+
+|p2= enable: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|s2= [[mapCenterOnCamera]]  minimap
+
+|s2since= arma3 1.48
+
+|p21= minimap: [[Control]]
+
+|r2= [[Position#PositionASL|PositionASL]] of the map center (camera focus object's '''model centre'''<nowiki/>'s position (see [[getPosWorld]])) in render scope
+
+|x1= <sqf>
+// --- Minimap update
+((uiNamespace getVariable "BIS_UAV_DISPLAY") displayCtrl 112410) mapCenterOnCamera true;
+</sqf>
+
+|seealso= [[ctrlMapAnimAdd]] [[ctrlMapAnimCommit]] [[getPosWorld]]
+}}

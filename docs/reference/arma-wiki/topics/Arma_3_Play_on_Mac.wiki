@@ -1,0 +1,160 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Play_on_Mac
+// revision: 376842 (2025-12-03T10:03:15Z)
+// export sha1: qd9mr4ex8cylnv2o42ddrf6wjr9xxin
+// categories: Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side||2}}
+This article covers the basic setup and troubleshooting of {{arma3}} on Mac.
+
+{{Feature|informative|See also:
+* [[Arma 3: Play on Linux]]
+* [[Arma 3: Experimental Ports]]
+}}
+
+
+== Setup ==
+
+# Download and install the [[Steam]] client, create an account and purchase the {{Link|http://store.steampowered.com/app/107410/|retail version of {{arma3}}}}.
+# Install the game (it will automatically download the data for Mac, depending on the platform you are installing from).
+# The launch options will offer a choice of the default non-native version, and the more experimental native version.
+#* Select ''Play {{arma3}}'' for the default non-native version.
+#* Select ''Launch experimental Apple silicon native version'' for the experimental native version.
+# Click Play!
+
+
+{{Feature|informative|
+In some cases Steam client has difficulties downloading the game or an update on Mac.
+A solution may be to go into ''Settings'' > ''Privacy & Security'' > ''App Management'', and to allow Steam client permission to modify executables.
+}}
+
+
+== Known Issues ==
+
+* If the native version fails to launch and crashes with ''E.MetalCachePrecompilation'', it may help to try deleting the pre-existing .DAT file found at ''"~/Library/Application Support/com.vpltd.Arma3/eONprecompiledShaders.dat"''.
+
+
+== BattlEye ==
+
+Only the non-native version supports BattlEye anti-cheat.
+
+
+== Mods ==
+
+In order to launch {{arma3}} with mods, they must be downloaded from the Steam Workshop or another source.
+The mod directory should be moved into the game directory, then loaded using the game's Steam launch options.
+There also exists a way to launch the game with mods via Terminal, or by making an Alias with the help of the Apple Script Editor.
+
+{{Feature|important|
+* Moving the folder will stop the mod from updating via Steam Workshop. If you want the Workshop to update the mods, you must write the whole path to the original folder.
+* '''Keep in mind that you need to start your path with {{hl|C:}}'''
+: Launch Options Example: {{hl|-mod{{=}}C:/Users/macuser/Desktop/rhs}}
+}}
+{{Feature|important|
+* Having whitespaces in your path may cause issues with parsing the launch options. You can use escape characters in this case.
+* Launch Options Example: {{hl|-mod{{=}}\"C:/Users/UserName/Library/Application\ Support/Steam/steamapps/workshop/content/107410/123456789\"}}
+}}
+
+Most mods will work out of the box for {{arma3}} on Mac (this may change in case the Windows version of the game gets updated, but the Mac port does not yet, since mods may rely on new platform features).
+
+{{Feature|informative|
+See {{Link|https://github.com/muttleyxd/arma3-unix-launcher|Muttley's {{arma3}} Unix Launcher}} for an alternative launcher that can be used to manage mods and launch options.
+It can be installed from the project's "Releases" page or in one's respective package repository.<br>
+See also {{Link|https://github.com/viktorholk/arma3-mod-manager-console|viktorholk's Mod Manager Console}}.
+}}
+
+=== Steam ===
+
+# Subscribe to and download the mod from the [https://steamcommunity.com/app/107410/workshop/ Steam Workshop].
+# Locate the folder with mods. Default path: {{hl|/Users/macuser/Library/Application Support/Steam/steamapps/workshop/content}}
+# Look for folders with number IDs. Those should be the mods.
+# Open the game folder. Default path: {{hl|/Users/macuser/Library/Application Support/Steam/steamapps/common/Arma 3}}<br><!--
+-->You can locate the game folder quickly by using Steam. Press {{Controls|RMB}} on {{arma3}} → Manage → Browse local files
+# Copy (or {{Link|https://en.wikipedia.org/wiki/Symbolic_link|symlink}}) the mod folder inside the game folder (in our example: 450814997)<!--
+-->It is recommended to rename the copied folder to a simpler name (example: mod1)<!--
+-->{{Feature|important|'''Do not''' place it in Addons folder!}}
+# Open Steam and go to {{arma3}} properties once again.
+# Find {{hl|Launch Options}} in the General tab and enter: {{hl|-mod{{=}}<directoryNameOrFullPath>}} (separate multiple mods by a semi-colon {{hl|<nowiki>;</nowiki>}})
+#* Example 1: {{hl|-mod{{=}}mod1;mod2}}
+#* Example 2: {{hl|-mod{{=}}C:/Users/macuser/Desktop/mod1}}
+# Close the properties and launch the game; the game should launch with the mod(s) loaded.
+
+=== Terminal ===
+
+# Open the Terminal.
+# Write the following command: <syntaxhighlight lang="bash" inline>open -a Arma3 --args -mod=<directoryName or directoryFullPath> -p default -no-remote</syntaxhighlight>
+#* Example 1: <syntaxhighlight lang="bash" inline>open -a Arma3 --args -mod=rhs -p default -no-remote</syntaxhighlight>
+#* Example 2: <syntaxhighlight lang="bash" inline>open -a Arma3 --args -mod=C:/Users/macuser/Desktop/rhs -p default -no-remote</syntaxhighlight>
+# Press Enter to confirm the command.
+# Press OK on the dialog that appeared; the game should launch with the selected mod(s) loaded.
+
+=== Apple Script Editor ===
+
+# Open Script Editor.
+# Write command: <syntaxhighlight lang="bash" inline>do shell script "open -a Arma3 --args -mod=<directoryName or directoryFullPath> -p default -no-remote"</syntaxhighlight>
+#* Example 1: <syntaxhighlight lang="bash" inline>do shell script "open -a Arma3 --args -mod=rhs -p default -no-remote"</syntaxhighlight>
+#* Example 2: <syntaxhighlight lang="bash" inline>do shell script "open -a Arma3 --args -mod=C:/Users/macuser/Desktop/rhs -p default -no-remote"</syntaxhighlight>
+# Go to File → Export.
+# Name the file and choose where it will be created (e.g the desktop) - change the File Format to '''Application''' and click '''Save'''.
+# The new custom-made Application should have now been created - close the Script Editor and open the created Application.
+# Hit OK on the dialog that appeared; the game should launch with the mod(s) loaded.
+
+
+== DLCs and CDLCs ==
+
+Here is a useful list of startup parameters to quickly access (C)DLCs:
+{| class="wikitable" style="min-width: 30em"
+! DLC
+! Command Line
+|-
+| {{Link|Arma 3 Contact}}
+| {{hl|1= -mod=contact}}
+|-
+! CDLC
+! Command Line
+|-
+| {{Link|Global Mobilization}}
+| {{hl|1= -mod=gm}}
+|-
+| {{Link|S.O.G. Prairie Fire}}
+| {{hl|1= -mod=vn}}
+|-
+| {{Link|CSLA Iron Curtain}}
+| {{hl|1= -mod=csla}}
+|-
+| {{Link|Western Sahara}}
+| {{hl|1= -mod=ws}}
+|-
+| {{Link|Spearhead 1944}}
+| {{hl|1= -mod=spe}}
+|-
+| {{Link|Reaction Forces}}
+| {{hl|1= -mod=rf}}
+|-
+| {{Link|Expeditionary Forces}}
+| {{hl|1= -mod=ef}}
+|}
+
+
+== Dedicated Server ==
+
+# Run the Steam client (if you do not start the normal game first, it will not let you launch after the Dedicated Server is on).
+# Run {{arma3}} and wait for the game to get to the main menu.
+# Run Terminal.
+# Change the current directory to the path where the '''Arma3.app''' is - e.g. <syntaxhighlight lang="bash" inline>cd ~/Library/Application\ Support/Steam/SteamApps/common/Arma\ 3/</syntaxhighlight>.
+# Run the Dedicated Server by command: <syntaxhighlight lang="bash" inline>./Arma3.app/Contents/MacOS/Arma3 --args -server -config=Server.cfg</syntaxhighlight>.
+
+
+== Cross-Platform Windows Compatibility ==
+
+For now, the version of the Mac ports and primary Windows version should be compatible, at least until further Windows version updates.
+When that happens, players on the Windows platform wishing to keep playing with players on the ports version must use the ''legacyports'' beta branch, as described below.
+
+How to revert back to the compatible branch on Windows (not currently necessary):
+# Open the ''Properties...'' of {{arma3}} in the Steam library
+# Open the ''Betas'' tab
+# Enter access code: ''Arma3LegacyPorts''. This should unlock ''legacyports - Legacy Build (2.20 - ports)''
+# Download and play together.
+
+
+{{GameCategory|arma3|Tutorials}}

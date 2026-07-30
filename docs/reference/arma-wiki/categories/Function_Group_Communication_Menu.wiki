@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Communication_Menu
+// revision: 376530 (2025-10-25T11:37:26Z)
+// export sha1: 3chcgq4wchwivek9su27j72jbmfihp8
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions related to the [[Arma 3: Communication Menu|communication menu]].
+
+[[Category:Functions by Functionality]]

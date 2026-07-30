@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sortAlphabetically
+// revision: 348643 (2023-11-08T13:48:23Z)
+// export sha1: 6q76xvlrj3ks93z7regk789opffa64v
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Arrays | Category:Function Group: Strings | Category:Functions | Category:Introduced with Arma 3 version 1.10 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.10
+
+|gr1= Arrays
+
+|gr2= Strings
+
+|descr= Alphabetically sort an array of strings without modifying the original. See also [[sort]].
+
+|s1= arrayOfStrings call [[BIS_fnc_sortAlphabetically]]
+
+|p1= arrayOfStrings: [[Array]] of [[String]]s
+
+|r1= [[Array]] of [[String]]s sorted alphabetically.
+
+|x1= <sqf>private _sortedNames = ["John", "Jane", "Julia", "Geronimo"] call BIS_fnc_sortAlphabetically; // will return ["Geronimo", "Jane", "John", "Julia"]</sqf>
+
+|seealso= [[BIS_fnc_sortBy]] [[BIS_fnc_sortNum]] [[sort]]
+}}

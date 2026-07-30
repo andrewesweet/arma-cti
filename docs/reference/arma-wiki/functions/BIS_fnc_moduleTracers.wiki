@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleTracers
+// revision: 327222 (2022-07-12T22:11:46Z)
+// export sha1: 4nl7a9hasja03sals2xo3i0ijvswtsd
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|descr= Function used by the Tracers [[Arma_3:_Editor_Modules|module]].
+
+|s1= [logic, activated] call [[BIS_fnc_moduleTracers]]
+
+|p1= logic: [[Object]] - a logic, but can be any object
+
+|p2= activated: [[Boolean]] - [[true]] to activate
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[myLogic, true] call BIS_fnc_moduleTracers;</sqf>
+
+|seealso= [[Arma_3:_Editor_Modules|Modules]]
+}}

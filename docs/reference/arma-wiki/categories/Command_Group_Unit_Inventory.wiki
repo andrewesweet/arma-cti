@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Unit_Inventory
+// revision: 341562 (2023-06-09T13:39:45Z)
+// export sha1: og25c09xu8u5xf3wt3eerz85j6nhmch
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands related to an unit's inventory.
+
+See also:
+* [[:Category:Command_Group: Vehicle Inventory|Vehicle Inventory]]
+* [[:Category:Command_Group: Containers|Containers]]
+
+[[Category:Scripting Commands by Functionality]]

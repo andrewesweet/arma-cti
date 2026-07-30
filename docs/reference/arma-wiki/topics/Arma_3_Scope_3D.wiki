@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Scope_3D
+// revision: 255746 (2021-04-24T18:47:43Z)
+// export sha1: i78dg68e7zqai52ar8j3e7lxk0odjjd
+// categories: Category:Arma 3: Weapon & Magazine Configuration | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|Weapon & Magazine Configuration}}
+{{Wiki|stub}}
+__ToC__
+
+This page will show you how to make a 3D scope, step by step.
+
+== The black tunnel ==
+[[File:arma3_scope3d_01.jpg|700px]]
+
+Cut a black tunnel through the LOD ''ViewPilot'', so it is see-through from aiming point of view. (''Take advantage of one-sided polygons'')
+
+If the shape is unsuitable, don't be afraid to deform it - it will be visible only from 1st person, so it might not look so apparent.
+
+== Alpha planes ==
+Add inside alpha planes, as described on the picture:
+
+[[File:arma3_scope3d_02.jpg|350px]]
+
+* Front scope shadow
+* Scope reticle
+* Rear scope shadow
+* Fake lens (Optional, eyepiece glass, decorative only)
+* Holosight reticle
+* Holosight glass (Optional, decorative only)
+
+== Sort alpha == 
+*Select the alpha element that is supposed to be furthest from the eye, then pick Faces - Move top,
+*Select the next alpha element and repeat,
+*Do this for all alphas until you have all in proper succession, from top to bottom ''(above image)'': holosight glass, fake lens, rear shadow, holo reticle, scope reticle, front shadow.
+
+== Assign respective textures and materials to alpha planes == 
+Look on example package for specifics and more detailed materials and textures setup.
+
+The parallax effect of the holosight and the scope elements is activated inside .RVMAT (material). When you assign such material to a model, it will start working automatically.
+* For regular parallax effect, the .rvmat must include an entry ''uvSource="texCollimator";''
+* For inverted parallax effect, the .rvmat must include an entry ''uvSource="texCollimatorInv";''
+
+== Troubleshooting ==
+If an error saying "collimator is probably not planar" is shown by the game, it means the active planes must be moved closer together in X axis and make their unwraps similar texel and size.
+
+If you see light blue inside of the scope, alpha are incorrectly sorted, double check the step "Sort alpha".
+
+If you see white inside scope, it means that at least a texture is missing.
+
+There can be an issue in the game where your entire attachement will turn blue at certain ranges or view angles. This may have to do with a lack of resolution LOD, but this is not entirely certain. Make sure that you have up to 6 or 7 resolution LOD, as this seemed to have fixed it. This can also happen to other attachements (e.g. Bipods)

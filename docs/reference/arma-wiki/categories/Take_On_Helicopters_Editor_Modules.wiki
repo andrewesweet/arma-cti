@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/Category:Take_On_Helicopters:_Editor_Modules
+// revision: 64903 (2011-10-24T07:53:36Z)
+// export sha1: qsfeh20fi07i36z09gbwst4jhdux44v
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Take On Helicopters: Editing]]
+List of official editor modules in Take On Helicopters.
+
+== Placing Modules ==
+In editor:
+# Activate modules mode by pressing F7 or clicking on following icon: [[File:icon editor module.png|32px]]
+# Double-click on map to place a module.

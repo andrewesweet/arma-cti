@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/sideEnemy
+// revision: 369191 (2024-09-03T10:34:47Z)
+// export sha1: mtus03adqyitaljm36obw5x2p3ow7xj
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Operation Flashpoint version 1.78 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.78
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Sides
+
+|descr= The enemy [[Side|side]] which is used for renegades. Units of this side are hostile to everyone.
+* To join [[sideEnemy]], you can attack members of your own side or use [[addRating]].
+* When below a [[rating]] of -2000 units switch automatically to this side.
+
+|s1= [[sideEnemy]]
+
+|r1= [[Side]]
+
+|x1= <sqf>
+if (side player == sideEnemy) then
+{
+	hint "We've got a renegade!";
+};
+</sqf>
+
+|seealso= [[addRating]] [[rating]] [[Side]] [[side]] [[west]] [[east]] [[resistance]] [[civilian]] [[sideLogic]] [[sideFriendly]] [[sideUnknown]] [[playerSide]] [[sideEmpty]] [[sideAmbientLife]] [[Side Relations]]
+}}

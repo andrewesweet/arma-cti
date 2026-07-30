@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/currentChannel
+// revision: 376817 (2025-11-21T20:34:59Z)
+// export sha1: ejayx6hiz6azjuqqyaho7qbmzsos8gw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Radio and Chat
+
+|descr= Returns currently selected user chat channel on the UI (selected with {{Controls|<}} and {{Controls|>}} in multiplayer).
+{{{!}} class="wikitable align-center"
+! colspan="13" {{!}} [[Channel IDs|channel ID]] number correspondence
+{{!}}-
+{{!}} {{n/a}}
+{{!}} Global
+{{!}} Side
+{{!}} Command
+{{!}} Group
+{{!}} Vehicle
+{{!}} Direct
+{{!}} Custom1
+{{!}} rowspan="2" {{!}} ..
+{{!}} Custom10
+{{!}} {{GVI|arma3|2.22|size= 0.75}} Custom11
+{{!}} rowspan="2" {{!}} ..
+{{!}} Custom50
+{{!}}-
+{{!}} -1
+{{!}} 0
+{{!}} 1
+{{!}} 2
+{{!}} 3
+{{!}} 4
+{{!}} 5
+{{!}} 6
+{{!}} 15
+{{!}} 26
+{{!}} 65
+{{!}}}
+
+For Custom Radio, see [[radioChannelCreate]].
+
+|s1= [[currentChannel]]
+
+|r1= [[Number]] - channel ID (see [[BIS_fnc_channelNumToRadioChannelID]], [[BIS_fnc_radioChannelIDToChannelNum]])
+
+|x1= <sqf>_selected = currentChannel; // 3 for the Group channel</sqf>
+
+|seealso= [[setCurrentChannel]] [[getPlayerChannel]] [[enableChannel]] [[channelEnabled]] [[radioChannelCreate]]
+}}

@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/binocular
+// revision: 318568 (2022-05-13T09:21:07Z)
+// export sha1: 35dkcwcg1a9vb0yu7gynl0ypodcvnps
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+
+|gr1= Unit Inventory
+
+|descr= Returns class name of currently used binocular weapon.
+
+|s1= [[binocular]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[String]]
+
+|x1= <sqf>_binocs = binocular player; //Rangefinder</sqf>
+ 
+
+|seealso= [[binocularMagazine]] [[binocularItems]] [[addBinocularItem]] [[removeBinocularItem]] [[removeAllBinocularItems]] [[headgear]] [[goggles]] [[hmd]]
+}}

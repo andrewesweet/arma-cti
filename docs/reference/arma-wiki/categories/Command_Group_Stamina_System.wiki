@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Stamina_System
+// revision: 254185 (2021-04-07T18:46:34Z)
+// export sha1: 3e062h4763gwinxa0my7m0dji0gmf1l
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands related to units stamina and fatigue. See [[Arma 3: Stamina]].
+
+[[Category:Scripting Commands by Functionality]]

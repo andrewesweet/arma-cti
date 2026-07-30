@@ -1,0 +1,14 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Editing
+// revision: 227132 (2021-01-31T18:53:06Z)
+// export sha1: 0yb8joc0qqsmgpfefwy0uxdtiklahbo
+// Vendored snapshot. Do not edit — re-export instead.
+
+Mission editing for Operation Flashpoint can be both a frustrating and rewarding experience: frustrating in that so much detail can be included in a mission that it can become overwhelming, and rewarding in that when a mission is completed and released to the community a real sense of creative achievement is felt.
+
+There are various ways to approach mission editing depending on what kind of experience you wish to create. A five minute frag-fest is very quick and easy to build, but an intricate thriller with twists and turns will require more thought and planning, and probably scripts.
+
+Scripts are sets of instructions which you write yourself and save as an external file which the mission references. You can write scripts to equip soldiers and vehicles, scripts to control alarm systems, scripts to create an atomic mushroom cloud - the list goes on. All that is required is a knowledge of the {{ofp}} commands and some general scripting principles like variables and loops. It is generally agreed within the community that if you want to build anything more than a basic mission, you'll need a few scripts.
+
+That said, the mission editor offers quite enough complexity to create a compelling experience. If you are new to {{ofp}}, start by becoming familiar with the [[Mission_Editor_User_Interface_%28OFP%29 | mission editor interface]], and take it from there.
+
+{{GameCategory|ofp}}

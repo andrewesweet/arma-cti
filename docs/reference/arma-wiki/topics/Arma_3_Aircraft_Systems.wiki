@@ -1,0 +1,110 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Aircraft_Systems
+// revision: 376390 (2025-10-09T19:49:49Z)
+// export sha1: tsvo77xcryzg03pst2krzdap57ubf3w
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 1.68
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GVI|arma3|1.68}}
+
+[[Arma 3 Jets]] DLC comes with a varity of new functionalities such as:
+* Starting off an aircraft carrier via catapult
+* Landing on an aircraft carrier via tailhook
+* Foldable wings for aircrafts
+* Boat recovery
+This page will give an overview of the needed config additions.
+
+
+== Aircraft Configuration ==
+
+=== Requirements ===
+
+* Compatible aircraft must have an animation for arrest/tail hook selection defined in CfgVehicles and modeled in 3D model (model.cfg)
+* Compatible aircraft must have a memory point for cable attach position
+
+=== CarrierOpsCompatability Sub-Class ===
+
+This class contains all the definitions needed for the catapult and tailhook functionality to work.
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class B_Plane_Fighter_01_F
+	{
+		tailHook = true;																		// Allow to land on carrier
+
+		class CarrierOpsCompatability
+		{
+			ArrestHookAnimationList[] = { "tailhook", "tailhook_door_l", "tailhook_door_r" };	// List of animation played to animate tailhook. Defined in model.cfg (type user)
+			ArrestHookAnimationStates[] = { 0, 0.53, 1 };										// Tailhook animation states when down, hooked, up.
+			ArrestHookMemoryPoint = "pos_tailhook";												// TailHook memory point in plane model.p3d
+			ArrestMaxAllowedSpeed = 275;														// Max speed km/h allowed for successful landing
+			ArrestSlowDownStep = 0.8;															// Simulation step for calcualting how smooth plane will be slowed down.
+			ArrestVelocityReduction = -12;														// Speed reduced per simulation step
+			LaunchVelocity = 300;																// Speed required for take off
+			LaunchVelocityIncrease = 10;														// Speed increased per simulation step
+			LaunchAccelerationStep = 0.001;														// Simulation step for calcualting how smooth plane will launched from carrier catapult.
+			LaunchBarMemoryPoint = "pos_gear_f_hook";											// LaunchBar memory point
+		};
+	};
+};
+</syntaxhighlight>
+
+=== AircraftAutomatedSystems Sub-Class ===
+
+This class contains all definitions needed for the foldable wings to work.
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class B_Plane_Fighter_01_F
+	{
+		class AircraftAutomatedSystems
+		{
+			wingStateControl = 1;				// enable automated wing state control to prevent player to take off with folded wings
+			wingFoldAnimations[] = { "wing_fold_l", "wing_fold_r", "wing_fold_cover_l", "wing_fold_cover_r" };		// foldable wing animation list
+			wingStateFolded = 1;				// animation state when folded
+			wingStateUnFolded = 0;				// animation state when un-folded
+			wingAutoUnFoldSpeed = 40;			// speed threshold when triger this feature, and unfold wings for player
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== Aircraft Carrier Configuration ==
+
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class Land_Carrier_01_base_F
+	{
+		// Defines all the parts the carrier is build out of
+		multiStructureParts[] = {
+			{ "Land_Carrier_01_hull_01_F", "pos_hull_1" },
+			{ "Land_Carrier_01_hull_02_F", "pos_hull_2" },
+			{ "Land_Carrier_01_hull_03_1_F", "pos_hull_3_1" }, { "Land_Carrier_01_hull_03_2_F", "pos_hull_3_2" },
+			{ "Land_Carrier_01_hull_04_1_F", "pos_hull_4_1" }, { "Land_Carrier_01_hull_04_2_F", "pos_hull_4_2" },
+			{ "Land_Carrier_01_hull_05_1_F", "pos_hull_5_1" }, { "Land_Carrier_01_hull_05_2_F", "pos_hull_5_2" },
+			{ "Land_Carrier_01_hull_06_1_F", "pos_hull_6_1" }, { "Land_Carrier_01_hull_06_2_F", "pos_hull_6_2" },
+			{ "Land_Carrier_01_hull_07_1_F", "pos_hull_7_1" }, { "Land_Carrier_01_hull_07_2_F", "pos_hull_7_2" },
+			{ "Land_Carrier_01_hull_08_1_F", "pos_hull_8_1" }, { "Land_Carrier_01_hull_08_2_F", "pos_hull_8_2" },
+			{ "Land_Carrier_01_hull_09_1_F", "pos_hull_9_1" }, { "Land_Carrier_01_hull_09_2_F", "pos_hull_9_2" },
+			{ "Land_Carrier_01_island_01_F", "pos_island_1" }, { "Land_Carrier_01_island_02_F", "pos_island_2" },
+			{ "Land_Carrier_01_island_03_F", "pos_island_3" },
+			{ "DynamicAirport_01_F", "pos_Airport" }
+		};
+
+		class Eventhandlers
+		{
+			init = "_this call BIS_fnc_Carrier01Init;";								// Initialises the carrier's functionality
+			attributesChanged3DEN = "_this call BIS_fnc_Carrier01PosUpdate;";		// Handles position changes when attributes are changed in Eden Editor
+			dragged3DEN = "_this call BIS_fnc_Carrier01PosUpdate;";					// Handles position changes when attributes are changed in Eden Editor
+			registeredToWorld3DEN = "_this call BIS_fnc_Carrier01EdenInit;";		// Initialises the carrier's functionality when it's created in Eden Editor
+			unregisteredFromWorld3DEN = "_this call BIS_fnc_Carrier01EdenDelete;";	// Handles deletion of all parts when its deleted in Eden Editor
+		};
+	};
+};
+</syntaxhighlight>
+
+
+[[Category: Introduced with Arma 3 version 1.68]] 
+{{GameCategory|arma3|Editing}}

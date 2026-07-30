@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Village_Pump_(miscellaneous)
+// revision: 115057 (2019-01-01T23:32:30Z)
+// export sha1: lk2fmooysouc0w9csdxj1q8weeai80j
+// categories: Category:Village Pump
+// Vendored snapshot. Do not edit — re-export instead.
+
+<noinclude>''Everything else that doesn't fit into the other categories...''</noinclude>
+<noinclude>{{villagepumpmenu}}</noinclude>
+[[Category:Village Pump]]

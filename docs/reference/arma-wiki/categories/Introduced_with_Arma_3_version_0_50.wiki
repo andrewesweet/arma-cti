@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_0.50
+// revision: 84879 (2014-10-02T00:41:33Z)
+// export sha1: 19ig1m3o3t74ehrkes4i5na8vznco8a
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with Arma 3 version 0.50 may be recognised by the appearance of this icon: {{GVI|arma3|0.50}}
+Release date: March 5, 2013<br>
+[[Category:Introduced with Arma 3|0.50]]

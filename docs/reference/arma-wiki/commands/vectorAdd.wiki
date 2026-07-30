@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/vectorAdd
+// revision: 378392 (2026-04-04T07:53:40Z)
+// export sha1: nen4anr207g74tqhak2xgrx6ehuiova
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr2= Math - Vectors
+
+|descr= Adds two arrays of numbers. Replaces [[BIS_fnc_vectorAdd]].<br>
+{{Feature|GVI|arma3|2.14|Since {{GVI|arma3|2.14|size= 0.75}} any count of numbers is valid, if one array is larger than the other, the remaining elements are inserted without change.<br>
+Before {{GVI|arma3|2.14|size= 0.75}}, the first argument had to be vector 3D, or {{GVI|arma3|2.00|size= 0.75}} 2D (Which still returned 3D result, with z coordinate defaulted to 0)}} 
+
+|s1= vector1 [[vectorAdd]] vector2
+
+|p1= vector1: [[Array]] of [[Number]]s - can be any size
+
+|p2= vector2: [[Array]] of [[Number]]s - can be any size
+
+|r1= [[Array]] of [[Number]]s
+
+|x1= <sqf>hint str (velocity unit1 vectorAdd velocity unit2);</sqf>
+
+|x2= <sqf>[5, 10, 5] vectorAdd [5, 5, 10];			// returns [10, 15, 15]</sqf>
+
+|x3= <sqf>[0, 0] vectorAdd [1, -2];					// returns [1, -2]</sqf>
+
+|x4= <sqf>[1, 2, 3, 4, 5, 6] vectorAdd [10, 10, 10];	// returns [11, 12, 13, 4, 5, 6]</sqf>
+
+|x5= <sqf>
+[1, 2, 3] vectorAdd [1, 2, 3];	// [2, 4, 6]
+[1, 2, 3] vectorAdd [1, 2];		// [2, 4, 3]
+[1, 2] vectorAdd [1, 2, 3];		// [2, 4, 3]
+[1, 2] vectorAdd [1, 2];		// [2, 4]
+</sqf>
+
+|seealso= [[vectorDiff]] [[vectorCrossProduct]] [[vectorDotProduct]] [[vectorCos]] [[vectorMagnitude]] [[vectorMagnitudeSqr]] [[vectorMultiply]] [[vectorDistance]] [[vectorDistanceSqr]] [[vectorDir]] [[vectorUp]] [[setVectorDir]] [[setVectorUp]] [[setVectorDirAndUp]] [[matrixMultiply]] [[matrixTranspose]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20231102174030
+|text= <sqf>
+// between {{GVI|arma3|2.00|size= 0.75}} and {{GVI|arma3|2.14|size= 0.75}}:
+[1, 2] vectorAdd [1, 2]; // [2, 4, 0]
+</sqf>
+}}

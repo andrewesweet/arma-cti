@@ -1,0 +1,107 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Debriefing
+// revision: 363304 (2024-03-26T11:24:22Z)
+// export sha1: bzahan8xgsrshhf3mnhplsqpuwso9bw
+// categories: Category:Mission Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{arma3}} introduces new debriefing screen style. It completely replaces the old [[Briefing.html]] system which is no longer supported.
+
+<gallery mode="packed-hover" heights="200px">
+File:A3_closingShot.jpg|Closing Shot
+File:A3_debriefing.jpg|Debriefing - Summary
+File:A3_debriefing_stats.jpg|Debriefing - Statistics
+</gallery>
+
+
+== Execution ==
+
+'''Mission debriefing''' is displayed automatically upon mission end, unless the [[Description.ext#debriefing|debriefing]] entry is set to 0 in ''[[Description.ext]]''.
+
+In order to show a '''closing shot''', you have to use [[BIS_fnc_endMission]] / [[BIS_fnc_endMissionServer]] instead of calling scripting commands [[endMission]] / [[failMission]] directly:
+<sqf>
+// Singleplayer / client-side
+"end1" call BIS_fnc_endMission;
+</sqf>
+<sqf>
+// Multiplayer / server-side
+["end1"] remoteExec ["BIS_fnc_endMission"];	// post {{arma3}} v1.50
+ "end1"  call BIS_fnc_endMissionServer;		// pre  {{arma3}} v1.50
+</sqf>
+
+
+== Configuration ==
+
+=== Debriefing ===
+
+'''config.cpp''' or '''description.ext''':
+<syntaxhighlight lang="cpp">
+class CfgDebriefing
+{
+	class End1
+	{
+		title = "Mission Completed";
+		subtitle = "";
+		description = "You successfully rescued our forces and neutralized the spotters, despite being forced to retreat.";
+		pictureBackground = "";
+		picture = "b_inf";
+		pictureColor[] = { 0.0, 0.3, 0.6, 1 };
+	};
+};
+</syntaxhighlight>
+
+Most of the params are shared both by the closing shot and by debriefing screen, see a table below:
+
+* '''title''': Ending main title. Default text (MISSION ACCOMPLISHED or MISSION FAILED, based on the ending type) is displayed when the param is missing.
+* '''subtitle''': Ending subtitle, further explaining the ending. Optional, no subtitle is displayed when the param is missing.
+* '''description''': Detailed description of the ending. Not available in closing shot. Optional, no description is displayed when the param is missing.
+* '''pictureBackground''': 2:1 picture displayed in the background. When undefined, [[Description.ext#loadScreen|loading screen]] is used instead (can be disabled by defining as empty string).
+* '''picture''': 1:1 icon, used mainly in multiplayer missions. Optional, no picture is displayed when the param is missing. Can be either link to a texture, or CfgMarkers class.
+* '''pictureColor''': Picture color. Optional, white is used when the param is missing.
+
+=== Disabling ===
+
+In order to disable the debriefing completely, use following param:
+<syntaxhighlight lang="cpp">
+debriefing = 0;
+</syntaxhighlight>
+Default value is 1 (enabled). Debriefing cannot be disabled in multiplayer.
+
+=== Default Lose Debriefing ===
+
+In order to change the default loss debriefing (used when all players on one side have died in multiplayer, for example), you can override loser class:
+
+<syntaxhighlight lang="cpp">
+class CfgDebriefing
+{
+	class loser
+	{
+		title = "You all died!";
+		subtitle = "";
+		description = "Everyone is dead.";
+		pictureBackground = "";
+		picture = "KIA";
+		pictureColor[] = { 0.6, 0.1, 0.2, 1 };
+	};
+};
+</syntaxhighlight>
+
+=== Custom Sections ===
+
+'''description.ext''':
+<syntaxhighlight lang="cpp">
+class CfgDebriefingSections
+{
+	class Loot
+	{
+		title = "Collected weapons";
+		variable = "BIS_loot";
+	};
+};
+</syntaxhighlight>
+
+* '''title''': Section title displayed in horizontal listbox
+* '''variable''': [[missionNamespace]] variable containing string to be shown. It will be parsed and displayed as [[Structured Text|structured text]]. When empty, section won't be visible at all.
+
+
+[[Category:Mission Editing]]

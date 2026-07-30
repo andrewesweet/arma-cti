@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Entity_Tools
+// revision: 170246 (2020-12-05T14:34:18Z)
+// export sha1: 5sdslek2ws1ao4sycjmhiudghzr6bp0
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Ylands]]

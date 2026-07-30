@@ -1,0 +1,112 @@
+// source: https://community.bistudio.com/wiki/Template:ConfigPage
+// revision: 373264 (2025-04-12T22:33:17Z)
+// export sha1: rf3o2sylrq4ueub2r9fd1jy554mswjq
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#switch:{{lc:{{{1}}}}}
+|start= {{#if:{{{notoc|}}}||{{TOC|side|1||nonum}}}}
+<div class="cfg_reference"{{#if:{{{notoc|}}}|<nowiki/> style="width: auto"}}>
+{{#switch:{{PAGENAME}}
+	|CfgMoves Config Reference
+	|CfgVehicles Config Reference
+	|CfgWeapons Config Reference
+	|CfgMagazines Config Reference
+	|CfgAmmo Config Reference= {{TopMenu|[[CfgMoves Config Reference]] {{#ifeq:{{PAGENAME}}|CfgMoves Config Reference|[[Arma 3: CfgMovesFatigue]]}} [[CfgVehicles Config Reference]] [[CfgWeapons Config Reference]] [[CfgMagazines Config Reference]] [[CfgAmmo Config Reference]]}}
+}}
+|abc= <div class="abc">
+|end= </div></div>
+|#default= <div>Wrong {{Template|ConfigPage}} template usage!{{#if:{{{1|}}}|<nowiki/> "{{{1}}}" is an invalid value.}}{{TemplateCase||[[Category:ConfigPage template usage error]]}}</div>
+}}</includeonly><noinclude>{{Doc/Template
+|descr= This template in three parts (all mandatory) creates and styles a config page. It automatically adds the table of contents (ToC) ''via'' {{Template|TOC}} usage.<br>
+A special {{Template|TopMenu}} is added to the following pages:
+* [[CfgMoves Config Reference]]
+* [[CfgVehicles Config Reference]]
+* [[CfgWeapons Config Reference]]
+* [[CfgMagazines Config Reference]]
+* [[CfgAmmo Config Reference]]
+|param1= type
+|descr1= (case-insensitive) can be one of:
+** start - to be placed at the very top of a Cfg page
+** abc - to be placed '''above''' the first letter:
+*** a letter index is a '''level 3''' title (e.g {{hl|c= === A ===}})
+*** an entry is a '''level 4''' title ((e.g {{hl|c= ==== Apple ====}})
+*** an entry's subtitle can be a '''level 5''' title ((e.g {{hl|c= ===== Details =====}})
+*** '''level 6''' titles are not stylised
+** end - to be placed at the bottom of the page, just above categories
+** notoc (named parameter) {{hl|1= notoc= y}} for ''start'' to avoid providing the TOC
+|example1= <pre>{{ConfigPage}}</pre>
+|result1= {{ConfigPage}}
+|example2= <pre>{{ConfigPage|test}}</pre>
+|result2= {{ConfigPage|test}}
+|example3= <pre>{{ConfigPage|start}}
+
+= Level 1 =
+
+Should not be used unless absolute necessity, e.g on a huge page where '''level 2''' are not enough.
+
+== Level 2 ==
+
+=== Level 3 ===
+
+{{ConfigPage|abc}}
+
+=== A ===
+
+==== Apple ====
+A fruit
+
+=== B ===
+
+==== Bee ====
+An insect
+
+=== C ===
+
+==== Cow ====
+A mammal
+
+===== Details =====
+But not just that
+
+====== Level 6 ======
+Not stylised.
+
+{{ConfigPage|end}}</pre>
+|result3= {{ConfigPage|start}}
+
+= Level 1 =
+
+Should not be used unless absolute necessity, e.g on a huge page where '''level 2''' are not enough.
+
+== Level 2 ==
+
+=== Level 3 ===
+
+{{ConfigPage|abc}}
+
+=== A ===
+
+==== Apple ====
+A fruit
+
+=== B ===
+
+==== Bee ====
+An insect
+
+=== C ===
+
+==== Cow ====
+A mammal
+
+===== Details =====
+But not just that
+
+====== Level 6 ======
+Not stylised.
+
+{{ConfigPage|end}}
+
+|historical= y
+}}
+</noinclude>

@@ -1,0 +1,85 @@
+// source: https://community.bistudio.com/wiki/preprocessFile
+// revision: 349792 (2023-11-20T22:10:15Z)
+// export sha1: 07jdmc68xbmclc8nuewzoj5czhitrga
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Operation Flashpoint version 1.85 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.85
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= System
+
+|descr= Reads and processes the content of the specified file. Preprocessor is C-like, supports comments using {{hl|//}} or {{hl|/*}} and {{hl|*/}} and [[PreProcessor Commands]].
+Due to the hard-drive access this command executes and the lack of caching this command should not be used in time-critical script loops.
+{{Feature|warning|If the file you are loading is not prepared using UTF-8 encoding and contains some characters [[toArray | with codes]] > 127, they might convert incorrectly.}}
+
+|s1= [[preprocessFile]] fileName
+
+|p1= fileName: [[String]] - path to the file and name of the file
+
+|r1= [[String]]
+
+|x1= <sqf>_content = preprocessFile "myFunction.sqf";</sqf>
+
+|seealso= [[fileExists]] [[preprocessFileLineNumbers]] [[loadFile]] [[Function]] [[SQF Syntax]] [[call]] [[spawn]] [[execVM]] [[PreProcessor Commands]]
+}}
+
+{{Note
+|user= Alef
+|timestamp= 20080304223500
+|text= File path is always relative to mission directory. If script dir\a.sqf includes dir\b.sqf, use "dir\b.sqf" and not "b.sqf".
+}}
+
+{{Note
+|user= Kju
+|timestamp= 20110708105900
+|text= Use [[preprocessFileLineNumbers]] instead as it provides more context information on error.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20131217134400
+|text= [[File:PreprocessFile.jpg|right]]The main difference between [[preprocessFile]] and [[preprocessFileLineNumbers]] is that the latter adds #line directive to the target file, which allows to log the {{hl|__LINE__}} error happened at and the {{hl|__FILE__}} error happened in.
+}}
+
+{{Note
+|user= BrotherhoodOfHam
+|timestamp= 20140725184300
+|text= Essentially what the preprocessFile command does is it refers to the contents of a file as a string:<br>
+Example 1:<br>
+boop.html:
+<syntaxhighlight lang="html"><t align = 'center' valign = 'middle' shadow = '0' size = '2'>structured text</t></syntaxhighlight>
+init.sqf:
+<sqf>
+_text = parseText preprocessFile "boop.html";
+hint _text;
+</sqf>
+This is especially useful for long strings, and it works on files with any file extension as long as they can be edited with a text editor.<br>
+Example 2:<br>
+init.sqf:
+<sqf>
+hint preprocessFile "description.ext";
+copyToClipboard preprocessFile "mission.sqm";
+</sqf>
+The above is all valid. However, using *.jpg or any other files saved in an image format is not possible.
+}}

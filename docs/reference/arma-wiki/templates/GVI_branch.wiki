@@ -1,0 +1,90 @@
+// source: https://community.bistudio.com/wiki/Template:GVI/branch
+// revision: 295909 (2021-11-16T09:33:35Z)
+// export sha1: ebc4fhkdctibnder8p8a8lbo25eoy1j
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#switch:{{Name|{{{1}}}|img}}
+|arma3={{#ifeq:{{lc:{{{2|1}}}}}|dev|dev
+	|{{#ifeq:{{lc:{{{2|1}}}}}|diag|diag
+		|{{#ifexpr:{{{2|1}}} < 0.7|alpha
+			|{{#ifexpr:{{{2|1}}} < 1.0|beta
+				|release
+			}}
+		}}
+	}}
+}}
+|arma={{#ifeq:{{{2|1}}}|?|unknown|}}}}</includeonly><noinclude>
+Template [[Template:GVI/branch|GVI/branch]] stands for '''G'''ame '''V'''ersion '''I'''nformation: '''branch'''.
+{{Feature | Informative |
+* {{Template|GVI}} uses this template.
+* This template defines {{Template|GVI}} '''CSS styles''' (GVI frame colours, with &lt;span style{{=}}"''value''"&gt;), and '''icons''' such as [[File:arma3_beta_version.gif]] or [[File:arma_unknown_version.gif]] (versus [[File:arma_version.gif]]).
+* Only {{hl|arma}} and {{hl|arma3}} games are supported.
+}}
+
+== Usage ==
+{{<nowiki/>GVI/branch|'''''game'''''|'''''version'''''}}
+* game: in the [[Template:GVI]] format, e.g arma3, ofp, tkoh etc.
+* version: (Optional, default {{hl|1}}) game version in format '''<Major>.<Minor>''', e.g 1.00, 1.86 etc.
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{GVI/branch}}</nowiki>
+| {{GVI/branch}}
+|-
+| <nowiki>{{GVI/branch|arma}}</nowiki>
+| {{GVI/branch|arma}}
+|-
+| <nowiki>{{GVI/branch|arma1|?}}</nowiki>
+| {{GVI/branch|arma1|?}}
+|-
+| <nowiki>{{GVI/branch|arma1|0.75}}</nowiki>
+| {{GVI/branch|arma1|0.75}}
+|-
+| <nowiki>{{GVI/branch|arma2|?}}</nowiki>
+| {{GVI/branch|arma2|?}}
+|-
+| <nowiki>{{GVI/branch|arma2|0.50}}</nowiki>
+| {{GVI/branch|arma2|0.50}}
+|-
+| <nowiki>{{GVI/branch|arma2|1.00}}</nowiki>
+| {{GVI/branch|arma2|1.00}}
+|-
+| <nowiki>{{GVI/branch|arma3}}</nowiki>
+| {{GVI/branch|arma3}}
+|-
+| <nowiki>{{GVI/branch|arma3|0.00}}</nowiki>
+| {{GVI/branch|arma3|0.00}}
+|-
+| <nowiki>{{GVI/branch|arma3|0.25}}</nowiki>
+| {{GVI/branch|arma3|0.25}}
+|-
+| <nowiki>{{GVI/branch|arma3|0.50}}</nowiki>
+| {{GVI/branch|arma3|0.50}}
+|-
+| <nowiki>{{GVI/branch|arma3|0.74}}</nowiki>
+| {{GVI/branch|arma3|0.74}}
+|-
+| <nowiki>{{GVI/branch|arma3|0.75}}</nowiki>
+| {{GVI/branch|arma3|0.75}}
+|-
+| <nowiki>{{GVI/branch|arma3|0.99}}</nowiki>
+| {{GVI/branch|arma3|0.99}}
+|-
+| <nowiki>{{GVI/branch|arma3|1.00}}</nowiki>
+| {{GVI/branch|arma3|1.00}}
+|-
+| <nowiki>{{GVI/branch|arma3|4.00}}</nowiki>
+| {{GVI/branch|arma3|4.00}}
+|-
+| <nowiki>{{GVI/branch|arma3|dev}}</nowiki>
+| {{GVI/branch|arma3|dev}}
+|-
+| <nowiki>{{GVI/branch|arma3|diag}}</nowiki>
+| {{GVI/branch|arma3|diag}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

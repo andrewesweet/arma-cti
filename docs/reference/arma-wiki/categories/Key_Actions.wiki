@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Key_Actions
+// revision: 187214 (2021-01-08T13:18:13Z)
+// export sha1: e8yyylkv19zqud4879norq4kvxl65iu
+// Vendored snapshot. Do not edit — re-export instead.
+
+==List of key actions==
+
+[[Category: Reference Lists]]

@@ -1,0 +1,16 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Line:_Mask:_Line
+// revision: 201638 (2021-01-17T20:17:36Z)
+// export sha1: 6c7av5q5xvc841sklqjiyzys35gts2c
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Mask]]
+{{TerrainProcessorManual|Mask: line|BITasksPlugin.dll|Polyline, PolylineM, PolylineZ|No
+|DESCRIPTION=This algorithm removes all objects in features database which are close to given polyline.
+|TASKPARAMETERS=* '''Objects distance''' - Distance between object and lines.
+* '''Spline interpolation''' - Use Bezier spline instead of original polyline.
+|OBJECTPROTOTYPEPARAMETERS=
+|USAGE=This task removes objects closer to line according to the given distance. You can use it for removing trees on roads, ...
+|ALGORITHM=# Algorithm finds all objects closer to polyline then given distance and removes them.
+|SAMPLE=
+}}

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/addHeadgear
+// revision: 318581 (2022-05-13T09:21:08Z)
+// export sha1: 8yvigc9ndb8isatczgjm2m7odef27e9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Creates a headgear item and tries to link it to headgear slot. If slot is occupied with another item, the item in the slot will be replaced.
+
+|s1= unit [[addHeadgear]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player addHeadgear "H_HelmetB";</sqf>
+
+|seealso= [[headgear]] [[removeHeadgear]]
+}}

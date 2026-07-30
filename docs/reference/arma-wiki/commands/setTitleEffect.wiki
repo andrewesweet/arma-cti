@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/setTitleEffect
+// revision: 377582 (2026-01-02T06:56:39Z)
+// export sha1: hxexwhf9be60ui78h73njgn7jjjq5a1
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Command Group: Waypoints | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Triggers
+
+|gr2= Waypoints
+
+|descr= Defines the title effect to show on activation via [Type, Effect, Text] where
+
+'Type' 
+
+The title effect does not disappear on deactivation, this should be done manually if required.
+
+|s1= triggerOrWaypoint [[setTitleEffect]] [type, effect, text]
+
+|p1= triggerOrWaypoint: [[Object]] or [[Waypoint]]
+
+|p2= type: [[String]] - defines [[Title Effect Type]] when not NONE, can be one of:
+* "NONE"
+* "OBJECT" - ''text'' defines the shown object , a subclass of {{hl|CfgTitles}} (see [[cutObj]])
+* "RES" - ''text'' defines a resource class, a subclass of RscTitles (see [[cutRsc]])
+* "TEXT" - ''text'' defines text string to show (see [[cutText]])
+
+|p3= effect: [[String]]
+
+|p4= text: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_trigger setTitleEffect ["TEXT", "PLAIN DOWN", "Hello world."];</sqf>
+
+|seealso= [[createTrigger]] [[setSoundEffect]] [[setMusicEffect]]
+}}

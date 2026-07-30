@@ -1,0 +1,338 @@
+// source: https://community.bistudio.com/wiki/Side_Relations
+// revision: 341425 (2023-05-25T22:38:22Z)
+// export sha1: 2wqkhc1k3p03j275jh4jq8j87wgydh8
+// categories: Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|arma3|
+This page deals with all '''{{arma3}}''' sides, which has more than previous games. See the [[Side]] page to see previous titles' available sides.
+Also:
+* [[west]] {{=}} [[blufor]]
+* [[east]] {{=}} [[opfor]]
+* [[resistance]] {{=}} [[independent]]
+}}
+== Sides Relations ==
+
+{{Wiki|extractionScript}}
+
+=== Sides Friendship ===
+
+Helper function: [[BIS_fnc_sideIsFriendly]]
+
+{| class="wikitable" style="text-align: center"
+! &darr; is friendly to &rarr;
+! [[east]]
+! [[west]]
+! [[resistance]]
+! [[civilian]]
+! [[sideAmbientLife]]
+! [[sideUnknown]]
+! [[sideEnemy]]
+! [[sideFriendly]]
+! [[sideEmpty]]
+! [[sideLogic]]
+|-
+| [[east]]
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[west]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[resistance]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[civilian]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[sideAmbientLife]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[sideUnknown]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[sideEnemy]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[sideFriendly]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[sideEmpty]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[sideLogic]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|}
+
+=== Sides Enmity ===
+
+Helper function: [[BIS_fnc_sideIsEnemy]]
+
+{| class="wikitable" style="text-align: center"
+! &darr; is enemy to &rarr;
+! [[east]]
+! [[west]]
+! [[resistance]]
+! [[civilian]]
+! [[sideAmbientLife]]
+! [[sideUnknown]]
+! [[sideEnemy]]
+! [[sideFriendly]]
+! [[sideEmpty]]
+! [[sideLogic]]
+|-
+| [[east]]
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[west]]
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[resistance]]
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[civilian]]
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[sideAmbientLife]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[sideUnknown]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[sideEnemy]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[sideFriendly]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[sideEmpty]]
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|-
+| [[sideLogic]]
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+|}
+
+
+== Change Relations ==
+
+* You can set which sides [[resistance]] is friendly/enemy to in the mission editor (click on the Intel box).
+* Everyone is friendly toward [[civilian]]s. Civilians AI have a total impunity and can kill any enemy without retaliation (same as [[captive]] units).
+* You can use the [[setFriend]] command to set relations between any sides (even [[east]] and [[west]]).
+
+<sqf>
+// will make east friendly to west and vice versa
+east setFriend [west, 1];
+west setFriend [east, 1];
+</sqf>
+
+=== One Way Hostility ===
+
+Using the [[setCaptive]] command allows you to stop enemy units to fire on the target unit.
+<sqf>_soldier setCaptive true; // _soldier can shoot at enemy but enemy will not return fire</sqf>
+
+You can re-activate hostility by canceling captive status.
+<sqf>_soldier setCaptive false; // _soldier will be shot at again by enemy units</sqf>
+
+=== Two Way Hostility With Civilians ===
+
+To make a civilian a potential target to other sides, you can either:
+* make the civilian a renegade by using the [[addRating]] command. This will make him a [[sideEnemy|renegade]], meaning an enemy to everyone including other civilians.
+<sqf>_civilian addRating -10000; // this will cause sides to shoot civilian, but not civilian to shoot back - for that, use setFriend</sqf>
+
+{{Feature|informative|The [[sideEnemy|renegade]] rating threshold is ''below'' -2000 (e.g -2001, -5000 etc).}}
+
+* make the civilian [[join]] an enemy group, e.g [[east]]:<sqf>
+private _eastGroup = createGroup east;
+[_civilian] joinSilent _eastGroup;
+</sqf>
+
+=== Set in the Editor ===
+
+# Group your civilians with an [[east]] leader
+# Delete the [[east]] leader on mission load:
+#* Put <sqf inline>deleteVehicle this</sqf> in the officer's initialisation field.
+#* Alternatively, set the '''[[Eden Editor: System#Attributes|probability of presence]]''' slider of the officer to '''zero'''.
+# On mission start, the [[east]] leader will not be here but the [[civilian]]s will be on the [[east]] side.
+
+
+[[Category: Scripting Topics]]

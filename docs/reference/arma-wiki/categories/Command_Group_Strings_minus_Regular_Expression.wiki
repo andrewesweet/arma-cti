@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Strings_-_Regular_Expression
+// revision: 290187 (2021-07-13T21:16:54Z)
+// export sha1: nywc21s1sm4jzrz878dphvnmaufzqyc
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands related to [[Arma 3: Regular Expressions|regular expressions]]. {{arma3}} only!
+
+
+[[Category:Command Group: Strings]]

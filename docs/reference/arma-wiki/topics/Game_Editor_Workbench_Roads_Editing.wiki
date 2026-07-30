@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/Game_Editor_(Workbench)_Roads_Editing
+// revision: 156829 (2020-09-07T16:08:44Z)
+// export sha1: 72tpy292y9beb0ba82sef81wmpc49zf
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Terrain Roads Editing =
+For now the tool can just edit heightmap, it has no influence on AI, it is not inserting materials, models.<br>
+But we planning to extend possibilities of this tool.
+<br>
+
+== Select Path ==
+[[File:RoadsEditing_selectPath.jpg|right]]
+
+* List of paths in world 
+* New path 
+* Delete path 
+* Unselect path 
+
+== Road Preview Options ==
+[[File:RoadsEditing_previewOptions.jpg|right]]
+
+* Clip road preview with z-buffer 
+* Draw road preview like mesh 
+* Draw move helpers 
+* Distance from terrain 
+
+== Active Points ==
+[[File:RoadsEditing_activePoints.jpg|right]]
+
+* New 
+* Delete 
+* Move 
+* Delete selected points 
+<br>
+<br>
+== Points Parameters ==
+[[File:RoadsEditing_Point_Parameters.jpg|right]]
+
+* First Parameter is hidden right now - will be fixed
+* Bias 
+* Continuity 
+* Angle 
+* Width mul 
+<br>
+<br>
+== Cut HeightMap ==
+[[File:RoadsEditing_Cut_Heights.jpg|right]]
+
+* Set width of the road 
+* Show angle bigger 
+* Overlap of the road

@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_FTLmanager
+// revision: 348927 (2023-11-08T14:44:05Z)
+// export sha1: fg1ek2eagutzpc91w5pz4hu6g4dtp0n
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Sides
+
+|descr= '''FTL''' ('''F'''riendly '''T'''o '''L'''ocal) manager tracks relationship between player and civilian side.<br>
+'''FTL State''' can be one of the following: "LOW", "NEUTRAL", "HIGH". See [[FriendlyToLocal System]].
+
+|s1= [functionCalled, type] call [[BIS_fnc_FTLmanager]]
+
+|p1= functionCalled: [[String]] - one of the following:
+* "Init" - initialises the FTL manager<br>Return: [[Number]] - FTL State
+* "Destroy" - destroys the current FTL manager instance<br>Return: 
+* "GetFTLState" - returns current FTL state<br>Return: [[String]] - FTL state: "LOW", "NEUTRAL" or "HIGH"
+* "SetFTLState" - computes and sets the new FTLValue and FTLState afterwards<br>Return: 
+* "GetNearestTownRespect" - Returns nearest (in 500m radius) town respect for player<br>Return: [[Number]] - respect
+
+|p2= type: [[String]] - can be one of the following:
+* "sysUpdate" (internal use)
+* "NONE" (no change)
+* "CivKilled" (-0.5)
+* "VIPCivKilled" (-0.7)
+* "RebelKilled" (-0.3)
+* "TaskSmallRefused" (-0.05)
+* "TaskSmallDone" (+0.4)
+* "TaskSmallFailed" (-0.4)
+* "TaskGreatRefused" (-0.1)
+* "TaskGreatDone" (+0.6)
+* "TaskGreatFailed" (-0.6)
+* "CivHouseDestroyed" (-0.5)
+* "GreatHouseDestroyed" (-0.8)
+
+|r1= [[Boolean]] - [[false]] if the manager is not initialised yet
+
+|x1= <sqf>["Init"] call BIS_fnc_FTLmanager;</sqf>
+
+|seealso= [[FriendlyToLocal System]]
+}}

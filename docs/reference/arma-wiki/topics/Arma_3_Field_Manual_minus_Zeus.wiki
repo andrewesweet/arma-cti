@@ -1,0 +1,177 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Zeus
+// revision: 337752 (2023-02-21T16:37:47Z)
+// export sha1: dffdyrqt020fa1tfqsn4jxkzuvhfsnm
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[File:arma3_curator_eye.png|right|80px]]
+'''Zeus''' is a new concept where scenarios are curated by one or more '''Game Masters'''. Using a 3D real-time editor, they can expand and manipulate scenario content in order to provide more interesting gameplay for other players.<br>Specific goals and limitations prevent them from becoming too powerful and ensures they also have some challenges to overcome themselves.
+
+''To become a Zeus, take the slot marked by Zeus icon in the multiplayer lobby.''
+
+=== Pinging Zeus ===
+
+When playing a Zeus scenario, but not in the role of a Zeus, press {{Controls|Y}} to ping him. He'll receive a sound cue and your name will briefly be highlighted. Use this to attract his attention towards a problem or an opportunity ahead.
+
+{{Feature|informative|Don't bother pressing {{Controls|Y}} in rapid succession to spam Zeus, as pings have a one second cooldown.}}
+
+=== Accessing Zeus ===
+
+Press {{Controls|Y}} to toggle the Zeus interface.
+
+It can be available in these two forms:
+* '''Free''' - Zeus is a soldier on the battlefield who can at any time open the interface to curate the scenario, but risks being killed.
+* '''Forced''' - the interface is opened automatically and cannot be closed by pressing the key. Zeus is not represented in the world and is safe from any danger.
+
+=== Camera ===
+
+The camera provides an aerial view over the battlefield.
+* Move using {{Controls|W}}, {{Controls|S}}, {{Controls|A}}, {{Controls|D}}
+* Change altitude with {{Controls|Q}} and {{Controls|Z}}.
+* Hold {{Controls|Left Shift}} to accelerate.
+* Press {{Controls|F}} to move to the selected unit.
+* Press {{Controls|Numpad Enter}} to toggle the view of the selected unit.
+* Press {{Controls|Space}} to move to the last pinged player's position.
+* Press {{Controls|Ctrl|F1..F12}} to save the camera position, and {{Controls|F1..F12}} to restore the respective one.
+<br>
+<br>
+In some scenarios, the camera's movement area may be limited. While not visualized, you will recognize the border when you've reached it.
+
+''The camera moves faster when being higher up. Increase the altitude to easily cover long distances.''
+
+=== Interface ===
+
+The Zeus interface provides additional features for simplified control over the scenario:
+* Press {{Controls|J}} to show your briefing and tasks.
+* Press {{Controls|N}} to toggle between vision modes (when available).
+* Press {{Controls|O}} to toggle the clock.
+* Press {{Controls|K}} to toggle the compass.
+* Press {{Controls|Backspace}} to toggle the interface.
+
+=== Map ===
+
+The map provides an unprecedented overview of everything under your control.
+* Open it by pressing {{Controls|M}}.
+* Zoom the map in or out using {{Controls|MSW}}
+* Click {{Controls|MMB}} to quickly teleport the camera under the cursor.
+* Close the map by pressing {{Controls|M}} or {{Controls|Esc}}.
+* Press {{Controls|T}} to toggle textures.
+
+The current camera position is represented by [[File:a3 fm drawCamera.png|32px]] and an approximate view cone.
+
+=== Selecting ===
+
+Select an entity by clicking {{Controls|LMB}} on its icon or name in the entity list.
+* Hold {{Controls|Left Ctrl}} to select add / remove the entity from selection.
+* Hold {{Controls|Left Shift}} to select multiple entities (works only in the list).
+* Press {{Controls|Ctrl|1..0}} to save the current selection, and {{Controls|1..0}} to restore the respective one.
+* Click and drag {{Controls|LMB}} to select multiple entities in the frame.
+
+While all entities can be selected, not all of them can be edited:
+: [[File:a3 fm entitySelect object ca.png|32px]] Normal object, can be edited
+: [[File:a3 fm entitySelect objectDestroyed ca.png|32px]] Destroyed object, can be edited
+: [[File:a3 fm entitySelect objectDisabled ca.png|32px]] Not in the editing area, cannot be edited
+: [[File:a3 fm entitySelect objectPlayer ca.png|32px]] Player, cannot be edited
+: [[File:a3 fm waypoint ca.png|32px]] Waypoint, can always be edited
+
+=== Editing ===
+
+Click and drag an entity using {{Controls|LMB}} to edit it.
+: [[File:a3 fm curatorMove.png|32px]] Move it around by default. When vehicle crew is selected, it will be moved out of their vehicle.
+: [[File:a3 fm curatorMoveZ.png|32px]] Hold {{Controls|Left Alt}} to change the height.
+: [[File:a3 fm curatorMoveIn.png|32px]] When a vehicle is under the cursor, selected soldiers are moved inside.
+: [[File:a3 fm curatorRotate.png|32px]] Hold {{Controls|Left Shift}} to rotate it.
+: [[File:a3 fm curatorMoveDisabled.png|32px]] When the entity is outside of the editing area or is being dragged into it, editing is not possible.
+
+Some scenarios may limit the editing area. Its borders are visualized in the scene by blue walls and by icons on the map.
+
+''Soldiers and ground vehicles moved to a high altitude will parachute to the ground.''
+
+=== Placing waypoints ===
+
+When a group (or its member) is selected, you can give it waypoints. They can be created anywhere on the map, no matter where the editing area is.
+* Click {{Controls|RMB}} to place a waypoint (it will replace all existing waypoints).
+* Hold {{Controls|Left Ctrl}} while clicking to add a new waypoint, preserving the existing ones.
+<br>
+<br>
+Type is based on what you clicked on:
+: [[File:a3 fm curatorPlaceWaypoint.png|32px]] MOVE having clicked on an empty space
+: [[File:a3 fm curatorPlaceWaypointGetIn.png|32px]] GET IN having clicked on a vehicle
+: [[File:a3 fm curatorPlaceWaypointDestroy.png|32px]] DESTROY having clicked on an enemy
+: [[File:a3 fm curatorPlaceWaypointCycle.png|32px]] CYCLE when {{Controls|Left Alt}} is held - upon reaching it, the unit will repeat the waypoints from the first one.
+
+=== Setting attributes ===
+
+Scenarios can allow you to set specific entity attributes.<br>
+Use {{Controls|LMB2}} on the entity icon or its name in the entity list to open the attributes window.
+
+Available attributes can be:
+* Objects - health, skill, fuel, lock, ...
+* Groups - callsign, combat mode, formation, ...
+* Waypoints - combat mode, speed, ...
+* Markers - text, color, ...
+
+''Many modules won't even be initialized until you configure their attributes.''
+
+=== Connecting ===
+
+Hold {{Controls|Left Ctrl}}, click {{Controls|LMB}} on an object and drag the line.
+* Release the button on another object to connect them together.
+* Release the button over an empty space to disconnect objects.
+
+Two types of connection exist:<br>
+: [[File:a3 fm modeUnits.png|32px]][[File:a3 fm modeGroups.png|32px]] Grouping - when Units or Groups modes are selected, you can group them together. Works only with AI units (e.g. soldiers or manned vehicles)
+: [[File:a3 fm modeModules.png|32px]] Syncing - when Modules mode is selected, objects are synchronized. Some modules may require synchronization to affected objects.
+
+=== Editing (Advanced) ===
+
+Additional keys let you to further manipulate an entity:
+* Press {{Controls|G}} to order soldiers in vehicles to get out.
+* Press {{Controls|End}} to destroy objects.
+* Press {{Controls|Del}} to delete entities.
+Objects can be destroyed or deleted only when inside editing areas. Modules, waypoints and markers can be removed anywhere.
+
+=== Placing ===
+
+Zeus can place new entities in the scene:
+* Select editing mode
+: [[File:a3 fm modeUnits.png|32px]] Objects (soldier, vehicles and objects, can be placed only in the editing area)
+: [[File:a3 fm modeGroups.png|32px]] Groups of objects
+: [[File:a3 fm modeModules.png|32px]] Modules (systems like artillery strikes, respawn points, weather settings, ...). Can usually be placed anywhere.
+: [[File:a3 fm modeMarkers.png|32px]] Markers (visible to every player, can be placed anywhere for free)
+* Pick a side.
+* Select an entity to place.
+* Click {{Controls|LMB}} on the ground to place the entity.
+* Hold {{Controls|Left Ctrl}} while clicking {{Controls|LMB}} to continue with placement afterwards.
+
+Object cost is previewed on the resources bar at the top of the screen. Entities which are too expensive are greyed out and cannot be placed.
+
+=== Taking over units ===
+
+When you have the 'Remote Control' module available, place it on any non-player unit to take it over.<br>
+Once in possession of the unit, you can move, shoot and perform actions as if it were you. However, there are some limitations:
+* When controlling a squad leader, you cannot give any orders.
+* Messages over chat or VOIP will be still said by You, not the unit.
+Press {{Controls|Y}} to return back to the Zeus interface.
+
+=== Placing fire support ===
+
+Zeus can quickly send fire support to any location. However, it takes a few seconds for it to arrive, and players are meanwhile warned and can seek cover.<br>
+The fire support module is visualized as an area of expected damage:
+* All vehicles and soldiers in the {{Color|red|red zone}} will be destroyed or disabled.
+* The {{Color|#ff8000|orange zone}} represents the maximal blast radius able to kill soldiers who are not in cover.
+
+''Keep in mind that sending fire support onto or near civilian objects opposes international laws of war. Additionally, using cluster ammunition is controversial at best.''
+
+=== Placing explosives ===
+
+Explosives and mines placed by Zeus have a special behavior:
+* All selected explosives can be detonated by pressing {{Controls|End}}.
+* Explosives are instantly revealed to everyone who's on the same side as Zeus.
+* Approximate minefield areas are visualized on the map for everyone.
+
+''Anti-Personnel (AP) mines are banned by international laws of war. Use them with caution!''
+
+
+{{GameCategory|arma3|Field Manual}}

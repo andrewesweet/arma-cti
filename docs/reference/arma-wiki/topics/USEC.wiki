@@ -1,0 +1,95 @@
+// source: https://community.bistudio.com/wiki/USEC
+// revision: 353498 (2024-03-19T12:00:46Z)
+// export sha1: br04h62o53pd3yepiml0rgm4v6el0hj
+// categories: Category:Arma 3: Multiplayer Squads
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Infobox/Squad
+|title = Unity Security Force
+|image = useclogo.jpg
+|founded = 1st April 2002
+|successes = Ground Campaigns:
+* [http://www.usecforce.com/operations/operation.asp?id{{=}}30 Operation Firefly] (143 combat hours)
+* [http://www.usecforce.com/operations/operation.asp?id{{=}}31 Operation Sunbeam] (376 combat hours)
+* [http://www.usecforce.com/operations/operation.asp?id{{=}}32 Operation Orange Dawn] (122 combat hours)
+* [http://www.usecforce.com/operations/operation.asp?id{{=}}34 Operation Green Field] (182 combat hours)
+* [http://www.usecforce.com/operations/operation.asp?id{{=}}36 Operation Tammarpok] (103 combat hours)
+* [http://www.usecforce.com/operations/operation.asp?id{{=}}38 Operation Rudolph] (114 combat hours)
+* [http://www.usecforce.com/operations/operation.asp?id{{=}}39 Operation Iron Dawn] (721 combat hours)
+* [http://www.usecforce.com/operations/operation.asp?id{{=}}42 Operation Desert Night] (137 combat hours)
+|members = View the {{Link|http://www.usecforce.com/roster/?c{{=}}AA|roster}}
+* 157 active members (April 2009)
+|former_members = View the [http://www.usecforce.com/roster/?g{{=}}rank&v{{=}}Retired retired list]
+|link = http://www.usecforce.com
+}}
+
+== About USEC ==
+[[File:usec_website_1.jpg||thumb|right|300px|The USEC website is a centerpiece of the group]]
+USEC was opened on 1 April 2002 as a division of the now defunct Unity Virtual Aviation Community. USEC conducts simulated military operations in a role-playing environment for mature players. Member's achievements and stats are recorded and rewarded to give a complete virtual military career. USEC members conduct operations on the Arma 3 platform with an emphasis on realism and challenge. Our doctrine is inspired by real world tactics, but built from the ground up for our virtual platforms.
+
+=== Force Groups ===
+USEC currently operates four force groupings:
+
+* [http://www.usecforce.com/force/?id{{=}}land Land Force Group]
+* [http://www.usecforce.com/force/?id{{=}}air Air Force Group]
+* [http://www.usecforce.com/force/?id{{=}}maritime Maritime Force Group]
+* [http://www.usecforce.com/force/?id{{=}}special Special Force Group]
+
+Each of these Force Groups is made up of a number of specific units and is commanded by a Force Commander. Currently a number of units offer Arma 3 as a gaming platform to simulate operations.
+
+=== Supported Units ===
+The following Units use {{GameCategory|arma3|link= y}} as a gaming platform:
+
+* [http://www.usecforce.com/roster/?g{{=}}Unit&v{{=}}UX152 UX152 Little Angels] as the primary helicopter support unit
+* [http://www.usecforce.com/roster/?g{{=}}Unit&v{{=}}UX411 UX411 Steel Riders] as the primary armored unit
+* [http://www.usecforce.com/roster/?g{{=}}Unit&v{{=}}UX501 UX501 Unity Royal Lancers] providing infantry units
+* [http://www.usecforce.com/roster/?g{{=}}Unit&v{{=}}UX505 UX505 Ghouls (Special Forces)] providing Tier One SF capabilities
+* [http://www.usecforce.com/roster/?g{{=}}Unit&v{{=}}VIA Virtual Intelligence Agency (VIA)] providing intelligence support
+
+== Life at USEC ==
+=== Enlistment ===
+To enlist at USEC applicants must first submit an {{Link|http://www.usecforce.com/recruiting/application.asp|application}}, and then complete the Basic Recruit Exam. This exam consists of 30 questions relating to the USEC Standing Orders. This ensures new applicants are familiar with the USEC environment before joining missions. Applicants are required to register at the USEC {{Link|http://www.usecforce.com/forums|forums}}, where they can gain access to assistance they might need while completing the initial training. Applicants should also join USEC TeamSpeak to talk to our members. Our members are worldwide, so you can often find someone able to help you.
+
+[[File:arma_usec_b1b_1.jpg||thumb|right|300px|The Offensive Weapons Specialists screen in a USEC B1B]]
+Once they have completed the Basic Recruit Exam, members are promoted to the rank of Recruit and await assignment to a unit. Upon approval of the recruit's application they will be assigned to the appropriate unit, and may be required to complete additional training in their chosen platform of operations.
+
+=== Training ===
+Training is overseen by the {{Link|http://www.usecforce.com/training/|Directorate of Training}}. UX501 conducts infantry training on a weekly basis, while UX152 and UX411 conduct periodic recruitment drives from within USEC. Nobody can join UX411 or UX152 without having served as an infantryman first. This ensures all members understand the virtual battlespace.
+
+Training is a mix of multi-choice examinations completed online through the website, and practical assessments held in game with an instructor. At the end of most training a ribbon is usually awarded.
+
+=== Operations ===
+Training operations are conducted every week on our dedicated server.  Sessions are usually password protected to ensure only USEC personnel are able to participate.  Every few months a Deployment is simulated, comprising a combined effort between most Force Groups to achieve overall strategic objectives.  Most Deployments result in some degree of Land Forces being deployed.  During deployments, personnel are able to earn a variety of ribbons and medals.
+
+== Group Compositions ==
+[[File:Aav_1_5.jpg||thumb|right|300px|A UX501 AAV makes it way along the road during a training mission]]
+=== Land Force Group ===
+The Land Force Group uses Arma 3 as its official gaming platform to simulate land operations. The Land Force Group represents the units within USEC that operate under {{Link|https://en.wikipedia.org/wiki/Land_warfare|Land Warfare Doctrine}}. Land forces include personnel, weapons platforms, vehicles, and support elements operating on land to accomplish assigned missions and tasks. USEC operates a number of units that simulate Land Forces either separately or as part of Joint operations. 
+
+The Land Force Group consists of 2 operational squadrons, the {{Link|http://www.usecforce.com/roster/?g{{=}}Unit&v{{=}}UX501|UX-501}} "Royal Lancers", {{Link|http://www.usecforce.com/roster/?g{{=}}Unit&v{{=}}UX505|UX-505}} "Ghouls".
+[[File:arma_usec_Aav_2.jpg||thumb|right|300px|UX501 received the AAV in January 2009]]
+=== Air Force Group ===
+The Air Force Group uses Arma 3 as its official gaming platforms to simulate operations. The Air Force Group represents the units within USEC that operate under {{Link|https://en.wikipedia.org/wiki/Aerial_warfare|Air Warfare Doctrine}}. Aerial warfare is the use of military aircraft and other flying machines in warfare, including military airlift of cargo to further the national interest. USEC operates a number of gaming platforms that simulate both combat and non-combat roles within Air Warfare. 
+
+The Air Force Group consists of a single operational squadron, {{Link|http://www.usecforce.com/roster/?g{{=}}Unit&v{{=}}UX151|UX152}} "Little Angels".
+
+[[File:Usec_medal_unity_l.jpg||thumb|right|200px|USEC has created its own medals, loosely based on real-world equivalents]]
+[[File:Usec cavalry l.jpg||thumb|right|200px|USEC has also created its own qualification badges]]
+[[File:usec_rank_render_1.jpg||thumb|right|200px|USEC has created its own ranks based on real-world equivalents]]
+
+== Benefits of Membership ==
+The Force operates 2 high-quality Arma 3 game servers, as well as a website located on a dedicated server. Members participate in a regulated and rewarding environment, where recognition is passed in the form of promotions, staff appointments, medals, and ribbons.
+
+Training is conducted regularly, using the custom persistent Training Facility. This facility contains practice ranges, ordinance ranges, and a special forces training facility. Members are able to complete training either offline, or online, and earn ribbons and qualifications badges.
+
+== Addon Development ==
+USEC has a rich history of addon development, developing a number of addons for use both within the Force, and for release externally.  The status of the major addon projects are included below:
+* USEC Oil Rig - '''Alpha'''
+* USEC C130 - '''Beta'''
+* USEC Revolution - '''Released'''
+
+== External links ==
+*{{Link|http://www.usecforce.com/|Official Homepage}} of the Unity Security Force
+*{{Link|http://www.usecforce.com/forums|Official Forums}} of the Unity Security Force
+
+{{GameCategory|arma3|Multiplayer Squads}}

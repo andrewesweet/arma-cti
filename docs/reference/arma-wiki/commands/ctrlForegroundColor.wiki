@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/ctrlForegroundColor
+// revision: 377364 (2026-01-02T06:40:35Z)
+// export sha1: hy3s5nkoympg18h3r5g7kixxszb24dx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= GUI Control
+
+|descr= Returns control's foreground color.
+
+|s1= [[ctrlForegroundColor]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Color|Color (RGBA)]]
+
+|x1= <sqf>ctrlForegroundColor _control;</sqf>
+
+|seealso= [[ctrlSetForegroundColor]] [[ctrlText]]
+}}

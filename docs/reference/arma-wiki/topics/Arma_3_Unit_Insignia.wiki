@@ -1,0 +1,222 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Unit_Insignia
+// revision: 351551 (2023-12-07T12:48:40Z)
+// export sha1: 55bddclvqv0y8bjfoaui124eygc2wbx
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:a3 insignia.png|thumb|{{Link|https://twitter.com/KarelMoricky/status/469814986471403520|AAF soldier with ''TFAegis'' insignia}}]]
+Unit insignia is a custom texture which can be mapped to a character to give it special look. It's similar to existing [[squad.xml]] clan logo, and it is based on real life {{Link|https://en.wikipedia.org/wiki/Shoulder_sleeve_insignia|shoulder sleeve insignia}}.
+
+
+== Usage ==
+
+See [[BIS_fnc_setUnitInsignia]].
+
+
+== Official Insignias ==
+
+The game contains several predefined insignias. You can preview them in-game in [[Arsenal]].
+
+{| class="wikitable align-center"
+! Image 
+! Code 
+! Name 
+! Introduced with
+|-
+| [[File:111thID ca.png|75px]]
+| <sqf>[this, "111thID"] call BIS_fnc_setUnitInsignia;</sqf>
+| 111th Infantry Division
+| {{Icon|arma3}}
+|-
+| [[File:TFAegis ca.png|75px]]
+| <sqf>[this, "TFAegis"] call BIS_fnc_setUnitInsignia;</sqf>
+| Task Force Aegis
+| {{Icon|arma3}}
+|-
+| [[File:gryffinRegiment ca.png|75px]]
+| <sqf>[this, "GryffinRegiment"] call BIS_fnc_setUnitInsignia;</sqf>
+| Griffin Regiment
+| {{Icon|arma3}}
+|-
+| [[File:curator ca.png|75px]]
+| <sqf>[this, "Curator"] call BIS_fnc_setUnitInsignia;</sqf>
+| Zeus
+| {{Icon|arma3}}
+|-
+| [[File:bi ca.png|75px]]
+| <sqf>[this, "BI"] call BIS_fnc_setUnitInsignia;</sqf>
+| {{Name|bi}}
+| {{Icon|arma3}}
+|-
+| [[File:manw ca.png|75px]]
+| <sqf>[this, "MANW"] call BIS_fnc_setUnitInsignia;</sqf>
+| Make Arma Not War
+| {{Icon|arma3}}
+|-
+| [[File:CTRG15 ca.png|75px]]
+| <sqf>[this, "CTRG15"] call BIS_fnc_setUnitInsignia;</sqf>
+| CTRG 15 - NATO
+| {{Icon|arma3apex}}
+|-
+| [[File:CTRG14 ca.png|75px]]
+| <sqf>[this, "CTRG14"] call BIS_fnc_setUnitInsignia;</sqf>
+| CTRG 14 - NATO
+| {{Icon|arma3apex}}
+|-
+| [[File:CTRG ca.png|75px]]
+| <sqf>[this, "CTRG"] call BIS_fnc_setUnitInsignia;</sqf>
+| CTRG
+| {{Icon|arma3apex}}
+|-
+| [[File:Jets_ID ca.png|75px]]
+| <sqf>[this, "Jets_ID"] call BIS_fnc_setUnitInsignia;</sqf>
+| Carrier Strike Group 14
+| {{Icon|arma3jets}}
+|-
+| [[File:CombatPatrol ca.png|75px]]
+| <sqf>[this, "CombatPatrol"] call BIS_fnc_setUnitInsignia;</sqf>
+| Combat Patrol
+| {{Icon|arma3malden}}
+|-
+| [[File:IDAP ca.png|75px]]
+| <sqf>[this, "IDAP"] call BIS_fnc_setUnitInsignia;</sqf>
+| IDAP
+| {{Icon|arma3lawsofwar}}
+|-
+| [[File:AAF_3rdRegiment ca.png|75px]]
+| <sqf>[this, "AAF_3rdRegiment"] call BIS_fnc_setUnitInsignia;</sqf>
+| AAF 3rd Support Regiment
+| {{Icon|arma3lawsofwar}}
+|-
+| [[File:CSAT_ScimitarRegiment ca.png|75px]]
+| <sqf>[this, "CSAT_ScimitarRegiment"] call BIS_fnc_setUnitInsignia;</sqf>
+| Scimitar Regiment
+| {{Icon|arma3tacops}}
+|-
+| [[File:AAF_1stRegiment ca.png|75px]]
+| <sqf>[this, "AAF_1stRegiment"] call BIS_fnc_setUnitInsignia;</sqf>
+| 1st Regiment
+| {{Icon|arma3tanks}}
+|-
+| [[File:EAF_5thRegiment ca.png|75px]]
+| <sqf>[this, "EAF_5thRegiment"] call BIS_fnc_setUnitInsignia;</sqf>
+| 5th Regiment
+| {{Icon|arma3contact}}
+|-
+| [[File:EnochJointTraining ca.png|75px]]
+| <sqf>[this, "EnochJointTraining"] call BIS_fnc_setUnitInsignia;</sqf>
+| Exercise Electron
+| {{Icon|arma3contact}}
+|-
+| [[File:Spetsnaz ca.png|75px]]
+| <sqf>[this, "Spetsnaz223rdDetachment"] call BIS_fnc_setUnitInsignia;</sqf>
+| Spetsnaz 223rd Special Purpose Detachment
+| {{Icon|arma3contact}}
+|-
+| [[File:Astra ca.png|75px]]
+| <sqf>[this, "Astra"] call BIS_fnc_setUnitInsignia;</sqf>
+| Astra
+| {{Icon|arma3contact}}
+|}
+
+
+== Configuration ==
+
+=== Insignia ===
+
+You can add a new insignia in [[Config.cpp]] and [[Description.ext]].
+<syntaxhighlight lang="cpp">
+class CfgUnitInsignia
+{
+	class 111thID
+	{
+		displayName = "111th Infantry Division";								// Name displayed in Arsenal
+		author = "Bohemia Interactive";											// Author displayed in Arsenal
+		texture = "\A3\Ui_f\data\GUI\Cfg\UnitInsignia\111thID_ca.paa";			// Image path
+		material = "\A3\Ui_f\data\GUI\Cfg\UnitInsignia\default_insignia.rvmat";	// .rvmat path
+		textureVehicle = "";													// Does nothing, reserved for future use
+	};
+};
+</syntaxhighlight>
+
+{{Feature|informative|Insignia texture should ideally be 128x128px [[PAA File Format|PAA]] file.}}
+
+=== Objects ===
+
+Objects like soldiers or cars must contain special selections on which insignia and clan logo can be displayed. Consider following these rules to make sure your addon is consistent with the official ones:
+# To all playable vehicles (types listed in table below) of all factions, add following selections:
+#* ''insignia'' - designers fills it with story-related unit insignia. '''Must be square'''.
+#* ''clan'' - engine fills it with clan logo. '''Must be square'''.
+#* ''clan_sign'' - engine fills it with clan name. Dimensions not specified, but should be '''short and wide'''. 
+# Map transparent texture <sqf inline>"#(argb,8,8,3)color(0,0,0,0)"</sqf> to all selections.
+# When same selection is on both sides of a vehicle, none of them should be mirrored.
+# Civilians characters and vehicles can be less unified, but must still contain all selections as military type (e.g. instead of shoulders, civilian character can have both selections on front and back side of his t-shirt).
+
+Once the model is ready, list the selection in object's config. The order of selections is not important, [[BIS_fnc_setUnitInsignia]] is looking specifically for ''insignia''.
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class MyVehicle
+	{
+		hiddenSelections[] = { "someSelection", "anotherSelection", "insignia" }; // insignia selection has to be present
+	};
+};
+</syntaxhighlight>
+
+
+{| class="wikitable" style="text-align: center; width: 100%" cellpadding="0.25em"
+! style="width: 0" | Vehicle
+! Insignia
+! Clan
+! Clan Text
+! style="width: 0" | Preview Image
+
+|-
+| '''Character'''
+| '''Left''' shoulder
+| '''Right''' shoulder
+| {{n/a}}
+| [[File:A3 insignia infantry.jpg|200px]]
+|-
+| '''Car'''
+| '''Both''' sides
+| '''Front''' and '''back'''
+| Optional above or below ''clan'', if there is space
+| [[File:A3 insignia car.jpg|200px]]
+
+|-
+| '''Armored&nbsp;Vehicle'''
+| '''Both''' sides above wheels&nbsp;/&nbsp;tracks
+| '''Both''' sides of the turret. 
+
+Front and back if turret is too small or missing completely.
+| Optional above or below ''clan'', if there is space
+| [[File:A3 insignia armor.jpg|200px]]
+
+|-
+| '''Helicopter'''
+| '''Left''' side near a cabin
+
+'''Both''' sides when ''clan'' is on front
+| '''Right''' side near a cabin
+Front on large helicopters. ''insignia'' is then on both sides near cabin
+| On tail
+| [[File:A3 insignia heli.jpg|200px]]
+
+|-
+| '''Plane'''
+| '''Both''' sides near a cabin
+| '''Both''' (outer) sides of vertical stabilizer(s)
+| Above or below ''clan''
+| [[File:A3 insignia plane.jpg|200px]]
+
+|-
+| <br>'''Ship'''<br><br>
+| '''Both''' sides, anywhere where there is space
+| '''Both''' sides, anywhere where there is space
+| Optional above or below ''clan'', if there is space
+| {{n/a}}
+|}
+
+
+{{GameCategory|arma3|Editing}}

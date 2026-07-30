@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/atan2
+// revision: 363173 (2024-03-25T08:38:17Z)
+// export sha1: p00954x54dtfjmmpy0t0tjqpztz644i
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Geometry | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Math - Geometry
+
+|descr= [[File:atan.jpg|right|300px]] ArcTangent of ''y/x''. Used to determine the angle of a vector ''[y,x]''. Result in [[Number#Degrees|Degrees]] between -180 and 180.
+{{Feature|informative|This command can handle ''x'' being 0, unlike when using [[atan]], and will return 90}}
+{{Feature|important|
+This command has [[SQF Syntax#Rules of Precedence|higher precedence]] than the [[select]] command, therefore beware of the case below:
+<sqf notrim>
+ _pos select 0  atan2 (_pos select 1) // error
+(_pos select 0) atan2 (_pos select 1) // OK
+</sqf>
+
+Alternatively, consider using the [[a hash b|#]] operator: <sqf inline>_pos # 0 atan2 _pos # 1</sqf>
+}}
+
+|s1= y [[atan2]] x
+
+|p1= y: [[Number]]
+
+|p2= x: [[Number]]
+
+|r1= [[Number]]
+
+|x1= <sqf>
+_yx = [5,3];
+_degrees = (_yx select 0) atan2 (_yx select 1); // 59.0362
+</sqf>
+
+|x2= Get direction from _obj1 to _obj2:
+<sqf>
+_vd = getPosASL _obj2 vectorDiff getPosASL _obj1;
+_dir = (_vd select 0) atan2 (_vd select 1); // _dir range from -180 to +180
+_dir = (_dir + 360) % 360; // _dir range from 0 to 360
+</sqf>
+
+|x3= Get relative direction from _obj1 to _obj2:
+<sqf>
+_yx = _obj1 worldToModel getPosASL _obj2;
+_dir = (_yx select 0) atan2 (_yx select 1); // _dir range from -180 to +180
+_dir = (_dir + 360) % 360; // _dir range from 0 to 360
+</sqf>
+
+|seealso= [[atan]] [[tan]] [[sin]] [[cos]] [[asin]] [[acos]] [[rad]] [[pi]] [[vectorCos]] [[BIS_fnc_dirTo]] [[getRelPos]] [[getRelDir]]
+}}

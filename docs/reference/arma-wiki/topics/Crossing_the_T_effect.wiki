@@ -1,0 +1,18 @@
+// source: https://community.bistudio.com/wiki/Crossing_the_T_effect
+// revision: 219007 (2021-01-19T12:38:32Z)
+// export sha1: loxlewridc9scwn320prspuw3bvendq
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+The Crossing the T effect occurs when a force is firing from a flank of its enemy who are in line formation or when firing along the length of the enemy when they are in column formation.
+
+Crossing the T comes from the nautical back ground in the Army it is more correctly called Enfilade fire which comes from the French enfiler - or to skewer.
+
+The effectiveness of Enfilade comes from several factors:
+* For the assaulting side; in the main, only elevation has to be changed thus reducing the firing equation to one dimension
+* The reduced traverse means targets are acquired more quickly
+* Rounds that miss the target have a high probability of continuing on to hit other enemy targets further along in the enemy formation
+* The effective fire of the enemy is reduced to single point, as intervening enemy troops obscure their comrades fire.
+* All the effective fire of the enfilading force is applied<br>
+
+[[Category:Battle Tactics]]

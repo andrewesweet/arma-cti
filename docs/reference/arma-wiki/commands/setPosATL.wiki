@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/setPosATL
+// revision: 377533 (2026-01-02T06:53:18Z)
+// export sha1: n2ip2zzyt5eb6ehd8schjsoigwzymvt
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 2 version 1.03 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.03
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Positions
+
+|descr= Sets the position of an object relative to the terrain.
+
+|s1= object [[setPosATL]] pos
+
+|p1= object: [[Object]]
+
+|p2= pos: [[Position#PositionATL|PositionATL]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setPosATL [getPosATL player select 0, (getPosATL player select 1) - 10, getPosATL player select 2];</sqf>
+
+|seealso= [[getPosATL]] [[getPos]] [[getPosASL]] [[setPos]] [[setPosASL]]
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20141111203900
+|text= If you plan on creating bases through script, [[setPosATL]] and [[getPosATL]] will be your friends. Other commands like [[getPos]] or [[getPosASL]] '''will''' return the position relative to any objects that are underneath / to the terrain.
+I wrote a base building helper script and through multiple tests, I have found that [[getPosATL]] is the absolute best way to get position for objects that are over land.
+}}
+
+{{Note
+|user= Hypoxic125
+|timestamp= 20220930040303
+|text= As of '''Verson 2.10''', if you use '''setPosX''' commands on a remote unit within a vehicle, the unit will remain in the vehicle. In order to avoid this, '''remoteExec''' the command to the remote client.
+
+<sqf>
+if !(isNull objectParent _unit) then {
+	[_unit, [0,0,0]] remoteExec ["setPosATL", _unit];
+};
+</sqf>
+}}

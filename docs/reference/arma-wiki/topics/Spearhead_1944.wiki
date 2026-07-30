@@ -1,0 +1,135 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944
+// revision: 370274 (2024-11-19T18:10:03Z)
+// export sha1: s1vll4nq9k8ytm78qk9hr2n0kupiygs
+// categories: Category:Arma 3: CDLCs | Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Navbox/CDLCs}}
+
+{{Infobox/Game
+|title= Spearhead 1944
+|image= [[File:arma3-cdlc-spearhead 1944 store header.jpg|300px|link= https://store.steampowered.com/app/1175380/Arma_3_Creator_DLC_Spearhead_1944/]]<br/>[[File:a3 gm arma3-com steampageimg 600x100 3c.png|link=http://www.arma3.com/dlc/creator|300px]]
+|releaseDate= 25 July 2023
+|storePage= {{Link|https://store.steampowered.com/app/1175380/Arma_3_Creator_DLC_Spearhead_1944/|Steam}}
+|developer= Heavy Ordnance Works
+|website= {{Link|https://www.spearhead-1944.com/|https://www.spearhead-1944.com/}}
+|discord= {{Link|https://discord.gg/spearhead-1944|https://discord.gg/spearhead-1944}}
+|facebook=
+|twitter=
+}}
+
+{{Feature|informative|Find documentation regarding content and modifications of '''Spearhead 1944''' here: [[:Category:Spearhead 1944|Spearhead 1944]]}}
+
+In this new Creator DLC, you will be a part of the US First Army’s advance as they attempt to break through the German lines.
+Take advantage of an array of US weaponry and equipment and traverse the fields and bocage of an all new Normandy terrain.
+Spearhead 1944 will offer a seven mission multiplayer co-op campaign, several official scenarios and game modes, and even more content creation opportunities with the {{arma3}} scenario editor.
+Players will be introduced to the lesser known Operation Cobra - taking place 7 weeks after D-Day, with the US First Army attempting to break through the German lines around Saint-Lô.
+The Creator DLC will deliver an immersive and historic military sandbox experience on a scale not seen before in {{arma3}}.
+
+
+== Features ==
+
+Key features of the Spearhead 1944 Creator DLC include:
+
+; Normandy Terrain
+: Explore 150 km² of unique terrain, based on real locations and topography of northwest France. An immersive environment to play the campaign and run missions. The terrain features flowing rivers, an airstrip, the destroyed city of Saint-Lô, wooded areas, fields with traditional French bocages and much more. Featuring new and unique buildings, ruins, objects and plants as well as dug in positions and light fortifications. Over 400 street signs :aid players in navigating the vast road network. Explore the overgrown, well-defended landscape of Normandy, where every field is another potential bloody battle.
+
+; 5 Playable Factions and Civilians
+: Featuring elements of the US Army, Free French, and German Forces equipped with their own uniforms and gear.
+
+; 50+ Weapons and Grenades
+: Engage the enemy with detailed recreations of 1944 weaponry and a diverse arsenal of grenades and explosives.
+
+; 40+ Vehicles & Static Weapons
+: Wage war in a range of transports and armored vehicles, such as the M18 Hellcat, M10 Wolverine, and Tiger I. You'll also be supported by a number of static weapons including trench variants, searchlight, and mortars.
+
+; Uniforms and Other Gear
+: Equip yourself with more than 200 uniform variants, 60+ vest variants, 70+ backpack variants, and 150+ headgear variants alongside a bunch of accessories.
+
+; Multiplayer Co-op Campaign
+: Seven co-op missions, fully voiced and highly replayable for up to 24 players, inspired by the real events of Operation Cobra, revealing the significance to liberated Europe and covering key milestones such as the liberation of Saint Gilles and the defense of Saint Denis-le-Gast
+
+; 6 Multiplayer Scenarios
+: Play six new scenarios in Arma 3's official Combat Patrol, Escape, Warlords, and Zeus game modes with various upgrades, additions, faction selection, and automatic support for WW2 mods.
+
+; Singleplayer/Co-op Scenario<nowiki>:</nowiki> Der Zahnarzt
+: Members of the French Resistance were ordered by the SOE to eliminate Standartenführer Konrad Dentist Hoffmann at the occupied Château near Marigny.
+
+; US Faction Showcase
+: Become familiar with the Allied arsenal and help push through Normandy during Operation Cobra.
+
+; German Faction Showcase
+: Build defenses and assist the retreating forces.
+
+; Sounds & Effects
+: Experience immersive audio designed to accurately reproduce the sounds of a World War 2 battlefield: Incoming projectiles, shell ricochets and interior hit sounds, plane fly-by sounds, bullet cracks, explosions, call-in radio requests and the desperation of surrendering soldiers, cries of the wounded and the dying.
+
+; Music
+: A custom and atmospheric soundtrack, specifically selected to transport you to 1944.
+
+; Additional Content
+: Spearhead 1944 is complemented by a number of modules and various objects that can be used when the CDLC is loaded.
+: These include custom systems to increase immersion (i.e. ambient war sounds, illumination flares, ordnance and artillery barrage, custom HUD for vehicles), to expand gameplay and tactical options (i.e. enhanced revive, indirect fire support, surrendering, bolt action rifles, extended reload animations, bayonets, open bolt hipfire, wall avoidance, realistic tank penetration, deflection and destruction), AI behavior (i.e. revive for AI, targeting :and weapons management in tanks by AI a gunner/commander, custom difficulty adjustment system) and more.
+
+
+== Videos ==
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center">
+{{Youtube|uGKg3-_5L-c|1.1 Launch Trailer|center|500}}
+{{Youtube|r89elU60shk|1.1 Teaser Trailer|center|500}}
+{{Youtube|av_Li3OFJA8|1.0 Launch Trailer|center|500}}
+{{Youtube|syxwHjFqbhs|1.0 Teaser Trailer|center|500}}
+{{Youtube|_XsWQNNPEuM|Audio Feature Showcase|center|500}}
+</div>
+
+== Gallery ==
+
+<gallery mode="slideshow" showthumbnails>
+File:spe_screenshot01.jpg
+File:spe_screenshot02.jpg
+File:spe_screenshot03.jpg
+File:spe_screenshot05.jpg
+File:spe_screenshot06.jpg
+File:spe_screenshot07.jpg
+File:spe_screenshot08.jpg
+File:spe_screenshot09.jpg
+File:spe_screenshot10.jpg
+File:spe_screenshot11.jpg
+File:spe_screenshot12.jpg
+File:spe_screenshot13.jpg
+File:spe_screenshot14.jpg
+File:spe_screenshot15.jpg
+File:spe_screenshot16.jpg
+</gallery>
+
+
+== Compatibility Data for Non-Owners ==
+
+People who do not own the Spearhead 1944 CDLC are able to download and install the CDLC's Compatibility Data via the {{arma3}} {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}2991828484|Steam Workshop}}. 
+
+=== What is Compatibility Data? ===
+
+Subscribing to this Workshop item makes it possible for potential buyers to try out the assets and terrains of the CDLC prior to purchasing, plus join multiplayer session in specific conditions.
+
+* It allows players to preview and try out the CDLC assets in the Arma 3 Virtual Arsenal.
+* It allows players to preview the the CDLC terrains in the Eden editor in camera mode.
+* It allows players to participate in multiplayer games containing Spearhead 1944 CDLC assets (vehicles, weapons, etc.) without the need to buy it. However joining missions running on the CDLC terrains is not possible!
+* The Compatibility Data mod uses exactly the same data as the CDLC version and is signed by the same server key.
+
+In simple terms: You can preview all assets in Arsenal, you preview the terrain in Eden in camera mode, and you can combine it with other mods to be able to play on another terrain and alongside or against SPE assets - if you want to pick up weapons, gear or get into the driver/gunner/commander position of SPE vehicles, you will get the usual DLC notification and are unable to use these assets yourself.
+
+=== What is not possible? ===
+
+Please note that access to premium content is restricted for non-owners in the same way as the official DLCs of Arma 3.
+
+* Premium missions and campaigns are inaccessible. 
+* Premium terrains can only viewed in camera mod, but not played on. 
+* Premium weapons cannot be picked up. 
+* Premium vehicles can be primarily used as a passenger for transport or in secondary turret positions. Not available are driver/gunner/commander position.
+
+For a detailed overview of premium DLC content restrictions, please refer to this {{Link|https://www.bohemia.net/blog/roadmap-14-15-dlc-strategy-blog|blogpost}}.
+
+Buying the DLC will remove these restrictions, enabling owners to access all the content.
+
+[[Category:Spearhead 1944]]
+{{GameCategory|arma3|CDLCs}}

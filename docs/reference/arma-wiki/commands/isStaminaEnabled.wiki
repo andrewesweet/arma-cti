@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/isStaminaEnabled
+// revision: 321931 (2022-05-22T12:50:06Z)
+// export sha1: oitdkjocgpjefal4rbb3wbvyr0bivdz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|arg= global
+
+|gr1= Stamina System
+
+|descr= Check if stamina depletion is enabled.
+
+|s1= [[isStaminaEnabled]]  unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (isStaminaEnabled player) then { hint "You can get exhausted." };</sqf>
+
+|seealso= [[Arma 3: Stamina]]
+}}

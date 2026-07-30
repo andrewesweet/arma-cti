@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Math
+// revision: 163241 (2020-09-26T22:29:23Z)
+// export sha1: aprovrgue1zftsdvmvblnhdkxl0x59z
+// Vendored snapshot. Do not edit — re-export instead.
+
+General math related commands. Also see [[:Category: Command Group: Math - Geometry|Command Group: Math - Geometry]] and [[:Category: Command Group: Math - Vectors|Command Group: Math - Vectors]].
+
+[[Category:Scripting Commands by Functionality]]

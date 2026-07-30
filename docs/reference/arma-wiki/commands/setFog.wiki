@@ -1,0 +1,122 @@
+// source: https://community.bistudio.com/wiki/setFog
+// revision: 370471 (2024-12-16T18:09:58Z)
+// export sha1: c0fbf2gsqnsoo5qyryglujy93p3cmft
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Scripting Commands: Server Execution | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Environment
+
+|eff= global
+
+|serverExec= server
+
+|descr= Smoothly change the fog over given time (in seconds). See also [[fogParams]].
+{{Feature|arma3|This command is MP synchronised, if executed on server, the changes will propagate globally. If executed on client effect is temporary as it will soon change to the server setting.}}
+
+|mp= Before {{arma3}}, server and clients could have each a different (local) fog value.
+
+|s1= time [[setFog]] fog
+
+|p1= time: [[Number]] - transition time to the new value
+
+|p2= fog: [[Number]] - fog density in range 0..1
+
+|r1= [[Nothing]]
+
+|s2= time [[setFog]] [fogValue, fogDecay, fogBase]
+
+|s2since= arma3 0.50
+
+|p21= time: [[Number]] - transition time to the new value
+
+|p22= fogValue: [[Number]] - normal [[fog]] value that represents fog density at ''fogBase'' level, in range 0..1
+
+|p23= fogDecay: [[Number]] - decay of fog density with altitude, in range -1..1; a negative value means a "ceiling" fog
+
+|p24= fogBase: [[Number]] - base altitude ([[Position#PositionASL|ASL]]) of fog (in meters), in range -5000..5000
+
+|r2= [[Nothing]]
+
+|x1= <sqf>15 setFog 0.5;</sqf>
+
+|x2= Force no fog:
+<sqf>
+0 setFog 0;
+// forceWeatherChange; // change is immediate
+999999 setFog 0;
+</sqf>
+
+|x3= <sqf>
+// Arma 3 examples:
+0 setFog [1, 0.01, 0];
+0 setFog [1, -1, 70];	// mountain fog, starts from 70m ASL and thickens the higher you climb
+0 setFog [1, 1, 60];	// valley fog, starts from 60m ASL and thickens the lower you descend
+0 setFog [1, 1, 0];		// fooooog on the waaaater
+</sqf>
+
+|seealso= [[Arma 3: Improved Fog]] [[fog]] [[fogParams]] [[fogForecast]] [[nextWeatherChange]] [[forceWeatherChange]] [[setRain]]
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20070420042500
+|text= Only one script command induced weather change (either [[setOvercast]] or setFog) can be happening at a time.
+Starting a new weather change will immediately halt the current weather change.
+[[setRain]] changes are independent and can occur simultaneously to a weather change.
+}}
+
+{{Note
+|user= Zapat
+|timestamp= 20151215143200
+|text= [[setTimeMultiplier]] DOES affect transition time.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20190110102300
+|text= A little information about how Alt Syntax works.
+The ''fogValue'' is normal [[fog]] value that could be set independently with original [[setFog]] command.
+''fogBase'' is the ASL altitude at which the fog will start. 0 is the sea level. ''fogDecay'' is how defined the fog start is. The more defined, the denser is the fog.
+1 (or -1) are the max values. If it is positive the fog will be generated below ''fogBase'' line, if negative, above it.
+If ''fogDecay'' is small, the fog will transition more smoothly from no fog to full fog, and because of that it will cross ''fogBase'' line by quite a lot, depending on how small is ''fogDecay'' value.
+Current values of ''fogDecay'' and ''fogBase'' can be retrieved with [[fogParams]].
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20220705052931
+|text= Few notes about network behavior of the fog:
+* Fog is the only weather parameter that is ''almost'' properly network-synchronized by the engine. You can rely on it for both connected players and JIP players without jumping through hoops like other weather commands.
+* ''time'' is not synchronized over the network exactly, fog values changes will be linear over time where you run the command, while network-synced ''time'' will be non-linear, but in the end fog is still will be somewhat close between clients and servers, so its not much of a game breaker.
+* Say fog all 0 on both server and client, instantly setting fog on the server with <sqf inline>0 setFog 1</sqf> or even <sqf inline>0 setFog [1,1,1]</sqf> will not set it instantly on clients, but rather interpolate it there over few seconds (~10-15), non-linearly (slower the closer it gets to server values)
+* Setting ''fogValue'' to values above 1 is allowed where you run the command, but network sync will still clamp it to 1, so if you do <sqf inline>0 setFog 100</sqf>, clients will still interpolate ''fogValue'' to 1, including JIP, so make sure you don't set it above 1 if you expect consistent values between server and client for some calculations.
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20220801094329
+|text= Be aware that this command is affected by [[setWindStr]] and [[windStr]]! Max fogValue = 1 - windStr, so if you do <sqf inline>0 setWindStr 1</sqf>, setting any fog with time>0 will actually set fog to 0! Doing instant fog changes with time=0 strangely still works though.
+}}

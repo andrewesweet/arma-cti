@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_exportEditorPreviews
+// revision: 370758 (2025-02-06T22:25:56Z)
+// export sha1: l14z6zgsrew0q8qwycpaoe8iy80eqen
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.60 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.60
+
+|gr1= Diagnostic
+
+|descr= Export screenshots of objects for [[:Category:Eden Editor|Eden Editor]] and Community Wiki to {{hl|<Arma 3 Profile>\Screenshots\EditorPreviews}} directory. See [[:Category:Arma 3: Assets|Arma 3 assets]].
+{{Feature|informative|
+The file is saved into ''Screenshots'' folder in the [[Profile]] directory. The folder is by default limited to 250 MB to prevent abuse.<br>
+To increase the limit, add the following line at the end of the profile file:
+<syntaxhighlight lang="cpp">maxScreenShotFolderSizeMB = 2000; // size in MB</syntaxhighlight>
+}}
+
+|s1= [duration, type, sides, mods, addons, classes] spawn [[BIS_fnc_exportEditorPreviews]]
+
+|p1= duration: [[Number]] - (Optional, default 1) duration in seconds for which an objects remains on the screen before its screen is captured
+
+|p2= type: [[String]] - (Optional, default "all") can be one of:
+* "vehicles" - only characters and vehicles will be used
+* "props" - only props will be used
+* "all" - all objects will be used
+
+|p3= sides: [[Array]] of [[Side]]s - (Optional, default all sides) list of sides. Only objects of these sides will be used
+
+|p4= mods: [[Array]] of [[String]] - (Optional, default all mods) list of CfgMods classes. External mods should be prefixed with "@". Only objects belonging to these mods will be used
+
+|p5= addons: [[Array]] of [[String]] - (Optional, default all addons) list of CfgPatches classes. Only objects belonging to these addons will be used
+
+|p6= classes: [[Array]] of [[String]] - (Optional, default all classes) list of CfgVehicles classes. Only these objects will be used
+
+|exec= spawn
+
+|r1= [[Nothing]]
+
+|x1= <sqf>// All objects
+[] spawn BIS_fnc_exportEditorPreviews;</sqf>
+
+|x2= <sqf>// All characters and vehicles. Capturing delay will be 0.5 seconds
+[0.5, "vehicles"] spawn BIS_fnc_exportEditorPreviews;</sqf>
+
+|x3= <sqf>// BLUFOR characters and vehicles
+[nil, "vehicles", [west]] spawn BIS_fnc_exportEditorPreviews;</sqf>
+
+|x4= <sqf>// Props in Karts DLC
+[nil, "props", [], ["kart"]] spawn BIS_fnc_exportEditorPreviews;</sqf>
+
+|x5= <sqf>// All objects in specified addons
+[nil, "all", [], [], ["A3_Armor_F_Slammer", "A3_Air_F_Heli_Heli_Transport_03"]] spawn BIS_fnc_exportEditorPreviews;</sqf>
+
+|x6= <sqf>// BLUFOR characters and vehicles in Marksmen DLC
+[nil, "vehicles", [west], ["mark"]] spawn BIS_fnc_exportEditorPreviews;</sqf>
+
+|x7= <sqf>// Only the B_Soldier_F
+[nil, "all", [], [], [], ["B_Soldier_F"]] spawn BIS_fnc_exportEditorPreviews;</sqf>
+
+|x8= <sqf>// Props in CBA
+[nil, "props", [], ["@cba_a3"]] spawn BIS_fnc_exportEditorPreviews;</sqf>
+
+|seealso= [[screenshot]] [[Eden_Editor:_Configuring_Asset_Previews|Configuring Asset Previews]]
+}}

@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_distance2Dsqr
+// revision: 347966 (2023-11-08T08:53:39Z)
+// export sha1: 4xx9jo67ecujnhy9rzu720rhspv22ol
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Geometry | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Geometry
+
+|descr= Returns the SQUARE of the distance between the two objects or positions "as the crow flies" (ignoring elevation).
+
+{{Feature|arma3|This function became obsolete with the introduction of [[distanceSqr]].}}
+
+|s1= [pointA, pointB] call [[BIS_fnc_distance2Dsqr]]
+
+|p1= pointA: [[Object]] or [[Position]]
+
+|p2= pointB: [[Object]] or [[Position]]
+
+|r1= [[Number]] - squared distance
+
+|x1= <sqf>[player, soldier_1] call BIS_fnc_distance2Dsqr;</sqf>
+
+|x2= <sqf>[[100,100,0], [0,0,0]] call BIS_fnc_distance2Dsqr;</sqf>
+
+|seealso= [[BIS_fnc_distance2D]] [[distance2D]] [[distance]]
+}}

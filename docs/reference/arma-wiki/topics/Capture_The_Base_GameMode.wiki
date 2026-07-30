@@ -1,0 +1,125 @@
+// source: https://community.bistudio.com/wiki/Capture_The_Base_GameMode
+// revision: 296035 (2021-11-17T14:40:18Z)
+// export sha1: c7ajfiddem70cmpvmyq28enujlvhl97
+// Vendored snapshot. Do not edit — re-export instead.
+
+=What is Capture The Base?=
+
+This is a project maturing since now half a year
+
+Capture The Base is a PvP mission, mixing stuff from various origin, derived mainly from 2 game modes :
+* Advance And Secure, the Joint Op adaptation on ArmA
+* Ennemy Territory concepts
+In essence, it is an Attack/Defense mission, with zones capture done in a Capture & Hold fashion
+
+= I) The Game =
+
+One team of attackers must seize a serie of zones defended by a team of defenders.<br>
+The goal of the attackers is to capture the last of the defender's zone.<br>
+The attackers have a time limit to acheive their goal
+
+Zones are linked together and attackers must take them in order before reaching the defender's final zone. There may be several different path of linked zones to reach the defender's last zone
+
+
+= II) The Game Play =
+
+CTB has some very specific designs that differ from other Arma 2 missions. These designs were not done with realism in mind, it is not the goal of this mission. CTB is more about gameplay.
+
+== A) Classes ==
+Coming from Ennemy Territory is the concept of classes in CTB
+The unit class you chose at spawn time will give you some abilities, and prevent you from doing everything. Your class will usually dictate your actions in game.<br>
+Each class is divided in several Roles with specific abilities within the class.
+
+The classes are :
+* Soldiers
+* Medic
+* Engineer
+* Scout
+* Spec Ops
+* Crewman
+
+=== 1) Soldiers ===
+''Roles :''
+* Grenadier
+* Automatic Rifleman
+* Light Anti Armor
+* Heavy Anti Armor
+* Anti Air
+
+''Abilities :''
+* Count toward the units count for zone capture. Need to be on foot and within zone range to count
+* Anti Air units can operate gun of some specific anti air vehicles
+
+=== 2) Medic ===
+''Roles :''
+* Medic
+
+''Abilities :''
+* Can heal
+* Can drive and deploy MHQ. MHQ, when deployed, acts as a spawn point for troops.
+
+=== 3) Engineer ===
+''Roles :''
+* Engineer
+
+''Abilities :''
+* Can drive Repair Truck for vehicle support
+* Can drive Ammo Truck, and drop and setup ammo crates from the ammo truck.
+* Can drive Utility Truck, and setup facilities in friendly zones to ease vehicle deployement
+
+=== 4) Scout ===
+''Roles :''
+* Sniper
+* Heavy Sniper
+
+''Abilities :''
+* Long range weapons
+* Ghillie suit
+
+=== 5) Spec Ops ===
+''Roles :''
+* Spec Ops
+
+''Abilities :''
+* Silenced weapons
+* Satchel Charge. The stachel charge in CTB can only be used with a 30 seconds timer. It cannot be remotely detonated. Satchel charge is the only weapon able to destroy a Facility deployed by an Engineer.
+
+=== 6) Crewmen ===
+''Roles :''
+* Crewman
+* Pilot
+
+''Abilities :''
+* Can drive, gun and command armored vehicles and air vehicles
+
+== B) The Vehicles ==
+Vehicles in CTB are available in limited quantity.<br>
+Each side as a set of available vehicles, in the safe area owned by each side at the back of fight zone. Vehicle can be driven from there to the front. They will respawn there if destroyed or left empty long enough<br>
+
+To ease the deployement, Facilities can be used. Facility may exist (or be deployed by Engineers) in friendly zone areas. From the Facility, a player can call a vehicle from the safe zone directly to the Facility, if he is of the correct class to drive the vehicle. He will be placed in the driver seat directly. <br>
+Some vehicles from the safe zone cannot be called through Facilities, usually air vehicles. The player who wants to use these vehicles should spawn at the safe zone (called "BackSpawn")<br>
+
+For classes without vehicle access, the main bunker in friendly zones can be used to create a car for transportation. Car creation is limited in time to avoid too much creation.
+
+
+= III) Mission makers area =
+
+CTB is made to ease the making of mission from a template.<br>
+The step to make a new mission from the template should ultimately be :
+* place the different zones (move existing ones, and copy/paste to create new ones) on the map, and change the init field to make them initialized properly (starting ownership, linked zones, associated marker)
+* place the vehicles in the Safe Zone, and change the init field for correct initialization
+* change some triggers, mainly end game detection
+* add or remove players spots by creating or deleting playable units 
+* change parameters in the common\initCTB.sqf file to setup things like spawn timers, zone capture size, classes list, roles list, vehicle permissions settings, etc...
+<br>
+There is still work to do to acheive this goal
+<br><br>
+= IV) Project dev and information =
+The CTB project has a dev space at Dev Heaven (thanks to all the crew here for outstanding support to mission making and modding community!).<br>
+You can visit DH CTB space here :
+* http://dev-heaven.net/projects/show/whis-maas
+<br>
+You'll find beta versions of the mission, as well as source files repository, for looking at the ugly coding done so far ;)
+<br>
+You can report found bugs in the project's bug list :
+* http://dev-heaven.net/projects/whis-maas/issues

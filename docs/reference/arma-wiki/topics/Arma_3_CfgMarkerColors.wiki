@@ -1,0 +1,105 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgMarkerColors
+// revision: 373210 (2025-04-12T22:20:51Z)
+// export sha1: sl8xmm0f1dh9dyjh0ru7wvru6xumt0w
+// categories: Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side||2}}
+An overview of the {{hl|CfgMarkerColors}} class.
+
+{{Clear}}
+== Config Entries ==
+
+
+=== C ===
+
+==== color ====
+[[TokenNameValueTypes#Array|Array]]
+
+<syntaxhighlight lang="cpp">
+color[] = { 0, 0, 0, 1 }; // colour in format RGBA
+</syntaxhighlight>
+
+=== N ===
+
+==== name ====
+[[TokenNameValueTypes#String|String]]
+
+<syntaxhighlight lang="cpp">
+name = "Default"; // name used as display name in UIs
+</syntaxhighlight>
+
+=== S ===
+
+==== scope ====
+[[TokenNameValueTypes#Integer|Integer]]
+
+<syntaxhighlight lang="cpp">
+scope = 1; // accessibility: 1 = public, 0 = private
+</syntaxhighlight>
+
+
+== Marker Color Classes ==
+
+{| class="wikitable sortable"
+! style= "min-width: 100px" | Preview !! Class Name !! Display Name !! RGBA (0..1) !! RGB (0..255) !! HTML
+|-
+| style="background-color: #000000" | || Default || ''Default'' || [0.00, 0.00, 0.00, 1.00] || [0.00, 0.00, 0.00] || #000000
+|-
+| style="background-color: #000000" | || ColorBlack || ''Black'' || [0.00, 0.00, 0.00, 1.00] || [0.00, 0.00, 0.00] || #000000
+|-
+| style="background-color: #808080" | || ColorGrey || ''Grey'' || [0.50, 0.50, 0.50, 1.00] || [127.50, 127.50, 127.50] || #808080
+|-
+| style="background-color: #E60000" | || ColorRed || ''Red'' || [0.90, 0.00, 0.00, 1.00] || [229.50, 0.00, 0.00] || #E60000
+|-
+| style="background-color: #804000" | || ColorBrown || ''Brown'' || [0.50, 0.25, 0.00, 1.00] || [127.50, 63.75, 0.00] || #804000
+|-
+| style="background-color: #D96600" | || ColorOrange || ''Orange'' || [0.85, 0.40, 0.00, 1.00] || [216.75, 102.00, 0.00] || #D96600
+|-
+| style="background-color: #D9D900" | || ColorYellow || ''Yellow'' || [0.85, 0.85, 0.00, 1.00] || [216.75, 216.75, 0.00] || #D9D900
+|-
+| style="background-color: #809966" | || ColorKhaki || ''Khaki'' || [0.50, 0.60, 0.40, 1.00] || [127.50, 153.00, 102.00] || #809966
+|-
+| style="background-color: #00CC00" | || ColorGreen || ''Green'' || [0.00, 0.80, 0.00, 1.00] || [0.00, 204.00, 0.00] || #00CC00
+|-
+| style="background-color: #0000FF" | || ColorBlue || ''Blue'' || [0.00, 0.00, 1.00, 1.00] || [0.00, 0.00, 255.00] || #0000FF
+|-
+| style="background-color: #FF4C66" | || ColorPink || ''Pink'' || [1.00, 0.30, 0.40, 1.00] || [255.00, 76.50, 102.00] || #FF4C66
+|-
+| style="background-color: #FFFFFF" | || ColorWhite || ''White'' || [1.00, 1.00, 1.00, 1.00] || [255.00, 255.00, 255.00] || #FFFFFF
+|-
+| style="background-color: #004C99" | || ColorWEST || ''BLUFOR'' || [0.00, 0.30, 0.60, 1.00] || [0.00, 76.50, 153.00] || #004C99
+|-
+| style="background-color: #800000" | || ColorEAST || ''OPFOR'' || [0.50, 0.00, 0.00, 1.00] || [127.50, 0.00, 0.00] || #800000
+|-
+| style="background-color: #008000" | || ColorGUER || ''Independent'' || [0.00, 0.50, 0.00, 1.00] || [0.00, 127.50, 0.00] || #008000
+|-
+| style="background-color: #660080" | || ColorCIV || ''Civilian'' || [0.40, 0.00, 0.50, 1.00] || [102.00, 0.00, 127.50] || #660080
+|-
+| style="background-color: #B29900" | || ColorUNKNOWN || ''Unknown side'' || [0.70, 0.60, 0.00, 1.00] || [178.50, 153.00, 0.00] || #B29900
+|-
+| style="background-color: #004C99" | || colorBLUFOR || ''BLUFOR'' || [0.00, 0.30, 0.60, 1.00] || [0.00, 76.50, 153.00] || #004C99
+|-
+| style="background-color: #800000" | || colorOPFOR || ''OPFOR'' || [0.50, 0.00, 0.00, 1.00] || [127.50, 0.00, 0.00] || #800000
+|-
+| style="background-color: #008000" | || colorIndependent || ''Independent'' || [0.00, 0.50, 0.00, 1.00] || [0.00, 127.50, 0.00] || #008000
+|-
+| style="background-color: #660080" | || colorCivilian || ''Civilian'' || [0.40, 0.00, 0.50, 1.00] || [102.00, 0.00, 127.50] || #660080
+|-
+| style="background-color: #B13339" | || Color1_FD_F || ''Red (Firing Drills)'' || [0.69, 0.20, 0.22, 1.00] || [177.00, 51.00, 57.00] || #B13339
+|-
+| style="background-color: #ADBF83" | || Color2_FD_F || ''Green (Firing Drills)'' || [0.68, 0.75, 0.51, 1.00] || [173.00, 191.00, 131.00] || #ADBF83
+|-
+| style="background-color: #F08231" | || Color3_FD_F || ''Orange (Firing Drills)'' || [0.94, 0.51, 0.19, 1.00] || [240.00, 130.00, 49.00] || #F08231
+|-
+| style="background-color: #678B9B" | || Color4_FD_F || ''Blue (Firing Drills)'' || [0.40, 0.55, 0.61, 1.00] || [103.00, 139.00, 155.00] || #678B9B
+|-
+| style="background-color: #B040A7" | || Color5_FD_F || ''Purple (Firing Drills)'' || [0.69, 0.25, 0.65, 1.00] || [176.00, 64.00, 167.00] || #B040A7
+|-
+| style="background-color: #5A595A" | || Color6_FD_F || ''Gray (Firing Drills)'' || [0.35, 0.35, 0.35, 1.00] || [90.00, 89.00, 90.00] || #5A595A
+|}
+
+{{Wiki|extractionScript}}
+
+
+{{GameCategory|arma3|Reference Lists}}

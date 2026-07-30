@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/missileState
+// revision: 377694 (2026-01-02T09:03:16Z)
+// export sha1: 6ii2unpa5dwfncicxe7bs8n59e0lzkd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Weapons
+
+|descr= Get the provided ''guided'' missile's engine, target lock and flight profile states.
+
+|s1= [[missileState]] munition
+
+|p1= munition: [[Object]] - missile
+
+|r1= [[Array]] with [engineState, lockState, flightState]
+* engineState: [[String]] - one of "INIT", "THRUST", "FLY" or ""
+* lockState: [[String]] - one of "MANUAL", "LOCKED", "LOST", "INITIAL", "SEEKING" or ""
+* flightState: [[String]] - one of "DEFAULT", "DIRECT", "TOPDOWN", "LOALDISTANCE", "LOALALTITUDE", "OVERFLY", "CRUISE" or "" (LOAL stands for "Lock-On After Launch")
+
+|x1= <sqf>missileState _myMissile params ["_engineState", "_lockState", "_flightState"];</sqf>
+
+|x2= <sqf>
+_myHelicopter addEventHandler ["Fired", {
+	private _projectile = _this select 6;
+	// or params ["", "", "", "", "", "", "_projectile"];
+	systemChat str missileState _projectile;
+}];
+</sqf>
+
+|seealso= [[missileTargetPos]] [[setMissileTargetPos]] [[setMissileTarget]] [[missileTarget]]
+}}

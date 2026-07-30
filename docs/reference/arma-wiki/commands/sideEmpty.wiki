@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/sideEmpty
+// revision: 342117 (2023-07-09T12:26:40Z)
+// export sha1: j7yx7lp73xox7mrpfr7o49veg6fqhu8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Sides
+
+|descr= Returns empty side, for example static buildings in [[:Category:Eden Editor|Eden Editor]].
+
+|s1= '''sideEmpty'''
+
+|r1= [[Side]]
+
+|x1= <sqf>_sideEmpty = sideEmpty;</sqf>
+
+|seealso= [[side]] [[west]] [[blufor]] [[east]] [[opfor]] [[resistance]] [[independent]] [[civilian]] [[sideLogic]] [[sideFriendly]] [[sideEnemy]] [[sideUnknown]] [[playerSide]] [[sideAmbientLife]]
+}}

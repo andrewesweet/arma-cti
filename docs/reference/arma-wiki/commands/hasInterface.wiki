@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/hasInterface
+// revision: 369395 (2024-09-03T18:43:19Z)
+// export sha1: sy14ai270lqztlkzmklfflg5s5yfjnt
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 2: Operation Arrowhead version 1.63 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.63
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Multiplayer
+
+|descr= Returns true if the computer has an interface (a real player). False for a dedicated server or for a headless client.
+
+|s1= [[hasInterface]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_isHC = !(hasInterface || isDedicated);</sqf>
+
+|x2= <sqf>_isHC = !hasInterface && !isDedicated;</sqf>
+
+|seealso= [[isDedicated]] [[isServer]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-12-21 - 14:55 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+<sqf>
+if (isDedicated) then {
+	//run on dedicated server only
+};
+
+if (isServer) then {
+	//run on dedicated server or player host
+};
+
+if (hasInterface) then {
+	//run on all player clients incl. player host
+};
+
+if (!isDedicated) then {
+	//run on all player clients incl. player host and headless clients
+};
+
+if (!isServer) then {
+	//run on all player clients incl. headless clients but not player host
+};
+
+if (!hasInterface) then {
+	//run on headless clients and dedicated server
+};
+
+if (!hasInterface && !isDedicated) then {
+	//run on headless clients only
+};
+</sqf>
+</dd>
+
+</dl>

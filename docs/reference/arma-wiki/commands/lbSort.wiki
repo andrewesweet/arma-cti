@@ -1,0 +1,75 @@
+// source: https://community.bistudio.com/wiki/lbSort
+// revision: 319276 (2022-05-13T09:23:28Z)
+// export sha1: s4g3yxhng69vtdwokkgntuyrqy2tcx5
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - ListBox
+
+|descr= Sorts listbox entries alphabetically ascending by their [[lbText]].
+
+|s1= [[lbSort]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Nothing]]
+
+|s2= [[lbSort]] [control, sortOrder]
+
+|s2since= arma3 1.18
+
+|p21= control: [[Control]]
+|p22= sortOrder: [[String]] - "ASC": ascending, "DESC": descending
+
+|r2= [[Nothing]]
+
+|s3= [[lbSort]] idc
+
+|s3since= arma3 1.68
+
+|p41= idc: [[Number]]
+
+|r3= [[Nothing]]
+
+|s4= [[lbSort]] [idc, sortOrder]
+
+|s4since= arma3 1.68
+
+|p61= idc: [[Number]]
+
+|p62= sortOrder: [[String]] - "ASC": ascending, "DESC": descending
+
+|r4= [[Nothing]]
+
+|x1= <sqf>lbSort _myControl;</sqf>
+|x2= <sqf>lbSort [_myControl, "DESC"];</sqf>
+|x3= <sqf>lbSort 101;</sqf>
+|x4= <sqf>lbSort [101, "DESC"];</sqf>
+
+|seealso= [[lbSortBy]] [[lnbSortBy]] [[lbSortByValue]] [[lnbSort]] [[tvSort]] [[lbSortByValue]] [[tvSortByValue]] [[lnbSortByValue]] [[lbAdd]] [[lbClear]] [[lbColor]] [[lbCurSel]] [[lbData]] [[lbDelete]] [[lbIsSelected]] [[lbPicture]] [[lbSelection]] [[lbSetColor]] [[lbSetCurSel]] [[lbSetData]] [[lbSetPicture]] [[lbSetSelected]] [[lbSetTooltip]] [[lbSetValue]] [[lbSize]] [[lbText]] [[lbValue]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted: Sep 10 2014</dd>
+<dt class="note">[[User:ffur2007slx2_5|ffur2007slx2_5]]</dt>
+<dd class="note">More information on the LB command family can be found on the [[List Box]] page.
+</dl>

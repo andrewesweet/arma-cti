@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Game_Logic_Type
+// revision: 170248 (2020-12-05T14:38:08Z)
+// export sha1: t984kgjxq00c9rjyjsuy0cdhw70k2dk
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Game Logic]]

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:BTS
+// revision: 376291 (2025-09-29T13:59:35Z)
+// export sha1: hlu3cngy7aklmmec0lh5h5tuz75os7s
+// Vendored snapshot. Do not edit — re-export instead.
+
+All things that have to with the [[:Category:ArmA: Armed Assault|{{arma1}}]] Bugtracking System.
+
+{{GameCategory|arma1}}

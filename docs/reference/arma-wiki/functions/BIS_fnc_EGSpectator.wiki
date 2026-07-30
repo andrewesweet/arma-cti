@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EGSpectator
+// revision: 348958 (2023-11-08T14:45:39Z)
+// export sha1: ig8jsvmdhdr5mp08jb8krcuzoq7wqd1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Spectator | Category:Functions | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.54
+
+|gr1= Spectator
+
+|descr= Spectator instance.
+
+|s1= [mode, [spectator, whitelistedSides, allowAi, allowFreeCamera, allow3PPCamera, showFocusInfo, showCameraButtons, showControlsHelper, showHeader, showLists]] call [[BIS_fnc_EGSpectator]]
+
+|p1= mode: [[String]] - function mode, can be:
+* "Initialize"
+* "Terminate"
+'''See the [[Arma 3: Functions Viewer|in-game Functions Viewer]] to see all the possible values. The following parameters are for "Initialize".'''
+
+|p2= spectator: [[Object]] - player
+
+|p3= whitelistedSides: [[Array]] - (Optional, default: []) sides that can be spectated
+
+|p4= allowAi: [[Boolean]] - (Optional, default: [[false]]) whether AI can be viewed by the spectator
+
+|p5= allowFreeCamera: [[Boolean]] - (Optional, default: [[true]]) whether free camera mode is available
+
+|p6= allow3PPCamera: [[Boolean]] - (Optional, default: [[true]]) whether 3rd Person camera mode is available
+
+|p7= showFocusInfo: [[Boolean]] - (Optional, default: [[true]]) whether to show Focus Info stats widget
+
+|p8= showCameraButtons: [[Boolean]] - (Optional, default: [[true]]) whether or not to show camera buttons widget
+
+|p9= showControlsHelper: [[Boolean]] - (Optional, default: [[true]]) whether to show controls helper widget
+
+|p10= showHeader: [[Boolean]] - (Optional, default: [[true]]) whether to show header widget
+
+|p11= showLists: [[Boolean]] - (Optional, default: [[true]]) whether to show entities / locations lists
+
+|r1= [[Boolean]] - the return value depends on the mode. For "Initialize" and "Terminate" a [[Boolean]] indicating successful execution is returned.
+
+|x1= <sqf>["Initialize", [player]] call BIS_fnc_EGSpectator;</sqf>
+
+|seealso= [[Arma 3: End Game Spectator Mode]]
+}}

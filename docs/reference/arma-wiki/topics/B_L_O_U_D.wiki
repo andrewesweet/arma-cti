@@ -1,0 +1,17 @@
+// source: https://community.bistudio.com/wiki/B.L.O.U.D
+// revision: 378833 (2026-07-08T16:39:07Z)
+// export sha1: 7k76h1fu0ywbpki83x34f0oncew1rvn
+// categories: Category:Before Flashpoint | Category:Easter Eggs | Category:Projects
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= Bloud_2.gif
+|intro = [[File:Bloud.gif|right]]'''B.L.O.U.D''' is a 1987 game created by Ondřej and Marek Španěl for the {{Link|https://en.wikipedia.org/wiki/Atari_8-bit_computers#600XL_and_800XL|Atari 800XL}}.
+It was made available to play as an [[:Category:Easter Eggs|Easter Egg]] in {{GameCategory|tkom|link= y}}.
+
+
+{{Youtube|EydLuhQnpQc|B.L.O.U.D gameplay|center|500}}
+}}
+
+[[Category:Before Flashpoint]]
+[[Category:Easter Eggs]]

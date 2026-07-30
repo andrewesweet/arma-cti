@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_unitHeadgear
+// revision: 336872 (2023-01-04T16:43:48Z)
+// export sha1: t2nu3xo3ygvnm8u5cttkvq6kejwe88g
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.48
+
+|arg= local
+
+|gr1= Inventory
+
+|descr= Randomise headgear and facewear of a character.
+{{Feature|important|If the randomization is disabled, only strings parameters will be processed, array will be ignored and considered as false.}}
+
+|s1= [unit, headgear, facewear] call [[BIS_fnc_unitHeadgear]]
+
+|p1= unit: [[Object]]
+
+|p2= headgear: [[Boolean]], [[String]] or [[Array]] - (Optional, default [[false]]) can be one of:
+* [[Boolean]] - if [[false]], change nothing to the headgear
+* [[String]] - valid Headgear class or a valid class from [[Description.ext#CfgUnitTemplates|Description.ext CfgUnitTemplates]]
+* [[Array]] - headgear list with individual probability|p3= facewear: [[Boolean]], [[String]] or [[Array]] - (Optional, default [[false]]) can be one of:
+* [[Boolean]] - if [[false]], change nothing to the facewear
+* [[String]] - valid facewear class or a valid class from [[Description.ext#CfgUnitTemplates|Description.ext CfgUnitTemplates]]
+* [[Array]] - facewear list with individual probability
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>
+[this] call BIS_fnc_unitHeadgear;					// headgear and face wear, same as [this, [], []]
+[this, [], []] call BIS_fnc_unitHeadgear;			// headgear only
+[this, nil, []] call BIS_fnc_unitHeadgear;			// facewear only
+[this, "myTemplate"] call BIS_fnc_unitHeadgear;	// class defined in Description.ext - CfgUnitTemplates
+</sqf>
+
+|seealso= {{Link|Description.ext#CfgUnitTemplates}} [[addGoggles]] [[addHeadgear]]
+}}

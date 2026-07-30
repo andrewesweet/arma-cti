@@ -1,0 +1,113 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Play_on_Linux
+// revision: 370841 (2025-02-14T13:34:29Z)
+// export sha1: 5sjkdqpvnhzs2tggjwg6w9yls6sutjv
+// categories: Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side||2}}
+This article covers the basic setup and troubleshooting of {{arma3}} on Proton. Using Proton, it is possible to run the latest version of {{arma3}} on a Linux client.
+To setup {{arma3}} on a Linux server see [[Arma 3: Dedicated Server]].
+
+Note that Mikero's tools '''also''' run on Mac and Linux and Arm OS.
+
+Proton is a tool that enables compatibility with Windows-exclusive games on Linux.
+On the {{Link|link= https://www.protondb.com/app/107410 |text= ProtonDB page}}, {{arma3}} is ranked "Gold" in compatibility. This means the game requires tweaking on Linux to run smoothly.
+{{Feature|informative|See also:
+* [[Arma 3: Play on Mac]]
+* [[Arma 3: Experimental Ports]]
+}}
+
+
+== Proton Setup ==
+
+To use Proton, it has to be enabled for all Steam library titles.
+Open Steam client, click on "Steam" on the top-left, click on "Settings" then click on "Steam Play" at the bottom of the list.
+Check the box for "Enable Steam Play for all other titles" and select a version of Proton. Avoid Proton Experimental as that can change overtime.
+A recommended version of Proton is Proton 7.0-1.
+
+[[File:arma3_proton-steamplay.png|center]]
+
+To enable Proton for {{arma3}}, go to Steam, right-click on {{arma3}}, and click on "Properties" to see the game's properties.
+Go to "Compatibility", check the box for "Force the use of a specific Steam Play compatibility tool" and select Proton again.
+
+[[File:arma3_proton-compatibility.png|center]]
+
+
+== Launch Options ==
+
+At the time of writing, the default {{arma3}} game launcher works with Proton, but some glitches may occur.
+To run the game smoothly, add {{hl|-noLauncher}} to the Launch Options under "Properties" → "General".
+
+[[File:arma3_proton-launch-options.png|center]]
+
+It is now possible to run {{arma3}} under Proton.
+
+
+== BattlEye ==
+
+{{arma3}} uses [[BattlEye]] to secure its servers. By default, {{arma3}} on Proton will not work on servers that use BattlEye.
+To enable BattlEye compatibility, download and install the "Proton BattlEye Runtime" tool under the "Tools" section in your steam library.
+Once installed, {{arma3}} on Proton will be compatible with BattlEye-secured servers.
+
+
+== Mods ==
+
+Most mods will work out of the box for {{arma3}} on Proton. TFAR / ACRE2 need extra setup to work.
+See {{Link|https://ninelore.org/project/armaonlinux/|ninelore's guide}} on setting up Teamspeak and TFAR / ACRE2 for {{arma3}} on Proton.<br>
+Alternative launchers can be used to manage mods and launch options.
+See for example {{Link|https://github.com/muttleyxd/arma3-unix-launcher|muttleyxd's {{arma3}} Unix Launcher}} or {{Link|https://github.com/viktorholk/arma3-mod-manager-console|viktorholk's Mod Manager Console}}.
+
+
+== Troubleshooting ==
+
+{{Feature|important|Note that for every fix using {{hl|%command%}}, the {{hl|-noLauncher}} option should be used ''after'' it in order to be considered.}}
+
+=== Mouse Escapes Fullscreen Window ===
+
+In some cases, the mouse may leave the fullscreen application. This often happens with multi-monitor setups. The solution is to enable "Automatically capture the mouse in full screen windows" in winecfg.<br>
+To open winecfg, run {{hl|protontricks 107410 winecfg}} in the terminal.
+
+=== Crackling Audio ===
+
+When certain loud sounds play in-game, the audio may crackle. There are several solutions.
+* Add {{hl|1= WINEDLLOVERRIDES="xaudio2_7=n" %command%}} to the Steam launch options (e.g {{hl|1= WINEDLLOVERRIDES="xaudio2_7=n" %command% -noLauncher}}).
+* Run {{hl|protontricks 107410 winecfg}} in the terminal to configure the game and install xaudio2_7.
+Switch to the performance branch. See [[Arma 3: Steam Branches]].
+
+=== Mission Start Issues ===
+
+In some cases, the game may freeze, hang, crash or otherwise fail to progress past the loading screen after mission launch.
+The possible cause of the issue has to do with how wine handles threads. There are a couple of solutions:
+* Disable Proton Esync by adding {{hl|1=PROTON_NO_ESYNC=1 %command%}} (e.g {{hl|1=PROTON_NO_ESYNC=1 %command% -noLauncher}}). Proton Esync can also be disabled in the {{arma3}} Unix Launcher under {{hl|Parameters >> Basic >> Proton: Disable esync}}.
+* Setting CPU count to 1 may fix the issue. Add {{hl|1= %command% -cpuCount=1}} to the launch options (e.g {{hl|1= %command% -cpuCount=1 -noLauncher}}). This can also be done in the {{arma3}} Unix Launcher under {{hl|Parameters >> Advanced >> CPU Count}} set to 1.
+Both of these solutions may hinder your performance as they are limiting CPU usage.
+
+
+== Dedicated Servers ==
+
+=== Method 1 ===
+
+# Launch {{arma3}} via Steam normally (if you want to run server and client on the same PC).
+# Find your {{arma3}} installation folder by using your right mouse button to click on the game name in Steam's library and go to the Properties click on Local files tab, then click on Browse local files button to open the file browser at that location. You should also put the server.cfg file there. Default installation folder is: {{hl|~/.steam/steam/steamapps/common/Arma 3}}.
+# Open Terminal and type in: "cd 'your {{arma3}} path'" and then press Enter. It should change to your game folder.
+# Type in and execute: <syntaxhighlight lang="bash" inline>export LD_LIBRARY_PATH="/home/user/.steam/ubuntu12_32"</syntaxhighlight>
+# Type in and execute: <syntaxhighlight lang="bash" inline>./arma3 -server -config=server.cfg</syntaxhighlight>
+Your Dedicated Server should run alongside the normal game now.
+
+{{Feature|informative|
+You can skip #4 by entering <syntaxhighlight lang="bash" inline>export LD_LIBRARY_PATH="/home/user/.steam/ubuntu12_32"</syntaxhighlight> directly into the {{hl|~/.bashrc}} file.
+}}
+
+=== Method 2 ===
+
+{{Link|Arma 3: Dedicated Server#Instructions (Linux o/s)}}
+
+
+== See Also ==
+
+* {{Link|https://ninelore.github.io/project/armaonlinux/|Setting up {{arma3}} with TFAR / ACRE2}} ({{Link|https://armaworld.de/forum/thread/4992-ger-eng-arma-on-linux-ninelore-s-guide-acre-tfar-working/?postID{{=}}39909#post39909|German Translation}})
+* {{Link|https://github.com/muttleyxd/arma3-unix-launcher|muttleyxd's {{arma3}} Unix Launcher}}
+* {{Link|https://github.com/viktorholk/arma3-mod-manager-console|viktorholk's Mod Manager Console}}
+
+
+[[Category:Arma 3: Tutorials]]

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/Template:Preload/Note
+// revision: 295914 (2021-11-16T09:33:41Z)
+// export sha1: m07sk5ozkvtxewgccvln3yoaewagjpb
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Note
+|user= {{subst:REVISIONUSER}}
+|timestamp= {{subst:CURRENTTIMESTAMP}}
+|text= {{{1|}}}
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Used by the {{hl|'''Add Note'''}} button - '''not''' to be used directly (use the {{Template|Note}} template)
+|param1= noteText
+|descr1= user note text
+|example1= <nowiki>{{Preload/Note}}</nowiki>
+|result1= {{Note
+|user= Current User
+|timestamp= 20010101000000
+}}
+|example2= <nowiki>{{Preload/Note|Hello There!}}</nowiki>
+|result2= {{Note
+|user= Current User
+|timestamp= 20010101000000
+|text= Hello There!
+}}
+}}</noinclude>

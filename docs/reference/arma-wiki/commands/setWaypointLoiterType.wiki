@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/setWaypointLoiterType
+// revision: 319603 (2022-05-13T09:24:33Z)
+// export sha1: qhem4dcthhovaeevtnk7sg7e47qo8aq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Waypoints
+
+|descr= Sets the waypoint loiter type.
+
+|s1= waypoint [[setWaypointLoiterType]] type
+
+|p1= waypoint: [[Waypoint]]
+|p2= type: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_grp, 2] setWaypointLoiterType "CIRCLE";</sqf>
+
+|x2= <sqf>[_grp, 2] setWaypointLoiterType "CIRCLE_L";</sqf>
+
+|seealso= [[waypoints]] [[deleteWaypoint]] [[copyWaypoints]] [[setCurrentWaypoint]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointDescription]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointTimeout]] [[setWaypointType]] [[setWaypointVisible]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[setWaypointLoiterRadius]] [[waypointLoiterRadius]] [[addWaypoint]] [[currentWaypoint]] [[waypointSpeed]] [[setWPPos]] [[waypointName]]
+}}

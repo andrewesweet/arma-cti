@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/CT_HITZONES
+// revision: 170185 (2020-11-30T08:34:30Z)
+// export sha1: c3dt8f7hachlc8e587xjeiitvyp67gw
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_HITZONES
+|value = 17
+|description = Unknown control type.
+|gallery=
+|commands =
+|events =
+}}
+
+<!-- {{CT|abc start}}
+
+{{CT|abc end}} -->
+
+{{CT|examples}}
+
+None

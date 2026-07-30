@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/ctrlSetActiveColor
+// revision: 377734 (2026-01-03T00:21:56Z)
+// export sha1: mqbqxm21ydrtqt4c66awxaouet4k1r0
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= Sets text color of given control when it is selected.
+
+|s1= control [[ctrlSetActiveColor]] color
+
+|p1= control: [[Control]]
+
+|p2= color: [[Color|Color (RGBA)]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetActiveColor [1, 0, 0, 1];</sqf>
+
+|seealso= [[allControls]] [[allDisplays]] [[controlsGroupCtrl]] [[ctrlDelete]] [[ctrlModel]] [[ctrlSetModel]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlClassName]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlModelDirAndUp]] [[ctrlSetModelDirAndUp]] [[displayParent]]
+}}

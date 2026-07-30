@@ -1,0 +1,170 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_strategicMapOpen
+// revision: 376191 (2025-09-14T12:29:08Z)
+// export sha1: jvl64v64296w045ljq785of08q8yt4f
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strategic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strategic
+
+|descr= Creates a strategic map.
+[[File:A3 strategicMap.jpg|center|600px]]
+
+|s1= [display, pos, missions, ORBATs, markers, images, weather, night, scale, simulation, label, missionName, missionIcon] call [[BIS_fnc_strategicMapOpen]]
+
+|p1= display: [[Display]] - parent display. When empty, mission display is used.
+
+|p2= pos: [[Array]] format [[Position]] - default view position in format [x,y,y] or [x,y]
+
+|p3= missions: [[Array]] - list of missions, each [[Array]] in format:
+* 0: [[Position]] - 2D or 3D position of mission
+* 1: [[Code]] - Expression executed when user clicks on mission icon
+* 2: [[String]] - Mission name
+* 3: [[String]] - Short description
+* 4: [[String]] - Name of mission's player
+* 5: [[String]] - Path to overview image
+* 6: [[Number]] - size multiplier for overview image
+* 7: [[Array]] - parameters for on-click action. Can be accessed in code with <sqf inline>_this # 9</sqf>
+
+|p4= ORBATs: [[Array]] - list of ORBAT, each [[Array]] in format:
+* 0: [[Array]] format [[Position]] - 2D or 3D position
+* 1: [[Config]] - preview CfgORBAT group
+* 2: [[Config]] - topmost displayed CfgORBAT group
+* 3: [[Array]] of [[String]]s - list of allowed tags
+* 4: [[String]] - name of mission's player
+* 5: [[Number]] - maximum number of displayed tiers
+
+|p5= markers: [[Array]] of [[String]]s - list of markers revealed in strategic map (will be hidden when map is closed)
+
+|p6= images: [[Array]] - list of custom images, each [[Array]] in format:
+* 0: [[String]] - texture path
+* 1: [[Array]] format [[Color|Color (RGBA)]]
+* 2: [[Array]] format [[Position]] - image position
+* 3: [[Number]] - image width in meters
+* 4: [[Number]] - image height in meters
+* 5: [[Number]] - image angle in degrees
+* 6: [[String]] - text displayed next to the image
+* 7: [[Boolean]] - [[true]] to show shadow
+
+|p7= weather: [[Number]] - overcast, from 0 - 1, where 1 means cloudy weather
+
+|p8= night: [[Boolean]] - [[true]] for night version of strategic map (darker with blue tone)
+
+|p9= scale: [[Number]] - default map scale coeficient (1 is automatic scale)
+
+|p10= simulation: [[Boolean]]] - (Optional, default [[false]] [[true]] to enable simulation while the map is opened
+
+|p11= label: [[String]] - (Optional, default "Select a mission") bottom bar action label text
+
+|p12= missionName: [[Boolean]] - (Optional, default [[true]]) [[true]] to show icon label as a mission name
+
+|p13= missionIcon: [[String]] - (Optional, default "\A3\Ui_f\data\Map\GroupIcons\badge_rotate_%1_gs.paa") path to mission icon texture 
+* %1 - Animation frame from 0-6 (optional)
+* %2 - Index from 1-9 (optional)
+
+|r1= [[Display]] - rscDisplayStrategicMap
+
+|x1= <sqf>
+[
+	findDisplay 46,
+	[2000,2000,0],
+	[
+		[
+			[2000,2000,0],
+			{systemChat format ["%1",name ((_this # 9) # 0)]},
+			"1st Mission",
+			"This is mission one",
+			"Name of mission's player",
+			"\A3\Data_F_Exp\Logos\arma3_exp_icon_ca.paa",
+			1.5,
+			[player]
+		],
+		[
+			[1000,1000,0],
+			{systemChat format ["%1",name ((_this # 9) # 0)]},
+			"2nd Mission",
+			"This is mission two",
+			"Name of mission's player",
+			"\A3\Data_F_Argo\Logos\arma3_argo_logoTitle_ca.paa",
+			1.5,
+			[player]
+		]
+	],
+	[
+		[
+			[3000,3000,0],
+			configFile >> "CfgORBAT" >> "BIS" >> "B_1_A_1_2",
+			configFile >> "CfgORBAT" >> "BIS" >> "B_1",
+			[],
+			10
+		]
+	],
+	[
+		"marker_1",
+		"marker_2"
+	],
+	[
+		[
+			"\A3\Ui_f\data\Logos\arma3_white_ca.paa",
+			[0,0,0,1],
+			[4000,4000,0],
+			8,
+			8,
+			0,
+			"Arma 3 Logo",
+			true
+		]
+	],
+	0,
+	false,
+	1,
+	true,
+	"Strategic Map Example",
+	false,
+	"\A3\Ui_f\data\Logos\arma3_white_ca.paa"
+] call BIS_fnc_strategicMapOpen;
+</sqf>
+
+|seealso= [[ORBAT Viewer]] [[BIS_fnc_ORBATAddGroupOverlay]] [[BIS_fnc_ORBATAnimate]] [[BIS_fnc_ORBATConfigPreview]] [[BIS_fnc_ORBATGetGroupParams]] [[BIS_fnc_ORBATOpen]] [[BIS_fnc_ORBATRemoveGroupOverlay]] [[BIS_fnc_ORBATSetGroupFade]] [[BIS_fnc_ORBATSetGroupParams]] [[BIS_fnc_ORBATTooltip]] [[BIS_fnc_strategicMapMouseButtonClick]] [[BIS_fnc_strategicMapAnimate]]
+}}
+
+{{Note
+|user= ansin11
+|timestamp= 20210331152900
+|text= In order to use an image from the mission folder, the full path to the image has to be provided:
+<sqf>
+"images\MyImage.jpg" // Does not work
+([str missionConfigFile, 0, -15] call BIS_fnc_trimString) + "images\MyImage.jpg" // works
+
+// edit: since Arma 3 v1.96 getMissionPath is available
+getMissionPath "images\MyImage.jpg" // works
+</sqf>
+}}
+
+{{Note
+|user= Hamster2k
+|timestamp= 20250911143457
+|text= If you want to show the strategic map at the start of the mission by attaching it to the mission display (findDisplay 46;), the mission display needs to be initialized first. You can wait for initialization like this:
+
+<sqf>waitUntil { !isNull findDisplay 46 };</sqf>
+}}
+
+{{Note
+|user= Hamster2k
+|timestamp= 20250912191307
+|text= If you are using 3D positions for the positions in your _missions array, be aware that the clickable size of the mission on the map gets reduced the further away from 0 your z coordinate is, becoming unclickable at some point. Use a 2D position like this to avoid that issue:
+<sqf>
+private _position = getPosWorld mission1;
+_position2d = [_position select 0, _position select 1];
+_missions pushBack [
+	_position2d,
+	{ /*mission code*/ },
+	"My mission",
+	"My mission description"
+];
+</sqf>
+}}

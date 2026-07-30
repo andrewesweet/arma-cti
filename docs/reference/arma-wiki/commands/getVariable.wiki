@@ -1,0 +1,131 @@
+// source: https://community.bistudio.com/wiki/getVariable
+// revision: 369203 (2024-09-03T10:34:50Z)
+// export sha1: 1dmplq9lukqurrd0bkz1c16d2s15t18
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Command Group: Namespaces | Category:Command Group: Variables | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|gr1= Variables
+|gr2= Namespaces
+|gr3= Multiplayer
+
+|descr= Returns the value of variable in the variable space assigned to various data types.
+All available data types combinations:
+{{{!}} class="wikitable"
+!colspan="2"{{!}}Primary syntax ([[String]]) !! colspan="2"{{!}}Alternative syntax ([[Array]])
+{{!}}-
+{{!}}'''Code'''
+{{!}}'''Since'''
+{{!}}'''Code'''
+{{!}}'''Since'''
+{{!}}-
+{{!}} [[Namespace]] getVariable [[String]] {{!}}{{!}} - {{!}}{{!}} [[Namespace]] getVariable [[Array]] {{!}}{{!}} {{arma2oa}} v1.60
+{{!}}-
+{{!}} [[Object]] getVariable [[String]] {{!}}{{!}} - {{!}}{{!}} [[Object]] getVariable [[Array]] {{!}}{{!}} - 
+{{!}}-
+{{!}} [[Group]] getVariable [[String]] {{!}}{{!}} - {{!}}{{!}} [[Group]] getVariable [[Array]] {{!}}{{!}} -
+{{!}}-
+{{!}} [[Team Member]] getVariable [[String]] {{!}}{{!}} - {{!}}{{!}} [[Team Member]] getVariable [[Array]] {{!}}{{!}} - 
+{{!}}-
+{{!}} [[Task]] getVariable [[String]] {{!}}{{!}} - {{!}}{{!}} [[Task]] getVariable [[Array]] {{!}}{{!}} {{arma3}} v1.68
+{{!}}-
+{{!}} [[Location]] getVariable [[String]] {{!}}{{!}} - {{!}}{{!}} [[Location]] getVariable [[Array]] {{!}}{{!}} {{arma3}} v1.68
+{{!}}-
+{{!}} [[Control]] getVariable [[String]] {{!}}{{!}} - {{!}}{{!}} [[Control]] getVariable [[Array]] {{!}}{{!}} {{arma3}} v1.56
+{{!}}-
+{{!}} [[Display]] getVariable [[String]] {{!}}{{!}} {{arma3}} v1.56 {{!}}{{!}} [[Display]] getVariable [[Array]] {{!}}{{!}} {{arma3}} v1.56
+{{!}}}
+
+{{Feature|important|When variable is [[setVariable|set]] on a [[Task]], it is not actually set on the task itself, but on the FSM attached to the task.<br>
+If there is no FSM, [[getVariable]] will not work.}}
+{{Feature| arma3 | In the case of Alt Syntax usage in {{arma3}}, ''defaultValue'' will be returned if:
+* Requested variable is either undefined or [[nil]]
+* Variable namespace is null ([[objNull]], [[grpNull]], etc.)}}
+
+|s1= varspace [[getVariable]] name
+
+|p1= varspace: [[Namespace]], [[Object]], [[Display]], [[Control]], [[Group]], [[Location]], [[Task]], [[Team Member]], [[Display]], [[Control]]
+
+|p2= name: [[String]] - variable name in given namespace
+
+|r1= [[Anything]] or [[Nothing]] if the variable doesn't exist
+
+|s2= varspace [[getVariable]] [name, defaultValue]
+
+|p21= varspace: [[Namespace]], [[Object]], [[Display]], [[Control]], [[Group]], [[Location]], [[Task]], [[Team Member]], [[Display]], [[Control]]
+
+|p22= name: [[String]] - variable name in given namespace
+
+|p23= defaultValue: [[Anything]] - value to return if variable doesn't exist {{Feature|warning|A dynamic ''defaultValue'' e.g <sqf inline>random 500</sqf> will always be executed, even if the variable is defined.}}
+
+|r2= [[Anything]] - current value of the variable or ''defaultValue'' if the variable doesn't exist.
+
+|x1= <sqf>private _variable = myTruck getVariable "myVariable"; // returns nil if "myVariable" is not set</sqf>
+
+|x2= <sqf>private _variable = myTruck getVariable ["myVariable", 50]; // returns 50 if "myVariable" is not set</sqf>
+
+|x3= <sqf>
+for "_i" from 0 to 5 do
+{
+	_car = missionNamespace getVariable ("car" + str _i);
+	_car setDamage 0;
+}; // Set damage of car0..car5 to 0
+</sqf>
+
+|x4= <sqf>
+myMissionVar = 2015;
+missionNamespace getVariable "myMissionVar"; // returns 2015
+</sqf>
+
+|x5= Get current value of a variable and if it is undefined, define it and get the defined value:
+<sqf>
+private _var = missionNamespace getVariable "varName";
+if (isNil "_var") then
+{
+	missionNamespace setVariable ["varName", 123];
+	_var = 123;
+};
+// _var here will contain current value of the variable varName
+</sqf>
+
+|seealso= [[setVariable]] [[allVariables]] [[getFSMVariable]]
+}}
+
+{{Note
+|user= Ebay
+|timestamp= 20160813171300
+|text= '''NOTE: {{arma2}} only! In {{arma3}} this will return default value:'''
+Warning: the alternative syntax returns undefined when the namespace is an object and that object is null. Example:<br>
+<sqf>
+_test = objNull getVariable ["test", "0"];
+systemChat _test;
+</sqf>
+Errors because _test is undefined. Tested in {{arma2oa}} 1.63.131129
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20170831032900
+|text= You can do typechecking using [[param]]:
+<sqf>private _myVar = [player getVariable "myVar"] param [0, "", [""]];</sqf>
+and [[params]]:
+<sqf>[player getVariable "myVar"] params [["_myVar", "", [""]]];</sqf>
+}}

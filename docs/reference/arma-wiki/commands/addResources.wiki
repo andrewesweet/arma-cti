@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/addResources
+// revision: 351337 (2023-11-27T10:06:14Z)
+// export sha1: f70aw1d1bpienros3roei4qd6nr1zbr
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Teams | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Teams
+
+|descr= Adds resources to a team member.
+
+|s1= teamMember [[addResources]] [resource1, resource2, ...]
+
+|p1= teamMember: [[Team Member]]
+
+|p2= resourceN: [[String]]
+
+|r1= [[Nothing]]
+
+|x1=
+
+|seealso= [[resources]] [[deleteResources]]
+}}

@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/disableMapIndicators
+// revision: 364167 (2024-05-05T10:46:43Z)
+// export sha1: n25sf64s250276e1217zpk3npvko4xk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Difficulty | Category:Introduced with Arma 3 version 1.82 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.82
+
+|eff= local
+
+|gr1= Difficulty
+
+|descr= Command allows suppressing visualization of FRIENDLY, ENEMY, MINES and/or PING map indicators from difficulty setting EXTENDED MAP CONTENT. 
+
+|s1= [[disableMapIndicators]] [disableFriendly, disableEnemy, disableMines, disablePing]
+
+|p1= disableFriendly: [[Boolean]] - [[true]] to disable visualization of friendly units
+
+|p2= disableEnemy: [[Boolean]] - [[true]] to disable visualization of enemy units
+
+|p3= disableMines: [[Boolean]] - [[true]] to disable visualization of mines
+
+|p4= disablePing: [[Boolean]] - [[true]] to disable visualization of all tactical pings
+
+|r1= [[Nothing]]
+
+|x1= Disable visualization of friendly and enemy units:
+<sqf>disableMapIndicators [true, true, false, false];</sqf>
+
+|seealso= [[difficultyOption]]
+}}

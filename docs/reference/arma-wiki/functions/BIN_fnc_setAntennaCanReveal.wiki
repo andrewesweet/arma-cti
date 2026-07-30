@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_setAntennaCanReveal
+// revision: 281337 (2021-06-14T09:08:35Z)
+// export sha1: nr9icxup10lmucypafl6w5mkb204x26
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: EM Interface | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= EM Interface
+
+|descr= {{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_setAntennaCanReveal]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

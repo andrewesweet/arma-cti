@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/getUnitMovesInfo
+// revision: 378281 (2026-03-31T10:06:54Z)
+// export sha1: fm1dd1kf8gveex51zovtf33923w6st3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|arg= global
+
+|gr1= Animations
+
+|descr= Returns various information about the unit moves (primary animation) and gestures (masked animation)
+{{Feature|informative| Up until {{GVI|arma3|2.20}} this command only worked for a man unit, and other units such as animals couldn't use this command. As of {{GVI|arma3|2.22}} animals are supported as well. }}
+
+|s1= [[getUnitMovesInfo]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] format:
+* 0 - moveProgress: [[Number]] - move progress in range 0-1
+* 1 - moveTime: [[Number]] - move elapsed time ({{hl|move progress * move duration}})
+* 2 - moveDuration: [[Number]] - move duration in seconds
+* 3 - moveFactor: [[Number]] - move blend factor
+* 4 - rtmStep: [[Vector3D]] - rtm step (how many meters the unit will move after finishing the animation)
+* 5 - gestureProgress: [[Number]] - gesture progress in range 0-1
+* 6 - gestureTime: [[Number]] - gesture elapsed time ({{hl|gesture progress * gesture duration}})
+* 7 - gestureDuration: [[Number]] - gesture duration in seconds
+* 8 - gestureFactor: [[Number]] - gesture blend factor
+
+|s2= unit [[getUnitMovesInfo]] index
+
+|p21= unit: [[Object]]
+
+|p22= index: [[Number]] - index of property from the main syntax
+
+|r2= [[Anything]] - Value of the requested property, or [[Nothing]] if index is invalid. See the main syntax.
+
+|x1= <sqf>
+// Getting the move velocity of the animation
+private _animInfo = getUnitMovesInfo player;
+// velocity = displacement / time
+private _animVelocity = _animInfo # 4 vectorMultiply -1 / _animInfo # 2;	// -1 is because man model is reversed
+																			// so the rtm animation moves "backwards"
+</sqf>
+
+|x2= <sqf>
+getUnitMovesInfo player params [
+	"_moveProgress",
+	"_moveTime",
+	"_moveDuration",
+	"_moveFactor",
+	"_rtmStep",
+	"_gestureProgress",
+	"_gestureTime",
+	"_gestureDuration",
+	"_gestureFactor"
+];
+</sqf>
+
+|seealso= [[switchMove]] [[switchGesture]] [[moveTime]] [[gestureState]] [[animationState]]
+}}

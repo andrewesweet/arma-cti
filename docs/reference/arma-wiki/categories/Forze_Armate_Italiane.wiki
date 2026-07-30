@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Forze_Armate_Italiane
+// revision: 184527 (2021-01-06T13:21:40Z)
+// export sha1: mnn350byx0nml5djwtcpb5gs8i626ot
+// Vendored snapshot. Do not edit — re-export instead.
+
+Italian Army
+
+{{GameCategory|arma2|Media}}

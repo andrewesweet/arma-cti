@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/AISFinishHeal
+// revision: 377976 (2026-01-19T18:45:43Z)
+// export sha1: 6cq08vwne0x3gdkjkfuoahy3y35wsiy
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Alternative Injury Simulation (AIS) end state. Used to tell engine that script side healing is done when using "HandleHeal" event handler.
+
+|s1= [[AISFinishHeal]] [unit, healer, healerCanHeal]
+
+|p1= unit: [[Object]] - wounded
+
+|p2= healer: [[Object]] - medic
+
+|p3= healerCanHeal: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>AISFinishHeal [_wounded, _medic, true];</sqf>
+
+|seealso= {{Link|Arma 2: Event Handlers#HandleHeal}} {{Link|Arma 3: Event Handlers#HandleHeal}}
+}}

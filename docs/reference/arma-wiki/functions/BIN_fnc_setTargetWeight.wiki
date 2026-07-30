@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_setTargetWeight
+// revision: 286101 (2021-06-20T17:25:47Z)
+// export sha1: 2k1t5ho9vgg4nqhz2zubngbsakjg9vu
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Behavior | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Behavior
+
+|descr= <pre>/*
+	BIN_fnc_setTargetWeight
+	Set target priroty which is used later by BIN_fnc_findTargetWeight function to find target.
+
+	Input:
+		0:
+			_input - Unit, vehicle, group or side.
+		1:
+			_value - scalar above 0 - weight which is later used by selectRandomWeighted script command. Values equal or less than 0 are excluded from target selection
+
+	Examples:
+
+		[west,0] call BIN_fnc_setTargetWeight - all units from side "west" will be ignored by targeting system
+		[player,10] call BIN_fnc_setTargetWeight - Increase player chance of being targeted by drone weapons
+		[bis_car,0] call BIN_fnc_setTargetWeight - Vehicle & it is crew will be ignored by targeting system
+*/</pre>
+{{Wiki|placeholder}}
+{{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_setTargetWeight]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

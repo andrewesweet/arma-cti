@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Phone
+// revision: 164699 (2020-10-05T14:23:03Z)
+// export sha1: quycpnkx2dlsg88los946ckyyrmy7cf
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions related to the [[Arma 3 Apex: Old Man]] scenario and it's phone feature.
+
+[[Category:Function Group: Old Man]]

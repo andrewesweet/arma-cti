@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/isManualFire
+// revision: 364125 (2024-05-04T22:07:43Z)
+// export sha1: bhn8aodjo7dohx6imkqa0d6ch0wpimm
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|gr1= Weapons
+
+|descr= Returns [[true]] if manual fire is on. Manual fire could either be selected in vehicle action menu (if available) or with [[action]] "ManualFire" and "ManualFireCancel". Always returns [[false]] for a soldier.
+
+|s1= [[isManualFire]] vehicleName
+
+|p1= vehicleName: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_bool = isManualFire vehicle player;</sqf>
+
+|seealso= [[fire]] [[doFire]] [[commandFire]] [[canFire]] [[fireAtTarget]] [[forceWeaponFire]] [[commandArtilleryFire]] [[commandSuppressiveFire]] [[doArtilleryFire]] [[doSuppressiveFire]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2017-02-05 - 05:35 (UTC)</dd>
+<dt class="note">[[User:AgentRev|AgentRev]]</dt>
+<dd class="note">
+Manual fire means the [[effectiveCommander]] of the vehicle controls firing (but not aiming) of the [[gunner]] turret weapons (usually path [0]), while unable to fire his own weapons.
+</dd>
+
+</dl>

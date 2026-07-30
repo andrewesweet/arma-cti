@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_countdown
+// revision: 378252 (2026-03-25T14:24:56Z)
+// export sha1: 0i21ucgdhpumth3dz31u24o229www7a
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 3 version 1.02 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.02
+
+|gr1= Missions
+
+|descr= Triggers a countdown.
+{{Feature|informative|
+The '''initial''' countdown can be accessed via [[missionNamespace]]'s variable '''BIS_fnc_countdown_time'''.<br>
+The initial value is either <sqf inline>serverTime + timeInSeconds</sqf> (if set globally) or <sqf inline>time + timeInSeconds</sqf> (if set locally).
+To return the left-over time see {{Link|#Example 4}}.
+}}
+
+|s1= [timeInSeconds, global] call [[BIS_fnc_countdown]]
+
+|p1= timeInSeconds: [[Number]] or [[Boolean]]:
+* [[Number]]:
+** Any number to set the length of the countdown in seconds
+** -1 to set the countdown to [[nil]]
+** 0 to return the left-over time
+* [[Boolean]]:
+** [[true]] to find out if countdown is active and if there is left-over time
+
+|p2= global: [[Boolean]] - (Optional, default [[true]]) true to set it globally, false to set it locally
+
+|r1= <nowiki/>
+* [[Number]]:
+** If set locally: [[time]] + timeInSeconds (see {{Link|#Example 1}})
+** If set globally: [[serverTime]] + timeInSeconds (see {{Link|#Example 2}})
+** Returns -1 if countdown is set to [[nil]] (see {{Link|#Example 3}})
+** Return left-over time (see {{Link|#Example 4}})
+* [[Boolean]]: returns [[true]] when countdown is > 0 else [[false]] (see {{Link|#Example 5}})
+
+|x1= <sqf>private _initialCountdown = [50, false] call BIS_fnc_countdown; // sets countdown to 50 seconds where function is executed</sqf>
+
+|x2= <sqf>private _initialCountdown = [50] call BIS_fnc_countdown; // sets countdown to 50 seconds globally</sqf>
+
+|x3= <sqf>[-1] call BIS_fnc_countdown; // sets BIS_fnc_countdown_time to nil</sqf>
+
+|x4= <sqf>private _timeLeft = [0] call BIS_fnc_countdown; // returns the left over-time</sqf>
+
+|x5= <sqf>private _isTimeLeft = [true] call BIS_fnc_countdown; // returns true if countdown is greater than 0</sqf>
+
+|seealso= [[BIS_fnc_VRTimer]]
+}}

@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/backpackSpaceFor
+// revision: 378506 (2026-05-03T16:57:31Z)
+// export sha1: tdawzyzp58avlb5wd0du3by3stxgo32
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Containers
+
+|descr= Returns how much space is in backpack for given weapon or magazine
+
+|s1= backpack [[backpackSpaceFor]] weaponName
+
+|p1= backpack: [[Object]]
+
+|p2= weaponName: [[String]]
+
+|r1= [[Array]] with [weapons, magazines]
+* weapons: [[Number]]
+* magazines: [[Number]]
+
+|x1= <sqf>(backpackContainer player) backpackSpaceFor "m16"; // [weapons, magazines]</sqf>
+
+|seealso= [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]]
+}}

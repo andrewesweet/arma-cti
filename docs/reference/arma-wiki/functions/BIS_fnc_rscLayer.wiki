@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_rscLayer
+// revision: 348814 (2023-11-08T14:38:17Z)
+// export sha1: 8zd69snmkmoh2a8f1lt9o5mdekez797
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Register RSC layer and returns a '''unique''' ID.
+
+|s1= [layerName] call [[BIS_fnc_rscLayer]]
+
+|p1= layerName: [[String]] - layer name. Parent function name is used automatically when param is [[nil]].
+
+|r1= [[Number]] - layer ID
+
+|x1= <sqf>private _id = ["myLayerName"] call BIS_fnc_rscLayer;</sqf>
+
+|seealso= [[allCutLayers]] [[titleRsc]] [[cutText]] [[cutObj]] [[cutFadeOut]] [[setTitleEffect]]
+}}

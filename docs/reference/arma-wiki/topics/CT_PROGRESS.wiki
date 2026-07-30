@@ -1,0 +1,75 @@
+// source: https://community.bistudio.com/wiki/CT_PROGRESS
+// revision: 259182 (2021-06-06T13:56:05Z)
+// export sha1: b0dmp4bq0knppos006e8qilp66diczu
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_PROGRESS
+|value = 8
+|description = Since {{arma2}} the [[progressSetPosition]] command can be used to change the value.
+Since {{arma3}} v1.40 the fill color can be changed via the [[ctrlSetTextColor]] command. Prior to {{arma2}} there were no means to manipulate a progress bar.<br>
+|gallery = 
+File:Progress_bar.jpg|400px|Progress Bar 
+|commands =
+* [[progressSetPosition]]
+* [[progressPosition]]
+|events =
+}}
+
+{{CT|abc start}}
+=== C ===
+{{CT|attribute
+|name=colorBar
+|type1=Array
+|value1={1,1,1,1}
+|description=Color of the filled progress bar.
+}}
+
+{{CT|attribute
+|name=colorFrame
+|type1=Array
+|value1={0,0,0,0}
+|description=Color of the surrounding frame.
+}}
+
+=== T ===
+{{CT|attribute
+|name=texture
+|type1=String
+|value1="#(argb,8,8,3)color(1,1,1,1)"
+|description=Texture of the bar. See [[Procedural Textures]]. If ''texture'' and ''colorBar'' are provided, both are mixed together, creating a different color.
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscExample ===
+<syntaxhighlight lang="cpp">
+class RscProgress
+{
+    onLoad = "_this spawn { for '_i' from 0 to 1 step 0.01 do { (_this # 0) progressSetPosition _i; sleep 0.01 } }";
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_PROGRESS;
+	style = ST_HORIZONTAL;
+	colorFrame[] = {0,0,0,0};
+	colorBar[] =
+	{
+		"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.13])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_G',0.54])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_B',0.21])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_A',0.8])"
+	};
+	x = 0.344;
+	y = 0.619;
+	w = 0.313726;
+	h = 0.0261438;
+	shadow = 2;
+	texture = "#(argb,8,8,3)color(1,1,1,1)";
+};
+</syntaxhighlight>

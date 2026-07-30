@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/2D_Editor:_Layout_Customization
+// revision: 364506 (2024-05-16T20:42:05Z)
+// export sha1: 6fxhb3bf8ik522xb8pmdx9633i4mxhn
+// categories: Category:2D Editor
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:MissionEditor_LayoutButton.jpg|thumb|Layout button]]
+[[File:MissionEditor_ChooseLayout.jpg|thumb|RscDisplayChooseEditorLayout]]
+[[File:MissionEditor_LayoutMessageBox.jpg|thumb|MessageBox that appears after clicking OK button in RscDisplayChooseEditorLayout.]]
+== Description ==
+
+* Arma 3 provides the ability to switch layout of the mission editor's main display. Two layouts are provided by default, but custom made could be added.
+* Layouts are listed in RscDisplayChooseEditorLayout, that could be invoked via layout button in mission editor.
+* Layout is switched without restarting of the game, only restart of mission editor is needed. Automatic restart of editor via ''Restart Now'' button in MessageBox is much quicker, than manual restart. This could be beneficial when designing new custom made layout.
+* Selected layout is stored in user's profile and so is remembered after game restart.
+
+
+== Configuration ==
+
+* New layout could be created via creating .hpp and optionally .sqf file. .hpp should be included in config.cpp. See ''A3\Ui_f\hpp\Editor\RscDisplayArcadeMap_Layout_6.hpp'' and ''A3\Ui_f\scripts\GUI\RscDisplayArcadeMap_Layout_6.sqf'' as an example.
+* Each layout that should be displayed in RscDisplayChooseEditorLayout should be configured in ''A3\Ui_f\hpp\cfgEditorLayouts.hpp''.
+* Parameters of the layout's class:
+** '''name''' - name of the class that will be used as resource for the layout. If name of non-existing class is used, ''RscDisplayArcadeMap'' is used as a failsafe.<!--
+-->{{Feature|informative|'''name''' can be anything but should be unique within CfgEditorLayouts.}}
+** '''displayName''' - name that will be displayed in ListBox in RscDisplayChooseEditorLayout.
+** '''layoutPicture''' - path to the preview picture of the layout. Picture should have aspect ratio 2:1 and should be stored in ''A3\Ui_f\data\GUI\Rsc\RscDisplayChooseEditorLayout\''.
+
+=== Example ===
+
+<syntaxhighlight lang="cpp">
+class CfgEditorLayouts
+{
+	class Layout01
+	{
+		name = "RscDisplayArcadeMap_Layout_2";
+		displayName = "$STR_A3_CfgEditorLayouts_Layout011";  // Streamlined
+		layoutPicture = "\A3\Ui_f\data\GUI\Rsc\RscDisplayChooseEditorLayout\Layout_2.paa";
+	};
+
+	class Layout02
+	{
+		name = "RscDisplayArcadeMap_Layout_6";
+		displayName = "$STR_A3_CfgEditorLayouts_Layout021";  // Traditional
+		layoutPicture = "\A3\Ui_f\data\GUI\Rsc\RscDisplayChooseEditorLayout\Layout_6.paa";
+	};
+};
+</syntaxhighlight>
+
+
+[[Category: 2D Editor]]

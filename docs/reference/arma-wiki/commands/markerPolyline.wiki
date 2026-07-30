@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/markerPolyline
+// revision: 377288 (2026-01-02T06:37:29Z)
+// export sha1: 8a0krz2ybtmavlsyv6lxzxdwsgst58h
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Markers
+
+|descr= Returns a polyline marker's path data.
+
+|s1= [[markerPolyline]] marker
+
+|p1= marker: [[String]]
+
+|r1= [[Array]] format {{hl|[x1, y1, x2, y2, ... xn, yn]}}
+
+|x1= <sqf>markerPolyline "_USER_DEFINED #0/0/1"; // returns your first polyline's data in Singleplayer</sqf>
+
+|seealso= [[setMarkerPolyline]] [[setMarkerPolylineLocal]]
+}}

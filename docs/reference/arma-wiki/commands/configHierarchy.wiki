@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/configHierarchy
+// revision: 378521 (2026-05-04T01:50:46Z)
+// export sha1: ilhd2rkxut6p8mdskpo0m2kyfg41w22
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.48
+
+|gr1= Config
+
+|descr= Returns hierarchy of the given config class. Just like with [[inheritsFrom]], only complete config classes are supported (before {{GVI|arma3|2.14|size= 0.75}}). Since {{GVI|arma3|2.22|size= 0.75}}, an alt syntax is added, which allows to return parents identical to [[BIS_fnc_returnParents]] (see Example 2) 
+
+|s1= [[configHierarchy]] config
+
+|p1= config: [[Config]] - target config 
+
+|r1= [[Array]] of [[Config]]s - ordered from parent to child
+
+
+|s2= [[configHierarchy]] [config, classesOnly, includeBases, reversedOrder, configNames]
+|s2since= arma3 2.22
+
+|p21= config: [[Config]] - target config 
+|p22= classesOnly: [[Boolean]] - when [[true]], only classes are included in output and not properties
+|p23= includeBases: [[Boolean]] - when [[true]], returned parents will include base classes (see description)
+|p24= reversedOrder: [[Boolean]] - when [[true]], the return order is from child to parent
+|p25= configNames: [[Boolean]] - (Optional) when [[true]], the return is [[Array]] of [[String]]s, when [[false]] - [[Array]] of [[Config]]s. Default: [[false]]
+
+
+|r2= [[Array]] of [[Config]]s or [[String]]s - Strings represent config names
+
+|x1= <sqf>
+_hierarchy = configHierarchy (configFile >> "CfgVehicles" >> "Car");
+// Returns [bin\config.bin, bin\config.bin/CfgVehicles, bin\config.bin/CfgVehicles/Car]
+</sqf>
+
+|x2= <sqf>
+_bis_fnc_returnParents = configHierarchy [configFile >> "CfgVehicles" >> "Land_FirePlace_F", true, true, true, true];
+// Returns ["Land_FirePlace_F","House_F","House","HouseBase","NonStrategic","Building","Static","All"]
+</sqf>
+
+|seealso= [[configClasses]] [[configProperties]] [[missionConfigFile]] [[campaignConfigFile]] [[a / b]] [[config greater greater name|config >> name]] [[configName]] [[count]] [[getArray]] [[getText]] [[getNumber]] [[inheritsFrom]] [[isArray]] [[isClass]] [[isNumber]] [[isText]] [[select]] [[isKindOf]] [[BIS_fnc_returnParents]]
+}}

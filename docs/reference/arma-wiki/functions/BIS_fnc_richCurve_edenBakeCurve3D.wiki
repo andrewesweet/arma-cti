@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_richCurve_edenBakeCurve3D
+// revision: 279110 (2021-06-13T21:48:53Z)
+// export sha1: 9viwmkh2owoh8021r8xpu4a1ldf8hsy
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curve3DEN | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Curve3DEN
+|descr= <pre>/*
+	Author: Nelson Duarte <@Nelson_G_Duarte>
+
+	Description:
+	Bakes a curve to a set of points
+
+	Parameter(s):
+	_this select 0: Object  - The curve
+	_this select 1: Integer - The amount of segments for curve baking (higher numbers mean more detail but also a lot more cpu time)
+
+	Returns:
+	ARRAY - All the baked curve points
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_richCurve_edenBakeCurve3D]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

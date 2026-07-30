@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/shownArtilleryComputer
+// revision: 321212 (2022-05-13T15:31:01Z)
+// export sha1: 3aow9l2paptezth5fztd3ua5i3lenbt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Artillery | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Artillery
+
+|descr= Checks whether the player has the artillery computer currently open.
+
+|s1= '''shownArtilleryComputer'''
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (shownArtilleryComputer) then { hint "Artillery Computer shown on screen"; };</sqf>
+
+|seealso= [[enableEngineArtillery]] [[getArtilleryComputerSettings]] [[inRangeOfArtillery]] [[commandArtilleryFire]] [[doArtilleryFire]] [[getArtilleryETA]]
+}}

@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_getTXScanSaveData
+// revision: 363748 (2024-04-17T15:24:36Z)
+// export sha1: ib8lcmtnlcnx0qkthbbobnhy3mcoprs
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: TXScan | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= TXScan 
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Returns array with given TXScan data which is used for saving/loading
+
+	Parameter(s):
+		0: STRING - TXScan name or "" to return all saved scan names
+
+	Returns:
+		ARRAY - save data for given scan name 
+		or if argument was ""
+		ARRAY in format [allscannames, activeareaboundaries]
+		
+	Example:
+		"MyScan" call BIN_fnc_getTXScanSaveData
+		"" call BIN_fnc_getTXScanSaveData
+*/
+
+#define SAVEVAR_NAME "BIN_fnc_TXScan_saveData"
+#define IDD_DEFAULT 12
+#define IDC_DEFAULT 51
+</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_getTXScanSaveData]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_getTXScanSaveData;</sqf> -->
+
+|seealso=
+}}

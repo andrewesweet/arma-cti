@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/lnbPicture
+// revision: 364186 (2024-05-05T10:46:48Z)
+// export sha1: ozungfx6yqqq2a3du50f7ahnm42go8v
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control - ListNBox
+
+|descr= Returns the picture name or path of the item with the given position of the 2D listbox.
+
+|s1= [[lnbPicture]] [idc, [row, column]]
+
+|p1= idc: [[Number]] - number of [[Control]]
+
+|p2= row: [[Number]] - index of Row
+
+|p3= column: [[Number]] - index of Column
+
+|r1= [[String]]
+
+|s2= control [[lnbPicture]] [row, column]
+
+|p21= control: [[Control]]
+
+|p22= row: [[Number]] - index of Row in given Control
+
+|p23= column: [[Number]] - index of Column in given Control
+
+|r2= [[String]]
+
+|x1= <sqf>lnbPicture [200, [1, 1]];</sqf>
+
+|x2= <sqf>_control lnbPicture [1, 1]; // "a3\ui_f\data\gui\cfg\ranks\corporal_gs.paa"</sqf>
+
+|seealso= [[lnbAddArray]] [[lnbAddColumn]] [[lnbAddRow]] [[lnbClear]] [[lnbColor]] [[lnbCurSelRow]] [[lnbData]] [[lnbDeleteColumn]] [[lnbDeleteRow]] [[lnbGetColumnsPosition]] [[lnbSetColor]] [[lnbSetColumnsPos]] [[lnbSetCurSelRow]] [[lnbSetData]] [[lnbSetPicture]] [[lnbSetText]] [[lnbSetValue]] [[lnbSize]] [[lnbText]] [[lnbValue]]
+}}

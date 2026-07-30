@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/diag_toggle
+// revision: 369317 (2024-09-03T18:42:56Z)
+// export sha1: sk19f3e33gwic9et3zomawkt7jz7k3c
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|branch= diag
+
+|gr1= Diagnostic
+
+|descr= Toggles various diagnostics.
+
+|s1= [[diag_toggle]] mode
+
+|p1= mode: [[String]] - see [[Arma 3: Diagnostics Exe]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+diag_toggle "Animation"; // enable
+diag_toggle "Animation"; // disable
+</sqf>
+
+|seealso= [[Arma 3: Diagnostics Exe]] [[diag_enable]]
+}}

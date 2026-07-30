@@ -1,0 +1,1043 @@
+// source: https://community.bistudio.com/wiki/ACE_Features
+// revision: 363943 (2024-04-26T21:33:54Z)
+// export sha1: lzisb0om0d3tehc4245qzhb1u1oeyj6
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== General ACE Features ==
+
+==== AI Improvements ====
+
+==== Air FCS ====
+Currently available for AH1 Cobra and AH64 Apache (v1.04). Future integration for Russian counterparts
+
+<u>Differences vs vanilla system:</u>
+* When you are in gunner position in one of the specified rotary aircraft specified above, you will no longer be able to control your weapons selection with the “F” key. 
+* Instead, use your action menu to select your weapons. Select “Overlay On” to activate the MFD overlay. 
+* Select “Laser On” to activate your targeting laser. When in the AGM-114 mode, you will be able to select what targeting mode the missile uses.
+* Target lock via "next target" bind key doesn't work anymore
+
+<u>Usage:</u>
+* Select weapon you want to fire via action menu (M197 Main Cannon, AGM-114 Hellfire, AGM-220 TOW)
+* Select weapon mode for AGM-114 Hellfire (if this weapon has been selected). The available modes are LOBL(default) LOAL-DIR, LOAL-LOW, LOAL-HI
+* Select overlay on (action menu) - more information will be given on top of your display
+* Select laser on (action menu) - mandatory for firing AGM-114 missiles in all the modes available
+* In case you have selected AGM-220 TOW missiles, all you'll need to do is guide the missile on target via crosshair just like you can in BMPs/Bradleys.
+
+<u>Notes:</u>
+* For certain weapon modes (AGM-114 HF), such as LOAL-LOW/HI certain range and angle to target needs to be met for target impact.
+* All weapon selection will be available no matter what kind of loadout the chopper has.
+* FFAR rocket control has been moved to pilot seat. All other weapons cannot be used by anyone but the gunner.
+* Getting an AI gunner to switch weapon can be done via {{Controls|space|F}} (default) key combination.
+* AGM-114 can lock on ground laser markers, or other aircraft markers, but the on board laser will take priority if it is on
+<br>
+
+==== Auto Rotation ====
+Improved auto rotation over vanilla system for all rotary aircraft.
+
+In the case of engine failure, cutting down power, bringing down speed while aligning your chopper to a 5 degrees nose up, will allow you to successfully make an emergency landing.
+Air Flow speed will be shown on the screen if the system notice a problem with the engine (failure, etc)
+
+==== Back Blast ====
+Most of the AT weapons available creates a large "back blast" area behind the weapon on fire, which can cause severe burning and overpressure injuries to friendly personnel in the vicinity.
+
+Whenever you are preparing to fire an AT shot, ensure that the backblast area of your AT weapon is clear. This typically is a 60° cone extending from the rear of the AT weapon for 30-60 meters behind the weapon.
+
+==== C.Q.B. Sights ====
+<DIV align="left">user<br>[[File:ACE_Keys2.jpg]]<br>config</DIV>
+
+Certain optics have a CQB sight on top to give the soldier the ability to quickly target enemies at close range. ACE has this modeled in per Real Life specs
+
+The default key combination for bringing up the CQB sight is {{Controls|shift|F}} ''(key combination is configurable)''.
+
+==== Crew Damage ====
+Being in a vehicle does NOT protect you anymore from everything going around you.
+
+You will not only suffer from bullets being shot directly at you, but also from explosive devices detonating under or next to the vehicle you are in, e.g roadside bombs or direct fire with grenades or shells.
+
+This also includes shellshock effects for tank crews and armored vehicles.
+
+This will allow killing/injuring crew members of certain low protected vehicles without needing to destroy the vehicle
+
+==== Crew Protection ====
+This feature simulates the protective gear of crewman and pilots (SoldierXCrew, SoldierXPilot).
+
+The corresponding class can stand the following effects better:
+
+* Concussion caused by AT launcher fired
+* Concussion caused by Anti Tank Missile systems fired
+* Concussion caused by Tanks firing 
+
+This just means the effect is not that much experienced as a normal soldier would experience it. In other words the effects are weakened.
+
+* '''It doesn't protect you against all other effects like, backblast, overpressure or kicked off debris.'''
+
+Usage
+
+You can query if a unit has protective gear with this line of code:
+''_protectiveGear=(configFile>>"CfgVehicles">>typeOf _unit>>"ACE_CrewProtection")'';
+
+Returns 1 (protected) or 0 (not protected).
+
+==== Crew Served Weapons ====
+<u>Overview</u>
+
+The crew served weapons system gives players the ability to operate as a fully functioning member of a crew served weapon team.  Player carry machine guns, tripods, and ammunition which they are able to deploy, mount, and load respectively anywhere on the battlefield.  Most of the functions of the weapon is accessed through a unique interaction menu.  At this time only machine guns are available in the crew served weapon system but others types of weapons will also come on line.
+
+<u>Deploying Tripods</u>
+
+If you have a tripod you will see a "Deploy Tripod" option in your action menu.  When selected you will see a phantom tripod directly in front of you that moves and turns as you do.  When you have the exact position to place your tripod select 'Confirm Deployment" to deploy the actual tripod.  If you wish to cancel select "Cancel Deployment".
+
+After deploying a tripod as long as there is no machine gun mounted on it you will see a "Pickup Tripod" option when close to the tripod.  When selected you will pick the tripod up and add it to your inventory.
+
+<u>Mounting Machine Guns</u>
+
+If you have a machine gun you will see a "Mount Machine Gun" option in your action menu.  When selected if you are close enough to a compatible tripod for the machine gun (less than 2m) the machine gun will be mounted to the tripod.  If you are not close enough you will receive a message telling you so.
+
+''The interact menu removes the need to use the action menu for many of the common functions involving player interaction with objects.  The menu is opened with a single action menu selection that gives access to the other available options.''
+
+[[File:Interact.jpg]]
+
+<u>Loading Machine Guns</u>
+
+Once a machine gun is assembled ammo can be loaded/linked.  If you do not already have an appropriate magazines then go to the ammo box marked ammo and take one or two.  Magazines (ammo cans or drums) for crew served machine guns are large and will take up from four to six of your magazine slots each.  You can usually fit two in your rucksack (except MK19 magazines which will not fit at all). To load or link a new ammo belt when near the machine gun select "Interact With Machine Gun".  This will open the Machine Gun Crew Menu. Now click "Load/Link" and if you have a correct magazine ('''must be unpacked and out of the ruck''') then a new belt will be loaded or linked to the existing belt.  You cannot link ammo to a belt that is more than 100% full.  '''Drum fed machine guns can only have one belt/drum loaded at a time.'''  You cannot load the machine gun if you are in it as the gunner.  Another player must load it or you must exit first.
+
+<u>Unloading Machine Guns</u>
+
+Once a machine gun is assembled and loaded ammo can be unloaded/delinked.  To unload or delink ammo belt when near the machine gun select "Interact With Machine Gun".  This will open the Machine Gun Crew Menu.  Now click "Unload".  If there is more than one full belt loaded you will unload a 100% full belt and drop it to the ground.  If there is anything left (minus some that cannot be unloaded while the gun is in service) then if you select "Unload" again either another 100%, 75%, 50%, or 25% full belt will be unloaded until no more ammo can be removed.  You cannot unload the machine gun if you are in it as the gunner.  Another player must unload it or you must exit first.
+
+<u>Rotating Machine Guns</u>
+
+Once a machine gun is assembled it can be rotated left and right in 10 degree increments.  To rotate the machine gun left or right when near the machine gun select "Interact With Machine Gun".  Now click "Rotate Left" or Rotate Right".  You will go to your knees to gain leverage and rotate the whole machine gun assembly in the appropriate direction.  You can repeat this process, rotating 10 degrees at a time, until you reach the desired direction.  You cannot rotate the machine gun if you or someone else is in it as gunner.
+
+<u>Unmounting Machine Guns</u>
+
+Once a machine gun is assembled the machine gun can be unmounted.  To unmount the machine gun when near it select "Interact With Machine Gun".  No click "Unmount"  The machine gun will be unmounted and added to your inventory leaving behind the assembled tripod to be picked up or awaiting a new mount.  All ammo loaded in the machine gun will be automatically dropped to the ground.  You cannot unmount the machine gun if you or someone else is in it as gunner.
+
+==== Destruction Effects ====
+Vehicles behave differently when they are destroyed:
+* In some cases, there's a explosion with a big fireball and lots of smoke. 
+* In other cases, when no vital part of the vehicle has been hit, but enough damage has been done to render it disabled, there could be no visible effect such as explosions visible, but only the texture turning darker - black.
+* In some other instances, like when the ammo dump is hit, the explosion is much more devastating, and different visual effect have been used.
+* Additionally, vehicles don't burn in water anymore. 
+* A burning vehicle can cause injuries such as burnings to bystanders
+
+==== Digital Compass ====
+Some of the newer and more modern armored vehicles in the BLUFOR and REDFOR armor class have a digital compass drawn over the normal compass.<br>
+This digital compass will give the correct bearing for all vehicle turrets, which speeds up target locating and in-vehicle communications.
+<br>
+<br>
+[[File:Ace_bearing.jpg]]
+
+==== Disposable Weapon System ====
+
+==== Dogtags ====
+Allows you to see the names of your fallen comrades.<br>
+
+Simply walk up a corpse and choose "'''Check dogtag'''".<br>
+
+This is the first resource in A.C.E that successfully bypasses the animation system.
+Instead of forcing you into a "''search''" animation you are only forced to be in a kneeling position to search for the dogtag.
+
+<u>For Missionmakers:</u><br>
+The Missionmaker also has the option to enable physical dogtags. That means that whenever you check a buddy for his dogtag a real dogtag is created directly at the body, which is collectible.
+The dogtags could be used as a mission goal for example ("Bring back the bodies and the dogtags").
+<br>
+The feature of creating physical dogtags can be enabled by adding a Gamelogic on the map and setting its init line to: <sqf>ACE_DogTagOn = true;</sqf>
+
+If you check a body, a dogtag is only created once. A second check, does not create a second physical dogtag.<br>
+
+
+<u>Notes:</u><br>
+Dogtags are not created for civilian units, since they normally don't have dogtags. So you won't be able to check for dogtags on a dead civilian.
+
+==== Eject System ====
+(optional)<br>[[File:ACE_Keys2.jpg]]<br>''eject''
+
+<u>Eject Option</u>
+
+The "Eject" action menu option and shortcut key has been disabled for all vehicles (air, land, and sea) except the KA-50, AV8B, A10, and SU34 (these are the only default ArmA vehicles that have real-life ejection seats).  Additionally, ejection seats now operate more realistically.  When you eject you are propelled out of the cockpit while still in your "seat" and then the parachute deploys.  All ejection seats are also now zero, zero capable (zero altitude, zero airspeed) so you can now eject while on the ground and without moving and still safely land.
+ 
+<u>Jump Out Option</u>
+
+All other vehicles now have a "Jump Out" action menu option (uses the "eject" action key).  The option simulates opening the vehicle door, hatch, or canopy and jumping out.  Once you jump out you begin to free fall if you are not on the ground.
+ 
+<u>Parachute Packs</u>
+
+Parachute packs have been added with A.C.E.  Player's can store a parachute pack in one of their binocular/goggle inventory slots.  If a player has a parachute pack in his inventory after "jumping out" of an aircraft the player will see a "Pull Rip Cord" option in the action menu.  Once selected the player's parachute will deploy.  All parachute packs are single use.  If you are too low to the ground when you pull the rip cord your parachute may not deploy properly which could lead to injury or death.
+
+==== Engine Start ====
+Vehicles now have a delay to start the engine, mimicking the ignition process and/or engine heating up. During the delay you can hear the engine starting.
+
+<u>Delays used</u>
+* Car: 1.25 seconds 
+* Motorcycle: 0.365 seconds
+* Truck or Tank: 2.25 seconds
+* M1 Abrams family of vehicles: 14 seconds
+
+==== Environment FX ====
+ACE Environment FX consists of several changes and additions to the stock environment effects in ArmA. All effects are designed to be displayed locally around the camera. All effects compensate for wind and fast movement.
+
+<u>Rain</u>
+
+The standard rain texture has been removed and replaced by particle based drops. Future version will also include long distance visibility reduction.
+
+<u>Fog</u>
+
+The standard distance based fog has been supplemented with particle based volumetric fog that is visible around the player.
+To disable the volumetric fog use 
+
+<sqf>ACE_FX_Environment_NoFog = true;</sqf>
+
+By default it is false.
+
+<u>Snow</u>
+
+Snow can be activated setting the variable ''ACE_environment_snow'' to a value between 0.1 and 1. Values above 1 are currently possible but not recommended due to increased particle density.
+<sqf>ACE_environment_snow = 0.55;</sqf>
+
+<u>Wind effects</u>
+
+(TODO) Wind effects include dust and snow being blown up due to heavy wind, creating dust-, sand or snowstorms if the wind is strong enough.
+
+<u>Sound effects</u>
+
+Replacement and enhancement of ambient sounds, including dynamic sound effects in towns, forests and other places.
+<br>
+<br>
+
+==== Explosion Effects ====
+Exploding ordonance have an impact on the gameplay experience.
+
+Depending on the used ammunition and the distance between player/AI and the impact, explosions cause stun effects like ear ringing, fuzzy optics or knock outs.
+
+==== Fast Switching ====
+A.C.E speeds up some animations like:
+
+* Taking out/putting back the binoculars or laserdesignator
+* Switching from rifle to pistol, and vice versa, is now much faster - as in real life
+* The transition after you have thrown a grenade and switch back to rifle/pistol
+* Switching from AT launcher to rifle is faster. Also you can drop on the ground very quickly with launcher in hands in case of emergency.
+
+==== Fixed-Wing Reverse ====
+Creates an action to allow an fixed winged aircraft to move in reverse to maneuver around obstacles while stopped on the ground.
+There needs to be a range of condition met before action will appear:
+* airplane needs to be stopped
+* engine needs to be on
+* airplane needs to be on a plane surface (certain inclinations are still allowed)
+
+==== Flashbangs ====
+Diversionary devices — also called stun grenades or ''flashbangs'' — are a less-than-lethal device used in a wide variety of law enforcement and military operations. 
+
+Like a grenade, the device is activated by pulling a pin. When thrown, the flash-bang creates a loud sound and bright flash of light to temporarily distract or disorient an adversary.
+
+Flash-bangs are used in law enforcement and military operations such as hostage rescue, room-clearing, crowd control and other specialized operations. 
+
+Military or law enforcement personnel will typically break down a door or smash a window of a building and toss in the diversionary device during a forced entry.
+
+
+This behaviour is similar in the A.C.E MOD. 
+
+You can use ''flashbangs'' to stun and disorientate AI as well as human players.
+
+In general the fusing time is VERY short, ~ 1.5 seconds. Make sure the ''flashbang'' is well aimed to avoid stunning yourself and your teammates.
+
+==== Grenade Simulation ====
+Grenades shot with under barrel grenade launchers, like the M203 or GP-25 behave realistically in A.C.E.<br>
+
+<u>West:</u>
+
+Western 40mm grenades (like the M433 HEDP) have an arming delay of ~0.5 seconds, which equals a distance of ~30 meters. When the grenade has been armed after the arming delay, it will detonate on impact (true for all rounds except the Star Parachute rounds), so it is advised to engage targets that are at least 50 meters away.
+
+Western 40mm grenades have no self-destruct, and have the possibility of becoming a dud.
+
+
+<u>East:</u>
+
+The Eastern 40mm VOG-25 and VOG-25P grenade for the GP-25 underbarrel grenade launcher also have an arming delay similar to the Western M433 HEDP grenade, but they also possess a self-destruct device which detonates the round after 14 seconds.
+The VOG-25 grenade detonates its charge on impact, while the VOG-25P (bouncing) grenade first detonates a small charge (located on the nose of the round) on impact to raise the grenade ~1 meter in the air, at which point it detonates its main charge.
+
+Of course the Eastern grenades also have a possibility of becoming a dud.
+
+==== Grenade Throw Modes ====
+User<br>[[File:ACE_Keys2.jpg]]<br>config
+
+Allows you to select between 5 modes of throwing a grenade:
+
+* Normal throw - default speed and direction.
+* Slow throw - very useful if the enemy is just behind this 1.8 m wall or behind a corner.
+* Normal roll - grenade goes low and parallel to the ground, fast enough to bounce  ('roll') 10 or so meters. 
+* Slow roll - slow roll.
+* Precise throw - grenade flies directly where you're pointing at (and not ~30 degrees higher as in default amplitude throw). Allows you to throw grenades into windows etc with high precision (after some practice).
+
+How to use: Key combination ({{Controls|shift|H}} default) switches between modes. Double check what mode you're in before throwing :
+
+==== HuntIR ====
+'''H'''igh-altitude '''U'''nit '''N'''avigated '''T'''actical '''I'''maging '''R'''ound
+
+After firing the ''HuntIR'', it propels to an average height of 500 meters (for gameplay reasons) and ejects an IR CMOS camera
+which is attached to a parachute. The camera provides 7 minutes of live video for reconnaissance which is transmitted to a handheld device (''HuntIR Monitor'').
+
+You can control the camera of the HuntIR with your keyboard keys:<br>
+
+''ARROW KEYS'' - Control camera movement<br>
+''W,S''        - Switch available HuntIR cameras<br>
+''A,D''        - Change zoom (0x, 2x, 4x, 8x)<br>
+''N''          - Toggle NVG<br>
+''M''          - Toggle TI<br>
+''R''          - Reset HuntIR camera<br>
+<br>
+The HuntIR round has an average flight time of 5-10 seconds after firing before the camera is ejected and another 3 seconds before the HuntIR device is ready to transmit data. 
+
+The HuntIR round can only be fired from M203 type grenade launchers.
+
+<u>Mission Editors</U>
+
+To include the HuntIR system in your mission, the following classnames are available:
+
+The box: ACE_HuntIRBox
+
+The monitor: ACE_HuntIR_monitor
+
+The round: ACE_HuntIR_M203
+
+
+Examples to add to a weapons crate:
+<sqf>
+_vehicle addMagazineCargo ["ACE_HuntIR_monitor", 10];
+_vehicle addMagazineCargo ["ACE_HuntIR_M203", 3];
+</sqf>
+
+==== IRStrobes ====
+The ''IR Strobe'' allows for easy recognition and location status of friendly forces while maintaining covert operation in the field.
+
+This is a must have accessory to assist avoiding friendly fire accidents and to support the overall safety of field personnel during night time missions. 
+
+The ''IR Strobe'' is only visible to allied personnel using night vision devices. 
+
+It permits operators using night vision goggles, scopes, binoculars and other night vision tactical devices to maintain the exact location of their team members, search dogs, vehicles and pre-positioned equipment.
+
+
+Use with:
+* Person: <sqf inline>myObject addMagazine "ACE_IRStrobe";</sqf>
+
+
+==== Jump ====
+User<br>[[File:ACE_Keys2.jpg]]<br>config
+
+Simply jump over any obstacles, like sandbags and small fences or walls.
+Default Key is ''J'' for jump.
+
+==== LVOSS ====
+'''L'''ight '''V'''ehicle '''O'''bscuration '''S'''moke '''S'''ystem 
+
+
+The LVOSS is a self-defense smoke/obscurant device externally mounted on the host vehicle. The LVOSS is made of lightweight materials. The LVOSS has a push button Arming/Firing Unit (A/FU) which allows the operator to select the direction he needs obscured. Additionally, the LVOSS uses smoke grenades which are low in toxicity and which minimize safety hazards to personnel and the environment.
+
+This system is available in A.C.E. on a wide range of vehicles that have been issued with such equipment, ranging from light APCs to MBTs. The smoke can be deployed from the gunner position, by firing the Given Weapon. The amount of smoke a vehicle can deploy varies depending on its type.
+
+==== Magazines System ====
+<u>ACE Magazines System</u>
+
+This system is made to address some limitations in the way weapon/ammo characteristics are setup in ArmA:
+
+* Because muzzle velocity is specified in magazine config, weapons of the same family (using the same types of magazines) will have the same muzzle velocity/ballistics/'punch' even though 1 is a 10" barrel CQC carbine and another is a 20" barrel marksman rifle.  
+
+* As the "loudness" and "visibility" of firing (for AI) is specified in ammo config, if you put a standard supersonic mag into a weapon equipped with suppressor, the AI will hear and see you just as well. It defeats the purpose of a suppressor in missions against AI and the only way to be silent to AI is to use subsonic ammo.
+
+These two problems could be solved by specifying a custom mag for each kind of weapon, but it would either make it impossible to take a mag from a buddy with another modification of the same weapon family or, if it were decided to make all mags compatible, the whole thing would be useless as you'd still be able to use the most powerful and silent mags in whatever weapon you have. It would also create a mess in ammoboxes and soldier configs with all the different mag variants.
+
+ace_sys_magazines is a scripted solution that automatically changes player's magazines to the ones appropriate to his weapon whenever he picks up a new mag or changes the weapon. This way, for example, AKS-74U has lower muzzle velocity than AK-74 and RPK-74 while using the same mag picked up from ammocrate. Also, if the weapon is suppressed, the standard mags are automatically changed to variants with 'suppressed' ammo. There is no need for additional magazine types in ammocrates and soldier configs as everything is converted automatically.
+
+
+<u>For Addon makers: how to set up a new weapon in a weapon family</u>
+
+Let's say we have a basic G36 and now want to add G36C which has a much shorter barrel and therefore lower muzzle velocity.
+ 
+# First of all, create a new mag. In ACE it looks like this: <syntaxhighlight lang="cpp">
+class ACE_30Rnd_556x45_B_G36C : ACE_30Rnd_556x45_B_G36
+{
+	initSpeed = 780;
+};
+</syntaxhighlight>
+# Now you have to define some things in weapon config. First of all, add the new mag to mag arrays of all weapons that can use mags of this type (in our case it includes G36 and G36K).
+# Add ammoconfigname_mv=yourinitspeed. In our case it will look like this: <syntaxhighlight lang="cpp">ACE_Bullet_556x45_B_mv = 780;</syntaxhighlight><!--
+-->This entry is used by the script to find the right magazine, so initspeed here must be exactly the same as in the mag config.
+# If you're defining a new weapon family which is not currently in ACE, don't forget to add magazine type to the magazine config: <syntaxhighlight lang="cpp"> ace_mag_type = "G36";</syntaxhighlight><!--
+-->And a list of compatible mag types to weapon config:<syntaxhighlight lang="cpp">ACE_magazines_compat[] = { "G36" };</syntaxhighlight>
+# Add the new mag to the magazines array of ACE_MagChecker.
+
+==== Map (Inventory Object) ====
+<u>To Use:</u>
+
+First place the game logic titled Enable: Require Map Object in your mission.  This will enable the feature as it is disabled by default.
+
+The map is defined by its config as a weapon and will be stored in Bino/NVG slots.  The weapon name for the object is ACE_Map
+
+<u>Features:</u>
+When enabled this feature will require a user to have a map in their possession in order to view the map screen.
+Speed restraints are placed on the player and their ability to view the map screen.
+ 
+
+<u>Notes:</u>
+
+If a player does not have a map, but they are in proximity to a person who does they will find an action on the map holder.  On executing this action they will be able to view the map screen as long as they stay within a few meters of the map holder.
+
+If the player is moving at faster than a walk speed (Jogging or Sprinting) they will not be able to view the map even if they have one in their inventory.  If the player is inside a vehicle the speed restraint is disabled.
+
+==== Missiles ====
+<u>Introduction</u>
+
+This feature is almost entirely a 1:1 integration of the MMA v2.35 beta suite of scripts that works around the main one (mando_missile.sqf) to bring 
+missile warfare to ArmA. The is able to launch and guide and object from the launcher or 
+position to the target using many parameters to adjust the launch, flight and detonation 
+characteristics of the simulated missile.
+
+Mando Missile (ace_sys_missiles) does not require any extra addon to work, but you may use 
+missile objects (or vehicles/planes/choppers) present in any existing addons as missile bodies 
+for Mando Missiles (Missile object class name) as well as missile launchers.
+
+Mando Missiles (ace_sys_missiles) comes also as addon, in case you dont want to use the 
+script suite (mando_missiles folder) in your mission. Placing Mando Missile ArmA gamelogic 
+in your mission ensures addon dependency, the gamelogic also executes mando_missileinit.sqf 
+automatically. If you want to use the addon, but not the gamelogic, then you'll need to 
+execute mando_missileinit.sqf from your mission init.sqf script. 
+
+Mission Writers ReadMe Source: http://www.terra.es/personal2/matias.s/mma_readme.htm
+
+
+<u>Mando Missiles Activation</u>
+
+If you are familiar with making missions with the Mando Missile System then you know you need to activate various components in the init.sqf and the description.ext files. 
+
+With ACE some of these components come automatically activated. And it is important to know which ones so you do not duplicate the code and cause errors. 
+
+So if you followed the following documentation WITHOUT considering the ACE automatically activated components you are sure to have problems. Please review the following documentation for using the Mando Missile System.<br>
+http://www.terra.es/personal2/matias.s/mma_readme.htm#t4<br>
+http://www.terra.es/personal2/matias.s/mma_readme.htm#t10<br>
+
+Now for ACE the following items are automatically activated when ACE is used:
+
+* Any lines required in the description.ext file (sounds, dialogs, resources) are already handled by ACE. 
+* []execVM"mando_missiles\mando_missileinit.sqf"; is already handled by ACE. Please omit this from your ACE mission. 
+* [This] mando_missiles\units\mando_onlymandoones.sqf"; is already added to all vehicles. Please omit this from your ACE mission. 
+* mando_missiles\units\mando_haveialaser.sqf;
+* No need to place a Mando Game Logic on your map. There is an ACE Game Logic for Mando but it is only available as one method to change the global Mando Defaults such as '''Minimum altitude of air targets''', '''Minimum countermeasures extent''', '''Maximum LOS check range''' (see section 1.3)
+
+
+See some example ACE Mando Missions below (soon to be added)
+
+<u>Mando Missiles Override</u>
+
+Some mission writers may have old or new missions that require a different missile configuration & parameters than the ACE Mando Missile defaults. Mission writers can override these defaults by adding a GameLogic to their mission called "Change Defaults: ACE Mando Missiles"
+
+In the Initialization box of the "Change Defaults: ACE Mando Missiles" GameLogic, you can set the initial value of any one of the following variables:
+
+* mando_minairalt = {positive #}; (Default Value: 10 meters) // Minimum altitude for Air units to be detected by radar 
+* mando_minchaffdist = {positive #}; (Default Value: 5 meters) //Minimum extra distance between missile and target and missile and countermeasure.
+* mando_loscheck_range = {positive #}; (Default Value: 3000 meters) // Maximum range to perform LOS checks
+* ACE_SYS_MISSILES_MANDO_ENABLED = {true|false}; (Default Value: true)
+
+'''Example:''' 
+
+[[File:MandoChangeDefaults.png]]
+<sqf>
+mando_minairalt = 15;
+mando_minchaffdist = 8;
+mando_loscheck_range = 3200;
+ACE_SYS_MISSILES_MANDO_ENABLED = false;
+</sqf>
+
+If you use ACE_SYS_MISSILES_MANDO_ENABLED = false; then you are now required to replace the following Mando Missile code for each of the vehicles that ACE enables by default.
+
+See the defaults ACE Mando Missile configuration code here:
+http://www.pastie.org/400347
+
+==== NVG ====
+user<br>[[File:ACE_Keys2.jpg]]<br>config
+
+In A.C.E mod the ''NVG'' device has two features:
+
+* You can enable an "Auto Adjust Mode", which will filter out bright light sources (lit fires, streetlamps, headlights, etc) in order to prevent blindings
+* You can adjust the brightness of the ''NVG'' device manually by pressing the "Page Up / Down" keys (default keys)
+
+==== Overheating ====
+Tracks player's weapon temperature and simulates negative effects of weapon overheating, which are:
+
+* Increased dispersion, loss of muzzle velocity in extreme cases.
+* Increased smoke when firing.
+
+The first sign your weapon is a little bit too hot is increased smoke appearing along the barrel as you shoot. If you continue firing actively and not giving the weapon the time to cool down, the density of smoke will increase. If the weapon is seriously overheated, it will fire with increased dispersion. Everything goes back to normal once the weapon is cool again.
+Weapons with heavier barrels (machineguns) have more resistance to overheating than assault rifles and SMG's.
+
+==== Overpressure ====
+<u>Muzzleblast Effect</u>
+
+The muzzleblast will mainly occur when a tank fires its maingun.
+Debris from the ground and ejected particles from the projectile will be kicked away in the direction of travel of the projectile.<br>
+It covers an 90° arc and has a range of ~1000 meters.
+
+
+[[File:ACE FiringDangerZone.png]]<br>
+
+
+
+Units standing in the direct LOF will either die from the overpressure caused by the shot, or become severely injured.<br>
+The killzone is 50m in direction of travel, minor effects are noticeable up to 200m.
+
+Taking cover in a building can reduce the effects of a nearby firing tank.
+
+
+
+
+<u>Overpressure Effect</u>
+
+Units standing to close to a firing tank will suffer from the overpressure caused by the shot.
+
+The overpressure effect causes:
+
+*Earring
+*Shock
+*Knockout and weapon loss
+
+<br>
+
+''For a better orientation see the above picture. Maximum effect range is ~50 meters.''<br>
+''Everything above ~50 meters is not covered anymore by the resource'' (''ace_sys_muzzleblast'').
+
+Different ammunition now has a different effect and range.<br>
+Depending of the muzzlevelocity and the strength of the projectile the overpressure is reduced, e.g BMP ammunition.
+
+==== Parachutes ====
+''Parachutes'' in the A.C.E mod are steerable all the way.
+
+Either if you have to eject from a plane, doing HALO or air deployment, you will always be able to land at your desired location, free from trees, rocks or even enemy assets.
+
+You steer the parachute with your movement keys ({{Controls|W}} {{Controls|A}} {{Controls|S}} {{Controls|D}}) or the arrow keys: 
+
+{|
+! Movement keys
+! Arrow keys
+! Function
+|-
+| {{Controls|A}} {{Controls|D}}
+| {{Controls|Left}} {{Controls|Right}}
+| Steer left/ right
+|-
+| {{Controls|W}} {{Controls|S}}
+| {{Controls|Up}} {{Controls|Down}}
+| Increase/Decrease your descending rate
+|}
+
+<u>Note</u>: 
+
+A high descending rate may cause injuries on landing.
+
+You will also have the option to ''Cut the chute'' in case you land in some trees or have to get out the chute quickly.
+
+==== Penetration ====
+This system simulates penetration and behind-obstacle effects for .50 and higher AP ammo, as well as rockets and tank shells. Penetration applies only to structures (walls, buildings, trees) and avoids affecting vehicles, as true penetration of, say, an APC with injuring the crew is impossible without too many calculations.
+
+* Penetration depends on kind of ammo and velocity of impact. Penetration probability decreases with round velocity.
+* Rounds loose velocity after penetrating an obstacle and deflect at a random angle.
+* Secondary missiles/shrapnel effect is also simulated.
+* Rockets/HE tank shells don't penetrate structures but create a powerful secondary fragments effect behind the obstacle, making it possible to fight infantry in buildings and bunkers using AT launchers.
+* Thermobaric/Follow-through rockets are especially effective in fighting infantry covered behind/inside structures.
+
+<u>Limitations:</u>
+
+* Penetration does not account for the material of the obstacle. It's tuned for typical urban obstacles seen in Arma, like fence walls, building walls, car wrecks, trees etc.
+* Enabled only for player-fired ammo to save on cpu power and seeing as AI does not employ methodic firing at obstacle knowing there is an enemy behind it.
+* Penetration for APFSDS (Sabot) tank rounds is disabled, as they already are excessively effective against buildings due to high Hit value. They only have a secondary missiles effect.
+<br>
+<br>
+
+==== Radio Silence ====
+
+The amount of radio chatter from AI troops may be reduced or eliminated altogether as a ACE client setting.
+
+==== Range Finder ====
+
+Laser Target Designators in A.C.E can be used to accurately measure the range (in meters) to a target.
+
+It will give an elevation and azimuth reading as well as distance.
+
+Click fire to activate the display (without firing it still functions as a laser designator)
+
+==== Recoil Dust ====
+This resource simulates dust that is kicked off when firing a high caliber weapon, e.g M107 or launcher type weapon inside a building.<br>
+[[File:Ace recoildust.jpg]]
+
+
+The effects depend on the weather, arid (lot of dust) or humid (not much dust) zones and the terrain type.
+You will experience dust primarily in desert style areas.
+
+==== Rocket Ballistics ====
+This system is created to address two main problems with unguided rockets in ArmA:
+
+* There is no dispersion whatsoever. Every AT launcher/FFAR will hit directly where you point at, at any distance.
+* The trajectory of rockets flying faster than ~ 200-250 m/s is very flat due to the rocket not changing its pitch during the flight. It leads to incorrect sideairfriction-related calculations in the engine and as a result the rocket refuses to drop even at marginally low velocities.
+
+Accordingly, sys_rocket_ballistics includes 2 main components:
+
+<u>Dispersion component</u>
+
+Every ammotype from RocketBase class has a value in the config, "ACE_DISP". The unit is the diameter of the 68% dispersion circle in mils (1/1000th of a radian or 1 meter per kilometer). For example, if an AT rocket has
+
+<syntaxhighlight lang="cpp">ACE_DISP = 10;</syntaxhighlight>
+
+It means that 68% of the rockets will land within a ten mil circle, which is 1 meter at 100 meters, 2 meters at 200 meters etc.
+
+<u>Trajectory component</u>
+
+It calculates rocket's correct vectorUp (responsible for pitch) and sets it. This way the rocket turns into the trajectory (always points where it flies to). As a result the trajectories of the rockets are very close to the real ones.
+
+<u>Affected weapons</u>
+ 
+FFARs and unguided AT rockets.
+
+
+<u>Notes:</u>
+
+Currently this feature is only enabled for human players to save some performance and not break AI aiming, as rocket trajectories drastically differ from vanilla ones. However, the scripted dispersion is applied to AI shooters too.
+
+
+==== Round Count ====
+[[File:ACE_Keys2.jpg]]<br>sitDown
+
+The ''RoundCount'' gives you the ability to check the remaining bullets of your currently loaded magazine. 
+
+The magazine check is bound to the "''sitDown''" key (Please make sure you have bound this action to a key).
+Pressing the according key will execute the magazine check.
+
+Don't worry about your avatar performing a nice sit down show, the config has been rewritten to perform a 75% faster reload animation, depending on your weapon (''rifle or pistol'') and your current state (''standing, kneeling, prone'') when you hit that key.
+
+''So you cannot sit down anymore. Keep that in mind.''
+
+It has shown to be useful to bind that key in range of your normal keys which you use during the play
+
+A hint will pop up and show you in words the approx. amount of rounds left in your magazine (''see examples below'').
+
+When you reload your magazine, the same hint will be shown. 
+That way you will always know if you are reloading a fresh magazine or a half empty one.
+
+
+[[File:ACE_RndCntHeavy.jpg]]
+[[File:ACE_RndCntLight.jpg]]
+
+
+----
+<u>ArmA Engine Limitation</u>
+
+''- M240 issue:''
+
+a) You have shot your whole ammo (inlcuding boxes in your inventory) -> the ammo belt is removed from the machinegun
+
+b) You pick up one new box. -> the ammo belt is shown again. BUT you have NOT reloaded yet.
+
+= This can lead to the wrong asumption that you already "may" have reloaded.
+
+
+''- M203 issue:''
+
+Since you cannot check which weapon the player has in hand, you will perform the magazine check, when you have the grenade launcher selected via firemode selector.
+
+The magazine check won't tell you if you have a grenade in the tube or not, instead it will give you only the magazine count of the magazine you have loaded.
+<br>
+<br>
+
+==== Rucksack System ====
+The existing gear dialog is extended to allow users to see a list of the units rucksack 
+contents, as well as with buttons to interact with the contents.
+
+
+Pack dummy magazines (PDM) to represent stored end use magazines (EUM) in a 1:1 ratio
+
+
+
+The unpack button removes the selected PDM and creates an EUM in inventory.
+
+While the supply button removes the selected PDM and creates an EUM on the ground. 
+
+With the drop button you drop the selected DPM from the list to the ground, just like 
+you drop other items.  
+
+
+If you select an EUM in inventory the unpack button changes to a pack button and swaps out the EUM for a PDM.
+
+The rucksack system extends the quantity of items a unit is able to carry.  It 
+works by using pack dummy magazines (PDM) to represent stored end use magazines 
+(EUM) in a 1:1 ratio. The existing gear dialog is extended to allow users to 
+see a list of their PDMs and interact with them.
+
+Rucksack System Interactions:
+The unpack button removes the selected PDM and creates an EUM in inventory.
+The supply button removes the selected PDM and creates an EUM on the ground.
+The drop button removes the selected DPM and creates a PDM on the ground.
+The pack button removes the selected EUM and creates a PDM in inventory.
+Double clicking on a PDM in the Ruck Items list is another way to unpack it.
+You can take PDMs from the Available Items list just like any other magazines.
+
+In order to use the rucksack system a unit must have a rucksack item in their 
+secondary weapon slot.  If you select an EUM in inventory the unpack button 
+changes to a pack button and the supply button is disabled.  If you select an 
+PDM from Ruck Items, the pack button changes to an unpack button and the supply 
+button is enabled.  If there is not room in inventory to unpack a PDM the unpack 
+button will be disabled.
+
+Clicking on the pack button when you have some partially used magazines of the 
+selected type may result in some or all of those magazines being removed and 
+added back to the end of your other magazines list after a short delay.  If all 
+magazines of the selected type in inventory are partially used, the pack button 
+will still be enabled. However, if you click it in this situation it should 
+only shuffle your magazine order, disable itself from further clicking, and not 
+actually pack any magazines.
+
+If there is no PDM defined for the selected EUM, the pack button will be 
+disabled. There should be PDMs defined for all the default ArmA magazines, and 
+all ACE magazines.  Magazines defined in other addons will need to define their 
+own PDMs, if they want their magazines to work with this ruck system.
+
+How To Define New Magazine for ACE:
+# Define a new class that inherits from ACE_PackDummyMag, define the 
+ACE_EndUseMag value as the name of the EUM this PDM should unpack to.  Also 
+define the ACE_Size value as the number of cubic centimeters this item takes 
+inside the rucksack.
+# Define ACE_PackDummyMag on the EUM as the name of the PDM you just created.
+# Add the PDM from step 1 to the magazines array of ACE_Rucksack, if you don't 
+the PDM won't be dropped when the rucksack is dropped.
+# Add the EUM from step 2 to the magazines array of ACE_MagChecker, if you 
+don't you won't be able to pack this magazine if there are any partially used 
+magazines of this type in inventory.
+
+
+<u>Update to ruck system (Jan 31 2009)</u>
+
+In view of the strain put by the amount of real magazines per unit on the network engine, ruck system has been revised. The main change is that _PDM magazines are now stored in a unit variable, instead of being 'physical' magazines. The variable is called ACE_Ruckmagazines, it contains a list of a unit's ruck magazines in this format: 
+
+<sqf>ACE_Ruckmagazines = [["mag1",amount1],["mag2",amount2],/*...*/,["magn",amountn]]</sqf>
+
+Consequently, the operations with ruck magazines can no longer be done using native functions 'addmagazine', 'removemagazine' and 'magazines'. There are three new functions created to do just that:
+<sqf>[_unit, "ACE_15Rnd_9x19_B_M9_PDM", 4] call ACE_Sys_Ruck_AddRuckMagazine</sqf>
+Will add 4 pistol mags to _unit. You can also use
+<sqf>[_unit, "ACE_15Rnd_9x19_B_M9_PDM"] call ACE_Sys_Ruck_AddRuckMagazine</sqf>
+Which will only add 1 mag.
+
+To remove a mag: 
+<sqf>[_unit,"ACE_15Rnd_9x19_B_M9_PDM"] call ACE_Sys_Ruck_RemoveRuckMagazine</sqf>
+
+To get a list of ruck mags:
+<sqf>_mags =  _unit call ACE_Sys_Ruck_RuckMagazines</sqf>
+
+the list will be a standard plain array just like what 'magazines' command returns.
+
+Of course, you can also directly manipulate the variable by 'setvariable' command.
+
+<sqf>_unit setvariable ["ACE_Ruckmagazines", [["ACE_15Rnd_9x19_B_M9_PDM",4], ["ACE_30Rnd_762x39_B_AK_PDM",20]]]</sqf>
+
+Note that you still have to use {{hl|_PDM}} magazine names.
+
+'''Functionality changes and limitations'''
+
+As ruck magazines are now 'phantom' and exist only on the client machine, there are several changes and inherent limitations as to how the system performs, both in SP and MP:
+
+* Dropping the ruck will result in magazines being unpacked into player's inventory and (when there is no more space there) on the ground.
+* Dropping a ruck item on the ground will create an unpacked mag on the ground (not a _PDM as before).
+* In multiplayer, you can't access unconscious player's rucksack contents.
+* A special script is spawning ruck contents of a dead unit so that all clients can access them. This feature can be turned off (to prevent the clogging of the battlefield in persistent/long-lasting PvP missions, as spawned weaponholders are not removed by body removal scripts) by setting the variable ACE_Sys_Ruck_SpawnRuckItemsOnDeath to false.
+
+==== Weapons on Back ====
+Ace allows soldiers to carry weapons on their backs- in addition to rucksacks.  
+For example, you could carry a sniper rifle, with an MP5 on your back.  A common use for this is allowing soldiers to carry an AT launcher and a rucksack, as well as their primary weapon.
+This feature can be disabled, or set to secondary weapons only (AT launchers and rucks) by mission editors. 
+
+To add a weapon to a units back :
+
+<sqf>_unit setvariable ["ACE_weapononback","ACE_M72"];</sqf>
+
+This will add an M72 Law launcher to _unit's back.  Ammunition is added in the normal way and takes up the same slots.
+
+To find the weapon on a units back :
+
+<sqf>_weapon = _unit getvariable "ACE_WeaponOnBack";</sqf>
+
+This will return the weapon class name.
+
+==== Sandbags ====
+Allows you to deploy sandbags in order to build up static defense positions.
+You can also stack up sandbags by using the '''ARROW UP/DOWN''' keys or remove built sandbags and put them back into your inventory.
+
+This feature does not use an animation to indicate you the building process, but uses a progress bar.
+That way you can always interrupt the deployment if something unforseen happens. With an animation you would have been trapped.
+It is necessary that you stand still and don't move around or the build process gets aborted.
+You are also able to build sandbags while prone or kneeling, but in these stances it takes more time.
+
+The sandbags should be capable of withstanding ~200 5.56 rounds before they are perforated and the sand rinses out.
+
+==== Sights Adjustment ====
+user<br>[[File:ACE_Keys2.jpg]]<br>config
+
+A number of weapon systems in ACE allow you to adjust the sights for range and windage:
+
+* Sniper/marksman rifles
+* AT launchers
+* Underbarrel grenadelaunchers
+* Vehicle and tripod mounted MGs and GLs
+
+The implementation of sight adjustment is a bit different between these categories to allow for the most fluent and easiest use possible.
+
+<u>Sniper rifles:</u>
+
+The adjustment dialog can be brought up by pressing a key combination (default Shift-V). Then click on corresponding arrows to adjust elevation and windage. 
+
+<u>AT launchers:</u>
+
+Default keys: Arrow Up and Arrow Down. Use them when you got the launcher in hands to increase/decrease elevation. 
+
+<u>Vehicle/tripod systems:</u>
+
+There are one or two actions that appear in the menu when you occupy gunner seat in a vehicle which has this system enabled. "Sight adjustment" action brings up a dialog where you can adjust the sight. One more action appears for GL's - "Use T-E". T-E stands for traverse and elevation mechanism, which is a thing used for indirect firing. In this mode information about current barrel elevation and azimuth appears on the screen, which allows to fire from defilade positions using a spotter, for example. In this mode you can also access a range table for the weapon, where you can look up necessary elevation for different ranges. When you activate T&E mode, the adjustments you made in the dialog stop affecting your projectiles, to avoid confusion. 
+
+<u>Underbarrel grenadelaunchers</u>
+
+A key combination (shift-v default) brings up a small info display which lets you see in real time an approximate distance grenade will fly with current weapon elevation. The text becomes red when elevation corresponds exactly to the shown range (on flat surface). Indirect (hi arc) mode is also supported. Press the combination again to switch the display off. Firing anything other than GL or changing your primary weapon also turns it off.
+
+==== Smoke Grenades ====
+In A.C.E mod, ''smokegrenades'' are just normal ''smokegrenades'' you all know from the game.
+
+But in A.C.E they have a special feature: They can block the view of the AI, not only humans
+
+This counts ''for all smoke producing devices'' you can use in A.C.E, no matter if those are hand smoke grenades, m203 type, or vehicle ones
+
+==== Stamina ====
+In A.C.E you are not longer able to run forever.
+
+Depending on your movement speed, like running, sprinting or walking slowly you are becoming tired. Rolling over while in prone position does also count against your stamina level
+
+Different classes have different stamina levels: Engineers, as well as Special Forces units, have increased stamina, while medics, crew members etc have lower than a normal grunt.
+
+Together with the items you carry in your gear or in your rucksack, your stamina is changing - depending of the weight of the whole gear.
+
+Additionally other influences like weather, wounding, suppressive fire your stamina can change.
+
+Once you have reached your stamina level you collapse. This is most likely the case when carrying a M240 with lots of ammoboxes and any launcher type weapon at the same time, e.g when you overload yourself.
+
+Current stamina level is indicated with heartbeat, breathing and in the worst case with a collapse and blackout.
+
+In order to regain your stamina, you should be "catching your breath". This can be done by standing still. The position also counts a bit: prone > crouch > standing.
+
+==== Steady Aim ====
+A.C.E improves the aim when you are walking or crouching slowly with your rifle leveled.<br>
+
+Compared to the default animation, the new aim is much better to use, especially when in ironsight mode.
+
+Also, because of the increased sway compared to vanilla ArmA, the ''hold breath'' feature now stands a purpose, since will steady your aim for that fraction of second needed for a precise shot.
+
+==== Suppression ====
+
+==== Tailrotor ====
+''Tailrotors'' from helicopters are as deadly as in reality in the A.C.E mod.
+<br>
+[[File:Ace tailrotor.jpg]]<br>
+
+Depending on the physical orientation of a tailrotor, it will kill you when you run into it, while boarding a helicopter.
+This makes proper boarding procedures and boarding safety necessary.
+
+==== Tracking ====
+
+Special group tracking markers may be enabled on ACE clients as a configuration option.
+
+==== Voices Russian ====
+You may make radio voices speak Russian permanently on ACE clients as a configuration option.
+
+==== Weapon Jamming ====
+user<br>[[File:ACE_Keys2.jpg]]<br>config
+
+Player's primary weapon can jam randomly. Once you're jammed, you can press the 'R' key (can be changed in ACE_keys.hpp) for immediate action. There will also appear a user action called 'Unjam' which will do the same. 
+
+With a certain probability the jam will be too serious to be fixed with immediate action, and you will be required to reload the weapon to fix it.
+
+==== Weapon Resting ====
+user<br>[[File:ACE_Keys2.jpg]]<br>config
+
+This system allows you to 'rest' your primary weapon against horizontal or vertical edges of objects of suitable height (like vehicles, fences, buildings, trees) when you are keeled or standing. 
+
+When the weapon is deployed, you get a lower recoil and weapon sway. The weapon also becomes harder to turn, and if you turn it more than 15 degrees to either side from the initial direction, it'll automatically undeploy itself. 
+
+To undeploy the weapon you just need to press a movement key or change stance. 
+<br>
+<br>
+To deploy your weapon, press {{Controls|shift|space}} (which is the default key combination defined in the ace_keys.hpp file)
+
+==== Weapon Bipods ====
+This system is similar to the ''Weapon Resting'' but it is available only from prone position, and only for weapons that have modeled bipods. This will increase even further the stability of the weapon (reduced recoil and weapon sway) but will also limit the horizontal and vertical speed more than weapon resting.
+To undeploy the weapon bipods you just need to press a movement key or change stance. 
+<br>
+<br>
+The keys used to deploy your weapon bipods are the same as the Weapon Resting ones, and cannot be assigned separately
+
+==== Wind Effect on Helicopters ====
+<u>Usage:</u>
+First place the game logic titled Enable: Wind Impact on Helicopters in your mission.  This will enable the feature as it is disabled by default.
+Next place any helicopter class vehicle in the mission.
+
+<u>Optionally:</u>
+Set a value to the variable ACE_Wind_Modifier_Vehicles in your mission.  If no value is set it will default to 0.5.  The greater this value the bigger impact the wind will have on helicopters and decreasing the value will cause it to have less of an effect.
+
+<u>Features:</u>
+When enabled the wind created by the ArmA engine will have an effect on helicopters.
+
+<u>Notes:</u>
+The wind speeds in ArmA are very dependent on the weather.
+
+If you have any issues in using it see the mission TestE_Wind_Vehicles.Sara in the editor missions folder of the ACE release.
+
+==== Wounding System ====
+The wounding system encompasses stun effects, pain, unconsciousness, bleeding, cardiac arrest (heart failure), body dragging, as well as the new medical system, which includes medical appliances to treat the various health effects. The system also contains some behavior and reaction modifiers for the AI.
+
+<u>Stunning</u>
+
+Stunning generally occurs when a soldier is hit by a bullet or takes damage some other way, such as falling or getting hit by a fast moving vehicle. The soldier will fall to the ground and be unable to fight for a few seconds.
+
+<u>Bleeding</u>
+
+When a soldier takes a significant amount of damage, he may start to bleed. Bleeding persistently causes damage until stopped by a bandage or, in serious cases, a tourniquet. Moving around will increase blood loss.
+
+A pulsating red edge around the screen indicates if the player is bleeding.
+
+<u>Pain & Unconsciousness</u>
+
+Pain is increased in mostly the same ways as blood loss, but is treated separately and will reduce over time if the soldier lays still. If a soldier takes so much damage, that his pain is higher than his tolerance threshold, he will pass out and remain unconscious until he is either treated with morphine, or his pain subsides enough. While unconscious, a soldier can no longer do the following:
+
+* Move, shoot etc.
+* Give orders to AI
+
+Furthermore, his hearing and visibility are reduced depending on his level of consciousness. Soldiers close to regaining consciousness will be able to perceive their surroundings better than soldiers who are close to death.
+
+<u>Cardiac Arrest</u>
+
+When a soldier has lost a significant amount of blood, he may experience cardiac arrest, meaning his heart will stop beating. If this happens, he will die, unless he receives epinephrine.
+
+<u>Examination & Treatment</u>
+
+If you are close enough to another soldier, you can examine them from the action menu. You will get a quick summary of their general status and wounds (are they bleeding, unconscious, in pain, no pulse). If you have the necessary medical supplies, relevant treatment options will then be added to your action menu.
+
+<u>Medical Items</u>
+* Bandages - used to stop the bleeding. This is the first step to be taken in order to stabilize the victim
+* Morphine - used to relieve the pain of the victim. Will stop the screaming. It should be used after the victim has been stabilized
+* Epinephrine - used to restart the heart and get the blood going again due to the hormone boosts the supply of oxygen and glucose to the brain and muscles. to be used if the victim is in cardiac arrest. To be used as a last resort.
+* Large Bandage - WIP
+* Tourniquet - WIP
+* Splint - WIP
+* Plasma Bag - WIP
+* IV Bag - WIP
+
+<u>Medical Personnel</u>
+While every soldier is able to help out his fellow buddy who has been injured in combat, his effectiveness is not going to be the same as a qualified field medic/corpsman. It is recommended that, if available, medics should provide the CPR.
+
+
+== Client Side ACE Features ==
+
+==== 3rd Person View ====
+You can alter slightly how the 3rd-person view is presented. See the ..\ArmA\dta\ace\ace_clientside.hpp file and set just one of the ACE_3RDVIEW defines.
+
+==== BIS Class Hiding ====
+This entry will hide BIS original units from selection in the editor. It is intended to reduce clutter in the unit selection, and to encourage the use of ACE-Mod units, therefore taking advantage of their extra abilities. Please note, this will not remove original BIS units from the game, so any missions that rely on them will load correctly.
+
+<syntaxhighlight lang="cpp">#define ACE_SCOPE_SHOW_BIS __hidden</syntaxhighlight>
+
+Replace {{hl|__hidden}} with {{hl|__visible}} to show original units - Note the use of double underline character.
+
+==== BIS Groups Hiding ====
+This setting controls the visibility of original BIS groups in the editor. It has a similar function to [[BIS Class Hiding]]. The groups are hidden by default and can be shown by uncommenting or adding the entry;
+<syntaxhighlight lang="cpp">#define ACE_SCOPE_SHOW_BIS_GROUPS</syntaxhighlight>
+
+This setting is not inserted prior to version 1.07 so therefore must be added to take effect. Remove the // characters to uncomment.
+
+==== BIS Sounds Override ====
+To restore BIS default sounds or use enable use of another sound mod comment out the define for ACE_OVERRIDE_BIS_SOUNDS in the ..\ArmA\dta\ace\ace_clientside.hpp file.
+
+==== Cartridges ====
+Adjustments to how ejected cartridges are displayed may be made in the ..\ArmA\dta\ace\ace_clientside.hpp file and altering
+the ACE_FX_CARTRIDGES_E class contents.
+
+==== Keys ====
+Adjustable bindings are in the ..\ArmA\dta\ace\ace_keys.hpp file.
+{|
+| afterburner
+| {{Controls|LShift}}
+|-
+| adjust rifle sights
+| {{Controls|Shift|V}}
+|-
+| adjust GL sights
+| {{Controls|Shift|V}}
+|-
+| jump low fence
+| {{Controls|J}}
+|-
+| NVG brightness up
+| {{Controls|PageUp}}
+|-
+| NVG brightness down
+| {{Controls|PageDown}}
+|-
+| CQB sights
+| {{Controls|Shift|F}} (currently hardcoded)
+|-
+| adjust grenade throw
+| {{Controls|Shift|H}}
+|-
+| clear weapons jam
+| {{Controls|R}}
+|-
+| rest weapon/deploy bipod
+| {{Controls|Shift|Space}}
+|-
+| check ammo
+| {{Controls|'}}
+|-
+| open parachute
+| {{Controls|\}}
+|}
+
+==== OFPEC ILS ====
+Adjustments to the Instrument Landing System aids for jets and helicopters may be made in the ..\ArmA\dta\ace\ace_clientside.hpp file and altering
+the OFPEC_ILS_CONFIG class contents.
+
+==== Radio Commands ====
+Radio chatter from the AI may be reduced or eliminated. See the ..\ArmA\dta\ace\ace_clientside.hpp file and set just one of the ACE_RADIO defines.
+
+==== Russian Voices ====
+You may make radio voices permanently speak Russian by default. See the ..\ArmA\dta\ace\ace_clientside.hpp file and uncomment the define for ACE_RUSSIAN_VOICES_ACTIVE.
+
+==== Sight Adjustment Method ====
+Whether you want range values displayed for scopes with bullet drop compensation look in the ..\ArmA\dta\ace\ace_clientside.hpp file and alter
+the ACE_SIGHT_ADJUSTMENT_RIFLE_CONFIG class contents.
+
+==== Tracers SP ====
+Tracers may be disabled in SP mode. See the {{hl|..\ArmA\dta\ace\ACE_Tracers.hpp}} file.
+
+==== Tracking ====
+Special group tracking markers may be enabled. See the {{hl|..\ArmA\dta\ace\ACE_Tracking.hpp}} file.
+
+
+== Server Side ACE Features ==
+
+Settings for dedicated server features may be adjusted in the {{hl|..\ArmA\dta\ace\ACE_serverconfig.hpp}} file
+
+==== Check PBOs ====
+To check if certain pbo's are missing on client and prevent client from playing if they are missing.
+<syntaxhighlight lang="cpp">check_pbos = 1;</syntaxhighlight>
+
+==== Check All ACE PBOs ====
+To verify that all pbos shipped with ACE are running on client.
+<syntaxhighlight lang="cpp">check_all_ace_pbos = 1;</syntaxhighlight>
+
+==== Checklist ====
+If check_all_ace_pbos is enabled, the following pbos are added to the checklist. If not, only these pbos are checked.
+<syntaxhighlight lang="cpp">checklist[] = {"ace_addon1","ace_addon2"};</syntaxhighlight>
+
+==== Exclude PBOs ====	
+If all ace_pbos_check is enabled, exclude the following files from check.
+<syntaxhighlight lang="cpp">exclude_pbos[] = {};</syntaxhighlight>

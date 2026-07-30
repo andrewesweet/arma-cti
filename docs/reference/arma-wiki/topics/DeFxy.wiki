@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/DeFxy
+// revision: 108382 (2018-06-14T03:46:22Z)
+// export sha1: ezv4ncbfd3ky8rw1zulxsdjwflide73
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+DeFxy Version 1.xx by Mikero
+
+see ReadMeGeneral
+
+see fixes.txt
+
+DeFxy is a simple analysis of any font fxy file, listing, in effect, the codepage
+
+Syntax:
+
+DeFxy [-P] Anyfile[.fxy]
+
+-P Don't Pause
+
+output is produced on screen
+
+[[Category:Mikero Tools]]

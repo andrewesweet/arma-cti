@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_setSkill
+// revision: 364258 (2024-05-06T09:38:24Z)
+// export sha1: rgxnm0gd8lxb3zq02zqvkkhywzpcbdt
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Maintenance/RV/Return value needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Campaign
+
+|serverExec= server
+
+|descr= Sets skill for an entire AI side. The skill will be calculated using a lerp function. Function will take player as multiplier.
+
+|s1= [side,skillMin,skillAimMin,skillMax,skillAimMax] call [[BIS_fnc_EXP_camp_setSkill]]
+
+|p1= side: [[Side]] - side of which AI skill should be changed
+|p2= skillMin: [[Number]] - (Optional, default 0.5) minimal general skill
+|p3= skillAimMin: [[Number]] - (Optional, default 0.3) minimal aiming skill
+|p4= skillMax: [[Number]] - (Optional, default 0.8) maximal general skill
+|p5= skillAimMax: [[Number]] - (Optional, default 0.5) maximal aiming skill
+
+|r1=
+
+|x1=<sqf>[WEST,0.1,0.2,0.7,0.6] call BIS_fnc_EXP_camp_setSkill;</sqf>
+
+|seealso= [[Arma 3: AI Skill]] [[setSkill]] [[skillFinal]] [[BIS_fnc_EXP_camp_dynamicAISkill]]
+}}

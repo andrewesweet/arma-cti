@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/hintCadet
+// revision: 308950 (2022-04-18T20:23:13Z)
+// export sha1: anu23wsdapoj9os4tps02d0uumvqxuc
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Difficulty | Category:Command Group: Interaction | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|eff= local
+
+|gr1= Interaction
+
+|gr2= Difficulty
+
+|descr= Shows a text hint only when in [[cadetMode]].
+
+The text can contain several lines. \n is used to indicate the end of a line.
+
+|s1= [[hintCadet]] text
+
+|p1= text: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>hintCadet "Press W to move forward";</sqf>
+
+|seealso= [[hint]] [[hintC]] [[hintSilent]] [[cadetMode]]
+}}

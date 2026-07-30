@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma:_Terrains
+// revision: 249473 (2021-02-24T09:16:42Z)
+// export sha1: teeoa50yivuxwa8px9m6tdjt83jxzmt
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Armaverse]]

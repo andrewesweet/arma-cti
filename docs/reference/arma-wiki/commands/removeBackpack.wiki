@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/removeBackpack
+// revision: 319442 (2022-05-13T09:24:04Z)
+// export sha1: ecyc0mcihpua2mfhrlsj0jt1qt888l8
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Containers
+
+|descr= Removes unit's backpack
+
+|s1= [[removeBackpack]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>removeBackpack this;</sqf>
+
+|x2= <sqf>removeBackpack mySoldierDude;</sqf>
+
+|seealso= [[removeBackpackGlobal]] [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]]
+}}

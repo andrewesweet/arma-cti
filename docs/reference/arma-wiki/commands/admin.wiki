@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/admin
+// revision: 364587 (2024-05-17T12:40:33Z)
+// export sha1: sxhpkcmeue8v1ywveqqbi53bowpwjve
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Multiplayer
+
+|serverExec= server
+
+|descr= This is dedicated server command, which queries the admin state of any client on the network by their client ([[owner]]) id.
+{{Feature|informative|To self-check the admin state of a local client, use [[BIS_fnc_admin]].}}
+
+|s1= [[admin]] ownerID
+
+|p1= ownerID: [[Number]] - [[clientOwner]] id
+
+|r1= [[Number]] - admin state of given client:
+* 0 - client is not an admin
+* 1 - client is admin that is [[Arma 3: Server Config File#Voted_In_Admin|voted in]]
+* 2 - client is admin that is [[Arma 3: Server Config File#Logged_In_Admin|logged in]]
+
+|x1= <sqf>private _isLoggedInAdmin = admin 3 == 2;</sqf>
+
+|x2= <sqf>private _adminState = admin owner unit1;</sqf>
+
+|seealso= [[serverCommand]] [[serverCommandAvailable]] [[owner]] [[clientOwner]] [[remoteExecutedOwner]]
+}}

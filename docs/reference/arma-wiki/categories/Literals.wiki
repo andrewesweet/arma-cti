@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Literals
+// revision: 115499 (2019-01-03T10:47:02Z)
+// export sha1: qmtl8b8a4we1j6urgrj39msjvhp70lw
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Script tiles]]

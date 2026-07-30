@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/Operating_armoured_vehicles
+// revision: 33026 (2007-04-14T11:04:56Z)
+// export sha1: n4oalhmh1t52hjinet65ko3gr933cun
+// Vendored snapshot. Do not edit — re-export instead.
+
+Armoured ground vehicles are extremely powerful, but still vulnerable to infantry. An armoured vehicle should never enter an area by itself that may contain hostile soldiers and would allow them to fire upon you at close range.
+
+
+
+Use the vehicle radar to spot enemy armour.
+
+
+Coordinate your movements with other infantry or jeep escorts to clear villages and choke points before passing.

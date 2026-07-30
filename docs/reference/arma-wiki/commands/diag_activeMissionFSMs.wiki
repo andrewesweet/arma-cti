@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/diag_activeMissionFSMs
+// revision: 349639 (2023-11-16T21:59:22Z)
+// export sha1: g82g5dkh85dmfj1einyve4qkoisg5uv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.44 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.44
+
+|gr1= Diagnostic
+
+|descr= Returns array with active Mission FSMs. To see number of all scripts currently in the scheduler use [[diag_activeScripts]].
+
+|s1= [[diag_activeMissionFSMs]]
+
+|r1= [[Array]] - format [<nowiki/>[name, state, timeout],...]:
+* name: [[String]] 
+* state:
+* timeout:
+
+|x1= <sqf>{ systemChat str _x } forEach diag_activeMissionFSMs;</sqf>
+
+|seealso= [[diag_activeSQSScripts]] [[diag_activeSQFScripts]] [[diag_log]] [[diag_fps]] [[diag_fpsmin]] [[diag_frameno]] [[diag_tickTime]] [[diag_activeScripts]]
+}}

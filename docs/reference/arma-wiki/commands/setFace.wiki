@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/setFace
+// revision: 369847 (2024-10-16T13:51:59Z)
+// export sha1: chdjo5avnut1m2796qccgb73qrr22al
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Identity | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Unit Identity
+
+|descr= Set person's face. For a list of available faces, check {{Link|Category:CfgIdentities}} or {{hl|CfgFaces}} config.
+If the face is non-existent, the face is set to 'Default' and the error is logged in the [[Crash Files|.rpt file]].
+
+{{Columns|3|
+* {{Link|Operation Flashpoint: CfgIdentities#Faces|{{ofp}} faces}}
+* {{Link|ArmA: Armed Assault: CfgIdentities#Faces|{{arma1}} faces}}
+* {{Link|Arma 2: CfgIdentities#Faces|{{arma2}} faces}}
+* {{Link|Arma 3: CfgIdentities#Faces|{{arma3}} faces}}
+* {{Link|Take On Helicopters: CfgIdentities#Faces|{{tkoh}} faces}}
+}}
+
+|s1= person [[setFace]] face
+
+|p1= person: [[Object]]
+
+|p2= face: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>soldier1 setFace "WhiteHead_02";</sqf>
+
+|x2= Set persistent face for a unit in multiplayer:
+<sqf>this setFace "AsianHead_A3_02"; // in the init field if the unit already exists in Eden Editor</sqf>
+
+<sqf>
+if (isServer) then { [_unit, "AsianHead_A3_02"] remoteExec ["setFace", 0, _unit] }; 
+// if the unit is created later in the game.
+// This only works with stock faces; when a player joins with a custom face into this unit, 
+// all current players need to be force-updated to the desired face as custom face overwrites current face.
+// Use [[BIS_fnc_setIdentity]] for persistent identity.
+</sqf>
+
+|seealso= [[face]] [[setIdentity]] [[setSpeaker]] [[hasCustomFace]]
+}}

@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/surfaceNormal
+// revision: 377547 (2026-01-02T06:54:42Z)
+// export sha1: k728999xv3558kx54tpyioq6qsxpbgp
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 2: Operation Arrowhead version 1.60 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.60
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Positions
+
+|descr= Returns terrain's {{Link|https://en.wikipedia.org/wiki/Normal_(geometry)|surface normal}} on given position.
+
+|s1= [[surfaceNormal]] position
+
+|p1= position: [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - when using [[Position#Introduction|Position3D]], Z is ignored
+
+|r1= [[Vector3D]]
+
+|x1= <sqf>_normal = surfaceNormal [300, 500];</sqf>
+
+|x2= <sqf>_normal = surfaceNormal getPosASL player;</sqf>
+
+|seealso= [[setVectorUp]] [[surfaceIsWater]] [[surfaceType]]
+}}

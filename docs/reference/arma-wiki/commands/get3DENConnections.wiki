@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/get3DENConnections
+// revision: 377333 (2026-01-02T06:39:13Z)
+// export sha1: kqeifa7sy2hw8s1s7lrhvw1y8b42h6e
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Returns all [[Eden Editor: Connecting|connections]] currently present on an entity.
+
+|s1= [[get3DENConnections]]  entity
+
+|p1= entity: [[Eden Entity]] or [[Eden ID]]
+
+|r1= [[Array]] format: {{hl|[[type1, to1], [type2, to2], ..., [typeN, toN]]}}
+* type: [[String]] - connection class from ''Cfg3DEN >> Connections''
+* to: [[Eden Entity]]: Entitiy the connection leads to
+
+|x1= <sqf>get3DENConnections _trigger; // Can return [["WaypointActivation",[B Alpha 4-5,0]]]</sqf>
+
+|seealso= [[add3DENConnection]] [[remove3DENConnection]]
+}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Error_Type_Any,_expected_Bool
+// revision: 364468 (2024-05-16T20:41:51Z)
+// export sha1: 4hfvmcf5cfabm0q77vx2bobpcbypnz8
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|{{hl|Creating Error Type Any, expected Bool}}
+This is a common script error, most likely caused by not returning [[Boolean]] from [[waitUntil]] expression.
+See [[waitUntil]] for more info.}}

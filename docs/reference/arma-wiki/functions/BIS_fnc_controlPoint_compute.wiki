@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_controlPoint_compute
+// revision: 349198 (2023-11-08T14:50:41Z)
+// export sha1: ssrovo1emn5y5h63y3wgs7kbh6pqwk0
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: ControlPoint | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= ControlPoint
+
+|descr= Computes data for control point.
+
+|s1= [controlPoint] call [[BIS_fnc_controlPoint_compute]]
+
+|p1= controlPoint: [[Object]] - the control point
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[controlPoint] call BIS_fnc_controlPoint_compute;</sqf>
+
+|seealso= [[BIS_fnc_controlPoint_isArrive]] [[BIS_fnc_controlPoint_computeOwnerKey]] [[BIS_fnc_controlPoint_getOwnerKey]] [[BIS_fnc_controlPoint_setIsArrive]]
+}}

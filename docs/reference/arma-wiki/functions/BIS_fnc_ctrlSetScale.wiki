@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ctrlSetScale
+// revision: 349189 (2023-11-08T14:50:39Z)
+// export sha1: fkc1eq4zmu1s14ul1n2f9g6hcdmdd06
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Scale a control while maintaining its centering.
+
+|s1= [control,scale,time] spawn [[BIS_fnc_ctrlSetScale]]
+
+|p1= control: [[Control]] - the control which should be scaled
+
+|p2= scale: [[Number]] - (Optional, default 1) scale
+
+|p3= time: [[Number]] - (Optional, default 0) commit time
+
+|r1= [[Array]] - final position
+
+|x1= <sqf>private _finalPos = [_ctrl, 1.5, 3] spawn BIS_fnc_ctrlSetScale;</sqf>
+
+|seealso= [[ctrlCommitted]] [[ctrlSetPosition]] [[ctrlSetFade]]
+}}

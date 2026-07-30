@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/maxLoad
+// revision: 309123 (2022-05-03T11:08:26Z)
+// export sha1: av60lc5g8wwhi60mdr8r8e8ytxm8yfe
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|gr1= Unit Inventory
+
+|descr= Returns maximum load limit for a unit, uniform/vest/backpack containers, vehicle cargo, supply boxes and weapon holders.
+
+|s1= [[maxLoad]] container
+
+|p1= container: [[Object]] - unit, uniform/vest/backpack container, vehicle cargo, supply box, weapon holder 
+
+|r1= [[Number]]
+
+|x1= <sqf>private _maxLoad = maxLoad _yaMum;</sqf>
+
+|seealso= [[setMaxLoad]] [[load]] [[loadAbs]] [[loadBackpack]] [[loadUniform]] [[loadVest]] [[getContainerMaxLoad]]
+}}

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/missionNameSource
+// revision: 310162 (2022-05-05T13:07:20Z)
+// export sha1: gytxj8v4galu0xaya1eesfn8yx2ga48
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Mission Information
+
+|descr= Return workshop-compatible currently loaded mission file (path to mission.pbo, relative to game exe).
+
+{{Feature | Informative |
+* [[missionName]] will return the Workshop user-friendly mission name, whereas [[missionNameSource]] will take the information from [[Mission.sqm|mission.sqm]].
+* pre-v2.02 missions may return an empty string.
+}}
+
+|s1= [[missionNameSource]]
+
+|r1= [[String]]
+
+|x1= <sqf>hint format ["You are playing mission ""%1""", missionNameSource];</sqf>
+
+|seealso= [[missionName]] [[worldName]] [[briefingName]] [[serverName]] [[worldSize]]
+}}

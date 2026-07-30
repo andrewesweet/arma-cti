@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/setCamUseTI
+// revision: 369156 (2024-09-03T10:34:40Z)
+// export sha1: hk414i7nm13opgp1pb66z9uu1n15re4
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Camera Control
+
+|descr= Sets thermal vision mode for currently used camera. This command only works with [[camCreate]] created camera that is currently the main camera for the player (see Example 2).
+
+|s1= state [[setCamUseTI]] modeIndex
+
+|p1= state: [[Boolean]] - [[true]] to enable, [[false]] to disable the effect
+
+|p2= modeIndex: [[Number]] - TI mode. Can be:
+* 0 - White Hot
+* 1 - Black Hot
+* 2 - Light Green Hot / Darker Green cold
+* 3 - Black Hot / Darker Green cold
+* 4 - Light Red Hot /Darker Red Cold
+* 5 - Black Hot / Darker Red Cold
+* 6 - White Hot . Darker Red Cold
+* 7 - Thermal (Shade of Red and Green, Bodies are white)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>true setCamUseTI 1;</sqf>
+
+|x2= ''Predator'' vision:
+<sqf>
+_cam = "camera" camCreate [0, 0, 0];
+_cam camSetTarget player;
+_cam camSetRelPos [0, 1, 1.5];
+_cam cameraEffect ["Internal", "Back"];
+_cam camCommit 0;
+true setCamUseTI 7;
+</sqf>
+
+|seealso= [[camUseNVG]] [[disableTIEquipment]]
+}}

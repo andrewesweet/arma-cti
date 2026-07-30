@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_inv
+// revision: 327932 (2022-07-13T12:32:54Z)
+// export sha1: 0bjsf8g4exccy2spo72kpe8a07bd19n
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Inventory
+
+|descr= Returns inventory contents of given vehicle (unit). For vehicles it returns mounted gun and its ammo, '''not''' cargo weapons and ammo.
+
+|s1= [unit] call [[BIS_fnc_inv]]
+
+|p1= unit: [[Object]] - unit or vehicle
+
+|r1= [[Array]] of [[Config]] - weapons then magazines
+
+|x1= <sqf>[player] call BIS_fnc_inv;</sqf>
+
+|seealso= [[BIS_fnc_invAdd]] [[BIS_fnc_invRemove]] [[BIS_fnc_invCodeToArray]] [[BIS_fnc_invString]] [[BIS_fnc_invSlots]] [[BIS_fnc_invSlotsEmpty]] [[BIS_fnc_invSlotType]]
+}}

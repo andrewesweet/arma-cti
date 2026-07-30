@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/setHitIndex
+// revision: 377888 (2026-01-04T16:34:13Z)
+// export sha1: hvqqsaomwy1ey3sxzk0p969to8wccem
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Sets the current level of damage for a specific Hit Point. All hit points can be obtained with [[getAllHitPointsDamage]] command.
+
+|s1= vehicle [[setHitIndex]] [hitPartIndex, damage, useEffects, killer, instigator, breakRotor]
+
+|p1= vehicle : [[Object]] - vehicle to be damaged
+
+|p2= hitPartIndex: [[Number]] - hit part index of the Hit Point
+
+|p3= damage: [[Number]] in range 0..1 - level of damage, 0 = no damage, 1 = full damage
+
+|p4= useEffects: [[Boolean]] - (Optional, default [[true]]) [[false]] to skip destruction effects
+|p4since= arma3 1.68
+
+|p5= killer: [[Object]] - (Optional, default [[objNull]]) the entity that caused the damage. If the damage leads to the death of the unit, the killer will be used as the object that caused the kill. <br>
+* It can be used to show "killed by player" in debriefing statistics and kill messages in the chat (if death messages are enabled). <br>
+* It will alter the killer's [[rating]] as if the killer directly killed the unit. <br>
+* It will be listed as <sqf inline>_killer</sqf> parameter in the [[Arma_3:_Event_Handlers#Killed|Killed]] event handler.
+|p5since= arma3 2.08
+
+|p6= instigator: [[Object]] - (Optional, default [[objNull]]) the person that instigated the damage.
+* if a tank is a killer, the tank gunner that pulled the trigger is instigator
+* it will be listed as <sqf inline>_instigator</sqf> parameter in the [[Arma 3: Event Handlers#Killed|Killed]] event handler.
+|p6since= arma3 2.12
+
+|p7= breakRotor: [[Boolean]] - (Optional, default [[false]]) if the hitpoint is rotor on a helicopter, [[true]] will break the rotor as well as play corresponding sound if 'useEffects' is also [[true]].
+|p7since= arma3 2.18
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player setHitIndex [1, 1];</sqf>
+
+|x2= <sqf>player setHitIndex [7, 0.5];</sqf>
+
+|seealso= [[getAllHitPointsDamage]] [[getHitIndex]] [[getHitPointDamage]] [[setHitPointDamage]] [[setHit]] [[getHit]] [[setDamage]] [[damage]] [[forceHitPointsDamageSync]]
+}}

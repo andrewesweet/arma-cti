@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_2.20
+// revision: 370047 (2024-10-29T11:04:10Z)
+// export sha1: 9papjvvheqsbfp36psmifm3g3z9quqj
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with {{arma3}} version 2.20 may be recognised by the appearance of this icon: {{GVI|arma3|2.20}}
+
+[[Category:Introduced with {{arma3}}|2.20]]

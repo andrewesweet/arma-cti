@@ -1,0 +1,669 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_AI_Systems_(AIS)
+// revision: 349616 (2023-11-15T16:40:19Z)
+// export sha1: sar12fiyvmlos5igq8trmtno2phag5n
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+The AI Tweaks system improves in various ways the AI behavior and their gameplay influence.
+
+=== Usage ===
+When activated via module or functions, the system's functions operate in the background to adjust AI behavior. Depending on the mission setup, it can be active for one or multiple sides.
+=== Detailed information ===
+{{hl|Main features}}
+
+
+*Info Share: This improves the situational awareness and combat responsiveness of fighting forces via simulated voice and radio-based knowledge sharing between groups.
+
+*Unstuck: This system tries to restore the mobility of AI when it's stuck due to various pathfinding issues - applies to both infantry and ground vehicles.
+
+*Collision Insurance: The safety code for AI to avoid harm or damage caused by vehicles colliding with allied mobile infantry and other vehicles.
+
+{{hl|Additional improvements}}
+
+
+*Manning vehicle turrets by passengers to engage enemies
+
+*Improved movement group cohesion to avoid soldiers being left behind
+
+*Autonomous rearming to avoid AI running out of ammo
+
+*Dynamic and situational formation adjustment for combat vs. non-combat phases
+
+*More reliable embarking of vehicles under various conditions
+=== Configuration ===
+Mission parameters may allow the customizing of certain elements of the system for the given play-session in multiplayer.
+=== Mission maker setup and use ===
+The advanced customization of AI is possible via the module to a large extent and even more so via scripting.
+
+Detailed documentation is found in the [[Spearhead 1944]].
+= Retreat Flee Surrender System = 
+=== Overview ===
+The Retreat Flee Surrender system simulates the stress, threat perception, and unit morale that may make AI decide to retreat from their current position, drop their weapons and flee the battlefield or surrender altogether. As such, the enemy doesn't have to be killed, yet different actions may also lead to overcoming the opposing force. Finally, POWs can be questioned to receive information on potential enemy forces and their locations.
+=== Usage ===
+When activated via module or functions, the system's functions operate in the background to calculate the AI behavior. Depending on the mission setup, it can be active for one or multiple sides. Players won't be directly affected, yet players do influence the AI through their actions.
+=== Detailed information ===
+Units in the scenario that are affected by this system will gain a special stress value that will increase and decrease depending on the current situation (being under fire, wounds, losses, lack of ammo, nearby threats, or allies). Depending on the stress value and the proximity of hostiles, units may be put into one or more non-combatant states. They may temporarily retreat, abandon weapons and flee permanently, become shocked, or surrender. Surrendered enemies, when approached, become POWs and may be interrogated with some chance to get intel about enemy presence in the area. POWs are directed towards certain areas where they will remain. Units in the permanent non-combatant state may get deleted when far enough away from any player.
+=== Configuration ===
+Mission parameters may allow customizing certain elements of the system for the given play-session in multiplayer.
+=== Mission maker setup and use ===
+The advanced customization of RFS is possible via the module to a large extent and even more so via scripting.
+
+Detailed documentation is found in the [[Spearhead 1944]].
+
+= MissionNamespace Variables =
+=== SPE_Active_AISuite ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' If set to [[false]] AI system will be paused.
+=== SPE_Active_Flee ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Can groups flee?
+=== SPE_Active_GroupTracing ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Group traces regardless of flee/surrender active.
+=== SPE_Active_InfoSharing ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Do groups share knowledege.
+=== SPE_Active_Surrender ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Can units surrender?
+=== SPE_Active_TweakAI ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Groups of AI can be tweaked.
+=== SPE_Active_TweakAI_rearm ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' AI can rearm.
+=== SPE_Active_Unstuck ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Enable unstuck system.
+=== SPE_AddGroups ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[]</sqf>
+
+'''Description:''' Additional groups for AIS.
+=== SPE_additionalPrimaryWeaponAmmoForAI ===
+'''Data Type: '''[[String]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>if (SPE_AIS_cadetDifficulty) then {6} else {0}</sqf>
+
+'''Description:''' Additional primary weapon ammo for all AIs out there.
+=== SPE_addSpawnedGroups ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Spawned groups added to AIS. '''Currently has no effect for Zeus-spawned units.
+=== SPE_AffectOurSide ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>false</sqf>
+
+'''Description:''' Should ''good guys'' be affected by retreat/flee/surrender/POW/shock.
+=== SPE_AIS_cadetDifficulty ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>false</sqf>
+
+'''Description:''' Use cadet difficulty.
+=== SPE_AIS_DebugSwitch_systemChat ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Enables debugging via [[systemChat| system chat]]. SPE_AIS_IFS_DebugSwitch needs to be set to [[true]] as well.
+=== SPE_AIS_IFS_DebugSwitch ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>false</sqf>
+
+'''Description:''' Enables debugging. Needs to be set to true for all other debug modes to work.
+=== SPE_AIS_Sides ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[EAST,WEST,GUER]</sqf>
+
+'''Description:''' All affected sides.
+=== SPE_AISuiteLoopActive ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Is AIS main loop running. Set to [[false]] to disable.
+=== SPE_CleanUp_Distances ===
+'''Data Type: '''[[String]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[((getObjectViewDistance select 0) + 20),((getObjectViewDistance select 0) + 20),-1]</sqf>
+
+'''Description:''' clean up from player distances in format [retreat, fleeing, surrender].
+=== SPE_CleanUp_Hourglass ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[120,240]</sqf>
+
+'''Description:''' Time in seconds that must pass from gaining non-combatant status to the moment, when non-combatant can be cleaned up in format [minimum time, max random addition]. Final value is determined at gaining non-combatant status.
+=== SPE_CleanUp_PlayableObservers ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>false</sqf>
+
+'''Description:''' Use playable/switchable units instead of current player units to check, if any player is too close to clean up non-combatants.
+=== SPE_CrowdPsyche ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>false</sqf>
+
+'''Description:''' Other's Retreat/Flee/Surrender behaviour affect my behaviour.
+=== SPE_Cycle_Flee ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>5</sqf>
+
+'''Description:''' flee check interval in seconds.
+=== SPE_Cycle_InfoSharing ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>5</sqf>
+
+'''Description:''' info share interval in seconds.
+=== SPE_Cycle_Surrender ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>2</sqf>
+
+'''Description:''' surrender check interval in seconds.
+=== SPE_Cycle_TweakAI ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>1</sqf>
+
+'''Description:''' AI tweak interval in seconds.
+=== SPE_Cycle_Unstuck ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>10</sqf>
+
+'''Description:''' unstuck interval in seconds.
+=== SPE_doCatchUp ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Group members movement speed manipulation to improve group cohesion on the move.
+=== SPE_doDiamondInCombat ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Switch groups formations to DIAMOND when in combat. Can improve AI navigation over the terrain.
+=== SPE_doHandleBlockingStuff ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' should unstuck try to hide various map objects around the stuck vehicles.
+=== SPE_doHideBlockingFoliage ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' should unstuck try to hide blocking foliage objects in front of stuck vehicles.
+=== SPE_doLeaveFootmobilesBehind ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Leave behind in separate group redundant tank crewmen.
+=== SPE_doManTurrets ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Important empty vehicle seats may be manned by passengers.
+=== SPE_doReliableEmbarking ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Improved reliability of embarking vehicles especially in combat situations.
+=== SPE_doTweakDisembarkInCombat ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>false</sqf>
+
+'''Description:''' Tweaked rules of disembarking passengers from vehicle in combat.
+=== SPE_FleeThreshold ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[5,50,100]</sqf>
+
+'''Description:''' Flee threshold [5,50,100].
+=== SPE_GlobalStressMultiplier ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>1</sqf>
+
+'''Description:''' basic stress multiplier.
+=== SPE_GlobalThreatMultiplier ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>1</sqf>
+
+'''Description:''' threat multiplier.
+=== SPE_InfoShare_BoostedInfoValue ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>3.5</sqf>
+
+'''Description:''' Info share boosted info value.
+=== SPE_InfoShare_maxTargetDistance_forInfantry ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>300</sqf>
+
+'''Description:''' Info share max distance from the revealed target if receiver is an infantry.
+=== SPE_InfoShare_maxTargetDistance_forInfantry_boosted ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>150</sqf>
+
+'''Description:''' Info share max distance from the revealed target if receiver is an infantry (knowledge boost).
+=== SPE_InfoShare_maxTargetDistance_forVehicle ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>150</sqf>
+
+'''Description:''' Info share max distance from the revealed target if receiver is a vehicle.
+=== SPE_InfoShare_maxTargetDistance_forVehicle_boosted ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>50</sqf>
+
+'''Description:''' Info share max distance from the revealed target if receiver is a vehicle (knowledge boost).
+=== SPE_InfoShare_revealCapMaximum ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>3.5</sqf>
+
+'''Description:''' Maximal reveal value.
+=== SPE_InfoSharing_Range ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[0,1168.36]</sqf>
+
+'''Description:''' How far AI units can share information.
+=== SPE_InfoSharing_ReceivingRange ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[500,500,500,500]</sqf>
+
+'''Description:''' How far receiver may get radio info ([east, west, resistance, other]).
+=== SPE_LocalDebug ===
+'''Data Type: '''[[String]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>!isMultiplayer</sqf>
+
+'''Description:''' Player-local debug. By default disabled in multiplayer.
+=== SPE_LocalDebug_fadeOut ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>10</sqf>
+
+'''Description:''' Player-local debug fade out delay (if applicable - permanent icons excluded).
+=== SPE_MHILoopPause ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>false</sqf>
+
+'''Description:''' As log this is [[true]], anti-road collisions component will be paused.
+=== SPE_MHILoopSwitch ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>false</sqf>
+
+'''Description:''' If [[false]], anti-road collisions component will cease to work permanently.
+=== SPE_mobilityRepairTime ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>0</sqf>
+
+'''Description:''' How long it takes to restore vehicle's mobility when all conditions are met in seconds. 0 to repair as soon conditions are met.
+=== SPE_MoraleAffectingTargetsRange ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>100</sqf>
+
+'''Description:''' Farther groups are ignored as a threat source.
+=== SPE_nonCombatantKillsAllowed ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>false</sqf>
+
+'''Description:''' Can fleeing, surrendering or POW units be killed.
+=== SPE_OurSide ===
+'''Data Type: '''[[Side]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>GUER</sqf>
+
+'''Description:''' Our side, the ''good'' guys.
+=== SPE_permanentShockProb ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>0.1</sqf>
+
+'''Description:''' Permanent shock probability.
+=== SPE_PlayerStressMultiplier ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>1.5</sqf>
+
+'''Description:''' Players are scarier than AI units.
+=== SPE_ReliableEmbarking ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[EAST,WEST,GUER,CIV]</sqf>
+
+'''Description:''' Enabling reliable embarking assistance for groups of included sides.
+=== SPE_RetreatFollowUp ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[[],[],[],[]]</sqf>
+
+'''Description:''' Optional sets of custom follow-up behavior codes after disengage stage of retreat routine is completed. Each side array in selectRandomWeighted-ready format: [string,probability]. Code must be finite, otherwise group will be considered in retreating state indefinitely.
+=== SPE_RetreatPositions ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[[],[],[],[]]</sqf>
+
+'''Description:''' Optional sets of positions, towards which retreating groups should move per side. Each side array in selectRandomWeighted-ready format: [coordinates,probability]. Example: [[500,1500,0],0.25,(getMarkerPos 'marker1'),0.75].
+=== SPE_RetreatTime ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[-1,0]</sqf>
+
+'''Description:''' Duration in seconds of disengage stage in retreat routine in format [minimum time, max random addition]. Unlimited (by default) when result is negative.
+=== SPE_RFS_POWWalkTimer ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>60</sqf>
+
+'''Description:''' Surrendered will automtically walk as POWs after that amount of seconds + 2-5s.
+=== SPE_RFSThresholds_ATStressDivisor ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>2</sqf>
+
+'''Description:''' Must be positive number. The higher, the more being AT-capable reduces stress generated by armored threats (it is already somewhat lower for this equal to 1).
+=== SPE_RFSThresholds_MultiplierRF ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>1</sqf>
+
+'''Description:''' The lower, the easier for retreat/flee.
+=== SPE_RFSThresholds_MultiplierS ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>1</sqf>
+
+'''Description:''' The lower, the easier for surrender.
+=== SPE_StressDifficultyComponentDivisor ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>3</sqf>
+
+'''Description:''' The lower, the bigger impact on group's stress has game difficulty setting values below 1.5 are treated as 1.5.
+=== SPE_SurrenderThreshold ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[90,150,200]</sqf>
+
+'''Description:''' Surrender threshold.
+=== SPE_ThreatProximityMultiplier ===
+'''Data Type: '''[[Number]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>1</sqf>
+
+'''Description:''' Decides, by how much threat source distance reduces generated threat. values below 1 amplify influence of distance down to 0.001, which basically nullifies the threat at any distance. values above 1 reduce that influence, so farther hostiles would be more threatening.
+=== SPE_Unstuck_BBMoveAside ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[true,true,true,true]</sqf>
+
+'''Description:''' Should bounding box based move aside empty vehicles unstuck feature be active per side: [west,east,resistance,other].
+=== SPE_Unstuck_EPEMoveAside ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[true,true,true,true]</sqf>
+
+'''Description:''' Should EPE-contact move aside not moving vehicles unstuck feature be active per side: [west,east,resistance,other].
+=== SPE_Unstuck_GroupsToCheck ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[]</sqf>
+
+'''Description:''' Additional groups to be checked by the unstuck system.
+=== SPE_Unstuck_HiddenOnly ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>false</sqf>
+
+'''Description:''' Unstuck not in player's sight.
+=== SPE_Unstuck_MoveAsideNonHostilesOnly ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Should unstuck move aside obstacles only if non hostile.
+=== SPE_Unstuck_MoveAsideRoadOnlyObstacle ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Should unstuck move aside obstacles only from the road.
+=== SPE_Unstuck_MoveAsideRoadOnlyVehicle ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Should unstuck move aside obstacles only, if vehicle moves on the road.
+=== SPE_Unstuck_MoveAsideTanksByTanksOnly ===
+'''Data Type: '''[[Boolean]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>true</sqf>
+
+'''Description:''' Should tank kind obstacles be moved aside only by other tanks.
+=== SPE_UnstuckExcluded ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[]</sqf>
+
+'''Description:''' Units excluded from unstucking.
+=== SPE_UnstuckHideTerrainObjects ===
+'''Data Type: '''[[Array]]
+
+'''Locality:''' {{Icon|globalEffect|24}}
+
+'''Default Value:'''<sqf inline>[[],[],[],[]]</sqf>
+
+'''Description:''' which types of terrain objects can be hidden by unstuck component:
+* 1: <sqf inline>['TREE','SMALL TREE','BUSH','FOREST','HIDE','FENCE','WALL']</sqf> - Can hide near stuck vehicles when player observer within 200m
+* 2: <sqf inline>['TREE','SMALL TREE','BUSH','FOREST','HIDE','FENCE','WALL']</sqf> - Can hide near stuck vehicles if no player observer in 200m
+* 3: <sqf inline>['TREE','BUSH','FOREST','WALL']</sqf> - ''Blocking foliage'' to hide in front of a stuck vehicle
+* 4: <sqf inline>['river','pond']</sqf> - Don't hide blacklist per substrings present in the terrain object name string (str object), case-insensitive, probably best to keep it short due to performance impact (numerous string comparisons).
+
+[[Category: Spearhead 1944]]

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/setForceGeneratorRTD
+// revision: 351296 (2023-11-27T03:20:18Z)
+// export sha1: irb21uel2lnjny25xm6t31myvtglege
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands | Category:Stubs | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|game2= tkoh
+|version2= 1.00
+
+|gr1= RTD
+
+|descr= {{Wiki|stub}} {{Feature|afm}}
+
+|s1= value [[setForceGeneratorRTD]] arr
+
+|p1= value: [[Number]]
+
+|p2= arr: [[Array]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>something1 setForceGeneratorRTD something2;</sqf>
+
+|seealso= [[clearForcesRTD]] [[forceGeneratorRTD]] [[addForceGeneratorRTD]]
+}}

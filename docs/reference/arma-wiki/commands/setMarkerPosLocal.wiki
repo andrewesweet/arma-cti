@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/setMarkerPosLocal
+// revision: 377550 (2026-01-02T06:54:46Z)
+// export sha1: 7qjq2srzi8w98cbu7nb35ntueb4b16e
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Armed Assault version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.04
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Markers
+
+|eff= local
+
+|descr= Moves the marker. If position is given in 3D format, {{hl|z}} coordinate is stored with the marker and will be used when marker is passed to commands like [[createVehicle]], [[createUnit]], [[createAgent]], [[createMine]], [[setVehiclePosition]] for example. In case of an object, the object's model [0,0,0] is used.
+
+|s1= markerName [[setMarkerPosLocal]] position
+
+|p1= markerName: [[String]]
+|p2= position: [[Position#Introduction|Position2D]], [[Position#PositionAGL|PositionAGL]] or {{GVI|arma3|1.94|size= 0.75}} [[Object]]. In case of an object, the object's model [0,0,0] is used.
+|r1= [[Nothing]]
+
+|x1= <sqf>"MarkerOne" setMarkerPosLocal getMarkerPos "MarkerTwo";</sqf>
+
+|seealso= [[setMarkerPos]] [[setMarkerAlphaLocal]] [[setMarkerBrushLocal]] [[setMarkerColorLocal]] [[setMarkerDirLocal]] [[setMarkerShapeLocal]] [[setMarkerSizeLocal]] [[setMarkerTextLocal]] [[setMarkerTypeLocal]]
+}}

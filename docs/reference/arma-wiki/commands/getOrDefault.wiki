@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/getOrDefault
+// revision: 348340 (2023-11-08T12:59:48Z)
+// export sha1: 5hz8csuw0s5norhts1glhhbrnu6yntq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: HashMap | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= HashMap
+
+|descr= Retrieves a value out of a [[HashMap]] after looking it up by its key. When the HashMap doesn't contain the key, the default value is returned
+
+|s1= hashMap [[getOrDefault]] [key, defaultValue, setDefault]
+
+|p1= hashMap: [[HashMap]]
+
+|p2= key: [[HashMapKey]] - case sensitive key
+
+|p3= defaultValue: [[Anything]] - (Optional, default [[nil]])
+
+|p4= setDefault: [[Boolean]] - (Optional, default [[false]]) if set to [[true]] and value does not exist in provided hash map, ''defaultValue'' will be added to the hash map
+|p4since= arma3 2.04
+
+|r1= [[Anything]]
+
+|x1= <sqf>private _myValue = _myHashMap getOrDefault ["a", "Not Found!"];</sqf>
+
+|x2= <sqf>private _myValue = _hashMap getOrDefault ["a", "Not Found!", true]; // will add default value to the hash map if it does not exist</sqf>
+
+|x3= <sqf>
+private _array = _hashmap getOrDefault [_key, [], true]; // a new array will be created if it doesn't exist
+_array pushBack _item; // _item will be added to the array (the one in the hashmap is updated by reference)
+</sqf>
+
+|seealso= [[getOrDefaultCall]] [[HashMap]] [[get]]
+}}

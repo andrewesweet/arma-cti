@@ -1,0 +1,74 @@
+// source: https://community.bistudio.com/wiki/forceSpeed
+// revision: 378638 (2026-05-15T15:15:33Z)
+// export sha1: hy9zcqqydwgwab9f5t0q11ckog4f4ee
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Force the speed limit on given object (object will never attempt to move faster than given by forceSpeed). Use negative value to return to default behaviour.
+{{Feature|important|This has no effect on [[player]]s.}}
+
+|s1= object [[forceSpeed]] speed
+
+|p1= object: [[Object]]
+
+|p2= speed: [[Number]] - in metre per second
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_helicopter forceSpeed 150;</sqf>
+
+|x2= <sqf>_vtol forceSpeed 0; // vtol stop and hover </sqf>
+|x3= <sqf>_vtol forceSpeed -1; // vtol resume </sqf>
+
+|seealso= [[getForcedSpeed]] [[forceWalk]] [[isWalking]] [[isForcedWalk]] [[getSpeed]] [[limitSpeed]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 17:02, 2 March 2007 (CET)</dd>
+<dt class="note">[[User:Donnervogel|Donnervogel]]</dt>
+<dd class="note">Setting forceSpeed to -1 will make the unit move according to the group speed mode (often specified by the waypoint) again. Setting forceSpeed to 0 will halt the unit ignoring waypoints or orders.</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 9 February 2008</dd>
+<dt class="note">[[User:Kronzky|Kronzky]]</dt>
+<dd class="note">Does not seem to do ''anything'' at the current time (V1.08.5163)</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 14 December 2011</dd>
+<dt class="note">[[User:Igneous01|Igneous01]]</dt>
+<dd class="note">If a unit (man) has forceSpeed set to anything under jogging (walking only) the unit will refuse to get into vehicles. He will automatically be unassigned from a vehicle everytime he is ordered to get in (via scripts or direct action)</dd>
+
+<dt></dt>
+<dd class="notedate">Posted on 2020-05-01 - 03:21 (UTC)</dd>
+<dt class="note">[[User:TMZulu|TMZulu]]</dt>
+<dd class="note">This command must be executed on the client to which the object/unit is local and will only take effect where the unit is local. If locality changes, the command must be reapplied.</dd>
+
+</dl>
+
+{{Note
+|user= Leopard20
+|timestamp= 20211117064926
+|text= In the case of infantry units, it is recommended to use [[getSpeed]] for better and more accurate results:
+<sqf>_unit forceSpeed (_unit getSpeed "NORMAL"); // force the unit to run</sqf>
+}}

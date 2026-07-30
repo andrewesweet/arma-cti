@@ -1,0 +1,684 @@
+// source: https://community.bistudio.com/wiki/Global_Mobilization_Multiplayer_Missions
+// revision: 338257 (2023-02-25T09:59:44Z)
+// export sha1: iunta1m89gv75tmi8y154f42k5bs56n
+// categories: Category:Global Mobilization
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[image:gm picture ca.png|borderless|60px|right|link=Global Mobilization]]
+Find below an overview of the classnames for available Multiplayer Missions in Arma 3 Creator DLC: Global Mobilization - Cold War Germany.
+
+= Mission Lists =
+== Cooperative Missions ==
+
+{| class="wikitable"
+|-
+! Shown Name
+! Classname
+! Terrain
+! Description
+|-
+| '''COOP 06 Magnetized'''
+| gm_multiplayer_01_m_01
+| gm_weferlingen_summer
+| ''Infiltrate a compound, steal data and kill the enemy colonel.''
+|-
+| '''COOP 08 Rainy Day'''
+| gm_multiplayer_01_m_02
+| gm_weferlingen_summer
+| ''Defend a village against the incoming West German forces.''
+|-
+| '''COOP 08 Cleanup'''
+| gm_multiplayer_01_m_03
+| gm_weferlingen_summer
+| ''Hit an East German vehicle depot and wreck it. Clear the village around it.''
+|-
+| '''COOP 12 Fat Cats'''
+| gm_multiplayer_01_m_04
+| gm_weferlingen_summer
+| ''Take your tanks through the enemy lines.''
+|-
+| '''COOP 06 Radio Bahrdorf'''
+| gm_multiplayer_01_m_05
+| gm_weferlingen_summer
+| ''Raid an enemy espionage tower.''
+|-
+| '''COOP 12 Missile Safari'''
+| gm_multiplayer_01_m_06
+| gm_weferlingen_summer
+| ''Small. Fast. Deadly.''
+|-
+| '''COOP 12 The Pit'''
+| gm_multiplayer_01_m_07
+| gm_weferlingen_summer
+| ''Lost behind enemy lines you must hold out in a forest.''
+|-
+| '''COOP 08 Scrap Drive'''
+| gm_multiplayer_01_m_08
+| gm_weferlingen_summer
+| ''Clear out the ruins of a village held by dug-in enemy forces.''
+|-
+| '''COOP 12 Downhill'''
+| gm_multiplayer_01_m_10
+| gm_weferlingen_summer
+| ''Defend a village in East Germany against the enemy trying to retake it.''
+|-
+| '''COOP 22 Pressing Matters'''
+| gm_multiplayer_01_m_11
+| gm_weferlingen_summer
+| ''Motorized infantry attacks a village held by West German forces to destroy the HQ and disrupt enemy operations.''
+|-
+| '''COOP 10 Danish Lies'''
+| gm_multiplayer_01_m_12
+| gm_weferlingen_summer
+| ''A Danish group of soldiers must return from behind enemy lines.''
+|-
+| '''COOP 08 Resistance'''
+| gm_multiplayer_01_m_13
+| gm_weferlingen_summer
+| ''A group of local resistance fighters take on an enemy radio jammer.''
+|-
+| '''COOP 12 Autobahnmeisters'''
+| gm_multiplayer_01_m_14
+| gm_weferlingen_summer
+| ''Ambush a large enemy convoy travelling on the Autobahn.''
+|-
+| '''COOP 04 Ninjas'''
+| gm_multiplayer_01_m_18
+| gm_weferlingen_summer
+| ''Two anti-tank helicopters must hold back enemy advances. Increased drawing distance settings recommended.''
+|}
+
+== Cooperative Missions (Winter) ==
+
+{| class="wikitable"
+|-
+! Shown Name
+! Classname
+! Terrain
+! Description
+|-
+| '''COOP 06 Magnetized'''
+| gm_multiplayer_01_m_01_winter
+| gm_weferlingen_winter
+| ''Infiltrate a compound, steal data and kill the enemy colonel.''
+|-
+| '''COOP 08 Rainy Day'''
+| gm_multiplayer_01_m_02_winter
+| gm_weferlingen_winter
+| ''Defend a village against the incoming West German forces.''
+|-
+| '''COOP 08 Cleanup'''
+| gm_multiplayer_01_m_03_winter
+| gm_weferlingen_winter
+| ''Hit an East German vehicle depot and wreck it. Clear the village around it.''
+|-
+| '''COOP 12 Fat Cats'''
+| gm_multiplayer_01_m_04_winter
+| gm_weferlingen_winter
+| ''Take your tanks through the enemy lines.''
+|-
+| '''COOP 06 Radio Bahrdorf'''
+| gm_multiplayer_01_m_05_winter
+| gm_weferlingen_winter
+| ''Raid an enemy espionage tower.''
+|-
+| '''COOP 12 Missile Safari'''
+| gm_multiplayer_01_m_06_winter
+| gm_weferlingen_winter
+| ''Small. Fast. Deadly.''
+|-
+| '''COOP 12 The Pit'''
+| gm_multiplayer_01_m_07_winter
+| gm_weferlingen_winter
+| ''Lost behind enemy lines you must hold out in a forest.''
+|-
+| '''COOP 08 Scrap Drive'''
+| gm_multiplayer_01_m_08_winter
+| gm_weferlingen_winter
+| ''Clear out the ruins of a village held by dug-in enemy forces.''
+|-
+| '''COOP 12 Downhill'''
+| gm_multiplayer_01_m_10_winter
+| gm_weferlingen_winter
+| ''Defend a village in East Germany against the enemy trying to retake it.''
+|-
+| '''COOP 22 Pressing Matters'''
+| gm_multiplayer_01_m_11_winter
+| gm_weferlingen_winter
+| ''Motorized infantry attacks a village held by West German forces to destroy the HQ and disrupt enemy operations.''
+|-
+| '''COOP 10 Danish Lies'''
+| gm_multiplayer_01_m_12_winter
+| gm_weferlingen_winter
+| ''A Danish group of soldiers must return from behind enemy lines.''
+|-
+| '''COOP 08 Resistance'''
+| gm_multiplayer_01_m_13_winter
+| gm_weferlingen_winter
+| ''A group of local resistance fighters take on an enemy radio jammer.''
+|-
+| '''COOP 12 Autobahnmeisters'''
+| gm_multiplayer_01_m_14_winter
+| gm_weferlingen_winter
+| ''Ambush a large enemy convoy travelling on the Autobahn.''
+|}
+
+== Sector Control Missions ==
+
+{| class="wikitable"
+|-
+! Shown Name
+! Classname
+! Terrain
+! Description
+|-
+| '''SC 40 East vs. West (Rennau)'''
+| gm_multiplayer_01_m_15
+| gm_weferlingen_summer
+| ''Two large teams are fighting over multiple sectors in a mechanized battle.''
+|-
+| '''SC 40 East vs. West (Buchberg)'''
+| gm_multiplayer_01_m_16
+| gm_weferlingen_summer
+| ''Two large teams are fighting over multiple sectors in a mechanized battle.''
+|-
+| '''SC 40 East vs. West (Border)'''
+| gm_multiplayer_01_m_17
+| gm_weferlingen_summer
+| ''Two large teams are fighting over multiple sectors in a mechanized battle.''
+|-
+|}
+
+== Sector Control Missions (Winter) ==
+
+{| class="wikitable"
+|-
+! Shown Name
+! Classname
+! Terrain
+! Description
+|-
+| '''SC 40 East vs. West (Rennau)'''
+| gm_multiplayer_01_m_15_winter
+| gm_weferlingen_winter
+| ''Two large teams are fighting over multiple sectors in a mechanized battle.''
+|-
+| '''SC 40 East vs. West (Buchberg)'''
+| gm_multiplayer_01_m_16_winter
+| gm_weferlingen_winter
+| ''Two large teams are fighting over multiple sectors in a mechanized battle.''
+|-
+| '''SC 40 East vs. West (Border)'''
+| gm_multiplayer_01_m_17_winter
+| gm_weferlingen_winter
+| ''Two large teams are fighting over multiple sectors in a mechanized battle.''
+|-
+|}
+
+== Deathmatch Missions ==
+
+{| class="wikitable"
+|-
+! Shown Name
+! Classname
+! Terrain
+! Description
+|-
+| '''DM 24 Fashion Police'''
+| gm_multiplayer_01_m_15
+| gm_weferlingen_summer
+| ''Kill those who wear the indicated piece of clothing. Level up your gun to win the game.''
+|}
+
+== Zeus Missions ==
+
+{| class="wikitable"
+|-
+! Shown Name
+! Classname
+! Terrain
+|-
+| '''Zeus 16+1 Master Weferlingen (East)'''
+| gm_zeus_01_gc
+| gm_weferlingen_summer
+|-
+| '''Zeus 16+1 Master Weferlingen (West)'''
+| gm_zeus_01_ge
+| gm_weferlingen_summer
+|}
+
+== Zeus Missions (Winter) ==
+
+{| class="wikitable"
+|-
+! Shown Name
+! Classname
+! Terrain
+|-
+| '''Zeus 16+1 Master Weferlingen (East)'''
+| gm_zeus_01_gc_winter
+| gm_weferlingen_winter
+|-
+| '''Zeus 16+1 Master Weferlingen (West)'''
+| gm_zeus_01_ge_winter
+| gm_weferlingen_winter
+|}
+
+== Warlords Missions ==
+
+{| class="wikitable"
+|-
+! Shown Name
+! Classname
+! Terrain
+|-
+| '''SC 16 Warlords (Groß Twülpstedt)'''
+| gm_warlords_01a
+| gm_weferlingen_summer
+|-
+| '''SC 16 Warlords (Rennau)'''
+| gm_warlords_01b
+| gm_weferlingen_summer
+|-
+| '''SC 16 Warlords (Klinze)'''
+| gm_warlords_01c
+| gm_weferlingen_summer
+|-
+| '''SC 16 Warlords (Velpke)'''
+| gm_warlords_01d
+| gm_weferlingen_summer
+|-
+| '''SC 16 Warlords (Western Half)'''
+| gm_warlords_02a
+| gm_weferlingen_summer
+|-
+| '''SC 16 Warlords (Eastern Half)'''
+| gm_warlords_02b
+| gm_weferlingen_summer
+|}
+
+== Warlords Missions (Winter) ==
+
+{| class="wikitable"
+|-
+! Shown Name
+! Classname
+! Terrain
+|-
+| '''SC 16 Warlords (Groß Twülpstedt)'''
+| gm_warlords_01a_w
+| gm_weferlingen_winter
+|-
+| '''SC 16 Warlords (Rennau)'''
+| gm_warlords_01b_w
+| gm_weferlingen_winter
+|-
+| '''SC 16 Warlords (Klinze)'''
+| gm_warlords_01c_w
+| gm_weferlingen_winter
+|-
+| '''SC 16 Warlords (Velpke)'''
+| gm_warlords_01d_w
+| gm_weferlingen_winter
+|-
+| '''SC 16 Warlords (Western Half)'''
+| gm_warlords_02a_w
+| gm_weferlingen_winter
+|-
+| '''SC 16 Warlords (Eastern Half)'''
+| gm_warlords_02b_w
+| gm_weferlingen_winter
+|}
+
+= Mission Rotation Lists =
+
+== Coop Missions ==
+<syntaxhighlight lang="cpp">
+class Missions
+{
+	class Mission1
+	{
+		template="gm_multiplayer_01_m_01.gm_weferlingen_summer";
+	};
+	class Mission2
+	{
+		template="gm_multiplayer_01_m_02.gm_weferlingen_summer";
+	};
+	class Mission3
+	{
+		template="gm_multiplayer_01_m_03.gm_weferlingen_summer";
+	};
+	class Mission4
+	{
+		template="gm_multiplayer_01_m_04.gm_weferlingen_summer";
+	};
+	class Mission5
+	{
+		template="gm_multiplayer_01_m_05.gm_weferlingen_summer";
+	};
+	class Mission6
+	{
+		template="gm_multiplayer_01_m_06.gm_weferlingen_summer";
+	};
+	class Mission7
+	{
+		template="gm_multiplayer_01_m_07.gm_weferlingen_summer";
+	};
+	class Mission8
+	{
+		template="gm_multiplayer_01_m_08.gm_weferlingen_summer";
+	};
+	class Mission9
+	{
+		template="gm_multiplayer_01_m_10.gm_weferlingen_summer";
+	};
+	class Mission10
+	{
+		template="gm_multiplayer_01_m_11.gm_weferlingen_summer";
+	};
+	class Mission11
+	{
+		template="gm_multiplayer_01_m_12.gm_weferlingen_summer";
+	};
+	class Mission12
+	{
+		template="gm_multiplayer_01_m_13.gm_weferlingen_summer";
+	};
+	class Mission13
+	{
+		template="gm_multiplayer_01_m_14.gm_weferlingen_summer";
+	};
+	class Mission14
+	{
+		template="gm_multiplayer_01_m_18.gm_weferlingen_summer";
+	};
+};
+</syntaxhighlight>
+
+== Coop Missions (Winter) ==
+<syntaxhighlight lang="cpp">
+class Missions
+{
+	class Mission1
+	{
+		template="gm_multiplayer_01_m_01_winter.gm_weferlingen_winter";
+	};
+	class Mission2
+	{
+		template="gm_multiplayer_01_m_02_winter.gm_weferlingen_winter";
+	};
+	class Mission3
+	{
+		template="gm_multiplayer_01_m_03_winter.gm_weferlingen_winter";
+	};
+	class Mission4
+	{
+		template="gm_multiplayer_01_m_04_winter.gm_weferlingen_winter";
+	};
+	class Mission5
+	{
+		template="gm_multiplayer_01_m_05_winter.gm_weferlingen_winter";
+	};
+	class Mission6
+	{
+		template="gm_multiplayer_01_m_06_winter.gm_weferlingen_winter";
+	};
+	class Mission7
+	{
+		template="gm_multiplayer_01_m_07_winter.gm_weferlingen_winter";
+	};
+	class Mission8
+	{
+		template="gm_multiplayer_01_m_08_winter.gm_weferlingen_winter";
+	};
+	class Mission9
+	{
+		template="gm_multiplayer_01_m_10_winter.gm_weferlingen_winter";
+	};
+	class Mission10
+	{
+		template="gm_multiplayer_01_m_11_winter.gm_weferlingen_winter";
+	};
+	class Mission11
+	{
+		template="gm_multiplayer_01_m_12_winter.gm_weferlingen_winter";
+	};
+	class Mission12
+	{
+		template="gm_multiplayer_01_m_13_winter.gm_weferlingen_winter";
+	};
+	class Mission13
+	{
+		template="gm_multiplayer_01_m_14_winter.gm_weferlingen_winter";
+	};
+};
+</syntaxhighlight>
+
+
+== Sector Control Missions ==
+<syntaxhighlight lang="cpp">
+class Missions
+{
+	class Mission1
+	{
+		template="gm_multiplayer_01_m_15.gm_weferlingen_summer";
+	};
+	class Mission2
+	{
+		template="gm_multiplayer_01_m_16.gm_weferlingen_summer";
+	};
+	class Mission3
+	{
+		template="gm_multiplayer_01_m_17.gm_weferlingen_summer";
+	};
+};
+</syntaxhighlight>
+
+== Sector Control Missions (Winter) ==
+<syntaxhighlight lang="cpp">
+class Missions
+{
+	class Mission1
+	{
+		template="gm_multiplayer_01_m_15_winter.gm_weferlingen_winter";
+	};
+	class Mission2
+	{
+		template="gm_multiplayer_01_m_16_winter.gm_weferlingen_winter";
+	};
+	class Mission3
+	{
+		template="gm_multiplayer_01_m_17_winter.gm_weferlingen_winter";
+	};
+};
+</syntaxhighlight>
+
+== Zeus Missions ==
+<syntaxhighlight lang="cpp">
+class Missions
+{
+	class Mission1
+	{
+		template="gm_zeus_01_gc.gm_weferlingen_summer";
+	};
+	class Mission2
+	{
+		template="gm_zeus_01_ge.gm_weferlingen_summer";
+	};
+};
+</syntaxhighlight>
+
+== Zeus Missions (Winter) ==
+<syntaxhighlight lang="cpp">
+class Missions
+{
+	class Mission1
+	{
+		template="gm_zeus_01_gc_winter.gm_weferlingen_winter";
+	};
+	class Mission2
+	{
+		template="gm_zeus_01_gc_winter.gm_weferlingen_winter";
+	};
+};
+</syntaxhighlight>
+
+== Warlords Missions ==
+<syntaxhighlight lang="cpp">
+class Missions
+{
+	class Mission1
+	{
+		template="mp_warlords_01a.gm_weferlingen_summer";
+		class Params
+		{
+			BIS_WLScanEnabled = 0;
+			BIS_WLArsenalEnabled = 0;
+			BIS_WLFatigueEnabled = 0;
+			BIS_WLMusic = 0;
+			BIS_WLVoice = 0;
+		};
+	};
+	class Mission2
+	{
+		template="mp_warlords_01b.gm_weferlingen_summer";
+		class Params
+		{
+			BIS_WLScanEnabled = 0;
+			BIS_WLArsenalEnabled = 0;
+			BIS_WLFatigueEnabled = 0;
+			BIS_WLMusic = 0;
+			BIS_WLVoice = 0;
+		};
+	};
+	class Mission3
+	{
+		template="mp_warlords_01c.gm_weferlingen_summer";
+		class Params
+		{
+			BIS_WLScanEnabled = 0;
+			BIS_WLArsenalEnabled = 0;
+			BIS_WLFatigueEnabled = 0;
+			BIS_WLMusic = 0;
+			BIS_WLVoice = 0;
+		};
+	};
+	class Mission4
+	{
+		template="mp_warlords_01d.gm_weferlingen_summer";
+		class Params
+		{
+			BIS_WLScanEnabled = 0;
+			BIS_WLArsenalEnabled = 0;
+			BIS_WLFatigueEnabled = 0;
+			BIS_WLMusic = 0;
+			BIS_WLVoice = 0;
+		};
+	};
+	class Mission5
+	{
+		template="gm_warlords_02a.gm_weferlingen_summer";
+		class Params
+		{
+			BIS_WLScanEnabled = 0;
+			BIS_WLArsenalEnabled = 0;
+			BIS_WLFatigueEnabled = 0;
+			BIS_WLMusic = 0;
+			BIS_WLVoice = 0;
+		};
+	};
+	class Mission6
+	{
+		template="gm_warlords_02b.gm_weferlingen_summer";
+		class Params
+		{
+			BIS_WLScanEnabled = 0;
+			BIS_WLArsenalEnabled = 0;
+			BIS_WLFatigueEnabled = 0;
+			BIS_WLMusic = 0;
+			BIS_WLVoice = 0;
+		};
+	};
+};
+</syntaxhighlight>
+
+== Warlords Missions (Winter) ==
+<syntaxhighlight lang="cpp">
+class Missions
+{
+	class Mission1
+	{
+		template="mp_warlords_01a_w.gm_weferlingen_winter";
+		class Params
+		{
+			BIS_WLScanEnabled = 0;
+			BIS_WLArsenalEnabled = 0;
+			BIS_WLFatigueEnabled = 0;
+			BIS_WLMusic = 0;
+			BIS_WLVoice = 0;
+		};
+	};
+	class Mission2
+	{
+		template="mp_warlords_01b_w.gm_weferlingen_winter";
+		class Params
+		{
+			BIS_WLScanEnabled = 0;
+			BIS_WLArsenalEnabled = 0;
+			BIS_WLFatigueEnabled = 0;
+			BIS_WLMusic = 0;
+			BIS_WLVoice = 0;
+		};
+	};
+	class Mission3
+	{
+		template="mp_warlords_01c_w.gm_weferlingen_winter";
+		class Params
+		{
+			BIS_WLScanEnabled = 0;
+			BIS_WLArsenalEnabled = 0;
+			BIS_WLFatigueEnabled = 0;
+			BIS_WLMusic = 0;
+			BIS_WLVoice = 0;
+		};
+	};
+	class Mission4
+	{
+		template="mp_warlords_01d_w.gm_weferlingen_winter";
+		class Params
+		{
+			BIS_WLScanEnabled = 0;
+			BIS_WLArsenalEnabled = 0;
+			BIS_WLFatigueEnabled = 0;
+			BIS_WLMusic = 0;
+			BIS_WLVoice = 0;
+		};
+	};
+	class Mission5
+	{
+		template="gm_warlords_02a_w.gm_weferlingen_winter";
+		class Params
+		{
+			BIS_WLScanEnabled = 0;
+			BIS_WLArsenalEnabled = 0;
+			BIS_WLFatigueEnabled = 0;
+			BIS_WLMusic = 0;
+			BIS_WLVoice = 0;
+		};
+	};
+	class Mission6
+	{
+		template="gm_warlords_02b_w.gm_weferlingen_winter";
+		class Params
+		{
+			BIS_WLScanEnabled = 0;
+			BIS_WLArsenalEnabled = 0;
+			BIS_WLFatigueEnabled = 0;
+			BIS_WLMusic = 0;
+			BIS_WLVoice = 0;
+		};
+	};
+};
+</syntaxhighlight>
+
+[[Category:Global Mobilization]]

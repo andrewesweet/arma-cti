@@ -1,0 +1,919 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Characters_And_Gear_Encoding_Guide
+// revision: 378454 (2026-04-17T15:46:29Z)
+// export sha1: sqyglf70ixiirjp71gnidae57zmjqjx
+// categories: Category:Arma 3: Editing | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This guide covers the basics of creating config files for characters and their equipment in {{arma3}}.
+The aim of this guide is to provide a comprehensive tool containing all the necessary information needed for creating new or editing existing character and equipment classes, as well as to offer a handful of useful tips.
+Weapons are indeed a part of a soldier's equipment, but to keep things a bit more simple here, encoding weapons is not within the scope of this guide.
+
+
+== Encoding Basics ==
+
+As a reminder, and a base for newcomers in modding {{arma3}}, it is worth to explain some basics. To get a new content into the game, an addon has to be created.
+Locally, an addon is a folder containing files like models, textures, or config files. When packed, the whole folder is transformed into a single ''.pbo'' file.
+
+There are several kinds of config files, explained right below.
+* '''config.cpp''' – The core config file for a particular addon. All the classes are defined here.
+* '''*.hpp''' – A header file, which is to be included in ''config.cpp''. Creating these files is not mandatory, but can make an addon much easier to navigate in. Please note the suffix doesn't matter at all, ''.hpp'' is just something we use in BI.
+* '''model.cfg''' – A model config. Most of the models in {{arma3}} need their model config. Characters or gear model configs are usually very simple, whereas for example a helicopter model config is a huge thing where all the animations of the model are set.
+
+
+== Config.cpp structure ==
+
+=== Classes ===
+
+Basically, everything in {{arma3}} has its class, which is defined within one of what we can call core classes.
+Those do not define any assets themselves, but they serve as a place where classes of particular assets are stored.
+There are many such classes, so only those important and relevant ones are listed below, together with examples of types of assets to be defined within them.
+* '''CfgVehicles''' – characters, backpacks, vehicles (surprise!), ammoboxes, ground holders (more on this later)
+* '''CfgWeapons''' – weapons (yes, really), weapon accessories, headgear, uniforms, vests
+* '''CfgGlasses''' – facewear (please do not mistake with facepalm)
+* '''CfgPatches''' – important for making things work in Zeus mode and for making sure configs are loaded in the desired order
+
+=== Files Structure ===
+
+All the content of all the listed classes has its place inside ''config.cpp'', but the file can easily become very messy when it is filled with a lot of classes and their properties.
+It is therefore advisable not to keep everything in one file, but utilise ''.hpp'' files instead. For example, if all the soldiers are defined in the ''cfgSoldiers.hpp'' file, the only thing needed is to include the ''.hpp'' file in ''config.cpp'', like this:
+
+<syntaxhighlight lang="cpp">
+/// Utilising includes ///
+
+class CfgVehicles
+{
+	#include "cfgSoldiers.hpp"
+};
+</syntaxhighlight>
+
+When using includes, please note the following:
+* The ''#include'' line is literally fully replaced by the whole content of the included file.
+* The ''#include'' does not end with semicolon, just make sure the included file has proper syntax.
+* The file to be included is looked for in the directory of the file it is being included in; other path can be specified within the quotation marks.
+* The order of includes might matter, depending on where which class is defined. It is advisable to create the structure in such a way so the order of includes actually does not matter.
+
+Spreading the content of ''config.cpp'' across several ''.hpp'' files will make the whole thing easy to navigate in, and it is strongly recommended.
+
+=== Properties ===
+
+The config itself can be compared to a special kind of form that needs to be filled in to make stuff work in the game. Once a class is defined, it contains ''properties'' with assigned ''values''.
+Properties can be compared to variables, as known from programming languages. However, there is no need to define or initialise a property in a config.
+Similarly, properties do not have any type per se, with exception of some being an array. Those are recognisable by square brackets at the end of their names (e.g., {{hl|hiddenSelections[]}}).
+Any value assigned to such property has to be inside curly brackets (e.g., {{hl|c= hiddenSelections[] = {"camo"};}}).
+To make things clear, properties which are arrays will be written with square brackets in this guide.
+
+=== Inheritance ===
+
+A class does not have to contain all necessary properties, there is a structure of parent and child classes, with a child class inheriting all properties from its parent class, unless a property is redefined under the child class.
+In most cases, it is most beneficial to find the closest existing class to a new one, and to inherit properties from the existing class to the new one.
+Then only those properties which are different from the parent class need to be defined in the new class.
+
+Defining a new class in a config can be done in several ways. Selecting the right one depends on the desired outcome.
+<syntaxhighlight lang="cpp">
+/// Various ways of defining a class ///
+
+class New_Class;					// Defines a new, empty class.
+ 
+class Existing_Class;				// Declares an existing class, so it can be used further in the config.
+class New_Class : Existing_Class	// Defines a new class, which inherits everything from the selected existing class.
+{
+	property = value;				// Properties of the new class. If the existing class has a property defined as well, the new value is used for the new class.
+};
+ 
+class Existing_Base_Class;
+class Existing_Class : Existing_Base_Class
+{
+	class Subclass;					// If a property of a subclass needs to be adjusted, the subclass has to be declared as well, inheriting properties from its original parent class.
+};
+
+class New_Class : Existing_Class
+{
+	class Subclass : Subclass
+	{
+		property = value;
+	};
+};
+ 
+class Existing_Base_Class;			// If an existing class is to be adjusted, it has to be declared using the class it inherits from originally. The new values of properties are used instead of the original ones.
+class Existing_Class : Existing_Base_Class
+{
+	property = value;
+};
+</syntaxhighlight>
+
+
+== Model.cfg Structure ==
+
+For characters and most of their gear, ''model.cfg'' is pretty simple to make.
+Please remember that every model needs ''model.cfg'' in its folder, although every model in one folder is listed in that one ''model.cfg'' in that particular folder.
+Usually, ''model.cfg'' looks like this:
+<syntaxhighlight lang="cpp">
+/// Sample model.cfg ///
+
+class CfgModels
+{
+	class ArmaMan;
+	class MyUniform : ArmaMan {};
+	class MyVest : ArmaMan {};
+	class MyHeadgear : ArmaMan {};
+	class MyFacewear : ArmaMan {};
+};
+</syntaxhighlight>
+
+Class names have to be the same as the model names without the ''.p3d'' suffix.
+The config sample above means there are ''MyUniform.p3d'', ''MyVest.p3d'', ''MyHeadgear.p3d'', and ''MyFacewear.p3d'' files in the same folder or in a subfolder.
+
+An important property in model classes is the {{hl|sections[]}} array. Every selection of the model that is to be used in config of a class using that model has to be defined in this array.
+This is usually used in order to have {{hl|hiddenSelectionsTextures[]}} property working.
+Please note that your custom model classes inherit everything from the ''ArmaMan'' class, where most of the commonly used selection names are listed.
+However, if your {{hl|hiddenSelectionsTextures[]}} or similar property is not working, you might have to add the selections into the model class like this:
+<syntaxhighlight lang="cpp">
+/// Sample model.cfg with custom sections ///
+
+class CfgModels
+{
+	class ArmaMan;
+	class MyUniform : ArmaMan
+	{
+		sectionsInherit = "ArmaMan";
+		sections[] = { "camo3", "camo4" };
+	};
+};
+</syntaxhighlight>
+
+
+== CfgPatches.hpp Structure ==
+
+As mentioned before, ''cfgPatches'' is one of the core classes needed in ''config.cpp'', but it is wise to define it in a separate ''.hpp'' file, and include this file in ''config.cpp''.
+Inside the ''cfgPatches'' class, the class named after the addon folder path (where "/" are replaced by "_") is defined using four properties:
+* '''units[]''' – all the classes from ''cfgVehicles'' are listed here
+* '''weapons[]''' – all the classes from ''cfgWeapons'' are listed here
+* '''requiredVersion''' – well, this property does effectively nothing
+* '''requiredAddons[]''' – makes sure the listed addons are loaded before the one this file belongs to, which is useful when the same class is defined in several addons
+
+An example of a ''cfgPatches.hpp'' file can look like this:
+<syntaxhighlight lang="cpp">
+/// Sample cfgPatches.hpp ///
+
+class CfgPatches
+{
+	class A3_MyAddon
+	{
+		units[] =
+		{
+			"MySoldier"
+		};
+
+		weapons[] =
+		{
+			"MyUniform", "MyVest", "MyHeadgear"
+		};
+
+		requiredVersion = 0.1;
+		requiredAddons[] = { "A3_Characters_F" };
+	};
+};
+</syntaxhighlight>
+
+A good habit is to include ''cfgPatches.hpp'' at the beginning of the ''config.cpp'' file ({{hl|#include "cfgPatches.hpp"}}).
+
+
+== Character Configuration ==
+
+Character class config is quite complex, but there is no reason to define all the parameters every time a character class is defined.
+This is where inheritance from some of the base classes is used, so usually only a handful of parameters is needed for a new character class to be defined.
+Characters are configured in the ''CfgVehicles'' class, inheritance goes as follows:
+{| class="wikitable"
+! Type
+! Config Hierarchy
+|-
+| Civilian
+| Land > Man > CAManBase > Civilian > Civilian_F > C_man_1
+|-
+| BLUFOR soldier
+| Land > Man > CAManBase > SoldierWB > B_Soldier_base_F
+|-
+| OPFOR soldier
+| Land > Man > CAManBase > SoldierEB > O_Soldier_base_F
+|-
+| AAF soldier
+| Land > Man > CAManBase > SoldierGB > I_Soldier_base_F
+|-
+| FIA soldier
+| Land > Man > CAManBase > SoldierGB > I_G_Soldier_base_F
+|}
+
+The last class in the second row in the table above is usually used for inheriting parameters into a new character class.
+
+A new character class defined in ''config.cpp'' might look like an example below.
+<syntaxhighlight lang="cpp">
+/// Sample character config ///
+
+class CfgVehicles		// Character classes are defined under cfgVehicles.
+{
+	class B_Soldier_base_F;					// For inheritance to work, the base class has to be defined.
+	class B_soldier_new : B_Soldier_base_F	// Define of a new class, which parameters are inherited from B_Soldier_base_F, with exception of those defined below.
+	{
+		author = "Splendid Modder";			// The name of the author of the asset, which is displayed in the editor.
+		scope = 2;							// 2 = class is available in the editor; 1 = class is unavailable in the editor, but can be accessed via a macro; 0 = class is unavailable (and used for inheritance only).
+		scopeCurator = 2;					// 2 = class is available in Zeus; 0 = class is unavailable in Zeus.
+		scopeArsenal = 2;					// 2 = class is available in the Virtual Arsenal; 0 = class is unavailable in the Virtual Arsenal.
+		identityTypes[] = { "LanguageENG_F","Head_NATO","G_NATO_default" };		// Identity Types are explained in the Headgear section of this guide.
+		displayName = "New Soldier";		// The name of the soldier, which is displayed in the editor.
+		cost = 200000;						// How likely the enemies attack this character among some others.
+		camouflage = 1.5;					// How likely this character is spotted (smaller number = more stealthy).
+		sensitivity = 2.5;					// How likely this character spots enemies when controlled by AI.
+		threat[] = { 1, 1, 0.8 };			// Multiplier of the cost of the character in the eyes of soft, armoured and air enemies.
+		model = "\A3\Characters_F\BLUFOR\b_soldier_01.p3d";			// The path to the uniform model this character uses.
+		uniformClass = "U_B_soldier_new";							// This links this soldier to a particular uniform. For the details, see below.
+		hiddenSelections[] = { "camo" };							// List of model selections which can be changed with hiddenSelectionTextures[]
+																	// and hiddenSelectionMaterials[] properties. If empty, model textures are used.
+		hiddenSelectionsTextures[] = { "\A3\Characters_F_New\BLUFOR\Data\b_soldier_new.paa" };	// The textures for the selections defined above.
+																								// If empty, no texture is used.
+		canDeactivateMines = 1;					// Can this character deactivate mines?
+		engineer = 1;							// Can this character repair vehicles?
+		attendant = 1;							// Can this character heal soldiers?
+		icon = "iconManEngineer";				// If a character has a special role, a special icon shall be used.
+		picture = "pictureRepair";				// The same as above, but for the squad picture.
+		backpack = "B_Kitbag_mcamo_Eng";		// Which backpack the character is wearing.
+		weapons[] = { "arifle_MX_ACO_pointer_F", "hgun_P07_F", "Throw", "Put" };		// Which weapons the character has.
+		respawnWeapons[] = { "arifle_MX_ACO_pointer_F", "hgun_P07_F", "Throw", "Put" };	// Which weapons the character respawns with.
+		Items[] = { "FirstAidKit" };			// Which items the character has.
+		RespawnItems[] = { "FirstAidKit" };		// Which items the character respawns with.
+		magazines[] = { MAG_10(30Rnd_65x39_caseless_mag), MAG_3(16Rnd_9x21_Mag), "SmokeShell", "SmokeShellGreen", "Chemlight_green", "Chemlight_green", MAG_2(HandGrenade) };			// What ammunition the character has.
+		respawnMagazines[] = { MAG_10(30Rnd_65x39_caseless_mag), MAG_3(16Rnd_9x21_Mag), "SmokeShell", "SmokeShellGreen", "Chemlight_green", "Chemlight_green", MAG_2(HandGrenade) };	// What ammunition the character respawns with.
+		linkedItems[] = { "V_PlateCarrier1_rgr", "H_HelmetB", "ItemMap", "ItemCompass", "ItemWatch", "ItemRadio", "NVGoggles" };		// Which items the character has.
+		respawnLinkedItems[] = { "V_PlateCarrier1_rgr", "H_HelmetB", "ItemMap", "ItemCompass", "ItemWatch", "ItemRadio", "NVGoggles" };	// Which items the character respawns with.
+	};
+};
+</syntaxhighlight>
+
+Please note that most of the properties in the example above are usually not needed. The example rather serves as a short list of supposedly most commonly used properties.
+Also please note the macros in the {{hl|magazines[]}} and {{hl|respawnMagazines[]}} properties. You have to define those if you want to use them.
+That can be done via adding the following code before any of the macros is used:
+<syntaxhighlight lang="cpp">
+/// Magazines macros definition ///
+
+#define MAG_2(a) a, a
+#define MAG_3(a) a, a, a
+#define MAG_4(a) a, a, a, a
+#define MAG_5(a) a, a, a, a, a
+#define MAG_6(a) a, a, a, a, a, a
+#define MAG_7(a) a, a, a, a, a, a, a
+#define MAG_8(a) a, a, a, a, a, a, a, a
+#define MAG_9(a) a, a, a, a, a, a, a, a, a
+#define MAG_10(a) a, a, a, a, a, a, a, a, a, a
+#define MAG_11(a) a, a, a, a, a, a, a, a, a, a, a
+#define MAG_12(a) a, a, a, a, a, a, a, a, a, a, a, a
+</syntaxhighlight>
+
+You can, of course, define only the macros with the amount of magazines you actually use. You can learn more about macros in a dedicated section of this guide.
+
+You might have noticed that FIA soldier has basically the same line of class structure as AAF soldier, which is even reflected in the name of his base class, while FIA in the game is actually faction of BLUFOR.
+In fact, FIA soldiers are configured for all three sides, but only BLUFOR version is visible in the editor.
+The structure of classes is the result of the fact that FIA soldier classes are primarily configured as an AAF faction and the classes for other sides are inherited from them.
+
+If a character is wearing a certain backpack, you might want to specify items in that backpack. This is indeed possible, please see the Backpack configuration section of this guide for details.
+
+Note that the engine expects {{hl|weapons[]}} and {{hl|respawnWeapons[]}} in a specific order, namely with main weapon before the handgun.
+If you put the handgun before main weapon and (ingame) lower your main weapon and raise it back again, you'll raise the handgun instead before the main gun switching animation kicks in.
+This fades away if you switch manually to handgun and back at least once.
+In addition, if you put Throw or Put before the main gun, some animation glitches may occur (character automatically crouching on lowering a weapon).
+All of these seem to be reproducible only in Multiplayer on a dedicated server, though reliably.
+
+
+== Uniform Configuration ==
+
+Due to how characters work in {{arma3}}, there always has to be a uniform linked with a character.
+That does not mean every character needs a unique uniform, usually a single uniform is shared across several soldiers.
+It is slightly confusing that similarly a uniform has to be linked with a character, but just one such link is enough, so in uniform config, it does not matter how many characters actually use the uniform.
+
+A uniform is defined in the ''cfgWeapons'' class, usually as follows:
+<syntaxhighlight lang="cpp">
+/// Uniform config ///
+
+class CfgWeapons
+{
+	class Uniform_Base;
+	class UniformItem;
+
+	class U_B_soldier_new : Uniform_Base
+	{
+		author = "Splendid Modder";
+		scope = 2;
+		displayName = "New Uniform";
+		picture = "\A3\characters_f\data\ui\icon_u_b_soldier_new_ca.paa";
+		model = "\A3\Characters_F\Common\Suitpacks\suitpack_original_F.p3d";
+		hiddenSelections[] = { "camo" };
+		hiddenSelectionsTextures[] = { "\A3\Characters_F_New\BLUFOR\Data\b_soldier_new.paa" };
+
+		class ItemInfo : UniformItem
+		{
+			uniformModel = "-";
+			uniformClass = B_soldier_new;
+			containerClass = Supply40;
+			mass = 40;
+		};
+	};
+};
+</syntaxhighlight>
+
+A uniform is linked with a character thanks to certain properties in both configs:
+* in character config, {{hl|uniformClass}} property has to contain the name of the uniform class the character is wearing
+* in uniform config, {{hl|uniformClass}} property in the ''ItemInfo'' subclass has to contain the name of one of the characters who are wearing the uniform
+
+Please note the {{hl|model}} property in a uniform config is actually not a model of the uniform, but a model of what we call a ''suitpack'' – the thing which appears on the ground when a uniform is placed in the editor, or when a character drops it. There are now four models for suitpacks, three of them located at \A3\Characters_F\Common\Suitpacks\. The model for Kart driver's uniform's suitpack is located separately at \A3\Characters_F_Kart\Civil\Suitpacks\:
+* '''suitpack_universal_F''' – a new model to be used with special suitpack textures. Currently, there are three such textures, one for BLUFOR, OPFOR, and AAF respectively:
+** \A3\Characters_F\Common\Suitpacks\data\suitpack_soldier_blufor_co.paa
+** \A3\Characters_F\Common\Suitpacks\data\suitpack_soldier_opfor_co.paa
+** \A3\Characters_F\Common\Suitpacks\data\suitpack_soldier_indep_co.paa
+* '''suitpack_civilian_F''' – basically the model from Kart, but without a normal map, and thus well suited for suitpacks for coveralls, civilian clothes and similar. The texture of a character model is used for this suitpack.
+* '''suitpack_original_F''' – the original model, which used to be used for all the suitpacks. The texture of a character model is used for this suitpack. This model is meant to be used where the universal one cannot be due to missing appropriate special texture, and where the character model texture does not look well on the civilian suitpack.
+* '''suitpack_F_driver''' – the suitpack model for the uniforms included in the Kart DLC.
+Capacity of a uniform is defined in {{hl|containerClass}} property in the ''ItemInfo'' subclass. The classes for various capacity are already defined in the game config, so in most cases, {{hl|SupplyXX}} can be used with XX replaced by the desired capacity value. The defined capacities are 0–10, then 10–250 with an increment of 10, then 300, 350, 380, 400, 420, 440, 450, 480, and 500. Should another value be needed, it is defined in ''cfgVehicles'' as follows:
+<syntaxhighlight lang="cpp">
+/// New Supply definition ///
+
+class CfgVehicles
+{
+	class ContainerSupply;
+	class SupplyXX : ContainerSupply		// The class name does not really matter, but for clarity, it should be SupplyXX, where XX is the desired capacity value.
+	{
+		maximumLoad = XX;				// Replace XX with the desired capacity value.
+	};
+};
+</syntaxhighlight>
+
+
+== Vest Configuration ==
+
+Vests are pretty simple to configure. There are two base classes used as parents for other vests, the only difference is whether the vest's texture is set in config, or the one in the model is used.
+This is clear from the names of vests base classes: ''Vest_Camo_Base'' and ''Vest_NoCamo_Base''. Usually, there is actually no need to use the latter.
+''Vest_Camo_Base'' is defined in the ''cfgWeapons'' class as follows:
+<syntaxhighlight lang="cpp">
+/// Vest_Camo_Base config ///
+
+class CfgWeapons
+{
+	class ItemCore;
+	class VestItem;
+	class Vest_Camo_Base : ItemCore
+	{
+		author = "Bohemia Interactive";
+		scope = 0;
+		weaponPoolAvailable = 1;
+		allowedSlots[] = { 901 };			// This means the vest can be put into a backpack.
+		picture = "\A3\characters_f\Data\UI\icon_V_BandollierB_CA.paa";
+		model = "\A3\Weapons_F\Ammo\mag_univ.p3d";
+		hiddenSelections[] = { "camo" };
+		class ItemInfo : VestItem
+		{
+			uniformModel = "\A3\Characters_F\BLUFOR\equip_b_bandolier";
+			hiddenSelections[] = { "camo" };
+			containerClass = "Supply0";
+			mass = 0;
+
+			class HitpointsProtectionInfo // more info at: https://community.bistudio.com/wiki/Arma_3:_Soldier_Protection
+			{
+				class Body
+				{
+						hitPointName = "HitBody";
+						armor = 0;
+						passThrough = 1;
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+Please note that several properties are actually missing from the config, like {{hl|hiddenSelectionsTextures[]}} or {{hl|displayName}}.
+Please also notice the universal model of the vest; it needs to be replaced by the path to an actual model. To have an example, let's see how a new vest's config might look like.
+<syntaxhighlight lang="cpp">
+/// Sample vest config ///
+
+class CfgWeapons
+{
+	class ItemCore;
+	class Vest_Camo_Base : ItemCore
+	{
+		class ItemInfo;
+	};
+
+	class V_vest_new : Vest_Camo_Base
+	{
+		author = "Splendid Modder";
+		scope = 2;
+		displayName = "New Vest";
+		picture = "\A3\characters_f\Data\UI\icon_V_BandollierB_CA.paa";
+		model = "\A3\Characters_F\BLUFOR\equip_b_bandolier";
+		hiddenSelectionsTextures[] = { "\A3\Characters_F\BLUFOR\Data\vests_khk_co.paa" };
+		class ItemInfo : ItemInfo
+		{
+			uniformModel = "\A3\Characters_F\BLUFOR\equip_b_bandolier";
+			containerClass = "Supply80";
+			mass = 15;
+
+			class HitpointsProtectionInfo // more info at: https://community.bistudio.com/wiki/Arma_3:_Soldier_Protection
+			{
+				class Chest
+				{
+						hitPointName = "HitChest";
+						armor = 16;
+						passThrough = 0.3;
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+Although some properties, like {{hl|armor}} or {{hl|passThrough}}, are unchanged from the values in the parent class, it is a good idea to define them in the new vest's class as well, so they are clear and easily changeable.
+
+
+== Headgear Configuration ==
+
+Headgear is defined in the ''cfgWeapons'' class, and its config is pretty straightforward, similarly to vests.<br>
+Here is ''H_HelmetB'' config for example:
+<syntaxhighlight lang="cpp">
+// some basic defines
+#define TEast 0
+#define TWest 1
+#define TGuerrila 2
+#define TCivilian 3
+#define TSideUnknown 4
+#define TEnemy 5
+#define TFriendly 6
+#define TLogic 7
+
+/* H_HelmetB config */
+
+class CfgWeapons
+{
+	class ItemCore;
+	class HeadgearItem;
+	class H_HelmetB : ItemCore
+	{
+		author = "Bohemia Interactive";
+		scope = 2;
+		weaponPoolAvailable = 1;
+		displayName = "ECH";
+		picture = "\A3\characters_f\Data\UI\icon_H_helmet_plain_ca.paa";
+		model = "\A3\Characters_F\BLUFOR\headgear_b_helmet_plain";
+		hiddenSelections[] = { "camo" };
+		hiddenSelectionsTextures[] = { "\A3\Characters_F\BLUFOR\Data\equip1_co.paa" };
+		class ItemInfo : HeadgearItem
+		{
+			mass = 40;
+			uniformModel = "\A3\Characters_F\BLUFOR\headgear_b_helmet_plain";
+			modelSides[] = { TCivilian, TWest };
+			hiddenSelections[] = { "camo" };
+
+			// if defined, this headgear item gains functionality (visual modes) of given NVG item and will occupy its slot as well.
+			// Currently works only for Headgear + NVG + Radio item combinations.
+			// subItems[] = { "Integrated_NVG_F" };
+
+			class HitpointsProtectionInfo // more info at: https://community.bistudio.com/wiki/Arma_3:_Soldier_Protection
+			{
+				class Head
+				{
+					hitPointName = "HitHead";
+					armor = 6;
+					passThrough = 0.5;
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+Headgear is usually inherited from the ''H_HelmetB'' class so only the properties that change have to be redefined (usually, it will be author, name, icon, model, texture, and values in the ''ItemInfo'' subclass).<br>
+Here is an inheritance example:
+<syntaxhighlight lang="cpp">
+// some basic defines
+#define TEast 0
+#define TWest 1
+#define TGuerrila 2
+#define TCivilian 3
+#define TSideUnknown 4
+#define TEnemy 5
+#define TFriendly 6
+#define TLogic 7
+
+/* H_HelmetB config */
+
+class CfgWeapons
+{
+	class HeadgearItem;
+	class H_HelmetB;
+	class myHelmet : H_HelmetB
+	{
+		author = "It's me!";
+		weaponPoolAvailable = 1;
+		displayName = "My Super Helmet";
+		picture = "\myAddon\myPicture.paa";
+		model = "\myAddon\myModel.p3d";
+		class ItemInfo : HeadgearItem
+		{
+			mass = 50;
+			uniformModel = "\myAddon\myModel.p3d";
+			modelSides[] = { TCivilian, TWest };
+			hiddenSelections[] = { "camo" };
+
+			class HitpointsProtectionInfo
+			{
+				class Head
+				{
+					hitPointName = "HitHead";
+					armor = 7;
+					passThrough = 0.75;
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== Facewear Configuration ==
+
+Facewear is defined in ''cfgGlasses'' base class. This class is not a subclass of ''cfgVehicles'' nor ''cfgWeapons'', it is basically on the same level of class structure as those two.
+Do not be distracted by the "Glasses"; originally, only various glasses and goggles existed – other kinds of facewear (for example balaclavas) have been added in the Bootcamp update.
+Configuring facewear is extremely easy, although there is one tricky part in the form of {{hl|identityTypes[]}} property (for details, see below).
+Facewear is inherited from the ''None'' class, and its config usually looks like this:
+<syntaxhighlight lang="cpp">
+/// G_Combat config ///
+
+class CfgGlasses
+{
+	class None;
+	class G_Combat : None
+	{
+		author = "Bohemia Interactive";
+		displayname = "Combat Goggles";
+		model = "\A3\characters_f_beta\heads\glasses\g_combat";
+		picture = "\A3\Characters_F\data\ui\icon_g_combat_CA.paa";
+		identityTypes[] =
+		{
+			"NoGlasses",0, "G_NATO_default",300, "G_NATO_casual",0, "G_NATO_pilot",0, "G_NATO_recon",50, "G_NATO_SF",300, "G_NATO_sniper",0,
+			"G_NATO_diver",0, "G_IRAN_default",0, "G_IRAN_diver",0, "G_GUERIL_default",0, "G_HAF_default",50, "G_CIVIL_female",0, "G_CIVIL_male",0
+		};
+		mass = 4;
+
+		mode = 2;	// Facewear mode:
+					// 0 = None - not supported
+					// 1 = Diving - diving goggles, only appear while swimming
+					// 2 = Goggles - normal goggles, they show overwater but disappear while swimming
+					// 3 = NVG - not supported
+					// 4 = DivingAndOverwater - goggles always show, over and underwater - added in Arma 3 v2.08
+	};
+};
+</syntaxhighlight>
+
+=== IdentityTypes ===
+
+The {{hl|identityTypes[]}} property can be optionally used to include the particular facewear into a pool which certain characters use for randomising their facewear.
+Character classes have the {{hl|identityTypes[]}} property defined, and it can contain an identity type for facewear, for example {{hl|G_NATO_default}}.
+Facewear classes, on the contrary, contain a lot of identity types in their {{hl|identityTypes[]}} property, together with values.
+Basically, the value is related to the frequency with which a certain facewear appears on a character with that identity type defined in his config; 0 means the facewear is never selected for a character with that identity type.
+
+
+== Backpack Configuration ==
+
+Backpacks are defined in the ''cfgVehicles'' class, and their base class ''Bag_Base'' is configured as follows:
+<syntaxhighlight lang="cpp">
+/// Bag_Base config ///
+
+class CfgVehicles
+{
+	class ReammoBox;
+	class Bag_Base : ReammoBox
+	{
+		scope = 1;
+		class TransportMagazines {};
+		class TransportWeapons{};
+		isbackpack = 1;
+		reversed = 1;
+		mapSize = 2;
+		vehicleClass = Backpacks;
+		allowedSlots[] = { 901 };
+		model = "\A3\weapons_f\Ammoboxes\bags\Backpack_Small";
+		displayName = "Bag";
+		picture = "\A3\Weapons_F\Ammoboxes\Bags\data\ui\backpack_CA.paa";
+		icon = "iconBackpack";
+		transportMaxWeapons = 1;
+		transportMaxMagazines = 20;
+		class DestructionEffects {};
+		hiddenSelections[] = { "Camo" };
+		hiddenSelectionsTextures[] = { "\A3\weapons_f\ammoboxes\bags\data\backpack_small_co.paa" };
+		maximumLoad = 0;
+		side = 3;
+	};
+};
+</syntaxhighlight>
+
+Usually, there will be just a handful of properties to set, when a new backpack is configured. The example is given below.
+<syntaxhighlight lang="cpp">
+/// Sample backpack config ///
+
+class CfgVehicles
+{
+	class Bag_Base;
+	class New_Bag : Bag_Base
+	{
+		author = "Splendid Modder";
+		scope = 2;
+		model = "\A3\weapons_f\Ammoboxes\bags\Backpack_Compact";
+		displayName = "New Bag";
+		picture = "\A3\weapons_f\ammoboxes\bags\data\ui\icon_B_C_Compact_dgtl_ca.paa";
+		hiddenSelectionsTextures[] = { "\A3\weapons_f\ammoboxes\bags\data\backpack_compact_digi_co.paa" };
+		maximumLoad = 160;
+		mass = 20;
+	};
+};
+</syntaxhighlight>
+
+If you want to specify contents of a backpack, you do it in ''TransportMagazines'', ''TransportItems'', and ''TransportWeapons'' classes.
+The best way is to define a new backpack class, inherit it from the backpack class of a bag you want a soldier to use, specify the contents of the bag, and use this new backpack class as a value of the {{hl|backpack}} property in the soldier's config. For example, a backpack for a BLUFOR Asst. Autorifleman is defined as follows:
+<syntaxhighlight lang="cpp">
+/// Asst. Autorifleman's backpack config ///
+
+class CfgVehicles
+{  
+	class B_Kitbag_rgr;
+	class B_Kitbag_rgr_AAR : B_Kitbag_rgr
+	{
+		scope = 1;		// There is no need for this bag to appear in the editor, Virtual Arsenal, or Zeus.
+		class TransportMagazines
+		{
+			MAG_XX(100Rnd_65x39_caseless_mag, 4);
+			MAG_XX(100Rnd_65x39_caseless_mag_Tracer, 2);
+			MAG_XX(130Rnd_338_Mag, 2);
+		};
+
+		class TransportItems
+		{
+			ITEM_XX(optic_tws_mg, 1);
+			ITEM_XX(bipod_01_F_snd, 1);
+			ITEM_XX(muzzle_snds_338_sand, 1);
+			ITEM_XX(muzzle_snds_H_SW, 1);
+		};
+	};
+};
+</syntaxhighlight>
+
+Please note the config above contains macros to simplify the list of equipment. The macros which are useful for this can be defined as follows:
+<syntaxhighlight lang="cpp">
+/// Equipment list macros definition ///
+
+#define MAG_XX(a,b) class _xx_##a { magazine = a; count = b; }
+#define WEAP_XX(a,b) class _xx_##a { weapon = a; count = b; }
+#define ITEM_XX(a,b) class _xx_##a { name = a; count = b; }
+
+// converting
+MAG_XX(100Rnd_65x39_caseless_mag, 4);
+// into
+class _xx_100Rnd_65x39_caseless_mag { magazine = "100Rnd_65x39_caseless_mag"; count = 4; }
+</syntaxhighlight>
+
+
+== Ground Holder Configuration ==
+
+When a new uniform, vest, or headgear is defined, it is usable in the game (unless its {{hl|scope}} is set to 0), and even visible in Virtual Arsenal (unless it has the {{hl|scopeArsenal}} property set to 0), but the item is nowhere to find in the editor.
+These ''cfgWeapons'' classes need an additional class to be configured to appear in the editor. Such classes are called ground holders.
+All ground holders are defined in the ''cfgVehicles'' class. (Please note that weapons need ground holders as well, but those are not covered in this guide.)
+
+For clarity purposes, it is a good idea to name a ground holder class so it would have a prefix and a name of the original class the holder is for.
+An important property is {{hl|vehicleClass}}, it tells the game under which category the item should be listed in the editor.
+
+=== Uniform Ground Holder ===
+
+<syntaxhighlight lang="cpp">
+/// Sample uniform ground holder ///
+
+class CfgVehicles
+{
+	class Item_Base_F;
+	class Item_U_B_soldier_new : Item_Base_F
+	{
+		scope = 2;
+		scopeCurator = 2;
+		displayName = "New Uniform";
+		author = "Splendid Modder";
+		vehicleClass = ItemsUniforms;
+		model = "\A3\Weapons_f\dummyweapon.p3d";
+		class TransportItems
+		{
+			class U_B_soldier_new
+			{
+				name = "U_B_soldier_new";
+				count = 1;
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Vest Ground Holder ===
+
+<syntaxhighlight lang="cpp">
+/// Sample vest ground holder ///
+
+class CfgVehicles
+{
+	class Vest_Base_F;
+	class Vest_V_vest_new : Vest_Base_F
+	{
+		scope = 2;
+		scopeCurator = 2;
+		displayName = "New Vest";
+		author = "Splendid Modder";
+		vehicleClass = ItemsVests;
+		class TransportItems
+		{
+			class V_vest_new
+			{
+				name = "V_vest_new";
+				count = 1;
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Headgear Ground Holder ===
+
+There are two types of ground holders for headger, the difference is in the model of the holder – one is better suited for helmets, the other for caps.
+<syntaxhighlight lang="cpp">
+/// Sample headgear ground holder ///
+
+class CfgVehicles
+{
+	class Headgear_Base_F;
+	class Headgear_H_Helmet_new : Headgear_Base_F
+	{
+		scope = 2;
+		scopeCurator = 2;
+		displayName = "New Headgear";
+		author = "Splendid Modder";
+		vehicleClass = ItemsHeadgear;
+		model = "\A3\Weapons_F\DummyCap.p3d";		// Omit this if the headgear is a helmet
+		class TransportItems
+		{
+			class H_Helmet_new
+			{
+				name = "H_Helmet_new";
+				count = 1;
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== Using Macros ==
+
+{{Feature|informative|See {{Link|PreProcessor Commands#Macros}}.}}
+
+Usually when defining several classes of the same type, you might end up repeating the same parts of the code again and again.
+To make the process more convenient, macros can be used to save some work, time, and space. Despite such technique is usually frowned upon in programming languages, where other methods can be used to achieve the same goal, there is no other way in config.
+
+The macro syntax is quite simple. The macro definition starts with {{hl|#define NAME(parameters)}}. We usually write names of macros in capital letters to make it clear, when a macro is used in a code.
+If a macro continues on the next line of the code, the line has to have {{hl|\}} at the end. The usefulness of macros comes from its parameters.
+In the code itself, just the name of the macro with values of the parameters is written in the code, where it is replaced by everything defined in the macro with parameters taken from what is written in the brackets once the macro is used.
+This happens because name of a parameter from the #define line of the macro definition is used somewhere in the code of the macro, where it is replaced by a value used when calling the macro.
+Due to how this works, be mindful with spaces and quotation marks when using macros. It is also advisable to use a name of a parameter with {{hl|##}} at both ends, although this is often not necessary
+(the hashes serves for directly connecting the value with whatever is written around).
+Again, to make it clear, it is advisable to write names of parameters in capital letters.
+
+Since the description of how macros work might be in fact quite confusing, please check the example below.
+The macro is created for a uniform config, and then two new uniforms are configured using that macro.
+<syntaxhighlight lang="cpp">
+/// Sample uniforms configured with a macro ///
+
+#define UNIFORM(NAME,DN,PIC,TEX,SOLDIER,LOAD,WEIGHT) \
+	class NAME : Uniform_Base \
+	{ \
+		author = "Splendid Modder"; \
+		scope = 2; \
+		displayName = DN; \
+		picture = "\A3\characters_f\data\ui\icon_##PIC##_ca.paa"; \
+		model = "\A3\Characters_F\Common\Suitpacks\suitpack_original_F.p3d"; \
+		hiddenSelections[] = { "camo" }; \
+		hiddenSelectionsTextures[] = { "\A3\Characters_F_New\BLUFOR\Data\TEX.paa" }; \
+\
+		class ItemInfo : UniformItem \
+		{ \
+			uniformModel = "-"; \
+			uniformClass = SOLDIER; \
+			containerClass = Supply##LOAD; \
+			mass = WEIGHT; \
+		}; \
+	};
+
+class CfgWeapons
+{
+	class Uniform_Base;
+	class UniformItem;
+
+	UNIFORM("U_B_soldier_new","New Uniform","u_b_soldier_new","b_soldier_new","B_soldier_new",40,40);
+	UNIFORM("U_B_soldier_new_2","New Uniform 2","u_b_soldier_new_2","b_soldier_new_2","B_soldier_new_2",60,60);
+};
+</syntaxhighlight>
+
+
+== Headgear and Facewear Randomisation ==
+
+In the Bootcamp update, we polished a lot of headgear items and added some fancy facewear.
+In order to give FIA soldiers a more distinct identity, we opted for a slightly complicated way of randomising headgear and facewear of FIA soldiers.
+For each soldier, we handpicked headgear items matching the soldier's uniform, and for each type of headgear, we selected a list of compatible facewear.
+In some cases, it was decided some types of headgear would be picked more often then other types, which needed to be implemented, as well.
+Then we used the function [[BIS_fnc_unitHeadgear]] for making the whole randomisation work. 
+
+{{Feature|informative|Even if this system has been designed for the FIA units, provided the config is correct, it can be used with any units.}}
+
+'''Prevent randomisation'''
+* For units placed from the editor, [[Description.ext#disableRandomization|disableRandomization]] should be used ([[Description.ext|mission config file]]).
+* For units spawned from a script, you can use <sqf inline>myUnit setVariable ["BIS_enableRandomization", false];</sqf> but the usage [[Description.ext#disableRandomization|disableRandomization]] is still preferred.
+* In the config – add the following code to a soldier's class which inherits its init from a class with enabled randomisation: <syntaxhighlight lang="cpp" inline>class EventHandlers : EventHandlers { init = ""; };</syntaxhighlight>.
+
+If you want to use the function mentioned above in a soldier's config, do not forget to add it to the soldier's init event handler, by adding the following code to the soldier's class in its config:
+<syntaxhighlight lang="cpp">
+class EventHandlers : EventHandlers
+{
+	init = "if (local (_this select 0)) then { [(_this select 0), [], []] call BIS_fnc_unitHeadgear; };";
+};
+</syntaxhighlight>
+
+'''Implement the headgear randomisation'''
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class I_G_soldier_new : I_G_Soldier_base_F // Character class
+	{
+		/* ... */
+		/* [_headgearClass1, _probability1, _headgearClass2, _probability2, ...] */
+		headgearList[] =
+		{
+			"", 0.7, // Empty array means no headgear nor face wear
+			"H_FakeHeadgear", 0.9, // In this case, there is no headgear but there is a face wear
+			"H_HelmetB_light", 0.6, // Formerly member of the first list which had 60% to be selected
+			"H_Booniehat_khk", 0.6,
+			"H_Booniehat_oli", 0.6,
+			"H_Booniehat_indp", 0.6,
+			"H_Booniehat_mcamo", 0.6,
+			"H_Booniehat_grn", 0.6,
+			"H_Booniehat_tan", 0.6,
+			"H_Booniehat_dirty", 0.6,
+			"H_Booniehat_dgtl", 0.4,  // Formerly member of the alternate list which had 40% to be selected
+			"H_Booniehat_khk_hs", 0.4,
+			"H_HelmetB_plain_mcamo", 0.4,
+			"H_HelmetB_plain_blk", 0.4,
+			"H_HelmetSpecB", 0.4,
+			"H_HelmetSpecB_paint1", 0.4,
+			"H_HelmetSpecB_paint2", 0.4,
+			"H_HelmetSpecB_blk", 0.4,
+			"H_HelmetIA", 0.4,
+			"H_HelmetIA_net", 0.4,
+			"H_HelmetIA_camo", 0.4,
+			"H_Helmet_Kerry", 0.4,
+			"H_HelmetB_grass", 0.4
+		};
+		// If the parent class does not have the headgear randomisation
+		class EventHandlers : EventHandlers
+		{
+			// The function must be triggered to benefit from the randomisation, its usage is documented in its header (see link above) 
+			init = "if (local (_this select 0)) then { [(_this select 0), [], []] call BIS_fnc_unitHeadgear; };";
+		};
+		/* ... */
+	};
+};
+</syntaxhighlight>
+
+'''Implement the face wear randomisation'''
+<syntaxhighlight lang="cpp">
+class CfgWeapons // Headgear main class
+{
+	class H_HelmetB_custom : H_HelmetB// Head gear class
+	{
+		/* ... */
+		allowedFacewear[] =
+		{
+			"G_Bandanna_aviator", 1, // If every value are the same, it is just a default random, otherwise, weighted random
+			"G_Bandanna_beast", 1,
+			"G_Bandanna_blk", 1,
+			"G_Bandanna_khk", 1,
+			"G_Bandanna_oli", 1,
+			"G_Bandanna_shades", 1,
+			"G_Bandanna_sport", 1,
+			"", 1
+		};
+		/* ... */
+	};
+};
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Editing}}
+{{GameCategory|arma3|Tutorials}}

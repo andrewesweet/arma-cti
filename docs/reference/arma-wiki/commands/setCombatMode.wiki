@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/setCombatMode
+// revision: 364240 (2024-05-06T09:38:16Z)
+// export sha1: nf3zwo4d3ry3qnllsao7urso06q6bt2
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+|eff= global
+
+|gr1= Groups
+
+|gr2= AI Behaviour
+
+|descr= Sets AI [[Group | group]] combat mode (engagement rules). For individual unit's combat mode see [[setUnitCombatMode]]. Mode may be one of the following: 
+* {{hl|"BLUE"}} : Never fire, keep formation
+* {{hl|"GREEN"}} : Hold fire, keep formation
+* {{hl|"WHITE"}} : Hold fire, engage at will/loose formation
+* {{hl|"YELLOW"}} : Fire at will, keep formation
+* {{hl|"RED"}} : Fire at will, engage at will/loose formation
+See [[Combat Modes]] for more information on combat modes.
+
+|s1= group [[setCombatMode]] mode
+
+|p1= group: [[Group]] or [[Object]] - if the argument is unit [[Object]], unit's current group is used.
+
+|p2= mode: [[String]] - see description
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_group1 setCombatMode "BLUE";</sqf>
+
+|seealso= [[Combat Modes]] [[Mission_Editor:_Waypoints#Combat_Mode|Use in Waypoints]] [[combatMode]] [[behaviour]] [[setBehaviour]] [[skill]] [[setSkill]] [[Arma 3: AI Skill]] [[setUnitCombatMode]] [[unitCombatMode]] [[setCombatBehaviour]] [[combatBehaviour]]
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20200101073500
+|text=
+* Combat mode can only be changed via scripting/waypoints - not by player radio commands for an AI group.
+<br>
+* "Engage at will" means AI can form subgroups and break off to engage known or assigned enemies. These AI will then act largely on their own. 
+* As player one can use the "engage at will" radio command to achieve the same/similar behavior. However this will not change the unit's combat mode. Yet one can override the "keep/loose formation" status of combat mode with radio commands.
+<br>
+* "Never fire" means AI will actually never fire. Whereas under "Hold fire", AI will shoot back if getting fired upon, hostiles get too close, or they get a target explicitly assigned by the (sub)group leader.
+* As player, one can override the fire status with radio commands ("Hold fire", "Open fire", "Fire"). However this will not change the unit's combat mode. 
+* "Never fire"/combat mode blue cannot be overridden by group leader target assignment. One needs to command "Open fire" or switch to a different combat mode (with "Hold fire") to be able to do so.
+<br>
+* Applying combat mode blue, clears the attack target commands from AI subgroups. Might be useful in combination with [[doFollow]]/[[commandFollow]]. Note: It will not affect [[assignedTarget]]s.
+}}

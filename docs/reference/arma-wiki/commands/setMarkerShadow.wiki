@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/setMarkerShadow
+// revision: 349188 (2023-11-08T14:50:39Z)
+// export sha1: 04xcyoxop9t77ppifw96dqf2cycqbbr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|eff= global
+
+|descr= Sets the shadow property of given marker.
+
+|pr= [[setMarkerType]] will reset the shadow value to the one defined in marker type.
+
+|gr1= Markers
+
+|s1= marker [[setMarkerShadow]] shadowState
+
+|p1= marker: [[String]] - the marker
+
+|p2= shadowState: [[Boolean]] - [[true]] to enable the shadow, [[false]] to disable it
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_myMarker setMarkerShadow true; // enable shadow</sqf>
+
+|seealso= [[markerShadow]] [[setMarkerShadowLocal]]
+}}

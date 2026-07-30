@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/playMission
+// revision: 376427 (2025-10-13T07:06:23Z)
+// export sha1: 1zu1o2a41ti692iblwd2vh7lgg4sd92
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= System
+
+|descr= The mission is launched (from the main menu).
+
+|s1= [[playMission]] [campaign, mission, skipBriefing]
+
+|p1= campaign: [[String]] - directory of Campaign, if empty a single mission is launched
+
+|p2= mission: [[String]] or [[Config]] - directory if a string
+
+|p3= skipBriefing: [[Boolean]] - (Optional) If true, the intro and briefing are skipped.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>playMission ["XOutrage", "x05Negotiator.Noe"];</sqf>
+
+|x2= <sqf>playMission ["", configFile >> "CfgMissions" >> "Missions" >> "Armory1"];</sqf>
+
+|x3= <sqf>playMission ["", "\A3\Missions_F_Bootcamp\Scenarios\Arsenal.VR"];</sqf>
+
+|seealso= [[hostMission]] [[playScriptedMission]] [[createMissionDisplay]] [[createMPCampaignDisplay]]
+}}

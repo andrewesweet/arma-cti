@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_bleedTickets
+// revision: 348045 (2023-11-08T11:28:46Z)
+// export sha1: klkm8wbrs1pqdyqhlh3kpbwh72gajh5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 3 version 1.10 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.10
+
+|gr1= Missions
+
+|descr= Function that handles bleeding ticket system. Tickets are set beforehand using [[BIS_fnc_respawnTickets]].
+
+|mp= Server-side execution only.
+
+|s1= [sides, dominanceRatio, bleedingAmount, bleedingDelay] call [[BIS_fnc_bleedTickets]]
+
+|p1= sides: [[Array]] - (Optional, default All sides) array of effected sides
+
+|p2= dominanceRatio: [[Number]] - (Optional, default 0.5) dominance ratio, values from 0 to 1. Determines how much of a sector a side must hold for bleeding tickets to start
+
+|p3= bleedingAmount: [[Number]] - (Optional, default 3) amount of tickets bled every step. Optional parameter
+
+|p4= bleedingDelay: [[Object]] - (Optional, default 5) delay in seconds between every bleeding step
+
+|r1= [[Boolean]]
+
+|x1= <sqf>call BIS_fnc_bleedTickets;</sqf>
+
+|x2= <sqf>[[west, east], 1, 1, 10] call BIS_fnc_bleedTickets;</sqf>
+
+|seealso= [[BIS_fnc_addScriptedEventHandler]] [[BIS_fnc_respawnTickets]]
+}}
+
+{{Note
+|user= Tryteyker-
+|timestamp= 20140929195800
+|text= The function calls on the scripted eventhandler (see [[BIS_fnc_addScriptedEventHandler]]) "dominantSideChanged" everytime a sector changes dominant side (this again depending on the value given to the function).
+}}

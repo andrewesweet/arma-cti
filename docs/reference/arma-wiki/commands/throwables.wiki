@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/throwables
+// revision: 377684 (2026-01-02T09:02:52Z)
+// export sha1: 65cohjv2gdrakr4hlv9nfv4bmxgjlps
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Weapons
+
+|gr2= Unit Inventory
+
+|descr= Returns all throwables in unit inventory in [[currentThrowable]] format.
+
+|s1= [[throwables]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[Array]]s with [magazineName, muzzleName, id, ammoCount]
+* magazineName: [[String]]
+* muzzleName: [[String]]
+* id: [[Array]] with [itemWorldID, creatorID]
+** itemWorldID: [[Number]] - unique ID of the item in the world
+** creatorID: [[Number]] - unique ID of the player who created the item
+* ammoCount: [[Number]] magazine ammo (Since Arma 3 2.22)
+
+|s2= [[throwables]] [unit, includeEmpty]
+|s2since= arma3 2.22
+
+|p21= unit: [[Object]]
+|p22= includeEmpty: [[Boolean]] - (Optional, default: [[false]]) when [[true]] returns empty throwables as well.
+
+|r2= [[Array]] of [[Array]]s with [magazineName, muzzleName, id, ammoCount]
+* magazineName: [[String]]
+* muzzleName: [[String]]
+* id: [[Array]] with [itemWorldID, creatorID]
+** itemWorldID: [[Number]] - unique ID of the item in the world
+** creatorID: [[Number]] - unique ID of the player who created the item
+* ammoCount: [[Number]] magazine ammo (Since Arma 3 2.22)
+
+|x1= <sqf>
+throwables player;
+/*
+	[
+		["HandGrenade","HandGrenadeMuzzle",[1e+007,0],1],
+		["SmokeShell","SmokeShellMuzzle",[1e+007,0],1],
+		["SmokeShellGreen","SmokeShellGreenMuzzle",[1e+007,0],1],
+		["Chemlight_green","ChemlightGreenMuzzle",[1e+007,0],1],
+		["Chemlight_green","",[1e+007,0],1],
+		["HandGrenade","",[1e+007,0],1]
+	]
+*/
+</sqf>
+
+|seealso= [[selectThrowable]] [[currentThrowable]] [[isThrowable]] [[selectWeapon]] [[currentWeapon]] [[currentMagazine]] [[currentMuzzle]] [[BIS_fnc_isThrowable]]
+}}

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/addForceGeneratorRTD
+// revision: 351294 (2023-11-27T03:19:37Z)
+// export sha1: qtjnlferjk2p15nmbqrcnxak2mn2au7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|game2= tkoh
+|version2= 1.00
+
+|gr1= RTD
+
+|descr= Adds force generator to world. {{Feature|afm}}
+
+|s1= [[addForceGeneratorRTD]] parameters
+
+|p1= parameters: [[Array]]
+
+|r1= [[Number]] - force index
+
+|x1=
+
+|seealso= [[forceAtPositionRTD]] [[clearForcesRTD]] [[forceGeneratorRTD]]
+}}

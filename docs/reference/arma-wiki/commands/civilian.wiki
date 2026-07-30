@@ -1,0 +1,63 @@
+// source: https://community.bistudio.com/wiki/civilian
+// revision: 343875 (2023-07-27T16:10:26Z)
+// export sha1: 0mc6tdp27dhab6xx5mbqubtma2zdqic
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Sides
+
+|descr= Pre-defined variable for the civilian [[Side|side]].<br>
+When used in a [[format]] statement (<sqf inline>hint format ["%1", civilian]</sqf>), the string returned is {{hl|"CIV"}}.
+
+|s1= [[civilian]]
+
+|r1= [[Side]]
+
+|x1= [[SQS Syntax|SQS]]:
+<sqs>? side _unit == civilian : hint "This is a civilian unit!"</sqs>
+
+|x2= [[SQF Syntax|SQF]]:
+<sqf>
+if (side _unit == civilian) then
+{
+	hint "This is a civilian unit!";
+};
+</sqf>
+
+|seealso= [[side]] [[west]] [[east]] [[resistance]] [[sideEmpty]] [[sideAmbientLife]]
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20070212060600
+|text= In '''OFP v1.96''', empty vehicles, objects and dead soldiers are on side civilian.
+}}
+
+{{Note
+|user= KC Grimes
+|timestamp= 20180501150300
+|text= In '''Arma 3 v1.82''', units where [[setCaptive]] and/or [[setUnconscious]] are set to true are on side civilian, regardless of low rating (Renegade status).
+}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/moonIntensity
+// revision: 369557 (2024-09-21T22:26:41Z)
+// export sha1: qo7izbmfox9yl17nakmpn5ltozmmtvj
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Environment
+
+|descr= Returns the intensity of the moon's brightness in range 0..1.
+
+|s1= [[moonIntensity]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_intensity = moonIntensity;</sqf>
+
+|seealso= [[moonPhase]] [[sunOrMoon]]
+}}

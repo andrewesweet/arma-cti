@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Print_Composer_Tutorial
+// revision: 349718 (2023-11-20T22:09:52Z)
+// export sha1: q4gdw6rtvjxz8mwbyyis7chki15unt6
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+This tutorial covers the process of creating a raster composition out of vector data in QGIS, suitable as basic spatially correct reference for further editing of your satellite textures and surface masks. Supplement to [[Terrain_Processor:_Tutorial|Terrain Processor Tutorial]].
+
+QGIS (Geographic Information System) Print composer is free and can be downloaded here: http://qgis.org/en/site/forusers/download.html
+
+== Start Print Composer ==
+* Create new Print Composer (Project -> New Print Composer)
+* Choose created Print Composer (Project -> Print Composers -> ...)
+== Resize composition to quad size ==
+[[File:TerrainProcessor_tutorial_print01.png|800px]]
+== Add new map ==
+[[File:TerrainProcessor_tutorial_print02.png|800px]]
+== Set terrain extent ==
+[[File:TerrainProcessor_tutorial_print03.png|800px]]
+== Set map position and size  ==
+[[File:TerrainProcessor_tutorial_print04.png|800px]]
+== Set background color (grass, ...) ==
+[[File:TerrainProcessor_tutorial_print05.png|800px]]
+== Composer -> Export as Image ==
+
+[[Category:Terrain_Processor_Manual|Tutorial]]

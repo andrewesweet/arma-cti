@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_compatibleMagazines
+// revision: 348182 (2023-11-08T11:39:58Z)
+// export sha1: p24q0vqi6wzx0jqn6z9tjiljequnesq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Weapons | Category:Functions | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.96
+
+|gr1= Weapons
+
+|descr= {{Feature|obsolete|
+Use [[compatibleMagazines]] instead.|arma3|2.10}}
+Gets all compatible magazines for selected weapons. Function looks both for magazines listed in {{hl|magazines}} array and compatible {{hl|magazineWells}}.
+
+|s1= [weapon, returnHidden] call [[BIS_fnc_compatibleMagazines]]
+
+|p1= weapon: [[String]] - weapon's classname
+
+|p2= returnHidden: [[Boolean]] - (Optional, default [[false]]) [[true]] to also return magazines with scope 1
+
+|r1= [[Array]] - array of magazine classes
+
+|x1= <sqf>["arifle_mx_f"] call BIS_fnc_compatibleMagazines;</sqf>
+
+|seealso= [[currentMagazine]] [[currentWeapon]] [[compatibleMagazines]]
+}}
+
+{{Note
+|user= PierreMGI
+|timestamp= 20200901185900
+|text= This function returns all magazines in lower case.<br>
+Example:
+<sqf>
+currentMagazine player;									//  "30Rnd_762x39_AK12_Mag_F"
+currentWeapon player call BIS_fnc_compatibleMagazines;	// ["30rnd_762x39_ak12_mag_f", ...]
+currentMagazine player in (currentWeapon player call BIS_fnc_compatibleMagazines);				// never works
+toLowerANSI currentMagazine player in (currentWeapon player call BIS_fnc_compatibleMagazines);	// works
+</sqf>
+}}

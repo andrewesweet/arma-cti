@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Take_On_Helicopters
+// revision: 79278 (2014-05-31T02:18:56Z)
+// export sha1: 61h22nr5f9pm03q5h2dsfe0vo47xhox
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with Take On Helicopters may be recognised by the appearance of these icons: {{GVI|tkoh|1.00}} {{GVI|tkoh|1.01}}
+
+[[Category:Introduced with|{{uc:Take On Helicopters}}]]

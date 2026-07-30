@@ -1,0 +1,112 @@
+// source: https://community.bistudio.com/wiki/Example_Code:_Random_Area_Distribution
+// revision: 378182 (2026-03-05T16:55:15Z)
+// export sha1: 6rth7s6dgbpuwzrfvzrz5bwwptleg8q
+// categories: Category:Example Code
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+[[File:ExampleCode RandomDiscDistribution.png|thumb|From left to right:<ol><li>random radius<li>random position in a circle<li>Gaussian normal distribution</ol>]]
+Originally from [[User:Commy2|Commy2]]'s {{Link|https://sqf.ovh/sqf%20math/2018/05/05/generate-a-random-position.html|sqf.ovh post}}.
+
+
+{{ArgTitle|2|{{arma3}}|{{GVI|arma3|1.56}}}}
+{{Feature | Informative |
+* <sqf inline>_object getPos [_distance, _direction]</sqf> has been introduced in {{GVI|arma3|1.56}}
+* Gaussian <sqf inline>random [_min, _mid, _max]</sqf> has been introduced in {{GVI|arma3|1.56}}
+}}
+
+<sqf>
+private _center = getPosATL player;					// disc center definition
+private _radius = 50;								// radius definition
+
+// random radius
+private _angle = random 360;						// angle definition (0..360)
+private _distance = random _radius;					// distance from the center definition (0..radius)
+private _position = _center getPos [_distance, _angle];
+
+// random position
+private _angle = random 360;						// angle definition (0..360)
+private _randomSquareRoot = sqrt random 1;			// random square-root to obtain a non-linear 0..1 value
+private _distance = _radius * _randomSquareRoot;	// distance from the center definition (0..radius)
+private _position = _center getPos [_distance, _angle];
+
+// Gaussian normal distribution
+private _angleHalf = random 180;
+private _randomGauss = random [-1, 0, 1];
+private _distance = _radius * _randomGauss;
+private _position = _center getPos [_distance, _angleHalf];
+</sqf>
+
+
+{{ArgTitle|2|{{arma2}}|{{GVI|arma2|1.03}}}}
+{{Feature | Informative |
+* [[getPosATL]] has been introduced in {{GVI|arma2|1.03}}
+}}
+
+<sqf>
+private ["_center", "_radius", "_angle", "_distance", "_offset", "_position"];	// private definitions
+_center = getPosATL player;	// disc center definition
+_radius = 50;				// radius definition
+
+// random radius
+_angle = random 360;
+_distance = random _radius;
+_offset = [sin _angle * _distance, cos _angle * _distance, 0];
+_position = [_center, _offset] call BIS_fnc_vectorAdd;
+
+// random position
+_angle = random 360;
+_distance = _radius * sqrt random 1;
+_offset = [sin _angle * _distance, cos _angle * _distance, 0];
+_position = [_center, _offset] call BIS_fnc_vectorAdd;
+</sqf>
+
+
+{{ArgTitle|2|{{arma1}}&nbsp;/&nbsp;{{ofpr}}|{{GVI|arma1|1.00}}&nbsp;{{GVI|ofpr|1.85}}}}
+{{Feature | Informative |
+* [[getPosASL]] has been introduced in {{GVI|arma1|1.00}}
+}}
+
+<sqf>
+private ["_center", "_radius", "_angle", "_distance", "_offset", "_position"];	// private definitions
+_center = getPos player;	// disc center definition - getPosASL can be used in Armed Assault
+_radius = 50;				// radius definition
+
+// random radius
+_angle = random 360;
+_distance = random _radius;
+_offset = [sin _angle * _distance, cos _angle * _distance];
+_position = [(_center select 0) + (_offset select 0), (_center select 1) + (_offset select 1)];
+
+// random position
+_angle = random 360;
+_distance = _radius * sqrt random 1;
+_offset = [sin _angle * _distance, cos _angle * _distance, 0];
+_position = [(_center select 0) + (_offset select 0), (_center select 1) + (_offset select 1)];
+</sqf>
+
+
+{{ArgTitle|2|{{ofp}}|{{GVI|ofp|1.00}}}}
+{{Feature|informative|This is an [[SQS Syntax]] example.}}
+
+<sqs>
+; private definitions
+private ["_center", "_radius", "_angle", "_distance", "_offset", "_position"]
+_center = getPos player;	"disc center definition"
+_radius = 50;				"radius definition"
+
+; random radius
+_angle = random 360
+_distance = random _radius
+_offset = [sin _angle * _distance, cos _angle * _distance]
+_position = [(_center select 0) + (_offset select 0), (_center select 1) + (_offset select 1)]
+
+; random position
+_angle = random 360
+_distance = _radius * sqrt random 1
+_offset = [sin _angle * _distance, cos _angle * _distance, 0]
+_position = [(_center select 0) + (_offset select 0), (_center select 1) + (_offset select 1)]
+</sqs>
+
+
+[[Category: Example Code]]

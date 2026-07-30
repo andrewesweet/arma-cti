@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_flies
+// revision: 348815 (2023-11-08T14:38:17Z)
+// export sha1: 2xfxgk04iwgixkbhffclowl6olg9rjh
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Environment | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 2: Operation Arrowhead version 1.56 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.56
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|eff= local
+
+|gr1= Environment
+
+|descr= Spawns flies around position.
+
+|s1= [position, ''interval'', ''areaSize''] call [[BIS_fnc_flies]]
+
+|p1= position: [[Array]] (in format [[position]])
+
+|p2= interval ''(Optional)'': [[Number]] - particle refresh time (default is 0.1)
+
+|p3= areaSize ''(Optional)'': [[Number]] - area radius (default is 1)
+
+|r1= [[Array]] - list of particle source objects
+
+|x1= <sqf>private _flies = [position deadBody, 0.05, 1.5] call BIS_fnc_flies;</sqf>
+
+|seealso= [[Functions Library]]
+}}

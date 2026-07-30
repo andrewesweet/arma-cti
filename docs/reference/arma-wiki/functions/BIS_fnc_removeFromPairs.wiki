@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_removeFromPairs
+// revision: 363590 (2024-04-07T18:25:56Z)
+// export sha1: 0bpuj3f1o6op5ajbumqo9j9cfy0ohi3
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Arrays
+
+|descr= Removes an item from pair array, modifying or not the original array.
+
+|s1= [array, key, copyArray] call [[BIS_fnc_removeFromPairs]]
+
+|p1= array: [[Array]] - array to search through
+
+|p2= key: [[String]] - key to search for
+
+|p3= copyArray: [[Boolean]] - (Optional, default [[false]]) [[true]] to copy the array and return it, [[false]] to modify the original array
+
+|r1= [[Array]] - resulting modified array or a copy
+
+|x1= <sqf>private _pairs = [[["apple", 3], ["pear", 2]], "pear"];
+[_pairs, "pear", true]	call BIS_fnc_removeFromPairs; // returns [<nowiki/>["apple", 3]] - _pairs is not modified
+[_pairs, "pear"]		call BIS_fnc_removeFromPairs; // returns [<nowiki/>["apple", 3]] - _pairs is now [<nowiki/>["apple", 3]]
+</sqf>
+
+|seealso= [[find]] [[findIf]] [[BIS_fnc_findInPairs]] [[BIS_fnc_getFromPairs]] [[BIS_fnc_addToPairs]] [[BIS_fnc_setToPairs]]
+}}

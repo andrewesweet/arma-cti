@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera_getVisionMode
+// revision: 378107 (2026-02-15T11:03:14Z)
+// export sha1: p4rmmlcmyqt87us86ezopuxgexo5v4x
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Camera | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Camera
+
+|descr= Returns camera vision mode.
+
+|s1= [camera] call [[BIS_fnc_camera_getVisionMode]]
+
+|p1= camera: [[Object]] - the camera
+
+|r1= [[Number]] - one of:
+* 0 - normal vision
+* 1 - night vision
+* 2 - thermal imaging
+
+|x1= <sqf>[BIS_camera] call BIS_fnc_camera_getVisionMode;</sqf>
+
+|seealso= [[BIS_fnc_camera_setVisionMode]]
+}}

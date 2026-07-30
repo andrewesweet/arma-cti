@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/getWaterLeakiness
+// revision: 378411 (2026-04-04T08:32:46Z)
+// export sha1: dj36nbupr3ye9j6hjno35nd3ulw4yty
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.16
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Get an object's water intake ratio when immersed.
+
+|s1= [[getWaterLeakiness]] obj
+
+|p1= obj: [[Object]] - object to check
+
+|r1= [[Number]] in range 0..1 - 0 is waterproof and 1 is full leak
+
+|x1= <sqf>
+if (getWaterLeakiness _myCar > 0) then
+{
+	hint "don't go in the water with it!";
+};
+</sqf>
+
+|seealso= [[setWaterLeakiness]] [[setWaterFillPercentage]] [[getWaterFillPercentage]]
+}}

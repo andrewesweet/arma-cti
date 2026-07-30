@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/waypointAttachedVehicle
+// revision: 377749 (2026-01-03T00:58:03Z)
+// export sha1: q75vnmzr4ivy5tpym2ggacoftn337xb
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+|gr1= Waypoints
+
+|descr= Gets the vehicle attached to the waypoint.
+<br>A vehicle can be attached to a waypoint by
+* creating the waypoint on top of the vehicle in the [[2D Editor]]
+* using [[waypointAttachVehicle]]
+
+|s1= [[waypointAttachedVehicle]] waypoint
+
+|p1= waypoint: [[Waypoint]]
+
+|r1= [[Object]]
+
+|x1= <sqf>waypointAttachedVehicle [groupOne, 1];</sqf>
+
+|x2= <sqf>waypointAttachedVehicle [group player, currentWaypoint group player];</sqf>
+
+|seealso= [[attachObject]] [[attachTo]] [[attachedObjects]] [[attachedTo]] [[lightAttachObject]] [[triggerAttachVehicle]] [[attachedObject]]
+}}

@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:File_extensions
+// revision: 373450 (2025-05-08T11:27:34Z)
+// export sha1: 0rwc9ovnnqplszdw03a4cqc0hw2h1p5
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists [[Bohemia Interactive]] file extensions redirections to their respective [[:Category:Real Virtuality File Formats|file formats]].
+
+
+[[Category:Real Virtuality File Formats]]

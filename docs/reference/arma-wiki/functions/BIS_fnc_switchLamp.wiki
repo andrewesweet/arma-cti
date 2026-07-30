@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_switchLamp
+// revision: 348593 (2023-11-08T13:44:37Z)
+// export sha1: ma6ue067bmjxt2lcrfflfw5ugf6u43v
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.64
+
+|eff= local
+
+|gr1= Object Manipulation
+
+|descr= Switch streetlamp on/off.
+
+|s1= [object, state] call [[BIS_fnc_switchLamp]]
+
+|r1= [[Nothing]]
+
+|p1= object: [[Object]] - street Lamp
+
+|p2= state: [[Boolean]] - true to turn lamp on, false to turn it off
+
+|x1= <sqf>
+// switches all lamps off in a radius of 200m
+private _lampsIn200m = nearestObjects [player, ["Lamps_base_F", "PowerLines_base_F", "PowerLines_Small_base_F"], 200];
+{ [_x, false] call BIS_fnc_switchLamp; } forEach _lampsIn200m;
+</sqf>
+
+|x2= <sqf>
+// simulates a damaged street light
+aLamp spawn {
+	params [
+		["_lamp", objNull, [objNull]]
+	];
+	while { player distance _lamp < 200 } do
+	{
+		[_lamp, selectRandom [true, false]] call BIS_fnc_switchLamp;
+		sleep 0.1 + random 0.5;
+	};
+};
+</sqf>
+
+|seealso= [[switchLight]]
+}}

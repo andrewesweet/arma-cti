@@ -1,0 +1,104 @@
+// source: https://community.bistudio.com/wiki/Category:Real_Virtuality_File_Formats
+// revision: 373453 (2025-05-08T12:00:10Z)
+// export sha1: jjdsst5fz08ibxtwltj826z8um4q177
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists the different files one can encounter scripting or modding a [[Real Virtuality]] game.
+
+<spoiler text="Show Description Table">
+{| class="wikitable valign-top-col-3 valign-top-col-4"
+! Category
+! Format(s)
+! colspan="2" | Description
+
+|-
+| 3D Model
+| [[P3D File Format - MLOD|P3D - MLOD]]<br><!--
+-->[[P3D File Format - ODOLV7|P3D - ODOLv7]]<br><!--
+--><span style="white-space: nowrap">[[P3D File Format - ODOLV4x|P3D - ODOLv4x]]</span>
+| MLOD File Format
+* uncompressed/unbinarised files
+* editable
+* there are two versions of MLOD model types, '''SP3X''' and '''P3DM''': SP3X was primarily used in {{ofp}} when P3DM was used in later titles
+| ODOL File Format
+* compressed/binarised versions of the MLOD model file
+* not editable
+* there are two versions of ODOL model types, ODOL v7 and ODOL v40: ODOL v7 are the equivalent of the MLOD's SP3X format for {{ofp}}, ODOL v40 of the P3DM format for later {{arma}} titles
+
+{{Feature|informative|[[ODOL Explorer]] is able to read ODOL v7 and resave it back to SP3X MLOD format.}}
+
+|-
+| Animation
+| [[Rtm (Animation) File Format|RTM]]
+| colspan="2" |
+
+|-
+| Audio
+| [[WSS File Format|WSS]]<br><!--
+-->OGG
+| colspan="2" |
+
+|-
+| Video
+| [[OGV File Format|OGV]]
+| colspan="2" |
+
+|-
+| Font
+| [[FXY File Format|FXY]]
+| colspan="2" | Fonts are [[PAA File Format|PAA]] files containing the characters of the font.
+
+|-
+| Terrain
+| [[POSE v60 File Format|PEW]]<br><br><!--
+-->{{Name|ofp|short}}:<br><!--
+-->[[Wrp File Format - 4WVR|WRP 4WVR]]<br><!--
+-->[[Wrp File Format - OPRW2 & 3|WRP OPRW]]
+{{Name|arma1|short}}:<br><!--
+-->[[Wrp File Format - 8WVR|WRP 8WVR]]<br><!--
+-->[[Wrp File Format - OPRWv17 to 24|WRP OPRW]]
+| PEW File Format
+* uncompressed/unbinarised
+* editable
+* not usable by [[Real Virtuality]], only used during the terrain design phase
+* several versions of PEW files correspond to different releases of [[Visitor 3|Visitor]] terrain editing tools along [[Real Virtuality]] evolutions
+* all versions have a file character prefix in the first 4-bytes of the file of POSE and a character version in the next 3-bytes (eg. 'POSEW60')
+
+| WRP File Format
+* compressed/binarised or uncompressed
+** uncompressed comes in 4WVR and 8WVR format for use with {{Name|ofp|short}} and {{Name|arma1|short}} respectively
+** compressed/binarised has an {{hl|OPRW}} file prefix in the first 4-bytes followed by a version number to indicate in which release of the [[Real Virtuality]] engine it it used
+* not editable
+* usable by [[Real Virtuality]]
+
+|-
+| Addon
+| [[PBO File Format|PBO]]<br>EBO
+| PBO File Format
+| EBO File Format
+* '''encrypted'''
+
+|-
+| Config
+| [[CPP File Format|CPP]]<br><!--
+-->[[raP File Format - OFP|BIN ({{Name|ofp|short}})]]<br><!--
+-->[[raP File Format - Elite|BIN ({{Name|ofpe|short}})]]<br><!--
+-->[[raP File Format - ArmA|BIN ({{Name|arma1|short}})]]
+| CPP File Format
+| BIN File Format
+
+|-
+| Material
+| [[Rvmat File Format|RVMAT]]
+| colspan="2" |
+
+|-
+| Translation
+| [[Stringtable.csv|CSV]]<br><!--
+-->[[Stringtable.xml|XML]]
+| colspan="2" |
+|}
+</spoiler>
+
+
+[[Category:Reference Lists]]

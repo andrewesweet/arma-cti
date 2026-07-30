@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Columns_template_usage_error
+// revision: 321922 (2022-05-22T12:43:04Z)
+// export sha1: 4e5ti6szktf66itf0kvqv26yeww63qn
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Template usage error]]

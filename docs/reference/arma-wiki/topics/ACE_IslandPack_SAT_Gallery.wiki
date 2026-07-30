@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/ACE:IslandPack:SAT_Gallery
+// revision: 225978 (2021-01-31T17:31:03Z)
+// export sha1: f7dn09vy0z59uycniaufcsajw4sdh1h
+// Vendored snapshot. Do not edit — re-export instead.
+
+==Download pictures==
+
+== Embedded pictures ==
+
+=== RG NORDIC ===
+
+http://public.acemod.net/download/aceip/ACEIP_SAT_Gallery/aceip_sat_01.jpg
+
+http://public.acemod.net/download/aceip/ACEIP_SAT_Gallery/aceip_sat_02.jpg
+
+http://public.acemod.net/download/aceip/ACEIP_SAT_Gallery/aceip_sat_03.jpg
+
+http://public.acemod.net/download/aceip/ACEIP_SAT_Gallery/aceip_sat_09.jpg
+
+=== ACEIP SAT SNOW ===
+
+http://public.acemod.net/download/aceip/ACEIP_SAT_Gallery/aceip_sat_04.jpg
+
+http://public.acemod.net/download/aceip/ACEIP_SAT_Gallery/aceip_sat_05.jpg
+
+http://public.acemod.net/download/aceip/ACEIP_SAT_Gallery/aceip_sat_10.jpg
+
+=== RG SAT TRAVA ===
+
+http://public.acemod.net/download/aceip/ACEIP_SAT_Gallery/aceip_sat_06.jpg
+
+http://public.acemod.net/download/aceip/ACEIP_SAT_Gallery/aceip_sat_07.jpg
+
+http://public.acemod.net/download/aceip/ACEIP_SAT_Gallery/aceip_sat_08.jpg

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/getTowParent
+// revision: 377973 (2026-01-19T17:39:21Z)
+// export sha1: m5bqq93z7n3katfusn4n05vk3y6kc6m
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: PhysX | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|arg= local
+
+|gr1= PhysX
+|gr2= Ropes and Sling Loading
+
+|descr= Get the vehicle towing the provided one.
+
+|s1= [[getTowParent]] towedVehicle
+
+|p1= towedVehicle: [[Object]] - the towed vehicle
+
+|r1= [[Object]] - the object towing the provided object - [[objNull]] if not towed
+
+|x1= <sqf>private _towParent = getTowParent _towedVehicle;</sqf>
+
+|seealso= [[setTowParent]]
+}}

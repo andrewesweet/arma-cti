@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_zzRotate
+// revision: 309734 (2022-05-05T12:09:47Z)
+// export sha1: k43p498rzpqz7zf2dayipejvvjm32pu
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Scenes | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Scenes
+
+|descr= {{Feature|arma3|This function is non functional in {{arma3}} because of undefined variables.}}
+
+|s1= <!-- [] call [[BIS_fnc_zzRotate]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_zzRotate;</sqf> -->
+
+|seealso=
+}}

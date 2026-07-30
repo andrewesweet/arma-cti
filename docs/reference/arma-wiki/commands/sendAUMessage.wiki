@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/sendAUMessage
+// revision: 321116 (2022-05-13T14:14:53Z)
+// export sha1: 88h7h989mfmgtkhbpao33mu9ctjkpu5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Multiplayer
+
+|descr= Send the command to the list of clients.
+
+|s1= [[sendAUMessage]] [clientList, command]
+
+|p1= clientList: [[Array]]
+
+|p2= command: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>sendAUMessage [[dpnid1, dpnid2], "ConnectTo: 192.168.1.66"];</sqf>
+
+|seealso= [[sendUDPMessage]]
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/Category:Take_On_Mars
+// revision: 369533 (2024-09-15T21:09:43Z)
+// export sha1: jlj489j75snt9i2jja46e37td3fvcxf
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image = tkom logo.png
+|releasedate= 20170209
+|intro = {{tkom}} is a new title for the Take On series, developed by [[{{Name|bi}}]].
+The player controls a rover or lander to explore Mars. The Mars vehicle can be equipped with scientific instruments by the player to study the Martian surface and complete objectives.
+There are 3 locations to explore on Mars accessed through the [[Take On Mars: Mission Control - The Map|mission control map]]: [[Take On Mars: Victoria Crater|Victoria]], [[Take On Mars: Kaiser Crater|Kaiser]] and [[Take On Mars: Gale Crater|Gale]] craters.
+Each location is 4 by 4&nbsp;km having an area of 16&nbsp;km<sup>2</sup> (''9.94&nbsp;mi<sup>2</sup>'') to be explored; filled with various exploration targets.
+
+|feature1 = '''Space Program''': Explore Mars from the perspective of a science-driven Space Agency. Develop new technologies, vehicles and instruments to tackle the tasks ahead
+|feature2 = '''Scenarios''': Head straight to the surface of Mars and complete individual missions centered around various Science Missions and objectives
+|feature3 = '''Editor''': Create scenarios with complex missions, or just play around with whatever you wish in this limitless, free-form mode
+|feature4 = '''Dynamic destruction system''': Break off cameras, robotic arms, even individual struts and wheels, all affecting the way the vehicle handles
+|feature5 = '''Economy''': Send missions to Mars with the budget you have available, raised by completing mission and individual tasks
+|feature6 = '''Realistic Terrain''': Explore the surface of Mars in locations based on actual satellite data from locations such as Victoria Crater
+|gallery1 = tkom screenshot 1.jpg
+|gallery2 = tkom screenshot 8.jpg
+|gallery3 = tkom screenshot 6.jpg
+|gallery4 = tkom screenshot 4.jpg
+|start1 = {{Link|http://mars.takeonthegame.com/ Official Site}}
+|start2 = {{Link|Take On Mars: Beta Patches| Beta Patches}}
+|start3 = {{Link|Take On Mars: Data Structure & Modifications|Introduction to {{tkom}} modding}}
+}}

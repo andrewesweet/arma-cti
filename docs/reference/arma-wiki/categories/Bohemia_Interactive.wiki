@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Bohemia_Interactive
+// revision: 25709 (2006-12-19T02:50:54Z)
+// export sha1: ascmj7fij6r471h7xk5j6h24dwbtinc
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Community Wiki]]

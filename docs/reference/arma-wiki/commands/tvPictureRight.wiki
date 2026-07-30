@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/tvPictureRight
+// revision: 378316 (2026-04-02T16:16:44Z)
+// export sha1: f1gfo80irf6jl9vhlkp36dlfs4cvixb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI Control - Tree View
+
+|descr= Returns the right picture of a [[CT_TREE]] on given path.
+
+|s1= [[tvPictureRight]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|r1= [[String]] - path to picture
+
+|s2= ctrl [[tvPictureRight]] path
+
+|p21= ctrl: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|r2= [[String]] - path to picture
+
+|x1= <sqf>private _result = _controlTV tvPictureRight [0, 0];</sqf>
+
+|seealso= [[tvSetPictureRight]] [[tvSetPicture]] [[tvPicture]]
+}}

@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/worldSize
+// revision: 373463 (2025-05-09T16:51:14Z)
+// export sha1: p7tg76ld9qsz7k893ls7r1kvgc5rsaf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.48
+
+|gr1= Mission Information
+
+|descr= Returns the engine calculated size (terrain side length) of the current world in meters. In Arma, terrains are always square. ([[BIS_fnc_mapSize]] may return the same value, but is just a simple look up in [[configFile | config]]).
+
+|s1= [[worldSize]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _size = worldSize; // VR and Stratis: 8192; Altis: 30720</sqf>
+
+|x2= <sqf>
+// A round marker that should cover the whole map, placed in the center of the map, should have the following radius (a, b)
+private _radius = sqrt 2 / 2 * worldSize;
+</sqf>
+
+|x3= <sqf>
+private _axis = worldSize / 2;
+private _center = [_axis, _axis , 0];
+private _radius = sqrt 2 * _axis;
+</sqf>
+
+|seealso= [[BIS_fnc_mapSize]] [[getTerrainInfo]]
+}}

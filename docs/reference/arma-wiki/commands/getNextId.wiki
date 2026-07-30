@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/getNextId
+// revision: 351573 (2023-12-07T17:08:20Z)
+// export sha1: 7mmeicrainqxrot2uqlxesswzm8783w
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|gr1= Argo
+
+|descr= Generate a new random-based UUID version 4 string as described in {{Link|https://tools.ietf.org/html/rfc4122#section-4.4}}.
+
+|s1= [[getNextId]]
+
+|r1= [[String]]
+
+|x1= <sqf>_uuid = getNextId; // e.g 5806a469-d1b2-404c-b0ac-8e51d0f533e4</sqf>
+
+|seealso= [[random]] [[BIS_fnc_randomNum]]
+}}

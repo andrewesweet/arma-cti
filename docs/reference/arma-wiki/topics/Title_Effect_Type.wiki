@@ -1,0 +1,79 @@
+// source: https://community.bistudio.com/wiki/Title_Effect_Type
+// revision: 341304 (2023-05-20T20:48:07Z)
+// export sha1: ild2cd7uhdad1bhoi9q9xbaw07wrg9w
+// categories: Category:Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+A [[Title Effect Type]] is a [[String]] parameter that is required by a few scripting commands.
+The commands are used to display custom GUI elements on the front end or the back end.
+
+Six [[:Category:Scripting Commands|commands]] use this parameter:
+
+: {| class="wikitable" style="min-width: 20em"
+! cut* commands !! title* commands
+|-
+|
+* [[cutObj]]
+* [[cutRsc]]
+* [[cutText]]
+|
+* [[titleObj]]
+* [[titleRsc]]
+* [[titleText]]
+|}
+
+: {{Feature|informative|
+The main difference between these commands is that {{hl|title*}} commands can only have a single effect on a single title layer, whereas the {{hl|cut*}} ones allow to have multiple effects on multiple cut layers.<br>If a layer is not specified, the cut effects will be defaulted to layer 0.
+}}
+
+
+The '''Title Effect''' simply tells the game engine how to display the object, resource, or text that is passed to the command.
+If plain text is given, it is always white with a black shadow and horizontally centered.
+The different effects are described below - the effects may vary if a black or white 'curtain' is currently visible or not:
+
+: {| class="wikitable" style="border: 0.33em solid #AAA"
+! style="font-size: 0.66em" | Colour
+! Type
+! Description
+|-
+| {{n/a}}
+| "PLAIN"
+| Displays the text, object, or resource given. Plain text is vertically centered.
+|-
+| {{n/a}}
+| style="white-space: nowrap" | "PLAIN NOFADE"
+| Displays the text, object, or resource given. Plain text is vertically centered. Has no fade in and fade out.
+|-
+| {{n/a}}
+| style="white-space: nowrap" | "PLAIN DOWN"
+| Displays the text, object, or resource given. Plain text is vertically aligned to 25% from the bottom of the screen.
+|-
+| style="background-color: #FFF" |
+| "WHITE OUT"
+| Causes the screen to turn completely white, and displays the optional text, object, or resource given. All other GUI is hidden behind this white 'curtain'.
+This can easily blind the player so it should be used with caution. Make sure that a fade-in time is set when calling the command.
+|-
+| style="background-color: #FFF" |
+| "WHITE IN"
+| Withdraws a white 'curtain' revealing the GUI.
+|-
+| style="background-color: #000" |
+| "BLACK"
+| Same as "BLACK OUT".
+|-
+| style="background-color: #000" |
+| "BLACK FADED"
+| Causes the screen to turn completely black without fading in, and displays the optional text, object, or resource given. All other GUI is hidden behind this black 'curtain'.
+If a 'speed' is not given, the 'curtain' and the displayed element disappears '''instantly''' after 5-10 seconds. Otherwise it will stay black with the element still visible.
+|-
+| style="background-color: #000" |
+| "BLACK OUT"
+| Causes the screen to turn completely black, and displays the optional text, object, or resource given. All other GUI is hidden behind this black 'curtain'.
+|-
+| style="background-color: #000" |
+| "BLACK IN"
+| Reveals the GUI after a black 'curtain' is withdrawn along with the optional text, object, or resource that was given.
+|}
+
+
+[[Category:Reference Lists]]

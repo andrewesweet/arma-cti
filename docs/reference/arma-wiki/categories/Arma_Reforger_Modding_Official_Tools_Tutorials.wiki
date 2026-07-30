@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Official_Tools/Tutorials
+// revision: 371160 (2025-02-28T17:21:00Z)
+// export sha1: j0lawi1r5ercvc969te303jdf822sd1
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding|Official Tools}}

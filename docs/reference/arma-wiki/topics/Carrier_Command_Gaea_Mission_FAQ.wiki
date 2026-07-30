@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_FAQ
+// revision: 341580 (2023-06-09T16:19:50Z)
+// export sha1: bdycnkvatio188vxhl39llh9xboxyc7
+// categories: Category:Carrier Command: Gaea Mission
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Gameplay ==
+Q: How do I control time acceleration<br>
+A: It is not possible to manually enter the Time Warp. <ref>http://scientificgamer.com/thoughts-carrier-command/</ref> The Timewarp is entered when . It is possible to leave it manually or it is left automatically when enemy carriers comes close.
+
+Q: I have lasers and rockets on my manta. How do I switch weapons?<br>
+A: The default control for switching weapons is the mouse wheel
+
+Q: I got hit hard in a FPS mission. My shield got depleated and I am low on health. How do I heal?<br>
+A: Healing your character is not possible. Avoid being shot at for a long time. The armor your character is wearing is so .
+
+Q: How do I transfer from one walrus to another in the Thermopilae mission?<br>
+A: You move close to the other walrus and press the Use key <ref>http://forums.bistudio.com/showthread.php?143403-Thermopylae-assault-change-vehicle</ref> (default F). It is mentioned in a hint; many people miss it though.
+
+Q: I have too little resources and production is really slow. How do I change island types to remedy that.<br>
+A: On the island info screen, click the tab button on the right and select an appropriate button to initiate conversion of the island into desired type <ref>http://forums.bistudio.com/showthread.php?140844-Help-needed-how-to-change-island-type-in-Campaign</ref>. Keep in mind these conversions take a long time.
+
+Q: How do I quickly select my units.<br>
+A: You can take advantage from the quick selection key. <ref>http://forums.bistudio.com/showthread.php?140366-What-would-you-like-to-be-able-to-mod-in-CCGM&p=2228644&viewfull=1#post2228644</ref>. By default it is the key to the left from the key 1, above Tab key.
+
+== Tips and tricks ==
+Q: When I start the game, I have to keep pressing the Esc key to skip startup splash animations. I feel silly. What can I do?<br>
+A: After you feel you need not to be reminded who made the game and what the Lt. Myrick thought about the Taurus mission, refer to the [|Startup parameters] and add the -nosplash parameter.
+
+Q: How do I access the hidden Droid mission in the campaign?<br><br>
+A: Completing the mission has no consequences whatsoever for the rest of the campaign, so you need not to replay it from the beginning.
+== Technical issues==
+Q: I cannot apply a patch. The patching utility says 
+<pre>
+File carrier.exe is missing.
+Some error occurred during patch installation.
+Patch file is probably dammaged. You may need to download it again.
+Error in file 1.02, phase 10.
+</pre>
+What should I do?<br>
+A: There may be your antivirus software blocking the process. Try to disable your antivirus program for the duration of the instalation. <ref>http://forums.bistudio.com/showthread.php?140666-Patch-Breaking-game-exe/page2</ref>
+
+Steam 1.1 is nonsteam 1.2; steam version is patched through steam
+<ref>http://forums.bistudio.com/showthread.php?140772-Cant-patch-steam-version</ref>
+
+FIXME: does still apply?
+Q: I want to change language to German, but that option is missing. <ref>http://forums.bistudio.com/showthread.php?140662-Release-Language</ref><br>
+A: {{Link|link= http://forums.bistudio.com/showthread.php?140794-German-language-how&s=37aeaacf4250acf379bed2e88981f9e5&p=2232209&viewfull=1#post2232209|text= Edit the text file that stores the configuration as described here}}
+
+Q: I think I found a bug. How do I report it to the developers?<br>
+A: You can report bugs at http://www.carriercommand.com/feedback . You need to create an account there first. <ref>http://forums.bistudio.com/showthread.php?140887-Where-do-i-report-bugs</ref>
+
+I have a technical issue that is not covered here.<br>
+A: Please ask on the BI forums in {{Link|link= http://forums.bistudio.com/forumdisplay.php?154-CARRIER-COMMAND-GAEA-MISSION-TROUBLESHOOTING|text= Troubleshooting section}}
+
+
+[[Category:Carrier Command: Gaea Mission]]

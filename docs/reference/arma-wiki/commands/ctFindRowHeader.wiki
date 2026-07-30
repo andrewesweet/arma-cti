@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/ctFindRowHeader
+// revision: 310883 (2022-05-07T20:26:57Z)
+// export sha1: 2k2nuhw1v7ljpmpepwteo0by20fkr9b
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+|arg= local
+|eff= local
+
+|gr1= GUI Control - Controls Table
+
+|descr= Gets index of the closest header above this row.
+
+|s1= ctrl [[ctFindRowHeader]] rowIndex
+
+|p1= ctrl: [[Control]]
+
+|p2= rowIndex: [[Number]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _index = _control ctFindRowHeader 0;</sqf>
+
+|seealso= [[ctAddRow]] [[ctAddHeader]] [[ctClear]] [[ctCurSel]] [[ctSetCurSel]] [[ctRowControls]] [[ctHeaderControls]] [[ctRowCount]] [[ctHeaderCount]] [[ctSetValue]] [[ctValue]] [[ctSetData]] [[ctData]] [[ctFindHeaderRows]] [[ctRemoveRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}

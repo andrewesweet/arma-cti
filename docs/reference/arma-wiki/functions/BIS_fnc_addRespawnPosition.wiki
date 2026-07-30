@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addRespawnPosition
+// revision: 342243 (2023-07-09T12:29:53Z)
+// export sha1: hw8u99vtpjfgxrwqik1vy4ad3x4c348
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Respawn
+
+|eff= global
+
+|descr= Add a respawn position for the [[Arma 3: Respawn|{{arma3}} Respawn Menu]].
+
+|s1= [target, position, name] call [[BIS_fnc_addRespawnPosition]]
+
+|p1= '''target''': [[Namespace]], [[Side]], [[Group]] or [[Object]] - receiver of the respawn position. Use [[missionNamespace]] to add the position to everyone
+
+|p2= '''position''': [[Array]], [[Object]] or [[String]]
+* [[Array]] - format [[Position#PositionATL|PositionATL]]
+* [[Object]] - specific object. When some crew positions are available and unlocked, players will be respawned on them, otherwise they will appear around the object.
+* [[String]] - marker name
+
+|p3= '''name''': [[String]] - (Optional) respawn name, can be text or link to localization key
+
+|r1= [[Array]] - format [target,id] (used in [[BIS_fnc_removeRespawnPosition]])
+
+|x1= <sqf>[west, myRespawnAPC] call BIS_fnc_addRespawnPosition;</sqf>
+
+|x2= <sqf>myRespawn = [missionNamespace,"arena","Battle Arena"] call BIS_fnc_addRespawnPosition;</sqf>
+
+|seealso= [[BIS_fnc_removeRespawnPosition]] [[Arma 3: Respawn]] [[BIS_fnc_respawnTickets]]
+}}
+
+{{Note
+|user= Krzmbrzl00
+|timestamp= 20160601112200
+|game= arma3
+|text= Make sure the used [[Position]] is in format [[Position#Introduction|Position3D]] (i.e. it contains a third coordinate (z-coordinate)) because otherwise you will get an error as soon as you open the respawn screen and you will be respawned at position [0,0,0] (lower left corner of the map), although the map marker for the spawn position is placed as intended
+}}
+
+{{Note
+|user= Leopard20
+|timestamp= 20220708173814
+|text= As of {{arma}} 3 {{GVI|arma3|2.10}}, when you use an object as the respawn position on water (e.g. on a carrier), the respawn position is incorrect. Instead, just pass the [[Position#PositionATL|ATL position]]. For example, if you intend to add a respawn position in [[:Category:Eden Editor|Eden Editor]], instead of the respawn position module, place a dummy object such as '''User Texture (1m)''' ({{hl|class UserTexture1m_F}}) and paste this in its init:
+<sqf>
+if (isServer) then {
+	[BLUFOR, getPosATL this, "My West Respawn"] call BIS_fnc_addRespawnPosition;
+	deleteVehicle this;
+}
+</sqf>
+This code adds a respawn position at the position of the dummy object, and deletes the dummy object afterwards.
+}}

@@ -1,0 +1,1188 @@
+// source: https://community.bistudio.com/wiki/CfgWeapons_Config_Reference
+// revision: 373257 (2025-04-12T22:28:08Z)
+// export sha1: chbnmkczq1vohkmsdc4lxna40jxgxoh
+// categories: Category:CfgWeapons | Category:Clarification needed | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Introduction ==
+'''''cfgAmmo''''', '''''cfgMagazines''''', '''''cfgWeapons''''' and '''''cfgVehicles''''' are root classes defined in the engine's {{hl|config.bin}}.
+
+These classes can be subsequently added to by addons inherit in the game or provided by ''oem''. 
+
+''cfgAmmo'' defines the missile characteristics for ammunition held in a ''cfgMagazine'' which, in turn, is used by a ''cfgWeapon'', which, in turn, is selected for use in a (series of) ''cfgVehicles''.
+
+The same ammunition can be, and generally is, used by multiple magazines. The same magazine, can be, and generally is, used by multiple weapons. And so on.
+
+''cfgWeapons'' define the rifle ''e.g.'' characteristics. What muzzles it has, how many 'modes' (if any) it can use. What magazines are selectable.
+
+=== Arma Enhancement ===
+
+{{Name|arma1|short}} introduced a new root class, ''cfgMagazines''.
+
+In contrast, {{Name|ofp|short}} uses a rather tedious construct in it is ''cfgWeapons'' class to distinguish between weapon and magazine parameters.
+
+The major alterations here are:
+{| class="wikitable"
+|-
+! {{Name|ofp|short}}
+! {{Name|arma1|short}}
+|-
+| {{hl|c= ammo=}}
+| moved to ''cfgMagazines''
+|-
+| {{hl|c= cost=}}
+| moved to ''cfgMagazines''
+|-
+| {{hl|c= displayNameMagazine=}}
+| moved to ''cfgMagazines'' and renamed ''DisplayName'' (of course)
+|-
+| {{hl|c= magazines[] = {"this"};}} || {{hl|c= magazines[] = {};}}
+|-
+| {{hl|c= magazineType=}}
+| moved to ''cfgMagazines'' and renamed ''Type''
+|-
+| {{hl|c= maxLeadSpeed=}}
+| moved to ''cfgMagazines''
+|-
+| {{hl|c= minRange=}}
+| moved FROM ''cfgAmmo''
+|-
+| {{hl|c= minRangeProbab=}}
+| 
+|-
+| {{hl|c= midRange=}}
+| 
+|-
+| {{hl|c= midRangeProbab=}}
+| 
+|-
+| {{hl|c= maxRange=}}
+| 
+|-
+| {{hl|c= maxRangeProbab=}}
+| 
+|-
+| {{hl|c= scopeWeapon=}}
+| renamed ''scope''
+|-
+| {{hl|c= scopeMagazine=}}
+| moved to ''cfgMagazines'' and renamed ''scope''
+|-
+| {{hl|c= shortNameMagazine=}}
+| moved to ''cfgMagazines'' and renamed ''descriptionShort''?
+|}
+
+=== Modifications ===
+
+<syntaxhighlight lang="cpp">
+cfgWeapons {
+	access = 1;
+	...
+
+	//Weapon classes can be added.
+
+	default {
+		access = 3;
+	}
+	...
+}
+</syntaxhighlight>
+
+Existing classes can (rarely) be altered.
+
+The default class of ''cfgWeapons'' specifies {{hl|c= access = 3;}}. Almost all subsequent classes inherit this value, which means they cannot be altered in any way.
+
+To allow YOUR addon to subsequently modify YOUR weapon (should you wish to with other addons), you must change the {{hl|c= access=}} in YOUR Weapon.
+
+=== Navigation: The wood for the trees ===
+
+''cfgWeapons'' can be a puzzling mess to the uninitiated.
+
+The ''tokenpairs'', their placement, and their constructs can be befuddled. This is not a reflection on {{Name|bi|short}}, the ultimate class structure is very, very, adaptive, but, it does confuse.
+
+Essentially, {{Name|arma1|short}} did open heart, and excellent, surgery to this class to distinguish between weapons and their magazines. {{Name|ofp|short}} had a common weapon/magazine class with variables declaring what to use and when. Variables only relevant to {{Name|ofp|short}}, are sometimes still encountered in {{Name|arma1|short}}, simply because, they do no harm.
+
+Weapons come in two major flavors (with plenty of sub themes). A weapon either has, or does not have, a {{hl|modes[]}} class or classes adding different behaviour like ''autofire'', ''burst'' or ''single shot''. Confusingly, a weapon with only one mode, is, equivalent to not declaring it at all. The tokens that would normally be in a ''modes'' class, are declared in the main body instead. This obfuscates what-goes-where.
+
+Weapons can have different muzzles, adding a further layer of modelling.
+
+The inherited tree structure for weapons vs their magazines, vs their ammo, is not always logical. This is a throwback to {{Name|ofp|short}} which (for instance) inherited ''RPG Ammo'' from an ''AT3'', but inherited the ''RPG weapon'' from a ''CarlGustav'', and so on. The end result being identical and good, since offending parameters were altered as necessary - but it does confuse what a ''HellfireHind'' really is, depending on who you are (''ammo'' vs ''mag'' vs ''weapon'').
+
+=== Modes ===
+
+Some ''TokenNames'' are relevant only within a ''mode'' class (''e.g.'' {{hl|c= sound[]=}}), and stated as such.
+
+'''All''' weapons, without exception, have at least one ''mode'' class.
+
+By default, the inherited ''mode'' for a weapon is:
+
+<syntaxhighlight lang="cpp">
+modes[] = {"this"};
+</syntaxhighlight>
+
+Which means the engine will treat the main body as also being a ''mode'' class unless over-ridden.
+
+Some weapons do not have a ''modes'' class specified, nor do they inherit a specified ''modes'' class via their parent(s). Under these circumstances, ''TokenNames'' stated to be ''ModeClass'' only must occur in the main body of that weapon (or it is parents) instead. The ''TokenNames'' themselves, remain, accurately described, as being ''mode'' class only.
+
+=== Muzzles ===
+
+Exact same comments as per [[#Modes|Modes]]. By default the inherited muzzle for a weapon is:
+
+<syntaxhighlight lang="cpp">
+muzzles[] = {"this"};
+</syntaxhighlight>
+
+Parameters belonging in muzzles are stated as such.
+
+Different muzzles are normally only encountered on grenade launcher weapons (?).
+
+=== TokenNames ===
+
+All engines accept ''integer'' values (or math strings) where a ''float'' would normally be expected.
+
+Default values are shown in the legend.
+
+; Usage
+: '''''{{Name|ofp|short}}''''': generally moved to {{Name|arma1|short}}'s ''[[CfgMagazines Config Reference|cfgMagazines Class]]'' and often renamed, else simply renamed.
+: '''''{{Name|arma1|short}}''''': Introduced from {{Name|ofpe|short}} and beyond.
+: '''''ModesClass''''': Any item marked as a ''ModeClass'' lives in a class {{hl|Mode...}} body. It '''must''' be declared (or inherited) for '''each''' class.
+: '''''MuzzleClass''''': Any item marked as a ''MuzzleClass'' lives in a class {{hl|Muzzle...}} body. It '''must''' be declared (or inherited) for '''each''' class. Normally, except for grenade launchers, the muzzle IS the mainbody.
+: ''Blank'': Used as described in both {{Name|ofp|short}}, and, {{Name|arma1|short}}.
+
+Dual Use ''TokenNames'' (such as {{hl|c= picture=}}) moved to {{Name|arma1|short}}'s ''[[CfgMagazines Config Reference|cfgMagazines Class]]'' as appropriate.
+
+=== Picture="[\][.pac]" ===
+
+Defines ''WEAPON Picture'' '''and separately''' ''MAGAZINE Picture''.
+{{Name|ofp|short}} generally created two ''cfgWeapon'' classes. One for the weapon and one for the magazine. {{hl|c= picture=}} was declared in each. In {{Name|arma1|short}}, the ''magazine picture'' name has been moved to the ''cfgMagazines'' class as appropriate.
+
+Note that this is one of those irritating {{Name|bi|short}} path snafu's (when if ever will they start using relative addressing?). The following notes apply to most {{hl|c= picture=}} references, not just ''cfgWeapons''. 
+
+#'''The DEFAULT extension is {{hl|.pac}}'''. The engine accepts {{hl|.pac}} or {{hl|.paa}}, but {{hl|.pac}} is not supposed to exist. A {{hl|.paa}} must be explicitly declared.
+#'''Path must explicitly have a {{hl|\}} leading.''' 
+
+This because in {{Name|ofp|short}} it was possible to '''not declare''' any picture at all.
+
+In which case (in {{Name|ofp|short}}) the engine looks for the {{hl|.paa}} file in {{hl|\dta\dtaext\NameOfClass.paa}}
+
+The {{Name|arma1|short}} engine appears to make a mess of it. Any picture reference without a preceding slash will look in a non-existent {{hl|'equip.pbo'}}
+
+Specifically:
+
+<syntaxhighlight lang="cpp">
+equip\w\w_your\path\name	// for weapons and
+equip\m\m_your\path\name	// for mags
+</syntaxhighlight>
+
+If no picture is specified, then like {{Name|ofp|short}}, {{hl|equip\w\w_NameOfClass}} is assumed.
+
+Note also the 'convention' of naming weapon images with {{hl|w_}} and magazine images with {{hl|m_}} (and to a certain extent having {{hl|data\equip}} file paths). This is rigidly followed in {{Name|arma1|short}}. In {{Name|ofp|short}}, {{Name|bi|short}} were inconsistent.
+
+=== Types ===
+
+==== type=WeaponHardMounted (ArmaOnly) ====
+{{Wiki|stub}}
+
+==== magazineType=None (OfpOnly) ====
+{{Wiki|stub}}
+
+==== weaponType=WeaponHardMounted (OfpOnly) ====
+[[TokenNameValueTypes#Integers|Integers]] (Note this value is often held as a math [[TokenNameValueTypes#Strings|String]])
+
+Gear (equipment) selection consists of ''SlotTypes'' and one or more ''slot positions'' '''of that type'''.
+
+This integer is a ''bit-field'' containing ''SlotType'' '''and count''' which defines which ''SlotType'' this '''''item''''' will occupy in gear selection and how many slots '''of that type''' it requires. It does NOT define which slot ''position'' to occupy, only the ''Type'' of Slot. Various engines will show this item in positions of their own choosing.
+
+: An ''item'' is defined as being a ''weapon, magazine, ''or'' equipment''.
+:* A ''weapon'' is ''rifle, handgun, LAW launcher''.
+:* A ''magazine'' is a ''magazine, a shell ,a LAW, a PipeBomb, a grenade'' - ''i.e.'' a housing for the ''cfgAmmo'' explosive(s).
+:* ''equipment'' are ''binoculars, NVG, etc''.
+
+For {{Name|arma1|short}}, ''MagazineSlots'' and ''WeaponSlots'' are mutually exclusive. The classes occur in the ''cfgWeapons'' or ''cfgMagazines'' respectively. In {{Name|ofp|short}} both types of class exist in ''cfgWeapons'', and are often the same class. {{Name|ofp|short}} does not have a {{hl|c= Type=}}; instead, it uses {{hl|c= WeaponType=}} and {{hl|c= MagazineType=}} couplets. The end result, and the intent, is identical.
+
+{{Feature|important|Note: the quite serious alteration to ''SecondaryWeapon'' and ''Handgun'' mags that occurred in Arma. This to allow for an increased count field in ''Handgun Magazines''.}}
+
+{| class="wikitable"
+! rowspan="2" | Slot: !! rowspan="2" | SlotType
+! colspan="2" | value/nbits
+! rowspan="2" | Example
+|- 
+! OFP
+! Arma
+|-
+| Either:
+| NoSlot
+| {{hl|0/0}}
+| ''same''
+| ''stroke'' is a weapon, but it occupies no slots
+|-
+| Weapon:
+| PrimaryWeapon
+| {{hl|1/1}}
+| ''same''
+| AK47
+|-
+| Weapon:
+| HandGun
+| {{hl|2/1}}
+| ''same''
+| CZ75
+|-
+| Weapon:
+| SecondaryWeapon
+| {{hl|16/1}}
+| {{hl|4/1}}
+| LAW
+|-
+| Mag:
+| HandGunMagazines || {{hl|32/3}}
+| {{hl|16/4}}
+| CZ75Mag or GLMag
+|-
+| Mag:
+| MainMagazines
+| {{hl|256/4}}
+| ''same''
+| AK47Mag or explosives
+|-
+| Weapon:
+| BinocularSlot
+| {{hl|4096/4}}
+| ''same''
+| Binoculars or NVG, LD etc.
+|-
+| Weapon:
+| HardMounted
+| {{hl|65536/1}} || ''same''
+| 
+|-
+| Mag:
+| SmallItems
+| 
+| {{hl|131072/4}} || (Arma 2) map, compass, small items (derived from ''ItemCore'')
+|}
+
+The specific combination for machine guns normally occupy both weapon slots ''i.e. PrimaryWeapon + SecondaryWeapon''.
+
+=== Magazine Sizes ===
+
+Architecturally, '''all''' ''bit-fields'' are counts. The fact that a ''PrimaryWeapon'' can only be {{hl|1}}, still makes it ''a count'' of that ''SlotType''.
+
+In practical terms magazines are the only ''item'' ('''warning:''' ''currently'') to have bit-fields {{hl|&gt; 1}}.
+
+''Most'' weapons use a single slot to declare a single magazine.
+
+''Shell weapons'' such as the ''RPG'' require three slots to hold the ''magazine''. {{Name|ofp|short}} presented this by filling those slots with the image. Arma makes a mess of it with a somewhat ugly blank between slots. You are supposed to guess why it is blank.
+
+No handgun magazine (''currently'') has a size {{hl|&gt; 1}}. This could change on ''e.g.'' a remote controlled explosive. The bit-field is larger for reasons explained in [[#CfgVehicles: Joining the dots|Joining the dots]] (below).
+
+For ''MainWeapon Magazines'', specific bit-field identities between {{hl|256}} and {{hl|4096}} are frequently represented textually as:
+
+<syntaxhighlight lang="cpp">
+"1 * 256" // main mags
+"2 * 256" // m60,pk,mortars
+"3 * 256" // law , rpg
+"4 * 256" // 6g30 4 slots needed
+"6 * 256" // carlgustav,stinger 6 slots needed
+"8 * 256" // mm1 all slots needed
+</syntaxhighlight>
+
+And, of course, in Arma, these ''fields'' are only relevant in it is ''CfgWeapons''.
+
+=== CfgVehicles: Joining the dots ===
+
+A ''vehicle'', in this case ''a human'' or ''parachute'', has it is equipment slots defined in it is ''cfgVehicles Class''. The {{hl|c= Weaponslots=}} ''bit-field'' declares whether or not a piece of equipment can be carried at all, and if so, how much, or max size of that equipment, measured in ''slots''.
+
+{{hl|c= cfgVehicles.Weaponslots=}} is deceptively similar to {{hl|c= cfgWeapons.Type=}} (and vice versa). {{hl|c= Weaponslots=}} defines the carrying capacity for equipment, {{hl|c= type=}} defines the size of that equipment.
+
+Different ''humans'' have more or fewer slots than others. Clearly, ''medics, police, civilians'' and some ''resistance fighters'', cannot carry heavy armament. They're either not trained to, or, they're already implicitly carrying ''medical packs''. The disastrous {{Name|arma1|short}} completely destroyed this distinction. {{Name|arma2|short}} enhances the distinction a little more than {{Name|ofp|short}}.
+
+A generalised ''capacity'' declaration for humans is:
+
+{| class="wikitable"
+! rowspan="8" | {{hl|c= weaponSlots=}}
+|-
+| {{hl|PrimaryWeapon+}}
+| Can carry a Primary Weapon
+|-
+| {{hl|SecondaryWeapon+}}
+| Sometimes able to carry a Secondary or even heavier Weapon (''LAW, MG, stinger'')
+|-
+| {{hl|(4+6)*MainMagazines+}}
+| Can carry n*Magazines for these weapons (AK47Mag) (or max ''size'' of shell)
+|-
+| {{hl|HandGun+}}
+| Can carry a Handgun (''e.g.'' Beretta)
+|-
+| {{hl|2*WeaponSlotBinocular+}} || Can carry n*slots of equipment
+|-
+| {{hl|4*HandGunMagazines+}}
+| Can carry n*Handgun Magazines (CZ75Mag)
+|-
+| {{hl|12*SmallItems}}
+| can carry n*slots of SmallItems (Arma 2)
+|-
+|}
+
+These will later be filled out with specific weapons in the human's {{hl|c= weapons[]=}} and {{hl|c= magazines[]=}} ''arrays''. Placing too many causes a ''ctd''{{Clarify}}.
+
+Note that specific {{Name|arma2|short}} women can only carry magazines and small equipment (for their boyfriends?) and nothing else.
+
+Magazine carrying ability altered markedly for {{Name|arma2|short}} vs {{Name|ofp|short}}; it is the reason for the nasty change to the ''bit-field'', and is as follows:
+
+{| class="wikitable"
+! colspan="2" |
+! OFP
+! Arma
+|-
+| rowspan="2" | Rifle
+| Potential || {{hl|15}}
+| {{hl|15}}
+|-
+| Actual
+| {{hl|4}} to {{hl|10}} || {{hl|2}} to {{hl|12}}
+|-
+| rowspan="2" | Handgun || Potential || {{hl|7}}
+| {{hl|15}}
+|-
+| Actual
+| {{hl|4}}
+| {{hl|4}} or {{hl|8}}
+|-
+| colspan="2" | Binoculars
+| {{hl|1}} or {{hl|2}}
+| {{hl|0}} to {{hl|2}}
+|}
+
+
+== Alphabetical Order ==
+
+
+=== A ===
+
+==== access=3 ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+<syntaxhighlight lang="cpp">
+#define ReadAndWrite 0		// any modifications enabled
+#define ReadAndCreate 1		// only adding new class members is allowed
+#define ReadOnly 2			// no modifications enabled
+#define ReadOnlyVerified 3	// no modifications enabled, CRC test applied
+</syntaxhighlight>
+
+==== aiBurstTerminable=false ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: AI firemode parameter, when true, AI will terminate burst when target is dead or out of sight 
+
+<syntaxhighlight lang="cpp">
+class CfgWeapons
+{
+	class LMG_RCWS : MGun
+	{
+		class close : manual
+		{
+			burst = 12;
+			aiBurstTerminable = 1;
+		};
+	};
+};
+</syntaxhighlight>
+
+==== aiDispersionCoefX=1.0 ====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Dispersion multiplier for ''AI'' units (axis X - left to right).
+
+==== aiDispersionCoefY=1.0 ====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Dispersion multiplier for ''AI'' units (axis Y - top-down).
+
+==== aimTransitionSpeed=1.0 ====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Speed for switching between normal mode and iron sights/optics.
+
+==== aiRateOfFire=5.0 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Delay between shots at given ''aiRateOfFireDistance''.
+
+==== aiRateOfFireDistance=500 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: At shorter distance delay (''aiRateOfFire'') goes linearly to zero.
+
+==== aiRateOfFireDispersion=1 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Property that affects the randomness of delay between shots. Value sets the maximum of the range in which a random number influencing the delay between shots is generated. 0 means the delay between shots will be the same (with given actual distance). The bigger the value the longer delay can be generated.
+
+<syntaxhighlight lang="cpp">
+// randomized delay after shot
+timeToShot = aiRateOfFire + aiRateOfFireDispersion * Random<0,1>
+</syntaxhighlight>
+
+==== allowedslots[]={} ====
+; Class: Arma3
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+; Description: allowedSlots[] is an array of slot numbers where you may put the handweapon. 701 stands for vest, 801 stands for uniform, 901 stands for backpack
+
+<syntaxhighlight lang="cpp">
+allowedslots[] = {701,901}; //item that can be put into vests and backpacks
+</syntaxhighlight>
+
+==== ammo="" ====
+; Class: OFPModeClass
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: ''cfgAmmo'' class that this weapon fires. Moved to [[CfgMagazines Config Reference|cfgMagazines]] in Arma.
+
+<syntaxhighlight lang="cpp">
+ammo = "TimeBomb";
+</syntaxhighlight>
+
+==== autoAimEnabled=true ====
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: {{hl|false}} for all standard weapons.
+
+==== autoFire=false ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: If {{hl|true}}, weapon will fire repeatedly all the while you hold the fire button down.
+
+And if {{hl|true}} the gunner can use the weapon on his own discretion (no ''commander'' fire order needed - like ''MG'' type).
+
+==== autoReload=true ====
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: If {{hl|true}} weapon will be reloaded automatically once magazine is empty.
+
+=== B ===
+
+==== backgroundReload=false ====
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: Weapon automatically reloads magazines without player intervention or animation.
+
+==== ballisticsComputer=false ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: Weapon attempts to calculate and shift the ''aim-point'' to hit a locked target based on range, target movement, own movement, and ballistics of selected ammo type. New updated information for A3: [[A3_Targeting_config_reference|Targeting reference]]
+
+==== burst=1 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Number of shots actually fired each time the weapon is fired.
+
+==== burstRangeMax=12 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Randomized number of shots actually fired each time the weapon is fired. When > 0 number of shots will be randomize in range{burst, burstRangeMax};
+
+=== C ===
+
+==== cameraDir ====
+; Class: MuzzleClass
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+<syntaxhighlight lang="cpp">
+cameraDir = "GL look";
+</syntaxhighlight>
+
+==== canDrop=true ====
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: Weapon can/not be dropped from Inventory Menu.
+
+''canDrop'' is poorly implemented. It is normally associated with true vehicles such as air. For humans nothing in the ''GUI'' panel suggests that you can't drop a weapon, and yet, hidden-from-view, the drop action has no effect. ''canDrop'' should have also been implemented in ''cfgMagazines'', but isn't. You can always drop the magazine, and yet, for some weapons, such as a laser designator, this is nonsensical.
+
+==== canLock=2 ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Defines if weapon can be locked on the target (white box appears).
+
+<syntaxhighlight lang="cpp">
+#define LockNo		0
+#define LockCadet	1
+#define LockYes		2
+</syntaxhighlight>
+
+==== cartridgePos="nabojnicestart" ====
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== cartridgeVel="nabojniceend" ====
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== count=0 ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Number of shots weapon starts with. Moved to ''cfgMagazines'' in Arma.
+
+==== cursor="" ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== cursor="w_weapon" ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== cursorAim="" ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+<syntaxhighlight lang="cpp">
+cursorAim = "\ca\Weapons\Data\cursor_target_locked_ca.paa";
+</syntaxhighlight>
+
+==== cursorAim="w_lock" ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== cursorAimOn="" ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== cursorSize=1.0 ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Floats|Float]]
+
+=== D ===
+
+==== dexterity=3.1 ====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: In-game weapon handling value, lower value = takes more time to traverse a weapon.
+
+<syntaxhighlight lang="cpp">
+dexterity = 3.1;
+</syntaxhighlight>
+
+==== dispersion=0.002 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: In-game weapon dispersion in radians. Bigger value = more dispersion.
+
+==== displayName="" ====
+; Class: MainBody
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Name of the WEAPON. Declared in the main body. This string is shown in gear selection as the rifle's name.
+
+
+; Class: ModeClass
+; Description: Name of the MODE. In '''every''' mode class. This string is shown in-game when selecting burst, single, auto etc.
+
+A weapon that only has a single mode '''''normally''''' has the same ''displayname'', repeated in the mode class. But, repeated, it must be.
+
+A weapon with no modes (modes={"this"); uses the weapon name for both.
+
+
+; Class: MuzzleClass
+; Description: Name of the MUZZLE. In '''every''' muzzle class.
+
+This string is shown in-game similar to burst, single, auto etc.
+
+It is quite common for one of the muzzle classes to inherit a basic rifle muzzle, in which case, the name of the muzzle for ''THAT'' class is the inherited weapon name.
+
+A weapon with no muzzles ''i.e.'' {{hl|c= muzzles={"this"};}} uses the weapon name.
+
+==== displayNameMagazine="" ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: ''displayname'' of the magazine in gear selection. Replaced in Arma via the ''[[CfgMagazines Config Reference|cfgMagazines Class]]''.
+
+See also [[#shortNameMagazine|shortNameMagazine]] and [[#descriptionShort|descriptionShort]]
+
+==== distanceZoomMax=400 ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Zeroing distance at [[#opticsZoomMax|opticsZoomMax]].
+
+==== distanceZoomMin=400 ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Zeroing distance at [[#opticsZoomMin|opticsZoomMin]].
+
+==== descriptionShort="" ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: A paragraph or two describing the rifle in bottom left panel of in-game gear selection.
+
+This is NOT equivalent of {{Name|ofp|short}}'s short label (''shortNameMagazine''). '''''THAT''''' ''descriptionShort'' exists in ''cfgMagazines''.
+
+==== drySound[]={"",1,1} ====
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+; Description: Click sound when empty weapon fired.
+
+<syntaxhighlight lang="cpp">
+drySound[] = {"\ca\Weapons\Data\Sound\XMS_dry_v2", 0.000316228, 1};
+</syntaxhighlight>
+
+=== E ===
+
+==== enableAttack=true ====
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+
+==== emptySound[]={"",1,1} ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+
+=== F ===
+
+==== ffCount=1 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Force feedback.
+
+==== ffFrequency=1 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Force feedback.
+
+==== ffMagnitude=0.0 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Force feedback.
+
+==== fireLightDuration=0.05 ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Duration of light from muzzle flash.
+
+==== fireLightIntensity=0.012 ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Intensity of light from muzzle flash.
+
+==== flash="" ====
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+<syntaxhighlight lang="cpp">
+flash = "gunfire";
+</syntaxhighlight>
+
+==== flashSize=0.0 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: {{Name|ofp|short}} only?
+
+==== forceOptics=0 ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Valid values: {{hl|0}}, {{hl|1}}, {{hl|2}} as per ''canLock''.
+
+=== H ===
+
+==== handAnim[]={} ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+
+=== I ===
+
+==== initSpeed=0 ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Initial speed of shot in meters per second. Also present in ''cfgMagazines''.
+
+<syntaxhighlight lang="cpp">
+initSpeed = 900;
+</syntaxhighlight>
+
+In OFP this must be set in the class of the magazine, not that of the weapon.
+
+In A3 this has multiple usages. positive values override magazine initspeed with the fixed number. Negative values act as modifier to the magazine's initispeed.
+<syntaxhighlight lang="cpp">
+initSpeed = 1050; //overwrites magazine's value with 1050m/s
+initSpeed = -1.1; //multiplies magazine's value by +1.1
+</syntaxhighlight>
+
+=== L ===
+
+==== laser=false ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: If the weapon is a laser designator, this should be true.
+
+==== libTextDesc ====
+; Class: ArmaClass
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+<syntaxhighlight lang="cpp">
+class Library {
+	libTextDesc = "The P07 is a semi-automatic pistol with an iron and reinforced polymer mix frame. Following the success of Glock, polymer based pistols became known as perfect handguns for both military use and self-defense and are available in various calibers. P07 allows easy mounting of suppressors.";
+};
+</syntaxhighlight>
+
+=== M ===
+
+==== magazineReloadTime=0 ====
+; Class: MuzzleClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Time delay when reloading the weapon (changing magazines).
+
+==== magazines[]={"this"} ====
+; Class: OFP
+; Type: [[TokenNameValueTypes|StringArray]]
+; Description: Array of magazine classes compatible with this weapon. This '''same''' ''Weapon class'' in ''cfgWeapons'' if not over-ridden.
+
+==== magazines[]={} ====
+; Class: Arma
+; Type: [[TokenNameValueTypes|StringArray]]
+; Description: These are declared here, same as {{Name|ofp|short}}, but defined in ''cfgMagazines''.
+
+'''Note, with extreme caution''': ''Unlike'' {{Name|ofp|short}}, you cannot have identically named ''magazine'' classes. The in-game gear selection panel gets confused. Safe bet is to call all your magazine classes "''[rifle]Mag''".
+
+==== maxLeadSpeed=50 ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Maximum speed of the target that can be shot with this weapon by ''AI''. Moved to ''cfgMagazines'' in Arma.
+
+==== min/mid/maxRange... ====
+; Class: ArmaModeClass
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Together with ''range'' and ''rangeProbab'' values, defines probability to use this weapon for ''AI'' units at given distance.
+
+For {{Name|ofp|short}} these parameters were specified in ''cfgAmmo'', rendering all rifles the same.
+
+===== minRange=1 =====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+===== minRangeProbab=0.3 =====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+
+===== midRange=150 =====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+===== midRangeProbab= 0.58 =====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+
+===== maxRange=500 =====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+===== maxRangeProbab=0.04 =====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+
+==== magazineType=0 ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: See Types below.
+
+==== memoryPointCamera="eye" ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: MuzzleClass
+
+<syntaxhighlight lang="cpp">
+memoryPointCamera = "GL eye";
+</syntaxhighlight>
+
+==== model="[.p3d]" ====
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+<syntaxhighlight lang="cpp">
+model = "\ca\a10\AGM65";
+</syntaxhighlight>
+
+==== modelMagazine="[.p3d]" ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== modelMagazine="\misc\mag_univ" ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== modelOptics="[.p3d]" ====
+; Class: MuzzleClass
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Optic model used in game. "{{hl|-}}" defines 3d view from the model (point "eye").
+
+<syntaxhighlight lang="cpp">
+modelOptics = "\ca\Weapons\G36_optics";
+modelOptics = "-";
+</syntaxhighlight>
+
+==== modelSpecial=[.p3d]"" ====
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Model used when the weapon is loaded. This is typically only used for rocket launchers.
+
+==== modes[]= {"this"} ====
+; Type: [[TokenNameValueTypes#Strings|String]]; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+; Description: Anything you care to claim as a class ''xxx''.
+
+{{hl|c= modes[]= {"this"};}} means all parameters necessary for the one and only mode are declared within the main body. Note this '''also''' gives the ''order'' of selection using the control key in-game.
+
+<syntaxhighlight lang="cpp">
+modes[] = {"single", "burst", "auto"};
+</syntaxhighlight>
+
+==== multiplier=1 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Ammunition used per shot.
+
+==== muzzleEnd="konec hlavne" ====
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== muzzlePos="usti hlavne" ====
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== muzzles[]={"this"} ====
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+; Description: Similarly to ''modes'', if not declared, the assumed muzzle is {{hl|"this"}}.
+
+<syntaxhighlight lang="cpp">
+muzzles[] = {"TimeBombMuzzle", "PipeBombMuzzle", "MineMuzzle", "MineEMuzzle"}; //Standard definition
+muzzles[]+={"my_custom_muzzle"}; // When you want to add something to an already existing array (e.g. Muzzles to the "throw" weapon class)
+</syntaxhighlight>
+
+=== N ===
+
+==== nameSound="" ====
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Sound ''classname'' played when ''vehicle commander'' switches to this weapon?
+
+<syntaxhighlight lang="cpp">
+nameSound = "smokeshell";
+</syntaxhighlight>
+
+==== nameSound="weapon" ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== nFovLimit=0.05 ====
+; Class: Arma2
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Defines when UI indicator switches from WFOV to NFOV. See Titan/Javelin UI
+
+=== O ===
+
+==== optics=true ====
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+
+==== opticsDisablePeripherialVision=0.67 ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Factor by which peripheral vision is reduced while using this optic. 0 has no effect and 1 disables it completely.
+
+==== opticsFlare=false ====
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: Decides if lens flare should be shown while using this optic.
+
+==== opticsPPEffects[] = {"OpticsCHAbera5", "OpticsBlur5"} ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+; Description: Post-process effects applied while using this optic.
+
+==== opticsZoomInit= 0.75 ====
+; Class: MuzzleClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Optics field of view at default zoom in radians.
+
+==== opticsZoomMax=1.1 ====
+; Class: MuzzleClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: FOV in radians. This and [[#opticsZoomMin|opticsZoomMin]] are counterintuitively named. opticsZoomMax is the ''maximum FOV'', which actually makes it the '''minimum zoom.'''
+
+==== opticsZoomMin=0.375 ====
+; Class: MuzzleClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+
+=== P ===
+
+==== picture="[\][.pac]" ====
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Defines ''weapon'' '''and''' ''magazine''. See below.
+
+==== primary=10 ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+=== R ===
+
+==== recoil="Empty" ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Selects recoil defined in ''cfgRecoils'' class. Arma differs substantially in Recoil ability; much more of them, and very different names.
+
+<syntaxhighlight lang="cpp">
+recoil = "AK74Recoil"
+</syntaxhighlight>
+
+==== recoilProne="" ====
+; Class: ArmaModeClass
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: When prone, recoil can be set to slower values.
+
+<syntaxhighlight lang="cpp">
+recoilProne = "AK74Recoil"
+</syntaxhighlight>
+
+==== reloadAction="" ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Enumerated list.
+
+==== reloadAction="ManActReloadMagazine" ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== reloadMagazineSound[]={"",1,1} ====
+; Class: MuzzleClass
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+; Description: Sound played while changing magazines.
+
+<syntaxhighlight lang="cpp">
+reloadMagazineSound[] = {"\ca\Weapons\Data\Sound\flare_reload", 0.000316228, 1};
+</syntaxhighlight>
+ 
+==== reloadSound[]={"",1,1} ====
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+; Description: Sound played after each shot.
+
+<syntaxhighlight lang="cpp">
+reloadSound[] = {"\ca\Weapons\Data\Sound\gun125reload", 1, 1};
+</syntaxhighlight>
+
+==== reloadTime=1.0 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Delay (in seconds) between each individual shot.
+
+==== requiredOpticType=-1 ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Required [[Arma_3_ItemInfo_Config_Reference#opticType|opticType]] for AI to be able to use this fire mode. It is mainly use to increase maximum engagement distance of AI depending on the optics it has mount on its rifle
+
+<syntaxhighlight lang="cpp">
+		class single_close_optics1 : Single // This optic mode will be used if AI unit has optic mounted on this weapon with opticType >= 1. AI will engage between 
+		{
+			requiredOpticType = 1;
+			showToPlayer = 0;
+			minRange = 2;
+			minRangeProbab = 0.05;
+			midRange = 300;
+			midRangeProbab = 0.8;
+			maxRange = 500;
+			maxRangeProbab = 0.01;
+			aiRateOfFire = 2;
+			aiRateOfFireDistance = 300;
+		};
+		class single_medium_optics1 : single_close_optics1 // Same as single_close_optics1 - requiredOpticType is inherited and therefore opticType >= 1 is required
+		{
+			minRange = 300;
+			minRangeProbab = 0.05;
+			midRange = 500;
+			midRangeProbab = 0.7;
+			maxRange = 700;
+			maxRangeProbab = 0.05;
+			aiRateOfFire = 2;
+			aiRateOfFireDistance = 500;
+		};
+		class single_far_optics1 : single_medium_optics1 // this optic mode will be only used if AI unit has optic with opticType = 2 mounted. With this fire mode AI will engage enemies up to 1km
+		{
+			requiredOpticType = 2;
+			minRange = 300;
+			minRangeProbab = 0.05;
+			midRange = 700;
+			midRangeProbab = 0.5;
+			maxRange = 1000;
+			maxRangeProbab = 0.05;
+			aiRateOfFire = 4;
+			aiRateOfFireDistance = 600;
+		};
+</syntaxhighlight>
+
+=== S ===
+
+==== scope=0 ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: {{Name|ofp|short}} had no scope token. Instead, it used ''scopeWeapon'' and ''scopeMagazine'' to distinguish who was what and when used.
+
+{{hl|2}} = ''can use'' in-game, with a picture in gear present. {{hl|1}} = ''can use'' in-game with no picture in gear.
+
+==== scopeWeapon=0 ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+==== scopeMagazine=0 ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Used as couplets instead of scope.
+
+==== selectionFireAnim="zasleh" ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: This defines the selection name for muzzleflash proxy. In czech the word "zasleh" is muzzleflash.
+
+==== shortNameMagazine="" ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: The descriptive magazine paragraph. Replaced in Arma by ''descriptionShort'' in the [[CfgMagazines Config Reference|cfgMagazines Class]].
+
+==== shotFromTurret=false ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: If true, it disables the muzzle flash completely ("''zasleh''" animation), and only smoke puffs are used. It also disables the lighting effects when firing the weapon at night. It only works with weapons defined as vehicle weapons. This value also dictates whether to use the legacy turret gunBeg/gunEnd settings (when shotFromTurret = 1), or the memoryPointGun[] array for tracer paths (when shotFromTurret = 0).
+
+==== showAimCursorInternal=true ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+
+==== showEmpty=true ====
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: If false weapon gets hidden from the player once there's no ammo left for it.
+
+{{ArgTitle|4|showHandgunMagProxy|{{GVI|arma3|?}}}}
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: '''Vest config'''. Default {{hl|1}}. Renders magazine proxy when gun is in its holster.
+
+{{ArgTitle|4|showHolsterMagazineProxy|{{GVI|arma3|?}}}}
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: '''Weapon config'''. Default {{hl|1}}. Renders magazine proxy when gun is in its holster.
+
+==== showSwitchAction=false ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: Show an option to switch to this weapon in the action menu.
+
+==== showToPlayer=true ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: Some modes defined for ''AI'' usage (''e.g.'' burst modes for full auto weapons) can be hidden from player with this parameter.
+
+==== simulation="Weapon" ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Strings|String]]
+
+==== sound[]={"",1,1} ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+; Description: There are several sound ''types''. Most are relevant to the weapon overall and specified in the main body, whilst {{hl|c= sound[]=}} is specific to each mode.
+
+The last parameter defines how fast the sound should be played. {{hl|1}} means normal speed. 
+
+<syntaxhighlight lang="cpp">
+sound[] = {"\ca\Weapons\Data\Sound\AGS30_shot1", 10, 1};
+</syntaxhighlight>
+
+==== soundBurst=true ====
+; Class: ArmaModeClass
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: When set to {{hl|false}}, the single shot sound can be used with burst mode - it will be played several times.
+
+==== soundContinuous=false ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: If {{hl|true}}, the sound for the next shot won't start before previous one ends. Thus you can prevent sound overlapping. 
+
+==== soundBegin[]={"begin1", 0.33, "begin2", 0.33, "begin3", 0.34} ====
+; Class: ArmaModeClass
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+; Description: The weapon's "firing" sound. An array of sounds and probabilities.
+
+<syntaxhighlight lang="cpp">
+begin1[] = {"A3\sounds_f\weapons\pistols\pistol_st_1", 1, 1, 700};
+begin2[] = {"A3\sounds_f\weapons\pistols\pistol_st_2", 1, 1, 700};
+begin3[] = {"A3\sounds_f\weapons\pistols\pistol_st_3", 1, 1, 700};
+soundBegin[] = {"begin1", 0.33, "begin2", 0.33, "begin3", 0.33}
+</syntaxhighlight>
+
+==== soundBullet[]={"emptySound",1} ====
+; Class: ArmaModeClass
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+; Description: The sound made when spent cases hit the ground
+
+<syntaxhighlight lang="cpp">
+bullet1[] = {"A3\sounds_f\weapons\shells\9mm\metal_9mm_01", 0.501187, 1, 15};
+bullet2[] = {"A3\sounds_f\weapons\shells\9mm\metal_9mm_02", 0.501187, 1, 15};
+bullet3[] = {"A3\sounds_f\weapons\shells\9mm\metal_9mm_03", 0.501187, 1, 15};
+soundBullet[] = {"bullet1", 0.33, "bullet2", 0.33, "bullet3", 0.33}
+</syntaxhighlight>
+
+==== soundEnd[]={"sound",1} ====
+; Class: ArmaModeClass
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+
+==== soundLoop[]={"sound",1} ====
+; Class: ArmaModeClass
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+; Description: Note that there is extensive use of ''soundloops'' in Arma. Most weapons elaborate on this basic, essentially {{Name|ofp|short}}, structure with begin {{hl|1, 2, 3}} loops etc.
+
+==== soundFly[] ====
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+
+<syntaxhighlight lang="cpp">
+soundFly[] = {"\ca\Weapons\Data\Sound\rocket_fly1", 25.1189, 0.8};
+</syntaxhighlight>
+
+==== soundServo[] ====
+; Type: [[TokenNameValueTypes#Arrays|Array]] of [[TokenNameValueTypes#Integers|Integer]]
+
+<syntaxhighlight lang="cpp">
+soundServo[] = {"", 0.0001, 1};
+</syntaxhighlight>
+
+=== T ===
+
+==== Type=WeaponHardMounted ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: See {{Link|#weaponType.3DWeaponHardMounted_.28OfpOnly.29|WeaponHardMounted}}
+
+=== U ===
+
+==== UiPicture="[\][.pac]" ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Image used in the commander's interface to indicate weapon loadout of a unit.
+
+<syntaxhighlight lang="cpp">
+"\CA\weapons\data\Ico\i_aa_CA.paa";
+</syntaxhighlight>
+
+==== uiPicture="ivojak" ====
+; Class: OFP
+
+==== uiModel="[.p3d]" ====
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Works only with watch & compass items (simulationWatch/simulationWatch). Replaces model which is visible in inventory with custom one.
+
+<syntaxhighlight lang="cpp">
+class ItemCompassRU : ItemCompass 
+{ 
+	UImodel = "\A3\ui_f\objects\CompassRU.p3d";
+};
+class ItemWatchRU : ItemWatch 
+{ 
+	UImodel = "\A3\ui_f\objects\WatchRU.p3d";
+};
+</syntaxhighlight>
+
+==== useAction=false ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: Allows this mode to be activated with the action menu
+
+==== useActionTitle="" ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Action title if [[#useAction|useAction]] is true
+
+<syntaxhighlight lang="cpp">
+useActionTitle = "$STR_ACTION_PUTBOMB";
+</syntaxhighlight>
+
+==== useAsBinocular=false ====
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+
+=== V ===
+
+==== value=2 ====
+; Class: Arma
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+==== valueMagazine=2 ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+==== valueWeapon=2 ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+=== W ===
+
+==== weaponType=WeaponHardMounted ====
+; Class: OFP
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+
+
+[[Category:CfgWeapons]]

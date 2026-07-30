@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/setConvoySeparation
+// revision: 376358 (2025-10-07T21:39:25Z)
+// export sha1: rwpacjh613dk7mbt74vpmke130s1zkj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Object Manipulation
+
+|descr=Sets the distance to keep to the vehicle which is '''in front'''.<br>
+*This command has to be applied to all vehicles in a convoy in order to have a separation of, for example, 50 m. 
+*Vehicles in a convoy can also have different distances.
+*It's recommended that small values (<10m) should only be used for slowly moving convoys, otherwise AI driven vehicles will leave the road frequently to avoid collisions
+
+|s1= vehicle [[setConvoySeparation]] distance
+
+|p1= vehicle: [[Object]]
+|p2= distance: [[Number]]
+|r1= [[Nothing]]
+
+|x1= <sqf>cursorObject setConvoySeparation 20;</sqf>
+
+|seealso= [[forceFollowRoad]] [[useAISteeringComponent]]
+}}

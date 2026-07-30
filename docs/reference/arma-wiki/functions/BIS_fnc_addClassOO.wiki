@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addClassOO
+// revision: 348326 (2023-11-08T12:59:44Z)
+// export sha1: 733aa5gdgz80g6v462xqt03fn0y8szg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: OO | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= OO
+
+|descr= Registering a class for the OO scripting shell.
+
+|s1= class call [[BIS_fnc_addClassOO]]
+
+|p1= class: [[String]] - class for the OO scripting shell {{Feature|important|Class has to exist in CfgOO}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"someOOClass" call BIS_fnc_addClassOO;</sqf>
+
+|seealso= [[BIS_fnc_createObjectOO]]
+}}

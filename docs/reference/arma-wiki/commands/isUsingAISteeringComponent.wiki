@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/isUsingAISteeringComponent
+// revision: 369751 (2024-10-08T15:08:54Z)
+// export sha1: 1tb6qoi9przq3hfpda5b8tjz77cq13k
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= AI Behaviour
+
+|descr= Returns whether the [[useAISteeringComponent|AI steering component]] setting is enabled globally.
+
+|s1= [[isUsingAISteeringComponent]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+if (isUsingAISteeringComponent) then
+{
+	useAISteeringComponent false;
+};
+</sqf>
+
+|seealso= [[useAISteeringComponent]] [[isAISteeringComponentEnabled]]
+}}

@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/getCenterOfMass
+// revision: 377796 (2026-01-03T03:53:42Z)
+// export sha1: qxls7le29imkrc6zvyz2mhmnol2nglw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+|arg= global
+
+|gr1= PhysX
+
+|descr= Returns center of mass of an object.
+
+|s1= [[getCenterOfMass]] object
+
+|p1= object: [[Object]] - PhysX object
+
+|r1= [[Position#PositionRelative|PositionRelative]] - relative to the model centre
+
+|x1= <sqf>_com = getCenterOfMass _myCar;</sqf>
+
+|seealso= [[getMass]] [[setCenterOfMass]] [[setMass]] [[addTorque]] [[addForce]]
+}}

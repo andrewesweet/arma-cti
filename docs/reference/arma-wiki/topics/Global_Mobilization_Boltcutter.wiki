@@ -1,0 +1,157 @@
+// source: https://community.bistudio.com/wiki/Global_Mobilization_Boltcutter
+// revision: 373225 (2025-04-12T22:20:52Z)
+// export sha1: s5nvr6qwh55wwf4rs9n4m7ccy688kpe
+// categories: Category:Global Mobilization
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:gm module boltcutter.jpg|thumb]]
+'''[[Global Mobilization]]''' introduces Bolt Cutters. These work straight out of the box and do not need any special enabling.
+
+With these Bolt Cutters you are able to:
+
+* Cut holes into fences
+* Cut down barbed wire
+* Cut the power of indiviual lights (editor placed ones, only)
+* Sabotage a utility box to turn off multiple lights in a radius (works with map placed and editor placed items)
+
+=== Modding ===
+
+The Bolt Cutters are easy to integrate into your mods.
+
+==== User Action ====
+To tag any of your objects with the "Prepare Bolt Cutter" user action, you'll want to add a user action for that:
+<syntaxhighlight lang="cpp">
+		class UserActions
+		{
+			class gm_useBoltcutters
+			{
+				displayName        = "$STR_DN_GM_BOLTCUTTER_PREPARE";
+				displayNameDefault = "<img image='\gm\gm_weapons\gm_items\data\ui\holdaction_boltcutter_ca.paa' size='2.5' />";
+				priority           = 10;
+				radius             = 2.5;
+				position           = "";
+				showWindow         = 0;
+				hideOnUse          = 1;
+				onlyForPlayer      = 1;
+				shortcut           = "";
+				condition          = "alive this and !(this getVariable ['gm_noBoltCutting', false]) and ('gm_boltcutter' in items player)";
+				statement          = "[this] call gm_boltcutter_fnc_addAction;";
+			};
+		};
+</syntaxhighlight>
+
+Alternatively you can do this same interaction via [[addAction]] to any object you like:
+
+<sqf>
+this addAction
+[
+	localize "STR_DN_GM_BOLTCUTTER_PREPARE",
+	{ (_this select 0) call gm_boltcutter_fnc_addAction },
+	[],
+	10,
+	false,
+	true,
+	"",
+	toString { alive _target and !(_target getVariable ["gm_noBoltCutting", false]) and ("gm_boltcutter" in items _this) },
+	2.5
+];
+</sqf>
+
+==== Config Parameters ====
+The exact behaviour of the bolt-cutting event is controlled by specific config parameters inside the object that has your user action activated (For example the fence being cut).
+===== gm_boltcutAction =====
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: This parameter controls what happens to the environment after using the cutters:
+
+{| class="wikitable"
+! Type !! Description
+|-
+| "powerbox" || All surrounding lights within 300m will be disabled
+|-
+| "light" || This indivudal object's lights will be disabled
+|-
+| "code" || Executes the given code on the client where the boltcutter was used
+|-
+| "" || Destroys the object
+|}
+
+<syntaxhighlight lang="cpp">
+gm_boltcutAction = powerbox;
+</syntaxhighlight>
+
+===== gm_replaceObject =====
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Specifies a CfgVehicles object that is spawned in place for the old one
+<syntaxhighlight lang="cpp">
+gm_replaceObject = "myDestroyedFenceObject";
+</syntaxhighlight>
+
+===== gm_fenceCutAnimationSource =====
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Specifies a the animation source that is animated to phase 1 using [[animateSource]]
+<syntaxhighlight lang="cpp">
+gm_fenceCutAnimationSource = "hide_fence_hole_source";
+</syntaxhighlight>
+
+===== gm_boltcut_code=====
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Specifies string containing code that will be executed once the bolt cut action is finished.
+<syntaxhighlight lang="cpp">
+gm_boltcut_code = "player sidechat 'I am breaking in!'";
+</syntaxhighlight>
+
+=== Scripting ===
+
+A scripted eventhandler and object variables are also available to further control the bolt cutters.
+==== gm_boltCutterUsed ====
+The Scripted Eventhandler <sqf inline>gm_boltCutterUsed</sqf> is available. It will trigger every time a user applies the bolt cutters.
+
+<sqf inline>[missionNamespace, "gm_boltCutterUsed", { player sidechat "I am breaking in!" }] call BIS_fnc_addScriptedEventHandler;</sqf>
+
+''Two arguments are processed by this eventhandler.''[_object, _actionType]
+
+{| class="wikitable"
+! Type !! Description
+|-
+|  OBJECT || the object that was interacted with
+|-
+|  STRING || The action type of this interaction (see gm_boltcutAction for action types)
+|}
+
+<sqf>
+params ["_object", "_actionType"];
+if (_actionType == "light") then
+{
+	[_object, "OFF"] remoteExec ["switchLight", 0, true]; // turn this light off and add to JIP Queue
+};
+</sqf>
+
+==== gm_noBoltCutting ====
+If you wish to disable the bolt cutters on a specific object, you can simply set the <sqf inline>gm_noBoltCutting</sqf> variable to true on that object:
+
+<sqf inline>MyPowerBox setVariable ["gm_noBoltCutting", true];</sqf>
+
+==== gm_boltcutAction====
+Overwrites the config-specified <syntaxhighlight lang="cpp" inline>gm_boltcutAction</syntaxhighlight> value.
+
+<sqf inline>MyPowerBox setVariable ["gm_boltcutAction", "code"];</sqf>
+
+See [[Global_Mobilization_Boltcutter#gm_boltcutAction]] for possible values.
+
+==== gm_fenceCutAnimationSource====
+Overwrites the config-specified <syntaxhighlight lang="cpp" inline>gm_fenceCutAnimationSource</syntaxhighlight> value.
+
+<sqf inline>MyPowerBox setVariable ["gm_fenceCutAnimationSource", "door_1"];</sqf>
+
+==== gm_replaceObject ====
+Overwrites the config-specified <syntaxhighlight lang="cpp" inline>gm_replaceObject</syntaxhighlight> value.
+
+<sqf inline>MyPowerBox setVariable ["gm_replaceObject", "land_gm_euro_toy_dinosaur_01"];</sqf>
+
+==== gm_boltcut_code====
+Overwrites the config-specified <syntaxhighlight lang="cpp" inline>gm_boltcut_code</syntaxhighlight> segment that will be executed when a bolt cutter is used.
+
+<sqf inline>MyPowerBox setVariable ["gm_boltcut_code", "player sidechat 'I am breaking in!'"];</sqf>
+
+
+[[Category:Global Mobilization]]

@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Nametags
+// revision: 346937 (2023-08-11T20:02:19Z)
+// export sha1: bthgqcrm1th8ec5h1fvwxxgw1jf1ll5
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[Spearhead 1944]] introduces a scripted nametag system. While it was designed for the campaign to aid new players it can also be enabled in other scenarios.
+
+Nametags can be shown by pressing {{Controls|^}}. Double tap {{Controls|^}} to toggle permanent mode.
+In singleplayer the nametags are shown for all members of the player's group.
+In multiplayer, they are shown for all group members of groups that have a player in it.
+
+The nametags show the [[Spearhead 1944 CfgRoles|role]], the squad, the unit ID in the squad, the name and wether the unit is an AI.
+
+[[File: spe_nametags_preview.jpg|500px]]
+
+
+== Setup ==
+
+Put the following code into the [[Event Scripts#initPlayerLocal.sqf|initPlayerLocal.sqf]].
+
+<sqf inline>[] call SPE_MISSIONUTILITYFUNCTIONS_fnc_NameTags;</sqf>
+
+The system will then be initialized on every client.
+{{Feature|important|The nametag system will not get initialized if ACE nametags are enabled.}}
+
+
+== Settings ==
+
+=== Accessing Settings Menu ===
+
+The nametag system comes with the option to be customized by the player.
+The settings menu can be found in the pause menu {{Controls|ESC}}. Settings are only available after a scenario has started.
+
+[[File:spe_nametags_settings_pause_menu.jpg|500px]]<br /><br />
+[[File:spe_nametags_settings.jpg|500px]]
+
+=== Settings Description ===
+
+{| class="wikitable"
+|-
+! Setting !! Description !! Default Value !! [[missionNamespace]] Variable
+|-
+| Enable Nametags || Toggles the nametags system on/off. || [[true]] || {{hl|SPE_Options_Client_NameTags_Enabled}}
+|-
+| Enable Shadows || Draws a drop shadow behind the text and icon for better legibility. || [[true]] || {{hl|SPE_Options_Client_NameTags_Shadow}}
+|-
+| Red || Red color amount. || 1 (100%) || {{hl|SPE_Options_Client_NameTags_Color_R}}
+|-
+| Green || Green color amount. || 1 (100%) || {{hl|SPE_Options_Client_NameTags_Color_G}}
+|-
+| Blue || Blue color amount. || 1 (100%) || {{hl|SPE_Options_Client_NameTags_Color_B}}
+|-
+| Draw Distance || How many meters the nametags are going to be visible. The nametags will start fading out at {{hl|drawDistance/1.5}} meters. || 150 || {{hl|SPE_Options_Client_NameTags_DistMax}}
+|-
+| Height Offset || Height offset in meters from original position. || 0 || {{hl|SPE_Options_Client_NameTags_Offset}}
+|-
+| Icon Size ||  Icon size in percent. || 0.8 (80%) || {{hl|SPE_Options_Client_NameTags_IconSize}}
+|-
+| Text Size || Text size in percent. || 0.8 (80%) || {{hl|SPE_Options_Client_NameTags_TextSize_Modifier}}
+|-
+| Show Icon || Toggle the visiblity of the icon on/off. || 0.8 (80%) || {{hl|SPE_Options_Client_NameTags_ShowIcon}}
+|-
+| Reset Settings || Resets settings to default value. For this option to take effect, the settings UI needs to be closed by pressing {{hl|OK}}. || [[false]] || {{n/a}}
+|}
+
+
+[[Category: Spearhead 1944]]

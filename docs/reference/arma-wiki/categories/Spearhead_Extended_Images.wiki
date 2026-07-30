@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Spearhead_Extended_Images
+// revision: 373993 (2025-07-18T13:38:20Z)
+// export sha1: jdr9wzwbmum6b1vzrmfghrk9ssfyidd
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: SPEX - Spearhead Extended]]

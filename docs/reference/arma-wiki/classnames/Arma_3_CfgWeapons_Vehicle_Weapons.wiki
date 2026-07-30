@@ -1,0 +1,2902 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgWeapons_Vehicle_Weapons
+// revision: 367288 (2024-08-09T16:06:35Z)
+// export sha1: dyknn60wl3ukbk6we1hda4oiearzgd8
+// categories: Category:Arma 3: Assets | Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Navbox/A3Assets}}
+{| class="wikitable sortable" style="font-size:80%; margin: auto"
+! Class<br />
+! Name<br />
+! Inventory description<br />
+! Magazines<br />
+! Used by<br />
+! Used by (gallery)<br />
+|-
+| <span id="AmbulanceHorn" >'''AmbulanceHorn'''</span>
+| ''Horn''
+| 
+| 
+| 
+
+:[[Arma 3 CfgVehicles CIV#C_Van_02_medevac_F|C_Van_02_medevac_F]]
+:[[Arma 3 CfgVehicles CIV#C_IDAP_Van_02_medevac_F|C_IDAP_Van_02_medevac_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Van_02_medevac_F|I_E_Van_02_medevac_F]]
+| [[File:arma3-c_van_02_medevac_f.jpg|150px]][[File:arma3-c_idap_van_02_medevac_f.jpg|150px]][[File:arma3-i_e_van_02_medevac_f.jpg|150px]]
+|-
+| <span id="autocannon_30mm" >'''autocannon_30mm'''</span>
+| ''Cannon 30 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#140Rnd_30mm_MP_shells|140Rnd_30mm_MP_shells]]
+:[[Arma 3 CfgMagazines#140Rnd_30mm_MP_shells_Tracer_Red|140Rnd_30mm_MP_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#140Rnd_30mm_MP_shells_Tracer_Green|140Rnd_30mm_MP_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#140Rnd_30mm_MP_shells_Tracer_Yellow|140Rnd_30mm_MP_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#60Rnd_30mm_APFSDS_shells|60Rnd_30mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_30mm_APFSDS_shells_Tracer_Red|60Rnd_30mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#60Rnd_30mm_APFSDS_shells_Tracer_Green|60Rnd_30mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#60Rnd_30mm_APFSDS_shells_Tracer_Yellow|60Rnd_30mm_APFSDS_shells_Tracer_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#I_APC_tracked_03_cannon_F|I_APC_tracked_03_cannon_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_APC_tracked_03_cannon_F|I_E_APC_tracked_03_cannon_F]]
+| [[File:arma3-i_apc_tracked_03_cannon_f.jpg|150px]][[File:arma3-i_e_apc_tracked_03_cannon_f.jpg|150px]]
+|-
+| <span id="autocannon_30mm_CTWS" >'''autocannon_30mm_CTWS'''</span>
+| ''CTWS Cannon 30 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#140Rnd_30mm_MP_shells|140Rnd_30mm_MP_shells]]
+:[[Arma 3 CfgMagazines#140Rnd_30mm_MP_shells_Tracer_Red|140Rnd_30mm_MP_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#140Rnd_30mm_MP_shells_Tracer_Green|140Rnd_30mm_MP_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#140Rnd_30mm_MP_shells_Tracer_Yellow|140Rnd_30mm_MP_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#60Rnd_30mm_APFSDS_shells|60Rnd_30mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_30mm_APFSDS_shells_Tracer_Red|60Rnd_30mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#60Rnd_30mm_APFSDS_shells_Tracer_Green|60Rnd_30mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#60Rnd_30mm_APFSDS_shells_Tracer_Yellow|60Rnd_30mm_APFSDS_shells_Tracer_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_APC_Tracked_02_cannon_F|O_APC_Tracked_02_cannon_F]]
+:[[Arma 3 CfgVehicles GUER#I_APC_Wheeled_03_cannon_F|I_APC_Wheeled_03_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_APC_Wheeled_03_cannon_F|B_APC_Wheeled_03_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Tracked_02_cannon_ghex_F|O_T_APC_Tracked_02_cannon_ghex_F]]
+| [[File:arma3-o_apc_tracked_02_cannon_f.jpg|150px]][[File:arma3-i_apc_wheeled_03_cannon_f.jpg|150px]][[File:arma3-b_apc_wheeled_03_cannon_f.jpg|150px]][[File:arma3-o_t_apc_tracked_02_cannon_ghex_f.jpg|150px]]
+|-
+| <span id="autocannon_30mm_RCWS" >'''autocannon_30mm_RCWS'''</span>
+| ''CTWS Cannon 30 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#60Rnd_30mm_MP_shells_Tracer_Green|60Rnd_30mm_MP_shells_Tracer_Green]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_MBT_04_command_F|O_MBT_04_command_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_04_command_F|O_T_MBT_04_command_F]]
+| [[File:arma3-o_mbt_04_command_f.jpg|150px]][[File:arma3-o_t_mbt_04_command_f.jpg|150px]]
+|-
+| <span id="autocannon_35mm" >'''autocannon_35mm'''</span>
+| ''Autocannon 35 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#680Rnd_35mm_AA_shells|680Rnd_35mm_AA_shells]]
+:[[Arma 3 CfgMagazines#680Rnd_35mm_AA_shells_Tracer_Red|680Rnd_35mm_AA_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#680Rnd_35mm_AA_shells_Tracer_Green|680Rnd_35mm_AA_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#680Rnd_35mm_AA_shells_Tracer_Yellow|680Rnd_35mm_AA_shells_Tracer_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_APC_Tracked_01_AA_F|B_APC_Tracked_01_AA_F]]
+:[[Arma 3 CfgVehicles EAST#O_APC_Tracked_02_AA_F|O_APC_Tracked_02_AA_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_APC_Tracked_01_AA_F|B_T_APC_Tracked_01_AA_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Tracked_02_AA_ghex_F|O_T_APC_Tracked_02_AA_ghex_F]]
+| [[File:arma3-b_apc_tracked_01_aa_f.jpg|150px]][[File:arma3-o_apc_tracked_02_aa_f.jpg|150px]][[File:arma3-b_t_apc_tracked_01_aa_f.jpg|150px]][[File:arma3-o_t_apc_tracked_02_aa_ghex_f.jpg|150px]]
+|-
+| <span id="autocannon_40mm_CTWS" >'''autocannon_40mm_CTWS'''</span>
+| ''Cannon 40 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#60Rnd_40mm_GPR_shells|60Rnd_40mm_GPR_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_40mm_GPR_Tracer_Red_shells|60Rnd_40mm_GPR_Tracer_Red_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_40mm_GPR_Tracer_Green_shells|60Rnd_40mm_GPR_Tracer_Green_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_40mm_GPR_Tracer_Yellow_shells|60Rnd_40mm_GPR_Tracer_Yellow_shells]]
+:[[Arma 3 CfgMagazines#40Rnd_40mm_APFSDS_shells|40Rnd_40mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#40Rnd_40mm_APFSDS_Tracer_Red_shells|40Rnd_40mm_APFSDS_Tracer_Red_shells]]
+:[[Arma 3 CfgMagazines#40Rnd_40mm_APFSDS_Tracer_Green_shells|40Rnd_40mm_APFSDS_Tracer_Green_shells]]
+:[[Arma 3 CfgMagazines#40Rnd_40mm_APFSDS_Tracer_Yellow_shells|40Rnd_40mm_APFSDS_Tracer_Yellow_shells]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_APC_Wheeled_01_cannon_F|B_APC_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_APC_Wheeled_01_cannon_F|B_T_APC_Wheeled_01_cannon_F]]
+| [[File:arma3-b_apc_wheeled_01_cannon_f.jpg|150px]][[File:arma3-b_t_apc_wheeled_01_cannon_f.jpg|150px]]
+|-
+| <span id="autocannon_40mm_VTOL_01" >'''autocannon_40mm_VTOL_01'''</span>
+| ''Cannon 40 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#240Rnd_40mm_GPR_Tracer_Red_shells|240Rnd_40mm_GPR_Tracer_Red_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_40mm_GPR_shells|60Rnd_40mm_GPR_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_40mm_GPR_Tracer_Red_shells|60Rnd_40mm_GPR_Tracer_Red_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_40mm_GPR_Tracer_Green_shells|60Rnd_40mm_GPR_Tracer_Green_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_40mm_GPR_Tracer_Yellow_shells|60Rnd_40mm_GPR_Tracer_Yellow_shells]]
+:[[Arma 3 CfgMagazines#160Rnd_40mm_APFSDS_Tracer_Red_shells|160Rnd_40mm_APFSDS_Tracer_Red_shells]]
+:[[Arma 3 CfgMagazines#40Rnd_40mm_APFSDS_shells|40Rnd_40mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#40Rnd_40mm_APFSDS_Tracer_Red_shells|40Rnd_40mm_APFSDS_Tracer_Red_shells]]
+:[[Arma 3 CfgMagazines#40Rnd_40mm_APFSDS_Tracer_Green_shells|40Rnd_40mm_APFSDS_Tracer_Green_shells]]
+:[[Arma 3 CfgMagazines#40Rnd_40mm_APFSDS_Tracer_Yellow_shells|40Rnd_40mm_APFSDS_Tracer_Yellow_shells]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_F|B_T_VTOL_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_blue_F|B_T_VTOL_01_armed_blue_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_olive_F|B_T_VTOL_01_armed_olive_F]]
+| [[File:arma3-b_t_vtol_01_armed_f.jpg|150px]][[File:arma3-b_t_vtol_01_armed_f.jpg|150px]][[File:arma3-b_t_vtol_01_armed_f.jpg|150px]]
+|-
+| <span id="autocannon_Base_F" >'''autocannon_Base_F'''</span>
+| 
+| 
+| 
+| 
+| 
+|-
+| <span id="BikeHorn" >'''BikeHorn'''</span>
+| ''Horn''
+| 
+| 
+| 
+| 
+|-
+| <span id="Bomb_03_Plane_CAS_02_F" >'''Bomb_03_Plane_CAS_02_F'''</span>
+| ''LOM-250G''
+| 
+| 
+:[[Arma 3 CfgMagazines#2Rnd_Bomb_03_F|2Rnd_Bomb_03_F]]
+:[[Arma 3 CfgMagazines#PylonMissile_1Rnd_Bomb_03_F|PylonMissile_1Rnd_Bomb_03_F]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_F|O_Plane_CAS_02_F]]
+| 
+|-
+| <span id="Bomb_04_Plane_CAS_01_F" >'''Bomb_04_Plane_CAS_01_F'''</span>
+| ''GBU-12''
+| 
+| 
+:[[Arma 3 CfgMagazines#4Rnd_Bomb_04_F|4Rnd_Bomb_04_F]]
+:[[Arma 3 CfgMagazines#PylonMissile_1Rnd_Bomb_04_F|PylonMissile_1Rnd_Bomb_04_F]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_F|B_Plane_CAS_01_F]]
+| 
+|-
+| <span id="Bomb_Leaflets" >'''Bomb_Leaflets'''</span>
+| ''Leaflets Dispenser''
+| 
+| 
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_West_F|1Rnd_Leaflets_West_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_East_F|1Rnd_Leaflets_East_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_Guer_F|1Rnd_Leaflets_Guer_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_Civ_F|1Rnd_Leaflets_Civ_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_Custom_01_F|1Rnd_Leaflets_Custom_01_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_Custom_02_F|1Rnd_Leaflets_Custom_02_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_Custom_03_F|1Rnd_Leaflets_Custom_03_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_Custom_04_F|1Rnd_Leaflets_Custom_04_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_Custom_05_F|1Rnd_Leaflets_Custom_05_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_Custom_06_F|1Rnd_Leaflets_Custom_06_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_Custom_07_F|1Rnd_Leaflets_Custom_07_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_Custom_08_F|1Rnd_Leaflets_Custom_08_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_Custom_09_F|1Rnd_Leaflets_Custom_09_F]]
+:[[Arma 3 CfgMagazines#1Rnd_Leaflets_Custom_10_F|1Rnd_Leaflets_Custom_10_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_West_F|Pylon_1Rnd_Leaflets_West_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_East_F|Pylon_1Rnd_Leaflets_East_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_Guer_F|Pylon_1Rnd_Leaflets_Guer_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_Civ_F|Pylon_1Rnd_Leaflets_Civ_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_Custom_01_F|Pylon_1Rnd_Leaflets_Custom_01_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_Custom_02_F|Pylon_1Rnd_Leaflets_Custom_02_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_Custom_03_F|Pylon_1Rnd_Leaflets_Custom_03_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_Custom_04_F|Pylon_1Rnd_Leaflets_Custom_04_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_Custom_05_F|Pylon_1Rnd_Leaflets_Custom_05_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_Custom_06_F|Pylon_1Rnd_Leaflets_Custom_06_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_Custom_07_F|Pylon_1Rnd_Leaflets_Custom_07_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_Custom_08_F|Pylon_1Rnd_Leaflets_Custom_08_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_Custom_09_F|Pylon_1Rnd_Leaflets_Custom_09_F]]
+:[[Arma 3 CfgMagazines#Pylon_1Rnd_Leaflets_Custom_10_F|Pylon_1Rnd_Leaflets_Custom_10_F]]
+| 
+| 
+|-
+| <span id="BombCluster_01_F" >'''BombCluster_01_F'''</span>
+| ''CBU-85 Cluster Bomb''
+| 
+| 
+:[[Arma 3 CfgMagazines#PylonMissile_1Rnd_BombCluster_01_F|PylonMissile_1Rnd_BombCluster_01_F]]
+:[[Arma 3 CfgMagazines#PylonRack_2Rnd_BombCluster_01_F|PylonRack_2Rnd_BombCluster_01_F]]
+| 
+| 
+|-
+| <span id="BombCluster_02_F" >'''BombCluster_02_F'''</span>
+| ''RBK-500F''
+| 
+| 
+:[[Arma 3 CfgMagazines#PylonMissile_1Rnd_BombCluster_02_F|PylonMissile_1Rnd_BombCluster_02_F]]
+:[[Arma 3 CfgMagazines#PylonMissile_1Rnd_BombCluster_02_cap_F|PylonMissile_1Rnd_BombCluster_02_cap_F]]
+| 
+| 
+|-
+| <span id="BombCluster_03_F" >'''BombCluster_03_F'''</span>
+| ''BL778 Cluster Bomb''
+| 
+| 
+:[[Arma 3 CfgMagazines#PylonMissile_1Rnd_BombCluster_03_F|PylonMissile_1Rnd_BombCluster_03_F]]
+:[[Arma 3 CfgMagazines#PylonRack_2Rnd_BombCluster_03_F|PylonRack_2Rnd_BombCluster_03_F]]
+| 
+| 
+|-
+| <span id="BombDemine_01_F" >'''BombDemine_01_F'''</span>
+| ''Demining Charge''
+| 
+| 
+:[[Arma 3 CfgMagazines#PylonRack_4Rnd_BombDemine_01_F|PylonRack_4Rnd_BombDemine_01_F]]
+:[[Arma 3 CfgMagazines#PylonRack_4Rnd_BombDemine_01_Dummy_F|PylonRack_4Rnd_BombDemine_01_Dummy_F]]
+| 
+| 
+|-
+| <span id="cannon_105mm" >'''cannon_105mm'''</span>
+| ''Cannon 105 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS|40Rnd_105mm_APFSDS]]
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS_T_Red|40Rnd_105mm_APFSDS_T_Red]]
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS_T_Green|40Rnd_105mm_APFSDS_T_Green]]
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS_T_Yellow|40Rnd_105mm_APFSDS_T_Yellow]]
+:[[Arma 3 CfgMagazines#20Rnd_105mm_HEAT_MP|20Rnd_105mm_HEAT_MP]]
+:[[Arma 3 CfgMagazines#20Rnd_105mm_HEAT_MP_T_Red|20Rnd_105mm_HEAT_MP_T_Red]]
+:[[Arma 3 CfgMagazines#20Rnd_105mm_HEAT_MP_T_Green|20Rnd_105mm_HEAT_MP_T_Green]]
+:[[Arma 3 CfgMagazines#20Rnd_105mm_HEAT_MP_T_Yellow|20Rnd_105mm_HEAT_MP_T_Yellow]]
+| 
+| 
+|-
+| <span id="cannon_105mm_VTOL_01" >'''cannon_105mm_VTOL_01'''</span>
+| ''Cannon 105 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS|40Rnd_105mm_APFSDS]]
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS_T_Red|40Rnd_105mm_APFSDS_T_Red]]
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS_T_Green|40Rnd_105mm_APFSDS_T_Green]]
+:[[Arma 3 CfgMagazines#40Rnd_105mm_APFSDS_T_Yellow|40Rnd_105mm_APFSDS_T_Yellow]]
+:[[Arma 3 CfgMagazines#100Rnd_105mm_HEAT_MP|100Rnd_105mm_HEAT_MP]]
+:[[Arma 3 CfgMagazines#20Rnd_105mm_HEAT_MP|20Rnd_105mm_HEAT_MP]]
+:[[Arma 3 CfgMagazines#20Rnd_105mm_HEAT_MP_T_Red|20Rnd_105mm_HEAT_MP_T_Red]]
+:[[Arma 3 CfgMagazines#20Rnd_105mm_HEAT_MP_T_Green|20Rnd_105mm_HEAT_MP_T_Green]]
+:[[Arma 3 CfgMagazines#20Rnd_105mm_HEAT_MP_T_Yellow|20Rnd_105mm_HEAT_MP_T_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_F|B_T_VTOL_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_blue_F|B_T_VTOL_01_armed_blue_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_olive_F|B_T_VTOL_01_armed_olive_F]]
+| [[File:arma3-b_t_vtol_01_armed_f.jpg|150px]][[File:arma3-b_t_vtol_01_armed_f.jpg|150px]][[File:arma3-b_t_vtol_01_armed_f.jpg|150px]]
+|-
+| <span id="cannon_120mm" >'''cannon_120mm'''</span>
+| ''Cannon 120 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#32Rnd_120mm_APFSDS_shells|32Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#32Rnd_120mm_APFSDS_shells_Tracer_Red|32Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#32Rnd_120mm_APFSDS_shells_Tracer_Green|32Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#32Rnd_120mm_APFSDS_shells_Tracer_Yellow|32Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_APFSDS_shells|30Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_APFSDS_shells_Tracer_Red|30Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_APFSDS_shells_Tracer_Green|30Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_APFSDS_shells_Tracer_Yellow|30Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#28Rnd_120mm_APFSDS_shells|28Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#28Rnd_120mm_APFSDS_shells_Tracer_Red|28Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#28Rnd_120mm_APFSDS_shells_Tracer_Green|28Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#28Rnd_120mm_APFSDS_shells_Tracer_Yellow|28Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#24Rnd_120mm_APFSDS_shells|24Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#24Rnd_120mm_APFSDS_shells_Tracer_Red|24Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#24Rnd_120mm_APFSDS_shells_Tracer_Green|24Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#24Rnd_120mm_APFSDS_shells_Tracer_Yellow|24Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_APFSDS_shells|20Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_APFSDS_shells_Tracer_Red|20Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_APFSDS_shells_Tracer_Green|20Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_APFSDS_shells_Tracer_Yellow|20Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_APFSDS_shells|12Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_APFSDS_shells_Tracer_Red|12Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_APFSDS_shells_Tracer_Green|12Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_APFSDS_shells_Tracer_Yellow|12Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_HEAT_MP|20Rnd_120mm_HEAT_MP]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_HEAT_MP_T_Red|20Rnd_120mm_HEAT_MP_T_Red]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_HEAT_MP_T_Green|20Rnd_120mm_HEAT_MP_T_Green]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_HEAT_MP_T_Yellow|20Rnd_120mm_HEAT_MP_T_Yellow]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HEAT_MP|12Rnd_120mm_HEAT_MP]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HEAT_MP_T_Red|12Rnd_120mm_HEAT_MP_T_Red]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HEAT_MP_T_Green|12Rnd_120mm_HEAT_MP_T_Green]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HEAT_MP_T_Yellow|12Rnd_120mm_HEAT_MP_T_Yellow]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HEAT_MP|8Rnd_120mm_HEAT_MP]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HEAT_MP_T_Red|8Rnd_120mm_HEAT_MP_T_Red]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HEAT_MP_T_Green|8Rnd_120mm_HEAT_MP_T_Green]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HEAT_MP_T_Yellow|8Rnd_120mm_HEAT_MP_T_Yellow]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_HE_shells|30Rnd_120mm_HE_shells]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_HE_shells_Tracer_Red|30Rnd_120mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_HE_shells_Tracer_Green|30Rnd_120mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_HE_shells_Tracer_Yellow|30Rnd_120mm_HE_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#16Rnd_120mm_HE_shells|16Rnd_120mm_HE_shells]]
+:[[Arma 3 CfgMagazines#16Rnd_120mm_HE_shells_Tracer_Red|16Rnd_120mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#16Rnd_120mm_HE_shells_Tracer_Green|16Rnd_120mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#16Rnd_120mm_HE_shells_Tracer_Yellow|16Rnd_120mm_HE_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#14Rnd_120mm_HE_shells|14Rnd_120mm_HE_shells]]
+:[[Arma 3 CfgMagazines#14Rnd_120mm_HE_shells_Tracer_Red|14Rnd_120mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#14Rnd_120mm_HE_shells_Tracer_Green|14Rnd_120mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#14Rnd_120mm_HE_shells_Tracer_Yellow|14Rnd_120mm_HE_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HE_shells|12Rnd_120mm_HE_shells]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HE_shells_Tracer_Red|12Rnd_120mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HE_shells_Tracer_Green|12Rnd_120mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HE_shells_Tracer_Yellow|12Rnd_120mm_HE_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HE_shells|8Rnd_120mm_HE_shells]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HE_shells_Tracer_Red|8Rnd_120mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HE_shells_Tracer_Green|8Rnd_120mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HE_shells_Tracer_Yellow|8Rnd_120mm_HE_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#4Rnd_120mm_cannon_missiles|4Rnd_120mm_cannon_missiles]]
+:[[Arma 3 CfgMagazines#4Rnd_120mm_LG_cannon_missiles|4Rnd_120mm_LG_cannon_missiles]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_cannon_F|B_MBT_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_TUSK_F|B_MBT_01_TUSK_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_cannon_F|B_T_MBT_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_TUSK_F|B_T_MBT_01_TUSK_F]]
+:[[Arma 3 CfgVehicles WEST#B_AFV_Wheeled_01_cannon_F|B_AFV_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_AFV_Wheeled_01_cannon_F|B_T_AFV_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_AFV_Wheeled_01_up_cannon_F|B_AFV_Wheeled_01_up_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_AFV_Wheeled_01_up_cannon_F|B_T_AFV_Wheeled_01_up_cannon_F]]
+| [[File:arma3-b_mbt_01_cannon_f.jpg|150px]][[File:arma3-b_mbt_01_tusk_f.jpg|150px]][[File:arma3-b_t_mbt_01_cannon_f.jpg|150px]][[File:arma3-b_t_mbt_01_tusk_f.jpg|150px]][[File:arma3-b_afv_wheeled_01_cannon_f.jpg|150px]][[File:arma3-b_t_afv_wheeled_01_cannon_f.jpg|150px]][[File:arma3-b_afv_wheeled_01_up_cannon_f.jpg|150px]][[File:arma3-b_t_afv_wheeled_01_up_cannon_f.jpg|150px]]
+|-
+| <span id="cannon_120mm_long" >'''cannon_120mm_long'''</span>
+| ''Cannon 120 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#32Rnd_120mm_APFSDS_shells|32Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#32Rnd_120mm_APFSDS_shells_Tracer_Red|32Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#32Rnd_120mm_APFSDS_shells_Tracer_Green|32Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#32Rnd_120mm_APFSDS_shells_Tracer_Yellow|32Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_APFSDS_shells|30Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_APFSDS_shells_Tracer_Red|30Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_APFSDS_shells_Tracer_Green|30Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_APFSDS_shells_Tracer_Yellow|30Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#28Rnd_120mm_APFSDS_shells|28Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#28Rnd_120mm_APFSDS_shells_Tracer_Red|28Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#28Rnd_120mm_APFSDS_shells_Tracer_Green|28Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#28Rnd_120mm_APFSDS_shells_Tracer_Yellow|28Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#24Rnd_120mm_APFSDS_shells|24Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#24Rnd_120mm_APFSDS_shells_Tracer_Red|24Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#24Rnd_120mm_APFSDS_shells_Tracer_Green|24Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#24Rnd_120mm_APFSDS_shells_Tracer_Yellow|24Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_APFSDS_shells|20Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_APFSDS_shells_Tracer_Red|20Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_APFSDS_shells_Tracer_Green|20Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_APFSDS_shells_Tracer_Yellow|20Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_APFSDS_shells|12Rnd_120mm_APFSDS_shells]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_APFSDS_shells_Tracer_Red|12Rnd_120mm_APFSDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_APFSDS_shells_Tracer_Green|12Rnd_120mm_APFSDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_APFSDS_shells_Tracer_Yellow|12Rnd_120mm_APFSDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_HEAT_MP|20Rnd_120mm_HEAT_MP]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_HEAT_MP_T_Red|20Rnd_120mm_HEAT_MP_T_Red]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_HEAT_MP_T_Green|20Rnd_120mm_HEAT_MP_T_Green]]
+:[[Arma 3 CfgMagazines#20Rnd_120mm_HEAT_MP_T_Yellow|20Rnd_120mm_HEAT_MP_T_Yellow]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HEAT_MP|12Rnd_120mm_HEAT_MP]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HEAT_MP_T_Red|12Rnd_120mm_HEAT_MP_T_Red]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HEAT_MP_T_Green|12Rnd_120mm_HEAT_MP_T_Green]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HEAT_MP_T_Yellow|12Rnd_120mm_HEAT_MP_T_Yellow]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HEAT_MP|8Rnd_120mm_HEAT_MP]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HEAT_MP_T_Red|8Rnd_120mm_HEAT_MP_T_Red]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HEAT_MP_T_Green|8Rnd_120mm_HEAT_MP_T_Green]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HEAT_MP_T_Yellow|8Rnd_120mm_HEAT_MP_T_Yellow]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_HE_shells|30Rnd_120mm_HE_shells]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_HE_shells_Tracer_Red|30Rnd_120mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_HE_shells_Tracer_Green|30Rnd_120mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#30Rnd_120mm_HE_shells_Tracer_Yellow|30Rnd_120mm_HE_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#16Rnd_120mm_HE_shells|16Rnd_120mm_HE_shells]]
+:[[Arma 3 CfgMagazines#16Rnd_120mm_HE_shells_Tracer_Red|16Rnd_120mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#16Rnd_120mm_HE_shells_Tracer_Green|16Rnd_120mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#16Rnd_120mm_HE_shells_Tracer_Yellow|16Rnd_120mm_HE_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#14Rnd_120mm_HE_shells|14Rnd_120mm_HE_shells]]
+:[[Arma 3 CfgMagazines#14Rnd_120mm_HE_shells_Tracer_Red|14Rnd_120mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#14Rnd_120mm_HE_shells_Tracer_Green|14Rnd_120mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#14Rnd_120mm_HE_shells_Tracer_Yellow|14Rnd_120mm_HE_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HE_shells|12Rnd_120mm_HE_shells]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HE_shells_Tracer_Red|12Rnd_120mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HE_shells_Tracer_Green|12Rnd_120mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#12Rnd_120mm_HE_shells_Tracer_Yellow|12Rnd_120mm_HE_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HE_shells|8Rnd_120mm_HE_shells]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HE_shells_Tracer_Red|8Rnd_120mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HE_shells_Tracer_Green|8Rnd_120mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#8Rnd_120mm_HE_shells_Tracer_Yellow|8Rnd_120mm_HE_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#4Rnd_120mm_cannon_missiles|4Rnd_120mm_cannon_missiles]]
+:[[Arma 3 CfgMagazines#4Rnd_120mm_LG_cannon_missiles|4Rnd_120mm_LG_cannon_missiles]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#I_MBT_03_cannon_F|I_MBT_03_cannon_F]]
+| [[File:arma3-i_mbt_03_cannon_f.jpg|150px]]
+|-
+| <span id="cannon_125mm" >'''cannon_125mm'''</span>
+| ''Cannon 125mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#24Rnd_125mm_APFSDS|24Rnd_125mm_APFSDS]]
+:[[Arma 3 CfgMagazines#24Rnd_125mm_APFSDS_T_Red|24Rnd_125mm_APFSDS_T_Red]]
+:[[Arma 3 CfgMagazines#24Rnd_125mm_APFSDS_T_Green|24Rnd_125mm_APFSDS_T_Green]]
+:[[Arma 3 CfgMagazines#24Rnd_125mm_APFSDS_T_Yellow|24Rnd_125mm_APFSDS_T_Yellow]]
+:[[Arma 3 CfgMagazines#20Rnd_125mm_APFSDS|20Rnd_125mm_APFSDS]]
+:[[Arma 3 CfgMagazines#20Rnd_125mm_APFSDS_T_Red|20Rnd_125mm_APFSDS_T_Red]]
+:[[Arma 3 CfgMagazines#20Rnd_125mm_APFSDS_T_Green|20Rnd_125mm_APFSDS_T_Green]]
+:[[Arma 3 CfgMagazines#20Rnd_125mm_APFSDS_T_Yellow|20Rnd_125mm_APFSDS_T_Yellow]]
+:[[Arma 3 CfgMagazines#16Rnd_125mm_APFSDS|16Rnd_125mm_APFSDS]]
+:[[Arma 3 CfgMagazines#16Rnd_125mm_APFSDS_T_Red|16Rnd_125mm_APFSDS_T_Red]]
+:[[Arma 3 CfgMagazines#16Rnd_125mm_APFSDS_T_Green|16Rnd_125mm_APFSDS_T_Green]]
+:[[Arma 3 CfgMagazines#16Rnd_125mm_APFSDS_T_Yellow|16Rnd_125mm_APFSDS_T_Yellow]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HEAT|12Rnd_125mm_HEAT]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HEAT_T_Red|12Rnd_125mm_HEAT_T_Red]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HEAT_T_Green|12Rnd_125mm_HEAT_T_Green]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HEAT_T_Yellow|12Rnd_125mm_HEAT_T_Yellow]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HE|12Rnd_125mm_HE]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HE_T_Red|12Rnd_125mm_HE_T_Red]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HE_T_Green|12Rnd_125mm_HE_T_Green]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HE_T_Yellow|12Rnd_125mm_HE_T_Yellow]]
+:[[Arma 3 CfgMagazines#8Rnd_125mm_HE|8Rnd_125mm_HE]]
+:[[Arma 3 CfgMagazines#8Rnd_125mm_HE_T_Red|8Rnd_125mm_HE_T_Red]]
+:[[Arma 3 CfgMagazines#8Rnd_125mm_HE_T_Green|8Rnd_125mm_HE_T_Green]]
+:[[Arma 3 CfgMagazines#8Rnd_125mm_HE_T_Yellow|8Rnd_125mm_HE_T_Yellow]]
+:[[Arma 3 CfgMagazines#4Rnd_125mm_cannon_missiles|4Rnd_125mm_cannon_missiles]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_MBT_02_cannon_F|O_MBT_02_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_02_cannon_ghex_F|O_T_MBT_02_cannon_ghex_F]]
+| [[File:arma3-o_mbt_02_cannon_f.jpg|150px]][[File:arma3-o_t_mbt_02_cannon_ghex_f.jpg|150px]]
+|-
+| <span id="cannon_125mm_advanced" >'''cannon_125mm_advanced'''</span>
+| ''Cannon 125mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#24Rnd_125mm_APFSDS|24Rnd_125mm_APFSDS]]
+:[[Arma 3 CfgMagazines#24Rnd_125mm_APFSDS_T_Red|24Rnd_125mm_APFSDS_T_Red]]
+:[[Arma 3 CfgMagazines#24Rnd_125mm_APFSDS_T_Green|24Rnd_125mm_APFSDS_T_Green]]
+:[[Arma 3 CfgMagazines#24Rnd_125mm_APFSDS_T_Yellow|24Rnd_125mm_APFSDS_T_Yellow]]
+:[[Arma 3 CfgMagazines#20Rnd_125mm_APFSDS|20Rnd_125mm_APFSDS]]
+:[[Arma 3 CfgMagazines#20Rnd_125mm_APFSDS_T_Red|20Rnd_125mm_APFSDS_T_Red]]
+:[[Arma 3 CfgMagazines#20Rnd_125mm_APFSDS_T_Green|20Rnd_125mm_APFSDS_T_Green]]
+:[[Arma 3 CfgMagazines#20Rnd_125mm_APFSDS_T_Yellow|20Rnd_125mm_APFSDS_T_Yellow]]
+:[[Arma 3 CfgMagazines#16Rnd_125mm_APFSDS|16Rnd_125mm_APFSDS]]
+:[[Arma 3 CfgMagazines#16Rnd_125mm_APFSDS_T_Red|16Rnd_125mm_APFSDS_T_Red]]
+:[[Arma 3 CfgMagazines#16Rnd_125mm_APFSDS_T_Green|16Rnd_125mm_APFSDS_T_Green]]
+:[[Arma 3 CfgMagazines#16Rnd_125mm_APFSDS_T_Yellow|16Rnd_125mm_APFSDS_T_Yellow]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HEAT|12Rnd_125mm_HEAT]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HEAT_T_Red|12Rnd_125mm_HEAT_T_Red]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HEAT_T_Green|12Rnd_125mm_HEAT_T_Green]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HEAT_T_Yellow|12Rnd_125mm_HEAT_T_Yellow]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HE|12Rnd_125mm_HE]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HE_T_Red|12Rnd_125mm_HE_T_Red]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HE_T_Green|12Rnd_125mm_HE_T_Green]]
+:[[Arma 3 CfgMagazines#12Rnd_125mm_HE_T_Yellow|12Rnd_125mm_HE_T_Yellow]]
+:[[Arma 3 CfgMagazines#8Rnd_125mm_HE|8Rnd_125mm_HE]]
+:[[Arma 3 CfgMagazines#8Rnd_125mm_HE_T_Red|8Rnd_125mm_HE_T_Red]]
+:[[Arma 3 CfgMagazines#8Rnd_125mm_HE_T_Green|8Rnd_125mm_HE_T_Green]]
+:[[Arma 3 CfgMagazines#8Rnd_125mm_HE_T_Yellow|8Rnd_125mm_HE_T_Yellow]]
+:[[Arma 3 CfgMagazines#4Rnd_125mm_cannon_missiles|4Rnd_125mm_cannon_missiles]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_MBT_04_cannon_F|O_MBT_04_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_04_cannon_F|O_T_MBT_04_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_04_command_F|O_MBT_04_command_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_04_command_F|O_T_MBT_04_command_F]]
+| [[File:arma3-o_mbt_04_cannon_f.jpg|150px]][[File:arma3-o_t_mbt_04_cannon_f.jpg|150px]][[File:arma3-o_mbt_04_command_f.jpg|150px]][[File:arma3-o_t_mbt_04_command_f.jpg|150px]]
+|-
+| <span id="cannon_20mm" >'''cannon_20mm'''</span>
+| ''Cannon 20mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#60Rnd_20mm_HE_shells|60Rnd_20mm_HE_shells]]
+:[[Arma 3 CfgMagazines#60Rnd_20mm_AP_shells|60Rnd_20mm_AP_shells]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#I_LT_01_cannon_F|I_LT_01_cannon_F]]
+| [[File:arma3-i_lt_01_cannon_f.jpg|150px]]
+|-
+| <span id="Cannon_30mm_Plane_CAS_02_F" >'''Cannon_30mm_Plane_CAS_02_F'''</span>
+| ''Cannon 30 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#500Rnd_Cannon_30mm_Plane_CAS_02_F|500Rnd_Cannon_30mm_Plane_CAS_02_F]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_F|O_Plane_CAS_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_dynamicLoadout_F|O_Plane_CAS_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_Cluster_F|O_Plane_CAS_02_Cluster_F]]
+| [[File:arma3-o_plane_cas_02_dynamicloadout_f.jpg|150px]][[File:arma3-o_plane_cas_02_dynamicloadout_f.jpg|150px]]
+|-
+| <span id="cannon_railgun" >'''cannon_railgun'''</span>
+| ''Railgun 75mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#60Rnd_75mm_RailGun_APFSDS_mag|60Rnd_75mm_RailGun_APFSDS_mag]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_MBT_02_railgun_F|O_MBT_02_railgun_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_02_railgun_ghex_F|O_T_MBT_02_railgun_ghex_F]]
+| [[File:arma3-o_mbt_02_railgun_f.jpg|150px]][[File:arma3-o_t_mbt_02_railgun_ghex_f.jpg|150px]]
+|-
+| <span id="cannon_railgun_fake" >'''cannon_railgun_fake'''</span>
+| ''Railgun 75mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#RailGun_01_DummyMagazine|RailGun_01_DummyMagazine]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_MBT_02_railgun_F|O_MBT_02_railgun_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_02_railgun_ghex_F|O_T_MBT_02_railgun_ghex_F]]
+| [[File:arma3-o_mbt_02_railgun_f.jpg|150px]][[File:arma3-o_t_mbt_02_railgun_ghex_f.jpg|150px]]
+|-
+| <span id="CarHorn" >'''CarHorn'''</span>
+| ''Horn''
+| 
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_F|C_Hatchback_01_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_sport_F|C_Hatchback_01_sport_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_grey_F|C_Hatchback_01_grey_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_green_F|C_Hatchback_01_green_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_blue_F|C_Hatchback_01_blue_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_bluecustom_F|C_Hatchback_01_bluecustom_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_beigecustom_F|C_Hatchback_01_beigecustom_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_yellow_F|C_Hatchback_01_yellow_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_white_F|C_Hatchback_01_white_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_black_F|C_Hatchback_01_black_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_dark_F|C_Hatchback_01_dark_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_sport_red_F|C_Hatchback_01_sport_red_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_sport_blue_F|C_Hatchback_01_sport_blue_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_sport_orange_F|C_Hatchback_01_sport_orange_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_sport_white_F|C_Hatchback_01_sport_white_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_sport_grey_F|C_Hatchback_01_sport_grey_F]]
+:[[Arma 3 CfgVehicles CIV#C_Hatchback_01_sport_green_F|C_Hatchback_01_sport_green_F]]
+:[[Arma 3 CfgVehicles CIV#C_SUV_01_F|C_SUV_01_F]]
+:[[Arma 3 CfgVehicles CIV#SUV_01_base_red_F|SUV_01_base_red_F]]
+:[[Arma 3 CfgVehicles CIV#SUV_01_base_black_F|SUV_01_base_black_F]]
+:[[Arma 3 CfgVehicles CIV#SUV_01_base_grey_F|SUV_01_base_grey_F]]
+:[[Arma 3 CfgVehicles CIV#SUV_01_base_orange_F|SUV_01_base_orange_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_01_transport_F|C_Van_01_transport_F]]
+:[[Arma 3 CfgVehicles GUER#I_G_Van_01_transport_F|I_G_Van_01_transport_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_01_box_F|C_Van_01_box_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_01_fuel_F|C_Van_01_fuel_F]]
+:[[Arma 3 CfgVehicles GUER#I_G_Van_01_fuel_F|I_G_Van_01_fuel_F]]
+:[[Arma 3 CfgVehicles WEST#B_G_Van_01_transport_F|B_G_Van_01_transport_F]]
+:[[Arma 3 CfgVehicles EAST#O_G_Van_01_transport_F|O_G_Van_01_transport_F]]
+:[[Arma 3 CfgVehicles WEST#B_G_Van_01_fuel_F|B_G_Van_01_fuel_F]]
+:[[Arma 3 CfgVehicles EAST#O_G_Van_01_fuel_F|O_G_Van_01_fuel_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_01_transport_white_F|C_Van_01_transport_white_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_01_transport_red_F|C_Van_01_transport_red_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_01_box_white_F|C_Van_01_box_white_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_01_box_red_F|C_Van_01_box_red_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_01_fuel_white_F|C_Van_01_fuel_white_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_01_fuel_red_F|C_Van_01_fuel_red_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_01_fuel_white_v2_F|C_Van_01_fuel_white_v2_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_01_fuel_red_v2_F|C_Van_01_fuel_red_v2_F]]
+:[[Arma 3 CfgVehicles GUER#I_C_Van_01_transport_F|I_C_Van_01_transport_F]]
+:[[Arma 3 CfgVehicles GUER#I_C_Van_01_transport_brown_F|I_C_Van_01_transport_brown_F]]
+:[[Arma 3 CfgVehicles GUER#I_C_Van_01_transport_olive_F|I_C_Van_01_transport_olive_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_02_transport_F|C_Van_02_transport_F]]
+:[[Arma 3 CfgVehicles CIV#C_IDAP_Van_02_transport_F|C_IDAP_Van_02_transport_F]]
+:[[Arma 3 CfgVehicles GUER#I_G_Van_02_transport_F|I_G_Van_02_transport_F]]
+:[[Arma 3 CfgVehicles WEST#B_G_Van_02_transport_F|B_G_Van_02_transport_F]]
+:[[Arma 3 CfgVehicles EAST#O_G_Van_02_transport_F|O_G_Van_02_transport_F]]
+:[[Arma 3 CfgVehicles GUER#I_C_Van_02_transport_F|I_C_Van_02_transport_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_02_vehicle_F|C_Van_02_vehicle_F]]
+:[[Arma 3 CfgVehicles CIV#C_IDAP_Van_02_vehicle_F|C_IDAP_Van_02_vehicle_F]]
+:[[Arma 3 CfgVehicles GUER#I_G_Van_02_vehicle_F|I_G_Van_02_vehicle_F]]
+:[[Arma 3 CfgVehicles WEST#B_G_Van_02_vehicle_F|B_G_Van_02_vehicle_F]]
+:[[Arma 3 CfgVehicles EAST#O_G_Van_02_vehicle_F|O_G_Van_02_vehicle_F]]
+:[[Arma 3 CfgVehicles GUER#I_C_Van_02_vehicle_F|I_C_Van_02_vehicle_F]]
+:[[Arma 3 CfgVehicles CIV#C_Van_02_service_F|C_Van_02_service_F]]
+:[[Arma 3 CfgVehicles CIV#C_Tractor_01_F|C_Tractor_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Van_02_vehicle_F|I_E_Van_02_vehicle_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Van_02_transport_F|I_E_Van_02_transport_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Van_02_transport_MP_F|I_E_Van_02_transport_MP_F]]
+|}
+| [[File:arma3-c_hatchback_01_f.jpg|150px]][[File:arma3-c_hatchback_01_sport_f.jpg|150px]][[File:arma3-c_hatchback_01_f.jpg|150px]][[File:arma3-c_hatchback_01_f.jpg|150px]][[File:arma3-c_hatchback_01_f.jpg|150px]][[File:arma3-c_hatchback_01_f.jpg|150px]][[File:arma3-c_hatchback_01_f.jpg|150px]][[File:arma3-c_hatchback_01_f.jpg|150px]][[File:arma3-c_hatchback_01_f.jpg|150px]][[File:arma3-c_hatchback_01_f.jpg|150px]][[File:arma3-c_hatchback_01_f.jpg|150px]][[File:arma3-c_hatchback_01_sport_f.jpg|150px]][[File:arma3-c_hatchback_01_sport_f.jpg|150px]][[File:arma3-c_hatchback_01_sport_f.jpg|150px]][[File:arma3-c_hatchback_01_sport_f.jpg|150px]][[File:arma3-c_hatchback_01_sport_f.jpg|150px]][[File:arma3-c_hatchback_01_sport_f.jpg|150px]][[File:arma3-c_suv_01_f.jpg|150px]][[File:arma3-c_suv_01_f.jpg|150px]][[File:arma3-c_suv_01_f.jpg|150px]][[File:arma3-c_suv_01_f.jpg|150px]][[File:arma3-c_suv_01_f.jpg|150px]][[File:arma3-c_van_01_transport_f.jpg|150px]][[File:arma3-i_g_van_01_transport_f.jpg|150px]][[File:arma3-c_van_01_box_f.jpg|150px]][[File:arma3-c_van_01_fuel_f.jpg|150px]][[File:arma3-i_g_van_01_fuel_f.jpg|150px]][[File:arma3-b_g_van_01_transport_f.jpg|150px]][[File:arma3-o_g_van_01_transport_f.jpg|150px]][[File:arma3-b_g_van_01_fuel_f.jpg|150px]][[File:arma3-o_g_van_01_fuel_f.jpg|150px]][[File:arma3-c_van_01_transport_f.jpg|150px]][[File:arma3-c_van_01_transport_f.jpg|150px]][[File:arma3-c_van_01_box_f.jpg|150px]][[File:arma3-c_van_01_box_f.jpg|150px]][[File:arma3-c_van_01_fuel_f.jpg|150px]][[File:arma3-c_van_01_fuel_f.jpg|150px]][[File:arma3-c_van_01_fuel_f.jpg|150px]][[File:arma3-c_van_01_fuel_f.jpg|150px]][[File:arma3-i_c_van_01_transport_f.jpg|150px]][[File:arma3-i_c_van_01_transport_f.jpg|150px]][[File:arma3-i_c_van_01_transport_f.jpg|150px]][[File:arma3-c_van_02_transport_f.jpg|150px]][[File:arma3-c_idap_van_02_transport_f.jpg|150px]][[File:arma3-i_g_van_02_transport_f.jpg|150px]][[File:arma3-b_g_van_02_transport_f.jpg|150px]][[File:arma3-o_g_van_02_transport_f.jpg|150px]][[File:arma3-i_c_van_02_transport_f.jpg|150px]][[File:arma3-c_van_02_vehicle_f.jpg|150px]][[File:arma3-c_idap_van_02_vehicle_f.jpg|150px]][[File:arma3-i_g_van_02_vehicle_f.jpg|150px]][[File:arma3-b_g_van_02_vehicle_f.jpg|150px]][[File:arma3-o_g_van_02_vehicle_f.jpg|150px]][[File:arma3-i_c_van_02_vehicle_f.jpg|150px]][[File:arma3-c_van_02_service_f.jpg|150px]][[File:arma3-c_tractor_01_f.jpg|150px]][[File:arma3-i_e_van_02_vehicle_f.jpg|150px]][[File:arma3-i_e_van_02_transport_f.jpg|150px]][[File:arma3-i_e_van_02_transport_mp_f.jpg|150px]]
+|-
+| <span id="CMFlareLauncher" >'''CMFlareLauncher'''</span>
+| ''Flares''
+| 
+| 
+:[[Arma 3 CfgMagazines#60Rnd_CMFlareMagazine|60Rnd_CMFlareMagazine]]
+:[[Arma 3 CfgMagazines#120Rnd_CMFlareMagazine|120Rnd_CMFlareMagazine]]
+:[[Arma 3 CfgMagazines#240Rnd_CMFlareMagazine|240Rnd_CMFlareMagazine]]
+:[[Arma 3 CfgMagazines#60Rnd_CMFlare_Chaff_Magazine|60Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#120Rnd_CMFlare_Chaff_Magazine|120Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#240Rnd_CMFlare_Chaff_Magazine|240Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#192Rnd_CMFlare_Chaff_Magazine|192Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#168Rnd_CMFlare_Chaff_Magazine|168Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#300Rnd_CMFlare_Chaff_Magazine|300Rnd_CMFlare_Chaff_Magazine]]
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles EAST#O_Heli_Light_02_dynamicLoadout_F|O_Heli_Light_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Light_02_F|O_Heli_Light_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Light_02_unarmed_F|O_Heli_Light_02_unarmed_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Light_02_v2_F|O_Heli_Light_02_v2_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Attack_01_F|B_Heli_Attack_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Attack_01_dynamicLoadout_F|B_Heli_Attack_01_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_F|O_Heli_Attack_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_black_F|O_Heli_Attack_02_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_dynamicLoadout_F|O_Heli_Attack_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_dynamicLoadout_black_F|O_Heli_Attack_02_dynamicLoadout_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_01_F|B_Heli_Transport_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_01_camo_F|B_Heli_Transport_01_camo_F]]
+:[[Arma 3 CfgVehicles GUER#I_Heli_Transport_02_F|I_Heli_Transport_02_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_03_CAS_F|I_Plane_Fighter_03_CAS_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_03_AA_F|I_Plane_Fighter_03_AA_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_03_dynamicLoadout_F|I_Plane_Fighter_03_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles GUER#I_Heli_light_03_F|I_Heli_light_03_F]]
+:[[Arma 3 CfgVehicles GUER#I_Heli_light_03_dynamicLoadout_F|I_Heli_light_03_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles GUER#I_Heli_light_03_unarmed_F|I_Heli_light_03_unarmed_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_F|B_Plane_CAS_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_dynamicLoadout_F|B_Plane_CAS_01_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_F|O_Plane_CAS_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_dynamicLoadout_F|O_Plane_CAS_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles WEST#B_UAV_02_F|B_UAV_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_UAV_02_F|O_UAV_02_F]]
+:[[Arma 3 CfgVehicles GUER#I_UAV_02_F|I_UAV_02_F]]
+:[[Arma 3 CfgVehicles WEST#B_UAV_02_CAS_F|B_UAV_02_CAS_F]]
+:[[Arma 3 CfgVehicles EAST#O_UAV_02_CAS_F|O_UAV_02_CAS_F]]
+:[[Arma 3 CfgVehicles GUER#I_UAV_02_CAS_F|I_UAV_02_CAS_F]]
+:[[Arma 3 CfgVehicles WEST#B_UAV_02_dynamicLoadout_F|B_UAV_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_UAV_02_dynamicLoadout_F|O_UAV_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles GUER#I_UAV_02_dynamicLoadout_F|I_UAV_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_03_F|B_Heli_Transport_03_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_03_unarmed_F|B_Heli_Transport_03_unarmed_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_03_black_F|B_Heli_Transport_03_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_03_unarmed_green_F|B_Heli_Transport_03_unarmed_green_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_F|O_Heli_Transport_04_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_ammo_F|O_Heli_Transport_04_ammo_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_bench_F|O_Heli_Transport_04_bench_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_box_F|O_Heli_Transport_04_box_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_covered_F|O_Heli_Transport_04_covered_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_fuel_F|O_Heli_Transport_04_fuel_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_medevac_F|O_Heli_Transport_04_medevac_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_repair_F|O_Heli_Transport_04_repair_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_black_F|O_Heli_Transport_04_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_ammo_black_F|O_Heli_Transport_04_ammo_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_bench_black_F|O_Heli_Transport_04_bench_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_box_black_F|O_Heli_Transport_04_box_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_covered_black_F|O_Heli_Transport_04_covered_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_fuel_black_F|O_Heli_Transport_04_fuel_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_medevac_black_F|O_Heli_Transport_04_medevac_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_repair_black_F|O_Heli_Transport_04_repair_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_CTRG_Heli_Transport_01_sand_F|B_CTRG_Heli_Transport_01_sand_F]]
+:[[Arma 3 CfgVehicles WEST#B_CTRG_Heli_Transport_01_tropic_F|B_CTRG_Heli_Transport_01_tropic_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_UAV_03_F|B_T_UAV_03_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_UAV_03_dynamicLoadout_F|B_T_UAV_03_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_UAV_04_CAS_F|O_T_UAV_04_CAS_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_F|O_T_VTOL_02_infantry_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_F|O_T_VTOL_02_vehicle_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_dynamicLoadout_F|O_T_VTOL_02_infantry_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_dynamicLoadout_F|O_T_VTOL_02_vehicle_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_hex_F|O_T_VTOL_02_infantry_hex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_ghex_F|O_T_VTOL_02_infantry_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_grey_F|O_T_VTOL_02_infantry_grey_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_hex_F|O_T_VTOL_02_vehicle_hex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_ghex_F|O_T_VTOL_02_vehicle_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_grey_F|O_T_VTOL_02_vehicle_grey_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_Fighter_02_F|O_Plane_Fighter_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_Fighter_02_Stealth_F|O_Plane_Fighter_02_Stealth_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_04_F|I_Plane_Fighter_04_F]]
+:[[Arma 3 CfgVehicles WEST#B_UAV_05_F|B_UAV_05_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_Cluster_F|B_Plane_CAS_01_Cluster_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_Cluster_F|O_Plane_CAS_02_Cluster_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_03_Cluster_F|I_Plane_Fighter_03_Cluster_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_Fighter_02_Cluster_F|O_Plane_Fighter_02_Cluster_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_04_Cluster_F|I_Plane_Fighter_04_Cluster_F]]
+:[[Arma 3 CfgVehicles CIV#C_IDAP_Heli_Transport_02_F|C_IDAP_Heli_Transport_02_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Heli_light_03_dynamicLoadout_F|I_E_Heli_light_03_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Heli_light_03_unarmed_F|I_E_Heli_light_03_unarmed_F]]
+|}
+| [[File:arma3-o_heli_light_02_dynamicloadout_f.jpg|150px]][[File:arma3-o_heli_light_02_unarmed_f.jpg|150px]][[File:arma3-b_heli_attack_01_dynamicloadout_f.jpg|150px]][[File:arma3-o_heli_attack_02_dynamicloadout_f.jpg|150px]][[File:arma3-b_heli_transport_01_f.jpg|150px]][[File:arma3-i_heli_transport_02_f.jpg|150px]][[File:arma3-i_plane_fighter_03_dynamicloadout_f.jpg|150px]][[File:arma3-i_heli_light_03_dynamicloadout_f.jpg|150px]][[File:arma3-i_heli_light_03_unarmed_f.jpg|150px]][[File:arma3-b_plane_cas_01_dynamicloadout_f.jpg|150px]][[File:arma3-o_plane_cas_02_dynamicloadout_f.jpg|150px]][[File:arma3-b_uav_02_dynamicloadout_f.jpg|150px]][[File:arma3-o_uav_02_dynamicloadout_f.jpg|150px]][[File:arma3-i_uav_02_dynamicloadout_f.jpg|150px]][[File:arma3-b_heli_transport_03_f.jpg|150px]][[File:arma3-b_heli_transport_03_unarmed_f.jpg|150px]][[File:arma3-b_heli_transport_03_f.jpg|150px]][[File:arma3-b_heli_transport_03_unarmed_f.jpg|150px]][[File:arma3-o_heli_transport_04_f.jpg|150px]][[File:arma3-o_heli_transport_04_ammo_f.jpg|150px]][[File:arma3-o_heli_transport_04_bench_f.jpg|150px]][[File:arma3-o_heli_transport_04_box_f.jpg|150px]][[File:arma3-o_heli_transport_04_covered_f.jpg|150px]][[File:arma3-o_heli_transport_04_fuel_f.jpg|150px]][[File:arma3-o_heli_transport_04_medevac_f.jpg|150px]][[File:arma3-o_heli_transport_04_repair_f.jpg|150px]][[File:arma3-o_heli_transport_04_f.jpg|150px]][[File:arma3-o_heli_transport_04_ammo_f.jpg|150px]][[File:arma3-o_heli_transport_04_bench_f.jpg|150px]][[File:arma3-o_heli_transport_04_box_f.jpg|150px]][[File:arma3-o_heli_transport_04_covered_f.jpg|150px]][[File:arma3-o_heli_transport_04_fuel_f.jpg|150px]][[File:arma3-o_heli_transport_04_medevac_f.jpg|150px]][[File:arma3-o_heli_transport_04_repair_f.jpg|150px]][[File:arma3-b_ctrg_heli_transport_01_sand_f.jpg|150px]][[File:arma3-b_ctrg_heli_transport_01_tropic_f.jpg|150px]][[File:arma3-b_t_uav_03_dynamicloadout_f.jpg|150px]][[File:arma3-o_t_uav_04_cas_f.jpg|150px]][[File:arma3-o_t_vtol_02_infantry_dynamicloadout_f.jpg|150px]][[File:arma3-o_t_vtol_02_vehicle_dynamicloadout_f.jpg|150px]][[File:arma3-o_plane_fighter_02_f.jpg|150px]][[File:arma3-o_plane_fighter_02_f.jpg|150px]][[File:arma3-i_plane_fighter_04_f.jpg|150px]][[File:arma3-b_uav_05_f.jpg|150px]][[File:arma3-b_plane_cas_01_dynamicloadout_f.jpg|150px]][[File:arma3-o_plane_cas_02_dynamicloadout_f.jpg|150px]][[File:arma3-i_plane_fighter_03_dynamicloadout_f.jpg|150px]][[File:arma3-o_plane_fighter_02_f.jpg|150px]][[File:arma3-i_plane_fighter_04_f.jpg|150px]][[File:arma3-c_idap_heli_transport_02_f.jpg|150px]][[File:arma3-i_e_heli_light_03_dynamicloadout_f.jpg|150px]][[File:arma3-i_e_heli_light_03_unarmed_f.jpg|150px]]
+|-
+| <span id="CMFlareLauncher_Singles" >'''CMFlareLauncher_Singles'''</span>
+| ''Flares''
+| 
+| 
+:[[Arma 3 CfgMagazines#60Rnd_CMFlareMagazine|60Rnd_CMFlareMagazine]]
+:[[Arma 3 CfgMagazines#120Rnd_CMFlareMagazine|120Rnd_CMFlareMagazine]]
+:[[Arma 3 CfgMagazines#240Rnd_CMFlareMagazine|240Rnd_CMFlareMagazine]]
+:[[Arma 3 CfgMagazines#60Rnd_CMFlare_Chaff_Magazine|60Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#120Rnd_CMFlare_Chaff_Magazine|120Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#240Rnd_CMFlare_Chaff_Magazine|240Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#192Rnd_CMFlare_Chaff_Magazine|192Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#168Rnd_CMFlare_Chaff_Magazine|168Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#300Rnd_CMFlare_Chaff_Magazine|300Rnd_CMFlare_Chaff_Magazine]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Plane_Fighter_01_F|B_Plane_Fighter_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_Fighter_01_Stealth_F|B_Plane_Fighter_01_Stealth_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_Fighter_01_Cluster_F|B_Plane_Fighter_01_Cluster_F]]
+| [[File:arma3-b_plane_fighter_01_f.jpg|150px]][[File:arma3-b_plane_fighter_01_f.jpg|150px]][[File:arma3-b_plane_fighter_01_f.jpg|150px]]
+|-
+| <span id="CMFlareLauncher_Triples" >'''CMFlareLauncher_Triples'''</span>
+| ''Flares''
+| 
+| 
+:[[Arma 3 CfgMagazines#60Rnd_CMFlareMagazine|60Rnd_CMFlareMagazine]]
+:[[Arma 3 CfgMagazines#120Rnd_CMFlareMagazine|120Rnd_CMFlareMagazine]]
+:[[Arma 3 CfgMagazines#240Rnd_CMFlareMagazine|240Rnd_CMFlareMagazine]]
+:[[Arma 3 CfgMagazines#60Rnd_CMFlare_Chaff_Magazine|60Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#120Rnd_CMFlare_Chaff_Magazine|120Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#240Rnd_CMFlare_Chaff_Magazine|240Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#192Rnd_CMFlare_Chaff_Magazine|192Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#168Rnd_CMFlare_Chaff_Magazine|168Rnd_CMFlare_Chaff_Magazine]]
+:[[Arma 3 CfgMagazines#300Rnd_CMFlare_Chaff_Magazine|300Rnd_CMFlare_Chaff_Magazine]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_infantry_F|B_T_VTOL_01_infantry_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_vehicle_F|B_T_VTOL_01_vehicle_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_F|B_T_VTOL_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_infantry_blue_F|B_T_VTOL_01_infantry_blue_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_infantry_olive_F|B_T_VTOL_01_infantry_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_vehicle_blue_F|B_T_VTOL_01_vehicle_blue_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_vehicle_olive_F|B_T_VTOL_01_vehicle_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_blue_F|B_T_VTOL_01_armed_blue_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_olive_F|B_T_VTOL_01_armed_olive_F]]
+| [[File:arma3-b_t_vtol_01_infantry_f.jpg|150px]][[File:arma3-b_t_vtol_01_vehicle_f.jpg|150px]][[File:arma3-b_t_vtol_01_armed_f.jpg|150px]][[File:arma3-b_t_vtol_01_infantry_f.jpg|150px]][[File:arma3-b_t_vtol_01_infantry_f.jpg|150px]][[File:arma3-b_t_vtol_01_vehicle_f.jpg|150px]][[File:arma3-b_t_vtol_01_vehicle_f.jpg|150px]][[File:arma3-b_t_vtol_01_armed_f.jpg|150px]][[File:arma3-b_t_vtol_01_armed_f.jpg|150px]]
+|-
+| <span id="DeminingDisruptor_01_base_f" >'''DeminingDisruptor_01_base_f'''</span>
+| ''Disruptor''
+| ''Disruptor''
+| 
+:[[Arma 3 CfgMagazines#15Rnd_12Gauge_Pellets|15Rnd_12Gauge_Pellets]]
+:[[Arma 3 CfgMagazines#15Rnd_12Gauge_Slug|15Rnd_12Gauge_Slug]]
+| 
+| 
+|-
+| <span id="DeminingDisruptor_01_F" >'''DeminingDisruptor_01_F'''</span>
+| ''Disruptor''
+| ''Disruptor''
+| 
+:[[Arma 3 CfgMagazines#15Rnd_12Gauge_Pellets|15Rnd_12Gauge_Pellets]]
+:[[Arma 3 CfgMagazines#15Rnd_12Gauge_Slug|15Rnd_12Gauge_Slug]]
+:[[Arma 3 CfgMagazines#15Rnd_12Gauge_Slug|15Rnd_12Gauge_Slug]]
+:[[Arma 3 CfgMagazines#15Rnd_12Gauge_Pellets|15Rnd_12Gauge_Pellets]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_UGV_02_Demining_F|B_UGV_02_Demining_F]]
+:[[Arma 3 CfgVehicles EAST#O_UGV_02_Demining_F|O_UGV_02_Demining_F]]
+:[[Arma 3 CfgVehicles GUER#I_UGV_02_Demining_F|I_UGV_02_Demining_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_UGV_02_Demining_F|I_E_UGV_02_Demining_F]]
+:[[Arma 3 CfgVehicles CIV#C_IDAP_UGV_02_Demining_F|C_IDAP_UGV_02_Demining_F]]
+| [[File:arma3-b_ugv_02_demining_f.jpg|150px]][[File:arma3-o_ugv_02_demining_f.jpg|150px]][[File:arma3-i_ugv_02_demining_f.jpg|150px]][[File:arma3-i_e_ugv_02_demining_f.jpg|150px]][[File:arma3-c_idap_ugv_02_demining_f.jpg|150px]]
+|-
+| <span id="FakeHorn" >'''FakeHorn'''</span>
+| 
+| 
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles GUER#I_Heli_light_03_F|I_Heli_light_03_F]]
+:[[Arma 3 CfgVehicles GUER#I_Heli_light_03_dynamicLoadout_F|I_Heli_light_03_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles GUER#I_Heli_light_03_unarmed_F|I_Heli_light_03_unarmed_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_F|O_Heli_Transport_04_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_ammo_F|O_Heli_Transport_04_ammo_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_bench_F|O_Heli_Transport_04_bench_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_box_F|O_Heli_Transport_04_box_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_covered_F|O_Heli_Transport_04_covered_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_fuel_F|O_Heli_Transport_04_fuel_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_medevac_F|O_Heli_Transport_04_medevac_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_repair_F|O_Heli_Transport_04_repair_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_black_F|O_Heli_Transport_04_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_ammo_black_F|O_Heli_Transport_04_ammo_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_bench_black_F|O_Heli_Transport_04_bench_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_box_black_F|O_Heli_Transport_04_box_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_covered_black_F|O_Heli_Transport_04_covered_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_fuel_black_F|O_Heli_Transport_04_fuel_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_medevac_black_F|O_Heli_Transport_04_medevac_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Transport_04_repair_black_F|O_Heli_Transport_04_repair_black_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Heli_light_03_dynamicLoadout_F|I_E_Heli_light_03_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Heli_light_03_unarmed_F|I_E_Heli_light_03_unarmed_F]]
+|}
+| [[File:arma3-i_heli_light_03_dynamicloadout_f.jpg|150px]][[File:arma3-i_heli_light_03_unarmed_f.jpg|150px]][[File:arma3-o_heli_transport_04_f.jpg|150px]][[File:arma3-o_heli_transport_04_ammo_f.jpg|150px]][[File:arma3-o_heli_transport_04_bench_f.jpg|150px]][[File:arma3-o_heli_transport_04_box_f.jpg|150px]][[File:arma3-o_heli_transport_04_covered_f.jpg|150px]][[File:arma3-o_heli_transport_04_fuel_f.jpg|150px]][[File:arma3-o_heli_transport_04_medevac_f.jpg|150px]][[File:arma3-o_heli_transport_04_repair_f.jpg|150px]][[File:arma3-o_heli_transport_04_f.jpg|150px]][[File:arma3-o_heli_transport_04_ammo_f.jpg|150px]][[File:arma3-o_heli_transport_04_bench_f.jpg|150px]][[File:arma3-o_heli_transport_04_box_f.jpg|150px]][[File:arma3-o_heli_transport_04_covered_f.jpg|150px]][[File:arma3-o_heli_transport_04_fuel_f.jpg|150px]][[File:arma3-o_heli_transport_04_medevac_f.jpg|150px]][[File:arma3-o_heli_transport_04_repair_f.jpg|150px]][[File:arma3-i_e_heli_light_03_dynamicloadout_f.jpg|150px]][[File:arma3-i_e_heli_light_03_unarmed_f.jpg|150px]]
+|-
+| <span id="FlareLauncher" >'''FlareLauncher'''</span>
+| ''Flares''
+| 
+| 
+:[[Arma 3 CfgMagazines#FlareLauncherMag|FlareLauncherMag]]
+| 
+| 
+|-
+| <span id="gatling_20mm" >'''gatling_20mm'''</span>
+| ''Minigun 20 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#2000Rnd_20mm_shells|2000Rnd_20mm_shells]]
+:[[Arma 3 CfgMagazines#1000Rnd_20mm_shells|1000Rnd_20mm_shells]]
+:[[Arma 3 CfgMagazines#300Rnd_20mm_shells|300Rnd_20mm_shells]]
+:[[Arma 3 CfgMagazines#PylonWeapon_300Rnd_20mm_shells|PylonWeapon_300Rnd_20mm_shells]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Heli_Attack_01_F|B_Heli_Attack_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Attack_01_dynamicLoadout_F|B_Heli_Attack_01_dynamicLoadout_F]]
+| [[File:arma3-b_heli_attack_01_dynamicloadout_f.jpg|150px]]
+|-
+| <span id="gatling_20mm_VTOL_01" >'''gatling_20mm_VTOL_01'''</span>
+| ''Minigun 20 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#4000Rnd_20mm_Tracer_Red_shells|4000Rnd_20mm_Tracer_Red_shells]]
+:[[Arma 3 CfgMagazines#2000Rnd_20mm_shells|2000Rnd_20mm_shells]]
+:[[Arma 3 CfgMagazines#1000Rnd_20mm_shells|1000Rnd_20mm_shells]]
+:[[Arma 3 CfgMagazines#300Rnd_20mm_shells|300Rnd_20mm_shells]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_F|B_T_VTOL_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_blue_F|B_T_VTOL_01_armed_blue_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_olive_F|B_T_VTOL_01_armed_olive_F]]
+| [[File:arma3-b_t_vtol_01_armed_f.jpg|150px]][[File:arma3-b_t_vtol_01_armed_f.jpg|150px]][[File:arma3-b_t_vtol_01_armed_f.jpg|150px]]
+|-
+| <span id="gatling_25mm" >'''gatling_25mm'''</span>
+| ''GAU-12 Cannon 25 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#1000Rnd_25mm_shells|1000Rnd_25mm_shells]]
+:[[Arma 3 CfgMagazines#300Rnd_25mm_shells|300Rnd_25mm_shells]]
+| 
+| 
+|-
+| <span id="gatling_30mm" >'''gatling_30mm'''</span>
+| ''Cannon Caseless 30 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#250Rnd_30mm_HE_shells|250Rnd_30mm_HE_shells]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_HE_shells_Tracer_Red|250Rnd_30mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_HE_shells_Tracer_Green|250Rnd_30mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells|250Rnd_30mm_APDS_shells]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells_Tracer_Red|250Rnd_30mm_APDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells_Tracer_Green|250Rnd_30mm_APDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells_Tracer_Yellow|250Rnd_30mm_APDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_HE_shells|250Rnd_30mm_HE_shells]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_HE_shells_Tracer_Red|250Rnd_30mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_HE_shells_Tracer_Green|250Rnd_30mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells|250Rnd_30mm_APDS_shells]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells_Tracer_Red|250Rnd_30mm_APDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells_Tracer_Green|250Rnd_30mm_APDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells_Tracer_Yellow|250Rnd_30mm_APDS_shells_Tracer_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_F|O_Heli_Attack_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_black_F|O_Heli_Attack_02_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_dynamicLoadout_F|O_Heli_Attack_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_dynamicLoadout_black_F|O_Heli_Attack_02_dynamicLoadout_black_F]]
+| [[File:arma3-o_heli_attack_02_dynamicloadout_f.jpg|150px]]
+|-
+| <span id="Gatling_30mm_Plane_CAS_01_F" >'''Gatling_30mm_Plane_CAS_01_F'''</span>
+| ''Minigun 30 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#1000Rnd_Gatling_30mm_Plane_CAS_01_F|1000Rnd_Gatling_30mm_Plane_CAS_01_F]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_F|B_Plane_CAS_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_dynamicLoadout_F|B_Plane_CAS_01_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_Cluster_F|B_Plane_CAS_01_Cluster_F]]
+| [[File:arma3-b_plane_cas_01_dynamicloadout_f.jpg|150px]][[File:arma3-b_plane_cas_01_dynamicloadout_f.jpg|150px]]
+|-
+| <span id="gatling_30mm_VTOL_02" >'''gatling_30mm_VTOL_02'''</span>
+| ''Cannon Caseless 30 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#250Rnd_30mm_HE_shells|250Rnd_30mm_HE_shells]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_HE_shells_Tracer_Red|250Rnd_30mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_HE_shells_Tracer_Green|250Rnd_30mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells|250Rnd_30mm_APDS_shells]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells_Tracer_Red|250Rnd_30mm_APDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells_Tracer_Green|250Rnd_30mm_APDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells_Tracer_Yellow|250Rnd_30mm_APDS_shells_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_HE_shells|250Rnd_30mm_HE_shells]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_HE_shells_Tracer_Red|250Rnd_30mm_HE_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_HE_shells_Tracer_Green|250Rnd_30mm_HE_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells|250Rnd_30mm_APDS_shells]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells_Tracer_Red|250Rnd_30mm_APDS_shells_Tracer_Red]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells_Tracer_Green|250Rnd_30mm_APDS_shells_Tracer_Green]]
+:[[Arma 3 CfgMagazines#250Rnd_30mm_APDS_shells_Tracer_Yellow|250Rnd_30mm_APDS_shells_Tracer_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_F|O_T_VTOL_02_infantry_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_F|O_T_VTOL_02_vehicle_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_dynamicLoadout_F|O_T_VTOL_02_infantry_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_dynamicLoadout_F|O_T_VTOL_02_vehicle_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_hex_F|O_T_VTOL_02_infantry_hex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_ghex_F|O_T_VTOL_02_infantry_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_grey_F|O_T_VTOL_02_infantry_grey_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_hex_F|O_T_VTOL_02_vehicle_hex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_ghex_F|O_T_VTOL_02_vehicle_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_grey_F|O_T_VTOL_02_vehicle_grey_F]]
+| [[File:arma3-o_t_vtol_02_infantry_dynamicloadout_f.jpg|150px]][[File:arma3-o_t_vtol_02_vehicle_dynamicloadout_f.jpg|150px]]
+|-
+| <span id="GBU12BombLauncher" >'''GBU12BombLauncher'''</span>
+| ''GBU-12''
+| 
+| 
+:[[Arma 3 CfgMagazines#2Rnd_GBU12_LGB|2Rnd_GBU12_LGB]]
+:[[Arma 3 CfgMagazines#2Rnd_GBU12_LGB_MI10|2Rnd_GBU12_LGB_MI10]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_UAV_02_CAS_F|B_UAV_02_CAS_F]]
+:[[Arma 3 CfgVehicles EAST#O_UAV_02_CAS_F|O_UAV_02_CAS_F]]
+:[[Arma 3 CfgVehicles GUER#I_UAV_02_CAS_F|I_UAV_02_CAS_F]]
+| 
+|-
+| <span id="GBU12BombLauncher_Plane_Fighter_03_F" >'''GBU12BombLauncher_Plane_Fighter_03_F'''</span>
+| ''GBU-12''
+| 
+| 
+:[[Arma 3 CfgMagazines#2Rnd_GBU12_LGB|2Rnd_GBU12_LGB]]
+:[[Arma 3 CfgMagazines#2Rnd_GBU12_LGB_MI10|2Rnd_GBU12_LGB_MI10]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_03_CAS_F|I_Plane_Fighter_03_CAS_F]]
+| 
+|-
+| <span id="GMG_20mm" >'''GMG_20mm'''</span>
+| ''Mk32 GMG 20 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_20mm_G_belt|200Rnd_20mm_G_belt]]
+:[[Arma 3 CfgMagazines#40Rnd_20mm_g_belt|40Rnd_20mm_g_belt]]
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles WEST#B_GMG_01_F|B_GMG_01_F]]
+:[[Arma 3 CfgVehicles EAST#O_GMG_01_F|O_GMG_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_GMG_01_F|I_GMG_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_GMG_01_high_F|B_GMG_01_high_F]]
+:[[Arma 3 CfgVehicles EAST#O_GMG_01_high_F|O_GMG_01_high_F]]
+:[[Arma 3 CfgVehicles GUER#I_GMG_01_high_F|I_GMG_01_high_F]]
+:[[Arma 3 CfgVehicles WEST#B_GMG_01_A_F|B_GMG_01_A_F]]
+:[[Arma 3 CfgVehicles EAST#O_GMG_01_A_F|O_GMG_01_A_F]]
+:[[Arma 3 CfgVehicles GUER#I_GMG_01_A_F|I_GMG_01_A_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_GMG_01_F|B_T_GMG_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_GMG_01_F|I_E_GMG_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_GMG_01_high_F|I_E_GMG_01_high_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_GMG_01_A_F|I_E_GMG_01_A_F]]
+|}
+| [[File:arma3-b_gmg_01_f.jpg|150px]][[File:arma3-o_gmg_01_f.jpg|150px]][[File:arma3-i_gmg_01_f.jpg|150px]][[File:arma3-b_gmg_01_high_f.jpg|150px]][[File:arma3-o_gmg_01_high_f.jpg|150px]][[File:arma3-i_gmg_01_high_f.jpg|150px]][[File:arma3-b_gmg_01_a_f.jpg|150px]][[File:arma3-o_gmg_01_a_f.jpg|150px]][[File:arma3-i_gmg_01_a_f.jpg|150px]][[File:arma3-b_t_gmg_01_f.jpg|150px]][[File:arma3-i_e_gmg_01_f.jpg|150px]][[File:arma3-i_gmg_01_high_f.jpg|150px]][[File:arma3-i_gmg_01_a_f.jpg|150px]]
+|-
+| <span id="GMG_40mm" >'''GMG_40mm'''</span>
+| ''RCWS GMG 40 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_40mm_G_belt|200Rnd_40mm_G_belt]]
+:[[Arma 3 CfgMagazines#96Rnd_40mm_G_belt|96Rnd_40mm_G_belt]]
+:[[Arma 3 CfgMagazines#64Rnd_40mm_G_belt|64Rnd_40mm_G_belt]]
+:[[Arma 3 CfgMagazines#32Rnd_40mm_G_belt|32Rnd_40mm_G_belt]]
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles WEST#B_APC_Tracked_01_rcws_F|B_APC_Tracked_01_rcws_F]]
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_arty_F|B_MBT_01_arty_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_02_arty_F|O_MBT_02_arty_F]]
+:[[Arma 3 CfgVehicles WEST#B_Boat_Armed_01_minigun_F|B_Boat_Armed_01_minigun_F]]
+:[[Arma 3 CfgVehicles EAST#O_Boat_Armed_01_hmg_F|O_Boat_Armed_01_hmg_F]]
+:[[Arma 3 CfgVehicles GUER#I_Boat_Armed_01_minigun_F|I_Boat_Armed_01_minigun_F]]
+:[[Arma 3 CfgVehicles WEST#B_MRAP_01_gmg_F|B_MRAP_01_gmg_F]]
+:[[Arma 3 CfgVehicles EAST#O_MRAP_02_gmg_F|O_MRAP_02_gmg_F]]
+:[[Arma 3 CfgVehicles GUER#I_MRAP_03_gmg_F|I_MRAP_03_gmg_F]]
+:[[Arma 3 CfgVehicles EAST#O_APC_Wheeled_02_rcws_F|O_APC_Wheeled_02_rcws_F]]
+:[[Arma 3 CfgVehicles EAST#O_APC_Wheeled_02_rcws_v2_F|O_APC_Wheeled_02_rcws_v2_F]]
+:[[Arma 3 CfgVehicles WEST#B_UGV_01_rcws_F|B_UGV_01_rcws_F]]
+:[[Arma 3 CfgVehicles EAST#O_UGV_01_rcws_F|O_UGV_01_rcws_F]]
+:[[Arma 3 CfgVehicles GUER#I_UGV_01_rcws_F|I_UGV_01_rcws_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MRAP_01_gmg_F|B_T_MRAP_01_gmg_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MRAP_02_gmg_ghex_F|O_T_MRAP_02_gmg_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_UGV_01_rcws_ghex_F|O_T_UGV_01_rcws_ghex_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_UGV_01_rcws_olive_F|B_T_UGV_01_rcws_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_APC_Tracked_01_rcws_F|B_T_APC_Tracked_01_rcws_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Wheeled_02_rcws_ghex_F|O_T_APC_Wheeled_02_rcws_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Wheeled_02_rcws_v2_ghex_F|O_T_APC_Wheeled_02_rcws_v2_ghex_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_arty_F|B_T_MBT_01_arty_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_02_arty_ghex_F|O_T_MBT_02_arty_ghex_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Boat_Armed_01_minigun_F|B_T_Boat_Armed_01_minigun_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Boat_Armed_01_hmg_F|O_T_Boat_Armed_01_hmg_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_UGV_01_rcws_F|I_E_UGV_01_rcws_F]]
+|}
+| [[File:arma3-b_apc_tracked_01_rcws_f.jpg|150px]][[File:arma3-b_mbt_01_arty_f.jpg|150px]][[File:arma3-o_mbt_02_arty_f.jpg|150px]][[File:arma3-b_boat_armed_01_minigun_f.jpg|150px]][[File:arma3-o_boat_armed_01_hmg_f.jpg|150px]][[File:arma3-i_boat_armed_01_minigun_f.jpg|150px]][[File:arma3-b_mrap_01_gmg_f.jpg|150px]][[File:arma3-o_mrap_02_gmg_f.jpg|150px]][[File:arma3-i_mrap_03_gmg_f.jpg|150px]][[File:arma3-o_apc_wheeled_02_rcws_v2_f.jpg|150px]][[File:arma3-b_ugv_01_rcws_f.jpg|150px]][[File:arma3-o_ugv_01_rcws_f.jpg|150px]][[File:arma3-i_ugv_01_rcws_f.jpg|150px]][[File:arma3-b_t_mrap_01_gmg_f.jpg|150px]][[File:arma3-o_t_mrap_02_gmg_ghex_f.jpg|150px]][[File:arma3-o_t_ugv_01_rcws_ghex_f.jpg|150px]][[File:arma3-b_t_ugv_01_rcws_olive_f.jpg|150px]][[File:arma3-b_t_apc_tracked_01_rcws_f.jpg|150px]][[File:arma3-o_t_apc_wheeled_02_rcws_v2_ghex_f.jpg|150px]][[File:arma3-b_t_mbt_01_arty_f.jpg|150px]][[File:arma3-o_t_mbt_02_arty_ghex_f.jpg|150px]][[File:arma3-b_t_boat_armed_01_minigun_f.jpg|150px]][[File:arma3-o_t_boat_armed_01_hmg_f.jpg|150px]][[File:arma3-i_e_ugv_01_rcws_f.jpg|150px]]
+|-
+| <span id="HMG_01" >'''HMG_01'''</span>
+| ''Mk30 HMG .50''
+| 
+| 
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag|500Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Red|500Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Green|500Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Yellow|500Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag|200Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Red|200Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Green|200Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Yellow|200Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag|100Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Red|100Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Green|100Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Yellow|100Rnd_127x99_mag_Tracer_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_Boat_Armed_01_hmg_F|O_Boat_Armed_01_hmg_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Boat_Armed_01_hmg_F|O_T_Boat_Armed_01_hmg_F]]
+| [[File:arma3-o_boat_armed_01_hmg_f.jpg|150px]][[File:arma3-o_t_boat_armed_01_hmg_f.jpg|150px]]
+|-
+| <span id="HMG_127" >'''HMG_127'''</span>
+| ''RCWS HMG 12.7 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag|500Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Red|500Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Green|500Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Yellow|500Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag|200Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Red|200Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Green|200Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Yellow|200Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag|100Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Red|100Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Green|100Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Yellow|100Rnd_127x99_mag_Tracer_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_MRAP_01_hmg_F|B_MRAP_01_hmg_F]]
+:[[Arma 3 CfgVehicles EAST#O_MRAP_02_hmg_F|O_MRAP_02_hmg_F]]
+:[[Arma 3 CfgVehicles GUER#I_MRAP_03_hmg_F|I_MRAP_03_hmg_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MRAP_01_hmg_F|B_T_MRAP_01_hmg_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MRAP_02_hmg_ghex_F|O_T_MRAP_02_hmg_ghex_F]]
+:[[Arma 3 CfgVehicles GUER#I_LT_01_AT_F|I_LT_01_AT_F]]
+:[[Arma 3 CfgVehicles GUER#I_LT_01_AA_F|I_LT_01_AA_F]]
+| [[File:arma3-b_mrap_01_hmg_f.jpg|150px]][[File:arma3-o_mrap_02_hmg_f.jpg|150px]][[File:arma3-i_mrap_03_hmg_f.jpg|150px]][[File:arma3-b_t_mrap_01_hmg_f.jpg|150px]][[File:arma3-o_t_mrap_02_hmg_ghex_f.jpg|150px]][[File:arma3-i_lt_01_at_f.jpg|150px]][[File:arma3-i_lt_01_aa_f.jpg|150px]]
+|-
+| <span id="HMG_127_AFV" >'''HMG_127_AFV'''</span>
+| ''RCWS HMG 12.7 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag|500Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Red|500Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Green|500Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Yellow|500Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag|200Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Red|200Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Green|200Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Yellow|200Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag|100Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Red|100Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Green|100Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Yellow|100Rnd_127x99_mag_Tracer_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_AFV_Wheeled_01_up_cannon_F|B_AFV_Wheeled_01_up_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_AFV_Wheeled_01_up_cannon_F|B_T_AFV_Wheeled_01_up_cannon_F]]
+| [[File:arma3-b_afv_wheeled_01_up_cannon_f.jpg|150px]][[File:arma3-b_t_afv_wheeled_01_up_cannon_f.jpg|150px]]
+|-
+| <span id="HMG_127_APC" >'''HMG_127_APC'''</span>
+| ''RCWS HMG 12.7 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag|500Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Red|500Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Green|500Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Yellow|500Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag|200Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Red|200Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Green|200Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Yellow|200Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag|100Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Red|100Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Green|100Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Yellow|100Rnd_127x99_mag_Tracer_Yellow]]
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles WEST#B_APC_Tracked_01_rcws_F|B_APC_Tracked_01_rcws_F]]
+:[[Arma 3 CfgVehicles WEST#B_APC_Tracked_01_CRV_F|B_APC_Tracked_01_CRV_F]]
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_arty_F|B_MBT_01_arty_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_02_arty_F|O_MBT_02_arty_F]]
+:[[Arma 3 CfgVehicles EAST#O_APC_Wheeled_02_rcws_F|O_APC_Wheeled_02_rcws_F]]
+:[[Arma 3 CfgVehicles EAST#O_APC_Wheeled_02_rcws_v2_F|O_APC_Wheeled_02_rcws_v2_F]]
+:[[Arma 3 CfgVehicles GUER#I_MBT_03_cannon_F|I_MBT_03_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_APC_Tracked_01_CRV_F|B_T_APC_Tracked_01_CRV_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_APC_Tracked_01_rcws_F|B_T_APC_Tracked_01_rcws_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Wheeled_02_rcws_ghex_F|O_T_APC_Wheeled_02_rcws_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Wheeled_02_rcws_v2_ghex_F|O_T_APC_Wheeled_02_rcws_v2_ghex_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_arty_F|B_T_MBT_01_arty_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_02_arty_ghex_F|O_T_MBT_02_arty_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_04_cannon_F|O_MBT_04_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_04_cannon_F|O_T_MBT_04_cannon_F]]
+|}
+| [[File:arma3-b_apc_tracked_01_rcws_f.jpg|150px]][[File:arma3-b_apc_tracked_01_crv_f.jpg|150px]][[File:arma3-b_mbt_01_arty_f.jpg|150px]][[File:arma3-o_mbt_02_arty_f.jpg|150px]][[File:arma3-o_apc_wheeled_02_rcws_v2_f.jpg|150px]][[File:arma3-i_mbt_03_cannon_f.jpg|150px]][[File:arma3-b_t_apc_tracked_01_crv_f.jpg|150px]][[File:arma3-b_t_apc_tracked_01_rcws_f.jpg|150px]][[File:arma3-o_t_apc_wheeled_02_rcws_v2_ghex_f.jpg|150px]][[File:arma3-b_t_mbt_01_arty_f.jpg|150px]][[File:arma3-o_t_mbt_02_arty_ghex_f.jpg|150px]][[File:arma3-o_mbt_04_cannon_f.jpg|150px]][[File:arma3-o_t_mbt_04_cannon_f.jpg|150px]]
+|-
+| <span id="HMG_127_LSV_01" >'''HMG_127_LSV_01'''</span>
+| ''Mk30 HMG .50''
+| 
+| 
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag|500Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Red|500Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Green|500Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Yellow|500Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag|200Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Red|200Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Green|200Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Yellow|200Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag|100Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Red|100Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Green|100Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Yellow|100Rnd_127x99_mag_Tracer_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_F|B_T_LSV_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_armed_F|B_LSV_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_armed_black_F|B_LSV_01_armed_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_armed_olive_F|B_LSV_01_armed_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_armed_sand_F|B_LSV_01_armed_sand_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_black_F|B_T_LSV_01_armed_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_olive_F|B_T_LSV_01_armed_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_sand_F|B_T_LSV_01_armed_sand_F]]
+| [[File:arma3-b_t_lsv_01_armed_f.jpg|150px]][[File:arma3-b_lsv_01_armed_f.jpg|150px]][[File:arma3-b_lsv_01_armed_f.jpg|150px]][[File:arma3-b_lsv_01_armed_f.jpg|150px]][[File:arma3-b_lsv_01_armed_f.jpg|150px]][[File:arma3-b_t_lsv_01_armed_f.jpg|150px]][[File:arma3-b_t_lsv_01_armed_f.jpg|150px]][[File:arma3-b_t_lsv_01_armed_f.jpg|150px]]
+|-
+| <span id="HMG_127_MBT" >'''HMG_127_MBT'''</span>
+| ''RCWS HMG 12.7 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag|500Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Red|500Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Green|500Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Yellow|500Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag|200Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Red|200Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Green|200Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Yellow|200Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag|100Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Red|100Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Green|100Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Yellow|100Rnd_127x99_mag_Tracer_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_TUSK_F|B_MBT_01_TUSK_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_TUSK_F|B_T_MBT_01_TUSK_F]]
+| [[File:arma3-b_mbt_01_tusk_f.jpg|150px]][[File:arma3-b_t_mbt_01_tusk_f.jpg|150px]]
+|-
+| <span id="HMG_127_UGV" >'''HMG_127_UGV'''</span>
+| ''RCWS HMG 12.7 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag|500Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Red|500Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Green|500Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Yellow|500Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag|200Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Red|200Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Green|200Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Yellow|200Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag|100Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Red|100Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Green|100Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Yellow|100Rnd_127x99_mag_Tracer_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_UGV_01_rcws_F|B_UGV_01_rcws_F]]
+:[[Arma 3 CfgVehicles EAST#O_UGV_01_rcws_F|O_UGV_01_rcws_F]]
+:[[Arma 3 CfgVehicles GUER#I_UGV_01_rcws_F|I_UGV_01_rcws_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_UGV_01_rcws_ghex_F|O_T_UGV_01_rcws_ghex_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_UGV_01_rcws_olive_F|B_T_UGV_01_rcws_olive_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_UGV_01_rcws_F|I_E_UGV_01_rcws_F]]
+| [[File:arma3-b_ugv_01_rcws_f.jpg|150px]][[File:arma3-o_ugv_01_rcws_f.jpg|150px]][[File:arma3-i_ugv_01_rcws_f.jpg|150px]][[File:arma3-o_t_ugv_01_rcws_ghex_f.jpg|150px]][[File:arma3-b_t_ugv_01_rcws_olive_f.jpg|150px]][[File:arma3-i_e_ugv_01_rcws_f.jpg|150px]]
+|-
+| <span id="HMG_M2" >'''HMG_M2'''</span>
+| ''M2 HMG .50''
+| 
+| 
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag|100Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Red|100Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Green|100Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Yellow|100Rnd_127x99_mag_Tracer_Yellow]]
+| 
+| 
+|-
+| <span id="HMG_NSVT" >'''HMG_NSVT'''</span>
+| ''NSVT-M HMG 12.7 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#450Rnd_127x108_Ball|450Rnd_127x108_Ball]]
+:[[Arma 3 CfgMagazines#150Rnd_127x108_Ball|150Rnd_127x108_Ball]]
+:[[Arma 3 CfgMagazines#50Rnd_127x108_Ball|50Rnd_127x108_Ball]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_MBT_02_cannon_F|O_MBT_02_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_02_cannon_ghex_F|O_T_MBT_02_cannon_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_02_railgun_F|O_MBT_02_railgun_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_02_railgun_ghex_F|O_T_MBT_02_railgun_ghex_F]]
+| [[File:arma3-o_mbt_02_cannon_f.jpg|150px]][[File:arma3-o_t_mbt_02_cannon_ghex_f.jpg|150px]][[File:arma3-o_mbt_02_railgun_f.jpg|150px]][[File:arma3-o_t_mbt_02_railgun_ghex_f.jpg|150px]]
+|-
+| <span id="HMG_static" >'''HMG_static'''</span>
+| ''Mk30 HMG .50''
+| 
+| 
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag|500Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Red|500Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Green|500Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#500Rnd_127x99_mag_Tracer_Yellow|500Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag|200Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Red|200Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Green|200Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_127x99_mag_Tracer_Yellow|200Rnd_127x99_mag_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag|100Rnd_127x99_mag]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Red|100Rnd_127x99_mag_Tracer_Red]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Green|100Rnd_127x99_mag_Tracer_Green]]
+:[[Arma 3 CfgMagazines#100Rnd_127x99_mag_Tracer_Yellow|100Rnd_127x99_mag_Tracer_Yellow]]
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles WEST#B_HMG_01_F|B_HMG_01_F]]
+:[[Arma 3 CfgVehicles EAST#O_HMG_01_F|O_HMG_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_HMG_01_F|I_HMG_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_HMG_01_high_F|B_HMG_01_high_F]]
+:[[Arma 3 CfgVehicles EAST#O_HMG_01_high_F|O_HMG_01_high_F]]
+:[[Arma 3 CfgVehicles GUER#I_HMG_01_high_F|I_HMG_01_high_F]]
+:[[Arma 3 CfgVehicles WEST#B_HMG_01_A_F|B_HMG_01_A_F]]
+:[[Arma 3 CfgVehicles EAST#O_HMG_01_A_F|O_HMG_01_A_F]]
+:[[Arma 3 CfgVehicles GUER#I_HMG_01_A_F|I_HMG_01_A_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_HMG_01_F|B_T_HMG_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_HMG_01_F|I_E_HMG_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_HMG_01_high_F|I_E_HMG_01_high_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_HMG_01_A_F|I_E_HMG_01_A_F]]
+|}
+| [[File:arma3-b_hmg_01_f.jpg|150px]][[File:arma3-o_hmg_01_f.jpg|150px]][[File:arma3-i_hmg_01_f.jpg|150px]][[File:arma3-b_hmg_01_high_f.jpg|150px]][[File:arma3-o_hmg_01_high_f.jpg|150px]][[File:arma3-i_hmg_01_high_f.jpg|150px]][[File:arma3-b_hmg_01_a_f.jpg|150px]][[File:arma3-o_hmg_01_a_f.jpg|150px]][[File:arma3-i_hmg_01_a_f.jpg|150px]][[File:arma3-b_t_hmg_01_f.jpg|150px]][[File:arma3-i_e_hmg_01_f.jpg|150px]][[File:arma3-i_e_hmg_01_high_f.jpg|150px]][[File:arma3-i_e_hmg_01_a_f.jpg|150px]]
+|-
+| <span id="Laserdesignator_mounted" >'''Laserdesignator_mounted'''</span>
+| ''Laser Marker''
+| 
+| 
+:[[Arma 3 CfgMagazines#Laserbatteries|Laserbatteries]]
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles WEST#B_Heli_Attack_01_F|B_Heli_Attack_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Attack_01_dynamicLoadout_F|B_Heli_Attack_01_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_F|O_Heli_Attack_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_black_F|O_Heli_Attack_02_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_dynamicLoadout_F|O_Heli_Attack_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_dynamicLoadout_black_F|O_Heli_Attack_02_dynamicLoadout_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_SDV_01_F|B_SDV_01_F]]
+:[[Arma 3 CfgVehicles EAST#O_SDV_01_F|O_SDV_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_SDV_01_F|I_SDV_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_UAV_01_F|B_UAV_01_F]]
+:[[Arma 3 CfgVehicles EAST#O_UAV_01_F|O_UAV_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_UAV_01_F|I_UAV_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_UAV_02_F|B_UAV_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_UAV_02_F|O_UAV_02_F]]
+:[[Arma 3 CfgVehicles GUER#I_UAV_02_F|I_UAV_02_F]]
+:[[Arma 3 CfgVehicles WEST#B_UAV_02_CAS_F|B_UAV_02_CAS_F]]
+:[[Arma 3 CfgVehicles EAST#O_UAV_02_CAS_F|O_UAV_02_CAS_F]]
+:[[Arma 3 CfgVehicles GUER#I_UAV_02_CAS_F|I_UAV_02_CAS_F]]
+:[[Arma 3 CfgVehicles WEST#B_UAV_02_dynamicLoadout_F|B_UAV_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_UAV_02_dynamicLoadout_F|O_UAV_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles GUER#I_UAV_02_dynamicLoadout_F|I_UAV_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles WEST#B_Static_Designator_01_F|B_Static_Designator_01_F]]
+:[[Arma 3 CfgVehicles EAST#O_Static_Designator_02_F|O_Static_Designator_02_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_UAV_03_F|B_T_UAV_03_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_UAV_03_dynamicLoadout_F|B_T_UAV_03_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_UAV_04_CAS_F|O_T_UAV_04_CAS_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_infantry_F|B_T_VTOL_01_infantry_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_vehicle_F|B_T_VTOL_01_vehicle_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_F|B_T_VTOL_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_infantry_blue_F|B_T_VTOL_01_infantry_blue_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_infantry_olive_F|B_T_VTOL_01_infantry_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_vehicle_blue_F|B_T_VTOL_01_vehicle_blue_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_vehicle_olive_F|B_T_VTOL_01_vehicle_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_blue_F|B_T_VTOL_01_armed_blue_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_VTOL_01_armed_olive_F|B_T_VTOL_01_armed_olive_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_F|O_T_VTOL_02_infantry_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_F|O_T_VTOL_02_vehicle_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_dynamicLoadout_F|O_T_VTOL_02_infantry_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_dynamicLoadout_F|O_T_VTOL_02_vehicle_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_hex_F|O_T_VTOL_02_infantry_hex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_ghex_F|O_T_VTOL_02_infantry_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_grey_F|O_T_VTOL_02_infantry_grey_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_hex_F|O_T_VTOL_02_vehicle_hex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_ghex_F|O_T_VTOL_02_vehicle_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_grey_F|O_T_VTOL_02_vehicle_grey_F]]
+:[[Arma 3 CfgVehicles WEST#B_UAV_05_F|B_UAV_05_F]]
+:[[Arma 3 CfgVehicles CIV#C_IDAP_UAV_01_F|C_IDAP_UAV_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_AFV_Wheeled_01_up_cannon_F|B_AFV_Wheeled_01_up_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_AFV_Wheeled_01_up_cannon_F|B_T_AFV_Wheeled_01_up_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_UGV_02_Demining_F|B_UGV_02_Demining_F]]
+:[[Arma 3 CfgVehicles EAST#O_UGV_02_Demining_F|O_UGV_02_Demining_F]]
+:[[Arma 3 CfgVehicles GUER#I_UGV_02_Demining_F|I_UGV_02_Demining_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_UGV_02_Demining_F|I_E_UGV_02_Demining_F]]
+:[[Arma 3 CfgVehicles CIV#C_IDAP_UGV_02_Demining_F|C_IDAP_UGV_02_Demining_F]]
+:[[Arma 3 CfgVehicles WEST#B_W_Static_Designator_01_F|B_W_Static_Designator_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_UAV_01_F|I_E_UAV_01_F]]
+:[[Arma 3 CfgVehicles EAST#O_UAV_01_Mine_F|O_UAV_01_Mine_F]]
+|}
+| [[File:arma3-b_heli_attack_01_dynamicloadout_f.jpg|150px]][[File:arma3-o_heli_attack_02_dynamicloadout_f.jpg|150px]][[File:arma3-b_sdv_01_f.jpg|150px]][[File:arma3-o_sdv_01_f.jpg|150px]][[File:arma3-i_sdv_01_f.jpg|150px]][[File:arma3-b_uav_01_f.jpg|150px]][[File:arma3-o_uav_01_f.jpg|150px]][[File:arma3-i_uav_01_f.jpg|150px]][[File:arma3-b_uav_02_dynamicloadout_f.jpg|150px]][[File:arma3-o_uav_02_dynamicloadout_f.jpg|150px]][[File:arma3-i_uav_02_dynamicloadout_f.jpg|150px]][[File:arma3-b_static_designator_01_f.jpg|150px]][[File:arma3-o_static_designator_02_f.jpg|150px]][[File:arma3-b_t_uav_03_dynamicloadout_f.jpg|150px]][[File:arma3-o_t_uav_04_cas_f.jpg|150px]][[File:arma3-b_t_vtol_01_infantry_f.jpg|150px]][[File:arma3-b_t_vtol_01_vehicle_f.jpg|150px]][[File:arma3-b_t_vtol_01_armed_f.jpg|150px]][[File:arma3-b_t_vtol_01_infantry_f.jpg|150px]][[File:arma3-b_t_vtol_01_infantry_f.jpg|150px]][[File:arma3-b_t_vtol_01_vehicle_f.jpg|150px]][[File:arma3-b_t_vtol_01_vehicle_f.jpg|150px]][[File:arma3-b_t_vtol_01_armed_f.jpg|150px]][[File:arma3-b_t_vtol_01_armed_f.jpg|150px]][[File:arma3-o_t_vtol_02_infantry_dynamicloadout_f.jpg|150px]][[File:arma3-o_t_vtol_02_vehicle_dynamicloadout_f.jpg|150px]][[File:arma3-b_uav_05_f.jpg|150px]][[File:arma3-c_idap_uav_01_f.jpg|150px]][[File:arma3-b_afv_wheeled_01_up_cannon_f.jpg|150px]][[File:arma3-b_t_afv_wheeled_01_up_cannon_f.jpg|150px]][[File:arma3-b_ugv_02_demining_f.jpg|150px]][[File:arma3-o_ugv_02_demining_f.jpg|150px]][[File:arma3-i_ugv_02_demining_f.jpg|150px]][[File:arma3-i_e_ugv_02_demining_f.jpg|150px]][[File:arma3-c_idap_ugv_02_demining_f.jpg|150px]][[File:arma3-b_w_static_designator_01_f.jpg|150px]][[File:arma3-i_e_uav_01_f.jpg|150px]][[File:arma3-o_uav_01_f.jpg|150px]]
+|-
+| <span id="Laserdesignator_pilotCamera" >'''Laserdesignator_pilotCamera'''</span>
+| ''Laser Marker''
+| 
+| 
+:[[Arma 3 CfgMagazines#Laserbatteries|Laserbatteries]]
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_03_CAS_F|I_Plane_Fighter_03_CAS_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_F|B_Plane_CAS_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_dynamicLoadout_F|B_Plane_CAS_01_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_F|O_Plane_CAS_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_dynamicLoadout_F|O_Plane_CAS_02_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_Fighter_01_F|B_Plane_Fighter_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_Fighter_01_Stealth_F|B_Plane_Fighter_01_Stealth_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_Fighter_02_F|O_Plane_Fighter_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_Fighter_02_Stealth_F|O_Plane_Fighter_02_Stealth_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_04_F|I_Plane_Fighter_04_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_Cluster_F|B_Plane_CAS_01_Cluster_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_Cluster_F|O_Plane_CAS_02_Cluster_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_Fighter_01_Cluster_F|B_Plane_Fighter_01_Cluster_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_Fighter_02_Cluster_F|O_Plane_Fighter_02_Cluster_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_04_Cluster_F|I_Plane_Fighter_04_Cluster_F]]
+|}
+| [[File:arma3-b_plane_cas_01_dynamicloadout_f.jpg|150px]][[File:arma3-o_plane_cas_02_dynamicloadout_f.jpg|150px]][[File:arma3-b_plane_fighter_01_f.jpg|150px]][[File:arma3-b_plane_fighter_01_f.jpg|150px]][[File:arma3-o_plane_fighter_02_f.jpg|150px]][[File:arma3-o_plane_fighter_02_f.jpg|150px]][[File:arma3-i_plane_fighter_04_f.jpg|150px]][[File:arma3-b_plane_cas_01_dynamicloadout_f.jpg|150px]][[File:arma3-o_plane_cas_02_dynamicloadout_f.jpg|150px]][[File:arma3-b_plane_fighter_01_f.jpg|150px]][[File:arma3-o_plane_fighter_02_f.jpg|150px]][[File:arma3-i_plane_fighter_04_f.jpg|150px]]
+|-
+| <span id="Laserdesignator_vehicle" >'''Laserdesignator_vehicle'''</span>
+| ''Laser Marker''
+| 
+| 
+:[[Arma 3 CfgMagazines#Laserbatteries|Laserbatteries]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#I_MRAP_03_F|I_MRAP_03_F]]
+:[[Arma 3 CfgVehicles GUER#I_MRAP_03_hmg_F|I_MRAP_03_hmg_F]]
+:[[Arma 3 CfgVehicles GUER#I_MRAP_03_gmg_F|I_MRAP_03_gmg_F]]
+:[[Arma 3 CfgVehicles WEST#B_AFV_Wheeled_01_cannon_F|B_AFV_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_AFV_Wheeled_01_cannon_F|B_T_AFV_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles GUER#I_LT_01_scout_F|I_LT_01_scout_F]]
+| [[File:arma3-i_mrap_03_f.jpg|150px]][[File:arma3-i_mrap_03_hmg_f.jpg|150px]][[File:arma3-i_mrap_03_gmg_f.jpg|150px]][[File:arma3-b_afv_wheeled_01_cannon_f.jpg|150px]][[File:arma3-b_t_afv_wheeled_01_cannon_f.jpg|150px]][[File:arma3-i_lt_01_scout_f.jpg|150px]]
+|-
+| <span id="launcher_SPG9" >'''launcher_SPG9'''</span>
+| ''SPG-9''
+| 
+| 
+:[[Arma 3 CfgMagazines#SPG9_HEAT|SPG9_HEAT]]
+:[[Arma 3 CfgMagazines#SPG9_HE|SPG9_HE]]
+:[[Arma 3 CfgMagazines#12rnd_SPG9_HEAT|12rnd_SPG9_HEAT]]
+:[[Arma 3 CfgMagazines#8rnd_SPG9_HE|8rnd_SPG9_HE]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#I_G_Offroad_01_AT_F|I_G_Offroad_01_AT_F]]
+:[[Arma 3 CfgVehicles WEST#B_G_Offroad_01_AT_F|B_G_Offroad_01_AT_F]]
+:[[Arma 3 CfgVehicles EAST#O_G_Offroad_01_AT_F|O_G_Offroad_01_AT_F]]
+:[[Arma 3 CfgVehicles GUER#I_C_Offroad_02_AT_F|I_C_Offroad_02_AT_F]]
+| [[File:arma3-i_g_offroad_01_at_f.jpg|150px]][[File:arma3-b_g_offroad_01_at_f.jpg|150px]][[File:arma3-o_g_offroad_01_at_f.jpg|150px]][[File:arma3-i_c_offroad_02_at_f.jpg|150px]]
+|-
+| <span id="LMG_65mm_body" >'''LMG_65mm_body'''</span>
+| ''RCWS LMG 6.5 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt|200Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Red|200Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Green|200Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Yellow|200Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt|2000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Green|2000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Yellow|2000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt|1000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Green|1000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Yellow|1000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Red|2000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green|2000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow|2000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Red|1000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Green|1000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Yellow|1000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green_Splash|2000Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow_Splash|2000Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt|500Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Red_Splash|500Rnd_65x39_Belt_Tracer_Red_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Green_Splash|500Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Yellow_Splash|500Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#PylonWeapon_2000Rnd_65x39_belt|PylonWeapon_2000Rnd_65x39_belt]]
+| 
+| 
+|-
+| <span id="LMG_coax" >'''LMG_coax'''</span>
+| ''Coaxial MG 7.62 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt|200Rnd_762x51_Belt]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt|1000Rnd_762x51_Belt]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt|2000Rnd_762x51_Belt]]
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt_Red|200Rnd_762x51_Belt_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt_Green|200Rnd_762x51_Belt_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt_Yellow|200Rnd_762x51_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt_Red|1000Rnd_762x51_Belt_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt_Green|1000Rnd_762x51_Belt_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt_Yellow|1000Rnd_762x51_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt_Red|2000Rnd_762x51_Belt_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt_Green|2000Rnd_762x51_Belt_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt_Yellow|2000Rnd_762x51_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt_T_Red|200Rnd_762x51_Belt_T_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt_T_Green|200Rnd_762x51_Belt_T_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt_T_Yellow|200Rnd_762x51_Belt_T_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt_T_Red|1000Rnd_762x51_Belt_T_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt_T_Green|1000Rnd_762x51_Belt_T_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt_T_Yellow|1000Rnd_762x51_Belt_T_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt_T_Red|2000Rnd_762x51_Belt_T_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt_T_Green|2000Rnd_762x51_Belt_T_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt_T_Yellow|2000Rnd_762x51_Belt_T_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_cannon_F|B_MBT_01_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_02_cannon_F|O_MBT_02_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_APC_Wheeled_01_cannon_F|B_APC_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles GUER#I_APC_tracked_03_cannon_F|I_APC_tracked_03_cannon_F]]
+:[[Arma 3 CfgVehicles GUER#I_MBT_03_cannon_F|I_MBT_03_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_TUSK_F|B_MBT_01_TUSK_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_APC_Wheeled_01_cannon_F|B_T_APC_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_cannon_F|B_T_MBT_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_TUSK_F|B_T_MBT_01_TUSK_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_02_cannon_ghex_F|O_T_MBT_02_cannon_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_04_cannon_F|O_MBT_04_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_04_cannon_F|O_T_MBT_04_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_04_command_F|O_MBT_04_command_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_04_command_F|O_T_MBT_04_command_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_APC_tracked_03_cannon_F|I_E_APC_tracked_03_cannon_F]]
+| [[File:arma3-b_mbt_01_cannon_f.jpg|150px]][[File:arma3-o_mbt_02_cannon_f.jpg|150px]][[File:arma3-b_apc_wheeled_01_cannon_f.jpg|150px]][[File:arma3-i_apc_tracked_03_cannon_f.jpg|150px]][[File:arma3-i_mbt_03_cannon_f.jpg|150px]][[File:arma3-b_mbt_01_tusk_f.jpg|150px]][[File:arma3-b_t_apc_wheeled_01_cannon_f.jpg|150px]][[File:arma3-b_t_mbt_01_cannon_f.jpg|150px]][[File:arma3-b_t_mbt_01_tusk_f.jpg|150px]][[File:arma3-o_t_mbt_02_cannon_ghex_f.jpg|150px]][[File:arma3-o_mbt_04_cannon_f.jpg|150px]][[File:arma3-o_t_mbt_04_cannon_f.jpg|150px]][[File:arma3-o_mbt_04_command_f.jpg|150px]][[File:arma3-o_t_mbt_04_command_f.jpg|150px]][[File:arma3-i_e_apc_tracked_03_cannon_f.jpg|150px]]
+|-
+| <span id="LMG_coax_ext" >'''LMG_coax_ext'''</span>
+| ''Coaxial MG 7.62 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt|200Rnd_762x51_Belt]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt|1000Rnd_762x51_Belt]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt|2000Rnd_762x51_Belt]]
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt_Red|200Rnd_762x51_Belt_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt_Green|200Rnd_762x51_Belt_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt_Yellow|200Rnd_762x51_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt_Red|1000Rnd_762x51_Belt_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt_Green|1000Rnd_762x51_Belt_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt_Yellow|1000Rnd_762x51_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt_Red|2000Rnd_762x51_Belt_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt_Green|2000Rnd_762x51_Belt_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt_Yellow|2000Rnd_762x51_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt_T_Red|200Rnd_762x51_Belt_T_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt_T_Green|200Rnd_762x51_Belt_T_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_762x51_Belt_T_Yellow|200Rnd_762x51_Belt_T_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt_T_Red|1000Rnd_762x51_Belt_T_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt_T_Green|1000Rnd_762x51_Belt_T_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_762x51_Belt_T_Yellow|1000Rnd_762x51_Belt_T_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt_T_Red|2000Rnd_762x51_Belt_T_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt_T_Green|2000Rnd_762x51_Belt_T_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_762x51_Belt_T_Yellow|2000Rnd_762x51_Belt_T_Yellow]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_APC_Tracked_02_cannon_F|O_APC_Tracked_02_cannon_F]]
+:[[Arma 3 CfgVehicles GUER#I_APC_Wheeled_03_cannon_F|I_APC_Wheeled_03_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_APC_Wheeled_03_cannon_F|B_APC_Wheeled_03_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Tracked_02_cannon_ghex_F|O_T_APC_Tracked_02_cannon_ghex_F]]
+:[[Arma 3 CfgVehicles GUER#I_LT_01_cannon_F|I_LT_01_cannon_F]]
+| [[File:arma3-o_apc_tracked_02_cannon_f.jpg|150px]][[File:arma3-i_apc_wheeled_03_cannon_f.jpg|150px]][[File:arma3-b_apc_wheeled_03_cannon_f.jpg|150px]][[File:arma3-o_t_apc_tracked_02_cannon_ghex_f.jpg|150px]][[File:arma3-i_lt_01_cannon_f.jpg|150px]]
+|-
+| <span id="LMG_M200" >'''LMG_M200'''</span>
+| ''M200 LMG 6.5 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt|200Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Red|200Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Green|200Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Yellow|200Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt|2000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Green|2000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Yellow|2000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt|1000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Green|1000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Yellow|1000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Red|2000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green|2000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow|2000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Red|1000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Green|1000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Yellow|1000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green_Splash|2000Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow_Splash|2000Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt|500Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Red_Splash|500Rnd_65x39_Belt_Tracer_Red_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Green_Splash|500Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Yellow_Splash|500Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#PylonWeapon_2000Rnd_65x39_belt|PylonWeapon_2000Rnd_65x39_belt]]
+| 
+| 
+|-
+| <span id="LMG_M200_body" >'''LMG_M200_body'''</span>
+| ''M200 LMG 6.5 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt|200Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Red|200Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Green|200Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Yellow|200Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt|2000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Green|2000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Yellow|2000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt|1000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Green|1000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Yellow|1000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Red|2000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green|2000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow|2000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Red|1000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Green|1000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Yellow|1000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green_Splash|2000Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow_Splash|2000Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt|500Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Red_Splash|500Rnd_65x39_Belt_Tracer_Red_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Green_Splash|500Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Yellow_Splash|500Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#PylonWeapon_2000Rnd_65x39_belt|PylonWeapon_2000Rnd_65x39_belt]]
+| 
+| 
+|-
+| <span id="LMG_Minigun" >'''LMG_Minigun'''</span>
+| ''Minigun 6.5 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt|200Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Red|200Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Green|200Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Yellow|200Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt|2000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Green|2000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Yellow|2000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt|1000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Green|1000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Yellow|1000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Red|2000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green|2000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow|2000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Red|1000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Green|1000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Yellow|1000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green_Splash|2000Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow_Splash|2000Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt|500Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Red_Splash|500Rnd_65x39_Belt_Tracer_Red_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Green_Splash|500Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Yellow_Splash|500Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#PylonWeapon_2000Rnd_65x39_belt|PylonWeapon_2000Rnd_65x39_belt]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Boat_Armed_01_minigun_F|B_Boat_Armed_01_minigun_F]]
+:[[Arma 3 CfgVehicles GUER#I_Boat_Armed_01_minigun_F|I_Boat_Armed_01_minigun_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Boat_Armed_01_minigun_F|B_T_Boat_Armed_01_minigun_F]]
+| [[File:arma3-b_boat_armed_01_minigun_f.jpg|150px]][[File:arma3-i_boat_armed_01_minigun_f.jpg|150px]][[File:arma3-b_t_boat_armed_01_minigun_f.jpg|150px]]
+|-
+| <span id="LMG_Minigun2" >'''LMG_Minigun2'''</span>
+| ''Minigun 6.5 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt|200Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Red|200Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Green|200Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Yellow|200Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt|2000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Green|2000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Yellow|2000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt|1000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Green|1000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Yellow|1000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Red|2000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green|2000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow|2000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Red|1000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Green|1000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Yellow|1000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green_Splash|2000Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow_Splash|2000Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt|500Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Red_Splash|500Rnd_65x39_Belt_Tracer_Red_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Green_Splash|500Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Yellow_Splash|500Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#PylonWeapon_2000Rnd_65x39_belt|PylonWeapon_2000Rnd_65x39_belt]]
+| 
+| 
+|-
+| <span id="LMG_Minigun_heli" >'''LMG_Minigun_heli'''</span>
+| ''Minigun 6.5 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt|200Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Red|200Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Green|200Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Yellow|200Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt|2000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Green|2000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Yellow|2000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt|1000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Green|1000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Yellow|1000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Red|2000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green|2000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow|2000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Red|1000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Green|1000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Yellow|1000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green_Splash|2000Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow_Splash|2000Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt|500Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Red_Splash|500Rnd_65x39_Belt_Tracer_Red_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Green_Splash|500Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Yellow_Splash|500Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#PylonWeapon_2000Rnd_65x39_belt|PylonWeapon_2000Rnd_65x39_belt]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_Heli_Light_02_F|O_Heli_Light_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Light_02_v2_F|O_Heli_Light_02_v2_F]]
+| 
+|-
+| <span id="LMG_Minigun_Transport" >'''LMG_Minigun_Transport'''</span>
+| ''Minigun 6.5 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt|200Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Red|200Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Green|200Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Yellow|200Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt|2000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Green|2000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Yellow|2000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt|1000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Green|1000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Yellow|1000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Red|2000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green|2000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow|2000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Red|1000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Green|1000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Yellow|1000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green_Splash|2000Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow_Splash|2000Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt|500Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Red_Splash|500Rnd_65x39_Belt_Tracer_Red_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Green_Splash|500Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Yellow_Splash|500Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#PylonWeapon_2000Rnd_65x39_belt|PylonWeapon_2000Rnd_65x39_belt]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_01_F|B_Heli_Transport_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_01_camo_F|B_Heli_Transport_01_camo_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_03_F|B_Heli_Transport_03_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_03_black_F|B_Heli_Transport_03_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_armed_F|O_T_LSV_02_armed_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_armed_viper_F|O_T_LSV_02_armed_viper_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_armed_F|O_LSV_02_armed_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_armed_viper_F|O_LSV_02_armed_viper_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_armed_black_F|O_T_LSV_02_armed_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_armed_ghex_F|O_T_LSV_02_armed_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_armed_arid_F|O_T_LSV_02_armed_arid_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_armed_black_F|O_LSV_02_armed_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_armed_ghex_F|O_LSV_02_armed_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_armed_arid_F|O_LSV_02_armed_arid_F]]
+:[[Arma 3 CfgVehicles WEST#B_CTRG_Heli_Transport_01_sand_F|B_CTRG_Heli_Transport_01_sand_F]]
+:[[Arma 3 CfgVehicles WEST#B_CTRG_Heli_Transport_01_tropic_F|B_CTRG_Heli_Transport_01_tropic_F]]
+| [[File:arma3-b_heli_transport_01_f.jpg|150px]][[File:arma3-b_heli_transport_03_f.jpg|150px]][[File:arma3-b_heli_transport_03_f.jpg|150px]][[File:arma3-o_t_lsv_02_armed_f.jpg|150px]][[File:arma3-o_t_lsv_02_armed_f.jpg|150px]][[File:arma3-o_lsv_02_armed_f.jpg|150px]][[File:arma3-o_lsv_02_armed_f.jpg|150px]][[File:arma3-o_t_lsv_02_armed_f.jpg|150px]][[File:arma3-o_t_lsv_02_armed_f.jpg|150px]][[File:arma3-o_t_lsv_02_armed_f.jpg|150px]][[File:arma3-o_lsv_02_armed_f.jpg|150px]][[File:arma3-o_lsv_02_armed_f.jpg|150px]][[File:arma3-o_lsv_02_armed_f.jpg|150px]][[File:arma3-b_ctrg_heli_transport_01_sand_f.jpg|150px]][[File:arma3-b_ctrg_heli_transport_01_tropic_f.jpg|150px]]
+|-
+| <span id="LMG_Minigun_Transport2" >'''LMG_Minigun_Transport2'''</span>
+| ''Minigun 6.5 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt|200Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Red|200Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Green|200Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Yellow|200Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt|2000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Green|2000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Yellow|2000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt|1000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Green|1000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Yellow|1000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Red|2000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green|2000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow|2000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Red|1000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Green|1000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Yellow|1000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green_Splash|2000Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow_Splash|2000Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt|500Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Red_Splash|500Rnd_65x39_Belt_Tracer_Red_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Green_Splash|500Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Yellow_Splash|500Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#PylonWeapon_2000Rnd_65x39_belt|PylonWeapon_2000Rnd_65x39_belt]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_01_F|B_Heli_Transport_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_01_camo_F|B_Heli_Transport_01_camo_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_03_F|B_Heli_Transport_03_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Transport_03_black_F|B_Heli_Transport_03_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_CTRG_Heli_Transport_01_sand_F|B_CTRG_Heli_Transport_01_sand_F]]
+:[[Arma 3 CfgVehicles WEST#B_CTRG_Heli_Transport_01_tropic_F|B_CTRG_Heli_Transport_01_tropic_F]]
+| [[File:arma3-b_heli_transport_01_f.jpg|150px]][[File:arma3-b_heli_transport_03_f.jpg|150px]][[File:arma3-b_heli_transport_03_f.jpg|150px]][[File:arma3-b_ctrg_heli_transport_01_sand_f.jpg|150px]][[File:arma3-b_ctrg_heli_transport_01_tropic_f.jpg|150px]]
+|-
+| <span id="LMG_RCWS" >'''LMG_RCWS'''</span>
+| ''RCWS LMG 6.5 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt|200Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Red|200Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Green|200Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#200Rnd_65x39_Belt_Tracer_Yellow|200Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt|2000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Green|2000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Yellow|2000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt|1000Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Green|1000Rnd_65x39_Belt_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Yellow|1000Rnd_65x39_Belt_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Red|2000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green|2000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow|2000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Red|1000Rnd_65x39_Belt_Tracer_Red]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Green|1000Rnd_65x39_Belt_Tracer_Green]]
+:[[Arma 3 CfgMagazines#1000Rnd_65x39_Belt_Tracer_Yellow|1000Rnd_65x39_Belt_Tracer_Yellow]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Green_Splash|2000Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#2000Rnd_65x39_Belt_Tracer_Yellow_Splash|2000Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt|500Rnd_65x39_Belt]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Red_Splash|500Rnd_65x39_Belt_Tracer_Red_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Green_Splash|500Rnd_65x39_Belt_Tracer_Green_Splash]]
+:[[Arma 3 CfgMagazines#500Rnd_65x39_Belt_Tracer_Yellow_Splash|500Rnd_65x39_Belt_Tracer_Yellow_Splash]]
+:[[Arma 3 CfgMagazines#PylonWeapon_2000Rnd_65x39_belt|PylonWeapon_2000Rnd_65x39_belt]]
+| 
+| 
+|-
+| <span id="M134_minigun" >'''M134_minigun'''</span>
+| ''2x M134 Minigun 7.62 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#5000Rnd_762x51_Belt|5000Rnd_762x51_Belt]]
+:[[Arma 3 CfgMagazines#5000Rnd_762x51_Yellow_Belt|5000Rnd_762x51_Yellow_Belt]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Heli_Light_01_armed_F|B_Heli_Light_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Light_01_dynamicLoadout_F|B_Heli_Light_01_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles GUER#I_Heli_light_03_F|I_Heli_light_03_F]]
+:[[Arma 3 CfgVehicles GUER#I_Heli_light_03_dynamicLoadout_F|I_Heli_light_03_dynamicLoadout_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Heli_light_03_dynamicLoadout_F|I_E_Heli_light_03_dynamicLoadout_F]]
+| [[File:arma3-b_heli_light_01_dynamicloadout_f.jpg|150px]][[File:arma3-i_heli_light_03_dynamicloadout_f.jpg|150px]][[File:arma3-i_e_heli_light_03_dynamicloadout_f.jpg|150px]]
+|-
+| <span id="M2" >'''M2'''</span>
+| 
+| 
+| 
+| 
+
+:[[Arma 3 CfgVehicles EMPTY#LaserTargetCBase|LaserTargetCBase]]
+:[[Arma 3 CfgVehicles EMPTY#LaserTargetWBase|LaserTargetWBase]]
+:[[Arma 3 CfgVehicles EMPTY#LaserTargetEBase|LaserTargetEBase]]
+| 
+|-
+| <span id="MiniCarHorn" >'''MiniCarHorn'''</span>
+| ''Horn''
+| 
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles CIV#C_Quadbike_01_F|C_Quadbike_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Quadbike_01_F|B_Quadbike_01_F]]
+:[[Arma 3 CfgVehicles EAST#O_Quadbike_01_F|O_Quadbike_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_Quadbike_01_F|I_Quadbike_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_G_Quadbike_01_F|I_G_Quadbike_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_G_Quadbike_01_F|B_G_Quadbike_01_F]]
+:[[Arma 3 CfgVehicles EAST#O_G_Quadbike_01_F|O_G_Quadbike_01_F]]
+:[[Arma 3 CfgVehicles CIV#C_Quadbike_01_black_F|C_Quadbike_01_black_F]]
+:[[Arma 3 CfgVehicles CIV#C_Quadbike_01_blue_F|C_Quadbike_01_blue_F]]
+:[[Arma 3 CfgVehicles CIV#C_Quadbike_01_red_F|C_Quadbike_01_red_F]]
+:[[Arma 3 CfgVehicles CIV#C_Quadbike_01_white_F|C_Quadbike_01_white_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Quadbike_01_ghex_F|O_T_Quadbike_01_ghex_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Quadbike_01_F|B_T_Quadbike_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Quadbike_01_F|I_E_Quadbike_01_F]]
+|}
+| [[File:arma3-c_quadbike_01_f.jpg|150px]][[File:arma3-b_quadbike_01_f.jpg|150px]][[File:arma3-o_quadbike_01_f.jpg|150px]][[File:arma3-i_quadbike_01_f.jpg|150px]][[File:arma3-i_g_quadbike_01_f.jpg|150px]][[File:arma3-b_g_quadbike_01_f.jpg|150px]][[File:arma3-o_g_quadbike_01_f.jpg|150px]][[File:arma3-c_quadbike_01_f.jpg|150px]][[File:arma3-c_quadbike_01_f.jpg|150px]][[File:arma3-c_quadbike_01_f.jpg|150px]][[File:arma3-c_quadbike_01_f.jpg|150px]][[File:arma3-o_t_quadbike_01_ghex_f.jpg|150px]][[File:arma3-b_t_quadbike_01_f.jpg|150px]][[File:arma3-i_e_quadbike_01_f.jpg|150px]]
+|-
+| <span id="Missile_AA_03_Plane_CAS_02_F" >'''Missile_AA_03_Plane_CAS_02_F'''</span>
+| ''Sahr-3''
+| 
+| 
+:[[Arma 3 CfgMagazines#2Rnd_Missile_AA_03_F|2Rnd_Missile_AA_03_F]]
+:[[Arma 3 CfgMagazines#PylonRack_1Rnd_Missile_AA_03_F|PylonRack_1Rnd_Missile_AA_03_F]]
+:[[Arma 3 CfgMagazines#PylonMissile_1Rnd_Missile_AA_03_F|PylonMissile_1Rnd_Missile_AA_03_F]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_F|O_Plane_CAS_02_F]]
+| 
+|-
+| <span id="Missile_AA_04_Plane_CAS_01_F" >'''Missile_AA_04_Plane_CAS_01_F'''</span>
+| ''Falchion-22''
+| 
+| 
+:[[Arma 3 CfgMagazines#2Rnd_Missile_AA_04_F|2Rnd_Missile_AA_04_F]]
+:[[Arma 3 CfgMagazines#PylonRack_1Rnd_Missile_AA_04_F|PylonRack_1Rnd_Missile_AA_04_F]]
+:[[Arma 3 CfgMagazines#PylonMissile_1Rnd_Missile_AA_04_F|PylonMissile_1Rnd_Missile_AA_04_F]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_F|B_Plane_CAS_01_F]]
+| 
+|-
+| <span id="Missile_AGM_01_Plane_CAS_02_F" >'''Missile_AGM_01_Plane_CAS_02_F'''</span>
+| ''Sharur''
+| 
+| 
+:[[Arma 3 CfgMagazines#4Rnd_Missile_AGM_01_F|4Rnd_Missile_AGM_01_F]]
+:[[Arma 3 CfgMagazines#PylonRack_1Rnd_Missile_AGM_01_F|PylonRack_1Rnd_Missile_AGM_01_F]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_F|O_Plane_CAS_02_F]]
+| 
+|-
+| <span id="Missile_AGM_02_Plane_CAS_01_F" >'''Missile_AGM_02_Plane_CAS_01_F'''</span>
+| ''Macer''
+| 
+| 
+:[[Arma 3 CfgMagazines#6Rnd_Missile_AGM_02_F|6Rnd_Missile_AGM_02_F]]
+:[[Arma 3 CfgMagazines#PylonRack_1Rnd_Missile_AGM_02_F|PylonRack_1Rnd_Missile_AGM_02_F]]
+:[[Arma 3 CfgMagazines#PylonRack_3Rnd_Missile_AGM_02_F|PylonRack_3Rnd_Missile_AGM_02_F]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_F|B_Plane_CAS_01_F]]
+| 
+|-
+| <span id="MissileLauncher" >'''MissileLauncher'''</span>
+| 
+| 
+| 
+| 
+| 
+|-
+| <span id="missiles_ASRAAM" >'''missiles_ASRAAM'''</span>
+| ''ASRAAM''
+| 
+| 
+:[[Arma 3 CfgMagazines#2Rnd_AAA_missiles|2Rnd_AAA_missiles]]
+:[[Arma 3 CfgMagazines#2Rnd_AAA_missiles_MI02|2Rnd_AAA_missiles_MI02]]
+:[[Arma 3 CfgMagazines#2Rnd_AAA_missiles_MI06|2Rnd_AAA_missiles_MI06]]
+:[[Arma 3 CfgMagazines#4Rnd_AAA_missiles|4Rnd_AAA_missiles]]
+:[[Arma 3 CfgMagazines#4Rnd_AAA_missiles_MI02|4Rnd_AAA_missiles_MI02]]
+:[[Arma 3 CfgMagazines#PylonRack_1Rnd_AAA_missiles|PylonRack_1Rnd_AAA_missiles]]
+:[[Arma 3 CfgMagazines#PylonMissile_1Rnd_AAA_missiles|PylonMissile_1Rnd_AAA_missiles]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Heli_Attack_01_F|B_Heli_Attack_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_03_CAS_F|I_Plane_Fighter_03_CAS_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_03_AA_F|I_Plane_Fighter_03_AA_F]]
+| 
+|-
+| <span id="missiles_DAGR" >'''missiles_DAGR'''</span>
+| ''DAGR''
+| 
+| 
+:[[Arma 3 CfgMagazines#24Rnd_PG_missiles|24Rnd_PG_missiles]]
+:[[Arma 3 CfgMagazines#12Rnd_PG_missiles|12Rnd_PG_missiles]]
+:[[Arma 3 CfgMagazines#PylonRack_12Rnd_PG_missiles|PylonRack_12Rnd_PG_missiles]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_Heli_Light_02_F|O_Heli_Light_02_F]]
+:[[Arma 3 CfgVehicles WEST#B_Heli_Attack_01_F|B_Heli_Attack_01_F]]
+| 
+|-
+| <span id="missiles_DAR" >'''missiles_DAR'''</span>
+| ''DAR''
+| 
+| 
+:[[Arma 3 CfgMagazines#24Rnd_missiles|24Rnd_missiles]]
+:[[Arma 3 CfgMagazines#12Rnd_missiles|12Rnd_missiles]]
+:[[Arma 3 CfgMagazines#PylonRack_12Rnd_missiles|PylonRack_12Rnd_missiles]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Heli_Light_01_armed_F|B_Heli_Light_01_armed_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Light_02_v2_F|O_Heli_Light_02_v2_F]]
+:[[Arma 3 CfgVehicles GUER#I_Heli_light_03_F|I_Heli_light_03_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_UAV_03_F|B_T_UAV_03_F]]
+| 
+|-
+| <span id="missiles_Firefist" >'''missiles_Firefist'''</span>
+| ''FireFIST ATGM''
+| 
+| 
+:[[Arma 3 CfgMagazines#2Rnd_127mm_Firefist_missiles|2Rnd_127mm_Firefist_missiles]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#I_LT_01_AT_F|I_LT_01_AT_F]]
+| [[File:arma3-i_lt_01_at_f.jpg|150px]]
+|-
+| <span id="missiles_Jian" >'''missiles_Jian'''</span>
+| ''Jian''
+| 
+| 
+:[[Arma 3 CfgMagazines#4Rnd_LG_Jian|4Rnd_LG_Jian]]
+:[[Arma 3 CfgMagazines#PylonRack_1Rnd_Missile_Jian|PylonRack_1Rnd_Missile_Jian]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_T_UAV_04_CAS_F|O_T_UAV_04_CAS_F]]
+| [[File:arma3-o_t_uav_04_cas_f.jpg|150px]]
+|-
+| <span id="missiles_SAAMI" >'''missiles_SAAMI'''</span>
+| ''SAAMI''
+| 
+| 
+:[[Arma 3 CfgMagazines#4Rnd_70mm_SAAMI_missiles|4Rnd_70mm_SAAMI_missiles]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#I_LT_01_AA_F|I_LT_01_AA_F]]
+| [[File:arma3-i_lt_01_aa_f.jpg|150px]]
+|-
+| <span id="missiles_SCALPEL" >'''missiles_SCALPEL'''</span>
+| ''Skalpel ATGM''
+| 
+| 
+:[[Arma 3 CfgMagazines#2Rnd_LG_scalpel|2Rnd_LG_scalpel]]
+:[[Arma 3 CfgMagazines#8Rnd_LG_scalpel|8Rnd_LG_scalpel]]
+:[[Arma 3 CfgMagazines#6Rnd_LG_scalpel|6Rnd_LG_scalpel]]
+:[[Arma 3 CfgMagazines#PylonRack_1Rnd_LG_scalpel|PylonRack_1Rnd_LG_scalpel]]
+:[[Arma 3 CfgMagazines#PylonMissile_1Rnd_LG_scalpel|PylonMissile_1Rnd_LG_scalpel]]
+:[[Arma 3 CfgMagazines#PylonRack_3Rnd_LG_scalpel|PylonRack_3Rnd_LG_scalpel]]
+:[[Arma 3 CfgMagazines#PylonRack_4Rnd_LG_scalpel|PylonRack_4Rnd_LG_scalpel]]
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_F|O_Heli_Attack_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_black_F|O_Heli_Attack_02_black_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_03_CAS_F|I_Plane_Fighter_03_CAS_F]]
+:[[Arma 3 CfgVehicles WEST#B_UAV_02_F|B_UAV_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_UAV_02_F|O_UAV_02_F]]
+:[[Arma 3 CfgVehicles GUER#I_UAV_02_F|I_UAV_02_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_UAV_03_F|B_T_UAV_03_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_F|O_T_VTOL_02_infantry_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_F|O_T_VTOL_02_vehicle_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_hex_F|O_T_VTOL_02_infantry_hex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_ghex_F|O_T_VTOL_02_infantry_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_grey_F|O_T_VTOL_02_infantry_grey_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_hex_F|O_T_VTOL_02_vehicle_hex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_ghex_F|O_T_VTOL_02_vehicle_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_grey_F|O_T_VTOL_02_vehicle_grey_F]]
+|}
+| 
+|-
+| <span id="missiles_titan" >'''missiles_titan'''</span>
+| ''Titan Missile''
+| 
+| 
+:[[Arma 3 CfgMagazines#2Rnd_GAT_missiles|2Rnd_GAT_missiles]]
+:[[Arma 3 CfgMagazines#2Rnd_GAT_missiles_O|2Rnd_GAT_missiles_O]]
+:[[Arma 3 CfgMagazines#5Rnd_GAT_missiles|5Rnd_GAT_missiles]]
+:[[Arma 3 CfgMagazines#4Rnd_GAA_missiles|4Rnd_GAA_missiles]]
+:[[Arma 3 CfgMagazines#4Rnd_Titan_long_missiles|4Rnd_Titan_long_missiles]]
+:[[Arma 3 CfgMagazines#4Rnd_Titan_long_missiles_O|4Rnd_Titan_long_missiles_O]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_APC_Tracked_02_cannon_F|O_APC_Tracked_02_cannon_F]]
+:[[Arma 3 CfgVehicles GUER#I_APC_Wheeled_03_cannon_F|I_APC_Wheeled_03_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_APC_Wheeled_03_cannon_F|B_APC_Wheeled_03_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Tracked_02_cannon_ghex_F|O_T_APC_Tracked_02_cannon_ghex_F]]
+| [[File:arma3-o_apc_tracked_02_cannon_f.jpg|150px]][[File:arma3-i_apc_wheeled_03_cannon_f.jpg|150px]][[File:arma3-b_apc_wheeled_03_cannon_f.jpg|150px]][[File:arma3-o_t_apc_tracked_02_cannon_ghex_f.jpg|150px]]
+|-
+| <span id="missiles_titan_AA" >'''missiles_titan_AA'''</span>
+| ''Titan Missile''
+| 
+| 
+:[[Arma 3 CfgMagazines#4Rnd_GAA_missiles|4Rnd_GAA_missiles]]
+:[[Arma 3 CfgMagazines#4Rnd_Titan_long_missiles|4Rnd_Titan_long_missiles]]
+:[[Arma 3 CfgMagazines#4Rnd_Titan_long_missiles_O|4Rnd_Titan_long_missiles_O]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_APC_Tracked_01_AA_F|B_APC_Tracked_01_AA_F]]
+:[[Arma 3 CfgVehicles EAST#O_APC_Tracked_02_AA_F|O_APC_Tracked_02_AA_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_APC_Tracked_01_AA_F|B_T_APC_Tracked_01_AA_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Tracked_02_AA_ghex_F|O_T_APC_Tracked_02_AA_ghex_F]]
+| [[File:arma3-b_apc_tracked_01_aa_f.jpg|150px]][[File:arma3-o_apc_tracked_02_aa_f.jpg|150px]][[File:arma3-b_t_apc_tracked_01_aa_f.jpg|150px]][[File:arma3-o_t_apc_tracked_02_aa_ghex_f.jpg|150px]]
+|-
+| <span id="missiles_titan_static" >'''missiles_titan_static'''</span>
+| ''Titan Missile''
+| 
+| 
+:[[Arma 3 CfgMagazines#1Rnd_GAT_missiles|1Rnd_GAT_missiles]]
+:[[Arma 3 CfgMagazines#1Rnd_GAA_missiles|1Rnd_GAA_missiles]]
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles WEST#B_static_AA_F|B_static_AA_F]]
+:[[Arma 3 CfgVehicles EAST#O_static_AA_F|O_static_AA_F]]
+:[[Arma 3 CfgVehicles GUER#I_static_AA_F|I_static_AA_F]]
+:[[Arma 3 CfgVehicles WEST#B_static_AT_F|B_static_AT_F]]
+:[[Arma 3 CfgVehicles EAST#O_static_AT_F|O_static_AT_F]]
+:[[Arma 3 CfgVehicles GUER#I_static_AT_F|I_static_AT_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_AT_F|B_T_LSV_01_AT_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_AT_F|B_LSV_01_AT_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Static_AA_F|B_T_Static_AA_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Static_AT_F|B_T_Static_AT_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Static_AA_F|I_E_Static_AA_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Static_AT_F|I_E_Static_AT_F]]
+|}
+| [[File:arma3-b_static_aa_f.jpg|150px]][[File:arma3-o_static_aa_f.jpg|150px]][[File:arma3-i_static_aa_f.jpg|150px]][[File:arma3-b_static_at_f.jpg|150px]][[File:arma3-o_static_at_f.jpg|150px]][[File:arma3-i_static_at_f.jpg|150px]][[File:arma3-b_t_lsv_01_at_f.jpg|150px]][[File:arma3-b_lsv_01_at_f.jpg|150px]][[File:arma3-b_t_static_aa_f.jpg|150px]][[File:arma3-b_t_static_at_f.jpg|150px]][[File:arma3-i_e_static_aa_f.jpg|150px]][[File:arma3-i_e_static_at_f.jpg|150px]]
+|-
+| <span id="missiles_Vorona" >'''missiles_Vorona'''</span>
+| ''9M135 Vorona''
+| 
+| 
+:[[Arma 3 CfgMagazines#Vorona_HEAT|Vorona_HEAT]]
+:[[Arma 3 CfgMagazines#Vorona_HE|Vorona_HE]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_AT_F|O_T_LSV_02_AT_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_AT_F|O_LSV_02_AT_F]]
+| [[File:arma3-o_t_lsv_02_at_f.jpg|150px]][[File:arma3-o_lsv_02_at_f.jpg|150px]]
+|-
+| <span id="missiles_Zephyr" >'''missiles_Zephyr'''</span>
+| ''Zephyr''
+| 
+| 
+:[[Arma 3 CfgMagazines#4Rnd_GAA_missiles|4Rnd_GAA_missiles]]
+:[[Arma 3 CfgMagazines#PylonRack_1Rnd_GAA_missiles|PylonRack_1Rnd_GAA_missiles]]
+:[[Arma 3 CfgMagazines#PylonMissile_1Rnd_GAA_missiles|PylonMissile_1Rnd_GAA_missiles]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_03_AA_F|I_Plane_Fighter_03_AA_F]]
+| 
+|-
+| <span id="Mk82BombLauncher" >'''Mk82BombLauncher'''</span>
+| ''Mk82''
+| 
+| 
+:[[Arma 3 CfgMagazines#2Rnd_Mk82|2Rnd_Mk82]]
+:[[Arma 3 CfgMagazines#2Rnd_Mk82_MI08|2Rnd_Mk82_MI08]]
+:[[Arma 3 CfgMagazines#PylonMissile_1Rnd_Mk82_F|PylonMissile_1Rnd_Mk82_F]]
+| 
+| 
+|-
+| <span id="MMG_01_vehicle" >'''MMG_01_vehicle'''</span>
+| ''Navid 9.3 mm''
+| ''Medium Machine Gun<br />Caliber: 9.3x64 mm''
+| 
+:[[Arma 3 CfgMagazines#150Rnd_93x64_Mag|150Rnd_93x64_Mag]]
+| 
+| 
+|-
+| <span id="MMG_02_coax" >'''MMG_02_coax'''</span>
+| ''SPMG .338''
+| ''Medium Machine Gun<br />Caliber: .338 Norma Magnum''
+| 
+:[[Arma 3 CfgMagazines#130Rnd_338_Mag|130Rnd_338_Mag]]
+:[[Arma 3 CfgMagazines#200Rnd_338_Mag|200Rnd_338_Mag]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_AFV_Wheeled_01_cannon_F|B_AFV_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_AFV_Wheeled_01_cannon_F|B_T_AFV_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_AFV_Wheeled_01_up_cannon_F|B_AFV_Wheeled_01_up_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_AFV_Wheeled_01_up_cannon_F|B_T_AFV_Wheeled_01_up_cannon_F]]
+| [[File:arma3-b_afv_wheeled_01_cannon_f.jpg|150px]][[File:arma3-b_t_afv_wheeled_01_cannon_f.jpg|150px]][[File:arma3-b_afv_wheeled_01_up_cannon_f.jpg|150px]][[File:arma3-b_t_afv_wheeled_01_up_cannon_f.jpg|150px]]
+|-
+| <span id="MMG_02_vehicle" >'''MMG_02_vehicle'''</span>
+| ''SPMG .338''
+| ''Medium Machine Gun<br />Caliber: .338 Norma Magnum''
+| 
+:[[Arma 3 CfgMagazines#130Rnd_338_Mag|130Rnd_338_Mag]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_F|B_T_LSV_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_AT_F|B_T_LSV_01_AT_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_armed_F|B_LSV_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_AT_F|B_LSV_01_AT_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_armed_black_F|B_LSV_01_armed_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_armed_olive_F|B_LSV_01_armed_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_armed_sand_F|B_LSV_01_armed_sand_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_black_F|B_T_LSV_01_armed_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_olive_F|B_T_LSV_01_armed_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_sand_F|B_T_LSV_01_armed_sand_F]]
+| [[File:arma3-b_t_lsv_01_armed_f.jpg|150px]][[File:arma3-b_t_lsv_01_at_f.jpg|150px]][[File:arma3-b_lsv_01_armed_f.jpg|150px]][[File:arma3-b_lsv_01_at_f.jpg|150px]][[File:arma3-b_lsv_01_armed_f.jpg|150px]][[File:arma3-b_lsv_01_armed_f.jpg|150px]][[File:arma3-b_lsv_01_armed_f.jpg|150px]][[File:arma3-b_t_lsv_01_armed_f.jpg|150px]][[File:arma3-b_t_lsv_01_armed_f.jpg|150px]][[File:arma3-b_t_lsv_01_armed_f.jpg|150px]]
+|-
+| <span id="mortar_155mm_AMOS" >'''mortar_155mm_AMOS'''</span>
+| ''Howitzer 155 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#32Rnd_155mm_Mo_shells|32Rnd_155mm_Mo_shells]]
+:[[Arma 3 CfgMagazines#32Rnd_155mm_Mo_shells_O|32Rnd_155mm_Mo_shells_O]]
+:[[Arma 3 CfgMagazines#6Rnd_155mm_Mo_smoke|6Rnd_155mm_Mo_smoke]]
+:[[Arma 3 CfgMagazines#6Rnd_155mm_Mo_smoke_O|6Rnd_155mm_Mo_smoke_O]]
+:[[Arma 3 CfgMagazines#2Rnd_155mm_Mo_guided|2Rnd_155mm_Mo_guided]]
+:[[Arma 3 CfgMagazines#4Rnd_155mm_Mo_guided|4Rnd_155mm_Mo_guided]]
+:[[Arma 3 CfgMagazines#4Rnd_155mm_Mo_guided_O|4Rnd_155mm_Mo_guided_O]]
+:[[Arma 3 CfgMagazines#2Rnd_155mm_Mo_LG|2Rnd_155mm_Mo_LG]]
+:[[Arma 3 CfgMagazines#4Rnd_155mm_Mo_LG|4Rnd_155mm_Mo_LG]]
+:[[Arma 3 CfgMagazines#4Rnd_155mm_Mo_LG_O|4Rnd_155mm_Mo_LG_O]]
+:[[Arma 3 CfgMagazines#6Rnd_155mm_Mo_mine|6Rnd_155mm_Mo_mine]]
+:[[Arma 3 CfgMagazines#6Rnd_155mm_Mo_mine_O|6Rnd_155mm_Mo_mine_O]]
+:[[Arma 3 CfgMagazines#2Rnd_155mm_Mo_Cluster|2Rnd_155mm_Mo_Cluster]]
+:[[Arma 3 CfgMagazines#2Rnd_155mm_Mo_Cluster_O|2Rnd_155mm_Mo_Cluster_O]]
+:[[Arma 3 CfgMagazines#6Rnd_155mm_Mo_AT_mine|6Rnd_155mm_Mo_AT_mine]]
+:[[Arma 3 CfgMagazines#6Rnd_155mm_Mo_AT_mine_O|6Rnd_155mm_Mo_AT_mine_O]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_arty_F|B_MBT_01_arty_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_02_arty_F|O_MBT_02_arty_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_arty_F|B_T_MBT_01_arty_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_02_arty_ghex_F|O_T_MBT_02_arty_ghex_F]]
+| [[File:arma3-b_mbt_01_arty_f.jpg|150px]][[File:arma3-o_mbt_02_arty_f.jpg|150px]][[File:arma3-b_t_mbt_01_arty_f.jpg|150px]][[File:arma3-o_t_mbt_02_arty_ghex_f.jpg|150px]]
+|-
+| <span id="mortar_82mm" >'''mortar_82mm'''</span>
+| ''Mortar 82 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#8Rnd_82mm_Mo_shells|8Rnd_82mm_Mo_shells]]
+:[[Arma 3 CfgMagazines#8Rnd_82mm_Mo_Flare_white|8Rnd_82mm_Mo_Flare_white]]
+:[[Arma 3 CfgMagazines#8Rnd_82mm_Mo_Smoke_white|8Rnd_82mm_Mo_Smoke_white]]
+:[[Arma 3 CfgMagazines#8Rnd_82mm_Mo_guided|8Rnd_82mm_Mo_guided]]
+:[[Arma 3 CfgMagazines#8Rnd_82mm_Mo_LG|8Rnd_82mm_Mo_LG]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Mortar_01_F|B_Mortar_01_F]]
+:[[Arma 3 CfgVehicles EAST#O_Mortar_01_F|O_Mortar_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_Mortar_01_F|I_Mortar_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_G_Mortar_01_F|I_G_Mortar_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_G_Mortar_01_F|B_G_Mortar_01_F]]
+:[[Arma 3 CfgVehicles EAST#O_G_Mortar_01_F|O_G_Mortar_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Mortar_01_F|B_T_Mortar_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Mortar_01_F|I_E_Mortar_01_F]]
+| [[File:arma3-b_mortar_01_f.jpg|150px]][[File:arma3-o_mortar_01_f.jpg|150px]][[File:arma3-i_mortar_01_f.jpg|150px]][[File:arma3-i_g_mortar_01_f.jpg|150px]][[File:arma3-b_g_mortar_01_f.jpg|150px]][[File:arma3-o_g_mortar_01_f.jpg|150px]][[File:arma3-b_t_mortar_01_f.jpg|150px]][[File:arma3-i_e_mortar_01_f.jpg|150px]]
+|-
+| <span id="PoliceHorn" >'''PoliceHorn'''</span>
+| ''Horn''
+| 
+| 
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_GEN_Offroad_01_gen_F|B_GEN_Offroad_01_gen_F]]
+:[[Arma 3 CfgVehicles WEST#B_GEN_Van_02_transport_F|B_GEN_Van_02_transport_F]]
+:[[Arma 3 CfgVehicles WEST#B_GEN_Van_02_vehicle_F|B_GEN_Van_02_vehicle_F]]
+:[[Arma 3 CfgVehicles WEST#B_GEN_Offroad_01_covered_F|B_GEN_Offroad_01_covered_F]]
+:[[Arma 3 CfgVehicles WEST#B_GEN_Offroad_01_comms_F|B_GEN_Offroad_01_comms_F]]
+| [[File:arma3-b_gen_offroad_01_gen_f.jpg|150px]][[File:arma3-b_gen_van_02_transport_f.jpg|150px]][[File:arma3-b_gen_van_02_vehicle_f.jpg|150px]][[File:arma3-b_gen_offroad_01_covered_f.jpg|150px]][[File:arma3-b_gen_offroad_01_comms_f.jpg|150px]]
+|-
+| <span id="ProbingLaser_01_F" >'''ProbingLaser_01_F'''</span>
+| ''Sampling Laser''
+| 
+| 
+:[[Arma 3 CfgMagazines#Laserbatteries|Laserbatteries]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_UGV_02_Science_F|B_UGV_02_Science_F]]
+:[[Arma 3 CfgVehicles EAST#O_UGV_02_Science_F|O_UGV_02_Science_F]]
+:[[Arma 3 CfgVehicles GUER#I_UGV_02_Science_F|I_UGV_02_Science_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_UGV_02_Science_F|I_E_UGV_02_Science_F]]
+| [[File:arma3-b_ugv_02_science_f.jpg|150px]][[File:arma3-o_ugv_02_science_f.jpg|150px]][[File:arma3-i_ugv_02_science_f.jpg|150px]][[File:arma3-i_e_ugv_02_science_f.jpg|150px]]
+|-
+| <span id="ProbingWeapon_01_F" >'''ProbingWeapon_01_F'''</span>
+| ''Sampling Laser''
+| 
+| 
+:[[Arma 3 CfgMagazines#ProbingWeapon_01_magazine|ProbingWeapon_01_magazine]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_UGV_02_Science_F|B_UGV_02_Science_F]]
+:[[Arma 3 CfgVehicles EAST#O_UGV_02_Science_F|O_UGV_02_Science_F]]
+:[[Arma 3 CfgVehicles GUER#I_UGV_02_Science_F|I_UGV_02_Science_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_UGV_02_Science_F|I_E_UGV_02_Science_F]]
+| [[File:arma3-b_ugv_02_science_f.jpg|150px]][[File:arma3-o_ugv_02_science_f.jpg|150px]][[File:arma3-i_ugv_02_science_f.jpg|150px]][[File:arma3-i_e_ugv_02_science_f.jpg|150px]]
+|-
+| <span id="ProbingWeapon_02_F" >'''ProbingWeapon_02_F'''</span>
+| ''Biopsy Probe''
+| 
+| 
+:[[Arma 3 CfgMagazines#ProbingWeapon_02_magazine|ProbingWeapon_02_magazine]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_UGV_02_Science_F|B_UGV_02_Science_F]]
+:[[Arma 3 CfgVehicles EAST#O_UGV_02_Science_F|O_UGV_02_Science_F]]
+:[[Arma 3 CfgVehicles GUER#I_UGV_02_Science_F|I_UGV_02_Science_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_UGV_02_Science_F|I_E_UGV_02_Science_F]]
+| [[File:arma3-b_ugv_02_science_f.jpg|150px]][[File:arma3-o_ugv_02_science_f.jpg|150px]][[File:arma3-i_ugv_02_science_f.jpg|150px]][[File:arma3-i_e_ugv_02_science_f.jpg|150px]]
+|-
+| <span id="Rocket_03_AP_Plane_CAS_02_F" >'''Rocket_03_AP_Plane_CAS_02_F'''</span>
+| ''Tratnyr''
+| 
+| 
+:[[Arma 3 CfgMagazines#20Rnd_Rocket_03_AP_F|20Rnd_Rocket_03_AP_F]]
+:[[Arma 3 CfgMagazines#PylonRack_20Rnd_Rocket_03_AP_F|PylonRack_20Rnd_Rocket_03_AP_F]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_F|O_Plane_CAS_02_F]]
+| 
+|-
+| <span id="Rocket_03_HE_Plane_CAS_02_F" >'''Rocket_03_HE_Plane_CAS_02_F'''</span>
+| ''Tratnyr''
+| 
+| 
+:[[Arma 3 CfgMagazines#20Rnd_Rocket_03_HE_F|20Rnd_Rocket_03_HE_F]]
+:[[Arma 3 CfgMagazines#PylonRack_20Rnd_Rocket_03_HE_F|PylonRack_20Rnd_Rocket_03_HE_F]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_Plane_CAS_02_F|O_Plane_CAS_02_F]]
+| 
+|-
+| <span id="Rocket_04_AP_Plane_CAS_01_F" >'''Rocket_04_AP_Plane_CAS_01_F'''</span>
+| ''Shrieker''
+| 
+| 
+:[[Arma 3 CfgMagazines#7Rnd_Rocket_04_AP_F|7Rnd_Rocket_04_AP_F]]
+:[[Arma 3 CfgMagazines#PylonRack_7Rnd_Rocket_04_AP_F|PylonRack_7Rnd_Rocket_04_AP_F]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_F|B_Plane_CAS_01_F]]
+| 
+|-
+| <span id="Rocket_04_HE_Plane_CAS_01_F" >'''Rocket_04_HE_Plane_CAS_01_F'''</span>
+| ''Shrieker''
+| 
+| 
+:[[Arma 3 CfgMagazines#7Rnd_Rocket_04_HE_F|7Rnd_Rocket_04_HE_F]]
+:[[Arma 3 CfgMagazines#PylonRack_7Rnd_Rocket_04_HE_F|PylonRack_7Rnd_Rocket_04_HE_F]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Plane_CAS_01_F|B_Plane_CAS_01_F]]
+| 
+|-
+| <span id="RocketPods" >'''RocketPods'''</span>
+| 
+| 
+| 
+| 
+| 
+|-
+| <span id="rockets_230mm_GAT" >'''rockets_230mm_GAT'''</span>
+| ''230 mm Rocket''
+| 
+| 
+:[[Arma 3 CfgMagazines#12Rnd_230mm_rockets|12Rnd_230mm_rockets]]
+:[[Arma 3 CfgMagazines#12Rnd_230mm_rockets_cluster|12Rnd_230mm_rockets_cluster]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_mlrs_F|B_MBT_01_mlrs_F]]
+:[[Arma 3 CfgVehicles GUER#I_Truck_02_MRL_F|I_Truck_02_MRL_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_mlrs_F|B_T_MBT_01_mlrs_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Truck_02_MRL_F|I_E_Truck_02_MRL_F]]
+| [[File:arma3-b_mbt_01_mlrs_f.jpg|150px]][[File:arma3-i_truck_02_mrl_f.jpg|150px]][[File:arma3-b_t_mbt_01_mlrs_f.jpg|150px]][[File:arma3-i_e_truck_02_mrl_f.jpg|150px]]
+|-
+| <span id="rockets_Skyfire" >'''rockets_Skyfire'''</span>
+| ''Skyfire''
+| 
+| 
+:[[Arma 3 CfgMagazines#14Rnd_80mm_rockets|14Rnd_80mm_rockets]]
+:[[Arma 3 CfgMagazines#38Rnd_80mm_rockets|38Rnd_80mm_rockets]]
+:[[Arma 3 CfgMagazines#PylonRack_19Rnd_Rocket_Skyfire|PylonRack_19Rnd_Rocket_Skyfire]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_F|O_Heli_Attack_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Heli_Attack_02_black_F|O_Heli_Attack_02_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_F|O_T_VTOL_02_infantry_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_F|O_T_VTOL_02_vehicle_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_hex_F|O_T_VTOL_02_infantry_hex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_ghex_F|O_T_VTOL_02_infantry_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_infantry_grey_F|O_T_VTOL_02_infantry_grey_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_hex_F|O_T_VTOL_02_vehicle_hex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_ghex_F|O_T_VTOL_02_vehicle_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_VTOL_02_vehicle_grey_F|O_T_VTOL_02_vehicle_grey_F]]
+| 
+|-
+| <span id="SEARCHLIGHT" >'''SEARCHLIGHT'''</span>
+| ''Searchlight''
+| 
+| 
+| 
+| 
+|-
+| <span id="SmokeLauncher" >'''SmokeLauncher'''</span>
+| ''Smoke Screen''
+| 
+| 
+:[[Arma 3 CfgMagazines#SmokeLauncherMag|SmokeLauncherMag]]
+:[[Arma 3 CfgMagazines#SmokeLauncherMag_Single|SmokeLauncherMag_Single]]
+:[[Arma 3 CfgMagazines#SmokeLauncherMag_boat|SmokeLauncherMag_boat]]
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles WEST#B_APC_Tracked_01_rcws_F|B_APC_Tracked_01_rcws_F]]
+:[[Arma 3 CfgVehicles WEST#B_APC_Tracked_01_CRV_F|B_APC_Tracked_01_CRV_F]]
+:[[Arma 3 CfgVehicles WEST#B_APC_Tracked_01_AA_F|B_APC_Tracked_01_AA_F]]
+:[[Arma 3 CfgVehicles EAST#O_APC_Tracked_02_cannon_F|O_APC_Tracked_02_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_APC_Tracked_02_AA_F|O_APC_Tracked_02_AA_F]]
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_cannon_F|B_MBT_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_arty_F|B_MBT_01_arty_F]]
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_mlrs_F|B_MBT_01_mlrs_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_02_cannon_F|O_MBT_02_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_02_arty_F|O_MBT_02_arty_F]]
+:[[Arma 3 CfgVehicles WEST#B_Boat_Armed_01_minigun_F|B_Boat_Armed_01_minigun_F]]
+:[[Arma 3 CfgVehicles EAST#O_Boat_Armed_01_hmg_F|O_Boat_Armed_01_hmg_F]]
+:[[Arma 3 CfgVehicles GUER#I_Boat_Armed_01_minigun_F|I_Boat_Armed_01_minigun_F]]
+:[[Arma 3 CfgVehicles EAST#O_MRAP_02_F|O_MRAP_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_MRAP_02_hmg_F|O_MRAP_02_hmg_F]]
+:[[Arma 3 CfgVehicles EAST#O_MRAP_02_gmg_F|O_MRAP_02_gmg_F]]
+:[[Arma 3 CfgVehicles GUER#I_MRAP_03_F|I_MRAP_03_F]]
+:[[Arma 3 CfgVehicles GUER#I_MRAP_03_hmg_F|I_MRAP_03_hmg_F]]
+:[[Arma 3 CfgVehicles GUER#I_MRAP_03_gmg_F|I_MRAP_03_gmg_F]]
+:[[Arma 3 CfgVehicles WEST#B_APC_Wheeled_01_cannon_F|B_APC_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_APC_Wheeled_02_rcws_F|O_APC_Wheeled_02_rcws_F]]
+:[[Arma 3 CfgVehicles EAST#O_APC_Wheeled_02_rcws_v2_F|O_APC_Wheeled_02_rcws_v2_F]]
+:[[Arma 3 CfgVehicles GUER#I_APC_tracked_03_cannon_F|I_APC_tracked_03_cannon_F]]
+:[[Arma 3 CfgVehicles GUER#I_MBT_03_cannon_F|I_MBT_03_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_MBT_01_TUSK_F|B_MBT_01_TUSK_F]]
+:[[Arma 3 CfgVehicles GUER#I_APC_Wheeled_03_cannon_F|I_APC_Wheeled_03_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_APC_Wheeled_03_cannon_F|B_APC_Wheeled_03_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MRAP_02_ghex_F|O_T_MRAP_02_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MRAP_02_hmg_ghex_F|O_T_MRAP_02_hmg_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MRAP_02_gmg_ghex_F|O_T_MRAP_02_gmg_ghex_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_APC_Tracked_01_AA_F|B_T_APC_Tracked_01_AA_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_APC_Tracked_01_CRV_F|B_T_APC_Tracked_01_CRV_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_APC_Tracked_01_rcws_F|B_T_APC_Tracked_01_rcws_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Tracked_02_cannon_ghex_F|O_T_APC_Tracked_02_cannon_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Tracked_02_AA_ghex_F|O_T_APC_Tracked_02_AA_ghex_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_APC_Wheeled_01_cannon_F|B_T_APC_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Wheeled_02_rcws_ghex_F|O_T_APC_Wheeled_02_rcws_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Wheeled_02_rcws_v2_ghex_F|O_T_APC_Wheeled_02_rcws_v2_ghex_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_arty_F|B_T_MBT_01_arty_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_mlrs_F|B_T_MBT_01_mlrs_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_cannon_F|B_T_MBT_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MBT_01_TUSK_F|B_T_MBT_01_TUSK_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_02_cannon_ghex_F|O_T_MBT_02_cannon_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_02_arty_ghex_F|O_T_MBT_02_arty_ghex_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Boat_Armed_01_minigun_F|B_T_Boat_Armed_01_minigun_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Boat_Armed_01_hmg_F|O_T_Boat_Armed_01_hmg_F]]
+:[[Arma 3 CfgVehicles WEST#B_AFV_Wheeled_01_cannon_F|B_AFV_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_AFV_Wheeled_01_cannon_F|B_T_AFV_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_AFV_Wheeled_01_up_cannon_F|B_AFV_Wheeled_01_up_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_AFV_Wheeled_01_up_cannon_F|B_T_AFV_Wheeled_01_up_cannon_F]]
+:[[Arma 3 CfgVehicles GUER#I_LT_01_AT_F|I_LT_01_AT_F]]
+:[[Arma 3 CfgVehicles GUER#I_LT_01_scout_F|I_LT_01_scout_F]]
+:[[Arma 3 CfgVehicles GUER#I_LT_01_AA_F|I_LT_01_AA_F]]
+:[[Arma 3 CfgVehicles GUER#I_LT_01_cannon_F|I_LT_01_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_04_cannon_F|O_MBT_04_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_04_cannon_F|O_T_MBT_04_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_04_command_F|O_MBT_04_command_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_04_command_F|O_T_MBT_04_command_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_APC_tracked_03_cannon_F|I_E_APC_tracked_03_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_MBT_02_railgun_F|O_MBT_02_railgun_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MBT_02_railgun_ghex_F|O_T_MBT_02_railgun_ghex_F]]
+|}
+| [[File:arma3-b_apc_tracked_01_rcws_f.jpg|150px]][[File:arma3-b_apc_tracked_01_crv_f.jpg|150px]][[File:arma3-b_apc_tracked_01_aa_f.jpg|150px]][[File:arma3-o_apc_tracked_02_cannon_f.jpg|150px]][[File:arma3-o_apc_tracked_02_aa_f.jpg|150px]][[File:arma3-b_mbt_01_cannon_f.jpg|150px]][[File:arma3-b_mbt_01_arty_f.jpg|150px]][[File:arma3-b_mbt_01_mlrs_f.jpg|150px]][[File:arma3-o_mbt_02_cannon_f.jpg|150px]][[File:arma3-o_mbt_02_arty_f.jpg|150px]][[File:arma3-b_boat_armed_01_minigun_f.jpg|150px]][[File:arma3-o_boat_armed_01_hmg_f.jpg|150px]][[File:arma3-i_boat_armed_01_minigun_f.jpg|150px]][[File:arma3-o_mrap_02_f.jpg|150px]][[File:arma3-o_mrap_02_hmg_f.jpg|150px]][[File:arma3-o_mrap_02_gmg_f.jpg|150px]][[File:arma3-i_mrap_03_f.jpg|150px]][[File:arma3-i_mrap_03_hmg_f.jpg|150px]][[File:arma3-i_mrap_03_gmg_f.jpg|150px]][[File:arma3-b_apc_wheeled_01_cannon_f.jpg|150px]][[File:arma3-o_apc_wheeled_02_rcws_v2_f.jpg|150px]][[File:arma3-i_apc_tracked_03_cannon_f.jpg|150px]][[File:arma3-i_mbt_03_cannon_f.jpg|150px]][[File:arma3-b_mbt_01_tusk_f.jpg|150px]][[File:arma3-i_apc_wheeled_03_cannon_f.jpg|150px]][[File:arma3-b_apc_wheeled_03_cannon_f.jpg|150px]][[File:arma3-o_t_mrap_02_ghex_f.jpg|150px]][[File:arma3-o_t_mrap_02_hmg_ghex_f.jpg|150px]][[File:arma3-o_t_mrap_02_gmg_ghex_f.jpg|150px]][[File:arma3-b_t_apc_tracked_01_aa_f.jpg|150px]][[File:arma3-b_t_apc_tracked_01_crv_f.jpg|150px]][[File:arma3-b_t_apc_tracked_01_rcws_f.jpg|150px]][[File:arma3-o_t_apc_tracked_02_cannon_ghex_f.jpg|150px]][[File:arma3-o_t_apc_tracked_02_aa_ghex_f.jpg|150px]][[File:arma3-b_t_apc_wheeled_01_cannon_f.jpg|150px]][[File:arma3-o_t_apc_wheeled_02_rcws_v2_ghex_f.jpg|150px]][[File:arma3-b_t_mbt_01_arty_f.jpg|150px]][[File:arma3-b_t_mbt_01_mlrs_f.jpg|150px]][[File:arma3-b_t_mbt_01_cannon_f.jpg|150px]][[File:arma3-b_t_mbt_01_tusk_f.jpg|150px]][[File:arma3-o_t_mbt_02_cannon_ghex_f.jpg|150px]][[File:arma3-o_t_mbt_02_arty_ghex_f.jpg|150px]][[File:arma3-b_t_boat_armed_01_minigun_f.jpg|150px]][[File:arma3-o_t_boat_armed_01_hmg_f.jpg|150px]][[File:arma3-b_afv_wheeled_01_cannon_f.jpg|150px]][[File:arma3-b_t_afv_wheeled_01_cannon_f.jpg|150px]][[File:arma3-b_afv_wheeled_01_up_cannon_f.jpg|150px]][[File:arma3-b_t_afv_wheeled_01_up_cannon_f.jpg|150px]][[File:arma3-i_lt_01_at_f.jpg|150px]][[File:arma3-i_lt_01_scout_f.jpg|150px]][[File:arma3-i_lt_01_aa_f.jpg|150px]][[File:arma3-i_lt_01_cannon_f.jpg|150px]][[File:arma3-o_mbt_04_cannon_f.jpg|150px]][[File:arma3-o_t_mbt_04_cannon_f.jpg|150px]][[File:arma3-o_mbt_04_command_f.jpg|150px]][[File:arma3-o_t_mbt_04_command_f.jpg|150px]][[File:arma3-i_e_apc_tracked_03_cannon_f.jpg|150px]][[File:arma3-o_mbt_02_railgun_f.jpg|150px]][[File:arma3-o_t_mbt_02_railgun_ghex_f.jpg|150px]]
+|-
+| <span id="SportCarHorn" >'''SportCarHorn'''</span>
+| ''Horn''
+| 
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles CIV#C_Offroad_01_F|C_Offroad_01_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_01_repair_F|C_Offroad_01_repair_F]]
+:[[Arma 3 CfgVehicles WEST#B_G_Offroad_01_repair_F|B_G_Offroad_01_repair_F]]
+:[[Arma 3 CfgVehicles EAST#O_G_Offroad_01_repair_F|O_G_Offroad_01_repair_F]]
+:[[Arma 3 CfgVehicles GUER#I_G_Offroad_01_repair_F|I_G_Offroad_01_repair_F]]
+:[[Arma 3 CfgVehicles GUER#I_G_Offroad_01_F|I_G_Offroad_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_G_Offroad_01_AT_F|I_G_Offroad_01_AT_F]]
+:[[Arma 3 CfgVehicles GUER#I_G_Offroad_01_armed_F|I_G_Offroad_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_G_Offroad_01_F|B_G_Offroad_01_F]]
+:[[Arma 3 CfgVehicles EAST#O_G_Offroad_01_F|O_G_Offroad_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_G_Offroad_01_armed_F|B_G_Offroad_01_armed_F]]
+:[[Arma 3 CfgVehicles EAST#O_G_Offroad_01_armed_F|O_G_Offroad_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_G_Offroad_01_AT_F|B_G_Offroad_01_AT_F]]
+:[[Arma 3 CfgVehicles EAST#O_G_Offroad_01_AT_F|O_G_Offroad_01_AT_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_01_red_F|C_Offroad_01_red_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_01_sand_F|C_Offroad_01_sand_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_01_white_F|C_Offroad_01_white_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_01_blue_F|C_Offroad_01_blue_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_01_darkred_F|C_Offroad_01_darkred_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_01_bluecustom_F|C_Offroad_01_bluecustom_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_luxe_F|C_Offroad_luxe_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_default_F|C_Offroad_default_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_stripped_F|C_Offroad_stripped_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_F|B_T_LSV_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_AT_F|B_T_LSV_01_AT_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_CTRG_F|B_T_LSV_01_armed_CTRG_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_unarmed_F|B_T_LSV_01_unarmed_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_unarmed_CTRG_F|B_T_LSV_01_unarmed_CTRG_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_armed_F|B_LSV_01_armed_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_AT_F|B_LSV_01_AT_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_unarmed_F|B_LSV_01_unarmed_F]]
+:[[Arma 3 CfgVehicles WEST#B_CTRG_LSV_01_light_F|B_CTRG_LSV_01_light_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_armed_black_F|B_LSV_01_armed_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_armed_olive_F|B_LSV_01_armed_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_armed_sand_F|B_LSV_01_armed_sand_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_unarmed_black_F|B_LSV_01_unarmed_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_unarmed_olive_F|B_LSV_01_unarmed_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_LSV_01_unarmed_sand_F|B_LSV_01_unarmed_sand_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_black_F|B_T_LSV_01_armed_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_olive_F|B_T_LSV_01_armed_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_armed_sand_F|B_T_LSV_01_armed_sand_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_unarmed_black_F|B_T_LSV_01_unarmed_black_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_unarmed_olive_F|B_T_LSV_01_unarmed_olive_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_LSV_01_unarmed_sand_F|B_T_LSV_01_unarmed_sand_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_armed_F|O_T_LSV_02_armed_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_armed_viper_F|O_T_LSV_02_armed_viper_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_unarmed_F|O_T_LSV_02_unarmed_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_AT_F|O_T_LSV_02_AT_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_unarmed_viper_F|O_T_LSV_02_unarmed_viper_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_armed_F|O_LSV_02_armed_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_armed_viper_F|O_LSV_02_armed_viper_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_unarmed_F|O_LSV_02_unarmed_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_AT_F|O_LSV_02_AT_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_unarmed_viper_F|O_LSV_02_unarmed_viper_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_armed_black_F|O_T_LSV_02_armed_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_armed_ghex_F|O_T_LSV_02_armed_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_armed_arid_F|O_T_LSV_02_armed_arid_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_unarmed_black_F|O_T_LSV_02_unarmed_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_unarmed_ghex_F|O_T_LSV_02_unarmed_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_LSV_02_unarmed_arid_F|O_T_LSV_02_unarmed_arid_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_armed_black_F|O_LSV_02_armed_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_armed_ghex_F|O_LSV_02_armed_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_armed_arid_F|O_LSV_02_armed_arid_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_unarmed_black_F|O_LSV_02_unarmed_black_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_unarmed_ghex_F|O_LSV_02_unarmed_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_LSV_02_unarmed_arid_F|O_LSV_02_unarmed_arid_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_02_unarmed_F|C_Offroad_02_unarmed_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_02_unarmed_black_F|C_Offroad_02_unarmed_black_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_02_unarmed_blue_F|C_Offroad_02_unarmed_blue_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_02_unarmed_green_F|C_Offroad_02_unarmed_green_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_02_unarmed_orange_F|C_Offroad_02_unarmed_orange_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_02_unarmed_red_F|C_Offroad_02_unarmed_red_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_02_unarmed_white_F|C_Offroad_02_unarmed_white_F]]
+:[[Arma 3 CfgVehicles GUER#I_C_Offroad_02_unarmed_F|I_C_Offroad_02_unarmed_F]]
+:[[Arma 3 CfgVehicles GUER#I_C_Offroad_02_unarmed_brown_F|I_C_Offroad_02_unarmed_brown_F]]
+:[[Arma 3 CfgVehicles GUER#I_C_Offroad_02_unarmed_olive_F|I_C_Offroad_02_unarmed_olive_F]]
+:[[Arma 3 CfgVehicles GUER#I_C_Offroad_02_LMG_F|I_C_Offroad_02_LMG_F]]
+:[[Arma 3 CfgVehicles GUER#I_C_Offroad_02_AT_F|I_C_Offroad_02_AT_F]]
+:[[Arma 3 CfgVehicles CIV#C_IDAP_Offroad_01_F|C_IDAP_Offroad_01_F]]
+:[[Arma 3 CfgVehicles CIV#C_IDAP_Offroad_02_unarmed_F|C_IDAP_Offroad_02_unarmed_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Offroad_01_F|I_E_Offroad_01_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Offroad_01_covered_F|I_E_Offroad_01_covered_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Offroad_01_comms_F|I_E_Offroad_01_comms_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_01_covered_F|C_Offroad_01_covered_F]]
+:[[Arma 3 CfgVehicles CIV#C_Offroad_01_comms_F|C_Offroad_01_comms_F]]
+|}
+| [[File:arma3-c_offroad_01_f.jpg|150px]][[File:arma3-c_offroad_01_repair_f.jpg|150px]][[File:arma3-b_g_offroad_01_repair_f.jpg|150px]][[File:arma3-o_g_offroad_01_repair_f.jpg|150px]][[File:arma3-i_g_offroad_01_repair_f.jpg|150px]][[File:arma3-i_g_offroad_01_f.jpg|150px]][[File:arma3-i_g_offroad_01_at_f.jpg|150px]][[File:arma3-i_g_offroad_01_armed_f.jpg|150px]][[File:arma3-b_g_offroad_01_f.jpg|150px]][[File:arma3-o_g_offroad_01_f.jpg|150px]][[File:arma3-b_g_offroad_01_armed_f.jpg|150px]][[File:arma3-o_g_offroad_01_armed_f.jpg|150px]][[File:arma3-b_g_offroad_01_at_f.jpg|150px]][[File:arma3-o_g_offroad_01_at_f.jpg|150px]][[File:arma3-c_offroad_01_f.jpg|150px]][[File:arma3-c_offroad_01_f.jpg|150px]][[File:arma3-c_offroad_01_f.jpg|150px]][[File:arma3-c_offroad_01_f.jpg|150px]][[File:arma3-c_offroad_01_f.jpg|150px]][[File:arma3-c_offroad_01_f.jpg|150px]][[File:arma3-c_offroad_01_f.jpg|150px]][[File:arma3-c_offroad_01_f.jpg|150px]][[File:arma3-c_offroad_01_f.jpg|150px]][[File:arma3-b_t_lsv_01_armed_f.jpg|150px]][[File:arma3-b_t_lsv_01_at_f.jpg|150px]][[File:arma3-b_t_lsv_01_armed_f.jpg|150px]][[File:arma3-b_t_lsv_01_unarmed_f.jpg|150px]][[File:arma3-b_t_lsv_01_unarmed_f.jpg|150px]][[File:arma3-b_lsv_01_armed_f.jpg|150px]][[File:arma3-b_lsv_01_at_f.jpg|150px]][[File:arma3-b_lsv_01_unarmed_f.jpg|150px]][[File:arma3-b_ctrg_lsv_01_light_f.jpg|150px]][[File:arma3-b_lsv_01_armed_f.jpg|150px]][[File:arma3-b_lsv_01_armed_f.jpg|150px]][[File:arma3-b_lsv_01_armed_f.jpg|150px]][[File:arma3-b_lsv_01_unarmed_f.jpg|150px]][[File:arma3-b_lsv_01_unarmed_f.jpg|150px]][[File:arma3-b_lsv_01_unarmed_f.jpg|150px]][[File:arma3-b_t_lsv_01_armed_f.jpg|150px]][[File:arma3-b_t_lsv_01_armed_f.jpg|150px]][[File:arma3-b_t_lsv_01_armed_f.jpg|150px]][[File:arma3-b_t_lsv_01_unarmed_f.jpg|150px]][[File:arma3-b_t_lsv_01_unarmed_f.jpg|150px]][[File:arma3-b_t_lsv_01_unarmed_f.jpg|150px]][[File:arma3-o_t_lsv_02_armed_f.jpg|150px]][[File:arma3-o_t_lsv_02_armed_f.jpg|150px]][[File:arma3-o_t_lsv_02_unarmed_f.jpg|150px]][[File:arma3-o_t_lsv_02_at_f.jpg|150px]][[File:arma3-o_t_lsv_02_unarmed_f.jpg|150px]][[File:arma3-o_lsv_02_armed_f.jpg|150px]][[File:arma3-o_lsv_02_armed_f.jpg|150px]][[File:arma3-o_lsv_02_unarmed_f.jpg|150px]][[File:arma3-o_lsv_02_at_f.jpg|150px]][[File:arma3-o_lsv_02_unarmed_f.jpg|150px]][[File:arma3-o_t_lsv_02_armed_f.jpg|150px]][[File:arma3-o_t_lsv_02_armed_f.jpg|150px]][[File:arma3-o_t_lsv_02_armed_f.jpg|150px]][[File:arma3-o_t_lsv_02_unarmed_f.jpg|150px]][[File:arma3-o_t_lsv_02_unarmed_f.jpg|150px]][[File:arma3-o_t_lsv_02_unarmed_f.jpg|150px]][[File:arma3-o_lsv_02_armed_f.jpg|150px]][[File:arma3-o_lsv_02_armed_f.jpg|150px]][[File:arma3-o_lsv_02_armed_f.jpg|150px]][[File:arma3-o_lsv_02_unarmed_f.jpg|150px]][[File:arma3-o_lsv_02_unarmed_f.jpg|150px]][[File:arma3-o_lsv_02_unarmed_f.jpg|150px]][[File:arma3-c_offroad_02_unarmed_f.jpg|150px]][[File:arma3-c_offroad_02_unarmed_f.jpg|150px]][[File:arma3-c_offroad_02_unarmed_f.jpg|150px]][[File:arma3-c_offroad_02_unarmed_f.jpg|150px]][[File:arma3-c_offroad_02_unarmed_f.jpg|150px]][[File:arma3-c_offroad_02_unarmed_f.jpg|150px]][[File:arma3-c_offroad_02_unarmed_f.jpg|150px]][[File:arma3-i_c_offroad_02_unarmed_f.jpg|150px]][[File:arma3-i_c_offroad_02_unarmed_f.jpg|150px]][[File:arma3-i_c_offroad_02_unarmed_f.jpg|150px]][[File:arma3-i_c_offroad_02_lmg_f.jpg|150px]][[File:arma3-i_c_offroad_02_at_f.jpg|150px]][[File:arma3-c_idap_offroad_01_f.jpg|150px]][[File:arma3-c_idap_offroad_02_unarmed_f.jpg|150px]][[File:arma3-i_e_offroad_01_f.jpg|150px]][[File:arma3-i_e_offroad_01_covered_f.jpg|150px]][[File:arma3-i_e_offroad_01_comms_f.jpg|150px]][[File:arma3-c_offroad_01_covered_f.jpg|150px]][[File:arma3-c_offroad_01_comms_f.jpg|150px]]
+|-
+| <span id="TruckHorn" >'''TruckHorn'''</span>
+| ''Horn''
+| 
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles EAST#O_MRAP_02_F|O_MRAP_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_MRAP_02_hmg_F|O_MRAP_02_hmg_F]]
+:[[Arma 3 CfgVehicles EAST#O_MRAP_02_gmg_F|O_MRAP_02_gmg_F]]
+:[[Arma 3 CfgVehicles GUER#I_MRAP_03_F|I_MRAP_03_F]]
+:[[Arma 3 CfgVehicles GUER#I_MRAP_03_hmg_F|I_MRAP_03_hmg_F]]
+:[[Arma 3 CfgVehicles GUER#I_MRAP_03_gmg_F|I_MRAP_03_gmg_F]]
+:[[Arma 3 CfgVehicles WEST#B_APC_Wheeled_01_cannon_F|B_APC_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_APC_Wheeled_02_rcws_F|O_APC_Wheeled_02_rcws_F]]
+:[[Arma 3 CfgVehicles EAST#O_APC_Wheeled_02_rcws_v2_F|O_APC_Wheeled_02_rcws_v2_F]]
+:[[Arma 3 CfgVehicles GUER#I_APC_Wheeled_03_cannon_F|I_APC_Wheeled_03_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_APC_Wheeled_03_cannon_F|B_APC_Wheeled_03_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MRAP_02_ghex_F|O_T_MRAP_02_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MRAP_02_hmg_ghex_F|O_T_MRAP_02_hmg_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_MRAP_02_gmg_ghex_F|O_T_MRAP_02_gmg_ghex_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_APC_Wheeled_01_cannon_F|B_T_APC_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Wheeled_02_rcws_ghex_F|O_T_APC_Wheeled_02_rcws_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_APC_Wheeled_02_rcws_v2_ghex_F|O_T_APC_Wheeled_02_rcws_v2_ghex_F]]
+:[[Arma 3 CfgVehicles WEST#B_AFV_Wheeled_01_cannon_F|B_AFV_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_AFV_Wheeled_01_cannon_F|B_T_AFV_Wheeled_01_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_AFV_Wheeled_01_up_cannon_F|B_AFV_Wheeled_01_up_cannon_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_AFV_Wheeled_01_up_cannon_F|B_T_AFV_Wheeled_01_up_cannon_F]]
+|}
+| [[File:arma3-o_mrap_02_f.jpg|150px]][[File:arma3-o_mrap_02_hmg_f.jpg|150px]][[File:arma3-o_mrap_02_gmg_f.jpg|150px]][[File:arma3-i_mrap_03_f.jpg|150px]][[File:arma3-i_mrap_03_hmg_f.jpg|150px]][[File:arma3-i_mrap_03_gmg_f.jpg|150px]][[File:arma3-b_apc_wheeled_01_cannon_f.jpg|150px]][[File:arma3-o_apc_wheeled_02_rcws_v2_f.jpg|150px]][[File:arma3-i_apc_wheeled_03_cannon_f.jpg|150px]][[File:arma3-b_apc_wheeled_03_cannon_f.jpg|150px]][[File:arma3-o_t_mrap_02_ghex_f.jpg|150px]][[File:arma3-o_t_mrap_02_hmg_ghex_f.jpg|150px]][[File:arma3-o_t_mrap_02_gmg_ghex_f.jpg|150px]][[File:arma3-b_t_apc_wheeled_01_cannon_f.jpg|150px]][[File:arma3-o_t_apc_wheeled_02_rcws_v2_ghex_f.jpg|150px]][[File:arma3-b_afv_wheeled_01_cannon_f.jpg|150px]][[File:arma3-b_t_afv_wheeled_01_cannon_f.jpg|150px]][[File:arma3-b_afv_wheeled_01_up_cannon_f.jpg|150px]][[File:arma3-b_t_afv_wheeled_01_up_cannon_f.jpg|150px]]
+|-
+| <span id="TruckHorn2" >'''TruckHorn2'''</span>
+| ''Horn''
+| 
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles WEST#B_MRAP_01_F|B_MRAP_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_MRAP_01_gmg_F|B_MRAP_01_gmg_F]]
+:[[Arma 3 CfgVehicles WEST#B_MRAP_01_hmg_F|B_MRAP_01_hmg_F]]
+:[[Arma 3 CfgVehicles WEST#B_Truck_01_transport_F|B_Truck_01_transport_F]]
+:[[Arma 3 CfgVehicles WEST#B_Truck_01_covered_F|B_Truck_01_covered_F]]
+:[[Arma 3 CfgVehicles WEST#B_Truck_01_mover_F|B_Truck_01_mover_F]]
+:[[Arma 3 CfgVehicles WEST#B_Truck_01_box_F|B_Truck_01_box_F]]
+:[[Arma 3 CfgVehicles WEST#B_Truck_01_Repair_F|B_Truck_01_Repair_F]]
+:[[Arma 3 CfgVehicles WEST#B_Truck_01_ammo_F|B_Truck_01_ammo_F]]
+:[[Arma 3 CfgVehicles WEST#B_Truck_01_fuel_F|B_Truck_01_fuel_F]]
+:[[Arma 3 CfgVehicles WEST#B_Truck_01_medical_F|B_Truck_01_medical_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MRAP_01_F|B_T_MRAP_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MRAP_01_gmg_F|B_T_MRAP_01_gmg_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_MRAP_01_hmg_F|B_T_MRAP_01_hmg_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Truck_01_transport_F|B_T_Truck_01_transport_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Truck_01_covered_F|B_T_Truck_01_covered_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Truck_01_mover_F|B_T_Truck_01_mover_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Truck_01_box_F|B_T_Truck_01_box_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Truck_01_Repair_F|B_T_Truck_01_Repair_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Truck_01_ammo_F|B_T_Truck_01_ammo_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Truck_01_fuel_F|B_T_Truck_01_fuel_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Truck_01_medical_F|B_T_Truck_01_medical_F]]
+:[[Arma 3 CfgVehicles WEST#B_Truck_01_flatbed_F|B_Truck_01_flatbed_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Truck_01_flatbed_F|B_T_Truck_01_flatbed_F]]
+:[[Arma 3 CfgVehicles WEST#B_Truck_01_cargo_F|B_Truck_01_cargo_F]]
+:[[Arma 3 CfgVehicles WEST#B_T_Truck_01_cargo_F|B_T_Truck_01_cargo_F]]
+|}
+| [[File:arma3-b_mrap_01_f.jpg|150px]][[File:arma3-b_mrap_01_gmg_f.jpg|150px]][[File:arma3-b_mrap_01_hmg_f.jpg|150px]][[File:arma3-b_truck_01_transport_f.jpg|150px]][[File:arma3-b_truck_01_covered_f.jpg|150px]][[File:arma3-b_truck_01_mover_f.jpg|150px]][[File:arma3-b_truck_01_box_f.jpg|150px]][[File:arma3-b_truck_01_repair_f.jpg|150px]][[File:arma3-b_truck_01_ammo_f.jpg|150px]][[File:arma3-b_truck_01_fuel_f.jpg|150px]][[File:arma3-b_truck_01_medical_f.jpg|150px]][[File:arma3-b_t_mrap_01_f.jpg|150px]][[File:arma3-b_t_mrap_01_gmg_f.jpg|150px]][[File:arma3-b_t_mrap_01_hmg_f.jpg|150px]][[File:arma3-b_t_truck_01_transport_f.jpg|150px]][[File:arma3-b_t_truck_01_covered_f.jpg|150px]][[File:arma3-b_t_truck_01_mover_f.jpg|150px]][[File:arma3-b_t_truck_01_box_f.jpg|150px]][[File:arma3-b_t_truck_01_repair_f.jpg|150px]][[File:arma3-b_t_truck_01_ammo_f.jpg|150px]][[File:arma3-b_t_truck_01_fuel_f.jpg|150px]][[File:arma3-b_t_truck_01_medical_f.jpg|150px]][[File:arma3-b_truck_01_flatbed_f.jpg|150px]][[File:arma3-b_t_truck_01_flatbed_f.jpg|150px]][[File:arma3-b_truck_01_cargo_f.jpg|150px]][[File:arma3-b_t_truck_01_cargo_f.jpg|150px]]
+|-
+| <span id="TruckHorn3" >'''TruckHorn3'''</span>
+| ''Horn''
+| 
+| 
+| 
+{| class="wikitable mw-collapsible mw-collapsed"
+! Objects&nbsp;
+|-
+|
+
+:[[Arma 3 CfgVehicles EAST#O_Truck_02_covered_F|O_Truck_02_covered_F]]
+:[[Arma 3 CfgVehicles EAST#O_Truck_02_transport_F|O_Truck_02_transport_F]]
+:[[Arma 3 CfgVehicles GUER#I_Truck_02_covered_F|I_Truck_02_covered_F]]
+:[[Arma 3 CfgVehicles GUER#I_Truck_02_transport_F|I_Truck_02_transport_F]]
+:[[Arma 3 CfgVehicles CIV#C_Truck_02_covered_F|C_Truck_02_covered_F]]
+:[[Arma 3 CfgVehicles CIV#C_Truck_02_transport_F|C_Truck_02_transport_F]]
+:[[Arma 3 CfgVehicles EAST#O_Truck_02_box_F|O_Truck_02_box_F]]
+:[[Arma 3 CfgVehicles EAST#O_Truck_02_medical_F|O_Truck_02_medical_F]]
+:[[Arma 3 CfgVehicles EAST#O_Truck_02_Ammo_F|O_Truck_02_Ammo_F]]
+:[[Arma 3 CfgVehicles EAST#O_Truck_02_fuel_F|O_Truck_02_fuel_F]]
+:[[Arma 3 CfgVehicles GUER#I_Truck_02_ammo_F|I_Truck_02_ammo_F]]
+:[[Arma 3 CfgVehicles GUER#I_Truck_02_box_F|I_Truck_02_box_F]]
+:[[Arma 3 CfgVehicles GUER#I_Truck_02_medical_F|I_Truck_02_medical_F]]
+:[[Arma 3 CfgVehicles GUER#I_Truck_02_fuel_F|I_Truck_02_fuel_F]]
+:[[Arma 3 CfgVehicles GUER#I_Truck_02_MRL_F|I_Truck_02_MRL_F]]
+:[[Arma 3 CfgVehicles CIV#C_Truck_02_fuel_F|C_Truck_02_fuel_F]]
+:[[Arma 3 CfgVehicles CIV#C_Truck_02_box_F|C_Truck_02_box_F]]
+:[[Arma 3 CfgVehicles EAST#O_Truck_03_transport_F|O_Truck_03_transport_F]]
+:[[Arma 3 CfgVehicles EAST#O_Truck_03_covered_F|O_Truck_03_covered_F]]
+:[[Arma 3 CfgVehicles EAST#O_Truck_03_repair_F|O_Truck_03_repair_F]]
+:[[Arma 3 CfgVehicles EAST#O_Truck_03_ammo_F|O_Truck_03_ammo_F]]
+:[[Arma 3 CfgVehicles EAST#O_Truck_03_fuel_F|O_Truck_03_fuel_F]]
+:[[Arma 3 CfgVehicles EAST#O_Truck_03_medical_F|O_Truck_03_medical_F]]
+:[[Arma 3 CfgVehicles EAST#O_Truck_03_device_F|O_Truck_03_device_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_02_F|O_T_Truck_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_02_transport_F|O_T_Truck_02_transport_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_02_fuel_F|O_T_Truck_02_fuel_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_02_Ammo_F|O_T_Truck_02_Ammo_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_02_Box_F|O_T_Truck_02_Box_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_02_Medical_F|O_T_Truck_02_Medical_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_03_transport_ghex_F|O_T_Truck_03_transport_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_03_covered_ghex_F|O_T_Truck_03_covered_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_03_repair_ghex_F|O_T_Truck_03_repair_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_03_ammo_ghex_F|O_T_Truck_03_ammo_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_03_fuel_ghex_F|O_T_Truck_03_fuel_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_03_medical_ghex_F|O_T_Truck_03_medical_ghex_F]]
+:[[Arma 3 CfgVehicles EAST#O_T_Truck_03_device_ghex_F|O_T_Truck_03_device_ghex_F]]
+:[[Arma 3 CfgVehicles CIV#C_IDAP_Truck_02_F|C_IDAP_Truck_02_F]]
+:[[Arma 3 CfgVehicles CIV#C_IDAP_Truck_02_transport_F|C_IDAP_Truck_02_transport_F]]
+:[[Arma 3 CfgVehicles CIV#C_IDAP_Truck_02_water_F|C_IDAP_Truck_02_water_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Truck_02_F|I_E_Truck_02_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Truck_02_transport_F|I_E_Truck_02_transport_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Truck_02_fuel_F|I_E_Truck_02_fuel_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Truck_02_Ammo_F|I_E_Truck_02_Ammo_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Truck_02_Box_F|I_E_Truck_02_Box_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Truck_02_Medical_F|I_E_Truck_02_Medical_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_Truck_02_MRL_F|I_E_Truck_02_MRL_F]]
+|}
+| [[File:arma3-o_truck_02_covered_f.jpg|150px]][[File:arma3-o_truck_02_transport_f.jpg|150px]][[File:arma3-i_truck_02_covered_f.jpg|150px]][[File:arma3-i_truck_02_transport_f.jpg|150px]][[File:arma3-c_truck_02_covered_f.jpg|150px]][[File:arma3-c_truck_02_transport_f.jpg|150px]][[File:arma3-o_truck_02_box_f.jpg|150px]][[File:arma3-o_truck_02_medical_f.jpg|150px]][[File:arma3-o_truck_02_ammo_f.jpg|150px]][[File:arma3-o_truck_02_fuel_f.jpg|150px]][[File:arma3-i_truck_02_ammo_f.jpg|150px]][[File:arma3-i_truck_02_box_f.jpg|150px]][[File:arma3-i_truck_02_medical_f.jpg|150px]][[File:arma3-i_truck_02_fuel_f.jpg|150px]][[File:arma3-i_truck_02_mrl_f.jpg|150px]][[File:arma3-c_truck_02_fuel_f.jpg|150px]][[File:arma3-c_truck_02_box_f.jpg|150px]][[File:arma3-o_truck_03_transport_f.jpg|150px]][[File:arma3-o_truck_03_covered_f.jpg|150px]][[File:arma3-o_truck_03_repair_f.jpg|150px]][[File:arma3-o_truck_03_ammo_f.jpg|150px]][[File:arma3-o_truck_03_fuel_f.jpg|150px]][[File:arma3-o_truck_03_medical_f.jpg|150px]][[File:arma3-o_truck_03_device_f.jpg|150px]][[File:arma3-o_t_truck_02_f.jpg|150px]][[File:arma3-o_t_truck_02_transport_f.jpg|150px]][[File:arma3-o_t_truck_02_fuel_f.jpg|150px]][[File:arma3-o_t_truck_02_ammo_f.jpg|150px]][[File:arma3-o_t_truck_02_box_f.jpg|150px]][[File:arma3-o_t_truck_02_medical_f.jpg|150px]][[File:arma3-o_t_truck_03_transport_ghex_f.jpg|150px]][[File:arma3-o_t_truck_03_covered_ghex_f.jpg|150px]][[File:arma3-o_t_truck_03_repair_ghex_f.jpg|150px]][[File:arma3-o_t_truck_03_ammo_ghex_f.jpg|150px]][[File:arma3-o_t_truck_03_fuel_ghex_f.jpg|150px]][[File:arma3-o_t_truck_03_medical_ghex_f.jpg|150px]][[File:arma3-o_t_truck_03_device_ghex_f.jpg|150px]][[File:arma3-c_idap_truck_02_f.jpg|150px]][[File:arma3-c_idap_truck_02_transport_f.jpg|150px]][[File:arma3-c_idap_truck_02_water_f.jpg|150px]][[File:arma3-i_e_truck_02_f.jpg|150px]][[File:arma3-i_e_truck_02_transport_f.jpg|150px]][[File:arma3-i_e_truck_02_fuel_f.jpg|150px]][[File:arma3-i_e_truck_02_ammo_f.jpg|150px]][[File:arma3-i_e_truck_02_box_f.jpg|150px]][[File:arma3-i_e_truck_02_medical_f.jpg|150px]][[File:arma3-i_e_truck_02_mrl_f.jpg|150px]]
+|-
+| <span id="Twin_Cannon_20mm" >'''Twin_Cannon_20mm'''</span>
+| ''Twin Cannon 20mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#2000Rnd_20mm_shells|2000Rnd_20mm_shells]]
+:[[Arma 3 CfgMagazines#1000Rnd_20mm_shells|1000Rnd_20mm_shells]]
+:[[Arma 3 CfgMagazines#300Rnd_20mm_shells|300Rnd_20mm_shells]]
+:[[Arma 3 CfgMagazines#PylonWeapon_300Rnd_20mm_shells|PylonWeapon_300Rnd_20mm_shells]]
+| 
+
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_03_CAS_F|I_Plane_Fighter_03_CAS_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_03_AA_F|I_Plane_Fighter_03_AA_F]]
+| 
+|-
+| <span id="Twin_Cannon_20mm_gunpod" >'''Twin_Cannon_20mm_gunpod'''</span>
+| ''Twin Cannon 20mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#2000Rnd_20mm_shells|2000Rnd_20mm_shells]]
+:[[Arma 3 CfgMagazines#1000Rnd_20mm_shells|1000Rnd_20mm_shells]]
+:[[Arma 3 CfgMagazines#300Rnd_20mm_shells|300Rnd_20mm_shells]]
+:[[Arma 3 CfgMagazines#PylonWeapon_300Rnd_20mm_shells|PylonWeapon_300Rnd_20mm_shells]]
+| 
+| 
+|-
+| <span id="weapon_AGM_65Launcher" >'''weapon_AGM_65Launcher'''</span>
+| ''Macer II''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Missile_AGM_02_x1|magazine_Missile_AGM_02_x1]]
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_AGM_02_x1|PylonMissile_Missile_AGM_02_x1]]
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_AGM_02_x2|PylonMissile_Missile_AGM_02_x2]]
+:[[Arma 3 CfgMagazines#PylonRack_Missile_AGM_02_x1|PylonRack_Missile_AGM_02_x1]]
+:[[Arma 3 CfgMagazines#PylonRack_Missile_AGM_02_x2|PylonRack_Missile_AGM_02_x2]]
+| 
+| 
+|-
+| <span id="weapon_AGM_KH25Launcher" >'''weapon_AGM_KH25Launcher'''</span>
+| ''KH25 Kedge''
+| 
+| 
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_AGM_KH25_x1|PylonMissile_Missile_AGM_KH25_x1]]
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_AGM_KH25_INT_x1|PylonMissile_Missile_AGM_KH25_INT_x1]]
+:[[Arma 3 CfgMagazines#magazine_Missile_AGM_KH25_x1|magazine_Missile_AGM_KH25_x1]]
+| 
+| 
+|-
+| <span id="weapon_AMRAAMLauncher" >'''weapon_AMRAAMLauncher'''</span>
+| ''AMRAAM''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Missile_AMRAAM_x1|magazine_Missile_AMRAAM_x1]]
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_AMRAAM_C_x1|PylonMissile_Missile_AMRAAM_C_x1]]
+:[[Arma 3 CfgMagazines#PylonRack_Missile_AMRAAM_C_x1|PylonRack_Missile_AMRAAM_C_x1]]
+:[[Arma 3 CfgMagazines#PylonRack_Missile_AMRAAM_C_x2|PylonRack_Missile_AMRAAM_C_x2]]
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_AMRAAM_D_x1|PylonMissile_Missile_AMRAAM_D_x1]]
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_AMRAAM_D_INT_x1|PylonMissile_Missile_AMRAAM_D_INT_x1]]
+:[[Arma 3 CfgMagazines#PylonRack_Missile_AMRAAM_D_x1|PylonRack_Missile_AMRAAM_D_x1]]
+:[[Arma 3 CfgMagazines#PylonRack_Missile_AMRAAM_D_x2|PylonRack_Missile_AMRAAM_D_x2]]
+| 
+| 
+|-
+| <span id="weapon_BIM9xLauncher" >'''weapon_BIM9xLauncher'''</span>
+| ''BIM 9X''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Missile_BIM9X_x1|magazine_Missile_BIM9X_x1]]
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_BIM9X_x1|PylonMissile_Missile_BIM9X_x1]]
+:[[Arma 3 CfgMagazines#PylonRack_Missile_BIM9X_x1|PylonRack_Missile_BIM9X_x1]]
+:[[Arma 3 CfgMagazines#PylonRack_Missile_BIM9X_x2|PylonRack_Missile_BIM9X_x2]]
+| 
+| 
+|-
+| <span id="weapon_Cannon_Phalanx" >'''weapon_Cannon_Phalanx'''</span>
+| ''Gatling Cannon 20mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Cannon_Phalanx_x1550|magazine_Cannon_Phalanx_x1550]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_AAA_System_01_F|B_AAA_System_01_F]]
+| [[File:arma3-b_aaa_system_01_f.jpg|150px]]
+|-
+| <span id="weapon_Fighter_Gun20mm_AA" >'''weapon_Fighter_Gun20mm_AA'''</span>
+| ''M61 Minigun 20 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Fighter01_Gun20mm_AA_x450|magazine_Fighter01_Gun20mm_AA_x450]]
+:[[Arma 3 CfgMagazines#magazine_Fighter04_Gun20mm_AA_x150|magazine_Fighter04_Gun20mm_AA_x150]]
+:[[Arma 3 CfgMagazines#magazine_Fighter04_Gun20mm_AA_x250|magazine_Fighter04_Gun20mm_AA_x250]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Plane_Fighter_01_F|B_Plane_Fighter_01_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_Fighter_01_Stealth_F|B_Plane_Fighter_01_Stealth_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_04_F|I_Plane_Fighter_04_F]]
+:[[Arma 3 CfgVehicles WEST#B_Plane_Fighter_01_Cluster_F|B_Plane_Fighter_01_Cluster_F]]
+:[[Arma 3 CfgVehicles GUER#I_Plane_Fighter_04_Cluster_F|I_Plane_Fighter_04_Cluster_F]]
+| [[File:arma3-b_plane_fighter_01_f.jpg|150px]][[File:arma3-b_plane_fighter_01_f.jpg|150px]][[File:arma3-i_plane_fighter_04_f.jpg|150px]][[File:arma3-b_plane_fighter_01_f.jpg|150px]][[File:arma3-i_plane_fighter_04_f.jpg|150px]]
+|-
+| <span id="weapon_Fighter_Gun_30mm" >'''weapon_Fighter_Gun_30mm'''</span>
+| ''Gsh Cannon 30mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Fighter02_Gun30mm_AA_x180|magazine_Fighter02_Gun30mm_AA_x180]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_Plane_Fighter_02_F|O_Plane_Fighter_02_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_Fighter_02_Stealth_F|O_Plane_Fighter_02_Stealth_F]]
+:[[Arma 3 CfgVehicles EAST#O_Plane_Fighter_02_Cluster_F|O_Plane_Fighter_02_Cluster_F]]
+| [[File:arma3-o_plane_fighter_02_f.jpg|150px]][[File:arma3-o_plane_fighter_02_f.jpg|150px]][[File:arma3-o_plane_fighter_02_f.jpg|150px]]
+|-
+| <span id="weapon_GBU12Launcher" >'''weapon_GBU12Launcher'''</span>
+| ''GBU 12''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Bomb_GBU12_x1|magazine_Bomb_GBU12_x1]]
+:[[Arma 3 CfgMagazines#PylonMissile_Bomb_GBU12_x1|PylonMissile_Bomb_GBU12_x1]]
+:[[Arma 3 CfgMagazines#PylonRack_Bomb_GBU12_x2|PylonRack_Bomb_GBU12_x2]]
+| 
+| 
+|-
+| <span id="weapon_HARMLauncher" >'''weapon_HARMLauncher'''</span>
+| ''AGM-88C HARM''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Missile_HARM_x1|magazine_Missile_HARM_x1]]
+:[[Arma 3 CfgMagazines#PylonRack_Missile_HARM_x1|PylonRack_Missile_HARM_x1]]
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_HARM_x1|PylonMissile_Missile_HARM_x1]]
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_HARM_INT_x1|PylonMissile_Missile_HARM_INT_x1]]
+| 
+| 
+|-
+| <span id="weapon_KAB250Launcher" >'''weapon_KAB250Launcher'''</span>
+| ''KAB 250''
+| 
+| 
+:[[Arma 3 CfgMagazines#PylonMissile_Bomb_KAB250_x1|PylonMissile_Bomb_KAB250_x1]]
+:[[Arma 3 CfgMagazines#magazine_Bomb_KAB250_x1|magazine_Bomb_KAB250_x1]]
+| 
+| 
+|-
+| <span id="weapon_KH58Launcher" >'''weapon_KH58Launcher'''</span>
+| ''KH58 ARM''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Missile_KH58_x1|magazine_Missile_KH58_x1]]
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_KH58_x1|PylonMissile_Missile_KH58_x1]]
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_KH58_INT_x1|PylonMissile_Missile_KH58_INT_x1]]
+| 
+| 
+|-
+| <span id="weapon_LGBLauncherBase" >'''weapon_LGBLauncherBase'''</span>
+| 
+| 
+| 
+| 
+| 
+|-
+| <span id="weapon_mim145Launcher" >'''weapon_mim145Launcher'''</span>
+| ''MIM-145 Defender''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Missile_mim145_x4|magazine_Missile_mim145_x4]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_SAM_System_03_F|B_SAM_System_03_F]]
+:[[Arma 3 CfgVehicles GUER#I_E_SAM_System_03_F|I_E_SAM_System_03_F]]
+| [[File:arma3-b_sam_system_03_f.jpg|150px]][[File:arma3-i_e_sam_system_03_f.jpg|150px]]
+|-
+| <span id="weapon_R73Launcher" >'''weapon_R73Launcher'''</span>
+| ''R73 Archer''
+| 
+| 
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_AA_R73_x1|PylonMissile_Missile_AA_R73_x1]]
+:[[Arma 3 CfgMagazines#magazine_Missile_AA_R73_x1|magazine_Missile_AA_R73_x1]]
+| 
+| 
+|-
+| <span id="weapon_R77Launcher" >'''weapon_R77Launcher'''</span>
+| ''R77 Adder''
+| 
+| 
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_AA_R77_x1|PylonMissile_Missile_AA_R77_x1]]
+:[[Arma 3 CfgMagazines#PylonMissile_Missile_AA_R77_INT_x1|PylonMissile_Missile_AA_R77_INT_x1]]
+:[[Arma 3 CfgMagazines#magazine_Missile_AA_R77_x1|magazine_Missile_AA_R77_x1]]
+| 
+| 
+|-
+| <span id="weapon_rim116Launcher" >'''weapon_rim116Launcher'''</span>
+| ''RIM 116 Spartan''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Missile_rim116_x21|magazine_Missile_rim116_x21]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_SAM_System_01_F|B_SAM_System_01_F]]
+| [[File:arma3-b_sam_system_01_f.jpg|150px]]
+|-
+| <span id="weapon_rim162Launcher" >'''weapon_rim162Launcher'''</span>
+| ''RIM 162 Centurion''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Missile_rim162_x8|magazine_Missile_rim162_x8]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_SAM_System_02_F|B_SAM_System_02_F]]
+| [[File:arma3-b_sam_system_02_f.jpg|150px]]
+|-
+| <span id="weapon_s750Launcher" >'''weapon_s750Launcher'''</span>
+| ''S-750 Rhea''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Missile_s750_x4|magazine_Missile_s750_x4]]
+| 
+
+:[[Arma 3 CfgVehicles EAST#O_SAM_System_04_F|O_SAM_System_04_F]]
+| [[File:arma3-o_sam_system_04_f.jpg|150px]]
+|-
+| <span id="weapon_SDBLauncher" >'''weapon_SDBLauncher'''</span>
+| ''Small Diameter Bomb''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Bomb_SDB_x1|magazine_Bomb_SDB_x1]]
+:[[Arma 3 CfgMagazines#PylonRack_Bomb_SDB_x4|PylonRack_Bomb_SDB_x4]]
+| 
+| 
+|-
+| <span id="weapon_ShipCannon_120mm" >'''weapon_ShipCannon_120mm'''</span>
+| ''Cannon 120 mm''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_ShipCannon_120mm_HE_shells_x32|magazine_ShipCannon_120mm_HE_shells_x32]]
+:[[Arma 3 CfgMagazines#magazine_ShipCannon_120mm_HE_guided_shells_x2|magazine_ShipCannon_120mm_HE_guided_shells_x2]]
+:[[Arma 3 CfgMagazines#magazine_ShipCannon_120mm_HE_LG_shells_x2|magazine_ShipCannon_120mm_HE_LG_shells_x2]]
+:[[Arma 3 CfgMagazines#magazine_ShipCannon_120mm_HE_cluster_shells_x2|magazine_ShipCannon_120mm_HE_cluster_shells_x2]]
+:[[Arma 3 CfgMagazines#magazine_ShipCannon_120mm_mine_shells_x6|magazine_ShipCannon_120mm_mine_shells_x6]]
+:[[Arma 3 CfgMagazines#magazine_ShipCannon_120mm_smoke_shells_x6|magazine_ShipCannon_120mm_smoke_shells_x6]]
+:[[Arma 3 CfgMagazines#magazine_ShipCannon_120mm_AT_mine_shells_x6|magazine_ShipCannon_120mm_AT_mine_shells_x6]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Ship_Gun_01_F|B_Ship_Gun_01_F]]
+| [[File:arma3-b_ship_gun_01_f.jpg|150px]]
+|-
+| <span id="weapon_VLS_01" >'''weapon_VLS_01'''</span>
+| ''Venator Cruise Missile''
+| 
+| 
+:[[Arma 3 CfgMagazines#magazine_Missiles_Cruise_01_x18|magazine_Missiles_Cruise_01_x18]]
+:[[Arma 3 CfgMagazines#magazine_Missiles_Cruise_01_Cluster_x18|magazine_Missiles_Cruise_01_Cluster_x18]]
+| 
+
+:[[Arma 3 CfgVehicles WEST#B_Ship_MRLS_01_F|B_Ship_MRLS_01_F]]
+| [[File:arma3-b_ship_mrls_01_f.jpg|150px]]
+|-
+| <span id="weapon_VLSBase" >'''weapon_VLSBase'''</span>
+| 
+| 
+| 
+| 
+| 
+|}
+<div style="color: grey; font-size: 0.9em; padding: 0.5em; text-align: center">Generated in {{GVI|arma 3|2.17|size= 0.75}} by [[User:R3vo|R3vo]] ([[User talk:R3vo|talk]]) 17:47, 9 August 2024 (CEST)</div>
+{{Navbox/A3Assets}}
+[[Category:Arma 3: Assets]]
+[[Category:Arma 3: Editing]]

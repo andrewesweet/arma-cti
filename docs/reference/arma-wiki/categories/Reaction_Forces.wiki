@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Reaction_Forces
+// revision: 352978 (2024-03-08T10:44:56Z)
+// export sha1: qhtodf28kx1d5g5gx4tz1476ec9p7xj
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|CDLCs}}

@@ -1,0 +1,342 @@
+// source: https://community.bistudio.com/wiki/Introduction_to_Arma_Scripting
+// revision: 371144 (2025-02-28T17:08:27Z)
+// export sha1: aldnx8iq7ffl6fg8v6o47euzk0r9yrx
+// categories: Category:Arma Scripting Tutorials | Category:To-do
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Scripting is one of the most powerful and most versatile tools available in the Arma sandbox. Unfortunately, it is also one of the most complex and unforgiving aspects of addon (i.e. mod) and mission creation.
+
+All {{arma}} games from {{arma0}} to {{arma3}} use a scripting language called [[SQF Syntax|SQF]]. Its predecessor [[SQS Syntax|SQS]] has been considered deprecated since {{arma1}} (2006) and is no longer used.
+As of {{armaR}} (2022), SQF has been succeeded by {{GameCategory|armaR|Modding|Scripting|Guidelines|text= Enforce Script}}. This document only considers SQF.
+
+
+== Scripting Topics ==
+
+There is a plethora of topics to learn about in the context of {{arma}} scripting (see the table below).
+Fortunately, there is no need to acquire detailed knowledge about all of these things in order to get started with scripting.
+To aid with prioritisation, this page provides three selections of topics, each relevant to beginner, intermediate and advanced scripters respectively.
+{{Table/RVScripting}}
+
+
+== Beginner Scripting ==
+
+{{Wiki|TODO|
+* Using existing functions
+}}
+
+=== Variables ===
+
+[[Variables]] are a fundamental building block of scripting (and programming in general). Like in mathematics, they serve as placeholders for values. A few examples:
+* <sqf inline>A = 1;</sqf> The variable <var>A</var> now has the value 1.
+* <sqf inline>B = 2;</sqf> The variable <var>B</var> now has the value 2.
+* <sqf inline>C = "Hello World!";</sqf> The variable <var>C</var> now has the value "Hello World!".
+A variable always has a [[Data Types|Data Type]]. In the example above, the variables <var>A</var> and <var>B</var> both have the data type [[Number]], while <var>C</var> has the data type [[String]]. The data type of a variable is not fixed and changes automatically based on the current value of the variable.
+
+=== Commands and Operators ===
+
+Two other basic tools of scripting are commands and [[Operators]]. In fact, they are so basic that the examples in the {{Link|#Variables}} section above already had to make use of an operator: The equals sign (<sqf inline>=</sqf>) serves as the assignment operator, assigning values to variables. Similarly, symbols such as <sqf inline>+</sqf>, <sqf inline>-</sqf>, <sqf inline>*</sqf> and <sqf inline>/</sqf> are also operators. Using operators is quite simple:
+<sqf>
+A = 1.5;
+B = -2 * A;
+C = A + B + 3.5; // Result: C is 2
+</sqf>
+Commands are often more versatile and complex than operators and can sometimes be used to interact with the game in some way. For instance, the [[setPosATL]] command can be used to change the position of an object in the game world, the [[damage]] command returns the amount of damage an object has suffered and the [[systemChat]] command can be used to display a message in the system chat.
+
+While operators are usually fairly intuitive to use, commands are often more complicated. As such, every single command (and every single operator) has a dedicated [[Main Page|Community Wiki]] page documenting it. This makes the Community Wiki an essential resource for scripting as it can be consulted whenever an unfamiliar command is encountered or needs to be used. The documentation commonly includes information about the behaviour and effect of the command, its return value and the purpose and data types of its parameters.
+
+{{Feature|informative|Commands List can be found here: [[:Category:Scripting Commands|Scripting Commands]].}}
+
+=== Control Structures, Conditions and Booleans ===
+
+[[Control Structures]] allow scripts to accomplish complex tasks. See the following:
+<sqf>
+if (damage player > 0.5) then
+{
+	player setDamage 0;
+	systemChat "The player has been healed.";
+}
+else
+{
+	systemChat "The player is fine.";
+};
+</sqf>
+This code behaves differently depending on the damage status of the player. The [[systemChat]] output and whether or not the player is healed changes dynamically based on how much health the player has when the code is executed.
+
+==== Conditions ====
+In the example above, the condition is <sqf inline>damage player > 0.5</sqf>. Like all conditions, it results in a [[Boolean]] value when evaluated:
+# First, <sqf inline>damage player</sqf> is evaluated and returns a number.
+# Then, the <sqf inline>></sqf> operator compares that number to 0.5:
+#* If the number is greater than 0.5, the <sqf inline>></sqf> operator returns [[true]].
+#* If the number is less than or equal to 0.5, the <sqf inline>></sqf> operator returns [[false]].
+
+==== Booleans ====
+The data type [[Boolean]] only has two possible values: [[true]] and [[false]].
+
+===== Boolean Operations =====
+There are three basic operations that can be performed on Boolean values:
+
+{| class="wikitable align-center-col-3 align-center-col-4" style="margin: auto"
+|-
+! Operation !! Description !! SQF Operator !! SQF Command
+|-
+| NOT (Negation) || Inverts the input value. || <sqf inline>!</sqf> || [[not]]
+|-
+| AND (Conjunction) || Combines two Booleans into one. Only returns [[true]] if both input values are [[true]]. || <sqf inline>&&</sqf> || [[and]]
+|-
+| OR (Disjunction) || Combines two Booleans into one. Returns [[true]] if at least one of the input values is [[true]]. || <sqf inline>||</sqf> || [[or]]
+|}
+
+Both the input and the output of these operations are Boolean values. Their behaviour is defined as follows:
+
+{| class="align-center valign-top" style="margin: auto"
+|
+
+{| class="wikitable align-center"
+! colspan="2" style="font-size: 1.25em" | NOT
+|-
+! Expression !! Result
+|-
+| <sqf inline>!true</sqf> || [[false]]
+|-
+| <sqf inline>!false</sqf> || [[true]]
+|}
+
+|
+
+{| class="wikitable align-center"
+! colspan="2" style="font-size: 1.25em" | AND
+|-
+! Expression !! Result
+|-
+| <sqf inline>true && true</sqf> || [[true]]
+|-
+| <sqf inline>true && false</sqf> || [[false]]
+|-
+| <sqf inline>false && true</sqf> || [[false]]
+|-
+| <sqf inline>false && false</sqf> || [[false]]
+|}
+
+|
+
+{| class="wikitable align-center"
+! colspan="2" style="font-size: 1.25em" | OR
+|-
+! Expression !! Result
+|-
+| <sqf inline>true || true</sqf> || [[true]]
+|-
+| <sqf inline>true || false</sqf> || [[true]]
+|-
+| <sqf inline>false || true</sqf> || [[true]]
+|-
+| <sqf inline>false || false</sqf> || [[false]]
+|}
+
+|}
+
+==== Complex Conditions ====
+Boolean operations can be used to create complex conditions by combining multiple conditions into one.
+<sqf>
+if ((alive VIP_1 && triggerActivated VIP_1_Task_Complete) || (alive VIP_2 && triggerActivated VIP_2_Task_Complete)) then
+{
+	systemChat "At least one VIP has been rescued.";
+};
+</sqf>
+
+{{Feature|informative|Beginners sometimes write conditions such as <sqf inline>if (Condition == true)</sqf> or <sqf inline>if (Condition == false)</sqf>.<br>
+While doing so is not a real error, it is unnecessary because [[Control Structures]] (and [[Trigger]]s) always implicitly compare the condition to [[true]].<br>
+The correct (as in faster, more common and more readable) way to write such conditions is <sqf inline>if (Condition)</sqf> and <sqf inline>if (!Condition)</sqf> respectively.
+}}
+
+=== Arrays ===
+
+An [[Array]] is a [[:Category:Data Types|Data Type]] that can be seen as a list of items. This list can hold none to multiple elements of different types:
+<sqf>
+[]						// an empty array
+[true]					// an array of 1 element (Boolean)
+[0, 10, 20, 30, 40, 50]	// an array of 6 elements of Number type
+["John Doe", 32, true]	// an array of 3 elements of different types (String, Number, Boolean)
+</sqf>
+An array is a useful way to keep data together and is used for example to store positions.
+
+==== Positions ====
+[[Position]]s are represented as 2D or 3D [[Array]]s of [[Number]]s (usually in the format <sqf inline>[X, Y]</sqf> or <sqf inline>[X, Y, Z]</sqf>) where X represents West-East, Y represents South-North and Z represents altitude.
+However, there are some important caveats and distinctions one should be aware of - for instance, the positions <sqf inline>[0, 0, 0]</sqf> ASL ('''A'''bove '''S'''ea '''L'''evel) and <sqf inline>[0, 0, 0]</sqf> AGL ('''A'''bove '''G'''round '''L'''evel) are not necessarily equivalent.
+It is therefore highly recommended to read the [[Position]]s page before working with positions.
+
+=== Script Files ===
+
+Scripts are usually placed in [[Script File]]s. It is of course possible and sometimes even necessary to use short pieces of code in the Editor (e.g. in the ''On Activation'' expression of a [[Trigger]]), but scripts can become long and complex, and then working with them is far easier when they are properly placed in script files. Additionally, some features are only accessible through the use of script files ([[Event Scripts]] for example).
+
+Script files are basically just text files with a certain filename extension. For script files, that file extension is {{hl|.sqf}} (or {{hl|.sqs}}), but in the broader context of Arma scripting, modification, configuration and mission design, more file extensions can be encountered: {{hl|.ext}}, {{hl|.hpp}}, {{hl|.cpp}} and {{hl|.cfg}} to mention the most common ones.
+
+==== File Creation ====
+Unfortunately, Windows does not make the creation of blank files with a desired file extension easily accessible.
+
+For instance, a common pitfall when trying to use [[Description.ext]] (a file that is used to configure certain mission features such as the respawn settings) for the first time is (unknowingly) creating {{hl|Description.ext.txt}} instead of {{hl|Description.ext}} because the Windows File Explorer hides file extensions by default.
+Obviously, {{hl|Description.ext.txt}} will not work and will not have any of the desired effects on the mission because the game does not recognize it as {{hl|Description.ext}}, but identifying a wrong file extension as the root cause of an issue when troubleshooting is notoriously difficult as one is usually looking for errors in the code and not in the filename.
+
+While there are many different ways to create a blank text file with a specific file extension, the easiest method using native Windows tools is probably this:
+* Preparation (only needs to be done once):
+# Open the File Explorer
+# Open the ''View'' tab at the top
+# Tick the ''File name extensions'' checkbox
+* File Creation:
+# Navigate to the location where you want to create a new script file
+# Right-click
+# Go to ''New''
+# Click on ''Text Document''
+# Rename {{hl|New Text Document.txt}} to what you need
+
+{{Feature|informative|It is also possible to bypass Notepad's automatic addition of the {{hl|.txt}} extension by wrapping the file name in quote, e.g {{hl|"description.ext"}}.}}
+
+==== File Locations ====
+In the context of mission creation, script files generally need to be placed in the corresponding ''scenario folder'' (often also called the ''mission root folder''). Every mission has its own scenario folder, it is created by the Editor when saving the scenario for the first time.
+By default it only contains a single file called [[Mission.sqm|{{hl|mission.sqm}}]]; this file mostly stores data regarding Editor-placed entities and does not need to be touched when scripting.
+
+[[Description.ext]] and [[Event Scripts]] have to be placed directly in the root of the scenario folder (i.e. next to {{hl|mission.sqm}}), but all other files can be placed in subfolders of the scenario folder.
+A well-structured scenario folder could look like this:
+
+ {{Color|green|Apex%20Protocol.Tanoa}}/
+ {{Color|lightgrey|├──}} functions/
+ {{Color|lightgrey|│   ├──}} fn_myFirstFunction.sqf
+ {{Color|lightgrey|│   └──}} fn_mySecondFunction.sqf
+ {{Color|lightgrey|├──}} scripts/
+ {{Color|lightgrey|│   ├──}} myFirstScript.sqf
+ {{Color|lightgrey|│   └──}} mySecondScript.sqf
+ {{Color|lightgrey|├──}} description.ext
+ {{Color|lightgrey|├──}} initPlayerLocal.sqf
+ {{Color|lightgrey|├──}} initServer.sqf
+ {{Color|lightgrey|└──}} mission.sqm
+
+Each scenario folder is stored in either the {{hl|missions}} or the {{hl|mpmissions}} subfolder of the folder containing the [[Profile|Arma Profile]] that was used to create the scenario.
+For instance, the path to the scenario folder from the example above could be:
+ C:\Users\Scott Miller\Documents\Arma 3 - Other Profiles\Keystone\missions\{{Color|green|Apex%20Protocol.Tanoa}}
+The Editor uses {{Link|https://en.wikipedia.org/wiki/Percent-encoding|percent-encoding}} for scenario folder names, that is why whitespaces in the scenario name are replaced with {{hl|%20}}.
+
+{{Feature|informative|
+The [[:Category:Eden Editor|Eden Editor]] provides a useful shortcut to quickly open a mission's scenario folder in the Windows File Explorer:
+With the mission open in the Editor, go to ''Scenario'' in the top left and then click on ''Open Scenario Folder''.
+}}
+
+'''See Also:'''
+* [[2D Editor: External]]
+* [[Eden Editor: Scenario Folder]]
+* [[Profile]] (the possible profile folder paths are listed there)
+
+==== Editing Script Files ====
+Because script files are essentially plain text files, they can be edited with just about any text editor. For instance, the native Windows Notepad can be used, but working with it is not very comfortable. As such, regular scripters typically use more versatile applications such as {{Link|https://notepad-plus-plus.org|Notepad++}} or {{Link|https://code.visualstudio.com|Visual Studio Code}}, usually in combination with plugins that add additional support for SQF. One feature commonly provided by these plugins is ''syntax highlighting'', and for good reason: Syntax highlighting makes code significantly more readable and helps recognizing and avoiding basic syntax errors. Consequently, it is highly recommended to use syntax highlighting.
+
+See [[:Category:Community Tools#Code Edition|Community Tools - Code Edition]] for a selection of community-made applications and plugins for Arma Scripting.
+
+==== Script Execution ====
+The [[execVM]] command is used to execute script files.
+
+For instance, {{hl|myFirstScript.sqf}} from the {{Link|#File Locations}} example above can simply be executed like so:
+<sqf>execVM "scripts\myFirstScript.sqf";</sqf>
+This can be done anywhere: Within another script, from the [[Arma 3: Debug Console|Debug Console]], in the ''On Activation'' or ''On Deactivation'' expression of a [[Trigger]] or in the init field of an [[Eden Editor: Object|Object]] in the Editor.
+
+
+== Intermediate Scripting ==
+
+{{Wiki|TODO|
+* [[:Category:Functions|Functions]]
+* [[Namespace]]s, {{Link|Variables#Scopes|Scopes}}
+* {{Link|Category:Event Handlers|Event Handlers}}
+* [[HashMap]]s
+}}
+
+
+== Advanced Scripting ==
+
+{{Wiki|TODO|
+* [[Multiplayer Scripting]]
+* [[GUI Tutorial|GUIs]]
+* [[Code Optimisation]]
+* [[Debugging Techniques]]
+}}
+
+
+== Miscellaneous ==
+
+{{Feature|informative|This section contains content from an old version of this page which is due to be updated.}}
+
+
+== Before anything ==<!-- "General Considerations" perhaps? -->
+
+; Is your idea necessary?
+: Will players even notice or use what you want to script? Just because you can does not mean you should. Sometimes less is more!
+
+; Is it possible to do this in the editor?
+: The [[:Category:Eden Editor|Eden Editor]] is a powerful tool and with it alone one can achieve a lot of things without writing a single line of code.
+: Poorly written scripts are a frequent cause of poor performance, both in singleplayer and multiplayer scenarios.
+
+; Can it be scripted using SQF?
+: This question might be hard to answer. Try to get as much information about what you want to do and what [[:Category: Scripting Commands|commands]] and [[:Category: Functions|functions]] there are before spending time on writing a script, just to find out that what you hoped to achieve is not possible after all.
+
+{{Feature|informative|Scripting is <u>not</u> the solution for everything!}}
+
+=== Terms ===
+
+The following is a collection of terms frequently encountered when talking or reading about scripting.
+
+; Game Engine
+: The core program of the game which executes your scripting commands at run time.
+
+; Script / Script File
+: Scripts are usually placed in [[Script File|script files]]. Script files contain code.
+
+; Syntax <!-- TODO: Explanation -->
+: See [[SQF Syntax]] ({{arma}}, {{arma2}}, {{arma3}}).
+: See [[SQS Syntax]] ({{ofp}}, {{arma}}).
+
+; Variables
+: A [[Variables|Variable]] is a named storage container for data.
+: The name of a variable is called its [[Identifier]].
+
+; Data Types
+: The [[:Category: Data Types|Data Type]] of a variable specifies which kind of data that variable can contain.
+
+; Operators <!-- TODO: Explanation -->
+: See [[Operators]]
+
+; Control Structures <!-- TODO: Explanation -->
+: See [[Control Structures]]
+
+; Functions <!-- TODO: Explanation -->
+: See [[Function]]
+
+=== Must-Read Articles ===
+
+==== Best Practices ====<!-- Bad section title, should be changed -->
+See [[Code Best Practices]]
+
+==== Debugging ====
+* [[Debugging Techniques]]
+* [[:Category:Community_Tools#Debug_Console.2FSystem|Community Tools - Debug Console/System]]
+
+==== Optimisation ====
+* [[Code Optimisation]]
+* [[Mission Optimisation]]
+
+=== Useful Links ===
+
+These pages cover further aspects of scripting:
+* [[:Category:Example Code|Example Code]]
+* [[Control Structures]]
+* [[Multiplayer Scripting]]
+* [[Exception handling]]
+* [[Script File]]
+* [[Function]]
+* [[SQS to SQF conversion]]
+
+Consider the following resources for more general learning:
+* [[6thSense.eu/EG|6thSense.eu Editing Guide]]
+* {{Link|link= https://www.armaholic.com/page.php?id=20465|text= Fockers Arma 3 Scripting Guide}}
+* {{Link|link= https://www.armaholic.com/page.php?id=4847|text= Mr-Murray's Armed Assault Editing Guide - Deluxe Edition}}
+* {{Link|https://youtu.be/WmEBN-RbK44|Excellent German SQF tutorial (YouTube)}}
+
+
+[[Category:Arma Scripting Tutorials]]

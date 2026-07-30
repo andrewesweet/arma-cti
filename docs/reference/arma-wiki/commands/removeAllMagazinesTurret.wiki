@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/removeAllMagazinesTurret
+// revision: 378391 (2026-04-04T07:52:47Z)
+// export sha1: mcfir6wmf8lk03ij1fmv5zx5q3pub6x
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 2.20 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.20
+
+|arg= local
+
+|eff= global
+
+|gr1= Turrets
+
+|descr= Removes all magazines from the given turret or from all turrets. Use turret path [-1] for driver's turret or [] for all turrets.
+
+|s1= vehicle [[removeAllMagazinesTurret]] turretPath
+
+|p1= vehicle: [[Object]]
+
+|p2= turretPath: [[Turret Path]] - [-1] for driver's turret or [] for all turrets
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player removeAllMagazinesTurret [-1];</sqf>
+
+|x2= <sqf>_tank removeAllMagazinesTurret [];</sqf>
+
+|seealso= [[removeMagazinesTurret]] [[addMagazineTurret]] [[removeAllMagazines]] [[magazinesTurret]] [[removeMagazineTurret]] [[weaponsTurret]] [[addWeaponTurret]] [[removeWeaponTurret]] [[turretLocal]]
+}}

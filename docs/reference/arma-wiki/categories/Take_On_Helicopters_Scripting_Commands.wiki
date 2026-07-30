@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Take_On_Helicopters:_Scripting_Commands
+// revision: 257297 (2021-05-05T07:40:10Z)
+// export sha1: 61wse2udgk21l2b0hxozo6sjra73da9
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Table/RVScriptingCommands}}
+
+[[Category:Scripting Commands]]

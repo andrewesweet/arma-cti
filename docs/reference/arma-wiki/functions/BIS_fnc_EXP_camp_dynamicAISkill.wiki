@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_dynamicAISkill
+// revision: 364260 (2024-05-06T09:38:26Z)
+// export sha1: h7bo7fiavbkvh35tkp7uo87yonpsq7s
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Campaign
+
+|serverExec= server
+
+|descr= Changes AI skill based on player count, responding to player connected / player disconnected events. This function does exactly the same as [[BIS_fnc_EXP_camp_setSkill]] execept that it automatically executes when a player joins or disconnects.
+
+|s1= [mode, affectedSides] call [[BIS_fnc_EXP_camp_dynamicAISkill]]
+
+|p1= mode: [[Boolean]] - (Optional, default [[true]]) [[true]] to enable, [[false]] to disable
+
+|p2= affectedSides: [[Array]] - array of affected sides and their skill sets. For details see [[BIS_fnc_EXP_camp_setSkill]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+[
+	true,
+	[
+		[WEST, 0.1, 0.2, 0.7, 0.6],
+		[EAST, 0.1, 0.2, 0.7, 0.6]
+	]
+] call BIS_fnc_EXP_camp_dynamicAISkill;
+</sqf>
+
+|seealso= [[Arma 3: AI Skill]] [[setSkill]] [[skillFinal]] [[BIS_fnc_EXP_camp_setSkill]]
+}}

@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ambientPostprocess
+// revision: 327503 (2022-07-12T22:24:52Z)
+// export sha1: 277cguj6qr1lr7jcb1t6yzmny12ym9g
+// categories: Category:Arma 3: Functions | Category:Function Group: Ambient | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Ambient
+
+|eff= local
+
+|descr= Initialize terrain-related postprocess effects.
+
+|s1= [terrain, activation] call [[BIS_fnc_ambientPostprocess]]
+
+|p1= terrain: [[String]] - (Optional, default [[worldName]]) terrain from which to take post-process effets configuration
+
+|p2= [[String]] or [[Boolean]] - (Optional, default [[true]]) post-process type to get, or [[true]] to get all of them. '''Any effect but "filmGrain"'''.
+
+|r1= [[Array]] of initialized effects with values
+
+|x1= <sqf>[] call BIS_fnc_ambientPostprocess;</sqf>
+
+|x2= <sqf>["Malden", "ColorCorrections"] call BIS_fnc_ambientPostprocess;</sqf>
+
+|seealso= [[Post Process Effects]]
+}}

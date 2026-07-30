@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/setCamShakeDefParams
+// revision: 341177 (2023-05-13T22:13:33Z)
+// export sha1: ihez2mt4kpthay1qammp8ayw6q5trmr
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Camera Control
+
+|eff= local
+
+|descr= Sets camera shake default parameters.
+
+|s1= [[setCamShakeDefParams]] [power, duration, frequency, minSpeed, minMass, caliberCoefHit, vehicleCoef]
+
+|p1= power: [[Number]]
+
+|p2= duration: [[Number]]
+
+|p3= frequency: [[Number]]
+
+|p4= minSpeed: [[Number]]
+
+|p5= minMass: [[Number]]
+
+|p6= caliberCoefHit: [[Number]]
+
+|p7= vehicleCoef: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setCamShakeDefParams [1, 2, 3, 4, 5, .5, .5];</sqf>
+
+|x2= <sqf>setCamShakeDefParams [100, 10, 10, 4, 5, 1, 1];</sqf>
+
+|seealso= [[enableCamShake]] [[addCamShake]] [[setCamShakeParams]] [[resetCamShake]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-12-01 - 03:35 (UTC)</dd>
+<dt class="note">[[User:Waffle SS.|Waffle SS.]]</dt>
+<dd class="note">
+Does not appear to have an effect in Arma 3.
+</dd>
+
+</dl>

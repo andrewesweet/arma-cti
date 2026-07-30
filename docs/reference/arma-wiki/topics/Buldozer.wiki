@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/Buldozer
+// revision: 364256 (2024-05-06T09:38:22Z)
+// export sha1: 6phvtonr42loumiuav8t9yazeb1wt7e
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= 
+[[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= 
+
+[[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD=
+
+{{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|INSTALL= See [[Buldozer Manual]] for more information.
+|COMMAND= Buldozer should be launched from [[Object Builder]] or [[Terrain Builder]] to work properly.
+|DESCRIPTION=
+'''Buldozer''' is a model (Object Builder) / map (Terrain Builder) viewing tool and was formerly known as [[Oxygen Viewer]].
+ 
+|NOTES=Take a look at [[P drive|DevP]] for its deployment and [[Buldozer Configurator]] for its configuration.<br>
+<br>
+Buldozer won't work as expected if you run {{PAGENAME}} from Steam or from [[Arma 3: Tools Launcher]] if this last was ran from Steam. The best case of use is to run [[Arma 3: Tools Launcher]] from the installation directory and run {{PAGENAME}} from it.
+
+|LICENSING=[[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO=[[Oxygen Viewer]], [[Terrain Builder]], [[Object Builder]], [[Buldozer Manual]]
+
+}}
+
+{{GameCategory|arma3|Official Tools}}

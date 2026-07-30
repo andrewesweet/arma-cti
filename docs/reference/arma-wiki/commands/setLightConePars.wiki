@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/setLightConePars
+// revision: 376693 (2025-11-05T22:52:10Z)
+// export sha1: 6s99f7jvopv2qbztpuhbezhz7c3wdth
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Lights
+
+|arg= local
+
+|eff= local
+
+|descr= Sets the {{hl|#lightreflector}}'s cone params.
+
+|s1= lightReflector [[setLightConePars]] [outerAngle, innerAngle, fadeCoef]
+
+|p1= lightReflector: [[Object]] - object of class {{hl|#lightreflector}}
+
+|p2= outerAngle: [[Number]]
+
+|p3= innerAngle: [[Number]]
+
+|p4= fadeCoef: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_light setLightConePars [90, 45, 1];</sqf>
+
+|seealso= [[setLightColor]] [[setLightAmbient]] [[setLightBrightness]] [[lightAttachObject]] [[lightDetachObject]] [[setLightIntensity]] [[setLightAttenuation]] [[setLightUseFlare]] [[setLightFlareSize]] [[setLightFlareMaxDistance]] [[setLightDayLight]] [[setLightIR]]
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20220720072612
+|text= Responds to [[setLightIntensity]], '''not''' [[setLightBrightness]]:
+<sqf>
+private _light = "#lightreflector" createVehicleLocal (player modelToWorld [0, 0.5, 0]);
+_light setLightIntensity 3000;
+_light setLightAmbient [0, 1, 0];
+_light setLightColor [0, 1, 0];
+_light setLightConePars [45, 10, 1];
+</sqf>
+}}

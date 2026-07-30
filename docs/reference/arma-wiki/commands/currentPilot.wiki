@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/currentPilot
+// revision: 309146 (2022-05-03T14:07:26Z)
+// export sha1: 0x47objvkdyn9aw9txihsqjo3n5l93d
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.96
+
+|gr1= Object Manipulation
+
+|descr= Returns the person piloting the vehicle. If co-pilot is piloting, co-pilot is returned. If you need current pilot of a UAV or UGV, see [[UAVControl]] command.
+
+|s1= [[currentPilot]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Object]] - piloting unit or [[objNull]]
+
+|x1= <sqf>
+if (currentPilot _vehicle != driver _vehicle) then
+{
+	hint "The pilot is not piloting!";
+};
+</sqf>
+
+|seealso= [[driver]] [[gunner]] [[commander]] [[effectiveCommander]] [[turretUnit]] [[UAVControl]] [[enableCopilot]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20190820231500
+|text= To return co-pilot units:
+<sqf>
+private _fnc_getCoPilots = 
+{
+	private _copilotTurrets = allTurrets _this select { getNumber ([_this, _x] call BIS_fnc_turretConfig >> "isCopilot") > 0 };
+	private _copilots = _copilotTurrets apply { _this turretUnit _x };
+	_copilots;
+};
+
+hint str (heli call _fnc_getCoPilots);
+</sqf>
+}}

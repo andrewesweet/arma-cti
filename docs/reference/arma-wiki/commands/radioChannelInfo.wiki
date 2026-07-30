@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/radioChannelInfo
+// revision: 377628 (2026-01-02T08:52:11Z)
+// export sha1: g97voqm0eszh8zhagw4bhpe146bv7uo
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Custom Radio and Chat | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Radio and Chat
+
+|gr2= Custom Radio and Chat
+
+|descr= Obtains custom radio channel's details. if 'customChannelID' is invalid, the return is either the first custom radio channel (customChannelID < firstCCChannel) or the last (customChannelID > lastCCChannel). 'inUse' [[true]] indicates if the channel was made available using [[radioChannelCreate]], [[false]] means it can be created.
+
+|s1= [[radioChannelInfo]] customChannelID
+
+|p1= customChannelID: [[Number]] - [[Channel IDs|custom channel ID]] returned by [[radioChannelCreate]]
+
+|r1= [[Array]] with [colour, label, callSign, units, sentenceType, inUse, {{GVI|arma3|2.22|size= 0.75}} callSignVoN] (see [[radioChannelCreate]])
+
+|s2= [[radioChannelInfo]] option
+|s2since= arma3 2.22 
+|p21= option: [[Boolean]] - [[true]] to return only channels in use, [[false]] to return all available channels
+
+|r2= [[Array]] of [[Array]]s in format [ [colour, label, callSign, units, sentenceType, inUse, callSignVoN],....] (see [[radioChannelCreate]])
+
+|x1= <sqf>
+private _channelID = radioChannelCreate [[1, 0, 0.5, 0.8], "Q-dance Radio", "%UNIT_NAME", [u1, u2], false];
+radioChannelInfo _channelID; // returns [[1,0,0.5,0.8], "Q-dance Radio", "%UNIT_NAME", [u1, u2], false, true]
+</sqf>
+
+|seealso= [[radioChannelCreate]] [[getPlayerChannel]]
+}}

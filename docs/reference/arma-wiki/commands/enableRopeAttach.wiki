@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/enableRopeAttach
+// revision: 310266 (2022-05-05T13:11:17Z)
+// export sha1: lef5ynzay8tg4e73win015r2r8xjp4d
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+|arg= local
+|eff= global
+
+|gr1= Ropes and Sling Loading
+
+|descr=Enables or disables the ability to be attached to a rope end for the given entity.
+
+|s1= entity [[enableRopeAttach]] enable
+
+|p1= entity: [[Object]] - given entity
+
+|p2= enable: [[Boolean]] - [[false]] to disable rope attachment
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player enableRopeAttach false;</sqf>
+
+|seealso= [[ropes]] [[canSlingLoad]] [[getSlingLoad]] [[ropeAttachedObjects]] [[ropeAttachTo]] [[ropeDestroy]] [[ropeLength]] [[ropeUnwound]] [[ropeAttachedTo]] [[ropeCreate]] [[ropeDetach]] [[ropeAttachEnabled]] [[ropeCut]] [[ropeEndPosition]] [[ropeUnwind]] [[setSlingLoad]] [[slingLoadAssistantShown]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 05 April, 2014</dd>
+<dt class="note">[[User:Waffle SS.|Waffle SS.]]</dt>
+<dd class="note">Attachable nearby vehicles may not update on Sling Load Assistant until re-opened.<br>
+
+</dl>

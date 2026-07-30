@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/setFSMVariable
+// revision: 330070 (2022-08-15T16:49:43Z)
+// export sha1: 6gkifuw8cvyok85s3e41700340zmzwu
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= System
+
+|descr= Set variable to given value in the variable space of given FSM.<br>
+The FSM handle is the number returned by the [[execFSM]] command.
+
+|s1= handle [[setFSMVariable]] [name, value]
+
+|p1= handle: [[Number]] - FSM handle
+
+|p2= name: [[String]] - name of the FSM variable
+
+|p3= value: [[Anything]] - new value of the FSM variable
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_handle = execFSM "test.fsm";
+_handle setFSMVariable ["_foo", 23]; // sets variable _foo in the FSM to 23
+</sqf>
+
+|seealso= [[FSM]] [[commandFSM]] [[completedFSM]] [[doFSM]] [[execFSM]] [[getFSMVariable]]
+}}
+
+{{Note
+|user= Master85
+|timestamp= 20140323005300
+|text= If the variable is not yet defined within the FSM it will be created.
+}}

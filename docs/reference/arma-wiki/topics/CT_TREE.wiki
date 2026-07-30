@@ -1,0 +1,467 @@
+// source: https://community.bistudio.com/wiki/CT_TREE
+// revision: 352088 (2024-02-01T23:24:41Z)
+// export sha1: pkexgz2k5mi4pp80n0njaxairs1mhdt
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{CT|intro
+
+|macro = CT_TREE
+|value = 12
+|description = The [[CT_TREE]], also referred to as tree view (tv), is a control with similar functionality as the [[CT_LISTBOX]]. In addition to that it supports multiple levels of entries as well as a search functionality.<br>
+Since {{GVI|arma3|2.01}}: Multiple selections are now also supported via commands.
+{{Feature|important|The engine driven search is very slow. Searching a tree view with many entries can freeze the game.}}<br>
+|gallery=
+File:CT TREE.png{{!}}A CT_TREE in {{GVI|arma3|1.96}}.
+File:CT TREE SEARCH.jpg{{!}}A CT_TREE with search in {{GVI|arma3|1.96}}.
+|commands =
+* [[:Category:Command_Group:_GUI_Control_-_Tree_View|Commands: Tree View]]
+|events =
+* [[User_Interface_Event_Handlers#Tree_Events|Events: Tree View]]
+}}
+
+{{CT|abc start}}
+=== B ===
+{{CT|attribute
+|name=borderSize
+|type1=Number
+|value1=0
+|description=Shows a border around the control. Setting the size to 0 will not hide the border. Set the {{hl|colorBorder}} to transparent instead.
+}}
+
+=== C ===
+{{CT|attribute
+|name=colorArrow
+|type1=Array
+|value1={1,1,1,1}
+|description=Has no effect but without it an error is thrown.
+|mandatory=1
+}}
+
+{{CT|attribute
+|name=colorBorder
+|type1=Array
+|value1={0,0,0,0}
+|description=With {{hl|borderSize {{=}} 1}} determines the color of that border.
+}}
+
+{{CT|attribute
+|name=colorLines
+|type1=Array
+|value1={0,0,0,0}
+|description=These lines connect the different entries for better clarity. 
+<gallery>
+CT TREE Lines.jpg|{{hl|c= colorLines[] = {1,1,1,1};}}
+CT TREE NoLines.jpg|{{hl|c= colorLines[] = {0,0,0,0};}}
+</gallery>
+}}
+
+{{CT|attribute
+|name=colorMarked
+|type1=Array
+|value1={0.2,0.3,0.7,1}
+|description=Background color of all subsequently selected entries when {{hl|multiselectEnabled {{=}} 1;}}.
+}}
+
+{{CT|attribute
+|name=colorMarkedSelected
+|type1=Array
+|value1={0,0.5,0.5,1}
+|description=Background color of the first selected entry with {{hl|multiselectEnabled {{=}} 1;}}.
+}}
+
+{{CT|attribute
+|name=colorMarkedText
+|type1=Array
+|value1={0,0,0,1}
+|description=Text color of secondarly selected entries with {{hl|multiselectEnabled {{=}} 1;}}.
+}}
+
+{{CT|attribute
+|name=colorPicture
+|type1=Array
+|value1={1,1,1,1}
+|description=Left picture color of an unselected entry.
+}}
+
+{{CT|attribute
+|name=colorPictureDisabled
+|type1=Array
+|value1={1,1,1,0.25}
+|description=Left picture color when control is disabled.
+}}
+
+{{CT|attribute
+|name=colorPictureRight
+|type1=Array
+|value1={1,1,1,1}
+|description=Right picture color of an unselected entry.
+}}
+
+{{CT|attribute
+|name=colorPictureRightDisabled
+|type1=Array
+|value1={1,1,1,0.25}
+|description=Right picture color when control is disabled.
+}}
+
+{{CT|attribute
+|name=colorPictureRightSelected
+|type1=Array
+|value1={0,0,0,1}
+|description=Right picture color of an selected entry.
+}}
+
+{{CT|attribute
+|name=colorPictureSelected
+|type1=Array
+|value1={1,1,1,1}
+|description=Left picture color of an selected entry.
+}}
+
+{{CT|attribute
+|name=colorSearch
+|type1=Array
+|value1={"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.77])","(profilenamespace getvariable ['GUI_BCG_RGB_G',0.51])","(profilenamespace getvariable ['GUI_BCG_RGB_B',0.08])",1}
+|description=Color of the entries that fit the search of the idcSearch listbox.
+}}
+
+{{CT|attribute
+|name=colorSelect
+|type1=Array
+|value1={"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.77])","(profilenamespace getvariable ['GUI_BCG_RGB_G',0.51])","(profilenamespace getvariable ['GUI_BCG_RGB_B',0.08])",1}
+|description=Entry's background when {{hl|multiselectEnabled {{=}} 0;}}.
+}}
+
+{{CT|attribute
+|name=colorSelectBackground
+|type1=Array
+|value1={0,0,0,0.5}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSelectText
+|type1=Array
+|value1={0,0,0,1}
+|description=Text color of a selected entry with {{hl|multiselectEnabled {{=}} 0;}}.
+}}
+
+=== D ===
+{{CT|attribute
+|name=defaultItem
+|type1=Array
+|value1={"BLU_F","Infantry"}
+|description=
+}}
+
+{{CT|attribute
+|name=disableKeyboardSearch
+|type1=Number
+|value1=1
+|description=
+}}
+
+{{CT|attribute
+|name=disableSearchHighlight
+|type1=Number
+|value1=1
+|description=
+}}
+
+=== E ===
+{{CT|attribute
+|name=expandedTexture
+|type1=String
+|value1="A3\ui_f\data\gui\rsccommon\rsctree\expandedTexture_ca.paa"
+|description="Arrow" texture on the left side, if non is given ("") a minus with box will be displayed.
+}}
+
+{{CT|attribute
+|name=expandOnDoubleclick
+|type1=Number
+|value1=1
+|description=Enable/disable expanding and collapsing with double-click.
+}}
+
+=== H ===
+{{CT|attribute
+|name=hiddenTexture
+|type1=String
+|value1="A3\ui_f\data\gui\rsccommon\rsctree\hiddenTexture_ca.paa"
+|description="Arrow" texture on the left side, if non is given ("") a plus with box will be displayed.
+}}
+
+=== I ===
+{{CT|attribute
+|name=iconFolder
+|type1=String
+|value1="\a3\3DEN\Data\Cfg3DEN\Layer\icon_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=iconFolderDefault
+|type1=String
+|value1="\a3\3DEN\Data\Cfg3DEN\Layer\iconDefault_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=idcSearch
+|type1=Number
+|value1=283
+|description=IDC of a [[CT_EDIT]] control which functions as the search input.
+}}
+
+=== M ===
+{{CT|attribute
+|name=maxHistoryDelay
+|type1=Number
+|value1=1
+|description=
+}}
+
+{{CT|attribute
+|name=multiselectEnabled
+|type1=Number
+|value1=1
+|description=Enable/disable multi selection with CTRL or SHIFT to select all entries up to the first selected entry.
+{{Feature|informative|Commands to retrieve all selected entries in a multi selection tv are only available after {{GVI|arma3|2.01}}.}}
+}}
+
+<!--- Not used
+=== R ===
+{{CT|attribute
+|name=rowHeight
+|type1=Number
+|value1=0.0439091
+|description=
+}}
+--->
+{{CT|abc end}}
+
+{{CT|examples}}
+
+=== RscExample ===
+
+<syntaxhighlight lang="cpp">
+class RscTree
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_TREE;
+	colorBackground[] = {0,0,0,0};
+	colorSelect[] = {1,1,1,0.7};
+	colorDisabled[] = {1,1,1,0.25};
+	colorText[] = {1,1,1,1};
+	colorSelectText[] = {0,0,0,1};
+	colorBorder[] = {0,0,0,0};
+	colorSearch[] =
+	{
+		"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.13])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_G',0.54])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_B',0.21])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_A',0.8])"
+	};
+	colorMarked[] = {0.2,0.3,0.7,1};
+	colorMarkedText[] = {0,0,0,1};
+	colorMarkedSelected[] = {0,0.5,0.5,1};
+	multiselectEnabled = 0;
+	colorPicture[] = {1,1,1,1};
+	colorPictureSelected[] = {0,0,0,1};
+	colorPictureDisabled[] = {1,1,1,0.25};
+	colorPictureRight[] = {1,1,1,1};
+	colorPictureRightSelected[] = {0,0,0,1};
+	colorPictureRightDisabled[] = {1,1,1,0.25};
+	colorArrow[] = {1,1,1,1};
+	maxHistoryDelay = 1;
+	shadow = 0;
+	style = ST_LEFT;
+	font = "RobotoCondensed";
+	sizeEx = GUI_TEXT_SIZE_MEDIUM;
+	expandedTexture = "A3\ui_f\data\gui\rsccommon\rsctree\expandedTexture_ca.paa";
+	hiddenTexture = "A3\ui_f\data\gui\rsccommon\rsctree\hiddenTexture_ca.paa";
+	x = 0;
+	y = 0;
+	w = 0.1;
+	h = 0.2;
+	rowHeight = 0.0439091;
+	colorSelectBackground[] = {0,0,0,0.5};
+	colorLines[] = {0,0,0,0};
+	borderSize = 0;
+	expandOnDoubleclick = 1;
+	class ScrollBar : ScrollBar
+	{
+	};
+};
+</syntaxhighlight>
+
+
+== Other examples ==
+
+=== RscTree with search functionality ===
+
+<syntaxhighlight lang="cpp">
+class Dialog
+{
+	idd = -1;
+	class Controls
+	{
+		class _CT_EDIT
+		{
+			idc = 100;
+			type = 2;
+			style = "512";
+			x = GUI_GRID_CENTER_X + 10 * GUI_GRID_CENTER_W;
+			y = GUI_GRID_CENTER_Y + 0 * GUI_GRID_CENTER_H;
+			w = 20 * GUI_GRID_CENTER_W;
+			h = 2 * GUI_GRID_CENTER_H;
+			font = "PuristaMedium";
+			sizeEx = 0.04;
+			autocomplete = "";
+			canModify = true;
+			maxChars = 100;
+			forceDrawCaret = false;
+			colorSelection[] = {0,1,0,1};
+			colorText[] = {1,1,1,1};
+			colorDisabled[] = {1,0,0,1};
+			colorBackground[] = {0,0,0,0.8};
+			text = "";
+			tooltip = "Type to search";
+		};
+		class _CT_TREE
+		{
+			/* Common properties */
+			idc = 200;
+			/* Add some entries */
+			onLoad = "params ['_tv'];\
+					_classes = 'true' configClasses (configFile >> 'CfgVehicles');\
+					for '_i' from 0 to 10 do\
+					{\
+						_tv tvAdd [[], configName selectRandom _classes];\
+						for '_j' from 0 to 10 do\
+						{\
+							_tv tvAdd [[_i], configName selectRandom _classes];\
+							for '_k' from 0 to 10 do\
+							{\
+								_tv tvAdd [[_i, _j], configName selectRandom _classes];\
+							};\
+						};\
+					};";
+			moving = 0;
+			type = CT_TREE;
+			style = ST_LEFT;
+			x = GUI_GRID_CENTER_X + 10 * GUI_GRID_CENTER_W;
+			y = GUI_GRID_CENTER_Y + 3 * GUI_GRID_CENTER_H;
+			w = 20 * GUI_GRID_CENTER_W;
+			h = 23 * GUI_GRID_CENTER_H;
+			sizeEx = GUI_TEXT_SIZE_MEDIUM;
+			font = "RobotoCondensed";
+			colorText[] = {1,1,1,1};
+			colorBackground[] = {0,0,0,0.8};
+			colorDisabled[] = {1,1,1,0.25};
+			shadow = 0;
+			access = 0;
+
+			/* CT_TREE specific properties */
+			idcSearch = 100;
+			colorSelect[] = {1,1,1,0.7};
+			colorSelectText[] = {0,0,0,1};
+			colorBorder[] = {0,0,0,0};
+			colorSearch[] =
+			{
+				"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.13])",
+				"(profilenamespace getvariable ['GUI_BCG_RGB_G',0.54])",
+				"(profilenamespace getvariable ['GUI_BCG_RGB_B',0.21])",
+				"(profilenamespace getvariable ['GUI_BCG_RGB_A',0.8])"
+			};
+			colorMarked[] = {0.2,0.3,0.7,1};
+			colorMarkedText[] = {0,0,0,1};
+			colorMarkedSelected[] = {0,0.5,0.5,1};
+			multiselectEnabled = 0;
+			colorPicture[] = {1,1,1,1};
+			colorPictureSelected[] = {0,0,0,1};
+			colorPictureDisabled[] = {1,1,1,0.25};
+			colorPictureRight[] = {1,1,1,1};
+			colorPictureRightSelected[] = {0,0,0,1};
+			colorPictureRightDisabled[] = {1,1,1,0.25};
+			colorArrow[] = {1,1,1,1};
+			maxHistoryDelay = 1;
+			colorSelectBackground[] = {0,0,0,0.5};
+			colorLines[] = {0,0,0,0};
+			class ScrollBar : ScrollBar
+			{
+			};
+			expandedTexture = "A3\ui_f\data\gui\rsccommon\rsctree\expandedTexture_ca.paa";
+			hiddenTexture = "A3\ui_f\data\gui\rsccommon\rsctree\hiddenTexture_ca.paa";
+			rowHeight = 0.0439091;
+			borderSize = 0;
+			expandOnDoubleclick = 1;
+
+			/* CT_TREE user interface eventhandlers */
+			onTreeSelChanged = "systemChat str ['onTreeSelChanged',_this]; false";
+			onTreeLButtonDown = "systemChat str ['onTreeLButtonDown',_this]; false";
+			onTreeDblClick = "systemChat str ['onTreeDblClick',_this]; false";
+			onTreeExpanded = "systemChat str ['onTreeExpanded',_this]; false";
+			onTreeCollapsed = "systemChat str ['onTreeCollapsed',_this]; false";
+			onTreeMouseMove = "systemChat str ['onTreeMouseMove',_this]; false";
+			onTreeMouseHold = "systemChat str ['onTreeMouseHold',_this]; false";
+			onTreeMouseExit = "systemChat str ['onTreeMouseExit',_this]; false";
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== Scripting Example ==
+
+{| class="valign-top"
+| <sqf>
+private ["_count", "_current", "_data", "_text", "_value", "_pic"];
+_CT_TREE tvAdd [[], "Parent_A"];
+_CT_TREE tvAdd [[0], "Child_A"];
+_CT_TREE tvAdd [[0,0], "Grandchild_A"];
+_CT_TREE tvAdd [[], "Parent_B"];
+_CT_TREE tvAdd [[1], "Child_B"];
+</sqf>
+| [[File:WuChaoRen_CTTree001.png]]
+|-
+| <sqf>
+_count = _CT_TREE tvCount []; // return 2
+_CT_TREE tvSetCurSel [0,0,0]; // select grandchild_A
+</sqf>
+| [[File:WuChaoRen_CTTree003.png]]
+|-
+| <sqf>
+_current = tvCurSel _CT_TREE; // return [0,0,0]
+_CT_TREE tvSetData [_current, "I'm grandchild_A"];
+_data = _CT_TREE tvData _current; // "I'm grandchild_A"
+_text = _CT_TREE tvText _current; // "Grandchild_A"
+_CT_TREE tvSetValue [_current,14];
+_value = _CT_TREE tvValue _current; // 14
+_CT_TREE tvSetPicture [_current, getText (configFile >> "CfgWeapons" >> "optic_NVS" >> "picture")];
+_pic = _CT_TREE tvPicture _current;
+</sqf>
+| [[File:WuChaoRen_CTTree004.png]]
+|-
+| <sqf>_CT_TREE tvExpand [1];</sqf>
+| [[File:WuChaoRen_CTTree005.png]]
+|-
+| <sqf>
+_CT_TREE tvSort [[], false];
+_CT_TREE tvSortByValue [[], false];
+</sqf>
+| [[File:WuChaoRen_CTTree006.png]]
+|-
+| <sqf>
+_CT_TREE tvDelete [0,0]; // remove child_b
+tvClear 12;
+_CT_TREE tvCollapse [];
+</sqf>
+| [[File:WuChaoRen_CTTree002.png]]
+|}
+
+
+[[Category: Control Types]]

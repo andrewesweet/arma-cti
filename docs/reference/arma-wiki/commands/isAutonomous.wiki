@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/isAutonomous
+// revision: 364996 (2024-07-04T19:58:06Z)
+// export sha1: 4fzxqi5phzar1m9n3y8bqr4hztbfzgt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|arg= global
+
+|gr1= Remote Control
+
+|descr= Returns whether the UAV is in autonomous mode or not.
+
+|s1= [[isAutonomous]] uav
+
+|p1= uav: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _isAutonomous = isAutonomous uav;</sqf>
+
+|seealso= [[setAutonomous]] [[disableAI]] [[enableAI]] [[checkAIFeature]]
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20230430040148
+|text= Only works on UAV vehicle, UAV crew will always return false. Check my comment @ [[setAutonomous]] for more details about this command.
+}}

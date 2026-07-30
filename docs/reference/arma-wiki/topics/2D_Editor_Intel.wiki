@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/2D_Editor:_Intel
+// revision: 353564 (2024-03-19T12:01:44Z)
+// export sha1: e71n5jqcq9o8bik1gshfmusl94085iw
+// categories: Category:2D Editor
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: 2D Editor]]
+
+The Intel box is the dark grey box with a weather icon, the time and date. It allows you to name your mission, give it a brief description, set the mission starting date and time, the current and forecast weather and which sides [[resistance]] forces are friendly to. Clicking on the Intel box will bring up the Intel menu.
+
+== Menu ==
+<gallery>
+File:OFP_editor_intel.jpg|[[Arma: Cold War Assault]]
+File:ArmA_editor_intel.jpg|[[:Category:ArmA: Armed Assault|{{Name|arma1|short}}]]
+File:Arma2 editor intel.jpg|{{GameCategory|arma2|link= y}}
+File:tkoh editor intel.jpg|[[Take On Helicopters]]
+File:arma 3 editor intel.jpg|{{GameCategory|arma3|link= y}}
+</gallery>
+
+=== Name ===
+The mission name is used in mission lists, such as when browsing missions in the "Single Mission" mode, on multiplayer sessions and mission lists, in the campaign mission list, and on the map notepad. If you do not name your mission, the missions folder/pbo name will be used. 
+
+=== Description ===
+This description is only displayed while in multiplayer mode, but it is recommended to give every mission a short description to explain what the mission is about, failing all else to allow you to identify it yourself in the future.
+
+=== Date and Time ===
+These options should be self explanatory. Remember that Armed Assault is highly accurate in its rendering of seasonal patterns. Thus daylight hours, the sun's path across the sky, star constellations and moon phases are all simulated correctly given the current terrain's world location. Tides are also accurately simulated, and can be somewhat hard to predict as different seasons and moon phases create vastly differing high/low water marks.
+
+=== Weather Sliders ===
+Weather sliders are devided into pairs, each of them setting starting value and forecast value which engine will reach in 30 minutes.
+* '''Weather''' - sets overcast, initiate raining when value is low enough
+* '''Fog''' - modifies visibility, no matter what view distance is set in video options.
+* '''Wind (Take On helicopters only)''' - wind strength, affecting helicopter flight model.
+
+=== Resistance Is Friendly to: ===
+Choose which side(s) the resistance side will be friendly to at the start of the mission. Note that the civilian side will inherit the same allies and enemies of the resistance side.
+
+== Scripting ==
+See [[:Category:Command_Group:_Environment|Command Group: Environment]] for list of all marker-related commands.

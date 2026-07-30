@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Decon_Shower
+// revision: 168191 (2020-10-13T08:49:56Z)
+// export sha1: 4uj2a0cbif0xcxp1eo8lfejpns7tq2h
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions related to the Decon Shower object.
+
+[[Category:Function Group: Object Manipulation]]

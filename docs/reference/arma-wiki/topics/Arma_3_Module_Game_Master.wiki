@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Module:_Game_Master
+// revision: 378799 (2026-06-18T07:28:13Z)
+// export sha1: 0oq3rx6buwbibmuwybhipi8o72v8fip
+// categories: Category:Arma 3: Editor Modules
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Zeus logic which provides access to the 3D real-time editor.
+
+
+== Parameters ==
+
+=== Owner ===
+
+Unit with access to Zeus interface. Can be an object's variable name, player UID (Steam64 ID) or you can use #adminLogged or #adminVoted to give access to the server admin. In single player, the player will automatically assume control of game master module when this field is left blank. An error message will also be displayed:
+ [BIS_fnc_moduleCurator] Curator owner not defined, player used instead in single player.
+
+=== Name ===
+
+Custom name displayed for other players.
+
+=== Default addons ===
+
+Which addons (ie., object packs) will be available at the beginning. You can unlock more using the [[Arma 3: Module: Manage Addons|Manage Addons]] module.
+# All addons (including unoffial ones)
+# All official addons - ''Default''
+# Addons present in the scenario
+# None
+
+=== Forced Interface ===
+
+Open the interface by default and prevent the player from closing it.
+# Enabled
+# Disabled - ''Default''
+
+
+== Module Variables ==
+
+All variable associated with this module. found with [[allVariables]], accessed using:
+<sqf>_module getVariable "variableName";</sqf>
+
+# "BIS_fnc_moduleexecute_activate": [[Boolean]]
+# "BIS_fnc_addcuratoricon_draw": [[Number]]
+# "BIS_fnc_moduleinit_iscuratorplaced": [[Boolean]]
+# "forced": [[Number]] - 0 (false) or 1 (true)
+# "BIS_fnc_moduleinit_status": [[Boolean]]
+# "BIS_fnc_initmodules_activate": [[Boolean]]
+# "owner"
+# "BIS_fnc_modulecuratorsetcamera_params": [[Array]] - [<nowiki/>[3D Position],[Vector]<nowiki>]</nowiki> - Last position and vector of curator camera when leaving curator interface.
+# {{sic|"BIS_fnc_initmodules_priroty"}}: [[Number]]
+# "birdtime": [[Number]]
+# "BIS_fnc_moduleexecute_first": [[Boolean]]
+# "clocktime": [[Number]]
+# "addons": [[Number]] - Number index of Addons parameter.<br> 
+#* 0: None
+#* 1: Addons present in the scenario
+#* 2: All official addons - Default
+#* 3: All addons (including unofficial ones)
+# "name": [[String]] - Same as Name parameter
+# "bird": [[Object]] - Eagle that flies around curator camera. Example: ''5: eagle.p3d''
+# "BIS_fnc_curatorvisionmodes_current": [[Number]]
+
+
+{{GameCategory|arma3|Editor Modules}}

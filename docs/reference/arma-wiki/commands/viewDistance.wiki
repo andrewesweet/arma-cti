@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/viewDistance
+// revision: 319951 (2022-05-13T09:25:46Z)
+// export sha1: oizmf4k7y5trwzatfcozsd1cg3ed5tk
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Command Group: System | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= System
+
+|gr2= Environment
+
+|descr= Returns the rendering distance.
+
+|s1= '''viewDistance'''
+
+|r1= [[Number]]
+
+|x1= <sqf>hint ("my view distance is " + str viewDistance + " meters");</sqf>
+
+|seealso= [[setViewDistance]] [[setDetailMapBlendPars]] [[setTerrainGrid]] [[getObjectViewDistance]] [[setObjectViewDistance]]
+}}

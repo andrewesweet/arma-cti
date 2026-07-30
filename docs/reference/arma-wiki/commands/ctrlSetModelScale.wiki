@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/ctrlSetModelScale
+// revision: 318942 (2022-05-13T09:22:05Z)
+// export sha1: qu9wr57p0e68kdkvnjcbvdpm94xwzm2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Object | Category:Command Group: GUI Control - Positioning | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= GUI Control - Object
+
+|gr2= GUI Control - Positioning
+
+|descr= Sets 3D control model scale
+
+|s1= control [[ctrlSetModelScale]]  scale
+
+|p1= control : [[Control]] - 3D control
+
+|p2= scale : [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_ctrl3D ctrlSetModelScale 1.5;</sqf>
+
+|seealso= [[ctrlModelDirAndUp]] [[ctrlCreate]] [[ctrlDelete]] [[ctrlModel]] [[ctrlSetModel]] [[ctrlSetModelDirAndUp]] [[ctrlModelScale]] [[ctrlPosition]] [[ctrlScale]] [[ctrlSetScale]] [[ctrlSetPosition]] [[ctrlClassName]] [[vectorDir]] [[vectorUp]] [[setVectorDirAndUp]]
+}}

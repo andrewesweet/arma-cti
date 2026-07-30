@@ -1,0 +1,88 @@
+// source: https://community.bistudio.com/wiki/FBX_to_RTM
+// revision: 336565 (2023-01-04T15:23:01Z)
+// export sha1: 3mppk3nowogo3da41px00tg48f6wbuq
+// categories: Category:ArmA: Armed Assault: Official Tools | Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= 
+[[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= 
+
+[[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD= 
+
+{{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= FBX to RTM is a simple tool to convert animations from Motion Builder FBX format into RV Engine RTM
+
+|NOTES=
+
+|COMMAND=
+    FBXToRTMGui.exe <br>
+
+Fbx2Rtm.exe [[-cfg model.xml] [-skeleton skeletonname]][-step bonename][-removestep][-bindpose bindpose.fbx][-fps framerate] [-scale scale][-log logname][-output filename.rtm] filename.fbx
+
+* cfg             ''XML config with skeleton definitions''
+* skeleton        ''Name of skeleton definition''
+* step            ''Name of root bone defining movement (Usually "Hips")''
+* removestep      ''Neutralize movement (remove step)''
+* bindpose        ''Fbx scene with character in bind pose. When not defined, the first animation frame is taken as bind pose.''
+* fps             ''Desired animation framerate. Default 30''
+* scale           ''Scale factor. Default is 0.01''
+* log             ''Name of log-file''
+* output          ''Output file name. Default is source name with .rtm extension''
+
+|LICENSING=
+[[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+}}
+
+=== Additional information ===
+
+==== Supported formats ====
+
+Input:
+* FBX (Motion Builder)
+
+Output:
+* RTM (nonbinarized)
+
+==== How to use it ====
+
+by {{Link|link= http://forums.bistudio.com/member.php?84576-Vespa|text= Zdeněk "Vespa" Vespalec}}
+
+===== in Motionbuilder =====
+* Use MoBu 2009. Other versions probably work too, but they are not tested. However, Mobu 2015 has been tested and does not work with FBXtoRTM.
+* Open a scene, do your animation and then select "Animation - Plot all" and plot it in the same FPS you intend it to have for game. Then save.
+* To match your animations on existing Arma3 ones, you can use poses from bank_20_07_2012.fbx.
+
+
+
+===== export procedure using FbxToRtm: =====
+* Run FBXToRTMGui.exe and manually set paths in fields (to bindposeman.fbx and modelbox.xml).
+* Pick input file and output dir and filename.
+* Make sure FPS is the same as input file FPS.
+* Make sure to pick ManSkeleton and Hips as root bone.
+* Check or not check step. (aka normalization) Depends what you want to achieve.
+* Hit export, and it should produce an .rtm.
+* Test the RTM with \p3d_skeleton\Male-light.p3d. If the rifle and launcher float (don't stick on a characters back) then you encountered so called "rifle/launcher bug". it is some voodoo in motionbuilder that nobody knows how to solve.
+
+
+
+===== "fixing" rifle/launcher bug =====
+* Open \rifle_bug_fix\AidlPercMstpSrasWrflDnon_1.fbx.
+* Plot all, do not save.
+* Open your actual file.
+* Plot all, save.
+* Try exporting and see if the bug disappeared.
+* If not, the repeat the process with \rifle_bug_fix\AmovPercMrunSlowWpstDbl.fbx.
+* Once you get your motionbuilder to a state when it doesn't produce weapon bugs, it will stay that way until you close it - so keep it running if you plan to work longer periods.
+
+{{GameCategory|arma1|Official Tools}}
+{{GameCategory|arma3|Official Tools}}

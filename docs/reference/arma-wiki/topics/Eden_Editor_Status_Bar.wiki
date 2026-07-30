@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Status_Bar
+// revision: 152509 (2020-05-31T09:27:12Z)
+// export sha1: tkqtm56l3vk3du5nwo8iy0r67iws5na
+// categories: Category:Eden Editor: Interface
+// Vendored snapshot. Do not edit — re-export instead.
+
+The '''Status Bar''' provides real-time information about the view and the current game session.
+
+[[File:3den statusBar.png]]
+
+== Status Bar Entries ==
+{| class="wikitable"
+! Icon
+! Description
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;" | [[File:3den statusBar x.png|16px]]
+| Cursor position in X coordinate (West to East).
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;" | [[File:3den statusBar y.png|16px]]
+| Cursor position in Y coordinate (South to North).
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;" | [[File:3den statusBar z.png|16px]]
+| Elevation at cursor position.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;" | [[File:3den statusBar dis.png|16px]]
+| In the scene, the value shows distance between camera and the cursor position.
+
+In the map, the value shows resolution in meters per pixel.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;" |
+| Game version, can be selected and copied.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;" | [[File:3den statusBar mod.png|22px]]
+| Mod indicator. The icon is white when some unofficial mods are installed.
+<!---------------------------------------------------------------------------------------->
+|-
+| style="background-color:#333333; text-align:center;" | [[File:3den statusBar server.png|22px]]
+| Server indicator. When a server is running in the background, the icon turns white and tooltip describes server name.
+|}
+
+[[Category:Eden Editor: Interface|Status Bar]]

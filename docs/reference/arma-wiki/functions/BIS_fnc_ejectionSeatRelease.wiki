@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ejectionSeatRelease
+// revision: 376188 (2025-09-13T16:42:56Z)
+// export sha1: t8tisnf2z6gybhxgghgof13xtafr7x5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Aircraft Functionality | Category:Functions | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Aircraft Functionality
+
+|descr= <pre>
+/*
+	Author: Bravo Zero One development
+	- John_Spartan
+
+	Description:
+	- This function is designed as part of set of functions to implement semi-authenthic ejection system on fixed wing aircrfat that have such functionality enabled/configured.
+	- Additional option for player to separate from ejetor seat via user action. default ejection function will ato deploy parachute at 350 m altitude. This is a manual override.
+	- Generic parachute used, currently only one model in game so no need to parametarize.
+
+	Execution:
+	- Call the function via user action defined on the ejector seat vehicle.
+
+		Example:
+		class UserActions
+		{
+
+			class Ejection_Seat_Eject
+			{
+				priority = 0.05;
+				shortcut = "Eject";
+				displayName = "$STR_A3_action_deploy_parachute";
+				condition = "player in this";
+				statement = "[this] spawn BIS_fnc_ejectionSeatRelease";
+				position = "pilotcontrol";
+				radius = 10;
+				onlyforplayer = 1;
+				showWindow = 0;
+				hideOnUse = 1;
+			};
+		};
+
+	Requirements:
+	- Compatible ejector seat must have a user action set up to triger this fnc.
+
+	Parameter(s):
+		_this select 0: mode (Scalar)
+		0: ejector seat/object
+
+	Returns: nothing
+	Result: Pilot will be forced from ejection seat vehicle to parachute. Semi-authenthic behaviour.
+*/
+</pre>
+
+{{Wiki|placeholder}}
+
+|s1= vehicle call [[BIS_fnc_ejectionSeatRelease]]
+
+|p1= vehicle: [[Object]] - object with a unit in it. Despite the name this does not have to be an ejection seat - the function is essentially a simple wrapper for [[moveOut]]. The first unit in the [[crew]] array will be used.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_ejectionSeat call BIS_fnc_ejectionSeatRelease;</sqf>
+
+|seealso= [[BIS_fnc_planeEjection]] [[BIS_fnc_planeAiEject]] [[BIS_fnc_planeEjectionFX]]
+}}

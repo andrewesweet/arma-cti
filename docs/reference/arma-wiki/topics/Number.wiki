@@ -1,0 +1,204 @@
+// source: https://community.bistudio.com/wiki/Number
+// revision: 373155 (2025-04-07T12:09:57Z)
+// export sha1: huqh4ihwro38w0tzc8hn3r9mbitx6p3
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A number is, depending on scope, either a {{Link|https://en.wikipedia.org/wiki/Single-precision_floating-point_format|single precision floating-point number}} (when talking about scripting) or a range of numerical types when talking about config context.
+
+
+== Scripting ==
+
+In [[SQF Syntax|SQF]], there are multiple accepted number formats.
+However, all of them will result in the same {{hl|SCALAR}} ([[typeName]]) value type '''as long as they remain within float range''';
+
+{| class="wikitable float-right"
+|+ Infinity string representation
+! Value
+! Before<br>{{GVI|arma3|2.18}}
+! Since<br>{{GVI|arma3|2.18}}
+|-
+| +Inf
+| {{hl|1.#INF}}
+| {{hl|inf}}
+|-
+| -Inf
+| {{hl|-1.#INF}}
+| {{hl|-inf}}
+|}
+The '''{{Color|#080|largest positive}}''' number that can be achieved is {{hl|3.4028235e38}} and the '''{{Color|#800|largest negative}}''' is {{hl|-3.4028235e38}}.
+It is possible to generate positive or negative infinity values using either {{hl|1e39}} or {{hl|-1e39}}, both being of {{hl|"NaN"}} [[typeName]].
+
+To check if a number is finite one can use the [[finite]] operator.
+
+{{Feature|informative|Regex to match all numbers in [[SQF Syntax|SQF]] is {{hl|<nowiki>(((\$|0x)[0-9a-fA-F]+)|(\.[0-9]+))|(\b[0-9]+(\.[0-9]+|[eE][-+]?[0-9]+)?)\b</nowiki>}}}}
+{{Feature|important|Due to technical limitations, the precision of floating-point numbers is limited. Please refer to {{Link|https://en.wikipedia.org/wiki/IEEE_754|IEEE 754}} for more info about the technical details.}}
+
+=== Decimal (Base 10) ===
+
+A decimal number is your normal {{hl|0.5}} syntax stuff with one extra: You may omit the initial pack of digits.
+
+Some Examples would be:
+* {{hl|5.197}}
+* {{hl|&nbsp;0.47}}
+* {{hl|&nbsp;16.0}}
+* {{hl|.8314}}
+* {{hl|12345}}
+
+A regex catching these kind of numbers could look like this {{hl|<nowiki>((\.[0-9]+)|(\b[0-9]+(\.[0-9]+)?))\b</nowiki>}}
+
+==== Scientific Notation ====
+The {{Link|https://en.wikipedia.org/wiki/Scientific_notation|Scientific Notation}} is a way of expressing numbers that are too big or too small to be conveniently written in decimal form.
+
+It starts of like a normal decimal and then gets expressed by an {{hl|E}} (Not case-sensitive, thus {{hl|e}} is also valid) followed by an '''optional''' {{hl|+}} or {{hl|-}} sign and ends with a range of digits.
+
+Some examples would be:
+* {{hl|1.23E4 ⇔ 1.23 ⋅ 10<sup>4 </sup> ⇔ 12300}}
+* {{hl|5e-2   ⇔    5 ⋅ 10<sup>-2</sup> ⇔  0.05}}
+
+A regex catching these kind of numbers could look like this  {{hl|([0-9]+.)?[0-9]+[eE][+-]?[0-9]+}}
+
+=== Hexadecimal (Base 16) ===
+
+In [[SQF Syntax|SQF]], {{Link|https://en.wikipedia.org/wiki/Hexadecimal|hexadecimal}} (also base 16, or hex) is a positional numeral system with a base of 16. 
+They start either with {{hl|0x}} or with a single {{hl|$}}.
+
+This gets followed by one of the following characters: {{hl|0 1 2 3 4 5 6 7 8 9 A B C D E F}}.<br>
+Note that casing does not matter, thus both {{hl|0xa}} and {{hl|0xA}} are valid.
+
+Some Examples would be:
+* {{hl|0xa5}}
+* {{hl|$5C}}
+* {{hl|$FFFFFF}}
+* {{hl|0x123ABC}}
+
+A regex catching these kind of numbers could look like this {{hl|<nowiki>((\$|0x)[0-9a-fA-F]+)\b</nowiki>}}
+
+
+== Config ==
+
+Unlike scripting, configs actually do allow for multiple number types (Integer, [[Float]], etc). They are properly stored with their corresponding type in mind.
+{{Feature|informative|In a config, a [[Number]] can also mean a [[Boolean]]: in [[Description.ext]] for example, <syntaxhighlight lang="cpp" inline>disabledAI = 1;</syntaxhighlight> means [[true]].}}
+
+<syntaxhighlight lang="cpp">
+class MyClass
+{
+	myInt = 1;		// integer
+	myFloat = 0.01;	// float
+};
+
+// description.ext example
+disabledAI = 1;		// boolean: 0 = false, everything else = true (usually 1)
+</syntaxhighlight>
+
+
+== Floating-point Precision ==
+
+Humans are typically used to performing mathematical calculations on the set of ''real numbers'' (ℝ). There are no gaps between real numbers, i.e. there is always another real number between two real numbers. However, as mentioned above, every number in scripting is a ''floating-point number''. Because any given floating-point number can only consist of a finite amount of bits (a computer's memory is finite after all), any given floating-point format can only represent a finite amount of distinct numbers. Consequently, there are gaps between floating-point numbers.
+
+This induces the following problem: There are real numbers that the computer does not have a binary representation for (and that it therefore can not work with) because there is no representation for these numbers in the specific floating-point format used by the computer. Of course, by extension, this also applies to the [[Real Virtuality]] Engine - there are real numbers that it does not have a representation for.
+
+This issue is dealt with by rounding to the nearest number that can actually be represented as a floating-point number.
+
+{| class="wikitable" style="margin: auto"
+|-
+! <var>n</var> ∈ ℝ !! <var>n</var> in {{arma3}}<br><span style="font-weight: normal">(value of <sqf inline>n toFixed 20</sqf>)</span>
+|- style="background-color: lightgreen"
+| 0 || 0.00000000000000000000
+|- style="background-color: lightgreen"
+| 1 || 1.00000000000000000000
+|-
+| 1.1 || 1.10000002384185790000
+|- style="background-color: lightgreen"
+| 2.5 || 2.50000000000000000000
+|-
+| 2.51 || 2.50999999046325680000
+|}
+
+Unfortunately, this rounding introduces a new problem in the form of unexpected, seemingly erroneous behaviour: For instance, despite being entirely correct mathematically, the expression <sqf inline>0.3 + 0.4 == 0.7</sqf> surprisingly returns [[false]] in {{arma3}}. In order to understand why this happens, examine the evaluation of the expression step by step:
+# The 0.3 from the source code has to be rounded to 0.30000001192092896
+# The 0.4 from the source code has to be rounded to 0.40000000596046448
+# Now the addition can be performed: 0.30000001192092896 + 0.40000000596046448 = 0.70000004768371582<br>(that is the result with floating-point arithmetic; the result of the same addition in ℝ is 0.70000001788139344)
+# The 0.7 from the source code has to be rounded to 0.69999998807907104
+# Finally, the comparison <sqf inline>0.70000004768371582 == 0.69999998807907104</sqf> returns [[false]]
+
+To add to the confusion, <sqf inline>0.3 + 0.4</sqf> will actually output {{hl|0.7}} in the [[Arma 3: Debug Console|Debug Console]] or when used with commands like [[hint]] or [[systemChat]] - that is because numbers are rounded yet again when they are converted to [[String]] for the output. If this needs to be avoided, the [[toFixed]] command can be used to obtain the accurate value of a number.
+
+Floating-point formats are designed so that the density of floating-point numbers is highest around the number zero. Accordingly, there are more floating-point numbers between 0 and 1 than there are between 100,000 and 100,001. As such, the gaps between consecutive floating-point numbers with small absolute values are also small, while the gaps between consecutive floating-point numbers with large absolute values become increasingly larger. For instance, the next larger floating-point number after 87,654,320 is 87,654,328 in {{arma3}}.
+
+=== Consequences ===
+
+* Fractional floating-point numbers should not be compared for exact equality. Instead, one should check the distance (i.e. absolute difference) between the numbers. Numbers can then be considered equal if the distance between them is smaller than some threshold (e.g. 0.000001). Consequently, expressions like <sqf inline>0.3 + 0.4 == 0.7</sqf> should be replaced with expressions such as <sqf inline>_res = 0.3 + 0.4; abs (_res - 0.7) < 0.000001</sqf>.<br>Note that this is only necessary if fractional numbers are involved; if only whole numbers are involved, this procedure is not necessary.
+* Large numbers can not always be incremented / decremented. For example, <sqf inline>87654320 + 1</sqf> returns {{hl|87,654,320}} because any real number between 87,654,316 and 87,654,324 has to be rounded to 87,654,320 in {{arma3}}.
+
+== String Number Formats ==
+{{GVI|arma3|2.20}}
+Some config entries or script parameters support receiving numbers as a string.<br>
+These string formats are Case-Sensitive!
+
+=== Time ===
+Specifies a time duration.<br>
+Time also supports decimals like "0.5s".
+
+Supported variants:
+<syntaxhighlight lang="cpp">
+"5ns" // Nanoseconds
+"5us" // Microseconds
+"5ms" // Milliseconds
+"5s" // Seconds
+"5m" // Minutes
+"5h" // Hours
+"5d" // Days
+"5fps" // Duration of one frame at specified frames per second rate (5fps = 1000ms/5 = 200ms = 0.2s)
+</syntaxhighlight>
+
+=== Data Size ===
+Specifies some amount of data in bytes.
+Does not support decimals like "0.5MB", only whole numbers like "500KB" are supported.
+
+Supported variants:
+<syntaxhighlight lang="cpp">
+"5B" // bytes
+"5KB" // Kilobytes
+"5MB" // Megabytes
+"5GB" // Gigabytes
+"5TB" // Terabytes
+"5KiB" // Kibibytes
+"5MiB" // Mebibytes
+"5GiB" // Gibibytes
+"5TiB" // Tibibytes
+</syntaxhighlight>
+
+=== Data Transfer rate ===
+Specifies a data transfer rates in Bytes or Bits per second
+Does not support decimals like "0.5Mbps", only whole numbers like "500kbps" are supported.
+
+Supported variants:
+<syntaxhighlight lang="cpp">
+"5bps" // Bits per second
+"5kbps" // Kilobits per second
+"5Mbps" // Megabits per second
+"5Gbps" // Gigabits per second
+"5bit/s" // Bits per second
+"5kbit/s" // Kilobits per second
+"5Mbit/s" // Megabits per second
+"5Gbit/s" // Gigabits per second
+
+"5Kibps" // Kibibits per second
+"5Mibps" // Mebibits per second
+"5Gibps" // Gibibits per second
+"5Kibit/s" // Kibibits per second
+"5Mibit/s" // Mebibits per second
+"5Gibit/s" // Gibibits per second
+
+"5kB/s" // Kilobytes per second
+"5MB/s" // Megabytes per second
+"5GB/s" // Gigabytes per second
+
+"5KiB/s" // Kibibytes per second
+"5MiB/s" // Mebibytes per second
+"5GiB/s" // Gibibytes per second
+</syntaxhighlight>
+
+[[Category: Data Types]]

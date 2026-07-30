@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/diag_mergeConfigFile
+// revision: 364163 (2024-05-05T10:46:42Z)
+// export sha1: c0t5dgb78xet85q7zciqs5x4cfofmpi
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Config | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+
+|branch= diag
+
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|gr2= Config
+
+|descr= Updates config without restarting. Attributes and classes can not be deleted unless {{hl|[[Class Inheritance#delete|delete]]}} is used. Changes to the config are applied to all new entities, a mission restart is not necessarily required. Spawning the vehicle again or switching weapons works too. Since {{GVI|arma3|1.70}} CfgAmmo should be mergeable as well.
+{{Feature|warning|Merging a config with an [[PreProcessor_Commands#.23include|include]] statement, that points to a non existing file, will crash the game.}}
+
+|s1= [[diag_mergeConfigFile]] [path, userdir]
+
+|p1= path: [[String]] - absolute or relative path
+
+|p2= userdir: [[Boolean]] - (Optional, default [[false]]) path is relative to the user directory, otherwise it is relative to the mission directory
+
+|r1= [[Nothing]]
+
+|x1= <sqf>diag_mergeConfigFile ["O:\Arma3\A3\Stuff_F\config.cpp"]</sqf>
+
+|seealso= [[Arma 3: Diagnostics Exe]]
+}}

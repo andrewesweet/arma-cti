@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Guidelines
+// revision: 321541 (2022-05-17T19:56:47Z)
+// export sha1: d3r9ocny7gvyo5c5gv4osxts3j2ytki
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding}}

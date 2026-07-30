@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Functions_Library
+// revision: 291397 (2021-08-04T16:40:41Z)
+// export sha1: ewq260z66jk43d02pibhdtht76zmevo
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Scripting Topics]]

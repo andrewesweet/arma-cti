@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/setLightnings
+// revision: 349843 (2023-11-20T22:10:39Z)
+// export sha1: rs82hw6bv9tt27epy6gj7f959bdrg5l
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|descr= Changes the lightnings value smoothly during the given time (in seconds). A time of zero means there will be an immediate change.<br><br>
+'''NOTE''': This command will have no effect (even though the value of [[lightnings]] changes) unless {{hl|Manual Override}} option is selected in the editor in the Intel, which is normally off.<br><br>
+[[File:setLightnings.jpg|left|600px]]
+
+|s1= time [[setLightnings]] value
+
+|p1= time: [[Number]]
+
+|p2= value: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>1800 setLightnings 0.7;</sqf>
+
+|seealso= [[lightnings]] [[overcast]] [[setWaves]]
+}}

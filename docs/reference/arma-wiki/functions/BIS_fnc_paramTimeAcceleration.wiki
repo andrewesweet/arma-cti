@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_paramTimeAcceleration
+// revision: 352535 (2024-02-12T16:42:19Z)
+// export sha1: 473mqav3ot4dx6q89hd6q8rsbfhivej
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Mission Parameters | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Mission Parameters
+
+|descr= Manages [[setTimeMultiplier]] Multiplayer setting (set with [[Mission Parameters|paramTimeAcceleration.hpp]])
+
+|s1= timeMultiplier call [[BIS_fnc_paramTimeAcceleration]]
+
+|p1= timeMultiplier: [[Number]] - (Optional, default [[timeMultiplier]])
+
+|r1= [[Number]] - the set ratio
+
+|x1= <sqf>5 call BIS_fnc_paramTimeAcceleration;</sqf>
+
+|seealso= [[setTimeMultiplier]] [[timeMultiplier]]
+}}

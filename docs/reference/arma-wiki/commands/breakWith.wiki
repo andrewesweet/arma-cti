@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/breakWith
+// revision: 349341 (2023-11-08T14:53:30Z)
+// export sha1: aen15sv53gqhq4tajb4sopcj6yd8fri
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Program Flow
+
+|descr= Skips all loop iterations and immediately returns the given value.
+
+|s1= [[breakWith]] return
+
+|p1= return: [[Anything]] - value to be returned when iterations are skipped
+
+|r1= [[Anything]]
+
+|x1= <sqf>
+// stops once _i reaches 5 and outputs 0, 1, 2, 3, 4, END
+systemChat call {
+	for "_i" from 0 to 10 do {
+		if (_i == 5) then { breakWith "END"; };
+		systemChat str _i;
+	};
+};
+</sqf>
+
+|seealso= [[continueWith]] [[break]] [[continue]] [[breakOut]]
+}}

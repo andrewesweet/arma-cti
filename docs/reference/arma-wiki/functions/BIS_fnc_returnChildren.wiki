@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_returnChildren
+// revision: 376418 (2025-10-11T23:07:20Z)
+// export sha1: djxp1idz45hud7ercr015tihmcbvhld
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Configs | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Configs
+
+|descr= Returns all subclasses within given class.
+
+|s1= [config, depth, lastTier] call [[BIS_fnc_returnChildren]]
+
+|p1= config: [[Config]] - class which is searched
+
+|p2= depth: [[Number]] - (Optional, default 0) depth, (0 = return only subclasses, 1 = return subclasses of subclasses, and so on...
+
+|p3= allTiers: [[Boolean]] - (Optional, default [[true]]) [[false]] to return only the last one, [[true]] to return all
+
+|r1= [[Array]] - of [[Config]]s
+
+|x1= <sqf>[configFile >> "CfgFunctions", 2] call BIS_fnc_returnChildren; // returns config paths of all functions</sqf>
+
+|seealso= [[BIS_fnc_returnParents]] [[configClasses]]
+}}

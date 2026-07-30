@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/curatorWaypointCost
+// revision: 353723 (2024-03-21T19:38:08Z)
+// export sha1: 5jr166ekdahy713t7k23rnkdovda1kq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Return current price for placing waypoints (curator specific).
+
+|s1= [[curatorWaypointCost]] curatorObj
+
+|p1= curatorObj: [[Object]] - curator module.
+
+|r1= [[Number]]
+
+|x1= <sqf>var_wpcost = curatorWaypointCost bis_curator;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[curatorPoints]] [[addCuratorPoints]]
+}}

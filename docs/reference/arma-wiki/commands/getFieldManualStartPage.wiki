@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/getFieldManualStartPage
+// revision: 377874 (2026-01-04T13:13:54Z)
+// export sha1: 8jqvasn15wq2f2jlxzw9sxg4s3ubnor
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 1.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.18
+
+|gr1= System
+
+|descr= Returns array of the starting topic and hint the given field manual should display.
+
+|s1= [[getFieldManualStartPage]] display
+
+|p1= display: [[Display]]
+
+|r1= [[Array]] with [startingTopic, hint]
+
+* startingTopic: [[String]]
+* hint: [[String]]
+
+|x1= <sqf>getFieldManualStartPage (findDisplay 46); // returns ["", ""]</sqf>
+
+|seealso= [[:Category:Arma 3: Field Manual|Arma 3: Field Manual]]
+}}

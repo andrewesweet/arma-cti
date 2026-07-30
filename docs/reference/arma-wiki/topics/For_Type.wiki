@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/For_Type
+// revision: 245328 (2021-02-10T23:45:38Z)
+// export sha1: h5ug66i5y6dfuvn80pdl85f6p7hf9ai
+// categories: Category:Syntactical Helper Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Description:'''
+This type handles 'For' cycles.
+
+
+'''Usage of this type:'''
+
+for "_var" from :expr: to :expr: [step <expr>] do {..code..};
+
+'''Second usage:'''
+
+for [":initPhase:",":condition:",":updatePhase:"] do {...code...};
+
+Introduced with Armed Assault, does not refer to Cold War Crisis or Resistance.
+
+[[Category:Syntactical Helper Types]]
+
+== See Also ==
+
+[[for]], [[Control Structures]]

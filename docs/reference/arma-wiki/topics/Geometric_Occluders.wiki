@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/Geometric_Occluders
+// revision: 229619 (2021-02-01T13:22:18Z)
+// export sha1: p2trvalmuymsp1vvh50s4ff6ww8di4v
+// categories: Category:Arma 3: Editing | Category:Arma 3: Tutorials | Category:DayZ: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+This feature is introduced to '''DayZ''' and '''Arma 3''' in '''Eden Update'''. The original text has been written by Filip Doksanský.
+
+'''Geometric occluders''' (GO) are new feature for improving rendering performance. Their purpose is to quickly filter out rendering of objects that are occluded by other objects.  To get most of its benefit, there must be as few of GOs in scene as possible and they should be as big as possible. When there is too much small GOs it may happen that computing occlusion will be more consuming than to render those occluded objects.
+
+GOs are part of P3D objects, represented by either convex components or convex polygons placed in view geometry LOD. They are usually in buildings as they perfectly fit the purpose. In the best case there should be one big box, aligned with building walls. When there is too much windows or doors that you should see through, you can represent occluder by few convex polygons covering these walls, where are not any windows etc.
+
+Example:
+
+[[File:occluder_01.jpg]]
+
+When some building do not offer opportunity to cover it with 1-3 occluders, it is better to leave it without occluder. When camera is inside occluder, then the occluder is omitted so you must not be afraid that you'll not see out of building with occluder.
+
+Naming convention is '''"occluder_#"''', where # is number of component. This is the *must*, as the system uses this prefix as identification of occluders.
+
+When occluders are used well, it can bring acceleration in order of hundreds percent especially in crowded town areas.
+
+=== Proxy Occluders ===
+
+There is also another feature for occluding interior proxy objects, that is called proxy-occluder. They can be represented only by box and they should cover only interior objects, so window frames (often represented by proxies) are not occluded as it would look bad when they'll disappear.
+
+Naming convention is "proxyoccluder_#", where # is number of component
+
+=== Summary of usage rules ===
+
+* Use as few occluders as possible. When it is not possible to satisfy it, leave the object without occluders.
+* Interior proxies should be always encapsulated in proxy-occluder unless there are huge openings in building walls that fully expose these proxies.
+* When box is not suitable, use convex polygons. Keep number of edges low. The best would be 4 edges, up to 6 as maximum. The best example of such building is warehouse, where there are huge opened doors.
+* When shape of object is not suitable for box at all, use just convex polygon. The best example is heap of rocks.
+* Don't care about some impressions that could cause occluding of objects that would be visible through windows in rare cases. Always think about object usage in the game.
+* When part of the building is well suited for occluders and another part isn't, use occluders only where it is worth it.
+
+Examples:
+
+[[File:occluder_02.jpg]] [[File:occluder_03.jpg]]
+
+{{GameCategory|arma3|Editing}}
+{{GameCategory|arma3|Tutorials}}
+{{GameCategory|dayz|Editing}}

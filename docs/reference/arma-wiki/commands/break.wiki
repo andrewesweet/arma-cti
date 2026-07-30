@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/break
+// revision: 370194 (2024-11-06T11:55:55Z)
+// export sha1: jzlu62d3dlnsy8ycz887j7m6ikc9wwz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Program Flow
+
+|descr= Skips all loop iterations ([[for]], [[forEach]], [[while]], [[findIf]] etc).
+
+|s1= [[break]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+// prints 0, 1 and then exits
+for "_i" from 0 to 3 do
+{
+	if (_i == 2) then { break };
+	systemChat str _i;
+};
+</sqf>
+
+|x2= <sqf>
+private _moneyHolder = objNull;
+{
+	if ("Money_roll" in items _x) then
+	{
+		_moneyHolder = _x;
+		break;
+	};
+} forEach units group player;
+
+if (isNull _moneyHolder) then
+{
+	hint "We have to find this money.";
+}
+else
+{
+	hint format ["%1 has the money!", name _moneyHolder];
+};
+</sqf>
+
+|x3 = <sqf>
+0 spawn
+{
+	private _value = 0;
+
+	while { _value < 10 } do
+	{
+		if (_value == 8) then
+		{
+			break; // 8 and 9 will never be printed
+		};
+
+		systemChat str _value ;
+		_value = _value + 1;
+	};
+};
+</sqf>
+
+|seealso= [[continueWith]] [[continue]] [[breakWith]] [[breakOut]]
+}}

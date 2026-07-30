@@ -1,0 +1,178 @@
+// source: https://community.bistudio.com/wiki/Walkthrough:Resistance-Pynaple's
+// revision: 339594 (2023-04-28T14:11:49Z)
+// export sha1: ktugxj5ds18zpcxukb6851vdda0oyh9
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|spoiler}}
+
+Alternative walkthroughs are available [[Walkthrough:Resistance|here]] and {{Link|http://www.gamefaqs.com/computer/doswin/file/555140/19415|here}}.
+
+
+
+== Start ==
+Independent Republic Of Nogova 1 Month Earlier
+Saturday 21st August 06:59
+
+Victor Troska is at his house on the Island of Nogova. An old friend Tom gives you a lift to the town of Petrovice where hopefully Peter has repaired your Motorbike.
+
+
+== Invasion ==
+City Of Petrovice
+Saturday 21st August 07:30
+
+After being dropped off at the Bus Stop you can either choose to wait for the Bus or run directly across the road, behind the wall is Peter waiting with your freshly repaired Motorbike. Try some of the doors in town they have the option in your Action Menu to Open/Close, Also Elevator shafts can be climbed Action Menu Climb Ladder Up/Down.
+
+Head to your east, press and hold the G Key to display Compass.
+
+*If in Veteran Mode press the M Key to display map, make your route via markers shown, Press the M key again to return.
+*You can also mouse wheel or + or - on the num pad to zoom in and out of map contours.
+*Double Clicking left mouse button on map, then typing your own markers, is also helpful for planning your Mission.
+*You can delete markers with the pointer over marker and press DELETE Key.
+
+Just down the road from from Petrovice on the outskirts to the East is a small town with a Fuel Station pull up and use the Action Menu choose refuel at fuel station.
+
+After refuelling Head to your East, Watch out for traffic. This is a nice scenic ride take in some of the peaceful country side of your home Nogova, as the peace and quiet will soon come to an end. Follow the road Towards the town of Lany, where you will turn to your Right towards the Town of Lipany and your office. Towns are clearly sign posted along the way.
+
+Get out of town. Run from your office into the square try grabbing a car or your Motorbike, head back towards the town of Lany, trying not to get shot.
+
+*Hint you could try running down a soldier or 2 grabbing a gun and the rest is up to you.
+
+
+== Crossroads ==
+At Home, The Following Morning
+Sunday 22nd August O7:30
+
+Back At home Laying Low with Soviet Forces over running your home of Nogova, you are paid a visit by Tom and 3 local youths. An Injured Resistance Fighter approaches. It's Anton, from the Town of Dolina in need of help and somewhere to hide. A Ural comes down the road, they are looking for the Resistance Fighter and will surely kill anyone harboring him.
+
+Suddenly a UAZ approaches it is Colonel Guba! You are given 2 options in the Actions Menu:
+
+# Try to Negotiate.
+# Betray The Partisan.
+
+Run into the shed where Anton is hiding Grab his AK47 and shoot the 3 soldiers. Alternatively you could run behind the house where lies a Kozlice in ammo crates grab it and shoot the 3 soldiers before they cold bloodedly murder your friends.
+
+Grab Guns and Ammo from dead soldiers and load up the Ural. Action Menu (eg: put AK47 to ural). Watch out for Chopper Mi17 and parachuting Spetz Natz to the east, press G Key and hold for Compass, there is also a vehicle check point ammo crates and UAZ to the East. Press M Key for your map, locate D2 co-ordinates secret Resistance camp, Jump into the Ural and Drive to this location, Watch out for a small Infantry patrol to the West in the direction of Resistance Camp.
+
+*Hint you could take up a defensive position covering House from the West to acquire more weapons from advancing Spetz Natz.
+ 
+
+== No Turning Back ==
+Resistance Encampment Near The Forest
+Saturday 21st August 10:30
+
+Objective:
+*Fight Them Off At Any Cost.
+
+Here You meet Gabriel head of the Resistance effort and Jerry-Geronimo.
+
+Watch Out For an Infantry Squad To your Sth East. Run along the line of tents to bushes against tent directly in front of you Crouch Press Q Key or Go Prone Press Z Key.
+Change To Iron Sights Press V Key. Shoot the troops advancing from the southeast. Kill them all!
+
+Ammo crates are to the South at the edge of the forest near Fortifications and M2 Machine Gun. Arm your troops using command menu. For example: choose unit F2 only, 0.command menu (6.Action) brings up menu with weapons able to be picked up. Arm your troops with RPG Launchers and Ammunition: Take RPG Launcher, Take RPG. A BMP and a T72 approach from the South along dirt road also a full infantry squad.
+
+*There is a mine field to the South keep your troops prone 0.command menu 7-6.
+*Scan Horizon 0.command menu 3-7.
+*Set Combat Mode to Danger 0.command menu 7-2.
+
+Take out what the mines don't using RPG Launchers. Get on M2 Machine Gun via Action Menu and take out Advancing Infantry squad from the South Press V for Iron sights and + or - to zoom in and out.
+
+Approaching Mi17 From the South East use m2 Machine Gun into cockpit taking out pilots, clean up any leftover troops from wreckage take NV Goggles from Pilots and Tank Crew you'll need them. Arm your men with whatever you can using the command menu.
+
+Before Enemy reinforcements arrive a Shilka and some T72's. Board vehicles and retreat to the North, map ref Ci21 Where truck awaits at a T intersection command your men to board truck 9-5 for team white and 4-(5.Ride in Back),4-(1.Disembark).
+
+*Hint You could take up a defensive position to take out advancing tanks.
+ 
+
+== Ammo Low ==
+Relocated Field Base In The Forest
+Ten Minutes to Convoy's Arrival.
+Sunday 22nd August 07:30
+
+Objectives:
+*Halt Convoy and take control of Supply Trucks.
+*Retreat Back to Camp.
+
+A weapons supply convoy is traveling from the port town of Modrova in the North West to the town of Lipany in the southeast. You will lead the main group in an Ambush to steal weapons and ammunition trucks.
+
+With Jay in a squad led by Geronimo as reconnaissance, warning you of approaching convoy and it is defensive capabilities. Be sure your squad is equipped as gunners and R.P.G's from Ammo Crates in Field Camp. DO-NOT Destroy Supply Trucks.
+
+Order your squad to return to formation 0.Command menu 1-1. Order your squad to board PV3S Civil (truck), Tild key for all (`or~) 0.Command Menu- 4-2-(5.Ride in the back). Jump in PV3S Civil as driver, head South out of Field Camp through clearing, turn Right at dirt track heading South West from Field Camp, turn Left heading South at the next Junction and Follow Convoy Route to Map Co-ordinates Fd28. Park truck on the Eastern side of the dirt road, behind boulders out of view. Order your squad to disembark 4-1.
+
+Position your squad for an ambush using foliage as cover, either by choosing a squad member F2 to F12 point and clicking Left Mouse Button or alternatively using 0.Command Menu 1- press M Key for Map, position pointer in desired location and click Left Mouse Button, (good for Non-line of sight positioning of troops). Once In Position:
+
+Order your squad to Hold Fire 3-2.
+Order your squad to Go Prone 7-6.
+Order your squad to Scan Horizon 3-7.
+Wait for Jay's Signal, change to Binoculars press B Key.
+Notify your squad of Danger 7-2
+
+Once Convoy comes into view from the North West, Designate targets to squad members F2 to F12 0.Command Menu 2- then target. Use R.P.G equipped infantry on armor targets and Gunners only on trucks. Wait for the convoy to pass the Junction and head on it is way up hill this should slow the targets up enough for some clean shots, upon receiving Ready To Fire signal from squad members Order your squad to Open Fire 3-1. Watch out for enemy infantry disembarking from the rear of supply trucks kill them all.
+Once clear expect Reinforcements, Jay as reconnaissance will warn you of their approach and strength.
+
+
+Take a Mine from one of the supply trucks and place it in the junction, get back to cover and wait for the fire works.
+
+Order your squad to Hold Fire 3-2
+Eliminate any remaining reinforcements.
+Order your squad to Stand Up 7-5
+Order your squad to Return To Formation 1-1
+Scavenge Weapons especially Night Vision Goggles and put to trucks (Urals and PV3S).
+
+Watch Out for Enemy Squad moving in from the South take an SVD Dragunov (sniper rifle) from one of the newly acquired supply trucks and Eliminate Enemy Squad.
+Order your squad into vehicles and head back to the Field Base.
+
+*Hint if you damage a supply truck try moving weapons to PV3S.
+ 
+
+== Scrap ==
+The Sun is Rising...
+Monday 23rd August 05:25
+
+Objectives:
+*Decide which Plan A or B.
+*Plan A, Infiltrate Enemy Base Alone Radio Reinforcements.
+*Plan B, Attack Enemy Base as Squad and Steal Tanks.
+*Radio Reinforcements 0-0-1.
+*Kill partying Soviets at Castle Ruins.
+*Repair and Rearm Tanks.
+*Disappear into mountains.
+
+Before Heading into battle Arm your squad using Gear section of Briefing. Night Vision Goggles and Silenced weapons (Bizon).
+
+Head East into the forest, Careful there is a Tank Crew encampment at Map Co-ordinates Gb27. Order your squad to Hold Fire 3-2. Order your squad to Scan Horizon 3-7.
+Order your squad to Go Prone 7-6. Position squad to intercept Tank Crews as they scramble for the Tanks upon being alerted to your presence.
+
+Move to a good firing position overlooking the Soviet Base in the Town of Trosky, bring a squad member to watch for a 2man patrol to your Right flank (South East). Eliminate guard beside B.M.P with Night Vision then 2man patrol within the Soviet Base. Order the rest of your squad to Open Fire 3-1. Advance into Base carefully get into B.M.P as gunner and give cover fire, eliminate advancing Soviets from the Castle Ruins.
+
+Radio 0-0-1 for reinforcements to move in. Watchout for Mi17 from the South West (direction of castle) and parachuting Spetz Natz. Order your squad to Return To Formation 1-1.
+Order your squad to Stand Up 7-5. You will receive a Radio message from Tasmanian Devil warning you of enemy reinforcements approaching from the South, (along roadway leading into Soviet Base).
+
+Order your Squad members to board available tanks, if damaged or ammo is low drive to the rear of Repair or Ammo trucks and using Action Menu Repair, Re-Arm or Refuel Tanks.
+Alternatively You can order your squad members via 0.Command Menu 6-Repair, Re-Arm or Refuel. Scavenge any available weapons steal as many Tanks as possible then retreat to the Town of Mokropsy Map Co-ordinates Ec26.
+
+
+*Hint the more tanks you can steal the better.
+ 
+
+== Field Exercise ==
+In The Hills To The West
+Tuesday 24th August 07:29
+
+Objectives:
+*Destroy Enemy Outpost leaving No Survivors.
+*Seize The Enemy Base at Modrava and Hold.
+*Radio Partisans 0-0-1 To Attack Modrava with Grenade Launchers.
+
+Time to take the fight to the Soviets attacking their Northern most Base in the Port Town of Modrava.
+
+Order your squad members to board tanks at the minimum 2per Tank 1.Driver 1.Gunner. Board Tank as Gunner press V key for Gunner sights and +or- on num-pad to Zoom in and out. Order your Tank Platoon to Form Column 8-1. Order your Tank Platoon to Scan Horizon 3-7. Move out along Roadway to the West head to Map Co-ordinates Db21 (overlooking Enemy outpost).
+
+Load up HEAT Round, Action Menu. HEAT Rounds against Infantry, SABOT Rounds against Armor. Before arriving at Co-ordinates Db21. Order your Tank Platoon to Form Line 8-7. Attack Enemy Outpost use HEAT Rounds on Tank Crew (black uniforms), change to Machine Gun press Space Bar and mow enemy down, while the next HEAT Round is being loaded.
+Once Outpost is clear Order your Tank platoon to Form Column 8-1. Change back to SABOT Rounds Action Menu (reload Sabot).
+
+Move out through Outpost and head South West, between 2 peaks Map Co-ordinates Cc23. Once you reach the Town of Bludov Order your Tank Platoon to Form Line 8-7.
+Move to Map Co-ordinates Bh22 overlooking Modrava Attack Enemy Base, expect Armor and Infantry go for the Armor first.
+
+Once Base is clear of Armor and before advancing into Modrava Radio 0-0-1 for Grenade bombardment, alternatively press M Key for Map and click on the Radio Grenades! Move into Modrava Eliminate all remaining Enemy Infantry.
+
+''(incomplete)''

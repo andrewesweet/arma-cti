@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_curatorObjectRegistered
+// revision: 348555 (2023-11-08T13:27:57Z)
+// export sha1: o2odqgunxqycylzntea4no4qbn7cker
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Register "curatorObjectRegistered" handler. Cost of vehicles with crews will be automatically calculated based on vehicle + crew cost.
+
+|s1= [curator, code] call [[BIS_fnc_curatorObjectRegistered]]
+
+|p1= curator: [[Object]] - curator module
+
+|p2= code: [[Code]] - handler code, passed arguments are:<br>
+0: [[Object]] - Curator<br>
+1: [[Array]] - Classes
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[curatorModule, { hint format ["Curator:%1, Classes:%2", _this # 0, _this # 1] }] call BIS_fnc_curatorObjectRegistered;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[BIS_fnc_registerCuratorObject]]
+}}

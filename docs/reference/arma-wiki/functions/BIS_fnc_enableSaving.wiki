@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_enableSaving
+// revision: 349320 (2023-11-08T14:52:29Z)
+// export sha1: mp4jtsy1rgkklsuc9rjtphgiyk416g5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Missions
+
+|descr= Controls the enabling of saving. Will only enable saving if there are no remaining requests for disabled saving.
+
+|s1= id call [[BIS_fnc_enableSaving]]
+
+|p1= id: [[String]] - unique id previously used to disable saving via [[BIS_fnc_disableSaving]]
+
+|r1= [[Boolean]] - [[true]] if successful, [[false]] if not
+
+|x1= <sqf>"savingID" call BIS_fnc_enableSaving;</sqf>
+
+|seealso= [[BIS_fnc_disableSaving]] [[saveGame]] [[BIS_fnc_saveGame]] [[loadGame]]
+}}

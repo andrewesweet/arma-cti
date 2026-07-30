@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_cargoTurretIndex
+// revision: 327249 (2022-07-12T22:11:49Z)
+// export sha1: takpu7fxm1e8hcnjto0jyvbbzohcgqo
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Return cargo index of a person turret and the other way around.
+
+|s1= [vehicle, personOrTurretPath] call [[BIS_fnc_cargoTurretIndex]]
+
+|p1= vehicle: [[Object]] - the vehicle to check
+
+|p2= personOrTurretPath: [[Object#Person|Person]] or [[Array]] of [[Number]]s - unit to find or turret path
+
+|r1= [[Array]] (turret path) or [[Number]] (cargo index)
+
+|x1= <sqf>private _vehicle = vehicle player;
+private _turretCargoIndex = [_vehicle, [0, 1]] call BIS_fnc_cargoTurretIndex;
+private _playerTurretPath = [_vehicle, player] call BIS_fnc_cargoTurretIndex;</sqf>
+
+|seealso= [[turretUnit]] [[moveInTurret]] [[allTurrets]]
+}}

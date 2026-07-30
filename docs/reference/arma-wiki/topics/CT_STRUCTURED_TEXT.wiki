@@ -1,0 +1,171 @@
+// source: https://community.bistudio.com/wiki/CT_STRUCTURED_TEXT
+// revision: 352117 (2024-02-01T23:25:00Z)
+// export sha1: p1rixg5db09gbj8silzb3gv1v0e6crg
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{CT|intro
+
+|macro = CT_STRUCTURED_TEXT
+|value = 13
+|description = The Structured Text control can display [[Structured Text]]. This is a separate [[:Category: Data Types|data type]] in Arma.
+Structured Text can not only hold some text values, it also can contain some attributes to format the text, as you can see in the example picture below.
+
+You ''can'' add the {{hl|Attributes}} subclass to change the default Structured Text attributes of your control, but the {{hl|Attributes}} class and all of its attributes are ''optional'' and do not have to be specified.
+|gallery=Image:ControlStructuredText.jpg{{!}}A StructuredText control with some formatting included.
+|commands =
+* [[:Category:Command_Group:_Structured_Text|Commands: Structured Text]]
+|events =
+}}
+
+{{CT|abc start}}
+=== A ===
+{{CT|attribute
+|name=Attributes
+|type1=Class
+|value1=class Attributes
+{
+	font = "RobotoCondensed";
+	color = "#ffffff";
+	colorLink = "#D09B43";
+	align = "left";
+	shadow = 1;
+};
+|description=Subclass with options how the text should be rendered. Attributes represent the [[Structured Text]] options. {{Feature|warning|Attributes ( {{hl|class Attributes}}) are not inherited from an existing [[CT_STRUCTURED_TEXT]] control. While no error is shown, properties of {{hl|class Attributes}} will be set to some default values. Re-define needed properties manually. }}
+{{{!}}class="wikitable" border="1" align="left" cellpadding="3" cellspacing="0" {{!}}
+! colspan="4" bgcolor="#bbbbff" {{!}} Optional SubClass Attributes Properties
+{{!}}-
+! bgcolor="#ddddff" {{!}} Name
+! bgcolor="#ddddff" {{!}} Type
+! bgcolor="#ddddff" {{!}} Remark
+! bgcolor="#ddddff" {{!}} Default Value
+{{!}}-
+{{!}} '''font'''
+{{!}} string
+{{!}} fontname to use
+{{!}} "Zeppelin32"
+{{!}}-
+{{!}} '''size'''
+{{!}} [[Float]] 
+{{!}} Set the size of the text where 1 is the size value of parent class.
+{{!}} 1
+{{!}}-
+{{!}} '''color'''
+{{!}} string
+{{!}} text color defined in HMTL-like syntax.
+{{!}} "#ffffff"
+{{!}}-
+{{!}} '''align'''
+{{!}} string
+{{!}} align of text. Values can be "left", "center" or "right"
+{{!}} "center"
+{{!}}-
+{{!}} '''valign'''
+{{!}} string
+{{!}} Vertical align of text. Values can be "top", "middle", "bottom". {{Feature|important|Seems to be broken}}
+{{!}} "middle"
+{{!}}-
+{{!}} '''shadow'''
+{{!}} Integer
+{{!}} affects the shadow of the text.
+{{!}} 1 (true)
+{{!}}-
+{{!}} '''shadowColor'''
+{{!}} string
+{{!}} shadow color defined in HMTL-like syntax.
+{{!}} "#000000"
+{{!}}-
+{{!}} '''shadowOffset'''
+{{!}} 
+{{!}} 
+{{!}} 
+{{!}}-
+{{!}} '''image'''
+{{!}} string
+{{!}} 
+{{!}} 
+{{!}}-
+{{!}} '''underline'''
+{{!}} 
+{{!}} 
+{{!}} 
+{{!}}-
+{{!}} '''href'''
+{{!}} string
+{{!}} 
+{{!}} 
+{{!}}-
+{{!}} '''linkColor'''
+{{!}} string
+{{!}} 
+{{!}} 
+{{!}}-
+{{!}}}<br clear="all">
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+
+=== RscStructuredText ===
+
+<syntaxhighlight lang="cpp">
+class RscStructuredText
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_STRUCTURED_TEXT;
+	idc = -1;
+	style = ST_LEFT;
+	colorText[] = {1,1,1,1};
+	class Attributes
+	{
+		font = "RobotoCondensed";
+		color = "#ffffff";
+		colorLink = "#D09B43";
+		align = "left";
+		shadow = 1;
+	};
+	x = 0;
+	y = 0;
+	h = 0.035;
+	w = 0.1;
+	text = "";
+	size = GUI_TEXT_SIZE_MEDIUM;
+	shadow = 1;
+};
+</syntaxhighlight>
+
+
+== Other Examples ==
+
+The following example uses almost the same code as the controls shown in the example screenshot.
+<syntaxhighlight lang="cpp">
+class MyRscStructuredText
+{
+	idc = -1;
+	type = CT_STRUCTURED_TEXT;	// defined constant
+	style = ST_LEFT;				// defined constant
+	colorBackground[] = { 1, 1, 1, 1 };
+	x = 0.1;
+	y = 0.1;
+	w = 0.3;
+	h = 0.1;
+	size = 0.018;
+	text = "";
+	class Attributes
+	{
+		font = "TahomaB";
+		color = "#000000";
+		align = "center";
+		valign = "middle";
+		shadow = false;
+		shadowColor = "#ff0000";
+		size = "1";
+	};
+};
+</syntaxhighlight>
+
+
+[[Category: Control Types]]

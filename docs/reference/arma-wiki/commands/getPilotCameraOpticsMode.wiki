@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getPilotCameraOpticsMode
+// revision: 349193 (2023-11-08T14:50:40Z)
+// export sha1: lycsv48vyiej0lw220fizudldn31mg1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Pilot Camera | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|arg= local
+
+|gr1= Pilot Camera
+
+|descr= Returns the optics mode index (zoom) for the [[Arma 3: Targeting config reference#class pilotCamera|pilotCamera]]
+
+|s1= [[getPilotCameraOpticsMode]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Number]] - the index of the optic mode
+
+|x1= <sqf>getPilotCameraOpticsMode vehicle player</sqf>
+
+|seealso= [[setPilotCameraOpticsMode]] [[hasPilotCamera]] [[getPilotCameraPosition]] [[getPilotCameraDirection]] [[getPilotCameraRotation]] [[setPilotCameraDirection]] [[setPilotCameraRotation]] [[setPilotCameraTarget]] [[getPilotCameraTarget]] [[getTurretOpticsMode]] [[setTurretOpticsMode]]
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/get3DENMissionAttributes
+// revision: 373745 (2025-06-24T21:49:17Z)
+// export sha1: 60xkh2vsm22o4ka09ge17jfdgcb3j6m
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Eden Editor
+
+|descr= Retrieve all attributes and their values from the specified section/category (category is optional).
+
+|s1= section [[get3DENMissionAttributes]] category
+
+|p1= section: [[String]]
+
+|p2= category: [[String]] Category name or {{hl|""}} to return all attributes
+
+|r1= [[Array]]
+
+|x1= <sqf>private _result = "Multiplayer" get3DENMissionAttributes "";</sqf>
+
+|seealso= [[set3DENMissionAttributes]] [[get3DENMissionAttribute]] [[get3DENAttributes]]
+}}

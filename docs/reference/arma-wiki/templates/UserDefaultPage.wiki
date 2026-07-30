@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/Template:UserDefaultPage
+// revision: 352303 (2024-02-05T20:10:56Z)
+// export sha1: jwwpfbbg1fyfab26pzbl8g07i3jbpqa
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{| class="wikitable plainlinks align-center" style="box-shadow: 0 0 0.5em rgba(0,0,0,0.1); line-height: 1.5em; min-width: 40em"
+| colspan="2" style="position: relative" | <div style="font-size: .8em; line-height: 1.25em; position: absolute; top: 0; right: 0.5em">
+[[User:{{{1|{{PAGENAME}}}}}/common.css|CSS]]<!--
+-->{{#ifexist:User talk:{{{1|{{PAGENAME}}}}}/common.js|<nowiki/> &bull; [[User:{{{1|{{PAGENAME}}}}}/common.js|JS]]}}<!--
+-->{{#ifexist:User talk:{{{1|{{PAGENAME}}}}}|<nowiki/> &bull; [[User talk:{{{1|{{PAGENAME}}}}}|Talk]]}}
+</div>
+'''{{{1|{{PAGENAME}}}}}'''<br><small>is my username</small>
+|-
+| style="width: 50%" | [[User:{{{1|{{PAGENAME}}}}}/Sandbox|<div>'''My Sandbox'''<br><small>User:{{{1|{{PAGENAME}}}}}/Sandbox</small></div>]]
+| style="width: 50%" | [[Special:Contributions/{{{1|{{PAGENAME}}}}}|<div>'''My Contributions'''<br><small>Special:Contributions/{{{1|{{PAGENAME}}}}}</small></div>]]
+|}</includeonly><noinclude>{{Doc/Template
+|descr= Adds the default userpage content.
+|param1= username
+|descr1= (Optional) username, default {{<nowiki/>PAGENAME}} (username on a User:* page)
+|example1= <nowiki>{{UserDefaultPage}}</nowiki>
+|result1= <nowiki/>
+{{UserDefaultPage}}
+|example2= <nowiki>{{UserDefaultPage|Maruk}}</nowiki>
+|result2= <nowiki/>
+{{UserDefaultPage|Maruk}}
+}}</noinclude>

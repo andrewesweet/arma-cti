@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3Dcredits
+// revision: 327969 (2022-07-13T14:24:24Z)
+// export sha1: d8s95rudztjp1j5cn8d90lihvz7beb7
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 2: Operation Arrowhead version 1.56 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.56
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= GUI
+
+|eff= local
+
+|descr= Displays structured text in 3D world. GUI layer for indicator is {{hl|2733}}.
+
+|s1= [text, position, minDist, fadeDist] spawn [[BIS_fnc_3Dcredits]]
+
+|p1= text: [[String]] with optional [[Structured Text]] formatting
+
+|p2= position: [[Array]] in format [[Position]]
+
+|p3= minDist: [[Number]] - (Optional, default 20) distance in which text is displayed
+
+|p4= fadeDist: [[Number]] - (Optional, default is 1.5) distance in which text starts fading again
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["<t size='2'>Hello World</t>", getPosATL helloWorld, 15, 0] spawn BIS_fnc_3Dcredits;</sqf>
+
+|x2= <sqf>["<img size='2' image='img\myImage.paa'/><br />Some text on the second line", getPosATL someObject] spawn BIS_fnc_3Dcredits;</sqf>
+
+|seealso= [[Functions Library]]
+
+|exec= spawn
+}}

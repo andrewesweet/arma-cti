@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/setLeader
+// revision: 330647 (2022-10-03T11:09:06Z)
+// export sha1: 3ipcm228elei9v8m22aldxw3tp7pxpm
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Teams | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= Teams
+
+|descr=
+{{Feature|important|To set a [[Group]] leader, see [[selectLeader]].}}
+Set the leader of the given [[Team]]. Effect is local, unless both leader unit and team are local to PC on which command is executed, then effect is global.
+
+|s1= team [[setLeader]] leader
+
+|p1= team: [[Team Member]]
+
+|p2= leader: [[Team Member]]
+
+|r1= [[Nothing]]
+
+|x1=
+
+|seealso= [[commandFollow]] [[doFollow]] [[formationLeader]] [[formLeader]] [[isFormationLeader]] [[leader]] [[selectLeader]]
+}}

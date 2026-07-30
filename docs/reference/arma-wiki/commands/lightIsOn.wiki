@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/lightIsOn
+// revision: 369182 (2024-09-03T10:34:45Z)
+// export sha1: q91ilzhfj5zcvx8inztpp9ijij976bs
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Operation Flashpoint version 1.04 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.04
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Lights
+
+|descr= Check if lampost is on (shining).
+{{Feature|informative|A lamp state is '''local''' to each client (see [[switchLight]]).}}
+{{Feature | arma3 | This command was originally designed to only work with CfgNonAIVehicles class "StreetLamp" only;
+since {{arma3}} v1.92 this command was extended to work with street lights.}}
+
+|s1= [[lightIsOn]] lamppost
+
+|p1= lamppost: [[Object]]
+
+|r1= [[String]] - can be one of:
+* '''"ON"''' - light is on
+* '''"OFF"''' - light is off
+* '''"AUTO"''' - applicable only to the light of type "StreetLamp" and is only on during the night.
+* '''"ERROR"''' - if command fails
+
+|x1= <sqf>if (lightIsOn nearestObject [player, "StreetLamp"] == "ON") then { hint "nightime"; };</sqf>
+
+|x2= <sqf>_it = lightIsOn object 159582;</sqf>
+
+|x3= <sqf>
+if (count allMissionObjects "StreetLamp" == 0) then {
+	hint "Objects compatible with 'lightIsOn' are not found.";
+} else {
+	hint "'lightIsOn' compatible objects are found!";
+};
+</sqf>
+
+|seealso= [[switchLight]]
+}}

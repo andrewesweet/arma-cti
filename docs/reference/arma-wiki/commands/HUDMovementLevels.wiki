@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/HUDMovementLevels
+// revision: 378504 (2026-05-03T16:49:48Z)
+// export sha1: m9nmgqv971vtilwad6cj7dtnn8kmswx
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Interaction
+
+|descr= Returns movement borders for HUD
+
+|s1= [[HUDMovementLevels]]
+
+|r1= [[Array]] with [minSpeed, maxSpeed, minAlt, maxAlt, minDir, maxDir, positionOrTarget]
+* minSpeed: [[Number]] - in m/s
+* maxSpeed: [[Number]] - in m/s
+* minAlt: [[Number]] - in meters
+* maxAlt: [[Number]] - in meters
+* minDir: [[Number]] - in degrees
+* maxDir: [[Number]] - in degrees
+* positionOrTarget: [[Position]], [[Object]]
+
+|x1= <sqf>HUDMovementLevels; // returns e.g [0,0,0,0,0,0,[0,0,0]]</sqf>
+
+|seealso= [[setHUDMovementLevels]]
+}}

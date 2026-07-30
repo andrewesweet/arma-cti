@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Terrains
+// revision: 249476 (2021-02-24T09:17:56Z)
+// export sha1: pp4wbajkx59vhyfzi8v5ngoprools67
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1}}
+[[Category:Arma: Terrains]]

@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_gridToPos
+// revision: 329531 (2022-07-30T12:57:54Z)
+// export sha1: 2ezembtoxl2wtz8n3whfqll23j0748v
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Positions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Positions
+
+|descr= Converts grid coordinates to world position.
+{{Feature|important|
+* Correct results outside of the map area are not guaranteed.
+* Does not work on machines with no UI like [[Arma 3: Dedicated Server|Dedicated Server]] or [[Arma 3: Headless Client|Headless Client]] - see [[hasInterface]].
+}}
+
+|s1= gridPosition call [[BIS_fnc_gridToPos]]
+
+|p1= gridPosition: [[String]] - (Optional, default <sqf inline>mapGridPosition position cameraOn</sqf>) accepts both "024577" or "De82" format
+
+|r1= [[Array]] of [[Number]]s in format [<nowiki/>[gridX, gridY], [gridWidth, gridHeight]]
+
+|x1= <sqf>private _realPosition = "183221" call BIS_fnc_gridToPos;</sqf>
+
+|x2= <sqf>private _realPosition = "He11" call BIS_fnc_gridToPos;</sqf>
+
+|seealso= [[mapGridPosition]]
+}}

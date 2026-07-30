@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/canAddItemToVest
+// revision: 369122 (2024-09-03T10:33:08Z)
+// export sha1: ax3i6tbxp7v4xy91lueu7a5ytthy1ha
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|gr1= Unit Inventory
+
+|descr= Checks if given object can be stored into soldier's vest.
+
+{{Feature|important|
+Avoid passing an empty string <sqf inline>""</sqf> to this command as it will create a warning dialog:
+[[File:a3 warning badvehicletype.jpg|none|alt= Warning Message: Bad vehicle type|Warning Message: Bad vehicle type]]
+This message will show once per mission restart.
+}}
+
+|s1= unit [[canAddItemToVest]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Boolean]]
+
+|s2= unit [[canAddItemToVest]] [item, count, ignoreSoldierMaxLoad]
+
+|s2since= arma3 1.56
+
+|p21= unit: [[Object]]
+
+|p22= item: [[String]]
+
+|p23= count: [[Number]]
+
+|p24= ignoreSoldierMaxLoad: [[Boolean]] - (Optional, default [[true]]) [[true]] to ignore 'soldierMaxLoad' param, container [[maxLoad]] is still counted.
+|p24since= arma3 2.18
+
+|r2= [[Boolean]]
+
+|x1= <sqf>
+_item = "HandGrenade";
+private _fits = player canAddItemToVest _item;
+if (_fits) then {
+	player addItemToVest _item;
+} else {
+	hint "no room!";
+};
+</sqf>
+
+|seealso= [[canAdd]] [[canAddItemToBackpack]] [[canAddItemToUniform]]
+}}

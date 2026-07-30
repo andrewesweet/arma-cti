@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/missionEnd
+// revision: 377043 (2026-01-01T08:50:34Z)
+// export sha1: dfljlwoh3ehij222mmkrfex9ppu5vqj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Mission Information
+
+|descr= Returns mission end type and how it was ended or an empty array [] is mission was not ended.
+
+|s1= [[missionEnd]]
+
+|r1= [[Array]] with [endType, failMission, isFailed] (or empty array if the mission is not ending):
+* endType : [[String]] - the ending that was passed to [[failMission]] or [[endMission]]
+* failMission: [[Boolean]] - [[true]] if the mission ended via [[failMission]], [[false]] if via [[endMission]]
+* isFailed: [[Boolean]] - engine idea of how mission ended. For example if mission ended via [[failMission]] but the type of ending was not "Killed", ''isFailed'' is [[false]]
+
+|x1= <sqf>private _endInfo = missionEnd;</sqf>
+
+|x2= <sqf>missionEnd params ["_endType", "_failMission", "_isFailed"];</sqf>
+
+|seealso= [[endMission]] [[failMission]] [[forceEnd]]
+}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Functions
+// revision: 257301 (2021-05-05T07:44:26Z)
+// export sha1: mzyksplmqoooiken1xhrtpz9ugdn4fz
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Table/RVScriptingFunctions}}
+
+[[Category:Functions]]

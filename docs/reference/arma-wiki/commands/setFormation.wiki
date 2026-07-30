@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/setFormation
+// revision: 336294 (2022-12-21T11:10:07Z)
+// export sha1: dgvw9pn39vpj10763ernd8xu7lo960g
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Groups
+
+|arg= local
+
+|eff= global
+
+|descr= Set group formation.
+
+|s1= group [[setFormation]] formation
+
+|p1= group: [[Object]] or [[Group]]
+
+|p2= formation: [[String]] - can be one of:
+{{Columns|2|
+* "COLUMN"
+* "STAG COLUMN"
+* "WEDGE"
+* "ECH LEFT"
+* "ECH RIGHT"
+* "VEE"
+* "LINE"
+* {{GVI|arma1|1.00|size= 0.75}} "FILE"
+* {{GVI|arma1|1.00|size= 0.75}} "DIAMOND"
+|y
+}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_groupOne setFormation "LINE";</sqf>
+
+|seealso= [[Mission_Editor:_Waypoints#Formation|formations description]] [[formation]]
+}}

@@ -1,0 +1,96 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_General
+// revision: 349726 (2023-11-20T22:09:54Z)
+// export sha1: g3lbwdlgo037rfocj6h1e9jtw5zoy3j
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== General ==
+=== Action Menu ===
+The action menu is a context sensitive list of available actions. It changes depending on the object pointed at with the cursor. '''Icons''' [[File:a3_fm_getindriver.png|24px]] [[File:a3_fm_gear.png|24px]] [[File:a3_fm_reload.png|24px]] near the weapon cursor indicate a new default action. <br>
+* Execute the given action directly with '''[Space]'''.<br>
+Other actions are listed in the action menu. <br>
+* Open the menu with '''[Mouse wheel down]''' or '''[Mouse wheel up]'''.<br>
+* Select an action.<br>
+* Execute the selected action with '''[Space]'''.
+
+
+=== Clothes ===
+You can change your uniform and bags in Inventory '''[I]'''. Different items have different attributes. Thus replacing uniform, vest and bag will result in a different visage, load capacity and armor. Note that you can only wear uniforms of your own side, in line with Geneva conventions.
+
+''When changing a container for one with a smaller capacity, some items might not fit.''
+
+
+=== Containers ===
+Uniforms, vests and backpacks work as containers in your inventory. To exchange a container:<br>
+* Open Inventory '''[I]'''.<br>
+* Point the cursor at a container with this equipment.<br>
+* Drag the replacement to the specific position.
+
+''Each container has a limited capacity indicated by a load bar underneath its icon. It's possible that some items will not fit into one bag. So, go get a bigger one.''
+
+
+=== Doors ===
+Most doors can be opened.<br>
+* Point the cursor at a door until the icon appears.  <br>
+* Press '''[Space]'''. <br>
+* You can also '''open/close doors''' through the action menu.
+
+
+=== Inventory ===
+* Access your Inventory [[File:a3_fm_gear.png|24px]] by pressing '''[I]'''. <br>
+* Use '''drag and drop''' to move the items between slots and containers. <br>
+* Close the Inventory window by pressing '''[I]''' again.
+
+''This hint also applies to searching vehicles, bags, corpses or just piles of items on the ground.''
+
+
+=== GPS ===
+Your GPS keeps track of the time, your location, direction and it even contains a detailed map of your surroundings.<br>
+* Activate the GPS '''[Right Ctrl+M]''' to gain instant awareness of your surroundings.
+
+''This handy device is capable of displaying a map, compass and time in one place. Don't lose it.''
+
+
+=== Binoculars ===
+There are specific slots for special items in your inventory. You can equip and use Binoculars '''[B]''', Night Vision Goggles '''[N]''' and others to improve your tactical awareness.
+
+''You can have only one head-mounted display equipped.''
+
+
+=== Slots ===
+The inventory has designated slots for specific items. '''Drag and drop''' an item from your containers. Available slots for the item will be highlighted.
+
+
+=== Take ===
+To pick up a single item from the ground:<br>
+* Move close to the item.<br>
+* Point the cursor at the item until the [[File:a3_fm_take.png|24px]] icon appears.<br>
+* Press '''[Space]''' to take the item.<br>
+Or you can choose to '''Take''' the item through the action menu '''[Mouse wheel down]'''.
+
+''You can also move close to the item and open the Inventory '''[I]'''. The item will be listed on the left side of the Gear window under the label '''Ground'''.''
+
+
+=== Rearm ===
+You can easily replenish your magazines without opening the inventory.<br>
+* Approach an ammo box or a vehicle, point your cursor at it and open the action menu with '''[Mouse wheel down]'''.<br>
+* Select '''Rearm [[File:a3_fm_reammo.png|24px]]'''. This will replenish your magazines up to your default loadout count.
+
+''When you are low on ammo, your commander will often issue a rearm order at an exact place.''
+
+
+=== Looting ===
+To loot a dead body:<br>
+* Get close and point the cursor at the body.<br>
+* Press '''[I]''' to open the Inventory.<br>
+* '''Drag and drop''' desired items into your inventory.<br>
+* Use '''double-click LMB''' to open a bag/vest/uniform on the ground. It will open to a new tab.
+
+
+=== Fast Equip ===
+When in the inventory, '''RMB click''' on any item will fast equip or fast un-equip it. <br>
+* Fast equipping anything from the ground will move it to its slot or one of your containers.<br>
+* Fast un-equipping anything from your slots or containers will move it to the ground or an opened ground container.
+
+
+{{GameCategory|arma3|Field Manual}}

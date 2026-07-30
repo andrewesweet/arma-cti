@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/curatorCameraAreaCeiling
+// revision: 348441 (2023-11-08T13:00:15Z)
+// export sha1: crwxbllh24wb4yrfe1hoip0huucgqnw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Returns ceiling height for curator camera.
+
+|s1= [[curatorCameraAreaCeiling]] curatorObj
+
+|p1= curatorObj: [[Object]] - curator module
+
+|r1= [[Number]]
+
+|x1= <sqf>private _height = curatorCameraAreaCeiling BIS_curatorUnit;</sqf>
+
+|seealso=
+}}

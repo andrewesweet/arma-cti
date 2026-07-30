@@ -1,0 +1,20 @@
+// source: https://community.bistudio.com/wiki/Arma_2:_Operation_Arrowhead:_AI_Developer_Insights
+// revision: 63559 (2011-08-08T15:12:16Z)
+// export sha1: ovi0xfyq5b7cx5eb9qfg5duzkt4auvr
+// Vendored snapshot. Do not edit — re-export instead.
+
+= AI Developer Insights =
+
+== Intention ==
+
+The intention of this page is to gather and conserve all insights into the inner workings of AI provided by BI developers.
+
+== Quotes ==
+
+AI is never using 3rd person view. It always casts the intersection rays from its eyes, never from some artifical point above it - which I suppose would be what you would mean by using 3rd person view.
+
+Most likely the grass shape is not approximated well enough (grass is most likely considered to be lower than it really is for the purpose of visibility testing). It is definitely impossible to include every individual grass object into account when computing line of sight, therefore it will never be 100 % accurate, but still it should be possible to improve it from the current state.
+
+Grass is currently approximated as elevated terrain. There can be currently no partial visibility through grass, you either can see the target or not. In the situation we check the camera is just assumed to be just above the grass, and as the targeted soldier is well above grass layer (he is standing), the line of sight is clear.
+
+Source: http://dev-heaven.net/issues/5785

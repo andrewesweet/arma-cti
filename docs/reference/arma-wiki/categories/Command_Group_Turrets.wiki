@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Turrets
+// revision: 329902 (2022-08-08T09:45:12Z)
+// export sha1: 3ou9ymf829pcg60ps8212v4e1eydydy
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands which work with turrets - see also [[Turret Path]].
+
+[[Category:Scripting Commands by Functionality]]

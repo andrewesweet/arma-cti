@@ -1,0 +1,832 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Weapon_Config_Guidelines
+// revision: 378440 (2026-04-12T22:07:01Z)
+// export sha1: bmqacqbhy3hfcumqqggr16wvlh8p62u
+// categories: Category:ArmA: Armed Assault: Modelling | Category:Arma 3: Tutorials | Category:Arma 3: Weapon & Magazine Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+'''101 - How to set up a weapon for Arma 3''' 
+
+Please be aware of our Arma 3 modding license:
+http://community.bistudio.com/wiki/Arma_3_Modding_License
+
+
+== Additional functionality compared to A2/OA ==
+
+* Slotable weapon accessories
+* Custom reload animations
+* Adjustable sights
+* Underwater weapons
+* Ammo changes on fly and on hit
+* Rotating muzzle-flash
+* Explosion shielding
+
+
+== Model requirements {p3d} ==
+
+* proxies for slotable accessories
+** muzzle accessory should be on proxy '''\A3\data_f\proxies\weapon_slots\MUZZLE'''
+** optics should be on proxy '''\A3\data_f\proxies\weapon_slots\TOP'''
+** side accessory should be on proxy '''\A3\data_f\proxies\weapon_slots\SIDE'''
+** bipod accessory should be on proxy '''\A3\data_f_mark\proxies\weapon_slots\UNDERBARREL'''
+** all these proxies could be redefined in ''cfgWeapons >> Weapon >> WeaponSlotsInfo >> XXX >> linkProxy'' parameter where XXX is the slot name
+
+* selections for folding iron sights
+** You need to create selections and axes for iron sights if You want them folded once the optics is put on the weapon
+** Front part should be named '''ForeSight''' with '''ForeSight_axis''' in memory lod
+** Rear part should be named '''BackSight''' with '''BackSight_axis''' in memory lod
+
+* adjustable sights for grenade launchers
+** there needs to be a selection that is going to rotate (in case of collimator sights), default naming is '''OP'''
+** this selection needs to have an axis in memory lod, default naming is '''OP_axis'''
+** there needs to be a focus point, the best place is the red dot of collimator, with memory point '''OP_look''' by default and several points for eye, usually '''OP_eyeX''' where X is the number of the point. Good practice is to place them in same distance form focus point
+
+
+== Model config changes {model.cfg} ==
+
+* custom reload animation have a good use of newly added parameter '''unHideValue''' for hide type of animations - you are now able to make asymmetrical animations eg. for hiding of magazine:
+{{Color|green|'''{model.cfg}'''}}
+<syntaxhighlight lang="cpp">
+class magazine_hide
+{
+	type = "hide";
+	source = "reloadMagazine";
+	selection = "magazine";
+	minValue = 0.000000;
+	maxValue = 1.00000;
+	hideValue = 0.220;
+	unhideValue = 0.550;
+};
+</syntaxhighlight>
+
+* the animations could look a bit better by simply adding a translation for the magazine and adding an axis for that in model - magazine should translate at first, then disappear, appear and translate back
+{{Color|green|'''{model.cfg}'''}}
+<syntaxhighlight lang="cpp">
+class magazine_reload_move_1
+{
+	type = "translation";
+	source = "reloadMagazine";
+	selection = "magazine";
+	axis = "magazine_axis";
+	minValue = 0.145;
+	maxValue = 0.170;
+	offset0 = 0.0;
+	offset1 = 0.5;
+};
+</syntaxhighlight>
+
+* foldable iron sights use '''hasOptics''' controller 
+{{Color|green|'''{model.cfg}'''}}
+<syntaxhighlight lang="cpp">
+class BackSight_optic
+{
+	type = "rotation";
+	source = "hasOptics";
+	selection = "BackSight";
+	axis = "BackSight_axis";
+	memory = 1;
+	minValue = 0.0000000;
+	maxValue = 1.0000000;
+	angle0 = 0.000000;
+	angle1 = (rad 90);
+};
+</syntaxhighlight>
+
+* new animation controllers '''zeroing1''' and '''zeroing2''' take values from ''discreteDistance[]'' of first and second muzzle of the weapon. The value is index number of current zeroing in the array starting with zero (that means the first value is 0, second is 1, the last is number of discrete distances plus one). It might be used for iron sights of the weapon if desired but better use is for UGL collimator sights rotation:
+{{Color|green|'''{model.cfg}'''}}
+<syntaxhighlight lang="cpp">
+class OP_ROT
+{
+	type="rotation";
+	source = "zeroing2";		// use second muzzle zeroing for rotation
+	sourceAddress = "loop";		// loop when phase out of bounds
+	selection = "OP";			// selection we want to rotate
+	axis = "OP_axis";			// has its own axis
+	minValue = 0;
+	maxValue = 3;				// this weapon has array with 4 distances
+	angle0 = "rad 0";
+	angle1 = "rad 65";
+};
+</syntaxhighlight>
+
+* rotating muzzle flashes are done using a new animation source '''ammoRandom''' which changes it is value every time weapon is fired. Various degrees of rotation may be set up by using correct muzzle flash shape and minValue maxValue combination.
+{{Color|green|'''{model.cfg}'''}}
+<syntaxhighlight lang="cpp">
+class MuzzleFlashROT
+{
+	type = "rotationX";
+	source = "ammoRandom";		// use ammo count as phase for animation
+	sourceAddress = "loop";		// loop when phase out of bounds
+	selection = "zasleh";		// selection we want to rotate
+	axis = "";					// no own axis - center of rotation is computed from selection
+	centerFirstVertex = true;	// use first vertex of selection as center of rotation
+	minValue = 0;
+	maxValue = 4;				// rotation angle will be 360/4 = 90 degrees
+	angle0 = "rad 0";
+	angle1 = "rad 360";
+};
+</syntaxhighlight>
+
+
+== New config parameters {config.cpp} ==
+
+=== Slotable weapons ===
+
+* Available slots are defined in each weapon but are usually inherited from a parent weapon. They are stored as classes in '''class WeaponSlotsInfo''' which contains the slots and parameters for inventory
+** '''Mass''' is a new unit used to describe weight and volume of an object used. Each container has a set capacity in the same units.
+** allowedSlots[] is an array of slot numbers where you may put the weapon. 701 stands for vest, 801 stands for uniform, 901 stands for backpack
+** each weapon slot is a separate subclass in class WeaponSlotsInfo
+*** parameter '''linkProxy''' defines a proxy in weapon model for said slot (see standard names on top)
+*** parameter '''displayName''' describes a mouse-over name of slot in Inventory
+*** array '''compatibleItems[]''' lists possible accessory placeable into that slot. Most weapons are able to have any RIS equipment, but eg. muzzle accessory differs according to caliber.
+** external classes ''CowsSlot'' and ''PointerSlot'' are used for standard optics and side accessory. That means these classes are outside cfgWeapons and changeable for all weapons at once.
+
+<syntaxhighlight lang="cpp">
+class SlotInfo;
+class CowsSlot : SlotInfo
+{
+	// targetProxy
+	linkProxy = "\A3\data_f\proxies\weapon_slots\TOP";
+
+	// display name
+	displayName = "$STR_A3_CowsSlot0";
+
+	// class names with items supported by weapon 
+	compatibleItems[] = { "optic_Arco", "optic_aco", "optic_ACO_grn", "optic_hamr", "optic_Holosight" };
+};
+class PointerSlot : SlotInfo
+{
+	// targetProxy
+	linkProxy = "\A3\data_f\proxies\weapon_slots\SIDE";
+
+	// display name
+	displayName = "$STR_A3_PointerSlot0";
+
+	// class names with items supported by weapon 
+	compatibleItems[] = { "acc_flashlight", "acc_pointer_IR" };
+};
+
+class CfgWeapons
+{
+	class myWeapon
+	{
+		class WeaponSlotsInfo
+		{
+			mass = 4; // default mass of a weapon
+			class MuzzleSlot : SlotInfo
+			{
+				// targetProxy
+				linkProxy = "\A3\data_f\proxies\weapon_slots\MUZZLE";
+
+				// display name
+				displayName = "Muzzle Slot";
+
+				// class names with items supported by weapon
+				compatibleItems[] = {}; // moved to each weapon
+			};
+			class CowsSlot : CowsSlot {};
+			class PointerSlot : PointerSlot {};
+			allowedSlots[] = { 901 }; // you simply cannot put this into your pants
+		};
+	};
+};
+</syntaxhighlight>
+
+==== Muzzle accessories ====
+* suppressors are configured as a weapon inheriting some item abilities from class '''ItemCore'''
+* the class itself consists only from scope, displayName, picture and model, there is a separate subclass '''ItemInfo''' with all the required parameters
+** there is subclass '''MagazineCoef''' inside class ItemInfo with parameter '''initSpeed''' - this is just a multiplier of initSpeed of weapon's magazine
+** subclass '''AmmoCoef''' of class ItemInfo has more parameters for the ammo shoot through the suppressor:
+*** '''hit''' is the coefficient of hit of original ammo
+*** '''visibleFire''', '''audibleFire''', '''visibleFireTime''' and '''audibleFireTime''' are coefficients for detection upon shooting the weapon
+*** higher '''cost''' coefficient should make AI think more about shooting the suppressed weapon
+*** '''typicalSpeed''' and '''airFriction''' coefficients change the ballistic characteristics of the ammo
+** there are alternate '''muzzleEnd''' and '''alternativeFire''' directly inside class ItemInfo to have different muzzle effects origin and muzzle flashes
+
+<syntaxhighlight lang="cpp">
+class Mode_SemiAuto;
+class CfgWeapons
+{
+	class ItemCore;
+	class InventoryMuzzleItem_Base_F;
+	class myMuzzleAccessory
+	{
+		scope = 2;
+		displayName = "My Muzzle Accessory";
+
+		picture = "\A3\weapons_F\Data\UI\myMuzzleAccessory_CA.paa";
+		model = "\A3\weapons_f\acc\myMuzzleAccessory";
+		
+		class ItemInfo : InventoryMuzzleItem_Base_F
+		{	
+			soundTypeIndex = 1; // index of sound in sounds[] in weapon modes (inherited 1 from parent class)
+
+			class MagazineCoef
+			{
+				initSpeed = 0.8;
+			};
+
+			class AmmoCoef
+			{
+				hit = 0.8;
+				visibleFire = 0.3;
+				audibleFire = 0.8;
+				visibleFireTime = 0.5;
+				audibleFireTime = 1.0;
+				cost = 1.0;
+				typicalSpeed = 0.8;
+				airFriction = 1.0;
+			};
+
+			muzzleEnd = "zaslehPoint";		// memory point in muzzle supressor's model
+			alternativeFire = "Zasleh2";	// class in cfgWeapons with model of muzzle flash	
+	
+			class MuzzleCoef
+			{
+				dispersionCoef = 1.0f;
+				artilleryDispersionCoef = 1.0f;
+
+				fireLightCoef = 0.1f;
+
+				recoilCoef = 1.0f;
+				recoilProneCoef = 1.0f;
+
+				minRangeCoef = 1.0f; minRangeProbabCoef = 1.0f;
+				midRangeCoef = 1.0f; midRangeProbabCoef = 1.0f;
+				maxRangeCoef = 1.0f; maxRangeProbabCoef = 1.0f;
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+==== Sound Values ====
+* Starting from patch 1.24 (dev version 1.23 from 23.6. 2014 on), there is a change how sounds are handled because of sound suppressors:
+** Weapon without any muzzle accessory has a '''soundTypeIndex''' equal to 0, while it could be any number (by default 1) according to suppressor type used.
+** array parameter '''sounds[]''' of fire mode is used to chose what sound subclass is going to be used - it is ''sounds[] = {StandardSound, SilencedSound};'' by default
+** classes defined in previous parameter are subclasses of a fire mode with various sound parameters: weaponSoundEffect, soundBegin[], soundClosure{}
+
+<syntaxhighlight lang="cpp">
+class MyWeapon : Rifle_Base_F
+{
+	class Single : Mode_SemiAuto
+	{			
+		sounds[] = { "StandardSound", "SilencedSound" };
+
+		class BaseSoundModeType // this base class has base definitions that both standard and silenced sounds will inherit (sound of closure stays the same no matter what muzzle accessory is used)
+		{
+			weaponSoundEffect = "DefaultRifle";
+
+			closure1[] = { "A3\sounds_f\weapons\closure\closure_rifle_2", db-12, 1, 10 };
+			closure2[] = { "A3\sounds_f\weapons\closure\closure_rifle_3", db-12, 1, 10 };
+			soundClosure[] = { closure1, 0.5, closure2, 0.5 };
+		};
+
+		class StandardSound : BaseSoundModeType // Sounds inside this class are used when soundTypeIndex = 0, according to sounds[]
+		{
+			begin1[] = { "A3\Sounds_F\weapons\SMG_02\SMG_02_st_1b", db0, 1, 500 };
+			begin2[] = { "A3\Sounds_F\weapons\SMG_02\SMG_02_st_2b", db0, 1, 500 };
+			begin3[] = { "A3\Sounds_F\weapons\SMG_02\SMG_02_st_3b", db0, 1, 500 };
+			soundBegin[] = { begin1, 0.33, begin2, 0.33, begin3, 0.34 };
+		};
+
+		class SilencedSound : BaseSoundModeType // Sounds inside this class are used when soundTypeIndex = 1, according to sounds[]
+		{
+			begin1[] = { "A3\sounds_f\weapons\silenced\silent-07", db-1, 1, 200 };
+			begin2[] = { "A3\sounds_f\weapons\silenced\silent-08", db-1, 1, 200 };
+			soundBegin[] = { begin1, 0.5, begin2, 0.5 };
+		};
+		// various other fire mode parameters
+	};
+};
+</syntaxhighlight>
+
+==== Optics ====
+* in addition to default parameters mentioned in muzzle accessories class, there is '''weaponInfoType''' to choose a correct resource for weapon info directly inside optic class (refers to a config class in RscInGameUI)
+** there is the same ItemInfo subclass but with different parameters
+*** don't forget that ItemInfo inherits some parameters from InventoryOpticsItem_Base_F (eg. muzzlePos and muzzleEnd) in case you rename the memory points
+** parameter '''opticType''' is used for balancing the optics for specific fire modes (should be further described by balancing crew)
+** '''modelOptics''' is the 2D model for selected optics
+** subclass '''OpticsModes''' works the same way it used to work in A2/OA
+
+<syntaxhighlight lang="cpp">
+class cfgWeapons
+{
+	class ItemCore;
+	class InventoryOpticsItem_Base_F;
+	class myOpticsAccessory
+	{
+		scope = 2;
+		displayName = "My Optics Accessory";
+
+		picture = "\A3\weapons_F\Data\UI\myOpticsAccessory_CA.paa";
+		model = "\A3\weapons_f\acc\myOpticsAccessory";
+		weaponInfoType = "RscOptics_myOptics";
+		
+		class ItemInfo : InventoryOpticsItem_Base_F
+		{	
+			mass = 7;
+			modelOptics = "\A3\Weapons_f\acc\reticle_MyOptics_F";
+			class OpticsModes
+			{
+				class MyOptics
+				{
+					opticsID = 1;
+					useModelOptics = true;
+					opticsPPEffects[] = { "OpticsCHAbera1", "OpticsBlur1" };
+					opticsZoomMin = 0.0555;
+					opticsZoomMax = 0.1300;
+					opticsZoomInit= 0.1300;
+					discreteDistance[] = { 100, 300, 400, 500, 600, 700, 800, 900, 1000 };
+					discreteDistanceInitIndex = 1;
+					distanceZoomMin = 100;
+					distanceZoomMax = 1000;
+					nFovLimit = 0.07;
+					discreteFov[] = { 0.1300, 0.0555 };
+					discreteInitIndex = 0;
+					modelOptics[] = { "\A3\Weapons_f\acc\reticle_MyOptics_F", "\A3\Weapons_f\acc\reticle_MyOptics_z_F" };
+					memoryPointCamera = "opticView";
+					visionMode[] = { "Normal", "NVG" };
+					opticsFlare = true;
+					opticsDisablePeripherialVision = true;
+					cameraDir = "";
+				};
+				class IronOnTopOfMyOptics : MyOptics
+				{
+					opticsID = 2;
+					useModelOptics = false;
+					opticsFlare = false;
+					opticsDisablePeripherialVision = false;
+					opticsZoomMin = 0.375;
+					opticsZoomMax = 1.1;
+					opticsZoomInit = 0.75;
+					memoryPointCamera = "eye";
+					visionMode[] = {};
+					discretefov[] = {};
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+==== Side Accessory ====
+* the class of side accessory is made the same way as for muzzle accessory
+** subclass ItemInfo contains some specific parameters, but they work the same way as they did in A2/OA
+
+<syntaxhighlight lang="cpp">
+class cfgWeapons
+{
+	class ItemCore;
+	class InventoryFlashLightItem_Base_F;
+	class mySidesAccessory
+	{
+		scope = 2;
+		displayName = "My Sides Accessory";
+
+		picture = "\A3\weapons_F\Data\UI\mySidesAccessory_CA.paa";
+		model = "\A3\weapons_f\acc\mySidesAccessory";
+		
+		class ItemInfo : InventoryFlashLightItem_Base_F
+		{
+			mass = 9;
+			class Pointer
+			{
+				irLaserPos = "laser pos";
+				irLaserEnd = "laser dir";
+			};
+			class FlashLight {};
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Custom reload animations ===
+
+* parameter '''reloadAction''' is now for both a magazine and the weapon. 
+** if it is not defined for any of them, default reload is played.
+** if the parameter is defined for the weapon but isn't defined for a magazine, reloadAction for weapon is played upon reloading said weapon
+** if the magazine has reloadAction defined, the action selected by this parameter is played every time (not depending on weapon). This ensures different reloads for different magazines of one weapon (eg. UGLs)
+* the action chosen by reloadAction is played according to config of animations for said soldier (action in CfgMovesMaleSdr leads to a state in CfgGesturesMale for default soldier), different target states could be defined for different action maps (eg. there could be a different reload gesture for crouch and prone with rifle)
+
+<syntaxhighlight lang="cpp">
+class CfgMovesBasic
+{
+	class DefaultDie;
+	class ManActions
+	{
+		reloadMyWeapon = "reloadMyWeapon";
+	};
+};
+
+class CfgGesturesMale
+{
+	class Default;
+	class States
+	{
+		class reloadMyWeapon : Default
+		{
+			file = "\A3\anims_f\Data\Anim\Sdr\wop\erc\stp\rld\rfl\reloadMyWeapon.rtm";
+			looped = 0;
+			speed = 0.400000;
+			mask = "handsWeapon";
+			headBobStrength = 0.200000;
+			headBobMode = 2;
+			rightHandIKBeg = 1;
+			rightHandIKEnd = 1;
+			leftHandIKCurve[] = { 0, 1, 0.050000, 0, 0.950000, 0, 1, 1 };
+		};
+	};
+};
+
+class cfgWeapons
+{
+	class myWeapon
+	{
+		reloadAction = "reloadMyWeapon";
+	};
+};
+</syntaxhighlight>
+
+=== Underwater weapons ===
+
+* weapons with '''canShootInWater''' set to 1 are able to shoot under water
+** parameter '''soundBeginWater[]''' has the same use as ''soundBegin[]'' and defines what sounds and with what probability is going to be played while shooting under the water surface, both of them are defined per fire mode:
+
+<syntaxhighlight lang="cpp">
+class Mode_SemiAuto;
+
+class cfgWeapons
+{
+	class myWeapon
+	{
+		modes[] = { "Single" };	// this example weapon has just one fire mode
+		canShootInWater = 1;	// allows to shoot under water
+		class Single : Mode_SemiAuto
+		{		
+			begin1[] = { "A3\sounds_f\weapons\myWeapon\myWeapon_st_1b.wav", db5, 1, 900 };
+			begin2[] = { "A3\sounds_f\weapons\myWeapon\myWeapon_st_2b.wav", db5, 1, 900 };
+			begin3[] = { "A3\sounds_f\weapons\myWeapon\myWeapon_st_3b.wav", db5, 1, 900 };
+			soundBegin[] = { begin1, 0.33, begin2, 0.33, begin3, 0.34 }; // all three sounds have roughly the same probablity
+			beginwater1[] = { "A3\sounds_f\weapons\myWeapon\underwater_myWeapon_st_1b.wav", db0, 1, 200 };
+			beginwater2[] = { "A3\sounds_f\weapons\myWeapon\underwater_myWeapon_st_2b.wav", db5, 1, 200 };
+			beginwater3[] = { "A3\sounds_f\weapons\myWeapon\underwater_myWeapon_st_3b.wav", db5, 1, 200 };
+			soundBeginWater[] = { beginwater1, 0.33, beginwater2, 0.33, beginwater3, 0.34 }; // all three sounds have roughly the same probablity
+		};
+	};
+};
+</syntaxhighlight>
+
+* underwater ammo has some different characteristics
+** '''waterFriction''' is underwater equivalent of ''airFriction'' and supercavitating ammunition has this close to zero. Standard ammo doesn't have this set and that means it is set to -0.4 by default (ie. stops nearly right after entering water)
+** '''timeToLive''' for underwater ammo is rather low to let it be harmless after some 40 meters
+** the fancy bubble effect is done by having '''effectFly''' set to '''AmmoUnderwater''', you'll try to modify it to work even on ground and we all know it
+
+<syntaxhighlight lang="cpp">
+class CfgAmmo
+{
+	class BulletBase;
+	class myAmmo : BulletBase // for myWeapon
+	{
+		waterFriction = -0.00096;	// nearly direct line underwater
+		timeToLive = 0.12;			// that's enough for 45 meters underwater
+		effectFly = "AmmoUnderwater";
+	};
+};
+</syntaxhighlight>
+
+=== Ammo changes on fly and on hit ===
+
+* there are two new simulations of ammo available mainly for shells and missiles.
+
+* simulation '''shotSubmunitions''' allows to deploy multiple ammo from the parent one upon meeting certain conditions
+** parameter '''submunitionAmmo''' defines class of newly created ammo and this could be used multiple times
+*** you could set the inherited ammo and it would spread in cone according to '''submunitionConeAngle''' and '''submunitionConeAngleHorizontal''' (in degrees)
+*** {{GVI|arma3|1.68}} you can also define multiple sub-munition projectiles and their probability: {{hl|c= submunitionAmmo[] = {"MySubammo1",0.8,"MySubammo2",0.2};}} (80% of sub-munition will be MySubammo1 and 20% will be MySubammo2)
+** '''submunitionConeType[]''' describes pattern of ammo in detail, first part is a distribution function ("random", "randomcenter", "poissondisc", "poissondisccenter", "custom"), second parameter is number of ammo except of custom one, where it is another array of pairs for specific locations
+<syntaxhighlight lang="cpp">
+submunitionConeType[] = { "random", 10 };
+submunitionConeType[] = { "randomcenter", 10 };
+submunitionConeType[] = { "randomupcone", 10 };
+submunitionConeType[] = { "poissondisc", 10 };
+submunitionConeType[] = { "poissondisccenter", 10 };
+submunitionConeType[] = { "custom", { { 0, 0 }, { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } } };
+</syntaxhighlight>
+** parameter '''submunitionAutoleveling''' affects if cone has the up vector in model space (rotated when lying on steep hill) or always up in world space coord system (replaced by submunitionDirectionType)
+** parameter '''submunitionDirectionType''' defines the direction in which the submunition is generated; "SubmunitionModelDirection" retains the parent munition's vector, "SubmunitionAutoLeveling" levels the submunition out horizontally and "SubmunitionTargetDirection" generates the submunition in the direction of the parent's locked target (see PCML from 1.81+). If present the param overrides submunitionAutoleveling parameter.
+** parameter '''triggerDistance''' is used to deploy ammo in set 3D distance before expected target
+** parameter '''triggerTime''' is used to deploy ammo in set time after being fired
+** parameter '''triggerOnImpact'''(bool) is used to deploy ammo after impact
+** parameter '''deleteParentWhenTriggered''' (bool) defines if parent munition should be deleted after releasing sub munition
+** parameter '''submunitionInitialOffset''' (array) sets spawning offset of submunition. i.e. {0,0,-0.2}; will spawn projectile 20 cm before impact position if it is coupled with SubmunitionModelDirection for example.
+** parameter '''submunitionInitSpeed''' sets the submunition init speed directly (in m/s)
+** parameter '''triggerSpeedCoef''' is a coefficient of speed of inherited ammo relative to speed of parent ammo
+*** {{GVI|arma3|1.68}} you can also define the speed as range, with the actual coefficient being selected randomly from within the range: {{hl|c= triggerSpeedCoef[] = {0.5,1.0};}}
+** parameter '''submunitionParentSpeedCoef''' is a coefficient of how much speed of the parent munition is retained in the submunition - i.e. {{hl|c= submunitionParentSpeedCoef = 0;}} will spawn submunition exactly at its own submunitionInitSpeed regardless of how fast was the parent munition flying
+** for Artillery computer use array '''aimAboveTarget[]''' and '''aimAboveDefault''' as a index of the array to set different heights to change the ammo to something different (eg. flare)
+
+<syntaxhighlight lang="cpp">
+class cfgAmmo
+{
+ 	class SubmunitionBase;
+	class MyAmmo : SubmunitionBase
+	{
+		submunitionAmmo = "MySubmunitionAmmo";
+		submunitionConeType[] = { "poissondisc", 10 };
+		submunitionConeAngle = 10;
+		triggerDistance = 100;
+	};
+};
+</syntaxhighlight>
+
+* simulation '''shotDeploy''' is used to change ammo upon impact (eg. change to a mine)
+** it uses the same '''submunitionAmmo''' parameter as described above
+
+<syntaxhighlight lang="cpp">
+class CfgAmmo
+{
+	class ShotDeployBase;
+	class Mo_ClassicMineRange : ShotDeployBase
+	{
+		submunitionAmmo = "APERSMine_Range_Ammo";	// some random mine deployable by a mortar
+		airFriction = 0;							// artillery ammo works better without friction
+		EffectFly = "ArtilleryTrails";				// some funky effect of smoke trails and stuff
+	};
+};
+</syntaxhighlight>
+
+=== Explosion shielding ===
+
+* class hitpoints in configuration of all vehicles (including soldiers) has got a new parameter called '''explosionShielding'''
+** this parameter simply multiplies inidrectHit taken from explosives (that makes it explosion vulnerability in an effective way) - the higher it is the more damage would selected hitpoint get from the hit
+
+<syntaxhighlight lang="cpp">
+class cfgVehicles
+{
+	class myVehicle
+	{
+		class HitPoints
+		{
+			class HitLFWheel { armor = 0.12; explosionShielding = 0.8; };
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Weapon inertia ===
+
+* inertia coefficient of the weapon is easily set by the '''inertia''' parameter, common values are 0.1 for a pistol, 0.5 for a rifle, 0.7 for machinegun and around 1.0 for a launcher
+
+<syntaxhighlight lang="cpp">
+class cfgWeapons
+{
+	class myWeapon
+	{
+		// inertia coefficient of the weapon
+		inertia = 0.5;
+	};
+};
+</syntaxhighlight>
+
+=== Inventory icons overlay method ===
+
+* Update 1.40 adds a new functionality for Inventory icons of weapons - using one icon for the weapons and display slot icons as an overlay for that icon.
+* If there is no slot with positive value of '''iconScale''' property, the game falls back to old behaviour
+* The icon lower layer of the inventory picture is still defined in property '''icon''' of the weapon itself
+
+<syntaxhighlight lang="cpp">
+class CfgWeapons
+{
+	class myWeapon
+	{
+		class WeaponSlotsInfo : WeaponSlotsInfo // default accessories for this slot, iconPicture and iconPinpoint is defined in the base class
+		{
+			class MuzzleSlot : MuzzleSlot
+			{
+				iconPosition[] = { 0.0, 0.45 };	// position of the slot icon inside of the weapon icon, relative to top-left corner in {right, down} format
+				iconScale = 0.2;				// scale of icon described in iconPicture
+				iconPicture = "\A3\Weapons_F\Data\UI\attachment_muzzle.paa"; // icon for selected slot
+				iconPinpoint = "Center";		// top, bottom, left, right, center alignment of the icon on snap point
+			};
+			class CowsSlot : CowsSlot // default accessories for this slot, iconPicture and iconPinpoint is defined in the base class
+			{
+				iconPosition[] = { 0.5, 0.35 };
+				iconScale = 0.2;
+			};
+			class PointerSlot : PointerSlot // default accessories for this slot, iconPicture and iconPinpoint is defined in the base class
+			{
+				iconPosition[] = { 0.20, 0.45 };
+				iconScale = 0.25;
+			};
+		};
+		icon = "\A3\MyAddon\Rifles\MyRifle\Data\MyRifle_X_CA.paa" // this stays the same as before and is used as a base layer
+	};
+};
+</syntaxhighlight>
+
+=== Magazine compatibility groups ===
+
+* Update 1.80 added new technology called magazineWells (also known as "magwells") which replaces old, non working magazineGroups. Technology consist from two parts: class '''CfgMagazineWells'''in root config & parameters (array) '''magazineWell''' in weapon muzzle. In contrast to old solution, Magazine Wells are using separate class in root config containing all type of magazine wells with list of arrays containing compatible classes. It's possible to add new entries by 3rd party modifications
+
+<syntaxhighlight lang="cpp">
+class cfgWeapons
+{
+	class arifle_MX_Base_F;
+	class rhs_weap_m4_Base : arifle_MX_Base_F
+	{ 
+		// ...
+		// first magazine in array is used as a default magazine in Virtual Arsenal
+		// Eden editor ammo crates widget is also using that array to create list of compatible magazine which can be placed in crate
+		magazines[] =
+		{
+			"rhs_mag_30Rnd_556x45_M855A1_Stanag"
+		};
+		// Link to magazine wells
+		magazineWell[] = { "STANAG_556x45" };
+	};
+};
+
+// Located in root config
+class CfgMagazineWells
+{
+	class STANAG_556x45
+	{
+		// Magazines listed by mod
+		// It is possible to add new arrays to class but for now inheritance (i.e. STANAG_556x45_New: STANAG_556x45 {};) is not supported 
+		RHS_Magazines[] =
+		{
+			"rhs_mag_30Rnd_556x45_M855_Stanag",
+			"rhs_mag_30Rnd_556x45_M855_Stanag_Tracer_Red",
+			"rhs_mag_30Rnd_556x45_M855_Stanag_Tracer_Green",
+			"rhs_mag_30Rnd_556x45_M855_Stanag_Tracer_Yellow",
+			"rhs_mag_30Rnd_556x45_M855_Stanag_Tracer_Orange",
+
+			"rhs_mag_100Rnd_556x45_M855A1_cmag",
+			"rhs_mag_100Rnd_556x45_M855A1_cmag_mixed",
+			"rhs_mag_100Rnd_556x45_M855_cmag",
+			"rhs_mag_100Rnd_556x45_M855_cmag_mixed",
+			"rhs_mag_100Rnd_556x45_Mk318_cmag",
+			"rhs_mag_100Rnd_556x45_Mk262_cmag"
+		};
+		// Magazines defined 
+		BI_Magazines[] =
+		{
+			"30Rnd_556x45_Stanag",
+			"30Rnd_556x45_Stanag_Tracer_Red",
+			"30Rnd_556x45_Stanag_Tracer_Green",
+			"30Rnd_556x45_Stanag_Tracer_Yellow"
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Bipods ===
+
+* Update 1.42 (Marksmen DLC release) adds a possibility to use #bipods by either utilizing another weapon slot - under barrel - or by using a inbuilt one
+** Bipod as an attachment works exactly the same way as for example muzzle attachment
+** There are two new properties - '''deployedPivot''' describing memory point in model around which the weapon pivots while deployed and '''hasBipod''' which is self-explanatory
+
+<syntaxhighlight lang="cpp">
+class CfgWeapons
+{
+	class ItemCore;
+	class InventoryUnderItem_Base_F;
+	class test_bipod_01_F : ItemCore
+	{
+		scope		= 2;															// available in Arsenal
+		displayName	= "My Little Bipod";											// name of item in Inventory (and Arsenal)
+		picture		= "\A3\Weapons_F_Mark\Data\UI\gear_accu_bipod_01_snd_CA.paa";	// icon in Inventory
+		model		= "\Samples_f\Test_weapon_01\test_bipod_01_F.p3d";				// path to model
+
+		class ItemInfo : InventoryUnderItem_Base_F
+		{
+			deployedPivot		= "bipod";	// what point should be used to be on surface while unfolded
+			hasBipod			= true;		// bipod obviously has a bipod
+			mass				= 10;		// what is the mass of the object
+			soundBipodDown[]	= { "A3\Sounds_F_Mark\arsenal\sfx\bipods\Bipod_AAF_down", db-3, 1, 20 };	// sound of unfolding the bipod
+			soundBipodUp[]		= { "A3\Sounds_F_Mark\arsenal\sfx\bipods\Bipod_AAF_up", db-3, 1, 20 };		// sound of folding the bipod
+		};
+		inertia = 0.2; // how much does the bipod add to inertia of the weapon
+	};
+};
+</syntaxhighlight>
+
+* Inbuilt #bipods are much easier, you just need to add '''deployedPivot''' and '''hasBipod''' properties to the weapon itself
+
+<syntaxhighlight lang="cpp">
+class cfgWeapons
+{
+	class myWeapon
+	{
+		deployedPivot		= "bipod";	// what point should be used to be on surface while unfolded
+		hasBipod			= true;		// a weapon with bipod obviously has a bipod
+		soundBipodDown[]	= { "A3\Sounds_F_Mark\arsenal\sfx\bipods\Bipod_AAF_down", db-3, 1, 20 };	// sound of unfolding the bipod
+		soundBipodUp[]		= { "A3\Sounds_F_Mark\arsenal\sfx\bipods\Bipod_AAF_up", db-3, 1, 20 };		// sound of folding the bipod
+	};
+};
+</syntaxhighlight>
+
+* The important part about bipods is that the actual model may be animated despite of it being a proxy on a weapon
+** Animation source '''bipod_legs''' is used for that, possible values are 0 for weapon not deployed and 1 for weapon deployed
+** The model obviously needs to have a skeleton to work properly
+** Configuration is the same in case of inbuilt bipods, the only difference is in animation source - it is '''bipod'''
+
+{{Color|green|'''{model.cfg}'''}}
+<syntaxhighlight lang="cpp">
+class legs
+{
+	type			= rotation;
+	source			= bipod_legs; // this one is for an attachment, weapon itself would have just bipod
+	sourceAddress	= clamp;
+	selection		= "bipod_legs";
+	axis			= "bipod_legs_axis";
+	minValue		= 0;
+	maxValue		= 1;
+	angle0			= (rad 0);
+	angle1			= (rad 90);
+};
+</syntaxhighlight>
+
+* The bipods may have even adjustable length of legs according to actual position
+** Animation source '''bipod_legs_length''' is used for that as it returns distance between bipod point and surface in meters (means that 5 centimeters are 0.05 value of the source)
+** Configuration is the same in case of inbuilt #bipods, the only difference is in animation source - it is '''bipod_length'''
+
+{{Color|green|'''{model.cfg}'''}}
+<syntaxhighlight lang="cpp">
+class Leg_L_move // we use different animation for each leg as they are folded by default and rotate while unfolding, this one is for the left one
+{
+	type		= translation;
+	source		= bipod_legs_length;
+	selection	= "Leg_L";
+	axis		= "Leg_L_axis"; // the axis is part of "bipod_legs" selection in model
+	memory		= 1;
+	minValue	= 0;
+	maxValue	= 0.1;	// this #bipod extends up to 10 centimeters for example
+	offset0		= 0;
+	offset1		= 1;	// we use axis with length of 10 centimeters, that means translation needs to be multiplied by ten
+};
+</syntaxhighlight>
+
+=== Pistol holsters ===
+
+* Update 1.48 adds a possibility to use show pistols inside of holsters of vests that have the holster
+** The vest model should contain proxy leading to ''\A3\Characters_F\Proxies\pistol_holstered.p3d'', the standard position is in sample of vest inside Characters samples, but feel free to move it according to the model
+** As soon as the vest contains the proxy, weapon is going to be shown in it. There are just two properties to adjust the way the weapon shows on the proxy:
+*** The standard pistol is P07 which has its center around the trigger. If you want to move the center of your weapon, just create a memory point called ''holster'' (according to '''holsterOffset''' property in weapon configuration) to serve as new center of the model
+*** P07 is even taken as a standard weapon for holster size, you may adjust the scale at which is your gun drawn in the holster with '''holsterScale''' property
+
+<syntaxhighlight lang="cpp">
+class Pistol;
+class Pistol_Base_F : Pistol
+{
+	class WeaponSlotsInfo;
+};
+class MyLittlePistol : Pistol_Base_F
+{
+	class WeaponSlotsInfo : WeaponSlotsInfo
+	{
+		holsterOffset = "holster";	// name of a memory point in weapon to serve as zero of the model
+		holsterScale = 1;			// scale of gun in holster relative to standard size (0.5 means the gun is 50 % of original size)
+	};
+};
+</syntaxhighlight>
+
+=== Magazine Proxies ===
+
+* With update 1.78 it is possible to have dynamic magazines using modelSpecial & modelSpecialIsProxy property.
+** More info can be found on following page: [[Arma 3: Magazine Proxies]]
+
+
+=== Virtual Arsenal visibility ===
+
+* In order to reduce clutter in Virtual Arsenal weapon list, parameter "baseWeapon" was introduced, which filters out all subvariants from the VA. 
+
+<syntaxhighlight lang="cpp">
+class cfgWeapons
+{
+	class myWeapon
+	{
+		baseWeapon = "myWeapon";
+	};
+	class myWeapon2 : myWeapon
+	{
+	};
+	class myWeapon3 : myWeapon
+	{
+		baseWeapon = "myWeapon3";
+	};
+};
+</syntaxhighlight>
+* In above example "myWeapon" & "myWeapon3" would be visibile in Virtual Arsenal. Please note, that all 3 weapons can be normally accessed in game and that '''baseWeapon parameter is only used in Virtual Arsenal'''
+
+
+== See Also ==
+
+* [[Arma 2 Weapon to Arma 3]]
+* [[CfgWeapons Config Reference]]
+* {{Link|link= http://forums.bistudio.com/showthread.php?149341-Arma-3-weapons-config-guidlines|text= Page discussion on the BI forums}}
+
+
+{{GameCategory|arma3|Weapon & Magazine Configuration}}
+{{GameCategory|arma1|Modelling}}
+{{GameCategory|arma3|Tutorials}}

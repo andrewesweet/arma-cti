@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/getBoneNames
+// revision: 369763 (2024-10-08T15:08:57Z)
+// export sha1: em17t88fbkpodkes4vsh6cg9xr10da5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Object Manipulation
+
+|descr= Returns an array of bone names and their parents.
+
+|s1= [[getBoneNames]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Array]] of [[String]]s - bone names and bone parents in separate arrays, in format: [[bone1, bone2,...], [parent1, parent2, ....]]
+
+|seealso= [[selectionPosition]] [[selectionNames]] [[getSelectionBones]]
+}}

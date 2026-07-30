@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_dbIsClass
+// revision: 328437 (2022-07-13T16:00:51Z)
+// export sha1: 3hn12ba51siuf3me2c17y2cvit346v4
+// categories: Category:Arma 3: Functions | Category:Function Group: Database | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Database
+
+|descr= Checks if string is class definition.
+
+|s1= text call [[BIS_fnc_dbIsClass]]
+
+|p1= text - [[String]]: Check if text is in class format
+
+|r1= [[Boolean]]: true when the argument starts with "#" (class symbol returned with [[BIS_fnc_dbSymbolClass]])
+
+|x1= <sqf>"#MYCLASS" call BIS_fnc_dbIsClass; // true
+"#myclass" call BIS_fnc_dbIsClass; // true
+"MYCLASS" call BIS_fnc_dbIsClass; // false
+1234 call BIS_fnc_dbIsClass; // false</sqf>
+
+|seealso= [[:Category:Function Group: Database|Database functions]] [[BIS_fnc_dbClassCheck]] [[BIS_fnc_dbClassId]] [[BIS_fnc_dbClassIndex]] [[BIS_fnc_dbClassList]] [[BIS_fnc_dbClassRemove]] [[BIS_fnc_dbClassReturn]] [[BIS_fnc_dbClassSet]] [[BIS_fnc_dbConfigPath]] [[BIS_fnc_dbImportConfig]] [[BIS_fnc_dbImportXML]] [[BIS_fnc_dbIsValue]] [[BIS_fnc_dbPrint]][[BIS_fnc_dbSymbolClass]] [[BIS_fnc_dbSymbolValue]] [[BIS_fnc_dbValueCheck]] [[BIS_fnc_dbValueId]] [[BIS_fnc_dbValueIndex]] [[BIS_fnc_dbValueList]] [[BIS_fnc_dbValueRemove]] [[BIS_fnc_dbValueReturn]] [[BIS_fnc_dbValueSet]]
+}}

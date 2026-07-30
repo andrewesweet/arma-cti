@@ -1,0 +1,148 @@
+// source: https://community.bistudio.com/wiki/fireAtTarget
+// revision: 369417 (2024-09-03T18:48:49Z)
+// export sha1: iekazk9x7e3jn1y33w0m9hvmngvcby2
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Command Group: Weapons | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Unit Control
+
+|gr2= Weapons
+
+|descr= Remotely forces a unit to fire the given weapon. See also [[BIS_fnc_fire]].
+
+|s1= sourceVehicle [[fireAtTarget]] [targetVehicle, weaponMuzzleName]
+
+|p1= sourceVehicle: [[Object]] - source vehicle to fire from
+
+|p2= targetVehicle: [[Object]] - target vehicle to fire at
+
+|p3= weaponMuzzleName: [[String]] - (Optional) weapon muzzle classname, optional parameter
+
+|r1= [[Boolean]] - [[true]] if fired, [[false]] if not
+
+|x1= <sqf>_handle = this fireAtTarget [groundtarget1, "HellfireLauncher"];</sqf>
+
+|x2= <sqf>_handle = Igla_AA_pod_TK_EP1 fireAtTarget [_helicopter, currentWeapon Igla_AA_pod_TK_EP1];</sqf>
+
+|x3= <sqf>_handle = Igla_AA_pod_TK_EP1 fireAtTarget [helicopter];</sqf>
+
+|seealso= [[fire]] [[doFire]] [[commandFire]] [[canFire]] [[forceWeaponFire]] [[commandArtilleryFire]] [[commandSuppressiveFire]] [[doArtilleryFire]] [[doSuppressiveFire]] [[isManualFire]] [[aimedAtTarget]] [[BIS_fnc_fire]]
+}}
+
+{{Note
+|user= Dwarden
+|timestamp= 20100916081700
+|text= Most likely only for missiles and for interaction with player only.
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140408165000
+|text= ({{arma3}} 1.14) Source vehicle is only limited to manned vehicle while any other types won’t be able to active [[fireAtTarget]] handle, e.g.
+<sqf>
+_handle = _infantryUnit fireAtTarget [_infantryTarget, weapons _infantryUnit select 0];
+// false & no bullet shoot
+</sqf>
+Target has no limitation and can be any object:
+<sqf>
+_handle = (vehicle _veh) fireAtTarget [objNull, weapons (vehicle _veh) select 0];
+// true & a bullet shoot
+</sqf>
+Handle returns false if weapon class name is inaccurate, e.g.
+<sqf>
+_handle = (vehicle _veh) fireAtTarget [ObjNull, "UnknownWeapon"];
+// false & no bullet shoot
+</sqf>
+Handle still returns true even though the vehicle is unavailable to shoot any bullet:
+<sqf>
+_weapon = weapons (vehicle _veh) select 0;
+(vehicle _veh) setAmmo [_weapon, 0];
+_handle = (vehicle _veh) fireAtTarget [objNull, _weapon];
+// true & no bullet shoot
+</sqf>
+
+=== Difference ===
+
+{{{!}} class="wikitable sortable"
+
+! command
+! Source
+! Target
+! Behavior
+! Workaround templets
+
+{{!}}-
+{{!}} [[fire]]
+{{!}} Either unit or manned vehicle
+{{!}} {{n/a}}
+{{!}} Fired aiming at air for infantry rifle
+{{!}} Together with [[selectWeapon]],
+suggested to work with "throw","put" weapon type
+for infantry, or vehicle entity indeed.
+
+{{!}}-
+{{!}} [[fireAtTarget]]
+{{!}} Manned vehicle only
+{{!}} Any object
+{{!}} Normal shoot, won’t aim at target automatically
+{{!}}
+<sqf>
+_veh doWatch _target;
+waitUntil { _veh aimedAtTarget [_target] > 0 };
+_veh fireAtTarget [_target];
+</sqf>
+
+{{!}}-
+{{!}} [[forceWeaponFire]]
+{{!}} Either unit or manned aircraft (weapon operator)
+{{!}} {{n/a}}
+{{!}} Normal shoot, can change fire mode
+{{!}}
+<sqf>
+// e.g. unit won't shoot until he is facing the target
+_unit doWatch _tar;
+waitUntil {
+	_dir = direction _unit;
+	_relative = [_unit,_tar] call BIS_fnc_relativeDirTo;
+	if (_dir == _relative) exitWith {
+		_unit forceWeaponFire [currentWeapon _unit, "single"];
+	};
+	false
+};
+</sqf>
+{{!}}-
+{{!}} [[doFire]]
+{{!}} Unit only
+{{!}} Either unit or vehicle
+{{!}} automatic aiming and shooting
+{{!}} No special example.
+
+{{!}}-
+{{!}} [[commandFire]]
+{{!}} Unit only
+{{!}} Either unit or vehicle
+{{!}} automatic aiming and shooting
+{{!}} No special example.
+
+{{!}}-
+{{!}} [[Arma 3: Actions#USEWEAPON{{!}}action ["UseWeapon"]]]
+{{!}} Either unit or manned vehicle 
+{{!}} {{n/a}}
+{{!}} unexpected behavior
+{{!}} {{n/a}}
+
+{{!}}}
+|game= arma3
+|version= 1.14
+}}

@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/setCustomWeightRTD
+// revision: 377783 (2026-01-03T01:32:40Z)
+// export sha1: r4qiyegsfhigo3wz376mwday5uyymye
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|gr1= RTD
+
+|game2= arma3
+|version2=1.34
+
+|descr= Add virtual custom weight to a helicopter's center of gravity. This can be used to simulate added internal payload for specific scenarios, and affects the flight model.
+{{Feature|afm}}
+
+|s1= helicopterRTD [[setCustomWeightRTD]] weight
+
+|p1= helicopterRTD : [[Object|ObjectRTD]] - helicopter
+|p2= weight: [[Number]] - weight (kilograms)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myHelicopterRTD setCustomWeightRTD 120;</sqf>
+
+|seealso= [[weightRTD]]
+}}
+
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-11-04 - 06:41 (UTC)</dd>
+<dt class="note">[[User:Benargee|Benargee]]</dt>
+<dd class="note">Value can be negative. Do not set negative value lower than helicopter's total weight.
+</dd>
+
+</dl>

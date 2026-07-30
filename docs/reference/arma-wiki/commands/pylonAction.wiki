@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/pylonAction
+// revision: 378173 (2026-03-03T13:58:17Z)
+// export sha1: 1vg4m2v5ujlukwp6j60gmvy3lhsnzll
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Development Branch | Category:Command Group: Vehicle Loadouts | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|branch= dev
+
+|arg= local
+
+|eff= local
+
+|gr1= Vehicle Loadouts
+
+|descr= Executes an action on a specific pylon. MP effect and locality depend on the specific action.<br><br>
+Components and their actions:<br>
+CameraComponent
+* SetLightState (arg bool, ret none)
+* GetLightState (arg none, ret bool)
+<br>
+TransportPylonsComponent (pylon index -1, no component name, no component index)<br>
+* GetLastFiredPylonIndex (no arg, ret scalar), returns the pylon index (note this is script index, which is 1-based) that last fired the gun, or -1 if the last firing was not from a pylon (can be used in Fired eventhandler)
+
+<br>
+All pylons (Not on a component)<br>
+* animateSource - Arg local, effect global. See [[animateSource]] pylonAction [vehicle player, 1, "animateSource", ["extendBoxSource", 1]];
+
+
+
+|s1= [[pylonAction]] [vehicle, pylon, actionPath(, arguments)]
+
+|p1= vehicle: [[Object]] - The object carrying the pylon
+
+|p2= pylon: [[Number]] or [[String]] - pylon index (index starts from 1) or pylon name (see {{Link|#Example 1}}). Or -1 to access the TransportPylonsComponent of the vehicle
+
+|p3= actionPath: [[String]] - The path to reach the specific component to send the action to.<br>
+actionPath is a "." delimited address of the component and action (like animation sources). Or (without a "." a command to the pylon directly)<br>
+arguments and return type depends on the final action<br>
+ActionPath examples<br>
+"CameraComponent.0.SetLightState" with argument bool, returns nothing.<br>
+"CameraComponent.0.GetLightState" with no argument, returns bool.<br>
+"CameraComponent.*.SetLightState" wildcard executes the action all components of that type (if there are multiple). Note the return value will be the value of the last executed action
+
+|p4= 
+
+|p5= 
+
+|r1= [[Anything]] - Depends on action
+
+|seealso= [[Arma_3:_Vehicle_Loadouts]] {{Link|https://community.bistudio.com/wiki/Category:Maintenance/RV/See_also_needed|See also needed}}
+}}

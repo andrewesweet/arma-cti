@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/onOfficialServer
+// revision: 351585 (2023-12-07T18:29:17Z)
+// export sha1: 2wedt802hf1xvooqugdtugmnw7h3dt4
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|gr1= Argo
+
+|descr= Get if the current machine is an official server or is connected to one.
+
+|s1= [[onOfficialServer]]
+
+|r1= [[Boolean]] - [[true]] if the machine is an official server or is connected to one, [[false]] otherwise (e.g disconnected or single player)
+
+|x1= <sqf>
+if (onOfficialServer) then
+{
+	systemChat "I am safe here! Wait, why is this bush crawling towards me";
+};
+</sqf>
+
+|seealso= [[kickPlayer]]
+}}

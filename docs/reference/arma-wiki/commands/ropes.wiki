@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/ropes
+// revision: 340878 (2023-05-13T21:30:53Z)
+// export sha1: a5arpjndktfgtwlimsvda7ri1jv4o1p
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Ropes and Sling Loading
+
+|descr= Returns all ropes attached to a ropes owner transport vehicle.
+
+|s1= [[ropes]] ropesOwner
+
+|p1= ropesOwner: [[Object]] - a transport from which the ropes originate
+
+|r1= [[Array]] of [[Object]]s - array of the actual rope objects
+
+|x1= <sqf>hint str (ropes vehicle player);</sqf>
+
+|x2= <sqf>_rope1 = (ropes heli1) select 0;</sqf>
+
+|seealso= [[canSlingLoad]] [[enableRopeAttach]] [[getSlingLoad]] [[ropeAttachedObjects]] [[ropeAttachTo]] [[ropeDestroy]] [[ropeLength]] [[ropeUnwound]] [[ropeAttachedTo]] [[ropeCreate]] [[ropeDetach]] [[ropeAttachEnabled]] [[ropeCut]] [[ropeEndPosition]] [[ropeUnwind]] [[setSlingLoad]] [[slingLoadAssistantShown]]
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20141013020500
+|text= The [[ropes]] command seems to return each individual sling load rope.
+[[ropes]] will return an empty [[Array]] if the sling load ropes are not deployed.
+Ropes as of A3 1.33 have a cfgVehicles classname of "Rope".
+}}

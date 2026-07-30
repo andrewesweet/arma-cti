@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_areFriendly
+// revision: 349194 (2023-11-08T14:50:41Z)
+// export sha1: 0clfoahiw4xzraw2d2r4jqwbeq2uext
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sides
+
+|descr= Function that takes two [[Side]]s and compares them, returning whether they are friendly or not.
+
+|s1= [side1, side2] call [[BIS_fnc_areFriendly]]
+
+|p1= side1: [[Side]] - first side, will be compared to second side.
+|p2= side2: [[Side]] - second side, will be compared to first side.
+
+|r1= [[Boolean]] - true if sides are friendly to each other, false if not.
+
+|x1= <sqf>private _areFriendly = [west, east] call BIS_fnc_areFriendly;</sqf>
+
+|seealso= [[getFriend]] [[BIS_fnc_sideIsFriendly]] [[BIS_fnc_sideIsEnemy]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-09-29 - 19:31 (UTC)</dd>
+<dt class="note">[[User:Tryteyker-|Tryteyker-]]</dt>
+<dd class="note">
+The friendly limit determined in the script is 0.6. Anything under 0.6 is considered hostile, whilst >=0.6 is considered friendly.
+</dd>
+
+</dl>

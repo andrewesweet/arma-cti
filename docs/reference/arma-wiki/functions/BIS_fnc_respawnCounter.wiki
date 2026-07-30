@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_respawnCounter
+// revision: 349173 (2023-11-08T14:50:37Z)
+// export sha1: 7wac8ikdni68etbhkibz4wu8wvph5u1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Set or execute respawn counter params.
+
+|s1= [text,colour] call [[BIS_fnc_respawnCounter]]
+
+|p1=text: [[String]] - text displayed below the respawn counter
+
+|p2=colour: [[Number]] - (Optional, default 0) can be:<br>
+0 = default<br>
+1 = warning<br>
+2 = error
+
+|r1= [[Boolean]]
+
+|x1= <sqf>["Some text", 2] call BIS_fnc_respawnCounter;</sqf>
+
+|seealso= [[:Category:Function Group: Respawn| Respawn Functions]]
+}}

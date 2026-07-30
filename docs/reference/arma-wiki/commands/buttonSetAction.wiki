@@ -1,0 +1,98 @@
+// source: https://community.bistudio.com/wiki/buttonSetAction
+// revision: 364179 (2024-05-05T10:46:46Z)
+// export sha1: oss2e5m40nleer5jeicsfrc6k84lufo
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= GUI Control
+
+|arg= local
+
+|eff= local
+
+|descr= 
+{{Feature|obsolete|Use [[ctrlAddEventHandler]] instead.}}
+Set the action of a control of the currently active user dialog. The script statement is executed on button release and {{hl|_this}} is available, but contains ""; See [[Arma: GUI Configuration]] for more information about user dialogs. Works with:
+* [[CT_BUTTON]]
+* [[CT_XBUTTON]]
+* [[CT_ACTIVETEXT]]
+* [[CT_SHORTCUTBUTTON]]
+
+|s1= [[buttonSetAction]] [idc, action]
+
+|p1= idc: [[Number]] - button IDC
+
+|p2= action: [[String]] - '''[[SQS Syntax|SQS]]''' code body that should be executed when the button/active text is clicked
+
+|r1= [[Nothing]]
+
+|s2= control [[buttonSetAction]]  action
+
+|p21= control:  [[Control]] - button control
+
+|p22= action:  [[String]] - '''[[SQS Syntax|SQS]]''' code body that should be executed when the button/active text is clicked
+
+|r2= [[Nothing]]
+
+|x1= <sqf>buttonSetAction [100, "player exec ""reply.sqs"""];</sqf>
+
+|x2= <sqf>_ctrl buttonSetAction "if (alive bob) then {hint 'alive'} else {hint 'dead'}"; // SQF but SQS compatible, see SQS</sqf>
+
+|x3= Script is [[SQS Syntax|SQS]]:
+<sqs>_control buttonSetAction "hint format ['Is SQS: %1', !isNil '_time']"</sqs>
+
+|seealso= [[buttonAction]]
+}}
+
+{{Note
+|user= Kungtotte
+|timestamp= 20091005162300
+|text= When using buttonSetAction for an ActiveText control from a script, you cannot use any variables local to the script in it.
+<sqf>
+/* This will print 'any bar' in the hint box,
+ since _foo has no value according to buttonSetAction */
+
+_foo = "foo";
+buttonSetAction [100, "hint format [""%1 bar"", _foo];"];
+</sqf>
+}}
+
+{{Note
+|user= Molaron
+|timestamp= 20160215101500
+|text= This command does not overwrite the button's action that was set via "action" in the {{hl|.hpp}} of the dialog.
+}}
+
+{{Note
+|user= Nomisum
+|timestamp= 20160611192400
+|text= To use variables local to the defining script, a syntax like the one below needs to be used:
+<sqf>
+_foo = "foo";
+buttonSetAction [100, format ["hint '%1 bar'", _foo]];
+</sqf>
+works! thanks to [[User:Kronzky|Kronzky]] for commenting this workaround in the VBS wiki
+}}

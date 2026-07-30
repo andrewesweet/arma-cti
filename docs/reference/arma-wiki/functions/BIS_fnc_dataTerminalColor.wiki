@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_dataTerminalColor
+// revision: 327228 (2022-07-12T22:11:46Z)
+// export sha1: nqzt62m31fkchcl2ht0tyqyi7ocexyg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Scripts | Category:Functions | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Scripts
+
+|descr= Set Data Terminal colors for its different steps. Steps are:
+# closed terminal
+# opening terminal
+# emitting terminal.
+
+Default step colors are "blue", "orange", "green".
+See [[BIS_fnc_dataTerminalAnimate]] to animate a terminal.
+
+|s1= [dataTerminal, step1color, step2color, step3color] call [[BIS_fnc_dataTerminalColor]]
+
+|p1= dataTerminal: [[Object]]
+
+|p2= step1color: [[String]] - step 1 color.  Can be one of:
+* "blue"
+* "orange"
+* "green"
+* "red"
+* "purple"
+
+If not set, the selection color will simply not be changed.
+
+|p3= step2color: [[String]] - step 2 color
+
+|p4= step3color: [[String]] - step 3 color
+
+|r1= [[Boolean]] - [[false]] if data terminal is null, [[true]] if the script ends properly
+
+|x1= <sqf>[myTerminal, "purple", "red", "orange"] call BIS_fnc_dataTerminalColor;</sqf>
+
+|seealso= [[MP End Game|End Game (MP mode)]] [[BIS_fnc_dataTerminalAnimate]]
+}}

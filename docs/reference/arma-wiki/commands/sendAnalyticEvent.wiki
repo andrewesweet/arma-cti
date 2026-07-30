@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/sendAnalyticEvent
+// revision: 377899 (2026-01-05T17:51:48Z)
+// export sha1: b5xizraqen1uu5ignxn837ts9wzky8d
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|gr1= Argo
+
+|descr= Generates new analytics events with given values, acceptable value types are string, scalar and bool.
+
+|mp= {{Feature|informative|Analytics are reserved to official server instances (server or client).}}
+
+|s1= [[sendAnalyticEvent]] [eventName, keyValuePairs]
+
+|p1= eventName: [[String]] - ''unknown possible values''
+
+|p2= keyValuePairs: [[Array]] with [key, value]
+* key: [[String]] - entry's name
+* value: [[String]], [[Number]], [[Boolean]] or [[Array]] - entry's value; if an [[Array]], inserts its content at the end of ''keyValuePairs''; if any other [[Data Types|Data Type]], it is ignored
+
+|r1= [[Boolean]] - [[true]] when done (not if the analytics were sent), [[false]] if the provided array is wrong
+
+|x1= <sqf>
+if (onOfficialServer) then
+{
+	sendAnalyticEvent ["EventName", ["key1", false], ["key2", 1], ["key3", "two"]];
+};
+</sqf>
+
+|seealso= [[onOfficialServer]] [[sendCloudRequest]] [[sendCloudRequestClient]] [[sendCloudRequestServer]]
+}}

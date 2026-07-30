@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EGSpectatorCamera
+// revision: 278956 (2021-06-13T21:47:03Z)
+// export sha1: 92a4395sotr841ua2jfqavhgcmrbee1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Spectator | Category:Functions | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.54
+
+|gr1= Spectator
+
+|descr= Part of the [[EG Spectator Mode]]. {{Feature|important|For internal use only.}}
+
+|s1= -
+
+|p1=
+
+|r1= -
+
+|x1= -
+
+|seealso= [[EG Spectator Mode]]
+}}

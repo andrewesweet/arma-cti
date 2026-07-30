@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/Category:Ylands
+// revision: 332462 (2022-11-21T13:55:07Z)
+// export sha1: 9p7meqd8137chihw4786t85vbdiksha
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= Ylands 3D Logo.png
+|EAdate= 20171206
+|releasedate= 20191205
+|size= 350
+|intro= Welcome to the Ylands official Wiki, edited and curated by the Ylands team and the community. Ylands is a creativity platform, a sandbox and an exploration game all in one! Developed by Bohemia Interactive, it first became a part of the Bohemia Interactive Incubator on November 1st, 2016 and it entered Steam’s Early Access on December 6th, 2017 after a public Alpha. The full version 1.0 released on the 5th of December 2019.
+
+Ylands is being continuously supported with regular updates. The '''2022''' roadmap can be found here: [https://ylands.com/community/topic/31196-dev-diary-216-roadmap-2022/ 2022 Roadmap]
+
+|feature1= '''Your lands:''' Journey across a vast sandbox of procedurally-generated islands with biomes ranging from tropical rainforests to sandy deserts, arctic tundras, and more. These landscapes are populated with many different animal species and hold a wealth of natural resources such as plants, soils, minerals, fuel, and a new mysterious and exotic material to the world: ylandium. The open-world also features day-and-night cycles and changing weather conditions. For those brave enough, a new discovery is always on the horizon.
+|feature2= '''Go explore:''' You find yourself stranded on a deserted island. What do you do? Mine the terrain, hunt animals, pick plants and figure out how to craft thousands of unique items that might be essential for your expeditions. Climb magnificent mountains, descend into hidden caves, and sail across uncharted waters. This is your opportunity to seek out Ylands’ many secrets and boldly go where no one has gone before.
+|feature3= '''Build things:''' Break out your imagination and start building. From treehouses, beach mansions, castles, and bat caves, all the way up to ships, cars, and elaborate energy devices – if you can think of it, you can build it. There’s also a special Create mode that gives you unlimited access to a library of all the available game objects and special terraforming abilities. You’ll have everything you need to surprise even yourself.
+|feature4= '''Play together:''' By yourself or with friends, live out your fantasies by combining your knowledge of survival, engineering, architecture, and science. Explore, create, or play one of the many custom games and seamlessly switch between singleplayer and multiplayer at any time. Plus, Ylands’ innovative Sharegames functionality enables you to save your multiplayer creations in the cloud. That means you can always pick up where you left off without needing to worry about server resets.
+|feature5= '''Custom games:''' Take part in a growing number of official and user-generated free custom games. The Ylands workshop hosts nearly every video game genre, such as platforming, roleplaying, racing, and even simulation. Of course, you can also unleash your own inner game developer. Ylands’ powerful 3D editor and a massive library of content let you build anything from simple structures to sophisticated game modes, which you can then easily share with the rest of the community.
+|gallery1= ylands_1.jpg
+|gallery2= ylands_2.jpg
+|gallery3= ylands_3.jpg
+|gallery4= ylands_4.jpg
+|trailer= Ief6LheNC2g
+|start1= [[Ylands:Basic Controls and Mechanics]]
+|start2= [[Ylands:Games]]
+|start3= [[Ylands:Editor|Editor]]
+|start4= [[Ylands:Exploration]]
+|start5= [[Ylands:Shop]]
+|start6= [[Ylands:Monetization description|Monetization]]
+|social1= [https://twitter.com/ylandsgame Twitter]
+|social2= [https://ylands.com/community Forums]
+|social3= [https://www.reddit.com/r/Ylands/ Reddit]
+}}

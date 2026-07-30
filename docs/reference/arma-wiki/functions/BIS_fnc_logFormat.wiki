@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_logFormat
+// revision: 351747 (2023-12-30T21:46:04Z)
+// export sha1: mz1i1ncwlzt4tpvx0zpyuxm0q6r21h4
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Display debug message. 
+{{Feature|informative|{{hl|[[Description.ext#allowFunctionsLog|allowFunctionsLog]]}} has to be set to '''1''' in [[Description.ext]] for this function to have any effect.}}
+
+|s1= [text, parameters] call [[BIS_fnc_logFormat]]
+
+|p1= '''text''': [[String]] - formatted message or first param
+
+|p2= '''parameters''': [[Anything]] - (Optional) additional parameters
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>["My logged name: %1, My position: %2", name player, getPos player] call BIS_fnc_logFormat;
+// RPT output:
+// 12:34:56 "BIS_fnc_log: [BIS_fnc_debugConsoleExec] My logged name: Miller, My position: [4866.73,21947.9,0.00143433]"</sqf>
+
+|seealso= [[BIS_fnc_error]] [[BIS_fnc_logFormatServer]] [[BIS_fnc_errorMsg]] [[BIS_fnc_log]]
+}}

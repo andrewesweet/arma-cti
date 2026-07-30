@@ -1,0 +1,108 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_MP_Mission_Names
+// revision: 364565 (2024-05-17T12:36:06Z)
+// export sha1: c1xbakc888ibquc1mtl4zjqc46dwiz5
+// categories: Category:Arma 3
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Format is PBO file name (for [[Arma 3: Server Config File|server config]] mission whitelisting) followed by the in-game name.
+
+== Vanilla ==
+{{Columns|3|
+* {{hl|"MP_Bootcamp_01.Altis"}}: ZGM 4+1 Bootcamp
+* {{hl|"MP_COOP_m01.Stratis"}}: COOP 10 Escape From Stratis
+* {{hl|"MP_COOP_m02.Stratis"}}: COOP 07 Headhunters
+* {{hl|"MP_COOP_m03.Altis"}}: COOP 10 Escape From Altis
+* {{hl|"MP_COOP_m04.Stratis"}}: ZvP 10+1 Defend Kamino
+* {{hl|"MP_COOP_m05.Altis"}}: ZvP 10+1 Defend Syrta
+* {{hl|"MP_COOP_m06.Altis"}}: ZvP 10+1 Seize Edoris
+* {{hl|"MP_COOP_m07.Altis"}}: ZvP 10+1 Seize Feres
+* {{hl|"MP_COOP_m08.Altis"}}: COOP 12 Tanks
+* {{hl|"MP_End_Game_02.Altis"}}: CTF 32 End Game Feres
+* {{hl|"MP_End_Game_03.Altis"}}: CTF 16 End Game Zaros
+* {{hl|"MP_GroundSupport01.Altis"}}: SC 06 Support Katalaki
+* {{hl|"MP_GroundSupport02.Altis"}}: SC 08 Support Sofia
+* {{hl|"MP_GroundSupport03.Altis"}}: SC 08 Support Pyrgos
+* {{hl|"MP_GroundSupport04.Altis"}}: COOP 04 Support Rodopoli
+* {{hl|"MP_GroundSupport05.Stratis"}}: COOP 05 Support Stratis
+* {{hl|"MP_Marksmen_01.Altis"}}: CTF 16 End Game Kavala
+* {{hl|"MP_ZGM_m11.Altis"}}: ZGM 48+2 Master Altis
+* {{hl|"MP_ZGM_m11_EAST.Altis"}}: ZGM 16+2 Master Altis (CSAT)
+* {{hl|"MP_ZGM_m11_GUER.Altis"}}: ZGM 16+2 Master Altis (AAF)
+* {{hl|"MP_ZGM_m11_WEST.Altis"}}: ZGM 16+2 Master Altis (NATO)
+* {{hl|"MP_ZGM_m12.Stratis"}}: ZGM 48+2 Master Stratis
+* {{hl|"MP_ZGM_m12_EAST.Stratis"}}: ZGM 16+2 Master Stratis (CSAT)
+* {{hl|"MP_ZGM_m12_GUER.Stratis"}}: ZGM 16+2 Master Stratis (AAF)
+* {{hl|"MP_ZGM_m12_WEST.Stratis"}}: ZGM 16+2 Master Stratis (NATO)
+* {{hl|"MP_ZGM_m13.VR"}}: ZGM 48+2 Master Virtual Reality
+* {{hl|"MP_ZGM_m13_EAST.VR"}}: ZGM 16+2 Master Virtual Reality (CSAT)
+* {{hl|"MP_ZGM_m13_GUER.VR"}}: ZGM 16+2 Master Virtual Reality (AAF)
+* {{hl|"MP_ZGM_m13_WEST.VR"}}: ZGM 16+2 Master Virtual Reality (NATO)
+* {{hl|"MP_ZR_8_Karts01.Altis"}},: ZR 8+1 Race on Altis (Karts)
+* {{hl|"MP_ZR_8_Karts02.Stratis"}}: ZR 8+1 Race on Stratis (Karts)
+* {{hl|"MP_ZSC_m10.Altis"}}: ZSC 32+2 Control Edessa
+* {{hl|"Showcase_Combined_arms.Stratis"}}: COOP 08 Combined Arms
+* {{hl|"Showcase_FiringFromVehicles.Altis"}}: COOP 04 Firing From Vehicles
+* {{hl|"MP_CombatPatrol_01.Altis"}}: COOP 12 Combat Patrol
+* {{hl|"MP_CombatPatrol_02.Stratis"}}: COOP 12 Combat Patrol
+* {{hl|"MP_Warlords_01.Altis"}}: SC 32 Warlords (Whole Island)
+* {{hl|"MP_Warlords_01_large.Altis"}}: SC 64 Warlords (Whole Island)
+* {{hl|"MP_Warlords_01_large_ver2.Altis"}}: SC 48 Warlords (Whole Island)
+* {{hl|"MP_Warlords_01a.Altis"}}: SC 16 Warlords (Central)
+* {{hl|"MP_Warlords_01b.Altis"}}: SC 16 Warlords (Pyrgos Gulf)
+* {{hl|"MP_Warlords_02.Stratis"}}: SC 16 Warlords
+* {{hl|"MP_Warlords_02_large.Stratis"}}: SC 32 Warlords
+}}
+
+=== Malden ===
+
+{{Columns|3|
+* {{hl|"MP_CombatPatrol_04.Malden"}}: COOP 12 Combat Patrol
+* {{hl|"MP_EscapeFromMalden.Malden"}}: Escape 10 Malden
+* {{hl|"mp_zgm_m15.Malden"}}: Zeus 48+2 Master Malden
+* {{hl|"mp_zgm_m15_east.Malden"}}: Zeus 16+2 Master Malden (CSAT)
+* {{hl|"mp_zgm_m15_west.Malden"}}: Zeus 16+2 Master Malden (NATO)
+* {{hl|"mp_zgm_m15_guer.Malden"}}: Zeus 16+2 Master Malden (AAF)
+* {{hl|"MP_Vanguard_LV_Chapoi.Malden"}}: Vanguard 30 Chapoi
+* {{hl|"MP_Warlords_04.Malden"}}: SC 16 Warlords
+* {{hl|"MP_Warlords_04_large.Malden"}}: SC 32 Warlords
+}}
+
+
+== APEX ==
+
+{{Columns|3|
+* {{hl|"EXP_m01.Tanoa"}}: 01 Keystone
+* {{hl|"EXP_m02.Tanoa"}}: 02 Warm Welcome
+* {{hl|"EXP_m03.Tanoa"}}: 03 Firestarter
+* {{hl|"EXP_m04.Tanoa"}}: 04 Heart of Darkness
+* {{hl|"EXP_m05.Tanoa"}}: 05 Extraction
+* {{hl|"EXP_m06.Tanoa"}}: 06 Apex Protocol
+* {{hl|"EXP_m07.Tanoa"}}: 07 End Game
+* {{hl|"MP_End_Game_04.Tanoa"}}: End Game 24 Balavu
+* {{hl|"MP_End_Game_05.Tanoa"}}: End Game 16 Moddergat
+* {{hl|"MP_ZGM_m14.Tanoa"}}: ZGM 48+2 Master Tanoa
+* {{hl|"MP_ZGM_m14_EAST.Tanoa"}}: ZGM 16+2 Master Tanoa (CSAT)
+* {{hl|"MP_ZGM_m14_GUER.Tanoa"}}: ZGM 16+2 Master Tanoa (Syndikat)
+* {{hl|"MP_ZGM_m14_WEST.Tanoa"}}: ZGM 16+2 Master Tanoa (NATO)
+* {{hl|"MP_EscapeFromTanoa.Tanoa"}}: Escape 10 Tanoa
+* {{hl|"MP_CombatPatrol_03.Tanoa"}}: COOP 12 Combat Patrol
+* {{hl|"MP_Vanguard_APC_Airport.Tanoa"}}: Vanguard 50 Power Plant
+* {{hl|"MP_Warlords_03.Tanoa"}}: SC 16 Warlords (West)
+* {{hl|"MP_Warlords_03a.Tanoa"}}: SC 16 Warlords (South)
+}}
+
+
+== Contact ==
+
+{{Columns|3|
+* {{hl|"MP_ZGM_m16.Enoch"}}: Zeus 48+2 Master Livonia
+* {{hl|"MP_ZGM_m16_east.Enoch"}}: Zeus 16+2 Master Livonia (CSAT)
+* {{hl|"MP_ZGM_m16_west.Enoch"}}: Zeus 16+2 Master Livonia (NATO)
+* {{hl|"MP_ZGM_m16_guer.Enoch"}}: Zeus 16+2 Master Livonia (LDF)
+* {{hl|"WarlordsEnoch.Enoch"}}: SC 24 Warlords
+* {{hl|"combatPatrolEnoch.Enoch"}}: COOP 12 Combat Patrol
+}}
+
+
+{{GameCategory|arma3}}

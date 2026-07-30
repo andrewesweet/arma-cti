@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Suppression
+// revision: 377989 (2026-01-21T11:17:23Z)
+// export sha1: 46exgsixfjayg3o0obl9eo14512tqqp
+// categories: Category:AI | Category:Arma 3
+// Vendored snapshot. Do not edit — re-export instead.
+
+* AI which is under fire becomes suppressed and its aim deteriorates. The speed of AI's recovery from the suppression is based on AI's Courage skill. AI with final skill close to 1.0 recovers almost immediately (doesn't suffer much suppression). Conversely just few shots around a 0.2 skilled AI should disturb its aiming for a longer period (up to ~12s).
+* When planning a path, the AI will try to avoid beaten zones and areas that are visibly within enemy's fire sectors
+* When suppressed, the AI will try to use smoke grenades to hide their position
+
+There is an Event Handler for suppression events: {{Link|Arma 3: Event Handlers#Suppressed}}.
+
+{{GVI|arma3|2.22|size= 0.75}} Hand grenades can be used for suppression.
+When thrown grenade is detected near an enemy unit, the unit may shout a warning and attempt a defensive action. The EH will also trigger for this unit.
+
+The 2 new config parameters for suppression for hand grenades are: 
+* suppressionRadiusGrenadeClose (default: 5, use -1 to disable) 
+* dangerRadiusGrenadeClose (default: 3, use -1 to disable) 
+Hand grenades should have 'explosive' > 0 for them to be considered dangerous.
+
+
+== See Also ==
+
+* [[commandSuppressiveFire]]
+* [[doSuppressiveFire]]
+* [[getSuppression]]
+* [[setSuppression]]
+* [[suppressFor]]
+
+
+[[Category:AI]]
+{{GameCategory|arma3}}

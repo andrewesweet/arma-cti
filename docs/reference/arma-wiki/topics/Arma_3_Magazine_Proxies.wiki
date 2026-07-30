@@ -1,0 +1,216 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Magazine_Proxies
+// revision: 364522 (2024-05-16T20:46:23Z)
+// export sha1: etubdgumoxoj1b1vg0l5r8z7yufqzzy
+// categories: Category:Arma 3: Weapon & Magazine Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Magazine Proxies, as name suggest, is a technology that allows moving weapon magazines to separate proxy & swap it dynamically by just swapping a different magazine. Magazine 
+Following feature was introduced in {{GVI|arma3|1.78}} version of game.
+
+
+== Configuration ==
+
+=== P3D ===
+
+Magazines in all LODs (shadow & geometry too) need to be replaced with new proxy which is linked to cfgNonAIVehicles entry. In {{GVI|arma3|1.80}} patch following proxy was created for this purpose A3\Data_f\proxies\weapon_slots\MAGAZINESLOT.p3d
+
+{{Feature | Informative |See [[Oxygen_2_-_Manual#Proxy_objects|Object Builder manual]] for some tips regarding handling of proxies.}}
+
+[[File:magazineProxies_MX_profile.png|800px]]
+
+''MX magazine in separate p3d''
+
+[[File:magazineProxies_MX_magazine.png|800px]]
+
+For testing purposes (especially when you are repositioning magazine) it is good to directly link in proxy to p3d containing your magazine so you can easily see it in buldozer
+
+=== Model Config ===
+
+Magazine proxies can be '''animated''' and '''retextured'''. At the moment, it supports following animation sources
+
+* reload
+* reloadMagazine
+* revolving
+* ammo
+* ammoRandom
+* isEmpty
+
+Configuring of bones, animations & sections for texturing is same as with any other model.cfg p3d & more info about it can be found on [[Model Config]] page.
+
+{{Feature|informative|Example model.cfg code for bullet hiding for transparent magazines.}}
+
+<syntaxhighlight lang="cpp">
+// Macro for hiding bullets
+#define BULLET_HIDE(x,from,count) class Bullet##x\
+{\
+	type=hide;\
+	source=revolving;\
+	sourceAddress="mirror";\
+	selection=bullet##x;\
+	minValue=-1.000000;\
+	maxValue= 0.000000;\
+	hideValue=((count+x-from-2)/count)+0.00001;\
+};
+
+class CfgSkeletons
+{
+	class Default
+	{
+		isDiscrete = 1;
+		skeletonInherit = "";
+		skeletonBones[] = {};
+	};
+	class magazine_transparent_skeleton : Default
+	{
+		skeletonInherit = "";
+		skeletonBones[] = 
+		{
+			"bullet030",	"",
+			"Bullet002",	"",
+			"Bullet003",	"",
+			"Bullet004",	"",
+			"bullet005",	"",
+			"bullet006",	"",
+			"bullet007",	"",
+			"bullet008",	"",
+			"bullet009",	"",
+			"bullet010",	"",
+			"bullet011",	"",
+			"bullet012",	"",
+			"bullet013",	"",
+			"bullet014",	"",
+			"bullet015",	"",
+			"bullet016",	"",
+			"bullet017",	""
+		};
+	};
+};
+class CfgModels
+{
+	class Default
+	{
+		skeletonName	= "";
+		sectionsInherit	= "";
+		sections[]		= {};
+	};
+	class magazine_transparent : Default 
+	{
+		skeletonName="magazine_transparent_skeleton";
+		// Magazine proxies supports hidden selections
+		sections[] =
+		{
+			"camo"
+		};
+		class Animations
+		{
+			BULLET_HIDE(030,30,30)
+			BULLET_HIDE(029,30,30)
+			BULLET_HIDE(002,30,30)
+			BULLET_HIDE(003,30,30)
+			BULLET_HIDE(004,30,30)
+			BULLET_HIDE(005,30,30)
+			BULLET_HIDE(006,30,30)
+			BULLET_HIDE(007,30,30)
+			BULLET_HIDE(008,30,30)
+			BULLET_HIDE(009,30,30)
+			BULLET_HIDE(010,30,30)
+			BULLET_HIDE(011,30,30)
+			BULLET_HIDE(012,30,30)
+			BULLET_HIDE(013,30,30)
+			BULLET_HIDE(014,30,30)
+			BULLET_HIDE(015,30,30)
+			BULLET_HIDE(016,30,30)
+			BULLET_HIDE(017,30,30)
+		};
+	};
+};
+</syntaxhighlight>
+
+=== CfgMagazines ===
+
+Heart of magazine proxy system lies in modelSpecial - a system originally designed in OFP for rifle mounted grenades. It was redesigned and now allows you to change to use magazine defined in modelSpecial as a proxy in weapon. In order to do so, you need to add following parameter - modelSpecialIsProxy = 1;
+
+In addition to that, it is still possible to use reloadAction inside magazine config, which means you can have different reload animation depending on currently loaded magazine.
+
+<syntaxhighlight lang="cpp">
+class CfgMagazines
+{
+	class RPG32_F;
+	class RPG7_F : RPG32_F
+	{
+		modelSpecial = "linkToP3d";
+		modelSpecialIsProxy = 1
+		hiddenSelections[] = {"camo"};
+		hiddenSelectionsTextures[] = {"linkToTexture.paa"};
+	};
+	class RPG7_YellowMagazine_F : RPG7_F
+	{
+		displayName = "Go, go my yellow rocket!";
+		reloadAction = "ReloadRPG"; // Switches reload action from RPG-7 front loading anim defined in cfgWeapons to RPG-32 back loading animation
+		hiddenSelectionsTextures[] = {"#(argb,8,8,3)color(1,0.952941,0.0509804,1.0,CO)"}; // procedural yellow rocket
+	};
+};
+</syntaxhighlight>
+
+=== CfgWeapons ===
+
+Moment of switching between old & new model is controlled by already existing parameter - magazineReloadSwitchPhase. It controls now both restart of revolving source (pre magazine proxy behavior) & model switching. Default value is 0.5 which means magazines will get swapped in the middle of reload animation (same as reloadMagazine source). It's worth to mention that following parameter can be applied per muzzle.
+<syntaxhighlight lang="cpp">
+class CfgWeapons
+{
+	class Launcher_Base_F;
+	class launch_RPG7_F : Launcher_Base_F
+	{
+		magazineReloadSwitchPhase = 0.3; // magazine will get replaced pretty early
+	};
+};
+
+</syntaxhighlight>
+
+=== CfgNonAIVehicles ===
+
+{{Feature|warning|It is strongly suggested to use '''"\A3\Data_f\proxies\weapon_slots\MAGAZINESLOT.p3d"''' as proxy but in case you want to create your own, here are the instructions.}}
+
+
+Proxy that is used in p3d need to be listed in '''CfgNonAIVehicles''' class. There is following rule for creating those entries
+
+{{Feature|informative|class '''Proxy''' + '''nameOfP3d'''}}
+
+
+Bear in mind that same as with i.e. missile proxies for dynamic loadouts, name need to be unique in order to have it working properly. Since for game only thing that matters is p3d name, location of this proxy doesn't need to be same across different models. For sake of simplicity it is advised to use just single proxy on all weapons.
+
+<syntaxhighlight lang="cpp">
+class CfgNonAIVehicles
+{
+	class ProxyWeapon;
+	class ProxyMagazine : ProxyWeapon
+	{
+		model		= "";
+		simulation	= "magazine";
+	};
+};
+</syntaxhighlight>
+
+
+== Examples ==
+
+Example proxies for AKM, MX, STANAG & RPG-7 magazines - https://drive.google.com/open?id=1hZvLu8rJqg6WSrNoOoy0tUctFTccFmJj
+
+E-Mag sample provided by da12thMonkey, model by Tigg - https://www.dropbox.com/s/am5ke5b02xr2jit/proxymag_example.7z?dl=0
+
+
+== Known issues ==
+
+Currently known issues:
+* There is no magazine model visible if magazine doesn't have modelSpecial defined which might be quite problematic when it comes to community magazine interchangeability.
+* Loading magazine without modelSpecial & then loading one which have it defined will result in on screen assert and invisible rifle (magazine will be still visible though)
+* There is no way to manipulate model.cfg animation (i.e. M249 STANG & Box magazines)
+
+
+== See Also ==
+
+* [[Model Config]]
+
+
+{{GameCategory|arma3|Weapon & Magazine Configuration}}

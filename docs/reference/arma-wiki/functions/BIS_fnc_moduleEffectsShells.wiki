@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleEffectsShells
+// revision: 352194 (2024-02-01T23:26:00Z)
+// export sha1: hq5kacheqlagn7a7j092ku8kh4y4kmv
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|descr= Creates empty ammo cartridges on position of the module logic. {{Feature|informative|Mainly meant to be used by modules available in [[:Category:Eden Editor|Eden Editor]].}}
+
+|s1= [module] call [[BIS_fnc_moduleEffectsShells]]
+
+|p1= module: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[BIS_module] call BIS_fnc_moduleEffectsShells;</sqf>
+
+|seealso= [[Modules]] [[Eden Editor: System]]
+}}

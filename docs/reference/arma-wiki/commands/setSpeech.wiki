@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/setSpeech
+// revision: 319558 (2022-05-13T09:24:28Z)
+// export sha1: 90nib6iforlfd0ewnojb2fm101ixxkd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+
+|gr1= Locations
+
+|descr= Add speech to location.
+
+|s1= location [[setSpeech]] speech
+
+|p1= location: [[Location]]
+
+|p2= speech: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_location setSpeech "SomeSpeech";</sqf>
+
+|seealso= [[nearestLocationWithDubbing]]
+}}

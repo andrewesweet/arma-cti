@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_liveFeedSetTarget
+// revision: 324234 (2022-07-01T12:00:39Z)
+// export sha1: oi7oqhs323050b1t36kr3tgtxim016f
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Live Feed | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Live Feed
+
+|descr= Set the target of the current live feed.
+
+|s1= target call [[BIS_fnc_liveFeedSetTarget]]
+
+|p1= target: [[Object]] or [[Position]]
+
+|r1= [[Boolean]] - [[true]] if successful, [[false]] if not.
+
+|x1= <sqf>player call BIS_fnc_liveFeedSetTarget;</sqf>
+
+|seealso= [[BIS_fnc_liveFeed]] [[BIS_fnc_liveFeedEffects]] [[BIS_fnc_liveFeedSetSource]] [[BIS_fnc_liveFeedTerminate]]
+}}

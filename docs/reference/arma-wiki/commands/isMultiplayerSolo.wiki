@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/isMultiplayerSolo
+// revision: 310750 (2022-05-07T20:21:31Z)
+// export sha1: mhttauyy7tpzlv23eie5iksteg83jhj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.66 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.66
+
+|gr1= Multiplayer
+
+|descr= Returns [[true]] when playing a game in '''solo multiplayer''' (for example Apex coop campaign PLAY SOLO option).
+
+|s1= [[isMultiplayerSolo]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_state = isMultiplayerSolo;</sqf>
+
+|seealso= [[isMultiplayer]] [[isDedicated]] [[hasInterface]] [[isServer]]
+}}

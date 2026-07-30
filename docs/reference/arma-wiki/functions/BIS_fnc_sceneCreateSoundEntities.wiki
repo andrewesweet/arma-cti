@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sceneCreateSoundEntities
+// revision: 309748 (2022-05-05T12:09:48Z)
+// export sha1: 7njx96fk80ojguvkph8y1bhjkw0s5k8
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Scenes | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Scenes
+
+|descr= <pre>
+/*******************************************************************************
+ *	version: 	1.0
+ *	name:		create sound entities	
+ *	description:	creates sound entities(logic objects) and attaches to 
+ *			an objects passed as parameter     
+ *			After scene end it will detach and delete all created 
+ *			sound entities (if scene was executed from scenes
+ *			controller.
+ *			 	
+ *	paramater:	objects - ARRAY of OBJECTS in format without "BIS_" 
+ *			prefix. For example, if you have BIS_Cooper in mission 
+ *			than parameter will be [Cooper]. Then you can use 
+ *			created sound entities as BIS_ZvukCooper say "something"    
+ *						 	
+ *	return value:	nothing 	
+ * 
+</pre>
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_sceneCreateSoundEntities]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_sceneCreateSoundEntities;</sqf> -->
+
+|seealso=
+}}

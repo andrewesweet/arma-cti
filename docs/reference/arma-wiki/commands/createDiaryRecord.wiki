@@ -1,0 +1,213 @@
+// source: https://community.bistudio.com/wiki/createDiaryRecord
+// revision: 370359 (2024-12-02T16:08:54Z)
+// export sha1: 58npt5vt8sntg5x6dlqxy8m3litxq5s
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Briefing
+
+|eff= local
+
+|arg= local
+
+|descr= Creates a [[Diary]] entry. Supported tags and their parameters: <spoiler>
+{| class="wikitable sortable valign-top"
+! Tag
+! class="unsortable" | Options
+! class="unsortable" | Example
+|-
+| img
+|
+* ''image'': [[String]] - path to image. When present, any element with it will be displayed as image.
+* ''width'': [[Number]] - image width in pixels.
+* ''height'': [[Number]] - image height in pixels.
+* {{GVI|arma3|2.10|size= 0.75}} ''title'': [[String]] - tooltip to show on mouse over image
+* {{GVI|arma3|2.10|size= 0.75}} ''src'': [[String]] - alternative to 'image'
+{{Feature|arma3|Maximum width supported seems to be '''370''' pixels as a wider image will be cut off. Height should be calculated with the aspect ratio of the image. {{hl|height {{=}} 370; ratio {{=}} 16/9; height {{=}} width / ratio;}}}}
+|
+<syntaxhighlight lang="html"><img image="picture.paa" width="128" height="64" /></syntaxhighlight>
+<br>
+Since {{arma3}} v2.10:
+<syntaxhighlight lang="html"><img src="picture.paa" width="128" height="64" title="this is an image" /></syntaxhighlight>
+|-
+| font
+|
+* ''color'': [[String]] - {{Link|https://en.wikipedia.org/wiki/HTML_color|HTML color}} in format #aarrggbb or #rrggbb
+* ''size'': [[Number]] - font height in pixels (default: 14)
+* ''face'': [[String]] - font type (see [[FXY File Format#Available Fonts|Fonts]])
+| <syntaxhighlight lang="html"><font color="#FF00FF" size="16" face="LucidaConsoleB">Hello there</font></syntaxhighlight>
+|-
+| br
+| {{n/a}}
+| <syntaxhighlight lang="html">Line 1<br />Line 2</syntaxhighlight>
+|-
+| marker
+|
+* ''name'': [[String]] - marker name
+| <syntaxhighlight lang="html"><marker name="respawn_west">Respawn point</marker></syntaxhighlight>
+|-
+| execute
+|
+* ''expression'': [[String]] - executed code
+| <syntaxhighlight lang="html"><execute expression="player setDamage 1">Die!</execute></syntaxhighlight>
+|-
+| executeClose
+|
+* ''expression'': [[String]] - executed code, diary is closed afterwards
+| <syntaxhighlight lang="html"><executeClose expression="player setDamage 1">Die and close</executeClose></syntaxhighlight>
+|-
+| [[createDiaryLink|log]]
+|
+* ''subject'': [[String]] - [[createDiarySubject|subject]] name.
+* ''record'': [[String]] - record ID (e.g. "Record6" or "Unit1059524")
+| <syntaxhighlight lang="html"><log subject="Hello">Get to the "Hello" subject</log></syntaxhighlight>
+<syntaxhighlight lang="html"><log subject="Hello" record="Record0">Go to the first record added to "Hello"</log></syntaxhighlight>
+|-
+| gear
+|
+* ''unit'': [[Number]] - unit ID
+| <syntaxhighlight lang="html"><gear unit="123456">Open unit 123456's gear</gear></syntaxhighlight>
+|-
+| teamSwitch
+|
+* ''unit'': [[Number]] - unit ID
+| <syntaxhighlight lang="html"><teamSwitch unit="123456">Switch to unit 123456</teamSwitch></syntaxhighlight>
+|-
+| kick
+|
+* ''id'': [[Number]] - unit ID
+| <syntaxhighlight lang="html"><kick unit="123456">Kick player unit 123456</kick></syntaxhighlight>
+|-
+| ban
+|
+* ''id'': [[Number]] - unit ID
+| <syntaxhighlight lang="html"><ban unit="123456">ban player unit 123456</ban></syntaxhighlight>
+|-
+| mute
+|
+* ''id'': [[Number]] - unit ID
+| <syntaxhighlight lang="html"><mute unit="123456">mute player unit 123456</mute></syntaxhighlight>
+|-
+| voteadmin
+|
+* ''id'': [[Number]] - unit ID
+| <syntaxhighlight lang="html"><voteadmin unit="123456">vote admin unit 123456</voteadmin></syntaxhighlight>
+|-
+| votekick
+|
+* ''id'': [[Number]] - unit ID
+| <syntaxhighlight lang="html"><votekick unit="123456">vote kick player unit 123456</votekick></syntaxhighlight>
+|-
+| currentTask
+|
+* ''id'': [[Number]] - task ID
+* ''action'': [[String]] - 'n' or 's' (select)
+| <syntaxhighlight lang="html"><currentTask id="my_task">get to my_task task</currentTask></syntaxhighlight>
+|}</spoiler>
+{{Feature|informative|
+If the [[createDiaryRecord]] command fails, it returns a null record.
+Before {{arma3}} v2.00, [[isNull]] did not work with the diary record type and [[diaryRecordNull]] did not exist.
+In order to verify a null record, it is possible to create a variable and compare against it:
+<sqf>
+private _recordNull = objNull createDiaryRecord [];
+private _createdRecord = player createDiaryRecord ["Diary", ["Title", "Description"]];
+if (_createdRecord isEqualTo _recordNull) then { hint "Failed"; };
+</sqf>
+}}
+
+|s1= player [[createDiaryRecord]] [subject, textInfo, task, taskState, showTitle]
+
+|p1= player: [[Object]]
+
+|p2= subject: [[String]]
+
+|p3= textInfo: [[String]] or [[Array]] of [[String]]s - can be:
+* [[String]] - the record's content - its title will be empty
+* [[Array]] of [[String]]s - format [title, text, icon]:
+** title: [[String]]
+** text: [[String]]
+** {{GVI|arma3|2.10|size= 0.75}} icon: [[String]] - (Optional) icon to show next to the title
+
+|p4= task: [[Task]] - (Optional, default [[taskNull]])
+
+|p5= taskState: [[String]] - (Optional, default {{hl|"NONE"}}) changes the state of the given task. Can be one of:
+{{Columns|3|
+* {{hl|"NONE"}}
+* {{hl|"CREATED"}}
+* {{hl|"ASSIGNED"}}
+* {{hl|"SUCCEEDED"}}
+* {{hl|"FAILED"}}
+* {{hl|"CANCELED"}}
+}}
+
+|p6= showTitle: [[Boolean]] - (Optional, default [[true]]) whether or not to show title in the description section as well
+|p6since= arma3 1.96
+
+|r1= [[Diary Record]]
+
+|x1= <sqf>player createDiaryRecord ["Diary", ["Intel", "Enemy base is on grid <marker name='enemyBase'>161170</marker>"]];</sqf>
+
+|x2= <sqf>player createDiaryRecord ["Diary", "Information gathered.<br /><img image='wellDone_ca.paa' />"];</sqf>
+
+|x3= <sqf>player createDiaryRecord ["Diary", ["Title", "Description"], taskNull, "", false];</sqf>
+
+|x4= <sqf>
+player createDiaryRecord [
+	"Diary",
+	["Font tag", "<font color='#7FFF00' size='30' face='TahomaB'>This will changed text size, colour and font</font>"],
+	taskNull,
+	"",
+	false
+];
+</sqf>
+
+|x5= <sqf>
+player createDiaryRecord [
+	"Diary",
+	["Image", "<img image='\A3\Ui_F_Curator\Data\Logos\arma3_curator_artwork.jpg' width='500' height='800' />"],
+	taskNull,
+	"",
+	false
+];
+</sqf>
+
+|x6= <sqf>player createDiaryRecord ["Diary", ["Linebreak", "Line1<br />Line2<br /><br />Line4"], taskNull, "", false];</sqf>
+
+|x7= <sqf>player createDiaryRecord ["Diary", ["Execute","<execute expression='hint ""Some code"";'>Some text</execute>"], taskNull, "", false];</sqf>
+
+|x8= <sqf>player createDiaryRecord ["Diary", ["ExecuteClose", "<executeClose expression=""hint 'Diary closed';"">Close Diary</executeClose>"], taskNull, "", false];</sqf>
+
+|seealso= [[allDiaryRecords]] [[processDiaryLink]] [[createDiaryLink]] [[createDiarySubject]] [[diarySubjectExists]] [[setDiaryRecordText]] [[removeDiaryRecord]]
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20170324201100
+|text= When adding multiple diary records, be aware that they appear in reverse order. ie the first one you add will appear last and the last one you add will be first.
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20190622162800
+|text= It seems that the '''task''' parameter has no effect in {{arma3}} because the task entry in the briefing menu is created when the task itself was created.
+}}
+
+{{Note
+|user= Honger
+|timestamp= 20221018175112
+|text= <nowiki><log></nowiki>, as <sqf inline>createDiaryLink</sqf>, requires declaring '''both''' subject and ID of the record belonging to said subject. Otherwise generated text will not be clickable or might open a non-existing record (behaviour similar to clicking on map when viewing Diary).
+}}

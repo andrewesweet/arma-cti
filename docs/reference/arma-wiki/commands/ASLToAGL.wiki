@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/ASLToAGL
+// revision: 377463 (2026-01-02T06:47:34Z)
+// export sha1: 2ajom1875n934ay4en6wft9aigzhtx8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|gr1= Positions 
+
+|descr= Converts position from [[Position#PositionASL|PositionASL]] to [[Position#PositionAGL|PositionAGL]] 
+
+|s1= [[ASLToAGL]] posASL 
+
+|p1= posASL: [[Position#PositionASL|PositionASL]] - position to convert
+
+|r1= [[Position#PositionAGL|PositionAGL]] 
+
+|x1= <sqf>_playerPosAGL = ASLToAGL getPosASL player;</sqf> 
+
+|seealso= [[AGLToASL]] [[ASLToATL]] [[ATLToASL]] [[getPos]] [[getPosATL]] [[getPosASL]] [[setUnitFreefallHeight]]
+}}

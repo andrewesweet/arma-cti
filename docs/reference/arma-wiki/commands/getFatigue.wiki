@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/getFatigue
+// revision: 363589 (2024-04-07T18:18:03Z)
+// export sha1: q2rgaimwgt1gk192zujtplpgsj581b7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+|arg= global
+
+|gr1= Stamina System
+
+|descr= Returns fatigue of given unit.
+
+|s1= [[getFatigue]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>if (getFatigue player < 0.5) then { player sideChat "I'm good to go!" };</sqf>
+
+|seealso= [[setFatigue]] [[enableFatigue]] [[getStamina]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20140405093000
+|text= [[getFatigue]] can be applied to remote unit however it will not read the changes made to unit's fatigue with [[setFatigue]] command. Only natural changes resulting from unit moving will be counted.
+When applied to local unit, it will read resulting value of natural fatigue combined with artificial changes added locally by [[setFatigue]].
+In short, the server wouldn't know the correct value of remote unit's fatigue if you used [[setFatigue]] on the unit prior.
+}}

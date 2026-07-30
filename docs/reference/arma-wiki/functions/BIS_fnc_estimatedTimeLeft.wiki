@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_estimatedTimeLeft
+// revision: 348865 (2023-11-08T14:39:13Z)
+// export sha1: 424wqz071bv2fin385oujwkhuiw2vck
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Multiplayer | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Multiplayer
+
+|descr=Set mission countdown.
+
+|s1= [time] call [[BIS_fnc_estimatedTimeLeft]]
+
+|p1= time: [[Number]] - mission countdown
+
+|r1= [[Number]] - [[estimatedEndServerTime]]
+
+|x1= <sqf>[180] call BIS_fnc_estimatedTimeLeft;</sqf>
+
+|seealso= [[estimatedEndServerTime]]
+}}

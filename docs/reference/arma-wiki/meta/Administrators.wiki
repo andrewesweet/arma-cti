@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/Bohemia_Interactive_Community:Administrators
+// revision: 352705 (2024-02-18T16:55:11Z)
+// export sha1: oz5k6pqqw2ytf83rxcjrik2swsgs8yi
+// Vendored snapshot. Do not edit — re-export instead.
+
+==Wiki Sysops==
+
+Many will think that the Wiki sysop has great powers, but the reality of wiki sysops power only allows them to protect pages from ''vandalism'', <u>delete</u> unwanted pages, and '''block''' a user's IP when they feel the the guidelines have not been adhered to. 
+
+{{Feature|informative|For a list of '''all users''' and '''administrators''' please use this [[Special:ListUsers|<big>special page</big>]].}}
+
+<!---
+=== Community Wiki Sysops ===
+
+[[User:Bedges|Bedges]]
+
+[[User:Berghoff|Berghoff]]
+
+[[User:Hardrock|hardrock]]
+
+[[User:Hoz|hoz]]
+
+[[User:Kronzky|Kronzky]]
+
+[[User:Raedor|raedor]]
+
+[[User:Sniperwolf572|Sniperwolf572]]
+
+[[User:T_D|T_D]]
+
+[[User:Kju|kju]] --->
+
+=== BI Staff ===
+
+<div style="columns: 3">
+* [[User:Hlavac|Hlavac]]
+* [[User:Maruk|Maruk]]
+* [[User:Placebo|Placebo]]
+* [[User:Str|Str]]
+* [[User:Suma|Suma]]
+* [[User:Dwarden|Dwarden]]
+* [[User:Dedmen|Dedmen]]
+* [[User:Killzone_Kid|Killzone_Kid]]
+* [[User:Lou Montana|Lou Montana]]
+</div>
+
+[[Category: Community Wiki]]

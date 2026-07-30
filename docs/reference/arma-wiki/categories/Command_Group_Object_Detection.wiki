@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Object_Detection
+// revision: 161886 (2020-09-25T08:44:54Z)
+// export sha1: bhp5d6pogbpzr4hzs8v10bk0l9f5ihn
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to find certain objects.
+
+[[Category:Scripting Commands by Functionality]]

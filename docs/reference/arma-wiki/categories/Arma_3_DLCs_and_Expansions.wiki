@@ -1,0 +1,142 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_DLCs_&_Expansions
+// revision: 378537 (2026-05-04T16:23:47Z)
+// export sha1: 3jom5um4ons9uf9r7xx5h5fsb0uivjw
+// Vendored snapshot. Do not edit — re-export instead.
+
+A list of all official DLCs; Premium contents are '''Bolded'''.
+{{Feature | Informative | For Creator DLCs, see [[:Category:Arma 3 CDLCs|Arma 3 CDLCs]].}}
+{| class="wikitable sortable" style="text-align: center"
+! #
+! Name
+! Notable features and assets
+! Game<br>version
+! Release date
+! Steam ID
+! Classname
+|-
+| 1 || [[Arma 3 Zeus]]
+| style="text-align: left" |
+* Zeus game modes
+| {{GVI|arma3|1.16}} || 2014-04-10 || {{Link|https://store.steampowered.com/app/275700/|275700}} || Curator
+|-
+| 2 || [[Arma 3: Soundtrack]]
+| style="text-align: left" |
+* .mp3 and .flac (HD) game soundtrack
+| {{n/a}} || || 249860 || {{n/a}}
+|-
+| 3 || DLC Bundle 1 (expired)
+| style="text-align: left" |
+* Karts DLC
+* Helicopters DLC
+* Marksmen DLC
+| {{n/a}} || || 304400 || DLCBundle
+|-
+| 4 || Maps
+| style="text-align: left" |
+* High definition localised PDF maps of the game's terrains
+| {{n/a}} || || 249861 || {{n/a}}
+|-
+| 5 || Tactical Guide
+| style="text-align: left" |
+* A 150000 words Tactical PDF guide
+| {{n/a}} || || 249862 || {{n/a}}
+|-
+| 6 || [[Arma 3 Karts]]
+| style="text-align: left" |
+* Karts
+* Race objects (racetrack barriers, etc)
+* Time Trials
+| {{GVI|arma3|1.20}} || 2014-06-10 || {{Link|https://store.steampowered.com/app/288520/|288520}} || Kart
+|-
+| 7 || [[Arma 3 Helicopters]]
+| style="text-align: left" |
+* Introduced sling loading and Firing From Vehicles (FFV)
+* Introduced the [[Arma 3 Advanced Helicopter Flight Model|Advanced Flight Model]]
+* New vehicles: '''CH-67 Huron (NATO), Mi-290 Taru (CSAT)''', M-900 (civilian)
+* '''Sling Loading Showcase''', Support game mode and '''Time Trials'''
+| {{GVI|arma3|1.34}} || 2014-09-04 || {{Link|https://store.steampowered.com/app/304380/|304380}} || Heli
+|-
+| 8 || [[Arma 3 Marksmen]]
+| style="text-align: left" |
+* Introduced bipods and weapon resting
+* Introduced improved weapon sounds
+* Weapons: '''ASP-1 Kir, Mk-I EMR, MAR-10 and SPMG (NATO), Cyrus and Navid (CSAT), Mk14 (FIA)'''
+* '''Firing Drills'''
+* Endgame Game Mode
+| {{GVI|arma3|1.42}} || 2015-04-08 || {{Link|https://store.steampowered.com/app/332350/|332350}} || Mark
+|-
+| 9 || '''[[Arma 3 Apex]]'''
+| style="text-align: left" |
+* Introduced [[Arma 3: Visual Upgrade|Visual Upgrade]]
+* Introduced Vehicle-in-Vehicle (ViV) transport
+* '''"Apex Protocol", a 1-4 player cooperative campaign'''
+* '''New terrain: [[Tanoa]]'''
+* '''New factions, new weapons, new gear''', new languages
+| {{GVI|arma3|1.62}} || 2016-07-11 || '''{{Link|https://store.steampowered.com/app/395180/|395180}}''' || '''Expansion'''
+|-
+| 10 || DLC Bundle 2 (expired)
+| style="text-align: left" |
+* Jets DLC
+* Laws of War DLC
+* Tac-Ops Mission Pack DLC
+* Tanks DLC
+| {{n/a}} || || {{Link|https://store.steampowered.com/app/612480/|612480}} || DLCBundle2
+|-
+| 11 || [[Arma 3 Jets]]
+| style="text-align: left" |
+* '''New vehicles: F/A-181 Black Wasp II, Sentinel UAV (NATO), To-201 Shikra (CSAT), A-149 Gryphon (AAF)'''
+* New asset: the USS Freedom (US aircraft carrier) along with defense turrets
+* '''Fighter Jets and VTOL Showcases (exclusive only for Apex owners)'''
+| {{GVI|arma3|1.70}} || 2017-05-16 || {{Link|https://store.steampowered.com/app/601670/|601670}} || Jets
+|-
+| 12 || [[Arma 3 Malden]]
+| style="text-align: left" |
+* New terrain: [[Malden 2035]]
+* Combat Patrol multiplayer mode
+| {{GVI|arma3|1.72}} || 2017-06-22 || {{Link|https://store.steampowered.com/app/639600/|639600}} || Argo
+|-
+| 13 || [[Arma 3 Laws of War]]
+| style="text-align: left" |
+* '''"Remnants of War" singleplayer campaign'''
+* '''New vehicles: Van and AL-6 Pelican Drone'''
+* IDAP faction and gear
+* New (de)mining systems (mine detector, UXO, etc)
+* '''Time Trials'''
+| {{GVI|arma3|1.76}} || 2017-09-07 || {{Link|https://store.steampowered.com/app/571710/|571710}} || Orange
+|-
+| 14 || [[Arma 3 Tac-Ops Mission Pack]]
+| style="text-align: left" |
+* '''3 singleplayer operations for a total of 7 missions (some of which are replayable from another POV): Beyond Hope, Stepping Stone and Steel Pegasus'''
+* AAR reports - mission-specific insights video from a military consultant (Available on YouTube too: {{Link|https://www.youtube.com/watch?v{{=}}vQgkf3D3wJs|Beyond Hope}}, {{Link|https://www.youtube.com/watch?v{{=}}gvDMXS9auKM|Stepping Stone}} and {{Link|https://www.youtube.com/watch?v{{=}}FxDs8_klESI|Steel Pegasus}}, spoiler alert!)
+| {{GVI|arma3|1.78}} || 2017-11-30 || {{Link|https://store.steampowered.com/app/744950/|744950}} || Tacops
+|-
+| 15 || [[Arma 3 Tanks]]
+| style="text-align: left" |
+* '''(Re)introduced tank interiors'''
+* '''New vehicles: Rhino MGS (NATO), T-140 Angara (CSAT) and AWC Nyx (AAF)'''
+* New anti-tank weapons: 9M135 Vorona, MAAWS Mk4 (Mod 0 (AAF/FIA) and 1 (NATO))
+* '''"Altis Requiem" campaign, Tank Destroyers showcase and Time Trials'''
+| {{GVI|arma3|1.82}} || 2018-04-11 || {{Link|https://store.steampowered.com/app/798390/|798390}} || Tank
+|-
+| 16 || '''[[Arma 3 Contact]]'''
+| style="text-align: left" |
+* '''"First Contact" singleplayer campaign'''
+* '''New terrain: [[Livonia]]'''
+* 2 new factions, '''5 new weapons, 2 new vehicles (Eddie the probing robot and the significantly upgraded {{arma2}} tractor)'''
+| {{GVI|arma3|1.94}} || 2019-07-25 || '''{{Link|https://store.steampowered.com/app/1021790/|1021790}}''' || '''Enoch/Contact'''
+|-
+| 17 || [[Arma 3 Art of War]]
+| style="text-align: left" |
+* Art of War assets
+* [[Arma 3: Art of War Artwork Textures]]
+| {{GVI|arma3|2.02}} || 2021-02-23 || {{Link|https://store.steampowered.com/app/1325500/|1325500}} || AoW
+|-
+| 18 || {{arma3}} Pass
+| style="text-align: left" |
+* Subscription-based {{arma3}} access
+| {{n/a}} || 2026-04-30 || {{Link|https://store.steampowered.com/app/4198200/|4198200}} || {{n/a}}
+|-
+|}
+
+
+{{GameCategory|arma3}}

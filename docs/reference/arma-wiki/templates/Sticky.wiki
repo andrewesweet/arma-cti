@@ -1,0 +1,21 @@
+// source: https://community.bistudio.com/wiki/Template:Sticky
+// revision: 295910 (2021-11-16T09:33:36Z)
+// export sha1: t2rkujsui0j4tb0d0zadf36gq8gvxi9
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+| <div class="sticky-{{#ifeq:{{lc:{{{2|top}}}}}|bottom|bottom|top}}">{{{1}}}</div>
+| -no content provided-
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Creates a sticky note - an information that sticks to the page, even after scrolling.
+|param1= content
+|descr1= the sticky note content
+|param2= position
+|descr2= (Optional, default {{hl|top}}) can be {{hl|top}} or {{hl|bottom}}.
+|example1= <nowiki>{{Sticky}}</nowiki>
+|result1= {{Sticky}}
+|example2= <nowiki>{{Sticky|{{Feature|warning|Use '''on'''EventName in [[Config]]!}}}}</nowiki>
+|result2= style{{=}}"height: 40em; vertical-align: top" {{!}} {{Sticky|{{Feature|warning|Use '''on'''EventName in [[Config]]!}}}}
+|example3= <nowiki>{{Sticky|Jump to [[#top|the top]] of the page|bottom}}</nowiki>
+|result3= style{{=}}"height: 40em; vertical-align: bottom" {{!}} {{Sticky|Jump to [[#top|the top]] of the page|bottom}}
+}}</noinclude>

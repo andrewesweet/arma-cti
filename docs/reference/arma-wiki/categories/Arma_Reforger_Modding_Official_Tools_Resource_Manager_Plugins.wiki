@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Official_Tools/Resource_Manager_Plugins
+// revision: 352593 (2024-02-15T17:35:38Z)
+// export sha1: j0lawi1r5ercvc969te303jdf822sd1
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding|Official Tools}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_IDWMap
+// revision: 166385 (2020-10-10T16:55:07Z)
+// export sha1: 07q3qbg5hbr1ue404dtxzlznyyh70o6
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Function Group: Contact]]

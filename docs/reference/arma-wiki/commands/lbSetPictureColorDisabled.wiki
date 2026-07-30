@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/lbSetPictureColorDisabled
+// revision: 377804 (2026-01-03T04:08:02Z)
+// export sha1: 56b87t3s8bd4v99m0knfn42b5j4p74e
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Arma 3 version 1.20 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.20
+
+|gr1= GUI Control - ListBox
+
+|descr= Sets the disabled color of item's picture (left) with the given index of the listbox with id idc of the topmost user dialog to the given color. Color is in format [[Color|Color (RGBA)]]. Color which consists from only zeros means disable this override.
+
+|s1= [[lbSetPictureColorDisabled]] [idc, index, color]
+
+|p1= idc: [[Number]]
+
+|p2= index: [[Number]]
+
+|p3= color: [[Color|Color (RGBA)]]
+
+|r1= [[Nothing]]
+
+|s2= control [[lbSetPictureColorDisabled]] [index, color]
+
+|p21= control: [[Control]]
+
+|p22= index: [[Number]]
+
+|p23= color: [[Color|Color (RGBA)]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lbSetPictureColorDisabled [101, 0, [1, 1, 1, 0.25]];</sqf>
+
+|x2= <sqf>_ctrl lbSetPictureColorDisabled [0, [1, 1, 1, 0.25]];</sqf>
+
+|seealso= [[lbSetPictureColor]] [[lbSetPictureRightColor]] [[lbSetPictureRightColorDisabled]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140910163000
+|text= More information on the [[CT_LISTBOX]] command family can be found [[CT_LISTBOX#Scripting_Example|here]].
+}}

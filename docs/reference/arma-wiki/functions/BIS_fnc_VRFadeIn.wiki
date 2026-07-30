@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_VRFadeIn
+// revision: 340940 (2023-05-13T22:00:44Z)
+// export sha1: gvdz6cfadj532xb4qa8nf1xwwh7u7py
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: VR | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= VR
+
+|descr= Fade In effect for VR.
+
+|s1= call [[BIS_fnc_VRFadeIn]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_VRFadeIn;</sqf>
+
+|seealso= [[BIS_fnc_VRFadeOut]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2018-05-22 - 00:42 (UTC)</dd>
+<dt class="note">[[User:Kalthramis|Kalthramis]]</dt>
+<dd class="note">
+This is also used in Triggers. Under "Triggers: Effects -> UI Overlay," select "Video Glitch".
+</dd>
+
+</dl>

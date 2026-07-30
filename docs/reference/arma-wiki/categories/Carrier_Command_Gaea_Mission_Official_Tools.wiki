@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/Category:Carrier_Command:_Gaea_Mission:_Official_Tools
+// revision: 226967 (2021-01-31T18:30:58Z)
+// export sha1: g8slzalrrc7i1yg6dwikmehhnoonsdq
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category contains official tools created by Bohemia Interactive for Carrier Command: Gaea Mission. These tools are provided to the community under the terms that allows free use of the tools for any non commercial purposes. Any commercial use of the tools is strictly prohibited without permission from BI. You must agree to the terms of End User License Agreement for BI's Tools before using any of the tools.
+
+=== MODs ===
+====Making a MOD ====
+* Install released SDK and run unpack_ccgm.bat.<br>
+* Once the data are unpacked and textures uncompressed, you have access to all the data you need to start editing the game.
+* Create a folder with the name of your MOD in your game directory (the name can be changed
+afterwards).
+* Into this folder copy the files you want want to edit. Please make sure you observe the game's directory structure. }files maybe copied here after you have edited them, but this keeps things better organized)
+* 
+
+==== Editing MODs in Workbench====
+To open a mod in workbench for editing, you will need to have it unpacked in the game directory.<br>
+You also have to add the path for MOD into filesystem section of the ccsettings.xml in Your Documents/CarrierCommand/ folder.<br>
+  '''Example:<br>'''
+    <filesystem><br>
+     <path directory="MODName"/>   < ---- Added line with MOD data <br>
+     <path directory="./"/><br>
+     <path directory="data00.cc"/><br>
+     <path directory="data01.cc"/><br>
+     <path directory="data02.cc"/><br>
+    </filesystem><br>
+
+==== Packing MOD ====
+For MODs distribution is good to pack it and released it as one file.<br>
+To pack/unpack the MOD data use [[XPacker|Xpacker]] (original data is packed with this tool).<br>
+
+==== Play the MOD ====
+To play some MOD you have to have packed or unpacked MOD data in your game folder.<br>
+Just run the game with MOD Name parameter.
+* MOD Name = name of folder or name of file without extension.
+  carrier.exe -mod MODName
+
+By default the game will first try to load folder named "MODName". If there is none, the it will look for files called "MODName", regardless of the file extension. Note that this parameter is case sensitive so "modname" is not the same as "MODName".
+
+
+
+=== Tools ===
+
+[[Workbench|Workbench]] is the main editing tool for  Carrier Command: Gaea Mission.
+
+
+
+[[Category: Official Tools]]
+[[Category:Carrier Command: Gaea Mission]]

@@ -1,0 +1,126 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ambientAnim
+// revision: 329376 (2022-07-27T12:38:16Z)
+// export sha1: rvyllwh0s9crhob8227fbw8hoycymuq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Ambient | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Ambient
+
+|descr= Play set of ambient animations on given unit. If the unit should react to combat, use [[BIS_fnc_ambientAnimCombat]] instead.
+{{Feature|informative|Animations can be cancelled using <sqf inline>_unit call BIS_fnc_ambientAnim__terminate</sqf>.}}
+
+|s1= [unit, animationSet, equipmentLevel, snapTo, interpolate, attachToLogic] call [[BIS_fnc_ambientAnim]]
+
+|p1= unit: [[Object]] - unit that will play the animations
+
+|p2= animationSet: [[String]] - the animation set to play. Possible values:
+{{{!}}
+{{!}}+ style="caption-side: bottom" {{!}} ''some values are missing due to duplicate results, e.g "STAND" does the same as "STAND1"''
+{{!}}- style="vertical-align: top"
+{{!}}
+* STAND1
+* STAND2
+* STAND_U1
+* STAND_U2
+* STAND_U3
+* WATCH
+* WATCH2
+* GUARD
+* LISTEN_BRIEFING
+* LEAN_ON_TABLE
+* LEAN
+{{!}}
+* SIT_AT_TABLE
+* SIT1
+* SIT
+* SIT3
+* SIT_U1
+* SIT_U2
+* SIT_U3
+* SIT_HIGH1
+* SIT_HIGH
+* SIT_LOW
+* SIT_LOW_U
+* SIT_SAD1
+* SIT_SAD2
+{{!}}
+* KNEEL
+* REPAIR_VEH_PRONE
+* REPAIR_VEH_KNEEL
+* REPAIR_VEH_STAND
+* PRONE_INJURED_U1
+* PRONE_INJURED_U2
+* PRONE_INJURED
+* KNEEL_TREAT
+* KNEEL_TREAT2
+* BRIEFING
+* BRIEFING_POINT_LEFT
+* BRIEFING_POINT_RIGHT
+* BRIEFING_POINT_TABLE
+{{!}}}
+
+|p3= equipmentLevel: [[String]] - the equipment level of the unit. Possible values:
+* NONE
+* LIGHT
+* MEDIUM
+* FULL
+* ASIS
+* RANDOM
+
+|p4= snapTo: [[Object]] - (Optional, default [[objNull]]) the object where the unit will be snapped to
+
+|p5= interpolate: [[Boolean]] - (Optional, default [[false]]) should try to interpolate into the ambient animation. Works only for some default stances
+
+|p6= attachToLogic: [[Boolean]] - (Optional, default [[true]]) [[true]] to [[attachTo|attach]] the unit to the created logic object, forcing it in one position
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player, "STAND1", "ASIS"] call BIS_fnc_ambientAnim;</sqf>
+
+|x2= <sqf>
+// will search for a chair within 2 meters around the unit and will place the unit on it
+[_unit, "SIT", "NONE"] call BIS_fnc_ambientAnim;
+</sqf>
+
+|seealso= [[BIS_fnc_ambientAnimCombat]] [[BIS_fnc_ambientAnimGetParams]]
+}}
+
+{{Note
+|user= PierreMGI
+|timestamp= 20160219042400
+|text= In 3den editor, place a blufor unit (B_soldier_A_F) near a camping chair (land_campingChair_V2_F).<br>
+In init field of the unit:<br>
+<sqf>
+[this, "SIT2"] call BIS_fnc_ambientAnim;
+0 = this spawn {
+	waitUntil { behaviour _this == "combat"};
+	_this call BIS_fnc_ambientAnim__terminate;
+};
+</sqf>
+When this unit is aware of a threat, he will quit the "ambient animation" and will able to return fire.<br>
+Note: [[BIS_fnc_ambientAnimCombat]] doesn't need this script but the list of animations is limited.
+}}
+
+{{Note
+|user= PierreMGI
+|timestamp= 20160808013700
+|text= To make this command working in MP (hosted server tested)
+<sqf>
+[this, "SIT2"] call BIS_fnc_ambientAnim; // wrong! the first JIP will throw the unit to position [0,0,0]
+if (isServer) then { [this, "SIT2"] call BIS_fnc_ambientAnim; }; // wrong! only player located on server will see the animation
+if (local this) then { [this, "SIT2"] call BIS_fnc_ambientAnim; }; // OK, best way
+if (isServer) then { [this, "SIT2"] remoteExecCall ["BIS_fnc_ambientAnim"]; }; // OK
+</sqf>
+}}
+
+{{Note
+|user= Icaruk
+|timestamp= 20160811163300
+|text= Be careful using this function multiple times on MP, it creates a Logic using [[createUnit]] (which is global).<br>
+If you use it on 20 units, 20 additional logics will be created.
+}}

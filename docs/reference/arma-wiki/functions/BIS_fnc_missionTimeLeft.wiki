@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_missionTimeLeft
+// revision: 349227 (2023-11-08T14:50:52Z)
+// export sha1: 2h84s7bp36vfsytpr3c86lxed0ccnd7
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Missions
+
+|descr= Returns time in seconds until the mission end. Remaining time can be set using [[estimatedTimeLeft]] command or using [[BIS_fnc_countdown]].
+
+|s1= call [[BIS_fnc_missionTimeLeft]]
+
+|r1= [[Number]] - time left
+
+|x1= <sqf>call BIS_fnc_missionTimeLeft;</sqf>
+
+|seealso= [[estimatedTimeLeft]] [[BIS_fnc_countdown]]
+}}

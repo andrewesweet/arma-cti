@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Unusual_process_exit
+// revision: 337326 (2023-01-16T10:47:27Z)
+// export sha1: sycjzl1vx3k6d8qoxs08lv31ngsxesi
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disambig}}
+* {{arma3}}'s [[Arma 3: Unusual Process Exit|Unusual Process Exit]]
+* {{dayz}}'s [[DayZ:Unusual Process Exit|Unusual Process Exit]]

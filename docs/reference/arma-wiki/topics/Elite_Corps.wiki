@@ -1,0 +1,104 @@
+// source: https://community.bistudio.com/wiki/Elite_Corps
+// revision: 349932 (2023-11-20T22:11:15Z)
+// export sha1: hbt74rwbzsuqbktz0voqcjnrispgr6p
+// categories: Category:ArmA: Armed Assault: Multiplayer Squads | Category:Arma 2: Multiplayer Squads | Category:Arma 3: Multiplayer Squads | Category:Operation Flashpoint: Multiplayer Squads
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Infobox/Squad
+|title = [EC] Elite Corps
+|image = logoecred.png
+|tag = [EC]
+|members = {{Link|http://vwar.elitecorps.pl/member.php|LINK}}
+|former_members = {{Link|http://elitecorps.pl/articles.php?article_id=6|LINK}}
+|founded = 08.11.2004
+|successes = [[#Participated Leagues, Tournaments and Campaigns|LINK]]
+|link = {{Link|http://elitecorps.pl|elitecorps.pl}}
+}}
+[[File:pfl.gif|frame|2nd place - PFL 2 (2004/2005)]]
+[[File:wintercup_ec.jpg|frame|3rd place - ESL Winter Cup (2007/2008)]]
+[[File:29165683.png|frame|2nd place - ECL Season 1 (2010/2011)]]
+
+
+== [[File:logoecred.png|left|25px]]History ==
+[EC] Elite Corps, the oldest polish OFP/ARMA series clan, was founded on 8th of November, 2004. The clan's roots come from ''Edition Center (EC Team)'' and ''WOLF''.
+
+== [[File:logoecred.png|left|25px]]Participated Leagues, Tournaments and Campaigns ==
+*PFL (Polish Flashpoint League)
+*TNT (Troops, Nukes and Tactics)
+*OTFKB (Ogólnopolski Turniej Flashpointa - Kierunek Berlin)
+*[[ECL]] (European Combat League)
+*CCL (Classic Combat League)
+*{{Link|http://www.esl.eu|ESL}} (European Sports League)
+*[[IC:ArmA_-_International_Conflict:_Armed_Assault|IC-ARMA]] (International Conflict: Armed Assault)
+*{{Link|http://www.arma-tactical-combat.com|ATC}} (ArmA Tactical Combat)
+*VB (Virtual Battle)
+
+
+
+
+=== [[File:OFP_CWC_Fcover.jpg|middle|25px]] [[:Category:Operation Flashpoint|Operation Flashpoint]] ===
+* PFL 2 (2004/2005)
+** [http://elitecorps.pl/articles.php?article_id{{=}}28#osiagniecia_ofp 2nd place]
+* TNT (2005)
+* OTFKB (2005/2006)
+** [http://elitecorps.pl/articles.php?article_id{{=}}28#osiagniecia_ofp 4th place]
+* CCL 4 (2006)
+** [http://elitecorps.pl/articles.php?article_id{{=}}28#osiagniecia_ofp 2nd place in Alpha Division]
+
+
+=== [[File:Arma.jpg|middle|25px]] [[:Category:ArmA: Armed Assault|ARMA]] ===
+* ECL War Ladder (2007/2008)
+** [http://elitecorps.pl/articles.php?article_id{{=}}28#osiagniecia_arma 2nd place in Division 2]
+* ESL Winter Cup (2007/2008)
+** [http://elitecorps.pl/articles.php?article_id{{=}}28#osiagniecia_arma 3rd place]
+* IC-ARMA 3 (2008)
+* IC-ARMA 4 (2008)
+* IC-ARMA 5 (2008)
+* IC-ARMA 6 (2009)
+
+
+=== [[File:arma_2_box_art.jpg|middle|25px]] [[{{arma2}}|ARMA 2]] ===
+* ATC 2 (2010)
+* VB 1 (2010)
+* ECL Season 1 (2010/2011)
+** [http://elitecorps.pl/articles.php?article_id{{=}}28#osiagniecia_arma2 2nd place]
+* ATC 3 (2010/2011)
+* VB - PHWAR (2011)
+* ATC 4 (2011/2012)
+* ATC 5 (2012/2013)
+
+
+=== [[File:ARMA_3_box_art.jpg|middle|25px]] [[{{arma3}}|ARMA 3]] ===
+* ATC 6 (2015)
+
+
+
+{| class="wikitable" align="center" style="text-align:center"
+|+ ATC MEDALS
+|[[File:medagliavittoriafondisc.png|50px]]
+|[[File:medagliaatcridotta3.png|42px]]
+|[[File:atcmedal2012fondiscuri.png|45px]]
+|[[File:file2_zps9a37dd2b.png|33px]]
+|[[File:ATC_medal_2015.png|49px]]
+|-
+| ATC 2 (2010)
+| ATC 3 (2010/2011)
+| ATC 4 (2011/2012)
+| ATC 5 (2012/2013)
+| ATC 6 (2015)
+|}
+
+== Links ==
+*{{Link|http://elitecorps.pl|Website}}
+*{{Link|http://www.facebook.com/RozekPoland0|Facebook fanpage}}
+*{{Link|http://twitter.com/RozekPoland|Twitter profile}}
+*{{Link|http://www.youtube.com/RozekPoland1|YouTube channel}}
+*{{Link|http://vwar.elitecorps.pl|vWAR}} - the database of results of leagues, tournaments and campaigns
+*{{Link|link= http://units.arma3.com/unit/elitecorps|text= units.arma3.com}} - an entry in the official ARMA3 clan/group base
+
+
+
+{{GameCategory|arma3|Multiplayer_Squads}}
+{{GameCategory|arma2|Multiplayer Squads}}
+{{GameCategory|arma1|Multiplayer Squads}}
+{{GameCategory|ofp|Multiplayer Squads}}

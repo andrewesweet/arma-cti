@@ -1,0 +1,377 @@
+// source: https://community.bistudio.com/wiki/knowsAbout
+// revision: 347557 (2023-09-28T09:45:05Z)
+// export sha1: 32kal2p2e9hm9rsrowitwx0o3iodivs
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Sides | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|gr1= Object Manipulation
+
+|gr2= Sides
+
+|descr= Checks if a group or a side knows about target.
+* Enemy knowledge is instantly shared among the group units
+* Units in the same group always perfectly know about each others
+* AI knowledge cannot check beyond current [[viewDistance]] and it resets to zero as soon as the target's distance is over it<br>Note: neither fog nor daylight affect this behaviour
+* Losing sight of a target for more than 120 seconds resets its [[knowsAbout]] to zero as well
+* '''Magic number''' is the value that must be reached for a unit to shoot at an enemy (used by "Detected by" triggers as well):
+:{{{!}}class="wikitable align-center"
+! Game
+{{!}} {{GVI|ofp|1.46}}
+{{!}} {{GVI|ofpr|1.96}}
+{{!}} {{GVI|arma1|1.18}}
+{{!}} {{GVI|arma2|1.11}}
+{{!}} {{GVI|arma2oa|1.62}}
+{{!}} {{GVI|arma3|1.82}}
+{{!}}-
+! Magic value
+{{!}} 0.7
+{{!}} 0.105
+{{!}} ?
+{{!}} ?
+{{!}} ?
+{{!}} ?
+{{!}}}
+
+|s1= who [[knowsAbout]] target
+
+|p1= who: [[Object]], [[Group]] or [[Side]] - if a unit, unit's [[group]] is considered; if a vehicle, vehicle commander's [[group]] is used.
+
+|p2= target: [[Object]]
+
+|r1= [[Number]] - in range of 0..4, where 4 is maximum knowledge.
+
+|mp= ''who'' '''must''' be local, while ''target'' can be remote.
+
+|x1= <sqf>_knowledge = player knowsAbout _target;</sqf>
+
+|x2= <sqf>_knowledge = (group player) knowsAbout _target;</sqf>
+
+|x3= <sqf>_knowledge = (side player) knowsAbout _target;</sqf>
+
+|seealso= [[nearTargets]] [[reveal]] [[getHideFrom]] [[targetKnowledge]] [[targetsAggregate]] [[targetsQuery]] [[forgetTarget]]
+}}
+
+{{Note
+|user= Hardrock
+|timestamp= 20060804105500
+|text= {{GVI|ofpr|1.91}}
+* As soon as An AI unit gets hit with a bullet his [[knowsAbout]] level for the unit that shot him will instantly jump to 1.5, even if the shooter is 1000m away.<br>Vice versa is also true. If An AI soldier's [[knowsAbout]] level for an enemy is 0.7 and the soldier fires and hits the enemy, his [[knowsAbout]] level about the enemy will instantly jump to 1.5.
+* Some editors have found, whilst using this command over the years, that the following characteristics have cropped up:
+** AI enemies have a very limited amount of peripheral vision, it is not nearly as good as a human player's. A target must be in front of the unit for him to be noticed, so if you sprint right behind an enemy, this value doesn't increase.
+** Depending on the unit's skill level, it can take a little time for the unit to notice a target. So if you run right past a unit, this value might not increase.
+** Bushes between the unit and the target seem to have little effect on this value, and trees definitely have no effect. You may be in a forest and can't see the unit, but he can see you.
+}}
+
+{{Note
+|user= Bdfy
+|timestamp= 20070116162500
+|text= {{hl|the magic [[knowsAbout]] number is 0.105}} It's not that simple. Maybe true for infantry but not all vehicles:<br>
+[[reveal|Reveal]] command sets [[knowsAbout]] to 1, but planes still won't fire at soldiers on the ground.
+There's only one known way to pass through this - designate target with another fake infantry unit near the target.
+As soon as this fake unit see the target [[knowsAbout]] lifts up to 2.5-4 and even single enemy soldiers are attacked from the air (of course if plane has suitable munition :))
+}}
+
+{{Note
+|user= Kju
+|timestamp= 20120614100100
+|text= According to '''[[User:Suma|Suma]]''':<br>
+All friendly units within a view distance to each unit [are revealed (to the player? or each friendly?)] on the mission start.
+The code is half broken, as it does not make the units known, it only sets the "accuracy" value for them.<br>
+Note: This is not affecting enemy units at all.
+}}
+
+{{Note
+|user= Helling3r
+|timestamp= 20130327232500
+|text= {{GVI|arma2oa|1.62}} infantry tests:
+It is still true that the command returns values between 0 (lowest) and 4 (most). Freshly Spotted units will have at least 1.5, slowly decreasing when the target disappeared.
+The following table shows my test results on a clear day in Takistan using the Vector. Please note that the returned values vary considerably depending on weather and time. Moonlight however seems to not have any considerable effect.
+{{{!}}
+{{!}}- style="vertical-align: top"
+{{!}}
+{{{!}} class="wikitable"
+{{!}}+ style="white-space: nowrap" {{!}} 12:00, sunlight, clear sky
+! Distance
+! knowsAbout
+{{!}}-
+{{!}} 1530 {{!}}{{!}} 1.5
+{{!}}-
+{{!}} 1370 {{!}}{{!}} 1.5
+{{!}}-
+{{!}} 1250 {{!}}{{!}} 1.5
+{{!}}-
+{{!}} 1135 {{!}}{{!}} 1.5
+{{!}}-
+{{!}} 1055 {{!}}{{!}} 1.52
+{{!}}-
+{{!}} 1022 {{!}}{{!}} 1.64
+{{!}}-
+{{!}} 990 {{!}}{{!}} 1.74
+{{!}}-
+{{!}} 833 {{!}}{{!}} 2.5
+{{!}}-
+{{!}} 720 {{!}}{{!}} 3.37
+{{!}}-
+{{!}} 600 {{!}}{{!}} 3.81
+{{!}}-
+{{!}} 505 {{!}}{{!}} 3.86
+{{!}}-
+{{!}} 400 {{!}}{{!}} 3.92
+{{!}}-
+{{!}} 380 {{!}}{{!}} 4
+{{!}}-
+{{!}} 365 {{!}}{{!}} 4
+{{!}}}
+{{!}}
+{{{!}} class="wikitable"
+{{!}}+ style="white-space: nowrap" {{!}} 21:00, bright half moon, clear sky
+! Distance
+! knowsAbout
+{{!}}-
+{{!}} 285 {{!}}{{!}} 1.5
+{{!}}-
+{{!}} 120 {{!}}{{!}} 1.5
+{{!}}-
+{{!}} 88 {{!}}{{!}} 1.89
+{{!}}-
+{{!}} 75 {{!}}{{!}} 2.3
+{{!}}-
+{{!}} 61 {{!}}{{!}} 3.9
+{{!}}}
+{{!}}
+{{{!}} class="wikitable"
+{{!}}+ style="white-space: nowrap" {{!}} 23:00, pitch black, clear sky, NVG on
+! Distance
+! knowsAbout
+{{!}}-
+{{!}} 600 {{!}}{{!}} 1.5
+{{!}}-
+{{!}} 487 {{!}}{{!}} 1.5
+{{!}}-
+{{!}} 390 {{!}}{{!}} 1.5
+{{!}}-
+{{!}} 289 {{!}}{{!}} 2.22
+{{!}}-
+{{!}} 278 {{!}}{{!}} 2.4
+{{!}}}
+{{!}}}
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20180603104600
+|text= {{GVI|arma3|1.82}} [[knowsAbout]] tests, player moving towards enemy AI, facing each other:
+{{{!}} class="wikitable" style="font-size: 0.85em"
+{{!}}+ Tests executed in VR, default date (2035-05-28), with AI [[behaviour]] "AWARE"
+! Daytime
+! AI equipment
+! AI skill and rank
+! player stance and speed
+! player outfit
+! first detection distance
+! first detection value
+! max detection (4)
+{{!}}-
+{{!}} 13:37
+{{!}} Katiba + ACO (Green)
+{{!}} 0.5 - private
+{{!}} Standing, running
+{{!}} B_Soldier_F
+{{!}} 245.663
+{{!}} 0.148076
+{{!}} 132.863
+{{!}}-
+{{!}} 13:37
+{{!}} Katiba + ACO (Green)
+{{!}} 0.5 - private
+{{!}} Standing, running
+{{!}} '''underwear only''', rifle
+{{!}} 246.815
+{{!}} 1.19377
+{{!}} 132.9
+{{!}}-
+{{!}} 13:37
+{{!}} Katiba + ACO (Green)
+{{!}} 0.5 - private
+{{!}} Standing, running
+{{!}} B_Soldier_F, '''no uniform'''
+{{!}} 241.885
+{{!}} 1.24
+{{!}} 132.56
+{{!}}-
+{{!}} 13:37
+{{!}} Katiba + ACO (Green)
+{{!}} 0.5 - private
+{{!}} Standing, running
+{{!}} '''B_Sniper_F'''
+{{!}} 156.715
+{{!}} 2.95534
+{{!}} 133.019
+{{!}}-
+{{!}} 13:37
+{{!}} Katiba + ACO (Green)
+{{!}} 0.5 - private
+{{!}} '''Lying down, running'''
+{{!}} B_Soldier_F
+{{!}} 105.401
+{{!}} 4
+{{!}} 105.401
+{{!}}-
+{{!}} 13:37
+{{!}} Katiba + ACO (Green)
+{{!}} 0.5 - private
+{{!}} '''Crouching, running'''
+{{!}} B_Soldier_F
+{{!}} 193.232
+{{!}} 1.94615
+{{!}} 134.556
+{{!}}-
+{{!}} 13:37
+{{!}} Katiba + ACO (Green)
+{{!}} 0.5 - private
+{{!}} '''Standing, sprinting'''
+{{!}} B_Soldier_F
+{{!}} 235.001
+{{!}} 1.3146
+{{!}} 134.445
+{{!}}-
+{{!}} 13:37
+{{!}} Katiba + ACO (Green)
+{{!}} '''0.2 - private'''
+{{!}} Standing, running
+{{!}} B_Soldier_F
+{{!}} 214
+{{!}} 0.166763
+{{!}} 124.553
+{{!}}-
+{{!}} 13:37
+{{!}} Katiba + ACO (Green)
+{{!}} '''1.0 - private'''
+{{!}} Standing, running
+{{!}} B_Soldier_F
+{{!}} 293.065
+{{!}} 1.11004
+{{!}} ''140.088''
+{{!}}-
+{{!}} 13:37
+{{!}} Katiba + ACO (Green)
+{{!}} '''0.5 - colonel'''
+{{!}} Standing, running
+{{!}} B_Soldier_F
+{{!}} 245.641
+{{!}} 1.20426
+{{!}} 132.113
+{{!}}-
+{{!}} 13:37
+{{!}} '''no weapon'''
+{{!}} 0.5 - private
+{{!}} Standing, running
+{{!}} B_Soldier_F
+{{!}} 421.959
+{{!}} 0.283476
+{{!}} 109.274
+{{!}}-
+{{!}} 13:37
+{{!}} '''Katiba + LRPS'''
+{{!}} 0.5 - private
+{{!}} Standing, running
+{{!}} B_Soldier_F
+{{!}} 244.962
+{{!}} 4
+{{!}} 244.962
+{{!}}-
+{{!}} '''20:00'''
+{{!}} Katiba + ACO (Green)
+{{!}} 0.5 - private
+{{!}} Standing, running
+{{!}} B_Soldier_F
+{{!}} 132.089
+{{!}} 0.62443
+{{!}} 49.4895
+{{!}}-
+{{!}} '''20:00'''
+{{!}} '''Katiba + ACO (Green), no NVG'''
+{{!}} 0.5 - private
+{{!}} Standing, running
+{{!}} B_Soldier_F
+{{!}} 10.6837
+{{!}} 4
+{{!}} 10.6837
+{{!}}}
+
+Code used (click on "Expand" to the right):
+<div class="mw-collapsible mw-collapsed">
+<sqf>
+player allowDamage false;
+player enableFatigue false;
+
+player setPosATL [0,0,0];
+player setDir 0;
+unit setPosATL [0,500,0];
+unit setDir 180;
+
+waitUntil { speed player > 0 };
+
+[unit, player] spawn {
+	params ["_unit1", "_unit2"];
+	private _time = time;
+	private _knowsAboutData = [
+		format ["world = %1\ndate = %2\nanim = %3\nweapon/scope = %4/%5\nskill/rank = %6/%7\nplayerType = %8",
+			worldName,
+			date,
+			animationState player,
+			primaryWeapon _unit1,
+			(_unit1 weaponAccessories primaryWeapon _unit1) select 2,
+			skill _unit1,
+			rank _unit1,
+			typeOf _unit2
+		]
+	];
+	private "_knowsAbout";
+	private "_entry";
+	while { alive _unit1 && alive _unit2 } do
+	{
+		_knowsAbout = _unit1 knowsAbout _unit2;
+		_entry = [_unit1 distance _unit2, _knowsAbout];
+		_knowsAboutData pushBack _entry;
+		systemChat format ["time: %1 - %2", round (time - _time), _entry];
+		copyToClipboard str _knowsAboutData;
+		sleep 1;
+	};
+};
+</sqf>
+</div>
+}}
+
+{{Note
+|user= ComradeCheekiBreeki
+|timestamp= 20210901041629
+|text= As of at least {{GVI|arma3|2.04}}, all sides appear to always perfectly know about props ({{hl|knowsAbout}} of 4) unless they are beyond max view distance. Direction of the observer, distance between observer and object (excluding those which are beyond the max view distance) and amount of obstructions between them do not seem to affect it. However, there is a short ~0.5 second delay after mission start before units perfectly know about props.<br><br>
+
+In addition, props appear to always have a {{hl|knowsAbout}} value of 0 regardless of side or other object checked, including other props.
+}}

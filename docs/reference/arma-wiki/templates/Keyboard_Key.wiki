@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/Template:Keyboard/Key
+// revision: 346923 (2023-08-10T10:00:18Z)
+// export sha1: 1uvmxxfoqrqvm1ueeraccqu9j1np5vo
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>| colspan="{{{4|2}}}" rowspan="{{{5|1}}}" style="background-color: {{#if:{{{3|}}}|<nowiki/>{{{3}}}|<nowiki/>#FFF}}; border: {{{6|1}}}px solid #CCC; border-right-color:#888; border-bottom-color:#333; border-radius: 0.5em; height: 3.5em; margin: 0.5em; text-align: left; vertical-align: top" | <small style="padding-left:5px; color:#666; font-size:0.7em;">{{{1|N/A}}}</small><br /><div style="text-align:center; margin-top:-5px;">{{#if:{{{2|}}}|<strong style="font-size:0.9em;">{{{2}}}</strong>}}</div></includeonly><noinclude>
+Draws a keyboard key - has to be used in a table, without the pipe symbol {{hl|{{!}}}} preceding it. See {{Template|Keyboard}}.
+
+== Usage ==
+{{<nowiki/>Keyboard/Key|'''''key'''''|'''''description'''''|'''''color'''''|'''''colSpan'''''|'''''rowSpan'''''|'''''borderSize'''''}}</pre>
+* key: key name (S, Esc, Space etc)
+* description: (Optional, default empty) key description
+* color: (Optional, default {{hl|#FFF}}) CSS background color
+* colSpan: (Optional, default 2)
+* rowSpan: (Optional, default 1)
+* borderSize: (Optional, default 1) border size in px
+
+{|
+|+ Examples
+|- style="background-color: #EEE"
+! Code
+! Result
+|-
+| <nowiki>{{Keyboard/Key}}</nowiki>
+ {{Keyboard/Key}}
+|-
+| <nowiki>{{Keyboard/Key|K}}</nowiki>
+ {{Keyboard/Key|K}}
+|-
+| <nowiki>{{Keyboard/Key|K|key}}</nowiki>
+ {{Keyboard/Key|K|key}}
+|-
+| <nowiki>{{Keyboard/Key|K|key|#CDF}}</nowiki>
+ {{Keyboard/Key|K|key|#CDF}}
+|-
+| <nowiki>{{Keyboard/Key|K|key|#CDF|||5}}</nowiki>
+ {{Keyboard/Key|K|key|#CDF|||5}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

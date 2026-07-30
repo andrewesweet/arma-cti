@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_singleMissionName
+// revision: 327143 (2022-07-12T21:45:23Z)
+// export sha1: 8q0vr9sdn86r8larbkwofwuu668rsy2
+// categories: Category:Arma 3: Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Missions
+
+|descr= Returns name of currently selected single mission.
+
+|s1= call [[BIS_fnc_singleMissionName]]
+
+|r1= [[String]] - the mission name
+
+|x1= <sqf>private _missionName = call BIS_fnc_singleMissionName;</sqf>
+
+|seealso= [[missionName]] [[briefingName]]
+}}

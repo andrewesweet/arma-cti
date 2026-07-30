@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/menuURL
+// revision: 378348 (2026-04-02T16:31:36Z)
+// export sha1: man8nrvkl22wwld6bfewqsfbohi5oxw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= GUI Control - Menu
+
+|descr= Returns current URL set in entry on given path.
+
+|s1= [[menuURL]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|r1= [[String]]
+
+|s2= control [[menuURL]] path
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|r2= [[String]]
+
+|x1= <sqf>findDisplay 313 displayCtrl 120 menuURL [7, 0]; // returns "https://community.bistudio.com/wiki/Eden_Editor"</sqf>
+
+|seealso= [[menuSetURL]]
+}}

@@ -1,0 +1,107 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Zeus_Hints_&_Tips
+// revision: 339347 (2023-04-28T14:08:29Z)
+// export sha1: b8mtzz2a6g0nj862ohxi1v3hmj0j6xj
+// categories: Category:Hints & Tips
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Guide for [[Arma 3 Zeus]], courtesy of '''Lankercool''' from the {{Link|https://www.discord.gg/arma|Arma 3 Discord}}.
+
+=== Adapting ===
+
+The core of zeusing is knowing to be flexible, as players are unpredictable and you don't know for sure how they will react unless you have spent a long amount of time with your audience.
+Even then you will have situations you would not expect so make sure to adjust accordingly all over the board. This will be the principle for the majority of these tips.
+
+=== Vision ===
+
+Always take into consideration what your players can and cannot see, this includes through thermals, night vision, UAVs, aircraft, etc., you should always prefer to deploy things out of player sight otherwise the general atmosphere can be ruined and become unprofessional in most cases, and in extreme cases can be considered unfair by the players.
+This also includes positions players have already been at, if they have already cleared a base there should not be any danger from enemies showing up in that area if it has already been gone through.
+
+{{Feature | informative | You can select a player/unit and press on your third person/first person camera key to see what they are seeing in their own vision.}}
+
+=== Equipment ===
+
+Depending on how you zeus and how the players operate, your mission will either contain limited or unlimited equipment.
+Take into account what this equipment is and adjust your ways around it, either by looking at players and seeing their gear if you don't know it or if you do know it make sure the equipment is fit for the mission they are heading into.
+e.g: if the players do not have any way to counter armored targets, do not send armored enemies towards them. there are exceptions to this like if they have a vehicle capable of doing so.
+
+=== Atmosphere ===
+
+Majority of cases will have your players operating within some sort of narrative or context, even the most minimal of which.
+You can help immerse players by providing relevant scenarios happening around them.
+A civilian driving around in a car, ambient helicopters going to their own missions, soldiers standing and talking, and so on.
+
+=== Vehicles ===
+
+Vehicles have a large impact on the mission depending on their roles, ranging from light wheeled(MRAPs and Quadbikes) to heavy combat aircraft(Blackfish Armed, AC-130s), make sure you are capable of dishing out the appropriate enemy count depending on the type of assets/vehicles you give to the players, and ensure your main role of the players, the infantry, are '''not''' overshadowed by these support assets.
+At the end of it, CAS and tanks are only there to assist, not do the mission themselves, unless they consist of the entire force, like in the case of a tank battalion of players.
+
+=== Narrative ===
+
+Ensure you have a rough idea of what the mission will consist of, or be about. Even the most basic of "I want the players to ambush a convoy" is good, and make sure to develop it further, with asking why would they do it, who would be doing it, who the players are facing to do it, etc.
+For example: I want the players to ambush a convoy, so I will have the convoy hold some important object, like a WMD or some HVT(officer/informant), the players will be Spec-Ops/Guerilla forces and the enemy is the national force of the terrain.
+They will have to extract this important object in order to complete the mission, so they will not be allowed to damage it.
+This requires the players to avoid doing a very easy method of just blowing up the entire convoy with mass firepower and requiring them to execute precise firepower, which will be a much challenging and enjoyable experience, as well as a significantly longer one.
+
+=== Players ===
+
+Half of a good Zeus mission lies in the hands of the players, as they decide the mood for the operation and how well along it goes.
+Troublemakers, attitude changers and the likes can make the reception towards your mission and how it runs wildly different, so keep in mind the satisfactions of the players at the current time, and whether or not they would enjoy a mission idea you want to execute then.
+
+=== Feedback ===
+
+Ensure your players are enjoying your mission, as you are not only making the mission for yourself but also for those who play it.
+Be honest, take any feedback whether positive or not to heart and respect it regardless of your disagreements with it.
+Both sides are spending a considerable amount of time on the mission, so make sure you are not wasting it for them or for yourself.
+
+=== Creativity and Setting ===
+
+While creativity flourishes in limitations, some people like to have more options or situations to use in their mission making/in their mission playing.
+Make sure to do a bit of research if needed and respect the setting or scenario you are imitating or basing your mission off of.
+If you are having your players in a WW2 type op, make sure to know what their equipment should be and vehicles and to not use any non-WW2 assets.
+
+=== Detail ===
+
+Don't be afraid to put little bits and pieces around the objective to make it truly yours.
+Whether or not the players notice is not the point; the point is to ensure that if they do notice it, they will appreciate it.
+Patrols, vehicles at gas stations with people next to them, combat happening around the players but not at their location, civilians terrified or passing by; be sensible in detail, but implement it carefully and it will help plenty.
+
+=== Punishment and Rewards ===
+
+Depending on the players skill level, you will have mistakes inevitably happen or exceptional performances be done by the players.
+Commend them for their performance, or punish them accordingly for being complacent. This will vary depending on how good the players generally are, but shooting civilians, exposing their positions, pushing aggressively or not coordinating can be appropriately punished, preferrably through in-mission means, like Mortars(be very gentle with these), QRF (not ontop of the players but a fair distance away), harder objectives, less assets, etc.
+
+=== Preparation ===
+
+Depending on whether or not you have prepared the scenario beforehand, you will have less or more things to set up before the players can jump at your mission.
+If you have got things to set up, be quick and don't waste too much time on it, but do not do it thoughtlessly.
+Place enemies in buildings or cover, do not finetune things until the players are on the way towards the obj and do not make players wait more time than they are doing the mission for.
+
+=== AI Management ===
+
+The AI, depending on who they are, can and should behave differently. if they are a guerilla force, they should ambush or poke at the players and use unconventional advantages against them.
+If they are special forces or QRF, have them flank the players or sneak up to them to surprise and overwhelm.
+Any basic infantry force should roughly support each other within squads, flank and assist, or suppress their opponents.
+
+It is fine to go easy on the players if they are struggling, having the AI go slower or in smaller numbers can assist the players, and deleting/killing AI units that are either irrelevant (players are already mostly clear in the obj zone) or too powerful (killing off a viper operative as part of a larger squad that is immensely overpowering the players) is perfectly fine, but do not babysit.
+
+=== Difficulty ===
+
+The general difficulty and challenge of the mission should always be slightly higher than your general expectations for your players, no matter the skill level.
+
+Your goal, as is of a game designer, is to make sure the players learn and adapt to the mission and feel accomplished when they complete it.
+An unfair or too easy of a mission is not preferable, but similar to players you will have to learn and adapt too to how the players handle the various difficulties and find a good sweetspot.
+
+=== Optimisation ===
+
+Keep your missions optimized and ensure a smooth experience for the players without sacrificing much of the mission; delete bodies and wrecks in areas no longer important or already passed through by players and do not put AI more than the server can handle.
+If creating missions partially in eden, set props and objects as "[[Arma 3: Simple Objects|Simple Objects]]" to massively reduce FPS issues; if purely in Zeus, do not try to put too many props down and simply use the terrain's already present objects to your advantage.
+
+=== Fun ===
+
+Don't stress yourself or force yourself to make a mission when you don't want to, even if no one else is available to do so.
+Part of zeusing is enjoyment from both sides, and if you have no passion in it then the mission won't come out proper either, so don't overburn it.
+Taking a break from zeusing or simply holding onto a moderator slot when available is perfectly fine if you don't want to Zeus.
+
+
+[[Category:Hints & Tips]]

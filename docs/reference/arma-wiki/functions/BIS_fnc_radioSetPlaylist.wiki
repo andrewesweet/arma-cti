@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_radioSetPlaylist
+// revision: 327542 (2022-07-12T22:38:04Z)
+// export sha1: 6e1uh7476hjl8wqa7ej0u161hba5ccx
+// categories: Category:Arma 3: Functions | Category:Function Group: Radio | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Radio
+
+|descr= Set a random music playlist for the current set channel (default "Rock"). Musics with "genre" set in [[Description.ext#CfgMusic|CfgMusic]] are selected and shuffled.
+
+|s1= call [[BIS_fnc_radioSetPlaylist]]
+
+|r1= [[Array]] of [[String]]s - created music playlist
+
+|x1= <sqf>call BIS_fnc_radioSetPlaylist;</sqf>
+
+|seealso= [[BIS_fnc_radioSetChannel]] [[BIS_fnc_radioSetTrack]]
+}}

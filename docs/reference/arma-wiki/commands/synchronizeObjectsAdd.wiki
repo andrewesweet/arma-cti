@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/synchronizeObjectsAdd
+// revision: 377071 (2026-01-01T09:31:05Z)
+// export sha1: nq210tbdcaud2gnndkeerfbg0nnmdx9
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|eff= global
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Add given objects to the unit's list of synchronized objects.
+
+|s1= unit [[synchronizeObjectsAdd]] objects
+
+|p1= unit: [[Object]]
+
+|p2= objects: [[Array]] of [[Object]]s
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_acm = _groupLogic createUnit ["AmbientCombatManager", position player, [], 0, "NONE"];
+_acm synchronizeObjectsAdd [player];
+</sqf>
+
+|seealso= [[synchronizeObjectsRemove]]
+}}

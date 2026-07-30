@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_GUI_Control_-_Positioning
+// revision: 250587 (2021-03-05T00:34:20Z)
+// export sha1: pk8trgb6mylanl9hbkiore6bhjbjywf
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to adjust x, y, z, w, h as well as rotation of GUI controls.
+
+[[Category:Command Group: GUI Control]]

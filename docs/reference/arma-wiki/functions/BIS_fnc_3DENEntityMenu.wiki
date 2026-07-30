@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENEntityMenu
+// revision: 342170 (2023-07-09T12:26:57Z)
+// export sha1: cr3duwcq29doyat7whl26c5ssl2m03v
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Eden Editor
+
+|descr= Excutes actions available in the entity menu (context menu).
+
+|s1= [mode] call [[BIS_fnc_3DENEntityMenu]]
+
+|p1= mode: [[String]] - case insensitive. Can be:
+{{Columns|3|
+* "onEntityMenu"
+* "reset"
+* "moveCamera"
+* "playFromHere"
+* "playAsEntity"
+* "grid"
+* "arsenal"
+* "arsenalReset"
+* "garage"
+* "garageReset"
+* "findCreate"
+* "findConfig"
+* "logClasses"
+* "logPosition"
+}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["reset"] call BIS_fnc_3DENEntityMenu;</sqf>
+
+|seealso= [[:Category:Eden Editor|Eden Editor]] [[BIS_fnc_3DENCamera]] [[BIS_fnc_3DENControlsHint]] [[BIS_fnc_3DENDiagCreateList]] [[BIS_fnc_3DENDiagFonts]] [[BIS_fnc_3DENDiagMouseControl]] [[BIS_fnc_3DENDrawLocations]] [[BIS_fnc_3DENExportAttributes]] [[BIS_fnc_3DENExportOldSQM]] [[BIS_fnc_3DENExportTerrainBuilder]] [[BIS_fnc_3DENFlashlight]] [[BIS_fnc_3DENGrid]] [[BIS_fnc_3DENIntel]] [[BIS_fnc_3DENInterface]] [[BIS_fnc_3DENListLocations]] [[BIS_fnc_3DENMissionPreview]] [[BIS_fnc_3DENModuleDescription]] [[BIS_fnc_3DENShowMessage]] [[BIS_fnc_3DENStatusBar]] [[BIS_fnc_3DENToolbar]] [[BIS_fnc_3DENTutorial]] [[BIS_fnc_3DENVisionMode]] 
+}}

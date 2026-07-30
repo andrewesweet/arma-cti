@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/setPlayerVoNVolume
+// revision: 309265 (2022-05-04T11:09:04Z)
+// export sha1: 15mqrzrbqxh6at6puy75rwm268955vl
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|arg= global
+
+|eff= local
+
+|gr1= Radio and Chat
+
+|descr= Sets provided player's Voice over Network (VoN) volume.
+
+|s1= unit [[setPlayerVoNVolume]] volume
+
+|p1= unit: [[Object]] - the other player's unit
+
+|p2= volume: [[Number]] - the wanted volume
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_loudPlayer setPlayerVoNVolume 0.5;</sqf>
+
+|seealso= [[getPlayerVoNVolume]] [[fadeSound]] [[fadeRadio]] [[fadeMusic]]
+}}

@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/weaponAccessoriesCargo
+// revision: 352198 (2024-02-01T23:26:01Z)
+// export sha1: 3n4dxrffk02yptsvn60unrc4a3pp0lg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Command Group: Unit Inventory | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr1= Vehicle Inventory
+
+|gr2= Containers
+
+|gr3= Unit Inventory
+
+|descr= Returns array with all items assigned to the given weapon in given cargo container.
+{{Feature|warning|This is unofficial documentation. All Information here is as it exists in the Engine. It might not reflect the reality.}}
+
+|s1= container [[weaponAccessoriesCargo]] [weaponId, creatorId]
+
+|p1= container: [[Object]] - cargo container
+
+|p2= weaponId: [[Number]]
+
+|p3= creatorId: [[Number]]
+
+|r1= [[Array]] - [silencer, laserpointer/flashlight, optics, bipod]
+
+|x1= -
+
+|seealso= [[weaponAccessories]] [[primaryWeaponItems]] [[handgunItems]] [[secondaryWeaponItems]] [[weaponsItems]] [[weaponsItemsCargo]] [[removeWeaponAttachmentCargo]] [[removeWeaponCargo]]
+}}

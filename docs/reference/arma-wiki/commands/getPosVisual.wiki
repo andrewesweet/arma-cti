@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/getPosVisual
+// revision: 377526 (2026-01-02T06:52:47Z)
+// export sha1: 48wtuwjutovqu21b4zg0m26j9g06bj8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Render Time Scope | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|arg= global
+
+|gr1= Object Manipulation
+|gr2= Render Time Scope
+
+|descr= Returns an object's [[Position#PositionAGLS|AGLS position]] in render time scope. Alias of [[visiblePosition]].
+{{Feature|important|This command must '''not''' be used for actual 3D calculations. See [[getPos]] for more details.}}
+
+|s1= [[getPosVisual]] object
+
+|p1= object: [[Object]] - name of the object
+
+|r1= [[Position#PositionAGLS|PositionAGLS]]
+
+|x1= <sqf>_playerRenderedPos = getPosVisual player;</sqf>
+
+|seealso= [[getPosASLVisual]] [[getPosATLVisual]] [[visiblePositionASL]] [[visiblePosition]] [[position]] [[getPos]] [[getPosATL]] [[getPosASL]] [[getPosASLW]]
+}}

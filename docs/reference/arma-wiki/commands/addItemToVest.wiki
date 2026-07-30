@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/addItemToVest
+// revision: 320961 (2022-05-13T10:04:50Z)
+// export sha1: 0szrtfo23655xqycpcg65zhjk3li539
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|arg= global
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Create new item and store it to soldier's vest. The item can also be a weapon or a magazine.
+
+|s1= unit [[addItemToVest]] item
+
+|p1= unit: [[Object]]
+|p2= item: [[String]]
+|r1= [[Nothing]]
+
+|x1= <sqf>player addItemToVest "itemGPS";</sqf>
+
+|x2= <sqf>player addItemToVest "hgun_Rook40_F";</sqf>
+
+|seealso= [[removeItemFromVest]] [[addItemToBackpack]] [[addItemToUniform]]
+}}

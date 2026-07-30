@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Syntactical_Helper_Types
+// revision: 245277 (2021-02-10T14:20:52Z)
+// export sha1: dj78whv6iqaotywfubm1igtjk425mpi
+// Vendored snapshot. Do not edit — re-export instead.
+
+Some more types are used to provide for a construction of syntactically richer constructs than normal unary / binary operators.
+
+[[Category: Data Types]]

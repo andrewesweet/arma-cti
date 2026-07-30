@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/tvExpand
+// revision: 377800 (2026-01-03T04:01:32Z)
+// export sha1: 3259yraoggyttm2akpd43z6l857p8kw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|arg= local
+
+|eff= local
+
+|descr= Expands tree item pointed to by the path. IDC means id of parent Tree View.
+
+|s1= [[tvExpand]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]] - [] will expand the whole tree if it was collapsed previously with []
+
+|r1= [[Nothing]]
+
+|s2= control [[tvExpand]] path
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]] - [] will expand the whole tree if it was collapsed previously with []
+
+|r2= [[Nothing]]
+
+|x1= <sqf>tvExpand [101, [0]];</sqf>
+
+|x2= <sqf>_ctrl tvExpand [1];</sqf>
+
+|seealso= [[tvExpandAll]] [[tvAdd]] [[tvClear]] [[tvCollapse]] [[tvCount]] [[tvCurSel]] [[tvData]] [[tvDelete]] [[tvPicture]] [[tvSetCurSel]] [[tvSetData]] [[tvSetPicture]] [[tvSetValue]] [[tvSort]] [[tvSortByValue]] [[tvText]] [[tvValue]]
+}}

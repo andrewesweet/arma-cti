@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/triggerAttachedVehicle
+// revision: 320994 (2022-05-13T10:28:34Z)
+// export sha1: ckwsupb4dyndhxow0c2dwl6oe5ikv34
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= global
+
+|gr1= Triggers
+
+|descr= Returns vehicle attached to the trigger (for example using [[triggerAttachVehicle]]).
+
+{{Feature|important|The trigger could be [[Multiplayer Scripting#Locality|local]] or remote but the result returned by this command will be for the vehicle attached locally on the client that executed the command. See [[createTrigger]] for more info.}}
+
+|s1= [[triggerAttachedVehicle]] trigger
+
+|p1= trigger: [[Object]]
+
+|r1= [[Object]]
+
+|x1= <sqf>_result = triggerAttachedVehicle triggerName;</sqf>
+
+|seealso= [[attachObject]] [[attachTo]] [[attachedObjects]] [[attachedTo]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[lightAttachObject]] [[triggerAttachVehicle]] [[attachedObject]] [[triggerAttachObject]]
+}}

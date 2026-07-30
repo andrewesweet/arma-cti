@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/doorPhase
+// revision: 318909 (2022-05-13T09:22:01Z)
+// export sha1: hum17bdgmb3hbl64eez2k36bnm7hhz9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Animations
+
+|descr= Return animation phase of door on vehicle.
+
+|s1= object [[doorPhase]] door
+
+|p1= object: [[Object]]
+
+|p2= door: [[String]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_phase = heli doorPhase "door_L";</sqf>
+
+|seealso= [[animateDoor]] [[setFaceAnimation]] [[animate]] [[animationPhase]] [[animateSource]] [[animationSourcePhase]] [[animationNames]]
+}}

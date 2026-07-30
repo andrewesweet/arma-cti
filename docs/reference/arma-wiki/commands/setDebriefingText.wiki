@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/setDebriefingText
+// revision: 363195 (2024-03-25T16:31:09Z)
+// export sha1: 44odxrfam2v1eat4dz00uoibxpf7ra3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Briefing
+
+|descr= Sets debriefing title, text, subtitle, picture and background for a mission ending.
+The end type could be the engine-defined ("CONTINUE", "KILLED", "LOSER", "END1", "END2", "END3", "END4", "END5", "END6"), config-defined (see [[Debriefing#Configuration|CfgDebriefing]]) or, with an alternative syntax of this command, any [[String]].
+Given texts will be used to replace the corresponding texts on the debriefing screen.
+
+{{Feature|important|In order to benefit from alternative syntax functionality, there will have to be at least '''three''' arguments passed to the command; '''two''' arguments will trigger the old behaviour.}}
+[[File:endMission.jpg|400px]] [[File:failMission.jpg|400px]]
+
+|s1= endType [[setDebriefingText]] [title, description]
+
+|p1= endType: [[String]] - engine type
+
+|p2= title: [[String]] - title text on the debriefing screen
+
+|p3= description: [[String]] - description text on the debriefing screen
+
+|r1= [[Nothing]]
+
+|s2= endType [[setDebriefingText]] [title, description, subtitle, picture, background]
+
+|s2since= arma3 2.06
+
+|p21= endType: [[String]] - any name
+
+|p22= title: [[String]] - title text on the debriefing screen
+
+|p23= description: [[String]] - description text on the debriefing screen
+
+|p24= subtitle: [[String]] - subtitle text on the debriefing screen ('''must''' be defined in order to trigger this syntax of the command)
+
+|p25= picture: [[String]] - (Optional) title picture
+
+|p27= background: [[String]] - (Optional) background picture
+
+|r2= [[Nothing]]
+
+|x1= <sqf>
+_currentObjective = (taskDescription currentTask player) select 2;
+"endDeath" setDebriefingText ["You Lose", "All of your men were killed while assaulting the " + _currentObjective];
+</sqf>
+
+|seealso= [[getDebriefingText]] [[disableDebriefingStats]] [[enableDebriefingStats]] [[endMission]] [[failMission]] [[missionEnd]]
+}}

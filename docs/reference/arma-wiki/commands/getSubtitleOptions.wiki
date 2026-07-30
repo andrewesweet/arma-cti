@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/getSubtitleOptions
+// revision: 309170 (2022-05-03T14:55:20Z)
+// export sha1: 2dk3q9mdfqjxmde5he7uxcstpy1118z
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Radio and Chat
+
+|descr= Returns subtitles settings.
+
+|s1= [[getSubtitleOptions]]
+
+|r1= [[Array]] of [[Boolean]]s - options in format [subtitlesEnabled, radioSubtitlesEnabled]
+
+|x1= <sqf>private _subtitleSettings = getSubtitleOptions;</sqf>
+
+|seealso= [[getAudioOptionVolumes]] [[soundVolume]] [[musicVolume]] [[radioVolume]] [[radioEnabled]] [[shownSubtitles]]
+}}

@@ -1,0 +1,204 @@
+// source: https://community.bistudio.com/wiki/Mission_Optimisation
+// revision: 377936 (2026-01-11T16:56:35Z)
+// export sha1: 7jsz1ny3z2qt7mlcq1qd24uq0tic6px
+// categories: Category:Arma Scripting Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|informative|This page is about [[Mission Optimisation]]. For ''scripting'' optimisation, see [[Code Optimisation]].}}
+
+This article will try to be a general guide about improving your '''mission's''' performance.<br>
+As usual, moderation is the key; do not expect to find on this page a magical solution that makes it possible to run thousands of AI at 240 FPS.
+Everything comes at a cost, the tweaks here will simply allow you to locate issues and calibrate your mission properly.
+
+
+== Before Anything ==
+
+Before optimising anything, make sure you do not have any performance issue running the game itself:
+* Read [[Arma 3: Performance Optimisation]]
+* Open the editor, place a unit in the area you like and test your computer.
+** You can get current FPS in {{arma3}} by going into '''video options''' or using [[diag_fps]]
+** '''Steam''' allows you to display FPS in a screen corner, in ''Settings &gt; In game &gt; FPS Counter''
+* Use (unofficial) Performance Guides to get better performances:
+** {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}1731305438|{{arma3}} performance guide}}
+** {{Link|https://www.moddb.com/forum/thread/arma-2-ultimate-tweak-thread|{{arma2}} performance guide}}
+** {{Link|https://forums.bohemia.net/forums/topic/50167-pc-optimization-for-arma/|{{arma1}} performance guide}}<!--
+** {{Link|{{ofp}} performance guide}}
+-->
+* Play your mission in singleplayer. If your mission runs fine, its network messages might very well be the issue. See [[Multiplayer Scripting]] for good practice tips.
+* Usual bottlenecks:
+** Lower your graphical settings (resolution, textures). If you get way better performances, at least your '''GPU''' limits you.
+** If the game keeps having low FPS when running @ 1024×768/low textures then your CPU is most likely the issue. Mission scripts may be performance-hogging too.
+{{Feature|important|Please note that [[viewDistance|view distance]] (among other settings) impacts both GPU and CPU!}}
+{{Feature|informative|[[viewDistance|View distance]] can be separately set for each clients independently from the server's value through scripting.<br>This can make or break performance for the client.}}
+
+
+== Mission Creation ==
+
+* Be sure to create your scripts with the latest available commands and functions.
+** In {{arma3}} use [[remoteExec]]&nbsp;/&nbsp;[[remoteExecCall]] and '''DITCH [[BIS_fnc_MP]] FOR GOOD!''' See [[Arma 3: Remote Execution]] for more information.
+** In {{arma2}} network communication is done using the [[Arma 2: Multiplayer Framework]].
+* Use the available frameworks and functions for each topic, unless you replace them by third-party ones:
+** [[Arma 3: Respawn]]
+** [[Arma 3: Revive]]
+** [[Arma 3: Task Framework]]
+** [[Arma 3: Animated Briefing]]
+** [[Arma 3: Animated Opening]]
+** [[Arma 3: Dynamic Groups]]
+** [[Arma 3: Key Frame Animation]]
+** and most importantly: [[Functions]]
+
+
+== Performance Impact Table ==
+
+{{Feature|informative|
+: {{Colorball|red|1.125}}		means a heavy impact on performance
+: {{Colorball|orange|1.125}}	means an average impact
+: {{Colorball|green|1.125}} 	means little to no performance impact.
+}}
+
+{| class="wikitable align-center-col-2 align-center-col-3 align-center-col-4"
+! Topic
+! CPU
+! GPU
+! Net-<br>work
+! Solution
+|-
+|
+==== AI unit quantity ====
+| {{Colorball|red}}
+| {{Colorball|green}}
+| {{Colorball|orange}}
+|
+* Use [[createAgent|Agents]] whenever possible
+* The more units there are, the more network updates there will be - hence the impact on both CPU and network.
+* If a client has a low-end machine, they should not lead a group of many AIs as these would then be locally computed.
+* [[Arma 3: Dynamic Simulation]] allows you to freeze AI that are distant from players. Many distance settings should be set according to the mission.
+{{Feature|informative|If you own more than one average computer, you could consider [[Arma 3: Headless Client|Headless client]] to offload AI from the server.}}
+|-
+|
+==== Object quantity ====
+| {{Colorball|orange}}
+| {{Colorball|orange}}
+| {{Colorball|orange}}
+| The less objects, the more FPS you will have.
+* Lower the quantity of objects in the mission, such as:
+** AI units, agents
+** vehicles, simple objects
+** weapon attachments (their proxies are [[attachedTo]])
+** headgear, clothing, vests, backpacks
+** head-mounted devices (NVGs, etc.)
+* Lower [[viewDistance|view distance]]
+* Lower [[setTerrainGrid|terrain details]]
+* Lower the [[Arma 3: Dynamic Simulation|Dynamic Simulation]] threshold
+* Use [[Arma 3: Simple Objects|Simple Objects]]
+* Use '''Garbage Collection''' in order to automatically delete bodies and wreckages:
+** {{arma3}}'s Eden-integrated [[Description.ext#Corpse .26 wreck management|Garbage Collection]]
+** {{arma2}}'s [[Garbage Collector]]
+** {{tkoh}}'s [[BIS_fnc_GC]]
+{{Feature|informative|Only the ''on-screen'' objects will strongly impact the GPU.}}
+|-
+|
+==== General script mistakes ====
+| {{Colorball|orange}}
+| {{Colorball|green}}
+| {{Colorball|green}}
+| Having too many scripts running is a cause for severe performance issues and execution delays in singleplayer as well as multiplayer.
+* You can track the number of running scripts using [[diag_activeScripts]]; you can also use:
+** [[diag_activeSQFScripts]]
+** [[diag_activeSQSScripts]]
+** [[diag_activeMissionFSMs]]
+* A common bad practice is to [[spawn]] a function for each units that need it; the good practice would be to have a single script working with an array of units, array that is edited (unit added/removed) whenever needed:<!--
+--><sqf>
+{ _x spawn _myCode; } forEach _units;	// bad
+_units spawn _myCode;					// good
+</sqf><!--
+-->You can use [[diag_activeSQFScripts]] to ensure you are not clogging your CPU with multiple instances of the same script.
+* '''Not compiling your scripts:''' running multiple times the same script with [[execVM]] will make the game read the file every single time; This is an issue, especially if you execute it frequently.<!--
+--><sqf>
+while { sleep 5; alive player } do { player execVM "myScript.sqf"; };	// bad
+
+private _myScript = compile preprocessFileLineNumbers "myScript.sqf";
+while { sleep 5; alive player } do { player spawn _myScript; };			// better
+
+while { sleep 5; alive player } do { player spawn TAG_fnc_myScript; };	// perfect! see [[Arma 3: Functions Library|Functions]]
+</sqf>
+|-
+|
+==== High-frequency scripts ====
+| {{Colorball|red}}
+| {{Colorball|green}}
+| {{Colorball|green}}
+| Checking a condition too often is usually a source of poor performance. Does your code execution need to be frame-perfect, or can you afford a delay of a few seconds?
+* A [[while]]-loop checking without a minimum loop-[[sleep]] time is usually a sign of bad conception.<!--
+--><sqf>
+while { true }						// bad if you do not know what you are doing
+while { alive player }				// better
+while { sleep 1 ; alive player }	// perfect
+</sqf>
+* By default, [[Trigger]]s check their set condition '''every 0.5 second'''. If a large area is covered or condition code is too complex, this can become an issue; the triggers should then be converted to scripts if possible. Since {{GVI|arma3|2.00}} it is possible to change trigger intervals, either via [[Eden Editor: Entity Attributes|trigger attributes]] in [[:Category:Eden Editor|3DEN]], or via the scripting command [[setTriggerInterval]].
+* [[Trigger]]s can be made '''Server-Side only''' to save clients' resources.
+{{Feature | important | All of the mission-related calculation (objectives, completion distance, etc.) must be done '''server-side'''. Local effects should be calculated '''client-side'''.}}
+|-
+|
+==== High-frequency network messages ====
+| {{Colorball|orange}}
+| {{Colorball|green}}
+| {{Colorball|red}}
+|
+* Use [[publicVariable]] wisely; for specific cases, consider [[publicVariableServer]]&nbsp;/&nbsp;[[publicVariableClient]]
+* Creating [[createUnit|units]]/[[createVehicle|vehicles]] globally implies a network synchronisation, keep them to a minimum / at one-point in the mission.
+* Keep [[Multiplayer Scripting#Locality|global effect]] commands to a minimum:
+** e.g a [[setPos]] will synchronise the unit position to every client, a good practice is to use these commands punctually. If you need a frequent "set position" you may want to look at [[attachTo]] depending on your usage.
+** [[Multiplayer Scripting#Locality|global]] [[:Category:Command Group: Markers|marker commands]] always send ''all'' the marker's information. If you are creating/updating many markers e.g server-side, edit them with [[Multiplayer Scripting#Locality|local]] commands, except the last one (that will be global) to send the whole marker's status over the network, once.
+* Lower client's [[viewDistance|view distance]] in order to lessen its object position update requests
+|-
+|
+==== Unscheduled code ====
+| {{Colorball|red}}
+| {{Colorball|green}}
+| {{Colorball|green}}
+| [[Scheduler#Unscheduled Environment|Unscheduled code]] can have a high impact on the framerate, as such code is not subject to the [[Scheduler|scheduler]]'s management (as its name suggests) and will run without limitation. Cyclic unscheduled low-performance code can make the game unplayable, up to freezing it.
+* As only time-critical scripts should run unscheduled, [[spawn]] any other code from unscheduled environment once you have the required results:<!--
+--><sqf>
+/* ... */ // unscheduled code
+[_var1, _var2] spawn TAG_fnc_MyFunction;
+/* ... */ // other unscheduled code
+</sqf>
+{{Feature|informative|See also {{Link|Scheduler#Where code starts unscheduled}}.}}
+|}
+
+
+== What Else? ==
+
+If you have applied all these recommendations and your mission still does not run well in multiplayer (but does in singleplayer),
+it might be caused by '''mods''' that you are running which could be badly, or not at all, optimised.
+
+If you want to be sure, run the same mission with and without mods. If you have a big difference in performance, look no further.
+
+
+== Performance Diagnostic Tools ==
+
+=== Server Commands ===
+
+* [[Multiplayer Server Commands#Commands|#monitor]] 5
+** Shows performance information of the server. Interval 0 means to stop monitoring.
+* [[Multiplayer Server Commands#Commands|#monitords]] 5
+** Shows performance information in the dedicated server console. Interval 0 means to stop monitoring. (since {{arma3}} v1.64)
+
+=== Diagnostic Commands ===
+
+* [[:Category:Arma 3: Scripting Commands: Diagnostic Branch|Diag. commands only available in Diagnostic Branch]]
+* [[:Category:Command Group: Diagnostic|Diag. command available in all builds]]
+
+
+== See Also ==
+
+* [[Multiplayer Scripting]]
+* [[Code Optimisation]]
+* [[Code Best Practices]]
+* [[Performance Profiling]]
+* [[User:Dedmen|Dedmen]]'s [[ArmaScriptProfiler]] ({{Link|https://forums.bohemia.net/forums/topic/211626-arma-script-profiler/|forum post}})
+
+
+[[Category:Arma Scripting Tutorials]]

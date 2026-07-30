@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:ofpe
+// revision: 322494 (2022-06-13T11:16:34Z)
+// export sha1: e1dmid9ujlzfj8plxci8chx96hpxvgg
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|ofpe}}</includeonly><noinclude>{{Doc/Template
+|descr= Returns {{hl|{{ofpe}}}}.
+|example1= <nowiki>{{ofpe}}</nowiki>
+|result1= {{ofpe}}
+}}</noinclude>

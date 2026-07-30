@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/ctrlAutoScrollDelay
+// revision: 310817 (2022-05-07T20:23:39Z)
+// export sha1: 9vs3n4me6f6aqtj1yu0g5h3zbef5h8n
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Command Group: GUI Control - ListBox | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= GUI Control
+
+|gr2= GUI Control - ListBox
+
+|gr3= GUI Control - ListNBox
+
+|descr= Returns number of seconds auto-scroll will wait before scroll and/or rewind. -2 if scrollbar not present. 
+<br><br>
+Autorscroll is available for [[DialogControls-ListBoxes|CT_LISTBOX]] and [[CT_CONTROLS_GROUP]] types of controls only. Autoscroll will wait [[ctrlAutoScrollDelay]] seconds (must be  > 0) and then will scroll the scroll bar down to the bottom. [[ctrlAutoScrollSpeed]] defines the speed with which scrollbar is scrolled. If [[ctrlAutoScrollRewind]] is [[true]], the control will fade out, immediately rewind to the top, then fade in, wait [[ctrlAutoScrollDelay]] seconds and then repeat the scrolling in a loop. If user focuses on the control, autoscrolling is interrupted.
+
+|s1= [[ctrlAutoScrollDelay]] control
+
+|p1= control: [[Control]] - [[DialogControls-ListBoxes|CT_LISTBOX]] or [[CT_CONTROLS_GROUP]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_ctrlDelay = ctrlAutoScrollDelay _ctrlGroup;</sqf>
+
+|seealso= [[ctrlSetAutoScrollSpeed]] [[ctrlAutoScrollSpeed]] [[ctrlSetAutoScrollDelay]] [[ctrlSetAutoScrollRewind]] [[ctrlAutoScrollRewind]]
+}}

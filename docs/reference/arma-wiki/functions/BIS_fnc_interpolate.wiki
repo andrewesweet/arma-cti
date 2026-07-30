@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_interpolate
+// revision: 349224 (2023-11-08T14:50:50Z)
+// export sha1: shg06cvb81z6t0153h8m3bc26exvl3d
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interpolation | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Interpolation
+
+|descr= Interpolates scalar to target, starts fast, eases out
+
+|s1= [currentValue, targetValue, delta, interpSpeed] call [[BIS_fnc_interpolate]]
+
+|p1= currentValue: [[Number]] - the current value
+
+|p2= targetValue: [[Number]] - the target value
+
+|p3= delta: [[Number]] - (Optional, default 0) the delta time
+
+|p4= interpSpeed: [[Number]] - (Optional, default 0) the interpolation speed
+
+|r1= [[Number]] - the interpolated value
+
+|x1= <sqf>private _value = [4,8,0.2,0.1] call BIS_fnc_interpolate;</sqf>
+
+|seealso= [[BIS_fnc_interpolateConstant]] [[BIS_fnc_interpolateVector]] [[BIS_fnc_interpolateVectorConstant]]
+}}

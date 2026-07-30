@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_holdActionRemove
+// revision: 349409 (2023-11-08T16:27:27Z)
+// export sha1: sr2j2y0fwblqz1c2duswaufc6yf7bzy
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interaction | Category:Functions | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Interaction
+
+|descr= Removes a hold action. This does exactly the same as [[removeAction]].
+
+|s1= [target,ID] call [[BIS_fnc_holdActionRemove]]
+
+|p1= target: [[Object]] - object the action is attached to
+
+|p2= ID: [[Number]] - action ID
+
+|x1= <sqf>[player,10] call BIS_fnc_holdActionRemove;</sqf>
+
+|r1= [[Nothing]]
+
+|seealso= [[BIS_fnc_holdActionAdd]]
+}}

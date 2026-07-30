@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/assignedVehicles
+// revision: 338334 (2023-02-28T14:33:58Z)
+// export sha1: ohhlokgc44rb60ezhort4yvdz5qt7oa
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+|gr1= Groups
+
+|descr= Returns all vehicles added to the given [[Group]] with [[addVehicle]].
+
+|s1= [[assignedVehicles]] group
+
+|p1= group: [[Group]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>_vehicles = assignedVehicles group player;</sqf>
+
+|seealso= [[assignedVehicle]] [[assignedGroup]] [[addVehicle]] [[assignAsDriver]] [[assignAsCargo]] [[assignAsCommander]] [[assignAsGunner]] [[assignAsTurret]] [[assignAsCargoIndex]] [[unassignVehicle]] [[leaveVehicle]] [[fullCrew]]
+}}

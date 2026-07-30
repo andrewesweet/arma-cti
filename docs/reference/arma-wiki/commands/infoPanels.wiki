@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/infoPanels
+// revision: 378367 (2026-04-03T16:46:20Z)
+// export sha1: f7sgvpbugfvhq4fo9ytmjb2ybyiw3jt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Custom Panels | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= Custom Panels
+
+|descr= Returns array all info panels configured for given object or object and turret path.
+
+|s1= [[infoPanels]] unit
+
+|p1= unit: [[Object]] - the concerned vehicle
+
+|r1= [[Array]] - format [<nowiki/>[infoPanelId1, infoPanelShortcutId1], [infoPanelId2, infoPanelShortcutId2], ...]:
+* infoPanelId: [[String]] - name of the info panel class as defined in vehicle config
+* infopanelShortcutId: [[String]] - shortcut representation of ''infopanelId'', currently are supported only shortcuts "left" and "right"
+
+|s2= [[infoPanels]] [unit, turretPath]
+
+|p21= unit: [[Object]] - the concerned vehicle
+
+|p22= turretPath: [[Turret Path]] - turret index
+
+|r2= [[Array]] - format [<nowiki/>[infoPanelId1, infoPanelShortcutId1], [infoPanelId2, infoPanelShortcutId2], ...]:
+* infoPanelId: [[String]] - name of the info panel class as defined in vehicle config
+* infopanelShortcutId: [[String]] - shortcut representation of ''infopanelId'', currently are supported only shortcuts "left" and "right"
+
+|x1= <sqf>infoPanels [vehicle player, [0]];</sqf>
+
+|seealso= [[Arma 3: Custom Info]] [[infoPanel]] [[setInfoPanel]] [[infoPanelComponents]] [[enableInfoPanelComponent]] [[infoPanelComponentEnabled]] [[openGPS]]
+}}

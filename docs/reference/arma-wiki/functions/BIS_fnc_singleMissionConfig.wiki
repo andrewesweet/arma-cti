@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_singleMissionConfig
+// revision: 349031 (2023-11-08T14:47:12Z)
+// export sha1: o0uumk0q57svv5cesiuc159ipk3vay8
+// categories: Category:Arma 3: Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Missions
+
+|descr= Returns config of current single mission.
+
+|s1= call [[BIS_fnc_singleMissionConfig]]
+
+|r1= [[Config]] or [[Nothing]] - returns [[Config]] if mission was found, otherwise [[Nothing]]
+
+|x1= <sqf>private _config = call BIS_fnc_singleMissionConfig;</sqf>
+
+|seealso= [[missionName]] [[briefingName]] [[BIS_fnc_singleMissionKeys]] [[BIS_fnc_singleMissionName]]
+}}
+singleMissionKeys

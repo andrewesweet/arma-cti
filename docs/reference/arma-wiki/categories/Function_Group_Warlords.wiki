@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Warlords
+// revision: 164043 (2020-09-30T10:42:45Z)
+// export sha1: r5vsbdtgipgkl8of9ljx7of9vyfb2i6
+// Vendored snapshot. Do not edit — re-export instead.
+
+See [[Arma 3 MP Warlords]] for the full documentation.
+
+[[Category:Functions by Functionality]]

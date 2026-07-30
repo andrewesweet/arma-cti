@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/DeKey
+// revision: 85280 (2014-10-12T23:20:12Z)
+// export sha1: kkgd1pxt1rc58dpzywtrdvz7uv187su
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+          
+<br>
+Dekey Version 1.xx by Mikero<br> <br>
+see readmeGeneral and fixes<br>
+
+ 
+----
+ 
+<br> <br>
+Dekey checks the '''integrity''' of .bisign, .bikey, and .biprivatekey 
+files.
+
+ 
+It does not crack them open as such, merely checks their 
+validity.
+
+ 
+Dekey is most useful in doing a full folder scan looking 
+for version ONE bisigns versus the shinier version 2's. A bonus for sysops
+
+ 
+Syntax:<br> <br>
+dekey [-P] whatever'''.bisign''' | '''bikey |''' '''privatekey'''
+
+ 
+-P don't pause
+
+ 
+Return status
+
+ 
+0: no errors (includes version2 bisigns)
+
+ 
+1: version 1 (old) bisign
+
+ 
+2: error
+
+ 
+<br>
+
+
+[[Category:Mikero Tools]]

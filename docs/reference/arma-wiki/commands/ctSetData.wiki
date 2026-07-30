@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/ctSetData
+// revision: 310914 (2022-05-07T20:34:41Z)
+// export sha1: 1f3ddbypw6iwl1xjpyy5r1d8458sjww
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+|arg= local
+|eff= local
+
+|gr1= GUI Control - Controls Table
+
+|descr= Associates metadata (string) with the row determined by the index. Returns Nothing.
+
+|s1= ctrl [[ctSetData]] [index, data]
+
+|p1= ctrl: [[Control]] - the respective control
+
+|p2= index: [[Number]] - the row index
+
+|p3= data: [[String]] - the data to set
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctSetData [0, "Test"];</sqf>
+
+|seealso= [[ctAddRow]] [[ctAddHeader]] [[ctClear]] [[ctCurSel]] [[ctSetCurSel]] [[ctRowControls]] [[ctHeaderControls]] [[ctRowCount]] [[ctHeaderCount]] [[ctSetValue]] [[ctValue]] [[ctData]] [[ctFindRowHeader]] [[ctFindHeaderRows]] [[ctRemoveRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}

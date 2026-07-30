@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/setSimpleTaskType
+// revision: 349265 (2023-11-08T14:51:08Z)
+// export sha1: krgn6ahprazjexow326l3maqih4nslh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Briefing
+
+|descr= Attach type to the simple task. See [[Arma_3_Tasks_Overhaul#Default_Task_Types:_Actions|Default Task Types]].
+
+|s1= task [[setSimpleTaskType]] taskType
+
+|p1= task: [[Task]]
+
+|p2= taskType: [[String]] - type of task
+
+|r1= [[Nothing]]
+
+|x1= <sqf>(currentTask player) setSimpleTaskType "attack";</sqf>
+
+|seealso= [[taskType]] [[currentTask]] [[setSimpleTaskCustomData]] [[taskCustomData]] [[Arma_3_Tasks_Overhaul#Default_Task_Types:_Actions|Default Task Types]]
+}}

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_functionPath
+// revision: 326933 (2022-07-12T21:44:39Z)
+// export sha1: o3k6sv2nrjn7ottu1coaii3s9mp1dnm
+// categories: Category:Arma 3: Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Diagnostic
+
+|descr= Returns path to function file.
+
+|s1= functionName call [[BIS_fnc_functionPath]]
+
+|p1= functionName: [[String]] - function name (if not defined, name of parent function is used)
+
+|r1= [[String]]
+
+|x1= <sqf>private _path = "BIS_fnc_wpLand" call BIS_fnc_functionPath;</sqf>
+
+|seealso= [[:Category:Functions]]
+}}

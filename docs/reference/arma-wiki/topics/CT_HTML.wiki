@@ -1,0 +1,311 @@
+// source: https://community.bistudio.com/wiki/CT_HTML
+// revision: 342149 (2023-07-09T12:26:45Z)
+// export sha1: p98vm00qijcrhqp8sm7q7xbxn12u198
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{CT|intro
+|macro = CT_HTML
+|value = 9
+|description = The HTML control is well known as the "notebook" in the Map-View of the game. It can display a text over more pages and can inherit links to other, own defined sections. It has some simple formatting possibilities. It also can display images.
+|commands =
+* [[:Category:Command_Group:_GUI_Control_-_HTML|Commands: HTML]]
+|events =
+}}
+
+{{CT|abc start}}
+=== C ===
+{{CT|attribute
+|name=colorBold
+|type1=Array
+|value1={1,1,1,1}
+|description=Color of '''bold''' text (between &lt;b&gt; and </b> tags).
+}}
+
+{{CT|attribute
+|name=colorLink
+|type1=Array
+|value1={1,1,1,1}
+|description=Text color of links (between <a href="#Sectionname> and </a>).
+}}
+
+{{CT|attribute
+|name=colorLinkActive
+|type1=Array
+|value1={1,1,1,1}
+|description=Text color of the active link (normaly the fist on in page).
+}}
+
+{{CT|attribute
+|name=colorPicture
+|type1=Array
+|value1={1,1,1,1}
+|description=Color of transparent part of image.
+}}
+
+{{CT|attribute
+|name=colorPictureBorder
+|type1=Array
+|value1={0,0,0,0}
+|description=Color of the borader arround image.
+}}
+
+{{CT|attribute
+|name=colorPictureLink
+|type1=Array
+|value1={1,1,1,1}
+|description=Color of transparent part of image within links
+}}
+
+{{CT|attribute
+|name=colorPictureSelected
+|type1=Array
+|value1={1,1,1,1}
+|description=Color of transparent part of image within active links.
+}}
+
+{{CT|attribute
+|name=cycleAllLinks
+|type1=Number
+|value1=0
+|description=
+}}
+
+{{CT|attribute
+|name=cycleLinks
+|type1=Number
+|value1=0
+|description=
+}}
+
+=== F ===
+{{CT|attribute
+|name=filename
+|type1=String
+|value1="a3\ui_f\data\html\RscFeedback.html"
+|description=The html file to load into the control at startup
+}}
+
+=== H ===
+{{CT|attribute
+|name=H1
+|type1=Class
+|value1=class H1
+{
+	font = "RobotoCondensed";
+	fontBold = "RobotoCondensedBold";
+	sizeEx = "(			(			(			((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1.2)";
+};
+|description=Header settings. Classes H1 to H6 as well as P are available.<br>
+{{{!}}class="wikitable" border="1" align="left" cellpadding="3" cellspacing="0" {{!}}
+! colspan="3" bgcolor="#bbbbff" {{!}} Properties of subclass (H1-H6,P)
+{{!}}-
+! bgcolor="#ddddff" {{!}} Name
+! bgcolor="#ddddff" {{!}} Type
+! bgcolor="#ddddff" {{!}} Remark
+{{!}}-
+{{!}} '''font'''
+{{!}} string
+{{!}} font to use for default text
+{{!}}-
+{{!}} '''fontBold'''
+{{!}} string
+{{!}} font to use within bold tags
+{{!}}-
+{{!}} '''sizeEx'''
+{{!}} [[Float]] 
+{{!}} font size
+{{!}}-
+{{!}}}<br clear="all">
+}}
+
+=== N ===
+{{CT|attribute
+|name=nextPage
+|type1=String
+|value1="\A3\ui_f\data\gui\rsccommon\rschtml\arrow_right_ca.paa"
+|description=Filename of image which is used as right arrow.
+}}
+
+=== P ===
+{{CT|attribute
+|name=P
+|type1=Class
+|value1=class P
+{
+	font = "RobotoCondensed";
+	fontBold = "RobotoCondensedBold";
+	sizeEx = "(			(			(			((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)";
+	align = "left";
+};
+|description=See [[#H1]].
+}}
+
+{{CT|attribute
+|name=prevPage
+|type1=String
+|value1="\A3\ui_f\data\gui\rsccommon\rschtml\arrow_left_ca.paa"
+|description=Filename of image which is used as left arrow.
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+
+=== RscExample ===
+
+<syntaxhighlight lang="cpp">
+class RscHTML
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_HTML;
+	idc = -1;
+	style = ST_LEFT;
+	filename = "";
+	colorBackground[] = {0,0,0,0};
+	colorText[] = {1,1,1,1};
+	colorBold[] = {1,1,1,1};
+	colorLink[] = {1,1,1,0.75};
+	colorLinkActive[] = {1,1,1,1};
+	colorPicture[] = {1,1,1,1};
+	colorPictureLink[] = {1,1,1,1};
+	colorPictureSelected[] = {1,1,1,1};
+	colorPictureBorder[] = {0,0,0,0};
+	tooltipColorText[] = {1,1,1,1};
+	tooltipColorBox[] = {1,1,1,1};
+	tooltipColorShade[] = {0,0,0,0.65};
+	class H1
+	{
+		font = "RobotoCondensed";
+		fontBold = "RobotoCondensedBold";
+		sizeEx = GUI_TEXT_SIZE_LARGE;
+		align = "left";
+	};
+	class H2
+	{
+		font = "RobotoCondensed";
+		fontBold = "RobotoCondensedBold";
+		sizeEx = GUI_TEXT_SIZE_MEDIUM;
+		align = "right";
+	};
+	class H3
+	{
+		font = "RobotoCondensed";
+		fontBold = "RobotoCondensedBold";
+		sizeEx = GUI_TEXT_SIZE_MEDIUM;
+		align = "left";
+	};
+	class H4
+	{
+		font = "RobotoCondensed";
+		fontBold = "RobotoCondensedBold";
+		sizeEx = GUI_TEXT_SIZE_MEDIUM;
+		align = "left";
+	};
+	class H5
+	{
+		font = "RobotoCondensed";
+		fontBold = "RobotoCondensedBold";
+		sizeEx = GUI_TEXT_SIZE_MEDIUM;
+		align = "left";
+	};
+	class H6
+	{
+		font = "RobotoCondensed";
+		fontBold = "RobotoCondensedBold";
+		sizeEx = GUI_TEXT_SIZE_MEDIUM;
+		align = "left";
+	};
+	class P
+	{
+		font = "RobotoCondensed";
+		fontBold = "RobotoCondensedBold";
+		sizeEx = GUI_TEXT_SIZE_MEDIUM;
+		align = "left";
+	};
+	x = 0;
+	y = 0;
+	w = 0.1;
+	h = 0.1;
+	sizeEx = GUI_TEXT_SIZE_MEDIUM;
+	prevPage = "\A3\ui_f\data\gui\rsccommon\rschtml\arrow_left_ca.paa";
+	nextPage = "\A3\ui_f\data\gui\rsccommon\rschtml\arrow_right_ca.paa";
+	shadow = 2;
+};
+</syntaxhighlight>
+
+
+== Other Examples ==
+
+=== Scripted Example ===
+
+[[File:A3 CT HTML EXAMPLE.jpg|thumb|Scripted Example]]
+
+# Open [[:Category:Eden Editor|Eden Editor]]
+# Save the mission
+# Create the file test.html in the mission folder and copy the html code from this page in it (see below)
+# Open the [[Arma 3: Debug Console]] and execute the sqf code
+
+==== SQF Code ====
+<sqf>
+disableSerialization;
+ 
+private _display = findDisplay 313 createDisplay "RscDisplayEmpty";
+ 
+private _ctrlGroup = _display ctrlCreate ["RscControlsGroup", -1];
+private _ctrlHTML = _display ctrlCreate ["RscHTML", -1, _ctrlGroup];
+ 
+_ctrlGroup ctrlSetPosition [0,safeZoneY + 0.01,1,safeZoneH - 0.02];
+_ctrlGroup ctrlCommit 0;
+ 
+_ctrlHTML ctrlSetPosition [0,0,0.98,2];
+_ctrlHTML ctrlSetBackgroundColor [0,0,0,1];
+_ctrlHTML ctrlCommit 0;
+_ctrlHTML htmlLoad "test.html"
+</sqf>
+
+==== test.html ====
+<syntaxhighlight lang="html">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>PageTitle</title>
+	</head>
+	<body>
+		<h1><a name="FirstSection">First Section</a></h1>
+		<p>This is the text to display in this section. You can write a lot of text here.</p>
+		<br>
+		<h1><a name="Alignment">Alignment</a></h1>
+		<p>Text can be aligned left, center or right</p>
+		<br>
+		<p align="left"><a name="left">Left</a></p>
+		<p align="center"><a name="center">Center</a></p>
+		<p align="right">Right</p>
+		<h1><a name="Font Sizes">Font Sizes</a></h1>
+		<p>Out of the box the CT_HTML offers seven font sizes. These can be changed in the controls config.</p>
+		<p>P (default)</p>
+		<h1>H1</h1>
+		<h2>H2</h2>
+		<h3>H3</h3>
+		<h4>H4</h4>
+		<h5>H5</h5>
+		<h6>H6</h6>
+		<br>
+		<h1><a name="Links">Links</a></h1>
+		<p>It is possible to link to sections or websites.</p>
+		<p><a href="#FirstSection">A link to the first section.</a></p>
+		<p><a href="https://community.bistudio.com/wiki/HTML_File_Format">A link to the BIKI.</a></p>
+		<br>
+		<h1><a name="Images">Images</a></h1>
+		<p>Images can also be displayed</p>
+		<p align="center"><img src="\a3\ui_f_curator\data\logos\arma3_curator_logo_ca.paa" height="100" width="100"></p>
+		<h1><a name="TextFormatting">Text Formatting</a></h1>
+		<p>Text can also be <b>bold</b>. The color and font used for this can be defined in config.</p>
+	</body>
+</html>
+</syntaxhighlight>
+
+
+[[Category: Control Types]]

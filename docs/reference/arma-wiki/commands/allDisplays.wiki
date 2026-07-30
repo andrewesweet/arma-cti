@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/allDisplays
+// revision: 377009 (2026-01-01T08:17:31Z)
+// export sha1: 6ve4mm639sxrwvivwrw0dyaxoxqhah2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.38 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.38
+
+|gr1= GUI Control
+
+|descr= Returns a list of all opened GUI displays.
+
+{{Feature | informative | Other displays could be accessed via [[uiNamespace]] variable which is updated every time a display is opened or closed.
+For example, to access IGUI displays:
+<sqf>private _iguiDisplays = uiNamespace getVariable ["IGUI_displays", []];</sqf>
+
+Other display variables:
+{{Columns|4|
+* {{hl|"3DENDisplaysTemp_displays"}}
+* {{hl|"3DENDisplays_displays"}}
+* {{hl|"BootcampDisplays_displays"}}
+* {{hl|"BootcampTitles_displays"}}
+* {{hl|"CuratorDisplays_displays"}}
+* {{hl|"CuratorTitles_displays"}}
+* {{hl|"GUI_displays"}}
+* {{hl|"IGUI_displays"}}
+* {{hl|"KartDisplays_displays"}}
+* {{hl|"Loading_displays"}}
+}}
+}}
+
+
+|s1= [[allDisplays]]
+
+|r1= [[Array]] of [[Display]]s
+
+|x1= <sqf>private _allDisps = allDisplays;</sqf>
+
+|seealso= [[allControls]] [[findDisplay]] [[controlsGroupCtrl]] [[ctrlCreate]] [[allVariables]] [[allCurators]] [[allGroups]] [[allDead]] [[allDeadMen]]
+}}

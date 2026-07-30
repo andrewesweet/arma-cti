@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_2.14
+// revision: 347361 (2023-09-13T12:21:19Z)
+// export sha1: b46jujexf79ic3cksufnkalcmojjv0q
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with {{arma3}} version 2.14 may be recognised by the appearance of this icon: {{GVI|arma3|2.14}}
+Release date: September 5th, 2023<br>
+{{Link|https://dev.arma3.com/post/spotrep-00111|SPOTREP 00111}}<br>
+{{Link|https://dev.arma3.com/post/spotrep-00112|SPOTREP 00112 (Hotfix)}}
+
+[[Category:Introduced with {{arma3}}|2.14]]

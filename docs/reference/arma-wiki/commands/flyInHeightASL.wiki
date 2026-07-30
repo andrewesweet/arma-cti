@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/flyInHeightASL
+// revision: 329162 (2022-07-25T12:35:13Z)
+// export sha1: hgg7nnqqj7518ke2ntk52wqjipxkqnd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Object Manipulation
+
+|descr= Sets the minimal [[Position#PositionASL|ASL]] height. Final height is {{hl|''flyInHeight'' [[max]] ''flyInHeightASL''}} - the higher altitude has priority.
+
+|s1= aircraft [[flyInHeightASL]] [standardAltitude, combatAltitude, stealthAltitude]
+
+|p1= aircraft: [[Object]] - helicopter, airplane
+
+|p2= standardAltitude: [[Number]] - base altitude used when [[behaviour]] is neither "COMBAT" or "STEALTH"
+
+|p3= combatAltitude: [[Number]] -  altitude used when [[behaviour]] is "COMBAT"
+
+|p4= stealthAltitude: [[Number]] - altitude used when [[behaviour]] is "STEALTH"
+
+|r1= [[Nothing]]
+
+|x1= <sqf>cobraOne flyInHeightASL [200, 100, 400];</sqf>
+
+|seealso= [[flyInHeight]]
+}}

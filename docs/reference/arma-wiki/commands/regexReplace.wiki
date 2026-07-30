@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/regexReplace
+// revision: 349515 (2023-11-08T17:14:41Z)
+// export sha1: g5bvovf1kdqopx28q2bl3le06z0ah7z
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings - Regular Expression | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|descr= Searches given ''haystack'' with given ''pattern'' and replaces all matches with given ''replaceString''.
+
+|gr1= Strings - Regular Expression
+
+|s1= haystack [[regexReplace]] [pattern, replaceString]
+
+|p1= haystack: [[String]]
+
+|p2= pattern: [[String]] - format [[Arma 3: Regular Expressions|regex pattern]]
+
+|p3= replaceString: [[String]] - {{Link|https://www.boost.org/doc/libs/1_76_0/libs/regex/doc/html/boost_regex/format/perl_format.html|Reference}}
+
+|r1= [[String]] - modified text
+
+|x1= <sqf>"wookie boOkie cookie" regexReplace [".oo/gio", "[$']"];						// "[kie boOkie cookie]kie [kie cookie]kie [kie]kie"</sqf>
+
+|x2= <sqf>"wookie boOkie cookie" regexReplace [".oo/gio", "[$&]"];						// "[woo]kie [boO]kie [coo]kie"</sqf>
+
+|x3= <sqf>"wook1e boOk2e cook3e" regexReplace [".oo/gio", "[$`]"];						// "[]kie [k1e ]k2e [k2e ]k3e"</sqf>
+
+|x4= <sqf>"wook1e boOk2e cook3e" regexReplace [".(oo)(.*?)e", "[$2]"];					// "[k1] [k2] [k3]"</sqf>
+
+|x5= <sqf>"wOokie boOkie cookie" regexReplace [".(?<test>oo)kie/gio", "[$+{test}]"];	// "[oo] [oO] [oo]"</sqf>
+
+|x6= <sqf>
+// Make captured group all lower case '\L' (lower case) or '\U' (upper case)
+"ArmA 3 is so awesome!" regexReplace ["(rmA 3)", "\L$1"]; // "Arma 3 is so awesome!"
+</sqf>
+
+|seealso= [[regexMatch]] [[regexFind]]
+}}

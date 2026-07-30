@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_relPosObject
+// revision: 327211 (2022-07-12T22:11:45Z)
+// export sha1: 2abf6nwetp58fuzie1prisa1infuxd8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Geometry | Category:Function Group: Positions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Positions
+
+|gr2= Geometry
+
+|descr= Place an object relative to another object, like a ''setRelPos'' command.
+
+|s1= [parent, child, relPos, direction] call [[BIS_fnc_relPosObject]]
+
+|p1= parent: [[Object]] - the parent object
+
+|p2= child: [[Object]] - the child object
+
+|p3= relPos: [[Position]] - ''child'' position relative to ''parent''
+
+|p4= direction: [[Number]] - (Optional, default 0) direction of the child object
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[BIS_briefingTable, BIS_map, [0, -0.58, 0.857], 98] call BIS_fnc_relPosObject;</sqf>
+
+|seealso= [[getRelPos]] [[getPos]]
+}}

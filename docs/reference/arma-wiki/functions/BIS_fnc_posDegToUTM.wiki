@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_posDegToUTM
+// revision: 338004 (2023-02-23T21:11:10Z)
+// export sha1: pkdtssef2l4oa3j2vcrbz7036490z9k
+// categories: Category:Arma 3: Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Map and Markers
+
+|descr= Generate a {{Link|https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system#UTM_zone|UTM Zone}}, Easting and Northing from lat and long fields.
+It uses {{Link|https://en.wikipedia.org/wiki/North_American_Datum|NAD83 constants}}.
+
+|s1= [longitude, latitude'', zone''] call [[BIS_fnc_posDegToUTM]]
+
+|p1= longitude: [[Number]]
+
+|p2= latitude: [[Number]]
+
+|p3= zone: [[Number]] - (Optional, default <sqf inline>31 + floor (_longitude / 6)</sqf>)
+
+|r1= [[Array]] of [[Number]]s - format [easting, northing, zone]
+
+|x1= <sqf>private _utmZone = [47.63959,-122.127249] call BIS_fnc_posDegToUTM;</sqf>
+
+|seealso= [[BIS_fnc_posDegToWorld]] [[BIS_fnc_posUTMToDeg]]
+}}

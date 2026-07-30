@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/tvSetPictureRight
+// revision: 377788 (2026-01-03T01:40:00Z)
+// export sha1: 5tsl13gmtpfqcawzqa2qfqm1zhd4fte
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= GUI Control - Tree View
+
+|descr= Sets right picture on the tree view item defined by path.
+
+|s1= [[tvSetPictureRight]] [idc, path, name]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|p3= name: [[String]] - picture texture
+
+|r1= [[Nothing]]
+
+|s2= control [[tvSetPictureRight]] [path, name]
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|p23= name: [[String]] - picture texture
+
+|r2= [[Nothing]]
+
+|x1= <sqf>tvSetPictureRight [101, [0], "picture"];</sqf>
+
+|x2= <sqf>_ctrl tvSetPictureRight [[0], "picture"];</sqf>
+
+|seealso= [[tvPictureRight]] [[tvSetPicture]] [[tvPicture]]
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20210405121400
+|text= {{Feature|informative|
+Adding pictures to lists is very slow. In order to prevent the filling of the list to be slowed down, add the pictures in the '''scheduled''' environment.
+One drawback of that method is, that sorting the entries is not easily possible.
+<sqf>
+private _path = _ctrlTV tvAdd [[], "Some Entry"];
+[_ctrlTV, _path] spawn
+{
+	(_this select 0) tvSetPictureRight [[_this select 1], "someImage.paa"];
+};
+</sqf>
+}}
+}}

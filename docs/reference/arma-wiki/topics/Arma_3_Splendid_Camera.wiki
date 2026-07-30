@@ -1,0 +1,148 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Splendid_Camera
+// revision: 342200 (2023-07-09T12:27:14Z)
+// export sha1: k1p8vsboeg5fl9fnjutxtn887m4py1s
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The '''Splendid Camera''' is available in [[:Category:Eden Editor|Eden Editor]] and [[Arma 3: Debug Console|Debug Console]]. It can be used to capture scenes, look around the map or create splendid screenshots.
+
+
+== Controls ==
+
+[[File:A3 Splendid Camera.jpg|500px|right|Splendid Camera Interface|]]
+
+{|
+| {{Controls|Ctrl|P}}
+| Take a screenshot with [[screenshot]] command. More information's in the link
+|-
+| {{Controls|F1}}
+| Open the debug console. When pointing at a target, it is stored to variable BIS_fnc_camera_target which you can freely manipulate with
+|-
+| {{Controls|LMB}}
+| Camera Movement
+|-
+| {{Controls|RMB}}
+| Camera rotation and pitch
+|-
+| {{Controls|Ctrl|RMB}}
+| Camera banking
+|-
+| {{Controls|Space}}
+|  Teleports player under the cursor
+|-
+| {{Controls|M}}
+| Toggle map
+|-
+| {{Controls|Ctrl|X}}
+| Export camera params
+|-
+| {{Controls|Ctrl|C}}
+| Copy camera parameters (Can be used in [[BIS_fnc_camera]])
+|-
+| {{Controls|Ctrl|V}}
+| Paste camera parameters
+|-
+| {{Controls|ESC}}
+| Exit
+|}
+
+It is also possible to shot a screen via Steam (default {{Controls|F12}}). See {{Link|https://partner.steamgames.com/doc/features/screenshots|Steamworks Documentation}} for more information.
+
+=== Changeable Controls ===
+
+{|
+| {{Controls|W}} {{Controls|S}} {{Controls|A}} {{Controls|D}} {{Controls|Q}} {{Controls|Y}}
+| Translational movement
+|-
+| {{Controls|LShift}} {{Controls|RShift}}
+| Speed modifier
+|-
+| {{Controls|NUM-}}
+| Zoom out
+|-
+| {{Controls|NUM+}}
+| Zoom in
+|-
+| {{Controls|NUM5}}
+| Reset view
+|-
+| {{Controls|2}} {{Controls|4}} {{Controls|6}} {{Controls|8}}
+| Look around
+|-
+| {{Controls|N}}
+| Toggle vision mode
+|-
+| {{Controls|Backspace}}
+| Toggle interface
+|}
+
+=== Save & load positions ===
+
+Positions, including camera parameters can be stored by pressing {{Controls|Ctrl|0..9}}.
+One a position was stored it can be loaded by pressing the number key of the slot is was saved in.
+
+== Use of [[BIS_fnc_camera]] ==
+Exporting positions by pressing {{Controls|Ctrl|C}} results in the following format:
+<sqf>["Stratis",[6485.92,4680.7,25.018],244.086,0.7,[-45.4546,0],0,0,721.084,0.3,0,1,0,1]</sqf>
+0: [[String]] Island name<br>
+1: [[Position]] Position of the camera<br>
+2: [[Number]] Direction of the camera<br>
+3: [[Number]] FOV<br>
+4: [[Array]] [Pitch,Bank]<br>
+5: [[Number]] Focus<br>
+6: [[Number]] Aperture<br>
+7: [[Number]] Daytime<br>
+8: [[Number]] Overcast<br>
+9: [[Number]] Acctime<br>
+10: [[Number]] Brightness<br>
+11: [[Number]] Contrast<br>
+12: [[Number]] Saturation<br>
+
+Calling '''BIS_fnc_camera''' with the exported array will automcatically open the camera and move to the given position with given parameters.
+<sqf>["Paste",["Stratis",[6111.09,4434.62,32.4268],242.722,0.7,[-35.7576,0],0,0,721.084,0.3,0,1,0,1]] call BIS_fnc_camera;</sqf>
+
+
+== Settings ==
+
+The camera comes also with the possibility to change the appearance of the current scene by allowing the player to change various parameters.
+
+=== Focus ===
+
+Changes the distance between the virtual lens and the sharp area of the photo. Default AUTO
+
+=== Aperture ===
+
+Defines how much light enters the virtual lens. A higher value means less light, but a photo which is sharp even in the corners. A low value means it’s only sharp in the center and gradually becomes unsharp.
+
+=== Brightness ===
+
+Changes the brightness of the photo.
+
+=== Contrast ===
+
+Changes the contrast of the photo.
+
+=== Saturation ===
+
+Defines how vivid the photo will be. Zero means black/white.
+
+=== Daytime ===
+
+Time of the day in format 0-24h.
+
+=== Overcast ===
+
+Defines how cloudy the scene will be.
+
+=== Acctime ===
+
+Defines the simulation time of the scene. Zero means no movement
+
+
+== See Also ==
+
+{{Link|https://arma3.com/news/this-is-war-photography|THIS IS WAR PHOTOGRAPHY by Karel Moricky}}
+
+
+{{GameCategory|arma3|Editing}}

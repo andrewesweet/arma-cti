@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_drawRespawnPositions
+// revision: 349423 (2023-11-08T16:27:33Z)
+// export sha1: tkk2p8o04ly2u84thwbuqmhofumhibi
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Draws respawn positions on the map which were added by [[BIS_fnc_addRespawnPosition]].
+
+|s1= [state] call [[BIS_fnc_drawRespawnPositions]]
+
+|p1= state: [[Boolean]] - [[true]] to start drawing, [[false]] to end it
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[true] call BIS_fnc_drawRespawnPositions;</sqf>
+
+|seealso= [[:Category:Function Group: Respawn|Respawn functions]]
+}}

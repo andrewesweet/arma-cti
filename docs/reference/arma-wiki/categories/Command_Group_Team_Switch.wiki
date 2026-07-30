@@ -1,0 +1,16 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Team_Switch
+// revision: 290484 (2021-07-20T00:39:24Z)
+// export sha1: hr38007lp2efi3e0e5pc8a4slfzqvmq
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Image:A3_teamSwitch_dialogue.jpg|thumb]]
+'''Team Switch''' is a feature introduced with [[:Category:ArmA: Armed Assault|{{arma1}}]] that provides the ability to switch between units.<br>
+It is available in singleplayer and multiplayer.
+* In Singleplayer, the player can switch between any unit set as ''playable'' in the editor
+* In Multiplayer, switching is only possible with units '''on the same side'''.<br>Team Switch is available with Side respawn ([[Description.ext#respawn|respawn = 5]]).
+{{Feature | arma3 |
+* the '''Team Switch Dialogue''' can be opened by pressing '''U'''.
+* a [[Arma 3: Mission Event Handlers#TeamSwitch|TeamSwitch Mission Event Handler]] is available.}}
+
+
+[[Category:Scripting Commands by Functionality]]

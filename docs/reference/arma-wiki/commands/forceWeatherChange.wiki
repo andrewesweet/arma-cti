@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/forceWeatherChange
+// revision: 369386 (2024-09-03T18:43:16Z)
+// export sha1: 02966e687axou5417bn1xohkkdz01wd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Environment
+
+|serverExec= server
+
+|descr= Forcibly applies previously set weather settings. Skips smooth transitions. This might cause lag.
+
+{{Feature|informative|To prevent the engine from overwriting custom weather settings, enable the ''Manual Control'' settings in [[:Category:Eden Editor|Eden Editor]]'s intel section.}}
+
+|s1= [[forceWeatherChange]] 
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+0 setOvercast 1;
+0 setRain 1;
+forceWeatherChange; // Force immediate change overriding smooth transitions
+</sqf>
+
+|seealso= [[fog]] [[fogForecast]] [[setFog]] [[overcast]] [[setOvercast]] [[overcastForecast]] [[nextWeatherChange]] [[rain]] [[setRain]] [[setWind]] [[simulWeatherSync]]
+}}

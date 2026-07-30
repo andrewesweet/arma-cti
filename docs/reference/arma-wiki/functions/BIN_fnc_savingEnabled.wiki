@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_savingEnabled
+// revision: 327697 (2022-07-13T10:12:50Z)
+// export sha1: bqkgbev6fc7xq7pw9ayedx9h0l7ne7e
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Missions
+
+|descr= Returns the value of <sqf inline>missionNamespace getVariable ["BIN_enableSaving", true]</sqf>.
+{{Feature|arma3contact}}
+
+|s1= call [[BIN_fnc_savingEnabled]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>call BIN_fnc_savingEnabled == (missionNamespace getVariable ["BIN_enableSaving", true]); // true</sqf>
+
+|seealso= [[BIS_fnc_enableSaving]] [[BIS_fnc_disableSaving]] [[saveGame]] [[loadGame]]
+}}

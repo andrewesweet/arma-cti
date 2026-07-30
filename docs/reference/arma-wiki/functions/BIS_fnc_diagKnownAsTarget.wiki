@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagKnownAsTarget
+// revision: 309532 (2022-05-05T12:06:51Z)
+// export sha1: kj1ubm7xepjw0mmbbhj1yv7t9ehww16
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= <pre>/*
+	File: fn_diagKnownAsTarget.sqf
+
+	Description:
+	Visualize and profile which units know about one specific unit and how much they do.
+	Calling function again stops diagnostics.
+	
+	Parameter(s):
+	_this select 0: profile unit (Object) [default player]
+	_this select 1: radius (Scalar - meters) [default 1000m]
+	
+	Returns:
+	-
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_diagKnownAsTarget]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_diagKnownAsTarget;</sqf> -->
+
+|seealso=
+}}

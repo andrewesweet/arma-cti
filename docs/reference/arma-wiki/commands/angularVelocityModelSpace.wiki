@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/angularVelocityModelSpace
+// revision: 377253 (2026-01-02T06:32:32Z)
+// export sha1: 165ffn159z0tm3hjmco55q6uwatwv1i
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Gets the angular velocity of the object in model space as a 3D vector. The units are in Rad/s (radians per second) and rotations are clockwise.
+
+|s1= [[angularVelocityModelSpace]] obj
+
+|p1= obj: [[Object]] 
+
+|r1= [[Vector3D]] - angular velocity of the object in model space ([0,0,0] if angular velocity is not supported by the object)
+
+|x1= <sqf>hint str angularVelocityModelSpace myHeli; // [0.01, 0.03, 0.95]</sqf>
+
+|seealso= [[velocityModelSpace]] [[setAngularVelocityModelSpace]] [[angularVelocity]]
+}}

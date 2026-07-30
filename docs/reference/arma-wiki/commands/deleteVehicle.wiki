@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/deleteVehicle
+// revision: 352346 (2024-02-08T14:01:50Z)
+// export sha1: 77gj7liu4y7vctu8n9iuusrs6yn0fnd
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.34 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.34
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Deletes an object. Only objects inserted in the mission editor and objects created during the game's progress can be deleted by this command. Terrain objects and players cannot be deleted.
+{{Feature|informative|The actual object deletion, when the object becomes [[objNull]], happens on the next frame after command execution, but there are some object modifications that happen immediately. For example if the object is a unit in a group, it immediately becomes groupless (<sqf inline>isNull group _unit; // true</sqf>).}}
+
+|pr= {{Feature|warning|Use [[deleteVehicleCrew]] to delete units that are in a vehicle! Do '''not''' use this command for a vehicle's [[crew]] members as it may lead to all sorts of bugs and ghost objects left on the map.}}
+
+|s1= [[deleteVehicle]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Nothing]]
+
+|s2= [[deleteVehicle]] objects
+|s2since= arma3 2.18
+
+|p21= objects: [[Array]] of [[Object]]s
+
+|r2= [[Nothing]]
+
+|x1= <sqf>deleteVehicle _house1;</sqf>
+
+|x2= Deleting a vehicle with crew:
+<sqf>
+// might want to make sure that the car is local
+{ car deleteVehicleCrew _x } forEach crew car;
+deleteVehicle car;
+</sqf>
+
+|seealso= [[deleteVehicleCrew]] [[createUnit]] [[createVehicleLocal]] [[createVehicle]] [[Arma_3:_Event_Handlers#Deleted | Deleted EH]]
+}}

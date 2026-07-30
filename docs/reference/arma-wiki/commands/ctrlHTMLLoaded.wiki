@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/ctrlHTMLLoaded
+// revision: 369233 (2024-09-03T10:35:01Z)
+// export sha1: cc15yu9ndyjbtvpo67avtqwjm9uvf9o
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - HTML | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= GUI Control - HTML
+
+|descr= Returns [[true]] when HTML content was successfully loaded.
+
+|s1= [[ctrlHTMLLoaded]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+_control htmlLoad "test.html";
+if (!ctrlHTMLLoaded _control) then {
+	hint "Loading test.html failed!";
+};
+</sqf>
+
+|seealso= [[htmlLoad]] [[Arma: GUI Configuration]]
+}}

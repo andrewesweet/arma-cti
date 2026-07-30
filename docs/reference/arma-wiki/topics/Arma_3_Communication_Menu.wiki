@@ -1,0 +1,302 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Communication_Menu
+// revision: 376531 (2025-10-25T12:53:07Z)
+// export sha1: ip1vbxq70m1f85r8isrdtxcufsxwrew
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Communication menu is a commanding menu where support or mission requests are placed.
+
+The player can access it using following means:
+* Open the '''quick command menu''' {{Controls|~}} and select "Communication" item
+* Press {{Controls|8}} then {{Controls|1}} (Reply - Communication)
+
+{{Feature|arma2|For {{arma2}} and additional information, see [[Arma 2: Custom Command Menu]].}}
+
+Available items are announced upon adding by a [[Arma 3: Notification|notification]] and remain visualized as icons next to the commanding menu.<br>
+[[File:A3_commMenu.jpg|Communication menu and icons|500px]]
+
+
+== Configuration ==
+
+=== Config ===
+
+Communication menu items can be defined in config - global [[Config.cpp]], [[Campaign Description.ext]] or mission [[Description.ext]] (searched in this order, the latter has the highest priority).
+{{Feature|informative|'CfgCommunicationMenu' is purely scripted config which requires the use of scripted function [[BIS_fnc_addCommMenuItem]]. It will not work with [[showCommandingMenu]] script command.}}
+
+[[File:CommunicationMenuIconsA3Beta.jpg|thumb|Preview and path for icons]]
+<syntaxhighlight lang="cpp">
+class CfgCommunicationMenu
+{
+	class myArtillery
+	{
+		text = "Artillery Strike";		// Text displayed in the menu and in a notification
+		submenu = "";					// Submenu opened upon activation (expression is ignored when submenu is not empty.)
+		expression = "player setVariable ['BIS_SUPP_request', ['Artillery', _pos]];";	// Code executed upon activation
+		icon = "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\artillery_ca.paa";				// Icon displayed permanently next to the command menu
+		cursor = "\a3\Ui_f\data\IGUI\Cfg\Cursors\iconCursorSupport_ca.paa";				// Custom cursor displayed when the item is selected
+		enable = "1";					// Simple expression condition for enabling the item
+		removeAfterExpressionCall = 1;	// 1 to remove the item after calling
+	};
+
+	class menu_comms_1
+	{
+		text = "Menu Comms 1";
+		submenu = "#USER:MENU_COMMS_1";	// will open submenu that is defined as global variable MENU_COMMS_1
+		expression = "";
+		icon = "";
+		cursor = "";
+		enable = "1";
+		removeAfterExpressionCall = 0;
+	};
+};
+</syntaxhighlight>
+
+Available default icons:
+* {{hl|"\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\'''artillery_ca'''.paa"}}
+* {{hl|"\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\'''attack_ca'''.paa"}}
+* {{hl|"\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\'''call_ca'''.paa"}}
+* {{hl|"\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\'''cas_ca'''.paa"}}
+* {{hl|"\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\'''casheli_ca'''.paa"}}
+* {{hl|"\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\'''defend_ca'''.paa"}}
+* {{hl|"\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\'''instructor_ca'''.paa"}}
+* {{hl|"\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\'''mortar_ca'''.paa"}}
+* {{hl|"\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\'''supplydrop_ca'''.paa"}}
+* {{hl|"\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\'''transport_ca'''.paa"}}
+
+You can also preview pre-defined items using the [[BIS_fnc_configViewer|Splendid™ Config Viewer]].
+
+=== Simple expressions ===
+
+<div style="display: inline-block; max-height: 40em; overflow: auto">
+{| class="wikitable sortable"
+|-
+! Expression !! Effect !! Tested
+|-
+| 1 || Always available || {{Icon|checked}}
+|-
+| 0 || Always disabled || {{Icon|checked}}
+|-
+| cursorOnGround || Only callable when pointing at a valid position || {{Icon|checked}}
+|-
+| IsLeader || Player has to be the leader of his group || {{Icon|checked}}
+|-
+| IsAlone || || {{Icon|unchecked}}
+|-
+| IsAloneInVehicle || || {{Icon|unchecked}}
+|-
+| IsCommander || || {{Icon|unchecked}}
+|-
+| VehicleCommander || || {{Icon|unchecked}}
+|-
+| CommandsToGunner || || {{Icon|unchecked}}
+|-
+| CommandsToPilot || || {{Icon|unchecked}}
+|-
+| NotEmpty || || {{Icon|unchecked}}
+|-
+| NotEmptySoldiers || || {{Icon|unchecked}}
+|-
+| NotEmptyCommanders || || {{Icon|unchecked}}
+|-
+| NotEmptyMainTeam || || {{Icon|unchecked}}
+|-
+| NotEmptyRedTeam || || {{Icon|unchecked}}
+|-
+| NotEmptyGreenTeam || || {{Icon|unchecked}}
+|-
+| NotEmptyBlueTeam || || {{Icon|unchecked}}
+|-
+| NotEmptyYellowTeam || || {{Icon|unchecked}}
+|-
+| NotEmptySubgroups || || {{Icon|unchecked}}
+|-
+| NotEmptyInVehicle || || {{Icon|unchecked}}
+|-
+| SelectedTeam || || {{Icon|unchecked}}
+|-
+| SelectedUnit || || {{Icon|unchecked}}
+|-
+| FuelLow || || {{Icon|unchecked}}
+|-
+| AmmoLow || || {{Icon|unchecked}}
+|-
+| Injured || || {{Icon|unchecked}}
+|-
+| Multiplayer || || {{Icon|unchecked}}
+|-
+| AreActions || || {{Icon|unchecked}}
+|-
+| CursorOnGroupMember || || {{Icon|unchecked}}
+|-
+| CursorOnHoldingFire || || {{Icon|unchecked}}
+|-
+| CursorOnEmptyVehicle || || {{Icon|unchecked}}
+|-
+| CursorOnVehicleCanGetIn || || {{Icon|unchecked}}
+|-
+| CursorOnFriendly || || {{Icon|unchecked}}
+|-
+| CursorOnEnemy || || {{Icon|unchecked}}
+|-
+| CursorOnGround || || {{Icon|unchecked}}
+|-
+| CanSelectUnitFromBar || || {{Icon|unchecked}}
+|-
+| CanDeselectUnitFromBar || || {{Icon|unchecked}}
+|-
+| CanSelectVehicleFromBar || || {{Icon|unchecked}}
+|-
+| CanDeselectVehicleFromBar || || {{Icon|unchecked}}
+|-
+| CanSelectTeamFromBar || || {{Icon|unchecked}}
+|-
+| CanDeselectTeamFromBar || || {{Icon|unchecked}}
+|-
+| FormationLine || || {{Icon|unchecked}}
+|-
+| FormationDiamond || || {{Icon|unchecked}}
+|-
+| SomeSelectedHoldingFire || || {{Icon|unchecked}}
+|-
+| PlayableLeader || || {{Icon|unchecked}}
+|-
+| PlayableSelected || || {{Icon|unchecked}}
+|-
+| IsWatchCommanded || || {{Icon|unchecked}}
+|-
+| IsSelectedToAdd || || {{Icon|unchecked}}
+|-
+| HCIsLeader || || {{Icon|unchecked}}
+|-
+| HCCursorOnIcon || || {{Icon|unchecked}}
+|-
+| HCCursorOnIconSelectable || || {{Icon|unchecked}}
+|-
+| HCCanSelectUnitFromBar || || {{Icon|unchecked}}
+|-
+| HCCanDeselectUnitFromBar || || {{Icon|unchecked}}
+|-
+| HCCanSelectTeamFromBar || || {{Icon|unchecked}}
+|-
+| HCCanDeselectTeamFromBar || || {{Icon|unchecked}}
+|-
+| HCNotEmpty || || {{Icon|unchecked}}
+|-
+| PlayerVehicleCanGetIn || || {{Icon|unchecked}}
+|-
+| IsXbox || || {{Icon|unchecked}}
+|-
+| IsTeamSwitch || || {{Icon|unchecked}}
+|-
+| CursorOnNotEmptySubgroups || || {{Icon|unchecked}}
+|-
+| SomeSelectedHaveTarget || || {{Icon|unchecked}}
+|-
+| CursorOnGroupMemberSelected || || {{Icon|unchecked}}
+|-
+| HCCursorOnIconSelectableSelected || || {{Icon|unchecked}}
+|-
+| HCCursorOnIconenemy || || {{Icon|unchecked}}
+|-
+| PlayerOwnRadio || || {{Icon|unchecked}}
+|-
+| CursorOnNeedFirstAID || || {{Icon|unchecked}}
+|-
+| CursorOnNeedHeal || || {{Icon|unchecked}}
+|}
+</div>
+
+
+== Add Menu Item ==
+
+Use the following functions to add the item in your mission or system:
+* [[BIS_fnc_addCommMenuItem]]
+* [[BIS_fnc_removeCommMenuItem]]
+
+Number of slots is limited to 10, no pagination is implemented. Larger number is an edge case, no mission should need as many supports.
+
+{{Feature|informative|See all {{Link|Category:Function Group: Communication Menu|Communication Menu}} functions.}}
+
+=== Submenu ===
+
+==== Config ====
+<syntaxhighlight lang="cpp">
+submenu = "#USER:MENU_COMMS_1"; // "MENU_COMMS_1" is just a global variable, can be named anything
+</syntaxhighlight>
+
+==== SQF ====
+A submenu is an array in format [menuInfo, item1, item2, ... itemX]:
+* menuInfo: [[Array]] format [menuName, hasInputFocus]:
+** menuName: [[String]]
+** hasInputFocus: [[Boolean]] - as of {{arma3}} v1.05, if "has input focus" is false, custom icons are not displayed
+* itemX: [[Array]] format [itemName, assignedKey, submenuName, command, expression, isVisible, isActive, iconPath]:
+** itemName: [[String]] - displayed title
+** assignedKey: [[Array]] of [[Number]]s (see [[DIK KeyCodes]]) - e.g 0 = no key, 1 = {{Controls|Esc}}, etc
+** submenuName: [[String]] - user menu name string (e.g "#USER:MY_SUBMENU_NAME"), "" for script to execute.
+** command: [[Number]] - for main menu, -1 = CMD_SEPARATOR, -2 = CMD_NOTHING, -3 = CMD_HIDE_MENU, -4 = CMD_BACK, -5 (custom menu only) = CMD_EXECUTE
+** expression: [[Array]] of [[String]]s format [type, codeString]:
+*** type: [[String]] - the <sqf inline>"expression"</sqf> string, always
+*** codeString: [[String]] - {{Link|SQF Syntax|SQF}} code in string format (see e.g {{Link|toString#Syntax_2|toString}}); the expression has predefined variables:
+**** _caller: [[Object]] - unit which called the item, usually [[player]]
+**** _pos: [[Array]] in format [[Position]] - cursor position
+**** _target: [[Object]] - cursor target
+**** _is3D: [[Boolean]] - [[true]] when in 3D scene, [[false]] when in map
+**** _id: [[String]] - item ID as returned by [[BIS_fnc_addCommMenuItem]] function
+** isVisible: [[String]] - visibility condition; "1" for true, "0" for false, or optional argument string e.g "CursorOnGround"
+** isActive: [[String]] - enabled condition; "1" for true, "0" for false, or optional argument string e.g "CursorOnGround"
+** iconPath: [[String]] - (Optional, default "") cursor icon path for this menu item
+
+; Example
+<sqf>
+MENU_COMMS_1 =
+[
+	["MenuName", false],
+	["Teleport", [2], "", -5, [["expression", "player setPos _pos;"]], "1", "1", "\A3\ui_f\data\IGUI\Cfg\Cursors\iconcursorsupport_ca.paa"],
+	["Kill Target", [3], "", -5, [["expression", "_target setDamage 1;"]], "1", "1", "\A3\ui_f\data\IGUI\Cfg\Cursors\iconcursorsupport_ca.paa"],
+	["Disabled", [4], "", -5, [["expression", ""]], "1", "0"],
+	["Submenu", [5], "#USER:MENU_COMMS_2", -5, [], "1", "1"]
+];
+
+MENU_COMMS_2 =
+[
+	["Submenu", false],
+	["Option 1", [2], "", -5, [["expression", "hint 'Option 1';"]], "1", "1"],
+	["Option 2", [3], "", -5, [["expression", "hint 'Option 2';"]], "1", "1"],
+	["Option 3", [4], "", -5, [["expression", "hint 'Option 3';"]], "1", "1"]
+];
+</sqf>
+
+<sqf>showCommandingMenu "#USER:MENU_COMMS_1"; // displays the custom menu</sqf>
+
+==== Existing Submenus ====
+Some of the existing submenus:
+{| class="wikitable"
+|-
+! Menu !! Menu Location
+|-
+| "#User:BIS_fnc_addCommMenuItem_menu" || Group/Reply communication menu /High Command Group reply menu
+|-
+| "#User:BIS_MENU_GroupCommunication" || High Command/UAV Reply communication menu
+|-
+| "#USER:BIS_VR_commMenu_1" || VR Training Mission menu
+|-
+| "#USER:HCWPWaitRadio" || High Command/UAV Waypoints waitRadio menu
+|-
+| "#USER:HCWPWaitUntil" || High Command/UAV Waypoints waitUnitl menu
+|-
+| "#USER:HC_Custom_0" || High Command/UAV Action menu
+|-
+| "#USER:HC_Missions_0" || High Command/UAV Missions menu
+|-
+| "#USER:HC_Targets_0" || High Command/UAV Targets menu
+|-
+| "#USER:BIS_fnc_kbMenu_menu" || Conversation menu
+|-
+| "#USER:BIS_MENU_SOM_SecOps" || Communication menu
+|-
+| "#USER:BIS_MENU_SOM_Support" || Communication Support menu
+|}
+
+
+{{GameCategory|arma3|Editing}}

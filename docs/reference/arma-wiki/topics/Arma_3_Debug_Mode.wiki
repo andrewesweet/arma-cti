@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Debug_Mode
+// revision: 377924 (2026-01-11T16:10:49Z)
+// export sha1: skvju96aaaz282uej8x0fcsja14l3lw
+// categories: Category:Arma 3: Troubleshooting | Category:Introduced with Arma 3 version 2.02 | Category:Scripting Topics | Category:Startup Parameters
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GVI|arma3|2.02}}
+
+{{arma3}} now has an additional debug mode that can be enabled with the [[Arma 3: Startup Parameters|-debug startup parameter]].
+Enabling it causes the game engine to be more verbose with its logging, providing additional contextual information for some information, and logging information that it otherwise would not.
+
+=== Additional context ===
+
+When in debug mode, many errors will provide additional context around where the error occurred. This will happen for script, [[Stringtable.xml]] and [[Description.ext]] errors, as well as in other areas. For example in scripts, this is the full stack trace showing error origin:
+
+<pre>
+18:01:30 Attempt to override final function - ace_captives_fnc_doapplyhandcuffs
+18:01:30  ➥ Context:     [] L582 (A3\functions_f\initFunctions.sqf)
+    [] L609 (A3\functions_f\initFunctions.sqf)
+    [] L608 (A3\functions_f\initFunctions.sqf)
+    [] L603 (A3\functions_f\initFunctions.sqf)
+    [] L605 (A3\functions_f\initFunctions.sqf)
+    [] L5 (z\gf_scripts\addons\gf_scripts\functions\fn_postInit.sqf)
+    [] L3 (z\gf_scripts\addons\gf_scripts\functions\fn_logHandcuffs.sqf)
+    [] L4 (z\gf_scripts\addons\gf_scripts\functions\fn_logHandcuffs.sqf)
+    [] L13 (z\gf_scripts\addons\gf_scripts\functions\fn_logHandcuffs.sqf)
+</pre>
+
+=== Additional errors ===
+
+Debug mode also unlocks additional errors that are hidden during normal execution.
+An example of it, coming in {{GVI|arma3|2.08}}, is a check on [[getVariable]] that logs if it is called on a null object.
+{{Feature|informative|See [[Arma 3: Error Messages]].}}
+
+=== A3_DEBUG Preprocessor Macros ===
+
+When {{arma3}} is in debug mode, an additional preprocessor macro is set that can be used by developers to change functionality when this mode.
+{{Feature|informative|See {{Link|PreProcessor Commands#A3_DEBUG}}.}}
+
+
+[[Category:Introduced with Arma 3 version 2.02]]
+{{GameCategory|arma3|Troubleshooting}}
+[[Category:Startup Parameters]]
+[[Category:Scripting Topics]]

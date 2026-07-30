@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Tools_Launcher
+// revision: 336439 (2023-01-04T15:21:42Z)
+// export sha1: 8rs5qib3368mjjddhoj8z5mktpz5n2q
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR=
+[[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY=
+[[:Category: Arma 3: Official Tools|Arma 3 Official Tools]]
+
+|DOWNLOAD={{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION=
+This is a "one place" for Arma 3 Tools, it can check some points of your installation and run any tools from the suite.<br>It's also able to detect Mikero's tools and [[Poseidon Tools]] and interact with them. 
+
+|NOTES=
+
+|COMMAND=
+    Arma3Tools.exe<br>
+    Arma3Tools.exe -Steam -hide
+
+|LICENSING=[[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO=}}
+=== Additional information ===
+
+==== How to use it ====
+===== Startup parameters =====
+It can take the following parameters (parameters are not case-sensitive):
+* "Arma3Tools.exe '''-hide'''": starts Arma3Tools in hidden mode, whatever your settings
+* "Arma3Tools.exe '''-show'''": starts Arma3Tools in normal mode, whatever your settings 
+* "Arma3Tools.exe '''-debug'''": starts Arma3Tools in trivial debug mode (generate a log and display sdtout)
+* "Arma3Tools.exe '''-steam'''": start Steam if not running
+* "Arma3Tools.exe '''-retoreDefault'''": restore all settings to default
+===== Shortcuts =====
+* CTRL+Q: Quit application
+* CTRL+H: Reduce the application to the notification zone
+* CTRL+E: Display a dialog to edit your [[P drive/settings|Settings.ini]] file
+* CTRL+S: Show the application main form (must be done from the notification zone)
+* CTRL+L: Open log directory
+* CTRL+D: Debug mode (display stdout and store its content into the log directory)
+* ALT+D: Stop debug mode
+
+{{GameCategory|arma3|Official Tools}}

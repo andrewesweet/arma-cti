@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/getModelInfo
+// revision: 352365 (2024-02-08T14:09:28Z)
+// export sha1: 2qlly5g3oz4vai1ifssncdeyxrmh5gr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|gr1= Object Manipulation
+
+|descr= Returns object's model info. Model path is suitable for use with [[createSimpleObject]] command.
+
+|s1= [[getModelInfo]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Array]] - array in format [modelName, modelPath, hasSkeleton, placingPoint, mass]
+* modelName: [[String]] - For example "car.p3d"
+* modelPath: [[String]] - Full path to model. For example: "a3\data\models\car.p3d"
+* hasSkeleton: [[Boolean]] - Returns whether the model has a skeleton (which usually means it's also animated)
+* {{GVI|arma3|2.08}} placingPoint: [[Vector3D]] - Placing point of the model in model coordinates. Placing point is always in format [0,0,z].
+* {{GVI|arma3|2.18}} mass: [[Number]] - Mass defined in the p3d model
+
+|x1= <sqf>_modelInfo = getModelInfo player; // ["b_soldier_03.p3d", "a3\characters_f\blufor\b_soldier_03.p3d", true, [0,0,0]]</sqf>
+
+|x2= <sqf>_modelInfo = getModelInfo cursorObject;</sqf>
+
+|x3= Get Z ASL using placing point:
+<sqf>_zASL = (heli modelToWorldWorld (getModelInfo heli select 3)) select 2;</sqf>
+
+|seealso= [[cursorObject]] [[cursorTarget]] [[createSimpleObject]] [[getObjectType]] [[getObjectTextures]] [[objectParent]] [[setVelocityTransformation]] [[getUnitFreefallInfo]] [[getEntityInfo]] [[getMass]]
+}}

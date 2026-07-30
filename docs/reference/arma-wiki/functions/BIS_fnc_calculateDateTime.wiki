@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_calculateDateTime
+// revision: 327310 (2022-07-12T22:11:53Z)
+// export sha1: 8gvd9om2hq7zdejtj3hf6xvznp2by5g
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Environment | Category:Functions | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.86
+
+|gr1= Environment
+
+|descr= Returns the end datetime if an offset is passed, or the offset between start and end dates.
+
+|s1= [startDate, endDateOrOffset, timeUnit] call [[BIS_fnc_calculateDateTime]]
+
+|p1= startDate: [[Array]] in [[Date]] format - (Optional, default [[date]])
+
+|p2= endDateOrOffset: [[Array]] in [[Date]] format or [[Number]] - (Optional, default [[date]]) either the end date of the period to calculate, or time in seconds from ''startDate''
+
+|p3= timeUnit: [[String]] - (Optional, default "s") one of:
+* "s" - seconds
+* "m" - minutes
+* "h" - hours
+* "d" - days
+
+|r1= [[Date]] or [[Number]]
+* [[Date]] if ''endDateOrOffset'' is a [[Number]]
+* [[Number]] is ''endDateOrOffset'' is a [[Date]]
+
+|x1= <sqf>
+[date, 3600] call BIS_fnc_calculateDateTime;								// returns date in 3600 seconds (60min, 1h)
+[date, 60, "m"] call BIS_fnc_calculateDateTime;								// returns date in 60 minutes (1h)
+[[2035,8,28,11,55], [2035,8,29,11,55], "h"] call BIS_fnc_calculateDateTime;	// returns 24
+</sqf>
+
+|seealso= [[date]] [[setDate]] [[BIS_fnc_setDate]]
+}}

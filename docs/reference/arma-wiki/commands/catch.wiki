@@ -1,0 +1,73 @@
+// source: https://community.bistudio.com/wiki/catch
+// revision: 369419 (2024-09-03T18:48:49Z)
+// export sha1: 5s97ljdxs7eshcy8hd09n4doon2u5lz
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Program Flow
+
+|descr= Processes code when an [[Exception handling|exception]] is thrown in a [[try]] block. The exception caught can be found in the ''_exception'' variable.
+
+|s1= tryBlock [[catch]] code
+
+|p1= tryBlock: [[Exception handling|Exception Type]]
+
+|p2= code: [[Code]]
+
+|r1= [[Anything]]
+
+|x1= <sqf>try { throw "invalid argument" } catch {hint str _exception};</sqf>
+
+|x2= <sqf>123 try { if (_this != 123) throw "invalid argument" } catch { hint str _exception };</sqf>
+
+|x3= The correct usage of shorthand alt syntax:
+<sqf>
+try {
+	if (a > b) throw "Error: some error"; // OK
+	// the command argument is static
+} catch {
+	hint str _exception;
+};
+
+try {
+	_someFunc = {
+		// ...
+	};
+	if (a > b) throw (call _someFunc); // NOT OK
+	// the command argument is dynamic
+	// _someFunc is called first to get the value regardless of (a > b) outcome
+} catch {
+	hint str _exception;
+};
+
+try {
+	_someFunc = {
+		// ...
+	};
+	if (a > b) then { throw (call _someFunc) }; /// OK
+	// the command argument is dynamic
+	// _someFunc is only called when (a > b) is true
+} catch {
+	hint str _exception;
+};
+</sqf>
+
+|seealso= [[Exception handling]] [[try]] [[throw]]
+}}

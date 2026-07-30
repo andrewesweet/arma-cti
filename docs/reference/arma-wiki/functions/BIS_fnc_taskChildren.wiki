@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskChildren
+// revision: 353700 (2024-03-21T17:10:39Z)
+// export sha1: 3a9r3xv0jjlxm634hnkql5fgty8iit5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|arg= global
+|eff= global
+
+|descr= Return a task's sub-tasks. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= taskID call [[BIS_fnc_taskChildren]]
+
+|p1= taskID: [[String]] - ID of the task
+
+|r1= [[Array]] or [[Object]] - array with sub tasks or [[objNull]] if parent task ID does not exist
+
+|x1= <sqf>"task_1" call BIS_fnc_taskChildren;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

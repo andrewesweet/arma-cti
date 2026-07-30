@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getVehicleCustomization
+// revision: 363635 (2024-04-08T21:57:47Z)
+// export sha1: 73qgq9a64qjsovomw4jhc14fkhavk5o
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Vehicles
+
+|descr= Return vehicle customization settings.
+
+|s1= [object, class] call [[BIS_fnc_getVehicleCustomization]]
+
+|p1= object: [[Object]]
+
+|p2= class: [[String]] - (Optional, default "") object class override
+
+|r1= [[Array]] in format: [<texture>, <animations>], for example (<nowiki>[</nowiki>["wasp",1],["AddTread",0,"AddTread_Short",1]])
+
+|x1= <sqf>[vehicle player] call BIS_fnc_getVehicleCustomization;</sqf>
+
+|seealso= [[Arma 3: Vehicle Customisation]] [[BIS_fnc_initVehicle]]
+}}

@@ -1,0 +1,88 @@
+// source: https://community.bistudio.com/wiki/lock
+// revision: 353298 (2024-03-15T17:11:43Z)
+// export sha1: 5uc736wmuqdk5pvs62dr3rvjmcweq3t
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Lock vehicle (disable mounting / dismounting) for player.
+This command will remove user get in/get out actions but will not stop player getting into or out of vehicle via script commands (e.g [[moveInCargo]]).
+{{Feature|informative|Alternative syntax is similar to [[setVehicleLock]] but with numbers.}}
+
+|s1= vehicleName [[lock]] locked
+
+|p1= vehicleName: [[Object]]
+
+|p2= locked: [[Boolean]] - [[true]] to lock, [[false]] to unlock
+
+|r1= [[Nothing]]
+
+|s2= vehicleName [[lock]] lockstate
+
+|s2since= arma3 0.50
+
+|p21= vehicleName: [[Object]]
+
+|p22= lockstate: [[Number]] - can be one of the following:<br>
+0 - Unlocked<br>
+1 - Default (player subordinate cannot enter until his leader says so)<br>
+2 - Locked<br>
+3 - Locked for player
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_jeepOne lock true;</sqf>
+
+|x2= <sqf>
+heli lock true;
+locked heli; // 2
+
+heli lock false;
+locked heli; // 0
+
+heli lock 1;
+locked heli; // 1
+</sqf>
+
+|seealso= [[locked]] [[setVehicleLock]] [[lockDriver]] [[lockCargo]] [[lockTurret]]
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20100109224800
+|text= Lock prevents AI persons mounting or dismounting vehicles when ordered to do so and players are prevented from doing both too, but AI will still dismount when a vehicle is damaged.
+}}
+
+{{Note
+|user= cali
+|timestamp= 20100922045600
+|text= If an AI group (e.g Mechanized Infantry) has its vehicle locked with its crew in it, it will mount or dismount it anyway. But a player in this group won't be able to enter the vehicle.
+}}

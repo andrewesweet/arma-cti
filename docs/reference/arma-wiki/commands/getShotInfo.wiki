@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/getShotInfo
+// revision: 377707 (2026-01-02T09:03:44Z)
+// export sha1: b53j85xtooew4tx7nq2x3uedqrt98l9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Object Manipulation
+
+|descr= Returns various properties for the given shot.
+
+|s1= [[getShotInfo]] shot
+
+|p1= shot: [[Object]] - shot projectile
+
+|r1= [[Array]] with [effectiveTimeToLive, fuseDistanceLeft, timeToExplosion, triggerIsForced, shownTracer, isReal, isSubmunitionTriggered, isSetForDeletion, shotParent, shotInstigator]
+* 0 - effectiveTimeToLive: [[Number]] - how much more shot has to live.
+* 1 - fuseDistanceLeft: [[Number]] - how long shot has to travel more to get fused (undebarrel grenade for example).
+* 2 - timeToExplosion: [[Number]] - how long before shot fuse explodes (hand grenade for example) {{GVI|arma3|2.20|size= 0.75}} works on mines too.
+* 3 - triggerIsForced: [[Boolean]] - [[true]] if shot ammo was triggered with [[triggerAmmo]].
+* 4 - shownTracer: [[Boolean]] - [[true]] if the shot shown as tracer.
+* 5 - isReal: [[Boolean]] - [[true]] if the shot is considered in damage events.
+* 6 - isSubmunitionTriggered: [[Boolean]] - [[true]] if the shot contains submunition and it is triggered.
+* 7 - isSetForDeletion: [[Boolean]] - [[true]] if the shot is already set for deletion but not yet removed from the scene.
+* 8 - {{GVI|arma3|2.22}} shotParent: [[Object]] - the vehicle that produced shot.
+* 9 - {{GVI|arma3|2.22}} shotInstigator: [[Object]] - the person who pulled the trigger.
+
+|s2= shot [[getShotInfo]] index
+
+|p21= shot: [[Object]] - shot projectile
+
+|p22= index: [[Number]] - property index (see main syntax, for example 1 for fuseDistanceLeft)
+
+|r2= [[Anything]] - depends on the requested property, or [[Nothing]]
+
+|x1= <sqf>private _shotInfo = getShotInfo shot1;</sqf>
+
+|x2= <sqf>private _fuseDistanceLeft = shot1 getShotInfo 1;</sqf>
+
+|seealso= [[getShotParents]] [[missileTarget]] [[triggerAmmo]] [[getObjectType]] [[getObjectTextures]] [[objectParent]] [[setVelocityTransformation]] [[getUnitFreefallInfo]] [[getEntityInfo]] [[getModelInfo]]
+}}

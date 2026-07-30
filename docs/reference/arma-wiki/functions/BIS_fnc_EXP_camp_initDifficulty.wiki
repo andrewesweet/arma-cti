@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_initDifficulty
+// revision: 309346 (2022-05-05T12:04:30Z)
+// export sha1: 36wmf1bmau5s55evkz1v9hr5iupbcva
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|eff= local
+
+|gr1= Campaign
+
+|descr= Initializes difficulty settings in Apex Protocol campaign.
+
+|mp= Needs to be executed globally.
+
+|s1=
+
+|r1= [[Boolean]] - [[true]]
+
+|x1= <sqf>call BIS_fnc_EXP_camp_initDifficulty;</sqf>
+
+|seealso= [[BIS_fnc_EXP_camp_initClasses]] [[BIS_fnc_EXP_camp_initCharacter]]
+}}

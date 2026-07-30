@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleTimeTrial
+// revision: 330749 (2022-11-01T15:22:38Z)
+// export sha1: cave90vy6bkjljr8rx9t7tcu70ui9jt
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules - Time Trials | Category:Functions | Category:Introduced with Arma 3 version 1.20 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.20
+
+|gr1= Modules - Time Trials
+
+|descr= {{Feature|important|Used for Time Trials, internal use only.}}
+
+|s1= -
+
+|r1= -
+
+|x1= -
+
+|seealso= [[:Category:Function Group: Modules - Time Trials|Time Trials Functions]]
+}}

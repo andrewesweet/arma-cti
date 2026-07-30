@@ -1,0 +1,101 @@
+// source: https://community.bistudio.com/wiki/createTrigger
+// revision: 370090 (2024-10-31T19:20:48Z)
+// export sha1: 9x40lansag378khqa0lnyjg0dp3woh1
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Triggers
+
+|descr= Creates a [[Trigger|trigger]] of the given type and at the given position. The type must be a class name in ''CfgNonAIVehicles'' or ''CfgVehicles'' with <syntaxhighlight lang="cpp" inline>simulation = detector</syntaxhighlight>. An array containing all units that have activated the trigger is available via <sqf inline>list triggerobj</sqf>. Since triggers are '''[[Object]]s''', commands such as [[getPosASL]], [[setPosASL]], [[deleteVehicle]] etc. work on them.
+{{Feature|important|Triggers are always created on the road surface (AGL) at provided x, y coordinates. The z param is ignored. In order to place the trigger with a custom z, use a 'setPosXXX' command after trigger creation.}}
+{{Feature|informative|Since {{arma3}} v1.54 triggers can be disabled/enabled using [[enableSimulation]] command.}}
+
+Triggers are created with default parameters:
+{{Columns|4|
+* {{hl|a}}: 50
+* {{hl|b}}: 50
+* {{hl|c}}: -1
+* {{hl|angle}}: 0
+* {{hl|rectangular}}: false
+* {{hl|activationBy}}: None
+* {{hl|activationType}}: Present
+* {{hl|repeating}}: false
+* {{hl|timeoutMin}}: 0
+* {{hl|timeoutMid}}: 0
+* {{hl|timeoutMax}}: 0
+* {{hl|interruptable}}: true
+* {{hl|type}}: None
+* {{hl|text}}: ""
+* {{hl|name}}: ""
+* {{hl|expCond}}: "this"
+* {{hl|expActiv}}: ""
+* {{hl|expDesactiv}}: ""
+* {{GVI|arma3|1.98|size= 0.75}} {{hl|interval}}: 0.5
+}}
+
+|s1= [[createTrigger]] [type, position, makeGlobal]
+
+|p1= type: [[String]] - usually "EmptyDetector"
+
+|p2= position: [[Position#Introduction|Position2D]], [[Position#Introduction|Position3D]] or [[Object]] (see the note in description)
+
+|p3= makeGlobal: [[Boolean]] - (Optional - default [[true]]) locality flag
+* [[true]] - trigger is global {{Icon|globalEffect|24}}
+* [[false]] - trigger is local {{Icon|localEffect|24}}
+|p3since= arma3 1.44
+
+|r1= [[Object]] - created trigger
+
+|x1= <sqf>
+_trg = createTrigger ["EmptyDetector", getPos player];
+_trg setTriggerArea [5, 5, 0, false];
+_trg setTriggerActivation ["CIV", "PRESENT", true];
+_trg setTriggerStatements ["this", "hint 'Civilian near player'", "hint 'no civilian near'"];
+</sqf>
+
+|x2= Open/close Bar Gate automatically:
+<sqf>
+//--- init of the Bar Gate
+if (isServer) then
+{	
+	_gateTrigger = createTrigger ["EmptyDetector", getPosWorld this, false];
+	_gateTrigger setVariable ["BarGateObj", this];
+	_gateTrigger setTriggerActivation ["ANYPLAYER", "PRESENT", true];
+	_gateTrigger setTriggerArea [5, 25, getDir this, true];
+	_gateTrigger setTriggerStatements 
+	[
+		"this", 
+		"thisTrigger getVariable ""BarGateObj"" animateSource [""Door_1_sound_source"", 1]", 
+		"thisTrigger getVariable ""BarGateObj"" animateSource [""Door_1_sound_source"", 0]"
+	];
+};
+</sqf>
+
+|seealso= [[setTriggerActivation]] [[setTriggerArea]] [[setTriggerStatements]] [[setTriggerText]] [[setTriggerTimeout]] [[setTriggerType]] [[setEffectCondition]] [[setSoundEffect]] [[setMusicEffect]] [[setTitleEffect]] [[deleteVehicle]] [[synchronizeWaypoint]] [[synchronizeTrigger]] [[createGuardedPoint]] [[triggerInterval]] [[setTriggerInterval]] [[enableSimulation]] [[simulationEnabled]]
+}}
+
+{{Note
+|user= TeaCup
+|timestamp= 20130306141500
+|text= Calling [[list]] immediately after creating a trigger this way (and setting up activation, area, statements, timeout, etc..), will return <null> instead of an array. It seems the trigger needs about 1 second to initialise, after which it will behave as expected: returning an array of all the objects inside the trigger (the ones matching the criteria), or an empty array.
+}}

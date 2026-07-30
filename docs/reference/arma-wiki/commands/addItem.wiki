@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/addItem
+// revision: 369269 (2024-09-03T18:42:43Z)
+// export sha1: 35v9n6rymd8w0pjuhnp474ylnjle21x
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Creates new item and tries to add it into inventory. Inventory must have enough space to accomodate new item or command will fail.The item can also be a weapon or a magazine.
+
+|s1= unit [[addItem]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+// identical to bluforUnit linkItem "NVGoggles"
+// addItem then assignItem makes the item go through through inventory storage and fail if storage space was missing
+bluforUnit addItem "NVGoggles";
+bluforUnit assignItem "NVGoggles";
+
+opforUnit addItem "NVGoggles_OPFOR";
+opforUnit assignItem "NVGoggles_OPFOR";
+
+independentUnit addItem "NVGoggles_INDEP";
+independentUnit assignItem "NVGoggles_INDEP";
+</sqf>
+
+|seealso= [[removeItem]] [[assignItem]] [[unassignItem]] [[assignedItems]] [[linkItem]] [[unlinkItem]] [[removeAllAssignedItems]] [[addItemToUniform]] [[addItemToVest]] [[addItemToBackpack]]
+}}

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_helicopterGetHitpoints
+// revision: 348648 (2023-11-08T13:48:24Z)
+// export sha1: 69tlljqb51o0ke22jgbdc6mvbmqs0lv
+// categories: Category:Arma 3: Functions | Category:Function Group: Helicopters | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Helicopters
+
+|descr= Return all hitpoints for a helicopter.
+
+|s1= object call [[BIS_fnc_helicopterGetHitpoints]]
+
+|p1= object: [[Object]] - helicopter
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>[BIS_helicopter] call BIS_fnc_helicopterGetHitpoints;</sqf>
+
+|seealso= [[setDamage]] [[setDammage]] [[getDammage]] [[setHit]] [[getHit]] [[getHitIndex]] [[setHitIndex]] [[getHitPointDamage]] [[setHitPointDamage]]
+}}

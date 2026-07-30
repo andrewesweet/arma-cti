@@ -1,0 +1,166 @@
+// source: https://community.bistudio.com/wiki/Conduct_an_Ambush
+// revision: 226239 (2021-01-31T17:51:34Z)
+// export sha1: g02za65duy1oe4np07a1g1243cz0zx2
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+==How to conduct an Ambush==
+
+=== Situation ===
+The enemy is moving or temporarily halted and your force is stationary. The enemy are in column formation. The Ambush may be hasty or deliberate. The person in charge orders an ambush. 
+
+=== Concept ===
+The concept is to kill the maximum number of enemy by using the elements of surprise and the reduced situational awareness of the enemies recent mobility. 
+
+=== Actions On ===
+The actions to be taken on deciding to ambush entail:
+
+* Choose the Category of Ambush
+** Hasty
+** Deliberate
+* Chose a kill-zone
+* Chose an Ambush Type
+** The Point Ambush
+** The Area Ambush
+* Chose an Ambush Formation
+** The L shape that results in Crossfire
+** The Linear Ambush that relies solely on flanking fire
+* Decide on a method of holding the enemy in the kill-zone
+* Surprise the enemy
+* Conduct a High Speed Contact
+* Move to a pre-chosen rally point
+
+==== Choose a category of Ambush ====
+The category of Ambush is primarily dictated by time
+
+===== Hasty Ambush =====
+
+#A patrol member makes a contact report that enemy is in sight and gives direction of contact from patrol
+#The patrol freezes
+#CO decides to conduct a hasty ambush
+#CO designates the rally point for the withdrawal
+#CO designates the kill zone
+#CO designates the type of ambush
+#CO deploys the patrol to ambush lines by positions marked on map and or in reference to terrain and clutter objects
+#Squad commanders and relevant individuals call or chat "SEEN!" for each designated reference point
+#CO deploys designated security elements by positions marked on map and in reference to terrain and clutter objects
+#Patrol members deploy to covered and concealed positions on the ambush lines
+#Security elements are placed on the flanks and rear
+#The Ambush is conducted
+#CO orders cease fire
+#The search team moves into kill zone and conducts a hasty search of enemy soldiers
+#At the CO's discretion and if further immediate contact is unlikely the patrol polices up any weapons creating a weapons cache if needed
+#Security elements rejoin patrol
+#CO orders withdrawal from the ambush site to the rally point
+#CO conducts an After Action Review by number so as to disseminate any useful info
+#The patrol reorganizes as needed and continues mission
+
+===== Deliberate Ambush =====
+A deliberate ambush is one that is conducted against a specific target at a predetermined time and location. As such; this type of ambush requires detailed intelligence about enemy movements and composition such as:
+* The size of enemy unit
+* Their weapons and equipment
+* The Enemy route and direction of movement
+* Either
+** Detailed timing of enemy movement and expected arrival times at various waypoints along the way
+** Knowledge of a predictable enemy transit route
+
+==== Choosing the kill-zone ====
+
+Choose a kill-zone that:
+
+* Allows the ambush force to control all phases of contact
+* Allows the whole enemy force to be encompassed.
+* Allows easy retreat to cover, reverse slopes and urban environments are good.
+* Is Obscured from enemy OP and air observation, by time and or terrain masking.
+
+==== Choice of Ambush type ====
+
+The factors in Choice of type of ambush are: terrain, relative size and type of forces, dispersion of the enemy, likely enemy reaction time for supporting elements.
+
+===== Point Ambush =====
+Useful against Armor, the point ambush relies on constrictions in terrain forcing the enemy through a bottle neck, such as a steep valley or a bridge, or urban constriction. This form of ambush very much tends to be hit and run; so cover is very important. In the open an overlooking observation ridge with reverse slope to the rear are useful here. Urban terrain are ideal for this form of ambush. This form of ambush can used to prepare the ground by blocking avenues of a approach to create to create a future L shape or linear ambush thus creating an area ambush.
+
+===== Area Ambush =====
+An Area Ambush takes place at multiple places and is conducted by multiple squads. As such an Area Ambush is only conducted by a force of platoon size and above.
+
+==== The Choice of Ambush Formation ====
+The factors in Choice of ambush formation are: warning of the enemy approach and thus time to deploy, terrain factors such as cover and the availability of safe lines of withdrawal, likely enemy reaction time for supporting elements.
+
+===== The L shape =====
+
+The L shape consists of a small powerful blocking force and a larger number of units parallel to the enemy column. 
+* Normally a blocking force over watch the head of the enemy column and have the most powerful automatic weapons
+* The blocking force line must be wider than the width of the enemy column
+* The majority of units deploy along the expected length of the enemy column
+* The top of the long flanking leg of the L and the junction of L are the best places for AT weapons
+Advantages
+* Crossfire negates any potential cover for the enemy.
+* Higher shock effect
+* Concentration of fire down the enemy column, due to the [[Crossing the T effect]]
+* Minimal traverse for most powerful weapons
+* Blocking force Fire passes through entire length of column
+Disadvantages
+* Fragments the Ambush Force more
+* Takes longer to deploy and withdraw
+* Blocking force may be spotted before the ambush is initiated
+* Blocking force is in the frontal arc of lead enemy weapon
+* More complex to command, synchronize and secure than a linear ambush
+* Some danger of Blue on Blue especially where legs of the L are very long
+* Two stage disengagement normally requires blocking force to be first to withdraw
+* Specific terrain requirements
+
+===== The Linear Ambush =====
+
+The linear ambush relies on constrictions of terrain and urban environment and static constriction methods such as mines and wire. 
+
+Advantages
+* Can be conducted almost completely from defilade using indirect fire such as grenades
+* Force is easy to control
+* Where it relies on terrain can be very quick and easy to conduct
+
+Disadvantages
+* The Linear Ambush relies solely on flanking fire.
+* Once the enemy recovers from initial surprise they are already in Line formation for pursuit
+
+==== Method of holding the enemy in the kill-zone ====
+
+There are several methods of holding the enemy in the kill-zone:
+
+* Static roadblocks 
+* Mobile roadblocks
+* Topping and tailing the column
+* Weight of suppressive fire
+* Minefields and command line explosives
+* Any combination of the above
+
+==== Surprise ====
+
+Surprise is achieved by:
+
+* Concealment of the ambush force.
+* Obscuration of the chosen kill-zone from the enemy until they enter it, so blind corners on hills, blind crests of hills, and urban environments are good, Forrest ambushes can also help.
+* Shocking and overwhelming force
+
+==== High speed of contact ====
+
+A high speed of contact is essential; contacts of less than 60 seconds are best as they:
+
+* Are a fundamental element of surprise.
+* Create shock.
+* Overwhelm the enemies ability to react
+* Disrupt enemy command, cohesion and communication
+
+==== A Preplanned Rally Point ====
+
+No ambush can be said to be complete until the Ambush force has escaped direct enemy contact, so the first and most important element to plan is the retreat plan. This retreat plan is a form of the break contact procedure. This may entail:
+
+* A Planned Rally Point (RP) that all elements can get to in 5 minutes or less  
+* A break contact order given by the Officer Commanding (OC)
+* Break contact plan
+* Cover and concealment.
+* An Over-watch force or over-watch plan
+* Obscuration by smoke 
+* Methods to prevent pursuit, such as mines and timed satchel charges
+
+
+[[Category:Battle Tactics]]

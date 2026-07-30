@@ -1,0 +1,149 @@
+// source: https://community.bistudio.com/wiki/Template:Columns
+// revision: 373204 (2025-04-12T18:03:06Z)
+// export sha1: 2n1vg8bfbrcxc9ub7s5m430s78fyshv
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+| {{#if:{{{2|}}}
+	| <div class="noresize">{{#if:{{{3|{{{expand|}}}}}}||<div>}}<div class="columns" style="columns: {{{1}}}{{#if:{{{3|{{{expand|}}}}}}||; display: inline-block}}">{{{2}}}</div>{{#if:{{{3|{{{expand|}}}}}}||</div>}}</div>
+	| -no columns content defined-{{TemplateCase||[[Category:Columns template usage error]]}}
+}}
+| -no columns information defined-{{TemplateCase||[[Category:Columns template usage error]]}}
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Creates CSS columns. It also adds the page to the [[:Category:Columns template usage error|Columns template usage error]] category on usage error.
+
+|param1= colsInfo
+|descr1= {{hl|columns}} CSS attribute's definition - see {{Link|https://developer.mozilla.org/en-US/docs/Web/CSS/columns|columns}}, can be:
+** desired columns number, e.g {{hl|4}}
+** column width, e.g {{hl|12em}}
+** a mix of the two, e.g {{hl|4 12em}} - in this case, columns number is the '''maximum''' columns number
+
+|param2= content
+|descr2= to be split in columns, usually a list
+
+|param3= expand
+|descr3= named parameter. makes the columns take the whole width
+
+|example1= <syntaxhighlight lang="handlebars">{{Columns}}</syntaxhighlight>
+|result1= {{Columns}}
+
+|example2= <syntaxhighlight lang="handlebars">{{Columns|3}}</syntaxhighlight>
+|result2= {{Columns|3}}
+
+|example3= <syntaxhighlight lang="handlebars">
+{{Columns||
+* contentA
+* contentB
+* contentC
+* contentD
+}}
+</syntaxhighlight>
+|result3= {{Columns||
+* contentA
+* contentB
+* contentC
+* contentD
+}}
+
+|example4= <syntaxhighlight lang="handlebars">
+{{Columns|2|
+* contentA
+* contentB
+* contentC
+* contentD
+}}
+</syntaxhighlight>
+|result4= {{Columns|2|
+* contentA
+* contentB
+* contentC
+* contentD
+}}
+
+|example5= <syntaxhighlight lang="handlebars">
+{{Columns|3|
+* contentA
+* contentB
+* contentC
+* contentD
+}}
+</syntaxhighlight>
+|result5= {{Columns|3|
+* contentA
+* contentB
+* contentC
+* contentD
+}}
+
+|example6= <syntaxhighlight lang="handlebars">
+{{Columns|4|
+* contentA
+* contentB
+* contentC
+* contentD
+}}
+</syntaxhighlight>
+|result6= {{Columns|4|
+* contentA
+* contentB
+* contentC
+* contentD
+}}
+
+|example7= <syntaxhighlight lang="html+handlebars">
+<div style="border: 1px solid red; width: 50em">
+Above
+{{Columns|3|
+* contentA
+* contentB
+* contentC
+* contentD
+|expand= y
+}}
+Below
+</div>
+</syntaxhighlight>
+|result7= <div style="border: 1px solid red; width: 50em">
+Above
+{{Columns|3|
+* contentA
+* contentB
+* contentC
+* contentD
+|expand= y
+}}
+Below
+</div>
+
+|example8= <syntaxhighlight lang="html+handlebars">
+<div style="border: 1px solid red; width: 50em">
+{{Columns|3 10em|
+* contentA, which can totally do with a lipsum amongst other things, yes
+* contentB, which can totally do with a lipsum amongst other things, too
+* contentC, which can totally do with a lipsum amongst other things, too
+* contentD, which can totally do with a lipsum amongst other things, too
+* contentE, which can totally do with a lipsum amongst other things, too
+* contentF, which can totally do with a lipsum amongst other things, too
+* contentG, which can totally do with a lipsum amongst other things, too
+* contentH, which can totally do with a lipsum amongst other things, too
+* contentI, which can totally do with a lipsum amongst other things, too
+* contentJ, which can totally do with a lipsum amongst other things, too
+}}
+</div>
+</syntaxhighlight>
+|result8= <div style="border: 1px solid red; width: 50em">
+{{Columns|3 10em|
+* contentA, which can totally do with a lipsum amongst other things, yes
+* contentB, which can totally do with a lipsum amongst other things, too
+* contentC, which can totally do with a lipsum amongst other things, too
+* contentD, which can totally do with a lipsum amongst other things, too
+* contentE, which can totally do with a lipsum amongst other things, too
+* contentF, which can totally do with a lipsum amongst other things, too
+* contentG, which can totally do with a lipsum amongst other things, too
+* contentH, which can totally do with a lipsum amongst other things, too
+* contentI, which can totally do with a lipsum amongst other things, too
+* contentJ, which can totally do with a lipsum amongst other things, too
+}}
+</div>
+
+}}</noinclude>

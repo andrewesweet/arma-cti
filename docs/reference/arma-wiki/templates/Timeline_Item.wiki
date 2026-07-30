@@ -1,0 +1,133 @@
+// source: https://community.bistudio.com/wiki/Template:Timeline_Item
+// revision: 376911 (2025-12-27T01:51:41Z)
+// export sha1: ot13t485snx2sry5t04ndkoioz1yz25
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>|-
+| class="timeline-item-icon"{{#if:{{{start|}}}|<nowiki/> style="border-top-width: {{{start}}}px"}} | {{#if:{{{1|}}}|{{Icon|{{{1}}}}}|{{Icon|unknown}}}}
+| class="timeline-item-date"{{#if:{{{6|}}}|<nowiki/> style="background-color:{{{6}}}"}} | '''{{#if:{{{3|}}}|{{{3}}}|?}}'''{{#if:{{{4|}}}|&nbsp;/&nbsp;{{{4}}}}}
+| class="timeline-item-text"{{#if:{{{6|}}}|<nowiki/> style="background-color:{{{6}}}"}} |
+{{{5|-no text provided!-{{TemplateCase||[[Category:Timeline Item template usage error]]}}}}}</includeonly><noinclude>
+Displays an [[Armaverse Timeline]] item - a line in the big table of Time.
+
+== Usage ==
+{{<nowiki/>Timeline_Item|'''''type'''''|'''''metadata'''''|'''''year'''''|'''''date'''''|'''''description'''''|'''''bgColor'''''}}
+* type: (Optional, default {{hl|unknown}}) See [[Template:Icon|icon template]]
+* metadata: obsolete, unused
+* year: (Optional, default "?") a year number
+* date: (Optional, default nothing without slash separator) a more precise date if available, in format {{hl|'''MM'''&amp;nbsp;/&amp;nbsp;'''DD'''}}
+* description: text describing the event. Use html {{hl|&lt;h4&gt;&lt;/h4&gt;}} tags to name an event (usually the mission name), {{hl|&lt;h3&gt;&lt;/h3&gt;}} for a title.
+* bgColor: (Optional) background color - use {{hl|LightSteelBlue}} for title
+
+; Named parameters:
+* start: defines the top border's thickness (in px). e.g: {{hl|c= {{!}}start=2}}
+
+The template adds the page to the [[:Category:Timeline Item template usage error|Timeline Item template usage error]] category in case ''description'' is not provided.
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result (put in an additional table)
+|-
+| <syntaxhighlight lang="handlebars">{{Timeline_Item}}</syntaxhighlight>
+|
+{| class="wikitable"
+! colspan="3" | Existing table
+{{Timeline_Item}}
+|}
+|-
+| <syntaxhighlight lang="handlebars">
+{{Timeline_Item
+|arma3|
+|2035||
+I heard of some events in the Mediterranean Sea...
+}}
+</syntaxhighlight>
+|
+{| class="wikitable"
+! colspan="3" | Existing table
+{{Timeline_Item
+|arma3|
+|2035||
+I heard of some events in the Mediterranean Sea...
+}}
+|}
+|-
+| <syntaxhighlight lang="handlebars">
+{{Timeline_Item
+|ofp|
+|2001|approx.|
+Space Odyssey?
+}}
+</syntaxhighlight>
+|
+{| class="wikitable"
+! colspan="3" | Existing table
+{{Timeline_Item
+|ofp|
+|2001|approx.|
+Space Odyssey?
+}}
+|}
+|-
+| <syntaxhighlight lang="handlebars">
+{{Timeline_Item
+|arma3|
+||01&nbsp;/&nbsp;01|
+This format does not make sense...<br>
+''Happy New Year I guess?''
+}}
+</syntaxhighlight>
+|
+{| class="wikitable"
+! colspan="3" | Existing table
+{{Timeline_Item
+|arma3|
+||01&nbsp;/&nbsp;01|
+This format does not make sense...<br>
+''Happy New Year I guess?''
+}}
+|}
+|-
+| <syntaxhighlight lang="handlebars">
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;02|
+<h4>Within Reach</h4>
+Kerry joins a small team bound for Stratis.
+}}
+</syntaxhighlight>
+|
+{| class="wikitable"
+! colspan="3" | Existing table
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;02|
+<h4>Within Reach</h4>
+Kerry joins a small team bound for Stratis.
+}}
+|}
+|-
+| <syntaxhighlight lang="handlebars">
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;02|
+<h4>Within Reach</h4>
+Kerry joins a small team bound for Stratis.
+|start= 10
+}}
+</syntaxhighlight>
+|
+{| class="wikitable"
+! colspan="3" | Existing table
+{{Timeline_Item
+|arma3|
+|2035|08&nbsp;/&nbsp;02|
+<h4>Within Reach</h4>
+Kerry joins a small team bound for Stratis.
+|start= 10
+}}
+|}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Ropes_and_Sling_Loading
+// revision: 139105 (2019-12-03T21:54:25Z)
+// export sha1: oulwhb4w7ojkvwxow2eebbjttwwba0h
+// Vendored snapshot. Do not edit — re-export instead.
+
+Create, manage and delete ropes and sling load cargo.
+
+
+[[Category:Scripting Commands by Functionality]]

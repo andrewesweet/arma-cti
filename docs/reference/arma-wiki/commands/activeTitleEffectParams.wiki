@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/activeTitleEffectParams
+// revision: 377608 (2026-01-02T08:51:23Z)
+// export sha1: esymbz3wotdi27oe0861oa1abwprfw9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+
+|gr1= GUI Control
+
+|descr= Returns type, effect, speed and map visibility of the given active title effect (see [[allActiveTitleEffects]])
+
+|s1= [[activeTitleEffectParams]] layer
+
+|p1 = layer: [[Number]] - layer number or -1 (see [[allActiveTitleEffects]])
+
+|r1= [[Array]] with [type, effect, speed, showInMap] or [], where:
+* type: [[String]] - type of effect, can be {{hl|"OBJ"}}, {{hl|"RSC"}} or {{hl|"TXT"}}
+* effect: [[String]] - [[Title Effect Type]] ({{hl|"PLAIN"}}, {{hl|"BLACK OUT"}} etc)
+* speed: [[Number]] - effect speed multiplier
+* showInMap: [[Boolean]] - [[true]] if effect is available over map
+
+
+|x1= <sqf>
+21 cutText ["Hello World!", "PLAIN", 2];
+hint str activeTitleEffectParams 21; // ["TXT", "PLAIN", 2, true]
+</sqf>
+
+|x2= <sqf>
+titleText ["Hello World!", "BLACK"];
+hint str activeTitleEffectParams -1; // ["TXT", "BLACK", 1, true]
+</sqf>
+
+
+|seealso= [[allCutLayers]] [[cutText]] [[cutRsc]] [[cutObj]] [[cutFadeOut]] [[titleText]] [[titleRsc]] [[titleObj]] [[titleFadeOut]] [[allActiveTitleEffects]] [[Title Effect Type]]
+}}

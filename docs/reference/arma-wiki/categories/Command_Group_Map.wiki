@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Map
+// revision: 157591 (2020-09-16T07:37:27Z)
+// export sha1: jh9d8m9rfvoemh65hp1udlyq5pb0p48
+// Vendored snapshot. Do not edit — re-export instead.
+
+Map related commands.
+
+[[Category:Scripting Commands by Functionality]]

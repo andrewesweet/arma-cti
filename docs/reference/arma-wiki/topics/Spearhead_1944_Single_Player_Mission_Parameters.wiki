@@ -1,0 +1,94 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Single_Player_Mission_Parameters
+// revision: 376072 (2025-07-27T10:18:55Z)
+// export sha1: 4dgnqtu7fbgv2qyrolcho66jpnlhx92
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File: spe singleplayer mission parameters ui.jpg|350px|thumb|The parameter UI]]
+
+[[Spearhead 1944]] introduces a system that allows players to use [[Arma 3: Mission Parameters]] also in single player scenarios. The system will automatically:
+
+* Read the mission parameters
+* Fill a UI appropriately
+* Execute the parameter's script or function
+
+== Scenario Setup ==
+1. Define [[Arma 3: Mission Parameters]] as usual in the [[description.ext]]. 
+<syntaxhighlight lang="cpp">
+class Params
+{
+	// If the class name contains either "header", "separator", "title" or "spacer"
+	// it will be formatted as a header and not treated as an actual parameter
+	class Environment_Header 
+	{
+		title = "$STR_SPE_MISSIONS_SCENARIOS_PARAMETER_ENVIRONMENT_HEADER";
+		texts[] = {""};
+		values[] = {0};
+		default = 0;
+	};
+	class Daytime
+	{
+		// The indentation here is for the multiplayer parameters UI, the singleplayer UI will trim the title and no spaces before and after the text are added
+		title = __EVAL("      " + localize "$STR_A3_CFGVEHICLES_MODULEDATE_F_ARGUMENTS_HOUR_0");
+		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23};
+		texts[] = {"00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"};
+		default = 5;
+		function = "SPE_PZKW_fnc_paramDaytime";
+		isGlobal = 0;
+
+		// Additional properties (not used in the vanilla system)
+		tooltip = "A tooltip"; // The tooltip propery is not available in the vanilla parameter system but is for the custom singleplayer system
+		ignoreInSingleplayer = 1; // If this is set to 1, the parameters will not be executed in single player
+	};
+};
+</syntaxhighlight>
+
+{{Feature|informative|Note that the code will automatically select the best control type for each parameter.}}
+
+2. Create a function in [[Arma 3: Functions Library]] that is executed on {{hl|preInit}}. Put the following code in it <sqf inline>BIS_fnc_initParams_skip = true;</sqf>. This ensures that the vanilla mission parameter behaviour is disabled. Otherwise changes in our UI will have no effect or parameter code gets executed twice.
+
+== Accessing the Parameter Values ==
+The parameter values are stored in the {{hl|SPE_ParamsHashMap}} [[HashMap]].  
+While most of your parameters will probably directly execute a script or functions, sometimes parameters only define a value which is then used by other scripts. If this is the case then you need to wait on the parameters (singleplayer or multiplayer) to be available.
+
+<sqf>
+// This file contains macros that make it easier to work with parameters and also guarantee compatibility with the vanilla system
+#include "\WW2\SPE_Missions_p\UtilityFunctions_f\params\macrosParamsSingleplayer.inc"
+
+// Wait until SP params are initialized or it's MP
+[
+	{WAIT_FOR_PARAMS},
+	{
+		if (GET_PARAM("HelperTasks", 1) == 1) then
+		{
+			[SPE_PZKW_FirstTaskArea, SPE_PZKW_FirstTaskID] call SPE_PZKW_fnc_createSubtasks;
+		};
+	}
+] call SPE_fnc_waitUntilAndExecute;
+</sqf>
+
+=== Macros ===
+<sqf>
+// Checks if singleplayer params are accessible
+PARAMS_EXISTS
+
+// Returns a param value, works with both SP and MP system
+GET_PARAM(name,default)
+
+// Returns true if singplayer params were initialized or multiplayer params are used
+// Use this in [[waitUntil]] when using singleplayer params in SP and MP scenario
+WAIT_FOR_PARAMS
+
+// Gets SPE_ParamsHashMap
+GET_PARAMS
+</sqf>
+
+== UI ==
+The UI gets automatically filled with all classes defined in the {{hl|Params}} class. The system will select the correct control type ([[CT_TOOLBOX]], [[CT_COMBO]]. Each parameter can be reset individually with the button to the right, additionally all values can be reset with the button at the bottom of the UI.
+
+== Diary Log ==
+Single player parameters are logged to the diary, showing the selected and default values.
+
+[[File: spe singleplayer mission parameters log.jpg|350px|thumb|Diary showing selected and default values]]
+
+[[Category:Spearhead 1944]]

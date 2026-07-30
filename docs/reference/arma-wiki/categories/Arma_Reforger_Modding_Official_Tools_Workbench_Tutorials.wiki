@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Official_Tools/Workbench/Tutorials
+// revision: 371133 (2025-02-28T15:48:57Z)
+// export sha1: 79mkxrj339d4pu7bkt8az7aot5vssgh
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding|Official Tools|Workbench}}

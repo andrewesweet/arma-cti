@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/lbSortBy
+// revision: 310351 (2022-05-05T17:24:12Z)
+// export sha1: p33qs1z5rwvwzk6t0dhj5ouqjrdu7fv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= GUI Control - ListBox
+
+|descr= Sorts given ListBox by either [[lbText]], [[lbValue]] or [[lbData]] in normal or reversed order, using case-sensitive or case-insensitive comparison. This command supports UNICODE characters.
+When sorting by {{hl|"VALUE"}}, the rows with the same [[lbValue]] will additionally be sorted by [[lbText]] in the order specified by `reversedOrder` flag, text specified by `useTextRight` flag and case-sensitivity specified by `caseSensitive` flag.
+
+{{Feature|important|
+* This command supports referencing control via IDC as well, but as with any use of IDC in UI [[Control]] commands, a [[dialog]] should be present, i.e. UI user interaction is created with [[createDialog]] rather than [[createDisplay]].
+* As this command supports UNICODE by default, which may result in slower sorting, you can switch it off with {{hl|unicodeOff}} param.
+}}
+
+|s1= controlOrIDC [[lbSortBy]] [sortByType, reversedOrder, caseSensitive, useTextRight, unicodeOff]
+
+|p1= controlOrIDC: [[Control]] or [[Number]] - the ListBox control or its IDC
+
+|p2= sortByType: [[String]] - (Optional, default "TEXT") one of:
+* {{hl|"TEXT"}}
+* {{hl|"VALUE"}}
+* {{hl|"DATA"}}
+
+|p3= reversedOrder: [[Boolean]] - (Optional, default [[false]]) [[true]] for sorting in reversed order
+
+|p4= caseSensitive: [[Boolean]] - (Optional, default [[false]]) [[true]] for using case-sensitive comparison
+
+|p5= useTextRight: [[Boolean]] - (Optional, default [[false]]) [[true]] to sort by [[lbSetTextRight | text right]]
+
+|p6= unicodeOff: [[Boolean]] - (Optional, default [[false]]) [[true]] to switch off UNICODE conversion for faster sorting
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+with uiNamespace do
+{
+	private _lb = findDisplay 46 createDisplay "RscDisplayEmpty" ctrlCreate ["RscListBox", -1];
+	_lb ctrlSetPosition [0,0,1,1];
+	_lb ctrlCommit 0;
+	lbClear _lb;
+	{
+		_lb lbAdd (_x select 0);
+		_lb lbSetValue [_forEachIndex, _x select 1];
+	}
+	forEach [["В",1], ["Я",0], ["Б",1], ["Ю",0], ["А",1]];
+	_lb lbSortBy ["VALUE", false, false];
+};
+</sqf>
+
+|seealso= [[lnbSortBy]] [[lnbSort]] [[lnbSortByValue]] [[lbSort]] [[lbSortByValue]] [[tvSort]] [[tvSortByValue]] [[sort]]
+}}

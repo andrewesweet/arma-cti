@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/saveProfileNamespace
+// revision: 369335 (2024-09-03T18:43:00Z)
+// export sha1: fzi3f5f1dm1mhmufybqy6jj1dil24za
+// categories: Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Namespaces | Category:Command Group: Variables | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.62
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Namespaces
+|gr2= Variables
+
+|descr= Saves all variables stored in [[profileNamespace]] to the active [[Profile]].
+{{Feature|informative|This command should be used when it is likely that the game will not be closed the usual way (e.g. via {{Controls|Alt|F4}}) or when the data is important and must not be lost due to a game crash.}}
+{{Feature|warning|
+* This command triggers a file operation. As file operations are slow (even on SSDs), it is not recommended to use this command too frequently (i.e. several times per second).
+* Do not save large amounts of data to the profile; the larger the profile file gets, the slower it loads!
+* The [[profileNamespace]] is saved automatically when the game is closed.
+}}
+{{Feature|tkoh|Heliport status, used in the Career mode for example, is stored in the file that is modified by this command, so be mindful of this to avoid losing data and progress.}}
+
+|s1= [[saveProfileNamespace]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+profileNamespace setVariable ["TAG_lastPlayerLocation", getPosASL player];
+saveProfileNamespace; // Optional since namespace is saved when game is closed
+</sqf>
+
+|seealso= [[saveMissionProfileNamespace]] [[save3DENPreferences]] [[profileNamespace]] [[Profile]]
+}}

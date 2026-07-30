@@ -1,0 +1,63 @@
+// source: https://community.bistudio.com/wiki/setCurrentWaypoint
+// revision: 377752 (2026-01-03T00:58:07Z)
+// export sha1: po2xtvd0dhkoh9mw7fqn9q75mken5yt
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Armed Assault version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.05
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|gr1= Waypoints
+
+|descr= Sets the currently active waypoint for a group.
+
+|s1= groupName [[setCurrentWaypoint]] waypoint
+
+|p1= groupName: [[Object]] or [[Group]]
+|p2= waypoint: [[Waypoint]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_grp setCurrentWaypoint [_grp, 1];</sqf>
+
+|seealso= [[waypoints]] [[deleteWaypoint]] [[copyWaypoints]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointDescription]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointTimeout]] [[setWaypointType]] [[setWaypointVisible]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[setWaypointLoiterRadius]] [[waypointLoiterRadius]] [[addWaypoint]] [[setWaypointLoiterType]] [[waypointSpeed]]
+}}
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 27 Aug 2007</dd>
+<dt class="note">[[User:Way|Way]]</dt>
+<dd class="note">
+(A1 1.08) Does not seem to work with Game Logic. Crashes to desktop.
+<dt><dt>
+<dd class="notedate">Posted on 26 Nov 2008</dd>
+<dt class="note">[[User:Ceeeb|Ceeeb]]</dt>
+<dd class="note">
+Note that a waypoints number as seen in the mission editor is not the same as it is waypoint number using this command. In the mission editor, waypoint 0 refers to the first placed waypoint, whereas waypoint 0 with the setCurrentWaypoint command refers to the unit's initial position waypoint.
+<dt><dt>
+<dd class="notedate">Posted on 17 Jan 2010</dd>
+<dt class="note">[[User:Galzohar|Galzohar]]</dt>
+<dd class="note">
+(A2 1.05) This command may crash the game to desktop if you call it from the on act field of a waypoint that belongs to that same unit. 
+<dt><dt>
+<dd class="notedate">Posted on 13 Aug 2012</dd>
+<dt class="note">[[User:Igneous01|Igneous01]]</dt>
+<dd class="note">
+Using this command forces the last waypoint to complete. Any code in the on Act of that waypoint will run. 
+</dl>

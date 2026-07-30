@@ -1,0 +1,345 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Server_Side_Scripting
+// revision: 378564 (2026-05-08T17:07:31Z)
+// export sha1: eye5r1yxcv0qdaoi0t8d72coyuy713z
+// categories: Category:Arma 3: Multiplayer
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The server has a separate Virtual Machine (VM) running administration scripts. This VM is completely independent on the game scripting environment and is designed to automate some administration tasks related to player administration and cheat detection. The basic way how scripts are executed is via event handlers reacting to some typical events, server admin can also execute individual commands using a chat command {{hl|#exec}}.
+
+Event handlers are defined in the [[Arma 3: Server Config File|server.cfg]] file.
+
+
+== Event Handlers ==
+
+{| class="wikitable sortable valign-top"
+! Event Name
+! Description
+! Handler Parameters
+|-
+| doubleIdDetected
+| 2nd user with the same ID detected
+| user id
+|-
+| onUserConnected
+| user has connected
+| user id
+|-
+| onUserDisconnected
+| user has disconnected
+| user id
+|-
+| onHackedData
+| modification of signed pbo detected
+| user id, file name
+|-
+| onDifferentData
+| signed pbo detected with a valid signature, but a different version than a server has (very strict test, use sparingly, no longer supported in Arma 2 OA 95232)
+| user id, file name
+|-
+| onUnsignedData
+| unsigned data detected
+| user id, file name
+|-
+| onUserKicked
+| if a user is kicked
+| user id, kick type ID, reason
+|-
+| regularCheck
+| called time by time for each user, test index is growing, example: <code>0 checkFile _this</code>
+| user id, test index
+|-
+| onPlayerJoinAttempt {{GVI|arma3|2.18}}
+| Called repeatedly while a new player is trying to join the server. Must return either "ACCEPT", "DELAY" or "REFUSE":
+* "ACCEPT": the player is let through into the server.
+* "DELAY": the player stays in the loading screen and is not let into the server.
+* "REFUSE": the player is kicked; a kick message can be appended by sending "REFUSE_You were kicked because reason".
+|
+* userId: [[String]] - the DirectPlay ID of the connecting player, see [[getPlayerID]]
+* waitTime: [[Scalar]] - the time in second since when the players connection attempt has started. How long the player has been waiting in loading screen.
+|-
+| sendChatMessage{{GVI|arma3|2.18}}
+| Send a "System" chat message to the specified user
+|
+* userId: [[String]] - the DirectPlay ID of the connecting player, see [[getPlayerID]]
+* message: [[String]] - Text message to be sent (If message starts with $, it will be sent as localized chat message and displayed in the receivers language)
+|-
+| OnAutoSelectRole{{GVI|arma3|2.22}}
+| When player joins server and tries to auto select a role (joinUnassigned=0 or skipLobby=1). This should return the index of the role the player should join into. Return -1 to not select any role (Note this will break skipLobby). Return [[Nothing]] to let the engine code select one.
+|
+* name: [[String]] - Players name
+* userId: [[String]] - the DirectPlay ID of the connecting player, see [[getPlayerID]]
+|-
+| OnPlayerSelectRole{{GVI|arma3|2.22}}
+| When player selects a role. Return the index of the role the player should be placed into. Preferably equal to wantedRoleIndex, -1 to block role selection (will break skipLobby), or a different index to put the player elsewhere.
+|
+* name: [[String]] - Players name
+* userId: [[String]] - the DirectPlay ID of the connecting player, see [[getPlayerID]]
+* wantedRoleIndex: [[Number]] - 
+|}
+
+
+== Commands ==
+
+=== Specific Commands ===
+
+{| class="wikitable sortable"
+! Command Syntax
+! Category
+! Description
+|-
+| users
+| User
+| List users, each user is described as an array in format [id, name]
+|-
+| kick userId reason
+| User
+| Kick off given user id from the server, with an optional text
+|-
+| ban userId reason
+| User
+| Add given user id into the ban list, with an optional text
+|-
+| unkick userId
+| User
+| Remove a kick from the server's list
+|-
+| unban userId
+| User
+| Remove a ban from the server's list
+|-
+| clearKicks
+| User
+| Clear all existing kicks from the server's list
+|-
+| clearBans
+| User
+| Clear all existing bans from the server's list
+|-
+| numberOfFiles userId
+| File
+| number of addons files used for given player - can be used to determine suitable values for checkFile
+|-
+| level checkFile [userId, fileIndex]
+| File
+| See {{Link|ArmA: Armed Assault: Addon Signatures|Addon Signature}} for a file with given index on given user computer, level determines test depth (0 = default, 1 = deep. Note: deep can be very slow)
+|-
+| level checkExe userId
+| File
+| Start the integrity check of game executable for given user. Level defines how exhaustive the test should be
+|-
+| lock
+| Game
+| Lock/unlock the session
+|-
+| getRoles
+| Game
+| Returns array of roles (array index == role index), to be used in "OnAutoSelectRole" event. Array of Arrays in format [Side, groupIndex, unitIndex, unit class, isTeamLeader, playerID (players DirectPlay ID who is in that slot, or empty), roleDescription, unitVarName, flags [Locked, EnabledAI, Forced, Headless]].
+Side is string, groupIndex/unitIndex are the Eden Editor ID's of the group/unit. Unit class is classname string, isTeamLeader bool, playerID is string (empty if slot is empty, or player DPID if occupied by other player), roleDescription string from editor, unitVarName string from editor, flags array of strings
+|}
+
+=== Shared Commands ===
+
+{{Columns|5|
+* [[! a|!]]
+* [[+]]
+* [[-]]
+* [[a : b|:]]
+* [[abs]]
+* [[acos]]
+* {{GVI|arma3|2.18|size= 0.75}} [[allUsers]]
+* [[append]]
+* [[apply]]
+* [[arrayIntersect]]
+* [[asin]]
+* [[assert]]
+* [[atan]]
+* [[atg]]
+* [[breakOut]]
+* [[call]]
+* {{GVI|arma3|2.18|size= 0.75}} [[callExtension]]
+* [[case]]
+* [[ceil]]
+* [[comment]]
+* [[compile]]
+* [[compileFinal]]
+* {{GVI|arma3|2.22|size= 0.75}} [[copyToClipboard]]
+* [[cos]]
+* [[count]]
+* [[deg]]
+* [[deleteAt]]
+* [[deleteRange]]
+* [[diag_log]]
+* [[disableSerialization]]
+* [[do]]
+* [[echo]]
+* [[else]]
+* [[exitWith]]
+* [[exp]]
+* [[false]]
+* [[find]]
+* [[findIf]]
+* [[finite]]
+* [[floor]]
+* [[forEach]]
+* [[for]]
+* {{GVI|arma3|2.22|size= 0.75}} [[fromJSON]]
+* {{GVI|arma3|2.18|size= 0.75}} [[getUserInfo]]
+* {{GVI|arma3|2.18|size= 0.75}} [[getVariable]] (namespace only)
+* [[if]]
+* [[in]]
+* [[isFinal]]
+* [[joinString]]
+* [[ln]]
+* [[log]]
+* {{GVI|arma3|2.18|size= 0.75}} [[missionNamespace]]
+* [[nil]]
+* [[not]]
+* [[parseNumber]]
+* [[parseSimpleArray]]
+* [[pi]]
+* [[private]]
+* [[pushBack]]
+* [[pushBackUnique]]
+* [[rad]]
+* [[random]]
+* [[resize]]
+* [[reverse]]
+* [[round]]
+* [[scriptName]]
+* [[select]]
+* [[selectMax]]
+* [[selectMin]]
+* [[selectRandom]]
+* [[selectRandomWeighted]]
+* [[set]]
+* {{GVI|arma3|2.18|size= 0.75}} [[setVariable]] (namespace only)
+* [[sin]]
+* [[sort]]
+* [[splitString]]
+* [[sqrt]]
+* [[str]]
+* {{GVI|arma3|2.22|size= 0.75}} [[supportInfo]]
+* [[switch]]
+* [[tan]]
+* [[tg]]
+* [[then]]
+* [[throw]]
+* [[toArray]]
+* {{GVI|arma3|2.22|size= 0.75}} [[toJSON]]
+* [[toLower]]
+* [[toLowerANSI]]
+* [[toString]]
+* [[toUpper]]
+* [[toUpperANSI]]
+* [[true]]
+* [[try]]
+* [[typeName]]
+* {{GVI|arma3|2.18|size= 0.75}} [[uiNamespace]]
+* [[waitUntil]]
+* [[while]]
+* [[with]]
+}}
+
+
+{{ArgTitle|2|Mission Scripts Interaction|{{GVI|arma3|2.18}}}}
+
+It is possible to interface with mission scripts that are not limited to the server scripts command set. There are two main approaches for this detailed below.<br>
+One major thing to keep in mind is that both these approaches depend on mission scripts being present.
+Which is not the case when a server is freshly started and didn't load a mission yet. So you need to account for the handlers not being present.
+
+=== CallExtension with Callbacks ===
+
+[[callExtension]] being available offers the option to communicate through the Extension. As extension callbacks are executed in mission scripts.<br>
+When the extension receives a request, it can trigger a callback to send information to be handled inside a mission script.<br>
+Here is an example of a (pseudocode) extension utilizing this pattern for a "onPlayerJoinAttempt" event.
+
+Extension code:
+<syntaxhighlight lang="C#">
+bool goodToGo = true;
+bool goodToKick = false;
+string kickReason = "";
+
+RvExtensionArgs(string output, string method, string[] args)
+{
+	if (method == "joinRequest")
+	{
+		if (goodToGo)
+		{
+			goodToGo = false; // only once
+			output.Append("ACCEPT");
+			return;
+		}
+
+		if (goodToKick)
+		{
+			goodToKick = false; // only once
+			output.Append("REFUSE");
+			output.Append(kickReason);
+			return;
+		}
+
+		// Tell our script handler about this
+		callback("ext", "joinRequest", args[0]);
+
+		output.Append("DELAY"); // wait till our script tells us what to do
+	}
+
+	if (method == "go")
+		goodToGo = true;
+
+	if (method == "kick")
+	{
+		goodToKick = true;
+		if (args.Length >= 1)
+			kickReason = args[0];
+	}
+}
+</syntaxhighlight>
+
+The server config side looks like this
+<syntaxhighlight lang="cpp">
+onPlayerJoinAttempt = " if (missionNamespace getVariable ['ext_ready', false]) then { ('extension' callExtension ['joinRequest', _this]) select 0 } else { 'ACCEPT' } ";
+</syntaxhighlight>
+Notice how we specifically check for a missionNamespace variable to indicate whether the actual callback handler is ready.
+
+Then we have this mission script:
+<sqf>
+addMissionEventHandler ["ExtensionCallback", { 
+	"extension" callExtension ["go", []];
+}];
+ExtensionReady = true;
+</sqf>
+
+This does not actually implement any logic for handling player joins, but you can see how you could pass data through the callback and handle it accordingly.
+
+=== Call missionNamespace Functions ===
+
+Since [[getVariable]] has become available, and [[call]] has already been available previously, this means we can now get functions from missionNamespace and execute them from our server scripts environment. Example:
+
+Server config:
+<syntaxhighlight lang="cpp">
+onPlayerJoinAttempt = " call (missionNamespace getVariable ['PlayerJoinHandler', {'ACCEPT'}]) ";
+</syntaxhighlight>
+<br>
+Mission script:
+<sqf>
+PlayerJoinHandler = {
+	params ["_playerId"];
+	"ACCEPT"; // return value
+};
+</sqf>
+
+Note a major thing here, we call a function from server-side script, that uses [[params]], even though params is a command that is not available to server side scripts.<br>
+This is because we are executing a normal script function, inside the server side scripting environment.
+The function was compiled in normal environment so it knew the script commands, they were compiled into the script function and thus they now work.<br>
+But we are still executing in server environment.
+Meaning if we execute things like [[compile]] the command itself will execute inside the server environment, and we wouldn't be able to compile a script containing [[params]] because the server environment would not know the script command.<br>
+<br>
+This also applies in the opposite direction. Mission scripts cannot use server side scripting commands, but if the mission script [[compile]]s a new script, we could be using server commands like "kick" or "ban".<br>
+<br>
+Care must be taken with scripting like this, it is best to do as little logic as possible in script functions that are accessed this way.
+There might be many bugs here that likely will not get fixed. The basics work, so keep it basic.
+
+
+{{GameCategory|arma3|Multiplayer}}

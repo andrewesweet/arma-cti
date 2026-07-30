@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Take_On_Mars:_Locations
+// revision: 349479 (2023-11-08T17:06:45Z)
+// export sha1: a665odx0xdfc9xqqz0ormzrihdgli3p
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|tkom}}

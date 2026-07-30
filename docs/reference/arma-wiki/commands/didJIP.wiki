@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/didJIP
+// revision: 376937 (2025-12-31T22:33:08Z)
+// export sha1: 27r686pv1ulj4rrc1yaanrnx0c1ht03
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|gr1= Multiplayer
+
+|descr= Checks if the current client {{Link|Multiplayer Scripting#Join In Progress|Joined In Progress}}.
+
+|s1= [[didJIP]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+if (didJIP) then
+{
+	hint "you're late to the party!";
+};
+</sqf>
+
+|seealso= [[didJIPOwner]] [[exportJIPMessages]]
+}}
+
+{{Note
+|user= Commy2
+|timestamp= 20160223223300
+|text= reports false in {{hl|CfgFunctions}} with <syntaxhighlight lang="cpp" inline>preInit = 1;</syntaxhighlight> even when the client joined in progress.
+}}

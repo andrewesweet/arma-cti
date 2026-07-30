@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/isNotEqualRef
+// revision: 338493 (2023-03-10T17:30:50Z)
+// export sha1: i9uy3koseiba8cbshlc7xgthe6iez5c
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+
+|gr1= Variables
+
+|descr= Compares two values by reference, returns [[true]] if not equal.
+
+|s1= val1 [[isNotEqualRef]] val2
+
+|p1= val1: [[Anything]]
+
+|p2= val2: [[Anything]]
+
+|r1= [[Boolean]] - [[true]] if not the same reference
+
+|x1= <sqf>
+_arr1 = [1,[2,[3]]];
+_arr2 = _arr1;
+_arr1 isEqualTo _arr2;		// true
+_arr1 isNotEqualRef _arr2;	// false
+
+_arr2 = +_arr1;				// array copy
+_arr1 isEqualTo _arr2;		// true
+_arr1 isNotEqualRef _arr2;	// true
+</sqf>
+
+|seealso= [[isEqualRef]] [[isNotEqualTo]] [[Operators]]
+}}

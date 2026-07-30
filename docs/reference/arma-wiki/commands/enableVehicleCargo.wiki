@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/enableVehicleCargo
+// revision: 376361 (2025-10-07T21:42:46Z)
+// export sha1: o2c5icoy98640cwf1jwqxh5tny2rhsh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle in Vehicle Transport | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Vehicle in Vehicle Transport
+
+|descr= Enable/disable option to transport other vehicles (if configured) or be transported.
+
+|s1= vehicle [[enableVehicleCargo]] enable
+
+|p1= vehicle: [[Object]]
+
+|p2= enable: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1=
+<sqf>_vehicle enableVehicleCargo true;</sqf>
+
+|seealso= [[Arma 3: Vehicle in Vehicle Transport| Vehicle in Vehicle Transport]] [[canVehicleCargo]] [[setVehicleCargo]] [[getVehicleCargo]] [[isVehicleCargo]] [[vehicleCargoEnabled]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2016-06-20 - 06:11 (UTC)</dd>
+<dt class="note">[[User:Pennyworth|Pennyworth]]</dt>
+<dd class="note">
+Setting [[enableVehicleCargo]] to true does not mean a vehicle can now load vehicles as cargo. They are still required to be correctly setup as shown on the [[Arma 3: Vehicle in Vehicle Transport|Vehicle in Vehicle Transport]] page.
+</dd>
+
+</dl>

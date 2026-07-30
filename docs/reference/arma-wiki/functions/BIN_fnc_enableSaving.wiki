@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_enableSaving
+// revision: 340303 (2023-04-28T23:03:28Z)
+// export sha1: lw03xbeskdsegwfxdufpva0gkr2kxlu
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Missions 
+
+<!--|serverExec= server-->
+
+|descr= Sets a variable used in [[Arma 3 Contact]] which handles saving. {{Feature|arma3contact}}
+
+|s1= [enableSaving, saveGame] call [[BIN_fnc_enableSaving]]
+
+|p1= enableSaving: [[Boolean]] - (Optional, default [[true]]) [[true]] to enable, [[false]] to disable
+
+|p2= saveGame: [[Boolean]] - (Optional, default [[false]]) [[true]] to save, [[false]] to not disable
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[true, true] call BIN_fnc_enableSaving;</sqf>
+
+|seealso= [[BIN_fnc_savingEnabled]] [[saveGame]] [[loadGame]]
+}}

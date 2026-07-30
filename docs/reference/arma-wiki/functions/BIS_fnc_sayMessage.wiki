@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sayMessage
+// revision: 328363 (2022-07-13T16:00:47Z)
+// export sha1: 6qhi49yklzlkv98tes0mhfiiplfj00g
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sound | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sound
+
+|arg= global
+
+|eff= local
+
+|descr= Make a speaker say a message.
+
+|s1= [speaker, message, channel] call [[BIS_fnc_sayMessage]]
+
+|p1= speaker: [[Object]] or [[Side]]
+
+|p2= message: [[String]] - must be defined in either [[Description.ext#CfgSounds|CfgSounds]] or [[Description.ext#CfgRadio|CfgRadio]]
+
+|p3= channel: [[String]] or [[Number]] - (Optional, default "side") can be "say3D", "direct", "group", "vehicle", "side", "command", "global", or custom channel ID
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>[leader player, "to_c01_m01_brief_001_br_briefing_a_CENTAUR_0", "say3D"] call BIS_fnc_sayMessage;</sqf>
+
+|seealso= [[say]] [[say3D]] [[directSay]] [[groupRadio]] [[vehicleRadio]] [[sideRadio]] [[commandRadio]] [[globalRadio]] [[customRadio]]
+}}

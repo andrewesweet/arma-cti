@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/systemChat
+// revision: 376770 (2025-11-17T00:03:10Z)
+// export sha1: nv1usrnc8pkj37xx7j13nzuq2899sgi
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 2: Operation Arrowhead version 1.63 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.63
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|eff= local
+
+|gr1= Radio and Chat
+
+|descr= Types text to the system radio channel. The text will be visible only on the PC where command was executed. If you need the message to show on all computers, you have to execute it globally (see [[remoteExec]]). Use [[clearRadio]] to clear chat history
+
+|s1= [[systemChat]] text
+
+|p1= text: [[String]] - message to transmit
+
+|r1= [[Nothing]]
+
+|x1= <sqf>systemChat "Hello world!";</sqf>
+
+|x2= [[File:xChat.jpg|right]]
+<sqf>
+driver vehicle player sideChat "sideChat";
+driver vehicle player globalChat "globalChat";
+driver vehicle player groupChat "groupChat";
+vehicle player vehicleChat "vehicleChat";
+driver vehicle player commandChat "commandChat";
+driver vehicle player customChat [1, "customChat"];
+systemChat "systemChat";
+</sqf>
+
+|seealso= [[globalChat]] [[groupChat]] [[vehicleChat]] [[commandChat]] [[customChat]] [[sideChat]] [[directSay]] [[clearRadio]]
+}}

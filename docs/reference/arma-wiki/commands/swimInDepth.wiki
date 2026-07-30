@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/swimInDepth
+// revision: 369202 (2024-09-03T10:34:50Z)
+// export sha1: j74hb97y2nj1eg2r4ybcvj717ikgtta
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Unit Control
+
+|descr= Sets the target depth level for swimming soldier. Depth should be a negative number.
+
+|s1= unit [[swimInDepth]] value
+
+|p1= unit: [[Object]]
+
+|p2= value: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>soldier swimInDepth -20;</sqf>
+|x2= <sqf>
+bob swimInDepth -10;
+bob doMove ASLToAGL getPosASL player;
+</sqf>
+
+|seealso= [[underwater]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2017-06-13 - 01:18 (UTC)</dd>
+<dt class="note">[[User:DrSova|DrSova]]</dt>
+<dd class="note">
+Doesn't work with animals.
+</dd>
+
+</dl>

@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sideColor
+// revision: 353604 (2024-03-19T17:37:26Z)
+// export sha1: 3xf2d23h8z99wk1yavgjg1l225ef847
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sides
+
+|descr= Returns colour of define side either as [[Array]] in format RGBA or the name of the colour as [[String]]
+
+|s1= [side, returnString] call [[BIS_fnc_sideColor]]
+
+|p1= side: [[Side]]
+
+|p2= returnString: [[Boolean]] - (Optional, default [[false]]) wanted output:
+* [[false]]: [R, G ,B, A]
+* [[true]]: "ColourName"
+
+|r1= or [[String]] or [[Array]] format [[Color|Color (RGBA)]]
+
+|x1= <sqf>[blufor, false] call BIS_fnc_sideColor; // returns [0,0.3,0.6,1]</sqf>
+
+|x2= <sqf>[blufor, true] call BIS_fnc_sideColor; // returns "ColorWEST"</sqf>
+
+|seealso= [[side]] [[Arma 3: CfgMarkerColors]]
+}}

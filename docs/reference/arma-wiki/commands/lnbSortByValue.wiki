@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/lnbSortByValue
+// revision: 330120 (2022-08-21T19:54:07Z)
+// export sha1: suthdwratvudw734x290rztly6waqo7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 3 version 1.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.08
+
+|gr1= GUI Control - ListNBox
+
+|descr= Sorts given multicolumn listbox by [[lnbValue]] in given column in ascending or descending order.
+
+|s1= [[lnbSortByValue]] [idc, column, reversed]
+
+|p1= idc: [[Number]]
+
+|p2= column: [[Number]]
+
+|p4= reversed: [[Boolean]] - (Optional, default [[false]]) [[false]]: descending / [[true]]: ascending
+
+|r1= [[Nothing]]
+
+|s2= control [[lnbSortByValue]] [column, reversed]
+
+|p21= control: [[Control]]
+
+|p22= column: [[Number]]
+
+|p23= reversed: [[Boolean]] - (Optional, default [[false]]) [[false]]: descending / [[true]]: ascending
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lnbSortByValue [1800, 1, false];</sqf>
+
+|x2= <sqf>_ctl lnbSortByValue [1, true];</sqf>
+
+|seealso= [[lbSortBy]] [[lnbSortBy]] [[lbSort]] [[lnbSort]] [[tvSortByValue]] [[lbSortByValue]] [[tvSort]]
+}}

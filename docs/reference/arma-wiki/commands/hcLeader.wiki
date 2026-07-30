@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/hcLeader
+// revision: 363257 (2024-03-26T10:51:31Z)
+// export sha1: 6aanyy1836ji59ma840mjgbkyompmc3
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: High Command | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= High Command
+
+|descr= Returns group's [[High Command|high command]] commander.
+
+|s1= [[hcLeader]] group
+
+|p1= group: [[Group]]
+|r1= [[Object]]
+
+|x1= <sqf>_leader = hcLeader groupName;</sqf>
+
+|seealso= [[High Command]] [[hcAllGroups]] [[hcGroupParams]] [[hcRemoveAllGroups]] [[hcRemoveGroup]] [[hcSelected]] [[hcSelectGroup]] [[hcSetGroup]] [[hcShowBar]] [[hcShownBar]] [[onHCGroupSelectionChanged]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2009-09-02</dd>
+<dt class="note">[[User:Dimitri Harkov|Dimitri Harkov]]</dt>
+<dd class="note">[[hcLeader]] returns 'NULL_OBJECT' if you use it on your HC commander's group in a HC setup with subordinates. It seems to work as expected if you don't use subordinates.
+
+</dl>

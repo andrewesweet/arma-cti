@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/setDynamicSimulationDistanceCoef
+// revision: 348832 (2023-11-08T14:39:08Z)
+// export sha1: a05rhqiu6dhob82xssdm6m0b7owy0t4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Dynamic Simulation | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Dynamic Simulation
+
+|descr= Sets activation distance multiplier of [[Arma 3: Dynamic Simulation]] for the given class
+
+|s1= class [[setDynamicSimulationDistanceCoef]] multiplier
+
+|p1= class: [[String]] - multiplier class, currently only:
+* {{hl|"IsMoving"}} - Multiplies the entity activation distance by set value if the entity is moving. Default: 2
+|p2= multiplier: [[Number]] - distance multiplier
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"IsMoving" setDynamicSimulationDistanceCoef 3;</sqf>
+
+|seealso= [[enableDynamicSimulationSystem]] [[dynamicSimulationSystemEnabled]] [[enableDynamicSimulation]] [[dynamicSimulationEnabled]] [[setDynamicSimulationDistance]] [[dynamicSimulationDistance]] [[dynamicSimulationDistanceCoef]] [[triggerDynamicSimulation]] [[canTriggerDynamicSimulation]] [[enableSimulation]] [[simulationEnabled]] [[enableSimulationGlobal]] [[Arma 3: Dynamic Simulation]]
+}}

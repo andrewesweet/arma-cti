@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_deleteTXScan
+// revision: 309647 (2022-05-05T12:07:58Z)
+// export sha1: nksrs0swqsrpcb64akenfi0wsm2q5ma
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: TXScan | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= TXScan 
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Deletes scan with given name from extension and the map
+
+	Parameter(s):
+		0: STRING - TXScan name
+
+	Returns:
+		BOOL - false on error
+		
+	Example:
+		"MyScan" call BIN_fnc_deleteTXScan
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_deleteTXScan]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_deleteTXScan;</sqf> -->
+
+|seealso=
+}}

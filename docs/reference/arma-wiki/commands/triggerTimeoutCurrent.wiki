@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/triggerTimeoutCurrent
+// revision: 376123 (2025-09-01T08:15:52Z)
+// export sha1: 10zajhwv0hdsmisggoz7tjyd453i36f
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Arma 3 version 1.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.08
+
+|arg= global
+
+|gr1= Triggers
+
+|descr= Returns current timeout of the given trigger or -1 if countdown is not in progress. 
+
+{{Feature|important|
+The trigger could be [[Multiplayer Scripting#Locality|local]] or remote but the result returned by this command will be for the current trigger timeout local to the client that executed the command.
+See [[createTrigger]] for more info.
+}}
+
+|s1= [[triggerTimeoutCurrent]] trigger
+
+|p1= trigger: [[Object]] - trigger object
+
+|r1= [[Number]] - time remaining before trigger activation.
+
+|x1= <sqf>_remaining = triggerTimeoutCurrent _trigger;</sqf>
+
+|seealso= [[triggerTimeout]] [[setTriggerTimeout]] [[waypointTimeoutCurrent]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20131126121600
+|text= Triggers have their own schedule. If you create a trigger with timeout and try to read [[triggerTimeoutCurrent]] immediately it will return -1.
+This is because the countdown will not start until the next scheduled trigger check is due, and this could take up to 0.5 seconds.
+}}

@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/Category:Carrier_Command:_Gaea_Mission
+// revision: 338097 (2023-02-23T23:30:09Z)
+// export sha1: c9f55l4yi91llwhoue9guwmjjtfuwra
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image = carrier command gaea mission cover.jpg
+|releasedate= 20120928
+|intro = '''Carrier Command: Gaea Mission''' is a sci-fi game based on the original {{Link|https://en.wikipedia.org/wiki/Carrier_Command|''Carrier Command''}} released in 1988. The game was developed by [[Bohemia Interactive]] and ''Black Element Software''. The development of ''Carrier Command: Gaea Mission'' was delayed several times and even put in halt once. After several scheduled release dates were missed, the game was finally released in fall 2012 for PC and XBOX 360. 
+
+=== Play & Contribute ===
+The game was made available pre-release in a Player & Contribute program. Players were able to obtain the game for a significantly lowered price and in exchange became part of the testing process.
+
+=== Synopsis ===
+The game’s story centers on a crew of a futuristic ship that struggles against an all-powerful enemy in their fight for 33 islands on a water moon Taurus.
+
+==== Reception ====
+The game was praised for staying true to the original 1988 game mechanics while bringing an updated look, detailed terrains, and stunning visual effects, including but not limited to the dynamic weather system.
+The campaign part, inspired by a book ''by P. D. Gilson'', received mixed reactions from critics who generally felt the campaign doesn't bring much beyond easing the player into the gameplay mechanics. The vast majority of reviewers were unsatisfied with the quality and fluency of animations and voice-overs in cutscenes, noting that the campaign clearly fails in its attempt to offer the player an epic sci-fi story. Some being quick to add that these deficiencies are only underlined by the very well executed epic in-game orchestral music.
+
+|feature1 = An updated look, detailed terrains and stunning visual effects
+|feature2 = Dynamic weather system
+|feature3 = In-game orchestral music
+
+|start1 = [[Carrier Command: Gaea Mission: FAQ|FAQ]]
+|start2 = [[Carrier Command: Gaea Mission: Walkthrough|Walkthrough]]
+|start3 = [[Carrier Command: Gaea Mission: Story|Story]]
+
+|gallery1 = CC_1.jpg
+|gallery2 = CC_2.jpg
+|gallery3 = CC_3.jpg
+|gallery4 = CC_4.jpg
+}}

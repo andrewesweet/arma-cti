@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_exportConfigHierarchy
+// revision: 349433 (2023-11-08T16:27:36Z)
+// export sha1: 44ztl2ufzbs3aehwn9ukuuw3npc3fp9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Export config hierarchy of given config.
+
+|s1= [config,class] call [[BIS_fnc_exportConfigHierarchy]]
+
+|p1=config: [[Config]]
+
+|p2=class: [[String]] - topmost class
+
+|r1= [[String]] - exported text in wikitable format
+
+|x1= <sqf>[configFile >> "CfgWeapons"] call BIS_fnc_exportConfigHierarchy;</sqf>
+
+|x2= <sqf>[configFile >> "CfgWeapons", "LandVehicle"] call BIS_fnc_exportConfigHierarchy;</sqf>
+
+|seealso= [[configFile]] [[Config]]
+}}

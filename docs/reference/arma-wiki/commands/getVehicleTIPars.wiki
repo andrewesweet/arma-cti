@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getVehicleTIPars
+// revision: 377635 (2026-01-02T08:52:29Z)
+// export sha1: 71tdpwiwk8fli4rrzrynlarvinvcdsr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Object Manipulation
+
+|descr= Returns TI parameters of a vehicle.
+
+|s1= [[getVehicleTIPars]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Array]] with [aliveFactor, movementFactor, metabolismFactor]
+
+|x1= <sqf>getVehicleTIPars _veh;</sqf>
+
+|seealso= [[setVehicleTIPars]]
+}}

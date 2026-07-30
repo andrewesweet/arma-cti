@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/ropeDetach
+// revision: 319665 (2022-05-13T09:24:40Z)
+// export sha1: k2gq12vx3r34xs2xjvk54xtx1hcce0i
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 1.34
+
+|gr1= Ropes and Sling Loading
+
+|descr= Detaches attached object from rope (i.e. detaches rope end from attached to it entity). See [[ropeAttachTo]] for attach operation.
+
+|s1= attachedObject [[ropeDetach]] rope
+
+|p1= attachedObject: [[Object]] - entity attached to the end of rope
+
+|p2= rope: [[Object]] - rope object to which entity is attached
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player ropeDetach myRope;</sqf>
+
+|seealso= [[ropeCreate]] [[ropeDestroy]] [[ropeSetCargoMass]] [[ropes]] [[canSlingLoad]] [[enableRopeAttach]] [[getSlingLoad]] [[ropeAttachedObjects]] [[ropeAttachTo]] [[ropeLength]] [[ropeUnwound]] [[ropeAttachedTo]] [[ropeAttachEnabled]] [[ropeCut]] [[ropeEndPosition]] [[ropeUnwind]]
+}}

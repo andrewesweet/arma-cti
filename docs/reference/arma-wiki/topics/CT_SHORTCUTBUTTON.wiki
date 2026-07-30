@@ -1,0 +1,584 @@
+// source: https://community.bistudio.com/wiki/CT_SHORTCUTBUTTON
+// revision: 369833 (2024-10-16T07:26:33Z)
+// export sha1: 37d4ejpw9pqr01cdwqht18206oc4xi3
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_SHORTCUTBUTTON
+|value = 16
+|description = A more customizable and modern version of [[CT_BUTTON]] that also supports [[Structured Text]] and an image with text at the same time (see [[#Other examples|below]]).
+|gallery=File:A3 console mission.jpg{{!}}The escape menu with shortcutbuttons in the bottom left.
+File:CT SHORTCUTBUTTON steam.png{{!}}ShortcutButton with the steam logo (texture) and text.
+File:CT SHORTCUTBUTTON secondaryText.jpg{{!}}ShortcutButton with secondary text.
+File:CT SHORTCUT BUTTON-Steam.png{{!}}Image and text on the same button.
+|commands =
+|events =
+* [[User_Interface_Event_Handlers#Button_Events|Events: Button]]
+}}
+
+{{CT|abc start}}
+=== A ===
+{{CT|attribute
+|name=action
+|type1=String
+|value1="if (profilenamespace getvariable ['BIS_fnc_init_recompileEditor',false]) then {[1] call (uinamespace getvariable 'BIS_fnc_recompile')}"
+|description=SQS code executed when button is clicked.
+}}
+
+{{CT|attribute
+|name=animTextureDefault
+|type1=String
+|value1="\A3\ui_f\data\GUI\RscCommon\RscShortcutButton\normal_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=animTextureDisabled
+|type1=String
+|value1="\A3\ui_f\data\GUI\RscCommon\RscShortcutButton\normal_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=animTextureFocused
+|type1=String
+|value1="#(argb,8,8,3)color(1,1,1,1)"
+|description=
+}}
+
+{{CT|attribute
+|name=animTextureNormal
+|type1=String
+|value1="#(argb,8,8,3)color(1,1,1,1)"
+|description=
+}}
+
+{{CT|attribute
+|name=animTextureOver
+|type1=String
+|value1="#(argb,8,8,3)color(1,1,1,1)"
+|description=
+}}
+
+{{CT|attribute
+|name=animTexturePressed
+|type1=String
+|value1="#(argb,8,8,3)color(1,1,1,1)"
+|description=
+}}
+
+{{CT|attribute
+|name=Attributes
+|type1=Class
+|value1=class Attributes
+{
+	font = "PuristaLight";
+	color = "#E5E5E5";
+	align = "left";
+	shadow = "false";
+};
+|description=Attributes of the text (Only 'font' has effect). See [[CT_STRUCTURED_TEXT#Attributes|Structured Text control text attributes]].
+}}
+
+{{CT|attribute
+|name=AttributesImage
+|type1=Class
+|value1=class AttributesImage
+{
+	font = "RobotoCondensed";
+	color = "#E5E5E5";
+	align = "left";
+};
+|description=
+}}
+
+{{CT|attribute
+|name=autoAdjustTexture
+|type1=Boolean
+|value1=true
+|description= Introduced with {{GVI|arma3|2.10|size=0.75}}. Default: [[false]]. When this attribute set to [[true]] the texture will be rendered in the following way: 
+* If the original texture aspect ratio is 2:1 or more ({{hl|w >{{=}} 2 * h}}) and the button aspect ration is 2:1 or more ({{hl|w >{{=}} 2 * h}}), the corners of the texture are preserved (rounded corners would scale but not stretch). 
+* In all other cases the texture is stretched to cover the button.
+}}
+
+
+=== C ===
+{{CT|attribute
+|name=color
+|type1=Array
+|value1={1,1,1,1}
+|description=Text color.
+}}
+
+{{CT|attribute
+|name=color2
+|type1=Array
+|value1={0.95,0.95,0.95,1}
+|description=When hovering over the button the text color changes from color[] to color2[].
+}}
+
+{{CT|attribute
+|name=color2Secondary
+|type1=Array
+|value1={0,0,0,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorBackground2
+|type1=Array
+|value1={1,1,1,1}
+|description=When hovering over the button the background color changes from colorBackground[] to colorBackground2[].
+}}
+
+{{CT|attribute
+|name=colorBackgroundActive
+|type1=Array
+|value1={"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.77])","(profilenamespace getvariable ['GUI_BCG_RGB_G',0.51])","(profilenamespace getvariable ['GUI_BCG_RGB_B',0.08])",1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorBackgroundFocused
+|type1=Array
+|value1={1,1,1,1}
+|description=Color of the background when the control is focused.
+}}
+
+{{CT|attribute
+|name=colorDisabledSecondary
+|type1=Array
+|value1={1,1,1,0.25}
+|description=
+}}
+
+{{CT|attribute
+|name=colorFocused
+|type1=Array
+|value1={0,0,0,1}
+|description=Text color when the control is focused.
+}}
+
+{{CT|attribute
+|name=colorFocusedSecondary
+|type1=Array
+|value1={0,0,0,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSecondary
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+=== D ===
+{{CT|attribute
+|name=default
+|type1=Number
+|value1=1
+|description=If set to 1, this control is focused when the GUI is opened.
+}}
+
+=== F ===
+{{CT|attribute
+|name=fontSecondary
+|type1=String
+|value1="PuristaLight"
+|description=
+}}
+
+=== H ===
+{{CT|attribute
+|name=HitZone
+|type1=Class
+|value1=class HitZone
+{
+	left = 0;
+	top = 0;
+	right = 0;
+	bottom = 0;
+};
+|description=
+}}
+
+=== K ===
+{{CT|attribute
+|name=KeyHints
+|type1=Class
+|value1=class KeyHints
+{
+	class A
+	{
+		key = "0x00050000 + 0";
+		hint = "";
+	};
+};
+|description=
+}}
+
+=== P ===
+{{CT|attribute
+|name=period
+|type1=Number
+|value1=1.2
+|description=Blinking period.
+}}
+
+{{CT|attribute
+|name=periodFocus
+|type1=Number
+|value1=1.2
+|description=Blinking period when focused.
+}}
+
+{{CT|attribute
+|name=periodOver
+|type1=Number
+|value1=1.2
+|description=Blinking period when mouse is hovering over the button.
+}}
+
+=== S ===
+{{CT|attribute
+|name=ShortcutPos
+|type1=Class
+|value1=class ShortcutPos
+{
+	left = "5.25 * (((safezoneW / safezoneH) min 1.2) / 40)";
+	top = 0;
+	w = "1 * (((safezoneW / safezoneH) min 1.2) / 40)";
+	h = "1 * ((((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
+};
+|description=Position of the texture used on the button.
+}}
+
+{{CT|attribute
+|name=shortcuts
+|type1=Array
+|value1={"0x00050000 + 1"}
+|description=Key shortcuts. often over-ridden/ignored by engine.
+}}
+
+{{CT|attribute
+|name=shpw
+|type1=Number
+|value1=0
+|description=Typo for '''show'''. See common attributes.
+}}
+
+{{CT|attribute
+|name=sizeExSecondary
+|type1=String
+|value1="(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)"
+|description=
+}}
+
+{{CT|attribute
+|name=soundClick
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButtonMenu\soundClick",0.09,1}
+|description=
+}}
+
+{{CT|attribute
+|name=soundEnter
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButtonMenu\soundEnter",0.09,1}
+|description=
+}}
+
+{{CT|attribute
+|name=soundEscape
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButtonMenu\soundEscape",0.09,1}
+|description=
+}}
+
+{{CT|attribute
+|name=soundPush
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1}
+|description=
+}}
+
+=== T ===
+{{CT|attribute
+|name=TextPos
+|type1=Class
+|value1=class TextPos
+{
+	left = 0;
+	top = "(1*(safezoneH / 40) - (0.028*SafezoneH)) / 2";
+	right = 0.005;
+	bottom = 0;
+	forceMiddle = true; // Since Arma 3 v2.10, default false. When true, text will be forced in the middle of the button vertically
+};
+|description=Position of the text. Useful for aligning with [[#ShortcutPos | ShortcutPos]].
+}}
+
+{{CT|attribute
+|name=textSecondary
+|type1=String
+|value1=""
+|description=Sets the secondary text of the button.
+}}
+
+{{CT|attribute
+|name=textureNoShortcut
+|type1=String
+|value1="#(argb,8,8,3)color(0,0,0,0)"
+|description=A custom Texture to be displayed alongside text. Position can be set in the ShortcutPos (texture) and TextPos (text) class.
+}}
+
+=== U ===
+{{CT|attribute
+|name=url
+|type1=String
+|value1="https://steamcommunity.com/workshop/browse?appid=107410"
+|description=Link to open when clicked.
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscShortcutButton ===
+An older version of the shortcut button.
+<syntaxhighlight lang="cpp">
+class RscShortcutButton
+{
+	deletable = 0;
+	fade = 0;
+	type = CT_SHORTCUTBUTTON;
+	x = 0.1;
+	y = 0.1;
+	class HitZone
+	{
+		left = 0;
+		top = 0;
+		right = 0;
+		bottom = 0;
+	};
+	class ShortcutPos
+	{
+		left = 0;
+		top = ((GUI_GRID_HAbs / 20) - GUI_TEXT_SIZE_MEDIUM) / 2;
+		w = GUI_TEXT_SIZE_MEDIUM * (3/4);
+		h = GUI_TEXT_SIZE_MEDIUM;
+	};
+	class TextPos
+	{
+		left = GUI_TEXT_SIZE_MEDIUM * (3/4);
+		top = ((GUI_GRID_HAbs / 20) - GUI_TEXT_SIZE_MEDIUM) / 2;
+		right = 0.005;
+		bottom = 0;
+	};
+	shortcuts[] = {};
+	textureNoShortcut = "#(argb,8,8,3)color(0,0,0,0)";
+	color[] = {1,1,1,1};
+	colorFocused[] = {1,1,1,1};
+	color2[] = {0.95,0.95,0.95,1};
+	colorDisabled[] = {1,1,1,0.25};
+	colorBackground[] =
+	{
+		"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.13])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_G',0.54])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_B',0.21])",
+		1
+	};
+	colorBackgroundFocused[] =
+	{
+		"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.13])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_G',0.54])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_B',0.21])",
+		1
+	};
+	colorBackground2[] = {1,1,1,1};
+	soundEnter[] =
+	{
+		"\A3\ui_f\data\sound\RscButton\soundEnter",
+		0.09,
+		1
+	};
+	soundPush[] =
+	{
+		"\A3\ui_f\data\sound\RscButton\soundPush",
+		0.09,
+		1
+	};
+	soundClick[] =
+	{
+		"\A3\ui_f\data\sound\RscButton\soundClick",
+		0.09,
+		1
+	};
+	soundEscape[] =
+	{
+		"\A3\ui_f\data\sound\RscButton\soundEscape",
+		0.09,
+		1
+	};
+	class Attributes
+	{
+		font = "RobotoCondensed";
+		color = "#E5E5E5";
+		align = "left";
+		shadow = "true";
+	};
+	idc = -1;
+	style = ST_LEFT;
+	default = 0;
+	shadow = 1;
+	w = 0.183825;
+	h = (GUI_GRID_HAbs / 20);
+	textSecondary = "";
+	colorSecondary[] = {1,1,1,1};
+	colorFocusedSecondary[] = {1,1,1,1};
+	color2Secondary[] = {0.95,0.95,0.95,1};
+	colorDisabledSecondary[] = {1,1,1,0.25};
+	sizeExSecondary = GUI_TEXT_SIZE_MEDIUM;
+	fontSecondary = "RobotoCondensed";
+	animTextureDefault = "\A3\ui_f\data\GUI\RscCommon\RscShortcutButton\normal_ca.paa";
+	animTextureNormal = "\A3\ui_f\data\GUI\RscCommon\RscShortcutButton\normal_ca.paa";
+	animTextureDisabled = "\A3\ui_f\data\GUI\RscCommon\RscShortcutButton\normal_ca.paa";
+	animTextureOver = "\A3\ui_f\data\GUI\RscCommon\RscShortcutButton\over_ca.paa";
+	animTextureFocused = "\A3\ui_f\data\GUI\RscCommon\RscShortcutButton\focus_ca.paa";
+	animTexturePressed = "\A3\ui_f\data\GUI\RscCommon\RscShortcutButton\down_ca.paa";
+	periodFocus = 1.2;
+	periodOver = 0.8;
+	period = 0.4;
+	font = "RobotoCondensed";
+	size = GUI_TEXT_SIZE_MEDIUM;
+	sizeEx = GUI_TEXT_SIZE_MEDIUM;
+	text = "";
+	url = "";
+	action = "";
+	class AttributesImage
+	{
+		font = "RobotoCondensed";
+		color = "#E5E5E5";
+		align = "left";
+	};
+};
+</syntaxhighlight>
+
+=== RscButtonMenu ===
+The modern Arma 3 button like the ones in the escape display.
+<syntaxhighlight lang="cpp">
+class RscButtonMenu : RscShortcutButton
+{
+	idc = -1;
+	type = CT_SHORTCUTBUTTON;
+	style = ST_CENTER + ST_FRAME + ST_HUD_BACKGROUND;
+	default = 0;
+	shadow = 0;
+	x = 0;
+	y = 0;
+	w = 0.095589;
+	h = 0.039216;
+	animTextureNormal = "#(argb,8,8,3)color(1,1,1,1)";
+	animTextureDisabled = "#(argb,8,8,3)color(1,1,1,1)";
+	animTextureOver = "#(argb,8,8,3)color(1,1,1,1)";
+	animTextureFocused = "#(argb,8,8,3)color(1,1,1,1)";
+	animTexturePressed = "#(argb,8,8,3)color(1,1,1,1)";
+	animTextureDefault = "#(argb,8,8,3)color(1,1,1,1)";
+	colorBackground[] = {0,0,0,0.8};
+	colorBackgroundFocused[] = {1,1,1,1};
+	colorBackground2[] = {0.75,0.75,0.75,1};
+	color[] = {1,1,1,1};
+	colorFocused[] = {0,0,0,1};
+	color2[] = {0,0,0,1};
+	colorText[] = {1,1,1,1};
+	colorDisabled[] = {1,1,1,0.25};
+	textSecondary = "";
+	colorSecondary[] = {1,1,1,1};
+	colorFocusedSecondary[] = {0,0,0,1};
+	color2Secondary[] = {0,0,0,1};
+	colorDisabledSecondary[] = {1,1,1,0.25};
+	sizeExSecondary = GUI_TEXT_SIZE_MEDIUM;
+	fontSecondary = "PuristaLight";
+	period = 1.2;
+	periodFocus = 1.2;
+	periodOver = 1.2;
+	size = GUI_TEXT_SIZE_MEDIUM;
+	sizeEx = GUI_TEXT_SIZE_MEDIUM;
+	tooltipColorText[] = {1,1,1,1};
+	tooltipColorBox[] = {1,1,1,1};
+	tooltipColorShade[] = {0,0,0,0.65};
+	class TextPos
+	{
+		left = 0.25 * GUI_GRID_W;
+		top = (GUI_GRID_H - GUI_TEXT_SIZE_MEDIUM) / 2;
+		right = 0.005;
+		bottom = 0;
+	};
+	class Attributes
+	{
+		font = "PuristaLight";
+		color = "#E5E5E5";
+		align = "left";
+		shadow = "false";
+	};
+	class ShortcutPos
+	{
+		left = 5.25 * GUI_GRID_W;
+		top = 0;
+		w = 1 * GUI_GRID_W;
+		h = 1 * GUI_GRID_H;
+	};
+	soundEnter[] =
+	{
+		"\A3\ui_f\data\sound\RscButtonMenu\soundEnter",
+		0.09,
+		1
+	};
+	soundPush[] =
+	{
+		"\A3\ui_f\data\sound\RscButtonMenu\soundPush",
+		0.09,
+		1
+	};
+	soundClick[] =
+	{
+		"\A3\ui_f\data\sound\RscButtonMenu\soundClick",
+		0.09,
+		1
+	};
+	soundEscape[] =
+	{
+		"\A3\ui_f\data\sound\RscButtonMenu\soundEscape",
+		0.09,
+		1
+	};
+};
+</syntaxhighlight>
+
+== Other examples ==
+This is an example with an image and text combined in one control.
+<syntaxhighlight lang="cpp">
+class RscButtonMenuSteam : RscButtonMenu
+{
+	text = "STEAM";
+	colorBackground[] = {0.03137255,0.72156864,0.91764706,1.0};
+	textureNoShortcut = "\A3\Ui_f\data\GUI\RscCommon\RscButtonMenuSteam\steam_ca.paa";
+	class TextPos
+	{
+		left = 0.0325;
+		top = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) - (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)) / 2";
+		right = 0.005;
+		bottom = 0.0;
+	};
+	class ShortcutPos
+	{
+		left = 0.005;
+		top = 0.005;
+		w = 0.0225;
+		h = 0.03;
+	};
+};
+</syntaxhighlight>

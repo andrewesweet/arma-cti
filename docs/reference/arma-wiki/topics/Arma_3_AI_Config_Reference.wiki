@@ -1,0 +1,1585 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_AI_Config_Reference
+// revision: 373242 (2025-04-12T22:20:55Z)
+// export sha1: ey3v9gz77kyc77762n49y8filzhr0lq
+// categories: Category:AI | Category:Arma 3: Reference Lists | Category:Clarification needed | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|stub}}
+{{Feature|informative|Note that this is the relevant page for {{arma3}} AI configuration. Implementations for older Arma titles differ somewhat, but are irrelevant for {{arma3}}.}}
+
+
+= [[Arma_3_CfgBrains_Config_Reference|CfgBrains Config Reference]] =
+As of {{GVI|arma3|2.00}} it contains three classes
+* DefaultAnimalBrain
+* DefaultCivilianBrain
+* DefaultSoldierBrain
+Each of which contains a Components class. Only DefaultSoldierBrain includes any components by default.
+
+Sources:
+# {{Link|link= https://forums.bohemia.net/forums/topic/150499-ai-discussion-dev-branch/?do=findComment&comment=3367671|text= oukej, BI-Forums, AI Discussion}}
+# {{Link|link= https://forums.bohemia.net/forums/topic/150499-ai-discussion-dev-branch/?page=168&tab=comments#comment-3075074|text= klamacz, BI-Forums, AI Discussion}}
+# {{Link|link= https://forums.bohemia.net/forums/topic/217481-ai-must-have-better-autonomy/?do=findComment&comment=3300586|text= .kju, BI-Forums, AI must have better autonomy.}}
+
+{{Feature|important|Source 2 states that you can create a custom soldier brain, but nowhere is it stated which brain a unit will use.}}
+
+
+== AIBrainAimingErrorComponent ==
+
+=== B ===
+
+==== best/worstDecreaseTime ====
+; Description: How long (in seconds) it should take a 1 and 0 [[skill]]ed unit respectivelly to stabilize their aim completely
+
+===== bestDecreaseTime =====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.2
+
+===== worstDecreaseTime ===== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 2
+
+=== D ===
+
+==== damageCoef ====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 10
+; Description: Importance of damage of entity, multiplier
+
+=== F ===
+
+==== fatigueCoef ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 10
+; Description: Importance of damage of entity, multiplier
+
+=== L ===
+
+==== lostTargetCoef ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 3
+; Description: Importance of loosing target event, multiplier
+
+==== lostTargetTimeMax ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 3
+; Description: How long error is raising after loosing sight of target
+
+==== lostTargetTimeMin ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.5
+; Description: How soon after loosing sight of target, error starts to raise
+
+=== M ===
+
+==== maxAngularError ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.1309
+; Description: Half of the error cone in radians
+
+==== maxAngularErrorTurrets ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: ? (''0.0872'', but sources do not all match)
+; Description: Half of the error cone in radians, used for turrets
+
+==== movingInfluence ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 1
+; Description: Importance of moving in algorithm, multiplier
+
+=== S ===
+
+==== shootingInfluence ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.4
+; Description: Importance of shooting in algorithm, multiplier
+
+==== suppressionCoef ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.5
+; Description: Importance of suppression value, multiplier
+
+=== T ===
+
+==== turningInfluence ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 1
+; Description: Importance of turning in algorithm, multiplier
+
+== AIBrainCountermeasuresComponent ==
+
+=== C ===
+
+==== CMCheckDelay ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.8
+
+==== CMOnTargettedProbability ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.1
+
+=== N ===
+
+==== nonLeaderSmokeProbability ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.1
+
+=== M ===
+
+==== minimalThrowDistance ====
+{{Clarify}}
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Default: 900
+
+==== minReactionTime ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.1
+
+==== maxReactionTime ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 3
+
+=== R ===
+
+==== randomReactionTimePercent ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.2
+
+=== S ===
+
+==== suppressionThreshold ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.8
+
+==== suppressionTimerMax ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 2
+
+=== U ===
+
+==== useSmokeGrenadeDelay ==== 
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Default: 20
+
+== AIBrainSuppressionComponent ==
+
+=== C ===
+
+==== cause... ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: How much impact different danger causes will have on suppression
+
+===== causeBulletCloseWeight ===== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.5
+{{Feature|informative|Source 1 and 2 provides conflicting default values of 0.5 and 0.15}}
+
+===== causeExplosionWeight ===== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.5
+{{Feature|informative|Source 1 and 2 provides conflicting default values of 0.5 and 0.15}}
+
+===== causeFireWeight ===== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.5
+
+===== causeHitWeight ===== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.5
+
+=== D ===
+
+==== ...DecreaseTime ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: How long it will take for a unit to loose suppression
+
+===== bestDecreaseTime ===== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 1
+; Description: How long it will take for a [[skill]] 1 unit to loose suppression{{cn}}
+
+===== worstDecreaseTime ===== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 10
+; Description: How long it will take for a [[skill]] 0 unit to loose suppression{{cn}}
+
+=== M ===
+
+==== maxSuppression ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 1.0
+; Description: Maximum level of suppression
+
+==== suppressionRange ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 1.0 / 20.0 ?
+; Description: Default suppression range, if not provided by ammo type
+{{Feature|informative|Source 1 and 2 provides conflicting default values of 1.0 and 20.0}}
+
+==== suppressionThreshold ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Default: 0.7
+; Description: Threshold to change behavior (use smoke grenades for example)
+
+== AIBrainTargetSelectorComponent ==
+As of {{GVI|arma3|2.00}} this component appears to be unimplemented and empty.
+
+
+
+= [[Arma_3_AI_Skill|AI Skill Config Reference]] =
+
+
+== CfgAILevelPresets ==
+This sets the values for the different presets available in Game Settings, by default there are four classes available:
+* AILevelHigh
+* AILevelMedium
+* AILevelLow
+* Custom
+Each of which feature the following properties
+
+=== D ===
+
+==== displayName ====
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Text displayed in the dropdown menu
+<syntaxhighlight lang="cpp">
+displayName = "Custom"
+</syntaxhighlight>
+
+=== P ===
+
+==== precisionAI ====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Coefficient applied to all accuracy skills
+
+=== S ===
+
+==== skillAI ====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Coefficient applied to all utility skills
+
+== [[Arma_3_AI_Skill#CfgAISkill|CfgAISkill]] ==
+
+=== A ===
+
+==== aimingAccuracy ====
+; Type: [[TokenNameValueTypes#Arrays|Array]]
+; Default: {0,0,1,1}
+
+==== aimingShake ==== 
+; Type: [[TokenNameValueTypes#Arrays|Array]]
+; Default: {0,0,1,1}
+
+==== aimingSpeed ==== 
+; Type: [[TokenNameValueTypes#Arrays|Array]]
+; Default: {0,0.5,1,1}
+
+=== C ===
+
+==== commanding ==== 
+; Type: [[TokenNameValueTypes#Arrays|Array]]
+; Default: {0,0,1,1}
+
+==== courage ==== 
+; Type: [[TokenNameValueTypes#Arrays|Array]]
+; Default: {0,0,1,1}
+
+=== E ===
+
+==== endurance ==== 
+{{Feature|important|This tokenName is no longer available in {{arma3}}.}}
+; Type: [[TokenNameValueTypes#Arrays|Array]]
+; Default: {0,0,1,1}
+
+=== G ===
+
+==== general ==== 
+; Type: [[TokenNameValueTypes#Arrays|Array]]
+; Default: {0,0,1,1}
+
+=== R ===
+
+==== reloadSpeed ==== 
+; Type: [[TokenNameValueTypes#Arrays|Array]]
+; Default: {0,0,1,1}
+
+=== S ===
+
+==== spotDistance ==== 
+; Type: [[TokenNameValueTypes#Arrays|Array]]
+; Default: {0,0,1,1}
+
+==== spotTime ==== 
+; Type: [[TokenNameValueTypes#Arrays|Array]]
+; Default: {0,0,1,1}
+
+== [[Arma 3: Difficulty Settings#Configuration|CfgDifficultyPresets]] ==
+
+=== L ===
+
+==== levelAI ==== 
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: Refers to [[#CfgAILevelPresets|CfgAILevelPresets]]
+
+
+
+= AI Steering Components =
+
+Subclasses of ''(configFile >> "CfgVehicles" >> _vehicle >> "components")'' class
+
+
+== [[Arma_3_AICarSteeringComponent|AICarSteeringComponent]] == 
+''Default values taken from Car_F class''
+
+=== A ===
+
+==== allow... ====
+[[TokenNameValueTypes|boolean]]
+<syntaxhighlight lang="cpp">
+allowOvertaking = true;			// overtaking is part of collision avoidance
+allowCollisionAvoidance = true;
+allowDrifting = false;			// allow using movement vector as direction
+</syntaxhighlight>
+
+=== C ===
+
+==== commandTurnFactor ==== 
+How strong AI will turn when commanded left/right
+
+[[TokenNameValueTypes|float]]
+<syntaxhighlight lang="cpp">
+commandTurnFactor = 1.0;
+</syntaxhighlight>
+
+==== convoyPIDWeights[] ==== 
+
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+convoyPIDWeights[] = {1,0.01,0.01};
+</syntaxhighlight>
+
+=== D ===
+
+==== differenceAngleCoef ==== 
+[[TokenNameValueTypes|float]]
+<syntaxhighlight lang="cpp">
+differenceAngleCoef = 1.0;
+</syntaxhighlight>
+
+==== doPredictForward ==== 
+Prediction ahead is used for both steering and analysing of shape to modify the speed
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+doPredictForward = true;
+</syntaxhighlight>
+
+===== predictForwardRange[] ===== 
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+predictForwardRange[] = { 1, 20 };
+</syntaxhighlight>
+
+===== steerAheadSaturation[] ===== 
+Steer ahead is a point to steer to, saturated down to given range, in meters
+
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+steerAheadSaturation[] = { 0.01, 0.4 };
+</syntaxhighlight>
+
+==== doRemapSpeed ==== 
+Remapping of maxSpeed of vehicle, for fast vehicles we want to lower the used speed
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+doRemapSpeed = true;
+</syntaxhighlight>
+
+===== remapSpeedRange ===== 
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+remapSpeedRange[] = { 30.0, 70.0 };
+</syntaxhighlight>
+
+===== remapSpeedScalar ===== 
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+remapSpeedScalar[] = { 1.0, 0.35 };
+</syntaxhighlight>
+
+=== S ===
+
+==== speedPIDWeights ==== 
+Controls working parameters of speed PID controller (Kp, Ki, Kd)
+
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+speedPIDWeights[] = { 0.7, 0.2, 0.0 };
+</syntaxhighlight>
+
+==== speedPredictionMethod ==== 
+[[TokenNameValueTypes#Integers|Integer]]: Determines the manipulability of the class.
+
+{| class="wikitable"
+! Value			!! Type	
+|-
+| {{hl|0}}	|| Three angles method
+|-
+| {{hl|1}}	|| Wheel direction method
+|-
+| {{hl|2}}	|| Combined method
+|}
+
+<syntaxhighlight lang="cpp">
+speedPredictionMethod = 2;
+</syntaxhighlight>
+
+===== ...AngleCoef ===== 
+Four coef's to determine how much given angle should influence slowing down
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+wheelAngleCoef = 0.7;
+forwardAngleCoef = 0.7;
+steeringAngleCoef = 1.0;
+differenceAngleCoef = 0.4;
+</syntaxhighlight>
+
+===== minSpeedToKeep ===== 
+Parameter of predictionMethod = 1
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+minSpeedToKeep = 0.1;
+</syntaxhighlight>
+
+===== maxWheelAngleDiff ===== 
+Parameter of predictionMethod = 1
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+maxWheelAngleDiff = 0.2616;
+</syntaxhighlight>
+
+==== steeringPIDWeights ==== 
+Controls working parameters of steering PID controller (Kp, Ki, Kd)
+
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+steeringPIDWeights[] = { 1.2, 0.1, 0.2 };
+</syntaxhighlight>
+
+==== stuckMaxTime ==== 
+For how long we allow to be not moving, before we consider us stuck
+
+[[TokenNameValueTypes|float]]
+<syntaxhighlight lang="cpp">
+stuckMaxTime = 3.0;
+</syntaxhighlight>
+
+== AITankSteeringComponent ==
+''Default values taken from Tank_F class''
+
+=== A ===
+
+==== allow... ====
+[[TokenNameValueTypes|boolean]]
+<syntaxhighlight lang="cpp">
+allowOvertaking = true;			// overtaking is part of collision avoidance
+allowCollisionAvoidance = true;
+allowDrifting = false;			// allow using movement vector as direction
+allowTurnAroundInPoint = true;
+</syntaxhighlight>
+
+=== C ===
+
+==== commandTurnFactor ==== 
+How strong AI will turn when commanded left/right
+
+[[TokenNameValueTypes|float]]
+<syntaxhighlight lang="cpp">
+commandTurnFactor = 1.0;
+</syntaxhighlight>
+
+==== convoyPIDWeights[] ==== 
+
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+convoyPIDWeights[] = {1,0,0};
+</syntaxhighlight>
+
+=== D ===
+
+==== differenceAngleCoef ==== 
+[[TokenNameValueTypes|float]]
+<syntaxhighlight lang="cpp">
+differenceAngleCoef = 1.0;
+</syntaxhighlight>
+
+==== doPredictForward ==== 
+Prediction ahead is used for both steering and analysing of shape to modify the speed
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+doPredictForward = true;
+</syntaxhighlight>
+
+===== predictForwardRange[] ===== 
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+predictForwardRange[] = { 1, 20 };
+</syntaxhighlight>
+
+===== steerAheadSaturation[] ===== 
+Steer ahead is a point to steer to, saturated down to given range, in meters
+
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+steerAheadSaturation[] = { 0.01, 0.4 };
+</syntaxhighlight>
+
+==== doRemapSpeed ==== 
+Remapping of maxSpeed of vehicle, for fast vehicles we want to lower the used speed
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+doRemapSpeed = false;
+</syntaxhighlight>
+
+===== remapSpeedRange ===== 
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+remapSpeedRange[] = { 30.0, 70.0 };
+</syntaxhighlight>
+
+===== remapSpeedScalar ===== 
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+remapSpeedScalar[] = { 1.0, 0.35 };
+</syntaxhighlight>
+
+=== M ===
+
+==== maxWheelAngleDiff ==== 
+Parameter of predictionMethod = 1
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+maxWheelAngleDiff = 0.2616;
+</syntaxhighlight>
+
+==== minSpeedToKeep ==== 
+Parameter of predictionMethod = 1
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+minSpeedToKeep = 0.1;
+</syntaxhighlight>
+
+=== P ===
+
+==== predictForwardMaxSpeed ==== 
+
+[[TokenNameValueTypes#Integers|Integer]]
+<syntaxhighlight lang="cpp">
+minSpeedToKeep = 15;
+</syntaxhighlight>
+
+=== S ===
+
+==== speedPIDWeights ==== 
+Controls working parameters of speed PID controller (Kp, Ki, Kd)
+
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+speedPIDWeights[] = { 0.7, 0.2, 0.0 };
+</syntaxhighlight>
+
+==== speedPredictionMethod ==== 
+[[TokenNameValueTypes#Integers|Integer]]: Determines the manipulability of the class.
+
+{| class="wikitable"
+! Value			!! Type	
+|-
+| {{hl|0}}	|| Three angles method
+|-
+| {{hl|1}}	|| Wheel direction method
+|-
+| {{hl|2}}	|| Combined method
+|}
+
+<syntaxhighlight lang="cpp">
+speedPredictionMethod = 3; // ?
+</syntaxhighlight>
+
+===== ...AngleCoef ===== 
+Four coef's to determine how much given angle should influence slowing down
+
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+wheelAngleCoef = 0.7;
+forwardAngleCoef = 0.7;
+steeringAngleCoef = 1.0;
+differenceAngleCoef = 1.0;
+</syntaxhighlight>
+
+==== steeringPIDWeights ==== 
+Controls working parameters of steering PID controller (Kp, Ki, Kd)
+
+[[TokenNameValueTypes#Arrays|Array]]
+<syntaxhighlight lang="cpp">
+steeringPIDWeights[] = { 1.2, 0.1, 0.2 };
+</syntaxhighlight>
+
+==== stuckMaxTime ==== 
+For how long we allow to be not moving, before we consider us stuck
+
+[[TokenNameValueTypes|float]]
+<syntaxhighlight lang="cpp">
+stuckMaxTime = 3.0;
+</syntaxhighlight>
+
+
+
+= Other =
+
+
+== [[CfgAmmo_Config_Reference|CfgAmmo]] ==
+
+=== A ===
+
+==== aiAmmoUsageFlags ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Tells the AI how to use this Ammo. NOTE: Feature still WIP, some functions may not work yet or be removed later. See: {{Link|link= http://forums.bistudio.com/showthread.php?159711-Development-Branch-Captain-s-AI-Log&p=2945231&viewfull=1#post2945231|text= AI Devbranch}}
+
+{| class="wikitable"
+! Value
+! Type
+! Description
+|-
+| {{hl|0}}
+| None || ???
+|-
+| {{hl|1}}
+| Light || used for illumination
+|-
+| {{hl|2}}
+| Marking || ???
+|-
+| {{hl|4}}
+| Concealment || used for smokes
+|-
+| {{hl|8}} || CounterMeasures || ???
+|-
+| {{hl|16}} || Mine || ???
+|-
+| {{hl|32}} || Underwater || used in underwater environment
+|-
+| {{hl|64}} || OffensiveInf || against infantry
+|-
+| {{hl|128}} || OffensiveVeh || against vehicles
+|-
+| {{hl|256}} || OffensiveAir || against air
+|-
+| {{hl|512}} ||OffensiveArmour || against armored vehicles
+|}
+
+Multiple flags can be combined by adding the values together
+
+<syntaxhighlight lang="cpp">
+aiAmmoUsageFlags = 4; //for concealment only
+aiAmmoUsageFlags = "64 + 128"; //against infantry and light vehicles
+</syntaxhighlight>
+
+==== airLock ====
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: Declares if ammo can lock on air targets. Also makes ''AI'' to decide whether to engage air units with the particular ammo.
+
+==== allowAgainstInfantry ====
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: Default {{hl|true}}. If {{hl|false}}, the ''AI'' will not (deliberately) employ this weapon against infantry targets. Used to override ''[[#cost|cost]]'' behaviour.
+
+==== audibleFire ====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: How much can ''AI'' hear when given weapon is fired.
+
+<syntaxhighlight lang="cpp">
+audibleFire = 5.0;
+</syntaxhighlight>
+
+=== C ===
+
+==== cost ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: ''Cost-gain'' evaluation is performed to choose an appropriate weapon.
+:''Gain'' includes self-preservation.
+:''Cost'' includes time required to complete the attack.
+As a result, weapons with ''high cost'' are unlikely to be used against common targets, esp. when ''low cost'' weapons are available. Still, there may be situation where ''AI'' may decide to use high cost weapon, esp. when it thinks it has little chance of survival and needs to attempt destroying enemy quickly.
+
+<syntaxhighlight lang="cpp">
+cost = 5000;
+</syntaxhighlight>
+
+
+=== D ===
+
+==== dangerRadiusBulletClose ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Defines how far in meters the AI gets alerted by the bullet's pass. Default value -1 disables the detection. (works only for bullets, no other projectiles).
+
+<syntaxhighlight lang="cpp">
+deflecting = -1;
+</syntaxhighlight>
+
+==== dangerRadiusHit ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Defines how far in meters the AI gets alerted by the projectile's impact or explosion. Default value -1 makes this distance be automatically derived from the hit and indirectHit properties (hit * 0.5 + indirectHit * indirectHitRange * 0.5 - but there's also an energy factor).
+
+<syntaxhighlight lang="cpp">
+deflecting = -1;
+</syntaxhighlight>
+
+=== M ===
+
+==== min/mid/maxRange... ====
+; Description: These tokens are present in {{Name|ofp|short}} only. They were badly classed in {{Name|ofp|short}}, causing all weapons using this specific ''bullet'' to exhibit this behaviour rather than the behaviour of the ''rifle''. As such they were transferred to Arma's ''cfgWeapons''{{Clarify}}.
+
+'''Above statement is not true'''; Even in {{Name|arma2|short}} and {{Name|arma2oa|short}}, these values still exist and affect the ''AI'' '''and only the AI''' in the following ways:
+:The tokens are found/put on each weapons "''firing modes''", or on the gun itself, if it has no separate firing modes{{Clarify}}.
+
+===== minRange =====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: ''Minimum'' engagement range for the ''AI''.
+
+Below given values, the ''AI'' '''will not''' engage but just "''stare them down''", even if they get shot at, and (most likely) killed.
+
+<syntaxhighlight lang="cpp">
+Minrange = 5;
+</syntaxhighlight>
+
+===== minRangeProbab =====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: ''Probability'' declaring how '''''high''''' the chance is that the ''AI'' will engage a target at ''minRange'' using ''this (current)'' firing mode.
+
+Values are {{hl|0.0}} to {{hl|1.0}} where {{hl|1.0}} equates to a ''100% likelihood''.
+
+<syntaxhighlight lang="cpp">
+minRangeProbab = 0.02;
+</syntaxhighlight>
+
+===== midRange =====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: ''Mid-Range'' engagement range for ''AI'''s using ''this (current)'' firing mode.
+
+<syntaxhighlight lang="cpp">
+midRange = 150;
+</syntaxhighlight>
+
+===== midRangeProbab =====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: ''Probability'' declaring how '''''high''''' the chance is that the ''AI'' will engage a target at ''midRange''.
+
+Values are {{hl|0.0}} to {{hl|1.0}} where {{hl|1.0}} equates to a ''100% likelihood''.
+
+<syntaxhighlight lang="cpp">
+midRangeProbab = 0.7;
+</syntaxhighlight>
+
+===== maxRange =====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: ''Maximum'' range possible for the ''AI''.
+
+Although ''AI's'' '''may''' engage targets slightly beyond ''maxRange'', this is how far the ''AI'' will try to shoot at targets. Targets definitely beyond ''maxRange'' are ignored.
+
+<syntaxhighlight lang="cpp">
+maxRange = 500;
+</syntaxhighlight>
+
+===== maxRangeProbab =====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: ''Probability'' declaring how '''''high''''' the chance is that the ''AI'' will engage a target at ''maxRange'' (or slightly below).
+
+Values are {{hl|0.0}} to {{hl|1.0}} where {{hl|1.0}} equates to a ''100% likelihood''.
+
+<syntaxhighlight lang="cpp">
+maxRangeProbab = 0.51;
+</syntaxhighlight>
+
+==== mineTrigger ====
+; Type: [[TokenNameValueTypes#Strings|String]]
+; Description: is a in [[CfgMineTriggers_Config_Reference|CfgMineTriggers]] defined class
+
+=== S ===
+
+==== suppressionRadiusBulletClose ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Defines the max. distance in meters at which the AI becomes suppressed by the bullet's pass. Default value -1 disables the suppressive effect (works only for bullets, no other projectiles).
+
+<syntaxhighlight lang="cpp">
+suppressionRadiusBulletClose = -1;
+</syntaxhighlight>
+
+==== suppressionRadiusHit ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Defines the max. distance in meters at which the AI becomes suppressed by the projectile's impact or explosion. Default value -1 disables the suppressive effect.
+
+<syntaxhighlight lang="cpp">
+suppressionRadiusHit = -1;
+</syntaxhighlight>
+
+=== V ===
+
+==== visibleFire ====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: How much does ''AI'' see a unit firing this weapon.
+
+<syntaxhighlight lang="cpp">
+visibleFire = 18;
+</syntaxhighlight>
+
+==== visibleFireTime ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: How long is one shot assumed to be noticeable by the ''AI''.
+
+Values under {{hl|5}} should be avoided, as ''AI'' can perform in cycles with 5s of no testing in between.
+
+<syntaxhighlight lang="cpp">
+visibleFireTime = 18;
+</syntaxhighlight>
+
+== [[CfgWeapons_Config_Reference|CfgWeapons]] ==
+
+=== A ===
+
+==== [[CfgWeapons_Config_Reference#aiBurstTerminable.3Dfalse|aiBurstTerminable]] ==== 
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: AI firemode parameter, when true, AI will terminate burst when target is dead or out of sight 
+
+==== [[CfgWeapons_Config_Reference#aiDispersionCoefX.3D1.0|aiDispersionCoefX]] ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Dispersion multiplier for ''AI'' units (axis X - left to right).
+
+==== [[CfgWeapons_Config_Reference#aiDispersionCoefY.3D1.0|aiDispersionCoefY]] ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Dispersion multiplier for ''AI'' units (axis Y - top-down).
+
+==== [[CfgWeapons_Config_Reference#aiRateOfFire.3D5.0|aiRateOfFire]] ==== 
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Delay between shots at given ''aiRateOfFireDistance''.
+
+==== [[CfgWeapons_Config_Reference#aiRateOfFireDistance.3D500|aiRateOfFireDistance]] ==== 
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: At shorter distance delay (''aiRateOfFire'') goes linearly to zero.
+
+==== [[CfgWeapons_Config_Reference#aiRateOfFireDispersion.3D1|aiRateOfFireDispersion]] ==== 
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Property that affects the randomness of delay between shots. Value sets the maximum of the range in which a random number influencing the delay between shots is generated. 0 means the delay between shots will be the same (with given actual distance). The bigger the value the longer delay can be generated.
+
+<syntaxhighlight lang="cpp">
+// randomized delay after shot
+timeToShot = aiRateOfFire + aiRateOfFireDispersion * Random<0,1>
+</syntaxhighlight>
+
+==== [[autoFire.3Dfalse|autoFire]] ====
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: If {{hl|true}}, weapon will fire repeatedly all the while you hold the fire button down.
+
+And if {{hl|true}} the gunner can use the weapon on his own discretion (no ''commander'' fire order needed - like ''MG'' type).
+
+=== M ===
+
+==== [[CfgWeapons_Config_Reference#min.2Fmid.2FmaxRange...|min/mid/maxRange...]] ==== 
+; Class: ArmaModeClass
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Together with ''range'' and ''rangeProbab'' values, defines probability to use this weapon for ''AI'' units at given distance.
+
+==== [[CfgWeapons_Config_Reference#minRange.3D1|minRange]] ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+==== [[CfgWeapons_Config_Reference#minRangeProbab.3D0.3|minRangeProbab]] ====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+
+==== [[CfgWeapons_Config_Reference#midRange.3D150|midRange]] ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+==== [[CfgWeapons_Config_Reference#midRangeProbab.3D_0.58|midRangeProbab]] ====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+
+==== [[CfgWeapons_Config_Reference#maxRange.3D500|maxRange]] ====
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+
+==== [[CfgWeapons_Config_Reference#maxRangeProbab.3D0.04|maxRangeProbab]] ====
+; Type: [[TokenNameValueTypes#Floats|Float]]
+
+=== O ===
+
+==== [[Arma_3:_ItemInfo_Config_Reference#opticType|opticType]] ==== 
+; Class: ItemInfo
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Parameter which defines opticType of given optics. It is used together [[CfgWeapons_Config_Reference#requiredOpticType.3D-1|requiredOpticType]] to create additional fire modes with higher engagement ranges
+
+<syntaxhighlight lang="cpp">
+opticType = 0; // Typically used for optics without magnification (Default)
+opticType = 1; // Typically used for optics with magnification level between 2.5 - 5x
+opticType = 2; // Typically used for scopes with high magnification (>5x)
+</syntaxhighlight>
+
+=== R ===
+
+==== [[CfgWeapons_Config_Reference#requiredOpticType.3D-1|requiredOpticType]] ==== 
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Integers|Integer]]
+; Description: Required [[Arma_3_ItemInfo_Config_Reference#opticType|opticType]] for AI to be able to use this fire mode. It is mainly use to increase maximum engagement distance of AI depending on the optics it has mount on its rifle
+
+<syntaxhighlight lang="cpp">
+		class single_close_optics1 : Single // This optic mode will be used if AI unit has optic mounted on this weapon with opticType >= 1. AI will engage between 
+		{
+			requiredOpticType = 1;
+			showToPlayer = 0;
+			minRange = 2;
+			minRangeProbab = 0.05;
+			midRange = 300;
+			midRangeProbab = 0.8;
+			maxRange = 500;
+			maxRangeProbab = 0.01;
+			aiRateOfFire = 2;
+			aiRateOfFireDistance = 300;
+		};
+		class single_medium_optics1 : single_close_optics1 // Same as single_close_optics1 - requiredOpticType is inherited and therefore opticType >= 1 is required
+		{
+			minRange = 300;
+			minRangeProbab = 0.05;
+			midRange = 500;
+			midRangeProbab = 0.7;
+			maxRange = 700;
+			maxRangeProbab = 0.05;
+			aiRateOfFire = 2;
+			aiRateOfFireDistance = 500;
+		};
+		class single_far_optics1 : single_medium_optics1 // this optic mode will be only used if AI unit has optic with opticType = 2 mounted. With this fire mode AI will engage enemies up to 1km
+		{
+			requiredOpticType = 2;
+			minRange = 300;
+			minRangeProbab = 0.05;
+			midRange = 700;
+			midRangeProbab = 0.5;
+			maxRange = 1000;
+			maxRangeProbab = 0.05;
+			aiRateOfFire = 4;
+			aiRateOfFireDistance = 600;
+		};
+</syntaxhighlight>
+
+=== S ===
+
+==== [[CfgWeapons_Config_Reference#showToPlayer.3Dtrue|showToPlayer]] ==== 
+; Class: ModeClass
+; Type: [[TokenNameValueTypes#Boolean|Boolean]]
+; Description: Some modes defined for ''AI'' usage (''e.g.'' burst modes for full auto weapons) can be hidden from player with this parameter.
+
+== [[CfgVehicles_Config_Reference|CfgVehicles]] ==
+
+=== A ===
+
+==== [[CfgVehicles_Config_Reference#accuracy|accuracy]] ==== 
+
+[[TokenNameValueTypes#Floats|Float]]: Default value = 0.02.
+
+Determines how easy an object is to identify. Smaller values are easier to detect.
+
+Typically, buildings are 0.2, vehicles, 0.5 
+
+'''A value of 1000 causes the underlying class to be identified instead.''' Eg bushy trees, pink trees and yellow trees, can all be 'identified' as "trees". The description "bushy trees" is then used solely when Editing. See [[#VehicleClass]]
+
+<syntaxhighlight lang="cpp">
+accuracy = 0.2;		// buildings
+accuracy = 0.5;		// small vehicles
+accuracy = 0.9;		// truck
+accuracy = 3.500000;	// sniper
+accuracy = 1.500000;	// lawsoldier
+accuracy = 1000;		// soldier // identify (most) solders as 'man'
+</syntaxhighlight>
+
+Relationship to [[#camouflage]]:
+
+'''accuracy''' defines how hard it is for the AI to recognise the correct class of a unit. But even if it can't recognise the correct class it can still recognise it as an enemy and engage it.
+
+'''camouflage''' defines how hard it is for the AI to ''see'' that the unit is there.
+
+==== [[CfgVehicles_Config_Reference#attendant|attendant]] ==== 
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false
+
+Used for 'vehicles' to repair other 'vehicles'. Thus a hospital has an attendant that can repair soldiers. Adds the action "Heal at XXX"
+
+<syntaxhighlight lang="cpp">
+attendant = true;
+</syntaxhighlight>
+
+==== AttributeValues ==== 
+{{Feature|Eden Editor|Editing the ''AttributeValues'' class of objects allows you to change the default values.}} 
+
+===== Skill =====
+[[TokenNameValueTypes#Floats|Float]]: Default 0.5 
+
+Changes the default Skill slider value of the unit
+
+<syntaxhighlight lang="cpp">
+class AttributeValues 
+{
+	Skill = 0.5;
+};
+</syntaxhighlight>
+
+===== UnitPos =====
+[[TokenNameValueTypes#Integers|Integer]]: Default 0
+
+Changes the default [[setUnitPos]] toolbox value of the unit
+
+{| class="wikitable"
+! Numeric value !! [[unitPos]]
+|-
+| 0 || "AUTO"
+|-
+| 1 || "DOWN"
+|-
+| 2 || "MIDDLE"
+|-
+| 3 || "UP"
+|}
+
+<syntaxhighlight lang="cpp">
+class AttributeValues 
+{
+	UnitPos = 0; // "AUTO"
+};
+</syntaxhighlight>
+
+==== [[CfgVehicles_Config_Reference#audible|audible]] ==== 
+[[TokenNameValueTypes|float]]: Default Value 1
+
+<syntaxhighlight lang="cpp">
+audible = .05;	// man
+audible = 3;	// motorcycle
+audible = 6;	// tank/ship
+</syntaxhighlight>
+
+How loud you are. The bigger value, the better the unit is heard.
+
+see [[#camouflage]]
+
+=== C ===
+
+==== [[CfgVehicles_Config_Reference#...CanSee|...CanSee]] ==== 
+[[TokenNameValueTypes#Integers|Integer]] 
+
+Used to describe which sensory inputs are available to which crew members. 
+
+{| class="wikitable"
+! Numeric value !! CanSee.. define !! Description
+|-
+| 1 || Radar || Enables top left radar (OA) for a vehicle (top centre in arma and OFP).
+|-
+| 2 || Eye || Effect unknown - maybe affects AI capabilities?
+|-
+| 4 || Optics || Effect unknown - maybe affects AI capabilities?
+|-
+| 8 || Ear || Effect unknown - maybe affects AI capabilities?
+|-
+| 16 || Compass || Enables top centre compass bar and digital compass in A2/OA.
+|-
+| 32 || Peripheral || Enables small colored blobs at the edge of the screen that indicate nearby units.
+|}
+
+Multiple values can be added (or binary ored, giving the same result) together.
+
+<syntaxhighlight lang="cpp">
+commanderCanSee = 31;	// default
+gunnerCanSee = 4+8+16;	// default
+driverCanSee = 2+8+16;	// default
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+#define CanSeeRadar 1
+#define CanSeeEye 2
+#define CanSeeOptics 4
+#define CanSeeEar 8
+#define CanSeeCompass 16
+#define CanSeeAll 31
+#define CanSeePeripheral 32
+#define CanSeeRadarC CanSeeRadar+CanSeeCompass
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+commanderCanSee = CanSeeAll;
+gunnerCanSee = CanSeeOptics+CanSeeEar+CanSeeCompass;
+driverCanSee = CanSeeEye+CanSeeEar+CanSeeCompass;
+</syntaxhighlight>
+
+==== [[CfgVehicles_Config_Reference#camouflage|camouflage]] ==== 
+[[TokenNameValueTypes#Floats|Float]]: Default Value = 2.
+
+how difficult to spot. bigger = easier
+
+<syntaxhighlight lang="cpp">
+camouflage = 0.6;	// snipers
+camouflage = 1;		// man
+camouflage = 4;		// trucks
+camouflage = 8;		// tanks
+</syntaxhighlight>
+
+Relationship to [[#accuracy]]:
+
+'''camouflage''' defines how hard it is for the AI to ''see'' that the unit is there. The AI will not spot an enemy that has a camouflage setting of 0 (maybe this needs some more testing) even if it stands directly in front of it ''as long as the enemy doesn't fire''.
+
+'''accuracy''' defines how hard it is for the AI to recognise the correct class of a unit. But even if it can't recognise the correct class it can still recognise it as an enemy and engage it.
+
+<u>Related TokenNames</u>
+[[#accuracy]], [[#nameSound]], [[#camouflage]]
+
+==== [[CfgVehicles_Config_Reference#canDeactivateMines|canDeactivateMines]] ==== 
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false
+
+part of the man class.
+
+<syntaxhighlight lang="cpp">
+canDeactivateMines= true;	// SoldierEngineer
+</syntaxhighlight>
+
+==== [[CfgVehicles_Config_Reference#coefInside...|coefInside...]] ==== 
+[[TokenNameValueTypes#Floats|Float]]:
+
+<syntaxhighlight lang="cpp">
+coefInside = 2;			// cost for movement inside buildings
+coefInsideHeur = 4.3;	// estimation of cost based on in/out points
+coefSpeedInside = 2; // we must go slowly inside houses
+</syntaxhighlight>
+
+Used by the static class for non moving objects such as buildings
+
+<syntaxhighlight lang="cpp">
+coefInside = 1;	// forest
+coefInsideHeur = 0.25;
+</syntaxhighlight>
+
+==== [[CfgVehicles_Config_Reference#cost|cost]] ==== 
+[[TokenNameValueTypes#Floats|Float]]: Default Value 50,0000
+
+This value reflects the attractiveness of the target to the enemy AI. When ''all other considerations are equal''. A soldier eg is not interested in Air, despite it is highly attractive cost values. On the other hand, he is interested in a medic, since a medic (in normal configs) has a (while small) a higher cost, than others in the group, including the officer.
+
+<syntaxhighlight lang="cpp">
+cost = 10000000;	// an air vehicle is typically this value
+cost = 8;			// a medic;
+cost = 1;			// a grunt
+cost = 4;			// an officer
+cost = 0;			// most buildings;
+</syntaxhighlight>
+
+<u>Related TokenNames</u>: [[#type (threat)|type]], [[#cost]], [[#threat]]
+
+=== D ===
+
+==== [[CfgVehicles_Config_Reference#driveThroughEnabled|driveThroughEnabled]] ==== 
+Determines if AI can decide to go through the object. This parameter skips regular mass checking if object can smashed through
+
+<syntaxhighlight lang="cpp">
+driveThroughEnabled			= 1; // test parameter for AI knowing they can drive through the object
+</syntaxhighlight>
+
+==== [[CfgVehicles_Config_Reference#ejectDamageLimit|ejectDamageLimit]] ==== 
+[[TokenNameValueTypes#Floats|Float]]: If the damage value of the vehicle is higher than the ejectDamageLimit, AI will disembark the vehicle.
+
+<syntaxhighlight lang="cpp">
+ejectDamageLimit = 0.75;
+</syntaxhighlight>
+
+=== E ===
+
+==== [[CfgVehicles_Config_Reference#enableSweep|enableSweep]] ==== 
+[[TokenNameValueTypes#Boolean|Boolean]]: Default true. Used by Helicopter class
+
+<syntaxhighlight lang="cpp">
+enableSweep = false;	/ /UH60MG
+</syntaxhighlight>
+
+Is sweeping over the target a valid technique for given helicopter?
+
+=== F ===
+
+==== [[CfgVehicles_Config_Reference#formation...|formation...]] ==== 
+[[TokenNameValueTypes#Integers|Integer]]:
+
+<syntaxhighlight lang="cpp">
+formationX = 10;	// default meters
+formationZ = 20;	// default meters
+formationTime = 10;	// default seconds
+</syntaxhighlight>
+
+One or both X Z values are used to keep objects separated (in meters) depending on 
+wedge, echelon, V, single line, formations.
+
+==== [[Arma_2:_Operation_Arrowhead:_AI_FSM|fsmDanger]] ==== 
+[[TokenNameValueTypes#Strings|String]]: Path to FSM file or CfgFSMs class
+
+Files can be found at:
+* \a3\characters_f\scripts\danger.fsm
+* \a3\characters_f\scripts\formationCDanger.fsm
+
+<syntaxhighlight lang="cpp">
+fsmDanger = "-"; // CAManBase
+fsmDanger = "A3\characters_f\scripts\formationCDanger.fsm"; // Civilian_F
+</syntaxhighlight>
+
+==== [[Arma_2:_Operation_Arrowhead:_AI_FSM|fsmFormation]] ==== 
+[[TokenNameValueTypes#Strings|String]]: Path to FSM file or CfgFSMs class
+
+Files can be found at:
+* A3\characters_f\scripts\formationCDanger.fsm
+
+<syntaxhighlight lang="cpp">
+fsmFormation = "Formation"; // CAManBase, referring to (configFile >> "CfgFSMs" >> "Formation")
+fsmDanger = "A3\characters_f\scripts\formationCDanger.fsm"; // Civilian_F
+</syntaxhighlight>
+
+=== G ===
+
+==== [[CfgVehicles_Config_Reference#...Gun...|...Gun...]] ==== 
+[[TokenNameValueTypes#Integers|Integer]]:degrees
+
+<syntaxhighlight lang="cpp">
+minGunElev = -60;
+maxGunElev = 60;
+minGunTurn = -5;
+maxGunTurn = 5;
+minGunTurnAI = -30;
+maxGunTurnAI = 30;
+</syntaxhighlight>
+
+=== H ===
+
+==== [[CfgVehicles_Config_Reference#...HeadTurnAI|...HeadTurnAI]] ==== 
+[[TokenNameValueTypes#Integers|Integer]] Degrees 
+
+<syntaxhighlight lang="cpp">
+minHeadTurnAI = -70;	// man class
+maxHeadTurnAI = 70;
+</syntaxhighlight>
+
+=== I ===
+
+==== [[CfgVehicles_Config_Reference#irScanGround|irScanGround]] ==== 
+[[TokenNameValueTypes#Boolean|Boolean]]: Default true.
+
+Probaly used to stop ai looking down
+
+<syntaxhighlight lang="cpp">
+irScanGround = false;	// tanks
+</syntaxhighlight>
+
+==== [[CfgVehicles_Config_Reference#irScanRange...|irScanRange...]] ==== 
+[[TokenNameValueTypes#Integers|Integer]]: Default 0
+
+<syntaxhighlight lang="cpp">
+irScanRange = 4000;		// outdated (since Resistance)
+irScanRangeMin = 500;	// tanks general
+irScanRangeMax = 4000;
+irScanRangeMin = 2000;	// air
+irScanRangeMax = 10000;
+irScanRangeMin = 4000;	// a vulcan
+irScanRangeMax = 10000;
+</syntaxhighlight>
+
+==== [[CfgVehicles_Config_Reference#irScanToEyeFactor|irScanToEyeFactor]] ==== 
+[[TokenNameValueTypes#Integers|Integer]]: Default 1
+
+<syntaxhighlight lang="cpp">
+irScanToEyeFactor = 2;	// air
+irScanToEyeFactor = 5;	// shilka
+</syntaxhighlight>
+
+==== [[CfgVehicles_Config_Reference#irTarget|irTarget]] ==== 
+[[TokenNameValueTypes#Boolean|Boolean]]: Default true.
+
+Used for (some) buildings so that they don't show up on tank radar. Save for very limited exceptions, this token should be enabled for all vehicle units. 
+
+Disabling it will make the vehicle NOT to be engaged by infantry anti-tank gunners nor vehicle weapons. It will only be engaged by small arms, and only if its armor value is low enough for AI infantry to think it can damage it by shooting at it. 
+
+<syntaxhighlight lang="cpp">
+irTarget = false;	// man
+</syntaxhighlight>
+
+=== M ===
+
+==== [[CfgVehicles_Config_Reference#minFireTime|minFireTime]] ==== 
+[[TokenNameValueTypes#Integers|Integer]]: Default 20 seconds
+
+<syntaxhighlight lang="cpp">
+minFireTime = 20;
+</syntaxhighlight>
+
+Minimal time spent firing on single target.
+
+=== N ===
+
+==== [[CfgVehicles_Config_Reference#nameSound|nameSound]] ==== 
+[[TokenNameValueTypes#Strings|String]]: Default value: "Target"
+
+Namesound is used by the AI audio to indicate verbally where to go, what 'vehicle' to attack. Thus the audio speech "move to 'rock' 3 o'clock' is derived from the ''nameSound''.
+
+<syntaxhighlight lang="cpp">
+nameSound = "rock";
+</syntaxhighlight>
+
+Many different nameSounds can be selected. Here are just a few.
+
+<syntaxhighlight lang="cpp">
+nameSound = crew;
+nameSound = target;
+nameSound = tank;
+nameSound = house;
+</syntaxhighlight>
+
+The actual descriptive text accompanying the 'sound' can be different see [[#displayName]]
+
+Typically, a collection of buildings (eg) will be configured as follows
+
+<syntaxhighlight lang="cpp">
+class GenBuilding : NonStrategic {
+	scope=private; // internal use only
+	VehicleClass="Some Editor Group Name";
+	namesound="house";
+};
+class YellowBuilding : GenBuilding {
+	scope=public;
+	name="YellowBuilding";
+	model="Some yellow building.p3d";
+};
+</syntaxhighlight>
+
+<u>Related TokenNames</u>
+[[#accuracy]], [[#vehicleClass]], [[#nameSound]], [[#camouflage]]
+
+=== P ===
+
+==== [[CfgVehicles_Config_Reference#preferRoads|preferRoads]] ==== 
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false
+
+<syntaxhighlight lang="cpp">
+preferRoads = true;	// all vehicles
+</syntaxhighlight>
+
+=== S ===
+
+==== [[CfgVehicles_Config_Reference#sensitivityEar|sensitivityEar]] ==== 
+[[TokenNameValueTypes#Floats|Float]]: Default 0.0075
+
+Sets how well can the given unit hear others.
+The bigger the value, the better the hearing.
+
+<syntaxhighlight lang="cpp">
+sensitivityEar = 0.13;	// man
+</syntaxhighlight>
+
+==== [[CfgVehicles_Config_Reference#...Speed|...Speed]] ==== 
+[[TokenNameValueTypes#Floats|Float]]: In Kph.
+
+Setting maxSpeed for infantry units too low might cause problems when working with waypoints (units won't be able to fully complete them or won't move towards them).
+
+<syntaxhighlight lang="cpp">
+minSpeed = -0.5;	// range 0->1
+maxSpeed = 80;		// default
+maxSpeed = 30;		// tractor
+maxSpeed = 60;		// boat
+</syntaxhighlight>
+
+=== T ===
+
+<u>Related TokenNames</u>: [[#type (threat)|type]], [[#cost]], [[#threat]]
+
+==== [[CfgVehicles_Config_Reference#threat|threat]] ==== 
+float [[TokenNameValueTypes#Arrays|Array]]: Default Value {0.700000, 0.500000, 0.300000};
+
+How threatening you are to unit [[#type (threat)|types]] {Soft, Armor, Air}, respectively.
+
+The ai for this model selects targets of opportunity, based on these values.
+
+<syntaxhighlight lang="cpp">
+threat[] = {1, 0.0500000, 0.050000};		// soldier
+threat[] = {1, 0.900000, 0.100000};			// law soldier
+threat[] = {0.900000, 0.700000, 0.300000};	// bmp
+</syntaxhighlight>
+
+<u>Related TokenNames</u>: [[#type (threat)|type]], [[#cost]], [[#threat]]
+
+==== [[CfgVehicles_Config_Reference#type_.28threat.29|type]] ==== 
+[[TokenNameValueTypes#Integers|Integer]]: Default Value: Armored
+
+This indicates the threat type of the 'vehicle'.
+
+In well written configs, the 3 possible values are declared as defines at top of file for legibility
+
+<syntaxhighlight lang="cpp">
+#define VSoft 0
+#define VArmor 1
+#define VAir 2
+
+type = VAir;
+</syntaxhighlight>
+
+Vehicles (and buildings) are armoured, humans are 'soft' and aircraft (obviously) are air
+
+<u>Related TokenNames</u>: [[#type (threat)|type]], [[#cost]], [[#threat]]
+
+=== U ===
+
+==== [[CfgVehicles_Config_Reference#unloadInCombat|unloadInCombat]] ==== 
+[[TokenNameValueTypes#Boolean|Boolean]]: default true
+
+<syntaxhighlight lang="cpp">
+unloadInCombat = false;
+</syntaxhighlight>
+
+All true vehicles will cause ai to disembark when in combat.
+
+== [[CfgMoves_Config_Reference|CfgMoves]] ==
+
+=== V ===
+
+==== [[CfgMoves_Config_Reference#variantsAI.5B.5D|variantsAI[]]] ==== 
+; Type: [[TokenNameValueTypes#Arrays|Array]]
+; Description: Found in ''States'' when there are several variations on the same animation (usually idles) that can be played randomly.
+
+It lists the animations to be randomly cycled. The numbers represent the probability of that animation being played, the higher the number, the more likely the animation will get to play.
+
+The sum of these numbers is always {{hl|1}}.
+
+<syntaxhighlight lang="cpp">
+//Default
+variantsAI[] = {""};
+//AidlPercMstpSnonWnonDnon
+variantsAI[] = {"AidlPercMstpSnonWnonDnon01", 0.01,
+	"AidlPercMstpSnonWnonDnon02", 0.01,
+	"AidlPercMstpSnonWnonDnon03", 0.01,
+	"AidlPercMstpSnonWnonDnon04", 0.01,
+	"AidlPercMstpSnonWnonDnon05", 0.01,
+	"AidlPercMstpSnonWnonDnon06", 0.01,
+	"AidlPercMstpSnonWnonDnon07", 0.01,
+	"AidlPercMstpSnonWnonDnon08", 0.01,
+	"AidlPercMstpSnonWnonDnon_idleSteady04", 0.23,
+	"AidlPercMstpSnonWnonDnon_idleSteady03", 0.23,
+	"AidlPercMstpSnonWnonDnon_idleSteady02", 0.23,
+	"AidlPercMstpSnonWnonDnon_idleSteady01", 0.23};
+//ActsPsitMstpSnonWnonDnon_varSittingOnTheWall
+variantsAI[] = {"Mi17_Cargo02", 0.4, "Mi17_Cargo02_V1", 0.1, "Mi17_Cargo02_V2", 0.1, "Mi17_Cargo02_V3", 0.1,
+	"Mi17_Cargo02_V4", 0.1, "Mi17_Cargo02_V5", 0.1, "Mi17_Cargo02_V6", 0.1};
+//aidlpercmstpsraswlnrdnon_S
+variantsAI[] = {"aidlpercmstpsraswlnrdnon_1", 0.333, "aidlpercmstpsraswlnrdnon_2", 0.333, "aidlpercmstpsraswlnrdnon_3", 0.334};
+</syntaxhighlight>
+
+==== [[CfgMoves_Config_Reference#visibleSize|visibleSize]] ==== 
+; Type: [[TokenNameValueTypes#Floats|Float]]
+; Description: Found in ''States'', probably used for calculating how visible a character is for the ''AI'', based on his stance/animation.
+
+<syntaxhighlight lang="cpp">
+visibleSize = 1.00012;	// SprintBaseDf					when sprinting more visible than..
+visibleSize = 0.700121;	// AmovPercMstpSrasWrflDnon		..when stopped > visible than..
+visibleSize = 0.300122;	// AmovPknlMstpSlowWrflDnon		..when kneeling > visible than..
+visibleSize = 0.100123;	// AmovPpneMstpSrasWrflDnon		..when prone.
+</syntaxhighlight>
+
+== [[Arma_3_CfgSurfaces_Config_Reference|CfgSurfaces]] ==
+
+=== A ===
+
+==== [[Arma_3_CfgSurfaces_Config_Reference#AIAvoidStance|AIAvoidStance]] ==== 
+[[TokenNameValueTypes#Integers|Integer]]: Allows restricting the AI from entering prone with two levels of emphasis
+
+{| class="wikitable"
+! Value			!! Description
+|-
+| {{hl|0}}	|| No change in behavior
+|-
+| {{hl|1}}	|| Less preference for going prone - avoid prone (unless stealth or suppressed or *)
+|-
+| {{hl|2}}	|| Almost never going prone - never prone (unless *)
+|}
+
+ * means commanded, injured, animated, forced, ...
+
+=== G ===
+
+==== [[Arma_3_CfgSurfaces_Config_Reference#grassCover|grassCover]] ==== 
+[[TokenNameValueTypes#Floats|Float]]: Reduces visibleSize (taken from [[CfgMoves_Config_Reference#visibleSize|CfgMovesBasic]]) of unit for AI visibility movement computations (cannot make fully invisible) - it is NOT about visual drawing
+<syntaxhighlight lang="cpp">
+grassCover = 0;		// Used by GdtStratisConcrete, there will be no simulated grass cover at a distance
+grassCover = 0.05;	// Used by GdtStratisGreenGrass, there will be some simulated grass cover at a distance
+</syntaxhighlight>
+
+== [[Arma_3_Particle_Effects#Definition_of_part-effect|CfgCloudlets]] ==
+
+=== B ===
+==== blockAIVisibility ====
+Sets if particles are in the AI visibility tests (default true) - false for better performance but AI is able to see through particles
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+<syntaxhighlight lang="cpp">
+blockAIVisibility = true;
+</syntaxhighlight>
+
+== [[2D_Editor:_Waypoints#Formation|CfgFormations]] ==
+This class lists the formations for each side, each side containing nine classes:
+{| class="wikitable"
+! CfgFormations class !! [[formation]]
+|-
+| Diamond || "DIAMOND"
+|-
+| EchelonLeft || "ECH LEFT"
+|-
+| EcholonRight || "ECH RIGHT"
+|-
+| File || "FILE"
+|-
+| formColumnFixed || "COLUMN"
+|-
+| Line || "LINE"
+|-
+| Vee || "VEE"
+|-
+| Wedge || "WEDGE"
+|}
+
+=== F ===
+
+==== Fixed ====
+Subclass of above formation classes, contains fixed positions for formation
+
+===== FormationPositionInfoN[] =====
+[[TokenNameValueTypes#Arrays|Array]]: Sets fixed position from formation center for position N {{cn}}
+<syntaxhighlight lang="cpp">
+class Fixed // Taken from Wedge class
+{
+	FormationPositionInfo1[] = {-1,0,0,0};
+	FormationPositionInfo2[] = {0,1,-1,0.785398};
+};
+</syntaxhighlight>
+
+==== Pattern ====
+Subclass of above formation classes, contains pattern for when there are not enough Fixed positions
+
+===== FormationPositionInfoN[] =====
+[[TokenNameValueTypes#Arrays|Array]]: Sets pattern position from previous fixed/pattern position N {{cn}}
+<syntaxhighlight lang="cpp">
+class Pattern // Taken from Wedge class
+{
+	FormationPositionInfo1[] = {-2,-1,-1,-0.785398};
+	FormationPositionInfo2[] = {-1,1,-1,0.785398};
+};
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Reference Lists}}
+[[Category:AI]]

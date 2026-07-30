@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/setShotParents
+// revision: 349182 (2023-11-08T14:50:39Z)
+// export sha1: tw2aq6a0yj30h5p5upl8hy67qy1dqer
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 1.66 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.66
+
+|arg=global
+
+|eff=global
+
+|serverExec= server
+
+|gr1= Weapons
+
+|descr= Sets vehicle and instigator pair for the given projectile.
+
+|s1= projectile [[setShotParents]] [vehicle, instigator]
+
+|p1= projectile: [[Object]] - the actual projectile shot
+
+|p2= vehicle: [[Object]] - vehicle shooting projectile (appears as the 'killer' in "Killed" EH)
+
+|p3= instigator: [[Object]] - person pulling the trigger (appears as the 'instigator' in "Killed" EH)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myProjectile setShotParents [vehicle bob, bob];</sqf>
+
+|x2= <sqf>tank addEventHandler ["Fired", {_this select 6 setShotParents [tank, commander tank]}];</sqf>
+
+|seealso= [[getShotParents]]
+}}

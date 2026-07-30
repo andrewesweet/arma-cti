@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_playMusic
+// revision: 349204 (2023-11-08T14:50:43Z)
+// export sha1: lsqxmzl50nknfw4x1e6mqwyc0p2xm9k
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sound | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sound
+
+|descr= Plays given song.
+
+|s1= [class,start,volume] call [[BIS_fnc_playMusic]]
+
+|p1= class: [[String]] - classname of song
+
+|p2= start: [[Number]] - time of start in seconds - Default: 0
+
+|p3= volume: [[Number]] - music volume from 0 to 1 - Default: [[musicVolume]]
+
+|r1= [[Boolean]] - true
+
+|x1= <sqf>["LeadTrack04_F", 10, 0.5] call BIS_fnc_playMusic; // song starts at 10 seconds with 50% volume.</sqf>
+
+|seealso= [[playMusic]] [[musicVolume]]
+}}

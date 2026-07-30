@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_onPlayerConnected
+// revision: 349536 (2023-11-08T17:16:42Z)
+// export sha1: bt5ozj2ypqfs1ut28n7bk7ck5vaabch
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Event Handlers | Category:Function Group: Multiplayer | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Multiplayer
+
+|gr2= Event Handlers
+
+|descr= Executes a function on server every time a player connects the mission.
+
+|s1= [code, params]] call [[BIS_fnc_onPlayerConnected]]
+
+|p1= code: [[Code]] or [[String]] - function name or [[Code|code]] to be executed. Following parameters are passed to the function or code:
+*0: [[player|Player]]
+*1: Params
+
+|p2= params: [[Anything]] - parameters passed to the code or function
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[
+ {
+   params ["_player", "_params"];
+   hint name _player; hint _params;
+ }, 
+ "Parameter" 
+] call BIS_fnc_onPlayerConnected;</sqf>
+
+|seealso= [[onPlayerConnected]] [[BIS_fnc_addStackedEventHandler]] [[Event Scripts]]
+}}

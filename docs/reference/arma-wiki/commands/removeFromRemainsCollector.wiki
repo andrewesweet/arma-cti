@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/removeFromRemainsCollector
+// revision: 377097 (2026-01-01T09:56:53Z)
+// export sha1: qon72bchsqvzs4bfwrx7o0iini8ygog
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= Object Manipulation
+
+|arg= global
+
+|eff= global
+
+|descr= Removes vehicles/units from the garbage collector, so they do not get deleted automatically; added earlier with [[addToRemainsCollector]].
+
+|s1= [[removeFromRemainsCollector]] remains
+
+|p1= remains: [[Array]] of [[Object]]s
+
+|r1= [[Nothing]]
+
+|x1= <sqf>removeFromRemainsCollector [unit1, unit2, vehicle1];</sqf>
+
+|seealso= [[addToRemainsCollector]] [[isInRemainsCollector]] [[diag_remainsCollector]]
+}}

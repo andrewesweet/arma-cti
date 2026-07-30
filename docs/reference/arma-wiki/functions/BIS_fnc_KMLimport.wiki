@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_KMLimport
+// revision: 352171 (2024-02-01T23:25:37Z)
+// export sha1: 44z4jxbi1kv4rfyaxfp127ss8ls6qz3
+// categories: Category:Arma 3: Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Map and Markers
+
+|descr= Read positions from a {{Link|https://en.wikipedia.org/wiki/Keyhole_Markup_Language|KML file}}.
+{{Feature|informative|Recommended to execute in loading screen.}}
+
+|s1= filePath call [[BIS_fnc_KMLimport]]
+
+|p1= filePath: [[String]] - (Optional, default <sqf inline>"hsim\Doc_H\GoogleEarth\Missions\" + missionName + ".kml"</sqf>) KML file path
+{{Feature|arma3|Default value only works in {{tkoh}}. Do not rely on it in {{arma3}}.}}
+
+|r1= [[Array]] of [[Array]]s in format [type, positionXYZ, folder, name, description]
+* type: [[Number]] - 0 for a point, 1 for a line, 2 for a polygon
+* positionXYZ: [[Position]] - format [[Position#PositionAGL|PositionAGL]]
+* folder: [[String]] - path to the value, "" if in the .kml root
+* name: [[String]] - location's name
+* description: [[String]] - location's description
+
+|x1= <sqf>private _data = "subDir\myFile.kml" call BIS_fnc_KMLimport;</sqf>
+
+|seealso= [[BIS_fnc_keypointsExportFromKML]] [[BIS_fnc_dbImportXML]] [[BIS_fnc_posDegToWorld]]
+}}

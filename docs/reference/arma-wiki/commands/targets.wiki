@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/targets
+// revision: 377208 (2026-01-01T11:46:32Z)
+// export sha1: 0rrxzx4t0fa6zsdxnh4aio5baboq3k1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|arg= global
+
+|gr1= Object Detection
+
+|descr= Retrieves list of given unit targets matching specified filter. If the filter is not specified, all targets are returned.
+{{Feature|informative|If a unit is provided, the unit itself will be excluded from results. If a group is provided, its units will be excluded (even if renegades).}}
+
+|s1= unitOrGroup [[targets]] [enemyOnly, maxDistance, sides, maxAge, alternateCenter]
+
+|p1= unitOrGroup: [[Object]] or {{GVI|arma3|2.12|size= 0.75}} [[Group]] - unit or group which target knowledge is retrieved
+
+|p2= enemyOnly: [[Boolean]] - (Optional, default [[false]]) [[true]] to include only enemy targets, [[false]] to include all targets
+
+|p3= maxDistance: [[Number]] - (Optional, default -1) maximum '''2D''' distance based on target's expected position; use 0 to ignore the filter
+
+|p4= sides: [[Array]] of [[Side]]s - (Optional, default {{hl|[]}}) array of accepted sides; use {{hl|[]}} to ignore the side filter
+
+|p5= maxAge: [[Number]] - (Optional, default 0) max. target age, targets that are known to unit for longer than maxAge are ignored; use 0 to ignore the maxAge filter
+
+|p6= alternateCenter: [[Array]] - (Optional, default ''unitOrGroup''<nowiki/>'s position) alternate (2D or 3D) position used for '''2D''' distance check
+
+|r1= [[Array]] - ''unitOrGroup''<nowiki/>'s targets matching the criteria
+
+|x1= <sqf>private _targets = _unit targets [false, 300, [east, sideEnemy]]; // all targets of east or renegade side in 300m</sqf>
+
+|x2= <sqf>private _targets = _unit targets [true, 300]; // enemy targets in 300m</sqf>
+
+|x3= <sqf>private _targets = _unit targets []; // all targets</sqf>
+
+|seealso= [[targetsQuery]] [[nearTargets]] [[targetsAggregate]] [[targetKnowledge]] [[knowsAbout]] [[reveal]] [[forgetTarget]] [[setTargetAge]] [[getHideFrom]] [[side]]
+}}

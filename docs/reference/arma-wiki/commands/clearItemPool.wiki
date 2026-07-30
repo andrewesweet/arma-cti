@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/clearItemPool
+// revision: 309902 (2022-05-05T12:16:48Z)
+// export sha1: 3aho2lqyokqox4fmc8gaekp6x5e3kk0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapon Pool | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Weapon Pool
+
+|descr= Removes all items from ammo box (or any general weapon holder container)
+
+|s1= [[clearItemPool]] box
+
+|p1= box: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>clearItemPool jeepOne;</sqf>
+
+|seealso= [[addItemPool]]
+}}

@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/animatePylon
+// revision: 336888 (2023-01-04T16:43:53Z)
+// export sha1: gqg06djj92zv0pehchmne2co5hxsse3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Command Group: Vehicle Loadouts | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Animations
+|gr2= Vehicle Loadouts
+
+|descr= Force animation of pylon to given state, -1 for reset to engine handling, can cause weapon inoperative, because weapon is released  when pylon state == 1.
+
+|s1= vehicle [[animatePylon]] [pylon, animphase, instant]
+
+|p1= vehicle: [[Object]]
+
+|p2= pylon: [[Number]] or {{GVI|arma3|1.94|size= 0.75}} [[String]] - pylon index (index starts from 1) or pylon name (see {{Link|getCompatiblePylonMagazines#Example 3}})
+
+|p3= animphase: [[Number]] - animation phase in range 0..1
+
+|p4= instant: [[Boolean]] - (Optional) animate immediately
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player animatePylon [1, 0.5];</sqf>
+
+|x2= <sqf>vehicle player animatePylon ["pylon1", 0.5];</sqf>
+
+|x3= <sqf>vehicle player animatePylon ["pylon1", 1, true];</sqf>
+
+|seealso= [[Arma 3: Vehicle Loadouts]] [[getCompatiblePylonMagazines]] [[getPylonMagazines]] [[setAmmoOnPylon]] [[animateBay]] [[setPylonsPriority]] [[setPylonLoadout]]
+}}

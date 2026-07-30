@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_radioSetChannel
+// revision: 309881 (2022-05-05T12:09:54Z)
+// export sha1: b6k9fc8fpzmr473k72z9fju7s0pg081
+// categories: Category:Arma 3: Functions | Category:Function Group: Radio | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Radio
+
+|descr= <pre>/*
+
+	Description:
+	Set a specific or random music channel.
+
+	Parameter(s):
+	_this select 0: channel (String)
+	_this select 1: next (Bool)
+	_this select 2: override (Bool)
+
+	Returns:
+	Bool
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_radioSetChannel]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_radioSetChannel;</sqf> -->
+
+|seealso=
+}}

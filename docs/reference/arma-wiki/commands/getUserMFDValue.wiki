@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getUserMFDValue
+// revision: 310918 (2022-05-07T20:39:37Z)
+// export sha1: 0kfrvl3dy56zq87w1y5vfwxo4us9kuu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Interaction
+
+|descr= Returns array of user text variables used in MFD.
+
+|s1= [[getUserMFDValue]] vehicle
+
+|p1= vehicle: [[Object]] - a vehicle with MFD
+
+|r1= [[Array]] of [[Number]]s
+
+|x1= <sqf>getUserMFDValue vehicle player; // user0 in MFD will return 1</sqf>
+
+|seealso= [[setUserMFDValue]] [[setUserMFDText]] [[getUserMFDText]]
+}}

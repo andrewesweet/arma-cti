@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Template:Horizontoc
+// revision: 378647 (2026-05-17T15:03:50Z)
+// export sha1: 7i9vzo7a4wk4038rpltttcfcrwxgnpt
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div class="horizontoc {{#if:{{{include|}}}|ht-{{#replace:{{{include}}}| |&#32;ht-}}|ht-1 ht-2 ht-3 ht-4 ht-5 ht-6}} {{{also|}}}" {{#if:{{{and|}}}|style="{{{and}}}"|}}> __TOC__ </div></includeonly><noinclude>Horizontal TOC, replaced by [[Template:TOC|<nowiki>{{TOC|horizontal}}</nowiki>]] template.
+
+[[Category:Historical Templates]]</noinclude>

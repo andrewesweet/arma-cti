@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/ammo
+// revision: 364083 (2024-05-03T19:33:29Z)
+// export sha1: jdk7dbbfqtyzovaewvlh7vs483nls5s
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Unit Inventory
+
+|descr= Check how many rounds are left in the currently loaded magazine in the given muzzle.
+{{Feature|informative|In older titles and before {{arma3}} v1.56, the command did not return ammo for units in vehicles.}}
+
+|s1= unit [[ammo]] muzzle
+
+|p1= unit: [[Object]]
+
+|p2= muzzle: [[String]] - weapon's muzzle - see the [[:Category:Weapons|Weapons]] topic for reference about possible values
+
+|r1= [[Number]]
+
+|x1= <sqf>_count = player ammo "M16"; // returns 30 in case of a full magazine</sqf>
+
+|x2= <sqf>_count = player ammo "M203Muzzle";</sqf>
+
+|x3= <sqf>_count = player ammo primaryWeapon player;</sqf>
+
+|seealso= [[setAmmo]] [[someAmmo]] [[magazines]]
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20120217223800
+|text= The command works (now?) also for units in vehicles. However only for the vehicle's gunners' weapons - aka those returned by "weapons vehicle".
+|game= arma2oa
+|version= 1.60
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20180830174200
+|text= Actually the command wants the <sqf inline>currentMuzzle (gunner _vehicle)</sqf> as parameter - not the weapon class.
+Most of the time both are the same. However when you have custom [[CfgWeapons_Config_Reference#modes.5B.5D.3D_.7B.22this.22.7D|modes[]]] for the weapons, this is likely not true.
+}}

@@ -1,0 +1,17 @@
+// source: https://community.bistudio.com/wiki/Kodiak
+// revision: 21303 (2006-10-14T21:02:44Z)
+// export sha1: fep2xk4zysu697j59d45c7vh59ga33f
+// Vendored snapshot. Do not edit — re-export instead.
+
+=Description=
+'''Instructor''' begun working on '''Kodiak''' in the first week after the release of WRP Tool. It should take him until the 17th of July 2002 to the release of the island.
+
+'''Kodiak''' is a very rural island, sparsely populated and densely wooded. The combination of this and some smaller fjords creates a Scandinavian impression.
+
+The four bigger villages are built with a lot of details and very spacious as the multiple barracks. There are three airfields on the island, one serves military purposes. It is the one construed for AI landing manoeuvres. 
+
+Like boreal woods of the polar circle, the north of island is  too cold for deciduous forest. Over there conifers are growing sporadically, while dense pine forests cover the middle and the south of the island.
+
+Around the main island, three more islands can be found: one populated in the south, which is reachable via a short single-lane bridge, then one close to the south-east shore with a harbour and helipads barracks. The last is located in the inhospitable north, hence unpopulated.
+
+The author put his main focus on advantages for the infantry, although armoured forces still have the upper hand on some open parts of the island.

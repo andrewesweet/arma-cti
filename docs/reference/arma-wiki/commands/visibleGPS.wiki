@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/visibleGPS
+// revision: 378434 (2026-04-07T19:38:22Z)
+// export sha1: 75trbkv7qkyiu4kcil1zwyhqelmaze5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr1= Interaction
+
+|descr= Checks if the player has GPS receiver (minimap) opened and visible.
+
+|s1= [[visibleGPS]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+if (visibleGPS) then
+{
+	hint "GPS is visible";
+};
+</sqf>
+
+|seealso= [[openGPS]] [[showGPS]] [[shownGPS]] [[visibleWatch]] [[visibleCompass]]
+}}

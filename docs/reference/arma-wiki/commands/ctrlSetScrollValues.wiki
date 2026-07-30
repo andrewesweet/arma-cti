@@ -1,0 +1,73 @@
+// source: https://community.bistudio.com/wiki/ctrlSetScrollValues
+// revision: 338941 (2023-04-17T15:45:43Z)
+// export sha1: 148aapsby21o9mod1081xx7e678y5y0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= GUI Control
+
+|descr= Sets scroll values for current scrollbars in range 0..1 for the following controls:
+{{Columns|2|
+* [[CT_CONTROLS_TABLE]]
+* [[CT_CONTROLS_GROUP]]
+* [[CT_TREE]]
+* [[CT_LISTBOX]]
+* [[CT_COMBO]]
+* [[CT_XCOMBO]]
+* [[CT_LISTNBOX]]
+* [[CT_LISTNBOX_CHECKABLE]]
+}}
+
+|s1= control [[ctrlSetScrollValues]] [vScrollValue, hScrollValue]
+
+|p1= control: [[Control]]
+
+|p2= vScrollValue: [[Number]] - vertical scroll value in 0..1 range. -1 to skip
+
+|p3= hScrollValue: [[Number]] - horizontal scroll value in 0..1 range. -1 to skip
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_ctrlGrp ctrlSetScrollValues [-1, 0.5];</sqf>
+
+|x2= <sqf>
+// ControlsGroup
+private _disp = findDisplay 46 createDisplay "RscDisplayEmpty";
+private _ctrlGrp = _disp ctrlCreate ["RscControlsGroup", -1];
+private _ctrl = _disp ctrlCreate ["RscTree", -1, _ctrlGrp];
+_ctrl tvAdd [[], "Root"];
+for "_i" from 1 to 25 do
+{
+	_ctrl tvAdd [[0], format ["Tree Item %1", _i]];
+};
+_ctrl ctrlSetPosition [0,0,0.3,1.2];
+_ctrl ctrlCommit 0;
+tvExpandAll _ctrl;
+_ctrlGrp ctrlSetPosition [0,0,0.2,0.3];
+_ctrlGrp ctrlCommit 0;
+ 
+uiNamespace setVariable ["_ctrl", _ctrlGrp];
+onEachFrame
+{
+	hintSilent str ctrlScrollValues (uiNamespace getVariable ["_ctrl", controlNull]);
+};
+0 spawn
+{
+	sleep 1;
+	uiNamespace getVariable ["_ctrl", controlNull] ctrlSetScrollValues [0.3, -1];
+	sleep 1;
+	uiNamespace getVariable ["_ctrl", controlNull] ctrlSetScrollValues [-1, 0.3];
+	sleep 1;
+	uiNamespace getVariable ["_ctrl", controlNull] ctrlSetScrollValues [0.7, -1];
+	sleep 1;
+	uiNamespace getVariable ["_ctrl", controlNull] ctrlSetScrollValues [-1, 0.7];
+};
+</sqf>
+
+|seealso= [[ctrlScrollValues]] [[sliderSetPosition]] [[progressSetPosition]]
+}}

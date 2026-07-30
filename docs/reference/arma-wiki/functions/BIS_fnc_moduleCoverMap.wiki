@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleCoverMap
+// revision: 351893 (2024-01-20T08:51:29Z)
+// export sha1: 6zxrazbg1qnidzhhdkkrj2f5f0ymcsr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Function Group: Modules | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|gr2= Map and Markers
+
+|eff= global
+
+|descr= [[File:BIS_fnc_moduleCoverMap.jpg|right|500px]]
+Covers the map except for a defined area. This function was designed to be used by the [[Modules|Modules framework]], but it can also be used without the module. The effect does not move with the centerObject.
+
+{{Feature|important|
+It is essential for the function to work that '''centerObject''' has the '''objectArea''' variable defined.
+<sqf>centerObject setVariable ["objectArea", [sizeX, sizeY, rotation]]</sqf>
+* centerObject: [[Object]] - object which is used as center
+* sizeX: [[Number]] - length in x in meters
+* sizeY: [[Number]] - length in y in meters
+* rotation: [[Number]] - shape's rotation in degree
+}}
+
+|s1= [centerUnit, units, init] call [[BIS_fnc_moduleCoverMap]]
+
+|p1= centerUnit: [[Object]] - object which is used as center
+
+|p2= units: [[Array]] - '''Not used inside the function'''
+
+|p3= init: [[Boolean]] - [[true]] to create cover map effect, [[false]] to remove all markers and destroy the effect
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+// covers the whole map except an area of 1000m by 1000m
+// can be used to dynamically change size of the area during mission
+centerObject setVariable ["objectArea",[1000, 1000, 0]];	// same format with [[triggerArea]], except the function only needs first three
+[centerObject, [], true] call BIS_fnc_moduleCoverMap;
+</sqf>
+
+|seealso= [[showMap]]
+}}

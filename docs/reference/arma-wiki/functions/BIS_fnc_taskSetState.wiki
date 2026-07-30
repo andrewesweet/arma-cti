@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskSetState
+// revision: 364616 (2024-05-22T11:37:48Z)
+// export sha1: lrmvvwj7vewlkqw1x9mpluxf13rmlye
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|arg= global
+|eff= global
+
+|descr= Set a task's state. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= [taskName, taskState, showHint] call [[BIS_fnc_taskSetState]]
+
+|p1= taskName: [[String]]
+
+|p2= taskState: [[String]] - can be:
+*"CREATED"
+*"ASSIGNED"
+*"SUCCEEDED"
+*"FAILED"
+*"CANCELED"
+
+|p3= showHint: [[Boolean]] - (Optional, default [[true]]) [[true]] to show a hint
+
+|r1= [[Boolean]]
+
+|x1= <sqf>["BIS_task_01","CANCELED"] call BIS_fnc_taskSetState;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}
+
+{{Note
+|user= Whiztler
+|timestamp= 20240522113748
+|text=  Mind the spelling of the TaskState parameter string "CANCELED". The parameter will not work with the TaskState correctly spelled "CANCELLED".
+
+}}

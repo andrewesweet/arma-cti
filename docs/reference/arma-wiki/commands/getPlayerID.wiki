@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getPlayerID
+// revision: 310153 (2022-05-05T12:55:18Z)
+// export sha1: i84q6iqu82gtn74yx8g0vf0qsm9qcss
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Multiplayer
+
+|gr2= Markers
+
+|descr= Returns user DirectPlay ID, which can be used with [[getUserInfo]], and is found in [[allMapMarkers]] results and in some [[Arma 3: Mission Event Handlers|mission event handlers]] such as [[Arma 3: Mission Event Handlers#PlayerConnected|PlayerConnected]].
+
+|s1= [[getPlayerID]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[String]] - "-1" if object is not a [[isPlayer|player]]
+
+|x1= <sqf>getPlayerID player;</sqf>
+
+|seealso= [[allUsers]] [[getUserInfo]] [[createMarker]] [[createMarkerLocal]] [[getObjectID]]
+}}

@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/configNull
+// revision: 321052 (2022-05-13T12:13:46Z)
+// export sha1: rqajsopp44z0svon1dngrr2yc019cy2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Command Group: Variables | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Variables
+
+|gr2= Config
+
+|descr= A non-existing [[Config]].
+
+{{Feature|important|
+Unlike other null values ([[objNull]], [[grpNull]], etc), [[configNull]] returns [[true]] when compared to itself.
+<sqf>
+configNull == configNull;							// returns true
+isNull configNull;									// returns true
+configNull isEqualTo configNull;					// returns true
+configNull == configFile >> "ANonExistentEntry";	// returns true
+</sqf>
+}}
+
+|s1= [[configNull]]
+
+|r1= [[Config]]
+
+|x1= <sqf>_config = missionNamespace getVariable ["myConfig", configNull];</sqf>
+
+|x2= <sqf>str configNull; // returns ""</sqf>
+
+|seealso= [[controlNull]] [[displayNull]] [[grpNull]] [[locationNull]] [[objNull]] [[taskNull]] [[teamMemberNull]] [[scriptNull]] [[typeName]] [[isNull]]
+}}

@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:CWR2
+// revision: 177823 (2020-12-30T09:55:45Z)
+// export sha1: 8sldcik8bjuq5kw85x47agyxrn7v7rq
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Navbox/CWR2}}
+{{GameCategory|arma2|Addon Groups}}

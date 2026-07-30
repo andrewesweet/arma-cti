@@ -1,0 +1,1457 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgWorlds_Config_Reference
+// revision: 373245 (2025-04-12T22:20:54Z)
+// export sha1: 2iyt4mt9snkwzlte7i1jd8pzm2ran27
+// categories: Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|warning|This reference page was created for {{arma3}} v1.66+, some fields may not exist in prior games and versions.}}
+
+=== A ===
+
+==== class AmbientA3 ====
+<syntaxhighlight lang="cpp">
+class AmbientA3
+{
+	maxCost = 500; // max. cost of all animals spawned by the ambient system
+
+	class Main_spawn_circle_name
+	{
+		areaSpawnRadius = 440.0;	// radius of the main spawn circle, testing circles are placed on this radius
+		areaMaxRadius = 500.0;		// radius where animals are removed
+		spawnCircleRadius = 30.0;	// radius of testing circles
+		spawnInterval = 4.7;		// how often is the creation process started in seconds
+
+		class Species
+		{
+			class Animal_config_class	// class of animal from CfgVehicles
+			{
+				maxCircleCount = 5;		// expression - max. number of a given kind in testing circle
+				maxWorldCount = 8;		// max. number of animals on map
+				cost = 3;				// cost of animal
+				spawnCount = 1;			// how many animals should be spawned at once
+				groupSpawnRadius = 10;	// radius for spawning of animal group
+				maxAlt = 200;			// if defined, an animal can be created only if [camera height above/under water/ground] < maxAlt
+				minAlt = -10;			// if defined, an animal can be created only if [camera height above/under water/ground] > minAlt
+			};
+		};
+	};
+};
+</syntaxhighlight>
+For more information visit the [[Arma_3_Animals:_Ambient_System|Ambient Animals System Page]]
+
+==== class AnomalyPars ====
+<syntaxhighlight lang="cpp">
+class AnomalyPars
+{
+	// outer model (should be sphere with radius of 1 and normals directed outwards)
+	outerModel = ""; /// path should be defined in data
+	// inner model (should be sphere with radius of 1 and normals directed inwards)
+	innerModel = ""; /// path should be defined in data
+	// scale of refraction (R, G, B - you can use different values to achieve abberation effect)
+	refractScale[] = {0.04, 0.03, 0.05};
+	// animation time coef (horizontal, vertical), use {0,0, 0} for no animation (third value not used)
+	timeScale[] = {0.03, 0.03, 0.0};
+	// distance (in meters) from the anomaly boundary, where the postprocess effect should be used (0 = no postprocess)
+	postProcessDistance = 3.0;
+};
+</syntaxhighlight>
+
+==== aroundSunCoefExponent ====
+{{GVI|arma3|1.60}}
+[[TokenNameValueTypes#Floats|Float]]: Modifiers of around sun coefficient for pixel shader computations.
+<syntaxhighlight lang="cpp">
+// coef = pow(coef * _aroundSunCoefMultiplier, _aroundSunCoefExponent);
+aroundSunCoefExponent = "12.0f"; //value used by BI in all A3 terrains
+</syntaxhighlight>
+
+==== aroundSunCoefMultiplier ====
+{{GVI|arma3|1.60}}
+[[TokenNameValueTypes#Floats|Float]]: Modifiers of around sun coefficient for pixel shader computations.
+<syntaxhighlight lang="cpp">
+// coef = pow(coef * _aroundSunCoefMultiplier, _aroundSunCoefExponent);
+aroundSunCoefMultiplier = "1.4f"; //value used by BI in all A3 terrains
+</syntaxhighlight>
+
+==== author ====
+[[TokenNameValueTypes#Strings|String]]: Defines the author of the world, which is shown in the loading screen
+<syntaxhighlight lang="cpp">
+author = "$STR_A3_Bohemia_Interactive"; //value used by Tanoa, $STR_A3_Bohemia_Interactive corresponds to a stringtable entry
+</syntaxhighlight>
+
+=== C ===
+
+==== causticsBrightnessCoef ====
+[[TokenNameValueTypes#Floats|Float]]: Brightness coefficient
+<syntaxhighlight lang="cpp">
+aroundSunCoefMultiplier = "1.4f"; //value used by BI in all A3 terrains
+</syntaxhighlight>
+
+==== causticsDepthFadeCoef ====
+[[TokenNameValueTypes#Floats|Float]]: Coef used for caustics intensity fading with depth (how fast the intensity fades with depth), 1.0 = linear, 2.0 = quadratic,...
+<syntaxhighlight lang="cpp">
+causticsDepthFadeCoef = "0.05f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== causticsDepthLimit ====
+[[TokenNameValueTypes#Floats|Float]]: Depth limit (under water) for caustics drawing (in m)
+<syntaxhighlight lang="cpp">
+causticsDepthLimit = "80.0f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== causticsDistanceLimit ====
+[[TokenNameValueTypes#Floats|Float]]: Distance limit for caustics drawing (in m)
+<syntaxhighlight lang="cpp">
+causticsDistanceLimit = "200.0f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== causticsEnabled ====
+[[TokenNameValueTypes#Integers|Integer]]: Enable/disable caustics
+<syntaxhighlight lang="cpp">
+causticsEnabled = 1; //value used by Tanoa
+</syntaxhighlight>
+
+==== causticsTexture ====
+[[TokenNameValueTypes#Strings|String]]: Caustics texture path
+<syntaxhighlight lang="cpp">
+causticsTexture = "A3\data_f\caustics\caustic_anim_ca.paa"; //value used by Tanoa
+</syntaxhighlight>
+
+==== causticsTextureArea ====
+[[TokenNameValueTypes#Floats|Float]]: Length of the side of the rectangle, that covers one caustics texture (in meters) in zero depth
+<syntaxhighlight lang="cpp">
+causticsTextureArea = "2.0f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== causticsTextureAreaDeep ====
+[[TokenNameValueTypes#Floats|Float]]: Length of the side of the rectangle, that covers one caustics texture (in meters) in max depth [[CfgWorlds_Config_Reference#causticsDepthLimit|causticsDepthLimit]](causticsDepthLimit)
+<syntaxhighlight lang="cpp">
+causticsTextureAreaDeep = "156.0f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== causticsTextureChangeInterval ====
+[[TokenNameValueTypes#Floats|Float]]: Interval of texture change (in s)
+<syntaxhighlight lang="cpp">
+causticsTextureChangeInterval = "0.04f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== causticsTextureCount ====
+[[TokenNameValueTypes#Integers|Integer]]: Number of caustics textures
+<syntaxhighlight lang="cpp">
+causticsTextureCount = 32; //value used by Tanoa
+</syntaxhighlight>
+
+==== causticsTextureDepthGranularity ====
+[[TokenNameValueTypes#Floats|Float]]: Distance (in meters) over which we interpolate two caustics textures (in different depth)
+<syntaxhighlight lang="cpp">
+causticsTextureDepthGranularity = "2.5f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== causticsTextureMask ====
+[[TokenNameValueTypes#Strings|String]]: Caustics texture mask path
+<syntaxhighlight lang="cpp">
+causticsTextureMask = "A3\data_f\caustics\caustics_anim_%03d.paa"; //value used by Tanoa
+</syntaxhighlight>
+
+==== causticsTextureNumRows ====
+[[TokenNameValueTypes#Integers|Integer]]: Number of textures in one row in caustic texture (we suppose that number of rows and columns is the same)
+<syntaxhighlight lang="cpp">
+causticsTextureNumRows = 4; //value used by Tanoa
+</syntaxhighlight>
+
+==== centerPosition[] ====
+[[TokenNameValueTypes#Arrays|Array]]: Default center position
+<syntaxhighlight lang="cpp">
+centerPosition[] = {7228, 6987, 0}; //value used by Tanoa
+</syntaxhighlight>
+
+==== clouds[] ====
+[[TokenNameValueTypes#Arrays|Array]]:
+<syntaxhighlight lang="cpp">
+clouds[] = {"A3\data_f\mrak1.p3d", "A3\data_f\mrak2.p3d", "A3\data_f\mrak3.p3d", "A3\data_f\mrak4.p3d"}; //value used by Tanoa
+</syntaxhighlight>
+
+==== class clutter ====
+<syntaxhighlight lang="cpp">
+class clutter
+{
+	class YourClutterName : DefaultClutter
+	{
+		// Determines the affection of the clutter to the wind (0 - stone, 1 - common grass)
+		affectedByWind = 0;
+		// Path to your clutter model
+		model = "path\to\your\clutter.p3d";
+		// If colored by the ground, desired color relative to the ground
+		relativeColor[] = {1, 1, 1, 1}; //not used in any A3 Clutter configs
+		// Maximal scale for random clutter scaling
+		scaleMax = 1.0;
+		// Minimal scale for random clutter scaling
+		scaleMin = 0.5;
+		// Use default lighting (0 = disable, 1 = enable). This should be enabled if your clutter uses the "Grass" pixel or vertex shader, otherwise it should be disabled
+		swLighting = 1;
+	};
+};
+</syntaxhighlight>
+
+==== clutterColoringFarCoef ====
+[[TokenNameValueTypes#Floats|Float]]: Max coef for clutter coloring at far distance (must be >=1, large coef means we can colorize more)
+<syntaxhighlight lang="cpp">
+clutterColoringFarCoef = "5.0f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== clutterColoringFarSpeed ====
+[[TokenNameValueTypes#Floats|Float]]: Speed of far clutter coloration (1 = linear, 2 = quadratic, etc.)
+<syntaxhighlight lang="cpp">
+clutterColoringFarSpeed = "2.0f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== clutterColoringFarStart ====
+[[TokenNameValueTypes#Floats|Float]]: Distance (in m) when [[CfgWorlds_Config_Reference#clutterColoringFarCoef|clutterColoringFarCoef]] when we start to interpolate to [[CfgWorlds_Config_Reference#clutterColoringFarCoef|clutterColoringFarCoef]]
+<syntaxhighlight lang="cpp">
+clutterColoringFarStart = "20.0f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== clutterDist ====
+[[TokenNameValueTypes#Integers|Integer]]: How far clutter is visible
+<syntaxhighlight lang="cpp">
+clutterDist = 100; //value used by Tanoa
+</syntaxhighlight>
+
+==== clutterGrid ====
+[[TokenNameValueTypes#Integers|Integer]]: Controls density of clutters (size of square where single clutter is present)
+<syntaxhighlight lang="cpp">
+clutterGrid = 0.8; //value used by Tanoa
+</syntaxhighlight>
+
+==== clutterRadius ====
+[[TokenNameValueTypes#Integers|Integer]]: Maximal size of clutters (for clipping)
+<syntaxhighlight lang="cpp">
+clutterRadius = 1; //value used by Tanoa
+</syntaxhighlight>
+
+==== clutterRoadwayCheckRadiusCoef ====
+[[TokenNameValueTypes#Floats|Float]]: Coefficient for clutter radius to check against roadways (0 = check only center, 1 = check whole radius)
+<syntaxhighlight lang="cpp">
+clutterRoadwayCheckRadiusCoef = "0.8f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== cutscenes[] ====
+[[TokenNameValueTypes#Arrays|Array]]:
+<syntaxhighlight lang="cpp">
+cutscenes[] = {"Tanoa_intro1"}; //value used by Tanoa
+</syntaxhighlight>
+
+=== D ===
+
+==== description ====
+[[TokenNameValueTypes#Strings|String]]: Name of the terrain
+<syntaxhighlight lang="cpp">
+description = "$STR_A3_CFGWORLDS_TANOA0"; //value used by Tanoa, corresponds to a stringtable entry
+</syntaxhighlight>
+
+==== class DOFPars ====
+Parameters for depth of field
+<syntaxhighlight lang="cpp">
+class DOFPars
+{
+	// standard dof parameters
+	focusDistance = 25.0;
+	blur = 1.0;
+	farOnly = 1; //blur only far objects? (0 = disable, 1 = enable)
+
+	// underwater dof parameters (no goggles)
+	focusDistanceWater = 1.0;
+	blurWater = 1.3;
+	farOnlyWater = 1; //blur only far objects? (0 = disable, 1 = enable)
+
+	// underwater dof parameters (with goggles)
+	focusDistanceWaterGoggles = 4.0;
+	blurWaterGoggles = 1.0;
+	farOnlyWaterGoggles = 1; //blur only far objects? (0 = disable, 1 = enable)
+};
+</syntaxhighlight>
+
+==== drawTaxiway ====
+[[TokenNameValueTypes#Integers|Integer]]:
+<syntaxhighlight lang="cpp">
+drawTaxiway = 0; //value used by Tanoa
+</syntaxhighlight>
+
+==== dynLightMinBrightnessAbsolute ====
+[[TokenNameValueTypes#Integers|Integer]]: These constants are used to determine the radius of dynamic lights. Radius is computed based on minimal brightness. Minimal brightness is computed: max(dynLightMinBrightnessAbsolute, sceneAmbient * dynLightMinBrightnessAmbientCoef) where sceneAmbient is current brightness of scene ambient light.
+<syntaxhighlight lang="cpp">
+dynLightMinBrightnessAbsolute = 0.05; //value used by Tanoa
+</syntaxhighlight>
+
+==== dynLightMinBrightnessAmbientCoef ====
+[[TokenNameValueTypes#Integers|Integer]]: These constants are used to determine the radius of dynamic lights. Radius is computed based on minimal brightness. Minimal brightness is computed: max(dynLightMinBrightnessAbsolute, sceneAmbient * dynLightMinBrightnessAmbientCoef) where sceneAmbient is current brightness of scene ambient light.
+<syntaxhighlight lang="cpp">
+dynLightMinBrightnessAmbientCoef = 0.5; //value used by Tanoa
+</syntaxhighlight>
+
+=== E ===
+
+==== elevationOffset ====
+[[TokenNameValueTypes#Floats|Float]]:
+<syntaxhighlight lang="cpp">
+elevationOffset = 0; //value used by Tanoa
+</syntaxhighlight>
+
+==== enableBloodSplashes ====
+[[TokenNameValueTypes#Integers|Integer]]: Enable blood splashes
+<syntaxhighlight lang="cpp">
+enableBloodSplashes = 1; //value used by Tanoa
+</syntaxhighlight>
+
+==== enableFootsteps ====
+[[TokenNameValueTypes#Integers|Integer]]: Enable footsteps
+<syntaxhighlight lang="cpp">
+enableFootsteps = 1; //value used by Tanoa
+</syntaxhighlight>
+
+==== enableTracks ====
+[[TokenNameValueTypes#Integers|Integer]]: Enable vehicle tracks
+<syntaxhighlight lang="cpp">
+enableTracks = 1; //value used by Tanoa
+</syntaxhighlight>
+
+==== class EnvMaps ====
+<syntaxhighlight lang="cpp">
+class EnvMaps
+{
+	class EnvMap1
+	{
+		// overcast value for which this is used
+		overcast = 0;
+		texture = "A3\Map_Tanoabuka\data\env_land_ClearSky_ca.paa";
+	};
+	class EnvMap2
+	{
+		// overcast value for which this is used
+		overcast = 0.4;
+		texture = "A3\Map_Tanoabuka\data\env_land_SemiCloudySky_ca.paa";
+	};
+	class EnvMap3
+	{
+		// overcast value for which this is used
+		overcast = 0.8;
+		texture = "A3\Map_Tanoabuka\data\env_land_OvercastSky_ca.paa";
+	};
+};
+</syntaxhighlight>
+
+==== envTexture ====
+[[TokenNameValueTypes#Strings|String]]: Set global envTexture to be used instead of assets specific one if defined for the world.
+<syntaxhighlight lang="cpp">
+envTexture = ""; //value used by Tanoa
+</syntaxhighlight>
+
+=== F ===
+
+==== fogBeta0Max ====
+[[TokenNameValueTypes#Integers|Integer]]: beta0 (macroscopic cross-section of atmospheric scatterers at base level) for fog value 1
+<syntaxhighlight lang="cpp">
+fogBeta0Max = 0.05; //value used by Tanoa
+</syntaxhighlight>
+
+==== fogBeta0Min ====
+[[TokenNameValueTypes#Integers|Integer]]: beta0 (macroscopic cross-section of atmospheric scatterers at base level) for fog value 0
+<syntaxhighlight lang="cpp">
+fogBeta0Min = 0; //value used by Tanoa
+</syntaxhighlight>
+
+==== fogHeight ====
+[[TokenNameValueTypes#Integers|Integer]]: Max height of the Arma fog for clouds (in meters)
+<syntaxhighlight lang="cpp">
+fogHeight = 2000; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[fog]], [[setFog]], [[fogParams]], [[fogForecast]]
+
+==== forecastFog ====
+[[TokenNameValueTypes#Integers|Integer]]:
+<syntaxhighlight lang="cpp">
+forecastFog = 0; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[fog]], [[setFog]], [[fogParams]], [[fogForecast]]
+
+==== forecastFogBase ====
+[[TokenNameValueTypes#Integers|Integer]]: Base forecasted altitude for fog computations (in meters)
+<syntaxhighlight lang="cpp">
+forecastFogBase = 250; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[fog]], [[setFog]], [[fogParams]], [[fogForecast]]
+
+==== forecastFogDecay ====
+[[TokenNameValueTypes#Integers|Integer]]: Forecasted decay coefficient - decay of fog with altitude
+<syntaxhighlight lang="cpp">
+forecastFogDecay = 0.014; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[fog]], [[setFog]], [[fogParams]], [[fogForecast]]
+
+==== forecastGusts ====
+[[TokenNameValueTypes#Integers|Integer]]: Forecasted gusts
+<syntaxhighlight lang="cpp">
+forecastGusts = 0; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[gusts]], [[setGusts]]
+
+==== forecastLightnings ====
+[[TokenNameValueTypes#Integers|Integer]]: Forecasted lightning
+<syntaxhighlight lang="cpp">
+forecastLightnings = 0; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[lightnings]], [[setLightnings]]
+
+==== forecastRain ====
+[[TokenNameValueTypes#Integers|Integer]]:
+<syntaxhighlight lang="cpp">
+forecastRain = 0; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[rain]], [[setRain]]
+
+==== forecastWaves ====
+[[TokenNameValueTypes#Integers|Integer]]: Forecasted waves
+<syntaxhighlight lang="cpp">
+forecastWaves = 0.1; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[waves]], [[setWaves]]
+
+==== forecastWeather ====
+[[TokenNameValueTypes#Integers|Integer]]: Forecasted weather
+<syntaxhighlight lang="cpp">
+forecastWeather = 0; //value used by Tanoa
+</syntaxhighlight>
+
+==== forecastWind ====
+[[TokenNameValueTypes#Integers|Integer]]: Forecasted wind
+<syntaxhighlight lang="cpp">
+forecastWind = 0.1; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[wind]], [[setWind]]
+
+==== forecastWindDir ====
+[[TokenNameValueTypes#Integers|Integer]]: Forecasted wind direction
+<syntaxhighlight lang="cpp">
+forecastWindDir = 0; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[windDir]], [[windDir]]
+
+==== fullDetailDist ====
+[[TokenNameValueTypes#Floats|Float]]: Distance where ground detail texture is fully visible (begin fading out)
+<syntaxhighlight lang="cpp">
+fullDetailDist = 5; //value used by Tanoa
+</syntaxhighlight>
+
+=== G ===
+
+==== gridNumbersOverLines ====
+[[TokenNameValueTypes#Integers|Integer]]: Displays Numbering over Grid lines instead between
+<syntaxhighlight lang="cpp">
+gridNumbersOverLines = 1; //value used by Tanoa
+</syntaxhighlight>
+
+=== H ===
+
+==== haloObject ====
+[[TokenNameValueTypes#Strings|String]]: Path to halo object model
+<syntaxhighlight lang="cpp">
+haloObject = "A3\data_f\sunhalo.p3d"; //value used by Tanoa
+</syntaxhighlight>
+
+==== hazeBaseBeta0 ====
+[[TokenNameValueTypes#Integers|Integer]]: Linear regression according to the base height. [[Arma_3:_Visual_Upgrade#Haze_Setup|More information]]
+<syntaxhighlight lang="cpp">
+hazeBaseBeta0 = 8e-005; //value used by Tanoa
+</syntaxhighlight>
+
+==== hazeBaseHeight ====
+[[TokenNameValueTypes#Integers|Integer]]: Base height for the haze computation (in meters). [[Arma_3:_Visual_Upgrade#Haze_Setup|More information]]
+<syntaxhighlight lang="cpp">
+hazeBaseHeight = 0; //value used by Tanoa
+</syntaxhighlight>
+
+==== hazeDensityDecay ====
+[[TokenNameValueTypes#Integers|Integer]]: Density decay based on height. [[Arma_3:_Visual_Upgrade#Haze_Setup|More information]]
+<syntaxhighlight lang="cpp">
+hazeDensityDecay = 0.00036; //value used by Tanoa
+</syntaxhighlight>
+
+==== hazeDistCoef ====
+[[TokenNameValueTypes#Integers|Integer]]: Coefficient used to compute haze distance (haze distance = fogFar * hazeDistCoef), can be > 1. If the value is negative, then standard haze computation is used.
+<syntaxhighlight lang="cpp">
+hazeDistCoef = 0.1; //value used by Tanoa
+</syntaxhighlight>
+
+==== hazeFogCoef ====
+[[TokenNameValueTypes#Integers|Integer]]: Fog value, that we want to have at haze distance (=distance computed using hazeDistCoef), 0 = full fog, 1 = no fog. If the value is negative, then standard haze computation is used
+<syntaxhighlight lang="cpp">
+hazeFogCoef = 0.98; //value used by Tanoa
+</syntaxhighlight>
+
+==== class HDRNewPars ====
+<syntaxhighlight lang="cpp">
+class HDRNewPars
+{
+	//@{ global aperture settings
+	// global minimal possible aperture
+	minAperture = 0.00001;
+	// global maximal possible aperture
+	maxAperture = 256;
+	// how many times greater than standard avg luminance must be current avg luminance to reach current max aperture
+	apertureRatioMax = 4;
+	// how many times smaller than standard avg luminance must be current avg luminance to reach current min aperture
+	apertureRatioMin = 10;
+	//@}
+
+	//@{ Bloom settings
+	// image scale for bloom composition
+	bloomImageScale = 1.0;
+	// bloom scale for bloom composition
+	bloomScale = 0.3;
+	// bloom exponent for bloom computation
+	bloomExponent = 1.0;
+	// luminance offset for bloom computation
+	bloomLuminanceOffset = 0.8;
+	// luminance scale for bloom computation
+	bloomLuminanceScale = 1;
+	// luminance exponent for bloom computation
+	bloomLuminanceExponent = 1.2;
+	//@}
+
+	//@{ Tone mapping settings
+	// tonemapping method (0 = none, 1 = filmic, 2 = Reinhard)
+	tonemapMethod = 2;
+	// params for filmic tonemapping
+	// Uncharted 2 tone mappping filmic curve
+	// for more information see http://www.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting
+	tonemapShoulderStrength = 0.22;
+	tonemapLinearStrength = 0.30;
+	tonemapLinearAngle = 0.10;
+	tonemapToeStrength = 0.20;
+	tonemapToeNumerator = 0.01;
+	tonemapToeDenominator = 0.30;
+	tonemapLinearWhite = 11.2;
+	tonemapExposureBias = 2.0;
+	// params for Reinhard tonemapping
+	tonemapLinearWhiteReinhard = 2.5;
+	//@}
+
+	//@{ settings for NVG
+	// min aperture when using NVG
+	nvgApertureMin = 1;
+	// standard aperture when using NVG
+	nvgApertureStandard = 7;
+	// max aperture when using NVG
+	nvgApertureMax = 15;
+	// average scene luminance for standard aperture when using NVG
+	nvgStandardAvgLum = 3;
+	// light gain when using NVG
+	nvgLightGain = 100;
+	// use transition effects when going to/from NVG (0 = disable, 1 = enable)
+	nvgTransition = 1;
+	// transition coefficient when we are putting NVG on
+	nvgTransitionCoefOn = 40.0;
+	// transition coefficient when we are putting NVG off
+	nvgTransitionCoefOff = 0.01;
+	//@}
+
+
+	//@{ settings for night eye (blue shift)
+	// min avg intensity (when the night shift is at full effect)
+	nightShiftMinAperture = 0;
+	// max avg intensity (when the night shift is at zero effect and begins to take some effect, effect of night shift is then interpolated based on min and max aperture)
+	nightShiftMaxAperture = 0.002;
+	// maximal possible effect of night shift (0-1, 0 disables it)
+	nightShiftMaxEffect = 0.6;
+	// luminance scale to determine night shift effects for individual pixels
+	nightShiftLuminanceScale = 600;
+	//@}
+
+	//@{ settings for light adaptation
+	// speed factor for adapting to light (greater number = faster)
+	eyeAdaptFactorLight = 0.6;
+	// speed factor for adapting to dark (greater number = faster)
+	eyeAdaptFactorDark = 0.2;
+	//@}
+};
+</syntaxhighlight>
+
+==== horizonFogColorationStart ====
+[[TokenNameValueTypes#Floats|Float]]: Starting vertical texture coordinate for horizon coloration with fog (use 1 to disable coloration)
+<syntaxhighlight lang="cpp">
+horizonFogColorationStart = "0.8f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== horizonParallaxCoef ====
+[[TokenNameValueTypes#Integers|Integer]]: Parallax coef used for shifting horizon - the higher the camera, the lower we want the horizon range to be placed use 0 to switch off shifting
+<syntaxhighlight lang="cpp">
+horizonParallaxCoef = 0; //value used by Tanoa
+</syntaxhighlight>
+
+==== horizonSunColorationIntensity ====
+[[TokenNameValueTypes#Floats|Float]]: Intensity coefficient for horizon coloration by Sun
+<syntaxhighlight lang="cpp">
+horizonSunColorationIntensity = "0.001f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== horizonSunColorationScale ====
+[[TokenNameValueTypes#Integers|Integer]]: Scale coefficient for horizon coloration by Sun
+<syntaxhighlight lang="cpp">
+horizonSunColorationScale = 10; //value used by Tanoa
+</syntaxhighlight>
+
+==== horizontObject ====
+[[TokenNameValueTypes#Strings|String]]: Path to model used for horizon object
+<syntaxhighlight lang="cpp">
+horizontObject = "A3\Map_Tanoabuka\data\horizon.p3d"; //value used by Tanoa
+</syntaxhighlight>
+
+==== humidityDownCoef ====
+[[TokenNameValueTypes#Integers|Integer]]:
+<syntaxhighlight lang="cpp">
+humidityDownCoef = 0.05; //value used by Tanoa
+</syntaxhighlight>
+
+==== humidityUpCoef ====
+[[TokenNameValueTypes#Integers|Integer]]:
+<syntaxhighlight lang="cpp">
+humidityUpCoef = 0.1; //value used by Tanoa
+</syntaxhighlight>
+
+=== I ===
+
+==== icon ====
+[[TokenNameValueTypes#Strings|String]]:
+<syntaxhighlight lang="cpp">
+icon = ""; //value used by Tanoa
+</syntaxhighlight>
+
+==== ilsDirection[] ====
+[[TokenNameValueTypes#Arrays|Array]]:
+<syntaxhighlight lang="cpp">
+ilsDirection[] = {-0.2002, 0.087, 0.9798}; //value used by Tanoa
+</syntaxhighlight>
+
+==== ilsPosition[] ====
+[[TokenNameValueTypes#Arrays|Array]]:
+<syntaxhighlight lang="cpp">
+ilsPosition[] = {7085.57, 7681.84}; //value used by Tanoa
+</syntaxhighlight>
+
+==== ilsTaxiIn[] ====
+[[TokenNameValueTypes#Arrays|Array]]:
+<syntaxhighlight lang="cpp">
+ilsTaxiIn[] = {6942.61, 7386.26, 6933.84, 7429.14, 6971.82, 7500.5, 7039.36, 7652, 7043.89, 7676.38, 7057.89, 7705.92, 7073.11, 7708.36, 7085.32, 7700.25, 7087.86, 7688.26}; //value used by Tanoa
+</syntaxhighlight>
+
+==== ilsTaxiOff[] ====
+[[TokenNameValueTypes#Arrays|Array]]:
+<syntaxhighlight lang="cpp">
+ilsTaxiOff[] = {7220.87, 7017.23, 7198.22, 7021.06, 6985.25, 7287.09, 6955.16, 7323.2, 6942.61, 7386.26}; //value used by Tanoa
+</syntaxhighlight>
+
+==== interpolateClutterColoring ====
+[[TokenNameValueTypes#Integers|Integer]]: If we should use interpolation of clutter coloring coef based on distance of clutter from camera. (0 = false, 1 = true)
+<syntaxhighlight lang="cpp">
+interpolateClutterColoring = 1; //value used by Tanoa
+</syntaxhighlight>
+
+=== L ===
+
+==== landGrid ====
+[[TokenNameValueTypes#Integers|Integer]]: Grid size
+<syntaxhighlight lang="cpp">
+landGrid = 50; //value used by Tanoa
+</syntaxhighlight>
+
+==== latitude ====
+[[TokenNameValueTypes#Integers|Integer]]: Latitude on globe, positive is south
+<syntaxhighlight lang="cpp">
+latitude = 17.698; //value used by Tanoa
+</syntaxhighlight>
+
+==== layerMask ====
+[[TokenNameValueTypes#Strings|String]]:
+<syntaxhighlight lang="cpp">
+layerMask = ""; //value used by Tanoa
+</syntaxhighlight>
+
+==== lightningsForced ====
+[[TokenNameValueTypes#Integers|Integer]]: (0 = false, 1 = true)
+<syntaxhighlight lang="cpp">
+lightningsForced = 0; //value used by Tanoa
+</syntaxhighlight>
+
+==== loadingTexts[] ====
+[[TokenNameValueTypes#Arrays|Array]]: Random text shown during loading screens
+<syntaxhighlight lang="cpp">
+loadingTexts[] = {"The mining and heavy ship industry have already devastated many areas of the Tanoan paradise archipelago.", "During the hottest summers, there are many occurrences of native men missing in the jungle.", "Local tribes claim that huge reptilian creatures can be encountered at the foot of the volcano.", "The native people have turned many parts of the wild jungle into fertile fields and plantations.", "Around the Tanoa archipelago, the native people worship a god of fertility and festivity called Darkon.", "The name of the archipelago comes from the Fijian word tanoa which means a bowl (the main island resembles a large bowl).", "Once upon a time, there was a living, fire-breathing volcano..."}; //value used by Tanoa
+</syntaxhighlight>
+
+==== longitude ====
+[[TokenNameValueTypes#Integers|Integer]]: Longitude on globe, positive is east
+<syntaxhighlight lang="cpp">
+longitude = 178.783; //value used by Tanoa
+</syntaxhighlight>
+
+=== M ===
+
+==== mapArea[] ====
+[[TokenNameValueTypes#Arrays|Array]]: Lon/lat coordinates (not in UTM to assure .kml precision). Looks in {{arma3}} this parameter is not used anyhow. ''[verify required]''
+<syntaxhighlight lang="cpp">
+mapArea[] = {
+	-20.268, 174.003, //Bottom Left
+	-20.1353, 174.146 //Top Right
+}; //value used by Tanoa
+</syntaxhighlight>
+
+==== mapDrawingBrightnessModifier ====
+[[TokenNameValueTypes#Floats|Float]]: Modifier for brightness of satellite map textures drawn on the map display view
+<syntaxhighlight lang="cpp">
+mapDrawingBrightnessModifier = "1.0f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== mapSize ====
+[[TokenNameValueTypes#Integers|Integer]]: Size of the map in meters
+<syntaxhighlight lang="cpp">
+mapSize = 15360; //value used by Tanoa
+</syntaxhighlight>
+
+==== mapZone ====
+[[TokenNameValueTypes#Integers|Integer]]: UTM Zone
+<syntaxhighlight lang="cpp">
+mapZone = 60; //value used by Tanoa
+</syntaxhighlight>
+
+==== maxHillsAltitude ====
+[[TokenNameValueTypes#Integers|Integer]]:
+<syntaxhighlight lang="cpp">
+maxHillsAltitude = 450; //value used by Tanoa
+</syntaxhighlight>
+
+==== midDetailTexture ====
+[[TokenNameValueTypes#Strings|String]]: Path to mid detail texture used
+<syntaxhighlight lang="cpp">
+midDetailTexture = "A3\Map_Tanoabuka\Data\L_middle_mco.paa"; //value used by Tanoa
+</syntaxhighlight>
+
+==== minHeight ====
+[[TokenNameValueTypes#Integers|Integer]]: Min. height - used to clamp data inside of the map during rendering
+<syntaxhighlight lang="cpp">
+minHeight = -10; //value used by Tanoa
+</syntaxhighlight>
+
+==== minHillsAltitude ====
+[[TokenNameValueTypes#Integers|Integer]]:
+<syntaxhighlight lang="cpp">
+minHillsAltitude = 80; //value used by Tanoa
+</syntaxhighlight>
+
+==== minRocksInRockSquare ====
+[[TokenNameValueTypes#Integers|Integer]]: Minimum rocks needed in a square to show rock polygons on 2D map
+<syntaxhighlight lang="cpp">
+minRocksInRockSquare = 2; //value used by Tanoa
+</syntaxhighlight>
+
+==== minTreesInForestSquare ====
+[[TokenNameValueTypes#Integers|Integer]]: Minimum trees needed in a square to show forest polygons on 2D map
+<syntaxhighlight lang="cpp">
+minTreesInForestSquare = 3; //value used by Tanoa
+</syntaxhighlight>
+
+==== minObjInTownSquare ====
+[[TokenNameValueTypes#Integers|Integer]]: Unknown
+<syntaxhighlight lang="cpp">
+minObjInTownSquare = 1.4; //value used by Tanoa
+</syntaxhighlight>
+
+==== moonObject ====
+[[TokenNameValueTypes#Strings|String]]: Path to model used for moon object
+<syntaxhighlight lang="cpp">
+moonObject = "A3\data_f\moon.p3d"; //value used by Tanoa
+</syntaxhighlight>
+
+=== N ===
+
+==== class Names ====
+<syntaxhighlight lang="cpp">
+class Names
+{
+	class SomeLocation
+	{
+		angle = 0;
+		demography = "CIV"; //not used by every location
+		name = "Some Location Name"; //name of the location, can be stringtable entry
+		position[] = {2089.06, 3523.68}; //position in world
+		radiusA = 300;
+		radiusB = 100;
+		type = "Airport";
+	};
+};
+</syntaxhighlight>
+
+==== newRoadsShape ====
+[[TokenNameValueTypes#Strings|String]]: Path to roads shape file
+<syntaxhighlight lang="cpp">
+newRoadsShape = "A3\Map_Tanoabuka\data\roads\roads.shp"; //value used by Tanoa
+</syntaxhighlight>
+
+==== noDetailDist ====
+[[TokenNameValueTypes#Integers|Integer]]: Where ground detail texture is no longer visible (end fading out)
+<syntaxhighlight lang="cpp">
+noDetailDist = 50; //value used by Tanoa
+</syntaxhighlight>
+
+==== class NVGPars ====
+<syntaxhighlight lang="cpp">
+class NVGPars
+{
+	// is film grain enabled for NVG (0 = disabled, 1 = enabled)?
+	filmGrainEnabled = true;
+	// film grain params (intensity, sharpness, grain size, intensityX0, intensityX1, monochromatic (0=mono, 1=color))
+	filmGrainPars[] = {0.4, 2.75, 1, 3, 1, 0};
+};
+</syntaxhighlight>
+
+=== O ===
+
+==== outsideHeight ====
+[[TokenNameValueTypes#Integers|Integer]]: Height used outside of the map
+<syntaxhighlight lang="cpp">
+outsideHeight = -10; //value used by Tanoa
+</syntaxhighlight>
+
+==== outsideMaterial ====
+[[TokenNameValueTypes#Strings|String]]:
+<syntaxhighlight lang="cpp">
+outsideMaterial = ""; //value used by Tanoa
+</syntaxhighlight>
+
+==== class OutsideTerrain ====
+<syntaxhighlight lang="cpp">
+class OutsideTerrain
+{
+	colorOutside[] = {0.227451, 0.27451, 0.384314, 1};
+	enableTerrainSynth = 0; // enable procedural terrain generation, can cause issues in some circumstances (0 = disable, 1 = enable)
+	satellite = "A3\map_Stratis\data\s_satout_co.paa"; // defines the satellite texture to be used outside of the terrain when viewing from a distance
+	class Layers
+	{
+		class Layer0
+		{
+			nopx = "A3\Map_Data\gdt_grass_green_nopx.paa"; // defines the parallax texture to be used outside of the terrain when viewing from close
+			texture = "A3\Map_Data\gdt_grass_green_co.paa"; // defines the diffuse texture to be used outside of the terrain when viewing from close
+		};
+	};
+
+	angleAltitudes[] = { { min1, max1 }, ... , { min512, max512 } };	// since Arma 3 v2.04 - min and max height for out-of-bounds terrain (360°/512 angles)
+																		// angle starts from the East, next values go counter-clockwise up to 512 entries
+	analysisLength = 123;												// since Arma 3 v2.04 - altitude analysis distance from terrain's border towards its centre
+};
+</syntaxhighlight>
+
+=== P ===
+
+==== peakWaveBottom ====
+[[TokenNameValueTypes#Integers|Integer]]: Point where water peaks should start appearing
+<syntaxhighlight lang="cpp">
+peakWaveBottom = -5; //value used by Tanoa
+</syntaxhighlight>
+
+==== peakWaveTop ====
+[[TokenNameValueTypes#Integers|Integer]]: Point where water peaks should be max. visible before going offshore
+<syntaxhighlight lang="cpp">
+peakWaveTop = -1; //value used by Tanoa
+</syntaxhighlight>
+
+==== pictureMap ====
+[[TokenNameValueTypes#Strings|String]]: Path to map picture shown on world selection screen and background of loading screen for that terrain.
+<syntaxhighlight lang="cpp">
+pictureMap = "A3\Map_Tanoabuka\data\pictureMap_ca.paa"; //value used by Tanoa
+</syntaxhighlight>
+
+==== plateFormat ====
+[[TokenNameValueTypes#Strings|String]]:
+<syntaxhighlight lang="cpp">
+plateFormat = "T#$-####"; //value used by Tanoa
+</syntaxhighlight>
+
+==== plateLetters ====
+[[TokenNameValueTypes#Strings|String]]:
+<syntaxhighlight lang="cpp">
+plateLetters = "ABCDEGHIKLMNOPRSTVXZ"; //value used by Tanoa
+</syntaxhighlight>
+
+==== pointObject ====
+[[TokenNameValueTypes#Strings|String]]: Path to model used for point object
+<syntaxhighlight lang="cpp">
+pointObject = "A3\data_f\point.p3d"; //value used by Tanoa
+</syntaxhighlight>
+
+==== previewVideo ====
+[[TokenNameValueTypes#Strings|String]]: Path to video used for video preview in main menu for the terrain
+<syntaxhighlight lang="cpp">
+previewVideo = "A3\Map_Tanoa_Scenes_F\Video\previewVideo.ogv"; //value used by Tanoa
+</syntaxhighlight>
+
+=== R ===
+
+==== class Rain ====
+<syntaxhighlight lang="cpp">
+class Rain
+{
+	levels[] = {8, 2};
+	raindrop = "\A3\data_f\raindrop.p3d"; //path to model used for rain drop
+	speed = 1;
+	texture = "A3\data_f\rain_ca.paa"; //path to texture used for rain drop
+};
+</syntaxhighlight>
+
+==== rainbowObject ====
+[[TokenNameValueTypes#Strings|String]]: Path to model used for rainbow object
+<syntaxhighlight lang="cpp">
+rainbowObject = "A3\data_f\rainbow.p3d"; //value used by Tanoa
+</syntaxhighlight>
+
+==== rainForced ====
+[[TokenNameValueTypes#Integers|Integer]]: (0 = false, 1 = true)
+<syntaxhighlight lang="cpp">
+rainForced = 0; //value used by Tanoa
+</syntaxhighlight>
+
+==== class RainParticles ====
+{{Feature|informative|When '''snow''' param is [[true]] the following changes occur in the engine:
+* environmental 'snow' [[Arma_3:_Sound:_SoundControllers | sound controller]] is set to 1
+* environmental 'rain' [[Arma_3:_Sound:_SoundControllers | sound controller]] is set to 0
+* thunder and lightnings effects are disabled
+* [[humidity]] stops updating (use [[setHumidity]] if specific value is needed)
+}}
+<syntaxhighlight lang="cpp">
+class RainParticles
+{
+	// Parameters for the new particle rain
+	// texture of the particle (r = alpha; g = normalX; b = normalY; a = color;)
+	rainDropTexture=PathDTextureAbs;
+	// dropsInTexture - the number of drops that are present in the drop texture
+	texDropCount=4;
+	// minimum rain strength when the effect starts to be rendered
+	minRainDensity = 0.01;
+	// distance of the effect
+	effectRadius=15;
+	// coefficient of how much the wind influences water drops
+	windCoef=0.05;
+	// fall speed of the drops
+	dropSpeed=15.0;
+	// random part of the fall speed
+	rndSpeed=0.2;
+	// coefficient of how much the drop could randomly change direction
+	rndDir=0.1;
+	// width of the single drop
+	dropWidth=0.04;
+	// height of the single drop
+	dropHeight=0.8;
+	// color of the drop
+	dropColor[]={0.1, 0.1, 0.1, 0.1};
+	// luminescence of the drop facing to sun
+	lumSunFront=0.3;
+	// luminescence of the drop opposite to sun
+	lumSunBack=0.1;
+	// coefficient that tells us how much "refracted" light from the scene is added to the drop color
+	refractCoef=0.3;
+	// coefficient to tune color saturation of the refraction effect (0=BW, 1=original color)
+	refractSaturation = 0.3;
+
+	// SINCE Arma 3 v2.07.148385
+	// rain is snow, will be used in "snow" env sound controller (optional, default is false)
+	snow=false;
+	// SINCE Arma 3 v2.07.148416
+	// when true, the dropColor is preserved and not affected by eye accommodation (optional, default is false)
+	dropColorStrong=false;	
+};
+</syntaxhighlight>
+
+=== S ===
+
+==== safePositionAnchor[] ====
+[[TokenNameValueTypes#Arrays|Array]]: Used for random safe position finding.
+<syntaxhighlight lang="cpp">
+safePositionAnchor[] = {9158, 9962}; //value used by Tanoa
+</syntaxhighlight>
+
+==== safePositionRadius ====
+[[TokenNameValueTypes#Integers|Integer]]: Used for random safe position finding.
+<syntaxhighlight lang="cpp">
+safePositionRadius = 100; //value used by Tanoa
+</syntaxhighlight>
+
+==== satelliteMap ====
+[[TokenNameValueTypes#Strings|String]]:
+<syntaxhighlight lang="cpp">
+satelliteMap = ""; //value used by Tanoa
+</syntaxhighlight>
+
+==== satelliteNormalBlendEnd ====
+[[TokenNameValueTypes#Integers|Integer]]: Distance, where blending of detail normal ends (satellite normal is fully visible)
+<syntaxhighlight lang="cpp">
+satelliteNormalBlendEnd = 100; //value used by Tanoa
+</syntaxhighlight>
+
+==== satelliteNormalBlendStart ====
+[[TokenNameValueTypes#Integers|Integer]]: Distance, where ground detail normal is starts to blend to satellite normal texture
+<syntaxhighlight lang="cpp">
+satelliteNormalBlendStart = 10; //value used by Tanoa
+</syntaxhighlight>
+
+==== satelliteNormalOnDetail ====
+[[TokenNameValueTypes#Integers|Integer]]: If the satellite normal map on detail maps is enabled. (0 = false, 1 = true)
+<syntaxhighlight lang="cpp">
+satelliteNormalOnDetail = 1; //value used by Tanoa
+</syntaxhighlight>
+
+==== seaBedUnderwaterDepth ====
+[[TokenNameValueTypes#Integers|Integer]]: Depth of sea bed plane under water, positive value means depth under water, negative value means autodetection.
+<syntaxhighlight lang="cpp">
+seaBedUnderwaterDepth = 52; //value used by Tanoa
+</syntaxhighlight>
+
+==== seagullPos[] ====
+[[TokenNameValueTypes#Arrays|Array]]:
+<syntaxhighlight lang="cpp">
+seagullPos[] = {1024, 130, 1024}; //value used by Tanoa
+</syntaxhighlight>
+
+==== seaMaterial ====
+[[TokenNameValueTypes#Strings|String]]: Water material is used for sea landscape parts
+<syntaxhighlight lang="cpp">
+seaMaterial = "#water"; //value used by Tanoa
+</syntaxhighlight>
+
+==== seaTexture ====
+[[TokenNameValueTypes#Strings|String]]: Wave detection texture expected by the shaders
+<syntaxhighlight lang="cpp">
+seaTexture = "#(rgb,8,8,3)color(0,0,0,1)"; //value used by Tanoa
+</syntaxhighlight>
+
+==== class SeaWaterShaderPars ====
+<syntaxhighlight lang="cpp">
+class SeaWaterShaderPars
+{
+	// coefficient used to multiply move value of refractions
+	refractionMoveCoef = 0.01;
+	// minimal water surface opacity, when we are looking from above the water surface down
+	minWaterOpacity = 0.65;
+	// coef used to multiply square root of distance of pixel from water surface when coputing final opacity of water surface
+	// waterOpacity = MinWaterOpacity + sqrt(distance)*WaterOpacityDistCoef;
+	waterOpacityDistCoef = 0.07;
+	// opacity of water surface when we are under water
+	underwaterOpacity = 0.2;
+	// distance from object, where we start to fade the water surface to full opacity
+	waterOpacityFadeStart = 100;
+	// length of water surface opacity fading
+	waterOpacityFadeLength = 20;
+};
+</syntaxhighlight>
+For more information see the [[Arma_3:_Visual_Upgrade#Ocean_Shader|Visual update documentation.]]
+
+==== shoreFoamMaterial ====
+[[TokenNameValueTypes#Strings|String]]: Shore material is used for sea and landscape interface parts - the foam part
+<syntaxhighlight lang="cpp">
+shoreFoamMaterial = "#shoreFoam"; //value used by Tanoa
+</syntaxhighlight>
+
+==== shoreMaterial ====
+[[TokenNameValueTypes#Strings|String]]: Shore material is used for sea and landscape interface parts
+<syntaxhighlight lang="cpp">
+shoreMaterial = "#shore"; //value used by Tanoa
+</syntaxhighlight>
+
+==== shoreTop ====
+[[TokenNameValueTypes#Integers|Integer]]: Top point where water is considered off-shore
+<syntaxhighlight lang="cpp">
+shoreTop = 0; //value used by Tanoa
+</syntaxhighlight>
+
+==== shoreWetMaterial ====
+[[TokenNameValueTypes#Strings|String]]: Shore wet material is used for sea and landscape interface parts - the wet part
+<syntaxhighlight lang="cpp">
+shoreWetMaterial = "#shoreWet"; //value used by Tanoa
+</syntaxhighlight>
+
+==== skyColorInfluencesFogColor ====
+{{GVI|arma3|1.60}}
+[[TokenNameValueTypes#Integers|Integer]]: If sky color influences fog color. (0 = false, 1 = true) [[Arma_3:_Visual_Upgrade#Lighting_Setup|More information]]
+<syntaxhighlight lang="cpp">
+skyColorInfluencesFogColor = 0; //value used by Tanoa
+</syntaxhighlight>
+
+==== skyFogColorationStart ====
+[[TokenNameValueTypes#Floats|Float]]: Starting vertical texture coordinate for skybox coloration with fog (use 1 to disable coloration)
+<syntaxhighlight lang="cpp">
+skyFogColorationStart = "0.7f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== skyObject ====
+[[TokenNameValueTypes#Strings|String]]: Path to model used for sky object
+<syntaxhighlight lang="cpp">
+skyObject = "A3\Map_Tanoabuka\data\skydome.p3d"; //value used by Tanoa
+</syntaxhighlight>
+
+==== skyTexture ====
+[[TokenNameValueTypes#Strings|String]]: Path to sky texture
+<syntaxhighlight lang="cpp">
+skyTexture = "A3\Map_Tanoabuka\data\sky_semicloudy_sky.paa"; //value used by Tanoa
+</syntaxhighlight>
+
+==== skyTextureR ====
+[[TokenNameValueTypes#Strings|String]]: Path to sky reflection texture, used only as default when there is no weather
+<syntaxhighlight lang="cpp">
+skyTextureR = "A3\Map_Tanoabuka\data\sky_semicloudy_lco.paa"; //value used by Tanoa
+</syntaxhighlight>
+
+==== soundMapSizeCoef ====
+[[TokenNameValueTypes#Integers|Integer]]: Defines size of soundMap as multiplier of landRange (soundMap.dimX = landRange * soundMapCoef). In more simple terms how detailed/rough the environment sounds areas are to be computed (trees, houses, sea, meadows).
+<syntaxhighlight lang="cpp">
+soundMapSizeCoef = 4; //value used by Tanoa
+</syntaxhighlight>
+
+==== class SpriteRefractionPars ====
+<syntaxhighlight lang="cpp">
+class SpriteRefractionPars
+{
+	// scale of refraction (R, G, B - you can use different values to achieve abberation effect)
+	refractScale[] = {0.02, 0.02, 0.02};
+	// animation time coef (horizontal, vertical), use {0,0, 0} for no animation (third value not used)
+	timeScale[] = {0.03, 0.03, 0.0};
+};
+</syntaxhighlight>
+
+==== starsObject ====
+[[TokenNameValueTypes#Strings|String]]: Path to model used for stars object
+<syntaxhighlight lang="cpp">
+starsObject = "A3\data_f\stars.p3d"; //value used by Tanoa
+</syntaxhighlight>
+
+==== startDate ====
+[[TokenNameValueTypes#Strings|String]]: Start date when terrain is loaded without a date preset (e.g. loading into editor)
+<syntaxhighlight lang="cpp">
+startDate = "6/6/2035"; //value used by Tanoa
+</syntaxhighlight>
+
+==== startFog ====
+[[TokenNameValueTypes#Integers|Integer]]: Start fog
+<syntaxhighlight lang="cpp">
+startFog = 0; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[fog]], [[setFog]], [[fogParams]], [[fogForecast]]
+
+==== startFogBase ====
+[[TokenNameValueTypes#Integers|Integer]]: Start base altitude for fog computations (in meters)
+<syntaxhighlight lang="cpp">
+startFogBase = 250; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[fog]], [[setFog]], [[fogParams]], [[fogForecast]]
+
+==== startFogDecay ====
+[[TokenNameValueTypes#Integers|Integer]]: Start decay coefficient - decay of fog with altitude
+<syntaxhighlight lang="cpp">
+startFogDecay = 0.014; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[fog]], [[setFog]], [[fogParams]], [[fogForecast]]
+
+==== startGusts ====
+[[TokenNameValueTypes#Integers|Integer]]: Start gusts
+<syntaxhighlight lang="cpp">
+startGusts = 0; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[gusts]], [[setGusts]]
+
+==== startLightnings ====
+[[TokenNameValueTypes#Integers|Integer]]: Start lightning
+<syntaxhighlight lang="cpp">
+startLightnings = 0; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[lightnings]], [[setLightnings]]
+
+==== startRain ====
+[[TokenNameValueTypes#Integers|Integer]]: Start rain
+<syntaxhighlight lang="cpp">
+startRain = 0; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[rain]], [[setRain]]
+
+==== startTime ====
+[[TokenNameValueTypes#Strings|String]]: Start time (military time)
+<syntaxhighlight lang="cpp">
+startTime = "12:00"; //value used by Tanoa
+</syntaxhighlight>
+
+==== startWaves ====
+[[TokenNameValueTypes#Integers|Integer]]: Start waves
+<syntaxhighlight lang="cpp">
+startWaves = 0.1; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[waves]], [[setWaves]]
+
+==== startWeather ====
+[[TokenNameValueTypes#Integers|Integer]]:
+<syntaxhighlight lang="cpp">
+startWeather = 0.3; //value used by Tanoa
+</syntaxhighlight>
+
+==== startWind ====
+[[TokenNameValueTypes#Integers|Integer]]:
+<syntaxhighlight lang="cpp">
+startWind = 0.1; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[wind]], [[setWind]]
+
+==== startWindDir ====
+[[TokenNameValueTypes#Integers|Integer]]:
+<syntaxhighlight lang="cpp">
+startWindDir = 0; //value used by Tanoa
+</syntaxhighlight>
+Related commands: [[windDir]], [[windDir]]
+
+==== class Subdivision ====
+Fractal and white noise random offset are added. White noise generated more "wild" terrain, while fractal tends to generate smooth, varied terrain
+<syntaxhighlight lang="cpp">
+class Subdivision
+{
+	// fractal component of subdivision
+	// changes are smaller for smaller rectangles
+	class Fractal
+	{
+		// texture roughness factor
+		rougness = 10;
+		// max. value for squares containing road
+		maxRoad = 0.2;
+		// max. value for squares containing track
+		maxTrack = 1.0;
+		// max. coeficient depending on slope
+		maxSlopeFactor = 0.05;
+	};
+	// white noise component of subdivision
+	// change size is independent on rectangle size
+	class WhiteNoise
+	{
+		rougness = 5;
+		// max. value for squares containing road
+		maxRoad = 0.1;
+		// max. value for squares containing track
+		maxTrack = 0.5;
+		// max. coeficient depending on slope
+		maxSlopeFactor = 0.025;
+	};
+
+	// do not divide surfaces that are under given limit
+	minY = -0.0;
+	// do not divide flat surfaces
+	minSlope = 0.02;
+};
+</syntaxhighlight>
+
+==== sunObject ====
+[[TokenNameValueTypes#Strings|String]]: Path to model used for sun object
+<syntaxhighlight lang="cpp">
+sunObject = "A3\data_f\sun.p3d"; //value used by Tanoa
+</syntaxhighlight>
+
+=== T ===
+
+==== terrainBlendMaxBrightenCoef ====
+[[TokenNameValueTypes#Floats|Float]]: Maximal brightening coef for blending of satellite map and detail map on terrain (default = 1.0f, no brightening = 0.0f)
+<syntaxhighlight lang="cpp">
+terrainBlendMaxBrightenCoef = "0.0f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== terrainBlendMaxDarkenCoef ====
+[[TokenNameValueTypes#Floats|Float]]: Maximal darkening coef for blending of satellite map and detail map on terrain (default = 0.0f, no darkening = 1.0f)
+<syntaxhighlight lang="cpp">
+terrainBlendMaxDarkenCoef = "1.0f"; //value used by Tanoa
+</syntaxhighlight>
+
+==== terrainMaterial ====
+[[TokenNameValueTypes#Strings|String]]: Terrain material is used for terrain solid ground, by default load from CfgMaterials
+<syntaxhighlight lang="cpp">
+terrainMaterial = "#terrain"; //value used by Tanoa
+</syntaxhighlight>
+
+==== timeOfChanges ====
+Default time (in seconds) over which the weather changes. BI terrains usually have this set to 30 mins (i.e. 1800s). Mission maker can change this value from the weather settings window in the Eden editor.
+<br>
+[[TokenNameValueTypes#Integers|Integer]]:
+<syntaxhighlight lang="cpp">
+timeOfChanges = 1800; //value used by Tanoa
+</syntaxhighlight>
+
+=== U ===
+
+==== class Underwater ====
+Parameters for underwater fog
+<syntaxhighlight lang="cpp">
+class Underwater
+{
+	/// fog color is changed based on the depth under the water surface
+	/// normal fog color	-> water color	-> deep water color
+	/// ^
+	/// noWaterFog			-> fullWaterFog	-> deepWaterFog
+
+	/// depth under the water, where water color starts (can be negative = distance above water)
+	noWaterFog = -0.3;
+	/// depth under the water, where water color is at full strength and deep water color starts
+	fullWaterFog = 0.1;
+	/// depth under the water, where deep water color is at full strength
+	deepWaterFog = 10;
+
+	/// distance of the water fog (fog far)
+	waterFogDistance = 20;
+	/// distance of the water fog (fog near)
+	waterFogDistanceNear = 0;
+
+	/// color of the water fog at fullWaterFog depth
+	waterColor[] = {0.02,0.08,0.12};
+	/// color of the water fog at deepWaterFog depth
+	deepWaterColor[] = {0.01,0.06,0.14};
+
+	/// skyTopColor (zenith) at fullWaterFog depth (reflections on water surface?)
+	surfaceColor[] = {0.20,0.30,0.25};
+	/// skyTopColor (zenith) at deepWaterFog depth (reflections on water surface?)
+	deepSurfaceColor[] = {0.10,0.18,0.22};
+};
+</syntaxhighlight>
+For more information see the [[Arma_3:_Visual_Upgrade#Ocean_Shader|Visual update documentation]].
+
+==== underwaterOcclusionObject ====
+[[TokenNameValueTypes#Strings|String]]: Path to model used for underwater occlusion object
+<syntaxhighlight lang="cpp">
+underwaterOcclusionObject = "A3\data_f\horizont_sphere.p3d"; //value used by Tanoa
+</syntaxhighlight>
+
+=== W ===
+
+==== class WaterExPars ====
+<syntaxhighlight lang="cpp">
+// parameters for water in expansion
+class WaterExPars
+{
+	// base density for water fog (exp coef used for water fog computation) (_A3_MULTI_COMPONENT_FOG)
+	fogDensity = 0.04;
+
+	// color of the water fog when the camera is on or above water surface
+	fogColor[] = { 0.003, 0.005, 0.01 };
+
+	// coefficients for water fog color extinction based on depth of the camera under water (coefs for RGB)
+	// this influences how fast the water fog color darkens when camera moves under water (depends on camera position)
+	fogColorExtinctionSpeed[] = { 0.2, 0.1, 0.04 };
+
+	// defines how light influences fog color (r = ambient influence, g = diffuse (sun) influence, b = overall light influence)
+	fogColorLightInfluence[] = { 0.6, 0.15, 0.5 };
+
+	// coefficient for water fog gradient (MIN coef, MIDDLE coef, MAX coef)
+	fogGradientCoefs[] = { 0.4, 1.0, 1.5 };
+
+	// coefficients for light extinction in water based on the point under water (coefs for RGB)
+	// this influences extinction of ambient light under water (depends on shaded point position)
+	ligtExtinctionSpeed[] = { 0.3, 0.1, 0.05 };
+	// coefficients for diffuse light extinction
+	diffuseLigtExtinctionSpeed[] = { 0.3, 0.1, 0.05 };
+
+	// screen space reflections - strength of reflections
+	// [0,1] (0 = no reflections, 1 = full reflections)
+	ssReflectionStrength = 0.85;
+	// screen space reflections - max. jitter used when sampling - this is used to randomize artifacts caused by sparse sampling
+	// [0,1] (0 = no jitter, 1 = max jitter)
+	ssReflectionMaxJitter = 1.0;
+	// screen space reflections - how much small ripples (from water normal map) influence the reflection
+	// [0,1] (0 = no influence, 1 = max influence)
+	ssReflectionRippleInfluence = 0.15;
+	// screen space reflections - coefficient for fading of reflection near screen borders (larger number = faster fading)
+	ssReflectionEdgeFadingCoef = 10.0;
+	// screen space reflections - coefficient for fading of reflection based on distance (larger number = faster fading)
+	ssReflectionDistFadingCoef = 4.0;
+
+	// minimal coef for refraction (at water surface)
+	refractionMinCoef = 0.02;
+	// maximal coef for refraction (at refractionMaxDist)
+	refractionMaxCoef = 0.07;
+	// distance (in meters) of the point from water surface, where refraction coefficient becomes refractionMaxCoef;
+	refractionMaxDist = 20.0;
+
+	// water surface opacity (should be 0 because of multicomponent fog, use higher values for debugging (-> Buldozer))
+	surfaceOpacity = 0.0;
+
+	// intensity of shadow on the water (1 = full shadow, 0 = no shadow)
+	shadowIntensity = 0.5;
+
+	// max intensity of specular on water
+	specularMaxIntensity = 25.0;
+	// specular power for overcast 0
+	specularPowerOvercast0 = 200.0;
+	// specular power for overcast 1
+	specularPowerOvercast1 = 50.0;
+	// how much we modify the normal for specular computation (0 = no modification, 1 = full modification)
+	specularNormalModifyCoef = 1.0;
+
+
+	// intensity of foam around objects
+	foamAroundObjectsIntensity = 0.25;
+	// coef for fading of foam (larger number = faster fade)
+	foamAroundObjectsFadeCoef = 8.0;
+	// coef for color of the foam
+	foamColorCoef = 2.0;
+	// coef for deformation of foam texture based on normal of water
+	foamDeformationCoef = 0.02;
+	// coef for mapping of foam texture based on world coordinates
+	foamTextureCoef = 0.2;
+	// speed of movement of foam based on time
+	foamTimeMoveSpeed = 0.2;
+	// amount of movement of foam based on time
+	foamTimeMoveAmount = 0.1;
+
+	// darkening of terrain near shore params
+	// maximal darkening coef (1.0 = max darkening, 0.0 = no darkening)
+	shoreDarkeningMaxCoef = 0.5;
+	// height offset above water level, where darkening is in its full power
+	shoreDarkeningOffset = 0.2;
+	// darkening gradient size
+	shoreDarkeningGradient = 0.2;
+
+	// speed of the waves (scaling of time)
+	shoreWaveTimeScale = 0.8;
+	// offset used to delay when the thick edge of foam appears and dissolves based on wave phase
+	shoreWaveShifDerivativeOffset = -0.8;
+	// overall shore foam intensity
+	shoreFoamIntensity = 0.5;
+	// max wave height on shore (in meters)
+	shoreMaxWaveHeight = 0.15;
+	// reflection intensity on the shore wet layer
+	shoreWetLayerReflectionIntensity = 1.0;
+};
+</syntaxhighlight>
+For more information see the [[Arma_3:_Visual_Upgrade#Ocean_Shader|Visual update documentation]].
+
+==== waterTexture ====
+[[TokenNameValueTypes#Strings|String]]:
+<syntaxhighlight lang="cpp">
+waterTexture = "#(argb,8,8,3)color(0.35,0.47,0.66,1)"; //value used by Tanoa
+</syntaxhighlight>
+
+==== wavesForced ====
+[[TokenNameValueTypes#Integers|Integer]]: (0 = false, 1 = true)
+<syntaxhighlight lang="cpp">
+wavesForced = 0; //value used by Tanoa
+</syntaxhighlight>
+
+==== windForced ====
+[[TokenNameValueTypes#Integers|Integer]]: (0 = false, 1 = true)
+<syntaxhighlight lang="cpp">
+windForced = 0; //value used by Tanoa
+</syntaxhighlight>
+
+==== worldName ====
+[[TokenNameValueTypes#Strings|String]]: Path to WRP
+<syntaxhighlight lang="cpp">
+worldName = "A3\Map_Tanoabuka\Tanoa.wrp"; //value used by Tanoa
+</syntaxhighlight>
+
+
+
+{{GameCategory|arma3|Reference Lists}}

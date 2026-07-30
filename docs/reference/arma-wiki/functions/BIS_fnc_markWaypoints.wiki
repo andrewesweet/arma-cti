@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_markWaypoints
+// revision: 309789 (2022-05-05T12:09:50Z)
+// export sha1: 8sedne8pk55stq4mh7gel78f8982msc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Map and Markers
+
+|descr= <pre>/*
+
+	Description:
+	Creates a marker on each uncompleted waypoint and marks it checked after completing that WP.
+	Note: "On Activation" WP code is used for handling the markers; if this code is overwritten during the course, it can break this functionality
+
+	Parameter(s):
+	_this select 0: OBJECT - unit who will have its waypoints marked
+	_this select 1 (Optional, use "" for default): STRING - text of hint shown after completing a waypoint, %1 is used for WP number (default "")
+	_this select 2 (Optional, use [] for default): ARRAY of STRINGS - marker text format for [uncompleted, completed] waypoints, %1 is used for WP number (default ["%1", "%1"])
+	_this select 3 (Optional, use [] for default): ARRAY of STRINGS - marker icon for [uncompleted, completed] waypoints (default ["mil_circle", "mil_circle"])
+	_this select 4 (Optional, use [] for default): ARRAY of STRINGS - marker color for [uncompleted, completed] waypoints (default ["ColorRed", "ColorGreen"])
+	_this select 5 (Optional, use [] for default): ARRAY of NUMBERS - marker size for [uncompleted, completed] waypoints (default [0.75, 0.75])
+
+	Returns:
+	NOTHING
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_markWaypoints]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_markWaypoints;</sqf> -->
+
+|seealso=
+}}

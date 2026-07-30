@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_destroyer01OperateHangarDoors
+// revision: 364795 (2024-06-13T20:08:17Z)
+// export sha1: 2rxcuvd8tftc7yc6xnlf3ldwpkx0152
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Destroyer | Category:Functions | Category:Introduced with Arma 3 version 1.84 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.84
+
+|gr1= Destroyer
+
+|descr= This function is designed to handle animations of ship hangar doors from vehicle user action (see {{Link|#Examples}}).
+It calls [[BIS_fnc_destroyer01AnimateHangarDoors]].
+
+{{Feature|important|Object (ship) must have all animations correctly defined and user actions configured.}}
+
+|s1= [shipPart, doorState] call [[BIS_fnc_destroyer01OperateHangarDoors]]
+
+|p1= shipPart: [[Object]]
+
+|p2= doorState: [[Number]] - doors' animation state; 1 to open, 0 to close
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+[this, 1] call BIS_fnc_destroyer01OperateHangarDoors; // to open doors
+[this, 0] call BIS_fnc_destroyer01OperateHangarDoors; // to close doors
+</sqf>
+
+<syntaxhighlight lang="cpp">
+class OpenHangarDoor_1
+{
+	displayNameDefault		= "<img image='\A3\Ui_f\data\IGUI\Cfg\Actions\open_door_ca.paa' size='2.5' />";
+	displayName 			= "$STR_DN_OUT_O_DOOR";
+	position 				= "pos_Door_Hangar_1_Trigger";
+	priority 				= 0.4;
+	radius 					= 1.5;
+	onlyForPlayer 			= 0;
+	condition 				= "(((nearestObjects [this, ['Land_Destroyer_01_hull_04_F'], 50, false]) select 0) animationPhase 'Door_Hangar_1_1_open') < 0.1;";
+	statement 				= "[this, 1] call BIS_fnc_destroyer01OperateHangarDoors;";
+};
+
+class CloseHangarDoor_1 : OpenHangarDoor_1
+{
+	displayName 			= "$STR_DN_OUT_C_DOOR";
+	position 				= "pos_Door_Hangar_1_Trigger";
+	condition 				= "(((nearestObjects [this, ['Land_Destroyer_01_hull_04_F'], 50, false]) select 0) animationPhase 'Door_Hangar_1_1_open') >= 0.1;";
+	statement 				= "[this, 0] call BIS_fnc_destroyer01OperateHangarDoors;";
+};
+</syntaxhighlight>
+
+|seealso= [[BIS_fnc_destroyer01AnimateHangarDoors]]
+}}

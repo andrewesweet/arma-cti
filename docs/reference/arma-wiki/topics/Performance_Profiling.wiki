@@ -1,0 +1,590 @@
+// source: https://community.bistudio.com/wiki/Performance_Profiling
+// revision: 370411 (2024-12-05T17:53:05Z)
+// export sha1: qk5mk0p0ftg549oarvb1dv7hbbkgufv
+// categories: Category:Arma Scripting Tutorials | Category:Eden Editor
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+== Versions with performance profiling ==
+
+The '''Profiling build''' is provided in semi regular intervals between major game version updates by {{User|Dedmen}} in tandem with {{arma3}} [[Arma_3:_Steam_Branches|Performance build]].
+
+The download and changelog can be found in the {{Link|https://forums.bistudio.com/forums/topic/160288-arma-3-stable-server-170-performance-binary-feedback/|BI Forums}} as well as in the {{hl|#perf_prof_branch}} channel in the {{Link|https://discordapp.com/invite/arma|official {{arma3}} Discord server}}.
+
+{{Feature|important|
+* Through the nature of a Profiling build (due to additional "measuring"/profiling code), they are not as performant as the normal release builds!
+* Performance Profiling works also with the [[Arma 3: Diagnostics Exe|Diagnostics Exe]].
+}}
+
+
+== Setup ==
+
+{{Feature|important|
+* To use the profiling build, you must launch the game with the '''arma3profiling_x64.exe''' (arma3serverprofiling_x64.exe for the server).
+* One way is to delete the '''arma3.exe''', and rename the profiling exe to it. This way you can continue to use the [[Arma_3:_Launcher|Arma 3 launcher]] to launch the game with your [[Arma_3:_Startup_Parameters|startup parameters]] by selecting '''Platform: 32-bit''' under '''All Parameters''' (or other third party launcher applications).
+* The alternative is to use {{Link|https://www.windowscentral.com/how-create-and-run-batch-file-windows-10|batch files}} (and copy your {{Link|Arma 3: Startup Parameters|startup parameters}} from the top of a [[arma.RPT|rpt log file]] from a regular session).
+}}
+
+Sample batch file to auto rename the exe: '''replaceArma3exeWithProfiling.bat'''
+<syntaxhighlight lang="bat">
+cd /D "C:\Program Files (x86)\Steam\steamapps\common\Arma 3"
+
+del arma3.exe
+
+copy /Y /B arma3profiling_x64.exe arma3.exe
+</syntaxhighlight>
+
+=== Steam Branch ===
+
+AUTOMATIC (Recommended) - see also [[Arma_3:_Steam_Branches|Steam Branches]].
+
+# Open Steam
+# Right click on '''{{arma3}}''' in your Steam Library, then '''Properties'''
+# Select the tab '''betas'''
+# Finally, use the dropdown list to select the branch '''profiling - Performance Profiling Build'''
+# Wait for the download to finish
+
+This will automatically download newest performance and profiling exes once they are available.
+
+=== Google Drive ===
+
+MANUAL (only when needed)
+
+# Download and install [https://www.7-zip.org/download.html 7z] (usually the 64-bit Windows x64 variant)
+# Open {{Link|https://forums.bistudio.com/forums/topic/160288-arma-3-stable-server-170-performance-binary-feedback/|BI forum thread}}
+# Got to latest post with a link to google drive
+# Browse to the latest game version and profiling build version folder
+# Download the desired exe from the google drive folder (usually the arma3client_x64_profiling_XXX.7z)
+# Extract the 7z file and copy the exe to your game folder (usually {{hl|C:\Program Files (x86)\Steam\steamapps\common\Arma 3}})
+
+
+{| class="wikitable float-right"
+|+ FPS conversion table
+|-
+! FPS !! seconds !! milliseconds
+|-
+| 1000 || 0.001 || 1
+|-
+| 500 || 0.002 || 2
+|-
+| 333 || 0.003 || 3
+|-
+| 250 || 0.004 || 4
+|-
+| 200 || 0.005 || 5
+|-
+| 100 || 0.010 || 10
+|-
+| 60 || 0.017 || 17
+|-
+| 50 || 0.020 || 20
+|-
+| 40 || 0.025 || 25
+|-
+| 30 || 0.033 || 33
+|-
+| 20 || 0.050 || 50
+|-
+| 10 || 0.100 || 100
+|-
+| 5 || 0.200 || 200
+|-
+| 4 || 0.250 || 250
+|-
+| 3 || 0.333 || 333
+|-
+| 2 || 0.500 || 500
+|-
+| 1 || 1.0 || 1000
+|}
+== FPS Basics ==
+
+The duration the engine needs to compute all calculations in one cycle is called a frame. The frame rate, or frames per second (FPS), in return states how many cycles the engine could compute for a given second.
+
+{{Feature|informative|
+* One second consists of one thousand {{Link|https://en.wikipedia.org/wiki/Millisecond|milliseconds}} (1 s {{=}} 1000 ms).
+* The shorter a cycle/frame, the higher the FPS.
+}}
+{{Feature|important|
+'''total''' only works for a client (a machine with [[hasInterface|interface]]). Basically the equivalent for the dedicated server is '''sLoop''' and for a headless client it is '''cLoop'''.
+}}
+
+
+Example:
+{| class="valign-top"
+|
+<sqf>
+diag_captureSlowFrame ["total", "50fps"];
+diag_captureSlowFrame ["total", "0.02s"];
+diag_captureSlowFrame ["total", "20ms"];
+</sqf>
+|
+<sqf>
+diag_captureSlowFrame ["total", "30fps"];
+diag_captureSlowFrame ["total", "0.033s"];
+diag_captureSlowFrame ["total", "33ms"];
+</sqf>
+|}
+
+<gallery>
+File:Performance_Profiling_01.png
+File:Performance_Profiling_02.png
+File:Performance_Profiling_03.png
+</gallery>
+
+
+{{Clear}}
+== Duration Parameter ==
+
+* The duration parameter is a time measured in seconds. 0.3 (seconds) is the same as 300 ms / milliseconds.
+* It is used to determine what duration of a frame you consider abnormal or that you are interested in for other reasons.
+* The first time such frame happens, the frame information will be captured - or put differently: when a situation occurs with a frame lasting longer than said duration.
+* 0.3 (<3 fps for the whole frame) is definitely something you should not see in a normal game.
+* If you do not capture any frames with 0.3, try lowering it to 0.2 (200 ms / <5 fps) or 0.1 (100 ms / <10 fps).
+* If it triggers "too early" before the main slowdown happens that you want to analyze, increase it to a higher value, e.g. 1.0 for long freeze (<1 fps).
+
+
+== Scope Parameter ==
+
+{{Feature|important|
+The '''scope''' parameter is {{Link|https://en.wikipedia.org/wiki/Case_sensitivity|case sensitive}}.
+}}
+
+* '''total''' is name for the scope of the duration for the whole frame ('''sLoop''' on a [[Arma_3:_Dedicated_Server|dedicated server]], '''cLoop''' on a [[Arma_3:_Headless_Client|headless client]]).
+* With the '''total''' scope you capture more or less your frames per second (fps) - if your current frame-rate is essentially stable. In other words if all frames for that second have roughly similar duration.
+* In some situations you may encounter single/few frame lasting mini-freezes - aka one/few frames take rather long to complete (ie 100 ms), yet the rest remains in your normal fps range (20 ms for 50 fps for example).
+* Whereas a longer freeze means usually a frame last very long, like a second or longer. Thus the game stalls altogether for the given timeframe.
+* The scope parameter now allows you to capture subparts of a frame, of different parts of the engine computation - in general terms like networking, world and unit simulation, AI behavior, sound, rendering and visibility checks.
+* The '''total''' scope is also from the '''main thread''' and could be called '''main frame''' - all things the engine has to complete in a cycle. In addition there are other threads, where the engine moves other tasks to be computed alongside. Essentially this is what multi-threading is about, allowing the CPU with multiple cores to compute more things at the same time, and thus to reduce the duration of the main frame.
+* With the scope parameter you can capture said subparts from the "main frame", yet also from the so called "worker" threads.
+* The names for scopes/subscopes you can get from the diag capture dialog or in the frame capture logging files (.log/.trace).
+
+
+== How to Capture ==
+
+=== Client ===
+
+==== Current Frame ====
+
+If you want to capture a snapshot of a current moment, there are a few options:
+
+1. Via {{Link|Arma 3: Cheats|Arma 3 Cheats}}
+
+# Press {{Controls|Shift|num-}}
+# Type {{hl|frame}}
+# As result the '''diag capture dialog''' opens
+
+{{Feature|important|
+* This is a very rough way to capture the game is running while you are typing.
+* Outside multiplier, if you open the pause menu, the simulation for the mission is halted. So when you do a capture in that menu, you only get a capture for the menu simulation.
+* You can use the ''frame'' cheat at any point - ie in the main menu or submenus, in the editor, in multiplayer, etc.
+}}
+
+2. Via [[Arma 3: Debug Console|Debug Console]]
+
+# Open the console ({{Controls|ESC}} key to open pause menu or {{Controls|Shift|D}} in the [[Category:Eden_Editor|Eden editor]])
+# Execute <sqf inline>diag_captureFrame 1;</sqf>
+# As result the '''diag capture dialog''' opens
+
+{{Feature|important|
+* This is a very rough way to capture the game is running while you are typing.
+* Outside multiplier, if you open the pause menu, the simulation for the mission is halted. So when you do a capture in that menu, you only get a capture for the menu simulation.
+* To avoid that, you need to delay the execution until the pause menu is closed again. For example by: <sqf inline>(findDisplay 49) closeDisplay 0; diag_captureFrame 3;</sqf>
+* To have the console available in a mission (outside the [[Category:Eden_Editor|Eden editor]]), you need to enable it via the {{Link|Description.ext#enableDebugConsole}} parameter.
+* Alternatively you can enable the console in any missions via mods (see below).
+}}
+
+Mods to enable console in any mission:
+* {{Link|https://steamcommunity.com/sharedfiles/filedetails/2000114984|Enable Debug Console {{=}} 1 (Access - ADMIN)}} by Mr. Uplay
+* {{Link|https://steamcommunity.com/sharedfiles/filedetails/2000131738|Enable Debug Console {{=}} 2 (Access - ALL)}} by Mr. Uplay
+* {{Link|https://steamcommunity.com/sharedfiles/filedetails/1939811222|enableDebugConsole}} by Sams
+* {{Link|https://steamcommunity.com/sharedfiles/filedetails/1231625987|Debug Console}} by R3vo
+
+{{Feature|important|
+For dedicated server use, you need to allow the given mod by uploading the respective bikey to the server's keys folder - or disable <syntaxhighlight lang="cpp" inline>verifySignatures = 0;</syntaxhighlight> via [[Arma 3: Server Config File|server.cfg]].
+}}
+
+'''Strongly recommended''': Use an enhanced debug console like {{Link|https://steamcommunity.com/sharedfiles/filedetails/450814997|CBA_A3}} or {{Link|https://steamcommunity.com/sharedfiles/filedetails/281032552|DevCon}} mod
+
+3. Via custom action
+
+You need to execute in the console the following code first to add the action:
+
+<sqf>
+if (!(isNil "temp_diag_captureFrame_action")) then
+{
+	player removeAction temp_diag_captureFrame_action;
+	temp_diag_captureFrame_action = nil;
+};
+
+temp_diag_captureFrame_action = player addAction ["<t color='#FF0000'>captureFrame</t>", { diag_captureFrame 1; }];
+</sqf>
+
+To remove the action again:
+
+<sqf>
+if (!(isNil "temp_diag_captureFrame_action")) then
+{
+	player removeAction temp_diag_captureFrame_action;
+	temp_diag_captureFrame_action = nil;
+};
+</sqf>
+
+4. Via mission specific code
+
+# [[Function|Functions]]
+# [[Eden_Editor:_Trigger#On_Activation|On Activation]] by [[Eden_Editor:_Trigger|Triggers]]
+# [[Eden_Editor:_Object#Attributes|Object init field]]
+
+==== Slow Frame ====
+
+{{Feature|important|
+The '''scope''' parameter is {{Link|https://en.wikipedia.org/wiki/Case_sensitivity|case sensitive}}.
+}}
+
+If you want to capture a snapshot of a slow frame, there are a few options:
+
+1. Via {{Link|Arma 3: Cheats|Arma 3 Cheats}}
+
+# Press {{Controls|Shift|num-}}
+# Type {{hl|sframe}}
+# Once the game falls below 30 fps (30 ms / 0.030 (s) duration for for '''total''' scope) the diag capture dialog opens
+
+{{Feature|important|
+* This is a very basic way to capture slow frames as the limit is not customizable and only works on the '''total''' scope. For customizable scope and duration use the options below.
+* Outside multiplier, if you open the pause menu, the simulation for the mission is halted. So when you do a capture in that menu, you only get a capture for the menu simulation.
+* You can use the ''sframe'' cheat at any point - ie in the main menu or submenus, in the editor, in multiplayer, etc.
+}}
+
+2. Via [[Arma 3: Debug Console|Debug Console]]
+
+# Open the console ({{Controls|ESC}} key to open pause menu or {{Controls|Shift|D}} in the [[Category:Eden_Editor|Eden editor]])
+# Execute <sqf inline>diag_captureSlowFrame ["total", 0.03];// [scope, duration]</sqf>
+# As result the '''diag capture dialog''' opens
+
+{{Feature|important|
+* There can be only captureSlowFrame active at the same time. If another is set by the different means, the old one becomes inactive.
+* Outside multiplier, if you open the pause menu, the simulation for the mission is halted. So when capture triggers while you are still in that menu, you only get a capture for the menu simulation.
+* To avoid that, you need to delay the execution until the pause menu is closed again. For example by: <sqf inline>(findDisplay 49) closeDisplay 0; diag_captureSlowFrame ["total", 0.03, 3];</sqf>
+* To have the console available in a mission (outside the [[Category:Eden_Editor|Eden editor]]), you need to enable it via the [[Description.ext#enableDebugConsole|description.ext enableDebugConsole parameter]].
+* Alternatively you can enable the console in any missions via mods (see above).
+}}
+
+3. Via custom action
+
+You need to execute in the console the following code first to add the action:
+
+<sqf>
+if (!(isNil "temp_diag_captureSlowFrame_action")) then
+{
+	player removeAction temp_diag_captureSlowFrame_action;
+	temp_diag_captureSlowFrame_action = nil;
+};
+
+temp_diag_captureSlowFrame_action = player addAction ["<t color='#FF0000'>captureSlowFrame</t>", { diag_captureSlowFrame ["total", 0.03]; }];
+</sqf>
+
+Customize the scope and duration as desired.
+
+To remove the action again:
+
+<sqf>
+if (!(isNil "temp_diag_captureSlowFrame_action")) then
+{
+	player removeAction temp_diag_captureSlowFrame_action;
+	temp_diag_captureSlowFrame_action = nil;
+};
+</sqf>
+
+4. Via mission specific code
+
+# [[Function|Functions]]
+# [[Eden_Editor:_Trigger#On_Activation|On Activation]] by [[Eden_Editor:_Trigger|Triggers]]
+# [[Eden_Editor:_Object#Attributes|Object init field]]
+
+=== Server ===
+
+==== Current Server Frame ====
+
+If you want to capture a snapshot of a current moment on the server, there are a few options:
+
+1. Via [[Multiplayer_Server_Commands#Performance_Profiling|Admin chat commands]]
+
+# Open the chat window '''by pressing the chat key''' (default {{Controls|/}}).
+# Type {{hl|#captureFrame}}
+# The current frame '''on the server''' is captured and written to a log file in the same directory as the [[Crash_Files|.rpt file]].
+
+{{Feature|important|
+* You must be [[Arma_3:_Server_Config_File#Logged_In_Admin|logged in as admin]]!
+* This is a very rough way to capture the current frame on the server.
+* See [[diag_captureFrameToFile]] for more info.
+}}
+
+2. Via [[Arma 3: Debug Console|Debug Console]]
+
+# Open the console ({{Controls|ESC}} key to open pause menu)
+# Execute <sqf inline>[1] remoteExec ["diag_captureFrame", 2];</sqf>
+# As result the '''diag capture dialog''' opens
+
+{{Feature|important|
+* This is a very rough way to capture the current frame on the server.
+* To have the console available in a mission, you need to enable it via the [[Description.ext#enableDebugConsole|description.ext enableDebugConsole parameter]].
+* Alternatively you can enable the console in any missions via mods (see below).
+}}
+
+Mods to enable console in any mission:
+* {{Link|https://steamcommunity.com/sharedfiles/filedetails/2000114984|Enable Debug Console {{=}} 1 (Access - ADMIN)}} by Mr. Uplay
+* {{Link|https://steamcommunity.com/sharedfiles/filedetails/2000131738|Enable Debug Console {{=}} 2 (Access - ALL)}} by Mr. Uplay
+* {{Link|https://steamcommunity.com/sharedfiles/filedetails/1939811222|enableDebugConsole}} by Sams
+* {{Link|https://steamcommunity.com/sharedfiles/filedetails/1231625987|Debug Console}} by R3vo
+
+{{Feature|important|
+For dedicated server use, you need to allow the given mod by uploading the respective bikey to the server's keys folder - or disable {{hl|verifySignatures <nowiki>=</nowiki> 0;}} via [[Arma_3:_Server_Config_File|server.cfg]].
+}}
+
+'''Strongly recommended''': Use an enhanced debug console like [https://steamcommunity.com/sharedfiles/filedetails/?id=450814997 CBA_A3] or [https://steamcommunity.com/sharedfiles/filedetails/?id=281032552 DevCon] mod
+
+3. Via custom action
+
+You need to execute in the console the following code first to add the action:
+
+<sqf>
+if (!(isNil "temp_diag_captureFrame_server_action")) then
+{
+	player removeAction temp_diag_captureFrame_server_action;
+	temp_diag_captureFrame_server_action = nil;
+};
+
+temp_diag_captureFrame_server_action = player addAction ["<t color='#FF0000'>captureFrame (server)</t>", { [1] remoteExec ["diag_captureFrame", 2]; }];
+</sqf>
+
+To remove the action again:
+
+<sqf>
+if (!(isNil "temp_diag_captureFrame_server_action")) then
+{
+	player removeAction temp_diag_captureFrame_server_action;
+	temp_diag_captureFrame_server_action = nil;
+};
+</sqf>
+
+4. Via mission specific code
+
+# [[Function|Functions]]
+# [[Eden_Editor:_Trigger#On_Activation|On Activation]] by [[Eden_Editor:_Trigger|Triggers]]
+# [[Eden_Editor:_Object#Attributes|Object init field]]
+
+==== Slow Server Frame ====
+
+{{Feature|important|
+The '''scope''' parameter is {{Link|https://en.wikipedia.org/wiki/Case_sensitivity|case sensitive}}.
+}}
+
+If you want to capture a snapshot of a slow frame on the server, there are a few options:
+
+1. Via [[Multiplayer_Server_Commands#Performance_Profiling|Admin chat commands]]
+
+# Open the chat window '''by pressing the chat key''' (default {{Controls|/}}).
+# Type {{hl|#captureSlowFrame sLoop 0.03 0 1}} - parameters ''scope, threshold, frameOffset, numberOfSlowFrames to capture''
+# Captures one frame '''on the server''' if it exceeds the set threshold in seconds for the given scope (30 ms / 0.030 (s) duration for for '''sLoop''' scope)
+# The frame information get written to a log file in the same directory as the [[Crash_Files|.rpt file]]
+
+{{Feature|important|
+* You must be [[Arma_3:_Server_Config_File#Logged_In_Admin|logged in as admin]]!
+* Customize the numberOfSlowFrames as you see fit.
+* There can be only captureSlowFrame active at the same time. If another is set by the different means, the old one becomes inactive.
+* See [[diag_captureSlowFrame]] for more info.
+}}
+
+2. Via [[Arma 3: Debug Console|Debug Console]]
+
+# Open the console ({{Controls|ESC}} key to open pause menu)
+# Execute <sqf inline>[["sLoop", 0.03]] remoteExec ["diag_captureSlowFrame", 2]; // [scope, duration]</sqf>
+# As result the '''diag capture dialog''' opens
+
+{{Feature|important|
+* To have the console available in a mission, you need to enable it via the [[Description.ext#enableDebugConsole|description.ext enableDebugConsole parameter]].
+* Alternatively you can enable the console in any missions via mods (see above).
+}}
+
+3. Via custom action
+
+You need to execute in the console the following code first to add the action:
+
+<sqf>
+if (!(isNil "temp_diag_captureSlowFrame_server_action")) then
+{
+	player removeAction temp_diag_captureSlowFrame_server_action;
+	temp_diag_captureSlowFrame_server_action = nil;
+};
+
+temp_diag_captureSlowFrame_server_action = player addAction ["<t color='#FF0000'>captureSlowFrame (server)</t>", { [["sLoop", 0.03]] remoteExec ["diag_captureSlowFrame", 2]; }];
+</sqf>
+
+Customize the scope and duration as desired.
+
+To remove the action again:
+
+<sqf>
+if (!(isNil "temp_diag_captureSlowFrame_server_action")) then
+{
+	player removeAction temp_diag_captureSlowFrame_server_action;
+	temp_diag_captureSlowFrame_server_action = nil;
+};
+</sqf>
+
+4. Via mission specific code
+
+# [[Function|Functions]]
+# [[Eden_Editor:_Trigger#On_Activation|On Activation]] by [[Eden_Editor:_Trigger|Triggers]]
+# [[Eden_Editor:_Object#Attributes|Object init field]]
+
+
+== Storing a capture to file ==
+
+To export the gathered information of a capture for later analysis/review or to share it with others, you have the following options:
+
+=== Diag capture dialog ===
+
+# Press the '''Copy All''' button
+# Open an external text editor
+# Paste the text into a new text/log file
+# Save the file (as .txt or .log)
+
+{{Feature|informative|
+Standard naming is: '''captureFrame-DATE_TIME.log''' - like {{hl|captureFrame-17452-2024-11-21_18-12-37.211027.log}}
+}}
+
+{{Feature|important|
+As alternative if you hold {{Controls|shift}} while pressing the '''Copy All''' button, it will instead use the '''.trace''' format used by third-party viewers like https://ui.perfetto.dev/#!/info
+}}
+
+=== diag_captureSlowFrame ===
+
+The sqf command <sqf inline>diag_captureSlowFrame</sqf> has the [[boolean]] '''toFile''' as forth parameter. In addition with the [[Number]] '''continuousCounter''' as fifth parameter you can make it log multiple captures in one go.
+
+<syntaxhighlight lang="cpp">
+[section, threshold, frameSkip, toFile, continuousCounter]
+</syntaxhighlight>
+
+* Client: <sqf inline>diag_captureSlowFrame ["total", 0.03, 0, true, 1];</sqf>
+* Server: <sqf inline>[["total", 0.03, 0, true, 1]] remoteExec ["diag_captureSlowFrame", 2];</sqf>
+
+=== Dedicated server ===
+
+The [[Multiplayer_Server_Commands#Performance_Profiling|Admin chat commands]] {{hl|#captureFrame}} / {{hl|#captureSlowFrame sLoop 0}} will automatically create both '''.log''' and '''.trace''' format files on the server in the [[arma.RPT|rpt log]] folder. See above server section for more information.
+
+For customized server side logging use the '''remoteExec approach''' or '''console with remote/target execution'''.
+
+
+== How to View a Capture ==
+
+TODO
+
+=== Ingame ===
+
+# In the window you will be able to browse a lot of performance-related data, which can be interesting
+
+TODO
+
+=== Externally ===
+
+==== Perfetto UI Web Viewer ====
+
+Pros:
+* Can view a frame capture without Arma 3 running
+* Nice visualization
+* Sub scopes easier to identify
+
+Cons:
+* Fairly slow to load/display a frame capture
+* Navigation via mouse and keyboard not super intuitive - see '''Support - Keyboard shortcuts''' in the left side menu
+* Does not support viewing multiple frame captures (only via multiple tabs)
+* .trace JSON export from Arma 3 doesnt support more advanced features of Perfetto UI nor contains information on CPU-RAM use
+
+Website: https://ui.perfetto.dev
+
+{{Feature|important|
+Only supports {{hl|.trace}} format frame captures!
+}}
+
+==== Tracy Live Viewer ====
+
+Works only with the custom tracy version provided by Dedmen as part of the {{Link|https://steamcommunity.com/sharedfiles/filedetails/1652506957|Arma Script Profiler}} mod.
+
+{{Feature|informative|
+Capturing live data needs a lot of RAM - up to 2 GB per minute (depends on detail level captured).
+}}
+
+Pros:
+* Live frame capture
+* Multiple frame captures - see frame by frame
+* Statistics like number of executions, average and mean time execution
+* Selection of ''zones'' for specific analysis of any time frame
+* Profiling of unscheduled code. See: [[ArmaScriptProfiler]]
+
+Cons:
+* Fairly advanced
+* Tracy UI more functional than visually nice
+
+Required mods:
+# CBA_A3: https://steamcommunity.com/workshop/filedetails/?id=450814997
+# Arma Script Profiler: https://steamcommunity.com/sharedfiles/filedetails/?id=1652506957
+# Intercept Minimal Dev: https://steamcommunity.com/workshop/filedetails/?id=1645973522
+
+Extra startup parameters: -profilerEnableEngine -profilerEngineThreads "-mod=!Workshop\@CBA_A3;!Workshop\@Arma Script Profiler;!Workshop\@Intercept Minimal Dev"
+
+* How to use: https://github.com/dedmen/ArmaScriptProfiler/wiki
+* Additional command line parameters: https://github.com/dedmen/ArmaScriptProfiler/wiki/Command-line-parameters
+* Some more info at: https://forums.bohemia.net/forums/topic/211626-arma-script-profiler/
+* Source: https://github.com/dedmen/ArmaScriptProfiler
+* Discord for tech support and such: https://discord.gg/vbFje5B
+
+Advanced info:
+* https://tracy.nereid.pl
+* https://github.com/wolfpld/tracy
+
+
+== Scripting Commands ==
+
+* [[diag_captureFrame]]
+* [[diag_captureSlowFrame]]
+* [[diag_logSlowFrame]] - not available in {{arma3}}. Since {{GVI|arma3|2.20}} [[diag_captureSlowFrame]] with '''toFile''' parameter can log to file as alternative.
+* [[diag_captureFrameToFile]]
+
+
+[[File:Performance_Profiling_04.png|thumb|diag_captureFrame sample output with custom subtree]]
+
+
+== Creating Your Own Subtree ==
+
+When Profiling Per-Frame Eventhandlers (PFH), [[diag_captureFrame]] only shows one blob called siFEH that contains all PFH's so you can't see what part of that is caused by your PFH.<br>
+You can create your own subtree inside siFEH by wrapping your function call inside a [[isNil]] CODE statement like this:<br>
+Turn your old call which may look like this:
+<sqf>
+addMissionEventHandler ["EachFrame", {
+	call myPFHFunction
+}];
+</sqf>
+
+Into something like this:
+<sqf>
+addMissionEventHandler ["EachFrame", {
+	isNil { call myPFHFunction } // isNil creates the subtree
+}];
+</sqf>
+
+Now when you run [[diag_captureFrame]] inside of siPFH you will have a subtree called gsEva and behind that you can see the first line of code inside the isNil statement.<br>
+It will only show a part of the first line of that code so you should put something descriptive into the [[isNil]] statement.<br>
+You can use the same to create a subtree for any function you like. This will also work inside [[Scheduler#Scheduled_Environment|Scheduled]] ([[spawn]]ed) scripts. <br>
+But using this method to "subtree" a function with return values requires a little bit of trickery to get the return value out.
+
+
+== See Also ==
+
+* [[Code Optimisation]]
+* [[Mission Optimisation]]
+
+
+[[Category:Arma Scripting Tutorials]]

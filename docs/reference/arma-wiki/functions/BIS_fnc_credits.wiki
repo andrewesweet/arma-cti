@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_credits
+// revision: 327607 (2022-07-13T09:50:31Z)
+// export sha1: jhinhudy0j5g9uevmxvoahckxukcr6i
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|exec= spawn
+
+|descr= Opens credits, identical to those found in main menu ({{arma3}}). Also present in {{arma3}}.
+
+|s1=  [] spawn [[BIS_fnc_credits]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[] spawn BIS_fnc_credits;</sqf>
+
+|seealso=
+}}

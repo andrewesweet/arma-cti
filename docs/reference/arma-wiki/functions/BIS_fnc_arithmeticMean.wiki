@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_arithmeticMean
+// revision: 338181 (2023-02-23T23:53:44Z)
+// export sha1: qbx0o15bsdvuq2y2uxs6mvxax9kp42g
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Math | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Math
+
+|descr= Returns the {{Link|https://en.wikipedia.org/wiki/Mean#Arithmetic_mean_(AM)|arithmetic mean}} ("average value") of an array of numbers.
+
+|s1= numbers call [[BIS_fnc_arithmeticMean]]
+
+|p1= numbers: [[Array]] of [[Number]]s - must not be empty
+
+|r1= [[Number]] - arithmetic mean
+
+|x1= <sqf>[1, 3] call BIS_fnc_arithmeticMean; // returns 2</sqf>
+
+|x2= <sqf>[1, 9, 8, 2] call BIS_fnc_arithmeticMean; // returns 5</sqf>
+
+|seealso= [[BIS_fnc_randomInt]] [[BIS_fnc_geometricMean]] [[BIS_fnc_nearestNum]] [[BIS_fnc_sortNum]] [[BIS_fnc_roundNum]]
+}}

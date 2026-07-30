@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/fromJSON
+// revision: 373363 (2025-04-29T02:36:28Z)
+// export sha1: 06uorm51l7mce9c58k3yo0lh4hs3yku
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Strings
+
+|descr= Obtain the game value from the provided {{Link|https://en.wikipedia.org/wiki/JSON|JSON}}-formatted string.
+
+|s1= [[fromJSON]] jsonValue
+
+|p1= jsonValue: [[String]] - JSON data
+
+|r1= Can be one of:
+{{Columns|3|
+* [[HashMap]]
+* [[Array]]
+* [[Number]]
+* [[String]]
+* [[Boolean]]
+* [[nil]]
+}}
+
+|x1= <sqf>
+private _myNumber = fromJSON "42";											// _myNumber is 42
+private _myString = fromJSON """Hello there""";								// _myString is "Hello there"
+private _myArray = fromJSON "[42, ""Hello there"", true]";					// _myArray is [42, "Hello there", true]
+private _myHash = fromJSON "{""key1"": ""value1"", ""key2"": ""value2""}"	// _myHash is [["key2", "value2"], ["key1", "value1"]]
+
+// Important: [] indicates array, {} and : indicates hash
+</sqf>
+
+|seealso= [[toJSON]] [[parseSimpleArray]]
+}}

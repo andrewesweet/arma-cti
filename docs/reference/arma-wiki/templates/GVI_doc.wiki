@@ -1,0 +1,149 @@
+// source: https://community.bistudio.com/wiki/Template:GVI/doc
+// revision: 376894 (2025-12-20T15:14:03Z)
+// export sha1: jxqmro953fwz6l3p2dt2c50g1c3s655
+// Vendored snapshot. Do not edit — re-export instead.
+
+Template '''''GVI''''' standing for '''''G'''ame '''V'''ersion '''I'''con'' - must appear inline {{GVI|arma3|1.00}} when in a paragraph.
+
+It places the page in the [[:Category:GVI template usage error|GVI template usage error]] category if no game is provided.
+
+== Usage ==
+{{<nowiki/>GVI|'''''game'''''|'''''version'''''|'''''size='''''}}
+* game: identical to [[Template:Name|Name Identifiers]]
+* version: (Optional) game version such as "1.75", "1.5.0", etc
+** default {{hl|1.00}} for games from {{ofp}} up until {{arma3}}/{{dayz}} - '''two digits''' after the period
+** default {{hl|1.0.0}} since {{armaR}}
+* branch: (Optional, named parameter, default empty) can be {{hl|dev}} or {{hl|diag}} for Development or Diagnostic Branch
+* size: (Optional, named parameter, default {{hl|1}}) ratio size, ratio &times; 32px
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| {{hl|<nowiki>{{GVI}}</nowiki>}}
+| {{GVI}}
+|-
+| {{hl|<nowiki>{{GVI|ofp}}</nowiki>}}
+| {{GVI|ofp}}
+|-
+| {{hl|<nowiki>{{GVI|ofp|1.30}}</nowiki>}}
+| {{GVI|ofp|1.30}}
+|-
+| {{hl|c= <nowiki>{{GVI|ofp|1.30|size=1}}</nowiki>}}
+| {{GVI|ofp|1.30|size=1}}
+|-
+| {{hl|c= <nowiki>{{GVI|ofp|1.30|size=.75}}</nowiki>}}
+| {{GVI|ofp|1.30|size=.75}}
+|-
+| {{hl|c= <nowiki>{{GVI|ofp|1.30|size=2}}</nowiki>}}
+| {{GVI|ofp|1.30|size=2}}
+|-
+| {{hl|<nowiki>{{GVI|ofpr|1.80}}</nowiki>}}
+| {{GVI|ofpr|1.80}}
+|-
+| {{hl|<nowiki>{{GVI|ofpe|1.00}}</nowiki>}}
+| {{GVI|ofpe|1.00}}
+|-
+| {{hl|<nowiki>{{GVI|arma1|?}}</nowiki>}}
+| {{GVI|arma1|?}}
+|-
+| {{hl|<nowiki>{{GVI|arma1|1}}</nowiki>}}
+| {{GVI|arma1|1}}
+|-
+| {{hl|<nowiki>{{GVI|arma1|1.1}}</nowiki>}}
+| {{GVI|arma1|1.1}}
+|-
+| {{hl|<nowiki>{{GVI|arma2|1.05}}</nowiki>}}
+| {{GVI|arma2|1.05}}
+|-
+| {{hl|<nowiki>{{GVI|arma2oa|1.60}}</nowiki>}}
+| {{GVI|arma2oa|1.60}}
+|-
+| {{hl|<nowiki>{{GVI|arma3|0.05}}</nowiki>}}
+| {{GVI|arma3|0.05}}
+|-
+| {{hl|<nowiki>{{GVI|arma3|0.50}}</nowiki>}}
+| {{GVI|arma3|0.50}}
+|-
+| {{hl|<nowiki>{{GVI|arma3|0.58}}</nowiki>}}
+| {{GVI|arma3|0.58}}
+|-
+| {{hl|<nowiki>{{GVI|arma3|0.70}}</nowiki>}}
+| {{GVI|arma3|0.70}}
+|-
+| {{hl|<nowiki>{{GVI|arma3|0.76}}</nowiki>}}
+| {{GVI|arma3|0.76}}
+|-
+| {{hl|<nowiki>{{GVI|arma3|1.14}}</nowiki>}}
+| {{GVI|arma3|1.14}}
+|-
+| {{hl|<nowiki>{{GVI|arma3|1.99}}</nowiki>}}
+| {{GVI|arma3|1.99}}
+|-
+| {{hl|<nowiki>{{GVI|arma3|2.00}}</nowiki>}}
+| {{GVI|arma3|2.00}}
+|-
+| {{hl|<nowiki>{{GVI|arma3|2.49}}</nowiki>}}
+| {{GVI|arma3|2.49}}
+|-
+| {{hl|<nowiki>{{GVI|arma3|2.50}}</nowiki>}}
+| {{GVI|arma3|2.50}}
+<!--
+
+	branches
+
+-->
+|-
+| {{hl|<nowiki>{{GVI|arma3|dev}}</nowiki>}}
+| {{GVI|arma3|dev}}
+|-
+| {{hl|c= <nowiki>{{GVI|arma3|1.55|branch=dev}}</nowiki>}}
+| {{GVI|arma3|1.55|branch=dev}}
+|-
+| {{hl|<nowiki>{{GVI|arma3|diag}}</nowiki>}}
+| {{GVI|arma3|diag}}
+|-
+| {{hl|c= <nowiki>{{GVI|arma3|1.55|branch=diag}}</nowiki>}}
+| {{GVI|arma3|1.55|branch=diag}}
+|-
+| {{hl|<nowiki>{{GVI|arma3|perf}}</nowiki>}}
+| {{GVI|arma3|perf}}
+|-
+| {{hl|c= <nowiki>{{GVI|arma3|1.55|branch=perf}}</nowiki>}}
+| {{GVI|arma3|1.55|branch=perf}}
+<!--
+
+	/branches
+
+-->
+|-
+| {{hl|<nowiki>{{GVI|carriercommand|1.00}}</nowiki>}}
+| {{GVI|carriercommand|1.00}}
+|-
+| {{hl|<nowiki>{{GVI|dayz|1.00}}</nowiki>}}
+| {{GVI|dayz|1.00}}
+|-
+| {{hl|<nowiki>{{GVI|tkoh|1.00}}</nowiki>}}
+| {{GVI|tkoh|1.00}}
+|-
+| {{hl|<nowiki>{{GVI|tkom|1.00}}</nowiki>}}
+| {{GVI|tkom|1.00}}
+|-
+| {{hl|<nowiki>{{GVI|armaR|0.9.5}}</nowiki>}}
+| {{GVI|armaR|0.9.5}}
+|-
+| {{hl|<nowiki>{{GVI|armaR|1.0.0}}</nowiki>}}
+| {{GVI|armaR|1.0.0}}
+|-
+| {{hl|<nowiki>{{GVI|armaR|1.42.0}}</nowiki>}}
+| {{GVI|armaR|1.42.0}}
+|-
+| {{hl|<nowiki>{{GVI|arma4|1.0.0}}</nowiki>}}
+| {{GVI|arma4|1.0.0}}
+|-
+| {{hl|<nowiki>{{GVI|arma4|1.42.0}}</nowiki>}}
+| {{GVI|arma4|1.42.0}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]

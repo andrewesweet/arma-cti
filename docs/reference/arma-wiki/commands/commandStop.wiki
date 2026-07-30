@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/commandStop
+// revision: 318579 (2022-05-13T09:21:07Z)
+// export sha1: mv0ry53p2ty3shqopklhn64lbe3hxfz
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Groups
+
+|arg= global
+
+|eff= global
+
+|descr= Order the given unit(s) to stop via radio. A stop command will never finish, the unit(s) will never be ready.
+
+|s1= [[commandStop]]  target
+
+|p1= target: [[Object]] or [[Array]] of [[Object]]s
+
+|r1= [[Nothing]]
+
+|x1= <sqf>commandStop _soldier1;</sqf>
+
+|x2= <sqf>commandStop [_soldier1, _soldier2];</sqf>
+
+|x3= <sqf>commandStop (units player);</sqf>
+
+|seealso= [[doStop]] [[stopped]] [[stop]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">
+<dt class="note">[[User:Ceeeb|Ceeeb]]</dt>
+<dd class="note">In '''{{arma1}} v1.14''', this command will not stop a unit that has been given a move order by means of selecting the unit, then clicking on the in game map or ground.
+</dl>

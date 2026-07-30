@@ -1,0 +1,224 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Official_Servers
+// revision: 373988 (2025-07-16T16:49:33Z)
+// export sha1: 8afyd1i0yozgvoeupp49uzy8oonnzto
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+Thanks to [https://www.bohemia.net Bohemia Interactive] and [https://www.armahosts.com Armahosts] there are plenty of official servers available for Spearhead 1944.
+
+This page provides an overview on these - what they offer, how to find them, and how to make use of them.
+
+== Official Servers ==
+
+=== [ OFFICIAL ] - no mods and no custom game modes ===
+
+==== Official Missions and Game Modes ====
+
+Available missions are all official MP missions in the Spearhead 1944 CDLC:
+* 1-24 COOP Campaign - [[Spearhead_1944_Scenarios#Operation_Cobra|Operation Cobra]]
+* 1-4 COOP mission - [[Spearhead_1944_Scenarios#COOP_04_Der_Zahnarzt|Der Zahnarzt]]
+* 1-6 COOP mission - [[Spearhead_1944_Scenarios#COOP_06_Attack_on_Mortain|Attack on Mortain]]
+* 1-6 COOP mission - [[Spearhead_1944_Scenarios#COOP_06_Panzerkampfwagen|Panzerkampfwagen]]
+
+And all [[Spearhead_1944_Scenarios#Game_Modes|official SPE game modes]]:
+
+{| class="wikitable"
+! Player count !! Game Mode name !! Type !! Admin !! Notes
+|-
+| 1-10
+| [[Spearhead_1944_Scenarios#COOP_10_Combat_Patrol|SPE Combat Patrol]]
+| SP/COOP
+| Can force location if set via mission parameter <br> Can select the factions to be used
+| Can be played alone <br> Can be played with AI as group leader <br> Only group leader has map and compass in Veteran/Hardcore
+|-
+| 1-10
+| [[Spearhead_1944_Scenarios#COOP_10_Escape|SPE Escape]]
+| SP/COOP
+| Can select the factions to be used <br> Can select the unit types to be used for players
+| Can be played alone <br> Can be played with AI as group leader <br> Only group leader has map and compass in Veteran/Hardcore
+|-
+| 1-16
+| [[Spearhead_1944_Scenarios#WL_16_Warlords|SPE Warlords]]
+| PvP with AI or SP/COOP against AI
+| Can select the factions to be used
+| Can be played alone with other slots operated by AI
+|-
+| 1-18
+| [[Spearhead_1944_Scenarios#ZGM_18_Zeus_GameMaster|SPE Zeus GameMaster]]
+| SP/COOP
+| 
+| Zeus Game Master slot must be used <br> Can be played alone
+|-
+| 3-50
+| [[Spearhead_1944_Scenarios#ZGM_50_Zeus_GameMaster|SPE Zeus GameMaster]]
+| SP/COOP
+| 
+| Zeus Game Master slot must be used <br> Should have at least one player 
+|}
+
+==== Bohemia Interactive Server Table ====
+
+The '''[ OFFICIAL ] Arma 3 Spearhead 1944''' servers provided by Bohemia Interactive are hosted in the US (East and West Coast), Europe (Germany) and Asia (Singapore).
+
+=== [Official by Armahosts.com] - with mods and custom game modes ===
+
+{{Feature|important|
+Required mods:
+* {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/3117898674|text=SPEX - includes '''Lingevres''', '''Carentan''' and '''Utah Beach'''}} by {{Link/External|link=https://steamcommunity.com/profiles/76561197960909051/myworkshopfiles/?appid=107410|text=Temppa}}
+* {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/2993515557 |text=Omaha Beach}} by {{Link/External|link=https://steamcommunity.com/id/cpl_doom/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=Jones}} and {{Link/External|link=https://steamcommunity.com/id/JNeeves/myworkshopfiles/?appid=107410|text=Neeves}} 
+}}
+
+==== Official Game Modes ====
+
+{{Feature|important|All available for '''Lingevres''', '''Carentan''', '''Mortain''', '''Utah Beach''', '''Omaha Beach''' and '''Normandy'''}}
+
+* CP 1-10 SPE Combat Patrol (SP/COOP)
+* EC 1-10 SPE Escape (SP/COOP)
+* WL 1-16 SPE Warlords (PvP with AI or COOP against AI)
+
+==== Unofficial Game Modes ====
+
+{{Feature|important|All available for '''Lingevres''', '''Carentan''', '''Mortain''', '''Utah Beach''', '''Omaha Beach''' and '''Normandy'''}}
+
+* 1-12 SPE '''Mission Wizard''' (SP/COOP) by {{Link/External|link=https://steamcommunity.com/profiles/76561198001181696/myworkshopfiles/?p=1&numperpage=30|text=Toksa}}
+* 1-66 SPE '''Random Skirmish''' (PvP with AI or SP/COOP against AI) by {{Link/External|link=https://steamcommunity.com/profiles/76561198001181696/myworkshopfiles/?p=1&numperpage=30|text=Toksa}}
+* 1-16 SPE '''Blitzkrieg Random Mode''' (PvP with AI or SP/COOP against AI) by {{Link/External|link=https://steamcommunity.com/id/kju_getSkillD/myworkshopfiles/?p=1&numperpage=30|text=kju}}
+* 1-12 {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3009601557|text=SPE Tank Team DeathMatch}} (PvP with AI or SP/COOP against AI) by {{Link/External|link=https://steamcommunity.com/profiles/76561198001181696/myworkshopfiles/?p=1&numperpage=30|text=Toksa}} and {{Link/External|link=https://steamcommunity.com/id/UD1E1979/myworkshopfiles/?p=1&numperpage=30|text=UD1E}}
+* 1-30 {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=1641133934|text=CAU Gun Game}} (PvP with AI or without AI) by {{Link/External|link=https://steamcommunity.com/id/_connor/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=Connor}}
+
+==== Third party game modes ====
+
+* 1-46 {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=332088703|text=Domination}} (SP/COOP) by {{Link/External|link=https://steamcommunity.com/profiles/76561198039019269/myworkshopfiles/?appid=107410|text=Xeno}}
+* 1-44 '''GREUH Liberation''' (SP/COOP) originally by {{Link/External|link=https://forums.bohemia.net/forums/topic/183734-mpcti-coop-liberation-beta/|text=zbug}}
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3306977281|text=Spearhead 1944 - Liberation [Mortain/GER]}} by {{Link/External|link=https://steamcommunity.com/id/7112015/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=Luca}}
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3121681132|text=Spearhead 1944 - Liberation [Utah Beach/US]}} by {{Link/External|link=https://steamcommunity.com/id/7112015/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=Luca}}
+** {{Link/External|link=missing|text=Spearhead 1944 - Liberation [Omaha Beach/GER]}} by {{Link/External|link=https://steamcommunity.com/id/7112015/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=Luca}}
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3009623233|text=Spearhead 1944 - Liberation [Normandy/US]}} by {{Link/External|link=https://steamcommunity.com/id/7112015/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=Luca}}
+* 1-6 '''Dynamic Recon Ops''' (SP/COOP) originally by {{Link/External|link=https://steamcommunity.com/profiles/76561197967479574|text=mbrdmn}} and {{Link/External|link=https://steamcommunity.com/id/JediSith1981|text=jedisith1981}}
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3305073738|text=Dynamic Recon Ops - Mortain}} by {{Link/External|link=https://steamcommunity.com/id/georg_ravioli/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=Georg Ravioli}}
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3305076291|text=Dynamic Recon Ops - Utah Beach}} by {{Link/External|link=https://steamcommunity.com/id/georg_ravioli/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=Georg Ravioli}}
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3305078189|text=Dynamic Recon Ops - Normandy}} by {{Link/External|link=https://steamcommunity.com/id/georg_ravioli/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=Georg Ravioli}}
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3023489590|text=Dynamic Recon Ops - Omaha Beach}} by {{Link/External|link=https://steamcommunity.com/id/UselessFodder/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=UselessFodder}}
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3010500665|text=Dynamic Recon Ops - Normandy}} by {{Link/External|link=https://steamcommunity.com/id/UselessFodder/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=UselessFodder}}
+* 1-34 '''ClashPoint''' (SP/COOP/PvP) originally by {{Link/External|link=https://forums.bohemia.net/forums/topic/178524-spmp-clashpoint/|text=zbug}}
+** {{Link/External|link=missing|text=Spearhead 1944 - Clashpoint [Mortain]}} by {{Link/External|link=https://steamcommunity.com/id/7112015/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=Luca}}
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3009647600|text=Spearhead 1944 - Clashpoint [Normandy]}} by {{Link/External|link=https://steamcommunity.com/id/7112015/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=Luca}}
+* 1-48 '''WARMACHINE''' (SP/COOP/PvP)
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3305991456|text=WARMACHINE Mortain}} by {{Link/External|link=https://steamcommunity.com/id/76561198029029000/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=IvosH_cz}}
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3128997140|text=WARMACHINE Utah Beach}} by {{Link/External|link=https://steamcommunity.com/id/76561198029029000/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=IvosH_cz}}
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3032323739|text=WARMACHINE Omaha beach}} by {{Link/External|link=https://steamcommunity.com/id/76561198029029000/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=IvosH_cz}}
+** {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3009621488|text=WARMACHINE Normandy}} by {{Link/External|link=https://steamcommunity.com/id/76561198029029000/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=IvosH_cz}}
+* 1-15 {{Link/External|link=https://steamcommunity.com/sharedfiles/filedetails/?id=3009239431|text=Direct Action}} (SP/COOP) by {{Link/External|link=https://steamcommunity.com/id/billyeatworld/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=BillyEatWorld}}
+
+** {{Link/External|link=missing|text=missing}} by {{Link/External|link=https://steamcommunity.com/id/missing/myworkshopfiles/?appid=107410&p=1&numperpage=30|text=missing}}
+
+==== Armahosts Server Table ====
+
+The '''[Official by Armahosts.com] Arma 3 Spearhead 1944''' servers provided by [https://spearhead-1944.com/#rent-a-server Open Group] are hosted in Europe (Germany and Finland).
+
+== Server info ==
+
+=== Custom Ingame Server Browser ===
+
+Open the '''Multiplayer''' menu from the main menu. From there select in the center from the different options
+
+==== Advanced Browser ====
+
+# Select '''Official''' in the '''Server Type''' top bar
+# Choose between '''All, PvP, PvE, PvPvE''' in the '''Game Type''' bar
+# Select the desired server in the list and double click with the mouse or the '''Connect''' button in the bottom right
+
+==== Simple Browser ====
+
+# Select '''Official''' in the '''Server Type''' top left bar
+# Choose between '''All, PvP, PvE, PvPvE''' in the '''Game Type''' top center bar
+# Select the desired server in the list and double click with the mouse or the '''Connect''' button in the bottom right
+
+Important: 
+* The Simple Browser only shows servers without extra mods!
+* You may not load any mods to be able to join servers shown here
+
+==== Quickplay ====
+
+# Choose between '''All, PvP, PvE, PvPvE''' in the '''Game Type''' top left bar
+# Select the desired server in the list and double click with the mouse or the '''Connect''' button in the bottom right
+
+{{Feature|important|* '''Quickplay lists also non official servers'''
+* By default '''Quickplay''' only shows servers without extra mods - if you want play on the official servers with extra mods, activate the '''Any Extra Mods''' tickbox in the bottom center
+* A Warning symbol is shown in the server list if the mod requirements dont match - either choose another server, or restart the game with the required mods, or use the External Server Browse to get/sync the mods as required by the given server}}
+
+==== Direct Connect ====
+
+# Open from the bottom center bar
+# Get the IP and Port from the server list below for the desired server
+# Enter IP and Port
+# Hit the '''Search''' button in the center dialog
+# Click '''Connect''' button in the bottom right
+
+=== Standard Ingame Server Browser ===
+
+# Open the '''Multiplayer''' menu from the main menu
+# Click the '''Server Browser''' button in the bottom bar
+# Click the '''Official Servers''' button in the top bar
+# Wait for the server list to get populated
+# Select the desired server with Spearhead 1944 in the name from the list and double click with the mouse or the '''Join''' button in the bottom right
+
+{{Feature|informative|For easier finding and selection, click on '''Host''' at the top of the server list to sort the servers by name and thus group the Spearhead 1944 ones together.}}
+
+For the official servers with mods:
+
+# Open the '''Multiplayer''' menu from the main menu
+# Click the '''Server Browser''' button in the bottom bar
+# Click the '''Internet''' button in the top bar
+# Click the '''Filter''' button in the bottom left
+# Enter into the '''Host''' field: <syntaxhighlight lang="cpp" inline>armahosts</syntaxhighlight>
+# Click the '''OK''' button in the bottom center
+# Wait for the server list to get populated
+# Select the desired server with Spearhead 1944 in the name from the list and double click with the mouse or the '''Join''' button in the bottom right
+
+{{Feature|informative|Searching for server with a set ''filter'' can take up to a minute.}}
+
+=== External Server Browser ===
+
+# Open the '''official Arma 3 Launcher''' from Bohemia Interactive
+# Load Spearhead 1944 via the '''DLC''' section
+# Open the '''Servers''' section
+# Click the '''Official''' tab in the top bar
+# Wait for the server list to get populated
+# Select the desired server with Spearhead 1944 in the name from the list and double click with the mouse or the '''Join''' button in the bottom right
+
+{{Feature|informative|For easier finding and selection, click on '''Name''' at the top of the server list to sort the servers by name and thus group the Spearhead 1944 ones together.}}
+
+For the official servers with mods:
+
+# Open the '''official Arma 3 Launcher''' from Bohemia Interactive
+# Load Spearhead 1944 via the '''DLC''' section
+# Open the '''Servers''' section
+# Click the '''Internet''' tab in the top bar
+# Click the '''Filters''' button in the top right
+# Enter into the '''Server Name''' field: <syntaxhighlight lang="cpp" inline>armahosts</syntaxhighlight>
+# Click the '''Filters''' button again to close the dialog
+# Wait for the server list to get populated
+# Select the desired server with Spearhead 1944 in the name from the list and click '''Join''' button in the right side of the selected entry
+# Click on "Setup DLCs and mods and join" bar in the bottom center
+
+=== Direct Connect ===
+
+Add the IP and port found in the server tables above.
+
+== Customization ==
+
+To be able to change '''difficulty level''' or '''mission''', or to customize the experience via [[Mission_Parameters|mission parameters]] (top right button in the mission lobby) or '''custom dialogs at the mission start''', you need to become '''server admin'''.
+
+# [[Multiplayer_Server_Commands#HowTo|Open the chat window]]
+# Type <syntaxhighlight lang="cpp" inline>#login ww2admin</syntaxhighlight> ([ OFFICIAL ]) / <syntaxhighlight lang="cpp" inline>#login admin</syntaxhighlight> ([Official by Armahosts.com])
+# Adjust the [[Mission_Parameters|mission parameters]] when in the mission lobby (bottom in the top right) or adjust settings/locations at mission start in custom dialogs
+or once admin
+# Type <syntaxhighlight lang="cpp" inline>#missions</syntaxhighlight>
+# Select difficulty (left side) and the mission (right side)
+
+See [[Multiplayer Server Commands]] for more information and commands.
+
+[[Category: Spearhead 1944]]

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/ctFindHeaderRows
+// revision: 377180 (2026-01-01T10:48:22Z)
+// export sha1: n0c04rhe68c744cr5n5md29zkb98gao
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+|arg= local
+|eff= local
+
+|gr1= GUI Control - Controls Table
+
+|descr= Gets array of indices of rows under this header.
+
+|s1= ctrl [[ctFindHeaderRows]] index
+
+|p1= ctrl: [[Control]]
+
+|p2= index: [[Number]] - header's index
+
+|r1= [[Array]] of [[Number]]s
+
+|x1= <sqf>private _indices = _control ctFindHeaderRows 0;</sqf>
+
+|seealso= [[ctAddRow]] [[ctAddHeader]] [[ctClear]] [[ctCurSel]] [[ctSetCurSel]] [[ctRowControls]] [[ctHeaderControls]] [[ctRowCount]] [[ctHeaderCount]] [[ctSetValue]] [[ctValue]] [[ctSetData]] [[ctData]] [[ctFindRowHeader]] [[ctRemoveRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}

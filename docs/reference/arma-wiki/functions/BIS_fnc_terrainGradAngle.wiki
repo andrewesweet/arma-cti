@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_terrainGradAngle
+// revision: 328359 (2022-07-13T16:00:47Z)
+// export sha1: su62n6jrd5lcxzakpfqsqau4cqb8q9j
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Geometry | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Geometry
+
+|descr= Returns the gradient angle (in radians) of the terrain at a specified position and a compass direction.
+It is an angle of the slope of a tangent plane to the terrain at the specified position in the specified direction.
+
+|s1= <!-- [object, direction, delta] call [[BIS_fnc_terrainGradAngle]]; -->
+
+|p1= object: [[Object]] or [[Position]]
+
+|p2= direction: [[Number]] - direction where should be gradient calculated (compass direction)
+
+|p3= delta: [[Number]] - which stepsize should be used
+
+|r1= [[Number]] - gradient angle in radians
+
+|x1= <sqf>private _radGrad = [getPos player, getDir player] call BIS_fnc_terrainGradAngle;</sqf>
+
+|seealso= [[getDir]] [[surfaceNormal]]
+}}

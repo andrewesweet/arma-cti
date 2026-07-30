@@ -1,0 +1,133 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Story
+// revision: 296042 (2021-11-17T14:40:30Z)
+// export sha1: 6kppdbybs78xnkrzqdzr25muu2uasil
+// categories: Category:Carrier Command: Gaea Mission
+// Vendored snapshot. Do not edit — re-export instead.
+
+=Characters=
+
+== The Carriers ==
+
+=== The Green Dragon ===
+
+An old decommissioned APA Carrier that the Myricks team captures on island Vulcan.
+
+=== The Red Dragon ===
+
+A new modern all powerful carrier Shinn is commanding. It is finished at the end of chapter II.
+
+= Myricks team =
+
+Consists of Lt. Myrick and three other solders
+
+== Myrick ==
+Leutnant Myrick, a bad-ass commander
+
+=== Personal history ===
+==== War on Earth ====
+Member of a resistance group. Has been held captive by Dr. Shin. The group’s base and everybody in it, including Myricks parents, was subsequently killed.
+
+Hates trains.
+
+== Essi ==
+Information specialist / hacker.
+
+== Andersen ==
+A fearful guy who constantly advises against attacking an enemy island in a bad weather.
+
+== Okoro ==
+
+
+= UEC =
+United Earth Coalition.
+
+== Captain Aurora ==
+
+Captured and interrogated by Shinn, 
+
+== Harisson ==
+
+Died during a torture session with Shinn.
+
+His dreadful appearance in cut scenes is underlined by extremely awful lip sync.
+
+= APA =
+
+== Dr. Mao Shinn ==
+
+= Tutorial campaign =
+
+== High level overview ==
+
+The tutorial campaign serves two goals. First, it is a tutorial to familiarize the player with the game and lead the player show gradualy bits and peaces of the gameplay. Second, it provides a story driven campaign that explains background familiarize with the carrier crew and links the individual attacks to islands with a narrative. The story moves forward in frequent cut scenes and in FPS missions when the player gets to acquire weapons necessary for moving to the next chapter.
+
+== Plot ==
+The tutorial campaign consists of four parts or chapters.
+
+'''In the first chapter''', the player is being lead through five islands in a linear order and the basics of the game are explained. From the story point, Myricks team manages to land on the island Vulcan, although all the other landing pods seem destroyed and their crew killed. They manage to take the enemy Carrier ship. Then they sail to the north, visiting enemy islands on the way, overpowering the automatic defense systems and taking the islands for the UEC. During this, Myricks team manages to intercept an APC video message that shows how Harrigan is killed by an unknown commander, whose voice seems strangely familiar to Myrick.
+
+'''The second chapter''' allows the player to visit a new group of islands in any order he wants. This chapter ends after the player attacks the two islands that hold the Hammerhead parts and then decides to attack the island Fulcrum. The player may or may not capture the other islands, although that is advisable. As to the story, Myrick is contacted by Captain Aurora and tasked with completing the Hammerhead missile platform and attacking the island Fulcrum with it.
+
+Myricks crew discover strange logs about an powerful weapon APC was developing. If this [[Carrier Command: Gaea Mission: Walkthrough/Lean Mean Green Machine|optional objective]] is pursued, a short narrative of how the APA engineers were struggling with the weapon is made available to read.
+
+'''Third chapter''' starts when after the successful attack on Fulcrum Myrick is contacted by Captain Aurora who starts to shout warnings to Myrick. Quickly she is silenced and it is discovered that Shinn has captured Aurora and this video is supposed to be a proof of it. Shinn offers Myrick a chance to surrender, which Myrick flatly refuses.
+
+From what Aurora managed to say, it is clear that Shinn was quick enough to take the newly finished Carrier from Fulcrum in time and is to retake the islands Myrick gained in the previous part. Myricks team finds records of an anti carrier torpedo. Finding the APA manufactured prototype and a guidance system for it is the main goal of the chapter.
+
+The player liberates Captain Aurora.
+
+After finding the torpedo, the team learns the guidance software is being developed at the island Thermopylae. This island is protected by a vast forcefield. To bring the field down, the crew takes the carrier to the neighboring volcanic islands and deactivates the geothermal power plants there by dropping coolant containers by means of Mantas equipped with manta hooks.
+
+Then the race with time starts, as the Red Dragon captain Shinn learns of the latest development and hastens to Thermopylae to defend it. Myrick needs to get to the research center and make the torpedo operational before Shinn's superior carrier gets there and sinks them. As he succeeds, he manages to sink the Red Dragon with the torpedo. Shinn however has an escape plan and an unexpected hostage.
+
+'''Fourth chapter''' consists of one mission that is concerned with capturing the fleeing Shinn. The success or failure to do so decides of the outro the player will get. If Shinn is shot down when escaping to his submarine in a Manta, the ending is quite bad but hopeful, otherwise the ending is very bad and all hope is lost.
+
+= Objectives =
+
+Chapter I: PREPARING
+Take all the islands on your way to the "Outpost" island - your final goal.
+
+Chapter II: CONQUEROR
+Find and decommission the enemy Stockpile island. The task is a difficult one, so we need to build a solid support chain for our Carrier. This means conquering as many islands as possible to give us an upper hand in battle.
+
+there are these additional objectives
+
+AURORA’S TEAM
+We need to find out what happened to Aurora and her team. Their drop pod diverged from ours, but hopefully they made a safe landing.
+
+RESEARCH & DEVELOPMENT
+We are technologically far behind the enemy. We need to search the archipelago for possible upgrades and technological advancements, or else we will be incapable of defeating the enemy.
+
+THE HAMMERHEAD CRUISE-MISSILE SYSTEM
+To get the Hammerhead Missile system operational, we&apos;ll need to find and install both the Hammerhead Launch Platform and the Hammerhead Missile itself.
+
+HAMMERHEAD MISSILE
+We need to find the Hammerhead Missile itself.
+
+HAMMERHEAD LAUNCH PLATFORM
+We need to find the Hammerhead Launch Platform, which allows us to launch the missile itself from the Carrier.
+
+As to the campaign story, the player is searching for a Hammerhead missile and the launch platform that will enable him taking the island Fulcrum.
+
+Chapter III: CREATION AND RUIN
+The first step is always the hardest, but in this case the second is even harder. The APA have been hit hard, so they will want revenge. We must proceed with the mission and push on. We must complete what we have begun.
+
+SINK THE APA CARRIER
+The APA boast their flagship Carrier is far superior to our older design. Even if this may be true, we need to find it, and sink it.
+
+LOCATE THE TORPEDO</English>
+It is crucial we locate at least one of the new torpedos designed to sink Carriers. The torpedo is on any one of the remaining islands in the Dead Zone, so we need to search everywhere.
+
+TORPEDO NAVIGATION SYSTEM
+We need to find the navigation software for the torpedo. Without it the torpedo will neither arm nor detonate.
+
+FIND AND RESCUE AURORA
+Aurora was captured by Dr. Shin. We have to find and rescue her. No doubt Shin will want information, so we need to free Aurora before she can no longer resist his inquisitional methods.
+
+Chapter IV: SHOWDOWN
+The final showdown. This is where the fate of the UEC and the APA will be decided. We must not fail.
+
+CATCH MAO SHIN
+Dr. Mao Shin is making a run for it. We need to stop him before he reaches his submarine. If we fail to do so, everything is lost.
+
+[[Category:Carrier Command: Gaea Mission]]

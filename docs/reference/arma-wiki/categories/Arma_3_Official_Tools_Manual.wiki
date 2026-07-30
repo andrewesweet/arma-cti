@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Official_Tools_Manual
+// revision: 255731 (2021-04-24T18:47:31Z)
+// export sha1: nkwga8xzxj8g94eizt7gzphrdvc4ofh
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category contains the pages from the manual of [[:Category:Arma 3: Official Tools|Arma 3 Official Tools]].
+
+{{GameCategory|arma3|Official Tools}}

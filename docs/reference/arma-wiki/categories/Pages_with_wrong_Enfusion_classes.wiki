@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Pages_with_wrong_Enfusion_classes
+// revision: 364868 (2024-06-26T13:01:41Z)
+// export sha1: szg32iqkopskv1p2ybxzliedp2j2d9w
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists pages using the {{Template|Link/Enfusion}} template with a valid game argument but an unknown class.
+
+
+__HIDDENCAT__
+[[Category:Maintenance]]

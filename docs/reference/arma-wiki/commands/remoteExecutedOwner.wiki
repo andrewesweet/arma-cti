@@ -1,0 +1,63 @@
+// source: https://community.bistudio.com/wiki/remoteExecutedOwner
+// revision: 365035 (2024-07-14T12:57:10Z)
+// export sha1: g4em0hx0qa14y2dhbrqqlcpmgwazab3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Remote Execution | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Multiplayer
+
+|descr= Returns the [[Multiplayer_Scripting#Machine_network_ID | machine network ID]] of the client that initiated [[Remote Execution]].
+{{Feature|important|
+Running this command
+* in a Single Player environment
+* outside of a remote-executed context
+* in a remote-executed context received from a [[Arma 3: Headless Client|Headless Client]]
+will return '''0''' by design. To check if the context is remote executed, use [[isRemoteExecuted]] or [[isRemoteExecutedJIP]].
+}}
+
+|s1= [[remoteExecutedOwner]]
+
+|r1= [[Number]] - returns zero in the specific cases listed in the {{Link|#Description}}
+
+|x1= <sqf>private _callerRE = remoteExecutedOwner;</sqf>
+
+|x2= Send request to the server and get immediate response:
+<sqf>
+{
+	// in this scope, the remoteExecutedOwner equals clientOwner of the sender
+	// so using it as target in remoteExec will send response right back at him
+	[
+		time, // mission time value on the server
+		{
+			hint format
+			[
+				"Request received!\nMission time value on the server is: %1",
+				_this
+			];
+		}
+	]
+	remoteExec ["call", remoteExecutedOwner]; // server response to the sender
+} 
+remoteExec ["call", 2]; // send request to server
+</sqf>
+
+|seealso= [[isRemoteExecuted]] [[isRemoteExecutedJIP]] [[remoteExecutedJIPID]] [[remoteExec]] [[remoteExecCall]] [[canSuspend]] [[publicVariableClient]] [[admin]] [[owner]] [[clientOwner]] [[groupOwner]] [[didJIPOwner]]
+}}
+
+{{GameCategory|arma3|Remote Execution}}
+
+{{Note
+|user= Demellion
+|timestamp= 20170911093100
+|text= Always be sure to check if the [[remoteExecutedOwner]] is not equal to 0 when sending a [[remoteExec]]/[[remoteExecCall]] packet back, as this will result in sending packet to ANYONE (0):
+<sqf>
+if (remoteExecutedOwner isEqualTo 0) exitWith {}; // invalid RE owner
+_gearArray remoteExecCall ['someGearFunction', remoteExecutedOwner];
+</sqf>
+Will prevent from code being accidentally sent to everyone on the server.
+}}

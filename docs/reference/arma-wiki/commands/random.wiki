@@ -1,0 +1,219 @@
+// source: https://community.bistudio.com/wiki/random
+// revision: 377710 (2026-01-02T09:03:49Z)
+// export sha1: sr7okitq0enu71rj3hzzuo1o8e0bk0d
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Math
+
+|descr= {{{!}} class="float-right valign-top"
+{{!}} [[File:bellcurve.jpg|thumb|120px|[[#Syntax 2|Syntax&nbsp;2]]'s distribution]]
+{{!}}  [[File:rv-random rescaled bates distribution graph.png|thumb|120px|[[#Syntax 2|Syntax&nbsp;2]]'s distribution if ''mid'' is off-centre]]
+{{!}}}
+{{{!}} class="valign-top"
+! style="padding-right: 1em; white-space: nowrap" {{!}} {{Link|#Syntax 1}}
+{{!}} generates a random floating point value
+{{!}}-
+! style="padding-right: 1em; white-space: nowrap" {{!}} {{Link|#Syntax 2}}
+{{!}} generates a {{Link|https://en.wikipedia.org/wiki/Normal_distribution|Gaussian Distribution}}<ref>Technically, it is a rescaled {{Link|https://en.wikipedia.org/wiki/Bates_distribution}} with n = 4.
+The distribution is split in two at its midpoint and scaled linearly such that its maximum lies at the specified midpoint.</ref>.<!--
+--> It uses the same method as [[setTriggerTimeout]] command and is quite useful for e.g spawning loot, making more valuable items more rare
+{{!}}-
+! style="padding-right: 1em; white-space: nowrap" {{!}} {{Link|#Syntax 3}}
+{{!}} generates a {{Link|https://en.wikipedia.org/wiki/Random_seed|seed-based}} random number
+{{!}}-
+! style="padding-right: 1em; white-space: nowrap" {{!}} {{Link|#Syntax 4}}
+{{!}} generates a {{Link|https://en.wikipedia.org/wiki/Random_seed|seed-based}} random noise ('''not''' Perlin) texture based on provided seed and returning the value at supplied coordinates
+{{!}}}
+
+|s1= [[random]] x
+
+|p1= x: [[Number]]
+
+|r1= [[Number]] from 0 (included) to ''x'', '''ex'''cluded
+{{Feature|important|''x'' was accidentally '''in'''cluded due to a bug introduced in {{GVI|arma2|1.00|size= 0.75}} and fixed in {{GVI|arma3|2.18|size= 0.75}}.}}
+
+|s2= [[random]] [min, mid, max]
+
+|s2since= arma3 1.56
+
+|p21= min: [[Number]]
+
+|p22= mid: [[Number]]
+
+|p23= max: [[Number]]
+
+|r2= [[Number]] in range from ''min'' to ''max'', weighted by ''mid'' - '''can''' be higher than max (maximum value is {{hl|min + max - mid}})
+
+|s3= seed [[random]] x
+
+|s3since= arma3 1.68
+
+|p41= seed: [[Number]] - an '''integer'''. Any float value will be truncated (e.g -0.9, -0.1, 0.1 or 0.9 will be read as '''0''')
+
+|p42= x: [[Number]]
+
+|r3= [[Number]] from 0 (included) to ''x'' ('''in'''cluded)
+
+|s4= seed [[random]] [x, y]
+
+|s4since= arma3 1.68
+
+|p61= seed: [[Number]]
+
+|p62= x: [[Number]] - x texture position
+
+|p63= y: [[Number]] - y texture position
+
+|r4= [[Number]] from 0 (included) to 1 ('''ex'''cluded)
+
+|x1= <sqf>_rNumber = random 1;</sqf>
+
+|x2= <sqf>_rNumber = random -10;</sqf>
+
+|x3= Generate a random position inside a circle (see also [[Example Code: Random Area Distribution]])
+<sqf>_center getPos [_radius * sqrt random 1, random 360];</sqf>
+
+|x4= Select a random value from an array:
+<sqf>
+_array = ["apples", "pears", "bananas", "M16"];
+
+_random = _array select floor random count _array;	// before {{arma2}}
+_random = _array call BIS_fnc_selectRandom;			// since {{arma2}}
+_random = selectRandom _array;						// since {{arma3}} v1.56
+</sqf>
+
+|x5= Visualisation of {{Link|#Syntax 4}} (warning, it takes a bit to execute and draw):<br>
+[[File:A3 random syntax4.png|thumb|right|Result]]
+<sqf>
+private _parent = call BIS_fnc_displayMission;
+if (is3DEN) then { _parent = findDisplay 313 };
+private _display = _parent createDisplay "RscDisplayEmpty";
+private _background = _disp ctrlCreate ["RscBackground", -1];
+
+private _coef = 0.1;
+
+for "_x" from 1 to 100 do
+{
+	for "_y" from 1 to 100 do
+	{
+		private _random = 0 random [_x * _coef, _y * _coef];
+		private _dot = _display ctrlCreate ["RscBackground", -1];
+
+		_dot ctrlSetPosition [0.5 + pixelW * _x, 0.5 + pixelH * _y, pixelW, pixelH];
+		_dot ctrlSetBackgroundColor [_random, _random, _random, 1];
+		_dot ctrlCommit 0;
+	};
+};
+</sqf>
+
+|seealso= [[selectRandom]] [[selectRandomWeighted]] [[Example Code: Random Area Distribution]]
+}}
+
+{{Note
+|user= Hcpookie
+|timestamp= 20150712203200
+|text= Random selections including negative numbers can be obtained via:
+<sqf>_xRnd = round (random 200) - 100;</sqf>
+
+This will yield numbers between -100 and 100.
+* Be careful using random numbers in multiplayer, each client will come up with a different result. See multiplayer tutorials for more general information about locality. 
+* The number returned is unlikely to be a whole number.<br>
+To return a whole number use either '''[[round]]''', '''[[ceil]]''' or '''[[floor]]''' together with [[random]]
+<sqf>
+x = round	(random 5) // will return 0, 1, 2, 3, 4 or 5.	(non-uniform distribution, 0 and 5 are half as likely to be selected than any of the other numbers)
+x = floor	(random 5) // will return 0, 1, 2, 3 or 4.		(uniform distribution, all numbers have the same probability of being selected)
+x = ceil	(random 5) // will return 0, 1, 2, 3, 4 or 5.	(0 is very unlikely, but possible, as ceil 0 is 0)
+</sqf>
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20180722125800
+|text= <nowiki/>
+{{{!}} class="wikitable align-right align-left-col-1 align-center-row-1"
+{{!}}+ Repartition comparison
+! Formula
+! 0
+! 1
+! 2
+! 3
+! 4
+! 5
+! 6
+! 7
+! 8
+! 9
+{{!}}-
+{{!}} <sqf>floor random 10</sqf>
+{{!}} 10%
+{{!}} 10%
+{{!}} 10%
+{{!}} 10%
+{{!}} 10%
+{{!}} 10%
+{{!}} 10%
+{{!}} 10%
+{{!}} 10%
+{{!}} 10%
+{{!}}-
+{{!}} <sqf>floor random [0, 5, 10]</sqf>
+{{!}} 0%
+{{!}} 2%
+{{!}} 7%
+{{!}} 17%
+{{!}} 25%
+{{!}} 25%
+{{!}} 17%
+{{!}} 7%
+{{!}} 2%
+{{!}} 0%
+{{!}}-
+{{!}} <sqf>floor random [0, 10, 0]</sqf>
+{{!}} 0%
+{{!}} 0%
+{{!}} 1%
+{{!}} 2%
+{{!}} 5%
+{{!}} 9%
+{{!}} 14%
+{{!}} 19%
+{{!}} 24%
+{{!}} 26%
+{{!}}-
+{{!}} <sqf>floor random [0, 10, 5]</sqf>
+{{!}} 0%
+{{!}} 0%
+{{!}} 0%
+{{!}} 1%
+{{!}} 2%
+{{!}} 5%
+{{!}} 9%
+{{!}} 16%
+{{!}} 28%
+{{!}} 38%
+{{!}}}
+}}

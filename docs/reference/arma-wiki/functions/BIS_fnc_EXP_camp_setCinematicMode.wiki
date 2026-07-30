@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_setCinematicMode
+// revision: 348061 (2023-11-08T11:29:36Z)
+// export sha1: t2nc9f3rci47glazo8tsupfo6hduoyp
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Functions | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Campaign
+
+|descr= Sets cinematic mode, with cinematic mode enabled the sounds are muted and screen is black.
+
+|mp= Must be executed for every player.
+
+|s1= [mode, fadeBlack, fadeSound] call [[BIS_fnc_EXP_camp_setCinematicMode]]
+
+|p1= mode: [[Boolean]] - (Optional, default [[false]]) [[true]] to enable, [[false]] to disable
+
+|p2= fadeBlack: [[Number]] - (Optional, default 5) how long it takes in seconds to fade the screen
+
+|p3= fadeSound: [[Number]] - (Optional, default 5) how long it takes in seconds to fade the sound
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[true, 3, 3] call BIS_fnc_EXP_camp_setCinematicMode;</sqf>
+
+|seealso= [[BIS_fnc_EXP_camp_getCinematicMode]]
+}}

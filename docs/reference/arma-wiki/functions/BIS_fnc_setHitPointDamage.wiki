@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setHitPointDamage
+// revision: 329658 (2022-08-01T00:59:26Z)
+// export sha1: n66w3cssa7yk9e22bftqpfz2z0jj848
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Object Manipulation
+
+|descr= Sets damage to HitPoint with dependency or not.
+
+|s1= [object, hitPoint, damage, useDependency] call [[BIS_fnc_setHitPointDamage]]
+
+|p1= object: [[Object]] - entity to which damage applies
+
+|p2= hitPoint: [[String]] - hitPoint to which damage applies
+
+|p3= damage:  [[Number]] - amount of damage to apply
+
+|p4= useDependency: [[Boolean]] - (Optional, default [[true]]) 
+* [[true]] - distribute damage to dependent HitPoints as well
+* [[false]] - apply damage to given HitPoint only
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player, "HitFace", 0.9] call BIS_fnc_setHitPointDamage;</sqf>
+
+|seealso= [[setHitPointDamage]]
+}}

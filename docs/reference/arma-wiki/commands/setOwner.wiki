@@ -1,0 +1,63 @@
+// source: https://community.bistudio.com/wiki/setOwner
+// revision: 351991 (2024-02-01T23:23:57Z)
+// export sha1: ez0fhtuipdxow7pca7mx7hjdotv8q9f
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Multiplayer
+
+|arg= global
+
+|serverExec= server
+
+|descr= From server machine, change the ownership of an object to a given client. Using command in an unintended way will log a message to .rpt file. To transfer ownership of all AI units in a group properly, use [[setGroupOwner]] instead.
+
+|pr= {{Feature|arma3|Since {{arma3}} v1.40, this command should not be used to transfer ownership of units with AI with the exception of [[agents]].}}
+{{Feature|important|'''Prior to {{arma3}} v1.40''' it was not possible to transfer the ownership from a client back to the server.}}
+
+|s1= object [[setOwner]] clientID
+
+|p1= object: [[Object]] - object to transfer
+
+|p2= clientID: [[Number]] - the [[Multiplayer_Scripting#Machine_network_ID | machine network ID]] of the new [[owner]].
+
+|r1= [[Boolean]] - returns [[true]] if ownership was successfully transferred, otherwise [[false]]
+
+|x1= <sqf>_someObject setOwner 12;</sqf>
+
+|x2= <sqf>_someObject setOwner (owner _playerObject);</sqf>
+
+|seealso= [[owner]] [[setGroupOwner]] [[groupOwner]] [[didJIPOwner]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2017-08-22 - 18:56 (UTC)</dd>
+<dt class="note">[[User:Demellion|Demellion]]</dt>
+<dd class="note">
+'''NOTE''': There are some interesting behaviour about the specific owner digits like '''0''' '''-2''' and '''2''':
+# Any mission objects (generated from SQM) initially have '''0''' owner state, but it is not [[Multiplayer Scripting#Locality|local]] to ANYONE (0) like it is expected to be, but actually only to a SERVER (2). You can't make any object owner to be 0 once it was changed.
+# Trying to change ownership to any negative digit will always result in attempt to transfer ownership to SERVER (2). Once it is unit (non-agent) it will fail and revert* to initial ownership.
+# *Changing ownership of a unit (non-agent) actually gives a result for a brief time after this action is performed. What actually happens next - ownership is getting reverted with a message to RPT of a server. This can be seen by reading results of (owner _object) in really fast cycle.
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2019-02-12 - 01:15 (UTC)</dd>
+<dt class="note">[[User:jonpas|jonpas]]</dt>
+<dd class="note">
+Prints RPT warning "setGroupOwner should be used" as soon as there is one unit inside the vehicle, but performs the action successfully.
+</dd>
+
+</dl>

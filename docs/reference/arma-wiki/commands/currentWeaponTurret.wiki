@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/currentWeaponTurret
+// revision: 378861 (2026-07-22T17:03:52Z)
+// export sha1: ll4qlktpc02xvvtb1m7kj8wse73pbgk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+
+|gr1= Turrets
+
+|descr= Returns the name of the currently selected weapon on specified turret. Use turret path [-1] for driver's turret.
+
+|s1= vehicle [[currentWeaponTurret]] turretPath
+
+|p1= vehicle: [[Object]]
+
+|p2= turretPath: [[Turret Path]]
+
+|r1= [[String]]
+
+|x1= <sqf>_weapon = MBT_Kuma currentWeaponTurret [0];</sqf>
+
+|seealso= [[currentMagazineDetailTurret]] [[currentMagazineTurret]] [[addWeaponTurret]] [[removeWeaponTurret]] [[turretLocal]] [[currentWeapon]]
+}}

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/hashValue
+// revision: 373375 (2025-05-04T09:05:03Z)
+// export sha1: ovtk0lm96osq9r3fm0tch32hnz9eoqm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: HashMap | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= HashMap
+
+|descr= Processes provided ''value''<nowiki/>'s hash, and encodes it using {{Link|https://en.wikipedia.org/wiki/Base64|Base64}}. The hash algorithm is {{Link|https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function|FNV-1A 64bit}}.
+{{Feature|informative|A hash value remains the same between game restarts but for [[Object]] and [[Group]] type, their hash being based on their [[netId]].}}
+
+|s1= [[hashValue]] value
+
+|p1= value: [[Array]], [[Boolean]], [[Code]], [[Config]], [[Group]], [[Namespace]], [[NaN]], [[Number]], [[Object]], [[Side]] or [[String]]
+
+|r1= [[String]] - base64-encoded 64 bits hash
+
+|x1= <sqf>private _valueHash = hashValue "Hello There";</sqf>
+
+|x2= <sqf>private _isCorrectPW = hashValue _enteredPassword == "eWkXUUqiinE";</sqf>
+
+|x3= <sqf>hashValue (systemTime joinString ""); // Returns a unique hash value such as "xoMQ9qd7S60"</sqf>
+
+|seealso= [[createHashMap]] [[values]]
+}}

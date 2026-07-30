@@ -1,0 +1,109 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Steam_Branches
+// revision: 373665 (2025-06-04T07:39:52Z)
+// export sha1: a25jfv7cz646nnbbbsu6zle60teyrd5
+// categories: Category:Arma 3
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Overview ==
+Arma 3 is distributed as several branches on Steam.
+
+These branches are accessible by opening the application ''Properties'' in Steam client. In the ''BETAS'' tab, you'll find a drop-down menu with publicly available branches. Some branches require an access code to be input before appearing the list. Those codes are shared via channels such as {{Link|link= https://twitter.com/Arma3official |text= Twitter}} and {{Link|link= https://forums.bistudio.com/|text= the forums}} when appropriate. You may need to restart the Steam client to see recently created branches.
+
+After selecting a branch, Steam client will begin downloading the differences in data. It can be recommended to do a local file verification afterwards to be sure the correct update was downloaded. Note that Steam client does not allow you to maintain multiple parallel branches on your hard drive. Our [[Game Updater]] tool does allow this for certain branches.
+[[File:steam branch selection.png|thumb|Steam Branch Selection]]
+
+
+== Branches ==
+=== {{Link|link= http://store.steampowered.com/app/107410/|text= Arma 3}} ===
+This application (appID 107410) exists for Windows, with {{Link|link= http://dev.arma3.com/ports|text= experimental port betas}} for Mac.
+{| class="wikitable"
+! Branch Name !! Branch Code !! Access Code !! Description
+|-
+| Main Branch || {{hl|public}} ||{{n/a}} || Primary and default build
+|-
+| Development Branch || {{hl|development}} || {{n/a}} || a.k.a. {{Link|link= http://dev.arma3.com/dev-branch|text= Dev-Branch}} build
+|-
+| RC Branch || {{hl|rc}} || Shared on {{Link|link= https://dev.arma3.com/|text= Dev Hub}} during active RC tests || {{Link|link= https://dev.arma3.com/rc-branch|text= Release Candidate build test}} of imminent updates
+|-
+| Profiling Branch || {{hl|profiling}} || {{n/a}} || Special {{Link|link= https://forums.bohemia.net/forums/topic/160288-arma-3-stable-server-198-performance-binary-feedback/|text= performance + profiling build}} / alternative download of needed binaries possible from {{Link|https://drive.google.com/drive/folders/15p9j7C2nHUt6NoVfChX4YFuqzFXzblJh|Google Drive}}. See {{Link|https://dev.arma3.com/profiling-branch|text=Arma 3 Profiling Branch}} for an in-depth explanation.
+|-
+| Legacy Branch || {{hl|legacy}} || {{hl|Arma3LegacyXYZ}}<br/><small>Where ''XYZ'' is the version, e.g. ''150''</small> || Old build comparison of the second-last main build
+|-
+| Legacy Mac Branch || {{hl|legacymac}} || {{hl|Arma3LegacyMacXYZ}}<br/><small>Where ''XYZ'' is the version, e.g. ''150''</small> || Old Mac build comparison of the second-last Mac main build
+|-
+| Legacy Ports Branch || {{hl|legacyports}} || {{hl|Arma3LegacyPorts}} || Old build compatibility for Mac client ports
+|-
+| Creator DLC RC Branch || {{hl|creatordlcrc}} || {{hl|Arma3CreatorDLCRC}}<br/><small>Only available during active RC tests</small> || {{Link|link= http://www.arma3.com/dlc/creator#public-testing|text= Release Candidate build test}} for Creator DLC
+|-
+|}
+
+=== Arma 3 Server ===
+This application (appID 233780) exists for Windows and Linux.
+{| class="wikitable"
+! Branch Name !! Branch Code !! Access Code !! Description
+|-
+| Main Branch || {{hl|public}} || {{n/a}} || Primary and default build
+|-
+| Contact Branch || {{hl|contact}} || {{n/a}} || Default build with [[Arma 3 Contact|Contact]] expansion server data and A3C signature key - note that this data is not fully compatible with multiplayer and should only be loaded for advanced use cases
+|-
+| Creator DLC Branch || {{hl|creatordlc}} || {{n/a}} || Default build with Creator DLC server data and signature keys
+|-
+| RC Branch || {{hl|rc}} || Shared on {{Link|link= https://dev.arma3.com/|text= Dev Hub}} during active RC tests || {{Link|link= https://dev.arma3.com/rc-branch|text= Release Candidate build test}} of imminent updates
+|-
+| Profiling Branch || {{hl|profiling}} || {{n/a}} || Special {{Link|link= https://forums.bohemia.net/forums/topic/160288-arma-3-stable-server-198-performance-binary-feedback/|text= performance + profiling build}} / alternative download of needed binaries possible from {{Link|https://drive.google.com/drive/folders/15p9j7C2nHUt6NoVfChX4YFuqzFXzblJh|Google Drive}}. See {{Link|https://dev.arma3.com/profiling-branch|text=Arma 3 Profiling Branch}} for an in-depth explanation.
+|-
+| Legacy Branch || {{hl|legacy}} || {{hl|Arma3LegacyXYZ}}<br/><small>Where ''XYZ'' is the version, e.g. ''150''</small> || Old build comparison of the second-last main build
+|-
+| Legacy Contact Branch || {{hl|legacycontact}} || {{hl|Arma3LegacyXYZ}}<br/><small>Where ''XYZ'' is the version, e.g. ''150''</small> || Old build comparison of the second-last main build with [[Arma_3_Contact|Contact expansion]] server data
+|-
+| Legacy Ports Branch || {{hl|legacyports}} || {{hl|Arma3LegacyPorts}} || Old build compatibility for Mac client ports
+|-
+| Creator DLC RC Branch || {{hl|creatordlcrc}} || {{hl|Arma3CreatorDLCRC}}<br/><small>Only available during active RC tests</small> || {{Link|link= http://www.arma3.com/dlc/creator#public-testing|text= Release Candidate build test}} for Creator DLC
+|-
+|}
+
+=== {{Link|link= http://store.steampowered.com/app/233800/|text= Arma 3 Tools}} ===
+This application (appID 233800) exists for Windows.
+{| class="wikitable"
+! Branch Name !! Branch Code !! Access Code !! Description
+|-
+| Main Branch || {{hl|public}} || {{n/a}} || Primary and default build
+|-
+| Development Branch || {{hl|development}} || {{n/a}} || {{Link|link= https://forums.bistudio.com/topic/169362-tools-development-branch-changelog/|text= Dev-Branch}} build
+|-
+| Legacy Branch || {{hl|legacy}} || {{hl|Arma3ToolsLegacyXYZ}}<br/><small>Where ''XYZ'' is the version, e.g. ''1024''</small> || Old build comparison of the second-last main build
+|-
+|}
+
+=== {{Link|link= http://store.steampowered.com/app/390500/|text= Arma 3 Samples}} ===
+This application (appID 390500) exists for Windows.
+{| class="wikitable"
+! Branch Name !! Branch Code !! Access Code !! Description
+|-
+| Main Branch || {{hl|public}} || {{n/a}} || Primary and default build
+|-
+| Development Branch || {{hl|development}} || {{n/a}} || {{Link|link= https://forums.bistudio.com/topic/169362-tools-development-branch-changelog/|text= Dev-Branch}} build
+|-
+| Legacy Branch || {{hl|legacy}} || {{hl|Arma3SamplesLegacyXYZ}}<br/><small>Where ''XYZ'' is the version, e.g. ''1024''</small> || Old build comparison of the second-last main build
+|-
+|}
+
+== SteamCMD ==
+To install different branches via SteamCMD follow these steps:
+* Do the following with steamcmd according to {{Link|https://developer.valvesoftware.com/wiki/SteamCMD|Valve's official documentation}}:
+** Download steamcmd
+** Install steamcmd
+** Launch steamcmd
+** Log in to your account
+** Set an install location
+{{Feature|important|The account has to be in possession of Arma 3 in order to download the playable branches. Server files can be downloaded even without an account.}}
+* To download the dev branch for example, enter the following into the steamcmd window:
+<code style="display: block">app_update 107410 -beta development validate</code>
+* If the branch is password protected (for example a legacy branch) enter the access code as follows:
+<code style="display: block">app_update 107410 -beta legacyports -betapassword Arma3LegacyPorts validate</code>
+* The game is now being downloaded
+* Once finished, log out with
+<code style="display: block">quit</code>
+
+{{GameCategory|arma3}}

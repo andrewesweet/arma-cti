@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moveToRespawnPosition
+// revision: 328433 (2022-07-13T16:00:51Z)
+// export sha1: lbclttdczga24lqij8684zj6883u8l4
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|arg= local
+
+|gr1= Respawn
+
+|descr= Move given unit to given respawn position. Units moved to height <nowiki>>=</nowiki> 30m will start on parachute. Position [0,0,0] is blacklisted. This function must be executed where unit to be moved is [[Multiplayer Scripting#Locality|local]].
+
+|s1= [unit, position, canBeDead] call [[BIS_fnc_moveToRespawnPosition]]
+
+|p1= unit: [[Object]] - unit to move
+
+|p2= position: [[Object]], [[Group]], [[String]] or [[Array]]
+* [[Object]] or [[Group]] - Object or Group to move unit to. Move to the object position or inside an object if the object is a vehicle, or if group or unit is in vehicle and there is an empty seat
+* [[String]] - Marker to move unit to. Marker size will be used for random placement area and marker direction for unit direction
+* [[Array]] - Precise [[Position#PositionAGL|PositionAGL]] to move unit to. [x,y] array will be converted to [x,y,0]
+
+|p3= canBeDead: [[Boolean]] - (Optional, default [[true]]) whether or not dead are allowed:
+* [[true]] - moved unit and/or object to which unit is moved can be dead
+* [[false]] - both moved unit and vehicle or unit at position (if any) must be alive
+
+|r1= [[Boolean]] - [[true]]: move succeeded, [[false]]: move failed
+
+|x1= <sqf>[player, "SpawnMarker1"] call BIS_fnc_moveToRespawnPosition;</sqf>
+
+|seealso=
+}}

@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/members
+// revision: 310843 (2022-05-07T20:24:01Z)
+// export sha1: 8pi0ghpzfbkr09d46orm9amutnyci7e
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Teams | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Teams
+
+|descr= Return a list of members in given team.
+
+|s1= [[members]] team
+
+|p1= team: [[Team Member]]
+
+|r1= [[Array]]
+
+|x1= <sqf>_members = members _team;</sqf>
+
+|seealso= [[teams]]
+}}

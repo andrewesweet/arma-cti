@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/forceEnd
+// revision: 318934 (2022-05-13T09:22:03Z)
+// export sha1: fy08yxedf1u0j2phljwd29zew778nnp
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|eff= local
+
+|gr1= Mission Information
+
+|descr= Forces mission ending (set with [[endMission]]) even if a camera effect or any another condition delays the endMission (mostly in [[:Category:Operation Flashpoint|{{ofp}}]]).
+
+|s1= [[forceEnd]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>forceEnd;// in an ending trigger to ensure no camera is delaying mission ending</sqf>
+
+|seealso= [[missionEnd]] [[failMission]] [[endMission]] [[enableEndDialog]]
+}}

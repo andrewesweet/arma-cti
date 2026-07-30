@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/ignore3DENHistory
+// revision: 370529 (2025-01-02T11:51:16Z)
+// export sha1: nt2q4wonykrcxs11ulo0pudyw2mqsej
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Eden Editor
+
+|descr= Ignores all history steps created by executing the given code.
+
+|s1= [[ignore3DENHistory]] code
+
+|p1= code: [[Code]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+ignore3DENHistory {
+	create3DENEntity ["Object", "B_Soldier_F", screenToWorld [0.5, 0.5]]; // no Ctrl+Z available for this operation
+};
+</sqf>
+
+|seealso= [[collect3DENHistory]] [[create3DENEntity]] [[set3DENAttributes]]
+}}

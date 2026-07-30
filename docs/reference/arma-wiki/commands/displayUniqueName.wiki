@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/displayUniqueName
+// revision: 338365 (2023-03-01T10:17:02Z)
+// export sha1: es0fg60mep5o193oibiaaqcxinv7tlr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|gr1= GUI Control
+
+|descr= Get the provided display's [[Procedural Textures#UI On Texture|UI On Texture]] unique name.
+{{Feature|informative|See [[findDisplay]] to get a [[Display]] by its unique name.}}
+
+|s1= [[displayUniqueName]] display
+
+|p1= display: [[Display]]
+
+|r1= [[String]] - the unique display identifier
+
+|x1= <sqf>private _displayName = displayUniqueName _myDisplay;</sqf>
+
+|seealso= [[findDisplay]] [[displayUpdate]] {{Link|Procedural Textures#UI On Texture}}
+}}

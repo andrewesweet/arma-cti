@@ -1,0 +1,141 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Porting_Guidelines_Overview
+// revision: 369465 (2024-09-06T09:28:08Z)
+// export sha1: ettjkgihyvfhfzx6u5vllsfihdtij2n
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Infantry weapons ==
+
+* Weapon attachments (add proxies, make WeaponSlotsInfo config definition, Inventory Icons)
+* Adjustable sights (add selections)
+* Reload animations (model.cfg definition, CfgGesturesMale anim definition)
+* 3d optics
+* Muzzle FX (model.cfg + config definition?)
+* Smoke FX
+* Stereo sounds (soundBegin, soundClosure configs definition?)
+* AllowAgainstInfantry (config)
+* AllowedSlots (config)
+* Fatigue system (Mass in config)
+* TextureType (config)
+
+* [[Arma 2 Weapon to Arma 3]]
+* [[Arma 3: Weapon Config Guidelines]]
+* [[Arma 3: Weapon Collimator Sights]]
+* {{Link|http://forums.bistudio.com/showthread.php?147718-Bringing-A2-weapon-addons-to-A3|http://forums.bistudio.com/showthread.php?147718-Bringing-A2-weapon-addons-to-A3}}
+* {{Link|http://forums.bistudio.com/showthread.php?149341-Arma-3-weapons-config-guidlines|http://forums.bistudio.com/showthread.php?149341-Arma-3-weapons-config-guidlines}}
+* {{Link|http://forums.bistudio.com/showthread.php?184655-Preventing-skeleton-errors-in-rpt-HOW-TO|http://forums.bistudio.com/showthread.php?184655-Preventing-skeleton-errors-in-rpt-HOW-TO}}
+* {{Link|http://forums.bistudio.com/showthread.php?175379-Weapon-UI-Tool|http://forums.bistudio.com/showthread.php?175379-Weapon-UI-Tool}}
+
+
+== Infantry units ==
+
+* Clothing (remove from infantry model, make separate models/objects, assign uniform, vest and headgear in configs)
+* New head/faces and sunglasses (replace head model)
+* Injury selections (rename selections)
+* Damage system (adjust HitPoints armor in configs)
+* Engineer (detectSkill and backpack in configs)
+* AA/AT (backpack in configs)
+* Items and NVG (linkedItems in configs)
+* Medic (items and backpack in configs)
+* Command bar (picture in configs)
+
+* [[Arma 3: Modding Characters]]
+* {{Link|http://forums.bistudio.com/showthread.php?148130-Arma3-Characters-Modding-Tutorial|http://forums.bistudio.com/showthread.php?148130-Arma3-Characters-Modding-Tutorial}}
+
+
+== Vehicles in General ==
+
+* Reflectors (config)
+* Heat haze effect
+* attenuationEffectType (config) {{Link|http://forums.bistudio.com/showthread.php?164073-Echo-issue-when-vehicle-weapons-fired|http://forums.bistudio.com/showthread.php?164073-Echo-issue-when-vehicle-weapons-fired}}
+* explosionShielding (in HitPoints in configs)
+* {{Link|http://forums.bistudio.com/showthread.php?176585-Olds-Configs-for-Newbs|Olds-Configs-for-Newbs}}
+* Sound volume (config) - computation unknown so far
+* Randomised variations
+* Light Volume Proxy for reflectors
+
+
+== Cars ==
+
+* Custom Engine, Gearbox and Suspension:
+** {{Link|http://forums.bistudio.com/showthread.php?165390-Tutorial-Creating-Custom-Engine-Gearbox-and-Suspension-Vehicle-config|Tutorial}}
+** {{Link|http://forums.bistudio.com/showthread.php?149027-Primer-for-new-vehicle-simulation|More info}}
+* Driver and gunner IK (AnimatedDriverHands and AnimatedGunnerHands in configs, something? in the model)
+* Mirrors
+* Engine sounds
+
+* {{Link|http://forums.bistudio.com/showthread.php?174673-Tutoria-Importing-ArmA2-vehicles-to-ArmA3|http://forums.bistudio.com/showthread.php?174673-Tutoria-Importing-ArmA2-vehicles-to-ArmA3}}
+* [[Arma 3: Cars Config Guidelines]]
+* {{Link|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html|https://developer.nvidia.com/sites/default/files/akamai/physx/Docs/Vehicles.html}}
+* {{Link|http://manuals.bisimulations.com/vbs2/2-00/devref/#Adding_Models/How_to/AMHT_Physx.htm|http://manuals.bisimulations.com/vbs2/2-00/devref/#Adding_Models/How_to/AMHT_Physx.htm}}
+
+
+== Tanks ==
+
+* Custom Engine, Gearbox and Suspension
+* Damage system
+* Engine sounds
+
+* {{Link|http://forums.bistudio.com/showthread.php?174301-Tank-porting-tutorial|http://forums.bistudio.com/showthread.php?174301-Tank-porting-tutorial}}
+* [[Arma 3: Tanks Config Guidelines]]
+* {{Link|http://forums.bistudio.com/showthread.php?176585-Olds-Configs-for-Newbs|http://forums.bistudio.com/showthread.php?176585-Olds-Configs-for-Newbs}}
+* {{Link|http://manuals.bisimulations.com/vbs2/2-00/devref/#Adding_Models/How_to/AMHT_Physx.htm|http://manuals.bisimulations.com/vbs2/2-00/devref/#Adding_Models/How_to/AMHT_Physx.htm}}
+
+
+== Helicopters ==
+
+* helicopterX simulation or helicopterRTD for advanced flight model and sling loading
+* Pilot and gunner IK (AnimatedDriverHands and AnimatedGunnerHands in configs, something? in the model)
+* Damage system (add HitFuel in HitPoints and new HitXXX classes in AnimationSources in configs, selections to be defined in the model?)
+
+* {{Link|http://forums.bistudio.com/showthread.php?168988-AirplaneX-Sinking-into-ground&p{{=}}2565139&viewfull{{=}}1#post2565139|http://forums.bistudio.com/showthread.php?168988-AirplaneX-Sinking-into-ground&p{{=}}2565139&viewfull{{=}}1#post2565139}}
+* {{Link|http://manuals.bisimulations.com/vbs2/2-00/devref/#Adding_Models/How_to/AMHT_Physx.htm|http://manuals.bisimulations.com/vbs2/2-00/devref/#Adding_Models/How_to/AMHT_Physx.htm}}
+
+
+== Planes ==
+
+* airplaneX simulation
+** {{Link|http://forums.bistudio.com/showthread.php?151050-are-planes-not-possible-in-the-a3-alpha&p{{=}}2536167&viewfull{{=}}1#post2536167|selection for wheels}}
+** Adjusted weight in p3d?
+* WingVortices effects (definition in configs)
+
+* {{Link|http://forums.bistudio.com/showthread.php?168988-AirplaneX-Sinking-into-ground&p{{=}}2565139&viewfull{{=}}1#post2565139|http://forums.bistudio.com/showthread.php?168988-AirplaneX-Sinking-into-ground&p{{=}}2565139&viewfull{{=}}1#post2565139}}
+* {{Link|http://forums.bistudio.com/showthread.php?172174-AirplaneX-PhysX&p{{=}}2614023&viewfull{{=}}1#post2614023|http://forums.bistudio.com/showthread.php?172174-AirplaneX-PhysX&p{{=}}2614023&viewfull{{=}}1#post2614023}}
+* {{Link|http://manuals.bisimulations.com/vbs2/2-00/devref/#Adding_Models/How_to/AMHT_Physx.htm|http://manuals.bisimulations.com/vbs2/2-00/devref/#Adding_Models/How_to/AMHT_Physx.htm}}
+
+
+== Boats and Ships ==
+
+* ShipX
+* SubmarineX
+* PhysX Geometry Lod
+* Buoyancy Lod
+
+* {{Link|http://forums.bistudio.com/showthread.php?185434-Boat-Ship-Builders!-New-wiki-entry|http://forums.bistudio.com/showthread.php?185434-Boat-Ship-Builders!-New-wiki-entry}}
+* {{Link|http://manuals.bisimulations.com/vbs2/2-00/devref/#Adding_Models/How_to/AMHT_Physx.htm|http://manuals.bisimulations.com/vbs2/2-00/devref/#Adding_Models/How_to/AMHT_Physx.htm}}
+
+
+== Static weapons ==
+
+N/A
+
+
+== Terrains ==
+
+* Volumetric clouds
+* Improved lighting
+* Ponds
+* Fog
+
+* [[Arma 3: Improved Fog]]
+
+
+== Effects ==
+
+* [[Arma 3: Particle Effects]]
+* [[Arma 3: Particle Effects: Config Parameters]]
+* {{Link|http://forums.bistudio.com/showthread.php?155866-Arma-3-Particle-Effects-documentation|http://forums.bistudio.com/showthread.php?155866-Arma-3-Particle-Effects-documentation}}
+
+
+{{GameCategory|arma3|Editing}}

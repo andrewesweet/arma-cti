@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/assignedTeam
+// revision: 341182 (2023-05-13T22:13:46Z)
+// export sha1: la1wyajprt8f71j7pnup4rxhg0s5e2c
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2: Operation Arrowhead version 1.60 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.60
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Manipulation
+
+|arg= global
+
+|descr= Returns the team the unit belongs to. Possible values:
+
+* {{hl|"MAIN"}} (default and white)
+* {{hl|"RED"}}
+* {{hl|"GREEN"}}
+* {{hl|"BLUE"}}
+* {{hl|"YELLOW"}}
+* {{GVI|arma3|1.94}} {{hl|""}} if given unit is [[objNull]] or [[remoteControl]]ling another unit
+
+|s1= [[assignedTeam]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[String]] (or, prior to Arma 3 v1.94, [[Nothing]] if given unit is [[objNull]] or [[remoteControl]]ling another unit)
+
+|x1= <sqf>_team = assignedTeam player;</sqf>
+
+|seealso= [[assignTeam]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-12-13 - 23:56 (UTC)</dd>
+<dt class="note">[[User:Commy2|Commy2]]</dt>
+<dd class="note">'''Prior to {{arma3}} v1.94''' assignedTeam might return [[nil]] instead of any of the STRINGs above if the player is currently remote controlling a unit.</dd>
+
+</dl>

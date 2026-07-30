@@ -1,0 +1,83 @@
+// source: https://community.bistudio.com/wiki/a_=_b
+// revision: 348661 (2023-11-08T13:49:04Z)
+// export sha1: bwp7bli0zyfslfwxhlldb5m7kgmqbhk
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|sortKey= #
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Variables
+
+|descr= Assigns the result of expression on the right to the variable on the left. Technically this is not a command and it is not listed in [[supportInfo]]; this is more of a compiler instruction.
+{{Feature|important|The following structure is invalid: <sqf inline>a = b = c = 4;</sqf>.}}
+
+|s1= variable [[a = b|=]] value
+
+|p1= variable: [[Anything]] - see [[Identifier]]
+
+|p2= value: [[Anything]]
+
+|r1= [[Nothing]] {{Feature|important|The returned value is not equivalent to [[nil]]. See {{Link|#Notes}} below for additional information.}}
+
+|x1= <sqf>_value = 5;</sqf> 
+
+|x2= <sqf>_mygroup = group player;</sqf>
+
+|x3= <sqf>_greeting = "Hello!";</sqf>
+
+|x4= <sqf>private _enemyTank = myTank1;</sqf>
+
+|seealso= [[Operators]]
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20061215052700
+|text= A conditional assignment can be done via the following syntax:
+<sqf>_msg = if (alive player) then {"you're alive"} else {"you're dead"}</sqf>
+}}
+
+{{Note
+|user= Alef
+|timestamp= 20090622162700
+|text= It's possible to assign to [[Number]]s. Numbers values are not changed. Useful instead of assigning to ''nul'' or ''nil'' when a result is of no use.
+<sqf>[player] execVM "myScript.sqf"</sqf>
+}}
+
+{{Note
+|user= Dedmen
+|timestamp= 20161109002900
+|text= This operator actually does not return a Nil. It really returns pure Nothing. Not Nil Nothing.<br>
+This can cause problems. For example:
+<sqf>
+_var1 = call {
+	_var2 = "";
+};
+</sqf>
+The return value of the "call" is the return value of the "{{=}}" operator.<br>
+If it were a nil then of cause "_var {{=}} nil;" would work just fine.<br>
+But in reality this causes a "Generic Error in expression" because you can't assign pure Nothing to anything
+}}

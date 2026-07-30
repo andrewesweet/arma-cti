@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_execVM
+// revision: 336359 (2022-12-29T08:50:08Z)
+// export sha1: 07owbovqtgz9obycliptn6wcz3mzhfu
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Program Flow | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Program Flow
+
+|eff= local
+
+|descr= {{Feature|obsolete|use [[remoteExec]]/[[remoteExecCall]] instead.|arma3|1.50}}
+[[execVM]] desired script with desired argument(s). This function is only really useful when combined with [[BIS_fnc_MP]] to execute a script remotely.
+
+
+|s1= filename call [[BIS_fnc_execVM]]
+
+|p1= filename: [[String]]
+
+|r1= [[Script Handle]] - can be used to determine (via [[scriptDone]]) when the script has finished.
+
+|s2= [arguments, filename] call [[BIS_fnc_execVM]]
+
+|p21= arguments: [[Anything]] - arguments are passed to script as magic variable [[Magic Variables#this|_this]].
+
+|p22= filename: [[String]]
+
+|r2= [[Script Handle]] - can be used to determine (via [[scriptDone]]) when the script has finished.
+
+|x1= <sqf>"Bonus\initializeExtras.sqf" call BIS_fnc_execVM;</sqf>
+
+|x2= <sqf>[player, "reposition.sqf"] call BIS_fnc_execVM;</sqf>
+
+|x3= <sqf>
+// before Arma 3 v1.50
+[[[_param1, _param2], "addBonus.sqf"], "BIS_fnc_execVM", true] call BIS_fnc_MP;
+
+// since Arma 3 v1.50
+[[_param1, _param2], "addBonus.sqf"] remoteExec ["execVM"];
+</sqf>
+
+|seealso= [[BIS_fnc_execFSM]] [[BIS_fnc_execRemote]] [[BIS_fnc_spawn]] [[BIS_fnc_call]]
+}}

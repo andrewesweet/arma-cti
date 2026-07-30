@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_CBRNHoseInit
+// revision: 363924 (2024-04-26T21:29:40Z)
+// export sha1: djejobpllvlt0xjca4gv08vaew09vjr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Contact | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3 
+|version1= 1.94
+
+|arg= local
+
+|eff= local
+
+|gr1= Contact 
+
+|descr= Initialises CBRN Hose for given unit.
+
+|s1=  [unit] call [[BIN_fnc_CBRNHoseInit]]
+
+|p1= unit: [[Object]] - unit 
+
+|r1= [[Nothing]] 
+
+|x1= <sqf>player call BIN_fnc_CBRNHoseInit;</sqf> 
+
+|seealso= [[Arma 3: CBRN]]
+}}

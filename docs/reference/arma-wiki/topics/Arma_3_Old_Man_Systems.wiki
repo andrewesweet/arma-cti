@@ -1,0 +1,221 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Old_Man_Systems
+// revision: 373218 (2025-04-12T22:20:53Z)
+// export sha1: hd4q0ptz0epyn6rl22oj7k69eeeesn5
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 1.98
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GVI|arma3|1.98}}
+== Minimal Setup ==
+
+Each scenario using any [[Arma 3 Apex: Old Man|Old Man]] systems needs to contain this minimal setup:
+* ''description.ext'' file, with included ''commonDescription.inc''
+<syntaxhighlight lang="cpp">
+#include "\a3\Missions_F_Oldman\Systems\commonDescription.inc"
+</syntaxhighlight>
+* Old Man Init. module (Systems (F5) > Old Man > Old Man Init.)
+{{Feature|warning|The Old Man systems were created for singleplayer and are not likely to function in multiplayer.}}
+
+
+== Old Man Sector ==
+
+This module was designed to optimize the performance of the scenario. It handles spawning and despawning of characters, vehicles and objects.
+It also handles several other functionalities in combination with other Old Man systems.
+
+=== Technical Details ===
+
+* '''Condition''' – Code that has to return true to allow the sector to spawn. The default condition is true.
+* '''Spawn Distance''' – The distance from the player (on foot) to the borders of the sector. If the distance is less than the set value, the sector will be spawned.
+* '''Vehicle Spawn Distance''' – The distance from the player (on foot) to the borders of the sector. If the distance is less than the set value, vehicles in the sector will be spawned.
+* '''Air Spawn Distance''' – The distance from the player (in an aerial asset) to the borders of the sector. If the distance is less than the set value, big entities like vehicles, tents and tables are spawned.
+* '''Sector Owner''' – Defines to which side sector belongs to (it's used in combination with other systems).
+* '''AA Sector''' – Defines whether the sector should be fully spawned, when the player enters an aircraft.
+* '''Can Be Attacked''' – Sets whether the sector can be selected as a target of attack in combination with other systems (Insurgent Support and Insurgent Agent).
+* '''QRF Enabled''' – Defines whether the Quick Reaction Forces can be send into this sector.
+* '''Threat Range''' – Defines to which distance the player will be considered as a threat.
+* '''Threat Rate''' – Defines how fast the sector owner will react to the player and consider them hostile in case the sector is set as restricted. A bigger number means a faster reaction.
+* '''Used Layer''' – If this is filled with a name of a layer defined in Eden Editor, characters and objects in this layer are spawned, instead of units and objects in range of the sector.
+* '''On State Change Code''' – Sectors have several stages. They can be Despawned / Busy / Spawned / Spawned Vehicles. The code in this field is triggered each time the status is changed.
+* '''On Despawn Script''' – This code is executed when the sector is fully despawned.
+
+==== General Notes ====
+* Two areas defined by sectors '''cannot''' overlap. The only exception is if a sector has defined a layer of objects to spawn.
+* If the player enter into a vehicle, this vehicle is removed from the sector and is never spawned again.
+* Be aware of the situation in which the player can enter a vehicle with a gunner in it. The vehicle will be removed from the sector, but the gunner in the vehicle will remain a part of the sector and will be despawned. The gunner can be removed from the sector manually.
+
+==== Script Control ====
+In some specific cases, you may want to control sector functionality by script. A few of the possible examples follow:
+
+===== Manual Control =====
+Turns on/off manual control of a sector (true - on, false - off)
+<sqf>[nameOfSector, true] call BIS_fnc_sectorSetManualControl;</sqf>
+
+===== Manual Sector Spawn =====
+Forces a sector to spawn. Manual control of a sector needs to be set first.
+<sqf>[nameOfSector] spawn BIS_fnc_OM_sectorActivate;</sqf>
+
+===== Sector Status Control =====
+Returns true / false based upon a sector having turned on/off manual control.
+<sqf>[nameOfSector] call BIS_fnc_sectorManualControl;</sqf>
+
+===== Sector Reset =====
+Resets a sector back to its original state.
+* resetUnits - true / false
+* resetVehicles - true / false
+<sqf>[nameOfSector, resetUnits, resetVehicles] call BIS_fnc_OM_sectorReset;</sqf>
+
+
+== Old Man Restricted Area ==
+
+Sometimes you may want to make a whole sector a restricted area. Or it may be just a part of it like a small military outpost or a house. In such cases restricted areas are handy.
+
+=== Technical Details ===
+
+* '''Condition''' – The condition for activation of the restricted area. The code has to return true or false.
+* '''Area Owner''' – Defines to which side the area belongs.
+* '''Area Restricted''' – Sets whether the restricted area is enabled.
+* '''Threat Range''' – Defines the distance (inside of the area) in which is the player seen as a threat.
+* '''Threat Rate''' – Defines how quickly enemies become aggressive.
+
+
+== Old Man Night ==
+
+The Old Man Night module handles Day / Night changes in sectors.
+{{Feature|informative|
+* Keep in mind the sector needs to be despawned and spawned again to apply changes.
+* The Old Man Night module affects the closest Sector to the Old Man Night module position.
+}}
+
+=== Technical Details ===
+
+* '''Light Fireplaces''' – Turns the light on for all fireplaces in the given sector.
+* '''Flashlights''' – Soldiers will turn on their flashlights (if they are equipped with them).
+* '''Ambient Civilians''' – Enables or disables civilians spawned by the Civilians Presence module.
+* '''Delete Unlinked Groups''' – If set, those characters whose leaders are not synchronized to the module, are deleted.
+
+
+== Old Man Init. Script ==
+
+Do not use Init fields of characters to execute any code. This code will not be executed on character spawn. Use the Old Man Init. Script instead.
+This module can be synchronized with any character, object or module and the code placed in the Sector: Init script is executed every time when this character or object is spawned.
+Variable ''_this'' refers to the synchronized object. Multiple objects can be synchronized to one Old Man Init. Script module.
+
+
+== Old Man Relationship ==
+
+This module handles the relationship between the player (as a civilian) and other factions in the game.
+The player character '''needs to be''' grouped to a soldier with 0% probability of presence on the BLUFOR side (if the potential enemy side is OPFOR) or OPFOR (if it is BLUFOR).
+
+=== Technical Details ===
+
+* '''Side''' – The side towards which the relationship is set.
+* '''Default Threat Level''' – The threat level at the beginning of a scenario.
+* '''Minimum Threat Level''' – Defines the minimum value of a threat range.
+* '''Maximum Threat Level''' – Defines the maximum value of a threat range.
+* '''Threat Level Threshold''' – Defines from which level the player is considered a threat. Soldiers of the defined side start to react to the player. They start aiming at them, and shouting to get out of an area / to stay back.
+* '''Enemy Threshold''' – Defines from which level the player is considered as an enemy. Soldiers of the defined side open fire on the player and considered them an enemy.
+* '''Ally Threshold''' – Defines the level at which the player is considered an ally.
+* '''Threat Level Stabilization''' – How quickly does the threat level diminish over time (points per second)?
+* '''Ignore Restricted Zones''' – If set and the player is allied with the side, then the player is allowed to enter the restricted zones owned by the specific side.
+
+==== General Notes ====
+Relationships are a quite complex system which is affected by player behavior, equipment and location. The distances, type of weapon and uniform are evaluated too. Some combinations – like complete CSAT Viper uniforms – are less suspicious than just a part of the uniform and enemies react to them slower, because they are not sure who the player is.
+
+==== Script Control ====
+Manually adding or lowering a threat:
+<sqf>
+[side, number] call BIS_fnc_OM_lowerThreat;
+[side, number] call BIS_fnc_OM_lowerThreat;
+</sqf>
+
+
+== Old Man Quest <Type> ==
+
+The following descriptions are valid for all quest types introduced in Old Man:
+
+=== Technical Details ===
+
+* '''Show Smart Marker''' – If set, a Smart Marker is created on the quest position.
+* '''Created at Start''' – If set, the quest is created at the beginning of the scenario, but is not assigned to the player. If the player finishes the quest without being tasked, the code in the proper quest state is executed, but without any notification about finishing the quest.
+* '''Task Template''' – The task template configured in the ''CfgQuest'' class.
+* '''Allowed object class name / type''' – (only for Old Man Destroy Quest Objects) – Class name of the object(s), like a house, building, tree, etc.
+* '''One object to completion''' – (only for Old Man Destroy Quest Objects) – If set, only one object from the selected ones needs to be destroyed to finish the quest (for example one pole in a power line).
+
+==== CfgQuest ====
+<syntaxhighlight lang="cpp">
+class SpecificQuestClass : QuestType // SpecificQuestClass is filled in the quest module
+// Possible QuestTypes are: FetchQuest, GetQuest, SupportQuest, QuestHoldAction, QuestDefend, SyndikatTeamQuest, DestroyQuest, TransportQuest, TransportPersonQuest, HostageRescueQuest, LocationQuest
+{
+	// Quest description
+	title = "Quest title";
+  	description[] = { "Quest description", _markerName }; // _markerName refers to a Smart Marker created on the quest position
+	markerDescription = "Custom marker description";
+	markerPicture = "\a3\Missions_F_Oldman\Data\img\Tooltip\T_SQ_T_TransportPlane_tooltip.paa"; // Path to a custom quest picture
+
+	questNPC = "BIS_Miller"; 				// NPC variable to which items can be delivered (FetchQuest) / NPC to transport (TransportPersonQuest) / NPC to untie (HostageRescueQuest)
+   	itemTypes[] = { "itemType1", "itemType2" }; // itemType, e.g. "O_NVGoggles_ghex_F"
+	itemCount = 1; 							// How many items need to be delivered?
+
+	// Only quest type QuestDefend
+	delayToFailSec = 5;						// Delay for how long can the enemy be present in the defended area before the quest fails
+	timeoutFromStartInMinutes = 3;			// Time in minutes for how long the area needs to be defended
+
+	parentTemplate = QuestParentName; 		// Quest can be a child of a parent quest
+	objectVariableName = "ObjectVariable";	// Variable for an object which needs to be delivered (TransportQuest only)
+	iconType = "Default"; 					// Type of marker created in the quest position (can be: Default, Fetch, Distraction, Defend, Support, Transport)
+	className = "Plane"; 					// Class name of a vehicle which needs to be transported (TransportQuest only)
+	isMandatory = true;						// If true, this marks the quest as mandatory. The parent quest can be finished only when all its mandatory children are finished. Other open children are canceled.
+
+	// Quest smart marker
+	class QuestSmartMarker : QuestSmartMarker 
+	{
+  		markerTitle = "";					// Marker title text is shown on the map next to the Smart Marker
+   		markerTooltipTitle = "";			// Text in the header of the Smart Marker tooltip
+   		markerTooltipText = "";				// Smart Marker tooltip text
+	};
+
+	class StateModifiers : StateModifiers 
+	{ 	
+		// Possible State modifiers are: Created, Assigned, Progressing, Completed, Elapsed, Failed, Canceled
+		class Created : Created 
+		{			
+			customCondition = "true"; 		// Code which needs to return true to allow execution of the state
+			code = ""; 						// Any code which is to be executed
+			conversations[] = {}; 			// A conversation to play
+		};
+	};
+};
+</syntaxhighlight>
+
+==== CfgQuestParents ====
+<syntaxhighlight lang="cpp">
+class ParentQuestName : ParentQuest	// ParentQuestName is the name of the Parent quest, filled in parentTemplate of each quest
+{
+	title =  "Parent Quest title";
+	description[] = { "Parent Quest description" };
+	iconType  = "default";					// Icon of the Parent Quest
+	cancelCondition = "MyCondition";		// Code which returns true / false. When true is returned, the parent quest with all its children is canceled.
+};
+</syntaxhighlight>
+
+
+== Module Placement ==
+
+* '''Old Man Destroy Quest Object''' – Module snaps to one object of the selected class.
+* '''Old Man Destroy Quest Objects''' – All objects of the given class in the module range.
+* '''Old Man Quest Defend''' – The module area defines an area to defend. More modules can be synchronized to the main one with a filled Quest Template. If set this way, all areas need to be defended.
+* '''Old Man Quest Fetch''' – An item can be delivered into all boxes with inventory space within the defined area.
+* '''Old Man Hold Action Quest''' – Module placement has no effect.
+* '''Old Man Quest Fetch''' – Module placement has no effect.
+* '''Old Man Quest Get''' – Module placement has no effect.
+* '''Old Man Quest Hostage Rescue''' – Module placement has no effect.
+* '''Old Man Quest Location''' – The module defines an area where the player needs to get to. More Old Man Quest Location modules can be synchronized with the main one which has a filled quest template. Others remain empty and serve only to define more locations where the quest can be finished.
+* '''Old Man Quest Support''' – Module placement has no effect.
+* '''Old Man Quest Support StartPos''' – Synchronized with Old Man Sectors defines spawn points of characters for Old Man Quest Support. Multiple Old Man Quest Support StartPos modules can be synchronized with one Old Man Sector.
+* '''Old Man Quest Transport''' – Module placement and radius define a location where the vehicle / plane / boat need to be transported.
+* '''Old Man Quest Transport Person''' – Module placement and radius define a location where the NPC needs to be transported.
+* '''Old Man Support Quests Units''' – Module placement has no effect.
+
+
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 1.98]]

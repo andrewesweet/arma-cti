@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getAllOwnedMines
+// revision: 347576 (2023-09-28T10:10:09Z)
+// export sha1: dyxbhdfa8bpf1riw3c4jgdc3u0g6zj7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mines | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Mines
+
+|descr= Gets all mine objects this unit has ownership over.
+
+|s1= [[getAllOwnedMines]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>_mines = getAllOwnedMines player;</sqf>
+
+|seealso= [[allMines]] [[createMine]] [[detectedMines]] [[mineActive]] [[removeOwnedMine]] [[addOwnedMine]] [[removeAllOwnedMines]]
+}}

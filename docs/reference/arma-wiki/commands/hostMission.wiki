@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/hostMission
+// revision: 369139 (2024-09-03T10:34:36Z)
+// export sha1: dsxzs1kbqp0n5hsbhidyb0hwogeox3v
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Multiplayer
+
+|descr= Host the multiplayer mission defined in the config class and opens the lobby with the scenario loaded. Must be called in UI action from a dialog.
+
+|s1= [[hostMission]] [configEntry, activeDisplay]
+
+|p1= configEntry: [[Config]]
+
+|p2= activeDisplay: [[Display]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>hostMission [configFile >> "CfgMissions" >> "MPMissions" >> _scenarioClassName, _currentlyActiveDisplay];</sqf>
+
+|x2= Launch host mission dialog from a client on dedicated server in {{arma3}}:
+<sqf>
+hostMission [
+	configFile >> "CfgMissions" >> "MPmissions" >> "MP_COOP_m01",
+	findDisplay 46
+];
+</sqf>
+
+|seealso= [[playScriptedMission]] [[playMission]] [[createMPCampaignDisplay]] [[createMissionDisplay]]
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20110103165100
+|text= The command must be called in the main menu or something similar menu it seems.
+}}

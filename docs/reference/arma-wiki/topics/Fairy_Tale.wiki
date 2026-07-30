@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/Fairy_Tale
+// revision: 376940 (2025-12-31T22:52:49Z)
+// export sha1: fze69ef6zkm6tiljfanetp0p0uk5dh9
+// categories: Category:Before Flashpoint
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+[[File:Fairytaleukbox1.jpg|220px|right|Fairy Tale]]
+{{Link|https://www.bohemia.net/games/father-frost|text= Fairy Tale}} is a project from back in the days when Maruk was still a little Maruk.
+The story is about a girl called Nastya growing up in a family composed of her biological father, and a stepmother/sister.
+The non-biological mother and sister try to suppress Nastya, by shoving all the possible work on her, like cleaning, cooking, and taking care of animals.
+Realistically, playing trough the eyes of Natasha in the campaign, you have to do exactly these shores.
+The campaign features static landscapes with view distances of up to two hundred meters.
+The point-and-click interface leads you along talking animals, to tough pitchfork jobs, and a variety of interactive AI.
+The plot is based on a traditional Russian Fairy tale.
+
+=== Compatibility ===
+
+{{Feature|warning|
+Due to the title's age, see the game's {{Link|https://www.pcgamingwiki.com/wiki/Fairy_Tale_About_Father_Frost,_Ivan_and_Nastya|PC Gaming Wiki article}} for compatibility with Windows 10 and above.
+}}
+
+=== Features ===
+
+* Talking to NPCs
+* Better collision detection
+* Hand-to-hand weapons, like pitchforks, and cooking pots.
+* Ambient wildlife
+
+=== System Requirements ===
+
+{| class="wikitable"
+! width="50%" | Minimal
+! Recommended
+|-
+|
+* Windows 98/ME/2000
+* Pentium 166 MHz
+* 32 MB RAM
+* CD-ROM x8
+* 2 MB graphic card
+* Sound Card
+|
+* Windows 10
+* Pentium 300 MHz
+* 32 MB RAM
+* CD-ROM x8
+* 4 MB graphic card
+* Sound Card
+|}
+
+=== Downloads ===
+
+* {{Link|https://store.steampowered.com/app/289320/|Buy on Steam}}
+* {{Link|https://fileplanet.download.it/p-25949/Fairy-Tale-Demo|Demo on FilePlanet.download.it}}
+
+
+[[Category:Before Flashpoint]]

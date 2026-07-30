@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_arsenal
+// revision: 364490 (2024-05-16T20:41:59Z)
+// export sha1: l1obwy2644mftfo8ni8qyvl8lbbolfr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= Inventory
+
+|descr= Function used for the [[Arma 3: Arsenal|Virtual Arsenal]]. The function features four different modes, each mode comes with its own parameters.
+{{Feature|informative|If Arsenal is launched within the first second from the mission start, the unit loadout will be randomised.}}
+
+|s1= [mode, params] call [[BIS_fnc_arsenal]]
+
+|p1= mode: [[String]] - mode, can be one of:
+* "Open" - opens the [[Arsenal]]
+* "Preload" - preloads item configs, without preloading the configs are parsed the first time it is opened
+* "AmmoboxInit" - adds a virtual ammobox. Action to access the [[Arsenal]] will be added automatically to all clients
+* "AmmoboxExit" - remove virtual ammobox
+|p2= params: [[Anything]] - mode parameters:
+* '''"Open"''': [full, cargo, center]
+** full: [[Boolean]] - (Optional, default [[false]]) [[true]] to open full [[Arsenal]] with all items available
+** cargo: Object to use as the cargo carrier (cargo is added with the [[BIS_fnc_addVirtualItemCargo]] functions)
+** center: Object whose arsenal will be modified
+* '''"Preload"''': no parameters
+* '''"AmmoboxInit"''': [ammobox, allItems, condition]
+** ammobox: [[Object]] - Object which should get a virtual ammobox
+** allItems: [[Boolean]] - (Optional, default [[false]]) [[true]] to make all items available
+** condition: [[Code]] - (Optional, default <sqf inline>{ true }</sqf>) condition for the [[Arsenal]] to be accessible. Available arguments are the same as in [[addAction]]'s ''condition'' parameter:
+*** _target: [[Object]] - object to which the action is attached or, if the object is a unit inside of vehicle, the vehicle
+*** _this: [[Object]] - caller person to whom the action is shown (or not depending on ''condition'')
+*** _originalTarget: [[Object]] - original object to which the action is attached, regardless if the object/unit is in a vehicle or not
+* '''"AmmoboxExit"''': [ammobox]
+** ammobox: [[Object]] - the object to which the [[Arma 3: Arsenal|Arsenal]] was added
+
+|r1= [[Nothing]]
+
+|x1= Opens [[Arma 3: Arsenal|Arsenal]] with all items:
+<sqf>["Open", [true]] call BIS_fnc_arsenal;</sqf>
+
+|x2= Preloads [[Arma 3: Arsenal|Arsenal]]'s config:
+<sqf>["Preload"] call BIS_fnc_arsenal;</sqf>
+
+|x3= Adds full [[Arsenal]] to the [[player]] object and makes the [[addAction|action]] available when the player is closer than 10 meters from ammoBox:
+<sqf>["AmmoboxInit", [ammoBox, true, { _this distance _target  < 10 }]] call BIS_fnc_arsenal;</sqf>
+
+|x4= Removes Arsenal from player object:
+<sqf>["AmmoboxExit", player] call BIS_fnc_arsenal;</sqf>
+
+|seealso= [[Arma 3: Arsenal]] [[BIS_fnc_garage]]
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/setWaypointForceBehaviour
+// revision: 377890 (2026-01-05T17:35:07Z)
+// export sha1: 2o36u6175fsir0vlp0rxrzvd7qq8rmn
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Waypoints
+
+|descr= Forces the behavior of waypoint, disables AUTOCOMBAT.
+
+|s1= waypoint [[setWaypointForceBehaviour]] state
+
+|p1= waypoint: [[Waypoint]]
+
+|p2= state: [[Boolean]] - force or not
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[grp, 2] setWaypointForceBehaviour true;</sqf>
+
+|seealso= [[waypointForceBehaviour]] [[setWaypointBehaviour]] [[waypointBehaviour]] [[Mission_Editor:_Waypoints#Behaviour|Behaviour Description]]
+}}

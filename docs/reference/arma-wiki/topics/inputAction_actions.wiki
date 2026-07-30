@@ -1,0 +1,910 @@
+// source: https://community.bistudio.com/wiki/inputAction/actions
+// revision: 352476 (2024-02-11T23:38:55Z)
+// export sha1: kr358gj349mto6v1dzi7nreh2ns8csl
+// categories: Category:Arma 3: Controls
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+<noinclude>Ancillary sub-page of [[inputAction]], listing input actions (keybinds) available in {{arma3}}.</noinclude>
+{| class="sortable wikitable"
+! colspan="3"| Action information !! colspan="7"| Presets
+|-
+! Type !! actionName !! Name !! Arma 2 !! Arma 3 !! Arma 3 Apex<br/>(Default) !! Arma 3 Alternative !! Arma Reforger !! Buldozer !! Industry Standard
+|-
+| Common || {{hl|gear}} || Inventory || G || I || I || I || Tab || I || I
+|-
+| Common || {{hl|showMap}} || Map || M || M || M || M || M || M || M
+|-
+| Common || {{hl|hideMap}} || Hide Map || M || M || M || M || M || M || M
+|-
+| Common || {{hl|diary}} || Diary || J || J || 2xJ || J || J || J || J
+|-
+| Common || {{hl|tasks}} || Task Overview || || || J || || || ||
+|-
+| Common || {{hl|MiniMap}} || GPS || || || || || || ||
+|-
+| Common || {{hl|MiniMapToggle}} || GPS (Toggle) || Right Ctrl+M || Right Ctrl+M || Right Ctrl+M || Right Ctrl+M || Right Ctrl+M || Right Ctrl+M || Right Ctrl+M
+|-
+| Common || {{hl|uavView}} || AV Camera || || Tab || Tab || Tab || Left Ctrl+Tab || Tab || Tab
+|-
+| Common || {{hl|uavViewToggle}} || AV Camera (Toggle) || || 2xTab || 2xTab || 2xTab || 2xTab || 2xTab || 2xTab
+|-
+| Common || {{hl|pilotCamera}} || Targeting Camera || || Left Ctrl+Sec. Mouse Btn. || Left Ctrl+Sec. Mouse Btn. || Left Ctrl+Sec. Mouse Btn. || Left Ctrl+Sec. Mouse Btn. || Left Ctrl+Sec. Mouse Btn. || Left Ctrl+Sec. Mouse Btn.
+|-
+| Common || {{hl|openDlcScreen}} || Open DLC Screen || Left Shift+P || Left Shift+P || Left Shift+P || Left Shift+P || Left Shift+P || Left Shift+P || Left Shift+P
+|-
+| Common || {{hl|compass}} || Compass || K || K || K || || || K || K
+|-
+| Common || {{hl|compassToggle}} || Compass (Toggle) || 2xK || 2xK || 2xK || K || K || 2xK || 2xK
+|-
+| Common || {{hl|watch}} || Watch || O || O || O || || || O || O
+|-
+| Common || {{hl|watchToggle}} || Watch (Toggle) || 2xO || 2xO || 2xO || O || O || 2xO || 2xO
+|-
+| Common || {{hl|ListLeftVehicleDisplay}} || Left Panel Next || || [ || [ || [ || [ || [ || [
+|-
+| Common || {{hl|ListRightVehicleDisplay}} || Right Panel Next || || ] || ] || ] || ] || ] || ]
+|-
+| Common || {{hl|ListPrevLeftVehicleDisplay}} || Left Panel Previous || || || || || || ||
+|-
+| Common || {{hl|ListPrevRightVehicleDisplay}} || Right Panel Previous || || || || || || ||
+|-
+| Common || {{hl|CloseLeftVehicleDisplay}} || Close Left Panel || || || || || || ||
+|-
+| Common || {{hl|CloseRightVehicleDisplay}} || Close Right Panel || || || || || || ||
+|-
+| Common || {{hl|NextModeLeftVehicleDisplay}} || Left Panel Mode || || Right Ctrl+[ || Right Ctrl+[ || Right Ctrl+[ || Right Ctrl+[ || Right Ctrl+[ || Right Ctrl+[
+|-
+| Common || {{hl|NextModeRightVehicleDisplay}} || Right Panel Mode || || Right Ctrl+] || Right Ctrl+] || Right Ctrl+] || Right Ctrl+] || Right Ctrl+] || Right Ctrl+]
+|-
+| Common || {{hl|nightVision}} || Night Vision || N || N || N || N || N || N || N
+|-
+| Common || {{hl|TransportNightVision}} || Vision Mode (Vehicle) || Right Ctrl+N || Right Ctrl+N || Right Ctrl+N || Right Ctrl+N || Right Ctrl+N || Right Ctrl+N || Right Ctrl+N
+|-
+| Common || {{hl|binocular}} || Binoculars || B || B || B || B || B || B || B
+|-
+| Common || {{hl|headlights}} || Headlights On/Off || L || L || L || L || L || L || L
+|-
+| Common || {{hl|prevAction}} || Previous || Mouse wheel up || Mouse wheel up || Mouse wheel up || Mouse wheel up || Mouse wheel up || Mouse wheel up || Mouse wheel up
+|-
+| Common || {{hl|nextAction}} || Next || Mouse wheel down || Mouse wheel down || Mouse wheel down || Mouse wheel down || Mouse wheel down || Mouse wheel down || Mouse wheel down
+|-
+| Common || {{hl|Action}} || Use Default Action || Enter || Space || Space || Enter || F || Space || F
+|-
+| Common || {{hl|ActionContext}} || Use Selected Action || Middle Mouse Btn. || Middle Mouse Btn. || Middle Mouse Btn. || F || F || Middle Mouse Btn. || Middle Mouse Btn.
+|-
+| Common || {{hl|ActionInMap}} || Use Command Action (Map) || || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn.
+|-
+| Common || {{hl|navigateMenu}} || Navigate Menu || Backspace || Backspace || Backspace || Backspace || Backspace || Backspace || Backspace
+|-
+| Common || {{hl|closeContext}} || Close Context Menu || Sec. Mouse Btn. || Sec. Mouse Btn. || Sec. Mouse Btn. || Sec. Mouse Btn. || Sec. Mouse Btn. || Sec. Mouse Btn. || Sec. Mouse Btn.
+|-
+| Common || {{hl|LiteUnitInfoToggle}} || {{n/a}} || Right Ctrl+H || Right Ctrl+H || Right Ctrl+H || Right Ctrl+H || Right Ctrl+H || Right Ctrl+H || Right Ctrl+H
+|-
+| Common || {{hl|help}} || Last Help || H || H || H || H || H || H || H
+|-
+| Common || {{hl|engineToggle}} || Engine On/Off || || || || || || ||
+|-
+| Common || {{hl|vehicleTurbo}} || Vehicle Turbo || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift
+|-
+| Common || {{hl|GetOut}} || Get Out || || V || V || V || X || V || V
+|-
+| Common || {{hl|Eject}} || Eject || || 2xV || 2xV || 2xV || 2xX || 2xV || 2xV
+|-
+| Common || {{hl|swapGunner}} || Swap Gunner || || || || || || ||
+|-
+| Common || {{hl|teamSwitch}} || Team Switch || U || U || U || U || U || U || U
+|-
+| Common || {{hl|teamSwitchPrev}} || Team Switch to Previous || || || || || || ||
+|-
+| Common || {{hl|teamSwitchNext}} || Team Switch to Next || || || || || || ||
+|-
+| Common || {{hl|timeDec}} || Time Deceleration || - || - || - || - || - || - || -
+|-
+| Common || {{hl|timeInc}} || Time Acceleration || = || = || = || = || = || = || =
+|-
+| Common || {{hl|copyVersion}} || Copy Version to Clipboard || || Left Ctrl+/ || Left Ctrl+/ || Left Ctrl+/ || Left Ctrl+/ || Left Ctrl+/ || Left Ctrl+/
+|-
+| Common || {{hl|ingamePause}} || Pause || Escape || Escape || Escape || Escape || Escape || Escape || Escape
+|-
+| Weapons || {{hl|defaultAction}} || Fire || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn.
+|-
+| Weapons || {{hl|fire}} || Command Fire || Left Ctrl+Prim. Mouse Btn. || Left Ctrl+Prim. Mouse Btn. || Left Ctrl+Prim. Mouse Btn. || Left Ctrl+Prim. Mouse Btn. || Left Ctrl+Prim. Mouse Btn. || Left Ctrl+Prim. Mouse Btn. || Left Ctrl+Prim. Mouse Btn.
+|-
+| Weapons || {{hl|reloadMagazine}} || Reload || R || R || R || R || R || R || R
+|-
+| Weapons || {{hl|SwitchPrimary}} || Switch to Primary Weapon || || || 1 || || 1 || ||
+|-
+| Weapons || {{hl|SwitchHandgun}} || Switch to Handgun || || || 2 || || 3 || ||
+|-
+| Weapons || {{hl|SwitchSecondary}} || Switch to Secondary Weapon || || || 3 || || 2 || ||
+|-
+| Weapons || {{hl|SwitchWeaponGrp1}} || Switch to Weapons Group 1 || || || 1 || || 1 || ||
+|-
+| Weapons || {{hl|SwitchWeaponGrp2}} || Switch to Weapons Group 2 || || || 2 || || 2 || ||
+|-
+| Weapons || {{hl|SwitchWeaponGrp3}} || Switch to Weapons Group 3 || || || 3 || || 3 || ||
+|-
+| Weapons || {{hl|SwitchWeaponGrp4}} || Switch to Weapons Group 4 || || || 4 || || || ||
+|-
+| Weapons || {{hl|nextWeapon}} || Next Weapon || F || F || F || C || V || F || Z
+|-
+| Weapons || {{hl|prevWeapon}} || Previous Weapon || || || || || || ||
+|-
+| Weapons || {{hl|switchWeapon}} || Switch Gun/Launcher || || Right Ctrl+; || Right Ctrl+; || Right Ctrl+; || Right Ctrl+; || Right Ctrl+; || Right Ctrl+;
+|-
+| Weapons || {{hl|handgun}} || Switch Gun/Handgun || ; || ; || ; || ; || ; || ; || ;
+|-
+| Weapons || {{hl|optics}} || Optics || Sec. Mouse Btn. || Sec. Mouse Btn. || Sec. Mouse Btn. || 0 [NUM] || Sec. Mouse Btn. || Sec. Mouse Btn. ||
+|-
+| Weapons || {{hl|opticsTemp}} || Optics Temporary || Sec. Mouse Btn. || Sec. Mouse Btn. || Sec. Mouse Btn. || Hold Sec. Mouse Btn. || Sec. Mouse Btn. || Sec. Mouse Btn. || Hold Sec. Mouse Btn.
+|-
+| Weapons || {{hl|opticsMode}} || Optics Mode || / [NUM] || Left Ctrl+ || Left Ctrl+ || Left Ctrl+ || Left Ctrl+ || Left Ctrl+ || X
+|-
+| Weapons || {{hl|holdBreath}} || Hold Breath || Hold Sec. Mouse Btn. || Hold Sec. Mouse Btn. || Left Shift || Left Shift || Hold Sec. Mouse Btn. || Hold Sec. Mouse Btn. || Left Shift
+|-
+| Weapons || {{hl|deployWeaponAuto}} || Deploy Weapon || Left Ctrl+C || C || C || Left Ctrl+C || C || C || C
+|-
+| Weapons || {{hl|tempRaiseWeapon}} || Raise Weapon || || || || || || ||
+|-
+| Weapons || {{hl|toggleRaiseWeapon}} || Toggle Raise Weapon || 2xLeft Ctrl || 2xLeft Ctrl || 2xLeft Ctrl || 2xLeft Ctrl || 2xLeft Ctrl || 2xLeft Ctrl || 2xC
+|-
+| Weapons || {{hl|throw}} || Throw || T || G || G || G || 4 || G || G
+|-
+| Weapons || {{hl|cycleThrownItems}} || Cycle Throw Items || Left Ctrl+T || Left Ctrl+G || Left Ctrl+G || Left Ctrl+G || Left Ctrl+4 || Left Ctrl+G || Left Shift+G
+|-
+| Weapons || {{hl|zeroingUp}} || Zeroing Up || Page Up || Page Up || Page Up || Page Up || Page Up || Page Up || Page Up
+|-
+| Weapons || {{hl|zeroingDown}} || Zeroing Down || Page Down || Page Down || Page Down || Page Down || Page Down || Page Down || Page Down
+|-
+| Weapons || {{hl|gunElevUp}} || Gun Elevation Up || Page Up || Page Up || Page Up || Page Up || Page Up || Page Up || Page Up
+|-
+| Weapons || {{hl|gunElevDown}} || Gun Elevation Down || Page Down || Page Down || Page Down || Page Down || Page Down || Page Down || Page Down
+|-
+| Weapons || {{hl|gunElevSlow}} || Slow Gun Elevation || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift
+|-
+| Weapons || {{hl|gunElevAuto}} || Lase Range || \ || T || T || T || T || T || T
+|-
+| Weapons || {{hl|ActiveSensorsToggle}} || Radar On/Off || || Left Ctrl+R || Left Ctrl+R || Left Ctrl+R || Left Ctrl+R || Left Ctrl+R || Left Ctrl+R
+|-
+| Weapons || {{hl|lockTarget}} || Lock Target || Hold Sec. Mouse Btn. || T || T || T || T || T || T
+|-
+| Weapons || {{hl|lockTargetToggle}} || {{n/a}} || || || || || || ||
+|-
+| Weapons || {{hl|revealTarget}} || Reveal Target || Hold Sec. Mouse Btn. || T || T || T || T || T || T
+|-
+| Weapons || {{hl|lockTargets}} || Next Target || Tab || || || || || ||
+|-
+| Weapons || {{hl|lockEmptyTargets}} || Next Empty Target || Left Ctrl+Tab || || || || || ||
+|-
+| Weapons || {{hl|vehLockTargets}} || Next Target (Vehicle) || Tab || R || R || R || R || R || R
+|-
+| Weapons || {{hl|vehLockEmptyTargets}} || Next Empty Target (Vehicle) || Left Ctrl+Tab || || || || || ||
+|-
+| Weapons || {{hl|vehLockTurretView}} || Stabilize Turret || || Left Ctrl+T || Left Ctrl+T || Left Ctrl+T || Left Ctrl+T || Left Ctrl+T || Left Ctrl+T
+|-
+| Weapons || {{hl|switchGunnerWeapon}} || Change Gunner Weapon || Left Ctrl+F || Left Ctrl+F || Left Ctrl+F || Left Ctrl+F || Left Ctrl+V || Left Ctrl+F || Left Ctrl+Z
+|-
+| Weapons || {{hl|heliManualFire}} || Toggle Manual Fire || acute/cedilla || acute/cedilla || acute/cedilla || acute/cedilla || acute/cedilla || acute/cedilla || acute/cedilla
+|-
+| Weapons || {{hl|launchCM}} || Countermeasures || R || C || C || C || C || C || C
+|-
+| Weapons || {{hl|nextCM}} || Countermeasures Mode || Left Ctrl+R || Left Ctrl+C || Left Ctrl+C || Left Ctrl+C || Left Ctrl+C || Left Ctrl+C || Left Ctrl+C
+|-
+| View || {{hl|AimUp}} || Aim Up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up
+|-
+| View || {{hl|AimDown}} || Aim Down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down
+|-
+| View || {{hl|AimLeft}} || Aim Left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left
+|-
+| View || {{hl|AimRight}} || Aim Right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right
+|-
+| View || {{hl|AimHeadUp}} || Look Up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up
+|-
+| View || {{hl|AimHeadDown}} || Look Down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down
+|-
+| View || {{hl|AimHeadLeft}} || Look Left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left
+|-
+| View || {{hl|AimHeadRight}} || Look Right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right
+|-
+| View || {{hl|personView}} || Toggle View || Enter [NUM] || Enter [NUM] || Enter [NUM] || Enter [NUM] || Enter [NUM] || Enter [NUM] || Enter [NUM]
+|-
+| View || {{hl|tacticalView}} || Tactical View || . [NUM] || . [NUM] || . [NUM] || . [NUM] || . [NUM] || . [NUM] || . [NUM]
+|-
+| View || {{hl|zoomTemp}} || Zoom Temporary || Hold Sec. Mouse Btn. || Hold Sec. Mouse Btn. || Hold Sec. Mouse Btn. || Hold Sec. Mouse Btn. || Hold Sec. Mouse Btn. || Hold Sec. Mouse Btn. || Hold Sec. Mouse Btn.
+|-
+| View || {{hl|lookAround}} || Look || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt
+|-
+| View || {{hl|commandWatch}} || Command Watch || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt
+|-
+| View || {{hl|lookAroundToggle}} || Freelook || 2xLeft Alt || 2xLeft Alt || 2xLeft Alt || 2xLeft Alt || 2xLeft Alt || 2xLeft Alt || 2xLeft Alt
+|-
+| View || {{hl|lookLeftUp}} || Look Left Up || 7 [NUM] || 7 [NUM] || 7 [NUM] || 7 [NUM] || 7 [NUM] || 7 [NUM] || 7 [NUM]
+|-
+| View || {{hl|lookUp}} || Look Up || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM]
+|-
+| View || {{hl|lookRightUp}} || Look Right Up || 9 [NUM] || 9 [NUM] || 9 [NUM] || 9 [NUM] || 9 [NUM] || 9 [NUM] || 9 [NUM]
+|-
+| View || {{hl|lookLeft}} || Look Left || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM]
+|-
+| View || {{hl|lookCenter}} || Center Look || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM]
+|-
+| View || {{hl|lookRight}} || Look Right || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM]
+|-
+| View || {{hl|lookLeftDown}} || Look Left Down || 1 [NUM] || 1 [NUM] || 1 [NUM] || 1 [NUM] || 1 [NUM] || 1 [NUM] || 1 [NUM]
+|-
+| View || {{hl|lookDown}} || Look Down || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM]
+|-
+| View || {{hl|lookRightDown}} || Look Right Down || 3 [NUM] || 3 [NUM] || 3 [NUM] || 3 [NUM] || 3 [NUM] || 3 [NUM] || 3 [NUM]
+|-
+| View || {{hl|zoomIn}} || Zoom In || + [NUM] || + [NUM] || + [NUM] || + [NUM] || + [NUM] || + [NUM] || + [NUM]
+|-
+| View || {{hl|zoomInToggle}} || Zoom In (Toggle) || 2x+ [NUM] || 2x+ [NUM] || 2x+ [NUM] || 2x+ [NUM] || 2x+ [NUM] || 2x+ [NUM] || 2x+ [NUM]
+|-
+| View || {{hl|zoomOut}} || Zoom Out || - [NUM] || - [NUM] || - [NUM] || - [NUM] || - [NUM] || - [NUM] || - [NUM]
+|-
+| View || {{hl|zoomOutToggle}} || Zoom Out (Toggle) || 2x- [NUM] || 2x- [NUM] || 2x- [NUM] || 2x- [NUM] || 2x- [NUM] || 2x- [NUM] || 2x- [NUM]
+|-
+| View || {{hl|lookShiftUp}} || Move Head Up || Left Ctrl+Page Up || Left Ctrl+Page Up || Left Ctrl+Page Up || Left Ctrl+Page Up || Left Ctrl+Page Up || Left Ctrl+Page Up ||
+|-
+| View || {{hl|lookShiftDown}} || Move Head Down || Left Ctrl+Page Down || Left Ctrl+Page Down || Left Ctrl+Page Down || Left Ctrl+Page Down || Left Ctrl+Page Down || Left Ctrl+Page Down ||
+|-
+| View || {{hl|lookShiftForward}} || Move Head Forward || || Left Ctrl+8 [NUM] || Left Ctrl+8 [NUM] || Left Ctrl+8 [NUM] || Left Ctrl+8 [NUM] || Left Ctrl+8 [NUM] ||
+|-
+| View || {{hl|lookShiftLeft}} || Move Head Left || || Left Ctrl+4 [NUM] || Left Ctrl+4 [NUM] || Left Ctrl+4 [NUM] || Left Ctrl+4 [NUM] || Left Ctrl+4 [NUM] ||
+|-
+| View || {{hl|lookShiftCenter}} || Center Head Move || Left Ctrl+5 [NUM] || Left Ctrl+5 [NUM] || Left Ctrl+5 [NUM] || Left Ctrl+5 [NUM] || Left Ctrl+5 [NUM] || Left Ctrl+5 [NUM] ||
+|-
+| View || {{hl|lookShiftRight}} || Move Head Right || || Left Ctrl+6 [NUM] || Left Ctrl+6 [NUM] || Left Ctrl+6 [NUM] || Left Ctrl+6 [NUM] || Left Ctrl+6 [NUM] ||
+|-
+| View || {{hl|lookShiftBack}} || Move Head Back || || Left Ctrl+2 [NUM] || Left Ctrl+2 [NUM] || Left Ctrl+2 [NUM] || Left Ctrl+2 [NUM] || Left Ctrl+2 [NUM] ||
+|-
+| View || {{hl|lookRollLeft}} || Head Roll Left || Left Ctrl+7 [NUM] || Left Ctrl+7 [NUM] || Left Ctrl+7 [NUM] || Left Ctrl+7 [NUM] || Left Ctrl+7 [NUM] || Left Ctrl+7 [NUM] ||
+|-
+| View || {{hl|lookRollRight}} || Head Roll Right || Left Ctrl+9 [NUM] || Left Ctrl+9 [NUM] || Left Ctrl+9 [NUM] || Left Ctrl+9 [NUM] || Left Ctrl+9 [NUM] || Left Ctrl+9 [NUM] ||
+|-
+| View || {{hl|lookLeftCont}} || Look Left (Analog) || Tracking device Rot Left || Tracking device Rot Left || Tracking device Rot Left || Tracking device Rot Left || Tracking device Rot Left || Tracking device Rot Left || Tracking device Rot Left
+|-
+| View || {{hl|lookRightCont}} || Look Right (Analog) || Tracking device Rot Right || Tracking device Rot Right || Tracking device Rot Right || Tracking device Rot Right || Tracking device Rot Right || Tracking device Rot Right || Tracking device Rot Right
+|-
+| View || {{hl|lookDownCont}} || Look Down (Analog) || Tracking device Rot Down || Tracking device Rot Down || Tracking device Rot Down || Tracking device Rot Down || Tracking device Rot Down || Tracking device Rot Down || Tracking device Rot Down
+|-
+| View || {{hl|lookUpCont}} || Look Up (Analog) || Tracking device Rot Up || Tracking device Rot Up || Tracking device Rot Up || Tracking device Rot Up || Tracking device Rot Up || Tracking device Rot Up || Tracking device Rot Up
+|-
+| View || {{hl|zoomContIn}} || Zoom In (Continuous) || Tracking device -tZ || Tracking device -tZ || Tracking device -tZ || Tracking device -tZ || Tracking device -tZ || Tracking device -tZ || Tracking device -tZ
+|-
+| View || {{hl|zoomContOut}} || Zoom Out (Continuous) || Tracking device +tZ || Tracking device +tZ || Tracking device +tZ || Tracking device +tZ || Tracking device +tZ || Tracking device +tZ || Tracking device +tZ
+|-
+| View || {{hl|lookShiftLeftCont}} || Head Left (Analog) || Tracking device Left || Tracking device Left || Tracking device Left || Tracking device Left || Tracking device Left || Tracking device Left || Tracking device Left
+|-
+| View || {{hl|lookShiftRightCont}} || Head Right (Analog) || Tracking device Right || Tracking device Right || Tracking device Right || Tracking device Right || Tracking device Right || Tracking device Right || Tracking device Right
+|-
+| View || {{hl|lookShiftUpCont}} || Head Up (Analog) || || || || || || ||
+|-
+| View || {{hl|lookShiftDownCont}} || Head Down (Analog) || || || || || || ||
+|-
+| View || {{hl|lookShiftForwardCont}} || Head Forward (Analog) || || || || || || ||
+|-
+| View || {{hl|lookShiftBackCont}} || Head Back (Analog) || || || || || || ||
+|-
+| View || {{hl|lookRollLeftCont}} || Head Roll Left (Analog) || Tracking device +rZ || Tracking device +rZ || Tracking device +rZ || Tracking device +rZ || Tracking device +rZ || Tracking device +rZ || Tracking device +rZ
+|-
+| View || {{hl|lookRollRightCont}} || Head Roll Right (Analog) || Tracking device -rZ || Tracking device -rZ || Tracking device -rZ || Tracking device -rZ || Tracking device -rZ || Tracking device -rZ || Tracking device -rZ
+|-
+| View || {{hl|turretElevationUp}} || Raise Turret || Left Ctrl+Q || E || E || E || E || E || E
+|-
+| View || {{hl|turretElevationDown}} || Lower turret || Left Ctrl+Z || Q || Q || Q || Q || Q || Q
+|-
+| Command || {{hl|selectAll}} || Select All Units || grave || grave || grave || 2xgrave || grave || grave || grave
+|-
+| Command || {{hl|switchCommand}} || Switch Command Menu || Left Ctrl+Space,  || Left Ctrl+Space,  || Left Ctrl+Space,  || Left Ctrl+Space,  || Left Ctrl+Space,  || Left Ctrl+Space,  || Left Shift+F,
+|-
+| Command || {{hl|SelectGroupUnit1}} || Select Unit 1 || F1 || F1 || F1 || F1 || F1 || F1 || F1
+|-
+| Command || {{hl|SelectGroupUnit2}} || Select Unit 2 || F2 || F2 || F2 || F2 || F2 || F2 || F2
+|-
+| Command || {{hl|SelectGroupUnit3}} || Select Unit 3 || F3 || F3 || F3 || F3 || F3 || F3 || F3
+|-
+| Command || {{hl|SelectGroupUnit4}} || Select Unit 4 || F4 || F4 || F4 || F4 || F4 || F4 || F4
+|-
+| Command || {{hl|SelectGroupUnit5}} || Select Unit 5 || F5 || F5 || F5 || F5 || F5 || F5 || F5
+|-
+| Command || {{hl|SelectGroupUnit6}} || Select Unit 6 || F6 || F6 || F6 || F6 || F6 || F6 || F6
+|-
+| Command || {{hl|SelectGroupUnit7}} || Select Unit 7 || F7 || F7 || F7 || F7 || F7 || F7 || F7
+|-
+| Command || {{hl|SelectGroupUnit8}} || Select Unit 8 || F8 || F8 || F8 || F8 || F8 || F8 || F8
+|-
+| Command || {{hl|SelectGroupUnit9}} || Select Unit 9 || F9 || F9 || F9 || F9 || F9 || F9 || F9
+|-
+| Command || {{hl|SelectGroupUnit0}} || Select Unit 10 || F10 || F10 || F10 || F10 || F10 || F10 || F10
+|-
+| Command || {{hl|GroupPagePrev}} || Previous Unit Page || F11 || F11 || F11 || F11 || F11 || F11 || F11
+|-
+| Command || {{hl|GroupPageNext}} || Next Unit Page || F12 || F12 || F12 || F12 || F12 || F12 || F12
+|-
+| Command || {{hl|SetTeamRed}} || Set Team Red || Left Ctrl+F1, Right Ctrl+F1 || Left Ctrl+F1, Right Ctrl+F1 || Left Ctrl+F1, Right Ctrl+F1 || Left Ctrl+F1, Right Ctrl+F1 || Left Ctrl+F1, Right Ctrl+F1 || Left Ctrl+F1, Right Ctrl+F1 || Left Ctrl+F1, Right Ctrl+F1
+|-
+| Command || {{hl|SetTeamGreen}} || Set Team Green || Left Ctrl+F2, Right Ctrl+F2 || Left Ctrl+F2, Right Ctrl+F2 || Left Ctrl+F2, Right Ctrl+F2 || Left Ctrl+F2, Right Ctrl+F2 || Left Ctrl+F2, Right Ctrl+F2 || Left Ctrl+F2, Right Ctrl+F2 || Left Ctrl+F2, Right Ctrl+F2
+|-
+| Command || {{hl|SetTeamBlue}} || Set Team Blue || Left Ctrl+F3, Right Ctrl+F3 || Left Ctrl+F3, Right Ctrl+F3 || Left Ctrl+F3, Right Ctrl+F3 || Left Ctrl+F3, Right Ctrl+F3 || Left Ctrl+F3, Right Ctrl+F3 || Left Ctrl+F3, Right Ctrl+F3 || Left Ctrl+F3, Right Ctrl+F3
+|-
+| Command || {{hl|SetTeamYellow}} || Set Team Yellow || Left Ctrl+F4, Right Ctrl+F4 || Left Ctrl+F4, Right Ctrl+F4 || Left Ctrl+F4, Right Ctrl+F4 || Left Ctrl+F4, Right Ctrl+F4 || Left Ctrl+F4, Right Ctrl+F4 || Left Ctrl+F4, Right Ctrl+F4 || Left Ctrl+F4, Right Ctrl+F4
+|-
+| Command || {{hl|SetTeamWhite}} || Set Team White || Left Ctrl+F5, Right Ctrl+F5 || Left Ctrl+F5, Right Ctrl+F5 || Left Ctrl+F5, Right Ctrl+F5 || Left Ctrl+F5, Right Ctrl+F5 || Left Ctrl+F5, Right Ctrl+F5 || Left Ctrl+F5, Right Ctrl+F5 || Left Ctrl+F5, Right Ctrl+F5
+|-
+| Command || {{hl|SelectTeamRed}} || Select Team Red || Left Shift+F1, Right Shift+F1 || Left Shift+F1, Right Shift+F1 || Left Shift+F1, Right Shift+F1 || Left Shift+F1, Right Shift+F1 || Left Shift+F1, Right Shift+F1 || Left Shift+F1, Right Shift+F1 || Left Shift+F1, Right Shift+F1
+|-
+| Command || {{hl|SelectTeamGreen}} || Select Team Green || Left Shift+F2, Right Shift+F2 || Left Shift+F2, Right Shift+F2 || Left Shift+F2, Right Shift+F2 || Left Shift+F2, Right Shift+F2 || Left Shift+F2, Right Shift+F2 || Left Shift+F2, Right Shift+F2 || Left Shift+F2, Right Shift+F2
+|-
+| Command || {{hl|SelectTeamBlue}} || Select Team Blue || Left Shift+F3, Right Shift+F3 || Left Shift+F3, Right Shift+F3 || Left Shift+F3, Right Shift+F3 || Left Shift+F3, Right Shift+F3 || Left Shift+F3, Right Shift+F3 || Left Shift+F3, Right Shift+F3 || Left Shift+F3, Right Shift+F3
+|-
+| Command || {{hl|SelectTeamYellow}} || Select Team Yellow || Left Shift+F4, Right Shift+F4 || Left Shift+F4, Right Shift+F4 || Left Shift+F4, Right Shift+F4 || Left Shift+F4, Right Shift+F4 || Left Shift+F4, Right Shift+F4 || Left Shift+F4, Right Shift+F4 || Left Shift+F4, Right Shift+F4
+|-
+| Command || {{hl|SelectTeamWhite}} || Select Team White || Left Shift+F5, Right Shift+F5 || Left Shift+F5, Right Shift+F5 || Left Shift+F5, Right Shift+F5 || Left Shift+F5, Right Shift+F5 || Left Shift+F5, Right Shift+F5 || Left Shift+F5, Right Shift+F5 || Left Shift+F5, Right Shift+F5
+|-
+| Command || {{hl|CommandingMenu1}} || Open Menu (Move) || 1 || 1 || || 1 || || 1 || 1
+|-
+| Command || {{hl|CommandingMenu2}} || Open Menu (Target) || 2 || 2 || || 2 || || 2 || 2
+|-
+| Command || {{hl|CommandingMenu3}} || Open Menu (Engage) || 3 || 3 || || 3 || || 3 || 3
+|-
+| Command || {{hl|CommandingMenu4}} || Open Menu (Mount) || 4 || 4 || || 4 || || 4 || 4
+|-
+| Command || {{hl|CommandingMenu5}} || Open Menu (Status) || 5 || 5 || || 5 || || 5 || 5
+|-
+| Command || {{hl|CommandingMenu6}} || Open Menu (Action) || 6 || 6 || || 6 || || 6 || 6
+|-
+| Command || {{hl|CommandingMenu7}} || Open Menu (Combat Mode) || 7 || 7 || || 7 || || 7 || 7
+|-
+| Command || {{hl|CommandingMenu8}} || Open Menu (Formation) || 8 || 8 || || 8 || || 8 || 8
+|-
+| Command || {{hl|CommandingMenu9}} || Open Menu (Team) || 9 || 9 || || 9 || || 9 || 9
+|-
+| Command || {{hl|CommandingMenu0}} || Open Menu (Reply) || 0 || 0 || 0 || 0 || 0 || 0 || 0
+|-
+| Command || {{hl|CommandingMenuSelect1}} || Select Menu 1 || 1 || 1 || 1 || 1 || 1 || 1 || 1
+|-
+| Command || {{hl|CommandingMenuSelect2}} || Select Menu 2 || 2 || 2 || 2 || 2 || 2 || 2 || 2
+|-
+| Command || {{hl|CommandingMenuSelect3}} || Select Menu 3 || 3 || 3 || 3 || 3 || 3 || 3 || 3
+|-
+| Command || {{hl|CommandingMenuSelect4}} || Select Menu 4 || 4 || 4 || 4 || 4 || 4 || 4 || 4
+|-
+| Command || {{hl|CommandingMenuSelect5}} || Select Menu 5 || 5 || 5 || 5 || 5 || 5 || 5 || 5
+|-
+| Command || {{hl|CommandingMenuSelect6}} || Select Menu 6 || 6 || 6 || 6 || 6 || 6 || 6 || 6
+|-
+| Command || {{hl|CommandingMenuSelect7}} || Select Menu 7 || 7 || 7 || 7 || 7 || 7 || 7 || 7
+|-
+| Command || {{hl|CommandingMenuSelect8}} || Select Menu 8 || 8 || 8 || 8 || 8 || 8 || 8 || 8
+|-
+| Command || {{hl|CommandingMenuSelect9}} || Select Menu 9 || 9 || 9 || 9 || 9 || 9 || 9 || 9
+|-
+| Command || {{hl|CommandingMenuSelect0}} || Select Menu 10 || 0 || 0 || 0 || 0 || 0 || 0 || 0
+|-
+| Command || {{hl|commandWatch}} || Command Watch || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt
+|-
+| Command || {{hl|commandLeft}} || Command Left || A || A || A || A || A || A || A
+|-
+| Command || {{hl|commandRight}} || Command Right || D || D || D || D || D || D || D
+|-
+| Command || {{hl|commandForward}} || Command Forward || W || W || W || W || W || W || W
+|-
+| Command || {{hl|commandBack}} || Command Back || S || S || S || S || S || S || S
+|-
+| Command || {{hl|commandFast}} || Command Fast || E || W+Left Shift || W+Left Shift || W+Left Shift || W+Left Shift || W+Left Shift || W+Left Shift
+|-
+| Command || {{hl|commandSlow}} || Command Slow || Q || W+Left Ctrl, Left Ctrl+W || W+Left Ctrl, Left Ctrl+W || W+Left Ctrl, Left Ctrl+W || W+Left Ctrl, Left Ctrl+W || W+Left Ctrl, Left Ctrl+W || W+Left Ctrl, Left Ctrl+W
+|-
+| Multiplayer || {{hl|networkStats}} || Multiplayer Statistics || I || P || P || P || P || P || P
+|-
+| Multiplayer || {{hl|networkPlayers}} || List Of Players || P || Right Ctrl+P || Right Ctrl+P || Right Ctrl+P || Right Ctrl+P || Right Ctrl+P || Right Ctrl+P
+|-
+| Multiplayer || {{hl|prevChannel}} || Previous Channel || , || , || , || , || , || , || ,
+|-
+| Multiplayer || {{hl|nextChannel}} || Next Channel || . || . || . || . || . || . || .
+|-
+| Multiplayer || {{hl|chat}} || Chat || / || / || / || / || <null> || / || Enter
+|-
+| Multiplayer || {{hl|pushToTalk}} || Push To Talk || Caps Lock || Caps Lock || Caps Lock || Caps Lock || Caps Lock || Caps Lock || Caps Lock
+|-
+| Multiplayer || {{hl|voiceOverNet}} || Voice Over Net || || || || || || ||
+|-
+| Multiplayer || {{hl|PushToTalkAll}} || Talk On Global Channel || || || || || || ||
+|-
+| Multiplayer || {{hl|PushToTalkSide}} || Talk On Side Channel || || || || || || ||
+|-
+| Multiplayer || {{hl|PushToTalkCommand}} || Talk On Command Channel || || || || || || ||
+|-
+| Multiplayer || {{hl|PushToTalkGroup}} || Talk On Group Channel || || || || || || ||
+|-
+| Multiplayer || {{hl|PushToTalkVehicle}} || Talk on Vehicle channel || || || || || || ||
+|-
+| Multiplayer || {{hl|PushToTalkDirect}} || Talk on Direct channel || || || || || || ||
+|-
+| Multiplayer || {{hl|TacticalPing}} || Tactical Ping || || Left Shift+T || Left Shift+T || Left Shift+T || Left Shift+T || Left Shift+T || Left Shift+T
+|-
+| Infantry Movement || {{hl|MoveForward}} || Move Forward || W || W || W || W || W || UP || W
+|-
+| Infantry Movement || {{hl|MoveBack}} || Move Back || S || S || S || S || S || DOWN || S
+|-
+| Infantry Movement || {{hl|TurnLeft}} || Strafe Left || A || A || A || A || A || LEFT || A
+|-
+| Infantry Movement || {{hl|TurnRight}} || Strafe Right || D || D || D || D || D || RIGHT || D
+|-
+| Infantry Movement || {{hl|MoveFastForward}} || Fast Forward || 2xW || || || W+S, S+W || || ||
+|-
+| Infantry Movement || {{hl|MoveSlowForward}} || Slow forward || || || || || || ||
+|-
+| Infantry Movement || {{hl|turbo}} || Sprint || || Left Shift || Left Shift || || Left Shift || Left Shift || Left Shift
+|-
+| Infantry Movement || {{hl|TurboToggle}} || Sprint (Toggle) || || || || || || ||
+|-
+| Infantry Movement || {{hl|MoveLeft}} || Turn Left || Left Shift+Q || || || || || ||
+|-
+| Infantry Movement || {{hl|MoveRight}} || Turn Right || Left Shift+E || || || || || ||
+|-
+| Infantry Movement || {{hl|TactTemp}} || Combat Pace || || || || Left Shift || || ||
+|-
+| Infantry Movement || {{hl|TactToggle}} || Combat Pace Toggle || Y || C || 2xC || || C || C || C
+|-
+| Infantry Movement || {{hl|TactShort}} || Combat Pace 3 Sec. || || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn. || Prim. Mouse Btn.
+|-
+| Infantry Movement || {{hl|WalkRunTemp}} || Walk/Run (Temporary) || Left Shift || || || Space || || ||
+|-
+| Infantry Movement || {{hl|WalkRunToggle}} || Walk/Run (Toggle) || 2xLeft Shift || W+S, S+W || Left Ctrl+C || || 2xLeft Shift || W+S, S+W || W+S, S+W
+|-
+| Infantry Movement || {{hl|AdjustUp}} || Adjust Stance Up || Left Ctrl+W || Left Ctrl+W || Left Ctrl+W || Left Ctrl+W || Left Ctrl+W || Left Ctrl+W || UP
+|-
+| Infantry Movement || {{hl|AdjustDown}} || Adjust Stance Down || Left Ctrl+S || Left Ctrl+S || Left Ctrl+S || Left Ctrl+S || Left Ctrl+S || Left Ctrl+S || DOWN
+|-
+| Infantry Movement || {{hl|AdjustLeft}} || Adjust Stance Left || Left Ctrl+A || Left Ctrl+A || Left Ctrl+A || Left Ctrl+A || Left Ctrl+A || Left Ctrl+A || LEFT
+|-
+| Infantry Movement || {{hl|AdjustRight}} || Adjust Stance Right || Left Ctrl+D || Left Ctrl+D || Left Ctrl+D || Left Ctrl+D || Left Ctrl+D || Left Ctrl+D || RIGHT
+|-
+| Infantry Movement || {{hl|Stand}} || Stand Up (Toggle) || C || || || || || ||
+|-
+| Infantry Movement || {{hl|Crouch}} || Crouch (Toggle) || || || || || || ||
+|-
+| Infantry Movement || {{hl|Prone}} || Prone (Toggle) || || || || || || ||
+|-
+| Infantry Movement || {{hl|MoveUp}} || Crouch / Stand Up || X || X || X || X || X || X || Left Ctrl
+|-
+| Infantry Movement || {{hl|MoveDown}} || Go Prone / Stand Up || Z || Z || Z || Z || Z || Z || Space
+|-
+| Infantry Movement || {{hl|SwimUp}} || Swim Up || Q || X || X || X || X || X || Left Shift
+|-
+| Infantry Movement || {{hl|SwimDown}} || Swim Down || Z || Z || Z || Z || Z || Z || Space
+|-
+| Infantry Movement || {{hl|EvasiveLeft}} || Evasive Left || Q || Q || Q || Q || Q || || Q
+|-
+| Infantry Movement || {{hl|EvasiveRight}} || Evasive Right || E || E || E || E || E || E || E
+|-
+| Infantry Movement || {{hl|LeanLeft}} || Lean Left || Q || Q || Q || Q || Q || Tracking device Left || Q
+|-
+| Infantry Movement || {{hl|LeanLeftToggle}} || Lean Left Toggle || 2xQ || 2xQ || 2xQ || 2xQ || Left Ctrl+Q || 2xQ || 2xQ
+|-
+| Infantry Movement || {{hl|LeanRight}} || Lean Right || E || E || E || E || E || E || E
+|-
+| Infantry Movement || {{hl|LeanRightToggle}} || Lean Right Toggle || 2xE || 2xE || 2xE || 2xE || Left Ctrl+E || 2xE || 2xE
+|-
+| Infantry Movement || {{hl|GetOver}} || Step Over || V || V || V || V || Space || V || V
+|-
+| Infantry Movement || {{hl|Salute}} || Salute || \ || \ || \ || \ || \ || \ || \
+|-
+| Infantry Movement || {{hl|SitDown}} || Sit Down || acute/cedilla || acute/cedilla || acute/cedilla || acute/cedilla || acute/cedilla || acute/cedilla || acute/cedilla
+|-
+| Vehicle Movement || {{hl|CarForward}} || Car Forward || W || W || W || UP || W || W || W
+|-
+| Vehicle Movement || {{hl|CarBack}} || Car Back || S || S || S || S || S || S || S
+|-
+| Vehicle Movement || {{hl|CarLeft}} || Car Left || A || A || A || A || A || A || A
+|-
+| Vehicle Movement || {{hl|CarRight}} || Car Right || D || D || D || D || D || D || D
+|-
+| Vehicle Movement || {{hl|CarLinearLeft}} || Car Left (Analog) || || || || || || ||
+|-
+| Vehicle Movement || {{hl|CarLinearRight}} || Car Right (Analog) || || || || || || ||
+|-
+| Vehicle Movement || {{hl|CarFastForward}} || Car Fast Forward || E || Left Shift+W || Left Shift+W || W || Left Shift+W || Left Shift+W || Left Shift+W
+|-
+| Vehicle Movement || {{hl|CarSlowForward}} || Car Slow Forward || Q || Left Ctrl+W || Left Ctrl+W || W+S, S+W || Left Ctrl+W || Left Ctrl+W || Left Ctrl+W
+|-
+| Vehicle Movement || {{hl|CarHandBrake}} || Hand Brake || || X || X || Space || Space || X || Space
+|-
+| Vehicle Movement || {{hl|CarWheelLeft}} || Car More Left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left
+|-
+| Vehicle Movement || {{hl|CarWheelRight}} || Car More Right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right
+|-
+| Vehicle Movement || {{hl|CarAimUp}} || Aim Up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up
+|-
+| Vehicle Movement || {{hl|CarAimDown}} || Aim Down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down
+|-
+| Vehicle Movement || {{hl|CarAimLeft}} || Aim Left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left
+|-
+| Vehicle Movement || {{hl|CarAimRight}} || Aim Right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right
+|-
+| Vehicle Movement || {{hl|TurnIn}} || Turn In || X || Left Ctrl+Q || Left Ctrl+Q || Z || Left Ctrl+Q || Left Ctrl+Q || Left Ctrl+Q
+|-
+| Vehicle Movement || {{hl|TurnOut}} || Turn out || Z || Left Ctrl+E || Left Ctrl+E || X || Left Ctrl+E || Left Ctrl+E || Left Ctrl+E
+|-
+| Helicopter Movement || {{hl|HeliCyclicForward}} || Cyclic Forward || W || W || W || W || W || W || W
+|-
+| Helicopter Movement || {{hl|HeliCyclicBack}} || Cyclic Backward || S || S || S || S || S || S || S
+|-
+| Helicopter Movement || {{hl|HeliCyclicLeft}} || Cyclic Left || A || A || A || A || A || A || A
+|-
+| Helicopter Movement || {{hl|HeliCyclicRight}} || Cyclic Right || D || D || D || D || D || D || D
+|-
+| Helicopter Movement || {{hl|HeliCollectiveRaise}} || Collective Raise || Q || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift
+|-
+| Helicopter Movement || {{hl|HeliCollectiveLower}} || Collective Lower || Z || Z || Z || Space || Z || Z || Space
+|-
+| Helicopter Movement || {{hl|HeliRudderLeft}} || Left Pedal || X || Q || Q || Q || Q || Q || Q
+|-
+| Helicopter Movement || {{hl|HeliRudderRight}} || Right Pedal || C || E || E || E || E || E || E
+|-
+| Helicopter Movement || {{hl|HeliLeft}} || Left Turn || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left
+|-
+| Helicopter Movement || {{hl|HeliRight}} || Right Turn || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right
+|-
+| Helicopter Movement || {{hl|AutoHover}} || Auto-Hover On || 2x\ || X || X || || 2xLeft Shift || X || X
+|-
+| Helicopter Movement || {{hl|AutoHoverCancel}} || Auto-Hover Off || \ || X || X || || 2xLeft Shift || X || X
+|-
+| Helicopter Movement || {{hl|LandGear}} || Gear Down || Right Ctrl+G || G || G || G || G || G || G
+|-
+| Helicopter Movement || {{hl|LandGearUp}} || Gear Up || Right Ctrl+G || G || G || G || G || G || G
+|-
+| Helicopter Movement || {{hl|HeliCollectiveRaiseCont}} || Collective Raise (Analog) || || || || || || ||
+|-
+| Helicopter Movement || {{hl|HeliCollectiveLowerCont}} || Collective Lower (Analog) || || || || || || ||
+|-
+| Helicopter Movement || {{hl|HeliWheelsBrake}} || Wheel Brake Hold/Release || Right Ctrl+W || Right Ctrl+W || Right Ctrl+W || Right Ctrl+W || Right Ctrl+W || Right Ctrl+W || Right Ctrl+W
+|-
+| Helicopter Movement || {{hl|HelicopterTrimOn}} || Manual Trim Set || Right Ctrl+5 [NUM] || Right Ctrl+5 [NUM] || Right Ctrl+5 [NUM] || Right Ctrl+5 [NUM] || Right Ctrl+5 [NUM] || Right Ctrl+5 [NUM] || Right Ctrl+5 [NUM]
+|-
+| Helicopter Movement || {{hl|HelicopterTrimOff}} || Manual Trim Release || Right Ctrl+. [NUM] || Right Ctrl+. [NUM] || Right Ctrl+. [NUM] || Right Ctrl+. [NUM] || Right Ctrl+. [NUM] || Right Ctrl+. [NUM] || Right Ctrl+. [NUM]
+|-
+| Helicopter Movement || {{hl|HeliTrimLeft}} || Manual Trim (Left) || Right Ctrl+4 [NUM] || Right Ctrl+4 [NUM] || Right Ctrl+4 [NUM] || Right Ctrl+4 [NUM] || Right Ctrl+4 [NUM] || Right Ctrl+4 [NUM] || Right Ctrl+4 [NUM]
+|-
+| Helicopter Movement || {{hl|HeliTrimRight}} || Manual Trim (Right) || Right Ctrl+6 [NUM] || Right Ctrl+6 [NUM] || Right Ctrl+6 [NUM] || Right Ctrl+6 [NUM] || Right Ctrl+6 [NUM] || Right Ctrl+6 [NUM] || Right Ctrl+6 [NUM]
+|-
+| Helicopter Movement || {{hl|HeliTrimForward}} || Manual Trim (Forward) || Right Ctrl+8 [NUM] || Right Ctrl+8 [NUM] || Right Ctrl+8 [NUM] || Right Ctrl+8 [NUM] || Right Ctrl+8 [NUM] || Right Ctrl+8 [NUM] || Right Ctrl+8 [NUM]
+|-
+| Helicopter Movement || {{hl|HeliTrimBackward}} || Manual Trim (Backward) || Right Ctrl+2 [NUM] || Right Ctrl+2 [NUM] || Right Ctrl+2 [NUM] || Right Ctrl+2 [NUM] || Right Ctrl+2 [NUM] || Right Ctrl+2 [NUM] || Right Ctrl+2 [NUM]
+|-
+| Helicopter Movement || {{hl|HeliTrimRudderLeft}} || Manual Trim (Pedals Left) || Right Ctrl+1 [NUM] || Right Ctrl+1 [NUM] || Right Ctrl+1 [NUM] || Right Ctrl+1 [NUM] || Right Ctrl+1 [NUM] || Right Ctrl+1 [NUM] || Right Ctrl+1 [NUM]
+|-
+| Helicopter Movement || {{hl|HeliTrimRudderRight}} || Manual Trim (Pedals Right) || Right Ctrl+3 [NUM] || Right Ctrl+3 [NUM] || Right Ctrl+3 [NUM] || Right Ctrl+3 [NUM] || Right Ctrl+3 [NUM] || Right Ctrl+3 [NUM] || Right Ctrl+3 [NUM]
+|-
+| Helicopter Movement || {{hl|HeliRopeAction}} || Rope Interaction || B || B || B || B || B || B || B
+|-
+| Helicopter Movement || {{hl|HeliSlingLoadManager}} || Sling Load Assistant || Right Ctrl+B || Right Ctrl+B || Right Ctrl+B || Right Ctrl+B || Right Ctrl+B || Right Ctrl+B || Right Ctrl+B
+|-
+| Plane Movement || {{hl|HeliForward}} || Nose Down || W || W || W || W || W || W || W
+|-
+| Plane Movement || {{hl|HeliBack}} || Nose Up || S || S || S || S || S || S || S
+|-
+| Plane Movement || {{hl|AirBankLeft}} || Bank Left || A || A || A || A || A || A || A
+|-
+| Plane Movement || {{hl|AirBankRight}} || Bank Right || D || D || D || D || D || D || D
+|-
+| Plane Movement || {{hl|HeliFastForward}} || Fast Forward || E || || || || || ||
+|-
+| Plane Movement || {{hl|HeliUp}} || Increase Thrust || Q || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift
+|-
+| Plane Movement || {{hl|HeliDown}} || Decrease Thrust || Z || Z || Z || Space || Z || Z || Space
+|-
+| Plane Movement || {{hl|HeliThrottlePos}} || Thrust (Analog) || || || || || || ||
+|-
+| Plane Movement || {{hl|AirPlaneBrake}} || Speedbrake || || X || X || X || || X || X
+|-
+| Plane Movement || {{hl|HeliRudderLeft}} || Left Pedal || X || Q || Q || Q || Q || Q || Q
+|-
+| Plane Movement || {{hl|HeliRudderRight}} || Right Pedal || C || E || E || E || E || E || E
+|-
+| Plane Movement || {{hl|HeliLeft}} || Left Turn || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left
+|-
+| Plane Movement || {{hl|HeliRight}} || Right Turn || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right
+|-
+| Plane Movement || {{hl|vtolVectoring}} || Auto-Vectoring On || 2x\ || Left Ctrl+X || Left Ctrl+X || Left Ctrl+X || Left Ctrl+X || Left Ctrl+X || X
+|-
+| Plane Movement || {{hl|vtolVectoringCancel}} || Auto-Vectoring Off || \ || Left Ctrl+X || Left Ctrl+X || Left Ctrl+X || Left Ctrl+X || Left Ctrl+X || X
+|-
+| Plane Movement || {{hl|LandGear}} || Gear Down || Right Ctrl+G || G || G || G || G || G || G
+|-
+| Plane Movement || {{hl|LandGearUp}} || Gear Up || Right Ctrl+G || G || G || G || G || G || G
+|-
+| Plane Movement || {{hl|FlapsDown}} || Flaps Down || Right Ctrl+K || Left Ctrl+Mouse left || Left Ctrl+Mouse left || Right Ctrl+L || Left Ctrl+Mouse left || Left Ctrl+Mouse left || Left Ctrl+Mouse left
+|-
+| Plane Movement || {{hl|FlapsUp}} || Flaps Up || Right Ctrl+L || Left Ctrl+Mouse left || Left Ctrl+Mouse left || Left Ctrl+Mouse left || Left Ctrl+Mouse left || Left Ctrl+Mouse left || Left Ctrl+Mouse left
+|-
+| Plane Movement || {{hl|HeliThrottleNeg}} || Speedbrake (Analog) || || || || || || ||
+|-
+| Submarine Movement || {{hl|submarineUp}} || Surface || Q || X || X || Left Shift || Q || X || Left Shift
+|-
+| Submarine Movement || {{hl|submarineDown}} || Dive || Z || Z || Z || Space || Z || Z || Space
+|-
+| Submarine Movement || {{hl|submarineLeft}} || Turn Left || A || A || A || A || A || A || A
+|-
+| Submarine Movement || {{hl|submarineRight}} || Turn Right || D || D || D || D || D || D || D
+|-
+| Submarine Movement || {{hl|submarineForward}} || Move Forward || W || W || W || W || W || W || W
+|-
+| Submarine Movement || {{hl|submarineBack}} || Move Backward || S || S || S || S || S || S || S
+|-
+| Submarine Movement || {{hl|submarineCyclicForward}} || Nose Up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up
+|-
+| Submarine Movement || {{hl|submarineCyclicBack}} || Nose Down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down
+|-
+| Development || {{hl|BuldSwitchCamera}} || Buldozer Switch Camera || Insert || Insert || Insert || Insert || Insert || Insert || Insert
+|-
+| Development || {{hl|BuldFreeLook}} || Buldozer Free Look || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM]
+|-
+| Development || {{hl|BuldSelect}} || Buldozer Select || Space || Space || Space || Space || Space || Space || Space
+|-
+| Development || {{hl|BuldResetCamera}} || Buldozer Reset Camera || 0 [NUM] || 0 [NUM] || 0 [NUM] || 0 [NUM] || 0 [NUM] || 0 [NUM] || 0 [NUM]
+|-
+| Development || {{hl|BuldMagnetizePoints}} || Buldozer Magnetize Points || F5 || F5 || F5 || F5 || F5 || F5 || F5
+|-
+| Development || {{hl|BuldMagnetizePlanes}} || Buldozer Magnetize Planes || F6 || F6 || F6 || F6 || F6 || F6 || F6
+|-
+| Development || {{hl|BuldMagnetizeYFixed}} || Buldozer Magnetize Fixed Y || F7 || F7 || F7 || F7 || F7 || F7 || F7
+|-
+| Development || {{hl|BuldTerrainRaise1m}} || Buldozer Raise Terrain 1 m || O || O || O || O || O || O || O
+|-
+| Development || {{hl|BuldTerrainRaise10cm}} || Buldozer Raise Terrain 10 cm || U || U || U || U || U || U || U
+|-
+| Development || {{hl|BuldTerrainLower1m}} || Buldozer Lower Terrain 1 m || L || L || L || L || L || L || L
+|-
+| Development || {{hl|BuldTerrainLower10cm}} || Buldozer Lower Terrain 10 cm || J || J || J || J || J || J || J
+|-
+| Development || {{hl|BuldTerrainRaise5m}} || Buldozer Raise Terrain 5 m || P || P || P || P || P || P || P
+|-
+| Development || {{hl|BuldTerrainRaise50cm}} || Buldozer Raise Terrain 50 cm || I || I || I || I || I || I || I
+|-
+| Development || {{hl|BuldTerrainLower5m}} || Buldozer Lower Terrain 5 m || ; || ; || ; || ; || ; || ; || ;
+|-
+| Development || {{hl|BuldTerrainLower50cm}} || Buldozer Lower Terrain 50 cm || K || K || K || K || K || K || K
+|-
+| Development || {{hl|BuldTerrainShowNode}} || Buldozer Show Terrain Node || H || H || H || H || H || H || H
+|-
+| Development || {{hl|BuldSelectionType}} || Buldozer Selection Type || S || S || S || S || S || S || S
+|-
+| Development || {{hl|BuldLeft}} || Buldozer Left || LEFT || LEFT || LEFT || LEFT || LEFT || LEFT || LEFT
+|-
+| Development || {{hl|BuldRight}} || Buldozer Right || RIGHT || RIGHT || RIGHT || RIGHT || RIGHT || RIGHT || RIGHT
+|-
+| Development || {{hl|BuldForward}} || Buldozer Forward || UP || UP || UP || UP || UP || UP || UP
+|-
+| Development || {{hl|BuldBack}} || Buldozer Back || DOWN || DOWN || DOWN || DOWN || DOWN || DOWN || DOWN
+|-
+| Development || {{hl|BuldMoveLeft}} || Buldozer Move Left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left || Mouse left
+|-
+| Development || {{hl|BuldMoveRight}} || Buldozer Move Right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right || Mouse right
+|-
+| Development || {{hl|BuldMoveForward}} || Buldozer Move Forward || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up || Mouse up
+|-
+| Development || {{hl|BuldMoveBack}} || Buldozer Move Back || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down || Mouse down
+|-
+| Development || {{hl|BuldTurbo}} || Buldozer Turbo || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift
+|-
+| Development || {{hl|BuldUp}} || Buldozer Up || Page Up || Page Up || Page Up || Page Up || Page Up || Page Up || Page Up
+|-
+| Development || {{hl|BuldDown}} || Buldozer Down || Page Down || Page Down || Page Down || Page Down || Page Down || Page Down || Page Down
+|-
+| Development || {{hl|BuldLookLeft}} || Buldozer Look Left || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM]
+|-
+| Development || {{hl|BuldLookRight}} || Buldozer Look Right || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM]
+|-
+| Development || {{hl|BuldLookUp}} || Buldozer Look Up || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM]
+|-
+| Development || {{hl|BuldLookDown}} || Buldozer Look Down || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM]
+|-
+| Development || {{hl|BuldZoomIn}} || Buldozer Zoom In || + [NUM] || + [NUM] || + [NUM] || + [NUM] || + [NUM] || + [NUM] || + [NUM]
+|-
+| Development || {{hl|BuldZoomOut}} || Buldozer Zoom Out || - [NUM] || - [NUM] || - [NUM] || - [NUM] || - [NUM] || - [NUM] || - [NUM]
+|-
+| Development || {{hl|BuldTextureInfo}} || Buldozer Show Texture Info || T || T || T || T || T || T || T
+|-
+| Development || {{hl|BuldBrushRatio}} || Brush Ratio || B || B || B || B || B || B || B
+|-
+| Development || {{hl|BuldBrushStrength}} || Brush Strength || M || M || M || M || M || F || M
+|-
+| Development || {{hl|BuldBrushSmooth}} || Brush Smooth || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift
+|-
+| Development || {{hl|BuldBrushRandomize}} || Randomize || R || R || R || R || R || R || R
+|-
+| Development || {{hl|BuldBrushSetHeight}} || Set Height Brush || C || C || C || C || C || C || C
+|-
+| Development || {{hl|BuldBrushOuter}} || Brush Outer || N || N || N || N || N || N || N
+|-
+| Development || {{hl|BuldUndo}} || Undo || Left Ctrl+Z || Left Ctrl+Z || Left Ctrl+Z || Left Ctrl+Z || Left Ctrl+Z || Left Ctrl+Z || Left Ctrl+Z
+|-
+| Development || {{hl|BuldRedo}} || Redo || Left Ctrl+R || Left Ctrl+R || Left Ctrl+R || Left Ctrl+R || Left Ctrl+R || Left Ctrl+R || Left Ctrl+R
+|-
+| Development || {{hl|BuldCreateObj}} || Create Object || V || V || V || V || V || V || V
+|-
+| Development || {{hl|BuldDuplicateSel}} || Duplicate Selection || C || C || C || C || C || C || C
+|-
+| Development || {{hl|BuldRemoveSel}} || Remove Selection || D || D || D || D || D || D || D
+|-
+| Development || {{hl|BuldRotateSelX}} || Rotate X || X || X || X || X || X || X || X
+|-
+| Development || {{hl|BuldRotateSelZ}} || Rotate Y || Z || Z || Z || Z || Z || Z || Z
+|-
+| Development || {{hl|BuldScaleSel}} || Scale || E || E || E || E || E || E || E
+|-
+| Development || {{hl|BuldElevateSel}} || Elevate || W || W || W || W || W || W || W
+|-
+| Development || {{hl|BuldKeepAbsoluteElevationSel}} || Lock Object Elevation || M || M || M || M || M || M || M
+|-
+| Development || {{hl|BuldClearAllElevationLocks}} || Unlock Object Elevation || Left Shift+M, Right Shift+M || Left Shift+M, Right Shift+M || Left Shift+M, Right Shift+M || Left Shift+M, Right Shift+M || Left Shift+M, Right Shift+M || Left Shift+M, Right Shift+M || Left Shift+M, Right Shift+M
+|-
+| Development || {{hl|SeagullUp}} || Seagull Up || Q || Q || Q || Q || Q || Q || Q
+|-
+| Development || {{hl|SeagullDown}} || Seagull Down || Z || Z || Z || Z || Z || Z || Z
+|-
+| Development || {{hl|SeagullForward}} || Seagull Forward || W || W || W || W || W || W || W
+|-
+| Development || {{hl|SeagullBack}} || Seagull Back || S || S || S || S || S || S || S
+|-
+| Development || {{hl|SeagullFastForward}} || Seagull Fast Forward || E || E || E || E || E || E || E
+|-
+| Development || {{hl|cheat1}} || {{n/a}} || Right Windows || Right Windows || Right Windows || Right Windows || Right Windows || Right Windows || Right Windows
+|-
+| Development || {{hl|cheat2}} || {{n/a}} || Right Alt || Right Alt || Right Alt || Right Alt || Right Alt || Right Alt || Right Alt
+|-
+| Custom controls || {{hl|User1}} || Use Action 1 || || || || || || ||
+|-
+| Custom controls || {{hl|User2}} || Use Action 2 || || || || || || ||
+|-
+| Custom controls || {{hl|User3}} || Use Action 3 || || || || || || ||
+|-
+| Custom controls || {{hl|User4}} || Use Action 4 || || || || || || ||
+|-
+| Custom controls || {{hl|User5}} || Use Action 5 || || || || || || ||
+|-
+| Custom controls || {{hl|User6}} || Use Action 6 || || || || || || ||
+|-
+| Custom controls || {{hl|User7}} || Use Action 7 || || || || || || ||
+|-
+| Custom controls || {{hl|User8}} || Use Action 8 || || || || || || ||
+|-
+| Custom controls || {{hl|User9}} || Use Action 9 || || || || || || ||
+|-
+| Custom controls || {{hl|User10}} || Use Action 10 || || || || || || ||
+|-
+| Custom controls || {{hl|User11}} || Use Action 11 || || || || || || ||
+|-
+| Custom controls || {{hl|User12}} || Use Action 12 || || || || || || ||
+|-
+| Custom controls || {{hl|User13}} || Use Action 13 || || || || || || ||
+|-
+| Custom controls || {{hl|User14}} || Use Action 14 || || || || || || ||
+|-
+| Custom controls || {{hl|User15}} || Use Action 15 || || || || || || ||
+|-
+| Custom controls || {{hl|User16}} || Use Action 16 || || || || || || ||
+|-
+| Custom controls || {{hl|User17}} || Use Action 17 || || || || || || ||
+|-
+| Custom controls || {{hl|User18}} || Use Action 18 || || || || || || ||
+|-
+| Custom controls || {{hl|User19}} || Use Action 19 || || || || || || ||
+|-
+| Custom controls || {{hl|User20}} || Use Action 20 || || || || || || ||
+|-
+| Zeus || {{hl|curatorInterface}} || Zeus || Y || Y || Y || Y || Y || Y || Y
+|-
+| Zeus || {{hl|curatorRotateMod}} || Rotate entity || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift
+|-
+| Zeus || {{hl|curatorMoveY}} || Raise entity || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt
+|-
+| Zeus || {{hl|curatorDelete}} || Delete entity || Delete || Delete || Delete || Delete || Delete || Delete || Delete
+|-
+| Zeus || {{hl|curatorDestroy}} || Destroy entity || End || End || End || End || End || End || End
+|-
+| Zeus || {{hl|curatorGetOut}} || Order units to get out || G || G || G || G || G || G || G
+|-
+| Zeus || {{hl|curatorContentWaypoint}} || Place 'cycle' waypoint || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt
+|-
+| Zeus || {{hl|curatorMoveCamTo}} || Move camera to selected entity || F || F || F || F || F || F || F
+|-
+| Zeus || {{hl|curatorLockCameraTo}} || Lock camera on selected entity || Left Ctrl+F || Left Ctrl+F || Left Ctrl+F || Left Ctrl+F || Left Ctrl+F || Left Ctrl+F || Left Ctrl+F
+|-
+| Zeus || {{hl|curatorLevelObject}} || Adjust object to sea level || X || X || X || X || X || X || X
+|-
+| Zeus || {{hl|curatorGroupMod}} || Group units together || Left Ctrl || Left Ctrl || Left Ctrl || Left Ctrl || Left Ctrl || Left Ctrl || Left Ctrl
+|-
+| Zeus || {{hl|curatorMultipleMod}} || Select multiple entities || Left Ctrl || Left Ctrl || Left Ctrl || Left Ctrl || Left Ctrl || Left Ctrl || Left Ctrl
+|-
+| Zeus || {{hl|CuratorCollapseParent}} || Collapse / Expand Section || C || C || C || C || C || C || C
+|-
+| Zeus || {{hl|curatorNightvision}} || Toggle vision mode || N || N || N || N || N || N || N
+|-
+| Zeus || {{hl|curatorPersonView}} || Toggle View || Enter [NUM] || Enter [NUM] || Enter [NUM] || Enter [NUM] || Enter [NUM] || Enter [NUM] || Enter [NUM]
+|-
+| Zeus || {{hl|curatorPingView}} || Move to pinged player || Space || Space || Space || Space || E || Space || Space
+|-
+| Zeus || {{hl|curatorToggleInterface}} || Toggle interface || Backspace || Backspace || Backspace || Backspace || I || Backspace || Backspace
+|-
+| Zeus || {{hl|curatorToggleEdit}} || Toggle EDIT list || E || E || E || E || U || E || E
+|-
+| Zeus || {{hl|curatorToggleCreate}} || Toggle CREATE list || R || R || R || R || R || R || R
+|-
+| Zeus || {{hl|curatorMapTextures}} || Toggle map textures || T || T || T || T || T || T || T
+|-
+| Zeus || {{hl|curatorCompass}} || Compass || K || K || K || K || K || K || K
+|-
+| Zeus || {{hl|curatorWatch}} || Toggle time information || O || O || O || O || O || O || O
+|-
+| Camera || {{hl|cameraMoveForward}} || Move Forward || W || W || W || W || W || W || W
+|-
+| Camera || {{hl|cameraMoveBackward}} || Move Backward || S || S || S || S || S || S || S
+|-
+| Camera || {{hl|cameraMoveLeft}} || Move Left || A || A || A || A || A || A || A
+|-
+| Camera || {{hl|cameraMoveRight}} || Move Right || D || D || D || D || D || D || D
+|-
+| Camera || {{hl|cameraMoveUp}} || Move Up || Q || Q || Q || Q || Q || Q || Q
+|-
+| Camera || {{hl|cameraMoveDown}} || Move Down || Z || Z || Z || Z || Z || Z || Z
+|-
+| Camera || {{hl|cameraMoveTurbo1}} || Speed Modifier || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift
+|-
+| Camera || {{hl|cameraMoveTurbo2}} || Extreme Speed Modifier || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt || Left Alt
+|-
+| Camera || {{hl|cameraZoomIn}} || Zoom In || + [NUM] || + [NUM] || + [NUM] || + [NUM] || + [NUM] || + [NUM] || + [NUM]
+|-
+| Camera || {{hl|cameraZoomOut}} || Zoom Out || - [NUM] || - [NUM] || - [NUM] || - [NUM] || - [NUM] || - [NUM] || - [NUM]
+|-
+| Camera || {{hl|cameraLookUp}} || Look Up || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM]
+|-
+| Camera || {{hl|cameraLookDown}} || Look Down || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM]
+|-
+| Camera || {{hl|cameraLookLeft}} || Look Left || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM]
+|-
+| Camera || {{hl|cameraLookRight}} || Look Right || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM]
+|-
+| Camera || {{hl|cameraReset}} || Reset View || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM]
+|-
+| Camera || {{hl|cameraTarget}} || Move to Target || F || F || F || F || F || F || F
+|-
+| Camera || {{hl|cameraVisionMode}} || Toggle Vision Mode || N || N || N || N || N || N || N
+|-
+| Camera || {{hl|cameraFlashlight}} || Toggle Flashlight || L || L || L || L || L || L || L
+|-
+| Camera || {{hl|cameraInterface}} || Toggle Interface || Backspace || Backspace || Backspace || Backspace || Backspace || Backspace || Backspace
+|-
+| Editor Camera || {{hl|editorCameraMoveForward}} || Move Forward || W || W || W || W || W || W || W
+|-
+| Editor Camera || {{hl|editorCameraMoveBackward}} || Move Backward || S || S || S || S || S || S || S
+|-
+| Editor Camera || {{hl|editorCameraMoveLeft}} || Move Left || A || A || A || A || A || A || A
+|-
+| Editor Camera || {{hl|editorCameraMoveRight}} || Move Right || D || D || D || D || D || D || D
+|-
+| Editor Camera || {{hl|editorCameraMoveUp}} || Move Up || Q || Q || Q || Q || Q || Q || Q
+|-
+| Editor Camera || {{hl|editorCameraMoveDown}} || Move Down || Z || Z || Z || Z || Z || Z || Z
+|-
+| Editor Camera || {{hl|editorCameraMoveTurbo}} || Speed Modifier || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift || Left Shift
+|-
+| Editor Camera || {{hl|editorCameraLookUp}} || Look Up || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM] || 8 [NUM]
+|-
+| Editor Camera || {{hl|editorCameraLookDown}} || Look Down || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM] || 2 [NUM]
+|-
+| Editor Camera || {{hl|editorCameraLookLeft}} || Look Left || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM] || 4 [NUM]
+|-
+| Editor Camera || {{hl|editorCameraLookRight}} || Look Right || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM] || 6 [NUM]
+|-
+| Editor Camera || {{hl|editorCameraReset}} || {{n/a}} || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM] || 5 [NUM]
+|}
+
+{{Wiki|extractionScript}}
+
+
+{{GameCategory|arma3|Controls}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:BAS_(OFP)
+// revision: 183133 (2021-01-05T06:50:52Z)
+// export sha1: 3aaaftbq5knn9ixh9q1pez692226ywz
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|ofp|Media}}

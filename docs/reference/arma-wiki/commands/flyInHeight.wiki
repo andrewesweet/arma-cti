@@ -1,0 +1,102 @@
+// source: https://community.bistudio.com/wiki/flyInHeight
+// revision: 376081 (2025-08-01T17:11:58Z)
+// export sha1: e1nr05792ccl9gy9z95rxlqb93jzmr3
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Sets the flying altitude for aircraft relatively to the ground surface. Avoid too low altitudes, as helicopters and planes won't evade trees and obstacles on the ground. The default flying altitude is 100 meters. The minimum height is 20 meters.
+{{Feature|informative|Height measurement is relative to the pilot and can be approximated with <sqf inline>ASLToAGL eyePos driver _aircraft;</sqf>.}}
+
+|s1= aircraft [[flyInHeight]] altitude
+
+|p1= aircraft: [[Object]]
+
+|p2= altitude: [[Number]] - flying altitude in meters
+
+|r1= [[Nothing]]
+
+|s2= aircraft [[flyInHeight]] [altitude, forced]
+
+|s2since= arma3 2.14
+
+|p21= aircraft: [[Object]]
+
+|p22= altitude: [[Number]] - flying altitude in meters
+
+|p23= forced: [[Boolean]] - [[true]] to force altitude in all cases, [[false]] to behave like main syntax
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_helicopter flyInHeight 40;</sqf>
+
+|x2= <sqf>
+// for altitudes below 10m
+_helicopter flyInHeight 5;			// helicopter will land
+_helicopter flyInHeight [5, true];	// helicopter will hover at 5m altitude
+
+// on a landed helicopter
+_helicopter flyInHeight 50;			// helicopter will not move until a waypoint is added
+_helicopter flyInHeight [50, true];	// helicopter will start to rise immediately
+</sqf>
+
+|seealso= [[flyInHeightASL]]
+}}
+
+{{Note
+|user= Hardrock
+|timestamp= 20060804125000
+|text= ''Notes from before the conversion:''<br>
+From {{GVI|ofp|1.80}} - [[flyInHeight]] now affects not only helicopters, but also planes.
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20081216013400
+|text= A [[flyInHeight]] of 0 will keep the chopper pinned to the ground, even when the engines have been started.
+}}
+
+{{Note
+|user= Jtgibson
+|timestamp= 20090411005300
+|text= If a helo has no waypoints, it will assume a low hover without regard to this setting.
+{{Feature|important|This comment does not apply to the {{Link|#Syntax 2|alternative syntax}}.}}
+|game= arma1
+|version= 1.00
+}}
+
+{{Note
+|user= OverlordZorn
+|timestamp= 20250801171158
+|text= As of 2.20:
+<br>- when altitude is greater or equal 10, collision avoidance will maintain priority and the rotary airframe stays around 20~35 meters ATL, depending on nearby objects.
+<br>- when altitude is lower then 10, for example, 9.99999, it seems that collision avoidance is disabled and the airframe will maintain the desired ATL.
+}}

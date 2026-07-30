@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_respawnEndMission
+// revision: 363227 (2024-03-26T10:50:29Z)
+// export sha1: j2fwk7gak28be0c8jv739gnuwkqtex2
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= End a mission if all players are dead ''and'' there are no more respawn tickets (if any).
+* '''Standard syntax''' is for when [[Description.ext#respawn|Respawn]] is "NONE", "BIRD", "GROUP" or "SIDE"
+* '''Alternative syntax''' is for when [[Description.ext#respawn|Respawn]] is "INSTANT" or "BASE"
+  {{Feature|important|Only works in Multiplayer!}}
+
+|s1= call [[BIS_fnc_respawnEndMission]]
+
+|r1= [[Nothing]] - the script doesn't end
+
+|s2= unit call [[BIS_fnc_respawnEndMission]]
+
+|p11= unit: [[Object]]
+|r2= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_respawnEndMission;</sqf>
+
+|x2= <sqf>player call BIS_fnc_respawnEndMission;</sqf>
+
+|seealso= [[BIS_fnc_endMission]] [[BIS_fnc_respawnTickets]] [[BIS_fnc_missionRespawnType]] [[playableUnits]] [[isMultiplayer]]
+}}

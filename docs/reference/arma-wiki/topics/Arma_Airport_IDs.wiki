@@ -1,0 +1,230 @@
+// source: https://community.bistudio.com/wiki/Arma:_Airport_IDs
+// revision: 341710 (2023-06-19T21:13:10Z)
+// export sha1: rbt0jrasw29jgzp51n1j5n8bv4ybz3p
+// categories: Category:ArmA: Armed Assault: Editing | Category:Arma 2: Editing | Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This page lists Arma games' airport ids.
+
+Related commands:
+* [[landAt]]
+* [[airportSide]]
+* [[setAirportSide]]
+* [[allAirports]]
+* ''[[assignToAirport]]''
+
+
+== {{arma3}} ==
+
+{{Wiki|extractionScript}}
+
+=== Altis ===
+
+See [[Altis]].
+
+{| class="wikitable"
+! ID !! Coordinates !! Description !! AI approach
+|-
+| 0
+| 143159
+| Airbase
+| 44 (NE)
+|-
+| 1
+| 113114
+| AAC Airfield
+| 33 (NE)
+|-
+| 2
+| 092215
+| Krya Nera Airstrip
+| 53 (NE)
+|-
+| 3
+| 210070
+| Selakeno Airfield
+| 11 (N)
+|-
+| 4
+| 271249
+| Molos Airfield
+| 41 (NE)
+|-
+| 5
+| 231184
+| Almyra Salt Lake Airstrip
+| 0 (N)
+|-
+|}
+
+=== Stratis ===
+
+See [[Stratis]].
+{| class="wikitable"
+! ID !! Coordinates !! Description !! AI approach
+|-
+| 0
+| 015050
+| Stratis Air Base
+| 15 (N)
+|-
+|}
+
+=== Tanoa ===
+
+See [[Tanoa]].
+{| class="wikitable"
+! ID !! Coordinates !! Description !! AI approach
+|-
+| 0
+| 072069
+| 	Aéroport de Tanoa
+| 12 (N)
+|-
+| 1
+| 018129
+| Tuvanaka Airbase
+| 51 (NE)
+|-
+| 2
+| 118029
+| Saint-George Airstrip
+| 54 (NE)
+|-
+| 3
+| 019034
+| Bala Airstrip
+| 74 (E)
+|-
+| 4
+| 122130
+| La Rochelle Aérodrome
+| 73 (E)
+|-
+|}
+
+=== Malden 2035 ===
+
+See [[Malden 2035]].
+{| class="wikitable"
+! ID !! Coordinates !! Description !! AI approach
+|-
+| 0
+| 079095
+| Airport
+| 0 (N)
+|-
+| 1
+| 006122
+| Pegasus Air Co.
+| 90 (E)
+|-
+|}
+
+=== Livonia ===
+
+See [[Livonia]].
+{| class="wikitable"
+! ID !! Coordinates !! Description !! AI approach
+|-
+| 0
+| 042105
+| Lukow Airfield
+| 45 (NE)
+|-
+|}
+
+
+== {{arma2oa}} ==
+
+=== Takistan ===
+
+See [[Takistan]].
+{| class="wikitable"
+! ID !! Coordinates !! Description !! AI approach
+|-
+| 0
+| -
+| North-West
+| -
+|-
+| 1
+| -
+| SouthEast
+| -
+|}
+
+
+== {{arma2}} ==
+
+=== Chernarus ===
+
+See [[Chernarus]].
+{| class="wikitable"
+! ID !! Coordinates !! Description !! AI approach
+|-
+| 0
+| -
+| NorthWest close to Grishno
+| rowspan="4" | South-East
+|-
+| 1
+| -
+| NorthEast close to Kranostav
+|-
+| 2
+| -
+| SouthWest close to Balota
+|-
+| 3
+| -
+| -
+|}
+
+=== Utes ===
+
+See [[Utes]].
+{| class="wikitable"
+! ID !! Coordinates !! Description !! AI approach
+|-
+| 0
+| -
+| -
+| -
+|}
+
+
+== {{arma1}} ==
+
+=== Sahrani ===
+
+See [[Sahrani]].
+{| class="wikitable"
+! ID !! Coordinates !! Description !! AI approach
+|-
+| 0
+| E5
+| Main airport near Paraiso
+| West
+|-
+| 1
+| B8
+| Rahmadi Island
+| North
+|-
+| 2
+| J3
+| Pita Airfield
+| North-West
+|-
+| 3
+| J1
+| Antigua Island
+| North
+|}
+
+
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}

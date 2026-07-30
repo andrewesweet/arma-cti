@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/periscopeElevation
+// revision: 378227 (2026-03-17T23:24:58Z)
+// export sha1: 9cw53nr57s8uyqlqbrz7qzqjyi8puf8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Object Manipulation
+
+|gr2= Animations
+
+|descr= Returns current periscope elevation value, see also [[elevatePeriscope]].
+
+|s1= vehicle [[periscopeElevation]] turretPath
+
+|p1= vehicle: [[Object]] - vehicle with periscope tech
+
+|p2= turretPath: [[Turret Path]]
+
+|r1= [[Array]] format [elevation, isLocked]:
+* elevation: [[Number]] - current periscope elevation value. -1 in case of an invalid turret
+* isLocked: [[Boolean]] - whether or not user override is blocked
+
+|x1= <sqf>_eddie periscopeElevation [0] params ["_elevation", "_isLocked"];</sqf>
+
+|seealso= [[elevatePeriscope]] [[animationPhase]] [[allTurrets]] [[Arma 3: Event Handlers#PeriscopeElevationChanged|PeriscopeElevationChanged]]
+}}

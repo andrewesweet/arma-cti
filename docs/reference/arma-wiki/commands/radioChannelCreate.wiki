@@ -1,0 +1,76 @@
+// source: https://community.bistudio.com/wiki/radioChannelCreate
+// revision: 378309 (2026-04-01T22:48:12Z)
+// export sha1: tnv8lzlq5lqvzwcx53dx0chg2nw9ir0
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: Custom Radio and Chat | Category:Command Group: Radio and Chat | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Scripting Commands: Server Execution | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|serverExec= server
+
+|arg= global
+|eff= global
+
+|gr1= Radio and Chat
+
+|gr2= Custom Radio and Chat
+
+|descr= Create a custom radio channel with the given color, label, call sign and registered characters.
+The '''[[Channel IDs|custom channel ID]]''' returned can be used to manipulate the created channel later.
+There are '''50''' slots (10 slots before {{GVI|arma3|2.22|size= 0.75}}) for custom radio channels which would correspond to channels 6..15 and 26..65 (see [[getPlayerChannel]]).
+The command will find an unused index in this range and create it when found.
+
+|s1= [[radioChannelCreate]] [color, label, callSign, units, sentenceType]
+
+|p1= color: [[Array]] - [[Color|RGBA color]] values
+
+|p2= label: [[String]] - label
+
+|p3= callSign: [[String]] or {{GVI|arma3|2.22|size= 0.75}} [[Array]] of [[String]]s - see [[radioChannelSetCallSign]]
+
+|p4= units: [[Array]] of [[Object]]s - units in the channel
+
+|p5= sentenceType: [[Boolean]] - (Optional, default [[true]])
+* [[true]] - use ''Protocol'' message color from <sqf inline>getArray (configFile >> "RscChatListDefault" >> "colorMessageProtocol")</sqf>
+* [[false]] - use ''Normal'' message color from <sqf inline>getArray (configFile >> "RscChatListDefault" >> "colorMessage")</sqf>
+
+|r1= [[Number]] - created '''[[Channel IDs|custom channel ID]]''' (used in [[customChat]] command), 0 if failed. (see [[BIS_fnc_channelNumToRadioChannelID]], [[BIS_fnc_radioChannelIDToChannelNum]])
+
+|x1= <sqf>_channelID = radioChannelCreate [[0.96, 0.34, 0.13, 0.8], "Q-dance Radio", "%UNIT_NAME", [player1, player2]];</sqf>
+
+|x2= <sqf>
+_channelID = radioChannelCreate [[0.96, 0.34, 0.13, 0.8], "Q-dance Radio", "%UNIT_NAME", [player1, player2], true];
+// using true also disables automatic quotes for chat in channel (Arma 3)
+</sqf>
+
+|x3= Create custom channel and add all players to it, present and JIP:
+<sqf>
+if (isServer) then
+{
+	private _channelName = "Q-dance Radio";
+	private _channelID = radioChannelCreate [[0.96, 0.34, 0.13, 0.8], _channelName, "%UNIT_NAME", []];
+	if (_channelID == 0) exitWith {diag_log format ["Custom channel '%1' creation failed!", _channelName]};
+	[_channelID, {_this radioChannelAdd [player]}] remoteExec ["call", [0, -2] select isDedicated, _channelName];
+};
+</sqf>
+
+|seealso= [[radioChannelAdd]] [[radioChannelRemove]] [[radioChannelSetCallSign]] [[radioChannelSetLabel]] [[customChat]] [[customRadio]] [[setCurrentChannel]] [[currentChannel]] [[enableChannel]] [[channelEnabled]] [[getPlayerChannel]] [[radioChannelInfo]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20160121133000
+|text= Make sure you add all units you intend to speak or receive messages on created custom channel to the channel.
+}}
+
+{{Note
+|user= Hypoxic125
+|timestamp= 20221101063808
+|text= Units are removed from the chat channel on RESPAWN. Be sure to add units back to their custom chat channels upon respawn via [[Event_Scripts#onPlayerRespawn.sqf|onPlayerRespawn.sqf]] or [[Arma_3:_Event_Handlers#Respawn|Respawn Event Handler]].
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/save3DENInventory
+// revision: 330340 (2022-08-31T21:24:40Z)
+// export sha1: 5cu4l060zfetboc6uyxuha9pnkzusyl
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Saves the current state of entities' inventory to the [[Mission.sqm]].
+
+|s1= [[save3DENInventory]] entities
+
+|p1= entities: [[Array]] of [[Eden Entity]] or [[Eden ID]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>save3DENInventory [_soldier1, _soldier2];</sqf>
+
+|x2= <sqf>save3DENInventory [11234, 21251];</sqf>
+
+|seealso= [[clear3DENInventory]] [[get3DENEntityID]] [[collect3DENHistory]]
+}}

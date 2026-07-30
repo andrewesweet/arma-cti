@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Localization
+// revision: 250735 (2021-03-13T08:54:02Z)
+// export sha1: t91le4xambdjktt7q82hcipmv65xbw1
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands related to [[Stringtable.xml|localization]]. See also [[BIS_fnc_localize]].
+
+[[Category:Scripting Commands by Functionality]]

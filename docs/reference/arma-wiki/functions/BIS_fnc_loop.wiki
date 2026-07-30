@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_loop
+// revision: 328958 (2022-07-18T10:58:38Z)
+// export sha1: 7aepwbaeb4zpuugzl3zhq94nct0wxu3
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Program Flow | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Program Flow
+
+|descr= Loop stacked code/function with timing and conditional control. Code and conditions are executed in [[Scheduler#Unscheduled_Environment|non-scheduled environment]].
+
+|s1= [action, parameters] call [[BIS_fnc_loop]]
+
+|p1= action: [[String]] - can be one of:
+* "initialize" - Initializes game loop (not required as internal AUTO_INITIALIZE variable is set to true)
+* "terminate" - Terminates game loop (required as internal AUTO_TERMINATE variable is ''not'' set to true)
+* "itemAdd" - Adds an item to loop
+* "itemRemove" - Remove item from loop with id "uniqueId"
+* ''"onEachFrame" - internally used by "initialize"''
+* ''"itemExecute" - internally used by "onEachFrame"''
+
+|p2= parameters: [[Array]] - used with "itemAdd" and "itemRemove" ''action'' ("itemRemove" only takes id):
+* id: [[String]] - loop unique id
+* code: [[Code]] or [[String]] - code to be executed
+* timer: [[Number]] - (Optional, default 0) delay between executions
+* timerType: [[String]] - (Optional, default "seconds") can be "seconds" or "frames"
+* conditionStart: [[Code]] - (Optional, default <sqf inline>{ true }</sqf>) will ''wait'' until the condition is met to start the code
+* conditionEnd:  [[Code]] - (Optional, default <sqf inline>{ false }</sqf>) stops the loop as soon as the ending condition is met (after the end of ''code'')
+* executeOnce: [[Boolean]] - (Optional, default [[false]])
+
+|r1= [[Nothing]]
+
+|x1= <sqf>// hints time every five seconds
+["itemAdd", ["uniqueId", { hint str time; }, 5]] call BIS_fnc_loop;</sqf>
+
+|x2= <sqf>// removes stacked loop with id of uniqueId
+["itemRemove", ["uniqueId"]] call BIS_fnc_loop;</sqf>
+
+|x3= <sqf>// hints time every frame after BIS_variable is assigned
+["itemAdd", ["uniqueId", { hint str time; }, nil, nil, { !isNil { BIS_variable } }]] call BIS_fnc_loop;</sqf>
+
+|x4= <sqf>// hints time every five seconds after BIS_variable is assigned
+["itemAdd", ["uniqueId", { hint str time; }, 5, "seconds", { !isNil { BIS_variable } }]] call BIS_fnc_loop;</sqf>
+
+|x5= <sqf>// hints time every frame
+["itemAdd", ["uniqueId", { hint str time; }]] call BIS_fnc_loop;</sqf>
+
+|x6= <sqf>// remove item from loop with id "uniqueId"
+["itemRemove", ["uniqueId"]] call BIS_fnc_loop;</sqf>
+
+|seealso= [[for]] [[forEach]] [[while]]
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Spearhead_Extended_Gear_Images
+// revision: 374534 (2025-07-18T15:15:25Z)
+// export sha1: 7mixcz3zezzhjbu9n27u7q8kmx6gvuc
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Spearhead Extended Images]]

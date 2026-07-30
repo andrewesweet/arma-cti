@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/configProperties
+// revision: 377082 (2026-01-01T09:41:25Z)
+// export sha1: 8cxjq8ipeip5if8qco0i24jiapjom7u
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Introduced with Arma 3 version 1.36 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.36
+
+|gr1= Config
+
+|descr= Returns an array of config entries that meet the criteria in the condition code. The command iterates through available classes and config properties for given config entry.
+Current looked at config is stored in _x variable (similar to alternative [[count]] command implementation).
+The condition has to return [[true]] in order for the looked at property to be added to the resulting array. This command is a bit slower than [[configClasses]] but allows to access inherited entries.
+
+|s1= [[configProperties]] [config, condition, inherit]
+
+|p1= config: [[Config]] - config entry to search
+
+|p2= condition: [[String]] - (Optional, default "true") expression, which if returns [[true]], adds current property to result
+{{Feature|important|
+* The condition code passed to [[configProperties]] should only be used for '''simple filter expressions''' and nothing more.
+* Since {{GVI|arma3|2.02}} the following conditions are optimised for performance:
+** {{hl|"true"}} (omitted condition)
+** {{hl|"isClass _x"}}
+** {{hl|"isClass _x &amp;&amp; (...)"}}
+}}
+
+|p3= inherit: [[Boolean]] - (Optional, default [[true]]) include inherited properties
+
+|r1= [[Array]] of [[Config]]s
+
+|x1= <sqf>_configs = configProperties [configFile >> "CfgVehicles" >> "O_Truck_02_box_F"];</sqf>
+
+|x2= <sqf>_configs = configProperties [configFile >> "RscText", "true", true];</sqf>
+
+|x3= Get all hitpoints of a truck:
+<sqf>
+_hitPoints = [];
+_hitPointsCfgs = configProperties [
+	configFile >> "CfgVehicles" >> "O_Truck_02_box_F" >> "HitPoints", 
+	"true", 
+	true
+];
+hint str _hitPointsCfgs;
+</sqf>
+
+|seealso= [[Config]] [[configFile]] [[missionConfigFile]] [[configClasses]] [[configHierarchy]]
+}}

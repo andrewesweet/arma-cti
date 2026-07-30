@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/checkVisibility
+// revision: 377827 (2026-01-03T04:27:56Z)
+// export sha1: lgxafx9c6ii4ym6bf6ycdcqce8gavdb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Geometry | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Math - Geometry
+
+|descr= {{{!}} class="wikitable float-right"
+! style="width: 50%" {{!}} Affected by
+! Not affected by
+{{!}}-
+{{!}}
+* [[getTerrainGrid|terrain grid]]
+* obstacles
+* particles<br><span style="font-size: .9em">(with <syntaxhighlight lang="cpp" inline>blockAIVisibility = 1</syntaxhighlight>)</span>
+{{!}}
+* [[time|daylight]]
+* [[distance]]
+* [[overcast]]
+* [[fog]]
+{{!}}}
+Checks if one position is visible from another position and how much.
+
+{{Feature|informative|Particles that have {{hl|blockAIVisibility}} set to 1 will influence the result, but will never make [[checkVisibility]] return 0; an extremely small number will be returned instead.}}
+
+|s1= [ignore, LOD, ignore2] [[checkVisibility]] [beg, end]
+
+|p1= ignore: [[Object]] - object to exclude from calculations
+
+|p2= LOD: [[String]] - level of details to use. Possible values are: {{hl|"FIRE"}}, {{hl|"VIEW"}}, {{hl|"GEOM"}}, {{hl|"IFIRE"}}, and {{GVI|arma3|2.02|size= 0.75}} {{hl|"PHYSX"}}
+
+|p3= ignore2: [[Object]] - (Optional, default [[objNull]]) second object to exclude from calculations
+|p3since= arma3 1.62
+
+|p4= beg: [[Position#PositionASL|PositionASL]] - start position
+
+|p5= end: [[Position#PositionASL|PositionASL]] - end position
+
+|r1= [[Number]] - how much end position is visible to start position in range 0..1, where 1 is fully visible.
+
+|x1= <sqf>private _canSee = [objNull, "VIEW"] checkVisibility [eyePos player, eyePos unit1];</sqf>
+
+|seealso= [[lineIntersectsWith]] [[lineIntersectsSurfaces]] [[lineIntersectsObjs]] [[intersect]] [[terrainIntersect]] [[terrainIntersectASL]] [[terrainIntersectAtASL]] [[lineIntersects]] [[cursorObject]] [[cursorTarget]] [[disableRemoteSensors]]
+}}

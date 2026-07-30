@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/Sahrani_Community_Package
+// revision: 347355 (2023-09-12T16:00:47Z)
+// export sha1: aaecacr64ulzq3w60lx7q46kqynmq8n
+// categories: Category:Public Data
+// Vendored snapshot. Do not edit — re-export instead.
+
+This archive contains source data for the Sahrani island from {{GameCategory|arma1|link= y}}, licensed under ARMA PUBLIC LICENSE SHARE ALIKE (APL-SA).
+
+
+== Package Content ==
+
+{{Feature|important|We recommend to download the data using the torrent. Due to high demand, the direct download links may be overloaded.}}
+
+=== Sahrani_Community_Package_APL-SA.zip ===
+
+: {{Link|https://tr4.bistudio.com/Sahrani_Community_Package_APL-SA.zip}}
+: '''{{Link|https://www.bistudio.com/licenseddata/Sahrani_Community_Package_APL-SA.zip.torrent}}'''
+{| class="wikitable mw-collapsible mw-collapsed" width="500px"
+! style="padding:10px;" | Content
+|-
+|
+* Data
+** Scenes
+** surface textures
+** surface textures's source RVMATs
+* Source
+** layers.cfg
+** mapLegend.png
+** Sara.pew
+** surface mask master supertexture
+** "satellite" master supertexture
+|}
+
+
+[[Category: Public Data]]

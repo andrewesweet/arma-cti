@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_returnConfigEntry
+// revision: 349149 (2023-11-08T14:49:48Z)
+// export sha1: 0h5uau0iza768e9oo04v33js2ux13x5
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Configs | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Configs
+
+|descr= Explores parent classes in the run-time config for the value of a config entry.
+
+|s1= [config,attribute,defaultValue] call [[BIS_fnc_returnConfigEntry]]
+
+|p1= config: [[Config]] - starting config
+
+|p2= attribute: [[String]] - config attribute to be returned
+
+|p3= defaultValue: [[Anything]] - (Optional, default [[Nothing]]) value to be returned if attribute is not existent
+
+|r1= [[Array]], [[String]] or [[Number]] - attribute value
+
+|x1= <sqf>[configfile >> "Cfg3DEN" >> "Attributes" >> "ActivationType","idc"] call BIS_fnc_returnConfigEntry;</sqf>
+
+|seealso= [[configFile]] [[BIS_fnc_getCfg]] [[BIS_fnc_getCfgData]]
+}}

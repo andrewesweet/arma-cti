@@ -1,0 +1,151 @@
+// source: https://community.bistudio.com/wiki/canAdd
+// revision: 376862 (2025-12-08T21:18:49Z)
+// export sha1: 4ymst08h71qa76vt8bcz7tj2r74e8is
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.70
+
+|gr1= Unit Inventory
+
+|descr= Checks if given object can be stored in inventory of given object or any inventory container ([[uniform]], [[vest]], [[backpack]]) of given unit.<br>
+Before {{arma3}} v2.10 this comment verified only the biggest container when multiple items were queried; now it checks all containers.
+
+{{Feature|important|
+Avoid passing an empty string <sqf inline>""</sqf> to this command as it will create a warning dialog:
+[[File:a3 warning badvehicletype.jpg|none|alt= Warning Message: Bad vehicle type|Warning Message: Bad vehicle type]]
+This message will show once per mission restart.
+}}
+
+|s1= object [[canAdd]] item
+
+|p1= object: [[Object]] - unit or container
+
+|p2= item: [[String]] - config class
+
+|r1= [[Boolean]]
+
+|s2= object [[canAdd]] [item, count, ignoreSoldierMaxLoad]
+
+|s2since= arma3 1.56
+
+|p21= object: [[Object]] - unit or container
+
+|p22= item: [[String]] - config class
+
+|p23= count: [[Number]] - desired quantity
+
+|p24= ignoreSoldierMaxLoad: [[Boolean]] - (Optional, default [[false]]) [[true]] to ignore 'soldierMaxLoad' param, container's [[maxLoad]] is still counted
+|p24since= arma3 2.18
+
+|r2= [[Boolean]]
+
+|s3= weapon [[canAdd]] item
+
+|s3since= arma3 2.10
+
+|p41= weapon: [[String]] - weapon class name
+
+|p42= item: [[String]] - config class of magazine or attachment
+
+|r3= [[Boolean]]
+
+|s4= weapon [[canAdd]] [attachment, slot]
+
+|s4since= arma3 2.10
+
+|p61= weapon: [[String]] - weapon class name
+
+|p62= attachment: [[String]] - attachment class name
+
+|p63= slot: [[String]] - slot class name (defined under '''WeaponSlotsInfo''' class in weapon config), for example: 
+* "CowsSlot" for optics 
+* "MuzzleSlot" for silencers
+* "PointerSlot" for laser pointers and flashlights
+* "UnderBarrelSlot" for bipods
+
+|r4= [[Boolean]]
+
+|s5= weapon [[canAdd]] [magazine, muzzle]
+
+|s5since= arma3 2.10
+
+|p81= weapon: [[String]] - weapon class name
+
+|p82= magazine: [[String]] - magazine class name
+
+|p83= muzzle: [[String]] - muzzle class name
+
+|r5= [[Boolean]]
+
+|x1= <sqf
+>if (player canAdd "FirstAidKit") then
+{
+	player addItem "FirstAidKit";
+}
+else
+{
+	hint "Not enough space";
+};
+</sqf>
+
+|x2= <sqf>
+if (_box canAdd "FirstAidKit") then
+{
+	_box addWeaponCargo ["FirstAidKit", 1];
+}
+else
+{
+	hint "Not enough space";
+};
+</sqf>
+
+|x3= <sqf>car canAdd [currentWeapon player, 50];</sqf>
+
+|x4= <sqf>
+// check if attachment can be loaded
+"arifle_Katiba_GL_F" canAdd "acc_pointer_IR";
+"arifle_Katiba_GL_F" canAdd ["acc_pointer_IR", "PointerSlot"];
+</sqf>
+
+|x5= <sqf>
+// check if magazine can be loaded
+"arifle_Katiba_GL_F" canAdd "30Rnd_65x39_caseless_green";
+"arifle_Katiba_GL_F" canAdd ["30Rnd_65x39_caseless_green", "this"];
+"arifle_Katiba_GL_F" canAdd ["1Rnd_SmokeRed_Grenade_shell", "EGLM"];
+</sqf>
+
+|seealso= [[canAddItemToBackpack]] [[canAddItemToUniform]] [[canAddItemToVest]] [[compatibleMagazines]] [[compatibleItems]] [[compatibleWeapons]]
+}}
+
+
+{{Note
+|user= Jonpas
+|timestamp= 20151129000200
+|text= Can also be used on any object that has inventory, not only player inventory containers.<br>
+<br>
+Where '''_box''' is '''B_supplyCrate_F''':
+<sqf>
+// empty
+_box canAdd "FirstAidKit"; // returns true
+
+// full
+_box canAdd "FirstAidKit"; // returns false
+</sqf>
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20170211184000
+|text= This can also be used as alternative to [[canAddItemToBackpack]], [[canAddItemToUniform]], [[canAddItemToVest]] where container might not be strictly defined. In some cases it might be a good optimisation for your code, where you also don't need to perform checks on which type of player container this is. Example:<br>
+<sqf>
+private _container = selectRandom [uniformContainer player, vestContainer player, backpackContainer player];
+if (_container canAdd "Rangefinder") then
+{
+	_container addItemCargoGlobal ["Rangefinder", 1];
+};
+</sqf>
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:PMC_Patches_&_Updates
+// revision: 170538 (2020-12-12T23:11:55Z)
+// export sha1: bufrenxp0i6xfpm5642ue88rlzsrxul
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Arma 2OA: Patches & Updates]]

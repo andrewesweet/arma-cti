@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_weaponComponents
+// revision: 348382 (2023-11-08T12:59:58Z)
+// export sha1: seumser5arsfb9vba9kg85szl2xpfvj
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Weapons | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Weapons
+
+|descr= Returns array with classname of the parent weapon (without attachments), followed by classnames of all its attachments.<br>
+{{Feature | important | The returned classnames are all converted to lower cases.}}
+
+|s1= [classname] call [[BIS_fnc_weaponComponents]]
+
+|p1= classname: [[String]] - classname of the parent weapon
+
+|r1= [[Array]]
+
+|x1= <sqf>"arifle_mx_aco_pointer_f" call BIS_fnc_weaponComponents; // ["arifle_mx_f","optic_aco","acc_pointer_ir"]</sqf>
+
+|x2= <sqf>"arifle_mx_gl_black_hamr_pointer_f" call BIS_fnc_weaponComponents; // ["arifle_mx_gl_black_f","optic_hamr","acc_pointer_ir"]</sqf>
+
+|x3= <sqf>"arifle_mx_black_f" call BIS_fnc_weaponComponents; // ["arifle_mx_f"]</sqf>
+
+|seealso=
+}}

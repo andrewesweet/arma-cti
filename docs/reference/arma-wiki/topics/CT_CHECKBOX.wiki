@@ -1,0 +1,251 @@
+// source: https://community.bistudio.com/wiki/CT_CHECKBOX
+// revision: 342180 (2023-07-09T12:26:56Z)
+// export sha1: 74ccjn3iyqtm0elfyrohc62ejgxz5za
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_CHECKBOX
+|value = 77
+|description = A toggleable control. There are two states that can be switched between: Checked and Unchecked.
+|gallery=File:CT CHECKBOX.jpg{{!}}A checkbox control from [[:Category:Eden Editor|Eden Editor]].
+|commands =
+* [[cbSetChecked]]
+* [[cbChecked]]
+|events =
+* [[User_Interface_Event_Handlers#Checkbox_events|Events: Checkbox]]
+}}
+
+{{CT|abc start}}
+=== C ===
+{{CT|attribute
+|name=checked
+|type1=Number
+|value1=0
+|description=Default state of the control. Can be either 0 or 1.
+}}
+
+{{CT|attribute
+|name=color
+|type1=Array
+|value1={1,1,1,0.7}
+|description=
+}}
+
+{{CT|attribute
+|name=colorBackgroundDisabled
+|type1=Array
+|value1={0,0,0,0}
+|description=
+}}
+
+{{CT|attribute
+|name=colorBackgroundFocused
+|type1=Array
+|value1={0,0,0,0}
+|description=
+}}
+
+{{CT|attribute
+|name=colorBackgroundHover
+|type1=Array
+|value1={0,0,0,0}
+|description=
+}}
+
+{{CT|attribute
+|name=colorBackgroundPressed
+|type1=Array
+|value1={0,0,0,0}
+|description=
+}}
+
+{{CT|attribute
+|name=colorFocused
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorHover
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorPressed
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+=== S ===
+{{CT|attribute
+|name=soundClick
+|type1=Array
+|value1={"",0.1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=soundEnter
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1}
+|description=
+}}
+
+{{CT|attribute
+|name=soundEscape
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1}
+|description=
+}}
+
+{{CT|attribute
+|name=soundPush
+|type1=Array
+|value1={"",0.1,1}
+|description=
+}}
+
+=== T ===
+{{CT|attribute
+|name=textureChecked
+|type1=String
+|value1="A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=textureDisabledChecked
+|type1=String
+|value1="A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=textureDisabledUnchecked
+|type1=String
+|value1="A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_unchecked_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=textureFocusedChecked
+|type1=String
+|value1="A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=textureFocusedUnchecked
+|type1=String
+|value1="\a3\3DEN\Data\Displays\Display3DEN\ToolBar\widget_scaling_off_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=textureHoverChecked
+|type1=String
+|value1="A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=textureHoverUnchecked
+|type1=String
+|value1="\a3\3DEN\Data\Displays\Display3DEN\ToolBar\widget_area_off_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=texturePressedChecked
+|type1=String
+|value1="A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=texturePressedUnchecked
+|type1=String
+|value1="A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_unchecked_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=textureUnchecked
+|type1=String
+|value1="A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_unchecked_ca.paa"
+|description=
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscCheckbox ===
+<syntaxhighlight lang="cpp">
+class RscCheckBox
+{
+	idc = -1;
+	type = CT_CHECKBOX;
+	deletable = 0;
+	style = ST_LEFT;
+	checked = 0;
+	x = "0.375 * safezoneW + safezoneX";
+	y = "0.36 * safezoneH + safezoneY";
+	w = "0.025 * safezoneW";
+	h = "0.04 * safezoneH";
+	color[] = {1,1,1,0.7};
+	colorFocused[] = {1,1,1,1};
+	colorHover[] = {1,1,1,1};
+	colorPressed[] = {1,1,1,1};
+	colorDisabled[] = {1,1,1,0.2};
+	colorBackground[] = {0,0,0,0};
+	colorBackgroundFocused[] = {0,0,0,0};
+	colorBackgroundHover[] = {0,0,0,0};
+	colorBackgroundPressed[] = {0,0,0,0};
+	colorBackgroundDisabled[] = {0,0,0,0};
+	textureChecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa";
+	textureUnchecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_unchecked_ca.paa";
+	textureFocusedChecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa";
+	textureFocusedUnchecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_unchecked_ca.paa";
+	textureHoverChecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa";
+	textureHoverUnchecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_unchecked_ca.paa";
+	texturePressedChecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa";
+	texturePressedUnchecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_unchecked_ca.paa";
+	textureDisabledChecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa";
+	textureDisabledUnchecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_unchecked_ca.paa";
+	tooltipColorText[] = {1,1,1,1};
+	tooltipColorBox[] = {1,1,1,1};
+	tooltipColorShade[] = {0,0,0,0.65};
+	soundEnter[] =
+	{
+		"",
+		0.1,
+		1
+	};
+	soundPush[] =
+	{
+		"",
+		0.1,
+		1
+	};
+	soundClick[] =
+	{
+		"",
+		0.1,
+		1
+	};
+	soundEscape[] =
+	{
+		"",
+		0.1,
+		1
+	};
+};
+</syntaxhighlight>

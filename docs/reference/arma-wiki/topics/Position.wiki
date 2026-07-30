@@ -1,0 +1,165 @@
+// source: https://community.bistudio.com/wiki/Position
+// revision: 364535 (2024-05-16T20:46:45Z)
+// export sha1: gmafsb2olcqbwksc0b4d81aamx5oxoj
+// categories: Category:Arrays
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Positions in {{arma}} games are always represented as [[Array|arrays]]. There are two types of positions:
+* 2D position: {{hl|[X, Y]}}
+* 3D position: {{hl|[X, Y, Z]}}
+
+On the map and on the terrain, the X-axis runs from west to east and the Y-axis runs from south to north. The origin {{hl|[0, 0]}} is (usually) located in the bottom left corner.<br>
+While the Z-coordinate is always the height/altitude, the point relative to which that height is measured depends on the specific position format (see {{Link|#Types}} below).
+
+{{Feature|arma3|Since {{arma3}} v1.94: X, Y and Z are limited to values between -50km and +500km. Using any '''setPos*''' command with values greater than that will {{Link|https://en.wikipedia.org/wiki/Clamping_(graphics)|clamp}} the value to within these boundaries, not throwing any errors. e.g:
+<sqf>player setPosASL [-50001, 500001, 500001]; // player will be set to [-50000, 500000, 500000]</sqf>}}
+
+
+== Commands ==
+
+See:
+* [[:Category:Command Group: Positions|Command Group: Positions]]
+* [[:Category:Command Group: Render Time Scope|Command Group: Render Time Scope]]
+
+
+== Types ==
+
+[[File:position.jpg|right|thumb|400px|A comparison of most common formats, where each curve shows the reference height (Z = 0) for that format. Notice that the ASL format is absolute, i.e. its reference height doesn't change from one place to another, unlike other formats. For example, an object on a mountain and an object at the bottom of the sea both have an ATL height equal to 0.]]
+There are a number of formats available in [[Real Virtuality]]:
+{|
+| '''ASL:''' || Presumably "'''A'''bove '''S'''ea '''L'''evel"
+|-
+| '''ATL:''' || Presumably "'''A'''bove '''T'''errain '''L'''evel"
+|-
+| '''ASLW:''' || Presumably "'''A'''bove '''S'''ea '''L'''evel including '''W'''aves"
+|-
+| '''AGL:''' || Presumably "'''A'''bove '''G'''eneric/'''G'''round '''L'''evel"
+|-
+| '''AGLS:''' || Presumably "'''A'''bove '''G'''eneric/'''G'''round '''L'''evel including '''S'''urfaces"
+|-
+| '''World:''' || Raw world coordinate system
+|-
+| '''Relative:''' || Position relative to an object within its model space
+|-
+| '''Config:''' || Position used in configs
+|-
+| '''Object:''' || When object is used for position, [[Position#PositionWorld|PositionWorld]] of the object is used
+|-
+| '''Visual:''' || Used for rendering objects on the screen. Useful for per-frame applications, such as [[drawIcon3D]] - see [[:Category:Command Group: Render Time Scope|Command Group: Render Time Scope]] and [[Simulation vs Render Time Scope]].
+|}
+<br>
+{{Feature|important|Note that the only '''absolute position format''' in Arma for 3D calculations is the ASL format. Always pay attention to this fact when performing 3D calculations. For example, when a unit is climbing a mountain, the Z in ATL format is '''always 0'''. The following example demonstrates this behavior:<br>
+Let's say it is desired to see if there is an intersection between two horizontal positions:
+<sqf>
+private _pos1 = getPosATL _unit;
+private _pos2 = _pos1 vectorAdd [0,200,0]; // make a horizontal line by shifting the y, so z remains the same
+private _intersects = lineIntersects [ATLToASL _pos1, ATLToASL _pos2]; // lineIntersects needs ASL, so we just convert _pos1 and _pos2 to ASL...
+</sqf>
+However, this is incorrect. ATL is a relative format, and while the ATL height between the coordinates is the same, the ASL height might not be (think of the mountain example again). <br>
+This is the correct way to write the above code:
+<sqf>
+private _pos1 = getPosASL _unit;
+private _pos2 = _pos1 vectorAdd [0,200,0]; // make a horizontal line by shifting the y
+private _intersects = lineIntersects [_pos1, _pos2];
+</sqf>
+}}
+
+=== Position2D ===
+
+This array only has two elements and is usually used with 2D information, for example standard markers or UI commands. If used with e.g [[distance]], Z is assumed to be 0.
+
+=== PositionASL ===
+
+Z is measured from the sea level which is constant across the map.
+
+'''See also:'''
+[[getPosASL]], [[setPosASL]], [[getPosASLVisual]], [[visiblePositionASL]], [[ASLToATL]], [[ATLToASL]], [[AGLToASL]], [[ASLToAGL]], [[eyePos]], [[aimPos]], [[getTerrainHeightASL]], [[lineIntersects]], [[lineIntersectsWith]], [[lineIntersectsObjs]], [[lineIntersectsSurfaces]], [[terrainIntersectASL]], [[playSound3D]], [[setDefaultCamera]]
+
+=== PositionASLW ===
+
+Z is measured from the surface of water at that position. Both waves and pond objects affect the result.
+
+'''See also:'''
+[[getPosASLW]], [[setPosASLW]]
+
+=== PositionATL ===
+
+Z is measured from the terrain level which varies across the map.
+
+'''See also:'''
+[[getPosATL]], [[setPosATL]], [[getPosATLVisual]], [[ASLToATL]], [[ATLToASL]]
+
+=== PositionAGL ===
+
+Z is the same as in [[Position#PositionASLW|PositionASLW]] when over sea and is the same as in [[Position#PositionATL|PositionATL]] when over land. Most commands either take or return [[Position#PositionAGL|PositionAGL]].
+
+'''See also:'''
+[[modelToWorld]], [[worldToModel]], [[modelToWorldVisual]], [[worldToModelVisual]], [[positionCameraToWorld]], [[intersect]], [[terrainIntersect]], [[isOnRoad]], [[drawIcon3D]], [[drawLine3D]], [[distance]], [[moveTo]], [[doMove]], [[move]], [[setDestination]], [[buildingPos]], [[screenToWorld]], [[worldToScreen]], [[AGLToASL]], [[ASLToAGL]], [[unitAimPosition]], [[unitAimPositionVisual]]
+
+=== PositionAGLS ===
+
+Over land, Z is measured as height over terrain level minus the height of surface over terrain level underneath. If such surface exists and is counted in, the resulting Z becomes 0.
+
+[[File:z.jpg|center|frame|Obtaining Z for a unit standing on a rock]]
+
+Over sea it gets even more complicated as instead of [[Position#PositionATL|PositionATL]], [[Position#PositionASLW|PositionASLW]] is used minus the offset for the surface height, presumably over waves too, as Z seems static. As there is currently no way to obtain H<sub>surface</sub>, it becomes impossible to convert given [[Position#PositionAGLS|PositionAGLS]] into other formats, unlike with other position formats.
+
+'''See also:'''
+[[position]], [[visiblePosition]], [[getPos]], [[getPosVisual]]
+
+==== setPosAGLS ====
+The function below will place passed object onto walkable surface, if there is one, otherwise on the ground. If only X and Y of the position are supplied, the object will be placed on surface, if Z is supplied, it will be treated as offset from the surface level.
+
+<sqf>
+KK_fnc_setPosAGLS = {
+	params ["_obj", "_pos", "_offset"];
+	_offset = _pos select 2;
+	if (isNil "_offset") then {_offset = 0};
+	_pos set [2, worldSize];
+	_obj setPosASL _pos;
+	_pos set [2, vectorMagnitude (_pos vectorDiff getPosVisual _obj) + _offset];
+	_obj setPosASL _pos;
+};
+</sqf>
+<sqf>
+// This will place the player exactly on top deck of Cargo HQ on Stratis:
+[player, [2437.18,5693.47,0]] call KK_fnc_setPosAGLS;
+
+// This will place the player 2m above top deck of Cargo HQ on Stratis:
+[player, [2437.18,5693.47,2]] call KK_fnc_setPosAGLS;
+
+// This will place the player 2m below top deck of Cargo HQ on Stratis:
+[player, [2437.18,5693.47,-2]] call KK_fnc_setPosAGLS;
+</sqf>
+
+Alternatively, [[setVehiclePosition]] can be used. It will put the object onto the nearest surface.
+<sqf>
+// This will place the player inside Cargo HQ on Stratis:
+player setVehiclePosition [[2437.18,5693.47,0], [], 0, "CAN_COLLIDE"];
+
+// This will place the player on top deck of Cargo HQ on Stratis:
+player setVehiclePosition [[2437.18,5693.47,100], [], 0, "CAN_COLLIDE"];
+</sqf>
+
+=== PositionWorld ===
+
+Similar to [[Position#PositionASL|PositionASL]], however Z is measured from the sea level to the the model centre {{hl|[0, 0, 0]}} of the object, rather than transformed [[boundingCenter]] or land contact vertices.
+<sqf>_identical = getPosWorld _obj isEqualTo AGLToASL (_obj modelToWorld [0,0,0]); // should be true</sqf>
+
+'''See also:'''
+[[getPosWorld]], [[setPosWorld]], [[mapCenterOnCamera]]
+
+=== PositionRelative ===
+
+Relative position is normally an {{hl|[X, Y, Z]}} offset from the model centre.
+
+'''See also:'''
+[[getRelPos]], [[positionCameraToWorld]], [[selectionPosition]], [[attachTo]], [[modelToWorld]], [[worldToModel]], [[modelToWorldVisual]], [[worldToModelVisual]], [[camPrepareRelPos]], [[camSetRelPos]]
+
+=== PositionConfig ===
+
+The format used in configs, such as ''mission.sqm'', is {{hl|[X, Z, Y]}}, where Z and Y are swapped around. One other command that uses this format is [[positionCameraToWorld]]. Z in configs is measured from the sea level.
+
+
+[[Category:Arrays]]

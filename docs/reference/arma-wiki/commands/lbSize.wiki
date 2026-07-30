@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/lbSize
+// revision: 353733 (2024-03-22T10:26:54Z)
+// export sha1: clpk3nphoereqs6ekgb8zfq1vy3bs8r
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= GUI Control - ListBox
+
+|arg= local
+
+|eff= local
+
+|descr= Returns the number of items in a [[CT_LISTBOX]] or [[CT_COMBO]] control. For [[CT_TOOLBOX]] size see [[lnbSize]].
+
+|s1= [[lbSize]] idc
+
+|p1= idc: [[Number]] - control's id
+
+|r1= [[Number]]
+
+|s2= [[lbSize]] control
+
+|p21= control: [[Control]]
+
+|r2= [[Number]]
+
+|x1= <sqf>_size = lbSize 101;</sqf>
+
+|x2= <sqf>_size = lbSize _control;</sqf>
+
+|seealso= [[lbAdd]] [[lbClear]] [[lbColor]] [[lbCurSel]] [[lbData]] [[lbDelete]] [[lbIsSelected]] [[lbPicture]] [[lbSelection]] [[lbSetColor]] [[lbSetCurSel]] [[lbSetData]] [[lbSetPicture]] [[lbSetSelected]] [[lbSetTooltip]] [[lbSetValue]] [[lbSort]] [[lbSortByValue]] [[lbText]] [[lbValue]]
+}}
+
+{{Note
+|user= Ffur2007slx2_5
+|timestamp= 20140910163200
+|text= More information on the [[CT_LISTBOX]] command family can be found [[CT_LISTBOX#Scripting_Example|here]].
+}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Elite:_Modelling
+// revision: 182518 (2021-01-04T12:27:42Z)
+// export sha1: gjpwuea804gx2dcimgjtxsou2qr0x6z
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category is here for modelling info for Operation Flashpoint: Elite.
+
+{{GameCategory|ofpe|Editing}}

@@ -1,0 +1,170 @@
+// source: https://community.bistudio.com/wiki/Simple_Expression
+// revision: 352181 (2024-02-01T23:25:49Z)
+// export sha1: iwtbpranrwfpl1oomyha4hppvd8edm5
+// categories: Category:ArmA: Armed Assault: Editing | Category:Arma 2: Editing | Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|informative|Simple expressions are not as flexible as normal scripts, but they are compiled for a very efficient execution.}}
+== Available Operators ==
+
+{| class="wikitable"
+| randomGen a || random value from 0 to ''a'' (randomGen 5)
+|-
+| randomGen expr || random value from 0 to expression value (randomGen daylight)
+|-
+| ''a'' factor [''x'',''y''] || {{hl|factor}} is the same as {{hl|interpolate}} only output range is fixed and capped to 0...1 (or 1...0 if input range is reversed)
+<br>if ''x''<''y'' then ''a''<''x'': 0, ''a''>''y'': 1<br>if  ''x''>''y'' then ''a''>''x'': 0, ''a''<''y'': 1
+|-
+| ''a'' interpolate [''xFrom'',''xTo'',''resFrom'',''resTo''] || Introduced in Arma 2 1.05. interpolate result based on input value.
+Equivalent to x factor [xFrom,xTo] * (resTo-resFrom)  +  resFrom
+|-
+| ''a'' min ''b'' || see [[min]]
+|-
+| ''a'' max ''b'' || see [[max]]
+|-
+| ''a'' - ''b'' || see [[a_-_b|a-b]]
+|-
+| ''a'' + ''b'' || see [[a_plus_b|a+b]]
+|-
+| ''a'' * ''b'' || see [[a_*_b|a*b]]
+|-
+| ''a'' / ''b'' || see [[a_/_b|a/b]] (for A3, not sure if others)
+|-
+| abs ''a'' || see [[abs|abs]] (introduced in Arma 3 patch 1.68)
+|-
+| x envelope [a,b,c,d] || trapezoid envelope with output <0;1> (substitution for "(v factor(a,b))*(v factor(d,c))" (Since Arma 3 1.67) <br><br> [[File:envelope.jpg|left|thumb|envelope graph]]
+|-
+| ''a'' > ''b'' || see [[a_greater_b|a > b]]. Returns 1 and 0 rather than true and false.
+|-
+| ''a'' < ''b'' || see [[a_less_b|a < b]]. Returns 1 and 0 rather than true and false.
+|-
+| ''a'' >= ''b'' || see [[a_greater=_b|a >= b]]. Returns 1 and 0 rather than true and false.
+|-
+| ''a'' <= ''b'' || see [[a_less=_b|a <= b]]. Returns 1 and 0 rather than true and false.
+|}
+
+Description: ''a'',''b'' can be any simple expression. ''x'',''y'' can be a constant expression only (i.e. expression with a type [[Number]]).
+
+Since Arma 3 1.67 the following operators are also available (v ... controller value):
+* abs(v) - absolute value
+* sqr(v) - square value
+* sqrt(v) - square root value
+* pow(v, a) - power
+
+== SQF Equivalent of {{hl|factor}} ==
+
+<sqf>
+SQF_fnc_factor = 
+{
+	private _fnc_interpolateCommon = 
+	{
+		params ["_c", "_cMin", "_cMax", "_vMin", "_vMax"];
+		
+		if (_c < _cMin) exitWith { _vMin };
+		if (_c > _cMax) exitWith { _vMax };
+	
+		(_c - _cMin) * (1 / (_cMax - _cMin)) * (_vMax - _vMin) + _vMin
+	};
+	
+	params ["_c", "_cMin", "_cMax"];
+	
+	if (_cMin < _cMax) then
+	{
+		[_c, _cMin, _cMax, 0, 1] call _fnc_interpolateCommon
+	}
+	else
+	{
+		[_c, _cMax, _cMin, 1, 0] call _fnc_interpolateCommon
+	};
+};
+</sqf>
+
+Example: <sqf>[0.2, 0.1, 0.7] call SQF_fnc_factor; // 0.166667</sqf>
+
+== SQF Equivalent of {{hl|interpolate}} ==
+
+<sqf>
+SQF_fnc_interpolate = 
+{
+	private _fnc_interpolateCommon = 
+	{
+		params ["_c", "_cMin", "_cMax", "_vMin", "_vMax"];
+		
+		if (_c < _cMin) exitWith { _vMin };
+		if (_c > _cMax) exitWith { _vMax };
+	
+		(_c - _cMin) * (1 / (_cMax - _cMin)) * (_vMax - _vMin) + _vMin
+	};
+	
+	params ["_c", "_cMin", "_cMax", "_vMin", "_vMax"];
+	
+	if (_cMin < _cMax) then
+	{
+		[_c, _cMin, _cMax, _vMin, _vMax] call _fnc_interpolateCommon
+	}
+	else
+	{
+		[_c, _cMax, _cMin, _vMax, _vMin] call _fnc_interpolateCommon
+	};
+};
+</sqf>
+
+Example: <sqf>[0.2, 0.1, 0.7, 0, 100] call SQF_fnc_interpolate; // 16.6667</sqf>
+
+
+== SQF Equivalent of {{hl|envelope}} ==
+
+<sqf>
+SQF_fnc_envelope = 
+{
+	private _fnc_interpolateCommon = 
+	{
+		params ["_c", "_cMin", "_cMax", "_vMin", "_vMax"];
+		
+		if (_c < _cMin) exitWith { _vMin };
+		if (_c > _cMax) exitWith { _vMax };
+	
+		(_c - _cMin) * (1 / (_cMax - _cMin)) * (_vMax - _vMin) + _vMin
+	};
+	
+	params ["_x", "_a", "_b", "_c", "_d"];
+
+	private _ret = 0;
+	
+	if (_x > _a && _x < _d) then
+	{
+		private _v = [_x, _a, _b, 0, 1] call _fnc_interpolateCommon;
+		
+		if (_v > 0) then { _ret = _v * ([_x, _c, _d, 1, 0] call _fnc_interpolateCommon) };
+	};
+	
+	_ret
+};
+</sqf>
+
+Example: <sqf>[0.5, 0.1, 0.3, 0.7, 0.9] call SQF_fnc_envelope; // 1</sqf>
+
+
+== Simple Expressions -  How do they work? ==
+
+'''The following is an example taken from the [[Eden Editor: Entity Context Menu]].'''
+
+'''Example:'''
+<syntaxhighlight lang="cpp">conditionShow = "hoverObjectCanFly * (1 - hoverObjectFlying)";</syntaxhighlight>
+Entry will only show if the object you are hovering over can fly and the object isn't flying.
+
+'''Let's take a closer look at the example.'''
+
+hoverObjectCanFly and hoverObjectFlying are two boolean values, which can either be [[true]] (1) or [[false]] (0).
+
+If hoverObjectCanFly is [[true]] (1) and hoverObjectFlying is [[false]] (0) the resulting equation looks like this:
+ 1 * (1-0) = x
+ 1 * 1 = x
+ x = 1
+The result will be [[true]] (1), therefore the entry will be shown.
+
+
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}

@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_PhysX
+// revision: 373885 (2025-06-26T10:58:04Z)
+// export sha1: bf1ra1ft8em8zijwp4l6xal40zpbewq
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands by Functionality]]
+Commands related to PhysX. {{arma3}} only!

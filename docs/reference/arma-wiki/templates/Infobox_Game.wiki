@@ -1,0 +1,119 @@
+// source: https://community.bistudio.com/wiki/Template:Infobox/Game
+// revision: 341926 (2023-07-07T14:42:16Z)
+// export sha1: fflonrhjh29i2r42n8dsj1mq6696rq8
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div class="float-right">
+{| class="wikitable mw-collapsible"
+! colspan="2" | {{{title|}}}
+|-
+{{#if:{{{image|}}}
+|<nowiki/>
+{{!}} colspan="2" style="text-align: center" {{!}} {{{image}}}
+{{!}}-
+}}
+{{#if:{{{releaseDate|}}}
+|<nowiki/>
+! Release Date
+{{!}} {{{releaseDate}}}
+{{!}}-
+}}{{#if:{{{storePage|}}}
+|<nowiki/>
+! Store Page
+{{!}} {{{storePage}}}
+{{!}}-
+}}{{#if:{{{developer|}}}
+|<nowiki/>
+! Developer
+{{!}} {{{developer}}}
+{{!}}-
+}}{{#if:{{{website|}}}
+|<nowiki/>
+! Website
+{{!}} {{{website}}}
+{{!}}-
+}}{{#if:{{{wiki|}}}
+|<nowiki/>
+! Wiki
+{{!}} {{{wiki}}}
+{{!}}-
+}}{{#if:{{{forums|}}}
+|<nowiki/>
+! Forums
+{{!}} {{{forums}}}
+{{!}}-
+}}{{#if:{{{discord|}}}
+|<nowiki/>
+! Discord
+{{!}} {{{discord}}}
+{{!}}-
+}}{{#if:{{{facebook|}}}
+|<nowiki/>
+! Facebook
+{{!}} {{{facebook}}}
+{{!}}-
+}}{{#if:{{{twitter|}}}
+|<nowiki/>
+! Twitter
+{{!}} {{{twitter}}}
+{{!}}-
+}}
+|}</div></includeonly><noinclude>
+
+{{Doc/Template
+|descr= Describes a game (and/or CDLC)
+|param1= title
+|descr1= game/CDLC title
+|param2= image
+|descr2= (Optional) image
+|param3= releaseDate
+|descr3= (Optional) release date
+|param4= storePage
+|descr4= (Optional) store page (''usually'' Steam)
+|param5= developer
+|descr5= (Optional) studio's name
+|param6= website
+|descr6= (Optional) website link
+|param7= wiki
+|descr7= (Optional) Wiki link
+|param8= forums
+|descr8= (Optional) Forums link
+|param9= discord
+|descr9= (Optional) Discord link
+|param10= facebook
+|descr10= (Optional) Facebook link
+|param11= twitter
+|descr11= (Optional) Twitter link
+|example1= <nowiki>{{Infobox/Game}}</nowiki>
+|result1= {{Infobox/Game}}
+|example2= <nowiki>{{Infobox/Game|title= Game Title}}</nowiki>
+|result2= {{Infobox/Game|title= Game Title}}
+|example3= <nowiki>{{Infobox/Game|website= theWebsiteURL}}</nowiki>
+|result3= {{Infobox/Game|website= theWebsiteURL}}
+|example4= <pre>{{Infobox/Game
+|title= {{arma3}}
+|image= [[File:Arma_3_logo_black.png]]
+|releaseDate= 2013-01-01
+|storePage= https://store.steampowered.com/app/107410/
+|developer= [https://bohemia.net {{Name|bi}}]
+|website= https://www.arma3.com/
+|wiki= https://community.bohemia.net/
+|forums= https://forums.bohemia.net/forums/forum/218-arma-3/
+|discord= https://discord.gg/arma
+|facebook= https://facebook.com/arma3official
+|twitter= https://twitter.com/Arma3official
+}}</pre>
+|result4= {{Infobox/Game
+|title= {{arma3}}
+|image= [[File:Arma_3_logo_black.png|200px]]
+|releaseDate= 2013-01-01
+|storePage= https://store.steampowered.com/app/107410/
+|developer= [https://bohemia.net {{Name|bi}}]
+|website= https://www.arma3.com/
+|wiki= https://community.bohemia.net/
+|forums= https://forums.bohemia.net/forums/forum/218-arma-3/
+|discord= https://discord.gg/arma
+|facebook= https://facebook.com/arma3official
+|twitter= https://twitter.com/Arma3official
+}}
+}}</noinclude>

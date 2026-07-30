@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Timeline3DEN
+// revision: 342093 (2023-07-09T12:24:20Z)
+// export sha1: 34z6h991qkd9fkqe6o9bjkk7rc2199j
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions used by [[:Category:Eden Editor|Eden Editor]] to manipulate the [[Arma 3 Key Frame Animation]] system.
+
+
+[[Category:Function Group: KeyframeAnimation]]

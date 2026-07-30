@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/diag_resetAnims
+// revision: 353741 (2024-03-22T13:45:12Z)
+// export sha1: 7cp0rt88uvohn5581eytqmnv1093zjf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 2.16 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+
+|branch= diag
+
+|version1= 2.16
+
+|gr1= Diagnostic
+
+|descr= Resets the animations system cache, so that animation makers can test their animations without restarting the game. A '''mission restart''' is required for the changes to be applied.
+
+|s1= [[diag_resetAnims]]
+
+|r1= [[Nothing]]
+
+|seealso= [[diag_resetShapes]]
+}}

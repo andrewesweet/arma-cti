@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isCuratorEditable
+// revision: 348581 (2023-11-08T13:42:14Z)
+// export sha1: kabu3rqdxhapx3scsm49e4mglce15nn
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Return [[true]] if given object is editable by player (when he's curator).
+
+|s1= [object] call [[BIS_fnc_isCuratorEditable]]
+
+|p1= object: [[Object]] - object to be checked
+
+|r1= [[Boolean]] - [[true]] if editable, otherwise [[false]]
+
+|x1= <sqf>[object_1] call BIS_fnc_isCuratorEditable;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

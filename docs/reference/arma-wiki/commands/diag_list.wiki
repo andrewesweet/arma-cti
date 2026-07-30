@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/diag_list
+// revision: 348389 (2023-11-08T13:00:00Z)
+// export sha1: 4rws0t044pdgax9lqq40o88wwek7smv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+
+|branch= diag
+
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Returns an array of all diagnostic modes available in the game.
+
+|s1= [[diag_list]]  mode
+
+|p1= mode: [[String]] - can be {{hl|"toggle"}} or {{hl|"drawMode"}}
+
+|r1= [[Array]] - ["Force", "Animation", "Mines", "HitPoints", "AnimSrcUnit", "AnimSrcTarget", "Suspension", "EPEForce", "EPEVehicle", "ParticleNames", "Particles", "SurfaceUnder", "AISkill", "AIDriving", "AIAiming", "AIBrain", "AIDynamicError", "AISuppression"] {{GVI|arma3|1.66}}
+
+|x1= <sqf>diag_list "toggle";</sqf>
+
+|x2= <sqf>diag_list "drawMode";</sqf>
+
+|seealso= [[diag_toggle]] [[diag_enable]]
+}}

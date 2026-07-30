@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/ctrlModelDirAndUp
+// revision: 365012 (2024-07-10T09:58:01Z)
+// export sha1: 58d1davkbarr3sh849ltwzlr46f3tty
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Object | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= GUI Control - Object
+
+|descr= Returns [[vectorDir]] and [[vectorUp]] of the model used in 3D-[[Arma: GUI Configuration|Dialogs]]. Returns [[],[]] if control is null.
+
+|s1= [[ctrlModelDirAndUp]] control
+
+|p1= control : [[Control]] - 3D control
+
+|r1= [[Array]] of [[Vector3D]]s format [<nowiki/>[[vectorDir]], [[vectorUp]]] or [[],[]]
+
+|x1= <sqf>_vectorDirAndUp = ctrlModelDirAndUp _control3D;</sqf>
+
+|seealso= [[ctrlModelVectorSide]] [[ctrlCreate]] [[ctrlDelete]] [[ctrlSetModelDirAndUp]] [[ctrlModel]] [[ctrlSetModel]] [[ctrlSetModelScale]] [[ctrlModelScale]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlClassName]] [[displayCtrl]]
+}}

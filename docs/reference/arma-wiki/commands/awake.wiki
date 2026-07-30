@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/awake
+// revision: 373886 (2025-06-26T10:58:51Z)
+// export sha1: id731if53exvo1vuyi7t4m6ycagka1z
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|arg= global
+
+|eff= local
+
+|gr1= PhysX
+
+|descr= Wakes up sleeping PhysX object or puts a PhysX object to sleep. In 2.10 this command can be used on corpses of type {{hl|Man}} and has no effect on [[alive]] units. When unit gets killed it goes into ragdoll state for a short while, then the units get frozen and any simulation and collision is removed to save system resources. As a result, corpses do not react to their surrounding any more. Using this command will temporarily re-enable ragdoll state of a corpse to the same state it was when unit died. If this command is used in "enable/disable" sequence on a dead body, it gives the corpse a visible nudge (See example 3).
+
+{{Feature|informative|This command won't have lasting effect on vehicles as vehicles are actively simulated, but it works rather well on smaller PhysX enabled objects.}}
+
+|s1= object [[awake]] awake
+
+|p1= object: [[Object]] - PhysX object or dead unit
+
+|p2= awake: [[Boolean]] - [[true]] to awake the object, [[false]] - to put it to sleep
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_object awake false;</sqf>
+|x2= Since 2.10: <sqf>_deadUnit awake true;</sqf>
+|x3= Make corpse react to explosion (since 2.10): <sqf>
+_deadUnit addEventHandler ["Explosion", 
+{
+	params ["_unit", "_damage"];
+	if (_damage < 0.01) exitWith {};
+	_unit awake true;
+	_unit awake false;
+}];
+</sqf>
+
+|seealso= [[isAwake]] [[addTorque]] [[addForce]] [[vectorModelToWorld]] [[vectorModelToWorldVisual]] [[selectionPosition]]
+}}

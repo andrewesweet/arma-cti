@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/taskType
+// revision: 339088 (2023-04-26T10:54:07Z)
+// export sha1: evxcuhyzz3fdz5dyjijfq75oj4h630u
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Briefing
+
+|descr= Returns the type of the given task. A new task returns "Default" for the type.
+
+|s1= [[taskType]] task
+
+|p1= task: [[Task]]
+
+|r1= [[String]]
+
+|x1= <sqf>_type = taskType (currentTask player);</sqf>
+
+|seealso= [[setSimpleTaskType]] [[taskName]] [[currentTask]] [[setSimpleTaskCustomData]] [[taskCustomData]] [[Arma 3: Task Framework#Task Overhaul|Tasks Overhaul]]
+}}

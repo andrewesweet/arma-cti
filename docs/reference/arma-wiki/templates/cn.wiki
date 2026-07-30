@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/Template:cn
+// revision: 178203 (2020-12-30T17:43:24Z)
+// export sha1: 0yboyut47l69812wr7bdxdiox1l2f5t
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+| <span style="border-bottom: 0.0625em solid red" title="Citation needed: this information lacks sources">{{{1|}}}</span>&nbsp;}}<sup>[''[[Template:cn|citation needed]]'']</sup></includeonly><noinclude>
+This template is used in pages that include unverifiable, unverified or unsourced information or claims.<br>
+For a list of pages with unsourced claims, see [[Special:WhatLinksHere/Template:cn|Pages using the <nowiki>{{cn}}</nowiki> template]].
+
+== Usage ==
+{{<nowiki/>cn|'''''text'''''}}
+* text: (Optional, default empty) the unsourced claim
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{cn}}</nowiki>
+| {{cn}}
+|-
+| <nowiki>{{cn|Miller is a nice guy}}</nowiki>
+| {{cn|Miller is a nice guy}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

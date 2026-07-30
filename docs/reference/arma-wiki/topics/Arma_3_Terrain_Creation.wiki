@@ -1,0 +1,17 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Terrain_Creation
+// revision: 369858 (2024-10-16T13:52:07Z)
+// export sha1: 54qjygseh1b7kqoksvuwjiy1a5nik45
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+=== Tools ===
+
+* {{Link|Category:Arma 3: Official Tools}}
+* {{Link|http://www.kegetys.fi/arma/|Arma tools}}
+* {{Link|http://www.bundysoft.com/L3DT/|L3DT}}
+* {{Link|http://www.lilchips.com/index.htm|TerreSculptor HMES}}
+* {{Link|http://crazybump.com/|Crazybump}}
+* {{Link|http://forums.bistudio.com/showthread.php?166895-ZGM-Arma-3-Terrain-Editing-Suite|ZGM {{arma3}} Terrain Editing Suite}}
+
+
+{{GameCategory|arma3|Editing}}

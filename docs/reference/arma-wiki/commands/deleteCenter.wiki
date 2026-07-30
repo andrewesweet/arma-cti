@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/deleteCenter
+// revision: 310241 (2022-05-05T13:11:01Z)
+// export sha1: f0pg1w7x1atsmhistopg17n84c5c8p4
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|eff= global
+
+|gr1= Sides
+
+|descr= In a nutshell, this command removes gaming [[Side]] (see [[createCenter]]). If a side has >0 [[Group]]s it cannot be deleted. Center can only be created for: [[east]], [[west]], [[resistance]], [[civilian]] and [[sideLogic]], therefore only centers from the mentioned sides can be deleted.<br><br>
+'''Old description:''' Destroys the AI center of the given side.
+
+|s1= [[deleteCenter]] side
+
+|p1= side: [[Side]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>deleteCenter east;</sqf>
+
+|seealso= [[createCenter]]
+}}

@@ -1,0 +1,63 @@
+// source: https://community.bistudio.com/wiki/diag_allMissionEventHandlers
+// revision: 363556 (2024-04-06T08:27:26Z)
+// export sha1: os7krg620bhvbv0xss4taslhdf8cctm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Command Group: Event Handlers | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|eff= local
+
+|gr1= Diagnostic
+
+|gr2= Event Handlers
+
+|descr= Returns an array with all [[addMissionEventHandler|mission event handlers]].
+
+|s1= [[diag_allMissionEventHandlers]]
+
+|r1= [[Array]] - in format ["EH1name", EH1count, "EH2name", EH2count, ...]
+
+|x1= <sqf>
+diag_allMissionEventHandlers;
+/*
+returns:
+[
+	"Ended",0,
+	"SelectedActionPerformed",0,
+	"SelectedRotorLibActionPerformed",0,
+	"SelectedActionChanged",0,
+	"SelectedRotorLibActionChanged",0,
+	"ControlsShifted",0,
+	"Draw3D",1,
+	"Loaded",0,
+	"HandleDisconnect",0,
+	"EntityRespawned",0,
+	"EntityKilled",0,
+	"MapSingleClick",0,
+	"HCGroupSelectionChanged",0,
+	"CommandModeChanged",0,
+	"PlayerConnected",0,
+	"PlayerDisconnected",0,
+	"TeamSwitch",0,
+	"GroupIconClick",0,
+	"GroupIconOverEnter",0,
+	"GroupIconOverLeave",0,
+	"EachFrame",0,
+	"PreloadStarted",0,
+	"PreloadFinished",0,
+	"Map",0,
+	"PlayerViewChanged",0,
+	"BuildingChanged",0,
+	"MPEnded",0,
+	"HandleAccTime",0,
+	"ExtensionCallback",0
+]
+*/
+</sqf>
+
+|seealso= [[addMissionEventHandler]] [[Arma 3: Mission Event Handlers]]
+}}

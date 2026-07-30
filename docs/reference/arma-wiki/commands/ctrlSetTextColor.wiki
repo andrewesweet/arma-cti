@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/ctrlSetTextColor
+// revision: 377177 (2026-01-01T10:47:30Z)
+// export sha1: 8reuulufe69q9r1ugb47snp80rcnysx
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= Sets text color of given control. As of Arma 3 v1.40 this command can also be used to change fill-color of a [[CT_PROGRESS]] control.
+
+{{Feature|informative|Also try [[ctrlSetForegroundColor]], if this command doesn't have the desired effect.}}
+
+|s1= control [[ctrlSetTextColor]] color
+
+|p1= control: [[Control]]
+
+|p2= color: [[Color|Color (RGBA)]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetTextColor [1, 0, 0, 1];</sqf>
+
+|seealso= [[ctrlSetForegroundColor]] [[ctrlTextColor]] [[ctrlSetText]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-04-10 - 06:47 (UTC)</dd>
+<dt class="note">[[User:Fight9|Fight9]]</dt>
+<dd class="note">
+When used on a [[CT_PROGRESS]] control, remove the configured "texture" first. The two will affect each other. - Arma 3 v1.42
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2018-03-04 - 22:57 (UTC)</dd>
+<dt class="note">[[User:feint|feint]]</dt>
+<dd class="note">
+This command can be used to change the color of the light that is illuminating a texture in a display.  By default, textures are lit with white light at 100% [1,1,1,1];
+</dd>
+
+</dl>

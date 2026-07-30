@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleRating
+// revision: 327571 (2022-07-12T22:39:18Z)
+// export sha1: 5n1g9vxjew7fzn5mx7xcmvham7bzj1d
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|descr= Function used by the Rating [[Arma_3:_Editor_Modules|module]].
+
+|s1= [logic, units, activated] call [[BIS_fnc_moduleRating]]
+
+|p1= logic: [[Object]] - a logic, but can be any object. Rating and Score are set with [[setVariable]]
+
+|p2= units: [[Array]] of [[Object]]s - units to add rating/score to
+
+|p3= activated: [[Boolean]] - (Optional, default true) [[true]] to activate
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>[myLogic, units group player, true] call BIS_fnc_moduleRating;</sqf>
+
+|seealso= [[Arma 3: Editor Modules]]
+}}

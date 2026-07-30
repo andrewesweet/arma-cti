@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sandstorm
+// revision: 329203 (2022-07-25T15:55:35Z)
+// export sha1: k0nogezkwe075852by6hr3jpi1b8cbv
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Environment | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 2: Operation Arrowhead version 1.56 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.56
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Environment
+
+|descr= Creates particle sandstorm round given object. {{Feature|arma3|The ''newspapers'' parameter is disabled in {{arma3}}.}}
+
+|s1= [object, interval, brightness, newspapers] call [[BIS_fnc_sandstorm]]
+
+|p1= position: [[Object]] - sandstorm center (should usually be [[player]])
+
+|p2= interval: [[Number]] - (Optional, default 0.07) particle refresh time; a lower number makes the sandstorm more dense
+
+|p3= brightness: [[Number]] - (Optional, default 1) brightness coeficient; 1 is bright, 0 is dark
+
+|p4= newspapers: [[Boolean]] - (Optional, default [[true]]) [[true]] if flying newspapers should be present
+
+|r1= [[Array]] of created particle effect
+
+|x1= <sqf>[player, 0.04, 0.8, false] call BIS_fnc_sandstorm;</sqf>
+
+|seealso= [[Functions Library]]
+}}

@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_VRCourseCommandingActions1
+// revision: 308048 (2022-01-20T21:38:41Z)
+// export sha1: 7fm9f88s70dlz6ci96ivsyhx6g0o00e
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: VR | Category:Functions | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= VR
+
+|descr= {{Feature|important|Used for VR Courses, internal use only.}}
+
+|s1= -
+
+|r1= -
+
+|x1= -
+
+|seealso= [[Arma 3: Virtual Reality Custom Courses|Arma 3 VR Custom Courses]] [[:Category:Function Group: VR|VR functions]]
+}}

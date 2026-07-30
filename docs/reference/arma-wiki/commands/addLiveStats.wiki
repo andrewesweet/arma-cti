@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/addLiveStats
+// revision: 318778 (2022-05-13T09:21:29Z)
+// export sha1: 7yv7auwybhivi9o0d86ekqj6o0155vp
+// categories: Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= System
+
+|descr= Adds score to the Xbox Live Statistics score for the given unit (or the commander unit of the given vehicle).
+
+|s1= unit [[addLiveStats]] score
+
+|p1= unit: [[Object]]
+
+|p2= score: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player addLiveStats 10;</sqf>
+
+|seealso= [[setArmoryPoints]] [[unlockAchievement]] [[setStatValue]]
+}}

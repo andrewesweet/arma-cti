@@ -1,0 +1,96 @@
+// source: https://community.bistudio.com/wiki/createSimpleTask
+// revision: 353044 (2024-03-12T12:09:28Z)
+// export sha1: q68mafyby9i61efiewcucvjbalqbs5k
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Briefing
+
+|arg= global
+
+|eff= local
+
+|descr= Creates a new [[Task]] and adds it to the Diary.
+{{Feature|Arma3|Using the '''[[Arma 3: Task Framework]]''' instead is recommended}}
+{{Feature|informative|When task is added as a child, it appears as subcategory to the parent task in the Tasks menu and can be parent to another child task. However this is cosmetic appearance as each task has own id and can be referenced directly via diary link.}}
+
+|mp= The task effect is [[Multiplayer Scripting#Locality|local]], it will only exist on the client it was added.
+
+|s1= unit [[createSimpleTask]] [name, parentTask]
+
+|p1= unit: [[Object]] - unit to add this new task
+
+|p2= name: [[String]]
+
+|p3= parentTask: [[Task]] - (Optional, [[taskNull]]) - The new task will be a sub task of the parent task
+
+|r1= [[Task]] - the new task
+
+|x1= <sqf>_currentTask = player createSimpleTask ["NewTask"];</sqf>
+
+|x2= <sqf>_childTask = player createSimpleTask ["ChildTask", _currentTask];</sqf>
+
+|seealso= [[simpleTasks]] [[removeSimpleTask]] [[setSimpleTaskDescription]] [[setSimpleTaskDestination]] [[setTaskState]] [[setTaskResult]] [[taskState]] [[Tasks]] [[Briefing]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20110702114500
+|text=
+* Creating child will position the new task just under the parent task.
+* Creating another "normal" (parent) task will create a new line '''above''' the others. Think of it if you want ordered objectives.
+* Succeeding parent task will automatically succeed childs, whatever their [[taskState]] was set to. (I.E. If a task is set as a child to another, it will be completed when its parent is complete.. no matter if the child task really was or not).
+* This command has to be executed again for it to be applied for JIP players - no server sync<br><br>
+Full step by step code from beginning to end:<br>
+'''Step 1: create a new simpleTask'''
+<sqf>MySimpleTask = player createSimpleTask [(localize "STR_aSimpleTask")];</sqf>
+You may create a task at any given point in time. You just need to be aware of the fact, that you've created the task for a single unit (the player). So if you make use of teamSwitch, respawn or similiar, you need to think about how to manage this, so all of these units will have up to date tasks assigned to them.
+Second, it is a good practice to use a stringtable, even if you do not plan (yet) to offer translations.<br>
+'''Step 2: task destination'''<br>
+<sqf>MySimpleTask setSimpleTaskDestination _destination;</sqf>
+variable/pointer-to-your-task setSimpleTaskDestination some-position. That's it.<br>
+'''Step 3: task description'''
+<sqf>
+MySimpleTask setSimpleTaskDescription [
+	localize "STR_aSimpleTaskLongText",
+	localize "STR_aSimpleTask",
+	localize "STR_aSimpleTaskWaypointLabel"
+];
+</sqf>
+
+Again, no magic involved here. You take your task, the command setSimpleTaskDescription an pass an array with three strings in it.
+The first string is the long description text, the second is the name/title of the task and the last one will show up on-screen on the waypoint in cadet mode.<br>
+'''Step 4: set and update task states'''
+<sqf>MySimpleTask setTaskState "CREATED";</sqf>
+And that's it. Here a minimal working example:
+<sqf>
+MySimpleTask = player createSimpleTask ["simple task title"];
+MySimpleTask setSimpleTaskDestination (position player);
+MySimpleTask setSimpleTaskDescription [
+	"simple task long description",
+	"simple task title",
+	"simple task waypoint label"
+];
+MySimpleTask setTaskState "CREATED";
+</sqf>
+
+And then later in the mission:
+<sqf>MySimpleTask setTaskState "SUCCEEDED";</sqf>
+
+If you want to keep the player in the loop about the status of tasks, you may always do this:
+<sqf>[objNull, objNull, MySimpleTask, "SUCCEEDED"] execVM "CA\Modules\MP\data\scriptCommands\taskHint.sqf";</sqf>
+}}

@@ -1,0 +1,124 @@
+// source: https://community.bistudio.com/wiki/Template:Link
+// revision: 376872 (2025-12-10T22:44:00Z)
+// export sha1: 42k05u2a7kcse4316r1iytt7f5x0d3w
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{link|{{{1|}}}}}}
+| {{#if:{{#pos:{{{link|{{{1|}}}}}}|<nowiki/>://}}{{#pos:{{{link|{{{1|}}}}}}|mailto:}}
+	| {{Link/External|link= {{{link|{{{1}}}}}}|text= {{{text|{{{2|}}}}}}}}
+	| {{Link/Internal|link= {{{link|{{{1}}}}}}|text= {{{text|{{{2|}}}}}}}}
+}}
+| -no link provided-{{TemplateCase||[[Category:Link template usage error]]}}
+}}</includeonly><noinclude>{{Doc/Template
+
+|descr= This template combines {{Template|Link/External}} and {{Template|Link/Internal}} under one entrypoint.
+It also adds the page to the [[:Category:Link template usage error|Link template usage error]] category on usage error.
+
+|param1= link
+|descr1= (possibly named parameter) the URL or the local link, hashed or not ({{hl|Operation Flashpoint#Introduction}})
+
+|param2= text
+|descr2= (Optional, possibly named parameter) text to be displayed
+
+|example1= <nowiki/>
+<nowiki>* {{Link}}</nowiki>
+|result1= <nowiki/>
+* {{Link}}
+
+|example2= <nowiki/>
+<nowiki>* {{Link|http://}}</nowiki><br>
+<nowiki>* {{Link|https://}}</nowiki><br>
+<nowiki>* {{Link|ftp://}}</nowiki><br>
+<nowiki>* {{Link|enfusion://}}</nowiki><br>
+<nowiki>* {{Link|armareforger://}}</nowiki><br>
+<nowiki>* {{Link|steam://}}</nowiki><br>
+<nowiki>* {{Link|mailto:}}</nowiki>
+|result2= <nowiki/>
+* {{Link|http://}}
+* {{Link|https://}}
+* {{Link|ftp://}}
+* {{Link|enfusion://}}
+* {{Link|armareforger://}}
+* {{Link|steam://}}
+* {{Link|mailto:}}
+
+|example3= <nowiki/>
+<nowiki>* {{Link|https://ofp.gamepark.cz/index.php?showthis{{=}}2302}}</nowiki><br>
+<nowiki>* {{Link|link= https://ofp.gamepark.cz/index.php?showthis=2302}}</nowiki><br>
+<nowiki>* {{Link|https://www.arma3.com/}}</nowiki><br>
+<nowiki>* {{Link|https://www.arma3.com/|{{arma3}} website}}</nowiki>
+|result3= <nowiki/>
+* {{Link|https://ofp.gamepark.cz/index.php?showthis{{=}}2302}}
+* {{Link|link= https://ofp.gamepark.cz/index.php?showthis=2302}}
+* {{Link|https://www.arma3.com/}}
+* {{Link|https://www.arma3.com/|{{arma3}} website}}
+
+|example4= <nowiki/>
+<nowiki>* {{Link|setDir}}</nowiki><br>
+<nowiki>* {{Link|setDir#notes}}</nowiki><br>
+<nowiki>* {{Link|setDir#notes|setDir and nothing else}}</nowiki>
+|result4= <nowiki/>
+* {{Link|setDir}}
+* {{Link|setDir#notes}}
+* {{Link|setDir#notes|setDir and nothing else}}
+
+|example5= <nowiki/>
+<nowiki>* {{Link|#}}</nowiki><br>
+<nowiki>* {{Link|#Usage}}</nowiki><br>
+<nowiki>* {{Link|#Usage|The Usage chapter}}</nowiki><br>
+<nowiki>* {{Link|link= #Usage|text=}}</nowiki><br>
+<nowiki>* {{Link|link= #Usage|text= The Usage chapter}}</nowiki>
+|result5= <nowiki/>
+* {{Link|#}}
+* {{Link|#Usage}}
+* {{Link|#Usage|The Usage chapter}}
+* {{Link|link= #Usage|text=}}
+* {{Link|link= #Usage|text= The Usage chapter}}
+
+|example6= <nowiki/>
+<nowiki>* {{Link|Arma Reforger:Getting Started}}</nowiki><br>
+<nowiki>* {{Link|Arma Reforger:Getting Started|Test}}</nowiki><br>
+<nowiki>* {{Link|Arma Reforger:Getting Started#Play in Single Player}}</nowiki><br>
+<nowiki>* {{Link|Arma Reforger:Getting Started#Play in Single Player|Play in Single Player}}</nowiki>
+|result6= <nowiki/>
+* {{Link|Arma Reforger:Getting Started}}
+* {{Link|Arma Reforger:Getting Started|Test}}
+* {{Link|Arma Reforger:Getting Started#Play in Single Player}}
+* {{Link|Arma Reforger:Getting Started#Play in Single Player|Play in Single Player}}
+
+|example7= <nowiki/>
+<nowiki>* {{Link|setDir}}</nowiki><br>
+<nowiki>* {{Link|Arma Reforger:Getting Started}}</nowiki><br>
+<nowiki>* {{Link|Template:Messagebox}}</nowiki><br>
+<nowiki>* {{Link|Template:Messagebox|Messagebox Template}}</nowiki><br>
+<nowiki>* {{Link|Template:Messagebox#Usage}}</nowiki><br>
+<nowiki>* {{Link|Template:Messagebox#Usage|Messagebox template usage}}</nowiki><br>
+<nowiki>* {{Link|mailto:support@example.com|support e-mail}}</nowiki>
+|result7= <nowiki/>
+* {{Link|setDir}}
+* {{Link|Arma Reforger:Getting Started}}
+* {{Link|Template:Messagebox}}
+* {{Link|Template:Messagebox|Messagebox Template}}
+* {{Link|Template:Messagebox#Usage}}
+* {{Link|Template:Messagebox#Usage|Messagebox template usage}}
+* {{Link|mailto:support@example.com|support e-mail}}
+
+|example8= <nowiki/>
+<nowiki>* {{Link|Category:Arma 3}}</nowiki><br>
+<nowiki>* {{Link|Category:Arma 3}}</nowiki><br>
+<nowiki>* {{Link|link= Category:Arma 3}}</nowiki><br>
+<nowiki>* {{Link|link= :Category:Arma 3}}</nowiki><br>
+<nowiki>* {{Link|link= Category:Arma 3 |text=}}</nowiki><br>
+<nowiki>* {{Link|link= :Category:Arma 3 |text=}}</nowiki><br>
+<nowiki>* {{Link|link= Category:Arma 3 |text= A3's category}}</nowiki><br>
+<nowiki>* {{Link|link= :Category:Arma 3 |text= A3's category}}</nowiki>
+|result8= <nowiki/>
+* {{Link|Category:Arma 3}}
+* {{Link|Category:Arma 3}}
+* {{Link|link= Category:Arma 3}}
+* {{Link|link= :Category:Arma 3}}
+* {{Link|link= Category:Arma 3 |text=}}
+* {{Link|link= :Category:Arma 3 |text=}}
+* {{Link|link= Category:Arma 3 |text= A3's category}}
+* {{Link|link= :Category:Arma 3 |text= A3's category}}
+}}</noinclude>

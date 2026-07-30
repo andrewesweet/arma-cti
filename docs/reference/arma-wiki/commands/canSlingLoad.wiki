@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/canSlingLoad
+// revision: 352426 (2024-02-09T15:26:09Z)
+// export sha1: s3yyq0swfe622n717wz434j5uyy8ul4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Ropes and Sling Loading
+
+|descr= Returns [[true]] if [[setSlingLoad]] is possible.
+
+|s1=heli [[canSlingLoad]] cargo
+
+|p1= heli: [[Object]] - a helicopter
+
+|p2= cargo: [[Object]] - an entity
+
+|r1= [[Boolean]] - [[true]] if [[setSlingLoad]] is possible
+
+|s2=typeOfHeli [[canSlingLoad]] typeOfCargo
+|s2since= arma3 2.12
+
+|p21= typeOfHeli: [[String]] - a config type of helicopter
+
+|p22= typeOfCargo: [[String]] - a config type of cargo (the object of type cargo has to exist in the mission)
+
+|r2= [[Boolean]] - [[true]] if can be sling loaded ''in principle''
+
+
+|x1= <sqf>_canSling = veh1 canSlingLoad veh2;</sqf>
+
+|x2= <sqf>hint str ((vehicle player) canSlingLoad veh1);</sqf>
+
+|seealso= [[ropes]] [[enableRopeAttach]] [[getSlingLoad]] [[ropeAttachedObjects]] [[ropeAttachTo]] [[ropeDestroy]] [[ropeLength]] [[ropeUnwound]] [[ropeAttachedTo]] [[ropeCreate]] [[ropeDetach]] [[ropeAttachEnabled]] [[ropeCut]] [[ropeEndPosition]] [[ropeUnwind]] [[setSlingLoad]] [[slingLoadAssistantShown]]
+}}

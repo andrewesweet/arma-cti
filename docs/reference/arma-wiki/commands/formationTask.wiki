@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/formationTask
+// revision: 310864 (2022-05-07T20:24:09Z)
+// export sha1: ski0lt8wm81m4z4colre5i0byjdpxmm
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Groups
+
+|descr= Return the current task of the unit in the formation.
+
+|s1= [[formationTask]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[String]]: "EXCLUDED", "MOVE", "COVER", "LEADER", "NOTHING"
+
+|x1= <sqf>_currentTask = formationTask _unit;</sqf>
+
+|seealso= [[setFormationTask]]
+}}

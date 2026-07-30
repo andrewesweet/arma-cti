@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Operation_Flashpoint:_Elite
+// revision: 250796 (2021-03-15T17:50:07Z)
+// export sha1: nfnvqwjiptvofb25cet1axaww4tb572
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with {{ofpe}} may be recognised by the appearance of this icon: {{GVI|ofpe|1.00}}
+
+[[Category:Introduced with|{{uc:{{ofpe}}}}]]

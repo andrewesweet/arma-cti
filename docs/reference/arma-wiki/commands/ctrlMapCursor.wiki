@@ -1,0 +1,110 @@
+// source: https://community.bistudio.com/wiki/ctrlMapCursor
+// revision: 369056 (2024-09-02T20:24:53Z)
+// export sha1: 7r3uav1yu3qlephjt6l17b0dd2haso3
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= GUI Control - Map
+
+|descr= Changes the default cursor that appears when interacting with a map control to a custom one. Use an empty string to restore the default cursor.
+{{Feature|important|Before {{arma3}}, if the specified cursor does not exist the default is used and no error is produced.<br>
+In {{arma3}}, this would result in the following error: {{hl|"No entry 'bin\config.bin/CfgWrapperUI/Cursors'"}}.
+}}
+The cursor is the name of a config entry from ''CfgWrapperUI / Cursors''. This command has the following specifics:
+* When used on the Main Map (<sqf inline>findDisplay 12 displayCtrl 51</sqf>), it is possible to override multiple default cursors. For example, while leaving default "Arrow" intact, it is possible to just override "Scroll" with e.g "Wait" (See {{Link|#Example 3}})
+* When used on a custom map, for example user made Mini Map, there is only one single cursor "" for everything, therefore only this cursor can be overridden (see {{Link|#Example 4}} on how to override it)
+Some possible class names (See [[ctrlMapCursor/cursors]] for the whole list):
+{{Columns|4|
+* Arrow
+* Track
+* Move
+* Scroll
+* Rotate
+* Track3D
+* Move3D
+* Rotate3D
+* Raise3D
+* Wait
+* HC_move
+* HC_overFriendly
+* HC_overEnemy
+* HC_overMission
+* HC_unsel
+}}
+
+|s1= control [[ctrlMapCursor]] [defaultCursor, newCursor]
+
+|p1= control: [[Control]] - map control
+
+|p2= defaultCursor: [[String]] - cursor class name, '''case-sensitive'''
+
+|p3= newCursor: [[String]] - cursor class name, '''case-sensitive'''
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_map ctrlMapCursor ["Track", "Arrow"];</sqf>
+
+|x2= <sqf>
+uiNamespace setVariable ["_map", findDisplay 12 displayCtrl 51];
+(uiNamespace getVariable "_map") ctrlMapCursor ["Track", "HC_overFriendly"];
+</sqf>
+
+|x3= <sqf>findDisplay 12 displayCtrl 51 ctrlMapCursor ["Scroll", "Wait"];</sqf>
+
+|x4= Cycle through all available cursors over custom map:
+<sqf>
+0 spawn
+{
+	disableSerialization;
+	_map = findDisplay 46 createDisplay "RscCredits" ctrlCreate ["RscMapControl", -1];
+	_map ctrlSetPosition [0,0,1,1];
+	_map ctrlCommit 0;
+	{
+		_map ctrlMapCursor ["", configName _x]; //<-- the actual usage
+		hint format ["Current cursor: %1", configName _x];
+		sleep 1;
+	}
+	forEach ("true" configClasses (configFile >> "CfgWrapperUI" >> "Cursors"));
+};
+</sqf>
+
+|seealso= [[setMousePosition]] [[getMousePosition]]
+}}
+
+{{Note
+|user= Bull A
+|timestamp= 20160208224300
+|text= When using this command, the cursor will change for the whole display, resulting in visual glitches. Adding the onMouseMoving event handler can help solve this problem:
+<sqf>
+_control ctrlAddEventHandler ["MouseMoving", {
+	params [
+		["_mapCtrl",controlNull, [controlNull]],
+		["_xPos",-1,[0]],
+		["_yPos",-1,[0]],
+		["_mouseIn", false, [true]]
+	];
+
+	if (_mouseIn) then {
+	// Mouse is in control area
+	_mapCtrl ctrlMapCursor ["", "Track"];
+	} else {
+	// Mouse is out of control area, goes back to arrow
+	_mapCtrl ctrlMapCursor ["", "Arrow"];
+	};
+}];
+</sqf>
+}}

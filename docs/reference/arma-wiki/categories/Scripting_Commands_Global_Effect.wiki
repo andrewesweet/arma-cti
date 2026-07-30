@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Scripting_Commands:_Global_Effect
+// revision: 294039 (2021-11-05T21:16:03Z)
+// export sha1: tvm3mhehrz5pcwrxzuptx6l7vldcuf3
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists [[:Category:Scripting Commands|Commands]] that have a global effect {{Icon|globaleffect|32}}.
+
+[[Category:Scripting Commands by Effect]]

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/min
+// revision: 321189 (2022-05-13T15:21:16Z)
+// export sha1: as6uadojvxgknhd440q1a2lrxciw0sq
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Math
+
+|descr= The smaller of a and b.
+
+|s1= a [[min]]  b
+
+|p1= a: [[Number]]
+
+|p2= b: [[Number]]
+
+|r1= [[Number]]
+
+|x1= <sqf>3 min 2 // Result is 2</sqf>
+
+|x2= <sqf>-3 min -2 // Result is -3</sqf>
+
+|seealso= [[max]] [[selectMin]] [[selectMax]] [[ceil]] [[floor]] [[linearConversion]] [[Math Commands]]
+}}

@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/getObjectFOV
+// revision: 309149 (2022-05-03T14:11:55Z)
+// export sha1: kai5utjqrs8e1tdjgmhpm3q3hpjv6tj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.96
+
+|gr1= Object Manipulation
+
+|descr= Returns Field of View of the given object in [[rad]]ians. Static objects return default value, which is 1.
+FOV of [[objNull]] is 0.
+Object FOV is indirectly connected with optics magnification or player view zoom, the narrower the angle the greater the zoom.
+{{Feature|informative|The FOV returned by this command doesn't change if user has custom FOV set in profile. Use it in combination with [[getResolution]] to adjust for the difference if required.}}
+
+|s1= [[getObjectFOV]] object
+
+|p1= object: [[Object]] - for units it queries unit weapon optics/zoom, for vehicles - vehicle optics/zoom
+
+|r1= [[Number]] - FOV in [[rad]]ians
+
+|x1= <sqf>private _objFOV = getObjectFOV player;</sqf>
+
+|x2= <sqf>private _objFOVinDegrees = deg getObjectFOV cursorObject;</sqf>
+
+|x3= Perceived distance to an object:
+<sqf>private _vdist = (player distance _obj) * (getObjectFOV player / 0.75);</sqf>
+
+|seealso= [[getObjectType]] [[getResolution]]
+}}

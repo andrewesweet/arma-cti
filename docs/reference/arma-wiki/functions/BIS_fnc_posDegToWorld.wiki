@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_posDegToWorld
+// revision: 328506 (2022-07-13T16:23:48Z)
+// export sha1: inpbmri40xrr1k90hqufssacniasxet
+// categories: Category:Arma 3: Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Map and Markers
+
+|descr= Convert latitude/longtitude coordinates into game world position.<br>
+World config '''must''' contain following settings to convert the position correctly:
+<syntaxhighlight lang="cpp">
+// Required for scripting
+mapSize = 61440;	// Can differ from mapArea size, as ingame world can be resized
+mapZone = 10;		// UTM zone
+mapArea[] = {		// lon/lat coordinates (not in UTM to assure .kml precision)
+	-122.754367782585,47.3272454065969,	// Bottom Left
+	-121.930117859276,47.8753494907418	// Top Right
+};
+</syntaxhighlight>
+
+|s1= [longitude, latitude, world] call [[BIS_fnc_posDegToWorld]]
+
+|p1= longitude: [[Number]]
+
+|p2= latitude: [[Number]]
+
+|p3= world: [[String]] - (Optional, default [[worldName]])
+
+|r1= [[Array]] of [[Number]]s - format [easting, northing, zone]
+
+|x1= <sqf>[47.63959,-122.127249] call BIS_fnc_posDegToWorld;</sqf>
+
+|seealso= [[BIS_fnc_posDegToUTM]] [[BIS_fnc_posUTMToDeg]]
+}}

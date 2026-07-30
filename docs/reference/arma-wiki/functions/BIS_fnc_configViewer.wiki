@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_configViewer
+// revision: 348118 (2023-11-08T11:32:17Z)
+// export sha1: j8h3pxov5qzygliu0ud8b2qrfexenco
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Diagnostic
+
+|descr= Opens the [[Arma 3: Splendid Config Viewer|Splendid&trade; Config Viewer]].
+
+|s1= [parent, cfg, showOk, onSelect, onAdd, header] call [[BIS_fnc_configViewer]]
+
+|p1= parent: [[Display]] - (Optional, default mission display) parent display
+
+|p2= cfg: [[Config]] - (Optional, default all configs) root config
+
+|p3= showOk: [[Boolean]] - (Optional, default [[false]]) [[true]] to display OK button. Script will then wait until viewer is closed and return selected class and param
+
+|p4= onSelect: [[Code]] - (Optional, default {}) executed upon selecting a class. '''Must return [[String]]''', which will be shown as structured text instead of params. Currently evaluated config is passed in the {{hl|_this}} variable.
+
+|p5= onAdd: [[Code]] - (Optional, default {}) executed upon adding a class to list. Returned value (STRING) is item text. Empty string will skip the item. Currently evaluated config is passed in the {{hl|_this}} variable.
+
+|p6= header: [[String]] - (Optional, default "%1") custom header. Use %1 to refer to original name ("Splendid Config Viewer")
+
+|r1= [[Array]]
+* When OK button is not displayed, empty array is returned
+* Else, an array of currently selected entries in format [class ([[Config]]), param ([[String]])] is returned.
+
+|x1= <sqf>call BIS_fnc_configViewer;</sqf>
+
+|x2= <sqf>
+private _return = [
+	nil,
+	configFile >> "CfgWeapons",
+	true,
+	nil,
+	{
+		params ["_cfg"];
+		if (
+			getNumber(_cfg >> "scope") == 2 &&
+			{ // Layzy evaluation
+				getNumber(_cfg >> "type") in [1,2,4] && // primary, secondary, handgun weapons
+				{ !isClass (_cfg >> "LinkedItems") or getText(_cfg >> "baseWeapon") == configName _cfg } // only base weapons, no accessories
+			}
+		) exitWith {
+			[_cfg] call BIS_fnc_displayName; // add the weapon with its displayname
+		};
+		"" // don't add
+	},
+	"Select Weapon"
+] call BIS_fnc_configViewer;
+_cfgSelected = _return param [0, configNull];
+systemChat str [configName _cfgSelected, _cfgSelected];
+</sqf>
+
+|seealso= [[BIS_fnc_animViewer]] [[BIS_fnc_help]]
+}}

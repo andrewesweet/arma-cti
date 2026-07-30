@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Structured_Text
+// revision: 169026 (2020-10-17T00:05:22Z)
+// export sha1: mgalkmadwbawqqls6toh66xwf3ayrps
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands which work with [[Structured Text|structured text]].
+
+[[Category:Scripting Commands by Functionality]]

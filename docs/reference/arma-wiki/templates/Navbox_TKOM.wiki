@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/TKOM
+// revision: 339145 (2023-04-26T10:55:04Z)
+// export sha1: j9xey7h6xutug9i270cnrnpl3zy32zw
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Navbox
+|title= [[{{tkom}}]]
+|color= #FBB
+|content1= '''[[Take On Mars: Editor|Editor]] {{!}} [[Take On Mars: Equipment|Equipment]] {{!}} [[Take On Mars: Mission Control - The Map|Map]] {{!}} [[Take On Mars: Beta Patches|Patches]] {{!}} [[Take On Mars: Tech Level|Tech Level]]'''
+|title2= Locations
+|color2= #FDC
+|content2= {{Navbox
+	|sub= y
+	|title1= Mars
+	|color1= #FDC
+	|content1= [[Take On Mars: Gale Crater|Gale Crater]] {{!}} [[Take On Mars: Kaiser Crater|Kaiser Crater]] {{!}} [[Take On Mars: Lyot Crater|Lyot Crater]] {{!}} [[Take On Mars: Mars Yard|Mars Yard]] {{!}} [[Take On Mars: Ptolemaeus Crater|Ptolemaeus Crater]] {{!}} [[Take On Mars: Victoria Crater|Victoria Crater]]
+	|title2= Asteroid Belt
+	|color2= #FDC
+	|content2= [[Take On Mars: Asteroid Belt|Asteroid Belt]]
+	|title3= Deimos
+	|color3= #FDC
+	|content3= [[Take On Mars: Deimos|Deimos]]
+}}
+|title3= Mini-Games
+|color3= #FDC
+|content3= [[Take On Mars: Gravon|Gravon]] {{!}} [[Take On Mars: Invaze|Invaze]]
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Creates a [[{{tkom}}]] navbox.
+|example1= <nowiki>{{Navbox/TKOM}}</nowiki>
+|result1= <nowiki/>{{Navbox/TKOM}}
+}}</noinclude>

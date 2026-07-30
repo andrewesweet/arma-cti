@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_animalRandomization
+// revision: 325112 (2022-07-01T12:25:00Z)
+// export sha1: mfr2ovupttuv5bebgswhzux6171yowq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Ambient | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Ambient
+
+|arg= local
+
+|eff= global
+
+|descr= Randomise animals skin.<br>
+Works on:
+* "Alsatian_Random_F"
+* "ButterFly_random"
+* "Cock_random_F"
+* "Fin_random_F"
+* "Goat_random_F"
+* "Sheep_random_F"
+* "Snake_random_F"
+
+|s1= animal call [[BIS_fnc_animalRandomization]]
+
+|p1=
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myDog call BIS_fnc_animalRandomization;</sqf>
+
+|seealso= [[BIS_fnc_unitHeadgear]] [[setObjectTextureGlobal]] [[setObjectMaterialGlobal]]
+}}

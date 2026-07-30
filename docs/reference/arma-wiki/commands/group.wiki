@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/group
+// revision: 377962 (2026-01-18T09:47:05Z)
+// export sha1: 4rzez50gls91x2qlvksvt1eqdvpzh9p
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Groups
+
+|arg= global
+
+|descr= Returns the group a unit is assigned to.
+
+|s1= [[group]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Group]] - for dead units, the returned group equals [[grpNull]].
+
+|x1= <sqf>_playerGrp = group player;</sqf>
+
+|seealso= [[local]] [[join]] [[leader]] [[units]] [[allGroups]] [[groups]] [[groupID]] [[setGroupId]] [[setGroupIdGlobal]]
+}}
+
+{{Note
+|user= jafarin
+|timestamp= 200608191200
+|text= Few rules about group in OFP:R:
+# When last man in group die or is moved to other group, group will be destroyed, and it can't be used anymore.
+# First man joined to empty group will be group leader.
+}}

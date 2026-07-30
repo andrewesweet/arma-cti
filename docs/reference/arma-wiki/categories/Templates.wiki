@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/Category:Templates
+// revision: 340038 (2023-04-28T16:27:19Z)
+// export sha1: nmqsi0ae6d52f8e6vk62qkbsc67xrcr
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOEDITSECTION__<div class="floating-box plainlinks" style="float: right; height: 11em; margin: 0 0 1em 3em">
+=== Useful Links ===
+
+[https://community.bistudio.com/wiki/Special:PrefixIndex?prefix{{=}}&namespace=10 Template-namespace pages]<br>
+[http://meta.wikimedia.org/wiki/Help:Template Wikipedia Template Article]<br>
+[https://www.mediawiki.org/wiki/Help:Magic_words Magic words]<br>
+[https://www.mediawiki.org/wiki/Help:Extension:ParserFunctions Parser functions]
+</div>
+{| class="valign-top"
+| style="width: 66%" |
+This category is a listing of templates found (and hopefully used) on the [[{{Name|bi}}]] wiki.
+
+Please choose a sensible and descriptive name when creating a template so that others may easily find this template and reuse it.<br>
+Take caution when updating a template that has been used frequently in the wiki. One small change could affect many pages that rely on this template.
+|
+{{Feature|important|
+Use the following code to categorise the template:
+<syntaxhighlight lang="html">
+<noinclude>[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>
+</syntaxhighlight>
+Make sure to keep the <noinclude> tags, otherwise it will categorise every page in which the template is used in the [[:Category:Templates|Templates]] category!<br>
+See [[Template:Doc/Template|Doc/Template]] for a template's documentation model that manages the category automatically.
+}}
+|}
+
+
+[[Category:Community Wiki]]

@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/shownCompass
+// revision: 341000 (2023-05-13T22:05:59Z)
+// export sha1: pgmpz4wy5s54l90p0ljyr875b9qbpsu
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Interaction
+
+|descr= Checks if client has Compass enabled in [[Description.ext|description.ext]] (''showCompass'' param) or force enabled with [[showCompass]] command.
+
+|s1= '''shownCompass'''
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (shownCompass) then {hint "You have Compass enabled"};</sqf>
+
+|seealso= [[showCompass]] [[visibleCompass]] [[shownGPS]] [[shownWatch]] [[shownHUD]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2020-03-09 - 08:12 (UTC)</dd>
+<dt class="note">[[User:POLPOX|POLPOX]]</dt>
+<dd class="note">
+Even if you're aiming down a sight (which is usually you can't open the compass), [[shownCompass]] returns true if you press the compass key (K).
+</dd>
+
+</dl>

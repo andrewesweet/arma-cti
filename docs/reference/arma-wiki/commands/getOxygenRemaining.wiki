@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/getOxygenRemaining
+// revision: 341133 (2023-05-13T22:12:32Z)
+// export sha1: clqm2yc308bfde27h18so97njq23h1v
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns amount of remaining oxygen.
+
+|s1= [[getOxygenRemaining]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_oxygen = getOxygenRemaining player;</sqf>
+
+|seealso= [[setOxygenRemaining]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-10-24 - 23:43 (UTC)</dd>
+<dt class="note">[[User:Benargee|Benargee]]</dt>
+<dd class="note"> Unit will die instantly at 0 oxygen unlike some other games that permit a certain amount of time after oxygen is depleted.
+</dd>
+
+</dl>

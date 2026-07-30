@@ -1,0 +1,83 @@
+// source: https://community.bistudio.com/wiki/2D_Editor:_Markers
+// revision: 353540 (2024-03-19T12:01:33Z)
+// export sha1: 5mz47ur1j7lirf12jvg4kocqjq67uux
+// categories: Category:2D Editor
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Marker mode is primarily used to place visual map icons and zones on the mission map.
+Markers are only visible while the mission editor is in marker mode, but can still be manipulated while in other modes.
+To do so, hover the mouse cursor over a marker's position to display it is name.
+
+The second use of markers is to define a possible starting position for any number of objects.
+To do this, create a [[Mission_Editor#Groups|group link]] between the marker and the object.
+The object will begin the mission at any one of the markers it is grouped with or at it is original position, chosen at random.
+This offers another way to create some randomness in a mission, with more precise control compared to using the object's ''Placement radius'' option.
+
+Note that any marker used in this way will still be drawn on the mission map (although setting the axis sizes to 0 can be used to hide a marker).
+Markers can not be attached to objects. To create a map marker, double left click in empty space.
+
+<gallery>
+File:OFP_editor_markers.jpg|[[Arma: Cold War Assault]]
+File:ArmA_editor_marker.jpg|[[:Category:ArmA: Armed Assault|{{Name|arma1|short}}]]
+File:Arma2 editor marker.jpg|{{GameCategory|arma2|link= y}}
+File:tkoh editor markers.jpg|[[Take On Helicopters]]
+File:Arma3 editor marker.jpg|{{GameCategory|arma3|link= y}}
+</gallery>
+
+=== Name ===
+
+Every marker must have a unique name. Marker names should comply with normal variable naming rules (no spaces, reserved characters or reserved words) but ArmA will only provide a warning in the case of a duplicate marker name.
+Markers can only be found by recognizing their name while in another map editing mode.
+
+=== Icon/Rectangle/Ellipse ===
+
+Markers can be one of two types :
+* '''Icons''' - These represent points, and will be drawn on the mission map at a fixed scale, no matter what zoom level is used. Icons are completely opaque and will cover whatever lies below them.
+* '''Ellipse/Rectangle''' - Markers can also take the form of a pattern filled zone, defined by either one of these shapes. The zone will always be displayed covering the same physical area, no matter what scale the map is viewed at.
+
+=== Color ===
+
+Choose the desired color. ''Default'' for icon markers is red, and black for zoned shapes.
+
+=== Icon ===
+
+This option is only available if the marker is an ''Icon'' type.
+Choose any icon from the list. The two ''Empty'' types are valid, they just lack proper names.
+Players can create icon markers during the mission by double clicking on the map.
+
+=== Fill ===
+
+Only available for ''Ellipse'' or ''Rectangle'' markers.
+The shape will be filled with the selected fill pattern.
+All fill patterns are slightly transparent.
+
+=== Axis a/Axis b ===
+
+These options define the scale at which the marker will be drawn.
+''Icon'' type markers have no absolute size, but rather display at a constant size irrespective of map zoom.
+The axis values define the relative scale for the icon, for example marker with an axis value of 10 will be displayed 10 times larger than normal icon display size.
+For ''zone'' type markers, these values define the radius of the marker, in meters.
+''Axis a'' is east west, ''Axis b'' north south, assuming angle of 0.
+To make an invisible marker (such as those used to define possible starting locations for a object) set both axis to 0.
+
+=== Angle ===
+
+A marker can be rotated as with any object or trigger.
+
+=== Text ===
+
+Only ''Icon'' markers will use this text.
+It will be displayed in small colored font directly east of the marker, irrespective of the marker's angle.
+
+{{ArgTitle|3|Preview|{{GVI|tkoh|1.00}}}}
+
+Displays preview of currently selected marker.
+
+
+== Scripting ==
+
+See [[:Category:Command_Group:_Markers|Command Group: Markers]] for a list of all marker-related commands.
+
+
+[[Category: 2D Editor]]

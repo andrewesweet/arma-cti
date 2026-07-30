@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Missions
+// revision: 336827 (2023-01-04T15:30:39Z)
+// export sha1: ao77kri1hyeulnq3dr5jypcol66vqd5
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|ofp}}
+=== Introduction ===
+
+Missions are the meat and potatoes of Operation Flashpoint (OFP). Detailed models are all very well, but without a mission in which they can be used, they remain mere decorations. Missions are what drive the interactive experience, and designing a mission can be both frustratingly complicated and overwhelmingly rewarding.
+
+=== Applicability ===
+
+This Category is at present only for information on missions for use with the original Operation Flashpoint series for the PC.
+
+=== Obtaining and Installing a User Created Mission ===
+
+Single Player missions for OFP generally come in a .pbo format, and can be put into the ''OperationFlashpoint\Missions'' folder.
+
+Similarly, Multiplayer missions go into the ''OperationFlashpoint\MPMissions'' folder.
+
+There are many sources from which you can download OFP missions, and some of the more reliable sources are listed below:
+
+*[http://www.ofpec.com OFPEC]
+*{{Link|link= http://ofp.gamepark.cz|text= ofp.info}}
+*[http://www.ofpmdb.net Operation Flashpoint Mission-Database]
+*[http://ofp.ruprt.cz Ruprt's mission depository (only czech missions)]
+*[http://cr-ofp.dyndns.org CR-OFP Resource Center]
+*[http://www.assaultmissionstudio.de Assault Mission Studio (German editing and Mission site)]
+
+=== Creating your Own Mission ===
+
+For information on how to create your own missions for OFP, see [[Mission_Design|Mission Design]].

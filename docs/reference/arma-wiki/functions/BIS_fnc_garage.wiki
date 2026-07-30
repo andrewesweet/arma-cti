@@ -1,0 +1,122 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_garage
+// revision: 349504 (2023-11-08T17:09:12Z)
+// export sha1: rok2v00dho3g3rvry214zsmxctbyqgs
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Broken Functions | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Vehicles
+
+|gr2= Broken Functions
+
+|descr= Splendid&trade; Virtual Arsenal Garage.
+
+|s1= [mode, params] call [[BIS_fnc_garage]]
+
+|p1= mode: [[String]] - (Optional, default "Open") '''case-sensitive'''. Can be "Open"; other cases are for internal use
+
+|p2= params: [[Anything]] - (Optional, default <sqf inline>[]</sqf>) depending on ''mode'', can be:
+* "Open": [fullGarage, garageCentre]
+** fullGarage: [[Boolean]] - (Optional, default [[false]])
+** garageCentre: [[Object]] - (Optional, default [[objNull]]) the garage centre as vehicle; will be deleted on opening
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[] call BIS_fnc_garage;</sqf>
+
+|x2= <sqf>
+player addAction ["Open Garage", {
+
+ 	// create a position 30 meters infront of the player
+	_pos = player getPos [30,getDir player];
+
+	// create empty helipad at the position and save it in the global variable BIS_fnc_garage_center
+	BIS_fnc_garage_center = createVehicle ["Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE"];
+
+	["Open", true] call BIS_fnc_garage;
+}];
+</sqf>
+
+|x3= <sqf>
+player addAction ["Open Garage", {
+
+ 	// create a position 30 meters infront of the player
+	_pos = player getPos [30, getDir player];
+
+	// create empty helipad at the position
+	_vehicle = createVehicle ["Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE"];
+
+	// pass created vehicle to function for use as position
+	["Open", [true, _vehicle]] call BIS_fnc_garage;
+}];
+</sqf>
+
+|seealso= [[BIS_fnc_arsenal]] [[Arsenal]]
+}}
+
+{{Note
+|user= Larrow
+|timestamp= 20150531070900
+|text= Available namespace variables
+<sqf>missionNamespace
+	BIS_fnc_arsenal_center			// copy of BIS_fnc_garage_center
+	BIS_fnc_arsenal_fullGarage		// holds param 1 of "open" statement
+	BIS_fnc_arsenal_group			// Group spawned vehicle is created in, default players group
+	BIS_fnc_arsenal_type			// --- 0 - Arsenal, 1 - Garage
+	BIS_fnc_garage_center			// Hold a reference to an OBJECT of where to spawn selected garage vehicle
+	BIS_fnc_garage_centerType		// ? // default selected vehicle model from config
+	BIS_fnc_garage_data				// Array of vehicles for garage tabs - see below
+	BIS_fnc_garage_turretPaths		// ? // []
+
+uiNamespace
+	BIS_fnc_arsenal_cam				// null if arsenal is not open else holds reference to arsenal display
+	BIS_fnc_arsenal_toggleSpace		// ?
+	BIS_fnc_garage_defaultClass		// Default class to display
+	BIS_fnc_garage_stats			// min and max values of config ["maxspeed","armor","fuelcapacity","threat"] of cfgVehicles >> crew
+</sqf>
+
+Available scripted eventHandlers
+<sqf>
+// [namespace event is stored in, event name, passed variables]
+[missionNamespace, "garageOpened", [_display, _toggleSpace]]
+[missionNamespace, "garageClosed", [displayNull, uiNamespace getVariable ["BIS_fnc_arsenal_toggleSpace", false]]]
+</sqf>
+
+Structure of BIS_fnc_garage_data
+<sqf>
+BIS_fnc_garage_data = [
+	// CARS
+	[
+		//model
+		"\a3\soft_f\offroad_01\offroad_01_unarmed_f",
+		// config paths of classes that use above model
+		[
+			config.bin/CfgVehicles/C_Offroad_01_F,
+			config.bin/CfgVehicles/B_G_Offroad_01_F
+		],
+		"\a3\soft_f\mrap_02\mrap_02_gmg_f",
+		[
+			config.bin/CfgVehicles/O_MRAP_02_gmg_F
+		]
+	],
+	[],		// ARMOR
+	[],		// HELIS
+	[],		// PLANES
+	[],		// NAVAL
+	[]		// STATICS
+]
+</sqf>
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20180501144000
+|text= The above overview isn't fully correct:
+
+# BIS_fnc_garage_centerType returns by default the model path of the "default class" <sqf>getText (configFile >> "cfgvehicles" >> _classDefault >> "model")</sqf> yet once a vehicle is selected it returns its class name.
+# BIS_fnc_garage_center returns by default the player reference, yet otherwise the created vehicle object
+}}

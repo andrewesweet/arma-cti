@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Launcher_-_Advanced_Parameters
+// revision: 226291 (2021-01-31T17:54:10Z)
+// export sha1: oj6bdezosd3osavqin40eecpadqqmtp
+// Vendored snapshot. Do not edit — re-export instead.
+
+This page is summary of advanced parameters available in [[Arma_3_Launcher|Arma 3 Launcher]].<br>
+Majority of these parameters is based on [[Arma_3_Startup_Parameters|Arma 3 startup parameters]].
+
+== List of parameters ==
+=== Advanced ===
+*'''Par''' - Reads startup parameters from a file.
+*'''Check Signatures''' - Introduced to provide thorough test of all signatures of all loaded banks at the start game.
+*'''CPU Count''' - Define number of CPUs/cores available.
+*'''ExThreads''' - Option to define extra threads.
+** File operations - Use a dedicated thread for file operations (enabled when ExThreads is 1 or 3 or 5 or 7).
+** Texture loading - Use a dedicated thread for loading textures (enabled when ExThreads is 2 or 3 or 6 or 7).
+** Geometry loading - Use a dedicated thread for loading geometry data (enabled when ExThreads is greater than or equal to 4).
+*'''Enable Hyper-Threading''' - Enables the use of hyper-threading CPU cores which might slightly improve performance in certain scenarios.
+*'''Malloc''' - Particular allocator to be used.
+*'''MaxMem''' - Memory allocation limit to number (in MegaBytes).
+*'''MaxVRAM''' - Defines Video Memory allocation limit to number (in MegaBytes).
+*'''Enable File Patching''' - Allow unpacked data to be loaded.
+*'''No Logs''' - Don't store the log.
+*'''World''' - Select a world loaded by default.
+*'''Profile Path''' - Location of user-profile folder.
+=== Client ===
+*'''Server IP''' - Server IP to connect to.
+*'''Server Port''' - Server port to connect to.
+*'''Server Password''' - Server password to connect to.
+*'''Host Session''' - Start a non-dedicated multiplayer host.
+=== Host ===
+*'''Server''' - Start as dedicated server.
+*'''Server Port''' - Port to have dedicated server listen on.
+*'''PID''' - File to write the server's PID (process ID) to.
+*'''Ranking File''' - Generates a ranking file.
+*'''NetLog''' - Enables multiplayer network traffic logging.
+*'''Cfg''' - Selects the Server Basic Config file.
+*'''Config''' - Selects the Server Config File.
+*'''BEpath''' - Defines the path to BattlEye.
+*'''Dedicated Server IP''' - Allows server process to use defined available IP address.
+=== Author ===
+*'''Buldozer''' - Starts Buldozer mode.
+*'''Init Script''' - Runs scripting command once in the main menu.
+*'''Do Nothing''' - Engine closes immediately after detecting this option.
+*'''No Pause''' - Allow the game running even when its window does not have focus.
+*'''No Sound''' - Disables sound output.
+*'''No Land''' - Starts with no world loaded.
+*'''Shows Script Errors''' - Introduced to show errors in scripts on-screen.
+*'''Autotest''' - Loads automatically a series of defined missions and on error writes to a log file.
+*'''Beta''' - Loads the specified beta sub-folders. Separated by semi-colons.
+=== Compatibility ===
+*'''No Context Buffers''' - Turns off multicore use. It slows down rendering but may resolve visual glitches.

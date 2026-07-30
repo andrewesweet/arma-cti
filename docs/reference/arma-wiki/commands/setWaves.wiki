@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/setWaves
+// revision: 349863 (2023-11-20T22:10:45Z)
+// export sha1: panwpffsw26kb992sw7e4chpye1r6yc
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+|eff= local
+
+|gr1= Environment
+
+|descr= Changes the waves value smoothly during the given time (in seconds). A time of zero means there will be an immediate change.<br><br>
+'''NOTE''': This command will have no effect (even though the value of [[waves]] changes) unless {{hl|Manual Override}} option is selected in the editor in the Intel, which is normally off.<br><br>
+[[File:setWaves.jpg|left|600px]]
+
+|s1= time [[setWaves]] value
+
+|p1= time: [[Number]]
+
+|p2= value: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>180 setWaves .5;</sqf>
+
+|x2= <sqf>0 setWaves 1;</sqf>
+
+|seealso= [[waves]] [[fog]] [[overcast]] [[setLightnings]]
+}}

@@ -1,0 +1,2062 @@
+// source: https://community.bistudio.com/wiki/ArmA:_Armed_Assault:_Moves
+// revision: 339440 (2023-04-28T14:08:51Z)
+// export sha1: 8rdronyhu7jyy8cfzvf6g0me3136mqd
+// categories: Category:Moves
+// Vendored snapshot. Do not edit — re-export instead.
+
+==Syntax==
+ unit [[switchMove]] move (Table code: "Usage:'''s'''")
+ unit [[playMove]] move (Table code: "Usage:'''p'''")
+
+* unit = [[Object]]: unit that perform this move
+* move = [[String]]: name of move to be performed
+
+The general naming convention for animation titles are explained on the '''[[AnimationTitles]]''' page.
+
+A tool for previewing the moves (to make documenting them easier) is available {{Link|http://www.kronzky.info/animationviewer/|here}}.
+
+
+= List of moves for Armed Assault =
+== Acrg... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AcrgPknlMstpSnonWnonDnon_AmovPercMstpSnonWnonDnon_getOutHigh||-||Slowly jumps out of vehicle without weapon
+|-
+| AcrgPknlMstpSnonWnonDnon_AmovPercMstpSnonWnonDnon_getOutLow||-||Slowly jumps out of vehicle without weapon
+|-
+| AcrgPknlMstpSnonWnonDnon_AmovPercMstpSnonWnonDnon_getOutMedium||-||Slowly jumps out of vehicle without weapon
+|-
+| AcrgPknlMstpSnonWnonDnon_AmovPercMstpSrasWpstDnon_getOutHigh||-||Jumps out of vehicle with pistol
+|-
+| AcrgPknlMstpSnonWnonDnon_AmovPercMstpSrasWpstDnon_getOutLow||-||Jumps out of vehicle with pistol
+|-
+| AcrgPknlMstpSnonWnonDnon_AmovPercMstpSrasWpstDnon_getOutMedium||-||Jumps out of vehicle with pistol
+|-
+| AcrgPknlMstpSnonWnonDnon_AmovPercMstpSrasWrflDnon_getOutHigh||-||Jumps out of vehicle with rifle
+|-
+| AcrgPknlMstpSnonWnonDnon_AmovPercMstpSrasWrflDnon_getOutLow||-||Jumps out of vehicle with rifle
+|-
+| AcrgPknlMstpSnonWnonDnon_AmovPercMstpSrasWrflDnon_getOutMedium||-||Jumps out of vehicle with rifle
+|-
+|}
+
+== Acts... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_TVstudioMan||p||TV Studio Man animation
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_TVstudioMan_Loop1||p||TV Studio Man animation
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_TVstudioMan_Loop2||p||TV Studio Man animation
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_TVstudioMan_Loop3||p||TV Studio Man animation
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_TVstudioMan_LoopLong||p||TV Studio Man animation
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_WarReporter||p||Interview scene (strange gfx)
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_shot1||p||Interview scene (strange gfx)
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_shot1Man||p||Interview partner holding rifle
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_shot2||p||Interview scene (strange gfx)
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_shot3||p||Interview scene (strange gfx)
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_shot3Man||p||Interview partner listening, nothing in hand
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_shot4||p||Interview scene (strange gfx)
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_shot4Man||p||Interview partner holding rifle, give orders, moves some steps
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_shot5||p||Interview scene (strange gfx)
+|-
+| ActsPercMstpSnonWnonDnon_MarianQ_shot5Man||p||Interview partner holding rifle, give quick orders, moves and prepares to defend
+|-
+|}
+
+== Adth... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AdthPercMrunSlowWlnrDb_1||p||knees, takes launcher from back, dies
+|-
+| AdthPercMrunSlowWlnrDf_1||p||knees, takes launcher from back, stands up, dies
+|-
+| AdthPercMrunSlowWlnrDf_2||p||knees, takes launcher from back, stands up, dies
+|-
+| AdthPercMrunSlowWrflDf_6||p||knees, takes rifle from back, dies
+|-
+| colspan="3" | &nbsp;
+|-
+| AdthPercMstpSlowWlnrDnon_1||p||knees, takes launcher form back, stands up, few steps forward, dies falling left
+|-
+| AdthPercMstpSlowWlnrDnon_2||p||knees, takes launcher from back, stands up, few steps forward, dies falling right
+|-
+| AdthPercMstpSlowWrflDf_1||p||takes rifle from back, dies falling left
+|-
+| AdthPercMstpSlowWrflDf_2||p||takes rifle from back, dies falling right
+|-
+| AdthPercMstpSlowWrflDf_4||p||takes rifle from back, dies falling forward
+|-
+| AdthPercMstpSlowWrflDnon_1||p||takes rifle from back, dies falling forward
+|-
+| AdthPercMstpSlowWrflDnon_2||p||takes rifle from back, dies falling backward
+|-
+| AdthPercMstpSlowWrflDnon_4||p||takes rifle from back, dies falling backward right
+|-
+| AdthPercMstpSlowWrflDnon_8||p||takes rifle from back, dies falling forward left
+|-
+| AdthPercMstpSlowWrflDnon_binocular||p||stands, switches to binocular, then dies
+|-
+| AdthPercMstpSnonWnonDnon_1||p||dies, falling forward and turns on back
+|-
+| AdthPercMstpSnonWnonDnon_2||p||dies, falling backward and turns on back
+|-
+| AdthPercMstpSnonWnonDnon_3||p||dies, falling forward
+|-
+| AdthPercMstpSnonWnonDnon_binocular||p||dies, when taking binocular
+|-
+| AdthPercMstpSrasWpstDb_8||p||takes pistol, dies falling forward 
+|-
+| AdthPercMstpSrasWpstDb_9||p||takes pistol, dies falling backward
+|-
+| AdthPercMstpSrasWpstDf_2||p||takes pistol, dies falling forward 
+|-
+| AdthPercMstpSrasWpstDf_6||p||takes pistol, dies falling forward 
+|-
+| AdthPercMstpSrasWpstDf_7||p||takes pistol, dies falling forward 
+|-
+| AdthPercMstpSrasWpstDnon_1||p||takes pistol, dies falling forward 
+|-
+| AdthPercMstpSrasWpstDnon_3||p||takes pistol, dies falling forward left
+|-
+| AdthPercMstpSrasWpstDnon_5||p||takes pistol, dies falling forward 
+|-
+| AdthPercMstpSrasWrflDb_8||p||takes rifle, dies falling forward 
+|-
+| AdthPercMstpSrasWrflDf_1||p||takes rifle, dies falling forward 
+|-
+| AdthPercMstpSrasWrflDf_2||p||takes rifle, dies falling forward 
+|-
+| AdthPercMstpSrasWrflDf_4||p||takes rifle, dies falling forward 
+|-
+| AdthPercMstpSrasWrflDnon_1||p||holds rifle, dies falling forward
+|-
+| AdthPercMstpSrasWrflDnon_2||p||holds rifle, dies falling forward left
+|-
+| AdthPercMstpSrasWrflDnon_4||p||holds rifle, dies falling forward
+|-
+| AdthPercMstpSrasWrflDnon_8||p||holds rifle, dies falling forward on back
+|-
+| AdthPknlMstpSlayWrflDnon_inventory||p||unholsters pistol, kneels down (inventory check), dies
+|-
+| AdthPknlMstpSlowWlnrDnon_binocular||-||-
+|-
+| AdthPknlMstpSlowWrflDnon_binocular||p||Kneels; switches to binocular, then dies
+|-
+| AdthPknlMstpSnonWnonDnon_1||-||Kneeling without a weapon, dies, falls to the left
+|-
+| AdthPknlMstpSnonWnonDnon_2||-||Kneeling without a weapon, dies, falls backwards
+|-
+| AdthPknlMstpSnonWnonDnon_binocular||-||Kneeling, looking through binoculars, dies, falls to the left
+|-
+| AdthPknlMstpSnonWnonDnon_inventory||p||unholsters pistol, kneels down (inventory check), dies
+|-
+| AdthPknlMstpSrasWlnrDnon_1||-||-
+|-
+| AdthPknlMstpSrasWlnrDnon_2||-||-
+|-
+| AdthPknlMstpSrasWpstDb_5||-||-
+|-
+| AdthPknlMstpSrasWpstDnon_1||-||-
+|-
+| AdthPknlMstpSrasWpstDnon_2||-||-
+|-
+| AdthPknlMstpSrasWpstDnon_4||-||-
+|-
+| AdthPknlMstpSrasWpstDnon_6||-||-
+|-
+| AdthPknlMstpSrasWrflDnon_1||-||-
+|-
+| AdthPknlMstpSrasWrflDnon_2||-||-
+|-
+| AdthPknlMwlkSrasWlnrDf_1||-||-
+|-
+| AdthPknlMwlkSrasWlnrDf_2||-||-
+|-
+| AdthPknlMwlkSrasWrflDf_1||-||-
+|-
+| AdthPknlMwlkSrasWrflDf_2||-||-
+|-
+| AdthPpneMstpSlowWrflDf_1||-||-
+|-
+| AdthPpneMstpSlowWrflDf_2||-||-
+|-
+| AdthPpneMstpSlowWrflDnon_binocular||-||-
+|-
+| AdthPpneMstpSnonWnonDnon||-||-
+|-
+| AdthPpneMstpSnonWnonDnon_binocular||-||-
+|-
+| AdthPpneMstpSrasWpstDnon_1||-||-
+|-
+| AdthPpneMstpSrasWpstDnon_2||-||-
+|-
+| AdthPpneMstpSrasWrflDnon_1||-||-
+|-
+| AdthPpneMstpSrasWrflDnon_2||-||-
+|-
+| AdthPsitMstpSlowWrflDnon||p||Sitting; dies
+|-
+| colspan="3" | &nbsp;
+|-
+| AdthPswmMrunSnonWnonDf||-||Dies in water, face down
+|-
+| AdthPswmMstpSnonWnonDnon||-||Dies in water, belly-up
+|-
+|}
+
+== Aidl.. ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AidlPercMstpSlowWrflDnon01||-||-
+|-
+| AidlPercMstpSlowWrflDnon02||-||-
+|-
+| AidlPercMstpSlowWrflDnon03||-||-
+|-
+| AidlPercMstpSlowWrflDnon04||-||-
+|-
+| AidlPercMstpSlowWrflDnon05||-||-
+|-
+| AidlPercMstpSlowWrflDnon06||-||-
+|-
+| AidlPercMstpSlowWrflDnon0S||-||-
+|-
+| AidlPercMstpSnonWnonDnon01||-||-
+|-
+| AidlPercMstpSnonWnonDnon02||-||-
+|-
+| AidlPercMstpSnonWnonDnon03||-||-
+|-
+| AidlPercMstpSnonWnonDnon04||p||Puts weapon on back
+|-
+| AidlPercMstpSnonWnonDnon05||-||-
+|-
+| AidlPercMstpSnonWnonDnon06||-||-
+|-
+| AidlPercMstpSnonWnonDnon07||-||-
+|-
+| AidlPercMstpSnonWnonDnon08||-||-
+|-
+| AidlPercMstpSnonWnonDnon0S||-||-
+|-
+| AidlPercMstpSrasWpstDnon01||-||-
+|-
+| AidlPercMstpSrasWpstDnon02||-||-
+|-
+| AidlPercMstpSrasWpstDnon03||-||-
+|-
+| AidlPercMstpSrasWpstDnon0S||-||-
+|-
+| AidlPercMstpSrasWrflDnon01||-||-
+|-
+| AidlPercMstpSrasWrflDnon02||-||-
+|-
+| AidlPercMstpSrasWrflDnon03||-||-
+|-
+| AidlPercMstpSrasWrflDnon04||-||-
+|-
+| AidlPercMstpSrasWrflDnon05||-||-
+|-
+| AidlPercMstpSrasWrflDnon06||-||-
+|-
+| AidlPercMstpSrasWrflDnon0S||-||-
+|-
+| AidlPknlMstpSnonWnonDnon01||p||Combat animation
+|-
+| AidlPknlMstpSnonWnonDnon02||-||-
+|-
+| AidlPknlMstpSnonWnonDnon03||-||-
+|-
+| AidlPknlMstpSnonWnonDnon0S||-||-
+|-
+| AidlPknlMstpSrasWlnrDnon01||-||-
+|-
+| AidlPknlMstpSrasWlnrDnon02||-||-
+|-
+| AidlPknlMstpSrasWlnrDnon03||-||-
+|-
+| AidlPknlMstpSrasWlnrDnon0S||-||-
+|-
+| AidlPknlMstpSrasWpstDnon01||-||-
+|-
+| AidlPknlMstpSrasWpstDnon02||-||-
+|-
+| AidlPknlMstpSrasWpstDnon03||-||-
+|-
+| AidlPknlMstpSrasWpstDnon0S||-||-
+|-
+| AidlPknlMstpSrasWrflDnon01||-||-
+|-
+| AidlPknlMstpSrasWrflDnon02||-||-
+|-
+| AidlPknlMstpSrasWrflDnon03||-||-
+|-
+| AidlPknlMstpSrasWrflDnon0S||-||-
+|-
+| AidlPpneMstpSnonWnonDnon01||-||-
+|-
+| AidlPpneMstpSnonWnonDnon02||-||-
+|-
+| AidlPpneMstpSnonWnonDnon03||-||-
+|-
+| AidlPpneMstpSnonWnonDnon0S||-||-
+|-
+| AidlPpneMstpSrasWpstDnon01||-||-
+|-
+| AidlPpneMstpSrasWpstDnon02||-||-
+|-
+| AidlPpneMstpSrasWpstDnon03||-||-
+|-
+| AidlPpneMstpSrasWpstDnon0S||-||-
+|-
+| AidlPpneMstpSrasWrflDnon01||-||-
+|-
+| AidlPpneMstpSrasWrflDnon02||-||-
+|-
+| AidlPpneMstpSrasWrflDnon03||-||-
+|-
+| AidlPpneMstpSrasWrflDnon0S||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AidlRfllowToRasTrans||-||-
+|-
+| AidlRflrasToLowTrans||-||-
+|-
+|}
+== Ainv... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AinvPknlMstpSlayWrflDnon||-||-
+|-
+| AinvPknlMstpSlayWrflDnon_1||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AinvPknlMstpSlayWrflDnon_AmovPercMstpSnonWnonDnon||-||-
+|-
+| AinvPknlMstpSlayWrflDnon_AmovPercMstpSrasWrflDnon||p||Kneels in front of ammo box, then gets up again.
+|-
+| AinvPknlMstpSlayWrflDnon_AmovPknlMstpSnonWnonDnon||p||Pistol Out, Kneels, Then gets up again.
+|-
+| AinvPknlMstpSlayWrflDnon_AmovPknlMstpSrasWrflDnon||p||Head injury/ache
+|-
+| colspan="3" | &nbsp;
+|-
+| AinvPknlMstpSlayWrflDnon_healed||p||Unit being healed
+|-
+| AinvPknlMstpSlayWrflDnon_healed2||p||Unit being healed
+|-
+| AinvPknlMstpSlayWrflDnon_medic||p||Medic healing
+|-
+| colspan="3" | &nbsp;
+|-
+| AinvPknlMstpSnonWnonDnon_1||p||Holsters pistol, kneels in front of ammo box. Stays that way
+|-
+| AinvPknlMstpSnonWnonDnon_2||-||Kneels in front of ammo box. Stays that way
+|-
+| AinvPknlMstpSnonWnonDnon_3||-||Kneels in front of ammo box. Stays that way
+|-
+| AinvPknlMstpSnonWnonDnon_4||-||Kneels, then looks down at ammo box. Stays that way.
+|-
+| colspan="3" | &nbsp;
+|-
+| AinvPknlMstpSnonWnonDnon_AmovPercMstpSrasWpstDnon||-||-
+|-
+| AinvPknlMstpSnonWnonDnon_AmovPercMstpSrasWpstDnon_end||-||-
+|-
+| AinvPknlMstpSnonWnonDnon_AmovPknlMstpSrasWpstDnon||p||Head injury/ache
+|-
+| AinvPknlMstpSnonWnonDnon_AmovPknlMstpSrasWpstDnon_end||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AinvPknlMstpSnonWnonDnon_healed_1||-||-
+|-
+| AinvPknlMstpSnonWnonDnon_healed_2||-||-
+|-
+| AinvPknlMstpSnonWnonDnon_medic_1||-||-
+|-
+| AinvPknlMstpSnonWnonDnon_medic_2||-||-
+|-
+|}
+
+== Amov... ==
+=== AmovPercMrun... ===
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPercMevaSlowWpstDf||-||Evasive sprint forward with pistol
+|-
+| AmovPercMevaSlowWpstDfl||-||Evasive sprint forward left with pistol
+|-
+| AmovPercMevaSlowWpstDfr||-||Evasive sprint forward right with pistol
+|-
+| AmovPercMevaSlowWrflDf||p||Evasive sprint forward with rifle
+|-
+| AmovPercMevaSlowWrflDfl||-||Evasive sprint forward left with rifle
+|-
+| AmovPercMevaSlowWrflDfr||-||Evasive sprint forward right with rifle
+|-
+| AmovPercMevaSnonWnonDf||-||Evasive sprint forward without weapon
+|-
+| AmovPercMevaSnonWnonDfl||-||Evasive sprint forward left without weapon
+|-
+| AmovPercMevaSnonWnonDfr||-||Evasive sprint forward right without weapon
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMrunSlowWlnrDb||-||Run backward with launcher
+|-
+| AmovPercMrunSlowWlnrDbl||-||Run backward left with launcher
+|-
+| AmovPercMrunSlowWlnrDbr||-||Run backward right with launcher
+|-
+| AmovPercMrunSlowWlnrDf||-||Run forward with launcher
+|-
+| AmovPercMrunSlowWlnrDfl||-||Run forward left with launcher
+|-
+| AmovPercMrunSlowWlnrDfr||-||Run forward right with launcher
+|-
+| AmovPercMrunSlowWlnrDl||-||Run left with launcher
+|-
+| AmovPercMrunSlowWlnrDr||-||Run right with launcher
+|-
+| AmovPercMrunSlowWlnrDnon_transition||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMrunSlowWpstDb||-||Run backward with pistol
+|-
+| AmovPercMrunSlowWpstDbl||-||Run backward left with pistol
+|-
+| AmovPercMrunSlowWpstDbr||-||Run backward right with pistol
+|-
+| AmovPercMrunSlowWpstDf||-||Run forward with pistol
+|-
+| AmovPercMrunSlowWpstDfl||-||Run forward left with pistol
+|-
+| AmovPercMrunSlowWpstDfr||-||Run forward right with pistol
+|-
+| AmovPercMrunSlowWpstDl||-||Run left with pistol
+|-
+| AmovPercMrunSlowWpstDr||-||Run right with pistol
+|-
+| AmovPercMrunSlowWpstDf_AmovPercMstpSrasWpstDnon_gthArm||-||-
+|-
+| AmovPercMrunSlowWpstDf_AmovPercMstpSrasWpstDnon_gthEnd||-||-
+|-
+| AmovPercMrunSlowWpstDf_AmovPercMstpSrasWpstDnon_gthStart||p||Long run up, throws a grenade
+|-
+| AmovPercMrunSlowWpstDf_AmovPercMstpSrasWpstDnon_gthThrow||p||Short run up, throws a grenade
+|-
+| AmovPercMrunSlowWpstDnon_transition||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMrunSlowWrflDb||-||Run backward with rifle lowered
+|-
+| AmovPercMrunSlowWrflDbl||-||Run backward left with rifle lowered
+|-
+| AmovPercMrunSlowWrflDbr||-||Run backward right with rifle lowered
+|-
+| AmovPercMrunSlowWrflDf||-||Run forward with rifle lowered
+|-
+| AmovPercMrunSlowWrflDfl||-||Run forward left with rifle lowered
+|-
+| AmovPercMrunSlowWrflDfr||-||Run forward right with rifle lowered
+|-
+| AmovPercMrunSlowWrflDl||-||Run left rifle lowered
+|-
+| AmovPercMrunSlowWrflDr||-||Run right rifle lowered
+|-
+| AmovPercMrunSlowWrflDf_AmovPercMevaSrasWrflDb||-||Step forward with a rifle, stops, does a step back
+|-
+| AmovPercMrunSlowWrflDf_AmovPercMevaSrasWrflDl||-||Long step to the left, aims rifle forward, does a few addition steps
+|-
+| AmovPercMrunSlowWrflDf_AmovPercMevaSrasWrflDr||-||Long step to the right, aims rifle forward, does a few addition steps
+|-
+| AmovPercMrunSlowWrflDf_AmovPercMstpSrasWrflDnon_gthEnd||-||Throws a grenade (rifle equipped), short step forward
+|-
+| AmovPercMrunSlowWrflDf_AmovPercMstpSrasWrflDnon_gthStart||-||Throws a grenade while moving forward with a rifle
+|-
+| AmovPercMrunSlowWrflDf_AmovPercMstpSrasWrflDnon_gthThrow||-||Same as above?
+|-
+| AmovPercMrunSlowWrflDf_AmovPpneMstpSrasWrflDnon||-||Dives prone
+|-
+| AmovPercMrunSlowWrflDnon_transition||p||Runs a few steps, kneels down, returns
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMrunSnonWnonDb||-||Run backward without weapon
+|-
+| AmovPercMrunSnonWnonDbl||-||Run backward left without weapon
+|-
+| AmovPercMrunSnonWnonDbr||-||Run backward right without weapon
+|-
+| AmovPercMrunSnonWnonDf||-||Run forward without weapon
+|-
+| AmovPercMrunSnonWnonDfl||-||Run forward left without weapon
+|-
+| AmovPercMrunSnonWnonDfr||-||Run forward right without weapon
+|-
+| AmovPercMrunSnonWnonDl||-||Run left without weapon
+|-
+| AmovPercMrunSnonWnonDr||-||Run right without weapon
+|-
+| AmovPercMrunSnonWnonDf_AmovPercMstpSnonWnonDnon_gthEnd||-||Throws a grenade (no weapon), short step forward
+|-
+| AmovPercMrunSnonWnonDf_AmovPercMstpSnonWnonDnon_gthStart||-||Throws a grenade while moving forward without a weapon
+|-
+| AmovPercMrunSnonWnonDf_AmovPercMstpSnonWnonDnon_gthThrow||-||Same as above (?)
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMrunSrasWrflDb||-||Run backward with rifle raised
+|-
+| AmovPercMrunSrasWrflDbl||-||Run backward left with rifle raised
+|-
+| AmovPercMrunSrasWrflDbr||-||Run backward right with rifle raised
+|-
+| AmovPercMrunSrasWrflDf||-||Run forward with rifle raised
+|-
+| AmovPercMrunSrasWrflDfl||-||Run forward left with rifle raised
+|-
+| AmovPercMrunSrasWrflDfr||-||Run forward right with rifle raised
+|-
+| AmovPercMrunSrasWrflDl||-||Run left with rifle raised
+|-
+| AmovPercMrunSrasWrflDr||-||Run right with rifle raised
+|-
+| AmovPercMrunSrasWrflDf_AmovPercMevaSrasWrflDb||-||Step forward, stops, step backwards, rifle aiming ahead
+|-
+| AmovPercMrunSrasWrflDf_AmovPercMevaSrasWrflDl||-||Long step to the left, aims rifle ahead, does a few additional steps to the left
+|-
+| AmovPercMrunSrasWrflDf_AmovPercMevaSrasWrflDr||-||Long step to the right, aims rifle ahead, does a few additional steps to the right
+|-
+|}
+
+=== AmovPercMspr... ===
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPercMsprSlowWpstDf||-||Sprint forward with pistol
+|-
+| AmovPercMsprSlowWpstDfl||-||Sprint forward left with pistol
+|-
+| AmovPercMsprSlowWpstDfr||-||Sprint forward right with pistol
+|-
+| AmovPercMsprSlowWrflDf||-||Sprint forward with rifle lowered
+|-
+| AmovPercMsprSlowWrflDfl||-||Sprint forward left with rifle lowered
+|-
+| AmovPercMsprSlowWrflDfr||-||Sprint forward right with rifle lowered
+|-
+| AmovPercMsprSlowWpstDf_AmovPpneMstpSrasWpstDnon||-||Runs with a pistol and dives prone
+|-
+| AmovPercMsprSlowWpstDf_AmovPpneMstpSrasWpstDnon_2||-||Shakes(?), aiming with a pistol ahead
+|-
+| AmovPercMsprSlowWrflDf_AllSprint||-||Sprint with a rifle lowered, stops, rifle still lowered
+|-
+| AmovPercMsprSlowWrflDf_AmovPpneMstpSrasWrflDnon||-||Runs with a rifle and dives prone
+|-
+| AmovPercMsprSlowWrflDf_AmovPpneMstpSrasWrflDnon_2||-||Lowers legs (just landed?), aiming rifle ahead
+|-
+| AmovPercMsprSlowWrflDfl_AllSprint||-||Runs 45 degs angle to the left with a rifle lowered
+|-
+| AmovPercMsprSlowWrflDfr_AllSprint||-||Runs 45 degs angle to the right with a rifle lowered
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMsprSnonWnonDf||-||Sprint forward without weapon
+|-
+| AmovPercMsprSnonWnonDfl||-||Sprint forward left without weapon
+|-
+| AmovPercMsprSnonWnonDfr||-||Sprint forward right without weapon
+|-
+| AmovPercMsprSnonWnonDf_AmovPpneMstpSnonWnonDnon||-||-
+|-
+| AmovPercMsprSnonWnonDf_AmovPpneMstpSnonWnonDnon_2||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMsprSrasWrflDf||-||Sprint forward with rifle raised
+|-
+| AmovPercMsprSrasWrflDfl||-||Sprint forward left with rifle raised
+|-
+| AmovPercMsprSrasWrflDfr||-||Sprint forward right with rifle raised
+|-
+| AmovPercMsprSrasWrflDf_AllSprint||-||-
+|-
+| AmovPercMsprSrasWrflDfl_AllSprint||-||-
+|-
+| AmovPercMsprSrasWrflDfr_AllSprint||-||-
+|-
+|}
+
+=== AmovPercMstp... ===
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPercMstpSlowWrflDnon||-||Standing with rifle lowered
+|-
+| AmovPercMstpSlowWrflDnon_AmovPercMevaSrasWrflDb||-||-
+|-
+| AmovPercMstpSlowWrflDnon_AmovPercMevaSrasWrflDl||-||-
+|-
+| AmovPercMstpSlowWrflDnon_AmovPercMevaSrasWrflDr||-||-
+|-
+| AmovPercMstpSlowWrflDnon_AmovPercMstpSrasWrflDnon||-||-
+|-
+| AmovPercMstpSlowWrflDnon_AmovPsitMstpSlowWrflDnon||p||Sits on ground
+|-
+| AmovPercMstpSlowWrflDnon_Salute||-||-
+|-
+| AmovPercMstpSlowWrflDnon_SaluteIn||p||Salutes
+|-
+| AmovPercMstpSlowWrflDnon_SaluteOut||-||-
+|-
+| AmovPercMstpSlowWrflDnon_seeWatch||p||Checks watch with weapon in other hand
+|-
+| AmovPercMstpSlowWrflDnon_talking||-||-
+|-
+| AmovPercMstpSlowWrflDnon_turnL||-||Turning left with rifle lowered
+|-
+| AmovPercMstpSlowWrflDnon_turnR||-||Turning right with rifle lowered
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMstpSnonWnonDnon||-||Stand without weapon
+|-
+| AmovPercMstpSnonWnonDnon_AcrgPknlMstpSnonWnonDnon_getInHigh||-||-
+|-
+| AmovPercMstpSnonWnonDnon_AcrgPknlMstpSnonWnonDnon_getInLow||-||-
+|-
+| AmovPercMstpSnonWnonDnon_AcrgPknlMstpSnonWnonDnon_getInMedium||-||-
+|-
+| AmovPercMstpSnonWnonDnon_AinvPknlMstpSnonWnonDnon||p||kneels down (inventory check)
+|-
+| AmovPercMstpSnonWnonDnon_AmovPercMstpSrasWpstDnon||p||Makes two steps back, draws his pistol and moves some steps forward
+|-
+| AmovPercMstpSnonWnonDnon_AmovPercMstpSrasWpstDnon_end||p||Draws pistol and moves some steps forward
+|-
+| AmovPercMstpSnonWnonDnon_AmovPercMstpSrasWrflDnon||p||Takes weapon from back and return it to the back
+|-
+| AmovPercMstpSnonWnonDnon_AmovPercMstpSsurWnonDnon||p||Puts hands behind his head and back
+|-
+| AmovPercMstpSnonWnonDnon_AmovPknlMstpSnonWnonDnon||p||Kneels with one knee down
+|-
+| AmovPercMstpSnonWnonDnon_AmovPknlMstpSrasWlnrDnon||-||Kneels, holding a rocket launcher
+|-
+| AmovPercMstpSnonWnonDnon_AmovPpneMstpSnonWnonDnon||p||Lays down, then stands up
+|-
+| AmovPercMstpSnonWnonDnon_AmovPsitMstpSnonWnonDnon_ground||p||Sits on the ground
+|-
+| AmovPercMstpSnonWnonDnon_AwopPercMstpSoptWbinDnon||p||Stands; switches to binocular, looks and put it back.
+|-
+| AmovPercMstpSnonWnonDnon_AwopPercMstpSoptWbinDnon_end||-||-
+|-
+| AmovPercMstpSnonWnonDnon_Ease||p||"At ease"
+|-
+| AmovPercMstpSnonWnonDnon_EaseIn||-||-
+|-
+| AmovPercMstpSnonWnonDnon_EaseOut||-||-
+|-
+| AmovPercMstpSnonWnonDnon_Salute||-||-
+|-
+| AmovPercMstpSnonWnonDnon_SaluteIn||-||-
+|-
+| AmovPercMstpSnonWnonDnon_SaluteOut||-||-
+|-
+| AmovPercMstpSnonWnonDnon_carCheckPush||-||-
+|-
+| AmovPercMstpSnonWnonDnon_carCheckWash||-||-
+|-
+| AmovPercMstpSnonWnonDnon_carCheckWheel||-||-
+|-
+| AmovPercMstpSnonWnonDnon_exerciseKata||p||Martial arts moves
+|-
+| AmovPercMstpSnonWnonDnon_exercisePushup||p||Pushups
+|-
+| AmovPercMstpSnonWnonDnon_exercisekneeBendA||p||Situps
+|-
+| AmovPercMstpSnonWnonDnon_exercisekneeBendB||-||-
+|-
+| AmovPercMstpSnonWnonDnon_normalizationTest||-||-
+|-
+| AmovPercMstpSnonWnonDnon_seeWatch||-||-
+|-
+| AmovPercMstpSnonWnonDnon_talking||p||Having a conversions (lips not moving)
+|-
+| AmovPercMstpSnonWnonDnon_turnL||-||Turning left without weapon
+|-
+| AmovPercMstpSnonWnonDnon_turnR||-||Turning right without weapon
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMstpSrasWpstDnon||-||Standing with pistol raised
+|-
+| AmovPercMstpSrasWpstDnon_AinvPknlMstpSnonWnonDnon||p||Kneels in front of ammo box. 
+|-
+| AmovPercMstpSrasWpstDnon_AinvPknlMstpSnonWnonDnon_end||-||-
+|-
+| AmovPercMstpSrasWpstDnon_AmovPercMstpSnonWnonDnon||-||-
+|-
+| AmovPercMstpSrasWpstDnon_AmovPercMstpSnonWnonDnon_end||-||-
+|-
+| AmovPercMstpSrasWpstDnon_AmovPercMstpSrasWrflDnon||-||-
+|-
+| AmovPercMstpSrasWpstDnon_AmovPercMstpSrasWrflDnon_end||-||-
+|-
+| AmovPercMstpSrasWpstDnon_AmovPknlMstpSrasWpstDnon||-||-
+|-
+| AmovPercMstpSrasWpstDnon_AmovPpneMstpSrasWpstDnon||-||-
+|-
+| AmovPercMstpSrasWpstDnon_AwopPercMstpSoptWbinDnon||-||-
+|-
+| AmovPercMstpSrasWpstDnon_AwopPercMstpSoptWbinDnon_end||-||-
+|-
+| AmovPercMstpSrasWpstDnon_AwopPercMstpSoptWbinDnon_mid||-||-
+|-
+| AmovPercMstpSrasWpstDnon_Salute||-||-
+|-
+| AmovPercMstpSrasWpstDnon_SaluteIn||-||-
+|-
+| AmovPercMstpSrasWpstDnon_SaluteIn_end||-||-
+|-
+| AmovPercMstpSrasWpstDnon_SaluteOut||-||-
+|-
+| AmovPercMstpSrasWpstDnon_SaluteOut_end||-||-
+|-
+| AmovPercMstpSrasWpstDnon_turnL||-||Turning left with pistol
+|-
+| AmovPercMstpSrasWpstDnon_turnR||-||Turning right with pistol
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMstpSrasWrflDnon||p||Stands up with rifle raised
+|-
+| AmovPercMstpSrasWrflDnon_AinvPknlMstpSlayWrflDnon||p||(same?)
+|-
+| AmovPercMstpSrasWrflDnon_AmovPercMevaSrasWrflDb||-||Does a few steps backwards, rifle aiming ahead
+|-
+| AmovPercMstpSrasWrflDnon_AmovPercMevaSrasWrflDl||-||-
+|-
+| AmovPercMstpSrasWrflDnon_AmovPercMevaSrasWrflDr||-||-
+|-
+| AmovPercMstpSrasWrflDnon_AmovPercMstpSlowWrflDnon||-||-
+|-
+| AmovPercMstpSrasWrflDnon_AmovPercMstpSnonWnonDnon||-||-
+|-
+| AmovPercMstpSrasWrflDnon_AmovPercMstpSrasWpstDnon||p||switch to pistol. draws a pistol
+|-
+| AmovPercMstpSrasWrflDnon_AmovPercMstpSrasWpstDnon_end||-||-
+|-
+| AmovPercMstpSrasWrflDnon_AmovPknlMstpSrasWrflDnon||-||-
+|-
+| AmovPercMstpSrasWrflDnon_AmovPpneMstpSrasWrflDnon||-||-
+|-
+| AmovPercMstpSrasWrflDnon_AwopPercMstpSoptWbinDnon||-||-
+|-
+| AmovPercMstpSrasWrflDnon_AwopPercMstpSoptWbinDnon_end||-||-
+|-
+| AmovPercMstpSrasWrflDnon_turnL||-||Turning left with rifle
+|-
+| AmovPercMstpSrasWrflDnon_turnR||-||Turning right with rifle
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMstpSsurWnonDnon||-||-
+|-
+| AmovPercMstpSsurWnonDnon_AmovPercMstpSnonWnonDnon||-||-
+|-
+|}
+
+=== AmovPercMwlk... ===
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPercMwlkSlowWrflDb||-||-
+|-
+| AmovPercMwlkSlowWrflDbl||-||-
+|-
+| AmovPercMwlkSlowWrflDbr||-||-
+|-
+| AmovPercMwlkSlowWrflDf||p||Walks a few steps straight
+|-
+| AmovPercMwlkSlowWrflDfl||p||Walks a few frontsidesteps left
+|-
+| AmovPercMwlkSlowWrflDfr||p||Walks a few frontsidesteps left
+|-
+| AmovPercMwlkSlowWrflDl||p||Walks a few backsidesteps left."
+|-
+| AmovPercMwlkSlowWrflDr||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMwlkSnonWnonDb||-||-
+|-
+| AmovPercMwlkSnonWnonDbl||-||-
+|-
+| AmovPercMwlkSnonWnonDbr||-||-
+|-
+| AmovPercMwlkSnonWnonDf||p||Puts a weapon on back, walks a bit, takes weapon on hand again
+|-
+| AmovPercMwlkSnonWnonDfl||-||-
+|-
+| AmovPercMwlkSnonWnonDfr||-||-
+|-
+| AmovPercMwlkSnonWnonDl||-||-
+|-
+| AmovPercMwlkSnonWnonDr||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPercMwlkSrasWpstDb||-||-
+|-
+| AmovPercMwlkSrasWpstDbl||-||-
+|-
+| AmovPercMwlkSrasWpstDbr||-||-
+|-
+| AmovPercMwlkSrasWpstDf||-||-
+|-
+| AmovPercMwlkSrasWpstDf_AmovPercMstpSrasWpstDnon_gthArm||-||-
+|-
+| AmovPercMwlkSrasWpstDf_AmovPercMstpSrasWpstDnon_gthEnd||-||-
+|-
+| AmovPercMwlkSrasWpstDf_AmovPercMstpSrasWpstDnon_gthStart||-||-
+|-
+| AmovPercMwlkSrasWpstDf_AmovPercMstpSrasWpstDnon_gthThrow||-||-
+|-
+| AmovPercMwlkSrasWpstDf_AwopPercMrunSgthWnonDf_1||-||-
+|-
+| AmovPercMwlkSrasWpstDfl||-||-
+|-
+| AmovPercMwlkSrasWpstDfr||-||-
+|-
+| AmovPercMwlkSrasWpstDl||-||-
+|-
+| AmovPercMwlkSrasWpstDr||-||-
+|-
+| AmovPercMwlkSrasWrflDb||-||-
+|-
+| AmovPercMwlkSrasWrflDbl||-||-
+|-
+| AmovPercMwlkSrasWrflDbr||-||-
+|-
+| AmovPercMwlkSrasWrflDf||-||-
+|-
+| AmovPercMwlkSrasWrflDf_AmovPercMstpSrasWrflDnon_gthEnd||-||-
+|-
+| AmovPercMwlkSrasWrflDf_AmovPercMstpSrasWrflDnon_gthStart||-||-
+|-
+| AmovPercMwlkSrasWrflDf_AmovPercMstpSrasWrflDnon_gthThrow||-||-
+|-
+| AmovPercMwlkSrasWrflDfl||-||-
+|-
+| AmovPercMwlkSrasWrflDfr||-||-
+|-
+| AmovPercMwlkSrasWrflDl||-||-
+|-
+| AmovPercMwlkSrasWrflDnon_transition||-||-
+|-
+| AmovPercMwlkSrasWrflDr||-||-
+|-
+|}
+=== AmovPknlMrun... ===
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPknlMrunSlowWpstDb||-||-
+|-
+| AmovPknlMrunSlowWpstDbl||-||-
+|-
+| AmovPknlMrunSlowWpstDbr||-||-
+|-
+| AmovPknlMrunSlowWpstDf||-||-
+|-
+| AmovPknlMrunSlowWpstDfl||-||-
+|-
+| AmovPknlMrunSlowWpstDfr||-||-
+|-
+| AmovPknlMrunSlowWpstDl||-||-
+|-
+| AmovPknlMrunSlowWpstDr||-||-
+|-
+| AmovPknlMrunSlowWrflDb||-||-
+|-
+| AmovPknlMrunSlowWrflDbl||-||-
+|-
+| AmovPknlMrunSlowWrflDbr||-||-
+|-
+| AmovPknlMrunSlowWrflDf||p||Kneels, walks few steps, kneels, runs a few steps
+|-
+| AmovPknlMrunSlowWrflDfl||-||-
+|-
+| AmovPknlMrunSlowWrflDfr||-||-
+|-
+| AmovPknlMrunSlowWrflDl||-||-
+|-
+| AmovPknlMrunSlowWrflDr||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPknlMrunSnonWnonDb||-||-
+|-
+| AmovPknlMrunSnonWnonDbl||-||-
+|-
+| AmovPknlMrunSnonWnonDbr||-||-
+|-
+| AmovPknlMrunSnonWnonDf||-||-
+|-
+| AmovPknlMrunSnonWnonDfl||-||-
+|-
+| AmovPknlMrunSnonWnonDfr||-||-
+|-
+| AmovPknlMrunSnonWnonDl||-||-
+|-
+| AmovPknlMrunSnonWnonDr||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPknlMrunSrasWrflDb||-||-
+|-
+| AmovPknlMrunSrasWrflDbl||-||-
+|-
+| AmovPknlMrunSrasWrflDbr||-||-
+|-
+| AmovPknlMrunSrasWrflDf||-||-
+|-
+| AmovPknlMrunSrasWrflDfl||-||-
+|-
+| AmovPknlMrunSrasWrflDfr||-||-
+|-
+| AmovPknlMrunSrasWrflDl||-||-
+|-
+| AmovPknlMrunSrasWrflDr||-||-
+|-
+|}
+=== AmovPknlMspr... ===
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPknlMsprSlowWpstDf||-||-
+|-
+| AmovPknlMsprSlowWpstDfl||-||-
+|-
+| AmovPknlMsprSlowWpstDfr||-||-
+|-
+| AmovPknlMsprSlowWrflDf||-||-
+|-
+| AmovPknlMsprSlowWrflDf_AllSprint||-||-
+|-
+| AmovPknlMsprSlowWrflDfl||-||-
+|-
+| AmovPknlMsprSlowWrflDfl_AllSprint||-||-
+|-
+| AmovPknlMsprSlowWrflDfr||-||-
+|-
+| AmovPknlMsprSlowWrflDfr_AllSprint||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPknlMsprSnonWnonDf||-||-
+|-
+| AmovPknlMsprSnonWnonDfl||-||-
+|-
+| AmovPknlMsprSnonWnonDfr||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPknlMsprSrasWrflDf||-||-
+|-
+| AmovPknlMsprSrasWrflDf_AllSprint||-||-
+|-
+| AmovPknlMsprSrasWrflDfl||-||-
+|-
+| AmovPknlMsprSrasWrflDfl_AllSprint||-||-
+|-
+| AmovPknlMsprSrasWrflDfr||-||-
+|-
+| AmovPknlMsprSrasWrflDfr_AllSprint||-||-
+|-
+|}
+=== AmovPknlMstp... ===
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPknlMstpSlowWrflDnon||p||Runs a few steps, returns.
+|-
+| AmovPknlMstpSlowWrflDnon_turnL||-||-
+|-
+| AmovPknlMstpSlowWrflDnon_turnR||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPknlMstpSnonWnonDnon||-||-
+|-
+| AmovPknlMstpSnonWnonDnon_AinvPknlMstpSnonWnonDnon||-||-
+|-
+| AmovPknlMstpSnonWnonDnon_AmovPercMsprSnonWnonDf||-||-
+|-
+| AmovPknlMstpSnonWnonDnon_AmovPercMsprSnonWnonDf_2||-||-
+|-
+| AmovPknlMstpSnonWnonDnon_AmovPercMstpSnonWnonDnon||-||-
+|-
+| AmovPknlMstpSnonWnonDnon_AmovPpneMstpSnonWnonDnon||-||-
+|-
+| AmovPknlMstpSnonWnonDnon_turnL||-||-
+|-
+| AmovPknlMstpSnonWnonDnon_turnR||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPknlMstpSrasWlnrDnon||-||Stand with launcher
+|-
+| AmovPknlMstpSrasWlnrDnon_AmovPercMstpSnonWnonDnon||-||-
+|-
+| AmovPknlMstpSrasWlnrDnon_AmovPknlMstpSrasWpstDnon||-||-
+|-
+| AmovPknlMstpSrasWlnrDnon_AmovPknlMstpSrasWpstDnon_end||-||-
+|-
+| AmovPknlMstpSrasWlnrDnon_AmovPknlMstpSrasWrflDnon||-||-
+|-
+| AmovPknlMstpSrasWlnrDnon_AmovPpneMstpSnonWnonDnon||-||-
+|-
+| AmovPknlMstpSrasWlnrDnon_AwopPknlMstpSoptWbinDnon||-||-
+|-
+| AmovPknlMstpSrasWlnrDnon_AwopPknlMstpSoptWbinDnon_End||-||-
+|-
+| AmovPknlMstpSrasWlnrDnon_turnL||-||Turning left with launcher
+|-
+| AmovPknlMstpSrasWlnrDnon_turnR||-||Turning right with launcher
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPknlMstpSrasWpstDnon||-||Kneel with pistol
+|-
+| AmovPknlMstpSrasWpstDnon_AinvPknlMstpSnonWnonDnon||p||Kneels in front of ammo box.
+|-
+| AmovPknlMstpSrasWpstDnon_AinvPknlMstpSnonWnonDnon_end||-||-
+|-
+| AmovPknlMstpSrasWpstDnon_AmovPercMsprSrasWpstDf||-||-
+|-
+| AmovPknlMstpSrasWpstDnon_AmovPercMsprSrasWpstDf_2||-||-
+|-
+| AmovPknlMstpSrasWpstDnon_AmovPercMstpSrasWpstDnon||-||-
+|-
+| AmovPknlMstpSrasWpstDnon_AmovPknlMstpSrasWlnrDnon||-||-
+|-
+| AmovPknlMstpSrasWpstDnon_AmovPknlMstpSrasWlnrDnon_end||-||-
+|-
+| AmovPknlMstpSrasWpstDnon_AmovPknlMstpSrasWrflDnon||-||-
+|-
+| AmovPknlMstpSrasWpstDnon_AmovPknlMstpSrasWrflDnon_end||-||-
+|-
+| AmovPknlMstpSrasWpstDnon_AmovPpneMstpSrasWpstDnon||-||-
+|-
+| AmovPknlMstpSrasWpstDnon_AwopPknlMstpSoptWbinDnon||-||-
+|-
+| AmovPknlMstpSrasWpstDnon_AwopPknlMstpSoptWbinDnon_end||-||-
+|-
+| AmovPknlMstpSrasWpstDnon_AwopPknlMstpSoptWbinDnon_mid||-||-
+|-
+| AmovPknlMstpSrasWpstDnon_turnL||-||Kneeled turning left with pistol
+|-
+| AmovPknlMstpSrasWpstDnon_turnR||-||Kneeled turning right with pistol
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPknlMstpSrasWrflDnon||-||Kneel with rifle
+|-
+| AmovPknlMstpSrasWrflDnon_AinvPknlMstpSlayWrflDnon||p||Kneels in front of ammo box, then returns to normal kneeling position
+|-
+| AmovPknlMstpSrasWrflDnon_AmovPercMstpSrasWrflDnon||-||-
+|-
+| AmovPknlMstpSrasWrflDnon_AmovPknlMevaSrasWrflDb||-||-
+|-
+| AmovPknlMstpSrasWrflDnon_AmovPknlMevaSrasWrflDl||-||-
+|-
+| AmovPknlMstpSrasWrflDnon_AmovPknlMevaSrasWrflDr||-||-
+|-
+| AmovPknlMstpSrasWrflDnon_AmovPknlMsprSrasWrflDf||-||-
+|-
+| AmovPknlMstpSrasWrflDnon_AmovPknlMsprSrasWrflDf_2||-||-
+|-
+| AmovPknlMstpSrasWrflDnon_AmovPknlMstpSrasWlnrDnon||-||-
+|-
+| AmovPknlMstpSrasWrflDnon_AmovPknlMstpSrasWpstDnon||-||-
+|-
+| AmovPknlMstpSrasWrflDnon_AmovPknlMstpSrasWpstDnon_end||-||-
+|-
+| AmovPknlMstpSrasWrflDnon_AmovPpneMstpSrasWrflDnon||-||-
+|-
+| AmovPknlMstpSrasWrflDnon_AwopPknlMstpSoptWbinDnon||-||-
+|-
+| AmovPknlMstpSrasWrflDnon_AwopPknlMstpSoptWbinDnon_end||-||-
+|-
+| AmovPknlMstpSrasWrflDnon_turnL||-||Kneeled turning left with rifle
+|-
+| AmovPknlMstpSrasWrflDnon_turnR||-||Kneeled turning right with rifle
+|-
+|}
+=== AmovPknlMwlk... ===
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPknlMwlkSlowWrflDb||-||-
+|-
+| AmovPknlMwlkSlowWrflDbl||-||-
+|-
+| AmovPknlMwlkSlowWrflDbr||-||-
+|-
+| AmovPknlMwlkSlowWrflDf||p||Walks a few step crouched
+|-
+| AmovPknlMwlkSlowWrflDfl||-||-
+|-
+| AmovPknlMwlkSlowWrflDfr||-||-
+|-
+| AmovPknlMwlkSlowWrflDl||-||-
+|-
+| AmovPknlMwlkSlowWrflDr||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPknlMwlkSnonWnonDb||-||-
+|-
+| AmovPknlMwlkSnonWnonDbl||-||-
+|-
+| AmovPknlMwlkSnonWnonDbr||-||-
+|-
+| AmovPknlMwlkSnonWnonDf||-||-
+|-
+| AmovPknlMwlkSnonWnonDfl||-||-
+|-
+| AmovPknlMwlkSnonWnonDfr||-||-
+|-
+| AmovPknlMwlkSnonWnonDl||-||-
+|-
+| AmovPknlMwlkSnonWnonDr||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPknlMwlkSrasWlnrDb||-||-
+|-
+| AmovPknlMwlkSrasWlnrDbl||-||-
+|-
+| AmovPknlMwlkSrasWlnrDbr||-||-
+|-
+| AmovPknlMwlkSrasWlnrDf||-||-
+|-
+| AmovPknlMwlkSrasWlnrDfl||-||-
+|-
+| AmovPknlMwlkSrasWlnrDfr||-||-
+|-
+| AmovPknlMwlkSrasWlnrDl||-||-
+|-
+| AmovPknlMwlkSrasWlnrDr||-||-
+|-
+| AmovPknlMwlkSrasWpstDb||-||-
+|-
+| AmovPknlMwlkSrasWpstDbl||-||-
+|-
+| AmovPknlMwlkSrasWpstDbr||-||-
+|-
+| AmovPknlMwlkSrasWpstDf||-||-
+|-
+| AmovPknlMwlkSrasWpstDfl||-||-
+|-
+| AmovPknlMwlkSrasWpstDfr||-||-
+|-
+| AmovPknlMwlkSrasWpstDl||-||-
+|-
+| AmovPknlMwlkSrasWpstDr||-||-
+|-
+| AmovPknlMwlkSrasWrflDb||-||-
+|-
+| AmovPknlMwlkSrasWrflDbl||-||-
+|-
+| AmovPknlMwlkSrasWrflDbr||-||-
+|-
+| AmovPknlMwlkSrasWrflDf||-||-
+|-
+| AmovPknlMwlkSrasWrflDfl||-||-
+|-
+| AmovPknlMwlkSrasWrflDfr||-||-
+|-
+| AmovPknlMwlkSrasWrflDl||-||-
+|-
+| AmovPknlMwlkSrasWrflDnon_transition||-||-
+|-
+| AmovPknlMwlkSrasWrflDr||-||Kneels with weapon, two side steps to the right
+|-
+|}
+
+=== AmovPpneMrun... ===
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPpneMrunSlowWpstDb||-|| Lying down, changes to pistol (secondary weapon?), crawling backwards two steps, takes back primary weapon, stays down
+|-
+| AmovPpneMrunSlowWpstDbl||-||Same as above except crawl to steps to the left (45 degrees)
+|-
+| AmovPpneMrunSlowWpstDbr||-||-
+|-
+| AmovPpneMrunSlowWpstDf||-||-
+|-
+| AmovPpneMrunSlowWpstDfl||-||-
+|-
+| AmovPpneMrunSlowWpstDfr||-||-
+|-
+| AmovPpneMrunSlowWpstDl||-||-
+|-
+| AmovPpneMrunSlowWpstDr||-||-
+|-
+| AmovPpneMrunSlowWrflDb||-||-
+|-
+| AmovPpneMrunSlowWrflDbl||-||-
+|-
+| AmovPpneMrunSlowWrflDbr||-||-
+|-
+| AmovPpneMrunSlowWrflDf||-||-
+|-
+| AmovPpneMrunSlowWrflDfl||-||-
+|-
+| AmovPpneMrunSlowWrflDfr||-||-
+|-
+| AmovPpneMrunSlowWrflDl||-||Lying down, one side step to the left
+|-
+| AmovPpneMrunSlowWrflDr||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPpneMrunSnonWnonDb||-||-
+|-
+| AmovPpneMrunSnonWnonDbl||-||-
+|-
+| AmovPpneMrunSnonWnonDbr||-||-
+|-
+| AmovPpneMrunSnonWnonDf||p||puts weapon on back, goes to ground, takes weapon back, does something
+|-
+| AmovPpneMrunSnonWnonDfl||-||-
+|-
+| AmovPpneMrunSnonWnonDfr||-||-
+|-
+| AmovPpneMrunSnonWnonDl||-||-
+|-
+| AmovPpneMrunSnonWnonDr||-||-
+|-
+|}
+
+=== AmovPpneMspr... ===
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPpneMsprSlowWrflDf||-||Lying down, crawl two steps forward
+|-
+| AmovPpneMsprSlowWrflDfl||-||-
+|-
+| AmovPpneMsprSlowWrflDfr||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPpneMsprSnonWnonDf||-||Weapon on back, lying down, crawls fast a couple of steps forward, takes back weapon (tested: crawl under a car)
+|-
+| AmovPpneMsprSnonWnonDfl||-||-
+|-
+| AmovPpneMsprSnonWnonDfr||-||-
+|-
+|}
+
+=== AmovPpneMstp... ===
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPpneMstpSnonWnonDnon||p||Prone without weapon
+|-
+| AmovPpneMstpSnonWnonDnon_AmovPercMsprSnonWnonDf||p||prone - gets up, runs forward
+|-
+| AmovPpneMstpSnonWnonDnon_AmovPercMsprSnonWnonDf_2||p||prone - gets up, runs forward, takes prim. weapon
+|-
+| AmovPpneMstpSnonWnonDnon_AmovPercMstpSnonWnonDnon||p||prone - gets up
+|-
+| AmovPpneMstpSnonWnonDnon_AmovPknlMstpSnonWnonDnon||p||prone - kneels, goes prone - takes prim. weapon, gets up
+|-
+| AmovPpneMstpSnonWnonDnon_AmovPknlMstpSrasWlnrDnon||p||prone - kneels, takes sec. weapon, stands up
+|-
+| AmovPpneMstpSnonWnonDnon_AmovPpneMevaSnonWnonDl||p||prone - rolls to left, takes prim. weapon, gets up
+|-
+| AmovPpneMstpSnonWnonDnon_AmovPpneMevaSnonWnonDr||p||prone - rolls to right, takes prim. weapon, gets up
+|-
+| AmovPpneMstpSnonWnonDnon_AmovPpneMstpSrasWpstDnon||p||prone - takes handgun
+|-
+| AmovPpneMstpSnonWnonDnon_AmovPpneMstpSrasWpstDnon_end||p||prone - takes handgun
+|-
+| AmovPpneMstpSnonWnonDnon_AmovPpneMstpSrasWrflDnon||p||prone - gets up, takes prim. weapon
+|-
+| AmovPpneMstpSnonWnonDnon_AmovPsitMstpSnonWnonDnon_ground||p||prone - sits up, stands up, takes prim. weapon
+|-
+| AmovPpneMstpSnonWnonDnon_AwopPpneMstpSoptWbinDnon||p||prone - takes binoculars, puts them away, takes prim. weapon, gets up
+|-
+| AmovPpneMstpSnonWnonDnon_AwopPpneMstpSoptWbinDnon_end||p||prone - takes binoculars, puts them away, takes prim. weapon, gets up
+|-
+| AmovPpneMstpSnonWnonDnon_healed||p||prone - moves head, takes prim. weapon, gets up
+|-
+| AmovPpneMstpSnonWnonDnon_turnL||p||Prone turning left without weapon
+|-
+| AmovPpneMstpSnonWnonDnon_turnR||p||Prone turning right without weapon
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPpneMstpSrasWpstDnon||p||Prone with pistol
+|-
+| AmovPpneMstpSrasWpstDnon_AmovPercMsprSlowWpstDf||p||prone - runs forward, holsters handgun, takes prim. weapon
+|-
+| AmovPpneMstpSrasWpstDnon_AmovPercMsprSlowWpstDf_2||p||crouched - runs forward, holsters handgun, takes prim. weapon
+|-
+| AmovPpneMstpSrasWpstDnon_AmovPercMstpSrasWpstDnon||p||prone - gets up, holsters handgun, takes prim. weapon
+|-
+| AmovPpneMstpSrasWpstDnon_AmovPknlMstpSrasWpstDnon||p||prone - kneels, aims handgun
+|-
+| AmovPpneMstpSrasWpstDnon_AmovPpneMevaSlowWpstDl||p||prone - rolls to left, aims handgun
+|-
+| AmovPpneMstpSrasWpstDnon_AmovPpneMevaSlowWpstDr||p||prone - rolls to right, aims handgun
+|-
+| AmovPpneMstpSrasWpstDnon_AmovPpneMstpSnonWnonDnon||p||prone - holsters handgun, takes prim. weapon, gets up
+|-
+| AmovPpneMstpSrasWpstDnon_AmovPpneMstpSnonWnonDnon_end||p||prone - holsters handgun, takes prim. weapon, gets up
+|-
+| AmovPpneMstpSrasWpstDnon_AmovPpneMstpSrasWrflDnon||p||prone - holsters handgun, takes prim. weapon, gets up
+|-
+| AmovPpneMstpSrasWpstDnon_AmovPpneMstpSrasWrflDnon_end||p||prone - holsters handgun, takes prim. weapon, gets up
+|-
+| AmovPpneMstpSrasWpstDnon_AwopPpneMstpSoptWbinDnon||p||prone - holsters handgun, takes binoculars, puts them away, takes handgun
+|-
+| AmovPpneMstpSrasWpstDnon_AwopPpneMstpSoptWbinDnon_end||p||prone - takes binoculars, puts them away, takes handgun
+|-
+| AmovPpneMstpSrasWpstDnon_AwopPpneMstpSoptWbinDnon_mid||p||prone - holsters handgun, takes binoculars, puts them away, takes handgun
+|-
+| AmovPpneMstpSrasWpstDnon_healed||p||prone - moves head around
+|-
+| AmovPpneMstpSrasWpstDnon_turnL||p||Prone turning left with pistol
+|-
+| AmovPpneMstpSrasWpstDnon_turnR||p||Prone turning right with pistol
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPpneMstpSrasWrflDnon||p||Prone with rifle
+|-
+| AmovPpneMstpSrasWrflDnon_AmovPercMsprSlowWrflDf||p||prone - gets up, runs forward
+|-
+| AmovPpneMstpSrasWrflDnon_AmovPercMsprSlowWrflDf_2||p||crouching - gets up, runs forward
+|-
+| AmovPpneMstpSrasWrflDnon_AmovPercMstpSrasWrflDnon||p||prone - gets up
+|-
+| AmovPpneMstpSrasWrflDnon_AmovPknlMstpSrasWrflDnon||p||prone - kneels, gets up
+|-
+| AmovPpneMstpSrasWrflDnon_AmovPpneMevaSlowWrflDl||p||prone - aims handgun, rolls to left, gets up
+|-
+| AmovPpneMstpSrasWrflDnon_AmovPpneMevaSlowWrflDr||p||prone - aims handgun, rolls to right, gets up
+|-
+| AmovPpneMstpSrasWrflDnon_AmovPpneMstpSnonWnonDnon||p||prone - holsters prim. weapon, takes it back, gets up
+|-
+| AmovPpneMstpSrasWrflDnon_AmovPpneMstpSrasWpstDnon||p||prone - holsters prim. weapon, takes handgun
+|-
+| AmovPpneMstpSrasWrflDnon_AmovPpneMstpSrasWpstDnon_end||p||prone - takes handgun, aims
+|-
+| AmovPpneMstpSrasWrflDnon_AwopPpneMstpSoptWbinDnon||p||prone - takes binoculars, gets up, puts them away, takes prim. weapon
+|-
+| AmovPpneMstpSrasWrflDnon_AwopPpneMstpSoptWbinDnon_end||p||prone - takes binoculars, gets up, uses them again, puts them away, takes prim. weapon
+|-
+| AmovPpneMstpSrasWrflDnon_healed||p||prone - moves head, gets up
+|-
+| AmovPpneMstpSrasWrflDnon_turnL||p||prone - gets up
+|-
+| AmovPpneMstpSrasWrflDnon_turnR||p||prone - gets up
+|-
+| amovpsitmstpslowwrfldnon||p||sitting - default sitting used if weapon was lowered before sitting
+|-
+| amovpsitmstpslowwrfldnon_weaponcheck1||p||sitting - Sitting, checking weapon variant 1. Used if weapon was lowered before sitting
+|-
+| amovpsitmstpslowwrfldnon_weaponcheck2||p||sitting - Sitting, checking weapon variant 2. Used if weapon was lowered before sitting
+|-
+| amovpsitmstpslowwrfldnon_smoking||p||sitting - Sitting, smoking. Used if weapon was lowered before sitting
+|-
+| amovpsitmstpsnonwpstdnon_ground||p||sitting - Sitting without weapon. (alternate, looks like others)
+|-
+| amovpsitmstpsnonwpstdnon_smoking||p||sitting - Sitting, smoking (alternate, looks like others)
+|-
+| amovpsitmstpsnonwnondnon_ground||p||sitting - sitting without weapon (alternate, looks same as others)
+|-
+| amovpsitmstpsnonwnondnon_smoking||p||sitting - Sitting, smoking (alternate, looks like others)
+|}
+
+=== AmovPsitMstp... ===
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPsitMstpSlowWrflDnon||-||Sitting with rifle
+|-
+| AmovPsitMstpSlowWrflDnon_AmovPercMstpSlowWrflDnon||p||Gets up from sitting
+|-
+| AmovPsitMstpSlowWrflDnon_Smoking||p||Sitting and smoking
+|-
+| AmovPsitMstpSlowWrflDnon_WeaponCheck1||p||Sitting and checking weapon
+|-
+| AmovPsitMstpSlowWrflDnon_WeaponCheck2||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AmovPsitMstpSnonWnonDnon_AmovPercMstpSnonWnonDnon_ground||-||-
+|-
+| AmovPsitMstpSnonWnonDnon_ground||p||Sitting without weapon
+|-
+| AmovPsitMstpSnonWnonDnon_ground_AmovPpneMstpSnonWnonDnon||p||Sits, goes prone, rises back up
+|-
+|}
+
+== Aswm... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AswmPercMrunSnonWnonDf||-||-
+|-
+| AswmPercMrunSnonWnonDf_AswmPercMstpSnonWnonDnon||p||Swimming
+|-
+| AswmPercMsprSnonWnonDf||-||-
+|-
+| AswmPercMstpSnonWnonDnon||-||-
+|-
+| AswmPercMstpSnonWnonDnon_AswmPercMrunSnonWnonDf||-||-
+|-
+| AswmPercMwlkSnonWnonDf||-||-
+|-
+|}
+
+== Awop ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AwopPercMstpSgthWnonDnon_end||-||Weapon on back, throws a grenade (anim only), takes back weapon
+|-
+| AwopPercMstpSgthWnonDnon_start||-||Weapon on back, throws a grenade (anim only), takes back weapon
+|-
+| AwopPercMstpSgthWnonDnon_throw||-||-
+|-
+| AwopPercMstpSgthWpstDnon_Part1||p||Throws a grenade
+|-
+| AwopPercMstpSgthWpstDnon_Part2||-||-
+|-
+| AwopPercMstpSgthWpstDnon_Part3||-||-
+|-
+| AwopPercMstpSgthWpstDnon_Part4||-||-
+|-
+| AwopPercMstpSgthWpstDnon_Part5||-||-
+|-
+| AwopPercMstpSgthWrflDnon_End1||-||-
+|-
+| AwopPercMstpSgthWrflDnon_End2||-||-
+|-
+| AwopPercMstpSgthWrflDnon_Start1||p||Throws a grenade
+|-
+| AwopPercMstpSgthWrflDnon_Start2||-||-
+|-
+| AwopPercMstpSgthWrflDnon_Throw1||-||-
+|-
+| AwopPercMstpSgthWrflDnon_Throw2||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AwopPercMstpSoptWbinDnon_AmovPercMstpSnonWnonDnon||-||-
+|-
+| AwopPercMstpSoptWbinDnon_AmovPercMstpSnonWnonDnon_end||-||-
+|-
+| AwopPercMstpSoptWbinDnon_AmovPercMstpSrasWpstDnon||-||-
+|-
+| AwopPercMstpSoptWbinDnon_AmovPercMstpSrasWpstDnon_end||-||-
+|-
+| AwopPercMstpSoptWbinDnon_AmovPercMstpSrasWpstDnon_mid||-||-
+|-
+| AwopPercMstpSoptWbinDnon_AmovPercMstpSrasWrflDnon||-||-
+|-
+| AwopPercMstpSoptWbinDnon_AmovPercMstpSrasWrflDnon_end||-||-
+|-
+| AwopPercMstpSoptWbinDnon_AwopPknlMstpSoptWbinDnon_pst||-||-
+|-
+| AwopPercMstpSoptWbinDnon_AwopPknlMstpSoptWbinDnon_rifle||-||-
+|-
+| AwopPercMstpSoptWbinDnon_AwopPpneMstpSoptWbinDnon_non||-||-
+|-
+| AwopPercMstpSoptWbinDnon_AwopPpneMstpSoptWbinDnon_pst||-||-
+|-
+| AwopPercMstpSoptWbinDnon_AwopPpneMstpSoptWbinDnon_rifle||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AwopPercMstpSoptWbinDnon_non||-||-
+|-
+| AwopPercMstpSoptWbinDnon_pst||-||-
+|-
+| AwopPercMstpSoptWbinDnon_rfl||p||Uses binoculars
+|-
+| AwopPknlMstpSgthWpstDnon_Part1||-||-
+|-
+| AwopPknlMstpSgthWpstDnon_Part2||-||-
+|-
+| AwopPknlMstpSgthWpstDnon_Part3||-||-
+|-
+| AwopPknlMstpSgthWpstDnon_Part4||-||-
+|-
+| AwopPknlMstpSgthWpstDnon_Part5||-||-
+|-
+| AwopPknlMstpSgthWrflDnon_End||-||-
+|-
+| AwopPknlMstpSgthWrflDnon_Start||p||Kneeling; throws a grenade
+|-
+| AwopPknlMstpSgthWrflDnon_Throw||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AwopPknlMstpSoptWbinDnon_AmovPknlMstpSrasWlnrDnon||-||Weapon on back, use binoculars, kneels, use binoculars, takes back weapon
+|-
+| AwopPknlMstpSoptWbinDnon_AmovPknlMstpSrasWlnrDnon_end||-||-
+|-
+| AwopPknlMstpSoptWbinDnon_AmovPknlMstpSrasWpstDnon||-||-
+|-
+| AwopPknlMstpSoptWbinDnon_AmovPknlMstpSrasWpstDnon_end||-||-
+|-
+| AwopPknlMstpSoptWbinDnon_AmovPknlMstpSrasWpstDnon_mid||-||-
+|-
+| AwopPknlMstpSoptWbinDnon_AmovPknlMstpSrasWrflDnon||-||-
+|-
+| AwopPknlMstpSoptWbinDnon_AmovPknlMstpSrasWrflDnon_end||-||-
+|-
+| AwopPknlMstpSoptWbinDnon_AwopPercMstpSoptWbinDnon_pst||-||-
+|-
+| AwopPknlMstpSoptWbinDnon_AwopPercMstpSoptWbinDnon_rifle||-||-
+|-
+| AwopPknlMstpSoptWbinDnon_AwopPpneMstpSoptWbinDnon_pst||-||-
+|-
+| AwopPknlMstpSoptWbinDnon_AwopPpneMstpSoptWbinDnon_rifle||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AwopPknlMstpSoptWbinDnon_lnr||-||-
+|-
+| AwopPknlMstpSoptWbinDnon_pst||-||-
+|-
+| AwopPknlMstpSoptWbinDnon_rfl||-||-
+|-
+| AwopPpneMstpSgthWnonDnon_end||-||-
+|-
+| AwopPpneMstpSgthWnonDnon_start||-||-
+|-
+| AwopPpneMstpSgthWnonDnon_throw||p||Throws a grenade
+|-
+| AwopPpneMstpSgthWpstDnon_Part1||-||-
+|-
+| AwopPpneMstpSgthWpstDnon_Part2||-||-
+|-
+| AwopPpneMstpSgthWpstDnon_Part3||-||-
+|-
+| AwopPpneMstpSgthWpstDnon_Part4||-||-
+|-
+| AwopPpneMstpSgthWpstDnon_Part5||-||-
+|-
+| AwopPpneMstpSgthWrflDnon_End||-||-
+|-
+| AwopPpneMstpSgthWrflDnon_Start||-||-
+|-
+| AwopPpneMstpSgthWrflDnon_Throw||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AwopPpneMstpSoptWbinDnon_AmovPpneMstpSnonWnonDnon||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_AmovPpneMstpSnonWnonDnon_end||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_AmovPpneMstpSrasWpstDnon||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_AmovPpneMstpSrasWpstDnon_end||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_AmovPpneMstpSrasWpstDnon_mid||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_AmovPpneMstpSrasWrflDnon||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_AmovPpneMstpSrasWrflDnon_end||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_AwopPercMstpSoptWbinDnon_non||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_AwopPercMstpSoptWbinDnon_pst||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_AwopPercMstpSoptWbinDnon_rifle||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_AwopPknlMstpSoptWbinDnon_pst||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_AwopPknlMstpSoptWbinDnon_rifle||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| AwopPpneMstpSoptWbinDnon_non||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_pst||-||-
+|-
+| AwopPpneMstpSoptWbinDnon_rfl||-||-
+|-
+|}
+
+== Basic... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| BasicDriver||s||Sitting (low)
+|-
+| BasicDriverDead||-||
+|-
+| BasicDriverDying||s||Sitting (high) [same as crew?]
+|-
+| BasicDriverOut||-||-
+|-
+| BasicDriverOutDead||-||-
+|-
+| BasicDriverOutDying||-||-
+|-
+| BasicSittingGunner||-||-
+|-
+| BasicSittingGunner_Dead||-||-
+|-
+|}
+== Ladder... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| LadderDownEnd||p||steps off the bottom of a ladder
+|-
+| LadderDownLoop||p||endlessly climbs down a ladder
+|-
+| LadderDownStart||p||starts at the top of a ladder
+|-
+| LadderStatic||p||stays still on a ladder
+|-
+| LadderUpEnd||p||steps off the top of a ladder
+|-
+| LadderUpLoop||p||endlessly climbs up ladder
+|-
+| LadderUpStart||p||starts at the bottom of a ladder
+|-
+|}
+
+== Misc ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| Crew||s||Sitting (high)
+|-
+| DeadState||s||Dies
+|-
+| LauncherReloadKneel||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| para_pilot||s||parachuting pose
+|-
+| colspan="3" | &nbsp;
+|-
+| PistolMagazineReloadKneel||-||-
+|-
+| PistolMagazineReloadProne||-||-
+|-
+| PistolMagazineReloadStand||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| SprintBaseDf||s||runs in one direction endlessly
+|-
+| SprintBaseDfl||s||runs in circle endlessly
+|-
+| SprintBaseDfr||-||-
+|-
+| SprintCivilBaseDf||-||-
+|-
+| SprintCivilBaseDfl||-||-
+|-
+| SprintCivilBaseDfr||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| TestDance||-||-
+|-
+| TestFlipflop||-||-
+|-
+| TestJabbaFun||-||-
+|-
+| TestROM||-||-
+|-
+| TestROMFingers||-||-
+|-
+| TestSurrender||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| TransAnimBase||-||-
+|-
+| colspan="3" | &nbsp;
+|-
+| WeaponMagazineReloadKneel||-||-
+|-
+| WeaponMagazineReloadProne||p||takes weapon off shoulder, goes prone, reloads, gets up again
+|-
+| WeaponMagazineReloadStand||-||-
+|-
+|}
+
+
+= List of moves for Queen's Gambit =
+
+== Acts... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| ActsPercMrunSlowWrflDf_TumbleOver||p||Begins running, then stumbles to his knees before picking up the pace again
+|-
+| ActsPercMrunSlowWrflDf_FlipFlopPara||p||Runs and dives into a forward roll, then runs again.
+|-
+
+| ActsPercMstpSlowWrflDnon_Listening||p||Listening to 'ActsPercMstpSlowWrflDnon_Talking1'
+|-
+| ActsPercMstpSlowWrflDnon_ListeningOrdersUnderFire||p||Unit stands and listens to a briefing (or similar)for a moment, then crouches to avoid something and carries on listening.
+|-
+| ActsPercMstpSlowWrflDnon_Lolling||p||Stretches, as if the unit has just woken up
+|-
+| ActsPercMstpSlowWrflDnon_Talking1||p||Chatting lazily, weapon lowered
+|-
+| ActsPercMstpSlowWrflDnon_Talking2||p||Talking, weapon raised upwards from the shoulder
+|-
+| ActsPercMstpSlowWrflDnon_ThingPassingMoving||p||Waves to someone, then approaches them and seems to put something on a table.  Talking follows.
+|-
+
+| ActsPercMstpSnonWnonDnon_ArrestingMan||p||Unit slowly puts his hands behind his head, then kneels, before being bound and kicked to the floor.  Used with 'ActsPercMstpSnonWrflDnon_ArrestingSoldier'
+|-
+| ActsPercMstpSnonWnonDnon_ArrestingManLoop||p||Unit is bound on the floor.  Occasionally wriggles about and struggles.
+|-
+| ActsPercMstpSnonWnonDnon_ArrestingManLoopActions||p||Unclear, seems to do nothing
+|-
+| ActsPercMstpSnonWrflDnon_ArrestingSoldier||p||Performs an arrest on a unit, used with 'ActsPercMstpSnonWnonDnon_ArrestingMan'
+|-
+| ActsPercMstpSnonWnonDnon_DancingDuoIvan||p||Does various dance moves
+|-
+| ActsPercMstpSnonWnonDnon_DancingDuoStefan||p||Dances
+|-
+| ActsPercMstpSnonWnonDnon_DancingStefan||p||As above
+|-
+| ActsPercMstpSnonWpstDnon_InterrogationSoldier||p||Interrogating someone, used with 'ActsPercMstpSnonWnonDnon_InterrogationVictim'
+|-
+| ActsPercMstpSnonWnonDnon_InterrogationVictim||p||Being interrogated, used with 'ActsPercMstpSnonWpstDnon_InterrogationSoldier'
+|-
+| ActsPercMstpSnonWnonDnon_Listening||p||Similar to 'ActsPercMstpSnonWnonDnon_Talking1'
+|-
+| ActsPercMstpSnonWnonDnon_Talking1||p||Anxious talking, no weapon
+|-
+| ActsPercMstpSnonWnonDnon_Talking2||p||Talking with no weapon, both arms crossed in front of him
+|-
+| ActsPercMstpSnonWnonDnon_Panicking1||p||
+|-
+| ActsPercMstpSnonWnonDnon_Panicking2||p||Unit cowers away from something
+|-
+| ActsPercMstpSnonWnonDnon_Panicking3||p||
+|-
+| ActsPercMstpSnonWnonDnon_Panicking4||p||
+|-
+| ActsPercMstpSnonWnonDnon_Panicking5||p||
+|-
+| ActsPercMstpSnonWnonDnon_Panicking6||p||
+|-
+| ActsPercMstpSnonWnonDnon_Panicking7||p||
+|-
+| ActsPercMstpSnonWnonDnon_ThingPassingStill||p||
+|-
+| colspan="3" | &nbsp;
+|-
+| ActsPercMwlkSlowWrflDnon_PatrolingBase1||p||
+|-
+| ActsPercMwlkSlowWrflDnon_PatrolingBase2||p||
+|-
+| ActsPercMwlkSlowWrflDnon_PatrolingBase3||p||
+|-
+| ActsPercMwlkSlowWrflDnon_PatrolingBase4||p||
+|-
+| colspan="3" | &nbsp;
+|-
+| ActsPknlMstpSlowWrflDnon_ThingPassingMoving||p||Waves to someone, then approaches them and seems to put something on a table.  Talking follows.
+|-
+| ActsPknlMstpSnonWnonDnon_ThingPassingStill||p||
+|-
+| ActsPknlMstpSnonWnonDnon_TreatingInjured||p||
+|-
+| ActsPknlMstpSnonWrflDnon_TreatingSoldier||p||
+|-
+| colspan="3" | &nbsp;
+|-
+| ActsPpneMstpSnonWnonDnon_AmovPercMstpSnonWnonDnon_Injured3||p||Unit is lying with a wound to the chest on the floor.  Eventually staggers up using a prop (low wall?)
+|-
+| ActsPpneMstpSnonWnonDnon_Injured1
+|-
+| ActsPpneMstpSnonWnonDnon_Injured2||p||
+|-
+| ActsPpneMstpSnonWnonDnon_Panicking||p||
+|-
+
+|}
+
+== Amov... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AmovPercMstpSlowWrflDnon_ActsPpneMstpSlowWrflDr_GrenadeEscape||-||
+|-
+| AmovPercMstpSlowWrflDnon_ActsPercMstpSlowWrflDr_HideFromFire||-||
+|-
+| AmovPercMstpSnonWnonDnon_Panicking3in||-||
+|-
+| AmovPercMstpSnonWnonDnon_Panicking2in||-||
+|-
+| AmovPercMstpSnonWnonDnon_Panicking2out||-||
+|-
+| AmovPercMstpSnonWnonDnon_Panicking2loop||-||
+|-
+| AmovPercMstpSnonWnonDnon_Panicking3loop||-||
+|-
+| AmovPercMstpSnonWnonDnon_Panicking1out||-||
+|-
+| AmovPercMstpSnonWnonDnon_Panicking1in||-||
+|-
+| AmovPercMstpSnonWnonDnon_Panicking3out||-||
+|-
+| AmovPercMstpSnonWnonDnon_AmovPlieMstpSnonWnonDnon||-||
+|-
+| AmovPercMstpSnonWnonDnon_Panicking1loopActions||-||
+|-
+| AmovPercMstpSnonWnonDnon_Panicking1loop||-||
+|-
+| AmovPercMwlkSlowWrflDf_ActsPercMstpSlowWrflDnon_HitLeg||-||
+|-
+| AmovPlieMstpSnonWnonDnon_AmovPercMstpSnonWnonDnon||-||
+|-
+| AmovPlieMstpSnonWnonDnon||-||
+|-
+|}
+
+== Asig... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| AsigPercMstpSlowWrflDnon_AmovPercMrunSlowWrflDnon_GoGo||-||
+|-
+| AsigPercMstpSlowWrflDnon_GoGo||-||
+|-
+| AsigPercMstpSlowWrflDnon_SendMenInAction||-||
+|-
+|}
+
+== m#... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| m1s1pedros||-||
+|-
+| m1s1wicks||-||
+|-
+| m1s2lamb||-||
+|-
+| m1s2wicks||-||
+|-
+| m1s2zold1||-||
+|-
+| m1s2zold2||-||
+|-
+| colspan="3" | &nbsp;
+|-
+| m2s1kancler||-||
+|-
+| m2s1pobocnik||-||
+|-
+| m2s1wicks||-||
+|-
+| m2s2bodyguard||-||
+|-
+| m2s2bodyguard_centered||-||
+|-
+| m2s2kancler||-||
+|-
+| m2s2kancler_centered||-||
+|-
+| m2s2lamb||-||
+|-
+| m2s2lamb_centered||-||
+|-
+| m2s2orlando||-||
+|-
+| m2s2orlando_centered||-||
+|-
+| m2s2wicks||-||
+|-
+| m2s2wicks_centered||-||
+|-
+| m2s2zoldak1||-||
+|-
+| m2s2zoldak2||-||
+|-
+| m2s3lamb||-||
+|-
+| m2s3orlando||-||
+|-
+| m2s3wicks||-||
+|-
+| colspan="3" | &nbsp;
+|-
+| m5s1gonzales||-||
+|-
+| m5s1lamb||-||
+|-
+| m5s1orlando||-||
+|-
+| colspan="3" | &nbsp;
+|-
+| m6as1gonzales||-||
+|-
+| m6as1lamb||-||
+|-
+| m6as1orlando||-||
+|-
+| m6as2gonzales||-||
+|-
+| m6as2lamb||-||
+|-
+| m6as2orlando||-||
+|-
+| m6bs1zoldak1||-||
+|-
+| m6bs1zoldak2||-||
+|-
+| m6bs2gonzales||-||
+|-
+| m6bs2lamb||-||
+|-
+| m6bs2zoldak1||-||
+|-
+| m6bs2zoldak2||-||
+|-
+| m6bs3gonzales||-||
+|-
+| m6bs3lamb||-||
+|-
+| m6bs3zoldak1||-||
+|-
+| m6bs3zoldak2||-||
+|-
+|}
+
+== x0... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| x01lamb||-||
+|-
+| x01wicks||-||
+|-
+| x01zoldak1||-||
+|-
+| x01zoldak2||-||
+|-
+| x03lamb||-||
+|-
+| x03orlando||-||
+|-
+| x04gonzales||-||
+|-
+| x04lamb||-||
+|-
+| x04orlando||-||
+|-
+| x05s1gonzales||-||
+|-
+| x05s1lamb||-||
+|-
+| x05s1orlandotv||-||
+|-
+| x05s2gonzales||-||
+|-
+| x05s2lamb||-||
+|-
+| x05s2zoldak1||-||
+|-
+| x05s2zoldak2||-||
+|-
+| x05s3lamb||-||
+|-
+| x05s3zoldak1||-||
+|-
+| x05s3zoldak2||-||
+|-
+| x05s4gonzales||-||
+|-
+| x05s4lamb||-||
+|-
+| x05s4zoldak||-||
+|-
+| x05s5a2lamb||-||
+|-
+| x05s5a2zoldak1||-||
+|-
+| x05s5a2zoldak2||-||
+|-
+| x05s5alamb||-||
+|-
+| x05s5azoldak1||-||
+|-
+| x05s5azoldak2||-||
+|-
+| x05s5b2lamb||-||
+|-
+| x05s5b2zoldak1||-||
+|-
+| x05s5b2zoldak2||-||
+|-
+| x05s5bgonzales||-||
+|-
+| x05s5blamb||-||
+|-
+|}
+
+== xout... ==
+{|
+|'''Name'''||'''Usage'''||'''Description'''
+|-
+| xoutrolamb||-||
+|-
+| xoutroorlando||-||
+|-
+| xoutrozoldak1||-||
+|-
+| xoutrozoldak2||-||
+|-
+|}
+
+[[Category:Moves]]

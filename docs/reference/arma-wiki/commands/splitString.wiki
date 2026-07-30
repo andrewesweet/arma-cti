@@ -1,0 +1,81 @@
+// source: https://community.bistudio.com/wiki/splitString
+// revision: 377128 (2026-01-01T10:23:07Z)
+// export sha1: 3d1u35ire199kb4bb2h09ibxt631dk5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|gr1= Strings
+
+|descr= Splits the provided '''ANSI''' string into an array of tokens according to given delimiters.
+{{Feature|informative|For Unicode support, see [[forceUnicode]].}}
+
+|s1= str [[splitString]] delimiters
+
+|p1= str: [[String]] - the string to split
+
+|p2= delimiters: [[String]] - one or more characters, each used as a separate delimiter; if empty, ''str'' is split by each character
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>
+_str = "- This, is a sample string." splitString "-,. "; // ["This","is","a","sample","string"]
+_str joinString "#"; // "This#is#a#sample#string"
+</sqf>
+
+|x2= <sqf>
+"\A3\ui_f\data\map\vehicleicons\iconLogic_ca.paa" splitString "\."; // ["A3","ui_f","data","map","vehicleicons","iconLogic_ca","paa"]
+</sqf>
+
+|x3= <sqf>"1:2:3" splitString ":"; // ["1","2","3"]</sqf>
+
+|x4= <sqf>"Japa is the best!" splitString "" joinString " "; // "J a p a   i s   t h e   b e s t !"</sqf>
+
+|x5= <sqf>
+_cmd = currentMagazineDetail player; // "9mm 16Rnd Mag(13/16)[id/cr:10000011/0]"
+_cmd splitString "([ ]/:)"; // ["9mm","16Rnd","Mag","13","16","id","cr","10000011","0"]
+</sqf>
+
+|x7= Remove all \r\n from file:
+<sqf>loadFile "somefile.txt" splitString toString [13,10] joinString " ";</sqf>
+
+|seealso= [[joinString]] [[set]] [[resize]] [[reverse]] [[select]] [[in]] [[find]] [[toArray]] [[forEach]] [[count]] [[deleteAt]] [[deleteRange]] [[append]] [[sort]] [[param]] [[params]] [[arrayIntersect]] [[toString]] [[endl]] [[forceUnicode]], {{Link|http://www.utf8-chartable.de/|Unicode Character Table}} {{Link|http://www.cplusplus.com/reference/cstring/strtok/|strtok (C++)}}
+}}
+
+{{Note
+|user= BaerMitUmlaut
+|timestamp= 20160517141800
+|text= This command is unreliable/broken when it comes to some non-ASCII characters (as of {{arma3}} v1.58):
+<sqf>
+"Mörser" splitString "" // -> ["M"," "," ","r","s","e","r"]
+"Mörser" splitString "ö" // -> ["M","rser"]
+"Mörser" splitString "ä" // -> ["M"," rser"]
+</sqf>
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20161017140300
+|text= This commands works only with ASCII chars, any chars with codes > 127, also used in different languages, will be converted to [" ", " "]. Use [[toArray]] to preserve special characters:
+<sqf>_spaced = toArray "Mörser" apply {toString [_x]} joinString " "; // M ö r s e r</sqf>
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20190719111700
+|text= When working with string which contain linebreaks...
+<sqf>
+"stringWith" + endl + "Linebreak" splitString ",; ";
+/*
+result is ["someStringWith
+Linebreak"]
+*/
+</sqf>
+
+...one can remove those by adding [[endl]] as delimiter
+<sqf>"stringWith" + endl + "Linebreak" splitString ",; " + endl; // result is ["someStringWith","Linebreak"]</sqf>
+}}

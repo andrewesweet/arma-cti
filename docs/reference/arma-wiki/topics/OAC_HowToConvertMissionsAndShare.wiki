@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/OAC:HowToConvertMissionsAndShare
+// revision: 363752 (2024-04-17T20:07:50Z)
+// export sha1: awxepxh1zfc8qo6n6pg56ecuojlgazo
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Banner biki.jpg]]
+
+= VI. How to convert missions and share =
+
+== Mission Conversion Guide ==
+
+In your OAC folder you find a folder called powerGREP configs:<br>
+'''.\arma\x\oac\powergrep-configs'''
+
+# Download the free {{Link|http://www.powergrep.com/download.html|PowerGREP Free Evaluation Version}}.
+# Open the software.
+# Ctrl+O ('''Open action''' / yellow folder in the mid) - select first powerGREP config from OAC: '''arma_convert_description_1._setSemicolonAtTheEndOfLine_in_everyLine.pga'''
+# Select your mission / campaign folder ('''Path''' on the left mid).
+# Shift+Ctrl+I (Inlude all folders and subfolders).
+# Ctrl+F9 ('''Replace''' button in the top mid).
+# Repeat step 3 to 6 of this guide for '''all''' OAC powerGREP configs.
+# Run powerGREP config number two again<br>('''arma_convert_description_2._removeSemicolonAtTheEndOfLine_in_everyLineNonMeantToBe.pga''').
+# Test your mission/campaign ingame and fix any remaining errors.{{Clear}}[[File:Oac_powergrep_tut.jpg|thumb|left|600px|OAC powerGREP tutorial]]{{Clear}}
+
+'''The powerGREP configs should do like 90% of the work for you already'''.
+
+The powerGREP configs contain regex to do an advanced search and replace operation.<br>
+More information on {{Link|https://www.regular-expressions.info/}}.
+
+
+== Missing addons ==
+
+At times the missions contain missing addons, vehicle or units.
+
+It is '''NOT''' recommended to replace them yourself or exchange the classes in the mission.sqm and scripts.
+
+Instead please create a ticket in the {{Link|link= http://dev-heaven.net/projects/oac/issues|text= OAC issue tracker}} and add the information about the missing addon,
+vehicle or unit with class name, example mission and best a link to the actual OFP addon.<br>
+We will included it in the [[OAC compatibility addon]] to solve in on the global level.<br>
+This will replace all instance magically without mission modification by a simple class replacement as part of the addon.<br>
+
+'''It will speed up the process, if you can suggest an unit/vehicle or even class mapping yourself'''.
+
+
+== Share your contributions ==
+
+Contributions are:
+* Updated or improved missions or campaigns
+* Your own mission or campaign conversions
+* Your own replacement addons for OFP classes
+
+See [[OAC:HowToImproveTheCompatibilityAddon|Git: Source control system]] how to share your work with the OAC project and its fans.
+
+= Back to OAC Home =
+
+[[OAC:Project#Subpage_link_overview|The seven roads to OAC - subpage link overview]]

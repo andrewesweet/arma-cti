@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_splitString
+// revision: 323143 (2022-06-30T17:01:12Z)
+// export sha1: 5gt7u1o8qsc7l117o6vimhi46vkk8ep
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strings | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strings
+
+|descr= Splits given string according to given separator(s).
+{{Feature|arma3|See [[splitString]].}}
+
+|s1= [stringToSplit, separators, byWord] call [[BIS_fnc_splitString]]
+
+|p1= stringToSplit: [[String]]
+
+|p2= separators: [[String]] - (Optional, default "") by default each letter is a separator. If ''byWord'' is set to [[true]], the separator will be treated as whole word
+
+|p3= byWord: [[Boolean]] - (Optional, default [[false]]) by default uses [[splitString]] behaviour e.g. each letter is a separator. If set to [[true]], the separator will be treated as whole word
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>["this is a test", " "] call BIS_fnc_splitString; // returns ["this", "is", "a", "test"]</sqf>
+
+|x2= <sqf>["this is a test", "st"] call BIS_fnc_splitString; // returns ["hi"," i"," a ","e"]</sqf>
+
+|x3= <sqf>["this is a test", "is"] call BIS_fnc_splitString; // returns ["th"," "," a te","t"]</sqf>
+
+|x4= <sqf>["this is a test", "is", true] call BIS_fnc_splitString; // returns ["th"," "," a test"]</sqf>
+
+|seealso= [[splitString]] [[toArray]] [[toString]]
+}}

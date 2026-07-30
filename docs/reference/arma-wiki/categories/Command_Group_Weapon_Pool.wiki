@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Weapon_Pool
+// revision: 376875 (2025-12-11T17:21:24Z)
+// export sha1: 6vcsbdc6bpn9mnducr6lng5h5y0kcqe
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands by Functionality]]
+
+The "Weapon pool" is a feature first introduced in [[{{ofpr}}]] and made fully MP compatible in [[Arma 2: Private Military Company|Arma 2: PMC]].
+Over the course of a campaign, it enables the player to store weapons and magazines from one mission and makes them available in the following scenarios.
+The stored items are available through the briefing gear selection and can be stored to specific object in order to make them available even during a mission.
+
+A campaign allows weapons to be stored by default but will not show them in briefing selection. To enable this feature, put the following line in the {{Link|Campaign Description.ext#weaponPool|Campaign's Description.ext}}:
+<syntaxhighlight lang="cpp">weaponPool = true;</syntaxhighlight>

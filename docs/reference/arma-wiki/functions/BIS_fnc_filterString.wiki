@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_filterString
+// revision: 327982 (2022-07-13T15:22:00Z)
+// export sha1: 5w56x3j6kgwyv7vpv8bbjdokdpiffh4
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strings | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strings
+
+|descr= Removes characters from a string based on the list of allowed characters.
+
+|s1= [text, allowedChars] call [[BIS_fnc_filterString]]
+
+|p1= '''text:''': [[String]] - text to filter
+
+|p2= '''allowedChars''': [[String]] - (Optional, default a..z, A..Z, 0..9, "_") allowed characters
+
+|r1= [[String]] - filtered text with only the allowed characters supplied in the filter.
+
+|x1= <sqf>["Player 1 @%!@$"] call BIS_fnc_filterString; // returns "Player1"</sqf>
+
+|x2= <sqf>["Player 1", "aelrPy"] call BIS_fnc_filterString; // returns "Player"</sqf>
+
+|seealso= [[find]] [[BIS_fnc_inString]] [[splitString]] [[joinString]]
+}}

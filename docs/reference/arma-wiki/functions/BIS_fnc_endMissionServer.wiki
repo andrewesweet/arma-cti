@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_endMissionServer
+// revision: 363361 (2024-03-27T20:01:55Z)
+// export sha1: bbyelyp6usxwb3q5mwewdmpxto54yih
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Multiplayer | Category:Functions | Category:Functions: Global Effect | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Multiplayer
+
+|serverExec= server
+
+|eff= global
+
+|descr= Ends the mission properly for all players in a multiplayer environment.
+{{Feature|informative|This function is somewhat deprecated for custom endings since {{GVI|arma3|1.50}} as [[remoteExec|remote-exec]]uting [[BIS_fnc_endMission]] allows for more options:
+<sqf>["MyEnding", true, 3] remoteExec ["BIS_fnc_endMission", 0, true];</sqf>
+}}
+
+|s1= endType call [[BIS_fnc_endMissionServer]]
+
+|p1= endType: [[String]] - class name of ending defined in [[Description.ext#CfgDebriefing|CfgDebriefing]].<br>
+Can be '''custom''' or one of dynamically calculated ones:
+* "EveryoneWon" - Show "MISSION COMPLETED" to everyone
+* "EveryoneLost" - Show "MISSION FAILED" to everyone
+* "SideTickets" - Show "YOUR SIDE WON" to side/s with most tickets and "YOUR SIDE LOST" to everyone else
+* "SideScore" - Show "YOUR SIDE WON" to side with largest score
+* "GroupScore" - Show "YOUR GROUP WON" to group with largest score
+* "PlayerScore" - Show "YOU WON" to player with largest score
+
+|r1= [[Boolean]]
+
+|x1= <sqf>"SideScore" call BIS_fnc_endMissionServer;</sqf>
+
+|seealso= [[BIS_fnc_endMission]] [[failMission]] [[forceEnd]] [[endMission]]
+}}

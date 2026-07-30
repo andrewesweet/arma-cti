@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/flag
+// revision: 353769 (2024-03-23T14:27:22Z)
+// export sha1: p5kqtnbxxa8yv4m7dk8f00kzbs167k9
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Flags | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Flags
+
+|descr= Returns the original flag pole of the flag the unit is carrying.
+
+|s1= [[flag]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Object]] - flag pole object the flag belongs to. If the unit carries no flag, [[objNull]] is returned.
+
+|x1= <sqf>_flag = flag _soldier;</sqf>
+
+|seealso= [[flagOwner]] [[setFlagOwner]] [[setFlagSide]] [[setFlagTexture]] [[flagSide]] [[flagTexture]] [[setFlagAnimationPhase]] [[flagAnimationPhase]] [[forceFlagTexture]] [[getForcedFlagTexture]] [[:Category:Flag Textures|Flag Textures]]
+}}

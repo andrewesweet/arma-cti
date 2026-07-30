@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/setTIParameter
+// revision: 330291 (2022-08-30T11:36:06Z)
+// export sha1: 04r50p250tph4lv7yfcku6dzxe40yn2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= Environment
+
+|descr= Sets the provided Thermal Imaging parameter's value.
+{{Feature|important|The settings are '''not''' saved in savegame and must be reapplied after loading.}}
+
+|s1= [[setTIParameter]] [paramName, newValue]
+
+|p1= paramName: [[String]] - the parameter name. See [[getTIParameters]] for a list of possible values
+
+|p2= newValue: [[Number]]<!-- technically anything --> - the set number
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+setTIParameter ["OutputRangeStart", 0];
+setTIParameter ["OutputRangeWidth", 1];
+</sqf>
+
+|seealso= [[getTIParameters]] [[setCamUseTI]] [[disableTIEquipment]]
+}}

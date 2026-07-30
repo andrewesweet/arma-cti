@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sortBy
+// revision: 327964 (2022-07-13T13:57:43Z)
+// export sha1: q89n6xkbxocumeruz53o6e0w1ukgkms
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 3 version 0.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.58
+
+|gr1= Arrays
+
+|descr= Sorts an array according to given algorithm. See [[sort]] for simple sorts.
+
+|s1= [array, parameters, algorithm, direction, filter] call [[BIS_fnc_sortBy]]
+
+|p1= array: [[Array]] - any unsorted array. Can contain any types
+
+|p2= parameters: [[Array]]
+* used in the eval algorithm
+* input params are referenced in the sorting algorithm by _input0..9
+* a maximum of 10 input params is supported (0-9)
+
+|p3= algorithm: [[Code]] - (Optional, default <sqf inline>{ _x }</sqf>)
+* needs to return [[String]], [[Number]] or [[Array]] - see [[sort]]
+* [[Magic Variables#x|_x]] refers to array item
+
+|p4= direction: [[String]] - (Optional, default "ASCEND") case-insensitive
+* "ASCEND" for ascending sorting
+* "DESCEND" (or anything else) for descending sorting
+
+|p5= filter: [[Code]] - (Optional, default <sqf inline>{ true }</sqf>) code that needs to evaluate true for the array item to be sorted, otherwise item is removed
+
+|r1= [[Array]] - sorted array
+
+|x1= <sqf>
+// sort numbers from lowest to highest
+_sortedNumbers = [[1,-80,0,480,15,-40], [], {_x}, "ASCEND"] call BIS_fnc_sortBy;
+</sqf>
+
+|x2= <sqf>
+// sort helicopters by distance from player
+_closestHelicopters = [[_heli1,_heli2,_heli3], [], { player distance _x }, "ASCEND"] call BIS_fnc_sortBy;
+</sqf>
+
+|x3= <sqf>
+// sort enemy by distance from friendly unit (referenced by local variable), the furthest first
+_furtherstEnemy = [[_enemy1,_enemy2,_enemy3], [_friendly], { _input0 distance _x }, "DESCEND", { canMove _x }] call BIS_fnc_sortBy;
+</sqf>
+
+|seealso= [[BIS_fnc_sortAlphabetically]] [[BIS_fnc_sortNum]] [[sort]]
+}}

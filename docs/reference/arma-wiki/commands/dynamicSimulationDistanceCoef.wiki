@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/dynamicSimulationDistanceCoef
+// revision: 319026 (2022-05-13T09:22:12Z)
+// export sha1: m5mi0h2xkks2qgl3mft6c74vufuviae
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Dynamic Simulation | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Dynamic Simulation
+
+|descr= A getter for [[setDynamicSimulationDistanceCoef]]
+
+|s1= [[dynamicSimulationDistanceCoef]] class
+
+|p1= class: [[String]] - see [[setDynamicSimulationDistanceCoef]]
+
+|r1= [[Number]]
+
+|x1= <sqf>hint str dynamicSimulationDistanceCoef "IsMoving";</sqf>
+
+|seealso= [[enableDynamicSimulationSystem]] [[dynamicSimulationSystemEnabled]] [[enableDynamicSimulation]] [[dynamicSimulationEnabled]] [[setDynamicSimulationDistance]] [[dynamicSimulationDistance]] [[setDynamicSimulationDistanceCoef]] [[triggerDynamicSimulation]] [[canTriggerDynamicSimulation]] [[enableSimulation]] [[simulationEnabled]] [[enableSimulationGlobal]] [[Arma 3: Dynamic Simulation]]
+}}

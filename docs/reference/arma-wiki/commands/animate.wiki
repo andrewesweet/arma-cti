@@ -1,0 +1,114 @@
+// source: https://community.bistudio.com/wiki/animate
+// revision: 349061 (2023-11-08T14:47:19Z)
+// export sha1: l1jxwhjrcotgb0iasvkkmartncsp6bd
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Animations
+
+|descr= Activates given object animation. Animation is defined in CfgModels [[Model Config#Animations|animations]] class. Class names listed in CfgVehicles [[Model Config#AnimationSources|AnimationSources]] bound to "Proxy" controller can also be animated with [[animate]] command (see [[Arma 3: createVehicle/vehicles]]).
+{{Feature|arma3|
+* It is recommended that [[animateSource]] command is used instead of [[animate]] whenever is possible, as it is more efficient and optimised for multiplayer
+* Since {{arma3}} v1.58 animation names can be obtained with [[animationNames]]}}
+{{Feature|warning|Mixing [[animateSource]] command with [[animate]] command to animate the same part may produce some undefined behaviour.}}
+
+|s1= object [[animate]] [animationName, phase, speed]
+
+|p1= object: [[Object]]
+
+|p2= animationName: [[String]] - name of the animation. This is the class-name of the animation defined in the config
+
+|p3= phase: [[Number]] - range 0 (start point of the animation) to 1 (end point of the animation). The speed, in which the animation is processed, is defined in the addon's config.cpp and cannot be changed during running missions
+
+|p4= speed: [[Boolean]] or (since {{GVI|arma3|1.66|size= 0.75}}) [[Number]] - (Optional, default [[false]]) when [[true]] animation is instant; [[Number]] > 0 is treated as config speed value multiplier
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_building animate ["maindoor", 1];</sqf>
+
+|x2= <sqf>_building animate ["Door_1_rot", 1, true];</sqf>
+
+|x3= Create Offroad and add flashing police light bar:
+<sqf>
+offroad = "C_Offroad_01_F" createVehicle (player getRelPos [5, 0]);
+offroad animate ["HidePolice", 0];
+offroad animate ["BeaconsStart", 1];
+</sqf>
+
+|seealso= [[animationPhase]] [[setFaceAnimation]] [[animateSource]] [[animationSourcePhase]] [[animateDoor]] [[doorPhase]] [[animationNames]]
+}}
+
+{{Note
+|user= Mikero
+|timestamp= 20070823225000
+|text= Animations can be used on existing game models such as houses that have doors eg. The general syntax is
+<sqf>house animate ["dvere1", 1]</sqf>
+to 'open' the door and <sqf>house animate ["dvere1", 0]</sqf> to 'close' it. Whether used on Oem addons, or official ones, an internal working knowledge (via config.cpp) of the model's animated name(s) is required.<br>
+<br>
+'open' and 'close' are visual perceptions of the state of the model, and are a design decision of the p3d. Open does not, necessarily mean, 1, and close does not mean 0.<br>
+'0' and '1' are better seen as FULLY_OFF and FULLY_ON<br>
+If a door is initially closed in the model, FULLY_ON, will open it. If it is initialy OPEN visually, in the model, FULLY_ON will close it.<br>
+<br>
+{{hl|c= initphase = 1;}} (in config cpp) does not alter open and close meanings, all it does is set the model to the 'on' (rather than 'off') state to begin with. Whether on means open or close visually is a p3d design decision.
+}}
+
+{{Note
+|user= Tyger
+|timestamp= 20081206082300
+|text= Also, to animate the object called "Bar Gate" in ArmA, use the following: <sqf>myGate animate ["Bargate",1]</sqf> to close it, and <sqf>myGate animate ["Bargate", 0]</sqf> to open it.
+}}
+
+{{Note
+|user= RageBone
+|timestamp= 20160216213300
+|text= "Bargate" was exchanged with "Door_1_rot" at one point:
+<sqf>object animate ["Bargate", 0]; // doesn't work</sqf>
+<sqf>object animate ["Door_1_rot", 0]; // works</sqf>
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20160314003400
+|text= To animate bargate use [[animateSource]]:
+<sqf>bargate animateSource ["Door_1_source", 1];</sqf>
+}}
+
+{{Note
+|user= SteveStevenson
+|timestamp= 20171125205500
+|text= For pop-up targets, you can keep the target down (until you tell it to pop up) with:
+<sqf>target1 animate ["terc", 1];</sqf>
+
+When you're ready for the target to pop up, you can use:
+<sqf>target1 animate ["terc", 0];</sqf>
+
+With this setting, the target will return to its usual behavior of going down when hit and automatically popping back up again. To make the target stay down after being hit, add the following line:
+<sqf>target1 addEventHandler ["HitPart", { target1 animate ["terc", 1]; }];</sqf>
+}}

@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/Diary
+// revision: 256015 (2021-04-27T14:08:47Z)
+// export sha1: 0q1xl9t4mjrur3ns8erc4albv7tmwr9
+// categories: Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:A3 Diary v2.jpg|350px|right]]
+
+== Subjects ==
+=== Default Subjects ===
+{| class="wikitable"
+! Display Name !! Internal Name !! Can be Linked !! Can be Edited !! Notes
+|-
+| Map || Map || {{Icon|unchecked}} || {{Icon|unchecked}} || Dummy tab
+|-
+| Tasks || Tasks || {{Icon|checked}} || {{Icon|unchecked}} || Hidden when no tasks exist
+|-
+| Briefing || Diary || {{Icon|checked}} || {{Icon|checked}} || Always shown, even when empty. Can be edited with [[createDiaryRecord]].
+|-
+| Team || Units || {{Icon|checked}} || {{Icon|unchecked}} || Always shown
+|-
+| Players || Players || {{Icon|checked}} || {{Icon|unchecked}} || Hidden in singleplayer
+|-
+| Statistics || Statistics || {{Icon|checked}} || {{Icon|unchecked}} || Hidden until scores are changed
+|}
+
+=== Custom Subjects ===
+Can be created with [[createDiarySubject]] - they go after all the default ones and can obviously be modified.
+
+=== Related Commands ===
+* [[:Category:Command Group: Briefing|Command Group: Briefing]]
+{| class="wikitable" width="30%"
+|-
+! Subject commands !! Record commands !! Helper commands
+|-
+| [[createDiarySubject]] || [[createDiaryRecord]] || [[createDiaryLink]]
+|-
+| [[removeDiarySubject]] || [[removeDiaryRecord]] || [[processDiaryLink]]
+|-
+| [[selectDiarySubject]] || [[setDiaryRecordText]] || 
+|-
+| [[diarySubjectExists]] || [[diaryRecordNull]] || 
+|-
+| [[setDiarySubjectPicture]] || || 
+|-
+| [[allDiarySubjects]] || || 
+|}
+
+[[Category: Scripting Topics]]
+__NOTOC__

@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/addMagazineTurret
+// revision: 377495 (2026-01-02T06:49:20Z)
+// export sha1: jusce07btqbbyxdx1feb4zamfou37ip
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 2: Operation Arrowhead version 1.52 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.52
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Turrets
+
+|descr= Adds a magazine to the turret. Use turret path {{hl|[-1]}} for driver's turret.
+{{Feature|important|Invalid combinations may be created by using this command, for example by adding 20 grenades. In these cases, behaviour is undefined.}}
+
+|s1= vehicle [[addMagazineTurret]] [magazineName, turretPath, ammoCount]
+
+|p1= vehicle: [[Object]]
+
+|p2= magazineName: [[String]]
+
+|p3= turretPath: [[Turret Path]]
+
+|p4= ammoCount: [[Number]] - (Optional, default 0) desired ammo count
+|p4since= arma3 1.56
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_tank addMagazineTurret ["SmokeLauncherMag", [0,0]];</sqf>
+
+|x2= <sqf>_tank addMagazineTurret ["20Rnd_120mmSABOT_M1A2", [0]];</sqf>
+
+|x3= <sqf>_tank addMagazineTurret ["20Rnd_120mmSABOT_M1A2", [0], 10]; // add magazine with 10 rounds</sqf>
+
+|seealso= [[addMagazinesTurret]] [[addMagazineGlobal]] [[addMagazine]] [[loadMagazine]] [[addMagazines]] [[addMagazineCargo]] [[addMagazineCargoGlobal]] [[addMagazinePool]] [[magazinesTurret]] [[removeMagazinesTurret]] [[removeMagazineTurret]] [[weaponsTurret]] [[addMagazineAmmoCargo]] [[addWeaponTurret]] [[removeWeaponTurret]] [[turretLocal]]
+}}

@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/pushBackUnique
+// revision: 377140 (2026-01-01T10:30:41Z)
+// export sha1: ggzoeetq0e0ds15wncru6y5hpdui6xy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Arrays
+
+|descr= Adds element to the back of the given array but only if it is unique to the array. The index of the added element is returned upon success, otherwise -1. This command modifies the original array.
+{{Feature|informative|Adding string elements is '''case sensitive'''.}}
+
+|s1= array [[pushBackUnique]] element
+
+|p1= array: [[Array]] of [[Anything]]
+
+|p2= element: [[Anything]]
+
+|r1= [[Number]] - index of inserted element or -1
+	
+|x1= <sqf>
+_arr = [1,2,3];
+_index = _arr pushBackUnique 3;
+hint str [_index, _arr]; // [-1,[1,2,3]]
+</sqf>
+
+|x2= <sqf>
+_arr = [1,2,3];
+_index = _arr pushBackUnique 4;
+hint str [_index, _arr]; // [3,[1,2,3,4]]
+</sqf>
+
+|seealso= [[pushBack]] [[select]] [[set]] [[resize]] [[reverse]] [[count]] [[find]] [[in]] [[forEach]] [[deleteAt]] [[deleteRange]] [[append]] [[sort]] [[arrayIntersect]] [[apply]] [[BIS_fnc_arrayPushStack]] [[BIS_fnc_arrayPush]]
+}}

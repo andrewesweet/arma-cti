@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/loadMagazine
+// revision: 377475 (2026-01-02T06:48:47Z)
+// export sha1: i12ltbu0y4lzviodjfw7yojgjp5436a
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Command Group: Weapons | Category:Introduced with Arma 2: Operation Arrowhead version 1.60 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.60
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Weapons
+
+|gr2= Turrets
+
+|descr= Initiates the loading action on given weapon of the turret of a transport. So the new magazine is not available instantly, yet according to the reloadTime.<br>
+The turret has to be manned. One can also change the magazine if its respective weapon is not selected.
+
+|s1= transport [[loadMagazine]] [turretPath, weaponName, magazineName]
+
+|p1= transport: [[Object]]
+
+|p2= turretPath: [[Turret Path]]
+
+|p3= weaponName: [[String]]
+
+|p4= magazineName: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player loadMagazine [[0], "m256", "20Rnd_120mmHE_M1A2"];</sqf>
+
+|seealso= [[magazinesTurret]] [[addMagazineTurret]] [[reload]] [[weaponState]] [[setWeaponReloadingTime]] [[weapons]] [[magazines]] [[Arma 3: Actions#SwitchMagazine|SwitchMagazine]]
+}}

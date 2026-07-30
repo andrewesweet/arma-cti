@@ -1,0 +1,79 @@
+// source: https://community.bistudio.com/wiki/-
+// revision: 377197 (2026-01-01T11:31:15Z)
+// export sha1: dvvzi5nspt7n5vn96jf0lz3snrzmrib
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: Math | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|sortKey= #
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Math 
+
+|gr2= Arrays
+
+|descr= Subtracts numbers or arrays from each another, negates a number. For arrays also see [[deleteAt]] and [[deleteRange]].
+{{Feature|arma3|In Arma 3 it is possible to subtract nested arrays.}}
+
+|s1= numberA [[-]] numberB
+
+|p1= numberA: [[Number]]
+
+|p2= numberB: [[Number]]
+
+|r1= [[Number]]
+
+|s2= [[-]] numberA
+
+|p21= numberA: [[Number]]
+
+|r2= [[Number]] - the negative of ''numberA''
+
+|s3= arrayA [[-]] arrayB
+
+|p41= arrayA: [[Array]] of [[Anything]]
+
+|p42= arrayB: [[Array]] of [[Anything]]
+
+|r3= [[Array]] of [[Anything]]
+
+|x1= <sqf>_result = 10 - 7; // result is 3</sqf>
+
+|x2= <sqf>
+_numA = 4;
+_numB = -_numA; // result is -4
+_numB = -_numB; // result is  4
+</sqf>
+
+|x3= <sqf>_result = [1, 2, 2, player, "String"] - [2, player, player, "String"]; // _result is [1]</sqf>
+
+|x4= <sqf>_result = [0, [0], [[0]]] - [0]; // [[0], [[0]]]</sqf>
+
+|x5= <sqf>
+_result = [0, [0], [[0]]] - [[0]];		// [0, [<nowiki/>[0]]]	- Since {{arma3}}
+_result = [0, [0], [[0]]] - [[[0]]];	// [0, [0]]		- Since {{arma3}}
+</sqf>
+
+|seealso= [[Array]] [[Operators]] [[deleteAt]] [[deleteRange]]
+}}

@@ -1,0 +1,138 @@
+// source: https://community.bistudio.com/wiki/remoteControl
+// revision: 373364 (2025-04-30T13:23:33Z)
+// export sha1: ob88gc5y9u8diytmjmwm00c3c1r71va
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Remote Control | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|eff= global
+
+|arg= local
+
+|gr1= Remote Control
+
+|descr= Switches on remote control of the unit. The command was {{Icon|globalArgument|32}} prior to {{GVI|arma3|2.14}}). For more info see [[Remote Control Tutorial]].
+
+If the drone is remote it will get transferred to the player's PC.
+{{Feature|informative|See also [[remoteControlled]], [[isRemoteControlling]], and {{Link|#Example 4}} for a getter workaround for earlier game versions.}}
+{{Feature|warning|Always use [[switchCamera]] first (when needed) before using [[remoteControl]] as doing it after may lead to unpredictable results.}}
+
+|s1= who [[remoteControl]] whom
+
+|p1= who: [[Object]] - controlling unit
+
+|p2= whom: [[Object]] - controlled unit
+
+|r1= [[Nothing]]
+
+|x1= Set player remote control of driver:
+<sqf>
+driver UAV switchCamera "Internal"; // switchCamera required
+player remoteControl driver UAV;
+// sometimes switchCamera is not needed
+player remoteControl driver UAV;
+</sqf>
+
+|x2= Return control to player: {{Feature|important|This method will not work if unit is dead, use the method in Example 3 instead}}
+<sqf>objNull remoteControl driver UAV;</sqf>
+
+|x3= {{GVI|arma3|2.14|size= 0.75}} Return control to player:
+<sqf>player remoteControl objNull;</sqf>
+
+|x4= A dirty hack to return controlling unit because of the absence of dedicated getter:
+<sqf>
+SQF_fnc_remoteControlledBy =
+{
+	params ["_obj"];
+	if (!isNull objectParent _obj) exitWith { UAVControl _obj select 0 };
+	private _res = [objNull];
+	isNil
+	{
+		private _pos = getPosWorld _obj;
+		private _dirUp = [vectorDirVisual _obj, vectorUpVisual _obj];
+		private _anim = animationState _obj;
+		private _dummy = "PaperCar" createVehicleLocal [0,0,0];
+		_obj moveInAny _dummy;
+		_res = uavControl _dummy;
+		_obj setPosWorld _pos;
+		_obj setVectorDirAndUp _dirUp;
+		_obj switchMove _anim;
+		deleteVehicle _dummy;
+	};
+	_res select 0
+};
+</sqf>
+Usage (could be scheduled or unscheduled):
+<sqf>
+0 spawn
+{
+	player remoteControl bob;
+	systemChat str (bob call SQF_fnc_remoteControlledBy); // B Alpha 1-1:1 (KK)
+	objNull remoteControl bob;
+	systemChat str (bob call SQF_fnc_remoteControlledBy); // <NULL-object>
+};
+</sqf>
+
+|seealso= [[switchCamera]] [[selectPlayer]] [[UAVControl]] [[remoteControlled]] [[isRemoteControlling]] [[cameraOn]] [[focusOn]]
+}}
+
+{{Note
+|user= TeRp
+|timestamp= 20090604185500
+|text= You must use [[switchCamera]] in order to remote control a unit.<br>
+You can only [[remoteControl]] characters, e.g. if yo want to remote control a car, you have to add a driver and use
+<sqf>player remoteControl driver someVehicle</sqf>
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20100125143500
+|text= '''{{arma2}} v1.05''':
+* You can remoteControl multiple units at the same time.
+* It is not needed to [[switchCamera]] to the unit to be able to control it - it is needed to be able to fire with.
+* The switchCamera is fixed : the player can't change internal/external/optics view.
+* Do not think about it like a [[selectPlayer]]: it is used to give the control to '''the vehicle role the unit is in'''.
+* [[switchCamera]] to the '''vehicle''' the unit is in; the camera will go depending the role you are remoteControlling.
+* The AI driver won't follow your vehicle move orders.
+* If the player dies, the death screen will appear, not automatically turning back to the player.
+* If you want to stop the remote control, use objNull as remote controller.
+* Example:
+<sqf>
+player remoteControl driver jeep1;		// will remoteControl it, you still will have full control of the player
+jeep1 switchCamera "internal";			// fix the camera to the vehicle and not to driver jeep1!
+waitUntil { !(alive jeep1) || !(alive player) };
+objNull remoteControl driver jeep1;		// removes the remoteControlling
+player switchCamera "internal";			// returns to the player
+</sqf>
+|game= arma2
+|version= 1.05
+}}
+
+{{Note
+|user= thedawnofallwars
+|timestamp= 20200917030100
+|text= Far and away the easiest way to check the unit remote controlling an AI through Zeus' Remote Control module is using [[BIS_fnc_moduleRemoteControl_owner]]
+This will return the unit in question which you can then run name on to find the controller's name.
+
+<sqf>
+private _name = "-";
+_who = _unit getVariable ["BIS_fnc_moduleRemoteControl_owner", objNull];
+if (!isNull _who) then
+{
+	_name = name _who;
+};
+</sqf>
+}}

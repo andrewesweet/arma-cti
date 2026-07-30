@@ -1,0 +1,248 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_cfgSoundSets
+// revision: 339738 (2023-04-28T16:20:12Z)
+// export sha1: a1esdkptmfdn6vls87y32c3c2ge0bmu
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== SoundSet ==
+
+A '''SoundSet''' usually combines multiple [[Arma_3_Sound:_cfgSoundShaders|SoundShaders]] and decides how they are presented in the world. Let's look at an example SoundSet:
+<syntaxhighlight lang="cpp">
+class cfgSoundSets
+{
+	class MX_Shot_SoundSet
+	{
+		soundShaders[] =
+		{
+			gunShotClose,
+			gunShotDistant
+		};
+		soundShadersLimit = 1;
+		volumeFactor = 1;
+		volumeRandomizer = 0;
+		volumeCurve = defaultVolumeCurve;
+		frequencyFactor = 1;
+		frequencyRandomizer = 0;
+		loop = 0;
+		spatial = 1;
+		sound3DProcessingType = defaultSound3DProcessingType;
+		doppler = 0;
+		speedOfSound = 1;
+	};
+};
+</syntaxhighlight>
+
+=== Important Notes on SoundSets ===
+
+* SoundSets are a dynamically mixed sample - audio is being created on the fly by the engine. If you mix a 1 second long SoundShader with a 3 second long SoundShader the final sample will be 3 seconds long.
+* the '''range''' of the SoundSet is the highest range of all SoundShaders used in SoundSet. So if one SoundShader has a range of 50 and another SoundShader has a range of 1800 - 1800 will be the range of the SoundSet.
+* volumeCurves applied to SoundSet will be scaled to that range. Looking at the example above 1 will mean 1800m and 0 will mean 0m.
+* currently it is necessary to use SoundShaders with the same frequency within the SoundSet (frequency parameter in SoundShader will be ignored if more than one SoundShader in SoundSet)
+* as of the Eden Update soundShaders used in soundSets MUST all be either mono or stereo, you can not mix together mono and stereo soundShaders
+
+=== soundShaders ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! soundShaders
+| { soundShader1, soundShader2... };
+| none
+| array of soundShaders to be submixed
+|}
+
+All SoundShaders within this array will be called, their volume values evaluated and they will be ''SUBMIXED'' into one voice. There are multiple great things here:
+* The mixing is sample accurate! The way you hear it in your DAW is how you will hear the mix ingame! In previous arma titles sound events sometimes were not played simultaneously but with a tiny gap between them, creating weird effects - no more!
+* The final mix counts as ONE VOICE. Game Sound Designers know that sometimes we create a sound out of multiple layers and the number of voices ingame is limited - well even if you use 6 SoundShaders to make up one dynamic SoundSet, the SoundSet will count as ONE voice.
+
+=== SoundShadersLimit ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! soundShadersLimit
+| N°
+| 0
+| SoundShaders without limitation parameter will always be processed
+|}
+
+If you set the value to 2, only the 2 '''loudest''' SoundShaders will be processed. Loudness is calculated from rangeCurves & volume values, not the sample itself.
+Since with rangeCurves you can have many soundShaders active this is a good way to save processing power. For this to work the SoundShaders must have ''limitation = 1;'' in their configurations.
+
+=== volumeFactor ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! volumeFactor
+| float (0-n)
+| 1
+| multiplication factor for volume
+|}
+
+This allows you to manage volume for a group of sounds instead of doing it one by one like in old configuration versions. volumeFactor set to 2 means that every volume value of each SoundShader is doubled.
+
+=== volumeRandomizer ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! volumeRandomizer
+| db values like db3, db6 etc.
+| 0
+| random volume change value, calculated during each use of SoundSet
+|}
+
+This allows you to have volume differences between each sound (for example gunshot). The value you enter is a volume RANGE.
+So If you configure your sound to be at db-6 (-6dBFS) and set volumeRandomizer to db3 (3dB range) the final volume will be between -3dBFS and -9dBFS.
+
+=== volumeCurve ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! volumeCurve
+| array of points or class name defined in '''CfgSoundCurves'''
+| defaultVolumeCurve
+| volume falloff curve for the SoundSet, based on highest range of SoundShaders in SoundSet
+|}
+
+=== frequencyFactor ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! frequencyFactor
+| Number (0-n)
+| 1
+| multiplication factor for frequency
+|}
+
+This allows you to control the pitch of all SoundShaders in the SoundSet.
+
+=== frequencyRandomizer ===
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! frequencyRandomizer
+| Semitones in numbers
+| 0
+| random multiplication factor for frequency, calculated during each use of SoundSet
+|}
+
+Every time soundSet is triggered a number between 0 and the value here is calculated and applied to the sound.
+So for example: frequencyRandomizer = 3; The sound will have pitch randomization within 3 semitones (positive and negative, sound pitch going up and down).
+
+=== frequencyRandomizerMin ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! frequencyRandomizer
+| Semitones in numbers
+| 0
+| minimum random multiplication factor for frequency, calculated during each use of SoundSet
+|}
+
+Works together with frequencyRandomizer. Here you can configure the minimum frequency change. This way you can ensure a certain "difference" between two sounds.
+FrequencyRandomizerMin = 0.5; will make sure that the two sounds are half a semitone apart.
+
+=== loop ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! loop
+| enum (0/1) or boolean
+| 0
+| defining looping of SoundSet, start/stop of loop is handled by gameplay event
+|}
+
+This is WIP, not sure how it works, will add information as soon as the feature becomes more prevalent.
+
+=== distanceFilter ===
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! distanceFilter
+| class name of filter or "none" if you don't want filter
+| defaultDistanceFilter
+| defines the filter used when listener distance to sound increases
+|}
+
+Distant sounds sound different compared to close sounds. Usually they become quieter (rangeCurve takes care of that) and they lose high frequency content.
+distanceFilter is defining how exactly the sound loses high frequency content. Open config.cpp in sounds.pbo and take a look at ''class cfgDistanceFilters'' to get a rough idea.
+
+If you want NO filter to be applied to your soundSet, use distanceFilter = "none";
+
+=== spatial ===
+
+If 1 the sound will be treated like a 3D sound. If 0 the sound will be played back locally "in the player's head" which would sound the same as if you played a sound in your MP3 player.
+
+=== sound3DProcessingType ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! sound3DProcessingType
+| class name of 3D processing type or ''none'' if you want the old config behaviour
+| defaultSound3DProcessingType
+| use '''emitter''' or '''panner'''? Class names defined in [[Arma_3_Sound:_cfgSound3DProcessors|'''cfgSound3DProcessors''']]
+|}
+Here you choose the 3D processing of the sound. You can use new systems explained in [[Arma_3_Sound:_cfgSound3DProcessors|cfgSound3DProcessors]] but if you want the engine to behave like in the old days and downmix stereo files to mono to position them in the 3D world, set sound3DProcessingType to ''"none"''.
+
+=== spatialityRange ===
+
+Default value 0.
+Distance in meters where signal starts "bleeding" into the opposite channel.
+It's X3DAudio's [https://msdn.microsoft.com/en-us/library/windows/desktop/microsoft.directx_sdk.x3daudio.x3daudio_emitter(v{{=}}vs.85).aspx '''innerRadius''' value and you can read more about it here].
+I don't know exactly how it works so I will explain it when I know more.
+
+=== spatialityRangeAngle ===
+
+Angle in Radians. It's X3DAudio's [https://msdn.microsoft.com/en-us/library/windows/desktop/microsoft.directx_sdk.x3daudio.x3daudio_emitter(v{{=}}vs.85).aspx '''innerRadiusAngle''' and you can read more about it here].
+
+=== doppler ===
+
+Decides whether [https://www.youtube.com/results?search_query{{=}}doppler+effect the doppler effect] will be applied to the SoundSet or not.
+
+=== speedOfSound ===
+
+Decides whether speed of sound calculation will be enabled for the SoundSet or not.
+
+
+{{GameCategory|arma3|Sound}}

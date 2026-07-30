@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/ctrlSetURLOverlayMode
+// revision: 376033 (2025-07-22T09:12:10Z)
+// export sha1: bep9xj2544468k13l6w8qax5qk53uqf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= GUI Control
+
+|descr= Sets how to handle opening of URL, default browser or Steam overlay. Possible values:
+* 0 - default browser
+* 1 - Steam overlay if enabled, otherwise default browser 
+* 2 - Steam overlay, shows error message box if disabled (the box has a button to continue with default browser)
+
+{{Feature|informative|Toggling Steam overlay in Steam options will require game restart for the changes to take effect.}}
+
+|s1= control [[ctrlSetURLOverlayMode]] mode
+
+|p1= control: [[Control]] - control that contain url opening action
+|p2= mode: [[Number]] - overlay mode, see description
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetURLOverlayMode 1;</sqf>
+
+|seealso= [[isSteamOverlayEnabled]] [[ctrlURLOverlayMode]] [[ctrlURL]] [[menuSetURL]]
+}}

@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_curatorObjectRegisteredTable
+// revision: 349171 (2023-11-08T14:50:37Z)
+// export sha1: k54wns5apluac47axh4uez49nldgikb
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Register curator object costs from a table.<br>
+A table can be exported into a spreadsheet using [[BIS_fnc_exportCuratorCostTable]] and used as argument for this function.
+
+|s1= [curatorLogic, [className, cost, className, cost...]] call [[BIS_fnc_curatorObjectRegisteredTable]]
+
+|p1= curatorLogic: [[Object]] - the curator logic to set the object costs for.
+
+|p2= className: [[String]] - the class name of the object you wish to assign a cost to. Any objects not listed in the array won't appear in the curator's unit list.
+
+|p3= cost: [[Number]] - the cost you wish to assign to the preceding object. The cost should be between 0 and 1, with 1 representing the entire resource bar of the curator.
+
+|r1= [[Boolean]]
+
+|x1= <sqf>// Nothing but the listed flare modules will show up in the curator's unit list
+[getAssignedCuratorLogic player, ["ModuleFlareWhite_F",0.02,"ModuleFlareYellow_F",0.02,"ModuleFlareGreen_F",0.02]] call BIS_fnc_curatorObjectRegisteredTable;</sqf>
+
+|seealso= [[BIS_fnc_exportCuratorCostTable]]
+
+|mp= Must be executed where the logic is local (on the machine of the player it is assigned to)
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-11-10 - 17:02 (UTC)</dd>
+<dt class="note">[[User:SilentSpike|SilentSpike]]</dt>
+<dd class="note">
+Be aware that you must provide an equal number of elements to the array of class names and costs.
+That mean every class name should be followed by an associated cost.
+You can add as many objects as you want as long as this condition is met.
+</dd>
+
+</dl>

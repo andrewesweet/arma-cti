@@ -1,0 +1,195 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Unusual_Process_Exit
+// revision: 376581 (2025-10-28T17:06:14Z)
+// export sha1: dvw7ym5xskbtw41a65y9pncpoako3a5
+// categories: Category:Arma 3: Troubleshooting | Category:Introduced with Arma 3 version 1.42
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:UnusualProcessExit.png|frame|A screenshot of an ''Unusual process exit'' message]]
+{{GVI|arma3|1.42}}
+
+An ''“Unusual process exit”'' message is displayed by [[Arma 3: Launcher]] whenever it detects that the game was not closed correctly.
+That may mean that the Operating System (OS) was unable to start the game or that the game has crashed.
+
+
+
+The exit code in the message is a number provided by the OS and it may be ambiguous. However, it still may provide a clue about what the issue is and how to solve it.
+
+{{Feature|informative|If you need to, you can copy the message by pressing {{Controls|Ctrl|C}} while it is displayed, and then paste it to the Feedback Tracker or another channel by pressing {{Controls|Ctrl|V}}.}}
+
+
+== Common Exit Codes ==
+
+Here’s a short list of common exit codes:
+
+=== 0x0000DEAD - (Unknown Software Exception) ===
+
+This code means the game crashed for a reason that could not be determined.
+
+==== the cloud file provider is not running ====
+This error usually comes from a Microsoft OneDrive issue. Here is a potential fix:
+* Create a {{hl|test}} directory on another drive than the C: drive
+* Start the {{Link|Arma 3: Launcher}}
+* Go to Parameters > All Parameters > Advanced > Profile folder
+* Tick Profile folder and select the created {{hl|test}} directory
+* Click on the Play button in Launcher and game should boot into main menu in default settings
+* Quit the game
+* Copy files from {{hl|C:\Users\<yourUsername>\OneDrive\Documents\Arma 3}} into {{hl|<otherDrive>:\test\Users\<gameProfileName>\}}
+* Click the Play button in the Launcher - the game should start with your settings and savegames
+
+If you do not use OneDrive, you can {{Link|https://support.microsoft.com/en-us/office/turn-off-disable-or-uninstall-onedrive-f32a17ce-3336-40fe-9c38-6efb09f944b0|uninstall it}} safely.
+
+=== 0xC0000022 - STATUS_ACCESS_DENIED ===
+
+This code means the OS doesn’t have access to some files required to run the game.
+Possible solution:
+* Run the game or Steam as administrator.
+
+=== 0xC0000135 - STATUS_DLL_NOT_FOUND ===
+
+The OS is unable to load a file that is required to run the game. A missing DLL may belong to the game, the OS or one of the required components (DirectX e.g.).
+Possible solutions:
+* Verify the integrity of the game cache using {{Link|https://help.steampowered.com/en/faqs/view/0C48-FCBD-DA71-93EB|Steam}}.
+* Re-install {{Link|https://support.microsoft.com/en-us/kb/179113|DirectX}}.
+* {{Link|#Reinstall Visual C++}}.
+* Run the {{Link|https://support.microsoft.com/en-us/kb/929833|Windows System File Check tool}} to repair corrupted system files.
+* To identify the precise DLL that is causing an issue.
+** Download a 64-bit version of the {{Link|http://www.dependencywalker.com/|Microsoft Dependency Walker}} and open {{hl|arma3_x64.exe}} with it. The libraries with a red icon are the corrupted ones.
+** Download a 32-bit version of the {{Link|http://www.dependencywalker.com/|Microsoft Dependency Walker}} and open {{hl|arma3.exe}} with it. The libraries with a red icon are the corrupted ones.
+
+=== 0x00000035 - ERROR_BAD_NETPATH === 
+
+One of the possible reasons for this message is running Steam as an administrator and starting Launcher as a regular user. If this situation occurs, Launcher may display a "Updates unavailable - Steam is not running" message in its status.
+
+Possible solutions:
+* Run the game from Steam client by clicking on the Play button (not from a shortcut nor directly from an executable).
+* Exit Steam and run as a regular user (instead of running it as an administrator).
+* Run the game or the Launcher from a shortcut or from an executable as an administrator.
+* Restart Steam.
+* Restart the computer.
+
+=== 0x406D1388 - MS_VC_EXCEPTION ===
+
+This error may be caused by a registry override (a hack) that forces Arma 3 to utilize Large-Page memory. This type of hack was previously used by Fred41’s custom allocator, but it may cause issues on some computers.
+Possible solution:
+In the Windows registry, locate the following key: {{hl|HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\arma3.exe}} and check the value of attribute {{hl|UseLargePages}}. If the value is {{hl|1}} then set it to {{hl|0}} or remove it entirely.
+
+=== 0xC0000005 - ACCESS_VIOLATION ===
+
+Can also be '''STATUS_ACCESS_VIOLATION'''.
+
+This error is very generic. It may be caused by many issues, such as a hardware malfunction, a virus in the computer, but also an error in the game itself.
+Possible solutions:
+* Try changing the [[Arma 3: Custom Memory Allocator|Memory Allocator]] you are using (default: "tbb4malloc_bi" - try "system" on Windows 7 and later)
+* Try joining another server, then rejoin the previous one.
+* Update the graphics card drivers to a newer version.
+* Rollback the graphics card drivers to an older version.
+* Check the temperature of your GPUs and CPUs.
+* Verify the integrity of the game cache using {{Link|https://help.steampowered.com/en/faqs/view/0C48-FCBD-DA71-93EB|Steam}}.
+* Re-install {{Link|https://support.microsoft.com/en-us/kb/179113|DirectX}}.
+* {{Link|#Reinstall Visual C++}}.
+* Run a {{Link|https://support.microsoft.com/en-us/kb/929833|Windows System File Check tool}} to repair corrupted system files.
+
+=== 0x00000001 – UNABLE_TO_INIT_DXGI ===
+
+The game is unable to initialize a graphical subsystem. One of possible reasons is ALT TABbing while the game is launching.
+Possible solutions:
+* Update the graphics card drivers to a newer version.
+* Rollback the graphics card drivers to an older version.
+* Check the temperature of your GPUs and CPUs.
+* Disable the Steam Overlay.
+
+=== 0xC000007B - STATUS_INVALID_IMAGE_FORMAT ===
+
+These errors are usually raised when some DLLs are corrupted or missing or when they are replaced with an incompatible version.
+It may also happen that you placed a DLL file in the game folder that is loaded instead of the genuine one.
+Possible solutions:
+* Verify the integrity of the game cache using {{Link|https://help.steampowered.com/en/faqs/view/0C48-FCBD-DA71-93EB|Steam}}.
+* Re-install {{Link|https://support.microsoft.com/en-us/kb/179113|DirectX}}.
+* {{Link|#Reinstall Visual C++}}.
+* Run the {{Link|https://support.microsoft.com/en-us/kb/929833|Windows System File Check tool}} to repair corrupted system files.
+* If you are using post-processing tools like {{Link|http://reshade.me/|Reshade}} or {{Link|http://reshade.me/|SweetFX}} or utilities like {{Link|http://www.radeonpro.info/|RadeonPro}} remove them.
+* Re-install the game; remove all files from the game installation folder and then verify the integrity of the game cache using Steam.
+* To identify the precise DLL that is causing an issue.
+** Download a 64-bit version of the {{Link|http://www.dependencywalker.com/|Microsoft Dependency Walker}} and open {{hl|arma3_x64.exe}} with it. The libraries with a red icon are the corrupted ones.
+** Download a 32-bit version of the {{Link|http://www.dependencywalker.com/|Microsoft Dependency Walker}} and open {{hl|arma3.exe}} with it. The libraries with a red icon are the corrupted ones.
+
+=== 0xC0000139 - STATUS_ENTRYPOINT_NOT_FOUND ===
+
+See {{Link|#0xC000007B - STATUS_INVALID_IMAGE_FORMAT}}
+
+=== 0xC000007A - STATUS_PROCEDURE_NOT_FOUND ===
+
+See {{Link|#0xC000007B - STATUS_INVALID_IMAGE_FORMAT}}
+
+=== 0xC000012F - STATUS_INVALID_IMAGE_NOT_MZ ===
+
+These errors are raised when the EXE or DLLs, either in the game folder or in the system folders, are corrupted.
+Possible solutions:
+* Verify the integrity of the game cache using {{Link|https://help.steampowered.com/en/faqs/view/0C48-FCBD-DA71-93EB|Steam}}.
+* Re-install {{Link|https://support.microsoft.com/en-us/kb/179113|DirectX}}.
+* {{Link|#Reinstall Visual C++}}.
+* Run the {{Link|https://support.microsoft.com/en-us/kb/929833|Windows System File Check tool}} to repair corrupted system files.
+* To identify the precise DLL that is causing an issue.
+** Download a 64-bit version of the {{Link|http://www.dependencywalker.com/|Microsoft Dependency Walker}} and open {{hl|arma3_x64.exe}} with it. The libraries with a red icon are the corrupted ones.
+** Download a 32-bit version of the {{Link|http://www.dependencywalker.com/|Microsoft Dependency Walker}} and open {{hl|arma3.exe}} with it. The libraries with a red icon are the corrupted ones.
+
+=== 0xCFFFFFFF - APPLICATION_HUNG ===
+
+The application became unresponsive and was terminated by the OS.
+
+=== 0xC000009A - STATUS_INSUFFICIENT_RESOURCES ===
+
+This error may occur when you have an obsolete version of the {{Link|http://www.battleye.com/|BattlEye}} anti-cheat software or after an upgrade to Windows 10.
+
+Possible solution:
+* Read a section dedicated to this error on {{Link|http://www.battleye.com/support/faq/|BattlEye FAQ}} page.
+* Update the BattlEye anti-cheat software or contact {{Link|http://www.battleye.com/support/|BattlEye support}}.
+* If you encountered this problem after the upgrade to Windows 10, some system or shared files might get lost in the upgrade.
+** Re-install {{Link|https://support.microsoft.com/en-us/kb/179113|DirectX}}.
+** {{Link|#Reinstall Visual C++}}.
+
+=== 0xC06D007E - ERROR_MOD_NOT_FOUND ===
+
+The specified module could not be found in loaded dynamic library.
+The reason that the DLL could not be loaded is most often that it needs to load other DLLs it depends on to do its work.
+{{Feature|informative|This error has nothing to do with game mods, MOD in this case means module.}}
+
+Possible solutions:
+* Upgrade your '''Intel Graphics Driver''': {{Link|https://downloadcenter.intel.com/}} or '''NVidia Drivers''' (an issue in the older versions the driver was identified as a root cause for this error in Arma 3 1.68).
+* Verify the integrity of the game cache using {{Link|https://help.steampowered.com/en/faqs/view/0C48-FCBD-DA71-93EB|Steam}}.
+* Re-install {{Link|https://support.microsoft.com/en-us/kb/179113|DirectX}}.
+* {{Link|#Reinstall Visual C++}}
+* Run the {{Link|https://support.microsoft.com/en-us/kb/929833|Windows System File Check tool}} to repair corrupted system files.
+* Dependency Walker might give an insight, but unfortunately this issue mostly happens for libraries that are loaded dynamically, so they are not visible in Dependency Walker.
+
+=== 0xC000041D - STATUS_FATAL_USER_CALLBACK_EXCEPTION ===
+
+There are multiple reasons for this error:
+* 3rd party programs interfering with the game and failing, crashing the game in the process.
+* See {{Link|#0xC06D007E - ERROR_MOD_NOT_FOUND}}.
+
+Possible solutions:
+* Close all unnecessary applications.
+* Un-install 3rd party applications that could interfere with the game (performance boosters, streaming apps, FPS indicators, overlays, graphics enhancers) or disable them.
+
+
+== Report the error to the Feedback Tracker == 
+
+If you encounter an error that you cannot solve by yourself, please report it to our {{Link|http://feedback.arma3.com/|Feedback Tracker}}, or contact our {{Link|http://support.bistudio.com/|support team}}.
+Together with the error code, please attach an error report. See {{Link|https://feedback.bistudio.com/w/ft_a3_howto/gamecrash/|this guide}} for more information on how to do so.
+
+
+== Troubleshooting Steps ==
+
+=== Reinstall Visual C++ ===
+
+* Uninstall '''Visual C++ 2022 Redistributable''' package (both '''x86''' and '''x64''' version)
+* Restart the computer
+* Install the package again:
+** {{Link|https://aka.ms/vs/17/release/vc_redist.x86.exe|32bits}} x86 version (for Windows 32 and 64 bits)
+** {{Link|https://aka.ms/vs/17/release/vc_redist.x64.exe|64bits}} x64 version (for Windows 64 bits only)
+{{Feature|important|Do '''not''' use the Repair function.}}
+
+
+[[Category:Introduced with Arma 3 version 1.42]]
+{{GameCategory|arma3|Troubleshooting}}

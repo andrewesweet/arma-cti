@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Roads_and_Airports
+// revision: 161861 (2020-09-25T08:25:02Z)
+// export sha1: idjpv929uro5qc9oeyo7hjcy12hbwyg
+// Vendored snapshot. Do not edit — re-export instead.
+
+All commands related to roads and airports.
+
+[[Category:Scripting Commands by Functionality]]

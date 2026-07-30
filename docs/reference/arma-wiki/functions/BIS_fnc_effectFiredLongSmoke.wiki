@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_effectFiredLongSmoke
+// revision: 281344 (2021-06-14T09:08:48Z)
+// export sha1: 6n5ls4br2a4rl5emmvh7nmql36admop
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Broken Functions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Broken Functions
+
+|descr= This function does nothing.
+
+|s1= [] call [[BIS_fnc_effectFiredLongSmoke]]
+
+|r1= [[Nothing]]
+
+|x1= -
+
+|seealso= -
+}}

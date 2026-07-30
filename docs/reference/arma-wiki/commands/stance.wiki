@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/stance
+// revision: 363221 (2024-03-25T22:48:35Z)
+// export sha1: rl6pgyfbwkpb1q169zrcsrva0ffj78a
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|gr1= Unit Control
+
+|descr= Returns the stance of the given unit.
+
+|s1= [[stance]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[String]] - can be:
+* {{hl|"STAND"}}
+* {{hl|"CROUCH"}}
+* {{hl|"PRONE"}}
+* {{hl|"UNDEFINED"}} (for example, swimming)
+* {{hl|""}} (on non-person [[Object|object]])
+
+|x1= <sqf>if (stance player == "STAND") then { hint "I am standing!" };</sqf>
+
+|seealso= [[animationState]] [[unitPos]] [[pose]] [[getLeaning]]
+}}

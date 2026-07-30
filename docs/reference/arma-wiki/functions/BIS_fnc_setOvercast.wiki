@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setOvercast
+// revision: 323950 (2022-07-01T11:58:29Z)
+// export sha1: ox3ms3dpaphnnkff2g1vp0ak9n297a3
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Environment | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Environment
+
+|descr= Instantly set weather conditions and share it across network. Must be executed in [[Scheduler#Scheduled_Environment|scheduled environment]].
+
+|s1= [value] call [[BIS_fnc_setOvercast]]
+
+|p1= value: [[Number]] - value ranging from 0 (sunny) to 1 (stormy).
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[0.5] call BIS_fnc_setOvercast;</sqf>
+
+|seealso= [[setOvercast]] [[overcast]]
+}}

@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgRecoils
+// revision: 373111 (2025-03-31T10:33:27Z)
+// export sha1: gq2b4a1sxgp8e2kse8ixzn4udmdz68r
+// categories: Category:Arma 3: Weapon & Magazine Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|none}}
+{{Feature|informative|For earlier recoil versions, see {{Link|ArmA: Armed Assault: CfgRecoils}}.}}
+
+
+== Samples ==
+
+=== Recoil ===
+
+* Parameter ''muzzleOuter'' defines the possible area where the recoil would like to move the weapon's muzzle randomly at each shot. It is defined as ellipse with variables defining the (x = horizontal axis position, y = vertical axis position, a = horizontal magnitude, b = vertical magnitude); or, translated to the weapon's recoil movement behavior (how far to the right, how high up, how much horizontal deviation, how much vertical deviation).
+* Parameter ''kickBack'' defines the minimum and maximum of random interval for backward force applied over the arms and torso for each fired shot.
+* Remaining parameters define how much of the random muzzle displacement within the defined ellipse space is ''permanent'' (causing muzzle rise you should compensate for) and how much is ''temporary'' (causing temporal weapon rise up and down, thus causing the weapon to shake in your hands).
+
+Camera shakes are derived from the overall magnitude of each recoil impulse forces.
+
+<syntaxhighlight lang="cpp">
+class CfgRecoils
+{
+	class my_awesome_recoil
+	{
+		muzzleOuter[]	= { 0.3, 1.0, 0.3, 0.2 }; // x, y, a, b
+		kickBack[]	= { 0.03, 0.06 };
+		permanent	= 0.1;
+		temporary	= 0.01;
+	};
+};
+</syntaxhighlight>
+
+=== Weapon ===
+
+<syntaxhighlight lang="cpp">
+class CfgWeapons
+{
+	class MyRifle
+	{
+		recoil = "my_awesome_recoil";
+	};
+};
+</syntaxhighlight>
+
+=== Config ===
+
+<syntaxhighlight lang="cpp">
+class CfgWeaponHandling
+{
+	class Recoil
+	{
+		kickVisual	= 0.3;	// multiplier for extra camera-only movement for weapon kickback
+		impulseCoef	= 1;	// common coefficient for weapon-based recoil configuration values, increase to make all recoils stronger, decrease to make them all weaker
+		prone		= 1.25;	// coefficient of recoil forces while in prone (this is further multiplied by weapon resting coefficients)
+	};
+};
+</syntaxhighlight>
+
+'''Basic suggestions'''
+* would you like your weapon to kick more to the right? Increase Horizontal Axis Position value of ''muzzleOuter''.
+* would you like your weapon to kick more upwards? Increase Vertical Axis Position value of ''muzzleOuter''.
+* would you like your weapon to jump left and right more randomly? Increase Horizontal Magnitude value of ''muzzleOuter''.
+* would you like your weapon to jump up and down more randomly? Increase Vertical Magnitude value of ''muzzleOuter''.
+* would you like your weapon to climb up more? Increase ''permanent''.
+* would you like your weapon to shake more in your hands? Increase ''temporary''.
+* would you like your weapon to kick back more? Increase ''kickBack''.
+* and vice versa.
+
+
+{{GameCategory|arma3|Weapon & Magazine Configuration}}

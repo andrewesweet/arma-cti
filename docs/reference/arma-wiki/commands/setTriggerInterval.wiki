@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/setTriggerInterval
+// revision: 353312 (2024-03-15T17:11:45Z)
+// export sha1: 5k7lx08jva2s83ek4tfnbdhjlylxsjg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Arma 3 version 1.98 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.98
+
+|arg= global
+|eff= local
+
+|gr1= Triggers
+
+|descr= Sets the interval in seconds for trigger condition check.<br><br>
+
+{{Feature|informative|Triggers are configured to check condition approx. every 0.5 second by default. This command allows either to slow down or to speed up default check interval per trigger. Setting interval to 0 will make the trigger check its condition every frame. However, when trigger is attached to some object, the trigger will inherit the simulation frequency of the object it is [[attachedTo | attached to]]. This command cannot change the interval of the attached trigger. The trigger can also be "frozen" with [[enableSimulation]] command.}}
+
+|s1= trigger [[setTriggerInterval]] interval
+
+|p1= trigger: [[Object]] - trigger object
+|p2= interval: [[Number]] - interval in seconds with which trigger condition is checked
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_trigger setTriggerInterval 5;</sqf>
+|mp= Interval changes are local.
+
+|seealso= [[triggerInterval]] [[triggerActivation]] [[triggerActivated]] [[createTrigger]] [[setTriggerActivation]] [[setTriggerArea]] [[setTriggerStatements]] [[setTriggerText]] [[setTriggerTimeout]] [[setTriggerType]] [[triggerAttachVehicle]] [[triggerAttachObject]] [[enableSimulation]] [[simulationEnabled]]
+}}

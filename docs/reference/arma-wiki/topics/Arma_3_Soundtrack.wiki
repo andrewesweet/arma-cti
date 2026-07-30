@@ -1,0 +1,359 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Soundtrack
+// revision: 377233 (2026-01-02T03:06:40Z)
+// export sha1: ndpreln6aaualbnidafp2pr6po1kg2o
+// categories: Category:Arma 3
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+Owners of '''Digital Deluxe''', '''Extended''' and '''Supporter Edition''' of the game have all tracks accessible as MP3 files in the '''Bonus folder'''
+(by default ''C:\Program Files (x86)\Steam\SteamApps\common\Arma 3\Bonus''). See also {{Link|Arma 3: Getting Started#Editions}} for a description of the currently-available editions.
+
+{{Feature|informative|If you are looking for in-game music config, see [[Arma 3: CfgMusic]].}}
+
+
+== {{arma3}} ==
+
+{| class="wikitable sortable align-center-col-1 align-center-col-3" width="100%"
+! width="5%" | No.
+! width="55%" | Title
+! width="10%" | Length
+! width="30%" | Author
+
+|-
+| 1
+| This is War (Main Theme)
+| 2:42
+| Jan Dušek
+
+|-
+| 2
+| Combined Arms
+| 1:37
+| Jan Dušek
+
+|-
+| 3
+| Assault at Dusk
+| 2:30
+| Ondřej Matějka
+
+|-
+| 4
+| The East Wind
+| 3:09
+| Jan Dušek
+
+|-
+| 5
+| Survive
+| 2:18
+| Jan Dušek
+
+|-
+| 6
+| Rebreather
+| 1:37
+| Ondřej Matějka
+|}
+
+
+== {{arma3}} - Survive ==
+
+{| class="wikitable sortable align-center-col-1 align-center-col-3" width="100%"
+! width="5%" | No.
+! width="55%" | Title
+! width="10%" | Length
+! width="30%" | Author
+
+|-
+| 1
+| Conquistador
+| 1:36
+| Ondřej Matějka
+
+|-
+| 2
+| Proteus
+| 1:34
+| Ondřej Matějka
+
+|-
+| 3
+| Aegis Blues
+| 1:56
+| Ondřej Matějka
+
+|-
+| 4
+| Fragmented
+| 1:00
+| Ondřej Matějka
+
+|-
+| 5
+| Horizon Scan
+| 1:01
+| Ondřej Matějka
+
+|-
+| 6
+| On The Road
+| 1:54
+| Ondřej Matějka
+
+|-
+| 7
+| Tactics
+| 2:40
+| Nathan McCree
+|}
+
+
+== {{arma3}} - Adapt ==
+
+{| class="wikitable sortable align-center-col-1 align-center-col-3" width="100%"
+! width="5%" | No.
+! width="55%" | Title
+! width="10%" | Length
+! width="30%" | Author
+
+|-
+| 1
+| Adapt
+| 2:15
+| Jan Dušek
+
+|-
+| 2
+| Resist
+| 0:33
+| Jan Dušek
+
+|-
+| 3
+| Exit Strategy
+| 2:59
+| Jan Dušek
+
+|-
+| 4
+| Recon
+| 0:26
+| Jan Dušek
+
+|-
+| 5
+| Beyond Recognition
+| 2:17
+| Jan Dušek
+
+|-
+| 6
+| Radio Silence
+| 0:44
+| Jan Dušek
+
+|-
+| 7
+| Canton Protocol
+| 2:12
+| Jan Dušek
+
+|-
+| 8
+| Signal Lost
+| 2:48
+| Jan Dušek
+
+|-
+| 9
+| Ambush
+| 0:37
+| Jan Dušek
+|}
+
+
+== {{arma3}} - Win ==
+
+{| class="wikitable sortable align-center-col-1 align-center-col-3" width="100%"
+! width="5%" | No.
+! width="55%" | Title
+! width="10%" | Length
+! width="30%" | Author
+
+|-
+| 1
+| Revenge
+| 1:26
+| Ondřej Matějka
+
+|-
+| 2
+| Just Another Day
+| 1:37
+| Jan Dušek
+
+|-
+| 3
+| The Trap
+| 2:26
+| Ondřej Matějka
+
+|-
+| 4
+| LZ Hot
+| 1:36
+| Jan Dušek
+
+|-
+| 5
+| Alone
+| 1:36
+| Ondřej Matějka
+
+|-
+| 6
+| Broken Barricade
+| 0:47
+| Jan Dušek
+
+|-
+| 7
+| Back On Stratis
+| 1:33
+| Ondřej Matějka
+
+|-
+| 8
+| In The Open
+| 2:08
+| Jan Dušek
+
+|-
+| 9
+| Farawell Altis
+| 0:38
+| Ondřej Matějka
+
+|-
+| 10
+| Assembly
+| 1:19
+| Jan Dušek
+
+|-
+| 11
+| Unforeseen Perdition
+| 1:27
+| Ondřej Matějka
+
+|-
+| 12
+| Win
+| 2:11
+| Jan Dušek
+
+|-
+| 13
+| Altis Requiem
+| 2:28
+| Jan Dušek
+|}
+
+
+== {{arma3}} - Zeus ==
+
+{| class="wikitable sortable align-center-col-1 align-center-col-3" width="100%"
+! width="5%" | No.
+! width="55%" | Title
+! width="10%" | Length
+! width="30%" | Author
+
+|-
+| 1
+| Lightning
+| 2:58
+| Jan Dušek
+
+|-
+| 2
+| Thunder
+| 1:28
+| Jan Dušek
+|}
+
+
+== {{arma3}} - Bootcamp ==
+
+{| class="wikitable sortable align-center-col-1 align-center-col-3" width="100%"
+! width="5%" | No.
+! width="55%" | Title
+! width="10%" | Length
+! width="30%" | Author
+
+|-
+| 1
+| This is War (VR Remix)
+| 2:44
+| Jan Dušek
+
+|-
+| 2
+| Evolution
+| 4:02
+| Jan Dušek
+
+|-
+| 3
+| Epic Split
+| 1:01
+| Jan Dušek
+|}
+
+
+== {{arma3}} - Helicopters ==
+
+{| class="wikitable sortable align-center-col-1 align-center-col-3" width="100%"
+! width="5%" | No.
+! width="55%" | Title
+! width="10%" | Length
+! width="30%" | Author
+
+|-
+| 1
+| This is War (Heli Remix)
+| 2:05
+| Jan Dušek
+|}
+
+
+== {{arma3}} - Marksmen ==
+
+{| class="wikitable sortable align-center-col-1 align-center-col-3" width="100%"
+! width="5%" | No.
+! width="55%" | Title
+! width="10%" | Length
+! width="30%" | Author
+
+|-
+| 1
+| This is War (Marksmen Remix)
+| 2:36
+| Jan Dušek, Andrej Sinkevič, Grigorij Tolkačev
+
+|-
+| 2
+| Into The Sun
+| 2:51
+| {{Link|https://www.denoi.cz/en/home/|Denoi}}
+
+|-
+| 3
+| Marksmen
+| 2:10
+| Jan Dušek
+|}
+
+
+{{GameCategory|arma3}}

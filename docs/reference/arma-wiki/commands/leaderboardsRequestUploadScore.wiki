@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/leaderboardsRequestUploadScore
+// revision: 351313 (2023-11-27T04:56:07Z)
+// export sha1: 0trzyno9nz7hdbltp4goprdde7atq8z
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Leaderboards | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Leaderboards
+
+|descr= Starts async. operation to upload score to board with given name, value always overwrite the current value in the board. The board has to be initialized before the call.
+
+|s1= [[leaderboardsRequestUploadScore]] [boardName, score, details]
+
+|p1= boardName: [[String]]
+
+|p2= score: [[Number]]
+
+|p3= details: [[Array]] - (Optional)
+
+|r1= [[Boolean]]
+
+|x1= <sqf>leaderboardsRequestUploadScore ["TT01", 1234, [5,6,7,8]];</sqf>
+
+|seealso= [[leaderboardRequestRowsGlobal]]
+}}

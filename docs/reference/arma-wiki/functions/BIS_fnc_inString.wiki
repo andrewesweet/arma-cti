@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_inString
+// revision: 376478 (2025-10-18T18:39:39Z)
+// export sha1: blwcldybgptnpvxaeulbfef8k0hic6d
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strings | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strings
+
+|descr= {{Feature|obsolete|See [[find]] and [[in]] commands's alternative syntaxes that replace this function.}}
+Find a string within a string.
+
+|s1= [searchTerm, searchText, caseSensitive] call [[BIS_fnc_inString]] 
+
+|p1= searchTerm: [[String]] - string to find
+
+|p2= searchText: [[String]] - string to search in
+
+|p3= caseSensitive (optional): [[Boolean]] - defines whether the search is case-sensitive (true) or not (false, by default)
+
+|r1= [[Boolean]] - true if search term is found, false if not
+
+|x1= <sqf>["rabbit", "I ate a rabbit today"] call BIS_fnc_inString // will return true</sqf>
+
+|x2= <sqf>["RaBbiT", "I ate a rabbit today"] call BIS_fnc_inString // will return true</sqf>
+
+|x3= <sqf>["RaBbiT", "I ate a rabbit today", true] call BIS_fnc_inString // will return false because of case sensitivity</sqf>
+
+|seealso= [[find]] [[BIS_fnc_filterString]] [[splitString]] [[joinString]]
+}}

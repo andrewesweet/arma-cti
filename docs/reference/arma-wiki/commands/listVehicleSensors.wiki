@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/listVehicleSensors
+// revision: 363161 (2024-03-24T17:31:12Z)
+// export sha1: hvo6kwzpcn8drwuipg7nem42of6t6g0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sensors | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+|game1= arma3
+|version1= 1.72
+
+|gr1= Sensors
+
+|descr= Returns an array of the sensors in the given vehicle's config (configFile >> "CfgVehicles" >> ''vehicle'' >> "Components" >> "SensorsManagerComponent" >> "Components").
+
+|s1= [[listVehicleSensors]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Array]] of [[Array]]s of [[String]]s format [className, componentType] (use ''className'' for [[enableVehicleSensor]] / [[isVehicleSensorEnabled]])
+
+|x1= <sqf>
+private _sensors = listVehicleSensors _v44blackfish;
+hint str _sensors;
+/*
+	e.g for a V44 Blackfish:
+	[
+		["IRSensorComponent", "IRSensorComponent"],
+		["VisualSensorComponent", "VisualSensorComponent"],
+		["ActiveRadarSensorComponent", "ActiveRadarSensorComponent"],
+		["PassiveRadarSensorComponent", "PassiveRadarSensorComponent"],
+		["LaserSensorComponent", "LaserSensorComponent"],
+		["NVSensorComponent", "NVSensorComponent"]
+	]
+*/
+</sqf>
+
+|seealso= [[listRemoteTargets]] [[enableVehicleSensor]] [[isVehicleRadarOn]] [[isVehicleSensorEnabled]]
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Ylands:_Updates
+// revision: 343684 (2023-07-09T18:31:30Z)
+// export sha1: cnc8gujli534s02ah9u072vwnp7mlrb
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|ylands}}

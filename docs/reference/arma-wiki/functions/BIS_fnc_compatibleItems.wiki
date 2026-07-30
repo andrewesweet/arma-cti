@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_compatibleItems
+// revision: 349367 (2023-11-08T15:35:11Z)
+// export sha1: 4qb8ngvb01dnwc6sjrdh77p1mabvcsd
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= Inventory
+
+|descr= {{Feature|obsolete|Use [[compatibleItems]] instead.}} Return all compatible weapon attachments.
+
+|s1= weapon call [[BIS_fnc_compatibleItems]]
+
+|p1= weapon: [[String]] - weapon class
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>(currentWeapon player) call BIS_fnc_compatibleItems;</sqf>
+
+|seealso= [[compatibleItems]] [[currentWeapon]] [[BIS_fnc_limitWeaponItems]] [[BIS_fnc_baseWeapon]]
+}}

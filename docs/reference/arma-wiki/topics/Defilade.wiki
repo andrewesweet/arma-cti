@@ -1,0 +1,107 @@
+// source: https://community.bistudio.com/wiki/Defilade
+// revision: 338096 (2023-02-23T23:28:58Z)
+// export sha1: lcbfx5tcvdaf9xavzt1ry9xz6wftxl6
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Defilade occurs when natural terrain or artificial objects prevent fire being placed on a position or unit.
+
+=== Origin ===
+From the french défiler - to scroll.
+
+== Explanation ==
+In its most basic form defilade is cover. [[Arma 2: Hints and Tips#The difference between cover and concealment|Cover is not the same as concealment.]]
+
+=== Basic Forms ===
+The type of cover that defilade can give falls into two basic forms: 
+* Direct fire defilade. 
+* Situational defilade. 
+
+'''Direct fire defilade''' is cover that intervenes between the shooter and target, such as thick walls and sandbags. So this type of defilade includes entrenchments, crests of hills and urban environments, though awareness that structures may not stop rounds, especially those of larger calibre from penetrating through said structures is important; wooden houses are not very good at stopping supersonic bullets and large calibre bullets will even pass through brick and block structures.<br>
+ 
+'''Situational defilade''' is cover that prevents the shooter's weapon from coming to bare on the target. This often occurs with Armored Fighting Vehicles (AFV) and Crew Served Weapons (CSW) when the AFV or CSW is on flat ground with a slope in its direction of fire that is steeper than the weapons ability to depress. Another case is in urban situations or narrow country lanes or the killing zone of an entrenchment where the AFV is prevented by obstructions from traversing its main gun; an example of this is the film "Kelly's Heroes" where Oddball catches a Tiger tank from the rear accidentally fires a paint shell but the Tiger tank is unable to traverse its main gun due to a tree on one side and a house on the other. Situational defilade can also occur with AFV's in particular when moving down a steep hill and the main gun cannot elevate far enough to target an enemy far out on a plane or on high ground, or when in dense urban environments with high buildings close to the AFV.<br>
+
+In certain circumstances situational defilade also occurs with infantry; where for instance the soldier them selves in defilade must expose them selves to heavy fire to depress their weapon far enough to hit a target close to their entrenchment, moving from say kneeling behind a wall to standing behind it.
+
+=== Defilade's circumstantial nature ===
+In reality all defilade has a circumstantial element to it; that is to say you may be in defilade from one direction but not from another, or from one type of fire but not another. This circumstantial element to defilade means both that there is always a solution to the shooter getting fire on target, and that there are methods of: fire, time and maneuver elements to the property of defilade.
+
+=== The concept of dead ground ===
+As has been mentioned defilade has: direct fire, situational and circumstantial elements to it. It is the job of all players on a side to mark dead ground positions both for the purpose of defense and attack. This involves looking at the map and looking at the contours of the battle ground. Dead ground allows assault forces to close with the enemy through cover. Defenders must guard, over-watch and patrol important dead ground. Dead ground is often the primary avenue of approach to a defensive position.
+
+== Defilade and Armor ==
+
+For the AFV, defilade often means hull-down and turret-down positions. That is to say positions where the AFV is protected by placing the vehicle in a natural or man made depression such that either only the turret or the commanders periscope are visible to the shooter.
+
+Armor on a forward slope or flat ground in a depression or entrenchment can be very powerful and hard to kill.
+
+=== Circumstances that defeat a hull down AFV ===
+The biggest problem of a hull down position is that the AFV has sacrificed its mobility. It has become a not very effective half blind, cannon with some Mg's on top. Lack of situational awareness is a key weakness of all AFV; removing mobility can both reduce and improve this. While mobile, vision is decreased by vibration and sudden changes in viewpoint. While an AFV is moving it is easy to loose sight of targets and objects previously seen and experience tunnel vision, sitting still negates many of these. While the engine is off the sense of hearing improves.  
+
+A hull down AFV is a powerful position but when on a forward slope on on the crest of ridge, it often has a blind spot of dead ground down slope of it and close up. In such circumstances the commanders and loaders MG with their greater ability to depress their barrel become very important. 
+
+A secondary problem of a forward slope entrenchment or depression is that: in order to obtain an ability to depress the main armament down a slope, that a tank may maneuver to tip the tank forward; thus the top of the turret and the top of the rear engine compartment can become visible to those far enough away on a plane or on high ground to the front of the forward slope.
+
+=== Fire and maneuver in a prepared position ===
+As with infantry, firing from the same spot attracts answering fire. Because of the circumstantial nature of Defilade, eventually the answering fire will concentrate and come to a terminal solution of your defilade position. The answer to this for the infantry; is to move from one defilade spot to another, perhaps rotating around several; so that the enemy fire cannot concentrate and achieve a solution to the defilade position, before the subject moves. The same can apply to AFVs. Modern AFV tactics, describe having several prepared positions, from which an AFV can provide inter locking fields of fire across each position. If one becomes suppressed the AFV can move to another with defilade from that answering fire position, ideally this allows fire on the position you were just fired upon from along with defilade from it. Essentially this is a trench system for an AFV and goes some way to answering the loss of mobility a hull down positions entails.
+
+== Reverse Slope Defense (RSD) ==
+A very special and important form of defilade is the reverse slope defence. It is used in several ways.
+
+=== 1) Hull Down for Infantry ===
+The concept of Hull Down applies to infantry as much as Armor.
+
+'''Do not crawl''' to the crest edge of an RSD, this defeats the cover of the crest; as you end up exposing a bigger chunk of your body to enemy fire. Instead you stand up or kneel and edge to the crest until just your head and gun are exposed. When you receive fire you duck to a crawl change position and stand up or kneel again; this keeps the mass of the hill crest between you and the enemy.
+
+=== 2) Surprise Effect ===
+The second method of using an RSD is to use it as a method of concealment and surprise. Of course there is nothing to stop you using both in combination.
+
+=== Conducting a Reverse Slope Defence ===
+A good Reverse Slope Defense  entails many elements:
+* Choice of ground
+* Identifying sectors and terrain features.
+* Defending the dead ground of the forward slope.
+* Protecting the open flanks.
+* Withdrawal plan.
+
+==== Choosing the ground ====
+In choosing the ground the commander should look for:
+* a bare crest.
+* easy escape routes.
+* Observation Posts (OP) from which the forward slope may observed
+The ground of the reverse slope can be further enhanced by entrenchments and strong points. Mg's should be placed at the flanks of the reverse slope so that traverse of the whole slope is kept to as small an angle as possible. As such these flank Mg's need protection to their front. ideally each flank MG should protect its opposite number. This takes good communication experience and trust. The temptation for the flank MG is to protect them self but that needs a 90 degree traverse. It is better if its opposite number defends it. Arcs of fire need to be observed and set out to reduce the risk of blue on blue. Direct fire Defilade with an entrenchment is of great use here.
+
+==== Identifying sectors and terrain features ====
+To defend the reverse slope and control the dead ground of the forward slope the commander should mark zones of the forward slope on the map. Each zone should be assigned to specific troops to a flank of that zone. The reason for defending each zone from the flank is that fire into the flanks of enemy is more effective, and the enemy is usually looking mainly to the front, that is also where their weapon is pointing. The exception to this rule is the belly of an AFV as it crests the ridge. A reverse slope defense is in some way a form of Ambush. Employing surprise and requiring that the enemy be held in the kill-zone. The kill-zone of the reverse slope is the crest of the hill. 
+
+The cover of the crest provides concealment and the force cresting the hill does not know where its opponent is, at the moment of cresting the ridge the attacking force is silhouetted against the back ground; hence the importance of choosing crossing points such as trees and bushes for hill crests and the importance of the defender preventing the enemy from using them. Such concealed or covered crest points are good spots for command line explosives.
+
+==== Defending the dead ground of the forward slope ====
+If time allows troops should place mines, entanglements, and tank traps along with command line explosives so as to channel the enemy into marked zones. The forward slope OP should look to warn the defenders what zone the enemy is assaulting, thus increasing the defenders situational awareness. Flanking fire across a revers slope from another defilade position is a good way defending the forward slope. Indirect fire methods are also effective. From preplanned and ideally preregistered artillery, mortars and automatic grenade launchers to the simple method throwing grenades over the ridge.
+
+===== Methods of securing the flank =====
+The open flank is standard problem for all forces at all times the best solution is not to have one! A flank can be secured by inaccessible terrain such as steep slopes, open ground with no cover, fresh water lakes and rivers, and the sea, though there is always the possibility of water born forces on such a flank, it also suffers from the open ground with no cover effect.
+
+Flanks can also be secured with obstacles mines command line explosives and interlocking fields of fire from other nearby units.
+
+The key method of defending a flank is placing troops to refuse that flank. Ideally this line of troops and entrenchments should be long enough to create a new front that the attacking force must overwhelm. The reserve may have to be employed to defend against a flanking maneuver by the attacker.
+ 
+==== Withdrawal plan ====
+Any fool of commander can get them self into a fight, the real question is can they get out of it? The first plan a commander must make is how do I get out of this? A reserve is key both to help firefight the defense, also the employment of the reserve is key indicator of the need to enact the withdrawal plan. The withdrawal is a [[Break Contact]] maneuver.
+
+==== 3) The concealed counter attack ====
+The third use of a reverse slope is in a concealed counter attack. This again makes use of the surprise effect of the RSD. In this case you may place a baiting force ideally on the forward slope but perhaps defending the crest in small numbers, another option is to drag a tail over the crest in the form of a retreating unit. With the enemy in pursuit you then have several options:.<br>
+i) Once the enemy crests the hill you conduct a normal RSD as in 2) above.<br>
+ii) If you are a very superior force you crest the hill in an overwhelming counter attack.<br>
+iii) You combine both i) and ii).<br>
+
+This method was famously employed by Wellington in the Napoleonic Wars
+{{Link|https://en.wikipedia.org/wiki/Reverse_slope_defence#Napoleonic_Wars|Wellington's use of Reverse Slope Defense}}<br> 
+most memorably at the battle of Waterloo causing {{Link|https://en.wikipedia.org/wiki/Battle_of_Waterloo#Attack_of_the_Imperial_Guard|The Retreat of Napoleon's Imperial Guard}}
+
+=== Threats and solutions to a Reverse Slope Defence ===
+A RSD may only have defilade for as long as it takes the enemy to flank it or call in indirect or plunging fire on the position. Stealthy observation is a key method of defeating a RSD.
+
+
+[[Category:Battle Tactics]]

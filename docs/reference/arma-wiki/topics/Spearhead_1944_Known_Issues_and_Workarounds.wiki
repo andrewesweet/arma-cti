@@ -1,0 +1,119 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Known_Issues_and_Workarounds
+// revision: 370198 (2024-11-06T13:02:21Z)
+// export sha1: 97nekugzhbufchwgn7t00ogz8ers0wr
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Vehicle class SPE_Module_Indirect_Fire_Support no longer exists ==
+
+Unfortunately an unintentional class name change slipped into 1.0.1 hotfix - please excuse the mishap!
+
+{{Feature|informative|We will revert the class name change in the next update, but will retain these temporary test classes for backwards compatibility.
+In simple terms - no change from your end needed with the next update!}}
+
+Simple solution:
+
+# Load the mission in Eden
+# Force load despite the missing class
+# Place the module again and configure it as desired
+
+Advanced solution:
+
+# Locate your mission folder
+# '''Make a backup of your mission (copy the folder to another location)'''
+# Open the mission.sqm in a text editor - best with a good one like Notepad++ or similar
+# Search for below terms and replace them (one by one or mass replacement)
+	SPE_Module_AI_Systems => SPE_Module_AI_Systems_Hotfix
+	SPE_Module_Indirect_Fire_Support => SPE_Module_Indirect_Fire_Support_Hotfix
+# Save the mission.sqm file
+# Export your mission again/upload to workshop
+
+
+== Vehicle class SPE_Module_AI_Systems no longer exists ==
+
+See one above.
+
+
+== IFS module is not fully working ==
+
+Add the following code in the {{Link|Event Scripts#init.sqf|init.sqf}}
+
+<sqf>
+0 spawn
+{
+	// Wait for other initializations
+	sleep 15;
+
+	// Fix for clients not initializing scripts
+	if (!isServer) then { [] call SPE_MissionUtilityFunctions_fnc_IFS_Init };
+
+	// Fix for null variable on clients
+	if (isServer) then { publicVariable "SPE_IFS_availableCalls" };
+
+	// Fix for AI not utilizing supports
+	if (isServer) then
+	{
+		if (isNil "SPE_IFS_AmountMultiplier") then
+		{
+			SPE_IFS_AmountMultiplier = [[0.33,0.5,1], [0.33,0.5,1]];
+		};
+
+		publicVariable "SPE_IFS_AmountMultiplier";
+	};
+
+	// Fix for player respawn
+	if (hasInterface) then
+	{
+		player addEventHandler ["Respawn",{ _this spawn SPE_MissionUtilityFunctions_fnc_IFS_onPlayerRespawn }];
+	};
+};
+</sqf>
+
+
+== Random headgear assigned to units ==
+
+To disable headgear randomization, insert the following code in the unit's init field:
+
+<sqf inline>this setVariable ["BIS_enableRandomization", false];</sqf>
+
+
+== AI gets spawned inside bocage objects ==
+
+As of version 1.0.1 bocage objects have building positions. They were originally added to support the destruction states of the bocage.
+
+Now scripts/missions may spawn AI inside them due to building position often used by spawning AI script. Unfortunately the AI inside can't get out and can hardly get killed.
+
+If you have access to the scripts that work with buildings positions you can filter out/exclude these bocage objects like this:
+
+<sqf inline>private _validBuildings = _nearBuildings select { !(_x isKindOf "spe_bocage_base") };</sqf>
+
+In the example _nearBuildings would be a list (array) of objects. 
+
+Usually AI spawning scripts are putting units inside building they will have something that looks like this:
+
+<sqf>
+private _nearestObjects = nearestObjects [_position, ["BUILDING","HIDE"], 100];
+private _objectsWithBuildingPositions = (_nearestObjects select {count (_x buildingPos -1) > 0});
+</sqf>
+
+or this
+
+<sqf>
+private _nearestTerrainObjects = nearestTerrainObjects [_position, ["BUILDING","HIDE"], 100];
+private _terrainObjectsWithBuildingPositions = _nearestTerrainObjects select { count (_x buildingPos -1) > 0 };
+</sqf>
+
+You would filter then these like:
+
+<sqf>private _objectsWithBuildingPositions = _objectsWithBuildingPositions select { !(_x isKindOf "spe_bocage_base") };</sqf>
+or
+<sqf>private _terrainObjectsWithBuildingPositions = _terrainObjectsWithBuildingPositions select { !(_x isKindOf "spe_bocage_base") };</sqf>
+
+
+== Recruited or spawned AI won't revive others / cannot get revived ==
+
+Visit {{Link|Spearhead_1944_Enhanced_Revive_(ER)#Handle_recruited_AI|Spearhead 1944 Enhanced Revive}} for detailed information.
+
+
+[[Category: Spearhead 1944]]

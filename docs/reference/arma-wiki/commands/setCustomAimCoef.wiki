@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/setCustomAimCoef
+// revision: 319776 (2022-05-13T09:24:52Z)
+// export sha1: d8j7ryi4b2x68d2unxx36pqmv34fz67
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|eff= local
+|arg= local
+
+|gr1= Stamina System
+
+|descr= Set custom aim precision coefficient for weapon sway
+
+|s1= unit [[setCustomAimCoef]] coef
+
+|p1= unit: [[Object]]
+
+|p2= coef: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setCustomAimCoef 3;</sqf>
+
+|seealso= [[Arma 3: Stamina]] [[getCustomAimCoef]] [[getWeaponSway]]
+}}

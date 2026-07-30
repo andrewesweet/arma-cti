@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getDLCAssetsUsage
+// revision: 310760 (2022-05-07T20:21:35Z)
+// export sha1: 585d6lytqcm0kyod07oupyx8i7bx6f2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: DLC | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= DLC
+
+|descr= Returns an array of the DLC usage times.
+
+|s1= [[getDLCAssetsUsage]]
+
+|r1= [[Array]] - array of DLC usage information, containing DLC items in format:<br>
+[<nowiki/>[name, dlcAppId, sessionTime, totalTime], [name, dlcAppId, sessionTime, totalTime], (…)]<br>
+'''NOTE:''' unused assets won't appear in the result (usage time = 0).
+
+|x1= <sqf>_dlcAssetsUsageInfo = getDLCAssetsUsage;</sqf>
+
+|seealso= [[getDLCs]] [[getObjectDLC]] [[getPersonUsedDLCs]] [[getMissionDLCs]] [[getDLCAssetsUsageByName]] [[getAssetDLCInfo]]
+}}

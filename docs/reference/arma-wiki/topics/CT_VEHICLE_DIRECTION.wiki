@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/CT_VEHICLE_DIRECTION
+// revision: 170156 (2020-11-29T14:31:19Z)
+// export sha1: lhjwuhttllm4ihh5owmygr9885bt5f1
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_VEHICLE_DIRECTION
+|value = 105
+|description = Unknown control type.
+|commands =
+|events =
+}}
+
+<!-- {{CT|abc start}}
+
+{{CT|abc end}} -->
+
+{{CT|examples}}
+None

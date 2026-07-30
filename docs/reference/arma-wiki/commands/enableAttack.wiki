@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/enableAttack
+// revision: 321173 (2022-05-13T15:15:34Z)
+// export sha1: 9ajdq52kgapd2mqloom9rmtzj8qfnu1
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Command Group: Unit Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Groups
+
+|gr2= Unit Control
+
+|descr= Set if leader can issue attack commands to the soldiers in his group.
+
+|s1= group [[enableAttack]] enable
+
+|p1= group: [[Object]] or [[Group]]
+|p2= enable: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_group1 enableAttack true;</sqf>
+
+|seealso= [[attackEnabled]]
+}}

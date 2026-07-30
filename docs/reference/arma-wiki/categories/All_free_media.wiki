@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:All_free_media
+// revision: 187204 (2021-01-08T13:10:41Z)
+// export sha1: sax3xvet232ewd8tqqhsmygtjqqc1i2
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category contains all free media existing on this wiki.
+
+[[Category:Community Wiki]]

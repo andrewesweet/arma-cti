@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getSuppression
+// revision: 320943 (2022-05-13T10:04:43Z)
+// export sha1: abuzcf8uohn5r9ro8ksru2t6e02wrll
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.42
+|arg= local
+
+|gr1= Object Manipulation
+
+|descr= Gets the suppression value for the given unit. Returns varying [[Number]] between 0 and 1, or -1 if suppression is disabled ({{hl|[[disableAI]] "SUPPRESSION"}}) or the suppression value is not available. Suppression is not calculated for player entities and is always 0, unless it is set with [[setSuppression]]. In this case the return value is the set value. Before Arma 3 v1.92 this command could return [[nil]].<br><br>  
+{{Feature | important | The unit must not be [[objNull]], must be [[Multiplayer Scripting#Locality|local]] and [[alive]]}}
+
+|s1= [[getSuppression]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Number]] - from 0 to 1, or -1 if suppression is not available.
+
+|x1= <sqf>getSuppression AI_unit_1;</sqf>
+
+|seealso= [[setSuppression]] [[suppressFor]] [[disableAI]] [[enableAI]]
+}}

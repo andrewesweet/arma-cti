@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Mission_Presentation
+// revision: 377916 (2026-01-11T15:02:53Z)
+// export sha1: tuvs3f7zzf9azewdgdbpg2zfjpywrtw
+// categories: Category:Mission Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+In order to play a scenario from the main menu, player has to go through multiple menus. While in the scenario itself, additional user interface elements are available.
+
+Scenario designers are advised to configure all of them correctly in order to make their scenarios consistent and comfortable for players.
+It is important to realise your scenario does not start when player takes controls, but is presented already in main menu, during loading or when reading the briefing.
+'''Every impression counts!'''
+{{Feature|informative|Mission &asymp; Scenario}}
+
+
+== Introduction ==
+
+{|
+|
+=== [[Mission Overview|Overview]] ===
+|
+=== [[Loading Screens|Loading Screen]] ===
+|-
+| [[File:A3_missionOverview.jpg|450px]]
+| [[File:A3_loading_mission.jpg|450px]]
+|-
+|
+=== [[Arma 3: Briefing|Briefing]] ===
+|
+=== [[BIS_fnc_establishingShot|Establishing shot]] ===
+|-
+| [[File:A3 Briefing Example.png|450px]] 
+| [[File:BIS_fnc_establishingShot.gif|450px]]
+|}
+
+
+== Scenario ==
+
+{| class="valign-top"
+|
+=== [[Notification]] ===
+|
+=== {{Link|Arma 3: Communication Menu|Communication Menu}} ===
+|-
+| [[File:A3_notification.jpg|450px]]
+| [[File:A3_commMenu.jpg|450px]]
+|-
+|
+=== [[Arma 3: Respawn|Respawn Screen]] ===
+|
+=== [[Arma 3: End Game Spectator Mode|Spectator Mode]] ===
+|-
+| [[File:A3_respawnSelectPosition.jpg|450px]]<br>''MP only''
+| [[File:BIS Arma3 EDEN VirtualSpectator 4.jpg|450px]]<br>''MP only''
+|-
+|
+=== [[Debriefing|Closing Shot]] ===
+|
+=== [[Debriefing]] ===
+|-
+| [[File:A3_closingShot.jpg|450px]]
+| [[File:A3_debriefing.jpg|450px]]<br>''Return back to 1 (in single missions) or 2 (in campaign)''
+|}
+
+
+[[Category:Mission Editing]]

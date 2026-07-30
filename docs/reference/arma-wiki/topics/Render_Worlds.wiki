@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/Render_Worlds
+// revision: 336727 (2023-01-04T15:24:45Z)
+// export sha1: 1dz7gqkdkyr6ibqybgwophscy9dzmow
+// categories: Category:Arma 3: Official Tools | Category:Arma 3: Terrains
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY=[[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD={{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION=
+We have added three Render Worlds that may be used to take pictures or video that needs some keying to add some different scene. They need to be copied into the standard distribution and added as a mod to work correctly in game. Each one of them is of different color, the default one is white while green/blue one is obviously green/blue respectively. You can access it like any other maps, from the mission editor.
+<br>
+<br>
+[[File:A3_renderWhite.jpg|300px]]
+[[File:A3_renderGreen.jpg|300px]]
+[[File:A3_renderBlue.jpg|300px]]
+
+|COMMAND= You can start this mod via [[A3 Launcher|Arma 3 Launcher]] or by adding the parameter ''-mod=RenderWorlds'' to your Arma 3 shortcut (or directly in Steam library product properties).
+
+|NOTES= Copy the RenderWorlds directory located in the Arma 3 Tools folder into the root of your Arma 3 directory to use them. Alternatively use [[mapFolders]] from [[:Category:Arma 3: Official Tools|Arma 3 Tools]].
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= [[mapFolders]]
+}}
+
+{{GameCategory|arma3|Official Tools}}	
+{{GameCategory|arma3|Terrains}}

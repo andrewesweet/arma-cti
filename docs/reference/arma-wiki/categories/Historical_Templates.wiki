@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Historical_Templates
+// revision: 286283 (2021-06-22T09:54:04Z)
+// export sha1: 0t5jiibdq6k1tam9oy4zt1yld5iz80u
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Templates]]

@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/tvSetValue
+// revision: 321508 (2022-05-17T11:23:14Z)
+// export sha1: ae0abo8p0jvpyhzzowksgtrikqqdr0s
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|arg= local
+
+|eff= local
+
+|descr= Sets scalar data to item on given path. IDC means id of parent Tree View. If the given value is not integer, it will be converted to integer
+
+|s1= [[tvSetValue]] [idc, path, val]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Array]] of [[Number]]s
+
+|p3= val: [[Number]]
+
+|r1= [[Nothing]]
+
+|s2= ctrl [[tvSetValue]] [path, val]
+
+|p21= ctrl: [[Control]]
+
+|p22= path: [[Array]] of [[Number]]s
+
+|p23= val: [[Number]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>tvSetValue [101, [0], 555];</sqf>
+
+|x2= <sqf>_ctrl tvSetValue [[0,0,0], 14];</sqf>
+
+|seealso= [[tvAdd]] [[tvClear]] [[tvCollapse]] [[tvCount]] [[tvCurSel]] [[tvData]] [[tvDelete]] [[tvExpand]] [[tvPicture]] [[tvSetCurSel]] [[tvSetData]] [[tvSetPicture]] [[tvSort]] [[tvSortByValue]] [[tvText]] [[tvValue]]
+}}

@@ -1,0 +1,92 @@
+// source: https://community.bistudio.com/wiki/cursorTarget
+// revision: 373164 (2025-04-08T21:03:11Z)
+// export sha1: 4f4yz8sfael5vbwfa3nx9xr4l1i1ouq
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Object Detection
+
+|descr= Returns the target pointed at by the player (usually with cross-hairs). The target has to be known to the player to some degree ([[knowsAbout]] > 0). If target is completely unknown, command returns [[objNull]].<br><br>
+A valid target could belong to an enemy or a friendly side. Buildings are normally known to player and so are valid targets. Try [[nearTargets]] to see what else is considered a target.
+While friendly targets are usually known to the player, enemy targets can be totally unknown, especially if "auto-spotting" (or sometimes called "auto-reporting") is switched off. To check if auto-spotting is enabled: <sqf inline>difficultyEnabled "autospot"</sqf>.<br><br>
+[[cursorTarget]] also returns locked target for the duration of the lock even if there is another target under the cursor. As soon as missile is fired, [[cursorTarget]] switches to current known target under cursor or [[objNull]].
+Targeting ({{Controls|T}} in {{arma3}}) works regardless of the state of "auto-spotting".<br><br>
+Adding a target to the known list could be done with [[reveal]] command. When auto-spotting is enabled, zooming on the enemy target with cross-hairs usually reveals the target.
+As friendly targets are always known, zooming on friendly target could improve [[knowsAbout]] value.<br><br>
+[[Side Relations]] can also influence target knowledge. For example [[east]] target is unknown target for [[civilian]], but making them friends with [[setFriend]] instantly improves [[civilian]] knowledge of the [[east]].
+
+|s1= [[cursorTarget]]
+
+|r1= [[Object]]
+
+|x1= <sqf>alive cursorTarget;</sqf>
+
+|seealso= [[cursorObject]] [[getCursorObjectParams]] [[laserTarget]] [[nearTargets]] [[knowsAbout]] [[reveal]] [[lineIntersects]] [[lineIntersectsWith]] [[lineIntersectsObjs]] [[lineIntersectsSurfaces]] [[intersect]] [[checkVisibility]]
+}}
+
+{{Note
+|user= FRL Myke
+|timestamp= 20110218002800
+|text= If the player is in a vehicle and a lockable weapon is selected and a target is locked, the locked target will be returned, regardless if it is in sight or not.
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20110311124800
+|text= Addition to Myke's note:
+It also works for infantry with launchers that canLock, like Javelin or AA.
+Only the lock cursor must be visible on the target - not a full lock necessarily.
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20090711121300
+|text=
+* Player must [[knowsAbout|know about]] what he is pointing to for this command to return something other than <NULL-OBJECT>
+* This command doesn't work through building windows
+* This recognition doesn't work with every object : soldiers, vehicles, big houses are ok, but not trees, plants, road signs or others little things
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20130823221600
+|text= To add to [[User:Lou Montana]]'s note, use [[reveal]] command on the object you want to be detected with [[cursorTarget]] when pointing at it.
+Without it, distant units are most likely to return [[objNull]] even if you shoot and hit them.<br><br>
+Units that have been previously subjected to [[enableSimulation]] false; or [[enableSimulationGlobal]] false; may stay unrecognised for a long time even after simulation was re-enabled, returning [[objNull]] as [[cursorTarget]].
+Force revealing units with [[reveal]] command usually solves the problem. For example:
+<sqf>{ player reveal _x } forEach allUnits;</sqf>
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20141203184000
+|text= [[cursorTarget]] seems to change when your cursor enters an object's [[boundingBox]].
+Because of this, if the player is '''inside''' the [[boundingBox]], the object will always be the current [[cursorTarget]] if the player is not looking at another object, although sometimes the object will remain the [[cursorTarget]] even if the player does.
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20150421035300
+|text= [[cursorTarget]] will not return enemy units, even very close, if "autoreport" is disabled in game difficulty settings, and if player is alone.
+However, when enemy units open fire on player, the cursortarget becomes functional on these units. If player is in a group, cursortarget is also functional (report by other units).
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20160205203800
+|text= CursorTarget will return a <Null_Object> for all of thus which have a disabled simulation (_object enableSimulation false). 
+}}

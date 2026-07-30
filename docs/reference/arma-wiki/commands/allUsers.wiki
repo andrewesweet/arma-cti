@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/allUsers
+// revision: 378526 (2026-05-04T01:56:35Z)
+// export sha1: iwrnzri0he4oooblgvvfdxggvrrx3n0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Command Group: Object Detection | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Multiplayer
+|gr2= Object Detection
+
+|serverExec= server
+
+|descr= Returns a list of [[getPlayerID|player ids]] of all the users on an MP server.
+{{Feature|informative|This also lists [[Arma 3: Headless Client|Headless Clients]].}}
+
+|s1= [[allUsers]]
+
+|r1= [[Array]] of [[String]]s - user network IDs (see [[getPlayerID]], [[getUserInfo]])
+
+|x1= <sqf>
+if (isServer) then
+{
+	private _allUserIDs = allUsers;
+	for "_i" from 0 to (count _allUserIds - 1) do
+	{
+		diag_log format ["User #%1 ID: %2", _i + 1, _allUserIds select _i];
+	};
+};
+</sqf>
+
+|seealso= [[getUserInfo]] [[getPlayerID]] [[allPlayers]] [[allCurators]] [[allGroups]] [[allDead]] [[allUnits]] [[switchableUnits]] [[playableUnits]] [[vehicles]] [[allUnitsUAV]] [[allDeadMen]] [[isPlayer]] [[playersNumber]]
+}}

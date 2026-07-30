@@ -1,0 +1,114 @@
+// source: https://community.bistudio.com/wiki/inGameUISetEventHandler
+// revision: 369378 (2024-09-03T18:43:13Z)
+// export sha1: tdgb89oq6xaxmx07u4imuisfqqo1245
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: GUI Control - Event Handlers | Category:Command Group: Interaction | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|eff= local
+
+|gr1= GUI Control - Event Handlers
+|gr2= Event Handlers
+|gr3= Interaction
+
+|descr= Sets given event handler of in-game UI. If EH function returns [[true]], performed action is overridden. Event handlers available are:
+* "PrevAction" - mouse scroll up
+* "Action" - action key press
+* "NextAction" - mouse scroll down
+In order to remove a previously added event handler, set it again with an empty ''code'' string {{hl|""}}.
+
+{{Feature|important|This is a "set" command, which means event handlers are not stackable and will replace previously set event handlers of the same type.}}
+
+{{Feature|arma3|Since {{arma3}} v1.50 the event handler receives an array of the selected/activated action's arguments in {{hl|_this}} variable:
+<sqf>params ["_target", "_caller", "_index", "_engineName", "_text", "_priority", "_showWindow", "_hideOnUse", "_shortcut", "_visibleMenu", "_eventName"];</sqf>
+* _target: [[Object]] - target object to which action is attached
+* _caller: [[Object]] - caller object, basically [[player]]
+* _index: [[Number]] - index of the action in action menu (0 - top most)
+* _engineName: [[String]] - engine based action name ("User" for user added actions)
+* _text: [[String]] - [[localize]]d action plain text as seen by the caller
+* _priority: [[Number]] - action ''priority'' value
+* _showWindow: [[Boolean]] - action ''showWindow'' value
+* _hideOnUse: [[Boolean]] - action ''hideOnUse'' value
+* _shortcut: [[String]] - action ''shortcut'' name or ""
+* _visibleMenu: [[Boolean]] - [[isActionMenuVisible|action menu visibility]] - on first scroll or action press the menu is still invisible, the menu is shown but no action is performed
+* _eventName: [[String]] - event name
+}}
+
+|s1= [[inGameUISetEventHandler]] [handlerName, code]
+
+|p1= handlerName: [[String]]
+
+|p2= code: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+inGameUISetEventHandler ["Action", "hint 'Lights, Camera, Action!'; true"];
+sleep 10;
+inGameUISetEventHandler ["Action", ""]; // removes the "Action" EH
+</sqf>
+
+|x2= <sqf>
+inGameUISetEventHandler ["PrevAction", "hint str _this; false"];
+inGameUISetEventHandler ["NextAction", "hint str _this; false"];
+inGameUISetEventHandler ["Action", "hint str _this; false"];
+</sqf>
+
+|x3= Deny any weapon disassembly:
+<sqf>
+inGameUISetEventHandler ["Action", "
+	if (_this select 3 == 'DisAssemble') then {
+		hint 'You are not allowed to do this';
+		true
+	}
+"];
+</sqf>
+
+|x4= Detect explosive/mine placement:
+<sqf>
+private _onMagazineUse = '
+	params ["_target", "", "", "_action", "", "", "", "", "", "", "_event"];
+	if (_action == "UseMagazine") then {
+		if (_event == "Action") then {
+			_target spawn {
+				waitUntil {!(all_magazines isEqualTo magazines _this)};
+				{
+					0 = all_magazines deleteAt (all_magazines find _x);
+				} count magazines _this;
+				hint format ["Magazine Used: %1", all_magazines select 0];
+			};
+		} else {
+			all_magazines = magazines _target;
+		};
+	};
+	false
+';
+inGameUISetEventHandler ["PrevAction", _onMagazineUse];
+inGameUISetEventHandler ["NextAction", _onMagazineUse];
+inGameUISetEventHandler ["Action", _onMagazineUse];
+</sqf>
+
+|seealso= [[isActionMenuVisible]] [[addEventHandler]] [[ctrlAddEventHandler]] [[displayAddEventHandler]] [[actionIDs]] [[actionParams]] [[addAction]] [[setUserActionText]] [[showHUD]] [[inputAction]] [[removeAction]] [[removeAllActions]] [[action]] [[enableWeaponDisassembly]]
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20160512205100
+|text= In case of the "Action" event, (''_showWindow'' {{!}}{{!}} ''_visibleMenu'') also denotes if the action is performed or not. For example, if the action menu is closed or fading off, pressing Spacebar will bring it up and trigger an "Action" event; in that case, ''_visibleMenu'' is false. But if the action menu is open, and Spacebar is pressed to perform the selected action, then ''_visibleMenu'' will be true. If ''_showWindow'' is true, then it means the action was performed, regardless of ''_visibleMenu''.
+}}

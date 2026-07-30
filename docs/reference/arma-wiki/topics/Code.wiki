@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/Code
+// revision: 378166 (2026-03-02T16:38:58Z)
+// export sha1: 8q3g51xyztchzdrbr1s0ecej9zr0vn1
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Code''' represents data consisting of commands and their parameters.
+It is defined in script by being wrapped in <sqf inline>{</sqf>/<sqf inline>}</sqf> brackets, and is precompiled by the game engine.
+
+The contents of [[SQF Syntax|SQF]] and [[SQS Syntax|SQS]] files are Code.
+
+Examples:
+<sqf>
+while { alive player } do { sleep 1; hintSilent format ["Health: %1/100", round ((1 - damage player) * 100)]; };
+unit addEventHandler ["Killed", { systemChat format ["%1 is dead", name (_this select 0)]; }];
+onMapSingleClick { systemChat format ["You clicked at %1", _pos]; };
+</sqf>
+
+
+{{Feature|informative|See [[Code vs. Strings]] for more information on code/string data typing.}}
+
+
+[[Category: Data Types]]

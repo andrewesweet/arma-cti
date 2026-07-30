@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/vehicleVarName
+// revision: 352868 (2024-02-28T19:33:35Z)
+// export sha1: 7yf1bg4oq9tqyhynepezzs1ratyd85l
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns the variable name that contains a primary editor reference to this object. This is the variable given in the ''Insert Unit dialog / name field'' in the editor. It can be changed using [[setVehicleVarName]].
+
+{{Feature|informative|Respawned unit will have the same vehicleVarName as the corpse left behind, however actual [[missionNamespace]] variable of the same name will only contain respawned unit.}}
+
+|s1= [[vehicleVarName]] object
+
+|p1= object: [[Object]]
+
+|r1= [[String]] - variable name, if none was set, an empty string is returned
+
+|x1= <sqf>hint vehicleVarName player;</sqf>
+
+|seealso= [[setVehicleVarName]] [[BIS_fnc_objectVar]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150419084500
+|text= To get variable names referencing an object in mission namespace:
+<sqf>
+KK_fnc_objectVarNames = {
+	private "_names";
+	_names = [];
+	{
+		if (missionNamespace getVariable _x isEqualTo _this) then {
+			_names pushBack _x;
+		};
+	} forEach allVariables missionNamespace;
+	_names
+};
+
+// Example
+myGroup = group player;
+aGroup = group player;
+hint str (group player call KK_fnc_objectVarNames); // ["agroup", "mygroup"]
+</sqf>
+}}

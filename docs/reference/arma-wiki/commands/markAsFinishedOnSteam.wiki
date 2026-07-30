@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/markAsFinishedOnSteam
+// revision: 369150 (2024-09-03T10:34:38Z)
+// export sha1: 2mtzu37l0ezqojlgcgk441vxlq6qsor
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= Mission Information
+
+|descr= Marks current mission as finished on Steam. Returns true if Steam query is successfully started or false otherwise.
+
+|s1= '''markAsFinishedOnSteam'''
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+markAsFinishedOnSteam;
+endMission "END1";
+</sqf>
+
+|seealso= [[isSteamMission]]
+}}

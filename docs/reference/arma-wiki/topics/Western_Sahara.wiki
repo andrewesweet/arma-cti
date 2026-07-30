@@ -1,0 +1,97 @@
+// source: https://community.bistudio.com/wiki/Western_Sahara
+// revision: 370275 (2024-11-19T18:10:43Z)
+// export sha1: 215k20nm3ntbtdy4qhsn62ens071wb1
+// categories: Category:Arma 3: CDLCs | Category:Western Sahara
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+{{Navbox/CDLCs}}
+
+{{Infobox/Game
+|title= Western Sahara
+|image= [[File:arma3-cdlc-western sahara store header.jpg|300px|link= https://store.steampowered.com/app/1681170/Arma_3_Creator_DLC_Western_Sahara/]]<br/>[[File:a3 gm arma3-com steampageimg 600x100 3c.png|link=http://www.arma3.com/dlc/creator|300px]]
+|releaseDate= 18 November 2021
+|storePage= {{Link|link= https://store.steampowered.com/app/1681170/Arma_3_Creator_DLC_Western_Sahara/|text= Steam}}
+|developer= [[File:rotators-collective-black-background-512x512.png|48px]] Rotators Collective
+|website= {{Link|https://sahara.rotators.net/|https://sahara.rotators.net/}}
+|discord= {{Link|https://discord.gg/3GVUagyjkx|https://discord.gg/3GVUagyjkx}}
+|facebook= {{Link|https://www.facebook.com/RotatorsCollective|https://www.facebook.com/RotatorsCollective}}
+|twitter= {{Link|https://twitter.com/TheRotators|https://twitter.com/TheRotators}}
+}}
+
+Argana, 2036. Welcome to the sprawling landscapes and punishing heat of the fictional Sefrou-Ramal province. Conflicts between rival tribes are flaring up, government forces are losing control, and an AAN war correspondent has been kidnapped. Civil war looms once again.
+
+Become a private military contractor and be deployed to the desert dunes of Argana. This new addition to {{arma3}} takes you to a hot conflict zone, brings back Arma's iconic ION PMC faction, and introduces new vehicle variants, weapons, clothing, gear, as well as singleplayer and multiplayer scenarios.
+
+
+== Features ==
+
+Key features of the Western Sahara Creator DLC include:
+
+=== Terrain: Sefrou-Ramal ===
+
+Located in the northeast of Argana, the mineral rich province of Sefrou-Ramal has been a hotspot of unrest for many years due to rival tribes, underfunded peacekeeping forces, and a foreign military presence. Characterized by flowing sand dunes and desert architecture, this 100km² terrain is composed of completely new assets, as well as upgraded structures and objects from {{arma2}} and {{arma3}}, making it as beautiful as it is mesmerizing.
+
+=== 5 Factions ===
+
+Western Sahara features the UNA peacekeepers, the Sefrawi Freedom and Independence Army, Tura tribe insurgents, desert NATO forces, and the return of private military contractors ION Services.
+
+To accompany these new factions, a wide number of headgear, uniform, and combat fatigue variants, as well as new civilian clothes has been added, and will allow you to blend in perfectly with the hot and dusty environment.
+
+=== 8 New Rifles ===
+
+Repel enemy forces with the powerful Israeli IMIL GALAT automatic rifle and its modernized South African licensed variants, the Velko R4 and R5. Need fire support? The SA-77 general-purpose machine gun will help you out. Alternatively, pick up the battle-tested Belgian SLR or the modern XMS bullpup rifle, or blow your way through enemy lines with the AA40 automatic combat shotgun while your teammates lob explosive payloads via the stand-alone GLX grenade launcher system.
+
+=== 12 New Vehicle Variants & 1 Static Turret ===
+
+New and impressive variants of existing Arma 3 vehicles make their way into Western Sahara; The Marshall lineup has been expanded with a Command Vehicle, 60mm Mortar, and an Anti-Tank Guided Missiles setup. The classic Zamak rolls through the blistering terrain in a new flatbed, cargo, and anti-air variant. The Offroad vehicle comes equipped with desert and makeshift armor kits, and the Russian PO-30 Orca helicopter has been outfitted with modern, lightweight armor plates to protect against incoming small arms fire. Additionally, new variants of the MSE-3 Marid with a .50cal manned turret and the BTR-K Kamysh featuring a hunter-killer kit have been rolled out. Last but not least, don't forget the exceptionally remastered Arma 2 asset, the ZU-23 anti-air gun.
+
+=== Equipment ===
+
+Western Sahara features a selection of new gear that includes a gun drone with a modular weapon attachment system, a portable ballistic shield which can be easily deployed whenever necessary, and a variety of masks like dust goggles, a military-style headset, a ballistic mask, and more.
+
+=== Open-World Scenario: "Extraction" ===
+
+AAN war correspondent Michael Sully has been kidnapped by insurgents and is believed to be held captive somewhere in Sefrou-Ramal. Your mission as an ION operator is to search for intel and clues and bring him back to safety. This brand new open-world scenario developed exclusively for the Western Sahara Creator DLC offers dynamically randomized contracts during the day and night and can be played in both singleplayer and multiplayer co-op with up to 4 players.
+
+=== Multiplayer Mode: "King of the Dunes" ===
+
+An original spin by developer Rotators Collective on the popular community-made sector control multiplayer game mode "King of the Hill" by Sa-Matra.
+
+=== Multiplayer Mode and Singleplayer Showcase: "Alchemist" ===
+
+A strange power of unknown origin has emerged from within the depths of the Sefrawi Desert and is calling to you! Compete against others and capture the source for yourself, or experience the Alchemist Game Mode in singleplayer against CSATs activated Viper unit.
+
+=== Multiplayer Mode: "Last Stand" ===
+
+Defend against waves of enemies and fight for your life against overwhelming odds in this new co-op game mode. Conserve your ammo and pick your targets carefully while working closely with a team of up to 4 people.
+
+=== Showcase: "ION Weapon Systems" ===
+
+Use the ION Weapon Systems VR training environment to test gear in various scenarios and prepare ION operatives for deployment.
+
+=== 2 Time Trial Races ===
+
+Going crazy from the heat? Need to blow off some steam? Then get your motor running and race across the Sefrawi sand dunes in the Vrana-Redstone Dune Rally.
+
+=== Additional Content ===
+
+Rounding out Western Sahara’s immersive desert experience is a painstakingly crafted set of additional items including a digital camera, dromedary camel, refugee tents, and various new structures and props.
+
+
+== About the Developers ==
+
+'''The Arma 3 Creator DLC: Western Sahara''' is published by {{Name|bi}} and developed by the Rotators Collective studio - a small group of like-minded developers loosely assembled from all around Europe with over 10 years of experience in making mods for a wide variety of games, including the top-rated {{arma3}} mini-campaigns {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}835526985|Callsign Minotaur}} and {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}1731998436|Dunes}}. The Western Sahara DLC has been specifically designed to expand on {{arma3}}'s 2035 near-future setting.
+
+
+== Compatibility Data for Non-Owners ==
+
+People who do not own the Western Sahara DLC are able to download and install the DLC's optional data via the {{arma3}} Steam Workshop {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}2636962953|here}}. Subscribing to this Workshop item makes it possible for potential buyers to try out many of the DLC's assets prior to purchasing. It also enables non-owners to join multiplayer servers that make use of DLC content. Be aware that access to the DLC's terrain and campaign remains exclusive to owners of the DLC. Restrictions to the use of non-owned content also apply.
+
+Please note that access to premium content is restricted for non-owners in a similar way to our official default DLC. The missions and the Sefrou-Ramal terrain are inaccessible. Premium weapons cannot be picked up. Premium vehicles can be primarily used as a passenger. For a detailed overview of premium DLC content restrictions, please refer to this {{Link|https://www.bohemia.net/blog/roadmap-14-15-dlc-strategy-blog|blogpost}}.
+
+Buying the DLC will remove these restrictions, enabling owners to access all the content.
+
+
+[[Category:Western Sahara]]
+{{GameCategory|arma3|CDLCs}}

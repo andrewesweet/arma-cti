@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/vectorModelToWorld
+// revision: 378448 (2026-04-16T17:00:30Z)
+// export sha1: ilpjqyegvpv3q7jj4ueulii4vz49mer
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= Math - Vectors
+
+|descr= Converts vector direction from model to world space.
+{{Feature|important|For [[setObjectScale|scaled objects]], the resulting vector's [[vectorMagnitude|magnitude]] will also be [[vectorMultiply|multiplied]] by the object scale.}}
+
+|s1= object [[vectorModelToWorld]] modelDir
+
+|p1= object: [[Object]]
+
+|p2= modelDir: [[Vector3D]] - vector direction in model space in format [x,y,z]
+
+|r1= [[Vector3D]] - vector direction in world space
+
+|x1=Convert model space vector [0,-10,4] to world space; vector gets rotated according to _airplane: 
+<sqf>_airplane vectorModelToWorld [0,-10,4];</sqf>
+
+|seealso= [[vectorDir]] [[modelToWorld]] [[addForce]] [[addTorque]] [[vectorModelToWorldVisual]] [[vectorWorldToModel]] [[vectorWorldToModelVisual]] [[matrixMultiply]] [[matrixTranspose]]
+}}

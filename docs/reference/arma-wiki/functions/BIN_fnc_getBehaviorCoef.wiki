@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_getBehaviorCoef
+// revision: 309581 (2022-05-05T12:07:18Z)
+// export sha1: 25rgtx2la78nck9q4a83nso0m0xp5ch
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Behavior | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Behavior 
+
+|descr= <pre>/*
+	BIN_fnc_getBehaviorCoef
+	Get behavior coefficients
+
+	Examples:
+
+		[bin_drone,"gravityCannon"] call BIN_fnc_getBehaviorCoef - returns coefficients for gravity cannon behavior
+*/</pre>
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_getBehaviorCoef]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_getBehaviorCoef;</sqf> -->
+
+|seealso=
+}}

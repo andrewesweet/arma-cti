@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/setHUDMovementLevels
+// revision: 323045 (2022-06-28T21:43:09Z)
+// export sha1: 31i9rbo3aj06zl63zriz5ar4e6nalch
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Interaction
+
+|descr= Set min/max movement borders displayed in HUD gauges. Use -1 to skip some value.
+
+|s1= [[setHUDMovementLevels]] [minSpeed, maxSpeed, minAlt, maxAlt, minDir, maxDir, targetOrPosition]
+
+|p1= minSpeed: [[Number]] - in m/s
+
+|p2= maxSpeed: [[Number]] - in m/s
+
+|p3= minAlt: [[Number]] - in meters
+
+|p4= maxAlt: [[Number]] - in meters
+
+|p5= minDir: [[Number]] - in degrees
+
+|p6= maxDir: [[Number]] - in degrees
+
+|p7= targetOrPosition: [[Object]] or [[Position]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setHUDMovementLevels [20, 30, -1, -1, 0.23, 2.1, [0,0,0]];</sqf>
+
+|x2= <sqf>setHUDMovementLevels [20, 30, -1, -1, 0.23, 2.1, player];</sqf>
+
+|seealso=
+}}

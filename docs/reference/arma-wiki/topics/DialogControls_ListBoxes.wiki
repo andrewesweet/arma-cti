@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/DialogControls-ListBoxes
+// revision: 244190 (2021-02-07T13:38:22Z)
+// export sha1: i57cbeydcnikq8zmjx9ung11zkeipea
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+* [[CT_LISTBOX]]
+* [[CT_XLISTBOX]]
+* [[CT_LISTNBOX]]
+* [[CT_XCOMBO]]

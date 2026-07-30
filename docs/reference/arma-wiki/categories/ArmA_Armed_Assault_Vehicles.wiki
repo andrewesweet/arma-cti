@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Vehicles
+// revision: 184050 (2021-01-06T01:00:23Z)
+// export sha1: jsmneqzldxjen5c61jj4opnmnhhv4ss
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1}}

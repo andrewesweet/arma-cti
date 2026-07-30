@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/set3DENAttachedCursorEntity
+// revision: 369759 (2024-10-08T15:08:56Z)
+// export sha1: bd5jgfrg4v88qr9xh4q5bqaaq90f18j
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Eden Editor
+
+|descr= Attach an entity to the [[:Category:Eden Editor|Eden Editor]] cursor.
+
+|s1= [[set3DENAttachedCursorEntity]] entityHashMap
+
+|p1= entityHashMap: [[HashMap]] - in format [<nowiki/>["type", entityType], otherOptions] where ''entityType'' can be one of:
+{{{!}} class="wikitable"
+! type
+! options<br><span style="font-size: 0.9em">case-sensitive!</span>
+{{!}}-
+{{!}} "object"
+{{!}}
+* "classname": [[String]] - object classname; see [[Arma 3: Assets]]
+{{!}}-
+{{!}} "marker"
+{{!}}
+* "classname": [[String]] - see [[Arma 3: CfgMarkers#Marker Classes|marker classes]]
+* "markershape": [[String]] - can be one of:
+** "icon"
+** "rectangle"
+** "ellipse"{{Feature|important|"polyline" is '''not''' supported.}}
+{{!}}-
+{{!}} "trigger"
+{{!}}
+* "classname": [[String]] - object classname; from CfgNonAIVehicles with simulation="detector". Usually "EmptyDetector"
+{{!}}-
+{{!}} "module"
+{{!}}
+* "classname": [[String]] - object classname;
+{{!}}-
+{{!}} "waypoint"
+{{!}}
+* "classname": [[String]] - classname; from CfgWaypoints
+{{!}}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>set3DENAttachedCursorEntity createHashMapFromArray [["type", "object"], ["classname", "B_Survivor_F"]];</sqf>
+
+|x2= <sqf>set3DENAttachedCursorEntity createHashMapFromArray [["type", "marker"], ["classname", "mil_pickup"], ["markertype", "icon"]];</sqf>
+
+|seealso= [[Eden Editor: Object]] [[typeOf]]
+}}

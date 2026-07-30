@@ -1,0 +1,90 @@
+// source: https://community.bistudio.com/wiki/Template:GVI/version
+// revision: 295903 (2021-11-16T09:33:29Z)
+// export sha1: 2siud4dqt9ip3few3mgf9qqg1xarphg
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#ifexpr: {{#len:{{{1|}}}}} > 3 and {{#ifexpr: 
+	{{#if: {{#pos:{{{1|thereisnopoint}}}|.}}
+		| {{#pos:{{{1|thereisnopoint}}}|.}}
+		| 0
+	}} = 1 | 1 | 0}}
+| {{#if: {{{2|}}}
+	| {{{1}}}
+	| {{#explode:{{{1}}}|.|0}}.{{#explode:{{{1}}}|.|1}}
+}}
+| {{#if: {{{2|}}}
+	|?
+	| {{#ifeq: {{{1|?}}}
+		| ?
+		| ?
+		| {{{1|}}}?
+	}}
+}}
+}}</includeonly><noinclude>
+Formats the provided version for {{Template|GVI}}.
+
+== Usage ==
+{{<nowiki/>GVI/version|'''''version'''''|'''''category'''''}}
+* version: the version number. if not to format '''<Major>.<Minor>''' (with '''two''' decimals), returns {{hl|&lt;version&gt;?}}. e.g {{hl|1.0?}}
+* category: if defined, an unknown/invalid version would only return {{hl|?}}.
+
+{|
+|+ Examples
+|
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{GVI/version}}</nowiki>
+| {{GVI/version}}
+|-
+| <nowiki>{{GVI/version|?}}</nowiki>
+| {{GVI/version|?}}
+|-
+| <nowiki>{{GVI/version|!}}</nowiki>
+| {{GVI/version|!}}
+|-
+| <nowiki>{{GVI/version|1}}</nowiki>
+| {{GVI/version|1}}
+|-
+| <nowiki>{{GVI/version|1.5}}</nowiki>
+| {{GVI/version|1.5}}
+|-
+| <nowiki>{{GVI/version|1.00}}</nowiki>
+| {{GVI/version|1.00}}
+|-
+| <nowiki>{{GVI/version|1.00.54}}</nowiki>
+| {{GVI/version|1.00.54}}
+|}
+|
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{GVI/version||category}}</nowiki>
+| {{GVI/version||category}}
+|-
+| <nowiki>{{GVI/version|?|category}}</nowiki>
+| {{GVI/version|?|category}}
+|-
+| <nowiki>{{GVI/version|!|category}}</nowiki>
+| {{GVI/version|!|category}}
+|-
+| <nowiki>{{GVI/version|1|category}}</nowiki>
+| {{GVI/version|1|category}}
+|-
+| <nowiki>{{GVI/version|1.5|category}}</nowiki>
+| {{GVI/version|1.5|category}}
+|-
+| <nowiki>{{GVI/version|1.00|category}}</nowiki>
+| {{GVI/version|1.00|category}}
+|-
+| <nowiki>{{GVI/version|1.00.54|category}}</nowiki>
+| {{GVI/version|1.00.54|category}}
+|}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

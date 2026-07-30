@@ -1,0 +1,22 @@
+// source: https://community.bistudio.com/wiki/Template:Messagebox/BI
+// revision: 370076 (2024-10-30T17:09:40Z)
+// export sha1: ac3tqyihe0tet9ypgnc0gjnddh0ff3w
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Messagebox|{{#if:{{{1|}}}|'''{{Trim|{{{1}}}}}'''<br>}}{{{2|{{{message|-message not defined-}}}}}}|{{Icon|bi_alt|28}}|class= messagebox-bi}}</includeonly><noinclude>{{Doc/Template
+|descr= Shows a [[Bohemia Interactive]] message box.
+|param1= title
+|descr1= (Optional) title to display
+|param2= message
+|descr2= (named) message to display
+|example1= <nowiki>{{Messagebox/BI}}</nowiki>
+|result1= {{Messagebox/BI}}
+|example2= <nowiki>{{Messagebox/BI|title}}</nowiki>
+|result2= {{Messagebox/BI|title}}
+|example3= <nowiki>{{Messagebox/BI|title|message}}</nowiki>
+|result3= {{Messagebox/BI|title|message}}
+|example4= <nowiki>{{Messagebox/BI||my super message}}</nowiki>
+|result4= {{Messagebox/BI||my super message}}
+|example5= <nowiki>{{Messagebox/BI|message= my super message}}</nowiki>
+|result5= {{Messagebox/BI|message= my super message}}
+}}</noinclude>

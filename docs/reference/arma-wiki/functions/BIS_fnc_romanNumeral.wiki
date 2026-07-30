@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_romanNumeral
+// revision: 340860 (2023-05-12T16:49:46Z)
+// export sha1: 5o3rsrtks2nqmq7o7gragqgmfn6pmyh
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Math | Category:Function Group: Strings | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strings
+
+|gr2= Math
+
+|descr= Convert integer to roman numerals (e.g. 42 becomes "XLII").
+
+|s1= integer call [[BIS_fnc_romanNumeral]]
+
+|p1= integer: [[Number]], [[String]], [[Code]] or [[Config]], same as [[BIS_fnc_parseNumber]] (used in this function) - any '''integer''' between 1 and 3999
+
+|r1= [[String]] - roman numerals
+
+|x1= <sqf>
+1 call BIS_fnc_romanNumeral;		// returns "I"
+2035 call BIS_fnc_romanNumeral;	// returns "MMXXXV"
+3999 call BIS_fnc_romanNumeral;	// returns "MMMCMXCIX"
+</sqf>
+
+|seealso= [[BIS_fnc_ordinalNumber]] [[BIS_fnc_phoneticalWord]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20191001014600
+|text= A Roman numeral is read like this:
+<!--
+	these are ASCII Roman Numerals, but let's not use them in order to avoid copy-paste confusion :^)
+	Ⅰ Ⅴ Ⅹ Ⅼ Ⅽ Ⅾ Ⅿ
+-->
+{{{!}} class="wikitable align-center"
+{{!}}- style="font-family: serif"
+! style="font-family: sans-serif" {{!}} Numeral
+{{!}} I {{!}}{{!}} V {{!}}{{!}} X {{!}}{{!}} L {{!}}{{!}} C {{!}}{{!}} D {{!}}{{!}} M
+{{!}}-
+! Value
+{{!}} 1 {{!}}{{!}} 5 {{!}}{{!}} 10 {{!}}{{!}} 50 {{!}}{{!}} 100 {{!}}{{!}} 500 {{!}}{{!}} 1000
+{{!}}}
+
+* It is read from left to right from the biggest numeral to the lowest*, adding up:<br><small>* not entirely true, see subtractions below</small>
+** {{hl|DCLVII}} = {{hl|D}} → {{hl|C}} → {{hl|L}} → {{hl|V}} → {{hl|I}} → {{hl|I}} = 500 + 100 + 50 + 5 + 1 + 1 = 657
+* A subtraction is done by writing '''one''' smaller numeral before a big one:
+** 9 could be written {{hl|VIIII}}, or {{hl|IX}}: 1 and 10, meaning 10 - 1 = 9 / but {{hl|IIX}} for 8 does not exist, only {{hl|VIII}}
+* The same numeral can be put together multiple times, but ''usually'' (there is no standard, but the shorter version is usually preferred) up to the point where it can be subtracted from the numeral above the used one (subtraction still done with only '''one''' numeral):
+** {{hl|IIII}} = {{hl|IV}}, {{hl|CCCC}} = {{hl|CD}}
+
+Now let's see if you can translate this one: {{hl|MCMLXXXV}}. Tip: where it all started ;-) <small><small>{{hl|MCMLXXXII}} for the purists!</small></small><br>
+To learn more: '''{{Link|https://en.wikipedia.org/wiki/Roman_numerals|Roman numerals on wikipedia}}'''
+}}

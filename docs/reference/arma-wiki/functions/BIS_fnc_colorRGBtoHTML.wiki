@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_colorRGBtoHTML
+// revision: 323934 (2022-07-01T11:58:28Z)
+// export sha1: 72176p8t62f8ir0icrdji2l74f2vvim
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Arrays
+
+|descr= Converts RGB color format to HTML color format.
+
+|s1= colorArray call [[BIS_fnc_colorRGBtoHTML]]
+
+|p1= colorArray: [[Color|Color (RGBA)]] - can be [r, g, b, a] or [r, g, b], alpha value will be ignored in both cases
+
+|r1= [[String]] - format #{{Color|red|RR}}{{Color|green|GG}}{{Color|blue|BB}}
+
+|x1= <sqf>private _htmlColor = [0,0,0,1] call BIS_fnc_colorRGBtoHTML; // will return #000000</sqf>
+
+|x2= <sqf>private _htmlColor = [2,93,0,1] call BIS_fnc_colorRGBtoHTML; // will return #025D00</sqf>
+
+|seealso= [[Color|Color (RGBA)]] [[BIS_fnc_colorConfigToRGBA]] [[BIS_fnc_colorRGBAtoHTML]] [[BIS_fnc_colorRGBAtoTexture]]
+}}

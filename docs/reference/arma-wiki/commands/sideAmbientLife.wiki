@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/sideAmbientLife
+// revision: 342224 (2023-07-09T12:27:27Z)
+// export sha1: kwqtza82ospu7kykix50lzzhwu1ap1v
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Sides
+
+|descr= Returns side of ambient life, for example ambient life placed in [[:Category:Eden Editor|Eden Editor]].
+
+|s1= [[sideAmbientLife]]
+
+|r1= [[Side]]
+
+|x1= <sqf>_sideAmbientLife = sideAmbientLife;</sqf>
+
+|seealso= [[side]] [[west]] [[blufor]] [[east]] [[opfor]] [[resistance]] [[independent]] [[civilian]] [[sideLogic]] [[sideFriendly]] [[sideEnemy]] [[sideUnknown]] [[playerSide]] [[sideEmpty]]
+}}

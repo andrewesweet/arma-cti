@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/CT_STATIC_SKEW
+// revision: 170141 (2020-11-29T14:29:07Z)
+// export sha1: 3d55qub9bxxut5aykgv8z9eoacwqx95
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_STATIC_SKEW
+|value = 10
+|description = Unknown control type.
+|gallery=
+|commands =
+|events =
+}}
+
+<!-- {{CT|abc start}}
+
+{{CT|abc end}} -->
+
+{{CT|examples}}
+
+None

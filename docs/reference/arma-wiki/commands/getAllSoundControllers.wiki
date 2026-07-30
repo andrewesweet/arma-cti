@@ -1,0 +1,131 @@
+// source: https://community.bistudio.com/wiki/getAllSoundControllers
+// revision: 377631 (2026-01-02T08:52:23Z)
+// export sha1: p7ife794peup1pr1f01r7xc5qxgb044
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|gr1= Sounds
+
+|descr= Returns an array containing names and values of the sound controllers that can be used in simple expressions when configuring sounds.
+
+|s1= [[getAllSoundControllers]] vehicle
+
+|p1= vehicle: [[Object]] - a '''vehicle''' - this does not work on humans
+
+|r1= [[Array]] with [<nowiki/>["controllerA", valueA], ["controllerB", valueB], ...], controllers being, in order:
+{{Columns|4|
+* {{hl|"rpm"}}
+* {{hl|"randomizer"}}
+* {{hl|"speed"}}
+* {{hl|"thrust"}}
+* {{hl|"campos"}}
+* {{hl|"engineon"}}
+* {{hl|"rotorspeed"}}
+* {{hl|"rotorthrust"}}
+* {{hl|"angvelocity"}}
+* {{hl|"gmeterz"}}
+* {{hl|"roughness"}}
+* {{hl|"dustness"}}
+* {{hl|"damper0"}}
+* {{hl|"damper1"}}
+* {{hl|"damper2"}}
+* {{hl|"damper3"}}
+* {{hl|"rock"}}
+* {{hl|"sand"}}
+* {{hl|"grass"}}
+* {{hl|"mud"}}
+* {{hl|"gravel"}}
+* {{hl|"asphalt"}}
+* {{hl|"gear"}}
+* {{hl|"flaps"}}
+* {{hl|"rotpos"}}
+* {{hl|"water"}}
+* {{hl|"apu"}}
+* {{hl|"batteries"}}
+* {{hl|"rpmstarter"}}
+* {{hl|"rpm1"}}
+* {{hl|"rpmstarter1"}}
+* {{hl|"motordamage"}}
+* {{hl|"transmissiondamage"}}
+* {{hl|"rotorbrake"}}
+* {{hl|"slingloadactive"}}
+* {{hl|"latslip"}}
+* {{hl|"latslipdrive"}}
+* {{hl|"longslip"}}
+* {{hl|"longslipdrive"}}
+* {{hl|"scrubland"}}
+* {{hl|"scrubobject"}}
+* {{hl|"scrubtree"}}
+* {{hl|"scrubbuilding"}}
+* {{hl|"scrubarmor"}}
+* {{hl|"engineeffectivity"}}
+* {{hl|"rain"}}
+* {{hl|"wind"}}
+* {{hl|"lateralmovement"}}
+* {{hl|"playerpos"}}
+* {{hl|"rotordamage"}}
+* {{hl|"distance"}}
+* {{hl|"machcone"}}
+* {{hl|"camint"}}
+* {{hl|"camext"}}
+* {{hl|"houses"}}
+* {{hl|"meadow"}}
+* {{hl|"forest"}}
+* {{hl|"trees"}}
+* {{hl|"altRadar"}}
+* {{hl|"acceleration"}}
+* {{hl|"CustomSoundController1"}}
+* {{hl|"CustomSoundController2"}}
+* {{hl|"CustomSoundController3"}}
+* {{hl|"CustomSoundController4"}}
+* {{hl|"CustomSoundController5"}}
+* {{hl|"CustomSoundController6"}}
+* {{hl|"CustomSoundController7"}}
+* {{hl|"CustomSoundController8"}}
+* {{hl|"CustomSoundController9"}}
+* {{hl|"CustomSoundController10"}}
+* {{hl|"CustomSoundController11"}}
+* {{hl|"CustomSoundController12"}}
+* {{hl|"CustomSoundController13"}}
+* {{hl|"CustomSoundController14"}}
+* {{hl|"CustomSoundController15"}}
+* {{hl|"CustomSoundController16"}}
+* {{hl|"CustomSoundController17"}}
+* {{hl|"CustomSoundController18"}}
+* {{hl|"CustomSoundController19"}}
+* {{hl|"CustomSoundController20"}}
+* {{hl|"CustomSoundController21"}}
+* {{hl|"CustomSoundController22"}}
+* {{hl|"CustomSoundController23"}}
+* {{hl|"CustomSoundController24"}}
+* {{hl|"CustomSoundController25"}}
+* {{hl|"CustomSoundController26"}}
+* {{hl|"CustomSoundController27"}}
+* {{hl|"CustomSoundController28"}}
+* {{hl|"CustomSoundController29"}}
+* {{hl|"CustomSoundController30"}}
+* {{hl|"CustomSoundController31"}}
+* {{hl|"CustomSoundController32"}}
+}}
+
+|x1= <sqf>
+getAllSoundControllers vehicle player;
+/*
+	returns e.g
+	[
+		["rpm",0],
+		["randomizer",0.874332],
+		["speed",0],
+		["thrust",0],
+		...
+	]
+*/
+</sqf>
+
+|seealso= [[Arma 3: Sound]] [[getSoundController]] [[getSoundControllerResult]] [[getEnvSoundController]] [[getAllEnvSoundControllers]] [[getCustomSoundController]] [[setCustomSoundController]] [[getCustomSoundControllerCount]]
+}}

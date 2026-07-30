@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskState
+// revision: 352114 (2024-02-01T23:25:00Z)
+// export sha1: mc72mwlz87meb06x88p59mwmo1etfcj
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.76
+
+|gr1= Tasks
+
+|arg= global
+
+|descr= Returns task's state. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= taskID call [[BIS_fnc_taskState]]
+
+|p1= taskID: [[String]] - ID of the task
+
+|r1= [[String]] - state of the task. Can be:
+* "AUTOASSIGNED"
+* "ASSIGNED"
+* "CREATED"
+* "SUCCEEDED"
+* "FAILED"
+* "CANCELED"
+
+|x1= <sqf>"task_1" call BIS_fnc_taskState;</sqf>
+
+|x2= <sqf>["task_1"] call BIS_fnc_taskState;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

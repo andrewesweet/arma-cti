@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/setWaypointStatements
+// revision: 377577 (2026-01-02T06:56:32Z)
+// export sha1: tjs0qq2m4o7cqyipsypq8fh3uc6v6v7
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Waypoints
+
+|descr= The waypoint is done only when the condition is fulfilled. When the waypoint is done, the statement expression is executed.<br>
+Within the Condition & Statement code string:
+* [[Magic Variables#this_2|this]] refers to the group leader
+* [[Magic Variables#thisList|thisList]] refers to the group's units
+{{Feature | important | The '''Condition''' code is evaluated on the [[groupOwner|group owner]]'s machine. When condition returns [[true]], for some strange reason, the condition is evaluated one more time. The '''OnActivation''' code is executed '''[[Multiplayer Scripting#Locality|globally]]''', a.k.a on every client! See [[Waypoints]].}}
+
+|s1= waypoint [[setWaypointStatements]] [condition, statement]
+
+|p1= waypoint: [[Waypoint]]
+
+|p2= condition: [[String]]
+
+|p3= statement: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_waypoint setWaypointStatements ["true", "hint 'hello'; hint 'goodbye'"];</sqf>
+
+|x2= <sqf>_waypoint setWaypointStatements ["true", "diag_log ['GroupLeader: ', this]; diag_log ['Units: ', thislist]"];</sqf>
+
+|seealso= [[waypointStatements]]
+}}
+
+{{Note
+|user= SilentSpike
+|timestamp= 20160521161900
+|text= Within the completion statement [[currentWaypoint]] will give the index of the waypoint being completed (as opposed to the following one).<br><br>
+This is particularly useful if you need a self deleting waypoint:
+<sqf>_waypoint setWaypointStatements ["true", "deleteWaypoint [group this, currentWaypoint group this]"]</sqf>
+}}
+
+{{Note
+|user= RHfront
+|timestamp= 20170509163500
+|text= The condition block carries the same rules as functions which return a value.
+The return value must be a [[Boolean]].
+One can bypass the use of triggers in this manner:
+<sqf>_waypoint setWaypointStatements ["code code code; _returnBool", "onActivation block;"];</sqf>
+}}

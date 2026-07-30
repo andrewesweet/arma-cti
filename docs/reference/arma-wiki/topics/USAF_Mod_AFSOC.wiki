@@ -1,0 +1,338 @@
+// source: https://community.bistudio.com/wiki/USAF_Mod/AFSOC
+// revision: 82740 (2014-08-12T13:39:04Z)
+// export sha1: i8aoghda9r6gtg3ht19t2z7jpvq8y0w
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Air Force Special Operations Command Units ==
+'''Author:''' Shockley
+
+'''Other Credits:'''
+
+Fuller, Randomslap, and Deskit - USAF Mod Team
+
+Armapirx - Original Multicam Textures
+
+Raspu & Gandi - C-L-F Mods - Additional backpacks/radios for TFAR
+
+Saul & Topas - PSD Character Templates
+
+[TF]Nkey - Task Force Arrowhead Radio
+
+== Combat Control Teams (CCT) ==
+[[image:a3_usaf_mod_cct_units.jpg]]
+
+: shy_afsoc_cct_mc - Combat Controller (Multicam)
+
+: shy_afsoc_cct_wdl - Combat Controller (Woodland)
+
+: shy_afsoc_cct_dcu - Combat Controller (DCU)
+
+== Combat Rescue Officer (CRO) ==
+[[image:a3_usaf_mod_cro_units.jpg]]
+
+: shy_afsoc_cro_mc - Combat Rescue Officer (Multicam)
+
+: shy_afsoc_cro_wdl - Combat Rescue Officer (Woodland)
+
+: shy_afsoc_cro_dcu - Combat Rescue Officer (DCU)
+
+== Pararescue (PJ) ==
+[[image:a3_usaf_mod_pj_units.jpg]]
+
+: shy_afsoc_pj_mc - Pararescue Jumper (Multicam)
+
+: shy_afsoc_pj_wdl - Pararescue Jumper (Woodland)
+
+: shy_afsoc_pj_dcu - Pararescue Jumper (DCU)
+
+== Special Tactics Officer (STO) ==
+[[image:a3_usaf_mod_sto_units.jpg]]
+
+: shy_afsoc_sto_mc - Special Tactics Officer (Multicam)
+
+: shy_afsoc_sto_wdl - Special Tactics Officer (Woodland)
+
+: shy_afsoc_sto_dcu - Special Tactics Officer (DCU)
+
+== Special Operations Weather Technician (SOWT) ==
+[[image:a3_usaf_mod_sowt_units.jpg]]
+
+: shy_afsoc_sowt_mc - Special Operations Weather Technician (Multicam)
+
+: shy_afsoc_sowt_wdl - Special Operations Weather Technician (Woodland)
+
+: shy_afsoc_sowt_dcu - Special Operations Weather Technician (DCU)
+
+== TACP / Joint Terminal Attack Controller (JTAC) ==
+[[image:a3_usaf_mod_jtac_units.jpg]]
+
+: shy_afsoc_jtac_mc - Joint Terminal Attack Controller (Multicam)
+
+: shy_afsoc_jtac_wdl - Joint Terminal Attack Controller (Woodland)
+
+: shy_afsoc_jtac_dcu - Joint Terminal Attack Controller (DCU)
+
+== Uniforms ==
+: shy_usaf_soc_Soldier_F_mc - BDU: USAF (Multicam)
+
+: shy_usaf_soc_Soldier_F_mc_rs - BDU: USAF (Multicam) Rolled Sleeves
+
+: shy_usaf_soc_Soldier_F_wdl - BDU: USAF (Woodland)
+
+: shy_usaf_soc_Soldier_F_wdl_rs - BDU: USAF (Woodland) Rolled Sleeves
+
+: shy_usaf_soc_Soldier_F_dcu - BDU: USAF (DCU)
+
+: shy_usaf_soc_Soldier_F_dcu_rs - BDU: USAF (DCU) Rolled Sleeves
+
+== Vests ==
+'''Multicam'''
+
+: shy_PlateCarrier2_rgr_mc_usflag - SPCS: US Flag (Multicam)
+
+: shy_PlateCarrier2_rgr_mc_sub_usflag - SPCS: Subdued US Flag (Multicam)
+
+: shy_PlateCarrier2_rgr_mc_cct - SPCS: CCT (Multicam)
+
+: shy_PlateCarrier2_rgr_mc_cro - SPCS: CRO (Multicam)
+
+: shy_PlateCarrier2_rgr_mc_pj - SPCS: PJ (Multicam)
+
+: shy_PlateCarrier2_rgr_mc_sto - SPCS: STO (Multicam)
+
+: shy_PlateCarrier2_rgr_mc_sowt - SPCS: SOWT (Multicam)
+
+: shy_PlateCarrier2_rgr_mc_jtac - SPCS: JTAC (Multicam)
+
+'''Woodland'''
+
+: shy_PlateCarrier2_rgr_wdl_usflag - SPCS: US Flag (Woodland)
+
+: shy_PlateCarrier2_rgr_wdl_sub_usflag - SPCS: Subdued US Flag (Woodland)
+
+: shy_PlateCarrier2_rgr_wdl_cct - SPCS: CCT (Woodland)
+
+: shy_PlateCarrier2_rgr_wdl_cro - SPCS: CRO (Woodland)
+
+: shy_PlateCarrier2_rgr_wdl_pj - SPCS: PJ (Woodland)
+
+: shy_PlateCarrier2_rgr_wdl_sto - SPCS: STO (Woodland)
+
+: shy_PlateCarrier2_rgr_wdl_sowt - SPCS: SOWT (Woodland)
+
+: shy_PlateCarrier2_rgr_wdl_jtac - SPCS: JTAC (Woodland)
+
+'''Green'''
+
+: shy_PlateCarrier2_rgr_grn - SPCS: US Flag (OD Green)
+
+: shy_PlateCarrier2_rgr_rangergrn - SPCS: US Flag (Ranger Green)
+
+: shy_PlateCarrier2_rgr_green_usflag - SPCS: US Flag (Green)
+
+: shy_PlateCarrier2_rgr_green_sub_usflag - SPCS: Subdued US Flag (Green)
+
+: shy_PlateCarrier2_rgr_green_cct - SPCS: CCT (Green)
+
+: shy_PlateCarrier2_rgr_green_cro - SPCS: CRO (Green)
+
+: shy_PlateCarrier2_rgr_green_pj - SPCS: PJ (Green)
+
+: shy_PlateCarrier2_rgr_green_sto - SPCS: STO (Green)
+
+: shy_PlateCarrier2_rgr_green_sowt - SPCS: SOWT (Green)
+
+: shy_PlateCarrier2_rgr_green_jtac - SPCS: JTAC (Green)
+
+'''Tan'''
+
+: shy_PlateCarrier2_rgr_tan_usflag - SPCS: US Flag (Tan)
+
+: shy_PlateCarrier2_rgr_tan_sub_usflag - SPCS: Subdued US Flag (Tan)
+
+: shy_PlateCarrier2_rgr_tan_cct - SPCS: CCT (Tan)
+
+: shy_PlateCarrier2_rgr_tan_cro - SPCS: CRO (Tan)
+
+: shy_PlateCarrier2_rgr_tan_pj - SPCS: PJ (Tan)
+
+: shy_PlateCarrier2_rgr_tan_sto - SPCS: STO (Tan)
+
+: shy_PlateCarrier2_rgr_tan_sowt - SPCS: SOWT (Tan)
+
+: shy_PlateCarrier2_rgr_tan_jtac - SPCS: JTAC (Tan)
+
+'''Coyote'''
+
+: shy_PlateCarrier2_rgr_coyote_usflag - SPCS: US Flag (Coyote)
+
+: shy_PlateCarrier2_rgr_coyote_sub_usflag - SPCS: Subdued US Flag (Coyote)
+
+: shy_PlateCarrier2_rgr_coyote_cct - SPCS: CCT (Coyote)
+
+: shy_PlateCarrier2_rgr_coyote_cro - SPCS: CRO (Coyote)
+
+: shy_PlateCarrier2_rgr_coyote_pj - SPCS: PJ (Coyote)
+
+: shy_PlateCarrier2_rgr_coyote_sto - SPCS: STO (Coyote)
+
+: shy_PlateCarrier2_rgr_coyote_sowt - SPCS: SOWT (Coyote)
+
+: shy_PlateCarrier2_rgr_coyote_jtac - SPCS: JTAC (Coyote)
+
+'''Black'''
+
+: shy_PlateCarrier2_rgr_blk_usflag - SPCS: US Flag (Black)
+
+: shy_PlateCarrier2_rgr_blk_sub_usflag - SPCS: Subdued US Flag (Black)
+
+: shy_PlateCarrier2_rgr_blk_cct - SPCS: CCT (Black)
+
+: shy_PlateCarrier2_rgr_blk_cro - SPCS: CRO (Black)
+
+: shy_PlateCarrier2_rgr_blk_pj - SPCS: PJ (Black)
+
+: shy_PlateCarrier2_rgr_blk_sto - SPCS: STO (Black)
+
+: shy_PlateCarrier2_rgr_blk_sowt - SPCS: SOWT (Black)
+
+: shy_PlateCarrier2_rgr_blk_jtac - SPCS: JTAC (Black)
+
+== Headgear ==
+'''Booniehats'''
+
+: shy_usaf_boonie_mc - Boonie Hat (Multicam)
+
+: shy_usaf_boonie_wdl - Boonie Hat (Woodland)
+
+: shy_usaf_boonie_dcu - Boonie Hat (DCU)
+
+'''Caps'''
+
+: shy_usaf_cap_mc - Baseball Cap (Multicam)
+
+: shy_usaf_capb_headphones_blk - Black Headset + Cap
+
+: shy_usaf_capb_headphones_grn - Green Headset + Cap
+
+: shy_usaf_capb_headphones_tan - Tan Headset + Cap
+
+'''Combat Helmets'''
+
+: shy_usaf_fast_mc - Combat Helmet (Multicam)
+
+: shy_usaf_fast_wdl  - Combat Helmet (Woodland)
+
+: shy_usaf_fast_grn - Combat Helmet (Green)
+
+'''Green'''
+
+: shy_usaf_fast_grn_abneg - Combat Helmet w/ AB- Blood Type Patch (Green)
+
+: shy_usaf_fast_grn_abpos - Combat Helmet w/ AB+ Blood Type Patch (Green)
+
+: shy_usaf_fast_grn_bneg - Combat Helmet w/ B- Blood Type Patch (Green)
+
+: shy_usaf_fast_grn_bpos - Combat Helmet w/ B+ Blood Type Patch (Green)
+
+: shy_usaf_fast_grn_aneg - Combat Helmet w/ A- Blood Type Patch (Green)
+
+: shy_usaf_fast_grn_apos - Combat Helmet w/ A+ Blood Type Patch (Green)
+
+: shy_usaf_fast_grn_oneg - Combat Helmet w/ O- Blood Type Patch (Green)
+
+: shy_usaf_fast_grn_opos - Combat Helmet w/ O+ Blood Type Patch (Green)
+
+'''Tan'''
+
+: shy_usaf_fast_tan_abneg - Combat Helmet w/ AB- Blood Type Patch (Tan)
+
+: shy_usaf_fast_tan_abpos - Combat Helmet w/ AB+ Blood Type Patch (Tan)
+
+: shy_usaf_fast_tan_bneg - Combat Helmet w/ B- Blood Type Patch (Tan)
+
+: shy_usaf_fast_tan_bpos - Combat Helmet w/ B+ Blood Type Patch (Tan)
+
+: shy_usaf_fast_tan_aneg - Combat Helmet w/ A- Blood Type Patch (Tan)
+
+: shy_usaf_fast_tan_apos - Combat Helmet w/ A+ Blood Type Patch (Tan)
+
+: shy_usaf_fast_tan_oneg - Combat Helmet w/ O- Blood Type Patch (Tan)
+
+: shy_usaf_fast_tan_opos - Combat Helmet w/ O+ Blood Type Patch (Tan)
+
+'''Coyote'''
+
+: shy_usaf_fast_coyote_abneg - Combat Helmet w/ AB- Blood Type Patch (Coyote)
+
+: shy_usaf_fast_coyote_abpos - Combat Helmet w/ AB+ Blood Type Patch (Coyote)
+
+: shy_usaf_fast_coyote_bneg - Combat Helmet w/ B- Blood Type Patch (Coyote)
+
+: shy_usaf_fast_coyote_bpos - Combat Helmet w/ B+ Blood Type Patch (Coyote)
+
+: shy_usaf_fast_coyote_aneg - Combat Helmet w/ A- Blood Type Patch (Coyote)
+
+: shy_usaf_fast_coyote_apos - Combat Helmet w/ A+ Blood Type Patch (Coyote)
+
+: shy_usaf_fast_coyote_oneg - Combat Helmet w/ O- Blood Type Patch (Coyote)
+
+: shy_usaf_fast_coyote_opos - Combat Helmet w/ O+ Blood Type Patch (Coyote)
+
+== Backpacks ==
+: shy_usaf_ruck_multicam - Combat Pack (Multicam)
+
+: shy_usaf_ruck_grn - Combat Pack (Green)
+
+: shy_usaf_ruck_woodland - Combat Pack (Woodland)
+
+: shy_usaf_ruck_dcu - Combat Pack (DCU)
+
+: shy_usaf_ruck_tan - Combat Pack (Tan)
+
+: shy_usaf_ruck_coyote - Combat Pack (Coyote)
+
+: shy_usaf_ruck_black - Combat Pack (Black)
+
+== Radio Backpacks == 
+Requires: Task Force Arrowhead Radio Addon
+
+: shy_prc117g_ap - AN/PRC-117G
+
+: shy_prc117g_ap_multi - AN/PRC-117G (Multicam)
+
+: shy_prc117g_ap_coy - AN/PRC-117G (Coyote)
+
+: shy_prc117g_ap_blk - AN/PRC-117G (Black)
+
+: shy_prc117g_ap_grn - AN/PRC-117G (Green)
+
+: shy_nicecomm2 - AN/PRC-117G Falcon III
+
+: shy_nicecomm2_multi - AN/PRC-117G Falcon III (Multicam)
+
+: shy_nicecomm2_coy - AN/PRC-117G Falcon III (Coyote)
+
+: shy_nicecomm2_blk - AN/PRC-117G Falcon III (Black)
+
+: shy_nicecomm2_grn - AN/PRC-117G Falcon III (Green)
+
+: shy_nicecomm2_prc117g - AN/PRC-117G NICE COMM2
+
+: shy_nicecomm2_prc117g_multi - AN/PRC-117G NICE COMM2 (Multicam)
+
+: shy_nicecomm2_prc117g_coy - AN/PRC-117G NICE COMM2 (Coyote)
+
+: shy_nicecomm2_prc117g_blk - AN/PRC-117G NICE COMM2 (Black)
+
+: shy_nicecomm2_prc117g_grn - AN/PRC-117G NICE COMM2 (Green)
+
+: shy_trc9110 - TRC 9110 Handheld
+
+
+== Night Vision ==
+: shy_usaf_NVGoggles_blk - NV Goggles (Black) (Full Screen)
+
+: shy_usaf_NVGoggles_grn - NV Goggles (Green) (Full Screen)
+
+: shy_usaf_NVGoggles_tan - NV Goggles (Tan) (Full Screen)

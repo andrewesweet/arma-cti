@@ -1,0 +1,96 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Mission_Voting
+// revision: 378798 (2026-06-17T09:21:38Z)
+// export sha1: kvm3r4fxkq91h8fiv78hc6v6ikatjos
+// categories: Category:Arma 3: Multiplayer | Category:Introduced with Arma 3 version 1.40
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GVI|arma3|1.40}}
+
+Documentation for server-side voting settings.
+
+
+== Global Voting Settings ==
+
+Global voting settings are used if no voting threshold defined in allowedVoteCmds or/and allowedVotedAdminCmds
+<syntaxhighlight lang="cpp">
+voteThreshold = <number>;		// Percentage of votes needed to confirm a vote. 
+voteMissionPlayers = <number>;	// Start mission-voting when ''X'' numberOfPlayers connect.
+</syntaxhighlight>
+
+
+== Advanced Voting Settings ==
+
+=== Format ===
+
+: '''allowedVoteCmds[] = { {''' ''<commandName>'', ''<preMissionStart>'', ''<postMissionStart>'', ''<votingThreshold>'' '''}, ... };''', where:
+:* ''<commandName>'': [[String]] - name of the command, for example {{hl|"admin"}}
+:* ''<preMissionStart>'' (Optional): [[Boolean]] - [[true]] to allow command before mission start. Default: [[true]]
+:* ''<postMissionStart>'' (Optional): [[Boolean]] - [[true]] to allow command after mission start. Default: [[true]]
+:* ''<votingThreshold>'' (Optional): [[Number]] - voting threshold 0...1. Default: value assigned to {{hl|voteThreshold}} param. Otherwise 0.5
+:* ''<percentSideVotingThreshold>'' (Optional): [[Number]] - percent side threshold 0...1. Default: 0.5 (since Arma 3 1.90+ PerformaceBranch)
+
+{{Feature|informative|Not using/specifying ''allowedVoteCmds[]'' param at all means every voting command is allowed!}}
+
+=== Examples ===
+
+<syntaxhighlight lang="cpp">
+allowedVoteCmds[] = {}; // voting is disabled (not a single command is allowed)
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+allowedVoteCmds[] =
+{
+	{ "admin" },								// will default to {"admin", true, true, 0.5}
+	{ "missions",	true,	false, 0.5 },		// not available after mission start
+	{ "mission",	true,	true },				// will use global {{hl|voteThreshold}}
+	{ "kick",		false,	false, 0.75 },		// not available at all
+	{ "restart",	true,	true, -1 },			// invalid threshold value. Will default to global {{hl|voteThreshold}}
+	{ "reassign",	false,	true, 0.5 },		// not available before mission start
+	{ "kick",		true,	true, 0.55, 0.30 }	// means kicked in case either 55% of all players
+												// or 30% of players from his side (west, east, resistance, civilian) voted to kick him
+};
+</syntaxhighlight>
+
+=== allowedVotedAdminCmds ===
+
+; Definition of available commands for voted-in admins (this doesn't affect abilities of normal server admins)<nowiki>:</nowiki>
+: <syntaxhighlight lang="cpp">
+allowedVotedAdminCmds[] = { { "CMD1", pre-init, post-init }, { "CMD2", pre-init, post-init }, ... , { "CMDn", pre-init, post-init } };
+</syntaxhighlight>
+
+Second and third parameter are optional. If not specified otherwise, they are true by default. (pre-init means prior to mission start, post-init means after a mission started)
+{{Feature|important|
+* Not listing any command (<syntaxhighlight lang="cpp" inline>allowedVotedAdminCmds[] = {};</syntaxhighlight>) means such commands are disabled for voted-in admin.
+* Not specifing allowedVotedAdminCmds at all means everything is allowed anytime for voted-in admin!
+}}
+
+Commands available for voted admins:
+<syntaxhighlight lang="cpp">
+allowedVotedAdminCmds[] =
+{
+	{ "mission",	true, true },
+	{ "missions",	true, true },
+	{ "restart",	true, true },
+	{ "reassign",	true, true },
+	{ "kick",		true, true }
+};
+</syntaxhighlight>
+
+
+== See Also ==
+
+* [[Arma 3: Server Config File|server config]]
+* [[ArmA: Server configuration|Server Configuration]] 
+* [[Armed Assault:Dedicated Server]]
+* [[ArmA: Server Side Scripting]]
+* [[Operation Flashpoint: Dedicated Server]]
+* [[Arma 3: Headless Client]]
+* [[Arma 3: Server Security]]
+* [[Arma: Mission rotation]]
+* [[Arma 2 Mission Rotation]]
+* [[Arma 2 OA: Multiple Mission Parameters Configuration]]
+
+
+{{GameCategory|arma3|Multiplayer}}
+[[Category:Introduced with {{arma3}} version 1.40]]

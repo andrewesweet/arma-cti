@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moveMarker
+// revision: 351272 (2023-11-26T14:20:51Z)
+// export sha1: ey63dmlh2ypwbvyszqrxwm5736xs84z
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Map and Markers
+
+|arg= global
+
+|eff= global
+
+|descr= Moves marker to a new position
+
+|s1= [marker, newPosition, duration, interpolationType] call [[BIS_fnc_moveMarker]]
+
+|p1= marker: [[String]] - marker
+
+|p2= newPosition: [[Array]] - new position
+
+|p3= duration: [[Number]] - (Optional, default 5) how long it takes to move the marker in seconds
+
+|p4= interpolationType: [[Number]] - (Optional, default 4) can be one of:
+{{Columns|3|
+* 0: LINEAR
+* 1: CUBIC
+* 2: EASEIN
+* 3: EASEOUT
+* 4: EASEINOUT
+* 5: HERMITE
+* 6: BERP
+* 7: BOUNCEIN
+* 8: BOUNCEOUT
+* 9: BOUNCEINOUT
+* 10: QUINTICIN
+* 11: QUINTICOUT
+* 12: QUINTICINOUT
+<!-- * 13: CONSTANT -->
+}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["BIS_marker", [1111,2222,0]] call BIS_fnc_moveMarker;</sqf>
+
+|x2= <sqf>["BIS_marker", getMarkerPos "BIS_marker2", 2, 9] call BIS_fnc_moveMarker;</sqf>
+
+|seealso= [[BIS_fnc_cancelMarker]] [[BIS_fnc_blinkMarker]] [[BIS_fnc_getMarkers]] [[BIS_fnc_rotateMarker]] [[BIS_fnc_resizeMarker]]
+}}

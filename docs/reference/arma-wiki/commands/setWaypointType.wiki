@@ -1,0 +1,91 @@
+// source: https://community.bistudio.com/wiki/setWaypointType
+// revision: 377747 (2026-01-03T00:58:00Z)
+// export sha1: oidwtw3a98szfa53x09zmbtz1rr27hs
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Waypoints
+
+|descr= Sets the waypoint type of given waypoint. 
+
+More details at [[Waypoints]].
+
+|s1= waypoint [[setWaypointType]] type
+
+|p1= waypoint: [[Waypoint]]
+
+|p2= type: [[String]] - waypoint type. Can be:
+{{Columns|4|
+* {{hl|"MOVE"}}
+* {{hl|"DESTROY"}}
+* {{hl|"GETIN"}}
+* {{hl|"SAD"}} ''(Seek And Destroy)''
+* {{hl|"JOIN"}}
+* {{hl|"LEADER"}}
+* {{hl|"GETOUT"}}
+* {{hl|"CYCLE"}}
+* {{hl|"LOAD"}}
+* {{hl|"UNLOAD"}}
+* {{hl|"TR UNLOAD"}}
+* {{hl|"HOLD"}}
+* {{hl|"SENTRY"}}
+* {{hl|"GUARD"}} <small>(used with GUARDED BY trigger or [[createGuardedPoint]])</small>
+* {{hl|"TALK"}}
+* {{hl|"SCRIPTED"}}
+* {{hl|"SUPPORT"}}
+* {{hl|"GETIN NEAREST"}}
+* {{hl|"DISMISS"}}
+* {{hl|"LOITER"}} <small>({{arma3}})</small>
+* {{GVI|arma3|1.34|size= 0.75}} {{hl|"HOOK"}} <small>(slingload object)</small>
+* {{GVI|arma3|1.34|size= 0.75}} {{hl|"UNHOOK"}} <small>(slingload drop)</small>
+* {{hl|"AND"}} <small>(only for game logics)</small>
+* {{hl|"OR"}} <small>(only for game logics)</small>
+}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_myWaypoint setWaypointType "HOLD";</sqf>
+
+|seealso= [[2D Editor: Waypoints#Select Type|Waypoints Types]] [[waypointType]]
+}}
+
+{{Note
+|user= ArmAtec
+|timestamp= 20071123074400
+|text= Using '''MOVE''' on a game logic group will move the logic to the set location just like [[setPos]]. In the editor, only '''AND''' and '''OR''' type of waypoints are available for GAME LOGICS but you can use CYCLE type as well with [[setWaypointType]].
+}}
+
+{{Note
+|user= RHfront
+|timestamp= 20170506160900
+|text= To use the '''LAND''' function in a waypoint, you must set ''"A3\functions_f\waypoints\fn_wpLand.sqf"'' as the script for that waypoint.
+}}
+
+{{Note
+|user= Nelis75733126
+|timestamp= 20170530091400
+|text= In '''{{arma3}} v1.70''', if you add a '''MOVE''' waypoint very soon after a '''LOITER''' waypoint, (assuming that the index of the MOVE waypoint is HIGHER than the index of the LOITER waypoint) then the LOITER waypoint will be considered as a MOVE waypoint.<br>
+And, if you add another waypoint after ( for example ) more than 1 second after adding the LOITER waypoint,
+then the LOITER waypoint will never complete even when its condition has been met.<br>
+There are two ways to quit an existing LOITER waypoint that was added more than about 1 second before adding a MOVE waypoint:
+* use the {{Link|setCurrentWaypoint|setCurrentWaypoint}} command
+* create a waypoint that has the same ID as the LOITER waypoint.
+The difference between those two methods is that the latter prevents the LOITER waypoint from executing its statement.
+}}

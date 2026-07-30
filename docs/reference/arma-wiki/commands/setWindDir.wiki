@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/setWindDir
+// revision: 377549 (2026-01-02T06:54:45Z)
+// export sha1: qqm5cfvvi3w9a70b3zahehwhkctiki0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|eff= global
+
+|serverExec= y
+
+|descr= Changes the wind direction smoothly.
+
+|mp= Effect is global only when executed on the server. On clients wind direction will sync to server value in a while.
+
+|s1= time [[setWindDir]] value
+
+|p1= time: [[Number]] - transition time in seconds. {{hl|0}} will cause the change to be immediate
+
+|p2= value: [[Number]] - azimuth
+
+|r1= [[Nothing]]
+
+|s2= [[setWindDir]] direction
+
+|p21= direction: [[Position#Introduction|Position2D]] - flat wind direction and strength
+
+|r2= [[Nothing]]
+
+|x1= <sqf>60 setWindDir 180;</sqf>
+
+|x2= <sqf>setWindDir [1, -15];</sqf>
+
+|seealso= [[windDir]]
+
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20140412204600
+|text= Seems to make wind [0, 0] in MP. ({{arma3}} v1.00)
+}}

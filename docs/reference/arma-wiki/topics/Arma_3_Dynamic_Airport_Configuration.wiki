@@ -1,0 +1,111 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Dynamic_Airport_Configuration
+// revision: 363297 (2024-03-26T10:54:12Z)
+// export sha1: o11er3djpvll5r3mgii6v8uiq05yq5f
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Arma 3 Jets|Jets DLC]] introduced a new feature which is creating landing strips dynamically, instead of them being hardcoded in the terrain config.
+This feature was necessary to create and configure the '''USS Freedom aircraft carrier''', to allow AI and autopilot land there.
+
+For this purpose, a new base class in the core config has been introduced, and by inheriting from this class, there can be created and object placeable even in 3Den editor.
+<syntaxhighlight lang="cpp">
+class AirportBase : NonStrategic
+{
+	simulation = "airport";
+
+	ilsPosition[] = { -270, 0 };
+	ilsDirection[] = { -1, 0.08, 0 };
+	ilsTaxiIn[] = { 40, -38, -212, -38, -218, -32, -218, -10, -200, 0 };
+	ilsTaxiOff[] = { 20, 0, 240, 0, 250, -10, 250, -30, 245, -35, 240, -38, 40, -38 };
+};
+</syntaxhighlight>
+
+The parameters above are a series of plotted coordinates, which define the layout and the direction of the airfield. The coordinates used to plot these points are from X,Y,Z positioning system.
+Unlike with airports in terrain config, where the points are set of an absolute coordinates when it comes to the terrain, dynamic airport's points are relative to the "model centre" - in other words, [0,0] coordinates.
+Seeing that dynamic airport is a set of nodes, it is often difficult to determine visually, and for creating it is configuration. Personally, I recommend usage of squared paper :)
+
+Placing the airport in 3DEN allows to see its shape in the map view (2D map), as well it is rotation. However, in 3D it is basically invisible.
+This is an example of the airport shape with the configuration above (not rotated in 3DEN):
+
+[[File:ils_old.jpg]]
+
+
+== Airfield Parameters ==
+
+'''ilsPosition''' - touchdown / takeoff position. This position has three purposes:
+* Position, which the aircraft will aim for the touchdown - quite often the aircraft misses this point and touches down after it, so please keep it in mind when plotting this position
+* Start position for the takeoff
+* First set of coordinates for '''ilsTaxiOff''' position
+* Format is [x,y]
+* Represented by blue dot on the picture below
+'''ilsDirection''' - defines the land / takeoff direction as well as the landing glide slope
+* There can be only one direction for both landing and takeoff per runway
+* Three values need to be input - defining a point in 3D relative to the '''ilsPosition'''
+* Format is [x,z,y]
+* Represented by black arrow on the picture below
+* Formula for working out the values (opposite of landing direction - add/subtract 180 from the angle of the direction):
+<syntaxhighlight lang="cpp">
+ilsDirection [] = {sin(opposite of desired landing direction in degrees), sin(desired glideslope in degrees), cos(opposite of desired landing direction in degrees)};
+</syntaxhighlight>
+'''ilsTaxiOff''' - path to taxi off the runway
+* A series of X, Y coordinates(waypoints) used by AI to taxi off the end of the runway.
+* Represented by green set of dots on the picture below
+'''ilsTaxiIn''' - path to taxi onto the runway
+* A series of X, Y co-ordinates (waypoints) used by AI to taxi on to the start of the runway.
+* Represented by red set of dots on the picture below
+
+[[File:airstripsmall.png]]
+
+
+== Aircraft Carrier Landing ==
+
+As this feature has been introduced mainly because of USS Freedom, there is several things worth noting with usage on the aircraft carrier:
+* The landing strip for aircraft carrier is very short
+* Not every plane will be able to land on carriers, and instead the autopilot will land on other nearest airport
+* Dynamic airport was added to the carrier by a script.
+
+To allow the plane AI / autopilot to land on carrier, is has to have following parameter in it is class:
+<syntaxhighlight lang="cpp">
+// config.cpp
+class Plane_Fighter_01_Base_F : Plane_Base_F
+{
+	// ...
+	tailhook = true;
+	// ...
+};
+</syntaxhighlight>
+
+For script-placed airports which are part of another asset, it might be wise to create the airport already with shape and direction intended, as the currently available might not be ideal for every asset.
+
+
+Carrier dynamic airport has also specific parameter to be distinguish from the ones on the land.
+
+'''USS Freedom dynamic airport''' configuration (for original use in the editor for development purposes and tweaking), together with (unrotated) picture of it is shape:
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class AirportBase;
+	class DynamicAirport_01_F : AirportBase
+	{
+		scope = 1;
+		displayName = "Dynamic Airport";
+		DLC = Jets;
+
+		editorCategory = "EdCat_Structures";
+		editorSubcategory = "EdSubcat_AircraftCarrier";
+		icon = iconObject_1x1;
+
+		// airplanes with "tailHook = true" will be able to land here
+		isCarrier = true;
+
+		ilsPosition[] = { -5, 150 };
+		ilsDirection[] = { -0.5, 0.08, 3 };
+		ilsTaxiIn[] = { 40, -60, 35, -80, 25, -80, 20, -70, -10, 110 };
+		ilsTaxiOff[] = { 40, -60, 35, -80, 25, -80, 20, -70, -10, 110 };
+	};
+};
+</syntaxhighlight>
+[[File:ils new.jpg]]
+
+
+{{GameCategory|arma3|Editing}}

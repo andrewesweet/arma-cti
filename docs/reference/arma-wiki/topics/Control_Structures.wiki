@@ -1,0 +1,416 @@
+// source: https://community.bistudio.com/wiki/Control_Structures
+// revision: 363911 (2024-04-25T21:29:06Z)
+// export sha1: cakkdz0yyiu4rleac67juohld5uku2m
+// categories: Category:Syntax
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+'''Control Structures''' are [[Statement|statements]] which are used to control execution flow in the scripts. They are sequences of scripting code which help to control complex procedures. You can use control structures to define code which is only executed under certain conditions or repeated for a couple of times.
+
+'''''Note for advanced readers:''' in the [[Virtual Reality]] scripting language control structures are normal scripting commands, with no special handling compared to other commands. This is different from most imperative programming languages (like C), where control statements are implemented in the core language grammar. The "controlling" done by them is implemented by accepting [[Code|code]] as an argument. The complex control structures like "[[while]] ... [[do]] ..." are implemented using helper types, like [[While Type]].''
+
+
+== Requirements ==
+
+To fully understand this article you should read the following articles:
+
+* [[Introduction to Arma Scripting]]
+* [[Variables]]
+* [[Operators]]
+
+
+== Conditional Structures ==
+
+'''Conditional structures''' help to define code which is only executed under certain circumstances. Often you will write code that depends on the game state, on other code or other conditions.
+
+=== {{hl|[[if]]}}-Statement ===
+
+The {{hl|if}}-statement defines code that is only executed '''if''' a certain condition is met. The syntax of it looks like that:
+
+ [[if]] (CONDITION) [[then]] {{cc|The round braces are optional}}
+ {
+ 	STATEMENT;
+ 	...
+ };
+
+* {{hl|CONDITION}} is a [[Boolean]] [[Statement|statement]] or [[Variables|variable]] which returns either {{hl|true}} or {{hl|false}}. The code nested in the following [[Block|block]] is only executed if the condition is {{hl|true}}, else ignored.
+* {{hl|STATEMENT}} is a custom sequence of [[Statement|statements]]. That may be commands, assignments, control structures etc.
+
+'''Example:'''
+<sqf>
+if (_temperature < 0) then
+{
+	hint "Snow!";
+};
+</sqf>
+
+In this example, first the value of {{hl|_temperature}} is checked:
+* If the value is 0 or greater than 0, the nested code is ignored.
+* If the value is less than 0, the command {{hl|hint "Snow!";}} is executed.
+
+==== Alternative Code ([[else]]) ====
+You can also define ''alternative'' code that is executed, when the condition is ''not'' {{hl|true}}.
+
+ [[if]] (CONDITION) [[then]]
+ {
+ 	STATEMENT1;
+ 	...
+ }
+ [[else]]
+ {
+ 	STATEMENT2;
+ 	...
+ };
+
+Another way of specifying an alternative code is done by feeding a 2-dimensional [[Array]] of [[Code]] into the [[then]] like this (but this alternative is CPU-heavier):
+
+ [[if]] (CONDITION) [[then]] [{STATEMENT1; ...}, {STATEMENT2; ...}];
+
+In fact the above syntax with the Array is the only possible syntax as [[else]] does nothing else than taking the code to its left and the one to its right and packs them both into an [[Array]] of [[Code]] which is then fed into the [[then]] operator. But using [[else]] is just as fine and in most cases better in case of readability of your code.<br>
+Here you have a second sequence of [[Statement|statements]] executed when {{hl|CONDITION}} is {{hl|false}}.
+
+==== Conditional assignments ====
+{{hl|if..then}} structures can also be used to assign conditional values to variables:
+<sqf>_living = if (alive player) then { true } else { false };</sqf>
+
+==== SQS syntax (deprecated) ====
+{{Feature|warning|[[SQS Syntax]] is deprecated; [[SQF Syntax]] should be used instead.}}
+Within [[SQS Syntax]] the use of [[goto]] labels is a way to execute more than one statement within if...then structures.
+
+ [[if]] (CONDITION) [[then]] { [[goto]] "label" }
+ ... some other statements
+ #label
+   statement1
+   statement2
+   statement3
+
+
+'''Example 1: (without [[else]])'''
+<sqs>
+if (_temperature < 0) then { goto "Snow" }
+; ... some other statements
+
+#Snow
+  hint "Snow!"
+  echo "There is snow!"
+  variable = text "Hey. Snow outside."
+</sqs>
+
+
+'''Example 2: (with [[else]])'''
+<sqs>
+if (_temperature < 0) then { goto "Snow" } else { goto "Sunshine" }
+; ... some other statements
+goto "Continue"
+#Snow
+  hint "Snow!"
+  echo "There is snow!"
+  variable = text "Hey. Snow outside."
+  goto "Continue"
+
+#Sunshine
+  hint "No Snow but sunshine!"
+  echo "There is no snow!"
+  variable = text "Hey. No snow outside."
+  goto "Continue"
+
+#Continue
+; ...
+</sqs>
+
+==== Nested {{hl|[[if]]}}-Statements ====
+Since the {{hl|if}}-statement is itself a [[Statement|statement]], you can also create '''nested {{hl|if}}-statements'''.
+
+'''Example:'''
+<sqf>
+if (alive player) then
+{
+	if (someAmmo player) then
+	{
+		hint "The player is alive and has ammo!";
+	}
+	else
+	{
+		hint "The player is out of ammo!";
+	};
+}
+else
+{
+	hint "The player is dead!";
+};
+</sqf>
+
+{{ArgTitle|3|{{hl|[[switch]]}}-Statement|{{GVI|arma1|1.00}}}}
+
+In some cases you may want to check a [[Variables|variable]] for several values and execute different code depending on the value.
+With the above knowledge you could just write a sequence of {{hl|if}}-statements.
+<sqf>
+if (_color == "blue") then
+{
+	hint "What a nice color";
+}
+else
+{
+	if (_color == "red") then
+	{
+		hint "Don't you get aggressive?";
+	}
+};
+</sqf>
+
+The more values you want to compare, the longer gets this sequence. That is why the simplified {{hl|switch}}-statement was introduced.
+
+The {{hl|switch}}-statement compares a variable against different values:
+
+ [[switch]] (VARIABLE) [[do]]
+ {
+ 	[[case]] VALUE1:
+ 	{
+ 		STATEMENT;
+ 		...
+ 	};
+ 	[[case]] VALUE2:
+ 	{
+ 		STATEMENT;
+ 		...
+ 	};
+ 	...
+ };
+
+The structure compares {{hl|VARIABLE}} against all given values ({{hl|VALUE1}}, {{hl|VALUE2}}, ...). If any of the values matches, the corresponding block of statements is executed.
+
+'''Example:'''
+<sqf>
+[switch (_color) do
+{
+	case "blue":
+	{
+		hint "What a nice color";
+	};
+	case "red":
+	{
+		hint "Don't you get aggressive?";
+	};
+};
+</sqf>
+
+==== {{hl|[[default]]}}-Block ====
+In some cases you may want to define alternative code that is executed, when none of the values matches. You can write this code in a {{hl|default}}-Block.
+
+ [[switch]] (VARIABLE) [[do]]
+ {
+ 	[[case]] VALUE1:
+ 	{
+ 		STATEMENT;
+ 		...
+ 	};
+ 	[[case]] VALUE2:
+ 	{
+ 		STATEMENT;
+ 		...
+ 	};
+ 	...
+ 	[[default]] {{cc|No colon behind '''default'''}}
+ 	{
+ 		STATEMENT;
+ 		...
+ 	};
+ };
+
+==== Variable Assignments ====
+Switch can be used to assign different values to a variable:
+<sqf>
+private _color = switch (side player) do
+{
+	case west: { "ColorGreen" };
+	case east: { "ColorRed" };
+};
+</sqf>
+
+
+== Loops ==
+
+'''Loops''' are used to execute the same [[Block|code block]] for a specific or unspecific number of times.
+
+=== {{hl|[[while]]}}-Loop ===
+
+This loop repeats the same code block as long as a given [[Boolean]] condition is {{hl|true}}.
+
+ [[while]] {CONDITION} [[do]] {{cc|Note the curly braces}}
+ {
+ 	STATEMENT;
+ 	...
+ };
+
+'''Description:'''
+
+# {{hl|CONDITION}} is evaluated. If it is {{hl|true}}, go on to 2., else skip the block and go on with the code following the loop.
+# Execution of all nested [[Statement|statements]]. Go back to 1.
+
+If {{hl|CONDITION}} is {{hl|false}} from the beginning on, the statements within the block of the loop will never be executed.
+
+Because the test of the while expression takes place before each execution of the loop, a while loop executes zero or more times.
+
+'''Example:'''
+<sqf>
+private _counter = 0;
+
+while { _counter < 10 } do
+{
+	_counter = _counter + 1;
+};
+</sqf>
+
+{{ArgTitle|3|{{hl|[[for]]}}-Loop|{{GVI|arma1|1.00}}}}
+
+The {{hl|for}}-loop repeats the same code block for a specific number of times.
+
+ [[for]] [{BEGIN}, {CONDITION}, {STEP}] [[do]]
+ {
+ 	STATEMENT;
+ 	...
+ };
+
+* {{hl|BEGIN}} is a number of [[Statement|statements]] executed ''before'' the loop starts
+* {{hl|CONDITION}} is a [[Boolean]] condition evaluated ''before'' each loop
+* {{hl|STEP}} is a number of statements executed ''after'' each loop
+
+The loop processes as follows:
+
+# {{hl|BEGIN}} is executed
+# {{hl|CONDITION}} is evaluated. If it is {{hl|true}}, go on to 3., else skip the block and go on with the code following the loop.
+# The statements in the code block are executed
+# {{hl|STEP}} is executed, go on to 2.
+
+If {{hl|CONDITION}} is {{hl|false}} from the beginning on, the code block will never be executed.
+
+'''Example:'''
+<sqf>
+for [{ _i = 0 }, { _i < 10 }, { _i = _i + 1 }] do // a loop repeating 10 times
+{
+	player globalChat format ["%1", _i];
+};
+</sqf>
+will display "0" then "1" then "2" then "3" then "4" then "5" then "6" then "7" then "8" then "9".
+
+'''Description:'''
+# The variable {{hl|_i}} is set to 0
+# The condition {{hl|_i < 10}} is evaluated, which is {{hl|true}} until {{hl|_i}} surpasses 9.
+# The code {{hl|player globalChat _i;}} is executed
+# The variable {{hl|_i}} is incremented by 1, back to step 2.
+
+==== {{hl|[[for]]}}-{{hl|[[from]]}}-{{hl|[[to]]}}-Loop ====
+There exists an alternate syntax of the {{hl|for}}-loop, which simplifies the last example a bit.
+
+ [[for]] "VARNAME" [[from]] STARTVALUE [[to]] ENDVALUE [[do]]
+ {
+ 	STATEMENT;
+ 	...
+ };
+
+* {{hl|VARNAME}} is any name given to the variable used to count the loop
+* {{hl|STARTVALUE}} is a [[Number]] value given to the counter variable before the loop starts
+* {{hl|ENDVALUE}} is a [[Number]] value until which the counter is incremented
+{{Feature|important| Note: Unless using a custom [[step]] as seen below, ENDVALUE must be greater than STARTVALUE for the loop to execute}}
+
+The loop processes as follows:
+
+#A variable with the name {{hl|VARNAME}} is initialized with {{hl|STARTVALUE}}
+#If {{hl|VARNAME}} does not exceed {{hl|ENDVALUE}}, the code block will be executed.
+#The variable {{hl|VARNAME}} is incremented by 1
+#Go back to step 2
+
+The following example is semantically equal to the last example.
+
+'''Example:'''
+<sqf>
+for "_i" from 0 to 9 do // a loop repeating 10 times
+{
+	player globalChat format ["%1", _i];
+};
+</sqf>
+
+'''Description:'''
+# {{hl|_i}} is set to 0
+# {{hl|player globalChat 0}} is executed
+# {{hl|_i}} is incremented by 1 => {{hl|_i}} is now 1
+# Back to step 2
+
+==== {{hl|[[for]]}}-{{hl|[[from]]}}-{{hl|[[to]]}}-Loop with custom {{hl|[[step]]}} ====
+The default step to increment the variable in {{hl|for}}-{{hl|from}}-{{hl|to}}-Loops is 1. You can set a custom step though using this syntax:
+
+ [[for]] "VARNAME" [[from]] STARTVALUE [[to]] ENDVALUE [[step]] STEP [[do]]
+ {
+ 	STATEMENT;
+ 	...
+ };
+
+* {{hl|STEP}} is a [[Number]] which defines the step by which the variable is incremented every loop
+{{Feature|important| Note: Utilizing this method, you can perform loops where VARNAME decrements by using a negative [[step]] value combined with a STARTVALUE that is greater than ENDVALUE}}
+
+The rest is equal to the above section.
+
+'''Example:'''
+<sqf>
+for "_i" from 0 to 9 step 2 do // a loop repeating 5 times
+{
+	player globalChat format ["%1", _i];
+};
+</sqf>
+
+'''Description:'''
+
+# {{hl|_i}} is set to 0
+# {{hl|player globalChat 0}} is executed
+# {{hl|_i}} is incremented by 2 => {{hl|_i}} is now 2
+# Back to step 2
+
+=== {{hl|[[forEach]]}}-Loop ===
+
+You will often use the {{hl|forEach}}-loop to increment over [[Array|arrays]].
+It repeats the same code block for every item in an array.
+
+ {
+ 	STATEMENT;
+ 	...
+ } [[forEach]] ARRAY;
+
+The code block is executed exactly {{hl|([[count]] ARRAY)}} times.
+
+You may use the [[Magic Variables|magic variable]] {{hl|_x}} within the code block, which always references to the current item of the array.
+Magic variable {{hl|_foreachindex}} contains current index of the _x element in ARRAY.
+
+'''Example:'''
+<sqf>
+private _array = [unit1, unit2, unit3];
+
+{
+	_x setDamage 1;
+}
+forEach _array;
+</sqf>
+
+'''Description:'''
+# In the first loop, the statement {{hl|unit1 setDamage 1;}} is executed
+# In the second loop, the statement {{hl|unit2 setDamage 1;}} is executed
+# In the third loop, the statement {{hl|unit3 setDamage 1;}} is executed
+
+{{Feature|warning|Each iteration will be executed within one frame, even if it consists of multiple instructions. So be aware of large and/or complex code blocks!}}
+
+
+== Return Values ==
+
+Control structures always return the '''last [[expression]] evaluated''' within the structure.
+
+'''Example:'''
+<sqf>if (myCondition) then { myValueA; } else { myValueB; }; // returns myValueA or myValueB</sqf>
+
+
+== See Also ==
+
+* [[:Category:Command Group: Program Flow|Command Group: Program Flow]]
+* [[Statement]]
+* [[Expression]]
+
+
+[[Category: Syntax]]

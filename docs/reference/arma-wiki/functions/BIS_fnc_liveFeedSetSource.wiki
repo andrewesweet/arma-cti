@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_liveFeedSetSource
+// revision: 328602 (2022-07-13T17:02:31Z)
+// export sha1: k08fx07rscccj8ozg432y0yvqkn34nk
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Live Feed | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Live Feed
+
+|descr= Set the source of the current live feed.
+
+|s1= source call [[BIS_fnc_liveFeedSetSource]]
+
+|p1= source:
+* [[Object]]
+* [[Position]]
+* [[Array]]: in the format [object, [x, y, z]]
+
+|r1= [[Boolean]] - [[true]] if successful, [[false]] if not
+
+|x1= <sqf>[player, [0, 0.25, 1.6]] call BIS_fnc_liveFeedSetSource;</sqf>
+
+|seealso=     [[BIS_fnc_liveFeed]] [[BIS_fnc_liveFeedEffects]] [[BIS_fnc_liveFeedSetTarget]] [[BIS_fnc_liveFeedTerminate]]
+}}

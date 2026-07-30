@@ -1,0 +1,460 @@
+// source: https://community.bistudio.com/wiki/Class_Inheritance
+// revision: 370018 (2024-10-27T10:46:30Z)
+// export sha1: cfrguroede2y12y1x352ra971xamk07
+// categories: Category:ArmA: Armed Assault: Addon Configuration | Category:ArmA: Armed Assault: Editing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Arma 3: Tutorials | Category:Operation Flashpoint: Editing | Category:Take On Helicopters: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Inheriting classes within the config is a concept that can easily go wrong.
+The purpose of this document is to clarify the cause of some common errors and contains instructions on how to resolve these mistakes.
+
+
+== Terms ==
+
+* A '''config''' refers to a config.cpp or config.bin file that is loaded during the game start. It does ''not'' refer to a [[Model Config]].
+* The '''bin\config.bin''' is the father of all other configs. It forms the first state of the master config.bin and consists of the base game's root classes.
+* The '''master''' config is built from the merging of ''all'' configs to the bin\config.bin, and it is what is seen through the Splendid Config Viewer.
+This includes both the base game addons as well as user-made addons.
+* '''Child configs''' are the configs that are merged into the master config.bin during game load. The order in which they are added is defined by the requiredAddons array within each CfgPatches (see {{Link|#Addon loading order}} below).
+* CfgPatches is a necessary prerequisite for '''all''' child configs so that its addon name and required addons (if any) are known.
+* Missions and campaigns are not configs, as the pbo they are in may or may not contain a config. This makes them mission pbos or mission addons respectively.
+
+== Basic Config Concepts ==
+
+The config is a hierarchical structure based on classes that provide almost all information necessary for the game.
+Objects, their behavior, user interface elements, and even which functions to run on game start are defined through the config.
+
+Classes can contain either child classes (see below) or properties.
+Properties work similarly to script variables, they have a name and are assigned a value.
+However, unlike script variables, properties can only have number values, string values, or (one or multidimensional) arrays that are made up of number or string values.
+
+=== Parent and Child Classes ===
+{{Feature|informative|[[BIS_fnc_returnChildren]] and [[BIS_fnc_getCfgSubClasses]] can be used to easily find hierarchical child subclasses.}}
+
+Due to the hierarchical nature of the config, classes can have parent, child, and sibling classes.
+While the relationships between classes seem as though they should be rather straightforward, these terms can be used in the case of hierarchy and inheritance.
+We will cover these terms in the scope of inheritance further in {{Link|#Basic Inheritance}}, but in most cases, a child class refers to a ''hierarchical'' subclass, and a parent class refers to the base class from which a class inherits.
+
+<syntaxhighlight lang="cpp">
+class Isaac
+{
+	class Esau
+	{
+		gender = "male";
+		firstborn = 1;
+		// ...
+	};
+
+	class Jacob
+	{
+		gender = "male";
+		firstborn = 0;
+		// ...
+	};
+};
+</syntaxhighlight>
+
+In this example, the classes "Esau" and "Jacob" are child classes of "Isaac".
+This makes "Isaac" the ''hierarchical'' parent class and "Esau" and "Jacob" sibling classes.
+
+
+In a more practical example, "arifle_MX_F" and "arifle_Katiba_F" are both child classes of CfgWeapons, and as a result, they too are sibling classes.
+
+<syntaxhighlight lang="cpp">
+class CfgWeapons
+{
+	class arifle_MX_F
+	{
+		// ...
+	};
+
+	class arifle_Katiba_F
+	{
+		// ...
+	};
+};
+</syntaxhighlight>
+
+=== Basic Inheritance ===
+{{Feature|informative|[[BIS_fnc_returnParents]] can be used to easily find the parent base classes from which a class inherits.}}
+
+A class can inherit properties from another class by defining it as a parent base class.
+All properties of the parent base class from which you inherit will also exist within your class, and unless you overwrite them, they will have the same values as the parent base class.
+This is extremely useful for quickly writing sibling classes that share properties, or to build a class on top of another class that has the same properties with only minor value changes.
+
+
+Taking the example from above we can create a common "ChildMaleBase" parent base class.
+
+<syntaxhighlight lang="cpp">
+class Isaac
+{
+	class ChildMaleBase
+	{
+		gender = "male";
+	};
+
+	class Esau : ChildMaleBase
+	{
+		firstborn = 1;
+		// ...
+	};
+
+	class Jacob : ChildMaleBase
+	{
+		firstborn = 0;
+		// ...
+	};
+};
+</syntaxhighlight>
+
+In this example, both "Esau" and "Jacob" will inherit the gender property from the new parent base class "ChildMaleBase".
+
+
+Alternatively, we can use "Esau" as a base class for "Jacob" and overwrite the "firstborn" property:
+
+<syntaxhighlight lang="cpp">
+class Isaac
+{
+	class Esau
+	{
+		gender = "Male";
+		firstborn = 1;
+		// ...
+	};
+
+	class Jacob : Esau
+	{
+		firstborn = 0;
+		// ...
+	};
+
+	class Mary : Esau
+	{
+		gender = "Female";
+		// ...
+	};
+};
+</syntaxhighlight>
+
+In the above example, while "Mary" overwrites the gender property, the "Mary" class would still inherit the firstborn value of 1 from its new parent base class "Esau".
+
+
+Either method is stored, as written, in the master config, and either one achieves the same result for any other classes that access "Isaac".
+
+=== Inheritance of Child Classes ===
+
+{{Feature|important|You will need to use {{Link|#External Base Classes}} syntax if the base class and base child class are not originally defined in the same config as the classes that are inheriting from them.}}
+
+
+Because classes are also inherited like properties, it is possible to inherit from child classes that are defined previously in the same config.
+
+<syntaxhighlight lang="cpp">
+class Rebecca
+{
+	class Esau
+	{
+		gender = "Male";
+		firstborn = 1;
+		// ...
+	};
+};
+
+class Isaac : Rebecca
+{
+	class Jacob : Esau
+	{
+		firstborn = 0;
+		// ...
+	};
+};
+</syntaxhighlight>
+
+Because "Isaac" inherits the "Esau" class from "Rebecca", "Jacob" can inherit from "Esau".
+The result is the same as the above example in Basic Inheritance, aside from the introduction of the new "Rebecca" base class.
+
+=== Array+= ===
+It is possible to add items to an array inherited from the direct parent. See [[Array+=]] to learn more.
+
+== External Base Classes ==
+
+{{Feature|important|The concept of external base classes only applies to addon configs. For mission configs, the [[import (Config)]] keyword fulfills a similar purpose.}}
+
+External base classes are essentially base classes that are first defined ''outside'' of your config, either by the base game or another addon.
+It is a simple concept to understand but not so simple to implement correctly.
+
+
+When using an external base class the first thing you have to do is declare it in what is termed a "template" or "skeleton".
+These do NOT affect those classes, they merely tell the compiler how they are constructed.
+If the classes you declare are not yet discovered by the engine, it will build empty classes waiting to be filled later, based on what inheritance you have written.
+As a result, it is important to get the inheritance (if any) right!
+
+<syntaxhighlight lang="cpp">
+class externalBaseClass;			// declare an external base class "skeleton"
+class myClass : externalBaseClass	// define that your class inherits from it
+{
+	// ...							// start using it
+};
+</syntaxhighlight>
+
+
+An example of both inheritance and the use of external base classes could be the addition of new weapon textures via "hiddenSelections".
+
+<syntaxhighlight lang="cpp">
+class CfgWeapons
+{
+	class arifle_MX_F;						// declare an external base class "skeleton"
+	class arifle_MX_Black_F : arifle_MX_F	// define that your class inherits from the external base class
+	{
+		hiddenSelections[] = { "camo1", "camo2" };
+		hiddenSelectionsTextures[] = { "\A3\Weapons_F_EPB\Rifles\MX_Black\Data\XMX_Base_Black_co.paa", "\A3\Weapons_F_EPB\Rifles\MX_Black\Data\XMX_short_Black_co.paa" };
+		// ...
+	};
+
+	class arifle_MX_khk_F : arifle_MX_Black_F
+	{
+		hiddenSelectionsTextures[] = { "\A3\Weapons_F_Exp\Rifles\MX\Data\XMX_Base_khk_co.paa", "\A3\Weapons_F_Exp\Rifles\MX\Data\XMX_Short_khk_co.paa" };
+		// ...
+	};
+};
+</syntaxhighlight>
+
+"CfgWeapons" serves as the hierarchical parent class, while "arifle_MX_F", "arifle_MX_Black_F", and "arifle_MX_khk_F" serve as sibling classes.
+In this instance, the "arifle_MX_Black_F" is inheriting all of its values from the "arifle_MX_F" external base class skeleton, but it changes the value for the "hiddenSelections" and "hiddenSelectionsTextures" arrays.
+When defining "arifle_MX_khk_F" later, instead of changing the "hiddenSelections" array value again, it inherits the changed value from its sibling class, "arifle_MX_Black_F", and changes the necessary values in the "hiddenSelectionsTextures" array for the new textures to appear.
+
+
+It is not necessary to declare the base class' inheritance tree (if any) ''if'' you have the correct inherited class' addon in the "requiredAddons" array.
+
+=== External Base Child Classes ===
+
+In the event that you want to access a child class of a base class, you must declare the child class as a part of the base class.
+In order to open the base class, however, you must declare what it inherits from as well.
+
+{{Feature|important|Opening the external base class to declare the external child class without defining what the base class inherits from will create the {{Link|#Empty}} syntax. As a result, your base class will not inherit any values that it may have previously, and any class that inherits from it may break.}}
+
+<syntaxhighlight lang="cpp">
+class externalRootClass;						// declare an external base class "skeleton"
+class externalBaseClass : externalRootClass	// define that the external parent base class inherits from the external base class
+{
+	class externalChildClass;					// define the external child base class "skeleton"
+};
+
+class myClass : externalBaseClass				// define that your class inherits from the external parent base class
+{
+	class myChildClass : externalChildClass	// define that your child class inherits from the external child base class
+	{
+		// ... add or make changes
+	};
+
+	// ...
+};
+</syntaxhighlight>
+
+=== Implied Child Classes ===
+
+Once an external child class is defined somewhere in the inheritance tree, you will not need to redefine it later, as it is implied by the game engine that that child class is the class you are looking for.
+
+<syntaxhighlight lang="cpp">
+class A
+{
+	class B
+	{
+		// whatever
+	};
+};
+
+class C : A
+{
+	class D
+	{
+		// whatever
+	};
+};
+
+class E : C
+{
+	class D : D	// fairly standard
+	{
+		// change things
+	};
+
+	class B : B	// fairly strange!
+	{
+		// change things
+	};
+};
+</syntaxhighlight>
+
+The reason ''why'' you can access, and use, "B" (which is not a direct child of "E") is due to inheritance. "B" does indeed become a child of "E"!
+
+
+Note that "A", "B", "C", and "D" could be more simply shown as a skeleton tree defined as follows:
+<syntaxhighlight lang="cpp">
+class A
+{
+	class B;
+};
+
+class C : A
+{
+	class D;
+};
+</syntaxhighlight>
+
+
+== Addon Loading Order ==
+
+When you are using external base classes it is extremely important to define what addons your addon depends on, or in other words, which external base classes need to be already loaded when your config gets loaded.
+
+{{Feature|important|Addons of externally defined base classes should always be defined in the load order to ensure your config is applied correctly.}}
+
+Defining which addons are required by your config is easily done through the [[CfgPatches]] class:
+
+<syntaxhighlight lang="cpp">
+class CfgPatches
+{
+	class MyAddon
+	{
+		// ...
+		requiredAddons[] = { "ExternalAddonA", "ExternalAddonB", ... };	// List of required addons' CfgPatches class names
+		// ...
+	};
+};
+</syntaxhighlight>
+
+Defining the required addons ensures that whatever changes you made, or whatever classes you defined based on external classes, are defined on top of the external addons' config.
+Without defining the required addons and load order, there is no guarantee that your config gets applied correctly.
+
+{{Feature|informative|{{hl|A3_Data_F_Decade_Loadorder}} is the last vanilla CfgPatches entry in {{arma3}} as of 2.14, so you can use this to overwrite some vanilla configs.}}
+
+
+== Empty ==
+
+The <syntaxhighlight lang="cpp" inline>class Empty{};</syntaxhighlight> syntax tells the engine that this class should not inherit from other classes. As a result, only non-inherited properties and classes in the class persist.
+
+
+As an example, we will return to the {{Link|#Basic Inheritance}} example of the "Isaac" hierarchical parent class and its child classes.
+
+<syntaxhighlight lang="cpp">
+// Addon One
+class Isaac
+{
+	class Esau
+	{
+		gender = "Male";
+		firstborn = 1;
+		// ...
+	};
+
+	class Jacob : Esau
+	{
+		firstborn = 0;
+		// ...
+	};
+};
+</syntaxhighlight>
+
+
+In a separate addon, loaded later in the {{Link|#Addon Loading Order}}, we can utilize the empty syntax to keep "Jacob" from inheriting the "gender" property. This does not remove the "firstborn" property value of "0" from "Jacob".
+
+{{Feature|warning|
+Note that the following example will update the base class and will break inheritance. The game will log a warning similar to {{hl|11:34:39 Updating base class RscShortcutButton->RscButton, by a3\editor_f\config.bin/RscDisplayEditObject/Controls/B_OK/ (original bin\config.bin)}}<br/><br/>
+'''Updating base classes should be avoided as it breaks compatibility between mods!'''
+}}
+<syntaxhighlight lang="cpp">
+// Addon Two
+class Isaac
+{
+	class Jacob {};	// stops inheritance of properties defined in Esau
+};
+</syntaxhighlight>
+
+
+It is worth noting that in the example above, "Isaac" uses a similar structure to the empty syntax.
+Anything defined using the empty syntax that does not use inheritance will be defined the same as a "skeleton".
+Because "Isaac" does not inherit from any other classes, using this structure functions the same as a "skeleton".
+If it was the case that "Isaac" inherited from another class, you would need to use the syntax seen above in {{Link|#External Base Classes}} to preserve the inheritance chain.
+
+
+Returning to the {{Link|#Inheritance of Child Classes}} example, we can see how the use of the empty syntax would differ.
+
+<syntaxhighlight lang="cpp">
+// Addon One
+class Rebecca
+{
+	class Esau
+	{
+		gender = "Male";
+		firstborn = 1;
+		// ...
+	};
+};
+
+class Isaac : Rebecca
+{
+
+	class Jacob : Esau
+	{
+		firstborn = 0;
+		// ...
+	};
+};
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+// Addon Two
+class Rebecca;			// declare an external base class "skeleton"
+class Isaac : Rebecca	// define that the external parent class inherits from the external base class
+{
+	class Jacob {};		// stops inheritance of properties defined in Esau
+};
+</syntaxhighlight>
+
+== Delete ==
+
+Within configs, the <syntaxhighlight lang="cpp" inline>delete Classname;</syntaxhighlight> keyword is available.
+It can be used to delete already existing classes.
+{{Feature|important|Classes from which other classes derive cannot be deleted unless the child classes are deleted first.}}
+
+<syntaxhighlight lang="cpp">
+class Intel
+{
+	class AttributeCategories
+	{
+		class Date
+		{
+			class Attributes
+			{
+				delete Fog;	// removes Fog attribute from Eden Editor
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+class Intel
+{
+	class Attributes
+	{
+		class Fog;
+		class TimeMultiplier : Fog
+		{
+			displayName = "Time Multiplier";
+			tooltip = "Set the time multiplier";
+			// ...
+		};
+
+		delete Fog;	// will not work since a child of Fog still exists.
+	};
+};
+</syntaxhighlight>
+
+
+{{GameCategory|ofp|Editing}}
+{{GameCategory|arma1|Addon Configuration}}
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+{{GameCategory|arma3|Tutorials}}
+{{GameCategory|tkoh|Editing}}

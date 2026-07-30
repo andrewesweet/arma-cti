@@ -1,0 +1,151 @@
+// source: https://community.bistudio.com/wiki/Scripting_Tags
+// revision: 369661 (2024-10-02T11:00:41Z)
+// export sha1: oipzkk4hfjoojoilzci10elknwxfbkn
+// categories: Category:ArmA: Armed Assault: Editing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Operation Flashpoint: Editing | Category:Take On Helicopters: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A Tag, also referred as an [[OFPEC]] tag, is a usually two to eight characters identifier that is individual to each designer, and allows for proper distinction between different authors' content.
+{{Feature|informative|Before 2022 and {{armaR}} era, a tag was three to five characters long.}}
+
+If an addon does not have a tag it could cause a conflict with another addon: this can cause your mission, game (or even your whole computer depending on the game) to crash.
+
+
+Tags are used in the following '''mod/addon''' contents:
+
+* [[Identifier#Recommendations|Global variables]]
+* [[Arma 3: Functions Library#Tag|Function names]]
+* New classes (in config.cpp files)
+* P3D names
+* Addon PBO names - this is less true in {{arma3}} since mod management is made through Steam.<br>'''Note''': for [[Real Virtuality]] games ({{Name|ofp|short}} &rarr; {{Name|arma3|short}}) pbo names tags should be lower case for Linux server compatibility.
+
+{{Feature|informative|It is [[Code Best Practices#Variable format|good practice]] for mission framework makers to use tags for global variables as well.}}
+
+
+== Rules ==
+
+{| class="wikitable valign-top float-right"
+! Valid
+! Invalid
+|-
+|
+* '''ARM4'''_Variable
+* '''ABC'''_Variable
+* '''A2345678'''_Variable
+|
+* {{Color|red|1}}ST_Variable
+* {{Color|red|A}}_Variable
+* A2345678{{Color|red|90}}_Variable
+* A{{Color|red|b}}C_Variable
+* AB{{Color|red|CV}}ariable
+|}
+
+Tags must:
+* be composed of letters and eventually numbers
+* be 2 to 8 characters long
+* be uppercase
+* start with a letter
+* followed by an '''underscore''' {{hl|_}}
+
+{{Feature|informative|Following the regex {{hl|^[A-Z][A-Z0-9]{1,7}_}}.}}
+
+
+== History ==
+
+Tags were originally introduced by [[OFPEC]] in 2002 as a way to avoid conflicts between different addons.
+The system was so effective that it was officially adopted by {{Name|bi|short}} as a requirement for their [[Addons at Ease]] initiative.<br>
+Today, every respectable addon maker has their own individual tag.
+
+OFPEC have created a list of all these tags so that people can see who registered which tag in order to avoid a tag usage conflict.
+
+{{Feature|informative|
+* See the {{Link|http://www.ofpec.com/tags/|OFPEC Tags page}} - {{Link|http://www.ofpec.com/forum/?action{{=}}register|an account}} is required in order to register a tag.
+* A BIKI backup exists at [[OFPEC Tags List]].
+}}
+
+
+== Examples ==
+
+=== Scripting ===
+
+ {{cc|considering {{Color|purple|MYTAG}} is the current tag}}
+ [[player]] [[setVariable]] ["{{Color|purple|MYTAG}}_hasDocuments", [[false]]];
+ 
+ [[waitUntil]] { [[sleep]] 1; [[player]] [[getVariable]] ["{{Color|purple|MYTAG}}_hasDocuments", [[false]]] };
+ {{Color|purple|MYTAG}}_DocumentsGrabbed = [[true]];
+ [[publicVariable]] "{{Color|purple|MYTAG}}_DocumentsGrabbed";
+
+=== Unit Config ===
+
+<syntaxhighlight lang="cpp">
+class MYTAG_Ranger : B_Soldier_F
+{
+	displayName = "MYTAG Ranger";
+	model="\mytag_rangers\MYTAG_Ranger";
+}
+</syntaxhighlight>
+
+this would use {{hl|{{Color|purple|mytag}}_rangers'''.pbo'''}} and {{hl|{{Color|purple|MYTAG}}_Ranger'''.p3d'''}} files
+
+=== Weapon Config ===
+
+<syntaxhighlight lang="cpp">
+class CfgAmmo
+{
+	class Default {};
+	class BulletSingle : Default {};
+	class BulletBurst : BulletSingle {};
+	class KozliceShell : BulletBurst {};
+	class MYTAG_RemShell : KozliceShell
+	{
+		hit = 6;
+		indirectHit = 6;
+		indirectHitRange = 0.2;
+	};
+};
+
+class CfgWeapons
+{
+	class Default {};
+	class MGun : Default {};
+	class Riffle : MGun {};
+	class KozliceShell : Riffle {};
+	class MYTAG_RemShell : KozliceShell
+	{
+		picture = "\mytag_delta\MYTAG_m_kozlice2.paa";
+		// ...
+		ammo = "MYTAG_RemShell";
+		// ...
+		sound[] = { "\mytag_delta\MYTAG_shotgun.wav", db0, 1 };
+		reloadMagazineSound[] = { "\mytag_delta\MYTAG_shotgunreload.wav", db-80, 1 };
+	};
+
+	class Kozlice {};
+	class MYTAG_Remington : Kozlice
+	{
+		displayName = "MYTAG_Remington";
+		model = "\mytag_delta\MYTAG_Remington";
+		picture = "\mytag_delta\MYTAG_w_kozlice.paa";
+		muzzles[] = { 'MYTAG_RemingtonShellMuzzle' };
+		class MYTAG_RemingtonShellMuzzle : MYTAG_RemShell
+		{
+			magazines[] = { "MYTAG_RemShell" };
+		}
+	};
+};
+
+class CfgNonAIVehicles
+{
+	class ProxyWeapon {};
+	class ProxyMYTAG_Remington : ProxyWeapon {};
+};
+</syntaxhighlight>
+
+This would be stored in {{hl|{{Color|purple|mytag}}_delta'''.pbo'''}} and use the {{hl|{{Color|purple|MYTAG}}_Remington'''.p3d'''}} file.
+
+
+{{GameCategory|ofp|Editing}}
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+{{GameCategory|tkoh|Editing}}

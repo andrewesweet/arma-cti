@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_instructorFigure
+// revision: 309750 (2022-05-05T12:09:48Z)
+// export sha1: crib7cx4yzzyhfkgpjtl41mov83qyzm
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Systems | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Systems
+
+|descr= <pre>
+/*******************************************************************************
+	Version:		0.1
+	Name:			Instructor Figure
+	DESCRIPTION:	www.  
+	PARAMETERS:		1) function called - string, list of functions:
+						- Init
+						- Destroy
+					2) parameter for the function
+					For more information see https://wiki.bistudio.com/index.php/A3_InstructorFigure
+	RETURNED VALUE:	depends on the function called
+	
+	TODO:	        + PlayTopic
+					+ Fade out New Intel text
+					+ wait for TAB press
+					+ use functions for dynamic text
+					- kbTell support
+						- logging
+						+ rework data structure (add, remove, search)
+						- ContainerExists function
+			        + display only if difficulty is low
+					+ disableSerialization
+					+ GetTopics should return array, not just debuglog info
+					+ deny play more than one topic in a time
+					+ Localize
+					+ check and fix return values of functions
+					+ correct debuglog information
+					- deny addtopic during playing
+					+ safe work with BIS_GroupCommunication - dont overwrite user menus
+					+ remove INSTRUCTOR FIGURE from BIS_GroupCommunication  
+					+ PlayTopicRandom - rule exceeding selection of a previous sentence
+*******************************************************************************/
+
+//Variables
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_instructorFigure]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_instructorFigure;</sqf> -->
+
+|seealso=
+}}

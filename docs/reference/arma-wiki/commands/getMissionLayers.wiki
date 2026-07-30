@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/getMissionLayers
+// revision: 377088 (2026-01-01T09:46:21Z)
+// export sha1: a560dk206yks6pbv99ynqdbi523zzwa
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Mission Information
+
+|descr= Returns a list of all layers created in [[:Category:Eden Editor|Eden Editor]]. Designed to be used during a scenario. Default layers (BLUFOR, OPFOR...) are not returned.
+
+|s1= [[getMissionLayers]]
+
+|r1= [[Array]] of [[String]]s - names of layers
+
+|x1= <sqf>getMissionLayers; // ["Electronics","Camp Endurance","UGV Workstation","Comments","Extraction Air","Comments","Extraction Ground","Extraction","test"]</sqf>
+
+|seealso= [[getMissionLayerEntities]]
+}}

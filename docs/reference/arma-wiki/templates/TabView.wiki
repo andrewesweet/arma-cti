@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/Template:TabView
+// revision: 295950 (2021-11-16T13:41:31Z)
+// export sha1: 4xgswofy7nu929155byobkivcg8jpia
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div class="biki-tabs"{{#if:{{{selected|}}}|<nowiki/> data-selectedtab="{{#expr: {{{selected}}} -1}}"}}>{{#if:{{{title1|}}} | <div class="biki-tab-title">{{{title1|}}}</div>
+}}{{#if:{{{title2|}}} | <div class="biki-tab-title">{{{title2|}}}</div>
+}}{{#if:{{{title3|}}} | <div class="biki-tab-title">{{{title3|}}}</div>
+}}{{#if:{{{title4|}}} | <div class="biki-tab-title">{{{title4|}}}</div>
+}}{{#if:{{{title5|}}} | <div class="biki-tab-title">{{{title5|}}}</div>
+}}{{#if:{{{title6|}}} | <div class="biki-tab-title">{{{title6|}}}</div>
+}}{{#if:{{{title7|}}} | <div class="biki-tab-title">{{{title7|}}}</div>
+}}{{#if:{{{title8|}}} | <div class="biki-tab-title">{{{title8|}}}</div>
+}}{{#if:{{{title9|}}} | <div class="biki-tab-title">{{{title9|}}}</div>
+}}{{#if:{{{title10|}}} | <div class="biki-tab-title">{{{title10|}}}</div>
+}}{{#if:{{{content1|}}} | <div class="biki-tab-content">{{{content1|}}}</div>
+}}{{#if:{{{content2|}}} | <div class="biki-tab-content">{{{content2|}}}</div>
+}}{{#if:{{{content3|}}} | <div class="biki-tab-content">{{{content3|}}}</div>
+}}{{#if:{{{content4|}}} | <div class="biki-tab-content">{{{content4|}}}</div>
+}}{{#if:{{{content5|}}} | <div class="biki-tab-content">{{{content5|}}}</div>
+}}{{#if:{{{content6|}}} | <div class="biki-tab-content">{{{content6|}}}</div>
+}}{{#if:{{{content7|}}} | <div class="biki-tab-content">{{{content7|}}}</div>
+}}{{#if:{{{content8|}}} | <div class="biki-tab-content">{{{content8|}}}</div>
+}}{{#if:{{{content9|}}} | <div class="biki-tab-content">{{{content9|}}}</div>
+}}{{#if:{{{content10|}}} | <div class="biki-tab-content">{{{content10|}}}</div>
+}}</div></includeonly><noinclude>{{Doc/Template
+|descr= This template allows for ''horizontal'' tabs.
+|param1= title1..10
+|descr1= named parameter - tab #'s title
+|param2= content1..10
+|descr2= named parameter - tab #'s content
+|param3= selected
+|descr3= named parameter - selected tab ('''not''' 0-based index, e.g 1 = first tab, 2 = second etc)
+|example1= <nowiki>{{Tabs}}</nowiki>
+|result1= {{ {{FULLPAGENAME}} }}
+|example2= <nowiki>{{TabView |title1= Tab 1 title}}</nowiki>
+|result2= {{ {{FULLPAGENAME}} |title1= Tab 1 title}}
+|example3= <nowiki>{{TabView |title1= Tab 1 title |content1= First tab content, yay!}}</nowiki>
+|result3= {{ {{FULLPAGENAME}} |title1= Tab 1 title |content1= First tab content, yay!}}
+|example4= <nowiki>{{Tabs |title1= Tab 1 title |title2= Tab 2 title}}</nowiki>
+|result4= {{ {{FULLPAGENAME}} |title1= Tab 1 title |title2= Tab 2 title}}
+|example5= <nowiki>{{TabView |title1= Tab 1 title |content1= First tab content... |title2= Tab 2 title |content2= Second tab content, yay!}}</nowiki>
+|result5= {{ {{FULLPAGENAME}} |title1= Tab 1 title |content1= First tab content... |title2= Tab 2 title |content2= Second tab content, yay!}}
+|example6= <nowiki>{{TabView |selected= 2 |title1= Tab 1 title |content1= First tab content... |title2= Tab 2 title |content2= Second tab content, yay!}}</nowiki>
+|result6= {{ {{FULLPAGENAME}} |selected= 2 |title1= Tab 1 title |content1= First tab content... |title2= Tab 2 title |content2= Second tab content, yay!}}
+}}</noinclude>

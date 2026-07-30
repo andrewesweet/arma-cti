@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/selectDiarySubject
+// revision: 349165 (2023-11-08T14:49:52Z)
+// export sha1: aa64j3mz3lg7j77ahbov9btd2dci644
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Briefing
+
+|eff= local
+
+|arg= local
+
+|descr= Selects a subject page in the [[Diary|diary]]. The subject page is selected but the command does not open the map by default, which could be opened with [[openMap]] if necessary.
+
+|s1= player [[selectDiarySubject]] subject
+
+|p1= player: [[Object]] - player
+
+|p2= subject: [[String]] - subject name, for example "Diary" (see also [[Diary]]). 
+{{Feature|informative|
+In order to open a specific record inside a subject one can append {{hl|:Record#}} to the subject name. 
+<sqf>
+player selectDiarySubject "Diary:Record0"; // selects the first record in the diary subject (from bottom to top)
+player selectDiarySubject "Diary:Record1"; // selects the second record
+</sqf>
+}}
+
+|r1= [[Boolean]] - [[true]] if subject was successfully selected
+
+|x1= <sqf>
+openMap true;
+player selectDiarySubject "Diary";
+</sqf>
+
+|seealso= [[processDiaryLink]] [[createDiaryLink]] [[createDiarySubject]] [[diarySubjectExists]] [[allDiarySubjects]]
+}}

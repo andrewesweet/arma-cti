@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENAttributeDoorStates
+// revision: 342156 (2023-07-09T12:26:50Z)
+// export sha1: go5wjv0tveq31eqcqwl7qs7r5l95wbt
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV | Category:Maintenance/RV/Return value needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Eden Editor
+
+|descr= Internal function used for the [[:Category:Eden Editor|Eden Editor]] Edit Terrain Object module.
+
+|s1= [] call [[BIS_fnc_3DENAttributeDoorStates]]
+
+|p1=
+
+|r1=
+
+|x1= -
+
+|seealso= [[Modules]]
+}}

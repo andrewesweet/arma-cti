@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/Global_Mobilization_Weferlingen
+// revision: 339504 (2023-04-28T14:09:06Z)
+// export sha1: g79kwwdaz4solcdfdc75rd63vj0pnyi
+// categories: Category:Global Mobilization
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[image:gm picture ca.png|borderless|60px|right|link=Global Mobilization]]
+== Overview ==
+Located in the northern plains of Germany, Weferlingen offers the largest Arma terrain released so far: 419 square kilometers of usable area. It's modeled after a real-world location in 1983, and uses entirely new assets – providing you with a unique experience that gives Arma 3 an entirely fresh look and feel. Explore nearly 50 fully destructible settlements in both West and East Germany, prepare your ambushes from scattered wooded areas, or have tanks battle each other at great distances on farmland – with each presenting its own major challenges. It is available in both winter and summer variants.
+[[image:gm weferlingen summer winter mixed.jpg|thumbnail|center|600px|Weferlingen summer and winter seasons]]
+== Map ==
+A detailed and stylized representation of Weferlingen is available as 2D map with the resolution of 20480x20480px.
+{{Link|http://global-mobilization.com/samples/gm_weferlingen_map_1983.zip|'''Download High Resolution Map (97MB)'''}}
+[[image:gm_weferlingen_map_1983_thumbnail.jpg|thumb|right|300px|Preview of the high resolution 2D map]]
+== Substitute Files ==
+Creating custom terrains using GM assets is a bit more difficult than usual, because the files are encrypted and cannot be unpacked. This means one is unable to build a custom terrain correctly, as the assets and their configuration are required during the binarization process of the .wrp file, but are not available.
+
+To mitigate this, so called '''substitute files''' are available that represent their encrypted counterparts in much lower detail but with full functionality required for the .wrp binarization.
+
+''(If clicking the link does not automatically start a download: Right-Click it and then use "Save As...".)''
+
+{{Link|http://global-mobilization.com/samples/gm_terrain_substitutes.zip|'''Download Terrain Substitute Files (17MB)'''}}
+
+=== Contents ===
+The following folders are available in low detail representation:
+* gm_plants\gm_shrubs
+* gm_plants\gm_trees
+* gm_structures\gm_rivers
+* gm_structures\gm_roads_euro_80
+* gm_structures\gm_structures_euro_80
+* gm_structures\gm_structures_euro_80_winter
+
+'''Additionally, supporting files are available:'''
+* layers.cfg (Example detail texture definitions)
+* RoadsLib.cfg (GM road style definitions)
+* cfgClutter.hpp (GM clutter definitions)
+* cfgSurfaceCharacters (GM surface character definitions)
+* TerrainBuilder Template Libraries (Summer)
+* TerrainBuilder Template Libraries (Winter)
+''Note that Summer and Winter libraries are directly interchangeable to allow fast conversion of your terrain between these styles.''
+
+[[Category:Global Mobilization]]

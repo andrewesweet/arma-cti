@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/backpack
+// revision: 337483 (2023-01-31T22:44:52Z)
+// export sha1: b6otv7olmm4x2sivj5nrps28dsid7u3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Containers
+
+|descr= Returns a class of a backpack.
+
+|s1= [[backpack]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[String]]
+
+|x1= <sqf>_classname = backpack player;</sqf>
+
+|seealso= [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]] [[backpacks]]
+}}

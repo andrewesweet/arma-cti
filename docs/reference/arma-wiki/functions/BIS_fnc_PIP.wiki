@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_PIP
+// revision: 376142 (2025-09-03T11:23:11Z)
+// export sha1: 9fvplsfbmnepmqui6chjklmcu9ylfcg
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= Displays Picture in Picture.
+
+|s1= [renderTarget, cameraParams, vehicle, replace] call [[BIS_fnc_PIP]]
+
+|p1= renderTarget: [[String]] - render target
+
+|p2= cameraParams: [[Object]] or [[Array]]
+* [[Object]] - existing camera
+* [[Array]] - camera params in format [position, target]:
+** position: [[Array]] in format [[Position#Introduction|Position3D]] or [[attachTo]] [object, position]
+** target: [[Object]] or [[Array]] in format [[Position#Introduction|Position3D]] (same as [[camPrepareTarget]])
+
+|p3= vehicle: [[Object]] - (Optional) vehicle to which action is added (to memory point "action_screen1")
+
+|p4= replace: [[Boolean]] - (Optional, default [[true]]) true to replace existing PIP on same target
+
+|r1= [[Object]] - camera
+
+|x1= <sqf>["rendertarget0", [[heli1, heli1 selectionPosition "slingload0"], cargo1], heli1, false] call BIS_fnc_PIP;</sqf>
+
+|x2= <sqf>["rendertarget0", _myCamera] call BIS_fnc_PIP;</sqf>
+
+|x3= <sqf>
+["rendertarget0"] call BIS_fnc_PIP;	// terminate
+[] call BIS_fnc_PIP;				// terminate "livefeedrendertarget0"
+</sqf>
+
+|seealso= [[isPiPEnabled]]
+}}

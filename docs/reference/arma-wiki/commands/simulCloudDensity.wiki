@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/simulCloudDensity
+// revision: 365017 (2024-07-10T18:22:01Z)
+// export sha1: kd63l1cmci14wgffxhfkloip0ew1n1h
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Environment
+
+|descr= Returns density of clouds at given position.
+
+|pr= {{Feature|Eden Editor|SimulWeather seems to be disabled in [[:Category:Eden Editor|Eden Editor]] and scenario preview.}}
+
+|s1= [[simulCloudDensity]] pos
+
+|p1= pos: [[Position]]
+
+|r1= 
+* [[Number]] - density (0-1)
+* [[Nothing]] - If arguments are incorrect
+* [[Boolean]] - Returns [[false]] if simulWeather is disabled
+
+|x1= <sqf>simulCloudDensity getPos player;</sqf>
+
+|seealso= [[setSimulWeatherLayers]] [[simulCloudOcclusion]] [[simulInClouds]]
+}}

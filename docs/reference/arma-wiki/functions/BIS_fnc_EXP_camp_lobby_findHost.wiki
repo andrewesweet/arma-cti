@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_lobby_findHost
+// revision: 274125 (2021-06-13T01:17:00Z)
+// export sha1: n5tm2p2bstw5hpuub2o8y4fi2t4kl4q
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: CampaignLobby | Category:Functions | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= CampaignLobby
+
+|descr= <pre>/*
+
+	PROJECT:	R&D
+	AUTHOR:		Endstar
+	DATE:		18-04-2016
+
+	fn_EXP_camp_lobby_findHost.sqf
+
+		Campaign Lobby: Find host
+
+	Params
+
+		0:
+
+	Return
+
+		0:
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_EXP_camp_lobby_findHost]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

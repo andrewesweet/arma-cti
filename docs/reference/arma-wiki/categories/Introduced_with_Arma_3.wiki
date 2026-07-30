@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3
+// revision: 85563 (2014-10-17T02:36:43Z)
+// export sha1: 7exbo22wmj36hjhtg8zv97acljlpenj
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with Arma 3 may be recognised by the appearance of icons like these: {{GVI|arma3|0.50}} {{GVI|arma3|0.70}} {{GVI|arma3|1.00}}
+
+[[Category:Introduced with|{{uc:Arma 3}}]]

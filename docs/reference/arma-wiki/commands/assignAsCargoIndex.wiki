@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/assignAsCargoIndex
+// revision: 330322 (2022-08-31T15:06:34Z)
+// export sha1: idjp4717qryfdntjcpjezyreo9kdh6v
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Take On Helicopters version 1.01 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.01
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Unit Control
+
+|descr= Assigns the character to a specific cargo / passenger index of the given vehicle.
+{{Feature|informative|See [[AI Group Vehicle Management]] for more information.}}
+
+|s1= character [[assignAsCargoIndex]] [vehicle, index]
+
+|p1= character: [[Object]] - character to assign
+
+|p2= vehicle: [[Object]] - vehicle to assign to
+
+|p3= index: [[Number]] - cargo / passenger index
+
+|r1= [[Boolean]]
+
+|x1= <sqf>player assignAsCargoIndex [myHelicopter, 1];</sqf>
+
+|seealso= [[assignAsCargo]] [[assignAsDriver]] [[assignAsCommander]] [[assignAsGunner]] [[assignAsTurret]] [[getCargoIndex]] [[assignedVehicleRole]] [[unassignVehicle]] [[fullCrew]]
+}}

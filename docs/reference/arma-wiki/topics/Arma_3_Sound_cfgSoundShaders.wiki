@@ -1,0 +1,196 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_cfgSoundShaders
+// revision: 364298 (2024-05-06T09:38:39Z)
+// export sha1: h34f81ju5kn2w6wbm33a9jqp865b1j6
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== SoundShader ==
+
+The '''SoundShader''' within the class ''cfgSoundShaders'' is the most basic sound entity in the Arma 3 sound engine. Let's look at an example and the parameters.
+
+<syntaxhighlight lang="cpp">
+class cfgSoundShaders
+{
+	class MX_Closure_SoundShader
+	{
+		samples[] =
+		{
+			{ "pathToYourSound1", 1 },
+			{ "pathToYourSound2", 1 },
+			{ "pathToYourSound3", 1 }
+		};
+		volume = 0.5;
+		frequency = 1;
+		range = 10;
+		rangeCurve[] =
+		{
+			{ 0, 1 },
+			{ 5, 0.7 },
+			{ 10, 0 }
+		};
+		limitation = 0;
+	};
+};
+</syntaxhighlight>
+
+=== samples ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! samples
+| { ["path/sound", p], ... }
+| none
+| array containing sound file name with paths and probability values (p)
+|}
+
+Here you define the path to your sound. The number after the path is used in the random sample selection. When a SoundShader with multiple sounds is called one sound is chosen randomly.
+The bigger the number behind the sound, the higher the chance of the sound being picked. So <syntaxhighlight lang="cpp" inline>{ "pathToYourSound1", 10 }</syntaxhighlight> is a lot more likely to be picked than <syntaxhighlight lang="cpp" inline>{ "pathToYourSound2", 1 }</syntaxhighlight>.
+
+Also noteworthy here is that in previous {{arma}} sound configuration we had to make sure that all the probability numbers add up to 1.
+So if we had two sounds their probabilities had to be 0.5. With the new configuration this is no longer needed.
+<syntaxhighlight lang="cpp">
+{ "pathToYourSound1", 10 }
+{ "pathToYourSound2", 10 }
+</syntaxhighlight>
+is the same as
+<syntaxhighlight lang="cpp">
+{ "pathToYourSound1", 1 }
+{ "pathToYourSound1", 1 }
+</syntaxhighlight>
+Both sounds have the same chance of being picked.
+
+=== volume ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! volume
+| float (0-5)
+| 1
+| basic volume value
+|}
+
+Volume defines how loud the sample is played in relation to 0dBFS - the highest volume value in the digital world. A value of 1 means 100% means 0dbFS. A value of 0.5 means 50% means -6dBFS.
+If you want to calculate what values to enter here depending on dB, you can use {{Link|https://www.noisemeters.com/apps/db-calculator/|this calculator}}.
+
+Any other percentage to dB calculator will work. Careful though, as you can see on {{Link|https://lightmachinery.com/optical-design-center/more-optical-design-tools/percentage-to-db/|this site}} signal dB is not equal power dB!
+Always be sure to calculate with the right dB! To ensure you work with the right dB test this in your calculator: -6dB = 50%, always.
+
+=== frequency ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! frequency
+| float
+| 1
+| basic pitch value, 1 = no change = normal pitch. Parameter ignored if more than 1 ''SoundShaders'' in ''SoundSet''
+|}
+
+Playback speed/pitch of the sound. Low number = low pitch, high number = high pitch.
+This parameter is '''ignored''' when the ''SoundShader'' is used together with other ''SoundShaders'' in a ''SoundSet'' (which can consist of multiple SoundShaders, more on that later).
+
+=== range ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! range
+| distance in meters
+| 0
+| radius of circle around sound source where the sound will be played
+|}
+
+The sound will be played in this radius around the sound source.
+There is no volume falloff configured yet so without any additional configuration the sound would start playing at full volume as soon as you are within this radius.
+
+=== rangeCurve ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! rangeCurve
+| {d0,v0}, {d1,v1}
+| none
+| array of points or class name defined in [[Arma 3: Sound: cfgSoundCurves|'''cfgSoundCurves''']]
+|}
+
+Here you can define the volume falloff depending on distance. The values are given in X,Y pairs. X being the distance, Y being the volume value.
+In the example the sound will be played at full volume at 0m distance. Note that here relative values (from 0 being o and 1 being 100%) are used.
+At 5m distance the volume will be 0.7 (70%, -3dB) and at 10m the sound will be silent. You can use hundreds of points to make really smooth curves.
+You can either use distance values within the range (in the example from 0m to 10m) OR use ''relative'' range values, 1 being maximum range. So the above example would also work with:
+<syntaxhighlight lang="cpp">
+rangeCurve[] =
+{
+	{ 0, 1 },
+	{ 0.5, 0.7 },
+	{ 1, 0 }
+};
+
+rangeCurve = myRangeCurve_001;
+</syntaxhighlight>
+
+'''Attention!''' In this case <syntaxhighlight lang="cpp" inline>{ 0.5, 0.7 }</syntaxhighlight> means "at half ''range'' volume will be 0.7" and <syntaxhighlight lang="cpp" inline>{ 1, 0 }</syntaxhighlight> means "at maximum ''range'' volume will be 0".
+In the 2nd example ''myRangeCurve_001'' has been predefined in [[Arma 3: Sound: cfgSoundCurves|cfgSoundCurves]] which is why we only need to enter a class name here.
+
+'''rangeCurve''' is pretty awesome because you can combine multiple ''SoundShaders'' with different ''rangeCurves'' within one ''SoundSet'' and play different sounds depending on distance. Imagine you have two SoundShaders:
+
+<syntaxhighlight lang="cpp">
+		// first SoundShader (close sounds)
+		range = 50;
+		rangeCurve[] =
+		{
+			{ 0, 1 },
+			{ 25, 0.7 },
+			{ 50, 0 }
+		};
+
+		// second SoundShader (distant sounds)
+		range = 1800;
+		rangeCurve[] =
+		{
+			{ 0, 0.2 },
+			{ 25, 0.7 },
+			{ 50, 1 },
+			{ 1800, 1 }
+		};
+</syntaxhighlight>
+
+The close sound will start to become quieter over distance and at 50m it will be completely silent.
+The distant sound starts off quietly and slowly becomes more loud until max volume at 50m. Max volume factor is kept within the SoundShader until 1800m (max distance of second SoundShader).
+
+=== limitation ===
+
+{| class="wikitable"
+! Parameter
+! Unit/values
+! Default
+! Description
+|-
+! limitation
+| bool
+| false
+| if true -> adds SoundShader to group of SoundShaders which will be limited within the SoundSet
+|}
+
+If enabled this adds the ''SoundShader'' to a group of ''SoundShaders'' which will be limited within the ''SoundSet'', explanation of that will be found when we go over ''SoundSets''.
+
+
+{{GameCategory|arma3|Sound}}

@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/triggerTimeout
+// revision: 377686 (2026-01-02T09:02:55Z)
+// export sha1: 9363rois5knpctth6i729jckfakjsr0
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+|arg= global
+
+|gr1= Triggers
+
+|descr= Returns trigger timeout.
+
+{{Feature | important | The trigger could be [[Multiplayer Scripting#Locality|local]] or remote but the result returned by this command will be for the trigger timeout set up locally on the client that executed the command. See [[createTrigger]] for more info.}}
+
+|s1= [[triggerTimeout]] trigger
+
+|p1= trigger: [[Object]]
+
+|r1= [[Array]] with [min, mid, max, interruptible]
+* min: [[Number]]
+* mid: [[Number]]
+* max: [[Number]]
+* interruptible: [[Boolean]]
+
+
+|x1= <sqf>_timeOut = triggerTimeout someTrigger;</sqf>
+
+|seealso= [[setTriggerTimeout]] [[triggerTimeoutCurrent]]
+}}

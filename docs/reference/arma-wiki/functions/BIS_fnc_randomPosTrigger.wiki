@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_randomPosTrigger
+// revision: 376281 (2025-09-24T15:32:14Z)
+// export sha1: 5zsv4sntg207wbyc344u49o5vni560i
+// categories: Category:Arma 3: Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Map and Markers
+
+|descr= Selects random position within trigger, marker, location area or area defined by array
+
+|s1= param call [[BIS_fnc_randomPosTrigger]]
+
+|p1= param: can be one of:
+* [[Object]] - trigger
+* [[String]] - marker
+* [[Location]] - location
+* [[Array]] - array in format [center, distance] or [center, [a, b, angle, rect]] or [center, [a, b, angle, rect, height]]
+
+{{Feature|informative|Be aware that the {{hl|height}} value is ignored.}}
+
+|r1= [[Array]] - random position in format [x,y,z]
+
+|x1= <sqf>marker1 call BIS_fnc_randomPosTrigger;</sqf>
+
+|seealso= [[BIS_fnc_findSafePos]]
+}}

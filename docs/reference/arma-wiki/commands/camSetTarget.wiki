@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/camSetTarget
+// revision: 369114 (2024-09-03T10:28:47Z)
+// export sha1: s4yifn09xl4nywyhx9igtn0omahtux1
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Camera Control
+
+|arg= local
+
+|eff= local
+
+|descr= Set the target object or position where the given camera should point at. Needs the call of [[camCommit]] to be conducted. To reset the target use [[objNull]].
+
+|s1= camera [[camSetTarget]] target
+
+|p1= camera: [[Object]] - object of type "camera"
+
+|p2= target: [[Object]] - target location
+
+|r1= [[Nothing]]
+
+|s2= camera [[camSetTarget]] position
+
+|p21= camera: [[Object]] - object of type "camera"
+
+|p22= position: [[Array]] - target location - [[Position]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_camera camSetTarget player;</sqf>
+
+|x2= <sqf>_camera camSetTarget [2540,1503,26];</sqf>
+
+|x3= <sqf>
+_cam = "camera" camCreate (player modelToWorld [0, 100, 10]);
+_cam camSetTarget player;
+_cam camSetRelPos [0, 0.5, 1.5];
+_cam cameraEffect ["internal", "back"];
+_cam camCommit 1;
+player setRandomLip true;
+</sqf>
+
+|seealso= [[camCreate]] [[camTarget]]
+}}

@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/getAllEnvSoundControllers
+// revision: 377626 (2026-01-02T08:52:06Z)
+// export sha1: 6c3ydiadbpxyl6jqczz5w4v03tpjm3f
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|gr1= Sounds
+
+|descr= Returns an array containing the names and values of environmental 2D sound controllers, variables that can be used in simple expressions when configuring sounds.
+{{Feature|important|
+* Controller names are case sensitive
+* Please note that the name for the wind param for '''2D''' controller is 'windy', 'wind' being the name for the '''3D''' controller [[getAllEnv3DSoundControllers]].
+}}
+
+|s1= [[getAllEnvSoundControllers]] position
+
+|p1= position: [[Position]]
+
+|r1= [[Array]] with [<nowiki/>["controllerA", valueA], ["controllerB", valueB], ...], controllers being, in order:
+{{Columns|3|
+* {{hl|"rain"}}
+* {{hl|"night"}}
+* {{hl|"windy"}}
+* {{hl|"daytime"}}
+* {{hl|"meadows"}}
+* {{hl|"trees"}}
+* {{hl|"houses"}}
+* {{hl|"forest"}}
+* {{hl|"sea"}}
+* {{hl|"coast"}}
+* {{hl|"altitudeGround"}}
+* {{hl|"altitudeSea"}}
+* {{hl|"shooting"}}
+* {{hl|"deadbody"}}
+* {{hl|"fog"}}
+* {{GVI|arma3|2.08|size= 0.75}} {{hl|"yearTime"}}
+* {{GVI|arma3|2.08|size= 0.75}} {{hl|"ambientTemp"}}
+* {{GVI|arma3|2.08|size= 0.75}} {{hl|"snow"}}
+}}
+
+|x1= <sqf>
+getAllEnvSoundControllers position player;
+/*
+	returns e.g
+	[
+		["rain",0],
+		["night",0],
+		["windy",0.161588],
+		...
+	]
+*/
+</sqf>
+
+|seealso= [[getAllEnv3DSoundControllers]] [[getEnv3DSoundController]] [[allEnv3DSoundSources]] [[selectBestPlaces]] [[getSoundController]] [[getSoundControllerResult]] [[getEnvSoundController]] [[getAllSoundControllers]] [[getCustomSoundController]] [[setCustomSoundController]] [[getCustomSoundControllerCount]] [[Arma 3: Sound]]
+}}

@@ -1,0 +1,22 @@
+// source: https://community.bistudio.com/wiki/scalar_bool_array_string_0xfcffffef
+// revision: 328751 (2022-07-15T12:20:04Z)
+// export sha1: 49hildvhv0q5rqg9sfz9qh7jml6w42t
+// categories: Category:Common Scripting Errors
+// Vendored snapshot. Do not edit — re-export instead.
+
+If variables don't exist, their value as string is generally a "scalar bool array string 0xfcffffef" error.
+
+'''Compatibility:'''
+
+Version {{GameCategory|ofp|link=y}} '''1.96'''
+
+{{Feature|arma1|For {{GameCategory|arma1|link=y}} version, see [[scalar bool array string 0xe0ffffef]].}}
+
+
+'''Examples:'''
+
+<sqs>hint format ["%1", undefined_variable]</sqs>
+<sqs>hint (if (format ["%1", undefined_variable] == "scalar bool array string 0xfcffffef") then { "Variable undefined" } else { "Variable already defined" })</sqs>
+
+
+[[Category:Common Scripting Errors]]

@@ -1,0 +1,81 @@
+// source: https://community.bistudio.com/wiki/activateAddons
+// revision: 370473 (2024-12-16T18:10:00Z)
+// export sha1: tewvm64raadvj5gpm3hu44czbsdt4bd
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mods and Addons | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Mods and Addons
+
+|descr= Activates the listed addons.
+
+|s1= [[activateAddons]] addonsList
+
+|p1= addonsList: [[Array]] of [[String]]s
+
+|r1= [[Nothing]]
+
+|x1= <sqf>activateAddons ["BISOFP"];</sqf>
+
+|seealso= [[unitAddons]] [[activatedAddons]]
+}}
+
+{{Note
+|user= WGL.Q
+|timestamp= 20090121123700
+|text= Be aware that addon's string is the {{hl|CfgPatches}} class of the desired addon to preload.
+}}
+
+{{Note
+|user= UNN
+|timestamp= 20090510111700
+|text= This command will activate addons that are referenced via scripts but not included in a missions required addons section. If executed from a configs init event with the [[call]] command, it will effectively override a missions required addons, preventing them from being activated (Appears to only happen in multi player). 
+To activate the passed addons along with those defined in the mission.sqm, execute the command from a configs init event using [[spawn]] or [[execVM]].
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20220703084305
+|text= Here is a handy function to call before you do [[createVehicle]] or other create* command during missing init scripts, which should activate missing addons without having to worry about re-adding previously added addons.
+<sqf>
+fnc_prepareClassAddons = {
+	private _class = toLower _this;
+
+	// To avoid double checks
+	if(isNil"var_addonCheckedClasses") then {var_addonCheckedClasses = createHashMap;};
+	if(_class in var_addonCheckedClasses) exitWith {};
+
+	// Finding missing addons
+	private _needed = unitAddons _class apply {toLower _x};
+	private _active = activatedAddons;
+	private _missing = _needed - (_needed arrayIntersect _active);
+	if(count _missing > 0) then {
+		// Adding everything again, engine will figure it out itself
+		_active append _missing;
+		activateAddons _active;
+	};
+
+	var_addonCheckedClasses set [_class, _needed];
+};
+</sqf>
+Usage would be <sqf inline>"Land_BurntGarbage_01_F" call fnc_prepareClassAddons</sqf>.
+}}

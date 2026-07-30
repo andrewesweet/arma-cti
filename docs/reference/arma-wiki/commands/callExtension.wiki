@@ -1,0 +1,263 @@
+// source: https://community.bistudio.com/wiki/callExtension
+// revision: 378445 (2026-04-14T14:09:53Z)
+// export sha1: con5024d1dne34esv972x51vc3t1h9t
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 2: Operation Arrowhead version 1.60 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.60
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= System
+
+|descr= Calls custom .dll also known as [[Extensions|Extension]]. The name of the extension is the name of the extension .dll without ".dll" part (or without "_x64.dll" part on 64-bit Arma). For example if the file is 'myExtension.dll' the name of the extension will be "myExtension". For 64-bit extensions, the name of the extension doesn't need to change and is still "myExtension". The game will automatically look for 'myExtension_x64.dll' when you use 64-bit Arma exe.
+<br><br>
+This command is blocking, meaning that the game will wait for the extension to return before continuing. This may cause FPS drop if extension is not optimised. If extension takes too long, consider making asynchronous extension, where the result of the work of the extension is collected in a separate call.
+<br><br>
+Currently there is no limit how much data you can send to the extension. However there is a limit on how much data you can return from extension in one call. The limit is known to the extension and is passed in {{hl| int outputSize}}. The limit may or may not change in the future and is currently 10240 bytes. It is up to extension designer to handle multipart results if returned data exceeds output limit.
+<br><br>
+Since {{arma3}} v1.68 it is possible to pass array of arguments to extensions. The array of arguments could be anything and all elements will be converted to strings, however you might want to only send simple types like [[Boolean]]s, [[String]]s, [[Number]]s and [[Array]]s of all of the above. There is currently a limit on how many arguments can be sent and it is 2048 (since Arma 3 v1.92; previous limit: 1024). However an argument could be an [[Array]] itself, in this case extension maker will have to provide additional methods for parsing such arguments.
+<br><br>
+Possible error codes:
+* 101: SYNTAX_ERROR_WRONG_PARAMS_SIZE
+* 102: SYNTAX_ERROR_WRONG_PARAMS_TYPE
+* 201: PARAMS_ERROR_TOO_MANY_ARGS
+* 301: EXECUTION_WARNING_TAKES_TOO_LONG
+* {{GVI|arma3|2.22|size=.75}} 400: EXTENSION_LOAD_FAILED
+* {{GVI|arma3|2.22|size=.75}} 403: EXTENSION_BLOCKED_BY_BATTLEYE
+* {{GVI|arma3|2.22|size=.75}} 404: EXTENSION_NOT_FOUND
+* {{GVI|arma3|2.22|size=.75}} 412: EXTENSION_BLOCKED_BY_SCRIPT
+* {{GVI|arma3|2.22|size=.75}} 415: EXTENSION_WRONG_ARCHITECTURE
+Each error will have entry in .rpt file with more details.<br><br>
+
+The extension execution timeout, after which {{hl|301: EXECUTION_WARNING_TAKES_TOO_LONG}} warning is issued, is hardcoded on clients and is 1000.0 milliseconds (1 second). On the server the default limit is also 1 second, however it is possible to set custom limit with {{hl|callExtReportLimit}} param (see [[Arma 3: Server Config File#Server_Options | Server Options]]).
+<br><br>
+If an extension with the given name cannot be found (or it is found but doesn't implement the required interface properly / at all) the following error will be written into the RPT (In this example the given dll-name was "MyExtension"):
+<code style="display: block">14:27:07 CallExtension 'MyExtension' could not be found</code>
+<br>
+If an extension is not whitelisted with BattlEye (see [[Extensions]] for more info) it will be blocked on clients running with enabled BattlEye protection. RPT message outputted however is a little obscure:
+<code style="display: block">21:35:04 Call extension 'MyExtension' could not be loaded: Insufficient system resources exist to complete the requested service</code>
+<br>
+Since {{arma3}} v1.70, {{hl|RVExtensionVersion}} interface (see source code example below) has been added, which is called by the engine on extension load and expects extension version. This interface is designed to work with both, Linux and Windows. The max buffer size is 32 bytes. The version information will then appear in .[[rpt]] file like so:
+<code style="display: block">19:06:36 CallExtension loaded: test_extension (.\test_extension.dll) [1.0.0.1]</code>
+<br>
+For more information see [[Extensions]].
+<br><br>
+<u>Linux specific</u><br>
+While on Windows the extension name is case-insensitive, on Linux the extension name is case-sensitive and should match the name of the .so file exactly (minus ".so" part).<br><br>
+
+{{Feature|important|
+If a user has '''anti-virus software real time protection running''', this could cause brand new extension to stutter the game and return with {{hl|EXECUTION_WARNING_TAKES_TOO_LONG}} when executed for the first time, because of the AV software scanning.
+After the extension is whitelisted by AV this should go away until a new version of the extension is installed.
+Perhaps a dummy call to the extension on init should be considered as a feature of implementation to account for that.
+}}
+<br>
+
+'''<u>Extension Context</u>'''
+
+Since {{arma3}} v2.12 the engine will call the {{hl|RVExtensionContext}} method (if it exists, see {{Link|#Example 4}}) and pass the following data:
+* {{hl|steamID}} of the client calling extension [[getPlayerUID]] or "0"
+* {{hl|fileSource}} from which the extension was executed or "" if done on the fly
+* {{hl|missionName}} [[missionNameSource]]
+* {{hl|serverName}} [[serverName]]
+
+|s1= extension [[callExtension]] function
+
+|p1= extension: [[String]] - extension name
+|p2= function: [[String]] - data sent to the extension
+
+|r1= [[String]] - data sent back from extension; If the extensiion was not found an empty String will be returned
+
+|s2= extension [[callExtension]] [function, arguments]
+
+|s2since= arma3 1.68
+
+|p21= extension: [[String]] - extension name
+
+|p22= function: [[String]] - extension function identifier
+
+|p23= arguments: [[Array]] of [[Anything]] - function arguments. Each element will be converted to [[String]] automatically. Current allowed max length of this array is 2048 (since Arma 3 v1.92; previous limit: 1024)
+
+|r2= [[Array]] with [result, returnCode, errorCode]
+* result: [[String]] - data sent back from extension. It is up to extension maker what it is.
+* returnCode: [[Number]] - integer return from extension method. It is up to extension maker to define it.
+* errorCode: [[Number]] - error code in case of command error (see description). 0 means no errors.
+
+|x1= <sqf>_return = "myExtension" callExtension "stringToBeParsed";</sqf>
+
+|x2= <sqf>
+_result = "test_extension" callExtension str weapons player;
+_result = "test_extension" callExtension ["fnc1", getUnitLoadout player];
+_result = "test_extension" callExtension ["fnc2", magazinesAmmoFull player];
+_result = "test_extension" callExtension ["fnc1", [weapons player, magazines player]];
+</sqf>
+
+|x3= <sqf>
+_result = "test_extension" callExtension ["fnc1", [1, "two", true, [4, "five", false]]];
+parseSimpleArray (_result select 0) params ["_number","_string","_boolean","_array"];
+systemChat str [_number,_string,_boolean,_array];
+</sqf>
+<br>
+<u>Source Code</u> ({{Link|link= http://data.bistudio.com/a3data/test_extension.zip|text= Download .dll}})
+<spoiler>
+This is an example of an extension compatible with both syntaxes. When using 1st syntax, the data is just copied from input to output. When using alt syntax, the arguments are parsed and then assembled back into string array in 2 ways: fnc1 and fnc2. fnc1 is a fraction faster.
+<syntaxhighlight lang="cpp">
+#include <string>
+#include <vector>
+#include <iterator>
+#include <sstream>
+
+#define CURRENT_VERSION "1.0.0.1"
+
+extern "C"
+{
+	//--- Engine called on extension load
+	__declspec (dllexport) void __stdcall RVExtensionVersion(char *output, int outputSize);
+	//--- STRING callExtension STRING
+	__declspec (dllexport) void __stdcall RVExtension(char *output, int outputSize, const char *function);
+	//--- STRING callExtension ARRAY
+	__declspec (dllexport) int __stdcall RVExtensionArgs(char *output, int outputSize, const char *function, const char **args, int argsCnt);
+}
+
+//--- Extension version information shown in .rpt file
+void __stdcall RVExtensionVersion(char *output, int outputSize)
+{
+	//--- max outputSize is 32 bytes
+	strncpy_s(output, outputSize, CURRENT_VERSION, _TRUNCATE);
+}
+
+//--- name callExtension function
+void __stdcall RVExtension(char *output, int outputSize, const char *function)
+{
+	std::string str = function;
+	strncpy_s(output, outputSize, ("Input Was: " + str).c_str(), _TRUNCATE);
+}
+
+//--- name callExtension [function, args]
+int __stdcall RVExtensionArgs(char *output, int outputSize, const char *function, const char **args, int argsCnt)
+{
+	if (strcmp(function, "fnc1") == 0)
+	{
+		//--- Manually assemble output array
+		int i = 0;
+		std::string str = "[";
+
+		//--- Each argument can be accessed via args[n]
+		if (argsCnt > 0)
+			str += args[i++];
+
+		while (i < argsCnt)
+		{
+			str += ",";
+			str += args[i++];
+		}
+
+		str += "]";
+
+		//--- Extension result
+		strncpy_s(output, outputSize, str.c_str(), _TRUNCATE);
+
+		//--- Extension return code
+		return 100;
+	}
+
+	else if (strcmp(function, "fnc2") == 0)
+	{
+		//--- Parse args into vector
+		std::vector<std::string> vec(args, std::next(args, argsCnt));
+
+		std::ostringstream oss;
+		if (!vec.empty())
+		{
+			//--- Assemble output array
+			std::copy(vec.begin(), vec.end() - 1, std::ostream_iterator<std::string>(oss, ","));
+			oss << vec.back();
+		}
+
+		//--- Extension result
+		strncpy_s(output, outputSize, ("[" + oss.str() + "]").c_str(), _TRUNCATE);
+
+		//--- Extension return code
+		return 200;
+	}
+
+	else
+	{
+		strncpy_s(output, outputSize, "Avaliable Functions: fnc1, fnc2", outputSize - 1);
+		return -1;
+	}
+}
+</syntaxhighlight>
+</spoiler>
+
+|x4= Since {{arma3}} v2.12: <sqf>hint ("myExtContext" callExtension "");</sqf>
+Here is a minimal example: <spoiler>
+<syntaxhighlight lang="cpp">
+#include <string>
+#include <vector>
+#include <iterator>
+#include <sstream>
+#include <iomanip>
+
+BOOL APIENTRY DllMain(	HMODULE hModule,
+						DWORD ul_reason_for_call,
+						LPVOID lpReserved)
+{
+	switch (ul_reason_for_call)
+	{
+		case DLL_PROCESS_ATTACH:
+		case DLL_THREAD_ATTACH:
+		case DLL_THREAD_DETACH:
+		case DLL_PROCESS_DETACH:
+			break;
+	}
+	return TRUE;
+}
+
+std::vector<std::string> contextInfo;
+
+extern "C"
+{
+	//--- User entry point
+	__declspec (dllexport) void __stdcall RVExtension(char *output, int outputSize, const char *function);
+	//--- Engine passed context
+	__declspec (dllexport) void __stdcall RVExtensionContext(const char **args, int argsCnt);
+}
+
+//--- name callExtension function
+void __stdcall RVExtension(char *output, int outputSize, const char *function)
+{
+	//--- Not used here
+	(void)function;
+
+	if (!contextInfo.empty())
+	{
+		std::ostringstream oss;
+		const char qt = '"';
+
+		for (auto it = contextInfo.begin(); it != contextInfo.end() - 1; ++it)
+			oss << std::quoted(*it, qt, qt) << ",";
+		oss << std::quoted(contextInfo.back(), qt, qt);
+
+		//--- Send context info back
+		strncpy_s(output, outputSize, ("[" + oss.str() + "]").c_str(), _TRUNCATE);
+	}
+}
+
+//--- Context is executed first, copy it
+void __stdcall RVExtensionContext(const char **args, int argsCnt)
+{
+	contextInfo.assign(args, std::next(args, argsCnt));
+}
+</syntaxhighlight>
+</spoiler>
+
+|seealso= [[freeExtension]] [[call]] [[compile]] [[parseSimpleArray]] [[Extensions]]
+}}

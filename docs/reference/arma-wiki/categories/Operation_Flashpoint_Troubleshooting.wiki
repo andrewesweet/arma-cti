@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Troubleshooting
+// revision: 187211 (2021-01-08T13:15:14Z)
+// export sha1: 8td18uos97f7zrvsw3vc58wxoz17ft2
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|ofp}}

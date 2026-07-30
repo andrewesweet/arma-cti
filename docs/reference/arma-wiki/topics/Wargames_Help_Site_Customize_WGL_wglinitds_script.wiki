@@ -1,0 +1,62 @@
+// source: https://community.bistudio.com/wiki/Wargames:Help_Site:Customize_WGL:wglinitds_script
+// revision: 329113 (2022-07-22T15:18:55Z)
+// export sha1: g7z537b46n26xhc1gurp2k4gr2lzoer
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+= wglinitds script =
+
+With WGL 5.1 out the door, a bug in it serves as a good reason to show you an example of how one can use the custom script '''wglinitds.sqs''' on a dedicated server.
+
+== The Purpose ==
+
+The script '''wglinitds.sqs''' is executed around 1-2 seconds into a MP game and only on a dedicated server. The idea with  is to let server admins execute server-side script when a MP mission starts.
+
+== HowTo ==
+
+* Create a folder '''scripts''' in the OFP server folder.
+* Create a script named '''wglinitds.sqs''' in that folder.
+* Edit it to suit your needs.
+
+== Example Script ==
+
+WGL 5.1.0 has a small omission where a function that should have been loaded isn't. This function is used by the helicopter and airplane fuel leak simulation system to clean up a certain array when a helicopter or plane is destroyed.
+
+
+One could call this WGL 5.1 quirk a memory leak. Now, let's use '''wglinitds.sqs''' to patch that bug. Unfortunately, due to limitations in OFP, we can't make this a 100% "will always do it" solution. For this fix to work, a MP mission must have one of the following:
+
+* A game logic named '''server'''.
+* A game logic named '''LocalServerObject ''' (this is a common CTI mission object).
+* The Chain of Command Network Services (CoC NS).
+
+On your dedicated server, create the text file ''scripts/wglinitds.sqs'' and put this into it:
+
+<sqs>
+; Fix a buglet in WGL 5.1.0 - the function "WGLfDelPropertyObj" isn't loaded
+; by wglevents\wglinit.sqs. That function is used for housekeeping/cleanup
+; in the helicopter and airplane fuel leak simulation scripts.
+;
+; This script will try to make sure the function is loaded on all machines. It
+; looks for, in order, CoC NS, a game logic named "server" or a game logic
+; named "LocalServerObject". The last one is used by many CTI missions.
+;
+?CoC_Server==CoC_Server:goto"ns"
+?server==server:_server=server;goto"server"
+?LocalServerObject==LocalServerObject:_server=LocalServerObject;goto"server"
+exit
+
+#server
+?side _server!=sideLogic:exit
+~2
+"Logic"createVehicle[getPos _server,group _server,{if(local this)then{wgltmpgl=this};WGLfDelPropertyObj=loadFile"\wglevents\util\delPropertyObj.sqf"}]
+~2
+[wgltmpgl] join grpNull
+~1
+deleteVehicle wgltmpgl
+exit
+
+#ns
+@CoC_ClientsReady
+[[],{WGLfDelPropertyObj=loadFile"\wglevents\util\delPropertyObj.sqf"}] call fNRemoteCall
+exit
+</sqs>

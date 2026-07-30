@@ -1,0 +1,92 @@
+// source: https://community.bistudio.com/wiki/Bundeswehr_Retro_Pack
+// revision: 340229 (2023-04-28T16:42:22Z)
+// export sha1: i1s45y03vp2dae7za9ywvxpbtgw26tz
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Infobox/Mod
+|picture = 
+|leader = [[User:Marseille77|Marseille77]]
+|2D = [[User:Marseille77|Marseille77]]
+|3D = [[User:Marseille77|Marseille77]]<br>[[User:Cubus|Cubus]]
+|script = [[User:Marseille77|Marseille77]]
+|code = [[User:Marseille77|Marseille77]]
+|island = 
+|missions =
+|other = 
+|betatest = 
+|external = [[User:Vilas|Vilas]]<br>[[User:Cubus|Cubus]]
+|released = Yes
+|releasedate = 
+|version = 
+|ingame = germa bw retro overview.jpg
+|description= First overview (2011)
+|web = {{Link|link= http://forums.bistudio.com/showthread.php?132288-German-Assault-Addons-Army|text= German-Assault-Addons-Army}}
+|link = {{Link|http://www.arma2base.de/include.php?path{{=}}download&contentid{{=}}4126&download{{=}}go|Download}}
+}}
+
+
+== Introduction ==
+The GermA ''Bundeswehr Retro'' Addon was released in Dezember 2011. It contains West German soldiers and equipment around the early years (1955 til 1970).
+
+== Backround ==
+After Germany has lost the Second World War, the country was divided in three parts (West, East and polish controlled german territory). In the West the Allies built up a democratic state (FRG) and in the East the Soviets an communism counterpart (GDR). Konrad Adenauer, the first chancellor of West Germany (since 1949) was very afraid about the uparmed military police units in East Germany. He wants already a part of NATO with an own army. Many Germans were against it because of the bad experiences in the last war. In 1955 West Germany enters the NATO and founded the new West German Army who was officially known as ''Bundeswehr'' (Federal Defence). In 1956 the first units was introduced with American, British and a little bit Wehrmacht items. One year later the first conscription recruits were called in. The Bundeswehr was founded on experiences of World War generals like Manstein or Speidel. In the end of the 1960's the in Germany began a new era. Willy Brandt and Helmut Schmidt modernized the country and his army with new weapon systems from the own industry. 
+
+== Requirements ==
+* Arma 2:Operation Arrowhead
+* GermA German Weapon Pack
+* GermA German Weapon Pack WWII
+
+== Content ==
+=== Early era (1956 - 1968) ===
+*DKW Munga Jeep
+*Borgward B2000 (light truck)
+*Ford G398 SAM Truck
+*MAN 630L Truck
+*KHD (Magirus) Jupiter 6x6 Truck
+*Faun L912/21 Trucks
+*Faun L 908 (fuel trucks)
+*SPz Hispano-Suiza 30
+*SPz Hotchkiss-Brandt 11-2
+*KPz M48A2 (still unreleased)
+*Fiat/Aeritalia G.91
+*FlakPz M42 Duster
+
+=== Late era (1969 - 1980) ===
+*VW 181 ('The Thing')
+*SpPz Luchs
+
+=== Soldier suits ===
+*Leibermuster (presentation 1955)
+*Splinter Camo (1955 - 1960)
+*Field Crab (1960 - 1965)
+*First Moleskin edition (1965 - 1970)
+
+== Gallery ==
+<gallery>
+arma2OA 2015-02-27 11-15-11-52.jpg|Soldiers (1955/56)
+germa bw retro 01.JPG|Soldiers (1959)
+germa borgward early.jpg|Borgward B2000 A/O
+germa bw retro 02.JPG|Soldier with bazooka
+germa bw retro 06.jpg|Tank crew
+germa bw retro 03.jpg|Soldiers (1965)
+germa bw retro 05.jpg|Ford G398 SAM
+VW 181 Bundeswehr.jpeg|VW 181
+germa bw retro khd.jpg|Magirus-Deutz Jupiter 6x6
+Faun F912 21 Bundeswehr.jpeg|Faun F912/21
+MAN Emma Truck with G91.jpeg|MAN 630L2A with G.91
+Faun L908 Truck.jpg|Faun L908
+Hotchkiss carrier Bundeswehr.jpg|Hotchkiss ammo carrier
+SPz 11 2 Bundeswehr.jpeg|SPz 11-2
+Luchs A1 Bundeswehr.jpeg|Luchs A1
+germa fiat g 91.jpg|G.91G
+KPz M48A2C ArmA2.jpg|M48A2C
+BW Retro M42 ArmA2.jpeg|M42 Duster
+</gallery>
+
+== Credits ==
+* '''Marseille77''': Project Lead, Models, Textures,Config
+* '''Cubus''': Vehicle Models
+* '''Vilas''': Textures, Soldiers
+
+{{GameCategory|arma1|Extensions]]
+[[Category:Arma 2: Addon Groups}}

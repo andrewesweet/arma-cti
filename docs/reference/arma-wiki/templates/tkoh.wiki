@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:tkoh
+// revision: 322487 (2022-06-13T10:36:26Z)
+// export sha1: 88dqijo2cvyfzssl84s9nboc1oane9v
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|tkoh}}</includeonly><noinclude>{{Doc/Template
+|descr= Returns {{hl|{{tkoh}}}}.
+|example1= <nowiki>{{tkoh}}</nowiki>
+|result1= {{tkoh}}
+}}</noinclude>

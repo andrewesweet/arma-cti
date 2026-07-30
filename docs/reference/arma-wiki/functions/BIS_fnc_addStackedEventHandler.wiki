@@ -1,0 +1,91 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addStackedEventHandler
+// revision: 330780 (2022-11-01T16:06:55Z)
+// export sha1: 9hdin8ybr1tq9g49n01j2vyx1pibpap
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Event Handlers | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Event Handlers
+
+|eff= local
+
+|mp= This command has the same locality as [[addMissionEventHandler]].
+
+|descr= {{Feature|obsolete|[[Arma 3: Mission Event Handlers]] should be used instead.|arma3|1.58}}
+Stacks an event handler.  All event handlers accept user arguments, which are passed to the EH code in {{hl|_this}} variable. If the EH has own params returned in {{hl|_this}} variable as well, user arguments are appended to the end of {{hl|_this}} array. Note that if you try to add an empty EH, i.e. with empty code, it will simply be ignored.
+
+{{{!}} class="wikitable"
+{{!}}+ Supported Event Handlers
+! Scripted Event Handler
+! Mission EH Equivalent
+! Description
+{{!}}-
+{{!}} "[[onEachFrame]]"
+{{!}} [[Arma 3: Mission Event Handlers#EachFrame|EachFrame]]
+{{!}} {{n/a}}
+{{!}}-
+{{!}} "[[onPlayerConnected]]"
+{{!}} [[Arma 3: Mission Event Handlers#PlayerConnected|PlayerConnected]]
+{{!}} rowspan="2" {{!}}Special variables {{hl|_id}}, {{hl|_uid}}, {{hl|_name}}, {{hl|_jip}}, {{hl|_owner}} are provided and are available in {{hl|_this}} array as well.
+<sqf>params ["_id", "_uid", "_name", "_jip", "_owner"];</sqf>
+{{!}}-
+{{!}} "[[onPlayerDisconnected]]"
+{{!}} [[Arma 3: Mission Event Handlers#PlayerDisconnected|PlayerDisconnected]]
+{{!}}-
+{{!}} "[[onMapSingleClick]]"
+{{!}} [[Arma 3: Mission Event Handlers#MapSingleClick|MapSingleClick]]
+{{!}} Special variables {{hl|_units}}, {{hl|_pos}}, {{hl|_alt}}, {{hl|_shift}} are provided and are available in {{hl|_this}} array as well.
+<sqf>params ["_units", "_pos", "_alt", "_shift"];</sqf>
+{{!}}-
+{{!}} "[[onPreloadStarted]]"
+{{!}} [[Arma 3: Mission Event Handlers#PreloadStarted|PreloadStarted]]
+{{!}} {{n/a}}
+{{!}}-
+{{!}} "[[onPreloadFinished]]"
+{{!}} [[Arma 3: Mission Event Handlers#PreloadFinished|PreloadFinished]]
+{{!}} {{n/a}}
+{{!}}}
+
+|s1= [id, event, code, arguments] call [[BIS_fnc_addStackedEventHandler]]
+
+|p1= id: [[String]] - custom id, a unique identifier. Adding same type of EH with the same id will overwrite existing
+
+|p2= event: [[String]] - event handler name, see description for supported EHs
+
+|p3= code: [[Code]] or [[String]]. The [[String]] is treated as function name
+
+|p4= arguments: [[Array]] of [[Anything]] - arguments to make available in code in {{hl|_this}} array
+
+|r1= [[String]] - custom id on success or "" on failure
+
+|x1= <sqf>["someId", "onEachFrame", { hintSilent str time }] call BIS_fnc_addStackedEventHandler;</sqf>
+
+|x2= <sqf>["someId", "onEachFrame", {hintSilent str position (_this select 0)}, [player]] call BIS_fnc_addStackedEventHandler;</sqf>
+
+|x3= <sqf>
+private _eventName = "OnEachFrame";
+missionNamespace getVariable [format ["BIS_stackedEventHandlers_%1", _eventName], []]; // gets an array with all existing ids
+</sqf>
+
+|seealso= [[addMissionEventHandler]] [[BIS_fnc_removeStackedEventHandler]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140625120800
+|text= Stacking all the code into one PFH will be less demanding than separated calling within multiple PFH, e.g:
+<sqf>
+{
+	[format ["%1", _forEachIndex], "onEachFrame", _code, [_x]] call BIS_fnc_addStackedEventHandler;
+} forEach [var0, var1, varN, var100]; // pretty demanding
+</sqf>
+<sqf>
+[_id, "onEachFrame", {
+	{ _x call _code } forEach [var0, var1, varN, var100];
+}] call BIS_fnc_addStackedEventHandler; // faster, only one event
+</sqf>
+}}

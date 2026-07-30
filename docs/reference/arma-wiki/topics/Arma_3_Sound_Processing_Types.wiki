@@ -1,0 +1,215 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_Processing_Types
+// revision: 363933 (2024-04-26T21:33:53Z)
+// export sha1: fgz41quip9q566j5r4pgv1y56id5k6o
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|Sound}}
+== Processing Types ==
+
+Sound Processing Type in Arma 3 audio engine is method of distribution of source wave file channels to output channels.
+
+All sound processing type classes have to be configured within base class '''CfgSound3DProcessors'''.
+
+There are 3 different Sound Processing Types in Arma 3:
+* '''Emitter''' - spatialized sounds (vehicle engines, animation sounds, weapon shooting without reflections, etc.)
+* '''Panner''' - stereo sounds which behaves as "local ambients" in closer distance and clearly spatialized sounds in larger distance (weapon shooting reflections, tree leaves rustling, etc.)
+* '''Surround Panner''' - stereo sounds with custom multichannel panner ("directional ambient ssounds")
+
+=== Emitter ===
+
+Sound is played from the location of sound source, so this approach should be used for sounds which need to be clearly spatialized.
+
+* if source wave file is mono, sound is played exactly from the sound source position
+* if source wave file is stereo (2 channels), two virtual speakers (emitters) are created on the horizontal circle with the sound source in the center
+* virtual speakers (emitters) are always facing towards the listeners direction and they remain in the same distance from the listener (and to each other as well), so the positions of virtual speakers keep with player's movement (rotating around a circle)
+
+{| cellpadding="6"
+| [[File:A3_SoundProcessingType_Emitter.jpg]]
+|
+{| class="wikitable"
+
+|-
+! Parameter
+! Unit/values
+! Default
+! Description
+
+|-
+! ''type''
+| type name
+| "emitter"
+|
+
+|-
+! ''innerRange''
+| [m]
+| 0
+|
+* below innerRange distance, circle with emitters is static (radius is fixed to the value in radius parameter)
+
+|-
+! ''range''
+| [m]
+| cfgSoundGlobals
+|
+* above range distance, circle has zero radius (point), both speakers are on the same position
+
+|-
+! ''rangeCurve''
+| {{d0, v0}, {d1, v1}, ... }
+or Class name
+| linear transition
+|
+* transition curve between setups in innerRange and range distance (100% emitter vs 3D mono sound source)
+* between innerRange and range, circle with emitters changes it is radius from radius to zero using rangeCurve
+
+|-
+! ''radius''
+| [m]
+| cfgSoundGlobals
+|
+* maximal radius of circle with emitters (reached at innerRange distance and below)
+|}
+
+{{Feature | informative
+|
+* consider emitter as a generator of virtual speakers for each recorded channel, so it is settings should correspond with the recording's actual microphone positions/directions
+* if ''range'' < ''innerRange'', the range value is set to the ''innerRange'' value
+* if you require a static emitter, set the emitter's innerRange to a value greater than SoundShader's range value (emitters range value does not matter in this case)
+}}
+
+|}
+
+=== Panner ===
+
+Sound panner was designed for stereo wave files to provide smooth transition between ambient (2D) and positional (3D) sound behavior.
+
+* In closer distances (below innerRange distance) sound behaves as 2D ambient sound, signal is distributed to all channels (left source channel to all left output channels, right source channel to all right output channels, center receives mono downmix with half amplitude).
+* In larger distances (above ''range'' distance) sound behaves as 3D sound, both source channels are mixed to mono and played from sound source position.
+* Between ''innerRange'' and ''range'' there is an interpolation between two states described above, based on custom transition curve.
+ 
+{| cellpadding="6"
+| [[File:A3 SoundProcessingType Panner.jpg]]
+|
+{| class="wikitable"
+
+|-
+! Parameter
+! Unit/values
+! Default
+! Description
+
+|-
+! ''type''
+| type name
+| "panner"
+|
+
+|-
+! ''innerRange''
+| [m]
+| 0
+|
+* below innerRange distance source channels are 100% separated and distributed to output channels (left source to left outputs, right source to right outputs)
+
+|-
+! ''range''
+| [m]
+| -
+|
+* above range distance source channels are downmixed to mono and plays from the location of sound source
+
+|-
+! ''rangeCurve''
+| {{x0, y0}, {x1, y1}, ... }
+or Class name
+| linear tranisition
+| 
+* transition curve between two states described above
+* y value of 1 means behavior present below ''innerRange'' distance (ambient sound), value of 0 means 100% positional sound
+* ''rangeCurve'' is scaled to ''range'' - ''innerRange'' (and also it is applied only in the distance between ''innerRange'' and ''range'')
+
+|}
+
+{{Feature | informative
+|
+* If listener is below innerRange distance, sound is played as usual stereo sound without any changes with rotation of the listener.
+* If ''range'' < ''innerRange'', range value is set to ''innerRange'' value.
+}}
+
+|}
+
+=== Surround Panner ===
+
+Ambient panner was designed to be used with stereo sounds (ambients) to simulate their source location by specifying volume values on predefined directions. Generally, it behaves as a multi-channel panner.
+
+* Consider predefined directions as virtual speakers: front-right, front-left, rear-right, rear-left
+* For dynamic changes of volume values, use simple expressions with sound controllers
+* Using environment-related sound controllers, virtual speakers behaves as evaluation points.
+
+{| class="wikitable"
+
+|-
+! Parameter
+! Unit/values
+! Default
+! Description
+
+|-
+! ''type''
+| type name
+| "surround_panner"
+|
+
+|-
+! ''radius''
+| [m]
+| 7
+|
+* radius of circle, where evaluation of controllers happens (if used within sound defined in EnvSounds)
+
+|-
+! ''volumeFrontRight''
+| float (0..n) of [dBFS]
+| 1
+|
+* value or expression of front right virtual speaker volume
+
+|-
+! ''volumeFrontLeft''
+| float (0..n) of [dBFS]
+| 1
+|
+* value or expression of front left virtual speaker volume
+
+|- 
+! ''volumeRearRight''
+| float (0..n) of [dBFS]
+| 1
+|
+* value or expression of rear right virtual speaker volume
+
+|-
+! ''volumeRearLeft''
+| float (0..n) of [dBFS]
+| 1
+|
+* value or expression of rear left virtual speaker volume
+
+|-
+! ''volumeAll''
+| float (0..n) of [dBFS]
+| 1
+|
+* optional, overrides other volume parameter values
+
+|-
+! ''reference''
+| "camera"
+| "camera"
+|
+* "camera" - virtual speakers (evaluation points) position is fixed to camera direction - reference vector is camera direction vector
+|}
+
+{{Feature | informative | Currently, only these sound controllers are supported: ''forest, houses, sea, coast, meadow'' and only within EnvSounds configuration.}}

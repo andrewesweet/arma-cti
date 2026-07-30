@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/Trigger
+// revision: 342169 (2023-07-09T12:26:57Z)
+// export sha1: rldop0kftli7pic0kguavzgbwcsecfx
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+A [[Trigger]] can make reference to:
+* '''[[2D Editor: Triggers]]''': old [[2D Editor]] version
+* '''[[Eden Editor: Trigger]]''': new [[:Category:Eden Editor|Eden Editor]] version
+* [[:Category:Command Group: Triggers|Trigger Commands]]

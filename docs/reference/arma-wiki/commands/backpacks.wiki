@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/backpacks
+// revision: 377190 (2026-01-01T10:53:56Z)
+// export sha1: jjn2vkbzw9rk3ocy5oe0d0pf5adfvn2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|arg= global
+
+|gr1= Unit Inventory
+
+|descr= Returns an array of all backpack names a unit has in its inventory, excluding the one it carries on the back.
+
+|s1= [[backpacks]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>private _allCarriedBackpackTypes = backpacks player + [backpack player];</sqf>
+
+|seealso= [[backpack]] [[itemsWithMagazines]] [[assignedItems]] [[items]] [[magazines]] [[everyBackpack]] 
+}}

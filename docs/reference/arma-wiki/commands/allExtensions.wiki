@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/allExtensions
+// revision: 378520 (2026-05-04T01:49:51Z)
+// export sha1: 7h30lktnx5aniu9bgywqmili8oamcl7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+
+|gr1= System
+
+|descr= Returns information about all loaded Extensions
+
+|s1= [[allExtensions]]
+
+|r1= [[Array]] of [[HashMap]]s - one for each extension, containing the following keys
+* name: [[String]]
+* hash: [[String]] - sha1
+* hasRVExtensionVersion: [[Boolean]]
+* hasRVExtensionRequestUI: [[Boolean]]
+* hasRVExtensionArgs: [[Boolean]]
+* hasRVExtensionContext: [[Boolean]]
+* hasRVExtensionRegisterCallback: [[Boolean]]
+* hasRVExtension: [[Boolean]]
+* hasRVExtensionFeatureFlags: [[Array]] of [[String]]s
+* signatures: [[Array]] of [[String]]s
+* productVersion: [[String]]
+* dllVersion: [[Boolean]]
+* fileVersion: [[Boolean]]
+* dllVersion: [[Boolean]]
+* mod: [[String]]
+
+|x1= <sqf>
+// Get hash for extension emm_api
+private _extensionHash = ""; 
+{ 
+    if ((_x getOrDefault ["name", ""]) == "emm_api") exitWith { 
+        _extensionHash = _x getOrDefault ["hash", ""]; 
+    }; 
+} forEach allExtensions;
+_extensionHash // "4CD820DBDBCAEBE6FF654762DA41AF6C97D013B4"
+</sqf>
+
+|seealso= [[callExtension]]
+}}

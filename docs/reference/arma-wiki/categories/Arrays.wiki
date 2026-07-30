@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Arrays
+// revision: 350068 (2023-11-22T17:40:21Z)
+// export sha1: 1ykad5sv5y0v0bek4ltpnk5p57k6qkl
+// Vendored snapshot. Do not edit — re-export instead.
+
+See [[Array]].
+
+
+[[Category: Data Types]]

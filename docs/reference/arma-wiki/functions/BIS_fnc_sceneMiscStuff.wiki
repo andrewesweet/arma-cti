@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sceneMiscStuff
+// revision: 309805 (2022-05-05T12:09:50Z)
+// export sha1: 5txrk1ovstna6gm0329bywtp6g3gvgl
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Scenes | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Scenes
+
+|descr= <pre>
+/*********************************************************************
+	Version:	1.0
+	Name:		sceneMiscStuff
+	DESCRIPTION:	Does the basic minor stuff for scene - cinema borders, map is denied etc.  
+	PARAMETERS:	1) _cameraPositions - [[cameraTarget],[cameraPos]] - Coordinates. If BIS_debugScene is true then external camera is activated
+			2) _skipInitBlackout - BOOL - if true, initial blackout is skipped
+			3) _skipFinalBlackout - BOOL - if true, final blackout is skipped
+			4) _noUseCheckTheWeapons - BOOL - if true, checking of weapon before scene is skipped
+			5) _noUseLoadingScreen - BOOL - if true, loadingscreen is bypassed
+			6) __excludedObjectsForIntruderDetector - ARRAY of objects - objects will be excluded from intruder detector
+	RETURNED VALUE:	
+**********************************************************************/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_sceneMiscStuff]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_sceneMiscStuff;</sqf> -->
+
+|seealso=
+}}

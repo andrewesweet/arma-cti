@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/menuSetData
+// revision: 378345 (2026-04-02T16:31:30Z)
+// export sha1: r9j11kljfghet18df1fri99gh286o87
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= GUI Control - Menu
+
+|descr= Sets data into menu entry on given path.
+
+|s1= [[menuSetData]] [idc, path, data]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|p3= data: [[String]]
+
+|r1= [[Nothing]]
+
+|s2= control [[menuSetData]] [path, data]
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|p23= data: [[String]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>findDisplay 313 displayCtrl 120 menuSetData [[0, 1], "[true, player, 'Hello World!', 1337]"];</sqf>
+
+|seealso= [[menuData]]
+}}

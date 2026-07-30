@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/lnbSortBy
+// revision: 352015 (2024-02-01T23:24:06Z)
+// export sha1: q3vfg8s15odtjby2rm9d9aai22y9sgf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= GUI Control - ListNBox
+
+|descr= Sorts given multi-column ListNBox in the given column by either [[lnbText]], [[lnbValue]] or [[lnbData]] in normal or reversed order, using case-sensitive or case-insensitive comparison. Unlike the older '''lnbSortXXX''' commands, this command supports UNICODE characters out of the box.<br>
+When sorting by {{hl|"VALUE"}}, the rows with the same [[lnbValue]] will additionally be sorted by [[lnbText]] in the order specified by the ''reversedOrder'' flag, text specified by `useTextRight` flag and case-sensitivity specified by `caseSensitive` flag.
+
+{{Feature|important|
+* This command supports referencing control via IDC as well, but as with any use of IDC in UI [[Control]] commands, a [[dialog]] should be present, i.e. UI user interaction is created with [[createDialog]] rather than [[createDisplay]].
+* As this command supports UNICODE by default, which may result in slower sorting, you can switch it off with {{hl|unicodeOff}} param.
+}}
+
+|s1= [controlOrIDC, column] [[lnbSortBy]] [sortByType, reversedOrder, caseSensitive, useTextRight,  unicodeOff]
+
+|p1= controlOrIDC: [[Control]] or [[Number]] - the ListNBox control or its IDC
+
+|p2= column: [[Number]] - column to sort (starts with 0)
+
+|p3= sortByType: [[String]] - (Optional, default "TEXT") one of:
+* {{hl|"TEXT"}}
+* {{hl|"VALUE"}}
+* {{hl|"DATA"}}
+
+|p4= reversedOrder: [[Boolean]] - (Optional, default [[false]]) [[true]] for sorting in reversed order
+
+|p5= caseSensitive: [[Boolean]] - (Optional, default [[false]]) [[true]] for using case-sensitive comparison
+
+|p6= useTextRight: [[Boolean]] - (Optional, default [[false]]) [[true]] to sort by [[lnbSetTextRight | text right]]
+
+|p7= unicodeOff: [[Boolean]] - (Optional, default [[false]]) [[true]] to switch off UNICODE conversion for faster sorting
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+with uiNamespace do
+{
+	private _column = 1;
+	private _lnb = findDisplay 46 createDisplay "RscDisplayEmpty" ctrlCreate ["RscListNBox", -1];
+	_lnb ctrlSetPosition [0,0,1,1];
+	_lnb ctrlCommit 0;
+	lnbClear _lnb;
+	{ 
+		_lnb lnbAddRow [format ["Row %1", _forEachIndex], _x select 0];
+		_lnb lnbSetValue [[_forEachIndex, _column], _x select 1];
+	} 
+	forEach [["В",1], ["Я",0], ["Б",1], ["Ю",0], ["А",1]];
+	[_lnb, _column] lnbSortBy ["VALUE", true, false];
+};
+</sqf>
+
+|seealso= [[lbSortBy]] [[lnbSort]] [[lnbSortByValue]] [[lbSort]] [[lbSortByValue]] [[tvSort]] [[tvSortByValue]] [[sort]]
+}}

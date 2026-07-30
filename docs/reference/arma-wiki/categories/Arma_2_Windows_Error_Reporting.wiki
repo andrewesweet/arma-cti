@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Windows_Error_Reporting
+// revision: 290647 (2021-07-20T00:53:24Z)
+// export sha1: goa22vvqmgs0p8zgg7yxt659yk2312w
+// Vendored snapshot. Do not edit — re-export instead.
+
+Windows Error Reporting responses for [[:Category:Arma 2|{{arma2}}]] crashes.
+
+{{GameCategory|arma2|Troubleshooting}}

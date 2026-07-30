@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_colorMarker
+// revision: 348838 (2023-11-08T14:39:09Z)
+// export sha1: tl4b5jpxfk9fcj7o5g23nzgonqkmilw
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Map and Markers
+
+|arg= global
+
+|eff= global
+
+|descr= Changes color of a marker with a little effect
+
+|s1= [marker, color, duration] spawn [[BIS_fnc_colorMarker]]
+
+|p1= marker: [[String]] - marker
+
+|p2= color: [[String]] - color from CfgMarkerColors
+
+|p3= duration: [[Number]] - (Optional, default 1) duration of the transition
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["BIS_marker","ColorRed",2] spawn BIS_fnc_colorMarker;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_blinkMarker]] [[BIS_fnc_changeColorMarker]] [[BIS_fnc_getMarkers]] [[BIS_fnc_getMarkerState]]
+}}

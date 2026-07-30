@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/showChat
+// revision: 310212 (2022-05-05T13:10:43Z)
+// export sha1: galx4h2xn6d6zr98kfrymt9rtwb9d95
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Radio and Chat
+
+|eff= local
+
+|descr= Shows/hides the whole chat window.
+
+|s1= [[showChat]] bool
+
+|p1= bool: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>showChat false;</sqf>
+
+|seealso= [[shownChat]]
+}}

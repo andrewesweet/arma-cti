@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Terrain_Processor_Manual
+// revision: 177024 (2020-12-30T02:43:14Z)
+// export sha1: ez6qcmsbdi9yjieg3zzs1dou5xwjqyj
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category contains the user manual for Terrain Processor. If you're not familiar with '''Terrain Processor''', we highly recommend you to read the [[Terrain Processor: Introduction|introduction]].
+
+{{GameCategory|arma3|Official Tools Manual}}

@@ -1,0 +1,22 @@
+// source: https://community.bistudio.com/wiki/Bohemia_Interactive_Simulations
+// revision: 378086 (2026-02-12T15:25:58Z)
+// export sha1: myiz8dbamk0rzoptiit4lees3ywl0wr
+// categories: Category:Bohemia Interactive
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Bohemia Interactive Simulations''' (a.k.a '''BISim''', known in the past as "Bohemia Interactive Australia" or BIA) was formed in 2001 as an initiative of both {{Link|https://twitter.com/dlagettie|David Lagettie}} (of the band Seventh, whose music features in the soundtrack for {{ofp}}) and {{Name|bi}}; it is the company behind the Virtual Battlespace (VBS) series, a professional training simulation aimed at armies and military entities.
+
+
+'''Bohemia Interactive Simulations''' was sold to Riverside in '''2013'''<ref>2013-01-08: {{Link|https://www.privateequityinternational.com/riverside-buys-military-training-firm/|Riverside buys military training firm}}</ref>.
+{{Feature|important|
+<div style{{=}}"text-align: center">
+While they shared the "Bohemia Interactive" part in their name and VBS 1 and 2 respectively '''partly''' used {{ofp}}'s and {{arma1}}'s engine,<br>
+'''{{Name|bi}} and BISim became two completely separate companies that did not share any more technologies past this point'''.
+</div>
+}}
+
+
+'''Bohemia Interactive Simulations''' was bought by BAE in 2022<ref>2022-03-07: {{Link|https://www.baesystems.com/en/article/bae-systems-completes-acquisition-of-bohemia-interactive-simulations|BAE Systems completes acquisition of Bohemia Interactive Simulations}}</ref> and '''was renamed OneArc'''<ref>2025-12-04: {{Link|https://www.baesystems.com/en/article/bae-systems-launches-bae-systems-onearc-a-defense-technology-innovator-to-transform-the-modern-battlespace|BAE Systems launches BAE Systems OneArc (...)}}</ref> when merged with Pitch.
+
+
+[[Category:Bohemia Interactive]]

@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/setCustomSoundController
+// revision: 309208 (2022-05-03T22:18:23Z)
+// export sha1: 27a7y5wb95pkhtd3c3yn2qtw6r50vr5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.86
+
+|gr1= Sounds
+
+|descr= Sets value of the specified custom sound controller to be used in [[simple expression]]s in config. Returns [[true]] if value was set to the controller, [[false]] if command fails, for example if vehicle is not a transport or controller name is not recognised.
+{{Feature | important | Custom sound controller name is <u>case sensitive</u> and of the following format:
+<sqf>format ["CustomSoundController%1", _number];</sqf>
+Where {{hl|_number}} is a number from 1 to [[getCustomSoundControllerCount]] (currently 32)}}
+
+|s1= [[setCustomSoundController]] [vehicle, controller, value]
+
+|p1= vehicle: [[Object]] - a transport type vehicle. Does not work on characters or buildings
+
+|p2= controller: [[String]] - name of the custom sound controller - needs to be full string e.g "CustomSoundController1". It goes from "CustomSoundController1" to "CustomSoundController32"
+
+|p3= value: [[Number]] - desired value
+
+|r1= [[Boolean]] - [[true]] on success
+
+|x1= Change value of CustomSoundController1 to 12
+<sqf>setCustomSoundController [vehicle player, "CustomSoundController1", 12];</sqf>
+
+|seealso= [[Arma 3: Sound]] [[getCustomSoundController]] [[getCustomSoundControllerCount]] [[getSoundController]] [[getSoundControllerResult]] [[getAllSoundControllers]] [[getEnvSoundController]] [[getAllEnvSoundControllers]]
+}}

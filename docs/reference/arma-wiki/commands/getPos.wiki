@@ -1,0 +1,111 @@
+// source: https://community.bistudio.com/wiki/getPos
+// revision: 377527 (2026-01-02T06:52:50Z)
+// export sha1: q59pfmijdzbqyv8s0tb2tbm8nxcf6q0
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Positions
+
+|descr= Returns object or location position. If the argument is an object, the return value is in format [[Position#PositionAGLS|PositionAGLS]].<br>
+The alternative syntax gets the position given distance and heading away from provided object or position - the command equivalent of [[BIS_fnc_relPos]].
+
+{{Feature|important|
+Do '''not''' use this command's first syntax to get an object's position in 3D format:
+* the Z value from this command is '''relative''' to the surface underneath, and there is no compatible setter command to use it with;<br>the commonly misused code: <sqf inline>_obj1 setPos getPos _obj2</sqf> is '''absolutely wrong'''
+* this command is significantly '''slower''' than other [[:Category:Command Group: Positions|position commands]] because it has to calculate the surface below a position from objects in the (2D) area; its performance therefore suffers from areas with a high density of objects such as cities, and can easily be ~20x slower than other, simpler position commands - see [[Code Optimisation#getPos.2A and setPos.2A|this benchmark]].
+The '''only''' correct usage of this command is to determine the altitude of an object '''from the surface below it''' (see {{Link|#Example 4}}).
+}}
+ 
+|s1= [[getPos]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Position#PositionAGLS|PositionAGLS]] - where Z is the height over the surface underneath
+
+|s2= [[getPos]] location
+
+|p21= location: [[Location]]
+
+|r2= [[Position#PositionAGL|PositionAGL]] - see [[locationPosition]]
+
+|s3= origin [[getPos]] [distance, heading]
+
+|s3since= arma3 1.56
+
+|p41= origin: [[Object]], [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]]
+
+|p42= distance: [[Number]] - distance from position
+
+|p43= heading: [[Number]] - in which compass direction
+
+|r3= [[Position#PositionAGLS|PositionAGLS]] - the Z value is '''terrain level [[Position#PositionAGL|Above Ground Level]]''', either 0 over land or [[getTerrainHeightASL]] (negative value) over water
+
+|x1= <sqf>hintSilent str getPos player;</sqf>
+
+|x2= [[getPos]] vs. other methods (over sea). Pay attention to Z values:
+<sqf>
+getPos ship;				// [2412.01, 6036.33, -0.839965]
+getPosATL ship;				// [2412.01, 6036.33, 19.4266]
+getPosASL ship;				// [2412.01, 6036.33, -0.920066]
+getPosASLW ship;			// [2412.01, 6036.33, -0.865981]
+visiblePosition ship;		// [2412.02, 6036.33, -0.837952]
+visiblePositionASL ship;	// [2412.02, 6036.33, -0.91798]
+position ship;				// [2412.01, 6036.33, -0.839965]
+</sqf>
+
+|x3= [[getPos]] vs. other methods (over land, on top of a 100m high building). Pay attention to Z values:
+<sqf>
+getPos car;					// [2508.64, 5681.47, 0.0609589]
+getPosATL car;				// [2508.64, 5681.47, 100.0356369]
+getPosASL car;				// [2508.64, 5681.47, 171.718]
+getPosASLW car;				// [2508.64, 5681.47, 171.718]
+visiblePosition car;		// [2508.64, 5681.47, 0.0609512]
+visiblePositionASL car;		// [2508.64, 5681.47, 171.718]
+position car;				// [2508.64, 5681.47, 0.0609589]
+</sqf>
+
+|x4= Determine if a free-falling unit is close enough to the surface (including buildings, aircraft carriers etc) below to deploy the parachute:
+<sqf>
+waitUntil { sleep 1; getPos player select 2 < 200 };
+hint "Deploying a parachute might be a good idea";
+</sqf>
+
+|x5= Find position 100 metres and 45 degrees from player position:<!-- referenced in description -->
+<sqf>
+player getPos [100, 45];	// e.g [1834, 2230, 0] if resulting pos is over land
+							// or [120, 256, -271] if resulting pos is over water
+</sqf>
+
+|seealso= [[getPosVisual]] [[getRelPos]] [[setPos]] [[Position#setPosAGLS|setPosAGLS]] [[position]] [[getPosATL]] [[getPosASL]] [[getPosASLW]] [[visiblePosition]] [[visiblePositionASL]] [[getMarkerPos]]
+}}
+
+{{Note
+|user= Dr_Eyeball
+|timestamp= 20070217134300
+|text= <sqf inline>getPos obj select 2</sqf> might return the vertical position above ground level, but for a stacked object, it returns the vertical position above the object beneath it. The same problem existed for [[getPosASL]] ('''pre-Arma 2 games only'''). There was a {{Link|link= http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?s=e587356595b907e91f96b8817d7f8a26;act=ST;f=71;t=57918|text= discussion}} thread in the BIS forums which suggested the use of the command [[modelToWorld]] instead to get around this issue where an absolute vertical position is required. ArmA Ver '''1.02'''.
+}}

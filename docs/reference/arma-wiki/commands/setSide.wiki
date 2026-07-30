@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/setSide
+// revision: 341632 (2023-06-12T19:02:54Z)
+// export sha1: rpug6xkl7wr5z5x0yf8bcpucjajdxmn
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Command Group: Sides | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Sides
+
+|gr2= Locations
+
+|descr= Sets a location's [[Side|side]]. The default side is Unknown.
+{{Feature|important|To change a ''unit''<nowiki/>'s side, see {{Link|#Notes}}.}}
+
+|s1= location [[setSide]] side
+
+|p1= location: [[Location]]
+
+|p2= side: [[Side]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_myLocation setSide resistance;</sqf>
+
+|seealso= [[Side]] [[side]] [[west]] [[east]] [[resistance]] [[civilian]] [[sideUnknown]] [[sideFriendly]] [[sideEnemy]] [[playerSide]] [[Side Relations]] [[independent]]
+}}
+
+{{Note
+|user= Ondřejkuzel
+|timestamp= 201312031600
+|text= For units, vehicles you can use: <sqf inline>_unitsArray joinSilent createGroup _side</sqf>, e.g. in init: <sqf inline>[this] joinSilent createGroup EAST;</sqf> ''described in the note below''
+}}
+
+{{Note
+|user= Jtgibson
+|timestamp= 20090806190500
+|text= This is a frequent question on OFPEC, but produced here because it was difficult to find an answer to. '''setSide''' does not work for men, vehicles, etc.: it is intended for locations (''i.e.'', territory).  If you want to switch a unit's (''e.g.'', the player's) side in the middle of a battle, make the unit '''[[joinSilent]]''' a group on the given side instead.  If you want the unit to become the group leader after joining, use '''[[selectLeader]]'''.  I have not tested the idea of spawning a temporary unit of that side, assigning the player to that unit, setting the player as the leader, then deleting the original unit, but I don't see why it wouldn't work.  (It begs the question why we don't have a setSide object function, though.)
+}}

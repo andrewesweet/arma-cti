@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/size
+// revision: 378398 (2026-04-04T08:01:25Z)
+// export sha1: djirmxq2eoltogzvt5zzmy6g2cs1brj
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Locations
+
+|descr= Returns a location's size.
+
+|s1= [[size]] location
+
+|p1= location: [[Location]]
+
+|r1= [[Array]] with [x,y]
+* x: [[Number]] - horizontal distance in meters
+* y: [[Number]] - vertical distance in meters
+
+|x1= <sqf>_locSize = size myLocation;</sqf>
+
+|seealso= [[setSize]]
+}}

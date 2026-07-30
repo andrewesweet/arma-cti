@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/TexView_2
+// revision: 364107 (2024-05-04T21:57:07Z)
+// export sha1: 12lx5nfoedvdvqg9xfwucfol2kdcekg
+// categories: Category:ArmA: Armed Assault: Official Tools | Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION= 2.0
+
+|COMPATIBILITY= [[:Category:ArmA: Armed Assault|{{arma1}}]], [[:Category:Arma 2|Arma 2]] and {{GameCategory|arma3|link= y}}
+
+|DOWNLOAD= Included in [[BI Tools]], [[BI Tools 2]], [[BI Tools 2.5]], [[Poseidon Tools]] and {{Link|link= http://store.steampowered.com/app/233800/|text= part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= TexView 2 is a texture viewer and conversion tool for .paa and .pac files.  For batch/command line operations use [[Pal2PacE]] instead (included in TexView2 release or called [[ImageToPAA]] in Arma 3 Tools). See [[Arma: Texture Naming Rules]] for more information about the conversion process.
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO=[[Pal2PacE]], [[TexView 2 Manual]], [[ImageToPAA]], [[Arma: Texture Naming Rules]]
+
+}}
+
+
+{{GameCategory|arma1|Official Tools}}
+{{GameCategory|arma3|Official Tools}}

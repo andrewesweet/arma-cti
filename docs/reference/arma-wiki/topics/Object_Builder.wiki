@@ -1,0 +1,101 @@
+// source: https://community.bistudio.com/wiki/Object_Builder
+// revision: 364236 (2024-05-06T09:38:16Z)
+// export sha1: rejw5b64dsdhnwfmthhp9ttftawj1jb
+// categories: Category:ArmA: Armed Assault: Official Tools | Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= 
+[[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= 
+
+[[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD=
+
+{{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= This tool is used to create, edit and configure 3D models made for Arma 3. 
+
+Object Builder is the successor to [[Oxygen 2]].
+
+|NOTES= Buldozer (the viewer) might not work as expected if you run {{PAGENAME}} from Steam or from [[Arma 3: Tools Launcher]] if this last was ran from Steam. The best case of use is to run [[Arma 3: Tools Launcher]] from the installation directory and run {{PAGENAME}} from it.
+
+It also includes Material Editor (material tweaking) and O2Scripts (automation). 
+
+|COMMAND=
+    ObjectBuilder.exe 
+
+|LICENSING=
+[[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= [[Oxygen 2 - Manual]], [[Oxygen 2 - UV Editor]], [[Oxygen 2]], [[Buldozer Manual]]
+
+}}
+
+=== Additional information ===
+
+==== Supported formats ====
+
+Input:
+* P3D (file with model, supported are nonbinarized version[MLOD])
+* 3DS (legacy 3d model file format)
+* ASC (ASCII 3D object)
+* SDA (Vicon Surface Data)
+
+Import:
+* 3DS (legacy 3d model file format)
+* OBJ (3D Object Format)
+* FBX (Autodesk FBX)
+* ASF (Acclaim Skeleton Format, MoCap)
+* BVH (Biovision Hierarchy, FilmBox)
+
+Export: 
+* 3DS
+* MDA
+* FBX
+
+Textures:
+* TGA (24 bit / 32 bit with alpha channel)
+* GIF (with or without alpha channel)
+* PAA,PAC (textures formats using in BI's game engines)
+
+Output:
+* P3D (nonbinarized)
+
+==== How to use it ====
+
+You can open any supported model using menu File / Open or drag and drop the model file icon into the main window of Object Builder (tip: you may assign P3D file extensions to Object Builder application using Windows desktop).
+
+You can make empty model using menu File / New.
+
+You can save (save as) the file only into the P3D format.
+
+Preview of model can be showed by Viewer Tool (Buldozer).
+
+==== Viewer setup ====
+
+parameters for the viewer.
+
+You can use '''[[Buldozer Configurator]]''' or define your settings manually:
+
+Path to viewer (Commands in [] are optional; leave [] away when using that command):
+P:\Buldozer.exe -buldozer [-window] [-noland] [-cfg=PathToConfig] [-maxmem=1024]
+
+-window : Starts Buldozer in window instead of fullscreen.
+
+-noland : Buldozer will not load a island.
+
+-cfg=PathToConfig : Forces Buldozer to use a certain config.
+
+To run viewer correctly you need a Arma 3 successfully installed on hard drive. Using [[P drive]] tool prepares P: drive with buldozer.exe 
+
+'''Known issues:''' Running Object Builder directly from Steam may prevent attaching of Buldozer. Using shortcut or running directly from app directory is a possible workaround until the issue is fixed.
+
+
+{{GameCategory|arma1|Official Tools}}
+{{GameCategory|arma3|Official Tools}}

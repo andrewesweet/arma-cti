@@ -1,0 +1,18 @@
+// source: https://community.bistudio.com/wiki/RandalHubb92
+// revision: 339584 (2023-04-28T14:11:45Z)
+// export sha1: 5q68xss1dppvbst0odcrtj2bpqs90r1
+// Vendored snapshot. Do not edit — re-export instead.
+
+===general info===
+* CIA Agent
+** Ex-US Marine
+** applied for INSCOM, but got rejected
+** now in training at the CIA
+* Armydude, studying and working towards a job in the CIA.
+* located at Agean area
+* Involved at ION - http://www.ion-inc.com/
+
+=== twitter ===
+{{Link|https://twitter.com/RandalHubb92|Twitter Account}}
+* https://twitter.com/RandalHubb92/status/306338824282337282/photo/1
+* https://twitter.com/RandalHubb92/status/306420332401676288/photo/1

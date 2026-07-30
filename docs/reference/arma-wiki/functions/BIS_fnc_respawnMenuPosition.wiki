@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_respawnMenuPosition
+// revision: 376730 (2025-11-15T04:51:27Z)
+// export sha1: arxtr8xzgoezpv0zeuzc3hl9i9z4xt8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Shows respawn menu. Closes it if the player is alive.
+
+|s1= [player, respawnDelay, revive] call [[BIS_fnc_respawnMenuPosition]]
+
+|p1= player: [[Object]] - player unit
+
+|p2= respawnDelay: [[Number]] - (Optional, default 3) respawn delay
+
+|p3= revive: [[Boolean]] - (Optional, default [[false]]) if unit was revived
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player,5] call BIS_fnc_respawnMenuPosition;</sqf>
+
+|seealso= [[Arma 3: Respawn]]
+}}
+
+{{Note
+|user= Ilias38rus
+|timestamp= 20210115181400
+|text= Use <sqf inline>setPlayerRespawnTime 0;</sqf> to respawn on selected position (certain gets selected by default), or position of death, if there is no the RP-s.
+}}

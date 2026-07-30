@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/removeWeaponItem
+// revision: 376149 (2025-09-06T17:37:00Z)
+// export sha1: 51vfmje73ljktsuhrpfgifvjz9te4iz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Removes magazine from the specified muzzle.
+It is possible to remove magazine directly from 'Throw' muzzle provided it is configured with <syntaxhighlight lang="cpp" inline>keepInInventory = 0;</syntaxhighlight>.
+{{Feature|informative|To add such magazine, see [[addWeaponItem]].}}
+
+|s1= unit [[removeWeaponItem]] [muzzle, magazine]
+
+|p1= unit: [[Object]]
+
+|p2= muzzle: [[String]] - name of the muzzle to add magazine to
+
+|p3= magazine: [[String]] - class name of the magazine to remove
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeWeaponItem ["arifle_MX_GL_ACO_F", "1Rnd_HE_Grenade_shell"];</sqf>
+
+|seealso= [[addWeaponItem]] [[addPrimaryWeaponItem]] [[addSecondaryWeaponItem]] [[addHandgunItem]] [[addBinocularItem]] [[weaponsItems]] [[handgunItems]] [[primaryWeaponItems]] [[secondaryWeaponItems]] [[binocularItems]] [[removePrimaryWeaponItem]] [[removeSecondaryWeaponItem]] [[removeHandgunItem]] [[removeBinocularItem]]
+}}

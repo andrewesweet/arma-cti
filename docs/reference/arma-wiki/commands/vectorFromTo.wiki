@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/vectorFromTo
+// revision: 378369 (2026-04-03T16:47:19Z)
+// export sha1: drsm163bket81xlcpv75rqt9ss73wrr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Introduced with Arma 3 version 1.26 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.26
+
+|gr2= Math - Vectors
+
+|descr= Unit vector, equal to direction from vector1 to vector2. In other words this command produces [[vectorNormalized | normalised vector]] between given 2 points.<br>
+To get a non-normalised vector, use [[vectorDiff]].
+
+|s1= vector1 [[vectorFromTo]] vector2
+
+|p1= vector1: [[Vector3D]] or [[Vector2D]] - 3D or {{GVI|arma3|2.00|size= 0.75}} 2D vector (z coordinate is defaulted to 0)
+
+|p2= vector2: [[Vector3D]] or [[Vector2D]] - 3D or {{GVI|arma3|2.00|size= 0.75}} 2D vector (z coordinate is defaulted to 0)
+
+|r1= [[Vector3D]]
+
+|x1= <sqf>
+[1,2,3] vectorFromTo [4,5,6];
+// is the same as
+vectorNormalized ([4,5,6] vectorDiff [1,2,3]);
+</sqf>
+
+|seealso= [[vectorDiff]] [[vectorCrossProduct]] [[vectorDotProduct]] [[vectorCos]] [[vectorMagnitude]] [[vectorMagnitudeSqr]] [[vectorMultiply]] [[vectorDistance]] [[vectorDistanceSqr]] [[vectorDir]] [[vectorUp]] [[setVectorDir]] [[setVectorUp]] [[setVectorDirAndUp]] [[vectorNormalized]] [[matrixMultiply]] [[matrixTranspose]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140719160100
+|text= {{GVI|arma3|1.26}} Algorithm:
+<sqf>
+_vector1 = [x1,y1,z1];
+_vector2 = [x2,y2,z2];
+_result = [
+	(x1 - x2) / (sqrt ((x1 - x2) ^ 2 + (y1 - y2) ^ 2 + (z1 - z2) ^ 2)),
+	(y1 - y2) / (sqrt ((x1 - x2) ^ 2 + (y1 - y2) ^ 2 + (z1 - z2) ^ 2)),
+	(z1 - z2) / (sqrt ((x1 - x2) ^ 2 + (y1 - y2) ^ 2 + (z1 - z2) ^ 2))
+];
+</sqf>
+}}

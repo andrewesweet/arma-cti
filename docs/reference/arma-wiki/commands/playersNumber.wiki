@@ -1,0 +1,63 @@
+// source: https://community.bistudio.com/wiki/playersNumber
+// revision: 369133 (2024-09-03T10:34:34Z)
+// export sha1: osk4a4jxavgf241fijmj2zlugoyevd0
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Operation Flashpoint version 1.80 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.80
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Multiplayer
+
+|descr= Returns count of occupied role selection slots for given side. Players who claimed a slot in the lobby but did not start the mission are counted as well. If <syntaxhighlight lang="cpp" inline>disabledAI = 0;</syntaxhighlight> in [[Description.ext#disabledAI|description.ext]] or ''Enable AI'' option is checked in [[:Category:Eden Editor|Eden Editor]], AI bots will be treated as valid players and will be counted too.
+
+|mp= '''Multiplayer only''', in singleplayer it always returns 0.
+
+|s1= [[playersNumber]] side
+
+|p1= side: [[Side]]
+
+|r1= [[Number]]
+
+|x1= <sqf>
+_west = playersNumber west;
+_east = playersNumber east;
+_civ = playersNumber civilian;
+hint format ["West:%1 East:%2, Civ:%3", _west, _east, _civ];
+</sqf>
+
+|seealso= [[playableSlotsNumber]] [[countSide]] [[allPlayers]] [[allUnits]]
+}}
+
+{{Note
+|user= Nelis75733126
+|timestamp= 20150413094400
+|text= '''2024-04-16 edit:'''<br>
+<sqf inline>playersNumber</sqf> returns playable AI as well as human players.<br>
+By default, a unit (placed down in the editor for example) ONLY becomes playable when the creator specifically checks the relevant checkbox.<br>
+<br>
+In addition to the examples already given, this is how <sqf inline>playersNumber</sqf> can be used to get an array of players and playable AI on the same side as the side of the player:<br>
+<sqf>playersNumber playerSide;</sqf>
+|game= arma1
+|version= 1.05
+}}

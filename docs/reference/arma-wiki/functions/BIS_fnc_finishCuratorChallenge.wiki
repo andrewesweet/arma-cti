@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_finishCuratorChallenge
+// revision: 349249 (2023-11-08T14:51:00Z)
+// export sha1: 1u7m6rwmmxk4qa9re24aj1numrs4emq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: CuratorChallenges | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= CuratorChallenges
+
+|descr= Handle repeated curator challenges.
+	When rewards defined in the argument are exceeded, refilling points bar fill be offered instead. Number of challenges can be retrieved by 
+
+|s1= [curator,input,taskState]] call [[BIS_fnc_finishCuratorChallenge]]
+
+|p1=curator [[Object]] - curator
+
+|p2=input [[Array]] - array in format:
+*0: [[String]] - Challenge class name
+*1: [[Object]] - Curator
+
+|p3= taskState [[String]] - task state, can be:
+*"SUCCEEDED"
+*"FAILED"
+*"CANCELED"
+*"ASSIGNED"
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[BIS_curator,["DestroyVehicle",BIS_curator],"SUCCEEDED"] call BIS_fnc_finishCuratorChallenge;
+_number = BIS_curator getVariable "DestroyVehicle";</sqf>
+
+|seealso= [[Arma 3: Curator]] [[BIS_fnc_formatCuratorChallengeObjects]] [[BIS_fnc_manageCuratorChallenges]] [[BIS_fnc_addCuratorChallenge]]
+}}

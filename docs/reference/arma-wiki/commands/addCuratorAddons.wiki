@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/addCuratorAddons
+// revision: 378390 (2026-04-04T07:50:38Z)
+// export sha1: r0noqj0uj0xcuyn8qwcervdta5sw67i
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|serverExec= server
+
+|gr1= Curator
+
+|descr= Allow curator use of given addon.
+
+|s1= curatorObj [[addCuratorAddons]] addons
+
+|p1= curatorObj: [[Object]] - curator module.
+
+|p2= addons: [[Array]] of [[String]]s - CfgPatches class names
+
+|r1= [[Nothing]]
+
+|x1= <sqf>curatorObj addCuratorAddons ["A3_Armor_F_AMV","A3_Armor_F_Panther"];</sqf>
+
+|x2= <sqf>curatorObj addCuratorAddons ["A3_Modules_F_Curator_Lightning"];</sqf>
+
+|x3= Addons can be stacked:
+<sqf>
+curatorObj addCuratorAddons ["A3_Armor_F_AMV","A3_Armor_F_Panther"];
+curatorObj addCuratorAddons ["A3_Modules_F_Curator_Lightning"];
+diag_log curatorAddons curatorObj;
+</sqf>
+<br>
+<sqf>
+[
+	"A3_Armor_F_AMV",
+	"A3_Armor_F_Panther",
+	"A3_Modules_F_Curator_Lightning"
+]
+</sqf>
+
+|seealso= [[Arma 3: Curator]] [[removeCuratorAddons]] [[removeAllCuratorAddons]] [[curatorAddons]]
+
+|mp= Can be executed only on server
+}}

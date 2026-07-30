@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/Vector2D
+// revision: 377905 (2026-01-06T14:47:02Z)
+// export sha1: t9z67v23cl0ea7n6ggebekb5ddsuz6f
+// categories: Category:Arrays
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Hatnote|See also [[Vector3D]].}}
+'''Format:'''
+
+[x, y] where x and y are [[Number]]s
+
+
+'''Description:'''
+
+Represents a 2-dimensional vector in space.
+
+A '''[[vectorNormalized|normalised]]''' vector means that each value is within range -1..+1.
+
+
+The return array can be processed-converted into degrees as follows:
+<sqf>
+_vDir = getMarkerPos "myMarker";
+_aDir = _vDir # 0 atan2 _vDir # 1;
+</sqf>
+
+
+[[Category: Arrays]]

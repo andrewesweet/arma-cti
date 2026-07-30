@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/linkItem
+// revision: 369226 (2024-09-03T10:34:55Z)
+// export sha1: fpuqvwywyhmf6b7a8obdevsdjbnxq1k
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Create and assign item to the correct slot. If there is an item in the targeted slot, it gets replaced. See also [[assignItem]].
+
+|s1= unit [[linkItem]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+bluforUnit linkItem "NVGoggles";
+opforUnit linkItem "NVGoggles_OPFOR";
+independentUnit linkItem "NVGoggles_INDEP";
+</sqf>
+
+|seealso= [[unlinkItem]] [[addItem]] [[assignItem]] [[removeItem]] [[unassignItem]] [[assignedItems]] [[removeAllAssignedItems]]
+}}

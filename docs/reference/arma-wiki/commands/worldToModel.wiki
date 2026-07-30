@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/worldToModel
+// revision: 377406 (2026-01-02T06:45:05Z)
+// export sha1: di1m5xew1g2ygbbqa6v2cfwxfhbdlvm
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Positions
+
+|descr= Converts position from world space to object model space.
+{{Feature|important|For [[setObjectScale|scaled objects]], the relative position will be [[vectorMultiply|divided]] by the object scale.}}
+|s1= model [[worldToModel]] position
+
+|p1= model: [[Object]]
+
+|p2= position: [[Position#PositionAGL|PositionAGL]] or [[Position#Introduction|Position2D]] - world position
+
+|r1= [[Position#PositionRelative|PositionRelative]] - position relative to model
+
+|x1= <sqf>_relPos = myObject worldToModel [0,0,0];</sqf>
+
+|x2= <sqf>_relPos = player worldToModel ASLToAGL getPosASL car;</sqf>
+
+|x3= <sqf>_relPos = car worldToModel [12000,5000];</sqf>
+
+|seealso= [[worldToModelVisual]] [[vectorWorldToModel]] [[modelToWorld]]
+}}

@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ambientPlanes
+// revision: 378072 (2026-02-11T08:03:13Z)
+// export sha1: n6qt6cqsvd9f1otcjnq77ofu2hxy42l
+// categories: Category:Arma 3: Functions | Category:Function Group: Ambient | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Ambient
+
+|eff= global
+
+|descr= Creates ambient airplanes fly-by near airports around the [[player]]. It will automatically get classes from <sqf inline>configFile >> "CfgVehicles"</sqf> on all planes that have "ambientType" attribute > 0.
+
+|mp= Since this function uses [[player]] and its effect is [[Multiplayer Scripting#Locality|global]],
+this can only be used in singleplayer or executed locally on a player, usually the group leader.
+
+|s1= [quantity, areaRadius, dirStep] call [[BIS_fnc_ambientPlanes]]
+
+|p1= quantity: [[Number]] - (Optional, default 5)
+
+|p2= areaRadius: [[Number]] - (Optional, default 10000) area radius around airports where planes can spawn/fly
+
+|p3= dirStep: [[Number]] - (Optional, default 30)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[] call BIS_fnc_ambientPlanes;</sqf>
+
+|x2= <sqf>[30, 3000] call BIS_fnc_ambientPlanes;</sqf>
+
+|seealso= [[createUnit]] [[createVehicle]] [[BIS_fnc_spawnGroup]]
+}}

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/removeBinocularItem
+// revision: 310306 (2022-05-05T13:24:30Z)
+// export sha1: 6nhtaqwnsnhlfr4pukpccgiqiu3tskw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|arg= local
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Removes given weapon item, including magazine, from the [[binocular]] weapon.
+
+|s1= unit [[removeBinocularItem]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeBinocularItem "Laserbatteries";</sqf>
+
+|seealso= [[addBinocularItem]] [[binocularItems]] [[removeAllBinocularItems]] [[removePrimaryWeaponItem]] [[removeSecondaryWeaponItem]] [[removeHandgunItem]]
+}}

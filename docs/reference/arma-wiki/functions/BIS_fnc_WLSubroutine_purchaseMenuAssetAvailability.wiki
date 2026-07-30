@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_WLSubroutine_purchaseMenuAssetAvailability
+// revision: 274036 (2021-06-13T01:15:33Z)
+// export sha1: mz11naeclho3u2ude4a598u10zkioca
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Warlords | Category:Functions | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.86
+
+|gr1= Warlords
+
+|descr= ''N/A''
+
+|s1= [] call [[BIS_fnc_WLSubroutine_purchaseMenuAssetAvailability]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

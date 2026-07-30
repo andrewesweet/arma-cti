@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_initRespawnBackpack
+// revision: 323738 (2022-07-01T11:53:37Z)
+// export sha1: se7wz07w8fd46rizo5zq6n5hd9pdv4y
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Init respawn backpack.
+	Whover "assembles" it will receive a new respawn position.
+	When backpack object has 'respawnNearbyPlayers' attribute set to 1, nearby player will receive the respawn as well.
+
+|s1= call [[BIS_fnc_initRespawnBackpack]]
+
+|r1= [[Boolean]]
+
+|x1= [[call]] [[BIS_fnc_initRespawnBackpack]];
+
+|seealso= [[Arma 3: Respawn]] [[:Category:Function Group: Respawn]]
+}}

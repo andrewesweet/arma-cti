@@ -1,0 +1,14 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Official_Tools
+// revision: 183925 (2021-01-06T00:14:46Z)
+// export sha1: btd2kt8espuvb3ju8qrt3ov4u3sfdkx
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category contains '''''official tools''''' created by [[BI|Bohemia Interactive]]. These tools are provided to the community under the terms that allows free use of the tools for any '''non commercial''' purposes. Any commercial use of the tools is <u>strictly prohibited</u> without permission from [[BI]]. 
+
+If you want Bohemia Interactive's proprietary tools and technology for a commercial purposes (including but not limited to using it for military training) you're not allowed to use these tools.
+
+You must agree to the terms of [[End User License Agreement for BI's Tools]] before using any of the tools.
+
+The BI community have created some decent tools that have extended features not found in the [[BI]] tools. For a listing of community made tools see [[ArmA: Community Tools]].
+
+[[Category: Official Tools]]

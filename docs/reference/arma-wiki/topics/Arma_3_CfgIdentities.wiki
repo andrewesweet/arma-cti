@@ -1,0 +1,726 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgIdentities
+// revision: 338894 (2023-04-14T11:08:13Z)
+// export sha1: lr9gtsf2l2kezt2me9fz5h1zt0og79z
+// categories: Category:CfgIdentities
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Presentation ==
+
+An identity declaration is done with [[setIdentity]] command, and its declaration looks like this:
+<syntaxhighlight lang="cpp">
+class CfgIdentities
+{
+	class SomeGuy
+	{
+		face = "WhiteHead_10";
+		glasses = "G_Tactical_Clear";
+		name = "Adams";
+		nameSound = "Adams";
+		pitch = 1.0;
+		speaker = "Male01ENG";
+	};
+};
+</syntaxhighlight>
+* '''face''': [[String]] - defines the unit's face.
+** This must be a value defined in [[#Faces|the Faces list]]
+** See commands [[face]], [[setFace]]
+* '''glasses''': [[String]] - defines the unit's glasses/goggles.
+** This must be a value defined in [[#Glasses|the Glasses list]]
+** See commands [[goggles]], [[addGoggles]], [[removeGoggles]]
+* '''name''': [[String]] - the unit's name.
+** Can be anything
+* '''nameSound''': [[String]] - defines how the unit is called (instead of "'''2''', take cover" it will be for example "'''Adams''', take cover").
+** This must be a value defined in [[#NameSounds|the NameSounds list]] '''''or''''' any valid word found in <sqf inline>configFile >> "RadioProtocolENG" >> "Words"</sqf>
+** See commands [[nameSound]], [[setNameSound]]
+* '''pitch''': [[Number]] - defines unit's voice pitch.
+** Must be a positive number, but can be anything over zero
+** See commands [[pitch]], [[setPitch]]
+* '''speaker''': [[String]] defines unit's voice actor.
+** This must be a value defined in [[#Speakers|the Speakers list]]
+** See commands [[speaker]], [[setSpeaker]]
+
+{{Feature|informative|See also the {{Link|Description.ext#CfgIdentities}} chapter.}}
+
+
+== Faces ==
+
+<spoiler>
+{| class="sortable wikitable"
+! className !! Name !! Note
+|-
+| {{hl|Default}} || Default face ||
+|-
+| {{hl|Custom}} || Custom face ||
+|-
+| {{hl|PersianHead_A3_01}} || Bahadur ||
+|-
+| {{hl|PersianHead_A3_02}} || Jalali ||
+|-
+| {{hl|PersianHead_A3_03}} || Sabet ||
+|-
+| {{hl|PersianHead_A3_04_a}} || Bahadur (Arid) ||
+|-
+| {{hl|PersianHead_A3_04_l}} || Bahadur (Lush) ||
+|-
+| {{hl|PersianHead_A3_04_sa}} || Bahadur (Semi-Arid) ||
+|-
+| {{hl|WhiteHead_01}} || Bayh ||
+|-
+| {{hl|WhiteHead_02}} || Burr ||
+|-
+| {{hl|WhiteHead_03}} || Coburn ||
+|-
+| {{hl|WhiteHead_04}} || Collins ||
+|-
+| {{hl|WhiteHead_05}} || Campbell ||
+|-
+| {{hl|WhiteHead_06}} || Dayton ||
+|-
+| {{hl|WhiteHead_07}} || Dorgan ||
+|-
+| {{hl|WhiteHead_08}} || Halliwell ||
+|-
+| {{hl|WhiteHead_09}} || Johnson ||
+|-
+| {{hl|WhiteHead_10}} || Martinez ||
+|-
+| {{hl|WhiteHead_11}} || Kirby ||
+|-
+| {{hl|WhiteHead_12}} || Reed ||
+|-
+| {{hl|WhiteHead_13}} || Santorum ||
+|-
+| {{hl|WhiteHead_14}} || Smith ||
+|-
+| {{hl|WhiteHead_15}} || Snowe ||
+|-
+| {{hl|WhiteHead_16}} || Kelly ||
+|-
+| {{hl|WhiteHead_17}} || O'Connor ||
+|-
+| {{hl|WhiteHead_18}} || Byrne ||
+|-
+| {{hl|WhiteHead_19}} || O'Brien ||
+|-
+| {{hl|WhiteHead_20}} || Walsh ||
+|-
+| {{hl|WhiteHead_21}} || O'Sullivan ||
+|-
+| {{hl|WhiteHead_22_a}} || Kirby (Arid) ||
+|-
+| {{hl|WhiteHead_22_l}} || Kirby (Lush) ||
+|-
+| {{hl|WhiteHead_22_sa}} || Kirby (Semi-Arid) ||
+|-
+| {{hl|AfricanHead_01}} || Williams ||
+|-
+| {{hl|AfricanHead_02}} || Hasan ||
+|-
+| {{hl|AfricanHead_03}} || Jesus ||
+|-
+| {{hl|GreekHead_A3_01}} || Athanasiadis ||
+|-
+| {{hl|GreekHead_A3_02}} || Baros ||
+|-
+| {{hl|GreekHead_A3_03}} || Constantinou ||
+|-
+| {{hl|GreekHead_A3_04}} || Costas ||
+|-
+| {{hl|GreekHead_A3_05}} || Doukas ||
+|-
+| {{hl|GreekHead_A3_06}} || Gikas ||
+|-
+| {{hl|GreekHead_A3_07}} || Christou ||
+|-
+| {{hl|GreekHead_A3_08}} || Kanelloupou ||
+|-
+| {{hl|GreekHead_A3_09}} || Savalas ||
+|-
+| {{hl|GreekHead_A3_10_a}} || Baros (Arid) ||
+|-
+| {{hl|GreekHead_A3_10_l}} || Baros (Lush) ||
+|-
+| {{hl|GreekHead_A3_10_sa}} || Baros (Semi-Arid) ||
+|-
+| {{hl|AsianHead_A3_01}} || Ximi ||
+|-
+| {{hl|AsianHead_A3_02}} || Jeong ||
+|-
+| {{hl|AsianHead_A3_03}} || Tung ||
+|-
+| {{hl|Nikos}} || Nikos || Hidden
+|-
+| {{hl|Miller}} || Miller || Hidden
+|-
+| {{hl|Kerry}} || Default face || Hidden
+|-
+| {{hl|Kerry_A_F}} || Default face || Hidden
+|-
+| {{hl|kerry_B1_F}} || Default face || Hidden
+|-
+| {{hl|kerry_B2_F}} || Default face || Hidden
+|-
+| {{hl|Kerry_C_F}} || Default face || Hidden
+|-
+| {{hl|IG_Leader}} || Stavrou || Hidden
+|-
+| {{hl|O_Colonel}} || Namdar || Hidden
+|-
+| {{hl|Jay}} || Jay || Hidden
+|-
+| {{hl|Ivan}} || Ivan || Hidden
+|-
+| {{hl|Pettka}} || Pettka || Hidden
+|-
+| {{hl|Dwarden}} || Dwarden || Hidden
+|-
+| {{hl|Hladas}} || Dr. Hladík || Hidden
+|-
+| {{hl|CamoHead_White_01_F}} || Camo_White_01 || Hidden
+|-
+| {{hl|CamoHead_White_02_F}} || Camo_White_02 || Hidden
+|-
+| {{hl|CamoHead_White_03_F}} || Camo_White_03 || Hidden
+|-
+| {{hl|CamoHead_White_04_F}} || Camo_White_04 || Hidden
+|-
+| {{hl|CamoHead_White_05_F}} || Camo_White_05 || Hidden
+|-
+| {{hl|CamoHead_White_06_F}} || Camo_White_06 || Hidden
+|-
+| {{hl|CamoHead_White_07_F}} || Camo_White_07 || Hidden
+|-
+| {{hl|CamoHead_White_08_F}} || Camo_White_08 || Hidden
+|-
+| {{hl|CamoHead_White_09_F}} || Camo_White_09 || Hidden
+|-
+| {{hl|CamoHead_White_10_F}} || Camo_White_10 || Hidden
+|-
+| {{hl|CamoHead_White_11_F}} || Camo_White_11 || Hidden
+|-
+| {{hl|CamoHead_White_12_F}} || Camo_White_12 || Hidden
+|-
+| {{hl|CamoHead_White_13_F}} || Camo_White_13 || Hidden
+|-
+| {{hl|CamoHead_White_14_F}} || Camo_White_14 || Hidden
+|-
+| {{hl|CamoHead_White_15_F}} || Camo_White_15 || Hidden
+|-
+| {{hl|CamoHead_White_16_F}} || Camo_White_16 || Hidden
+|-
+| {{hl|CamoHead_White_17_F}} || Camo_White_17 || Hidden
+|-
+| {{hl|CamoHead_White_18_F}} || Camo_White_18 || Hidden
+|-
+| {{hl|CamoHead_White_19_F}} || Camo_White_19 || Hidden
+|-
+| {{hl|CamoHead_White_20_F}} || Camo_White_20 || Hidden
+|-
+| {{hl|CamoHead_White_21_F}} || Camo_White_21 || Hidden
+|-
+| {{hl|CamoHead_African_01_F}} || Camo_African_01 || Hidden
+|-
+| {{hl|CamoHead_African_02_F}} || Camo_African_02 || Hidden
+|-
+| {{hl|CamoHead_African_03_F}} || Camo_African_03 || Hidden
+|-
+| {{hl|CamoHead_Greek_01_F}} || Camo_Greek_01 || Hidden
+|-
+| {{hl|CamoHead_Greek_02_F}} || Camo_Greek_02 || Hidden
+|-
+| {{hl|CamoHead_Greek_03_F}} || Camo_Greek_03 || Hidden
+|-
+| {{hl|CamoHead_Greek_04_F}} || Camo_Greek_04 || Hidden
+|-
+| {{hl|CamoHead_Greek_05_F}} || Camo_Greek_05 || Hidden
+|-
+| {{hl|CamoHead_Greek_06_F}} || Camo_Greek_06 || Hidden
+|-
+| {{hl|CamoHead_Greek_07_F}} || Camo_Greek_07 || Hidden
+|-
+| {{hl|CamoHead_Greek_08_F}} || Camo_Greek_08 || Hidden
+|-
+| {{hl|CamoHead_Greek_09_F}} || Camo_Greek_09 || Hidden
+|-
+| {{hl|CamoHead_Asian_01_F}} || Camo_Asian_01 || Hidden
+|-
+| {{hl|CamoHead_Asian_02_F}} || Camo_Asian_02 || Hidden
+|-
+| {{hl|CamoHead_Asian_03_F}} || Camo_Asian_03 || Hidden
+|-
+| {{hl|CamoHead_Persian_01_F}} || Camo_Persian_01 || Hidden
+|-
+| {{hl|CamoHead_Persian_02_F}} || Camo_Persian_02 || Hidden
+|-
+| {{hl|CamoHead_Persian_03_F}} || Camo_Persian_03 || Hidden
+|-
+| {{hl|TanoanHead_A3_01}} || Simo ||
+|-
+| {{hl|TanoanHead_A3_02}} || Adnet ||
+|-
+| {{hl|TanoanHead_A3_03}} || Cahun ||
+|-
+| {{hl|TanoanHead_A3_04}} || Ganio ||
+|-
+| {{hl|TanoanHead_A3_05}} || Malet ||
+|-
+| {{hl|TanoanHead_A3_06}} || Solé ||
+|-
+| {{hl|TanoanHead_A3_07}} || Mignard ||
+|-
+| {{hl|TanoanHead_A3_08}} || Thibaud ||
+|-
+| {{hl|TanoanBossHead}} || Solomon Maru || Hidden
+|-
+| {{hl|AsianHead_A3_04}} || Lee ||
+|-
+| {{hl|AsianHead_A3_05}} || Chan ||
+|-
+| {{hl|AsianHead_A3_06}} || Yeung ||
+|-
+| {{hl|AsianHead_A3_07}} || Wong ||
+|-
+| {{hl|GreekHead_A3_11}} || Gavras ||
+|-
+| {{hl|GreekHead_A3_12}} || Markos ||
+|-
+| {{hl|GreekHead_A3_13}} || Alexis ||
+|-
+| {{hl|GreekHead_A3_14}} || Dimitrou ||
+|-
+| {{hl|WhiteHead_23}} || Nathan ||
+|-
+| {{hl|Barklem}} || Barklem ||
+|-
+| {{hl|Mavros}} || Mavros ||
+|-
+| {{hl|Sturrock}} || Sturrock ||
+|-
+| {{hl|Ioannou}} || Ioannou ||
+|-
+| {{hl|WhiteHead_24}} || Čapek ||
+|-
+| {{hl|WhiteHead_25}} || Dillon ||
+|-
+| {{hl|WhiteHead_26}} || Homewood ||
+|-
+| {{hl|WhiteHead_27}} || Kesson ||
+|-
+| {{hl|WhiteHead_28}} || Kingsly ||
+|-
+| {{hl|WhiteHead_29}} || Severov ||
+|-
+| {{hl|WhiteHead_30}} || Smolko ||
+|-
+| {{hl|WhiteHead_31}} || Stype ||
+|-
+| {{hl|WhiteHead_32}} || Rudwell ||
+|-
+| {{hl|LivonianHead_1}} || Nowak ||
+|-
+| {{hl|LivonianHead_2}} || Górecki ||
+|-
+| {{hl|LivonianHead_3}} || Kowalski ||
+|-
+| {{hl|LivonianHead_4}} || Stolarski ||
+|-
+| {{hl|LivonianHead_5}} || Burak ||
+|-
+| {{hl|LivonianHead_6}} || Kawa ||
+|-
+| {{hl|LivonianHead_7}} || Janowski ||
+|-
+| {{hl|LivonianHead_8}} || Sternik ||
+|-
+| {{hl|LivonianHead_9}} || Zieliński ||
+|-
+| {{hl|LivonianHead_10}} || Rabinowicz ||
+|-
+| {{hl|RussianHead_1}} || Ivanov ||
+|-
+| {{hl|RussianHead_2}} || Petrenko ||
+|-
+| {{hl|RussianHead_3}} || Krupin ||
+|-
+| {{hl|RussianHead_4}} || Adamovich ||
+|-
+| {{hl|RussianHead_5}} || Yakhin ||
+|-
+| {{hl|AfricanHead_01_sick}} || AfricanHead_01_sick || Hidden
+|-
+| {{hl|AfricanHead_02_sick}} || AfricanHead_02_sick || Hidden
+|-
+| {{hl|AfricanHead_03_sick}} || AfricanHead_03_sick || Hidden
+|-
+| {{hl|AsianHead_A3_01_sick}} || AsianHead_A3_01_sick || Hidden
+|-
+| {{hl|AsianHead_A3_02_sick}} || AsianHead_A3_02_sick || Hidden
+|-
+| {{hl|AsianHead_A3_03_sick}} || AsianHead_A3_03_sick || Hidden
+|-
+| {{hl|AsianHead_A3_04_sick}} || AsianHead_A3_04_sick || Hidden
+|-
+| {{hl|AsianHead_A3_05_sick}} || AsianHead_A3_05_sick || Hidden
+|-
+| {{hl|AsianHead_A3_06_sick}} || AsianHead_A3_06_sick || Hidden
+|-
+| {{hl|AsianHead_A3_07_sick}} || AsianHead_A3_07_sick || Hidden
+|-
+| {{hl|GreekHead_A3_01_sick}} || GreekHead_A3_01_sick || Hidden
+|-
+| {{hl|GreekHead_A3_02_sick}} || GreekHead_A3_02_sick || Hidden
+|-
+| {{hl|GreekHead_A3_03_sick}} || GreekHead_A3_03_sick || Hidden
+|-
+| {{hl|GreekHead_A3_04_sick}} || GreekHead_A3_04_sick || Hidden
+|-
+| {{hl|PersianHead_A3_01_sick}} || PersianHead_A3_01_sick || Hidden
+|-
+| {{hl|PersianHead_A3_02_sick}} || PersianHead_A3_02_sick || Hidden
+|-
+| {{hl|PersianHead_A3_03_sick}} || PersianHead_A3_03_sick || Hidden
+|-
+| {{hl|TanoanHead_A3_01_sick}} || TanoanHead_A3_01_sick || Hidden
+|-
+| {{hl|TanoanHead_A3_02_sick}} || TanoanHead_A3_02_sick || Hidden
+|-
+| {{hl|TanoanHead_A3_03_sick}} || TanoanHead_A3_03_sick || Hidden
+|-
+| {{hl|TanoanHead_A3_04_sick}} || TanoanHead_A3_04_sick || Hidden
+|-
+| {{hl|TanoanHead_A3_05_sick}} || TanoanHead_A3_05_sick || Hidden
+|-
+| {{hl|TanoanHead_A3_06_sick}} || TanoanHead_A3_06_sick || Hidden
+|-
+| {{hl|TanoanHead_A3_07_sick}} || TanoanHead_A3_07_sick || Hidden
+|-
+| {{hl|TanoanHead_A3_08_sick}} || TanoanHead_A3_08_sick || Hidden
+|-
+| {{hl|TanoanHead_A3_09}} || Old Man ||
+|-
+| {{hl|TanoanBossHead_sick}} || TanoanBossHead_sick || Hidden
+|-
+| {{hl|WhiteHead_16_sick}} || WhiteHead_16_sick || Hidden
+|-
+| {{hl|WhiteHead_17_sick}} || WhiteHead_17_sick || Hidden
+|-
+| {{hl|WhiteHead_18_sick}} || WhiteHead_18_sick || Hidden
+|-
+| {{hl|WhiteHead_19_sick}} || WhiteHead_19_sick || Hidden
+|-
+| {{hl|WhiteHead_20_sick}} || WhiteHead_20_sick || Hidden
+|-
+| {{hl|WhiteHead_21_sick}} || WhiteHead_21_sick || Hidden
+|}
+</spoiler>
+
+{{Feature|informative| An incorrect face name will revert man's face to Default.}}
+{{Wiki|extractionScript}}
+
+
+== Glasses ==
+
+<spoiler>
+{| class="sortable wikitable"
+! className !! Name
+|-
+| {{hl|None}} || None
+|-
+| {{hl|G_Spectacles}} || Spectacle Glasses
+|-
+| {{hl|G_Spectacles_Tinted}} || Tinted Spectacles
+|-
+| {{hl|G_Combat}} || Combat Goggles
+|-
+| {{hl|G_Lowprofile}} || Low Profile Goggles
+|-
+| {{hl|G_Shades_Black}} || Shades (Black)
+|-
+| {{hl|G_Shades_Green}} || Shades (Green)
+|-
+| {{hl|G_Shades_Red}} || Shades (Red)
+|-
+| {{hl|G_Squares}} || Square Spectacles
+|-
+| {{hl|G_Squares_Tinted}} || Square Shades
+|-
+| {{hl|G_Sport_BlackWhite}} || Sport Shades (Shadow)
+|-
+| {{hl|G_Sport_Blackyellow}} || Sport Shades (Poison)
+|-
+| {{hl|G_Sport_Greenblack}} || Sport Shades (Yetti)
+|-
+| {{hl|G_Sport_Checkered}} || Sport Shades (Style)
+|-
+| {{hl|G_Sport_Red}} || Sport Shades (Fire)
+|-
+| {{hl|G_Tactical_Black}} || Tactical Shades
+|-
+| {{hl|G_Aviator}} || Aviator Glasses
+|-
+| {{hl|G_Lady_Blue}} || Ladies Shades
+|-
+| {{hl|G_Diving}} || Diving Goggles
+|-
+| {{hl|G_B_Diving}} || Diving Goggles [NATO]
+|-
+| {{hl|G_O_Diving}} || Diving Goggles [CSAT]
+|-
+| {{hl|G_I_Diving}} || Diving Goggles [AAF]
+|-
+| {{hl|G_Goggles_VR}} || VR Goggles
+|-
+| {{hl|G_Balaclava_blk}} || Balaclava (Black)
+|-
+| {{hl|G_Balaclava_oli}} || Balaclava (Olive)
+|-
+| {{hl|G_Balaclava_combat}} || Balaclava (Combat Goggles)
+|-
+| {{hl|G_Balaclava_lowprofile}} || Balaclava (Low Profile Goggles)
+|-
+| {{hl|G_Bandanna_blk}} || Bandana (Black)
+|-
+| {{hl|G_Bandanna_oli}} || Bandana (Olive)
+|-
+| {{hl|G_Bandanna_khk}} || Bandana (Khaki)
+|-
+| {{hl|G_Bandanna_tan}} || Bandana (Tan)
+|-
+| {{hl|G_Bandanna_beast}} || Bandana (Beast)
+|-
+| {{hl|G_Bandanna_shades}} || Bandana (Shades)
+|-
+| {{hl|G_Bandanna_sport}} || Bandana (Sport)
+|-
+| {{hl|G_Bandanna_aviator}} || Bandana (Aviator)
+|-
+| {{hl|G_Shades_Blue}} || Shades (Blue)
+|-
+| {{hl|G_Sport_Blackred}} || Sport Shades (Vulcan)
+|-
+| {{hl|G_Tactical_Clear}} || Tactical Glasses
+|-
+| {{hl|G_Balaclava_TI_blk_F}} || Stealth Balaclava (Black)
+|-
+| {{hl|G_Balaclava_TI_tna_F}} || Stealth Balaclava (Green)
+|-
+| {{hl|G_Balaclava_TI_G_blk_F}} || Stealth Balaclava (Black, Goggles)
+|-
+| {{hl|G_Balaclava_TI_G_tna_F}} || Stealth Balaclava (Green, Goggles)
+|-
+| {{hl|G_Combat_Goggles_tna_F}} || Combat Goggles (Green)
+|-
+| {{hl|G_Respirator_white_F}} || Respirator (White)
+|-
+| {{hl|G_Respirator_yellow_F}} || Respirator (Yellow)
+|-
+| {{hl|G_Respirator_blue_F}} || Respirator (Blue)
+|-
+| {{hl|G_EyeProtectors_F}} || Safety Goggles
+|-
+| {{hl|G_EyeProtectors_Earpiece_F}} || Safety Goggles (Earpiece)
+|-
+| {{hl|G_WirelessEarpiece_F}} || Wireless Earpiece
+|-
+| {{hl|G_AirPurifyingRespirator_01_F}} || APR [NATO]
+|-
+| {{hl|G_AirPurifyingRespirator_02_black_F}} || APR (Black) [CSAT]
+|-
+| {{hl|G_AirPurifyingRespirator_02_olive_F}} || APR (Olive) [CSAT]
+|-
+| {{hl|G_AirPurifyingRespirator_02_sand_F}} || APR (Sand) [CSAT]
+|-
+| {{hl|G_RegulatorMask_F}} || Regulator Facepiece
+|-
+| {{hl|G_Blindfold_01_white_F}} || Blindfold (White)
+|-
+| {{hl|G_Blindfold_01_black_F}} || Blindfold (Black)
+|}
+</spoiler>
+
+
+== NameSounds ==
+<spoiler>
+{| class="wikitable valign-top" style="min-width: 60em"
+|-
+! Default
+! NATO
+! CSAT
+! Independent
+! Codenames
+|-
+|
+* Armstrong
+* Nichols
+* Tanny
+* Frost
+* Lacey
+* Larkin
+* Kerry
+* Jackson
+* Miller
+* McKendrick
+* Levine
+* Reynolds
+|
+* Adams
+* Bennett
+* Campbell
+* Dixon
+* Everett
+* Franklin
+* Givens
+* Hawkins
+* Lopez
+* Martinez
+* O'Connor
+* Ryan
+* Patterson
+* Sykes
+* Taylor
+* Walker
+|
+* Amin
+* Masood
+* Fahim
+* Habibi
+* Kushan
+* Jawadi
+* Nazari
+* Siddiqi
+* Takhtar
+* Wardak
+* Yousuf
+|
+* Anthis
+* Costa
+* Dimitirou
+* Elias
+* Gekas
+* Kouris
+* Leventis
+* Markos
+* Nikas
+* Nicolo
+* Panas
+* Petros
+* Rosi
+* Samaras
+* Stavrou
+* Thanos
+* Vega
+|
+* Ghost
+* Stranger
+* Fox
+* Snake
+* Razer
+* Jester
+* Nomad
+* Viper
+* Korneedler
+|}
+</spoiler>
+{{Feature|informative|An incorrect {{hl|nameSound}} name will '''mute''' the callsign. Use "" to revert back to default behaviour.}}
+
+
+== Speakers ==
+
+<spoiler>
+{| class="sortable wikitable"
+! className !! Name
+|-
+| {{hl|NoVoice}} || {{n/a}}
+|-
+| {{hl|Male01ENG}} || American English 01
+|-
+| {{hl|Male02ENG}} || American English 02
+|-
+| {{hl|Male03ENG}} || American English 03
+|-
+| {{hl|Male04ENG}} || American English 04
+|-
+| {{hl|Male05ENG}} || American English 05
+|-
+| {{hl|Male06ENG}} || American English 06
+|-
+| {{hl|Male07ENG}} || American English 07
+|-
+| {{hl|Male08ENG}} || American English 08
+|-
+| {{hl|Male09ENG}} || American English 09
+|-
+| {{hl|Male10ENG}} || American English 10
+|-
+| {{hl|Male11ENG}} || American English 11
+|-
+| {{hl|Male12ENG}} || American English 12
+|-
+| {{hl|Male01ENGB}} || British English 01
+|-
+| {{hl|Male02ENGB}} || British English 02
+|-
+| {{hl|Male03ENGB}} || British English 03
+|-
+| {{hl|Male04ENGB}} || British English 04
+|-
+| {{hl|Male05ENGB}} || British English 05
+|-
+| {{hl|Male01GRE}} || Altian English 01
+|-
+| {{hl|Male02GRE}} || Altian English 02
+|-
+| {{hl|Male03GRE}} || Altian English 03
+|-
+| {{hl|Male04GRE}} || Altian English 04
+|-
+| {{hl|Male05GRE}} || Altian English 05
+|-
+| {{hl|Male06GRE}} || Altian English 06
+|-
+| {{hl|Male01PER}} || Farsi 01
+|-
+| {{hl|Male02PER}} || Farsi 02
+|-
+| {{hl|Male03PER}} || Farsi 03
+|-
+| {{hl|Male01ENGVR}} || English VR 01
+|-
+| {{hl|Male01GREVR}} || Altian English VR 01
+|-
+| {{hl|Male01PERVR}} || Farsi VR 01
+|-
+| {{hl|Male01CHI}} || Chinese 01
+|-
+| {{hl|Male02CHI}} || Chinese 02
+|-
+| {{hl|Male03CHI}} || Chinese 03
+|-
+| {{hl|Male01FRE}} || French 01
+|-
+| {{hl|Male02FRE}} || French 02
+|-
+| {{hl|Male03FRE}} || French 03
+|-
+| {{hl|Male01ENGFRE}} || French English 01
+|-
+| {{hl|Male02ENGFRE}} || French English 02
+|-
+| {{hl|Male01POL}} || Polish 01
+|-
+| {{hl|Male02POL}} || Polish 02
+|-
+| {{hl|Male03POL}} || Polish 03
+|-
+| {{hl|Male01RUS}} || Russian 01
+|-
+| {{hl|Male02RUS}} || Russian 02
+|-
+| {{hl|Male03RUS}} || Russian 03
+|}
+</spoiler>
+{{Feature|informative|An incorrect voice name will revert man's voice to Default.}}
+
+
+[[Category:CfgIdentities]]

@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/playSoundUI
+// revision: 376806 (2025-11-21T17:10:26Z)
+// export sha1: rbdnubmghss6mjbko4gvsghqodcen1m
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|eff= local
+
+|gr1= Sounds
+
+|descr= Plays given [[CfgSounds]] sound or a [[Arma 3: Sound Files| sound file]] given by file path through a dedicated UI sound channel unaffected by the global mixer volumes. If the file path is given, the leading slash will be ignored. To stop the sound use [[stopSound]]
+
+|s1= [[playSoundUI]] [sound, volume, soundPitch, isEffect, offset, loop]
+
+|p1= sound: [[String]] - [[CfgSounds]] class or file as used in [[playSound3D]] (see [[Arma 3: Sound Files]] for available file names)
+|p2= volume: [[Number]] - (Optional, default 1) sound volume clamped in range 0..5
+|p3= soundPitch: [[Number]] - (Optional, default 1)
+* 1.0 &rarr; normal 
+* 0.5 &rarr; Darth Vader
+* 2.0 &rarr; Chipmunks
+|p4= isEffect: [[Boolean]] - (Optional, default [[false]]) if [[true]], diverts sound through effects channel (see [[fadeSound]], [[soundVolume]])
+|p5= offset: [[Number]] - (Optional, default 0) offset in seconds. Same as with [[playSound3D]] (ignored if sound is set to 'loop')
+|p5since= arma3 2.12
+|p6= loop: [[Boolean]] - (Optional, default [[false]]) If [[true]] the sound will loop forever. Use [[stopSound]] to stop
+|p6since= arma3 2.22
+
+|r1= [[Number]] - id of the sound (0..65535) since {{GVI|arma3|2.12|size= 0.75}} (was [[Nothing]] before that)
+
+|x1= <sqf>playSoundUI ["Alarm", 0.5, 0.5];</sqf>
+
+|x2= <sqf>playSoundUI ["A3\Sounds_F\sfx\blip1.wss"];</sqf>
+
+|x3= Sound file extension must be specified even if a config entry has none:
+<sqf>
+playSoundUI ["A3\Sounds_F\sfx\alarm_independent", 5, 1];		// no sound
+playSoundUI ["A3\Sounds_F\sfx\alarm_independent.wss", 5, 1];	// alarm
+</sqf>
+
+|seealso= [[stopSound]] [[soundParams]] [[say3D]] [[playSound]] [[say2D]] [[say]] [[createSoundSource]] [[setRandomLip]] [[getMissionPath]] [[playSound3D]]
+}}

@@ -1,0 +1,365 @@
+// source: https://community.bistudio.com/wiki/Variables
+// revision: 376701 (2025-11-07T23:34:36Z)
+// export sha1: 9ovsnb5dpfbqrw859kjrg8slgdrgv63
+// categories: Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A [[Variables|variable]] is a "storage container" or "named placeholder" for data. You can read and modify the data once this container is created.<br>
+Its "name" is referenced as [[Identifier]].
+
+
+== Requirements ==
+
+The following links guide to the basics to understand this article:
+
+* [[Introduction to Arma Scripting]]
+* [[Identifier]]
+
+
+== Initialisation ==
+
+The first thing to do to create a variable is to find its name, also called [[Identifier|identifier]]; this name must be speaking to the reader - keep in mind that code is meant to be read by ''human beings'' (see [[Code Best Practices#Variable format|Code Best Practices - Variable format]]).
+
+Once a proper name is found, it can be used to '''declare''' (or '''initialise''') the variable:
+
+<sqf>myVariable = 0;</sqf>
+
+Before {{GameCategory|arma2|link= y}}, querying undefined (or uninitialised) variables returns [[nil]] (undefined value); from {{GameCategory|arma2|link= y}} and later, it returns an "Error Undefined variable in expression" error.
+{{Feature|informative|
+An undefined ([[nil]]) variable converted to [[String]] with [[str]] will return [[scalar bool array string 0xe0ffffef]] (in [[:Category:ArmA: Armed Assault|{{arma1}}]]) and [[scalar bool array string 0xfcffffef]] (in [[:Category:Operation Flashpoint|{{ofp}}]]).<br>
+Unless trying to emulate [[isNil]], '''always''' declare your variable before trying to access it.
+}}
+
+
+== Deletion ==
+
+Once created, variables take up space in the computer's memory.<br>
+This is not drastic for small variables, but if a big number of very large variables is used, it is recommended to undefine the unneeded ones in order to free up memory.
+
+Variable deletion is done by setting its value to [[nil]]:
+<sqf>HugeVariable = nil;</sqf>
+
+{{Feature|informative|Local variables are automatically freed (deleted from memory) when their scope is exited, avoiding the need to manually deallocate them.}}
+
+
+== Scopes ==
+
+Variables are only visible in certain scopes of the game. This prevents name conflicts between different variables in different [[Script File|scripts]].
+
+There are two main scopes:
+
+=== Global Scope ===
+
+A global variable is visible from all scripts on the computer on which it was defined.
+Names given to units in the [[Mission Editor]] are also global variables pointing to those units, which may not be redefined or modified.
+<!-- TODO: mention missionNamespace? -->
+{{Feature | important | a global variable can be different from one machine to another!<!--
+--> To ensure the global variable's proper broadcast, see [[publicVariable]], [[publicVariableServer]] and [[publicVariableClient]].
+If the value changes, the broadcast must be reapplied. e.g:
+<sqf>
+GlobalVariable = 33;
+publicVariable "GlobalVariable";
+
+GlobalVariable = 42;				// GlobalVariable is now 42 on the current machine but still 33 on the others
+publicVariable "GlobalVariable";	// updates the value to 42 for everyone
+</sqf>
+}}
+
+=== Local Scope ===
+
+A local variable is only visible in the [[Script File|Script]], [[Function]] or [[Control Structures|Control Structure]] in which it was defined.
+
+{{Feature|informative|A local variable cannot be broadcast. In order to broadcast a local variable's ''value'', it must be assigned to a global variable first:
+<sqf>
+private _myLocalVariable = 33;
+publicVariable "_myLocalVariable";	// incorrect
+
+GlobalVariable = _myLocalVariable;
+publicVariable "GlobalVariable";	// correct
+</sqf>
+}}
+
+=== Local Variables Scope ===
+
+{{Feature|warning|
+Local variables in [[call]]able code (e.g [[Arma 3: Functions Library|Functions]]) should be scoped using the [[private]]/[[privateAll]] commands,
+otherwise you may modify local variables of the [[call]]ing script that are visible in the function.}}
+<sqf>
+// Since Arma 3 v1.54
+private _myLocalVariable = 0;
+
+// From Arma 2 until Arma 3 v1.54
+local _myLocalVariable = 0;
+
+// Before Arma 2
+private "_myLocalVariable";
+_myLocalVariable = 0;
+
+// Alternative method to private multiple local variables at the same time
+private ["_myLocalVariable1", "_myLocalVariable2"];
+_myLocalVariable1 = 1;
+_myLocalVariable2 = 2;
+</sqf>
+
+If a [[private]] variable is initialised within a [[Control Structures|Control Structure]] (i.e. [[if]], [[for]], [[switch]], [[while]]),
+its existence will be limited to it and its sub-structures - the variable does not exist outside of the structure and will be seen as undefined.
+
+
+<!--
+	don't judge me
+-->
+<table style="border-collapse: collapse; font-family: monospace; font-size: 1.1em; line-height: 1.15em; margin: auto; tab-size: 4; -moz-tab-size: 4; white-space: pre">
+<tr>
+	<th colspan="9">Variables<br>lifespan</th>
+	<th style="font-size: 1.25em">Code</th>
+</tr>
+<tr style="border-bottom: 0.05em solid grey">
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td style="line-height: 2em">'''{{Color|grey|BEGINNING OF FILE}}''' - e.g <span style="font-size: small"><sqf inline>execVM "script.sqf";</sqf></span></td>
+</tr>
+<tr>
+	<td rowspan="28"></td>
+	<td rowspan="29" style="background-color: orange; border-radius: 10em 10em 0 0; width: .40em"></td>
+	<td rowspan="28" style="width: .10em"></td>
+	<td style="width: .40em"></td>
+	<td rowspan="28" style="width: .10em"></td>
+	<td style="width: .40em"></td>
+	<td rowspan="28" style="width: .10em"></td>
+	<td style="width: .40em"></td>
+	<td rowspan="28" style="width: 1em"></td>
+	<td>'''{{Color|darkorange|TAG_GlobalVariable}}''' = "Global variable"; {{cc|Global variable is accessible from any scope}}</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td><wbr /></td>
+</tr>
+<tr>
+	<td rowspan="4" style="background-color: darkgreen; border-radius: 10em; margin: .1em"></td>
+	<td><wbr /></td>
+	<td><wbr /></td>
+	<td>[[private]] '''{{Color|darkgreen|_myVariable}}''' = 0;</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>[[if]] ('''{{Color|grey|_condition}}''') [[then]]</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>{</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>	'''{{Color|darkgreen|_myVariable}}''' = 1;</td>
+</tr>
+<tr>
+	<td></td>
+	<td rowspan="2" style="background-color: blue; border-radius: 10em"></td>
+	<td></td>
+	<td>	[[private]] '''{{Color|blue|_myVariable}}''' = 2;</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>	'''{{Color|blue|_myVariable}}''' = 3;</td>
+</tr>
+<tr>
+	<td rowspan="13" style="background-color: darkgreen; border-radius: 10em"></td>
+	<td></td>
+	<td></td>
+	<td>} [[else]] {</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>	'''{{Color|darkgreen|_myVariable}}''' = 4;</td>
+</tr>
+<tr>
+	<td></td>
+	<td rowspan="1" style="background-color: purple; border-radius: 10em"></td>
+	<td>	[[private]] '''{{Color|purple|_anotherVariable}}''' = 10;</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>};</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td><wbr /></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>[[hint]] [[str]] '''{{Color|darkgreen|_myVariable}}''';			{{cc|if '''{{Color|grey|_condition}}''' is [[true]],  '''{{Color|darkgreen|_myVariable}}''''s value is '''{{Color|darkgreen|1}}''';}}</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>								{{cc|if '''{{Color|grey|_condition}}''' is [[false]], '''{{Color|darkgreen|_myVariable}}''''s value is '''{{Color|darkgreen|4}}'''.}}</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td><wbr /></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>0 [[call]] {</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>	[[hint]] [[str]] '''{{Color|darkgreen|_myVariable}}''';		{{cc|works, as [[call]]ed code runs in the same scope}}</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>};</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td><wbr /></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>['''{{Color|darkgreen|_myVariable}}'''] [[spawn]] {</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td>	[[hint]] '''{{Color|darkorange|TAG_GlobalVariable}}''';	{{cc|works}}</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td>	[[hint]] [[str]] _myVariable;		{{cc|throws an [[Debugging Techniques#Common errors|"undefined variable" error]],}}</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td>								{{cc|as '''{{Color|darkgreen|_myVariable}}''' does '''not''' exist in this new script}}</td>
+</tr>
+<tr>
+	<td rowspan="4" style="background-color: darkgreen; border-radius: 10em"></td>
+	<td></td>
+	<td></td>
+	<td>};</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td><wbr /></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>{{cc|trying to use '''{{Color|purple|_anotherVariable}}''' here would result in an [[Debugging Techniques#Common errors|"undefined variable" error]],}}</td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td>{{cc|'''{{Color|purple|_anotherVariable}}''' being only scoped in the [[else]] block.}}</td>
+</tr>
+<tr style="border-top: 0.05em solid grey">
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td></td>
+	<td style="line-height: 2em">'''{{Color|grey|END OF FILE}}''' - '''{{Color|darkorange|TAG_GlobalVariable}}''' keeps on living in [[missionNamespace]]</td>
+</tr>
+</table>
+
+
+{| style="margin: auto"
+! style="width: 50%" | Correct
+! style="width: 50%" | Incorrect
+|-
+| <sqf>
+private _living = false;
+if (alive player) then
+{
+	_living = true;
+};
+
+
+hint format ["%1", _living]; // returns true
+</sqf>
+| <sqf>
+// -
+if (alive player) then
+{
+	private _living = true;
+};
+// throws an error since the private variable was
+// not initialised outside of the if control structure.
+hint format ["%1", _living];
+</sqf>
+|}
+
+
+== Data Types ==
+
+Variables may store values of a certain [[:Category:Data Types|Data Types]] ([[String]], [[Number]], etc). The kind of the value specifies the ''type'' of the variable.
+Different [[Operators|operators]] and [[:Category:Scripting Commands|commands]] require variables to be of different types.
+
+A variable is not strongly typed and changes its type according to the new data:
+<sqf>
+private "_myVariable";	// nil
+_myVariable = 1;		// 1 (Number)
+_myVariable = "test";	// "test" (String)
+</sqf>
+
+
+== Multiplayer Considerations ==
+
+Storing functions (or any callable code) into global variables without securing them with [[compileFinal]] (since {{arma3}}) is a '''very''' bad practice in multiplayer.
+The biggest security risk would be to see it being overridden by a malicious usage of [[publicVariable]], setting potentially dangerous code in it.
+
+The best option is to declare your function in [[Arma 3: Functions Library|CfgFunctions]] so the engine secures it for you.
+
+If you want to manually create a global function anyway, the best practice is the following:
+<sqf>TAG_MyGlobalVariableFunction = compileFinal preprocessFileLineNumbers "functionFile.sqf";</sqf>
+
+{{Feature|informative|
+You should ideally run this code locally on every machine.
+Using [[publicVariable]]  on a "final" global function (created with [[compileFinal]]) will indeed broadcast the variable '''and''' make it final on other clients as well, but the network can quickly become saturated from sending big pieces of code.
+}}
+
+
+== See also ==
+
+* [[Introduction to Arma Scripting]]
+* [[Identifier]]
+* [[:Category: Data Types| Data Types]]
+* [[Control Structures]]
+* [[Magic Variables]]
+* [[private]]/[[privateAll]] ({{arma3}})
+* [[local]] ({{arma2}})
+
+
+[[Category: Scripting Topics]]

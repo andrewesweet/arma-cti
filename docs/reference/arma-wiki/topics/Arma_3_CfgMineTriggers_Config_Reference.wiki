@@ -1,0 +1,62 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgMineTriggers_Config_Reference
+// revision: 373251 (2025-04-12T22:28:08Z)
+// export sha1: hbnewbdeaimshal42g5xw41of8u2cv9
+// categories: Category:Arma 3: Reference Lists | Category:To-do
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|TODO}}
+
+== Alphabetical Order ==
+
+=== M ===
+==== mineDelay ====
+;Type:[[TokenNameValueTypes#Floats|Float]]
+;Description: Delay between activation and explosion. (''Needs to be confirmed'')
+
+==== mineMagnetic ====
+;Type:[[TokenNameValueTypes#Integers|Integer]]
+;Description: Whether or not the mine is magnetic and triggers for vehicles. (''Needs to be confirmed'')
+
+==== mineTriggerActivationRange ====
+;Type:[[TokenNameValueTypes#Integers|Integer]]
+;Description: Radius around the mine which triggers the activation. (''Needs to be confirmed'')
+
+==== mineTriggerMass ====
+;Type:[[TokenNameValueTypes#Integers|Integer]]
+
+==== mineTriggerRange ====
+;Type:[[TokenNameValueTypes#Integers|Integer]]
+
+==== mineTriggerType ====
+;Type:[[TokenNameValueTypes#Strings|String]]
+;Description: Possible values are "radius", "wire", "remote", "timer"
+
+==== mineUnderwaterOnly ====
+;Type:[[TokenNameValueTypes#Integers|Integer]]
+
+==== mineWireStart ====
+;Type:[[TokenNameValueTypes#Arrays|Array]]
+;Description: Defines the position where the wire starts if ''mineTriggerType'' is set to "wire". (''Needs to be confirmed'')
+
+==== mineWireEnd ====
+;Type:[[TokenNameValueTypes#Arrays|Array]]
+;Description: Defines the position where the wire ends if ''mineTriggerType'' is set to "wire". (''Needs to be confirmed'')
+
+=== R ===
+==== restrictZoneCenter ====
+;Type:[[TokenNameValueTypes#Arrays|Array]]
+
+==== restrictZoneRadius ====
+;Type:[[TokenNameValueTypes#Integers|Integer]]
+
+=== S ===
+==== scope ====
+;Type:[[TokenNameValueTypes#Integers|Integer]]
+
+=== T ===
+==== timerStep ====
+;Type:[[TokenNameValueTypes#Integers|Integer]]
+;Description: Defines the step size in seconds in which the player can set the timer via user action. (''Needs to be confirmed'')
+
+
+{{GameCategory|arma3|Reference Lists}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Error_Type_Bool,_expected_Bool
+// revision: 364489 (2024-05-16T20:41:58Z)
+// export sha1: popx73s8odxviljdkep47pugblst5x0
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|{{hl|Error Type Bool, expected Bool}}
+This script error is most likely caused by having one or more undefined variables in [[waitUntil]] expression.
+See [[waitUntil]] for more info.}}

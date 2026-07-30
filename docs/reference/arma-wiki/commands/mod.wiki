@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/mod
+// revision: 339102 (2023-04-26T10:54:26Z)
+// export sha1: 4fqyof4u0ir8qtik9xfa5ct7urkjsbx
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Math
+
+|descr= Remainder of a divided by b.
+
+|alias= [[a % b]]
+
+|s1= a [[mod]] b
+
+|p1= a: [[Number]]
+
+|p2= b: [[Number]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_remaining = 5 mod 2; // returns 1, as 5 divided by 2 is 2 &times; 2 + 1</sqf>
+
+|seealso= [[Math Commands]] [[Operators]] [[a % b]]
+}}
+
+{{Note
+|user= Hoz
+|timestamp= 20060416013400
+|text= <nowiki/>
+* Remainder is calculated in real domain.
+* mod is identical to [[a % b]]
+You can use mod to round a decimal number down to the nearest whole number. For example: If you wanted to use the command random to generate a whole number between 0 and 5, you could put this in a script: 
+<sqf>
+_rand = random 6;
+_num = _rand - (_rand mod 1);
+</sqf>
+In A1, the new commands [[round]], [[floor]] or [[ceil]] would be the easier way to round.
+}}

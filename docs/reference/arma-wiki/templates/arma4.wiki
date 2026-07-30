@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:arma4
+// revision: 322492 (2022-06-13T10:48:06Z)
+// export sha1: myukepo3t9bej2k4h3iufzf3q61t99w
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|arma4}}</includeonly><noinclude>{{Doc/Template
+|descr= Returns {{hl|{{arma4}}}}.
+|example1= <nowiki>{{arma4}}</nowiki>
+|result1= {{arma4}}
+}}</noinclude>

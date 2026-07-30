@@ -1,0 +1,620 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Prof-Branch_Change_Log_v2.20
+// revision: 378864 (2026-07-28T12:39:07Z)
+// export sha1: cvtl5k6kpgxtl2ipfb5jg2avov55omw
+// categories: Category:Arma 3: Prof-Branch Change Logs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+= 22-07-2026 =
+'''2.20.153973''' new PROFILING branch with PERFORMANCE binaries, '''v78''', server and client, windows 64-bit, linux server 64-bit
+* Added: LAN server discovery via mDNS/DNS-SD
+* Added: Multiplayer connections to domains now support multiple A/AAAA/SRV records
+* Added: IPv6 Multiplayer support (no Voice-over-Net support on Profiling branch)
+* Fixed: Hotfix for the linux crashes
+
+Notes:
+* Linux Dedicated Server now requires libavahi-common/libavahi-client (which should be installed by default on most distributions)
+
+= 08-07-2026 =
+'''2.20.153940''' new PROFILING branch with PERFORMANCE binaries, '''v77''', server and client, windows 64-bit, linux server 64-bit
+* Added: Config entry ''turretsAvailable'' in vehicle pylons, which allows to restrict pylon assignment to specific vehicle seats (only in the Eden Editor pylon attributes UI)
+* Fixed: Linux server crash from v76 (it was same as v75, but the crashing code was copy-pasted in a second spot that was missed)
+* Fixed: Opening Eden Editor pylon attributes would show an incorrect turret assignment
+* Fixed: [[3DEN]] would allow to put units into locked seats, if all other seats were full
+* Fixed: Zeus would allow to put units into locked seats
+* Fixed: [[moveInAny]] did not respect get-in ordering on cargo seats (''getInProxyOrder'' config entry)
+
+= 02-07-2026 =
+'''2.20.153930''' new PROFILING branch with PERFORMANCE binaries, '''v76''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: [[addMagazineGlobal]] was not syncing magazine on the server properly 
+* Fixed: Changing pylon loadout in 3DEN could remove default weapons 
+* Fixed: Linux server crash from v75
+
+= 26-06-2026 =
+'''2.20.153906''' new PROFILING branch with PERFORMANCE binaries, '''v75''', server and client, windows 64-bit, linux server 64-bit
+* Added: PilotCamera "memoryPointDriverOptics" now animates its memory point
+* Added: Vehicle pylons attribute in 3DEN, now reads pylon config "pylonUsableByTurrets" which is an array of turret classnames allowed to use the pylon (some pylon pods can be limited to only specific turrets)
+* Changed: Various netcode changes that should have no noticeable effect
+* Fixed: Steam +connect/+password parameters would not work
+* Fixed: Vehicle pylons attribute display, would display wrong turret names when switching pylon owner
+
+= 16-06-2026 =
+'''2.20.153870''' new PROFILING branch with PERFORMANCE binaries, '''v74''', server and client, windows 64-bit, linux server 64-bit
+* Added: RPT Warning for preprocessor errors with "too many" / "too few" macro arguments
+* Fixed: Preprocessor not correctly resetting error state when continuing after a silent error
+
+= 15-06-2026 =
+'''2.20.153866''' new PROFILING branch with PERFORMANCE binaries, '''v73''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Better logging for "Unable to create slotItem from type" 
+* Fixed: Incorrect preprocessor handling of ".."
+
+= 09-06-2026 =
+'''2.20.153858''' new PROFILING branch with PERFORMANCE binaries, '''v72''', server and client, windows 64-bit, linux server 64-bit
+* Added: All remaining difficulty options to [[description.ext]] ''DifficultyOverride'' (probably requires Profiling branch on client and server)
+* Added: ''showBackpack'' config entry to vehicle seat 'spec' (''PilotSpec'', ''CargoSpec'', next to ''showHeadPhones'')
+* Changed: Mystery Preprocessor change (in here for regression tests, please report if you observe preprocessor related issues)
+* Fixed: Height of listbox rows was not matching the mouse cursor since v70
+* Fixed: "SetConstantColor not supported" RPT message when drawing IR lasers
+
+= 22-05-2026 =
+'''2.20.153799''' new PROFILING branch with PERFORMANCE binaries, '''v71''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: When a PhysX object repeatedly falls below terrain, it will now be put on top and put to sleep to prevent it from falling again
+* Fixed: Using the -mpmissions= parameter would set a wrong pboprefix on the server-side mission PBO
+
+= 20-05-2026 =
+'''2.20.153789''' new PROFILING branch with PERFORMANCE binaries, '''v70''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Crash related to "CommandChanged" Event Handler (thanks Rook)
+* Fixed: VTOL aircraft would not stop and hover after executing [[forceSpeed]] 0 
+* Added: ''timeStampFormatConsole'' server config param - https://feedback.bistudio.com/T199089
+* Fixed: Second weapon in dead character's inventory could not be opened - https://feedback.bistudio.com/T198101
+* Fixed: Community Guide YouTube videos would not play in Steam overlay
+* Fixed: Last item in [[3DEN]] Equipment Storage attribute was missing the add/remove buttons if scrolled down using a scrollwheel - https://feedback.bistudio.com/T199272
+
+= 13-05-2026 =
+'''2.20.153752''' new PROFILING branch with PERFORMANCE binaries, '''v69''', server and client, windows 64-bit, linux server 64-bit
+* Added: ''#mpmissions'' BattlEye RCon command to list available missions on the server
+* Added: ''idleFPSLimit'' server config to limit max FPS while server is empty
+* Added: "OnAutoSelectRole" / "OnPlayerSelectRole" {{Link|Arma_3:_Server_Side_Scripting|server-side}} Event Handlers - https://feedback.bistudio.com/T198797
+* Added: ''getRoles'' server-side script command - https://feedback.bistudio.com/T198797
+* Tweaked: [[closeDisplay]] on a UI2Texture display now instantly closes/unloads the display - https://feedback.bistudio.com/T199098
+* Fixed: Using [[moveInAny]] and [[moveInCargo]] together on cargo could produce undefined behavior
+* Fixed: Mission loading could fail when using a custom ''-mpmissions='' folder and selecting mission with ''#missions XX''
+* Fixed: [[currentVisionMode]] would always return 2 when local player has thermal vision enabled - https://feedback.bistudio.com/T198952
+* Fixed: [[get3DENConnections]] did not return correct syntax for Group/Waypoint connections - https://feedback.bistudio.com/T191578
+* Fixed: Several crashes
+
+= 29-04-2026 =
+'''2.20.153725''' new PROFILING branch with PERFORMANCE binaries, '''v68''', server and client, windows 64-bit, linux server 64-bit
+* Added: '-mpmissions=' command line parameter for servers - https://feedback.bistudio.com/T63330
+* Added: Scripted texture support for [[CT_PROGRESS]] - https://feedback.bistudio.com/T198806
+* Added: Script error on [[createMarker]] if marker already exists (only in -debug)
+* Tweaked: Dead unit's inventory now shows dropped weapons in the 'ground' list - https://feedback.bistudio.com/T198101
+* Changed: Weapon twitching is now suppressed when inventory is opened on a dead unit's weapons 
+* Fixed: [[setVariable]] with a target in singleplayer did not work as expected - https://feedback.bistudio.com/T198795
+* Fixed: Could not select "Host new Session" entry in DisplayMultiplayer
+* Fixed: [[drawLaser]] would not show in main view, if a PIP display is visible - https://feedback.bistudio.com/T198779
+* Fixed: GPS display could change position when getting into vehicle
+* Fixed: "activeSensorsPhase" animation source no longer animates when the vehicle is dead
+* Fixed: No more wobble when destroying Repair Depot objects (thanks @drebin052)
+
+= 21-04-2026 =
+'''2.20.153701''' new PROFILING branch with PERFORMANCE binaries, '''v67''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Sensor "animPosition" property now also supports a memory point (if an animation with the name is not found)
+* Fixed: Refreshing the server browser official servers list multiple times would make it stop updating until game restart - https://feedback.bistudio.com/T195726
+* Fixed: [[currentZeroing]] array syntax issues (crashfix, wrong return type, crashfix)
+
+= 17-04-2026 =
+'''2.20.153690''' new PROFILING branch with PERFORMANCE binaries, '''v66''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Server browser LAN/Direct Connect view is no longer limited to only 16 results
+* Fixed: Waypoint activation scripts would not execute since v64
+* Fixed: After using server browser Direct Connect, the LAN tab would stop showing LAN results
+
+= 16-04-2026 =
+'''2.20.153687''' new PROFILING branch with PERFORMANCE binaries, '''v65''', server and client, windows 64-bit, linux server 64-bit
+* Added: CfgExtensions pre-load verification eventhandler - https://feedback.bistudio.com/T78558
+* Fixed: ''disabledChannels'' were reset between server sending them and server mission starting
+* Fixed: 3DEN condition=0 fix from v62 was not always working
+* Fixed: "Special1" renderFlag for Refract shader would not take effect if the material is applied with [[setObjectMaterial]]
+
+= 14-04-2026 =
+'''2.20.153673''' new PROFILING branch with PERFORMANCE binaries, '''v64''', server and client, windows 64-bit, linux server 64-bit
+* Added: Refract shader material renderFlag "Special1" to disable aberration and time-based normal map UV animation - https://feedback.bistudio.com/T198170
+* Fixed: Many {{Link|Category:Command_Group:_GUI_Control_-_ListNBox|lnb*}} script commands were missing error messages for invalid arguments - https://feedback.bistudio.com/T198100
+* Fixed: Animal/Man collision test did not account for animation bounding radius correctly, thus collision tests failed early for enlarged soldiers, or animations that moved the unit far from the model space origin - https://feedback.bistudio.com/T198169
+* Fixed: Moving the camera in a Mortar/Artillery would play "soundServoVertical" even though the gun did not move, and GunElevUp/Down hotkey would not play the sound
+* Fixed: Placing units into a vehicle in Eden Editor would not respect the get in order, and cause the Xi'an to eject units after filling more than 10 passenger slots  - https://feedback.bistudio.com/T162566
+* Fixed: Several crashes (also enabled request for full dump for a couple unsolved crashes)
+* Fixed: [[currentZeroing]] returned invalid data while in a FFV turret seat - https://feedback.bistudio.com/T198019
+* Fixed: Eden Editor now displays Module Description for legacy (pre-3DEN) modules - https://feedback.bistudio.com/T197534
+* Fixed: Disabled chat channels would not reset when switching between servers - https://feedback.bistudio.com/T197303
+
+= 02-04-2026 =
+'''2.20.153649''' new PROFILING branch with PERFORMANCE binaries, '''v63''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: "VehicleCustomization" attribute being wrongly inserted into missions in v62
+* Fixed: ShipX simulation would not apply gun stabilization - https://feedback.bistudio.com/T186846
+* Fixed: Speedboat/SDV would not have gun stabilization (stabilizedInAxes=4 had camera roll stabilization, but no weapon stabilization) - https://feedback.bistudio.com/T80918
+
+= 01-04-2026 =
+'''2.20.153646''' new PROFILING branch with PERFORMANCE binaries, '''v62''', server and client, windows 64-bit, linux server 64-bit
+* Added: 'aiAmmoUsageFlagsStrict' property to ammo config to force strict use of AI ammo usage flags
+* Fixed: isEject in GetOutMan EH was inconsistent when using moveOut script command
+* Fixed: IR laser beamThickness parameter in config didn't affect the beam thickness - https://feedback.bistudio.com/T168103
+* Fixed: VTOL would not land on helipad - https://feedback.bistudio.com/T193098
+* Fixed: Eden Attributes with condition=0 would not show up (Temporary hotfix)
+
+= 26-03-2026 =
+'''2.20.153630''' new PROFILING branch with PERFORMANCE binaries, '''v61''', server and client, windows 64-bit, linux server 64-bit
+* Added: [[3DEN]] Action "CreateTextFile" to create files in the scenario folder within Eden Editor
+* Added: [[get3DENEntityID]] now also works with entities from within scenario preview
+* Added: Special "$mission" prefix to [[addonFiles]] command to retrieve scenario folder files while in Eden Editor
+* Added: "OnConnectionAdded" / "OnConnectionRemoved" 3DEN Event Handlers
+* Fixed: [[3DEN]] custom connections were not included in copy-pastes or compositions
+* Fixed: HashMaps did not resolve script handles when loading a save game - https://feedback.bistudio.com/T197940
+* Fixed: Possible fix for map icon drawing crash
+
+= 19-03-2026 =
+'''2.20.153620''' new PROFILING branch with PERFORMANCE binaries, '''v60''', server and client, windows 64-bit, linux server 64-bit
+* Added: [[3DEN]] now renders custom connections as an arrow instead of a line (to indicate which is first/second entity)
+* Added: Script conditions to {{Link|Eden_Editor:_Configuring_Attributes|3DEN Attributes}}
+* Added: Support for wildcard/RegEx search in [[3DEN]] Create tree
+* Tweaked: [[3DEN]] Create tree search is now multithreaded
+* Fixed: [[3DEN]] Attribute "condition" did not apply on object-specific attributes
+* Fixed: Incorrect mouse offset in ContextMenu submenus if hitting the bottom edge of the screen
+* Fixed: Stretched hands for far away characters
+
+= 18-03-2026 =
+'''2.20.153615''' new PROFILING branch with PERFORMANCE binaries, '''v59''', server and client, windows 64-bit, linux server 64-bit
+* Added: Script conditions to [[3DEN]] custom connections
+* Added: Script conditions to [[3DEN]] context menu items
+* Added: [[3DEN]] custom connection: cursor icon now changes to "disabled" when the connection cannot be made
+* Added: Shortcuts now work in [[3DEN]] context menus - https://feedback.bistudio.com/T140938
+* Added: submenuXOffset/submenuYOffset for StructuredMenu ([[CT_MENU]]) to specify origin position of submenus
+* Added: "colorStripBorder" for MenuStrip control (to separate the strip's border from the opened menu's border)
+* Changed: [[3DEN]] context menu style (this requires the Profiling Branch Companion Mod)
+* Fixed: [[3DEN]] custom connection to markers, would not render the line in 3D view
+* Fixed: [[3DEN]] custom connection expression would not receive marker names (this requires Profiling branch on the server)
+* Fixed: Border rendering in [[CT_MENU]] (used to only render 2 of 4 borders, with wrong width)
+
+Notes:
+* The Profiling Branch Companion Mod is available on [https://steamcommunity.com/sharedfiles/filedetails/?id=2419451036 Steam Workshop]
+
+= 11-03-2026 =
+'''2.20.153601''' new PROFILING branch with PERFORMANCE binaries, '''v58''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: The crashes of v57
+
+= 10-03-2026 =
+'''2.20.153595''' new PROFILING branch with PERFORMANCE binaries, '''v57''', server and client, windows 64-bit, linux server 64-bit
+* Added: Entity ID to 3DEN "OnEditableEntityRemoved" event
+* Tweaked: Improved performance of AI sensor target visibility checks
+* Fixed: 3DEN event "OnEditableEntityRemoved" would not fire for units inside a group, if the whole group is deleted (thanks @Razer)
+* Fixed: 3DEN group icon would not render correctly after undoing deletion of all units inside the group
+* Fixed: Some crashes
+
+= 04-03-2026 =
+'''2.20.153586''' new PROFILING branch with PERFORMANCE binaries, '''v56''', server and client, windows 64-bit, linux server 64-bit
+* Tweaked: Increased limitation for prone weapon deployment to catch more edge cases
+* Fixed: Crash when a mortar hitting a tree would try to create a -600x scale crater
+* Fixed: Possible fix for a map [[drawIcon]] crash
+
+= 26-02-2026 =
+'''2.20.153576''' new PROFILING branch with PERFORMANCE binaries, '''v55''', server and client, windows 64-bit, linux server 64-bit
+* Added: Proper time limit for per-frame texture loading, which should smooth out lag spikes due to texture loads
+* Added: [[getVideoOptions]] now returns whether rendering modifications like DXVK/ReShade are loaded
+* Fixed: Adjustments to prone weapon deployment to prevent players floating or sinking into the ground
+* Removed: The "Improved performance of engine closing files" performance fix (it does not seem to work; lag spikes in server browser will return and stay for now)
+
+= 18-02-2026 =
+'''2.20.153560''' new PROFILING branch with PERFORMANCE binaries, '''v54''', server and client, windows 64-bit, linux server 64-bit
+* Added: Mimalloc [[Arma_3:_Custom_Memory_Allocator|memory allocator]]
+* Fixed: Attempted performance fix for part of "Improved performance of engine closing files"
+
+= 17-02-2026 =
+'''2.20.153557''' new PROFILING branch with PERFORMANCE binaries, '''v53''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Alternate prone weapon deployment behavior (should fix sinking below terrain, but potential negative impacts are unclear. We are evaluating whether this is a usable approach or we might revert it again.)
+* Changed: Reintroduced a part of the "Improved performance of engine closing files" change, to further diagnose the lag issue
+
+= 13-02-2026 =
+'''2.20.153552''' new PROFILING branch with PERFORMANCE binaries, '''v52''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Temporarily disabled v1 change "Improved performance of engine closing files" to diagnose a lag issue
+* Fixed: [[diag_exportTerrainSVG]] was not escaping "&" in town names, and removed a superfluous semicolon in the style
+* Fixed: Red-tinted image when enabling the blur PP effect in Thermal Imaging
+
+= 11-02-2026 =
+'''2.20.153545''' new PROFILING branch with PERFORMANCE binaries, '''v51''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Disabled some optimizations to better diagnose remaining crashes
+
+= 09-02-2026 =
+'''2.20.153539''' new PROFILING branch with PERFORMANCE binaries, '''v50''', server and client, windows 64-bit, linux server 64-bit
+* Tweaked: Minor optimizations in [[lineIntersectsSurfaces]]
+* Fixed: Potential crash with ''WebBrowser'' texture
+* Fixed: Potential crash when a magazine is in a pylon that does not exist
+* Fixed: Crash AI unit without group
+* Fixed: Possible crash in explosions
+* Fixed: Crash related to local-only missiles
+* Fixed: Possible crash in [[currentZeroing]]
+* Fixed: Crash related to pylons
+* Fixed: Crash AI unit without group
+
+= 04-02-2026 =
+'''2.20.153533''' new PROFILING branch with PERFORMANCE binaries, '''v49''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: UAV could not be used by respawned player - https://feedback.bistudio.com/T196936
+* Fixed: Crash on exit (the SOGPF "Across the Fence" Eden Editor one)
+* Fixed: Crash on exit (the other one)
+* Tweaked: Possible fix and extra logging for crash related to custom radio channels
+
+= 04-02-2026 =
+'''2.20.153530''' new PROFILING branch with PERFORMANCE binaries, '''v48''', server and client, windows 64-bit, linux server 64-bit
+* Changed: RPT Mod/DLC lists are now left-aligned - https://feedback.bistudio.com/T196884
+* Fixed: Weather configuration would not be reloaded on terrain change
+* Fixed: "No entry 'bin\config.bin/CfgWorlds.'"
+* Fixed: RPT Logging could get disabled when opening the mission loading dialog in Eden - https://feedback.bistudio.com/T196576
+
+= 15-12-2025 =
+'''2.20.153495''' new PROFILING branch with PERFORMANCE binaries, '''v47''', server and client, windows 64-bit, linux server 64-bit
+* Added: Vehicle exhaust particle emitter positions can now be animated - https://feedback.bistudio.com/T196146
+
+= 12-12-2025 =
+'''2.20.153492''' new PROFILING branch with PERFORMANCE binaries, '''v46''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Unit reporting for thrown grenade ("frag out!") not triggering for hand grenades - https://feedback.bistudio.com/T180926
+* Fixed: Airplane engine state would flicker and spam eventhandler when using analogue throttle with broken engine (Thanks ''Jenna'')
+* Fixed: Performance issue when using turret stabilization from pilot camera with many possible targets (thanks ''yod'')
+* Fixed: Web Browser control related crash (Thanks ''Rook'')
+* Fixed: Freeze if circular reference in "addonRootClass" (turned into forced crash, Thanks ''Dart'')
+* Fixed: Crash when [[attachTo]] with followBoneRotation on an entity that has no bones (Since v45)
+
+= 09-12-2025 =
+'''2.20.153471''' new PROFILING branch with PERFORMANCE binaries, '''v45''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Remote controlled UAV pilot can now control lights and collision lights - https://feedback.bistudio.com/T196161
+* Fixed: Possible crash when using [[setVehicleAmmoDef]] script command
+* Fixed: Using [[setObjectScale]] on [[attachedObject]] could cause jittering
+* Fixed: [[attachTo]] with followBoneRotation would not apply Hand IK and Head Mimic animations - https://feedback.bistudio.com/T189084
+* Fixed: Bisign/Bikey files would not be loaded on linux
+* Fixed: CT_WebBrowser would not correctly handle input from non-ascii keyboard layouts - https://feedback.bistudio.com/T196167
+
+= 04-12-2025 =
+'''2.20.153463''' new PROFILING branch with PERFORMANCE binaries, '''v44''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Exit crashes
+
+= 02-12-2025 =
+'''2.20.153455''' new PROFILING branch with PERFORMANCE binaries, '''v43''', server and client, windows 64-bit, linux server 64-bit
+* Removed: The answer to life, the universe, and everything
+* Fixed: More AI related crashes
+* Fixed: Crash at shutdown
+
+= 01-12-2025 =
+'''2.20.153451''' new PROFILING branch with PERFORMANCE binaries, '''v42''', server and client, windows 64-bit, linux server 64-bit
+* Added: The answer to life, the universe, and everything
+* Fixed: Crash when spawning animal with [[create3DENEntity]]
+* Fixed: Several crashes at game exit
+* Fixed: AI multithreading related crash
+* Fixed: Linux server crash on startup (disabled parallel config parsing on linux)
+* Fixed: Multiple AI related crashes
+
+= 27-11-2025 =
+'''2.20.153446''' new PROFILING branch with PERFORMANCE binaries, '''v41''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Potential VoN indicator not displaying due to clash with other speaking players
+* Fixed: Crash due to users being able to select non-existing chat channel 
+* Fixed: Freeze when launching Carpe Noctem mission with cpuCount=2 - https://feedback.bistudio.com/T195838
+* Fixed: curatorEditableObjects could accumulate null objects without ability to remove them (Thanks ''Andrei Gud'')
+* Fixed: Possible crash (likely at game exit)
+* Fixed: Possible crash in splash screen
+* Fixed: Crash in [[selectionPosition]] command if shape geometry is not loaded yet
+
+= 20-11-2025 =
+'''2.20.153432''' new PROFILING branch with PERFORMANCE binaries, '''v40''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Missing model files are now replaced by a default placeholder model (prevent crashes due to missing models)
+* Changed: Linux compiler upgrade; no noticeable changes expected
+* Tweaked: Further custom chat code refactoring and optimization to accommodate large number of custom channels
+* Fixed: Passing invalid channel to [[radioChannelInfo]] was returning an empty array
+* Fixed: Possible freeze when opening server browser (Thanks ''Mysterypotatoguy'')
+* Fixed: Possible crash related to grass clutter (Thanks ''veebs333'')
+
+= 13-11-2025 =
+'''2.20.153411''' new PROFILING branch with PERFORMANCE binaries, '''v39''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Refactoring custom chat channel code (No noticeable change expected)
+* Fixed: Wrong default custom channel label when using [[radioChannelSetLabel]]
+* Fixed: [[setCurrentChannel]] was not selecting the last custom channel
+* Fixed: Slower file loading since v38
+
+= 11-11-2025 =
+'''2.20.153401''' new PROFILING branch with PERFORMANCE binaries, '''v38''', server and client, windows 64-bit, linux server 64-bit
+* Added: "ts3server:" as allowed protocol for openable URL's (button/links) - https://feedback.bistudio.com/T195169
+* Tweaked: [[drawIcon3D]] will not be added to the draw queue when game is paused - https://feedback.bistudio.com/T167397
+* Fixed: Ampersand in item description name was breaking tooltip in inventory - https://feedback.bistudio.com/T195596
+* Fixed: [[compatibleMagazines]] could return duplicate magazines when giving muzzle param - https://feedback.bistudio.com/T195724
+* Fixed: Freeze when opening Eden "Load Mission" dialog
+* Fixed: "Cannot load mipmap" error at start
+
+= 24-10-2025 =
+'''2.20.153368''' new PROFILING branch with PERFORMANCE binaries, '''v37''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: 8 crashes (Thanks to reports submitted by players)
+* Fixed: Dynamic simulation did not work since v36
+
+= 22-10-2025 = 
+'''2.20.153363''' new PROFILING branch with PERFORMANCE binaries, '''v36''', server and client, windows 64-bit, linux server 64-bit
+* Tweaked: Improved game startup speed (Parallel config parsing, parallel weather init, spreading I/O load over more time)
+* Changed: The "Copy Version" hotkey now also works in camera sequences and multiplayer
+* Fixed: Game freeze when running out of memory (Since v18)
+* Fixed: Texture re-use did not work (Reducing VRAM usage when running low)
+* Fixed: Splash window showing "Profiling" text on "Performance" binary
+* Fixed: selectLeader could select a leader who is in a different group (Would cause game crash when the unit is deleted while being leader. Now the command does a implicit 'join' into the group)
+* Fixed: Some group eventhandlers could cause game crash if the eventhandler code would re-trigger the event
+* Fixed: lockCameraTo with temporary flag could get stuck if the target is beyond turret limits
+
+= 15-10-2025 =
+'''2.20.153351''' new PROFILING branch with PERFORMANCE binaries, '''v35''', server and client, windows 64-bit, linux server 64-bit
+* Added: :egg: :ghost: 
+* Added: A config class can now contain "delete" and definition of class with same name (To delete&recreate classes for intentional base class change)
+* Added: -noWindowBorder command line parameter to start game in borderless window
+* Changed: More detailed source information in "Updating base class" warnings
+* Changed: Silenced "Updating base class" warnings if the base was a forward declaration (Except if -debug is set because it still indicates a load order issue)
+* Fixed: Crash caused by malformed script
+* Fixed: Structured text hint color would persist through mission restart and get applied on all hint's 
+* Fixed: Config array += did not support appending array values - https://feedback.bistudio.com/T195196
+* Fixed: "Updating base class" warnings would show the wrong config as "original" if the class had no members
+* Fixed: Crash when a weapon shoots a null projectile since v26
+* Fixed: Player or AI unit on passenger seat would report "No Fuel" radio message even though they don't know the fuel status from that seat
+* Fixed: Game failed to extract key out of bisign for ebo files if the bikey is missing from the keys folder (leading to signature check failures) (Thanks ''Saint Trinian'')
+
+= 13-10-2025 =
+'''2.20.153337''' new PROFILING branch with PERFORMANCE binaries, '''v34''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: All Experimental features (Startup performance improvement, AI performance improvement, Networking improvements) were accidentally disabled since v23
+
+= 10-10-2025 =
+'''2.20.153327''' new PROFILING branch with PERFORMANCE binaries, '''v33''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Rendering could get stuck for a few seconds when right-clicking the spectrum device in thermal vision
+* Fixed: [[setShotParents]] would not assign the Instigator when the Owner was [[objNull]]
+* Fixed: Very long loading times for some modpacks
+
+= 08-10-2025 =
+'''2.20.153325''' new PROFILING branch with PERFORMANCE binaries, '''v32''', server and client, windows 64-bit, linux server 64-bit
+* Added: server.cfg/AdvancedOptions/logPlayerConnectionStates to log player "connecting" progress
+* Fixed: "Ref to nonnetwork object" if a vehicle Init script tries to send any network message relating to the vehicle
+
+= 07-10-2025 =
+'''2.20.153319''' new PROFILING branch with PERFORMANCE binaries, '''v31''', server and client, windows 64-bit, linux server 64-bit
+* Added: Cleaning up MPMissionsCache folder (If above 1GiB, deleting oldest files that are over 50MiB except the 5 newest) - https://feedback.bistudio.com/T195101
+* Added: Scripted post-processing effects are now visible in Thermal Imaging view
+* Changed: Don't calculate scripted actions and [[cursorTarget]] on headless client
+* Fixed: Saving game while on map screen would show a gray background on the "Saving game" display
+* Fixed: Freeze (or crash on Linux) when the game is low on memory
+
+= 06-10-2025 =
+'''2.20.153314''' new PROFILING branch with PERFORMANCE binaries, '''v30''', server and client, windows 64-bit, linux server 64-bit
+* Added: CfgPatches "skipWhenAnyAddonPresent" property (Note that this won't work with non-profiling branch clients) - https://feedback.bistudio.com/T195122
+* Changed: "Cannot find base class" config error is now a warning, and will try to load anyway without inheriting base class
+* Fixed: Freeze from v29
+* Fixed: Arma would not load mods from a read-only mod folder - https://feedback.bistudio.com/T121694
+* Fixed: Prevented one autopilot change (see v23) from being active while AI is piloting
+
+= 02-10-2025 =
+'''2.20.153303''' new PROFILING branch with PERFORMANCE binaries, '''v29''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Another freeze in v28 when loading scenarios list (from main menu, or by dedicated server)
+* Fixed: HashMap compileFinal did not keep HashMapObject's NoCopy flag - https://feedback.bistudio.com/T194855
+* Fixed: HashMap non-existent values would get replaced by nil values when stored into [[profileNamespace]]
+
+= 01-10-2025 =
+'''2.20.153299''' new PROFILING branch with PERFORMANCE binaries, '''v28''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Game Freeze from v27
+
+= 30-09-2025 = 
+'''2.20.153296''' new PROFILING branch with PERFORMANCE binaries, '''v27''', server and client, windows 64-bit, linux server 64-bit
+* Added: Command line parameter -profileGameStart will profile the game start and write to file (Profiling/Diag binary only)
+* Reverted: The [[setDamage]] reviving change
+* Tweaked: Minor game startup CPU usage improvements
+
+= 23-09-2025 =
+'''2.20.153281''' new PROFILING branch with PERFORMANCE binaries, '''v26''', server and client, windows 64-bit, linux server 64-bit
+* Added: -reportNonNetworkObject command line parameter that automatically reports "Ref to nonnetwork object" errors (Windows profiling binary only)
+* Fixed: Several "Ref to nonnetwork object" occurences - https://feedback.bistudio.com/T178229 / https://feedback.bistudio.com/T171682
+* Fixed: [[setDamage]] 0 would not properly reset the "alive" state of most Entities
+
+= 22-09-2025 = 
+'''2.20.153273''' new PROFILING branch with PERFORMANCE binaries, '''v25''', server and client, windows 64-bit, linux server 64-bit
+* Added: Server-side log warning when headless client slot has no assigned name (making it unusable)
+* Fixed: Freeze since v24
+
+= 22-09-2025 =
+'''2.20.153271''' new PROFILING branch with PERFORMANCE binaries, '''v24''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Increased number of RenderTarget's from 8 to 10
+* Tweaked: Refactor for multithreading - no noticeable changes expected
+* Tweaked: Improved game startup time if improperly created mods log many error messages
+* Fixed: Some ThingX entities would get suspended too early when they are un-alived (Shooting target plates not falling down)
+* Fixed: Destroying Streetlights (Any House simulation object with attached lights) while simulation is disabled would leave behind floating light emitters
+* Fixed: Going back from slot selection in a multiplayer campaign would start the next mission instead of showing mission selection
+* Fixed: Mines with Wire trigger did not update their trigger location when teleported/moved - https://feedback.bistudio.com/T193669
+
+= 17-09-2025 =
+'''2.20.153249''' new PROFILING branch with PERFORMANCE binaries, '''v23''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Unable to connect to linux servers since v22
+* Fixed: Aircraft autopilot when loosing input focus would reduce speed to wrong value and change vectoring mode in VTOL (Now keeps speed and vectoring at time of input loss) - https://feedback.bistudio.com/T192405
+* Fixed: Aircraft autopilot when loosing input focus would not be able to catch airplane on too steep dive - https://feedback.bistudio.com/T192405
+
+= 15-09-2025 =
+'''2.20.153231''' new PROFILING branch with PERFORMANCE binaries, '''v22''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Linux compiler upgrade; no noticeable changes expected
+* Fixed: [[nearSupplies]] alt syntax did not work
+* Fixed: [[calculatePath]] did not work when starting position was too far out of terrain bounds - https://feedback.bistudio.com/T193491
+
+= 10-09-2025 =
+'''2.20.153211''' new PROFILING branch with PERFORMANCE binaries, '''v21''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Freeze when saving game (since v19)
+* Fixed: Crash when saving game (since v19)
+
+= 10-09-2025 =
+'''2.20.153209''' new PROFILING branch with PERFORMANCE binaries, '''v20''', server and client, windows 64-bit, linux server 64-bit
+* Added: Multithreaded entity simulation for mines - https://feedback.bistudio.com/T194228
+* Tweaked: Mines no longer load terrain objects around them
+* Fixed: Take entity eventhandler did not fire when using the "Rearm" action - https://feedback.bistudio.com/T194245
+* Fixed: Creating CYCLE waypoint sometimes crashes the game
+* Fixed: Crash with Pylons when loading savegame or joining MP server (since v19)
+
+= 09-09-2025 =
+'''2.20.153200''' new PROFILING branch with PERFORMANCE binaries, '''v19''', server and client, windows 64-bit, linux server 64-bit
+* Tweaked: Amphibious Tank steering in water - https://feedback.bistudio.com/T170421
+* Changed: select command out of bounds error is now actually an out of bounds error (instead of divide by zero)
+* Changed: Internals of vehicle pylon functionality, no noticeable changes expected
+* Fixed: Empty subgroups would not be removed from groups and could trigger errors
+* Fixed: [[createSoundSource]] ignored speed of sound - https://feedback.bistudio.com/T177285
+* Fixed: [[throwables]] script command return was inconsistent
+* Fixed: Mismatch of shot dispersion in multiplayer - https://feedback.bistudio.com/T194410
+
+= 21-08-2025 = 
+'''2.20.153169''' new PROFILING branch with PERFORMANCE binaries, '''v18''', server and client, windows 64-bit, linux server 64-bit
+* Added: "extension" procedural texture source (Note this requires profiling branch on all clients using it)
+* Fixed: Possible desync caused by setUnitLoadout - https://feedback.bistudio.com/T167015
+* Fixed: Couple dozen potential crashes
+
+= 12-08-2025 =
+'''2.20.153137''' new PROFILING branch with PERFORMANCE binaries, '''v17''', server and client, windows 64-bit, linux server 64-bit
+* Added: Audio input device selection in audio options (Requires companion mod)
+* Changed: Replaced special internal allocator with main allocator, removes 2GB memory limit on file cache and script values
+* Changed: Increased bitrate of self-hearing while auto-adjusting microphone sensitivity (11.025khz to 44.1khz)
+* Tweaked: Optimization for loading of Car/Tank vehicles, speeds up Editor mission loading and reduces lag spikes when spawning vehicles
+* Fixed: worldName would be lowercased after loading a savegame - https://feedback.bistudio.com/T193597
+* Fixed: Entity config eventhandlers for WeaponChanged/EpeContactStart/EpeContactEnd/EpeContact, did only trigger if there was also a scripted eventhandler of the same type
+* Fixed: Stereo Audio in Proton (Thanks ''Madbug'')
+Notes:
+* To adjust the Audio Input device, the Companion mod (https://steamcommunity.com/sharedfiles/filedetails/?id=2419451036) needs to be loaded.
+
+= 05-08-2025 =
+'''2.20.153120''' new PROFILING branch with PERFORMANCE binaries, '''v16''', server and client, windows 64-bit, linux server 64-bit
+* Added: Logging of windows version and CPU in RPT header
+* Added: Logging for which audio input device is being used
+* Fixed: Crash when FSM script was terminated (since v8)
+* Fixed: Possible crash when subgroup is created
+* Fixed: [[isEqualTo]] [[scriptNull]] did not behave the same as [[scriptDone]] (since v8)
+* Fixed: Crash when player is kicked due to timeout in self-hosted MP
+* Fixed: Possible crash when drawing polyline on map
+* Fixed: Possible crash when re-assigning units to group in Eden Editor
+* Fixed: Crash if Soldier vegetation collision sound cannot be played
+* Fixed: Crash if Soldier loses its brain during simulation
+* Removed: "Handle has already been terminated" warning on the old terminate command syntax
+
+= 01-08-2025 =
+'''2.20.153110''' new PROFILING branch with PERFORMANCE binaries, '''v15''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Crash when initializing VoN and there is no audio input (Caused crashes on Headless clients)
+* Fixed: Crash when VoN transmitting while switching/unplugging audio input device
+
+= 31-07-2025 =
+'''2.20.153108''' new PROFILING branch with PERFORMANCE binaries, '''v14''', server and client, windows 64-bit, linux server 64-bit
+* Added: Fallback to old Audio input in VoN if the new one fails to initialize
+* Fixed: New Audio input failing to initialize in VoN
+* Fixed: Windows 11 detection (for the stereo sound fix)
+* Fixed: Game Freeze when using VoN
+* Fixed: Crash in a script command
+
+= 20-07-2025 =
+'''2.20.153104''' new PROFILING branch with PERFORMANCE binaries, '''v13''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Audio input is now using Windows Audio Session API (Instead of Windows Multimedia)
+* Fixed: Audio input would get lost when switching the input device, and could not be recovered without game restart (now automatically switches to new device)
+* Fixed: Stereo panning was broken by v12 for Windows 11 users
+
+= 29-07-2025 =
+'''2.20.153096''' new PROFILING branch with PERFORMANCE binaries, '''v12''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Dedicated Server no longer requires XAudio dll files
+* Fixed: Stereo panning of some 3D sounds (since v10)
+
+= 25-07-2025 =
+'''2.20.153094''' new PROFILING branch with PERFORMANCE binaries, '''v11''', server and client, windows 64-bit, linux server 64-bit
+* Added: Live microphone playback while adjusting sensitivity in audio options
+* Fixed: Could not connect to server for ~10 seconds after startup
+* Fixed: Vehicle "CustomSoundController1" did not work since v10
+
+= 24-07-2025 =
+'''2.20.153089''' new PROFILING branch with PERFORMANCE binaries, '''v10''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Updated to XAudio 2.9
+* Fixed: Crash when exiting game via button from main menu
+* Fixed: Dedicated server would keep the config file locked for editing while it was running
+
+= 23-07-2025 =
+'''2.20.153085''' new PROFILING branch with PERFORMANCE binaries, '''v9''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Crash in command line parsing
+* Changed: A model/p3d failing to load is only a fatal error if -debug is set
+
+= 22-07-2025 =
+'''2.20.153074''' new PROFILING branch with PERFORMANCE binaries, '''v8''', server and client, windows 64-bit, linux server 64-bit
+* Added: RVExtensionGGetR2TTexture
+* Changed: Several changes to scheduled scripts, should not be noticeable
+* Changed: A model/p3d failing to load is now a fatal error (previously it would be a RPT message, followed by a game crash)
+* Changed: FSM not being found is now a fatal error (same as above)
+* Fixed: Mission eventhandler arguments of type Object/Group/Script would become null after loading a savegame
+* Fixed: Crash at exit after using SVG map export
+* Fixed: Depth of Field post-processing effect could not be applied multiple times
+* Fixed: Executing allDiaryRecords/Subjects after a diary change would block the visual update - https://feedback.bistudio.com/T192777
+* Fixed: CarHorn type weapons did not work for Tank type vehicles
+* Fixed: Server side things (Should hopefully not cause issues with players connecting)
+
+= 09-07-2025 =
+'''2.20.153053''' new PROFILING branch with PERFORMANCE binaries, '''v7''', server and client, windows 64-bit, linux server 64-bit
+* Changed: Linux compiler upgrade; no noticeable changes expected
+* Fixed: When a land waypoint was given above water, the helicopter would attempt to land on water - https://feedback.bistudio.com/T193098
+* Fixed: Crashes related to Thermal Imaging
+* Fixed: Steam Game Recording overrides in description.ext would not apply if the event was triggered before the mission was loaded
+* Fixed: Crash related to cloud simulation
+* Fixed: Multiplayer crash when entity class uses Init Event Handler
+* Fixed: Crash when in Zeus UI without an assigned Zeus logic
+* Fixed: Crash related to AI groups
+* Fixed: Crash related to multithreading attached craters
+
+= 03-07-2025 =
+'''2.20.153034''' new PROFILING branch with PERFORMANCE binaries, '''v6''', server and client, windows 64-bit, linux server 64-bit
+* Added: Extension "RVFeature_ArgumentNoEscapeString" feature flag for more efficient string passing - https://feedback.bistudio.com/T184219
+* Added: Support for ARGB8888 paa textures
+* Added: -keysFolder= command line parameter
+* Tweaked: Minor performance improvement for tree/bush PhysX joints
+* Tweaked: Minor performance improvement in [[params]] command (non-array argument fallback code would cause memory allocation even if array argument was provided)
+* Fixed: AI would stop engaging the enemy after it is released from remote control - https://feedback.bistudio.com/T83435
+* Fixed: Possible crash at shutdown
+* Fixed: Crash when assembling backpacks and one doesn't have a shape
+* Fixed: Possible crash during vehicle deletion
+* Fixed: Possible crash when switching in/out of thermal imaging
+* Fixed: Possible crash (Something AI)
+* Fixed: Possible crash in [[setHit]] command if the target object has no shape
+* Fixed: Crash on dedicated server when it fails to start (ex. unavailable port)
+* Fixed: Stack overflow crash if Man type does not have a "pilotPoint" memory point set
+* Fixed: Possible crash (Something AI)
+* Fixed: Possible crash when dead AI unit has been deleted
+* Fixed: Performance issue with aircraft MFDs
+* Fixed: Crash if grenade has no shape
+
+= 25-06-2025 =
+'''2.20.152991''' new PROFILING branch with PERFORMANCE binaries, '''v5''', server and client, windows 64-bit, linux server 64-bit
+* Added: Enfusion Crash reporter integration
+* Tweaked: MFD Radar target filtering is now multithreaded
+* Changed: Adjustment to Tree physics, there should be no noticeable change
+* Fixed: Potential game freeze mid-play (it was quite rare)
+
+= 20-06-2025 =
+'''2.20.152975''' new PROFILING branch with PERFORMANCE binaries, '''v4''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Post processing effects Sharpness, Resolution, DepthOfField and Fisheye would get lost when changing video settings (Thanks ''Polpox'')
+* Fixed: Helicopter would not land on a helipad placed on an object when using landAt command (Thanks ''Ansible2'')
+* Fixed: Multiplayer desync since v1
+
+= 19-06-2025 =
+'''2.20.152965''' new PROFILING branch with PERFORMANCE binaries, '''v3''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Possible crash when AI is repairing a vehicle (Thanks ''Emperor'')
+* Fixed: High CPU load and possible freeze at game start after switching mods
+
+= 18-06-2025 =
+'''2.20.152960''' new PROFILING branch with PERFORMANCE binaries, '''v2''', server and client, windows 64-bit, linux server 64-bit
+* Fixed: Axeorbitant arboreal aggression from v1
+
+= 18-06-2025 =
+'''2.20.152958''' new PROFILING branch with PERFORMANCE binaries, '''v1''', server and client, windows 64-bit, linux server 64-bit
+* Added: All changes from 2.18 v29-v32 (Netcode, Game start speed, affinity parameters, server-side script additions)
+* Changed: HandleChatMessage serverside eventhandler renamed to OnHandleChatMessage
+* Changed: Some aspects of PhysX, there should be no noticeable change in behavior
+* Changed: Increased memory limit for SimpleVM
+* Fixed: Difficulty option checkboxes were not saving correctly - https://feedback.bistudio.com/T192324
+* Fixed: [[setUnitLoadout]] being silently ignored when switching weapons (This reintroduces https://feedback.bistudio.com/T167015 )
+* Fixed: stringtable.bin would not fall back to "Original"/"English"/first language if the desired language is not included in the stringtable (Thanks ''thegamecracks'')
+* Fixed: RemoteExec failing when used with #mission restart command - https://feedback.bistudio.com/T190364
+
+= 17-06-2025 =
+'''2.20.152945''' new PROFILING branch with PERFORMANCE binaries, '''v0''', server and client, windows 64-bit, linux server 64-bit
+* Sync with 2.20 main branch update
+* Changes from 2.18 v29 and above are not included
+
+{{GameCategory|arma3|Prof-Branch Change Logs}}

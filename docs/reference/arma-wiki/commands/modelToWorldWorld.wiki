@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/modelToWorldWorld
+// revision: 377452 (2026-01-02T06:47:11Z)
+// export sha1: 503f9ci5tl37vbx2miet90vh29n4zqs
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|arg= global
+
+|gr1= Positions
+
+|descr= Converts position from object model space to world space in [[Position#PositionASL|PositionASL]] format from the object's centre position.
+{{Feature|important|
+For [[setObjectScale|scaled objects]], the relative position will first be [[vectorMultiply|multiplied]] by the object scale.<br>
+For example, if the object scale is 2, <sqf inline>_obj modelToWorldWorld [0,1,0]</sqf> will be offset '''2 meters''' from the model center (<sqf inline>[0,0,0]</sqf>).
+}}
+
+|s1= obj [[modelToWorldWorld]] modelPos
+
+|p1= obj: [[Object]]
+
+|p2= modelPos: [[Position#PositionRelative|PositionRelative]]
+
+|r1= [[Position#PositionASL|PositionASL]] - '''the model's centre''' (see [[getPosWorld]])
+
+|x1= <sqf>private _playersFrontWorld = player modelToWorldWorld [0,1,0];</sqf>
+
+|seealso= [[modelToWorldVisualWorld]]
+}}

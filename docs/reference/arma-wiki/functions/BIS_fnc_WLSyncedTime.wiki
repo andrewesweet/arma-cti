@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_WLSyncedTime
+// revision: 281229 (2021-06-14T09:06:21Z)
+// export sha1: 9c0d06vi93v4q01sbu9u41bj3u8fb9b
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Warlords | Category:Functions | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.96
+
+|gr1= Warlords
+
+|descr= <pre>/*
+WARLORDS-SPECIFIC FUNCTION
+
+Author: Josef Zemánek
+
+Description: Returns time synced between server and clients
+*/</pre>{{Wiki|placeholder}}
+
+|s1= [] call [[BIS_fnc_WLSyncedTime]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

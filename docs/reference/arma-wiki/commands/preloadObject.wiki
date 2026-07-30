@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/preloadObject
+// revision: 369157 (2024-09-03T10:34:40Z)
+// export sha1: kqugfeps2ik6u23rlqctih4kngv0w2z
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Preloads all textures, materials and proxies needed to render given object. Works with objects and classnames - note that classnames require an object instance in the mission.
+
+|s1= distance [[preloadObject]] object
+
+|p1= distance: [[Number]] -  distance at which preload the object
+
+|p2= object: [[Object]] or [[String]]
+* [[Object]] - existing object
+* [[String]] - object classname - an object of that type '''must''' exist in the mission for it to have effect
+
+|r1= [[Boolean]] - [[true]] when preload is finished
+
+|x1= <sqf>
+0 spawn 
+{
+	waitUntil { 10 preloadObject "SoldierW" };
+	hint "Preload finished";
+};
+</sqf>
+|x2= <sqf>
+0 spawn 
+{
+	waitUntil { 10 preloadObject leader player };
+	hint "Preload finished";
+};
+</sqf>
+
+|seealso= [[preloadCamera]] [[preloadSound]] [[preloadTitleObj]] [[preloadTitleRsc]]
+}}

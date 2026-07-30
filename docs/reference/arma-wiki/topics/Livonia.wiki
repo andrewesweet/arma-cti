@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/Livonia
+// revision: 349918 (2023-11-20T22:11:08Z)
+// export sha1: e7ip0bdb8l34pk2oxrii5spqbyeiwhl
+// categories: Category:Arma 3: Terrains
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:arma3_flag_livonia.png|thumb|Flag of Livonia]]
+Dense forests, wide open fields, and plenty of interesting landmarks – get ready to explore a fresh temperate summer environment ideally suited for combined arms warfare. [[Arma 3 Contact]]'s 163&nbsp;km<sup>2</sup> Eastern European terrain covers the partly abandoned '''Nadbór''' region within the larger Polish-speaking country of [[Livonia]]. This landlocked NATO member state shares borders with four other nations, including the Russian exclave Kaliningrad and CSAT partner Belarus, which inherently makes it a place of great geo-strategic importance. Its woodland locale is composed of a big set of completely new structures, props, and natural objects, complemented by objects from other Bohemia terrains.
+
+
+[[Livonia]] is based on real-life data from Czech Republic; Livonia represents the North-East part of Chřiby mountains, South of the city of Kroměřiž.
+{| class="wikitable"
+! In-game city !! Real-life counterpart
+|-
+| Topolin
+| Zdounky
+|-
+| Polana
+| Bunč
+|-
+| Nadbór
+| Kostelany
+|-
+| Gieraltów
+| Nová Dědina
+|}
+
+
+== Maps ==
+
+{|
+| [[File:A3_Livonia_birdView.jpg|thumb|Map of Livonia (terrain)]]
+| [[File:arma3 terrain map livonia.jpg|thumb|Map of Livonia (place names)]]
+|}
+
+
+
+{{GameCategory|arma3|Terrains}}

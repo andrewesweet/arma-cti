@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/getSensorThreats
+// revision: 373682 (2025-06-12T15:41:21Z)
+// export sha1: lj12yqiifjjkpt8am4sy3ctkoa07wp3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sensors | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|arg= local
+
+|descr= Returns vehicle sensors' threats.
+
+|gr1= Sensors
+
+|s1= [[getSensorThreats]] vehicle
+
+|p1= vehicle: [[Object]] - the sensors-equipped vehicle
+
+|r1= [[Array]] of [[Array]]s - format [<nowiki/>[object, type, sensor], ...]:
+* object: [[Object]]
+* type: [[String]] - can be one of:
+** "missile"
+** "marked"
+** "locked"
+* sensors: [[Array]] of [[String]]s - values can be:
+** "ir"
+** "laser"
+** "missile"
+** "radar" ('''not''' "activeradar"/"passiveradar")
+** "visual"
+
+|x1= <sqf>
+private _dangers = getSensorThreats vehicle player;
+/*
+	returns e.g
+	[
+		[164230: titan_missile_atl_fly.p3d, "missile", ["visual"]],
+		[164233: titan_missile_atl_fly.p3d, "threatmissile", ["radar"]]
+	]
+*/
+</sqf>
+
+|seealso= [[getSensorTargets]] [[listVehicleSensors]] [[listRemoteTargets]]
+}}

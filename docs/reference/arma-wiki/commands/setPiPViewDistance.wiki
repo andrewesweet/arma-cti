@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/setPiPViewDistance
+// revision: 309141 (2022-05-03T11:52:25Z)
+// export sha1: j4w1iyo5h7qduv3qbrz1fd3mki0isu9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|eff= local
+
+|descr= Set the PiP (Picture-in-Picture) view distance. This has no impact if PiP is disabled (see [[isPiPEnabled]]).
+
+|gr1= System
+
+|s1= [[setPiPViewDistance]] distance
+
+|p1= distance: [[Number]] - distance in meters, minimum value is 100, maximum is [[viewDistance|current view distance]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setPiPViewDistance 100;</sqf>
+
+|x2= <sqf>setPiPViewDistance viewDistance;</sqf>
+
+|x3= <sqf>setPiPViewDistance getObjectViewDistance;</sqf>
+
+|seealso= [[getPiPViewDistance]] [[setViewDistance]] [[setObjectViewDistance]] [[viewDistance]] [[getObjectViewDistance]]
+}}

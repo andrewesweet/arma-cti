@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskParent
+// revision: 352072 (2024-02-01T23:24:41Z)
+// export sha1: eix1nicjubthsdse2tpt8ajsj1n03v0
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|arg= global
+|eff= global
+
+|descr= Return a sub-task's parent task. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= taskName call [[BIS_fnc_taskParent]]
+
+|p1= taskName: [[String]]
+
+|r1= [[String]] - parent task
+
+|x1= <sqf>"BIS_task_01" call BIS_fnc_taskParent;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

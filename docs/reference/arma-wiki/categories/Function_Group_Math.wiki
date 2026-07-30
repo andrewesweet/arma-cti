@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Math
+// revision: 321479 (2022-05-14T16:47:47Z)
+// export sha1: 4j3kmsm7gg73l2se7hre0xy9l6ykgyw
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions related to mathematics such as statistics, vectors and geometry.
+
+[[Category:Functions by Functionality]]

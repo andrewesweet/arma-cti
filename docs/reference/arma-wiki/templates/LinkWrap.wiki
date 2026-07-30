@@ -1,0 +1,20 @@
+// source: https://community.bistudio.com/wiki/Template:LinkWrap
+// revision: 250121 (2021-02-27T17:24:37Z)
+// export sha1: 5r8rnpb4amgjlxapdj4fkep7j28olqo
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}{{{2|}}}|{{#if:{{{2|}}}|[[{{{2}}}{{!}}{{#if:{{{1|}}}|{{{1}}}|{{{2}}}}}]]|{{{1|}}}}}|-no text nor link provided-}}</includeonly><noinclude>{{Doc/Template
+|descr= Wrap with a link ''if'' the link is provided.
+|param1= text
+|descr1= shown text
+|param2= link
+|descr2= (Optional) link
+|example1= <nowiki>{{LinkWrap}}</nowiki>
+|result1= {{LinkWrap}}
+|example2= <nowiki>{{LinkWrap|Hello there!}}</nowiki>
+|result2= {{LinkWrap|Hello there!}}
+|example3= <nowiki>{{LinkWrap||Main Page}}</nowiki>
+|result3= {{LinkWrap||Main Page}}
+|example4= <nowiki>{{LinkWrap|Hello there!|Main Page}}</nowiki>
+|result4= {{LinkWrap|Hello there!|Main Page}}
+}}</noinclude>

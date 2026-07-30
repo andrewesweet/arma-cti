@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_allIDWMapMeasurementPoints
+// revision: 309485 (2022-05-05T12:06:18Z)
+// export sha1: 4b7tk9d99a5sk8c8vwzoxgv7l3oulpi
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: IDWMap | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= IDWMap
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Retrieves user measurements data with strengths
+
+	Parameter(s):
+		NONE
+
+	Returns:
+		ARRAY - user measurements in format [x,y,strength] or empty array [] on error
+		
+	Example:
+		call BIN_fnc_getAllMeasurementPoints
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_allIDWMapMeasurementPoints]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_allIDWMapMeasurementPoints;</sqf> -->
+
+|seealso=
+}}

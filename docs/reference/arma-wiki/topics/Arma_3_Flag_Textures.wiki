@@ -1,0 +1,227 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Flag_Textures
+// revision: 353766 (2024-03-23T14:26:15Z)
+// export sha1: ht9gonhxjxp3vgwuiqcfc2u0kfeln0x
+// categories: Category:Arma 3: Reference Lists | Category:Flag Textures
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+Textures available for use with [[setFlagTexture]]/[[forceFlagTexture]]. See [[:Category:Command Group: Flags|Command Group: Flags]] for all flag commands.
+
+
+== Single-coloured ==
+
+{| class="wikitable"
+! Description || File path
+|-
+| Blue flag (Firing Drill) || {{hl|"\A3\Data_F\Flags\flag_fd_blue_CO.paa"}}
+|-
+| Green flag (Firing Drill) || {{hl|"\A3\Data_F\Flags\flag_fd_green_CO.paa"}}
+|-
+| Orange flag (Firing Drill) || {{hl|"\A3\Data_F\Flags\flag_fd_orange_CO.paa"}}
+|-
+| Purple flag (Firing Drill) || {{hl|"\A3\Data_F\Flags\flag_fd_purple_CO.paa"}}
+|-
+| Red flag (Firing Drill) || {{hl|"\A3\Data_F\Flags\flag_fd_red_CO.paa"}}
+|-
+| Blue flag || {{hl|"\A3\Data_F\Flags\flag_blue_CO.paa"}}
+|-
+| Green flag || {{hl|"\A3\Data_F\Flags\flag_green_CO.paa"}}
+|-
+| Red flag || {{hl|"\A3\Data_F\Flags\flag_red_CO.paa"}}
+|-
+| White flag || {{hl|"\A3\Data_F\Flags\flag_white_CO.paa"}}
+|-
+| White flag (damaged) || {{hl|"\A3\Data_F\Flags\flag_white_dmg_CO.paa"}}
+|}
+
+
+== Countries ==
+
+{| class="wikitable"
+! Description || File path
+|-
+| [[Altis]] || {{hl|"\A3\Data_F\Flags\flag_Altis_CO.paa"}}
+|-
+| [[Altis]] (colonial) || {{hl|"\A3\Data_F\Flags\flag_AltisColonial_CO.paa"}}
+|-
+| [[Chernarus]] || {{hl|"\A3\Air_F\Data\plane_flag_CO.paa"}}
+|-
+| [[Tanoa]] || {{hl|"\A3\Data_F_Exp\Flags\flag_Tanoa_CO.paa"}}
+|-
+| United Kingdom || {{hl|"\A3\Data_F\Flags\flag_uk_CO.paa"}}
+|-
+| United States || {{hl|"\A3\Data_F\Flags\flag_us_CO.paa"}}
+|-
+| Livonia || {{hl|"\A3\Data_F_Enoch\Flags\flag_Enoch_CO.paa"}}
+|-
+| Russia || {{hl|"\A3\Data_F_Enoch\Flags\flag_rus_co.paa"}}
+|-
+| Netherlands || {{hl|"\A3\Missions_F_AoW\Data\Img\flag_netherlands_co.paa"}}
+|}
+
+
+== Sides/Factions ==
+
+{| class="wikitable"
+! Description || File path
+|-
+| NATO || {{hl|"\A3\Data_F\Flags\flag_NATO_CO.paa"}}
+|-
+| AAF || {{hl|"\A3\Data_F\Flags\flag_AAF_CO.paa"}}
+|-
+| CSAT || {{hl|"\A3\Data_F\Flags\flag_CSAT_CO.paa"}}
+|-
+| FIA || {{hl|"\A3\Data_F\Flags\flag_FIA_CO.paa"}}
+|-
+| CTRG || {{hl|"\A3\Data_F_Exp\Flags\flag_CTRG_CO.paa"}}
+|-
+| Viper || {{hl|"\A3\Data_F_Exp\Flags\flag_VIPER_CO.paa"}}
+|-
+| Syndikat || {{hl|"\A3\Data_F_Exp\Flags\flag_SYND_CO.paa"}}
+|-
+| IDAP || {{hl|"\A3\Data_F_Orange\Flags\flag_IDAP_CO.paa"}}
+|-
+| LDF || {{hl|"\A3\Data_F_Enoch\Flags\flag_EAF_CO.paa"}}
+|-
+| Looters || {{hl|"\A3\Data_F_Enoch\Flags\flag_looters_co.paa"}}
+|}
+
+
+== Organisations/Companies ==
+
+{| class="wikitable"
+! Description !! File path
+|-
+| [[Multiplayer Armory|ARMEX]] || {{hl|"\A3\Data_F\Flags\flag_armex_CO.paa"}}
+|-
+| [[{{Name|bi}}]] || {{hl|"\A3\Data_F\Flags\Flag_bis_CO.paa"}}
+|-
+| Bluking (white) || {{hl|"\A3\Data_F_Karts\Flags\Flag_bluking1_CO.paa"}}
+|-
+| Bluking (blue) || {{hl|"\A3\Data_F_Karts\Flags\Flag_bluking2_CO.paa"}}
+|-
+| Burst Koke (white) || {{hl|"\A3\Data_F_Karts\Flags\Flag_koke1_CO.paa"}}
+|-
+| Burst Koke (black) || {{hl|"\A3\Data_F_Karts\Flags\Flag_koke2_CO.paa"}}
+|-
+| Fuel (white) || {{hl|"\A3\Data_F_Karts\Flags\Flag_fuel1_CO.paa"}}
+|-
+| Fuel (green) || {{hl|"\A3\Data_F_Karts\Flags\Flag_fuel2_CO.paa"}}
+|-
+| [[ION Incorporated]] || {{hl|"\A3\Data_F\Flags\flag_ion_CO.paa"}}
+|-
+| Larkin Aviation || {{hl|"\A3\Data_F\Flags\flag_larkin_CO.paa"}}
+|-
+| Quontrol || {{hl|"\A3\Data_F\Flags\flag_quontrol_CO.paa"}}
+|-
+| Red Burger || {{hl|"\A3\Data_F_Karts\Flags\Flag_redburger_CO.paa"}}
+|-
+| Redstone || {{hl|"\A3\Data_F_Karts\Flags\Flag_redstone_CO.paa"}}
+|-
+| SUATMM || {{hl|"\A3\Data_F_Karts\Flags\Flag_suatmm_CO.paa"}}
+|-
+| Vrana || {{hl|"\A3\Data_F\Flags\flag_vrana_CO.paa"}}
+|-
+| United Nations (UN) || {{hl|"\A3\Data_F\Flags\Flag_uno_CO.paa"}}
+|-
+| Lars Blanken Gallery || {{hl|"\A3\Missions_F_AoW\Data\Img\flag_blanken_co.paa"}}
+|}
+
+
+== Markers ==
+
+{{Feature|informative|The following textures are actually map marker textures - they ''should'' be usable as flags.}}
+
+{| class="wikitable"
+! Description || File path
+|-
+| AAF || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\AAF_ca.paa"}}
+|-
+| CSAT || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\CSAT_ca.paa"}}
+|-
+| Altis || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\altis_ca.paa"}}
+|-
+| Altis (colonial) || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\altiscolonial_ca.paa"}}
+|-
+| Belgium || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\belgium_ca.paa"}}
+|-
+| Canada || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\canada_ca.paa"}}
+|-
+| Catalonia || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\catalonia_ca.paa"}}
+|-
+| Croatia || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\croatia_ca.paa"}}
+|-
+| CTRG || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\ctrg_ca.paa"}}
+|-
+| Czech Republic || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\czechrepublic_ca.paa"}}
+|-
+| Denmark || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\denmark_ca.paa"}}
+|-
+| EU || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\eu_ca.paa"}}
+|-
+| FIA || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\fia_ca.paa"}}
+|-
+| France || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\france_ca.paa"}}
+|-
+| Georgia || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\georgia_ca.paa"}}
+|-
+| Germany || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\germany_ca.paa"}}
+|-
+| Greece || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\greece_ca.paa"}}
+|-
+| Hungary || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\hungary_ca.paa"}}
+|-
+| Iceland || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\iceland_ca.paa"}}
+|-
+| Italy || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\italy_ca.paa"}}
+|-
+| Luxembourg || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\luxembourg_ca.paa"}}
+|-
+| NATO || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\nato_ca.paa"}}
+|-
+| Netherlands || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\netherlands_ca.paa"}}
+|-
+| Norway || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\norway_ca.paa"}}
+|-
+| Poland || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\poland_ca.paa"}}
+|-
+| Portugal || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\portugal_ca.paa"}}
+|-
+| Slovakia || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\slovakia_ca.paa"}}
+|-
+| Slovenia || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\slovenia_ca.paa"}}
+|-
+| Spain || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\spain_ca.paa"}}
+|-
+| Syndicat || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\syndicat_ca.paa"}}
+|-
+| Tanoa's Gendarmerie || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\tanoaGendarmerie_ca.paa"}}
+|-
+| Tanoa || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\tanoa_ca.paa"}}
+|-
+| UK || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\uk_ca.paa"}}
+|-
+| UN || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\un_ca.paa"}}
+|-
+| USA || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\usa_ca.paa"}}
+|-
+| Viper || {{hl|"\A3\Ui_f\data\Map\Markers\Flags\viper_ca.paa"}}
+|}
+
+
+== Miscellaneous ==
+
+{| class="wikitable"
+! Description || File path
+|-
+| Red crystal || {{hl|"\A3\Data_F\Flags\flag_rcrystal_CO.paa"}}
+|-
+| Prisoners of War (POW) || {{hl|"\A3\Data_F\Flags\Flag_pow_CO.paa"}}
+|-
+| Race flag || {{hl|"\A3\Signs_F\SignSpecial\data\checker_flag_co.paa"}}
+|}
+
+
+{{GameCategory|arma3|Reference Lists}}
+[[Category:Flag Textures]]

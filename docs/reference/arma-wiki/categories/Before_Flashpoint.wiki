@@ -1,0 +1,14 @@
+// source: https://community.bistudio.com/wiki/Category:Before_Flashpoint
+// revision: 376944 (2025-12-31T22:53:52Z)
+// export sha1: o0y8f868pua7x3cnjegcvnud5gb8v17
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Fairy Tale]] was released by {{Name|bi}} in 2000 and it's a point and click adventure for kids that was localised into many languages.
+
+Before founding [[Bohemia Interactive]], the Španěl brothers released games for home computers: [[B.L.O.U.D]] for Atari 800XL, [[Invaze z Aldebaranu]] for Atari ST, and [[Gravon]] for Atari Falcon030.
+
+
+[[Rio Grande]] is the first attempt of the Španěl brothers to create a 3D game for Windows PC, soon abandoned to follow up with the much more ambitious [[Poseidon]] engine that later evolved into [[Real Virtuality]], giving birth to {{GameCategory|ofp|link= y}}.
+
+
+[[Category:Projects]]

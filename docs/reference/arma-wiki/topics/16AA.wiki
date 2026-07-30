@@ -1,0 +1,122 @@
+// source: https://community.bistudio.com/wiki/16AA
+// revision: 343752 (2023-07-15T22:03:18Z)
+// export sha1: q5ainufv5k2gt435lxurs34g1ic7yhn
+// categories: Category:ArmA: Armed Assault: Multiplayer Squads | Category:Arma 2: Multiplayer Squads | Category:Arma 3: Multiplayer Squads
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Infobox/Squad
+|title= 16 Air Assault Brigade [16AA]
+|image= clan 16AA shield.png
+|founded= 2004-08-29
+|link= {{Link|https://www.16aa.net|www.16AA.net}}
+}}
+'''16 Air Assault Brigade [16AA]''' is an online gaming unit playing {{arma3}}. It is a multinational unit based out of its website, with English as its operating language.
+
+
+== Aims and Motivations ==
+
+16AA was set up to bring together individuals who are looking for a more realistic, teamwork-driven, and team-focused approach to online gaming in first-person shooter (FPS) scenarios.
+It aims to provide a good compromise between completely real tactics and tactics that work in-game to maintain its core values of teamwork, friendship, realism, and the drive to succeed.
+16AA requires members to use their real (or a real-sounding) name and aims to provide an environment of friendship and family for all members.
+
+
+== Formation and Subsequent Growth ==
+
+16AA was formed on the 29th of August 2004 by former members of the online unit 75th Ranger Regiment with the intention of creating an online unit that follows realistic army tactics and doctrines and to provide an enjoyable gaming environment for gamers who want to play in a similar way.
+With a starting membership of 10 at its formation, 16AA consisted of one platoon of 2 sections led by Second Lieutenant Hutson and Sergeant Andersson.
+Since then, through ups and downs, 16AA has grown to consist of 2 infantry platoons, 1 maneuver support platoon, a medical and a logistics support detachment as well as the Joint Helicopter Command.
+
+
+== Structure and Organisation ==
+
+The unit structure of 16AA is based around that of a "standard" British Army Company.
+It is intended to expand from the bottom up, with promotions only being given out as expansion requires it and merit deserves it.
+This structure provides both meaningful and practical organization with the chain of command being utilized to ensure every member has someone they can turn to for help with in-game, administrative, and real-life issues.
+It also ensures that the burden of work is evenly spread out and that command in-game is well understood and defined.
+
+
+== Ranks, Insignia, and Abbreviation ==
+
+16AA uses British Army ranks and insignia for all members. The following ranks and their abbreviations are used:
+
+{| class="wikitable"
+! Rank
+! Abbreviation
+|-
+| Recruit
+| Rec
+|-
+| Private
+| Pte
+|-
+| Pilot Officer
+| Plt Off
+|-
+| Signaller
+| Sig
+|-
+| Lance Corporal
+| LCpl
+|-
+| Flying Officer
+| Fg Off
+|-
+| Corporal
+| Cpl
+|-
+| Flight Lieutenant
+| Flt Lt
+|-
+| Sergeant
+| Sgt
+|-
+| Colour Sergeant
+| CSgt
+|-
+| Warrant Officer Class Two
+| WO2
+|-
+| Warrant Officer Class One
+| WO
+|-
+| Second Lieutenant
+| 2Lt
+|-
+| Lieutenant
+| Lt
+|-
+| Captain
+| Cpt
+|-
+| Major
+| Maj
+|}
+
+
+There are more ranks in the British Army, but as the 16AA will never use them they are not listed here.
+
+
+== Recruitment Process ==
+
+16AA has a formal recruitment and training process which all new applicants must pass through in order to attain the rank of Private. This procedure is the result of years of refinement and is intended to ensure that the unit only accepts members who will maintain its high standards and who are proficient at the basic skill set 16AA uses in its combat operations. It is also designed to make new recruits familiar with as many members of the unit as possible and gives all current members the opportunity to be involved with the assessment of new recruits.
+
+The recruitment process has the following stages:
+
+* Application: The first stage of application to 16AA is for a candidate to submit an application to the enlistment area of the 16AA website. An application requires the candidate's full name, date of birth, and nationality. 16AA does not accept anonymous applications or applications from people under the age of 18.
+* Interview: 16AA conducts an interview on Teamspeak for every new applicant. The purpose of this interview is to feel out the candidate and to give the chance to ask questions of the interviewer to ensure that 16AA is the correct unit for them.
+* Recruit Training: 16AA runs a Recruit Training Programme (Phase 1) designed to bring a recruit's gaming skills and understanding of the unit's tactics and procedures up to a basic level of competency that will allow a recruit to operate within a 16AA section as a Private.
+
+
+== Company Training ==
+
+The 16AA hold company-wide Home Rotation Training between every Campaign. These HRs make the company ready to step off with the skills required for the next Campaign.
+
+
+== The Real 16 Air Assault Brigade ==
+
+16AA is based on a real British Army Brigade, The 16th Air Assault Brigade, which was formed on 1 September 1999 by merging 24th Airmobile Brigade with elements of the 5th Airborne Brigade to form a highly mobile rapid reaction force consisting of Parachute units and airmobile units which employ helicopters.
+
+
+{{GameCategory|arma1|Multiplayer Squads}}
+{{GameCategory|arma2|Multiplayer Squads}}
+{{GameCategory|arma3|Multiplayer Squads}}

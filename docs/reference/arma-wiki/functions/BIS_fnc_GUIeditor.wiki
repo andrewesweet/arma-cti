@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_GUIeditor
+// revision: 327608 (2022-07-13T09:50:31Z)
+// export sha1: 9p3v63vwbkcg079jb7fsrqwipjs40ro
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= Opens the [[Arma 3: User Interface Editor]].
+
+|s1=  call [[BIS_fnc_GUIeditor]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_GUIeditor;</sqf>
+
+|seealso= [[Arma 3: User Interface Editor]]
+}}

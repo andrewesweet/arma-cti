@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/showCuratorCompass
+// revision: 319912 (2022-05-13T09:25:43Z)
+// export sha1: jrj4yxny94app6d5l0btp91zl7vo8jf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Hides or shows compass in curator interface.
+
+|s1= [[showCuratorCompass]] bool
+
+|p1= bool: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>showCuratorCompass true;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

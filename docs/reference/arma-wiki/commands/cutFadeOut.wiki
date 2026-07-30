@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/cutFadeOut
+// revision: 369415 (2024-09-03T18:46:04Z)
+// export sha1: qcuciu15e6suuw9oyft23iwpkr6irc5
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.05
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.55
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= Terminates the effect in the given layer by fading it out according to the given duration. If named layer is used and it doesn't exist, it will be allocated. For title layer see [[titleFadeOut]].
+{{Feature|arma3|For greater efficiency and ease of moddability, it is recommended to use named layers.}}
+
+|s1= layer [[cutFadeOut]]  duration
+
+|p1= layer: [[Number]]
+
+|p2= duration: [[Number]]
+
+|r1= [[Nothing]]
+
+|s2= layerName [[cutFadeOut]]  duration
+
+|s2since= arma3 1.58
+
+|p21= layerName: [[String]] - effect layer name. Layer names are CaSe SeNsItIvE
+
+|p22= duration: [[Number]] - fade out time
+
+|r2= [[Number]] - number of the corresponding layer
+
+|x1= <sqf>0 cutFadeOut 2;</sqf>
+
+|x2= <sqf>private _layer = "layer1" cutFadeOut 2;</sqf>
+
+|seealso= [[allCutLayers]] [[cutText]] [[cutRsc]] [[cutObj]] [[allActiveTitleEffects]] [[activeTitleEffectParams]] 
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2016-07-09 - 11:30 (UTC)</dd>
+<dt class="note">[[User:Krzmbrzl00|Krzmbrzl00]]</dt>
+<dd class="note">
+{{GVI|arma3|1.60}} The actual fadeOut-duration can be dependent on the duration for the fadeIn (e.g. specified by [[cutText]]). If the fadeIn-duration is set to a value less than 1 the fadeOut-duration will be the given number multiplied by the fadeIn-duration.
+<sqf>
+"test" cutText ["", "BLACK", 0.5, true]; // fadein is < 0
+"test" cutFadeOut 2; // The actual fadeout-time is 2 * 0.5 = 1
+</sqf>
+</dd>
+
+</dl>

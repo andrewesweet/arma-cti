@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/distributionRegion
+// revision: 318977 (2022-05-13T09:22:07Z)
+// export sha1: gxnna9y8kdj45xjit2tgi2rkrtjcwg0
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Armed Assault version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.05
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= System
+
+|descr= Returns the numerical index for the distribution region of this copy of [[:Category:ArmA: Armed Assault|{{arma1}}]].
+# USA
+# Rest of the world
+
+|s1= [[distributionRegion]]
+
+|r1= [[Number]]
+
+|x1= <sqf>if (distributionRegion == 1) then { hint "miles"; } else { hint "kilometres"; };</sqf>
+
+|seealso= [[productVersion]]
+}}

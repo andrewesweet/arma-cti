@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/removeCuratorAddons
+// revision: 377139 (2026-01-01T10:30:26Z)
+// export sha1: pparr7w863a142ga3d2fyruiogm02x4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|serverExec= server
+
+|gr1= Curator
+
+|descr= Restrict curator use of given addons.
+
+|s1= curatorObj [[removeCuratorAddons]] addons
+
+|p1= curatorObj: [[Object]] - curator module.
+
+|p2= addons: [[Array]] of [[String]]s
+
+|r1= [[Nothing]]
+
+|x1= <sqf>curatorModule removeCuratorAddons [addon1, addon2];</sqf>
+
+|seealso= [[Arma 3: Curator]] [[addCuratorAddons]] [[removeAllCuratorAddons]] [[curatorAddons]]
+}}

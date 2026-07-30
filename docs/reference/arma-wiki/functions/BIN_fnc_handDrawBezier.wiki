@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_handDrawBezier
+// revision: 309531 (2022-05-05T12:06:51Z)
+// export sha1: myd5gcp86e8t6xzy5xqesqdkpx5g33b
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diary | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Diary 
+
+|descr= <pre>/*
+
+	Description:
+		Show hand-drawn bezier curve in the map
+
+	Parameter(s):
+		0: STRING - Unique ID of the ellipse. When such ellipse already exists, it will override it.
+		1: ARRAY - control points of bezier curve
+		2: ARRAY - color in [r,g,b,a] format
+		3: STRING - fill texture
+		   BOOL - true for default pen-blue color, false for the same, but faded
+
+		Optional:
+		4: NUMBER or ARRAY: thickness
+		5: ARRAY - random thickness offset in format [min,mid,max]
+		6: NUMBER - number od drawing steps
+
+	Returns:
+		NOTHING
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_handDrawBezier]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_handDrawBezier;</sqf> -->
+
+|seealso=
+}}

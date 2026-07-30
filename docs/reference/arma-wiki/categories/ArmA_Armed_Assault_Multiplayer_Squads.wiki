@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Multiplayer_Squads
+// revision: 184498 (2021-01-06T13:08:42Z)
+// export sha1: kxud6jgbws0iztegrto0sj2760j13t1
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1| Community}}
+{{GameCategory|arma1| Multiplayer}}

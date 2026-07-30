@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/disableDebriefingStats
+// revision: 364532 (2024-05-16T20:46:25Z)
+// export sha1: t5uq5bsgtxif1yoy82c3auvb8zndasr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Command Group: Broken Commands | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Broken Commands
+
+|gr2= Briefing
+
+|descr= Disable debriefing score table.
+{{Feature|warning|This command is broken.}}
+
+|s1= [[disableDebriefingStats]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>disableDebriefingStats;</sqf>
+
+|seealso= [[enableDebriefingStats]]
+}}

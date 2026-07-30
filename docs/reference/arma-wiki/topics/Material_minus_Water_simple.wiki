@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/Material_-_Water_simple
+// revision: 227512 (2021-01-31T19:30:20Z)
+// export sha1: qkm0hogfda8e76grrv1dyc274f5iw45
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Two pass water'''
+
+= First RVMAT =
+
+ renderFlags[]={NoAlphaWrite};
+ nextPass=DetailMapy\water-pass2.rvmat;
+ 
+ // color when there is no water texture
+ ambient[] = {0.136,0.168,0.276,0.6}; /// last number is water alpha
+ diffuse[] = {0.156,0.197,0.230,1.0};
+ forcedDiffuse[] = {0,0,0,0};
+ specular[] = {0.4,0.4,0.45,0};
+ specularPower = 4;
+ emmisive[] = {0,0,0,0};
+ 
+ PixelShaderID = "Water";
+ VertexShaderID = "WaterSimple";
+ 
+ class Stage1
+ {
+   texture="DetailMapy\waterSimple_NOFex.paa";
+   uvSource="texWaterAnim";
+   class uvTransform
+   {
+     aside[] = {0,4,0};
+     up[] = {4,0,0};
+     dir[] = {0,0,4};
+     pos[] = {0,0,0};
+   };
+ };
+ class Stage3
+ {
+   texture="#(ai,16,64,1)irradiance(16)";
+   uvSource="none";
+ };
+
+= Second RVMAT (water-pass2.rvmat) =
+
+ renderFlags[]={NoColorWrite};
+ ambient[]={1,1,1,1};
+ diffuse[]={1,1,1,1};
+ forcedDiffuse[]={0,0,0,0};
+ emmisive[]={0,0,0,1};
+ specular[]={0,0,0,0};
+ specularPower=0;
+ PixelShaderID="White";
+ VertexShaderID="WaterSimple";
+ class Stage1
+ {
+   texture="DetailMapy\waterSimple_NOFex.paa";
+   uvSource="texWaterAnim";
+   class uvTransform
+   {
+     aside[] = {0,4,0};
+     up[] = {4,0,0};
+     dir[] = {0,0,4};
+     pos[] = {0,0,0};
+   };
+ };

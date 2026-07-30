@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_helicopterSeatMove
+// revision: 327331 (2022-07-12T22:11:54Z)
+// export sha1: plct45qckdr64kyfptyxha6rxtiurjg
+// categories: Category:Arma 3: Functions | Category:Function Group: Helicopters | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Helicopters
+
+|descr= Plays cockpit animation. '''{{tkoh}} only'''.
+
+|s1= [unit, gesture] call [[BIS_fnc_helicopterSeatMove]]
+
+|p1= unit: [[Object]]
+
+|p2= gesture: [[String]] - can be one of:
+* "greet"
+* "look"
+* "point"
+* "thumbDown"
+* "thumbUp"
+
+|r1= [[String]] - animation full name - "" if animation not found
+
+|x1= <sqf>[instructor, "thumbUp"] call BIS_fnc_helicopterSeatMove;</sqf>
+
+|seealso= [[switchMove]] [[BIS_fnc_helicopterSeat]] [[BIS_fnc_helicopterType]]
+}}

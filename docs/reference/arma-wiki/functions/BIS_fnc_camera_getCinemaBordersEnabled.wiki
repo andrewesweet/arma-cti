@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera_getCinemaBordersEnabled
+// revision: 349202 (2023-11-08T14:50:43Z)
+// export sha1: oeo0qqbcf9btqpmwyllu97q6yy96j8o
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Camera | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Camera
+
+|descr= Check if camera uses cinema borders.
+
+|s1= [camera] call [[BIS_fnc_camera_getCinemaBordersEnabled]]
+
+|p1= camera: [[Object]] - the camera
+
+|r1= [[Boolean]] - returns [[true]] if cinema borders are used
+
+|x1= <sqf>[BIS_camera] call BIS_fnc_camera_getCinemaBordersEnabled;</sqf>
+
+|seealso= [[BIS_fnc_camera_setCinemaBordersEnabled]]
+}}

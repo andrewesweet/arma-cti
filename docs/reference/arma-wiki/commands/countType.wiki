@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/countType
+// revision: 377068 (2026-01-01T09:25:18Z)
+// export sha1: 171d0yxwoybgfitxsefvxqa6m6i8ryo
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Object Detection
+
+|descr= Count how many objects in the array are of given type. This command also works with parent classes like "Air", "Tank", and "Car". For a full class reference see [[CfgVehicles|Classes]].
+
+|s1= type [[countType]] objects
+
+|p1= type: [[String]] - class type
+
+|p2= objects: [[Array]] of [[Object]]s
+
+|r1= [[Number]]
+
+|x1= <sqf>_count = "Tank" countType list _triggerOne;</sqf>
+
+|x2= <sqf>_count = "B_medic_F" countType units player;</sqf>
+
+|seealso= [[count]] [[isKindOf]] [[typeOf]] [[countFriendly]] [[countEnemy]] [[countSide]] [[countUnknown]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2007-04-23 - 16:34</dd>
+<dt class="note">[[User:Kronzky|Kronzky]]</dt>
+<dd class="note">This command can be used on the whole [[ArmA: CfgVehicles|hierarchical class tree]] (i.e. when checking a [[ArmA:_Vehicles#Wheeled|HMMWV]], one could test for "HMMWV50", "Car", "LandVehicle", etc.)
+
+<dt></dt>
+<dd class="notedate">Posted on 2016-05-04 - 13:30 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">To complement Kronzky's note, if one needs to count exact types, [[countType]] is not suitable for this, use [[count]] instead:
+<sqf>_count = {typeOf _x == "B_medic_F"} count units player;</sqf>
+</dd>
+
+</dl>

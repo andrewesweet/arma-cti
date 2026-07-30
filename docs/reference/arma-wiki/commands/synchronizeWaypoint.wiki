@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/synchronizeWaypoint
+// revision: 377321 (2026-01-02T06:38:53Z)
+// export sha1: 4zo3elcng22rmk1i1zlidf1i5t3sbq0
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Command Group: Waypoints | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Waypoints
+
+|gr2= Triggers
+
+|descr= Synchronizes the trigger or the waypoint with an array of waypoints.
+
+|s1= triggerOrWaypoint [[synchronizeWaypoint]] waypoints
+
+|p1= triggerOrWaypoint: [[Object]] or [[Waypoint]] - can be:
+* [[Object]] - [[Trigger|trigger]]
+* [[Waypoint]] - [[Array]] format of [[Waypoint]]
+|p2= waypoints: [[Array]] of [[Waypoint]]s
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_myTrigger synchronizeWaypoint [[_group2, 3]];</sqf>
+
+|x2= <sqf>[_group1, 2] synchronizeWaypoint [[_group2, 3]];</sqf>
+
+|seealso= [[synchronizedWaypoints]] [[createTrigger]] [[synchronizeTrigger]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2008-03-31 - 23:41</dd>
+<dt class="note">[[User:Master85|Master85]]</dd>
+<dd class="note">
+To 'unsynchronize' a waypoint use: [[Waypoint]] [[synchronizeWaypoint]] []
+</dd>
+
+</dl>

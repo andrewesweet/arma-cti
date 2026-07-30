@@ -1,0 +1,104 @@
+// source: https://community.bistudio.com/wiki/Arma_2:_Undocumented_Startup_Parameters
+// revision: 336176 (2022-12-13T17:35:12Z)
+// export sha1: cbbvi9g5w7udadi7lz7kwmz3ts5z4zn
+// categories: Category:Merge Requests | Category:Startup Parameters | Category:To-do
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Wiki|merge|Arma 2: Startup Parameters|Some information is missing, though most are mostly internal and have no use for the end user.}}
+
+{{Feature|informative|If you are looking for the normal {{arma2}} startup switches, see [[Arma 2: Startup Parameters]].}}
+
+
+== Configuration & Performance ==
+
+=== noland ===
+
+Disable procedural terrain generation.
+{{Wiki|TODO|Disable procedural terrain generation, or [[Arma 2: Startup Parameters#Misc.|Starts with no world loaded]] (Used for [[Buldozer]])?}}
+
+
+== Graphics ==
+
+=== forceDX9 ===
+
+Self-explanatory.
+
+=== window ===
+
+Run game in windowed mode.
+
+=== y ===
+
+Specify rendering height.
+
+=== x ===
+
+Specify rendering width.
+
+
+== Sound ==
+
+=== XA2Sound ===
+
+Use XAudio2 sound engine. (Default)
+
+
+== Network & Multiplayer ==
+
+=== noESRB ===
+
+Gets rid of ESRB warning when clicking Multiplayer.
+
+=== noPatchCheck ===
+
+Disables check for newer patch on MP server select screen, disabling nag.
+
+=== session ===
+
+Unknown.
+
+=== privateSlots ===
+
+Unknown, may set aside MP slots for local connections only.
+
+=== bandwidth ===
+
+Self-explanatory, but usage unknown.
+
+=== gamertag ===
+
+Microsoft Gamertag. I doubt this does anything, it is a remnant of the Xenon code.
+
+
+== Development ==
+
+=== sm2 ===
+
+Use Shader Model 2.
+
+=== sm3 ===
+
+Use Shader Model 3.
+
+=== disableShaderGeneration ===
+
+Self-explanatory.
+
+=== generateShaders ===
+
+Self-explanatory.
+
+
+== Unknown ==
+
+=== worldCfg ===
+
+Unknown.
+
+=== noLauncher ===
+
+This may have something to do with the shell association introduced in 1.05.
+
+
+[[Category:Startup Parameters]]

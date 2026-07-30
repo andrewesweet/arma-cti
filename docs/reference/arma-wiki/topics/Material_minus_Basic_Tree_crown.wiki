@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/Material_-_Basic_Tree_crown
+// revision: 292287 (2021-08-07T23:53:05Z)
+// export sha1: bld75h97fhw6ss534h2noyh6bsr1b6k
+// Vendored snapshot. Do not edit — re-export instead.
+
+=== Material for trees ===
+
+Applies to branches and also for polyplanes therewith branches have set amount of light passing thru as 0 (or very low value if You want that reverse sides were bit plastic). 
+Functional only in combination with difuse map containing continuous alpha.
+
+<pre>
+ambient[]={0.8,0.8,0.8,1.000000};
+// here we on purpose help out contrast by lowering ambient light, because NO map on tree-top blend quickly inside mipmaps
+diffuse[]={0.9,0.9,0.9,1.000000};
+forcedDiffuse[]={0.1,0.1,0.1,0.500000};
+// alpha = how much light pass through
+emmisive[]={0.000000,0.000000,0.000000,1.000000};
+specular[]={0.06,0.06,0.06,1.000000};
+specularPower=25.000000;
+PixelShaderID="NormalMapSpecularThrough";
+VertexShaderID="NormalMapSpecularThrough";
+class Stage1
+{
+	texture="ca\plants\data\dub_jiny_0_NON.tga";
+	uvSource="tex";
+	class uvTransform
+	{
+		aside[]={1.000000,0.000000,0.000000};
+		up[]={0.000000,1.000000,0.000000};
+		dir[]={0.000000,0.000000,0.000000};
+		pos[]={0,0,0};
+	};
+};
+class Stage2
+// diffusion light decline
+{
+	texture="#(ai,32,32,1)treeCrown(0.1)";
+	uvSource="none";
+};
+class Stage3
+// ambient light decline
+ {
+	texture="#(ai,32,32,1)treeCrownAmb(0.1)";
+	uvSource="none";
+};</pre>

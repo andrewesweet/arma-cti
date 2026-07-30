@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_removeCommMenuItem
+// revision: 327871 (2022-07-13T11:39:50Z)
+// export sha1: pr76pnguffhkgtw8yytzi8af8herxsw
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Communication Menu | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local|gr1= Communication Menu
+
+|descr= Remove an item from the [[Arma_3_Communication_Menu|communication menu]].
+
+|s1= [owner,itemID] call [[BIS_fnc_removeCommMenuItem]]
+
+|p1= '''owner''': [[Object]] - object to which the item belongs to
+|p2= '''itemID''': [[Number]] - item ID returned by [[BIS_fnc_addCommMenuItem]] command
+
+|r1= [[Boolean]] - true when the item was removed
+
+|x1= <sqf>[player, 2] call BIS_fnc_removeCommMenuItem;</sqf>
+
+|x2= <sqf>
+private _supportHeli = [player, "Support_Request_CAS_Heli"] call BIS_fnc_addCommMenuItem;
+[player, _supportHeli] call BIS_fnc_removeCommMenuItem;
+</sqf>
+
+|seealso= [[BIS_fnc_addCommMenuItem]] [[Arma 3: Communication Menu]]
+}}

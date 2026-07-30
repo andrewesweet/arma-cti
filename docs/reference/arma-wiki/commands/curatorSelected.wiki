@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/curatorSelected
+// revision: 377660 (2026-01-02T09:02:11Z)
+// export sha1: ie3rxrvuzpcqpfmwk575r3cgpr119iz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Returns list of all curator selected items.
+
+|s1= [[curatorSelected]]
+
+|r1= [[Array]] with [objects, groups, waypoints, markers]
+* objects: [[Array]] of [[Object]]s
+* groups: [[Array]] of [[Group]]s
+* waypoints: [[Waypoint]]
+* markers: [[Array]] of [[String]]s
+
+|x1= <sqf>_selectedItems = curatorSelected;</sqf>
+
+|x2= <sqf>curatorSelected params ["_selObjects", "_selGroups", "_selWaypoints", "_selMarkers"];</sqf>
+
+|seealso= [[curatorMouseOver]] [[setCuratorSelected]] [[addCuratorSelected]] [[Arma 3: Curator]]
+}}

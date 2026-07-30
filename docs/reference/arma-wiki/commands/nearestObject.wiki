@@ -1,0 +1,129 @@
+// source: https://community.bistudio.com/wiki/nearestObject
+// revision: 377544 (2026-01-02T06:54:36Z)
+// export sha1: aohjlwqyv1bclmoci8kv613xj58h1kz
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Object Detection
+
+|descr= Returns the nearest object of given type (or inherited classes) to given position within a sphere. Hardcoded radius is 50 meters.
+Unlike with [[nearestObjects]], where distance is measured in 2D space, [[nearestObject]] will be closest object in 3D space.
+
+{{Feature|informative|
+* in {{ofp}}, only objects of the exact provided class are found.
+* if an object ID is used ({{Link|#Syntax 4}}, see {{Link|#Example 2}}) the search range is unlimited
+}}
+
+|s1= [[nearestObject]] [position, type]
+
+|p1= position: [[Object]] or [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - position to start search at
+
+|p2= type: [[String]] - type of object (see [[typeOf]], [[CfgVehicles|class type]])
+
+|r1= [[Object]] - nearest object, [[objNull]] otherwise
+
+|s2= [[nearestObject]] position
+
+|p21= position: [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - position to start search at
+
+|r2= [[Object]] - nearest object, [[objNull]] otherwise
+
+|s3= position [[nearestObject]] typeOrId
+
+|p41= position: [[Position#Introduction|Position3D]] or [[Position#Introduction|Position2D]] - position to start search at
+
+|p42= typeOrId: [[String]] - type of object (see [[typeOf]], [[CfgVehicles|class type]]) or {{GVI|arma3|2.10|size= 0.75}} Visitor id (see [[getObjectID]])
+
+|r3= [[Object]] - nearest object, [[objNull]] otherwise
+
+|s4= position [[nearestObject]] id
+
+|p61= position: [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - position to start search at
+
+|p62= id: [[Number]] - object Visitor id
+
+|r4= [[Object]] - nearest object, [[objNull]] otherwise
+
+|x1= <sqf>
+_nObject = nearestObject [2345, 6789];
+_nObject = nearestObject [player, "StreetLamp"];
+</sqf>
+
+|x2= Return the object with ID 123456:
+<sqf>_nObject = [0,0,0] nearestObject 123456;</sqf>
+
+|x3= <sqf>_nObject = getPos player nearestObject "StreetLamp";</sqf>
+
+|x4= Return the nearest object with ([[typeOf]] _nObject == "#XXXX") -> #mark, #slop, etc. Unlimited search range:
+<sqf>_nObject = _position nearestObject -1;</sqf>
+
+Return the nearest object with ([[typeOf]] _nObject != ""). Search range is 50m:
+<sqf>_nObject = nearestObject _position;</sqf>
+
+|x5= (See also [[allMissionObjects]]):
+<sqf>
+_blood	= nearestObject [player, "#slop"];
+_step	= nearestObject [player, "#mark"];
+_track	= nearestObject [player, "#track"];
+_crater	= nearestObject [player, "#crater"];
+</sqf>
+
+|seealso= [[nearestObjects]] [[nearObjectsReady]] [[nearObjects]] [[objectFromNetId]] [[nearEntities]] [[entities]] [[object]] [[nearestBuilding]] [[nearestTerrainObjects]] [[nearestMines]]
+}}
+
+{{Note
+|user= Gnashes
+|timestamp= 20190129153100
+|text= The ID for Syntax 4 may be dynamically obtained via the following (as of {{arma3}} v1.88):
+(for {{arma3}} v2.10 or newer, use [[getObjectID]] instead)
+<sqf>
+// returns Object Terrain/Visitor ID, or -1 if no ID found (invalid/null object)
+cursorObject call {
+	private _obj = str (param [0, objNull]);
+	private _id = -1;
+
+	private _find = ((_obj find "#") + 2);
+	if (_find > 1) then
+	{
+		private _len = ((_obj find ":") - _find);
+		_id = _obj select [_find, _len];
+		parseNumber _id;
+	};
+	_id
+};
+</sqf>
+}}
+
+{{Note
+|user= blackfisch
+|timestamp= 20200212085500
+|text= Note, that if you want to check for the nearest Unit you have to check for {{hl|CAManBase}} instead of {{hl|Man}}, since {{hl|Man}} will also return any wildlife population in that area:
+
+<sqf>
+nearestObject [player, "Man"];			// could possibly return rabbits or other wildlife
+nearestObject [player, "CAManBase"];	// only returns units
+</sqf>
+}}

@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/Help:Contents
+// revision: 338201 (2023-02-24T00:04:03Z)
+// export sha1: d9765ip3t463ms5w5dd8xfvsxox7oqn
+// Vendored snapshot. Do not edit — re-export instead.
+
+===User creating and setting===
+You can create a user account. It is recommended to set the timezone.
+
+There are many reasons to create an account; For example your name is visible to everybody in the editation history. It is also possible to have some personal settings like skin, language, etc...
+
+Note: You need an account if you want to edit or create any pages.
+
+You can create a user account by clicking the text "Create an account or log in" in the top right corner of the browser.
+
+Once you create an account, you should consider using the template <nowiki>{{contributions|UserName}}</nowiki> on your page (accessible by clicking on your account name). This way several standard items will be placed on your Wiki user page automatically. (You can see this used on many user pages, e.g. [[User:Suma]]).
+
+=== Create a new page ===
+New page is created by creating a new link to it. Link is a page name enclosed in double square brackets:
+
+ <nowiki>[[a page name]]</nowiki>
+
+=== Sections ===
+
+You can split page into several sections with titles using triple equals signs:
+
+ <nowiki>===a page section===</nowiki>
+
+... and subsections with quadruple equals:
+
+ <nowiki>====Subsection====</nowiki>
+
+ <nowiki>=====Subsubsection=====</nowiki>
+
+You can edit individual sections instead of whole page. When there are many sections, wiki will create small table of contents on top of the page with links to the sections. Editing single sections helps prevent conflicts when two users edit the same page.
+
+=== Examples ===
+
+To format text as an example in a box, indent it with single space on the beginning:
+ Example of an example.
+ Very simple.
+
+=== Lists ===
+
+Individual list entries start with an asterisk:
+
+ * List entry
+
+Looks like this:
+
+* List entry
+
+=== Categories ===
+To put an article in a category, place a link like in the example below anywhere in the article.
+ <nowiki>[[Category:Projects]]</nowiki>
+
+=== More information ===
+
+More editing information can be found at
+
+* {{Link|https://en.wikipedia.org/wiki/Wikipedia:How_to_edit_a_page|Wikipedia's "How To Edit a Page"}}
+* [http://meta.wikimedia.org/wiki/Help:Wikitext_examples More Wikitext Examples]
+* [http://meta.wikimedia.org/wiki/MediaWiki_User's_Guide#For_editors Wikipedia's User's Guide For Editors]
+* {{Link|https://en.wikipedia.org/wiki/Help:Contents|Wikipedia's Help Index}}
+* {{Link|https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style|Wikipedia's Manual of Style}}

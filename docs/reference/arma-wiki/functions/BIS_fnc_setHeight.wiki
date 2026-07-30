@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setHeight
+// revision: 349594 (2023-11-13T22:41:43Z)
+// export sha1: 6sczzj2aucucebzh0eha8oslssdw74q
+// categories: Category:Arma 3: Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Set an object's altitude.
+
+|s1= [target, height, position, mode] call [[BIS_fnc_setHeight]]
+
+|p1= target: [[Object]] - affected object
+
+|p2= height: [[Number]] - (Optional, default 0) height to set
+
+|p3= position: [[Position]] - (Optional, default <sqf inline>position target</sqf>) position to place the target with calculated height
+
+|p4= mode: [[String]] - (Optional, default "ROADWAY") can be:
+* "ROADWAY": uses [[setPos]]
+* "ASL": uses [[setPosASL]]
+* "ATL": uses [[setPosATL]]
+
+|r1= [[Boolean]] - [[true]] when done
+
+|s2= [height, mode] call [[BIS_fnc_setHeight]]
+{{Feature|important|This syntax uses <sqf inline>this</sqf> and is therefore meant to be used in init fields. Not to be used in MP.}}
+
+|p21= height: [[Number]] - (Optional, default 0) height to set
+
+|p22= mode: [[String]] - (Optional, default "ROADWAY") can be:
+* "ROADWAY": uses [[setPos]]
+* "ASL": uses [[setPosASL]]
+* "ATL": uses [[setPosATL]]
+
+|r2= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>
+// will place player's vehicle on "myHeightMarker", 50m above terrain
+[vehicle player, 50, getMarkerPos "myHeightMarker", "ATL"] call BIS_fnc_setHeight;
+</sqf>
+
+|x2= <sqf>
+// will set the "this" object 50m above sea level at its position
+// use where "this" has a value like in an init field
+[50, "ASL"] call BIS_fnc_setHeight;
+</sqf>
+
+|seealso= [[setPos]] [[setPosASL]] [[setPosATL]]
+}}

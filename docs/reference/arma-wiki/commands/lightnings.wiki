@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/lightnings
+// revision: 310753 (2022-05-07T20:21:32Z)
+// export sha1: ova5j962e8y8wfehgwxy069mo2bkfek
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|descr= Return the current lightnings value.
+
+|s1= '''lightnings'''
+
+|r1= [[Number]]
+
+|x1= Get the current ''lightnings'' value:<sqf>_lightningsVal = lightnings;</sqf>
+
+|seealso= [[setLightnings]]
+}}

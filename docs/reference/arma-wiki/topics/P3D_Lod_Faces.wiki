@@ -1,0 +1,175 @@
+// source: https://community.bistudio.com/wiki/P3D_Lod_Faces
+// revision: 373409 (2025-05-08T11:27:11Z)
+// export sha1: 5sclhw8zt6n5iw3b57uhuza75tzqcpl
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|UnsupportedDoc}}
+
+Alias 'Polygons'
+= LodFaces =
+ struct
+ {
+   ulong   nFaces;
+   ulong   AllocationSize;   // see below
+   LodFace LodFaces[nFaces];
+ }
+= LodFace =
+ LodFace
+ {
+   //////////// MLOD ////////////////////////
+   char              TextureName[32]       // SP3X/SP3D ONLY (ofp)
+   ulong             FaceType;             // 3==Triangle or 4==Box
+   PsuedoVertexTable PsuedoVertexTables[4];//
+   ulong             FaceFlags;            // NOT SP3D: [[P3D Point and Face Flags]]
+   Asciiz            TextureName;          // P3DM ONLY (arma)
+   Asciiz            MaterialName;         // P3DM ONLY (arma)
+   ////////// ODOL   ////////////////////////
+   ulong             FaceFlags;            //ODOL7 ONLY see [[P3D Point and Face Flags]]
+   short             TextureIndex;         //ODOL7 ONLY
+   byte              FaceType;             // 3==Triangle or 4==Box
+   ushort            VertexTableIndex[FaceType];
+   //////////////////////////////////////////
+ }
+
+There are always 3, or 4, vertices represented by the value in FaceType.
+
+*3 point vertices describe a triangle.
+*4 point vertices describe a rectangle.
+
+Ultimately, the value points to a vertex table comprising of points, normals and uvset(s).
+
+*Odol: The actual vertex wanted for each of the vertices of a triangle (eg) are carried in an index table within this structure. The so-called VertexTableIndex. This index table looks up the VertexTable of the lod.
+
+*Mlod: The values of each vertex are supplied in a PsuedoVertexTable. Within which, are indexes to the respective points and normals. The PsuedoVertexTable has a fixed size of 4 vertices. The 4th is unused for triangles.
+
+*The TextureIndex is a zero based array. If set to -1, there are no textures 
+
+*In Arma, the FaceFlags and Texture Index have been moved out to their own [[P3D Lod Sections|LodSections]].
+
+== PsuedoVertexTable ==
+ PsuedoVertexTable
+ {
+  ulong PointsIndex;
+  ulong NormalsIndex;
+  float U,V;
+ }
+
+== Indices ==
+
+the vertex referred to in triangles and quads change places in Odol vs Mlod
+
+*Mlod Triangle  A B C
+*Odol Triangle  B A C
+*Mlod Quad A B C D
+*Odol Quad B A D C
+
+
+For odol, Indices themselves must be transformed as follows
+*triangles   : 1st, 2nd, 0th
+*quadrangles : 1st, 2nd, 3rd, 0th
+
+
+
+
+=== Polygon Vertex Order ===
+
+For a visible 3-vertex polygon: 
+
+ AB // clockwise order
+ C 
+ .
+ AC // CounterClock
+ B 
+
+The same for 4-vertex polygon: 
+
+ AB // clockwise
+ DC 
+ .
+ AD // CounterClock
+ BC 
+
+Your 3D device will cull invisible polygons. An invisible polygon is a polygon that has the ''other'' direction order. For example, DirectX default setting is 'cull counterclockwise polygons', so only clockwise is visible.
+
+Vertices must be reordered for clockwise vertex order (default for DirectX), and not changed for counterclockwise order: 
+
+ for 3-vertices polygon: 
+ 1. 1st vertice descriptor 
+ 2. 3rd vertice descriptor 
+ 3. 2nd vertice descriptor 
+ 4. (not used, zero filled) 
+
+ for 4-vertices polygon: 
+ 1. 1st vertice descriptor 
+ 2. 4th vertice descriptor 
+ 3. 3rd vertice descriptor 
+ 4. 2nd vertice descriptor
+
+== AllocationSize ==
+
+
+Because of the variable amount of face vertices (3 or 4), AllocationSize is used to 
+*skip the block.
+*calculate memory requirements
+
+It's value is relative to the first entry and is computed as follows
+
+  AllocationSize= nFaces* (SizeofEach (FaceVertice));
+
+
+'''In Memory''', as allocated by the engine, each FaceVertice is:
+{| class="wikitable"
+|-
+! Engine
+! FaceFlag
+! TextureIndex
+! FaceType
+! Indexes
+|-
+| On Disk
+| sizeof(ulong)
+| sizeof(short)
+| sizeof(byte)
+| sizeof(short)
+|
+|-
+| OFP (V7)
+| sizeof(ulong)
+| sizeof(short)
+| bgcolor="red" |sizeof(ulong)
+| sizeof(short)
+|
+|- 
+| Size
+| 4+
+| 2+
+| 4+
+| 2*FaceType
+| always  16 or 18
+|-
+| ARMA (V4x)
+| 
+| 
+| bgcolor="red" |sizeof(short)
+| sizeof(short)
+|
+|-
+| Size
+| 
+| 
+| 2+
+| 2*FacetType
+| always  8 or 10
+|}
+
+
+This, is the MEMORY requirement. To calculate the offset to the sections struct
+*V7   OffsetToSectionsStruct = AllocationSize- 3*nFaces;
+*V4x  OffsetToSectionsStruct = AllocationSize- nFaces;
+
+The difference being between sizeof(byte) vs long and short respectively
+
+
+[[BIS_File_Formats#3D_Model_File_Formats|Model File Formats]]
+[[Category:Real Virtuality File Formats]]

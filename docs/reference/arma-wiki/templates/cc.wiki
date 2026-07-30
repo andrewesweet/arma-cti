@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/Template:cc
+// revision: 323125 (2022-06-30T13:56:36Z)
+// export sha1: gzrdkkcpo6ad4l3pwu2m2zqx8yvfwik
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><span class="code-comment">//&nbsp;{{Trim|{{{1|-no comment defined-{{TemplateCase||[[Category:cc template usage error]]}}}}}}}</span></includeonly><noinclude>{{Doc/Template
+|descr= Displays a one-lined code comment. See {{Template|codecomment}} for multi-lines comments. It also adds the page to the [[:Category:cc template usage error|cc template usage error]] category on usage error.
+
+|param1= message
+|descr1= comment to display
+
+|example1= <nowiki>{{cc}}</nowiki>
+|result1= {{cc}}
+
+|example2= <nowiki>{{cc|this code is wonderful}}</nowiki>
+|result2= {{cc|this code is wonderful}}
+
+|example3= <div style="white-space: pre"><nowiki>{{cc|this
+code
+is
+wonderful}}</nowiki></div>
+|result3= {{cc|this
+code
+is
+wonderful}}
+}}</noinclude>

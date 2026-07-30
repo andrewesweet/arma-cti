@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/setEngineRpmRTD
+// revision: 349351 (2023-11-08T15:35:07Z)
+// export sha1: 3erwcf9h608jpf0t76d7ga5ki1n9ef0
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 1.34
+
+|gr1= RTD
+
+|descr= Sets the RPM of given engines. {{Feature|afm}}
+
+|s1= helicopter [[setEngineRpmRTD]] [rpm, engineIndex]
+
+|p1= helicopter: [[Object]]
+
+|p2= rpm: [[Number]] - wanted RPM
+
+|p3= engineIndex: [[Number]] - index of the engine
+* engine index 0: engine #1
+* engine index 1: engine #2
+* engine index 2: engine #3
+* engine index -1: all engines 
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myHelicopter setEngineRpmRTD [1337, -1];</sqf>
+
+|seealso= [[setWantedRPMRTD]] [[rotorsRpmRTD]] [[enginesRpmRTD]]
+}}

@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_cfgSound3DProcessors
+// revision: 339060 (2023-04-25T00:16:04Z)
+// export sha1: ocoj9t3age9v7dndc16j3yo6sl0b7z5
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+In the old audio engine any stereo file that was supposed to be positional in the 3D world (gunshots for example) was downmixed to mono.
+Using stereo sounds can enhance the soundscape tremendously which is why '''Sound 3D Processors''' were introduced. Here is an example configuration.
+
+<syntaxhighlight lang="cpp">
+class cfgSound3DProcessors
+{
+	class default3DProcessingType
+	{
+		type = emitter;				// emitter or panner, chooses between the available processors
+		innerRange = 0;				// range at which certain behaviors of the chosen processor reach their limit, results depend on chosen processor
+		range = 50;					// range at which the chosen processor starts turning 100% mono into "3D processed stereo sound"
+		rangeCurve = LinearCurve;	// normally the transition between 100% mono and 100% "3D processed" is linear, but you can use curves defined in CfgSoundCurves to change that behavior
+		radius = 3;					// ONLY FOR EMITTER maximum radius between the virtual speakers
+	};
+};
+</syntaxhighlight>
+{{Feature|informative|See also [[CfgSoundCurves]].}}
+
+=== Stereo Emitter ===
+
+The '''Stereo Emitter''' creates two virtual speakers in the 3D world, each speaker is playing back one channel of the stereo file. Only stereo files are supported at the moment. The position of the speakers depends on parameters in the configuration and the distance to the listener. When the listener is beyond the ''range'' distance both speakers are sitting on two opposite sides of a circle with the radius of 0 on the sound source. You could say they are in the same position. As the player crosses ''range'' the speakers start moving away from sound source as the radius of the circle increases to a maximum which you set with the ''radius'' parameter. Maximum radius is reached at ''innerRange''.
+
+The virtual speakers copy the cameras rotation, so if you are infront of the sound source and rotate yourself 90° to the left, your "ingame ears" and the virtual speakers will all line up. A small visual comparison: You might know particle effects in video games that seem to always ''look'' at you and ''rotate'' with you, like billboards. The stereo emitter has the same behavior.
+
+=== Multichannel Panner ===
+
+The '''Multichannel Panner''' does not create any virtual speakers.
+
+More info soon&trade;.
+
+
+== Creating 3D Processors ==
+
+'''3D Processors''' are defined ''ONLY'' in the cfgSound3DProcessors class. You can create your own versions of ''emitters'' and ''panners''. An example should be enough to explain:
+<syntaxhighlight lang="cpp">
+class cfgSound3DProcessors
+{
+	class myAwesomeExtremeEmitter
+	{
+		type = emitter;
+		innerRange = 50;
+		range = 200;
+		rangeCurve = myAwesomeCurve; // OPTIONAL PARAMETER - you can use a curve defined in CfgSoundCurves, if you don't define a curve a linear transition curve will be used (it's fine for most cases)
+		radius = 50;
+	};
+	class myAwesomeExtremePanner
+	{
+		type = panner;
+		innerRange = 100;
+		range = 5000;
+	};
+};
+</syntaxhighlight>
+
+
+== Implementing 3D Processors in your config ==
+
+In your [[Sound#SoundSet|SoundSets]] use the name of your 3D Processor, like this:
+<syntaxhighlight lang="cpp">sound3DProcessorType = myAwesomeExtremeEmitter;</syntaxhighlight>
+
+
+{{GameCategory|arma3|Sound}}

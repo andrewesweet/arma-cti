@@ -1,0 +1,417 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgGlasses
+// revision: 368819 (2024-08-10T12:35:04Z)
+// export sha1: qomzvoziwqowvoulpuu0ztx4qzul22k
+// categories: Category:Arma 3: Assets | Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Navbox/A3Assets}}
+{| class="wikitable sortable" style="font-size:80%; margin: auto"
+! Preview
+! Class
+! Name
+! DLC
+|-
+| [[File:arma3-icon_g_airpurifyingrespirator_01_f_ca.png|150px]]
+| <span id="G_AirPurifyingRespirator_01_F" >'''G_AirPurifyingRespirator_01_F'''</span>
+| ''APR [NATO]''
+| 
+|-
+| [[File:arma3-icon_g_airpurifyingrespirator_01_f_ca.png|150px]]
+| <span id="G_AirPurifyingRespirator_01_nofilter_F" >'''G_AirPurifyingRespirator_01_nofilter_F'''</span>
+| ''APR [NATO]''
+| 
+|-
+| [[File:arma3-icon_g_airpurifyingrespirator_02_black_f_ca.png|150px]]
+| <span id="G_AirPurifyingRespirator_02_black_F" >'''G_AirPurifyingRespirator_02_black_F'''</span>
+| ''APR (Black) [CSAT]''
+| 
+|-
+| [[File:arma3-icon_g_airpurifyingrespirator_02_black_f_ca.png|150px]]
+| <span id="G_AirPurifyingRespirator_02_black_nofilter_F" >'''G_AirPurifyingRespirator_02_black_nofilter_F'''</span>
+| ''APR (Black) [CSAT]''
+| 
+|-
+| [[File:arma3-icon_g_airpurifyingrespirator_02_olive_f_ca.png|150px]]
+| <span id="G_AirPurifyingRespirator_02_olive_F" >'''G_AirPurifyingRespirator_02_olive_F'''</span>
+| ''APR (Olive) [CSAT]''
+| 
+|-
+| [[File:arma3-icon_g_airpurifyingrespirator_02_olive_f_ca.png|150px]]
+| <span id="G_AirPurifyingRespirator_02_olive_nofilter_F" >'''G_AirPurifyingRespirator_02_olive_nofilter_F'''</span>
+| ''APR (Olive) [CSAT]''
+| 
+|-
+| [[File:arma3-icon_g_airpurifyingrespirator_02_sand_f_ca.png|150px]]
+| <span id="G_AirPurifyingRespirator_02_sand_F" >'''G_AirPurifyingRespirator_02_sand_F'''</span>
+| ''APR (Sand) [CSAT]''
+| 
+|-
+| [[File:arma3-icon_g_airpurifyingrespirator_02_sand_f_ca.png|150px]]
+| <span id="G_AirPurifyingRespirator_02_sand_nofilter_F" >'''G_AirPurifyingRespirator_02_sand_nofilter_F'''</span>
+| ''APR (Sand) [CSAT]''
+| 
+|-
+| [[File:arma3-icon_g_aviators_ca.png|150px]]
+| <span id="G_Aviator" >'''G_Aviator'''</span>
+| ''Aviator Glasses''
+| 
+|-
+| [[File:arma3-icon_g_diving_nato_ca.png|150px]]
+| <span id="G_B_Diving" >'''G_B_Diving'''</span>
+| ''Diving Goggles [NATO]''
+| 
+|-
+| [[File:arma3-icon_g_balaclava_clean_ca.png|150px]]
+| <span id="G_Balaclava_blk" >'''G_Balaclava_blk'''</span>
+| ''Balaclava (Black)''
+| 
+|-
+| [[File:arma3-icon_g_balaclava_bluestrips_ca.png|150px]]
+| <span id="G_Balaclava_BlueStrips" >'''G_Balaclava_BlueStrips'''</span>
+| ''Balaclava (Blue Stripe)''
+| 
+|-
+| [[File:arma3-icon_g_balaclava_combat_ca.png|150px]]
+| <span id="G_Balaclava_combat" >'''G_Balaclava_combat'''</span>
+| ''Balaclava (Combat Goggles)''
+| 
+|-
+| [[File:arma3-icon_g_balaclava_flames1_ca.png|150px]]
+| <span id="G_Balaclava_Flames1" >'''G_Balaclava_Flames1'''</span>
+| ''Balaclava (Orange Pattern)''
+| 
+|-
+| [[File:arma3-icon_g_balaclava_flecktarn_ca.png|150px]]
+| <span id="G_Balaclava_Flecktarn" >'''G_Balaclava_Flecktarn'''</span>
+| ''Balaclava (Flecktarn)''
+| 
+|-
+| [[File:arma3-icon_g_balaclava_halloween_01_ca.png|150px]]
+| <span id="G_Balaclava_Halloween_01" >'''G_Balaclava_Halloween_01'''</span>
+| ''Balaclava (Halloween)''
+| 
+|-
+| [[File:arma3-icon_g_balaclava_lowprofile_ca.png|150px]]
+| <span id="G_Balaclava_lowprofile" >'''G_Balaclava_lowprofile'''</span>
+| ''Balaclava (Low Profile Goggles)''
+| 
+|-
+| [[File:arma3-icon_g_balaclava_olive_ca.png|150px]]
+| <span id="G_Balaclava_oli" >'''G_Balaclava_oli'''</span>
+| ''Balaclava (Olive)''
+| 
+|-
+| [[File:arma3-icon_g_balaclava_scarecrow_01_ca.png|150px]]
+| <span id="G_Balaclava_Scarecrow_01" >'''G_Balaclava_Scarecrow_01'''</span>
+| ''Balaclava (Scarecrow)''
+| 
+|-
+| [[File:arma3-icon_g_balaclava_skull1_ca.png|150px]]
+| <span id="G_Balaclava_Skull1" >'''G_Balaclava_Skull1'''</span>
+| ''Balaclava (Skull)''
+| 
+|-
+| [[File:arma3-icon_g_balaclava_ti_blk_f_ca.png|150px]]
+| <span id="G_Balaclava_TI_blk_F" >'''G_Balaclava_TI_blk_F'''</span>
+| ''Stealth Balaclava (Black)''
+| [[File:apex_icon_ca.png|50px]]
+|-
+| [[File:arma3-icon_g_balaclava_ti_g_blk_f_ca.png|150px]]
+| <span id="G_Balaclava_TI_G_blk_F" >'''G_Balaclava_TI_G_blk_F'''</span>
+| ''Stealth Balaclava (Black, Goggles)''
+| [[File:apex_icon_ca.png|50px]]
+|-
+| [[File:arma3-icon_g_balaclava_ti_g_tna_f_ca.png|150px]]
+| <span id="G_Balaclava_TI_G_tna_F" >'''G_Balaclava_TI_G_tna_F'''</span>
+| ''Stealth Balaclava (Green, Goggles)''
+| [[File:apex_icon_ca.png|50px]]
+|-
+| [[File:arma3-icon_g_balaclava_ti_tna_f_ca.png|150px]]
+| <span id="G_Balaclava_TI_tna_F" >'''G_Balaclava_TI_tna_F'''</span>
+| ''Stealth Balaclava (Green)''
+| [[File:apex_icon_ca.png|50px]]
+|-
+| [[File:arma3-icon_g_balaclava_tropentarn_ca.png|150px]]
+| <span id="G_Balaclava_Tropentarn" >'''G_Balaclava_Tropentarn'''</span>
+| ''Balaclava (Tropentarn)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_aviator_ca.png|150px]]
+| <span id="G_Bandanna_aviator" >'''G_Bandanna_aviator'''</span>
+| ''Bandana (Aviator)''
+| 
+|-
+| [[File:arma3-icon_g_bandmask_beast_ca.png|150px]]
+| <span id="G_Bandanna_beast" >'''G_Bandanna_beast'''</span>
+| ''Bandana (Beast)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_clean_ca.png|150px]]
+| <span id="G_Bandanna_blk" >'''G_Bandanna_blk'''</span>
+| ''Bandana (Black)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_blueflame1_ca.png|150px]]
+| <span id="G_Bandanna_BlueFlame1" >'''G_Bandanna_BlueFlame1'''</span>
+| ''Bandana (Blue Flame)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_blueflame2_ca.png|150px]]
+| <span id="G_Bandanna_BlueFlame2" >'''G_Bandanna_BlueFlame2'''</span>
+| ''Bandana (Blue Flames)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_candyskull_ca.png|150px]]
+| <span id="G_Bandanna_CandySkull" >'''G_Bandanna_CandySkull'''</span>
+| ''Bandana (Candy Skull)''
+| 
+|-
+| [[File:arma3-icon_g_bandmask_khaki_ca.png|150px]]
+| <span id="G_Bandanna_khk" >'''G_Bandanna_khk'''</span>
+| ''Bandana (Khaki)''
+| 
+|-
+| [[File:arma3-icon_g_bandmask_olive_ca.png|150px]]
+| <span id="G_Bandanna_oli" >'''G_Bandanna_oli'''</span>
+| ''Bandana (Olive)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_orangeflame1_ca.png|150px]]
+| <span id="G_Bandanna_OrangeFlame1" >'''G_Bandanna_OrangeFlame1'''</span>
+| ''Bandana (Orange Flames)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_redflame1_ca.png|150px]]
+| <span id="G_Bandanna_RedFlame1" >'''G_Bandanna_RedFlame1'''</span>
+| ''Bandana (Red Flames)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_shades_ca.png|150px]]
+| <span id="G_Bandanna_shades" >'''G_Bandanna_shades'''</span>
+| ''Bandana (Shades)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_skull1_ca.png|150px]]
+| <span id="G_Bandanna_Skull1" >'''G_Bandanna_Skull1'''</span>
+| ''Bandana (Skull)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_skull2_ca.png|150px]]
+| <span id="G_Bandanna_Skull2" >'''G_Bandanna_Skull2'''</span>
+| ''Bandana (Skull, Ornamental)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_sport_ca.png|150px]]
+| <span id="G_Bandanna_sport" >'''G_Bandanna_sport'''</span>
+| ''Bandana (Sport)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_syndikat1_ca.png|150px]]
+| <span id="G_Bandanna_Syndikat1" >'''G_Bandanna_Syndikat1'''</span>
+| ''Bandana (Skull) [Syndikat]''
+| 
+|-
+| [[File:arma3-icon_g_bandana_syndikat2_ca.png|150px]]
+| <span id="G_Bandanna_Syndikat2" >'''G_Bandanna_Syndikat2'''</span>
+| ''Bandana [Syndikat]''
+| 
+|-
+| [[File:arma3-icon_g_bandmask_tan_ca.png|150px]]
+| <span id="G_Bandanna_tan" >'''G_Bandanna_tan'''</span>
+| ''Bandana (Tan)''
+| 
+|-
+| [[File:arma3-icon_g_bandana_vampire_01_ca.png|150px]]
+| <span id="G_Bandanna_Vampire_01" >'''G_Bandanna_Vampire_01'''</span>
+| ''Bandana (Vampire)''
+| 
+|-
+| [[File:arma3-icon_g_blindfold_01_black_f_ca.png|150px]]
+| <span id="G_Blindfold_01_black_F" >'''G_Blindfold_01_black_F'''</span>
+| ''Blindfold (Black)''
+| 
+|-
+| [[File:arma3-icon_g_blindfold_01_white_f_ca.png|150px]]
+| <span id="G_Blindfold_01_white_F" >'''G_Blindfold_01_white_F'''</span>
+| ''Blindfold (White)''
+| 
+|-
+| [[File:arma3-icon_g_combat_ca.png|150px]]
+| <span id="G_Combat" >'''G_Combat'''</span>
+| ''Combat Goggles''
+| 
+|-
+| [[File:arma3-icon_g_combat_goggles_tna_f_ca.png|150px]]
+| <span id="G_Combat_Goggles_tna_F" >'''G_Combat_Goggles_tna_F'''</span>
+| ''Combat Goggles (Green)''
+| [[File:apex_icon_ca.png|50px]]
+|-
+| [[File:arma3-icon_g_diving_ca.png|150px]]
+| <span id="G_Diving" >'''G_Diving'''</span>
+| ''Diving Goggles''
+| 
+|-
+| [[File:arma3-icon_g_eyeprotectors_earpiece_ca.png|150px]]
+| <span id="G_EyeProtectors_Earpiece_F" >'''G_EyeProtectors_Earpiece_F'''</span>
+| ''Safety Goggles (Earpiece)''
+| [[File:orange_icon_ca.png|50px]]
+|-
+| [[File:arma3-icon_g_eyeprotectors_ca.png|150px]]
+| <span id="G_EyeProtectors_F" >'''G_EyeProtectors_F'''</span>
+| ''Safety Goggles''
+| [[File:orange_icon_ca.png|50px]]
+|-
+| [[File:arma3-icon_g_goggles_vr_ca.png|150px]]
+| <span id="G_Goggles_VR" >'''G_Goggles_VR'''</span>
+| ''VR Goggles''
+| 
+|-
+| [[File:arma3-icon_g_diving_rus_ca.png|150px]]
+| <span id="G_I_Diving" >'''G_I_Diving'''</span>
+| ''Diving Goggles [AAF]''
+| 
+|-
+| [[File:arma3-icon_g_lady_ca.png|150px]]
+| <span id="G_Lady_Blue" >'''G_Lady_Blue'''</span>
+| ''Ladies Shades''
+| 
+|-
+| [[File:arma3-icon_g_lady_ca.png|150px]]
+| <span id="G_Lady_Dark" >'''G_Lady_Dark'''</span>
+| ''Ladies Shades (Sea)''
+| 
+|-
+| [[File:arma3-icon_g_lady_ca.png|150px]]
+| <span id="G_Lady_Mirror" >'''G_Lady_Mirror'''</span>
+| ''Ladies Shades (Iridium)''
+| 
+|-
+| [[File:arma3-icon_g_lady_ca.png|150px]]
+| <span id="G_Lady_Red" >'''G_Lady_Red'''</span>
+| ''Ladies Shades (Fire)''
+| 
+|-
+| [[File:arma3-icon_g_lowprofile_ca.png|150px]]
+| <span id="G_Lowprofile" >'''G_Lowprofile'''</span>
+| ''Low Profile Goggles''
+| 
+|-
+| [[File:arma3-icon_g_diving_iran_ca.png|150px]]
+| <span id="G_O_Diving" >'''G_O_Diving'''</span>
+| ''Diving Goggles [CSAT]''
+| 
+|-
+| [[File:arma3-icon_g_regulatormask_f_ca.png|150px]]
+| <span id="G_RegulatorMask_F" >'''G_RegulatorMask_F'''</span>
+| ''Regulator Facepiece''
+| 
+|-
+| [[File:arma3-icon_g_respirator_blue_ca.png|150px]]
+| <span id="G_Respirator_blue_F" >'''G_Respirator_blue_F'''</span>
+| ''Respirator (Blue)''
+| [[File:orange_icon_ca.png|50px]]
+|-
+| [[File:arma3-icon_g_respirator_white_ca.png|150px]]
+| <span id="G_Respirator_white_F" >'''G_Respirator_white_F'''</span>
+| ''Respirator (White)''
+| [[File:orange_icon_ca.png|50px]]
+|-
+| [[File:arma3-icon_g_respirator_yellow_ca.png|150px]]
+| <span id="G_Respirator_yellow_F" >'''G_Respirator_yellow_F'''</span>
+| ''Respirator (Yellow)''
+| [[File:orange_icon_ca.png|50px]]
+|-
+| [[File:arma3-icon_g_shades_black_ca.png|150px]]
+| <span id="G_Shades_Black" >'''G_Shades_Black'''</span>
+| ''Shades (Black)''
+| 
+|-
+| [[File:arma3-icon_g_shades_blue_ca.png|150px]]
+| <span id="G_Shades_Blue" >'''G_Shades_Blue'''</span>
+| ''Shades (Blue)''
+| 
+|-
+| [[File:arma3-icon_g_shades_green_ca.png|150px]]
+| <span id="G_Shades_Green" >'''G_Shades_Green'''</span>
+| ''Shades (Green)''
+| 
+|-
+| [[File:arma3-icon_g_shades_red_ca.png|150px]]
+| <span id="G_Shades_Red" >'''G_Shades_Red'''</span>
+| ''Shades (Red)''
+| 
+|-
+| [[File:arma3-icon_g_spectacles_ca.png|150px]]
+| <span id="G_Spectacles" >'''G_Spectacles'''</span>
+| ''Spectacle Glasses''
+| 
+|-
+| [[File:arma3-icon_g_spectacles_tinted_ca.png|150px]]
+| <span id="G_Spectacles_Tinted" >'''G_Spectacles_Tinted'''</span>
+| ''Tinted Spectacles''
+| 
+|-
+| [[File:arma3-icon_g_sport_blackred_ca.png|150px]]
+| <span id="G_Sport_Blackred" >'''G_Sport_Blackred'''</span>
+| ''Sport Shades (Vulcan)''
+| 
+|-
+| [[File:arma3-icon_g_sport_blackwhite_ca.png|150px]]
+| <span id="G_Sport_BlackWhite" >'''G_Sport_BlackWhite'''</span>
+| ''Sport Shades (Shadow)''
+| 
+|-
+| [[File:arma3-icon_g_sport_blackyellow_ca.png|150px]]
+| <span id="G_Sport_Blackyellow" >'''G_Sport_Blackyellow'''</span>
+| ''Sport Shades (Poison)''
+| 
+|-
+| [[File:arma3-icon_g_sport_checkered_ca.png|150px]]
+| <span id="G_Sport_Checkered" >'''G_Sport_Checkered'''</span>
+| ''Sport Shades (Style)''
+| 
+|-
+| [[File:arma3-icon_g_sport_greenblack_ca.png|150px]]
+| <span id="G_Sport_Greenblack" >'''G_Sport_Greenblack'''</span>
+| ''Sport Shades (Yetti)''
+| 
+|-
+| [[File:arma3-icon_g_sport_red_ca.png|150px]]
+| <span id="G_Sport_Red" >'''G_Sport_Red'''</span>
+| ''Sport Shades (Fire)''
+| 
+|-
+| [[File:arma3-icon_g_squares_ca.png|150px]]
+| <span id="G_Squares" >'''G_Squares'''</span>
+| ''Square Spectacles''
+| 
+|-
+| [[File:arma3-icon_g_squares_ca.png|150px]]
+| <span id="G_Squares_Tinted" >'''G_Squares_Tinted'''</span>
+| ''Square Shades''
+| 
+|-
+| [[File:arma3-icon_g_tactical_ca.png|150px]]
+| <span id="G_Tactical_Black" >'''G_Tactical_Black'''</span>
+| ''Tactical Shades''
+| 
+|-
+| [[File:arma3-icon_g_tactical_ca.png|150px]]
+| <span id="G_Tactical_Clear" >'''G_Tactical_Clear'''</span>
+| ''Tactical Glasses''
+| 
+|-
+| [[File:arma3-icon_h_wirelessearpiece_ca.png|150px]]
+| <span id="G_WirelessEarpiece_F" >'''G_WirelessEarpiece_F'''</span>
+| ''Wireless Earpiece''
+| [[File:orange_icon_ca.png|50px]]
+|-
+| [[File:arma3-icon_g_aviators_ca.png|150px]]
+| <span id="None" >'''None'''</span>
+| ''None''
+| 
+|}
+<div style="color: grey; font-size: 0.9em; padding: 0.5em; text-align: center">Generated in {{GVI|arma 3|2.17|size= 0.75}} by [[User:R3vo|R3vo]] ([[User talk:R3vo|talk]]) 14:35, 10 August 2024 (CEST)</div>
+{{Navbox/A3Assets}}
+[[Category:Arma 3: Assets]]
+[[Category:Arma 3: Editing]]

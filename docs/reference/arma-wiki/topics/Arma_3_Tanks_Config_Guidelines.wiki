@@ -1,0 +1,157 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Tanks_Config_Guidelines
+// revision: 351607 (2023-12-11T08:38:40Z)
+// export sha1: 428juqbk7zc930uudtugtwc73mt6hkl
+// categories: Category:Arma 3: Vehicle Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Comparison to {{arma2}} / {{arma2oa}} tanks ==
+
+* PhysX support
+* Improved penetration materials
+* More detailed Fire Geometry LODs
+* Improved tweakability of HitPoints LODs
+
+
+== Comparison TankX vs. CarX ==
+
+[[Arma 3: Cars Config Guidelines]]
+
+* More wheels to be set up
+* Few additional params used
+* Less complicated Center of Mass tweaking
+* Vehicle config parameter: '''tankTurnForce'''
+* Wheel config parameter: '''side'''
+* Importance of wheel config parameters: '''MOI''', '''dampingRate''', '''dampingRateInAir'''
+* boneName ="<string>" in Wheel classes needs to be the damper bone in model.cfg (instead of the visual wheel bone for CarX)
+
+== Model requirements {p3d} ==
+
+* A new PhysX LOD [[File:Test_Tank_01_Geometry_PhysX_LOD.jpg|thumb|Test_Tank_01: Geometry PhysX LOD]]
+** There needs to be a lod (4e13) consisting of convex components as simple as possible.
+*** Current public Oxygen version doesn't support showing correct name of this lod and displays only Geometry instead. Don't be afraid of having two geometries, it is going to be fixed with new tools.
+** This lod should contain tank’s hull, turret and main gun only. Wheels representing the tracks are added by engine later
+
+* Memory LOD [[File:Test_Tank_01_Memory_LOD_PhysX_Wheels.jpg|thumb|Test_Tank_01: Memory LOD PhysX Wheels]]
+** There should be an axis for each wheel named ''wheel_X_Y_axis'' (X is 1 for left and 2 for right, Y is position of wheel from front), the name is defined in selected wheel as '''center'''.
+** There should be a point at the edge of each wheel named ''wheel_X_Y_bound'' which is used to determine wheel radius (distance from wheel axis is used for this) - there is no other need than placing the point at the edge, even memory points for tracks could be used for this, the name is defined in selected wheel as '''boundary'''
+
+== Model config changes {model.cfg} ==
+
+* Similarly to PhysX related car changes, you will mostly need to change dampers:
+** Example: 
+  		{{Color|green|{model.cfg}<<nowiki/>}}
+  			class Wheel_podkoloL1 {
+  				type = "translation";
+  				source = "damper";
+  				selection = "podkoloL1";
+  				axis = "damper_axis"; // contains points [0,0,0] and [0,0,1]
+  				animPeriod = 1;
+  				minValue = 0;
+  				maxValue = 1;
+  				offset0 = 0.15; // = maxCompression
+  				offset1 = -0.15; // = maxDroop
+  				memory = 1;
+  			};
+
+** Man-held turrets like commander’s gun on T-72 shouldn't be hidden until whole vehicle is destroyed - IK issues would crash the game
+
+
+== New config parameters {config.cpp} ==
+
+=== Basic parameters ===
+TankX uses most of the parameters present in cars. The tutorial will comment only parameters not described in car tutorial.
+
+*''<Type>: string''
+*''<Default>: (required)''
+*'''simulation = "tankx";'''
+
+==== Engine parameters ====
+
+*''<Type>: float''
+*''<Default>: (required)''
+*''tankTurnForce = 330000; // start from 11x vehicle mass and tweak until fine''' 
+
+=== Wheel parameters ===
+
+Wheels work almost like in cars. PhysX allows up to 20 wheels (10 per side) at maximum.
+Wheels are not steerable, and all left wheels have to be in one line, and right wheels have to be in one line as well.
+They should also be the exact same size, otherwise you may encounter servere problems, as all wheels will be forced to have the same rotation speed. This can prevent your tank from driving any faster than 10km/h. Exceptions may be made for wheels that do not always touch the ground, but should be done with caution.
+Special wheels, like the drive sprocket and idler wheels don't have suspension on realworld tanks - set both maxDroop and maxCompression for them to 0.
+Drive sprocket and idler wheels are not required to make a working tank with PhysX however. Only implement wheels that are important for ground contact. 
+e.g. If a Tank's body would collide with the ground before the sprocket wheel touches it, don't include the wheel. It would be useless for the game, while eating valuable computing ressources and adding to the things you need to configure.
+
+==== Wheel PX parameters ====
+
+*'''steering = 0;''' - tank wheels are not turning
+*'''side = “left”;''' - which side of tank the wheel belongs to
+*'''dampingRate = 0.1;''' - damping rate while contacting with ground
+*'''dampingRateInAir = 8000;''' - damping rate while in air. Use to tweak maximum speed. Tweak together with MOI.
+*'''MOI = 50;''' - moment of inertia, set it so the tank does not accelerate or maintain speed indefinitely. Tweak together with dampingRateInAir.
+
+==== Suspension parameters ====
+
+*'''maxCompression = 0.15;''' // set to 0 for wheels that don’t have dampers
+*'''maxDroop = 0.15;'''// set to 0 for wheels that don’t have dampers
+
+== Damage handling ==
+
+
+Tanks offer differing protection levels for themselves and crew inside, depending on place you hit them. Balancing damage is usually most time-consuming task for armored vehicles.
+
+=== Basic config ===
+
+The tanks will usually have - at first sight - too much armor. But their vulnerable '''hitpoints''' will justify the effort, making it possible to destroy or neutralize armor with one shot.
+
+Use '''armor''' to represent overall thickness of vehicle as seen by AI units, and '''armorStructural''' to finetune damage received.
+
+=== Armour plates setup ===
+
+Armour plates consist of convex components in '''[[LOD#Fire_Geometry|Fire Geometry]]'''.
+
+[[File:Test_Tank_01_Fire_Geometry_LOD.jpg|thumb|Test_Tank_01: Fire Geometry LOD]]
+
+Surface '''A3\Data_F\Penetration\armour.rvmat''' provides '''Rolled Homogenous Armour''' (RHA) equivalent in Arma world. For best results, create convex components with armour plates offering desired Line of Sight thicknesses. Refer to http://en.wikipedia.org/wiki/Sloped_armour for more details about real life side of the issue.
+
+For example, T-72’s front armour should have protection level of 550mm RHA horizontally. As you can see in example model, the plate itself is much thinner. Due to sloping it can withstand penetration up to 550mm RHA.
+
+You may also use armourplate materials on components. 
+These have a predefined thickness, regardless of the shape or thickness of the convex component. The difference between a plate and a regular material is, that a penetrator does not go into a plate component if it can't be totally penetrated. Against a regular material, the penetrator would enter the block, but be stopped somewhere inside the component if the pentration isn't enough. 
+The plate materials can be used for small components that otherwise are difficult to model.  Examples of plate materials would be armour_plate.rvmat (30mm RHA), armour_plate_medium (80mm RHA, armour_plate_heavy (110mm RHA) and armour_plate_16mm (16mm RHA). Just beware that components using such surface material will NOT stop projectiles after penetration.
+
+All the materials available for penetration can be found in A3\Data_F\Penetration  (respectively  <Arma3installation>\Addons\data_f.pbo\penetration).
+You can also create and use custom penetration materials.
+
+You may also need a metalplate component inside free space inside, to catch bullets that otherwise shouldn’t even pass primary armour but for whatever reason (f.e. sticking gun’s muzzle into tank) it’s possible to bypass primary armour.
+
+For more detail on how the damage works, check '''[[Arma_3_Damage_Description|A3 Damage Description]]'''.
+=== Hitpoints ===
+
+Hitpoints represent '''weak points''' in structure of tanks: turret servos, ammo storages, engine. They can also improve internal penetration handling. 
+
+==== Hitpoint categories ====
+There are 3 common hitpoint categories in Arma 3's tracked vehicles: [[File:Test_Tank_01_Hit_Points_LOD.jpg|thumb|Test_Tank_01: Hit Points LOD]]
+* '''HitHull''', handling internal penetration - when damaged over 0.9, vehicle will explode.
+* '''HitEngine''', handling damage of engine
+* '''HitLTrack''', '''HitRTrack''', damage of tracks/drive sprockets/idlers
+
+Turrets have their own class HitPoints, coontaining info about how easy it is to damage given turret:
+* '''HitTurret''', horizontal rotation
+* '''HitGun''', vertical rotation - this should handle any event that renders tank guns inoperable, f.e. hit to servos
+
+==== New attributes ====
+Hitpoints gained two important config attributes in Arma 3:
+* '''radius''', defining size of “hitpoint sphere” around each vertice in Hit Points LOD assigned to given hitpoint’s selection
+* '''explosionShielding''', multiplying damage inflicted by indirect damage. The smaller it is, the less damage hitpoint will receive.
+
+==== Internal damage ====
+Internal damage is handled by HitHull class. When KE round penetrates the armor plates, it passes the damage to HitHull hitpoints array as seen in example model. The hitpoint vertices are set up in such way that the nearest distance between them equals RADIUS attribute in HitHull class, and they cannot be activated by rounds that fail to penetrate armor. [[File:Test_Tank_01_HitHull_vertices_vs._Fire_Geometry_LOD.jpg|thumb|Test_Tank_01: HitHull vertices vs. Fire Geometry LOD]]
+
+During implementation of internal damage handling it is important to tweak following attributes:
+* '''armor'''
+* '''explosionShielding'''
+* '''radius'''
+
+If the results of config tweaking are not satisfying, consider adding greater detail to Hit Points and Fire Geometry LODs.
+
+{{GameCategory|arma3|Vehicle Configuration}}

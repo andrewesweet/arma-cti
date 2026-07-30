@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_endLoadingScreen
+// revision: 369457 (2024-09-06T08:44:54Z)
+// export sha1: rq7ev2rxuhv6nq50pjfdhbwc6jstz9t
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 0.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.58
+
+|gr1= GUI
+
+|descr= Unregister a loading screen. When none other remains, end the loading.
+{{Feature|arma3|The loading screen can be force-ended with the {{Link|Arma 3: Cheats#ENDLOAD|ENDLOAD cheat code}}.}}
+
+|s1= screenId call [[BIS_fnc_endLoadingScreen]]
+
+|p1= screenId: [[String]] - screen ID, used in [[BIS_fnc_startLoadingScreen]]
+
+|r1= [[Boolean]] - true when unregistered
+
+|x1= <sqf>["myLoadingScreen", "Loading… wait for my splendid™ mission!"] call BIS_fnc_startLoadingScreen;
+uiSleep 3;
+"myLoadingScreen" call BIS_fnc_endLoadingScreen;</sqf>
+
+|seealso= [[BIS_fnc_startLoadingScreen]] [[startLoadingScreen]] [[endLoadingScreen]]
+}}

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/diag_lightNewLoad
+// revision: 309216 (2022-05-03T22:41:30Z)
+// export sha1: eqs8piojgwz3eu94tjo4tgbh9h43n9v
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Command Group: Lights | Category:Introduced with Arma 3 version 1.82 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.82
+
+|gr1= Lights
+
+|gr2= Diagnostic
+
+|descr= Allows loading of lighting config during the gameplay (effectively changing the current scene lighting).
+Filename path can be either absolute or relative. The file must contain only the class LightingNew, which should contain lighting configuration.
+
+|s1= [[diag_lightNewLoad]] path
+
+|p1= path: [[String]] - the path to the config filename
+
+|r1= [[Nothing]]
+
+|x1= <sqf>diag_lightNewLoad "o:\lighting.txt";</sqf>
+
+|seealso= [[diag_setLightNew]]
+}}

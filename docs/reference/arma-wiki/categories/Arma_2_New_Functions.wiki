@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_New_Functions
+// revision: 194108 (2021-01-12T17:16:05Z)
+// export sha1: cfjrtudele0v4br9s0jarslu9dfoifa
+// Vendored snapshot. Do not edit — re-export instead.
+
+List of all new [[:Category:Functions|Functions]] in {{arma2}}.
+
+
+[[Category:Arma 2: Functions|New Functions List]]

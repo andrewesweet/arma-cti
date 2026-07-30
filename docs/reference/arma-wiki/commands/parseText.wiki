@@ -1,0 +1,82 @@
+// source: https://community.bistudio.com/wiki/parseText
+// revision: 364995 (2024-07-04T19:58:06Z)
+// export sha1: av8q2e39qfaq1slqzq0yaxx5yj9mbws
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Command Group: Structured Text | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Strings
+
+|gr2= Structured Text
+
+|descr= Creates a structured text by parsing the given XML description. Do not use [[parseText]] when displaying a localized text from [[Stringtable.xml]].<br>
+A detailed explanation of all formatting possibilities can be found at [[Structured Text]].
+
+|s1= [[parseText]] text
+
+|p1= text: [[String]]
+
+|r1= [[Structured Text]]
+
+|x1= <sqf>private _Stxt = parseText "First line<img image='data\isniper.paa'/><br/>Second line";</sqf>
+
+|x2= <sqf>hintSilent parseText format["<t size='1.25' font='Zeppelin33' color='#ff0000'>%1 lives remaining.</t>", 12];</sqf>
+
+|x3= <sqf>private _clickableLink = parseText "<a href='http://arma3.com'>A3</a>";</sqf>
+
+|seealso= [[Structured Text]] [[composeText]] [[text]] [[localize]] [[ctrlSetStructuredText]]
+}}
+
+{{Note
+|user= Dr_Eyeball
+|timestamp= 20160901064700
+|text= To convert a structured text back to a string type, just use:
+<sqf>_str = str parseText _structuredText;</sqf>
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20170901132300
+|text= If you are parsing user-defined strings like player names, you may want to convert special characters to their {{Link|https://en.wikipedia.org/wiki/Character_encodings_in_HTML#XML_character_references|XML entities}} as a precaution beforehand, otherwise the result might be corrupted.
+<sqf>
+private _escapeXML =
+{
+	_this
+	regexReplace ["&", "&amp;"]
+	regexReplace ["<", "&lt;"]
+	regexReplace [">", "&gt;"]
+	regexReplace ['"', "&quot;"]
+	regexReplace ["'", "&apos;"]
+};
+
+private _name = '<A&M> Paul "Bear" Bryant';
+private _escapedName = _name call _escapeXML;
+private _redName = parseText format ["<t color='#ff0000'>%1</t>", _escapedName];
+</sqf>
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20231013120233
+|text= Here is a useful script snippet to safely use angled braces and ampersand in structured texts:
+<sqf>_string regexReplace ["&", "&amp;"] regexReplace ["<", "&lt;"]</sqf>
+}}

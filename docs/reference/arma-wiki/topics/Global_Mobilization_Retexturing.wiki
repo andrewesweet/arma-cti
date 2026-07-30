@@ -1,0 +1,139 @@
+// source: https://community.bistudio.com/wiki/Global_Mobilization_Retexturing
+// revision: 373631 (2025-05-29T18:22:20Z)
+// export sha1: ehuvz29fpskae3oxkz8psimd9sadz8g
+// categories: Category:Global Mobilization
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[image:gm picture ca.png|borderless|60px|right|link=Global Mobilization]]
+== Overview ==
+All playable assets in '''[[Global Mobilization]]''' are configured and textured using hiddenSelections-technology.
+This means you are able to replace the textures of the vehicle without having to edit the mesh data itself.
+Instead, a simple config or even script call using [[setObjectTexture]] is enough.
+
+Vehicles follow a standard setup of available texture "slots". All GM vehicles have these, but are not necessarily using all slots.
+Usually only two or three texture "slots" are used.
+[[image:gm retex bmp1 neutral.png|thumbnail|400px|A BMP1 textured with neutral grey]]
+{| class="wikitable"
+|-
+! Index
+! Selection Name
+|-
+| 0
+| texWheel_01
+|-
+| 1
+| tex_01
+|-
+| 2
+| tex_02
+|-
+| 3
+| tex_03
+|-
+| 4
+| tex_04
+|-
+| 5
+| tex_05
+|-
+| 6
+| tex_06
+|}
+
+
+== Texturing ==
+
+Retexturing an asset traditionally poses one problem: ''How to keep the wear and tear of the texture while changing the base color and pattern?''
+
+'''The assets in Global Mobilization do not have this problem!'''
+
+Any color or camo pattern that you apply to GM vehicles will automatically receive the appropriate wear and tear details without you having to worry about it.
+
+=== Procedural Textures ===
+
+Compare these examples:
+<gallery widths=500px heights=200px mode="packed">
+file:gm retex bmp1 default.png|BMP1 in default olive texture
+file:gm retex bmp1 procedural.png|BMP1 with procedural textures
+</gallery>
+
+To achieve the look of the vehicle in the second picture not a single texture file was created. This was done purely via script in runtime using [[Procedural Textures]]:
+<sqf>
+bmp1 setObjectTexture [0, "#(rgb,8,8,3)color(1,0.0,0.0,1,CO)"];
+bmp1 setObjectTexture [1, "#(rgb,8,8,3)color(0,0.5,0.0,1,CO)"];
+bmp1 setObjectTexture [2, "#(rgb,8,8,3)color(0,0.2,0.5,1,CO)"];
+</sqf>
+
+This means you can pick any uniform color you wish and assign it to any vehicle in GM without any issues.
+
+=== Bitmap Textures ===
+
+The same of course works with texture files instead of scripted textures:
+
+<gallery mode="packed">
+File:demopattern 01a co.png|Pattern Texture 01
+File:gm_demopattern_02_co.png|Pattern Texture 02
+</gallery>
+The result of applying these two textures to indices 1 and 2 looks like this:
+
+[[image:gm_retex_bmp1_funky2.png|thumbnail|center|500px]]
+
+'''Note how the pattern textures themselves are very basic and contain no masking, wear or any other irregularities.'''
+
+
+== Template Textures ==
+
+''Please note that not all characters support the automatic "wear and tear". For those assets we provided the wear and tear as a separate layer.''
+
+These template images are not meant to be used directly as textures. Instead they are intended only for reference if you wish to paint more detailed patterns.
+The ambient shadow effect was added to these masks to provide you further orientation and guidance when working on a template.
+
+<gallery>
+File:gmx_sample_bmp1_ext_01_co.png|gmx_sample_bmp1_ext_01_co
+File:gmx_sample_bmp1_ext_02_co.png|gmx_sample_bmp1_ext_02_co
+File:gmx_sample_bmp1_wheels_01_co.png|gmx_sample_bmp1_wheels_01_co
+</gallery>
+
+
+== Configuration Templates and Ingame Examples ==
+
+We have prepared two factions that extensively make use of this concept:
+
+* {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}816026173 |Global Mobilization Extra - Altis Armed Forces}}
+* {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}1737435871|Global Mobilization Extra - Takistan Armed Forces}}
+
+'''These are unencrypted pbo archives''' that provide you with useable config templates and textures.
+
+They are meant to help you '''get an understanding of how to re-use existing GM content''' with new custom textures, loadouts, display names and further detail.
+All of this is supported by a solid config file foundation that is prepared in a way so that it does not confuse with unnecessary clutter.
+We encourage everyone to download, unpack and start their modding journey with these addons their guiding samples.
+
+
+== Download Reference Templates ==
+
+Find the zip archive that contains all necessary template textures for GM's vehicles and characters here:
+
+''(If clicking the link does not automatically start a download: Right-Click it and then use "Save As...".)''
+[[image:gm retex download templates.png|frame|left|link=https://www.global-mobilization.com/samples/gm_samples.zip|{{Link|https://www.global-mobilization.com/samples/gm_samples.zip|Download Texture Templates - 649&nbsp;MB}}]]
+
+
+{{Clear}}
+
+== Changelog ==
+
+* '''13th November 2019:''' Added Templates for Hats, Helmets and Vests.
+* '''28th November 2019:''' Added Templates for M113A1DK, M92 PNMK, T-55A, T-55AM2, OT-64/SKOT, PT-76B, Leopard 1A5, New Danish and Polish infantry gear
+* '''18th March 2020''': Added GE BGS uniform template
+* '''8th October 2020''': Added 1.2 Vehicle and Character Templates (VBH/PAH-1, Do-28D2, CH-53G, Mi-2, L-410; BDU, Pilot suits, Pilot Vest, Combat Vest, new helmets, hats and berets)
+* '''18th October 2020''': Added a skinning_template.p3d that can help with creating custom vests to match the GM uniforms, especially the belt/hip and shoulder position
+* '''22nd October 2020''': Added the missing template for the boonie hat
+* '''30th October 2020''': Added the missing template for the Refueling Ural
+* '''11th March 2021''': Added 1.3 Vehicles and Character Templates (UAZ, Marder, Fire Truck, GE 90s uniforms, vests, helmets and backpack templates, new civilian clothing)
+* '''27th August 2021''': Added 1.4 vehicles (M109, LARS 2, 2S1, BM-21, 2P16, 7t Truck)
+* '''3rd April 2023''': Added 1.5 vehicles (Typ 2 and W123) and clothing
+* '''3rd April 2023''': Added 1.5 vehicles (Typ 2 and W123) and clothing
+* '''11th May 2024''': Added gm_sample_bo105_ext_02_co.png, Updated ZSU-23-4 Samples, Added GM Fire Geometry penetration material rvmats
+* '''29th May 2024''': Added DK M113 samples and Armband texture sample + rvmat, added book binder sample texture
+* '''29th May 2025''': Added 1.6 vehicles and clothing
+
+[[Category:Global Mobilization]]

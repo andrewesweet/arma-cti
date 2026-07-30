@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_showUnitInfo
+// revision: 327452 (2022-07-12T22:12:10Z)
+// export sha1: h3madmt4ui6s8lyzkdfd983rzt9thiu
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Hides or shows '''weapon''' information. Also hides ''grenades'' information.
+
+|s1= [showUnitInfo] call [[BIS_fnc_showUnitInfo]]
+
+|p1= showUnitInfo: [[Boolean]] - [[true]] to show weapon information, [[false]] to hide it
+
+|r1= [[Nothing]]
+
+|x1= <sqf>false call BIS_fnc_showUnitInfo; // hides weapon information</sqf>
+
+|seealso= [[showHUD]] [[shownHUD]]
+}}

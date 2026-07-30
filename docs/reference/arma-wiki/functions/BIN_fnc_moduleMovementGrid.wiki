@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_moduleMovementGrid
+// revision: 272875 (2021-06-13T00:34:02Z)
+// export sha1: jp2p0x7q7kzxfwusc7vg1ytons640e6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Movement | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Movement
+
+|descr= {{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_moduleMovementGrid]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

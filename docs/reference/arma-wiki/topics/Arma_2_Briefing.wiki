@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/Arma_2:_Briefing
+// revision: 339780 (2023-04-28T16:20:17Z)
+// export sha1: kd91jqrs0y5xq0zd97xljfhtjlsg8m2
+// categories: Category:Briefing
+// Vendored snapshot. Do not edit — re-export instead.
+
+The briefing is an essential part of any mission. It usually displays a synopsis of what to do to complete the mission, as well as objectives.
+
+Prior to {{arma2}}, briefings were constructed through a [[Briefing.html]] file.
+
+{{Feature|arma3|For {{arma3}} briefing, see [[Arma 3: Briefing]].}}
+
+
+== Briefings ==
+
+=== Adding Notes ===
+
+Example:
+<sqf>player createDiaryRecord ["Diary", ["Situation", "Things are looking bad."]];</sqf>
+
+This adds a note called 'Situation', and when you click on that a bigger message screen comes up with the message 'Things are looking bad.'
+
+=== Adding Tasks ===
+
+See [[Tasks]].
+Example:
+<sqf>
+tskExample1 = player createSimpleTask ["Task Message"];
+tskExample1 setSimpleTaskDescription ["Task Message", "Task Title", "Task HUD Title"];
+
+// Make sure you have an empty marker called 'mkrObj1'
+// and you will see a semi-transparant circular marker which will light up when you set the task as active.
+tskExample1 setSimpleTaskDestination (getMarkerPos "mkrObj1");
+</sqf>
+
+In your diary, "Task Title" is displayed for each task you set, and when you click on each task, it is "Task Message" appears. And "Task HUD Title" is what gets shown on the HUD.
+
+We force a task upon a player by executing this on his machine:
+<sqf>player setCurrentTask tskExample1; // This will highlight the objective marker, and show him the through the HUD where the objective is.</sqf>
+
+We alter the task status during the mission by the following options:
+<sqf>
+tskExample1 setTaskState "SUCCEEDED";	// Makes the checkbox green
+tskExample1 setTaskState "FAILED";		// Puts a red cross in the checkbox
+tskExample1 setTaskState "CANCELED";	// Puts a grey diagonal line through the checkbox
+tskExample1 setTaskState "CREATED";		// Clears the checkbox (makes it look like you've just created it)
+</sqf>
+
+You can show the state of the task with the [[taskHint]] command, or for an alternative method see this [http://www.ofpec.com/forum/index.php?topic{{=}}33768.0 OFPEC topic].
+
+
+[[Category:Briefing]]

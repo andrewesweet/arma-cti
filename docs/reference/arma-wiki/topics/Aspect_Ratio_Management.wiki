@@ -1,0 +1,146 @@
+// source: https://community.bistudio.com/wiki/Aspect_Ratio_Management
+// revision: 338076 (2023-02-23T23:06:35Z)
+// export sha1: fhphhu54qy4l1y92wqtgnof0qvog3ra
+// categories: Category:Startup Parameters
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The '''Aspect Ratio''' is the ratio of the pixel width of your display to the height of the display.
+Commonly you'll see it listed as a number (1.25 or 0.8) or as a ratio (5:4).
+Knowing your display's aspect ratio can help you optimize your visual display for a more balanced and less skewed graphical presentation.
+
+{{ofp}} and {{arma1}} are rather unique in that they have excellent support for arbitrary display resolutions and aspect ratios.
+Aspect ratios are defined specific to different application users, so it is possible to have multiple in-game profiles with different aspect ratios.
+Below is a listing of different aspect ratios available from different displays:
+
+{| class="wikitable"
+|-
+! x !! y !! Ratio !! Ratio (decimal) !! Notes
+|-
+| 0640 || 0480 || 4:3 || 0.75 ||
+|-
+| 0800 || 0600 || 4:3 || 0.75 ||
+|-
+| 0960 || 0600 || 16:10 || 0.625 ||
+|-
+| 1024 || 0768 || 4:3 || 0.75 || Common default CRT setting
+|-
+| 1088 || 0612 || 16:9 || 0.5625 ||
+|-
+| 1152 || 0864 || 4:3 || 0.75 ||
+|-
+| 1280 || 720 || 16:9 || 0.5625 || HDTV 720
+|-
+| 1280 || 800 || 16:10 || 0.625 ||
+|-
+| 1280 || 960 || 4:3 || 0.75 ||
+|-
+| 1280 || 1024 || 5:3 || 0.8 || Common 17" and 19" LCD native resolution
+|-
+| 1600 || 0900 || 16:9 || 0.5625 || Common mid-size laptop native LCD resolution
+|-
+| 1600 || 1200 || 4:3 || 0.75 || Common upper limit of non-widescreen CRT's and LCD's
+|-
+| 1680 || 1050 || 16:10 || 0.625 ||
+|-
+| 1920 || 1080 || 16:9 || 0.5625 || HDTV 1080
+|-
+| 1920 || 1200 || 16:10 || 0.625 || Various workstation-class laptops
+|-
+| 2560 || 1080 || 64:27 || 0.422 || Philips Cinema etc. (marketing uses 21:9)
+|-
+| 2560 || 1600 || 16:10 || 0.625 || Apple/Dell 30"
+|-
+| 3840 || 2400 || 16:10 || 0.625 || IBM T220/1 and derivatives
+|}
+
+
+== Game Specifics ==
+
+=== {{ofp}} ===
+
+The first generation of Bohemia Interactive products do not have an internal mechanism for adjusting the aspect ratio within the program, the values must be manually edited outside in the userinfo.cfg file.
+This can be found in the appropriate subfolder in the user profiles directory within the application installation location.
+Although it is possible to use the [[Operation_Flashpoint: Startup Parameters|"-x=" and "-y="]] startup parameters to dynamically set the display resolution, there is no other provision for display aspect ratio management.
+Restart is required to change the aspect ratio.
+
+
+=== {{arma1}} ===
+
+The second generation software has the ability to select from a hard-coded list of different aspect ratios from within the program.
+These values are then stored in the user editable ''username.Armaprofile'' file located in the respective profile location in the ''My Documents'' system folder.
+
+The default list includes 3:4, 4:5, 16:9, 16:10, and 12:3 for ''Matrox TripleHeadtoGo'' systems.
+There is no method for altering this list, aspect ratios not matching these values must be manually configured.
+Changing values within the internal selection list in the Video options dialog is effective immediately, unlisted values have be manually defined and require a program restart.
+
+Aspect ratios and display resolutions are now handled exclusively within the respective .*profile and *.cfg files, the -x / -y startup parameters have been deprecated and have no effect.
+
+
+== Multi-Display Compatibility ==
+
+Matrox markets two consumer-oriented products capable of combining two or three displays into a single virtual display.
+The ''DualHead2Go'' combines two displays into a single channel, while the ''TripleHead2Go'' combines three displays.
+Both generations of BI software automatically support these devices as they are capable of automatic display resolution and definable aspect ratios.
+
+Logically these devices present to the computer a single virtual monitor with the dimensions of all connected devices combined.
+This allows DirectX applications limited by the Direct3D API to output a single rendered scene across multiple displays, up to the limit of the respective Direct3D API (DirectX 9 limits applications to a maximum of 4096x4096 pixels).
+
+Nvidia has for many years provided a software option in their dual-port video cards as well that allows the two ports to be combined as a single virtual output as well.
+However, in their consumer-grade cards the secondary port's render channel is a dependent channel instead of a fully independent channel, which will result in noticeably reduced performance on the monitor attached to the secondary port.
+Most Quadro FX cards have fully independent channels and do not have this performance bottleneck.
+
+ATI cards at the time of the publishing of the first generation software did not have support for combining dual outputs, it is unknown if this feature has been added in current generation models.
+
+As listed above, {{arma1}} includes a single aspect ratio for TripleHead2Go usage.
+Other multi-display aspect ratios must be manually configured with the values listed below.
+Display resolutions available from the display aggregation provider will be automatically listed within the Video options.
+
+{| class="wikitable"
+! x !! y !! Ratio !! Ratio (decimal) !! Notes
+|-
+| 2048 || 0768 || 8:3 || 0.375 || Dual 1024x768
+|-
+| 3072 || 0768 || 12:3 || 0.25 || Triple 1024x768
+|-
+| 2560 || 1024 || 8:4 || 0.5 || Dual 1280x1024
+|-
+| 3840 || 0960 || 12:3 || 0.25 || Triple 1280x960
+|-
+| 3840 || 1024 || 15:4 || 0.2666 || Triple 1280x1024
+|-
+| 4096 || 0768 || 16:3 || 0.1875 || Double-Dual 1024x768
+|-
+| 3840 || 1200 || 32:10 || 0.3125 || Dual 1920x1200
+|-
+| 3840 || 1080 || 32:9 || 0.28125 || Dual 1920x1080
+|-
+| 3360 || 1050 || 32:10 || 0.3125 || Dual 1680x1050
+|-
+| 3840 || 0800 || 48:10 || 0.2083 || Triple 1280x800
+|-
+| 3200 || 0900 || 32:9 || 0.28125 || Dual 1600x900
+|}
+
+While some DirectX 10 native cards may be capable of interfacing larger display resolutions with dimensions less than 4097 pixels, these require DirectX 10 native application on Windows Vista, and so are not applicable with current BI software.
+
+The Double-dual configuration listed above requires a dual-channel Nvidia video card with both outputs merged into a single virtual output, with each physical port connected to a separate DualHead2Go.
+
+Double-channel configurations are not compatible with SLI configurations, SLI systems must use an external aggregation device such as the Matrox products.
+
+
+== Further Reading ==
+
+It is possible to have very non-traditional display configurations e.g. 1200x3840 portrait orientation as opposed to 3840x1200 landscape orientation. Listing all possible options is beyond the scope of this page.
+
+With multi-display configurations you may wish to reduce the aspect ratio to lower than the values specified to reduce extreme peripheral stretching. Zooming the FOV in with scripted cameras can also help alleviate that problem.
+
+Net environment aspect ratios lower than approximately 3:1 (.333~) may be better displayed with multiple stations configured with scripted cameras offset to a designated source. Note that there is no provision for remote render synchronization or similar genlock capability support.
+
+* {{Link|https://en.wikipedia.org/wiki/Display_resolution}}
+* {{Link|https://en.wikipedia.org/wiki/Aspect_ratio}}
+* [[Operation Flashpoint: Startup Parameters|Startup parameters for "-x=" and "-y="]]
+* [[SafeZone]]
+
+
+[[Category: Startup Parameters]]

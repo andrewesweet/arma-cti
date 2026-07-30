@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_synchronizedObjects
+// revision: 376223 (2025-09-20T13:17:32Z)
+// export sha1: emzj3vb5y68oxdewgay8tloqc44mr0e
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Get all objects of given type directly synchronised to the given object. Works in [[:Category:Eden Editor|Eden Editor]] too.
+
+|s1= [object, filter, preciseMatch] call [[BIS_fnc_synchronizedObjects]]
+
+|p1= object: [[Object]] - parent object
+
+|p2= filter: [[String]] or [[Array]] of strings - class name filter; 1 or more class name of objects in which we are interested
+
+|p3= preciseMatch: [[Boolean]] - (Optional, default [[true]]) if [[true]] only precise class names are considered, if [[false]] inheritance is considered
+
+|r1= [[Array]] of synchronised objects
+
+|x1= <sqf>[BIS_Poliakko, "LocationArea_F"] call BIS_fnc_synchronizedObjects;</sqf>
+
+|seealso= [[BIS_fnc_allSynchronizedObjects]]
+}}

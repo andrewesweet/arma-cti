@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Informative
+// revision: 336987 (2023-01-05T10:24:33Z)
+// export sha1: s8vz1996ol6l7gubp541ir4spxe8pas
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Feature|informative|{{{1}}}}}</includeonly><noinclude>See [[Template:Feature|Feature-informative Template]].[[Category:Historical Templates]]</noinclude>

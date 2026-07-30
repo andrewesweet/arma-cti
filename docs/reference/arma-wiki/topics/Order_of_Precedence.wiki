@@ -1,0 +1,146 @@
+// source: https://community.bistudio.com/wiki/Order_of_Precedence
+// revision: 376136 (2025-09-02T10:05:38Z)
+// export sha1: p96kovpz1gjzpmsqaetp2761iq67elr
+// categories: Category:Syntax
+// Vendored snapshot. Do not edit — re-export instead.
+
+<onlyinclude>
+Order of operations, also called operator precedence, is a set of rules specifying which procedures should be performed first in a mathematical expression.
+
+=== Precedence Overview === <!--- Level 3 because it's transcluded into Operators page --->
+
+{{Feature | Informative |
+* Highest precedence means highest priority
+* Associativity is (then) done from left to right, for example <sqf inline>3 + 5 + 8</sqf> will be processed as <sqf inline>((3 + 5) + 8)</sqf>
+}}
+
+{| class="wikitable"
+|-
+! Precedence
+! Type of Operator
+! Examples
+|-
+| style="text-align: center" | 11
+|
+Nular operators (commands with no arguments):
+* {{hl|commandName}}
+|
+* [[Variables]]
+* Values
+* <sqf inline>()</sqf> / <sqf inline>[]</sqf> / <sqf inline>{}</sqf> / <sqf inline>""</sqf> / <sqf inline>''</sqf> -enclosed expressions
+|-
+| style="text-align: center" | 10
+|
+Unary operators (commands with 1 argument):
+* {{hl|commandName}} a
+| {{Columns|2|
+* [[+|+a]]
+* [[-|-a]]
+* [[+|+array]]
+* [[! a|! b]]
+* [[not|not b]]
+}}
+|-
+| style="text-align: center" | 9
+| Hash-select operator
+|
+* [[a hash b|array # index]]
+|-
+| style="text-align: center" | 8
+| Power operator
+|
+* [[a ^ b]]
+|-
+| style="text-align: center" | 7
+|
+* [[Number]] multiplication, division and remainder
+* [[atan2]]
+* [[Config]] access ([[a / b|/]])
+| {{Columns|2|
+* [[a * b]]
+* [[a / b]]
+* [[a % b]]
+* [[mod | a mod b]]
+* [[a / b]]
+* [[atan2| a atan2 b]]
+}}
+|-
+| style="text-align: center" | 6
+|
+* [[Number]] addition and subtraction
+* [[Array]] addition and subtraction
+* [[String]] addition
+* [[min]] and [[max]] commands
+| {{Columns|2|
+* [[+|a + b]]
+* [[-|a - b]]
+* [[+|arr1 + arr2]]
+* [[-|arr1 - arr2]]
+* [[+|str1 + str2]]
+* [[min|a min b]]
+* [[max|a max b]]
+}}
+|-
+| style="text-align: center" | 5
+|
+* [[else]] ([[if]]-[[then]]-[[else]] structure)
+| {{n/a}}
+|-
+| style="text-align: center" | 4
+|
+Binary operators (commands with 2 arguments):
+* a {{hl|commandName}} b
+|
+* [[setDir]]
+* [[a : b|switch colon (:)]]
+|-
+| style="text-align: center" | 3
+|
+* [[a == b|==]] and [[a != b|!=]] comparisons
+* [[Number]] comparisons
+* [[Config]] access ([[config greater greater name|&gt;&gt;]])
+|
+{{Columns|2|
+* [[a == b]]
+* [[a != b]]
+* [[a greater b|a &gt; b]]
+* [[a less b|a &lt; b]]
+* [[a greater= b|a &gt;= b]]
+* [[a less= b|a &lt;= b]]
+}}
+* [[config greater greater name|config >> name]]
+|-
+| style="text-align: center" | 2
+| Logical [[and]] operator
+|
+* [[a && b|&&]]
+* [[and]]
+|-
+| style="text-align: center" | 1
+| Logical [[or]] operator
+|
+* [[a or b|<nowiki/>||]]
+* [[or]]
+|}
+
+
+=== Examples ===
+
+{| class="wikitable"
+! Input
+! Process
+! Comment
+|-
+| <sqf>1 + 2 * 3</sqf>
+| <sqf>1 + (2 * 3)</sqf>
+| result equals 7, and not 9 (see also {{Link|https://en.wikipedia.org/wiki/Order_of_operations|PEMDAS}})
+|-
+| <sqf>sleep 10 + random 20</sqf>
+| <sqf>(sleep 10) + random 20</sqf>
+| <sqf inline>sleep 10</sqf> will return [[Nothing]], then <sqf inline>+ random 20</sqf> will be calculated but not used.<br>
+<sqf inline>sleep (10 + random 20)</sqf> should be used instead
+|}
+</onlyinclude>
+
+
+[[Category:Syntax]]

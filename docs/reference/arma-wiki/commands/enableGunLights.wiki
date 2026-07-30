@@ -1,0 +1,80 @@
+// source: https://community.bistudio.com/wiki/enableGunLights
+// revision: 351992 (2024-02-01T23:23:57Z)
+// export sha1: jgw5bdn61vlasar1city7yymqv9b7n7
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Command Group: Weapons | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TabView
+
+|selected= 2
+
+|title1= {{TabView/GameTitle|arma2oa|tkoh}}
+|content1=
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|gr1= Lights
+|gr2= Weapons
+
+|arg= local
+|eff= global
+
+|descr= Toggles the target group's gun light(s).
+
+|s1= target [[enableGunLights]] state
+
+|p1= target: [[Group]] or [[Object]] - the group forced to use gun lights. If unit is supplied as argument, unit's group is used
+
+|p2= state: [[Boolean]] - [[true]] to enable, [[false]] to disable
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_group enableGunLights false;</sqf>
+
+|seealso= [[isFlashlightOn]]
+}}
+
+|title2= {{Icon|arma3|24|link=}} {{arma3}}
+|content2=
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Lights
+|gr2= Weapons
+
+|arg= local
+|eff= global
+
+|descr= Toggles the target group's gun lights. [[disableAI]] "LIGHTS" will disable the use of gun lights.
+
+{{Feature|important|This command acts on each unit of the provided group or provided unit's group; there is no need to apply it on each unit.}}
+
+
+|s1= target [[enableGunLights]] mode
+
+|p1= target: [[Group]] or [[Object]] - the group forced to use gun lights. If unit is supplied as argument, unit's group is used
+
+|p2= mode: [[String]] - can be:
+* {{hl|"Auto"}} - Depends on combat mode 
+* {{hl|"ForceOn"}} - Always on
+* {{hl|"ForceOff"}} - Always off
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_groupA enableGunLights "Auto";</sqf>
+
+|x2= <sqf>_unit1 enableGunLights "ForceOff"; // sets _unit1's GROUP behaviour to not use gun lights</sqf>
+
+|seealso= [[isFlashlightOn]] [[enableIRLasers]]
+}}
+
+}}

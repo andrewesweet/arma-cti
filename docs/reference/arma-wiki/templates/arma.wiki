@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:arma
+// revision: 322493 (2022-06-13T10:48:31Z)
+// export sha1: b7nex0kpmr2otww0alhuciut0yjatu3
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|arma}}</includeonly><noinclude>{{Doc/Template
+|descr= Returns {{hl|{{arma}}}}.
+|example1= <nowiki>{{arma}}</nowiki>
+|result1= {{arma}}
+}}</noinclude>

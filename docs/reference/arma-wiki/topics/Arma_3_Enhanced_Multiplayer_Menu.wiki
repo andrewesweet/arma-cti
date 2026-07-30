@@ -1,0 +1,577 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Enhanced_Multiplayer_Menu
+// revision: 370867 (2025-02-21T10:43:59Z)
+// export sha1: jnt9mmez5ezrbutikj6y81rdu4ibu1p
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+'''Enhanced Multiplayer Menu''' (or '''EMM''') is an alternative '''in-game server browser''' for {{arma3}}.
+The vision is make the complex multiplayer environment easier to navigate and enable players to explore the diverse community driven server and game modes landscape.
+The initial focus is to support CDLC use in MP best. However also pure {{arma3}} or modded MP play is to be made more convenient a great deal. EMM is bundled with some CDLCs.
+In addition in the near future EMM will become available as standalone client side mod on the Steam workshop as well.
+
+
+== Goals ==
+
+# '''Speed''' - gets you those servers at lightning speed
+# '''Relevance''' - show you only those servers you are looking for
+# '''Ease of use''' - responsive, fun and easy
+# '''Expose community game modes''' - learn about and explore the wide variety - via game mode images, descriptions and default sorting by server activity (instead raw player numbers or ping)
+# '''Simplify mod use in MP''' - leave the complex and confusing situation behind, get clear information and assistance to enjoy the new mods heaven
+
+
+== Versions ==
+
+=== CDLC version ===
+
+Currently bundled with:
+* [[S.O.G. Prairie Fire]]
+* [[Spearhead 1944]]
+<!--
+=== Standalone version ===
+
+This version is to be used with vanilla {{arma3}} or can be combined with any other mods or CDLCs (to become available shortly).
+
+Download: TODO
+-->
+
+
+== Key Features ==
+
+* '''Detects your current active CDLC(s) and/or mods to show you only the relevant servers by default'''
+* '''Game mode focused server selection [QP]''' - looking for a specific game mode or experience is now easy-peasy
+* '''Recommended server set [SSB]''' - just want to play a quick game without hassle and you are open to try a new experience or server, you will be served a set of servers to choose from and hop into action
+* '''Filter customization [ASB]''' - looking for something very specific or choose from your own set of filter profiles, you can go as crazy now as you want
+* '''Rejoin servers easily [LS]''' - wanna continue where you left of last time or get back to your preferred server (next to the classic Recent/Favorites tabs)
+* '''Mod matching''' - the system will warn you ahead of time if you may not be able to join a given server and provides an overview mod mismatches
+* '''Various convenience features''' like Exclude Game Modes, Server History, Export Server Details, including links to website, Discord, qq, Teamspeak, or Connection Data (IP:PORT+PW) and Server Password Caching
+
+
+== Frequently Asked Questions ==
+
+=== Can EMM be disabled? ===
+
+Yes. In the main menu open Options - Extras:
+# Vanilla main menu: Toggle between the native {{arma3}} main menu and EMM main menu.
+# Vanilla multiplayer menu: Toggle between the native {{arma3}} multiplayer menu and EMM multiplayer menu.
+
+=== Can EMM be used standalone? ===
+
+Yes. The standalone mod version will available very soon.
+
+=== Can EMM be combined with other mods? ===
+
+Yes. Even more so it is meant to make mod use in MP easier with the likes of RHS, CUP, etc.
+
+=== What servers are shown in the Simple Server Browser? ===
+
+In general only servers with specific setup are shown deemed suitable for the average player:
+
+* No mods/Just CDLCs active
+* No password
+* BattlEye active
+* Not locked
+* Must be a dedicated server
+* verifySignatures system must be active
+* equal_mod_required=false
+* allowed_file_patching=0
+
+See [[Arma 3: Server Config File|server config]] for details on these settings.
+
+After above filtered set the system selects:
+# Maximum 50 servers
+# Based on their score
+## 33-66% fullness in the same region
+## If not enough, also outside the same region
+## If not enough, also fullness below 33%
+## If not enough, also fullness between 66 and 75%
+## If not enough, also fullness above 75%
+## If not enough, also full and empty
+# The same result set is shared to all players from the given region
+# The set is refreshed every 30-60 seconds
+
+=== What servers are shown in the Quick play? ===
+
+In general only servers with specific setup are shown deemed suitable for the average player:
+
+* No mods/Just CDLCs active
+* No password
+* BattlEye active
+* Not locked
+* Must be a dedicated server
+* equal_mod_required=false
+* allowed_file_patching=0
+
+See [[Arma 3: Server Config File|server config]] for details on these settings.
+
+=== How to have a custom game mode supported for Quick Play? ===
+
+Anyone can submit a new game mode definition. Required are:
+* Identifier (max 7 characters - gameType used in [[Description.ext#Mission_information|description.ext]])
+* Name
+* Image (1024x512 and 1024x256 as png)
+* Short description (max 156)
+* Long description (use paragraphs/basic formatting)
+
+Optional:
+* Website URL
+* Wiki URL
+* Discord ID/URL
+* Twitter ID/URL
+* YouTube Video/Channel URL
+
+This is best done via the official discord or the public gitlab project.
+
+=== How to have a custom game mode image shown in Simple Server Browser? ===
+
+The game mode needs to be supported by EMM. See the question above how to get it supported.
+
+=== Is this real? ===
+
+Yes
+
+=== More to come? ===
+
+Indeed
+
+== Support ==
+
+Join our discord at: https://discord.gg/tYyeZXCtSx
+
+
+== Menus ==
+
+The system replaces the original multiplayer menu and server browser of {{arma3}}. The following part provides an overview on the new menus and their functionality.
+
+=== Quick Play [QP] ===
+
+Quick Play is a game mode focused server selection. So you are looking for a specific game mode or experience, this is menu is your best choice.
+
+Aside from basic filtering (Game Type, Difficulty) the main focus is to give a good overview of available game modes and to provide some information about the modes to get you started.
+
+In a second step you can get to join a randomly selected server, or choose yourself from a basic server list.
+
+==== Game Mode Selection ====
+
+[[File:arma3_emm_1_qp_overview.jpg|thumb|800px]]
+
+# Game Type: Select your preferred play
+#* All
+#* Player versus Player
+#* Player versus Environment (AI)
+#* Player versus Player versus Environment (AI)
+# Difficulty: Choose your preferred level
+#* Standard (Recruit, Regular, Veteran, Custom)
+#* Hardcore (special level - still to be supported by the community)
+# Game Modes: List of available game modes
+# Game Mode Overview: Basic information on the game mode
+#* Name
+#* Image
+#* Short description
+# Players and Servers: Count for the given game mode
+#* Includes all servers expect with password, [[BattlEye]] disabled, locked, non dedicated, equal mod required active or file patching enabled
+#* The actual server list may show just a subset based on the active filters in the game mode servers submenu
+# Official: The icon indicates if the game mode is coming from BI or CDLC partners (without means from community developers)
+# Game Mode Servers: Click the icon or the game mode image to open the submenu to list the servers for the selected game mode
+# Random Join Server: Click the icon to have the system select an active server for you instead
+# Favorite: Click to make the game mode be shown at the start of the game modes list
+
+==== Game Mode Servers ====
+
+[[File:arma3_emm_2_qp_list.jpg|thumb|800px]]
+
+# Game Type: Select your preferred play and brings you back to the Game Mode Selection
+#* All
+#* Player versus Player
+#* Player versus Environment (AI)
+#* Player versus Player versus Environment (AI)
+# Difficulty: Choose your preferred level
+#* Standard (Recruit, Regular, Veteran, Custom)
+#* Hardcore (special level - still to be supported by the community)
+# Game Mode Overview: Basic information on the game mode
+#* Name
+#* Image
+#* Long description
+#* Website
+#* Wiki
+#* Twitter account
+# Server List: List of available servers for the game mode
+# Activity column: Shows activity level, current player count and maximum players for the game mode/current mission
+#* The activity level is based on current player count versus maximum players for the game mode/current mission - also called relative fullness or percentage
+# Difficulty column: Shows overall and AI difficulty, as well as difficulty parameters (3rd person view, crosshair and advanced flight model)
+# Mission Name column: Shows the name of the current mission
+# Terrain column: Shows the terrain the current mission is on
+# Server Name column: Shows the name of the server
+# Quality column: Shows the quality level of the server and rough ping level
+#* The quality level is currently based only on ping level, yet may get expanded to server performance
+# CDLCs tickbox: When active, shows only servers running CDLCs the player has loaded
+# Any Extra Mods tickbox: When active, shows also servers that have a different mods active than the player
+# Signature Check tickbox: When active, shows only servers having the signature verification system active
+# Matching Mods Only tickbox: When active, shows only servers having the same modset active as the player [very strict check]
+# Refresh: Get the latest list of servers
+# Favorite: Make the currently selected server a favorite
+# Details: Opens the Server Details menu for additional information on the server
+# Connect: Join the currently selected server - alternatively double click on a server in the server list
+
+Note: Favorite, Details and Connect are also available via Right Mouse Button menu on a server in the list and selecting the desired option
+
+=== Simple Server Browser [SSB] ===
+
+The Simple Server Browser is simple server list selection.
+If you just want to play a quick game without hassle and you are open to try a new experience or server, this menu will serve you a set of servers to choose from and hop into action.
+
+Aside from basic filtering (Official/Vanilla, Game Type, Difficulty) the main focus is to provide a simple server list of recommended, active servers to join from with your current CDLC/mod selection.
+
+[[File:arma3_emm_3_ssb.jpg|thumb|800px]]
+
+# Server Type: Choose between Official and Community (Vanilla) servers
+# Game Type: Select your preferred play and brings you back to the Game Mode Selection
+#* All
+#* Player versus Player
+#* Player versus Environment (AI)
+#* Player versus Player versus Environment (AI)
+# Difficulty: Choose your preferred level
+#* Standard (Recruit, Regular, Veteran, Custom)
+#* Hardcore (special level - still to be supported by the community)
+# Server List: Predetermined set of active servers - changes every xx seconds
+# Activity column: Shows activity level, current player count and maximum players for the game mode/current mission
+#* The activity level is based on current player count versus maximum players for the game mode/current mission - also called relative fullness or percentage
+# Difficulty column: Shows overall difficulty level
+# Preview column: Shows the image of the game mode
+# Description column: Shows the short description for the game mode
+# Game Mode column: Shows the Game Mode name, Terrain name and Mission name - (13) with mouse hovering shows also
+# Region column: Shows the country the server is based in
+# Quality column: Shows the quality level of the server and rough ping level
+#* The quality level is currently based only on ping level, yet may get expanded to server performance
+# Difficulty entry mouse hovering: Shows difficulty, as well as difficulty parameters (3rd person view, crosshair and advanced flight model) and AI difficulty
+# Game Mode entry mouse hovering: Shows the server name of the current entry
+# Region entry mouse hovering: Shows the country abbreviation and region
+# Advanced Server Browser: Switch to comprehensive the server browser variant
+# Refresh: Get the latest list of servers
+# Favorite: Make the currently selected server a favorite
+# Details: Opens the Server Details menu for additional information on the server
+# Connect: Join the currently selected server - alternatively double click on a server in the server list
+
+Note: Connect, Favorite and Details are also available via Right Mouse Button menu on a row in the server list and selecting the desired option
+
+=== Advanced Server Browser [ASB] ===
+
+The Advanced Server Browser is a full featured server selection. If you are looking for something very specific or want to choose from your own set of filter profiles, you can go as crazy now as you want here.
+
+Aside from basic filtering (Official/Vanilla/Modded/Recent/Favorites/Friends, Game Type, Difficulty) the main focus is to provide as many filter options to narrow down the server list to what you are looking for.
+In addition it is to offer convenience features to master the complex filtering options.
+
+[[File:arma3_emm_4_asb.jpg|thumb|800px]]
+
+# Server Type: Choose between:
+# Official: Servers hosted by BI/CDLCs
+# Vanilla: Community servers without mods (or just optional client side mods)
+# Modded: Community servers requiring mods
+# Recent: Lists the servers you last played on
+# Favorites: Lists the servers you have bookmarked/set as favorite
+# Friends: Lists the servers your Steam friends are playing on currently
+# Game Type: Select your preferred play and brings you back to the Game Mode Selection
+#* All
+#* Player versus Player
+#* Player versus Environment (AI)
+#* Player versus Player versus Environment (AI)
+# Difficulty: Choose your preferred level
+#* Standard (Recruit, Regular, Veteran, Custom)
+#* Hardcode (special level - still to be supported by the community)
+# Server List: List of servers fitting the currently active filters (max 50 per page)
+#* Activity column: Shows activity level, current player count and maximum players for the game mode/current mission
+#** The activity level is based on current player count versus maximum players for the game mode/current mission - also called relative fullness or percentage
+#* Difficulty column: Shows overall difficulty level
+#* Game Mode column: Shows the Game Mode name, Terrain name and Mission name - (13) with mouse hovering shows also
+#* Mission Name column: Shows the name of the current mission
+#* Terrain column: Shows the terrain the current mission is on
+#* Server Name column: Shows the name of the server
+#* Quality column: Shows the quality level of the server and rough ping level
+#** The quality level is currently based only on ping level, yet may get expanded to server performance
+# Min-Max player filter: Enter number to set the minimum and maximum number of players for servers you want to see
+# Text filters for Mission, Terrain and Server Name: Enter at least three characters to narrow down the server list - beware: very specific filter! don't forget to disable if no/too few result/not the desired results
+# Server Pages: Hit the arrows to go to the next or previous page of servers - each page has 50 servers
+# Activity State filter: Set what level you would like to have shown - note: you can combine multiple entries by holding CTRL or SHIFT while clicking
+#* Full: Untick to hide full servers
+#* Empty: Untick to hide empty servers
+# Game Mode filter: Select one or multiple game modes to show only the servers running them - note: you can combine multiple entries by holding CTRL or SHIFT while clicking
+#* Include/Exclude: Switch the filter from showing or hiding servers with the selected modes
+# Server Difficulty filter: Select one or multiple difficulty levels to show only the servers with those levels
+# AI Difficulty filter: Select one or multiple AI difficulty levels to show only the servers with those levels
+# Difficulty settings toggles: Switch between Show Any, Show Disabled and Show Active modes to show servers only with the respective difficulty settings. See more at: [[Arma_3:_Difficulty_Settings|Difficulty Settings]]
+#* Third Person View
+#* Weapon Crosshair
+#* Advanced Flight Model
+# Region filter: Select one or multiple regions or sub-regions to show only the servers located in those regions
+# Quality filter: Select one or multiple quality levels show only the servers within those quality levels
+# Server settings toggles: Switch between Show Any, Show Disabled and Show Active modes to show servers only with the respective server settings. See more at: [[Arma 3: Server Config File#Server_Options|Server Options]]
+#* Passworded
+#* Locked
+#* BattlEye
+#* Dedicated (vs home PC hosted)
+# Mods filter:
+#* CDLCs tickbox: When active, shows only servers running CDLCs the player has loaded
+#* Any Extra Mods tickbox: When active, shows also servers that have a different mods active than the player
+#* Signature Check tickbox: When active, shows only servers having the signature verification system active
+#* Matching Mods Only tickbox: When active, shows only servers having the same modset active as the player [very strict check]
+# Filter Presets: Store your custom filter settings by the desired name - To reset all filters open the Default profile
+#* Save current settings as custom name set in the top input field
+#* Open selected profile
+#* Save current settings to active profile
+#* Delete selected profile
+# Simple Server Browser: Switch to the simplified server browser variant
+# Refresh: Get the latest list of servers
+# Favorite: Make the currently selected server a favorite
+# Details: Opens the Server Details menu for additional information on the server
+# Connect: Join the currently selected server - alternatively double click on a server in the server list
+
+Note: Connect, Favorite and Details are also available via Right Mouse Button menu on a row in the server list and selecting the desired option
+
+[[File:arma3_emm_4b_asb.jpg|800px]]
+
+# Warning icon: Indicates that you may not join this specific server due to mod mismatch
+# Warning message: Tooltip over the warning icon - provides more information as to why the warning is shown for the given server
+
+=== Server Details [SD] ===
+
+The Server Details menu provides all the vital information about the currently selected server in one screen.
+It can be helpful, if you want to have your friends join the same server or to share a server you had a great experience on social media or elsewhere.
+
+In addition the menu exposed some additional information like Player List, Population History and Mod List.
+
+[[File:arma3_emm_5_sd.jpg|800px]]
+
+Server Information:
+# General: Basic information on the current server
+# Technical: Specific information on the current server
+# Website and social media channels: Links taken from the current server name [schema listed below]
+# Mission Image and Description: Visual and textual presentation [currently shows Game Mode data instead of mission specific]
+# [NOT YET IMPLEMENTED] Player List: Lists the players on the current server
+# [NOT YET IMPLEMENTED] Population History: Shows the player activity graph or the current server [last 24 hours or last 7 days]
+# Mod List: Lists the mods loaded by the client and those required by the current server - visually indicates mod mismatches [missing or not allowed]
+# Copy All Details: Opens a dialog with all server information and the ability to copy to clipboard ({{Controls|CTRL|V}} / paste action to insert into another application)
+# Copy Connection Details: Opens a dialog with server ip, port and password and the ability to copy to clipboard ({{Controls|CTRL|V}} / paste action to insert into another application)
+# Refresh: Get the information for the current server
+# Favorite: Make the current server a favorite
+# Connect: Join the current server
+
+=== Last Servers [LS] ===
+
+The Last Servers elements in the Multiplayer menu are to allow you to rejoin servers easily you last played on.
+If you wanna continue where you left of last time or get back to your preferred server, this is made even easier now.
+
+[[File:arma3_emm_6_ls.jpg|800px]]
+
+# Last PvP/PvE/PvPvE Server: Show the server you had joined successfully the last time for the respective game type
+# Server Type
+# Server Name
+# Current Mission Name
+# Current Game Mode
+# Current Activity
+# Current Quality
+# Toggle element to hide/show the specific Last Server
+# Copy Server Details to clipboard ({{Controls|CTRL|V}} / paste action to insert into another application)
+# Connect: Join the current server
+
+=== Recent ===
+
+Lists the servers you last played on.
+
+[[File:arma3_emm_7_recent.jpg|800px]]
+
+=== Favorites ===
+
+Lists the servers you have bookmarked/set as favorite. Favorited servers are shown with a yellow text color.
+
+[[File:arma3_emm_8_favs.jpg|800px]]
+
+=== Friends ===
+
+Lists the servers your Steam friends are playing on currently.
+
+[[File:arma3_emm_9_friends.jpg|800px]]
+
+=== Direct Connect ===
+
+Allows you to join a specific server via IP and Port.
+
+[[File:arma3_emm_10_dc.jpg|800px]]
+
+# IP Address: Enter the IP address of the server to search for
+# Port: Enter the port of the server to search for
+# Search: Click the search button once IP and port have been set to start the query for the server
+# Server information: Overview for the found server
+# Connect: Join the found server
+
+=== Host Server ===
+
+Host your own local server to play by yourself multiplayer missions or to play together with your friends without a dedicated server.
+
+[[File:arma3_emm_11_host.jpg|800px]]
+
+# Name: Set the name your server should be listed in the server list
+# Port: Set the port to be used for the your server
+# Max. players: Set the maximum number of players allow to join your server (optional)
+# Password: Set the password clients have to enter when trying to join your server (optional)
+# Host: Switch between LAN (local area network) and Internet accessibility for your server
+# UPnP: Tick to activate Universal Plug and Play. This is an alternative to Port Forwarding. Must be supported by your router/modem. At times need to be also whitelisted by firewall or anti virus software.
+# Host Server: Click the host server button to start your server
+
+{{Feature|important|
+Activating UPnP on your router '''can pose a security risk''' - it is recommended to use [[Arma_3:_Dedicated_Server#Port_Forwarding|Port Forwarding]].
+For more information on UPnP check [[Arma 3: Server Config File#Server_Behaviour|Server Behaviour]].
+}}
+
+=== LAN ===
+
+Search for servers in your Local Area Network.
+
+Note: EMM uses the standard {{arma3}} menu and native engine functionality for LAN.
+
+=== Server History ===
+
+Lists all the servers you have successfully joined in the past.
+
+[[File:arma3_emm_12_history.jpg|800px]]
+
+* Server Name
+* Mission Name (when you played - not real time information)
+* Game Mode (when you played - not real time information)
+* IP:Port
+* Password (if any was active)
+* Last Joined
+
+You can sort by any of the columns.
+
+* Remove: Remove the selected server from the server history
+* Copy Details: Copy the connection details for the selected server to clipboard (ctrl+v / paste action to insert into another application)
+* Show passwords: Show all passwords in the list
+
+
+== Server Admin ==
+
+=== Whitelisting ===
+
+To allow players to use EMM to join your server, you need to upload the '''EMM_DATE_TAG.bikey''' to the '''.\Arma 3 Server\keys''' folders.
+
+{{Feature|informative|There might be a new bikey for every release to allow server admins to discontinue support for older EMM versions.}}
+
+=== Server Name Links ===
+
+To have your Website/Teamspeak/Discord/QQ/YY be shown in Server Details, as Server Admin you can modify the [[Arma 3: Server Config File#Server_Options|server name]] for the custom tags to be recognized:
+
+Website:
+* must start with http(s)://
+* must contain .
+* remainder must contain only VAL_ALPHANUMERIC2 chars
+* must contain only VAL_ALPHANUMERIC2 chars
+* must contain either at least 2 . or 1 . and at least 1 /
+
+Teamspeak:
+* must start with one of the tags: "ts","tp-ip","ts3","ts3-ip","teamspeak"
+* followed by space or colon and space
+* can be URL or IP[:PORT]
+
+Discord:
+* must start with http[s]://discord.gg[/] followed by NUMBERS or STRING
+* or discord.URL
+* or URL.discord.DOMAIN
+* or discord[:] STRING
+
+QQ:
+* must match tag or start with tag
+* followed by number >100000
+
+YY:
+* must match tag or start with tag
+* followed by a number
+
+
+== Technology ==
+
+Mod:
+* Configs
+* SQF
+
+Extension:
+* C++
+
+Backend:
+* Python
+* Django
+* PostgreSQL
+
+Monitoring:
+* Graylog
+* Grafana
+
+Infrastructure:
+* Ansible
+* Terraform
+* Scaleway
+* Cloudflare
+
+== System Design ==
+
+WIP
+
+== Open Source ==
+
+{| class="wikitable"
+|-
+! scope="col"| Type 
+! scope="col"| Plan 
+! scope="col"| Timeframe
+! scope="col"| Repository
+|-
+| Mod || Will become fully open source || Near term || TODO
+|-
+| Extension || May become fully open source || Near term || TODO
+|-
+| Backend || May become partially open source (limited by sensitive nature) || At some point || N/A
+|-
+| Monitoring || May become fully open source || Near term || TODO
+|-
+| Infrastructure || Cannot become open source due to sensitive nature || Never || N/A
+|}
+
+
+== License ==
+
+TODO
+
+
+== Join the development ==
+
+TODO
+
+Join our discord at: https://discord.gg/tYyeZXCtSx
+
+
+== Team ==
+
+* '''A. Roman''' - EMM API extension (C++)
+* '''ConnorAU''' - system design (frontend), visual designer, EMM mod (Configs, SQF)
+* '''Dscha''' - prototype of EMM mod (Configs, SQF)
+* '''Heyoxe''' - backend monitoring (Graylog, Grafana), EMM mod assistance
+* '''jaaziar''' - visual design assistance
+* '''jokoho482''' - continuous integration
+* '''kju''' - team and project organization, system architect and design (frontend), visual designer, EMM mod (Configs, SQF)
+* '''Stack''' - system architect and design (backend), backend developer (Python, Django, PostgreSQL) and infrastructure management (Ansible, Terraform, Scaleway, Cloudflare)
+* '''Terra''' - EMM mod assistance (Configs, SQF)
+
+=== Consultants ===
+
+* '''TeTeT'''
+* '''Spoffy'''
+* '''Dahlgren'''
+* '''OfotViking'''
+
+
+== Acknowledgements ==
+
+* '''Dedmen''' - extension code reviews
+* '''Dwarden''' - advice and assistance
+* '''Burns''' - visual design review
+* '''Defunkt''' - visual design advice
+* Frameworks/Tools used:
+** TODO

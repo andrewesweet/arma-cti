@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_initCutLayers
+// revision: 309629 (2022-05-05T12:07:47Z)
+// export sha1: ke9w8euk8ccmh1rgx32mumdq9yzk7d3
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Contact | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Contact 
+
+|descr= <pre>//--- Register RSC layers in the correct order (they are not serialized)
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_initCutLayers]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_initCutLayers;</sqf> -->
+
+|seealso=
+}}

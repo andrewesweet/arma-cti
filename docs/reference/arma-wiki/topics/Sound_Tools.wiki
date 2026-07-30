@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/Sound_Tools
+// revision: 336721 (2023-01-04T15:24:44Z)
+// export sha1: 83u7l18v8miar1g3fxfms36er9vh5ax
+// categories: Category:ArmA: Armed Assault: Official Tools | Category:Arma 2: Official Tools | Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= 
+[[:Category:ArmA: Armed Assault|{{arma1}}]], [[:Category:Arma 2|Arma 2]] and [[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD= 
+Included in [[BI Tools]], [[BI Tools 2]], [[BI Tools 2.5]] and {{Link|link= http://store.steampowered.com/app/233800/|text= part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= SoundTools allow to convert various sound formats used by Bohemia Interactive's games and also create information necessary for lip sync.
+
+|NOTES=
+
+|COMMAND=
+WaveToLip.exe source_file<br>
+
+WaveToWSS.exe options source_file
+
+|OPTIONS=
+8b deltapack
+* -d8
+4b deltapack (voice)
+* -d4
+play the sound instead converting it
+* -play 
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO=[[Sound Tools Manual]], [[Wave2Lip]], [[WSSDecoder]], [[WaveToWss]]
+
+}}
+=== Additional information ===
+
+WaveToLip is an application that generates a lip files (*.lip) from wav, ogg or wss audio files supported by RV engine.
+
+A lip file accompanies a sound file meant for spoken words in a mission. The file lip-syncs the month of the charter to the spoken words in a sound file. It shares the same name of the sound file and must be in the same folder.
+
+	'''Example:'''
+
+	talking1.ogg
+
+	talking1.lip
+
+	talking2.ogg
+
+	talking2.lip
+
+'''NOTE:'''
+
+ogg files are actually sound files encoded with the Ogg Vorbis codec developed by Xiphophorus software
+
+wss files are proprietary BI sound files created by WaveToSSS. Wss files are optimal for the engine except a long audio that needs to be streamed - for that ogg format is best.
+
+To use, simply drag a 16-bit mono aduio file into the WaveToLip.exe. It will then generate the lip file to the same directory/folder as the source audio files.
+
+'''Tip:'''
+
+Add a short-cut of the WavToLip program to Windows Send To folder (C:\Documents and Settings\<your user name>\SendTo ). This will let you simply right click on a supported audio file wav and select "send to" and WaveToLip.
+
+{{GameCategory|arma1|Official Tools}}
+{{GameCategory|arma2|Official Tools}}
+{{GameCategory|arma3|Official Tools}}

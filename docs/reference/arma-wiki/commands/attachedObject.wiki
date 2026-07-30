@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/attachedObject
+// revision: 318758 (2022-05-13T09:21:27Z)
+// export sha1: t6nznky88lvwmh2pcrwkhyv5erl0lel
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns the object a location is attached to. If the location is unattached, then [[objNull]] is returned.
+
+|s1= [[attachedObject]] location
+
+|p1= location: [[Location]]
+
+|r1= [[Object]]
+
+|x1= <sqf>_locAttachedObj = attachedObject myLocation;</sqf>
+
+|seealso= [[attachObject]] [[attachTo]] [[attachedObjects]] [[attachedTo]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[lightAttachObject]] [[triggerAttachVehicle]]
+}}

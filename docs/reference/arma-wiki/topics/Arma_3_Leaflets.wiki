@@ -1,0 +1,149 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Leaflets
+// revision: 353253 (2024-03-14T16:15:06Z)
+// export sha1: 8ywvylcazveuqxmnu02dgu1fqw63hdr
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:a3_orange_leaflets_drone.gif|512px|thumb|A drone dropping leaflets]]
+Propaganda leaflets are a new feature introduced in [[Arma 3 Laws of War]] DLC ({{GVI|arma3|1.76}})
+
+=== Mission Usage ===
+
+Leaflets are a special weapon which can be fired both by a player or AI.
+
+To add leaflets to an Utility Drone, use pylons settings in [[:Category:Eden Editor|Eden Editor]]:
+
+[[File:a3 orange leaflets pylons.jpg|240px]]
+
+Alternatively, you can add them by script:
+<sqf>
+myDrone addMagazine "1Rnd_Leaflets_West_F";
+myDrone addWeapon "Bomb_Leaflets";
+</sqf>
+Several leaflet types exist apart from ''West'', see the table below.
+
+To let AI drop the leaflets, simply fire the weapon:
+<sqf>myDrone fire "Bomb_Leaflets";</sqf>
+
+=== Custom Leaflets ===
+
+Leaflet visuals are tied to specific magazine type. They are defined in global [[Config.cpp]], but can be overridden in [[Description.ext]]:
+<syntaxhighlight lang="cpp">
+class CfgLeaflets
+{
+	class West // configuration for 1Rnd_Leaflets_West_F
+	{
+		text = "Text of the leaflet";	// text shown when previewing the leaflet full-screen. Should ideally be localised, so even player who cannot read the image can get the information
+		texture = "myLeaflet_ca.paa";	// leaflet texture shown when previewing the leaflet full-screen
+		model = "myLeaflet.p3d";		// in-flight model. Optional; When undefined, generic white leaflet is used
+	};
+};
+</syntaxhighlight>
+
+=== Leaflet Classes ===
+
+{| class="wikitable"
+! Magazine class
+! CfgLeaflets class
+! Default Texture
+|-
+|
+ 1Rnd_Leaflets_West_F
+|
+ West
+| [[File:a3 orange cfgleaflets west ca.jpg|128px]]
+|-
+|
+ 1Rnd_Leaflets_East_F
+|
+ East
+| [[File:a3 orange cfgleaflets east ca.jpg|128px]]
+|-
+|
+ 1Rnd_Leaflets_Guer_F
+|
+ Guer
+| [[File:a3 orange cfgleaflets guer ca.jpg|128px]]
+|-
+|
+ 1Rnd_Leaflets_Civ_F
+|
+ Civ
+| [[File:a3 orange cfgleaflets civ ca.jpg|128px]]
+|-
+|
+ 1Rnd_Leaflets_Custom_01_F
+|
+ Custom_01
+| ''Empty''
+|-
+|
+ 1Rnd_Leaflets_Custom_02_F
+|
+ Custom_02
+| ''Empty''
+|-
+|
+ 1Rnd_Leaflets_Custom_03_F
+|
+ Custom_03
+| ''Empty''
+|-
+|
+ 1Rnd_Leaflets_Custom_04_F
+|
+ Custom_04
+| ''Empty''
+|-
+|
+ 1Rnd_Leaflets_Custom_05_F
+|
+ Custom_05
+| ''Empty''
+|-
+|
+ 1Rnd_Leaflets_Custom_06_F
+|
+ Custom_06
+| ''Empty''
+|-
+|
+ 1Rnd_Leaflets_Custom_07_F
+|
+ Custom_07
+| ''Empty''
+|-
+|
+ 1Rnd_Leaflets_Custom_08_F
+|
+ Custom_08
+| ''Empty''
+|-
+|
+ 1Rnd_Leaflets_Custom_09_F
+|
+ Custom_09
+| ''Empty''
+|-
+|
+ 1Rnd_Leaflets_Custom_10_F
+|
+ Custom_10
+| ''Empty''
+|}
+
+=== Leaflet Preview ===
+
+Once a leaflet falls on the ground, it can be inspected using hold action. It will bring up a full-screen leaflet preview with the ability to show localized text of the leaflet.
+<gallery>
+File:a3 orange leaflets preview.jpg|Leaflet preview
+File:a3 orange leaflets preview text.jpg|Leaflet preview with text
+</gallery>
+
+=== Scripting Functions ===
+
+* [[BIS_fnc_initLeaflet]]
+* [[BIS_fnc_initInspectable]]
+
+
+{{GameCategory|arma3|Editing}}

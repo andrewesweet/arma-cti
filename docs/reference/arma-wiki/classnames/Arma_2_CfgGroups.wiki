@@ -1,0 +1,906 @@
+// source: https://community.bistudio.com/wiki/Arma_2:_CfgGroups
+// revision: 293073 (2021-08-17T23:39:00Z)
+// export sha1: 4r7cj8qsxb3y176wmkhq0ib1plavffa
+// categories: Category:CfgGroups
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|horizontal}}
+
+== BLUFOR ==
+
+config: West
+
+=== USMC ===
+
+config: USMC
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Rifle Squad'''<br>config: USMC_InfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# USMC_Soldier_SL
+# USMC_Soldier_TL
+# USMC_Soldier_AR
+# USMC_Soldier_LAT
+# USMC_Soldier
+# USMC_Soldier_TL
+# USMC_Soldier_AR
+# USMC_Soldier_LAT
+# USMC_Soldier
+# USMC_Soldier_TL
+# USMC_Soldier_AR
+# USMC_Soldier_LAT
+# USMC_Soldier
+</div></div>
+| <div style="white-space: pre">'''Fire Team'''<br>config: USMC_FireTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# USMC_Soldier_TL
+# USMC_Soldier_AR
+# USMC_Soldier_LAT
+# USMC_Soldier
+</div></div>
+| <div style="white-space: pre">'''Fire Team (MG)'''<br>config: USMC_FireTeam_MG</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# USMC_Soldier_TL
+# USMC_Soldier_MG
+# USMC_Soldier_AR
+# USMC_Soldier_LAT
+</div></div>
+| <div style="white-space: pre">'''Fire Team (AT)'''<br>config: USMC_FireTeam_AT</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# USMC_Soldier_TL
+# USMC_Soldier_AR
+# USMC_Soldier_AT
+# USMC_Soldier_LAT
+</div></div>
+| <div style="white-space: pre">'''Fire Team (Support)'''<br>config: USMC_FireTeam_Support</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# USMC_Soldier_TL
+# USMC_Soldier_AR
+# USMC_Soldier_LAT
+# USMC_Soldier_Medic
+</div></div>
+|-
+| <div style="white-space: pre">'''Heavy AT Team'''<br>config: USMC_HeavyATTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# USMC_Soldier_HAT
+# USMC_Soldier_AT
+# USMC_Soldier_LAT
+</div></div>
+| <div style="white-space: pre">'''Sniper Team'''<br>config: USMC_SniperTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# USMC_SoldierS_Sniper
+# USMC_SoldierS_Spotter
+</div></div>
+| <div style="white-space: pre">'''Force Recon Team'''<br>config: USMC_FRTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# FR_TL
+# FR_AR
+# FR_GL
+# FR_Marksman
+# FR_R
+# FR_Corpsman
+</div></div>
+| <div style="white-space: pre">'''Razor Team'''<br>config: USMC_FRTeam_Razor</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# FR_Miles
+# FR_Cooper
+# FR_Sykes
+# FR_Rodriguez
+# FR_OHara
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized</div>
+| <div style="white-space: pre">'''Motorized Section'''<br>config: USMC_MotInfSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# USMC_Soldier_TL
+# HMMWV_M2
+# HMMWV_Mk19
+# USMC_Soldier_AR
+# USMC_Soldier_AT
+# USMC_Soldier_AR
+# USMC_Soldier_LAT
+# USMC_Soldier
+</div></div>
+| <div style="white-space: pre">'''Motorized Section (AT)'''<br>config: USMC_MotInfSection_AT</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# USMC_Soldier_TL
+# HMMWV_TOW
+# HMMWV_TOW
+# USMC_Soldier_AR
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Mechanized Infantry
+<div style="font-weight: normal">config: Mechanized</div>
+| <div style="white-space: pre">'''Mechanized Rifle Squad'''<br>config: USMC_MechInfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# USMC_Soldier_SL
+# AAV
+# USMC_Soldier_TL
+# USMC_Soldier_AR
+# USMC_Soldier_LAT
+# USMC_Soldier
+# USMC_Soldier_TL
+# USMC_Soldier_AR
+# USMC_Soldier_LAT
+# USMC_Soldier
+# USMC_Soldier_TL
+# USMC_Soldier_AR
+# USMC_Soldier_LAT
+# USMC_Soldier
+</div></div>
+| <div style="white-space: pre">'''Recon Section'''<br>config: USMC_MechReconSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# USMC_Soldier_TL
+# LAV25
+# USMC_Soldier_MG
+# USMC_Soldier_AR
+# USMC_Soldier_AT
+# USMC_Soldier_LAT
+# USMC_Soldier
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Armor
+<div style="font-weight: normal">config: Armored</div>
+| <div style="white-space: pre">'''Tank Platoon'''<br>config: USMC_TankPlatoon</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# M1A2_TUSK_MG
+# M1A2_TUSK_MG
+# M1A2_TUSK_MG
+# M1A2_TUSK_MG
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Air
+<div style="font-weight: normal">config: Air</div>
+| <div style="white-space: pre">'''AH-1Z Squadron'''<br>config: USMC_AH1ZSquadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# AH1Z
+# AH1Z
+</div></div>
+| <div style="white-space: pre">'''UH-1Y Squadron'''<br>config: USMC_UH1YSquadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# UH1Y
+# UH1Y
+</div></div>
+| <div style="white-space: pre">'''MV-22 Squadron'''<br>config: USMC_MV22Squadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# MV22
+# MV22
+</div></div>
+| <div style="white-space: pre">'''MQ-9 Squadron'''<br>config: USMC_MQ9Squadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# MQ9PredatorB
+</div></div>
+| <div style="white-space: pre">'''F-35B Squadron'''<br>config: USMC_F35Squadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# F35B
+# F35B
+</div></div>
+|-
+| <div style="white-space: pre">'''AV-8B Fighter Squadron'''<br>config: USMC_AV8BFighterSquadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# AV8B2
+# AV8B2
+</div></div>
+| <div style="white-space: pre">'''AV-8B Bomber Squadron'''<br>config: USMC_AV8BBomberSquadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# AV8B
+# AV8B
+</div></div>
+|-
+|}
+=== CDF ===
+
+config: CDF
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Infantry Squad'''<br>config: CDF_InfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_TL
+# CDF_Soldier_MG
+# CDF_Soldier_RPG
+# CDF_Soldier_GL
+# CDF_Soldier
+# CDF_Soldier_MG
+# CDF_Soldier_GL
+# CDF_Soldier_RPG
+# CDF_Soldier
+# CDF_Soldier_Medic
+</div></div>
+| <div style="white-space: pre">'''Weapons Squad'''<br>config: CDF_InfSquad_Weapons</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_TL
+# CDF_Soldier_AR
+# CDF_Soldier_MG
+# CDF_Soldier_MG
+# CDF_Soldier_RPG
+# CDF_Soldier_RPG
+# CDF_Soldier_GL
+# CDF_Soldier_Marksman
+</div></div>
+| <div style="white-space: pre">'''Infantry Section (AT)'''<br>config: CDF_InfSection_AT</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_TL
+# CDF_Soldier_RPG
+# CDF_Soldier_RPG
+# CDF_Soldier_AR
+</div></div>
+| <div style="white-space: pre">'''Infantry Section (AA)'''<br>config: CDF_InfSection_AA</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_TL
+# CDF_Soldier_Strela
+# CDF_Soldier_Strela
+# CDF_Soldier_MG
+</div></div>
+| <div style="white-space: pre">'''Infantry Section (MG)'''<br>config: CDF_InfSection_MG</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_MG
+# CDF_Soldier_MG
+# CDF_Soldier_AR
+# CDF_Soldier_RPG
+</div></div>
+|-
+| <div style="white-space: pre">'''Patrol'''<br>config: CDF_InfSection_Patrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_Militia
+# CDF_Soldier_Militia
+# CDF_Soldier_Militia
+# CDF_Soldier_Militia
+</div></div>
+| <div style="white-space: pre">'''Sniper Team'''<br>config: CDF_SniperTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_Sniper
+# CDF_Soldier_Sniper
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized</div>
+| <div style="white-space: pre">'''Motorized Infantry Squad'''<br>config: CDF_MotInfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_TL
+# Ural_CDF
+# CDF_Soldier_MG
+# CDF_Soldier_RPG
+# CDF_Soldier_GL
+# CDF_Soldier
+# CDF_Soldier_MG
+# CDF_Soldier_GL
+# CDF_Soldier_RPG
+# CDF_Soldier
+# CDF_Soldier_Medic
+</div></div>
+| <div style="white-space: pre">'''Motorized Infantry Patrol'''<br>config: CDF_MotInfSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_GL
+# UAZ_CDF
+# CDF_Soldier_RPG
+</div></div>
+| <div style="white-space: pre">'''Motorized Weapons Section'''<br>config: CDF_MotInfSection_Weapons</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_TL
+# UAZ_AGS30_CDF
+# UAZ_AGS30_CDF
+# CDF_Soldier_MG
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Mechanized Infantry
+<div style="font-weight: normal">config: Mechanized</div>
+| <div style="white-space: pre">'''Mechanized Rifle Squad'''<br>config: CDF_MechInfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_TL
+# BMP2_CDF
+# CDF_Soldier_MG
+# CDF_Soldier_MG
+# CDF_Soldier_Marksman
+# CDF_Soldier_RPG
+# CDF_Soldier_GL
+# CDF_Soldier
+</div></div>
+| <div style="white-space: pre">'''Mechanized Recon Section'''<br>config: CDF_MechReconSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_TL
+# BRDM2_CDF
+# CDF_Soldier_MG
+# CDF_Soldier_RPG
+</div></div>
+| <div style="white-space: pre">'''Mechanized Recon Section (AT)'''<br>config: CDF_MechATSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# CDF_Soldier_TL
+# BRDM2_ATGM_CDF
+# CDF_Soldier_MG
+# CDF_Soldier_RPG
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Armor
+<div style="font-weight: normal">config: Armored</div>
+| <div style="white-space: pre">'''Tank Platoon'''<br>config: CDF_TankPlatoon</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# T72_CDF
+# T72_CDF
+# T72_CDF
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Air
+<div style="font-weight: normal">config: Air</div>
+| <div style="white-space: pre">'''Mi-24D Squadron'''<br>config: CDF_Mi24DSquadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Mi24_D
+# Mi24_D
+</div></div>
+| <div style="white-space: pre">'''Mi-8 Squadron'''<br>config: CDF_Mi8Squadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Mi17_CDF
+# Mi17_CDF
+</div></div>
+|-
+|}
+
+
+== OPFOR ==
+
+config: East
+
+=== Russia ===
+
+config: RU
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Infantry Squad'''<br>config: RU_InfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# RU_Soldier_SL
+# RU_Soldier_MG
+# RU_Soldier_AT
+# RU_Soldier_LAT
+# RU_Soldier_GL
+# RU_Soldier_Marksman
+# RU_Soldier_MG
+# RU_Soldier_AT
+# RU_Soldier_AR
+# RU_Soldier_LAT
+# RU_Soldier_GL
+# RU_Soldier
+</div></div>
+| <div style="white-space: pre">'''Infantry Section'''<br>config: RU_InfSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# RU_Soldier_TL
+# RU_Soldier_AR
+# RU_Soldier_AT
+# RU_Soldier_GL
+# RU_Soldier
+</div></div>
+| <div style="white-space: pre">'''Infantry Section (AT)'''<br>config: RU_InfSection_AT</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# RU_Soldier_HAT
+# RU_Soldier_HAT
+# RU_Soldier_AT
+# RU_Soldier_AT
+# RU_Soldier
+</div></div>
+| <div style="white-space: pre">'''Infantry Section (AA)'''<br>config: RU_InfSection_AA</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# RU_Soldier_AA
+# RU_Soldier_AA
+# RU_Soldier_AA
+</div></div>
+| <div style="white-space: pre">'''Infantry Section (MG)'''<br>config: RU_InfSection_MG</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# RU_Soldier_TL
+# RU_Soldier_MG
+# RU_Soldier_MG
+# RU_Soldier_GL
+# RU_Soldier_AT
+</div></div>
+|-
+| <div style="white-space: pre">'''Sniper Team'''<br>config: RU_SniperTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# RU_Soldier_Sniper
+# RU_Soldier_Spotter
+</div></div>
+| <div style="white-space: pre">'''Spetsnaz Team'''<br>config: RUS_ReconTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# RUS_Soldier_TL
+# RUS_Soldier_GL
+# RUS_Soldier_Marksman
+# RUS_Soldier3
+# RUS_Soldier1
+# RUS_Soldier2
+</div></div>
+| <div style="white-space: pre">'''MVD Assault Team'''<br>config: MVD_AssaultTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# MVD_Soldier_TL
+# MVD_Soldier_MG
+# MVD_Soldier_AT
+# MVD_Soldier_GL
+# MVD_Soldier_Sniper
+# MVD_Soldier_Marksman
+# MVD_Soldier_GL
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized</div>
+| <div style="white-space: pre">'''Motorized Infantry Squad'''<br>config: RU_MotInfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# RU_Soldier_SL
+# Kamaz
+# RU_Soldier_MG
+# RU_Soldier_AT
+# RU_Soldier_LAT
+# RU_Soldier_GL
+# RU_Soldier_Marksman
+# RU_Soldier_MG
+# RU_Soldier_LAT
+# RU_Soldier_AR
+# RU_Soldier_AT
+# RU_Soldier_GL
+# RU_Soldier
+</div></div>
+| <div style="white-space: pre">'''Motorized Recon Section'''<br>config: RU_MotInfSection_Recon</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# RU_Soldier_TL
+# GAZ_Vodnik
+# GAZ_Vodnik_HMG
+# RU_Soldier_MG
+# RU_Soldier_AT
+# RU_Soldier_GL
+# RU_Soldier_Marksman
+# RU_Soldier_MG
+# RU_Soldier_AR
+# RU_Soldier_LAT
+# RU_Soldier
+# RU_Soldier
+# RU_Soldier
+</div></div>
+| <div style="white-space: pre">'''Motorized Patrol'''<br>config: RU_MotInfSection_Patrol</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# RU_Soldier_TL
+# GAZ_Vodnik_HMG
+# RU_Soldier_AR
+# RU_Soldier_AT
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Mechanized Infantry
+<div style="font-weight: normal">config: Mechanized</div>
+| <div style="white-space: pre">'''Motor Rifles (BMP)'''<br>config: RU_MechInfSquad_1</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# RU_Soldier_SL
+# BMP3
+# RU_Soldier_MG
+# RU_Soldier_AT
+# RU_Soldier_LAT
+# RU_Soldier_GL
+</div></div>
+| <div style="white-space: pre">'''Motor Rifles (BTR)'''<br>config: RU_MechInfSquad_2</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# RU_Soldier_SL
+# BTR90
+# RU_Soldier_MG
+# RU_Soldier_MG
+# RU_Soldier_AT
+# RU_Soldier_LAT
+# RU_Soldier_GL
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Armor
+<div style="font-weight: normal">config: Armored</div>
+| <div style="white-space: pre">'''Tank Platoon'''<br>config: RU_TankPlatoon</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# T90
+# T90
+# T90
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Air
+<div style="font-weight: normal">config: Air</div>
+| <div style="white-space: pre">'''Mi-24V Squadron'''<br>config: RU_Mi24VSquadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Mi24_V
+# Mi24_V
+</div></div>
+| <div style="white-space: pre">'''Mi-24P Squadron'''<br>config: RU_Mi24PSquadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Mi24_P
+# Mi24_P
+</div></div>
+| <div style="white-space: pre">'''Pchela-1T Squadron'''<br>config: RU_Pchela1TSquadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Pchela1T
+</div></div>
+| <div style="white-space: pre">'''Ka-52 Squadron'''<br>config: RU_Ka52Squadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Ka52
+</div></div>
+| <div style="white-space: pre">'''Mi-8 Squadron'''<br>config: RU_Mi8Squadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Mi17_Rockets_RU
+# Mi17_Rockets_RU
+</div></div>
+|-
+| <div style="white-space: pre">'''Su-34 Fighter Squadron'''<br>config: RU_Su34FighterSquadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Su34
+# Su34
+</div></div>
+|-
+|}
+=== Insurgents ===
+
+config: INS
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Group'''<br>config: INS_InfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# INS_Soldier_CO
+# INS_Soldier_AR
+# INS_Soldier_GL
+# INS_Soldier_AT
+# INS_Soldier_2
+# INS_Soldier_AR
+# INS_Soldier_1
+# INS_Soldier_2
+</div></div>
+| <div style="white-space: pre">'''Weapons Group'''<br>config: INS_InfSquad_Weapons</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# INS_Soldier_CO
+# INS_Soldier_MG
+# INS_Soldier_MG
+# INS_Soldier_AT
+# INS_Soldier_AT
+# INS_Soldier_AR
+# INS_Soldier_AR
+# INS_Soldier_2
+</div></div>
+| <div style="white-space: pre">'''AT Team'''<br>config: INS_InfSection_AT</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# INS_Soldier_AT
+# INS_Soldier_AT
+# INS_Soldier_1
+</div></div>
+| <div style="white-space: pre">'''AA Team'''<br>config: INS_InfSection_AA</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# INS_Soldier_AA
+# INS_Soldier_AA
+# INS_Soldier_AA
+</div></div>
+| <div style="white-space: pre">'''Sniper Team'''<br>config: INS_SniperTeam</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# INS_Soldier_Sniper
+# INS_Soldier_Sniper
+# INS_Soldier_1
+</div></div>
+|-
+| <div style="white-space: pre">'''Militia'''<br>config: INS_MilitiaSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# INS_Worker2
+# INS_Woodlander3
+# INS_Villager3
+# INS_Woodlander2
+# INS_Woodlander1
+# INS_Villager4
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized</div>
+| <div style="white-space: pre">'''Motorized Group'''<br>config: INS_MotInfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# INS_Soldier_CO
+# UralOpen_INS
+# INS_Soldier_MG
+# INS_Soldier_AT
+# INS_Soldier_AR
+# INS_Soldier_2
+# INS_Soldier_GL
+# INS_Soldier_1
+# INS_Soldier_MG
+# INS_Soldier_AT
+# INS_Soldier_1
+# INS_Soldier_1
+# INS_Soldier_2
+</div></div>
+| <div style="white-space: pre">'''Technicals'''<br>config: INS_MotInfSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# INS_Soldier_GL
+# Offroad_DSHKM_INS
+# UAZ_SPG9_INS
+# Pickup_PK_INS
+# INS_Soldier_1
+# INS_Soldier_MG
+# INS_Soldier_GL
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Mechanized Infantry
+<div style="font-weight: normal">config: Mechanized</div>
+| <div style="white-space: pre">'''Mechanized Group'''<br>config: INS_MechInfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# INS_Soldier_CO
+# BMP2_INS
+# INS_Soldier_MG
+# INS_Soldier_AT
+# INS_Soldier_2
+# INS_Soldier_GL
+# INS_Soldier_1
+# INS_Soldier_AR
+</div></div>
+| <div style="white-space: pre">'''Mechanized Patrol'''<br>config: INS_MechInfSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# INS_Soldier_CO
+# BRDM2_INS
+# BRDM2_INS
+# INS_Soldier_MG
+# INS_Soldier_AR
+# INS_Soldier_GL
+# INS_Soldier_1
+# INS_Soldier_AT
+# INS_Soldier_2
+</div></div>
+| <div style="white-space: pre">'''Mechanized Section (AT)'''<br>config: INS_MechInfSection_AT</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# INS_Soldier_GL
+# BRDM2_ATGM_INS
+# BRDM2_ATGM_INS
+# INS_Soldier_AT
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Armor
+<div style="font-weight: normal">config: Armored</div>
+| <div style="white-space: pre">'''Tank Section'''<br>config: INS_TankSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# T72_INS
+# T72_INS
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Air
+<div style="font-weight: normal">config: Air</div>
+| <div style="white-space: pre">'''Mi-8 Squadron'''<br>config: INS_Mi8Squadron</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Mi17_Ins
+</div></div>
+|-
+|}
+
+
+== Independent ==
+
+config: Guerrila
+
+=== Guerillas ===
+
+config: GUE
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" rowspan="2" | Infantry
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Group'''<br>config: GUE_InfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Soldier_CO
+# GUE_Soldier_GL
+# GUE_Soldier_AR
+# GUE_Soldier_1
+# GUE_Soldier_3
+# GUE_Soldier_GL
+# GUE_Soldier_2
+</div></div>
+| <div style="white-space: pre">'''Group (Assault)'''<br>config: GUE_InfSquad_Assault</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Soldier_CO
+# GUE_Soldier_GL
+# GUE_Soldier_MG
+# GUE_Soldier_AT
+# GUE_Soldier_AR
+# GUE_Soldier_MG
+# GUE_Soldier_AT
+# GUE_Soldier_2
+# GUE_Soldier_1
+</div></div>
+| <div style="white-space: pre">'''Group (Weapons)'''<br>config: GUE_InfSquad_Weapons</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Soldier_2
+# GUE_Soldier_MG
+# GUE_Soldier_AT
+# GUE_Soldier_MG
+# GUE_Soldier_GL
+# GUE_Soldier_AT
+</div></div>
+| <div style="white-space: pre">'''Patrol 1'''<br>config: GUE_InfTeam_1</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Soldier_2
+# GUE_Soldier_MG
+# GUE_Soldier_AT
+# GUE_Soldier_GL
+</div></div>
+| <div style="white-space: pre">'''Patrol 2'''<br>config: GUE_InfTeam_2</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Soldier_1
+# GUE_Soldier_AR
+# GUE_Soldier_GL
+# GUE_Soldier_2
+</div></div>
+|-
+| <div style="white-space: pre">'''AT Team'''<br>config: GUE_InfTeam_AT</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Soldier_AT
+# GUE_Soldier_AT
+# GUE_Soldier_AR
+</div></div>
+| <div style="white-space: pre">'''AA Team'''<br>config: GUE_GrpInf_TeamAA</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Soldier_CO
+# GUE_Soldier_AA
+# GUE_Soldier_AA
+# GUE_Soldier_AR
+</div></div>
+| <div style="white-space: pre">'''Sniper Team'''<br>config: GUE_GrpInf_TeamSniper</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Soldier_Sniper
+# GUE_Soldier_Scout
+</div></div>
+| <div style="white-space: pre">'''Militia'''<br>config: GUE_MilitiaSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Worker2
+# GUE_Woodlander3
+# GUE_Villager3
+# GUE_Woodlander2
+# GUE_Woodlander1
+# GUE_Villager4
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Motorized Infantry
+<div style="font-weight: normal">config: Motorized</div>
+| <div style="white-space: pre">'''Technicals'''<br>config: GUE_MotInfSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Soldier_CO
+# Offroad_DSHKM_Gue
+# Offroad_SPG9_Gue
+# Pickup_PK_GUE
+# GUE_Soldier_MG
+# GUE_Soldier_3
+# GUE_Soldier_Sniper
+# GUE_Soldier_AR
+# GUE_Soldier_2
+</div></div>
+| <div style="white-space: pre">'''Motorized Group'''<br>config: GUE_MotInfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Soldier_CO
+# V3S_GUE
+# GUE_Soldier_GL
+# GUE_Soldier_AT
+# GUE_Soldier_1
+# GUE_Soldier_AR
+# GUE_Soldier_MG
+# GUE_Soldier_MG
+# GUE_Soldier_2
+# GUE_Soldier_AT
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Mechanized Infantry
+<div style="font-weight: normal">config: Mechanized</div>
+| <div style="white-space: pre">'''Mechanized Patrol'''<br>config: GUE_MechInfSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Soldier_AR
+# BRDM2_GUE
+# GUE_Soldier_GL
+# GUE_Soldier_1
+</div></div>
+| <div style="white-space: pre">'''Mechanized Group'''<br>config: GUE_MechInfSquad</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# GUE_Soldier_CO
+# BMP2_GUE
+# GUE_Soldier_MG
+# GUE_Soldier_GL
+# GUE_Soldier_3
+# GUE_Soldier_AR
+# GUE_Soldier_Sniper
+# GUE_Soldier_AT
+</div></div>
+|-
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Armor
+<div style="font-weight: normal">config: Armored</div>
+| <div style="white-space: pre">'''Tank Section'''<br>config: GUE_TankSection</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# T72_GUE
+# T72_GUE
+</div></div>
+|-
+|}
+
+
+== Civilian ==
+
+config: Civilian
+
+=== Civilians ===
+
+config: CIV
+
+{| class="wikitable"
+|- style="vertical-align: top"
+! style="vertical-align: middle; white-space: pre" | Civilian Groups
+<div style="font-weight: normal">config: Infantry</div>
+| <div style="white-space: pre">'''Crowd'''<br>config: CIV_Crowd</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Profiteer4
+# Worker2
+# Functionary1
+# Woodlander4
+# Rocker1
+# Worker3
+# Profiteer3
+# Profiteer2
+# Worker4
+# Profiteer1
+</div></div>
+| <div style="white-space: pre">'''City people 1'''<br>config: CIV_City_1</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Profiteer2
+# Worker4
+# Rocker3
+# Functionary1
+# Profiteer1
+# Profiteer4
+</div></div>
+| <div style="white-space: pre">'''City people 2'''<br>config: CIV_City_2</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Worker2
+# Rocker2
+# Rocker4
+# Functionary2
+# Profiteer3
+# Worker4
+</div></div>
+| <div style="white-space: pre">'''Village people 1'''<br>config: CIV_Village_1</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Worker3
+# Woodlander2
+# Rocker1
+# Woodlander4
+# Worker1
+# Woodlander3
+</div></div>
+| <div style="white-space: pre">'''Village people 2'''<br>config: CIV_Village_2</div>
+Composition:<div style="font-size: small" class="mw-collapsible mw-collapsed"><div style="margin-right: 5em; padding-top: 1em">
+# Worker4
+# Villager1
+# Woodlander4
+# Woodlander1
+# Villager3
+# Villager2
+</div></div>
+|-
+|-
+|}
+
+{{Wiki|extractionScript|CfgGroups}}
+
+
+[[Category: CfgGroups]]

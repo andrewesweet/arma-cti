@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/flatten
+// revision: 377162 (2026-01-01T10:41:18Z)
+// export sha1: trf3btuc0vllr0erqfdrdoccour6wqt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Arrays
+
+|descr= Flattens an array.
+
+|s1= [[flatten]] array
+
+|p1= array: [[Array]] of [[Anything]]
+
+|r1= [[Array]] of [[Anything]] - flattened array
+
+|x1= <sqf>flatten [1, [2], [[3]], [[[4]]]]; // returns [1, 2, 3, 4]</sqf>
+
+|x2= <sqf>flatten getUnitLoadout player;</sqf>
+
+|seealso= [[arrayIntersect]]
+}}

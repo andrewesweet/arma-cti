@@ -1,0 +1,93 @@
+// source: https://community.bistudio.com/wiki/setUnitRank
+// revision: 340312 (2023-04-29T17:03:09Z)
+// export sha1: sn4dm2hvrvxcejc1max8sv0o7pwet0v
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Identity | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Unit Identity
+
+|descr= Sets rank of given unit.
+
+Possible rank values, and the associated [[rating]] that is '''set''' (not added, the value replaces previous rating) with it:
+
+{{{!}} class="wikitable" style="text-align: center"
+! colspan="2" {{!}} Ranks
+! PRIVATE
+! CORPORAL
+! SERGEANT
+! LIEUTENANT
+! CAPTAIN
+! MAJOR
+! COLONEL
+{{!}}-
+! rowspan="3" {{!}} Ratings
+!
+{{Name|arma1|short}}<br>
+{{Name|arma2|short}}<br>
+{{Name|arma2oa|short}}<br>
+{{Name|tkoh|short}}
+{{!}} 0
+{{!}} 500
+{{!}} 1500
+{{!}} 2500
+{{!}} 3500
+{{!}} 5000
+{{!}} 7500
+{{!}}-
+! {{Name|arma3|short}} (ca 2015)
+{{!}} 0
+{{!}} 50
+{{!}} 150
+{{!}} 250
+{{!}} 350
+{{!}} 500
+{{!}} 750
+{{!}}-
+! {{Name|arma3|short}}
+{{!}} 0
+{{!}} 0
+{{!}} 0
+{{!}} 0
+{{!}} 0
+{{!}} 0
+{{!}} 0
+{{!}}}
+
+{{Feature|arma3|Before {{arma3}} v1.68 and in previous titles, this command was {{Icon|globalArgument|32}} {{Icon|localEffect|32}}.}}
+
+|s1= unitName [[setUnitRank]] rank
+
+|p1= unitName: [[Object]]
+
+|p2= rank: [[String]] - see above. If a wrong string is provided, the command errors and reverts to using "PRIVATE"
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setUnitRank "COLONEL";</sqf>
+
+|seealso= [[ArmA: Armed Assault: Rating Values|Rating Values]] [[rating]] [[addRating]] [[rank]] [[setRank]]
+}}

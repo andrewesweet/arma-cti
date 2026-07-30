@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_berp
+// revision: 338047 (2023-02-23T21:15:20Z)
+// export sha1: l7yrqvetegh6zclz4u76nzw8k0rk540
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interpolation | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Interpolation
+
+|descr= Derivative of the {{Link|https://en.wikipedia.org/wiki/Kelvin_functions|Kelvin function}} {{Link|https://en.wikipedia.org/wiki/Kelvin_functions#ber(x)|ber}}.
+
+|s1= [a, b, delta] call [[BIS_fnc_berp]]
+
+|p1= a: [[Number]] - (Optional, default 0) first point (start) 
+
+|p2= b: [[Number]] - (Optional, default 0) second point (end)
+
+|p3= delta: [[Number]] - (Optional, default 0) the delta time, 0..1
+
+|r1= [[Number]] - the interpolated value
+
+|x1= <sqf>private _value = [0, 1, 0.5] call BIS_fnc_berp;</sqf>
+
+|seealso= [[BIS_fnc_berpVector]]
+}}

@@ -1,0 +1,132 @@
+// source: https://community.bistudio.com/wiki/exportJIPMessages
+// revision: 370220 (2024-11-10T18:07:35Z)
+// export sha1: 2gdw5pwesksdek773hr7cw6xmq7nbqi
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Diagnostic
+|gr2= Multiplayer
+
+|descr= Creates a log file containing an overview on all JIP (network) messages currently in the JIP queue.
+The file is created in the same directory as [[Crash_Files|.rpt file]].
+{{Feature|informative|[[BattlEye]]'s RCON variant of this command is {{hl|#exportJIPqueue}} (see also [[Multiplayer Server Commands]]).}}
+File name examples:
+* {{hl|jipqueue_12024_2024-10-25_11-31-11.log}} (using {{hl|#exportJIPqueue}} chat command)
+* {{hl|jipqueue-12024-2024-10-25_11-31-11.fileNameParameter.log}} (using [[exportJIPMessages]] sqf command)
+File content example: <spoiler text="Show example">
+<pre>
+time = 78814.063
+
+==================================================================================================
+Objects: 
+---------------------------------------------------------------------------------------------
+	Type_96 creator:2 networkId:ID - owner __SERVER__ (2)
+---------------------------------------------------------------------------------------------
+	Type_107 creator:2 networkId:ID - owner __SERVER__ (2)
+---------------------------------------------------------------------------------------------
+	Type_109 creator:2 networkId:ID - owner __SERVER__ (2)
+---------------------------------------------------------------------------------------------
+	Type_113 creator:2 networkId:ID - owner __SERVER__ (2)
+---------------------------------------------------------------------------------------------
+	Type_118 creator:2 networkId:ID - owner __SERVER__ (2)
+---------------------------------------------------------------------------------------------
+	Type_99 creator:2 networkId:ID - owner __SERVER__ (2)
+---------------------------------------------------------------------------------------------
+	Unknown creator:2 networkId:ID - owner __SERVER__ (2)
+---------------------------------------------------------------------------------------------
+	Type_332 creator:2 networkId:ID - owner __SERVER__ (2)
+---------------------------------------------------------------------------------------------
+	Type_334 creator:2 networkId:ID - owner __SERVER__ (2)
+---------------------------------------------------------------------------------------------
+	Type_198 creator:2 networkId:ID - owner __SERVER__ (2)
+---------------------------------------------------------------------------------------------
+	Unknown creator:4 networkId:0 - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_332 creator:4 networkId:1 - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_334 creator:4 networkId:2 - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_96 creator:2 networkId:ID - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_109 creator:2 networkId:ID - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_113 creator:2 networkId:ID - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_118 creator:2 networkId:ID - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_195 creator:2 networkId:ID - owner __SERVER__ (2)
+---------------------------------------------------------------------------------------------
+	Type_99 creator:4 networkId:3 - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_99 creator:4 networkId:4 - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_99 creator:4 networkId:5 - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_99 creator:4 networkId:6 - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_99 creator:4 networkId:7 - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_99 creator:4 networkId:8 - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_96 creator:4 networkId:12 - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_96 creator:4 networkId:13 - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_96 creator:4 networkId:15 - owner NAME (1c7f3773)
+---------------------------------------------------------------------------------------------
+	Type_96 creator:4 networkId:49 - owner NAME (1c7f3773)
+
+==================================================================================================
+_initMessages - Total: 7601
+	            Type_330 :     4
+	             Type_60 :     6
+	            Type_272 :    31
+	            Type_273 :    31
+	            Type_274 :  4481
+	             Type_64 :   435
+	            Type_291 :   147
+	            Type_292 :     1
+	            Type_187 :    50
+	            Type_248 :  1846
+	             Type_53 :    70
+	             Type_54 :   341
+	            Type_294 :     3
+	             Type_10 :    69
+	            Type_385 :     1
+	            Type_295 :     1
+	            Type_296 :    16
+	            Type_328 :     4
+	            Type_329 :     4
+	             Type_59 :    60
+
+==================================================================================================
+_initMessagesRE - Total: 0
+
+==================================================================================================
+_jipMarkerInfos - Total: 0
+
+</pre>
+</spoiler>
+
+|s1= [[exportJIPMessages]] fileName
+
+|p1= fileName: [[String]] - file where to store the list
+
+|r1= [[Nothing]]
+
+|x1= <sqf>exportJIPMessages "myFileNameWithoutExtension";</sqf>
+
+|seealso= [[didJIP]] [[didJIPOwner]] [[logEntities]] [[diag_captureFrame]]
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20191016193100
+|text= ''Note: this may have only applied to earlier versions of the game; as of {{GVI|arma3|2.18}} no such problems are reported.''<br>
+Exporting JIP might crash a populated server. This doesn't seem to be exactly related to amount of data to export, since results don't vary much against unpopulated server.
+}}

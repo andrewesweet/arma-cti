@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/getObjectType
+// revision: 348931 (2023-11-08T14:44:06Z)
+// export sha1: tcsudccxtedls1pca61h562sof5nwp7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|gr1= Object Manipulation
+
+|descr= Returns object type as a number:
+* 1 - Primary - Normal object placed in Visitor, part of landscape
+* 2 - Network - Road placed in Visitor, part of landscape
+* 4 - Temporary - Temporary object (like tracks)
+* 8 - TypeVehicle - Some entity added by game
+* 16 - TypeTempVehicle - Temporary entity
+* 32 - LandDecal - Land decal
+
+|s1= [[getObjectType]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Number]] - object type
+
+|x1= <sqf>_objType = getObjectType player;</sqf>
+|x2= <sqf>_objType = getObjectType cursorObject;</sqf>
+
+|seealso= [[allObjects]] [[getObjectFOV]] [[cursorObject]] [[cursorTarget]] [[createSimpleObject]] [[allMissionObjects]] [[setObjectViewDistance]] [[getObjectViewDistance]] [[objectParent]] [[object]]
+}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Teams
+// revision: 160357 (2020-09-24T12:17:20Z)
+// export sha1: 0gv942n5ncec9xlsmyfl0akxf2lzf4x
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to work with [[Team|teams]] and [[Team Member|team members]].
+
+[[Category:Scripting Commands by Functionality]]

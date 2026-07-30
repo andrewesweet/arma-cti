@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_unitCaptureFiring
+// revision: 336358 (2022-12-29T08:47:04Z)
+// export sha1: e9zbrhqaeblv2d920e28myqu7kajfsj
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Scenes | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Scenes
+
+|descr= Records weapon fire data of input unit over a specified period of time. Pressing the {{Controls|ESC}} key, the duration ending, or the unit dying ends the recording.
+
+|s1= [unit, duration, startTime] spawn [[BIS_fnc_unitCaptureFiring]]
+
+|p1= unit: [[Object]] - unit to capture weapon fire data from
+
+|p2= duration: [[Number]] - maximum duration to capture
+
+|p3= startTime: [[Number]] - (Optional, default 0) starting time offset for the frame time
+
+|r1= [[Script Handle]]
+
+|exec= spawn
+
+|x1= <sqf>[BIS_Vehicle, 50, 10] spawn BIS_fnc_unitCaptureFiring;</sqf>
+
+|x2= <sqf>[[2.135, "GAU8", "<NULL-object>"], [2.157, "GAU8", "<NULL-object>"]] // output example</sqf>
+
+|seealso= [[BIS_fnc_unitCaptureSimple]] [[BIS_fnc_unitPlaySimple]] [[BIS_fnc_unitPlayFiring]] [[BIS_fnc_unitCapture]] [[BIS_fnc_unitPlay]]
+}}

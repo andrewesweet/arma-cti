@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_drawCuratorRespawnMarkers
+// revision: 309637 (2022-05-05T12:07:51Z)
+// export sha1: bcejzjculgw67r9tn3qbxiek1uambcx
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= <pre>/*
+
+	Description:
+	Create a curator icon on every respawn marker
+
+	Parameter(s):
+		0: OBJECT - curator module
+		1: ARRAY of SIDEs 
+
+	Returns:
+	BOOL
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_drawCuratorRespawnMarkers]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_drawCuratorRespawnMarkers;</sqf> -->
+
+|seealso=
+}}

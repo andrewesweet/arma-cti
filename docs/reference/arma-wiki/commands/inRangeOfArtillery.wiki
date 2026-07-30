@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/inRangeOfArtillery
+// revision: 347548 (2023-09-28T09:25:36Z)
+// export sha1: m022poeq9mr0m364roi3t8e123912nz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Artillery | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+|arg= global
+
+|gr1= Artillery
+
+|descr= Returns true if all given units are able to fire at given position with given magazineType.
+
+|s1= pos [[inRangeOfArtillery]] [units, magazineType]
+
+|p1= pos: [[Position]]
+
+|p2= units: [[Array]] of [[Object]]s - array of units.
+
+|p3= magazineType: [[String]] - '''case-sensitive'''
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_isInRange = getMarkerPos "myTarget" inRangeOfArtillery [[myArty], "32Rnd_155mm_Mo_shells"];</sqf>
+
+|seealso= [[getArtilleryAmmo]] [[commandArtilleryFire]] [[doArtilleryFire]] [[enableEngineArtillery]] [[getArtilleryComputerSettings]] [[shownArtilleryComputer]] [[getArtilleryETA]]
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20150710194600
+|text= Using an empty artillery vehicle will return false.
+}}

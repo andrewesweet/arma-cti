@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskReal
+// revision: 348603 (2023-11-08T13:45:16Z)
+// export sha1: ce1e57fb8gbtrrquqd302w9ff3h5k86
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|arg= global
+
+|descr= Find the actual task associated with a task name assigned to a unit.
+{{Feature|informative|See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= [taskName, owner] call [[BIS_fnc_taskReal]]
+
+|p1= taskName: [[String]]
+
+|p2= owner: [[Object]] - task owner
+
+|r1= [[Task]] - task
+
+|x1= <sqf>["testTask", player] call BIS_fnc_taskReal; // returns "Task testTask (id 0)"</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

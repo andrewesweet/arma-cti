@@ -1,0 +1,3499 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgVehicles_Ruins_&_Wrecks
+// revision: 367238 (2024-08-08T16:10:44Z)
+// export sha1: kn3bguowp60p23fnlf44nqlt0x4s40g
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Navbox/A3Assets}}
+{| class="wikitable sortable" style="font-size:80%; margin: auto"
+! Preview
+! Class Name
+! Display Name
+! Side
+! Category
+! Subcategory
+! Scope
+! DLC
+! Addons
+! Features
+|-
+| 
+| <span id="Wreck_Base" >'''Wreck_Base'''</span>
+| 
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Military
+| style="background-color:#fff3b2" | Protected
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Data_F|A3_Data_F]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| 
+| <span id="Ruins" >'''Ruins'''</span>
+| 
+| style="background-color:#dac2e1" | Civilian
+| Ruins
+| Village
+| style="background-color:#fff3b2" | Protected
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Data_F|A3_Data_F]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_belltower_02_v1_ruins_f.jpg|150px]]
+| <span id="Land_BellTower_02_V1_ruins_F" >'''Land_BellTower_02_V1_ruins_F'''</span>
+| ''Bell Tower (Big, New, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Religious
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Civ_BellTowers|A3_Structures_F_Civ_BellTowers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_belltower_02_v2_ruins_f.jpg|150px]]
+| <span id="Land_BellTower_02_V2_ruins_F" >'''Land_BellTower_02_V2_ruins_F'''</span>
+| ''Bell Tower (Big, Old, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Religious
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Civ_BellTowers|A3_Structures_F_Civ_BellTowers]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_chapel_v1_ruins_f.jpg|150px]]
+| <span id="Land_Chapel_V1_ruins_F" >'''Land_Chapel_V1_ruins_F'''</span>
+| ''Chapel (Big, New, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Religious
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Civ_Chapels|A3_Structures_F_Civ_Chapels]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_chapel_v2_ruins_f.jpg|150px]]
+| <span id="Land_Chapel_V2_ruins_F" >'''Land_Chapel_V2_ruins_F'''</span>
+| ''Chapel (Big, Old, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Religious
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Civ_Chapels|A3_Structures_F_Civ_Chapels]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_chapel_small_v1_ruins_f.jpg|150px]]
+| <span id="Land_Chapel_Small_V1_ruins_F" >'''Land_Chapel_Small_V1_ruins_F'''</span>
+| ''Chapel (Small, New, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Religious
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Civ_Chapels|A3_Structures_F_Civ_Chapels]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_chapel_small_v2_ruins_f.jpg|150px]]
+| <span id="Land_Chapel_Small_V2_ruins_F" >'''Land_Chapel_Small_V2_ruins_F'''</span>
+| ''Chapel (Small, Old, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Religious
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Civ_Chapels|A3_Structures_F_Civ_Chapels]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_castle_01_tower_ruins_f.jpg|150px]]
+| <span id="Land_Castle_01_tower_ruins_F" >'''Land_Castle_01_tower_ruins_F'''</span>
+| ''Castle Tower (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Historical
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Dominants_Castle|A3_Structures_F_Dominants_Castle]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_lighthouse_ruins_f.jpg|150px]]
+| <span id="Land_LightHouse_ruins_F" >'''Land_LightHouse_ruins_F'''</span>
+| ''Lighthouse (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Seaport
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Dominants_Lighthouse|A3_Structures_F_Dominants_Lighthouse]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_lighthouse_small_ruins_f.jpg|150px]]
+| <span id="Land_Lighthouse_small_ruins_F" >'''Land_Lighthouse_small_ruins_F'''</span>
+| ''Lighthouse (Small, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Seaport
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Dominants_Lighthouse|A3_Structures_F_Dominants_Lighthouse]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wip_ruins_f.jpg|150px]]
+| <span id="Land_WIP_ruins_F" >'''Land_WIP_ruins_F'''</span>
+| ''Unfinished Complex (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| City
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Dominants_WIP|A3_Structures_F_Dominants_WIP]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_addon_01_v1_ruins_f.jpg|150px]]
+| <span id="Land_Addon_01_V1_ruins_F" >'''Land_Addon_01_V1_ruins_F'''</span>
+| ''Pergola (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Addons|A3_Structures_F_Households_Addons]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_addon_02_v1_ruins_f.jpg|150px]]
+| <span id="Land_Addon_02_V1_ruins_F" >'''Land_Addon_02_V1_ruins_F'''</span>
+| ''House Addon (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Addons|A3_Structures_F_Households_Addons]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_addon_03_v1_ruins_f.jpg|150px]]
+| <span id="Land_Addon_03_V1_ruins_F" >'''Land_Addon_03_V1_ruins_F'''</span>
+| ''Inn Garden (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Addons|A3_Structures_F_Households_Addons]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_addon_03mid_v1_ruins_f.jpg|150px]]
+| <span id="Land_Addon_03mid_V1_ruins_F" >'''Land_Addon_03mid_V1_ruins_F'''</span>
+| ''Inn Garden (Middle, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Addons|A3_Structures_F_Households_Addons]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_addon_04_v1_ruins_f.jpg|150px]]
+| <span id="Land_Addon_04_V1_ruins_F" >'''Land_Addon_04_V1_ruins_F'''</span>
+| ''Inn Garden (No Roof, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Addons|A3_Structures_F_Households_Addons]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_garage_v1_ruins_f.jpg|150px]]
+| <span id="Land_Garage_V1_ruins_F" >'''Land_Garage_V1_ruins_F'''</span>
+| ''Garage (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Addons|A3_Structures_F_Households_Addons]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_metal_shed_ruins_f.jpg|150px]]
+| <span id="Land_Metal_Shed_ruins_F" >'''Land_Metal_Shed_ruins_F'''</span>
+| ''Grey Metal Shed (Large, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Addons|A3_Structures_F_Households_Addons]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_big_01_v1_ruins_f.jpg|150px]]
+| <span id="Land_House_Big_01_V1_ruins_F" >'''Land_House_Big_01_V1_ruins_F'''</span>
+| ''House (Large, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| City
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_House_Big01|A3_Structures_F_Households_House_Big01]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_big_02_v1_ruins_f.jpg|150px]]
+| <span id="Land_House_Big_02_V1_ruins_F" >'''Land_House_Big_02_V1_ruins_F'''</span>
+| ''House (Big, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| City
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_House_Big02|A3_Structures_F_Households_House_Big02]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shop_01_v1_ruins_f.jpg|150px]]
+| <span id="Land_Shop_01_V1_ruins_F" >'''Land_Shop_01_V1_ruins_F'''</span>
+| ''Shop House (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| City
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_House_Shop01|A3_Structures_F_Households_House_Shop01]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shop_02_v1_ruins_f.jpg|150px]]
+| <span id="Land_Shop_02_V1_ruins_F" >'''Land_Shop_02_V1_ruins_F'''</span>
+| ''Shop (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| City
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_House_Shop02|A3_Structures_F_Households_House_Shop02]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_small_01_v1_ruins_f.jpg|150px]]
+| <span id="Land_House_Small_01_V1_ruins_F" >'''Land_House_Small_01_V1_ruins_F'''</span>
+| ''House (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_House_Small01|A3_Structures_F_Households_House_Small01]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_small_02_v1_ruins_f.jpg|150px]]
+| <span id="Land_House_Small_02_V1_ruins_F" >'''Land_House_Small_02_V1_ruins_F'''</span>
+| ''House (Small, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_House_Small02|A3_Structures_F_Households_House_Small02]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_small_03_v1_ruins_f.jpg|150px]]
+| <span id="Land_House_Small_03_V1_ruins_F" >'''Land_House_Small_03_V1_ruins_F'''</span>
+| ''Bungalow (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| City
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_House_Small03|A3_Structures_F_Households_House_Small03]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_house_slum_ruins_f.jpg|150px]]
+| <span id="Land_cargo_house_slum_ruins_F" >'''Land_cargo_house_slum_ruins_F'''</span>
+| ''Slum House Container (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Slum|A3_Structures_F_Households_Slum]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_slum_house01_ruins_f.jpg|150px]]
+| <span id="Land_Slum_House01_ruins_F" >'''Land_Slum_House01_ruins_F'''</span>
+| ''Slum House (Small, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Slum|A3_Structures_F_Households_Slum]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_slum_house02_ruins_f.jpg|150px]]
+| <span id="Land_Slum_House02_ruins_F" >'''Land_Slum_House02_ruins_F'''</span>
+| ''Slum House (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Slum|A3_Structures_F_Households_Slum]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_slum_house03_ruins_f.jpg|150px]]
+| <span id="Land_Slum_House03_ruins_F" >'''Land_Slum_House03_ruins_F'''</span>
+| ''Slum House (Big, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Slum|A3_Structures_F_Households_Slum]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_stone_housebig_v1_ruins_f.jpg|150px]]
+| <span id="Land_Stone_HouseBig_V1_ruins_F" >'''Land_Stone_HouseBig_V1_ruins_F'''</span>
+| ''Stone House (Big, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Stone_Big|A3_Structures_F_Households_Stone_Big]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_stone_shed_v1_ruins_f.jpg|150px]]
+| <span id="Land_Stone_Shed_V1_ruins_F" >'''Land_Stone_Shed_V1_ruins_F'''</span>
+| ''Stone House (Small, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Stone_Shed|A3_Structures_F_Households_Stone_Shed]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_stone_housesmall_v1_ruins_f.jpg|150px]]
+| <span id="Land_Stone_HouseSmall_V1_ruins_F" >'''Land_Stone_HouseSmall_V1_ruins_F'''</span>
+| ''Stone House (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Village
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_Stone_Small|A3_Structures_F_Households_Stone_Small]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_unfinished_building_01_ruins_f.jpg|150px]]
+| <span id="Land_Unfinished_Building_01_ruins_F" >'''Land_Unfinished_Building_01_ruins_F'''</span>
+| ''Unfinished Building (Big, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| City
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_WIP|A3_Structures_F_Households_WIP]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_unfinished_building_02_ruins_f.jpg|150px]]
+| <span id="Land_Unfinished_Building_02_ruins_F" >'''Land_Unfinished_Building_02_ruins_F'''</span>
+| ''Unfinished Building (Large, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| City
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Households_WIP|A3_Structures_F_Households_WIP]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_airport_tower_ruins_f.jpg|150px]]
+| <span id="Land_Airport_Tower_ruins_F" >'''Land_Airport_Tower_ruins_F'''</span>
+| ''Airport Control Tower (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Airport
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_AirPort|A3_Structures_F_Ind_AirPort]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo20_color_v1_ruins_f.jpg|150px]]
+| <span id="Land_Cargo20_color_V1_ruins_F" >'''Land_Cargo20_color_V1_ruins_F'''</span>
+| ''Cargo Container (Medium, Brick Red, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Cargo|A3_Structures_F_Ind_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo20_color_v2_ruins_f.jpg|150px]]
+| <span id="Land_Cargo20_color_V2_ruins_F" >'''Land_Cargo20_color_V2_ruins_F'''</span>
+| ''Cargo Container (Medium, Light Blue, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Cargo|A3_Structures_F_Ind_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo20_color_v3_ruins_f.jpg|150px]]
+| <span id="Land_Cargo20_color_V3_ruins_F" >'''Land_Cargo20_color_V3_ruins_F'''</span>
+| ''Cargo Container (Medium, Blue, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Cargo|A3_Structures_F_Ind_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo20_china_color_v1_ruins_f.jpg|150px]]
+| <span id="Land_Cargo20_china_color_V1_ruins_F" >'''Land_Cargo20_china_color_V1_ruins_F'''</span>
+| ''Cargo Container (Medium, Grey, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Cargo|A3_Structures_F_Ind_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo20_china_color_v2_ruins_f.jpg|150px]]
+| <span id="Land_Cargo20_china_color_V2_ruins_F" >'''Land_Cargo20_china_color_V2_ruins_F'''</span>
+| ''Cargo Container (Medium, White, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Cargo|A3_Structures_F_Ind_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo20_military_ruins_f.jpg|150px]]
+| <span id="Land_Cargo20_military_ruins_F" >'''Land_Cargo20_military_ruins_F'''</span>
+| ''Cargo Container (Medium, Military Green, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Cargo|A3_Structures_F_Ind_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo40_color_v1_ruins_f.jpg|150px]]
+| <span id="Land_Cargo40_color_V1_ruins_F" >'''Land_Cargo40_color_V1_ruins_F'''</span>
+| ''Cargo Container (Long, Brick Red, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Cargo|A3_Structures_F_Ind_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo40_color_v2_ruins_f.jpg|150px]]
+| <span id="Land_Cargo40_color_V2_ruins_F" >'''Land_Cargo40_color_V2_ruins_F'''</span>
+| ''Cargo Container (Long, Light Blue, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Cargo|A3_Structures_F_Ind_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo40_color_v3_ruins_f.jpg|150px]]
+| <span id="Land_Cargo40_color_V3_ruins_F" >'''Land_Cargo40_color_V3_ruins_F'''</span>
+| ''Cargo Container (Long, Blue, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Cargo|A3_Structures_F_Ind_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo40_china_color_v1_ruins_f.jpg|150px]]
+| <span id="Land_Cargo40_china_color_V1_ruins_F" >'''Land_Cargo40_china_color_V1_ruins_F'''</span>
+| ''Cargo Container (Long, Grey, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Cargo|A3_Structures_F_Ind_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo40_china_color_v2_ruins_f.jpg|150px]]
+| <span id="Land_Cargo40_china_color_V2_ruins_F" >'''Land_Cargo40_china_color_V2_ruins_F'''</span>
+| ''Cargo Container (Long, White, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Cargo|A3_Structures_F_Ind_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo40_military_ruins_f.jpg|150px]]
+| <span id="Land_Cargo40_military_ruins_F" >'''Land_Cargo40_military_ruins_F'''</span>
+| ''Cargo Container (Long, Military Green, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Cargo|A3_Structures_F_Ind_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cmp_hopper_ruins_f.jpg|150px]]
+| <span id="Land_cmp_Hopper_ruins_F" >'''Land_cmp_Hopper_ruins_F'''</span>
+| ''Concrete Mixing Hopper (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_ConcreteMixingPlant|A3_Structures_F_Ind_ConcreteMixingPlant]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cmp_shed_ruins_f.jpg|150px]]
+| <span id="Land_cmp_Shed_ruins_F" >'''Land_cmp_Shed_ruins_F'''</span>
+| ''Concrete Mixing Shed (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_ConcreteMixingPlant|A3_Structures_F_Ind_ConcreteMixingPlant]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cmp_tower_ruins_f.jpg|150px]]
+| <span id="Land_cmp_Tower_ruins_F" >'''Land_cmp_Tower_ruins_F'''</span>
+| ''Concrete Mixing Tower (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_ConcreteMixingPlant|A3_Structures_F_Ind_ConcreteMixingPlant]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_dp_bigtank_ruins_f.jpg|150px]]
+| <span id="Land_dp_bigTank_ruins_F" >'''Land_dp_bigTank_ruins_F'''</span>
+| ''Diesel Storage Tank (Big, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_DieselPowerPlant|A3_Structures_F_Ind_DieselPowerPlant]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_dp_smalltank_ruins_f.jpg|150px]]
+| <span id="Land_dp_smallTank_ruins_F" >'''Land_dp_smallTank_ruins_F'''</span>
+| ''Diesel Storage Tank (Small, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_DieselPowerPlant|A3_Structures_F_Ind_DieselPowerPlant]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_factory_conv1_10_ruins_f.jpg|150px]]
+| <span id="Land_Factory_Conv1_10_ruins_F" >'''Land_Factory_Conv1_10_ruins_F'''</span>
+| ''Factory Conveyor Belt (Ground, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Factory|A3_Structures_F_Ind_Factory]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_factory_conv1_main_ruins_f.jpg|150px]]
+| <span id="Land_Factory_Conv1_Main_ruins_F" >'''Land_Factory_Conv1_Main_ruins_F'''</span>
+| ''Factory Conveyor Belt (Main, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Factory|A3_Structures_F_Ind_Factory]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_factory_conv2_ruins_f.jpg|150px]]
+| <span id="Land_Factory_Conv2_ruins_F" >'''Land_Factory_Conv2_ruins_F'''</span>
+| ''Factory Conveyor Belt (Slope, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Factory|A3_Structures_F_Ind_Factory]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_factory_hopper_ruins_f.jpg|150px]]
+| <span id="Land_Factory_Hopper_ruins_F" >'''Land_Factory_Hopper_ruins_F'''</span>
+| ''Factory Hopper (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Factory|A3_Structures_F_Ind_Factory]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_factory_main_ruins_f.jpg|150px]]
+| <span id="Land_Factory_Main_ruins_F" >'''Land_Factory_Main_ruins_F'''</span>
+| ''Factory (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Factory|A3_Structures_F_Ind_Factory]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_fuelstation_build_ruins_f.jpg|150px]]
+| <span id="Land_FuelStation_Build_ruins_F" >'''Land_FuelStation_Build_ruins_F'''</span>
+| ''Gas Station (Sun Oil, Shop, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Services
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_FuelStation|A3_Structures_F_Ind_FuelStation]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_fuelstation_shed_ruins_f.jpg|150px]]
+| <span id="Land_FuelStation_Shed_ruins_F" >'''Land_FuelStation_Shed_ruins_F'''</span>
+| ''Gas Station (Sun Oil, Roof, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Services
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_FuelStation|A3_Structures_F_Ind_FuelStation]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_reservoirtank_airport_ruins_f.jpg|150px]]
+| <span id="Land_ReservoirTank_Airport_ruins_F" >'''Land_ReservoirTank_Airport_ruins_F'''</span>
+| ''Reservoir Tank (Airport, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Utilities
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_ReservoirTank|A3_Structures_F_Ind_ReservoirTank]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_reservoirtank_rust_ruins_f.jpg|150px]]
+| <span id="Land_ReservoirTank_Rust_ruins_F" >'''Land_ReservoirTank_Rust_ruins_F'''</span>
+| ''Reservoir Tank (Rust, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Utilities
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_ReservoirTank|A3_Structures_F_Ind_ReservoirTank]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_reservoirtank_v1_ruins_f.jpg|150px]]
+| <span id="Land_ReservoirTank_V1_ruins_F" >'''Land_ReservoirTank_V1_ruins_F'''</span>
+| ''Reservoir Tank (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Utilities
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_ReservoirTank|A3_Structures_F_Ind_ReservoirTank]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_reservoirtower_ruins_f.jpg|150px]]
+| <span id="Land_ReservoirTower_ruins_F" >'''Land_ReservoirTower_ruins_F'''</span>
+| ''Reservoir Tower (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Utilities
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_ReservoirTank|A3_Structures_F_Ind_ReservoirTank]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shed_big_ruins_f.jpg|150px]]
+| <span id="Land_Shed_Big_ruins_F" >'''Land_Shed_Big_ruins_F'''</span>
+| ''Industrial Shed (Big, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Shed|A3_Structures_F_Ind_Shed]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shed_small_ruins_f.jpg|150px]]
+| <span id="Land_Shed_Small_ruins_F" >'''Land_Shed_Small_ruins_F'''</span>
+| ''Industrial Shed (Small, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Shed|A3_Structures_F_Ind_Shed]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shed_ind_ruins_f.jpg|150px]]
+| <span id="Land_Shed_Ind_ruins_F" >'''Land_Shed_Ind_ruins_F'''</span>
+| ''Industrial Shed (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Shed|A3_Structures_F_Ind_Shed]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_spp_mirror_ruins_f.jpg|150px]]
+| <span id="Land_spp_Mirror_ruins_F" >'''Land_spp_Mirror_ruins_F'''</span>
+| ''Solar Mirrors (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Utilities
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_SolarPowerPlant|A3_Structures_F_Ind_SolarPowerPlant]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_spp_tower_ruins_f.jpg|150px]]
+| <span id="Land_spp_Tower_ruins_F" >'''Land_spp_Tower_ruins_F'''</span>
+| ''Solar Tower (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Utilities
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_SolarPowerPlant|A3_Structures_F_Ind_SolarPowerPlant]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_spp_transformer_ruins_f.jpg|150px]]
+| <span id="Land_spp_Transformer_ruins_F" >'''Land_spp_Transformer_ruins_F'''</span>
+| ''Solar Transformer (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Utilities
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_SolarPowerPlant|A3_Structures_F_Ind_SolarPowerPlant]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_tbox_ruins_f.jpg|150px]]
+| <span id="Land_TBox_ruins_F" >'''Land_TBox_ruins_F'''</span>
+| ''Transmitter Box (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Utilities
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Transmitter_Tower|A3_Structures_F_Ind_Transmitter_Tower]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_ttowerbig_1_ruins_f.jpg|150px]]
+| <span id="Land_TTowerBig_1_ruins_F" >'''Land_TTowerBig_1_ruins_F'''</span>
+| ''Transmitter Tower (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Utilities
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Transmitter_Tower|A3_Structures_F_Ind_Transmitter_Tower]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_ttowerbig_2_ruins_f.jpg|150px]]
+| <span id="Land_TTowerBig_2_ruins_F" >'''Land_TTowerBig_2_ruins_F'''</span>
+| ''Transmitter Tower (Tall, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Utilities
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Transmitter_Tower|A3_Structures_F_Ind_Transmitter_Tower]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_windmill01_ruins_f.jpg|150px]]
+| <span id="Land_Windmill01_ruins_F" >'''Land_Windmill01_ruins_F'''</span>
+| ''Windmill (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Historical
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Ind_Windmill|A3_Structures_F_Ind_Windmill]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_barracks_ruins_f.jpg|150px]]
+| <span id="Land_Barracks_ruins_F" >'''Land_Barracks_ruins_F'''</span>
+| ''Barracks (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Barracks|A3_Structures_F_Mil_Barracks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_house_v1_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_House_V1_ruins_F" >'''Land_Cargo_House_V1_ruins_F'''</span>
+| ''Military Cargo House (Green, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_house_v2_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_House_V2_ruins_F" >'''Land_Cargo_House_V2_ruins_F'''</span>
+| ''Military Cargo House (Rusty, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_house_v3_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_House_V3_ruins_F" >'''Land_Cargo_House_V3_ruins_F'''</span>
+| ''Military Cargo House (Brown, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_hq_v1_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_HQ_V1_ruins_F" >'''Land_Cargo_HQ_V1_ruins_F'''</span>
+| ''Military Cargo HQ (Green, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_hq_v2_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_HQ_V2_ruins_F" >'''Land_Cargo_HQ_V2_ruins_F'''</span>
+| ''Military Cargo HQ (Rusty, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_hq_v3_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_HQ_V3_ruins_F" >'''Land_Cargo_HQ_V3_ruins_F'''</span>
+| ''Military Cargo HQ (Brown, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_patrol_v1_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_Patrol_V1_ruins_F" >'''Land_Cargo_Patrol_V1_ruins_F'''</span>
+| ''Military Cargo Post (Green, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_patrol_v2_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_Patrol_V2_ruins_F" >'''Land_Cargo_Patrol_V2_ruins_F'''</span>
+| ''Military Cargo Post (Rusty, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_patrol_v3_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_Patrol_V3_ruins_F" >'''Land_Cargo_Patrol_V3_ruins_F'''</span>
+| ''Military Cargo Post (Brown, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_tower_v1_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_Tower_V1_ruins_F" >'''Land_Cargo_Tower_V1_ruins_F'''</span>
+| ''Military Cargo Tower (Green, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_tower_v2_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_Tower_V2_ruins_F" >'''Land_Cargo_Tower_V2_ruins_F'''</span>
+| ''Military Cargo Tower (Rusty, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_tower_v3_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_Tower_V3_ruins_F" >'''Land_Cargo_Tower_V3_ruins_F'''</span>
+| ''Military Cargo Tower (Brown, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_medevac_house_v1_ruins_f.jpg|150px]]
+| <span id="Land_Medevac_house_V1_ruins_F" >'''Land_Medevac_house_V1_ruins_F'''</span>
+| ''Military Cargo House (Medical, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_medevac_hq_v1_ruins_f.jpg|150px]]
+| <span id="Land_Medevac_HQ_V1_ruins_F" >'''Land_Medevac_HQ_V1_ruins_F'''</span>
+| ''Military Cargo HQ (Medical, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Cargo|A3_Structures_F_Mil_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_radar_ruins_f.jpg|150px]]
+| <span id="Land_Radar_ruins_F" >'''Land_Radar_ruins_F'''</span>
+| ''Radar (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Airport
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Radar|A3_Structures_F_Mil_Radar]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_radar_small_ruins_f.jpg|150px]]
+| <span id="Land_Radar_Small_ruins_F" >'''Land_Radar_Small_ruins_F'''</span>
+| ''Radar (Small, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Airport
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_Radar|A3_Structures_F_Mil_Radar]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_tenthangar_v1_ruins_f.jpg|150px]]
+| <span id="Land_TentHangar_V1_ruins_F" >'''Land_TentHangar_V1_ruins_F'''</span>
+| ''Tent Hangar (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Airport
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Mil_TentHangar|A3_Structures_F_Mil_TentHangar]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_rowboat_v1_f.jpg|150px]]
+| <span id="Land_RowBoat_V1_F" >'''Land_RowBoat_V1_F'''</span>
+| ''Rowboat (v1)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Naval_RowBoats|A3_Structures_F_Naval_RowBoats]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_rowboat_v2_f.jpg|150px]]
+| <span id="Land_RowBoat_V2_F" >'''Land_RowBoat_V2_F'''</span>
+| ''Rowboat (v2)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Naval_RowBoats|A3_Structures_F_Naval_RowBoats]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_rowboat_v3_f.jpg|150px]]
+| <span id="Land_RowBoat_V3_F" >'''Land_RowBoat_V3_F'''</span>
+| ''Rowboat (v3)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Naval_RowBoats|A3_Structures_F_Naval_RowBoats]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_research_house_v1_ruins_f.jpg|150px]]
+| <span id="Land_Research_house_V1_ruins_F" >'''Land_Research_house_V1_ruins_F'''</span>
+| ''Research House (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Research|A3_Structures_F_Research]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_research_hq_ruins_f.jpg|150px]]
+| <span id="Land_Research_HQ_ruins_F" >'''Land_Research_HQ_ruins_F'''</span>
+| ''Research HQ (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Research|A3_Structures_F_Research]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_slidecastle_ruins_f.jpg|150px]]
+| <span id="Land_SlideCastle_ruins_F" >'''Land_SlideCastle_ruins_F'''</span>
+| ''Slide (Castle, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Sport & Recreation
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_EPB_Civ_PlayGround|A3_Structures_F_EPB_Civ_PlayGround]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_kiosk_blueking_ruins_f.jpg|150px]]
+| <span id="Land_Kiosk_blueking_ruins_F" >'''Land_Kiosk_blueking_ruins_F'''</span>
+| ''Kiosk (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Services
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_EPC_Civ_Kiosks|A3_Structures_F_EPC_Civ_Kiosks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_gh_gazebo_ruins_f.jpg|150px]]
+| <span id="Land_GH_Gazebo_ruins_F" >'''Land_GH_Gazebo_ruins_F'''</span>
+| ''Ghost Hotel (Gazebo, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Services
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_EPC_Dominants_GhostHotel|A3_Structures_F_EPC_Dominants_GhostHotel]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_gh_house_ruins_f.jpg|150px]]
+| <span id="Land_GH_House_ruins_F" >'''Land_GH_House_ruins_F'''</span>
+| ''Ghost Hotel (House, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Services
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_EPC_Dominants_GhostHotel|A3_Structures_F_EPC_Dominants_GhostHotel]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| 
+| <span id="Plane_Fighter_03_wreck_F" >'''Plane_Fighter_03_wreck_F'''</span>
+| ''Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#fff3b2" | Protected
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Air_F_Gamma_Plane_Fighter_03|A3_Air_F_Gamma_Plane_Fighter_03]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_uwreck_fishingboat_f.jpg|150px]]
+| <span id="Land_UWreck_FishingBoat_F" >'''Land_UWreck_FishingBoat_F'''</span>
+| ''Small Fishing Boat Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_uwreck_heli_attack_02_f.jpg|150px]]
+| <span id="Land_UWreck_Heli_Attack_02_F" >'''Land_UWreck_Heli_Attack_02_F'''</span>
+| ''Mi-48 Wreck (Underwater)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Helicopters
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_uwreck_mv22_f.jpg|150px]]
+| <span id="Land_UWreck_MV22_F" >'''Land_UWreck_MV22_F'''</span>
+| ''V/STOL Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_bmp2_f.jpg|150px]]
+| <span id="Land_Wreck_BMP2_F" >'''Land_Wreck_BMP2_F'''</span>
+| ''BMP2 Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| APCs
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_brdm2_f.jpg|150px]]
+| <span id="Land_Wreck_BRDM2_F" >'''Land_Wreck_BRDM2_F'''</span>
+| ''BRDM-2 Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| APCs
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_car_f.jpg|150px]]
+| <span id="Land_Wreck_Car_F" >'''Land_Wreck_Car_F'''</span>
+| ''Hatchback Wreck 1''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_car2_f.jpg|150px]]
+| <span id="Land_Wreck_Car2_F" >'''Land_Wreck_Car2_F'''</span>
+| ''Hatchback Wreck (Tilted)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_car3_f.jpg|150px]]
+| <span id="Land_Wreck_Car3_F" >'''Land_Wreck_Car3_F'''</span>
+| ''Hatchback Wreck 2''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_cardismantled_f.jpg|150px]]
+| <span id="Land_Wreck_CarDismantled_F" >'''Land_Wreck_CarDismantled_F'''</span>
+| ''Dismantled car''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_heli_attack_01_f.jpg|150px]]
+| <span id="Land_Wreck_Heli_Attack_01_F" >'''Land_Wreck_Heli_Attack_01_F'''</span>
+| ''Blackfoot Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Helicopters
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_heli_attack_02_f.jpg|150px]]
+| <span id="Land_Wreck_Heli_Attack_02_F" >'''Land_Wreck_Heli_Attack_02_F'''</span>
+| ''Mi-48 Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Helicopters
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_hmmwv_f.jpg|150px]]
+| <span id="Land_Wreck_HMMWV_F" >'''Land_Wreck_HMMWV_F'''</span>
+| ''Army Car Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_hunter_f.jpg|150px]]
+| <span id="Land_Wreck_Hunter_F" >'''Land_Wreck_Hunter_F'''</span>
+| ''Hunter Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_offroad_f.jpg|150px]]
+| <span id="Land_Wreck_Offroad_F" >'''Land_Wreck_Offroad_F'''</span>
+| ''Offroad Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_offroad2_f.jpg|150px]]
+| <span id="Land_Wreck_Offroad2_F" >'''Land_Wreck_Offroad2_F'''</span>
+| ''Offroad Wreck (Doorless)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_plane_transport_01_f.jpg|150px]]
+| <span id="Land_Wreck_Plane_Transport_01_F" >'''Land_Wreck_Plane_Transport_01_F'''</span>
+| ''C-192 Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_skodovka_f.jpg|150px]]
+| <span id="Land_Wreck_Skodovka_F" >'''Land_Wreck_Skodovka_F'''</span>
+| ''Car Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_slammer_f.jpg|150px]]
+| <span id="Land_Wreck_Slammer_F" >'''Land_Wreck_Slammer_F'''</span>
+| ''Slammer Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Tanks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_slammer_hull_f.jpg|150px]]
+| <span id="Land_Wreck_Slammer_hull_F" >'''Land_Wreck_Slammer_hull_F'''</span>
+| ''Slammer Wreck (Hull)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Tanks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_slammer_turret_f.jpg|150px]]
+| <span id="Land_Wreck_Slammer_turret_F" >'''Land_Wreck_Slammer_turret_F'''</span>
+| ''Slammer Wreck (Turret)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Tanks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_t72_hull_f.jpg|150px]]
+| <span id="Land_Wreck_T72_hull_F" >'''Land_Wreck_T72_hull_F'''</span>
+| ''T-72 Wreck (Hull)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Tanks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_t72_turret_f.jpg|150px]]
+| <span id="Land_Wreck_T72_turret_F" >'''Land_Wreck_T72_turret_F'''</span>
+| ''T-72 Wreck (Turret)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Tanks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_traw_f.jpg|150px]]
+| <span id="Land_Wreck_Traw_F" >'''Land_Wreck_Traw_F'''</span>
+| ''Trawler Wreck (Front)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_traw2_f.jpg|150px]]
+| <span id="Land_Wreck_Traw2_F" >'''Land_Wreck_Traw2_F'''</span>
+| ''Trawler Wreck (Back)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_truck_dropside_f.jpg|150px]]
+| <span id="Land_Wreck_Truck_dropside_F" >'''Land_Wreck_Truck_dropside_F'''</span>
+| ''Truck Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_truck_f.jpg|150px]]
+| <span id="Land_Wreck_Truck_F" >'''Land_Wreck_Truck_F'''</span>
+| ''Fuel Truck Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_uaz_f.jpg|150px]]
+| <span id="Land_Wreck_UAZ_F" >'''Land_Wreck_UAZ_F'''</span>
+| ''Rusty Car Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_ural_f.jpg|150px]]
+| <span id="Land_Wreck_Ural_F" >'''Land_Wreck_Ural_F'''</span>
+| ''Rusty Truck Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_van_f.jpg|150px]]
+| <span id="Land_Wreck_Van_F" >'''Land_Wreck_Van_F'''</span>
+| ''Minivan Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Wrecks|A3_Structures_F_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_bulldozer_01_abandoned_f.jpg|150px]]
+| <span id="Land_Bulldozer_01_abandoned_F" >'''Land_Bulldozer_01_abandoned_F'''</span>
+| ''Locked Bulldozer''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Industrial_HeavyEquipment|A3_Props_F_Exp_Industrial_HeavyEquipment]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_bulldozer_01_wreck_f.jpg|150px]]
+| <span id="Land_Bulldozer_01_wreck_F" >'''Land_Bulldozer_01_wreck_F'''</span>
+| ''Abandoned Bulldozer''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Industrial_HeavyEquipment|A3_Props_F_Exp_Industrial_HeavyEquipment]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_combineharvester_01_wreck_f.jpg|150px]]
+| <span id="Land_CombineHarvester_01_wreck_F" >'''Land_CombineHarvester_01_wreck_F'''</span>
+| ''Abandoned Combine Harvester''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Industrial_HeavyEquipment|A3_Props_F_Exp_Industrial_HeavyEquipment]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_excavator_01_abandoned_f.jpg|150px]]
+| <span id="Land_Excavator_01_abandoned_F" >'''Land_Excavator_01_abandoned_F'''</span>
+| ''Locked Digger''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Industrial_HeavyEquipment|A3_Props_F_Exp_Industrial_HeavyEquipment]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_excavator_01_wreck_f.jpg|150px]]
+| <span id="Land_Excavator_01_wreck_F" >'''Land_Excavator_01_wreck_F'''</span>
+| ''Abandoned Digger''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Industrial_HeavyEquipment|A3_Props_F_Exp_Industrial_HeavyEquipment]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_haultruck_01_abandoned_f.jpg|150px]]
+| <span id="Land_HaulTruck_01_abandoned_F" >'''Land_HaulTruck_01_abandoned_F'''</span>
+| ''Haul Truck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Industrial_HeavyEquipment|A3_Props_F_Exp_Industrial_HeavyEquipment]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_miningshovel_01_abandoned_f.jpg|150px]]
+| <span id="Land_MiningShovel_01_abandoned_F" >'''Land_MiningShovel_01_abandoned_F'''</span>
+| ''Mining Shovel''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Industrial_HeavyEquipment|A3_Props_F_Exp_Industrial_HeavyEquipment]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_locomotive_01_v1_f.jpg|150px]]
+| <span id="Land_Locomotive_01_v1_F" >'''Land_Locomotive_01_v1_F'''</span>
+| ''Locomotive (Grey)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Trains
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Infrastructure_Railways|A3_Props_F_Exp_Infrastructure_Railways]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_locomotive_01_v2_f.jpg|150px]]
+| <span id="Land_Locomotive_01_v2_F" >'''Land_Locomotive_01_v2_F'''</span>
+| ''Locomotive (Yellow)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Trains
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Infrastructure_Railways|A3_Props_F_Exp_Infrastructure_Railways]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_locomotive_01_v3_f.jpg|150px]]
+| <span id="Land_Locomotive_01_v3_F" >'''Land_Locomotive_01_v3_F'''</span>
+| ''Locomotive (Orange)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Trains
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Infrastructure_Railways|A3_Props_F_Exp_Infrastructure_Railways]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_railwaycar_01_passenger_f.jpg|150px]]
+| <span id="Land_RailwayCar_01_passenger_F" >'''Land_RailwayCar_01_passenger_F'''</span>
+| ''Railway Car (Passenger)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Trains
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Infrastructure_Railways|A3_Props_F_Exp_Infrastructure_Railways]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_railwaycar_01_sugarcane_empty_f.jpg|150px]]
+| <span id="Land_RailwayCar_01_sugarcane_empty_F" >'''Land_RailwayCar_01_sugarcane_empty_F'''</span>
+| ''Railway Car (Sugarcane, Empty)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Trains
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Infrastructure_Railways|A3_Props_F_Exp_Infrastructure_Railways]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_railwaycar_01_sugarcane_f.jpg|150px]]
+| <span id="Land_RailwayCar_01_sugarcane_F" >'''Land_RailwayCar_01_sugarcane_F'''</span>
+| ''Railway Car (Sugarcane, Loaded)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Trains
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Infrastructure_Railways|A3_Props_F_Exp_Infrastructure_Railways]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_railwaycar_01_tank_f.jpg|150px]]
+| <span id="Land_RailwayCar_01_tank_F" >'''Land_RailwayCar_01_tank_F'''</span>
+| ''Railway Car (Tank)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Trains
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Infrastructure_Railways|A3_Props_F_Exp_Infrastructure_Railways]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_historicalplanedebris_01_f.jpg|150px]]
+| <span id="Land_HistoricalPlaneDebris_01_F" >'''Land_HistoricalPlaneDebris_01_F'''</span>
+| ''Plane Wreck Debris 1''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Military_OldPlaneWrecks|A3_Props_F_Exp_Military_OldPlaneWrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_historicalplanedebris_02_f.jpg|150px]]
+| <span id="Land_HistoricalPlaneDebris_02_F" >'''Land_HistoricalPlaneDebris_02_F'''</span>
+| ''Plane Wreck Debris 2''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Military_OldPlaneWrecks|A3_Props_F_Exp_Military_OldPlaneWrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_historicalplanedebris_03_f.jpg|150px]]
+| <span id="Land_HistoricalPlaneDebris_03_F" >'''Land_HistoricalPlaneDebris_03_F'''</span>
+| ''Plane Wreck Debris 3''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Military_OldPlaneWrecks|A3_Props_F_Exp_Military_OldPlaneWrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_historicalplanedebris_04_f.jpg|150px]]
+| <span id="Land_HistoricalPlaneDebris_04_F" >'''Land_HistoricalPlaneDebris_04_F'''</span>
+| ''Plane Wreck Debris 4''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Military_OldPlaneWrecks|A3_Props_F_Exp_Military_OldPlaneWrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_historicalplanewreck_01_f.jpg|150px]]
+| <span id="Land_HistoricalPlaneWreck_01_F" >'''Land_HistoricalPlaneWreck_01_F'''</span>
+| ''Plane Wreck (A6M)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Military_OldPlaneWrecks|A3_Props_F_Exp_Military_OldPlaneWrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_historicalplanewreck_02_front_f.jpg|150px]]
+| <span id="Land_HistoricalPlaneWreck_02_front_F" >'''Land_HistoricalPlaneWreck_02_front_F'''</span>
+| ''Plane Wreck (G4M, Front)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Military_OldPlaneWrecks|A3_Props_F_Exp_Military_OldPlaneWrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_historicalplanewreck_02_front_f.jpg|150px]]
+| <span id="Land_HistoricalPlaneWreck_02_front_water_F" >'''Land_HistoricalPlaneWreck_02_front_water_F'''</span>
+| ''Plane Wreck (G4M, Front)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#fff3b2" | Protected
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Military_OldPlaneWrecks|A3_Props_F_Exp_Military_OldPlaneWrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_historicalplanewreck_02_rear_f.jpg|150px]]
+| <span id="Land_HistoricalPlaneWreck_02_rear_F" >'''Land_HistoricalPlaneWreck_02_rear_F'''</span>
+| ''Plane Wreck (G4M, Back)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Military_OldPlaneWrecks|A3_Props_F_Exp_Military_OldPlaneWrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_historicalplanewreck_02_rear_f.jpg|150px]]
+| <span id="Land_HistoricalPlaneWreck_02_rear_water_F" >'''Land_HistoricalPlaneWreck_02_rear_water_F'''</span>
+| ''Plane Wreck (G4M, Back)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#fff3b2" | Protected
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Military_OldPlaneWrecks|A3_Props_F_Exp_Military_OldPlaneWrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_historicalplanewreck_02_wing_left_f.jpg|150px]]
+| <span id="Land_HistoricalPlaneWreck_02_wing_left_F" >'''Land_HistoricalPlaneWreck_02_wing_left_F'''</span>
+| ''Plane Wreck (G4M, Left Wing)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Military_OldPlaneWrecks|A3_Props_F_Exp_Military_OldPlaneWrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_historicalplanewreck_02_wing_right_f.jpg|150px]]
+| <span id="Land_HistoricalPlaneWreck_02_wing_right_F" >'''Land_HistoricalPlaneWreck_02_wing_right_F'''</span>
+| ''Plane Wreck (G4M, Right Wing)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Military_OldPlaneWrecks|A3_Props_F_Exp_Military_OldPlaneWrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_historicalplanewreck_03_f.jpg|150px]]
+| <span id="Land_HistoricalPlaneWreck_03_F" >'''Land_HistoricalPlaneWreck_03_F'''</span>
+| ''Plane Wreck (B-25)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Military_OldPlaneWrecks|A3_Props_F_Exp_Military_OldPlaneWrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_boat_01_abandoned_blue_f.jpg|150px]]
+| <span id="Land_Boat_01_abandoned_blue_F" >'''Land_Boat_01_abandoned_blue_F'''</span>
+| ''Abandoned Boat (Blue)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Naval_Boats|A3_Props_F_Exp_Naval_Boats]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_boat_01_abandoned_red_f.jpg|150px]]
+| <span id="Land_Boat_01_abandoned_red_F" >'''Land_Boat_01_abandoned_red_F'''</span>
+| ''Abandoned Boat (Red)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Naval_Boats|A3_Props_F_Exp_Naval_Boats]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_boat_02_abandoned_f.jpg|150px]]
+| <span id="Land_Boat_02_abandoned_F" >'''Land_Boat_02_abandoned_F'''</span>
+| ''Abandoned Boat (Engine)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Naval_Boats|A3_Props_F_Exp_Naval_Boats]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_boat_03_abandoned_f.jpg|150px]]
+| <span id="Land_Boat_03_abandoned_F" >'''Land_Boat_03_abandoned_F'''</span>
+| ''Abandoned Boat (Dry Dock)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Naval_Boats|A3_Props_F_Exp_Naval_Boats]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_boat_04_wreck_f.jpg|150px]]
+| <span id="Land_Boat_04_wreck_F" >'''Land_Boat_04_wreck_F'''</span>
+| ''Old Boat Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Naval_Boats|A3_Props_F_Exp_Naval_Boats]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_boat_05_wreck_f.jpg|150px]]
+| <span id="Land_Boat_05_wreck_F" >'''Land_Boat_05_wreck_F'''</span>
+| ''Wooden Boat Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Naval_Boats|A3_Props_F_Exp_Naval_Boats]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_boat_06_wreck_f.jpg|150px]]
+| <span id="Land_Boat_06_wreck_F" >'''Land_Boat_06_wreck_F'''</span>
+| ''Metal Boat Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Boats
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Exp_Naval_Boats|A3_Props_F_Exp_Naval_Boats]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_garageshelter_01_ruins_f.jpg|150px]]
+| <span id="Land_GarageShelter_01_ruins_F" >'''Land_GarageShelter_01_ruins_F'''</span>
+| ''House with Parking Shelter (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_Garages|A3_Structures_F_Exp_Civilian_Garages]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_big_01_ruins_f.jpg|150px]]
+| <span id="Land_House_Big_01_ruins_F" >'''Land_House_Big_01_ruins_F'''</span>
+| ''Bungalow (Yellow, Large, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_House_Big_01|A3_Structures_F_Exp_Civilian_House_Big_01]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_native_01_ruins_f.jpg|150px]]
+| <span id="Land_House_Native_01_ruins_F" >'''Land_House_Native_01_ruins_F'''</span>
+| ''Native House (Big, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Historical
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_House_Native_01|A3_Structures_F_Exp_Civilian_House_Native_01]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_native_02_ruins_f.jpg|150px]]
+| <span id="Land_House_Native_02_ruins_F" >'''Land_House_Native_02_ruins_F'''</span>
+| ''Native House (Small, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Historical
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_House_Native_02|A3_Structures_F_Exp_Civilian_House_Native_02]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_small_01_ruins_f.jpg|150px]]
+| <span id="Land_House_Small_01_ruins_F" >'''Land_House_Small_01_ruins_F'''</span>
+| ''Metal Bungalow (Yellow, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_House_Small_01|A3_Structures_F_Exp_Civilian_House_Small_01]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_small_02_ruins_f.jpg|150px]]
+| <span id="Land_House_Small_02_ruins_F" >'''Land_House_Small_02_ruins_F'''</span>
+| ''Brick Bungalow (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_House_Small_02|A3_Structures_F_Exp_Civilian_House_Small_02]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_small_03_ruins_f.jpg|150px]]
+| <span id="Land_House_Small_03_ruins_F" >'''Land_House_Small_03_ruins_F'''</span>
+| ''Bungalow (Turquoise, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_House_Small_03|A3_Structures_F_Exp_Civilian_House_Small_03]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_small_04_ruins_f.jpg|150px]]
+| <span id="Land_House_Small_04_ruins_F" >'''Land_House_Small_04_ruins_F'''</span>
+| ''Bungalow (Blue Roof, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| City
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_House_Small_04|A3_Structures_F_Exp_Civilian_House_Small_04]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_house_small_05_ruins_f.jpg|150px]]
+| <span id="Land_House_Small_05_ruins_F" >'''Land_House_Small_05_ruins_F'''</span>
+| ''Bungalow (Grey Roof, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| City
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_House_Small_05|A3_Structures_F_Exp_Civilian_House_Small_05]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shed_01_ruins_f.jpg|150px]]
+| <span id="Land_Shed_01_ruins_F" >'''Land_Shed_01_ruins_F'''</span>
+| ''Yellow Metal Shed (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_Sheds|A3_Structures_F_Exp_Civilian_Sheds]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shed_02_ruins_f.jpg|150px]]
+| <span id="Land_Shed_02_ruins_F" >'''Land_Shed_02_ruins_F'''</span>
+| ''Grey Metal Shed (Small, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_Sheds|A3_Structures_F_Exp_Civilian_Sheds]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shed_03_ruins_f.jpg|150px]]
+| <span id="Land_Shed_03_ruins_F" >'''Land_Shed_03_ruins_F'''</span>
+| ''Grey Metal Shed (Unfinished, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_Sheds|A3_Structures_F_Exp_Civilian_Sheds]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shed_04_ruins_f.jpg|150px]]
+| <span id="Land_Shed_04_ruins_F" >'''Land_Shed_04_ruins_F'''</span>
+| ''Yellow Metal Shed (Small, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_Sheds|A3_Structures_F_Exp_Civilian_Sheds]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shed_05_ruins_f.jpg|150px]]
+| <span id="Land_Shed_05_ruins_F" >'''Land_Shed_05_ruins_F'''</span>
+| ''Grey Metal Shed (Medium, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_Sheds|A3_Structures_F_Exp_Civilian_Sheds]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shed_06_ruins_f.jpg|150px]]
+| <span id="Land_Shed_06_ruins_F" >'''Land_Shed_06_ruins_F'''</span>
+| ''Grey Metal Shed (Roof, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_Sheds|A3_Structures_F_Exp_Civilian_Sheds]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shed_07_ruins_f.jpg|150px]]
+| <span id="Land_Shed_07_ruins_F" >'''Land_Shed_07_ruins_F'''</span>
+| ''Grey Metal Shed (Large, Weathered, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Civilian_Sheds|A3_Structures_F_Exp_Civilian_Sheds]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_addon_01_ruins_f.jpg|150px]]
+| <span id="Land_Addon_01_ruins_F" >'''Land_Addon_01_ruins_F'''</span>
+| ''House Addon (Small, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| City
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Addons|A3_Structures_F_Exp_Commercial_Addons]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_addon_02_ruins_f.jpg|150px]]
+| <span id="Land_Addon_02_ruins_F" >'''Land_Addon_02_ruins_F'''</span>
+| ''House Addon (Big, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| City
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Addons|A3_Structures_F_Exp_Commercial_Addons]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_addon_03_ruins_f.jpg|150px]]
+| <span id="Land_Addon_03_ruins_F" >'''Land_Addon_03_ruins_F'''</span>
+| ''House Addon (Coffee Bar, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| City
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Addons|A3_Structures_F_Exp_Commercial_Addons]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_addon_04_ruins_f.jpg|150px]]
+| <span id="Land_Addon_04_ruins_F" >'''Land_Addon_04_ruins_F'''</span>
+| ''House Addon (Terrace, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| City
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Addons|A3_Structures_F_Exp_Commercial_Addons]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_addon_05_ruins_f.jpg|150px]]
+| <span id="Land_Addon_05_ruins_F" >'''Land_Addon_05_ruins_F'''</span>
+| ''House Addon (Garage, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| City
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Addons|A3_Structures_F_Exp_Commercial_Addons]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_metalshelter_01_ruins_f.jpg|150px]]
+| <span id="Land_MetalShelter_01_ruins_F" >'''Land_MetalShelter_01_ruins_F'''</span>
+| ''Metal Market Roof (Small, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Market
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Market|A3_Structures_F_Exp_Commercial_Market]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_metalshelter_02_ruins_f.jpg|150px]]
+| <span id="Land_MetalShelter_02_ruins_F" >'''Land_MetalShelter_02_ruins_F'''</span>
+| ''Metal Market Roof (Large, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Market
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Market|A3_Structures_F_Exp_Commercial_Market]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_woodenshelter_01_ruins_f.jpg|150px]]
+| <span id="Land_WoodenShelter_01_ruins_F" >'''Land_WoodenShelter_01_ruins_F'''</span>
+| ''Wooden Shelter (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Market
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Market|A3_Structures_F_Exp_Commercial_Market]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shop_town_01_ruins_f.jpg|150px]]
+| <span id="Land_Shop_Town_01_ruins_F" >'''Land_Shop_Town_01_ruins_F'''</span>
+| ''Medium Shop (White, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Shop_Town_01|A3_Structures_F_Exp_Commercial_Shop_Town_01]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shop_town_02_ruins_f.jpg|150px]]
+| <span id="Land_Shop_Town_02_ruins_F" >'''Land_Shop_Town_02_ruins_F'''</span>
+| ''Small Shop (Yellow, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Shop_Town_02|A3_Structures_F_Exp_Commercial_Shop_Town_02]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shop_town_03_ruins_f.jpg|150px]]
+| <span id="Land_Shop_Town_03_ruins_F" >'''Land_Shop_Town_03_ruins_F'''</span>
+| ''Large Shop (White, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Shop_Town_03|A3_Structures_F_Exp_Commercial_Shop_Town_03]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_shop_town_04_ruins_f.jpg|150px]]
+| <span id="Land_Shop_Town_04_ruins_F" >'''Land_Shop_Town_04_ruins_F'''</span>
+| ''Small Shop (Red, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Village
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Shop_Town_04|A3_Structures_F_Exp_Commercial_Shop_Town_04]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_warehouse_03_ruins_f.jpg|150px]]
+| <span id="Land_Warehouse_03_ruins_F" >'''Land_Warehouse_03_ruins_F'''</span>
+| ''Warehouse (Blue, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Commercial_Warehouses|A3_Structures_F_Exp_Commercial_Warehouses]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_mausoleum_01_ruins_f.jpg|150px]]
+| <span id="Land_Mausoleum_01_ruins_F" >'''Land_Mausoleum_01_ruins_F'''</span>
+| ''Mausoleum (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Religious
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Cultural_Cemeteries|A3_Structures_F_Exp_Cultural_Cemeteries]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_church_01_ruins_f.jpg|150px]]
+| <span id="Land_Church_01_ruins_F" >'''Land_Church_01_ruins_F'''</span>
+| ''Church (Big, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Religious
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Cultural_Church_01|A3_Structures_F_Exp_Cultural_Church_01]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_church_02_ruins_f.jpg|150px]]
+| <span id="Land_Church_02_ruins_F" >'''Land_Church_02_ruins_F'''</span>
+| ''Church (Village, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Religious
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Cultural_Church_02|A3_Structures_F_Exp_Cultural_Church_02]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_church_03_ruins_f.jpg|150px]]
+| <span id="Land_Church_03_ruins_F" >'''Land_Church_03_ruins_F'''</span>
+| ''Church (Town, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Religious
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Cultural_Church_03|A3_Structures_F_Exp_Cultural_Church_03]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_temple_native_01_ruins_f.jpg|150px]]
+| <span id="Land_Temple_Native_01_ruins_F" >'''Land_Temple_Native_01_ruins_F'''</span>
+| ''Native Temple (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Historical
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Cultural_Temple_Native_01|A3_Structures_F_Exp_Cultural_Temple_Native_01]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_watertower_01_ruins_f.jpg|150px]]
+| <span id="Land_WaterTower_01_ruins_F" >'''Land_WaterTower_01_ruins_F'''</span>
+| ''Water Tower (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Utilities
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Infrastructure_WaterSupply|A3_Structures_F_Exp_Infrastructure_WaterSupply]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_house_v4_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_House_V4_ruins_F" >'''Land_Cargo_House_V4_ruins_F'''</span>
+| ''Military Cargo House (Jungle, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Military
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Military_ContainerBases|A3_Structures_F_Exp_Military_ContainerBases]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_hq_v4_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_HQ_V4_ruins_F" >'''Land_Cargo_HQ_V4_ruins_F'''</span>
+| ''Military Cargo HQ (Jungle, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Military
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Military_ContainerBases|A3_Structures_F_Exp_Military_ContainerBases]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_patrol_v4_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_Patrol_V4_ruins_F" >'''Land_Cargo_Patrol_V4_ruins_F'''</span>
+| ''Military Cargo Post (Jungle, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Military
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Military_ContainerBases|A3_Structures_F_Exp_Military_ContainerBases]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo_tower_v4_ruins_f.jpg|150px]]
+| <span id="Land_Cargo_Tower_V4_ruins_F" >'''Land_Cargo_Tower_V4_ruins_F'''</span>
+| ''Military Cargo Tower (Jungle, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Military
+| style="background-color:#c2e1c2" | Public
+| [[File:apex_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Exp_Military_ContainerBases|A3_Structures_F_Exp_Military_ContainerBases]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| 
+| <span id="Plane_Fighter_01_wreck_F" >'''Plane_Fighter_01_wreck_F'''</span>
+| ''Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#fff3b2" | Protected
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Air_F_Jets_Plane_Fighter_01|A3_Air_F_Jets_Plane_Fighter_01]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| 
+| <span id="Plane_Fighter_02_wreck_F" >'''Plane_Fighter_02_wreck_F'''</span>
+| ''To-201 Shikra wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#fff3b2" | Protected
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Air_F_Jets_Plane_Fighter_02|A3_Air_F_Jets_Plane_Fighter_02]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| 
+| <span id="Plane_Fighter_04_wreck_F" >'''Plane_Fighter_04_wreck_F'''</span>
+| ''Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Planes
+| style="background-color:#fff3b2" | Protected
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Air_F_Jets_Plane_Fighter_04|A3_Air_F_Jets_Plane_Fighter_04]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| 
+| <span id="Land_TankWreck_01_turret_F" >'''Land_TankWreck_01_turret_F'''</span>
+| ''ARGO TankWreck_01_turret_F''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Tanks
+| style="background-color:#fff3b2" | Protected
+| [[File:malden_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Argo_Wrecks|A3_Structures_F_Argo_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo20_idap_ruins_f.jpg|150px]]
+| <span id="Land_Cargo20_idap_ruins_F" >'''Land_Cargo20_idap_ruins_F'''</span>
+| ''Cargo Container (Medium, Ruin) [IDAP]''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| ORANGE
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Orange_Industrial_Cargo|A3_Structures_F_Orange_Industrial_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_cargo40_idap_ruins_f.jpg|150px]]
+| <span id="Land_Cargo40_idap_ruins_F" >'''Land_Cargo40_idap_ruins_F'''</span>
+| ''Cargo Container (Long, Ruin) [IDAP]''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Storage
+| style="background-color:#c2e1c2" | Public
+| ORANGE
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Orange_Industrial_Cargo|A3_Structures_F_Orange_Industrial_Cargo]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_mbt_04_f.jpg|150px]]
+| <span id="Land_Wreck_MBT_04_F" >'''Land_Wreck_MBT_04_F'''</span>
+| ''Angara Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Tanks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Tank_Military_Wrecks|A3_Props_F_Tank_Military_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_lt_01_f.jpg|150px]]
+| <span id="Land_Wreck_LT_01_F" >'''Land_Wreck_LT_01_F'''</span>
+| ''Nyx Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Tanks
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Tank_Military_Wrecks|A3_Props_F_Tank_Military_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_afv_wheeled_01_f.jpg|150px]]
+| <span id="Land_Wreck_AFV_Wheeled_01_F" >'''Land_Wreck_AFV_Wheeled_01_F'''</span>
+| ''Rhino MGS Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| APCs
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Tank_Military_Wrecks|A3_Props_F_Tank_Military_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| 
+| <span id="Land_RepairDepot_01_base_ruins_F" >'''Land_RepairDepot_01_base_ruins_F'''</span>
+| ''Repair depot (Civilian, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins
+| Military
+| style="background-color:#fff3b2" | Protected
+| [[File:tank_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Tank_Military_RepairDepot|A3_Structures_F_Tank_Military_RepairDepot]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_repairdepot_01_civ_ruins_f.jpg|150px]]
+| <span id="Land_RepairDepot_01_civ_ruins_F" >'''Land_RepairDepot_01_civ_ruins_F'''</span>
+| ''Repair depot (Civilian, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins
+| Military
+| style="background-color:#c2e1c2" | Public
+| [[File:tank_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Tank_Military_RepairDepot|A3_Structures_F_Tank_Military_RepairDepot]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_repairdepot_01_tan_ruins_f.jpg|150px]]
+| <span id="Land_RepairDepot_01_tan_ruins_F" >'''Land_RepairDepot_01_tan_ruins_F'''</span>
+| ''Repair depot (Tan, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins
+| Military
+| style="background-color:#c2e1c2" | Public
+| [[File:tank_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Tank_Military_RepairDepot|A3_Structures_F_Tank_Military_RepairDepot]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_repairdepot_01_green_ruins_f.jpg|150px]]
+| <span id="Land_RepairDepot_01_green_ruins_F" >'''Land_RepairDepot_01_green_ruins_F'''</span>
+| ''Repair depot (Green, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins
+| Military
+| style="background-color:#c2e1c2" | Public
+| [[File:tank_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Tank_Military_RepairDepot|A3_Structures_F_Tank_Military_RepairDepot]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_heli_02_wreck_01_f.jpg|150px]]
+| <span id="Land_Wreck_Heli_02_Wreck_01_F" >'''Land_Wreck_Heli_02_Wreck_01_F'''</span>
+| ''PO-30 Wreck (Fuselage)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Helicopters
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Enoch_Military_Wrecks|A3_Props_F_Enoch_Military_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_heli_02_wreck_02_f.jpg|150px]]
+| <span id="Land_Wreck_Heli_02_Wreck_02_F" >'''Land_Wreck_Heli_02_Wreck_02_F'''</span>
+| ''PO-30 Wreck (Tail)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Helicopters
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Enoch_Military_Wrecks|A3_Props_F_Enoch_Military_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_heli_02_wreck_03_f.jpg|150px]]
+| <span id="Land_Wreck_Heli_02_Wreck_03_F" >'''Land_Wreck_Heli_02_Wreck_03_F'''</span>
+| ''PO-30 Wreck (Rotor Blade)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Helicopters
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Enoch_Military_Wrecks|A3_Props_F_Enoch_Military_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_wreck_heli_02_wreck_04_f.jpg|150px]]
+| <span id="Land_Wreck_Heli_02_Wreck_04_F" >'''Land_Wreck_Heli_02_Wreck_04_F'''</span>
+| ''PO-30 Wreck (Door)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Helicopters
+| style="background-color:#c2e1c2" | Public
+| 
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Enoch_Military_Wrecks|A3_Props_F_Enoch_Military_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| 
+| <span id="Land_CargoPlaftorm_01_ruins_F" >'''Land_CargoPlaftorm_01_ruins_F'''</span>
+| ''Military Cargo Platform (Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#fff3b2" | Protected
+| Enoch
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Enoch_Military_Camps|A3_Structures_F_Enoch_Military_Camps]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-cargoplaftorm_01_green_ruins_f.jpg|150px]]
+| <span id="CargoPlaftorm_01_green_ruins_F" >'''CargoPlaftorm_01_green_ruins_F'''</span>
+| ''Military Cargo Platform (Green, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| Enoch
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Enoch_Military_Camps|A3_Structures_F_Enoch_Military_Camps]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-cargoplaftorm_01_brown_ruins_f.jpg|150px]]
+| <span id="CargoPlaftorm_01_brown_ruins_F" >'''CargoPlaftorm_01_brown_ruins_F'''</span>
+| ''Military Cargo Platform (Brown, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| Enoch
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Enoch_Military_Camps|A3_Structures_F_Enoch_Military_Camps]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-cargoplaftorm_01_jungle_ruins_f.jpg|150px]]
+| <span id="CargoPlaftorm_01_jungle_ruins_F" >'''CargoPlaftorm_01_jungle_ruins_F'''</span>
+| ''Military Cargo Platform (Jungle, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Tanoa)
+| Military
+| style="background-color:#c2e1c2" | Public
+| Enoch
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Enoch_Military_Camps|A3_Structures_F_Enoch_Military_Camps]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-cargoplaftorm_01_rusty_ruins_f.jpg|150px]]
+| <span id="CargoPlaftorm_01_rusty_ruins_F" >'''CargoPlaftorm_01_rusty_ruins_F'''</span>
+| ''Military Cargo Platform (Rusty, Ruin)''
+| style="background-color:#dac2e1" | Civilian
+| Ruins (Altis)
+| Military
+| style="background-color:#c2e1c2" | Public
+| Enoch
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Enoch_Military_Camps|A3_Structures_F_Enoch_Military_Camps]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;1
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_mi8_wreck_f.jpg|150px]]
+| <span id="Land_Mi8_wreck_F" >'''Land_Mi8_wreck_F'''</span>
+| ''Mi-17 Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Helicopters
+| style="background-color:#c2e1c2" | Public
+| Enoch
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Enoch_Wrecks|A3_Structures_F_Enoch_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_powergenerator_wreck_f.jpg|150px]]
+| <span id="Land_PowerGenerator_wreck_F" >'''Land_PowerGenerator_wreck_F'''</span>
+| ''Power Generator Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| Enoch
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Enoch_Wrecks|A3_Structures_F_Enoch_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_trailercistern_wreck_f.jpg|150px]]
+| <span id="Land_TrailerCistern_wreck_F" >'''Land_TrailerCistern_wreck_F'''</span>
+| ''Old Cistern Trailer''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Industrial
+| style="background-color:#c2e1c2" | Public
+| Enoch
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Enoch_Wrecks|A3_Structures_F_Enoch_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-land_v3s_wreck_f.jpg|150px]]
+| <span id="Land_V3S_wreck_F" >'''Land_V3S_wreck_F'''</span>
+| ''V3S Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Cars
+| style="background-color:#c2e1c2" | Public
+| Enoch
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Structures_F_Enoch_Wrecks|A3_Structures_F_Enoch_Wrecks]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| 
+| <span id="Spaceship_base_F" >'''Spaceship_base_F'''</span>
+| 
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Space
+| style="background-color:#fff3b2" | Protected
+| Decade
+| 
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|-
+| [[File:arma3-spaceshipcapsule_01_wreck_f.jpg|150px]]
+| <span id="SpaceshipCapsule_01_wreck_F" >'''SpaceshipCapsule_01_wreck_F'''</span>
+| ''Space Capsule Wreck''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Space
+| style="background-color:#c2e1c2" | Public
+| [[File:malden_icon_ca.png|50px]]
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Decade_Spaceship|A3_Props_F_Decade_Spaceship]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;2
+'''Slingloadable:''' No
+|-
+| [[File:arma3-spaceshipcapsule_01_debris_f.jpg|150px]]
+| <span id="SpaceshipCapsule_01_debris_F" >'''SpaceshipCapsule_01_debris_F'''</span>
+| ''Space Capsule Wreck (Debris)''
+| style="background-color:#dac2e1" | Civilian
+| Wrecks
+| Space
+| style="background-color:#c2e1c2" | Public
+| Decade
+| 
+:[[Arma 3 CfgPatches CfgVehicles#A3_Props_F_Decade_Spaceship|A3_Props_F_Decade_Spaceship]]
+
+| '''Randomization:''' No
+'''Camo&nbsp;selections:'''&nbsp;0
+'''Slingloadable:''' No
+|}
+<div style="color: grey; font-size: 0.9em; padding: 0.5em; text-align: center">Generated in {{GVI|arma 3|2.16|size= 0.75}} by [[User:R3vo|R3vo]] ([[User talk:R3vo|talk]]) 18:10, 8 August 2024 (CEST)</div>
+{{Navbox/A3Assets}}

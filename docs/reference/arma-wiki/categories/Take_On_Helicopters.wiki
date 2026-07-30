@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/Category:Take_On_Helicopters
+// revision: 322761 (2022-06-23T12:12:50Z)
+// export sha1: nw3g4dejl8ashve7ori0iavr9r3b5b5
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image = Logo TakOH full.png
+|releasedate= 20111027
+|intro = The brand new '''helicopter''' game from independent developers '''Bohemia Interactive''' – creators of the award-winning mil-sim series [[:Category:Arma 2|{{arma2}}]].
+Built upon over 10 years of experience in cutting-edge simulator development, Take On Helicopters immerses players within rich, expansive landscapes and authentic flight dynamics.
+
+'''Take''' your first steps towards mastering rotor-wing flight across a massive range of enjoyable challenges, or create your own missions using the powerful easy-to-use mission editor.
+
+'''Take''' to the air above two beautifully rich and expansive environments, based upon real-world North American and South Asian terrain-data.
+
+'''Take''' on cutting-edge technology, helicopters modelled in stunning detail, a large-scale, open-world sandbox and authentic flight dynamics…
+
+''' Take On Helicopters!'''
+|feature1 = High fidelity flight dynamics modelling
+|feature2 = Richly modelled helicopters & cockpits
+|feature3 = Expansive & detailed environments
+|feature4 = Powerful & intuitive mission editor
+|feature5 = Multiplayer – co-op & competitive scenarios
+|gallery1 = TKOH POBInfo.jpg
+|gallery2 = tkoh FIG Preview1.jpg
+|gallery3 = tkoh loading.jpg
+|dlc1 = [[Take On Helicopters: Hinds]]
+|dlc2 = [[Take On Helicopters: Rearmed]] (free)
+|dlc3 = [[Take On Helicopters: Noisecontrollers]] (free)
+|start1 = [[Take On Helicopters: Patches|Patches]]
+|start2 = [[Take On Helicopters: Samples|Helicopter Samples]]
+}}

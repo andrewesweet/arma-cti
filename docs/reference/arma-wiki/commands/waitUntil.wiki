@@ -1,0 +1,142 @@
+// source: https://community.bistudio.com/wiki/waitUntil
+// revision: 378204 (2026-03-12T16:08:53Z)
+// export sha1: jrt5nt9m7rwvabggryrbetuevz2nby2
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Program Flow
+
+|descr= Suspends execution of [[Scheduler|scheduled]] script until the given condition satisfied. 
+* This command will loop and call the code inside <sqf inline>{}</sqf> '''mostly every frame''', depends on complexity of the condition and the overall engine load, until the [[Code|code]] returns [[true]]
+* If the very first execution of the code returns [[true]] the command will exit immediately, therefore it will not produce any "Suspending not allowed in this context" error when used inside [[Scheduler#Unscheduled_Environment|non-scheduled]] script. For all other uses it must be executed in environment that allows [[Scheduler#Suspension|suspension]] ([[canSuspend]]), such as [[spawn]]ed or [[execVM]]ed code
+* Avoid doing <sqf inline>waitUntil { time > 20 };</sqf> and use <sqf inline>sleep 20;</sqf> instead!
+* If you can, add a [[sleep]] to the condition to save some cpu cycles <sqf inline>waitUntil { sleep 1; !alive player };</sqf>
+
+{{Feature|arma3|Since {{arma3}} v1.94, a ''condition'' returning anything other than [[true]] or [[false]] '''will''' result in an appropriate type error.}}
+
+|pr= For some unknown reason if you have [[waitUntil]] loop active and game is '''saved/loaded''', some variables in the expression may appear undefined for a short time. As a workaround, assign expression to a variable and make sure it is defined before [[waitUntil]] checks it:
+<sqf>waitUntil { private _expression = someBooleanVar && (someNumberVar > 10); !isNil "_expression" && { _expression } };</sqf>
+
+|s1= [[waitUntil]] condition
+
+|p1= condition: [[Code]] - the expression that '''must''' return a [[Boolean]], [[true]] to finish waiting or [[false]] to continue waiting
+
+|r1= [[Anything]] - the value the condition evaluates to when the wait is over (normally [[true]])
+
+|s2= [[waitUntil]] [condition, timeout, interval]
+|s2since= arma3 2.22
+|p21= condition: [[Code]] - the expression that '''must''' return a [[Boolean]], [[true]] to finish waiting or [[false]] to continue waiting
+|p22= timeout: [[Number]] - a timeout in seconds of game time ([[sleep]] vs [[uiSleep]]). The timeout is only checked after the condition was checked.
+|p23= interval: [[Number]] - (Optional, default 0) the time interval in seconds of game time between condition checks, this is equivalent to using a "sleep" after the condition.
+|r2= [[Anything]] - the value the condition evaluates to when the wait is over (normally [[true]]), or [[Nothing]] if the timeout ended the wait
+
+
+|s3= [[waitUntil]] scriptHandle
+|s3since= arma3 2.22
+|p41= scriptHandle: [[Script Handle]] - a script handle or [[Script Handle|promise]] to wait on
+|r3= [[Anything]] - The result of the script or [[Script_Handle#Promise_Handles|Promise]]
+
+|s4= [[waitUntil]] [scriptHandle, timeout]
+|s4since= arma3 2.22
+|p61= scriptHandle: [[Script Handle]] - a script handle or [[Script Handle|promise]] to wait on
+|p62= timeout: [[Number]] - a timeout in seconds of game time ([[sleep]] vs [[uiSleep]])
+|r4= [[Anything]] - the result of the script or [[Script_Handle#Promise_Handles|Promise]]. Or [[Nothing]] if timed out.
+
+
+|x1= <sqf>waitUntil { not alive player };</sqf>
+
+|x2= <sqf>_i = 0; waitUntil { _i = _i + 1; _i >= 100 };</sqf>
+
+|x3= [[waitUntil]] can lead to performance loss if used improperly:
+<sqf>
+waitUntil { not alive player };			// bad
+waitUntil { sleep 1; not alive player };	// good - checks every 1 second
+player addEventHandler ["Killed", {  }];	// best - don't forget about Event Handlers
+</sqf>
+
+|x4= An on-the-fly custom [[Arma 3: Event Handlers|event handler]]:
+<sqf>
+_myEH = ["ZoomIn"] spawn {
+	while { true } do
+	{
+		waitUntil { inputAction (_this select 0) == 1 };
+		diag_log format ["%1 @ %2", _this select 0, diag_tickTime];
+	};
+};
+</sqf>
+Although it may be better to use [[onEachFrame]] ([[BIS_fnc_addStackedEventHandler|stacked]]) [[Arma_3:_Mission_Event_Handlers#EachFrame|mission Event Handler]], depending on the application.
+
+|x5= Use [[getVariable]] with default value to prevent unexcepted script errors:
+<sqf>
+waitUntil { bank getVariable ["money", 0] > 0 };
+waitUntil { missionNamespace getVariable ["isready", false] };
+</sqf>
+
+|x6= Always return [[Boolean]]:
+<sqf>
+waitUntil { sleep 1; if (not alive player) exitWith {}; _time = _time + 1 };				// bad
+waitUntil { sleep 1; if (not alive player) exitWith { true }; _time = _time + 1; false };	// good
+waitUntil { sleep 1; not alive player };													// perfect
+</sqf>
+
+|seealso= [[sleep]] [[uiSleep]] [[canSuspend]] [[spawn]] [[execVM]] [[while]] [[Control Structures]]
+}}
+
+
+{{Note
+|user= CrashDome
+|timestamp= 20061220195500
+|text= waitUntil suspends both SQF functions and SQF scripts. In functions, the calling script is still in suspension due to waiting for a return from the [[call]] command. The game engine will continue, however. See [[Function]] for more detail.
+}}
+
+{{Note
+|user= RoehrenRadio
+|timestamp= 20100402171000
+|text= Prior to {{arma3}} v1.94 if [[waitUntil]] uses an undefined [[call]] code, [[waitUntil]] won't release, even when this code is separated from other conditions through [[or]]. Be warned that this won't cause an error message.
+}}
+
+{{Note
+|user= Commy2
+|timestamp= 20141213232500
+|text= If you want to use [[waitUntil]] together with [[exitWith]], remember that the loop only exits if the code block returns true.<br>
+<br>
+It should look like this:
+<sqf>
+waitUntil {
+	// exit loop if the unit gets deleted
+	if (isNull _unit) exitWith { true }; // has to return true to continue
+
+	!alive _unit;
+};
+</sqf>
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20220419060501
+|text= It's a good idea to include a timeout with the condition if there's any possibility that it never becomes true:
+<sqf>
+disableUserInput true;
+player moveInDriver _vehicle; // this command is asynchronous and can fail sometimes
+_time = time;
+waitUntil {vehicle player == _vehicle || time - _time > 3};
+disableUserInput false;
+</sqf>
+}}

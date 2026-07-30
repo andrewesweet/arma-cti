@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Common_Scripting_Errors
+// revision: 104736 (2017-11-30T10:09:02Z)
+// export sha1: kz8j01ro1sjujx41aruadtj7kqh840i
+// Vendored snapshot. Do not edit — re-export instead.
+
+Scripting can generate some errors here and there, it should be considered that all error messages that show up in white lettering across the top of the screen ''in game are'' scripting related.
+
+[[Category: Scripting Topics]]

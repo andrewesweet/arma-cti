@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/blufor
+// revision: 329284 (2022-07-27T09:50:34Z)
+// export sha1: 48j68euym0kweb9a4iq9kvnm6w05mba
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Sides
+
+|descr= Pre-defined variable for the blufor [[Side|side]].
+
+|alias= [[west]]
+
+|s1= [[blufor]] 
+
+|r1= [[Side]]
+
+|x1= <sqf>
+if (side player == blufor) then
+{
+	hint "BLUFOR";
+};
+</sqf>
+
+|seealso= [[side]] [[civilian]] [[east]] [[independent]] [[opfor]] [[resistance]] [[west]]
+}}

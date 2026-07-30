@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/distance2D
+// revision: 363614 (2024-04-08T11:45:05Z)
+// export sha1: 2y4y5ivv0duoq44f7grq13cam2k8zxj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Geometry | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|arg= global
+
+|gr1= Math - Geometry
+
+|descr= Returns a 2D distance ([[distance]] projected to X,Y plane) in meters between [[Object]]s and/or [[Position]]s.
+[[File:distance2D.jpg|250px|right]]
+
+|s1= from [[distance2D]] to
+
+|p1= from: [[Object]], [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]]
+
+|p2= to: [[Object]], [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]]
+
+|r1= [[Number]] - distance in meters or 1e10 if distance cannot be calculated
+
+|x1= <sqf>_meters = player distance2D heli;</sqf>
+
+|seealso= [[distance]] [[distanceSqr]] [[vectorDistance]]
+}}

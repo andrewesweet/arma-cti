@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/nearestBuilding
+// revision: 377548 (2026-01-02T06:54:43Z)
+// export sha1: p8jodkj7eymji173wg9zbpnojqc6z88
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Object Detection
+
+|descr= Finds the nearest building to a given object or position. A "building" is defined as an object that is of class "House" and contains a path LOD.
+
+|s1= [[nearestBuilding]] position
+
+|p1= position: [[Object]] or [[Position#Introduction|Position2D]] or [[Position#PositionAGL|PositionAGL]]
+
+|r1= [[Object]]
+
+|x1= <sqf>_nBuilding = nearestBuilding player;</sqf>
+
+|x2= <sqf>_nBuilding = nearestBuilding position player;</sqf>
+
+|seealso= [[buildingPos]] [[nearestObject]] [[nearestObjects]] [[nearObjects]] [[nearestLocation]] [[nearEntities]] [[nearTargets]] [[nearSupplies]] [[nearestLocationWithDubbing]] [[nearObjectsReady]] [[nearRoads]] [[nearestMines]]
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20160218201800
+|text= This command doesn't return any house or building placed in editor (with [[createVehicle]]). Use [[nearestObjects]] instead:
+<sqf>nearestObjects [player, ["House", "Building"], 50] select 0</sqf>
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20201230160400
+|text= Some large buildings are not found by this command. "Land_Airport_Tower_F", "Land_Offices_01_V1_F" and "Land_Hotel_02_F" are examples.
+}}

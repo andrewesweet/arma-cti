@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_DLC
+// revision: 293471 (2021-09-19T22:27:00Z)
+// export sha1: ovnqd5yk1j9bfvcwqmyz50nahdkoe1u
+// Vendored snapshot. Do not edit — re-export instead.
+
+DLC related {{arma3}} commands. For a  list of all official DLCs, see [[:Category:Arma 3: DLCs &amp; Expansions|DLCs &amp; Expansions Category]].

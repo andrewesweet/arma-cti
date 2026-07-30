@@ -1,0 +1,114 @@
+// source: https://community.bistudio.com/wiki/Category:Spearhead_1944
+// revision: 375817 (2025-07-19T08:05:50Z)
+// export sha1: i5poetihknhvjyb2fgvfysxmp5a6spk
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__ __NOEDITSECTION__
+
+[[File:spe logo black full 16 9.png|280px|link=Spearhead 1944|center]]
+
+<div class="floating-box-container" style="margin: 1em; width: auto">
+<div class="floating-box" style="margin: 1em; width: 280px; height: 210px" >
+
+== Getting Started ==
+
+[[Spearhead 1944 F.A.Q.|F.A.Q]]<br />
+[[Spearhead 1944 Official Servers|Official Servers]]<br />
+[[Spearhead 1944 Field Manual|Field Manual]]<br />
+[[Spearhead 1944 Known Issues and Workarounds|Known Issues and Workarounds]]<br />
+[[Spearhead 1944 War Diary|War Diary]]<br />
+[[Spearhead 1944 Credits|Credits]]<br />
+{{Link|https://forums.bohemia.net/forums/topic/243027-spearhead-1944-changelog|Changelog}}<br />
+
+</div>
+
+<div class="floating-box" style="margin: 1em; width: 280px; height: 210px" >
+
+== Terrains ==
+
+[[Spearhead 1944 Normandy|Normandy]]<br />
+[[Spearhead 1944 Mortain|Mortain]]<br />
+[[Spearhead 1944 Substitute Files|Substitute Files]]<br />
+
+</div>
+
+<div class="floating-box" style="margin: 1em; width: 512px; height: 210px" >
+
+== Assets ==
+
+{{Columns|3|
+[[Spearhead 1944 CfgWeapons Weapons|Weapons]]<br />
+[[Spearhead 1944 CfgWeapons Vehicle Weapons|Vehicle&nbsp;Weapons]]<br />
+[[Spearhead 1944 CfgVehicles WEST|Vehicles (WEST)]]<br />
+[[Spearhead 1944 CfgVehicles GUER|Vehicles (GUER)]]<br />
+[[Spearhead 1944 CfgGroups|Groups]]<br />
+[[Spearhead 1944 CfgVehicles Other|Objects]]<br />
+[[Spearhead 1944 CfgWeapons Equipment|Equipment]]<br />
+[[Spearhead 1944 CfgWeapons Items|Items]]<br />
+[[Spearhead 1944 CfgVehicles Backpacks|Backpacks]]<br />
+[[Spearhead 1944 CfgMagazines|Magazines]]<br />
+[[Spearhead 1944 CfgGlasses|Glasses]]<br />
+[[Spearhead 1944 Vehicle Components|Vehicle Components]]<br />
+[[Spearhead 1944 Retexturing|Retexturing]]<br />
+}}
+</div>
+
+<div class="floating-box" style="margin: 1em; width: 280px; height: 210px" >
+
+== Missions ==
+
+[[Spearhead 1944 Scenarios|Overview of all Missions]]<br />
+[[Spearhead 1944 Arsenal (WW2)|Arsenal (WW2)]]<br />
+[[Spearhead 1944 CfgMissions MPMissions|MP Missions Rotation]]<br />
+[[Spearhead 1944 CfgMissions MPMissions MissionParameters|MP Mission Parameters]]<br />
+
+
+</div>
+
+<div class="floating-box" style="margin: 1em; width: 280px; height: 210px" >
+
+== Mission Systems ==
+
+[[Spearhead 1944 Indirect Fire Support (IFS)|Indirect Fire Support (IFS)]]<br />
+[[Spearhead 1944 AI Systems (AIS)|AI Systems (AIS)]]<br />
+[[Spearhead 1944 Nametags|Nametags]]<br />
+[[Spearhead 1944 Enhanced Revive (ER)|Enhanced Revive (ER)]]<br />
+[[Spearhead 1944 Custom Difficulty Adjustment System (CDA)|Custom Difficulty Adjustment System (CDA)]]<br />
+[[Spearhead 1944 Field Repair|Field Repair (FR)]]<br />
+
+</div>
+
+<div class="floating-box" style="margin: 1em; width: 512px; height: 210px" >
+
+== Mission Making ==
+
+{{Columns|3|
+[[Spearhead 1944 CfgFunctions|Functions]]<br />
+[[Spearhead 1944 Code Snippets|Code Snippets]]<br />
+[[Spearhead 1944 CfgMusic|Music]]<br />
+[[Spearhead 1944 CfgSounds Voice Lines|Sounds and Voice Lines]]<br />
+[[Spearhead 1944 CfgVehicles Modules|Modules]]<br />
+[[Spearhead 1944 Custom Waypoints|Custom Waypoints]]<br />
+[[Spearhead 1944 Scenario Effects|Scenario Effects]]<br />
+[[Spearhead 1944 Whitelisted Arsenal|Whitelisted Arsenal]]<br />
+[[Spearhead 1944 Single Player Mission Parameters|Single Player Mission Parameters]]<br />
+[[Spearhead 1944 Frontline Function|Frontline]]<br />
+[[Spearhead 1944 Map Vote UI|Map Vote UI]]<br />
+[[Spearhead 1944 Animated Briefing (AB)|Animated Briefing (AB)]]<br />
+[[Spearhead 1944 Portraits|Portraits]]<br />
+[[Spearhead 1944 CfgRoles|Roles]]<br />
+[[Spearhead 1944 Vehicle Customization|Vehicle Customization]]<br />
+[[Spearhead 1944 CfgMarkers|Markers]]<br />
+[[Spearhead 1944 CfgMarkerColors|Marker Colors]]<br />
+[[Spearhead 1944 CfgPatches|CfgPatches]]<br />
+}}
+</div>
+
+</div>
+
+<div class="floating-box-container" style="margin: 1em; width: auto">
+<div class="floating-box" style="padding-top: 1em">[[File:spe_screenshot01.jpg|280px]]</div>
+<div class="floating-box" style="padding-top: 1em">[[File:spe_screenshot02.jpg|280px]]</div>
+</div>
+
+{{GameCategory|arma3|CDLCs}}

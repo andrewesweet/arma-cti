@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/curatorCoef
+// revision: 348299 (2023-11-08T12:59:35Z)
+// export sha1: 443mpdxkujf9xyac2kbpy9131vxftld
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Returns current coeficient setting.
+
+|s1= curatorObj [[curatorCoef]] action
+
+|p1= curatorObj: [[Object]] - curator module.
+
+|p2= action: [[String]]
+
+|r1= [[Number]]
+
+|x1= <sqf>curatorModule curatorCoef "Place";</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

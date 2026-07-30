@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Infantry_Metrics
+// revision: 245899 (2021-02-16T18:03:55Z)
+// export sha1: lci2p0cqxgowcaf2mqipy7ruwjp8rlf
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|warning|The following information '''are by no means official'''. They were retrieved with some simple tests as described below.}}
+For making structures and also maps that work well in-game it ss important to know what metrics infantry units have.
+
+= Wall Height =
+* 50cm - look over:"high prone", shootover: "high prone", totally covered: "regular prone"
+* 80cm - look over:"regular crouch", shootover:"regular crouch", totally covered:"high prone" (the sitting animation). Bipod deployable.
+* 110cm - look over:"high crouch", shootover:"high crouch", totally covered:"low crouch". Bipod deployable.
+* 130cm - look over:"low stand", shootover:"regular stand", totally covered:"high crouch". Bipod deployable.
+* 145cm - look over:"stand", shootover:"high stand", totally covered:"high crouch". Bipod deployable.
+
+{{Feature|informative|The heights listed here are the VR Obstacle objects. They can be used as reference.<br>
+Totally covered and shoot over depends on what height the target is at. To get the values above infantry units at the same ground level at 100 m distance where used.
+}}
+
+= Ceiling/ Gap Height =
+(e.g. in a fence, wall, door frame or room height)
+
+* 20cm - can shoot below in "low prone", enemy feet past 50m barely hittable
+* 50cm - minimum for moving through in prone
+* 110cm - minimum for moving through in crouch, BUT bad clipping with head. Better use 120cm
+* 170cm - minimum for moving through in standing, BUT bad clipping with head. Better use 180cm (no clipping, even in high stand)
+
+= Corridor Width =
+* 90cm - minimum width for walking through. Turning in "regular stand" and "regular crouch" is possible but very twitchy (due to wall collisions of the weapon). Better use 100cm. Crouched turning causes head to clip through wall
+* 130cm - minimum for turning in "low crouch" and "high crouch" (but twitchy). Better use 140cm.
+* 170cm - minimum for turning in "regular prone", but twitchy (only is gone at 200cm). No "high prone" or "low prone" turning possible.
+* 200cm - minimum for turning in "high prone" and "low prone" , no twitching.
+
+'''Walking past another standing soldier close to the wall, both facing along the corridor:'''
+* 150cm - only using "step" function - pretty glitchy.
+* 160cm - only using "step" but only 1 step required
+* 180cm - passing without "step" possible.
+
+{{Feature|informative|Note that depending on orientation and stance of both soldiers, it may be easier or harder to pass.}}
+
+{{Feature|informative|When two separate building/object walls are 180 cm apart from each other, the AI seems to be able to navigate this corridor (better use 2m in this case though).
+For interior of buildings (with paths LOD and roadway LOD) smaller corridors are no issue for AI, because they can walk through Geometry when on a path.}}
+
+{{Feature|informative|The tests where conducted with the 1x1x1m VR Block, and the 10x5x4m VR Block. So if their geometry does not properly match these results are slightly inaccurate.<br>
+<small>Edit: It seems that for the VR Block skews the results a little bit (or the crouched stance got increased geometry model in some patch). I was not able to turn 360° in a gap of 1m in regular crouched stance inside a building. 1.1meter is fine however.</small>}}
+
+= Weapon Deployment Limits =
+* You can definitely deploy weapons between 0.8 m height (maybe even lower) and 1.45 meter height (maybe even higher).
+* You need minimum clearance for the muzzle when deployed. Imagine you place a 130cm tall "resting block" in front of a 2m tall wall and you try to deploy the weapon on the resting block, facing in the direction of the wall. You will only be able to deploy if the space between resting block and wall is somewhere between 35cm and 40cm (37.5cm worked in my case). Of note here is that this space needs to be in the fire geometry LOD, normal geometry LOD does not affect this particular case.
+
+= Walkable Slope =
+* Slope angle on Roadway LOD to be still walkable
+* Up to 50° from horizontal - no problem getting on the slope and walking on it
+* At least up to 65° from horizontal (possibly steeper, test stopped at 65°) - can walk on the slope itself, but difficulty getting on it from horizontal level. Without using "step over" key (or glitching/walking diagonal) it is not possible to get on the slope from a horizontal place, when standing at the bottom.
+* Generally avoid steep slopes where possible, because infantry are "turbo-boosted" when walking up or down (looks real goofy), as their walking speed is constant and referenced to the horizontal plane.
+
+{{GameCategory|arma3|Editing}}

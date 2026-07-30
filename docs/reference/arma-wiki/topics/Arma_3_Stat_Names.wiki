@@ -1,0 +1,1075 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Stat_Names
+// revision: 339412 (2023-04-28T14:08:45Z)
+// export sha1: fko4fw5ft7vv182abkg5mfz36kc6a13
+// categories: Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+List of possible values for StatName for commands [[setStatValue]] and [[getStatValue]] – data extracted from '''{{Link|https://steamdb.info/app/107410/stats/|Steam Database}}'''.
+
+Stat names can also be retrieved using {{Link|https://developer.valvesoftware.com/wiki/Steam_Web_API#GetSchemaForGame_.28v2.29|Steam Web API - GetSchemaForGame}}.<br>
+
+{|
+| style="vertical-align: top" |
+== Stats ==
+
+{| class="wikitable sortable"
+! API Name
+|-
+| GamePlayed
+|-
+| GamePlayedDays
+|-
+| GamePlayedTimeStamp
+|-
+| MPPlayTime
+|-
+| SPPlayTime
+|-
+| WorkshopMissionPublishedCount
+|-
+| WorkshopMissionPublishedFlag
+|-
+| DevPlayTime
+|-
+| StablePlayTime
+|-
+| TotalPlayTime
+|-
+| EditorPlayTime
+|-
+| WorkshopMissionPlayTime
+|-
+| CampaignPlayTime
+|-
+| CampaignEPAPlayTime
+|-
+| CampaignEPBPlayTime
+|-
+| CampaignEPCPlayTime
+|-
+| AltisPlayTime
+|-
+| StratisPlayTime
+|-
+| OtherWorldPlayTime
+|-
+| ChallengesPlayTime
+|-
+| ShowcasesPlayTime
+|-
+| ZeusPlayerPlayTime
+|-
+| ZeusNormalPlayerGamePlayTime
+|-
+| FieldManualPlayTime
+|-
+| FiringDrillsPlayTime
+|-
+| ZeusUnitControlPlayTime
+|-
+| CompletedEPA
+|-
+| CompletedEPB
+|-
+| CompletedEPC
+|-
+| CompletedEPC_A
+|-
+| CompletedEPC_B
+|-
+| StartedAnyScenario
+|-
+| CompletedFD01
+|-
+| CompletedFD02
+|-
+| CompletedFD03
+|-
+| CompletedFD04
+|-
+| CompletedFD05
+|-
+| CompletedFD06
+|-
+| CompletedFD07
+|-
+| CompletedFD08
+|-
+| CompletedFD09
+|-
+| CompletedFD10
+|-
+| CompletedBronzeFD01
+|-
+| CompletedBronzeFD02
+|-
+| CompletedBronzeFD03
+|-
+| CompletedBronzeFD04
+|-
+| CompletedBronzeFD05
+|-
+| CompletedBronzeFD06
+|-
+| CompletedBronzeFD07
+|-
+| CompletedBronzeFD08
+|-
+| CompletedBronzeFD09
+|-
+| CompletedBronzeFD10
+|-
+| CompletedSilverFD01
+|-
+| CompletedSilverFD02
+|-
+| CompletedSilverFD03
+|-
+| CompletedSilverFD04
+|-
+| CompletedSilverFD05
+|-
+| CompletedSilverFD06
+|-
+| CompletedSilverFD07
+|-
+| CompletedSilverFD08
+|-
+| CompletedSilverFD09
+|-
+| CompletedSilverFD10
+|-
+| CompletedGoldFD01
+|-
+| CompletedGoldFD02
+|-
+| CompletedGoldFD03
+|-
+| CompletedGoldFD04
+|-
+| CompletedGoldFD05
+|-
+| CompletedGoldFD06
+|-
+| CompletedGoldFD07
+|-
+| CompletedGoldFD08
+|-
+| CompletedGoldFD09
+|-
+| CompletedGoldFD10
+|-
+| AchievedFDSpecial1
+|-
+| AchievedFDSpecial2
+|-
+| CompletedTT01
+|-
+| CompletedTT02
+|-
+| CompletedTT03
+|-
+| CompletedTT04
+|-
+| CompletedTT05
+|-
+| CompletedBronzeTT01
+|-
+| CompletedBronzeTT02
+|-
+| CompletedBronzeTT03
+|-
+| CompletedBronzeTT04
+|-
+| CompletedBronzeTT05
+|-
+| CompletedSilverTT01
+|-
+| CompletedSilverTT02
+|-
+| CompletedSilverTT03
+|-
+| CompletedSilverTT04
+|-
+| CompletedSilverTT05
+|-
+| CompletedGoldTT01
+|-
+| CompletedGoldTT02
+|-
+| CompletedGoldTT03
+|-
+| CompletedGoldTT04
+|-
+| CompletedGoldTT05
+|-
+| AchievedTTSpecial1
+|-
+| AchievedTTSpecial2
+|-
+| AchFDFirst
+|-
+| AchFDBronze
+|-
+| AchFDGold
+|-
+| AchTTFirst
+|-
+| AchTTBronze
+|-
+| AchTTGold
+|-
+| ZeusUnitsCreated
+|-
+| AchZeusHerosJourney
+|-
+| AchZeusDietyForADay
+|-
+| AchZeusMagnumOpus
+|-
+| AchZeusGodlyCreations
+|-
+| AchZeusScapegoat
+|-
+| AchZeusWorshiper
+|-
+| AchZeusMercifulGod
+|-
+| ZeusPingResponded
+|-
+| KartsPTKart_01_F
+|-
+| KartsPTPistol_Signal_01_F
+|-
+| KartsPTC_RacingHelmet_F
+|-
+| KartsPTC_Driver_F
+|-
+| BCFirstDeployment
+|-
+| BCKIA
+|-
+| BCDrillInstructor
+|-
+| BCReadyForDuty
+|-
+| BCStarRecruit
+|-
+| BCVirtualReality
+|-
+| BCVirtualCommand
+|-
+| BCRealVirtuality
+|-
+| BCLockAndLoad
+|-
+| BCRelentlessCreator
+|-
+| VRPlayTime
+|-
+| WorkshopMissionSubscribedFlag
+|-
+| WorkshopMissionUpdatedFlag
+|-
+| HeliPTTaru
+|-
+| HeliPTHuron
+|-
+| HeliPTM900
+|-
+| HeliShowcasing
+|-
+| HeliMeetAndGreet
+|-
+| HeliShowtime
+|-
+| HeliAirbridge
+|-
+| HeliDustOff
+|-
+| HeliNapOfTheEarth
+|-
+| TTHeliGold
+|-
+| TTHeliBronze
+|-
+| BCVirtualNOEFlight
+|-
+| BCAdvVirtualPilot
+|-
+| BCVirtualPilot
+|-
+| CompletedTT06
+|-
+| CompletedTT07
+|-
+| CompletedTT08
+|-
+| CompletedTT09
+|-
+| CompletedTT10
+|-
+| CompletedBronzeTT06
+|-
+| CompletedBronzeTT07
+|-
+| CompletedBronzeTT08
+|-
+| CompletedBronzeTT09
+|-
+| CompletedBronzeTT10
+|-
+| CompletedGoldTT06
+|-
+| CompletedGoldTT07
+|-
+| CompletedGoldTT08
+|-
+| CompletedGoldTT09
+|-
+| CompletedGoldTT10
+|-
+| MarkPT_DMR_02
+|-
+| MarkPT_DMR_03
+|-
+| MarkPT_DMR_04
+|-
+| MarkPT_DMR_05
+|-
+| MarkPT_DMR_06
+|-
+| MarkPT_MMG_01
+|-
+| MarkPT_MMG_02
+|-
+| MarkPT_fullghillie
+|-
+| MarkPT_equip_b_carrier_gl_rig
+|-
+| MarkPT_acco_khs
+|-
+| MarkPT_Designator_01
+|-
+| MarkPT_acco_ams
+|-
+| MarkVirtualShooter
+|-
+| MarkBadOmens
+|-
+| MarkDodgeThis
+|-
+| MarkHacker
+|-
+| MarkCarrier
+|-
+| MarkHipShooter
+|-
+| MarkConservativeSharpshooter
+|-
+| MarkVirtualVehicleInspection
+|-
+| MarkMassVirtualDestruction
+|-
+| MarkRockStable
+|-
+| MarkMarksmenWeaponMaster
+|-
+| CompletedFD11
+|-
+| CompletedFD12
+|-
+| CompletedFD13
+|-
+| CompletedBronzeFD11
+|-
+| CompletedBronzeFD12
+|-
+| CompletedBronzeFD13
+|-
+| CompletedGoldFD11
+|-
+| CompletedGoldFD12
+|-
+| CompletedGoldFD13
+|-
+| CompletedSilverFD11
+|-
+| CompletedSilverFD12
+|-
+| CompletedSilverFD13
+|-
+| GamePlayedWin
+|-
+| GamePlayedDaysWin
+|-
+| GamePlayedTimeStampWin
+|-
+| GamePlayedLinux
+|-
+| GamePlayedDaysLinux
+|-
+| GamePlayedTimeStampLinux
+|-
+| GamePlayedMacOS
+|-
+| GamePlayedDaysMacOS
+|-
+| GamePlayedTimeStampMacOS
+|-
+| 2DEditorPlayTime
+|-
+| 3DEditorPlayTime
+|-
+| 3DENModelStudent
+|-
+| 3DENPuppeteer
+|-
+| 3DENArsenal
+|-
+| 3DENImport2D
+|-
+| ExpPT_ctar
+|-
+| ExpPT_cmr
+|-
+| ExpPT_erco
+|-
+| ExpPT_lmg
+|-
+| ExpPT_pm9
+|-
+| ExpPT_rpg7
+|-
+| ExpPT_spar16
+|-
+| ExpPT_spar17
+|-
+| ExpPT_arx
+|-
+| ExpPT_planeCivil
+|-
+| ExpPT_kh3a
+|-
+| ExpPT_mq12
+|-
+| ExpPT_offroad
+|-
+| ExpPT_prowler
+|-
+| ExpPT_qilin
+|-
+| ExpPT_rhib
+|-
+| ExpPT_v44x
+|-
+| ExpPT_y32
+|-
+| ExpPT_scooter
+|-
+| ExpPT_ctrg
+|-
+| ExpPT_paraTT
+|-
+| ExpPT_paraTee
+|-
+| ExpPT_sphHex
+|-
+| ExpPT_spsHex
+|-
+| ExpPT_sch
+|-
+| ExpPT_ak12
+|-
+| ExpPT_aks
+|-
+| ExpPT_akm
+|-
+| ExpPT_protector
+|-
+| ExpFirestarter
+|-
+| ExpFastExtract
+|-
+| ExpWarlockDown
+|-
+| ExpBetterWithFriends
+|-
+| ExpLoneWolf
+|-
+| ExpBiggerPicture
+|-
+| ExpNoneTheWiser
+|-
+| ExpWelcomeToTanoa
+|-
+| ExpTransportService
+|-
+| ExpGamePlan
+|-
+| ExpSerpentMark
+|-
+| ExpChangingBalance
+|-
+| ExpMrAnderson
+|-
+| ExpVehLoadUnload
+|-
+| ExpPT_adr97
+|-
+| TanoaPlaytime
+|-
+| ExpPT_snds65
+|-
+| ExpPT_paraRF
+|-
+| ExpPT_paraMK
+|-
+| ExpPT_paraLNCH
+|-
+| ExpPT_bandMK
+|-
+| ExpPT_bandLNCH
+|-
+| ExpPT_bandMG
+|-
+| ExpPT_bandRF
+|-
+| ExpPT_bandSCT
+|-
+| ExpPT_helmetSkate
+|-
+| ExpPT_balacava
+|-
+| ExpPT_tacChessRig
+|-
+| ExpPT_viperHarness
+|-
+| ExpPT_backBergen
+|-
+| ExpPT_nvgComp
+|-
+| ExpPT_envgII
+|-
+| JetsPT_PlaneFighter01
+|-
+| JetsPT_PlaneFighter02
+|-
+| JetsPT_PlaneFighter04
+|-
+| JetsPT_UAV05
+|-
+| JetsPT_DeckCrewVest
+|-
+| JetsBomberman
+|-
+| JetsDeadstickLanding
+|-
+| JetsGetArrested
+|-
+| JetsArmedAndDangerous
+|-
+| JetsPunchOut
+|-
+| MaldenPlayTime
+|-
+| OrangeCampaignDone
+|-
+| OrangeCampaignComplete
+|-
+| OrangeCampaignGood
+|-
+| OrangeShowcaseIDAP
+|-
+| OrangeShowcaseLoW
+|-
+| OrangeTTBronze
+|-
+| OrangeTTGold
+|-
+| CompletedTT11
+|-
+| CompletedTT12
+|-
+| CompletedTT13
+|-
+| CompletedTT14
+|-
+| CompletedTT15
+|-
+| CompletedBronzeTT11
+|-
+| CompletedBronzeTT12
+|-
+| CompletedBronzeTT13
+|-
+| CompletedBronzeTT14
+|-
+| CompletedBronzeTT15
+|-
+| CompletedGoldTT11
+|-
+| CompletedGoldTT12
+|-
+| CompletedGoldTT13
+|-
+| CompletedGoldTT14
+|-
+| CompletedGoldTT15
+|-
+| AIKillCount
+|-
+| PlayerKillCount
+|-
+| RenegadeCount
+|-
+| OrangePT_Van02
+|-
+| OrangePT_UAV06
+|-
+| OrangePT_APERSMineDispenser
+|-
+| OrangePT_TrainingMine
+|-
+| OrangePT_SafetyVest
+|-
+| OrangePT_MultiPocketVest
+|-
+| OrangePT_IdentificationVest
+|-
+| OrangePT_EODVest
+|-
+| OrangePT_MessengerBag
+|-
+| OrangePT_LegStrapBag
+|-
+| OrangePT_WirelessEarpiece
+|-
+| OrangePT_EarProtectors
+|-
+| OrangePT_HardHat
+|-
+| OrangePT_SafariHat
+|-
+| OrangePT_HeadBandage
+|-
+| OrangePT_BasicHelmet
+|-
+| OrangePT_Respirator
+|-
+| OrangePT_EyeProtectors
+|-
+| OrangePT_ParamedicOutfit
+|-
+| OrangePT_MechanicClothes
+|-
+| OrangeCampaignArticleDecisionA
+|-
+| OrangeCampaignArticleDecisionB
+|-
+| OrangeCampaignArticleDecisionC
+|-
+| OrangeCampaignArticleDecisionD
+|-
+| OrangeCampaignArticleDecisionE
+|-
+| OrangeCampaignAirDropDecisionA
+|-
+| OrangeCampaignAirDropDecisionB
+|-
+| OrangeCampaignLeafletsDecisionA
+|-
+| OrangeCampaignLeafletsDecisionB
+|-
+| OrangeCampaignClusterDecisionA
+|-
+| OrangeCampaignClusterDecisionB
+|-
+| OrangeCampaignEscapeDecisionA
+|-
+| OrangeCampaignEscapeDecisionB
+|-
+| OrangeCampaignMineDispenserDecisionA
+|-
+| OrangeCampaignMineDispenserDecisionB
+|-
+| ToDifferentPerspective
+|-
+| ToForwardObserver
+|-
+| ToBeyondHope
+|-
+| ToChangingPlaces
+|-
+| ToSteppingStone
+|-
+| ToSeasonedWarfighter
+|-
+| ToSteelPegasus
+|-
+| ToSavior
+|-
+| ToLifeline
+|-
+| TankPT_rhino
+|-
+| TankPT_nyx
+|-
+| TankPT_angara
+|-
+| TankPT_tankCrew
+|-
+| TankTTBronze
+|-
+| TankTTGold
+|-
+| TankByTheBook
+|-
+| TankFromWithin
+|-
+| TankEasyMoney
+|-
+| TankSteelSniper
+|-
+| TankCommander
+|-
+| TankSizeNotMatter
+|-
+| TankInItTogether
+|-
+| CompletedTT16
+|-
+| CompletedTT17
+|-
+| CompletedTT18
+|-
+| CompletedBronzeTT16
+|-
+| CompletedBronzeTT17
+|-
+| CompletedBronzeTT18
+|-
+| CompletedGoldTT16
+|-
+| CompletedGoldTT17
+|-
+| CompletedGoldTT18
+|-
+| TankFromWithinCount
+|-
+| TankCommanderCount
+|-
+| TankSizeNotMatterCount
+|-
+| TankInItTogetherCount
+|-
+| ContactPT_UGV02
+|-
+| ContactPT_Tractor01
+|-
+| ContactPT_MSBS65
+|-
+| ContactPT_MSBS65_ICO
+|-
+| ContactPT_HunterShotgun01
+|-
+| ContactPT_DMR_06
+|-
+| ContactPT_RPK12
+|-
+| ContactPT_AKU12
+|-
+| ContactPT_ESD01
+|-
+| ContactPT_ESD01_Light
+|-
+| ContactPT_ESD01_Antenna01
+|-
+| ContactPT_ESD01_Antenna02
+|-
+| ContactPT_ESD01_Antenna03
+|-
+| ContactPT_LDFFatigues
+|-
+| ContactPT_LDFHelmet
+|-
+| ContactPT_LDFVest
+|-
+| ContactPT_Granit
+|-
+| ContactPT_Avenger
+|-
+| ContactPT_Kipchak
+|-
+| ContactPT_CBRNSuit
+|-
+| ContactPT_CBRNAPR
+|-
+| ContactPT_CBRNCUR
+|-
+| ContactPT_RegulatorMask
+|-
+| ContactPT_SCBA
+|-
+| ContactPT_SIMCOM
+|-
+| ContactPT_RadioPack
+|-
+| ContactPT_Blindfold
+|-
+| ContactPT_TinFoilHat
+|-
+| ContactPT_Offroad01_Covered
+|-
+| EnochPlayTime
+|-
+| ContactCampaignIntro1PlayTime
+|-
+| ContactCampaignIntro2PlayTime
+|-
+| ContactCampaignIntro3PlayTime
+|-
+| ContactCampaignFreeRoam1PlayTime
+|-
+| ContactCampaignFreeRoam2PlayTime
+|-
+| ContactCampaignOutro2PlayTime
+|-
+| ContactCampaignOutro3PlayTime
+|-
+| ContactCampaignIntro1Finished
+|-
+| ContactCampaignIntro2Finished
+|-
+| ContactCampaignIntro3Finished
+|-
+| ContactCampaignFreeRoam1Finished
+|-
+| ContactCampaignFreeRoam2Finished
+|-
+| ContactCampaignOutro2Finished
+|-
+| ContactCampaignOutro3Finished
+|-
+| ContactCampaignTotalPlayTime
+|-
+| ContactCampaignCompleted
+|}
+
+| style="vertical-align: top" |
+== Achievements ==
+
+{| class="wikitable sortable"
+! API name !! Display name !! Description
+|-
+| AchEPAFinished || Tactical Withdrawal || Hidden.
+|-
+| AchEPBFinished || Guerilla Warfare || Hidden.
+|-
+| AchEPCFinished || Question of Loyalty || Hidden.
+|-
+| AchEPCFinished_A || Peacekeeper || Hidden.
+|-
+| AchEPCFinished_B || Every Man for Himself || Hidden.
+|-
+| testAchTTFirst || Start Your Engines || Finished any official Time Trial.
+|-
+| testAchTTBronze || Aspiring Kart Racer || Earned the bronze medal in all official Karts Time Trials.
+|-
+| testAchTTGold || Formula Kart || Earned the gold medal in all official Karts Time Trials.
+|-
+| testAchTTSpecial1 || Clean Race || Finished any official Karts Time Trial without damage.
+|-
+| testAchTTSpecial2 || Speed Demon || Finished any official Karts Time Trial with an average speed of 85 kmph or more.
+|-
+| testAchFDFirst || Competitive Shooter || Finished any official Firing Drill.
+|-
+| testAchFDBronze || Aspiring Sharpshooter || Earned the bronze medal in all official Firing Drills.
+|-
+| testAchFDGold || Firing Drills Champion || Earned the gold medal in all official Firing Drills.
+|-
+| testAchFDSpecial1 || Clean Drill || Finished any official Firing Drill without penalties (competitive rules).
+|-
+| testAchFDSpecial2 || Bonus Targets || Hit every bonus target in any official Firing Drill with bonus targets.
+|-
+| testAchZeusHerosJourney || Hero's Journey || Placed any objective for players as Zeus.
+|-
+| testAchZeusDietyForADay || Deity for a Day || Played as Zeus for a total of 24 hours.
+|-
+| testAchZeusGodlyCreations || Godly Creations || Placed a total of 200 objects as Zeus across all scenarios.
+|-
+| testAchZeusWorshiper || Worshiper || Pinged your Zeus.
+|-
+| testAchZeusMercifulGod || Merciful God || Reacted to 5 player pings as a Zeus by using the control shortcut.
+|-
+| testAchGamePlayed || This is War || Started your first Arma 3 scenario - welcome!
+|-
+| testAchZeusScapegoat || Scapegoat || Killed by a player while remotely controlling a unit as Zeus.
+|-
+| AchBCFirstDeployment || First Deployment || Completed the Bootcamp campaign. Get ready for your next deployment!
+|-
+| AchBCKIA || K.I.A. || Died in any Bootcamp campaign scenario. If you see the flash, it is already too late ...
+|-
+| AchBCDrillInstructor || Drill Instructor || Guided your recruits through all Bootcamp Zeus training stages.
+|-
+| AchBCReadyForDuty || Ready for Duty || Passed all Bootcamp Zeus training stages as a recruit.
+|-
+| AchBCStarRecruit || Star Recruit || Completed the bootcamp combat training stage without hurting yourself or others.
+|-
+| AchBCVirtualReality || Virtual Reality || Booted up the VR simulation for the first time.
+|-
+| AchBCVirtualCommand || Virtual Command || Completed all official VR commanding courses.
+|-
+| AchBCRealVirtuality || Real Virtuality || Completed all official VR training courses.
+|-
+| AchBCLockAndLoad || Lock and Load || Saved a custom load-out in VR Arsenal.
+|-
+| AchBCContributor || Contributor || Published a scenario to Steam Workshop.
+|-
+| AchBCSubscriber || Subscriber || Subscribed to a scenario on Steam Workshop.
+|-
+| AchBCPerfectionist || Perfectionist || Updated an existing Steam Workshop scenario to a newer version.
+|-
+| AchBCRelentlessCreator || Relentless Creator || Spent over 100 hours creating and testing in the scenario editor.
+|-
+| AchBCVirtualPilot || Virtual Pilot || Completed all official VR helicopter courses.
+|-
+| AchBCAdvVirtualPilot || Advanced Virtual Pilot || Completed all official VR helicopter courses while using the Advanced Flight Model.
+|-
+| AchBCVirtualNOEFlight || Virtual NOE Flight || Completed the Low Flight stage in the advanced VR helicopter course under 40 seconds.
+|-
+| AchTTHeliBronze || Aspiring Stunt Pilot || Earned the bronze medal in all official Helicopter Time Trials.
+|-
+| AchTTHeliGold || Golden Rotorhead || Earned the gold medal in all official Helicopter Time Trials.
+|-
+| AchHeliNapOfTheEarth || Nap of the Earth || Flew under an average of 22 meters AGL in any official Helicopters Time Trial.
+|-
+| AchHeliDustOff || Dust-Off || Completed 10 medevac tasks in official Support multiplayer.
+|-
+| AchHeliAirbridge || Airbridge || Transported 10 groups of soldiers into battle without being killed in official Support multiplayer.
+|-
+| AchHeliShowtime || Showtime || Tried any 5 official showcases.
+|-
+| AchHeliMeetAndGreet || Meet and Greet || Visited all official Faction Showcases to check out their weapons and vehicles on display.
+|-
+| AchHeliShowcasing || Showcasing || Completed all official Showcases.
+|-
+| AchMarkVirtualShooter || Virtual Shooter || Completed all official VR Weapon Handling courses.
+|-
+| AchMarkBadOmens || Bad Omens || Discovered the secret room in Showcase Firing From Vehicles.
+|-
+| AchMarkDodgeThis || Dodge This || Completed Showcase Marksmen without injury.
+|-
+| AchMarkHacker || Hacker || Downloaded Intel 5 times in official End Game multiplayer.
+|-
+| AchMarkCarrier || Carrier || Became the Carrier in official End Game multiplayer for the first time.
+|-
+| AchMarkHipShooter || Hip Shooter || Finished any official Marksmen Firing Drill without resting or deploying your weapon (competitive rules).
+|-
+| AchMarkConservativeSharpshooter || Conservative Sharpshooter || Finished any official Firing Drill by hitting all targets and spending no more than a single round per target.
+|-
+| AchMarkVirtualVehicleInspection || Virtual Vehicle Inspection || Visited the Garage in VR Arsenal for the first time.
+|-
+| AchMarkMassVirtualDestruction || Mass Virtual Destruction || Disabled all target vehicles in VR Arsenal at the same time.
+|-
+| AchMarkRockStable || Rock Stable || Deployed any weapon for the first time.
+|-
+| AchMarkMarksmenWeaponMaster || Marksmen Weapon Master || Tried all 7 Marksmen DLC weapons.
+|-
+| Ach3DENModelStudent || Model Student || Completed all Eden Editor tutorials.
+|-
+| Ach3DENPuppeteer || Puppeteer || Played a scenario as a non-player character in the Eden Editor.
+|-
+| Ach3DENArsenal || Dressing Doll || Configured a character loadout using the Arsenal in the Eden Editor.
+|-
+| Ach3DENImport2D || New Dimension || Imported a 2D scenario into the Eden Editor.
+|-
+| AchExpFirestarted || Firestarter || Hidden.
+|-
+| AchExpFastExtract || Fast Extract || Hidden.
+|-
+| AchExpWarlockDown || Warlock Down || Hidden.
+|-
+| AchExpBetterWithFriends || Better With Friends || Completed each mission of the Apex Protocol campaign with the help of your teammates.
+|-
+| AchExpLoneWolf || Lone Wolf || Completed each mission of the Apex Protocol campaign alone.
+|-
+| AchExpBiggerPicture || The Bigger Picture || Completed each mission of the Apex Protocol campaign chronologically.
+|-
+| AchExpNoneTheWiser || None The Wiser || Completed the 04 Heart of Darkness campaign mission without alerting the enemy.
+|-
+| AchExpWelcomeToTanoa || Welcome to Tanoa || Visited the crown jewel terrain of Arma 3 Apex for the first time.
+|-
+| AchExpTransportService || Transport Service || Loaded or unloaded 5 vehicles into any suitable transport vehicle.
+|-
+| AchExpGamePlan || Game Plan || Drew at least one line on the map.
+|-
+| AchExpSerpentMark || With Mark of the Serpent || Tried out Viper Special Purpose Suit.
+|-
+| AchExpChangingBalance || Changing the Balance || Modified your difficulty options and saved the custom settings.
+|-
+| AchExpMrAnderson || Mr. Anderson || Equipped any variant of the ADR-97 Weapon Pack ('Official Mod').
+|-
+| AchJetsBomberman || Bomberman || Destroyed a ground target with a bomb in Showcase Fighter Jets.
+|-
+| AchJetsDeadstickLanding || Deadstick Landing || Landed your damaged aircraft for repairs in Showcase Fighter Jets.
+|-
+| AchJetsGetArrested || Get Arrested || Successfully completed your first carrier landing.
+|-
+| AchJetsArmedAndDangerous || Armed and Dangerous || Customized any compatible vehicle's dynamic loadout in Eden Editor.
+|-
+| AchJetsPunchOut || Punch Out || Safely ejected from any compatible jet using an ejection seat.
+|-
+| AchOrangeCampaignDone || Remnants of War || Cleared all explosives from Oreokastro and completed the Remnants of War campaign.
+|-
+| AchOrangeCampaignComplete || Memories of Oreokastro || Recalled all memories in Oreokastro during the Remnants of War campaign.
+|-
+| AchOrangeCampaignGood || Humanitarian || Faced with difficult decisions in the Remnants of War campaign, you went for the more humane options.
+|-
+| AchOrangeShowcaseIDAP || Explosive Treasure || Found and triggered all hidden training mines in the IDAP faction Showcase.
+|-
+| AchOrangeShowcaseLoW || Collateral Damage || Completed the 3 VR simulations in Showcase Laws of War without any civilian collateral damage.
+|-
+| AchOrangeTTBronze || Aspiring Aid Supplier || Earned the bronze medal in all official IDAP Time Trials.
+|-
+| AchOrangeTTGold || Fast Aid || Earned the gold medal in all official IDAP Time Trials.
+|-
+| AchToDifferentPerspective || Different Perspective || Completed each role of the Beyond Hope operation.
+|-
+| AchToForwardObserver || Forward Observer || Destroyed all APCs defending Orino by artillery strike in the Beyond Hope operation.
+|-
+| AchToBeyondHope || Beyond Hope || Completed the Beyond Hope operation.
+|-
+| AchToChangingPlaces || Changing Places || Completed each role of the Stepping Stone operation.
+|-
+| AchToSteppingStone || Stepping Stone || Completed the Stepping Stone operation.
+|-
+| AchToSeasonedWarfighter || Seasoned Warfighter || Completed one mission of the Stepping Stone operation without dying.
+|-
+| AchToSteelPegasus || Steel Pegasus || Completed the Steel Pegasus operation.
+|-
+| AchToSavior || Savior || Rescued both pilot and medic in the LZ Nowhere mission of the Steel Pegasus operation.
+|-
+| AchToLifeline || Lifeline || Transported all injured soldiers to the LZ Blazer in the Breaking Through mission of the Steel Pegasus operation.
+|-
+| AchTankTTBronze || Tank Rally || Earned the bronze medal in all official Tanks Time Trials.
+|-
+| AchTankTTGold || Hammer Time || Earned the gold medal in all official Tanks Time Trials.
+|-
+| AchTankByTheBook || No Requiem || Hidden.
+|-
+| AchTankFromWithin || From Within || Spent 3 hours inside an armored vehicle.
+|-
+| AchTankEasyMoney || Easy Money || Destroyed more tanks than Zulu in Showcase Tank Destroyers.
+|-
+| AchTankSteelSniper || Steel Sniper || Hit a moving enemy tank with an APFSDS round at a distance of at least 3500 meters.
+|-
+| AchTankCommander || Commander || Spent 3 hours as a tank commander.
+|-
+| AchTankSizeNotMatter || Size Doesn't Matter || Spent 3 hours in the Nyx tankette.
+|-
+| AchTankInItTogether || In It Together || Spent 24 hours in any tank with a full human crew in multiplayer.
+|}
+|}
+
+{{GameCategory|arma3|Reference Lists}}

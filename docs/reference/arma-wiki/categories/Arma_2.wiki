@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2
+// revision: 378835 (2026-07-08T16:44:09Z)
+// export sha1: gki1hfso74tpqq53dg1lncqvvkaus6m
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|releasedate =
+* {{#time: M d, Y|2009-05-29}} (Germany)
+* {{#time: M d, Y|2009-06-18}} (Russia)
+* '''{{#time: M d, Y|2009-06-29}}''' (World)
+* {{#time: M d, Y|2009-07-07}} (USA)
+* {{#time: M d, Y|2009-07-31}} (Japan)
+<nowiki/>
+|latestversion = 1.11
+|image = arma_2_box_art.jpg
+|intro = '''{{arma2}}''' is a military simulation game for PC DVD-ROM and digital download from {{Name|bi}}.
+It takes place in the present days (2008), in a fictional post soviet country called [[Chernarus]].
+Players will be sent as members of a United States Marine Corps Force Recon squad to this country to prevent further civilian casualties and ensure ongoing stability there.
+
+{{arma2}} is Game 2.
+|feature1 = Large-scale game world
+|feature2 = Authentic and extremely detailed, modern units, weapons, vehicles and environments
+|feature3 = Challenging single-player
+|feature4 = Large array of multi-player content
+|gallery1 = ArmA2 razor.jpg
+|gallery2 = ArmA2 soldiers.jpg
+|gallery3 = ArmA2 grand citizen.jpg
+|gallery4 = ArmA2 dog.jpg
+|start1 = [[Arma 2: Hints and Tips|Hints and Tips]]
+|start2 = [[Arma 2: Demo|Demo Version]]
+|start3 = [[Arma 2: Modifications|Modifications]]
+|start4 = [[Arma 2: Dedicated Server|Dedicated Server]]
+|start5 = [[Arma 2: Editing|Editing]]
+|start6 = [[:Category:Arma 2: Terrains|Terrains]]
+}}

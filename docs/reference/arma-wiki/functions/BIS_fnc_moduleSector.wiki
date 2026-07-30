@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleSector
+// revision: 309773 (2022-05-05T12:09:49Z)
+// export sha1: 25qdqbdgzy36lo64nrb50gfh4hnuwdt
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.76
+
+|gr1= Modules
+
+|descr= <pre>/*
+
+	Description:
+	Initialize a sector module. Can be also used to get sector parameters.
+
+	--- Get all sectors ---
+	Parameter(s):
+		0: BOOL
+
+	Returns:
+	ARRAY of OBJECTs
+
+	--- Get number of sectors held by a side ---
+	Parameter(s):
+		0: SIDE
+
+	Returns:
+	NUMBER - number of sectors owned by the side
+
+	--- Set sector owner ---
+	Parameter(s):
+		0: OBJECT - sector module
+		1: SIDE
+
+	Returns:
+	BOOL
+
+	--- Initialize ---
+	Parameter(s):
+		0: OBJECT - sector module
+
+	Returns:
+	NOTHING
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_moduleSector]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_moduleSector;</sqf> -->
+
+|seealso=
+}}

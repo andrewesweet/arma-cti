@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/lbSetPictureRightColorDisabled
+// revision: 377803 (2026-01-03T04:08:00Z)
+// export sha1: jux1pismly7zn3so6r4uwamjbp21jkj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Arma 3 version 1.20 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.20
+
+|gr1= GUI Control - ListBox
+
+|descr= Sets the disabled color of second (right aligned) picture of the item with the given index of the listbox with id idc of the topmost user dialog to the given color.
+Color which consists from only zeros means disable this override.
+
+|s1= [[lbSetPictureRightColorDisabled]] [idc, index, color]
+
+|p1= idc: [[Number]]
+
+|p2= index: [[Number]]
+
+|p3= color: [[Color|Color (RGBA)]]
+
+|r1= [[Nothing]]
+
+|s2= control [[lbSetPictureRightColorDisabled]] [index, color]
+
+|p21= control: [[Control]]
+
+|p22= index: [[Number]]
+
+|p24= color: [[Color|Color (RGBA)]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lbSetPictureRightColorDisabled [101, 0, [1, 1, 1, 0.25]];</sqf>
+
+|x2= <sqf>_ctrl lbSetPictureRightColorDisabled [0, [1, 1, 1, 0.25]];</sqf>
+
+|seealso= [[lbAdd]] [[lbClear]] [[lbColor]] [[lbCurSel]] [[lbData]] [[lbDelete]] [[lbIsSelected]] [[lbPicture]] [[lbSelection]] [[lbSetColor]] [[lbSetCurSel]] [[lbSetData]] [[lbSetSelected]] [[lbSetTooltip]] [[lbSetValue]] [[lbSize]] [[lbSort]] [[lbSortByValue]] [[lbText]] [[lbValue]] [[lbSetPicture]] [[lbSetPictureColor]] [[lbSetPictureColorDisabled]] [[lbSetPictureColorSelected]]
+}}
+
+<dl class="command_description">
+<dt></dt>
+<dd class="notedate">Posted: Sep 10 2014</dd>
+<dt class="note">[[User:ffur2007slx2_5|ffur2007slx2_5]]</dt>
+<dd class="note">More information on the [[CT_LISTBOX]] command family can be found [[CT_LISTBOX#Scripting_Example|here]].
+</dl>

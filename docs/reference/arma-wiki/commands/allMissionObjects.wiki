@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/allMissionObjects
+// revision: 369567 (2024-09-24T07:52:15Z)
+// export sha1: nfh2gxrmbbsba3yjh1dd6mur6adf26p
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 2: Operation Arrowhead version 1.57 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.57
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Detection
+
+|descr= Returns all objects of the given type that are currently present in the mission. In some cases, the [[entities]] and [[allObjects]] commands are much faster alternatives to this command.<br>
+Some of the special types that can be detected with this command (and with [[nearestObject]]):
+* {{hl|""}} - returns everything, e.g. agents, bees, mosquitoes, footprints, armed mines, ...
+* {{hl|"all"}} - more restrictive than {{hl|""}}: no ambient insects, only agents such as rabbits and snakes, no footprints, tracks, no armed mines
+* {{hl|"#slop"}} - blood drops
+* {{hl|"#mark"}} - unit footprints
+* {{hl|"#track"}} - vehicle tracks
+* {{hl|"#crater"}} - explosion craters on the ground
+* {{hl|"#crateronvehicle"}} - bullet marks on vehicles
+* {{hl|"#explosion"}} - explosions
+* {{hl|"#objectdestructed"}} - building, tree or bush destruction
+* {{hl|"#soundonvehicle"}} - sounds created with [[say3D]] for example
+* {{hl|"#dynamicsound"}} - sound sources created using [[createSoundSource]]
+* {{hl|"EmptyDetector"}} - all [[Trigger]]s
+* {{hl|"Logic"}} - all game logics
+{{Feature|important|This command is quite performance heavy. Use with caution!}}
+
+|mp= {{Feature|arma3|This command is ~5 times faster on a dedicated server than on a client. Reason unknown.}}
+
+|s1= [[allMissionObjects]] type
+
+|p1= type: [[String]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>_airObjects = allMissionObjects "Air";</sqf>
+
+|x2= <sqf>{ deleteVehicle _x; } forEach (allMissionObjects "");</sqf>
+
+|x3= <sqf>_allMObjects = allMissionObjects "All";</sqf>
+
+|seealso= [[allObjects]] [[allDead]] [[allGroups]] [[allUnits]] [[entities]] [[vehicles]] [[allMines]] [[allSimpleObjects]]
+}}

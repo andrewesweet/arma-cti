@@ -1,0 +1,139 @@
+// source: https://community.bistudio.com/wiki/addPublicVariableEventHandler
+// revision: 376526 (2025-10-24T10:02:40Z)
+// export sha1: 9wchv8yr5saaik5k1nmjj4njwnjd00p
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Command Group: Event Handlers | Category:Command Group: Multiplayer | Category:Command Group: Variables | Category:Introduced with Armed Assault version 1.09 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.09
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Broken Commands
+
+|gr2= Event Handlers
+
+|gr3= Multiplayer
+
+|gr4= Variables
+
+|descr= {{Feature|arma3|This command is deprecated since {{GVI|arma3|1.52}} and the introduction of [[remoteExec]] and [[remoteExecCall]].}}
+
+This event handler will detect if a [[missionNamespace]] variable (it is attached to) has been broadcast over network with [[publicVariable]], [[publicVariableClient]] or [[publicVariableServer]] commands and will execute EH code upon detection.
+{{Feature|informative|
+* This EH works '''only''' in Multiplayer environment
+* There is '''no way''' to remove this EH
+* This EH will not fire on the machine that executed broadcast with [[publicVariable]] command, only on the machines that receive the broadcast
+* The value of broadcast variable can be exactly the same, it is the actual broadcast that triggers EH not the change in variable
+}}
+
+|pr= {{Feature|warning|The {{Link|#Alternative Syntax}} does not work as intended.}}
+
+|s1= varName [[addPublicVariableEventHandler]] code
+
+|p1= varName: [[String]] - [[missionNamespace]] variable name
+
+|p2= code: [[Code]] - by default, the code is executed in [[missionNamespace]]. {{hl|_this}} arguments array is in format [varName, value, target]:
+* varName: [[String]] - broadcast variable name (same variable name EH is attached to)
+* value: [[Anything]] - broadcast variable value
+* target: [[Object]] or [[Group]] - target the variable got set on with [[setVariable]] (see {{Link|#Alternative Syntax}})
+
+|r1= [[Nothing]]
+
+|s2= varName [[addPublicVariableEventHandler]] [target, code]
+
+|s2since= arma3 1.46
+
+|p21= varName: [[String]] - name of the variable set on target with [[setVariable]]
+
+|p22= target: [[Object]], [[Group]] or [[Team Member]]
+
+|p23= code: [[Code]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>
+"publicThis" addPublicVariableEventHandler {
+	_varName = _this select 0;
+	_value = _this select 1;
+	_target = _this select 2;
+	hint format ["%1 has been updated to %2 for %3", _varName, _value, target];
+};
+</sqf>
+
+|x2= Client:
+<sqf>"'^:)123BURP,+=lol" addPublicVariableEventHandler {hint ("NUTS are " + (_this select 1))};</sqf>
+Server:
+<sqf>
+missionNamespace setVariable ["'^:)123BURP,+=lol", "craZZZZy"];
+publicVariable "'^:)123BURP,+=lol";
+</sqf>
+
+|seealso= [[publicVariable]] [[publicVariableClient]] [[publicVariableServer]]
+}}
+
+{{Note
+|user= TeRp
+|timestamp= 20071222133000
+|text= Please note that varName indicates which variable you want to monitor with this eventhandler.<br>
+As a result, the example eventhandler on this page will only fire when the variable publicThis has been changed,
+but not if any other variable was changed by any other client via the publicVariable command.
+}}
+
+{{Note
+|user= MulleDK13
+|timestamp= 20140227005700
+|text= Note on using addPublicVariableEventHandler during initialization: If you need a function to call addPublicVariableEventHandler during initialization, you must use postInit. addPublicVariableEventHandler does not work during preInit.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20140227084000
+|text= {{User|MulleDK13}}'s note above needs some clarification. You don't "must" use postInit and you absolutely can use preInit function to initialise [[addPublicVariableEventHandler]] if you start [[Scheduler#Scheduled_Environment|scheduled]] script from it.<br>
+<sqf>
+// script with preInit = 1; in CfgFunctions
+0 spawn {
+	"someVar" addPublicVariableEventHandler {
+		// yourcode
+	};
+};
+</sqf>
+}}
+
+{{Note
+|user= SilentSpike
+|timestamp= 20151123213600
+|text= While it is true that the event handler will only fire on the machine receiving the broadcast value, please note that this machine can actually be the same machine broadcasting it in the cases of [[publicVariableClient]] and [[publicVariableServer]].
+
+Examples:
+<sqf>
+if (isServer) then
+{
+	"OnServer" addPublicVariableEventHandler { hint "This event handler still fired!"; };
+	publicVariableServer "OnServer";
+};
+</sqf>
+<sqf>
+// This example assumes the client knows their own client ID
+// It does also work on the server (when the server ID is used) irrespective of the command name
+
+"OnClient" addPublicVariableEventHandler { hint "This event handler still fired!"; };
+clientID publicVariableClient "OnClient";
+</sqf>
+}}

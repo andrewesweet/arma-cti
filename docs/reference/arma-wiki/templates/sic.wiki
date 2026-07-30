@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/Template:sic
+// revision: 329148 (2022-07-25T12:14:19Z)
+// export sha1: rozawfuj713s3f4tgw29bniwf4lt55s
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}|<span class="sic" title="This is the intended documentation spelling{{#if:{{{2|}}}|; the actual proper spelling would be '{{{2}}}'}}.">{{{1}}}|}}{{#if:{{{1|}}}|</span>|}}<sup class="sic" title="This is the intended documentation spelling{{#if:{{{2|}}}|; the actual proper spelling would be '{{{2}}}'}}.">[[Template:sic|sic]]</sup></includeonly><noinclude>{{Doc/Template
+
+|descr= Template {{hl|<nowiki>{{sic}}</nowiki>}} placed immediately after a circumstantially correct but unusual spelling or grammatically iffy statement, will add a small but superior note at that point in the text that links to this page.
+
+
+{{Feature|quote|The Latin adverb '''sic''' ("thus"; in full: ''sic erat scriptum'', "thus was it written") added immediately after a quoted word or phrase (or a longer piece of text), indicates that the quotation has been transcribed exactly as found in the original source, complete with any erroneous or archaic spelling or other nonstandard presentation.|Wikipedia|https://en.wikipedia.org/wiki/Sic}}
+'''''Sic''''', in other words, indicates that the word is a direct retranscription and not the result of a spelling mistake.
+
+
+{{Feature|important|Not to be confused with '''{{Link|https://www.merriam-webster.com/dictionary/sigh|sigh}}'''.}}
+
+|param1= incorrect
+|descr1= (Optional) wrongfully spelt term
+
+|param2= correct
+|descr2= (Optional) correct spelling
+
+|example1= {{hl|"...so we can then use setDammage<nowiki>{{sic}}</nowiki> to..."}}
+|result1= {{hl|"...so we can then use setDammage{{sic}} to..."}}
+
+|example2= {{hl|"...so we can then use <nowiki>{{sic|setDammage}}</nowiki> to..."}}
+|result2= {{hl|"...so we can then use {{sic|setDammage}} to..."}}
+
+|example3= {{hl|"this is a <nowiki>{{sic|nular|nullar}}</nowiki> operator"}}
+|result3= {{hl|"this is a {{sic|nular|nullar}} operator"}}
+}}
+</noinclude>

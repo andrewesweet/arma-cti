@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_GUIgridToProfile
+// revision: 282999 (2021-06-16T22:11:28Z)
+// export sha1: 5rkyveak2r7rvg11jzuqrapn0v19z1k
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= {{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_GUIgridToProfile]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

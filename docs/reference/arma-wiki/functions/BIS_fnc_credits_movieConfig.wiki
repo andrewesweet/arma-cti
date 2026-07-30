@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_credits_movieConfig
+// revision: 272861 (2021-06-13T00:33:51Z)
+// export sha1: dr67ha34veuxofgqxe5iim82xlayis2
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= <pre>/*
+	File: fn_credits_movieConfig.sqf
+
+	Description:
+	Movie credits config preprocessor.
+
+	Parameter(s):
+	_this select 0: Number - Index of item in config (CfgCredits >> CreditsMovie >> item)
+	
+	Returned value:
+	_array: Array
+	_array select 0: String - Position name (and tags) as structured text.
+	_array select 1: String - Names (and tags) as structured text.
+	_array select 2: Number - Required space coeficient (numberOfNames * textSizeCoef), -1 if config entry doesn't exist
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_credits_movieConfig]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

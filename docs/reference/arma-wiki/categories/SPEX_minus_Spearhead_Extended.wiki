@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/Category:SPEX_-_Spearhead_Extended
+// revision: 375820 (2025-07-19T08:07:41Z)
+// export sha1: kmabq3spbhy6to3w700qo7zlc9p4m7o
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__ __NOEDITSECTION__
+
+[[File: spex_overview_1.jpg|right|300px]]
+
+'''SPEX''' or '''Spearhead Extended''' is the official workshop mod created by the '''Heavy Ordnance Works''' team. Designed to host ‘in-between release’ content created by the team, it aims to fill gaps in content as required when the team needs an agile delivery.
+
+Continuing the stories of the Allied breakthrough in Normandy, SPEX allows you to step in the shoes of other units in France and abroad. Traverse new, detailed terrains inspired by historic locations, including '''Lingèvres''', '''Utah Beach''', and '''Carentan''', and engage in intense combat with iconic units and gear like the '''7th Armoured Division''' and '''327th GIR'''.
+
+Choose your approach with an array of authentic World War II weapons and vehicles. Take to the skies in '''C-47 Skytrains''' or glide into action with '''Horsa''' and '''Waco''' gliders. Spearhead Expanded offers the flexibility to immerse yourself in large-scale, realistic combat scenarios, whether solo or with friends, bringing the Arma military sandbox to life in a whole new era.
+
+For a detailed description visit the {{Link/External|link= https://steamcommunity.com/sharedfiles/filedetails/?id=3117898674|text= Steam Workshop}} page.
+
+<div class="floating-box-container" style="margin: 1em; width: auto">
+<div class="floating-box" style="margin: 1em; width: 280px; height: 210px" >
+
+== Terrains ==
+
+[[Spearhead Extended Utah Beach|Utah Beach]]<br />
+[[Spearhead Extended Carentan|Carentan]]<br />
+[[Spearhead Extended Lingevres|Lingevres]]<br />
+
+</div>
+
+<div class="floating-box" style="margin: 1em; width: 512px; height: 210px" >
+
+== Assets ==
+
+{{Columns|3|
+[[Spearhead Extended CfgWeapons Weapons|Weapons]]<br />
+[[Spearhead Extended CfgWeapons Vehicle Weapons|Vehicle&nbsp;Weapons]]<br />
+[[Spearhead Extended CfgVehicles WEST|Vehicles (WEST)]]<br />
+[[Spearhead Extended CfgVehicles GUER|Vehicles (GUER)]]<br />
+[[Spearhead Extended CfgGroups|Groups]]<br />
+[[Spearhead Extended CfgVehicles Other|Objects]]<br />
+[[Spearhead Extended CfgWeapons Equipment|Equipment]]<br />
+[[Spearhead Extended CfgWeapons Items|Items]]<br />
+[[Spearhead Extended CfgVehicles Backpacks|Backpacks]]<br />
+[[Spearhead Extended CfgMagazines|Magazines]]<br />
+<!--[[Spearhead Extended CfgGlasses|Glasses]]<br />-->
+}}
+</div>
+</div>
+
+[[Category: Spearhead 1944]]

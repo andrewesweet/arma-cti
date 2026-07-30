@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/diag_activeSQSScripts
+// revision: 377696 (2026-01-02T09:03:19Z)
+// export sha1: jgmn3bta2mtb9afo4yitek9ksnlnls2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.44 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.44
+
+|gr1= Diagnostic
+
+|descr= Returns array with active SQSs. To see number of all scripts currently in the scheduler use [[diag_activeScripts]].
+
+|s1= [[diag_activeSQSScripts]]
+
+|r1= [[Array]] with [<nowiki/>[name, fileName, isRunning, currentLine],...]
+* name: [[String]] - function or file name
+* fileName: [[String]]
+* isRunning: [[Boolean]]
+* currentLine: [[Number]] - line currently executing
+
+|x1= <sqf>{ systemChat str _x } forEach diag_activeSQSScripts;</sqf>
+
+|seealso= [[diag_activeMissionFSMs]] [[diag_activeSQFScripts]] [[diag_log]] [[diag_fps]] [[diag_fpsmin]] [[diag_frameno]] [[diag_tickTime]] [[diag_activeScripts]]
+}}

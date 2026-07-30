@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_0.54
+// revision: 329254 (2022-07-26T15:06:43Z)
+// export sha1: emwxn700l65jynpe0muro50tx25m105
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with  Arma 3 version 0.54 may be recognised by the appearance of this icon: {{GVI|arma3|0.54}}
+
+[[Category:Introduced with Arma 3|0.54]]

@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/dayTime
+// revision: 378415 (2026-04-04T08:39:14Z)
+// export sha1: io1j2h2chngj3v693663mtxgpuxppaj
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Command Group: Mission Information | Category:Command Group: Time | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Environment
+
+|gr2= Mission Information
+
+|gr3= Time
+
+|descr= Returns the current in-game time in hours. For a formatted version of time, see [[BIS_fnc_timeToString]].
+
+|mp= Returns the current '''local''' in-game time in hours.
+
+|s1= [[dayTime]]
+
+|r1= [[Number]] in range 0..24 - day time using a 24 hour clock, using fractions of hours
+
+|x1= <sqf>dayTime; // returns 16.5 given it is 16:30 (4.30pm) in game</sqf>
+
+|x2= Get hour, minute, seconds:
+<sqf>
+private _daytime = dayTime; // assuming dayTime returns 1.66046
+private _hours = floor _daytime;											//  1
+private _minutes = floor ((_daytime - _hours) * 60);						// 39
+private _seconds = floor ((((_daytime - _hours) * 60) - _minutes) * 60);	// 37
+</sqf>
+
+|seealso= [[date]] [[dateToNumber]] [[BIS_fnc_timeToString]] [[time]] [[skipTime]] [[systemTime]] [[systemTimeUTC]]
+}}

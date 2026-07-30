@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/apertureParams
+// revision: 377662 (2026-01-02T09:02:15Z)
+// export sha1: 4yohhogcuyj5cah6psagqxz5fo45y5a
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Command Group: Lights | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|arg= local
+
+|descr= Returns current aperture parameters.
+
+|gr1= Camera Control
+
+|gr2= Lights
+
+|s1= [[apertureParams]]
+
+|r1= [[Array]] with [aperture, isForced, estimatedAperture, estimatedLuminance, minCustom, stdCustom, maxCustom, customLuminance, isCustomForced, blinding]
+* aperture: [[Number]] - current aperture
+* isForced: [[Boolean]] - whether aperture was forced by [[setAperture]]
+* estimatedAperture: [[Number]] - engine-estimated scene aperture
+* estimatedLuminance: [[Number]] - engine-estimated luminance
+* minCustom: [[Number]] - minimal custom aperture, see [[setApertureNew]]
+* stdCustom: [[Number]] - standard custom aperture, see [[setApertureNew]]
+* maxCustom: [[Number]] - maximal custom aperture, see [[setApertureNew]]
+* customLuminance: [[Number]] - custom luminance, see [[setApertureNew]]
+* isCustomForced: [[Boolean]] - whether custom values were forced
+* blinding: [[Number]] - blinding intensity of the light
+
+|x1= <sqf>private _apertureParams = apertureParams;</sqf>
+
+|seealso= [[setApertureNew]] [[setAperture]]
+}}

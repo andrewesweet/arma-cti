@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Scripting/Workbench
+// revision: 371061 (2025-02-26T12:39:26Z)
+// export sha1: bne5y8di59quojkcrsvibwjl3q3wica
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding|Scripting}}

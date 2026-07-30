@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/ctCurSel
+// revision: 310869 (2022-05-07T20:24:09Z)
+// export sha1: pclst4lslg1ffuh4dy2wg80jjrq6ipp
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+|arg= local
+|eff= local
+
+|gr1= GUI Control - Controls Table
+
+|descr= Returns index of the selected row. Will take only rows, but not headers into account.
+
+|s1= [[ctCurSel]] ctrl
+
+|p1= ctrl: [[Control]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_curSel = ctCurSel _control;</sqf>
+
+|seealso= [[ctAddRow]] [[ctAddHeader]] [[ctClear]] [[ctSetCurSel]] [[ctRowControls]] [[ctHeaderControls]] [[ctRowCount]] [[ctHeaderCount]] [[ctSetValue]] [[ctValue]] [[ctSetData]] [[ctData]] [[ctFindRowHeader]] [[ctFindHeaderRows]] [[ctRemoveRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}

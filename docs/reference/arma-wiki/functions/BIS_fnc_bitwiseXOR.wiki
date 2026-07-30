@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_bitwiseXOR
+// revision: 328591 (2022-07-13T17:02:28Z)
+// export sha1: 35aux5k5hvnoz8nn4fqsbjsz2ek6k0p
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Bitwise | Category:Functions | Category:Introduced with Arma 3 version 1.66 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.66
+
+|gr1= Bitwise
+
+|descr= Performs bitwise XOR operation on two decimal or hexadecimal unsigned 24 bit integers <br>(Hexadecimal number representation is simply auto-converted into decimal by the engine)<br><br>
+'''Limitations''':<br>
+Due to various limitations of the Real Virtuality engine this function is 
+intended to work with unsigned 24 bit integers only. This means that the 
+supported range is 2^0...2^24 (1...16777216)
+
+|s1= [num1, num2] call [[BIS_fnc_bitwiseXOR]]
+
+|p1= num1: [[Number]] - decimal or hexadecimal unsigned 24 bit integer
+|p2= num2: [[Number]] - decimal or hexadecimal unsigned 24 bit integer
+
+|r1= [[Number]] - decimal number
+
+|x1=<sqf>[1 + 4 + 16, 1] call BIS_fnc_bitwiseXOR; // 20
+[1 + 2 + 32, 4 + 8] call BIS_fnc_bitwiseXOR; // 47
+[16 + 32, 4 + 16] call BIS_fnc_bitwiseXOR; // 36
+[1 + 16 + 32, 2 + 32] call BIS_fnc_bitwiseXOR; // 19</sqf>
+
+|seealso=    [[BIS_fnc_bitwiseAND]] [[BIS_fnc_bitwiseOR]] [[BIS_fnc_bitwiseNOT]]
+}}

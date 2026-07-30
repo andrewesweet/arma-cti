@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Creative_Commons_Attribution-ShareAlike_3.0_images
+// revision: 187202 (2021-01-08T13:08:45Z)
+// export sha1: 70xnkj2yuk04qz3i16yubk4yl98late
+// Vendored snapshot. Do not edit — re-export instead.
+
+See [https://creativecommons.org/licenses/by-sa/3.0/ Creative Commons ShareAlike 3.0 license] (on https://creativecommons.org/).
+
+[[Category:Community Wiki]]

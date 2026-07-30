@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/ctrlTextHeight
+// revision: 377912 (2026-01-09T17:38:24Z)
+// export sha1: op7ullvfdraadoyr1fdoi0cgu2ohgr9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= GUI Control
+
+|descr= Returns the text control's height. Supported control [[ctrlType|types]]:
+{{Columns|3|
+* [[CT_STATIC]]
+* [[CT_STRUCTURED_TEXT]]
+* [[CT_EDIT]]
+* {{GVI|arma3|2.06|size= 0.75}} [[CT_XKEYDESC]]
+* {{GVI|arma3|2.06|size= 0.75}} [[CT_XBUTTON]]
+* {{GVI|arma3|2.06|size= 0.75}} [[CT_SHORTCUTBUTTON]]
+* {{GVI|arma3|2.06|size= 0.75}} [[CT_BUTTON]]
+* {{GVI|arma3|2.06|size= 0.75}} [[CT_ACTIVETEXT]]
+}}
+
+|s1= [[ctrlTextHeight]]  control
+
+|p1= control: [[Control]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_h = ctrlTextHeight _ctrl;</sqf>
+
+|seealso= [[ctrlFontHeight]] [[ctrlTextWidth]] [[ctrlSetText]] [[ctrlType]] [[Arma: GUI Configuration]]
+}}
+
+{{Note
+|user= Nelis75733126
+|timestamp= 20170524213400
+|text= In {{arma3}} v1.70, this command always returns 0 if the definition for width of the control ( inside .hpp or .cpp file ) is missing.
+}}

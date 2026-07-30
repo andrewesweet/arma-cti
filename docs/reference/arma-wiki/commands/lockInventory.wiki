@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/lockInventory
+// revision: 370883 (2025-02-21T10:44:04Z)
+// export sha1: jintqdp3v80bdqlpqaqq5druhem1sjt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|arg= global
+
+|eff= local
+
+|gr1= Unit Inventory
+
+|descr= Lock or unlock a vehicle's inventory access.
+This command can also lock backpack a unit is wearing to prevent access by a third party.
+If set to [[true]] (locked), the inventory cannot be accessed via hotkey or action menu.
+
+|s1= vehicle [[lockInventory]] lock
+
+|p1= vehicle: [[Object]]
+
+|p2= lock: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player lockInventory true;</sqf>
+
+|x2= <sqf>backpackContainer player lockInventory true;</sqf>
+
+|seealso= [[lockedInventory]]
+}}
+
+{{Note
+|user= PierreMGI
+|timestamp= 20201121200000 <!-- dat time -->
+|text= This command works only on alive unit. No matter you run it before or after death, on due [[backpackContainer]] unit, the backpack will be accessible on corpse.
+}}

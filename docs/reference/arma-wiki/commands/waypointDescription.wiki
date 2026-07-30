@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/waypointDescription
+// revision: 377753 (2026-01-03T00:58:09Z)
+// export sha1: 4kc9ugvfsl0cula42af8cc7y2imcj2t
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Waypoints
+
+|descr= Gets the waypoint description.
+
+|s1= [[waypointDescription]] waypoint
+
+|p1= waypoint: [[Waypoint]]
+
+|r1= [[String]]
+
+|x1= <sqf>waypointDescription [groupOne,1];</sqf>
+
+|seealso= [[waypoints]] [[setWaypointDescription]]
+}}

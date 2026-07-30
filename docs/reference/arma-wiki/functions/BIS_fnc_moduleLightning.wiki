@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleLightning
+// revision: 373909 (2025-06-27T14:16:20Z)
+// export sha1: pcxhbddyq8dftlzg08apqdlc8e3xlhe
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Modules
+
+|descr= Zeus lightning strike.
+{{Feature|important|Note that the ''target'' object will be deleted by the function (part of how Zeus modules work) if it can be edited by any curators (which is checked by the [[objectCurators]] command).}}
+
+|exec= spawn
+
+|s1= [target, nil, activate] call [[BIS_fnc_moduleLightning]]
+
+|p1= target: [[Object]] - where the lightning bolt hits - '''will''' be deleted by the function!
+
+|p2= nil: [[Nothing]] - not used
+
+|p3= activate: [[Boolean]] - [[true]] to activate, [[false]] does nothing
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player addAction 
+[
+	"Eat that!", 
+	{
+		private _tempTarget = createSimpleObject ["Land_HelipadEmpty_F", getPosASL cursorTarget];
+		[_tempTarget, nil, true] spawn BIS_fnc_moduleLightning;
+		cursorTarget setDamage 1;
+	},
+	[],
+	1.5, 
+	true, 
+	true, 
+	"",
+	"!isNull cursorTarget"
+];</sqf>
+
+|x2= <sqf>[] spawn // Who gets hit first? ;-)
+{
+	{
+		private _tempTarget = createSimpleObject ["Land_HelipadEmpty_F", getPosASL _x];
+		[_tempTarget, nil, true] spawn BIS_fnc_moduleLightning;
+		sleep (1 + random 4);
+	} forEach (allPlayers call BIS_fnc_arrayShuffle);
+};</sqf>
+
+|seealso= [[Arma 3 Zeus]]
+}}
+
+{{Note
+|user= Smith.UA
+|timestamp= 20250626120044
+|text= Please note that the function makes the visual effects (lightning model and light) visible only to the client on which the function was executed.<br/>
+The explosion sound, crater and damage will only be generated (globally) on the client where the target is local or the target curator is local to the client.<br/>
+<br/>
+If you want to call lightning globally, you must call this function on all clients:<br/>
+<sqf>
+// consider remoteExec limitations by CfgRemoteExec
+[target, nil, true] remoteExec ["BIS_fnc_moduleLightning"];
+</sqf>
+}}

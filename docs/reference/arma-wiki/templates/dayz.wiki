@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:dayz
+// revision: 322490 (2022-06-13T10:37:44Z)
+// export sha1: 3rnrxd5ruwcl25de9azg203jc60tupi
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|dayz}}</includeonly><noinclude>{{Doc/Template
+|descr= Returns {{hl|{{dayz}}}}.
+|example1= <nowiki>{{dayz}}</nowiki>
+|result1= {{dayz}}
+}}</noinclude>

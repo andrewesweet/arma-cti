@@ -1,0 +1,18 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Enable_Steam_Workshop_support_in_Server_Browser
+// revision: 364238 (2024-05-06T09:38:16Z)
+// export sha1: iuaihvnrginkgpokxdykqwkvukemg91
+// categories: Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Arma 3: Launcher]] Server Browser can pair server mods with Steam Workshop items, activate required mods before joining the server and/or subscribe and download missing mods. At the present moment, the mods are paired only by ''Steam Workshop item identifier''. Server administrators have to set this identifier to required Workshop item, otherwise user will have activate mods manually.
+
+== How to pair mod on server with Steam Workshop item ==
+# In the root of the mod create a file {{hl|meta.cpp}}.
+# Add line {{hl|c= protocol = 1; }}
+# Add line {{hl|c= publishedid = 123456789;}}, where 123456789 is a Steam Workshop id.
+
+== How to get Steam Workshop item identifier ==
+# Open the Steam Workshop page of the mod in your web browser.
+# The identifier is displayed in the address bar after id=, e..g. for the {{Link|link= http://steamcommunity.com/sharedfiles/filedetails/?id=463939057|text= ACE3}} mod (<nowiki>http://steamcommunity.com/sharedfiles/filedetails/?id=463939057</nowiki>) the Steam Workshop id is 463939057.
+
+{{GameCategory|arma3|Tutorials}}

@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_unitPlaySimple
+// revision: 349494 (2023-11-08T17:09:09Z)
+// export sha1: 9k0iwrbxwjuss9mxhbseqaakos4618i
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Scenes | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Scenes
+
+|descr= Plays back input movement data on input unit. Simplified.
+
+|s1= [unit, data, varDone, stateIngnore, debug, sleep, skipTime] spawn [[BIS_fnc_unitPlaySimple]]
+
+|p1= unit: [[Object]] - unit to play movement data on
+
+|p2= data: [[Array]] - movement data to use
+
+|p3= varDone: [[Array]] - (Optional, default <sqf inline>[]</sqf>) variable to set on specified Object once playback has finished in format:
+* 0: [[Object]], [[Group]] or [[Namespace]] - target
+* 1: [[String]] - variable name
+
+|p4= stateIgnore: [[Boolean]] - (Optional, default [[false]]) whether to ignore if the Unit is dead and/or cannot move
+
+|p5= debug: [[Boolean]] - (Optional, default [[false]] whether to give debug information on played frames per second
+
+|p6= sleep: [[Number]] - (Optional, default 0) time to sleep between frames. This is if you want to be recording another unit and playing back movement data on another as well. Limit is 0-1 seconds.
+
+|p7= skipTime: [[Number]] - (Optional, default 0) amount of time to skip at the start of playback. For example if you wish to play the data from halfway instead of the start.
+
+|r1= [[Script Handle]] - script handle
+
+|exec= spawn
+
+|x1= <sqf>
+private _capturedData = [[0, [8208.26, 1953.13, 296.04], 67]];
+[BIS_Vehicle, _capturedData, [BIS_Object, "DoneRecording"], true, false, 0.2, 5] spawn BIS_fnc_unitPlaySimple;
+</sqf>
+
+|seealso= [[BIS_fnc_unitCaptureFiring]] [[BIS_fnc_unitCaptureSimple]] [[BIS_fnc_unitPlayFiring]] [[BIS_fnc_unitPlay]] [[BIS_fnc_unitCapture]]
+}}

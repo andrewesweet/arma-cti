@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Visual_Scripting
+// revision: 115532 (2019-01-03T11:27:33Z)
+// export sha1: 2mctr2h4wu470qc79plsw5ooc9b7s1f
+// Vendored snapshot. Do not edit — re-export instead.
+
+=How to=
+*[[Ylands Visual scripting introduction|Introduction to Visual scripting]]
+*[[Ylands Script conventions|Conventions]]
+
+[[Category: Ylands]]

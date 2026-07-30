@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/ropeAttachTo
+// revision: 329674 (2022-08-01T01:24:20Z)
+// export sha1: 6r8hipz0lp1dgw9ue6iwilm1q5rrhrz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Ropes and Sling Loading
+
+|descr= Attaches entity to the rope end with optional offset. For detach operation use [[ropeDetach]].
+
+|s1= [entity, toPoint, ropeEndDownVector] [[ropeAttachTo]] rope
+
+|p1= entity: [[Object]] - entity to be attached to the end of rope
+
+|p2= toPoint: [[String]] or [[Array]] - (Optional) position for the rope end, either a memory point [[String]] or relative offset [[Array]]
+
+|p3= ropeEndDownVector: [[String]] or [[Array]] - (Optional, default [0,0,-1]) either a memory point [[String]] or relative vector [[Array]]. If [[String]] is given, then {{hl|ropeEndDownVector}} is calculated from {{hl|toPoint}} towards {{hl|ropeEndDownVector}} memory point
+
+|p4= rope: [[Object]] - the rope to which entity will be attached to
+
+|r1= [[Nothing]]
+
+|s2= entity [[ropeAttachTo]] rope
+|s2since= arma3 2.10
+
+|p21= entity: [[Object]] - entity to be attached to the end of rope
+
+|p22= rope: [[Object]] - the rope to which entity will be attached to
+
+|r2= [[Nothing]]
+
+|x1= <sqf>[veh1, [0,0,0], [0,0,-1]] ropeAttachTo (ropes heli1 select 0);</sqf>
+
+|seealso= [[ropes]] [[canSlingLoad]] [[enableRopeAttach]] [[getSlingLoad]] [[ropeAttachedObjects]] [[ropeDestroy]] [[ropeLength]] [[ropeUnwound]] [[ropeAttachedTo]] [[ropeCreate]] [[ropeDetach]] [[ropeAttachEnabled]] [[ropeCut]] [[ropeEndPosition]] [[ropeUnwind]] [[setSlingLoad]] [[slingLoadAssistantShown]]
+}}

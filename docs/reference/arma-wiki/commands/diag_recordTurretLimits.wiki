@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/diag_recordTurretLimits
+// revision: 309925 (2022-05-05T12:16:58Z)
+// export sha1: giekv5ra23n2k6bdiyo1upvxqeb3en4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|branch= diag
+
+|gr1= Diagnostic
+
+|descr= Start recording tool for creating turret aiming limits.
+
+|s1= [[diag_recordTurretLimits]] section
+
+|p1= section: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>diag_recordTurretLimits true;</sqf>
+
+|seealso=
+}}

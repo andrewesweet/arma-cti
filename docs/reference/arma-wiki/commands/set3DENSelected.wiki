@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/set3DENSelected
+// revision: 352152 (2024-02-01T23:25:20Z)
+// export sha1: 6kukf2qy4gx5mjaa14538x0qbl87src
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Changes selection in [[:Category:Eden Editor|Eden Editor]] to what is inside entities array. {{Feature|warning|This command will trigger the 3DEN event handler '''"OnSelectionChange"'''. Do not use it inside this event handler!}}
+
+|s1= [[set3DENSelected]] entities
+
+|p1= entities: [[Array]] of [[Eden Entity]] or [[Eden ID]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>set3DENSelected [0,5,3,6,7,12];</sqf>
+
+|seealso= [[get3DENMouseOver]] [[all3DENEntities]] [[collect3DENHistory]] [[get3DENEntityID]] [[get3DENSelected]] [[set3DENObjectType]]
+}}

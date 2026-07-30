@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Loading_Screens
+// revision: 353495 (2024-03-19T12:00:45Z)
+// export sha1: rlbg191k0ywksry11l8ddsqclnpvsyb
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|tkoh|This page is about {{arma3}} configuration; for {{tkoh}}, see [[Take On Helicopters: Loading Screens]].}}
+
+
+{{GameCategory|arma3|link= y}} loading screens composes of two main sections:
+* '''Map''' - based on currently loaded world; full screen. Configured in world config, cannot be changed in mission.
+* '''Mission''' - previews currently loaded mission; fixed size. Configured in mission.
+
+<gallery mode="packed-hover" widths=400px heights=300px>
+File:A3_loading_mission.jpg|Singleplayer mission
+File:A3_loading_unknown.jpg|Multiplayer mission with missing configuration
+</gallery>
+
+
+== Mission Configuration ==
+
+'''[[Description.ext]]'''
+<syntaxhighlight lang="cpp">
+author = "John Doe"; // Author
+onLoadName = "Epic Invasion"; // Mission name (temporary solution; actual name set in editor will be used later in the alpha)
+onLoadMission = "Fate of the world is in your hands. Good luck and Godspeed."; // Description
+loadScreen = "loadScreen_ca.paa"; // Preview picture
+class Header
+{
+	gameType = Coop; // MP mission type
+};
+</syntaxhighlight>
+
+'''Image'''
+* must be in [[PAA File Format|paa]] or jpg file format
+* '''2:1''' aspect ratio (different aspect are rendered correctly as well, but won't cover the whole area)
+* Ideally '''1024x512''' pixels
+
+
+== World Configuration ==
+
+'''[[Config.cpp]]'''
+<syntaxhighlight lang="cpp">
+class CfgWorlds
+{
+	class Stratis : CAWorld
+	{
+		author = "Bohemia Interactive"; // Author
+		description = "Stratis"; // World name
+		pictureMap = "A3\map_Stratis\data\pictureMap_ca.paa"; // Background map
+		pictureShot = "A3\map_Stratis\data\ui_Stratis_ca.paa"; // Default overview picture
+
+		// Loading texts displayed on the bottom of the loading screen (picked randomly)
+		loadingTexts[] =
+		{
+			"Area of Stratis is 19.3 square kilometers.",
+			"Stratis is of volcanic origin, with many rocks and crevices.",
+			"Kamino Firing Range uses remnants of the nearby old Kamino village as a target area."
+		};
+	};
+};
+</syntaxhighlight>
+
+'''Image'''
+* Preferably [[PAA File Format|paa]], but jpg file format works too
+* '''2048x2048''' version of actual satellite map used on terrain. Should be exact copy, will be used by other game systems in the future
+
+
+{{GameCategory|arma3|Editing}}

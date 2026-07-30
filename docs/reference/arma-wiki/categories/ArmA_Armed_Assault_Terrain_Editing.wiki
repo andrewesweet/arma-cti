@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Terrain_Editing
+// revision: 184357 (2021-01-06T09:40:28Z)
+// export sha1: jk92y56x2bsx97v9vzjepbui8xao0dx
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1|Editing}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/focusedCtrl
+// revision: 348589 (2023-11-08T13:42:42Z)
+// export sha1: qjdiipfr1w4nhrfqtkyoziw0gc36vdj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|gr1= GUI Control
+
+|descr= Returns display's focused control.
+
+|s1= [[focusedCtrl]] display
+
+|p1= display: [[Display]] - parent display
+
+|r1= [[Control]] - control which has focus
+
+|x1= <sqf>private _focusedCtrl = focusedCtrl findDisplay 12;</sqf>
+
+|x2= <sqf>private _isFocused = focusedCtrl _display == _ctrl;</sqf>
+
+|x3= <sqf>private _isFocused = focusedCtrl (ctrlParent _ctrl) == _ctrl;</sqf>
+
+|seealso= [[ctrlSetFocus]] [[displayParent]] [[ctrlParent]]
+}}

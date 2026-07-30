@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setRank
+// revision: 349416 (2023-11-08T16:27:30Z)
+// export sha1: rwtplomwryvrcin32k72lbm2mts2isc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Set rank of vehicle crew.
+
+|s1= [target, rank] call [[BIS_fnc_setRank]]
+
+|p1= target: [[Object]] - the vehicle whose crew's rank should be adjusted
+|p2= rank: [[String]] or [[Number]] - rank name or rank ID, can be:<br>
+0 - "Private"<br>
+1 - "Corporal"<br>
+2 - "Sergeant"<br>
+3 - "Lieutenant"<br>
+4 - "Captain"<br>
+5 - "Major"<br>
+6 - "Colonel"
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[vehicle player, "Captain"] call BIS_fnc_setRank;</sqf>
+
+|seealso= [[rank]] [[setRank]]
+}}

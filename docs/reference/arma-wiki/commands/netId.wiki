@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/netId
+// revision: 364973 (2024-07-04T17:25:50Z)
+// export sha1: guz780icr66qziktezrlskusiypqee9
+// categories: Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|game2= arma2oa
+|version2= 1.63
+
+|gr1= Multiplayer
+
+|descr= Get the unique ID of an object or a group.
+
+|mp= <nowiki/>
+* In singleplayer: {{GVI|arma3|2.18|size= 0.75}} returns a net ID (different from [[BIS_fnc_netId]]'s output), before that it returned an empty string in single player (see [[BIS_fnc_netId]] and [[BIS_fnc_objectVar]])
+* In multiplayer: works as described
+
+|s1= [[netId]] objOrGroup
+
+|p1= objOrGroup: [[Object]] or [[Group]]
+
+|r1= [[String]]
+
+|x1= <sqf>_playerNetId = netId player;</sqf>
+
+|seealso= [[objectFromNetId]] [[groupFromNetId]] [[BIS_fnc_objectFromNetId]] [[BIS_fnc_netId]] [[BIS_fnc_groupFromNetId]] [[BIS_fnc_objectVar]]
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20181019134000
+|text= Even if the returned value is in format of '''owner:uniqueid''', it doesn't follow the current ownership of an object ([[owner]] for example).<br>
+This command keeps the '''original owner''' of a created object.
+}}

@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/addBackpackCargoGlobal
+// revision: 341861 (2023-07-01T14:05:59Z)
+// export sha1: k03351ojm69gxg5wmvkwlaaxkozz02d
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Containers
+
+|arg= global
+|eff= global
+
+|descr= Add backpack(s) to the cargo space of vehicle.
+{{Feature|informative|
+Classname list of available backpacks:
+* [[Arma 2: Operation Arrowhead: Backpacks|{{Name|arma2oa|short}} backpacks]]
+* [[Arma 3: CfgVehicles Equipment|{{arma3}} backpacks]] - objects starting with "B_", starts near {{Link|Arma 3: CfgVehicles Equipment#Bag Base|"B_AssaultPack_khk"}}
+}}
+
+|s1= vehicle [[addBackpackCargoGlobal]] [packClassName, count]
+
+|p1= vehicle: [[Object]] - object to add the Backpack to
+
+|p2= packClassName: [[String]] - see the topic [[:Category:Weapons]] for reference about possible values.
+
+|p3= count: [[Number]] - number of backpacks to add; {{GVI|arma3|2.14|size= 0.75}} a negative value will remove backpacks.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>this addBackpackCargoGlobal ["TK_RPG_Backpack_EP1", 2];</sqf>
+
+|x2= <sqf>_apc addBackpackCargoGlobal ["US_Patrol_Pack_EP1", 4];</sqf>
+
+|seealso= [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]] [[addMagazineCargo]] [[clearMagazineCargo]] [[clearWeaponCargo]] [[addMagazineCargoGlobal]] [[addWeaponCargo]] [[addWeaponCargoGlobal]] [[addItemCargo]] [[addItemCargoGlobal]]
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Community_Websites
+// revision: 184400 (2021-01-06T10:13:36Z)
+// export sha1: anqt9gwmy00dsaay1pri1cqoj46umep
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1|Websites}}

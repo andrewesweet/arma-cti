@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_createMenu
+// revision: 376525 (2025-10-23T22:37:32Z)
+// export sha1: 9h31a1ahvqsgaguj4iky5uf4gab57m2
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Communication Menu | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Communication Menu
+
+|descr= Create custom commanding menu (with multiple pages if necessary).
+
+|s1= [namePath, variable, itemDetails, subMenu, codeStr, parameters, showKey] call [[BIS_fnc_createMenu]]
+
+|p1= namePath: [[String]] or [[Array]] - can be one of:
+* [[String]] - menu name
+* [[Array]] - format [menuName, context]
+
+|p2= variable: [[String]] - variable in which will be menu params stored (as {{hl|''variable''_0}}, {{hl|''variable''_1}} etc)
+
+|p3= itemDetails: [[Array]] - menu items, format can be one of:
+* [items]
+* [<nowiki/>[items], [itemNames], [itemEnable]] if custom parameters are to be set (names, enable values)
+
+|p4= subMenu: [[String]] - name of the submenu which will open when item is activated. Name of the selected item is passed to string as {{hl|%1}}
+
+|p5= codeStr: [[String]] - expression which is executed when ''item'' is activated; item's name is passed to string as {{hl|%1}}, ID as {{hl|%2}}, ''parameters'' (below) as {{hl|%3}}
+
+|p6= parameters: [[Anything]] - (Optional) passed to ''codeStr'' as {{hl|%3}}
+
+|p7= showKey: [[Boolean]] - (Optional, default [[true]]) [[false]] to hide number shortcuts
+
+|r1= [[Boolean]] - always [[true]]
+
+|x1= <sqf>
+["Menu", "b", ["first", "second"], "","hint 'ahoj'"] call BIS_fnc_createMenu;
+showCommandingMenu "#USER:b_0";
+</sqf>
+
+|x2= <sqf>
+private _itemDetails = [["firstData", "secondData"], ["First", "Second"]];
+["Menu", "b", _itemDetails, "", "hint (str '%1' + str '%2' + str '%3')"] call BIS_fnc_createMenu;
+showCommandingMenu "#USER:b_0";
+</sqf>
+
+|seealso= [[Conversations]]
+}}

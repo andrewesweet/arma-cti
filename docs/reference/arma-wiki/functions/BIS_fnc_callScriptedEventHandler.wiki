@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_callScriptedEventHandler
+// revision: 327926 (2022-07-13T12:24:31Z)
+// export sha1: 2dtp91uhsbyzgsn2m4z7uku1tj2nyjz
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Event Handlers | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Event Handlers
+
+|descr= Calls all the codes assigned to scripted event handler with given name. Since {{GVI|arma3|1.68}} the code receives current EH id in the special variable: {{hl|_thisScriptedEventHandler}}
+
+|s1= [namespace, name, arguments, returnResults] call [[BIS_fnc_callScriptedEventHandler]]
+
+|p1= namespace: [[Namespace]], [[Object]], [[Group]], [[Location]], [[Boolean]], [[Control]] or [[Display]] - namespace in which handler is saved
+
+|p2= name: [[String]] - handler name
+
+|p3= arguments: [[Array]] - array of arguments passed to the EH code
+
+|p4= returnResults: [[Boolean]] - (Optional, default [[false]]) if [[true]] EH will place results from each code execution into an array using EH id as index
+
+|r1= [[Array]] - array with EH results or empty array
+
+|x1= <sqf>[missionNamespace, "event", [player, 123]] call BIS_fnc_callScriptedEventHandler;</sqf>
+
+|seealso= [[BIS_fnc_addScriptedEventHandler]] [[BIS_fnc_removeScriptedEventHandler]] [[BIS_fnc_removeAllScriptedEventHandlers]]
+}}

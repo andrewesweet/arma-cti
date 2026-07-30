@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/setApertureNew
+// revision: 376403 (2025-10-11T00:55:28Z)
+// export sha1: m38h2w1aq0cktbodvjy08rxehvrrw37
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Command Group: Lights | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+
+|gr1= Camera Control
+
+|gr2= Lights
+
+|descr= Sets custom camera aperture when HDR is enabled. Provided values should be set such as ''minimum'' &lte; ''standard'' &lte; ''maximum''.
+{{Feature|informative|
+* This command has to be executed after mission start: be sure to use e.g <sqf inline>sleep 0.1;</sqf> for it to take effect.
+* If HDR is enabled (it is by default), when [[setAperture]] {{hl|value}} is used it also forces [[setApertureNew]] to the following values: [{{hl|value}}, {{hl|value}}, {{hl|value}}, 1]. Execute [[setApertureNew]] ''after'' [[setAperture]] to override this default mechanic.
+}}
+
+|s1= [[setApertureNew]] [minimum, standard, maximum, luminance]
+
+|p1= minimum: [[Number]] - minimum aperture
+
+|p2= standard: [[Number]] - standard aperture
+
+|p3= maximum: [[Number]] - maximum aperture
+
+|p4= luminance: [[Number]] - standard luminance
+
+|r1= [[Nothing]]
+
+|s2= [[setApertureNew]] [reset]
+
+|p21= reset: [[Number]] - reset to default with -1
+
+|r21= [[Nothing]]
+
+|x1= <sqf>
+setApertureNew [0.1, 0.2, 0.3, 1];
+setApertureNew [-1];				// reset to default
+</sqf>
+
+|x2= Simulate eye adjustment at night:
+<sqf>
+setDate [2016, 8, 10, 4, 0];
+setApertureNew [2, 8, 14, 0.9];
+</sqf>
+
+|x3= Narrower range for a subtler effect:
+<sqf>
+setDate [2016, 8, 10, 4, 0];
+setApertureNew [2, 5, 9, 0.8];
+</sqf>
+
+|seealso= [[setAperture]] [[apertureParams]]
+}}
+
+{{Note
+|user= Tofof
+|timestamp= 20161030045400
+|text= Some notes on {{Link|#Example 2}} - try it outdoors on a piece of ground with high contrasting areas. I suggest the end of a runway, standing among the white painted triangles.<br><br>
+Look up about 60 degrees above the horizon and toggle between {{hl|setApertureNew [2, 8, 14, .9];}} and the default setting of {{hl|setAperture -1;}}. There should be little change -- at least on the date in the example.<br><br>
+Reset again to {{hl|setApertureNew [2, 8, 14, .9];}} and then pan slowly down until you're basically looking at your feet. The less sky (the main outdoor light source) you see, the 'wider' (toward the 'min' number) the aperture will become. Looking at the ground on a runway, for example, you should be able to easily distinguish the painted white triangles from the unpainted pavement. Again, toggle back to the default aperture. The view should get much darker.<br><br>
+This setting allows for some natural adjustment based on the amount of visible light in the scene, and is highly encouraged over the default fixed aperature for night missions. When you're standing in the beam of a lighthouse, for example (try near the 'Spartan' on Stratis), you will be basically unable to see anything not illuminated by the beam. Once the beam passes and your vision returns to normal, your immediate surroundings will be dimmer, of course, but you'll be able to see further out.
+}}

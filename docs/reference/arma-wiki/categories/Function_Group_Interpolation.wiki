@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Interpolation
+// revision: 166106 (2020-10-10T14:31:28Z)
+// export sha1: m0pdo39dyikpwipufyvl34uhoxdsu9i
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions for interpolating curves. Used by the [[Arma 3 Key Frame Animation]] system.
+
+[[Category:Function Group: KeyframeAnimation]]
+[[Category:Function Group: Math]]

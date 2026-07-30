@@ -1,0 +1,20 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Heightmap:_Perlin_Noise
+// revision: 338029 (2023-02-23T21:11:23Z)
+// export sha1: jlxtyci8t083qj9904jk2qlo8roq7oi
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Heightmap]]
+{{TerrainProcessorManual|Heightmap: Perlin Noise|BITasksPlugin.dll|Polygon, PolygonM, PolygonZ|Yes
+|DESCRIPTION=Algorithm adds perlin noise in terrain heightmap. It uses Shapefile as mask polygons. {{Link|https://en.wikipedia.org/wiki/Perlin_noise|Perlin noise on Wikipedia}}.
+|TASKPARAMETERS=
+* '''Amplitude''' - Maximal +- height added to terrain heightmap.
+* '''Scale''' - Perlin noise mapping scale.
+|OBJECTPROTOTYPEPARAMETERS=
+|USAGE=Good to for creating some terrain corrugation within a particular area, e.g. more rugged terrain in a forest offering some additional cover to infantry. Gentle noise adds natural feel to meadows or brownfield.
+|ALGORITHM=# Load heightmap
+# For each shapefile polygon
+## For each heightmap point in polygon
+### Get Perlin noise value and add it to height in heightmap
+|SAMPLE=
+}}

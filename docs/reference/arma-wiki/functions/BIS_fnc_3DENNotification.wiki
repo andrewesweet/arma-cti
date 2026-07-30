@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENNotification
+// revision: 352420 (2024-02-09T15:26:08Z)
+// export sha1: 0ravyt3wsc62nri23868rqwxvtxnast
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.58
+
+|eff= Local
+
+|gr1= Eden Editor
+
+|descr= Shows notification banner with given text, animated or not, at the top of the screen in the [[:Category:Eden Editor|Eden Editor]].<br/>
+Since {{GVI|arma3|2.10}} this function will no longer throw an error outside of [[:Category:Eden Editor|Eden Editor]]. Because {{hl|Display3DEN}} (<sqf inline>findDisplay 313</sqf>) is not available, it will only play the sound according to the message type.
+The sound is played through the UI channel with [[playSoundUI]].
+
+|s1= [text, type, duration, animate] call [[BIS_fnc_3DENNotification]]
+
+|p1= text: [[String]] or [[Structured Text]] - either text or class from <sqf inline>"Cfg3DEN" >> "Notifications"</sqf>
+
+|p2= type: [[Number]] - (Optional, default 0) 0: Notification (Green) 1: Warning (Red)
+
+|p3= duration: [[Number]] - (Optional, default 2) duration in seconds (+ 1 sec for each new line)
+
+|p4= animate: [[Boolean]] - (Optional, default [[true]]) toggle animation
+
+|p5= volume: [[Number]] - (Optional, default 1) volume adjustment
+|p5since= arma3 2.10
+
+|r1= [[Number]] - selected Mode
+
+|x1= <sqf>["This is an animated notification", 0] call BIS_fnc_3DENNotification;</sqf>
+
+|x2= <sqf>["This is a warning that is not animated", 1, 2, false] call BIS_fnc_3DENNotification;</sqf>
+
+|x3= <sqf>["For more information visit <t colorLink='#E69710'><a href='https://community.bistudio.com/wiki/BIS_fnc_3DENNotification'>Community Wiki</a></t>"] call BIS_fnc_3DENNotification;</sqf>
+
+|seealso= [[:Category:Eden Editor|Eden Editor]] [[BIS_fnc_3DENShowMessage]]
+}}

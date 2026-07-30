@@ -1,0 +1,15 @@
+// source: https://community.bistudio.com/wiki/Team
+// revision: 281654 (2021-06-14T16:32:42Z)
+// export sha1: obwjla0eji2kezztvsqyp4q1ohmu1l8
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Description:''' : n/a
+
+Introduced with {{arma2}}.
+{{Feature | important | '''Not''' related to [[teamSwitch]] or [[assignedTeam]].}}
+
+See [[:Category:Command Group: Teams|Command Group: Teams]] for related commands.
+
+
+[[Category: Data Types]]

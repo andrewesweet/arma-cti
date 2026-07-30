@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/setInfoPanel
+// revision: 364317 (2024-05-06T09:38:47Z)
+// export sha1: d9en7t6859wf7g2b651gn229rcoetbe
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Custom Panels | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= Custom Panels
+
+|descr= Opens given component or first component of given component type on specified info panel.
+
+|s1= [[setInfoPanel]] [infoPanelId, componentClassOrType]
+
+|p1= infoPanelId: [[String]] - info panel classname, or "left" or "right"
+
+|p2= componentClassOrType: [[String]]
+
+|r1= [[Boolean]] - [[true]] if panel was successfully opened, [[false]] otherwise (e.g. opening GPS on player without GPS item or setting panel to vehicle that doesn't have such capability configured)
+
+|x1= <sqf>
+// opens slingload assistant on right panel
+private _result = setInfoPanel ["VehicleSystemsDisplayManagerComponentRight", "SlingLoadDisplayComponent"];
+if (!_result) then { hint "could not open the slingload assistant, sorry" };
+</sqf>
+
+|seealso= [[Arma 3: Custom Info]] [[infoPanel]] [[infoPanels]] [[infoPanelComponents]] [[enableInfoPanelComponent]] [[infoPanelComponentEnabled]]
+}}

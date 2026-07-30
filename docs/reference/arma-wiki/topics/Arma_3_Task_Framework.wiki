@@ -1,0 +1,527 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Task_Framework
+// revision: 373678 (2025-06-10T15:49:57Z)
+// export sha1: 76w2avgn65dram2i0a4k9498drcpfik
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{ArgTitle|1|Framework Structure|{{GVI|arma3|1.00}}}}
+Task framework is a complex scripted system for '''handling tasks in both singleplayer and multiplayer environment'''. It’s main goal is to provide solid interface for creating, updating and managing tasks in both environments and fully automatize synchronization in MP environment.
+
+; See also
+* [[Arma 3: Task Framework Tutorial]]
+
+The whole task framework consists of multiple functions that can be split into several categories according to their functionality and purpose:
+
+{| class="wikitable"
+|-
+! Function !! Description
+|-
+! colspan="2" style="font-weight: bold" | Setter Functions
+|-
+| colspan="2" | ''Functions for creating and updating tasks their data''
+|-
+| [[BIS_fnc_taskCreate]] || Creates task
+|-
+| [[BIS_fnc_taskSetCurrent]] || Assigns task
+|-
+| [[BIS_fnc_taskSetDescription]] || Sets task title, description and marker texts
+|-
+| [[BIS_fnc_taskSetDestination]] || Sets target destination
+|-
+| [[BIS_fnc_taskSetState]] || Sets task state ("FAILED", "SUCCEEDED", ...)
+|-
+| [[BIS_fnc_deleteTask]] || Removes task from given target, if no one has the task, task is removed from the framework
+|-
+| [[BIS_fnc_taskSetType]] || Sets task type
+|-
+| [[BIS_fnc_taskSetAlwaysVisible]] || Makes task always visible
+|-
+! colspan="2" style="font-weight: bold" | Getter Functions
+|-
+| colspan="2" | ''Functions for retrieving information about tasks''
+|-
+| [[BIS_fnc_taskCompleted]] || Returns true if task is "SUCCEEDED", "FAILED" or "CANCELED"
+|-
+| [[BIS_fnc_taskCurrent]] || Returns id of currently assigned task
+|-
+| [[BIS_fnc_taskDescription]] || Returns task title, description and marker texts
+|-
+| [[BIS_fnc_taskDestination]] || Returns task’s destination
+|-
+| [[BIS_fnc_taskExists]] || Returns [[true]] if task exists (was created and not deleted)
+|-
+| [[BIS_fnc_taskState]] || Returns state of particular task
+|-
+| [[BIS_fnc_tasksUnit]] || Return all tasks that given unit has (in any state)
+|-
+| [[BIS_fnc_taskType]] || Returns type of the task
+|-
+| [[BIS_fnc_taskAlwaysVisible]] || Makes task always visible
+|-
+! colspan="2" style="font-weight: bold" | Support Functions
+|-
+| colspan="2" | ''Special getter functions that are used by the task framework''
+|-
+| [[BIS_fnc_taskVar]] || Returns variable under which task is stored in the game (based on task id)
+|-
+| [[BIS_fnc_taskChildren]] || Returns all child tasks for given task
+|-
+| [[BIS_fnc_taskParent]] || Returns parent task for given task
+|-
+| [[BIS_fnc_taskReal]] || Returns engine task associated with the task id
+|-
+! colspan="2" style="font-weight: bold" | Core Functions
+|-
+| [[BIS_fnc_setTask]] || Creates and updates task data and automatically calls BIS_fnc_setTaskLocal. Can be called directly, however using the setter functions is recommended.
+|-
+| [[BIS_fnc_setTaskLocal]] || Function that locally creates or updates task data. {{Feature|warning|This function is designed to be executed only from inside of the framework, do not execute it directly.}}
+|}
+
+{{Feature|informative|In normal circumstances the setter and getter functions are all is needed to create and manage tasks. Check the function headers in the function viewer from inside of the game for detailed information about function syntax and parameters.}}
+
+==== Handling Tasks in MP Environment ====
+Being said, task framework can be used in both SP and MP environments. In SP environment everything is very easy as task data and execution are all handled on one place and there is no needs for synchronization. In MP environment things get complicated.
+
+==== Task Locality ====
+Tasks are purely local. It means that if task is created using the script command [[createSimpleTask]] it is created only on the machine where it was called. If you create it on a local client, server would not know about the task existence at all. Similar issue if you want to give a task to whole group of players, you would need to create it separately on every machine. In case you need to update the task, let say change the target destination or the task state, you would need to do the change on every group member machine. Keeping those tasks fully synchronized while using only the engine based script commands could be very tedious in more complex MP scenarios.
+
+And that’s why the task framework was created in the first place - to provide comfortable but still powerful tool for synchronized task creation and management in MP scenarios.
+
+==== Data and Processing Centralisation ====
+It is strongly suggested that all task operations are initialized from same place, preferably a server. With this approach, all task operations are being handled on server - task creation and updates are initialized from server and thanks to the task framework the task data are automatically transferred to appropriate clients and the local execution is triggered there, so the tasks states are fully synchronized over the network.
+
+=== Good Techniques ===
+
+==== Keep Task ID Short ====
+Task ID is a string that differs tasks between each other and so task id is a required parameter for all setter functions and most of the getter functions. Task ID is also being used for creating global variables that hold different task parameters and are broadcasted on the network. Because of that, it is a good practice when defining task IDs in MP scenario to keep them as short as possible to reduce the network load.
+
+It is usually good idea to keep task IDs descriptive enough, but their length should probably not exceed 15 chars. If you can live with tasks using some code names like “tsk1” or even “t1” it is great. If not try to keep the task id as short as possible. The shorter, the better.
+
+The task ID length is of course important only in MP games. For SP games, feel free to name task as you wish.
+
+==== Use Getters ====
+Even if most of the task data can be read directly from the task global variables, if you learn how they are named and structured, it is not a good technique. The reason is simple - in case we modify the task framework for any reason, the internal structure and data handling can easily change and your scripts cease to work.
+
+If you use the getters we provide, you should not notice any difference. The input and output should always be the same, fully backward compatible and shielded from the internal functionality changes.
+
+==== Use Setters ====
+Although all setters can be replaced by direct call of [[BIS_fnc_setTask]], it is strongly suggested to use the setters. The performance impact is very low and by using setters, the code become more readable and prone to accidental data change - setters only affect data related to the setter nature/functionality.
+
+
+= Task Modules =
+
+The task modules in [[:Category:Eden Editor|Eden Editor]] also work in multiplayer, but compared to the scripted framework provided limited customization options.
+
+
+{{ArgTitle|1|Task Overhaul|{{GVI|arma3|1.58}}}}
+
+Tasks Overhaul is name for project targeting UX and visual improvements to Arma 3 task framework. The 1st batch of updates was released to development branch on March 2016.
+
+; Goals
+* Update visuals of task markers in both 3D environment and in map.
+* Improve diary panels UX and visuals.
+* Improve map & task interaction - direct task assignment/unassignment from map.
+* Allow simultaneous display of multiple tasks in 3D environment.
+* Implement 'Shared Objectives' through new generic feature called Custom Data.
+
+
+== Feature Breakdown ==
+
+Below you will find brief feature breakdown, that should present you all the core features of Tasks Overhaul.
+
+=== Task Types ===
+
+There is a new attribute - task type. The attribute describes what is in general the task about and replaces the task label that was displayed on the task marker. Task type is visualized through the icon and unlike the task label, it is fully implemented to the game UI (3D marker, map marker, task list, task index diary panel, task notification, debriefing screen, ...).
+
+==== Task Type Definition ====
+Tasks overhaul is going to ship with quite large library of task types, that should suffice the common needs community creators might have when designing their mission tasks. However we felt it would be great to allow community to extend or replace the default task type selection with their own task types in an easy and comfortable way. As result we prepared the system the way that it reads the definition from addon, campaign and/or even mission config and merges them together. In case there are duplicated definitions the more local definition takes precedence.
+
+; Config
+Task types definition is stored in CfgTaskTypes class. Types can also be declared in [[Description.ext#CfgTaskTypes|Description.ext]].
+<syntaxhighlight lang="cpp">
+class CfgTaskTypes
+{
+	class Ambush
+	{
+		icon = "taskTypes\ambush_ca.paa";
+	};
+	class Heal
+	{
+		icon = "\A3\Ui_f\data\IGUI\Cfg\simpleTasks\letters\h_ca.paa";
+	};
+};
+</syntaxhighlight>
+
+; Texture
+The default task type icons are .paa textures with 32x32px size, 32bit color, white foreground and transparent background. There are no gradients or any other colors. Could be 2^x 2^y greater than 32px and 8bit color, prefered to follow restricted names "<name>_MCO.paa"
+
+==== New Commands & Functions ====
+{{Feature|informative|For a detailed explaination and examples visit the command or function page.}}
+* [[setSimpleTaskType]]
+* [[taskType]]
+
+Task type was fully integrated to [[BIS_fnc_taskCreate]].
+* [[BIS_fnc_taskCreate]]
+* [[BIS_fnc_taskSetType]]
+* [[BIS_fnc_taskType]]
+{{Feature|informative|Defining task type when the task is created is suggested and most efficient way.}}
+
+=== 3D Markers ===
+
+Task's 3D marker was completely redesigned. It now consists from 3 elements:
+# background - texture with distinctive shape to visually define the element as task marker
+# task type icon - texture of task type icon defining nature of the task; replaces the former task label
+# distance indicator - standardized info about task distance
+
+In standard situation there can be only an assigned task 3D marker shown on the screen. However there are now new commands and functions that allow to bend this behavior by flagging a task to always show - do not fade out.
+
+==== New Commands ====
+There are 2 new commands that interact with task visibility flag.
+
+*[[setSimpleTaskAlwaysVisible]]
+*[[taskAlwaysVisible]]
+
+==== New Functions ====
+The alwaysVisible flag is also fully implemented to scripted framework. There are getter and setter functions that mimic the commands behavior.
+
+* [[BIS_fnc_taskSetAlwaysVisible]]
+* [[BIS_fnc_taskAlwaysVisible]]
+
+=== Task Overview ===
+
+Task overview is a new display that shows all tasks available to player in 3D environment. It is triggered by new action 'Tasks Overview'. Action can be found in 'Common' section and uses the keybind that was previously used by 'Diary' action.
+
+; Interaction
+* on key down - all task markers and navigation elements show up and a special widget with assigned task type and name pops-up in the top-left corner
+* on key up - 3 secs timer starts to tick, when it is over the task markers, navigation elements and assigned task widget fade out
+
+=== Map Markers and Tooltip Widgets ===
+
+==== Map Marker ====
+The former non-interactive markers were replaced by new interactive markers that shows the task type icon and have a tooltip widget.
+
+; Interaction patterns (marker)
+* on click on marker - opens-up the task diary panels and selects the task in the task index. Color of the selected task marker on the map gets inverted.
+* on click outside of the marker - closes the diary panels and deselects task marker if it was previously selected. Colors return to normal scheme.
+* on mouse over - marker scales up and tooltip widget get displayed
+
+==== Tooltip Widget ====
+The tooltip widget shows task name, its state and can also display custom data info. The widget can be used to quickly assign to or unassign from a task.
+
+; Interaction patterns (tooltip)
+* on mouse over - task state text (bottom text) changes to action which will trigger on click; it is either assign or unassign
+* on mouse leave - tooltip hides
+* on click - assigns or unassigns task; bottom text shows the action that will trigger on click
+
+=== Task Index and Description Panels ===
+
+==== Task Index Panel ====
+There were 2 major improvements done to the task index panel functionality wise:
+# inactive (succeeded, failed or cancelled) tasks are automatically drawn in 'disabled' color and are moved down to the bottom of the task list
+# parent/child task folding visualization and functionality was fixed
+
+; Interaction patterns
+* on click (on a list entry) - selects the task in the list and opens up the task description panel. In addition to the former state it also highlights the task marker on the map
+* on double-click (on a list entry) - centers the map on the task marker (if present)
+
+==== Task Description Panel ====
+There are now 2 new buttons under task title - toggle button 'Assign'/'Unassign' and 'Locate' button (with distance indicator).
+
+; Interaction patterns
+* on 'Assign' button click - assigns the task to player; mimicing functionality of previous 'Assign task as current'
+* on 'Unassign' button click - unassigns player from the task; was not possible before
+* on 'Locate' button click - centers the map on the task marker (if present)
+
+; Locate button remarks
+* Locate button currently uses "Find" string. It is subject to change.
+* If task doesn't have an objective linked the Locate buttons is disabled.
+* Number in parentheses shows the actual distance from player to the task objective.
+* If showing distances is blocked through difficulty settings, button is visible, but the distance indicator is hidden.
+
+=== Diary Screen ===
+
+Visual and functionality of task index and description panel is almost identical to map diary panels, with a single exception - there is no 'Locate' button in the task description panel.
+
+There were 2 major changes done to the Diary display:
+# In addition to the former functionality it also shows 3D markers of all tasks available to player; similarly to the 'Task Overview' action.
+# The 'Diary' action was remapped to 2x[J] as its former keybind was taken by the 'Task Overview' action.
+
+=== Debriefing ===
+
+Changes and fixes done to the debriefing screen:
+* Task type icons were added to each task.
+* Task list placement was fixed, list made wider so it properly fits the area dedicated to the task list.
+* Uncompleted tasks are now in 'disabled' color. It usually should not happen as it is a good practice to complete every task at the end of the mission - either cancel, fail or succeed it.
+
+=== Custom Data and 'Shared Objectives' ===
+Custom data is a brand new feature that was prototyped on the scripted 'Shared Objectives' system. Custom Data allows for displaying extra information in task index and description panel as well as map marker tooltip.
+
+==== New Commands ====
+Custom data are completely local. There are 2 new commands that interact with custom data.
+* [[setSimpleTaskCustomData]]
+* [[taskCustomData]]
+
+==== Shared Objectives ====
+Task Overhaul is going to ship with one system build on Custom Data - Shared Objectives.
+The system monitors people assigned to particular tasks and displays locally the assigned player count per task.
+
+Shared objective can be added to mission from EDEN editor by:
+* Opening Attributes >> Multiplayer >> Tasks >> Shared Objectives panel
+* Selecting either: 'Enable' or 'Enable with Task Propagation'
+
+If 'Enable with Task Propagation' is selected, system automatically re-assigns tasks to every subordinate according to the group leader whenever the leader changes his assigned task.
+
+
+== Task Icons ==
+
+; Default Task Types: Actions
+
+{| class="valign-top"
+|
+
+{| class="wikitable sortable align-center-col-1"
+! Icon
+! Task Type
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_airdrop.png]]
+| style="width: 130px" | airdrop
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_attack.png]]
+| style="width: 130px" | attack
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_danger.png]]
+| style="width: 130px" | danger
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_default.png]]
+| style="width: 130px" | default
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_defend.png]]
+| style="width: 130px" | defend
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_destroy.png]]
+| style="width: 130px" | destroy
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_download.png]]
+| style="width: 130px" | download
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_exit.png]]
+| style="width: 130px" | exit
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_getin.png]]
+| style="width: 130px" | getin
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_getout.png]]
+| style="width: 130px" | getout
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_heal.png]]
+| style="width: 130px" | heal
+|}
+
+|
+
+{| class="wikitable sortable align-center-col-1"
+! Icon
+! Task Type
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_interact.png]]
+| style="width: 130px" | interact
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_kill.png]]
+| style="width: 130px" | kill
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_land.png]]
+| style="width: 130px" | land
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_listen.png]]
+| style="width: 130px" | listen
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_meet.png]]
+| style="width: 130px" | meet
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_move.png]]
+| style="width: 130px" | move
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_move1.png]]
+| style="width: 130px" | move1
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_move2.png]]
+| style="width: 130px" | move2
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_move3.png]]
+| style="width: 130px" | move3
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_move4.png]]
+| style="width: 130px" | move4
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_move5.png]]
+| style="width: 130px" | move5
+|}
+
+|
+
+{| class="wikitable sortable align-center-col-1"
+! Icon
+! Task Type
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_navigate.png]]
+| style="width: 130px" | navigate
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_rearm.png]]
+| style="width: 130px" | rearm
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_refuel.png]]
+| style="width: 130px" | refuel
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_repair.png]]
+| style="width: 130px" | repair
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_run.png]]
+| style="width: 130px" | run
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_scout.png]]
+| style="width: 130px" | scout
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_search.png]]
+| style="width: 130px" | search
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_takeoff.png]]
+| style="width: 130px" | takeoff
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_talk.png]]
+| style="width: 130px" | talk
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_talk1.png]]
+| style="width: 130px" | talk1
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_talk2.png]]
+| style="width: 130px" | talk2
+|}
+
+|
+
+{| class="wikitable sortable align-center-col-1"
+! Icon
+! Task Type
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_talk3.png]]
+| style="width: 130px" | talk3
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_talk4.png]]
+| style="width: 130px" | talk4
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_talk5.png]]
+| style="width: 130px" | talk5
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_target.png]]
+| style="width: 130px" | target
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_unknown.png]]
+| style="width: 130px" | unknown
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_upload.png]]
+| style="width: 130px" | upload
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_use.png]]
+| style="width: 130px" | use
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_wait.png]]
+| style="width: 130px" | wait
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_walk.png]]
+| style="width: 130px" | walk
+|}
+
+|}
+
+
+; Default Task Types: Objects
+{| class="valign-top"
+|
+
+{| class="wikitable sortable align-center-col-1"
+! Icon
+! Task Type
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_armor.png]]
+| style="width: 130px" | armor
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_backpack.png]]
+| style="width: 130px" | backpack
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_boat.png]]
+| style="width: 130px" | boat
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_box.png]]
+| style="width: 130px" | box
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_car.png]]
+| style="width: 130px" | car
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_container.png]]
+| style="width: 130px" | container
+|}
+
+|
+
+{| class="wikitable sortable align-center-col-1"
+! Icon
+! Task Type
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_documents.png]]
+| style="width: 130px" | documents
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_heli.png]]
+| style="width: 130px" | heli
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_intel.png]]
+| style="width: 130px" | intel
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_map.png]]
+| style="width: 130px" | map
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_mine.png]]
+| style="width: 130px" | mine
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_plane.png]]
+| style="width: 130px" | plane
+|}
+
+|
+
+{| class="wikitable sortable align-center-col-1"
+! Icon
+! Task Type
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_radio.png]]
+| style="width: 130px" | radio
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_rifle.png]]
+| style="width: 130px" | rifle
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_truck.png]]
+| style="width: 130px" | truck
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_whiteboard.png]]
+| style="width: 130px" | whiteboard
+|}
+
+|}
+
+
+; Default Task Types: Letters
+
+There is also a full set of capital letters available. Task types are named simply "a", "b", ... "z".
+{| class="wikitable sortable align-center-col-1"
+! Icon
+! Task Type
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_a.png]]
+| style="width: 130px" | a
+|-
+| style="width: 32px; background-color: #000" | [[File:bis_tasktype_z.png]]
+| style="width: 130px" | z
+|}
+
+
+{{GameCategory|arma3|Editing}}

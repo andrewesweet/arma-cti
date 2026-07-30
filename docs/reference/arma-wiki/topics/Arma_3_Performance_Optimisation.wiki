@@ -1,0 +1,156 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Performance_Optimisation
+// revision: 352212 (2024-02-01T23:26:04Z)
+// export sha1: 3cgtjtrblt7xywxzhro6m4rttd4rssz
+// categories: Category:Arma 3
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side||3}}
+{{arma3}} performance has always been a great interrogation topic. This page brings light on some aspects of the Video Settings.
+
+
+== General Guidelines ==
+
+* '''use auto-detection''' as a base for other settings - the autodetect button knows best, most of the time
+** an exception to that being that auto-detection will set the render sampling to ''at least'' 100% - this is not ideal if one wants to play e.g in 1920&times;1080 on a 3840&times;2160 screen.
+* in order to bring some relief to the CPU, play with (terrain/object) view distance
+* to alleviate pressure on the GPU, lower PiP settings and reduce 3D '''[[#General|Sampling]]'''
+* to reduce stutter and greatly improve loading times, it is highly recommended to install {{arma3}} on a Solid State Drive (SSD)
+{{Feature|important|2=
+* '''Run tests on a <span style="border-bottom: 1px solid">Vanilla</span> (no mods) {{arma3}}!''' Some ill-conceived mods can bring performance down.
+* '''Run tests in a <span style="border-bottom: 1px solid">Single Player environment</span>.''' If performances in multiplayer are worse than in single player, the server/connection/mission is at fault; nothing can be done on Settings' side.
+}}
+
+
+== Video Options ==
+
+<gallery mode="packed" heights="175px">
+arma3 video options general.png | '''{{Link|#General}}'''
+arma3 video options display.png | '''{{Link|#Display}}'''
+arma3 video options aanpp.png   | '''{{Link|#AA &amp; PP}}'''
+</gallery>
+
+
+== Settings Impacts ==
+
+{{Feature|informative|
+: {{Colorball|red|1.125}}    means a heavy impact on performance
+: {{Colorball|orange|1.125}} means an average impact
+: {{Colorball|green|1.125}}  means little to no performance impact.
+}}
+
+=== General ===
+
+{| class="wikitable align-center"
+! Category !! Setting !! CPU !! GPU !! Additional Details
+|-
+| rowspan="8" |
+==== Quality ====
+| Sampling || {{Colorball|orange}} || {{Colorball|red}} || class="align-left" | Defines the game's 3D resolution '''based on Display's Resolution setting''' (in %) - e.g '''50%''' of 3840&times;2160 results in a 3D resolution of 1920&times;1080 (1/4 of the original resolution)
+|-
+| Texture || {{Colorball|green}} || {{Colorball|orange}} || class="align-left" | Defines textures' quality - dependent on the GPU's memory
+|-
+| Objects || {{Colorball|orange}} || {{Colorball|orange}} || class="align-left" | Defines object's details and LOD thresholds
+|-
+| Terrain || {{Colorball|orange}} || {{Colorball|green}} || class="align-left" | Defines terrain's geometry details at medium long range (does not affect textures)
+|-
+| Shadow || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | Defines shadow precision
+|-
+| Particles || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | Defines quality and the amount of particles (smoke, fire, dust, etc) visible on screen.
+|-
+| Cloud || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | Defines if '''Cloud Simulation''' should be used and at which level of detail
+|-
+| PIP || {{Colorball|red}} || {{Colorball|green}} || class="align-left" | Adds (doubles?) the strain on the CPU - another scene has to be calculated in order to do the render. Quality here means PIP drawing distance
+|-
+| rowspan="3" |
+==== Visibility ====
+| Overall || {{Colorball|red}} || {{Colorball|orange}} || class="align-left" | Terrain's view distance
+|-
+| Object || {{Colorball|red}} || {{Colorball|green}} || class="align-left" | Object's view distance - ''The'' CPU killer. Set to about 1/3 to 1/2 of terrain's view distance
+|-
+| Shadow || {{Colorball|green}} || {{Colorball|orange}} || class="align-left" | Shadows' draw distance - range 50..200m
+|-
+| rowspan="3" |
+==== Lighting ====
+| HDR || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | Sets HDR quality, 8 or 16 bits
+|-
+| Dynamic Lights || {{Colorball|green}} || {{Colorball|orange}} || class="align-left" | Sets the maximum number of dynamic lights (light sources that are not the sun or the moon) in the scene
+|-
+| Water Reflections || {{Colorball|green}} || {{Colorball|orange}} || class="align-left" | Defines quality of water surface reflection
+|}
+
+=== Display ===
+
+{| class="wikitable align-center"
+! Category !! Setting !! CPU !! GPU !! Additional Details
+|-
+| rowspan="7" |
+==== General ====
+| Display Mode || {{Colorball|green}} || {{Colorball|orange}} || class="align-left" | Full Screen can solve some issues, Full Screen Window can fix some others. Windowed is useful for debug purposes
+|-
+| Resolution || {{Colorball|green}} || {{Colorball|red}} || class="align-left" | Should be set to the screen's native resolution and use '''Sampling''' to lower the 3D resolution if needed
+|-
+| Aspect Ratio || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | Set to auto or to the screen's aspect ratio. No impact on performance
+|-
+| VSync || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | '''V'''ertical '''Sync'''hronisation
+|-
+| Interface Size || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | No impact on performance
+|-
+| Brightness || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | No impact on performance
+|-
+| Gamma || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | No impact on performance
+|}
+
+=== AA &amp; PP ===
+
+{| class="wikitable align-center"
+! Category !! Setting !! CPU !! GPU !! Additional Details
+|-
+| rowspan="7" |
+==== PostProcesses ====
+| Bloom || {{Colorball|green}} || {{Colorball|green}} || class='align-left" |
+|-
+| Radial Blur || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | Adds "speed" blur to the border of the screen
+|-
+| Rotation Blur || {{Colorball|green}} || {{Colorball|orange}} || class="align-left" | Adds screen blur on fast camera movement
+|-
+| Depth of Field || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | Adds blur to non-focused background
+|-
+| Sharpen Filter || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | Makes the image sharper, but can also make it more grainy or too outlined
+|-
+| AO || {{Colorball|green}} || {{Colorball|orange}} || class="align-left" | (Screen Space) '''A'''mbient '''O'''cclusion. HBAO stands for Horizon-Based AO (Nvidia), whereas HDAO stands for High Definition AO (AMD).
+|-
+| Caustics || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | Water surface reflection on the ocean floor
+|-
+| rowspan="4" |
+==== PostProcess<br>Color Corrections ====
+| Color Preset || {{Colorball|green}} || {{Colorball|green}} || class="align-left" |
+|-
+| Brightness || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | ''Post-process'' image brightness
+|-
+| Contrast || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | ''Post-process'' image contrast
+|-
+| Saturation || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | Colour saturation - the higher the more colours, the lower the more black &amp; white
+|-
+| rowspan="4" |
+==== AntiAliasing ====
+| FSAA || {{Colorball|green}} || {{Colorball|red}} || class="align-left" | '''F'''ull '''S'''creen '''A'''nti-'''A'''liasing
+|-
+| AtoC || {{Colorball|green}} || {{Colorball|orange}} || class="align-left" | '''A'''lpha '''to''' '''C'''overage. Requires '''FSAA'''
+|-
+| PPAA || {{Colorball|green}} || {{Colorball|orange}} || class="align-left" | '''P'''ost-'''P'''rocessing '''A'''nti-'''A'''liasing. Less taxing than '''FSAA''', with very minor graphical glitches
+|-
+| Aniso. Filtering || {{Colorball|green}} || {{Colorball|green}} || class="align-left" | Anisotropic filtering
+|}
+
+
+== See Also ==
+
+* [[Mission Optimisation]]
+
+
+== External Links ==
+
+* {{Link|link= https://steamcommunity.com/sharedfiles/filedetails/?id=375092418|text= Yet Another Arma Benchmark}}
+
+
+{{GameCategory|arma3}}

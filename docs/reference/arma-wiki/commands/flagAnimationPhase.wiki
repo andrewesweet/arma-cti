@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/flagAnimationPhase
+// revision: 376970 (2026-01-01T06:01:24Z)
+// export sha1: oc9eqjskhacvv0dsbh99apim3526ffq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Flags | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|arg= global
+
+|gr1= Flags
+
+|descr= Returns flag position on the flag pole.
+
+|mp= The result is local to the PC on which command is executed.
+
+|s1= [[flagAnimationPhase]]  flag
+
+|p1= flag: [[Object]] - flag pole of the type {{hl|"FlagCarrier"}}
+
+|r1= [[Number]] in range 0..1 - flag position, where 0 is bottom of the flag pole, 1 is the top of the flag pole
+
+|x1= <sqf>flagAnimationPhase _flag1;</sqf>
+
+|seealso= [[setFlagAnimationPhase]] [[Arma 3: Flag Textures]]
+}}

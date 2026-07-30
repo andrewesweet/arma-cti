@@ -1,0 +1,228 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Scenarios
+// revision: 369012 (2024-08-23T07:54:37Z)
+// export sha1: 653cxbrp1f9g4okwdbjkldk7f3kfj4z
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Campaigns =
+
+== Operation Cobra ==
+
+
+Mount up with the 2nd Armored Division for Operation Cobra with up to 24 players and experience the legendary operation that changed the course of war in Western Europe during late July of 1944.
+
+* 9 fully-voiced immersive missions taking place across large swaths of Normandy.
+* Animated briefings for each mission describe the battlefield situation and lay out the tasks and objectives players must complete.
+* Plan your strategy with your friends by voting on multiple tactical choices in each mission, providing increased replayability with the chance to try different approaches and roles.
+* Wide range of player roles to choose from, including tankers, engineers, flamethrower operators, medics and much more.
+* Can be played with up to 24 players or alone with AI support.
+
+=== Backstory ===
+
+''Seven weeks after the Allied invasion of Normandy, Operation Cobra began. The objective, to break through the German defenses that were containing the Allied advance amongst the bocages of Northern France. Spearhead 1944 puts you on the front lines of Operation Cobra as part of the US assault. You will take part in battles inspired by true events, utilizing an array of WW2 weaponry, vehicles, and equipment.''
+
+''Fight through the bocage of Normandy as you take part in Operation Cobra - the US Army's attempt to break through the German lines several weeks after D-Day. Use iconic and authentic weapons and vehicles to recreate or even alter history in this WW2 sandbox for Arma 3.''
+
+=== Overview ===
+
+The campaign takes the player through the journey of the US Army's 2nd Armored Division during Operation Cobra, which was the plan developed to get the Allies out of the bloody Normandy battleground.
+
+The campaign offers seven historically accurate battles throughout '''seven CO-OP missions for up to 24 players'''. The missions highlight events that were crucial for the 2nd Armored Division and which defined Operation Cobra as a total success. Detailed narration fills out the feel of the game's atmosphere, connecting the gameplay experience with historical events.
+
+=== Features ===
+
+* '''Customization''' - Many mission parameters may allow the customizing of various elements for the play-session in multiplayer (ie skipping presentation elements, difficulty, revive, respawn, AI behavior and more).
+
+* '''Enhanced Revive''' System - The Enhanced Revive system offers several additional features and customization options compared to the vanilla revive system.%1%1This system includes actions like dragging unconscious co-players or NPCs, stabilizing bleeding, and reviving the wounded. Players who are incapacitated can choose to self-revive if they have the necessary items in their inventory, allowing them to rejoin the action. They also have the option to roll over and crawl to safety or towards friendly forces, or they can call for assistance from both AI units and other players. Furthermore, AI units are also capable of reviving each other.
+
+* '''AI Tweaks''' System - The AI Tweaks system improves in various ways the AI behavior and their gameplay influence.
+
+* '''Retreat Flee Surrender''' System - The Retreat Flee Surrender system simulates the stress, threat perception, and unit morale that may make AI decide to retreat from their current position, drop their weapons and flee the battlefield or surrender altogether. As such, the enemy doesn't have to be killed, yet different actions may also lead to overcoming the opposing force. Finally, POWs can be questioned to receive information on potential enemy forces and their locations.
+
+* '''Indirect Fire Support''' System - The Indirect Fire Support system provides battlefield support in various forms: mortars, artillery, CAS, and even direct support from nearby tanks.%1%1The support occurs both by player call-in requests, as well as automatically, and is based on the available intel of enemy threats and capabilities in any given moment.
+
+* '''Custom Difficulty Adjustment''' System - To make Arma 3 more playable and enjoyable with and against AI, the Custom Difficulty Adjustment system allows various aspects of AI behavior, damage taken/dealt, skill, and much more to be adjusted automatically.
+
+=== Missions ===
+
+==== [00] Prologue ====
+
+The prologue cinematics will introduce you to Operation Cobra and provides essential information about this legendary operation that changed the battlefield situation in Western Europe during the summer of 1944.
+
+[[File:spe_loading_m00b.jpg|500px]]
+
+==== [01] Liberation of Saint-Gilles ====
+
+Following an initial assault by Allied infantry, the 2nd Armored Division's first objective is to liberate the town of Saint-Gilles.
+
+[[File:spe_loading_m01b.jpg|500px]]
+
+==== [02] Liberation of Canisy ====
+
+The next goal for the 2nd Armored Division is to take the town of Canisy.
+
+[[File:spe_loading_m02b.jpg|500px]]
+
+==== [03] Quibou Dangy March ====
+
+To reach their objectives, the 2nd Armored Division must make its way through Quibou and Dangy.
+
+[[File:spe_loading_m03b.jpg|500px]]
+
+==== [04] Defense of Pont-Brocard ====
+
+After making rapid progress, the Division's leading elements are vulnerable to German counterattacks. The bridge at Pont-Brocard could be a high-value target for the enemy.
+
+[[File:spe_loading_m04b.jpg|500px]]
+
+==== [05] Villebaudon March ====
+
+To continue further south, the 2nd Armored Division first needs to liberate the town of Villebaudon.
+
+[[File:spe_loading_m05b.jpg|500px]]
+
+==== [06] Liberation of Saint Denis-le-Gast ====
+
+The 2nd Armored Division must take positions in Saint-Denis-le-Gast to prevent the enemy from escaping to the south.
+
+[[File:spe_loading_m07b.jpg|500px]]
+
+==== [07] Defense of Saint Denis-le-Gast ====
+
+The Germans are surrounded in the Roncey area. The 2nd Armored Division must prevent them from breaking through to the south.
+
+[[File:spe_loading_m08b.jpg|500px]]
+
+==== [08] Epilogue ====
+
+The epilogue cinematics explains the aftermath and conclusion of Operation Cobra, along with laying out the overall impact the operation had on the following Allied advance during the liberation of France and Western Europe.
+
+[[File:spe_loading_m09b.jpg|500px]]
+
+=== Singleplayer ===
+
+{{Feature|important|Dedicated Server play is STRONGLY RECOMMENDED for best performance/FPS and AI behavior! Please try to play on a Dedicated Server - your own or our [[Spearhead 1944 Official Servers]]. Thank you for your understanding!}}
+
+= Tutorial =
+
+Spearhead 1944 comes with a custom Arsenal. It automatically filters out non WW2 content. More info at [[Spearhead 1944 Arsenal (WW2)]].
+
+== WW2 Arsenal ==
+
+[[File:spe_loading_ww2_arsenal.jpg|500px]]
+
+Try every weapon and item WW2 has to offer.
+
+== WW2 Garage ==
+
+[[File:spe_loading_ww2_garage.jpg|500px]]
+
+Try every vehicle WW2 has to offer.
+
+= Showcases =
+
+Familiarize yourself with the history and equipment of the US and German faction during Operation Cobra.
+
+Hint: To explore the showcases easily, use the Strategic Map, accessible from wooden signs below the task marker, to quickly move between areas. To complete the showcase, select "Deploy" area on the strategic map.
+
+== US Faction Showcase ==
+
+[[File:spe_faction_showcase_us.jpg|500px]]
+
+Familiarize yourself with the Allied armory and help push through Normandy during Operation Cobra. Visit designated areas to learn more about the units, weapons, and vehicles of the American forces.
+
+Tasks:
+* Range: Familiarize yourself with the US small arms arsenal and test them out.
+* Support: Test out our anti-vehicle and artillery arsenal.
+* Staging area: Round up and inspect the 2nd Armored, gearing up for their contribution to Operation Cobra.
+* Airfield: Visit the combat airfield.
+* French Liberation: Visit Saint-Lô and meet up with the French Liberation Army.
+* Resistance: Meet the French resistance cell that helped us prepare for liberation.
+* Deploy: Once ready, advance with your unit to support the operation and exit the showcase.
+
+== German Faction Showcase ==
+
+[[File:spe_faction_showcase_ger.jpg|500px]]
+
+Set up defenses and support the retreating forces. Visit designated areas to learn more about the units, weapons, and vehicles of Wehrmacht forces.
+
+Tasks:
+* Armory: Familiarize yourself with the small-arms arsenal and test them out.
+* Artillery: Test out our anti-vehicle and artillery arsenal.
+* Camp: Test out all of the vehicles that German engineering has to offer.
+* Downed Plane: Visit Luftwaffe downed plane.
+* Retreat: Retreat from the incoming American advance and exit the showcase.
+
+= Singleplayer Scenarios =
+
+== Battle of St. Barthélemy ==
+
+[[File:spe_loading_battle_of_st_barthelemy.jpg|500px]]
+
+''Defend against an armored onslaught with the 30th Infantry Division.''
+
+Intense singleplayer experience as US tank hunter specialist to hold off the surprise attack by the Germans.
+
+== Prizefighter ==
+
+[[File:spe_loading_prizefighter.jpg|500px]]
+
+''Lead a daring armored reconnaissance patrol during Operation Cobra.''
+
+In singleplayer command your crew of a M8 light armored car on a recon patrol into the countryside near Canisy to scout out the German presence in the area.
+
+= Multiplayer Missions =
+
+== COOP 04 Der Zahnarzt ==
+
+[[File:spe_loading_derzahnarzt.jpg|500px]]
+
+''Members of the French Resistance were ordered by the SOE to eliminate Standartenführer Konrad Dentist Hoffmann at the occupied Château near Marigny.''
+
+== COOP 06 Attack on Mortain ==
+
+[[File:spe_loading_attack_on_mortain.jpg|500px]]
+
+''Support the 2nd Panzer Division on the first day of Operation Lüttich.''
+
+Infantry COOP mission for up to six players to make your way into Mortain as the main German push from the south.
+
+== COOP 06 Panzerkampfwagen ==
+
+[[File:spe_loading_panzerkampfwagen.jpg|500px]]
+
+''Command a German tank and destroy the Allied Armored Forces.''
+
+Tank COOP mission for up to six players in two tanks of your choice from the wide German arsenal to crush through the Allied lines in a massive and wide sweeping tank assault from multiple fronts.
+
+= Game Modes =
+
+== COOP 10 Combat Patrol ==
+
+[[File:spe_loading_ww2_combatpatrol_mortain.jpg|500px]]
+
+Spearhead version with faction selection, more tasks, wide customization via mission parameters and automatic support for WW2 mods.
+
+== COOP 10 Escape ==
+
+[[File:spe_loading_ww2_escape_mortain.jpg|500px]]
+
+Spearhead version with faction selection, a tougher experience and automatic support for WW2 mods.
+
+== WL 16 Warlords ==
+
+[[File:spe_loading_ww2_warlords.jpg|500px]]
+
+Spearhead version with faction selection, more customization via mission parameters and automatic support for WW2 mods.
+
+== ZGM 18 Zeus GameMaster ==
+
+[[File:spe_loading_ww2_zeus_mortain.jpg|500px]]
+
+Create your own missions and play your own way, with both US and German CO-OP scenarios pre-made and ready to go.
+
+== ZGM 50 Zeus GameMaster ==
+
+Create your own missions and play your own way in a team vs team setup.
+
+[[Category: Spearhead 1944]]

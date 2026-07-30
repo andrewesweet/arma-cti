@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_respawnRounds
+// revision: 309851 (2022-05-05T12:09:52Z)
+// export sha1: eih2e6aywmw68ukhacgobzdzyv9fpgi
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= <pre>/*
+
+	Description:
+	Disable respawn until players of only one side (including its allies) remains, then respawn everyone at once.
+	When "Rounds" respawn is used by only one side, wait until all its players are dead.
+
+	Parameter(s):
+		BOOL - true to force round end
+		SIDE - use any side to return side affected by round system (based on description.ext respawnTemplates settings)
+		ARRAY - empty array to return if a round is still on (players of more than one involved faction are alive)
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_respawnRounds]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_respawnRounds;</sqf> -->
+
+|seealso=
+}}

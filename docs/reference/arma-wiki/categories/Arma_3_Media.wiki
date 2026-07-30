@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Media
+// revision: 183134 (2021-01-05T06:52:10Z)
+// export sha1: sezg3dzdba6kyq5wpa2kiu7cn4f89jp
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3}}

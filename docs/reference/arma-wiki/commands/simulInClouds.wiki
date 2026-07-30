@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/simulInClouds
+// revision: 378513 (2026-05-03T17:21:12Z)
+// export sha1: dk4a0u7a8kpa0uq7bq02zggp0xugzw4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|pr= {{Feature|Eden Editor|SimulWeather seems to be disabled in [[:Category:Eden Editor|Eden Editor]] and scenario preview.}}
+
+|gr1= Environment
+
+|descr= Returns if given position is in clouds.
+
+|s1= [[simulInClouds]] pos
+
+|p1= pos: [[Position]]
+
+|r1= [[Boolean]], [[Nothing]] - [[true]] if given position is in clouds. [[Nothing]] if given arguments are incorrect
+
+|x1= <sqf>simulInClouds getPos player;</sqf>
+
+|seealso= [[setSimulWeatherLayers]] [[simulCloudDensity]] [[simulCloudOcclusion]]
+}}

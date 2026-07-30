@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/Team_Member
+// revision: 340881 (2023-05-13T21:44:16Z)
+// export sha1: omh5eqvzo208s1dt5go4244vghid4uw
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Description:''' n/a - see [[:Category:Command Group: Teams|Command Group: Teams]].
+
+Introduced with {{GameCategory|arma2|link= y}}.
+
+
+[[Category: Data Types]]

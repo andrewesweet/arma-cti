@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Functions
+// revision: 257298 (2021-05-05T07:43:27Z)
+// export sha1: h42x81qrzshtx25h3r5zu7uimdfa8q7
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Table/RVScriptingFunctions}}
+
+[[Category: Scripting Topics]]

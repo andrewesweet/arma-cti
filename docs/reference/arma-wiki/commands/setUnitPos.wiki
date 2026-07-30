@@ -1,0 +1,78 @@
+// source: https://community.bistudio.com/wiki/setUnitPos
+// revision: 369297 (2024-09-03T18:42:52Z)
+// export sha1: rqhqsll01axay7l1bp4ok759wbqz15h
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|eff= global
+
+|arg= local
+
+|gr1= Unit Control
+
+|descr= Set unit position rules. This command will not change the stance of the human player, even though it will change the output of [[unitPos]] command. To change player stance use [[playAction]] or [[playActionNow]]:
+<sqf>
+player playAction "PlayerProne"; // DOWN
+player playAction "PlayerStand"; // UP
+player playAction "PlayerCrouch"; // MIDDLE
+</sqf>
+
+|s1= unit [[setUnitPos]] mode
+
+|p1= unit: [[Object]]
+
+|p2= mode: [[String]] - can be:
+* "DOWN" - Unit goes prone and stays prone.
+* "UP" - Unit stands and stays standing.
+* "MIDDLE" - Kneel Position. {{GVI|arma1|1.04}} - Unit will not kneel if it is unarmed
+* "AUTO" - Unit chooses mode according to circumstances.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_soldier setUnitPos "UP";</sqf>
+
+|seealso= [[setUnitPosWeak]] [[unitPos]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 18 September 2008 </dd>
+<dt class="note">[[User:Dwarden|Dwarden]]</dt>
+<dd class="note">
+Command most likely only works if run before [[join]] into group after [[createUnit]].
+<dt><dt>
+<dd class="notedate">Posted on 11 March 2011</dd>
+<dt class="note">[[User:.kju|.kju]]</dt>
+<dd class="note">
+The above  comment by [[User:Dwarden|Dwarden]] about 'an additional join required' is no longer true for Operation Arrowhead.
+<dt><dt>
+<dd class="notedate">Posted on 26 September 2013</dd>
+<dt class="note">[[User:Katulobotomia|Katulobotomia]]</dt>
+<dd class="note">
+A unit might not always go prone when ordered to [[setUnitPos]] "DOWN", if the unit doesn't agree with the command. To force the unit to go prone, stop the unit from firing by [[setCombatMode]] "BLUE" and then order the unit to prone.
+
+</dl>

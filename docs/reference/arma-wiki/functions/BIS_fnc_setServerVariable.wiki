@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setServerVariable
+// revision: 327933 (2022-07-13T12:34:00Z)
+// export sha1: hbj0c1qcgkyww95j6bgo25f3mk7c4rf
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Variables | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Variables
+
+|descr= Set variable stored only on server. Clients can the download it using [[BIS_fnc_getServerVariable]]. Used when you want to share variables only to specific clients to prevent large traffic.
+
+|s1= [namespace, varName, value] call [[BIS_fnc_setServerVariable]]
+
+|p1= namespace: [[Namespace]], [[Object]] or [[Group]] - (Optional, default [[missionNamespace]])
+
+|p2= varName: [[String]] - variable name
+
+|p3= value: [[Anything]] - variable value
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>[nil, "playerHealth", damage player] call BIS_fnc_setServerVariable;</sqf>
+
+|x2= <sqf>[player, "playerHealth", damage player] call BIS_fnc_setServerVariable;</sqf>
+
+|seealso= [[BIS_fnc_getServerVariable]] [[publicVariableServer]] [[publicVariableClient]]
+}}

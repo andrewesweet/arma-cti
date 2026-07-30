@@ -1,0 +1,62 @@
+// source: https://community.bistudio.com/wiki/linearConversion
+// revision: 364172 (2024-05-05T10:46:44Z)
+// export sha1: 6nceqpo6e4tbhopldqjr3hhnz3zuw7y
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Math
+
+|descr= Converts given value from given "from" range to wanted "to" range. If clipping is set to [[true]], the resulting value is guaranteed to be within "to" range no matter what. {{Feature|arma3|Faster alternative to [[BIS_fnc_linearConversion]].}}
+
+|s1= [[linearConversion]] [minFrom, maxFrom, value, minTo, maxTo, clip]
+
+|p1= minFrom: [[Number]] - start "from" range
+
+|p2= maxFrom: [[Number]] - end "from" range
+
+|p3= value: [[Number]] - given value from "from" range
+
+|p4= minTo: [[Number]] - start "to" range
+
+|p5= maxTo: [[Number]] - end "to" range
+
+|p6= clip: [[Boolean]] - (Optional, default [[false]]) if [[true]], resulting value cannot leave "to" range
+
+|r1= [[Number]] - respectful value from "to" range
+
+|x1= <sqf>
+// Say given range is 0 to 1 and wanted range is 0 to 100 (percent calculation). Given value 0.55 then will be 55
+linearConversion [0, 1, 0.55, 0, 100];
+
+// but if given value is 1.1 it will return 110
+linearConversion [0, 1, 1.1, 0, 100, false];
+
+// or if clipping is true it will return 100
+linearConversion [0, 1, 1.1, 0, 100, true];
+</sqf>
+
+|x2= <sqf>linearConversion [4, 8, 5, 0, 1, false];</sqf>
+
+|x3= <sqf>
+// Calculate days from 1/1/1970
+fnc_daysFromEpoc = 
+{
+	private _year = param [0];
+	private _days = 0;
+	for "_i" from 1970 to _year - 1 do 
+	{
+		_days = _days + round linearConversion [0, 1, dateToNumber [_i, 12, 31, 23, 59], 0, 365, false];
+	};
+	_days + linearConversion [0, 1, dateToNumber _this, 0, 365, false];
+};
+
+hint str (date call fnc_daysFromEpoc);
+</sqf>
+
+|seealso= [[round]] [[floor]] [[ceil]] [[vectorLinearConversion]] [[bezierInterpolation]]
+}}

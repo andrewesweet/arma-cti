@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Functions_by_Effect
+// revision: 294036 (2021-11-05T21:13:11Z)
+// export sha1: hr4xj8xr0wzruqbk7e7mnmz5s2bwj9o
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Functions]]

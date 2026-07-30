@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/parseSimpleArray
+// revision: 363379 (2024-03-29T13:22:55Z)
+// export sha1: b5lzmhfol8oakm5m0ydi5p95dlws47h
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: Strings | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Strings
+
+|gr2= Arrays
+
+|descr= Converts given, formatted as simple array, [[String]] into a valid [[Array]]. Simple array is array consisting of [[Number]]s, [[String]]s, [[Boolean]]s and [[Array]]s of all of the above.
+This command is almost '''4&times; faster''' than similar uncached [[call]] [[compile]] method. And because [[call]] [[compile]] is not required, it is also '''more secure''' and primarily intended for use with [[callExtension]] to parse the [[String]] output into [[Array]].
+
+{{Feature|informative|
+Since {{arma3}} v1.96 the command tolerates extra spaces and supports single quotes. The only recognised keywords (case '''in'''sensitive) are:
+{{Columns|2|
+* {{hl|true}} - translates into [[true]]
+* {{hl|false}} - translates into [[false]]
+* {{hl|nil}} - translates into [[nil]]
+* {{hl|null}} - translates into [[nil]]
+* {{hl|&lt;null&gt;}} - translates into [[nil]] (''not'' [[objNull]])
+* {{hl|any}} - translates into [[nil]]
+}}
+}}
+
+|s1= [[parseSimpleArray]] stringArray
+
+|p1= stringArray: [[String]] - string formatted as simple array
+
+|r1= [[Array]] - valid array
+
+|x1= <sqf>private _arr = parseSimpleArray "[1,2,3]";</sqf>
+
+|x2= <sqf>
+private _array1 = [1, "2", true, [4, "five", false]];
+private _array2 = parseSimpleArray "[1,""2"",true,[4,""five"",false]]";
+_array1 isEqualTo _array2; // true
+</sqf>
+
+|x3= <sqf>
+_bool = true;
+_num = 123.45;
+_str = "ok";
+_arr = [1, false, "cool"];
+_res = parseSimpleArray format ["[%1,%2,%3,%4]", _bool, _num, str _str, str _arr];
+// note how _bool and _num do not need str, however if used anyway, the result in this case would be identical
+hint str _res;  // returns [true,123.45,"ok",[1,false,"cool"]]
+</sqf>
+
+|seealso= [[set]] [[resize]] [[pushBack]] [[pushBackUnique]] [[select]] [[apply]] [[reverse]] [[count]] [[find]] [[in]] [[forEach]] [[deleteAt]] [[deleteRange]] [[append]] [[sort]] [[arrayIntersect]] [[callExtension]]
+}}

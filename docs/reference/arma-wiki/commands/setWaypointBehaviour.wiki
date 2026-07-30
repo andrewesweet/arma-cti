@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/setWaypointBehaviour
+// revision: 340921 (2023-05-13T21:59:51Z)
+// export sha1: l5oaj9ac3jrg6xx98kipzs2byl1o9f8
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Scripting Commands: Server Execution | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|serverExec= server
+
+|eff= global
+
+|gr1= Waypoints
+
+|descr= Switches the unit behaviour when the waypoint becomes active.
+<br>
+<br>
+Possible values are:
+* "UNCHANGED"
+* "CARELESS"
+* "SAFE"
+* "AWARE"
+* "COMBAT"
+* "STEALTH"
+
+See the [[AIBehaviour]] page for details of the effect of this command on AI units.
+
+|s1= waypoint [[setWaypointBehaviour]] mode
+
+|p1= waypoint: [[Waypoint]]
+
+|p2= mode: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_grp, 2] setWaypointBehaviour "AWARE";</sqf>
+
+|seealso= [[Mission_Editor:_Waypoints#Behaviour|behaviour description]] [[AIBehaviour]] [[waypoints]] [[deleteWaypoint]] [[copyWaypoints]] [[setCurrentWaypoint]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointDescription]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointTimeout]] [[setWaypointType]] [[setWaypointVisible]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[setWaypointLoiterRadius]] [[waypointLoiterRadius]] [[addWaypoint]] [[setWaypointLoiterType]] [[waypointSpeed]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2008-08-26 - 13:32</dd>
+<dt class="note">[[User:Str|Str]]</dt>
+<dd class="note">Modes are case sensitive - ''"safe"'' won't work, while ''"SAFE"'' is ok.
+</dl>

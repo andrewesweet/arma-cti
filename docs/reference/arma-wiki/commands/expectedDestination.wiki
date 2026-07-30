@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/expectedDestination
+// revision: 377689 (2026-01-02T09:03:08Z)
+// export sha1: 10ths3powt0h1049plwvtjyzsop9lmj
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Command Group: Unit Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|gr1= Unit Control
+|gr2= AI Behaviour
+
+|descr= Return expected destination of unit as an array.
+
+|s1= [[expectedDestination]] person
+
+|p1= person: [[Object]]
+
+|r1= [[Array]] with [destination, planningMode, forceReplan]
+* destination: [[Position#PositionAGL|PositionAGL]]
+* planningMode: [[String]] - can be one of:
+** "DoNotPlan" - used when not moving
+** "DoNotPlanFormation" - used in formation when simple path testing is used
+** "LEADER PLANNED" - used for formation leader (full path finding used)
+** "LEADER DIRECT" - used for DirectGo (like getin, supply)
+** "FORMATION PLANNED" - used in formation when full path finding is used
+** "VEHICLE PLANNED" - used for vehicle driver
+* forceReplan: [[Boolean]] -  specifies if path replanning was forced (through [[setDestination]])
+
+|x1= <sqf>_data = expectedDestination player;</sqf>
+
+|seealso= [[setDestination]] [[getUnitState]]
+}}
+
+{{Note
+|user= Donnervogel
+|timestamp= 20070303162400
+|text= For AI units I have found the following values: ''planningMode'' is "LEADER PLANNED" when the unit is ordered by the group leader to go somewhere or if the unit is the group leader and it follows a waypoint. Otherwise ''planningMode'' it is "DoNotPlan". Units moving in formation have "DoNotPlan" as long as they don't receive orders by the group leader. Units also have "DoNotPlan" when they don't move. Units executing special formation tasks like engaging or return to formation have "FORMATION PLANNED" as long they have not fulfilled the task.
+}}

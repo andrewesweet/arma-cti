@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/lockedCameraTo
+// revision: 378357 (2026-04-02T16:48:58Z)
+// export sha1: d3gfhmq7scf4r141r5863etlvbqct62
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|arg= local
+
+|descr= Return the turret lock target.
+{{Feature|informative|The command is local to the '''turret''', not the vehicle.}}
+
+|gr1= Camera Control
+
+|s1= vehicle [[lockedCameraTo]] turretPath
+
+|p1= vehicle: [[Object]]
+
+|p2= turretPath: [[Turret Path]]. Use an empty array to select the gunner's turret by default
+
+|r1= Can be one of:
+* [[Nothing]] - not locked
+* [[Object]] - if locked to an object
+* [[Position#PositionASL|PositionASL]] - if locked to a position
+
+|x1= <sqf>vehicle player lockedCameraTo [];</sqf>
+
+|seealso= [[lockCameraTo]]
+}}

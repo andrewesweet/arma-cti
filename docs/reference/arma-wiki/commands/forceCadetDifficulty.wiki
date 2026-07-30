@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/forceCadetDifficulty
+// revision: 310147 (2022-05-05T12:46:27Z)
+// export sha1: kao7lwgzphsfrwqd8h3osc7jo6wv9m5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Difficulty | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Difficulty
+
+|descr= Forces {{hl|showCadetHints}} and {{hl|showCadetWP}} global Cadet [[Arma 3: Difficulty Settings|{{arma3}} difficulty]], returns previous settings.
+
+|s1= [[forceCadetDifficulty]] [showCadetHints, showCadetWP]
+
+|p1= showCadetHints: [[Boolean]] - {{hl|showCadetHints}} difficulty
+
+|p2= showCadetWP: [[Boolean]] - {{hl|showCadetWP}} difficulty
+
+|r1= [[Array]] of [[Boolean]]s - [prev_showCadetHints, prev_showCadetWP]
+
+|x1= <sqf>private _previousSettings = forceCadetDifficulty [true, false];</sqf>
+
+|x2= <sqf>
+private _fnc_forceCadetDifficulty = 
+{
+	params ["_OKButtonPressed"];
+	if (_OKButtonPressed) then
+	{
+		forceCadetDifficulty (switch (toLowerANSI configName ((configFile >> "CfgDifficultyPresets") select difficulty)) do
+		{
+			case "recruit";
+			case "regular":
+			{
+				// showCadetHints = 1;
+				// showCadetWP = 1;
+				[true, true]
+			};
+			case "veteran":
+			{
+				// showCadetHints = 0;
+				// showCadetWP = 1;
+				[false, true]
+			};
+			default
+			{
+				// showCadetHints = 0;
+				// showCadetWP = 0;
+				[false, false]
+			};
+		});
+	};
+};
+[true] call _fnc_forceCadetDifficulty;
+[missionNamespace, "OnGameOptionsExited", _fnc_forceCadetDifficulty] call BIS_fnc_addScriptedEventHandler;
+</sqf>
+
+|seealso= [[difficulty]] [[cadetMode]] [[hintCadet]] [[Arma 3: Scripted Event Handlers|Arma 3 Scripted Event Handlers]]
+}}

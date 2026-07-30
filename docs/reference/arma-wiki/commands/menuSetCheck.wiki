@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/menuSetCheck
+// revision: 378337 (2026-04-02T16:31:09Z)
+// export sha1: 0jhvb3x9hzdk3eqqs9wtme1ddyo2tbi
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+
+|version1= 1.56
+
+|gr1= GUI Control - Menu
+
+|descr= Sets item on given path to be checked or not. By default menu strip entries are not checkable.
+Once this command was executed, an entry can become checked and unchecked.
+If an entry is checked is indicated by a tick to the left of the entry's text.
+Setting an entry to be checkable will overwrite set picture with [[menuSetPicture]].
+
+|s1= [[menuSetCheck]] [idc, path, checked]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|p3= checked: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|s2= control [[menuSetCheck]] [path, checked]
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|p23= checked: [[Boolean]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>findDisplay 313 displayCtrl 120 menuSetCheck [[0,1], true];</sqf>
+
+|seealso= [[menuChecked]]
+}}

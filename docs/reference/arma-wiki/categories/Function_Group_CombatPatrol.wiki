@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_CombatPatrol
+// revision: 164005 (2020-09-30T10:34:01Z)
+// export sha1: a7vkq5i3tk5t0mg5gtptpsa3trowvw6
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions used by the [[Arma 3 MP Combat Patrol]] multiplayer mode.
+
+[[Category:Functions by Functionality]]

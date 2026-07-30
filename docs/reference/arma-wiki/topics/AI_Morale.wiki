@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/AI_Morale
+// revision: 226044 (2021-01-31T17:33:44Z)
+// export sha1: 4bfks0xdlhd9bn3jjly9827u7pzktv9
+// categories: Category:AI
+// Vendored snapshot. Do not edit — re-export instead.
+
+In addition to [[AI Behaviour|behaviour]] and [[Combat Modes|combat modes]], there are other factors they may affect the overall activity of AI. 
+
+== Fleeing ==
+
+* Can be disabled by [[allowFleeing]]. Details in [[fleeing]]
+
+[[Category:AI]]

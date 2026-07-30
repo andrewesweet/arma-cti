@@ -1,0 +1,321 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_MP_End_Game
+// revision: 364250 (2024-05-06T09:38:19Z)
+// export sha1: par93x3l64mq00v5f0oyjrigo82vt72
+// categories: Category:Arma 3: MP Modes | Category:Introduced with Arma 3 version 1.42
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GVI| arma3|1.42}}
+= End Game - Scenario Guideline =
+
+{{Feature|informative|
+Here you can find information on how to create your own '''{{Link|link= http://dev.arma3.com/post/oprep-end-game|text= End Game}}''' scenarios.
+Be introduced to the individual system components, how they work together, and finally learn how to set up the '''End Game''' scenario.
+}}
+
+{{Feature|important|
+The current issues and limitations are:
+
+* '''West vs East vs Resistance'''
+** Currently, the only supported playable sides are ''[[west]]'' ([[blufor|BLUFOR]]) and ''[[east]]'' ([[opfor|OPFOR]]), and the common enemy is ''[[resistance]]'' ([[independent|Independent]])'','' which is AI controlled.
+** The plan is to re-factor the related code to support all kinds of side combinations.
+}}
+
+A [[Arma 3: Asset Samples|sample]] is available in [[:Category:Arma 3: Official Tools|Arma 3 Tools]].
+
+
+== How to access modules and logics ==
+
+=== Modules ===
+
+When inside the Editor, navigate to''' Modules (F7)''' and double click on the map. The modules selection window will appear.<br> Set the ''Category'' to '''Objectives,''' and here you can see all '''End Game Modules''' listed.
+
+[[File:Arma3 EndGame_1.jpg|600px]]
+
+=== Logics ===
+
+When inside the Editor, navigate to '''Units (F1)''' and double click on the map. The unit selection window will appear.<br> Set the ''side'' to '''Game Logic''' (note this is only possible after placing a player unit) and the ''class'' to '''Objects'''. Here you will find '''End Game''' specific''' Game Logics.'''
+
+[[File:arma3 endgame randomizer.jpg|600px]]
+
+
+== Objectives Instance ==
+
+=== Objectives Instance ===
+
+The '''End Game Objectives Instance''' is what controls the flow of the whole End Game scenario. It decides when and which objectives should be visible and handles changes in their state.
+
+The '''Objectives Instance''' is also responsible for the stage progression / selection, and only one instance may be placed per scenario, otherwise an error will be triggered.
+
+[[File:Arma3 EndGame_3.jpg|600px]]
+
+
+== Objective Types ==
+
+=== Start Game Objective ===
+
+The ''Start Game Objective'' handles the initial phase of the '''End Game''' by requiring players to '''Establish FOB'''.<br> The succeed radius tells the objective the distance from its location that no enemy is within, so the objective can succeed. So, when attacking the enemy location to establish the FOB, players are required to eliminate all the enemies within the given radius.
+
+[[File:Arma3 EndGame_4.jpg|600px]]
+
+
+=== Middle Game Objective ===
+
+The ''Middle Game Objective'' is part of the second phase of '''End Game''' and requires players to move to a location and download Intel from an electronic device.
+
+[[File:Arma3 EndGame_5.jpg|600px]]
+
+=== End Game Objective ===
+
+The ''End Game Objective'' handles the last phase of''' End Game''' by requiring players to pick up important schematics from a location and upload them to their HQ.<br> The team which is able to complete the upload will win the match.
+
+[[File:Arma3 EndGame_6.jpg|600px]]
+
+
+== Game Logic Types ==
+
+=== Objective Randomizer ===
+
+The '''Randomizer Game Logic''' allows for objective randomization. If two or more objectives are synced to a '''Randomizer''' that in turn is synced with the '''End Game Objectives Instance''' module, one of those objectives will be selected at random on mission start.
+
+The objectives that are not selected, are cleared and all related objects are deleted.
+
+In the example on the right, both '''Objective 1''' and '''Objective 2''' have a '''50%''' chance to be selected. The one which is not selected at mission start, will be '''deleted''' along with its related objects.
+
+[[File:Arma3 EndGame_7.jpg|600px]]
+
+
+== Scenario Configuration ==
+
+=== Intel ===
+
+When inside the '''Editor''', enter the '''Intel''' properties. Here you are able to set mission parameters such as the mission '''Name''', mission '''Description''', the initial '''Time of Day''' and '''Weather'''.
+
+[[File:Arma3 EndGame_8.jpg|600px]]
+
+Add a mission '''name''' and '''description'''. Also, make sure '''Independent''' is friendly to '''Nobody'''. This will make the Independent side the common enemy for players.
+
+[[File:Arma3 EndGame_9.jpg|600px]]
+
+=== Revive and Respawn ===
+
+'''End Game''' was made with group respawn in mind, and although you are free to try different respawn types, the following configuration is the suggested one. You will need to add a few lines to your '''[[Description.ext|description.ext]]'''.
+
+'''Description.ext'''
+ 
+ [[Description.ext#respawn|respawn]] = 3;
+ [[Description.ext#respawnDelay|respawnDelay]] = 30;
+ [[Description.ext#respawnVehicleDelay|respawnVehicleDelay]] = 0;
+ [[Description.ext#respawnTemplates|respawnTemplates<nowiki>[]</nowiki>]] = {"Revive", "MenuPosition"}; // Enable Revive and Respawn Menu 
+ [[Description.ext#respawnOnStart|respawnOnStart]] = -1;
+ [[Description.ext#respawnDialog|respawnDialog]] = 1;
+ [[Description.ext#disabledAI|disabledAI]] = 1;
+
+=== Shared Objectives ===
+
+To enable the '''Shared Objectives''' you'll need to add a few lines to your '''[[Description.ext|description.ext]]'''.
+
+'''Description.ext'''
+<syntaxhighlight lang="cpp">
+class CfgTaskEnhancements
+{
+	enable		= 1;		// 0: disable new task features (default), 1: enable new task features & add new task markers and task widgets into the map
+	3d			= 1;		// 0: do not use new 3D markers (default), 1: replace task waypoints with new 3D markers
+	3dDrawDist	= 10000;	// 3D marker draw distance (default: 2000)
+	share		= 1;		// 0: do not count assigned players (default), 1: count how many players have the task assigned
+	propagate	= 1;		// 0: do not propagate (default), 1: propagate shared tasks to subordinates
+};
+</syntaxhighlight>
+
+=== Garbage Manager ===
+
+In order to keep the game from slowing down because of dozens of destroyed vehicles and hundreds of bodies, you may enable and configure the '''Garbage Manager''' within your '''[[Description.ext|description.ext]]'''.
+
+'''Description.ext'''
+ 
+ [[Description.ext#corpseManagerMode|corpseManagerMode]] = 1; //Type of removed bodies: 0 - none, 1 - all, 2 - only respawnable, 3 - only non-respawnable 
+ [[Description.ext#corpseLimit|corpseLimit]] = 10; //Max number of bodies which can be available at the same time. When exceeded, start deleting immediately. 
+ [[Description.ext#corpseRemovalMinTime|corpseRemovalMinTime]] = 120; //Minimal time in seconds a body stays in the scene (can't be removed sooner). 
+ [[Description.ext#corpseRemovalMaxTime|corpseRemovalMaxTime]] = 240; //Maximal time in seconds after which a dead body is removed (can't stay longer) 
+ 
+ [[Description.ext#wreckManagerMode|wreckManagerMode]] = 1; //Type of removed wrecks: 0 - none, 1 - all, 2 - only respawnable, 3 - only non-respawnable 
+ [[Description.ext#wreckLimit|wreckLimit]] = 5; //Max number of wrecks which can be available at the same time. When exceeded, start deleting immediately. 
+ [[Description.ext#wreckRemovalMinTime|wreckRemovalMinTime]] = 120; //Minimal time in seconds a wreck stays in the scene (can't be removed sooner). 
+ [[Description.ext#wreckRemovalMaxTime|wreckRemovalMaxTime]] = 240; //Maximal time in seconds after which a wreck is removed (can't stay longer)
+
+=== Header and Missions Parameters ===
+
+To wrap up the [[Description.ext|description.ext]] configuration, you may set a few parameters such as scenario author, how many players the scenario supports, and even what parameters will be available in the lobby.
+
+'''Description.ext'''
+ 
+ [[Description.ext#author|author]] = "Author";
+ [[Description.ext#onLoadName|onLoadName]] = "On Load Name";
+ [[Description.ext#briefingName|briefingName]] = "Briefing Name";
+ [[Description.ext#onLoadMission|onLoadMission]] = "On Load Mission";
+ [[Description.ext#overviewText|overviewText]] = "Overview Text";
+ [[Description.ext#overviewPicture|overviewPicture]] = "\a3\Missions_F_MP_Mark\Data\Marksmen_scenario01_overview_CA.paa";
+ class [[Description.ext#header|Header]] 
+ { 
+ 	gameType = CTF;
+ 	minPlayers = 1;
+ 	maxPlayers = 16;
+ };
+ class [[Description.ext#params|Params]] 
+ { 
+ 	#define DAYTIMEHOUR_DEFAULT 12 
+ 	#define WEATHER_DEFAULT  25 
+ 	#define DEBUGCONSOLE_DEFAULT   0
+ 
+ 	#define TIMEACCELERATION_DEFAULT  10
+ 	#include "\a3\functions_f\Params\paramDaytimeHour.hpp"
+ 	#include "\a3\functions_f\Params\paramWeather.hpp"
+ 	#include "\a3\functions_f\Params\paramDebugConsole.hpp"
+ 
+ 	#include "\a3\Functions_F_MP_Mark\Params\paramTimeAcceleration.hpp" 
+ };
+
+Please note that Param templates currently don't work with PBO missions manually copied to MPMissions folder.
+Unpacked missions, Steam missions and missions which are part of an addon work correctly.
+See {{Link|Mission Parameters}} for more info.
+
+
+== Scenario Setup ==
+
+=== Placing Player Slots ===
+
+Place your playable units for both '''BLUFOR''' and '''OPFOR'''. Again, please note the current limitations, only BLUFOR and OPFOR can be player-controlled.
+
+[[File:Arma3 EndGame_10.jpg|600px]]
+
+=== Respawn Markers ===
+
+Place a '''Marker''' at the players' initial position that will assign the initial respawn position.
+Then make sure to call it '''respawn_west''' and '''respawn_east''' depending whether for '''WEST''' (BLUFOR) or '''EAST''' (OPFOR).
+
+[[File:Arma3 EndGame_11.jpg|600px]]
+
+=== Headquarters Entity ===
+
+The '''Headquarters Entity''' serves as the speaker for the side.
+This entity is the HQ which gives players hints on how or what they have to do during the mission.<br>
+Make sure to place a '''Headquarters Entity''' by selecting '''Modules (F7)''' and navigating to the '''Intel''' category.<br>
+Also, '''make sure to name this module'''. Its name will be used later so we can reference this entity.
+For the ''west'' entity name it '''BIS_west_speaker''' and for the ''east'' entity name it '''BIS_east_speaker'''. Make sure to set the correct side of the HQ entity within the module.
+
+[[File:Arma3 EndGame_12.jpg|600px]]
+
+=== Objectives Instance ===
+
+Select '''Modules (F7)''' and navigate to the '''Objectives''' category. Place the '''End Game Objectives Instance''' module.
+This will tell the game to initialize the End Game systems on mission start.<br>
+The module has one property, the '''End Game Threshold''', which tells the system how many Intel packages a side must download for the last phase to start, during the middle game stage, or '''Stage 2'''.<br><br>
+'''End Game Threshold''' - The amount of retrieve intel tasks a side must complete in order to succeed the 2nd stage and move to the 3th and final stage.<br>
+'''Warmup Delay''' - The amount of time in seconds players are locked in the warmup phase at the start of the scenario.
+
+[[File:Arma3 EndGame_13.jpg|600px]]
+
+=== Start Game Objectives ===
+
+So now, let's place our our first objectives. These will be the '''Start Game Objective''', and each playable side must have their own unique one.
+So select '''Modules (F7)''' and double click on the map. After the modules selection window appears, navigate to the '''Objectives''' category and, for each side, place a '''EndGame Start Game Objective''' where you want the side to Establish their FOB.
+Within the module itself, you '''must''' set the side which will be tasked with this objective.<br>Every Start Game Objective modules must be synchronized with the Objectives Instance module.
+{{Feature|informative|Do not forget to add at least one for each of the playable sides.}}
+* '''Attacking Side''' - The side which will be tasked to this objective
+* '''Succeed Radius''' - The radius in which at least one player of the side doing this objective must be and the radius in which no enemy units can be
+* '''Restriction Radius''' - The radius in which players are confined until they complete this objective
+
+[[File:Arma3 EndGame_14.jpg|600px]]
+
+[[File:Arma3 EndGame_15.jpg|600px]]
+
+=== Middle Game Objective ===
+
+A '''Middle Game Objective (MGO)''' is what could be called a '''Retrieve Intel''' objective.
+These are the objectives which require players to move to their location and ''download some intel'' from the object connected to the ''objective module''.
+
+To place a Middle Game Objective select '''Modules (F7)''' and double click on the map. Once the modules window appears, navigate to the '''Objectives''' category and select the '''EndGame Simple Objective'''.<br>
+Each '''MGO''' requires an object which is used to download Intel from, for example a car, UAV or a computer.<br>
+Go ahead and place any object you would like, then name it, for example, ''BIS_downloadPoint_1'' and put this exact name in the module's '''"Downloadable Object"''' field.<br>
+Every Middle Game Objective modules must be synchronized with the Objectives Instance module.
+
+Any '''triggers''' connected to the module defines the mission objects' relation with the connected objective.
+For example, if you have a trigger connected to the module, any mission objects inside it will be set as '''owned by the objective''' and will be hidden / deleted when the object is.<br><br>
+'''Note that the object to be downloaded from will be indestructible until one of the competing sides downloads intel from it.'''
+It is also good practice to lock vehicles (if used as download object) so players can't board and drive it away.<br><br>
+* '''Downloadable Object''' - The name of the object to use as download source
+* '''Download Radius''' - The radius in which download will be available (Non-Functional)
+* '''Task Description''' - The description of this objective, for example, "Download intel from UAV"
+* '''Instant Download''' - Whether the download should be instant, if so, download is succeeded after interaction with object
+
+[[File:Arma3 EndGame_16.jpg|600px]]
+
+[[File:Arma3 EndGame_17.jpg|600px]]
+
+=== Randomizer Logic ===
+
+'''Randomizer''' logics can be used to randomize '''Middle Game Objectives''', so if more then one objective is connected to a randomizer, one at random will be selected at '''mission start'''.
+The objectives not selected '''will be deleted''', along with their '''owned objects'''.
+
+[[File:Arma3 EndGame_18.jpg|600px]]
+
+=== End Game Objective ===
+
+The '''End Game Objective''' is the objective which handles the last phase of the game mode. It defines the possible '''pickup / upload''' locations and how long the match can take when in the last phase.
+
+So start by selecting '''Modules (F7)''', navigate to the '''Objectives''' category and place a '''EndGame End Game Objective'''.<br>
+After placing our module, let's place one '''Pickup''' and at least two '''Upload''' objects.
+A pickup object is the object that is referred to as '''Schematics''', and it is the object players need to pick up and use to upload the data.
+The upload objects are the objects used to upload the '''Schematics''' to HQ.<br>Every End Game Objective modules must be synchronized with the Objectives Instance module.
+{{Feature|informative|One Pickup object and at least two upload objects are needed, if more are provided, these will be randomized.}}
+* '''Time Limit''' - The time limit for the 3th phase, if time limit is reached before one of the sides winning, the mission will end as a draw
+* '''Pickup Objects''' - List of all available pickup objects
+* '''Upload Objects''' - List of all upload objects (At least 2 are required, one per side or more)
+* '''Note that the objects used as Schematics will be indestructible.'''
+
+[[File:Arma3 EndGame_19.jpg|600px]]
+
+[[File:Arma3 EndGame_20.jpg|600px]]
+
+
+=== Resulting Layout ===
+
+You should get something similar to the picture on the right.
+
+[[File:Arma3 EndGame_21.jpg|600px]]
+
+=== Respawn Points ===
+
+You can add positions which are turned into respawn points after an event. For example, a player of a side entering an objective area will unlock any respawn points available for that objective.<br>
+The system handles 3 kinds of respawn points:
+
+* '''Respawn Point logic''' connected to the '''Start Game Objective'''
+** It is unlocked when the owner side establishes their FOB.
+* '''BLUFOR / OPFOR game logics''' connected to a '''Simple Objective'''
+** These are unlocked when a player of a side enters an objective area.
+* '''Respawn Point logic''' connected to an Upload object which is used by the '''End Game Objective'''
+** It is unlocked when the last phase starts and serves as a position for the upload defenders to respawn at.
+
+Where to find the logics?
+
+* '''BLUFOR / OPFOR game logics''' can be found under''' Units (F1) &gt; Game Logics &gt; Sides'''.
+* '''Respawn Point logics''' can be found under''' Units (F1) &gt; Game Logics &gt; Positions'''.
+
+[[File:Arma3 EndGame_22.jpg|600px]]
+
+[[File:Arma3 EndGame_23.jpg|600px]]
+
+[[File:Arma3 EndGame_24.jpg|600px]]
+
+=== Vehicle Respawn Modules ===
+
+For any placed vehicles in the scenario, you may add a respawn module synchronized to them, making them respawn after being destroyed, damaged and/or abandoned.
+Such module can be found under''' Modules (F7) &gt; Multiplayer &gt; Vehicle Respawn'''.
+
+=== Final Notes ===
+
+{{Feature|important|If one of the competing sides has no players at the moment when the third and last phase starts, the match will end with the side with players being the winner.}}
+
+
+{{GameCategory|arma3|MP Modes}}
+[[Category:Introduced with Arma 3 version 1.42]]

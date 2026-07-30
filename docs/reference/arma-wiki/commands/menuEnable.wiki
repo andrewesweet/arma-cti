@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/menuEnable
+// revision: 378329 (2026-04-02T16:30:39Z)
+// export sha1: lqsbydjufxfqxjllfpp0sf38urnbyaz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= GUI Control - Menu
+
+|descr= Enables or disables menu entry on given path.
+
+|s1= [[menuEnable]] [idc, path, enable]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|p3= enable: [[Boolean]] - (Optional, default [[true]]) disabled if [[false]]
+|p3since= arma3 2.06
+
+|r1= [[Nothing]]
+
+|s2= control [[menuEnable]] [path, enable]
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|p23= enable: [[Boolean]] - (Optional, default [[true]]) disabled if [[false]]
+|p23since= arma3 2.06
+
+|r2= [[Nothing]]
+
+|s3= control [[menuEnable]] path {{Feature|obsolete|This old syntax is kept only for backward compatibility.|arma3|2.06}}
+
+|p41= control: [[Control]]
+
+|p42= path: [[Tree View Path]]
+
+|r3= [[Nothing]]
+
+|x1= <sqf>findDisplay 313 displayCtrl 120 menuEnable [0]; // old syntax, do not use</sqf>
+
+|x2= <sqf>findDisplay 313 displayCtrl 120 menuEnable [[0, 0, 1], false]; // since {{arma3}} v2.06</sqf>
+
+|seealso= [[menuEnabled]]
+}}

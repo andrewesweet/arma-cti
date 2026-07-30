@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/Template:Table/RVScriptingCommands
+// revision: 373883 (2025-06-26T10:56:03Z)
+// export sha1: tet4dwjunm7q06xh8vytcv9qpm2lfdv
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>
+{| class="wikitable rv-commands" style="margin: auto; font-size:.85em"
+|-
+! colspan="10" | <big>[[Real Virtuality]] Scripting Commands</big>
+|- style="text-align: center"
+! colspan="2" | By Game
+| [[:Category: {{Name|tkoh|cat}}: Scripting Commands|{{tkoh}}]] {{Icon|tkoh|24}}
+| [[:Category: {{Name|ofp|cat}}: Scripting Commands|{{ofp}}]] {{Icon|ofp|32}}
+| [[:Category: {{Name|ofpe|cat}}: Scripting Commands|{{ofpe}}]] {{Icon|ofpe|24}}
+| [[:Category: {{Name|arma1|cat}}: Scripting Commands|{{arma1}}]] {{Icon|arma1|32}}
+| [[:Category: {{Name|arma2|cat}}: Scripting Commands|{{arma2}}]] {{Icon|arma2|32}}
+| [[:Category: {{Name|arma2oa|cat}}: Scripting Commands|{{arma2oa}}]] {{Icon|arma2oa|32}}
+|
+[[:Category: {{Name|arma3|cat}}: Scripting Commands|{{arma3}}]] {{Icon|arma3|32}}<br>
+<span style="border-bottom: .33em solid #62A762; margin: 0 0.25em">[[:Category:{{Name|arma3|cat}}: Scripting Commands: Diagnostic Branch|Diagnostic]]</span>
+<span style="border-bottom: .33em solid #E87600; margin: 0 0.25em">[[:Category:{{Name|arma3|cat}}: Scripting Commands: Development Branch|Development]]</span>
+<span style="border-bottom: .33em solid #0088DD; margin: 0 0.25em">[[:Category:{{Name|arma3|cat}}: Scripting Commands: Profiling Branch|Profiling]]</span>
+| [[:Category: {{Name|argo|cat}}: New Scripting Commands|{{Name|argo}}]]<br>{{Icon|argo|24|link=:Category: {{Name|argo|cat}}: New Scripting Commands}}
+|-
+! rowspan="4" | [[:Category:Scripting Commands by Functionality|By Functionality]]
+! | A&nbsp;-&nbsp;G
+| colspan="8" | [[:Category:Command Group: AI Behaviour|AI Behaviour]] ● [[:Category:Command Group: Animations|Animations]] ● [[:Category:Command Group: Arrays|Arrays]] ● [[:Category:Command Group: Artillery|Artillery]] ● [[:Category:Command Group: Briefing|Briefing]] ● [[:Category:Command Group: Broken Commands|Broken Commands]] ● [[:Category:Command Group: Camera Control|Camera Control]] ● [[:Category:Command Group: Config|Config]] ● [[:Category:Command Group: Containers|Containers]] ● [[:Category:Command Group: Conversations|Conversations]] ● [[:Category:Command Group: Curator|Curator]] ● [[:Category:Command Group: Custom Panels|Custom Panels]] ● [[:Category:Command Group: Custom Radio and Chat|Custom Radio and Chat]] ● [[:Category:Command Group: Diagnostic|Diagnostic]] ● [[:Category:Command Group: Difficulty|Difficulty]] ● [[:Category:Command Group: DLC|DLC]] ● [[:Category:Command Group: Dynamic Simulation|Dynamic Simulation]] ● [[:Category:Command Group: Eden Editor|Eden Editor]] ● [[:Category:Command Group: Environment|Environment]] ● [[:Category:Command Group: Event Handlers|Event Handlers]] ● [[:Category:Command Group: Flags|Flags]] ● [[:Category:Command Group: Game 2 Editor|Game 2 Editor]] ● [[:Category:Command Group: Groups|Groups]] ● [[:Category:Command Group: GUI Control|GUI Control]]
+|-
+! | H&nbsp;-&nbsp;N
+| colspan="8" | [[:Category:Command Group: HashMap|HashMap]] ● [[:Category:Command Group: High Command|High Command]] ● [[:Category:Command Group: Interaction|Interaction]] ● [[:Category:Command Group: Leaderboards|Leaderboards]] ● [[:Category:Command Group: Lights|Lights]] ● [[:Category:Command Group: Localization|Localization]] ● [[:Category:Command Group: Locations|Locations]] ● [[:Category:Command Group: Map|Map]] ● [[:Category:Command Group: Markers|Markers]] ● [[:Category:Command Group: Math|Math]] ● [[:Category:Command Group: Mines|Mines]] ● [[:Category:Command Group: Mission Information|Mission Information]] ● [[:Category:Command Group: Mods and Addons|Mods and Addons]] ● [[:Category:Command Group: Namespaces|Namespaces]] ● [[:Category:Command Group: Multiplayer|Multiplayer]]
+|-
+! | O&nbsp;-&nbsp;S
+| colspan="8" | [[:Category:Command Group: Object Detection|Object Detection]] ● [[:Category:Command Group: Object Manipulation|Object Manipulation]] ● [[:Category:Command Group: Particles|Particles]] ● [[:Category:Command Group: Performance Profiling|Performance Profiling]] ● [[:Category:Command Group: PhysX|PhysX]] ● [[:Category:Command Group: Pilot Camera|Pilot Camera]] ● [[:Category:Command Group: Positions|Positions]] ● [[:Category:Command Group: Program Flow|Program Flow]] ● [[:Category:Command Group: Radio and Chat|Radio and Chat]] ● [[:Category:Command Group: Regular Expression (Regex)|Regular Expression (Regex)]] ● [[:Category:Command Group: Remote Control|Remote Control]] ● [[:Category:Command Group: Render Time Scope|Render Time Scope]] ● [[:Category:Command Group: Roads and Airports|Roads and Airports]] ● [[:Category:Command Group: Ropes and Sling Loading|Ropes and Sling Loading]] ● [[:Category:Command Group: RTD|RTD]] ● [[:Category:Command Group: Sensors|Sensors]] ● [[:Category:Command Group: Sides|Sides]] ● [[:Category:Command Group: Sounds|Sounds]] ● [[:Category:Command Group: Stamina System|Stamina System]] ● [[:Category:Command Group: Strings|Strings]] ● [[:Category:Command Group: Structured Text|Structured Text]] ● [[:Category:Command Group: System|System]]
+|-
+! | T&nbsp;-&nbsp;Z
+| colspan="8" | [[:Category:Command Group: Team Switch|Team Switch]] ● [[:Category:Command Group: Teams|Teams]] ● [[:Category:Command Group: Time|Time]] ● [[:Category:Command Group: Triggers|Triggers]] ● [[:Category:Command Group: Turrets|Turrets]] ● [[:Category:Command Group: Uncategorised|Uncategorised]] ● [[:Category:Command Group: Unit Control|Unit Control]] ● [[:Category:Command Group: Unit Identity|Unit Identity]] ● [[:Category:Command Group: Unit Inventory|Unit Inventory]] ● [[:Category:Command Group: Variables|Variables]] ● [[:Category:Command Group: Vehicle in Vehicle Transport|Vehicle in Vehicle Transport]] ● [[:Category:Command Group: Vehicle Inventory|Vehicle Inventory]] ● [[:Category:Command Group: Vehicle Loadouts|Vehicle Loadouts]] ● [[:Category:Command Group: Waypoints|Waypoints]] ● [[:Category:Command Group: Weapon Pool|Weapon Pool]] ● [[:Category:Command Group: Weapons|Weapons]]
+|- style="text-align: center"
+! colspan="2" | By Locality
+| colspan="2" | [[:Category:Scripting Commands: Local Effect|Local Effect]] {{Icon|localEffect|24}}
+| colspan="2" | [[:Category:Scripting Commands: Global Effect|Global Effect]] {{Icon|globalEffect|24}}
+| colspan="2" | [[:Category:Scripting Commands: Server Execution|Server Execution]] {{Icon|serverExec|24}}
+| colspan="2" |
+|-
+! colspan="2" | See Also
+| colspan="8" | [[:Category:Scripting Commands|All Scripting Commands]] ● [[:Category:Functions|All Functions]] ● [[:Category:Functions by Functionality|Functions by Functionality]]
+|}
+</includeonly><noinclude>
+
+== Usage ==
+{| style="width: 100%"
+|- style="background-color: #EEE"
+! Code
+! Result
+|-
+| <nowiki>{{Table/RVScriptingCommands}}</nowiki>
+| {{Table/RVScriptingCommands}}
+|}
+
+[[Category:Templates|{{PAGENAME}}]]</noinclude>

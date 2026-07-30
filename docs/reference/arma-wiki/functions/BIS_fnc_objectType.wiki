@@ -1,0 +1,84 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_objectType
+// revision: 327120 (2022-07-12T21:44:51Z)
+// export sha1: te1ew6xiysnb1w5avgt0dmxrfu57367
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.08 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.08
+
+|gr1= Object Manipulation
+
+|descr= Return object category and type.
+
+|s1= anObject call [[BIS_fnc_objectType]]
+
+|p1= anObject: [[String]] or [[Object]]
+
+|r1= [[Array]] - in format [category, type]. One of:
+{{{!}} class="wikitable"
+! Soldier
+! Vehicle / VehicleAutonomous
+! Logic
+! Object
+{{!}}- style="vertical-align: top"
+{{!}}
+* AT
+* Civilian
+* Diver
+* Infantry
+* Medic
+* MG
+* Officer
+* Pilot
+* Sniper
+* SpecialForces
+* UAVPilot
+{{!}}
+* Car
+* Helicopter
+* Motorcycle
+* Plane
+* Ship
+* StaticWeapon
+* Submarine
+* TrackedAPC
+* Tank
+* WheeledAPC
+{{!}}
+* Logic
+* Module
+{{!}}
+{{Columns|2|
+* Ammobox
+* Animal
+* Backpack
+* Camera
+* Church
+* Effect
+* Fire
+* Flag
+* Helipad
+* House
+* Marker
+* Mine
+* Parachute
+* Seagull
+* Sound
+* Target
+* Thing
+* Trigger
+* UnknownObject
+* VASI
+* Wreck
+}}
+{{!}}}
+
+|x1= <sqf>private _myType = player call BIS_fnc_objectType;</sqf>
+
+|x2= <sqf>private _myType = "B_MRAP_01_F" call BIS_fnc_objectType;</sqf>
+
+|seealso= [[typeOf]] [[countType]] [[isKindOf]]
+}}

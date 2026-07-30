@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/showWaypoints
+// revision: 329411 (2022-07-27T15:11:51Z)
+// export sha1: l47bwq6mfbabsgo0joq55mc1drkxhuw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Waypoints
+
+|descr= Shows/Hides task HUD markers and waypoints that will fade out in time. Dependable on difficulty settings.
+|s1= [[showWaypoints]] enabled
+
+|p1= enabled: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>showWaypoints true;</sqf>
+
+|seealso= [[showWaypoint]] [[waypointShow]]
+}}
+
+{{Note
+|user= PierreMGI
+|timestamp= 20200527072000
+|text= Even if you set your difficulty with "waypoints: hide", if you are using [[addWaypoint]] command for player, you will see your waypoints displayed on map, with the track to follow.
+Some other cases using addWaypoint will allow this unexpected behaviour on map and the code <sqf inline>showWaypoints false;</sqf> will not change anything for map.<br>
+You need to use [[showWaypoint]] command instead, on each added waypoints:
+<sqf>
+_wp = group player addWaypoint [getMarkerPos "aMarker", 0];
+_wp showWaypoint "NEVER";
+</sqf>
+}}

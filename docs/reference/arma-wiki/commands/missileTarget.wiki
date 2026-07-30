@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/missileTarget
+// revision: 364926 (2024-06-30T22:40:26Z)
+// export sha1: h0surz1wh7kh6pmmtahw0aek8jmjgyz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.92
+
+|gr1= Weapons
+
+|descr= Returns a guided missile's target.
+
+|s1= [[missileTarget]] munition
+
+|p1= munition: [[Object]]
+
+|r1= [[Object]]
+
+|x1= <sqf>missileTarget missile1;</sqf>
+
+|seealso= [[missileTargetPos]] [[setMissileTargetPos]] [[setMissileTarget]] [[missileState]]
+}}

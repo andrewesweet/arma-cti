@@ -1,0 +1,75 @@
+// source: https://community.bistudio.com/wiki/getUnitLoadout
+// revision: 377568 (2026-01-02T06:55:51Z)
+// export sha1: 761d24f1xk9u4kxv6odwar1lul0ofy8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Unit Inventory
+
+|descr= Returns a '''[[Unit Loadout Array]]''' with all assigned items, weapons, containers and their stored items.
+
+{{Feature|informative|
+The config should contain the following standard entries: <spoiler>
+<syntaxhighlight lang="cpp">
+class MyLoadout
+{
+	uniformClass = "U_B_CombatUniform_mcam";
+	backpack = "B_AssaultPack_mcamo";
+	linkedItems[] = { "V_PlateCarrier1_rgr", "H_HelmetB", "ItemCompass", "ItemWatch", "ItemRadio", "NVGoggles" };
+	weapons[] = { "arifle_MX_ACO_pointer_F", "hgun_P07_F" };
+	items[] = { "FirstAidKit", "FirstAidKit", "FirstAidKit" };
+	magazines[] = {
+		"30Rnd_65x39_caseless_mag", "16Rnd_9x21_Mag",
+		"SmokeShell",
+		"HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade",
+		"HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade",
+		"HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade"
+	};
+};
+</syntaxhighlight>
+</spoiler>
+}}
+
+|s1= [[getUnitLoadout]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Unit Loadout Array]]
+
+|s2= [[getUnitLoadout]] [unit, fullMagazines]
+
+|p21= unit: [[Object]]
+
+|p22= fullMagazines: [[Boolean]] - [[true]] to top up used magazines
+
+|r2= [[Unit Loadout Array]]
+
+|s3= [[getUnitLoadout]] name
+
+|p41= name: [[String]] - {{hl|CfgVehicles}} classname from which to extract the loadout
+
+|r3= [[Unit Loadout Array]]
+
+|s4= [[getUnitLoadout]] config
+
+|p61= config: [[Config]] - loadout config class
+
+|r4= [[Unit Loadout Array]]
+
+|x1= <sqf>getUnitLoadout player;</sqf>
+
+|x2= <sqf>getUnitLoadout [player, true];</sqf>
+
+|x3= <sqf>getUnitLoadout "B_Soldier_F";</sqf>
+
+|x4= <sqf>getUnitLoadout (configFile >> "CfgVehicles" >> "B_Soldier_F");</sqf>
+
+|x5= <sqf>getUnitLoadout (missionConfigFile >> "MyLoadout");</sqf>
+
+|seealso= [[setUnitLoadout]]
+}}

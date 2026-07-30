@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENExportSQF
+// revision: 348022 (2023-11-08T11:22:58Z)
+// export sha1: jwrd9zyecdbkcainkoncvvb2vtzfaul
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.86
+
+|gr1= Eden Editor
+
+|descr= Export 3DEN mission to SQF script. When called, the script will dynamically recreate the mission.
+
+|s1= [showWindow,exportLayers,center,checkBlacklist] call [[BIS_fnc_3DENExportSQF]]
+
+|p1= showWindow: [[Boolean]] - (Optional, default [[true]]) [[true]] to show window with script code
+
+|p2= exportLayers: [[Boolean]] - (Optional, default [[true]]) [[true]] to export layers as conditions (it's possible to create only specific layers using params passed to the exported script)
+
+|p3= center: [[Array]] format [[Position]] - (Optional, default [0,0,0]) center position, all entity positions will be exported as relative
+
+|p4= checkBlacklist: [[Boolean]] - (Optional, default [[false]]) [[true]] to export with check if specific entity ID was blacklisted
+
+|r1= [[Array]] in form [[objects,groups,triggers,waypoints,logics,markers],[objectIDs,groupIDs,triggerIDs,waypointIDs,logicIDs,markerIDs]]
+
+|x1= <sqf>[true, false, [1337,1337,0], true] call BIS_fnc_3DENExportSQF;</sqf>
+
+|seealso= [[:Category:Eden Editor|Eden Editor]]
+}}

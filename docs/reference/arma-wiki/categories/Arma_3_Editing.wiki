@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Editing
+// revision: 182670 (2021-01-04T18:10:45Z)
+// export sha1: jgwl5j008h5xvn78po7m0qfgh1c7k22
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3}}
+{{GameCategory|arma3}}

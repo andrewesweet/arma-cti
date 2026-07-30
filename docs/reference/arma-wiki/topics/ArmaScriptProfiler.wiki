@@ -1,0 +1,241 @@
+// source: https://community.bistudio.com/wiki/ArmaScriptProfiler
+// revision: 337101 (2023-01-11T10:52:16Z)
+// export sha1: t3pbtzayu1ecry8kpynahh7y41vo2gm
+// categories: Category:Community Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side||3}}
+== General ==
+
+Arma Script Profiler is a Mod that provides the ability to profile [[Scheduler|unscheduled]] SQF Scripts just like how [[Performance_Profiling]] does it for Engine internals.<br>
+
+Once you Capture a Frame the data is put into your Clipboard. To display it properly you need the [[Performance_Profiling#Versions with performance profiling|Profiling build]] of Arma.<br>
+When one or multiple Frames were Captured it automatically opens the captureFrame UI and you have to click on "PASTE ALL" to paste your clipboard content and display the data.
+
+{{Clear}}
+== Commands ==
+
+<div class="_description cmd">
+
+<h3>createProfileScope</h3>
+<dl>
+<dt>Description:</dt>
+<dd> 
+This creates a new scope. Store it in a a [[private]] local variable. Don't store it in a Global Variable!
+</dd>
+</dl>
+
+<h4>Syntax</h4>
+<dl>
+<dt>Syntax:</dt>
+<dd> '''createProfileScope''' scopeName </dd>
+<dt>Parameters:</dt>
+<dd class="param">scopeName : [[String]] - The name of your scope. This will be displayed in the output.</dd>
+<dt>Return Value:</dt>
+<dd> ProfileScope - a proprietary variable Type. This value going out of scope defines the end of the current Scope. So you have to store the result in a local variable.</dd>
+</dl>
+
+<h4>Examples</h4>
+<dl><dt>Example 1:</dt><dd class="example"><code style="display: block">private _scope = createProfileScope "testScope";</code><!--[[File:ArmaScriptProfiler_profilerLogExample.png|thumb|example output]]--></dd>
+</dl>
+
+
+
+
+<h3>profilerBlockingSleep</h3>
+<dl>
+<dt>Description:</dt>
+<dd> 
+This freezes the engine for 17ms. Used for testing.
+</dd>
+</dl>
+
+<h4>Syntax</h4>
+<dl>
+<dt>Syntax:</dt>
+<dd> '''profilerBlockingSleep''' </dd>
+<dt>Return Value:</dt>
+<dd> [[Nothing]]</dd>
+</dl>
+
+
+
+
+<h3>profilerCaptureFrame</h3>
+<dl>
+<dt>Description:</dt>
+<dd> 
+Captures the next Frame.
+</dd>
+</dl>
+
+<h4>Syntax</h4>
+<dl>
+<dt>Syntax:</dt>
+<dd> '''profilerCaptureFrame''' </dd>
+<dt>Return Value:</dt>
+<dd> [[Nothing]]</dd>
+</dl>
+
+<h4>Examples</h4>
+<dl><dt>Example 1:</dt><dd class="example"><code style="display: block">profilerCaptureFrame</code></dd>
+</dl>
+<h4>Additional Information</h4>
+<dl>
+<dt>See also:</dt>
+<dd class="seealso"><div id="biki-unified-see-also"></div>[[diag_captureFrame]]</dd>
+</dl>
+
+
+
+
+<h3>profilerCaptureFrames</h3>
+<dl>
+<dt>Description:</dt>
+<dd> 
+Captures N Frames.
+</dd>
+</dl>
+
+<h4>Syntax</h4>
+<dl>
+<dt>Syntax:</dt>
+<dd> '''profilerCaptureFrames''' NumberOfFrames </dd>
+<dt>Parameters:</dt>
+<dd class="param">NumberOfFrames : [[Number]] - The Number of Frames to capture.</dd>
+<dt>Return Value:</dt>
+<dd> ProfileScope - a proprietary variable Type. This value going out of scope defines the end of the current Scope. So you have to store the result in a local variable.</dd>
+</dl>
+
+<h4>Examples</h4>
+<dl><dt>Example 1:</dt><dd class="example"><code style="display: block">profilerCaptureFrames 10;</code></dd>
+</dl>
+<h4>Additional Information</h4>
+<dl>
+<dt>See also:</dt>
+<dd class="seealso"><div id="biki-unified-see-also"></div>[[diag_captureFrame]]</dd>
+</dl>
+
+
+
+
+<h3>profilerCaptureSlowFrame</h3>
+<dl>
+<dt>Description:</dt>
+<dd> 
+Captures the first frame that hits the threshold.<br>
+The runtime of all scripts in the current Frame are summed up. And if they hit the threshold it triggers a Capture.
+</dd>
+</dl>
+
+<h4>Syntax</h4>
+<dl>
+<dt>Syntax:</dt>
+<dd> '''profilerCaptureSlowFrame''' threshold</dd>
+<dt>Parameters:</dt>
+<dd class="param">threshold : [[Number]] - Threshold in milliseconds</dd>
+<dt>Return Value:</dt>
+<dd> [[Nothing]]</dd>
+</dl>
+
+<h4>Examples</h4>
+<dl><dt>Example 1:</dt><dd class="example"><code style="display: block">profilerCaptureSlowFrame 2;</code></dd>
+</dl>
+<h4>Additional Information</h4>
+<dl>
+<dt>See also:</dt>
+<dd class="seealso"><div id="biki-unified-see-also"></div>[[diag_captureSlowFrame]]</dd>
+</dl>
+
+
+
+
+<h3>profilerCaptureTrigger</h3>
+<dl>
+<dt>Description:</dt>
+<dd> 
+Captures the first frame that contains a [[ArmaScriptProfiler#profilerTrigger|Trigger]].
+</dd>
+</dl>
+
+<h4>Syntax</h4>
+<dl>
+<dt>Syntax:</dt>
+<dd> '''profilerCaptureTrigger'''</dd>
+<dt>Return Value:</dt>
+<dd> [[Nothing]]</dd>
+</dl>
+
+
+
+
+<h3>profilerTrigger</h3>
+<dl>
+<dt>Description:</dt>
+<dd> 
+A Trigger for [[ArmaScriptProfiler#profilerCaptureTrigger|profilerCaptureTrigger]].
+</dd>
+</dl>
+
+<h4>Syntax</h4>
+<dl>
+<dt>Syntax:</dt>
+<dd> '''profilerTrigger'''</dd>
+<dt>Return Value:</dt>
+<dd> [[Nothing]]</dd>
+</dl>
+
+
+
+
+<h3>profilerLog</h3>
+<dl>
+<dt>Description:</dt>
+<dd> 
+Adds a log message to the current Scope.
+<!--[[File:ArmaScriptProfiler_profilerLogExample.png|thumb|profilerLog example output]]-->
+</dd>
+</dl>
+
+<h4>Syntax</h4>
+<dl>
+<dt>Syntax:</dt>
+<dd> '''profilerLog''' message</dd>
+<dt>Parameters:</dt>
+<dd class="param">message : [[String]] - The message to add.</dd>
+<dt>Return Value:</dt>
+<dd> [[Nothing]]</dd>
+</dl>
+<h4>Examples</h4>
+<dl><dt>Example 1:</dt><dd class="example"><code style="display: block">profilerLog "testLog";</code></dd>
+</dl>
+
+<h3>profileScript</h3>
+<dl>
+<dt>Description:</dt>
+<dd> 
+A more precise alternative to [[diag_codePerformance]].<br>
+This outputs the results as double precision microseconds without any rounding. And it doesn't check for a timeout.<br>
+Meaning this WILL freeze your game if you go overboard with it. And it also works in MP.<br>
+</dd>
+</dl>
+
+<h4>Syntax</h4>
+<dl>
+<dt>Syntax:</dt>
+<dd> '''profileScript''' [code, arguments, runs]</dd>
+<dt>Parameters:</dt>
+<dd class="param">code: [[Code]] - Your code to run</dd>
+<dd class="param">arguments: [[Anything]] - The arguments passed in _this (Warning: This overwrites your _this in your current scope</dd>
+<dd class="param">runs: [[Number]] - Number of runs to do (Default: 10000)</dd>
+<dt>Return Value:</dt>
+<dd> [Execution time per run in microseconds as [[Number]], Execution time per run in microseconds as [[String]], number of runs]</dd>
+</dl>
+<h4>Examples</h4>
+<dl><dt>Example 1:</dt><dd class="example"><code style="display: block">profileScript [{_a = 1 + 2 + 3}];</code></dd>
+</dl>
+
+</div>
+
+
+[[Category:Community Tools]]

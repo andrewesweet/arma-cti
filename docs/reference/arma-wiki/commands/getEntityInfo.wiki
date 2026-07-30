@@ -1,0 +1,82 @@
+// source: https://community.bistudio.com/wiki/getEntityInfo
+// revision: 377880 (2026-01-04T16:17:23Z)
+// export sha1: 17n445ay1nwkim3w5lj978mr5uznmch
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Object Manipulation
+
+|descr= Returns various properties for the given entity. Most properties should be checked where entity is [[local]]
+
+|s1= [[getEntityInfo]] entity
+
+|p1= entity: [[Object]]
+
+|r1= [[Array]] with [isMan, isAnimal, isDeadSet, deadSetTime, lastEntityCausingDamage, lastDamageTime, isUpsideDown, upsideDownTime, isStopped, canFloat, hasTerminalOpened, isWeaponholder, isWreck, isSmoking, isSetForDeletion]
+* 0 - isMan: [[Boolean]] - [[true]] if the entity is a man
+* 1 - isAnimal: [[Boolean]] - [[true]] if the entity is an animal
+* 2 - isDeadSet: [[Boolean]] - [[true]] if the entity has dead flag set. Often has the same value as ![[alive]], but is not the same, as [[alive]] checks the total damage.
+* 3 - deadSetTime: [[Number]] - for how long the entity was dead
+* 4 - lastEntityCausingDamage: [[Object]] - [[objNull]] or the entity that last caused damage to this entity. Is not the same as the killer but could be the same. Killed entity might not have this set either. The entity does not have to be dead in order to have last entity that caused damage assigned.
+* 5 - lastDamageTime: [[Number]] - how long ago was ''lastEntityCausingDamage'' assigned
+* 6 - isUpsideDown: [[Boolean]] - [[true]] if the entity is upside down. The engine considers this to be <sqf inline>vectorUp ent select 2 < 0.3</sqf>
+* 7 - upsideDownTime: [[Number]] - how long the entity was upside down.
+* 8 - isStopped: [[Boolean]] - [[true]] when the entity does not need to be actively simulated.
+* 9 - canFloat: [[Boolean]] - [[true]] if the entity is able to float on water.
+* 10 - hasTerminalOpened: [[Boolean]] - [[true]] if the UAV terminal is opened for the given entity.
+* 11 - isWeaponholder: [[Boolean]] - [[true]] if the entity is weaponholder.
+* 12 - isWreck: [[Boolean]] - [[true]] if the entity is wreck.
+* 13 - isSmoking: [[Boolean]] - [[true]] if the entity has smoke and fire destruction effect active.
+* 14 - isSetForDeletion: [[Boolean]] - [[true]] if the entity was set for deletion, but is not yet removed from the simulation. Simple Object is supported.
+
+{{Feature|informative|
+In multiplayer, following values update properly only when entity is [[local]]:
+* lastEntityCausingDamage
+* lastDamageTime
+* isStopped
+Other values are either static or update depending on how your client sees the entity right now.
+
+Timer values are never exact between clients and vary slightly depending on latency, JIP clients end up with large timer values close to game's [[time]] but get normal once associated value changes again:
+* {{hl|deadSetTime}}
+* {{hl|lastDamageTime}}
+* {{hl|upsideDownTime}}
+}}
+
+|s2= entity [[getEntityInfo]] index
+
+|p21= entity: [[Object]]
+
+|p22= index: [[Number]] - property index (see {{Link|Syntax 1|main syntax}})
+
+|r2= [[Anything]] - depends on the requested property, or [[Nothing]]
+
+|x1= <sqf>
+private _entityInfo = getEntityInfo ent1;
+_entityInfo params [
+	"_isMan",
+	"_isAnimal",
+	"_isDeadSet",
+	"_deadSetTime",
+	"_lastEntityCausingDamage",
+	"_lastDamageTime",
+	"_isUpsideDown",
+	"_upsideDownTime",
+	"_isStopped",
+	"_canFloat",
+	"_hasTerminalOpened",
+	"_isWeaponholder",
+	"_isWreck",
+	"_isSmoking",
+	"_isSetForDeletion"
+];
+</sqf>
+
+|x2= <sqf>private _isMan = ent1 getEntityInfo 0;</sqf>
+
+|seealso= [[cursorObject]] [[cursorTarget]] [[createSimpleObject]] [[getObjectType]] [[getObjectTextures]] [[objectParent]] [[setVelocityTransformation]] [[getUnitFreefallInfo]] [[getModelInfo]] [[getShotInfo]] [[getRespawnVehicleInfo]]
+}}

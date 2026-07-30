@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/endl
+// revision: 325316 (2022-07-11T14:52:06Z)
+// export sha1: psmyx1kor8kxj3shufbpmygfpsqjiy6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Strings
+
+|descr= Creates a string containing a line break, similar to [[lineBreak]] for [[text]]. The name is inspired by c++ std::endl ('''end''' '''l'''ine).
+The command returns {{hl|"\r\n"}}, which contains control characters rather than printable characters:
+<sqf>
+hint str count "\r\n";	// 4
+hint str count endl;	// 2
+</sqf>
+The line break works for [[diag_log]] and [[ctrlSetText]].
+It does not work with the [[hint]] because [[hint]] interprets printable "\n" as line break instead.
+Alternatively one can use [[toString]] command to get other characters.
+
+|s1= [[endl]]
+
+|r1= [[String]] - line break
+
+|x1= <sqf>diag_log ("line1" + endl + "line2");</sqf>
+
+|x2= <sqf>
+_ctrl = findDisplay 46 ctrlCreate ["RscTextMulti", -1];
+_ctrl ctrlSetPosition [0,0,1,1];
+_ctrl ctrlCommit 0;
+_ctrl ctrlSetText format ["line1%1line2%1line3", endl];
+</sqf>
+
+|seealso= [[lineBreak]] [[str]] [[format]] [[toString]] [[joinString]] [[splitString]] [[toArray]]
+}}
+
+{{Note
+|user= 7erra
+|timestamp= 20200715115000
+|text= <sqf inline>toArray endl</sqf> results in <sqf inline>[13, 10]</sqf>. <sqf inline>toString [13, 10]</sqf> is therefore equivalent (or at least very similar) to [[endl]].
+}}

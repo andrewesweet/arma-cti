@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/hcGroupParams
+// revision: 319122 (2022-05-13T09:23:13Z)
+// export sha1: f781jbzj7m8rogxmp30ejnljzpduimw
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: High Command | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= High Command
+
+|descr= Returns parameters describing group in [[High Command|high command]] bar. Return value is array in format [groupName, teamName] or [] if error. Possible values for team name:
+* {{hl|"teammain"}} (default)
+* {{hl|"teamred"}}
+* {{hl|"teamgreen"}}
+* {{hl|"teamblue"}}
+* {{hl|"teamyellow"}}
+
+|s1= unit [[hcGroupParams]] group
+
+|p1= unit: [[Object]] - commander
+
+|p2= group: [[Group]]
+
+|r1= [[Array]]
+
+|x1= <sqf>player hcGroupParams someGroup;</sqf>
+
+|seealso= [[High Command]] [[hcAllGroups]] [[hcLeader]] [[hcRemoveAllGroups]] [[hcRemoveGroup]] [[hcSelected]] [[hcSelectGroup]] [[hcSetGroup]] [[hcShowBar]] [[hcShownBar]] [[onHCGroupSelectionChanged]]
+}}

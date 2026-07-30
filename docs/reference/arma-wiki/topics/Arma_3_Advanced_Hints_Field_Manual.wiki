@@ -1,0 +1,119 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Advanced_Hints_(Field_Manual)
+// revision: 370890 (2025-02-21T10:44:05Z)
+// export sha1: mla9tgzcewsvg3b83kzphna352yo704
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Arma_3_advHint_1.PNG|right|180px|example]]
+Advanced hints are system of educative/informative hints. There are two place where you can see these hints:
+* Field Manual - list of all advanced hints, you can open it from main menu or pause menu
+* In Game - mission designer can call any advanced hint through [[BIS_fnc_advHint]]
+
+Specifications:
+* There is a set of default advanced hints in the game. Players are able to add own hints.
+* Hints can be related only to a mission, campaign or the whole game. Hints related to any mission/campaign are not accessible in other missions/campaigns.
+* Showing of advanced hints in mission can be disabled by player in game options.
+* If player creates its own hint in config, this hint is added into Field Manual automatically (hint just needs to be defined in the right class, see [[Arma_3_Advanced_Hints_(Field_Manual)#Config|Config definition]])
+
+
+== Calling of hint in mission ==
+
+* Simple function triggered by the designer at any needed point in the mission flow
+* Syntax: <sqf inline>[classes, duration1, condition1, duration2, condition2, showing, onlyFullHint, onlyOnce, Sound] call BIS_fnc_advHint;</sqf> where:
+** '''Classes''' - [Array] in format [main class, class] or [main class, class, sub-class]. Main class, class and sub-class are classes in a config (see [[Arma_3:_Advanced_Hints_(Field_Manual)#Config|Config definition]] part) that includes title, image, description text possibly including keybinds (html formatted); required parameter
+** '''Duration1''' - [Number] An amount of time the SHORT version of hint is shown; optional - default 15 s
+** '''Condition1''' - [String] A condition that hide the SHORT version of hint when becomes true; optional - default nothing
+** '''Duration2''' - [Number] An amount of time the FULL version of hint is shown; optional - default 35 s
+** '''Condition2''' - [String] A condition that hide the FULL version of hint when becomes true; optional - default nothing
+** '''Showing''' - [Bool] true show hint even if tutorial hints are disabled via game settings; optional - default false
+** '''OnlyFullHint''' - [Bool] true show directly the full hint without using of the short hint, optional - default false
+** '''OnlyOnce''' - [Bool] show the hint in a mission only once (true) or multiple times (false), optional - default false
+** '''Sound''' - [Bool] show hint with (true) or without (false) sound effect, optional - default true
+
+
+== Config ==
+
+* System can read definitions from [[configFile]], [[campaignConfigFile]] and [[missionConfigFile]] (so mission/campaign specific hints are possible).
+* Hint must by defined in class ''CfgHints''.
+* There can be used sub-hint. Sub-hint is not shown in the Field Manual, but it can be called via [[BIS_fnc_advHint]] function. This way you can divide one hint into more hints for showing during mission.
+
+Definition:
+<syntaxhighlight lang="cpp">
+class CfgHints
+{
+	class InfantryMovement
+	{
+		// Topic title (displayed only in topic listbox in Field Manual)
+		displayName = "Infantry Controls";
+		class SteppingOver
+		{
+			// Hint title, filled by arguments from 'arguments' param
+			displayName = "Stepping over obstacles";
+			// Optional hint subtitle, filled by arguments from 'arguments' param
+			displayNameShort = "Stepping over";
+			// Structured text, filled by arguments from 'arguments' param
+			description = "Press %11 to step over low obstacle. Your %12 is %13.";
+			// Optional structured text, filled by arguments from 'arguments' param (first argument is %11, see notes below), grey color of text
+			tip = "The free look represents turning the head sideways and up or down.";
+			arguments[] = {
+				{ { "getOver" } }, // Double nested array means assigned key (will be specially formatted)
+				{ "name" }, // Nested array means element (specially formatted part of text)
+				"name player" // Simple string will be simply compiled and called, String can also link to localization database in case it starts by str_
+			};
+			// Optional image
+			image = "\a3\ui_f\data\gui\cfg\hints\steppingover_ca.paa";
+			// optional parameter for not showing of image in context hint in mission (default false)
+			noImage = false;
+			// -1 Creates no log in player diary, 0 Creates diary log (default when not provided)
+			// if a dlc's appID Number is used (see command getDLCs) and the user does not have the required dlc installed then the advHint will be replaced with
+			// configfile >> "CfgHints" >> "DlcMessage" >> "Dlc#"; where # is this properties (dlc appID) number
+			dlc = -1;
+
+			class SteppingOver_subHint
+			{
+				// Sub-hint title, filled by arguments from 'arguments' param
+				displayName = "Stepping over obstacles";
+				// Optional sub-hint subtitle, filled by arguments from 'arguments' param
+				displayNameShort = "Stepping over";
+				// Structured text, filled by arguments from 'arguments' param
+				description = "Press %11 to step over low obstacle. Your %12 is %13.";
+				// Optional structured text, filled by arguments from 'arguments' param (first argument is %11, see notes below), grey color of text
+				tip = "The free look represents turning the head sideways and up or down.";
+				arguments[] = {
+					{ { "getOver" } }, // Double nested array means assigned key (will be specially formatted)
+					{ "name" }, // Nested array means element (specially formatted part of text)
+					"name player" // Simple string will be simply compiled and called, String can also link to localization database in case it starts by str_
+				};
+				// Optional image
+				image = "\a3\ui_f\data\gui\cfg\hints\steppingover_ca.paa";
+				// optional parameter for not showing of image in context hint in mission (default false)
+				noImage = false;
+				// -1 Creates no log in player diary, 0 Creates diary log (default when not provided)
+				// if a dlc's appID Number is used (see [[getDLCs]]) and the user does not have the required dlc installed then the advHint will be replaced with
+				// configfile >> "CfgHints" >> "DlcMessage" >> "Dlc#"; where # is this properties (dlc appID) number
+				dlc = -1;
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+{{Feature|informative|
+* Only the first topic class is used from [[missionConfigFile]] and [[campaignConfigFile]], all other topic classes are ignored. This class is renamed automatically to ''<Mission>''. This applies only to the Field Manual.
+* First item from arguments field in config is inserted in text via variable {{hl|%11}}, second item via {{hl|%12}}, etc.
+* Variables %1 - %10 are hardcoded:
+** %1 - small empty line
+** %2 - bullet (for item in list)
+** %3 - highlight start
+** %4 - highlight end
+** %5 - warning color formatted for using in structured text tag
+** %6 - BLUFOR color attribute
+** %7 - OPFOR color attribute
+** %8 - Independent color attribute
+** %9 - Civilian color attribute
+** %10 - Unknown side color attribute
+* color formatted for using in structured text is string: "color {{=}} 'given_color'"
+}}
+
+
+{{GameCategory|arma3|Editing}}

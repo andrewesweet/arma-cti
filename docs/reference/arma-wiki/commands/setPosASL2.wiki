@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/setPosASL2
+// revision: 378100 (2026-02-13T10:46:49Z)
+// export sha1: sxz7vku2l32r1k8rcq34zzehlooq3qp
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Command Group: Positions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Broken Commands
+|gr2= Positions
+
+|descr= Sets the object position. The pos array uses the [[Position#PositionASL|PositionASL]] format.
+The version of the command does not offset based on object center. 
+{{Feature|warning|This command was deactivated and has no effect. Use [[setPosWorld]] instead.}}
+
+|s1= obj [[setPosASL2]] pos
+
+|p1= obj: [[Object]]
+
+|p2= pos: [[Position#PositionASL|PositionASL]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+private _aslPos = getPosASL player;
+_aslPos set [1, _aslPos select 1 + 10];
+player setPosASL2 _aslPos;
+</sqf>
+
+|seealso= [[setPosWorld]] [[getPosWorld]] [[setPosASL]] [[getPosASL]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20130821200700
+|text= This command appears to do nothing in both {{arma2}} and {{arma3}}.
+}}

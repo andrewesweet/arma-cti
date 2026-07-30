@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/fogForecast
+// revision: 310773 (2022-05-07T20:21:44Z)
+// export sha1: e32mpyvr1k6qviufpdgqgjtoqz6cie6
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Environment
+
+|descr= Returns the forecast fog value. A value of 0 means no fog, 1 means maximum fog.
+
+|s1= '''fogForecast'''
+
+|r1= [[Number]]
+
+|x1= <sqf>_level = fogForecast;</sqf>
+
+|mp= This command returns the local forcast fog value. Each client and the server can have differing values.
+|seealso= [[fogParams]] [[fog]] [[setFog]] [[nextWeatherChange]]
+}}

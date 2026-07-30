@@ -1,0 +1,92 @@
+// source: https://community.bistudio.com/wiki/CfgPatches
+// revision: 376479 (2025-10-19T10:17:17Z)
+// export sha1: 0xf24ovlidmouu457gv2molxbx7zrde
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[CfgPatches]] is a header class of an addon. Placed in [[Config.cpp]], it contains information about requirements, content and meta data describing the addon.
+
+If the config doesn't contain CfgPatches, it is ignored when the game is loading addons on startup.
+
+{{Feature|Eden Editor|For [[:Category:Eden Editor|Eden Editor]] see also [[Eden Editor: Modding#Addon_Configuration|Eden Editor: Modding]].}}
+
+== Configuration ==
+
+=== Root ===
+
+Most commonly, config.cpp file is placed in addon folder's root.
+
+'''MyAddon\config.cpp'''
+<syntaxhighlight lang="cpp">
+// In the following example addons refers to CfgPatches class name, NOT PBO file name!
+class CfgPatches
+{
+	class MyAddon
+	{
+		// Meta information for editor
+		name = "My Addon";
+		author = "Me";
+		url = "http://xkcd.com";
+
+		// Minimum compatible version. When the game's version is lower, pop-up warning will appear when launching the game. Note: was disabled on purpose some time late into Arma 2: OA.
+		requiredVersion = 1.60;
+
+		// Required addons, used for setting load order.
+		// When any of the addons are missing, a pop-up warning will appear when launching the game.
+		requiredAddons[] = { "A3_Data_F_Decade_Loadorder" };
+
+		// List of objects (CfgVehicles classes) contained in the addon. Important also for Zeus content (units and groups) unlocking.
+		units[] = {};
+
+		// List of weapons (CfgWeapons classes) contained in the addon.
+		weapons[] = {};
+
+		// Optional. If this is 1, if any of requiredAddons[] entry is missing in your game the entire config will be ignored and return no error (but in rpt) so useful to make a compat Mod (Since Arma 3 2.14)
+		skipWhenMissingDependencies = 1;
+
+		// Optional. If any of the addons in the array are found, MyAddon is not loaded. 
+		// AVOID SKIPPING ON AN ADDON THAT ITSELF MIGHT BE SKIPPED IF ANOTHER ADDON IS PRESENT
+		skipWhenAnyAddonPresent[] = {"AnotherAddon1", "AnotherAddon2"}; // Arma 3 Profiling only as of 19.10.25
+	};
+};
+</syntaxhighlight>
+
+{{hl|requiredAddons}} is the most important setting, because it defines the initialization order of addons. If addon B requires addon A, then it will be loaded only once A is loaded as well. This is extremely crucial for making sure [[Class Inheritance]] works as intended. If an addon is using some assets from addon C (e.g., textures, sounds, etc.), it is a good practice to make C a required addons.
+
+=== Sub-folders ===
+
+Additional config.cpp files can be also placed in sub-folders of an addon (/[[PBO]]), they are treated as individual addons by the game.
+
+To  make configuration of meta data simpler, you can simply create a link to the root class instead of defining name, author and url again. A good practice is to have all configs withing one PBO to use the same meta data.
+
+'''MyAddon\Weapons\config.cpp'''
+<syntaxhighlight lang="cpp">
+class CfgPatches
+{
+	class MyAddon_Weapons
+	{
+		// Use meta information from specified addon. Used to avoid repeated declarations.
+		addonRootClass = "MyAddon";
+
+		requiredVersion = 1.60;
+		requiredAddons[] = { "MyAddon" };
+		units[] = {};
+		weapons[] = {};
+	};
+};
+</syntaxhighlight>
+
+== Scenario Design ==
+
+{| style="margin: 0 auto"
+| [[File:3den requiredAddons.jpg|center|384px]]
+| [[File:3den requiredAddons advanced.jpg|center|384px]]
+|}
+
+When a designer is saving a scenario, meta data of all required addons are saved to [[Mission Editor: External#Mission.sqm|mission.sqm]] as well. When someone else attempts to load the scenario without having the required addons, he will be shown a list of all addons including meta data, even though he doesn't have the addons where they're defined.
+
+Introduced to [[:Category:Eden Editor|Eden Editor]] in {{GVI|arma3|1.60}}
+
+
+{{GameCategory|arma3|Editing}}

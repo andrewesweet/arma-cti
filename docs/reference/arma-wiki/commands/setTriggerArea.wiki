@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/setTriggerArea
+// revision: 364460 (2024-05-16T20:41:48Z)
+// export sha1: mjnddoo375tan12q0qn9na3clzby0ur
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Triggers
+
+|descr= [[File:setTriggerArea.jpg|thumb|300px|Trigger axis a, b and c (''half'' of their x, y and z dimensions)]] Defines the area monitored by the given trigger. The area could be either rectangular or elliptical.
+{{Feature|informative|
+Just like with a and b dimensions, c dimension will alter area in opposite directions from the trigger position along z axis. Therefore if the trigger position is on the surface, half of the trigger area will be above the surface and half below. To place the whole area above the surface, adjust trigger position (move it up c meters). If c is not specified or &lt;{{=}} 0, the trigger's height is considered infinite like 2D triggers.}}
+
+|s1= trigger [[setTriggerArea]] [a, b, angle, isRectangle, c]
+
+|p1= trigger: [[Object]] - object of the type "EmptyDetector"
+
+|p2= a: [[Number]] - trigger area X size / 2, in meters
+
+|p3= b: [[Number]] - trigger area Y size / 2, in meters
+
+|p4= angle: [[Number]] - trigger area rotation in degrees
+
+|p5= isRectangle: [[Boolean]] - [[true]] if rectangle
+
+|p6= c: [[Number]] - (Optional, default -1) trigger area Z size / 2, in meters. -1 for infinite height
+|p6since= arma3 1.60
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_trigger setTriggerArea [100, 50, 45, false];</sqf>
+
+|x2= <sqf>_trigger setTriggerArea [100, 50, 45, false, 100];</sqf>
+
+|x3= <sqf>
+_trg = createTrigger ["EmptyDetector", getPos player, false];
+_trg setTriggerArea [5, 5, 0, false];
+_trg setTriggerActivation ["CIV", "PRESENT", true];
+_trg setTriggerStatements ["this", "hint 'Civilian near player'", "hint 'no civilian near'"];
+</sqf>
+
+|seealso= [[triggerArea]] [[createTrigger]] [[setTriggerActivation]] [[setTriggerStatements]] [[setTriggerText]] [[setTriggerTimeout]] [[setTriggerType]] [[inArea]] [[inAreaArray]] [[triggerInterval]] [[setTriggerInterval]] [[enableSimulation]] [[simulationEnabled]]
+}}

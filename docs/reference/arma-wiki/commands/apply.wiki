@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/apply
+// revision: 377840 (2026-01-03T04:33:29Z)
+// export sha1: lp4sdtdvq1svj9expmtn3gg7zoelu8y
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: HashMap | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Arrays
+|gr2= HashMap
+
+|descr= Applies the given code to each element of the given data structure and collects the results in an array.
+
+|s1= array [[apply]] code
+
+|p1= array: [[Array]] of [[Anything]]
+
+|p2= code: [[Code]] - code to be executed on each element of the array. The current element value is stored in the magic variable [[Magic Variables#x|_x]].
+
+|r1= [[Array]] of [[Anything]] - resulting array
+
+|s2= hashmap [[apply]] code
+
+|s2since= arma3 2.04
+
+|p21= hashmap: [[HashMap]]
+
+|p22= code: [[Code]] - code to be executed on each key-value pair of the hashmap. The current key is stored in the magic variable [[Magic Variables#x|_x]], the corresponding value is stored in [[Magic Variables#y|_y]].
+
+|r2= [[Array]] of [[Anything]] - resulting array
+
+|x1= <sqf>private _arr = [1,2,3,4,5,6,7,8,9,0] apply { [1,0] select (_x % 2 == 0) }; // [1,0,1,0,1,0,1,0,1,0]</sqf>
+
+|x2= <sqf>private _arr = [1,2,3,4,5,6,7,8,9,0] apply { _x ^ _x }; // [1,4,27,256,3125,46656,823543,16777216,387420480,1]</sqf>
+
+|x3= <sqf>
+private _arr1 = [];
+_arr1 resize 20;
+_arr2 = _arr1 apply { 0 }; // [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+</sqf>
+
+|x4= <sqf>[0,1,2,3,4] apply { str _x }; // ["0","1","2","3","4"]</sqf>
+
+|x5= <sqf>
+private _hashmap = createHashMapFromArray [["Key 1", "Value 1"], ["Key 2", "Value 2"]];
+private _array = _hashmap apply { _y + " Test" }; // ["Value 2 Test","Value 1 Test"]
+</sqf>
+
+|seealso= [[set]] [[resize]] [[pushBack]] [[pushBackUnique]] [[select]] [[reverse]] [[count]] [[find]] [[in]] [[forEach]] [[deleteAt]] [[deleteRange]] [[append]] [[sort]] [[arrayIntersect]]
+}}
+
+{{Note
+|user= Fusselwurm
+|timestamp= 20160218110300
+|text= (to anyone else wondering, I took a minute to get it) this is {{Link|https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map|Array.map()}} in JavaScript
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20180211230200
+|text= if performance really is an issue, [[apply]] seems to be (very) slightly faster than [[forEach]] (by more or less one percent, 0.7-1.5% in my tests to be precise).
+}}

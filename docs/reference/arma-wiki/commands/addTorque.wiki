@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/addTorque
+// revision: 377433 (2026-01-02T06:46:20Z)
+// export sha1: 6qznpl2k2dkha31yyvym2nq4mqamvpf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+|game1= arma3
+|version1= 1.72
+|arg= global
+|eff= global
+
+|gr1= PhysX
+
+|descr= [[File:addTorque_correct.jpg|400px|right]]
+Applies torque (rotation momentum) to the [[getCenterOfMass | center of mass]] of the given object. Torque force is defined as vector [x, y, z] applied in world space. If you need to define torque in model space, convert the torque vector first by [[vectorModelToWorld]] or [[vectorModelToWorldVisual]] command. The torque applied as impulse. Diagram below explain which way the object would rotate.  For more information see {{Link|http://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/apireference/files/classPxRigidBody.html#acb04ffc816d45afff2d04e93d7446e79|NVIDIA docs}} <br>
+
+{{Feature|informative|
+A single application of torque would produce one impulse, which may not be enough. In this case consider applying a series of continuous impulses, for example to make a quad bike to roll forward:
+<sqf>onEachFrame { quad addTorque (quad vectorModelToWorld [100,0,0]) };</sqf>
+}}
+{{Feature|important|This command doesn't follow convention for torque direction, which obeys right-hand rule. To comply, negate all values in the vector.}}
+
+|s1= object [[addTorque]] torque
+
+|p1= object: [[Object]] - PhysX object
+
+|p2= torque: [[Vector3D]] - world vector in format [x,y,z]
+
+|r1= [[Nothing]]
+
+|x1= Apply torque [1000,0,0] to object not factoring object positioning:
+<sqf>_wheel addTorque [1000,0,0];</sqf>
+
+|x2= Apply torque [1000,0,0] relative to object:
+<sqf>_wheel addTorque (_wheel vectorModelToWorld [1000,0,0]);</sqf>
+
+|seealso= [[addForce]] [[awake]] [[isAwake]] [[vectorModelToWorld]] [[vectorModelToWorldVisual]] [[disableBrakes]] [[brakesDisabled]]
+}}

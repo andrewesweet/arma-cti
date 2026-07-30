@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_GCinit
+// revision: 336929 (2023-01-04T16:44:03Z)
+// export sha1: r2t63ezuup4ifedeor0khlazffw51zc
+// categories: Category:Arma 3: Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Return value needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Diagnostic
+
+|descr= Initializes Garbage Collection.
+
+|s1= [] call [[BIS_fnc_GCinit]]
+
+|r1=
+
+|x1= <sqf>[] call BIS_fnc_GCinit;</sqf>
+
+|seealso= [[Arma 2: Garbage Collector]] {{Link|Description.ext#Corpse & wreck management}}
+}}

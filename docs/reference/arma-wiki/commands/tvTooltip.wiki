@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/tvTooltip
+// revision: 377816 (2026-01-03T04:13:43Z)
+// export sha1: e99cvlexijpt8r04xr08p2uzfekept7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control - Tree View
+
+|descr= Gets the tooltip text associated with the specified tree view path.
+
+|s1= [[tvTooltip]] [idc, path]
+
+|p1= idc: [[Number]] - IDC of the tree view control
+
+|p2= path: [[Tree View Path]]
+
+|r1= [[String]] - tooltip text
+
+|s2= ctrl [[tvTooltip]] path
+
+|p21= ctrl: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|r2= [[String]] - tooltip text
+
+|x1= <sqf>_text = tvTooltip [101, [0,2]];</sqf>
+
+|x2= <sqf>_text = _treeCtrl tvTooltip [0,2];</sqf>
+
+|seealso= [[tvSetTooltip]] [[tvAdd]] [[tvClear]] [[tvCollapse]] [[tvCount]] [[tvCurSel]] [[tvData]] [[tvDelete]] [[tvExpand]] [[tvPicture]] [[tvSetCurSel]] [[tvSetData]] [[tvSetPicture]] [[tvSetValue]] [[tvSort]] [[tvSortByValue]] [[tvText]] [[tvValue]]
+}}

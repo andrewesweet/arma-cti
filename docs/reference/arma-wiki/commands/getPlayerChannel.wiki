@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/getPlayerChannel
+// revision: 376827 (2025-11-23T01:44:27Z)
+// export sha1: penqdvsmi14yk3kdic5f9kgnyl8kf33
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.42
+
+|arg= global
+
+|gr1= Radio and Chat
+
+|descr= Returns channel number for given player, '''provided that player is SPEAKING''', otherwise -1. Having mic on is not enough, player has to make a sound. There are several limitations to this command:
+* It does not work on dedicated server, the return is always -1, only client can detect other client talking.
+* Prior to Arma 3 v2.01.146856 did not detect when someone talked on direct chat at all anywhere. 
+* The client on which command is executed has to able to receive transmission before the transmission channel can be detected. For example if a player is not in the same group as a speaker and the speaker speaks on Group Channel, the player cannot hear the speaker and therefore cannot detect what channel the speaker is on.
+In short, this command mimics the speaking icon from the UI. Correspondence between channel and number:
+{{{!}} class="wikitable align-center"
+! colspan="13" {{!}} [[Channel IDs|channel ID]] number correspondence
+{{!}}-
+{{!}} {{n/a}}
+{{!}} Global
+{{!}} Side
+{{!}} Command
+{{!}} Group
+{{!}} Vehicle
+{{!}} Direct
+{{!}} Custom1
+{{!}} rowspan="2" {{!}} ..
+{{!}} Custom10
+{{!}} {{GVI|arma3|2.22|size= 0.75}} Custom11
+{{!}} rowspan="2" {{!}} ..
+{{!}} Custom50
+{{!}}-
+{{!}} -1
+{{!}} 0
+{{!}} 1
+{{!}} 2
+{{!}} 3
+{{!}} 4
+{{!}} 5
+{{!}} 6
+{{!}} 15
+{{!}} 26
+{{!}} 65
+{{!}}}
+
+|s1= [[getPlayerChannel]] player
+
+|p1= player: [[Object]]
+
+|r1= [[Number]] - [[Channel IDs|channel ID]]
+
+|x1= <sqf>private _channelID = getPlayerChannel player;</sqf>
+
+|seealso= [[setCurrentChannel]] [[currentChannel]] [[enableChannel]] [[channelEnabled]] [[radioChannelCreate]] [[radioChannelInfo]]
+}}

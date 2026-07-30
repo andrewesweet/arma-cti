@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Zeus
+// revision: 336663 (2023-01-04T15:23:38Z)
+// export sha1: av32mxojh5yhi6xorgpza914n6ihlb1
+// categories: Category:Arma 3: DLCs & Expansions | Category:Introduced with Arma 3 version 1.16
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image = arma3 zeus logo.png
+|game= arma3
+|version= 1.16
+|releasedate= 13th February 2014
+|intro = Zeus is a Free DLC for {{arma3}} that is available since 10th April 2014.<br>
+Inspired by popular tabletop games such as 'Dungeons & Dragons', a limited number of players can assume the role of Game Master, and influence the multiplayer experience of those with boots on the ground. Watching the battlefield from a bird's-eye view, wielding an intuitive real-time editor, Zeus can create, manipulate, or expand mission content to generate new stories and a flow of challenges. The result is incredibly dynamic, unscripted combat gameplay - and multiplayer sessions which are filled with unexpected, challenging, and creative events.
+
+The Zeus multiplayer concept works across all familiar multiplayer game types, such as Team Deathmatch and Sector Control, where players can either work with or go up against Zeus. The most distinctive game type in Arma 3 Zeus, however, is 'Zeus Game Master'. Here, Game Masters are entirely free to create objectives, spawn units, and steer players across {{arma3}}’s massive Altis and Stratis terrains.
+|gallery1 = arma3 dlc zeus screenshot 1.jpg
+|gallery2 = arma3 dlc zeus screenshot 2.jpg
+|gallery3 = arma3 dlc zeus screenshot 3.jpg
+|gallery4 = arma3 dlc zeus screenshot 4.jpg
+|trailer= 5JiXznUyldM
+|start1 = [[Arma 3 Field Manual - Zeus|Field Manual]]
+|start2 = [[Curator|Zeus Editing]]
+|start3 = [[Arma 3: Zeus Hints &amp; Tips]]
+|start4 = {{Link|link= http://forums.bistudio.com/forumdisplay.php?198-ARMA-3-ZEUS|text= Bohemia Interactive Forums - Zeus}}
+|start5 = {{Link|link= http://forums.bistudio.com/forumdisplay.php?199-ARMA-3-ZEUS-EDITING|text= Bohemia Interactive Forums - Zeus Editing}}
+|start6 = {{Link|link= http://www.arma3.com/dlc/zeus|text= Official Site}}
+|isDLC = y
+}}
+
+{{GameCategory|arma3|DLCs & Expansions}}

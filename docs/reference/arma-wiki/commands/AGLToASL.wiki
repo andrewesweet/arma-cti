@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/AGLToASL
+// revision: 377450 (2026-01-02T06:47:08Z)
+// export sha1: 2cbgvhugywnyw246sfc014erjdbnuz2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+
+|gr1= Positions
+
+|descr= Converts position from [[Position#PositionAGL|PositionAGL]] to [[Position#PositionASL|PositionASL]].
+
+|s1= [[AGLToASL]] posAGL
+
+|p1= posAGL: [[Position#PositionAGL|PositionAGL]] - position to convert
+
+|r1= [[Position#PositionASL|PositionASL]]
+
+|x1= <sqf>_playerPosASL = AGLToASL (player modelToWorld [0,0,0]);</sqf>
+
+|x2= <sqf>_camPosASL = AGLToASL positionCameraToWorld [0,0,0];</sqf>
+
+|seealso= [[ASLToAGL]] [[ASLToATL]] [[ATLToASL]] [[getPos]] [[getPosATL]] [[getPosASL]]
+}}

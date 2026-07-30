@@ -1,0 +1,22 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Line:_Nodes_Objects
+// revision: 201540 (2021-01-17T20:13:55Z)
+// export sha1: kq3j5ogz5qbsrik57jdreql56reuh9t
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Line]]
+{{TerrainProcessorManual|Line: Nodes Objects|BITasksPlugin.dll|Polyline, PolylineM, PolylineZ|No
+|DESCRIPTION=Method puts objects on polylines nodes with forward rotation.
+|TASKPARAMETERS=* '''PROBABILITY''' - Probability of object occurence on polyline node in %. 0% - never, 100% - always
+|OBJECTPROTOTYPEPARAMETERS=* '''OBJECT''' - Object's prototype name
+* '''PROB''' - Object's probability
+* '''MINHEIGHT''' - Minimal size in %
+* '''MAXHEIGHT''' - Maximal size in %
+* '''ROTATION''' - Rotation offset in °
+|USAGE=You may create polylines of powerlines with node on each pole, and use this module to place the poles with correct rotation.
+|ALGORITHM=For each shape (linear) do :
+# For each node on polyline do :
+## Compute right forward rotation
+## Add object prototype
+|SAMPLE=
+}}

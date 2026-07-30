@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Template:ylands
+// revision: 295920 (2021-11-16T09:33:52Z)
+// export sha1: 5w3py560opfrv10x53ammzb13fr52vo
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|ylands}}</includeonly><noinclude>Returns the name {{hl|{{ylands}}}}.
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

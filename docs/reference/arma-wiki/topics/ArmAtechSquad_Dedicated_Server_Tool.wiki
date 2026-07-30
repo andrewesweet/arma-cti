@@ -1,0 +1,351 @@
+// source: https://community.bistudio.com/wiki/ArmAtechSquad_Dedicated_Server_Tool
+// revision: 351612 (2023-12-11T09:33:16Z)
+// export sha1: e0ul8yicr3zn59bbyvcwg27h300rqs6
+// categories: Category:Community Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|UnsupportedTool}}
+[[File:ARmAtEcNew Icon.png|400px|frame|ArmATechSquad]]
+{{Infobox/Mod|title = ArmAtechsquad|leader = ArmATech|Lead Coder = Bence|3D = ArmaTech|missions = N/A|betatest = |released = 02.07.08|version = 1.9.1.0|link = {{Link|http://www.armatechsquad.com/ArmAHost/file/36/ArMaTeC-Dedicated-Server-Tool-setup-7z.html|Download}}}}
+
+{| style="float: middel;"
+|-
+|<div style="float: left; border: solid red 1px; margin: 1px;">
+<table cellspacing="0" style="width:100%;background:#eee"><tr>
+<td style="width:45px;height:45px;background:#aaa;text-align:center;font-size:14pt">'''ArmA Demo Support'''</td>
+<td style="font-size:8pt;padding:4pt;">Just added ArmA Demo mode this will help u fully setup a demo server.</td>
+</tr></table></div>
+|-
+|}
+
+{| style="float: middel;"
+|-
+|<div style="float: left; border: solid red 1px; margin: 1px;">
+<table cellspacing="0" style="width:100%;background:#eee"><tr>
+<td style="width:45px;height:45px;background:#aaa;text-align:center;font-size:14pt">'''Updated 21.05 02.07.08'''</td>
+<td style="font-size:8pt;padding:4pt;">Added Server Info anf also changed all options to run form the reg</td>
+</tr></table></div>
+|-
+|}
+
+<big><big>ArmAtechSquad Dedicated Server Tool</big></big>
+
+
+== Introduction ==
+This is a tool to help you manage your Armed Assault Server. 
+
+I created this as I thought it might help some people to contribute some of there servers for the Armed Assault Community.
+
+
+== What can it Do ==
+
+=== ArmA Control Options ===
+
+*Start Server - Start the Armed Assault Server. (Note: Default Start EXE is ArmA_Server.exe but ArmA.exe is also supported)
+
+*Start Single Player - Start ArmA.exe in single player mode. (Note: See Single Player window for Direct Play options)
+
+*Close ArmA - Kill the ArmA_Server.exe.
+
+*Close Server - Kill the ArmA.exe.
+
+=== Dedicated Server Options ===
+
+==== Main Server Info ====
+This is for all the server main options
+
+[[File:techImage1.jpg|400px]]
+
+[[User:ArmAtec|ArmAtec]]
+
+*Auto Start - This option when checked will automatically start the server when the tool is loaded. (Note: Add to windows startup to load when you logon)
+
+*Hide Server - This option when checked will hide the server window from the desktop. (Note: You will need to use the "Close Server" button)
+
+*Server Name - Server Hostname, the one visible in the game browser.
+
+*Server Password - Password required when connecting to server.
+
+*Admin password - Password to protect admin access.
+
+*Message of the day - Server welcome message.
+
+*Port - Port for the server to use.
+
+*Max Players = the maximum number of players that can connect to one server.
+
+*ArmA Reporting Location -private server - no reporting ("armedass.master.gamespy.com" to report to the master server).
+
+*Restart On Error - When checked will load the ArmA server via a batch (restart.bat) in the ArmA directory selected.
+[[File:armatecautorestart.gif|636px 193px]]
+
+*Check ID's - When checked will not allow duplicate game ids.
+
+*Persistent Battlefield - Enables or disables the persistent battlefield. Default 0.
+
+*Check add-ons Signature - Enables or disables the signature verification for add-ons. Default = 0.
+
+*Disable VoN - Enables or disables the Voice over Net. Default = 0.
+
+*Netlog - Don’t think this works yet but it don’t error so hey its there.
+
+*Mod Check - Require users have the same mods as the server.
+{| style="float: middel;"
+|-
+|<div style="float: left; border: solid red 1px; margin: 1px;">
+<table cellspacing="0" style="width:100%;background:#eee"><tr>
+<td style="width:45px;height:45px;background:#aaa;text-align:center;font-size:14pt">'''Mod Check Warning'''</td>
+<td style="font-size:8pt;padding:4pt;">With this option enabled the server will only let you join if you are matching its loaded mods.</td>
+</tr></table></div>
+|-
+|}
+
+*Vote Threshold - When one third agrees, this is enough to confirm a vote.
+
+*Vote Mission Players - Start voting for missions when 3 players connect.
+
+*MOTD Interval - If Message of the day has multiple lines, how fast to show these in succession.
+
+==== Missions and Mods ====
+
+[[File:armatecdsmonmissionsandmods.jpg|400px]]
+
+[[User:ArmAtec|ArmAtec]]
+
+ArmA Server Missions window
+
+*Cadet Mode - (not only AI, but radar, map etc) 
+
+*Veteran Mode - Same as above.
+
+*Insert - Mission name and both params that are filled in
+**Mission name = the full mp mission file name but with out the .pbo at end
+*** e.g. UNA(C38)_Coalition.Sara.pbo would be inserted as UNA(C38)_Coalition.Sara
+**Params 1 & 2 = Defualt Pre Defined mission settings
+
+*Load Defaults - Load a list default missions
+
+==== File Check ====
+
+[[File:armatecdsmonfilecheck.jpg|400px]]
+
+[[User:ArmAtec|ArmAtec]]
+
+This window is for the ArmA server file checking system
+
+*Remove - Remove selected file from checker.
+
+*Insert - Insert selected file to checker.
+
+*Load Defaults - Load defaults Add-ons that came with the game.
+
+==== Server Ban List ====
+
+[[File:armatecdsmonserverbans.jpg|400px]]
+
+[[User:ArmAtec|ArmAtec]]
+
+This window is for the ArmA server file checking system
+
+*Remove - Remove selected ban from list.
+
+*Insert - Insert typed ban to list. (Note: you need the player ID, Username and reason)
+
+==== Performance ====
+
+[[File:armatecdsmonperformance.jpg|400px]]
+
+[[User:ArmAtec|ArmAtec]]
+
+To setup the server settings file see picture for info
+
+=== Mission Vault ===
+
+This is a section for all the server admin to grab a selection of missions to help setup a new server or to update current servers there is also an upload option where you can upload your custom missions. (Note: Accepted extensions are rar, zip and pbo.)
+
+[[File:armatecdmissionvault.jpg|400px]]
+
+[[User:ArmAtec|ArmAtec]]
+
+=== Single Player Options ===
+
+This is for all the single player options
+
+[[File:armatecdsmonSP.jpg|400px]]
+
+[[User:ArmAtec|ArmAtec]]
+
+=== Server Check Options ===
+
+This is for checking sever settings live 
+
+[[File:armatecdsmonServercheckinfo.jpg|400px]]
+
+[[User:ArmAtec|ArmAtec]]
+
+=== Server Check List ===
+
+This will retrieve a list of current ArmA Servers.
+
+[[File:armatecdsmonServerchecklist.jpg|400px]]
+
+[[User:ArmAtec|ArmAtec]]
+
+=== Single Player options ===
+
+This is for all the Translation options (note: if u can help me send me a message)
+
+[[File:armatecdsmonlang.jpg|400px]]
+
+[[User:ArmAtec|ArmAtec]]
+
+
+
+
+
+=== Misc options ===
+
+* Grab IP - This will retrieve your IP from {{Link|http://whatismyip.com|whatismyip}}.
+
+* Bug Report - This will take u to the forums
+
+== External Resources ==
+{{Link|http://www.armatechsquad.com/index.php|ArmAtechSquad Dedicated Server Tool Homepage}}
+
+{{Link|http://www.armatechsquad.com/setup.exe|ArmAtechSquad Dedicated Server Tool Instaler}}
+
+{{Link|http://armatechsquad.com/dotnetfx/|.NET Framework 2.0}}
+
+{{Link|http://armatechsquad.com/windowsinstaller3_1/|Windows Installer 3.1}}
+
+{{Link|http://armatechsquad.com/help.php|Help with install error (XML)}}
+
+{{Link|http://armatechsquad.com/forum/|Visit the forums}}
+
+[[Category:Community Tools]]
+
+<big><big>More to Come When I have time away for playing ArmA sorry about spelling mistakes if u can help correct them hehe</big></big> 
+ 
+[[User:ArmAtec|ArmAtec]]
+
+== Produced config ==
+<code style="display: block">  password ="Welcome";
+   passwordAdmin ="password";
+   reportingIP ="armedass.master.gamespy.com";
+   maxPlayers=65;
+   hostname="ArmaTechSquad.com Test Server";
+   verifySignatures=1;
+motd[]=
+{
+   "Welcoem to ArmATech's Server",
+   "visit us ast armatechsquad.com",
+};
+   voteMissionPlayers=3;
+   motdInterval=1;
+   voteThreshold=0.33;
+   disableVoN=1;
+   kickduplicate=0;
+   equalModRequired=0;
+   persistent=1;
+checkfiles[]={
+"AddOns\wheeled.pbo",
+"AddOns\weapons.pbo",
+"AddOns\water.pbo",
+"AddOns\ui.pbo",
+"AddOns\tracked.pbo",
+"AddOns\sara.pbo",
+"AddOns\roads.pbo",
+"AddOns\misc.pbo",
+"AddOns\characters.pbo",
+"AddOns\Ca.pbo",
+"AddOns\buildings.pbo",
+"AddOns\Anims.pbo",
+"AddOns\air.pbo",
+"AddOns\voice.pbo",
+"AddOns\sounds.pbo",
+"AddOns\signs.pbo",
+"AddOns\rocks.pbo",
+"AddOns\plants.pbo",
+"AddOns\desert.pbo",
+"AddOns\animals.pbo",
+"AddOns\Civilians.pbo",
+"AddOns\LANGUAGE.PBO",
+"Dta\BIN.PBO",
+"Dta\core.pbo",
+};
+class Missions
+{
+class Mission0
+{
+   template=MP01SEIZETHECITY.SARA;
+   param1=1;
+   param2=2;
+   cadetMode = 0;
+};
+class Mission1
+{
+   template=M02CaptureTheFlag.Sara;
+   param1=2;
+   param2=3;
+   cadetMode = 0;
+};
+class Mission2
+{
+   template=MP03ARMOREDFIST.SARA;
+   param1=3;
+   param2=7;
+   cadetMode = 0;
+};
+class Mission3
+{
+   template=MP04CLEANSWEEP.SARA;
+   param1=6;
+   param2=3;
+   cadetMode = 0;
+};
+class Mission4
+{
+   template=MP15SECTORCONTROL.SARA;
+   param1=2;
+   param2=1;
+   cadetMode = 0;
+};
+class Mission5
+{
+   template=MP13FLAGFIGHT2.SARA;
+   param1=2;
+   param2=3;
+   cadetMode = 0;
+};
+};
+</code>
+== Credits ==
+
+=== Coding ===
+
+*ArmAtech
+
+=== Translations ===
+
+**Bence
+**Gunichou
+**[UNA-A1]Luke
+
+=== Beta Testing ===
+
+**Binkster
+
+
+
+== Disclaimer ==
+{| style="float: left;"
+|-
+|<div style="float: left; border: solid red 1px; margin: 1px;">
+<table cellspacing="0" style="width:100%;background:#eee"><tr>
+<td style="width:45px;height:45px;background:#aaa;text-align:center;font-size:14pt">'''Disclaimer'''</td>
+<td style="font-size:8pt;padding:4pt;"> This Application is in no way supported by BIS I created it on my own without help other than in this ''Biki'' it is coded in visual basics 2005 by me armatech for the ArmA Community. Any damage or loss of work can not be placed at me but with u the users I can certify that there is no harmful or damaging content with in this application.</td>
+</tr></table></div>
+|-
+|}
+== Download ==
+{{Link|http://www.armatechsquad.com/ArmAHost/file/36/ArMaTeC-Dedicated-Server-Tool-setup-7z.html|Download}}

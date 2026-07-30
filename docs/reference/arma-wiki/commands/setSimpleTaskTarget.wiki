@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/setSimpleTaskTarget
+// revision: 376222 (2025-09-20T13:11:55Z)
+// export sha1: 69a0p3xz4xlgov4es24k3ga1c25q25p
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Briefing
+
+|descr= Attach a target to the simple task.<br>Overrides [[setSimpleTaskDestination]].
+
+|s1= task [[setSimpleTaskTarget]] [target, precisePosition]
+
+|p1= task: [[Task]]
+
+|p2= target: [[Object]]
+
+|p3= precisePosition: [[Boolean]] - use exact position of the target for map marker / HUD indicator instead of the position known to the task's owner (depending on the unit's knowledge of the target)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_task setSimpleTaskTarget [targetVehicle, true];</sqf>
+
+|seealso= [[briefing]] [[createSimpleTask]] [[setSimpleTaskDestination]]
+}}

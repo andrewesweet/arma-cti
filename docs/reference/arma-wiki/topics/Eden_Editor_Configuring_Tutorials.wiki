@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Configuring_Tutorials
+// revision: 286013 (2021-06-20T17:24:17Z)
+// export sha1: dn3y65bp724br4kfloz4n5xulcz4p4l
+// categories: Category:Eden Editor: Modding
+// Vendored snapshot. Do not edit — re-export instead.
+
+Eden Editor offers in-game tutorial system. By default, it contains tutorials for controlling various editor features.
+
+Modders can add new tutorials and categories to describe their custom features. Whenever new tutorial is added, icon in top right will show red notification for player.
+[[File:3den_tutorial.gif|center]]
+
+== Config ==
+<syntaxhighlight lang="cpp">
+// File with IDCs of UI controls which can be highlighted (see 'highlight' property below)
+#include "\a3\3DEN\UI\resincl.inc"
+
+class Cfg3DEN
+{
+	// Container with all tutorials
+	class Tutorials
+	{
+		// Category class. You can use one of the existing ones, or create a new one
+		class Intro
+		{
+			displayName = "Introduction"; // Name visible in the list. Don't define when you're using existing category!
+			// Category sections
+			class Sections
+			{
+				// Section class
+				class MyTutorial
+				{
+					displayName = "My Tutorial"; // Name visible in the list
+					// Individual tutorial steps (shown as post-it notes), sorted in-game as they appear here
+					class Steps
+					{
+						// Classname can be anything
+						class Hello
+						{
+							text = "Hello World"; // Step text
+							highlight = IDC_DISPLAY3DEN_TOOLBAR_MISSION_MAP; // IDC of highlighted UI control (none by default)
+							expression = "['showInterface',true] call BIS_fnc_3DENInterface;"; // Code called when the step is displayed (before highlight)
+							x = safeZoneX + 0.1; // Custom X coordinate (centered when undefined)
+							y = safeZoneY + 0.9; // Custom Y coordinate (centered when undefined)
+						};
+						class Text2
+						{
+							text = "Schnobble!";
+						};
+					};
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+[[Category:Eden Editor: Modding|Menu Bar: Configuring Tutorials]]

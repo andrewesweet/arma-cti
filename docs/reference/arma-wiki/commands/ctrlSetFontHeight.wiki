@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/ctrlSetFontHeight
+// revision: 336297 (2022-12-21T11:10:07Z)
+// export sha1: bv3vn8g44eh3wu89vjqxpaptoyt3rch
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - HTML | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - HTML
+
+|descr= Sets the {{hl|sizeEx}} property for most controls as follows: 
+* {{hl|CT_MAP}} - "sizeExNames"
+* {{hl|CT_HTML}} - "P" >> "sizeEx"
+* Other - "sizeEx"
+* {{GVI|arma3|2.02|size= 0.75}} {{hl|CT_STRUCTURED_TEXT}} - "size"
+
+|s1= control [[ctrlSetFontHeight]]  size 
+
+|p1= control: [[Control]]
+
+|p2= size: [[Number]]
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetFontHeight 0.05;</sqf>
+
+|seealso= [[ctrlFontHeight]] [[Arma: GUI Configuration]]
+}}

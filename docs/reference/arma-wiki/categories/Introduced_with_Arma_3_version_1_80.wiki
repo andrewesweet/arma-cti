@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_1.80
+// revision: 249538 (2021-02-24T23:23:13Z)
+// export sha1: kgnga5q9eb0bajgpjl5zbwm6o6k9ka7
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with {{arma3}} version 1.80 may be recognised by the appearance of this icon: {{GVI|arma3|1.80}}
+
+[[Category:Introduced with {{arma3}}|1.80]]

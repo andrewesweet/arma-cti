@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_flamesEffect
+// revision: 309325 (2022-05-05T12:04:28Z)
+// export sha1: efjzhstot4sdzjvuhkf3g0n38ie4fom
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Feedback | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Feedback
+
+|descr= Flames (texture) postprocess.
+
+|s1= call [[BIS_fnc_flamesEffect]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_flamesEffect;</sqf>
+
+|seealso= [[BIS_fnc_dirtEffect]]
+}}

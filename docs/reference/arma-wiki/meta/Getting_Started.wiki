@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/Bohemia_Interactive_Community:Getting_Started
+// revision: 372986 (2025-03-03T18:18:57Z)
+// export sha1: 5nux83qfhid562ib475xiz5zrw2n3u4
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Account Creation ==
+
+In order to  prevent vandalism and bot spam, self-creation of accounts has been disabled.<br>
+You need to ask for an account creation, Wiki account that will be linked to your [[Bohemia Interactive]] account.
+
+=== Do you need an account? ===
+
+{{Feature|ylands|For {{Name|ylands}}, see the [[Ylands:WIKI FAQ|Ylands WIKI FAQ]]!}}
+
+Before asking for an account, ask yourself:
+; Do you want to edit only a couple of pages where you noticed an error?
+: If so, it is better to ask someone to edit said page(s) on the {{Link|https://discord.gg/arma|Arma Discord}} in the {{hl|#community_wiki}} channel.
+
+Else, head towards {{User|Dwarden}} (or any available official Community Manager) and ask for a Wiki account on {{Link|https://forums.bohemia.net/profile/743078-dwarden/|BI Forums}} or the {{Link|https://discord.gg/arma|Arma Discord}}!
+
+
+== Rules &amp; Recommendations ==
+
+* Read the [[Bohemia Interactive Community:Guidelines|Bohemia Interactive Community Guidelines]]
+* Use the [[Bohemia Interactive Community:Naming Conventions|BI Community Wiki naming conventions]]
+* [[:Bohemia Interactive Community:Formatting|Formatting]] holds all the basic editing information
+* You can refer to [[Bohemia Interactive Community:Formatting]] for information on wikitext
+* Use categories to distinguish content specific for a particular project (e.g. not everything for {{ofp}} makes sense for {{arma1}} etc.)
+* Check the "This is a minor edit" box for small edits to keep version history easy to read
+* Include some summary text of edits you have made
+* Add your '''signature''' on talk pages (with four tildes {{hl|<nowiki>~~~~</nowiki>}}) - see {{Link|https://en.wikipedia.org/wiki/Wikipedia:Signatures|these instructions}}.
+* Collaborate with other contributors on the [https://discord.gg/arma Arma 3 Discord] {{hl|#community_wiki}} channel. 
+* For experimentation, use your [[Special:Mypage/Sandbox|Sandbox]].
+
+You can find some excellent starting points for learning to edit the BI Wiki below, and on the  [[Help:Contents|help page]]
+
+=== MediaWiki Tutorials & Guides ===
+
+* {{Link|http://meta.wikipedia.org/wiki/MediaWiki_User%27s_Guide|User's Guide}}
+* {{Link|https://en.wikipedia.org/wiki/Wikipedia:Tutorial|An excellent Wiki tutorial}}
+* {{Link|http://www.mediawiki.org/wiki/Help:FAQ|MediaWiki FAQ}}
+
+
+== BiKi TODO list ==
+
+See [[:Category:Maintenance|Maintenance]] and [[:Category:To-do|To-do]].
+
+
+[[Category:Community Wiki]]

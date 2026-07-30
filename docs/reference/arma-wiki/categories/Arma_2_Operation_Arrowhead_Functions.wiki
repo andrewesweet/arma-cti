@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Operation_Arrowhead:_Functions
+// revision: 257300 (2021-05-05T07:44:05Z)
+// export sha1: gxqsy8cxz8qyrdm85saeu4k04bechd2
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Table/RVScriptingFunctions}}
+
+[[Category:Functions]]
+{{GameCategory|arma2|Editing}}

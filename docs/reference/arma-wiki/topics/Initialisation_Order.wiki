@@ -1,0 +1,168 @@
+// source: https://community.bistudio.com/wiki/Initialisation_Order
+// revision: 373629 (2025-05-29T15:41:33Z)
+// export sha1: rv6vm4iodyzh77g3otfep96pwdkk3yn
+// categories: Category:Mission Editing | Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+Whenever a mission is launched (or [[Multiplayer Scripting#Join In Progress|joined]] in Multiplayer) certain tasks are performed to ensure the mission's various components are initialised correctly and that everyone is synced in multiplayer games (particularly [[Multiplayer Scripting#Join In Progress|JIP]] players).
+Initialisation order refers to the order in which those tasks are executed and it is important to take into account when setting up the start of a mission.
+
+[[Event Scripts]] are a key part of a mission's initialisation order and will be utilised often when working with [[SQF Syntax|SQF]].
+
+
+{| class="wikitable" style="float: right; margin: 0 0 0.5em 1.5em"
+|+ Key
+! Item
+! Meaning
+|-
+| style="background-color: #95F0AD" |
+| Single Player Only
+|-
+| style="background-color: #95DEF0" |
+| Multiplayer Only
+|-
+| style="background-color: #DEF0AD" |
+| Order is not guaranteed
+|}
+Take note that the order of initialisation is different in single player and multiplayer environments. If an entry is unmarked then it applies to both.
+{{Feature|informative|
+In multiplayer the following is relevant to every machine including the server and [[Arma 3: Headless Client|headless clients]].
+If the server is non-dedicated then it should be considered both a server and client.
+}}
+
+
+{{Clear}}
+== {{arma3}} ==
+
+{| class="wikitable"
+|+ Order of Initialisation (From First to Last)
+! Task
+! Applies To
+! JIP
+! Related To
+! Exec Environment
+! Notes
+|-
+| Functions with ''recompile'' attribute are recompiled
+| All
+| {{Icon|checked}}
+| [[Arma 3: Functions Library]]
+|
+|
+|-
+| Functions with ''preInit'' attribute are called
+| All
+| {{Icon|checked}}
+| [[Arma 3: Functions Library]]
+| [[Scheduler#Unscheduled Environment|Unscheduled]]
+|
+|-
+| Object Init Event Handlers are called
+| All
+| {{Icon|unchecked}}
+|
+| [[Scheduler#Unscheduled Environment|Unscheduled]]
+|
+|-
+| Expressions of Eden Editor entity attributes are called
+| Server
+| {{Icon|unchecked}}
+| [[Eden Editor: Configuring Attributes]]
+| [[Scheduler#Unscheduled Environment|Unscheduled]]
+| <sqf inline>isPlayer _entity</sqf> does not return [[true]] immediately. Once the entity has become a [[player]], it is transfered to the client.
+|-
+| Object initialisation fields are called
+| All
+| {{Icon|checked}}
+|
+| [[Scheduler#Unscheduled Environment|Unscheduled]]
+|
+|- style="background-color: #95F0AD"
+| [[Event Scripts#init.sqs|init.sqs]] is executed
+| Singleplayer
+| {{n/a}}
+| [[Event Scripts]]
+|
+|
+|- style="background-color: #95F0AD"
+| [[Event Scripts#init.sqf|init.sqf]] is executed
+| Singleplayer
+| {{n/a}}
+| [[Event Scripts]]
+| [[Scheduler#Scheduled Environment|Scheduled]]<ref name="enginewaits">Note '''in single player''' that while the environment is [[Scheduler#Scheduled Environment|Scheduled]] ([[canSuspend]] returns true), the engine seems to wait until the script is done executing, essentially behaving similarly to an [[Scheduler#Unscheduled Environment|Unscheduled environment]] - infinite loops will freeze the game, [[uiSleep]] may pause the game for up to ~20s (postInit), [[waitUntil]] can cause catastrophic issues, etc.</ref>
+|
+|-
+| Expressions of Eden Editor scenario attributes are called
+| All
+| {{Icon|checked}}
+| [[Eden Editor: Configuring Attributes]]
+| [[Scheduler#Unscheduled Environment|Unscheduled]]
+| [[player]] is not available immediately.
+|- style="background-color: #95DEF0"
+| Persistent functions are called
+| Client
+| {{Icon|checked}}
+| [[Arma 3: Remote Execution]], [[BIS_fnc_MP]]
+|
+|
+|-
+| Modules are initialised
+| All
+| {{Icon|unchecked}}
+|
+|
+| Modules with <syntaxhighlight lang="cpp" inline>isTriggerActivated = 0</syntaxhighlight> execute their functions in scheduled environment
+|- style="background-color: #DEF0AD"
+| [[Event Scripts#initServer.sqf|initServer.sqf]] is executed
+| Server
+| {{n/a}}
+| [[Event Scripts]]
+| [[Scheduler#Scheduled Environment|Scheduled]]
+|
+|- style="background-color: #DEF0AD"
+| [[Event Scripts#initPlayerLocal.sqf|initPlayerLocal.sqf]] is executed
+| Client
+| {{Icon|checked}}
+| [[Event Scripts]]
+| [[Scheduler#Scheduled Environment|Scheduled]]
+|
+|- style="background-color: #DEF0AD"
+| [[Event Scripts#initPlayerServer.sqf|initPlayerServer.sqf]] is executed on the server
+| Client
+| {{Icon|checked}}
+| [[Event Scripts]]
+| [[Scheduler#Scheduled Environment|Scheduled]]
+|
+|-
+| Functions with ''postInit'' attribute are called
+| All
+| {{Icon|checked}}
+| [[Arma 3: Functions Library]]
+| [[Scheduler#Scheduled Environment|Scheduled]]<ref name="enginewaits"/>
+|
+|-
+| "BIS_fnc_init" variable is set to true
+| All
+| {{Icon|checked}}
+| [[Arma 2: Functions Library]]
+|
+|
+|- style="background-color: #95DEF0"
+| [[Event Scripts#init.sqs|init.sqs]] is executed
+| Multiplayer
+| {{Icon|checked}}
+| [[Event Scripts]]
+| [[Scheduler#Scheduled Environment|Scheduled]]
+|
+|- style="background-color: #95DEF0"
+| [[Event Scripts#init.sqf|init.sqf]] is executed
+| Multiplayer
+| {{Icon|checked}}
+| [[Event Scripts]]
+| [[Scheduler#Scheduled Environment|Scheduled]]
+|
+|}
+
+
+[[Category:Mission Editing]]
+[[Category: Scripting Topics]]

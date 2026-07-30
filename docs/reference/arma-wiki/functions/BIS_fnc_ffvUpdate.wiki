@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ffvUpdate
+// revision: 327742 (2022-07-13T10:45:35Z)
+// export sha1: 28ecxnvp444v50hy5lptp8sh7q72d45
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Vehicles
+
+|descr= Update Firing From Vehicle feature depending on condition defined in turret's config.
+
+|s1= vehicle call [[BIS_fnc_ffvUpdate]]
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+if (local _vehicle) then
+{
+	_vehicle animate ["Door_1", 1];
+	_vehicle call BIS_fnc_ffvUpdate;
+};
+</sqf>
+
+|seealso=
+}}

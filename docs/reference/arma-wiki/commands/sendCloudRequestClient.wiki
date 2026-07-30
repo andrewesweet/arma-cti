@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/sendCloudRequestClient
+// revision: 351590 (2023-12-07T19:44:33Z)
+// export sha1: jyhnq3gljisa0fu3ltdis3cmvdjxvdw
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|gr1= Argo
+
+|descr= Sends a client request to the {{Name|bi|short}} cloud service and executes callback code with server's response.
+
+|mp= {{Feature|informative|Only works on player clients and requires player to be logged in; on dedicated server and {{Link|Arma 3: Headless Client|headless clients}}, use [[sendCloudRequestServer]]).}}
+
+|s1= [[sendCloudRequestClient]] [requestName, callback, data, httpMethod]
+
+|p1= requestName: [[String]] - can be anything but "users"
+
+|p2= callback: [[String]] - (Optional, default "") code to be executed on request completion
+
+|p3= data: [[Anything]] - (Optional, default "") JSON data to be sent
+
+|p4= httpMethod: [[String]] - (Optional, default "GET", or "POST" if ''data'' is provided - case-insensitive) can be one of:
+* "POST"
+* "GET"
+* "DELETE"
+* "PUT"
+
+|r1= [[Boolean]] - [[true]] on success, [[false]] otherwise
+
+|x1= <sqf>_result = sendCloudRequestClient ["users/current", "hint 'success'", player];</sqf>
+
+|seealso= [[sendCloudRequestServer]] [[sendAnalyticEvent]]
+}}

@@ -1,0 +1,132 @@
+// source: https://community.bistudio.com/wiki/Category:Functions_by_Functionality
+// revision: 342090 (2023-07-09T12:24:19Z)
+// export sha1: jhziu4nparmbr7gk5bw4bjnh3a0dpau
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable sortable" width = "100%"
+|-
+! Function Group !! Description !! Examples !! Only for !! #Functions / #Subcategories
+|-
+| style="width: 8%" | [[:Category:Function Group: Ambient|Ambient]] || Functions to fill a mission with life. || [[BIS_fnc_ambientAnim]], [[BIS_fnc_ambientFlyby]] || || {{PAGESINCATEGORY:Function Group: Ambient|pages}} 
+|-
+| [[:Category:Function Group: Arrays|Arrays]] || Functions to manipulate arrays. || [[BIS_fnc_arrayInsert]], [[BIS_fnc_arrayFindDeep]] || || {{PAGESINCATEGORY:Function Group: Arrays|pages}} / {{PAGESINCATEGORY:Function Group: Arrays|subcats}}
+|-
+| [[:Category:Function Group: Bitwise|Bitwise]] || Functions for bitwise operations and working with flags. || [[BIS_fnc_bitwiseAND]], [[BIS_fnc_decodeFlags8]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Bitwise|pages}}
+|-
+| [[:Category:Function Group: Briefing|Briefing]] || Functions to create briefings. || [[BIS_fnc_briefingAnimate]], [[BIS_fnc_briefingInit]] || || {{PAGESINCATEGORY:Function Group: Briefing|pages}}
+|-
+| [[:Category:Function Group: Broken Functions|Broken Functions]] || Functions which do not work or have no effect at all. || - || || {{PAGESINCATEGORY:Function Group: Broken Functions|pages}}
+|-
+| [[:Category:Function Group: Camera|Camera]] || Functions to manipulate cameras. || [[BIS_fnc_camera_deleted]], [[BIS_fnc_camera_getFocus]] || || {{PAGESINCATEGORY:Function Group: Camera|pages}}
+|-
+| [[:Category:Function Group: Campaign|Campaign]] || Mostly functions used in the APEX Protocol campaign. Also see [[:Category:Function Group: CampaignLobby|CampaignLobby]] and [[:Category:Function Group: CampaignManager|CampaignManager]]. || [[BIS_fnc_EXP_camp_addTickets]], [[BIS_fnc_isCampaign]] || || {{PAGESINCATEGORY:Function Group: Campaign|pages}} / {{PAGESINCATEGORY:Function Group: Campaign|subcats}}
+|-
+| [[:Category:Function Group: Combat|Combat]] || Functions used to manipulate AI in combat. || [[BIS_fnc_fire]], [[BIS_fnc_stalk]] || || {{PAGESINCATEGORY:Function Group: Combat|pages}}
+|-
+| [[:Category:Function Group: CombatPatrol|CombatPatrol]] || Functions used in the [[Arma 3 MP Combat Patrol]] game mode. || [[BIS_fnc_CPDummy]], [[BIS_fnc_CPInit]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: CombatPatrol|pages}}
+|-
+| [[:Category:Function Group: Communication Menu|Communication Menu]] || Functions used to add or remove entries from the communication menu. || [[BIS_fnc_addCommMenuItem]], [[BIS_fnc_commsMenuToggleAvailability]] || || {{PAGESINCATEGORY:Function Group: Communication Menu|pages}}
+|-
+| [[:Category:Function Group: Configs|Configs]] || Functions to work with configs. || [[BIS_fnc_getCfgSubClasses]], [[BIS_fnc_getCfg]] || || {{PAGESINCATEGORY:Function Group: Configs|pages}}
+|-
+| [[:Category:Function Group: Contact|Contact]] || Functions used in the [[Arma 3 Contact]] campaign. Many of them cannot be used ouside of the Contact DLC. || [[BIN_fnc_inDangerZone]], [[BIN_fnc_showSimpleNotification]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Contact|pages}} / {{PAGESINCATEGORY:Function Group: Contact|subcats}}
+|-
+| [[:Category:Function Group: Conversations|Conversations]] || Functions used with [[Conversations]]. || [[BIS_fnc_kbTell]], [[BIS_fnc_kbMenu]] || || {{PAGESINCATEGORY:Function Group: Conversations|pages}}
+|-
+| [[:Category:Function Group: Curator|Curator (Zeus)]] || [[Arma 3: Curator|Curator]] ([[Arma 3 Zeus|Zeus]]) related functions. For modules see [[:Category:Function Group: Modules - Curator|Modules - Curator]]. || [[BIS_fnc_curatorHint]], [[BIS_fnc_isCurator]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Curator|pages}} / {{PAGESINCATEGORY:Function Group: Scripts|subcats}}
+|-
+| [[:Category:Function Group: Database|Database]] || Functions to create and change databases. || [[BIS_fnc_dbClassId]], [[BIS_fnc_dbSymbolClass]] || {{arma3}} and {{tkoh}} || {{PAGESINCATEGORY:Function Group: Database|pages}}
+|-
+| [[:Category:Function Group: Diagnostic|Diagnostic]] || Debug functions. || [[BIS_fnc_debugConsoleExec]], [[BIS_fnc_fps]] || || {{PAGESINCATEGORY:Function Group: Diagnostic|pages}}
+|-
+| [[:Category:Function Group: Eden Editor|Eden Editor]] || [[:Category:Eden Editor|Eden Editor]] related functions. || [[BIS_fnc_3DENIntel]], [[BIS_fnc_3DENTutorial]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Eden Editor|pages}}
+|-
+| [[:Category:Function Group: Effects|Effects]] || Functions to manipulate various effects like guns firing. || [[BIS_fnc_effectFired]], [[BIS_fnc_healthEffects]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Effects|pages}}
+|-
+| [[:Category:Function Group: Environment|Environment]] || Functions to change the environment e.g., time, weather || [[BIS_fnc_calculateDateTime]], [[BIS_fnc_interpolateWeather]] ||  || {{PAGESINCATEGORY:Function Group: Environment|pages}}
+|-
+| [[:Category:Function Group: Event Handlers|Event Handlers]] || Functions to work with Event Handlers || [[BIS_fnc_addScriptedEventHandler]], [[BIS_fnc_onLoad]] ||  || {{PAGESINCATEGORY:Function Group: Event Handlers|pages}}
+|-
+| [[:Category:Function Group: Feedback|Feedback]] || Functions used to give the player feedback about his status. || [[BIS_fnc_bloodEffect]], [[BIS_fnc_radialRed]] ||  || {{PAGESINCATEGORY:Function Group: Feedback|pages}}
+|-
+| [[:Category:Function Group: GUI|GUI]] || GUI related function. || [[BIS_fnc_getIDC]], [[BIS_fnc_ctrlSetScale]] ||  || {{PAGESINCATEGORY:Function Group: GUI|pages}}
+|-
+| [[:Category:Function Group: Interaction|Interaction]] || Functions to allow player to interact with objects. || [[BIS_fnc_holdKey]], [[BIS_fnc_keyHold]] ||  || {{PAGESINCATEGORY:Function Group: Interaction|pages}}
+|-
+| [[:Category:Function Group: Inventory|Inventory]] || Inventory related functions. || [[BIS_fnc_saveInventory]], [[BIS_fnc_hasItem]] ||  || {{PAGESINCATEGORY:Function Group: Inventory|pages}}
+|-
+| [[:Category:Function Group: KeyframeAnimation|KeyframeAnimation]] || Functions related to the [[Arma 3 Key Frame Animation]] system. || [[BIS_fnc_keyframeAnimation_deltaTime]], [[BIS_fnc_keyframeAnimation_init]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: KeyframeAnimation|pages}} / {{PAGESINCATEGORY:Function Group: KeyframeAnimation|subcats}}
+|-
+| [[:Category:Function Group: Live Feed|Live Feed]] || Functions related live feed system. || [[BIS_fnc_liveFeed]], [[BIS_fnc_liveFeedEffects]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Live Feed|pages}}
+|-
+| [[:Category:Function Group: Map and Markers|Map and Markers]] || Functions to be used with markers or the map. || [[BIS_fnc_drawAO]], [[BIS_fnc_blinkMarker]] || || {{PAGESINCATEGORY:Function Group: Map and Markers|pages}}
+|-
+| [[:Category:Function Group: Math|Math]] || Math related functions. See also: [[:Category:Function Group: Geometry|Geometry]], [[:Category:Function Group: Interpolation|Interpolation]] and [[:Category:Function Group: Vectors|Vectors]]. || [[BIS_fnc_pow]], [[BIS_fnc_nearestNum]] || || {{PAGESINCATEGORY:Function Group: Math|pages}} / {{PAGESINCATEGORY:Function Group: Math|subcats}}
+|-
+| [[:Category:Function Group: Mission Parameters|Mission Parameters]] || Functions for [[Mission Parameters]]. || [[BIS_fnc_getParamValue]], [[BIS_fnc_initParams]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Mission Parameters|pages}}
+|-
+| [[:Category:Function Group: Missions|Missions]] || Functions to get information about missions or manipulate the mission flow. || [[BIS_fnc_singleMissionConfig]], [[BIS_fnc_countdown]] || || {{PAGESINCATEGORY:Function Group: Missions|pages}}
+|-
+| [[:Category:Function Group: Modules|Modules]] || Functions used by modules. Make sure to check the subcategories as well. [[Arma 3: Old Man Systems]] modules are in [[:Category:Function Group: Old Man|Function Group: Old Man]]. || [[BIS_fnc_singleMissionConfig]], [[BIS_fnc_countdown]] || || {{PAGESINCATEGORY:Function Group: Modules|pages}} / {{PAGESINCATEGORY:Function Group: Modules|subcats}}
+|-
+| [[:Category:Function Group: Multiplayer|Multiplayer]] || Functions designed for multiplayer missions. || [[BIS_fnc_admin]], [[BIS_fnc_listPlayers]] || || {{PAGESINCATEGORY:Function Group: Multiplayer|pages}}
+|-
+| [[:Category:Function Group: Object Manipulation|Object Manipulation]] || Get or set various different properties of units, vehicles and other objects. Also check out the subcategories for very object specific functions. || [[BIS_fnc_attachToRelative]], [[BIS_fnc_neutralizeUnit]] || || {{PAGESINCATEGORY:Function Group: Object Manipulation|pages}} / {{PAGESINCATEGORY:Function Group: Object Manipulation|subcats}}
+|-
+| [[:Category:Function Group: Old Man|Old Man]] || Functions used by the [[Arma 3 Apex: Old Man]] scenario. || [[BIS_fnc_OM_credits]], [[BIS_fnc_OM_init]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Old Man|pages}} / {{PAGESINCATEGORY:Function Group: Old Man|subcats}}
+|-
+| [[:Category:Function Group: OO|OO]] || Function for '''O'''bject '''O'''riented (OO) scripting. || [[BIS_fnc_addClassOO]], [[BIS_fnc_createObjectOO]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: OO|pages}}
+|-
+| [[:Category:Function Group: Positions|Positions]] || Functions to work with positions. || [[BIS_fnc_position]], [[BIS_fnc_buildingPositions]] || || {{PAGESINCATEGORY:Function Group: Positions|pages}}
+|-
+| [[:Category:Function Group: Priority Queue|Priority Queue]] || Functions to set up and manipulate a priority queue. || [[BIS_fnc_priorityQueue_GetLowestPriority]], [[BIS_fnc_priorityQueue_Init]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Priority Queue|pages}}
+|-
+| [[:Category:Function Group: Program Flow|Program Flow]] || Functions used to execute scripts or handle their flow. || [[BIS_fnc_spawn]], [[BIS_fnc_call]] || || {{PAGESINCATEGORY:Function Group: Program Flow|pages}}
+|-
+| [[:Category:Function Group: Radio|Radio]] || Radio related functions. || [[BIS_fnc_diagRadio]], [[BIS_fnc_radioSetChannel]] || {{arma3}} and {{tkoh}} || {{PAGESINCATEGORY:Function Group: Radio|pages}}
+|-
+| [[:Category:Function Group: Respawn|Respawn]] || Functions used to set up and manipulate the respawn functionality. See [[Arma 3: Respawn]]. || [[BIS_fnc_addRespawnInventory]], [[BIS_fnc_respawnSeagull]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Respawn|pages}}
+|-
+| [[:Category:Function Group: Revive|Revive]] || Functions used to set up and manipulate the revive functionality. See [[Arma 3: Revive]]. || [[BIS_fnc_disableRevive]], [[BIS_fnc_reviveInit]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Revive|pages}}
+|-
+|-
+| [[:Category:Function Group: RichCurve|Rich Curve]] || Functions used to work with rich curves. || [[BIS_fnc_richCurve_getCurveLength]], [[BIS_fnc_richCurve_getKeysAtTime]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: RichCurve|pages}}
+|-
+| [[:Category:Function Group: Scenes|Scenes]] || Set up scenes with these funcitons. || [[BIS_fnc_sceneAreaClearance]], [[BIS_fnc_sceneMiscStuff]] || || {{PAGESINCATEGORY:Function Group: Scenes|pages}}
+|-
+| [[:Category:Function Group: Scripts|Scripts]] || Scripts on these page usually only have one very specific functionality and usually can not be used for anything else. || [[BIS_fnc_dataTerminalAnimate]], [[BIS_fnc_lockedDoorOpen]] || || {{PAGESINCATEGORY:Function Group: Scripts|pages}} / {{PAGESINCATEGORY:Function Group: Scripts|subcats}}
+|-
+| [[:Category:Function Group: Sides|Sides]] || Side related functions. || [[BIS_fnc_areFriendly]], [[BIS_fnc_playerSideFaction]] || || {{PAGESINCATEGORY:Function Group: Sides|pages}}
+|-
+| [[:Category:Function Group: Sound|Sound]] || Functions to play music or set up sounds. || [[BIS_fnc_jukebox]], [[BIS_fnc_music]] || || {{PAGESINCATEGORY:Function Group: Sound|pages}}
+|-
+| [[:Category:Function Group: Spectator|Spectator]] || An overview of functions used by the [[EG Spectator Mode]]. || [[BIS_fnc_EGSpectator]], [[BIS_fnc_EGSpectatorCamera]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Spectator|pages}}
+|-
+| [[:Category:Function Group: Strategic|Strategic]] || Functions for the strategic map and ORBAT feature. || [[BIS_fnc_ORBATOpen]], [[BIS_fnc_strategicMapOpen]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Strategic|pages}}
+|-
+| [[:Category:Function Group: Strings|Strings]] || Functions to work with strings. || [[BIS_fnc_filterString]], [[BIS_fnc_splitString]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Strings|pages}}
+|-
+| [[:Category:Function Group: Supports|Supports]] || Functions to set up support requests. || [[BIS_fnc_addSupportLink]], [[BIS_fnc_fireSupport]] || || {{PAGESINCATEGORY:Function Group: Supports|pages}}
+|-
+| [[:Category:Function Group: Systems|Systems]] || Functions for various systems like [[Arma 3: Dynamic Groups]]. || [[BIS_fnc_dynamicGroups]], [[BIS_fnc_missionSelector]] || || {{PAGESINCATEGORY:Function Group: Systems|pages}}
+|-
+| [[:Category:Function Group: Tasks|Tasks]] || Functions to create tasks for player and AI. See [[Arma 3: Task Framework]]. || [[BIS_fnc_taskAttack]], [[BIS_fnc_taskSetType]] || || {{PAGESINCATEGORY:Function Group: Tasks|pages}}
+|-
+| [[:Category:Function Group: Timeline|Timeline]] || Functions to create a timeline with events. || [[BIS_fnc_timeline_init]], [[BIS_fnc_timeline_isPaused]] || {{arma3}} || {{PAGESINCATEGORY:Function Group: Timeline|pages}}
+|-
+| [[:Category:Function Group: Uncategorised|Uncategorised]] || Functions which have no defined category. || {{n/a}} || || {{PAGESINCATEGORY:Function Group: Uncategorised|pages}}
+|-
+| [[:Category:Function Group: Variables|Variables]] || Compare and set variables. || [[BIS_fnc_areEqual]], [[BIS_fnc_setServerVariable]]  || || {{PAGESINCATEGORY:Function Group: Variables|pages}}
+|-
+| [[:Category:Function Group: Vehicles|Vehicles]] || Functions to work with vehicles. || [[BIS_fnc_absSpeed]], [[BIS_fnc_initVehicle]]  || || {{PAGESINCATEGORY:Function Group: Vehicles|pages}}
+|-
+| [[:Category:Function Group: VR|VR]] || Functions used by the Virtual Reality missions from the {{arma3}} Bootcamp update. Mostly FSMs. || [[BIS_fnc_VRCourseBallistics1]], [[BIS_fnc_VRCourseHeliWeapons2]]  || {{arma3}} || {{PAGESINCATEGORY:Function Group: VR|pages}}
+|-
+| [[:Category:Function Group: Warlords|Warlords]] || [[Arma 3 MP Warlords]] functions. || [[BIS_fnc_WLAICore]], [[BIS_fnc_WLSendResponseTeam]]  || {{arma3}} || {{PAGESINCATEGORY:Function Group: Warlords|pages}}
+|-
+| [[:Category:Function Group: Waypoints|Waypoints]] || Functions to work with waypoints. || [[BIS_fnc_wpRelax]], [[BIS_fnc_wpTimed]]  || || {{PAGESINCATEGORY:Function Group: Waypoints|pages}}
+|-
+| [[:Category:Function Group: Weapons|Weapons]] || Weapon related functions. || [[BIS_fnc_compatibleMagazines]], [[BIS_fnc_weaponAddon]]  || || {{PAGESINCATEGORY:Function Group: Weapons|pages}}
+|} 	
+
+[[Category:Functions]]

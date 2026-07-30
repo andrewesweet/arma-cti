@@ -1,0 +1,78 @@
+// source: https://community.bistudio.com/wiki/createDisplay
+// revision: 369323 (2024-09-03T18:42:58Z)
+// export sha1: h06ypkxyb4xjzt7ojqxybovplqnldis
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= Creates child display of given display and loads from "resourceName". The notable difference between [[createDisplay]] and [[createDialog]] is that with [[createDisplay]] the player would be able to move around while the display is shown.<br>
+Displays created with [[createDisplay]] or [[createDialog]] will take control of the mouse pointer and will close when user presses {{Controls|Esc}}.
+{{Feature|arma3|Since {{arma3}} v1.50 [[createDisplay]] returns [[Display]] and will first look in [[Description.ext|description.ext]] for resourceName config, if not found, it will then look in main config.}}
+{{Feature|informative|If an ''overlay'' is needed instead, use [[cutRsc]].}}
+
+|s1= parent [[createDisplay]]  resourceName
+
+|p1= parent: [[Display]]
+
+|p2= resourceName: [[String]] - custom display class defined in [[Description.ext|description.ext]] or existing display class from main config
+
+|r1= [[Display]] (since {{GVI|arma3|1.50|size= 0.75}}, [[Nothing]] before)
+
+|x1= <sqf>findDisplay 46 createDisplay "RscCredits";</sqf>
+
+|x2= <sqf>
+// creates an empty display
+private _emptyDisplay = findDisplay 46 createDisplay "RscDisplayEmpty";
+</sqf>
+
+|seealso= [[closeDisplay]] [[createDialog]] [[displayCtrl]] [[dialog]] [[displayNull]] [[controlNull]] [[ctrlCreate]] [[displayParent]]
+}}
+
+{{Note
+|user= MrPineapple
+|timestamp= 20141115132000
+|text= When using createDisplay instead of [[createDialog]], all the commands for working with the controls of the display only work with the control version, not the IDC version:
+<sqf>
+lbAdd [1234, "item"];	// does not work on displays, and won't error either
+_ctrl lbAdd "item";		// does work with displays
+</sqf>
+So you have to use the control(DisplayCtrl) and not the IDC.
+|game= arma3
+|version= 1.34
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20170629090200
+|text= A user dialog created with [[createDisplay]] over mission display ([[findDisplay]] 46) will stop [[displayAddEventHandler|display event handlers]] added to mission display from firing. However if it is created with [[createDialog]] then the event handlers continue to work.
+}}
+
+{{Note
+|user= Target_practice
+|timestamp= 20200621170100
+|text= Creating a display with the same parent as an existing display will destroy the latter and all of its children. However, their [[User_Interface_Event_Handlers#onUnload|onUnload]], [[User_Interface_Event_Handlers#onChildDestroyed|onChildDestroyed]], and [[User_Interface_Event_Handlers#onDestroy|onDestroy]] event handlers will not fire.
+}}
+
+{{Note
+|user= 7erra
+|timestamp= 20220205154714
+|text= When trying to create a display with [[createDisplay]] on a non existing display the command will fail silently and return [[displayNull]].
+}}

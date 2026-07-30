@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_2:_Operation_Arrowhead_version_1.62
+// revision: 142522 (2019-12-06T13:53:25Z)
+// export sha1: t5ow2p1syiil6650m6grc8g63t9l1nx
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with Arma 2: Operation Arrowhead version 1.62 may be recognised by the appearance of this icon: {{GVI|arma2oa|1.62}}
+
+[[Category:Introduced with Arma 2: Operation Arrowhead|1.62]]

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_basicBackpack
+// revision: 349020 (2023-11-08T14:47:08Z)
+// export sha1: 9mmlr0fc2buhbtd9mlnwuzrc6gugtz6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Inventory
+
+|descr= Determines basic backpack with no equipment present (ie empty).
+
+|s1= backPackClassName call [[BIS_fnc_basicBackpack]]
+
+|p1= [[String]] - backpack classname.
+
+|r1= [[String]] - returns classname of base backpack.
+
+|x1= <sqf>baseBackpack = "b_assaultpack_rgr_medic" call BIS_fnc_basicBackpack; // returns "b_assaultpack_rgr", the base class</sqf>
+
+|seealso=
+}}

@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/setLightIntensity
+// revision: 376690 (2025-11-05T22:15:14Z)
+// export sha1: 2u1cuz26pyvkohg6i950ld69frl4qhx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Lights
+
+|arg= local
+
+|eff= local
+
+|descr= Sets intensity of light directly. [[setLightBrightness]] uses [[setLightIntensity]] internally, therefore avoid using [[setLightBrightness]] alltogether to avoid confusion
+{{Feature|informative|Intensity formula is as follows (IF SET VIA [[setLightBrightness]]): <sqf>Intensity = Brightness ^ 2 * 2500;</sqf>
+<spoiler text="Test code">
+<sqf>
+[4096, 4096, 10] spawn {
+	private _brightness = 1;
+	private _intensity = _brightness ^ 2 * 2500;
+
+	private _obj = "Sign_Sphere10cm_F" createVehicleLocal _this;
+	private _light = "#lightpoint" createVehicleLocal _this;
+	_light setLightDayLight true;
+	_light setLightAmbient [1, 1, 1];
+	_light setLightColor [1, 1, 1];
+
+	_light setLightBrightness _brightness;
+	sleep 0.2;
+	_brightness = getLightingAt _obj select 3;
+
+	_light setLightIntensity _intensity;
+	sleep 0.2;
+	_intensity = getLightingAt _obj select 3;
+
+	systemChat format ["%1 (%2, %3)", _brightness == _intensity, _brightness, _intensity];
+
+	deleteVehicle _light;
+	deleteVehicle _obj;
+};
+</sqf>
+</spoiler>
+}}
+
+|s1= light [[setLightIntensity]] value
+
+|p1= light: [[Object]]
+
+|p2= value: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myLight setLightIntensity 4;</sqf>
+
+|seealso= [[setLightAmbient]] [[setLightColor]] [[lightAttachObject]] [[lightDetachObject]] [[setLightBrightness]] [[setLightAttenuation]] [[setLightUseFlare]] [[setLightFlareSize]] [[setLightFlareMaxDistance]] [[setLightDayLight]] [[getLightInfo]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140324233700
+|text= In {{arma3}} ver1.14 [[setLightIntensity]] will overwrite the previous effect processed by [[setLightBrightness]] on the same light source, vice versa. And both of them currently play the same role on brightness, for example: <sqf>
+_light setLightIntensity 3000;
+// same as
+_light setLightBrightness 1;
+</sqf>
+}}

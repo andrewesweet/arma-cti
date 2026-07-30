@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/controlNull
+// revision: 369405 (2024-09-03T18:43:23Z)
+// export sha1: bwpq95acr7ckm2h4slbis5nntislri7
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= A non-existing [[Control]]. To compare non-existent objects use [[isNull]] or [[isEqualTo]] (see examples).
+
+|s1= [[controlNull]]
+
+|r1= [[Control]]
+
+|x1= <sqf>if (_myCtrl isEqualTo controlNull) then { hint "_myCtrl is null!"; };</sqf>
+
+|x2= <sqf>
+controlNull == controlNull;			// returns false
+isNull controlNull;						// returns true
+controlNull isEqualTo controlNull;		// returns true
+</sqf>
+
+|x3= <sqf>str controlNull; // No control</sqf>
+
+|seealso= [[displayNull]] [[grpNull]] [[locationNull]] [[objNull]] [[taskNull]] [[teamMemberNull]] [[scriptNull]] [[configNull]] [[typeName]] [[isNull]]
+}}

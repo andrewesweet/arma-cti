@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/ctrlPosition
+// revision: 377302 (2026-01-02T06:38:20Z)
+// export sha1: 75h7m4ex0q6m05ngxwhkqu2entdz87e
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - Positioning
+
+|descr= Returns the current position of 2D control as {{hl|[x, y, w, h]}} array. For 3D control it returns relative {{hl|[x, z, y]}}.<br>
+If the control is within a [[CT_CONTROLS_GROUP]], the returned position will be relative to the group's position.<br>
+If the control is a [[CT_CONTROLS_TABLE]] header or row the returned position is relative to the table's position.
+
+|s1= [[ctrlPosition]] controlName
+
+|p1= controlName: [[Control]]
+
+|r1= [[Array]] format {{hl|[x, y, w, h]}} (2D) or {{hl|[x, z, y]}} (3D)
+
+|x1= <sqf>_pos = ctrlPosition _control;</sqf>
+
+|seealso= [[ctrlCreate]] [[ctrlDelete]] [[ctrlModel]] [[ctrlSetModel]] [[ctrlSetPosition]] [[ctrlClassName]] [[displayCtrl]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlModelDirAndUp]] [[ctrlSetModelDirAndUp]]
+}}

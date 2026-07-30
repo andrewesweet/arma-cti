@@ -1,0 +1,193 @@
+// source: https://community.bistudio.com/wiki/Template:CT
+// revision: 373263 (2025-04-12T22:29:17Z)
+// export sha1: swo6siw8lz33a9b59mqjei99j4ztguk
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>
+{{#switch: {{lc:{{{1}}}}}
+
+|intro = {{#ifeq:{{uc:{{FULLPAGENAME}}}}|TEMPLATE:CT||{{DISPLAYTITLE:{{{macro}}}}}}}{{Navbox/CT}}
+== Introduction ==
+{{{description}}}
+{{#if: {{{gallery|}}}|
+{{#tag:gallery|{{{gallery}}}|mode="slideshow"|heights=240px|widths=240px}}
+}}
+
+=== Related commands & functions ===
+* [[:Category:Command_Group:_GUI_Control|Commands: General]]
+* [[:Category:Command_Group:_GUI_Control_-_Event_Handlers|Commands: UI Eventhandlers]]<!--
+-->{{#if: {{{commands|}}} | 
+{{{commands}}}
+}}
+
+=== Related User Interface Eventhandlers ===
+* [[User_Interface_Event_Handlers#Generic_Events|Events: General]]<!--
+-->{{#if: {{{events|}}} | 
+{{{events}}}
+}}
+
+== Alphabetical Order ==
+{{Feature|informative|TokenNames common to most controls, such as x, y, w, h, text, idc... can be found [[Arma:_GUI_Configuration#Common_Properties|'''here''']].}}
+{{Feature|warning|Not all of the listed attributes might have an effect nor might the list be complete. All attributes were gathered with [https://github.com/7erra/BIKI.VR/blob/master/fnc/generateCTPage.sqf this] config crawler.}}
+{{#tag:syntaxhighlight|#define {{{macro}}} {{{value}}}|lang="cpp"}}
+
+|abc start = 
+|attribute = ==== {{{name}}} ====
+{{#if: {{{mandatory|}}} |{{Feature|important|This attribute is mandatory for the control to work!}}}}
+; Type: [[TokenNameValueTypes|{{{type1}}}]]{{#if: {{{type2|}}} | , [[TokenNameValueTypes|{{{type2}}}]]}}{{#if: {{{type3|}}} | , [[TokenNameValueTypes|{{{type3}}}]]}}{{#if: {{{type4|}}} | , [[TokenNameValueTypes|{{{type4}}}]]}}
+; Description: {{#if: {{{description|}}}|{{{description}}}|n/a}}
+{{#if: {{{type2|}}}|{{{type1}}} example:}}
+{{#tag:syntaxhighlight|{{#switch: {{{type1}}}
+ | Array = {{{name}}}[] = {{{value1}}};
+ | Class = {{{value1}}}
+ | {{{name}}} {{=}} {{{value1}}};
+}}|lang="cpp"}}
+{{#if: {{{type2|}}}|{{{type2}}} example:
+{{#tag:syntaxhighlight|{{#switch: {{{type2}}}
+ | Array = {{{name}}}[] = {{{value2}}};
+ | Class = {{{value2}}}
+ | {{{name}}} {{=}} {{{value2}}};
+}}|lang="cpp"}}}}
+{{#if: {{{type3|}}}|{{{type3}}} example:
+{{#tag:syntaxhighlight|----
+{{#switch: {{{type3}}}
+ | Array = {{{name}}}[] = {{{value3}}};
+ | Class = {{{value3}}}
+ | {{{name}}} {{=}} {{{value3}}};
+}}|lang="cpp"}}}}
+{{#if: {{{type4|}}}|{{{type4}}} example:
+{{#tag:syntaxhighlight|----
+{{#switch: {{{type4}}}
+ | Array = {{{name}}}[] = {{{value4}}};
+ | Class = {{{value4}}}
+ | {{{name}}} {{=}} {{{value4}}};
+}}|lang="cpp"}}}}
+
+|abc end = 
+|examples = == Default Classes ==
+{{Feature|arma3|'''AddOns:''' Classes need to be initialised first with <syntaxhighlight lang="cpp" inline>class SomeClass;</syntaxhighlight>
+----
+'''Missions:''' Since {{arma3}} v2.02 one can use <syntaxhighlight lang="cpp" inline>import SomeClass;</syntaxhighlight> to initialise a class (see the [[import (Config)|import]] keyword).
+In older versions, use <sqf inline>"Default" call BIS_fnc_exportGUIBaseClasses;</sqf> and paste the result into the [[Description.ext|description.ext]].}}}}
+</includeonly><noinclude>
+== Usage ==
+<pre>{{CT|mode|arg1=value|arg2=value2|...}}</pre>
+{| class="wikitable"
+! Mode !! Arguments !! Description !! Example
+|-
+| rowspan="6" | '''intro''' || macro || Control type macro from [[BIS_fnc_exportGUIBaseClasses]]. || <pre>CT_STATIC</pre>
+|-
+| value || Value of the macro. || <pre>0</pre>
+|-
+| description || Some text to give info about the CT. || <pre>This is CT_MAP. It is a map.</pre>
+|-
+| gallery || List of images to display in a gallery below the description. || <pre>File:Image.jpg{{!}}This is an image of the control.</pre>
+|-
+| commands || List of commands associated with the control. ||<pre>* [[:Category:Command_Group:_GUI_Control_-_Controls_Table|Commands: Controls Table]]</pre>
+|-
+| events || List of UIEH that work on the control. || <pre>* [[User_Interface_Event_Handlers|Events: All]]</pre>
+|-
+| colspan="4" |
+|-
+| '''abc start''' || no arguments || Marks the beggining of the config reference part with the use of the '''attribute''' mode. ||
+|-
+| colspan="4" |
+|-
+| rowspan="5" | '''attribute''' || name || Name of the attribute. || <pre>text</pre>
+|-
+| value1-4 || Possible values of the config entry. Has to match the type given by type1-4. || <pre>"This is a string"</pre>
+|-
+| type1-4 || Type of the respective value. Possible values: Number, String, Array, Class. Each type/value pair gets an example.|| <pre>String</pre>
+|-
+| description || What does the attribute do? || <pre>This string displays text.</pre>
+|-
+| mandatory || If defined a yellow warning box will be displayed at the attributes position. Mandatory attributes throw an error in RPT when omitted. || <pre>1</pre>
+|-
+| colspan="4" |
+|-
+| '''abc end''' || no arguments || Marks the end of the config reference. ||
+|-
+| colspan="4" |
+|-
+| '''examples''' || no arguments || Inserts the header and a disclaimer at this position. ||
+|}
+
+You can inspect the generator code for this page by clicking EDIT on the top right. The code starts below this line:<br>
+------------------------------------------------------------------------------------------------------------------------
+
+{{CT|intro
+|macro = CT_TREE
+|value = 1234
+|description = Informative text about this control type.
+|gallery = File:CT COMBO.jpg {{!}}Example image 1.
+File:BIS fnc 3DENDiagFonts example.jpg{{!}}Image 2.
+|commands = * command group CT
+|events = 
+* event1
+* event2
+}}
+
+{{CT|abc start}}
+=== T ===
+{{CT|attribute
+| name=testArray
+| value1={1,0,0,1}
+| type1=Array
+| description=This is a test array to test arrays. {{Feature|important|Notice Me!}}
+}}
+{{CT|attribute
+| name=testAttribute
+| value1="test"
+| type1=String
+| mandatory=1
+}}
+
+{{CT|attribute
+| name=testClass
+| type1=Class
+| value1=class ComboScrollBar
+{
+	color[] = {1,1,1,1};
+	colorActive[] = {1,1,1,1};
+	colorDisabled[] = {1,1,1,0.3};
+	thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+	arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+	arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+	border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+	shadow = 0;
+	scrollSpeed = 0.06;
+	width = 0;
+	height = 0;
+	autoScrollEnabled = 0;
+	autoScrollSpeed = -1;
+	autoScrollDelay = 5;
+	autoScrollRewind = 0;
+};
+| type2=Number
+| value2=9876
+| description=This is a test class to test classes.
+}}
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscExample ===
+<syntaxhighlight lang="cpp">
+class RscExample
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_TYPEMACRO;
+	style = SL_HORZ;
+	color[] = {1,1,1,0.8};
+	colorActive[] = {1,1,1,1};
+	shadow = 0;
+	x = 0;
+	y = 0;
+	w = 0.3;
+	h = 0.025;
+};
+</syntaxhighlight>
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

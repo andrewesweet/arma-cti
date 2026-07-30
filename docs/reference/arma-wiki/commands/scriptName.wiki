@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/scriptName
+// revision: 369379 (2024-09-03T18:43:13Z)
+// export sha1: csdriz9nmvn42c2qielj4no3a18e995
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Program Flow
+
+|descr= Assign a user friendly name to the [[Script Handle|VM script]] this command is executed from.
+{{Feature|important|Once a name is assigned, it cannot be changed.}}
+
+|s1= [[scriptName]] name
+
+|p1= name: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>scriptName "leetScript.sqf";</sqf>
+
+|x2= <sqf>scriptName format ["%1ARTY\data\scripts\ARTY_sadarmDeploy.sqf (_this: %1)", _this];</sqf>
+
+|seealso= [[spawn]] [[execVM]] [[scriptDone]]
+}}
+
+{{Note
+|user= PhilippRauch
+|timestamp= 20090613173900
+|text= [[scriptName]] is good when you want to load the handle of some spawn or call with some name:
+<sqf>
+example_scripthandle = 0 spawn {
+	scriptName "Example";
+	systemChat str example_scripthandle; // System: Example
+}
+</sqf>
+}}

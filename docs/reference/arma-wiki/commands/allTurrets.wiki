@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/allTurrets
+// revision: 378481 (2026-04-24T12:20:34Z)
+// export sha1: 06lpaulknzfipojaq0go6jfdz93hs6g
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Turrets
+
+|descr= Returns array of available turret paths from vehicle object.
+
+{{Feature|informative|
+* to look up turrets from config, use [[BIS_fnc_allTurrets]]
+* to get config from turret path, use [[BIS_fnc_turretConfig]]
+}}
+
+|s1= [[allTurrets]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Array]] of [[Turret Path]]s
+
+|s2= [[allTurrets]] [vehicle, includeFFV]
+
+|p21= vehicle: [[Object]]
+
+|p22= includeFFV: [[Boolean]] - [[true]] to include FFV (Firing From Vehicle) positions, [[false]] to exclude them
+
+|r2= [[Array]] of [[Turret Path]]s
+
+|x1= <sqf>
+_turretPaths = allTurrets _mySlammerUP;				// [[0],[0,0]]
+_turretPaths = allTurrets [_mySlammerUP, true];		// [[0],[0,0]] <- commander turret is also an FFV turret
+_turretPaths = allTurrets [_mySlammerUP, false];	// [<nowiki/>[0]]
+</sqf>
+
+|x2= Return FFV turrets only:
+<sqf>_FFVTurrets = allTurrets [tank, true] - allTurrets [tank, false];</sqf>
+
+|seealso= [[moveInTurret]] [[enablePersonTurret]] [[assignedVehicleRole]] [[fullCrew]] [[turretUnit]] [[turretLocal]] [[turretOwner]] [[BIS_fnc_allTurrets]] [[BIS_fnc_turretConfig]]
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20160413191300
+|text= The first syntax (vehicle only without boolean) will include commander turrets like in the example, and does not include actual FFV turrets like offroad back seats, as expected.<br>
+Also, the driver turret [-1] is never included in the results, which can be solved as follows:
+<sqf>_paths = [[-1]] + allTurrets _vehicle;</sqf>
+}}

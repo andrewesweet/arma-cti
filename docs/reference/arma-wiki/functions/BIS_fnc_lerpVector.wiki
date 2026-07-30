@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_lerpVector
+// revision: 348754 (2023-11-08T14:33:09Z)
+// export sha1: sb9xf6a68znrd91kgh1ltajn1op7ku8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vectors | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Vectors
+
+|descr= Given two different vectors A and B, think of a straight line drawn between them, ''alpha'' saying how far along that line is the wanted vector.
+
+|s1= [currentValue, targetValue, alpha] call [[BIS_fnc_lerpVector]]
+
+|p1= currentValue: [[Array]] - vector start
+
+|p2= targetValue: [[Array]] - vector end
+
+|p3= alpha: [[Number]] - alpha
+
+|r1= [[Array]] - interpolated vector
+
+|x1= <sqf>[[1592.74,6558.36,0], [2240.43,7459.69,0], 0.3] call BIS_fnc_lerpVector; // returns [1787.05,6828.76,0]</sqf>
+
+|seealso= [[BIS_fnc_clerp]] [[BIS_fnc_slerp]] [[BIS_fnc_lerp]] [[BIS_fnc_inverseLerp]]
+}}

@@ -1,0 +1,114 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Marker
+// revision: 376659 (2025-11-03T16:14:49Z)
+// export sha1: 7rj739zool8r91mje6u1tfyab9n4dw7
+// categories: Category:Eden Editor: Asset Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A marker is an image shown on the player's map. It is visible to every player, and it is visible only on the map, not in the scene.
+
+== Icon Markers ==
+A marker can be an '''icon'''. It is a single image which has a constant size on the screen when zooming the map in and out. When you set its text, it will be shown on its right side. It is used to mark points of interest, like an enemy base or an insertion point.
+[[File:3den marker icon.jpg|center]]
+
+== Area Markers ==
+Markers can also be '''areas'''. Their size is set in meters and is constant in the world space. They are used for marking specific zones, such as an enemy area or border line.
+Similarly to trigger areas, the marker area can also be edited using the [[Eden_Editor:_Transformation_Widget|area scaling widget]]. <!-- TODO: Link that to the correct subsection of the widget page! -->
+
+The area is always shown, but by default you cannot interact with it. However, when the marker is selected, you can drag it by its area as well. 
+[[File:3den marker area.gif|center]]
+
+
+Markers are a powerful tool for explaining your intentions to the player with little or no text. Do not forget to use them while designing your scenario.
+
+== Attributes ==
+<onlyinclude>
+<!-- Exported from the game by BIS_fnc_3DENExportAttributes. Manual edits may be replaced by future exports. -->
+{| class="wikitable sortable"
+! colspan="3" | <big>Info</big>
+! colspan="3" | <big>[[Eden Editor: Setting Attributes|Development]]</big>
+|-
+! Name
+! Category
+! class="unsortable" | Description
+! Property
+! Type
+! Correspondence
+|-
+| '''Type'''
+| Type
+| Icon texture.
+| <small>{{hl|itemClass}}</small>
+| [[String]]
+| [[markerType]]
+|-
+| '''Variable Name'''
+| Init
+| Unique system name. Can contain any characters. The name is not case sensitive, so 'someName' and 'SOMENAME' are treated as the same variables.
+| <small>{{hl|markerName}}</small>
+| [[String]]
+| [[createMarker]]
+|-
+| '''Text'''
+| Init
+| Text displayed right from the marker.
+| <small>{{hl|text}}</small>
+| [[String]]
+| [[markerText]]
+|-
+| '''Position'''
+| Transformation
+| World coordinates in meters. X goes from West to East and Y from South to North.
+| <small>{{hl|position}}</small>
+| [[Position#Introduction|Position3D]]
+| [[markerPos]]
+|-
+| '''Size'''
+| Transformation
+| Marker A and B size.
+| <small>{{hl|size2}}</small>
+| [[Array]]
+| [[markerSize]]
+|-
+| '''Rotation'''
+| Transformation
+| Rotation in degrees.
+| <small>{{hl|rotation}}</small>
+| [[Number]]
+| [[markerDir]]
+|-
+| '''Shape'''
+| Style
+| Marker shape. The marker has to be created as shape marker, for this use "" empty string as class name with [[create3DENEntity]], this will create rectangular marker.
+Available options:
+* 0 - rectangle
+* 1 - ellipse
+
+| <small>{{hl|markerType}}</small>
+| [[Number]]
+| [[markerShape]]
+|-
+| '''Brush'''
+| Style
+| Area fill texture.
+| <small>{{hl|brush}}</small>
+| [[String]]
+| [[markerBrush]]
+|-
+| '''Color'''
+| Style
+| Marker color. 'Default' is based on the selected marker type. Since {{GVI|arma3|2.22}} custom color format is supported as well. See [[setMarkerColor]].
+| <small>{{hl|baseColor}}</small>
+| [[Array]]
+| [[markerColor]]
+|-
+| '''Alpha'''
+| Style
+| Transparency. When the icon marker has a shadow, it will be visible behind the transparent icon.
+| <small>{{hl|alpha}}</small>
+| [[Number]]
+| [[markerAlpha]]
+|}
+</onlyinclude>
+
+[[Category:Eden Editor: Asset Types|Markers]]

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_ProbingBeam_sendData
+// revision: 309667 (2022-05-05T12:08:24Z)
+// export sha1: t25wmrmv19maijpqzvzrp3ttb3cbzlt
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Probing | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Probing 
+
+|descr= <pre>/*
+	BIS_fnc_ProbingBeam_sendData
+*/</pre>
+{{Wiki|placeholder}} 
+
+|s1= <!-- [] call [[BIN_fnc_ProbingBeam_sendData]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_ProbingBeam_sendData;</sqf> -->
+
+|seealso=
+}}

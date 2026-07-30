@@ -1,0 +1,237 @@
+// source: https://community.bistudio.com/wiki/Global_Mobilization_Insignia_(Vehicles)
+// revision: 338453 (2023-03-08T20:20:17Z)
+// export sha1: rgg5gswfacewctx0vy576jlpoguni0s
+// categories: Category:Global Mobilization
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[image:gm picture ca.png|borderless|60px|right|link=Global Mobilization]]
+The vehicles added in '''[[Global Mobilization]]''' offer a great amount of customization through the editor.
+
+Apart from the ability to change their vehicle color and camo, they are also able to have a detailed selection of insignia applied.
+
+
+This page will provide an overview of the available insignia types and also guide you with some documentation through how to add your own custom insignia to be used within the modular system.
+
+[[image:insignia reference reduced.png]]
+= Insignia =
+Following insignia slots are available for vehicles in GM. Please note that not all vehicles have access to all slots.
+All insignia can be modified via the editor on a per vehicle case. If you leave the values untouched, a sensible but randomized default selection is applied.
+Every slot can be disabled through the attribute editor if desired.
+
+<code style="display: block">All slots can also be directly accessed via the [[setObjectTexture]] commands. Find the specific indices for each insignia slot below:</code>
+
+== a.) Crest ==
+[[image:gm ge pzbrig2 col ca.png|100px|thumb|Crest example]]
+The crest insignia is used to display the unit's coat of arms. On civilian vehicles this slot is used to display nationality-stickers.
+
+<code style="display: block">Hidden selection index: 28</code>
+== b.) Mission (Large) ==
+[[image:gm hfor 01 blk ca.png|100px|thumb|Mission symbol example]]
+The Mission (Large) symbol is used to display the current operation's symbol. This could be used for real life missions such as SFOR or KFOR, or as in this demo case for WFOR - Weferlingen Force.
+You can easily use a symbol instead of a letter-stencil here.
+
+<code style="display: block">Hidden selection index: 26</code>
+== c.) Company ==
+This insignia slot is used for some mascot of the unit or even some specific art the vehicle crew created. Could also be used for a vehicle's nickname.
+
+<code style="display: block">Hidden selection index: 29</code>
+== d.) Marking ==
+[[image:gm octagon 17 org ca.png|100px|thumb|Marking example]]
+The Marking insignia slot is used for force identification, like the famous chevrons of Desert Storm. In this example markings were applied that are similar to those found during the big REFORGER exercises.
+
+<code style="display: block">Hidden selection index: 30</code>
+== e.) License Plate ==
+The License Plate is found on vehicles that are road legal. You can type in any combination of letters and numbers here.
+
+== f.) Tactical Sign - Pre Number ==
+NATO tactical sign. The Pre Number indicates the digit of the company within the given hierarchy. Supports only single digits.
+
+== g.) Tactical Sign ==
+NATO tactical sign. This symbol indicates the military branch the vehicle belongs to.
+
+== h.) Tactical Sign - Post Number ==
+NATO tactical sign. The Post Number indicates the digits of the battalion within the given hierarchy. Supports up to three digits.
+
+== i.) Nation ==
+National emblem. The designated symbol or coat of arms of a given military power.
+
+<code style="display: block">Hidden selection index: 32 and 33</code>
+== j.) Mission ==
+
+Mission insignia. This place can be used for logos or coat of arms that a specific military mission has (I.e KFOR) or as in this case a cross made with colored tape to indicate this vehicle belonging to opposing forces during a military exercise.
+
+<code style="display: block">Hidden selection index: 25</code>
+== k.) Tactical Number ==
+The tactical number can be up to four digits that uniquely identify the vehicle within a given battalion. Via the attribute editor you can change the type of font used for this item.
+
+== l.) Formation ==
+The Formation symbol is usually used on a platoon or company level to provide additional designation of specific vehicles belonging to individual squads.
+
+<code style="display: block">Hidden selection index: 27</code>
+
+= Modding =
+Global Mobilization is highly modular and allows you to safely and quickly expand many aspects of the asset configuration without much hassle. Insignia are a prime example for this.
+
+Insignia are controlled through config classes that you can easily expand through config addons.
+
+The following insignia types exist within the config structure:
+==National Emblem ==
+
+National emblems are slightly different from regular insignia, as these allow for mirrored symbols for the other side of the vehicle.
+[[image:gm_cs_army_01_ca.png|250px|thumb|National Emblem Template. Note the mirrored extra item.]]
+
+To configure a new nation symbol, use the following config for reference:
+<code style="display: block">class gm_VehicleInsignias_base; // declare base class
+class gm_VehicleInsignias_Nations : gm_VehicleInsignias_base // declare class you wish to patch with a new entry, carry over correct inheritance from base class
+{
+	class myMOD_insignia_aaf_01 // class name of your new entry. MUST be unique name
+	{
+		name     = "AAF";                                              // Name displayed in the editor for this item in the drop-down.
+		texture  = "myMOD\path\to\data\insignias\myMod_aaf_01_ca.paa"; // Path to the texture used on the vehicle
+		picture  = "myMOD\path\to\data\insignias\myMod_aaf_01_ca.paa"; // Path to the preview picture used in the drop down. Can be the same as used in "texture".
+		value    = "myMOD_insignia_aaf_01";                            // identical to the classname of this item.
+	};
+};
+</code>
+
+==Insignia ==
+[[image:insignia menu.png|thumb|350px]]
+Template configuration:
+<code style="display: block">	class myMOD_insignia_symbol_01 // class name of your new entry. MUST be unique name
+	{
+		name     = "AAF";                                                 // Name displayed in the editor for this item in the drop-down.
+		texture  = "myMOD\path\to\data\insignias\myMod_symbol_01_ca.paa"; // Path to the texture used on the vehicle
+		picture  = "myMOD\path\to\data\insignias\myMod_symbol_01_ca.paa"; // Path to the preview picture used in the drop down. Can be the same as used in "texture".
+		value    = "myMOD_insignia_symbol_01";                            // identical to the classname of this item.
+	};
+</code>
+
+=== Insignia Subtypes ===
+All types of symbol insignia follow the same configuration template. They are restricted to certain slots by configuring them within a specific container.
+==== Mission Insignia ====
+To make a specific insignia available under the "Mission Insignia" category, place the template configuration into the following config class:
+<code style="display: block">gm_VehicleInsignias_MissionSmall : gm_VehicleInsignias_base // make sure to declare this baseclass somewhere
+{
+	class myMOD_insignia_symbol_01
+	{
+		[...]
+	};
+};
+</code>
+==== Mission Insignia (Large) ====
+To make a specific insignia available under the "Mission Insignia (Large)" category, place the template configuration into the following config class:
+<code style="display: block">gm_VehicleInsignias_MissionLarge : gm_VehicleInsignias_base // make sure to declare this baseclass somewhere
+{
+	[...]
+};
+</code>
+==== Marking ====
+[[image:gm insignia car.png|thumbnail|400px|A civilian P601 marked up.]]
+To make a specific insignia available under the "Marking" category, place the template configuration into the following config class:
+<code style="display: block">gm_VehicleInsignias_Recon : gm_VehicleInsignias_base // make sure to declare this baseclass somewhere
+{
+	[...]
+};
+</code>
+==== Crest ====
+To make a specific insignia available under the "Crest" category, place the template configuration into the following config class:
+<code style="display: block">gm_VehicleInsignias_Unit : gm_VehicleInsignias_base // make sure to declare this baseclass somewhere
+{
+	[...]
+};
+</code>
+==== Company ====
+To make a specific insignia available under the "Company" category, place the template configuration into the following config class:
+<code style="display: block">gm_VehicleInsignias_Company : gm_VehicleInsignias_base // make sure to declare this baseclass somewhere
+{
+	[...]
+};
+</code>
+==== Formation ====
+To make a specific insignia available under the "Formation" category, place the template configuration into the following config class:
+<code style="display: block">gm_VehicleInsignias_Formation : gm_VehicleInsignias_base // make sure to declare this baseclass somewhere
+{
+	[...]
+};
+</code>
+==Tactical Sign ==
+[[image:gm tacticalSigns nato airborneInfantry ca.png|thumb|200px|Template image for custom NATO tactical signs.]]
+Tactical signs follow exactly the same template configuration as insignia, but are categorized under class gm_tacticalSigns:
+<code style="display: block">gm_tacticalSigns // root class
+{
+	class myMOD_tactical_sign_01
+	{
+		[...]
+	};
+	class myMOD_tactical_sign_02 {[...]};
+	[...]
+};</code>
+
+==Fonts ==
+Fonts used by the GM insignia system are somewhat more complex to configure:
+
+A font requires a set of individual letter textures present in a folder where each file is named like the symbol it is liked to.
+For example if you wish to provide your custom font with the letter "8", you'll have to place an image of your font's 8 letter in a specific folder and save it as "8_ca.paa"
+
+[[image:gm fonts folder example.png|500px|frame]]
+
+''(We know, not ideal. An alternative font-definition exists for character nametags that already makes use of ascii code to link letters, allowing differentiation between lower and upper case as well as special characters.)''
+
+You can then define a new font in the following way:
+<code style="display: block">gm_VehicleInsignias_Fonts // root class
+{
+	class myMOD_myCustomFont_01
+	{
+		name    = "My Custom Font 01";               // name displayed in the editor
+		picture = "myMod\path\to\fonts\myFont\8_ca"; // Preview texture
+		path    = "myMod\path\to\fonts\myFont";      // Path to folder containing all available files of the letters
+		value   = "myMOD_myCustomFont_01";           // Same as this item's classname
+		letters = true;                              // Does this set allow setting of text letters
+		numbers = true;                              // Does this set allow setting of numeral letters?
+	};
+};</code>
+== License Plate Style ==
+Vehicles can also have their license plates customized.<br>
+
+However, this is not available to be selected in the editor and can only be influenced via the config of a vehicle.
+
+Some vehicles require a more squarer type of license plate, so please take this license plate mask as a template for your own styles.
+<code style="display: block">class gm_licenseplates
+{
+	class myMod_myTypeOfLicensePlate_01 // can be named whatever
+	{
+		name          = "My Type Of License Plate";                        // name of license plate in editor, not actually displayed anywhere currently.
+		value         = "myMod_myTypeOfLicensePlate_01";                   // same as this item's classname
+		Texture       = "myMOD\path\to\some\mymod_licenseplate_01_ca.paa"; // Path to the license image plate template
+		FontDigits    = "myMOD_myCustomFont_01";                           // classname of the type of font this license plate style should use. See above for configuring custom fonts.
+		DefaultDigits = "$$ ##-##";                                        // Default mask for license plates. Use $ as a placeholder for letters, # as placeholder for numbers, * as placeholder for letter/numbers.
+	};
+};</code>
+[[image:gm ge army blk ca.png|thumbnail|200px|Template for custom license plate background.]]
+
+
+== Config Parameters for default insignia==
+Use any of these parameters to have a given insignia appear by default on your custom vehicle:
+The following config parameters allow you to have default insignia applied to vehicles.
+<syntaxhighlight lang="cpp">
+gm_TacticalSignsDefaultPreIcon
+gm_TacticalSignsFontPreIcon
+gm_TacticalSignsDefaultIcon
+gm_TacticalSignsDefaultPostIcon
+gm_TacticalSignsFontPostIcon
+gm_TacticalNumbersDefaultNumber
+gm_TacticalNumbersFontNumbers
+gm_InsigniasDefaultMissionSmall
+gm_InsigniasDefaultMissionLarge
+gm_InsigniasDefaultRecon
+gm_InsigniasDefaultUnit
+gm_InsigniasDefaultCompany
+gm_InsigniasDefaultFormation
+gm_InsigniasDefaultHazardSign
+gm_InsigniasDefaultNation
+</syntaxhighlight>
+
+Example:
+<syntaxhighlight lang="cpp" inline>gm_InsigniasDefaultNation = myMOD_insignia_aaf_01;</syntaxhighlight>
+This will cause the given vehicle to be created by default with the <syntaxhighlight lang="cpp" inline>myMOD_insignia_aaf_01</syntaxhighlight> insignia type.
+[[Category:Global Mobilization]]

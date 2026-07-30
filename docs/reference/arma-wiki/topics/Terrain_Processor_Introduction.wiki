@@ -1,0 +1,307 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Introduction
+// revision: 364691 (2024-05-25T17:23:27Z)
+// export sha1: aj3okbdqtmvia7o8xmmulbsb4o1wnys
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| 
+! 
+! 
+! 
+|- style="vertical-align:top;"
+| 
+
+== Introduction ==
+Terrain Processor is application for making mass changes and additions to Arma terrains edited in Terrain Builder, focused primarily on fast object population of extents of areal or linear topologies. Long story short, user can use this tool to add thousands of objects to an existing Arma terrain project based on geographic data. Outputs of Terrain Processor need to be imported to Terrain Builder. It is practical to keep the tools separated, so that both can be updated, fixed and tweaked independently and with more flexibility.
+
+
+Application interface is very simple: user sets up a <u>Terrain Processor Project</u> ('''.TPP''') - a queue of <u>Tasks</u> which are processed into output '''.LBT''' files which can be imported inside Terrain Builder. Each task processes some geographic data - vectors in ESRI '''Shapefile (.SHP)''' and '''ASCII DEM heightmap (.ASC)''' - using a particular Module (algorithm of user's choice) to provide outputs in form of '''Terrain Builder (.LBT)''' and '''ASCII heightmap (.ASC)'''.
+
+
+Arma series benefit from the authentic scale of environment, and it is natural to use digitized map data (geographic data), commonly used in {{Link|https://en.wikipedia.org/wiki/Geographic_information_system|geographic information systems}} (GIS) as basis for map design work. Terrain Processor was created in order to allow Arma devs to use some geographic data to quickly prototype terrains and automate some (otherwise tedious) tasks, e.g. placing several hundred thousand trees in a forest. When set up correctly, the existing modules may help map designer to save plenty of work time by populating map with forests, linear vegetation or other randomly placed objects, by leveling terrain under roads or adding small randomization to the terrain mesh. Terrain Processor does not replace manual work and "artistic" fine tuning, but it may serve map designer as a tool for rapid creation of a solid basis for their manual editing.
+
+
+Terrain Processor operates in orthogonal grid coordinates used by the Terrain Processor, thus all the input data need to be in the Terrain Builder project coordinates (project origin in [200000,0]).
+
+
+Please note that Terrain Processor comes without much preview tools, which requires some empiric testing and iterative setting tweaks. The manual comes with sample TP project data illustrating the tool's basic setup, and with tutorials guiding community map designers through some basic pipelines of geographic data usage in an Arma map.
+
+== Getting started == 
+=== Project ===
+Upon starting TP, user is prompted to either open existing project or set up a new one. Either double-click on an existing project in the list, search for other existing project using the "Open other project" button, or "Create new" project.
+
+
+Project (*.TPP) is list of Tasks, which can be added in TP's main interface. Each task is represented by a line in the TP's main interface, tasks are processed from top to bottom. Task is a Plugin applied on certain Data, both module (the processing method) and data (Shapefile) are visible in the list of tasks.
+
+
+There's a check-box to the left of each task line. The checked tasks are those being processed when processing is started, which will be covered by the '''Exporting data section'''.
+
+
+Project file itself is an XML table listing the task items and their values. While it is not recommended to tinker with the data in Notepad, the structure is readable and suitable for e.g. keeping in an online code repository.
+
+
+TP is using relative paths for all the file dependencies, so that it is easy to transfer projects and their data. It is recommended to store all the relevant data and project in a single folder with sub-folders organized to user's liking.
+
+=== Main Interface ===
+There are couple of icons on the toolbar over the task list table:
+
+[[File:TerrainProcessor_toolbar.png]]
+
+'''Project functions (orange):'''
+* New project - Sets up a new blank project.
+* Open project - To open an existing project.
+* Save project - Saves current project.
+* Export settings - Opens a dialog allowing to set up path to results folder and * select desired output formats (LBT, SHP).
+'''Task functions (blue):'''
+* Add task - Adds a new task to the end of the queue. 
+* Duplicate task - Duplicates selected task, including all its settings. Does not work on multiple selections.
+* Delete tasks - Removes selected tasks.
+'''Task interaction (grey):'''
+* Move task up - Moves selected task up in the queue, deselects task.
+* Move task down - Moves selected task down in the queue, deselects task.
+* Check all tasks - Checks all tasks in the project.
+* Uncheck all tasks - Unchecks all tasks in the project.
+'''Processing (green):'''
+Start processing - TP processes all checked tasks and creates desired output * files. User is prompted to select the outputs.
+
+=== Tasks check vs. selection ===
+There is a difference between checking or selecting a task. Selection is done using LMB and it is used for tasks manipulation (e.g. duplication, deletion, reordering), while checking is done over a check-box on the beginning on each task line, used to determine whether a task will be processed after hitting the "Run" button.
+
+
+Tip: It is possible to select multiple tasks in standard Windows way, using either '''Shift''' or '''Ctrl'''.
+
+=== Something you should know: Features Database === 
+
+All created objects are inserted into Features database. After all tasks are completed, content of Features Database is saved into LBT and/or SHP file(s). The database is a memory construct not represented by any data. Terrain Processor prevents clipping of inserted objects by checking with the Features Database content produced in a single queue of processed Tasks. Most modules use "minimum distance" parameter to prevent the placement of objects closer than the given value.
+
+
+''Tip: If you want to allow things to clip (e.g. you have tree layer and bush layer of a forest), you can separate the tasks to 2 projects.''
+
+== Setting up a task ==
+=== Adding and managing tasks ===
+Task can be added using a toolbar button (see the '''Main interface''' section above). Upon adding a task, dialog is opened to determine which Module should be used for the task. Once a task is set up, it is required to fill in required values and variables in order to make it functional. Task settings are available upon its addition to the project, and can be accessed and edited anytime later by '''double-clicking LMB''' on a particular task line.
+
+=== Task settings ===
+All tasks have almost same settings, split into several tabs. Most modules require some geographic data as input, and some additional parameters to be set. These parameters can be either set up in the task setting interface, or read from a database file (which can be either part of a Shapefile, or a separate DBF file referenced in the task settings).
+
+
+Every tab page has <u>color indicator</u> of inputs, allowing user to quickly identify completion of a task's setup:
+* <span style="color: rgb(0,128,0);"><strong>Green</strong></span> - Data OK - all correct.
+* <span style="color: rgb(51,102,255);"><strong>Blue</strong></span> - Missing Data - some parameters are not set.
+* <span style="color: rgb(255,0,0);"><strong>Red</strong></span> - Wrong Data - some parameters are not set correctly.
+
+'''Objects'''
+* You can manually add object names for the selected task. The names of objects must be equal to <u>the names of Object Templates in the Terrain Builder project</u>. Every task can has different object prototype parameters.
+
+'''Parameters'''
+* On the Parameters tab, you can manually set task's parameters. Almost every task has its own parameters.
+* You can change parameter value by double clicking on it. You will see new form for parameter value settings.
+* There are two parameter value types :
+** '''Value''' - Value is manually set and applied for all shapes in the source vector file (suitable for e.g. Random seed).
+** '''DBF binding''' - You can choose shapefile database column source for values. Every shape can have own parameter value (hectares, density, ...). Tip: Even though the "Hectare area" parameter can have universal default value, it is required for object-placing modules to get correct value from each shape, thus the "DBF binding" to DBF column containing the density in hectares should be used.
+
+'''Shapefile'''
+* Tab for selecting the source vector Shapefile. You can insert object prototypes data inside database in shapefile. If you want to use same shapes from shapefile with different object prototypes, you can use Additional databases.
+* Additional database bind data with shapefile database data, with the relation based on same values in the indicated columns. It is practical for e.g. storing complex value sets in separate database and connecting them to a shapefile with many types of intended content. For example, in Arma 2 / DayZ, Chernarus forests created using the "Area: Random" plugin come in about 15 types, each with 16 values required - instead of typing and copying all the values for thousands of forest shapes during the edits, it is faster to assign each type its own numeric ID and connect the database with values in the TP. You can set additional database by double click on the "Additional database" button.
+** Database filename - File name of the additional database.
+** Additional database column - column name in additional database for binding.
+** Shapefile database column - column name in original shapefile for binding or random values from database column. You have to check values for random binding.
+
+'''DEM files'''
+* Some tasks need ASCII DEM data (heightmap). You can add DEM files on this tab.
+* The required format is ASCII DEM with cell count in power of 2, using decimal dot in the values, with the coordinates in the header compliant with the location of the other processed data (it is recommended to work in the Terrain Builder space with origin in [200000;0]).
+
+'''Notes'''
+* Notes used only for task description. It is recommended to leave a note describing the intent behind addition of each particular task - e.g. a nice forested area may use couple of modules, and it certainly helps to add some description to particular tasks, determining what is used for e.g. placing clusters of stones, bush or tree layer.
+
+=== Exporting data ===
+With several tasks set, it is possible to export the '''LBT''' file importable to Terrain Builder by clicking the '''RUN''' icon. User will be prompted to select the output file; then a dialog with progress bar and processing log appears. Once all the tasks are finished, output files are saved and user needs to close the dialog manually.
+
+
+User can determine the export settings by clicking on the orange sprocket icon (see the Main Interface section). Output directory can be selected, as well as possibility to export LBT, additional reference shapefile (SHP) or both. Most users don't need to export Shapefile, but such outputs may be useful for an expert for e.g. creating raster basis for surface masks in a GIS.
+
+
+Output LBTs can be <u>imported to Terrain Builder</u> using the "Import" > "Objects" menu items or by simply dragging the LBT file to the main view. Note: Terrain Builder is not exporting a different LBT than the one it accepts.
+
+== Plugin / Modules Database Parameters ==
+Overview of the Plugin parameters, added by any available means in TP (manual input, Shapefile database, related database).
+
+
+Where [n] is used, it is possible to use multiple object definitions. Each of them need to have correct set of data columns in the database, named e.g. OBJECT1, PROB1, MINHEIGHT1, MAXHEIGHT1, MINDIST1. Same method can be applied for number of clusters in the cluster-generating plugins.
+
+
+Some of the variable names (column names in tables), when read from a DBF (be it a Shapefile or Added one), should be <u>exactly same</u> as listed below as their reading is hard-coded for sake of tool simplicity - these are marked as '''REQUIRED''' in the "Variable name" column. For the rest, we recommend to use the presented convention (used internally in BI and in the sample data).
+
+{|  class="wikitable sortable" 
+! Parameter name / column name in DBF
+! Description
+! Units
+! Value type
+! Variable name
+<!----------------------------------------------------------->
+|-
+| CDENSHA
+| Clusters density per hectare - clusters count in one hectare.
+| N
+| <span>number</span>
+| Recommended name
+<!----------------------------------------------------------->
+|-
+| DENSHA
+| Density per hectare - instances count in one hectare.
+| N / ha
+| <span>number</span>
+| Recommended name
+<!----------------------------------------------------------->
+|-
+| FRACTION
+| For clusters - clusters count of object with smallest probability on hectare.
+| N
+| <span>number</span>
+| Recommended name
+<!----------------------------------------------------------->
+|-
+| <strong>GROUPID[n]</strong>
+| Group ID for clustering, all objects in each cluster have to be in same group.
+| N
+| <span>number</span>
+| <strong>REQUIRED NAME<br></strong>
+<!----------------------------------------------------------->
+|-
+| LDENSITY
+| Linear density - objects count per 100 meters.
+| N
+| <span>number</span>
+| <span>Recommended name</span>
+<!----------------------------------------------------------->
+|-
+| <strong>MAXCOUNT[n]</strong>
+| Maximal instances count in one cluster.
+| N
+| <span>number</span>
+| <p><strong>REQUIRED NAME<br></strong></p>
+<!----------------------------------------------------------->
+|-
+| <strong>MAXHEIGHT[n]</strong>
+| Object maximal height in percent. <em> For maximum height of 120%, use 120.</em>
+| %
+| <span>number</span>
+| <strong>REQUIRED NAME<br></strong>
+<!----------------------------------------------------------->
+|-
+| <strong>MAXRADIUS[n]</strong>
+| <span>Maximal distance to cluster center.</span>
+| m
+| <span>number</span>
+| <strong>REQUIRED NAME<br></strong>
+<!----------------------------------------------------------->
+|-
+| <strong>MINCOUNT[n]</strong>
+| Minimal instances count in one cluster.
+| N
+| <span>number</span>
+| <p><strong>REQUIRED NAME<br></strong></p>
+<!----------------------------------------------------------->
+|-
+| <strong>MINDIST[n]</strong>
+| Minimal object distance from another objects. Used in a single project's Feature Database (see above) to prevent object clipping.
+| m
+| <span>number</span>
+| <strong>REQUIRED NAME<br></strong>
+<!----------------------------------------------------------->
+|-
+| <strong>MINHEIGHT[n]</strong>
+| Object minimal height in percent. <em>For minimum height of 80%, use 80.</em>
+| %
+| <span>number</span>
+| <strong>REQUIRED NAME<br></strong>
+<!----------------------------------------------------------->
+|-
+| <strong>MINRADIUS[n]</strong>
+| Minimal distance to cluster center. <em>Tip: With MINRADIUS and MAXRADIUS value, occurence in particular parts of clusters can be controlled, e.g. having tall trees in the middle and bushes on the cluster outskirts.</em>
+| m
+| <span>number</span>
+| <p><strong>REQUIRED NAME<br></strong></p>
+<!----------------------------------------------------------->
+|-
+| <strong>OBJECT[n]</strong>
+| Object template name - use the corresponding names from the Terrain Builder template libraries!
+| -
+| string
+| <strong>REQUIRED NAME<br></strong>
+<!----------------------------------------------------------->
+|-
+| <strong>PROB[n]</strong>
+| Object's probability. Any numbers can be used, percentage is calculated automatically from the sum of all values; however, it is recommended to use percent values with sum of 100 to maintain control.
+| ~%
+| <span>number</span>
+| <strong>REQUIRED NAME</strong>
+<!----------------------------------------------------------->
+|-
+|}
+
+== Plugins / Modules ==
+=== Area ===
+Input of these modules are polygon Shapefiles, and these modules work within boundaries of the polygon geometries.
+* [[Terrain Processor: Area: High-density Cluster|Area: High-density Cluster]] - Creates clusters of particular objects in a densely covered area, e.g. spots of spruce and beech in a forest.
+* [[Terrain Processor: Area: Local Maximum Cluster|Area: Local Maximum Cluster]] - Creates clusters of objects in local terrain maximums; ASCII DEM required.
+* [[Terrain Processor: Area: Local Minimum Cluster|Area: Local Minimum Cluster]] - Creates clusters of objects in local depressions; ASCII DEM required.
+* [[Terrain Processor: Area: Low-density Cluster (circle)|Area: Low-density Cluster (circle)]] - Creates roughly circular clusters of objects in sparsely populated areas, e.g. trees in savannah. 
+* [[Terrain Processor: Area: Low-density Cluster (strip)|Area: Low-density Cluster (strip)]] - Creates prolonged circular clusters of objects in sparsely populated areas.
+* [[Terrain Processor: Area: Random|Area: Random]] - Simple random object placer, useful where no extra occurence rules are required.
+=== Line ===
+Input of linear Shapefiles, with the modules placing objects along the linear geometries.
+* [[Terrain Processor: Line: Random|Line: Random]] - Places objects randomly in certain distance interval from a line.
+* [[Terrain Processor: Line: Regular|Line: Regular]] - Places objects in regular interval in certain distance from a line.
+* [[Terrain Processor: Line: Sparse Cluster|Line: Sparse Cluster]] - Randomly places objects in clusters along a line.
+* [[Terrain Processor: Line: Nodes Objects|Line: Nodes Objects]] - Places objects on polyline nodes.
+=== Point ===
+Input of point Shapefiles, with the modules placing objects on the point geometries.
+* [[Terrain Processor: Point: With Rotation|Point: With Rotation]] - Places objects on points with random or defined rotation.
+=== Heightmap ===
+Plugins for processing ASCII DEMs, with a map project-sized terrain model being its main input and output.
+* [[Terrain Processor: Heightmap: ASCII DEM Convert|Heightmap: ASCII DEM Convert]] - Conversion tool for ASCII DEMs in Geodetic coordinates (e.g. WGS84 coordinate system) in degrees to UTM (in meters).
+* [[Terrain Processor: Heightmap: Perlin Noise|Heightmap: Perlin Noise]] - Random noise added to the ASCII DEM in the extent of polygon mask. Practical for making e.g. rugged terrain in forested areas. 
+* [[Terrain Processor: Heightmap: Road Integration|Heightmap: Road Integration]] - Levels the terrain under the roads and smoothens the terrain cells in the vicinity of the flattened areas.
+=== Mask ===
+Special section currently containing a single plugin for masking object occurrence in a project.
+* [[Terrain Processor: Line: Mask: Area|Mask: Area]] - Removes all objects in the extent of polygon shapefile mask from Features Database. Can be used multiple times in single project, useful to mask areas of e.g. water bodies, roads or settlements instead of manually erasing their extent from the shapefiles used for generating objects.
+* [[Terrain Processor: Line: Mask: Line|Mask: Line]] - Removes objects closer to line then given distance. You can use it for removing trees on roads, ... 
+
+<!----------------------------------------------------------->
+| style="padding: 1.5em" |
+<!----------------------------------------------------------->
+| <div style="font-size: 1.5em; margin: 0.83em 0; font-weight: bold">What the heck is...</div>
+<div style="font-size: 1.17em; margin: 1em 0; font-weight: bold">Geographic data</div>
+Data formats used to represent some geographic features. there can be vector data (abstracting the reality in forms of polygons, lines and points) or raster data (e.g. aerial photos). Geographic data also contain information about their position on Earth, however, the nature of this information vary a lot, as there are many coordinate systems in which such data could be stored.
+
+
+The advantage of using such data for making an Arma map is in their ability to provide map designer with basic landscape structure in the real scale, resulting in gaming terrains with authentic appearance and gameplay possibilities. 
+<div style="font-size: 1.17em; margin: 1em 0; font-weight: bold">Shapefile format</div>
+Vectors commonly used to represent various features in geoinformatics (=digital mapping). Shapefile can contain either polygons, lines or points (only single type for a file). It also has amended database file with the additional data (e.g. village names for point shapefile of village locations, or forest composition and density in BI's polygon shapefile of Chernarussian forests). Each shapefile consists of 3 files: SHP, SHX and DBF - all 3 of them are essential for a Shapefile layer to work.
+
+
+Read more in {{Link|https://en.wikipedia.org/wiki/Shapefile|Wikipedia}}.
+<div style="font-size: 1.17em; margin: 1em 0; font-weight: bold">ASCII DEM format</div>
+Text-based raster used to describe terrain (DEM = Digital Elevation Model) by means of values arranged in regular (square) pattern. The file (TXT or ASC) contains header describing the raster size, sampling interval and coordinates of the lower left corner.
+
+
+Some GIS softwares work with various decimal marks. Terran Builder is using decimal dot - in the event of having a different decimal mark (usually period), it is fairly easy to mass-replace the symbols in Notepad. It is also possible to use Notepad (or other plain text editor) to change the lower left corner coordinates to work properly in the Terrain Builder.
+<div style="font-size: 1.17em; margin: 1em 0; font-weight: bold">Geographic coordinate system</div>
+Coordinates which can be used to describe a location on the Earth surface. There are many coordinate systems (some applicable only to portion of Earth surface) using various units, e.g. angular degrees or meters.
+
+
+When preparing data for your map project, always make sure they are projected in the same coordinate system.
+
+
+Learn more in {{Link|https://en.wikipedia.org/wiki/Geographic_coordinate_system|Wikipedia}}.
+<div style="font-size: 1.17em; margin: 1em 0; font-weight: bold">GIS (Geographic Information System)</div>
+Simply put, a digital map with plenty of data attached to the map features. The system may integrate various vector and raster (e.g. aerial or satellite imagery) data, terrain models etc. It is used not just as a digital map, but also for landscape analysis or calculations.
+
+
+There are many professional and free solutions allowing user to set up a GIS. BI is using ESRI's ArcGIS, however, freely available {{Link|http://www.qgis.org/en/site/|Quantum GIS (or QGIS)}} is capable of basic data processing for an Arma map project.
+
+
+Learn more in {{Link|https://en.wikipedia.org/wiki/Geographic_information_system|Wikipedia}}.
+|}
+[[Category:Terrain Processor Manual|#]]

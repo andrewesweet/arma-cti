@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_exportInventory
+// revision: 378118 (2026-02-20T08:53:31Z)
+// export sha1: 9y8fadwfmvwgyq2rsf8mnsqz8hcrrsi
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Inventory
+
+|descr= Exports unit's loadout as a [[String]], also [[copyToClipboard|copies]] it to clipboard.
+
+|s1= [unit, type, includeIdentity] call [[BIS_fnc_exportInventory]]
+
+|p1= unit: [[Object]] - (Optional, default [[player]]) unit whose loadout should be saved
+
+|p2= type: [[String]] - (Optional, default "script") export type, can be:
+* "script" - scripting commands, target is referred to as {{hl|_unit}}
+* "init" - scripting commands, target is referred to as {{hl|this}}
+* "config" - config attributes
+
+|p3= includeIdentity: [[Boolean]] - (Optional, default [[true]]) [[true]] to also export face, voice and insignia (applicable to "script" and "init" only)
+
+|r1= [[String]] - [[SQF Syntax|SQF]] code or [[Config]] text when "config" option is chosen
+
+|x1= <sqf>[player, "init", true] call BIS_fnc_exportInventory;</sqf>
+
+|seealso= [[BIS_fnc_loadInventory]] [[BIS_fnc_deleteInventory]] [[BIS_fnc_saveInventory]] [[getUnitLoadout]]
+}}

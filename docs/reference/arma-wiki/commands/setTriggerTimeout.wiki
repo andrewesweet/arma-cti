@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/setTriggerTimeout
+// revision: 337985 (2023-02-23T21:11:05Z)
+// export sha1: a3aat6f3e6hqtjcu8z8geut8bd62fsp
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Triggers
+
+|descr= Defines the time between condition satisfaction and trigger activation (randomly from min to max, with an average value mid). If the last argument is true, the condition must be fullfilled all the time. <br><br>
+For a normal trigger, ''min'', ''mid'' and ''max'' are used to generate random duration according to {{Link|https://en.wikipedia.org/wiki/Normal_distribution|Gaussian Distribution}}<ref>Technically, it is a rescaled {{Link|https://en.wikipedia.org/wiki/Bates_distribution|Bates distribution}} with n = 4. The distribution is split in two at its midpoint and scaled linearly such that its maximum lies at the specified midpoint.</ref>. For a "Seized" type of trigger, the duration value is generated using side ruling power
+
+|s1= trigger [[setTriggerTimeout]] [min, mid, max, interruptable]
+
+|p1= trigger: [[Object]]
+
+|p2= min: [[Number]]
+
+|p3= mid: [[Number]]
+
+|p4= max: [[Number]]
+
+|p5= interruptable: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_trigger setTriggerTimeout [5, 10, 7, false];</sqf>
+
+|seealso= [[triggerTimeout]] [[triggerTimeoutCurrent]] [[createTrigger]] [[setTriggerActivation]] [[setTriggerArea]] [[setTriggerStatements]] [[setTriggerText]] [[setTriggerType]] [[triggerInterval]] [[setTriggerInterval]] [[enableSimulation]] [[simulationEnabled]]
+}}

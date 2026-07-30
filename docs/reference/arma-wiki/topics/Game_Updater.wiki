@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/Game_Updater
+// revision: 336623 (2023-01-04T15:23:29Z)
+// export sha1: i5xfn9cwvsstfzgodyp1ctgv7ueioe1
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+|VERSION=
+|COMPATIBILITY= [[:Category:Arma_3:_Official_Tools|Arma 3 Tools]]
+|DOWNLOAD= {{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+|DESCRIPTION=This application aims to improve the experience of switching between Steam branches of the game by avoiding the inconvenience of additional downloads every time you change. It downloads, install and update additional copies of Arma 3 from different branches (Main, Development, Legacy and Release Candidate). 
+
+Keep in mind this software was initially designed to maintain an installation from the development branch.
+|NOTES=
+|COMMAND=GameUpdater.exe
+|OPTIONS=<!-- -debug: display the stdout. -->
+|EXAMPLE=
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+|SEEALSO= [[Game Updater Manual]]
+
+}}
+
+=== Additional information ===
+==== Running the Arma 3 installed with GU ====
+You cannot run directly Arma 3 from the installation path, Arma3 will use the default addons directory (from the Steam installation). You need to use Arma3GU.exe to force Arma3 to use the Addons directory of your new installation.
+
+Arma3GU.exe accepts the same arguments as Arma3.exe. examples:
+* Run Arma3diag.exe with the mod @debug
+''Arma3GU.exe /diag -mod=@Debug'' 
+* Run Arma3.exe with the mod @debug
+''Arma3GU.exe -mod=@Debug''
+
+{{GameCategory|arma3|Official Tools}}

@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/setEffectCondition
+// revision: 377586 (2026-01-02T06:56:46Z)
+// export sha1: 3irwk7f2tx1dc8u9qs0p2zkpwxc1m5c
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Triggers
+
+|descr= The statement is executed when the trigger or waypoint is activated and the effects are launched depending on the result.
+
+*If the result is a [[Boolean|boolean]] and [[true]], the effect is launched.
+*If the result is an [[object]], the effect is launched if the result is the player or the player vehicle.
+*If the result is an [[Array|array]], the effect is launched if the result contains the player or the player vehicle.
+
+|s1= trigger [[setEffectCondition]] statement
+
+|p1= trigger: [[Object]]
+
+|p2= statement: [[String]]
+
+|r1= [[Nothing]]
+
+|s2= waypoint [[setEffectCondition]] statement
+
+|p21= waypoint: [[Waypoint]] - [[Waypoint]]
+|p22= statement: [[String]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_triggerObj setEffectCondition "thisList";</sqf>
+
+|seealso= [[createTrigger]]
+}}

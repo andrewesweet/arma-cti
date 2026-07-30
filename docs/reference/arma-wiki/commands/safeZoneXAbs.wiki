@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/safeZoneXAbs
+// revision: 349882 (2023-11-20T22:10:54Z)
+// export sha1: mqbj5r8j6bdmqx1s1ofqtng1rr974jk
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Arma 2 version 1.03 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.03
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= GUI Control - Positioning
+
+|descr= Returns absolute [[safeZoneX]] including all monitors. 
+<br>[[File:UI_12-3.jpg|600px]]
+
+|s1= [[safeZoneXAbs]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_szX = safeZoneXAbs;</sqf>
+
+|seealso= [[safeZoneWAbs]] [[SafeZone]] [[safeZoneH]] [[safeZoneX]] [[safeZoneY]] [[safeZoneW]]
+}}

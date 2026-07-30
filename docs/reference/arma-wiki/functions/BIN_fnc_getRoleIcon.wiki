@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_getRoleIcon
+// revision: 309620 (2022-05-05T12:07:45Z)
+// export sha1: m08x40ct3qdkhdq88qckw1x3zyqkc54
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Contact | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Contact 
+
+|descr= <pre>/*
+
+	Description:
+		Get soldier's role icon (e.g., sniper, machine-gunner, etc.)
+
+	Parameter(s):
+		0: OBJECT
+
+	Returns:
+		STRING - image path
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_getRoleIcon]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_getRoleIcon;</sqf> -->
+
+|seealso=
+}}

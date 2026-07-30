@@ -1,0 +1,3933 @@
+// source: https://community.bistudio.com/wiki/Take_On_Helicopters:_CfgVehicles
+// revision: 226551 (2021-01-31T18:09:11Z)
+// export sha1: 50cxoc2q3jamf1137e3vdd4paw9bo4p
+// categories: Category:CfgVehicles
+// Vendored snapshot. Do not edit — re-export instead.
+
+List of all objects available in game
+
+== List ==
+=== Public ===
+{| class="wikitable sortable"
+! Name
+! Class
+! Category
+! Side
+! Faction
+<!-- EXPORT START ----------------------------------------------------------->
+
+|-
+|
+==== Logic ====
+| Game Logic
+| Objects
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogic ====
+| Location
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicAirport ====
+| Airport
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicFlat ====
+| Open place
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicCamp ====
+| Camp
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicCityCenter ====
+| City center
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicCityLink ====
+| City Link
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicCityFlatArea ====
+| City Flat Area
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicDepot ====
+| Depot
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicCity ====
+| City
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicOwnerCivilian ====
+| Owner (Civilian)
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicOwnerEast ====
+| Owner (OPFOR)
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicOwnerWest ====
+| Owner (BLUFOR)
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicOwnerResistance ====
+| Owner (NAPA)
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== LocationLogicStart ====
+| Starting Location
+| Locations
+| Game Logic
+| Default
+
+|-
+|
+==== Pastor_H ====
+| Alsatian
+| Animals
+| Civilian
+| Default
+
+|-
+|
+==== GenericConversations ====
+| Generic Sentences
+| Modules
+| Game Logic
+| Default
+
+|-
+|
+==== AmbientPlanes ====
+| Ambient Planes
+| Modules
+| Game Logic
+| Default
+
+|-
+|
+==== AmbientHelicopters ====
+| Ambient Helicopters
+| Modules
+| Game Logic
+| Default
+
+|-
+|
+==== AmbientBoats ====
+| Ambient Boats
+| Modules
+| Game Logic
+| Default
+
+|-
+|
+==== AmbientPostprocess ====
+| Environment - Colors
+| Modules
+| Game Logic
+| Default
+
+|-
+|
+==== DShKM_H ====
+| DShKM
+| Static
+| OPFOR
+| HSim_OPFOR_Army
+
+|-
+|
+==== Pilot_H ====
+| Pilot (green)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Pilot02_H ====
+| Pilot (scarf)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Pilot03_H ====
+| Pilot (black)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Pilot04_H ====
+| Pilot (brown)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Pilot05_H ====
+| Pilot (grey)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Pilot06_H ====
+| Pilot (tan)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Pilot_Random_H ====
+| Pilot (random)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Fireman_H ====
+| Firefighter
+| People
+| Civilian
+| HSim_Civ_ES
+
+|-
+|
+==== Rescuer_H ====
+| Rescue Worker
+| People
+| Civilian
+| HSim_Civ_ES
+
+|-
+|
+==== PoliceOfficer_H ====
+| Police Officer
+| People
+| Civilian
+| HSim_Civ_ES
+
+|-
+|
+==== TacticalPoliceOfficer_H ====
+| Tactical Team Member
+| People
+| Civilian
+| HSim_Civ_ES
+
+|-
+|
+==== TacticalPoliceCommander_H ====
+| Tactical Commander
+| People
+| Civilian
+| HSim_Civ_ES
+
+|-
+|
+==== Functionary_H ====
+| Businessman (black)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Functionary02_H ====
+| Businessman (brown)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Functionary_Random_H ====
+| Businessman (random)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Rocker_H ====
+| Man (rocker)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Brawler_H ====
+| Criminal
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Citizen01_H ====
+| Man 1 (brown)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Citizen02_H ====
+| Man 1 (green)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Citizen03_H ====
+| Man 1 (tan)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Citizen04_H ====
+| Man 1 (black)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Citizen_Random_H ====
+| Man 1 (random)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Workman_H ====
+| Workman (black)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Workman02_H ====
+| Workman (blue)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Workman_Random_H ====
+| Workman (random)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== GroundCrew_H ====
+| Ground Crew
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Doctor_H ====
+| Doctor
+| People
+| Civilian
+| HSim_Civ_ES
+
+|-
+|
+==== Journalist_H ====
+| Journalist
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== SeattleMan01_H ====
+| Man 2 (aqua)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== SeattleMan02_H ====
+| Man 2 (orange)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== SeattleMan03_H ====
+| Man 2 (blue)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== SeattleMan_Random_H ====
+| Man 2 (random)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman01_H ====
+| Woman (blue)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman01_02_H ====
+| Woman (green)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman01_03_H ====
+| Woman (brown)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman01_04_H ====
+| Woman (grey)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman01_05_H ====
+| Woman (purple)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman01_Random_H ====
+| Woman (random)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman02_H ====
+| Businesswoman (grey)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman02_02_H ====
+| Businesswoman (brown)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman02_03_H ====
+| Businesswoman (black)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman02_04_H ====
+| Businesswoman (white)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman02_05_H ====
+| Businesswoman (light green)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman02_Random_H ====
+| Businesswoman (random)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman03_H ====
+| Sportswoman (purple)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman03_02_H ====
+| Sportswoman (brown)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman03_03_H ====
+| Sportswoman (grey)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman03_04_H ====
+| Sportswoman (blue)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman03_05_H ====
+| Sportswoman (black)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Woman03_Random_H ====
+| Sportswoman (random)
+| People
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Player_H ====
+| Tom Larkin
+| People
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Brother_H ====
+| Joseph Larkin
+| People
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Copilot_H ====
+| Cpt. Pierce
+| People
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== CEO_H ====
+| William R.J. Haydon
+| People
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Instructor_H ====
+| Howard Maddox
+| People
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Maintenance_H ====
+| Andrew Craymer
+| People
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Security_H ====
+| Paul Kelly
+| People
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Boss_H ====
+| Stranger
+| People
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Frost_H ====
+| Brian Frost
+| People
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Manager_H ====
+| Michelle Carmichael
+| People
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Samaritan_H ====
+| Maggie Townsend
+| People
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== TK_Soldier_H ====
+| Rifleman
+| People
+| OPFOR
+| HSim_OPFOR_Army
+
+|-
+|
+==== TK_Soldier_AR_H ====
+| Rifleman (automatic)
+| People
+| OPFOR
+| HSim_OPFOR_Army
+
+|-
+|
+==== TK_Soldier_AA_H ====
+| Rifleman (AA)
+| People
+| OPFOR
+| HSim_OPFOR_Army
+
+|-
+|
+==== TK_Soldier_LAT_H ====
+| Rifleman (LAT)
+| People
+| OPFOR
+| HSim_OPFOR_Army
+
+|-
+|
+==== TK_Soldier_Crew_H ====
+| Crewman
+| People
+| OPFOR
+| HSim_OPFOR_Army
+
+|-
+|
+==== TK_Soldier_Pilot_H ====
+| Pilot
+| People
+| OPFOR
+| HSim_OPFOR_Army
+
+|-
+|
+==== TK_INS_Soldier01_H ====
+| Militiaman (AK-47)
+| People
+| OPFOR
+| HSim_OPFOR_Militia
+
+|-
+|
+==== TK_INS_Soldier02_H ====
+| Militiaman
+| People
+| OPFOR
+| HSim_OPFOR_Militia
+
+|-
+|
+==== TK_INS_Soldier_AT_H ====
+| Militiaman (AT)
+| People
+| OPFOR
+| HSim_OPFOR_Militia
+
+|-
+|
+==== TK_Civilian01_H ====
+| Man (sweater)
+| People
+| Civilian
+| HSim_Civ_SA
+
+|-
+|
+==== TK_Civilian02_H ====
+| Man (jacket)
+| People
+| Civilian
+| HSim_Civ_SA
+
+|-
+|
+==== TK_Civilian03_H ====
+| Man (hat)
+| People
+| Civilian
+| HSim_Civ_SA
+
+|-
+|
+==== TK_Civilian04_H ====
+| Man (turban)
+| People
+| Civilian
+| HSim_Civ_SA
+
+|-
+|
+==== TK_Civilian05_H ====
+| Man (scarf)
+| People
+| Civilian
+| HSim_Civ_SA
+
+|-
+|
+==== TK_Civilian06_H ====
+| Man (vest)
+| People
+| Civilian
+| HSim_Civ_SA
+
+|-
+|
+==== TK_Worker01_H ====
+| Worker (red)
+| People
+| Civilian
+| HSim_Civ_SA
+
+|-
+|
+==== TK_Worker02_H ====
+| Worker (brown)
+| People
+| Civilian
+| HSim_Civ_SA
+
+|-
+|
+==== US_Crewman_H ====
+| Crewman
+| People
+| BLUFOR
+| HSim_BLUFOR_USArmy
+
+|-
+|
+==== US_Officer_H ====
+| Officer
+| People
+| BLUFOR
+| HSim_BLUFOR_USArmy
+
+|-
+|
+==== US_Pilot_H ====
+| Pilot (equipped)
+| People
+| BLUFOR
+| HSim_BLUFOR_USArmy
+
+|-
+|
+==== US_Pilot_Light_H ====
+| Pilot
+| People
+| BLUFOR
+| HSim_BLUFOR_USArmy
+
+|-
+|
+==== US_Soldier_H ====
+| Rifleman
+| People
+| BLUFOR
+| HSim_BLUFOR_USArmy
+
+|-
+|
+==== US_Soldier_AR_H ====
+| Rifleman (automatic)
+| People
+| BLUFOR
+| HSim_BLUFOR_USArmy
+
+|-
+|
+==== US_Soldier_LAT_H ====
+| Rifleman (AT)
+| People
+| BLUFOR
+| HSim_BLUFOR_USArmy
+
+|-
+|
+==== Contractor01_H ====
+| Contractor 1
+| People
+| Independent
+| HSim_Ind_PC
+
+|-
+|
+==== Contractor02_H ====
+| Contractor 2
+| People
+| Independent
+| HSim_Ind_PC
+
+|-
+|
+==== Supervisor_H ====
+| Supervisor
+| People
+| Independent
+| HSim_Ind_PC
+
+|-
+|
+==== HeliportLogic ====
+| Heliport
+| Modules
+| Game Logic
+| Default
+
+|-
+|
+==== MissionLogic ====
+| Procedural Mission Init
+| Modules
+| Game Logic
+| Default
+
+|-
+|
+==== HeliportLogicStaff ====
+| Heliport - Staff
+| Heliport
+| Game Logic
+| Default
+
+|-
+|
+==== HeliportLogicUpgrade ====
+| Heliport - Upgrade
+| Heliport
+| Game Logic
+| Default
+
+|-
+|
+==== FishingBoat_Large_H ====
+| Fishing Boat (large)
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Jetboat_H ====
+| Speedboat
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Yacht_H ====
+| Yacht
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== ContainerShip_Black_Loaded_H ====
+| Cargo Ship (loaded, black)
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== ContainerShip_Black_Empty_H ====
+| Cargo Ship (empty, black)
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== ContainerShip_Grey_Loaded_H ====
+| Cargo Ship (loaded, grey)
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== ContainerShip_Grey_Empty_H ====
+| Cargo Ship (empty, grey)
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== ContainerShip_Green_Loaded_H ====
+| Cargo Ship (loaded, green)
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== ContainerShip_Green_Empty_H ====
+| Cargo Ship (empty, green)
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== ContainerShip_Blue_Loaded_H ====
+| Cargo Ship (loaded, blue)
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== ContainerShip_Blue_Empty_H ====
+| Cargo Ship (empty, blue)
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== CruiseShip_White_H ====
+| Cruise Liner (white)
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== CruiseShip_Blue_H ====
+| Cruise Liner (blue)
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== CruiseShip_Red_H ====
+| Cruise Liner (red)
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Destroyer_H ====
+| Navy Destroyer
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Fishing_Boat_H ====
+| Fishing Boat
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Fregata_H ====
+| Navy Frigate
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== OilTanker_H ====
+| Oil Tanker
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== RubberBoat_H ====
+| Dinghy
+| Ships
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== GreyWhale_H ====
+| Whale (grey)
+| Animals
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Whale1_H ====
+| Whale 01
+| Animals
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Igla_AA_H ====
+| AA IGLA Pod
+| Static
+| OPFOR
+| HSim_OPFOR_Army
+
+|-
+|
+==== M2StaticMG_H ====
+| M2 Machine Gun
+| Static
+| BLUFOR
+| HSim_BLUFOR_USArmy
+
+|-
+|
+==== Ambulance_H ====
+| Ambulance
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== FireTruck_Red_H ====
+| Fire Truck
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== FireTruck_yellow_H ====
+| Fire Truck (aviation)
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Hatchback_H ====
+| Hatchback
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== LR_MG_H ====
+| Offroad (MG)
+| Vehicles
+| OPFOR
+| HSim_OPFOR_Ambient
+
+|-
+|
+==== LR_SPG9_H ====
+| Offroad (GL)
+| Vehicles
+| OPFOR
+| HSim_OPFOR_Ambient
+
+|-
+|
+==== Military_Pickup_DSHKM_H ====
+| Offroad (DShKM)
+| Vehicles
+| OPFOR
+| HSim_OPFOR_Ambient
+
+|-
+|
+==== Offroad_H ====
+| Offroad
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== PoliceCar_H ====
+| Police Car
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== TowingTractor_H ====
+| Tractor (aviation)
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Tractor_H ====
+| Tractor (large)
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Tractor_Old_H ====
+| Tractor
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Trailer_Freight_H ====
+| Trailer (freight)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Trailer_Gravel_H ====
+| Trailer (gravel)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Trailer_Fuel_H ====
+| Trailer (fuel)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Van_Flatbed_H ====
+| Flatbed Truck
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Ural_Reammo_H ====
+| Truck (ammo)
+| Vehicles
+| OPFOR
+| HSim_OPFOR_Ambient
+
+|-
+|
+==== Ural_Refuel_H ====
+| Truck (fuel)
+| Vehicles
+| OPFOR
+| HSim_OPFOR_Ambient
+
+|-
+|
+==== Ural_Repair_H ====
+| Truck (repair)
+| Vehicles
+| OPFOR
+| HSim_OPFOR_Ambient
+
+|-
+|
+==== Ural_ZU23_H ====
+| Anti-Air Artillery
+| Vehicles
+| OPFOR
+| HSim_OPFOR_Ambient
+
+|-
+|
+==== Van_H ====
+| Van
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Military_Offroad_Ambulance_H ====
+| Military Offroad (ambulance)
+| Vehicles
+| BLUFOR
+| HSim_BLUFOR_Ambient
+
+|-
+|
+==== Military_Offroad_CROWS_H ====
+| Military Offroad (MG)
+| Vehicles
+| BLUFOR
+| HSim_BLUFOR_Ambient
+
+|-
+|
+==== Military_Offroad_Transport_H ====
+| Military Offroad
+| Vehicles
+| BLUFOR
+| HSim_BLUFOR_Ambient
+
+|-
+|
+==== Military_Truck_Ammunition_H ====
+| Truck (ammo)
+| Vehicles
+| BLUFOR
+| HSim_BLUFOR_Ambient
+
+|-
+|
+==== Ind_Truck_Supply_H ====
+| Truck (supply)
+| Vehicles
+| Independent
+| HSim_Ind_PC
+
+|-
+|
+==== Military_Truck_Fuel_H ====
+| Truck (fuel)
+| Vehicles
+| BLUFOR
+| HSim_BLUFOR_Ambient
+
+|-
+|
+==== Military_Truck_Repair_H ====
+| Truck (repair)
+| Vehicles
+| BLUFOR
+| HSim_BLUFOR_Ambient
+
+|-
+|
+==== Pickup01_H ====
+| Pickup
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Pickup02_H ====
+| Pickup (large)
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== SUV_White_H ====
+| SUV
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== SUV_H ====
+| SUV (black)
+| Vehicles
+| Independent
+| HSim_Ind_PC
+
+|-
+|
+==== SUV_Blue_H ====
+| SUV (Larkin)
+| Vehicles
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Truck_US_H ====
+| Big Rigg
+| Vehicles
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Aircraft_A_H ====
+| Classic Plane
+| Aircraft
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Aircraft_C_H ====
+| Cargo Plane
+| Aircraft
+| BLUFOR
+| HSim_BLUFOR_Ambient
+
+|-
+|
+==== Aircraft_D_H ====
+| Airliner (classic)
+| Aircraft
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Aircraft_E_H ====
+| Small Plane
+| Aircraft
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Airliner_A_H ====
+| Airliner (large)
+| Aircraft
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Airliner_B_H ====
+| Airliner
+| Aircraft
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Heli_Heavy01_H ====
+| Heavy (Civil)
+| Helicopters (Heavy)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Heavy01_Vrana_H ====
+| Vrana Corp Industrial
+| Helicopters (Heavy)
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Heli_Heavy01_Wave_H ====
+| Larkin Aviation
+| Helicopters (Heavy)
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== IND_Heli_Heavy01_H ====
+| ION (Black)
+| Helicopters (Heavy)
+| Independent
+| HSim_Ind_PC
+
+|-
+|
+==== Heli_Heavy01_Military_H ====
+| Heavy (Military)
+| Helicopters (Heavy)
+| BLUFOR
+| HSim_BLUFOR_USArmy
+
+|-
+|
+==== IND_Heli_Heavy01_Military_H ====
+| ION (Armed)
+| Helicopters (Heavy)
+| Independent
+| HSim_Ind_PC
+
+|-
+|
+==== Heli_Heavy01_Luxury_H ====
+| Heavy (Luxury)
+| Helicopters (Heavy)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Heavy01_Luxury_Vrana_H ====
+| Vrana Corp Executive
+| Helicopters (Heavy)
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Ind_Heli_Heavy01_Luxury_H ====
+| ION (VIP)
+| Helicopters (Heavy)
+| Independent
+| HSim_Ind_PC
+
+|-
+|
+==== Heli_Heavy01_Luxury_President_H ====
+| Heavy (Marine One)
+| Helicopters (Heavy)
+| Civilian
+| HSim_Civ_ES
+
+|-
+|
+==== Heli_Light01_H ====
+| Light
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Light01_Vrana_H ====
+| Vrana Corp Executive
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Heli_Light01_Wave_H ====
+| Larkin Aviation
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Heli_Light01_blueline_H ====
+| Light (blueline)
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Light01_digital_H ====
+| Light (digital times)
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Light01_elliptical_H ====
+| Light (elliptical)
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Light01_furious_H ====
+| Light (furious)
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Light01_graywatcher_H ====
+| Light (greywatcher)
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Light01_jeans_H ====
+| Light (jeans)
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Light01_shadow_H ====
+| Light (shadow)
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Light01_sunset_H ====
+| Light (sunset)
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Light01_wasp_H ====
+| Light (wasp)
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Light01_sheriff_H ====
+| Light (Sheriff Dept.)
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_ES
+
+|-
+|
+==== Heli_Light01_TimeTrial_H ====
+| Light (Time Trial)
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Heli_Light01_OLD_H ====
+| Training Helicopter
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Heli_Light01_ION_H ====
+| Light (ION)
+| Helicopters (Light)
+| Independent
+| HSim_Ind_PC
+
+|-
+|
+==== CIV_Heli_Light01_ION_H ====
+| ION Tactical
+| Helicopters (Light)
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Heli_Light01_Military_H ====
+| Light (Military)
+| Helicopters (Light)
+| BLUFOR
+| HSim_BLUFOR_USArmy
+
+|-
+|
+==== IND_Heli_Light01_Military_H ====
+| ION (Armed)
+| Helicopters (Light)
+| Independent
+| HSim_Ind_PC
+
+|-
+|
+==== Heli_Medium01_H ====
+| Medium (Civil)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Medium01_Wave_H ====
+| Larkin Aviation
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== IND_Heli_Medium01_H ====
+| ION (Black)
+| Helicopters (Medium)
+| Independent
+| HSim_Ind_PC
+
+|-
+|
+==== Heli_Medium01_Flamingo_H ====
+| Medium (flamingo)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Medium01_Frostfire_H ====
+| Medium (frostfire)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Medium01_Parrot_H ====
+| Medium (parrot)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Medium01_Coastguard_H ====
+| Medium (coastguard)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_ES
+
+|-
+|
+==== Heli_Medium01_Red_H ====
+| Medium (red)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Medium01_Redlines_H ====
+| Medium (redlines)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Medium01_Shark_H ====
+| Medium (shark)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Medium01_Sun_H ====
+| Medium (sun)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Medium01_Twilight_H ====
+| Medium (twilight)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Medium01_Wasp_H ====
+| Medium (wasp)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Medium01_Sheriff_H ====
+| Medium (Sheriff Dept.)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_ES
+
+|-
+|
+==== Heli_Medium01_FLIR_H ====
+| Medium (FLIR)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_ES
+
+|-
+|
+==== Heli_Medium01_Luxury_H ====
+| Medium (Luxury)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_US
+
+|-
+|
+==== Heli_Medium01_Luxury_Vrana_H ====
+| Vrana Corp Executive
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Heli_Medium01_Medic_H ====
+| Medium (Air Ambulance)
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_ES
+
+|-
+|
+==== Heli_Medium01_Military_H ====
+| Medium (Military)
+| Helicopters (Medium)
+| BLUFOR
+| HSim_BLUFOR_USArmy
+
+|-
+|
+==== IND_Heli_Medium01_Military_H ====
+| ION (Armed)
+| Helicopters (Medium)
+| Independent
+| HSim_Ind_PC
+
+|-
+|
+==== TK_Heli_Medium01_Military_H ====
+| Medium (Military)
+| Helicopters (Medium)
+| OPFOR
+| HSim_OPFOR_Army
+
+|-
+|
+==== Heli_Medium01_Veteran_H ====
+| Veteran Transport
+| Helicopters (Medium)
+| Civilian
+| HSim_Civ_Story
+
+|-
+|
+==== Satellite_H ====
+| Satellite dish
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Barrel_Red_H ====
+| Barrel (red)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Barrel_Green01_H ====
+| Barrel (green 01)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Barrel_Black_H ====
+| Barrel (black)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Barrel_Orange_H ====
+| Barrel (orange)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Barrel_Yellow_H ====
+| Barrel (yellow)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Barrel_Blue_H ====
+| Barrel (blue)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Barrel_Green02_H ====
+| Barrel (green 02)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Barrel_Green03_H ====
+| Barrel (green 03)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Barrels_H ====
+| Barrels
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_Barrel_Empty_H ====
+| Plastic barrel (empty)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_Barrel_Sand_H ====
+| Plastic barrel (sand)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_Barrel_Water_H ====
+| Plastic barrel (water)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Bleacher_H ====
+| Bleacher
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_BoardsPack1_H ====
+| Boards pack
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_BoardsPack2_H ====
+| Boards pack (small)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== PalletsFoiled_H ====
+| Foiled pallets
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== PalletsFoiled_Heap_H ====
+| Foiled pallet
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== PaletteA_H ====
+| Pallet
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== PaletteC_H ====
+| Pallets
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Crate_Wood_H ====
+| Wooden crate
+| Objects (Fortifications)
+| Civilian
+| Default
+
+|-
+|
+==== CargoCont_Net1_H ====
+| Container in net
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== CargoCont_Net2_H ====
+| Containers in net
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== CargoCont_Net3_H ====
+| Containers in net (heap)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CncBlock_H ====
+| Concrete barrier
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_CncBlock_Stripes_H ====
+| Concrete barrier (stripes)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_CncBlock_D_H ====
+| Concrete barrier (damaged)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Concrete_Wall_H ====
+| Concrete Wall
+| Objects (Fortifications)
+| Civilian
+| Default
+
+|-
+|
+==== Land_DogHouse_H ====
+| Doghouse
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== EngineCrane_H ====
+| Engine crane
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_BigHBarrier_H ====
+| H-barrier (large)
+| Objects (Fortifications)
+| Civilian
+| Default
+
+|-
+|
+==== Land_HBarrier3_H ====
+| H-barrier (short)
+| Objects (Fortifications)
+| Civilian
+| Default
+
+|-
+|
+==== Land_HBarrier5_H ====
+| H-barrier
+| Objects (Fortifications)
+| Civilian
+| Default
+
+|-
+|
+==== Land_BagFenceCorner_H ====
+| Bag Fence (corner)
+| Objects (Fortifications)
+| Civilian
+| Default
+
+|-
+|
+==== Land_BagFenceEnd_H ====
+| Bag Fence (end)
+| Objects (Fortifications)
+| Civilian
+| Default
+
+|-
+|
+==== Land_BagFenceLong_H ====
+| Bag Fence
+| Objects (Fortifications)
+| Civilian
+| Default
+
+|-
+|
+==== Land_BagFenceRound_H ====
+| Bag Fence (round)
+| Objects (Fortifications)
+| Civilian
+| Default
+
+|-
+|
+==== Land_BagFenceShort_H ====
+| Bag Fence (short)
+| Objects (Fortifications)
+| Civilian
+| Default
+
+|-
+|
+==== FireExtinguisher_H ====
+| Fire extinguisher
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== FireSuppression_H ====
+| Fire suppression
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== FirstAid_H ====
+| First aid
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== FlagPole_H ====
+| Flagpole
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== FlagCarrier_USA_H ====
+| Flag (USA)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== FlagCarrier_Vrana_H ====
+| Flag (Vrana)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== FlagCarrier_Larkin_H ====
+| Flag (Larkin)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== FoldingLadder_H ====
+| Folding ladder
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== FoldingLadder_Big_H ====
+| Folding ladder (big)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== FuelCan_H ====
+| Fuel can
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_Canister_H ====
+| Plastic canister
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Basin_H ====
+| Basin
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Sink_H ====
+| Sink
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Toilet_H ====
+| Toilet
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Towels_H ====
+| Towels
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Case_Small01_H ====
+| Case (small 01)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Case_Small02_H ====
+| Case (small 02)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Case_Small03_H ====
+| Case (small 03)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Case_Medium01_H ====
+| Case (medium 01)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Case_Medium02_H ====
+| Case (medium 02)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Case_Medium03_H ====
+| Case (medium 03)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Case_Big01_H ====
+| Case (big 01)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Case_Big02_H ====
+| Case (big 02)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Case_Big03_H ====
+| Case (big 03)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== ShelfStand_H ====
+| Shelf stand
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== ShelfStand_Big_H ====
+| Shelf stand (big)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Heavy_engine_H ====
+| Helicopter engine
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Medium_door_H ====
+| Helicopter door (medium)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Medium_rotorcenter_H ====
+| Helicopter rotorcenter
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Medium_searchlight_H ====
+| Helicopter searchlight
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Medium_winch_H ====
+| Helicopter winch
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Light_door_H ====
+| Helicopter door (light)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Light_enginecover_H ====
+| Helicopter enginecover
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Light_rotorblade_H ====
+| Helicopter rotorblade
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Helipad_H ====
+| Helipad
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Helipad_Invisible_H ====
+| Helipad (Invisible)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Helipad_Rescue_H ====
+| Helipad (Rescue)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Helipad_Civil_H ====
+| Helipad (Civil)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== WeldingCart_H ====
+| Welding cart
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== PressureCleaner_H ====
+| Pressure cleaner
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== PortableWheel_H ====
+| Portable wheel
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== FuelFacility_H ====
+| Fuel facility
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== LandingPlatform_H ====
+| Landing platform
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Arrow_Down_H ====
+| Arrow (down)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Arrow_Down_Large_H ====
+| Arrow (down large)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Cube_5cm_H ====
+| Cube (5cm)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Cube_25cm_H ====
+| Cube (25cm)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Pointer_Small_H ====
+| Pointer (small)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Pointer_Large_H ====
+| Pointer (large)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Sign_circle_H ====
+| Circle (small)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Sign_circle02_H ====
+| Circle (medium)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Sign_circle03_H ====
+| Circle (large)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Sphere_10cm_H ====
+| Sphere (10 cm)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Sphere_25cm_H ====
+| Sphere (25 cm)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Sphere_100cm_H ====
+| Sphere (100 cm)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Marker_Basic_H ====
+| Marker Basic
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Marker_GetIn_H ====
+| Marker Get In
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Marker_Checkpoint_H ====
+| Marker Checkpoint
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Marker_Use_H ====
+| Marker Use
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Marker_Waypoint_H ====
+| Marker Waypoint
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Square_25m_H ====
+| Square (25m)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Sphere_HalfVisible_H ====
+| Sphere (half-visible)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Info_Board_H ====
+| Info Board
+| Objects (Signs)
+| Civilian
+| Default
+
+|-
+|
+==== Billboard_H ====
+| Billboard
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Infostand01_H ====
+| Infostand (1 leg)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Infostand02_H ====
+| Infostand (2 legs)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Leak_Oil_H ====
+| Leak (oil, small)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Leak_Oil_Medium_H ====
+| Leak (oil, medium)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Leak_Oil_Large_H ====
+| Leak (oil, large)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Leak_Fuel_H ====
+| Leak (fuel, small)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Leak_Fuel_Medium_H ====
+| Leak (fuel, medium)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Leak_Fuel_Large_H ====
+| Leak (fuel, large)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Leak_Fuel02_H ====
+| Leak (fuel type 02, small)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Leak_Fuel02_Medium_H ====
+| Leak (fuel type 02, medium)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Leak_Fuel02_Large_H ====
+| Leak (fuel type 02, large))
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Bolts_H ====
+| Bolts
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Bolts02_H ====
+| Bolts (type 02)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Bolts03_H ====
+| Bolts (type 03)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Bolts04_H ====
+| Bolts (type 04)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Nest_H ====
+| Nest
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Shard01_H ====
+| Shard
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Shard02_H ====
+| Shard (type 02)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Shard03_H ====
+| Shard (type 03)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Shard04_H ====
+| Shard (type 04)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Shard05_H ====
+| Shard (type 05)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Shard06_H ====
+| Shard (type 06)
+| Objects (Helpers)
+| Civilian
+| Default
+
+|-
+|
+==== Land_Crates_H ====
+| Cardboard crates
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Land_Bucket_H ====
+| Bucket
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== FoldTable_H ====
+| Folding Table
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== FoldChair_H ====
+| Folding Chair
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== WoodChair_H ====
+| Chair - wood
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Land_Chair_H ====
+| Garden chair
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Loudspeakers_H ====
+| Loudspeakers
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_Sunshade_H ====
+| Canvas sunshade
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_BagsStack_H ====
+| Heap of bags
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_Tires_H ====
+| Tyre pile
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== TyreHeap_H ====
+| Tyre heap
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_CratesTransport_H ====
+| Wooden crates
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_Pneu_H ====
+| Tyre
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Bucket_Metal_H ====
+| Bucket (metal)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Computer_H ====
+| Computer
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== ConferenceTable_H ====
+| Table (conference)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Couch_H ====
+| Couch
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== DeskFan_H ====
+| Desk fan
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== DVDPlayer_H ====
+| DVD player
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Fax_H ====
+| Fax
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== FillingCabinet_White_H ====
+| Filling cabinet (white)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== FillingCabinet_Black_H ====
+| Filling cabinet (black)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== FillingCabinet_Blue_H ====
+| Filling cabinet (blue)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== FillingCabinet_Red_H ====
+| Filling cabinet (red)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Plant01_H ====
+| Plant (type 01)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Plant02_H ====
+| Plant (type 02)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Plant03_H ====
+| Plant (type 03)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Fridge_H ====
+| Fridge
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== HeadsetRack ====
+| Headset rack
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== OfficeChair01_H ====
+| Chair (office 01)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== OfficeChair02_H ====
+| Chair (office 02)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== OfficeChair03_H ====
+| Chair (office 03)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== OfficeChair04_H ====
+| Chair (office 04)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Keyboard_H ====
+| Keyboard
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== KitchenUnit_H ====
+| Kitchen unit
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Lamp_H ====
+| Lamp
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Monitor_H ====
+| Monitor
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== PaintBucket_Blue_H ====
+| Paint bucket (blue colour)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== PaintBucket_White_H ====
+| Paint bucket (white colour)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== PCDesk_H ====
+| PC desk
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Picture_H ====
+| Picture
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Receiver_H ====
+| Receiver
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== RadioTerminal_H ====
+| Radio terminal
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Speakers01_H ====
+| Speakers (type 01)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Speakers02_H ====
+| Speakers (type 02)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Speakers03_H ====
+| Speakers (type 03)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Speakers04_H ====
+| Speakers (type 04)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Speakers05_H ====
+| Speakers (large)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== TV_H ====
+| TV
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Water_Cooler_H ====
+| Water cooler
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== PerimeterLigh_Blue_H ====
+| Perimeter (blue)
+| Objects (Signs)
+| Civilian
+| Default
+
+|-
+|
+==== PerimeterLigh_Green_H ====
+| Perimeter (green)
+| Objects (Signs)
+| Civilian
+| Default
+
+|-
+|
+==== PerimeterLigh_Orange_H ====
+| Perimeter (orange)
+| Objects (Signs)
+| Civilian
+| Default
+
+|-
+|
+==== PerimeterLigh_Red_H ====
+| Perimeter (red)
+| Objects (Signs)
+| Civilian
+| Default
+
+|-
+|
+==== PerimeterLigh_White_H ====
+| Perimeter (white)
+| Objects (Signs)
+| Civilian
+| Default
+
+|-
+|
+==== Pike_H ====
+| Bar gate
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== PlatformCart_H ====
+| Platform cart
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== PortableGenerator_H ====
+| Portable generator
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== OutdoorScreen_H ====
+| Outdoor screen
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Broom_H ====
+| Broom
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Cloth_H ====
+| Cloth
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Welding_Torch_H ====
+| Welding torch
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Headset_H ====
+| Headset
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== LightStick_H ====
+| Light stick
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== MedicineBottle_H ====
+| Medicine bottle
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== SawHorse_H ====
+| Saw horse
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_Shooting_range ====
+| Shooting position
+| Objects (Training)
+| Civilian
+| Default
+
+|-
+|
+==== Sign_Direction_H ====
+| Direction
+| Objects (Signs)
+| Civilian
+| Default
+
+|-
+|
+==== RoadBarrier_Light_H ====
+| Road barrier (small)
+| Objects (Signs)
+| Civilian
+| Default
+
+|-
+|
+==== RoadBarrier_Long_H ====
+| Road barrier
+| Objects (Signs)
+| Civilian
+| Default
+
+|-
+|
+==== RoadCone_H ====
+| Road Cone
+| Objects (Signs)
+| Civilian
+| Default
+
+|-
+|
+==== Land_ConeLight_H ====
+| Road cone (light)
+| Objects (Signs)
+| Civilian
+| Default
+
+|-
+|
+==== BuoyBig_H ====
+| Buoy
+| Objects (Signs)
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== Sink_Big_H ====
+| Sink (big)
+| Objects (Furniture)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CamoNet_NATO_H ====
+| Camouflage net (NATO desert)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CamoNet_Wdl_NATO_H ====
+| Camouflage net (NATO)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CamoNet_EAST_H ====
+| Camouflage net (East desert)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CamoNet_Wdl_EAST_H ====
+| Camouflage net (East)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CamoNetVar_NATO_H ====
+| Camouflage net open (NATO desert)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CamoNetVar_Wdl_NATO_H ====
+| Camouflage net open (NATO)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CamoNetVar_EAST_H ====
+| Camouflage net open (East desert)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CamoNetVar_Wdl_EAST_H ====
+| Camouflage net open (East)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CamoNetB_NATO_H ====
+| Camouflage vehicle cover (NATO desert)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CamoNetB_Wdl_NATO_H ====
+| Camouflage vehicle cover (NATO)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CamoNetB_EAST_H ====
+| Camouflage vehicle cover (East desert)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_CamoNetB_Wdl_EAST_H ====
+| Camouflage vehicle cover (East)
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Tent_Personal_H ====
+| Camping tent
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_A_Tent_H ====
+| Old camping tent
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_Tent_East_H ====
+| Tent East
+| Objects (Military)
+| Civilian
+| Default
+
+|-
+|
+==== Land_Toilet_H ====
+| Field Toilet
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Drill_H ====
+| Drill
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== DustMask_H ====
+| Dust mask
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== ExtensionCord_H ====
+| Extension cord
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Files_H ====
+| File
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Gloves_H ====
+| Gloves
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Grinder_H ====
+| Grinder
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Hammer_H ====
+| Hammer
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== MultiMeter_H ====
+| Multimeter
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Pliers_H ====
+| Pliers
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Saw_H ====
+| Saw
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Screwdriver_Flat_H ====
+| Screwdriver (flat)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Screwdriver_PH_H ====
+| Screwdriver (PH)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== TapeMeasure_H ====
+| Tape measure
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Wrench_H ====
+| Wrench
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== ToolsRacking_H ====
+| Tools racking unit
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== GarbageContainer_H ====
+| Garbage container
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== GarbageCan_H ====
+| Garbage can
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== WeatherStation ====
+| Weather station
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== WeldGastank_H ====
+| Weld gastank
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== WheelChocks_H ====
+| Wheel chock
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Scaffolding_Wheeled_H ====
+| Scaffolding (wheeled)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== WheeledToolCart_H ====
+| Tool cart (red)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== WheeledToolCart_Blue_H ====
+| Tool cart (blue)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Whiteboard_H ====
+| Whiteboard
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Winch_H ====
+| Winch
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Windsock_H ====
+| Windsock
+| Objects (Signs)
+| Civilian
+| Default
+
+|-
+|
+==== Workbench_H ====
+| Workbench
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== FourWheeled_Wreck_H ====
+| Off-road
+| Wrecks
+| Civilian
+| Default
+
+|-
+|
+==== BMP2_Wreck_H ====
+| BMP-2
+| Wrecks
+| Civilian
+| Default
+
+|-
+|
+==== HMMWV_Wreck_H ====
+| HMMWV
+| Wrecks
+| Civilian
+| Default
+
+|-
+|
+==== Pickup01_Wreck_H ====
+| Pickup
+| Wrecks
+| Civilian
+| Default
+
+|-
+|
+==== Pickup02_Wreck_H ====
+| Pickup (rolled over)
+| Wrecks
+| Civilian
+| Default
+
+|-
+|
+==== T72_Wreck_H ====
+| T-72
+| Wrecks
+| Civilian
+| Default
+
+|-
+|
+==== T72_WreckTurret_H ====
+| T-72 Turret
+| Wrecks
+| Civilian
+| Default
+
+|-
+|
+==== Ural_Wreck_H ====
+| Ural
+| Wrecks
+| Civilian
+| Default
+
+|-
+|
+==== Land_Heliport_Big_Complete_H ====
+| Heliport (Big)
+| 
+| Civilian
+| Default
+
+|-
+|
+==== Land_Heliport_Small_H ====
+| Heliport (Small)
+| 
+| Civilian
+| Default
+
+|-
+|
+==== Stairwell_H ====
+| Stairwell
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Ventilation_H ====
+| Ventilation
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_Rooftop_landing_1_H ====
+| Rooftop landing (Circle mark)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_Rooftop_landing_2_H ====
+| Rooftop landing (Triangle mark)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_Rooftop_landing_hospital_H ====
+| Rooftop landing (Hospital)
+| Objects
+| Civilian
+| Default
+
+|-
+|
+==== Land_Space_Needle_01 ====
+| Space Needle
+| 
+| Civilian
+| Default
+
+|-
+|
+==== GasTorch_H ====
+| Gas Torch
+| Objects
+| Civilian
+| HSim_Civ_Ambient
+
+|-
+|
+==== BMP2_H ====
+| BMP-2
+| Vehicles
+| OPFOR
+| HSim_OPFOR_Ambient
+
+|-
+|
+==== M1A2_H ====
+| Tank
+| Vehicles
+| BLUFOR
+| HSim_BLUFOR_Ambient
+
+|-
+|
+==== MLRS_H ====
+| Artillery
+| Vehicles
+| BLUFOR
+| HSim_BLUFOR_Ambient
+<!-- EXPORT END ----------------------------------------------------------->
+|}
+
+[[Category:CfgVehicles]]

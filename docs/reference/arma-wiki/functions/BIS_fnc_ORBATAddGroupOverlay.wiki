@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ORBATAddGroupOverlay
+// revision: 349398 (2023-11-08T16:27:25Z)
+// export sha1: fc0zf25f7wlvw97bs2b60sdr5furv16
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strategic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strategic
+
+|descr= Register texture(s) to be displayed over CfgORBAT group.
+
+|s1= [target, texture, colour, widthMulti, heightMulti, angle, text, shadow] call [[BIS_fnc_ORBATAddGroupOverlay]]
+
+|p1= target: [[Config]] - path to group in CfgORBAT
+|p2= texture: [[String]] - texture
+|p3= colour: [[Array]] - colour in format [R,G,B,A]
+|p4= widthMulti: [[Number]] - original icon width multiplier
+|p5= heightMulti: [[Number]] - original icon height multiplier
+|p6= angle: [[Number]] - angle
+|p7= text: [[String]] - text
+|p8= shadow: [[Boolean]] - shadow outlining the texture
+
+|r1= [[Number]] - overlay ID, used by [[BIS_fnc_ORBATRemoveGroupOverlay]]
+
+|x1= <sqf>[configFile >> "CfgORBAT" >> "BIS" >> "B_1_A_1", "\A3\weapons_f\data\UI\icon_MG_CA.paa", [0,0,01], 3, 3, 0, "Some Text", true] call BIS_fnc_ORBATAddGroupOverlay;</sqf>
+
+|seealso= [[ORBAT Viewer]] [[BIS_fnc_ORBATAnimate]] [[BIS_fnc_ORBATConfigPreview]] [[BIS_fnc_ORBATGetGroupParams]] [[BIS_fnc_ORBATOpen]] [[BIS_fnc_ORBATRemoveGroupOverlay]] [[BIS_fnc_ORBATSetGroupFade]] [[BIS_fnc_ORBATSetGroupParams]] [[BIS_fnc_ORBATTooltip]]
+}}

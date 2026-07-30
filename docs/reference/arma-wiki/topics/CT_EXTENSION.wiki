@@ -1,0 +1,112 @@
+// source: https://community.bistudio.com/wiki/CT_EXTENSION
+// revision: 368965 (2024-08-21T12:57:49Z)
+// export sha1: h5esig8k41pto26i0b9g4v5d5rd8smz
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{CT|intro
+
+|macro = CT_EXTENSION
+|value = 107
+|description =
+{{Feature|warning|This is a experimental feature currently available for testing on Development-Branch. It is not yet decided whether this will become available in Stable branch. Please provide Feedback on the {{Link|https://discord.gg/arma|{{arma}} Discord}}'s #dev_rc_branch channel. }}
+Extension controls are controlled and rendered by [[Extensions]]. The constant ''type'' property for these controls usually is {{hl|CT_EXTENSION}}.
+All inputs to the control are forwarded to the Extension. And the Extension will render the UI into a prepared texture that will then be displayed.
+}}
+
+{{CT|abc start}}
+
+=== C ===
+
+{{CT|attribute
+|name=colorBackground
+|type1=Array
+|value1={0,0,0,0}
+|description=Color of the background (The backing texture gets cleared to this color before the Extension's OnDraw). If the UI is not created (Extension not found, or doesn't offer the uiClass), this color fills the whole control.
+}}
+
+=== E ===
+
+{{CT|attribute
+|name=extension
+|type1=String
+|value1="RVExtensionTest"
+|description=Name of the Extension that provides this UI Control.
+}}
+
+=== T ===
+
+{{CT|attribute
+|name=tileH
+|type1=Number
+|value1=1
+|type2=String
+|value2="4 / (32 * pixelH)"
+|description=Height of one tile. Used with ST_TILE_PICTURE to create a repeating wall of pictures, such as the fullscreen backgrounds in the [[:Category:Eden Editor|Eden Editor]]. Uses [[GUI Coordinates]].
+}}
+
+{{CT|attribute
+|name=tileW
+|type1=Number
+|value1=1
+|type2=String
+|value2="8 / (32 * pixelW)"
+|description=Width of one tile. Used with ST_TILE_PICTURE to create a repeating wall of pictures, such as the fullscreen backgrounds in the [[:Category:Eden Editor|Eden Editor]]. Uses [[GUI Coordinates]].
+}}
+
+=== U ===
+
+{{CT|attribute
+|name=uiClass
+|type1=String
+|value1="TestUI_123"
+|description="Classname" of the UI, gets passed to the Extension, the Extension has to interpret it and choose what UI to display (If the Extension offers multiple UI Elements).
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+
+=== RscExtension ===
+
+Baseline RscExtension example
+<syntaxhighlight lang="cpp">
+class RscExtension
+{
+	type = CT_EXTENSION; // 107
+	idc = -1;
+	deletable = 0;
+	style = 0;
+	colorBackground[] = {0,0,0,0};
+	x = 0;
+	y = 0;
+	w = 0.3;
+	h = 0.3;
+	extension = "ExtensionNameHere";
+	uiClass = "ClassNameHere";
+};
+</syntaxhighlight>
+
+=== RscWebBrowser ===
+
+Web Browser sample, utilizing https://github.com/arma3/RVExtensionImGui/blob/main/dllmain.cpp#L76
+<syntaxhighlight lang="cpp">
+class RscExtension
+{
+	type = CT_EXTENSION; // 107
+	idc = -1;
+	deletable = 0;
+	style = 0;
+	colorBackground[] = {0,0,0,0};
+	x = 0;
+	y = 0;
+	w = 0.3;
+	h = 0.3;
+	extension = "RVExtensionTest";
+	uiClass = "webbrowser_https://arma3.com/";
+};
+</syntaxhighlight>
+
+
+
+[[Category: Control Types]]

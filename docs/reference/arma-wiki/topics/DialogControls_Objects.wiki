@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/DialogControls-Objects
+// revision: 244186 (2021-02-07T13:37:12Z)
+// export sha1: j6f8hhm62g4f9p3oxhol1888x3u0we8
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+* [[CT_OBJECT]]
+* [[CT_OBJECT_ZOOM]]
+* [[CT_OBJECT_CONTAINER]]
+* [[CT_OBJECT_CONT_ANIM]]

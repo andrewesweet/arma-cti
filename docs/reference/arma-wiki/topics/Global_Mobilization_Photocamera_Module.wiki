@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/Global_Mobilization_Photocamera_Module
+// revision: 378613 (2026-05-13T20:16:08Z)
+// export sha1: hbks80z35a1v83nldh10vcg5jl9j7yz
+// categories: Category:Global Mobilization
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:gm module photocamera.jpg|thumb]]
+'''[[Global Mobilization]]''' introduces the “Enable Camera Picture Saving” Module in 3DEN. This module toggles the ability for the camera to save screenshots to your user folder.
+
+{{Feature|informative|Systems (F5) > Other > Enable Camera Picture Saving}}
+
+With this module placed, anyone who will take a picture with the "Laiktika PLC3A" will actually take a screenshot of the current view.
+
+The image will be saved to the user's documents folder where also editor missions are stored.
+
+Read up on the [[screenshot]] command to see what restrictions apply and how to allow for more allocated space.
+
+=== Scripting ===
+
+Independently from this module, the camera (or any other camera inheriting from gm_photocamera_feature_type classes) will be able to simulate picture taking.
+ 
+Sound and a shutter effect are played when a player uses the "Fire" button while looking through the camera's viewfinder.
+
+This event can be utilized by custom scripting!
+
+==== gm_photocamera_takePicture ====
+The Scripted Eventhandler <sqf inline>gm_photocamera_takePicture</sqf> is available. It will trigger every time a user "fires" the camera.
+
+<sqf inline>[missionNamespace, "gm_photocamera_takePicture", {hint "picture taken"}] call BIS_fnc_addScriptedEventHandler;</sqf>
+
+''No arguments are processed by this eventhandler.''
+
+==== gm_photocamera_feature_disabled ====
+If you wish to disable the camera feature alltogether, you can simply set the <sqf inline>gm_photocamera_feature_disabled</sqf> variable to true:
+
+<sqf inline>missionNamespace setVariable ["gm_photocamera_feature_disabled", true];</sqf>
+
+=== Custom Cameras ===
+If you wish to replace the currently supported cameras (by default any weapon that is inheriting from "gm_photocamera_base" can do so), you can modify the "gm_photocamera_feature_type" variable:
+
+==== gm_photocamera_feature_type ====
+<sqf>
+// this will enable the GM's photocamera to work
+missionNamespace setVariable ["gm_photocamera_feature_type", "gm_photocamera_base"];
+
+// This will trigger the event every time any rifle is fired (not recommended at all!)
+missionNamespace setVariable ["gm_photocamera_feature_type", "Rifle_Base_F"];
+</sqf>
+
+It is also possible to support multiple different types of weapon at the same time. To do so, change the variable to an array of supported classnames (base classes are always the better choice):
+<sqf>
+// This will allow GM's camera AND any laserdesignator to take pictures
+missionNamespace setVariable ["gm_photocamera_feature_type", ["gm_photocamera_base", "Laserdesignator"]];
+</sqf>
+
+
+[[Category:Global Mobilization]]

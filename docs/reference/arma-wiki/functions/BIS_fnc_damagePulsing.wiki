@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_damagePulsing
+// revision: 329958 (2022-08-09T17:17:12Z)
+// export sha1: jo2n1fxmlcv1p288ev83ke54yy8nwt6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Feedback | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Feedback
+
+|descr= Game pulsing damage effect.
+
+|s1= call [[BIS_fnc_damagePulsing]]
+
+|r1= [[Script Handle]]
+
+|x1= <sqf>call BIS_fnc_damagePulsing;</sqf>
+
+|seealso= [[BIS_fnc_fatigueEffect]] [[BIS_fnc_incapacitatedEffect]] [[BIS_fnc_incapacitatedEffect]] [[BIS_fnc_indicateBleeding]] [[BIS_fnc_bloodEffect]]
+}}

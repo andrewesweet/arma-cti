@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/markerDrawPriority
+// revision: 351284 (2023-11-27T02:52:20Z)
+// export sha1: 3ct27zrzovy9h9bzc9qihajy37if5u9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|gr1= Markers
+
+|descr= Returns marker draw priority.
+
+|s1= [[markerDrawPriority]] markerName
+
+|p1= markerName: [[String]]
+
+|r1= [[Number]] - draw priority
+
+|x1= <sqf>markerDrawPriority "MarkerOne"</sqf>
+
+|seealso= [[setMarkerDrawPriority]] [[setMarkerType]] [[setMarkerTypeLocal]] [[markerType]] [[setMarkerAlphaLocal]] [[setMarkerBrush]] [[setMarkerColor]] [[setMarkerDir]] [[setMarkerPos]] [[setMarkerShape]] [[setMarkerSize]] [[setMarkerText]] [[createMarker]] [[CfgMarkers]] 
+}}

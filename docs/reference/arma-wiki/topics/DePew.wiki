@@ -1,0 +1,1155 @@
+// source: https://community.bistudio.com/wiki/DePew
+// revision: 377932 (2026-01-11T16:28:42Z)
+// export sha1: 1m20mz8jz9sqahcwhlphg44xde264qr
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+DePew Version 3.xx by Mikero
+
+
+Installation: see ReadMeGeneral.txt
+
+
+Fixes: see fixes.txt
+
+
+----
+
+Dual Dos / Windows Application
+
+
+DePew.exe is the dual dos
+/windows exe
+
+
+clicking on it in windows, (or simply invoking it in a dos console with no
+parameters), invokes the gui.
+
+
+passing DePew.exe in a dos prompt WITH parameters (eg in a batch file)
+invokes dos mode.
+
+
+DePewDos.exe Is separate utility without the gui overhead. This for lean and
+mean, fast executable, dos prompt only. It is provided for the rare occasions
+(such as piping stderr) cannot be handled by the gui version.
+
+
+'''General'''
+
+
+The essence of DePew is to extract object, template,
+and
+elevation information and present in a text form that is usable by external tools
+such as L3dt, 'worldtools', Excel, and of course feedback into DePew, with altered
+heights or etc. Formats that Depew supports range from Pose57(Xbox Elite) thru to
+Pose60 (a2/Arrowhead). There is currently limited support for ofp. While much of what DePew does can also be done by
+02Script, DePew is blindingly fast. DePew.exe also consolidates various other deprecated exes (such
+as CreatePewObjects) into one umbrella.
+
+
+The types of items DePew works with are
+
+
+* Object positions: The placement of p3d models on the terrain, not, details of the object itself.
+* Object Templates: A library of p3d models to use. No matter how many 100's of Cherry Blossom Trees are used on the island there is only one reference to THE model.
+* Elevations: The terrain surface, which, ultimately derives such things as contour maps.
+ Exported files of all types use comma separation (optional
+default), with newline and/or whitespace between 'records',
+ to enable easy import into Excel (eg). Additional, optional, exported
+parameters, when present, are always at end of each written record.
+Note that an 'exported file' can mean to the display screen
+where the user might simply view the output, or &gt;pipe it somewhere else.
+
+
+'''XYZ specifications:'''
+
+<blockquote>
+'''The 'Z' position.'''
+
+
+* '''Object (Model) Height:'''
+
+Internally, pew files follow the unusual 'model'
+convention of specifying height as the Y component of xyz. This document, and
+most exported/imported files, follows the intuitive 'Cartesian' convention of xy
+and height. '''Any reference to Z in this document means height unless stated
+otherwise.'''
+
+
+Height is expressed in meters, accurate to 10cm, and is
+the distance between the object's geometric center and the terrain elevation at
+that object's position. It is almost always zero. The model's geometric centre
+is rarely the centre of the object. Objects will generally rotate from one of it is corners because that's
+where it is geometric centre is. This is especially true of roads.
+
+
+All objects 'sit' on the terrain at their geometric
+center, as designed by, and as intended by, the model's author. Thus identical
+objects will follow the terrain contour. Relative height above or below
+the current terrain height can be tweaked by island authors. It is that value
+that is present in the Z component of an xyz. It is a hidden value and almost
+always zero. Other than
+by script, there is no facility in Visitor to 'see' it. It is mostly and only
+used for bridges (or any object not designed to follow the terrain) and is set
+by the island author when hand tweaking relative heights of specific objects..
+
+
+At the time of wrp creation, the height component
+of the object is set in concrete to this relative value + terrain height to
+produce a height above sea level (ASL) . The relative height used to cause this
+offset is not retained and not needed by the engine, and the objects are
+effectively divorced from terrain elevations. Except to say, the terrain
+elevations are also set to values ASL. Manipulating terrain elevations in a wrp,
+will not, therefore, produce corresponding (and desirable) effects in that
+island's object's. They will be buried in the ground or floating in the sky
+unless similarly treated by external tools.
+
+
+Similarly, when producing pew data from wrp data, the relative adjustment of
+bridges (eg) cannot be known. They can only follow the current contour.
+
+
+* '''Terrain elevation:'''
+
+The only other use of Z in a pew file is for terrain elevation. It is
+expressed as meters above (or below) absolute sea level and is accurate to 10cm.
+
+</blockquote> <blockquote>
+'''The X position'''
+
+
+* '''Always''' Left to Right. (Cartesian)
+
+'''The Y position.'''
+
+
+Of all the spatial coordinate systems out there, only two word definitions
+are universally reliable:
+
+
+* '''Cartesian''': South to North
+* '''Screen''': Top to Bottom
+
+Cartesian is also popularly known as map co-ordinates. Unfortunately Bis
+call coordinates on their map, map coordinates. They are however''', screen'''
+coordinates.
+
+</blockquote>
+----
+
+'''General Syntax : Freestyle statement format.'''
+
+
+Depew[.exe] [-Options] [import.txt] NameOf[.pew] [export.txt] [-MoreOptions]
+
+
+DePew is the first, of a new family of exe's, that use
+relaxed syntax rules: intended to allow a user to state the command line to best
+suit them. Internally, the exe uses safe-heuristics to 'discover' the meaning.
+That said, beware the -Strict option which negates all below. For all example
+statements in this document, one of each alternative is stated as the -Strict
+syntax.
+
+
+* Actual import/output file.extension is immaterial. 'txt' is suggested.
+* Options are caseInsEnsiTive.
+<blockquote>
+(Minor options are listed here in lower case for
+legibility)
+
+</blockquote>
+* Options can be grouped together, or separated into various fragments anywhere on the command line. Strict: All options must occur first and be in a single group. <u>'''example:'''</u> depew -EoC* NameOfPew // list objects using * as separation character. Strict<br> depew -EO NameOfPew -C* // identical meaning<br> depew NameOfPew -EOC* // identical meaning<br> depew -Cc* NameOfPew -eo // identical meaning
+
+* the .pew extension need not be specified. Depew will find it.
+
+* Only an import.txt or only an export.txt are are contextually relevant. One can occur anywhere on command line. It is the user's choice to state a 'txt' file before or after the pew file. Whichever is more intuitive for them.
+<blockquote>
+<u>'''examples:'''</u>
+
+
+depew -EO NameOfPew export.xyz
+Strict
+
+
+depew export.xyz NameOfPew -EO
+
+
+depew -IO import.txt NameOfPew
+Strict
+
+
+depew NameOfPew -IO import.txt
+
+
+In other words it is a user's conceptual preference how to
+phrase the command.
+
+</blockquote>
+<u>'''Options: '''</u>
+
+
+{| border="1"
+|-
+|none:
+|simply analyse the pew to
+ verify it is integrity and print usage statistics.
+|-
+|-U:
+|'''U'''sage. As above
+|-
+|
+|
+|-
+|-X
+|Export pew to wrp
+|-
+|
+|
+|-
+|-LZ
+|List Duplicated Objects
+|-
+|-RZ
+|Remove Duplicated Objects
+|-
+|
+|
+|-
+|-EOn[Cc]:
+|''' E'''xport
+ '''O'''bjects n= Output format desired. Worldtools, row transform, etc. (see
+ below)
+|-
+|-IO[v][y]:
+|'''I'''mport '''O'''bjects
+ (and build templates where necessary)
+|-
+|-DO[v][y]:
+|'''D'''elete all '''O'''bject
+ (positions) .
+|-
+|-RO[v][y]:
+|'''R'''educe '''O'''bjects
+ (by deleting unused)
+|-
+|
+|
+|-
+|
+ -LT[Cc]:
+
+|'''L'''ist '''T'''emplates
+|-
+|
+ -ET[Cc]:
+
+|''' E'''xport '''T'''emplates
+|-
+|-RT[v][y]:
+|'''R'''educe ''' T'''emplate
+ objects (by deleting unused)
+|-
+|-AT[v][y]:
+|A'''dd T'''emplate
+|-
+|-IT[v][y]:
+|'''I'''mport '''T'''emplate
+|-
+|-DT[v][y]:
+|'''D'''elete '''T'''emplates (and
+ objects). Note
+ deleting templates causes all objects to be deleted too.
+|-
+|
+|
+|-
+|
+ -IEn[v][y]
+|'''I'''mport '''
+ E'''levations
+|-
+|
+ -EEn[v][y]
+|'''E'''xport '''
+ E'''levations , asc (default) or xyz format
+|-
+|
+|
+|-
+|-Cc:
+|Separation '''c'''har
+ (default is ,)
+|-
+|-Y:
+|'''Y'''es. Don't prompt for
+ ask.
+|-
+|-V:
+|'''V'''erify integrity after
+ any new pew create.
+|-
+|-Hn:
+|Output Header Information.
+|-
+|-Fn:
+|'''F'''ormatted (Columnated)
+ output.
+|-
+|-P:
+|'''do NOT P'''ause on completion.
+|-
+|-K:
+|no pause on error (useful for bat commands which
+ generally test the return value anyway)
+|-
+|
+|
+|-
+|
+|
+|-
+|-Xn:
+|Export as Ascii, utf8, or unicode (import has
+ auto detection)
+|-
+|
+ -T:
+|'''T'''est''': '''will create a copy of the pewfile, using the dll's
+internals, and then checks it for errors. <br>
+ This is a confidence test of the dll,
+not, the pew.
+|-
+|-S:
+|'''S'''trict rules. Any
+ option or syntax that looks wrong, is wrong.
+|}
+* All options are permissible but, clearly, -Y (yes) only has relevance when altering a pew file or deleting it. If an option is irrelevant, it is ignored. But note -S
+
+<u>'''EXPORT TO WRP'''</u>
+
+
+syntax:
+
+
+depew -X[V] NameOfPew[.pew]
+
+
+an '''unbinarised''' wrp of the same name is produced in
+the same folder. This is identical in function to visitor's export script only
+1,000 times faster
+
+
+----
+
+'''Export 'text' file format'''
+
+
+* '''-ZA: Ascii (default)'''
+* '''-Z8: UTF8'''
+* '''-ZU: Unicode'''
+
+Standard Ascii/Ansi output is the default option. This is
+ordinarily windows CodePage 1252 which covers most European languages and is the
+default install for windows OS.
+
+
+UTF8 is the better alternative for guaranteed portability
+between your French keyboard (eg) which implies a *potentially* NON cp1252
+install, and someone else.
+
+
+'''THE
+NITTY
+GRITTY'''
+
+
+----
+
+'''USAGE'''
+
+<blockquote>
+[-U] NameOfPew
+
+<blockquote>
+-U is optional. DePew will also show usage statistics when no options are
+specified.
+
+</blockquote> </blockquote>
+-Usage shows the amount of redundant objects which can never be accessed again,
+and unused templates which can. (It is up to the user to -Reduce unusable
+objects.)
+
+
+----
+
+'''OBJECT
+POSITIONS'''
+
+
+Preamble:
+
+
+There are '''only''' four elements that make it from a pew into the final binarised wrp file.
+
+
+# Island surface textures described in a mixture of rvmats and their paX files.
+# The elevation of this surface at any given point expressed in meters above (or below) sea level..
+# The position of all objects
+# Details of the object itself, the library 'template'.
+
+'''Nothing''' else in a pew is relevant to the final island. '''Everything'''
+else in a pew file is '''only''' relevant to easing the editing burden. An
+example of which are road-networks. They play no part and are of no consequence
+to a wrp, nor in the process of building a wrp, nor do they have any relevance
+to the engine.
+
+
+Visitor stores positional information of objects separately to details of the
+object itself. This is common sense. The details of a pinetree.p3d need only be
+recorded once. This pine tree can be placed in thousands of positions on the
+island. It is the position of these objects on the map which are of
+critical interest to island authors and the majority-use of external tools.
+DePew.exe also, however, facilitates changing '''a''' tree.p3d to
+anotherTree.p3d simply and efficiently.
+
+
+Be aware that Depew can export or import this information in a variety of ways:
+The intention of depew is '''not''' to manipulate data itself but to facilitate
+external tools to do so in ways yet to be imagined.
+
+
+----
+<blockquote>
+'''-E[O] ''' '''Export
+Object (positions)'''
+
+</blockquote>
+Object positions can be listed to screen, or, exported to
+a file. A quick visual
+listing on the screen (which could be &gt;piped if wanted), or, genuine hard
+copy for immediate use by other tools, or permanent reference. File exports
+contain only or mostly valid data (see -Header option). Screen 'data' on the other hand also contains
+informational messages. Some care is taken by depew to visually arrange the text
+to be humanly readable.
+
+
+{| border="1"
+|-
+|'''-EO[n][Cc][F0][H0] NameOf.Pew '''
+|Export to screen
+|-
+|'''-EO[n][Cc][F0][H0] NameOf.Pew Export.txt'''
+|Export to file
+|}
+Additional options:
+
+
+Note that the 0 digit for any option is NOT required.
+
+
+{| border="1"
+|-
+|'''-Cc'''
+|Separation Character:
+|Unless stated otherwise via option -Cc, the separation
+ char is a comma (,)
+|-
+|-F0
+|Raw Output
+|
+|-
+|-F1
+|Formatted Output
+|Default. Columnated text for easier reading
+|-
+|-H0
+|No Header
+|
+|-
+|-H1
+|Header
+|Default. Use Header as first line of output.
+|-
+|-On
+|output format:
+|
+|-
+|
+|0
+| (default) world tools format
+|-
+|
+|1
+|extended world tools format
+|-
+|
+|2
+|row transform format
+|-
+|
+|3
+|column transform format
+|}
+<u>n==0 or not specified, (word tools format) Default.</u>
+
+
+'''&quot;path\and\model&quot;, X, Y,
+Z, Orientation'''
+
+
+'''this is a plain vanilla export,
+compatible with visitor vis files. There are many deficiencies in this format,
+notably, the lack of relative height, and instance name.'''
+
+
+Output Example:
+
+
+// no header -H0
+
+<blockquote>
+&quot;ca\structures\wreck\wreck_ship_1&quot;, 1514.15, 9864.49, 4.76, 325<br>
+&quot;ca\structures\wreck\wreck_ship_2&quot;, 1469.50, 9919.33, 6.46, 322<br>
+&quot;ca\water2\lhd\lhd_1&quot;, 1368.00, 1120.00, -2.69, 0<br>
+&quot;ca\water2\lhd\helper_snaper&quot;, 1368.00, 1142.00, 0.24, 0
+
+</blockquote>
+<u>n==1 (extended format)</u>
+
+
+<u>// with header (-H1 default)</u>
+
+
+'''&quot;path\and\model[:InstanceName]&quot;, X, Y, Z,
+Orientation, RelativeHeight, Scale'''
+
+
+Output Example:
+
+<blockquote>
+&quot;ca\structures\wreck\wreck_ship_1&quot;,
+1514.15, 9864.49, 4.76, 325, 4.91, 1.00<br>
+&quot;ca\structures\wreck\wreck_ship_2:arthur&quot;, 1469.50, 9919.33, 6.46, 322, 2.74, 1.00<br>
+&quot;ca\water2\lhd\lhd_1&quot;, 1368.00, 1120.00, -2.69, 0, 55.07, 1.00<br>
+&quot;ca\water2\lhd\helper_snaper&quot;, 1368.00, 1142.00, 0.24, 0, 55.07, 1.00<br>
+&quot;ca\water2\lhd\lhd_4&quot;, 1366.56, 990.52, -1.06, 0, 55.07, 1.00
+
+
+note the 2nd objecthas
+an object 'name' of arthur'.
+This will be present on the same, imported object.
+
+</blockquote>
+{| border="1"
+|-
+|&quot;ModelAndPath&quot;
+|Actual file location. Quotes
+ are always present.
+|-
+|''':&quot;Instance name&quot;'''
+|'''if present AND different to the
+ model's name, it is listed'''
+|-
+|'''X,Y,Z'''
+|float values are limited to 2 decimal
+ places (10cm)
+|-
+|
+|Values read as West, North, Height
+|-
+|'''Orientation'''
+|Float degrees limited to 2 decimal places
+|-
+|'''RelativeHeight'''
+|Float limited to 2 decimal places (10cm)
+|-
+|'''Scale'''
+|Float limited to 2 decimal places
+|-
+|
+|
+|}
+'''Notes:'''
+
+
+* '''Newlines separate records'''
+* -Formatted output makes it far easier to read textually since all variables are in columns. This should present no problem with import applications (such as Excel) but -F0 is provided to defeat this feature.
+* -H1 allows header information describing each column of data as the first line. Most spreadsheet applications expect or accept this. -H0 prevents this.
+
+Object
+transforms
+
+
+'''n==2 transform Row format<br>
+n==3 transform Column format '''
+
+
+This by far, is the most flexible output format. It supplies all possible
+information about an object's position, for manipulation by some other tool.
+(Orientation, pitch, slant, skew, position and scale are derived from this
+matrix).
+
+
+The internal transform matrix, held by a pew, and used by visitor,
+is in 'row' format. All other transforms used by bis, including wrps, are in
+column format. One wrinkle with pew transforms is that the
+height information of the
+object is stored in the 'Y' position. Most external tools expect an XYZ of LeftMost, UpperMost, and Height.
+
+
+<u>The output is a faithful copy of the pew, not, what externals tools might
+expect of it.</u>
+
+
+Row (pew) Output format:
+
+
+&quot;ca\some\where[:InstanceName]&quot;, RelativeHeight,<br>
+R11,R12,R13,<br>
+R21,R22,R23,<br>
+R31,R32,R33,<br>
+R41,R42,R43
+
+
+&quot;ca\some\other[:InstanceName]&quot;, Relative
+Height,<br>
+etc
+
+
+'''example'''
+
+<blockquote>
+&quot;ca\structures\wreck\wreck_ship_1&quot;,4.91,<br>
+0.817631, 0.000000, -0.575742,<br> 1514.147583, 0.000000, 1.000000,<br>
+0.000000, 4.760678, 0.575742,<br>
+0.000000, 0.817631, 9864.490234<br> <br>
+&quot;ca\structures\wreck\wreck_ship_2&quot;,2.74,<br>
+0.787751, 0.000000, -0.615991,
+
+</blockquote>
+'''Column (wrp) Output
+format'''
+
+
+&quot;ca\some\where&quot;, RelativeHeight,<br>
+C11,C12,C13,<br>
+C21,C22,C23,<br>
+C31,C32,C33,<br>
+C41,C42,C43
+
+
+Note that column format produces the normally convenient XYZ triplet as the
+4th array. '''Note most carefully, C42/R32 (Y) is the height.'''
+
+
+'''example'''
+
+<blockquote>
+'''
+&quot;ca\structures\wreck\wreck_ship_1&quot;,4.91,<br>
+0.817631, 0.000000, 0.575742,<br>
+0.000000, 1.000000, 0.000000,<br>
+-0.575742, 0.000000, 0.817631,<br> 1514.147583, 4.760678, 9864.490234<br> <br>
+&quot;ca\structures\wreck\wreck_ship_2&quot;,2.74,<br>
+0.787751, 0.000000, 0.615991,'''
+
+</blockquote>
+<u>Notes:</u>
+
+
+* Whitespace should be ignored
+* floating output is accurate to 6 decimal places
+* each 'record' of information is comma separated (subject to -Cc option)
+
+----
+<blockquote>
+'''-IO ''' '''Import
+Object (positions)'''
+
+</blockquote>
+DePew auto detects the format of the imported text file
+and it is separation character (be it world tools, extended, or transform).
+
+
+Depew is 'aware' that the import.txt may, or may not have
+a 1st line header.
+
+
+Quoted filenames are optional (except of course if the
+file name contains spaces)
+
+
+.p3d extension to the filename is optional.
+
+
+a preceding slash on the filename (if present) is ignored
+
+
+If the object itself does not exist in the template,
+DePew creates it. However:
+
+
+# DePew cannot know in advance if this object is natural, artificial, or road. DePew sets it as Natural as a majority case and warns the user.
+# If the model subsequently does not exist on the p: drive, DePew fills it with best guess estimates and also warns the user that this is the case.
+<blockquote>
+These are warnings to the island maker. It is up to the island maker to do
+something about it, or, accept depew's best guesses.
+
+</blockquote>
+'''-IO[v][y] NameOf[.pew] import.txt'''
+
+
+Additional options:
+
+
+-verify after creation of new pew file.<br>
+-yes, don't ask to write filet
+
+
+Notes:
+
+
+* Be aware that importing the same data multiple times, replicates the same object. You will end up with multiple, identical, objects at the same position. Depew cannot ascertain that you are replicating because the vagaries of IEEE floats prevent exact detection of same position. Your only way out of this is to delete all objects and start again.
+* Although verification of a 'good' pew is desirable, pew files can be enormous and can take staggering amounts of time to process. The -v option is therefore not the default because of this (but should be).
+* Although noisy, DePew lists each imported record as a 'progress bar'. This in preference to listing nothing and the user assuming DePew has stalled, when it is simply a huge pew being processed.
+* Import works with all known forms of world tool export syntax. Specifically one object per line <blockquote> FileName&lt;separator&gt;X&lt;separator&gt;Y&lt;separator&gt;Z[&lt;Separator&gt;Degrees]&lt;optional separator&gt; </blockquote> &lt;separator&gt; can be ; , | or space. Spaces if used in a file name must (obviously) be enclosed in quotes
+
+----
+
+'''DELETE OBJECTS/Templates'''
+
+<blockquote>
+-DO/T[v][y] NameOf.pew
+
+</blockquote>
+All objects or all templates (and consequently all objects) will be removed
+from the pew
+
+
+-Verify reads the resulting output pew to verify it is integrity
+
+
+-Y is a silent yes, rather than being asked
+
+
+'''REDUCE Template/Objects'''
+
+<blockquote>
+-RO/T[v][y] NameOf.pew
+
+</blockquote>
+Both options involve the removal of unused items.
+
+
+'''In the case of objects:''' As a natural course of events when editing islands,
+objects which have been added and subsequently deleted remain in the pew file.
+'''Forever'''. They play no part in subsequent editing, nor any part of the wrp binarisation
+process. They are simply large chunks of forests and roads (eg) that cannot be
+subsequently accessed. The -Usage option will tell you how large this redundant space is. (DePew
+will make an informed guess whether removing them is beneficial, but it is left
+to the user to specifically command it)
+
+
+'''Removing unused ''templates''''', while not harmful, is not generally beneficial.
+Most Island authors create a library template library of all their most commonly
+used trees, roads, plants and buildings. When creating AN island, they will only
+use a certain percentage of this library, but, it saves effort creating a new
+template for every island they make.
+
+
+note that the command line accepts -Rot or -Rto to reduce
+both at same time.
+
+
+----
+
+<u>'''
+Template Object Library'''</u>
+
+
+Template objects are a library of p3d's. <u>Not all of which may be
+present on the island</u>. Irrespective of the number of pinetree.p3d's that are
+placed on the island, Visitor generally has a single, unique entry, existing in the
+template library describing ALL of those identical pinetrees. It is possible for
+a pew template to contain more than one identical template 'object.p3d', but unusual.
+Some 'objects will refer to the one template id, others, to other id's and cause
+no harm.
+
+
+While it is essential of course to have specifically placed
+objects in this template, it is also quite common for this library to have
+considerably more entries than those actually used. This is a 'selection'
+library. One that you build for yourself for commonly used roads, trees and
+buildings. Whether you actually use '''all''' of the buildings or '''all''' of
+the roads on '''this''' island, is your choice, but you would normally have a
+common library, built from your experience, for '''all''' islands you make.
+
+
+Naturally and of course, specific island templates are unlikely
+to be identical to other ones. Simply because, for a given island, you have also
+added a few odd items unique to this pew. It does not negate the need for a
+common template library when you first start.
+
+
+DePew facilitates Template creation for two reasons.
+
+
+# To save you '''hours''' of your time re-creating a template for every island you make. Obviously, it '''will''' take hours. '''Once'''. But then you can use DePew to export it, and then import it for every new creation.
+# To facilitate island upgrades. It is quite common for a popular island to be retextured. Depew allows you to export your templates and objects from the 'old' island, to the re-textured one.
+
+<u>'''
+List Templates'''</u>
+
+
+Listing is meant to be a quick
+visual check of what is, in fact, in the pew.
+
+
+'''-LT[Cc] NameOf[.pew] '''
+
+
+Output examples:
+
+<blockquote>
+'''[*]ca\some\where.p3d , MyStandardHouse, Artificial, Rectangle,
+[Road]'''
+
+
+'''[*]NameOf.p3d,NameOfP3d,Natural,Ellipse'''
+
+</blockquote>
+* says at least one object uses this template
+
+
+End of listing produces a summary of used/unused templates
+
+
+<u>Notes</u>
+
+
+Template objects are normally of 3 types
+
+
+* Natural objects such as trees: Normally green ellipses.
+* Artificial objects: Normally red rectangular.
+* Roads: Normally grey rectangles
+
+NameOfP3d is auto generated by visitor when first added as a template. It is
+exact same as the filename, without the p3d extension, and is normally altered
+by the island author to suit.
+
+
+----
+
+'''IMPORT/EXPORT TEMPLATES'''
+
+
+<u>'''
+Export Templates'''</u>
+
+
+'''-ET NameOf[.pew] output.file'''
+
+
+Exporting or listing of templates is intended as a
+facility to create a library of common
+p3d's that are used over and over again in different pew projects. eg a
+standard set of trees/bushes/houses and roads. Not all will necessarily be used
+in AN island. This facility should save a bazillion hours in creating new
+artificial and 'natural' objects for every island you do. Island authors are
+free to add to, or remove items from this textual reference to suit.
+
+
+Most island authors use a collection of standard objects such as trees,
+plants, buildings and roads, regardless of the island they are creating. In order to avoid persistent re-creation of a collection of objects for every
+island worked on, a 'generic' template library can be imported into any pew. This library can be added to what's already there, or, it can replace
+whatever's there, if anything.
+
+
+The import file is in standard Bis class syntax. An import library should be created by EXPORTING a template from a working
+pew. Eg something already done, once. This file can be hand edited by the user to add more objects, or remove the
+more obscure ones, before general use. Allowance is made to distinguish between artificial, natural, and roads.
+
+
+Output example:
+
+
+This output file is structured in the classic, powerful, bis class syntax.
+For importing, you are free to add definitions, conditional assembly, macros,
+classes and inheritances and #includes. DePew utilises the equally powerful
+internal rapification of DePbo.dll to achieve whatever style-preference you
+prefer, with of course it is attendant error checking abilities.
+
+<blockquote>
+#define NATURAL 1<br>
+#define ARTIFICIAL 2<br>
+#define ROADS 3<br> <br>
+#define RECTANGLE 0<br>
+#define ELLIPSE 1<br> <br>
+#define RGB_DEFAULT -1<br>
+#define RGB_BLACK 0x000000<br>
+#define RGB_BLUE 0xFF0000<br>
+#define RGB_GREEN 0x00FF00<br>
+#define RGB_RED 0x0000FF<br>
+#define RGB_GREY 0x7F7F7F<br>
+#define RGB_DARK_GREEN 0x007F00<br> <br>
+class ObjectTemplates<br>
+{<br>
+
+class Object_wreck_ship_1<br>
+{<br>
+ulObjectType=ARTIFICIAL;<br>
+ulMarkerType=RECTANGLE;<br>
+strModelFilename=&quot;ca\structures\wreck\wreck_ship_1.p3d&quot;;<br>
+strModelName=&quot;ca\structures\wreck\wreck_ship_1&quot;;<br>
+GeometryAutoCenterPos[]={0.5771198,3.2087746,4.3739014};<br>
+ResolutionAutoCenterPos[]={0.5771198,3.2087746,4.3739014};<br>
+dblxyGeometryBounds[]={28.249469757080078,80.78480529785156};<br>
+dblxyResolutionBounds[]={28.249469757080078,80.78480529785156};<br>
+};<br>
+class AnotherObject<br>
+
+{<br>
+........<br>
+
+};<br>
+.........<br>
+};
+
+</blockquote>
+each class has the following parameters
+
+
+{| border="1"
+|-
+|
+|
+|Value
+|-
+|ulObjectType
+|Type of library object.
+|ARTIFICIAL<br>
+ NATURAL<br>
+ ROADS <br>
+ or number range 0..5
+|-
+|ulMarkerType
+|The shape of the object on the map
+|RECTANGLE<br>
+ ELLIPSE <br>
+ or number range 0..2
+|-
+|strModelFilename
+|
+|ca\somewwhere.p3d
+|-
+|strModelName
+|
+|somehwere
+|-
+|ulOutlineColour
+|
+|RGB value, else default
+|-
+|ulObjectColour
+|
+|RGB value, else default
+|-
+|GeometryAutoCenterPos
+|Visitor generates these values when
+ initially loading the p3d.
+|{0.5771198,3.2087746,4.3739014};
+|-
+|ResolutionAutoCenterPos
+|
+|same as above
+|-
+|dblxyGeometryBounds
+|As above
+|{28.249469757080078,80.78480529785156};
+|-
+|dblxyResolutionBounds
+|
+|same as above
+|-
+|dblxyRandomScale
+|
+|Default 50
+|-
+|dblxyRandomRotate
+|
+|Default 20
+|-
+|dblxyRandomOrientation
+|
+|Default180
+|-
+|
+|
+|
+|}
+Default values are supplied or assumed by DePew if not specified.
+
+
+Import
+Templates
+
+
+'''DePew -IT[v][y] import.txt NameOfPew'''
+
+
+Depew will create a new template library from a file
+generated from above export (and potentially modified by the user).
+
+
+'''Be Warned: ''' '''All''' existing template objects (and consequently
+'''all''' objects themselves) will be automatically removed from the pew. This
+may not be what you want.
+
+
+Add
+Templates
+
+
+'''DePew -AT[v][y] import.txt NameOfPew'''
+
+
+'''Unlike''' the above drastic procedure, adding extra
+template entries to a pew does not affect anything there in the first instance.
+
+
+Depew.exe will ignore each template class from the
+import.txt that already exists in the pew by examining the file.p3d
+
+
+Note if no template has been added, the pew is left
+untouched.
+
+
+----
+
+'''ELEVATIONS'''
+
+
+{| border="1"
+|-
+|Export:
+|-EE[1][Cc] NameOf.pew to screen
+|-
+|Export:
+|-EE[1][Cc] NameOf.pew export.txt
+|-
+|Import:
+|-IE[v][y] import.txt NameOf.pew
+|}
+Note that when listing to screen, hitting the escape key will quit the output
+
+
+Default n=0 ASC
+format
+
+
+Elevations are listed in ASC format. Specifically:
+
+
+ncols 256<br>
+nrows 256<br>
+xllcorner 0.0<br>
+yllcorner 0.0<br>
+cellsize 20.0<br>
+NODATA_value -9999<br>
+-74.9 -75.9........ data until end of file..............
+
+
+note that the data is contiguous, separated by spaces (including newlines). row of data is separated by a newline
+
+
+The origin of the grid is the upper left and terminus at the lower right.
+(screen coords)
+
+
+As a matter of convenience each 'line' of data is a 'row' of heights.
+
+
+'''n==1 xyz format'''
+
+
+This is the deprecated 'ExportXYZ.exe' which has been subsumed into this
+package.
+
+
+X== column, row==Y, Z == height
+
+
+data IS in meters
+
+
+X Y
+Z
+
+
+0.00 0.00 -54.83<br>
+12.50 0.00 -54.83<br>
+25.00 0.00 -54.83<br>
+37.50 0.00 -54.83<br>
+50.00 0.00 -54.83<br>
+62.50 0.00 -54.83
+
+
+..............
+
+
+12675.00 12787.50 -54.83<br>
+12687.50 12787.50 -54.83<br>
+12700.00 12787.50 -54.83<br>
+12712.50 12787.50 -54.83<br>
+12725.00 12787.50 -54.83<br>
+12737.50 12787.50 -54.83<br>
+12750.00 12787.50 -54.83<br>
+12762.50 12787.50 -54.83<br>
+12775.00 12787.50 -54.83<br>
+12787.50 12787.50 -54.83
+
+
+Importing Elevations
+
+
+Depew automatically detects the difference between ASC and XYZ formats
+
+
+Height data to be imported must be at the same dimensions as the original xy
+and gridsize.
+
+
+----
+
+'''Duplicated Objects'''
+
+
+It is difficult to impossible to check in visitor that identical objects have
+not been placed at the same position on a map. This can occur all too easily as
+a repeated copy and paste, or more subtly, as a multiple mouse click. The
+duplicated object(s) is hidden under the one in view (the z Order), and short of
+removing, or moving that top object and checking underneath, you are none the
+wiser.
+
+
+Listing duplicated objects provides an xyz position and an object name of the
+offending item. You can then check manually with visitor at that location and do
+something about it, or, you can leave it to depew, to remove ALL duplicated
+objects itself.
+
+
+the criteria for a duplicated object is that
+
+
+* it uses the same template id
+* the xy height and rotation are identical
+
+this should overcome a series of objects in exact same place, but oriented
+differently.
+
+
+
+[[Category:Mikero Tools]]

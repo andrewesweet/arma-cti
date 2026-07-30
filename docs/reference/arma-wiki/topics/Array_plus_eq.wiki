@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/Array+=
+// revision: 373440 (2025-05-08T11:27:12Z)
+// export sha1: tq8guzueblef66uedyqcdt12p88cqml
+// categories: Category:Introduced with Arma 3 version 0.50 | Category:Introduced with Arma 3 version 1.00 | Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|0.50}} same-file support<!-- in 2011 --><br>
+{{GVI|arma3|1.00}} full support<!-- in 2013 -->
+
+
+The <syntaxhighlight lang="cpp" inline>array[] += {}</syntaxhighlight> syntax allows to add items to an existing array inherited from the direct parent.
+
+{{Feature|important|
+* This syntax has limitations in inheritance - see {{Link|#Limitations}}.
+* This syntax should '''not''' be used in [[Description.ext]] - only in modded {{Link|Config.cpp/bin File Format|config.cpp}}.
+}}
+
+
+== Usage ==
+
+<syntaxhighlight lang="cpp">
+class A
+{
+	array[] = { any, thing };
+};
+
+class B : A
+{
+	array += { more, Bstuff };
+};
+
+class C : A // inherits from A, -not- B
+{
+	array += { other, Cstuff };
+};
+</syntaxhighlight>
+
+
+== Limitations ==
+
+Only '''direct inheritance''' of an explicitly-stated array works. The following cases do '''not''' work:
+{| style="awidth: 100%"
+| style="width: 50%" |
+<syntaxhighlight lang="cpp">
+class A { array[] = { any, thing }; };
+class B : A {};
+class C : B // inherits from B which inherits from A (without changes)
+{
+	array[] += { wont, work }; // result: array[] = { wont, work };
+};
+</syntaxhighlight>
+|
+<syntaxhighlight lang="cpp">
+class A { array[] = { any, thing }; };
+class B : A { array[] += { more, stuff }; };
+class C : B // inherits from B which inherits from A (with += changes)
+{
+	array[] += { wont, work }; // result: array[] = { wont, work };
+};
+</syntaxhighlight>
+|}
+
+
+[[Category:Real Virtuality File Formats]]
+[[Category:Introduced with Arma 3 version 0.50]]
+[[Category:Introduced with Arma 3 version 1.00]]

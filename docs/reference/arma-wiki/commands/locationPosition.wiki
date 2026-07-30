@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/locationPosition
+// revision: 377416 (2026-01-02T06:45:21Z)
+// export sha1: siu13wov2bgloztlmwskh0wcdtu2too
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Locations
+
+|descr= Returns the [[Position|position]] of a location. If the location is attached to an object, that object's position is returned.
+
+|s1= [[locationPosition]] location
+
+|p1= location: [[Location]]
+
+|r1= [[Position#PositionAGL|PositionAGL]] - as locations are placed at Z = zero [[Position#PositionASL|ASL]] the returned Z is negative on land and around zero on water, see {{Link|#Example 3}}
+
+|x1= <sqf>_locationPos = locationPosition myLocation;</sqf>
+
+|x2= <sqf>
+_location = nearestLocation [getPos player, "nameCity"];
+_locationPos = locationPosition _location;
+</sqf>
+
+|x3= <sqf>
+private _landLocation = locationPosition nearestLocation [[2915.2, 6164.52], "NameCityCapital"]; // "Agia Marina" [2915.2, 6164.52, -21.9009]
+private _waterLocation = locationPosition nearestLocation [[2647.8799, 5989.9502], "NameMarine"]; // "Marina Bay" [2647.88, 5989.95, 0.0161484]
+</sqf>
+
+|seealso= [[setPosition]] [[createLocation]] [[nearestLocation]] [[nearestLocations]] [[position]] [[size]]
+}}

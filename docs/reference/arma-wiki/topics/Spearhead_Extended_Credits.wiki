@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/Spearhead_Extended_Credits
+// revision: 376017 (2025-07-21T15:42:18Z)
+// export sha1: 7ltmxysnlzvsxf5ax31xjxp00j215hp
+// categories: Category:SPEX - Spearhead Extended
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| style="width: 100%;"
+| colspan="2" style="text-align: center; padding: 2em;" | [[File: spex_overview_1.jpg|700px]]
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">CREATIVE DIRECTORS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Michael 'Instant Muffin' Cochrane<br/>Ben Shimadry<br/>Nathan 'Dmitry Yuri' Smyth<br/>Daryl 'Kerc' Hawkins
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ASSET ARTISTS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Michael 'Instant Muffin' Cochrane<br/>Daryl 'Kerc' Hawkins<br/>Andrew Baxter<br/>Edward<br/>Simon 'norrin' Louis<br/>Hammad 'Casper_TFG' Arkan<br/>Justin Nijs<br/>Felix 'SteamboatMonkee' Ungermann<br/>Tyler 'Coldfront15' Bashaw<br/>Jacob 'Valentine' Lengfelder-DeCriscio<br/>Dwayne Hicks<br/>Gustavo Martins<br/>Pierre 'El Tyranos' Azuelos
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">ENVIRONMENT ARTISTS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | DutchFox<br/>Julian 'yooles' Łada<br/>Teemu 'Temppa' Mikkilä
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">PROMO/COMMUNITY MANAGERS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | DutchFox<br/>Julian 'yooles' Łada<br/>Jakša 'Jaki' Gabrić<br/>AugCph
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">MUSIC COMPOSERS</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Luke Nemitz
+|-
+! colspan="2" | <span style="font-size: large; padding-bottom: 2.5em">DOCUMENTATION</span>
+|-
+| colspan="2" style="text-align: center; padding-bottom: 1.2em" | Robert 'R3vo' Seibel
+|-
+|}
+
+[[Category: SPEX - Spearhead Extended]]

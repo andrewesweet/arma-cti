@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_limitSupport
+// revision: 310412 (2022-05-05T18:03:14Z)
+// export sha1: i00afy9wxeavoyd0wsrc28zswg2xufh
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Supports | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Supports
+
+|descr= Limits support runs during a mission.
+
+|s1= [module, supportType, quantity] call [[BIS_fnc_limitSupport]]
+
+|p1= module: [[Object]] - the requester module
+
+|p2= supportType: [[String]] - can be one of:
+* "Artillery"
+* "Transport"
+* "CAS_Heli"
+* "CAS_Bombing"
+* "Drop"
+
+|p3= quantity: [[Number]] - support run limit. -1 for unlimited support
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>[reqModule, "Transport", -1] call BIS_fnc_limitSupport;</sqf>
+
+|seealso= [[BIS_fnc_addSupportLink]]
+}}

@@ -1,0 +1,73 @@
+// source: https://community.bistudio.com/wiki/displaySetEventHandler
+// revision: 369398 (2024-09-03T18:43:19Z)
+// export sha1: 6tucuxjszr2fkwkilelt538cmdtcz8t
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: GUI Control - Event Handlers | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - Event Handlers
+
+|gr2= Event Handlers
+
+|descr= Sets given event handler of given display.
+The return code of the provided function should indicate whether this event was handled correctly. This implies telling the engine whether it is default code should be executed. 
+See [[User Interface Event Handlers]] for the full list of handler names.<br>
+If applicable, see [[DIK KeyCodes]] for a list of key code constants, which are relevant to key related user interface events like {{Link|User Interface Event Handlers#onKeyDown|onKeyDown}} and {{Link|User Interface Event Handlers#onKeyUp|onKeyUp}}.
+{{Feature|important|When using the event names listed [[User Interface Event Handlers|here]] with the [[ctrlAddEventHandler]], [[ctrlSetEventHandler]], [[displayAddEventHandler]] or [[displaySetEventHandler]] commands, the prefix "on" in the event name must be removed (e.g. ''''ButtonDown'''' instead of ''''onButtonDown'''').}}
+
+|s1= display [[displaySetEventHandler]] [handlerName, function]
+
+|p1= display: [[Display]]
+
+|p2= handlerName: [[String]]
+
+|p3= function: [[String]] - code
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control displaySetEventHandler ["KeyDown", ""];</sqf>
+
+|x2= {{hl|init.sqf}}:
+<sqf>
+KeysPressed = compile preprocessFile "keysPressed.sqf";
+private _display = findDisplay 46;
+_display displaySetEventHandler ["KeyDown", "_this call KeysPressed"];
+</sqf>
+
+{{hl|keysPressed.sqf}}:
+<sqf>
+private _handled = false;
+switch (_this select 1) do {
+	// F key
+	case 33: {
+		// code here
+		_handled = true;
+	};
+};
+_handled;
+</sqf>
+
+|seealso= [[ListOfKeyCodes]] [[displayAddEventHandler]] [[displayRemoveEventHandler]] [[displayRemoveAllEventHandlers]] [[ctrlSetEventHandler]] [[User_Interface_Event_Handlers|UI Event Handlers]] [[DIK_KeyCodes|DIK KeyCodes]] [[keyName]]
+}}
+
+{{Note
+|user= WGL.Q
+|timestamp= 20091125180200
+|text= Always use [[displayAddEventHandler]] instead, as [[displaySetEventHandler]] '''overwrites''' other (peoples') DEH.
+}}

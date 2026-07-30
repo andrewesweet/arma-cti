@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_encodeFlags
+// revision: 348540 (2023-11-08T13:06:07Z)
+// export sha1: o7se6gya2g1mgdsxap08jjkda897i7y
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Bitwise | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Bitwise
+
+|descr= Encodes array of unique binary flags with indexes between 0-15 into a single scalar.
+
+|s1= flags call [[BIS_fnc_encodeFlags]]
+
+|p1= flags: [[Array]] - array of unique binary flags with indexes between 0-15
+
+|r1= [[Number]] - encoded flags
+
+|x1= <sqf>private _encodedFlags = [0,2,3] call BIS_fnc_encodeFlags;//Returns 13</sqf>
+
+|seealso= [[BIS_fnc_decodeFlags]]
+}}

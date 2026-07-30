@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/ctrlMapDir
+// revision: 347213 (2023-09-05T16:49:02Z)
+// export sha1: qy6sg6daj6mmf07limb95s8nik56goj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|gr1= GUI Control - Map
+
+|descr= Returns the current orientation angle of the map control in degrees.
+
+|s1= [[ctrlMapDir]] ctrl
+
+|p1= ctrl: [[Control]]
+
+|r1= [[Number]]
+
+|x1= <sqf>
+private _mapControl = findDisplay 12 displayCtrl 51; // get the map
+private _dir = ctrlMapDir _mapControl; // returns 0 as the main map does not autorotate
+</sqf>
+
+|seealso= [[ctrlMapScale]]
+}}

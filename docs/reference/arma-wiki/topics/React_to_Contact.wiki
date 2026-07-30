@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/React_to_Contact
+// revision: 339250 (2023-04-28T13:43:44Z)
+// export sha1: jibpwwbk62wveeeoysau8w3td4fx6t8
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+When your squad/platoon receives fire from the enemy the following drill should be executed:
+
+'''Step 1 (Cover)'''
+Take up the nearest cover and return fire. Identify the enemy, determine if the squad/platoon can properly engage the enemy, and if the fireteam/squad in contact can suppress the enemy. If not, deploy additional fireteams/squads to gain suppressing fire. If all fireteams/squads are deployed, the squad/platoon commander moves into position to observe and suppress the enemy. No further orders will be made and the squad/platoon will be used as a base of fire for the platoon/company.
+
+'''Step 2 (Maneuvering)'''
+Determine avenues of approach to the enemy and deploy a fireteam/squad into position to seize the enemy position. Make sure the base of fire element keeps the movement covered or obscured from the enemy.
+
+'''Step 3 (Assault)'''
+Report to the platoon/company commander. Take command of the assaulting fireteam/squad and signal the base of fire element to shift fire away from the area about to be attacked. Seize the enemy position.
+
+'''Step 4 (Reorganize)'''
+Redistribute ammunition and supplies. Fill any sensitive vacancies and move the base of fire element into position to cover the most likely avenue of approach.
+
+=== Video of how the Rangers do it ===
+Unclassified Video explaing how the Rangers do it.
+{{Link|http://vimeo.com/27008994|link}}
+
+[[Category:Battle Tactics]]

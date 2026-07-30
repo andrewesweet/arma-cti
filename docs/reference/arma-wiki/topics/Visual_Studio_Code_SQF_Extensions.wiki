@@ -1,0 +1,132 @@
+// source: https://community.bistudio.com/wiki/Visual_Studio_Code_SQF_Extensions
+// revision: 369513 (2024-09-11T21:48:15Z)
+// export sha1: 3zlou3hd5swz4o3r9g4i9zxuqdzdiyk
+// categories: Category:Arma 3: Editing | Category:Arma 3: Tutorials | Category:Community Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This page contains information about {{Link|https://code.visualstudio.com/|Microsoft's Visual Studio Code editor}} and how it can be used for content creation in {{arma}}.
+
+
+== Extensions ==
+
+{{Feature|informative|See the {{Link|https://code.visualstudio.com/docs/editor/extension-marketplace|Microsoft article}}.}}
+
+The following is a list of recommended extensions. Note that it might be incomplete or out of date.<br>
+{{Link|https://marketplace.visualstudio.com/search?term{{=}}SQF&target{{=}}VSCode&category{{=}}All%20categories&sortBy{{=}}Relevance|Search "SQF" on the marketplace}} to find new or better extensions in that case.
+
+{| class="wikitable"
+! Extension
+! Author
+! Remark
+|-
+| {{Link|https://marketplace.visualstudio.com/items?itemName{{=}}Armitxes.sqf|SQF Language}}
+| Armitxes
+| Syntax highlighter.
+|-
+| {{Link|https://marketplace.visualstudio.com/items?itemName{{=}}SQF-VM.sqf-vm-language-server|SQF-VM Language Server}}
+| {{User|X39}} et al.
+| Language server for sqf (checks code for errors).
+|-
+| {{Link|https://marketplace.visualstudio.com/items?itemName{{=}}billw2011.sqf-debugger|SQF Debugger}}
+| billw2011
+| Debug sqf scripts (callstack, variables, breakpoints, ...)
+|-
+| {{Link|https://marketplace.visualstudio.com/items?itemName{{=}}EelisLynne.sqf-wiki|SQF Wiki}}
+| Eelis Lynne
+| Shortcut to go to the Biki page of the selected command/function.
+|}
+
+
+== Tasks ==
+
+To add tasks to your project follow these steps:
+# Open the folder you are working in with VSCode
+# Create a new directory at the root of it called {{hl|.vscode}}
+# Create a file called {{hl|tasks.json}} inside of that directory
+# Add the following content to it: <syntaxhighlight lang="cpp">
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		// -> Tasks go here <-
+	]
+}
+</syntaxhighlight>
+
+The following snippets will be listed under the {{hl|"tasks"}} tag. Tasks are separated by a comma.
+
+=== Start {{arma3}} (Mission Editing) ===
+
+This task launches {{arma3}} and opens a mission that is located inside of your working folder directly in Eden.
+<syntaxhighlight lang="cpp">
+{
+	"label": "Start Arma 3 (Mission Editing)",
+	"type": "process",
+	"options": {
+		"cwd": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Arma 3" // Change to your Arma 3 installation path
+	},
+	"command": "arma3_x64", // Also possible, if available: arma3profiling_x64, arma3diag_x64
+	"args": [
+		"${workspaceFolder}\\mission.sqm", // Loads directly into editor if you have a mission folder open in VSCode
+		"-mod=!Workshop\\@CBA_A3;!Workshop\\@My Other Mod", // Add mods separated by ";", absolute paths work as well
+		"-debug",
+		"-skipIntro",
+		"-filePatching",
+		"-noSplash",
+		"-showScriptErrors"
+	],
+	// Enable launching via shortcut "Tasks: Run Test Task"
+	"group": {
+		"kind": "test",
+		"isDefault": true
+	}
+}
+</syntaxhighlight>
+
+=== Stop {{arma3}} ===
+
+''Immediately'' closes {{arma3}}. Closing the game via the X button or {{Controls|Alt|F4}} would normally take some time. The name of the exe you are using can be found like this:
+# Open task manager
+# Select the "Processes" tab
+# Find {{arma3}}
+# Expand the entry
+# Right click on the first sub-entry
+# Select "Go to details"
+# The "Name" column (by default the first one) contains the exe name
+<syntaxhighlight lang="cpp">
+{
+	"label": "Stop Arma 3 Diag",
+	"type": "shell",
+	"command": "taskkill",
+	"args": [
+		"/F",
+		"/IM",
+		"arma3_x64.exe" // Other values: arma3diag_x64.exe, arma3profiling_x64.exe
+	],
+	"problemMatcher": []
+}
+</syntaxhighlight>
+
+=== Track RPT ===
+
+Changes to the [[Crash Files|RPT files]] will be written to the Terminal window.
+You might need to adjust the path {{hl|$env:USERPROFILE\\AppData\\Local\\Arma` 3}} ({{hl|`}} is required before a space) to your needs if you are using the {{Link|Arma 3: Startup Parameters#-profiles|-profiles startup parameter}}.
+<syntaxhighlight lang="json">
+{
+	"label": "RPT Watcher",
+	"type": "shell",
+	"command": "powershell",
+	"args": [
+		"-command",
+		"Get-ChildItem -Path $env:USERPROFILE\\AppData\\Local\\Arma` 3 -Filter *.rpt | Sort-Object LastAccessTime -Descending | Select-Object -First 1 | Get-Content -Tail 1 -Wait -Encoding utf8"
+	],
+	"problemMatcher": []
+}
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Editing}}
+{{GameCategory|arma3|Tutorials}}
+[[Category:Community Tools]]

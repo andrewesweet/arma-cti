@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/setPosASL
+// revision: 377438 (2026-01-02T06:46:46Z)
+// export sha1: 4v1z29jo8fp4mza0k3giyzupw9t5ljb
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= ofp
+|version2= 1.99
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Positions
+
+|descr= Sets the object position above sea level. Given position must be in [[Position#PositionASL|PositionASL]] format.
+
+|s1= object [[setPosASL]] pos
+
+|p1= object: [[Object]]
+
+|p2= pos: [[Position#PositionASL|PositionASL]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setPosASL [getPosASL player select 0, (getPosASL player select 1) + 10, getPosASL player select 2];</sqf>
+
+|x2= <sqf>
+_position = getPosASL _object;
+_position set [2, 10]; // 10m above sea level
+_object setPosASL _position;
+</sqf>
+
+|seealso= [[ASLToATL]] [[ATLToASL]] [[getPos]] [[getPosASL]] [[getPosATL]] [[position]] [[setPos]] [[setPosASL2]] [[setPosATL]] [[getTerrainHeightASL]] [[setPosWorld]] [[setVehiclePosition]]
+}}
+
+{{Note
+|user= Hypoxic125
+|timestamp= 20230226035906
+|text= As of Verson 2.10, if you use setPosX commands on a remote unit within a vehicle, the unit will remain in the vehicle. In order to avoid this, remoteExec the command to the remote client.
+<sqf>
+if !(isNull objectParent _unit) then {
+	[_unit, [0,0,0]] remoteExec ["setPosASL", _unit];
+};
+</sqf>
+}}

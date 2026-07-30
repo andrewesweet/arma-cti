@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getSteamFriendsServers
+// revision: 309225 (2022-05-04T10:08:28Z)
+// export sha1: ekc8y0abqrpdsb1ho3i5zxre9s5h10z
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= System
+
+|descr= Returns servers information of Steam friends currently playing the game.
+
+|mp= {{Feature|important|Does '''not''' work in multiplayer - returns an empty array.}}
+
+|s1= [[getSteamFriendsServers]]
+
+|r1= [[Array]] of [[Array]] of [[String]]s in format [ipAndPort, steamFriendName]
+
+|x1= <sqf>getSteamFriendsServers; // returns e.g [["127.42.33.8:2302", "MyFriend"], ["127.84.66.16:4604", "My Best Friend"]]</sqf>
+
+|seealso= [[isMultiplayer]] [[connectToServer]]
+}}

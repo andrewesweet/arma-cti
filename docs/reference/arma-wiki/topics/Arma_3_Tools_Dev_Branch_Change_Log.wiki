@@ -1,0 +1,97 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Tools_Dev-Branch_Change_Log
+// revision: 378865 (2026-07-28T12:42:30Z)
+// export sha1: 1173s50pnnwr2o92ox635y3pkou0rz1
+// categories: Category:Arma 3: Dev-Branch Change Logs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+{{Feature|informative|Changes prior to March 2025 can be found on the {{Link|https://forums.bohemia.net/forums/topic/169362-tools-development-branch-changelog/|Bohemia Interactive forums}}. The {{Link|https://discord.com/invite/arma|Arma Discord}} is another channel to learn about changes and to discuss them (''#arma3_tools'').}}
+
+= 17-07-2026= 
+''Size: ~3.6 MB''
+
+'''NOTES'''
+{{Feature|warning|A new build of Terrain Builder (''TerrainBuilderNew.exe'') is now included alongside the existing executable for testing. The original ''TerrainBuilder.exe'' remains unchanged and is still the default. This new build has not had broad testing yet, and we recommend backing up any project files before trying it out! The Terrain Builder changes below only apply to ''TerrainBuilderNew.exe''.}}
+
+'''TOOLS'''
+* [[Terrain Builder]]
+** Added: Configurable threshold for object diagnostics (duplicate finder) tool, and displaying the distance of duplicates
+** Added: Autosave function
+** Added: Tool to clean up log files (in the Help menu)
+** Added: "Templates selection" now allows checking/unchecking multiple libraries at once
+** Fixed: Library Manager list no longer starts out with every library expanded
+** Fixed: Sat map not loading after switching projects
+** Fixed: Crash when trying to rotate an object immediately after loading a project
+** Added: Label to "Zoom Level:" slider in object diagnostics dialog (it was an unlabeled slider before)
+** Added: Tooltip to layer list to explain the "content needs to be refreshed" icon
+** Added: Notification messages for common problems on [[Buldozer]] start (layers not yet generated, missing "dta" folder on P-drive)
+** Fixed: "Tips and Tricks" and View Crosshair/Rulers/RulersGrid/TerrainGrid settings were not saved in the settings file
+** Changed: The default surface mask export format is now "6 materials per cell"
+** Fixed: Point Area "Change Radius" in context menu did not work
+** Fixed: Changing Point Area scale would change the radius but not show the updated value in the "Properties" panel
+** Fixed: Crash when clicking Edit/Delete in Mapframe/InternalMCE/Surfaces dialog while the list is empty
+
+= 03-06-2026= 
+''Size: ~6.1 MB''
+
+'''NOTES'''
+{{Feature|warning|A new build of Terrain Builder (''TerrainBuilderNew.exe'') is now included alongside the existing executable for testing. The original ''TerrainBuilder.exe'' remains unchanged and is still the default. This new build has not had broad testing yet, and we recommend backing up any project files before trying it out! The Terrain Builder changes below only apply to ''TerrainBuilderNew.exe''.}}
+
+'''TOOLS'''
+* [[Terrain Builder]]
+** Removed: Pop-up every time Buldozer gets closed
+** Added: Allow user to specify number of processes to be used to generate PAAs
+** Fixed: Generate PAAs only for selected tiles instead of every time generating PAAs for all tiles
+** Fixed: Crashes if creating new a layer through Objects > Layers > New Layer
+** Fixed: Console window now works again, and properly displays log messages to the user
+** Added: Option for checking color count per tile when generating a surface mask
+** Tweaked: Made PNG generation about 3x faster
+** Fixed: Export Shapes to Imagery functionality now continues to work even after an invalid path is specified
+** Fixed: Renaming an object / shape layer works now, instead of creating a new layer
+** Tweaked: "Remove + Delete from HDD" from the Object layer window has been replaced with a "Remove" option which does not delete the corresponding file
+** Tweaked: Removed various unused options from Terrain > Preferences
+** Fixed: Fill area window now allows users to use presets even if part of the name is already present in another preset
+** Fixed: Clearing a Fill Polygon now clears all objects within its borders
+** Fixed: Terrain now gets rendered when regenerating mask layers
+** Fixed: Hint is displayed if a user attempts to add an object without having a template selected (also changed the name of Tools > Preferences > Custom > "Terrain size in meters:" to "New mapframe terrain size (m):")
+** Fixed: Undoing object layer removal now actually works
+** Fixed: Add template dialogue window now always opens the file browser window in the root of the mounted drive (P:)
+** Fixed: Direction angle field is now actually used by new road wizard window when adding a new road
+** Changed: New default setting values (Buldozer on P-drive, inverted mouse wheel enabled by default)
+** Fixed: "Make layer transparent" button will now actually make the layer transparent
+** Fixed: Delete button is now disabled for locked object and shape layers
+** Added: More options for sat / mask size in the mapframe calculator
+** Fixed: Improved fill area tool (no crashing, much faster)
+** Fixed: Thumbnails now have a transparent background (white outline / background will be used for selected textured objects only)
+** Added: "Collapse All" button for template libraries
+** Fixed: Removed the solid opaque outline from the textured icons (now it will only be used to show the selected ones)
+** Fixed: The Object > Layer > Delete Layer will now check only if the selected layer is locked
+** Added: Map PNG export (instead of EMF)
+** Added: Search bar for templates
+** Added: New icons to notify the user about the content refresh of the raster layers (added a new button to automatically refresh all possible layer contents)
+** Added: New default layout
+** Changed: Auto Fill with objects will now try to keep distance from the area borders
+** Added: Warning icons to notify the user that the raster layers are out of sync
+** Added: Log messages (in console) when importing a TXT file to provide details in case of errors
+** Fixed: Object texture alpha is now rendering correctly in Terrain Builder and when exporting to PNG / EMF
+* [[Publisher]]
+** Added: Display old and new file size when updating existing items
+** Added: Display "first published" and "last updated" time in item metadata
+** Changed: Handling of 32-bit deprecation for extensions
+
+= 19-06-2025= 
+Size: ~1 MB
+
+'''TOOLS'''
+* [[Binarize]]
+** Fixed: Crash caused by missing Steam DLLs
+
+= 06-06-2025 =
+''Size: ~24.7 MB''
+
+'''TOOLS'''
+* [[Publisher]]
+** Added: {{Link|https://store.steampowered.com/app/1175380/Arma_3_Creator_DLC_Spearhead_1944/|Arma 3 Creator DLC: Spearhead 1944}} Mortain terrain Steam Workshop tag
+
+{{GameCategory|arma3|Dev-Branch Change Logs}}

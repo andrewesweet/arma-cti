@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_convertUnits
+// revision: 370880 (2025-02-21T10:44:03Z)
+// export sha1: ooscqgvc9dl7dalplgox8lr1z2px9hd
+// categories: Category:Arma 3: Functions | Category:Function Group: Math | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Math
+
+|descr= Converts values to a target system of units.
+
+|s1= [value, from, to, mode, precision] call [[BIS_fnc_convertUnits]]
+
+|p1= value: [[Number]] - source value
+
+|p2= from: [[Number]] - source unit. Can be one of:
+* 0: m (meters)
+* 1: km (kilometers)
+* 2: ms (meters per second)
+* 3: kmh (kilometers per hour)
+* 4: ft (feet)
+* 5: mi (miles)
+* 6: fts (feet per second)
+* 7: mph (miles per hour)
+* 8: nm (nautical miles)
+* 9: kts (knots)
+
+|p3= to: [[Number]] - (Optional, default detected system of units via [[systemOfUnits]]) destination unit. See ''from''.
+
+|p4= mode: [[Number]] - (Optional, default 0) can be one of:
+* 0: destination value (Scalar)
+* 1: destination text long (String) e.g "5 meters"
+* 2: destination text short (String) e.g "5 m"
+
+|p5= precision: [[Number]] - (Optional, default 1) destination precision factor, -1 for no precision change. '''cannot be 0'''
+
+|r1= [[Number]] or [[String]] - converted value
+
+|x1= <sqf>private _distString = [500, 0, 5, 1, -1] call BIS_fnc_convertUnits;</sqf>
+
+|seealso= [[systemOfUnits]]
+}}

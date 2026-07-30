@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/setJointDriveLinearVelocity
+// revision: 377252 (2026-01-02T06:32:06Z)
+// export sha1: mxpvmxr6bcd1mkk7cqe3jwd1iomqq9b
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Development Branch | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:WIP
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|branch= dev
+
+|arg= local
+
+|eff= local
+
+|serverExec=
+
+|gr1= PhysX
+
+|descr= {{Wiki|WIP}} Requires that a linear "drive" has been configured in [[attachChild]].
+Sets the joints target velocity (orientation relative to the joint's own orientation).
+The drive will then behave like a spring (springParameters are configured in the drive), trying to accelerate the child object to the desired velocity.
+Similar to [[setVelocityModelSpace]]
+
+|s1= joint [[setJointDriveLinearVelocity]] velocity
+
+|p1= joint : [[Object]] or [[NetObject]] - The parent vehicle that has a joint to a child, or the joint itself to be manipulated
+
+|p2= velocity: [[Vector3D]] - relative velocity vector
+
+|r1= [[Nothing]]
+
+|x1= <sqf></sqf>
+
+|x2= <sqf></sqf>
+
+|x3= <sqf></sqf>
+
+|x4= <sqf></sqf>
+
+|x5= <sqf></sqf>
+
+|seealso= [[attachChild]] [[setJointDrivePosition]] [[setJointDriveOrientation]] [[setJointDriveAngularVelocity]]
+}}

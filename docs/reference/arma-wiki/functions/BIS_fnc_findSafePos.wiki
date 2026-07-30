@@ -1,0 +1,85 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_findSafePos
+// revision: 349938 (2023-11-20T22:11:20Z)
+// export sha1: theot320txzvl4sjoip06qxnz1uvpkr
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Positions | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Positions
+
+|descr= This function generates position on a map according to several given parameters (see diagram).
+[[File:bis_fnc_findsafepos.jpg|600px|thumb|Diagram]]
+The position '''pos''' will be generated inside an area which resides between '''minDist''' and '''maxDist''' from the given '''center'''. If '''objDist''' is also specified, the position will be selected '''objDist''' away from nearest terrain object. If '''maxGrad''' > 0 then the position will be also checked for how flat the area around is within '''objDist''' radius. The function can additionally be instructed to generate position specifically on water or land ('''waterMode''') or on a shoreline ('''shoreMode'''). The '''shoreLine''' param will be ignored if position is not requested specifically on land.<br><br>
+Additionally, generated position could be checked against the list of blacklisted positions '''blacklistPos'''. If search for suitable position failed, '''defaultPos''' position will be used. The format for '''defaultPos''' is array with 2 positions: [posOnLand, posOnWater].
+
+|s1= [center, minDist, maxDist, objDist, waterMode, maxGrad, shoreMode, blacklistPos, defaultPos] call [[BIS_fnc_findSafePos]]
+
+|p1= center: (Optional, default <sqf inline>[]</sqf>) center position. Can be one of: 
+* [[Array]] - position in format [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]]
+* [[Object]] - object which position will be used
+* [[Nothing]] - when passing empty array [] or nothing, the world's "safePositionAnchor" entry will be used
+
+|p2= minDist: [[Number]] - (Optional, default 0) minimum distance from the center position
+
+|p3= maxDist: [[Number]] - (Optional, default -1) maximum distance from the center position. If -1, the world's "safePositionRadius" entry will be used
+
+|p4= objDist: [[Number]] - (Optional, default 0) minimum distance from the resulting position to the center of nearest object. Specifying quite large distance here will slow the function and might often fail to find suitable position. Recommended value: 0..10
+
+|p5= waterMode: [[Number]] - (Optional, default 0) water mode. Can be one of:
+* 0 - cannot be in water
+* 1 - can either be in water or not
+* 2 - must be in water
+
+|p6= maxGrad: [[Number]] - (Optional, default 0) maximum terrain gradient (hill steepness). A quite small non-zero value could result in failure to find suitable position. Recommended: 0.1+
+
+|p7= shoreMode: [[Number]] - (Optional, default 0) shore mode. Can be one of:
+* 0 - does not have to be at a shore
+* 1 - must be at a shore
+
+|p8= blacklistPos: [[Array]] - (Optional, default <sqf inline>[]</sqf>) list of blacklisted areas in format [area1, area2, area3... areaN]. Can be one of:
+* [[Array]] - in format [topLeftCorner, bottomRightCorner] - top and bottom coordinates of blacklisted area
+* [[Object]] - trigger area
+* [[String]] - marker area
+* [[Location]] - location
+* [[Array]] - array in format [center, distance] or [center, a, b, angle, rect] or [center, a, b, angle, rect, height]
+
+|p9= defaultPos: [[Array]] - (Optional, default <sqf inline>[]</sqf>) default position when no position is found. Array format is [landPosition, seaPosition], where: 
+* landPosition: [[Array]] - in format [x,y] or [x,y,z] - default position on land
+* seaPosition: [[Array]] - in format [x,y] or [x,y,z] - default position on water
+
+|r1= [[Array]] - in format [x,y] on success. When position cannot be found at all, default map center position is returned, which will be in format [x,y,0]
+
+|x1= Find position minimum 1m from from player but not further than 150m, not closer than 3m to any other object, not in the water, maximum gradient of 20, not on the shoreline:
+<sqf>private _pos = [player, 1, 150, 3, 0, 20, 0] call BIS_fnc_findSafePos;</sqf>
+
+|x2= <sqf>private _pos = [getPos player, 2000, 5000, 1, 0, 0.7, 0, [], [getPos player, getPos player]] call BIS_fnc_findSafePos;</sqf>
+
+|x3= <sqf>private _pos = [[], 0, 1000] call BIS_fnc_findSafePos;</sqf>
+
+|seealso= [[BIS_fnc_randomPosTrigger]] [[BIS_fnc_randomPos]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20170315193000
+|text= To make sure position is not inside a building, increase distance to nearest object param.
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20210924222305
+|text= If ''objDist'' &gt; 0, this function will unfortunately treat all roads and trails seen on the map as obstacles to avoid, due to its unfiltered usage of [[nearestTerrainObjects]].
+}}

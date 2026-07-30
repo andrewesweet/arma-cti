@@ -1,0 +1,400 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_holdActionAdd
+// revision: 376577 (2025-10-28T11:45:09Z)
+// export sha1: b8m4lzgukwhqt7e8noa4kxot6ocu4q3
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interaction | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|arg= global
+
+|eff= local
+
+|gr1= Interaction
+
+|descr= [[File:A3 HoldActionIcons v2.02.png|thumb|Note: This image does not contain all available icons.|300px]]
+Adds an action to an object which requires the user to hold a key to perform the action.
+
+{{Wiki|extractionScript}}
+
+Available official icons as of {{GVI|arma3|2.10}}:
+
+<spoiler text="Show holdActionAdd list">
+{{Columns|2|
+* "\a3\Missions_F_Orange\Data\Img\Showcase_LawsOfWar\action_access_fm_CA.paa"
+* "\a3\Missions_F_Orange\Data\Img\Showcase_LawsOfWar\action_end_sim_CA.paa"
+* "\a3\Missions_F_Orange\Data\Img\Showcase_LawsOfWar\action_exit_CA.paa"
+* "\a3\Missions_F_Orange\Data\Img\Showcase_LawsOfWar\action_start_sim_CA.paa"
+* "\a3\Missions_F_Orange\Data\Img\Showcase_LawsOfWar\action_view_article_CA.paa"
+* "\a3\data_f_destroyer\data\UI\IGUI\Cfg\holdactions\holdAction_loadVehicle_ca.paa"
+* "\a3\data_f_destroyer\data\UI\IGUI\Cfg\holdactions\holdAction_unloadVehicle_ca.paa"
+* "\a3\missions_f_oldman\data\img\holdactions\holdAction_box_ca.paa"
+* "\a3\missions_f_oldman\data\img\holdactions\holdAction_follow_start_ca.paa"
+* "\a3\missions_f_oldman\data\img\holdactions\holdAction_follow_stop_ca.paa"
+* "\a3\missions_f_oldman\data\img\holdactions\holdAction_talk_ca.paa"
+* "\a3\props_f_enoch\items\tools\data\tinfoil_action_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_connect_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_forceRespawn_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_hack_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_loaddevice_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_passleadership_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_requestleadership_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_reviveMedic_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_revive_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_search_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_secure_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_takeOff1_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_takeOff2_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsdown_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_thumbsup_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa"
+* "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unloaddevice_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\idle\idle_0_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\idle\idle_1_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\idle\idle_2_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\idle\idle_3_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\idle\idle_4_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\idle\idle_5_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\idle\idle_6_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\idle\idle_7_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\idle\idle_8_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\idle\idle_9_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\idle\idle_10_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\idle\idle_11_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\in\in_0_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\in\in_1_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\in\in_2_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\in\in_3_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_0_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_1_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_2_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_3_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_4_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_5_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_6_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_7_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_8_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_9_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_10_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_11_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_12_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_13_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_14_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_15_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_16_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_17_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_18_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_19_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_20_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_21_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_22_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_23_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress2\progress_24_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_0_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_1_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_2_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_3_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_4_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_5_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_6_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_7_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_8_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_9_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_10_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_11_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_12_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_13_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_14_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_15_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_16_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_17_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_18_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_19_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_20_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_21_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_22_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_23_ca.paa"
+* "\a3\ui_f\data\igui\cfg\holdactions\progress\progress_24_ca.paa"
+* "\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\attack_ca.paa"
+* "\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\destroy_ca.paa"
+* "\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\holdAction_market_ca.paa"
+* "\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\holdAction_sleep2_ca.paa"
+* "\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\holdAction_sleep_ca.paa"
+* "\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\map_ca.paa"
+* "\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\meet_ca.paa"
+* "\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\refuel_ca.paa"
+* "\a3\ui_f_oldman\data\IGUI\Cfg\holdactions\repair_ca.paa"
+* "\a3\ui_f_orange\Data\CfgOrange\Missions\action_aaf_ca.paa"
+* "\a3\ui_f_orange\Data\CfgOrange\Missions\action_csat_ca.paa"
+* "\a3\ui_f_orange\Data\CfgOrange\Missions\action_escape_ca.paa"
+* "\a3\ui_f_orange\Data\CfgOrange\Missions\action_fia_ca.paa"
+* "\a3\ui_f_orange\Data\CfgOrange\Missions\action_fragment_back_ca.paa"
+* "\a3\ui_f_orange\Data\CfgOrange\Missions\action_fragment_ca.paa"
+* "\a3\ui_f_orange\Data\CfgOrange\Missions\action_idap_ca.paa"
+* "\a3\ui_f_orange\Data\CfgOrange\Missions\action_nato_ca.paa"
+* "\a3\ui_f_aow\data\igui\cfg\holdactions\holdaction_charity_ca.paa"
+}}
+</spoiler><br><spoiler text="Show addAction list">
+{{Columns|2|
+* "\a3\ui_f\data\igui\cfg\actions\takeflag_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\talk_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\unloadallvehicles_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\unloadincapacitated_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\unloadvehicle_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\vtolvectoring_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\vtolvectoringcancel_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\arrow_down_gs.paa"
+* "\a3\ui_f\data\igui\cfg\actions\arrow_up_gs.paa"
+* "\a3\ui_f\data\igui\cfg\actions\autohover_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\bandage_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\beacons_off_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\beacons_on_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\cancelhover_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\clear_empty_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\close_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\eject_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\engine_off_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\engine_on_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\flapsextend_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\flapsretract_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\gear_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\getincargo_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\getincommander_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\getindriver_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\getingunner_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\getinpilot_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\getout_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\heal_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_cpt_batt_off_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_cpt_batt_on_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_cpt_brk_on_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_cpt_col_off_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_cpt_col_on_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_cpt_land_off_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_cpt_land_on_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_cpt_start_off_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_cpt_start_on_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_cpt_thtl_idl_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_cpt_thtl_off_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_cpt_thtl_on_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_off_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ico_on_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ladderdown_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ladderoff_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\ladderup_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\landingautopilot_off_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\landingautopilot_on_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\loadvehicle_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\open_door_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\periscopedepth_off_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\periscopedepth_on_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\radaroff_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\radaron_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\reammo_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\refuel_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\reload_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\repair_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\returnflag_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\settimer_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\take_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_arrow_up_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_cancel_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_cancel_manualfire_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_deactivate_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_enter_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_exit_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_fire_in_flame_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_fire_put_down_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_gear_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_getin_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_getincargo.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_ladderondown_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_ladderonup_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_manualfire_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_open_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_takemagazine_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_takemine_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_takeweapon_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_teamswitch_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_turnin_ca.paa"
+* "\a3\ui_f\data\igui\cfg\actions\obsolete\ui_action_turnout_ca.paa"
+* "\a3\ui_f_jets\data\igui\cfg\actions\action_attachtocatapult_ca.paa"
+* "\a3\ui_f_jets\data\igui\cfg\actions\action_detachtocatapult_ca.paa"
+* "\a3\ui_f_jets\data\igui\cfg\actions\action_launchfromcatapult_ca.paa"
+}}
+</spoiler><br><spoiler text="UI that shows all icons">
+<sqf>
+0 spawn
+{
+	// EXECUTE IN EDEN EDITOR OR EDITOR PREVIEW!
+	disableSerialization;
+
+	private _display = findDisplay 313 createDisplay "RscDisplayEmpty";
+
+	private _edit = _display ctrlCreate ["RscEdit", 645];
+	_edit ctrlSetPosition [safezoneX + 50 * pixelW, safezoneY + 50 * pixelH, safezoneW - 500 * pixelW, 50 * pixelH];
+	_edit ctrlSetBackgroundColor [0,0,0,1];
+	_edit ctrlCommit 0;
+
+	private _status = _display ctrlCreate ["RscEdit", 1337];
+	_status ctrlSetPosition [safezoneX + safezoneW - 400 * pixelW, safezoneY + 50 * pixelH, 350 * pixelW, 50 * pixelH];
+	_status ctrlSetBackgroundColor [0,0,0,1];
+	_status ctrlCommit 0;
+	_status ctrlEnable false;
+
+	private _tv = _display ctrlCreate ["RscTreeSearch", -1];
+	_tv ctrlSetFont "EtelkaMonospacePro";
+	_tv ctrlSetFontHeight 0.05;
+	_tv ctrlSetPosition [safezoneX + 50 * pixelW, safezoneY + 125 * pixelH, safezoneW - 100 * pixelW, safeZoneH - 175 * pixelH];
+	_tv ctrlSetBackgroundColor [0,0,0,1];
+	_tv ctrlCommit 0;
+
+	_tv ctrlAddEventHandler ["treeSelChanged",
+	{
+		params ["_ctrlTV", "_selectionPath"];
+		copyToClipboard (_ctrlTV tvText _selectionPath);
+		playSound ("RscDisplayCurator_ping" + selectRandom ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]);
+		(ctrlParent _ctrlTv) displayCtrl 1337 ctrlSetText "Path copied to clipboard!";
+	}];
+
+	private _counter = 0;
+	{
+		private _files = addonFiles [_x # 0, ".paa"];
+		{
+			if ("\actions" in _x || "\holdaction" in _x) then
+			{
+				_counter = _counter + 1;
+				_status ctrlSetText format ["%1 textures found.", _counter];
+				private _index = _tv tvAdd [[], _x];
+				_tv tvSetPicture [[_index], _x];
+			};
+		} forEach _files;
+	} foreach allAddonsInfo;
+
+	_tv tvSortall [[], false];
+};
+</sqf>
+</spoiler>
+
+|s1= [target, title, idleIcon, progressIcon, conditionShow, conditionProgress, codeStart, codeProgress, codeCompleted, codeInterrupted, arguments, duration, priority, removeCompleted, showUnconscious, showWindow, radius, selection, memoryPoint] call [[BIS_fnc_holdActionAdd]]
+
+|p1= target: [[Object]] - object the action is attached to
+
+|p2= title: [[String]] - title of the action shown in the action menu.It can contain [[Structured Text]] tags, such as <syntaxhighlight lang="html" inline><t color='#FFAA00'>text</t></syntaxhighlight>
+
+|p3= idleIcon: [[String]] - (Optional, default "\A3\Ui_f\data\IGUI\Cfg\HoldActions\holdAction_revive_ca.paa") path of the idle icon shown on screen
+
+|p4= progressIcon: [[String]] - (Optional, default "\A3\Ui_f\data\IGUI\Cfg\HoldActions\holdAction_revive_ca.paa") path of the progress icon shown on screen
+
+|p5= conditionShow: [[String]] - (Optional, default "true") condition for the action to be shown.<br>
+Special arguments passed to the code: {{hl|_target}} (action-attached object), {{hl|_this}} (caller/executing unit)
+
+|p6= conditionProgress: [[String]] - (Optional, default "true") condition for the action to progress; if false is returned action progress is paused.<br>
+Special arguments passed to the code: {{hl|_target}}, {{hl|_caller}}, {{hl|_actionId}}, {{hl|_arguments}}
+
+|p7= codeStart: [[Code]] - (Optional, default <sqf inline>{}</sqf>) code executed when action starts.<br>
+Special arguments passed to the code: {{hl|_target}}, {{hl|_caller}}, {{hl|_actionId}}, {{hl|_arguments}}<br>
+Passed arguments are:
+<sqf>params ["_target", "_caller", "_actionId", "_arguments"];</sqf>
+* target: [[Object]] - the object which the action is assigned to
+* caller: [[Object]] - the unit that activated the action
+* actionId: [[Number]] - ID of the activated action (same as ID returned by addAction)
+* arguments: [[Array]] - arguments given to the function
+
+|p8= codeProgress: [[Code]] - (Optional, default <sqf inline>{}</sqf>) code executed on every progress tick.<br>
+Special arguments passed to the code: {{hl|_target}}, {{hl|_caller}}, {{hl|_actionId}}, {{hl|_arguments}}, {{hl|_frame}}<br>
+Passed arguments are:
+<sqf>params ["_target", "_caller", "_actionId", "_arguments", "_frame", "_maxFrame"];</sqf>
+* target: [[Object]] - the object which the action is assigned to
+* caller: [[Object]] - the unit that activated the action
+* actionId: [[Number]] - ID of the activated action (same as ID returned by addAction)
+* arguments: [[Array]] - arguments given to the function
+* frame: [[Number]] - current progress, goes from 1 to 24
+* maxFrame: [[Number]] - maximum progress (24)
+
+|p9= codeCompleted: [[Code]] - (Optional, default <sqf inline>{}</sqf>) code executed on completion.<br>
+Special arguments passed to the code: {{hl|_target}}, {{hl|_caller}}, {{hl|_actionId}}, {{hl|_arguments}}<br>
+Passed arguments are:
+<sqf>params ["_target", "_caller", "_actionId", "_arguments"]; // same as codeStart</sqf>
+
+|p10= codeInterrupted: [[Code]] - (Optional, default <sqf inline>{}</sqf>) code executed on interrupted.<br>
+Special arguments passed to the code: {{hl|_target}}, {{hl|_caller}}, {{hl|_actionId}}, {{hl|_arguments}}<br>
+Passed arguments are:
+<sqf>params ["_target", "_caller", "_actionId", "_arguments"]; // same as codeCompleted</sqf>
+
+|p11= arguments: [[Array]] - (Optional, default <sqf inline>[]</sqf>) arguments passed to '''codeStart''', '''codeProgress''', '''codeCompleted''' and '''codeInterrupted''' (max 10) in format:
+<sqf>
+params [
+	"_a0", "_a1", "_a2", "_a3", "_a4", "_a5", "_a6", "_a7", "_a8", "_a9", // custom arguments
+	"_target", "_title", "_iconIdle", "_iconProgress",
+	"_condShow", "_condProgress", "_codeStart", "_codeProgress", "_codeCompleted", "_codeInterrupted",
+	"_duration", "_removeCompleted"
+];
+</sqf>
+
+|p12= duration: [[Number]] - (Optional, default 10) action duration, i.e. how much time it takes to complete the action
+
+|p13= priority: [[Number]] - (Optional, default 1000) priority value; actions are arranged in descending order according to this value
+
+|p14= removeCompleted: [[Boolean]] - (Optional, default [[true]]) remove on completion
+
+|p15= showUnconscious: [[Boolean]] - (Optional, default [[false]]) show in unconscious state
+
+|p16= showWindow: [[Boolean]] - (Optional, default [[true]]) show on screen; if false action needs to be selected from action menu to appear on screen
+
+|p17= radius: [[Number]] - (Optional, default 15) action radius
+|p17since= arma3 2.22
+|p18= selection: [[String]] - (Optional, default "") selection to use
+|p18since= arma3 2.22
+|p19= memoryPoint: [[String]] - (Optional, default "") memory point to use
+|p19since= arma3 2.22
+
+|r1= [[Number]] - action ID
+
+|x1= <sqf>
+[
+	player,
+	"Kill",
+	"", "",
+	"true", "true",
+	{ hint "Started!" },
+	{ systemChat str (_this select 3) },
+	{ player setDamage 1 },
+	{ hint "Afraid of death?" },
+	[], 10, nil, true, false
+] call BIS_fnc_holdActionAdd;
+</sqf>
+
+|x2= <sqf>
+// adds the action to every client and JIP, but also adds it when it was already removed. E.g., Laptop has already been hacked by a player
+[
+	_myLaptop,														// Object the action is attached to
+	"Hack Laptop",													// Title of the action
+	"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_connect_ca.paa",	// Idle icon shown on screen
+	"\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_connect_ca.paa",	// Progress icon shown on screen
+	"_this distance _target < 3",									// Condition for the action to be shown
+	"_caller distance _target < 3",									// Condition for the action to progress
+	{},																// Code executed when action starts
+	{},																// Code executed on every progress tick
+	{ _this call MY_fnc_hackingCompleted },							// Code executed on completion
+	{},																// Code executed on interrupted
+	[],																// Arguments passed to the scripts as _this select 3
+	12,																// Action duration in seconds
+	0,																// Priority
+	true,															// Remove on completion
+	false															// Show in unconscious state
+] remoteExec ["BIS_fnc_holdActionAdd", 0, _myLaptop];				// MP-compatible implementation
+</sqf>
+
+|seealso= [[BIS_fnc_holdActionRemove]] [[BIS_fnc_holdKey]]
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20210401234400
+|text= A repository with icons:
+{{Feature|quote|I've converted all of the icons from the Tasking Overhaul to follow the Hold Action format, as well as a few others I've made myself. They're available on {{Link|https://github.com/Kalthramis/Arma3/tree/master/holdAction-TaskType-Icons|GitHub}}.|{{User|Kalthramis}}}}
+}}

@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Addon_Configuration
+// revision: 339156 (2023-04-26T10:55:21Z)
+// export sha1: nak60nsmlgzws2lsqiaal7k5rwf1x0e
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1|Addon Editing}}
+{{GameCategory|arma1| Addons‏}}

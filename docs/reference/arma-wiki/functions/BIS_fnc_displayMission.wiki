@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_displayMission
+// revision: 329370 (2022-07-27T12:33:56Z)
+// export sha1: c8zggkqea8bbyppd4rqa1i42hnm178i
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= Returns main display of current mission/intro/outro. A cleaner alternative to <sqf inline>findDisplay 46</sqf>.
+
+|s1= call [[BIS_fnc_displayMission]]
+
+|r1= [[Display]]
+
+|x1= <sqf>_mainDisplay = call BIS_fnc_displayMission;</sqf>
+
+|seealso= [[findDisplay]]
+}}

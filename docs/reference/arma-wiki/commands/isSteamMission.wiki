@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/isSteamMission
+// revision: 369183 (2024-09-03T10:34:45Z)
+// export sha1: gatjderxv8m2ps7smjm48d7ov22qzcu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= Mission Information
+
+|descr= Returns true if the current mission is a Steam Workshop mission.
+
+|s1= '''isSteamMission'''
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+if (isSteamMission) then
+{
+	hint "Thank you for subscribing to my mission on Steam!";
+}
+else
+{
+	hint "Thank you for downloading my mission off the Internet!";
+};
+</sqf>
+
+|seealso= [[markAsFinishedOnSteam]]
+}}

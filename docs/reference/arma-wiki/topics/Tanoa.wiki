@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/Tanoa
+// revision: 353494 (2024-03-19T12:00:44Z)
+// export sha1: pvizkznc40fgcy459bzdypx2te6yjgz
+// categories: Category:Arma 3: Terrains
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:A3_Tanoa_birdView.jpg|400px|right]]
+'''Tanoa''' is an {{GameCategory|arma3|link= y}} terrain, released in 11 July 2016 as a part of the [[Arma 3 Apex|Apex expansion]]. It is a South Pacific archipelago map, and it is 100&nbsp;km<sup>2</sup> . It has a lush tropical flora, a very dense jungle, with a very rough and mountanious terrain. The archipelago also features a volcano in the main island, '''Mont Tanoa'''. The archipelago has a '''coral reef'''.
+
+
+== The Islands ==
+
+=== Tanoa ===
+
+The main and the largest island in the archipelago. The island has N number of towns and villages, the largest being '''Georgetown''', the capital of the archipelago. The island has two airfields, two ports, two military bases, a mine, a factory, two diesel powerplants, numerous lumberyards, 10 temples, and a large railway network, mostly covering the west side of the island. The island is largely industrialized, the main economic sources being lumber, sugar and mining.
+
+=== Tuvanaka ===
+
+The north-western island. It has two towns, '''Tuvanaka''' and '''Belfort'''. The island is mainy used for military purposes, as nearly 3/4 of the island has been claimed by the military base. The island has one airfield, two long rage transmitter antennas, a large training range and two small harbors, each in one town.
+
+=== Balavu ===
+
+The northern South-west island. It consists of 7 towns, 3 harbors and a long range transmitter antenna. The largest town is '''Balavu'''. There is a bridge and a ferry route to the neighboring island, '''Katkoula'''.
+
+=== Katkoula ===
+
+The southern south-west island. It consists of 6 towns, an airfield, two long range transmitter antennas and a small harbor. The largest town is Katkoula.
+
+=== Moddergat ===
+
+The south-eastern island. It has 12 towns and villages, the largest being '''Lijnhaven'''. It has two harbors, a long range transmitter antenna, an airfield, and an old fortress. It is dutch speaking. It is connected to the main island with a bridge and a ferry route.
+
+
+== Trailer ==
+
+{{Youtube|5aHxziH5l0g|Tanoa trailer|center|800}}
+
+
+== Links ==
+
+* [[Arma 3 Apex]]
+* [https://www.youtube.com/watch?v{{=}}H0N0T_COJEA Arma 3 Tanoa terrain reveal - PC Gaming Show 2015 - YouTube]
+* {{Link|http://arma3.com/tanoa|Tanoa | Arma 3}}
+* {{Link|link= http://dev.arma3.com/post/sitrep-00111|text= SITREP #00111 | Dev Hub | Arma 3}}
+* {{Link|http://arma3.com/news/e3-2015-bohemia-interactive-reveals-terrain-for-upcoming-arma-3-expansion|E3 2015 - BOHEMIA INTERACTIVE REVEALS TERRAIN FOR UPCOMING ARMA 3 EXPANSION | Arma 3}}
+* {{Link|http://arma3.com/news/report-in-radim-vitek-petr-sedlacek-environment|REPORT IN: RADIM VITEK & PETR SEDLACEK - ENVIRONMENT | Arma 3}}
+
+
+
+{{GameCategory|arma3|Terrains}}

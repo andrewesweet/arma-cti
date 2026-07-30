@@ -1,0 +1,432 @@
+// source: https://community.bistudio.com/wiki/KMP:OFPIP
+// revision: 369466 (2024-09-06T09:36:13Z)
+// export sha1: bkfpgfrfu8zp4qou2dror5krrp3syjg
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Welcome to the '''OFP Island Pack((OFPIP))''' project by the {{Link|#OFP Island Pack Team}}.
+
+
+== Bug reporting ==
+
+Please post bugs related to OFPIP only at the {{Link|link= http://dev-heaven.net/projects/kmp-ofpip/issues|text= OFPIP @ dev-heaven}}.<br>
+
+Please keep your bug reports '''as specific and as precise as possible'''.<br>
+Adding '''screenshots''', '''videos''' or the errors from the [[arma.RPT]] help to visualize
+the problem.<br>
+
+Recommended tools for recording:
+
+* {{Link|http://www.planetgamecam.com/?locid{{=}}download|GameCam}}
+* {{Link|http://www.fraps.com/download.php|Fraps}}
+* {{Link|http://www.howiesfunware.com/loadSideBarMiscSoftware.html|Howie's Quick Screen Capture Tool}}
+
+
+== OFP Island Pack ==
+
+=== Summary ===
+
+With the permission of each original author you find the most popular community created islands of Operation Flashpoint as well the {{GameCategory|ofp|link=y}} islands [[Everon]], [[Malden]], [[Kolgujev]] and [[Nogova]] of [[{{ofpr}}]] playable in [[:Category:ArmA: Armed Assault|{{Name|arma1|short}}]].
+
+=== Features ===
+
+==== v1.0 ====
+* No dependencies. You can load them with any other addon or MOD.
+* Tested in MP / dedicated server.
+* Replaced all possible objects/buildings with an ArmA/Arma 2 counterpart. The others objects/buildings have been converted to ArmA as part of the (OFPIP) addons.
+* Uses OFP:Res Nogova vegetation for best performance/look.
+* Replaced the 'block forest objects' with 'single tree pattern'. (click for screenshot)
+* Forest trees can be brought down by explosions.
+* Forest trees slow down vehicles, yet can be brought down.
+* Single ground texture technology - several to choose from via client side config. You can even assign each island a texture individually.
+* High quality SAT texture:
+** Snow SAT by the-f.
+** Trava SAT by Rg.
+** Nordic SAT by Rg (single SAT texture with mask and four HQ textures).
+* {{arma1}} clutters
+* {{arma2}} clutters
+
+<!---
+=== Texture preview galleries ===
+//TODO
+* [[KMP:OFPIP:HeightMap_Gallery|HeightMap gallery]] (6,4 MB)
+* [[KMP:OFPIP:Satellite_View_Gallery|Single texture satellite view gallery]] (5,9 MB)
+* [[KMP:OFPIP:Texture_Settings_Gallery|Single texture texture settings gallery]] (2,2 MB)
+* [[KMP:OFPIP:Texture_With_Clutter_Settings_Gallery|Single texture texture with clutter settings gallery]] (2,2 MB)
+* [[KMP:OFPIP:SAT_Gallery|SAT texture gallery]] (0,7 MB)
+--->
+
+=== OFPIP World List ===
+
+* OFPIP '''Abel''' by ''Bohemia Interactive and Codemasters''
+* OFPIP '''Cain''' by ''Bohemia Interactive and Codemasters''
+* OFPIP '''Eden''' by ''Bohemia Interactive and Codemasters''
+* OFPIP '''Noe''' by ''Bohemia Interactive and Codemasters''
+* OFPIP '''OFP World''' by ''Bohemia Interactive and Codemasters''
+
+* OFPIP '''Clarkisland''' by ''Phaeden''
+* OFPIP '''Elephanthead''' by ''Phaeden''
+* OFPIP '''Gaia''' by ''Phaeden''
+* OFPIP '''Highlands''' by ''Phaeden''
+* OFPIP '''Isladestella''' by ''Phaeden''
+* OFPIP '''Lakemartin''' by ''Phaeden''
+* OFPIP '''SamakHills''' by ''Phaeden''
+
+* OFPIP '''Canyonda''' by ''Pierre W.''
+* OFPIP '''Nabukonodexa''' by ''Pierre W.''
+
+* OFPIP '''Messor''' by ''Reaper''
+* OFPIP '''Occasus''' by ''Reaper''
+
+* OFPIP '''Torment_valley''' by ''Barn''
+* OFPIP '''Trinity''' by ''Brent a.k.a Buggs''
+* OFPIP '''Havelte''' by ''Coolhand''
+* OFPIP '''Anilym''' by ''cowardheart''
+* OFPIP '''Freya''' by ''HeinBloed''
+* OFPIP '''Avignon''' by ''Jakerod''
+* OFPIP '''73Eastings''' by ''Calm Terror''
+* OFPIP '''Sandy_rocks''' by ''Mr Bean''
+* OFPIP '''Ivtiliac''' by ''Narpal''
+* OFPIP '''Saru''' by ''Schuschs''
+* OFPIP '''Atlantis_gold''' by ''Scipio''
+* OFPIP '''Virovitica''' by ''Skalpel''
+* OFPIP '''Sontonagh_district''' by ''Smiley_Nick''
+* OFPIP '''Uwar_desert''' by ''ThruYerStErNuM''
+* OFPIP '''Skye''' by ''Waterman''
+* OFPIP '''Leusderheide''' by ''Wouter''
+
+=== Terrain Grid Size ===
+
+All islands have 50 terrain cell size.
+
+==== 128 ====
+* Virovitica
+
+==== 256 ====
+* Abel
+* Anilym
+* Atlantis Gold
+* Avignon
+* Cain
+* Eden
+* Freya
+* Gaia
+* Havelte
+* Ivtiliac
+* Leusderheide
+* Nabukonodexa
+* Noe
+* Sandy Rocks
+* Saru
+* Skye
+* Sontonagh District
+* Torment Valley
+* Trinity
+
+==== 512 ====
+* 73eastings
+* Canyonda
+* Clarkisland
+* Elephanthead
+* Highlands
+* Isladestella
+* Lakemartin
+* Messor
+* Occasus
+* Samakhills
+
+==== 1024 ====
+* OFP World
+* Uwar Desert
+
+{{Clear}}
+[[File:ACE_IslandPack_OFPWorld.JPG|thumb|300px|left|OFP World layout]]
+[[File:Aceip_singletree_forest.jpg|thumb|320px|left|Woods drawn on the map ]]
+{{Clear}}
+
+=== Integrated missions ===
+
+OFPIP has several missions integrated.
+
+==== Vehicle DM ====
+//TODO
+This mission is a rather simple '''Vehicle DM''' with a focus on fast and fun play.
+
+One of the key features is that it auto integrates available vehicle addons into the mission.
+
+<!-- {{Link|link= http://dev-heaven.net/wiki/kmp-ofpip/Vehicle_DM|text= More info}} -->
+
+
+== Download ==
+
+=== OFPIP core package ===
+
+==== Installer ====
+
+==== 7z Package ====
+
+You can extract the exe version above just fine with 7z.
+
+==== OFPIP Yoma Addon Sync 2009 Server ====
+
+* Server name: '''OFPIP YAS Server'''
+//TODO <!-- * Auto config URL: '''http://ofpip.arma-creations.com/yas/ofpip/ofpip.7z''' -->
+* (Optional) Homepage: {{Link|KMP:OFPIP|KMP:OFPIP}}
+
+Get Addon Sync 2009 {{Link|link= http://dev-heaven.net/projects/show/yoma-addonsync2009|text= here}}.
+
+=== Big SAT package ===
+
+==== Installation ====
+//TODO 
+* Unpack the 7z file into some modfolder like .\arma2\@ofpip_sat\addons and load the OFPIP along.
+
+* Activate the '''RG_SAT_TRAVA''' or '''OFPIP_SAT_SNOW''' define in the .\arma2\userconfig\ofip\ofpip_select_texture.hpp for the desired island(s).
+
+==== 7z Package ====
+//TODO
+ofpip_sat_2008_02_25.7z (251 MB) - Mirrors:
+
+<!--  {{Link|http://public.acemod.net/download/OFPIP/optional/OFPIP_sat_2008_02_25.7z|acemod.net}}<br> -->
+
+
+== Installation ==
+
+=== Preface ===
+
+{{Feature|important|NEVER ever put addons (pbo files) in the arma2\addons folder!}}
+
+=== Installer ===
+
+Simply execute the binary you downloaded before and follow onscreen instructions.
+
+=== 7z package ===
+
+//TODO
+Unpack the exe file with RMB extract into the '''.\arma2''' folder itself.<br>
+The result is:
+
+* .\arma2\@ofpip
+* .\arma2\userconfig\ofpip
+** ofpip_hide_island_in_island_list.hpp
+** ofpip_select_texture.hpp
+** ofpip_select_texture_custom.hpp
+* .\arma2\userconfig\ofpip\ofpip_config
+** ofpip_t_definitions.hpp
+** ofpip_t_rvmat_base.hpp
+** ofpip_t_rvmat_stuff.hpp
+** ofpip_t_rvmat_with_mask.hpp
+** ofpip_t_rvmat_without_mask.hpp
+
+=== OFPIP YomaTools Server ===
+
+=== Stay up to date (included automatic updater) ===
+
+//TODO 
+The OFPIP offers an unique updating system which allows you to stay always up to date with the latest OFPIP version.
+
+1. Go to '''.\arma2\@ofpip\tools'''.
+
+2. Run '''Update OFPIP and vehicle DM'''.
+
+3. Follow on screen instructions.
+
+As alternative you can update with the OFPIP YomaTools Server.
+
+
+== Additional information ==
+
+==== HowTo switch ground textures ====
+
+# Go to '''.\arma2\userconfig\ofpip'''.
+# Open the '''ofpip_island_select_texture.hpp''' file with a text editor. You can chose the texture you want to apply to the specific island.
+# At the very end you have the list of '''available textures'''.
+# Replace the UPPERCASE string, like ARMA_BLATO, with a new one for the desired island.
+
+{{Feature|important|Do NOT change anything else!}}
+
+
+<syntaxhighlight lang="cpp">
+#ifdef OFPIP_MALDEN
+ #define ARMA_BLATO
+#endif
+#ifdef OFPIP_KOLGUJEV
+ #define ARMA_LESLIST
+#endif
+#ifdef OFPIP_EVERON
+ #define ARMA_LESJEH
+#endif
+#ifdef OFPIP_NOGOVA
+ #define ARMA_TRAVA
+#endif
+</syntaxhighlight>
+
+//TODO 
+You can check the different textures in the [[KMP:OFPIP:Texture_Settings_Gallery|OFPIP Texture Settings Gallery]] in the BIKI or download the {{Link|http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery.7z|ACEIP Texture Settings Gallery}} as screenshots.
+
+==== HowTo enforce the same texture in MP play ====
+//TODO 
+# Have [[ArmA:_Addon_Signatures|verifySignatures]] active on your server.
+# On your server ONLY the '''OFPIP_v*.*.bikey''' may remain in a keys folder.<br>You have to remove the ''' OFPIP_client_can_choose_texture_settings_v*.*.bikey''' from any keys folder or your server completely.
+# Go to '''.\arma\@ofpip\addons'''.
+# Move the '''ofpip__client_can_choose_texture_settings.pbo''' to '''.\arma\@ofpip''' (one folder higher).
+
+A client has to do points 3 and 4 in able to play.
+
+==== Standard setup - files overview ====
+//TODO 
+<br clear="all" />
+<br clear="all" />
+
+=== Server key file ===
+
+//TODO 
+Included in the release package.
+
+The '''.bikey''' file are needed only on the dedicated server in .\arma2\keys.<br>
+
+To have the key(s) inside .\arma2\@ofip\keys should work as well.
+
+'''Separate download''':
+
+<!-- * Standard key<br>{{Link|link= http://dev-heaven.net/projects/list_files/ace-ip|text= OFPIP_v*.*.bikey}} -->
+
+<!-- * To allow custom ground textures<br>{{Link|link= http://dev-heaven.net/projects/list_files/ace-ip|text=  OFPIP_client_can_choose_texture_settings_v*.*.bikey}} -->
+
+'''Important''': To allow custom ground textures you need both keys on the server!
+
+=== BISign ===
+
+//TODO 
+Included in the release package.
+
+The '''.bisign''' files are needed both on the dedicated server and client 
+in .\arma2\@ofpip\addons for each PBO, if a server only allows to join only with signed files.
+
+'''Separate download''':
+
+<!-- {{Link|link= http://dev-heaven.net/projects/list_files/ace-ip|text= ofpip_bisign_files_v*.*.7z}} -->
+
+Extract the package inside the .\arma2\@ofpip\addons folder.
+
+=== Linux server ===
+
+For better readability the files still use case sensitivity.
+
+{{Feature|important|Do not forget to make all files lower case only on a Linux server machine!}}
+
+=== FAQ ===
+
+==== I have problems with the download / the download is never complete? ====
+
+Please use the free {{Link|http://www.freedownloadmanager.org|freedownloadmanager}} to download the file.
+
+==== How can I remove OFPIP v1.0 completely from my computer? ====
+//TODO 
+* Files
+** $DESKTOP\Play ArmA With ${PRODUCT_NAME}.lnk
+** $DESKTOP\Play ArmA (Beta) With ${PRODUCT_NAME}.lnk
+** .\arma\ofpip uninst.exe
+** .\arma\@ofpip
+** .\arma\dta\userconfig\ofpip_select_texture.hpp
+** .\arma\dta\userconfig\ofpip_select_texture_custom.hpp
+** .\arma\dta\userconfig\ofpip_config\ofpip_t_definitions.hpp
+** .\arma\keys\ofpip_*.bikey
+* Startmenu
+** ofpip
+* Registry
+** HKLM Software\ofpip\OPFIP
+** HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\OFPIP
+
+==== Does the 'userconfig' folder have to be moved into the dta folder? ====
+No, it should be like this:
+
+ .\arma2\userconfig\ofpip
+
+Please refer to {{Link|#Standard setup - files overview}}.
+
+==== The OFPIP updater says "File not found or site error..." ====
+Probably not available on this mirror.
+
+Run it again or use the direct download of the patch listed on the BIKI page @ {{Link|#Installer}}.
+
+==== How to use the SAT pack ====
+//TODO 
+ When I use to add SAT pack, will they instantly replace other textures 
+ and make sat-texture as default? Or how to use it together WITH Signature-checking?
+
+No you have to activate them.
+Please read {{Link|#Installation 2|Big SAT package # Installation]] and {{Link|#HowTo switch ground textures}}.
+
+The SAT have his own key found {{Link|http://dev-heaven.net/projects/list_files/ace-ip|here}}. BIsign files are included in the download package itself.
+
+
+== Credits ==
+
+=== Tools ===
+
+* '''Mikero''' for the superb pbodll tools.
+* '''Spooner''' for the outstanding OFP to ArmA island conversion tool '''Roller'''.
+* '''Dschulle, Rom, Snake Man''' for the excellent WrpTool.
+
+
+=== Island designers ===
+
+* '''Bohemia Interactive and Codemasters''' for 'Everon', 'Kolgujev', 'Malden' and 'Nogova' islands.
+* '''Barn''' for the 'Torment_valley' island.
+* '''Brent a.k.a Buggs''' for the 'Trinity' island.
+* '''Coolhand''' for the 'Havelte' island.
+* '''cowardheart''' for the 'Anilym' island.
+* '''HeinBloed''' for the 'Freya' island.
+* '''Jakerod''' for the 'Avignon' island.
+* '''Calm Terror''' for the '73Eastings' island.
+* '''Mr Bean''' for the 'Sandy_rocks' island.
+* '''Narpal''' for the 'Ivtiliac' island.
+* '''Phaeden''' for 'Clarkisland', 'Elephanthead', 'Gaia', 'Highlands', 'Isladestella', 'Lakemartin' and 'Samakhills' islandS.
+* '''Pierre W. aka PIWI56''' for 'Canyonda' and 'Nabukonodexa' islands.
+* '''Reaper''' for 'Messor' and 'Occasus' islands.
+* '''Schuschs''' for the 'Saru' island.
+* '''Scipio''' for the 'Atlantis_gold' island.
+* '''Skalpel''' for the 'Virovitica' island.
+* '''Smiley_Nick''' for the 'Sontonagh_district' island.
+* '''ThruYerStErNuM''' for the 'Uwar_desert' island.
+* '''Waterman''' for the 'Skye' island.
+* '''Wouter''' for the 'Leusderheide' island.
+
+=== Addon designers ===
+
+* '''Agent Smith''' for the 'AGS_build', 'AGS_inds', 'AGS_port', 'F3WX_O1' addons.
+* '''Lester''' for the 'aef_reallights' addon.
+* '''OFP_Pupsi''' for the 'anjaddon1' addon.
+* '''USMC Sniper''' for the 'art_bd' addon.
+* '''Bkm Mod''' for the 'bkm_balkan' addon.
+* '''Iva from Bkm Mod''' for the 'bkm_objects' addon.
+* '''MiG and PowerSlide''' for the 'fml_objects' addon.
+* '''HeinBloed''' for the 'freya' addon.
+* '''Miles Teg''' for the 'ob73east' addon.
+* '''bk1276''' for the 'rksl-netpack-uk' and 'rksl-netpack-us' addons.
+* '''Team Yankee''' for the 'tmyk_bridges' addon.
+* '''Barn''' for the 'tormobj' addon.
+
+=== Texture designers ===
+
+* '''Bohemia Interactive'''
+* '''CAT_SHIT_ONE'''
+* '''Gummi'''
+* '''Hund [Zeus]'''
+* '''NVidia'''
+* '''Phaeden (WGL/ACE Mod)'''
+* '''Rg'''
+* '''Sgt.Ace'''
+* '''Symbiot'''
+* '''Wouter'''
+
+=== OFP Island Pack Team ===
+
+* the-f
+* kju
+
+
+== Change log ==
+
+===2009-00-00 v0.00===

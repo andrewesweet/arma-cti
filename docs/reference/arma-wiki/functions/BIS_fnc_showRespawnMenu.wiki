@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_showRespawnMenu
+// revision: 348955 (2023-11-08T14:45:39Z)
+// export sha1: t5uzolq4pr4ob91qml8sakv6rv5anr3
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Triggers the respawn screen in the given mode
+
+|s1= <!-- [mode] call [[BIS_fnc_showRespawnMenu]]; -->
+
+|p1= mode: [[String]] - possible modes are "open", "map", "spectate" and "close"
+
+|r1=
+
+|x1= <sqf>["open"] call BIS_fnc_showRespawnMenu; // spawn does work as well</sqf>
+
+|seealso= [[Arma 3: Respawn]]
+}}

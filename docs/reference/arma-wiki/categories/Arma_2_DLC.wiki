@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_DLC
+// revision: 148943 (2020-03-03T21:07:59Z)
+// export sha1: q9flli0g6ee3gojt9jjoge4si5w5lms
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Arma 2: Operation Arrowhead|DLC]]

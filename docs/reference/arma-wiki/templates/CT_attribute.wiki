@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/Template:CT/attribute
+// revision: 373270 (2025-04-13T14:16:23Z)
+// export sha1: dzu7rvsjet7kv42l2jzblglddm2y9e2
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>
+==== {{{name}}} ====
+{{#if: {{{mandatory|}}} |{{Feature|important|This attribute is mandatory for the control to work!}}}}
+; Type: [[TokenNameValueTypes|{{{type1}}}]]{{#if: {{{type2|}}} | , [[TokenNameValueTypes|{{{type2}}}]]}}{{#if: {{{type3|}}} | , [[TokenNameValueTypes|{{{type3}}}]]}}{{#if: {{{type4|}}} | , [[TokenNameValueTypes|{{{type4}}}]]}}
+; Description: {{#if: {{{description|}}}|{{{description}}}|n/a}}
+{{#if: {{{type2|}}}|{{{type1}}} example:}}
+{{#tag:syntaxhighlight|{{#switch: {{{type1}}}
+ | Array = {{{name}}}[] = {{{value1}}};
+ | Class = {{{value1}}}
+ | {{{name}}} {{=}} {{{value1}}};
+}}|lang=cpp}}
+{{#if: {{{type2|}}}|{{{type2}}} example:
+{{#tag:syntaxhighlight|{{#switch: {{{type2}}}
+ | Array = {{{name}}}[] = {{{value2}}};
+ | Class = {{{value2}}}
+ | {{{name}}} {{=}} {{{value2}}};
+}}|lang=cpp}}}}
+{{#if: {{{type3|}}}|{{{type3}}} example:
+{{#tag:syntaxhighlight|----
+{{#switch: {{{type3}}}
+ | Array = {{{name}}}[] = {{{value3}}};
+ | Class = {{{value3}}}
+ | {{{name}}} {{=}} {{{value3}}};
+}}|lang=cpp}}}}
+{{#if: {{{type4|}}}|{{{type4}}} example:
+{{#tag:syntaxhighlight|----
+{{#switch: {{{type4}}}
+ | Array = {{{name}}}[] = {{{value4}}};
+ | Class = {{{value4}}}
+ | {{{name}}} {{=}} {{{value4}}};
+}}|lang=cpp}}}}
+</includeonly><noinclude>
+== Usage ==
+=== Parameters ===
+{| class="wikitable"
+|-
+! Parameter !! Description !! Example
+|-
+| name || Name of the attribute || <pre>text</pre>
+|-
+| value1-4 || Possible values of the config entry. Has to match the type given by type1-4 || <pre>"This is a string"</pre>
+|-
+| type1-4 || Type of the respective value. Possible values: Number, String, Array, Class. Each type/value pair gets an example. || <pre>String</pre>
+|-
+| description || What does the attribute do? || <pre>This string displays text.</pre>
+|-
+| mandatory || If defined a yellow warning box will be displayed at the attributes position. Mandatory attributes throw an error in RPT when omitted. || <pre>1</pre>
+|}
+<pre>{{CT/attribute
+|name= testArray
+|value1= { 1, 0, 0, 1 }
+|type1= Array
+|description= This is a test array to test arrays. {{Feature|important|Notice Me!}}
+}}
+
+{{CT/attribute
+|name= testAttribute
+|value1= "test"
+|type1= String
+|mandatory= 1
+}}</pre>
+
+
+== Result ==
+
+See {{Link|CT_LISTBOX#active}}.
+</noinclude>

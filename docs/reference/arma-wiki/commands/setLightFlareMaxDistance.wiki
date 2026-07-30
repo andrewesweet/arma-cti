@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/setLightFlareMaxDistance
+// revision: 310082 (2022-05-05T12:25:10Z)
+// export sha1: cyn0j8fck8ujyg519zfptsjepquwn5s
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Lights
+
+|arg= local
+
+|eff= local
+
+|descr= Sets max distance where the flare is visible.
+
+|s1= light [[setLightFlareMaxDistance]] distance
+
+|p1= light: [[Object]]
+
+|p2= distance: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myLight setLightFlareMaxDistance 500;</sqf>
+
+|seealso= [[setLightAmbient]] [[setLightColor]] [[lightAttachObject]] [[lightDetachObject]] [[setLightIntensity]] [[setLightAttenuation]] [[setLightUseFlare]] [[setLightFlareSize]] [[setLightBrightness]] [[setLightDayLight]]
+}}

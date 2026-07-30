@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Vehicle_Loadouts
+// revision: 254240 (2021-04-07T19:03:37Z)
+// export sha1: 2d2vkszkj78705qj91kdr2zbfr4jw30
+// Vendored snapshot. Do not edit — re-export instead.
+
+Scripting commands related to [[Arma 3: Vehicle Loadouts]].
+
+
+[[Category:Scripting Commands by Functionality]]

@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/ctrlMapMouseOver
+// revision: 369404 (2024-09-03T18:43:23Z)
+// export sha1: qs1dbj212d3pgempl4ojcpmrja0best
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= GUI Control - Map
+
+|descr= Returns description of map sign mouse cursor is over. Works with in-game map as well as 2D editor map in edit mode.
+
+|s1= [[ctrlMapMouseOver]] control
+
+|p1= control: [[Control]] - map control
+
+|r1= [[Array]] - possible values:
+* ["unit", [[Object]]]
+* ["vehicle", [[Object]]]
+* ["vehicleGroup", [[Object]]]
+* ["object", [[Object]]]
+* ["waypoint", [[Waypoint]]]
+* ["trigger", [[Object]]]
+* ["marker", [[String]]]
+* ["task", [[Task]]]
+* ["customMark"]
+
+|x1= <sqf>
+(uiNamespace getVariable "_map") ctrlMapCursor ["Track","HC_overFriendly"];
+
+_mouseover = if (count (ctrlMapMouseOver (uiNamespace getVariable "_map")) > 0) then
+{
+	ctrlMapMouseOver (uiNamespace getVariable "_map")
+}
+else
+{
+	[""]
+};
+
+if (_mouseover select 0 == "task" && str(_logic getVariable "onTaskAssigned") != str{}) then
+{
+	//--- Task
+	(uiNamespace getVariable "_map") ctrlMapCursor ["Track","HC_overMission"];
+}
+else
+{
+	//--- Waypoint
+	(uiNamespace getVariable "_map") ctrlMapCursor ["Track","HC_move"];
+};
+</sqf>
+
+|x2= <sqf>onEachFrame {hintSilent str ctrlMapMouseOver (findDisplay 12 displayCtrl 51)};</sqf>
+
+|seealso= [[findDisplay]] [[displayCtrl]] [[BIS_fnc_createTooltip]]
+}}

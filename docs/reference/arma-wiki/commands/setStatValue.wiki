@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/setStatValue
+// revision: 319644 (2022-05-13T09:24:37Z)
+// export sha1: 9q78537jfqscyxkvi9q0pw99fwxd9ub
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 1.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.18
+
+|gr1= System
+
+|descr= Sets a value to a given stat. <br>
+A list of possible StatNames can be found here: [[Arma 3: Stat Names]]<br>
+Its important to note that most Stats are restricted to scripts and missions in certain paths.<br>
+For example "ExpWarlockDown" is restricted to scripts in any subdirectory of {{hl|"a3\Missions_F_Exp\Campaign\Missions\"}}
+
+|s1= [[setStatValue]] [name, value]
+
+|p1= name: [[String]]
+
+|p2= value: [[Number]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>setStatValue ["ExpWarlockDown", 1]; // Unlocks the "Warlock Down" Steam achivement</sqf>
+
+|seealso= [[getStatValue]] [[Arma 3: Stat Names]]
+}}

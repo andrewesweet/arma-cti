@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/DialogControls-Map
+// revision: 244191 (2021-02-07T13:38:45Z)
+// export sha1: szumzk7s629ajb3nj6vrsjw0i2m5f8g
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+* [[CT_MAP]]
+* [[CT_MAP_MAIN]]

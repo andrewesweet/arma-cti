@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_inventoryExists
+// revision: 328426 (2022-07-13T16:00:51Z)
+// export sha1: 7h0eh6q0uhfvs8v600ploqlxtybosm7
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Inventory
+
+|descr= Check if loadout with given name exists.
+
+|s1= [source, name] call [[BIS_fnc_inventoryExists]]
+
+|p1= source: [[Namespace]], [[Group]] or [[Object]] - (Optional, default [[missionNamespace]]) loadout location
+
+|p2= name: [[String]] - (Optional, default "")
+
+|r1= [[Boolean]] - [[true]] if found, [[false]] otherwise
+
+|x1= <sqf>private _hasSuperLoadout = [missionNamespace, "mySuperLoadout"] call BIS_fnc_inventoryExists;</sqf>
+
+|seealso= [[setUnitLoadout]] [[getUnitLoadout]] [[BIS_fnc_saveInventory]] [[BIS_fnc_deleteInventory]] [[BIS_fnc_loadInventory]]
+}}

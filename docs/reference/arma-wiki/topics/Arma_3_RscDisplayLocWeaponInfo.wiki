@@ -1,0 +1,22 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_RscDisplayLocWeaponInfo
+// revision: 349947 (2023-11-20T22:11:24Z)
+// export sha1: 055ol5vflr0n6tav9mkh6ogbgmrm99g
+// categories: Category:Arma 3: Weapon & Magazine Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:A3_RscDisplayLocWeaponInfo.jpg|800px|right]]
+A debug config dialog to explore all weapon and magazine classes and check if their localized name is too long.
+
+
+== How To ==
+
+<sqf>
+call BIS_fnc_locWeaponInfo;
+// or
+findDisplay 313 createDisplay "RscDisplayLocWeaponInfo"; // from within Eden Editor
+// or
+createDialog "RscDisplayLocWeaponInfo";
+</sqf>
+
+
+{{GameCategory|arma3|Weapon & Magazine Configuration}}

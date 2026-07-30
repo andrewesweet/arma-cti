@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/ctAddHeader
+// revision: 377658 (2026-01-02T09:02:08Z)
+// export sha1: stgq2rm9ozl2kyv1ehkd13lz4lgm11t
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control - Controls Table
+
+|descr= Adds a header line of controls according to the HeaderTemplate class. Note that rows and headers are indexed separately.
+
+|s1= [[ctAddHeader]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Array]] with [headerIndex, createdControls]
+* headerIndex: [[Number]]
+* createdControls: [[Array]] of [[Control]]s
+
+|x1= <sqf>private _array = ctAddHeader _control;</sqf>
+
+|seealso= [[ctAddRow]] [[ctClear]] [[ctCurSel]] [[ctSetCurSel]] [[ctRowControls]] [[ctHeaderControls]] [[ctRowCount]] [[ctHeaderCount]] [[ctSetValue]] [[ctValue]] [[ctSetData]] [[ctData]] [[ctFindRowHeader]] [[ctFindHeaderRows]] [[ctRemoveRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_relScaledDist
+// revision: 349415 (2023-11-08T16:27:30Z)
+// export sha1: qwdmblo4wtnaugpos3021ow1n0ac93q
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Geometry | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Geometry
+
+|descr= Exponentially inflated rational number between 0 and 1, with 1 being center and 0 being edge of the trigger. This function can be used to check where in a trigger area an object is. Is it near the border of the trigger area the number will go against 0.
+
+|s1= [referenceObject, relativeObject] call [[BIS_fnc_relScaledDist]]
+
+|p1= referenceObject: [[Object]]
+
+|p2= relativeObject: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>[myTrigger, player] call BIS_fnc_relScaledDist;</sqf>
+
+|seealso= [[distance]] [[distanceSqr]]
+}}

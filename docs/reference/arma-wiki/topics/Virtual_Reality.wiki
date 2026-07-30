@@ -1,0 +1,17 @@
+// source: https://community.bistudio.com/wiki/Virtual_Reality
+// revision: 364320 (2024-05-06T09:38:47Z)
+// export sha1: ij07df8res29kbrch3z0c033lpnkvh3
+// categories: Category:Arma 3: Terrains
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:B Protagonist VR F.jpg|thumb|left|A soldier in VR gear]]
+[[File:Arma3_VR_ground_1024x1024_measurements.png|thumb|right|VR ground square sizes]]
+[[Virtual Reality]] is a virtual space similar to [[Render Worlds]] with no elements nor terrain relief in sight with the exception of a small, squared lake to the  North-East of the "place".
+
+Both ground and skybox are grey and squared with white lines. A big square is 32x32m and contains 256 (16x16) small squares of 2x2m.<br>
+The centre of the editor terrain is X:4000 - Y:4000, which is in the middle of a big square; the terrain itself is infinite.
+
+[[Arma 3: CfgVehicles VR Objects|VR blocks]] glow in the dark (but terrain lines don't).
+
+
+{{GameCategory|arma3|Terrains}}

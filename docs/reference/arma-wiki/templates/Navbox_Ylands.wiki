@@ -1,0 +1,110 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/Ylands
+// revision: 332453 (2022-11-21T13:50:02Z)
+// export sha1: g1yg5rdze6r7isiguj0xekf1xajqpbd
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Navbox
+|title= {{GameCategory|ylands|link=y}} - [[Ylands:Editor|Editor]]
+|color= #FF7
+
+|title1= [[:Category: Editor: How To|Editor]]
+|color1= #6CD9FF
+|content1=
+[[Ylands:Animated objects|Animated objects]],
+[[Ylands:Custom UI - Edit layout|Custom UI]],
+[[Ylands:Entity welding|Entity welding]],
+[[Ylands:Game export|Game export]],
+[[Ylands:Change Game ID|Game ID]],
+[[Ylands:Monetization description|Monetization]],
+[[Ylands:MIDI track|MIDI music]],
+[[Ylands:Best practices|Optimizations]],
+[[Ylands:Common problems FAQ|Common Problems]],
+[[Ylands:Editor FAQ|FAQ]]
+
+|title2= [[:Category: Script: How To|Script]]
+|color2= #6CD9FF
+|content2=
+[[Ylands:Visual scripting introduction|Introduction]],
+[[Ylands:Script conventions|Conventions]],
+[[Ylands:Client Script|Client script]],
+[[Ylands:Text scripting introduction|Text scripting]],
+[[Ylands:Game logic - Custom controls|Custom controls]],
+[[Ylands:Game logic - Controller|Custom controller]],
+[[Ylands:Persistent Storage|Storage Data]],
+[[Ylands:Game set|Game set]],
+[[Ylands:Leaderboards|Leaderboards]],
+[[Ylands:Matchmaking|Matchmaking]],
+[[Ylands:Map markers|Map markers]]
+
+|title3= [[:Category:Game Logic|Game logic]]
+|color3= #F7B942
+|content3=
+[[Ylands:Game logic - AI Behavior|AI Behaviour]],
+[[Ylands:Game logic - Ask Player|Ask Player]],
+[[Ylands:Game logic - Controller|Controller]],
+[[Ylands:Game logic - Custom Camera|Custom Camera]],
+[[Ylands:Game logic - Custom controls|Custom Controls]],
+[[Ylands:Game logic - Custom HUD|Custom HUD]],
+[[Ylands:Game logic - Custom window|Custom Window]],
+[[Ylands:Game logic - Data set|Data Set]],
+[[Ylands:Game logic - Dialogue|Dialogue]],
+[[Ylands:Game logic - Entity label|Entity Label]],
+[[Ylands:Game logic - Entity storage|Entity Storage]],
+[[Ylands:Game logic - Entity template|Entity Template]],
+[[Ylands:Game logic - Environment|Environment]],
+[[Ylands:Game logic - Event listener|Event Listener]],
+[[Ylands:Game logic - Logic label|Game Logic Label]],
+[[Ylands:Game logic - Game logic storage|Game Logic Storage]],
+[[Ylands:Game logic - Game logic template|Game Logic Template]],
+[[Ylands:Game logic - Global storage|Global Storage]],
+[[Ylands:Game logic - Group template|Group Template]],
+[[Ylands:Game logic - Custom Image Library|Image Library]],
+[[Ylands:Game logic - Impassable barrier|Impassable Barrier]],
+[[Ylands:Game logic - Light|Light]],
+[[Ylands:Game logic - Melee attack effect|Melee Attack Effect]],
+[[Ylands:Game logic - Particle effect|Particle Effect]],
+[[Ylands:Game logic - Particle template|Particle Template]],
+[[Ylands:Game logic - Path|Path]],
+[[Ylands:Game logic - Play area|Play Area]],
+[[Ylands:Game logic - Player role|Player Role]],
+[[Ylands:Game logic - Player team|Player Team]],
+[[Ylands:Game logic - Animator position|Position Animator]],
+[[Ylands:Game logic - Custom Post Process|Post Process]],
+[[Ylands:Game logic - Reference point|Reference Point]],
+[[Ylands:Game logic - Resource|Resource]],
+[[Ylands:Game logic - Animator rotation|Rotation Animator]],
+[[Ylands:Game logic - Script Module|Script Module]],
+[[Ylands:Game logic - Skill|Skill]],
+[[Ylands:Game logic - Sound effect|Sound Effect]],
+[[Ylands:Game logic - Spawn point|Spawn Point]],
+[[Ylands:Game logic - Time trigger|Time Trigger]],
+[[Ylands:Game logic - Transaction|Transaction]],
+[[Ylands:Game logic - Trigger zone|Trigger Zone]],
+[[Ylands:Game logic - Voice Chat Channel|Voice Chat Channel]],
+[[Ylands:Game logic - Water volume|Water Volume]]
+
+|title4= [[:Category:Instructions|Script tiles]]
+|color4= #A8CA00
+|content4=
+[[Ylands:Tile Category - Game|Game]],
+[[Ylands:Tile Category - Entities|Entities]],
+[[Ylands:Tile Category - Game Logic|Game Logic]],
+[[Ylands:Tile Category - Logic|Logic]],
+[[Ylands:Tile Category - Loops|Loops]],
+[[Ylands:Tile Category - Instructions|Instructions]],
+[[Ylands:Tile Category - Number|Number]],
+[[Ylands:Tile Category - Vector|Vector]],
+[[Ylands:Tile Category - Color|Color]],
+[[Ylands:Tile Category - String|String]],
+[[Ylands:Tile Category - Array|Array]]
+
+|title5= [[:Category:Ylands: How To|Misc]]
+|color5= #A8CA00
+|content5=
+[[Ylands:WIKI FAQ|WIKI FAQ]]
+
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Creates a {{GameCategory|ylands|link=y}} navbox.
+|example1= <nowiki>{{Navbox/Ylands}}</nowiki>
+|result1= <nowiki/>{{Navbox/Ylands}}
+}}</noinclude>

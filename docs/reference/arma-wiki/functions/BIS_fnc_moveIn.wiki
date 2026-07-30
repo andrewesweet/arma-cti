@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moveIn
+// revision: 327172 (2022-07-12T22:05:55Z)
+// export sha1: 0esetxlbuawd2c55ghqqjp7pnv6ju6s
+// categories: Category:Arma 3: Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Object Manipulation
+
+|arg= local
+
+|descr= Moves a unit into vehicle. Compatible with [[assignedVehicleRole]] output.
+
+|s1= [vehicle, unit, role] call [[BIS_fnc_moveIn]]
+
+|p1= vehicle: [[Object]]
+
+|p2= unit: [[Object]] - the unit to move into ''vehicle'' - must be [[Multiplayer Scripting#Locality|local]]
+
+|p3= role: [[Array]] - wanted seat, in format [''"role"''] or [''"role"'', turretPath]. Can be one of:
+* "driver"
+* "gunner"
+* "commander"
+* "cargo"
+* "turret"
+* "": will load ''unit'' in the first available seat (using [[moveInAny]])
+
+|r1= [[Boolean]] - [[true]] if moved in successfully
+
+|x1= <sqf>[myCar, player, "cargo"] call BIS_fnc_moveIn;</sqf>
+
+|x2= <sqf>[myTank, player, ["turret", [0]]] call BIS_fnc_moveIn;</sqf>
+
+|x3= <sqf>[myTank, player, ["turret", -1]] call BIS_fnc_moveIn; // will moveInDriver the player</sqf>
+
+|seealso= [[moveInDriver]] [[moveInGunner]] [[moveInCommander]] [[moveInCargo]] [[moveInTurret]] [[moveInAny]]
+}}

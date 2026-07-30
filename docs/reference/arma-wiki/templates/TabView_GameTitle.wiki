@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/Template:TabView/GameTitle
+// revision: 293139 (2021-08-21T19:45:38Z)
+// export sha1: rivq31soxcxuxwy0jj8pqkyq5r9nhjd
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+| {{Icon|{{{1}}}|24|link=}} {{Name|{{{1}}}}} {{#if:{{{2|}}}|'''to''' {{Icon|{{{2}}}|24|link=}} {{Name|{{{2}}}}}}}
+|-no game defined-}}</includeonly><noinclude>{{Doc/Template
+|descr= Creates a tab title for [[Template:TabView]].
+|param1= game1
+|descr1= the game to display
+|param2= game2
+|descr2= (Optional) if provided, will create a "from ''game1'' to ''game2''" title
+|example1= <nowiki>{{TabView/GameTitle}}</nowiki>
+|result1= {{TabView/GameTitle}}
+|example2= <nowiki>{{TabView/GameTitle|Hello there!}}</nowiki>
+|result2= {{TabView/GameTitle|Hello there!}}
+|example3= <nowiki>{{TabView/GameTitle|arma3}}</nowiki>
+|result3= {{TabView/GameTitle|arma3}}
+|example4= <nowiki>{{TabView/GameTitle|arma1|arma2}}</nowiki>
+|result4= {{TabView/GameTitle|arma1|arma2}}
+|example5= <nowiki>{{TabView/GameTitle|carriercommand|ylands}}</nowiki>
+|result5= {{TabView/GameTitle|carriercommand|ylands}}
+}}</noinclude>

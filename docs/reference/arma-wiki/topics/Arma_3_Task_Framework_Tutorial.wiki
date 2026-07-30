@@ -1,0 +1,174 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Task_Framework_Tutorial
+// revision: 347341 (2023-09-11T08:03:31Z)
+// export sha1: tswcagzeguw210uwvcgq29t9yeityjp
+// categories: Category:Arma Scripting Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Basics ==
+
+Tasks are a group's objectives. {{arma3}} introduced the '''[[Arma 3: Task Framework]]''' to work with tasks with ease.<br>
+The '''Task Framework''' functions have a '''global''' effect.
+
+
+{{Feature|informative|For '''{{arma2}}'''<nowiki/>'s Task Tutorial, see [[Arma 2: Task Tutorial]].}}
+
+
+== How to Use a Task ==
+
+=== Create a Task ===
+
+<sqf>
+private _title = "Get the documents";
+private _description = "Enter the house to find the documents. Hurry, as the enemy is on its way.";
+private _waypoint = "House";
+
+private _myTask = [groupOfPlayers, "taskID", [_description, _title, _waypoint], objDocuments, true] call BIS_fnc_taskCreate;
+</sqf>
+
+{{Feature|informative|The '''"taskID"''' argument is the task's ID used for later references.<!--
+--> This string gets defined here on creation and must be unique for each task.<!--
+--> It should be kept short for network economy.}}
+
+=== Assign a Task ===
+
+<sqf>"taskID" call BIS_fnc_taskSetCurrent;</sqf>
+{{Feature|informative|This step is optional here as we used [[true]] as the fifth argument of  the [[BIS_fnc_taskCreate]] call, making it the current task.}}
+
+=== Set a Task's Type ===
+
+<sqf>["taskID", "attack"] call BIS_fnc_taskSetType;</sqf>
+{{Feature|informative|This could have been set in the task creation call as the eighth argument. See [[BIS_fnc_taskCreate]]'s ''type'' parameter.}}
+
+=== Set a Task's Visibility ===
+
+<sqf>["taskID", true] call BIS_fnc_taskSetAlwaysVisible;</sqf>
+
+=== Update a Task's Description ===
+
+<sqf>
+// hardcoded language
+_description = _description + "<br/><br/>UPDATE: an officer stole the documents; we got the GPS tracking, follow your HUD.";
+["taskID", [_description, _title, _waypoint]] call BIS_fnc_taskSetDescription;
+
+// new description
+["taskID", ["STR_TaskDescription2", _title, _waypoint]] call BIS_fnc_taskSetDescription;
+</sqf>
+
+=== Update a Task's Waypoint Position ===
+
+<sqf>["taskID", [theOfficer, true]] call BIS_fnc_taskSetDestination;</sqf>
+
+=== Update a Task's Status ===
+
+<sqf>["taskID", "SUCCEEDED"] call BIS_fnc_taskSetState;</sqf>
+
+=== Delete a Task ===
+
+<sqf>["taskID"] call BIS_fnc_deleteTask;</sqf>
+
+
+== How to Read a Task's Information ==
+
+=== Find if a Task Exists ===
+
+<sqf>["taskID"] call BIS_fnc_taskExists;</sqf>
+
+=== Find if a Task is Completed ===
+
+<sqf>"taskID" call BIS_fnc_taskCompleted;</sqf>
+{{Feature|informative|"Completed" means that the task is either "SUCCEEDED", "FAILED" or "CANCELED".}}
+
+==== Multiple Tasks Check ====
+<sqf>["taskID_0", "taskID_1", "taskID_2"] findIf { !(_x call BIS_fnc_taskCompleted) } == -1;</sqf>
+
+=== Get a Task's Status ===
+
+<sqf>"taskID" call BIS_fnc_taskState;</sqf>
+
+=== Get a Task's Type ===
+
+<sqf>"taskID" call BIS_fnc_taskType;</sqf>
+
+=== Get a Task's Visibility ===
+
+<sqf>"taskID" call BIS_fnc_taskAlwaysVisible;</sqf>
+
+=== Get a Task's Description ===
+
+<sqf>"taskID" call BIS_fnc_taskDescription;</sqf>
+
+=== Get a Task's Destination ===
+
+<sqf>"taskID" call BIS_fnc_taskDestination;</sqf>
+
+=== Get a Unit's Tasks ===
+
+<sqf>private _taskIDs = player call BIS_fnc_tasksUnit;</sqf>
+
+
+== Advanced ==
+
+{{Feature|informative|All these details can be found in the [[Description.ext#Tasks|Description.ext's Tasks chapter]].}}
+
+=== Define a Task in Mission Config ===
+
+You can define a task in [[Description.ext#CfgTaskDescriptions|Description.ext's CfgTaskDescriptions]]:
+<syntaxhighlight lang="cpp">
+class CfgTaskDescriptions
+{
+	class myTask1
+	{
+		title		= "my task title";
+		description	= "my task description";
+		marker		= "my task destination marker";
+	};
+	class myTask2
+	{
+		title		= "STR_myTask2Title";			// note the lack of $ sign here!
+		description	= "STR_myTask2Description";		// without $, it translates for each client
+		marker		= "STR_myTask2Marker";			// with $ everyone sees the server's language
+	};
+};
+</syntaxhighlight>
+
+=== Define a new Task Type ===
+
+<syntaxhighlight lang="cpp">
+class CfgTaskTypes
+{
+	class Attack
+	{
+		icon	= "\A3\UI_F_MP_Mark\Data\Tasks\Types\Attack_ca.paa";
+		icon3D	= "\A3\UI_F_MP_Mark\Data\Tasks\Types3D\Attack_ca.paa";
+	};
+	class Defend
+	{
+		icon	= "\A3\UI_F_MP_Mark\Data\Tasks\Types\Defend_ca.paa";
+		icon3D	= "\A3\UI_F_MP_Mark\Data\Tasks\Types3D\Defend_ca.paa";
+	};
+};
+</syntaxhighlight>
+
+=== Define Task Display Behaviour ===
+
+<syntaxhighlight lang="cpp">
+class CfgTaskEnhancements
+{
+	enable       = 1; // 0: disable new task features (default), 1: enable new task features & add new task markers and task widgets into the map
+	3d           = 1; // 0: do not use new 3D markers (default), 1: replace task waypoints with new 3D markers
+	3dDrawDist   = 0; // 3d marker draw distance (default: 2000)
+	share        = 1; // 0: do not count assigned players (default), 1: count how many players have the task assigned
+	propagate    = 1; // 0: do not propagate (default), 1: propagate shared tasks to subordinates
+};
+</syntaxhighlight>
+
+
+== See Also ==
+
+* [[Arma 3: Task Framework]]
+* [[:Category:Function_Group:_Tasks|Tasks Functions]]
+* [[:Category:Command Group: Briefing|Briefing Commands]]
+
+
+[[Category:Arma Scripting Tutorials]]

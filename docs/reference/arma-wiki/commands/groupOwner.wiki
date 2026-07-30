@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/groupOwner
+// revision: 363282 (2024-03-26T10:51:53Z)
+// export sha1: n7p8mjde8rc9n4rl1utohnwdrmzpu9n
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.40 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.40
+
+|gr1= Multiplayer
+
+|serverExec= server
+|arg= global
+
+|descr= Returns the [[Multiplayer_Scripting#Machine_network_ID | machine network ID]] of the client to which the group is local. This command only works when called from the server. When called from a client, it always returns 0.
+
+|s1= [[groupOwner]] group
+
+|p1= group: [[Group]]
+|r1= [[Number]]
+
+|x1= <sqf>_clientID = groupOwner _someGroup;</sqf>
+
+|seealso= [[owner]] [[setOwner]] [[setGroupOwner]] [[local]] [[group]] [[didJIPOwner]] [[remoteExecutedOwner]]
+}}

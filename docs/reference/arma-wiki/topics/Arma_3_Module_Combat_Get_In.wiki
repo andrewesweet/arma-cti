@@ -1,0 +1,22 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Module:_Combat_Get_In
+// revision: 339843 (2023-04-28T16:20:23Z)
+// export sha1: npl9cr5hk7vmt885r8iw3rmm5eshxkz
+// categories: Category:Arma 3: Editor Modules
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Introduction: ==
+Bohemia Interactive's Combat Get In module allows you to easily set up crew behavior to a team in your missions.<br>
+When the troops reach combat mode, for example after identifying an enemy, they will climb aboard the linked vehicle.
+
+== Properties: ==
+
+This module doesn't have any property.
+
+== How to: ==
+
+Open the editor and create the module "Group Modifiers\Combat Get In". Synchronize it with the crew group leader, and with the empty vehicle to get in.
+
+=== Video Guide ===
+[https://www.youtube.com/watch?v{{=}}LKN3vJn3O9Y YouTube - ARMA 3 EDITOR TUTORIAL Combat Get In Module how to]
+
+{{GameCategory|arma3|Editor Modules}}

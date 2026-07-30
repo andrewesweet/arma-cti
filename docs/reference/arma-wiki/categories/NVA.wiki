@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:NVA
+// revision: 184529 (2021-01-06T13:22:06Z)
+// export sha1: ku8h41zd8552i04i19h8hy85kgacyfr
+// Vendored snapshot. Do not edit — re-export instead.
+
+East German Army of the GDR (1956 - 1990)
+
+{{GameCategory|arma2|Media}}

@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/setMarkerBrushLocal
+// revision: 319560 (2022-05-13T09:24:29Z)
+// export sha1: 89jz6r84gn68bfd5bg9po6uhlc0vezh
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Armed Assault version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.04
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Markers
+
+|eff= local
+
+|descr= Selects the fill texture for the marker ("RECTANGLE" or "ELLIPSE"). Brush is the name of the subclass in CfgMarkerBrushes.
+<br>
+<br>
+''brush'' can be:
+* "Solid"
+* "SolidFull" (A3 only)
+* "Horizontal"
+* "Vertical"
+* "Grid"
+* "FDiagonal"
+* "BDiagonal"
+* "DiagGrid"
+* "Cross"
+* "Border" (A2/A3 only)
+* "SolidBorder" (OA/A3 only)
+
+|s1= markerName [[setMarkerBrushLocal]] brush
+
+|p1= markerName: [[String]]
+
+|p2= brush: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"Marker1" setMarkerBrushLocal "DiagGrid";</sqf>
+
+|seealso= [[setMarkerAlpha]] [[setMarkerAlphaLocal]] [[setMarkerBrush]] [[setMarkerColor]] [[setMarkerColorLocal]] [[setMarkerDir]] [[setMarkerDirLocal]] [[setMarkerPos]] [[setMarkerPosLocal]] [[setMarkerShape]] [[setMarkerShapeLocal]] [[setMarkerSize]] [[setMarkerSizeLocal]] [[setMarkerText]] [[setMarkerTextLocal]] [[setMarkerType]] [[setMarkerTypeLocal]]
+}}

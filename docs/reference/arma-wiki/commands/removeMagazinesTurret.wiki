@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/removeMagazinesTurret
+// revision: 377499 (2026-01-02T06:49:26Z)
+// export sha1: q3y5zv5wupswxtk4q3thmo6idzz7t0g
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 2: Operation Arrowhead version 1.52 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.52
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Turrets
+
+|descr= Removes all magazines of the given type from given vehicle. Use turret path [-1] for driver's turret.
+
+|s1= vehicle [[removeMagazinesTurret]] [magazineName, turretPath]
+
+|p1= vehicle: [[Object]]
+
+|p2= magazineName: [[String]]
+
+|p3= turretPath: [[Turret Path]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player removeMagazinesTurret ["60rnd_CMFlareMagazine", [-1]];</sqf>
+
+|x2= <sqf>_tank removeMagazinesTurret ["20Rnd_120mmSABOT_M1A2", [0]];</sqf>
+
+|seealso= [[removeAllMagazinesTurret]] [[addMagazineTurret]] [[removeAllMagazines]] [[magazinesTurret]] [[removeMagazineTurret]] [[weaponsTurret]] [[addWeaponTurret]] [[removeWeaponTurret]] [[turretLocal]]
+}}
+
+{{Note
+|user= Kylania
+|timestamp= 20110730184200
+|text= Here's how you would remove all machine gun ammo from an M1A2 TUSK:<br>
+remove the gunner's M240 ammo.
+<sqf>this removeMagazinesTurret ["1200Rnd_762x51_M240", [0]];</sqf>
+
+remove the commander's M2 ammo.
+<sqf>this removeMagazinesTurret ["100Rnd_127x99_M2", [0, 0]];</sqf>
+
+remove the loader's M240 ammo.
+<sqf>this removeMagazinesTurret ["100Rnd_762x51_M240", [0, 1]];</sqf>
+}}

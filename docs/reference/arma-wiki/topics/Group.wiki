@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/Group
+// revision: 330390 (2022-09-05T21:46:56Z)
+// export sha1: idxdk80gk3kzlb4fu7ryxkmsb5zlstc
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+A group is its own data type in the scripting language. All units belong to a group. If units are linked together in the editor, they are all part of the same group. If a unit is not linked to anyone else, then it belongs to its own group.
+
+* The AI makes many decisions as an entire group, instead of on an individual unit level. For example, behavior, combat mode, and waypoints are decided on a group, not an individual level.
+* Note that empty objects do not belong to a group. Nor do empty vehicles.
+* To get the group that a unit belongs to, use the [[group]] command.
+* To get the unit that currently leads a group, use the [[leader]] command.
+* To get an array of units that are in a group, use the [[units]] command.
+
+{| class="wikitable" style="text-align: center"
+! Game
+| {{GVI|ofp|1.00}}
+| {{GVI|ofpe|1.00}}
+| {{GVI|arma1|1.00}}
+| {{GVI|arma2|1.00}}
+| {{GVI|arma2oa|1.50}}
+| {{GVI|tkoh|1.00}}
+| {{GVI|arma3|1.00}}
+| {{GVI|arma3|1.68}}
+|-
+! Max. No. of Groups per Side
+| 63
+| colspan="6" | 144
+| 288
+|-
+! Max. No. of Units per Group
+| 12
+| ?
+| colspan="7" | 10000+
+|}
+<!--
+2022-09-05 tested:
+OFP: 12
+A1: 6286+
+A2: 26482+
+A3: 33872+
+-->
+
+[[Category: Data Types]]

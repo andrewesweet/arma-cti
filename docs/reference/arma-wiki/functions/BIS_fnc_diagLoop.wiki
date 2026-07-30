@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagLoop
+// revision: 348046 (2023-11-08T11:28:47Z)
+// export sha1: 2t7vojv407n1ejvp4hz58q00bttdxt3
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Runs scripted loop. Repeated call terminates previous loops.
+
+|s1= [code, delay] spawn [[BIS_fnc_diagLoop]]
+
+|p1= code: [[Code]] - code to be executed
+
+|p2= code: [[Number]] - (Optional, default 0.1) delay between loops
+
+|exec= spawn
+
+|r1= [[Script Handle]] - [[spawn]] handle
+
+|x1= <sqf>[{ systemChat "Loop!" }, 0.5] spawn BIS_fnc_diagLoop;</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic|Diag functions]]
+}}

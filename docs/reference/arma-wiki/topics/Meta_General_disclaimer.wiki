@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/Meta:General_disclaimer
+// revision: 341406 (2023-05-25T14:02:25Z)
+// export sha1: pdnbqf4oh364hlwxwmdvokcalgzo3or
+// categories: Category:Bohemia Interactive Community:Policies
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+{{Feature|important|By accessing '''this site''', you agree to the terms below!}}
+
+== Your License with Bohemia Interactive and Other Users ==
+Content stored on this site contains information that is the protected Intellectual Property of Bohemia Interactive and other users. Your usage of any content stored, distributed, documented, or referenced through this site may only be for your personal, non-commercial entertainment use only. You may integrate content from this site in whole or in part into works you create or derive, as long as your content and any derived or included works remain licensed non-commercial. You may not use any content or information from this site for any commercial purpose without a separately negotiated commercial exploitation license from Bohemia Interactive and any other Intellectual Property holders.
+
+With regard to material that you contribute to this site, you grant to Bohemia Interactive and its designated agents (in exclusion of all other users of the site) a worldwide, nonexclusive, perpetual, irrevocable, royalty free, fully paid up license, in connection with the Bohemia Interactive's engine and games, mods and other products based on it, to: 
+# make, use, copy, modify, create derivative works of such material, 
+# publicly perform or display, import, broadcast, transmit, distribute, license, offer to sell, and sell, rent, lease or lend copies of the material (and derivative works thereof), and 
+# sublicense to third parties the foregoing rights, including the right to sublicense to further third parties.
+
+
+You grant to all other licensed users (excepting Bohemia Interactive and it is designated agents) of this site a worldwide, nonexclusive, perpetual, irrevocable, royalty free, fully paid up license, in connection with the Bohemia Interactive's engine and games, mods and other products based on it, to:
+# make, use, copy, modify, create derivative works of such material solely for non-commercial entertainment use only, 
+# publicly perform or display, import, broadcast, transmit, or distribute solely for non-commercial entertainment use only, and 
+# sublicense to third parties the foregoing rights solely for non-commercial entertainment use, including the right to sublicense to further third parties within the limits set by the non-commercial usage terms.
+
+Your license to other users is subject to the terms of the users’ valid license(s) to the Bohemia Interactive's engine and tools (including but not limited to games, mods and other products based on it).
+
+== Content Accuracy Liability ==
+While the goal of this Wiki is to provide complete, correct and accurate information, 
+neither Bohemia Interactive nor any other Wiki contributor can be made responsible for any incompleteness, incorrectness and inaccuracy.
+
+== Conduct on the Site ==
+See Bohemia Interactive '''[[Bohemia Interactive Community:Guidelines]]''' for the complete article
+<!---
+* Protect your personal login information and site identity
+* Any offensive material is prohibited
+* Be nice and use good common sense and etiquette
+* Don't help hackers or cheaters here
+* Follow all other guidelines as described in [[Bohemia Interactive Community: Guidelines]].
+* Information and documentation about [[Virtual Battlespace | VBS]] and related products is still being sorted out by Bohemia Interactive at this time. It is anticipated that the documentation will be added to the Community wiki content under the direction of Bohemia Interactive in the near future.
+-->
+== Copyright Infringement. ==
+In case of any possible copyright infrigement on this site please contact admins of the site or Bohemia Interactive immediately. We stongly value copyright of others and we ask all members of this community to do the same.
+
+We strongly urge that where possible, the original content developers submit their content rather than third parties, so that the rights and interests of the developers may be more easily honored and respected.
+
+== Operation Flashpoint Trade Mark ==
+Operation Flashpoint is the registered trademark of Codemasters Software Company Ltd. Bohemia Interactive, developer of Operation Flashpoint, is not affiliated with, authorized by or related to the Operation Flashpoint trademark owner.
+
+[[Category:Bohemia Interactive Community:Policies]]

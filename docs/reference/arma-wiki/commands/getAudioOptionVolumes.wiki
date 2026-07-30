@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/getAudioOptionVolumes
+// revision: 377864 (2026-01-04T11:30:15Z)
+// export sha1: hbrlxsodjzt4a2rjz201iwsah138jmh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Sounds
+
+|descr= Returns profile audio volumes.
+
+|s1= [[getAudioOptionVolumes]]
+
+|r1= [[Array]] - [effects, music, radio, von, UI, map]
+* effects: [[Number]] - fx volume factor 
+* music: [[Number]] - music volume factor
+* radio: [[Number]] - speech volume factor
+* von: [[Number]] - Voice over Network (VoN) volume factor
+* {{GVI|arma3|2.10|size= 0.75}} UI: [[Number]] - UI volume factor
+* {{GVI|arma3|2.12|size= 0.75}} map: [[Number]] - map volume factor
+
+|x1= <sqf>getAudioOptionVolumes params ["_effects", "_music", "_radio", "_von", "_ui", "_map"];</sqf>
+
+|seealso= [[getSubtitleOptions]] [[soundVolume]] [[musicVolume]] [[radioVolume]] [[setPlayerVoNVolume]] [[getPlayerVoNVolume]]
+}}

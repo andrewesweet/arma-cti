@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/ctAddRow
+// revision: 310853 (2022-05-07T20:24:08Z)
+// export sha1: oqljqms3cq7s1dpyqem4qtbqaknu1nc
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+|arg= local
+|eff= local
+
+|gr1= GUI Control - Controls Table
+
+|descr= Adds one row of controls according to the RowTemplate class. It returns an array containing row index and array of created controls in a format [<rowIndex>, [<control0>, <control1>...<control n>]].
+<br>
+Note that rows and headers are indexed separately.
+
+|s1= [[ctAddRow]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Array]]
+
+|x1= <sqf>_array = ctAddRow _control;</sqf>
+
+|seealso= [[ctAddHeader]] [[ctClear]] [[ctCurSel]] [[ctSetCurSel]] [[ctRowControls]] [[ctHeaderControls]] [[ctRowCount]] [[ctHeaderCount]] [[ctSetValue]] [[ctValue]] [[ctSetData]] [[ctData]] [[ctFindRowHeader]] [[ctFindHeaderRows]] [[ctRemoveRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}

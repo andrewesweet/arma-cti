@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/get3DENEntityID
+// revision: 378236 (2026-03-20T13:50:55Z)
+// export sha1: k28h9x3r7vewce5patgz6s8n7qnapm0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Returns unique index of an [[Eden Entity]]. This number remains the same even after saving and loading the scenario. ´
+
+{{Feature|informative|Since {{GVI|arma3|2.22}} this command also returns the IDs of [[Eden Entity|Eden Entities]] of type Object, Trigger, Group and Logic during [[is3DENPreview|preview]].}}
+
+|s1= [[get3DENEntityID]] entity
+
+|p1= entity: [[Eden Entity]] or [[Eden ID]]
+|r1= [[Number]] - [[Eden ID]] If ID is not available, -1 is returned
+
+|x1= <sqf>myID = get3DENEntityID player;</sqf>
+
+|seealso= [[get3DENEntity]]
+}}

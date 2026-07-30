@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/onGroupIconOverLeave
+// revision: 369294 (2024-09-03T18:42:50Z)
+// export sha1: ay03dny9w7l3oauxwtse0jxuvxvoge6
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: High Command | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= High Command
+
+|gr2= Event Handlers
+
+|descr= Defines an action performed when pointer, previously positioned over icon, is moved away from it (3D or in a map). The code is executed once.
+{{Feature|arma3|Since {{arma3}} v1.58 a [[Arma 3: Mission Event Handlers#GroupIconOverLeave|Mission Event Handler]] exists and should be used.}}
+
+|s1= [[onGroupIconOverLeave]] command
+
+|p1= command: [[String]] or [[Code]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+onGroupIconOverLeave
+{
+	// passed values for _this are:
+	params ["_is3D", "_group", "_wpID", "_posX", "_posY", "_shift", "_ctrl", "_alt"];
+
+	// before Arma 3
+	_is3D = _this select 0;
+	_group = _this select 1;
+	_wpID = _this select 2;
+	_posx = _this select 3;
+	_posy = _this select 4;
+	_shift = _this select 5;
+	_ctrl = _this select 6;
+	_alt = _this select 7;
+
+	_message = format ["____ Info ____"];
+	{ _message = _message + format ["\n %1",_x] } forEach _this;
+	hint _message;
+};
+</sqf>
+
+|seealso= [[onGroupIconClick]] [[onGroupIconOverEnter]] [[groupIconSelectable]] [[setGroupIconsSelectable]]
+}}

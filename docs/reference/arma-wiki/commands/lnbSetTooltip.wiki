@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/lnbSetTooltip
+// revision: 349264 (2023-11-08T14:51:08Z)
+// export sha1: iyfw06a5wi96vay37473e527haob4qa
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= GUI Control - ListNBox
+
+|descr= Sets tooltip on the item with the given row and column of [[CT_LISTNBOX]].
+{{Feature|important|
+By default, tooltips are added for all columns no matter what column index is provided.
+This behaviour can be overwritten since {{GVI|arma3|2.02}} by setting the control's property {{hl|tooltipPerColumn}} to [[true]].
+See [[CT_LISTNBOX#tooltipPerColumn|CT_LISTNBOX documentation]].
+}}
+
+|s1= [[lnbSetTooltip]] [idc, [row, column], text]
+
+|p1= idc: [[Number]] - control's IDC
+
+|p2= row: [[Number]] - row where the tooltip should be shown
+
+|p3= column: [[Number]] - column where tooltip should be shown. By default it is set for every column, see description
+
+|p4= text: [[String]] - tooltip text
+
+|r1= [[Nothing]]
+
+|s2= ctrl [[lnbSetTooltip]] [<nowiki/>[row, column], text]
+
+|p21= ctrl: [[Control]] - control
+
+|p22= row: [[Number]] - row where the tooltip should be shown
+
+|p23= column: [[Number]] - column where tooltip should be shown. By default it is set for every column, see description
+
+|p24= text: [[String]] - tooltip text
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lnbSetTooltip [1234, [1,0], "tip"];</sqf>
+
+|x2= <sqf>_ctrl lnbSetTooltip [[3,0], "top"];</sqf>
+
+|seealso= [[lbSetTooltip]] [[lnbSetData]] [[lnbAddArray]] [[lnbAddColumn]] [[lnbAddRow]] [[lnbClear]] [[lnbColor]] [[lnbCurSelRow]] [[lnbData]] [[lnbDeleteColumn]] [[lnbDeleteRow]] [[lnbGetColumnsPosition]] [[lnbPicture]] [[lnbSetColor]] [[lnbSetColumnsPos]] [[lnbSetCurSelRow]] [[lnbSetPicture]] [[lnbSetText]] [[lnbSetValue]] [[lnbSize]] [[lnbText]] [[lnbValue]]
+}}

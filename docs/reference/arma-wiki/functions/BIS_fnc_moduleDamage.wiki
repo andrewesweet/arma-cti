@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleDamage
+// revision: 352163 (2024-02-01T23:25:25Z)
+// export sha1: ooowlz4z473h0raghu7hzhro7oly9t4
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|descr= Damage given vehicles.
+{{Feature|informative|Regarding locality: if a hitpoint is defined,<br>{{Icon|localArgument|32}} [[setHitPointDamage]] is used. Else,<br>
+{{Icon|globalArgument|32}} [[setDamage]] is used.}}
+
+|s1= [logic, vehicles, isActivated] call [[BIS_fnc_moduleDamage]]
+
+|p1= logic: [[Object]] - the logic. Possible [[setVariable]] parameter:
+* "value": [[Number]] - (Optional, default 0) wanted damage, in range 0..1
+* "bodypart": [[String]] - (Optional, default "0") [[setHitPointDamage]] hitpoint name
+
+|p2= vehicles: [[Array]] of [[Object]]s - list of vehicles
+
+|p3= isActivated: [[Boolean]] - (Optional, default [[true]]) if [[true]], the fuel is set
+
+|r1= [[Boolean]] - [[true]] when done, even if ''isActivated'' equals [[false]]
+
+|x1= <sqf>[myLogic, vehicle player, true] call BIS_fnc_moduleDamage;</sqf>
+
+|seealso= [[setDamage]] [[setHitPointDamage]]
+}}

@@ -1,0 +1,399 @@
+// source: https://community.bistudio.com/wiki/Extension:SQF_Highlighter
+// revision: 378083 (2026-02-11T19:42:22Z)
+// export sha1: bl3i2g34b3yyg052cc3te7dqw9jb2v7
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable float-right"
+! colspan="2" style="padding: 1.5em" | SQF Highlighter
+|-
+! Description
+| Highlights and links SQF commands and functions
+|-
+! Author
+| {{User|Lou Montana}}
+|-
+! Project Start
+| 2022-03-08: Project start
+|-
+! Release Date
+|
+* 2022-03-12: "v1" (0.50b), first upload
+* 2022-07-11: "v2" (0.85b), new parser
+* 2023-11-02: 0.9b, allow some wiki formatting in comments
+|-
+! Version
+| 0.9b
+|}
+This extension highlights and automatically links [[SQF Syntax|SQF]] commands and functions. It also covers [[SQS Syntax|SQS]] (free of charge).
+
+
+{{TOC}}
+
+
+{{Clear}}
+== Features ==
+
+* [[SQF Syntax]] support
+* [[SQS Syntax]] support
+* "Copy code to clipboard" button on hover
+* Partial wiki formatting in comments: {{hl|<nowiki>''italic''</nowiki>}}, {{hl|<nowiki>'''bold'''</nowiki>}}, {{hl|<nowiki><s>striked</s></nowiki>}}, {{hl|<nowiki><u>underlined</u></nowiki>}}, {{hl|<nowiki>[[links|even styled ones]]</nowiki>}}, {{hl|<nowiki>{{templates}}</nowiki>}}
+* {{hl|#define}}d constant value on mouse hover
+* SQF tag button in the wiki edit toolbar (next to '''B''' and '''''I''''')
+* Options:
+** {{hl|inline}} for inline code
+** {{hl|notrim}} to remove the auto trim (lines themselves will always be rtrimmed)
+* Categorises wrong code pages in [[:Category:Pages with SQF errors]] and [[:Category:Pages with SQS errors]]
+
+
+== Installation ==
+
+* Unzip the directory to {{hl|wiki/extensions/SQFHighlighter}}
+* Add <syntaxhighlight lang="php" inline>wfLoadExtension( 'SQFHighlighter' );</syntaxhighlight> to {{hl|LocalSettings.php}}
+* there is a {{hl|case-sensitive}} setting in {{hl|extension.json}} (default true). Set to false to highlight improperly-cased commands and functions (e.g [[setDammage|setDaMMage]] instead of [[setDammage]], etc)
+* The extension creates full path links unless the host is one of the following (then relative links are created):
+** {{hl|community.bistudio.com}}
+** {{hl|community.bohemia.net}}
+
+
+== Usage ==
+
+Using <syntaxhighlight lang="html" inline><sqf></syntaxhighlight> tags will auto-generate syntax highlighting '''and''' links to the pages.
+
+{| class="wikitable valign-top" style="min-width: 50em"
+|+ Examples
+! colspan="2" | [[SQF Syntax]]
+|-
+! Code
+! Result
+|-
+| <syntaxhighlight lang="html"><sqf/></syntaxhighlight>
+| <sqf/>
+|-
+| <syntaxhighlight lang="html"><sqf></sqf></syntaxhighlight>
+| <sqf></sqf>
+|-
+| <syntaxhighlight lang="html"><sqf> </sqf></syntaxhighlight>
+| <sqf> </sqf>
+|-
+| <syntaxhighlight lang="html"><sqf>hint "It Works!";</sqf></syntaxhighlight>
+| <sqf>hint "It Works!";</sqf>
+|-
+| <syntaxhighlight lang="html">This is <sqf inline>hint "It Works!";</sqf> absolutely inline.</syntaxhighlight>
+| This is <sqf inline>hint "It Works!";</sqf> absolutely inline.
+|-
+| <syntaxhighlight lang="html"><sqf notrim>
+
+	hint "It Works!";
+
+
+</sqf></syntaxhighlight>
+| <sqf notrim>
+
+	hint "It Works!";
+
+
+</sqf>
+|-
+| <syntaxhighlight lang="html">
+<sqf>
+// your code here
+hint "good!";
+</sqf>
+</syntaxhighlight>
+| <sqf>
+// your code here
+hint "good!";
+</sqf>
+|-
+| <syntaxhighlight lang="html">
+<sqf>
+#define fadeInDuration 3
+
+waitUntil { not alive player };
+hint DEATH_MESSAGE;
+cutText ["", "Black", playerRespawnTime];
+
+private _deathTime = time;
+Deaths = Deaths + 1;
+
+/*
+	wait for resurrection - see {{Link|Arma 3: Respawn}}
+*/
+waitUntil { alive player && { preloadCamera getPosATL player } };
+
+sleep 3;
+cutText ["Welcome!", "Black in", fadeInDuration];
+
+// after 10s, end the mission
+sleep 10;
+[] call BIS_fnc_endMission;
+</sqf>
+</syntaxhighlight>
+| <sqf>
+#define fadeInDuration 3
+
+waitUntil { not alive player };
+hint DEATH_MESSAGE;
+cutText ["", "Black", playerRespawnTime];
+
+private _deathTime = time;
+Deaths = Deaths + 1;
+
+/*
+	wait for resurrection - see {{Link|Arma 3: Respawn}}
+*/
+waitUntil { alive player && { preloadCamera getPosATL player } };
+
+sleep 3;
+cutText ["Welcome!", "Black in", fadeInDuration];
+
+// after 10s, end the mission
+sleep 10;
+[] call BIS_fnc_endMission;
+</sqf>
+|-
+! colspan="2" | [[SQS Syntax]]
+|-
+! Code
+! Result
+|-
+| <syntaxhighlight lang="html"><sqs/></syntaxhighlight>
+| <sqs/>
+|-
+| <syntaxhighlight lang="html"><sqs></sqs></syntaxhighlight>
+| <sqs></sqs>
+|-
+| <syntaxhighlight lang="html"><sqs> </sqs></syntaxhighlight>
+| <sqs> </sqs>
+|-
+| <syntaxhighlight lang="html"><sqs>hint "It Works!"</sqs></syntaxhighlight>
+| <sqs>hint "It Works!";</sqs>
+|-
+| <syntaxhighlight lang="html">This is <sqs inline>hint "It Works!"</sqs> absolutely inline.</syntaxhighlight>
+| This is <sqs inline>hint "It Works!"</sqs> absolutely inline.
+|-
+| <syntaxhighlight lang="html"><sqs notrim>
+
+	hint "It Works!";
+
+
+</sqs></syntaxhighlight>
+| <sqs notrim>
+
+	hint "It Works!";
+
+
+</sqs>
+|-
+| <syntaxhighlight lang="html"><sqs>
+#loop
+@ alive player
+; you ok - see [[getDammage]] too
+hint "OK"
+~1
+@ not alive player
+~1
+hint "you ded"
+; you not ok
+goto "loop"
+</sqs></syntaxhighlight>
+| <sqs>
+#loop
+@ alive player
+; you ok - see [[getDammage]] too
+hint "OK"
+~1
+@ not alive player
+~1
+hint "you ded"
+; you not ok
+goto "loop"
+</sqs>
+|}
+
+
+== CSS Classes ==
+
+All elements are <syntaxhighlight lang="html" inline><span></syntaxhighlight> except for some exceptions:
+* unless using <syntaxhighlight lang="html" inline><sqf inline></syntaxhighlight>, the parent block is a <syntaxhighlight lang="html" inline><div></syntaxhighlight> holding another one for scrolling purpose; otherwise, is is a <syntaxhighlight lang="html" inline><span></syntaxhighlight> as well.
+
+{| class="wikitable"
+! Element
+! CSS class
+! Overview
+|-
+| parent block
+| sqfhighlighter-'''block'''<br>contains sqfhighlighter-'''scroller''' for blocks
+| <sqf>;</sqf>
+|-
+| error message
+| sqfhighlighter-'''error'''
+| <sqf></sqf><br><sqs></sqs>
+|-
+| wild character / bad variable / unclosed string
+| bv, bvl
+| <sqf>
+@
+private _var = 3RndMag;
+
+hint "hello
+</sqf>
+|-
+| comment
+| cc
+| <sqf>
+// comment
+
+/*
+	this is
+	a multiline
+	comment
+*/
+</sqf>
+|-
+| comment bold
+| b
+| <sqf>
+// '''bold''' comment
+</sqf>
+|-
+| string
+| s
+| <sqf>"string"</sqf>
+|-
+| stringtable string
+| ss
+| <sqf>
+"STR_entry"
+"str_entry"
+"sTr_entry"
+"STRD_entry"
+"STRM_entry"
+"$STR_entry"
+</sqf>
+|-
+| number
+| n
+| <sqf>
+42
+-6.9
+10e10
+</sqf>
+|-
+| operator
+| o
+| <sqf>a + b</sqf>
+|-
+| keyword ({{hl|if}}, {{hl|then}}, {{hl|waitUntil}}, etc)
+| k
+| <sqf>if</sqf>
+|-
+| command
+| c
+| <sqf>setDir</sqf>
+|-
+| function
+| f
+| <sqf>BIS_fnc_spawnGroup</sqf>
+|-
+| function (external)
+| fe
+| <sqf>// not just considering BIS_ or BIN_
+BIS_fnc_unknownFunction
+TAG_fnc_spawnGroup</sqf>
+|-
+| local variable
+| lv
+| <sqf>_localVar</sqf>
+|-
+| global variable
+| gv
+| <sqf>
+// anything will go but UNDERSCORED_ALL_CAPS
+GlobalVar = 1;
+</sqf>
+|-
+| macro
+| m
+| <sqf>
+#define myVar 1
+#if
+#endif
+</sqf>
+|-
+| constant ({{hl|#define}}d value)
+| c
+| <sqf>
+// anything #defined only
+#define testVar 1
+
+testVar;
+otherVar;
+MY_CONSTANT;
+</sqf>
+|-
+| array start ({{hl|[}})
+| as
+| <sqf>[ /* ... */</sqf>
+|-
+| array end ({{hl|]}})
+| ae
+| <sqf>/* ... */ ]</sqf>
+|-
+| code start ({{hl|{<nowiki/>}})
+| cs
+| <sqf>{ /* ... */</sqf>
+|-
+| code end ({{hl|}<nowiki/>}})
+| ce
+| <sqf>/* ... */ }</sqf>
+|-
+| parenthese start ({{hl|(}})
+| ps
+| <sqf>( /* ... */</sqf>
+|-
+| parenthese end ({{hl|)}})
+| pe
+| <sqf>/* ... */ )</sqf>
+|}
+
+
+== Known Issues ==
+
+{| class="wikitable sortable"
+! class="unsortable" | Version
+! class="unsortable" | Issue
+! Report Date
+! Fix Date
+|-
+! rowspan="5" | v1
+| comment blocks still highlight words as global variables for now
+| 2022-03-15
+| 2022-03-17
+|-
+| #if are considered as keywords
+| 2022-03-15
+| 2022-03-17
+|-
+| single-quote strings have issues with other formatting between quotes
+| 2022-03-15
+| w/ '''v2'''
+|-
+| negative numbers should see the minus sign coloured as well<br>''in the end, they should not''
+| 2022-03-15
+| 2022-03-17
+|-
+| numbers in variables are highlighted as numbers (e.g {{hl|unit'''1'''}})
+| 2022-03-22
+| w/ '''v2'''
+|-
+! rowspan="1" | v2
+| preprocessor instructions are not considered if not at the very beginning of the line (and the parsing of the whole line may be wrong)
+| 2022-07-11
+| 2022-07-12
+|}
+
+{{Feature|informative|Report issues on {{Link|https://discord.gg/arma|Discord}}, in the {{hl|#community_wiki}} channel!}}
+
+
+[[Category: MediaWiki Extension]]

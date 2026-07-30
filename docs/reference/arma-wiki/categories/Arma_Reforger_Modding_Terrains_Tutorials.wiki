@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Terrains/Tutorials
+// revision: 371149 (2025-02-28T17:11:07Z)
+// export sha1: di5kfuz3dfoqcj4mos6158867yx806f
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|See also {{GameCategory|armaR|Modding|Terrains|Guidelines|link= y|text= Terrain Guidelines}}.}}
+
+
+{{GameCategory|armaR|Modding|Terrains}}

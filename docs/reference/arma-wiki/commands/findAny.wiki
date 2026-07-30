@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/findAny
+// revision: 377163 (2026-01-01T10:41:43Z)
+// export sha1: irnw9aigq2him41ijkmmmn91thowwbb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+
+|descr= Returns the zero-based index of the first element in array A that also exists in array B. If no common elements exist it returns -1.<br>
+Similar in functionality as [[find#Syntax 1|find's first syntax]], but the second parameter is an array of elements to find.
+
+|gr1= Arrays
+
+|s1= searchIn [[findAny]] toFind
+
+|p1= searchIn: [[Array]] of [[Anything]]
+
+|p2= toFind: [[Array]] of [[Anything]]
+
+|r1= [[Number]] - the index of the first found item
+
+|x1= <sqf>[0,1,2,3,4] findAny [2,4,6,8]; // returns 2</sqf>
+
+|x2= <sqf>[0,1,2,3,4] findAny [8,6,4,2]; // returns 2</sqf>
+
+|x3= <sqf>[0,1,2,3,4] findAny [5,7,9]; // returns -1</sqf>
+
+|seealso= [[find]] [[findIf]]
+}}

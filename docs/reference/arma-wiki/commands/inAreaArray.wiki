@@ -1,0 +1,82 @@
+// source: https://community.bistudio.com/wiki/inAreaArray
+// revision: 378040 (2026-01-27T13:05:40Z)
+// export sha1: 4ryess4po1xp33a3l093lepa0te1ie4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Command Group: Markers | Category:Command Group: Positions | Category:Command Group: Triggers | Category:Introduced with Arma 3 version 1.66 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.66
+
+|gr1= Triggers
+
+|gr2= Markers
+
+|gr3= Locations
+
+|gr4= Positions
+
+|descr= Returns given list of [[Object]]s and/or [[Position]]s that are in the given area, area defined by a trigger, marker, location or array.
+
+{{Feature|important| By default all positions given as [[Array]] or as objects are treated as [[PositionAGL]]. Since {{GVI|arma3|2.20|size= 0.75}} there is an option to force them to [[PositionWorld]] format.}}
+
+|s1= positions [[inAreaArray]] area
+
+|p1= positions: [[Array]] of [[Object]]s and/or [[Position]]s
+
+|p2= area: [[Object]], [[Location]] or [[String]] - the defined area:
+* [[Object]] - trigger
+* [[Location]] - location
+* [[String]] - marker name
+
+|r1= [[Array]] of [[Object]]s and/or [[Position]]s
+
+|s2= positions [[inAreaArray]] [centre, a, b, angle, isRectangle, c, usePosWorld]
+
+|p21= positions: [[Array]] of [[Object]]s and/or [[Position]]s - Places to check. [[Position]]s must be [[Position#PositionAGL|PositionAGL]] if area is checked in 3D (see note in description)
+
+|p22= centre: [[Position#Introduction|Position2D]], [[Position#PositionAGL|PositionAGL]], {{GVI|arma3|2.14|size= 0.75}} [[Object]] or [[Group]]
+
+|p23= a: [[Number]] - x axis (x / 2)
+
+|p24= b: [[Number]] - y axis (y / 2)
+
+|p25= angle: [[Number]] - (Optional, default 0) rotation angle
+
+|p26= isRectangle: [[Boolean]] - (Optional, default [[false]]) [[true]] if rectangle, [[false]] if ellipse
+
+|p27= c: [[Number]] - (Optional, default -1: unlimited) z axis (z / 2)
+
+|p28= usePosWorld: [[Boolean]] - (Optional, default [[false]]) set to [[true]] to treat all positions as [[PositionWorld]]
+|p28since= Arma3 2.20
+
+|r2= [[Array]] of [[Object]]s and/or [[Position]]s
+
+|s3= positions [[inAreaArray]] [pos1, pos2, pos3,...]
+|s3since= arma3 2.20
+
+|p41= positions: [[Array]] of [[Object]]s and/or [[Position]]s - places to check.
+
+|p42 = posN: [[Position]] - polygon vertices in 2d or 3d format (see [[inPolygon]])
+
+|r3= [[Array]] of [[Object]]s and/or [[Position]]s
+
+|x1= <sqf>vehicles inAreaArray myTrigger;</sqf>
+
+|x2= <sqf>allUnits inAreaArray "myMarker";</sqf>
+
+|x3= <sqf>allPlayers inAreaArray myLocation;</sqf>
+
+|x4= <sqf>allDead inAreaArray [[100, 100, 0], 20, 30, 45, false, 10];</sqf>
+
+|seealso= [[inAreaArrayIndexes]] [[inArea]] [[triggerArea]]
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20170611213300
+|text= The array you send the command can be filtered. For example:
+<sqf>vehicles select { _x isKindOf "StaticWeapon" } inAreaArray "myMarker"</sqf>
+Will return only the statics inside the given marker.
+}}

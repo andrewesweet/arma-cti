@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Template:CT/abc_end
+// revision: 373268 (2025-04-13T14:16:20Z)
+// export sha1: p7yi571mhc86butv9cm1l5zavr2jdki
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly></includeonly><noinclude>{{Doc/Template
+|descr= Marks the end of the alphabetically sorted attributes of a Control Type page.
+|example1= <nowiki>{{CT/abc end}}</nowiki>
+|result1= Ends the specially formatted section of config attributes.
+|historical= y
+}}</noinclude>

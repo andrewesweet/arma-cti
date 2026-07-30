@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_kbTopicConfig
+// revision: 364464 (2024-05-16T20:41:50Z)
+// export sha1: 5ph0g7ca2utldk7fzr3rwfqoh1ckwbu
+// categories: Category:Arma 3: Functions | Category:Function Group: Conversations | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Conversations
+
+|descr= Reads the [[Config|configs]] to return a matching {{hl|config [[config greater greater name|&gt;&gt;]] [[Description.ext#CfgSentences|CfgSentences]] [[config greater greater name|&gt;&gt;]] missionName [[config greater greater name|&gt;&gt;]] topic}} entry.
+{{Feature|informative|[[Config]]s are checked in that order: [[configFile]], [[campaignConfigFile]], [[missionConfigFile]].}}
+{{Feature | important | This function is intended to be used by [[BIS_fnc_kbTell]] only.}}
+
+|s1= [missionName, topic] call [[BIS_fnc_kbTopicConfig]]
+
+|p1= missionName: [[String]]
+
+|p2= topic: [[String]]
+
+|r1= [[Config]] - the topic's config entry. [[nil]] on error or not found
+
+|x1= <sqf>private _configTopic = ["missionName", "topic"] call BIS_fnc_kbTopicConfig;</sqf>
+
+|seealso= [[Conversations]] [[BIS_fnc_kbTell]]
+}}

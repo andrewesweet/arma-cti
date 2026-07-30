@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_bitwiseNOT
+// revision: 328587 (2022-07-13T17:02:27Z)
+// export sha1: o2xshl6qj4inmjdf6rstgozhtberfpr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Bitwise | Category:Functions | Category:Introduced with Arma 3 version 1.66 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.66
+
+|gr1= Bitwise
+
+|descr= Performs bitwise NOT operation on decimal or hexadecimal unsigned 24 bit integer <br>(Hexadecimal number representation is simply auto-converted into decimal by the engine)<br><br>
+'''Limitations''':<br>
+Due to various limitations of the Real Virtuality engine this function is 
+intended to work with unsigned 24 bit integers only. This means that the 
+supported range is 2^0...2^24 (1...16777216)
+
+|s1= num call [[BIS_fnc_bitwiseNOT]]
+
+|p1= num: [[Number]] - decimal or hexadecimal unsigned 24 bit integer
+
+|r1= [[Number]] - decimal number
+
+|x1=<sqf>873687 call BIS_fnc_bitwiseNOT; // 15903528
+[2 + 4 + 8 + 32 + 256 + 1024] call BIS_fnc_bitwiseNOT; // 16775889</sqf>
+
+|seealso=    [[BIS_fnc_bitwiseAND]] [[BIS_fnc_bitwiseXOR]] [[BIS_fnc_bitwiseOR]]
+}}

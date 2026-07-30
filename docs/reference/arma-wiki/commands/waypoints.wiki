@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/waypoints
+// revision: 347556 (2023-09-28T09:43:23Z)
+// export sha1: cccu482w6w0i9stjzfnjs78054mfo0i
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Armed Assault version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.05
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|gr1= Waypoints
+
+|descr= Returns an array of waypoints for the specified unit/group.
+
+|s1= [[waypoints]] groupName
+
+|p1= groupName: [[Group]] or [[Object]]
+
+|r1= [[Array]] of [[Waypoint]]s
+
+|x1= <sqf>waypoints player;</sqf>
+
+|x2= <sqf>_wPosArray = waypoints group10; // returns e.g [[EAST 1-1-A,0],[EAST 1-1-A,1],[EAST 1-1-A,2]]</sqf>
+
+|seealso= [[deleteWaypoint]] [[copyWaypoints]] [[setCurrentWaypoint]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointDescription]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointTimeout]] [[setWaypointType]] [[setWaypointVisible]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[setWaypointLoiterRadius]] [[waypointLoiterRadius]] [[addWaypoint]] [[setWaypointLoiterType]] [[waypointSpeed]] [[setWPPos]] [[waypointName]]
+}}

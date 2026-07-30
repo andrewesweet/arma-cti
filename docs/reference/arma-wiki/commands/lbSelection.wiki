@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/lbSelection
+// revision: 377149 (2026-01-01T10:35:25Z)
+// export sha1: lkw1xzrkzojqhur0rgem0wtejn88fyo
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - ListBox
+
+|descr= Returns [[Array]] of selected rows indices in the given listbox. If listbox is of style LB_MULTI (multi-selection) the array will contain multiple elements, otherwise only a single element. For single selection listbox one can also use [[lbCurSel]]. See also [[lbIsSelected]], [[lbSetSelected]]
+
+|s1= [[lbSelection]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Array]] of [[Number]]s
+
+|x1= <sqf>_indices = lbSelection _control;</sqf>
+
+|seealso= [[lbAdd]] [[lbClear]] [[lbColor]] [[lbCurSel]] [[lbData]] [[lbDelete]] [[lbIsSelected]] [[lbPicture]] [[lbSetColor]] [[lbSetCurSel]] [[lbSetData]] [[lbSetPicture]] [[lbSetSelected]] [[lbSetTooltip]] [[lbSetValue]] [[lbSize]] [[lbSort]] [[lbSortByValue]] [[lbText]] [[lbValue]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2020-04-24 - 11:39 (UTC)</dd>
+<dt class="note">[[User:Dscha|Dscha]]</dt>
+<dd class="note">
+With the addition of '''RscListBoxMulti''' (in [[:Category:Introduced with Arma 3 version 1.98|{{arma3}} - 1.98]]), it is possible to get all the selected Rows with [[lbSelection]].
+</dd>
+
+</dl>

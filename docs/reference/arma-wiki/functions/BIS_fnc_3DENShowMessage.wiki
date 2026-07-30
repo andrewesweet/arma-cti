@@ -1,0 +1,83 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENShowMessage
+// revision: 376078 (2025-07-30T11:33:25Z)
+// export sha1: fv98cn9762ccnzgod0ux23h2oza7x6n
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Eden Editor
+
+|descr= Shows a pop-up message.
+In order to skip any optional parameter in between other parameters, send [[nil]] as parameter.
+{{Feature|informative|The following [[Stringtable.xml|stringtable]] entries are useful to add custom [[Code]] but keep the default button texts:
+* {{hl|"STR_DISP_OK"}}
+* {{hl|"STR_DISP_CLOSE"}}
+* {{hl|"STR_DISP_CANCEL"}}
+}}
+
+|s1= [text, title, buttonOK, buttonCancel, icon, parentDisplay] call [[BIS_fnc_3DENShowMessage]]
+
+|p1= text: [[String]] - text to display. Text is [[parseText|parsed]] and therefore supports [[Structured Text]] tags
+
+|p2= title: [[String]] - (Optional, default "") title header
+
+|p3= buttonOK: [[String]], [[Boolean]] or [[Array]] - (Optional, default "") can be one of:
+* [[String]] - button's text
+* [[Boolean]] - show button or not
+* [[Array]] - in format [<nowiki/>[[String]] or [[Boolean]], [[Code]]]:
+** [[String]] or [[Boolean]] - same as above
+** [[Code]] - code executed when button is pressed
+
+|p4= buttonCancel: [[String]], [[Boolean]] or [[Array]] - (Optional, default "") can be one of:
+* [[String]] - button's text
+* [[Boolean]] - show button or not
+* [[Array]] - in format [<nowiki/>[[String]] or [[Boolean]], [[Code]]]:
+** [[String]] or [[Boolean]] - same as above
+** [[Code]] - code executed when button is pressed
+
+|p5= icon: [[String]] - (Optional, default "") path to an icon which will be shown on the left side of the message
+
+|p6= parentDisplay: [[Display]] - (Optional, default <sqf inline>findDisplay 313</sqf> (Eden Display)) display from which the window is opened
+
+|r1= [[Display]]
+
+|x1= <sqf>["Message","Title of the Message"] call BIS_fnc_3DENShowMessage;</sqf>
+
+|x2= <sqf>
+[
+	"Are you sure you want to delete / modify the selected variables?",
+	"Delete / Modify",
+	[
+		"Yes",
+		{ BIS_Message_Confirmed = true }
+	],
+	[
+		"No",
+		{ BIS_Message_Confirmed = false }
+	],
+	"\A3\ui_f\data\map\markers\handdrawn\warning_CA.paa",
+	findDisplay 313
+] call BIS_fnc_3DENShowMessage;
+</sqf>
+
+|x3= <sqf>
+// Only change the OK button's code
+[
+	"Are you sure you want to delete / modify the selected variables?",
+	"Delete / Modify",
+	[
+		nil,
+		{ BIS_Message_Confirmed = true }
+	],
+	nil,
+	"\A3\ui_f\data\map\markers\handdrawn\warning_CA.paa",
+	findDisplay 313
+] call BIS_fnc_3DENShowMessage;
+</sqf>
+
+|seealso= [[BIS_fnc_guiMessage]]
+}}

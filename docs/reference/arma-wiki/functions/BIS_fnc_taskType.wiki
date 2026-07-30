@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskType
+// revision: 352026 (2024-02-01T23:24:23Z)
+// export sha1: ay4qeff2yymk0n2f0etoumh31pvb52t
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.58
+
+|arg= global|gr1= Tasks
+
+|descr= Returns type of given task. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= taskID call [[BIS_fnc_taskType]]
+
+|p1= taskID: [[String]] - task ID
+
+|r1= [[String]] - task type or type 'Default' if not defined.
+
+|x1= <sqf>["BIS_Task_01"] call BIS_fnc_taskType;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

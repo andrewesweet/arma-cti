@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/Material_-_Basic_detail_map
+// revision: 227550 (2021-01-31T19:32:19Z)
+// export sha1: 4h4ool3xqudcbgezqps41d1tb9u6ejc
+// Vendored snapshot. Do not edit — re-export instead.
+
+=== Simple material with detail texture ===
+
+With detail maps You can add to diffusion map inside one stage another repeating texture to reach greater fineness for close view onto big surfaces which would too complicated to cover with oversized texture resolution.
+
+'''WARNING:''' DetailTexture (_DT) has painting saved inside alpha-channel (RGB components are ignored while this texture is converted from TGA to PAA).
+Because shader in a way multiplying detail texture with colored diffusion component,  it is necessary that average color of detail texture should be 50% grey.
+Otherwise if material with detail texture is cutoff inside lower LOD then it may result into visible change of texture brightness (MipMapping is applied with distance and angle).
+
+
+ PixelShaderID="Detail";
+ VertexShaderID="Basic";
+ 
+ class Stage1
+ {
+    texture="detailmapy\platno_detail.paa"; ''// path to detail texture ''
+    uvSource="tex";
+    class uvTransform
+    {
+       aside[] = {4,0,0}; ''// multiplication and offset UV coordinate (transformation matrix)''
+       up[] = {0,6,0};
+       dir[] = {0,0,2};
+       pos[] = {0,0,0};
+    };
+ };

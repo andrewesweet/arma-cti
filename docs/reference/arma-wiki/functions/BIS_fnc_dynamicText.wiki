@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_dynamicText
+// revision: 330683 (2022-10-21T17:13:50Z)
+// export sha1: 6ppepsc27zu9nq3ks2u17wghro4rl51
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= GUI
+
+|eff= local
+
+|descr= Shows dynamic opening credits or any type of text.<br>
+[[File:BIS_fnc_dynamicText_v2.gif|left|400px]]
+
+|s1= [text, x, y, duration, fadeInTime, deltaY, rscLayer] spawn [[BIS_fnc_dynamicText]]
+
+|p1= text: [[String]] - text to display
+
+|p2= x: [[Number]] or [[Array]] - (Optional, default -1)
+* [[Number]] - Position in x
+* [[Array]]
+** 0: Position in x
+** 1: Width of the control
+
+|p3= y: [[Number]] or [[Array]] - (Optional, default -1)
+* [[Number]] - Position in y
+* [[Array]]
+** 0: Position in y
+** 1: Height of the control
+
+|p4= duration: [[Number]] - (Optional, default 4) display duration
+
+|p5= fadeInTime: [[Number]] - (Optional, default 1) fade-in time
+
+|p6= deltaY: [[Number]] - (Optional, default 0) Y position delta:
+* = 0: Text will not move
+* > 0: Text will move down
+* < 0: Text will move up
+''duration'' and the absolute ''deltaY'' value will influence the movement speed.
+
+|p7= rscLayer: [[Number]] - resource layer
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["<t color='#ff0000' size='.8'>Warning!<br />Stop doing what you are doing</t>",-1,-1,4,1,0,789] spawn BIS_fnc_dynamicText;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_infoText]] [[BIS_fnc_textTiles]] [[BIS_fnc_typeText]] [[BIS_fnc_typeText2]] [[BIS_fnc_EXP_camp_SITREP]]
+}}

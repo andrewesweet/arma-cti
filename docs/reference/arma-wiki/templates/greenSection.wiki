@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/Template:greenSection
+// revision: 376529 (2025-10-24T13:15:54Z)
+// export sha1: ltpph4cndwumxmlzd0093n5bg58xjyf
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>! <h2 style="margin:0;background:{{{bg|#cef2e0}}};font-size:120%;font-weight:bold;border:1px solid {{{fg|#a3bfb1}}};text-align:left;color:#000;padding:0.2em 0.4em;">{{{1}}}</h2>
+|-
+|style="color:#000"|{{{2}}}
+|-
+</includeonly><noinclude>
+This historical template is exclusively used in wiki tables and only used in old page's revisions now.
+
+* bg: title's background colour
+* fg: title's '''''border''''' colour
+
+{| class="valign-top"
+! Code
+! Result
+|-
+| <syntaxhighlight lang="handlebars">
+{|
+
+{{greenSection
+| Hello there!
+|
+* item 1
+* item 2
+* item 3
+}}
+
+|}
+</syntaxhighlight>
+|
+{|
+
+{{greenSection
+| Hello there!
+|
+* item 1
+* item 2
+* item 3
+}}
+
+|}
+
+|-
+| <syntaxhighlight lang="handlebars">
+{|
+
+{{greenSection|fg=#a3b0bf|bg=#cedff2|Old Blue
+|
+* item 1
+* item 2
+* item 3
+}}
+
+|}
+</syntaxhighlight>
+|
+{|
+
+{{greenSection|fg=#a3b0bf|bg=#cedff2|Old Blue|
+* item 1
+* item 2
+* item 3
+}}
+
+|}
+
+|}
+[[Category:Historical Templates]]
+</noinclude>

@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/inputController
+// revision: 338923 (2023-04-17T15:23:03Z)
+// export sha1: 6srgec0fkw1ih6egaqnegov9lizawam
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|gr1= Interaction
+
+|descr= Returns the state of controller inputs. The controller is a standard XBOX controller which is selected with Windows XBOX controller scheme. The input can be:
+{{Columns|4|
+* XBOX_A 0
+* XBOX_B 1
+* XBOX_X 2
+* XBOX_Y 3
+* XBOX_Up 4
+* XBOX_Down 5
+* XBOX_Left 6
+* XBOX_Right 7
+* XBOX_Start 8
+* XBOX_Back 9
+* XBOX_LeftBumper 10
+* XBOX_RightBumper 11
+* XBOX_LeftTrigger 12
+* XBOX_RightTrigger 13
+* XBOX_LeftThumb 14
+* XBOX_RightThumb 15
+* XBOX_LeftThumbXRight 16
+* XBOX_LeftThumbYUp 17
+* XBOX_RightThumbXRight 18
+* XBOX_RightThumbYUp 19
+* XBOX_LeftThumbXLeft 20
+* XBOX_LeftThumbYDown 21
+* XBOX_RightThumbXLeft 22
+* XBOX_RightThumbYDown 23
+}}
+
+|s1= [[inputController]] input
+
+|p1= input: [[Number]] - controller input 0...31 (see description) or -1 for controller detection.
+
+|r1= [[Number]] - value of the controller input 0...1. When input is -1, return is 1 if controller is available, 0 - if controller is unavailable 
+
+|x1= State of the fire trigger:
+<sqf>onEachFrame { hintSilent str inputController 13 };</sqf>
+
+|seealso= [[inputMouse]] [[inputAction]] [[actionKeys]] [[actionKeysImages]] [[actionKeysNames]] [[actionIDs]] [[actionParams]] [[addAction]] [[setUserActionText]] [[inGameUISetEventHandler]] [[showHUD]] [[removeAction]] [[removeAllActions]] [[action]]
+}}

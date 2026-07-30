@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_destroyer01GetShipPart
+// revision: 286025 (2021-06-20T17:24:28Z)
+// export sha1: 2v6ds11h4p3esl6ortdp4qlv40py7z9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Destroyer | Category:Functions | Category:Introduced with Arma 3 version 1.84 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.84
+
+|gr1= Destroyer
+
+|descr= <pre>/*
+	Author: Bravo Zero One development
+	- John_Spartan
+
+	Description:
+	- This is a helper function to get ship components (objects) by class name from stored array in ships master component's name-space ("BIS_CarrierParts" array).
+
+	Execution:
+	- Call from script or config.
+
+		Example:
+		[_this, 'Land_Destroyer_01_hull_05_F'] call BIS_fnc_destroyer01GetShipPart;
+
+	Requirements:
+	- Ships master object must be present. Ships master object must have initialized the array of sub components.
+
+	Parameter(s):
+		_this select 0: mode (Scalar)
+		0: ship Base/object
+		1: ship part class name to find
+
+	Returns: object (ship part that matches selected class name)
+	Result: n/a
+
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_destroyer01GetShipPart]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/laserTarget
+// revision: 377476 (2026-01-02T06:48:48Z)
+// export sha1: tsc9vgyjztnndzyuy31kp5p5ipgh7l0
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|gr1= Weapons
+
+|descr= Returns the laser target object created by given unit (vehicle or soldier) when using a laser targeting device. The main syntax targets the primary gunner turret.
+
+|s1= [[laserTarget]] entity
+
+|p1= entity: [[Object]] - unit or vehicle
+
+|r1= [[Object]] - laser target or [[objNull]] if no laser target exists
+
+|s2= vehicle [[laserTarget]] turret
+
+|s2since= arma3 2.12
+
+|p21= vehicle: [[Object]] - transport
+
+|p22= turret: [[Turret Path]]
+
+|r2= [[Object]] - laser target or [[objNull]] if no laser target exists
+
+|x1= <sqf>private _target = laserTarget gunner heli;</sqf>
+
+|x2= <sqf>private _designatedPos = getPosATL laserTarget player;</sqf>
+
+|seealso= [[isLaserOn]] [[cursorTarget]] [[setMissileTarget]]
+}}

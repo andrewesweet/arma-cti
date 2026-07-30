@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENDiagCreateList
+// revision: 342197 (2023-07-09T12:27:13Z)
+// export sha1: 59sv4yh3kbawvb34tiiqck8wxcwtvsc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Copies all in [[:Category:Eden Editor|Eden Editor]] available objects to the clipboard.
+
+|s1= class call [[BIS_fnc_3DENDiagCreateList]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_3DENDiagCreateList;</sqf>
+
+|seealso= [[:Category:Eden Editor|Eden Editor]] [[BIS_fnc_3DENCamera]] [[BIS_fnc_3DENControlsHint]] [[BIS_fnc_3DENDiagFonts]] [[BIS_fnc_3DENDiagMouseControl]] [[BIS_fnc_3DENDrawLocations]] [[BIS_fnc_3DENEntityMenu]] [[BIS_fnc_3DENExportAttributes]] [[BIS_fnc_3DENExportOldSQM]] [[BIS_fnc_3DENExportTerrainBuilder]] [[BIS_fnc_3DENFlashlight]] [[BIS_fnc_3DENGrid]] [[BIS_fnc_3DENIntel]] [[BIS_fnc_3DENInterface]] [[BIS_fnc_3DENListLocations]] [[BIS_fnc_3DENMissionPreview]] [[BIS_fnc_3DENModuleDescription]] [[BIS_fnc_3DENShowMessage]] [[BIS_fnc_3DENStatusBar]] [[BIS_fnc_3DENToolbar]] [[BIS_fnc_3DENTutorial]] [[BIS_fnc_3DENVisionMode]]
+}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Environment
+// revision: 160758 (2020-09-24T14:24:56Z)
+// export sha1: bcd5f41xv158d4jydir9sac72g2kacy
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands to manipulate the weather, time, date or traffic.
+
+[[Category:Scripting Commands by Functionality]]

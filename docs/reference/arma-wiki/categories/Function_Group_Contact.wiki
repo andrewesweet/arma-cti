@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Contact
+// revision: 352049 (2024-02-01T23:24:33Z)
+// export sha1: 0vhq7ewvx3k1y4zlg0zdmq6aby4n6ex
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions used in the [[Arma 3 Contact]] Campaign.
+{{Feature|informative|Many functions are most likely only available during the campaign and not outside of [[Arma 3 Contact]].}}
+
+[[Category:Functions by Functionality]]

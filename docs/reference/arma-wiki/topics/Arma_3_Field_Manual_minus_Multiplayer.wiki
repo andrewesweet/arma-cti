@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Multiplayer
+// revision: 378274 (2026-03-30T20:48:12Z)
+// export sha1: snvt0v54ki36julqn36nz3yyj1lh8c8
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Multiplayer ==
+=== Channels ===
+To communicate with other players you can use one of the three types of communications: Text, Voice and Map Markers. The communication is only broadcasted to a selected channel. Channels are:<br>
+* Global – to all players<br>
+* Side – to your faction<br>
+* Command – to your faction commanders<br>
+* Group – to your command group<br>
+* Vehicle – to players in the same vehicle<br>
+* Direct – to players in a close distance<br>
+Cycle channels with '''[.]''', '''[,]'''.
+
+
+=== Voice Channel ===
+Built-in voice chat provides an option to quickly communicate with your fellow soldiers. If a microphone is connected, press and hold '''[Caps Lock]''' to start broadcasting. Voice chat follows the same rules as text chat, so remember to switch channels by pressing '''[,]''', '''[.]''' to talk privately to your side.
+
+
+=== Team Switch ===
+Team Switch enables you to switch between playable units.<br>
+* Open the Team Switch window '''[U]'''.<br>
+* Select a unit to switch into.<br>
+* Press the '''Switch''' button.
+
+''Press '''[]''' to switch directly into the next unit.''
+
+
+=== Text Chat ===
+Text chat serves as one of the three forms of communicating with other players. It's displayed on the screen amongst the combat protocol.<br>
+* Open the text input with '''[/]'''.<br>
+* Cycle the channels by pressing '''[UP]''', '''[DOWN]'''.<br>
+* Send the message with '''[Enter]'''.
+
+''When you are writing, other keyboard controls are disabled. Close the chat box by pressing '''[Esc]''' quickly.''
+
+
+=== Map Markers ===
+A map marker is a visual aid placed on the Map. To add a marker:<br>
+* Doubleclick '''[LMB]''' anywhere on the map.<br>
+* Press '''[UP]''', '''[DOWN]''' to change the type of the marker.<br>
+* Hold '''[L. Shift]''' and press '''[UP]''' or '''[DOWN]''' to change the color of the marker.<br>
+* You can enter text while creating the marker.<br>
+* Confirm the marker placement with '''[Enter]'''.<br>
+To delete a marker, point at it with the cursor and press '''[Delete]'''.
+
+
+=== Line Drawing ===
+Line Drawing is a communication enhancing feature that helps players visualize their plan using map. It is important to select appropriate channel (such as “group” or “side”) to share information with the people who should have them. You can draw lines while holding '''[Left CTRL]''' key to share information. You can also delete them by hovering mouse cursor on desired line and hitting '''[Delete]''' key. At top of screen you can choose color not only for lines but also for markers (that you can insert by double-clicking of left mouse button).
+Please note that this feature can be disabled by server administrators in the [[Arma 3: Server Config File|server configuration]]. 
+
+''This marker is visible to a selected chat channel (e.g. placing a map marker while in the Side channel ensures only other players on your side will see it). Use markers to point out enemy forces, plot routes, assign artillery targets and convey any other useful information required.''
+
+
+=== Scoreboard  ===
+Score/ Stat Screen is a standard multiplayer display allowing player to see his and his side’s standings, score count, number of kills and deaths and types of killed units. Player can also see his/ her current standings against other players in list and even check on how your friends are doing if you look up their nicknames.
+You can activate it by pressing key '''[P]''' and it will close itself upon pressing '''[P]''' again. You can navigate to lower positions of list using mouse-wheel or by dragging slider on right side of dialogue.
+If you are a modder and would like to tinker with this dialogue, see [[Display]] since this is a standard display.
+
+
+=== Quick Play ===
+Quick Play is a dialogue that serves as a mean for player to join best server according to his preferences without having to choosing from Server List in Server Browser manually. You can (optional) specify mission type, max ping and preferred server criteria.
+After clicking “FIND AND JOIN SERVER”, the Game will find server according to criteria with unoccupied slots and connect you to it. If no such server exists, you will be returned to Quick Play menu.
+This feature can be accessed from Main Menu or Multiplayer tab.
+
+{{GameCategory|arma3|Field Manual}}

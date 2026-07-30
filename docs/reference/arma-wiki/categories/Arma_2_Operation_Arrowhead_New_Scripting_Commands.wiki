@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Operation_Arrowhead:_New_Scripting_Commands
+// revision: 292551 (2021-08-09T16:27:54Z)
+// export sha1: q190b3fxsd6lallpm9oovleiukl4ob9
+// Vendored snapshot. Do not edit — re-export instead.
+
+List of all new commands in {{arma2oa}}.
+
+Commands not listed here but backported after being introduced by later titles:
+{| class="wikitable"
+! {{GVI|arma2oa|1.62}}
+! {{GVI|arma2oa|1.64}}
+|- style="vertical-align: top"
+|
+* [[addWeaponTurret]]
+* [[getHit]]
+* [[removeWeaponTurret]]
+|
+* [[profileNamespace]]
+* [[saveProfileNamespace]]
+|}
+
+
+{{GameCategory|arma2oa|Scripting Commands}}

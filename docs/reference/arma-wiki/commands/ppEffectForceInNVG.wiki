@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/ppEffectForceInNVG
+// revision: 348736 (2023-11-08T14:32:10Z)
+// export sha1: stzd789xjojtw003fkn7o40jkvbjt6i
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Camera Control
+
+|eff=local
+
+|descr= Forces use of [[Post Process Effects]] in NVG.
+
+|s1= ppHandle [[ppEffectForceInNVG]] force
+
+|p1= ppHandle: [[Number]] - handle of the post processing returned by [[ppEffectCreate]]
+
+|p2= force: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_ppGrain ppEffectForceInNVG true;</sqf>
+
+|seealso= [[Post Process Effects]] [[ppEffectEnable]] [[ppEffectEnabled]] [[ppEffectDestroy]] [[ppEffectCreate]] [[ppEffectCommit]] [[ppEffectCommitted]] [[ppEffectAdjust]]
+}}

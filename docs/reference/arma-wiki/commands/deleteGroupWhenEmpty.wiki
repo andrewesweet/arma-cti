@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/deleteGroupWhenEmpty
+// revision: 353027 (2024-03-12T11:37:47Z)
+// export sha1: 7xjxal4x5hiurnrtg9y4jftgcmlziph
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|arg= local
+
+|eff= global
+
+|gr1= Groups
+
+|descr= Marks given group for auto-deletion when group is empty.
+[[true]] will mark the group for auto-deletion once empty, [[false]] will simply unmark the group that was marked previously.
+{{Feature|important|This command does '''not''' prevent group deletion (through e.g [[deleteGroup]] or any engine group management).}}
+
+|s1= group [[deleteGroupWhenEmpty]] delete
+
+|p1= group: [[Group]]
+
+|p2= delete: [[Boolean]] - [[true]] to mark for auto-deletion on empty group, [[false]] to not use this auto-deletion system
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_group deleteGroupWhenEmpty true;</sqf>
+
+|x2= Executed on the server:
+<sqf>
+if (local _group) then
+{
+	_group deleteGroupWhenEmpty true;
+}
+else // group is local to a client
+{
+	[_group, true] remoteExec ["deleteGroupWhenEmpty", groupOwner _group];
+};
+</sqf>
+
+|seealso= [[deleteGroup]] [[isGroupDeletedWhenEmpty]] [[createGroup]] [[group]] [[setGroupId]] [[groupID]] [[units]] [[groupFromNetId]] [[netId]] [[leader]] [[selectLeader]] [[join]] [[createCenter]] [[createUnit]] [[createVehicle]] [[Side]]
+}}
+
+{{Note
+|user= PierreMGI
+|timestamp= 20231201050428
+|text= The auto-deletion of a group is not automatic. For example, if you place a group in editor, name it (grp1), and kill the units in preview, this group remains not null and is counted as group (checked by count allGroups).
+On the other hand, if you write: <sqf inline>this deleteGroupWhenEmpty true</sqf> in composition init (group init), this group will become null sometimes after the units are killed. It takes a little time for dead units to exit the group, then an extra time for the group to be deleted once all units dead. (count allGroups decreases).
+Of course, in both cases, grp1 remains a variable ("grp1" is not nil).
+}}

@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/setTurretOpticsMode
+// revision: 377497 (2026-01-02T06:49:23Z)
+// export sha1: ggcffy6y8xcnf84xbep5fhuwbvnffoy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|arg= local
+
+|eff= local
+
+
+|descr= Set the current optics mode of the optics in the turret occupied by the specified unit. Alternatively, you can specify a vehicle and turret path instead of a unit. Optic modes refer to the different fields of view (FOV) or zoom levels of an optic.
+
+|gr1= Turrets
+
+|s1= obj [[setTurretOpticsMode]] mode
+
+|p1= obj: [[Object]]
+
+|p2= mode: [[Number]] - optic mode index
+
+|r1= [[Nothing]]
+
+|s2= obj [[setTurretOpticsMode]] [turretPath, opticModeIndex]
+
+|p21= obj: [[Object]]
+
+|p22= turretPath: [[Turret Path]]
+
+|p23= opticModeIndex: [[Number]] - optic mode index
+
+|r2= [[Nothing]]
+
+|x1= <sqf>player setTurretOpticsMode 0;</sqf>
+
+|x2= <sqf>myTank setTurretOpticsMode [[-1], 1];</sqf>
+
+|x3= <sqf>myAircraft setTurretOpticsMode [[0, 0], 0];</sqf>
+
+|seealso= [[getTurretOpticsMode]] [[turretLocal]] [[selectWeaponTurret]] [[getPilotCameraOpticsMode]] [[setPilotCameraOpticsMode]]
+}}

@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/ctrlMapAnimAdd
+// revision: 377869 (2026-01-04T11:37:23Z)
+// export sha1: 1lplqry82ya686poewu67t2mg9q3ny4
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control - Map
+
+|descr= Adds the next frame to the map animation.
+
+|pr= When used on a [[CT_MAP]] that was created dynamically the target position could be offset. Use [[ctrlMapSetPosition]] before adding animation (Example 3).
+
+|s1= map [[ctrlMapAnimAdd]] [time, zoom, position]
+
+|p1= map: [[Control]] - [[CT_MAP]] control
+
+|p2= time: [[Number]] - duration of the animation in seconds
+
+|p3= zoom: [[Number]] - zoom in range from 0.001 (max) to 1 (min). Custom map scales can be set in map control's config. See also [[ctrlMapScale]] 
+
+|p4= position: [[Position#Introduction|Position2D]], [[Position#Introduction|Position3D]], [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_map ctrlMapAnimAdd [1, 0.1, getMarkerPos "anim1"];
+ctrlMapAnimCommit _map;
+</sqf>
+
+|x2= Center map on player:
+<sqf>
+_ctrl ctrlMapAnimAdd [0, 0.05, player];
+ctrlMapAnimCommit _ctrl;
+</sqf>
+
+|x3= <sqf>
+_map ctrlMapSetPosition [];
+_map ctrlMapAnimAdd [1, 0.1, getMarkerPos "anim1"];
+ctrlMapAnimCommit _map;
+</sqf>
+
+|seealso= [[ctrlMapSetPosition]] [[mapAnimAdd]] [[mapAnimClear]] [[mapAnimCommit]] [[mapAnimDone]] [[ctrlMapAnimClear]] [[ctrlMapAnimCommit]] [[ctrlMapAnimDone]]
+}}

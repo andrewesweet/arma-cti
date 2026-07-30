@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_setIDWMapDrawColorSet
+// revision: 364343 (2024-05-06T10:34:27Z)
+// export sha1: bog172ovs0v3xieyisa38pcao8kpmd0
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: IDWMap | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= IDWMap
+
+|descr= <pre>
+/*
+		Killzone_Kid
+
+	Description:
+		Sets map draw color set
+
+	Parameter(s):
+		ARRAY - array of colors from 1 to 11
+
+	Returns:
+		BOOL - true on success
+		
+	Example:
+		// set 3 color drawing on the fly
+		[[0,0,0.514,0.7],[0.843,1,0.153,0.7],[0.522,0,0,0.7]] call BIN_fnc_setIDWMapDrawColorSet;
+		// set from config
+		[] call BIN_fnc_setIDWMapDrawColorSet;
+*/
+</pre>
+
+{{Wiki|placeholder}}
+{{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_setIDWMapDrawColorSet]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

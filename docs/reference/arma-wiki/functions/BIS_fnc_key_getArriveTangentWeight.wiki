@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_key_getArriveTangentWeight
+// revision: 279118 (2021-06-13T21:48:57Z)
+// export sha1: tsywd2pai1f278y01uoquw0ubgd8s8p
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Key | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Key
+|descr= <pre>/*
+	Author: Nelson Duarte <@Nelson_G_Duarte>
+
+	Description:
+	Returns the key arrive tangent weight
+
+	Parameter(s):
+	_this select 0: Object - The key
+
+	Returns:
+	Float - The key arrive tangent weight
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_key_getArriveTangentWeight]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

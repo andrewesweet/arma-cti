@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/getCurrentPlayerLevel
+// revision: 351571 (2023-12-07T16:53:56Z)
+// export sha1: io3qawpynr8fs8scthooeau3p0rm4ki
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|gr1= Argo
+
+|descr= Get the level of the currently logged client.
+
+|s1= [[getCurrentPlayerLevel]]
+
+|r1= [[Number]] - the current player's level, or -1 if servers are unreachable
+
+|x1= <sqf>
+if (getCurrentPlayerLevel > 9) then
+{
+	hint "Wow, you're good!";
+};
+</sqf>
+
+|seealso= [[getPlayerLevel]] [[isPlayerSupporter]]
+}}

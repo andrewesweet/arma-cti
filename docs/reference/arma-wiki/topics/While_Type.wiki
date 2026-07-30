@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/While_Type
+// revision: 245279 (2021-02-10T14:23:54Z)
+// export sha1: jcpli82pmj8xzu4f9r93ysqhlyltq2p
+// categories: Category:Syntactical Helper Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Description:'''
+Helper type used in [[while]]...[[do]] construct.
+
+== See Also ==
+[[Control Structures]]
+
+[[Category:Syntactical Helper Types]]

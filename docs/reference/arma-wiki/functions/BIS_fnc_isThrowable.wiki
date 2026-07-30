@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isThrowable
+// revision: 376125 (2025-09-01T08:18:13Z)
+// export sha1: f8ir5iqxngdsx76vqz6ycjpifv1sg6d
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Inventory
+
+|descr= Returns true if given magazine is throwable.
+{{Feature|obsolete|see [[isThrowable]].|arma3|2.18}}
+
+|s1= magazine call [[BIS_fnc_isThrowable]]
+
+|p1= magazine: [[String]] - magazine class name
+
+|r1= [[Boolean]] - [[true]] if throwable
+
+|x1= <sqf>private _isThrowable = "SmokeShellGreen" call BIS_fnc_isThrowable;</sqf>
+
+|seealso= [[isThrowable]] [[magazines]] [[currentThrowable]]
+}}

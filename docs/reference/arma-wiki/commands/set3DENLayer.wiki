@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/set3DENLayer
+// revision: 377849 (2026-01-03T11:30:21Z)
+// export sha1: lw8goh8pe1609owtnjv1i13xiit9862
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Set layer for [[Eden Entity]]. 
+
+|s1= entity [[set3DENLayer]] layerID
+
+|p1= entity: [[Eden Entity]]
+
+|p2= layerID: [[Number]] - layer ID as returned by [[add3DENLayer]] command
+
+|r1= [[Boolean]] - [[true]] if the entity was moved succesfully
+
+|x1= <sqf>
+private _myLayer = -1 add3DENLayer "CTRG";
+player set3DENLayer _myLayer;
+</sqf>
+
+|x2= <sqf>player set3DENLayer -1; // Move to root</sqf>
+
+|seealso= [[add3DENLayer]] [[remove3DENLayer]] [[get3DENLayerEntities]]
+}}

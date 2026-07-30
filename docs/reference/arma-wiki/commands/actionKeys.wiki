@@ -1,0 +1,85 @@
+// source: https://community.bistudio.com/wiki/actionKeys
+// revision: 330779 (2022-11-01T16:06:07Z)
+// export sha1: dk03qoygwxqbaqbop6xuaylg44ttvfr
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Interaction
+
+|descr= Returns [[Array]] containing [[DIK_KeyCodes|dikCodes]] of keys, buttons and combos assigned to the given user action. Action names could be found in config class ControllerSchemes or [[:Category:Key Actions|user action names]] or user profile, for example:
+<syntaxhighlight lang="cpp">
+keyWatch[] = { 24 };
+</syntaxhighlight>
+To retrieve the value, use the property name without 'key':
+<sqf>actionKeys "Watch"; // 24</sqf>
+In addition, some of the actions are also listed in here: [[inputAction/actions]]
+
+|s1= [[actionKeys]] userAction
+
+|p1= userAction: [[String]]
+
+|r1= [[Array]] of [[Number]]s
+
+|s2= [[actionKeys]] [userAction]
+|s2since=Arma3 2.08
+
+|p21= userAction: [[String]]
+
+|r2= [[Array]] of [[String]]s
+
+|x1= <sqf>_arrayOfNumbers = actionKeys "ReloadMagazine";</sqf>
+|x2= From {{arma3}} v2.08: <sqf>_arrayOfStrings = actionKeys ["ReloadMagazine"];</sqf>
+
+|seealso= [[actionKeysNames]] [[actionKeysNamesArray]] [[actionKeysImages]] [[actionName]] [[inputAction]] [[addUserActionEventHandler]]
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20160511023600
+|text= If an action key is configured with a modifier (e.g. "Right Ctrl + M" for "MiniMapToggle"), the DIK code returned by this command has a weird value, equivalent to the following:<br>
+: Left Ctrl + Key = 486539264 + DIK
+: Left Shift + Key = 704643072 + DIK
+: Left Alt + Key = 939524096 + DIK
+: Right Ctrl + Key = -1660944384 + DIK
+: Right Shift + Key = 905969664 + DIK
+: Right Alt + Key = -1207959552 + DIK</sqf>
+
+This increases the difficulty of accurately comparing key codes to actionKeys in [[User_Interface_Event_Handlers|UI event handlers]]. Those strange numbers are probably due to bit flags being added to the DIK value by the game engine for easier storage in the [[Profile|ArmaProfile]].<br>
+In case of mouse buttons, actionKeys will also return values that are different from those in "MouseButton" UI events:<br>
+: LMB: MouseButton 0 = actionKeys 65536
+: RMB: MouseButton 1 = actionKeys 65665 (65536 + 1 + 128)
+: MMB: MouseButton 2 = actionKeys 65538 (65536 + 2)
+: 4MB: MouseButton 3 = actionKeys 65539 (65536 + 3)
+: 5MB: MouseButton 4 = actionKeys 65540 (65536 + 4)
+The values above are valid for a right-handed mouse configuration, and may or may not differ for a left-handed config.
+<br><small>''Note edited by [[User:R3vo|R3vo]] ([[User talk:R3vo|talk]]) 13:04, 19 March 2021 (CET)''</small>
+}}
+
+{{Note
+|user= Commy2
+|timestamp= 20160806122400
+|text= '''The values described by {{User|AgentRev}} cannot be compared <u>reliably</u>.''' All numbers in SQF are floats and those are only precise up to 7 digits.<br>
+<sqf>486539264 + 19 == 486539264 + 20 // returns true</sqf>
+The DIK codes for {{hl|LCtrl + R}} and {{hl|LCtrl + T}} are indistinguishable.
+<br><small>''Note edited by [[User:R3vo|R3vo]] ([[User talk:R3vo|talk]]) 13:04, 19 March 2021 (CET)''</small>
+}}

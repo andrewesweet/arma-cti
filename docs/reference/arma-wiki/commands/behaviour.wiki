@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/behaviour
+// revision: 369334 (2024-09-03T18:43:00Z)
+// export sha1: e6kj0dyzkz9g4jx5uf43zrtbrr2tk65
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= AI Behaviour
+
+|descr= Returns the behaviour of the individual unit, this is why it only accepts [[Object]] as the argument. For Arma 3 behaviour explanation see [[Arma_3_AI_Behavior]]
+
+|s1= [[behaviour]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[String]] - one of:
+* "CARELESS"
+* "SAFE"
+* "AWARE"
+* "COMBAT"
+* "STEALTH"
+* "ERROR" (Since {{GVI|Arma3|1.78}} when used on empty vehicles and such)
+
+|x1= <sqf>
+_soldier setBehaviour "CARELESS";
+_b = behaviour _soldier; // returns "CARELESS"
+</sqf>
+
+|seealso= [[AIBehaviour]] [[setBehaviour]] [[setWaypointBehaviour]] [[combatMode]] [[setCombatMode]] [[skill]] [[setSkill]] [[Arma 3: AI Skill]] [[setCombatBehaviour]] [[combatBehaviour]]
+}}

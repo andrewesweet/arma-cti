@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/clientOwner
+// revision: 353110 (2024-03-12T12:48:23Z)
+// export sha1: ozk2864eciy6qx0uaoq2sh420fjsxq6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Multiplayer
+
+|descr= Returns the [[Multiplayer_Scripting#Machine_network_ID | machine network ID]] of the client executing the command.
+
+|s1= [[clientOwner]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _myNetworkId = clientOwner;</sqf>
+
+|seealso= [[owner]] [[groupOwner]] [[onPlayerConnected]] [[onPlayerDisconnected]] [[getClientState]] [[getClientStateNumber]] [[admin]] [[remoteExecutedOwner]]
+}}
+
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2016-02-17 - 18:54 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+On hosted server there could be some inconsistency between [[clientOwner]], [[owner]] and object creator id, especially in missions started from save.
+On the dedicated server this command however works reliably.
+</dd>
+
+</dl>

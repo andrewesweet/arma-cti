@@ -1,0 +1,75 @@
+// source: https://community.bistudio.com/wiki/arrayIntersect
+// revision: 377192 (2026-01-01T10:54:34Z)
+// export sha1: 930hvx3xj9uoou2dp6m92bg4atxb96x
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.48
+
+|gr1= Arrays
+
+|descr= Intersects two arrays returning an array of unique common elements, avoiding [[nil]] values.
+Using the same array as both parameters will return unique elements of that array.
+Intersects only the first dimension of said arrays.
+{{Feature|informative|From Arma 3 v 2.14 the order of the intersected elements would follow 'array1' order}}
+
+
+|s1= array1 [[arrayIntersect]] array2
+
+|p1= array1: [[Array]] of [[Anything]]
+
+|p2= array2: [[Array]] of [[Anything]]
+
+|r1= [[Array]] of [[Anything]]
+
+|x1= <sqf>
+_arr1 = [1,2,3,4,5,2,3,4];
+_arr2 = [4,5,6,1,2,3,5,6];
+hint str (_arr1 arrayIntersect _arr2); // [4,5,1,2,3]
+</sqf>
+
+|x2= <sqf>
+_arr = [1,2,3,1,2,3,1,2,3,4,5];
+hint str (_arr arrayIntersect _arr); // [1,2,3,4,5]
+</sqf>
+
+|x3= Remove [[nil]]s:
+<sqf>hint str ([1,2,nil,3] arrayIntersect [1,2,nil,3]); // [1,2,3]</sqf>
+
+|x4= Also works with array elements which are [[isEqualTo|equal]]:
+<sqf>hint str ([[1],[2],[3]] arrayIntersect [[2],[3],[4]]); // [[2],[3]]</sqf>
+
+|x5= This command is case-sensitive:
+<sqf>
+["cAse"] arrayIntersect ["cAse"]; // ["cAse"]
+["cAse"] arrayIntersect ["casE"]; // []
+</sqf>
+
+|seealso= [[append]] [[set]] [[pushBack]] [[pushBackUnique]] [[apply]] [[select]] [[resize]] [[reverse]] [[count]] [[find]] [[in]] [[forEach]] [[deleteAt]] [[deleteRange]] [[sort]] [[param]] [[params]] [[toArray]] [[toString]] [[splitString]] [[joinString]] [[BIS_fnc_arrayPushStack]] [[BIS_fnc_arrayPush]]
+}}
+
+{{Note
+|user= Hypoxic125
+|timestamp= 20240526165002
+|text= Selectively filter out elements from _arrayA based on _arrayB.
+* Designed to remove the first occurrence of each element found in _arrayB from _arrayA.
+* Useful in removing elements where duplicates may exist.
+
+<sqf>
+private _arrayA = [1, 2, 3, 2, 4, 5, 4];
+private _arrayB = [2, 2, 4];
+
+{
+	private _index = _arrayA find _x;
+	if (_index != -1) then
+	{
+		_arrayA deleteAt _index;
+	};
+} forEach _arrayB;
+
+_arrayA; // is now [1, 3, 5, 4]
+</sqf>
+}}

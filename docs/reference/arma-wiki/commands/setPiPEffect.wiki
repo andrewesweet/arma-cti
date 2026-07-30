@@ -1,0 +1,102 @@
+// source: https://community.bistudio.com/wiki/setPiPEffect
+// revision: 351291 (2023-11-27T03:13:48Z)
+// export sha1: 1zomjteosq36ye4xnk25mef1atgfdgd
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Camera Control
+
+|descr= Sets Render Target's visual effect (Picture-in-Picture).
+{{{!}} class="wikitable align-center-col-1" style="font-size: .95em"
+! Mode
+! Description
+! Parameters
+{{!}}-
+{{!}} 0
+{{!}} Normal
+{{!}} [0]
+{{!}}-
+{{!}} 1
+{{!}} Night Vision
+{{!}} [1]
+{{!}}-
+{{!}} 2
+{{!}} Thermal Imaging
+{{!}} [2]
+{{!}}-
+{{!}} 3
+{{!}} [[Post Process Effects#ColorCorrections|Color Correction]]
+{{!}} [3, enabled, brightness, contrast, offset, blend [r,g,b,a], lerp [r,g,b,a], rgb [r,g,b,a]]
+{{!}}-
+<!--
+{{!}} 4
+{{!}} Mirror - '''non-functional'''
+{{!}} [4]
+{{!}}-
+{{!}} 5
+{{!}} [[Post Process Effects#ChromAberration|Chromatic Aberration]] - '''non-functional'''
+{{!}} [5, enabled, powerx, powery, (bool) aspectCorrection]
+{{!}}-
+{{!}} 6
+{{!}} [[Post Process Effects#FilmGrain| Film Grain]] - '''non-functional'''
+{{!}} <small>[6, enabled, intensity, sharpness, grainsize, intensityx1, intensityx2, (bool) monochromatic]</small>
+{{!}}-
+-->
+{{!}} 7
+{{!}} Alt. Thermal Imaging 1 (Inverted)
+{{!}} [7]
+{{!}}-
+{{!}} 8
+{{!}} Alt. Thermal Imaging 2 (Green)
+{{!}} [8]
+{{!}}-
+{{!}} 9..70
+{{!}} {{GVI|arma3|2.10|size= 0.75}} Alt. Thermal Imaging 3..64
+{{!}} ''[n]''
+{{!}}}
+
+|s1= name [[setPiPEffect]] [effect, optionalParam1, optionalParam2, ...]
+
+|p1= name : [[String]] - render surface reference from [[Procedural Textures#Render To Texture|Render To Texture]]
+
+|p2= effect : [[Number]] - effect type
+
+|p3= optionalParamN: [[Number]] - (Optional) parameters based on selected effect
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"rendersurface" setPiPEffect [0];</sqf>
+
+|x2= <sqf>"rendertarget0" setPiPEffect [3, 1, 1.0, 1.0, 0.0, [0.0, 1.0, 0.0, 0.25], [1.0, 0.0, 1.0, 1.0],  [0.199, 0.587, 0.114, 0.0]];</sqf>
+
+|x3= <sqf>
+private _cam = "camera" camCreate (player modelToWorld [0,-5,2]);
+_cam cameraEffect ["internal", "back", "rtt"];
+"rtt" setPiPEffect [2];
+with uiNamespace do {
+	private _pic = findDisplay 46 ctrlCreate ["RscPicture", -1];
+	_pic ctrlSetPosition [0,0,1,1];
+	_pic ctrlCommit 0;
+	_pic ctrlSetText "#(argb,512,512,1)r2t(rtt,1.0)";
+};
+</sqf>
+
+|x4= Black & White:
+<sqf>"rtt" setPiPEffect [3, 1, 1.0, 0.4, 0, [0,0,0,0], [1,1,1,0], [1,1,1,1]];</sqf>
+
+|seealso= [[Procedural Textures]] [[camCreate]] [[cameraEffect]] [[Post Process Effects]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20170709200400
+|text= If Color Corrections effect has been used, going back to Normal will have no effect. In order to unset Color Corrections, set the 2nd param in it (enable) to 0.
+}}

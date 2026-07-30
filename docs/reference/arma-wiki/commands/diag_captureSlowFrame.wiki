@@ -1,0 +1,88 @@
+// source: https://community.bistudio.com/wiki/diag_captureSlowFrame
+// revision: 370412 (2024-12-05T18:30:13Z)
+// export sha1: sgln1jmu9t036d2xqrnjumwdxcadjtl
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Arma 3: Scripting Commands: Profiling Branch | Category:Command Group: Diagnostic | Category:Command Group: Performance Profiling | Category:Introduced with Arma 2: Operation Arrowhead version 1.63 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.63
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 1.00
+
+|branch= diag prof
+
+|gr1= Diagnostic
+
+|gr2= Performance Profiling
+
+|descr= [[File:CaptureSlowFrame.jpg|right|200x120px]]
+Opens "capture frame" dialog if current frame exceeds set threshold in seconds. One can indicate to either capture duration of a specific profiling selection or the total duration of the frame.
+The selection names can be obtained by expanding the profiling tree. Clicking on a tree item will highlight the item on the graph and vice versa.
+The GUI also provides method of copying of the displayed data to clipboard. 
+
+{{Feature|informative|
+'''Chrome export format''':
+Capturing to file also creates a .trace file, which can be imported into chrome://tracing (in chromium based webbrowsers), or https://ui.perfetto.dev/ <br>
+The same format can be exported by pressing the "COPY ALL" button, in the capture frame UI, with {{Controls|Ctrl}} key being held down.
+}}
+
+|s1= [[diag_captureSlowFrame]] [section, threshold, frameSkip, toFile, continuousCounter]
+
+|p1= section: [[String]] - '''case-sensitive'''; some of the selections:
+
+: {{{!}} class="wikitable valign-top-row-2"
+! Render
+! Main Thread
+! Visualize
+! Mjob
+{{!}}-
+{{!}}
+* bgD3D
+{{!}}
+* total
+* sLoop (for dedicated server)
+* cLoop (for headless client)
+* memAl
+{{!}}
+* visul
+{{!}}
+* Mjob
+{{!}}}
+
+|p2= threshold: [[Number]] or {{GVI|arma3|2.20|size= 0.75}} [[String]]
+* [[Number]]: section duration in seconds. 0 captures always '''IF''' the section you gave as section filter appears inside the given frame. "total" always appears, while "callExt" might not always appear for example.
+* [[String]]: number with unit (s / ms / us / ns / fps, e.g "30fps" - see {{Link|https://en.wikipedia.org/wiki/Second#SI_multiples|SI prefixes}} for more unit information){{Feature|important|
+The capture happens "when the section/scope duration is larger/longer than this", except with "fps" where it is "when smaller/lower".
+}}
+
+|p3= frameSkip: [[Number]] - (Optional, default 0) number of frames to ignore before measuring
+|p3since= arma3 1.18 <!-- estimate, was committed on 2014-03-31 -->
+
+|p4= toFile: [[Boolean]] - (Optional, default [[false]]) if true, doesn't open UI and writes straight to file. If logging to file, it automatically also outputs a .trace file. Note: even if false it might still force to file if it doesn't have a UI, like a server or HC
+|p4since= arma3 2.20
+
+|p5= continuousCounter: [[Number]] - (Optional, default 0) captures N slow frames. 0 or 1 will only capture one frame - do '''not''' set it to negative! Can be aborted by running [[diag_captureFrame]] or another [[diag_captureSlowFrame]] usage
+|p5since= arma3 2.20
+
+|r1= [[Nothing]]
+
+|x1= <sqf>diag_captureSlowFrame ["total", 0.003];</sqf>
+
+|x2= <sqf>diag_captureSlowFrame ["total", "0.003s"];</sqf>
+
+|x3= <sqf>diag_captureSlowFrame ["total", "3ms"];</sqf>
+
+|x4= <sqf>diag_captureSlowFrame ["total", "333fps"];</sqf>
+
+|x5= <sqf>diag_captureSlowFrame ["memAl", 0.0001, 30];</sqf>
+
+|x6= <sqf>diag_captureSlowFrame ["total", 0, 0, false, 3]; // opens the capture UI three times</sqf>
+
+|seealso= [[Arma 3: Diagnostics Exe]] [[Performance Profiling]] [[Arma 3: Cheats]] [[Multiplayer_Server_Commands#Performance_Profiling|Admin chat commands]] [[diag_captureFrameToFile]] [[diag_captureFrame]] [[diag_logSlowFrame]] [[logEntities]] [[exportJIPMessages]]
+}}

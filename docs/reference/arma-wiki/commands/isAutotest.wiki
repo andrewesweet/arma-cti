@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/isAutotest
+// revision: 339084 (2023-04-26T10:54:05Z)
+// export sha1: fyfumva6erzuputuduc8uen3iq2acy8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= System
+
+|descr= Returns true if game was started with autotest parameter
+
+|s1= [[isAutotest]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_bool = isAutotest;</sqf>
+
+|seealso= [[Arma_3_Startup_Parameters#autotest|autotest]]
+}}

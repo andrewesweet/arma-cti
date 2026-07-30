@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/setCuratorCameraAreaCeiling
+// revision: 339085 (2023-04-26T10:54:07Z)
+// export sha1: nwa2df5jot873hhsqfendic7e0z5jna
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|serverExec= server
+
+|gr1= Curator
+
+|descr= Sets maximal ([[Position#PositionATL|ATL]]) height to which curator camera can move.
+
+|s1= curatorObj [[setCuratorCameraAreaCeiling]] height
+
+|p1= curatorObj: [[Object]] - [[Arma 3 Curator|Curator]] module
+
+|p2= height: [[Number]] - [[Position#PositionATL|ATL]], in metres
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myCurator setCuratorCameraAreaCeiling 50;</sqf>
+
+|seealso= [[Arma 3 Curator]] [[addCuratorCameraArea]] [[removeCuratorCameraArea]] [[removeAllCuratorCameraAreas]] [[curatorCameraArea]]
+}}

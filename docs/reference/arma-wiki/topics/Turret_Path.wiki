@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/Turret_Path
+// revision: 329896 (2022-08-08T09:33:51Z)
+// export sha1: iwzkk92cy5vzbizaow5794x2h45cucj
+// categories: Category:Arrays | Category:Introduced with Armed Assault version 1.00
+// Vendored snapshot. Do not edit — re-export instead.
+
+A '''Turret Path''' is an [[Array]] of [[Number]]s that determines a turret seat's "path", a turret being able to have a turret that has a turret etc.
+
+Turrets' notion was introduced with {{GVI|arma1|1.00}}.
+
+{| class="align-right-col-1"
+| [-1]
+| means driver seat
+|-
+| [0]
+| means first turret (usually gunner)
+|-
+| [1]
+| means second turret
+|-
+| [0,0]
+| means first turret's first turret
+|-
+| [0,1]
+| means first turret's second turret
+|-
+| [1,0]
+| means second turret's first turret, etc.
+|}
+
+
+== See Also ==
+
+[[:Category:Command Group: Turrets]]
+
+
+[[Category:Arrays]]
+[[Category:Introduced with Armed Assault version 1.00]]

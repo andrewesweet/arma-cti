@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_vectorFromXToY
+// revision: 352158 (2024-02-01T23:25:22Z)
+// export sha1: 0vpvhopzcaw4peo49azm0es8t6jtw65
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Vectors | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Vectors
+
+|descr= Returns a unit vector that 'points' from ''vector1'' to ''vector2''.
+This is a very useful function as it can be used with the [[velocity]] command to move an object from one position to another (i.e ''vector1'' to ''vector2'').
+{{Feature|informative|Ensure both positions are found using [[getPosASL]].}}
+{{Feature|arma3|Since {{GVI|arma3|1.26}} For better performance, use the [[vectorFromTo]] command instead.}}
+
+|s1= [vector1, vector2] call [[BIS_fnc_vectorFromXToY]]
+
+|p1= vector1: [[Array]]|p2= vector2: [[Array]]|r1= [[Array]]
+
+|x1= <sqf>private _resultVector = [getPosASL vehicle player, getPosASL airTarget] call BIS_fnc_vectorFromXToY;</sqf>
+
+|seealso= [[velocity]] [[setVelocity]] [[vectorAdd]]
+}}

@@ -1,0 +1,90 @@
+// source: https://community.bistudio.com/wiki/forceWeaponFire
+// revision: 369347 (2024-09-03T18:43:03Z)
+// export sha1: egx1xphk2y7pz5w9sea75ebznv6xooq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Control
+
+|gr2= Weapons
+
+|descr= The unit will be forced to fire weapon from the given muzzle. The weapon will not fire if firemode passed as parameter is not supported by the given muzzle. The muzzle could belong to a vehicle weapon and unit in this case will be the unit operating this weapon. Doesnt't seem to work for units in FFV positions. Works on [[player]]. See also: [[BIS_fnc_fire]]
+
+|s1= unit [[forceWeaponFire]] [muzzle, firemode]
+
+|p1= unit: [[Object]] - unit alone or in vehicle
+
+|p2= muzzle: [[String]]
+
+|p3= firemode: [[String]] - common options are "Single", "Burst", "FullAuto". For the full list of a weapon firemodes:
+
+<sqf>hint str (getArray (configFile >> "CfgWeapons" >> currentWeapon player >> "modes"));</sqf> If ''modes[]'' param in config for the weapon says ''{"this"}'', then the same classname as for the weapon param ([[currentWeapon]] [[player]]) should be used as firemode param.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_unit forceWeaponFire ["arifle_MX_F", "Single"];
+_unit forceWeaponFire ["hgun_ACPC2_F", "hgun_ACPC2_F"];
+_unit forceWeaponFire ["HandGrenadeMuzzle","HandGrenadeMuzzle"];
+_unit forceWeaponFire ["MiniGrenadeMuzzle","MiniGrenadeMuzzle"];
+_unit forceWeaponFire ["HandGrenade_Stone","HandGrenade_Stone"];
+_unit forceWeaponFire ["SmokeShellMuzzle","SmokeShellMuzzle"];
+_unit forceWeaponFire ["ChemlightGreenMuzzle","ChemlightGreenMuzzle"];
+_unit forceWeaponFire ["IRGrenade","IRGrenade"];
+_unit forceWeaponFire ["Laserdesignator","Laserdesignator"];
+</sqf>
+
+|x2= <sqf>gunner blackfoot forceWeaponFire ["gatling_20mm", "close"];</sqf>
+
+|seealso= [[currentWeapon]] [[currentWeaponMode]] [[setWeaponReloadingTime]] [[selectWeapon]] [[fire]] [[doFire]] [[commandFire]] [[canFire]] [[fireAtTarget]] [[commandArtilleryFire]] [[commandSuppressiveFire]] [[doArtilleryFire]] [[doSuppressiveFire]] [[isManualFire]] [[BIS_fnc_fire]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2013-08-25</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">Here is a neat workaround trick for firemode change from a script:
+<sqf>
+_weapon = currentWeapon player;
+_ammo = player ammo _weapon;
+player setAmmo [_weapon, 0];
+player forceWeaponFire [_weapon, "FullAuto"];
+player setAmmo [_weapon, _ammo];
+</sqf>
+<dd class="notedate">Posted on 2014-04-14</dd>
+<dt class="note">[[User:ffur2007slx2_5|ffur2007slx2_5]]</dt>
+<dd class="note">(A3 1.16) [[forceWeaponFire]] is no longer only limited to units, but can remote aircrafts weapon firing as well. Passed source unit should be the correct one who controls the weapon, if passed mode is "this", use the weapon name instead:
+<sqf>
+_weapon = (weapons _veh) select 3;
+_mode = (getArray (configFile >> "cfgweapons" >> _weapon >> "modes")) select 0;
+if (_mode == "this") then {_mode = _weapon;};
+(driver _veh) forceWeaponFire [_weapon, _mode];
+//Force a CAS fire a rocket.
+</sqf>
+Currently this command is not available for land vehicle remote fire.
+<dt><dt>
+<dd class="notedate">Posted on 2014-09-02</dd>
+<dt class="note">[[User:Benargee|Benargee]]</dt>
+<dd class="note">
+Similar to Killzone_Kid's note, This fires the units current weapon in its current firemode.
+<sqf>_unit forceWeaponFire [weaponState _unit select 1, weaponState _unit select 2];</sqf>
+<dt><dt>
+<dd class="notedate">Posted on 2015-01-03 - 14:55 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+fireAtTarget command can be used to force fire gunner weapon in vehicles. A gunner must be present. <sqf>_veh fireAtTarget [objNull];</sqf> Will fire one shot even if player is gunner.
+[[fire]] command can also be used to fire vehicle weapon, like smoke launcher for example:
+<sqf>vehicle player fire "SmokeLauncher";</sqf> And if this doesn't work, it is possible to force fire via action <sqf>tank action ["UseWeapon", tank, commander tank, 0];</sqf>
+</dd>
+
+</dl>

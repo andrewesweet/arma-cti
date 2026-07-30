@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/enableDynamicSimulationSystem
+// revision: 373713 (2025-06-21T11:20:46Z)
+// export sha1: 3shah5lolptzvlvbb5loha3m36hecwl
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Dynamic Simulation | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Dynamic Simulation
+
+|eff= global
+
+|serverExec= server
+
+|descr= Enables or disables the whole [[Arma 3: Dynamic Simulation]] system
+
+|s1= [[enableDynamicSimulationSystem]] enable
+
+|p1= enable: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>enableDynamicSimulationSystem true;</sqf>
+
+|seealso= [[dynamicSimulationSystemEnabled]] [[enableDynamicSimulation]] [[dynamicSimulationEnabled]] [[setDynamicSimulationDistance]] [[dynamicSimulationDistance]] [[setDynamicSimulationDistanceCoef]] [[dynamicSimulationDistanceCoef]] [[triggerDynamicSimulation]] [[canTriggerDynamicSimulation]] [[enableSimulation]] [[simulationEnabled]] [[enableSimulationGlobal]] [[Arma 3: Dynamic Simulation]]
+}}

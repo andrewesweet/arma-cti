@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/setDirection
+// revision: 376967 (2026-01-01T05:58:28Z)
+// export sha1: f3tbfnwkz1mgmgs2zjss2n01mgggw05
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Locations
+
+|descr= Sets the orientation of a location. The location's area and map icon (if its type uses an icon) will be rotated to this orientation.
+
+|s1= location [[setDirection]] direction
+
+|p1= location: [[Location]]
+|p2= direction: [[Number]] in range 0..360
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_location = createLocation ["VegetationPalm", getPos player, 200, 200];
+_location setText "Benargee's Palm Tree";
+_location setDirection 45;
+</sqf>
+
+|seealso= [[createLocation]] [[setText]] [[direction]]
+}}

@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Community_Mod_Pages
+// revision: 244989 (2021-02-07T23:22:58Z)
+// export sha1: 8n5er6jqah7y83ys8sb4rqncelwo16w
+// Vendored snapshot. Do not edit — re-export instead.
+
+If you are creating a Biki page for your mod, consider using '''[[:Template:Infobox/Mod|mod format template]]'''.
+
+(When creating mod pages, please keep the limitations stated in the [[http://community.bistudio.com/wiki/Bohemia_Interactive_Community:Guidelines#Mod_Pages Guidelines]] in mind.)
+
+== [[Community_Mod_List|Community Mod List]] ==
+List of all mods without Biki article.
+
+{{GameCategory|ofp|Community Websites}}

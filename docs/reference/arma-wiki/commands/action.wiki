@@ -1,0 +1,105 @@
+// source: https://community.bistudio.com/wiki/action
+// revision: 378568 (2026-05-08T21:16:17Z)
+// export sha1: 6viwwf0q03k1ssiwckmiqukq4ffeubc
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|eff= global
+
+|gr1= Interaction
+
+|descr= Make a unit perform an action. See [[:Category:Actions]] for action names and syntaxes.
+{{Feature|arma3|
+Since {{arma3}} 2.18 it is possible to use [[actionNow]] to perform some actions immediately without any animation.
+However, note that some actions do require animations (for example, opening inventory while on foot), otherwise they will get cancelled.
+}}
+{{Feature|informative|
+* in singleplayer, when user Alt-Tabs the simulation is paused and so the action will also halt until user returns to the game. For example, <sqf inline>player action ["GetInDriver", car];</sqf> executed while user is Alt-Tabbed will result in the user seeing the action happening when he returns to the game screen. This does not happen in Multiplayer.
+* the alternative syntax creates a temporary Logic entity in place of ''unit''.
+}}
+
+|mp= {{Feature|important|
+The argument's [[Multiplayer Scripting#Locality|locality]] is '''usually''' local, but some actions can take a global argument (e.g "Eject", "GetOut", "GetInXXXX", "MoveToXXXX").
+See [[:Category:Actions]] for more details.
+}}
+
+|s1= unit [[action]] actionArray
+
+|p1= unit: [[Object]]
+
+|p2= actionArray: [[Array]]
+
+|r1= [[Nothing]]
+
+|s2= [[action]] actionArray
+
+|s2since= arma3 2.10
+
+|p21= actionArray: [[Array]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>player action ["SitDown", player];</sqf>
+
+|x2= <sqf>_soldier action ["Eject", vehicle _soldier];</sqf>
+
+|x3= <sqf>
+player action ["UseWeapon", player, player, 7]; // plays pick up animation before throwing grenade
+action ["UseWeapon", player, player, 7]; // normal grenade throw
+</sqf>
+
+|seealso= [[actionNow]] [[actionIDs]] [[actionParams]] [[addAction]] [[setUserActionText]] [[inGameUISetEventHandler]] [[showHUD]] [[inputAction]] [[removeAction]] [[removeAllActions]] [[weaponsInfo]] [[shownAction]]
+}}
+
+{{Note
+|user= Tom_48_97
+|timestamp= 20090828092600
+|text= In {{arma2}}, you can place a unique unit (for example a boat, far of all combats) and use it for all command lines with action.
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20150327175700
+|text= This command has no effect when a dead unit is used as input.
+}}
+
+{{Note
+|user= DrSova
+|timestamp= 20170627021500
+|text= <sqf>player action ["SWITCHWEAPON", player, player, -1]</sqf>
+Switching weapon to the back.
+}}
+
+{{Note
+|user= Yuval
+|timestamp= 20170720122200
+|text= Some of the actions (such as "DropWeapon") do not always execute, and there should be a set of conditions for them to run.
+The unit must be able to perform the dropping animation in order for the action to properly execute.
+So, if for example we spawn a unit at [0,0,0] and make it perform a "DropWeapon" action - it won't work if [0,0,0] is water (which it is, if the current map is an island) because the unit will be swimming.<br>
+<br>
+Also, you cannot stack up actions right after the other. If you run a "DropWeapon" action when the current action animation is still going - it will not perform.
+There are a few more conditions for an action to perform, but relying on a hundred percent success of the action is not a good practice.
+}}

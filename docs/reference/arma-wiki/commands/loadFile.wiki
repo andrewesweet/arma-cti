@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/loadFile
+// revision: 352208 (2024-02-01T23:26:04Z)
+// export sha1: syq5n805wh19iz7i69wnifgpd7zq43k
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Operation Flashpoint version 1.90 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.90
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Program Flow
+
+|descr= Returns the content of given files. If you plan to [[compile]] said string, be aware that the file should not contain comments or [[compile]] will throw an error. If there are comments, use [[preprocessFile]]/[[preprocessFileLineNumbers]] instead.
+{{Feature|warning|If the file is not prepared using UTF-8 encoding and contains some characters [[toArray|with codes]] > 127, they might convert incorrectly.}}
+
+|s1= [[loadFile]] fileName
+
+|p1= fileName: [[String]]
+
+|r1= [[String]]
+
+|x1= <sqf>_contents = loadFile "wantedString.txt";</sqf>
+
+|x2= <sqf>_contents = compile loadFile "myFunction.sqf"; // will compile string into code</sqf>
+
+|seealso= [[fileExists]] [[preprocessFile]] [[preprocessFileLineNumbers]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 25 January 2016 - 12:13</dd>
+<dt class="note">[[User:James|James]]</dt>
+<dd class="note">Notice that you will have to activate file patching via [[Arma 3: Startup Parameters#Developer Options|-filePatching]]. Otherwise [[execVM]] and [[loadFile]] will '''not''' load any files outside your mission folder (like the global scripts).
+</dl>

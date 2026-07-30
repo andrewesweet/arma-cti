@@ -1,0 +1,127 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Utilities
+// revision: 376210 (2025-09-15T12:54:38Z)
+// export sha1: 9euh2wao6s9rmjq2mkpnww4s8tr5ji7
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 1.68
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Utilities.jpg|500px|right]]
+{{TOC|side}}
+{{GVI|arma3|1.68}}
+In order to access the Utilities list, type {{hl|utils}} in [[Arma 3: Debug Console|debug console]] and click on {{hl|LOCAL EXEC}} or execute <sqf inline>execVM "A3\Functions_F\Debug\Utilities\lib\index.sqf"</sqf>.
+{{Feature|informative|To find out how to access a tool directly, see description of the tools below.}}
+
+{{Clear}}
+
+
+[[File:CfgDisabledCommands.jpg|thumb|500px|[[CfgDisabledCommands]] Template Generator]]
+== CfgDisabledCommands Template Generator ==
+
+Auto-generates template to be used with [[CfgDisabledCommands]].
+{|
+! Shortcut:
+| {{hl|utils 1}}
+|-
+! Script:
+| <sqf>execVM "A3\Functions_F\Debug\Utilities\utility_cfgDisabledCommands.sqf"</sqf>
+|}
+{{Clear}}
+
+
+[[File:PrintConfig.jpg|thumb|500px|Print Config]]
+== Print Config ==
+
+Prepares formatted config. There is a limit on how much of the config information can be retrieved and is limited by the [[Array]] maximum capacity.
+{|
+! Shortcut:
+| {{hl|utils 2}}
+|-
+! Script:
+| <sqf>execVM "A3\Functions_F\Debug\Utilities\utility_printConfig.sqf"</sqf>
+|}
+{{Clear}}
+
+
+[[File:MoonPhases.jpg|thumb|500px|Moon Phases Tool]]
+
+== Moon Phases ==
+
+Finds moon phases throughout given year. The longer the bar the brighter the night.
+{|
+! Shortcut:
+| {{hl|utils 3}}
+|-
+! Script:
+| <sqf>execVM "A3\Functions_F\Debug\Utilities\utility_moonPhases.sqf"</sqf>
+|}
+{{Clear}}
+
+
+[[File:Jukebox.jpg|thumb|500px|Jukebox]]
+
+== Jukebox ==
+
+Plays music from CfgMusic. One can navigate through the track by dragging the progress bar left or right and pause/resume by clicking again on the song in the list. The track information for played track in window shows the actual track duration, while the track duration in the list comes from config and could be inaccurate.
+{|
+! Shortcut:
+| {{hl|utils 4}}
+|-
+! Script:
+| <sqf>execVM "A3\Functions_F\Debug\Utilities\utility_jukebox.sqf"</sqf>
+|}
+{{Clear}}
+
+
+
+[[File:ScriptCommands.jpg|thumb|500px|Script Commands]]
+
+== Script Commands ==
+
+Lists all available script commands and their arguments.
+{|
+! Shortcut:
+| {{hl|utils 5}}
+|-
+! Script:
+| <sqf>execVM "A3\Functions_F\Debug\Utilities\utility_scriptCommands.sqf"</sqf>
+|}
+
+Limited modifiers can be used with search:
+{|
+! <pre>"<word>"</pre> 
+| Searches for exact word, for example: 
+| <pre>"addmagazine"</pre>
+|-
+! <pre>*</pre>   
+| Replaces asterisk with anything, for example: 
+| <pre>add*global</pre>
+|-
+! <pre>-</pre>   
+| Ignores given word, for example: 
+| <pre>addMagazine-cargo</pre>
+|}
+{{Clear}}
+[[File:template.jpg|thumb|500px|Notepad++ language highlight template export]]
+{{ArgTitle|3|Notepad++ Export|{{GVI|arma3|2.22}}}}
+
+All script commands can be exported in Notepad++ syntax highlight template format (light and dark).
+
+Follow the instructions on the export page, here is a short transcript:
+# Copy this content to clipboard with {{Controls|Ctrl|A}}/{{Controls|Ctrl|C}}
+# Open Notepad++ and open a new file
+# Paste the copied content into the new file with {{Controls|Ctrl|V}}
+# Save the file as {{hl|arma3sqf.xml}}
+# Open Notepad++ template directory via Notepad++ menu: Language &rarr; User Defined Language &rarr; Open User Defined Language folder...
+# Move arma3sqf.xml in this directory and restart Notepad++
+# From the Language menu, select:
+#* ARMA 3 SQF (Default) - for Default style
+#* ARMA 3 SQF (DarkModeDefault) - for DarkModeDefault style
+The style can be chosen in: Settings  &rarr; Style Configurator...
+
+{{Clear}}
+<gallery mode="packed">
+File:NPP_light.jpg|thumb|500px|Light mode syntax highlight example
+File:NPP_dark.jpg|thumb|500px|Dark mode syntax highlight example
+</gallery>
+
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 1.68]]

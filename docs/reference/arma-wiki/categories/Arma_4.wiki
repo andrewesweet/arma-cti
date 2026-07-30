@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_4
+// revision: 369883 (2024-10-17T22:32:18Z)
+// export sha1: qd6kdax1x8bzjp4ontr6w3x48w6sa07
+// Vendored snapshot. Do not edit — re-export instead.
+
+<div style="float: right; font-size: .9em; margin: 0 3em 0.5em 3em; max-width: 20%">
+{{Color|grey|
+Has {{arma4}} been confirmed? Yes<br>
+Has {{arma4}} been announced? Yes<br>
+Does {{arma4}} have a release ''year''? Yes:
+}}
+<div style="font-family: 'Segoe UI', sans-serif; font-size: 8em">'''2027'''</div>
+{{Color|grey|Does {{arma4}} have a set release ''date''? '''No.'''}}
+</div>
+
+On 2022-05-17 and {{GameCategory|armaR|link= y}} Early Access, the road to {{arma4}} is announced and planned.
+
+On 2024-10-16 during {{Link|{{Name|bi}}}}'s {{Link|https://www.youtube.com/watch?v{{=}}cC-uT5rc9HQ|25th anniversary concert}}, {{arma4}} release year was announced: '''2027''' (at {{Link|https://www.youtube.com/watch?v{{=}}cC-uT5rc9HQ&t{{=}}6445s|1h 47min 25s}}).
+
+
+: More to come soon&trade;&hellip;
+
+
+<div style="display: flex; flex-wrap: wrap">
+{{Youtube|Hns-Nhm1H2I|Road to {{arma4}} trailer.||500}}
+{{Youtube|cC-uT5rc9HQ|25th Anniversary concert.||500}}
+</div>
+
+
+== See Also ==
+
+* {{Link|https://x.com/ArmaPlatform/status/1846899721731793267|{{arma4}} when?}}
+* {{Link|https://arma4.com/|https://arma4.com/}}
+* {{Link|https://armaplatform.com/|https://armaplatform.com/}}
+
+
+[[Category:Projects]]

@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/allAddonsInfo
+// revision: 377669 (2026-01-02T09:02:27Z)
+// export sha1: bl1gw1agwv90rrgdu111mctr0kbkl8v
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mods and Addons | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Mods and Addons
+
+|descr= Returns the list of all loaded addons.
+
+|s1= [[allAddonsInfo]]
+
+|r1= [[Array]] of [[Array]]s with [prefix, version, isPatched, modIndex, hash]
+* prefix: [[String]] - addon prefix
+* version: [[String]] - addon revision version
+* isPatched: [[Boolean]] - [[true]] if patching is enabled and this addon is being patched 
+* {{GVI|arma3|2.14|size= 0.75}} modIndex: [[Number]] - index of mod in [[getLoadedModsInfo]] array. -1 if not found.
+* {{GVI|arma3|2.14|size= 0.75}} hash: [[String]] - hash of the addon PBO file. "" if hashing fails.
+
+|x1= <sqf>
+allAddonsInfo
+/*
+	[
+		["bin\","150301",false,-1,"66b6d1a87da30e0386fec881504c14a0a6025cb1"],
+		["core\","129618",false,-1,"49e1b8da67de848c8ea058fd8512c222ccb6d919"],
+		["Languagecore_F\","150376",false,-1,"2ee7b09d60f916d7e56934632f55683a14a636b7"],
+		["a3\anims_f_aow\","149768",false,0,"59df21ad1fc6939c460a555b3af662f725564b37"],
+		["a3\dubbing_radio_f_enoch\","150070",false,1,"5ca436c61a634fcbd28ca9480a4c8249c5b0e4bd"],
+		["a3\armor_f_tank\","150292",false,2,"6d0ea8b45ff4cd316b3d6c5575def9dd048e198e"],
+		["a3\music_f_tacops\","124064",false,3,"435c2b0338fe6bec7685002dca7c47778abf44ee"],
+		...
+	]
+*/
+</sqf>
+
+|seealso= [[addonFiles]]
+}}

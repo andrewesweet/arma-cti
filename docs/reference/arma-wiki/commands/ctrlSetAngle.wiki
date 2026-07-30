@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/ctrlSetAngle
+// revision: 376965 (2026-01-01T05:57:04Z)
+// export sha1: fn59j31velgmjk2wlaq6v9vjd9ns218
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control
+
+|descr= Sets the rotation of a control set as {{hl|ST_PICTURE}}. Rotation will be done within the control boundaries, so if the X and Y are given off center, the picture may get clipped by the control boundaries.
+Only requires [[ctrlCommit]] when fourth parameter is set to [[false]]. Procedural textures filled controls do not rotate. Supported control types:
+* [[CT_STATIC]]
+* {{GVI|arma3|2.10|size= 0.75}} [[CT_ACTIVETEXT]]
+
+{{Feature|important|Images that touch borders may "bleed" during rotation transformation, to avoid this, make sure the image has a 1px transparent padding.}} 
+
+|s1= control [[ctrlSetAngle]] [angle, centerX, centerY, now]
+
+|p1= control: [[Control]] - picture control
+
+|p2= angle: [[Number]] - rotation angle (clockwise)
+
+|p3= centerX: [[Number]] in range 0..1 - rotation center X. Control center is 0.5
+
+|p4= centerY: [[Number]] in range 0..1 - rotation center Y. Control center is 0.5
+
+|p5= now: [[Boolean]] - (Optional, default [[true]]) if [[false]], control will wait for [[ctrlCommit]] input for result to apply
+|p5since= arma3 1.78
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetAngle [25, 0.5, 0.5];</sqf>
+
+|x2= <sqf>
+with uiNamespace do
+{
+	ctrl = findDisplay 46 ctrlCreate ["RscPictureKeepAspect", -1];
+	ctrl ctrlSetPosition [0,0,1,1];
+	ctrl ctrlSetText "A3\Missions_F_Exp\data\Img\lobby\ui_campaign_lobby_background_tablet_radial_left_ca.paa";
+	ctrl ctrlCommit 0;
+	angle = 0;
+	onEachFrame
+	{
+		with uiNamespace do
+		{
+			if (angle > 359) then { angle = 0 };
+			ctrl ctrlSetAngle [angle, 0.5, 0.5];
+			angle = angle + 1;
+		};
+	};
+};
+</sqf>
+
+|x3= <sqf>
+_control ctrlSetAngle [25, 0.5, 0.5, false];
+_control ctrlCommit 1; // Rotation applies smoothly for 1 second.
+</sqf>
+
+|seealso= [[ctrlAngle]]
+}}

@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_destroyCity
+// revision: 349509 (2023-11-08T17:09:13Z)
+// export sha1: d3tmnqpffyw7jw6utip0k7klg2mlzij
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Environment | Category:Functions | Category:Functions: Global Effect | Category:Functions: Server Execution | Category:Introduced with Arma 2: Operation Arrowhead version 1.56 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.56
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|eff= global |MPeff= Effects in MP
+
+|serverExec= server
+
+|gr1= Environment
+
+|descr= Destroys building in given area based on input seed.
+
+|s1= [position, ''areaSize'', ''seed'', ''blacklist''] call [[BIS_fnc_destroyCity]]
+
+|p1= position: [[Object]], [[String]] or [[Position]] - center of the area:
+* [[Object]] - position of the object will be used
+* [[String]] - marker name
+* [[Position]]
+
+|p2= areaSize: [[Number]] - (Optional, default 1000) area radius
+
+|p3= seed: [[Number]] - (Optional, default 1138) destruction's random seed
+
+|p4= blacklist: [[Array]] - (Optional, default <sqf inline>[]</sqf>) array of spared buildings
+
+|r1= [[Boolean]] - [[true]] when completed
+
+|x1= <sqf>["destroyBase", 500, 42, [ourHouseInTheMiddleOfTheStreet]] call BIS_fnc_destroyCity;</sqf>
+
+|seealso= [[setDamage]] [[nearestBuilding]] [[buildingPos]]
+}}

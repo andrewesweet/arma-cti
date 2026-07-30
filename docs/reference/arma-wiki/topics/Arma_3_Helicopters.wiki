@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Helicopters
+// revision: 353508 (2024-03-19T12:01:15Z)
+// export sha1: tenjgyncbu52s4yk8x6ba2orkh85sg7
+// categories: Category:Arma 3: DLCs & Expansions | Category:Introduced with Arma 3 version 1.34
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= arma3_helicopters_logo.png
+|game= arma3
+|version= 1.34
+|releasedate= 4th November, 2014 
+|intro= [[Arma 3 Helicopters]] is a paid DLC that was first announced on May 1st, 2014. The DLC includes a wide range of features, including '''sling loading''', '''two new helicopters''' and '''firing from vehicles''' (FFV). An updated flight model, commonly called '''RotorLib''', has also been included. This flight-model is an upgraded version of the flight model seen in [[Take On Helicopters]]. RotorLib is entirely optional and players still have the possibility to choose between RotorLib and the old flight model, which has been present since {{GameCategory|arma2|link= y}}. A wide variety of free content has also been pushed out with the new game version, which added the {{GameCategory|arma3|link= y}} Helicopters DLC, including free new time trials, skin variants and multiple game-changing features.
+|premfeature1= '''CH-67 Huron''' - A BLUFOR Logistical Support helicopter intended to lift heavy loads.
+|premfeature2= '''Mi-290 Taru''' - The OPFOR equivalent of the CH-67 Huron.
+|premfeature3= '''Showcase''' - Sling Loading
+|supportfeature1= VR Training for Helicopters
+|supportfeature2= Five new time trails
+|supportfeature3= [[Arma_3_CfgVehicles_CIV#C_Heli_Light_01_civil_F|M-900]] - Civilian variant of the NATO MH-9 Hummingbird helicopter. 
+|supportfeature4= ''Support'' Multiplayer mode
+|supportfeature5= Variety of Steam Achievements
+|supportfeature6= Optional RotorLib flight model.
+|supportfeature7= Wide variety of new objects for mission makers, such as landing pads or ropes.
+|supportfeature8= Firing from Vehicles, where seated passengers are able to fire their guns inside a vehicle.
+|supportfeature9= Sling Loading
+|gallery1= arma3_dlc_helicopters_screenshot_01.jpg
+|gallery2= arma3_dlc_helicopters_screenshot_02.jpg
+|gallery3= arma3_dlc_helicopters_screenshot_03.jpg
+|gallery4= arma3_dlc_helicopters_screenshot_04.jpg
+|trailer= NiyxTQ2Sk6c
+|start1= {{Link|http://arma3.com/dlc/helicopters|Official Site}}
+|start2= {{Link|link= http://store.steampowered.com/app/304380|text= Steam Marketplace: Helicopters DLC}}
+|start3= {{Link|link= http://dev.arma3.com/post/spotrep-00036|text= SPOTREP #00036}}
+|isDLC= y
+}}
+
+{{GameCategory|arma3|DLCs & Expansions}}

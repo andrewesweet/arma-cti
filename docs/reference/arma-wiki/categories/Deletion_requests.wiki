@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/Category:Deletion_requests
+// revision: 351523 (2023-12-06T11:04:18Z)
+// export sha1: muecm8m2a8pml8qq7tzpw56hhnpgkwv
+// Vendored snapshot. Do not edit — re-export instead.
+
+Pages marked with <syntaxhighlight lang="handlebars" inline>{{Wiki|delete}}</syntaxhighlight> are listed here.
+
+Make sure that said article has no more links towards it (including redirections) before submitting it for deletion.
+Try to include a deletion reason (e.g <syntaxhighlight lang="handlebars" inline>{{Wiki|delete|duplicate page}}</syntaxhighlight>) whenever possible.
+
+
+[[Category:Maintenance]]

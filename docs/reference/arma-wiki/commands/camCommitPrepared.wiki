@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/camCommitPrepared
+// revision: 349291 (2023-11-08T14:51:57Z)
+// export sha1: gf9vakqey8k3s677ryuczjm6y4m78n0
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= Camera Control
+
+|descr= Smoothly conducts the changes that were assigned to a camera within the given time. If the time is set to zero, the changes are done immediately.
+This command is for use with {{hl|camPrepareXXX}} commands. For the normal cam command use [[camCommit]].
+
+|s1= camera [[camCommitPrepared]] time
+
+|p1= camera: [[Object]] - object of type "camera"
+
+|p2= time: [[Number]] - time in seconds in which the changes shall be done
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+// create a camera object
+_cam = "camera" camCreate [5600, 4800, 10];
+_cam camPrepareTarget player;
+_cam cameraEffect ["internal", "BACK"];
+_cam camCommitPrepared 0;
+
+// smoothly move the camera to its new position in 6 seconds
+_cam camPreparePos [5680, 4720, 20];
+_cam camCommitPrepared 6;
+waitUntil { camCommitted _cam };
+
+// proceed
+</sqf>
+
+|seealso= [[camCommitted]] [[camCommit]]
+}}

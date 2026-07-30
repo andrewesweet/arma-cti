@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_errorMsg
+// revision: 351742 (2023-12-30T21:31:28Z)
+// export sha1: g4rdzd1wzphr7xaao475l7poizh97t9
+// categories: Category:Arma 3: Functions | Category:Function Group: Broken Functions | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Broken Functions
+
+|descr= Display error window.
+{{Feature|arma3|Broken in {{arma3}}. Use [[BIS_fnc_error]] instead}}
+
+|s1= [message, otherParameters] call [[BIS_fnc_errorMsg]]
+
+|p1= message: [[String]]
+
+|p2= otherParameters: [[Anything]] - to format [[format]] command
+
+|r1= [[Script Handle]]
+
+|x1= <sqf>["This is an error message"] call BIS_fnc_errorMsg;</sqf>
+
+|x2= <sqf>["This is an error message: player is: %1", player] call BIS_fnc_errorMsg;</sqf>
+
+|seealso= [[BIS_fnc_error]] [[BIS_fnc_logFormat]] [[BIS_fnc_log]] [[BIS_fnc_logFormatServer]]
+}}

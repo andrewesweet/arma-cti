@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Connecting
+// revision: 296499 (2021-12-20T10:48:28Z)
+// export sha1: 0cjmkqs95nddo95nsyblvtj7up4rgla
+// categories: Category:Eden Editor: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|horizontal|1|2}}
+Connecting can bind certain entities together and affect their functionality.
+
+== Connecting Entities ==
+To connect entities together, click the '''right mouse button''' on an entity, expand the '''Connect''' folder and pick a connection type to start the connecting operation.
+Click the '''left mouse button''' on the desired target to connect all selected entities to the target. You can also press the '''right mouse button''' to cancel the operation.
+[[File:3den connectMenu.gif|center]]
+
+== Disconnecting Entities ==
+To remove an existing connection, hover over the connection line in the scene and press {{Controls|Del}}. Alternatively, clicking into an empty space while connecting will remove any connection of the selected type.
+[[File:3den connectEmpty.gif|center]]
+
+== Additional Notes ==
+It is also possible to group or sync multiple units with another entity at once.<br>
+Connections are shown as lines, both in the scene and on the map. Each connection type is represented by a different color.
+Unless selected, the line will be obstructed by the terrain and environmental settings.
+
+== Connection Types ==
+=== Grouping ===
+''Character &amp; Character''
+
+Characters grouped together become a group with a leader. Subordinates follow the leader and carry out issued orders.
+Grouping can also be quickly accessed by '''holding''' {{Controls|Ctrl}} and dragging a line from one character to another.
+
+Read more: [[Eden_Editor:_Group|Eden Editor: Group]]
+[[File:3den connectGroup.gif|center]]
+
+=== Syncing ===
+''Character &amp; Object''
+
+A generic connection without any inherent functionality. Often used by scripted systems. One of the connected entities has to be a character, otherwise the connection will not be recognized once the scenario starts.
+
+=== Setting Trigger Owner ===
+''Trigger &amp; Character''
+
+Trigger owner changes a trigger's activation from being side based (e.g., activated by BLUFOR) to object based (e.g., activated by the owner or its group members).
+
+Read more: [[Eden_Editor:_Trigger#Trigger_Owner|Eden Editor: Trigger]]
+
+=== Setting Random Start ===
+''Object &amp; Marker''
+
+When the scenario starts, an object will appear randomly either on its default position, or on the position of any connected [[Eden_Editor:_Marker|marker]]. Each restart will bring different results.
+
+=== Setting Waypoint Activation ===
+''Waypoint &amp; Trigger''
+
+A Waypoint will only be completed once all connected triggers are activated. This is useful, for example, for sending reinforcements once enemy locations are cleared.
+
+Read more: [[Eden_Editor:_Waypoint|Eden Editor: Waypoint]]
+
+[[Category:Eden Editor: Editing|Connecting]]

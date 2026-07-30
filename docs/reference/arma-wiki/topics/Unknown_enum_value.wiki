@@ -1,0 +1,15 @@
+// source: https://community.bistudio.com/wiki/Unknown_enum_value
+// revision: 104737 (2017-11-30T10:17:23Z)
+// export sha1: lp3z7pmc9i5wr8ktqgbmpjzyr3uzvyi
+// categories: Category:Common Scripting Errors
+// Vendored snapshot. Do not edit — re-export instead.
+
+This error occurs when an incorrect enum(erated) value is provided. 
+
+'''Examples:'''
+<syntaxhighlight lang="cpp">
+_g2 setBehaviour "CARELES"; // "CARELESS" should be used
+
+_newWP setWaypointCombatMode "UNCHANGED"; // "NO CHANGE" should be used
+</syntaxhighlight>
+[[Category:Common Scripting Errors]]

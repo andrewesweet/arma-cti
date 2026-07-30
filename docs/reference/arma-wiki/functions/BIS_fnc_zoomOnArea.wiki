@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_zoomOnArea
+// revision: 322348 (2022-05-31T21:47:12Z)
+// export sha1: qk0alsh1nckj8412eazkm10ngp6vayp
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Map and Markers
+
+|descr= Map will zoom on the given area. Function always takes the longer side of the area to zoom on.
+
+|s1= [area, center, time, handler, forceCam] call [[BIS_fnc_zoomOnArea]]
+
+|p1= area: [[Array]] - area to zoom on
+
+|p2= center: [[Array]] - coordinates of the center
+
+|p3= time: [[Number]] - (Optional, default 1) time of the zoom operation
+
+|p4= handler: [[Control]] - (Optional, default [[nil]]) handler to the map display control (you can pass one if already exists, if not, handler is created)
+
+|p5= forceCam: [[Boolean]] - (Optional, default [[false]]) whether to force the camera in position after the zoom.
+
+|r1= [[Number]] - zoom level
+
+|x1= <sqf>
+openMap true;
+[markerSize "BIS_areaMarker", markerPos "BIS_areaMarker", 5] call BIS_fnc_zoomOnArea;
+</sqf>
+
+|seealso= [[BIS_fnc_zoomLock]] [[BIS_fnc_zoomUnlock]]
+}}

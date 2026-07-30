@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/Category:DayZ
+// revision: 336172 (2022-12-13T15:57:13Z)
+// export sha1: e2ylv7ra3zegbz8cvyy3cpu0i6s2z32
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= dayz_store_logo.jpg
+|size= 400
+|EAdate= 20131216
+|releasedate= 20181213
+|intro= The post-soviet country of Chernarus is struck by an unknown virus, turning the majority population into frenzied infected. Fighting over resources has bred a hostile mentality among survivors, driving what’s left of humanity to collapse. You are one of the few immune to the virus - how far will you go to survive?
+
+=== This is DayZ, this is your story ===
+DayZ is an unforgiving, authentic, open-world sandbox online game where each one of 60 players on a server follows a single goal - to survive as long as they can, by all means necessary. There are no superficial tips, waypoints, built-in tutorials or help given to you. Every decision matters - with no save games, and no extra lives, every mistake can be lethal. If you fail, you lose everything and start over. 
+
+Scavenging for supplies and roaming the open world never feels safe in DayZ, as you never know what's behind the next corner. Hostile player interactions, or simply just struggling through severe weather can easily turn into intense, nerve-racking moments where you experience very real emotions. On the other hand, meeting with another friendly survivor in DayZ can lead to a true friendship that lasts a lifetime...
+
+Your choices and your decisions create a gameplay experience that's completely unique and unequivocally personal - unmatched by any other multiplayer game out there. This is DayZ, this is your story.
+|feature1= Detailed, authentic backdrop of Chernarus, an open world terrain featuring '''230 square kilometers''' of hand-crafted environment based on real-life locations.
+|feature2= Real emotional experience driven by the emergent interactions of '''60 players on the server''', all fighting for survival by any means necessary.
+|feature3= Wide variety of '''complex survival mechanics''' - from hunting and crafting, through sophisticated injury simulation, to transferable diseases.
+|feature4= Persistent servers with complex loot economy, and the '''ability to build improvised bases'''.
+|feature5= Environmental dangers including the infected, dynamic weather, and animal predators
+|feature6= Visceral, authentic gunplay, and melee combat systems.
+|feature7= Smooth and reactive character controller utilizing a detailed animation system.
+|feature8= Rewarding and authentic experience of driving vehicles for travel and material transport.
+|feature9= Robust technology platform featuring '''modules of Bohemia's new Enfusion Engine'''.
+|feature10= Seamless network synchronization and '''significantly improved game performance'''.
+|feature11= A platform fully open to user-created content, offering the same toolset that we use for actual game development.
+|start1= [[DayZ:Survival|DayZ: Survival]]
+|start2= {{GameCategory|dayz|Server|link=y}} 
+|start3= {{GameCategory|dayz|Tutorials|link=y}} 
+|start4= {{GameCategory|dayz|Editing|link=y}} 
+|start5= {{GameCategory|dayz|Official Tools|link=y}} 
+|gallery1= dayz_1.jpg
+|gallery2= dayz_2.jpg
+|gallery3= dayz_3.jpg
+|gallery4= dayz_4.jpg
+|trailer= Z8YxinOKNss
+}}

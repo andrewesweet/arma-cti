@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/ambientTemperature
+// revision: 347561 (2023-09-28T09:49:53Z)
+// export sha1: sfkmcdphvsf7rt9amwly8e492m5fszz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= Environment
+
+|descr= Returns ambient temperature on the current terrain in Celsius in format: [airTemperature, blackSurfaceTemperature, whiteSurfaceTemperature]
+
+|s1= [[ambientTemperature]]
+
+|r1= [[Array]] of [[Number]]s in format [airTemperature, blackSurfaceTemperature, whiteSurfaceTemperature]
+
+|x1= <sqf>private _airTemp = ambientTemperature select 0;</sqf>
+
+|seealso= [[forceWeatherChange]]
+}}

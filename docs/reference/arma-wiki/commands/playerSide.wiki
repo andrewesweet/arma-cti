@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/playerSide
+// revision: 353328 (2024-03-15T17:11:49Z)
+// export sha1: p6lavwwikp31lyn51tnb6rorrcv064p
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Sides
+
+|descr= Returns the player's [[Side|side]]. This is valid even when the player controlled person is dead (a difference from [[side]] [[player]]).
+{{Feature|informative|[[playerSide]] will not change automatically if [[player]] [[join]]s a [[group]] on different [[side]]. However, [[selectPlayer]] command can and does change [[playerSide]] - see {{Link|#Example 3}} for information.}}
+
+|s1= [[playerSide]]
+
+|r1= [[Side]]
+
+|x1= <sqf>
+if (side man1 == playerSide) then
+{
+	hint "man1 is on your side!";
+};
+</sqf>
+
+|x2= <sqf>
+switch (playerSide) do
+{
+	case west: { hint "You are BLUFOR"; };
+	case east: { hint "You are OPFOR"; };
+};
+</sqf>
+
+|x3= the following code will change the side of the player including [[playerSide]]:
+<sqf>
+private _player = player;
+[player] join createGroup east;
+selectNoPlayer;
+selectPlayer _player;
+hint str playerSide; // EAST
+</sqf>
+
+|seealso= [[Side]] [[side]] [[west]] [[east]] [[resistance]] [[civilian]] [[sideLogic]] [[sideFriendly]] [[sideEnemy]] [[sideUnknown]] [[sideEmpty]] [[sideAmbientLife]] [[Side Relations]]
+}}
+
+{{Note
+|user= Dr_Eyeball
+|timestamp= 20080127075200
+|text= [[playerSide]] defaults to [[west]] for JIP players early on during initialization regardless of their side.<br>
+So if you are a JIP player on another side (like [[east]]), you will need to cater for this for any early initializations.
+}}
+
+{{Note
+|user= Dr_Eyeball
+|timestamp= 20081013083000
+|text= [[playerSide]] also shows your starting side, even if your [[side]] changes to [[enemy]] due to a bad [[rating]]. In that case, playerSide != side player.
+}}

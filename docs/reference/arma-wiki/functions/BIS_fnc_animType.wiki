@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_animType
+// revision: 349146 (2023-11-08T14:49:48Z)
+// export sha1: pxzg54g00xz77sfmg62qdp7wzfq9u2x
+// categories: Category:Arma 3: Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Function that returns a categorized array using a single string with the animation name.
+
+|s1= param call [[BIS_fnc_animType]]
+
+|p1= [[String]] - animation name.
+
+|r1= [[Array]] - sorted arrays within an array with details about animation.
+
+|x1= <sqf>animType = ["AmovPsitMstpSrasWrflDnon"] call BIS_fnc_animType;
+// Returns [["Action","Move"],["Pose","Sit"],["Movement","Stop"],["Stance","Raised"],["Hand item","Rifle"],["Direction","Not specified"]]</sqf>
+
+|seealso=
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-10-01 - 20:26 (UTC)</dd>
+<dt class="note">[[User:Tryteyker-|Tryteyker-]]</dt>
+<dd class="note">
+The categorization is identical to that of the animation viewer, minus the direction array. 
+<br>So if the animation you are running through this function is found in the following categories:
+<pre>Action: Move
+Pose: Erect
+Movement: Stop
+Stance: Raised
+Weapon: Rifle
+</pre>
+
+Then the following array will be returned:
+<sqf>[["Action", "Move"], ["Pose", "Erect"], ["Movement", "Stop"], ["Stance", "Raised"], ["Hand item", "Rifle"], ["Direction", "Not specified"]];</sqf>
+</dd>
+
+</dl>

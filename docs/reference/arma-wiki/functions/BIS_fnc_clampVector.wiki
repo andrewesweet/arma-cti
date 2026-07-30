@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_clampVector
+// revision: 327749 (2022-07-13T11:07:26Z)
+// export sha1: 7eqw8j5zn71zwmehaxzyd7doawzgftc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vectors | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Vectors
+
+|descr= Clamps vector values between provided min/max boundaries.
+
+{{Feature|informative|This function can be used to clamp any [[Array]] of [[Number]]s (even though it is not its main usage).}}
+
+|s1= [vector, min, max] call [[BIS_fnc_clampVector]]
+
+|p1= vector: [[Vector3D]] - (Optional, default [0,0,0]) the vector to be clamped
+
+|p2= min: [[Number]] - (Optional, default 0)
+
+|p3= max: [[Number]] - (Optional, default 0)
+
+|r1= [[Vector3D]] - the clamped ''vector''
+
+|x1= <sqf>
+private _newVelocity = [velocity vehicle player, -100, 100] call BIS_fnc_clampVector;
+vehicle player setVelocity _newVelocity;
+</sqf>
+
+|seealso= [[BIS_fnc_clamp]] [[vectorNormalized]] [[vectorMultiply]]
+}}

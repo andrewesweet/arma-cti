@@ -1,0 +1,120 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_List_of_Achievements
+// revision: 364498 (2024-05-16T20:42:01Z)
+// export sha1: 9x48y8ojg3s6uip16ggbemq1it1c918
+// categories: Category:Carrier Command: Gaea Mission
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|this list is incomplete}}
+
+
+{{Feature|spoiler}}
+
+
+; Face Off
+: Defeat the enemy Carrier in naval combat
+
+; Captain
+: Successfully commandeer an enemy Carrier
+
+; Titanic
+: Sink the enemy Carrier
+
+; Silent Heroes
+: Locate survivors from the Dead Zone drop
+
+; Lost Friends
+: Restore contact with Captain Aurora
+
+; Manhattan Project
+:
+; Damsel In Distress
+: Rescue Captain Aurora from the APA
+
+; Kali
+: Unleash the Lord of Death within you, eliminate Fulcrum's facilities</English>
+
+; Blueprint Collector
+: Locate and acquire all available Blueprints
+
+Applies to strategy mode. In campaign there is a similar notification in-game dialogue. Essi: Sir, according to the database we now have the complete set of blueprints. From now on we do not need to search any other Research Centers.
+
+; Brute Force
+: Blast your way through the enemy defenses on Treasure
+
+; To Protect, To Destroy
+: Decommission the Geothermal power plants
+
+; Balls Of Steel MK.I
+: Capture 1 island with a Deadly defense
+
+; Balls Of Steel MK.II
+: Capture 10 islands with a Deadly defense
+
+; Balls Of Steel MK.III
+: Capture 25 islands with a Deadly defense
+
+; Relentless
+: Shoot down Shin's Manta
+
+; Revenge Is Sweet
+: Execute Dr. Mao Shin
+
+; Conqueror Of The Dead Zone
+: Capture all enemy islands in the Dead Zone
+
+; 5 Finger Discount
+: Capture the enemy Stockpile
+
+; Lean Mean Green Machine
+: Locate all Green Laser research files
+
+; Island Hopper
+: Capture over 250 islands
+
+; Hammers And Nails
+: Produce over 1000 items
+
+; Millionaire
+: Mine over 1 million in resources
+
+; Hardcore MK.I
+: Capture 1 island without using load
+
+; Hardcore MK.II
+: Capture 3 islands without using load
+
+; Hardcore MK.III
+: Capture 5 islands without using load
+
+; Iron Fist MK.I
+: Capture 1 island with a Strong defense
+
+; Iron Fist MK.II
+:
+
+; Iron Fist MK.III
+:
+
+; Fly Swatter MK.II
+: Destroy 100 Mantas from Direct Control
+
+; Fly Swatter MK.I
+: Destroy 1 Manta from Direct Control
+
+; Road Kill MK.III
+: Run over 1 enemy infantry unit
+
+; Bug Crusher MK.I
+: Destroy 1 Walrus from Direct Control
+
+; Bunker Buster MK.I
+:
+
+; Bunker Buster MK.II
+:
+
+; Bunker Buster MK.III
+:
+
+
+{{GameCategory|carriercommand}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Tutorials
+// revision: 176252 (2020-12-29T21:35:01Z)
+// export sha1: 2cotpwqjyj9ncq4c4wimgnvimr2drsh
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaSeries|Tutorials}}

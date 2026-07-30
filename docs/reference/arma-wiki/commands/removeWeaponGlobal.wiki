@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/removeWeaponGlobal
+// revision: 373147 (2025-04-04T06:15:31Z)
+// export sha1: dw4uvcmqpmm6zakj91tlohuohsv9cqb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.76
+
+|eff= global
+
+|arg= global
+
+|gr1= Unit Inventory
+
+|gr2= Vehicle Inventory
+
+|descr= Remove a weapon from a unit. An attempt to remove a weapon, which is not in unit's possession, is simply ignored.
+
+|s1= unit [[removeWeaponGlobal]] weapon
+
+|p1= unit: [[Object]] - unit or vehicle
+|p2= weapon: [[String]] - weapon class name
+
+|r1= [[Nothing]]
+
+|s2= object [[removeWeaponGlobal]] [weapon, autoselect]
+|s2since= arma3 2.20
+|p21= object: [[Object]] - unit or vehicle
+
+|p22= weapon: [[String]] - weapon class name
+|p23= autoselect: [[String]] - (Optional, default [[true]]) [[false]] to abort weapon autoselection when removing primary weapon.
+
+|r2= [[Nothing]]
+
+|x1= <sqf>
+{
+	_x removeWeaponGlobal "Laserdesignator";
+} forEach allUnits;
+</sqf>
+
+|x2= <sqf>
+{
+	if (typeOf _x == "O_Heli_Attack_02_black_F") then {
+		_x removeWeaponGlobal "rockets_Skyfire";
+	};
+} forEach vehicles;
+</sqf>
+
+|seealso= [[addWeaponGlobal]] [[removeWeapon]] [[removeMagazine]] [[removeMagazineGlobal]] [[removeAllWeapons]]
+}}

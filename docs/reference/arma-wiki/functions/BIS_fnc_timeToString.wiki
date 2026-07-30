@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_timeToString
+// revision: 327131 (2022-07-12T21:45:21Z)
+// export sha1: 1jwg1hbxtp8zrmc4vvgdp6bffmtwk8w
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strings | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.50
+
+|arg= local|eff= local|gr1= Strings
+
+|descr= This function returns a 24-hour time as a string (or array) from a decimal.
+
+|s1= [time, format] call [[BIS_fnc_timeToString]]
+
+|p1= time: [[Number]] - time to convert (format [[dayTime]])
+
+|p2= format: [[String]] - (Optional, default "HH:MM:SS") one of the following:
+* "HH"          - Hour
+* "HH:MM"       - Hour:Minute
+* "HH:MM:SS"    - Hour:Minute:Seconds
+* "HH:MM:SS:MM" - Hour:Minute:Seconds:Milliseconds
+* "ARRAY"       - [Hour, Minute, Seconds, Milliseconds]
+
+|x1=<sqf>private _time = 7.36;
+[_time] call BIS_fnc_timeToString; // 07:21:36</sqf>
+
+|x2=<sqf>private _time = 7.36;
+[_time, "HH:MM"] call BIS_fnc_timeToString; // 07:21</sqf>
+
+|r1= [[String]] or [[Array]]
+
+|seealso= [[time]] [[dayTime]] [[BIS_fnc_secondsToString]]
+}}

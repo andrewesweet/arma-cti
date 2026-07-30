@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/Rio_Grande
+// revision: 336695 (2023-01-04T15:24:39Z)
+// export sha1: 3xaliah19zg67f3urhdbf0743z8mug0
+// categories: Category:Before Flashpoint
+// Vendored snapshot. Do not edit — re-export instead.
+
+Rio Grande was supposed to be a modern 3D remake of River Raid, an 8-bit classics from Activision.
+
+It was never finished and the team decided to work on the project codenamed [[Poseidon]] instead. <!-- but you can download Rio Grande early prototype from {{Link|link= ftp://www.flashpoint1985.com/flashpoint/demos/1996_Rio_Grande.zip}} -->
+
+
+[[Category:Before Flashpoint]]

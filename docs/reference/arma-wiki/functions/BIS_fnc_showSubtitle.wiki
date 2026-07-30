@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_showSubtitle
+// revision: 336362 (2022-12-29T09:02:33Z)
+// export sha1: l8iwhviyuktq3c6l6qiufmbokgesq99
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Displays a subtitle at the bottom of the screen.
+{{Feature|informative|If you want to play more subtitles, or want them to be played at a certain time, it might be easier to use [[BIS_fnc_EXP_camp_playSubtitles]].}}
+
+|s1= [name, subtitle] spawn [[BIS_fnc_showSubtitle]]
+
+|p1= name: [[String]] - name of the speaker
+
+|p2= subtitle: [[String]] - subtitle to display
+
+|r1= [[Script Handle]] - script controlling the displayed subtitle.
+
+|x1= <sqf>["CROSSROAD", "Mission is a go, I repeat, mission is a go, Crossroad, out."] spawn BIS_fnc_showSubtitle;</sqf>
+
+|exec= spawn
+
+|seealso= [[Conversations]] [[BIS_fnc_EXP_camp_playSubtitles]]
+}}

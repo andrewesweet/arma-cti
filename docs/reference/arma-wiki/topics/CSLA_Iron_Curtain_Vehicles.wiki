@@ -1,0 +1,1487 @@
+// source: https://community.bistudio.com/wiki/CSLA_Iron_Curtain_Vehicles
+// revision: 376511 (2025-10-22T21:23:08Z)
+// export sha1: rvmzweksb833x6tg20dion9rsqouii5
+// categories: Category:CSLA: Iron Curtain
+// Vendored snapshot. Do not edit — re-export instead.
+
+This page contains the list of all CSLA Iron Curtain vehicles.
+The HiddenSelection texture index column information can be used to place custom textures and insignias by utilizing the [[setObjectTexture]] command.
+
+=== CSLA vehicles ===
+
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview
+! Class
+! Name
+! Side
+! Faction
+! Category
+! Weapons
+! Magazines
+! HiddenSelections Indexes
+
+|-
+| [[File: csla_azu_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_AZU" >'''CSLA_AZU'''</span>
+| ''AZU 469''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+|
+|
+			hiddenSelections[] = {<br>
+				0, - body texture<br>
+				1, - canvas, int & misc<br>
+				2, - undercarriage<br>
+				3, - national sign on LF door<br>
+				4, - national sign on RF door<br>
+				5, - emblem on LF door<br>
+				6 - emblem on RF door<br>
+			};
+
+|-
+| [[File:csla_azu_para_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_AZU_para" >'''CSLA_AZU_para'''</span>
+| ''AZU 469 (Para)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+|
+| Same as CSLA_AZU
+
+
+|-
+| [[File:csla_azu_r2_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_AZU_R2" >'''CSLA_AZU_R2'''</span>
+| ''AZU 469 (Radio Car)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+|
+| Same as CSLA_AZU
+
+
+|-
+| [[File:csla_v3s_open_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_V3So" >'''CSLA_V3So'''</span>
+| ''Mk. V3S Truck''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn3|TruckHorn3]]
+|
+|
+			hiddenSelections[] = {<br>
+				0, - cabin texture<br>
+				1, - cabin interior texture<br>
+				2, - wheel texture<br>
+				3, - undercarraige texture<br>
+				4, - bed texture<br>
+				5, - canvas/tarp texture<br>
+				6, - interior (pilot lod) texture<br>
+				7, - dashboard (pilot lod) texture<br>
+				8, - national sign on LF door<br>
+				9 - national sign on RF door<br>
+			};
+
+|-
+| [[File:csla_v3s_cargo_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_V3S" >'''CSLA_V3S'''</span>
+| ''Mk. V3S Truck Covered''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn3|TruckHorn3]]
+|
+| Same as CSLA_V3So
+
+
+|-
+| [[File:csla_v3s_ammo_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_V3Sa" >'''CSLA_V3Sa'''</span>
+| ''Mk. V3S Ammo Truck''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Support
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn3|TruckHorn3]]
+|
+| Same as CSLA_V3So
+
+
+|-
+| [[File:csla_v3s_repair_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_V3Sr" >'''CSLA_V3Sr'''</span>
+| ''Mk. V3S Workshop''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Support
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn3|TruckHorn3]]
+
+|
+|
+			hiddenSelections[] = {<br>
+				0, - cabin texture<br>
+				1, - cabin interior texture<br>
+				2, - wheel texture<br>
+				3, - undercarraige texture<br>
+				4, - box texture<br>
+				5, - interior (pilot lod) texture<br>
+				6, - dashboard (pilot lod) texture<br>
+				7, - national sign on LF door<br>
+				8 - national sign on RF door<br>
+			};
+
+
+|-
+| [[File:csla_v3s_fuel_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_V3Sf" >'''CSLA_V3Sf'''</span>
+| ''Mk. V3S Fuel''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Support
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn3|TruckHorn3]]
+
+|
+|
+			hiddenSelections[] = {<br>
+				0, - cabin texture<br>
+				1, - cabin interior texture<br>
+				2, - wheel texture<br>
+				3, - undercarraige texture<br>
+				4, - fuel tank texture<br>
+				5, - interior (pilot lod) texture<br>
+				6, - dashboard (pilot lod) texture<br>
+				7, - national sign on LF door<br>
+				8 - national sign on RF door<br>
+			};
+
+|-
+| [[File:csla_f813_closed_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_F813" >'''CSLA_F813'''</span>
+| ''F813 Goliath Covered''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+|
+|
+			hiddenSelections[] = {<br>
+				0, - body texture<br>
+				1, - undercarriage texture<br>
+				2, - canvas/tarp texture<br>
+				3, - national sign on LF door<br>
+				4, - national sign on RF door<br>
+				5, - national signs in between cab door<br>
+			};
+
+|-
+| [[File:csla_f813_open_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_F813o" >'''CSLA_F813o'''</span>
+| ''F813 Goliath''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+|
+| Same as base F813
+
+
+|-
+| [[File:csla_ot64c_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_OT64C" >'''CSLA_OT64C'''</span>
+| ''OT-64A2 SKOT''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn|TruckHorn]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_KPVT|CSLA_KPVT]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_PKT|CSLA_PKT]]
+
+|
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_100rnd_14_5PZSv41|CSLA_100rnd_14_5PZSv41]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_100rnd_14_5TZSv41|CSLA_100rnd_14_5TZSv41]]
+:6x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62PZ59|CSLA_250rnd_7_62PZ59]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62TzSv59|CSLA_250rnd_7_62TzSv59]]
+
+|
+			hiddenSelections[] = {<br>
+				0, - hull texture #1<br>
+				1, - hull texture #2<br>
+				2,	- national signs in front of driver's door<br>
+				3,	- national signs on driver's door<br>
+				4,	- emblem, lower front part of the hull<br>
+				5,	- emblem, rear part of the hull<br>
+				6,	- emblem, rear door<br>
+				7,	- unit number<br>
+				8, - unit number<br>
+				9, - unit number<br>
+				10	- unit number<br>
+			};
+|-
+| [[File:csla_ot65_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_OT65A" >'''CSLA_OT65A'''</span>
+| ''OT-65A Otter''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn|TruckHorn]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_T21|CSLA_T21]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_UK59T|CSLA_UK59T]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_12rnd_82JOFZ47|CSLA_12rnd_82JOFZ47]]
+:8x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62TzSv59|CSLA_250rnd_7_62TzSv59]]
+
+|
+			hiddenSelections[] = {<br>
+				0, - hull texture<br>
+				1, - undercarriage texture #1<br>
+				2,	- alpha texture<br>
+				3,	- national signs in front of driver's door<br>
+				4,	- emblem, lower front part of the hull<br>
+				5,	- unit number<br>
+				6, - unit number<br>
+				7, - unit number<br>
+				8	- unit number<br>
+			};
+|-
+| [[File:csla_pldvk_base_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_V3SLizard" >'''CSLA_V3SLizard'''</span>
+| ''Mk. V3S Lizard''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+|
+|
+			hiddenSelections[] = {<br>
+				0, - hull texture #1<br>
+				1, - hull texture #2<br>
+				2,	- gun texture #1<br>
+				3,	- gun texture #2<br>
+				4,	- gun texture #3<br>
+				5,	- national sign on LF door<br>
+				6,	- national sign on RF door<br>
+				7,	- emblem, both sides of cabin compartment<br>
+				8, - unit number<br>
+				9, - unit number<br>
+				10,	- unit number<br>
+				11	- unit number<br>
+			};
+|-
+| [[File:csla_pldvk_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_PLdvK59V3S" >'''CSLA_PLdvK59V3S'''</span>
+| ''PLDvK-53/59 Lizard''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_PLdvK59|CSLA_PLdvK59]]
+
+|
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_100rnd_30JPZSv53|CSLA_100rnd_30JPZSv53]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_100rnd_30JOFSv53|CSLA_100rnd_30JOFSv53]]
+
+| Same as CSLA_V3SLizard
+
+|-
+| [[File:csla_dana_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_ShKH77" >'''CSLA_ShKH77'''</span>
+| ''ShKH-77 DANA''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn|TruckHorn]]
+:[[Arma 3 CfgWeapons Items#CSLA_R123M|CSLA_R123M]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_KH77|CSLA_KH77]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_DSKM|CSLA_DSKM]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#SmokeLauncher|SmokeLauncher]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_54Rnd_152EOF|CSLA_54Rnd_152EOF]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_6Rnd_152EPrSv|CSLA_6Rnd_152EPrSv]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_50rnd_12_7PZSv44|CSLA_50rnd_12_7PZSv44]]
+:2x&nbsp;[[Arma 3 CfgMagazines#SmokeLauncherMag|SmokeLauncherMag]]
+
+|
+			hiddenSelections[] = {<br>
+				0, - hull texture #1<br>
+				1, - hull texture #2<br>
+				2,	- undercarriage texture<br>
+				3,	- hull texture #3<br>
+				4,	- national sign on the cabin compartment<br>
+				5,	- emblem, both sides of gun turret<br>
+			};
+
+|-
+| [[File:csla_rm70_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_RM70" >'''CSLA_RM70'''</span>
+| ''RM-70''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn3|TruckHorn3]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_9K51|CSLA_9K51]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_UK59V_2|CSLA_UK59V_2]]
+
+|
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_40rnd_9M22U|CSLA_40rnd_9M22U]]
+:10x&nbsp;[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62PZ59|CSLA_UK59_50rnd_7_62PZ59]]
+
+|
+			hiddenSelections[] = {<br>
+				0, - hull texture #1<br>
+				1, - hull texture #2<br>
+				2, - hull texture #3<br>
+				3,	- undercarriage texture<br>
+				4,	- national sign on LF door<br>
+				5,	- national sign on RF door<br>
+				6,	- emblem, left side<br>
+				7	- emblem, front left<br>
+			};
+
+|-
+| [[File:csla_jara250_m_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_JARA250" >'''CSLA_JARA250'''</span>
+| ''JARA 250''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#MiniCarHorn|MiniCarHorn]]
+|
+| N/A
+
+|-
+| [[File:csla_bvp1_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_BVP1" >'''CSLA_BVP1'''</span>
+| ''BMP-1''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_2A28|CSLA_2A28]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_9K11|CSLA_9K11]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_PKT|CSLA_PKT]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_40rnd_PG15V|CSLA_40rnd_PG15V]]
+:6x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62TzSv59|CSLA_250rnd_7_62TzSv59]]
+:4x&nbsp;[[Arma 3 CfgMagazines#CSLA_9M14M|CSLA_9M14M]]
+
+|
+			hiddenSelections[] = {<br>
+				0, - hull texture<br>
+				1, - turret texture<br>
+				2, - undefined<br>
+				3,	- undefined<br>
+				4,	- undefined<br>
+				5,	- national signs on the hull<br>
+				6,	- national signs on the turret<br>
+				7,	- emblem, top, front<br>
+				8,	- emblem, rear left door<br>
+				9, - unit number<br>
+				10, - unit number<br>
+				11,	- unit number<br>
+				12	- unit number<br>
+			};
+
+|-
+| [[File:csla_bpzv_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_BPzV" >'''CSLA_BPzV'''</span>
+| ''BPzV Svatava''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_2A28|CSLA_2A28]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_9K11|CSLA_9K11]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_PKT|CSLA_PKT]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#SmokeLauncher|SmokeLauncher]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_40rnd_PG15V|CSLA_40rnd_PG15V]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_36rnd_OG15vV|CSLA_36rnd_OG15vV]]
+:7x&nbsp;[[Arma 3 CfgMagazines#CSLA_9M14M|CSLA_9M14M]]
+:12x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62PZ59|CSLA_250rnd_7_62PZ59]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62vz59|CSLA_250rnd_7_62vz59]]
+:1x&nbsp;[[Arma 3 CfgMagazines#SmokeLauncherMag|SmokeLauncherMag]]
+
+|
+			hiddenSelections[] = {<br>
+				0, - hull texture<br>
+				1, - turret texture<br>
+				2, - undefined<br>
+				3,	- undefined<br>
+				4,	- undefined<br>
+				5,	- national signs on the hull<br>
+				6,	- national signs on the turret<br>
+				7,	- emblem, top, front<br>
+				8,	- emblem, rear left door<br>
+				9, - unit number<br>
+				10, - unit number<br>
+				11,	- unit number<br>
+				12	- unit number<br>
+			};
+
+|-
+| [[File:csla_bvp1_dpt_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_DTP90" >'''CSLA_DTP90'''</span>
+| ''DTP-90''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| ARMORED
+|
+|
+|
+			hiddenSelections[] = {<br>
+				0, - hull texture<br>
+				1, - turret texture<br>
+				2, - undefined<br>
+				3,	- undefined<br>
+				4,	- undefined<br>
+				5,	- national signs on the hull<br>
+				6,	- emblem, top, front<br>
+				7, - unit number<br>
+				8, - unit number<br>
+				9,	- unit number<br>
+				10	- unit number<br>
+			};
+
+|-
+| [[File:csla_bvp1_amb_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_OZV90" >'''CSLA_OZV90'''</span>
+| ''OZV-90''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| ARMORED
+|
+|
+|
+			hiddenSelections[] = {<br>
+				0, - hull texture<br>
+				1, - undefined<br>
+				2, - undefined<br>
+				3,	- undefined<br>
+				4,	- undefined<br>
+				5,	- national signs on the hull<br>
+				6,	- emblem, top, front<br>
+				7, - unit number<br>
+				8, - unit number<br>
+				9,	- unit number<br>
+				10	- unit number<br>
+			};
+
+
+|-
+| [[File:csla_ot62_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_OT62" >'''CSLA_OT62'''</span>
+| ''OT-62 TOPAS''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_T21|CSLA_T21]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_UK59T|CSLA_UK59T]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_12rnd_82JOFZ47|CSLA_12rnd_82JOFZ47]]
+:8x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62TzSv59|CSLA_250rnd_7_62TzSv59]]
+
+|
+			hiddenSelections[] = {<br>
+				0, - hull texture #1<br>
+				1, - hull texture #2<br>
+				2, - undefined<br>
+				3,	- undefined<br>
+				4,	- undefined<br>
+				5,	- national signs on the hull<br>
+				6,	- emblem, sides, middle<br>
+				7, - unit number<br>
+				8, - unit number<br>
+				9,	- unit number<br>
+				10	- unit number<br>
+			};
+
+|-
+| [[File:csla_t72_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_T72" >'''CSLA_T72'''</span>
+| ''T-72''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Armored
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_2A46|CSLA_2A46]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_PKT_T72|CSLA_PKT_T72]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_NSV_T72|CSLA_NSV_T72]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_8rnd_3BM22|CSLA_8rnd_3BM22]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_18rnd_3BK21B|CSLA_18rnd_3BK21B]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_18rnd_3OF26|CSLA_18rnd_3OF26]]
+:8x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62TzSv59|CSLA_250rnd_7_62TzSv59]]
+:6x&nbsp;[[Arma 3 CfgMagazines#CSLA_50rnd_12_7PSv44|CSLA_50rnd_12_7PSv44]]
+
+|
+			hiddenSelections[] = {<br>
+				0, - hull texture<br>
+				1, - turret texture<br>
+				2, - attachments texture<br>
+				3,	- misc texture<br>
+				4,	- nsv texture<br>
+				5,	- national sign, left side of the cannon<br>
+				6,	- national sign, right side of the cannon<br>
+				7, - unit number<br>
+				8, - unit number<br>
+				9,	- unit number<br>
+				10	- unit number<br>
+			};
+
+
+|-
+| [[File:csla_t72m_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_T72M" >'''CSLA_T72M'''</span>
+| ''T-72M''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Armored
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_2A46M|CSLA_2A46M]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_PKT_T72|CSLA_PKT_T72]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#SmokeLauncher|SmokeLauncher]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_NSV_T72|CSLA_NSV_T72]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_8rnd_3BM22|CSLA_8rnd_3BM22]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_18rnd_3BK21B|CSLA_18rnd_3BK21B]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_18rnd_3OF26|CSLA_18rnd_3OF26]]
+:8x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62TzSv59|CSLA_250rnd_7_62TzSv59]]
+:1x&nbsp;[[Arma 3 CfgMagazines#SmokeLauncherMag|SmokeLauncherMag]]
+:6x&nbsp;[[Arma 3 CfgMagazines#CSLA_50rnd_12_7PSv44|CSLA_50rnd_12_7PSv44]]
+
+|
+			hiddenSelections[] = {<br>
+				0, - hull texture<br>
+				1, - turret texture<br>
+				2, - attachments texture<br>
+				3,	- misc texture<br>
+				4,	- nsv texture<br>
+				5,	- national sign, both sides of the turret<br>
+				6, - unit number<br>
+				7, - unit number<br>
+				8,	- unit number<br>
+				9	- unit number<br>
+			};
+
+
+|-
+| [[File:csla_t72m1_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_T72M1" >'''CSLA_T72M1'''</span>
+| ''T-72M1''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Armored
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_2A46M|CSLA_2A46M]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_PKT_T72|CSLA_PKT_T72]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#SmokeLauncher|SmokeLauncher]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_NSV_T72|CSLA_NSV_T72]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_8rnd_3BM22|CSLA_8rnd_3BM22]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_18rnd_3BK21B|CSLA_18rnd_3BK21B]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_18rnd_3OF26|CSLA_18rnd_3OF26]]
+:8x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62TzSv59|CSLA_250rnd_7_62TzSv59]]
+:1x&nbsp;[[Arma 3 CfgMagazines#SmokeLauncherMag|SmokeLauncherMag]]
+:6x&nbsp;[[Arma 3 CfgMagazines#CSLA_50rnd_12_7PSv44|CSLA_50rnd_12_7PSv44]]
+
+| Same as T72M
+
+
+
+|-
+| [[File:csla_mi17_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_Mi17" >'''CSLA_Mi17'''</span>
+| ''Mi-17''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Air
+|
+|
+
+| hiddenSelections[] = {<br>
+				0 - hull left texture<br>
+				1 - hull right texture<br>
+				2 - details texture<br>
+				3 - decals texture<br>
+				4 - undefined<br>
+				5 - undefined<br>
+				6 - unit number<br>
+				7 - unit number<br>
+				8 - unit number<br>
+				9 - unit number<br>
+				10	- national sign, both sides of the hull<br>
+				11	- emblem, side door<br>
+			};
+
+|-
+| [[File:csla_mi17_pylons_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_Mi17pylons" >'''CSLA_Mi17pylons'''</span>
+| ''Mi-17 (Weapon Pylons)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Air
+|
+|
+| Same as base Mi17
+
+
+|-
+| [[File:csla_mi17_mg_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_Mi17mg" >'''CSLA_Mi17mg'''</span>
+| ''Mi-17 (2x—UK-59)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Air
+|
+:[[Arma 3: CfgWeapons Weapons#CSLA_UK59T_2|CSLA_UK59T_2]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_UK59V|CSLA_UK59V]]
+
+|
+:8x&nbsp;[[Arma 3 CfgMagazines#CSLA_250rnd_7_62TzSv59|CSLA_250rnd_7_62TzSv59]]
+:20x&nbsp;[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62PZ59|CSLA_UK59_50rnd_7_62PZ59]]
+
+| Same as base Mi17
+
+
+|-
+| [[File:csla_lodka_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_lodka" >'''CSLA_lodka'''</span>
+| ''Motorboat''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| Ship
+|
+|
+|
+			hiddenSelections[] = {<br>
+				0 - body texture<br>
+			};
+|}
+
+=== US vehicles ===
+
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class<br>
+! Name<br>
+! Side<br>
+! Faction<br>
+! Category<br>
+! Weapons<br>
+! Magazines<br>
+! Features<br>
+
+|-
+| [[File:csla_m1025_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M1025_ua" >'''US85_M1025_ua'''</span>
+| ''M1025''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn2|TruckHorn2]]
+
+|
+
+| 			hiddenSelections[] = {<br>
+				0 - body texture<br>
+				1, - undercarriage texture<br>
+				2, - national signs in front of fron door<br>
+				3, - unit, LF door<br>
+				4, - unit, RF door<br>
+				5, - emblem, LB door<br>
+				6 - emblem, RB door<br>
+			};
+
+|-
+| [[File:csla_m1043_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M1043_ua" >'''US85_M1043_ua'''</span>
+| ''M1043''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn2|TruckHorn2]]
+
+|
+
+| Same as base M1025
+
+|-
+| [[File:csla_m1025_m60_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M1025_M60" >'''US85_M1025_M60'''</span>
+| ''M1025 (M60)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn2|TruckHorn2]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M60_veh|US85_M60_veh]]
+
+|
+:5x&nbsp;[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+
+| Same as base M1025
+
+|-
+| [[File:csla_m1025_m60_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M1043_M60" >'''US85_M1043_M60'''</span>
+| ''M1043 (M60)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn2|TruckHorn2]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M60_veh|US85_M60_veh]]
+
+|
+:5x&nbsp;[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+
+| Same as base M1025
+
+|-
+| [[File:csla_m998_sf_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M998SFGT" >'''US85_M998SFGT'''</span>
+| ''M998 SF Gun Truck (M60)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn2|TruckHorn2]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M60_veh|US85_M60_veh]]
+
+|
+:5x&nbsp;[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+
+| hiddenSelections[] = {<br>
+				0 - body texture<br>
+				1 - undercarriage texture<br>
+			};
+
+|-
+| [[File:csla_m1008_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M1008" >'''US85_M1008'''</span>
+| ''M1008 CUCV (passenger)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+
+|
+
+| hiddenSelections[] = {<br>
+				0 - body texture<br>
+				1, - bed texture<br>
+				2, - interior texture<br>
+				3, - national sign, LF door<br>
+				4 - national sign, RF door<br>
+			};
+
+|-
+| [[File:csla_m1008_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M1008c" >'''US85_M1008c'''</span>
+| ''M1008 CUCV (cargo)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+
+|
+
+| Same as base M1008
+
+|-
+| [[File:csla_m1008_s250_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M1008_S250" >'''US85_M1008_S250'''</span>
+| ''M1008 CUCV (radio)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+
+|
+
+| hiddenSelections[] = {<br>
+				0 - body texture<br>
+				1, - s250 texture<br>
+				2, - interior texture<br>
+				3, - national sign, LF door<br>
+				4 - national sign, RF door<br>
+			};
+
+|-
+| [[File:csla_m923_open_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M923o" >'''US85_M923o'''</span>
+| ''M923 TT''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn|TruckHorn]]
+
+|
+
+| hiddenSelections[] = {<br>
+				0 - cabin texture<br>
+				1, - undercarriage texture<br>
+				2, - bed texture<br>
+				3, - alpha texture<br>
+				4, - national sign, left side of the hood<br>
+				5, - national sign, right side of the hood<br>
+				6, - unit sign, LF door<br>
+				7 - unit sign, RF door<br>
+			};
+
+
+|-
+| [[File:csla_m923_closed_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M923c" >'''US85_M923c'''</span>
+| ''M923 TT Covered''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn|TruckHorn]]
+
+|
+
+| Same as base M923
+
+
+|-
+| [[File:csla_m923_closed_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M923cargo" >'''US85_M923cargo'''</span>
+| ''M923 Cargo (no troops in the back)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Support
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn|TruckHorn]]
+
+|
+
+| Same as base M923
+
+|-
+| [[File:csla_m923_ammo_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M923a" >'''US85_M923a'''</span>
+| ''M923 Reammo''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Support
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn|TruckHorn]]
+
+|
+
+| Same as base m923
+
+|-
+| [[File:csla_m923_repair_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M923r" >'''US85_M923r'''</span>
+| ''M923 Repair''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Support
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn|TruckHorn]]
+
+|
+
+| Same as base m923
+
+|-
+| [[File:csla_m923_fuel_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M923f" >'''US85_M923f'''</span>
+| ''M923 Refuel''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Support
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn|TruckHorn]]
+
+|
+
+| hiddenSelections[] = {<br>
+				0 - cabin texture<br>
+				1, - undercarriage texture<br>
+				2, - fuel tank texture<br>
+				3, - alpha texture<br>
+				4, - national sign, left side of the hood<br>
+				5, - national sign, right side of the hood<br>
+				6, - unit sign, LF door<br>
+				7 - unit sign, RF door<br>
+			};
+
+|-
+| [[File:csla_lav25_ca.jpg|150px|&nbsp;]]
+| <span id="US85_LAV25" >'''US85_LAV25'''</span>
+| ''LAV-25''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn|TruckHorn]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M242|US85_M242]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M240_LAV25_coax|US85_M240_LAV25_coax]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#SmokeLauncher|SmokeLauncher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M240_LAV25_commander|US85_M240_LAV25_commander]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_210Rnd_M791|US85_210Rnd_M791]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_210Rnd_M792|US85_210Rnd_M792]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_440Rnd_762x51|US85_440Rnd_762x51]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_220Rnd_762x51|US85_220Rnd_762x51]]
+:1x&nbsp;[[Arma 3 CfgMagazines#SmokeLauncherMag|SmokeLauncherMag]]
+
+| hiddenSelections[] = {<br>
+				0, - hull texture #1<br>
+				1, - hull texture #2<br>
+				2, - alpha texture<br>
+				3, - undefined<br>
+				4, - national signs, turret<br>
+				5, - emblem, turret<br>
+				6, - unit sign, left side<br>
+				7, - unit sign, right side<br>
+				8 - unit sign, back door<br>
+			};
+
+|-
+| [[File:csla_m1030_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M1030" >'''US85_M1030'''</span>
+| ''M1030''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#MiniCarHorn|MiniCarHorn]]
+
+|
+
+| hiddenSelections[] = {<br>
+				0, - body texture<br>
+			};
+
+
+|-
+| [[File:csla_m1ip_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M1IP" >'''US85_M1IP'''</span>
+| ''M1IP''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Armored
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M68|US85_M68]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M240_M1A1_coax|US85_M240_M1A1_coax]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M2_M1A1_commander|US85_M2_M1A1_commander]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#SmokeLauncher|SmokeLauncher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M240_M1A1_loader|US85_M240_M1A1_loader]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_30rnd_105mm_APFSDS|US85_30rnd_105mm_APFSDS]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_33rnd_105mm_HEAT_MP|US85_33rnd_105mm_HEAT_MP]]
+:5x&nbsp;[[Arma 3 CfgMagazines#US85_2000rnd_762x51|US85_2000rnd_762x51]]
+:10x&nbsp;[[Arma 3 CfgMagazines#US85_100Rnd_127x99|US85_100Rnd_127x99]]
+:1x&nbsp;[[Arma 3 CfgMagazines#SmokeLauncherMag|SmokeLauncherMag]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+
+| hiddenSelections[] = {<br>
+				0, - hull texture<br>
+				1, - turret texture<br>
+				2, - misc texture<br>
+				3, - undefined<br>
+				4, - national signs, turret<br>
+				5, - emblem, front side of the turret<br>
+				6, - text, tank gun<br>
+				7, - undefined<br>
+				8, - unit, side skirt #1<br>
+				9, - unit, side skirt #2<br>
+				10, - unit, side skirt #3<br>
+				11 - unit, side skirt #4<br>
+			};
+
+
+|-
+| [[File:csla_m1a1_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M1A1" >'''US85_M1A1'''</span>
+| ''M1A1''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Armored
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M256|US85_M256]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M240_M1A1_coax|US85_M240_M1A1_coax]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M2_M1A1_commander|US85_M2_M1A1_commander]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#SmokeLauncher|SmokeLauncher]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M240_M1A1_loader|US85_M240_M1A1_loader]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_20rnd_120mm_APFSDS|US85_20rnd_120mm_APFSDS]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_20Rnd_120mm_HE|US85_20Rnd_120mm_HE]]
+:5x&nbsp;[[Arma 3 CfgMagazines#US85_2000rnd_762x51|US85_2000rnd_762x51]]
+:10x&nbsp;[[Arma 3 CfgMagazines#US85_100Rnd_127x99|US85_100Rnd_127x99]]
+:1x&nbsp;[[Arma 3 CfgMagazines#SmokeLauncherMag|SmokeLauncherMag]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+
+| Same as M1IP
+
+
+|-
+| [[File:csla_m113_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M113" >'''US85_M113'''</span>
+| ''M113''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M2_M113|US85_M2_M113]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#SmokeLauncher|SmokeLauncher]]
+
+|
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_100Rnd_127x99|US85_100Rnd_127x99]]
+:1x&nbsp;[[Arma 3 CfgMagazines#SmokeLauncherMag|SmokeLauncherMag]]
+
+| hiddenSelections[] = {<br>
+				0, - hull texture<br>
+				1, - turret texture<br>
+				2, - undefined<br>
+				3, - undefined<br>
+				4, - national signs, both sides, front<br>
+				5, - emblem, front<br>
+				6, - emblem, rear<br>
+				7, - unit, side #1<br>
+				8, - unit, side #2<br>
+				9 - text, turret<br>
+			};
+
+
+|-
+| [[File:csla_m113_amb_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M113_AMB" >'''US85_M113_AMB'''</span>
+| ''M113 MEV''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| ARMORED
+|
+
+|
+
+| hiddenSelections[] = {<br>
+				0, - hull texture<br>
+				1, - turret texture<br>
+				2, - undefined<br>
+				3, - undefined<br>
+				4, - national signs, both sides, front<br>
+				5, - emblem, front<br>
+				6, - emblem, rear<br>
+				7, - unit, side #1<br>
+				8 - unit, side #2<br>
+			};
+
+
+|-
+| [[File:csla_m113_dpt_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M113_DTP" >'''US85_M113_DTP'''</span>
+| ''M113 Repair''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| ARMORED
+|
+
+|
+
+| Same as M113 AMB
+
+|-
+| [[File:csla_m163_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M163" >'''US85_M163'''</span>
+| ''M163''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M61|US85_M61]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_2100Rnd_M53|US85_2100Rnd_M53]]
+
+| hiddenSelections[] = {<br>
+				0, - hull texture<br>
+				1, - turret texture<br>
+				2, - side armor texture<br>
+				3, - national signs, both sides, front<br>
+				4, - emblem, front<br>
+				5, - emblem, rear<br>
+				6, - unit, side #1<br>
+				7, - unit, side #2<br>
+				8 - text, turret<br>
+			};
+
+|-
+| [[File:csla_m270_ca.jpg|150px|&nbsp;]]
+| <span id="US85_M270" >'''US85_M270'''</span>
+| ''M270 MLRS''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M269|US85_M269]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_12Rnd_M26|US85_12Rnd_M26]]
+
+| hiddenSelections[] = {<br>
+				0, - cabin texture<br>
+				1, - base texture<br>
+				2, - turret texture<br>
+				3, - national signs, turret<br>
+				4, - emblem, LF door<br>
+				5 - emblem, RF door<br>
+
+			};
+
+|-
+| [[File:csla_uh60_ca.jpg|150px|&nbsp;]]
+| <span id="US85_UH60" >'''US85_UH60'''</span>
+| ''UH-60''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Air
+|
+
+|
+
+| hiddenSelections[] = {<br>
+				0, - undefined<br>
+				1, - undefined<br>
+				2, - undefined<br>
+				3, - undefined<br>
+				4, - undefined<br>
+				5, - undefined<br>
+				6, - undefined<br>
+				7, - national sign, left side of the cabin<br>
+				8, - national sign, right side of the cabin<br>
+				9, - unit, both sides<br>
+				10, - emblem, nose, engines<br>
+				11 - text, tail<br>
+
+			};
+|-
+| [[File:csla_uh60_m240_ca.jpg|150px|&nbsp;]]
+| <span id="US85_UH60M240" >'''US85_UH60M240'''</span>
+| ''UH-60A (2x M240)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Air
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M240_UH60_L|US85_M240_UH60_L]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M240_UH60_R|US85_M240_UH60_R]]
+
+|
+:14x&nbsp;[[Arma 3 CfgMagazines#US85_200Rnd_762x51|US85_200Rnd_762x51]]
+
+| Same as base UH-60
+
+|-
+| [[File:csla_mh60_m134_ca.jpg|150px|&nbsp;]]
+| <span id="US85_MH60M134" >'''US85_MH60M134'''</span>
+| ''MH-60A (2x— M134)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Air
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M134_L_minigun|US85_M134_L_minigun]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M134_R_minigun|US85_M134_R_minigun]]
+
+|
+:2x&nbsp;[[Arma 3 CfgMagazines#5000Rnd_762x51_Belt|5000Rnd_762x51_Belt]]
+
+| Same as base UH-60
+
+|-
+| [[File:csla_mh60_dap_ca.jpg|150px|&nbsp;]]
+| <span id="US85_MH60FFAR" >'''US85_MH60FFAR'''</span>
+| ''MH-60A DAP (FFAR)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Air
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M134_2x_minigun|US85_M134_2x_minigun]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#US85_M261|US85_M261]]
+
+|
+:1x&nbsp;[[Arma 3 CfgMagazines#5000Rnd_762x51_Belt|5000Rnd_762x51_Belt]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_38x_M151|US85_38x_M151]]
+
+| Same as base UH-60
+
+|-
+| [[File:csla_zodiac_ca.jpg|150px|&nbsp;]]
+| <span id="US85_zodiac" >'''US85_zodiac'''</span>
+| ''Zodiac''
+| style="background-color:#c2d4e7" | WEST
+| US85
+| Ship
+|
+
+|
+
+| hiddenSelections[] = {<br>
+				0, - body texture<br>
+
+			};
+|}
+
+=== Independent vehicles ===
+
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class<br>
+! Name<br>
+! Side<br>
+! Faction<br>
+! Category<br>
+! Weapons<br>
+! Magazines<br>
+! Features<br>
+
+|-
+| [[File:csla_btr40_ca.jpg|150px|&nbsp;]]
+| <span id="FIA_BTR40" >'''FIA_BTR40'''</span>
+| ''BTR-40''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn2|TruckHorn2]]
+
+|
+
+| 			hiddenSelections[] = {<br>
+				0, - body texture<br>
+				3, - national signs<br>
+				6 - emblem<br>
+			};
+
+|-
+| [[File:csla_btr40_dskm_ca.jpg|150px|&nbsp;]]
+| <span id="FIA_BTR40_DSKM" >'''FIA_BTR40_DSKM'''</span>
+| ''BTR-40 (DShKM)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn2|TruckHorn2]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_DSKM_veh|CSLA_DSKM_veh]]
+
+|
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_50rnd_12_7PSv44|CSLA_50rnd_12_7PSv44]]
+
+| Same as base BTR-40
+
+
+|-
+| [[File:csla_azu_f_ca.jpg|150px|&nbsp;]]
+| <span id="FIA_AZU_para" >'''FIA_AZU_para'''</span>
+| ''AZU 469 (Armored)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+
+|
+
+| 			hiddenSelections[] = {<br>
+				0, - body texture<br>
+				1, - canvas, int & misc<br>
+				2, - undercarriage<br>
+				3, - national sign on LF door<br>
+				4, - national sign on RF door<br>
+				5, - emblem on LF door<br>
+				6 - emblem on RF door<br>
+			};
+
+
+|-
+| [[File:csla_azu_f_t21_ca.jpg|150px|&nbsp;]]
+| <span id="FIA_AZU_T21" >'''FIA_AZU_T21'''</span>
+| ''AZU 469 (T21)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+:[[Arma 3 CfgWeapons Vehicle Weapons#CSLA_T21|CSLA_T21]]
+
+|
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_6rnd_82JOFZ47|CSLA_6rnd_82JOFZ47]]
+
+| Same as armored AZU
+
+
+|-
+| [[File:csla_azu_f_dskm_ca.jpg|150px|&nbsp;]]
+| <span id="FIA_AZU_DSKM" >'''FIA_AZU_DSKM'''</span>
+| ''AZU 469 (DShKM)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+| ARMORED
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_DSKM_veh|CSLA_DSKM_veh]]
+
+|
+:6x&nbsp;[[Arma 3 CfgMagazines#CSLA_50rnd_12_7PZSv44|CSLA_50rnd_12_7PZSv44]]
+
+| Same as armored AZU
+
+|}
+
+=== Civilian vehicles ===
+
+{| class="wikitable sortable" border="1" style="border-collapse:collapse; font-size:80%;" cellpadding="3px"
+! Preview<br>
+! Class<br>
+! Name<br>
+! Side<br>
+! Faction<br>
+! Category<br>
+! Weapons<br>
+! Magazines<br>
+! Features<br>
+
+|-
+| [[File:csla_v3s_civil_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_CIV_V3S" >'''CSLA_CIV_V3S'''</span>
+| ''Mk. V3S Truck (civ.)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#TruckHorn3|TruckHorn3]]
+
+|
+
+| Same as base CSLA V3S
+
+
+|-
+| [[File:csla_jara250_c_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_CIV_JARA250" >'''CSLA_CIV_JARA250'''</span>
+| ''JARA 250 (civ.)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#MiniCarHorn|MiniCarHorn]]
+
+|
+
+| hiddenSelections[] = {<br>
+				0, - body texture<br>
+			};
+
+
+|-
+| [[File:csla_ada_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_CIV_ADA1600" >'''CSLA_CIV_ADA1600'''</span>
+| ''ADA 1600''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+
+|
+
+| hiddenSelections[] = {<br>
+				0, - body texture<br>
+			};
+
+|-
+| [[File:csla_ada_vb_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_CIV_ADA1600VB" >'''CSLA_CIV_ADA1600VB'''</span>
+| ''ADA 1600 (VB)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+
+|
+
+| hiddenSelections[] = {<br>
+				0, - body texture<br>
+			};
+
+|-
+| [[File:csla_sarka1200_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_CIV_Sarka1200" >'''CSLA_CIV_Sarka1200'''</span>
+| ''Sarka 1200''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| Car
+|
+:[[Arma 3 CfgWeapons Vehicle Weapons#CarHorn|CarHorn]]
+
+|
+
+| hiddenSelections[] = {<br>
+				0, - body texture<br>
+				1 - interior texture<br>
+			};
+
+
+|-
+| [[File:csla_an2_ca.jpg|150px|&nbsp;]]
+| <span id="CSLA_CIV_An2_1" >'''CSLA_CIV_An2_1'''</span>
+| ''An-2''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| Air
+|
+
+|
+
+| hiddenSelections[] = {<br>
+				0, - body texture #1<br>
+				1, - body texture #2<br>
+				2 - wings texture<br>
+			};
+|}
+
+[[Category:CSLA: Iron Curtain]]

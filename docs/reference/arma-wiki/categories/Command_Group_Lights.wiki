@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Lights
+// revision: 339178 (2023-04-27T13:28:52Z)
+// export sha1: d5su1tlv5juf92st4402lf63iwg9uc5
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands about gun lights, street lights and lightpoints. See also [[Light Source Tutorial]].
+
+
+[[Category:Scripting Commands by Functionality]]

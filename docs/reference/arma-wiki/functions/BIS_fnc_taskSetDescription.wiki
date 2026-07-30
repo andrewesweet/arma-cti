@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskSetDescription
+// revision: 352043 (2024-02-01T23:24:29Z)
+// export sha1: its0m2kx4g7of0wi40ulxu3gf1auvnm
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|arg= global
+|eff= global
+
+|descr= Set a task description. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= [taskId, [taskDescription, taskTitle, taskMarker]] call [[BIS_fnc_taskSetDescription]]
+
+|p1= taskId: [[String]]
+
+|p2= taskDescription: [[String]]
+
+|p3= taskTitle: [[String]]
+
+|p4= taskMarker: [[String]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[
+	"tsk_destroyAA",
+	[
+		"You should plant Satchels under those Shilkas! Good luck.",
+		"Destroy the Shilkas",
+		"Shilkas"
+	]
+] call BIS_fnc_taskSetDescription;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

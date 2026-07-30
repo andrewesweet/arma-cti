@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Template:Stub
+// revision: 376697 (2025-11-07T00:24:41Z)
+// export sha1: 1hijvrfv76fpgcwthctm7avdwicm2mw
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div class="notice metadata" id="stub">''This article is a [[:Category:Stubs|Stub]]. You can help BI Community Wiki by <span class="plainlinks">[{{fullurl:{{FULLPAGENAME}}|action=edit}} expanding it]</span>.''</div>{{TemplateCase||[[Category:Stubs]]}}</includeonly><noinclude>{{Doc/Template
+|descr= '''Marks a page as stub''' and displays a note about it. Users can check the [[:Category:Stubs|Stubs category]] to expand the wiki.
+|example1= <nowiki>{{Stub}}</nowiki>
+|result1= {{Stub}}
+|historical= y
+}}</noinclude>

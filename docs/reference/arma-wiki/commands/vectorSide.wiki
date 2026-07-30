@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/vectorSide
+// revision: 378405 (2026-04-04T08:14:48Z)
+// export sha1: mxylvl6885xbze7lnyns656kkz0pi3a
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|arg= global
+
+|gr2= Math - Vectors
+
+|descr= [[File:arma3_object-vectors.jpg|thumb|right|An object with its [[vectorDir]], [[vectorUp]] and [[vectorSide]] (vectors not to scale)]]
+Returns an object's side vector in world space.
+
+{{Feature|important|The vector is '''not necessarily [[vectorNormalized|normalized]]'''. The [[vectorMagnitude|magnitude]] of the vector depends on the [[getObjectScale|object's scale]].}}
+
+|s1= [[vectorSide]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Vector3D]]
+
+|x1= <sqf>_vecSide = vectorSide MyObject;</sqf>
+
+|seealso= [[vectorSideVisual]] [[vectorUpVisual]] [[vectorDir]] [[setVectorDir]] [[setVectorUp]] [[setVectorDirAndUp]] [[vectorDiff]] [[vectorAdd]] [[vectorMultiply]] [[vectorCrossProduct]] [[vectorDistance]] [[vectorMagnitudeSqr]] [[vectorDistanceSqr]] [[vectorCos]] [[vectorMagnitude]] [[vectorDotProduct]] [[vectorNormalized]] [[vectorFromTo]] [[BIS_fnc_getPitchBank]] [[BIS_fnc_transformVectorDirAndUp]]
+}}

@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/deleteVehicleCrew
+// revision: 347420 (2023-09-18T16:02:36Z)
+// export sha1: qq077sl6ozvljisr1twsa4o3k7b5c1r
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|arg= global
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Deletes a member of or the whole crew of a vehicle. Human players cannot be deleted.
+{{Feature|informative|This command attempts to move the given [[crew]] member out before deleting it. Made especially for deleting dead crew members, as using conventional [[deleteVehicle]] leads to all sorts of bugs and ghost objects. While the argument is global, you should take extra steps and execute this where vehicle is [[Multiplayer Scripting#Locality|local]] as moving units out of the vehicle happens where vehicle is [[Multiplayer Scripting#Locality|local]] and you want this to always precede deletion.}}
+
+|s1= vehicle [[deleteVehicleCrew]] unit
+
+|p1= vehicle: [[Object]]
+
+|p2= unit: [[Object]]
+
+|r1= [[Nothing]]
+
+|s2= [[deleteVehicleCrew]] vehicle
+
+|s2since= arma3 2.06
+
+|p21= vehicle: [[Object]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>
+// delete when knowing the vehicle
+_helicopter deleteVehicleCrew driver _helicopter;
+
+// delete when only knowing the unit
+// vehicle _soldier deleteVehicleCrew _soldier;		// may return the unit itself when used on dead crew
+objectParent _soldier deleteVehicleCrew _soldier;	// faster and always returns the vehicle
+</sqf>
+
+|x2= Delete entire crew:
+<sqf>
+deleteVehicleCrew _tank; // since v2.06
+
+{ _helicopter deleteVehicleCrew _x } forEach crew _helicopter; // before v2.06
+</sqf>
+
+|seealso= [[createVehicleCrew]] [[moveInDriver]] [[moveInGunner]] [[moveInCommander]] [[moveInTurret]] [[moveInCargo]] [[Arma_3:_Event_Handlers#Deleted | Deleted EH]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20140831101500
+|text= If you delete the AI pilot with <sqf inline>deleteVehicle driver heli</sqf> the co-pilot will jump out.<br>
+If you delete the AI pilot with <sqf inline>heli deleteVehicleCrew driver heli</sqf> the co-pilot will stay.
+}}

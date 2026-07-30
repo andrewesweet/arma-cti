@@ -1,0 +1,216 @@
+// source: https://community.bistudio.com/wiki/lineIntersectsSurfaces
+// revision: 377700 (2026-01-02T09:03:29Z)
+// export sha1: 9i721kk1xickhaqfpbq38h5w3p1t9c3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Geometry | Category:Introduced with Arma 3 version 1.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.50
+|arg= global
+
+|gr1= Math - Geometry
+
+|descr= Returns a list of intersections with surfaces and ground from ''begPosASL'' to ''endPosASL''. Doesn't return intersection with sea surface. Works underwater, unlike [[lineIntersects]]. Hardcoded max distance: 5000m.
+{{Feature|important|
+* if ''begPosASL'' is under the ground and ''endPosASL'' is above it, the command will only return intersection with the ground, this is an engine limitation and none of the intersectXXX commands will work when initiated from under the ground.
+* only a single LOD is checked for intersection. LOD2 will only be checked if LOD1 is unavailable.
+}}
+Since {{GVI|arma3|2.20|size= 0.75}}, there is an alternative syntax that does multiple checks in parallel, faster than multiple calls.
+
+|s1= [[lineIntersectsSurfaces]] [begPosASL, endPosASL, ignoreObj1, ignoreObj2, sortMode, maxResults, LOD1, LOD2, returnUnique]
+
+|p1= begPosASL: [[Position#PositionASL|PositionASL]] - virtual line start
+
+|p2= endPosASL: [[Position#PositionASL|PositionASL]] - virtual line end
+
+|p3= ignoreObj1: [[Object]] - (Optional, default [[objNull]]) first object to ignore
+
+|p4= ignoreObj2: [[Object]] - (Optional, default [[objNull]]) second object to ignore
+
+|p5= sortMode: [[Boolean]] -  (Optional, default [[true]]) [[true]]: closest to furthest, [[false]]: furthest to closest
+
+|p6= maxResults: [[Number]] - (Optional, default 1) max results to return. -1 to return every result
+
+|p7= LOD1: [[String]] - (Optional, default "VIEW") primary [[LOD]] to look for intersection. Can be one of:
+* "FIRE"
+* "VIEW"
+* "GEOM"
+* "IFIRE" - ("I" stands for Indirect, ''almost'' identical to "FIRE")
+* "NONE"
+* {{GVI|arma3|2.02|size= 0.75}} "PHYSX" - PhysX geometry LOD
+* {{GVI|arma3|2.08|size= 0.75}} "ROADWAY" - only works from the top
+|p7since= arma3 1.52
+
+|p8= LOD2: [[String]] - (Optional, default "FIRE") secondary [[LOD]] to look for intersection. See ''LOD1'' for possible values
+|p8since= arma3 1.52
+
+|p9= returnUnique: [[Boolean]] - (Optional, default [[true]]) when [[false]], all intersections in the same object are included, otherwise only the first one
+|p9since= arma3 1.70
+
+|r1= [[Array]] of [[Array]]s with [intersectPosASL, surfaceNormal, intersectObj, parentObject, selectionNames, pathToBisurf]
+* intersectPosASL: [[PositionASL]] - the actual position where line intersects surface
+* [[surfaceNormal]]: [[Vector]] - a normal to the intersected surface 
+* intersectObject: [[Object]] - the object the surface belongs to (could be proxy object) - [[objNull]] if terrain
+* parentObject: [[Object]] - the object proxy object belongs to (not always the same as intersect object) - [[objNull]] if terrain
+* {{GVI|arma3|2.10|size= 0.75}} [[selectionNames]]: [[Array]] of [[String]]s - Names of the intersected selections (bones). Returns {{hl|[]}} if there is no intersection with a selection.
+* {{GVI|arma3|2.10|size= 0.75}} pathToBisurf: [[String]] - path to intersected surface properties (.bisurf) file. Returns {{hl|""}} if surface has no special properties. Terrain surface properties begin with {{hl|#}}, and the surface properties are defined in {{hl|CfgSurfaces}}. For example, if it returns {{hl|#GdtVRsurface01}}, properties are defined in: <sqf inline>configFile >> "CfgSurfaces" >> "GdtVRsurface01"</sqf>
+
+|s2= [[lineIntersectsSurfaces]] <nowiki>[[</nowiki>element1, element2, ...<nowiki>]]</nowiki>
+
+|s2since= arma3 2.20
+
+|p21= elementN: [[Array]] with [begPosASL, endPosASL, ignoreObj1, ignoreObj2, sortMode, maxResults, LOD1, LOD2, returnUnique]
+* begPosASL: [[Position#PositionASL|PositionASL]] - virtual line start
+* endPosASL: [[Position#PositionASL|PositionASL]] - virtual line end
+* ignoreObj1: [[Object]] - (Optional, default [[objNull]]) first object to ignore
+* ignoreObj2: [[Object]] - (Optional, default [[objNull]]) second object to ignore
+* sortMode: [[Boolean]] -  (Optional, default [[true]]) [[true]]: closest to furthest, [[false]]: furthest to closest
+* maxResults: [[Number]] - (Optional, default 1) max results to return. -1 to return every result
+* LOD1: [[String]] - (Optional, default "VIEW") primary [[LOD]] to look for intersection. Can be one of:
+** "FIRE"
+** "VIEW"
+** "GEOM"
+** "IFIRE" - ("I" stands for Indirect, ''almost'' identical to "FIRE")
+** "NONE"
+** "PHYSX" - PhysX geometry LOD
+** "ROADWAY" - only works from the top
+* LOD2: [[String]] - (Optional, default "FIRE") secondary [[LOD]] to look for intersection. See ''LOD1'' for possible values
+* returnUnique: [[Boolean]] - (Optional, default [[true]]) when [[false]], all intersections in the same object are included, otherwise only the first one
+
+|r2= [[Array]] of [[Array]]s with [intersectPosASL, surfaceNormal, intersectObj, parentObject, selectionNames, pathToBisurf]
+* intersectPosASL: [[PositionASL]] - the actual position where line intersects surface
+* [[surfaceNormal]]: [[Vector]] - a normal to the intersected surface 
+* intersectObject: [[Object]] - the object the surface belongs to (could be proxy object) - [[objNull]] if terrain
+* parentObject: [[Object]] - the object proxy object belongs to (not always the same as intersect object) - [[objNull]] if terrain
+* [[selectionNames]]: [[Array]] of [[String]]s - Names of the intersected selections (bones). Returns {{hl|[]}} if there is no intersection with a selection.
+* pathToBisurf: [[String]] - path to intersected surface properties (.bisurf) file. Returns {{hl|""}} if surface has no special properties. Terrain surface properties begin with {{hl|#}}, and the surface properties are defined in {{hl|CfgSurfaces}}. For example, if it returns {{hl|#GdtVRsurface01}}, properties are defined in: <sqf inline>configFile >> "CfgSurfaces" >> "GdtVRsurface01"</sqf>
+
+|x1= <sqf>_intersections = lineIntersectsSurfaces [eyePos player, aimPos chopper, player, chopper, true, -1];</sqf>
+
+|x2= <sqf>
+arrow = "Sign_Arrow_F" createVehicle [0,0,0];
+onEachFrame {
+	_ins = lineIntersectsSurfaces [
+		AGLToASL positionCameraToWorld [0,0,0], 
+		AGLToASL positionCameraToWorld [0,0,1000], 
+		player
+	];
+	if (count _ins == 0) exitWith { arrow setPosASL [0,0,0] };
+	arrow setPosASL (_ins select 0 select 0);
+	arrow setVectorUp (_ins select 0 select 1);
+	hintSilent str _ins;
+};
+</sqf>
+
+|x3= This should detect glass windows and wire fences (since {{arma3}} v1.52):
+<sqf>
+wirefence = "Land_New_WiredFence_5m_F" createVehicle position player;
+arrow = "Sign_Arrow_F" createVehicle [0,0,0];
+onEachFrame {
+	_ins = lineIntersectsSurfaces [
+		AGLToASL positionCameraToWorld [0,0,0], 
+		AGLToASL positionCameraToWorld [0,0,1000], 
+		player,
+		objNull,
+		true,
+		1,
+		"GEOM",
+		"NONE"
+	];
+	if (count _ins == 0) exitWith { arrow setPosASL [0,0,0] };
+	arrow setPosASL (_ins select 0 select 0);
+	arrow setVectorUp (_ins select 0 select 1);
+	hintSilent str _ins;
+};
+</sqf>
+
+|x4= Alternative syntax to check intersections in parallel. Will draw a redline to the first intersecting object between the player and unit:
+<sqf>
+private _handle = addMissionEventHandler ["Draw3D", {
+	private _enemies = units opfor;
+	private _enemyDataArray = _enemies apply { [eyePos player, eyePos _x, player, _x] };
+	
+	private _intersections = lineIntersectsSurfaces [_enemyDataArray];
+	{
+		// No intersections found, draw green '+' icon at unit
+		if (_x isEqualTo []) then {
+			drawIcon3D [
+				"\a3\ui_f\data\gui\cfg\cursors\add_gs.paa",
+				[0, 1, 0, 1],
+				ASLToAGL (eyePos (_enemies#_forEachIndex)),
+				0.5, 0.5, 0,
+				str (_enemies#_forEachIndex)
+			];
+		} else {
+			private _firstIntersection = _x#0;
+			// Draw red line and '+' icon to first intersecting object
+			drawIcon3D [
+				"\a3\ui_f\data\gui\cfg\cursors\add_gs.paa",
+				[1, 0, 0, 1],
+				ASLToAGL (_firstIntersection#0),
+				0.5, 0.5, 0,
+				str (_enemies#_forEachIndex) + "- Blocked by " + str (_firstIntersection#2)
+			];
+			drawLine3D [
+				ASLToAGL (eyePos player),
+				ASLToAGL (_firstIntersection#0),
+				[1, 0, 0, 1],
+				5
+			];
+		};
+	} forEach _intersections;
+}];
+</sqf>
+
+|seealso= [[lineIntersectsObjs]] [[lineIntersectsWith]] [[lineIntersects]] [[terrainIntersectASL]] [[terrainIntersectAtASL]] [[terrainIntersect]] [[intersect]] [[cursorObject]] [[cursorTarget]] [[checkVisibility]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150827124400
+|text= Fast check if the player is in a house:
+<sqf>
+KK_fnc_inHouse = {
+	lineIntersectsSurfaces [
+		getPosWorld _this, 
+		getPosWorld _this vectorAdd [0, 0, 50], 
+		_this, objNull, true, 1, "GEOM", "NONE"
+	] select 0 params ["","","","_house"];
+	if (_house isKindOf "House") exitWith { true };
+	false
+};
+onEachFrame { hintSilent str (player call KK_fnc_inHouse) };
+</sqf>
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20160130201000
+|text= This command is useful to place weaponholder (and then spawned weapons) on floor of houses, correcting  the spawn position (can_collide) to intersect with floor:
+<sqf>
+MGI_fnc_setPosAGLS = {
+	params ["_obj", "_pos"];
+	_wh_pos = getPosASL _obj;
+
+	_pos set [2, (ATLToASL _pos select 2) - 10];
+	_ins = lineIntersectsSurfaces [_wh_pos, _pos,_obj, objNull, true, 1, "VIEW", "FIRE"];
+	_surface_distance = if (count _ins > 0) then [{ (_ins select 0 select 0) distance _wh_pos }, { 0 }];
+	_wh_pos set [2, (getPosASL _obj select 2) - (_surface_distance)];
+	_weaponholder setPosASL _wh_pos;
+};
+</sqf>
+After the position (_pos) obtained in BIS_fnc_buidingPositions array:
+<sqf>
+private _weaponHolder = createVehicle ["groundWeaponHolder", _pos, [], 0, "CAN_COLLIDE"];
+[_weaponHolder, _pos] call MGI_fnc_setPosAGLS;
+</sqf>
+Then fill your weapon holder.
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20240106154115
+|text= Note that dome_big and dome_small objects have glass roof panels which this function can't see if it intersects those windows
+}}

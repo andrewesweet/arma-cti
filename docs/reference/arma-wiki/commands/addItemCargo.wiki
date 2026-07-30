@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/addItemCargo
+// revision: 341379 (2023-05-25T12:43:57Z)
+// export sha1: peptbr70vw9of54958g8vo391ueill9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= Vehicle Inventory
+
+|descr= Creates new items and stores them in given container.
+Works with [[Arma 3: CfgWeapons Items|items]], [[Arma 3: CfgWeapons_Weapons|weapons]], [[Arma 3: CfgMagazines|magazines]], [[Arma 3: CfgWeapons Equipment|equipment]] and [[Arma 3: Characters And Gear Encoding Guide#Facewear configuration|glasses]] but not backpacks.
+In the latter case use [[addBackpackCargo]] instead. For the global variant, see [[addItemCargoGlobal]].
+
+|s1= box [[addItemCargo]] [item, count]
+
+|p1= box: [[Object]]
+
+|p2= item: [[String]]
+
+|p3= count: [[Number]] - number of items to add; {{GVI|arma3|2.14|size= 0.75}} a negative value removes items
+
+|r1= [[Nothing]]
+
+|x1= <sqf>supplyBox addItemCargo ["optic_ARCO", 10];</sqf>
+
+|seealso= [[addItemCargoGlobal]] [[clearItemCargo]] [[addMagazineCargo]] [[addMagazineCargoGlobal]] [[addWeaponCargo]] [[addWeaponCargoGlobal]] [[addBackpackCargo]] [[addBackpackCargoGlobal]]
+}}
+
+{{Note
+|user= 7erra
+|timestamp= 20211120122755
+|text= Make sure that you are using the classname from CfgWeapons, CfgMagazines or CfgGlasses! Placing an item in Eden Editor places the container of the item, not the item itself.
+To get the item classname you can open the config of the placed container in the Config Viewer and look for a subclass called "TransportItems".
+The correct classname is stored under <sqf inline>configFile >> "CfgVehicles" >> _containerClass >> "TransportItems" >> "some_classname" >> "name"</sqf>.
+}}

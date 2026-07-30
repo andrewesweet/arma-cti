@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/actionKeysNames
+// revision: 364173 (2024-05-05T10:46:45Z)
+// export sha1: bvly8q0ym0k3h76vyhq7zlp70vpl9ey
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Interaction
+
+|descr= Returns a list of button names assigned to the given user action.
+Action names can be found in config class {{hl|ControllerSchemes}} or [[:Category:Key Actions|user action names]].
+
+|s1= [[actionKeysNames]]  userAction
+
+|p1= userAction: [[String]]
+
+|r1= [[String]]
+
+|s2= [[actionKeysNames]] [userAction, maxKeys, inputDevicePriority]
+
+|p21= userAction: [[String]]
+
+|p22= maxKeys: [[Number]] - maximum number of keys to return
+
+|p23= inputDevicePriority: [[String]] - result sorted by inputDevicePriority with values:
+* {{hl|"Mouse"}}
+* {{hl|"Keyboard"}}
+* {{hl|"Stick"}}
+* {{hl|"Gamepad"}}
+* {{hl|"Tracker"}}
+* {{hl|"Combo"}} (mouse and keyboard combinations)
+* {{sic|{{hl|"Controler"}}}} (any controller other than mouse or keyboard)
+Other values are considered as: 
+* {{hl|"Unsorted"}}
+|p23since= arma3 1.36
+
+|r2= [[String]]
+
+|x1= <sqf>_list = actionKeysNames "ReloadMagazine"; // """R"" or ""XBox X"""</sqf>
+
+|seealso= [[actionKeys]] [[actionKeysImages]] [[actionKeysNamesArray]] [[actionName]] [[inputAction]]
+}}
+
+{{Note
+|user= WGL.Q
+|timestamp= 20100120201400
+|text= The return type is a stacked string. A string inside a string. To compare use first single and inside double quotes:<br>
+<sqf>if (actionKeysNames "User1" == '"W"') then { /* ... */ };</sqf>
+}}

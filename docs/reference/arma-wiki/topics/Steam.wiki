@@ -1,0 +1,80 @@
+// source: https://community.bistudio.com/wiki/Steam
+// revision: 376904 (2025-12-20T22:55:14Z)
+// export sha1: pzya57od4mniadl3ut5h6elp0xxqem0
+// categories: Category:ArmA: Armed Assault | Category:Arma 2 | Category:Arma 2: Operation Arrowhead | Category:Arma 3 | Category:Arma 4 | Category:Arma Reforger | Category:Carrier Command: Gaea Mission | Category:DayZ | Category:Operation Flashpoint | Category:Silica | Category:Take On Helicopters | Category:Take On Mars | Category:Vigor
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Link|https://store.steampowered.com/|Steam}} is a video game distribution platform that hosts, sometimes exclusively, {{GameCategory|bi|link= y}} games such as {{arma3}}, {{tkoh}} and {{armaR}}.
+{{Feature|informative|See {{Link|https://en.wikipedia.org/wiki/Steam_(service)}}.}}
+
+
+== Available {{Name|bi}} Games ==
+
+{{Columns|3|
+* {{GameCategory|ofp|link= y}}
+* {{GameCategory|arma1|link= y}}
+* {{GameCategory|arma2|link= y}}
+* {{GameCategory|arma2oa|link= y}}
+* {{GameCategory|arma3|link= y}}
+* {{GameCategory|armaR|link= y}}
+* {{GameCategory|dayz|link= y}}
+* {{GameCategory|ylands|link= y}}
+* {{GameCategory|carriercommand|link= y}}
+* {{GameCategory|tkoh|link= y}}
+* {{GameCategory|tkom|link= y}}
+* {{GameCategory|vigor|link= y}}
+* {{GameCategory|silica|link= y}}
+
+}}
+
+
+== Assistance ==
+
+=== Verify Game Files ===
+
+In the event of a game issue, it is sometimes recommended to make Steam verify the game files:
+* right-click on the game in the Steam list
+* select "Properties"
+* click on "Local Files"
+* press "Verify integrity of game files"
+Steam will now verify and repair modified files. This will not erase any personal files; game progress, controls and other configurations will remain unchanged.
+
+{{Feature|informative|See {{Link|https://help.steampowered.com/en/faqs/view/0C48-FCBD-DA71-93EB|Steam's tutorial}}.}}
+
+=== Move {{arma3}} Workshop Items ===
+
+Mods in {{arma3}} can often take a lot of space, and storage capacity can quickly be overwhelmed. In order to circumvent this issue, it is possible to change the mods storage location.<br>
+A {{Link|https://en.wikipedia.org/wiki/Symbolic_link}} (also known as Symlink) can make this happen, making the game see data from another location in the directory it expects.
+
+# Locate the Workshop directory, in which the {{hl|107410}} directory (which has the entire {{arma3}} related Workshop items) is present.<!--
+-->{{Feature|informative|Usually {{hl|C:\Program Files (x86)\Steam\steamapps\workshop\content}} or if SteamLibrary is installed on another drive (e.g {{hl|D:}}), {{hl|D:\SteamLibrary\steamapps\workshop\content}}.}} 
+# '''Copy''' the {{hl|107410}} directory to its new location (e.g {{hl|E:\NewArma3WorkshopDirectory}})
+# Rename the {{hl|<workshop directory>\107410}} source directory to make a backup and ensure it is not used accidentally(e.g {{hl|107410_backup}})
+# Open Command Prompt in Administrator mode (Windows Search > type "cmd", right-click > "Run as Administrator")
+# Enter this command: <code style="display: block">mklink /d ''target'' ''source''</code>, where:
+#* ''target'' is the original {{hl|107410}} location, e.g {{hl|C:\Program Files (x86)\Steam\steamapps\workshop\content\107410}}
+#* ''source'' is the actual data directory, e.g {{hl|E:\NewArma3WorkshopDirectory}}
+# Press {{Controls|Enter}} to run the command, here <code style="display: block">mklink /d "C:\Program Files (x86)\Steam\steamapps\workshop\content\107410" "E:\NewArma3WorkshopDirectory"</code>
+# This is it! There is nothing else to configure and nothing to change Launcher-wise. Start the game to make sure it recognizes the items properly.
+# If everything went well, the backup can be safely deleted ({{hl|C:\Program Files (x86)\Steam\steamapps\workshop\content\107410_backup}}).
+
+{{Feature|informative|
+To delete a symbolic link, simply delete the ''target'' directory from Windows Explorer (here {{hl|C:\Program Files (x86)\Steam\steamapps\workshop\content\107410}} > right-click > delete).<br>
+See also {{Link|https://www.howtogeek.com/16226/complete-guide-to-symbolic-links-symlinks-on-windows-or-linux/|How-To Geek tutorial}}.
+}}
+
+
+{{GameCategory|arma0}}
+{{GameCategory|arma1}}
+{{GameCategory|arma2}}
+{{GameCategory|arma2oa}}
+{{GameCategory|arma3}}
+{{GameCategory|armaR}}
+{{GameCategory|arma4}}
+{{GameCategory|dayz}}
+{{GameCategory|carriercommand}}
+{{GameCategory|tkoh}}
+{{GameCategory|tkom}}
+{{GameCategory|vigor}}
+{{GameCategory|silica}}

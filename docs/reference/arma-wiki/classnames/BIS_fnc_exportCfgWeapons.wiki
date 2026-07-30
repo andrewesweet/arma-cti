@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_exportCfgWeapons
+// revision: 353282 (2024-03-15T16:46:12Z)
+// export sha1: 8id1gyalvukginm9hghgpq4tq5ioqsk
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Export list of weapons for Community Wiki [[:Category:Arma 3: Assets|Arma 3 Assets Category]].
+
+|s1= [mode, patches, types] spawn [[BIS_fnc_exportCfgWeapons]]
+
+|p1= mode: [[String]] - can be one of:
+* "Equipment"
+* "Item"
+* "VehicleWeapon"
+* "Weapon" - specific item type, based on [[BIS_fnc_itemType]]
+* internal use only: "screenshots" - create items one by one and take their screenshot. Works only on "Render" terrain.
+* internal use only: "screenshotsTest" - create items one by one without taking screen (to verify everything is ok)
+
+|p2= patches: [[Array]] of [[String]]s - (Optional, default <sqf inline>[]</sqf>) list of [[CfgPatches]] classes. Only weapons belonging to these addons will be used
+
+|p3= types: [[Array]] of [[String]]s - (Optional, default <sqf inline>[]</sqf>)
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>
+["Weapon"]			spawn BIS_fnc_exportCfgWeapons;	// exports [[Arma 3: CfgWeapons Weapons]]
+["VehicleWeapon"]	spawn BIS_fnc_exportCfgWeapons;	// exports [[Arma 3: CfgWeapons Vehicle Weapons]]
+["Item"]			spawn BIS_fnc_exportCfgWeapons;	// exports [[Arma 3: CfgWeapons Items]]
+["Equipment"]		spawn BIS_fnc_exportCfgWeapons;	// exports [[Arma 3: CfgWeapons Equipment]]
+["screenshots"]		spawn BIS_fnc_exportCfgWeapons;	// screenshots
+["screenshotsTest"]	spawn BIS_fnc_exportCfgWeapons;	// screenshots test mode, does nothing
+</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic|Diagnostic Function Group]]
+
+|exec= spawn
+}}

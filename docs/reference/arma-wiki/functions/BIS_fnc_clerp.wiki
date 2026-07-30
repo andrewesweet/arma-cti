@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_clerp
+// revision: 349253 (2023-11-08T14:51:03Z)
+// export sha1: 0dl50164sds7lygt3uzx116aiub6lv2
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interpolation | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Interpolation
+
+|descr= CLerp - Circular Lerp - is like lerp but handles the wraparound from 0 to 360
+ This is useful when interpolating eulerAngles and the object crosses the 0/360 boundary
+ The standard Lerp function causes the object to rotate in the wrong direction, clerp fixes that
+
+|s1= [currentValue, targetValue, alpha] call [[BIS_fnc_clerp]]
+
+|p1= currentValue: [[Number]] - the current value
+
+|p2= targetValue: [[Number]] - the target value
+
+|p3= alpha: [[Number]] - the alpha
+
+|r1= [[Number]] - interpolated value
+
+|x1= <sqf>[90,170,0.1] call BIS_fnc_clerp; // Returns 98</sqf>
+
+|seealso= [[BIS_fnc_slerp]] [[BIS_fnc_lerp]] [[BIS_fnc_slerp]] [[BIS_fnc_lerpVector]] [[BIS_fnc_inverseLerp]]
+}}

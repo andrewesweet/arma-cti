@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/allMines
+// revision: 377194 (2026-01-01T10:55:10Z)
+// export sha1: dx5egrnssy1ddk9cvphuaqt3roky1oe
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mines | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= Mines
+
+|descr=Returns an array of all mines in the mission
+
+|s1= [[allMines]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>hint format ["there are %1 mines total", count allMines];</sqf>
+
+|x2= <sqf>private _isFirstMineDetected = (allMines select 0) mineDetectedBy blufor;</sqf>
+
+|seealso= [[detectedMines]] [[mineDetectedBy]] [[createMine]] [[mineActive]] [[revealMine]] [[allMissionObjects]]
+}}

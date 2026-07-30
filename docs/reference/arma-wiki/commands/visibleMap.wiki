@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/visibleMap
+// revision: 376117 (2025-08-30T17:58:07Z)
+// export sha1: 4ch0dpsxgrxci3z2o7ba5tzq51g6jek
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Command Group: Map | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Map
+
+|gr2= Interaction
+
+|descr= Return true if the main map is shown (active). In {{arma3}} it also returns true if the respawn screen map is visible.
+
+|s1= [[visibleMap]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (visibleMap) then { hint "You're showing the map !" };</sqf>
+
+|seealso= [[forceMap]] [[openMap]]
+}}
+
+{{Note
+|user = 3.JgKp James
+|timestamp= 20171113151400
+|text= [[visibleMap]] does not work in all cases where a map might be part of a dialog like in a uav terminal or in a artillery computer dialog.
+Some of these cases can be covered with an [[addMissionEventHandler]] of type [[Arma 3: Mission Event Handlers#Map|"Map"]].
+Just use the two magic variables 'mapIsOpened' and 'mapIsForced'. Skeleton might look something like:
+<sqf>
+// update marker as long as map is open (works for UAV stations as well)
+J_myGPSEH = addMissionEventHandler ["Map", {
+
+	params ["_mapIsOpened", "_mapIsForced"];
+
+	if (_mapIsOpened) then
+	{
+		systemChat "GPS active";
+		J_var_GPSOn = true;
+
+		// no sheduled environment -> create one
+		/* Triggered when map is opened or closed either by user action or script command openMap. */
+		0 spawn {
+			waitUntil { 
+				// ... // do something as long as map is open
+				not J_var_GPSOn;
+			};
+		};
+	}
+	else
+	{
+		J_var_GPSOn = false;
+		systemChat "GPS inactive";
+	};
+}];
+</sqf>
+}}

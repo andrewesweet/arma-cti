@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_HEXtoRGB
+// revision: 378164 (2026-03-02T12:35:10Z)
+// export sha1: 6he7y8d5rfwg957v5zae1lx9229tro0
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Math | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Math
+
+|descr= Convert {{Color|red|R}}{{Color|green|G}}{{Color|blue|B}}{{Color|grey|A}} hexcode color into RGBA array format.
+
+|s1= [hexString] call [[BIS_fnc_HEXtoRGB]]
+
+|p1= hexString: [[String]] - string representing '''4 bytes''' of HEX color
+
+|r1= [[Array]] format [[Color|Color (RGBA)]] - array of '''4''' numbers in range 0..1
+
+|x1= <sqf>["025D00FF"] call BIS_fnc_HEXtoRGB; // [0.007843, 0.843138, 0, 1]</sqf>
+
+|x2= Usually HEX code is represented as 3 bytes without alpha, so you can add it yourself:
+<sqf>
+_hexstring = "025D00";
+[_hexString + "FF"] call BIS_fnc_HEXtoRGB; // add alpha 4th byte
+</sqf>
+
+|seealso= [[Color|Color (RGBA)]] [[BIS_fnc_colorConfigToRGBA]] [[BIS_fnc_colorRGBAtoHTML]] [[BIS_fnc_colorRGBtoHTML]] [[BIS_fnc_colorRGBAtoTexture]]
+}}

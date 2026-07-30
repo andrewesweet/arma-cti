@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_moduleAntenna
+// revision: 280896 (2021-06-14T08:55:29Z)
+// export sha1: 1j7bo47f5je1v40rbe834lsf0izp695
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Modules
+
+|descr= {{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_moduleAntenna]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

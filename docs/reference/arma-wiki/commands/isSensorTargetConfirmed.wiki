@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/isSensorTargetConfirmed
+// revision: 310733 (2022-05-07T20:04:52Z)
+// export sha1: c9wns5yw4yosbjf6oxeu5qyvcjlmxtl
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sensors | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= Sensors
+
+|descr= Returns if given unit is confirmed target for given side.
+
+|s1= unit [[isSensorTargetConfirmed]] side
+
+|p1= unit: [[Object]]
+
+|p2= side: [[Side]]
+
+|r1= [[Boolean]] - [[true]] if confirmed target, otherwise [[false]]
+
+|x1= <sqf>private _enemyConfirmed = _possibleEnemy isSensorTargetConfirmed opfor;</sqf>
+
+|seealso= [[listVehicleSensors]] [[isVehicleSensorEnabled]]
+}}

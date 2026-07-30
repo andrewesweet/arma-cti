@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/distanceSqr
+// revision: 352357 (2024-02-08T14:07:32Z)
+// export sha1: 9l8nc7zc7xirc9eqkpwp9upy18a487c
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Geometry | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Math - Geometry
+
+|descr= Computes the {{Link|https://en.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance|squared distance}} between two objects or positions.
+This command is faster than {{Link|distance}} by saving a {{Link|sqrt|square root}} operation, useful for mass-checking distance without the need of the distance value itself.
+
+|s1= var1 [[distanceSqr]] var2
+
+|p1= var1: [[Object]] or [[Position]]
+
+|p2= var2: [[Object]] or [[Position]]
+
+|r1= [[Number]] - distance in meters or 1e10 if distance cannot be calculated
+
+|s2= a [[distanceSqr]] b
+
+|s2since= arma3 2.18
+
+|p21= a: [[Number]]
+
+|p22= b: [[Number]]
+
+|r2= [[Number]] - distance c calculated as <sqf inline>c = a * a + b * b</sqf>
+
+|x1= <sqf>
+private _distanceSquared = 5 * 5;
+if (player distanceSqr leader player < _distanceSquared) then // similar to player distance leader player < 5
+{
+	hint "You are less than 5m from the leader!";
+};
+</sqf>
+
+|x2= <sqf>
+private _distance = sqrt ((x2 - x1) ^ 2 + (y2 - y1) ^ 2 + (z2 - z1) ^ 2);
+private _distanceSqr = (x2 - x1) ^ 2 + (y2 - y1) ^ 2 + (z2 - z1) ^ 2;
+_distance = [x1, y1, z1] distance [x2, y2, z2];
+_distanceSqr = [x1, y1, z1] distanceSqr [x2, y2, z2];
+_distance = sqrt ([x1, y1, z1] distanceSqr [x2, y2, z2]);
+_distanceSqr = ([x1, y1, z1] distance [x2, y2, z2]) ^ 2;
+</sqf>
+
+<!-- KK, your turn!
+If normal distance is calculated according to this formula:
+
+squared distance is calculated according to this formula:  
+-->
+
+|seealso= [[distance]] [[vectorDistanceSqr]] [[distance2D]]
+}}

@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/kbWasSaid
+// revision: 330038 (2022-08-15T15:23:07Z)
+// export sha1: ovfxwkp5on6jpvy6quaugy53fwhx8pf
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Conversations | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Conversations
+
+|arg= global
+
+|descr= Check if given item was said by person to someone. See [[Conversations]] for more details.
+
+|s1= person [[kbWasSaid]] [receiver, topic, sentenceID, maxAge]
+
+|p1= person: [[Object]] - who said the item
+
+|p2= receiver: [[Object]] - receiver of the sentence
+
+|p3= topic: [[String]] - name of the topic used in [[kbAddTopic]]
+
+|p4= sentenceID: [[String]] - id of sentence that we want to check
+
+|p6= maxAge: [[Number]] - time in seconds. [[kbWasSaid]] will check whether the sentence was said in last '''max. age''' seconds
+
+|r1= [[Boolean]]
+
+|x1= <sqf>player kbWasSaid [otherUnit, "myTopic", "mySentenceID", 3];</sqf>
+
+|seealso= [[Conversations]] [[kbAddTopic]] [[kbHasTopic]] [[kbTell]] [[kbReact]] [[kbRemoveTopic]] [[kbAddDatabase]] [[kbAddDatabaseTargets]] [[FSM]] [[FSM Editor]]
+}}

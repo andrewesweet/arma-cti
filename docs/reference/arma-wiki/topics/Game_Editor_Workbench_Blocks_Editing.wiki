@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Game_Editor_(Workbench)_Blocks_Editing
+// revision: 149375 (2020-03-14T13:41:41Z)
+// export sha1: bdt8tllqce1dji1ky9mvz38cd89fqin
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Blocks Editing =
+Holes editing is disabled right now.<br>
+Blocks editing is available, but there is nothing useful right now. You can just select/deselect block.<br>
+<br>
+[[File:BlocksEditing_holes.jpg]]  [[File:BlocksEditing_blocks.jpg]]

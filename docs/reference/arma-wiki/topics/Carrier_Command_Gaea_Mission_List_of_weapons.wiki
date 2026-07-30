@@ -1,0 +1,185 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_List_of_weapons
+// revision: 226344 (2021-01-31T17:56:28Z)
+// export sha1: t3l5x8j7s52ftjzeinaynfers413y8s
+// categories: Category:Carrier Command: Gaea Mission
+// Vendored snapshot. Do not edit — re-export instead.
+
+This list enumerates the offensive weapons found in [[:Category:Carrier Command: Gaea Mission|Carrier Command: Gaea Mission]]. For a repair gun and other supporting devices see [[Carrier Command: Gaea Mission: List of supports| List of supports]]
+
+== Carrier ==
+*Quad gun
+
+FRONT RIGHT, 
+BACK LEFT, 
+BACK RIGHT, 
+FRONT LEFT
+
+*Flak
+
+FRONT RIGHT, 
+FRONT LEFT, 
+BACK LEFT, 
+BACK RIGHT
+
+A very effective anti-air weapon. The projectiles explode in mid-air, causing heavy damage to airborne targets.
+
+*Hammerhead missile
+
+A large, guided missile with a nuclear payload of 8 kilotons designed to be launched from the Carrier. The damage caused by this weapon is catastrophic.
+
+*Shell
+
+Highly explosive projectiles, combined with their sheer size, result in a weapon that is extremely effective against ground targets. This heavy weapon is mountable only on the Carrier.
+
+*Carrier Plasma
+
+A Carrier-mounted plasma cannon. The slow-moving plasma projectiles are extremely devastating on impact, resulting in an excellent Carrier-to-Carrier weapon. It is also effective against ground-based, coastal targets.
+
+From tutorial. Okoro: Perfect! Sir, using these blueprints we may construct the "Carrier Plasma"; cannon, designed to assault enemy Carriers and coastal targets. This appears to be an extremely powerful weapon, I recommend we mount it onto our Carrier as soon as possible.
+
+== Walrus ==
+*Machine gun
+
+magazine capacity: 400/800
+
+A weapon that belongs in every basic arsenal. Due to its high fire rate, it is perfect against infantry and lightly armed units.
+
+From tutorial. Okoro: Sir, we've acquired blueprints for the production of the "Machinegun", a basic, bullet-ejecting cannon. Though its effectiveness is mostly limited to lightly armored targets.
+
+*Grenade
+
+magazine capacity: 48/68
+
+The explosive grenades of this weapon are very effective against lightly armed targets such as personnel and Walruses. Due to the ballistic curve, it is possible to hit targets behind walls and barriers.
+
+From tutorial. Okoro: Sir, we have just received the blueprints to a Walrus-mounted "Grenade" launcher. It is relatively effective against medium targets and personnel, though extremely ineffective against airborne targets.
+
+*HEAT
+
+magazine capacity: 75/100
+
+An anti-tank weapon designed to penetrate the highly-resistant armors of heavy Walruses. Although it features only a small radius of effect, a direct impact is devastating.
+
+From tutorial. Okoro: Sir, the production of the high explosive anti-tank cannon, or "H.E.A.T", is now possible thanks to the blueprints we just received. This projectile weapon is intended to punch through heavy armor, though its area of effect is not too large.
+
+*Howitzer
+
+magazine capacity: 
+
+A high-caliber, ballistic weapon designed against heavy, distant targets. The devastating impact of this weapon is effective against buildings, vehicles, and personnel. Features a high zoom level.
+
+From tutorial. Okoro: Now these are the schematics to a truly heavy-caliber weapon. Sir, this details the production process of the "Howitzer", a long-range, heavy artillery cannon used to destroy distant targets. Although the fire rate is extremely low, one shot is usually enough to destroy any heavily armored target.
+
+*Plasma
+
+A plasma cannon. The extremely hot plasma has catastrophic effects on impact. Due to the projectile's slow movement speed, however, it is more suited against heavy, slow-moving to stationary targets.
+
+From tutorial. Okoro: Sir, this blueprint details the production of "Plasma" projectile-ejecting cannons. The technology looks promising, it must be extremely powerful. I recommend we try to build and test them as soon as possible!
+
+*Shell
+
+magazine capacity: 75 / 100
+
+A highly-explosive projectile designed against units and buildings. Explodes on impact, causing damage within a large radius.
+
+*Flak
+
+magazine capacity: 300 / 450
+
+A very effective anti-air weapon. The projectiles explode in mid-air, causing heavy damage to airborne targets.
+
+*Laser
+
+magazine capacity: 60 % / 100 %
+
+Very effective against all targets, the laser emits an energy beam where aimed. Its effects are evident immediately. However, due to the high output, the weapon overheats very quickly.
+
+From tutorial. Okoro: Sir, this blueprint will allow us to create "Lasers". This beam weapon is effective against most targets to varying degrees. It is ready for production.
+
+*Missiles
+Computer-guided missiles. The internal system registers a nearby target and automatically follows its target after launch. Very effective against airborne targets.
+
+*Quad gun
+
+magazine capacity: 1000 / 16000
+
+A Walrus-mounted, quad-barreled anti-aircraft cannon designed to take down aerial units. Although not as effective as Flak projectiles, the sheer volume of ejected bullets is enough to give any Manta a hard time.
+
+From tutorial. Okoro: Sir, using these blueprints we may finally produce anti-air cannons, or "AA". These are designed to be mounted on a Walrus, which will provide a good defense against attacking Mantas.
+
+*Gatling
+
+magazine capacity: 800 / 1200
+
+A rotary cannon featuring a very high fire rate. Mainly due to its design, the weapon overheats very slowly and is also effective against all targets.
+
+From tutorial. Okoro: Excellent, we have the blueprints to the "Gatling" cannon. Its rate of fire is ridiculous - no machinegun comes even close. Not to mention the fact that it does not overheat that easily. A very good find, Sir!
+
+*Laser Mk.II
+
+A prototype laser with increased output. The Mk II is several times stronger than the standard laser. Effective against all targets.
+
+*Missiles
+
+magazine capacity: 16 / 22
+
+Computer-guided missiles. The internal system registers a nearby target and automatically follows its target after launch. Very effective against airborne targets.
+
+== Manta ==
+*Machine gun
+
+magazine capacity: 400 / 800
+
+A weapon that belongs in every basic arsenal. Due to its high fire rate, it is perfect against infantry and lightly armed units.
+
+*plasma
+
+magazine capacity: 100 / 150
+
+*Laser
+
+magazine capacity: 50 / 100%
+
+Very effective against all targets, the laser emits an energy beam where aimed. Its effects are evident immediately. However, due to the high output, the weapon overheats very quickly.
+
+*Rockets
+
+magazine capacity: 
+
+Unguided rockets with a standard explosive warhead. Boasting a high fire rate, the weapon is perfect for attacking multiple ground targets.
+
+*Torpedo
+An unguided weapon designed to sink Carriers. On impact, the explosive core detonates, firstly penetrating the target's armor, then causing heavy damage inside. The Torpedo is dropped into the sea via Manta.
+
+*Bomb
+
+magazine capacity: 1
+
+A highly explosive device with a large blast radius. Designed to be air-dropped onto a target.
+
+From tutorial. Okoro: Sir, using these schematics we may produce Manta-mounted "Bombs". These are highly effective base-killers, boasting a large explosive radius capable of leveling buildings and eliminating units.
+
+*Tomahawk
+
+magazine capacity: 1
+
+An unguided rocket with a highly explosive warhead designed for distant targets.
+
+== Droid ==
+*Rifle
+
+magazine capacity: 1000 rounds
+
+*Laser
+
+*Grenade launcher
+
+== Solder ==
+*Rifle
+Standard issue assault rifle. Part of the basic personnel armament.
+
+magazine capacity: 300 rounds
+
+*Laser
+
+[[Category:Carrier Command: Gaea Mission]]

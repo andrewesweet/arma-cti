@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/isAutoTrimOnRTD
+// revision: 351295 (2023-11-27T03:19:56Z)
+// export sha1: 69dg6yksgyp3d0zyfkgfl0aexlhtyf6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|game2= tkoh
+|version2= 1.00
+
+|gr1= RTD
+
+|descr= Returns state of auto trim functionality. {{Feature|afm}}
+
+|s1= [[isAutoTrimOnRTD]] helicopter
+
+|p1= helicopter: [[Object]]
+
+|r1= [[Boolean]] - returns [[true]] if auto trim is enabled
+
+|x1= <sqf>_state = isAutoTrimOnRTD _myHelicopter;</sqf>
+
+|seealso= [[enableAutoTrimRTD]]
+}}

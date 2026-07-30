@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/formationMembers
+// revision: 377161 (2026-01-01T10:40:57Z)
+// export sha1: r3bqephv8dttrtu2bx7gug0qcd2uzgm
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Groups
+
+|descr= Return list of units (drivers) in the formation.
+
+|s1= [[formationMembers]] person
+
+|p1= person: [[Object]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>_drivers = formationMembers _person;</sqf>
+
+|seealso= [[formation]] [[setFormation]] [[driver]]
+}}

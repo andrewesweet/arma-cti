@@ -1,0 +1,123 @@
+// source: https://community.bistudio.com/wiki/isFlatEmpty
+// revision: 377421 (2026-01-02T06:45:31Z)
+// export sha1: rxpv6w0aaytq60bl88ajj5ddo8arr6k
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Positions
+
+|descr= Checks given position against given filter params. Filter includes checks for:
+* If there are any objects closer than given distance from given position (in 2D)
+* If the area around position is flat enough to match given gradient
+* If the given position is over water or land
+* If the given position is over shore line
+The gradient seems to correlate with general hill steepness: 0.1 (10%) ~6°, 0.5 (50%) ~27°, 1.0 (100%) ~45°, etc.
+{{Feature|informative|See also [[BIS_fnc_findSafePos]].}}
+
+|pr= <nowiki/>
+* Objects accounted for proximity check seem to be static objects. Nearby vehicles and units do not seem to affect the output
+* Given position will be magically transferred into given position + [[getTerrainHeightASL]] value
+* The second element must be -1 (&le; 0 really) at all times, otherwise command becomes unusable
+* The command might be a bit heavy on computations so avoid frequent and large area checks
+
+|s1= position [[isFlatEmpty]] [minDistance, mode, maxGradient, maxGradientRadius, overLandOrWater, shoreLine, ignoreObject]
+
+|p1= position: [[Position#PositionAGL|PositionAGL]]
+
+|p2= minDistance: [[Number]] - (Optional, default -1) minimum (2D) distance from other objects (range 0..50). -1 to ignore proximity check
+
+|p3= mode: [[Number]] - (Optional, default -1) position check mode ('''ALWAYS USE DEFAULT VALUE''')
+
+|p4= maxGradient: [[Number]] - (Optional, default -1) maximum terrain steepness allowed. -1 to ignore
+
+|p5= maxGradientRadius: [[Number]] - (Optional, default 1) how far to extend gradient check
+
+|p6= overLandOrWater: [[Number]] - (Optional, default 0)
+* 0: position cannot be over water
+* 2: position cannot be over land
+* -1 to ignore
+
+|p7= shoreLine: [[Boolean]] - (Optional, default [[false]])
+* [[true]]: position is over shoreline (< ~25 m from water)
+* [[false]] to ignore
+
+|p8= ignoreObject: [[Object]] - (Optional, default [[objNull]]) object to ignore in proximity checks. [[objNull]] to ignore
+
+|r1= [[Array]] - empty array [] if check failed or [[Position#PositionASL|PositionASL]] if succeded. Resulting position will be original [[Position#PositionAGL|PositionAGL]] + [[getTerrainHeightASL]]
+
+|x1= Check if player position is over land:
+<sqf>_overLand = !(position player isFlatEmpty [-1, -1, -1, -1, 0, false] isEqualTo []);</sqf>
+
+|x2= Check if player position is over shore line:
+<sqf>_overShore = !(position player isFlatEmpty  [-1, -1, -1, -1, 0, true] isEqualTo []);</sqf>
+
+|x3= Check if player position is over water:
+<sqf>_overWater = !(position player isFlatEmpty  [-1, -1, -1, -1, 2, false] isEqualTo []);</sqf>
+
+|x4= Check if no object is closer than 5m to player position:
+<sqf>_isEmpty = !(position player isFlatEmpty  [5, -1, -1, -1, -1, false, player] isEqualTo []);</sqf>
+
+|x5= Check if area 10m around player position is relatively flat:
+<sqf>_isFlat = !(position player isFlatEmpty  [-1, -1, 0.3, 10, -1] isEqualTo []);</sqf>
+
+|x6= Check if area 15m around player position is very flat and empty:
+<sqf>_isFlatEmpty = !(position player isFlatEmpty  [15, -1, 0.1, 15, -1, false, player] isEqualTo []);</sqf>
+
+|seealso= [[BIS_fnc_findSafePos]] [[selectBestPlaces]] [[findEmptyPosition]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20160424171800
+|text= When this command is instructed to check if area at given position is empty it takes into account the radius of the bounding sphere of surrounding objects. Because of this, the high voltage columns such as "Land_HighVoltageColumnWire_F" and such objects may appear extremely large to the calculations and the position will be rejected even if visually it doesn't look too bad. To avoid this, use [[findEmptyPosition]] command first to find guaranteed empty position, then pass the result to [[isFlatEmpty]] making sure you switched off proximity check by setting 1st param to -1. For example:
+<sqf>
+// Check if given position is flat and empty within 1m radius
+[4274.66,12113,0.00139618] isFlatEmpty [1, -1, 0.1, 1, -1, false, objNull]; // []
+</sqf>
+The result suggests it is not flat and empty.
+<sqf>
+// Check if given position is flat within 1m radius
+[4274.66,12113,0.00139618] isFlatEmpty [-1, -1, 0.1, 1, -1, false, objNull]; // [4274.66,12113,48.3209]
+</sqf>
+The result suggests it is.
+<sqf>
+// Check if given position is empty within 1m radius
+[4274.66,12113,0.00139618] isFlatEmpty [1, -1, -1, -1, -1, false, objNull]; // []
+</sqf>
+The result suggests it is not empty. But the position is in the middle of a road and there is nothing within 1m but there is "Land_HighVoltageColumnWire_F" not far.
+<sqf>
+// Check if given position is empty within 1m radius ignoring nearest "Land_HighVoltageColumnWire_F"
+[4274.66,12113,0.00139618] isFlatEmpty [1, -1, -1, 1, -1, false, nearestObject [[4274.66,12113,0.00139618], "Land_HighVoltageColumnWire_F"]]; // [4274.66,12113,48.3209]
+</sqf>
+The result now suggests it is empty. So instead of relying on internal proximity check we can combine both commands:
+<sqf>
+fnc_isFlatEmpty =
+{
+	params ["_pos", "_params"];
+	_pos = _pos findEmptyPosition [0, _params select 0];
+	if (_pos isEqualTo []) exitWith {[]};
+	_params = +_params;
+	_params set [0, -1];
+	_pos = _pos isFlatEmpty _params;
+	if (_pos isEqualTo []) exitWith {[]};
+	_pos
+};
+
+// Test
+[[4274.66,12113,0.00139618], [1, -1, 0.1, 1, -1, false, objNull]] call fnc_isFlatEmpty; // [4274.53,12113,48.3175]
+</sqf>
+}}

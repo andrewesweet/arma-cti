@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/ropeAttachedObjects
+// revision: 377098 (2026-01-01T09:57:17Z)
+// export sha1: lovxk2j5szjzo5wrt5x7341eelsabt1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Ropes and Sling Loading
+
+|descr=Returns an array of all entities that are attached to the transport with [[ropes]]. This command is the opposite of [[ropeAttachedTo]].<br><br>
+[[File:ropeAttachedObjects.jpg|400px]]
+
+|s1= [[ropeAttachedObjects]] ropesOwner
+
+|p1= ropesOwner: [[Object]] - transport from which a single or multiple ropes are originating
+
+|r1= [[Array]] of [[Object]]s - array of attached entities on ropes
+
+|x1= <sqf>_cargoArray = ropeAttachedObjects heli1;</sqf>
+
+|seealso= [[ropes]] [[canSlingLoad]] [[enableRopeAttach]] [[getSlingLoad]] [[ropeAttachTo]] [[ropeDestroy]] [[ropeLength]] [[ropeUnwound]] [[ropeAttachedTo]] [[ropeCreate]] [[ropeDetach]] [[ropeAttachEnabled]] [[ropeCut]] [[ropeEndPosition]] [[ropeUnwind]] [[setSlingLoad]] [[slingLoadAssistantShown]]
+}}

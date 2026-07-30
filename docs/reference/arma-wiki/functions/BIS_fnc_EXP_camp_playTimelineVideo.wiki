@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_playTimelineVideo
+// revision: 348964 (2023-11-08T14:45:40Z)
+// export sha1: 2uo3zllxjp31h7ykf8jiosybe6moelc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Campaign
+
+|eff= local
+
+|descr= Plays a video with [[BIS_fnc_EXP_camp_setCinematicMode]] enabled.
+
+|s1= [videoPath] call [[BIS_fnc_EXP_camp_playTimelineVideo]]
+
+|p1= videoPath: [[String]] - path to video
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"someVideoPath" call BIS_fnc_EXP_camp_playTimelineVideo;</sqf>
+
+|seealso= [[BIS_fnc_playVideo]]
+}}

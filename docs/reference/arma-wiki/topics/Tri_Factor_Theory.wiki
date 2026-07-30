@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/Tri-Factor_Theory
+// revision: 149312 (2020-03-14T13:08:51Z)
+// export sha1: st330gq7uhcw5q0ky0ghkv38on7nru2
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Battle Tactics]]<!-- This article contains a theory that has not been tested thoroughly. Please be respective and avoid vandalias editing-->
+
+The '''Tri-Factor Theory''' (or unofficially the "Triple-S" theory) consists of doing an offensive maneuver using three principles:
+
+*Speed
+*Stealth
+*Skill
+
+No one factor is more valuable than another. If all three are done correctly and equally in the attack, then victory is guaranteed.
+
+;Speed:How fast your force moves, the faster your force is moving the harder it is for your enemy to attack or defend.
+;Stealth: How deceptive your force is during the maneuver. The more deceptive you are the more surprised the enemy will be
+;Skill: this is how effective your force is. The more skill your force has, the more damage you will inflict
+
+You want to equalize all three factors, don't have more of a certain effect than the others:
+
+*If you have more speed, then the enemy will retreat.
+*If you have more stealth, then the enemy may split its forces.
+*If you have more skill, then the enemy may have called for reinforcements.
+
+Combining two factors with equal effect is usually devastating to the enemy:
+
+*Having speed and stealth may confuse and immobilize the enemy.
+*Having speed and skill may surprise and overwhelm the enemy.
+*Having stealth and skill may confuse and disperse the enemy.
+
+By having all three factors present and in equal terms the enemy will be surprised, confused, immobilized, and overwhelmed. So, in theory, you can annihilate an enemy. 
+
+        This theory has not been thoroughly tested so if it doesn't work review why and discuss <br>it in the discussion part of this article. But give reasons why it failed, or how you executed it.

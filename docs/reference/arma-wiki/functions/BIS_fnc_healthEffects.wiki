@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_healthEffects
+// revision: 309300 (2022-05-05T12:04:16Z)
+// export sha1: 02oyoc4vyntixw3oidah074ce41f5iu
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Feedback | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Feedback
+
+|descr= Effects when player is hit. Parameters are sent by the [[Arma 3: Event Handlers#HandleDamage|HandleDamage]] event handler.
+
+|s1= call [[BIS_fnc_healthEffects]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>call BIS_fnc_healthEffects;</sqf>
+
+|seealso= [[BIS_fnc_healing]]
+}}

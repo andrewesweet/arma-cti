@@ -1,0 +1,513 @@
+// source: https://community.bistudio.com/wiki/server.armaprofile
+// revision: 365133 (2024-07-26T16:29:08Z)
+// export sha1: 5z72kezdw1twigbjwy68hjlo1xf2m9l
+// categories: Category:ArmA: Armed Assault: Multiplayer | Category:Arma 2: Multiplayer | Category:Arma 3: Multiplayer
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This article deals with the '''server.armaprofile''', describing all the visual and difficulty settings in {{arma}}, like friendly and enemy AI quality, HUD, crosshair, 3rd person view, clock indicator and so on.
+
+
+== Extension ==
+
+{| class="wikitable"
+!Game !! Extension
+|-
+| {{arma1}} || .ArmAProfile
+|-
+| {{arma2}} || .ArmA2Profile
+|-
+| {{arma2oa}} || .ArmA2OAProfile
+|-
+| {{arma3}} || .Arma3Profile
+|}
+
+== Location ==
+
+The file's location is different on each operating system:
+
+=== Windows ===
+
+The default profile named after the system user can be found at:
+
+* Vista/Win7/8/10/11: {{hl|C:\Users\%username%\Documents\<game name>}}
+* XP: {{hl|C:\Documents and Settings\%username%\My Files\<game name>}}
+
+User created profiles with a different naming are found at:
+
+* Vista/Win7/8/10/11: {{hl|C:\Users\%username%\Documents\<game name> - Other Profiles}}
+* XP: {{hl|C:\Documents and Settings\%username%\My Files\<game name> Other Profiles}}
+
+==== Profile Name ====
+In there is a folder and within it a file which name is based on your profile name:
+
+ \<game name>\'''MyProfileName'''\'''MyProfileName'''.<{{Link|#Extension|file extension}}>
+
+You can define the profile to be loaded with the [[Arma 2: Startup Parameters|-name]] parameter.
+
+==== Define a different location ====
+You can specify the location by using the [[Arma 3: Startup Parameters#|-profiles]] parameter.
+
+For example start the server with
+ arma_server.exe -profiles=D:\<game name>\Users\ -name=server
+
+You can find your file in
+ D:\<game name>\Users\server\server.<{{Link|#Extension|file extension}}>
+
+=== Linux ===
+
+The name depends upon the [[Arma 3: Startup Parameters#Profile Options|-name]] parameter when starting the Arma server.
+Having started the server with "./server -name=server" ({{hl|-profiles}} seems to be useless on Linux) you'll find it as a subfolder of your arma-server directory, for example {{hl|"/usr/home/arma-server/server/server.armaprofile"}}.
+
+If you are not using the {{hl|-name}} parameter, the default name "player" will be used and you'll find the Arma profile in {{hl|player/player.armaprofile}}.
+
+
+== Example Configuration File ==
+
+The server has less values compared to a client version.
+
+=== Server ===
+
+==== {{arma1}} ====
+<spoiler>
+<syntaxhighlight lang="cpp">
+class Difficulties
+{
+	class regular				// Displayed as "Cadet"
+	{
+		class Flags
+		{
+			// These are the settings. Set a value to 0 to disable the feature, or set it to 1 to enable it.
+
+			Armor = 1;			// Gives you improved body armor, tank armor etc
+
+			FriendlyTag = 1;	// Displays information on friendly units. ONLY WORKS WITH 'Weaponcursor = 0', eg crosshair on.
+			EnemyTag = 1;		// Displays information on enemy units
+
+			HUD = 1;			// Shows you leaders location and your position in formation
+			HUDPerm = 1;		// Shows HUD permanently
+
+			HUDWp = 1;			// Shows Waypoints right after they're ordered to you
+			HUDWpPerm = 1;		// Shows Waypoints permanently
+
+			WeaponCursor = 1;	// Shows the crosshair for your weapon
+			AutoAim = 1;		// Enables auto aim when you're not looking through your weapon's scope. Also works with crosshair off
+			AutoGuideAT = 1;	// AT missiles will be automatically guided to their target. If 0, player has to lock onto the target.
+
+			3rdPersonView = 1;	// This turns 3rd(third) person view and group leader view on or off. Please never talk of this as "3D view" - ArmA is not an arcade game !
+			ClockIndicator = 1;	// Displays the clock indicator on the left of your screen when giving/receiving orders like "At 11 o'clock, enemy man at 200 meters"
+			Map = 1;			// Shows symbols for all objects known to your group on the map. This will NOT disable the map itself !
+			Tracers = 1;		// Displays tracers even of small arms that in real life would not have tracers
+
+			AutoSpot = 1;		// If you're close enough to an enemy, you'll report it without right-clicking
+			UltraAI = 0;		// Enables some kind of super AI that hears and sees more and has better tactics. This is for both friendly and enemy sides.
+
+			UnlimitedSaves = 1;	// Enables saving permanently. For single player missions. But you then can only load the last save state.
+
+			DeathMessages = 1;	// (1.09 and later) Displays "XXX was killed by YYY" messages in multiplayer
+			NetStats = 1;		// (1.09 and later) Enables the scoreboard functionality in MP
+			VonID = 1;			// (1.09 and later) When using VoN, display the name of the player speaking.
+		};
+
+		// These are the skills. Value may range from 0.000000 to 1.000000
+		skillFriendly = 0.350000;		// Friendly tactics skill
+		skillEnemy = 0.350000;			// Enemy tactics skill
+		precisionFriendly = 0.350000;	// Friendly shooting precision
+		precisionEnemy = 0.350000;		// Enemy shooting precision
+	};
+
+	class veteran				// Most of the options from above are not available, because they're off by default.
+	{
+		// Also soldiers/vehicles die sooner upon damage (have no armor or body armor).
+		class Flags
+		{
+			HUD = 1;			// Shows you leaders location and your position in formation
+			HUDWp = 1;			// Shows Waypoints right after they're ordered to you
+			HUDWpPerm = 0;		// Shows Waypoints permanently
+			WeaponCursor = 1;	// Shows the crosshair for your weapon
+			ClockIndicator = 1;	// Displays the clock indicator on the left of your screen when giving/receiving orders like "At 11 o'clock, enemy man at 200 meters"
+			3rdPersonView = 1;	// This turns 3rd(third) person view and group leader view on or off. Please never talk of this as "3D view" - ArmA is not an arcade game !
+			Tracers = 1;		// Displays tracers even of small arms that in real life would not have tracers
+			UltraAI = 0;		// Enables some kind of super AI that hears and sees more and has better tactics. This is for both friendly and enemy sides.
+
+			DeathMessages = 1;	// (1.09 and later) Displays "XXX was killed by YYY" messages in multiplayer
+			NetStats = 1;		// (1.09 and later) Enables the scoreboard functionality in MP
+			VonID = 0;			// (1.09 and later) When using VoN, display the name of the player speaking.
+		};
+
+		// These are the skills. Value may range from 0.000000 to 1.000000
+		skillFriendly = 0.850000;
+		skillEnemy = 0.850000;
+		precisionFriendly = 0.850000;
+		precisionEnemy = 0.850000;
+	};
+};
+</syntaxhighlight>
+</spoiler>
+
+==== {{arma2}} ====
+
+This is how the default difficulty settings part of the server's .arma2profile file would look:<br>
+<spoiler>
+<syntaxhighlight lang="cpp">
+class Difficulties
+{
+	class Recruit
+	{
+		class Flags
+		{
+			3rdPersonView = 1;
+			armor = 1;
+			autoAim = 0;
+			autoGuideAT = 1;
+			autoSpot = 1;
+			clockIndicator = 1;
+			deathMessages = 1;
+			enemyTag = 0;
+			friendlyTag = 1;
+			hud = 1;
+			hudGroupInfo = 1;
+			hudPerm = 1;
+			hudWp = 1;
+			hudWpPerm = 1;
+			map = 1;
+			netStats = 1;
+			tracers = 1;
+			ultraAI = 0;
+			unlimitedSaves = 1;
+			vonID = 1;
+			weaponCursor = 1;
+		};
+
+		skillFriendly = 1;
+		precisionFriendly = 1;
+		skillEnemy = 0.55;
+		precisionEnemy = 0.3;
+	};
+
+	class Regular
+	{
+		class Flags
+		{
+			3rdPersonView = 1;
+			armor = 1;
+			autoAim = 0;
+			autoGuideAT = 1;
+			autoSpot = 1;
+			clockIndicator = 1;
+			deathMessages = 1;
+			enemyTag = 0;
+			friendlyTag = 1;
+			hud = 1;
+			hudGroupInfo = 1;
+			hudPerm = 1;
+			hudWp = 1;
+			hudWpPerm = 1;
+			map = 1;
+			netStats = 1;
+			tracers = 1;
+			ultraAI = 0;
+			unlimitedSaves = 1;
+			vonId = 1;
+			weaponCursor = 1;
+		};
+
+		skillFriendly = 1;
+		precisionFriendly = 1;
+		skillEnemy = 0.7;
+		precisionEnemy = 0.5;
+	};
+
+	class Veteran
+	{
+		class Flags
+		{
+			3rdPersonView = 1;
+			armor = 0;			// Cannot be changed
+			autoAim = 0;		// Cannot be changed
+			autoGuideAT = 0;	// Cannot be changed
+			autoSpot = 0;		// Cannot be changed
+			clockIndicator = 0;	// Cannot be changed
+			deathMessages = 1;
+			enemyTag = 0;		// Cannot be changed
+			friendlyTag = 0;	// Cannot be changed
+			hud = 1;
+			hudGroupInfo = 0;
+			hudPerm = 0;		// Cannot be changed
+			hudWp = 0;			// Cannot be changed
+			hudWpPerm = 0;		// Cannot be changed
+			map = 0;			// Cannot be changed
+			netStats = 1;
+			tracers = 0;		// Cannot be changed
+			ultraAI = 0;
+			unlimitedSaves = 0;	// Cannot be changed
+			vonId = 0;
+			weaponCursor = 1;
+		};
+
+		skillFriendly = 1;
+		precisionFriendly = 1;
+		skillEnemy = 0.9;
+		precisionEnemy = 0.75;
+	};
+
+	class Mercenary
+	{
+		class Flags
+		{
+			3rdPersonView = 0;	// Cannot be changed
+			armor = 0;			// Cannot be changed
+			autoAim = 0;		// Cannot be changed
+			autoGuideAT = 0;	// Cannot be changed
+			autoSpot = 0;		// Cannot be changed
+			clockIndicator = 0;	// Cannot be changed
+			deathMessages = 0;
+			enemyTag = 0;		// Cannot be changed
+			friendlyTag = 0;	// Cannot be changed
+			hud = 0;			// Cannot be changed
+			hudGroupInfo = 0;	// Cannot be changed
+			hudPerm = 0;		// Cannot be changed
+			hudWp = 0;			// Cannot be changed
+			hudWpPerm = 0;		// Cannot be changed
+			map = 0;			// Cannot be changed
+			netStats = 0;
+			tracers = 0;		// Cannot be changed
+			ultraAI = 0;
+			unlimitedSaves = 0;	// Cannot be changed
+			vonID = 0;
+			weaponCursor = 0;	// Cannot be changed
+		};
+
+		skillFriendly = 1;
+		precisionFriendly = 1;
+		skillEnemy = 1;
+		precisionEnemy = 1;
+	};
+};
+</syntaxhighlight>
+</spoiler>
+
+==== {{arma2oa}} ====
+<spoiler>
+<syntaxhighlight lang="cpp">
+class Difficulties
+{
+	class Recruit
+	{
+		class Flags
+		{
+			3rdPersonView = 1;
+			armor = 1;
+			autoAim = 0;
+			autoGuideAT = 1;
+			autoSpot = 1;
+			cameraShake = 0;
+			clockIndicator = 1;
+			deathMessages = 1;
+			enemyTag = 0;
+			friendlyTag = 1;
+			hud = 1;
+			hudGroupInfo = 1;
+			hudPerm = 1;
+			hudWp = 1;
+			hudWpPerm = 1;
+			map = 1;
+			netStats = 1;
+			tracers = 1;
+			ultraAI = 0;
+			unlimitedSaves = 1;
+			vonID = 1;
+			weaponCursor = 1;
+		};
+
+		skillFriendly = 1;
+		precisionFriendly = 1;
+		skillEnemy = 0.55;
+		precisionEnemy = 0.3;
+	};
+
+	class Regular
+	{
+		class Flags
+		{
+			3rdPersonView = 1;
+			armor = 1;
+			autoAim = 0;
+			autoGuideAT = 1;
+			autoSpot = 1;
+			cameraShake = 1;
+			clockIndicator = 1;
+			deathMessages = 1;
+			enemyTag = 0;
+			friendlyTag = 1;
+			hud = 1;
+			hudGroupInfo = 1;
+			hudPerm = 1;
+			hudWp = 1;
+			hudWpPerm = 1;
+			map = 1;
+			netStats = 1;
+			tracers = 1;
+			ultraAI = 0;
+			unlimitedSaves = 1;
+			vonId = 1;
+			weaponCursor = 1;
+		};
+
+		skillFriendly = 1;
+		precisionFriendly = 1;
+		skillEnemy = 0.7;
+		precisionEnemy = 0.5;
+	};
+
+	class Veteran
+	{
+		class Flags
+		{
+			3rdPersonView = 1;
+			armor = 0;			// Cannot be changed
+			autoAim = 0;		// Cannot be changed
+			autoGuideAT = 0;	// Cannot be changed
+			autoSpot = 0;		// Cannot be changed
+			cameraShake = 1;
+			clockIndicator = 0;
+			deathMessages = 1;
+			enemyTag = 0;		// Cannot be changed
+			friendlyTag = 0;	// Cannot be changed
+			hud = 1;
+			hudGroupInfo = 0;
+			hudPerm = 0;		// Cannot be changed
+			hudWp = 1;
+			hudWpPerm = 0;		// Cannot be changed
+			map = 0;
+			netStats = 1;
+			tracers = 0;		// Cannot be changed
+			ultraAI = 0;
+			unlimitedSaves = 0;
+			vonId = 0;
+			weaponCursor = 1;
+		};
+
+		skillFriendly = 1;
+		precisionFriendly = 1;
+		skillEnemy = 0.9;
+		precisionEnemy = 0.75;
+	};
+
+	class Mercenary
+	{
+		class Flags
+		{
+			3rdPersonView = 0;	// Cannot be changed
+			armor = 0;			// Cannot be changed
+			autoAim = 0;		// Cannot be changed
+			autoGuideAT = 0;	// Cannot be changed
+			autoSpot = 0;		// Cannot be changed
+			cameraShake = 1;	// Cannot be changed
+			clockIndicator = 0;	// Cannot be changed
+			deathMessages = 0;
+			enemyTag = 0;		// Cannot be changed
+			friendlyTag = 0;	// Cannot be changed
+			hud = 0;			// Cannot be changed
+			hudGroupInfo = 0;	// Cannot be changed
+			hudPerm = 0;		// Cannot be changed
+			hudWp = 0;			// Cannot be changed
+			hudWpPerm = 0;		// Cannot be changed
+			map = 0;			// Cannot be changed
+			netStats = 0;
+			tracers = 0;		// Cannot be changed
+			ultraAI = 0;
+			unlimitedSaves = 0;	// Cannot be changed
+			vonID = 0;
+			weaponCursor = 0;	// Cannot be changed
+		};
+
+		skillFriendly = 1;
+		precisionFriendly = 1;
+		skillEnemy = 1;
+		precisionEnemy = 1;
+	};
+};
+</syntaxhighlight>
+</spoiler>
+
+==== {{arma3}} ====
+'''Since 1.58:'''<br>
+One of the main changes that came with 1.58 is that the difficulty levels were transformed to true presets (Recruit, Regular, Veteran).<br>
+Each preset has exactly defined value for each difficulty option. If any of the options doesn't match the preset, the preset is changed to Custom. The particular flags stored in profile are only for the Custom preset, since Recruit, Regular and Veteran are fixed ones and predefined in game's data in {{hl|CfgDifficultyPresets}} config class.
+* Documentation of presets and data config as well as a list of the most significant changes in 1.58: [[Arma 3: Difficulty Settings]]
+* Related forum thread: {{Link|https://forums.bistudio.com/topic/188661-difficulty-overhaul/|Difficulty Overhaul}}
+
+===== Server Difficulty Example =====
+<syntaxhighlight lang="cpp">
+class DifficultyPresets
+{
+	class CustomDifficulty
+	{
+		class Options
+		{
+			/* Simulation */
+
+			reducedDamage = 0;		// Reduced damage
+
+			/* Situational awareness */
+
+			groupIndicators = 0;	// Group indicators (0 = never, 1 = limited distance, 2 = always)
+			friendlyTags = 0;		// Friendly name tags (0 = never, 1 = limited distance, 2 = always)
+			enemyTags = 0;			// Enemy name tags (0 = never, 1 = limited distance, 2 = always)
+			detectedMines = 0;		// Detected mines (0 = never, 1 = limited distance, 2 = always)
+			commands = 1;			// Commands (0 = never, 1 = fade out, 2 = always)
+			waypoints = 1;			// Waypoints (0 = never, 1 = fade out, 2 = always)
+			tacticalPing = 0;		// Tactical ping (0 = disabled, 1 = in 3D scene, 2 = on map, 3 = both)
+
+			/* Personal awareness */
+
+			weaponInfo = 2;			// Weapon info (0 = never, 1 = fade out, 2 = always)
+			stanceIndicator = 2;	// Stance indicator (0 = never, 1 = fade out, 2 = always)
+			staminaBar = 0;			// Stamina bar
+			weaponCrosshair = 0;	// Weapon crosshair
+			visionAid = 0;			// Vision aid
+
+			/* View */
+
+			thirdPersonView = 0;	// 3rd person view (0 = disabled, 1 = enabled, 2 = enabled for vehicles only (Since  Arma 3 v1.99))
+			cameraShake = 1;		// Camera shake
+
+			/* Multiplayer */
+
+			scoreTable = 1;			// Score table
+			deathMessages = 1;		// Killed by
+			vonID = 1;				// VoN ID
+
+			/* Misc */
+
+			mapContent = 0;			// Extended map content
+			autoReport = 0;			// (former autoSpot) Automatic reporting of spotted enemies by players only. This doesn't have any effect on AIs.
+			multipleSaves = 0;		// Multiple saves
+		};
+
+		// aiLevelPreset defines AI skill level and is counted from 0 and can have following values: 0 (Low), 1 (Normal), 2 (High), 3 (Custom).
+		// when 3 (Custom) is chosen, values of skill and precision are taken from the class CustomAILevel.
+		aiLevelPreset = 3;
+	};
+
+	class CustomAILevel
+	{
+		skillAI = 0.5;
+		precisionAI = 0.5;
+	};
+};
+</syntaxhighlight>
+
+
+== See Also ==
+
+* [[ArmA: Server configuration|Server Configuration]]
+* [[Arma 3: Difficulty Settings|Difficulty Menu]]
+* [[Armed Assault:Dedicated Server]]
+* [[Operation Flashpoint: Dedicated Server]]
+
+
+{{GameCategory|arma3|Multiplayer}}
+{{GameCategory|arma2|Multiplayer}}
+{{GameCategory|arma1|Multiplayer}}

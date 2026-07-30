@@ -1,0 +1,138 @@
+// source: https://community.bistudio.com/wiki/ACE:IslandPack:HeightMap_Gallery
+// revision: 339449 (2023-04-28T14:08:53Z)
+// export sha1: dt82v6562mks4h15fe9hdu48pvsit8s
+// Vendored snapshot. Do not edit — re-export instead.
+
+==Download pictures==
+
+{{Link|http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery.7z|ACEIP_HeightMap_Gallery.7z}} (6,4 MB)
+
+== Embedded pictures ==
+
+=== 73eastings ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/73eastings.jpg
+
+=== abel ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/abel.jpg
+
+=== anilym ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/anilym.jpg
+
+=== atlantis gold ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/atlantis_gold.jpg
+
+=== avignon ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/avignon.jpg
+
+=== cain ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/cain.jpg
+
+=== canyonda ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/canyonda.jpg
+
+=== clarkisland ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/clarkisland.jpg
+
+=== eden ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/eden.jpg
+
+=== elephanthead ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/elephanthead.jpg
+
+=== freya ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/freya.jpg
+
+=== gaia ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/gaia.jpg
+
+=== havelte ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/havelte.jpg
+
+=== highlands ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/highlands.jpg
+
+=== isladestella ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/isladestella.jpg
+
+=== ivtiliac ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/ivtiliac.jpg
+
+=== lakemartin ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/lakemartin.jpg
+
+=== leusderheide ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/leusderheide.jpg
+
+=== messor ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/messor.jpg
+
+=== nabukonodexa ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/nabukonodexa.jpg
+
+=== noe ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/noe.jpg
+
+=== occasus ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/occasus.jpg
+
+=== ofp world ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/ofp_world.jpg
+
+=== samakhills ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/samakhills.jpg
+
+=== sandy rocks ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/sandy_rocks.jpg
+
+=== saru ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/saru.jpg
+
+=== skye ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/skye.jpg
+
+=== sontonagh district ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/sontonagh_district.jpg
+
+=== torment valley ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/torment_valley.jpg
+
+=== trinity ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/trinity.jpg
+
+=== uwar desert ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/uwar_desert.jpg
+
+=== virovictica ===
+
+http://public.acemod.net/download/aceip/ACEIP_HeightMap_Gallery/virovictica.jpg

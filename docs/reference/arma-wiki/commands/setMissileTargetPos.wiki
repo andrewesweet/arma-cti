@@ -1,0 +1,74 @@
+// source: https://community.bistudio.com/wiki/setMissileTargetPos
+// revision: 377534 (2026-01-02T06:53:19Z)
+// export sha1: 12hq7pg33t3pyd877va2pphk3pikpf9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.92
+
+|gr1= Object Manipulation
+
+|gr2= Weapons
+
+|descr= Sets a guided munition target position.
+The munition must have {{hl|manualControl}} config entry to use this command.
+The target position has to be inside the missile's configured targeting cone for the command to work.
+
+|s1= munition [[setMissileTargetPos]] position
+
+|p1= munition: [[Object]]
+
+|p2= position: [[Position#PositionATL|PositionATL]] 
+
+|r1= [[Nothing]]
+
+|x1= <sqf>missile1 setMissileTargetPos unitAimPosition tank1;</sqf>
+
+|x2= <sqf>
+private _missile = createVehicle ["M_Scalpel_AT", player modelToWorld [0,0,100], [], 0, "CAN_COLLIDE"];
+_missile setMissileTargetPos (player modelToWorld [0,100,0]);
+</sqf>
+
+|seealso= [[missileTargetPos]] [[setMissileTarget]] [[missileTarget]] [[missileState]]
+}}
+
+{{Note
+|user= Benargee
+|timestamp= 20200413060400
+|text= To get list of compatible missiles with <syntaxhighlight lang="cpp" inline>manualControl = 1</syntaxhighlight>, use the below script and paste the clipboard results to a text editor.
+<sqf>
+private _cfgCount = count (configfile >> "CfgAmmo");
+private _pasteStr = "";
+
+for "_x" from 0 to (_cfgCount - 1) do {
+	_cfg = (configFile >> "CfgAmmo") select _x;
+	_ammoClassName = configName _cfg;
+	private _manCtrl = getNumber (configFile >> "CfgAmmo" >> _ammoClassName >> "manualControl");
+	if (_manCtrl > 0) then {
+			_pasteStr = _pasteStr + _ammoClassName + endl;
+	};
+};
+
+copyToClipboard _pasteStr;
+</sqf>
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20220812220600
+|text= Tested with a player-controlled AH-99 firing DAGR, a civilian helicopter named {{hl|heli}} above water/land, and the following code:
+<sqf>
+if (!isNil "EH") then
+{
+	vehicle player removeEventHandler ["Fired", EH];
+};
+EH = vehicle player addEventHandler ["Fired", {
+params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_missile", "_gunner"];
+	_missile setMissileTargetPos getPosATL heli; // changing here getPosATL / getPosASL / getPos
+	systemChat str [_missile, missileTarget _missile, missileTargetPos _missile];
+}];
+</sqf>
+}}

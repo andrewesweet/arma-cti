@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/save3DENPreferences
+// revision: 369740 (2024-10-08T15:05:37Z)
+// export sha1: 4iyu4ixq0v6aquujet22kmuf3otx7xv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Eden Editor
+
+|descr= Saves current 3DEN preferences into .3den.Arma3Profile file.
+
+|s1= [[save3DENPreferences]] 
+
+|r1= [[Boolean]] - [[true]] on success
+
+|x1= <sqf>
+"Preferences" set3DENMissionAttribute ["SaveBinarized", true];
+save3DENPreferences;
+</sqf>
+
+|seealso= [[saveProfileNamespace]] [[saveMissionProfileNamespace]]
+}}

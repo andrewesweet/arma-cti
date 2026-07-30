@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/ctrlMapWorldToScreen
+// revision: 378320 (2026-04-02T16:18:50Z)
+// export sha1: lreatoxvbxf3vry5nqj315s3zcs3wh4
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Armed Assault version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.05
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - Map
+
+|descr= Converts world coordinates into map screen coordinates. This command is identical to [[posWorldToScreen]].
+
+|s1= control [[ctrlMapWorldToScreen]] position
+
+|p1= control : [[Control]] - map control
+
+|p2= position : [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - world position
+
+|r1= [[Position#Introduction|Position2D]] - screen coordinates in format [x, y]
+
+|x1= <sqf>_screenCoord = _control ctrlMapWorldToScreen _worldCoord;</sqf>
+
+|x2= <sqf>_screenCoord = _control ctrlMapWorldToScreen position player;</sqf>
+
+|seealso= [[ctrlMapScreenToWorld]] [[posWorldToScreen]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2010-06-16</dd>
+<dt class="note">[[User:.kju|.kju]]</dt>
+<dd class="note">
+This command returns a 2D array with the position on the active map display. Say the return [0.5.0.5] would mean that your input 3d world position, like [500,1000], is currently at the center of the active map display.<br>
+In other words you can make the actual world position (of an object for example), relative to your active map display.
+
+</dl>

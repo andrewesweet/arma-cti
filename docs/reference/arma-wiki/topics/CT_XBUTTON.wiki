@@ -1,0 +1,155 @@
+// source: https://community.bistudio.com/wiki/CT_XBUTTON
+// revision: 170192 (2020-11-30T10:08:46Z)
+// export sha1: mcvzcla4bw7hyku4aw6m3uwsuvqqmdi
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_XBUTTON
+|value = 41
+|description = Another type of button. Seems like the only difference between other buttons is, that it has no animation when being clicked.
+|gallery=
+File:CT XBUTTON.jpg
+|commands =
+|events =
+}}
+
+{{CT|abc start}}
+=== C ===
+{{CT|attribute
+|name=color
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorActive
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorActive2
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorActiveBackground
+|type1=Array
+|value1={1,0.5,0,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorActiveBackground2
+|type1=Array
+|value1={0,0,0,1}
+|description=
+}}
+
+=== P ===
+{{CT|attribute
+|name=period
+|type1=Number
+|value1=1
+|description=
+}}
+
+=== S ===
+{{CT|attribute
+|name=soundClick
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1}
+|description=
+}}
+
+{{CT|attribute
+|name=soundEnter
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1}
+|description=
+}}
+
+{{CT|attribute
+|name=soundEscape
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1}
+|description=
+}}
+
+{{CT|attribute
+|name=soundPush
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1}
+|description=
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+None.
+
+== Other Examples ==
+<syntaxhighlight lang="cpp">
+class _CT_XBUTTON
+{
+	access = 0;
+	idc = 41;
+	type = 41;
+	style = 0;
+	default = 0;
+	enable = 1;
+	show = 1;
+	fade = 0;
+	blinkingPeriod = 0;
+	x = 12 * GUI_GRID_W + GUI_GRID_CENTER_X";
+	y = 15 * GUI_GRID_H + GUI_GRID_CENTER_Y;
+	w = 10 * GUI_GRID_W;
+	h = 1 * GUI_GRID_H;
+	colorBackground[] = {0,0,0,0};
+	colorActiveBackground[] = {1,0.5,0,1};
+	colorActiveBackground2[] = {0,0,0,1};
+	colorDisabled[] = {0,1,1,1};
+	text = "CT_XBUTTON";
+	size = GUI_GRID_H;
+	font = "RobotoCondensed";
+	shadow = 0;
+	color[] = {1,1,1,1};
+	colorActive[] = {1,1,1,1};
+	colorActive2[] = {1,1,1,1};
+	tooltip = "CT_XBUTTON";
+	tooltipColorShade[] = {0,0,0,1};
+	tooltipColorText[] = {1,1,1,1};
+	tooltipColorBox[] = {1,1,1,1};
+	period = 1;
+	soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1};
+	soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
+	soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
+	soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1};
+	onCanDestroy = "diag_log ['Log: onCanDestroy',ctrlClassname (_this select 0),_this]; true";
+	onDestroy = "diag_log ['Log: onDestroy',ctrlClassname (_this select 0),_this]; false";
+	onMouseEnter = "diag_log ['Log: onMouseEnter',ctrlClassname (_this select 0),_this]; false";
+	onMouseExit = "diag_log ['Log: onMouseExit',ctrlClassname (_this select 0),_this]; false";
+	onSetFocus = "diag_log ['Log: onSetFocus',ctrlClassname (_this select 0),_this]; false";
+	onKillFocus = "diag_log ['Log: onKillFocus',ctrlClassname (_this select 0),_this]; false";
+	onKeyDown = "diag_log ['Log: onKeyDown',ctrlClassname (_this select 0),_this]; false";
+	onKeyUp = "diag_log ['Log: onKeyUp',ctrlClassname (_this select 0),_this]; false";
+	onMouseButtonDown = "diag_log ['Log: onMouseButtonDown',ctrlClassname (_this select 0),_this]; false";
+	onMouseButtonUp = "diag_log ['Log: onMouseButtonUp',ctrlClassname (_this select 0),_this]; false";
+	onMouseButtonClick = "diag_log ['Log: onMouseButtonClick',ctrlClassname (_this select 0),_this]; false";
+	onMouseButtonDblClick = "diag_log ['Log: onMouseButtonDblClick',ctrlClassname (_this select 0),_this]; false";
+	onMouseZChanged = "diag_log ['Log: onMouseZChanged',ctrlClassname (_this select 0),_this]; false";
+	onMouseMoving = "";
+	onMouseHolding = "";
+	onButtonClick = "diag_log ['Log: onButtonClick',ctrlClassname (_this select 0),_this]; false";
+	onButtonDown = "diag_log ['Log: onButtonDown',ctrlClassname (_this select 0),_this]; false";
+	onButtonUp = "diag_log ['Log: onButtonUp',ctrlClassname (_this select 0),_this]; false";
+};
+</syntaxhighlight>

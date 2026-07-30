@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/opfor
+// revision: 369180 (2024-09-03T10:34:45Z)
+// export sha1: tgo3v4db7admi9aww8gnju3300cjwzy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Sides
+
+|descr= Pre-defined variable for the opfor [[Side|side]].
+
+|alias= [[east]]
+
+|s1= [[opfor]] 
+
+|r1= [[Side]]
+
+|x1= <sqf>
+if (side player == opfor) then
+{
+	hint "OPFOR";
+};
+</sqf>
+
+|seealso= [[side]] [[civilian]] [[blufor]] [[east]] [[independent]] [[resistance]] [[west]]
+}}

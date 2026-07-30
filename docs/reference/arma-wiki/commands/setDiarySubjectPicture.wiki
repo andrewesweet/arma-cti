@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/setDiarySubjectPicture
+// revision: 349299 (2023-11-08T14:52:18Z)
+// export sha1: e6rs1yn4555439dcwyedrysjzmvm5aw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|arg= global
+
+|eff= local
+
+|gr1= Briefing
+
+|descr= Sets a picture to be displayed on the right of the [[Diary]] subject. The picture can also be set during custom [[Diary]] subject [[createDiarySubject | creation]], but this command also allows to change icon for the fixed subjects, like "Tasks", "Diary", "Units", "Players" and "Statistics".
+
+|s1= unit [[setDiarySubjectPicture]] [subject, picture]
+
+|p1= unit: [[Object]] - unit
+
+|p2= subject: [[String]] - diary subject (see [[Diary]])
+
+|p3= picture: [[String]] - icon path
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setDiarySubjectPicture ["Diary", "\A3\ui_f\data\map\markers\nato\o_mech_inf.paa"];</sqf>
+
+|seealso= [[createDiarySubject]] [[removeDiarySubject]] [[selectDiarySubject]] [[diarySubjectExists]] [[allDiarySubjects]] [[Diary]]
+}}

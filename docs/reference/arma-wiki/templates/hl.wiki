@@ -1,0 +1,109 @@
+// source: https://community.bistudio.com/wiki/Template:hl
+// revision: 370842 (2025-02-14T13:57:51Z)
+// export sha1: ly5hr6hghpqhfgunp2pnnixmqoylwlb
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{c|{{{1|}}}}}}
+	| <var>{{#switch:0
+		| {{#pos:{{{c|{{{1}}}}}}|:}}= {{#replace:{{{c|{{{1}}}}}}|:|&colon;}}
+		| {{#pos:{{{c|{{{1}}}}}}|;}}= {{#replace:{{{c|{{{1}}}}}}|;|&semi;}}
+		| {{#pos:{{{c|{{{1}}}}}}|#}}= {{#replace:{{{c|{{{1}}}}}}|#|&num;}}
+		| {{#pos:{{{c|{{{1}}}}}}|*}}= {{#replace:{{{c|{{{1}}}}}}|*|&#42;}}
+		| {{#ifexpr: {{#if:{{#pos:{{{c|{{{1}}}}}}|/}}|1|0}} and {{#if:{{#pos:{{{c|{{{1}}}}}}|[<nowiki/>[}}|0|1}}|0}}= {{#replace:{{#replace:{{{c|{{{1}}}}}}|/|<wbr>/}}|<<wbr>/|</}}
+		| {{#if:{{#pos:{{{c|{{{1}}}}}}|\}}|0}}= {{#replace:{{{c|{{{1}}}}}}|\|<wbr>\}}
+		| {{{c|{{{1}}}}}}
+	}}</var>
+	| -No content provided-{{TemplateCase||[[Category:hl template usage error]]}}
+}}</includeonly><noinclude><!--
+	
+-->{{Doc/Template
+|descr= This template displays '''h'''igh'''l'''ighted content - it replaces {{hl|&lt;tt&gt;}} which was used across the wiki. It also adds the page to the [[:Category:hl template usage error|hl template usage error]] category on usage error.
+|param1= c
+|descr1= the content to display.<br>If it contains an equal sign {{hl|c= =}}, which '''it should not''' (for inline code, {{hl|<nowiki><syntaxhighlight></nowiki>}}/{{hl|<nowiki><sqf></nowiki>}} should be used instead):
+** replace it with {{hl|<nowiki>{{=}}</nowiki>}}
+** use {{hl|c= c=}}
+** use the MediaWiki trick {{hl|c= 1=}}
+
+|example1= <nowiki>{{hl}}</nowiki>
+|result1= {{hl}}
+
+|example2= <nowiki>{{hl|"AWARE"}}</nowiki>
+|result2= {{hl|"AWARE"}}
+
+|example3= <nowiki>{{hl|</nowiki>oneLongFilePath<wbr>/ThatCannotLineBreak<wbr>/OnMobileOrOtherNonWideScreen<wbr>/BecauseThereAreNoSpaces<wbr>/AndGivenFirefoxAndChromeBrowsersHaveADifferentBehaviour<wbr>/LetsCoverAllTheCases}<nowiki/>}
+|result3= {{hl|oneLongFilePath/ThatCannotLineBreak/OnMobileOrOtherNonWideScreen/BecauseThereAreNoSpaces/AndGivenFirefoxAndChromeBrowsersHaveADifferentBehaviour/LetsCoverAllTheCases}}
+
+|example4= <nowiki>{{hl|</nowiki>oneLongFilePath<wbr>\ThatCannotLineBreak<wbr>\OnMobileOrOtherNonWideScreen<wbr>\BecauseThereAreNoSpaces<wbr>\AndGivenFirefoxAndChromeBrowsersHaveADifferentBehaviour<wbr>\LetsCoverAllTheCases}<nowiki/>}
+|result4= {{hl|oneLongFilePath\ThatCannotLineBreak\OnMobileOrOtherNonWideScreen\BecauseThereAreNoSpaces\AndGivenFirefoxAndChromeBrowsersHaveADifferentBehaviour\LetsCoverAllTheCases}}
+
+|example5= <nowiki/>
+<nowiki>{{hl|#test1}} test2 {{hl|#test3}} test4</nowiki><br>
+<nowiki>{{hl|*test1}} test2 {{hl|*test3}} test4</nowiki><br>
+<nowiki>{{hl|:test1}} test2 {{hl|:test3}} test4</nowiki><br>
+<nowiki>{{hl| test1}} test2 {{hl| test3}} test4</nowiki>
+|result5= <nowiki/>
+{{hl|#test1}} test2 {{hl|#test3}} test4<br>
+{{hl|*test1}} test2 {{hl|*test3}} test4<br>
+{{hl|:test1}} test2 {{hl|:test3}} test4<br>
+{{hl| test1}} test2 {{hl| test3}} test4
+
+|example6= <nowiki/>
+<nowiki>* {{hl|;}}</nowiki><br>
+<nowiki>* a {{hl|;}} b</nowiki><br>
+<nowiki>* {{hl|:}}</nowiki><br>
+<nowiki>* a {{hl|:}} b</nowiki><br>
+<nowiki>; test {{hl|test}}</nowiki><br>
+<nowiki>; test {{hl|:test}}</nowiki><br>
+<nowiki>; test: {{hl|test}}</nowiki><br>
+<nowiki>; {{hl|test}}: {{hl|test}}</nowiki><br>
+<nowiki>; {{hl|;test}}: {{hl|test}}</nowiki><br>
+<nowiki>; {{hl|:test}}: {{hl|test}}</nowiki><br>
+<nowiki>; {{hl|test}}: {{hl|;test}}</nowiki><br>
+<nowiki>; {{hl|test}}: {{hl|:test}}</nowiki><br>
+<nowiki>; {{hl|;test}}: {{hl|:test}}</nowiki>
+|result6= <nowiki/>
+* {{hl|;}}
+* a {{hl|;}} b
+* {{hl|:}}
+* a {{hl|:}} b
+; test {{hl|test}}
+; test {{hl|:test}}
+; test :{{hl|test}}
+; {{hl|test}}: {{hl|test}}
+; {{hl|;test}}: {{hl|test}}
+; {{hl|:test}}: {{hl|test}}
+; {{hl|test}}: {{hl|;test}}
+; {{hl|test}}: {{hl|:test}}
+; {{hl|;test}}: {{hl|:test}}
+
+|example7= <nowiki/>
+<nowiki>* {{hl|;}}</nowiki><br>
+<nowiki>* {{hl|; test}}</nowiki><br>
+<nowiki>* {{hl|:}}</nowiki><br>
+<nowiki>* {{hl|: test}}</nowiki><br>
+<nowiki>* ''{{hl|test}}''</nowiki><br>
+<nowiki>* '''{{hl|test}}'''</nowiki><br>
+<nowiki>* {{hl|[[Template:Link]]}}</nowiki><br>
+<nowiki>* {{hl|[[Template:Link/Internal]]}}</nowiki><br>
+<nowiki>* {{hl|[[Description.ext#CfgSounds]]}}</nowiki><br>
+<nowiki>* {{hl|{{Link|Description.ext#CfgSounds}}}}</nowiki><br>
+<nowiki>* {{hl|{{GVI|arma3|1.00}}}}</nowiki><br>
+<nowiki>* {{hl|&lt;nowiki>{{GVI|arma3|1.00}}&lt;/nowiki>}}</nowiki><br>
+<nowiki>* {{hl|c= &lt;nowiki>{{GVI|arma3|1.00}}&lt;/nowiki>}}</nowiki><br>
+<nowiki>* {{hl|2&amp;nbsp;km<sup>2</sup>}}</nowiki><br>
+|result7= <nowiki/>
+* {{hl|;}}
+* {{hl|; test}}
+* {{hl|:}}
+* {{hl|: test}}
+* ''{{hl|test}}''
+* '''{{hl|test}}'''
+* {{hl|[[Template:Link]]}}
+* {{hl|[[Template:Link/Internal]]}}
+* {{hl|[[Description.ext#CfgSounds]]}}
+* {{hl|{{Link|Description.ext#CfgSounds}}}}
+* {{hl|{{GVI|arma3|1.00}}}}
+* {{hl|<nowiki>{{GVI|arma3|1.00}}</nowiki>}}
+* {{hl|c= <nowiki>{{GVI|arma3|1.00}}</nowiki>}}
+* {{hl|2&nbsp;km<sup>2</sup>}}
+}}</noinclude>

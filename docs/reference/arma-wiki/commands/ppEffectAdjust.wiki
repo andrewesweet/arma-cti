@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/ppEffectAdjust
+// revision: 377096 (2026-01-01T09:56:04Z)
+// export sha1: 6x2izq5juoy2xbbcbt5vcmb5hf1rwie
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|eff= local
+
+|gr1= Camera Control
+
+|descr= Set [[Post Process Effects|post process effect]] parameters.
+
+{{Feature|informative|The two syntaxes differ in what format of the params they accept. The syntax with PP name expects colors to be packed into arrays within main array, while the syntax with PP handle can handle both flat and packed array. Therefore it is recommended to use the universal packed format, such as shown in the examples.}}
+
+|s1= effect [[ppEffectAdjust]] settings
+
+|p1= effect: [[String]] or [[Number]]
+* [[String]] - effect name
+* [[Number]] - effect handle
+
+|p2= settings: [[Array]] of [[Anything]] - array of effect params
+
+|r1= [[Nothing]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>"colorCorrections" ppEffectAdjust [1, 1, -0.01, [0, 0, 0, 0], [1.5, 1, 1.2, 0.6], [0.199, 0.587, 0.114, 0]];</sqf>
+
+|x2= Black&White:
+<sqf>_colorCorrectionsEffHandle ppEffectAdjust [1, 0.4, 0, [0, 0, 0, 0], [1, 1, 1, 0], [1, 1, 1, 0]];</sqf>
+
+|seealso= [[Post Process Effects]] [[ppEffectForceInNVG]] [[ppEffectEnable]] [[ppEffectEnabled]] [[ppEffectDestroy]] [[ppEffectCreate]] [[ppEffectCommitted]] [[ppEffectCommit]] [[setPiPEffect]]
+}}

@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_genericSentence
+// revision: 329652 (2022-08-01T00:38:41Z)
+// export sha1: pj6ua9vw7x23emuamk564o3bjpnfgu2
+// categories: Category:Arma 3: Functions | Category:Function Group: Conversations | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Conversations
+
+|descr= Play generic sentence with probablity set by bis_genericSentenceMode variable (0.5 = 50%, 1 = 100%)
+
+|s1= [class, speaker, delay, canRepeat] call [[BIS_fnc_genericSentence]] 
+
+|p1= class: [[String]] - sentence name (from ''class RadioProtocol_EN_H'')
+
+|p2= speaker: [[Object]] or [[Code]] - (Optional) sentence speaker (when code, speaker is it is returned value). Default is 2nd [[crew]] member.
+
+|p3= delay: [[Number]] - (Optional) delay from previous generic sentence: When negative, sentence is played always.
+
+|p4= canRepeat: [[Boolean]] - (Optional) true to allow repeating same sentence
+
+|r1= [[Boolean]] - true if sentence was played
+
+|x1= <sqf>["FeedbackFlightNegativeHeightTooHigh"] call BIS_fnc_genericSentence;</sqf>
+
+|x2= <sqf>["FeedbackFlightNegativeSpeedTooSlow",nil,5,true] call BIS_fnc_genericSentence;</sqf>
+
+|seealso= [[Generic Sentences]]
+}}

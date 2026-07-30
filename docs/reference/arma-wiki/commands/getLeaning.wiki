@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getLeaning
+// revision: 369757 (2024-10-08T15:08:56Z)
+// export sha1: td43tiuuy6j6k3zzbyhrzrgwdcffd0j
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|arg= global
+
+|gr1= Unit Control
+
+|descr= Returns the leaning factor of the given unit.
+
+|s1= [[getLeaning]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Number]] - leaning factor from -1 to 1
+
+|x1= <sqf>if (getLeaning player < 0) then { systemChat "player is leaning left" };</sqf>
+
+|seealso= [[animationState]] [[unitPos]] [[stance]] [[pose]]
+}}

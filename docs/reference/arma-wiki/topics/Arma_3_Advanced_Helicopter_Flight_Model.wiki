@@ -1,0 +1,97 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Advanced_Helicopter_Flight_Model
+// revision: 340297 (2023-04-28T17:20:15Z)
+// export sha1: mljrep8c57ai4xnoj007eot0orv3pee
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+This document relates to [[Helicopter_Flight_Model_Config_(XML)]]
+
+'''Changes introduced by RTD libraries 4.1.1 in [[Arma 3 Helicopters]] DLC'''
+
+1) ''<Fuselage CoPX= CoPY= CoPZ=''
+changed to '''forceExertionPnt*='''
+
+2) ''<Engines> maxPower=''
+changed to '''emergencyPowerHP='''
+
+''<DriveTrains> torque maximumContinuous='' and ''takeoff='' have no use, were removed
+
+3) ''<ControlSystem> <FCSComponent'' renamed to '''<CSComponent'''
+
+Added new value '''rotorBrake'''
+
+4) ''<Rotors> <ModelConfiguration updateSubstepCount="360" />''
+were replaced by '''<ModelConfiguration maxIntegrationStepSizeDeg="1.0" />'''
+
+new entries
+ ''<Geometry>''
+	'''<Blades rootCutout='''
+
+ ''<AerodynamicFeatures>''
+	''<InducedVelocity groundEffectFactor= >''
+	'''<InducedVelocityTable>'''
+
+ '''<VortexRingState>'''
+	'''<Perturbation>'''
+		'''<RoughnessBoundaries>'''
+
+ '''<Blades tipLossFactor='''
+
+5) ''<GroundContacts>'' '''removed''' ''<GeneralConfiguration
+gearDragCoefficient='' and ''gearReferenceArea="0"''
+'''
+== Notes about VRS (Vortex Ring State): ==
+
+When the vortex ring state is entered depends on vertical velocity,
+horizontal velocity and current thrust (roughly collective position).
+Generally, VRS occurs at low horizontal speeds and relatively large
+vertical speeds (comparable to induced velocity at the given thrust
+setting). Although there are different numbers mentioned in the 
+Internet they are usually over-generalizations. VRS entrance 
+conditions differ from helicopter to helicopter and it differs
+also depending on the current mass of the helicopter. A loaded 
+helicopter requires more thrust, which results in larger induced
+velocity. In this configuration, blade tip vortices are blown quickly 
+downwards and entrance to VRS is hence harder.
+
+VRS starts with vibrations. As the vertical speed increases VRS
+condition deepens and pitch,yaw,roll and thrust oscillations can
+be observed. Another important thing to observe is sudden loss
+of thrust; climb rate will fall quickly in VRS however it will
+stabilize after some time.
+
+Once the VRS is fully established the thrust will not be sufficient
+to come out. Actually, if the helicopter is relatively lightly 
+loaded and has powerful engines, it might eventually brake
+the descend but usually this takes more time than simply increasing
+horizontal speed. Getting a little bit ETL will clear the rotor
+from vortex rings.
+
+
+'''RTD Implementation:'''
+There are two aspects of VRS
+* Average induced velocity increase
+* Changes in distribution of the induced velocity on the blades
+
+For the first one an empirical, table look-up based model is used.
+( see <InducedVelocityTable> ). As is customariy in the literature,
+the axes and values in this table are non-dimensionalized by dividing
+to '''v_h = sqrt(Thrust/(2*airdensity*rotorArea))''' 
+
+More details about this simulation approach can be found in this paper {{Link|http://www.dtic.mil/cgi-bin/GetTRDoc?AD{{=}}ADA526709|link}}
+
+The second one is partly responsible for the thrust loss (increase in
+average induced velocity also plays a major role) and also 
+vibration and oscillations.
+
+* Loss of thrust: Distribution of the induced velocity at the blade elements are automatically modified in VRS.
+* Vibration: vibration is to be visually cued at the application level (e.g. vibrating console etc. ).
+* Oscillations: RTD provides a configurable means for creating thrust and moment oscillations.
+
+
+Configuration of the behavior in VRS is made in <VortexRingState> 
+section of the XML. In <Perturbation> section, oscillations for thrust 
+and moments can be configured with their periods and amplitudes.
+
+
+{{GameCategory|arma3|Editing}}

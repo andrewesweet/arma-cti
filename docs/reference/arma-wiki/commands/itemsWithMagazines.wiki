@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/itemsWithMagazines
+// revision: 377150 (2026-01-01T10:35:45Z)
+// export sha1: ao6r8v0v31wgezbc4ezdw7o8nm26bn7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+|arg= global
+
+|gr1= Unit Inventory
+
+|descr= Returns combined array including all unit's stored [[items]] and all unit's stored [[magazines]] and all unit's '''stored''' [[weapons]]. Loaded magazines such as [[currentMagazine]], [[primaryWeaponMagazine]], [[secondaryWeaponMagazine]], [[handgunMagazine]], [[binocularMagazine]] as well as [[assignedItems]] are excluded.
+
+|s1= [[itemsWithMagazines]] unit
+
+|p1= unit: [[Object]]
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>
+private _res1 = itemsWithMagazines player;
+// ... is essentially the same as ...
+private _res2 = items player + magazines player;
+</sqf>
+Example result:
+<sqf>
+[
+	"FirstAidKit",			//item
+	"30Rnd_65x39_caseless_mag",	//magazine
+	"16Rnd_9x21_Mag",		//magazine
+	"Chemlight_green",		//magazine
+	"HandGrenade",			//magazine
+	"ToolKit",				//item
+	"MineDetector"			//item
+]
+</sqf>
+
+|seealso= [[items]] [[removeAllItemsWithMagazines]] [[backpacks]]
+}}

@@ -1,0 +1,82 @@
+// source: https://community.bistudio.com/wiki/sendSimpleCommand
+// revision: 336305 (2022-12-21T11:10:14Z)
+// export sha1: 7tjlrobuqzv9krbv967q24uvgoejlx9
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Unit Control
+
+|descr= Sends a simple command to the vehicle's driver / gunner (air vehicles ignore it). See also [[vehicleMoveInfo]].{{Feature | important | Doesn't seem to work if AI driver is alone, needs another unit in the vehicle (could be another AI or player) that is set as [[setEffectiveCommander]]. If driver is [[effectiveCommander]] it will refuse any drive commands.}}
+{{Feature|arma3|Due to some sort of a bug when vehicle is ordered turning ("LEFT" or "RIGHT"), it locks the vehicle ability to respond to any other commands properly. Always use "STOPTURNING" to cancel turning before issuing other move commands}}
+{{{!}} class="valign-top"
+! style="width: 33%" {{!}} Gunner commands
+! style="width: 33%" {{!}} Driver Move commands
+! Driver Turn commands
+{{!}}-
+{{!}}
+* {{hl|"FIRE"}}
+* {{hl|"CEASE FIRE"}}
+* {{hl|"MANUAL FIRE"}}
+* {{hl|"CANCEL MANUAL FIRE"}}
+* {{hl|"KEY FIRE"}}
+{{!}}
+* {{hl|"FORWARD"}} - move forward
+* {{hl|"FAST"}} - move forward, fast
+* {{hl|"SLOW"}} - move forward, slow
+* {{hl|"STOP"}} - stop moving forward or backward
+* {{hl|"BACK"}} - move backward
+* {{hl|"KEY UP"}}
+* {{hl|"KEY DOWN"}}
+* {{hl|"KEY FAST"}}
+* {{hl|"KEY SLOW"}}
+{{!}}
+* {{hl|"LEFT"}} - turn left, while moving or not
+* {{hl|"RIGHT"}} - turn right, while moving or not
+* {{GVI|arma3|1.78|size= 0.75}} {{hl|"STOPTURNING"}} cancel turning (special case, normally would be called by the engine when LEFT or RIGHT turn key is released by the player)
+{{!}}}
+
+|s1= vehicleName [[sendSimpleCommand]] command
+
+|p1= vehicleName: [[Object]]
+|p2= command: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player sendSimpleCommand "STOP";</sqf>
+
+|seealso= [[vehicleMoveInfo]] [[useAISteeringComponent]] [[effectiveCommander]] [[setEffectiveCommander]] [[enableAI]] [[disableAI]] [[enableAIFeature]] [[enableSentences]]
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20070416045200
+|text= Valid commands include: "FORWARD", "SLOW", "FAST" "BACK", "LEFT", "RIGHT", "STOP", "FIRE", "CEASE FIRE", "MANUAL FIRE", "CANCEL MANUAL FIRE". There may be more. <br><br>
+Only vehicles crewed by a player can use sendSimpleCommand.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20140126155800
+|text= Other commands that work: "KEY FIRE", "KEY FAST", "KEY SLOW", "KEY DOWN", "KEY UP". These will simulate key presses.<br><br>
+In {{arma3}} player doesn't always need to be in the vehicle to give commands.
+}}

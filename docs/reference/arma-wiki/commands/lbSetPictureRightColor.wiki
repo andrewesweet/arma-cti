@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/lbSetPictureRightColor
+// revision: 377351 (2026-01-02T06:40:13Z)
+// export sha1: fvjnzvzm2lje1ys30skoz2bzppbv8g3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr1= GUI Control - ListBox
+
+|descr= Sets the color of the second (right aligned) picture of the given index of the listbox with id idc of the topmost user dialog to the given color.
+Color which consists from only zeros means disable this override.
+
+|s1= [[lbSetPictureRightColor]] [idc, index, color]
+
+|p1= idc: [[Number]] - control id
+
+|p2= index: [[Number]]
+
+|p3= color: [[Color|Color (RGBA)]]
+
+|r1= [[Nothing]]
+
+|s2= control [[lbSetPictureRightColor]] [index, color]
+
+|p21= control: [[Control]]
+
+|p22= index: [[Number]]
+
+|p24= color: [[Color|Color (RGBA)]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lbSetPictureRightColor [101, 0, [0, 1, 0, 0.5]];</sqf>
+
+|x2= <sqf>_ctrl lbSetPictureRightColor [0, [1, 1, 1, 1]];</sqf>
+
+|seealso= [[lbAdd]] [[lbClear]] [[lbColor]] [[lbSetPictureColorSelected]] [[lbCurSel]] [[lbData]] [[lbDelete]] [[lbIsSelected]] [[lbPicture]] [[lbSelection]] [[lbSetColor]] [[lbSetCurSel]] [[lbSetData]] [[lbSetSelected]] [[lbSetTooltip]] [[lbSetValue]] [[lbSize]] [[lbSort]] [[lbSortByValue]] [[lbText]] [[lbValue]] [[lbSetPicture]] [[lbSetPictureColor]]
+}}
+
+<dl class="command_description">
+<dt></dt>
+<dd class="notedate">Posted: Sep 10 2014</dd>
+<dt class="note">[[User:ffur2007slx2_5|ffur2007slx2_5]]</dt>
+<dd class="note">More information on the [[CT_LISTBOX]] command family can be found [[CT_LISTBOX#Scripting_Example|here]].
+</dl>

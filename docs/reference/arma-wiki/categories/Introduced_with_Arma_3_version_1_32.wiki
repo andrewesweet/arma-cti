@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_1.32
+// revision: 86949 (2014-12-13T19:41:06Z)
+// export sha1: t9b0qzbrq8243e3skoe6nenlrwaezml
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with  Arma 3 version 1.32 may be recognised by the appearance of this icon: {{GVI|Arma 3 |1.32}}
+Release date: October 14, 2014<br>
+[http://dev.arma3.com/post/spotrep-00034 SPOTREP 00034]
+
+[[Category:Introduced with Arma 3 |1.32]]

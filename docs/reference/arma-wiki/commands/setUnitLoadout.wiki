@@ -1,0 +1,161 @@
+// source: https://community.bistudio.com/wiki/setUnitLoadout
+// revision: 370162 (2024-11-02T23:29:35Z)
+// export sha1: o11cwcx30ifuwu1ogw2ums8riz3lur4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|arg= global
+
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Creates a loadout from given inventory structure and applies it to a unit.
+When [[String]] for class name is supplied, the command will search {{hl|CfgVehicles}} for the given class in order to extract the loadout from config.
+If [[Config]] is given, it will search given config (including [[missionConfigFile|mission config]]) for the loadout information.
+In either case, the config should contain the following entries, which is standard for any unit class, for example:
+<syntaxhighlight lang="cpp">
+class MyLoadout
+{
+	uniformClass = "U_B_CombatUniform_mcam";
+	backpack = "B_AssaultPack_mcamo";
+	linkedItems[] = { "V_PlateCarrier1_rgr", "H_HelmetB", "ItemCompass", "ItemWatch", "ItemRadio", "NVGoggles" };
+	weapons[] = { "arifle_MX_ACO_pointer_F", "hgun_P07_F" };
+	items[] = { "FirstAidKit", "FirstAidKit", "FirstAidKit" };
+	magazines[] = {
+		"30Rnd_65x39_caseless_mag", "16Rnd_9x21_Mag", "SmokeShell",
+		"HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade",
+		"HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade",
+		"HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade",
+		"HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade",
+		"HandGrenade", "HandGrenade", "HandGrenade", "HandGrenade"
+	};
+};
+</syntaxhighlight>
+
+{{Feature|important|Since {{GVI|arma3|2.20|size= 0.75}} if the command is executed while the unit is in the process of switching weapon, the command will be aborted. To check if unit is switching weapon use [[isSwitchingWeapon]].}}
+
+|pr= {{Feature|important|If this command is used on the player, it makes the inventory window bug (if opened) - vest and backpack tabs disappear. Closing and re-opening the inventory solves the issue.}}
+
+|s1= unit [[setUnitLoadout]] loadout
+
+|p1= unit: [[Object]]
+
+|p2= loadout: [[Array]] - [[Unit Loadout Array]]
+
+|r1= [[Nothing]]
+
+|s2= unit [[setUnitLoadout]] [loadout, fullMagazines]
+
+|p21= unit: [[Object]]
+
+|p22= loadout: [[Array]] - [[Unit Loadout Array]]
+
+|p23= fullMagazines: [[Boolean]] - partially emptied magazines will be refilled when the loadout is applied
+
+|r2= [[Nothing]]
+
+|s3= unit [[setUnitLoadout]] name
+
+|p41= unit: [[Object]]
+
+|p42= name: [[String]] - class name (see description)
+
+|r3= [[Nothing]]
+
+|s4= unit [[setUnitLoadout]] config
+
+|p61= unit: [[Object]]
+
+|p62= config: [[Config]] - config class (see description)
+
+|r4= [[Nothing]]
+
+|x1= <sqf>
+_unit setUnitLoadout "B_Soldier_F";										// by class name
+_unit setUnitLoadout (configFile >> "CfgVehicles" >> "B_Soldier_F");	// by config entry
+_unit setUnitLoadout (missionConfigFile >> "MyLoadout");				// (also works for mission config)
+_unit setUnitLoadout getUnitLoadout _otherUnit;							// by loadout array
+</sqf>
+
+|x2= <sqf>
+player_2 setUnitLoadout (getUnitLoadout player_1);			// Copies loadout from player_1 and applies it to player_2
+player_2 setUnitLoadout [getUnitLoadout player_1, true];	// Copies loadout from player_1 and applies it to player_2 while topping up all magazines
+</sqf>
+
+|x3= Strip unit of everything:
+<sqf>_unit setUnitLoadout (configFile >> "EmptyLoadout");</sqf>
+
+|x4= Make sure the unit is not switching weapon:
+<sqf>player spawn 
+{
+	waitUntil {!isSwitchingWeapon _this};
+	_this setUnitLoadout (configFile >> "EmptyLoadout");
+};</sqf>
+
+
+|seealso= [[getUnitLoadout]] [[isSwitchingWeapon]]
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20191217230800
+|text= Empty or used magazines in loadouts will be refilled under specific circumstance, even if the refill argument is [[false]]. This seems to happen if amount of used magazines is 2 or more.
+<sqf>
+player setUnitLoadout [
+	["arifle_MX_ACO_pointer_F", "", "acc_pointer_IR", "optic_Aco", [], [], ""],
+	[],
+	["hgun_P07_F", "", "", "", ["16Rnd_9x21_Mag", 16], [], ""],
+	["U_B_CombatUniform_mcam", [["30Rnd_65x39_caseless_mag", 1, 1]]],
+	["V_PlateCarrier1_rgr", []],
+	["B_AssaultPack_mcamo_Ammo", []],
+	"H_HelmetB_grass", "", [], ["ItemMap", "", "ItemRadio", "ItemCompass", "ItemWatch", "NVGoggles"]
+];
+</sqf>
+
+Will result in 30Rnd magazine with one bullet in it.
+<sqf>
+player setUnitLoadout [
+	["arifle_MX_ACO_pointer_F", "", "acc_pointer_IR", "optic_Aco", [], [], ""],
+	[],
+	["hgun_P07_F", "", "", "", ["16Rnd_9x21_Mag", 16], [], ""],
+	["U_B_CombatUniform_mcam", [["30Rnd_65x39_caseless_mag", 2, 1]]],
+	["V_PlateCarrier1_rgr", []],
+	["B_AssaultPack_mcamo_Ammo", []],
+	"H_HelmetB_grass", "", [], ["ItemMap", "", "ItemRadio", "ItemCompass", "ItemWatch", "NVGoggles"]
+];
+</sqf>
+Will result in 2 magazines but full, 30 rounds in it. This applies to any magazines count >2. They will never be with specified amount of rounds, even if you force the refill argument to [[false]].
+}}
+
+{{Note
+|user= Andrew_S90
+|timestamp= 20201023211600
+|text= Here is a command I wrote up that provides a fix for the ammo bug described by Demellion above.
+https://pastebin.com/SHX41Jkk
+Pass a loadout to your compiled command and it will provide one back that will not refill ammo.
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20220823082709
+|text= <sqf>
+player setUnitLoadout [
+	nil, nil, nil, nil, nil,
+	["B_Bergen_sgg", nil],
+	nil, nil, nil, nil
+];
+</sqf>
+You can use [[nil]] to skip some desired parameter. The skipped part will be ignored and remain the same with old loadout.<br>
+This method is ''very slightly'' faster than the latter method:
+<sqf>
+private _loadout = getUnitLoadout player;
+_loadout#5 set [0, "B_Bergen_mcamo_F"];
+player setUnitLoadout _loadout;
+</sqf>
+}}

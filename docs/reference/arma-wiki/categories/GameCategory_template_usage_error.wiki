@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:GameCategory_template_usage_error
+// revision: 341654 (2023-06-14T14:09:02Z)
+// export sha1: b2q4v0nbo1soc0fp0epkjbv59nb2vwv
+// Vendored snapshot. Do not edit — re-export instead.
+
+__HIDDENCAT__
+[[Category:Template usage error]]

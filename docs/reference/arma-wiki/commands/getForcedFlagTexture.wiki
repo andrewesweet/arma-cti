@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getForcedFlagTexture
+// revision: 348629 (2023-11-08T13:46:06Z)
+// export sha1: 30zlnro1npcyflfqtfx0vr2iwwscegy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Flags | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Flags
+
+|descr= A getter for [[forceFlagTexture]]. Forced texture is different from your normal flag texture, which can be retrieved with [[flagTexture]]
+
+|s1= [[getForcedFlagTexture]] object
+
+|p1= object: [[Object]] - vehicle, unit or flag pole
+
+|r1= [[String]]
+
+|x1= <sqf>getForcedFlagTexture player;</sqf>
+
+|seealso= [[forceFlagTexture]] [[Arma 3: Flag Textures]]
+}}

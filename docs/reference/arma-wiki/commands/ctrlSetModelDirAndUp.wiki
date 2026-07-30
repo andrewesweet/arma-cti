@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/ctrlSetModelDirAndUp
+// revision: 378364 (2026-04-03T16:42:03Z)
+// export sha1: tttxqw98f7aabsszze4l11a1eqrcydc
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Object | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= GUI Control - Object
+
+|descr= Sets orientation of 3D control model. It is similar to [[setVectorDirAndUp]] command for an object.
+
+|s1= control [[ctrlSetModelDirAndUp]] dirAndUp
+
+|p1= control : [[Control]] - 3D control
+
+|p2= dirAndUp: [[Array]] with [vectorDir, vectorUp]
+* vectorDir: [[Vector3D]] - see [[vectorDir]]
+* vectorUp: [[Vector3D]] - see [[vectorUp]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_ctrl3D ctrlSetModelDirAndUp [[0,1,0],[0,0,1]]; //default orientation</sqf>
+
+|seealso= [[ctrlModelDirAndUp]] [[ctrlCreate]] [[ctrlDelete]] [[ctrlModel]] [[ctrlSetModel]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlClassName]] [[vectorDir]] [[vectorUp]] [[setVectorDirAndUp]] [[ctrlModelVectorSide]]
+}}

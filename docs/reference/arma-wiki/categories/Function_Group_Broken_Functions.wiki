@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Broken_Functions
+// revision: 164168 (2020-10-03T11:31:35Z)
+// export sha1: 58nj6hbid5a13amweevbprzd4lma5p6
+// Vendored snapshot. Do not edit — re-export instead.
+
+This page shows [[:Category:Functions|scripting functions]] that...
+* ...have no effect at all or
+* ...do not fully work as intended or
+* ...were not implemented
+
+[[Category:Functions by Functionality]]

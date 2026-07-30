@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_weaponAddon
+// revision: 327150 (2022-07-12T21:45:23Z)
+// export sha1: i0b08z3ti6owbtozwqlfm1iv3t2i7ii
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Weapons | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Weapons
+
+|descr= Return addon from CfgPatches to which a given weapon class belongs to.
+{{Feature | important | This function is quite performance heavy, use only when absolutely necessary!}}
+
+|s1= classname call [[BIS_fnc_weaponAddon]]
+
+|p1= classname [[String]] - weapon's classname
+
+|r1= [[String]] - addon's config name
+
+|x1= <sqf>"arifle_MX_F" call BIS_fnc_weaponAddon; // returns "A3_Weapons_F_Rifles_MX"</sqf>
+
+|seealso=
+}}

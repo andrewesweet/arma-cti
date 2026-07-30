@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/removeMissionEventHandler
+// revision: 369303 (2024-09-03T18:42:53Z)
+// export sha1: 7a1g4grxfv308dj5j9lrkym2xb22mwx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+
+|gr1= Event Handlers
+
+|descr= Removes mission event handler added by [[addMissionEventHandler]].
+
+|s1= [[removeMissionEventHandler]] [type, index]
+
+|p1= type: [[String]]
+
+|p2= index: [[Number]] - index is returned by addMissionEventHandler.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+private _eventHandlerId = addMissionEventHandler ["Ended", { diag_log "mission complete"; }];
+// ...
+removeMissionEventHandler ["Ended", _eventHandlerId];
+</sqf>
+
+|x2= <sqf>
+for "_i" from 0 to 4 do {
+	missionNamespace setVariable [format ["handler%1",_i], addMissionEventHandler ["Loaded","hint ""_i"";"]];
+};
+removeMissionEventHandler ["Loaded", handler2]; // Remove the third index under type "Loaded"
+</sqf>
+
+|x3= <sqf>addMissionEventHandler ["entityKilled",{hint "First kill!"; removeMissionEventHandler ["entityKilled", _thisEventHandler]; }];</sqf>
+
+|seealso= [[addMissionEventHandler]] [[removeAllMissionEventHandlers]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2015-08-06 - 22:02 (UTC)</dd>
+<dt class="note">[[User:SilentSpike|SilentSpike]]</dt>
+<dd class="note">
+As of Arma 3 version 1.38 you can safely remove mission event handlers without worrying about decrementing higher indices.<br>
+'''EDIT:''' this command used to decrement other EH ids above the deleted one (e.g EH 0,1,2,3, delete EH 1, EH would be 0,1,2 now and not 0,2,3) - [[User:Lou Montana|Lou Montana]] ([[User talk:Lou Montana|talk]]) 19:29, 25 June 2020 (CEST)
+</dd>
+
+</dl>

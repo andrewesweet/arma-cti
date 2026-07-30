@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_display3denCopy
+// revision: 342138 (2023-07-09T12:26:46Z)
+// export sha1: oulkn1ukj2objxu2eiwshkl1w1yhnv7
+// categories: Category:Eden Editor: Modding | Category:GUI Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:A3 display3denCopy.png|thumb|display3denCopy with some example text|500px]]
+In [[:Category:Eden Editor|Eden Editor]], display3denCopy can be accessed to offer the user a way to inspect and copy long texts. 
+
+
+== Open the Display ==
+
+The display can be opened in [[:Category:Eden Editor|Eden Editor]] by executing <sqf inline>findDisplay 313 createDisplay "display3denCopy";</sqf>. While the display is mainly meant to be used inside the Editor it can also be used outside of it. To do so, just replace {{hl|313}} with the IDD of your parent display.
+
+Note that the display can also be used outside of [[:Category:Eden Editor|Eden Editor]].
+<sqf>(call BIS_fnc_displayMission) createDisplay "display3denCopy";</sqf>
+
+=== Adding Custom Text ===
+
+In order to display some text inside the edit box, one has to define the data. This is done via an [[uiNamespace]] variable like so:
+<sqf>uiNamespace setVariable ["display3DENCopy_data", ["Text displayed as header", "Text the user can copy and inspect"]];</sqf>
+
+ 
+[[Category:GUI Topics]]
+[[Category: Eden Editor: Modding]]

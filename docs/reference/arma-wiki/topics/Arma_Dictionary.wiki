@@ -1,0 +1,775 @@
+// source: https://community.bistudio.com/wiki/Arma:_Dictionary
+// revision: 377236 (2026-01-02T03:27:48Z)
+// export sha1: i83azyh8npwddol337h4f11fnzm3ilo
+// categories: Category:Armaverse
+// Vendored snapshot. Do not edit — re-export instead.
+
+This article covers {{arma}} series/military-related words as well as common lingo.
+
+{{Feature|informative|For {{arma}}-related Czech words, see the {{Link|ArmA: Armed Assault: Selection Translations|translation table}}.}}
+
+{| class="wikitable sortable valign-top"
+! Term
+! Type
+! Meaning
+! Description/Notes
+! Scope
+|-
+| PID
+| Abbreviation
+| '''P'''ositive '''Id'''entification
+| Ensure target's identity confirmation (whether hostile or objective)
+| IRL
+|-
+| PAC
+| Abbreviation
+| '''Pac'''kage
+| military personnel
+| IRL
+|-
+| BLUFOR
+| Abbreviation
+| '''Blu'''e '''For'''ces
+| friendlies, in {{arma}} means Western forces (e.g. US, NATO)
+| IRL
+|-
+| OPFOR
+| Abbreviation
+| '''Op'''posing '''For'''ces
+| enemies, in {{arma}} means Eastern forces (e.g. Soviet, CSAT)
+| IRL
+|-
+| Independent
+| Alias
+| Independent (Forces)
+| In {{arma}} means third-world forces, local forces and/or guerillas (e.g. FIA, CDF, AAF). Sometimes called ''“INDFOR”'', ''“GREENFOR”'' unofficially
+| {{arma}}
+|-
+| CIVPOP
+| Abbreviation
+| '''Civ'''ilian '''Pop'''ulation
+|
+| IRL
+|-
+| CASEVAC
+| Abbreviation
+| '''Cas'''ualty '''Evac'''uation
+|
+| IRL
+|-
+| MEDEVAC
+| Abbreviation
+| '''Med'''ical '''Evac'''uation
+|
+| IRL
+|-
+|-
+| MRAP
+| Abbreviation
+| '''M'''ine '''R'''esistant '''A'''mbush '''P'''rotected Vehicle
+| e.g Hunter, Ifrit in {{arma3}}
+| IRL
+|-
+| HVT
+| Abbreviation
+| '''H'''igh '''V'''alue '''T'''arget
+|
+| IRL
+|-
+| IED
+| Abbreviation
+| '''I'''mprovised '''E'''xplosive '''D'''evice
+| unconventional, usually hidden explosive charge
+| IRL
+|-
+| SITREP
+| Abbreviation
+| '''Sit'''uation '''Rep'''ort
+|
+| IRL
+|-
+| ETA
+| Abbreviation
+| '''E'''stimated '''T'''ime of '''A'''rrival
+| Normally means time (hours:minutes) of arrival - used to mean time enroute (travel time). See '''ETE'''
+| IRL
+|-
+| ETE
+| Abbreviation
+| '''E'''stimated '''T'''ime '''E'''nroute
+| Means time left before arrival. '''ETA''' is used instead.
+| IRL
+|-
+| BIS
+| Abbreviation
+| '''B'''ohemia '''I'''nteractive '''S'''tudios
+| expired name - see BI
+| Company
+|-
+| BI
+| Abbreviation
+| '''B'''ohemia '''I'''nteractive
+| (ex Bohemia Interactive Studios)
+| Company
+|-
+| BISim
+| Abbreviation
+| '''B'''ohemia '''I'''nteractive '''Sim'''ulations
+| (ex Bohemia Interactive Australia)
+| Company
+|-
+| RACS
+| Abbreviation
+| '''R'''oyal '''A'''rmy '''C'''orps of '''S'''ahrani
+| {{arma1}} INDFOR
+| {{arma1}}
+|-
+| SLA
+| Abbreviation
+| '''S'''ahrani '''L'''iberation '''A'''rmy
+| {{arma1}} OPFOR
+| {{arma1}}
+|-
+| NATO
+| Abbreviation
+| '''N'''orth '''A'''tlantic '''T'''reaty '''O'''rganization
+| {{Link|https://en.wikipedia.org/wiki/NATO}}
+| IRL
+|-
+| CSAT
+| Abbreviation
+| '''C'''anton '''P'''rotocol '''S'''trategic '''A'''lliance '''T'''reaty
+| {{arma3}} NATO counterpart mainly composed of Iran and China
+| {{arma3}}
+|-
+| AAF
+| Abbreviation
+| '''A'''ltis '''A'''rmed '''F'''orces
+| Altis military
+| {{arma3}}
+|-
+| Greenbacks
+| Slang
+| AAF soldiers
+| NATO soldiers' derogatory slang
+| {{arma3}}
+|-
+| LZ
+| Abbreviation
+| '''L'''anding '''Z'''one
+| An area where a helicopter or similar can land
+| IRL
+|-
+| LDF
+| Abbreviation
+| '''L'''ivonian '''D'''efense '''F'''orce
+| Livonia military
+| {{arma3}}
+|-
+| CAS
+| Abbreviation
+| {{Link|https://en.wikipedia.org/wiki/Close_air_support|'''C'''lose '''A'''ir '''S'''upport}}
+| Air strike to support ground forces by fixed/rotory wings
+| IRL
+|-
+| CAP
+| Abbreviation
+| {{Link|https://en.wikipedia.org/wiki/Combat_air_patrol|'''C'''ombat '''A'''ir '''P'''atrol}}
+| Sentry airspace by fighter jets to protect airspace
+| IRL
+|-
+| Fixed Wings
+| Military term
+| Planes
+|
+| IRL
+|-
+| Rotary Wings
+| Military term
+| Helicopters
+|
+| IRL
+|-
+| HE
+| Abbreviation
+| '''H'''igh '''E'''xplosive
+| Type of shells; Explosive rounds
+| IRL
+|-
+| AP / APERS
+| Abbreviation
+| '''A'''nti '''P'''''ers''onnel
+|
+| IRL
+|-
+| AP
+| Abbreviation
+| '''A'''rmor-'''P'''iercing
+| Type of shells made to penetrate armored targets
+| IRL
+|-
+| APDS
+| Abbreviation
+| '''A'''rmor-'''P'''iercing '''D'''iscarding '''S'''abot
+| Type of shells made to penetrate armor - "classical" Sabot ammunition
+| IRL
+|-
+| APFSDS
+| Abbreviation
+| '''A'''rmor-'''P'''iercing '''F'''in-'''S'''tabilized '''D'''iscarding '''S'''abot
+| Type of shells made to penetrate armor - thinner and longer than APDS Sabot, more "dart"-like
+| IRL
+|-
+| ERA
+| Abbreviation
+| '''E'''xplosive '''R'''eactive '''A'''rmor
+| Type of armor; protects the vehicle by exploding itself when hit by a shell
+| IRL
+|-
+| Soft skin
+| Military term
+| Less-protected/armored vehicles
+|
+| IRL
+|-
+| Fast mover
+| Military term
+| Fighter jets
+|
+| IRL
+|-
+| Blue on Blue
+| Military term
+| Friendly fire
+|
+| IRL
+|-
+| FF
+| Abbreviation
+| '''F'''riendly '''F'''ire
+|
+| IRL
+|-
+| IFF
+| Abbreviation
+| '''I'''dentification '''F'''riend or '''F'''oe
+|
+| IRL
+|-
+| FIA
+| Abbreviation
+| '''F'''reedom and '''I'''ndependence '''A'''rmy
+|
+| {{arma}}
+|-
+| Altis
+| Location
+| A fictional country in {{arma3}}
+| Republic of [[Altis]] and [[Stratis]], located in Mediterranean Sea
+| {{arma3}}
+|-
+| Horizon Islands
+| Location
+| A fictional country in {{arma3}}
+| [[Tanoa]] is the part of this country, located in Southern Pacific
+| {{arma3}}
+|-
+| [[Livonia]]
+| Location
+| A fictional country in {{arma3}}
+| Located in {{Link|https://en.wikipedia.org/wiki/Lithuania%E2%80%93Poland_border|Suwałki gap}} IRL, part of NATO
+| {{arma3}}
+|-
+| Chernarus
+| Location
+| A fictional country in {{arma2}}
+| Located in the coast of fictional sea Green Sea, former Russian Empire and a part of Soviet Union
+| {{arma2}}
+|-
+| [[Takistan]]
+| Location
+| A fictional country in {{arma2}}
+| Located in the coast of fictional sea Green Sea
+| {{arma2}}
+|-
+| South Zagoria
+| Location
+| A fictional region in {{arma2}}
+| AKA [[Chernarus|Chernarus (Terrain)]]
+| {{arma2}}
+|-
+| UAV
+| Abbreviation
+| '''U'''nmanned '''A'''ir '''V'''ehicle
+| AKA Drone
+| IRL
+|-
+| UCAV
+| Abbreviation
+| '''U'''nmanned '''C'''ombat '''A'''ir '''V'''ehicle
+| AKA Combat Drone
+| IRL
+|-
+| UGV
+| Abbreviation
+| '''U'''nmanned '''G'''round '''V'''ehicle
+| AKA Drone
+| IRL
+|-
+| ATV
+| Abbreviation
+| '''A'''ll '''T'''errain '''V'''ehicle
+|
+| IRL
+|-
+| Chedaki
+| Slang
+| ChDKZ
+|
+| {{arma2}}
+|-
+| ChDKZ
+| Abbreviation
+| Chernarussian Movement of the Red Star
+| Черноруссии движения к красной звездой<br>('''Ch'''ernorussii '''D'''vizheniya k '''K'''rasnoy '''Z'''vezdoy) in Russian
+| {{arma2}}
+|-
+| Alpha Victor
+| Military Term
+| Armored Vehicle
+| In phonetic code
+| {{arma3}}
+|-
+| AA
+| Abbreviation
+| '''A'''nti-'''A'''ir
+|
+| IRL
+|-
+| AAA
+| Abbreviation
+| '''A'''nti-'''A'''ir '''A'''rtillery
+| AKA Triple-A
+| IRL
+|-
+| Fox Two
+| Military Term
+| Fired an Infra-red Air to Air missile
+|
+| IRL
+|-
+| Fox Three
+| Military Term
+| Fired an Active radar-guided Air to Air missile
+|
+| IRL
+|-
+| VTOL
+| Military Term
+| '''V'''ertical '''T'''ake '''O'''ff and '''L'''anding
+| see S/VTOL
+| IRL
+|-
+| S/VTOL
+| Military Term
+| {{Link|https://en.wikipedia.org/wiki/V/STOL|'''S'''hort and/or '''V'''ertical '''T'''ake '''O'''ff and '''L'''anding}}
+|
+| IRL
+|-
+| STOVL
+| Military Term
+| {{Link|https://en.wikipedia.org/wiki/STOVL|'''S'''hort '''T'''ake '''O'''ff and '''V'''ertical '''L'''anding}}
+|
+| IRL
+|-
+| SVBIED
+| Abbreviation
+| '''S'''uicide '''V'''ehicle '''B'''orne '''I'''mprovised '''E'''xplosive '''D'''evice
+| AKA Suicide Car Bomb
+| IRL
+|-
+| FAK
+| Abbreviation
+| '''F'''irst '''A'''id '''K'''it
+|
+| IRL
+|-
+| Nadbór
+| Location
+| A fictional region in {{arma3}}
+| AKA Livonia (Terrain)
+| {{arma3}}
+|-
+| QRF
+| Abbreviation
+| '''Q'''uick '''R'''eaction '''F'''orce
+|
+| IRL
+|-
+| CDLC
+| Abbreviation
+| {{Link|https://arma3.com/dlc/creator|'''C'''reator '''DLC'''}}
+| AKA {{Link|link= https://forums.bohemia.net/forums/topic/211488-arma-3-third-party-dlc-pitch-invitation/|text= Third-Party DLC}}
+| {{arma3}}
+|-
+| GM
+| Abbreviation
+| '''G'''lobal '''M'''obilization
+| [[Global Mobilization|{{arma3}} Creator DLC: Global Mobilization - Cold War Germany]]
+| {{arma3}}
+|-
+| RV
+| Abbreviation
+| '''R'''endez'''v'''ous (point)
+|
+| IRL
+|-
+| RV
+| Abbreviation
+| [[Real Virtuality|'''R'''eal '''V'''irtuality]]
+| Game engine for the {{arma}} series from {{ofp}} to {{arma3}}, the latest version being v4
+| BI
+|-
+| OFP:CWC
+| Abbreviation
+| [[:Category:Operation Flashpoint|'''O'''peration '''F'''lash'''p'''oint: '''C'''old '''W'''ar '''C'''risis]]
+| Or simply '''OFP''', AKA '''OPF'''. ''{{arma0}}''<nowiki/>'s former name, trademarked by {{Link|https://www.codemasters.com/|Codemasters}}
+| {{ofp}}
+|-
+| Arma: CWA<br>A:CWA
+| Abbreviation
+| '''Arma''': '''C'''old '''W'''ar '''A'''ssault
+| New name for '''OFP: CWC''' since 2011, renamed after copyright issue
+| {{ofp}}
+|-
+| OFP:R
+| Abbreviation
+| [[{{ofpr}}|'''O'''peration '''F'''lash'''p'''oint: '''R'''esistance]]
+|
+| {{ofpr}}
+|-
+| OFP:RH
+| Abbreviation
+| '''O'''peration '''F'''lash'''p'''oint: '''R'''ed '''H'''ammer
+| Codemasters-made Soviet perspective campaign. Not included in Arma: CWA nowadays
+| {{ofp}}
+|-
+| Arma
+| Alias
+| Arma (Game series name)
+| Arma - means War, or Weapon in Latin. See {{Link|https://www.bohemia.net/blog/arma-2-the-name-tale|The Name Tale}} blogpost.
+| {{arma}}
+|-
+| ArmA
+| Abbreviation
+| '''Arma''': '''Arm'''ed '''A'''ssault
+| Not to be confused with ''Arma'', which designates the game series and/or games
+| {{arma1}}
+|-
+| A1
+| Abbreviation
+| '''A'''rma '''1''' (Armed Assault, see ArmA)
+|
+| {{arma1}}
+|-
+| ArmA:QG
+| Abbreviation
+| [[ArmA: Queen's Gambit|'''ArmA''': '''Q'''ueen's '''G'''ambit]]
+|
+| {{arma1}}
+|-
+| A2
+| Abbreviation
+| [[{{arma2}}|'''A'''rma '''2''']]
+|
+| {{arma2}}
+|-
+| A2OA
+| Abbreviation
+| [[Arma 2: Operation Arrowhead|'''A'''rma '''2''': '''O'''peration '''A'''rrowhead]]
+| Or simply '''OA'''
+| {{arma2}}
+|-
+| Arma 2 OA
+| Abbreviation
+| [[Arma 2: Operation Arrowhead|'''A'''rma '''2''': '''O'''peration '''A'''rrowhead]]
+| Or simply '''OA'''
+| {{arma2}}
+|-
+| A3
+| Abbreviation
+| [[{{arma3}}|'''A'''rma '''3''']]
+|
+| {{arma3}}
+|-
+| 3DEN
+| Alias
+| [[:Category:Eden Editor|'''Eden''' Editor]]
+| New editor introduced with the [[Arma 3: Main Updates#1.56 - Eden Update|Eden Update]]
+| {{arma3}}
+|-
+| AAR
+| Military Term
+| '''A'''fter '''A'''ction '''R'''eview
+| Reviewing past actions to understand potential mistakes and ways of improvement
+| IRL
+|-
+| ASAP
+| Abbreviation
+| '''A'''s '''S'''oon '''A'''s '''P'''ossible
+| Quickly, in emergency
+| IRL
+|-
+| klick
+| Military Term
+| Kilometer
+| e.g "enemy, one klick, North", "half a klick East”
+| IRL
+|-
+| Mike
+| Military Term
+| Minute
+| e.g "I will be there in 10 mikes"
+| IRL
+|-
+| AR
+| Abbreviation
+| '''A'''utomatic '''R'''ifleman
+|
+| IRL
+|-
+| AT
+| Abbreviation
+| '''A'''nti '''T'''ank
+|
+| IRL
+|-
+| IR
+| Abbreviation
+| '''I'''nfra-'''R'''ed
+|
+| IRL
+|-
+| UXO
+| Abbreviation
+| '''U'''n '''Ex'''ploded '''O'''rdnance
+| Bombs/shells that didn't explode properly and still have a risk of detonation. Call an expert when you find one. In {{arma3}}, UXOs are seen often in the Ground Zero of a Cluster bomb
+| IRL
+|-
+| UXB
+| Abbreviation
+| '''U'''n '''Ex'''ploded '''B'''omb
+| See '''UXO'''
+| IRL
+|-
+| IHL
+| Abbreviation
+| {{Link|https://ijrcenter.org/international-humanitarian-law/|'''I'''nternational '''H'''umanitarian '''L'''aw}}
+| Rules that needed to respect even in a war, AKA ''Jus in bello''
+| IRL
+|-
+| ICRC
+| Abbreviation
+| {{Link|https://www.icrc.org/en|'''I'''nternational '''C'''ommittee of the '''R'''ed '''C'''ross}}
+| AKA Red Cross, Red Crystal or Red Cresent
+| IRL
+|-
+| IDAP
+| Abbreviation
+| '''I'''nternational '''D'''evelopment & '''A'''id '''P'''roject
+| Fictional NGO, ICRC counterpart for {{arma3}}
+| {{arma3}}
+|-
+| LoW
+| Abbreviation
+| '''L'''aws '''o'''f '''W'''ar
+| [[Arma 3 Laws of War]] DLC
+| {{arma3}}
+|-
+| GBU
+| Abbreviation
+| '''G'''uided '''B'''omb '''U'''nit
+|
+| IRL
+|-
+| LGB
+| Abbreviation
+| '''L'''aser '''G'''uided '''B'''omb
+|
+| IRL
+|-
+| JTAC
+| Abbreviation
+| '''J'''oint '''T'''erminal '''A'''ttack '''C'''ontroller
+| Forward operator who guides an ''CAS'' and other fighter/attacker jets operation
+| IRL
+|-
+| Strafing
+| Military Term
+| Attacking ground enemies by aircraft-mounted guns
+|
+| IRL
+|-
+| Gendarmerie
+| Non-English
+| French MP
+| Also designates Horizon Islands' MP in {{arma3}}
+| IRL
+|-
+| MP
+| Abbreviation
+| '''M'''ilitary '''P'''olice
+|
+| IRL
+|-
+| IRL
+| Abbreviation
+| '''I'''n '''R'''eal '''L'''ife
+|
+| IRL
+|-
+| SP
+| Abbreviation
+| '''S'''ingle '''P'''layer
+|
+| IRL
+|-
+| MP
+| Abbreviation
+| '''M'''ulti'''P'''layer
+|
+| IRL
+|-
+| Bundeswehr
+| Non-English
+| German Army
+|
+| IRL
+|-
+| Luftwaffe
+| Non-English
+| German Airforce
+|
+| IRL
+|-
+| HALO
+| Abbreviation
+| '''H'''igh '''A'''ltitude '''L'''ow '''O'''pening
+| a.k.a '''HALO jump''', stealthy paradrop insertion used by special operators
+| IRL
+|-
+| Paradrop
+| Military Term
+| Parachute drop
+|
+| IRL
+|-
+| SpecOp
+| Abbreviation
+| '''Spec'''ial '''Op'''erators<br>'''Spec'''ial '''Op'''erations
+|
+| IRL
+|-
+| COIN
+| Abbreviation
+| '''Co'''unter '''In'''surgency
+|
+| IRL
+|-
+| EW
+| Abbreviation
+| '''E'''lectronic '''W'''arfare
+|-
+| EW
+| Abbreviation
+| '''E'''agle '''W'''ing campaign
+|
+| {{arma2}}
+|-
+| EMP
+| Abbreviation
+| '''E'''lectronic'''M'''agnetic '''P'''ulse
+| A pulse that disables most of the electric devices in an area
+| IRL
+|-
+| Callsign
+| Military Term
+| Anonymized name to be used in radio calls
+|
+| IRL
+|-
+| [[Armaverse_Timeline|Armaverse]]
+| Unique Term
+| The Universe of the {{arma}}
+|
+| {{arma}}
+|-
+| PMC
+| Abbreviation
+| '''P'''rivate '''M'''ilitary '''C'''ompany<br>'''P'''rivate '''M'''ilitary '''C'''ontractors
+|
+| IRL
+|-
+| ION, Inc.
+| Unique Term
+| A fictional PMC in the Armaverse. {{Link|https://arma2.com/arma-2-pmc-factions/a2omc-ion|arma2.com ION page}}
+|
+| {{arma}}
+|-
+| FOB
+| Abbreviation
+| '''F'''orward '''O'''perating '''B'''ase
+|
+| IRL
+|-
+| CIWS
+| Abbreviation
+| '''C'''lose '''I'''n '''W'''eapon '''S'''ystem
+| Weapon system to destroy enemy aircraft/missiles to defend ally fleets
+| IRL
+|-
+| VLS
+| Abbreviation
+| '''V'''ertical '''L'''aunch '''S'''ystem
+| Weapon system to launch missiles vertically from fleets
+| IRL
+|-
+| CBRN
+| Abbreviation
+| '''C'''hemical '''B'''iological '''R'''adiological '''N'''uclear
+| Formely known as '''NBC''' - can designate a threat or an adapted equipment
+| IRL
+|-
+| NBC
+| Abbreviation
+| '''N'''uclear '''B'''iological '''C'''hemical
+| Old acronym, see '''CBRN'''
+| IRL
+|-
+| Futura
+| Alias
+| {{arma3}}'s working title
+| ''Future'' in Latin. Also appears as pbo names' suffix ''_f''
+| {{arma}}
+|-
+| Orange
+| Alias
+| {{arma3}} Laws of War's working title
+| Named after Amsterdam Studio and Dutch "orange culture"
+| {{arma}}
+|-
+| CSLA
+| Abbreviation
+| Czechoslovak People's Army
+| In Czech, Československá lidová armáda, in Slovak, Československá ľudová armáda.<br/>AKA '''ČSLA''', also may referred to {{arma3}} Creator DLC: [[CSLA Iron Curtain]].
+| IRL
+|-
+| SOCOM<br>USSOCOM
+| Abbreviation
+| ('''U'''nited '''S'''tates) '''S'''pecial '''O'''perations '''Com'''mand
+| Unified Combatant Command of all US special units of the US Army, US Air Force, US Navy and US Marine Corps
+| IRL
+|}
+
+
+[[Category: Armaverse|DICTIONARY]]

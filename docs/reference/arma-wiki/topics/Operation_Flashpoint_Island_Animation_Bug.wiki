@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/Operation_Flashpoint:_Island_Animation_Bug
+// revision: 251753 (2021-03-26T09:08:30Z)
+// export sha1: bf9lv4iizzca7acyj96io0s0kxo8ln0
+// Vendored snapshot. Do not edit — re-export instead.
+
+Considering the gigantic whole of Operation Flashpoint, one small oversight is impressively small.
+
+Island Anims created by BIS live inside their Anims pbo folder.
+
+The engine '''only''' looks inside that pbo because, in error, it is hardwired to do so. (all engine anims are preceded by ~\Anims\somewhere).
+
+Short of modifying and inserting your island anim inside the official bis anim.pbo, you '''cannot''' have an OemIslandAnim.Pbo because the addressing won't let u.
+
+The only option is to keep your anim unpoe'd and in  a folder 'somewhere'.
+
+When creating your 'world', you designate where 'somewhere' is.
+
+By convention that location is ~Addons because, convenient, that folder is guaranteed to exist.
+
+=== Previous Documentation ===
+
+The Cause
+
+As ever increasing numbers of addons (and islands) have been constructed over the years, it is impractical, and very inadvisable, to keep stuffing them into the 'official' folders of ~\Addons and / or ~\Res\Addons. In fact, the release of OFP: Resistance introduced the whole idea of using a mod folder for addons. The resistance pack IS a mod folder, only an 'official' one.
+
+Nowadays, the correct approach is to separate out addons into folders of related material (HYK, BAS, LSR, Nam) and use Kegety's excellent launcher to simply select those addons needed for the specific mission/campaign at hand. This article does not discuss the merits of doing this, it should, be obvious. If it were not, you wouldn't be reading!
+
+One wrinkle remains however with Island Anims. They cannot be inside a pbo. Neither their own, nor any other. This then prevents relative references being made to them. They must be hard wired to a known folder.
+
+So the standard approach is to place them in the official ~\Addons folder. Note carefully, not, the ~\Res\Addons folder (it might not exist!). This is a design decision implmemented by the author of the island addon. You, have no say in the matter.
+
+All of which contradicts the purpose of mods folders in attempting to keep your installation 'clean'.
+
+The cure
+
+== For Players ==
+
+there isn't one. Except to say, wherever you've been in doubt before, place the island anim folder in the root Addons directory. It is, the only place it will work. Note, you dont need (and shouldn't) put the island addon in here despite the readme.txt that says to do so. Addons belong in mods folders. Period. But, you must place the anim in here.
+
+=== For Authors and Hackers ===
+
+If you look a little closer, a mods directory is actually a mods folder with an embedded addons directory.
+
+Since it is your island, you can be pretty specific on what to call the mods name. In otherwords, you can, dictate the label.
+
+Let's take Doe's Winter Everon for example.
+
+Doe1.pbo is a classic Island pbo. it contains a wrp (island texture) file, a config.cpp, and lots of pretty pictures. The config.cpp for this island addon, and any other island addon out there, specifies where to find the island anim.
+
+Unsurprisingly, you will discover this
+
+class CfgWorlds
+{
+ class DefaultWorld {};
+ class DOEeden_snow: DefaultWorld
+ {
+   ......
+   cutscenes[]={"..\ADDONS\doe1_anim\intro"};
+
+In otherwords, this island pbo conforms to the standard, hardwired convention, of placing the island anim in the root Addons folder.
+
+However, how about this
+
+   cutscenes[]={"..\WinterEveron\ADDONS\doe1_anim\intro"};
+
+What you are saying here is you have created a mod which MUST be called WinterEveron (hardly an illogical choice, and hardly likely to collide with other folder names!)
+
+The island pbo, will call the anim in the same folder as the pbo. This is, after all how you shipped your island in a zip file in the first place!
+
+From now on, you, and players, can use the anim in a 'standard' mod folder, called, WinterEveron.
+
+The above is the base principle of so-called full modification mods. Mods like @Farmland and Finnish Defence Forces Mod (FDF) and PMC-VTE conform exactly to the manner described above.

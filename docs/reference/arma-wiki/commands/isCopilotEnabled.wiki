@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/isCopilotEnabled
+// revision: 369152 (2024-09-03T10:34:39Z)
+// export sha1: bibflf5i5heop2xpmv3gg27h7tmvmxa
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns true if copilots actions are enabled. 
+
+|s1= [[isCopilotEnabled]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+if (!isCopilotEnabled myHeli) then {
+	myHeli enableCopilot true;
+};
+</sqf>
+
+|seealso= [[enableCopilot]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-02-17</dd>
+<dt class="note">[[User:Strangepete|Strangepete]]</dt>
+<dd class="note">Only returns whether or not the actions are enabled and shown to the pilot and co-pilot. This will still return TRUE if the pilot uses the 'Lock Controls' action to disable co-pilot controls.<br>
+You can use the [[Arma 3: Event Handlers#ControlsShifted|Arma 3 Event Handler - Controls Shifted]] to detect 'Take Controls' or 'Release Controls' actions 
+
+</dl>

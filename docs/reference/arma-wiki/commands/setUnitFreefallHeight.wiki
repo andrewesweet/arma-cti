@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/setUnitFreefallHeight
+// revision: 364759 (2024-06-07T23:35:13Z)
+// export sha1: ih5rkpycsufn4drmaknt0as0d8u5n34
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Sets minimum freefall height AGL per unit, at which the unit assumes HALO pose. Engine default is 100m. Use -1 to reset the height to default.
+
+|s1= unit [[setUnitFreefallHeight]] minHeight
+
+|p1= unit: [[Object]] - unit
+
+|p2= minHeight: [[Number]] - min freefall height, -1 to set default
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setUnitFreefallHeight 1000;</sqf>
+
+|seealso= [[getUnitFreefallInfo]] [[getPosASL]] [[ASLToAGL]]
+}}
+
+{{Note
+|user= Hypoxic125
+|timestamp= 20240607233513
+|text= For player units, you must reapply setUnitFreefallHeight upon respawning.
+}}

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_smoothStep
+// revision: 329343 (2022-07-27T10:50:10Z)
+// export sha1: lwmjv6sizhl8x3r2xabmkdxwpjm7249
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interpolation | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Interpolation
+
+|descr= Interpolates between 0 and 1 with smoothing at the limits. Formula is {{hl|n<sup>2</sup> &times; (3 - 2n)}}.
+
+|s1= number call [[BIS_fnc_smoothStep]]
+
+|p1= number: [[Number]] - a number in range 0..1. A value not in range will be [[floor|floored]] to 0 or [[ceil|ceiled]] to 1
+
+|r1= [[Number]] - interpolation result
+
+|x1= <sqf>private _smoothedStep = 0.75 call BIS_fnc_smoothStep;</sqf>
+
+|x2= <sqf>
+[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0] apply { _x call BIS_fnc_smoothStep; };
+// returns [0, 0.028, 0.104, 0.216, 0.352, 0.5, 0.648, 0.784, 0.896, 0.972, 1]
+</sqf>
+
+|seealso= [[BIS_fnc_lerp]]
+}}

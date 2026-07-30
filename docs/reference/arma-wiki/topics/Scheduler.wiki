@@ -1,0 +1,89 @@
+// source: https://community.bistudio.com/wiki/Scheduler
+// revision: 351907 (2024-01-24T14:43:29Z)
+// export sha1: 00f2c9zbvhy7lkdqq8eogijg796rm0c
+// categories: Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The [[Scheduler]] is the part of the game engine that decides which script runs at a certain point in time. It has the ability to pause a running script, move it to the back of the running queue and start a new script.
+
+
+== Scripts ==
+
+A new script can be started by using [[spawn]], [[execVM]], [[exec]] and [[execFSM]] commands. The script started this way will be added into the script scheduler and will be executed in turns, giving priority to the scripts waiting longest since their last suspension. Completed scripts are removed from the scheduler while scripts not completed in allocated time are suspended.
+
+
+== Scheduled Environment ==
+
+Running code in a scheduled environment starts a new script. The executing instance will not wait for the result of scheduled code and will continue on with its execution, so it is not possible to return any values from code executed in this manner although a [[Script Handle]] for started script is provided.
+
+As described below there is no way to predict when scheduled code will have finished, although you can use the command [[scriptDone]] with the provided [[Script Handle]] to query if the script execution has finished and there is also the command [[terminate]] to abort the script.
+
+Because the scheduled code can run only for a fixed duration, heavy scripts spread their load over time, and thus are having lesser impact on the game performance.
+
+'''All scheduled scripts can run for a maximum of 3ms in a frame'''. (Except if inside loadingscreen where it is 50ms per frame) <br>
+Each Script that runs add's up to the total runtime and as soon as the total runtime of 3ms is reached the current script is paused and the game continues calculating everything else it needs to calculate that frame (For example sound and graphics rendering). On the next frame the scheduler again starts to run scripts for 3ms, starting with the script which has not been executed for the longest time.
+
+This means any script that ran as the 3ms runtime was reached will be paused in the middle of it is execution and depending on how many scripts are spawned it might take several frames till it will run again.
+A while true loop with sleep started in scheduled environment therefore has little chance to follow with exact interval, because [[sleep]] only marks the script as done in the current frame and the next time the script is executed the engine will check if the sleep is over.
+This means at 20 FPS the time between one frame and the next is roughly 50ms. That would make a sleep 0.01 wait for atleast 0.05 seconds.This effect get's bigger when the fps get even lower and if the scheduler is so overfilled that your script only get's checked every few frames instead of every frame.
+
+If you spawn a scheduled script it will only start to run in the next frame when the scheduler starts fresh again.
+
+=== Where code starts scheduled ===
+
+* [[Event Scripts#init.sqf|init.sqf]]
+* [[Event Scripts#initServer.sqf|initServer.sqf]]
+* [[Event Scripts#initPlayerLocal.sqf|initPlayerLocal.sqf]]
+* [[Event Scripts#initPlayerServer.sqf|initPlayerServer.sqf]]
+* [[Arma 3: Functions Library#Pre and Post Init | functions with postInit attribute]] (although suspension is allowed, any long term suspension will halt the mission loading until suspension has finished)
+* code executed with [[spawn]]
+* code executed with [[execVM]] 
+* code executed with [[exec]]
+* code executed with [[call]] from a scheduled environment
+
+=== Scheduler diagnostics commands ===
+
+The following commands are available:
+* [[diag_activeSQSScripts]] - for all [[exec]]ed scripts in the scheduler  
+* [[diag_activeSQFScripts]] - for all [[execVM]]ed and [[spawn]]ed scripts in the scheduler 
+* [[diag_activeMissionFSMs]] - for all [[execFSM]]ed scripts in the scheduler 
+* [[diag_activeScripts]] - for all scripts in the scheduler
+
+
+== Unscheduled Environment ==
+
+Often also called non-scheduled environment but means the same and you will find both terms used in this wiki.
+The unscheduled environment runs (as described above) in the executing instance. The executing instance waits until the called function is finished. This ensures the execution order and is the fastest way for scripters to execute their code. The disadvantage is that a called function can halt or slow down the game if the function has a high performance consumption. Therefore those functions should be spawned and thereby run in a scheduled environment.
+
+=== Where code starts unscheduled ===
+
+* [[Arma 3: Debug Console|Debug Console]]
+* [[Eden Editor: Trigger|Triggers]]
+* [[Waypoints]] (condition ''and'' activation)
+* All pre-init code executions including [[Arma 3: Functions Library#Pre and Post Init|functions with preInit attribute]]
+* Code executed by [[FSM]] (actions, conditions, etc.)
+* [[:Category:Event Handlers|Event Handlers]] on units and in GUI
+* ''EachFrame'' code ([[Arma 3: Mission Event Handlers#EachFrame|Event Handler]] / [[BIS_fnc_addStackedEventHandler|Scripted EH]] / [[onEachFrame]])
+* Object initialisation fields
+* Expressions of Eden Editor entity/mission attributes
+* Code execution with [[call]] from an unscheduled environment
+* Code executed with [[remoteExecCall]]
+* Code inside [[isNil]]
+* [[SQF Syntax|SQF]] code called from [[SQS Syntax|SQS]] code
+* [[Conversations#Conversation Event Handler|Conversation Event Handler]]
+* Code inside [[collect3DENHistory]]
+
+=== while Loops ===
+
+A [[while]]-[[do]] loop is limited to (hard-coded) '''10,000''' iterations in a non-scheduled environment.
+
+
+== Suspension ==
+
+Suspension is the process to wait a period of time or to wait for something to happen. Commands for suspension are [[sleep]], [[uiSleep]], [[waitUntil]].
+
+Suspension is '''forbidden''' in an unscheduled environment and trying to use such command will fail with an error; you must ensure that you are running your code in a scheduled environment '''and''' can suspend with the '''[[canSuspend]]''' command.
+
+
+[[Category:Scripting Topics]]

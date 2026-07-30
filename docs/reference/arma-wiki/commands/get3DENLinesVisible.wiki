@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/get3DENLinesVisible
+// revision: 377632 (2026-01-02T08:52:24Z)
+// export sha1: fw9h9377fr4q2hcvim7ln5humk483ai
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Get visibility state of [[:Category:Eden Editor|Eden Editor]] lines.
+
+|s1= [[get3DENLinesVisible]]
+
+|r1= [[Array]] with [showMap, showScene]
+* showScene: [[Boolean]] - visibility in the scene
+* showMap : [[Boolean]] - visibility in the map
+
+|x1= <sqf>if (get3DENLinesVisible select 0) then { hint "Lines are visible in the map."; };</sqf>
+
+|seealso= [[set3DENLinesVisible]] [[set3DENIconsVisible]] [[get3DENIconsVisible]] [[set3DENModelsVisible]]
+}}

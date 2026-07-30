@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_interpolateVectorConstant
+// revision: 349200 (2023-11-08T14:50:42Z)
+// export sha1: gg9ra5qw0wixdigbd75voiz3v9cre63
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interpolation | Category:Function Group: Vectors | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Interpolation
+
+|gr2= Vectors
+
+|descr= Interpolates vector to target linearly. 
+
+|s1= [currentValue, targetValue, delta, interpSpeed] call [[BIS_fnc_interpolateVectorConstant]]
+
+|p1= currentValue: [[Array]] - the current value
+
+|p2= targetValue: [[Array]] - the target value
+
+|p3= delta: [[Number]] - (Optional, default 0) the delta time
+
+|p4= interpSpeed: [[Number]] - (Optional, default 0) the interpolation speed
+
+|r1= [[Array]] - the interpolated value
+
+|x1= <sqf>[[1,1,1], [20,20,20], 0.2, 0.1] call BIS_fnc_interpolateVectorConstant;</sqf>
+
+|seealso= [[BIS_fnc_interpolateConstant]] [[BIS_fnc_interpolate]] [[BIS_fnc_interpolateVector]]
+}}

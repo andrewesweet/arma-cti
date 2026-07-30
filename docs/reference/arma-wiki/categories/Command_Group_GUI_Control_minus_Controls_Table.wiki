@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_GUI_Control_-_Controls_Table
+// revision: 170105 (2020-11-29T13:45:47Z)
+// export sha1: 91g5kuaffxi59c0acmxrk3kyll1mdj5
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands to manipulate [[CT_CONTROLS_TABLE]] controls.
+
+[[Category:Command Group: GUI Control]]

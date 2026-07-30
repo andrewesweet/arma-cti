@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/getSlotItemName
+// revision: 353032 (2024-03-12T11:47:36Z)
+// export sha1: ry9igypu92nqnoqaue3zldv78jztb14
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|gr1= Unit Inventory
+
+|descr= Returns the name of assigned item in given slot or the empty string.
+
+|s1= unit [[getSlotItemName]] slot
+
+|p1= unit: [[Object]]
+
+|p2= slot: [[Number]] - can be one of:
+{{Columns|4|
+* 603 - Goggles
+* 605 - Headgear
+* 608 - Map
+* 609 - Compass
+* 610 - Watch
+* 611 - Radio
+* 612 - GPS
+* 616 - HMD
+* 617 - Binoculars
+* 701 - Vest
+* 801 - Uniform
+* 901 - Backpack
+}}
+
+|r1= [[String]] - item name
+
+|x1= <sqf>hint (player getSlotItemName 610);</sqf>
+
+|seealso= [[assignedItems]] [[assignItem]] [[unassignItem]] [[linkItem]] [[unlinkItem]] [[addItem]] [[removeItem]] [[removeAllAssignedItems]] [[items]] [[itemsWithMagazines]] [[backpacks]]
+}}

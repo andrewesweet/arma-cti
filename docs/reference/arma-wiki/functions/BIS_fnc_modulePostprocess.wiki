@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_modulePostprocess
+// revision: 352172 (2024-02-01T23:25:38Z)
+// export sha1: gagncoft6rqpjtuijv6bsukh1ct23bc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|descr= {{Feature|informative|This function is used by the [[Post Process Effects|Post-Process]] module.}}
+
+|s1= -<!-- [] call [[BIS_fnc_modulePostprocess]]; -->
+
+|r1= -
+
+|x1= -
+
+|seealso= [[Arma 3: Editor Modules]] [[Modules]]
+}}

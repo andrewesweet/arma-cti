@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_RC-Branch_Change_Log_v2.20
+// revision: 378266 (2026-03-27T09:42:42Z)
+// export sha1: 1xcndh3b0d751ak2iubwkk453cej87p
+// categories: Category:Arma 3: RC-Branch Change Logs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+= 14-05-2025 =
+<s>We're starting public Release Candidate testing for Arma 3 platform '''update 2.20''' today.</s> This test has concluded, thanks!
+
+<s>Steam beta branch access code: ''Arma3Update220RC''</s>
+
+<s>Download sizes: ~112 MB (client) / ~52 MB (server)</s>
+
+
+Pseudo-changelog:
+* Performance optimizations
+* Steam Game Recording
+* UH-80 / AH-99 stub wings
+* Illumination flares
+* Miscellaneous fixes and tweaks
+
+=== 14-05-2025 ===
+Notable changes:
+* Added: Custom Arma 3 Steam Game Recording icons (documentation forthcoming)
+* Fixed: Various "Old Man" script errors
+* Fixed: PP Fisheye / DepthOfField did not work in CfgOpticsEffect
+
+=== 21-05-2025 ===
+Notable changes:
+* Fixed: Glitches on new stub wing helicopters and their armaments
+* Tweaked: Color consistency of Steam Game Recording icons
+
+=== 28-05-2025 ===
+Notable changes:
+* Added: Translations for new 2.20 texts
+* Fixed: Potential crash discovered while testing Support multiplayer scenarios
+* Tweaked: Separated DAGR variant for MH-80 Ghost Hawk stub wing pylons (and removed auto-seek from default DAGR again)
+* Tweaked: Added missing pylon mirroring option to AH-99 stub wing variant
+
+=== 04-06-2025 ===
+Notable changes:
+* Fixed: mfdMaxUserValues config entry was loaded too late (after MFDs were already initialized with a maximum of 50) (thanks ''Ampersand'')
+* Fixed: The cache locator in “Old Man” was not working (thanks ''Laid3acK'')
+* Added: Option to the disableChannels mission and server parameter to disable map drawing and map marker placement from the UI per chat channel
+* Fixed: MH-80 stub wing pylon presets were using the incorrect version of DAGR missiles (thanks ''drebin052'')
+
+{{GameCategory|arma3|RC-Branch Change Logs}}

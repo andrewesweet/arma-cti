@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_List_of_supports
+// revision: 226396 (2021-01-31T17:58:38Z)
+// export sha1: rof1lwajv90z2oxpb9727njw53u8j2h
+// categories: Category:Carrier Command: Gaea Mission
+// Vendored snapshot. Do not edit — re-export instead.
+
+==Carrier==
+
+*Flares
+A set of small rockets. These are deployed as dummy targets to protect the Carrier against missiles.
+
+*Fuel
+Used in Carrier engines and as a basic substance for repairing components and vehicles.
+
+*Fuelpack
+A pack of Carrier fuel cells. Used in Carrier engines and as a basic substance for repairing components and vehicles.
+
+*Defense drones
+Defense Drones protect the Carrier primarily from enemy Walruses. They lock and explode on impact.
+
+*Scout drone
+The Scout Drone allows for aerial reconnaissance of an island without being detected.
+
+== Walrus ==
+
+*Repair gun
+
+magazine capacity: 80 / 100%
+
+An energy beam capable of repairing damaged units at short range.
+
+From tutorial. Okoro: Sir, the blueprint we just gained details the construction of a Walrus-mounted &quot;Repair&quot; beam. This beam repairs its target, mending broken welds and damaged plates. It has a limited range, but I strongly recommend we build one and try it out.
+
+*Ammo box
+A capsule that stores additional ammunition for the unit, increasing combat capabilities.
+
+*Hacking capsule
+A capsule used to re-program the internal systems in an enemy Command Center.
+
+*Resource capsule
+The Resource capsule constructs Mining structures, the island then harvests materials.
+
+*Production capsule
+The Production capsule constructs Factories, the island is then capable of Production.
+
+*Defense capsule
+The Defense capsule constructs Defensive structures, changing the island to Defensive.
+
+== Manta ==
+
+*Hook
+The Manta Hook is a system designed for transporting objects and vehicles, primarily Walruses.
+
+*Flares
+A set of small rockets. These are deployed as dummy targets against missiles.
+
+[[Category:Carrier Command: Gaea Mission]]

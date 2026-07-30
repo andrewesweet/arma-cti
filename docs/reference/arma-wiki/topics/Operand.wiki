@@ -1,0 +1,16 @@
+// source: https://community.bistudio.com/wiki/Operand
+// revision: 295443 (2021-11-15T22:54:57Z)
+// export sha1: h7g96caxiqbhptf71e7lkadqb5l77sr
+// categories: Category:Syntax
+// Vendored snapshot. Do not edit — re-export instead.
+
+An '''operand''' is any value given to an [[Operators|operator]].
+
+
+'''Example:'''
+
+ a + b
+
+{{hl|a}} and {{hl|b}} are operands.
+
+[[Category: Syntax]]

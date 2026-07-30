@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/slingLoadAssistantShown
+// revision: 369265 (2024-09-03T18:42:42Z)
+// export sha1: lewqe8g79qtdr511asp79dxfns97blp
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Ropes and Sling Loading
+
+|descr= Returns [[true]] if Sling Load Assistant is open.
+
+|s1= [[slingLoadAssistantShown]]
+
+|r1= [[Boolean]] - [[true]] if sling load assistant is shown, [[false]] otherwise
+
+|x1= <sqf>
+waitUntil { slingLoadAssistantShown };
+hint "You lack rudimentary motor skills and basic eye-hand coordination."; // scold user for unethical practices
+</sqf>
+
+|seealso= [[ropes]] [[canSlingLoad]] [[enableRopeAttach]] [[getSlingLoad]] [[ropeAttachedObjects]] [[ropeAttachTo]] [[ropeDestroy]] [[ropeLength]] [[ropeUnwound]] [[ropeAttachedTo]] [[ropeCreate]] [[ropeDetach]] [[ropeAttachEnabled]] [[ropeCut]] [[ropeEndPosition]] [[ropeUnwind]]
+}}

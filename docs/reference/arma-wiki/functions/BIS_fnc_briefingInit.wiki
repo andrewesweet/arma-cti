@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_briefingInit
+// revision: 348860 (2023-11-08T14:39:13Z)
+// export sha1: 6sxjzg101k65snz49xx4dwymacyi7ni
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Briefing | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Briefing
+
+|descr= Initialize animated briefing markers.
+
+|s1= marker call [[BIS_fnc_briefingInit]]
+
+|p1= marker: [[String]] - marker to initialise
+
+|x1= "marker_1" [[call]] [[BIS_fnc_briefingInit]];
+
+|r1= [[Nothing]]
+
+|seealso= [[BIS_fnc_briefingAnimate]]
+}}

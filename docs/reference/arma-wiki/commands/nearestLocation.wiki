@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/nearestLocation
+// revision: 377409 (2026-01-02T06:45:10Z)
+// export sha1: 9883pa3ghuymwfh8262u630v9qktbma
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Locations
+
+|descr= Return the closest location of specified class to a given position. Checked range is unlimited (i.e. covers the whole map).
+
+{{Feature|informative|Although locations can be placed in 3D with [[setPosition]], [[nearestLocations]] search is conducted in 2D.}}
+
+|s1= [[nearestLocation]] [position, locationType, maxDistance]
+
+|p1= position: [[Object]] or [[Position#PositionAGL|PositionAGL]] or [[Position#Introduction|Position2D]]
+
+|p2= locationType: [[String]] of a location class name. If "" is supplied, any nearest location is returned. Since Arma 3 2.14 locationType could be an [[Array]] of location types. See [[Location#Location Types|Location Types]]
+
+|p3= maxDistance: [[Number]] - (Optional) max search radius. Default - unlimited range.
+|p3since= arma3 2.14 
+
+|r1= [[Location]]
+
+|x1= <sqf>_nearestCity = nearestLocation [getPos player, "nameCity"];</sqf>
+
+|x2= <sqf>_anyNearestLocation = nearestLocation [player, ""];</sqf>
+
+|seealso= [[findNearestEnemy]] [[nearestBuilding]] [[nearestObject]] [[nearestObjects]] [[nearObjects]] [[nearEntities]] [[nearTargets]] [[nearSupplies]] [[nearestLocationWithDubbing]] [[nearObjectsReady]] [[nearRoads]] [[Location#Location Types|Location Types]] [[locationPosition]] [[nearestLocations]] [[createLocation]] [[nearestMines]]
+}}

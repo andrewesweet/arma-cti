@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/A3_Launcher
+// revision: 364284 (2024-05-06T09:38:35Z)
+// export sha1: cpt2n4ewscbtcv37clgz1vswco67pt7
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION= 1.3
+
+|COMPATIBILITY= [[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD= Part of Arma 3 package on Steam
+
+|DESCRIPTION= Launcher is a new interface to run the game and manage {{Link|link= http://steamcommunity.com/workshop/browse/?appid=107410|text= Steam Workshop}} addons.
+
+The purpose of this tool is to simplify start-up parameters, game options and manage mods. Read detailed documentation here: [[Arma 3: Launcher]].
+
+|COMMAND= arma3launcher.exe
+
+|OPTIONS=
+
+|EXAMPLE= arma3launcher.exe
+
+|NOTES=
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= [[Addon Builder]], [[Publisher]], [[Arma 3: Launcher]]
+}}
+
+
+{{GameCategory|arma3|Official Tools}}

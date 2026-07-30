@@ -1,0 +1,100 @@
+// source: https://community.bistudio.com/wiki/enableChannel
+// revision: 378455 (2026-04-19T11:32:44Z)
+// export sha1: srwddgqshzrqgiaywnum45vi56h2lvu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.42
+
+|eff= local
+
+|gr1= Radio and Chat
+
+|descr= Enables/disables UI functionality which is responsible for sending text or voice chat to the given chat channel.
+{{Feature|informative|
+This command:
+* can override [[Description.ext]] or [[Arma 3: Server Config File|server config]]'s channel setting
+* cannot disable Global channel for the admin or server host, because Global channel is always available for the admin
+* does not disable ''incoming'' text or voice
+* actively interrupts (since {{arma3}} v2.02) the current communication in progress
+* does not affect chat related scripting commands such as [[vehicleChat]], [[globalRadio]] etc.
+}}
+
+{{{!}} class="wikitable align-center"
+! colspan="16" {{!}} [[Channel IDs|Channel ID]] number correspondence
+{{!}}-
+{{!}} colspan="6" {{!}} Default Channels
+{{!}} colspan="10" {{!}} Custom Channels
+{{!}}- style="font-size: .9em"
+{{!}} Global
+{{!}} Side
+{{!}} Command
+{{!}} Group
+{{!}} Vehicle
+{{!}} Direct
+{{!}} CC&nbsp;1
+{{!}} CC&nbsp;2
+{{!}} CC&nbsp;3
+{{!}} CC&nbsp;4
+{{!}} CC&nbsp;5
+{{!}} CC&nbsp;6
+{{!}} CC&nbsp;7
+{{!}} CC&nbsp;8
+{{!}} CC&nbsp;9
+{{!}} CC&nbsp;10
+{{!}}-
+{{!}} 0
+{{!}} 1
+{{!}} 2
+{{!}} 3
+{{!}} 4
+{{!}} 5
+{{!}} 6
+{{!}} 7
+{{!}} 8
+{{!}} 9
+{{!}} 10
+{{!}} 11
+{{!}} 12
+{{!}} 13
+{{!}} 14
+{{!}} 15
+{{!}}}
+
+|s1= channelID [[enableChannel]] enable
+
+|p1= channelID: [[Number]] - [[Channel IDs|channel ID]]
+
+|p2= enable: [[Boolean]] - [[true]] to enable, [[false]] to disable (both VoN and chat)
+
+|r1= [[Nothing]]
+
+|s2= channelID [[enableChannel]] [chat, VoN]
+
+|s2since= arma3 1.60
+
+|p21= channelID: [[Number]] - [[Channel IDs|channel ID]]
+
+|p22= chat: [[Boolean]] - [[true]] to enable text chat
+
+|p23= VoN: [[Boolean]] - [[true]] to enable voice chat
+
+|p24= enableMapMarkers: [[Boolean]] - (Optional, default [[true]]) [[true]] to enable map marker placement
+
+|p24since= arma3 2.22
+
+|p25= enableMapDrawing: [[Boolean]] - (Optional, default [[true]]) [[true]] to enable drawing on the map
+
+|p25since= arma3 2.22
+
+|r2= [[Nothing]]
+
+|x1= <sqf>0 enableChannel false; // disable user ability to send voice and text on global channel</sqf>
+
+|x2= <sqf>0 enableChannel [true, false]; // enable user ability to send text but disable voice on global channel</sqf>
+
+|seealso= [[currentChannel]] [[setCurrentChannel]] [[getPlayerChannel]] [[channelEnabled]] [[radioChannelCreate]]
+}}

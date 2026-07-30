@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_nearestHelipad
+// revision: 348117 (2023-11-08T11:32:17Z)
+// export sha1: klqf13nul3x98sb2xilgv4q7nrorjbw
+// categories: Category:Arma 3: Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Map and Markers
+
+|descr= Finds the nearest helipad of given type.
+
+|s1= [position, radius, random, types] call [[BIS_fnc_nearestHelipad]]
+
+|p1= position: [[Array]] format [[Position]] - (Optional, default [[position]] [[vehicle]] [[player]]) center position
+
+|p2= radius: [[Number]] - (Optional, default 999999) radius of the area to search in meters
+
+|p3= random: [[Boolean]] - (Optional, default [[false]]) if [[true]] a random helipad will be selected if multiple are found
+
+|p4= types: [[Array]] - (Optional, default ["Heliport"]) location types to be searched for. See [[nearestLocations]] for more information {{Feature|arma3|Default value won't work in {{arma3}}. Only types listed in CfgLocationTypes are supported}}
+
+|r1= [[Array]] in format:
+* 0: [[Position]] - Position of the selected location
+* 1: [[Object]] - Helipad 
+* 2: [[Position]] - Position of the helipad
+
+|x1=
+
+|seealso= [[nearestObjects]]
+}}

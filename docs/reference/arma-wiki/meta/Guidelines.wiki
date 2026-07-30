@@ -1,0 +1,163 @@
+// source: https://community.bistudio.com/wiki/Bohemia_Interactive_Community:Guidelines
+// revision: 338301 (2023-02-27T10:21:34Z)
+// export sha1: h14f9pfo61874updbh932g5s8p8oohl
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+As with any good public internet place, rules and guidelines help maintain order and sanity among readers and editors. The following rules and guidelines are designed so that people will return here to contribute and find quality information. Respecting these rules will help in providing a positive experience for both editors and readers alike.
+
+{{Feature|informative|User behaviour is regulated by general BI [[Bohemia Interactive Community:Rules|Rules]].}}
+
+
+== Content Guidelines ==
+
+The '''content guidelines''' are important to ensure that content, names and pictures remain consistent.  This makes reading the articles much easier, and it also makes the job of the editors easier. Content guidelines ensure that articles and topics do not violate the '''[[Meta:General_disclaimer|Rules of Conduct]]''', or violate the law.
+
+=== Text ===
+
+When writing an article:
+* Do your research beforehand. Read all the relevant documentation, posts and articles on the web, this very wiki, test the situations your are describing, and only then start your article.<!--
+--> If you are still in the early stages of editing, formatting, etc. keep the article in your '''sandbox''' until it is finished.<!--
+--> If you are unsure about certain subjects that are brought up by your article, don't guess. Likewise, it is good to be honest and say the data is incomplete.<!--
+--> It is better to leave out subjects about which you are unsure rather than to post hear-say or false information. This is a Wiki and other users will, over time, complete the missing parts.
+* '''Preview''' the changes before saving them. Saving every single revision during editing will clutter the "History" and "Recent Changes" pages, and will make it harder for others to track the actual changes.
+* Aim for the best spelling ("u r"/"you're" &rarr; "you are", "its" &rarr; "its", "it's" &rarr; "it is").
+
+If there are some minor points in your article that you think someone else might be able to answer, ask on the {{Link|https://discord.com/invite/arma|Arma Platform Discord}}'s {{hl|#community_wiki}} channel
+* '''Only post verified information on the wiki''' - this should go without saying.
+* Do not '''ask''' questions (about a topic, a future game, anything else).
+* Talk pages and Discussion pages are not to be used anymore and are blocked for modification.
+* If in doubt, use {{Link|https://discord.com/invite/arma|Arma Platform Discord}}'s {{hl|#community_wiki}} channel or the or the {{Link|https://forums.bohemia.net/forums/|forums}}
+
+=== Images ===
+
+Uploaded images must not contain porn, real killings, mutilations, wounds, carnage and other explicit images. This also includes links to pages that contain such images.
+The only accepted images for this Wiki must be related to a {{Name|bi}} product. Keep the following guidelines in mind when uploading and posting pictures here: 
+* You must own the image rights or its copyright must allow its upload on this wiki
+* Do not use hotlinked images in the Wiki. Use the [[Special:Upload|Upload File]] function instead to upload images to this Wiki.
+* Use the [[Special:Upload#Naming Rules|Naming Rules]]
+* When appropriate use an image thumbnail on the article page (such as on the [[Operation Flashpoint: Easter Eggs|OFP Easter Eggs]] page). 
+* Avoid using a text link to point to an image. Display the image as thumbnail or sized appropriately for the article.
+
+
+== Format Guidelines ==
+
+These guidelines are here to ensure that articles are presented in a clear, understandable and consistent style.
+
+=== Categorise your Article ===
+
+Organisation is essential for making it easy to find information on this Wiki. Be sure to categorise your article once you have completed the writing.
+'''Always''' use categories for a page. Unless you categorise your article properly people will not be able to find it.
+
+Clearly distinguish content specific to a particular project.
+If the content you are creating is about {{ofp}} then it should be categorised in the appropriate {{GameCategory|ofp|link=y}} category, not everything from {{ofp}} is applicable to later titles).
+
+* Use {{Template|GameCategory}} whenever possible!
+
+=== Create/Edit Sections ===
+
+When starting a new subject on an article or discussion page define a section name to describe the sub-topic (Example: {{hl|<nowiki>== Create/edit Sections ==</nowiki>}}).<br>
+When editing only a section of a page, use the section edit button (the <nowiki>[edit]</nowiki> link on the right side) to open only that particular part of the page.
+This will prevent conflicts if two people are editing the same page.
+
+=== External Links ===
+
+* To link an external page, use the {{Template|Link}} template (e.g {{hl|<nowiki>{{Link|https://www.google.com|My Link}}</nowiki>}} – this will allow to track dead links faster in the future.
+* Do not link to websites that have temporary addresses (e.g IPs).
+
+=== Changes Summary ===
+
+When making only small edits check the "This is a minor edit" box at the bottom.
+This makes the version history easier to read. Generally 90% of the edits will be minor edits for boldness, typos, etc.
+By default all edits are marked as "major". This can be changed to "minor" in your preferences setting.
+
+Be sure to include a summary text of edits you have made. This makes it easy for other people to see at a glance what the edit was about. Even short text statements like "''fixed typo''" will be sufficient in most cases.
+
+=== Page Titles ===
+{| class="wikitable float-right"
+! Do
+! Don't
+|-
+|
+* {{ofp}}: Actions List
+* {{ofpe}}
+* {{arma3}}: Weapons
+|
+* List of Actions OFP
+* OFP:Elite
+* A3:Weapons
+|}
+
+When creating new categories or articles, consider the naming convention to be used.<br>
+<nowiki>[[Operation Flashpoint: Elite]] is more acceptable than [[OFP:Elite]]. The new category or article should almost always be [[Game Title: something]] such as [[Operation Flashpoint: Addons]]</nowiki>.
+
+The namespace must be considered:
+* if the game has a namespace, use it: {{hl|[[DayZ:Unusual Process Exit|<nowiki>DayZ:Unusual Process Exit</nowiki>]]}}
+* otherwise, use the game name with a space: {{hl|[[Arma 3: Unusual Process Exit|<nowiki>Arma 3: Unusual Process Exit</nowiki>]]}}
+
+{{Feature|informative|Use '''Namespaces''' whenever possible!}}
+
+The name choice should always be clear and concise for the reader, and easy for the editor to link back to.
+Keep in mind that you can use spaces in the name of the article (e.g. <nowiki>[[Easter Eggs]] would be better than [[EasterEggs]]</nowiki>).
+
+=== Content ===
+
+==== Common Names ====
+The [[Template:Name|Name Template]] provides the expected names for various product and company names.<br>
+Some shortcut templates exist for simplicity (e.g {{hl|<nowiki>{{arma3}}</nowiki>}} instead of {{hl|<nowiki>{{Name|arma3}}</nowiki>}}) and are listed in the table below.
+
+{| class="wikitable"
+! Long Names || Short Names || Template
+|-
+| {{Name|arma4}} || {{Name|arma4|short}} || [[Template:arma4]] ({{arma4}})
+|-
+| {{Name|armaR}} || {{Name|armaR|short}} || [[Template:armaR]] ({{armaR}})
+|-
+| {{Name|arma3}} || {{Name|arma3|short}} || [[Template:arma3]] ({{arma3}})
+|-
+| {{Name|arma2oa}} || {{Name|arma2oa|short}} || [[Template:arma2oa]] ({{arma2oa}})
+|-
+| {{Name|arma2}} || {{Name|arma2|short}} || [[Template:arma2]] ({{arma2}})
+|-
+| {{Name|arma1}} || {{Name|arma1|short}} || [[Template:arma1]] ({{arma1}})
+|-
+| | {{Name|bi}} || {{Name|bi|short}} ('''not''' BIS) || ''[[Template:Name|<nowiki>{{Name|bi}}</nowiki>]]'' ({{Name|bi}})
+|-
+| {{Name|ofp}} || {{Name|ofp|short}} || [[Template:ofp]] ({{ofp}})
+|-
+| {{Name|ofpr}} || {{Name|ofpr|short}} || [[Template:ofpr]] ({{ofpr}})
+|-
+| {{Name|ofpe}} || {{Name|ofpe|short}} || [[Template:ofpe]] ({{ofpe}})
+|-
+| {{Name|tkoh}} || {{Name|tkoh|short}} ('''not''' TOH) || [[Template:tkoh]] ({{tkoh}})
+|- 
+| {{Name|tkom}} || {{Name|tkom|short}} ('''not''' TOM) || [[Template:tkom]] ({{tkom}})
+|}
+
+=== Categories ===
+
+{{Feature|informative|Use the [[Template:GameCategory|GameCategory]] template whenever possible.}}
+
+Templates can be used in the category name, e.g <syntaxhighlight lang="html" inline>[[Category:{{arma3}}: Functions]]</syntaxhighlight> (result: [[:Category:{{arma3}}: Functions]])
+
+==== Sorting Keys ====
+When defining a category for an article you should include a search key in that definition:
+ [[<nowiki/>Category: CategoryName'''|Sort Key''']]
+If not defined, the automatically created table of contents will sort everything alphabetically, sometimes unsuccessfully.
+
+One can use the following:
+<syntaxhighlight lang="html" inline>[[Category:{{arma3}}|{{uc:{{PAGENAME}}}}]]</syntaxhighlight>
+
+The {{hl|uc:}} wiki template will '''u'''pper'''c'''ase the given value, which is <syntaxhighlight lang="html+handlebars" inline>{{PAGENAME}}</syntaxhighlight>.
+{{Feature|informative|See the interest of defining a custom key on the [[:Category:Arma 3: Functions|{{arma3}} Functions page]]: if custom keys were not defined in the {{Template|RV}} template, every function would be sorted under '''B''', for '''B'''IS_fnc/'''B'''IN_fnc.}}
+
+=== Deletion Guidelines ===
+
+Deletion is only possible by a wiki admin. Pages should not be created without thinking beforehand, therefore pages are usually moved rather than deleted.
+
+A page can be marked for deletion with <nowiki>{{Wiki|delete}}</nowiki>:
+* A page containing pointless/test/BI-unrelated/law-breaking content is prone to be deleted.
+* All links to that page must be removed before doing so.
+
+
+[[Category:Bohemia Interactive Community:Policies]]

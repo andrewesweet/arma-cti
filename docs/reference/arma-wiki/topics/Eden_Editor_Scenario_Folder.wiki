@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Scenario_Folder
+// revision: 293264 (2021-08-28T17:21:03Z)
+// export sha1: a587rnlezmie95jn3j5dyir03yhz560
+// categories: Category:Eden Editor: Scenario
+// Vendored snapshot. Do not edit — re-export instead.
+
+The scenario folder can contain various scripts, but also images used during the mission. Commonly used are:
+*[[Description.ext]]
+*[[Event Scripts]]
+*[[Script File|Scripts]]
+
+[[Category:Eden Editor: Scenario|Scenario Folder]]

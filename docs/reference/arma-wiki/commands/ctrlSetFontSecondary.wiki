@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/ctrlSetFontSecondary
+// revision: 348687 (2023-11-08T14:29:23Z)
+// export sha1: aoga8vop174o0zdtv591w5xdsxdqlcy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+|game1= arma3
+|version1= 1.62
+|arg=
+|eff= local
+
+|gr1= GUI Control
+
+|descr= Sets the font size of the secondary text of given control.
+|s1= ctrl [[ctrlSetFontSecondary]] fontClass
+
+|p1= ctrl: [[Control]]
+|p2= fontClass: [[String]] - font class
+|r1= [[Nothing]]
+
+|x1= _control [[ctrlSetFontSecondary]] "TahomaB";
+|seealso= [[ctrlSetFontP]] [[ctrlSetFontHeightSecondary]]
+}}

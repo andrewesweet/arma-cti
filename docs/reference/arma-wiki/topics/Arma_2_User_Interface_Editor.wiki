@@ -1,0 +1,194 @@
+// source: https://community.bistudio.com/wiki/Arma_2:_User_Interface_Editor
+// revision: 351432 (2023-12-06T09:43:06Z)
+// export sha1: lokmvtqdf5n33f8fdbx6fpm50brbudq
+// categories: Category:GUI Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Installation ==
+
+<span style="font-size: 200%">'''{{Link|http://moricky.com/items/stra_gui.rar|Download GUI editor}}'''</span>
+
+{{Link|http://moricky.com/items/stra_gui_preview.rar|Download Preview Mission}}
+
+* Current version: '''1.03'''
+* Compatible with: {{GameCategory|arma2|link= y}}; [[{{arma2oa}}]]
+
+
+Copy file ''stra_gui.pbo'' into your Arma 2 or Arma 2: OA addons folder.
+
+
+== Running ==
+
+Place the Functions module in editor and during game, execute the following code:
+<sqf>0 call BIS_fnc_GUIeditor;</sqf>
+
+
+== First Steps ==
+
+* GUI Editor is transferring data to and from game by copying to clipboard. To load some interface, simply copy it ({{Controls|Ctrl|C}}) and import it in game ({{Controls|Ctrl|L}}).
+* Same way, when exporting, result is again copied to clipboard and you can paste it ({{Controls|Ctrl|V}}) anywhere you need.
+* When GUI Editor is started, it automatically tries to load content from clipboard.
+* Custom params ({{Controls|Ctrl|RMB}}) are params which are exported, but their effects cannot be seen in editor itself.
+** If you define some param which is already set by classic editing (idc, text, position ...), custom param will have larger priority.
+
+
+== Controls ==
+
+=== LMB ===
+
+* '''Click and hold over GUI element''' - Move element
+* {{Controls|Ctrl}} - Align to grid
+* {{Controls|Alt}} - Modify size
+* {{Controls|Alt|Shift}} - Modify size with constant proportions
+
+=== RMB ===
+
+* '''Click on GUI element''' - Modify element parameters
+* '''Ctrl + Click on GUI element''' - Modify custom element parameters (changes won't be visible)
+* '''Click on free space''' - Add a new element
+
+=== Key Shortcuts ===
+
+* {{Controls|H}} - Help
+* {{Controls|G}} - Show/hide grid
+* {{Controls|Ctrl|G}} - Modify grid parameters
+* {{Controls|Alt|G}} - Create grid on element under cursor
+* {{Controls|Shift|G}} - Toggle between Absolute and Safezone grid
+* {{Controls|Ctrl|N}} - Add a new element
+* {{Controls|Delete}} - Delete a current element
+* {{Controls|Ctrl|C}} - Copy a current element
+* {{Controls|Ctrl|X}} - Cut a current element
+* {{Controls|Ctrl|V}} - Paste a copied element
+* {{Controls|Ctrl|Z}} - Undo
+* {{Controls|Ctrl|Shift|Z}} - Redo
+* {{Controls|Ctrl|S}} - Clipboard Export to GUI editor format
+* {{Controls|Ctrl|Alt|S}} - Clipboard Export to GUI editor format with linebreaks
+* {{Controls|Ctrl|Shift|S}} - Clipboard Export to a config format
+* {{Controls|Ctrl|Shift|S|1..9}} - Clipboard Export to a config format with given number of tabs (1-9)
+* {{Controls|Ctrl|L}} - Clipboard Import from GUI editor format
+* {{Controls|Ctrl|P}} - Clipboard Export parent classes
+* {{Controls|Ctrl|Shift|P}} - Clipboard Export grid proportions
+* {{Controls|Ctrl|I}} - Import from config
+* {{Controls|Space}} - Highlights all elements (including invisible ones)
+
+=== Position Types ===
+
+Following variants determine in what format the element position will be saved
+* '''Absolute''' - absolute position, remains same no matter what UI size or aspect ratio is.
+* '''Safezone''' - GUI elements stretches based both on UI width and height. Result may differ on different aspect ratios.
+* '''Grid''' - Position is calculated as multiplier of grid parameters.
+
+
+== Control Panels ==
+
+<gallery>
+Image:gui_workspace.jpg|Workspace
+Image:gui_element_edit.jpg|Edit Element
+Image:gui_element_edit_custom.jpg|Edit Element Custom Params
+Image:gui_export.jpg|Exported Dialog
+</gallery>
+
+
+== Export ==
+
+=== Editor format ===
+
+{{Controls|Ctrl|S}}
+
+Starts with dollar symbol ($). When you copy this format to clipboard, it can be loaded in editor ({{Controls|Ctrl|L}})
+
+ $[1.03,[["safezoneX","safezoneY","safezoneW","safezoneH"],"safezoneW / 32","safezoneH / 20"],[1000,"",[1,"",["0.3125 * safezoneW + safezoneX","0.35 * safezoneH + safezoneY","0.375 * safezoneW","0.3 * safezoneH"],[-1,-1,-1,-1],[0,0,0,0.5],[-1,-1,-1,-1],""],[]],[1001,"MyHeader",[1,"Hello World",["0.3125 * safezoneW + safezoneX","0.35 * safezoneH + safezoneY","0.375 * safezoneW","0.05 * safezoneH"],[-1,-1,-1,-1],[0,0,0,0.5],[-1,-1,-1,-1],""],["style = ST_CENTER;"]],[1400,"MyEditbox",[1,"",["0.328125 * safezoneW + safezoneX","0.425 * safezoneH + safezoneY","0.34375 * safezoneW","0.15 * safezoneH"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],["idc = 1234;"]],[1700,"MyButtonOK",[1,"Ok",["0.53125 * safezoneW + safezoneX","0.575 * safezoneH + safezoneY","0.140625 * safezoneW","0.1 * safezoneH"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],["onButtonClick = |hint ctrlText ((ctrlParent (_this select 0)) displayCtrl 1234);|;"]],[1701,"MyButtonBack",[1,"Cancel",["0.328125 * safezoneW + safezoneX","0.575 * safezoneH + safezoneY","0.140625 * safezoneW","0.1 * safezoneH"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],["onButtonClick = |((ctrlParent (_this select 0)) closeDisplay 3000);|;"]]]
+
+=== Editor Format (Multiline) ===
+
+{{Controls|Ctrl|Alt|S}}
+
+Ready to be included into config or description file.
+
+<sqf>
+/*
+$[
+	1.03,
+	[["safezoneX","safezoneY","safezoneW","safezoneH"],"safezoneW / 32","safezoneH / 20"],
+	[1000,"",[1,"",["0.3125 * safezoneW + safezoneX","0.35 * safezoneH + safezoneY","0.375 * safezoneW","0.3 * safezoneH"],[-1,-1,-1,-1],[0,0,0,0.5],[-1,-1,-1,-1],""],[]],
+	[1001,"MyHeader",[1,"Hello World",["0.3125 * safezoneW + safezoneX","0.35 * safezoneH + safezoneY","0.375 * safezoneW","0.05 * safezoneH"],[-1,-1,-1,-1],[0,0,0,0.5],[-1,-1,-1,-1],""],["style = ST_CENTER;"]],
+	[1400,"MyEditbox",[1,"",["0.328125 * safezoneW + safezoneX","0.425 * safezoneH + safezoneY","0.34375 * safezoneW","0.15 * safezoneH"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],["idc = 1234;"]],
+	[1700,"MyButtonOK",[1,"Ok",["0.53125 * safezoneW + safezoneX","0.575 * safezoneH + safezoneY","0.140625 * safezoneW","0.1 * safezoneH"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],["onButtonClick = |hint ctrlText ((ctrlParent (_this select 0)) displayCtrl 1234);|;"]],
+	[1701,"MyButtonBack",[1,"Cancel",["0.328125 * safezoneW + safezoneX","0.575 * safezoneH + safezoneY","0.140625 * safezoneW","0.1 * safezoneH"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],["onButtonClick = |((ctrlParent (_this select 0)) closeDisplay 3000);|;"]]
+]
+*/
+</sqf>
+
+=== Config format ===
+
+{{Controls|Ctrl|Shift|S}}
+
+<syntaxhighlight lang="cpp">
+class RscText_1000 : RscText
+{
+	idc = 1000;
+	x = 0.3125 * safezoneW + safezoneX;
+	y = 0.35 * safezoneH + safezoneY;
+	w = 0.375 * safezoneW;
+	h = 0.3 * safezoneH;
+	colorBackground[] = { 0, 0, 0, 0.5 };
+};
+
+class MyHeader : RscText
+{
+	style = ST_CENTER;
+
+	idc = 1001;
+	text = "Hello World";
+	x = 0.3125 * safezoneW + safezoneX;
+	y = 0.35 * safezoneH + safezoneY;
+	w = 0.375 * safezoneW;
+	h = 0.05 * safezoneH;
+	colorBackground[] = { 0, 0, 0, 0.5 };
+};
+
+class MyEditbox : RscEdit
+{
+	idc = 1234;
+
+	x = 0.328125 * safezoneW + safezoneX;
+	y = 0.425 * safezoneH + safezoneY;
+	w = 0.34375 * safezoneW;
+	h = 0.15 * safezoneH;
+};
+
+class MyButtonOK : RscShortcutButton
+{
+	onButtonClick = "hint ctrlText ((ctrlParent (_this select 0)) displayCtrl 1234);";
+
+	idc = 1700;
+	text = "Ok";
+	x = 0.53125 * safezoneW + safezoneX;
+	y = 0.575 * safezoneH + safezoneY;
+	w = 0.140625 * safezoneW;
+	h = 0.1 * safezoneH;
+};
+
+class MyButtonBack : RscShortcutButton
+{
+	onButtonClick = "((ctrlParent (_this select 0)) closeDisplay 3000);";
+
+	idc = 1701;
+	text = "Cancel";
+	x = 0.328125 * safezoneW + safezoneX;
+	y = 0.575 * safezoneH + safezoneY;
+	w = 0.140625 * safezoneW;
+	h = 0.1 * safezoneH;
+};
+</syntaxhighlight>
+
+
+== Disclaimer ==
+
+This is not an official addon released or approved by {{Name|bi}} or any of {{arma2}} publishers. Use at your own risk.
+
+As long as it stays free, you can redistribute it or modify it as you wish.
+
+
+[[Category:GUI Topics]]

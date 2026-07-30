@@ -1,0 +1,92 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Firing_Drills
+// revision: 255757 (2021-04-24T18:48:04Z)
+// export sha1: 9r4r91prq8t25jzyj1n4ifu1mam12os
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Firing Drills ==
+=== Firing Drills ===
+Firing Drills are a fun shooting sport to train and compete in.<br>
+<br>
+Competitors complete a Course of Fire (CoF), usually consisting of a series of Check Points with targets to engage at each one.
+
+''They refine their skills in the areas of movement, environmental awareness, weapon handling, shooting, prioritization and creativity.''
+
+
+=== Rules ===
+Firing Drills can be completed using one of two rule-sets: training and competitive.
+
+''* Training: less strict and about familiarizing with the course. Medal times cannot be challenged while training.<br>
+<br>
+* Competitive: stricter rules and competitors are penalized when breaking rules. Medal times can be beaten here!''
+
+
+=== Timing ===
+A competitor's raw time is the amount of time it takes to reach the final Check Point, or to clear all targets for some courses.
+
+''Time may be deducted when you are awarded bonuses, or added when you are penalized.<br>
+<br>
+When competing for medals, you can beat the bronze, silver and gold times. Sometimes a special time is available.''
+
+
+=== Check Points ===
+When a CoF uses Check Points, competitors move between them and usually engage all available targets before moving on.
+
+''Each Check Point may define special requirements such as the use of a specific weapon type or stance.<br>
+<br>
+Keep an eye on the Check Point briefing and other indicators and memorize the CoF well by training often.''
+
+
+=== Shooting Boxes ===
+Check Points can define specific shooting boxes. When present, it is always better to engage from within these marked boxes.
+
+
+=== Targets ===
+There are various types of targets that appear at Check Points:
+
+''* Targets can appear immediately or after a little while.<br>
+* Targets can disappear after a short time.<br>
+* Targets can move along rails.<br>
+* Targets can activate after hitting another target.<br>
+* Sometimes only specifically colored targets should be hit.<br>
+* Targets may require multiple hits.<br>
+* Accuracy zones on targets can reduce your time when struck.<br>
+* Optional bonus targets lower your time.<br>
+* No-shoot targets must not be engaged!<br>
+<br>
+Targets can sometimes be randomly positioned or randomly appearing.''
+
+
+=== Weapons ===
+You may be urged to use a specific weapon type at a Check Point.
+
+''Doing this will be rewarded with bonuses. Not doing this may incur penalties.''
+
+
+=== Stances ===
+You may be asked to employ a specific stance at a Check Point.
+
+''Doing this correctly can result in bonuses. Failure to do so may be penalized.''
+
+
+=== Tips ===
+*  Firing Drills are not meant to be aced in one attempt. Study the courses, find shortcuts and get creative.<br>
+<br>
+* Observe on-screen Check Point briefings, voice instructions and other indicators to know which stance and weapon to use.<br>
+<br>
+* Plan your reloads and weapon switches well! Doing this in a smart way can save you many seconds.
+
+''* Don't always trust the most direct route. Sometimes a detour can be quicker if there are no obstacles in your path.<br>
+<br>
+*  Consider what will cost you more time: missing a target and re-engaging it, or moving on and taking the penalty.<br>
+<br>
+*  Think about your aiming path from target to target, as well as clever use of fire modes. Remember that some targets offer bonuses for accuracy.<br>
+<br>
+*  Scan for bonus targets, but balance your search time against the gained bonuses. Check your map for clues.<br>
+<br>
+*  Not all targets appear upon arriving at a Check Point. Remain vigilant until the all clear is given.<br>
+<br>
+* Consider your fatigue and how often you sprint. It all affects your continued performance and aiming.''
+
+
+{{GameCategory|arma3|Field Manual}}

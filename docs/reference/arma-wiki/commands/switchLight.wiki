@@ -1,0 +1,95 @@
+// source: https://community.bistudio.com/wiki/switchLight
+// revision: 364994 (2024-07-04T19:58:05Z)
+// export sha1: c2xm07yaba8e22jrm74dqq00tqou6p0
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Lights
+
+|eff= local
+
+|descr= Controls whether a lamp is lit or not.
+{{Feature|arma3|
+This command was originally designed to only work with {{hl|CfgNonAIVehicles}} class {{hl|"StreetLamp"}} only.
+Since {{arma3}} v1.92 this command was extended to work with street lights and some prop lights, like portable construction light.
+}}
+
+|s1= lamp [[switchLight]] mode
+
+|p1= lamp: [[Object]]
+
+|p2= mode: [[String]] - mode can be: "ON", "OFF" or "AUTO" (''lamp'' is on only during nighttime, default)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>(object 12345) switchLight "OFF";</sqf>
+
+|x2= <sqf>nearestObject [player, "Streetlamp"] switchLight "OFF";</sqf>
+
+|x3= <sqf>cursorObject switchLight "ON";</sqf>
+|seealso= [[lightIsOn]] [[BIS_fnc_switchLamp]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20130916111400
+|text= ''Before {{arma3}} v1.92'' use [[setHit]] instead:
+<sqf>
+_lamp = nearestObject [player, "Lamps_base_F"];
+_lamp setHit ["light_1_hitpoint", 0.97];	// off
+_lamp setHit ["light_1_hitpoint", 0];		// on
+</sqf>
+
+Switch all lights off in the 500 radius of player:
+<sqf>
+private _lamps = nearestObjects [player, ["Lamps_base_F", "PowerLines_base_F", "PowerLines_Small_base_F"], 500];
+
+{
+	for "_i" from 0 to (count getAllHitPointsDamage _x -1) do
+	{
+		_x setHitIndex [_i, 0.97];
+	};
+} forEach _lamps;</sqf>
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20230301141231
+|text= How to disable all lamps using the latest {{arma3}} commands, a modern method. Disable all lights that are pre-placed on the map, on the entire map:
+<sqf>
+{
+	_x switchLight "OFF";
+} forEach (1 allObjects 0);
+</sqf>
+
+Disable all script-spawned and editor-placed lamps:
+<sqf>
+{
+	_x switchLight "OFF";
+} forEach (8 allObjects 0);
+</sqf>
+These snippets iterate through all buildings and run [[switchLight]] on them. If they're lamps, they'll be turned off.
+}}

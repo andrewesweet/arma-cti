@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_paramCountdown
+// revision: 352531 (2024-02-12T16:42:17Z)
+// export sha1: 6anh2i3a8hd2129etkdj21z19bkkjsg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Mission Parameters | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Mission Parameters
+
+|serverExec= server
+
+|descr= Set side mission time.
+
+|s1= number call [[BIS_fnc_paramCountdown]]
+
+|p1= number: [[Number]] - mission time in seconds
+
+|r1= [[Boolean]]
+
+|x1= <sqf>360 call BIS_fnc_paramCountdown;</sqf>
+
+|seealso= [[Mission Parameters]] [[:Category:Function Group: Mission Parameters|Mission Parameters Functions]]
+}}

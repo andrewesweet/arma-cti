@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/removeDiaryRecord
+// revision: 340844 (2023-05-10T15:17:04Z)
+// export sha1: j0ucbaw6twfbmr3qxsf5evmj2fw04gt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.96
+
+|eff= local
+
+|gr1= Briefing
+
+|descr= Remove a log record.
+
+|s1= unit [[removeDiaryRecord]] [subject, diaryRecord]
+
+|p1= unit: [[Object]]
+
+|p2= subject: [[String]]
+
+|p3= diaryRecord: [[Diary Record]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+private _diaryRecord = player createDiaryRecord ["Diary", ["Subject", "Text"]];
+// ...
+player removeDiaryRecord ["Diary", _diaryRecord];
+</sqf>
+
+|seealso= [[createDiaryRecord]] [[removeDiarySubject]]
+}}

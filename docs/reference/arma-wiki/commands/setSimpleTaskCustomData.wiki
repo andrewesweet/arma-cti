@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/setSimpleTaskCustomData
+// revision: 351289 (2023-11-27T03:11:48Z)
+// export sha1: mc79xs1hjon0asuu75m3grq2tdiasjf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Briefing
+
+|descr= Set custom data for the task. Tooltip will be drawn in task list on the right side. Description will be drawn in task description panel on the bottom.
+
+|s1= task [[setSimpleTaskCustomData]] [iconPath, tooltip, description]
+
+|p1= task: [[Task]] - task the custom data are being added to
+
+|p2= iconPath: [[String]] - icon path
+
+|p3= tooltip: [[String]] - text displayed next to the icon; max. 3 charactersc
+
+|p4= description: [[String]] - text displayed on the task description panel; html format
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_task setSimpleTaskCustomData ["\A3\Ui_f\data\IGUI\Cfg\simpleTasks\letters\h_ca.paa", "This is the tooltip", "This is the description"];</sqf>
+
+|seealso= [[taskCustomData]] [[setSimpleTaskType]] [[taskType]] [[Arma 3: Task Framework#Task Overhaul|Tasks Overhaul]]
+}}

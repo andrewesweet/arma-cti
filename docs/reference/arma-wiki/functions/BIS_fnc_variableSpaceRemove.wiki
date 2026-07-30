@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_variableSpaceRemove
+// revision: 349319 (2023-11-08T14:52:29Z)
+// export sha1: 6qgtg6umtx38wikfbrp9byhuf2vxxu9
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Variables | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Variables
+
+|descr= Remove element from variable from someone's variable space.
+
+|s1= [object,varName,element,global,inArray] call [[BIS_fnc_variableSpaceRemove]]
+
+|p1= object: [[Object]] - owner of variable space
+
+|p2= varName: [[String]] - name of variable
+
+|p3= element: [[Anything]] - element which will be removed (must be of same type as variable)
+|p4= global: [[Boolean]] - (Optional, default [[false]]) [[true]] to save modified variable globally]]
+
+|r1= [[Anything]] - updated variable
+
+|x1= <sqf>[player, "someVar", 1337, true] call BIS_fnc_variableSpaceRemove;</sqf>
+
+|seealso= [[BIS_fnc_variableSpaceAdd]] [[setVariable]]
+}}

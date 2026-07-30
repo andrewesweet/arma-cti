@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Village_Pump_(policy):_Talk_Pages
+// revision: 115071 (2019-01-01T23:43:10Z)
+// export sha1: jlxojdo7c5ilf5pu21amiban8lav6qm
+// categories: Category:Village Pump
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Village Pump]]

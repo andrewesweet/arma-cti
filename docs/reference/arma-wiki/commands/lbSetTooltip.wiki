@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/lbSetTooltip
+// revision: 364888 (2024-06-29T14:38:30Z)
+// export sha1: l90oo9ix8l9kqdnoqx2tk3kmzut9s8s
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Arma 3 version 0.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.58
+
+|gr1= GUI Control - ListBox
+
+|descr= Sets tooltip for item with given index of the listbox or combobox with id idc of the topmost user dialog to the given data.
+
+|s1= [[lbSetTooltip]] [idc, index, tooltip]
+
+|p1= idc: [[Number]]
+
+|p2= index: [[Number]]
+
+|p3= tooltip: [[String]]
+
+|r1= [[Nothing]]
+
+|s2= control [[lbSetTooltip]] [index, tooltip]
+
+|p21= control: [[Control]]
+
+|p22= index: [[Number]]
+
+|p23= tooltip: [[String]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lbSetTooltip [101, 1, "tooltip"];</sqf>
+
+|x2= <sqf>_control lbSetTooltip [0, "another tooltip"];</sqf>
+
+|seealso= [[lbTooltip]] [[lnbSetTooltip]] [[lbAdd]] [[lbClear]] [[lbColor]] [[lbCurSel]] [[lbData]] [[lbDelete]] [[lbIsSelected]] [[lbPicture]] [[lbSelection]] [[lbSetColor]] [[lbSetCurSel]] [[lbSetData]] [[lbSetPicture]] [[lbSetSelected]] [[lbSetValue]] [[lbSize]] [[lbSort]] [[lbSortByValue]] [[lbText]] [[lbValue]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted: Sep 10 2014</dd>
+<dt class="note">[[User:ffur2007slx2_5|ffur2007slx2_5]]</dt>
+<dd class="note">More information on the [[CT_LISTBOX]] command family can be found [[CT_LISTBOX#Scripting_Example|here]].
+
+</dl>
+
+{{Note
+|user= Nelis75733126
+|timestamp= 20170809130300
+|text= if you want to put linebreaks into a tooltip, use this method:
+<sqf>format ["%1,%2%3", "Hi", parseText "\n", "my name is Will"];</sqf>
+|game= arma3
+|version= 1.76
+}}

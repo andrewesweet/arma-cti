@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getCfgDataObject
+// revision: 309768 (2022-05-05T12:09:49Z)
+// export sha1: joypf6sgtmm057ayzyxww8kg27gvrv6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Configs | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Configs
+
+|descr= <pre>/*
+
+	Description:
+	Get the object defined in cfg by its name (global variable).
+
+	Remark(s):
+	* Can by called 2 ways:
+		* 1st way (general) works for any config.
+		* 2nd way is for comfortable working with mission description.ext.
+
+	Parameter(s):
+		_this: CFG
+		_this: ARRAY of STRINGS - missionConfigFile classes and an attribute.
+
+	Example:
+
+	* 1st way of calling:
+
+		_value = (missionconfigfile >> "Hubs" >> "A1" >> "QuickStart" >> "trigger") call BIS_fnc_getCfgDataObject;
+
+	* 2nd way of calling:
+
+		_value = ["Hubs","A1","QuickStart","trigger"] call BIS_fnc_getCfgDataObject;
+
+	Returns:
+		OBJECT or OBJNULL
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_getCfgDataObject]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_getCfgDataObject;</sqf> -->
+
+|seealso=
+}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/flagSide
+// revision: 376347 (2025-10-07T17:04:44Z)
+// export sha1: flaj68bp15erhgewpso8djwt4gufe6v
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Flags | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|arg= global
+
+|eff= local
+
+|gr1= Flags
+
+|descr= Returns [[Side]] of the [[Multiplayer Scripting#Locality|local]] instance of the flag. A getter for [[setFlagSide]].
+
+|s1= [[flagSide]] flag
+
+|p1= flag: [[Object]] - flag
+
+|r1= [[Side]]
+
+|x1= <sqf>_flagSide =  flagSide aFlag;</sqf>
+
+|seealso= [[setFlagSide]] [[Arma 3: Flag Textures]]
+}}

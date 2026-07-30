@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_trackMissionTime
+// revision: 328347 (2022-07-13T16:00:46Z)
+// export sha1: c90ws1ctregkpi10xk2y7yw2jbvhddq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Missions
+
+|descr= Tracks mission time by storing time in [[profileNamespace]].
+
+|s1= [save, delete] call [[BIS_fnc_trackMissionTime]]
+
+|p1= save: [[Boolean]] (Optional, default [[true]])
+
+|p2= delete: [[Boolean]] (Optional, default [[false]])
+
+|r1= [[Number]] - time result
+
+|x1= <sqf>[true, true] call BIS_fnc_trackMissionTime; // Delete saved mission time</sqf>
+
+|x2= <sqf>[true] call BIS_fnc_trackMissionTime; // Save mission time</sqf>
+
+|seealso= [[time]] [[serverTime]] [[systemTime]]
+}}

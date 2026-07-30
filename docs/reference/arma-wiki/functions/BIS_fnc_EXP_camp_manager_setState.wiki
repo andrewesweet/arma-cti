@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_manager_setState
+// revision: 279099 (2021-06-13T21:48:44Z)
+// export sha1: bd50he9cfmwyie2lesa6jqmmef8dlbk
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: CampaignManager | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= CampaignManager
+
+|serverExec= server
+
+|descr= <pre>/*
+	Author: Nelson Duarte
+
+	Description:
+	Set's the state of the mission
+
+	Parameters:
+		_state: The new mission state to set
+
+	Returns:
+		Nothing
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_EXP_camp_manager_setState]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

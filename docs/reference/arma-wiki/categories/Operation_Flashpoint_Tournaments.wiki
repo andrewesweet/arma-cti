@@ -1,0 +1,17 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Tournaments
+// revision: 227125 (2021-01-31T18:51:58Z)
+// export sha1: gyfib4zwv9qem8s4hxqs4dcs6h3yqdr
+// Vendored snapshot. Do not edit — re-export instead.
+
+
+Tournaments are an essential part of the competitive multiplayer arena of Operation Flashpoint.
+
+== OFP Leagues / Tournaments ==
+
+'''[http://www.border-conflict.de.vu/ Border Conflict League]''' - www.border-conflict.de.vu/ is 404<br>
+'''[http://www.clanzone-league.com/ ClanZone League]''' - in Japanese only<br>
+'''[http://www.classiccombatleague.com/ Classic Combat League]''' - last news post June 14, 2006; last Forum post January 4, 2008<br>
+'''[http://www.onlinewarfare.net/ Online Warfare]''' - seems dedicated to gaming hardware; perhaps domain is parked<br>
+'''[http://www.tntleague.net TNT League]''' - no such
+
+{{GameCategory|ofp|Community}}

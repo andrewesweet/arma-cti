@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_wpAddScript
+// revision: 281360 (2021-06-14T09:09:13Z)
+// export sha1: crcr1zbvws836nuiv9iq8hk0k9pocka
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Contact | Category:Function Group: Waypoints | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Waypoints
+
+|gr2= Contact
+
+|descr= {{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_wpAddScript]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

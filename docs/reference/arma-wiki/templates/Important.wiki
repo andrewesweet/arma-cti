@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Important
+// revision: 336988 (2023-01-05T10:24:56Z)
+// export sha1: ngchs9eluilbwcovmgc8ybwe3ojgpy0
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Feature|important|{{{1}}}}}</includeonly><noinclude>See [[Template:Feature|Feature-important Template]].[[Category:Historical Templates]]</noinclude>

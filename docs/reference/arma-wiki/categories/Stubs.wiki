@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Stubs
+// revision: 238953 (2021-02-04T18:11:35Z)
+// export sha1: 4w40mivrzva4ifo9mppuss2i6fm5i4s
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|quote|A '''stub''' is an article deemed too short to provide encyclopedic coverage of a subject.|Wikipedia|http://en.wikipedia.org/wiki/Wikipedia:Stub}}
+
+[[Category:Maintenance]]

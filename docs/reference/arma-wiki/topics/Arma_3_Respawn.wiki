@@ -1,0 +1,490 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Respawn
+// revision: 378634 (2026-05-15T12:14:41Z)
+// export sha1: gin18djuy4y28ehzrwtaf466wnptwma
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+<gallery mode="packed-overlay" heights="200px">
+File:A3 RespawnScreen.jpg|Respawn screen
+File:A3 EdenEditor Respawn.jpg|Respawn settings in [[:Category:Eden Editor|Eden Editor]]
+</gallery>
+
+
+== Settings ==
+
+* Some basic settings can be set up in [[:Category:Eden Editor|Eden Editor]]
+* [[Description.ext]] and/or [[Campaign Description.ext]] allow for full control over all available respawn settings
+
+
+== Scripting ==
+
+; Scripting Commands
+* [[playerRespawnTime]]
+* [[setPlayerRespawnTime]]
+* [[respawnVehicle]]
+
+; Scripting Functions
+* [[:Category:Function Group: Respawn|Respawn Functions]]
+
+; Event Scripts
+* [[Event Scripts|onPlayerRespawn.sqf]]
+* [[Event Scripts|onPlayerKilled.sqf]]
+
+
+== Respawn Types ==
+
+Type is represented either by respawn ID, or by its name.
+<syntaxhighlight lang="cpp">
+respawn = "BASE";
+respawn = 3;
+</syntaxhighlight>
+
+{| class="wikitable align-center-col-2 align-center-col-4 align-center-col-5 align-center-col-6"
+! ID
+! Name
+! Description
+! Default Templates
+! onPlayerKilled
+! onPlayerRespawn
+|-
+| 0
+| "NONE"
+| Show singleplayer death screen
+| {{n/a}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+
+|-
+| 1
+| "BIRD"
+| Respawn to a seagull
+| Spectator, EndMission
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+
+|-
+| 2
+| "INSTANT"
+| Respawn on spot where player died
+| Instant, Counter
+| {{Icon|checked}}
+| {{Icon|checked}}
+
+|-
+| 3
+| "BASE"
+| Respawn on a marker(s) start by following strings:
+
+'''Unit respawn'''
+* ''respawn'' (used only when side variant is not found)
+* ''respawn_west''
+* ''respawn_east''
+* ''respawn_guerrila''
+* ''respawn_civilian''
+
+'''Vehicle respawn'''
+* ''respawn'' (used only when side variant is not found)
+* ''respawn_vehicle_west''
+* ''respawn_vehicle_east''
+* ''respawn_vehicle_guerrila''
+* ''respawn_vehicle_civilian''
+You can have multiple markers simply by adding any text behind the name, e.g. ''respawn_west1'', ''respawn_westBase'' etc. When no markers are defined, player is respawned on position where he started the mission. More about marker respawn can be found {{Link|http://killzonekid.com/arma-scripting-tutorials-respawn-on-marker/|here}}. Alternatively you can also use the ''Respawn Position'' module.
+| Base, Counter
+| {{Icon|checked}}
+| {{Icon|checked}}
+
+|-
+| 4
+| "GROUP"
+| Respawn to the next available playable unit in a group. When none is left, BIRD respawn is used instead.
+| Group, EndMission
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+
+|-
+| 5
+| "SIDE"
+| Respawn to the next available playable unit of the same side (selected using team switch window). When none is left, BIRD respawn is used instead.
+| Side, EndMission
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+|}
+
+
+== Respawn Templates ==
+
+{{Feature|warning|Respawn Templates are '''case-sensitive!'''}}
+Templates are pre-defined scripts called when player dies and respawns. They are defined in an array and can be combined together.
+<syntaxhighlight lang="cpp">
+respawnTemplates[] = { "MenuInventory", "MenuPosition" };
+</syntaxhighlight>
+
+Additionally, you can define side specific templates. When a side has no unique templates, it will use general ''respawnTemplates'' instead.
+<syntaxhighlight lang="cpp">
+respawnTemplatesWest[] = { "MenuInventory" };
+respawnTemplatesEast[] = { "Counter" };
+respawnTemplatesGuer[] = { "Tickets" };
+respawnTemplatesCiv[] = { "Spectator" };
+respawnTemplatesVirtual[] = {}; // Virtual players, used mainly in Curator (Zeus) missions
+</syntaxhighlight>
+{{Feature|important|When the {{hl|respawnTemplates}} entry is missing, default templates based on the respawn type are used.}}
+
+=== Conflicts ===
+
+The respawn templates "MenuPosition" and "Spectator" are '''not''' compatible since MenuPosition will force the map open. Instead you can use the following settings to get access to the full spectator mode:
+<syntaxhighlight lang="cpp">
+// description.ext
+respawn = 3;
+respawnTemplates[] = { "MenuPosition", "Spectator" };
+</syntaxhighlight>
+<sqf>
+// initPlayerLocal.sqf
+// --- Enable full spectator in respawn screen
+{
+	missionNamespace setVariable [_x, true];
+} forEach [
+	"BIS_respSpecAI",					// Allow spectating of AI
+	"BIS_respSpecAllowFreeCamera",		// Allow moving the camera independent from units (players)
+	"BIS_respSpecAllow3PPCamera",		// Allow 3rd person camera
+	"BIS_respSpecShowFocus",			// Show info about the selected unit (dissapears behind the respawn UI)
+	"BIS_respSpecShowCameraButtons",	// Show buttons for switching between free camera, 1st and 3rd person view (partially overlayed by respawn UI)
+	"BIS_respSpecShowControlsHelper",	// Show the controls tutorial box
+	"BIS_respSpecShowHeader",			// Top bar of the spectator UI including mission time
+	"BIS_respSpecLists"					// Show list of available units and locations on the left hand side
+];
+</sqf>
+
+=== Official Templates ===
+
+{| class="wikitable"
+! Class
+! Description
+! Preview
+
+|-
+| '''None'''
+| Singleplayer death screen. Default in singleplayer. 
+|
+
+|-
+| '''Spectator'''
+| [[Spectator Mode]].
+|
+
+|-
+| '''Instant'''
+| Currently empty.
+|
+
+|-
+| '''Base'''
+| Currently empty.
+|
+
+|-
+| '''Group'''
+| Cutscene showing a newly controlled unit.
+|
+
+|-
+| '''Side'''
+| Cutscene showing a newly controlled unit.
+|
+
+|-
+| '''Seagull'''
+| {{ofp}}-style seagull respawn
+|
+
+|-
+| '''Wave'''
+| Adjusts respawn counter so players spawns together. Wave delay is based on ''respawnDelay'' and [[playerRespawnTime|Player's respawn time]] is set between 1 and 2 times ''respawnDelay'': if ''respawnDelay'' is set to e.g 10, respawn waves happen every 10 seconds. If a player dies and the next respawn wave is in 3 seconds, the player's respawn time is set to 17 seconds to match the next wave.
+|
+
+|-
+| '''SwitchPlayer'''
+| Swichtes to another unit upon death.
+|
+
+|-
+| '''Tickets'''
+| Use a limited respawn ticket pool for players. Pool can be applied to everyone, a side, a group or a single unit.
+
+Use [[BIS_fnc_respawnTickets]] to update the amount of available tickets. Note that the template will have no effect if this function is never used, meaning players outside of all given pools will have infinite respawns.
+|
+
+|-
+| '''TicketsSpawn'''
+| Substracts ticket '''after''' respawn.
+|
+
+|-
+| '''Counter'''
+| Show a simple respawn countdown.
+|
+
+|-
+| '''EndMission'''
+| Automatically fail the mission once all players are dead (for NONE, BIRD, GROUP and SIDE respawn types) or when all respawn tickets are exceeded (for INSTANT and BASE respawn types with ''Tickets'' template)
+|
+
+|-
+| '''MenuPosition'''
+| Lets players select from available respawn positions defined either by ''respawn markers'', see [[#Respawn Types|Respawn Types]], by [[BIS_fnc_addRespawnPosition]] function or by the ''Respawn Position'' module. A new screen was released with {{GVI|arma3|1.60}} and brings new functionalities together with a new design.
+
+'''Item disabling'''
+* Respawn positions can be disabled automatically (e.g., unit used as respawn point is dead) or manually by calling [[BIS_fnc_showRespawnMenuDisableItem]]
+| [[File:A3 respawnSelectPosition.jpg|200px]]
+
+|-
+| '''MenuInventory'''
+|
+Lets players pick a respawn loadout defined in [[Description.ext#CfgRespawnInventory|CfgRespawnInventory]]. Loadouts can be added using [[BIS_fnc_addRespawnInventory]] function. A new screen was released with {{GVI|arma3|1.60}} and brings new functionalities together with a new design.
+
+'''Role selection'''
+* Respawn inventories are sorted in to Roles which can be defined in [[#Loadouts and Roles|CfgRoles]].
+
+'''Item disabling'''
+* Roles and loadouts can be disabled. This can happen automatically (e.g., Role/loadout limit was reached) or can be manually by calling [[BIS_fnc_showRespawnMenuDisableItem]].
+
+'''Limits'''
+* Roles and loadouts can be limited. This way only limited number of player can use given role/loadout in a mission. For details on how to do that see [[BIS_fnc_addRespawnInventory]]. 
+| [[File:A3 respawnSelectInventory.jpg|200px]]
+|}
+
+'''Options shared by ''MenuInventory'' and ''MenuPosition'''''<br>
+Both templates feature a similar respawn UI and therefore share the following options:
+* '''Timeout disabling'''
+** Mission designer can disable the timeout used between death of a unit and opening of the respawn screen: <sqf>
+missionNamespace setVariable ["BIS_RscRespawnControls_skipBlackOut", true, true];	// disable timout
+missionNamespace setVariable ["BIS_RscRespawnControls_skipBlackOut", nil, true];	// reset to original timeout
+</sqf>
+* '''Autorespawn'''
+** A checkbox can be ticket to let the player automatically respawn once the coundown reached 0. If disabled player is not respawned immediately, but must confirm selection by clicking on "RESPAWN" button.
+* '''Spectator Camera''' 
+** The Spectator Camera used in here is slightly modified (no free camera available etc.) version of Spectator Mode. For full documentation see [[EG_Spectator_Mode|Spectator Mode documentation]].
+** Mission designer needs to use the '''Spectator''' respawn template, the camera is disabled otherwise.
+
+=== Custom Respawn Templates ===
+
+New templates can be defined in global [[Config.cpp]] or in mission and campaign [[Description.ext]] files.<br>
+'''Example''':
+<spoiler>
+<syntaxhighlight lang="cpp">
+class CfgRespawnTemplates
+{
+	// Class used in respawnTemplates entry
+	class myTag_beacon
+	{
+		// Function or script executed upon death. Parameters passed into it are the same as are passed into onPlayerKilled.sqf file
+		onPlayerKilled = "\myAddon\scripts\respawnBeacon.sqf";
+
+		// Function or script executed upon respawn. Parameters passed into it are the same as are passed into onPlayerRespawn.sqf file
+		onPlayerRespawn = "\myAddon\scripts\respawnBeacon.sqf";
+
+		// Default respawn delay (can be overwitten by description.ext entry of the same name)
+		respawnDelay = 20;
+
+		// 1 to respawn player when he joins the game. Available only for INSTANT and BASE respawn types
+		// Can be overridden by description.ext attribute of the same name
+		respawnOnStart = 1;
+
+		// By default onPlayerKilled and onPlayerRespawn function are spawned
+		// set to 1 to run in unscheduled, called functions MUST NOT return an assignment or respawn will break
+		isCall = 0;
+	};
+
+	class Spectator
+	{
+		onPlayerRespawn = "BIS_fnc_respawnSpectator";
+	};
+};
+</syntaxhighlight>
+</spoiler>
+{{Feature|important|
+For a template's {{hl|respawnDelay}} to be considered, [[Description.ext]]'s {{hl|respawnDelay}} '''must''' be defined and have a negative value due to [[BIS_fnc_selectRespawnTemplate]] code.
+<syntaxhighlight lang="cpp">
+respawnDelay = -1;
+</syntaxhighlight>
+}}
+
+
+== Loadouts and Roles ==
+
+The main purpose of the roles is to make things more clear and simple for player when selecting loadout. All the loadouts available in a mission are now divided into various roles.<br>
+Mission designer can use roles already created in the game config, or custom roles can be defined in [[Description.ext]]. Loadouts with no role assigned are automatically assigned to the ''Default'' role.<br>
+'''Loadout config example:'''
+<spoiler>
+<syntaxhighlight lang="cpp">
+class CfgRoles
+{
+	class Assault // Class name used in CfgRespawnInventory
+	{
+		displayName = "$STR_A3_Role_Assault"; // Name of the role, displayed in the respawn menu
+		icon = "a3\missions_f_exp\data\img\classes\assault_ca.paa"; // Icon shown next to the role name in the respawn screen
+	};
+};
+ 
+class CfgRespawnInventory
+{
+	class B_SquadLeader // Class of the respawn inventory, used by BIS_fnc_addRespawnInventory
+	{
+		displayName = "$STR_b_soldier_sl_f0"; // Name of the respawn inventory
+		role = "Assault"; // Role the respawn inventory is assigned to
+		icon = "\A3\ui_f\data\map\VehicleIcons\iconManLeader_ca.paa"; // Icon shown next to the role
+		show = "side group _this == west"; // Condition used to make specific respawn inventories only available for specfic sides, must return [[Boolean]]
+		weapons[] = { // Weapons
+			"arifle_SPAR_01_khk_F",
+			"Rangefinder",
+			"hgun_P07_khk_F"
+		};
+
+		magazines[] = { // Magazines
+			"SmokeShell",
+			"SmokeShell",
+			"16Rnd_9x21_Mag",
+			"16Rnd_9x21_Mag",
+			"16Rnd_9x21_Mag",
+			"30Rnd_556x45_Stanag_Tracer_Red",
+			"30Rnd_556x45_Stanag_Tracer_Red",
+			"30Rnd_556x45_Stanag_Tracer_Red",
+			"30Rnd_556x45_Stanag_Tracer_Red",
+			"30Rnd_556x45_Stanag_Tracer_Red",
+			"30Rnd_556x45_Stanag_Tracer_Red",
+			"30Rnd_556x45_Stanag_Tracer_Red",
+			"30Rnd_556x45_Stanag_Tracer_Red",
+			"HandGrenade",
+			"HandGrenade"
+		};
+
+		items[] = { // Useable items
+			"FirstAidKit"
+		};
+
+		linkedItems[] = { // Linked items, also weapon items, helmet etc.
+			"V_PlateCarrierSpec_tna_F",
+			"H_HelmetB_Enh_tna_F",
+			"optic_ERCO_blk_F",
+			"acc_pointer_IR",
+			"NVGoggles_tna_F",
+			"ItemGPS",
+			"ItemMap",
+			"ItemCompass",
+			"ItemWatch",
+			"ItemRadio"
+		};
+
+		uniformClass = "U_B_T_Soldier_SL_F"; // uniform
+	};
+</syntaxhighlight>
+</spoiler>
+'''Export Function''':
+* The following function will copy a complete respawn inventory to your clipboard, see function header for more information.<br>
+'''Author:''' {{User|R3vo}}<br>
+<spoiler>
+<sqf>
+/*
+	Author: R3vo
+
+	Description:
+	Retrieves loadout of unit and formats it for CfgRespawnLoadouts. Content is copied to clipboard and returned by function.
+
+	Parameter(s):
+	0: Object - Object to take the loadout from
+	1: String - Class name of the respawn loadout
+	2: String - Display name of the respawn loadout
+	3: String - Icon path displayed next to display name
+	4: String - Loadouts are assigned to a role, possible values:
+		"Assistant"
+		"CombatLifeSaver"
+		"Crewman"
+		"Default"
+		"Grenadier"
+		"MachineGunner"
+		"Marksman"
+		"MissileSpecialist"
+		"Rifleman"
+		"Sapper"
+		"SpecialOperative"
+		"Unarmed"
+	5: String - Condition for the respawn loadout to be shown. Code inside string has to return boolean. _this refers to the unit inside the respawn screen
+
+	Returns:
+	String - Exports formatted loadout
+*/
+
+params
+[
+	["_object", player, [objNull]],
+	["_class", "REPLACE", [""]],
+	["_displayName", "REPLACE", [""]],
+	["_icon", "\A3\Ui_f\data\GUI\Cfg\Ranks\sergeant_gs.paa", [""]],
+	["_role", "Default", [""]],
+	["_conditionShow", "true", [""]]
+];
+
+private _indent = "	";
+private _class = format ["class %1", _class];
+private _displayName = format ["displayName = ""%1"";", _displayName];
+private _icon = format ["icon = ""%1"";", _icon];
+private _role = format ["role = ""%1"";", _role];
+private _conditionShow = format ["show = ""%1"";", _conditionShow];
+private _uniformClass = format ["uniformClass = ""%1"";", uniform _object];
+private _backpack = format ["backpack = ""%1"";", backpack _object];
+private _export = _class + endl + "{" + endl + _indent + _displayName + endl + _indent + _icon + endl + _indent + _role + endl + _indent + _conditionShow + endl + _indent + _uniformClass + endl + _indent + _backpack + endl;
+private _weapons = weapons _object;
+private _primWeaponItems = primaryWeaponItems _object;
+private _secWeaponItems = secondaryWeaponItems _object;
+private _assignedItems = assignedItems _object;
+// From BIS_fnc_exportLoadout START
+private _fnc_addArray =
+{
+	params ["_name", "_array"];
+	_export = _export + format [_indent + "%1[] = {", _name];
+	{
+		if (_foreachindex > 0) then {_export = _export + ", ";};
+		_export = _export + format ["""%1""", _x];
+	} foreach _array;
+	_export = _export + "};" + endl;
+};
+
+["weapons", _weapons + ["Throw", "Put"]] call _fnc_addArray;
+["magazines", magazines _object] call _fnc_addArray;
+["items", items _object] call _fnc_addArray;
+["linkedItems", [vest _object, headgear _object, goggles _object] + _assignedItems - _weapons + _primWeaponItems + _secWeaponItems] call _fnc_addArray;
+// From BIS_fnc_exportLoadout END
+_export = _export + "};" + endl + "// visit https://community.bistudio.com/wiki/Arma_3:_Respawn for detailed information";
+
+copyToClipboard _export;
+_export;
+</sqf>
+</spoiler>
+{{Feature|important|Loadouts are only available after they were added with the [[BIS_fnc_addRespawnInventory]] function!}}
+
+
+== Restore Loadout on Respawn ==
+
+=== Respawn with Original Loadout ===
+
+In order to let players respawn with the gear with which they started the mission, create an [[Event Scripts|initPlayerLocal.sqf]] file in the mission directory (if it does not exist already) and add the following code:
+
+{{hl|[[Event Scripts#initPlayerLocal.sqf|initPlayerLocal.sqf]]}}
+<sqf>
+player setVariable ["TAG_StartLoadout", getUnitLoadout player];
+player addEventHandler ["Respawn", { private _loadout = player getVariable "TAG_StartLoadout"; if (!isNil "_loadout") then { player setUnitLoadout _loadout; }; }];
+</sqf>
+
+=== Respawn with Death Loadout ===
+
+The following code makes the player respawn with the loadout they had on death:
+
+{{hl|[[Event Scripts#initPlayerLocal.sqf|initPlayerLocal.sqf]]}}
+<sqf>
+player addEventHandler ["Killed", { player setVariable ["TAG_DeathLoadout", getUnitLoadout player]; }];
+player addEventHandler ["Respawn", { private _loadout = player getVariable "TAG_DeathLoadout"; if (!isNil "_loadout") then { player setUnitLoadout _loadout; }; }];
+</sqf>
+
+
+{{GameCategory|arma3|Editing}}

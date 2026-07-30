@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/scudState
+// revision: 369332 (2024-09-03T18:43:00Z)
+// export sha1: iqtczh926z8pe2qimvj2ypxh4ifks96
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.30 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.30
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Return the current state of given Scud launcher.
+
+|s1= [[scudState]] scudName
+
+|p1= scudName: [[Object]]
+
+|r1= [[Number]] - can be one of:
+* 0 - No activity
+* 1 - Launch preparation
+* 2 - Launch prepared
+* 3 - Ignition
+* 4 - Launched
+
+|x1= <sqf>
+waitUntil { sleep 1; scudState _scud > 2 };
+guba say "MasterPlanCompletion";
+</sqf>
+
+|seealso= [[action]] [[Arma 3: Actions#ScudStart|"ScudStart" action]] [[Arma 3: Actions#ScudLaunch|"ScudLaunch" action]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2006-08-04 - 10:58</dd>
+<dt class="note">[[User:Hardrock|hardrock]]</dt>
+<dd class="note">
+This command checks the scud status (Non-integral values are used to indicate transition between states).
+To make the scud be upright, launch or cancel launch you need to use actions.
+<sqf>
+scud1 action ["scudLaunch", scud1];	// rise the missile
+scud1 action ["scudStart", scud1];	// launch the missile
+scud1 action ["scudCancel", scud1];	// down the missile
+</sqf>
+(Make sure either the scud launcher has a crew inside or you use the game logic to perform actions).
+</dl>

@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/Error_Unknown_Operator
+// revision: 8353 (2006-06-11T00:25:38Z)
+// export sha1: kl1g0j2zbkq3tmjcrudrwmspu4z5mos
+// categories: Category:Common Scripting Errors
+// Vendored snapshot. Do not edit — re-export instead.
+
+This error occurs when the game engine has attempted to parse something as an operator, but could not successfully find the given symbol.
+
+
+'''Examples:'''
+
+_myBits = 1002 | 43<br>
+_myVariable = "hello " concat "world!"
+
+
+There are several reasons why this might happen. If a script intended for a new version of OFP makes use of a new operator, and is run on an old copy of the game, this error will show up. Another common cause is when executing a formatted String as an instruction, where a variable inside the instruction is undefined.
+
+
+'''Example:'''
+
+["a = %1", b]
+
+''Outputted instruction:''
+
+a = scalar bool array string 0xfcfffef
+
+'''Result:'''
+
+The engine interprets 'scalar' as an uninitialised variable (similar to 'b' in the above example), and the parser expects an operator as the next token. 'bool' cannot be found in the list of operators (since it isn't one), and so an Unknown Operator message is given.
+
+
+'''Compatibility:'''
+
+Version '''1.96'''
+
+[[Category:Common Scripting Errors]]

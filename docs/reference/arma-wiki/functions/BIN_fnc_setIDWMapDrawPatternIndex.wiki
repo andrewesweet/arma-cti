@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_setIDWMapDrawPatternIndex
+// revision: 364344 (2024-05-06T10:34:40Z)
+// export sha1: 5rdfj3vxmxd0kuxe2zskw111x86oc9r
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: IDWMap | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= IDWMap
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Sets map draw pattern
+
+	Parameter(s):
+		NUMBER - pattern: 0 - triangles, 1 - diamonds, 2 - squares, 3 - diamonds overlapped
+
+	Returns:
+		BOOL - true on success
+		
+	Example:
+		// set on the fly
+		3 call BIN_fnc_setIDWMapDrawPatternIndex; OR [3] call BIN_fnc_setIDWMapDrawPatternIndex;
+		// set from config
+		call BIN_fnc_setIDWMapDrawPatternIndex; OR [] call BIN_fnc_setIDWMapDrawPatternIndex;
+*/
+</pre>
+
+{{Wiki|placeholder}}
+{{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_setIDWMapDrawPatternIndex]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

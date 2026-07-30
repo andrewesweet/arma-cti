@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/ctrlMapAnimClear
+// revision: 339139 (2023-04-26T10:55:02Z)
+// export sha1: oh4gt4tz1bhe88wa5mxsr11lv73wdgm
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control - Map
+
+|descr= Clears the map animation.
+
+|s1= [[ctrlMapAnimClear]] controlName
+
+|p1= controlName: [[Control]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>ctrlMapAnimClear _ctrlMap;</sqf>
+
+|seealso= [[mapAnimAdd]] [[mapAnimClear]] [[mapAnimCommit]] [[mapAnimDone]] [[ctrlMapAnimAdd]] [[ctrlMapAnimCommit]] [[ctrlMapAnimDone]]
+}}

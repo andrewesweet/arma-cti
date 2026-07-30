@@ -1,0 +1,96 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Event_Handlers/Reloaded
+// revision: 349648 (2023-11-17T19:45:13Z)
+// export sha1: h5eoq0voh8qiaw4ijab495a1ydh19ui
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+In short, [[Arma_3:_Event_Handlers#Reloaded|Reloaded]] Event Handler (EH) triggers every time a new magazine is added to a weapon.
+The EH can be assigned to both person and transport.<br><br>
+
+<sqf>player addEventHandler ["Reloaded", { hint str _this }];</sqf>
+
+
+{| class="valign-top" style="width: 100%"
+|
+== Return Format ==
+
+The EH returns array in _this variable of the following format [entity, weapon, muzzle, newMagazine, (oldMagazine)], where:
+* entity: [[Object]] - unit or vehicle to which EH is assigned
+* weapon: [[String]] - weapon that got reloaded
+* muzzle: [[String]] - weapons muzzle that got reloaded
+* newMagazine: [[Array]] - new magazine info in format [magazineClass, ammoCount, magazineID, magazineCreator], where:
+** magazineClass: [[String]] - class name of the magazine
+** ammoCount: [[Number]] - amount of ammo in magazine
+** magazineID: [[Number]] - global magazine id
+** magazineCreator: [[Number]] - owner of the magazine creator
+* (oldMagazine): [[Array]] - old magazine that was in the muzzle before. Could be [[Nothing]] if muzzle was empty prior to reload event. Format is the same as for the newMagazine.
+| style="min-width: 30%" |
+== Example Return ==
+
+<pre>
+[
+	B Alpha 1-1:1 (KK),
+	"arifle_MXC_Holo_pointer_F",
+	"arifle_MXC_Holo_pointer_F",
+	[
+		"30Rnd_65x39_caseless_mag",
+		30,
+		1e+007,
+		0
+	],
+	[
+		"30Rnd_65x39_caseless_mag",
+		12,
+		1e+007,
+		0
+	]
+]
+</pre>
+|}
+
+== Magazine ID ==
+
+The magazine ID number is normally > 10,000,000, so due to the number to string conversion limitation it would always show as 1e+007 in hint. In order to be able to see the changing ID number, subtract this amount from the returned ID.
+
+
+== Example ==
+
+Here is a little demo to play with:
+<sqf>
+player addEventHandler ["Reloaded",
+{
+	params ["", "_weapon", "_muzzle", "_newmag", ["_oldmag", ["","","",""]]];
+	hint format ["
+		Weapon: %1\n
+		Muzzle: %2\n\n
+		- New Magazine -\n
+		Name: %3\n
+		Ammo: %4\n
+		ID: %5\n
+		Creator: %6\n\n
+		- Old Magazine -\n
+		Name: %7\n
+		Ammo: %8\n
+		ID: %9\n
+		Creator: %10
+		",
+		_weapon,
+		_muzzle,
+		_newmag select 0,
+		_newmag select 1,
+		(_newmag select 2) - 1e7,
+		_newmag select 3,
+		_oldmag select 0,
+		_oldmag select 1,
+		if (_oldmag select 2 isEqualType "") then { "" } else { (_oldmag select 2) - 1e7 },
+		_oldmag select 3
+	];
+}];
+</sqf>
+
+
+== Some explanation about "Throw" and "Put" weapons ==
+
+The "Throw" weapon has multiple muzzles for different types of [[currentThrowable]]s. Normally the muzzles are already loaded. However, if you have "Reloaded" EH attached and a spare hand grenade in inventory, when you throw 1st grenade the EH will trigger immediately. This might be a little bit confusing at first, but it is the correct behaviour. As 1st grenade leaves its muzzle, spare grenade is auto reloaded immediately, which explains the EH firing. Also picking up a throwable or putting it in inventory will trigger the "Reloaded" EH if the muzzle for it was empty, as this will reload the muzzle.
+
+The "Put" weapon also has multiple muzzles for different type of mines, but unlike "Throw" weapon, it seems to have its muzzles empty, so it loads and fires them pretty much at the same time. This behaviour could also raise eyebrow at first. But if you assign both "Reloaded" and "Fired" EH to player, when he puts down a mine, both EH fire almost immediately, with "Reloaded" always firing first. This means that "Put" muzzles are reloaded and fired immediately only when requested and this is why old mag information will be non-existent.

@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/Bohemia_Interactive_Community:Searching
+// revision: 339974 (2023-04-28T16:27:14Z)
+// export sha1: jzm8mk7l1y5zhn2y27hdfnj3tbrqaef
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| width="100%" style="border:solid 2px #A3B1BF; background-color:#F5FAFF;"
+|-
+|
+<div style="background-color:#CEDFF2; border-bottom:0px; border:1px solid #A3B0BF; text-align:center; font-size:150%; padding:3px; margin:4px;">Searching Bohemia Interactive Community</div>
+<div style="padding-left:2em; padding-right:2em;">
+
+This article provides a detailed overview of this Wiki's search feature, and instructions on using external search engines, such as Google, to find information. 
+
+
+== Search this site ==
+<div style="border:1px solid #ababff; background-color:#fdfdff; padding:1em; margin:0em 1em 1em 0em; float:left; font-size:105%">
+Enter your keywords in the search box.
+* <font face="MS Sans Serif,Arial">'''Go'''</font> - (or ''Enter'' on keyboard) takes you to the article.
+* <font face="MS Sans Serif,Arial">'''Search'''</font> - returns a list of articles and additional search options.
+</div><br clear="left"/>
+
+=== Tips for effective searches ===
+
+==== Phrases in double quotes -- exact match only ====
+A phrase can easily be found by enclosing it in double quotes. For example, ''"holly dolly"'' returns six matches; ''holly dolly'' (two standalone words) returns 197.
+
+==== Go is case sensitive ====
+The "go" function uses an algorithm to decide what page you're likely to be interested in, and this usually masks its case sensitivity - but not always.  For more details about this please see {{Link|https://en.wikipedia.org/wiki/Wikipedia:Go_button|Go button}}.
+
+==== Avoid short and common words ====
+If your search terms include a common "stop word" (such as ''the'', ''your'', ''more'', ''right'', ''while'', ''when'', ''who'', ''which'', ''such'', ''every'', ''about''), you may see many irrelevant results. 
+
+==== Wildcards ====
+Please exercise self restraint when using {{Link|https://en.wikipedia.org/Wildcard_character|wildcard character}}s, as they take a toll on the server. 
+
+==== Words with special characters ====
+In a '''search''' for a word with a {{Link|https://en.wikipedia.org/Diaeresis|diaeresis}}, such as Sint Odili&euml;nberg, it depends whether this ë is stored as one character or as "&amp;euml;". In the first case one can simply search for Odilienberg (or Odili&euml;nberg); in the second case it can only be found by searching for Odili, euml and/or nberg. This is actually a bug that should be fixed -- the entities should be folded into their raw character equivalents so all searches on them are equivalent. 
+
+==== Words in single quotes ====
+If a word appears in an article with single quotes, you can only find it if you search for the word with quotes. Since this is rarely desirable, it is better to use double quotes in articles for which this problem does not arise. 
+
+An apostrophe is identical to a single quote, therefore the name Mu'ammar can be found only by searching for exactly that (and not otherwise). A word with ''<nowiki>'</nowiki>s'' is an exception in that it can be found also by searching for the word without the apostrophe and the s.
+
+==== Namespaces searched by default ====
+The search only applies to the namespaces selected in the user's [[special:preferences|preferences]]. To search the other namespaces, check or uncheck the checkboxes in the "Search in namespaces" box found at the bottom of a search results page. Depending on the web browser in use, a box may still be checked from a previous search, but without being effective any longer! To make sure, uncheck and then recheck it.
+
+Searching the image namespace means searching the image descriptions, i.e. the first parts of the image description pages.
+
+==== Delay in updating the search index ====
+For reasons of efficiency and priority, very recent changes are not always immediately taken into account in searches.
+
+=== Display of search results ===
+Logged in users can choose how much context and how many hits per page to display with a parameter in "My Preferences".
+
+== External search engines ==
+Various search engines can provide domain-specific searches, which let you search this site specifically. Searches are based on the text as shown by the browser, so wiki markup is irrelevant. 
+
+In general, external search engines are faster than an internal search. However, because the search engine's cache is based on when the site was indexed, the search may not return newly created pages. Similarly, the search engine's cached version of the page will not be as up-to-date as the link to the site itself. 
+
+=== Google ===
+By following the links below, you can use the Google search engine to search this site. Google indexes all namespaces except article talk.
+
+* [http://www.google.com/custom?domains{{=}}/community.bistudio.com&sitesearch=/community.bistudio.com Search with Google]
+
+=== Yahoo! ===
+By following the links below, you can use the Yahoo! search engine to search this site.
+
+* [http://search.yahoo.com/web/advanced?vs{{=}}community.bistudio.com Search with Yahoo!]

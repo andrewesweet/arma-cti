@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_transportService
+// revision: 327739 (2022-07-13T10:40:56Z)
+// export sha1: 7k6ytng9afj65c3eshiidy2yutgzll5
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Supports | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/See also needed | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Supports
+
+|descr= <pre>
+/*
+	File: transportService.sqf
+
+	Description:
+	Transportation system
+
+	Parameter(s):
+	1: <object> unit allowed to use the transport system
+	2: <object> vehicle providing transport
+	3: <array> positions to be chosen by player; accepted strings are "pickup" and "unload", the second position is defined by the next paramter (OPTIONAL)
+	4: <position> (NEEDED ONLY IF PARAMETER #3 IS USED)
+
+	Returns:
+	N/A
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= [caller, vehicle, position, mainScope, secopScope] call [[BIS_fnc_transportService]]
+
+|p1=
+
+|r1= [[Nothing]]
+
+|x1=
+
+|seealso=
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20180428002100
+|text= ''caller'' can only be [[player]] due to {{arma2}} design: FSM overrides by <sqf inline>_clicker = player</sqf> instead of <sqf inline>_clicker = _this select 0</sqf>).<br>
+Parameters displayed are incorrect, these are:
+<sqf>
+_caller		= _this select 0;
+_veh		= _this select 1;
+_passedPos	= _this select 2;
+_mainScope	= _this select 3;
+_secopScope	= _this select 4;
+
+if (count _this > 5) then
+{
+	_supportType = _this select 5;
+};
+</sqf>
+}}

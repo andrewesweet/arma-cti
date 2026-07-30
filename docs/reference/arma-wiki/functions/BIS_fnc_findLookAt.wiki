@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_findLookAt
+// revision: 274091 (2021-06-13T01:16:28Z)
+// export sha1: azczbwg538s3shcja6t8w6aw5odvyc4
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Function Group: Vectors | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Vectors
+
+|gr2= Object Manipulation
+
+|descr= <pre>/*
+	Author: Nelson Duarte <@Nelson_G_Duarte>
+
+	Description:
+	Given target location, calculates orientation vectors facing direction
+
+	Parameter(s):
+	_this select 0: Object 	- The curve
+
+	Returns:
+	Array - In format [Dir Vector, Up Vector]
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_findLookAt]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

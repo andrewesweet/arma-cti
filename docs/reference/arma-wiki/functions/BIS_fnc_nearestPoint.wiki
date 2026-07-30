@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_nearestPoint
+// revision: 328376 (2022-07-13T16:00:48Z)
+// export sha1: 2yrahzjxdpbtj03fhy0xr84pkilxpw2
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Geometry | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Geometry
+
+|descr= Computes nearest point in a line.
+
+|s1= [start, end, point, ''is2D''] call [[BIS_fnc_nearestPoint]]
+
+|p1= start: [[Position]] - line start
+
+|p2= end: [[Position]] - line end
+
+|p3= point: [[Position]] - point to check against
+
+|p4= is2D: [[Boolean]] - (Optional, default [[false]]) 2D calculation instead of 3D
+
+|r1= [[Position]] - the line point that is closest to ''point''
+
+|x1= <sqf>private _idealLocation = [getMarkerPos "base", getMarkerPos "destination", getPos player, true] call BIS_fnc_nearestPoint;</sqf>
+
+|seealso= [[nearObjects]] [[nearestObject]] [[nearestObjects]] [[BIS_fnc_nearestPosition]] [[BIS_fnc_nearestNum]] [[BIS_fnc_nearestRoad]] [[BIS_fnc_nearestHelipad]] [[BIS_fnc_isPosBlacklisted]]
+}}

@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/velocity
+// revision: 377249 (2026-01-02T06:14:11Z)
+// export sha1: sa2h6cez5lpb79rkn4d7l0nuktkimr7
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.80 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.80
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns the velocity of the object as vector in m/s.
+
+|s1= [[velocity]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Vector3D]]
+
+|x1= <sqf>_vector = velocity jeep;</sqf>
+
+|x2= <sqf>if ((velocity _plane1 select 2) > 50) then { hint "Aircraft is climbing up too fast!"; };</sqf>
+
+|seealso= [[setVelocity]] [[velocityModelSpace]] [[setVelocityModelSpace]] [[setVelocityTransformation]] [[speed]]
+}}

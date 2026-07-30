@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isCampaign
+// revision: 309322 (2022-05-05T12:04:27Z)
+// export sha1: fl2kp3w4sh7d39h85822vaytfbpdran
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Campaign
+
+|gr2= Missions
+
+|descr= Checks to see if a mission is being run in a campaign.
+
+|s1= [] call [[BIS_fnc_isCampaign]]
+
+|r1= [[Boolean]] - [[true]] if being run in a campaign, [[false]] if not
+
+|x1= <sqf>[] call BIS_fnc_isCampaign;</sqf>
+
+|seealso= [[campaignConfigFile]]
+}}

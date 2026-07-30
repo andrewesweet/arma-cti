@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/diag_drawMode
+// revision: 336291 (2022-12-21T11:09:54Z)
+// export sha1: 6equamvd1ruc4pwhcjzdk44r20764kx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+
+|branch= diag
+
+|version1= 1.86
+
+|gr1= Diagnostic
+
+|descr= Activates a debug visualisation.
+
+|s1= [[diag_drawMode]] type
+
+|p1= type: [[String]] - type of visualisation. Can be one of:
+{{Columns|2|
+* "Normal"
+* "Roadway"
+* "Geometry"
+* "ViewGeometry"
+* "FireGeometry"
+* "Paths"
+* "ShadowVolume"
+* "ShadowBuffer"
+* "Buoyancy"
+* {{GVI|arma3|2.10|size= 0.75}} "Wire" - can be used along other visualisation
+** first mode: pure wireframe, no normal rendering
+** second mode: normal rendering combined with wireframe
+** third mode: back to normal
+}}
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+diag_drawMode "FireGeometry";
+sleep 5;
+diag_drawMode "Normal";
+</sqf>
+
+|x2= "Wire" can be used along other modes:
+<sqf>
+diag_drawMode "Wire";			// switch to first Wire mode
+diag_drawMode "Roadway";		// switch to Roadway like usual
+
+diag_drawMode "Wire";			// switch to second Wire mode
+diag_drawMode "ViewGeometry";	// switch to ViewGeometry, keeping the current Wire mode
+
+diag_drawMode "Wire";			// disable Wire
+</sqf>
+
+|seealso= [[diag_list]]
+}}

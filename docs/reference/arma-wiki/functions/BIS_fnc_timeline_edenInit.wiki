@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_timeline_edenInit
+// revision: 279391 (2021-06-13T22:18:24Z)
+// export sha1: 3lsqja0tal28csnztpxqexksvac00j8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Timeline3DEN | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Timeline3DEN
+|descr= <pre>/*
+	Author: Nelson Duarte <@Nelson_G_Duarte>
+
+	Description:
+	Time line is initialized in 3den
+
+	Parameter(s):
+	_this select 0: Object	- The timeline
+
+	Returns:
+	Nothing
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_timeline_edenInit]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

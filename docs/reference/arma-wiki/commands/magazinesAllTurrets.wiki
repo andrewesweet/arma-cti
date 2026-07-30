@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/magazinesAllTurrets
+// revision: 377649 (2026-01-02T09:01:54Z)
+// export sha1: gnmerpp2fvlu0cf1b1sztkn2jb5kxe7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 1.52 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.52
+
+|arg= global
+
+|gr1= Turrets
+
+|descr= Returns all magazines (including empty) from all vehicle turrets (including driver turret [-1]) and their ammo counts. Since Arma 3 v2.08.148327 it is possible to exclude person turrets from returned results.
+
+|s1= [[magazinesAllTurrets]] vehicle
+
+|p1= vehicle: [[Object]] - vehicle with turrets
+
+|r1= [[Array]] of [[Array]]s with [className, turretPath, ammoCount, id, creator]
+* className: [[String]] - magazine class name
+* turretPath: [[Turret Path]]
+* ammoCount: [[Number]] - how many rounds left in the magazine
+* id: [[Number]] - id of the magazine object. The number starts at 10,000,000. This gives it about 6,700,000 possible ids before the number starts losing precision and cannot be used in scripts.
+* creator: [[Number]] - [[owner]] / [[clientOwner]] of the PC that created the object
+
+|s2= [[magazinesAllTurrets]] [vehicle, excludePersonTurrets]
+
+|s2since= arma3 2.08
+
+|p21= vehicle: [[Object]] - vehicle with turrets
+
+|p22= excludePersonTurrets: [[Boolean]] - when [[true]] only vehicle's turrets are queried
+
+|r2= [[Array]] of [[Array]]s with [className, turretPath, ammoCount, id, creator]
+* className: [[String]] - magazine class name
+* turretPath: [[Turret Path]]
+* ammoCount: [[Number]] - how many rounds left in the magazine
+* id: [[Number]] - id of the magazine object. The number starts at 10,000,000. This gives it about 6,700,000 possible ids before the number starts losing precision and cannot be used in scripts.
+* creator: [[Number]] - [[owner]] / [[clientOwner]] of the PC that created the object
+
+|x1= <sqf>_mags = magazinesAllTurrets vehicle player;</sqf>
+
+|x2= <sqf>_mags = magazinesAllTurrets [vehicle player, true];</sqf>
+
+|seealso= [[magazinesTurret]] [[allTurrets]] [[addMagazineTurret]] [[removeMagazinesTurret]] [[removeMagazineTurret]] [[weaponsTurret]] [[loadMagazine]] [[magazines]] [[magazinesDetail]] [[magazinesAmmo]] [[magazinesAmmoFull]] [[addWeaponTurret]] [[removeWeaponTurret]] [[turretLocal]] [[getPylonMagazines]] [[ammoOnPylon]]
+}}

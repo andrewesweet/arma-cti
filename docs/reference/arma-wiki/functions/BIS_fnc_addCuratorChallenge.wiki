@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addCuratorChallenge
+// revision: 279021 (2021-06-13T21:47:50Z)
+// export sha1: ix10lmhtxkvn89kneutallnssjubjj0
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: CuratorChallenges | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= CuratorChallenges
+
+|serverExec= server
+
+|descr= <pre>/*
+
+	Description:
+	Add challenges for curator to complete
+
+	Parameter(s):
+		0: OBJECT - curator
+		1 (Optional): ARRAY - list of supported challenges from CfgCuratorChallenges (default: all challenges)
+		2 (Optional): NUMBER - number of added challenges (default: 3)
+		3 (Optional): CODE - condition for challenges to remain active {default: true}
+		4 (optional):
+			CODE or [CODE,STRING] - code executed upon completing all challenges and reward description
+			Arguments passed to the code are:
+				0: OBJECT - curator
+				1: NUMBER - number of previously completed challenges by given curator
+				2: STRING - parent task ID
+		5 (Optional): STRING - parent task ID
+
+	Returns:
+	STRING - ID of parent task under which all challenge tasks are
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_addCuratorChallenge]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_spawnEnemy
+// revision: 337523 (2023-02-03T22:19:23Z)
+// export sha1: lzc1eartrgii7lpp5yzk8fjl5lpfnd4
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Constantly spawns enemies around a player according to array of enemy classes. The units will try to hunt down the player.
+
+|exec= spawn
+
+|s1= [aPlayer, target, side, classes, maxEnemies, delay, code] spawn [[BIS_fnc_spawnEnemy]]
+
+|p1= aPlayer: [[Object]] - a unit that [[isPlayer|is a player]]
+
+|p2= target: [[Object]] - reference object (enemies will be spawned on same direction in respect to the player)
+
+|p3= side: [[Side]] - side of the spawned enemies
+
+|p4= classes: [[Array]] of [[String]]s - list of enemy classes (units will form a group together)
+{{Feature|important|Classes must be of the defined ''side'', otherwise they will attack each other.}}
+
+|p5= maxEnemies: [[Number]] - (Optional, default 10) maximum number of enemies at once
+
+|p6= delay: [[Number]] - (Optional, default 30) time between spawn waves
+
+|p7= code: [[Code]] - (Optional, default {}) - code to execute on each unit (referenced by [[Magic Variables#this|_this]])
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player, player, opfor, ["O_Soldier_F"]] spawn BIS_fnc_spawnEnemy;</sqf>
+
+|seealso= [[BIS_fnc_spawnGroup]] [[BIS_fnc_stalk]]
+}}

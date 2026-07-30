@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/ctrlClassName
+// revision: 321025 (2022-05-13T11:30:29Z)
+// export sha1: ordvvvff511hd0dx0g9vqs29qgmbv4n
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.26 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.26
+
+|gr1= GUI Control
+
+|descr= Returns the class name of a [[Control]] as it is defined in config. If you need config class of a game created [[Display]], it is stored on display itself:
+<sqf>_className = findDisplay 12 getVariable ["BIS_fnc_initDisplay_configClass", ""]; // "RscDiary"</sqf>
+
+|s1= [[ctrlClassName]] control
+
+|p1= control : [[Control]]
+
+|r1= [[String]] - class name
+
+|x1= List class names of all controls present on display 46:
+<sqf>
+_return = [];
+{
+	_return pushBack format ["IDC: %1, className: %2", ctrlIDC _x, ctrlClassName _x];
+} forEach (allControls findDisplay 46);
+
+copyToClipboard (_return joinString endl);
+</sqf>
+
+|seealso= [[ctrlIDC]] [[ctrlIDD]] [[ctrlType]] [[ctrlCreate]] [[ctrlDelete]] [[ctrlModel]] [[ctrlSetModel]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlModelDirAndUp]] [[ctrlSetModelDirAndUp]]
+}}

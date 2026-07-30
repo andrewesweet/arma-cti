@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Official_Tools/Resource_Manager_Viewports
+// revision: 322225 (2022-05-27T11:42:50Z)
+// export sha1: j0lawi1r5ercvc969te303jdf822sd1
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|armaR|Modding|Official Tools}}

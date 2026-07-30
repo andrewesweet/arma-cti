@@ -1,0 +1,198 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Cheats
+// revision: 370845 (2025-02-14T16:00:07Z)
+// export sha1: og4obf5elcq7cg2w3jzh1k9npjjdegs
+// categories: Category:Arma 3
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Cheats offer various different functionalities which are not meant to be easily accessible. Use cheats with care!
+To enter a cheat press: {{Controls|LShift|Num-}} and enter one of the cheat codes below. Capitalisation does not matter.
+
+
+{{Feature|important|
+'''Keyboard Layout information:'''<br>
+* The cheats listed on this page work on a {{Link|https://en.wikipedia.org/wiki/QWERTY}} keyboard and work on any keyboard ''if typed as on a QWERTY one''. e.g:
+** {{Link|https://en.wikipedia.org/wiki/QWERTZ}} users (Germany, etc) must replace {{hl|Y}} &lrarr; {{hl|Z}} (e.g {{hl|TOPOGRAPHY}} becomes {{hl|TOPOGRAPHZ}})
+** {{Link|https://en.wikipedia.org/wiki/AZERTY}} users (France, etc) must replace {{hl|M}} with {{hl|,}}, {{hl|A}} &lrarr; {{hl|Q}}, {{hl|Z}} &lrarr; {{hl|W}} (e.g {{hl|ENDMISSION}} becomes {{hl|END,ISSION}})
+<spoiler text="Show translation table">
+{| class="wikitable align-center"
+! QWERTY
+! QWERTZ
+! AZERTY
+|-
+| {{hl|ENDMISSION}}
+| {{hl|ENDMISSION}}
+| {{hl|END,ISSION}}
+|-
+| {{hl|CAMPAIGN}}
+| {{hl|CAMPAIGN}}
+| {{hl|CQ,PQIGN}}
+|-
+| {{hl|MISSIONS}}
+| {{hl|MISSIONS}}
+| {{hl|,ISSIONS}}
+|-
+| {{hl|SAVEGAME}}
+| {{hl|SAVEGAME}}
+| {{hl|SQVEGQME}}
+|-
+| {{hl|TOPOGRAPHY}}
+| {{hl|TOPOGRAPHZ}}
+| {{hl|TOPOGRAPHY}}
+|-
+| colspan="3" | {{hl|EXPORTNOGRID}}
+|-
+| {{hl|GETALLGEAR}}
+| {{hl|GETALLGEAR}}
+| {{hl|GETQLLGEQR}}
+|-
+| colspan="3" | {{hl|FLUSH}}
+|-
+| colspan="3" | {{hl|SUPERFLUSH}}
+|-
+| {{hl|ENDLOAD}}
+| {{hl|ENDLOAD}}
+| {{hl|ENDLOQD}}
+|-
+| colspan="3" | {{hl|ENTITIES}}
+|-
+| {{hl|REMAINS}}
+| {{hl|REMAINS}}
+| {{hl|RE,QINS}}
+|-
+| {{hl|FRAME}}
+| {{hl|FRAME}}
+| {{hl|FRQ,E}}
+|-
+| {{hl|SFRAME}}
+| {{hl|SFRAME}}
+| {{hl|SFRQ,E}}
+|-
+| colspan="3" | {{hl|FREEZE}}
+|-
+| {{hl|CRASH}}
+| {{hl|CRASH}}
+| {{hl|CRQSH}}
+|-
+| colspan="3" | {{hl|FPS}}
+|}
+</spoiler>
+* Since the {{Controls|LShift|Num-}} keybind cannot be rebound, your keyboard must have an numpad to enter a cheat.
+}}
+
+
+== Cheats ==
+
+=== ENDMISSION ===
+
+Ends the mission.
+
+=== CAMPAIGN ===
+
+Unlocks all campaign missions. This must be entered in the appropriate campaign screen.
+
+=== MISSIONS ===
+
+Unlocks all single player missions. This must be entered in the appropriate single missions screen.
+
+=== SAVEGAME ===
+
+Saves the game in your current mission. Can be useful as a quicksave function.
+
+=== TOPOGRAPHY ===
+
+Generates selected map in EMF vector format. The file is (not) always created at the root directory of the C: drive (Windows 7 with UAC might put the file in Virtualstore, {{hl|"C:\Users\<username>\AppData\Local\Virtualstore"}}).
+This function is '''deprecated''' and was replaced with [[diag_exportTerrainSVG]].
+
+==== Example Export Procedure ====
+# '''Run {{arma3}} as administrator'''
+#* Open your {{arma3}} main folder
+#* Locate {{hl|arma3.exe}}
+#* Right click on it and select ''Run as administrator''. The reason for it is that {{hl|.emf}} file will be saved at {{hl|c:\<worldname>.emf}} location, and on Windows 7, for example, most apps do not have rights to write in that location. Running {{arma3}} as administrator should resolve this
+# '''Select desired map'''
+#* Open [[:Category:Eden Editor|Eden Editor]] with the map you want to export
+# '''Enter required cheat'''
+#* Press and hold {{Controls|Shift}}
+#* Tap {{Controls|Num-}} on the while still holding {{Controls|Shift}}
+#* Release both keys then blindly type {{hl|TOPOGRAPHY}}. If everything done correctly, a small message will flash saying that topography is activated
+# '''Locate exported file'''
+#* Go to {{hl|c:\}} and check for {{hl|<worldname>.emf}} file. If you had activation message and no file saved, something is wrong with write file permission to this location, you will have to troubleshoot it on your own
+# '''Finish exporting'''
+#* Close the game for it to release the file
+#* Copy the resulting {{hl|.emf}} file into some location where any user can write to the disk
+#* Copy {{hl|EmfToPng.exe}} file to the same location. This file can be found in Visitor 3 folder in the Arma 3 Tools package. If you don’t have it, it is available on steam as free download (Library -> Tools)
+# '''Convert exported map to .png'''
+#* At this point you can just drag your resulting {{hl|.emf}} file over the converter {{hl|.exe}} to start default conversion. However if you prefer to do it with different zoom, you can do it via command line, for instructions run {{hl|EmfToPng.exe}} without params
+# '''Done!'''
+#* If everything went ok, you would have {{hl|<worldname>.png}} file created next to {{hl|<woldname>.emf}} file
+
+{{ArgTitle|3|EXPORTNOGRID|{{GVI|arma3|1.44}}}}
+
+Does what the {{Link|#TOPOGRAPHY}} cheat does, but generates a ''grid-less'' map in EMF format {{hl|XXNAMEXX_nogrid.emf}}. See the following for more on map topography export {{Link|http://killzonekid.com/arma-scripting-tutorials-how-to-export-topography/|KK's How to Export Topography}}
+
+=== GETALLGEAR ===
+
+Entering this cheat will execute statement defined by [[Description.ext#onCheat|'''onCheat''']] property in [[Description.ext|description.ext]]. For example:
+<syntaxhighlight lang="cpp">
+// description.ext
+onCheat = "hint str _this";
+</syntaxhighlight>
+
+The [[Magic Variables#this|_this]] variable will contain "GETALLGEAR" text. Currently this is the only cheat that can activate '''onCheat''' event handler.
+
+=== FLUSH ===
+
+Flush all video memory to cure performance issue caused by textures being placed in the AGP memory
+
+In {{arma3}}, up until {{GVI|arma3|2.18|size= 0.75}} this had no effect.
+
+{{ArgTitle|3|SUPERFLUSH|{{GVI|arma3|2.18}}}}
+
+Flush all video memory and as much system memory as possible. Empties all caches. Tries to free as much memory as possible.
+
+{{ArgTitle|3|ENDLOAD|{{GVI|arma3|2.18}}}}
+
+Forcefully ends a scripted [[startLoadingScreen|loading screen]].
+
+{{ArgTitle|3|ENTITIES|{{GVI|arma3|1.24}}}} <!-- perhaps 1.26 -->
+
+{{Feature|important|Only available in {{Link|Arma 3: Diagnostics Exe|Diagnostic}}/{{Link|Performance Profiling|Profiling}} branch.}}
+
+Triggers [[logEntities]].
+
+{{ArgTitle|3|REMAINS|{{GVI|arma3|2.20}}}}
+
+{{Feature|important|Only available in {{Link|Arma 3: Diagnostics Exe|Diagnostic}}/{{Link|Performance Profiling|Profiling}} branch.}}
+
+Logs remains collector entities into a file in the [[arma.RPT|RPT]] directory. See also <sqf inline>diag_remainsCollector -1</sqf> and {{hl|{{Link|Multiplayer Server Commands#Performance Profiling|#logremains}}}} {{Link|Multiplayer Server Commands|server command}}.
+
+{{ArgTitle|3|FRAME|{{GVI|arma3|1.24}}}} <!-- perhaps 1.26 -->
+
+{{Feature|important|Only available in {{Link|Arma 3: Diagnostics Exe|Diagnostic}}/{{Link|Performance Profiling|Profiling}} branch.}}
+Triggers [[diag_captureFrame]].
+
+{{ArgTitle|3|SFRAME|{{GVI|arma3|2.16}}}}
+
+{{Feature|important|Only available in {{Link|Arma 3: Diagnostics Exe|Diagnostic}}/{{Link|Performance Profiling|Profiling}} branch.}}
+Triggers [[diag_captureSlowFrame]] with <sqf inline>["total", 0.03]</sqf> arguments.
+
+=== FREEZE ===
+
+{{Feature|warning|Disabled in retail version.}}
+Instantaneous "freezing" the game. For debugging of freeze dump creation process.
+
+=== CRASH ===
+
+{{Feature|warning|Disabled in retail version.}}
+Forced game crash. For debugging of crash dump creation process.
+
+=== FPS ===
+
+Allows to artificially limit FPS for testing. Every time the FPS cheat is entered, it cycles through the following list (message shown):
+* {{hl|Limit FPS 60}} - 1st time cheat entered
+* {{hl|Limit FPS 40}} - 2nd time cheat entered
+* {{hl|Limit FPS 20}} - 3rd time cheat entered
+* {{hl|Limit FPS 0}} - 4th time cheat entered (FPS and counter reset)
+
+
+{{GameCategory|arma3}}

@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/a_/_b
+// revision: 363979 (2024-04-29T22:53:36Z)
+// export sha1: bgt0bxs8sgb4x11jwk8p5zxc2nvw4vq
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Command Group: Math | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|sortKey= #
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Math
+
+|gr2= Config
+
+|descr= Returns the quotient of two numbers. If the divisor is 0 a ''Division by zero'' error is shown but the script does not stop and the result of such division is assumed to be 0.<br><br>
+Alternative syntax returns the [[Config]] entry with the given name (alias for [[config greater greater name|>>]], slightly slower but with [[Operators#Order of Precedence|higher precedence]]).
+
+|s1= a [[a / b|/]] b
+
+|p1= a: [[Number]] - dividend
+
+|p2= b: [[Number]] - divisor
+
+|r1= [[Number]] - quotient
+
+|s2= config [[a / b|/]] name
+
+|s2since= arma1 1.00
+
+|p21= config: [[Config]]
+
+|p22= name: [[String]]
+
+|r21= [[Config]] - config entry
+
+|x1= <sqf>_result = 15 / 3; // result is 5</sqf>
+
+|x2= <sqf>_cfgVehicles = configFile / "CfgVehicles"; // identical to configFile >> "CfgVehicles" (but the order of precedence)</sqf>
+
+|seealso= [[Operators]] [[configFile]] [[missionConfigFile]] [[campaignConfigFile]] [[configName]] [[config greater greater name|config >> name]] [[count]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140401000200
+|text= ({{arma3}} 1.14) config / name can be composed to config >> name [[String]] or [[Array]] format via [[BIS_fnc_configPath]]. E.g.
+<sqf>
+[configFile / "ATMineCrater" / "MissileCircleDust", ""] call BIS_fnc_configPath; // return: "configfile >> "ATMineCrater" >> "MissileCircleDust""
+[configFile / "ATMineCrater" / "MissileCircleDust", []] call BIS_fnc_configPath; // return: ["configfile","ATMineCrater","MissileCircleDust"]
+</sqf>
+}}

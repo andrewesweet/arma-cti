@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getCfgData
+// revision: 363873 (2024-04-23T21:03:46Z)
+// export sha1: c4ak6az5ncv16virfvuk1j0m546ii0q
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Configs | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Configs
+
+|descr= Smart-return number, text or array value from config.
+* Default syntax works for any config.
+* Alternative syntax is for working comfortably with [[Description.ext]].
+
+|s1= config call [[BIS_fnc_getCfgData]]
+
+|p1= config: [[Config]] - [[Config]] path
+
+|r1= [[Array]], [[String]], [[Number]] or [[nil]]
+
+|s2= array call [[BIS_fnc_getCfgData]]
+
+|p21= [[Array]] of [[String]]s - [[missionConfigFile]] classes and an attribute
+
+|r2= [[Array]], [[String]], [[Number]] or [[nil]]
+
+|x1= <sqf>private _value = (configFile >> "BulletBubbles" >> "BulletBubbles1" >> "type") call BIS_fnc_getCfgData;</sqf>
+
+|x2= <sqf>private _value = (missionConfigFile >> "Hubs" >> "A1" >> "QuickStart" >> "trigger") call BIS_fnc_getCfgData;</sqf>
+
+|seealso= [[BIS_fnc_getCfgDataArray]] [[BIS_fnc_getCfgDataObject]] [[BIS_fnc_getCfgDataPool]] [[BIS_fnc_getCfgDataBool]]
+}}

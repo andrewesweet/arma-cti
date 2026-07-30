@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/setMarkerDir
+// revision: 370038 (2024-10-28T20:28:34Z)
+// export sha1: sgdp13sd3q8zh003updvcnn46pfwgyy
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Markers
+
+|eff= global
+
+|descr= Sets the orientation of the marker. Angle is in degrees.
+{{Feature|informative|
+'''Multiplayer optimisation:''' Global marker commands always broadcast the ''entire'' marker state over the network.
+As such, the number of network messages exchanged when creating or editing a marker can be reduced by performing all but the last operation using local marker commands, then using a global marker command for the last change (and subsequent global broadcast of all changes applied to the marker).
+}}
+
+|s1= markerName [[setMarkerDir]] angle
+
+|p1= markerName: [[String]]
+
+|p2= angle: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"Marker1" setMarkerDir 90;</sqf>
+
+|seealso= [[markerDir]] [[setMarkerBrush]] [[createMarker]] [[setMarkerColor]] [[setMarkerPos]] [[setMarkerShape]] [[setMarkerSize]] [[setMarkerText]] [[setMarkerType]] [[setMarkerAlpha]]
+}}

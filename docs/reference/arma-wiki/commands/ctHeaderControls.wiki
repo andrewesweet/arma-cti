@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/ctHeaderControls
+// revision: 377179 (2026-01-01T10:48:06Z)
+// export sha1: tq0bpwyr8uo6ywhn5g1hwb3ughgdnq8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+|arg= local
+|eff= local
+
+|gr1= GUI Control - Controls Table
+
+|descr= Returns array of controls on the header with the given index.
+
+|s1= ctrl [[ctHeaderControls]] index
+
+|p1= ctrl: [[Control]]
+|p2= index: [[Number]]
+
+|r1= [[Array]] of [[Control]]s
+
+|x1= <sqf>_array = _control ctHeaderControls 0;</sqf>
+
+|seealso= [[ctAddRow]] [[ctAddHeader]] [[ctClear]] [[ctCurSel]] [[ctSetCurSel]] [[ctRowControls]] [[ctRowCount]] [[ctHeaderCount]] [[ctSetValue]] [[ctValue]] [[ctSetData]] [[ctData]] [[ctFindRowHeader]] [[ctFindHeaderRows]] [[ctRemoveRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}

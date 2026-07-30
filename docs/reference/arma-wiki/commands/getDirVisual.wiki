@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/getDirVisual
+// revision: 330392 (2022-09-06T17:01:40Z)
+// export sha1: pgixnyui7zhfj3p4x5bpummsxppl3h8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Render Time Scope | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|gr2= Render Time Scope
+
+|descr= Returns object's heading in the range from 0 to 360 in render time scope.
+{{Feature|arma3|The alternative syntax gets heading from one object or position to another object or position in render time scope, and should be used instead of [[BIS_fnc_dirTo]].}}
+
+
+|s1= [[getDirVisual]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Number]]
+
+|s2= pos1 [[getDirVisual]] pos2
+
+|s2since= arma3 2.12
+
+|p21= pos1: [[Object]], [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - from where
+
+|p22= pos2: [[Object]], [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - to where
+
+|r2= [[Number]]
+
+|x1= <sqf>_dir = getDirVisual player;</sqf>
+|x2= <sqf>_azimuth = player getDirVisual tank;</sqf>
+
+|seealso= [[getDir]] [[direction]]
+}}

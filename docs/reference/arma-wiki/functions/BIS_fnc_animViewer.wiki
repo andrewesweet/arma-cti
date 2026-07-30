@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_animViewer
+// revision: 349489 (2023-11-08T17:09:07Z)
+// export sha1: 1k9slrjtze5tunrhcko5k717y5di7w7
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Opens the [[Arma 3: Splendid Animation Viewer|Splendid&trade; Animation Viewer]].
+
+|s1= [] call [[BIS_fnc_animViewer]]
+
+<!--
+p0= arrayFromHeader: [[Array]] - forced animation in format [<unit class>, <animation class>]
+
+|p1= mode: [[String]] - (Optional, default "Init")
+
+|p2= arguments: [[Array]] - (Optional, default <sqf inline>[]</sqf>)
+-->
+|r1= [[Nothing]]
+
+|x1= <sqf>[] call BIS_fnc_animViewer;</sqf>
+
+|seealso=  [[BIS_fnc_configViewer]]
+}}

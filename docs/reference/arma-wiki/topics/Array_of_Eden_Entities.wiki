@@ -1,0 +1,20 @@
+// source: https://community.bistudio.com/wiki/Array_of_Eden_Entities
+// revision: 152615 (2020-06-02T21:05:04Z)
+// export sha1: ccbgqdcbfla5mjs7769azc82099eegu
+// categories: Category:Arrays | Category:Eden Editor: Modding
+// Vendored snapshot. Do not edit — re-export instead.
+
+Array of Eden Entities is an [[Array]] used by many [[:Category:Command_Group:_Eden_Editor|Eden Editor commands]]. It's not a unique [[Data_Types|data type]], only an array with specific format.
+
+ [objects, groups, triggers, systems, waypoints, markers, layers, comments]
+* objects: [[Array]] of [[Object]]s
+* groups: [[Array]] of [[Group]]s
+* triggers: [[Array]] of [[Object]]s
+* systems: [[Array]] of [[Object]]s
+* waypoints: [[Array]] of [[Array]]s in [[Waypoint]] format
+* markers: [[Array]] of [[String]]s
+* layers: [[Array]] of [[Number]]s
+* comments: [[Array]] of [[Number]]s
+
+[[Category:Arrays]]
+[[Category:Eden_Editor:_Modding]]

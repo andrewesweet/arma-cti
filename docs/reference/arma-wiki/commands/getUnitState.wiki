@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/getUnitState
+// revision: 369978 (2024-10-22T13:15:33Z)
+// export sha1: 42tzyzvcc4a21hbhnh6tsbaw32ahwdc
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|arg= local
+
+|eff= 
+
+|gr1= AI Behaviour
+
+|descr= Returns current state of the given AI unit, which could be one of the following:
+* "WAIT" - another plan is needed (current partial plan was done or is not present)
+* "INIT" - operative planing should start, endpoint is set
+* "INITFAILED" - init failed because data are not ready
+* "BUSY" - operative plan ready and valid
+* "OK" - completed whole strategic plan
+* "DELAY" - repeat search, usually when failed
+* "CARGO" - unit is in vehicle cargo, no planning needed
+* "STOPPING" - unit is stopping (usually because of getin/getout request/landing)
+* "REPLAN" - we have a plan, but we would like to search a new one
+* "STOPPED" - unit is stopped, no planning needed (also landed. Different from [[stop]] command)
+* "PLANNING" - operative planning pending
+
+|s1= [[getUnitState]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[String]] - unit state (see description)
+
+|x1= <sqf>_state = getUnitState bob; //"WAIT"</sqf>
+
+|seealso= [[disableAI]] [[enableAI]] [[checkAIFeature]] [[enableAIFeature]] [[vehicleMoveInfo]] [[expectedDestination]]
+}}

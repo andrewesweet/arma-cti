@@ -1,0 +1,98 @@
+// source: https://community.bistudio.com/wiki/Operation_Flashpoint:_Startup_Parameters
+// revision: 373973 (2025-07-09T15:17:51Z)
+// export sha1: kb1rsg93l84zbwrmdqe4h4vr1t3fg1v
+// categories: Category:Startup Parameters
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}} Note that the following items are startup parameters for use only with the original {{ofp}} game series for the PC. These parameters can be configured by creating a new shortcut on your desktop and then adding the appropriate option.
+
+'''Example'''
+
+{{hl|c= "C:\...\OperationFlashpoint\FLASHPOINTRESISTANCE.EXE" -nomap -nosplash -mod=@winter}}
+
+== Available parameters ==
+=== Display Options ===
+
+{| class="wikitable"
+| width="10%" | -window || Displays Arma windowed instead of full screen. Screen resolution / window size are set in [[arma3.cfg]].
+|-
+| -x= || Numeric, used to set resolution width.
+|-
+| -y= || Numeric, used to set resolution height
+|-
+| -window || Displays {{ofp}} windowed instead of fullscreen
+|-
+| -benchmark || Intended for automated benchmarking, but was never finished and is not working.<br/>
+It can be manually launched but its only working feature is loading of a specific hard coded mission file in the editor.
+<br><br>
+To launch -benchmark it is required to:
+# Launch {{ofp}} / {{arma0}}
+# Create a new profile named '''test'''
+# Open Mission Editor on '''Malden''' island
+# Save a mission file named '''benchmark'''
+# You can switch to your original profile and exit the game
+# Launch {{ofp}} / {{arma0}} with -benchmark parameter. You should be directly in Mission Editor on Malden with opened {{hl|benchmark.abel}} mission file.
+<br>
+As a side note: 
+* Any saved missions in Mission Editor will be stored in {{hl|OFP\Users\test\missions}}
+* {{ofp}} / {{arma0}} launched with -benchmark parameter uses settings from the original profile
+* Once you close Mission Editor the game will switch to your original profile.
+<br>
+Details: https://forums.bohemia.net/forums/topic/177209-ofpcwa-facts-myths-findings-experiments-prototypes-tutorials/?do=findComment&comment=3360569
+|-
+| -nosplash || '''''-noSplash''''' is a startup option that allows one to bypass the splash screens on startup of Operation Flashpoint.
+|}
+
+=== Modifications ===
+{| class="wikitable"
+|-
+| width="10%" | -mod || Allows you to subdivide your addons into different folders, folder names separated by semi-colons. See [[Arma: Mod Folders]] for more information.
+|-
+| -nomap || Forces {{ofp}} to avoid memory mapping for file access. While memory mapping is very efficient from  a performance point of view, it can quickly fill all available virtual space, causing various memory allocation errors or even driver crashes or freezes. This switch is especially important for users with display adapters with large amounts of VRAM (128MB or more), which reserves a lot of virtual addresses in the application address space for themselves.
+|-
+| -cfg= || Selects a config file like your [[Flashpoint.cfg]].
+|-
+| -profiles || Defines the location of the profile folders. 
+{| class="wikitable"
+|-
+! Path Definition !! Explanation
+|-
+| {{hl|c= -profiles=c:\games\myProfiles}} || -
+|-
+| {{hl|c= "-profiles=c:\My Profiles\profiles"}} || If the profile path contains spaces, the whole parameter should be enclosed by quotation marks.
+|-
+| {{hl|c= -profiles=profiles}} || The path defined in the argument can also be interpreted ''relative'' to the game's path. Resulting path would be {{hl|c:\<gamefolder>\profiles\Users\<playername>}}.
+|-
+| {{hl|c= -profiles=.}} || Would put the user profiles ''directly'' into the game folder: {{hl|c:\<gamefolder>\Users\<playername>}}.
+|}
+|}
+
+=== Network Options ===
+{| class="wikitable"
+|-
+| width="10%" |-port= || Port to host dedicated server on.
+|-
+| -password= || Password to join dedicated server.
+|-
+| -sockets || This can be used in a shortcut to specifiy which networking mode to use. The '''''-sockets''''' networking mode uses the BIS implementation of networking code. This mode lacks the in game voice over IP that is supported with the option '''''-dplay'''''. The networking code has been optimized in the '''''-sockets''''' and therefore is the preferred networking method when playing online. {{Link|http://www.goteamspeak.com/|TeamSpeak}} is an alternative VOIP application that is used to replace the in game VOIP lost when using '''''-sockets'''''.
+|-
+| -dplay || The option '''''-dplay''''' can be used in a shortcut to specify which networking mode to use. You can also change this option in the networking mode menu. The '''''-dplay''''' networking mode uses Microsofts Direct Play  implementation of networking code included with DirectX. This mode contains the in game voice over IP that is not supported with the option '''''-sockets'''''.
+|-
+| -config= || Config file for server specific stuff like admin password and mission selection. See [[Arma 3: Server Config File|server config]] for more information.
+|-
+| -netlog  || Location for network game log files.
+|-
+| -host || Start a non-dedicated host.
+|-
+| -server || Start a dedicated server (not needed for a special dedicated server exe).
+|-
+| -connect || Client-side, server to connect to.
+|-
+| -name= || Client-side, User name.
+|-
+| -pid= || Sets the process ID, linux-only?
+|-
+| -logfiles || Name of files to log to, probably only MP server relevant.
+|}
+
+[[Category: Startup Parameters]]

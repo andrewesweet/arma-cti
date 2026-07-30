@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/Turkish_Union_Mod
+// revision: 41789 (2008-06-12T21:51:49Z)
+// export sha1: t14t036r5ny7v0sq29p7rdfw1h8oja2
+// Vendored snapshot. Do not edit — re-export instead.
+
+http://www.turkishunion.com/img/tu_banner_001.jpg
+
+
+Turkish Union Mod was found as non-profit game modification group in 2004.
+It is the first Turkish mod developed for Armed Assault and Operation Flashpoint
+platforms.
+
+
+'''Mission'''
+
+
+Our mission is to represent Turkish presence on cutting-edge military simulation.
+
+
+'''Vision'''
+
+
+Our vision is to constitute and maintain a state-of-the-art Turkish Mod and, in turn, to provide players with maximum Turkish Military experience.
+
+
+Turkish Union Mod
+
+http://www.turkishunion.com/index.html

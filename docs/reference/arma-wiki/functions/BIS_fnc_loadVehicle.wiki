@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_loadVehicle
+// revision: 363969 (2024-04-29T06:51:33Z)
+// export sha1: qxwwagrzf58dfo5m0zke13mbm198spu
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Vehicles
+
+|descr= Load vehicle appearance saved with [[BIS_fnc_saveVehicle]].
+
+|s1= [object,target] call [[BIS_fnc_loadVehicle]]
+
+|p1= object: [[Object]] - vehicle
+
+|p2= target: [[Array]] - in format:
+*0: [[Namespace]], [[Group]] or [[Object]] - location of the previously saved appearance
+*1: [[String]] - name of the saved appearance
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[BIS_tank, [missionNamespace, "BIS_someTankSave"]] call BIS_fnc_loadVehicle;</sqf>
+
+|seealso= [[BIS_fnc_saveVehicle]] [[BIS_fnc_initVehicle]] [[Arma 3: Vehicle Customisation]]
+}}

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/curatorEditingArea
+// revision: 348379 (2023-11-08T12:59:58Z)
+// export sha1: 7gwseyhzehymtmv48k5ngsneh64miu6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Returns all curator editing areas.
+
+|s1= [[curatorEditingArea]] curator
+
+|p1= curator: [[Object]] - curator module.
+
+|r1= [[Array]] of [[Array|array]]s in format: [ID, [[Position#PositionAGL|PositionAGL]], radius]
+
+|x1= <sqf>_editingAreas = curatorEditingArea myCurator;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[addCuratorEditingArea]] [[removeCuratorEditingArea]] [[removeAllCuratorEditingAreas]]
+}}

@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/deleteMarkerLocal
+// revision: 338570 (2023-03-20T14:55:35Z)
+// export sha1: 1f07a7fbp4f2qgj2eusivn6cipdq56g
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Armed Assault version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.04
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Markers
+
+|eff= local
+
+|descr= Destroys the given marker.
+
+|s1= [[deleteMarkerLocal]] markerName
+
+|p1= markerName: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>deleteMarkerLocal "Marker1";</sqf>
+
+|seealso= [[createMarkerLocal]] [[deleteMarker]]
+}}
+
+{{Note
+|user= HomerJohnston
+|timestamp= 20120107091600
+|text= Unproven: I believe that if you use this command on a globally-created marker, and subsequently another machine executes a global command on the same marker (e.g. setMarkerPos), then the marker will be re-created on the machine it was previously deleted on. Can result in confusing marker behaviour.
+}}

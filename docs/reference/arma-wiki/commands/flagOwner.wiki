@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/flagOwner
+// revision: 353770 (2024-03-23T14:27:22Z)
+// export sha1: ccuc3camwzuyl5i7ymxpth7nbolpxsd
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Flags | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Flags
+
+|descr= Returns the global owner of a flag. A getter for [[setFlagOwner]]. Note that owner of a flag is [[Object]] rather than [[Number]], as how it is usually with other [[owner]] commands
+
+|s1= [[flagOwner]]  flag
+
+|p1= flag: [[Object]]
+
+|r1= [[Object]] - the person or vehicle that owns the flag is returned. If used on anything else than a flag, the returned value is [[objNull]]. If the flag is on its pole, the return value is NULL. If the flagowner is dead, the return value is the name of the soldier model
+
+|x1= <sqf>_person = flagOwner _flagOne;</sqf>
+
+|seealso= [[setFlagOwner]] [[:Category:Flag Textures|Flag Textures]]
+}}

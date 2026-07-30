@@ -1,0 +1,105 @@
+// source: https://community.bistudio.com/wiki/BTS_Instructions
+// revision: 349699 (2023-11-20T22:09:44Z)
+// export sha1: 0xdso7zml8i2bp1orl6igw3m9hzhglv
+// categories: Category:BTS
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Note''': [[BTS Guidelines|Guidelines for Admins]]  
+== Introduction ==
+Bugs are now logged on a dedicated bug tracking system, called "{{Link|http://www.mantisbugtracker.com/|Mantis}}".
+
+;Attention: If you encounter a bug, '''first''' make sure, that you started '''ArmA without any mods'''. You should contact the mod author, if the problem happens only with the mod.
+
+== Logging into the system ==
+[[File:BTS-Login.gif|thumb|300px]]
+To file a bug, you need an account on the system.
+*If you have ''not'' filed a bug before, look {{Link|link= http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?s=3bf0ba922475bdd3da0f0da5108cd6f5&act=ST&f=75&t=61281&st=&&#entry1048275|text= here}} for the signup process.
+* If you have previously filed a bug under the Wiki, an account under the same name will have been created already. The default password is "changeme". Log into the system with those settings, and then go to "My Account" to change your password.
+
+== Search for existing bugs ==
+[[File:BTS-ViewIssues.gif|thumb|300px]]
+Before you file a bug, you should first check whether something similar has been submitted already.
+
+For that you should go to the "View Issues" page, and enter a keyword into the search field (circled red on screenshot). Click on "Apply Filter", and if nothing relevant shows up, you can then go to the next step of filing a new bug.
+<br clear="all">
+
+== Filing a new bug ==
+;Attention:Make sure that you you file a '''separate report for each independent issue''' (i.e. don't put two independent bugs into the same report).
+=== Select Project ===
+[[File:BTS-SelectProject.gif|thumb|300px]]
+The first step is to select the project you're filing a bug for.
+* Armed Assault
+* Armed Assault Features (for Feature Requests)
+
+This will most likely be "Armed Assault" at the moment.
+
+If you check "Make Default", you will not have to select the project anymore, the next time you file a bug.
+<br clear="all">
+
+=== Select Category ===
+[[File:BTS-ReportCategory.gif|thumb|300px]]
+Select which category the issue falls under.
+<br clear="all">
+
+=== Select Reproducibility ===
+[[File:BTS-ReportReproducibility.gif|thumb|300px]]
+Select whether the bug appears ''all the time'', or only occasionally, etc.
+<br clear="all">
+
+=== Select Severity ===
+[[File:BTS-ReportSeverity.gif|thumb|300px]]
+Leave the "Severity" at the default setting of "minor". A sysop will later assign it a proper priority status.
+<br clear="all">
+
+=== Select Version ===
+[[File:BTS-ReportVersion.gif|thumb|300px]]
+Select which version of ArmA this bug appears under. 
+
+The version number is visible on your main ArmA screen, at the bottom left.
+<br clear="all">
+
+=== Complete Report ===
+[[File:BTS-ReportComplete.gif|thumb|300px]]
+* insert a description to reproduce the issue
+* it is often advisable to attach a file to the entry to clarify things:
+** pictures to demonstrate the error (e.g. LOD, misplaced vehicles,etc)
+** selfmade short missions for reproducing the error (e.g. scripting failures) 
+
+;Attention:Make sure that you you file a '''separate report for each independent issue''' (i.e. don't put two independent bugs into the same report).
+<br clear="all">
+
+== View after Report is filed ==
+[[File:BTS-ReportFiled.gif|thumb|300px]]
+After the report is filed, you will see an updated listing of current bugs that should include your new report.
+<br clear="all">
+
+== Update/Monitor Reports ==
+[[File:BTS-ReportUpdate.gif|thumb|300px]]
+If you wish to receive an email notification if the status of your filed bug is changed, click on the "Monitor Issue" button.
+By default you will receive email notifications on issues you did setup yourself or added notes to. If you want to change this behaviour, go to {{Link|http://bugs.armed-assault.net/account_prefs_page.php|My Account - Preferences}} and configure your desired settings.
+<br clear="all">
+
+== Adding notes ==
+
+After the bug report is created, it is possible to annotate comments via "Add Note". 
+For referencing other bug reports use the syntax "#<bugnumber>". 
+=== Example ===
+ I think this is related with #1598.
+;This will be translated to
+ I think this is related with {{Link|http://bugs.armed-assault.net/view.php?id{{=}}1598|0001598}}.
+
+== Status Codes ==
+The color of each bug entry indicated its current status.
+*'''new''' (light pink): a bug that has just been filed.
+*'''feedback''' (dark pink): a discussion is going on regarding the status of this bug.
+*'''acknowledged''' (dark yellow): the bug is acknowledged as reproducible / real bug.
+*'''confirmed''' (light yellow): the bug was tested and it is ready to be fixed.
+*'''assigned''' (light purple): the bug has been assigned to a specific developer in order to be fixed.
+*'''resolved''' (light green): the bug has been fixed in the latest patch.
+*'''closed''' (gray): the bug has been fixed, and the reporter has closed the report.
+[[File:BTS-ColorCodes.gif]]
+
+== Where? ==
+The URL for this system is '''http://www.armedassault.eu/bugtracker''' 
+
+[[Category:BTS]]

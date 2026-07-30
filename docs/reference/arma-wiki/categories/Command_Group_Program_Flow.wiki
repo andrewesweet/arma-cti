@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Program_Flow
+// revision: 139111 (2019-12-03T21:56:40Z)
+// export sha1: 0ggghawdxajwf3yd8uahm6jonz8xuhn
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands by Functionality]]
+Commands to define loops, conditions, and jumps inside scripts.
+
+For an overview see [[Control Structures]]

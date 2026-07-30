@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/waypointSpeed
+// revision: 377740 (2026-01-03T00:57:48Z)
+// export sha1: 5hj0wj01cqaoyef6g9klig9tl9imy6j
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Waypoints
+
+|descr= Gets the waypoint speed.
+
+Possible values are:
+* "UNCHANGED"
+* "LIMITED"
+* "NORMAL"
+* "FULL"
+
+|s1= [[waypointSpeed]] waypoint
+
+|p1= waypoint: [[Waypoint]]
+
+|r1= [[String]] - see description
+
+|x1= <sqf>_speed = waypointSpeed [groupOne,1];</sqf>
+
+|seealso= [[deleteWaypoint]] [[copyWaypoints]] [[setCurrentWaypoint]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointDescription]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointTimeout]] [[setWaypointType]] [[setWaypointVisible]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[setWaypointLoiterRadius]] [[waypointLoiterRadius]] [[addWaypoint]] [[setWaypointLoiterType]] [[waypoints]] [[setWPPos]] [[waypointName]]
+}}

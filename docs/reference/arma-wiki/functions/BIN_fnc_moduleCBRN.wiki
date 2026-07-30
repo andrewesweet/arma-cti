@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_moduleCBRN
+// revision: 281109 (2021-06-14T09:00:57Z)
+// export sha1: t3ufh8wah1o811xdbl3kxsu8vq71d92
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules - CBRN | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Modules - CBRN
+
+|descr= <pre>/*
+
+	Description:
+	Enables CBRN systems in a scenario (not MP-compatible!).
+	NOTE: Module / function set not robust nor completed - not recommended for usage at this stage!
+
+	Parameter(s):
+
+	Returns:
+	BOOL
+*/</pre>
+
+{{Wiki|placeholder}}
+{{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_moduleCBRN]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

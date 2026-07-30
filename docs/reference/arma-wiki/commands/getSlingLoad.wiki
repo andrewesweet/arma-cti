@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getSlingLoad
+// revision: 319143 (2022-05-13T09:23:15Z)
+// export sha1: ixcd87jy9ei7wgevdvxaizhvb3fbefz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Ropes and Sling Loading
+
+|descr=Return object which is sling loaded by vehicle
+
+|s1= [[getSlingLoad]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Object]] - the sling loaded vehicle. [[objNull]] if nothing is sling loaded.
+
+|x1= <sqf>_cargo = getSlingLoad heli1;</sqf>
+
+|seealso= [[ropes]] [[canSlingLoad]] [[enableRopeAttach]] [[ropeAttachedObjects]] [[ropeAttachTo]] [[ropeDestroy]] [[ropeLength]] [[ropeUnwound]] [[ropeAttachedTo]] [[ropeCreate]] [[ropeDetach]] [[ropeAttachEnabled]] [[ropeCut]] [[ropeEndPosition]] [[ropeUnwind]] [[setSlingLoad]] [[slingLoadAssistantShown]]
+}}

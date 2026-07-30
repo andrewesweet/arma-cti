@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/setOpticsMode
+// revision: 377651 (2026-01-02T09:01:57Z)
+// export sha1: 9mjgl9rcreqwo0cbhmp272k54qfetou
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+
+|gr1= Object Manipulation
+
+|descr= Sets the optic mode of the current weapon to the given class name or the index.
+
+|s1= unit [[setOpticsMode]] mode
+
+|p1= unit: [[Object]]
+
+|p2= mode: [[String]], [[Number]] or [[Array]]:
+* [[String]] - class name defined in the optic's {{hl|OpticsModes}} config class
+* [[Number]] - 0-based index of the optic mode with 0 being the default optic mode
+* [[Array]] with [slotIndex, opticsModeIndexOrClassName]
+** slotIndex: [[Number]], can be one of:
+*** 0 - Current weapon
+*** 1 - Primary weapon
+*** 2 - Secondary weapon
+*** 3 - Handgun
+** opticsModeIndexOrClassName: [[String]] or [[Number]] as above
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setOpticsMode "Hamr2Scope"; // Default optic mode for optic_Hamr</sqf>
+
+|x2= <sqf>player setOpticsMode 0;</sqf>
+
+|x3= <sqf>player setOpticsMode [1, 0]; // reset the optics mode of the player's primary weapon to the default</sqf>
+
+|seealso= [[getOpticsMode]]
+}}

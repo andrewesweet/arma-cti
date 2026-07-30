@@ -1,0 +1,314 @@
+// source: https://community.bistudio.com/wiki/CT_ACTIVETEXT
+// revision: 351452 (2023-12-06T09:57:40Z)
+// export sha1: meh3ov85xthxhqldfbrpyeaz9q1xbw1
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_ACTIVETEXT
+|value = 11
+|description = The active text control behaves very similar to buttons. It shows up as regular text with the additional functionality that you can click and select it. The dialog's currently selected Active Text control will be underlined to indicate its status. By default, the first Active Text control is selected. When the mouse cursor hovers over an instance of this control, it will show up in the color defined in the ''colorActive'' property. It is also possible to show a clickable image instead of text.<br>
+{{Feature|informative|If you need to show text and an image at the same time you can use [[CT_SHORTCUTBUTTON]].}}
+'''Notice:''' This control doesn't render the usually common ''colorBackground'' property and ''colorText'' is replaced with ''color''.
+*For Arrowhead, this is not true. The properties are there, and it might be an attempt to standardise, or to account for pictures
+[[File:Dialog controls activetext.jpg]]
+|commands =
+* [[:Category:Command_Group:_GUI_Control_-_Buttons|Commands: Button (TODO)]]
+|events =
+* [[User_Interface_Event_Handlers#Button_Events|Commands: Button]]
+}}
+
+{{CT|abc start}}
+=== A ===
+{{CT|attribute
+|name=action
+|type1=String
+|value1="[finddisplay 26] call (uinamespace getvariable 'BIS_fnc_help');"
+|description='''SQS''' code to execute when the control is clicked.
+{{Feature|important|Use [[User_Interface_Event_Handlers#onButtonClick|onButtonClick]] instead.}}
+}}
+
+{{CT|attribute
+|name=angle
+|type1=Number
+|value1=180
+|description=
+}}
+
+=== B ===
+{{CT|attribute
+|name=blinkingPeriod
+|type1=Number
+|value1=1.2
+|description=Makes the text start transparent, go to full opacity and back to full transparent in the amount of time specified.
+}}
+
+=== C ===
+{{CT|attribute
+|name=canDrag
+|type1=Number
+|value1=1
+|description=
+}}
+
+{{CT|attribute
+|name=color
+|type1=Array
+|value1={1,1,1,0.7}
+|description='''Replaces ''colorText''''', standard text and underline color.
+}}
+
+{{CT|attribute
+|name=colorActive
+|type1=Array
+|value1={1,1,1,1}
+|description=Text and underline color whenever the mouse hovers over the control.
+}}
+
+{{CT|attribute
+|name=colorBackgroundSelected
+|type1=Array
+|value1={1,1,1,0.1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorFocused
+|type1=Array
+|value1={0,0,0,0}
+|description=
+}}
+
+{{CT|attribute
+|name=colorShade
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+=== D ===
+{{CT|attribute
+|name=default
+|type1=Number
+|value1=1
+|description=Whether or not this control is the dialog's initially selected active text.
+}}
+
+{{CT|attribute
+|name=DLCTemplate
+|type1=Class
+|value1=class DLCTemplate
+{
+	class controls
+	{
+		class DlcBg
+		{
+			idc = 101;
+			text = "\A3\Ui_f\data\GUI\Rsc\RscDisplayInventory\InventoryStripe_ca.paa";
+			color[] = {1,1,1,1};
+			x = 0;
+			y = 0;
+			w = 1.8 * GUI_GRID_W;
+			h = 1.8 * GUI_GRID_H;
+		};
+		class DlcIcon
+		{
+			idc = 100;
+			text = "";
+			color[] = {1,1,1,1};
+			x = 0 * GUI_GRID_W;
+			y = 0 * GUI_GRID_H;
+			w = 1 * GUI_GRID_W;
+			h = 1 * GUI_GRID_H;
+		};
+	};
+};
+|description=
+}}
+
+=== E ===
+{{CT|attribute
+|name=enabled
+|type1=Number
+|value1=0
+|description=
+}}
+
+=== P ===
+{{CT|attribute
+|name=picture
+|type1=String
+|value1="a3\ui_f\data\gui\rsc\rscdisplaymultiplayersetup\flag_opfor_empty_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=pictureHeight
+|type1=Number
+|value1=1
+|description=
+}}
+
+{{CT|attribute
+|name=pictureWidth
+|type1=Number
+|value1=1
+|description=
+}}
+
+=== S ===
+{{CT|attribute
+|name=shortcuts
+|type1=Array
+|value1={"512 + 0x11"}
+|description=
+}}
+
+{{CT|attribute
+|name=sideDisabled
+|type1=String
+|value1="a3\ui_f\data\gui\rsc\rscdisplaymultiplayersetup\flag_none_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=sideToggle
+|type1=String
+|value1="a3\ui_f\data\gui\rsc\rscdisplaymultiplayersetup\flag_opfor_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=soundClick
+|type1=Array
+|value1={"",0.1,1}
+|description=The sound to play, when the button is being released.
+}}
+
+{{CT|attribute
+|name=soundDoubleClick
+|type1=Array
+|value1={"",0.1,1}
+|description=The sound to play, when the cursor enters the button's bounds.
+}}
+
+{{CT|attribute
+|name=soundEnter
+|type1=Array
+|value1={"",0.1,1}
+|description=The sound to play, when the cursor enters the button's bounds.
+}}
+
+{{CT|attribute
+|name=soundEscape
+|type1=Array
+|value1={"",0.1,1}
+|description=The sound to play, when the button has been pushed and the mouse button is released when not over the control.
+}}
+
+{{CT|attribute
+|name=soundPush
+|type1=Array
+|value1={"",0.1,1}
+|description=The sound to play, when the button has been pushed.
+}}
+
+=== T ===
+{{CT|attribute
+|name=textHeight
+|type1=Number
+|value1=0.38
+|description=
+}}
+
+{{CT|attribute
+|name=textMuted
+|type1=String
+|value1="\A3\Ui_f\Data\IGUI\RscIngameUI\RscDisplayChannel\MuteVON_crossed_ca.paa"
+|description=
+}}
+
+=== U ===
+{{CT|attribute
+|name=url
+|type1=String
+|value1=""
+|description=Link to open when control is pressed.
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscActiveText ===
+<syntaxhighlight lang="cpp">
+class RscActiveText
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_ACTIVETEXT;
+	style = ST_CENTER;
+	color[] = {0,0,0,1};
+	colorActive[] = {0.3,0.4,0,1};
+	colorDisabled[] = {1,1,1,0.25};
+	soundEnter[] =
+	{
+		"",
+		0.1,
+		1
+	};
+	soundPush[] =
+	{
+		"",
+		0.1,
+		1
+	};
+	soundClick[] =
+	{
+		"",
+		0.1,
+		1
+	};
+	soundEscape[] =
+	{
+		"",
+		0.1,
+		1
+	};
+	text = "";
+	default = 0;
+	idc = -1;
+	x = 0;
+	y = 0;
+	h = 0.035;
+	w = 0.035;
+	font = "RobotoCondensed";
+	shadow = 2;
+	sizeEx = GUI_TEXT_SIZE_MEDIUM;
+	url = "";
+	tooltipColorText[] = {1,1,1,1};
+	tooltipColorBox[] = {1,1,1,1};
+	tooltipColorShade[] = {0,0,0,0.65};
+};
+</syntaxhighlight>
+
+=== RscActivePicture ===
+<syntaxhighlight lang="cpp">
+class RscActivePicture : RscActiveText
+{
+	style = ST_MULTI + ST_TITLE_BAR;
+	color[] = {1,1,1,0.5};
+	colorActive[] = {1,1,1,1};
+};
+</syntaxhighlight>
+
+=== RscActivePictureKeepAspect ===
+<syntaxhighlight lang="cpp">
+class RscActivePictureKeepAspect : RscActivePicture
+{
+	style = ST_MULTI + ST_TITLE_BAR + ST_KEEP_ASPECT_RATIO;
+};
+</syntaxhighlight>

@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/currentNamespace
+// revision: 339095 (2023-04-26T10:54:14Z)
+// export sha1: hbpr82gt8h43u222pairrwvexxhae8q
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Namespaces | Category:Command Group: System | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.48
+
+|gr1= Namespaces
+|gr2= System
+
+|descr= Returns the current [[Namespace|global namespace]] the script runs in.
+{{Feature|informative|Since {{arma3}} v2.00, [[Namespace]]s can be compared with [[==]] and [[!=]] operators in addition to [[isEqualTo]].}}
+
+|s1= [[currentNamespace]]
+
+|r1= [[Namespace]] - one of:
+* [[missionNamespace]]
+* [[uiNamespace]]
+* [[parsingNamespace]]
+* [[profileNamespace]]
+* [[localNamespace]]
+
+|x1= <sqf>if (currentNamespace isEqualTo uiNamespace) then { hint "This is uiNamespace" };</sqf>
+
+|x2= <sqf>
+private _fn_getCurrentNamespaceName = {
+	if (currentNamespace isEqualTo missionNamespace) exitWith { "missionNamespace" };
+	if (currentNamespace isEqualTo parsingNamespace) exitWith { "parsingNamespace" };
+	if (currentNamespace isEqualTo profileNamespace) exitWith { "profileNamespace" };
+	if (currentNamespace isEqualTo uiNamespace) exitWith { "uiNamespace" };
+	"error";
+};
+
+with profileNamespace do {
+	systemChat call _fn_getCurrentNamespaceName;	// profileNamespace
+};
+
+systemChat call _fn_getCurrentNamespaceName;		// missionNamespace
+
+with uiNamespace do {
+	systemChat call _fn_getCurrentNamespaceName;	// uiNamespace
+};
+</sqf>
+
+|seealso= [[missionNamespace]] [[uiNamespace]] [[parsingNamespace]] [[profileNamespace]] [[localNamespace]] [[allVariables]] [[with]] [[ArmA:_Editing#Forward_Compatibility|Forward Compatibility]]
+}}

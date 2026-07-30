@@ -1,0 +1,88 @@
+// source: https://community.bistudio.com/wiki/missionConfigFile
+// revision: 342131 (2023-07-09T12:26:44Z)
+// export sha1: hrsq7cpu33pcg1pfmuqpiy12huhuo93
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Config
+
+|descr= Return root of mission [[Description.ext]] entries hierarchy.
+{{Feature|important|Since the introduction of the [[:Category:Eden Editor|Eden Editor]], scenario attributes can be configured in the editor itself, not only in the external Description.ext file.
+To access desired value independently on where it is stored, use the following commands:
+* [[getMissionConfigValue]]
+* [[getMissionConfig]]
+}}
+
+|s1= [[missionConfigFile]] 
+
+|r1= [[Config]]
+
+|x1= <sqf>
+for "_i" from 0 to (count paramsArray - 1) do
+{
+	missionNamespace setVariable [configName ((missionConfigFile/"Params") select _i), paramsArray select _i];
+};
+</sqf>
+
+|x2= To define custom values in [[Description.ext|description.ext]]:
+<syntaxhighlight lang="cpp">
+class myMissionConfig
+{
+	class mySetup
+	{
+		myNumber = 3;
+		myArray[] = { 1, 2, 3 };
+		myText = "LOL";
+	};
+};
+</syntaxhighlight>
+
+To read defined custom values from a script:
+<sqf>
+_myNumber = getNumber (missionConfigFile >> "myMissionConfig" >> "mySetup" >> "myNumber");
+_myArray = getArray (missionConfigFile >> "myMissionConfig" >> "mySetup" >> "myArray");
+_myText = getText (missionConfigFile >> "myMissionConfig" >> "mySetup" >> "myText");
+</sqf>
+
+|seealso=[[configFile]] [[campaignConfigFile]] [[getMissionConfigValue]] [[getMissionConfig]] [[getMissionPath]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150217164600
+|text= [[missionConfigFile]] can be used to parse ''mission.sqm'' file data as well if it is included into [[Description.ext|description.ext]]:
+<syntaxhighlight lang="cpp">
+class MissionSQM
+{
+	#include "mission.sqm"
+};
+</syntaxhighlight>
+Then ''mission.sqm'' data can be accessed like this:
+<sqf>getNumber (missionConfigFile >> "MissionSQM" >> "version"); // 12 - version param in mission.sqm</sqf>
+(courtesy of [[Special:Contributions/Master85|Master85]])
+}}
+
+{{Note
+|user= Dedmen
+|timestamp= 20180427203900
+|text= If your [[Description.ext]] file is empty, [[str]] [[missionConfigFile]] may report an empty string instead of the path to the file. You have to put at least one entry into your config.<br>
+To get file path with [[Description.ext|description.ext]] to play sound via [[playSound3D]] (before [[getMissionPath]]):
+<sqf>private _missionRootPath = str missionConfigFile select [0, count str missionConfigFile - 15];</sqf>
+}}

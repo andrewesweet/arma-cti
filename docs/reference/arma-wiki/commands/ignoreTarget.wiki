@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/ignoreTarget
+// revision: 369769 (2024-10-08T15:08:58Z)
+// export sha1: 32cn81jxduwkfphzxh1qd9j5wxlyvht
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|arg= global
+
+|gr1= Object Detection
+
+|descr= Sets a target to be ignored by this Group. It will not appear in [[nearTargets]] and the group will not notice its presence. [[targetKnowledge]] can be used to check if a target is currently ignored. While a unit is ignored, [[reveal]] has no effect.
+
+|s1= group [[ignoreTarget]] target
+
+|p1= group : [[Object]] or [[Group]] - which receives revealing information
+
+|p2= target: [[Object]] - which would be ignored
+
+|r1= [[Nothing]]
+
+|s2= group [[ignoreTarget]] [target, isIgnored]
+
+|p21= group : [[Object]] or [[Group]] - which receives revealing information
+
+|p22= target: [[Object]] - which would be ignored
+
+|p23= isIgnored: [[Boolean]] - whether the target should be ignored
+
+|r2= [[Nothing]]
+
+
+
+|x1= <sqf>aiGroup ignoreTarget player</sqf>
+
+|seealso= [[knowsAbout]] [[targetsQuery]] [[targetsAggregate]] [[nearTargets]] [[reveal]] [[targetKnowledge]]
+}}

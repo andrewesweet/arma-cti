@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_removeCuratorIcon
+// revision: 348760 (2023-11-08T14:33:12Z)
+// export sha1: 20oans0na185to3e6z728iqpuad92qo
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Remove icon displayed in curator interface.
+
+|s1= [object, id] call [[BIS_fnc_removeCuratorIcon]]
+
+|p1= object: [[Object]] - curator module
+
+|p2= id: [[Array]] - icon ID returned by [[BIS_fnc_addCuratorIcon]] function
+
+|r1= [[Boolean]] - [[true]] when removed
+
+|x1= <sqf>[curatorModule, 5] call BIS_fnc_removeCuratorIcon;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[BIS_fnc_addCuratorIcon]]
+}}

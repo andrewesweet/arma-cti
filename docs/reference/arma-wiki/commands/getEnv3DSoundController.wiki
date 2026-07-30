@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getEnv3DSoundController
+// revision: 309132 (2022-05-03T11:42:40Z)
+// export sha1: 7lppwy8gmz2muf5uwj3qf12qhqvqzye
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|gr1= Sounds
+
+|descr= Returns value of the specified 3D controller, see [[getAllEnv3DSoundControllers]].
+
+|s1= object [[getEnv3DSoundController]] controller
+
+|p1= object: [[Object]] - environmental sound source like a tree or a house - see [[allEnv3DSoundSources]]
+
+|p2= controller: [[String]] - name of environmental variable like "trees" or "houses"
+
+|r1= [[Number]]
+
+|x1= <sqf>_thatTreeOverThere getEnv3DSoundController "rainDrops"; // returns 1</sqf>
+
+|seealso= [[getEnvSoundController]] [[getAllEnv3DSoundControllers]] [[allEnv3DSoundSources]] [[selectBestPlaces]] [[getSoundController]] [[getSoundControllerResult]] [[getAllEnvSoundControllers]] [[getAllSoundControllers]] [[getCustomSoundController]] [[setCustomSoundController]] [[getCustomSoundControllerCount]] [[Arma 3: Sound]]
+}}

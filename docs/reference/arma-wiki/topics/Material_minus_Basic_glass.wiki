@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/Material_-_Basic_glass
+// revision: 363357 (2024-03-27T12:10:07Z)
+// export sha1: pulwqspxtvpxs6bvjpd75l2hpqm3co1
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Two pass material'''
+
+First pass draws the surface, second affects Alfa and Z-buffer to keep correct visibility and shadow casting.
+
+== First RVMAT ==
+
+<syntaxhighlight lang="cpp">
+renderFlags[] = { NoAlphaWrite };
+nextPass = ofp2\Data\glass_2pass.rvmat;
+</syntaxhighlight>
+
+
+== Second RVMAT (sklo-pass2.rvmat) ==
+
+<syntaxhighlight lang="cpp">
+renderFlags[] = { NoColorWrite };
+ambient[] = { 1, 1, 1, 1 };
+diffuse[] = { 1, 1, 1, 1 };
+forcedDiffuse[] = { 0, 0, 0, 0 };
+emmisive[] = { 0, 0, 0, 1 };
+specular[] = { 0, 0, 0, 0 };
+specularPower = 0;
+PixelShaderID = "AlphaShadow";
+VertexShaderID = "Basic";
+</syntaxhighlight>

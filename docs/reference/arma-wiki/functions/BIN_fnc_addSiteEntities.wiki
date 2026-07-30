@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_addSiteEntities
+// revision: 363741 (2024-04-17T15:24:34Z)
+// export sha1: 3g6ish363t4rrw4eupe9elu251i9h9u
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Contact | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Contact 
+
+|descr= <pre>/*
+
+	Description:
+		Register entities to a site, so they can be despawned with the rest when player leaves the area.
+
+	Parameter(s):
+		0: OBJECT - site logic. The site must be spawned for the function to work.
+		1: ARRAY - entities to be added. Types can be mixed, the system will sort them out itself.
+
+	Returns:
+		BOOL - true if added
+*/
+
+#define ADD(ID)\
+	(_entities select ID) pushback _x;\
+	(_entityIDs select ID) pushback -1;
+</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_addSiteEntities]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_addSiteEntities;</sqf> -->
+
+|seealso=
+}}

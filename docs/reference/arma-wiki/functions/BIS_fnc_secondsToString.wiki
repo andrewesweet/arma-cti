@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_secondsToString
+// revision: 328375 (2022-07-13T16:00:48Z)
+// export sha1: t8yprckvv6sk6l74y45iry45aodl5z3
+// categories: Category:Arma 3: Functions | Category:Function Group: Strings | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Strings
+
+|descr= Convert seconds to formatted string.
+
+|s1= [totalSeconds, format, returnArray] call [[BIS_fnc_secondsToString]]
+
+|p1= totalSeconds: [[Number]] - time in seconds (see [[time]])
+
+|p2= format: [[String]] - (Optional, default "HH:MM:SS") can be one of:
+* "HH"
+* "HH:MM"
+* "HH:MM:SS"
+* "HH:MM:SS.MS"
+* "MM"
+* "MM:SS"
+* "MM:SS.MS"
+* "SS.MS"
+''HH = Hours, MM = Minutes, SS = Seconds, MS = Milliseconds''
+
+|p3= returnArray: [[Boolean]] - (Optional, default false)
+
+|r1= [[String]] or [[Array]] of [[String]]s if ''returnArray'' is set to [[true]]
+
+|x1= <sqf>hint format ["Hi, it is currently %1.", [time, "HH:MM"] call BIS_fnc_secondsToString];</sqf>
+
+|seealso= [[time]] [[BIS_fnc_showTime]] [[BIS_fnc_timeToString]]
+}}

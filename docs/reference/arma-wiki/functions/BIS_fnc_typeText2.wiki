@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_typeText2
+// revision: 349484 (2023-11-08T17:09:03Z)
+// export sha1: mtgvga4vngkz31zd6iijr1mrflc3uz5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|eff= local
+
+|descr= [[File:BIS_fnc_typeText2.gif|400px|right]]
+Types a structured text on the screen, letter by letter, cursor blinking. Note that line returns are manual, unlike [[BIS_fnc_typeText]].
+
+|s1= [stringLines, posX, posY, alignBottom, rootFormat, abortParams, abortCond, playSounds] call [[BIS_fnc_typeText2]]
+
+|p1= stringLines:
+* [[Array]] of [[String]]s - array containing lines of text with same structured text formatting.
+* [[Array]] of [[Array]] of [[String]]s [text, format, color]
+** text: [[String]] - (Optional, default <sqf inline>""</sqf>)
+** format: [[String]] - (Optional, default <sqf inline>"align = 'center' size = '0.7'"</sqf>) a linebreak is defined as "&lt;br/&gt;" '''and this only!'''
+** color: [[String]] - (Optional, default <sqf inline>"#ffffff"</sqf>)
+
+|p2= posX: [[Number]] - (Optional, default 0)
+
+|p3= posY: [[Number]] - (Optional, default 0)
+
+|p4= alignBottom: [[Boolean]] - (Optional, default [[true]])
+
+|p5= rootFormat: [[String]] - (Optional, default <sqf inline>"<t>%1</t>"</sqf>)
+
+|p6= abortParams: [[Array]] - (Optional, default <sqf inline>[]</sqf>)
+
+|p7= abortCond: [[Code]] - (Optional, default <sqf inline>{ false }</sqf>)
+
+|p8= playSounds: [[Boolean]] - (Optional, default [[true]])
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+[
+	[
+		["CAMP ROGAIN, ", "align = 'center' shadow = '1' size = '0.7' font='PuristaBold'"],
+		["RESUPPLY POINT", "align = 'center' shadow = '1' size = '0.7'", "#aaaaaa"],
+		["", "<br/>"], // line break
+		["10 MINUTES LATER...", "align = 'center' shadow = '1' size = '1.0'"]
+	]
+] spawn BIS_fnc_typeText2;
+</sqf>
+
+|x2= <sqf>
+[
+	["Hello there"],
+	safeZoneX, safeZoneH / 2,
+	true,
+	"<t font='PuristaBold'>%1</t>",
+	[],
+	{ false },
+	true
+] spawn BIS_fnc_typeText2;
+</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_dynamicText]] [[BIS_fnc_infoText]] [[BIS_fnc_textTiles]] [[BIS_fnc_typeText]] [[BIS_fnc_EXP_camp_SITREP]]
+}}

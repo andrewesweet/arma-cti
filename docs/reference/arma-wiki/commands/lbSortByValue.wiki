@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/lbSortByValue
+// revision: 363604 (2024-04-08T09:49:07Z)
+// export sha1: 5bt15pzj88hg7r6qd4coeqktlf9wypt
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - ListBox
+
+|descr= Sorts the ListBox entries by [[lbValue]]. The entries are sorted in ascending order. Also note that this command will mix up the entries randomly if multiple entries have the same value. In {{arma3}} use [[lbSortBy]] to avoid this problem.
+
+|s1= [[lbSortByValue]]  control
+
+|p1= control: [[Control]]
+
+|r1= [[Nothing]]
+
+|s2= [[lbSortByValue]]  idc
+
+|s2since= arma3 1.68
+
+|p21= idc: [[Number]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lbSortByValue _control;</sqf>
+
+|x2= <sqf>lbSortByValue 101;</sqf>
+
+|seealso= [[lbSortBy]] [[lbSort]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">January 1st, 2011 - 22:54
+<dt class="note">[[User:RoehrenRadio|RoehrenRadio]]</dt>
+<dd class="note">
+A good way to avoid that this Command will mix your Listbox up is, to assign your Value summed up with the Index ID returned by [[lbAdd]] to your Listbox Entries. 
+<dd class="notedate">Posted: Sep 10 2014</dd>
+<dt class="note">[[User:ffur2007slx2_5|ffur2007slx2_5]]</dt>
+<dd class="note">More information on the LB command family can be found [[List_Box|here]]
+</dl>

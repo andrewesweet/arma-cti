@@ -1,0 +1,90 @@
+// source: https://community.bistudio.com/wiki/Product.cpp/bin_File_Format
+// revision: 373445 (2025-05-08T11:27:13Z)
+// export sha1: cnwb4sw5oj7rffad1v6p7mv3n0rdf6d
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|UnsupportedDoc}}
+{{Feature|ofp|This page does '''not''' concern {{ofp}}.}}
+
+
+{{hl|Product.bin}} exists in the {{hl|~\dta}} folder of the {{arma}} game.
+
+{{Feature|important|To use buldozer correctly in both Visitor and Oxygen, the {{hl|P:\dta}} directory needs to contain a copy of the correct product bin.}}
+
+
+== PersonalTools 2.0 ==
+
+<syntaxhighlight lang="cpp">
+profilePathDefault = "ArmA";
+profilePathCommon = "ArmA Other Profiles";
+extensionSave = "ArmASave";
+extensionProfile = "ArmAProfile";
+extensionWizardMission = "ArmAWizardMission";
+extensionAddon = "ArmAAddon";
+</syntaxhighlight>
+
+
+== PersonalTools 2.5.x ==
+
+<syntaxhighlight lang="cpp">
+profilePathDefault = "Arma 2";
+profilePathCommon = "Arma 2 Other Profiles";
+extensionSave = "ArmA2OASave";
+extensionProfile = "ArmA2OAProfile";
+extensionWizardMission = "ArmA2OAWizardMission";
+extensionAddon = "ArmA2OAAddon";
+defaultMods = "ca;expansion;baf;pmc";
+</syntaxhighlight>
+
+
+== {{arma1}} ==
+
+<syntaxhighlight lang="cpp">
+profilePathDefault = "ArmA";
+profilePathCommon = "ArmA Other Profiles";
+extensionSave = "ArmASave";
+extensionProfile = "ArmAProfile";
+extensionWizardMission = "ArmAWizardMission";
+extensionAddon = "ArmAAddon";
+</syntaxhighlight>
+
+== {{arma2}} ==
+
+<syntaxhighlight lang="cpp">
+profilePathDefault = "Arma 2";
+profilePathCommon = "Arma 2 Other Profiles";
+extensionSave = "ArmA2Save";
+extensionProfile = "ArmA2Profile";
+extensionWizardMission = "ArmA2WizardMission";
+extensionAddon = "ArmA2Addon";
+</syntaxhighlight>
+
+
+== {{arma2oa}} ==
+
+<syntaxhighlight lang="cpp">
+profilePathDefault = "Arma 2";
+profilePathCommon = "Arma 2 Other Profiles";
+extensionSave = "ArmA2OASave";
+extensionProfile = "ArmA2OAProfile";
+extensionWizardMission = "ArmA2OAWizardMission";
+extensionAddon = "ArmA2OAAddon";
+defaultMods = "expansion;baf;pmc";
+</syntaxhighlight>
+
+
+== {{arma3}} ==
+
+<syntaxhighlight lang="cpp">
+profilePathDefault = "Arma 3";
+profilePathCommon = "Arma 3 - Other Profiles";
+extensionSave = "Arma3Save";
+extensionProfile = "Arma3Profile";
+extensionWizardMission = "Arma3WizardMission";
+extensionAddon = "Arma3Addon";
+defaultMods = "A3;curator";
+</syntaxhighlight>
+
+
+[[Category:Real Virtuality File Formats]]

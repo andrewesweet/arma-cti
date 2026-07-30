@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Editing_Websites
+// revision: 184752 (2021-01-06T15:37:30Z)
+// export sha1: bpnh1kmgkva2nr31idmckr98r8tsiy5
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1| Community Websites}}
+[[Category:Operation_Flashpoint:_Editing]]

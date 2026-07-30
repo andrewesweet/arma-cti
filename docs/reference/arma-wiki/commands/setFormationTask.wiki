@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/setFormationTask
+// revision: 319792 (2022-05-13T09:24:53Z)
+// export sha1: srpdhwmcu2qlbriijh6sqfuuf4uuo0s
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Unit Control
+
+|descr= Set the current task of the formation member. {{Feature|arma2|This command is not available in {{arma2}}.}}
+
+|s1= unit [[setFormationTask]] task
+
+|p1= unit: [[Object]]
+
+|p2= task: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_unit setFormationTask "MOVE";</sqf>
+
+|seealso= [[formationTask]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 16:57, 2 March 2007 (CET)</dd>
+<dt class="note">[[User:Donnervogel|Donnervogel]]</dt>
+<dd class="note">The argument for ''task'' can be any String value. This can effectively be used to store a property in String format an retrieve it with [[formationTask]] in FSM scripts. By using it outside of FSM scripts you're risking to get it overwritten by other running FSM scripts.
+</dl>

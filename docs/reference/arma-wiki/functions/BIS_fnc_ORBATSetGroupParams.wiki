@@ -1,0 +1,73 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ORBATSetGroupParams
+// revision: 349199 (2023-11-08T14:50:42Z)
+// export sha1: d1b863nenaestdmyvaxv6mhjoew6r6t
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strategic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strategic
+
+|descr= Overrides group params from CfgORBAT. See [[ORBAT Viewer]] for a detailed explanation.
+
+|s1= [target, idType, size, type, side, name, shortName, texture, textSizeCoef, insignia, textColour, commName, commRank, description, assets] call [[BIS_fnc_ORBATSetGroupParams]]
+
+|p1= target: [[Config]] - path to class in CfgORBAT
+
+|p2= idType: [[Number]] or [[String]] - ID Type (e.g. {{hl|1}} to result in "1st", or a specific string)
+
+|p3= size: [[String]] - size as a class from CfgChainOfCommand > Sizes (e.g., "Platoon")
+
+|p4= type: [[String]] - type as a class from CfgChainOfCommand > Types (e.g., "Infantry")
+
+|p5= side: [[String]] - side as a class from CfgChainOfCommand > Sides (e.g., "West")
+
+|p6= name: [[String]] - name. Passed arguments are: %1 - ID, %2 - type, %3 - size)
+
+|p7= shortName: [[String]] - short name. Passed arguments are: %1 - ID, %2 - type, %3 - size)
+
+|p8= texture: [[String]] - texture. Can be link to a file or a class from CfgMarkers
+
+|p9= textSizeCoef: [[Number]] - texture size coeficient. 1 is the default size
+
+|p10= insignia: [[String]] - insignia displayed in tooltip and in the ORBAT viewer background
+
+|p11= textColour: [[Array]] - texture color in format RGBA
+
+|p12= commName: [[String]] - commander name. Can be the name directly or a class from CfgWorlds > GenericNames
+
+|p13= commRank: [[String]] - commander rank
+
+|p14= description: [[String]] - description shown in tooltip
+
+|p15= assets: [[Array]] of [[Array]]s in format [vehicleClass, count]:
+* vehicleClass: [[String]] - vehicle class name
+* count: [[Number]] - quantity of vehicles
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+[
+	configFile >> "CfgORBAT" >> "BIS" >> "B_1_A_1",
+	1,
+	"Platoon",
+	"Infantry",
+	"West",
+	"Name: %1 %2 %3",
+	"Short Name: %1 %2 %3",
+	"b_air",
+	3,
+	"\A3\Air_F_EPB\Heli_Light_03\data\UI\Heli_Light_03_CA.paa",
+	[0,0,0,1],
+	"Commander Name",
+	"General",
+	"Description",
+	[["B_MRAP_01_F",5]]
+] call BIS_fnc_ORBATSetGroupParams;
+</sqf>
+
+|seealso= [[ORBAT Viewer]] [[BIS_fnc_ORBATAddGroupOverlay]] [[BIS_fnc_ORBATAnimate]] [[BIS_fnc_ORBATConfigPreview]] [[BIS_fnc_ORBATGetGroupParams]] [[BIS_fnc_ORBATOpen]] [[BIS_fnc_ORBATRemoveGroupOverlay]] [[BIS_fnc_ORBATSetGroupFade]] [[BIS_fnc_ORBATTooltip]]
+}}

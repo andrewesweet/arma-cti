@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/serverStartMission
+// revision: 351592 (2023-12-07T19:58:21Z)
+// export sha1: cnh89vindoje6plnyxvbfm4c5f2irec
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|serverExec= server
+
+|gr1= Argo
+
+|descr= Start the provided mission (if it exists) on a dedicated server.
+
+|mp= Only works on a '''dedicated''' server.
+
+|s1= [[serverStartMission]] missionName
+
+|p1= missionName: [[String]] - mission name with terrain extension
+
+|r1= [[Boolean]] - [[true]] if the mission could be started on a dedicated server, [[false]] otherwise
+
+|x1= <sqf>
+if (!isServer) exitWith {};
+
+if (isDedicated) then
+{
+	serverStartMission "TestMission.Malden";
+}
+else // hasInterface
+{
+	hint "You must choose a mission now.";
+};
+</sqf>
+
+|seealso= [[playMission]] [[playScriptedMission]]
+}}

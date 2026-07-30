@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_GC
+// revision: 326906 (2022-07-12T21:44:38Z)
+// export sha1: g1z9jb1dqf2gxp9qkwmwy7cf4hkg6kr
+// categories: Category:Arma 3: Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Diagnostic
+
+|descr= Sends an entity to the garbage collection queue. Replaces [[Arma_2:_Garbage_Collector|Arma 2 Garbage Collector]].
+
+|s1= entity spawn [[BIS_fnc_GC]]
+
+|exec= spawn
+
+|p1= entity: [[Object]] or [[Group]] or [[String]] (marker) or [[Array]] (array of entities)
+
+|r1= [[Boolean]] - true if function was executed successfuly
+
+|x1= <sqf>[dude1] spawn BIS_fnc_GC;</sqf>
+
+|x2= <sqf>[dude1, group dude1, "marker1"] spawn BIS_fnc_GC;</sqf>
+
+|seealso= [[Garbage Collector]]
+}}

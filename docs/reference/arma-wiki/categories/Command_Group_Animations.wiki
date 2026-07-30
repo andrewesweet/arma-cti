@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Animations
+// revision: 157540 (2020-09-15T16:37:00Z)
+// export sha1: gcbbysekizzv91tv3fgc5vgi5y9b3zn
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands related to animations.
+
+[[Category:Scripting Commands by Functionality]]

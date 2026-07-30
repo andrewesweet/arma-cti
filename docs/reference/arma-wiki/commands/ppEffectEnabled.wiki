@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/ppEffectEnabled
+// revision: 327511 (2022-07-12T22:24:54Z)
+// export sha1: seeu730lhc4jqlndqrf8t817b03z0nn
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Camera Control
+
+|descr= Checks whether given post process effect is enabled
+
+|s1= [[ppEffectEnabled]] effect
+
+|p1= effect: [[Number]] - effect handle
+
+|r1= [[Boolean]]
+
+|s2= [[ppEffectEnabled]] effect
+
+|s2since= arma3 2.04
+
+|p21= effect: [[String]] - effect name
+
+|r2= [[Boolean]]
+
+|x1= <sqf>_enabled = ppEffectEnabled _hndl;</sqf>
+|x2= <sqf>_enabled = ppEffectEnabled "DynamicBlur";</sqf>
+
+|seealso= [[Post Process Effects]] [[ppEffectForceInNVG]] [[ppEffectDestroy]] [[ppEffectEnable]] [[ppEffectCreate]] [[ppEffectCommit]] [[ppEffectCommitted]] [[ppEffectAdjust]]
+}}

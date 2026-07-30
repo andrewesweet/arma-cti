@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/addMusicEventHandler
+// revision: 370195 (2024-11-06T12:01:24Z)
+// export sha1: mmg2p1gcoaixulsult9fk41cpalqxzf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+
+|gr1= Event Handlers
+
+|gr2= Sounds
+
+|descr= Adds [[playMusic]] event handler. Returns id of the handler or -1 when failed. Like [[addMissionEventHandler]], the music event handler is attached to the mission.
+See {{Link|Arma 3: Event Handlers#Music Event Handlers}}.
+
+|s1= [[addMusicEventHandler]] [type, function]
+
+|p1= type: [[String]] - "MusicStart" or "MusicStop"
+
+|p2= function: [[String]] or [[Code]] - passed params array is [musicClassname, eventHandlerId] where:
+<sqf>params ["_musicClassname", "_eventHandlerId", "_currentPosition", "_totalLength"];</sqf>
+* musicClassName: [[String]] - [[Description.ext#Music|CfgMusic]] class name of the music that started
+* eventHandlerId: [[Number]] - event handler id (same as returned by [[addMusicEventHandler]] usage)
+* {{GVI|arma3|2.18|size= 0.75}} currentPosition: [[Number]] - current playback position in 0..1 range (see [[getMusicPlayedTime]])
+* {{GVI|arma3|2.18|size= 0.75}} totalLength: [[Number]] - track total length in seconds
+
+|r1= [[Number]] - event handler id
+
+|x1= <sqf>private _ehID = addMusicEventHandler ["MusicStart", { hint str _this }];</sqf>
+
+|x2= <sqf>private _ehID = addMusicEventHandler ["MusicStop", { hint str _this }];</sqf>
+
+|seealso= [[removeMusicEventHandler]] [[playMusic]] {{Link|Arma 3: Event Handlers#Music Event Handlers}} [[removeAllMusicEventHandlers]] [[getEventHandlerInfo]]
+}}
+
+{{Note
+|user= Druid
+|timestamp= 20130304133000
+|text= There are these two types at this time:
+* '''MusicStart''' - It is triggered when the music is started (command [[playMusic]]). In variable _this is stored class name from [[Description.ext#Music|CfgMusic]].
+* '''MusicStop''' - It is triggered when the music is ended (command [[playMusic]]). In variable _this is stored class name from [[Description.ext#Music|CfgMusic]].
+}}

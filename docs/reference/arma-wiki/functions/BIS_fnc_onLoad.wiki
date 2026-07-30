@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_onLoad
+// revision: 328472 (2022-07-13T16:11:09Z)
+// export sha1: hbee0s481x7ix9bb2ax5guyxkavnkfr
+// categories: Category:Arma 3: Functions | Category:Function Group: Event Handlers | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Event Handlers
+
+|descr= Register code to be executed after a mission load (from a save, for example).
+{{Feature|important|Replaced by [[Arma 3: Mission Event Handlers#Loaded|"loaded" mission event handler]].<br>
+This function now exists only because of backward compatibility}}
+
+|s1= parameter call [[BIS_fnc_onLoad]]
+
+|p1= parameter: [[Code]] or [[Number]]:
+* [[Code]] - code to be executed on mission load
+* [[Number]] - index of code to remove
+&nbsp;
+
+|r1= [[Number]] - index of onLoad code
+
+|x1= <sqf>private _codeIndex = { hint "Welcome back!"; } call BIS_fnc_onLoad;</sqf>
+
+|x2= <sqf>0 call BIS_fnc_onLoad; // removes code with index 0</sqf>
+
+|seealso= [[Arma 3: Mission Event Handlers|Mission Event Handlers]] [[addMissionEventHandler]]
+}}

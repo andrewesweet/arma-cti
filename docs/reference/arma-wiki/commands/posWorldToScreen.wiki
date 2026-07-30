@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/posWorldToScreen
+// revision: 377539 (2026-01-02T06:54:25Z)
+// export sha1: ipjjboh22wi3eeuphoege94cmaxo4co
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Command Group: Positions | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - Map
+
+|gr2= Positions
+
+|descr= Converts world coordinates into map screen coordinates. This command is identical to [[ctrlMapWorldToScreen]].
+
+|s1= map [[posWorldToScreen]] position
+
+|p1= map : [[Control]] - map control
+
+|p2= position : [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - world position
+
+|r1= [[Position#Introduction|Position2D]] - screen coordinates in format [x, y]
+
+|x1= <sqf>_screenCoord = _control posWorldToScreen _worldCoord;</sqf>
+|x2= <sqf>_screenCoord = _control posWorldToScreen position player;</sqf>
+
+|seealso= [[posScreenToWorld]] [[ctrlMapWorldToScreen]]
+}}

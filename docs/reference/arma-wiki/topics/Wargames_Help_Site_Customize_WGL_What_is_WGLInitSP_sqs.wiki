@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/Wargames:Help_Site:Customize_WGL:What_is_WGLInitSP_sqs
+// revision: 243943 (2021-02-07T01:09:11Z)
+// export sha1: 6shox9enh5txcr6ftpcrs9wwpd4709m
+// Vendored snapshot. Do not edit — re-export instead.
+
+= What is WGLInitSP.sqs =
+
+== Basic Overview and Idea ==
+
+WGL 5.1 will try to execute a custom script named '''wglinitsp.sqs''' when you play offline, in single-player mode.
+
+To use your own custom SP init stuff, place a script named '''wglinitsp.sqs''' in a folder ''...\OFP\Users\Playernick\scripts''.
+
+The '''wglinitsp.sqs''' gives you the possibility to execute scripts independent to a mission implementation in single-player. 
+So for example you could call a script to generate grass around the player in every mission.
+
+
+== HowTo ==
+
+# The folder '''scripts''' in ''...\OFP\Users\Playernick'' does not exist by default, so you'll need to create it.
+# Create a text file in the '''scripts folder''' and rename it to '''wglinitsp.sqs'''.
+# Add any content you like to get executed for every mission you load in singleplayer.
+
+{{Feature|important|NOTE: As the name indicates, this script will not be run in multiplayer.}}

@@ -1,0 +1,287 @@
+// source: https://community.bistudio.com/wiki/Function
+// revision: 349916 (2023-11-20T22:11:06Z)
+// export sha1: jg99d1h7uaqkmid2tdszk6myz22tk2v
+// categories: Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+{{Feature|important|For a proper writing tutorial, see [[Arma 3: Writing a Function|Writing a Function]].<br>
+See also:
+* [[Arma 2: Functions Library]]
+* [[Take On Helicopters: Functions Library]]
+* [[Arma 3: Functions Library]]
+}}
+
+
+A '''function''' contains [[Code|code]] which usually consists of an ''input'', ''processing'' and ''output'' part. Functions were first introduced in the [[Operation Flashpoint: Resistance Version History|{{ofpr}}]] patch.
+The main advantages of functions are:
+
+; Improved legibility
+: By writing the code once and re-using it by calling the function
+
+; Easier debugging 
+: If your function contains an error, you only have to fix it in one place
+
+
+== Types of function ==
+
+=== Functions-as-files ===
+
+:''See [[Function#Call|calling functions]] for how a function-as-file is called. 
+Functions as files are functions stored within a file. These are usually used for larger and more complex functions. The code is evaluated in the same way, however, there are additional commands which must include the file before the function itself can be called.
+
+<sqf>
+// Code inside fn_showHint.sqf
+hint "Function was executed!"; // Function will show a hint when executed
+</sqf>
+
+=== Inline functions ===
+
+Inline functions are functions are technically [[Code|code]] which is often stored within a variable or declared as a function parameter. Inline functions operate the same way as functions-as-files as both are evaluated in the same way, but the difference is that inline functions are stored within parentheses {{hl|{}}}, whereas functions-as-files do not require these. 
+
+<sqf>
+// Inline function as variable
+TAG_fnc_showHint = 
+{
+	hint "Function was executed!"; // Function will show a hint when executed
+};
+call TAG_fnc_showHint;
+</sqf>
+
+
+== Anatomy of a function ==
+
+When scripting, there are two types of functions: functions-as-files and inline functions.
+Functions-as-files are instances where the a whole file itself is used to house a function, whereas inline functions are either contained within a variable or as a parameter of a function.
+Some built-in functions require functions-as-files, whereas most will support both. 
+
+=== Parameters (input) ===
+
+Parameters for functions are available to the function via the [[Magic Variables|magic variable]] [[Magic Variables#this|_this]].
+Declaration of parameters can be done using the [[params]] command. Common practice for defining parameters is done via the use of [[private]] variables and defined variables.
+
+<sqf>
+// Code inside fn_showHint.sqf
+params ["_text"];
+hint _text;
+</sqf>
+
+<sqf>
+// Inline function as variable
+TAG_fnc_showHint = 
+{
+	params ["_text"];
+	hint _text;
+};
+</sqf>
+
+<sqf>"Function was executed!" call TAG_fnc_showHint;</sqf>
+
+Parameters passed to functions are passed '''before''' the function, rather than after (such as the mathematical or c-like syntax ''f(x)''). 
+<sqf>
+// Array variable as parameter
+_myTempParams = [_parameterOne, _parameterTwo];
+_myTempVariableTwo = _myTempParams call myInlineFunction;
+</sqf>
+
+<sqf>
+// Array as parameter
+_myTempVariable = [_parameterOne,_parameterTwo] call myInlineFunction;
+</sqf>
+
+=== Return Values (output) ===
+
+The value of the last executed statement in a function is returned to the calling instance.
+
+<sqf>
+my_fnc = {
+	if (_this > 0) exitWith {
+		_this + 1
+	};
+	_this - 1
+};
+
+hint str ( 5 call my_fnc); //  6
+hint str (-5 call my_fnc); // -6
+</sqf>
+
+In the first example "_this + 1" is the last executed statement in my_fnc, in the second example it is "_this - 1".
+{{Feature|informative|It was believed at one point that the returning statement should not have a semicolon {{hl|;}} after it; this is false and having a semicolon does not change anything and is recommended.}}
+<sqf>
+my_fnc = {
+	a = 1;
+	b = 2;
+	c = a + b;
+	c // ← fine
+};
+</sqf>
+<sqf>
+my_fnc = {
+	a = 1;
+	b = 2;
+	c = a + b;
+	c; // ← better
+};
+</sqf>
+
+More examples:
+<sqf>
+// myCode.sqf
+private _myName = _this select 0;
+
+private _returnMe = "FAIL";
+
+if (_myName == "Test") then
+{
+	_returnMe = "PASS";
+};
+_returnMe;
+</sqf>
+
+<sqf>
+// myCodeInline
+myCodeReturnValue = {
+	private _myName = _this select 0;
+	private _returnMe = "FAIL";
+
+	if (_myName == "Kaboom") then
+	{
+		_returnMe = "PASS";
+	};
+
+	_returnMe
+};
+
+_myCalledVariable = ["Kaboom"] call myCodeReturnValue; // "PASS"
+_myCalledVariableFail = ["Blah"] call myCodeReturnValue; // "FAIL"
+</sqf>
+
+<sqf>
+// return.sqf
+STATEMENT 1;
+STATEMENT 2;
+RETURN_VALUE
+</sqf>
+
+<sqf>
+// test.sqf
+value = call compile preprocessFile "return.sqf";
+// value is now RETURN_VALUE
+
+call compile preprocessFile "return.sqf";
+// valid, but RETURN_VALUE is not saved anywhere
+</sqf>
+
+=== Execution ===
+
+[[File: Function_Execution.png|frame|right||Function Execution Diagram in [[Scheduler#Scheduled_Environment|scheduled environment]]<br><br>'''Executing Instance :''' [[Script File|script]], function or game engine]]
+
+Functions can be executed from several points in the game:
+
+* Other [[Script File|scripts]]
+* Other functions
+* Scripting lines in the [[ArmA:_Mission_Editor|Mission Editor]]
+* [[:Category:Event Handlers|Event Handlers]] in addon config files
+
+Functions are first loaded as [[String]] from a file via [[preprocessFile]] or [[loadFile]]. They are then executed via the [[call]] or [[spawn]] command. Since Armed Assault the loaded [[String]] needs to be [[compile|compiled]] in order to convert it to [[Code]], which is required for [[call]] or [[spawn]].
+
+==== Call ====
+
+Example (Operation Flashpoint):
+<sqf>
+myFunction1 = loadFile "myFunction1.sqf";
+myFunction2 = preprocessFile "myFunction2.sqf";
+
+call myFunction1;
+[1, 2] call myFunction2;
+</sqf>
+
+Example (Armed Assault):
+<sqf>
+myFunction1 = compile loadFile "myFunction1.sqf";
+myFunction2 = compile preprocessFile "myFunction2.sqf";
+
+_result1 = call myFunction1;
+_result2 = [1, 2] call myFunction2;
+</sqf>
+
+Functions executed using [[call]] are run ''within'' the executing instance, which waits for the result of the function.
+Unlike scripts, functions halt all other game engine processes until the function has completed its instructions.
+This means functions run faster than scripts, and the result of functions is immediate and unambiguous.
+It can also mean that if a function takes too long to run it will have an adverse effect on game play - large functions or CPU intensive functions can cause the game to seize up until it completes.
+When creating a functions you want the function to be short and sweet to achieve the best results.
+
+{{Feature|informative|You can still use the special variables and commands of [[Script File|scripts]] in functions ({{arma1}} only)!}}
+
+==== Spawn ====
+Functions may also be executed using [[spawn]], but then the function result is not accessible, making it behave more like a procedure.
+Spawned functions will run asynchronously or ''alongside'' the executing instance. This helps prevent large CPU intensive functions from seizing up the game.
+
+Example (Armed Assault):
+<sqf>
+myFunction1 = compile loadFile "myFunction1.sqf";
+myFunction2 = compile preprocessFile "myFunction2.sqf";
+
+_param spawn myFunction1;
+[1, 2] spawn myFunction2;
+</sqf>
+
+
+== Examples ==
+
+=== Example 1: max.sqf ===
+
+In this example the function returns maximum of first and second argument.
+
+max.sqf
+<sqf>
+//"Return maximum of first and second argument";
+params ["_a", "_b"];
+[_b, _a] select (_a > _b);
+</sqf>
+
+alternative max.sqf (big boys code :))
+<sqf>(_this select 0) max (_this select 1);</sqf>
+
+executing script:
+<sqf>
+fMax = compile preprocessFile "max.sqf";
+maxValue = [3, 5] call fMax;
+
+// maxValue is now 5
+</sqf>
+
+=== Example 2: infantrySafe.sqf ===
+
+In this example the function returns no value and switches all units to safe mode.
+<sqf>
+// Switch all infantry units to safe mode
+{
+	if (vehicle _x == _x) then
+	{
+		_x setBehaviour "safe";
+	}
+} forEach _this;
+</sqf>
+
+=== Example 3: Inline Function ===
+
+An inline-function can be created in any script:
+<sqf>FNC_sayhello = {hint format ["hello %1", _this]};</sqf>
+
+This function can then be called (in other scripts, functions, unit's init lines, trigger activation fields, etc.) via:
+<sqf>name player call FNC_sayhello</sqf>
+
+In case the function doesn't require any arguments you can just call the function.
+<sqf>call FNC_helloall</sqf>
+
+
+== See also ==
+
+* [[Script File|Scripts]]
+* [[SQF Syntax]]
+* [[call]]
+
+
+[[Category: Scripting Topics]]

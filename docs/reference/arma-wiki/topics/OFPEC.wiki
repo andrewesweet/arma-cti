@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/OFPEC
+// revision: 349814 (2023-11-20T22:10:24Z)
+// export sha1: fztd20dlwwy165qy6uqssmgeeeityss
+// categories: Category:Editing Websites
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Ofpeclogotoys.jpg|right|OFPEC Logo]]
+
+=== Introduction ===
+
+OFPEC The Editing Center has established itself as the central repository for Armed Assault and Operation Flashpoint editing resources. Since August 2001 OFPEC has served as both a vast archive of third-party addons, missions, tutorials and references for the game and also as a meeting place for editors of all ranges of experience. Today OFPEC is a major hub of the Flashpoint editing community and operates an active forum where users can discuss and resolve their editing problems and exchange knowledge.
+
+=== History ===
+
+OFPEC has its origins in the very first days of OFP editing, when LustyPooh launched the Editing Center. Although it may seem difficult to believe now, OFP editing was largely unsupported by BIS in late 2001. LustyPooh wrote the first Unofficial Command Reference, and a few basic tutorials.
+
+LustyPooh's site closed down soon after opening, however Tigershark managed to salvage the contents and re-launched the OFP Editing Center, a fledging site that soon became the mecca for OFP editing knowledge. 
+
+Over time (and numerous servers) the site has grown into what it is today: a dynamic, wide-ranging information resource for editing. OFPEC stands as a tribute to all of the people that have supported it over the years, thus the site proudly bears the legend "By the Community, for the Community".
+
+A documented account of the history of OFPEC can be found {{Link|http://www.ofpec.com/faq/index.php?action{{=}}read&cat{{=}}ao&id{{=}}57|here}}
+
+=== The Site ===
+
+OFPEC is split into depots dealing with the various aspects of editing.
+
+First and foremost is the Editors Depot which houses the numerous resources submitted by the community over the years to help editors. There are well-written tutorials, script snippets, tools, functions and the ever-useful Command Reference (COMREF).
+
+Then we have the Missions Depot, where members can submit their unfinished missions for testing by the membership, and submit their finished missions for review by the expert staff.
+
+The Addons Depot was created due to public demand for a source of high-quality addons to be used in missions. These too are reviewed by expert staff.
+
+The backbone of OFPEC is the Forum. Tutorials in themselves are only a 'what', and it is within the Forum that editors can discuss the 'how'. OFPEC enjoys an international membership with a wide range of ability and experience, and the atmosphere is consistently friendly, helpful and professional.
+
+With the release of Armed Assault, OFPEC continues to support the Community with its editing activities. If you have an editing-related problem, chances are you'll find help at {{Link|http://www.ofpec.com/|OFPEC}}.
+
+[[Category:Editing Websites]]

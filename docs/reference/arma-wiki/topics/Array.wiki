@@ -1,0 +1,406 @@
+// source: https://community.bistudio.com/wiki/Array
+// revision: 378805 (2026-06-29T16:53:01Z)
+// export sha1: 5qqbxn0382cdnkzoncxs4ellabomdur
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+An '''Array''' is a list of items of varying [[:Category:Data Types|variable types]] (including other arrays). Different types can coexist within the same array.
+
+See also: [[:Category:Arrays|Arrays]]
+{{Feature|warning|Since {{arma3}} v1.56, arrays are limited to maximum of '''9,999,999''' (sometimes 10,000,000) elements.}}
+
+
+== Working With Arrays ==
+
+=== Array Properties ===
+
+An array variable is a '''reference''' to the array (see {{Link|https://en.wikipedia.org/wiki/Reference_(computer_science)|Wikipedia reference page}});
+this means that if the array is edited, all the scripts/functions using a reference to this array will see the edition.
+
+<sqf>
+private _myArray = ["a", "b", "c"];
+private _myNewArray = _myArray;
+_myArray set [1, "z"];
+_myNewArray select 1; // will be "z"
+</sqf>
+
+An array set through [[setVariable]] does not need to be assigned again if you modify it by reference:
+<sqf>
+player setVariable ["myArray", ["a", "b", "c"]];
+private _myArray = player getVariable "myArray";
+_myArray set [1, "z"];
+player getVariable "myArray"; // is ["a", "z", "c"]
+</sqf>
+
+=== Array Creation ===
+
+<sqf>
+// Example of an empty array
+private _myArray = [];
+count _myArray;			// returns 0
+
+// Example of a filled array
+private _myFilledArray = ["abc", "def"];
+count _myFilledArray;	// returns 2
+</sqf>
+
+An array can hold another array within it, that can hold another array itself, etc:
+<sqf>
+private _myArray = [["my", "subArray", 1], ["mySubArray2"], [["my", "sub", "sub", "array"]]];
+count   _myArray;						// returns 3
+count  (_myArray select 0);				// returns 3
+count  (_myArray select 1);				// returns 1
+count  (_myArray select 2);				// returns 1
+count ((_myArray select 2) select 0);	// returns 4
+</sqf>
+
+=== Getting an element ===
+
+An array uses a zero-based index for its elements:
+<sqf>
+private _myArray = ["first item", "second item", "third item"];
+_myArray select 0;	// returns "first item"
+_myArray # 2;		// returns "third item" - Arma 3 only
+</sqf>
+
+=== Setting an Element ===
+
+<sqf>
+private _myArray = ["first item", "second item", "third item"];
+_myArray select 1;					// returns "second item"
+_myArray set [1, "hello there"];	// _myArray is ["first item", "hello there", "third item"]
+</sqf>
+
+{{Feature | important | If the index given to the [[set]] command is out of bounds, the array will [[resize]] to incorporate the index ''as its last value''.
+All the "empty spaces" between the last valid element and the new [[set]] element will be filled with [[nil]]}}
+
+=== Counting elements ===
+
+<sqf>
+private _myArray = ["first item", ["second item's subitem 1", "second item's subitem 2"], "third item"];
+count _myArray; // returns 3 - arrays are not counted recursively
+</sqf>
+
+=== Changing array size ===
+
+The [[resize]] command is made to reduce or expand an array:
+<sqf>
+private _myArray = ["a", "b", "c", "d", "e"];
+_myArray resize 3; // _myArray is ["a", "b", "c"]
+</sqf>
+<sqf>
+private _myArray = ["a", "b", "c"];
+_myArray resize 5; // _myArray is ["a", "b", "c", nil, nil]
+</sqf>
+
+{{Feature|important|You do '''not''' need to extend an array before adding any elements.}}
+
+=== Array Copy ===
+
+<sqf>
+private _myArray = ["a", "b", "c"];
+private _myNewArray = _myArray;
+_myArray set [1, "z"];
+_myNewArray select 1; // will be "z"
+</sqf>
+<sqf>
+private _myArray = [["a", "b", "c"], ["d", "e", "f"]];
+private _subArray1 = _myArray select 0;
+_subArray1 set [1, "z"];
+// _subArray1 is now ["a", "z", "c"]
+// _myArray is now [["a", "z", "c"], ["d", "e", "f"]]
+</sqf>
+
+In order to avoid this behaviour, '''copy''' the array with [[+|+ (plus)]]:
+<sqf>
+// making copy
+private _myArray = ["a", "b", "c"];
+private _myNewArray = +_myArray;
+_myArray set [1, "z"];
+_myNewArray select 1; // still "b"
+</sqf>
+
+Sub-arrays are also deep-copied; {{hl|_myNewArray}} will not point at the same sub-array instances.
+
+=== Adding (Appending) Elements ===
+
+In {{arma3}} use [[append]] and [[pushBack]] commands:
+<sqf>
+private _myArray = ["a", "b", "c"];
+_myArray pushBack "d";		// _myArray is ["a", "b", "c", "d"] - pushback = add the element at the end
+_myArray append ["e", "f"];	// _myArray is ["a", "b", "c", "d", "e", "f"] - append = pushback for each provided items
+</sqf>
+
+You could also use the [[+|plus (+)]] operator to add arrays.
+The difference is that addition returns a copy of array and thus [[Code Optimisation#Adding elements |a little slower]] than [[append]] and [[pushBack]], which modify the target array.
+<sqf>
+private _myArray = ["a", "b", "c"];
+_myArray = _myArray + ["d"];		// _myArray is ["a", "b", "c", "d"]
+_myArray = _myArray + ["e", "f"];	// _myArray is ["a", "b", "c", "d", "e", "f"]
+</sqf>
+
+=== Removing (Deleting) Elements ===
+
+In {{arma3}} the [[deleteAt]] and [[deleteRange]] commands are available:
+<sqf>
+private _myArray = ["a", "b", "c", "d", "e"];
+_myArray deleteAt 0; // _myArray is ["b", "c", "d", "e"]
+</sqf>
+<sqf>
+private _myArray = ["a", "b", "c", "d", "e"];
+_myArray deleteRange [1, 2];	// _myArray is ["a", "d", "e"]
+</sqf>
+
+You can also use the [[-|minus (-)]] operator to subtract arrays.
+The subtraction returns array copy, just like addition, and is [[Code Optimisation#Removing elements|not as fast]] as [[deleteAt]] and [[deleteRange]] which modify target arrays.
+<sqf>
+private _myArray = ["a", "b", "c", "d", "e"];
+_myArray = _myArray - ["a"]; // _myArray is ["b", "c", "d", "e"]
+</sqf>
+
+In {{arma3}} it became possible to also subtract nested arrays:
+<sqf>
+private _myArray = [["a", "b", "c"], ["d", "e", "f"], ["g", "h", "i"]];
+_myArray = _myArray - [["d", "e", "f"]]; // _myArray is [["a", "b", "c"], ["g", "h", "i"]]
+</sqf>
+
+The subtraction will remove ''all'' elements of the second array from the first one:
+<sqf>_myArray = ["a", "b", "c", "a", "b", "c"] - ["a", "b"]; // _myArray is ["c", "c"]</sqf>
+
+The solution to this issue is the combined use of [[set]] and an item that you know is '''not''' present in the array:
+<sqf>
+private _myArray = ["a", "b", "c", "a", "b", "c"];
+_myArray set [2, objNull];			// _myArray is ["a", "b", objNull, "a", "b", "c"]
+_myArray = _myArray - [objNull];	// _myArray is ["a", "b", "a", "b", "c"]
+</sqf>
+
+Using this technique, it is possible to mimic [[deleteRange]] behaviour this way:
+<sqf>
+private _myArray = ["a", "b", "c", "d", "e"];
+{ _myArray set [_x, objNull] } forEach [1, 2];	// _myArray is ["a", objNull, objNull, "d", "e"]
+_array = _array - [objNull];					// _myArray is ["a", "d", "e"]
+</sqf>
+
+=== Going Through the Array ===
+
+The simplest way to iterate through an array is the [[forEach]] command:
+<sqf>
+private _myArray = ["a", "b", "c", "d", "e"];
+{ systemChat _x } forEach _myArray;
+</sqf>
+
+A combination of [[for]], [[count]] and [[select]] can also be used:
+<sqf>
+private _myArray = ["a", "b", "c", "d", "e"];
+for "_i" from 0 to (count _myArray) -1 do { // count returns 5, but it is a zero-based index
+	systemChat (_myArray select _i);
+};
+</sqf>
+
+
+== Advanced Usage ==
+
+=== apply ===
+
+Similar to the {{Link|https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map|"map" function in Javascript}},
+[[apply]] allows to apply code to every elements in an array and return a copy:
+<sqf>
+private _myArray = [1, 2, 3, 4, 5];
+_myArray = _myArray apply { _x * 2 }; // _myArray is [2, 4, 6, 8, 10]
+
+// same as (but faster than)
+_myArray = + _myArray;
+for "_i" from 0 to count _myArray -1 do
+{
+	private _element = _myArray select _i;
+	_myArray set [_i, _element * 2];
+};
+</sqf>
+
+=== select ===
+
+A simple way to filter an array (and obtain a new one) is using [[select]]'s alternative syntax:
+<sqf>
+private _myArray = [1, 2, 3, 4, 5];
+private _filteredArray = _myArray select { _x > 3 }; // _filteredArray is [4, 5]
+
+// same as
+private _filteredArray = [];
+{ if (_x > 3) then { _filteredArray pushBack _x } } forEach _myArray;
+</sqf>
+
+=== findIf ===
+
+The [[findIf]] command was introduced in {{arma3}} and allows you to go through the whole list and stop '''as soon as the condition is met''', returning the condition-meeting element's array index:
+<sqf>
+private _myArray = [1, 2, 3, 4, 5];
+_myArray findIf { _x == 3 } > -1; // returns true, meaning there is an element that equals 3
+_myArray findIf { _x == 6 } > -1; // returns false, meaning there is no element that is equal to 6
+</sqf>
+
+You could use [[count]] to achieve the same result, however [[count]] won't stop until it iterated through the whole array, so it might take [[Code Optimisation#findIf|longer]].
+<sqf>
+private _myArray = [1, 2, 3, 4, 5];
+{ _x == 3 } count _myArray > 0; // returns true, meaning there is an element that equals 3
+{ _x == 6 } count _myArray > 0; // returns false, meaning there is no element that is equal to 6
+</sqf>
+
+=== arrayIntersect ===
+
+The [[arrayIntersect]] command returns a new array filled with the items found in both provided lists:
+<sqf>
+private _array1 = [1, 2, 3, 4];
+private _array2 = [3, 4, 5, 6];
+private _result = _array1 arrayIntersect _array2; // _result is [3, 4]
+</sqf>
+
+'''You can remove duplicates (get unique items) with this command:'''
+<sqf>
+private _myArray = [1, 2, 2, 3, 4];
+private _result = _myArray arrayIntersect _myArray; // _result is [1, 2, 3, 4]
+</sqf>
+
+Be wary that [[nil]] elements get removed by this method:
+<sqf>
+private _myArray = [1, 2, nil, 3, 4];
+private _result = _myArray arrayIntersect _myArray; // _result is [1, 2, 3, 4]
+</sqf>
+
+=== Selective Removal ===
+
+Selectively filter out single elements from {{hl|_arrayA}} based on {{hl|_arrayB}}.<br>
+This is useful in the case where ''some'' duplicates must be removed.
+
+<sqf>
+private _arrayA = [1, 2, 3, 2, 4, 5, 4];
+private _arrayB = [2, 2, 4];
+
+{
+	private _index = _arrayA find _x;
+	if (_index != -1) then
+	{
+		_arrayA deleteAt _index;
+	};
+} forEach _arrayB;
+
+_arrayA; // is now [1, 3, 5, 4]
+</sqf>
+
+=== Sorting ===
+
+==== sort ====
+The [[sort]] command allows for sorting an array of [[String]], [[Number]] or sub-[[Array]]s of string/number. It modifies the original array and '''does not return anything''':
+<sqf>
+private _myArray = ["zzz", "aaa", "ccc"];
+_myArray sort true; // _myArray is ["aaa", "ccc", "zzz"]
+</sqf>
+<sqf>
+private _myArray = [666, 57, 1024, 42];
+_myArray sort false; // _myArray is [1024, 666, 57, 42]
+</sqf>
+<sqf>
+private _myArray = [["zzz", 0], ["aaa", 42], ["ccc", 33]];
+_myArray sort true; // _myArray is [["aaa", 42], ["ccc", 33], ["zzz", 0]]
+</sqf>
+
+==== reverse ====
+The [[reverse]] command simply reverses the array order:
+<sqf>
+private _myArray = [99, 33, 17, 24, "a", [3,2,1], 7777];
+reverse _myArray; // _myArray is [7777, [3,2,1], "a", 24, 17, 33, 99]
+</sqf>
+
+==== BIS_fnc_sortBy ====
+The function [[BIS_fnc_sortBy]] has been created for more complex sorting. Its algorithm input must return a number:
+<sqf>private _closestHelicopters = [[_heli1, _heli2, _heli3], [], { player distance _x }, "ASCEND"] call BIS_fnc_sortBy;</sqf>
+
+
+== Common Errors ==
+
+=== Index Rounding ===
+
+In {{Link|Real Virtuality}} scripts, indices are rounded to the nearest whole number.
+A boundary case (X.5, where X is any whole number) rounds to the nearest '''even''' whole number.
+
+; Boundary cases:
+* -0.5 <= index <= 0.5 rounds to 0
+* &nbsp;0.5 <&nbsp; index <&nbsp; 1.5 rounds to 1
+* &nbsp;1.5 <= index <= 2.5 rounds to 2
+* &nbsp;2.5 <&nbsp; index <&nbsp; 3.5 rounds to 3
+
+; In short:
+* -0.5 rounds '''up''' to 0
+* &nbsp;0.5 rounds '''down''' to 0
+* &nbsp;1.5 rounds '''up''' to 2
+* &nbsp;2.5 rounds '''down''' to 2
+* &nbsp;3.5 rounds '''up''' to 4
+etc.
+{{Feature|informative|This behaviour is different from {{Link|random}}'s behaviour.}}
+
+=== Index out of Range ===
+
+The following code lists {{arma3}} behaviour on wrong indices:
+<sqf>
+private _myArray = ["element0"];
+_myArray select -1; // throws a Error Zero Divisor error message
+_myArray select  0; // returns "element0"
+_myArray select  1; // returns nil
+_myArray select  2; // throws a Error Zero Divisor error message
+</sqf>
+
+==== param ====
+Use the [[param]] command in order to avoid out of range error:
+<sqf>
+private _myArray = [0, 1, 2];
+_myArray select 5;			// error: out of range
+_myArray param [5];			// returns nil
+_myArray param [5, "abc"];	// returns default value "abc" on invalid index
+</sqf>
+{{Feature|informative|See also [[params]] to define multiple items at once.}}
+
+==== set ====
+If the index given to the [[set]] command is out of bounds:
+* if the index rounded to a negative number, then an [[Error Zero Divisor]] message will be displayed in game.
+* if the index rounded to a positive number, then the array will [[resize]] to incorporate the index ''as its last value''. Each element between the last valid element, and the new [[set]] element, will be the [[Nothing|null type]]
+
+=== Zero Divisor ===
+
+See above - a used array index may be negative.
+
+=== Unexpected "," ===
+
+This error originates from a bad syntax:
+<sqf>
+private _myErroneousArray = ["Weapon1", "Weapon2", "Weapon3",]; // The last element in an array must not end by ","
+
+// this mostly happens in vertical arrays
+private _myErroneousArray = [
+	"element1",
+	"element2",
+	"element3", // this one comma is wrong
+];
+</sqf>
+
+=== Reserved variable in expression ===
+
+This issue arises when trying to modify a read-only array (such as {{Link|select}} arrays that are returned from an addon, or eventually a trigger's {{Link|Magic Variables#thisList|thisList}}).
+
+To combat this, ''copy'' said array with the {{Link|+|plus (+)}} command before modifying:
+<sqf>
+private _readOnlyArray = thisList;	// assuming the code is called from within a trigger
+_readOnlyArray set [1, "test"];		// Error: Reserved variable in expression - thisList return value is read-only
+
+// No Error
+private _normalArray = +_readOnlyArray;	// shallow-copy the array instead of using a reference
+_normalArray set [1, "test"];			// perfectly fine
+</sqf>
+
+
+== See Also ==
+
+* [[:Category:Arrays|Arrays]]
+* [[:Category:Command Group: Arrays|Command Group: Arrays]]
+* [[:Category:Function Group: Arrays|Function Group: Arrays]]
+
+[[Category: Data Types]]

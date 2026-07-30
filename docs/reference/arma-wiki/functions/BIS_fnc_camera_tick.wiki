@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera_tick
+// revision: 349290 (2023-11-08T14:51:16Z)
+// export sha1: i7dy9s1g2k2vhq9okmvg6ww5ydxrjy7
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Camera | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Camera
+
+|descr= Ticks a camera. Updates position and view mode.
+
+|s1= [camera] call [[BIS_fnc_camera_tick]]
+
+|p1= camera: [[Object]] - the camera
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[BIS_camera] call BIS_fnc_camera_tick;</sqf>
+
+|seealso= [[BIS_fnc_camera_init]]
+}}

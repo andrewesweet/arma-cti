@@ -1,0 +1,91 @@
+// source: https://community.bistudio.com/wiki/side
+// revision: 341641 (2023-06-12T19:02:58Z)
+// export sha1: a7vysgnu1c0ctx5lbt2hvy1ys2007kd
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Sides
+
+|descr= Returns the side of a unit, vehicle, object or location.
+* side of a renegade soldier is [[sideEnemy]]
+* side of an empty vehicle is [[civilian]]
+* side of a crewed vehicle is, if present, commander's > gunner's > driver's or > cargo's side, in this order
+* side of a captive or dead unit is [[civilian]]. Use <sqf inline>side group _unit</sqf> to get the underlying side (see {{Link|#Example 2}})
+* you can use [[playerSide]] to know the real player's side
+
+{{Feature|informative|
+Converting a side to string will '''not''' always return the side command text: e.g <sqf inline>str resistance; // returns "GUER"</sqf>.<br>
+See [[Side]] page to see the return value of all side commands.
+}}
+
+|s1= [[side]] target
+
+|p1= target: [[Object]], [[Group]] or [[Location]]
+
+|r1= [[Side]]
+
+|x1= <sqf>if (side player == west) then { hint "Player is on the West side" };</sqf>
+
+|x2= <sqf>_sideAlsoWorkingForDead = side group _deadUnit;</sqf>
+
+|x3= <sqf>_sideLocation = side myLocation;</sqf>
+
+|x4= <sqf>if (side player != playerSide) then { hint "player is renegade or dead"; };</sqf>
+
+|x5= Check the [[side]] of the vehicle:
+<sqf>_vehicleSide = side group _vehicle; // sideUnknown (CIV for Arma 3) if empty or dead crew, otherwise the appropriate side</sqf>
+
+|seealso= [[CfgVehicles Config Reference#side|CfgVehicles Config Side Value]] [[Side]] [[playerSide]] [[west]] [[east]] [[resistance]] [[civilian]] [[sideLogic]] [[sideFriendly]] [[sideEnemy]] [[sideUnknown]] [[sideEmpty]] [[sideAmbientLife]] [[Side Relations]] [[BIS_fnc_sideID]] [[BIS_fnc_objectSide]]
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20070323045100
+|text= In '''{{arma}}''', the following objects are on side [[civilian]]: dead bodies and vehicles, empty vehicles, all mission editor placed objects (that do not have an inherit side), all objects with interactive components such as ladders and doors, man made structures such as buildings (including classless wrp placed objects), docks, high tension powerlines, see-saws, large rubbish bins, fountains. Basically if an object uses a non-simple damage or physics simulation it is likely to be on the civilian side.<br>
+'''NOTE:''' If you need to know the side of a dead body, you can use [[faction]] command as a workaround -- [[User:Killzone_Kid|Killzone_Kid]]
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20070212062800
+|text= In '''{{ofp}} v1.96''', the side return value for a vehicle is based on the side of its commander, then gunner, then driver, then cargo. It will retain its side value until it is either empty, or a unit of another side takes over in a equal or higher role, irrespective of the side of other units still on board. This can be used to simulate friendly fire, as a vehicle can be made to appear to be an enemy even though all units on board are actually friendly.
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20100319164800
+|text= As Ceeeb says above, in '''{{arma2}}''', side for a vehicle often depends on who the command or driver is, for example, A KA52, piloted by a USMC guy will have side WEST. For an accurate result of what 'where the vehicle was made', use [[faction]]. This ignores the pilot/commander, so in my example here, this KA52 will always return faction "RU". Note that faction returns different values to side though.
+}}
+
+{{Note
+|user= RKurtzDmitriyev
+|timestamp= 20110204181100
+|text= Side values for ambient life (animals) are bizarre. <sqf inline>side _unit</sqf> returns "CIV", but [[playerSide]] returns "AMBIENT LIFE" when the player is an animal. In that case, <sqf inline>playerSide == side player;</sqf> returns false!
+
+Fortunately, you can easily check if a unit is an animal with <sqf inline>_unit isKindOf "ANIMAL";</sqf>
+}}

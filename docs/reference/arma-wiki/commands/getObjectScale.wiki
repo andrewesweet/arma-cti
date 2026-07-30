@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/getObjectScale
+// revision: 364985 (2024-07-04T19:58:04Z)
+// export sha1: ods34o1m7u7q8i47pqvgg9vg0ka3y2w
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Object Manipulation
+
+|descr= Returns the render scale of an object relative to the original model.
+
+|s1= [[getObjectScale]] object
+
+|p1= object: [[Object]] - object to return scale of. Can also be a [[nearestTerrainObjects|terrain object]].
+
+|r1= [[Number]] - scale relative to the original model
+
+|x1= <sqf>
+private _objectScale = getObjectScale MyObject;
+
+if (_objectScale == 1) exitWith { systemChat "Original scale"; };
+
+if (_objectScale > 1) then
+{
+	systemChat "Scaled up";
+}
+else
+{
+	systemChat "Scaled down";
+};
+</sqf>
+
+|seealso= [[setObjectScale]]
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20240610122652
+|text= Some objects can be scaled by XYZ individually by the engine. Rope segments are one example, they only scale by Z and this command returns average of all dimensions giving no real picture of the scale. You can get real scale of each dimension with:
+<sqf>[vectorMagnitude vectorSideVisual _seg, vectorMagnitude vectorDirVisual _seg, vectorMagnitude vectorUpVisual _seg]</sqf>
+for rope segment it will be something like <sqf inline>[1,1,1.54066]</sqf>
+}}

@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_CPWaitUntil
+// revision: 348068 (2023-11-08T11:29:53Z)
+// export sha1: lcz8rczx5w21vro4yl0x753lb5wenk2
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: CombatPatrol | Category:Function Group: Program Flow | Category:Functions | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= CombatPatrol
+
+|gr2= Program Flow
+
+|descr= Function waits until condition becomes true. Condition is checked with given interval.
+
+|s1= [condition, interval] spawn [[BIS_fnc_CPWaitUntil]]
+
+|p1= condition: [[Code]] - (Optional, default <sqf inline>{ true }</sqf>) condition to be checked
+
+|p2= interval: [[Number]] - (Optional, default 0.5) interval in which the condition will be checked
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[{ not alive player }, 2] spawn BIS_fnc_CPWaitUntil;</sqf>
+
+|exec= spawn
+
+|seealso= [[waitUntil]]
+}}

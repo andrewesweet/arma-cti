@@ -1,0 +1,193 @@
+// source: https://community.bistudio.com/wiki/ArmA:_Armed_Assault:_STOVL
+// revision: 337451 (2023-01-31T12:38:42Z)
+// export sha1: e4afgr7zjl2bb15c5jabsni1x4k4yhk
+// categories: Category:Hints & Tips
+// Vendored snapshot. Do not edit — re-export instead.
+
+Harrier (AV8B) can perform Short takeoff and vertical landing (STOVL).
+
+It is controlled with "Autohover ON/OFF" action.
+
+When activated, there is no such autopilot for slowdown that helicopters use.
+Thrust vector is just rotated downwards. Q/Z keys control only airplane speed.
+There are no keys for control over vertical thrust,
+so it is not possible to hover up/down like in helicopter.
+
+'''Takeoff procedure:'''
+* activate Autohover ({{Controls|\}})
+* extend full flaps (2x {{Controls|Ctrl|K}})
+* gain some speed by holding {{Controls|Q}} for a short while and then release it.
+* once in the air, retract gear ({{Controls|Ctrl|G}}))
+* hold {{Controls|Q}} a little longer until you move fast enough
+* retract flaps as you build more speed (2x {{Controls|Ctrl|L}})
+* at aprox. 180kmph toggle autohover off and control flight as regular aircraft
+
+'''Landing procedure:'''
+* reduce speed and altitude same way as during conventional landing
+* extend full flaps (2x {{Controls|Ctrl|K}}), drop gear ({{Controls|Ctrl|G}})
+* hold {{Controls|Z}} to reduce speed
+* at approx 180 kmph activate Autohover ({{Controls|\}})
+* pitch nose up to reduce speed, check speed, height and flight path vector indicated on HUD
+* hold {{Controls|Z}} for descent at aprox 2.5 m/s
+* at touchdown toggle autohover off
+
+
+== Harrier Takeoff/Landing Simple Flight Demo ==
+
+'''AV-8B Harrier Description.'''
+
+
+As you walk around the AV-8B Harrier note the tandem landing gear with additional outrigger wheeled struts, the four adjustable nozzles arranged in a box with two on either side of the fuselage, the internal gun located on the forward left hand side of the fuselage below the canopy, and the external armament attached to weapon pylons.
+
+
+'''AV-8B Harrier visual check for damage.'''
+
+When playing ArmA as in real life it is always worth giving any aircraft a visual inspection before taking off. Take time to walk around the aircraft before getting in. Inspect for obvious physical damage and count the number of external stores. Watch out for empty stores and damage to areas of the aircraft such as the cockpit canopy. An aircraft with no weapons is no use in firefight. In a Multi Player(MP) game damaged aircraft or ones with exhausted weapons may be left on the ground after use or even as bate for a trap. In Single Player(SP) games damaged aircraft may be left around by crafy mission designers either as a red hering or a puzzle or as bate for a trap.
+
+This aircraft looks to be in pristine shape with the following load out:
+
+* Station 1-- GBU-12
+* Station 2-- GBU-12
+* Station 3-- GBU-12
+* Station 4-- Empty
+* Station 5-- AN/AAQ-28 LITENING
+* Station 6-- GBU-12
+* Station 7-- GBU-12
+This aircraft is made for air to ground attack with its five 500lb laser-guided bombs and targeting pod to make sure they land right on the enemy's head.
+
+
+'''Pre Entry Checklist:'''
+
+Before entering the aircraft we go through the pre-entry checklist. Here is a sensible example checklist to use on any aircraft in ArmA:
+
+* Is the aircraft showing signs of damage ''Needs repair look for a repair truck''
+* Are the external stores empty ''Needs ammo look for an ammo truck''
+* Area around aircraft clear
+* No obstructions to movement such as vehicles, trees or buildings.
+* Any satchel charges or the like near by
+* Check near by buildings and cover for threats
+* Your joystick throttle is at idle ''A sudden lurch toward a fuel or ammo truck is embarrassing''
+* The joystick trigger is not pressed "droping a GBU 12 on entry is not a good idea"
+* Pre Entry checklist complete.
+
+We're ready to get in the seat and have a look inside:
+
+Move around the cockpit side and look at the cockpit and watch for a pilot entry glyph in green that should appear in the center of your screen.
+Press the action key ''Default Enter/Return key or mouse wheel click'' You will now enter the vehicle in the pilots seat.
+
+
+''' Aircraft On Entry Checklist:'''
+
+* Aircraft engine off
+* Aircraft canopy is open
+* Armor is Green ''Top left corner display''
+* Fuel is Green ''Top left corner display''
+* On Entry Checklist complete
+
+Here we see a perfectly healthy aircraft with a full load of fuel.
+
+
+Looking inside at the cockpit we notice 5 main displays:
+
+# Aircraft status panel-- this shows us the speed, altitude over the ground (AGL), health, fuel level, and currently selected weapon and number of that weapon available.
+# Radar panel-- this shows us our current heading along the heading tape as well as a radar window where radar contacts will appear. The right half of the display represents all directions from straight ahead through 180 degrees right, and similarly the left side represents the arc from straight ahead through 180 degrees left. The dim white box in the center represents the bounds of our current vision.
+# Left MFD-- The left MFD has on it an electronic display which shows an artificial horizon.
+# Right MFD-- The right MFD has on it an electronic display of our heading.
+# HUD-- The HUD has many useful pieces of information that can be seen without looking down into the cockpit.
+
+
+Looking down we can see the rest of the cockpit. There is a backup artificial horizon which will become useful if you suffer damage to the left MFD as well as a vertical speed indicator behind the joystick (in future patches the joystick will move and seeing this gauge might be possible). There also might be a backup altimeter here but it is not likely to ever been needed. Before touching any controls we should change our current weapon. Currently we have the GBU-12 selected. Change to the GAU-12 25mm cannon.
+
+
+The GAU-12 cannon is much safer in the event of an accidental fire while on the ground. Dropping a 500lb bomb while taxing makes a much larger mess. Always have the cannon selected when not prepared for weapons release.
+
+Ok let's turn the engine on via the action menu and let it spool up to full RPM while we do some pre-taxi checks.
+
+This is no good for flying and moving things around while going 450 knots is probably not a good idea so let's change it.
+
+
+Pre-taxi Checklist: Map OK, Reviewed mission before takeoff CHECK, flaps fully up CHECK, nozzles aft CHECK, aircraft healthy CHECK, weapons on safest weapon CHECK. Pre-taxi checklist complete.
+
+Advance throttle slowly until you get a response from the aircraft and then back off on the throttle. Take a left turn using the rudder pedals and align with the yellow taxiway centerline heading down to the west end of the runway.
+Keep taxi speed around 20-30 knots. Pulling back on the stick aids in slowing down a little bit. As you reach the end of the taxiway follow the yellow line as it curves right.
+Depending on your taxi clearance you would continue onto the runway or hold in the short stretch before the runway to keep it clear for landing or taking off aircraft.
+This is where you should stop given the instruction "Taxi to runway nine and hold short."
+
+
+Waiting for takeoff clearance is a good time to do the pre-takeoff checklist. For this take off we'll use the first notch of flaps but keep the nozzles pointed aft for a normal fixed wing takeoff.
+
+
+Given our clearance "Position and hold" we move onto the runway and stop on the numbers "9" as best we can. Given "Cleared for takeoff" we wouldn't stop in this position but continue on our take off run.
+
+
+Really the last time to check we're good to go. "Cleared for takeoff." We smoothly advance the throttle to full and follow the runway centerline using the rudder pedals.
+At V-R we rotate the aircraft into a 10 degree nose up attitude and raise the gear once clear of the ground. After that we're going pretty fast and can raise the notch of flaps we put in safely.
+
+
+Now we're free to maneuver in a "clean" gear/flaps up state and go and have a little fun. For now let's have a closer look at the HUD when in GAU-12 mode and find out what all the symbols mean.
+
+
+----
+
+Altitude Ladder: The altitude ladder is a visual representation of your MSL altitude. The short horizontal line on the left of the HUD moves up and down in response to changes in MSL altitude.
+The ladder has a min at 0m MSL max at 500m MSL. Any altitude higher than 500m will show as the ladder at the top of its scale.
+
+Vertical Speed Pointer: Attached to the right side of the short horizontal line that is the altitude ladder is the vertical speed pointer. If the line extends down then that indicates a descent.
+A line extending up indicates a climb. The length of the line shows how rapidly you are gaining or losing altitude.
+
+Missie Seeker: The missile seeker shows where an AIM-9X sidewinder is "looking" for a target. This feature does not work and the symbol should be ignored.
+
+Flight Path Marker: The FPM shows where your jet is going to go. Placing the FPM on a point on the ground would mean you would impact with the ground at that point.
+Armed assault avionics are simplistic so don't trust this too much.
+
+Gun Cross: The gun cross is an aiming reference used with the GAU-12 25mm cannon. This only shows up when the GAU-12 is the current weapon.
+
+Pitch Ladder: The pitch ladder is a series of lines parallel with the horizon. They are spaced 5 degrees apart in pitch. Ladder lines showing positive pitch will have short tail lines pointing down.
+Ladder lines showing negative pitch will have the short tail lines pointing up. The ladder line at 0 degrees is wider and has no short tail lines. This is called the horizon line.
+
+Airspeed Ladder: On the right of the HUD is the airspeed ladder and consists of a tick mark and a number.
+The number is your speed in knots and the number and tick mark move up the ladder toward the top of the HUD as the airspeed increases.
+
+----
+
+After flying around a bit we return to the airbase and prepare to land. Today we will be doing a normal fixed-wing landing with full flaps. Flying over the runway we turn west and prepare to land.
+
+Decent checklist: Weapons safe CHECK. Decent checklist complete.
+
+After about a minute flying to the west at 400m altitude and 400kts we drop a notch of flaps and turn around heading east.
+Using the GPS and map we make sure we're as close to due west of the runway as we can. Satisfied with that we drop the 2nd notch of flaps and drop the gear.
+Depending on how close your are to the final approach path one or two items will appear on your HUD. Definitely you will see the landing AoA bracket show up on the bottom of your HUD.
+This lets you know that the gear are down.
+
+Let's descend to around 325m and slow to 250 kts. Being too fast and too high make landing very hard.
+
+
+If you are close to the right path and within range you will see one or two ILS lines as well. The localizer works out to 3km and shows your position relative to the idea flight path.
+If the vertical needle (localizer) is to your right then the flight path is to your right. If you fly a heading a little more north than east you will cross it.
+Once the needle starts to return to center turn back east again. The glide scope needle is harder to use. It shows the relative position of the flight path in altitude.
+If the line is at the bottom of the HUD you are too high, if the line is at the top of the localizer line then you are too low.
+
+
+Fly level at your altitude of 325m and adjust your position so the vertical localizer needle is centered and turn so you are facing the runway direction (090 or East). The runway threshold should be in sight.
+As you fly level toward the runway the threshold will start to drift down the HUD. As the runway threshold drifts down to 3 degrees down on the HUD the horizontal glide scope needle should decend down the HUD.
+When the needle reaches the center (or a little before) move the FPM from the horizon to the threshold of the runway. Slow to approach speed as you decend.
+With a little adjustment we can get the ILS lines to make and maintain a nice "Plus" and let us know we're exactly on the right approach path as we track the localizer and glidescope in.
+
+
+Things happen fast on landing. We confirm landing gear are down, flaps full, weapons safe, and cleared to land. When you have the runway visually you should ignore the localizer lines as they are very sensitive.
+Looking out the window at the concrete is much better. Slowing to about 200kts and only 50m above the runway elevation you put the FPM on the beginning of the runway.
+Just as you cross the outer approach lights reduce power to idle and slowly walk the FPM up from the beginning of the runway along the dotted runway centerline to the far end of the runway.
+If you time it right you will settle your wheels on the black rubber marks where others have landed before you.
+
+
+If you don't like how the landing is going, put in full power, raise the gear and then raise the flaps in stages as you go faster and faster. Assume 10 degrees up climb and track the runway direction east outbound to try it again.
+
+As soon as you land raise your flaps to zero, track the centerline of the runway with the rudder pedals and let the airplane slow down to about 60 knots.
+When under about 100knots you can pull up on the joystick to help the aircraft slow down.
+When the speed gets to around 60 knots you should transition to taxi and take the next right turn onto the taxiway at again 20-30 knots until you are off the runway and stop.
+
+
+Go through the after landing checklist and get taxi permission from ground control back to the hangar. Park so that you can leave later (jets don't have reverse) and shut the engine off before getting out.
+
+
+[[Category:Hints & Tips]]

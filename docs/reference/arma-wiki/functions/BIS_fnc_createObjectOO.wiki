@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_createObjectOO
+// revision: 349495 (2023-11-08T17:09:09Z)
+// export sha1: hm3ryvrxy4b4wm1ml7rd7r26gmkwaco
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: OO | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= OO
+
+|descr= Instantiates an object of a certain class.
+
+|s1= [class,params] call [[BIS_fnc_createObjectOO]]
+
+|p1= class: [[String]] - class for the OO scripting shell {{Feature|important|Class has to exist in CfgOO}}
+
+|p2= params: [[Array]] - (Optional, default <sqf inline>[]</sqf>) optional parameters for constructor
+
+|r1= [[Logic]] - created logic object
+
+|x1= <sqf>["someOOClass", [1,2,3]] call BIS_fnc_createObjectOO;</sqf>
+
+|seealso= [[BIS_fnc_addClassOO]] [[BIS_fnc_validateParametersOO]]
+}}

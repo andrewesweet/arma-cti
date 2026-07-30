@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/simulCloudOcclusion
+// revision: 369177 (2024-09-03T10:34:44Z)
+// export sha1: 1ll55mmi74drshi3xyb29vt5cxhjzeb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Environment
+
+|descr= Returns clouds occlusion between two given points.
+
+|pr= {{Feature|Eden Editor|SimulWeather seems to be disabled in [[:Category:Eden Editor|Eden Editor]] and scenario preview.}}
+
+|s1= [[simulCloudOcclusion]] [pos1, pos2]
+
+|p1= pos1: [[Position]]
+
+|p2= pos2: [[Position]]
+
+|r1= 
+* [[Number]] - (0 - no clouds, 1 - full clouds)
+* [[Nothing]] - If arguments are incorrect
+* [[Boolean]] - Returns [[false]] if simulWeather is disabled
+
+|x1= <sqf>
+private _posPlayer = getPos player;
+private _posAbovePlayer = +_posPlayer; _posAbovePlayer set [2,200];
+simulCloudOcclusion [_posPlayer, _posAbovePlayer];
+</sqf>
+
+|seealso= [[setSimulWeatherLayers]] [[simulCloudDensity]] [[simulInClouds]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 8 August, 2014 - 12:17</dd>
+<dt class="note">[[User:Waffle SS.|Waffle SS.]]</dt>
+<dd class="note">The '''simulCloudOcclusion''' command is not recognized on dedicated servers, and will produce an error.  If you use this command, it '''cannot''' be anywhere within a script that is run on the dedicated server, or the entire script will halt.  To get around this, you can use:
+<sqf>if !isDedicated then {[] execVM "simulCloudOcclusionScript.sqf"};</sqf>
+
+</dl>

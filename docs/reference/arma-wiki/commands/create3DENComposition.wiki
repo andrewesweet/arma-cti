@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/create3DENComposition
+// revision: 377506 (2026-01-02T06:50:07Z)
+// export sha1: 2hezsryo2n54b63bwqgby5y1plz86c0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Create new [[Eden_Editor:_Composition|Composition]]. To create individual entities, use [[create3DENEntity]].
+
+|s1= [[create3DENComposition]] [configPath,  position]
+
+|p1= configPath: [[Config]] - path to {{hl|CfgGroups}} or since {{GVI|arma3|2.18}} {{hl|configFile >> "Cfg3DEN" >> "Compositions"}} class of a composition
+
+|p2= position: [[Position]]
+
+|r1= [[Array]] of [[Eden Entity|Eden Entities]]
+
+|x1= <sqf>
+myComposition = create3DENComposition [
+	configFile >> "CfgGroups" >> "West" >> "BLU_F" >> "Infantry" >> "BUS_InfSquad",
+	screenToWorld [0.5, 0.5]
+];
+</sqf>
+
+|seealso= [[create3DENEntity]]
+}}

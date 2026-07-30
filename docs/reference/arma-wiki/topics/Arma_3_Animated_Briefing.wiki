@@ -1,0 +1,218 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Animated_Briefing
+// revision: 349780 (2023-11-20T22:10:10Z)
+// export sha1: c1exn1b8brl1xtvlyb1efnmbp8wxc6b
+// categories: Category:Arma 3: Tutorials | Category:Briefing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The [[Arma 3: Animated Briefing]] framework allows you to create a briefing using the in-game map which features timeline-based,
+animated events such as moving markers, blinking markers, zooming, and other marker-related features.
+
+
+== Functionality ==
+
+The standard map is used as the platform. Standard markers are placed on the map using some kind of animations.
+Showing, hiding, canceling, moving and stretching markers is done by set of functions which are part of the briefing's framework.
+The briefing can be easily synced to dialogs, such as a leader explaining a plan, or to music.
+
+; Features
+: Easy to setup
+: Timeline based
+: Can be easily synced to music or dialogs
+: Skippable
+
+
+== Systems ==
+
+=== [[BIS_fnc_animatedBriefing]] ===
+
+* Enhanced version of the [[BIS_fnc_eventTimeline]] function
+* Does the work with the event timeline simpler and get the start of the briefings consistent
+* It does the initial setup
+** speaker setup
+** black-out / black-in
+** opens the map
+** starts the event timeline by calling BIS_fnc_eventTimeline function
+** holdKey setup (for skipping the briefing)
+*For the documentation visit [[BIS_fnc_animatedBriefing]].
+
+=== [[BIS_fnc_eventTimeline]] ===
+
+* Essential system of the Animated Briefings, but the function can be used for different purposes
+* It executes the code fragments at given time (keyframes)
+* It can play the events from start or from a defined position (index)
+* It can be interrupted from outside
+* User defined code can be executed onInterrupt or onFinished
+* See [[BIS_fnc_eventTimeline]] for full documentation
+
+
+== Usage ==
+
+=== Setup ===
+
+A few things need to be prepared before calling the Animated Briefing function:
+
+* '''Timeline'''
+** A timeline is a multi-dimensional array in which each element consists of a time (represented by a number) and an event (a piece of code).
+** The timeline starts counting from 0 when it is created.
+** When the time specified in a timeline's element has elapsed, its relative event is spawned.
+** The timeline stops once it reaches the last element. The last element's code can also be empty if you're just using the element as an ending point.
+** The timeline can be kept in a separate file and included using #include "timelineFile.sqf"; within the file calling the briefing.
+: <sqf>
+private _timeline = [
+	[
+		0,
+		{
+			[markerSize "BIS_SF_zoom0", markerPos "BIS_SF_zoom0", 0, nil, true] spawn BIS_fnc_zoomOnArea;
+			[(getMissionLayerEntities "g_showAtEnd") select 1, 0, true] spawn BIS_fnc_showMarkerArray;
+
+			sleep 0.5;
+
+			[markerSize "BIS_SF_zoom1", markerPos "BIS_SF_zoom1", 3, nil, true] spawn BIS_fnc_zoomOnArea;
+		}
+	],
+	[
+		1.5,
+		{
+			["to_c02_m01_003_br_sf_briefing_c_GUARDIAN_0", "GUARDIAN", BIS_fnc_AnimatedBriefing_speaker1] spawn BIS_fnc_TO_playSoundAndSubtitles;
+
+			["BIS_SF_specialArea", 2] spawn BIS_fnc_showMarker;
+		}
+	],
+	[
+		8.2,
+		{
+			["to_c02_m01_003_br_sf_briefing_c_GUARDIAN_1", "GUARDIAN", BIS_fnc_AnimatedBriefing_speaker1] spawn BIS_fnc_TO_playSoundAndSubtitles;
+
+			_arrayTemp = ["BIS_SF_question_"] call BIS_fnc_getMarkers;
+			[_arrayTemp, 8, false] spawn BIS_fnc_showMarkerArray;
+		}
+	],
+	[ 12, {}]
+];
+</sqf>
+
+* '''Array of markers to be hidden'''
+** Array of markers that will be hidden both at the start of the briefing and at the end.
+** You can use ''allMapMarkers'' to hide every marker.
+
+* '''Array of markers to be shown at the end of the Briefing'''
+** Array of markers that will be shown at the end of the briefing.
+** Markers that are manually shown during timeline events should also be included, as skipping the briefing before those events occur won't show them if they are not.
+** Markers can be organized into layers to facilitate the usage of the Animated Briefing function. <br>[[File:A3_animBrief_layers.JPG|400px]]
+*** To show the contents of the "showAtEnd" layers at the end of the Briefing, you can use the following code when calling the Animated Briefing function:
+<sqf>[_timeline, 0, nil, allMapMarkers, (getMissionLayerEntities "showAtEnd") select 1, "BIS_markerh_Zoom_final"] spawn BIS_fnc_animatedBriefing;</sqf>
+
+To show a list of markers when the briefing starts, retrieve and show them in the first element of the timeline at 0 seconds as shown below:
+<sqf>
+private _timeline =
+[
+	[
+		0,
+		{
+			[(getMissionLayerEntities "showAtStart") select 1, 0, true] spawn BIS_fnc_showMarkerArray;
+		}
+	],
+// etc
+];
+</sqf>
+
+* '''Camera size and position at the end of the Briefing'''
+** Position and size the camera will jump to at the end of the briefing
+** This helps ensure that the camera will be in the same position when the briefing ends both if the player watches through or skips the Briefing.
+** Rectangle markers can be used to make it easier to find the right position and size.
+
+=== Starting the Briefing ===
+
+The Animated Briefing can be started by calling the function BIS_fnc_AnimatedBriefing. Once called, the briefing starts right away.
+
+<sqf>
+// timeline of events
+_timeline =
+[
+	[0.0,	{ hint "Start of the Timeline" }	],
+	[1.0,	{ hint "Event 1" }					],
+	[3.0,	{ hint "End of the timeline" }		]
+];
+
+// get markers to be shown at end by using the layer's name
+private _showMarkers = (getMissionLayerEntities "showAtEnd") select 1;
+
+// start the Animated Briefing at index 0
+// hide all markers and show the markers from the "showAtEnd" layer after the briefing is done
+// zoom on marker_rect_1 at the end of the briefing
+[_timeline, 0, nil, allMapMarkers, _showMarkers, "marker_rect_1"] spawn BIS_fnc_animatedBriefing;
+
+// Wait until timeline is over
+waitUntil { !(missionNamespace getVariable "BIS_fnc_eventTimeline_playing"); };
+</sqf>
+
+{{Feature|informative|
+* The briefing can be started from a different keyframe (by passing the pointer/index), which is helpful in the development/testing phase.
+* The briefing can be interrupted by setting a variable: <sqf inline>missionNamespace setVariable ["BIS_fnc_eventTimeline_play", false]</sqf>.
+* To hide the standard briefing screen that normally opens after the Intro phase ends, add the line <syntaxhighlight lang="cpp" inline>briefing = 0;</syntaxhighlight> in the [[Description.ext]] file in your mission folder.
+}}
+
+=== Synchronizing a timeline to dialogues ===
+
+Dialogues can be easily synchronized to events. This can be achieved by following these steps:
+
+* Open your dialog audio file or files in an audio editing software
+* Organize/place them as you would like to hear them.
+** Waiting roughly 1.5 seconds before playing any dialogue is recommended as there is a slow fade in at the beginning of the Animated Briefing.
+* Write down the starting times of each one of your dialogues or, alternatively, create labels and place them at the beginning of each dialogue and then export them.
+* Create an .sqf file with a timeline array using these times (in seconds).
+** Use the following example to create a timeline: <sqf>
+private _timeline =
+[
+	[
+		1.5,
+		{
+		}
+	],
+	[
+		8.2,
+		{
+		}
+	],
+	[ 12, {}]
+];
+</sqf>
+* Set up audio files so they can be played from the timeline.
+** Set them up in the CfgSounds class. <syntaxhighlight lang="cpp">
+class CfgSounds
+{
+	// Little Hope Mission 02
+	class to_c01_m02_brief_01
+	{
+		sound[] = {"\a3\Dubbing_F_Tacops\Briefings\to_c01_m02\to_c01_m02_brief_01.ogg", db+3,1};
+		titles[] = {};
+	};
+	class to_c01_m02_brief_02
+	{
+		sound[] = {"\a3\Dubbing_F_Tacops\Briefings\to_c01_m02\to_c01_m02_brief_02.ogg", db+3,1};
+		titles[] = {};
+	};
+	class to_c01_m02_brief_03
+	{
+		sound[] = {"\a3\Dubbing_F_Tacops\Briefings\to_c01_m02\to_c01_m02_brief_03.ogg", db+3,1};
+		titles[] = {};
+	};
+	...
+};
+</syntaxhighlight>
+* Add commands to play the dialogs in the timeline you just created.
+** It is recommended to use [[BIS_fnc_playSoundAndSubtitles]] or [[say2D]].
+** Note that the Animated Briefing functions creates two speaker objects, BIS_fnc_AnimatedBriefing_speaker1 and BIS_fnc_AnimatedBriefing_speaker2, which should be used to play dialogues or SFX pertaining the Animated Briefing. <sqf>["to_c01_m01_brief_002_br_briefing_b_OLYMPOS_0", "OLYMPOS", BIS_fnc_AnimatedBriefing_speaker1] call BIS_fnc_TO_playSoundAndSubtitles;</sqf>
+* Add a final element to the timeline array with the ending time.
+
+Once you are done with creating the timeline, you can add commands (e.g moving/showing/resizing markers) to the existing timeline elements to have them synchronized with the dialogs.
+
+
+== Map and Marker Functions ==
+
+See [[:Category: Function Group: Map and Markers| Function Group: Map and Markers]].
+
+
+{{GameCategory|arma3|Tutorials}}
+[[Category:Briefing]]

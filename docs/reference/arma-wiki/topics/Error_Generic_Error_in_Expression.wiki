@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/Error_Generic_Error_in_Expression
+// revision: 363360 (2024-03-27T12:35:11Z)
+// export sha1: esy0qstrxh8epidrkbb4ntqgcugrrv6
+// categories: Category:Common Scripting Errors
+// Vendored snapshot. Do not edit — re-export instead.
+
+This error occurs when the type of data an operator is expecting does not match. 
+
+
+
+'''Compatibility:'''
+
+Version '''1.96'''
+
+
+
+'''Example:'''
+<sqf>
+_myString = "The meaning of life is " + 42;					// error
+_myString = "The meaning of life is " + str 42;				// OK
+_myString = "The meaning of life is " + format ["%1", 42];	// OK - {{Name|ofp|short}}
+</sqf>
+
+
+[[Category:Common Scripting Errors]]

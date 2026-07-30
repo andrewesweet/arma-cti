@@ -1,0 +1,80 @@
+// source: https://community.bistudio.com/wiki/setPylonLoadout
+// revision: 378820 (2026-07-01T10:02:12Z)
+// export sha1: im9ax6pwjpb43ld5bvrxxiymg34waht
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Loadouts | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|arg= local
+
+|eff= local
+
+|gr1= Vehicle Loadouts
+
+|descr= Adds/overrides loadout to a vehicle pylon. {{hl|TransportPylonsComponent}} in vehicle config and {{hl|pylonWeapon}} in the magazine config are required to run.
+{{Feature|informative|This command also adds the corresponding weapon if the vehicle does not have one, but will not remove one that is no longer used.}}
+
+|mp= {{Feature|important|
+This command should run locally to the vehicle itself or it will cause desync issue! (especially upon the locality change, e.g getting in the vehicle).
+See {{Link|#Example 4}} for an MP-compatible usage.
+}}
+
+|s1= vehicle [[setPylonLoadout]] [pylon, magazine, forced, turret]
+
+|p1= vehicle: [[Object]]
+
+|p2= pylon: [[Number]] or [[String]] - pylon index (index starts from 1) or pylon name (see {{Link|#Example 1}})
+
+|p3= magazine: [[String]] - magazine name
+
+|p4= forced: [[Boolean]] - (Optional, default [[false]]) [[true]] to force an incompatible magazine
+
+|p5= turret: [[Turret Path]] - (Optional, default <sqf inline>[]</sqf>) turret path
+
+|r1= [[Boolean]] - [[true]] on success
+
+|x1= <sqf>vehicle player setPylonLoadout ["pylon1", ""];</sqf>
+
+|x2= Make all of your pylon weapons Twin Cannon 30 mm:
+<sqf>
+private _vehicle = vehicle player;
+private _pylonsIndices = getAllPylonsInfo _vehicle apply { _x select 0 };
+{
+	_vehicle setPylonLoadout [_x, "PylonWeapon_300Rnd_20mm_shells", true];
+} forEach _pylonsIndices;
+</sqf>
+
+|x3= Showcase all possible magazines:
+<sqf>
+0 spawn {
+	private _allPylonMagazines = "getText (_x >> 'pylonWeapon') != ''" configClasses (configFile >> "CfgMagazines");
+	private _vehicle = vehicle player;
+	private _pylonsIndices = getAllPylonsInfo _vehicle apply { _x select 0 };
+
+	{
+		private _configName = configName _x;
+		{
+			_vehicle setPylonLoadout [_x, _configName, true];
+		} forEach _pylonsIndices;
+
+		hint _configName;
+		sleep 1.5;
+	} forEach _allPylonMagazines;
+};
+</sqf>
+
+|x4= MP compatible usage:
+<sqf>[myPlane, [1, "PylonWeapon_300Rnd_20mm_shells", true]] remoteExec ["setPylonLoadout", myPlane];</sqf>
+
+|seealso= [[Arma 3: Vehicle Loadouts]] [[getCompatiblePylonMagazines]] [[getPylonMagazines]] [[setAmmoOnPylon]] [[ammoOnPylon]] [[animatePylon]] [[animateBay]] [[setPylonsPriority]]
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20200430130100
+|text= '''Before {{GVI|arma3|2.02}}:''' ''turret'' must be <sqf inline>[]</sqf> if you wanted to equip the magazine to the pilot. <sqf inline>[-1]</sqf> returns false and fails unlike other turret-related commands.
+}}

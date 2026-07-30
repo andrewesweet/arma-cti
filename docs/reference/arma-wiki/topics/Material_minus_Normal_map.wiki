@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/Material_-_Normal_map
+// revision: 292361 (2021-08-07T23:54:27Z)
+// export sha1: gg7s9q7h65onubetbwqvoiacvi77nev
+// Vendored snapshot. Do not edit — re-export instead.
+
+=== Simple material with Normal map, per pixel specular reflections ===
+
+This material allows surface rendering with roughness and reflections. Normal map creates curvature on surface and may as well hold inside alpha-channel saved Black&White map limiting specular reflection locally (multiplying values specular[]={R,G,B,A} )
+
+Irradiance table replaces here setting specularPower
+
+ PixelShaderID="NormalMap";
+ VertexShaderID="NormalMap";
+ 
+ class Stage1
+ {
+    texture="ofp2\Vehicles\Land\Wheeled\LandRover\LR_op_1\Data\lr_op_hulla_NS.paa";
+   '' // path to normal map texture. Alpha in NS map can be used to locally weaken specular reflection at surface''
+    uvSource="tex";
+    class uvTransform
+    {
+       aside[]={1,0,0};
+       up[]={0,1,0};
+       dir[]={0,0,1};
+       pos[]={0,0,0};
+    };
+ };
+ 
+ class Stage3
+ {
+    texture=”#(ai,32,128,1)irradiance(8)”;
+    ''// procedural irradiance table for per pixel specularity calculations, last number inside brackets defines specular power
+        see more in irradiance deffinition above''
+    uvSource="none";
+ };

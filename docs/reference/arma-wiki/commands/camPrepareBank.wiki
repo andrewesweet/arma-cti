@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/camPrepareBank
+// revision: 352123 (2024-02-01T23:25:04Z)
+// export sha1: a8lvqlbl9phrkuont45n27r1y2edq91
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Command Group: Camera Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Broken Commands
+|gr2= Camera Control
+
+|descr= Prepares the camera bank angle.
+{{Feature|warning|This command is '''non-functional'''!}}
+
+|s1= camera [[camPrepareBank]] bank
+
+|p1= camera: [[Object]]
+|p2= bank: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_camera camPrepareBank -0.1;</sqf>
+
+|seealso= [[camPreload]] [[camCommitPrepared]]
+}}

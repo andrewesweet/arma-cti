@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/buldozer_loadNewRoads
+// revision: 318691 (2022-05-13T09:21:20Z)
+// export sha1: 4qtr577a5h97zbyl35jhefqkf0rgle9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= System
+
+|descr= Generates new roads. Working only in [[Oxygen Viewer|buldozer]].
+
+|s1= [[buldozer_loadNewRoads]] path
+
+|p1= path: [[String]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_loaded = buldozer_loadNewRoads "C:/A3/Map_Stratis/data/roads/"</sqf>
+
+|seealso= [[buldozer_reloadOperMap]]
+}}

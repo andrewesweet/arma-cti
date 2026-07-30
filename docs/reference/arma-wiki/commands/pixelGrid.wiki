@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/pixelGrid
+// revision: 376543 (2025-10-27T00:18:56Z)
+// export sha1: 4mzwer6co0ytpmfjow5k1cc3ge2sena
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Arma 3 version 1.60 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.60
+
+|gr1= GUI Control - Positioning
+
+|descr= Returns grid size based on screen resolution, UI size and configs: uiScaleFactor, uiScaleMaxGrids.
+
+|s1= [[pixelGrid]]
+
+|r1= [[Number]] - grid size, see [[Arma 3: Pixel Grid System]]
+
+|x1= <sqf>private _gridHeight = pixelH * pixelGrid;</sqf>
+
+|seealso= [[pixelGridBase]] [[pixelGridNoUIScale]] [[pixelH]] [[pixelW]] [[Pixel Grid System]]
+}}

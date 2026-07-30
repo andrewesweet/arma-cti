@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_initClasses
+// revision: 349080 (2023-11-08T14:47:23Z)
+// export sha1: 1tktsxr8g4sc1xd4si2hso6au7zwsbl
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Functions | Category:Functions: Server Execution | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Campaign
+
+|descr= Initializes the classes players can choose from before spawning.
+
+|serverExec= server
+
+|s1= [mode] call [[BIS_fnc_EXP_camp_initClasses]]
+
+|p1= mode: [[String]] - (Optional, default "DAY") can be either "DAY" (unsilenced, no NVGs, default) or "NIGHT" (silenced, NVGs)
+
+|r1= [[Boolean]] - returns [[true]] if successful, [[false]] if not
+
+|x1= <sqf>["NIGHT"] call BIS_fnc_EXP_camp_initClasses;</sqf>
+
+|seealso= [[BIS_fnc_EXP_camp_initCharacter]]
+}}

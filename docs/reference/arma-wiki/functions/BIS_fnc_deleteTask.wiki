@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_deleteTask
+// revision: 364798 (2024-06-14T14:01:53Z)
+// export sha1: pcli2pkjq1clfrozh4zmczvrzgarcsg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.06 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.06
+
+|gr1= Tasks
+
+|arg= global
+
+|eff= global
+
+|descr= Deletes given task. {{Feature|informative| See [[Arma 3: Task Framework]].}}
+
+|s1= [taskID, owner, removeFromJIP] call [[BIS_fnc_deleteTask]]
+
+|p1= taskID: [[String]] - ID of the task
+
+|p2= owner: [[String]] - (Optional) owner of the task. Can be:
+* [[Boolean]] - true to use all playable units
+* [[Object]] - specific object
+* [[Group]] - all objects in the group
+* [[Side]] - all objects of the given side
+* [[Array]] - collection of above types
+
+|p3= removeFromJIP: [[Boolean]] - (Optional, default [[false]]) [[true]] to also remove task from JIP queue
+|p3since= arma3 2.08
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["task_1"] call BIS_fnc_deleteTask;</sqf>
+
+|x2= <sqf>["task_1", west] call BIS_fnc_deleteTask;</sqf>
+
+|x3= <sqf>["task_1", [west, player, group soldier]] call BIS_fnc_deleteTask;</sqf>
+
+|seealso= [[Arma 3: Task Framework]]
+}}

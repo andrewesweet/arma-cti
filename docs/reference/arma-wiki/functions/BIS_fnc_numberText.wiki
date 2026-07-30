@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_numberText
+// revision: 336883 (2023-01-04T16:43:51Z)
+// export sha1: ib0b1lj0j4m24o1au3kqmxbsikfx9eq
+// categories: Category:Arma 3: Functions | Category:Function Group: Math | Category:Function Group: Strings | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Math
+
+|gr2= Strings
+
+|descr= Convert a number into string (avoiding scientific notation).
+
+|pr= It is very imprecise with larger numbers. See {{Link|#Example 3}}. It also does not work with floating point numbers.
+
+|s1= [number, modulo] call [[BIS_fnc_numberText]]
+
+|p1= number: [[Number]]
+
+|p2= modulo: [[Number]] - (Optional, default 3)
+
+|r1= [[String]]
+
+|x1= <sqf>[4096] call BIS_fnc_numberText; // "4 096"</sqf>
+
+|x2= <sqf>[512, 1] call BIS_fnc_numberText; // "5 1 2"</sqf>
+
+|x3= <sqf>[999999999999] call BIS_fnc_numberText; // "909 999 995 904"</sqf>
+
+|x4= <sqf>[1234.5678] call BIS_fnc_numberText; // "1 234"</sqf>
+
+|seealso= [[BIS_fnc_numberDigits]] [[BIS_fnc_cutDecimals]]
+}}

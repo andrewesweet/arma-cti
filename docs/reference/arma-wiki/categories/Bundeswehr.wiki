@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Bundeswehr
+// revision: 184522 (2021-01-06T13:20:54Z)
+// export sha1: l044lsopipje43pgbztoib8rd9pi36l
+// Vendored snapshot. Do not edit — re-export instead.
+
+German Army of West- (1949-1990) and unified Germany today.
+
+{{GameCategory|arma2|Media}}

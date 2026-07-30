@@ -1,0 +1,670 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Vehicle_Loadouts
+// revision: 378792 (2026-06-15T12:49:59Z)
+// export sha1: phcxzzdd4wx4kbeutzfo4xvnjt6bphw
+// categories: Category:Arma 3: Vehicle Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+In-game customisation of vehicle's external armament.
+{{Feature|important|'''Forum thread: {{Link|link= https://forums.bistudio.com/topic/202173-dynamic-loadout-feedback/|text= Dynamic Loadouts}}'''.}}
+
+
+== Goal ==
+
+* allow players to add/change weapons on vehicle's hardpoints on the begining of a mission, during the mission, in 3DEN, ...
+* add system that will allow addon-makers (configs) and designers (scripts) manage weapons on vehicles (mainly helicopters and airplanes) in a similar way to how it works in the real world.
+
+
+== Features ==
+
+* done similarly to how the current missiles work - by a proxy system with simulation "maverick"
+** allows to set missile directly on pylon by pylon ID
+** supports both missile holder (rail) and multi-missile holder (rack)
+** future-compatible with non-missile equipment such as fuel tanks, pylon mounted HMG, electronics equipment, ...
+
+
+== Configuration ==
+
+==== CfgNonAIVehicles: simulation: pylonpod ====
+
+<syntaxhighlight lang="cpp">
+class CfgNonAIVehicles
+{
+	class ProxyWeapon;
+	class ProxyPylonPod_3x_Missile_AGM_02_F : ProxyWeapon
+	{
+		model		= "\A3\Weapons_F\DynamicLoadout\PylonPod_3x_Missile_AGM_02_F.p3d";
+		simulation	= "pylonpod";
+	};
+};
+</syntaxhighlight>
+
+This tells engine that model "PylonPod_3x_Missile_AGM_02_F" - used as proxy in parent model - is the place for an item under pylon. Proxy ID corresponds with ID in config and script command to determine where to draw the item.
+Only models that are used in airplane's P3Ds have to be CfgNonAIVehicles. Models that are only in CfgMagazines doen't need to be in CfgNonAIVehicles.
+
+==== Magazine and weapon ====
+
+<syntaxhighlight lang="cpp">
+class CfgMagazines
+{
+	class 6Rnd_Missile_AGM_02_F;
+	class PylonPod_1Rnd_Missile_AGM_02_F : 6Rnd_Missile_AGM_02_F
+	{
+		displayName		= "1x Macer";
+		model			= "\A3\Weapons_F\DynamicLoadout\PylonPod_1x_Missile_AGM_02_F.p3d";
+		count			= 1;
+		hardpoints[]	= { "SUU_63_PYLON", "BRU_32_EJECTOR","US_BOMB" };
+		pylonWeapon		= "Missile_AGM_02_Plane_CAS_01_F";
+		initSpeedY		= -25;	// Y, minus for down speed
+		initSpeedZ		= 0;	// Z, aside missile eject speed
+	};
+
+	class PylonPod_3Rnd_Missile_AGM_02_F : PylonPod_1Rnd_Missile_AGM_02_F
+	{
+		displayName	= "3x Macer";
+		model		= "\A3\Weapons_F\DynamicLoadout\PylonPod_3x_Missile_AGM_02_F.p3d";
+		count		= 3;
+		pylonWeapon	= "Missile_AGM_02_Plane_CAS_01_F";
+		mirrorMissilesIndexes[] = { 2, 1, 3 }; // when on pylon with mirroredMissilePos = true, proxies will be taken/fired in this order
+	};
+};
+
+class CfgWeapons
+{
+	class MissileLauncher;
+	class Missile_AGM_02_Plane_CAS_01_F : MissileLauncher
+	{
+		magazines[] = { "6Rnd_Missile_AGM_02_F", "PylonPod_1Rnd_Missile_AGM_02_F", "PylonPod_3Rnd_Missile_AGM_02_F" };
+	};
+};
+</syntaxhighlight>
+
+Parameters used by gunpods or rocket pods without proxies
+
+<syntaxhighlight lang="cpp">
+class PylonRack_12Rnd_PG_missiles : 24Rnd_PG_missiles
+{
+	displayName = "DAGR";
+	count = 12;
+	hardpoints[] = { "B_MISSILE_PYLON", "DAGR" };
+	model = "\A3\Weapons_F\DynamicLoadout\PylonPod_Rocket_DAGR_F.p3d";
+	muzzlePos = "muzzlePos";
+	muzzleEnd = "muzzleEnd";
+};
+</syntaxhighlight>
+
+=== {{arma3}} Hardpoint Naming Example ===
+
+* B_BOMB_PYLON - default Blufor bomb pylon, attachable NATO bomb + NATO ejectors
+* O_BOMB_PYLON - default Opfor bomb pylon
+* B_ASRAAM - build in ejector (mostly wing tip); only AIM-9 compatible missiles
+* B_AH_99_PYLON - special pylons, only AH-99 compatible weapon
+{{hl|hardpoint[]}} is only array of string, when one or more hardpoint from magazine and pylon are same, and mass of missile is OK, weapon can be used.
+
+Here is a list of all vanilla hardpoints: <spoiler>
+{{Columns|3|
+* "20MM_TWIN_CANNON"
+* "ANTIMINE_DRONE_PYLON"
+* "B_A143_BUZZARD_CENTER_PYLON"
+* "B_AGM65_DUAL"
+* "B_AGM65_DUAL_RAIL"
+* "B_AGM65_RAIL"
+* "B_AMRAAM_D_DUAL_RAIL"
+* "B_AMRAAM_D_INT"
+* "B_AMRAAM_D_RAIL"
+* "B_ASRAAM"
+* {{sic|"B_ASRRAM_EJECTOR"|B_ASRAAM_EJECTOR}}
+* "B_BIM9X"
+* "B_BIM9X_DUAL_RAIL"
+* "B_BIM9X_RAIL"
+* "B_BOMB_PYLON"
+* "B_GBU12"
+* "B_GBU12_DUAL_RAIL"
+* "B_HARM_INT"
+* "B_HARM_RAIL"
+* "B_MISSILE_PYLON"
+* "B_SDB_QUAD_RAIL"
+* "B_SHIEKER"
+* "B_ZEPHYR"
+* "DAGR"
+* "DAR"
+* "I_AGM65_DUAL_RAIL"
+* "I_AGM65_RAIL"
+* "I_AMRAAM_C_DUAL_RAIL"
+* "I_AMRAAM_C_RAIL"
+* "I_BIM9X"
+* "I_BIM9X_DUAL_RAIL"
+* "I_BIM9X_RAIL"
+* "I_GBU12"
+* "I_ORCA_RIGHT_PYLON"
+* "O_BOMB_PYLON"
+* "O_BOMB_PYLON_HELI"
+* "O_KAB250_BOMB"
+* "O_KH25"
+* "O_KH25_INT"
+* "O_KH58"
+* "O_KH58_INT"
+* "O_MISSILE_PYLON"
+* "O_R73"
+* "O_R77"
+* "O_R77_INT"
+* "O_SKYFIRE"
+* "SCALPEL_1RND"
+* "SCALPEL_1RND_EJECTOR"
+* "UNI_LEAFLETS_PYLON"
+* "UNI_SCALPEL"
+}}
+</spoiler>
+
+=== pylonWeapon property ===
+
+* Pylon magazines require double side connection of pylon weapons and pylon magazine
+* Each weapon has to have a list of compatible magazines. No change here. But the new pylon magazine requires a new parameter called "pylonWeapon" with a name of default weapon which is added automatically when adding missile by setPylonLoadout script command or by 3DEN
+
+Example:
+<syntaxhighlight lang="cpp">
+class CfgMagazines
+{
+	class PylonPod_AA
+	{
+		pylonWeapon = "Missile_AGM_02_Plane_CAS_01_F";
+	};
+};
+
+class CfgWeapons
+{
+	class Launcher_AA
+	{
+		magazines[] = { "PylonPod_AA" };
+	};
+
+	class Launcher_AA_v2
+	{
+		magazines[] = { "PylonPod_AA" };
+	};
+};
+</syntaxhighlight>
+
+In case of new vehicle in 3DEN, Launcher_AA will be added automatically. If you call script command setPylonLoadout then only Launcher_AA will be added.
+To add Launcher_AA_v2 call:
+<sqf>
+veh addWeapon "Launcher_AA_v2";
+// then
+veh setPylonLoadout [1, "PylonPod_AA"];
+</sqf>
+In this case Launcher_AA will not be added because compatible weapon is already present.
+
+==== vehicle config - CfgVehicles ====
+
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class Plane_Base_F;
+	class Plane_CAS_01_base_F : Plane_Base_F
+	{
+		class Components;
+	};
+
+	class B_Plane_CAS_01_Pylons_F : Plane_CAS_01_base_F
+	{
+		class Components : Components
+		{
+			class TransportPylonsComponent
+			{
+				class pylons // pylons are indexed to aircraft model's proxies IDs in the order they are written in class Pylons
+				{
+					class pylons1 // left wingtip
+					{
+						maxweight		= 560;								// kg, magazine with higher mass will not be allowed on this pylon
+						hardpoints[]	= { "B_BOMB_PYLON" };				// magazine with at least one same hardpoints name will be attachable
+						//hardpoint[]	= { "A164_PYLON_1_10","LAU_7","B_ASRAAM", "SUU_63_PYLON", "BRU_32_EJECTOR", "B_BOMB_PYLON", ... }; // just example for community, I am sure you will go closer to realism
+						attachment		= "PylonPod_1Rnd_Missile_AA_04_F";	// default magazine
+						bay				= -1;								// index of bay for animation
+						priority		= 5;								// pylon with higher priority is used to fire missile first, this can by changed in run time by script command setPylonsPriority
+						UIposition[]	= { 0.1, 0.25 };					// x,y coordinates in 3DEN UI
+						turret[]		= {};								// default owner of pylon/weapon, empty for driver
+					};
+
+					class pylons2 : pylons1
+					{
+						maxweight		= 800; // kg
+						attachment[]	= { "ProxyPylonPod_3x_Missile_AGM_02_F" };
+						priority		= 4;
+					};
+
+					class pylons3 : pylons1		{ priority = 3; };
+					class pylons4 : pylons1		{ priority = 2; };
+					class pylons5 : pylons1		{ priority = 1; };
+					class pylons6 : pylons5		{ mirroredMissilePos = 5; }; // will copy loadout from pylon 5 in when "Mirror" is checked in Eden loadout interface. And proxies/missiles racks on this pylon will be re-indexed by magazine::mirrorMissilesIndexes[]
+					class pylons7 : pylons4		{ mirroredMissilePos = 4; };
+					class pylons8 : pylons3		{ mirroredMissilePos = 3; };
+					class pylons9 : pylons2		{ mirroredMissilePos = 2; };
+					class pylons10 : pylons1	{ mirroredMissilePos = 1; }; // right wingtip
+				};
+
+				class Bays
+				{
+					class BayCenter // corresponding to pylons/##pylon##/bay=1;
+					{
+						bayOpenTime					= 1;
+						openBayWhenWeaponSelected	= 1.0;	// float value, can be used to half open bay
+
+						// -1 keep open, 0 close after last missile, > 0 keep open for given time after last shot
+						autoCloseWhenEmptyDelay   = 2;		// when last shot keep 2s open after last shot
+					};
+
+					class BayRight // corresponding to pylons/##pylon##/bay=2;
+					{
+						bayOpenTime					= 0.8;
+						openBayWhenWeaponSelected	= 0.0;
+					};
+
+					class BayLeft : BayRight{}; // corresponding to pylons/##pylon##/bay=3;
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+* pylons:hardpoint: if one or more matches with magazine:hardpoints then magazine can be attached, setPylonLoadout with force = true will ignore this check.
+
+
+== Scripting ==
+
+ vehicle [[setPylonLoadout]] [pylonID, magazine name, forced = false, turret path = []]
+* adds missile to vehicle pylon; TransportPylonsComponent in config is required
+* pylonID can be number/index corresponding to order in config or string name of pylon in config
+ vehicle [[setPylonsPriority]] [priority pylon 1, priority pylon 2, ..., priority pylon n]
+* overrides default pylons priorities
+* can be used to make weapon fire in different order or to force burst of all weapons of same type
+ vehicle [[animateBay]] [bay index, value <-1,1>, bool instant]
+* will force bay to animate to given position, use -1 reset to default (engine driven) state
+ vehicle [[animatePylon]] [pylon index, value <-1,1>, bool instant]
+* will force pylon to animate to given position, use -1 reset to default (engine driven) state
+* both script command above will in case that state < 1 make attached weapon unable to release missile, because missile can be released only when bay.animation == 1 && pylon.animation == 1
+ vehicle [[ammoOnPylon]] pylon name/index
+* returns ammo count on given pylon
+ vehicle [[setAmmoOnPylon]] [pylon name/index, ammo count]
+* set count of ammo in magazine on pylon
+ [[getPylonMagazines]] vehicle
+* return array of magazines on pylons, size is equal to count of pylons
+ vehicle [[getCompatiblePylonMagazines]] string/index
+* return list of compatible magazines, number > 0 or class name for one given pylon, or 0 for array of all pylons
+
+{{Feature|informative|See also [[getAllPylonsInfo]] and {{Link|Category:Command Group: Vehicle Loadouts|Vehicle Loadouts}} category.}}
+
+=== Saving and Restoring ===
+
+Here's a demo on how to gather and store pylon loadouts in script form:
+# Open your text editor, and copy-paste the following: <sqf>
+private _pylons = /* paste your data here */;
+private _pylonPaths = (configProperties [configFile >> "CfgVehicles" >> typeOf _vehicle >> "Components" >> "TransportPylonsComponent" >> "Pylons", "isClass _x"]) apply { getArray (_x >> "turret") };
+{ _vehicle removeWeaponGlobal getText (configFile >> "CfgMagazines" >> _x >> "pylonWeapon") } forEach getPylonMagazines _vehicle;
+{ _vehicle setPylonLoadout [_forEachIndex + 1, _x, true, _pylonPaths select _forEachIndex] } forEach _pylons;
+</sqf>
+# Create a new scenario in the Eden editor, add your vehicle, adjust the pylon loadout, and set its "Object Init" to: <sqf inline>copyToClipboard str getPylonMagazines this</sqf>
+# Play scenario, wait until loaded, then pause the game and return to Eden.
+# Your pylon loadout is now in the clipboard; go back to your text editor, and paste the loadout in the {{hl|_pylons}} variable.
+# The loadout code is ready; you must assign the target vehicle to the {{hl|_vehicle}} variable before calling it.
+
+
+== Animation Sources ==
+
+=== plane/helicopter ===
+
+* bay.1, bay.2, ...bay.X - animation state of bay
+* pylonReadyPos.X - animation state of pylon, missile is released when anim. state of bay and pylon is 1
+* pylonIsEmpty.X - return 1 when no magazine is attached on pylon
+* pylonReload.X - reload state of weapon on given pylon
+* pylonRevolving.X - revolving state of weapon on given pylon
+
+=== magazine ===
+
+* revolving - revolving state of weapon, can be used in model.cfg for model of magazine/pylon ejector model
+* ammo - real count of ammunition from 0 to maxAmmo
+* reload - reload state of pylon magazine, same as reload for non - pylon weapons
+
+
+== "Generic" Pylons ==
+
+
+=== Configuration ===
+Generic pylons are in CfgMagazines just like weapon pylons. But they have a simulation entry.
+Generic pylons do not add actual Magazines or Weapons to the vehicle, instead their functionality depends on which "Components" are added to them.
+
+There are three supported simulation types.
+* generic - This one is the "cheapest" in simulation cost. It does nothing by itself, but functionality can be added via the "Added"/"Removed" EventHandlers.
+* fuel - Has "fuelCapacity" and acts like an additional fuel tank. Equivalent to the "FuelTankComponent", but also has cheap simulation.
+* components - This type can have multiple components of different types, allowing to combine functionality in one pylon.
+
+<syntaxhighlight lang="cpp">
+class Test_FuelTankPylon : VehicleMagazine // Need to inherit unused entries, otherwise trying to use it as a magazine (addMagazine script command) would throw errors
+{
+	// General options (Same also for weapon pylons)
+	displayName = "FuelTankPylon";
+	descriptionShort = "FuelTankPylon";
+	model = "a3\Air_F_Beta\Heli_Transport_01\PylonPod_Fuel.p3d";
+	hardpoints[] = { "B_MISSILE_PYLON", "B_FUELTANK_HELI" };
+	mass = 125;
+	 
+	// pylon type
+	simulation = "fuel"; // Simulation entry being present, decides the difference between weapon/generic pylon.
+	 
+	// Fuel specific options
+	fuelCapacity = 1024;
+}
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+class Test_SmokePod : VehicleMagazine
+{
+	// General options
+	displayName="SmokePod Green";
+	model = "a3\Air_F_Beta\Heli_Transport_01\PylonPod_Fuel.p3d";
+	hardpoints[] = { "B_MISSILE_PYLON", "B_FUELTANK_HELI" };
+	mass=125;
+	 
+	// pylon type
+	simulation = "generic";
+	class EventHandlers
+	{ 
+		Added = "call compileScript ['DedmenPylon\added.sqf']"; // params ["_vehicle", "_pylonConfigClass", "_pylonIndex"]
+		Removed = "call compileScript ['DedmenPylon\removed.sqf']"; // params ["_vehicle", "_pylonConfigClass", "_pylonIndex"]
+	}
+
+	SmokeClass = "SmokeShellGreen_Infinite"; // Script can access config via _pylonConfigClass
+};
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+class Test_Component_FuelTankPylon : VehicleMagazine
+{
+	// General options
+	displayName="Component FuelTankPylon";
+	model = "a3\Air_F_Beta\Heli_Transport_01\PylonPod_Fuel.p3d";
+	hardpoints[]= { "B_MISSILE_PYLON", "B_FUELTANK_HELI" };
+	mass=125;
+	
+	// pylon type
+	simulation = "components";
+	
+	// All pylons have scripts
+	class EventHandlers
+	{
+		Added = "call {}";
+		Removed = "call {}";
+	}
+	
+	class Components 
+	{
+		class FuelTankComponent // Can have multiple of these
+		{
+			fuelCapacity = 1024;
+		};
+		
+		class AdditionalSensorsComponent
+		{
+			class Components
+			{
+				// Sensor components here					
+			};
+		};
+		
+		class CameraComponent
+		{
+			// ...
+		};
+	};
+};
+</syntaxhighlight>
+
+
+=== Components ===
+
+There is a list of components here :surprise_pikachu:
+
+==== FuelTankComponent ====
+
+Adds a fuel tank with "fuelCapacity" liters of fuel.<br>
+When the tank is added, it is always full.<br>
+There is actually no fuel in the pylon pod itself, when the fueltank is added, the vehicles main tank is extended and the fuel transferred into it.<br>
+When the pylon is removed, the pylon removes the minimal amount of fuel from the vehicles main tank, that is needed to return it back to original capacity.<br>
+That means removing a "half-full" fuel tank pylon, will leave the vehicle with 100% fuel remaining. Fuel is first drained from the pylon, but virtually, because the pylon itself doesn't have a tank. That is a implementation detail.<br>
+Pylon fuel tanks have no hitpoints, the vehicles main fueltank hitpoints are used for leaking fuel (because the pylon itself, technically doesn't have fuel inside it).
+
+==== AdditionalSensorsComponent ====
+
+Allows to add vehicle sensors, inside a pylon. This is equivalent to the "SensorsManagerComponent". See [[Arma_3:_Sensors_Config_Reference]].<br>
+These sensors are dynamically added/removed to/from the main vehicle sensors.<br>
+<br>
+The "animDirection" of the sensor, will be taken from a memory point on the pylon pod.<br>
+
+==== CameraComponent ====
+
+Adds a PilotCamera (see [[A3_Targeting_config_reference#class_pilotCamera|pilotCamera]]).<br>
+Its "memoryPointDriverOptics" is taken from a memory point on the pylon pod.<br>
+Note that assigning a camera pylon to the copilot, is currently not supported.<br>
+The pylon will replace any existing pilotCamera already present on the vehicle.<br>
+The actual PilotCamera configuration is inside the PilotCamera subclass.<br>
+Note because it replaces the PilotCamera, other commands like [[getPilotCameraDirection]] and [[setPilotCameraRotation]] will apply to the pylon pod.<br>
+<br>
+This component also has SearchLight functionality, which can be used by providing a "Reflectors" class. The light memory points are taken from the pylon pod.<br>
+<br>
+It provides animation sources
+* pilotCameraRotX
+* pilotCameraRotY
+<br>
+It provides scripted actions
+* GetLightState - Returns [[Boolean]]
+* SetLightState - Argument is [[Boolean]] returns [[Nothing]]
+
+<syntaxhighlight lang="cpp">
+class CameraComponent
+{
+	cameraInfoType = ""; // If this is set, it will override the vehicles "driverWeaponsInfoType" (If pilot pylon) or the turret's "turretInfoType" (If copilot pylon) of the vehicle.
+	memoryPointDriverOptics = "camera_pos"; // This point is on the pylon pod that the component is attached to
+	class PilotCamera
+	{
+		class OpticsIn
+		{
+			class Wide
+			{
+				opticsDisplayName = "WFOV";
+				initAngleX=0; minAngleX=0; maxAngleX=0;
+				initAngleY=0; minAngleY=0; maxAngleY=0;
+				initFov = A3_FOV_DEG(30);
+				minFov = A3_FOV_DEG(30);
+				maxFov = A3_FOV_DEG(30);
+				directionStabilized = 1;
+				visionMode[] = {"Normal","NVG"};
+				thermalMode[] = {0,1};
+				gunnerOpticsModel = "\A3\Weapons_F\Reticle\Optics_Generic_wide_F.p3d";
+			};
+			class Medium : Wide
+			{
+				opticsDisplayName = "MFOV";
+				initFov = A3_FOV_DEG(6);
+				minFov = A3_FOV_DEG(6);
+				maxFov = A3_FOV_DEG(6);
+				gunnerOpticsModel = "\A3\Weapons_F\Reticle\Optics_Generic_medium_F.p3d";
+
+			};
+		};
+		minTurn=-180;
+		maxTurn=180;
+		initTurn=0;
+		minElev=-20;
+		maxElev=90;
+		initElev=5;
+		maxXRotSpeed=1;
+		maxYRotSpeed=1;
+		maxMouseXRotSpeed=0.5;
+		maxMouseYRotSpeed=0.5;
+		pilotOpticsShowCursor=1;
+		controllable=1;
+	};
+
+	armorLights = 1; // Cannot be undefined or zero, must be set when Reflectors are present
+	class Reflectors
+	{
+		class Center
+		{
+
+			position  = "camera_pos";
+			direction = "camera_dir";
+			hitpoint  = "";
+			selection = "light";
+			
+			
+			color[]={2500,4000,6000};
+			ambient[]={2.5,4,6};
+			intensity=200000;
+			size=1;
+			innerAngle=100;
+			outerAngle=165;
+			coneFadeCoef=4;
+
+			useFlare=1;
+			flareSize=2;
+			flareMaxDistance=130;
+			class Attenuation
+			{
+				start=0;
+				constant=0;
+				linear=0;
+				quadratic=0.30000001;
+				hardLimitStart=50;
+				hardLimitEnd=65;
+			};
+		};
+	};
+	aggregateReflectors[]=
+	{
+		{
+			"Center"
+		}
+	};
+};
+</syntaxhighlight>
+
+
+=== Example ===
+A scripted pylon, that adds a smoke trail emitter.
+
+<syntaxhighlight lang="cpp">
+class Test_SmokePod : VehicleMagazine
+{
+	// General options
+	displayName="SmokePod Green";
+	model = "a3\Air_F_Beta\Heli_Transport_01\PylonPod_Fuel.p3d";
+	hardpoints[] = { "B_MISSILE_PYLON", "B_FUELTANK_HELI" };
+	mass=125;
+	 
+	// pylon type
+	simulation = "generic";
+	class EventHandlers
+	{ 
+		Added = "call compileScript ['DedmenPylon\added.sqf']"; // params ["_vehicle", "_pylonConfigClass", "_pylonIndex"]
+		Removed = "call compileScript ['DedmenPylon\removed.sqf']"; // params ["_vehicle", "_pylonConfigClass", "_pylonIndex"]
+	}
+
+	SmokeClass = "SmokeShellGreen_Infinite"; // Script can access config via _pylonConfigClass
+};
+</syntaxhighlight>
+
+The added handler:
+<sqf>
+systemChat str [_this, _thisEvent];
+if !(uiNamespace isNil "dedmen_fnc_added") exitWith {call (uiNamespace getVariable "dedmen_fnc_added");};
+
+params ["_vehicle", "_pylonCfg", "_pylonIndex"];
+
+private _smokePylonList = _vehicle getVariable ["SmokePylons", []];
+
+private _firstToAdd = _smokePylonList isEqualTo [];
+
+_smokePylonList pushBack [_pylonCfg, _pylonIndex];
+_vehicle setVariable ["SmokePylons", _smokePylonList];
+
+
+if (_firstToAdd) then {
+  private _smokeDeployAction = _vehicle addAction ["Engage Smoke Pylons", {
+    params ["_vehicle"];
+  
+    private _smokePylonActiveList = _vehicle getVariable ["SmokePylonsActive", []];
+  
+    private _wasActive = _smokePylonActiveList isNotEqualTo [];
+  
+    if (_wasActive) then {
+      {deleteVehicle _x} forEach _smokePylonActiveList;
+	  _smokePylonActiveList = [];
+    } else {
+  
+      private _smokePylonList = _vehicle getVariable ["SmokePylons", []];
+      private _allPylonsInfo = getAllPylonsInfo _vehicle; 
+	  
+      {
+		_x params ["_pylonCfg", "_pylonIndex"];
+  		private _pylonPosRel = _allPylonsInfo select (_pylonIndex-1) select 6 select 0; // Specific pylon (1-based index), positions array from 2.20, relativePos
+		
+		private _smokeClass = getText (_pylonCfg >> "SmokeClass");
+  	
+  		private _projectile = createVehicle [_smokeClass, [0,0,0], [], 0, "none"];
+  
+  		_projectile attachTo [_vehicle, _pylonPosRel];
+  		_smokePylonActiveList pushBack _projectile;
+      } forEach _smokePylonList;
+    };
+    
+    _vehicle setVariable ["SmokePylonsActive", _smokePylonActiveList];
+  }];
+  
+  _vehicle setVariable ["SmokePylonsAction", _smokeDeployAction];
+};
+</sqf>
+
+The removed handler:
+<sqf>
+systemChat str [_this, _thisEvent];
+if !(uiNamespace isNil "dedmen_fnc_removed") exitWith {call (uiNamespace getVariable "dedmen_fnc_removed");};
+
+params ["_vehicle", "_pylonCfg", "_pylonIndex"];
+
+
+private _smokePylonList = _vehicle getVariable ["SmokePylons", []];
+private _smokePylonActiveList = _vehicle getVariable ["SmokePylonsActive", []];
+
+private _pylonArrIndex = _smokePylonList find [_pylonCfg, _pylonIndex];
+if (_pylonArrIndex == -1) exitWith {};
+
+_smokePylonList deleteAt _pylonArrIndex; // Modify by ref, so vehicle is also updated
+
+// Kill the currently active smoke emitter, if there is one
+if (_pylonArrIndex < count _smokePylonActiveList) then {
+  deleteVehicle (_smokePylonActiveList deleteAt _pylonArrIndex);
+};
+
+//#TODO "SmokePylonsActive", if the smoke emitter is currently active we should remove that too 
+
+if (_smokePylonList isEqualTo []) then {
+  // We removed all, so clean up the action and other variables
+
+  _vehicle removeAction (_vehicle getVariable ["SmokePylonsAction", -1]);
+
+  _vehicle setVariable ["SmokePylons", nil];
+  _vehicle setVariable ["SmokePylonsActive", nil];
+  _vehicle setVariable ["SmokePylonsAction", nil];
+};
+</sqf>
+
+== See Also ==
+
+* [[CfgAmmo Config Reference|CfgAmmo]]
+* [[CfgVehicles Config Reference|CfgVehicles]]
+* [[CfgMagazines Config Reference|CfgMagazines]]
+* [[:Category:Command Group: Vehicle Loadouts|Command Group: Vehicle Loadouts]]
+* {{Link|https://forums.bistudio.com/topic/202173-dynamic-loadout-feedback/|Dynamic Loadouts forum thread}}
+
+
+{{GameCategory|arma3|Vehicle Configuration}}

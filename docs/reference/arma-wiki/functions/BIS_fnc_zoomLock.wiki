@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_zoomLock
+// revision: 328000 (2022-07-13T15:48:50Z)
+// export sha1: 6b6y2nw9os3p9pysk851jlhxh05twgx
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Map and Markers
+
+|eff= local
+
+|descr= Locks the camera in place when the map is open.
+
+|s1= [cameraCenter] call [[BIS_fnc_zoomLock]]
+
+|p1= cameraCenter: [[Array]] format [[Position#Introduction|Position2D]] - (Optional, default [0, 0]) position where the camera should be placed and locked
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[[0, 0]] call BIS_fnc_zoomLock;</sqf>
+
+|seealso= [[BIS_fnc_zoomUnlock]] [[BIS_fnc_zoomLockEH]]
+}}
+
+{{Note
+|user= Poslovitch
+|timestamp= 20200422162900
+|text= In '''{{arma3}} v1.98.146303''', closing the map after running this function '''does not unlock''' the map's camera. One must use [[BIS_fnc_zoomUnlock]] to allow the player to move the camera again.
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/windDir
+// revision: 321137 (2022-05-13T14:31:42Z)
+// export sha1: 0mxdnixqro7x7skwlpvyexhjficojkg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|descr= Returns the current wind azimuth.
+
+|s1= [[windDir]]
+
+|r1= [[Number]] - azimuth
+
+|x1= <sqf>
+if (windDir < 45 || windDir > 315) then {
+	hint "I feel a southern wind"; // wind going from South to North
+};
+</sqf>
+
+|seealso= [[wind]] [[setWindDir]] [[setWindStr]] [[setWindForce]]
+}}

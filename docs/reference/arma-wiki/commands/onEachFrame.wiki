@@ -1,0 +1,76 @@
+// source: https://community.bistudio.com/wiki/onEachFrame
+// revision: 369525 (2024-09-15T18:15:30Z)
+// export sha1: kgh8ow2yafqefh2bpuy7tm9a9lfxl5m
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Introduced with Arma 2: Operation Arrowhead version 1.63 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.63
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Event Handlers
+
+|descr= Runs given statement every frame in an [[Scheduler#Unscheduled Environment|unscheduled environment]].
+{{Feature|arma3|
+In order to keep compatibility between official and community content:
+* Since {{arma3}} v1.58 a stackable version of this EH is available: [[Arma 3: Mission Event Handlers#EachFrame|EachFrame Mission Event Handler]]
+* Before that, the scripted version of the event handler should be used instead (using [[BIS_fnc_addStackedEventHandler]] and [[BIS_fnc_removeStackedEventHandler]]).
+}}
+
+|s1= [[onEachFrame]] statement
+
+|p1= statement: [[String]] or [[Code]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>onEachFrame { hintSilent str getPosWorld player }; // hints position every frame</sqf>
+
+|x2= Private variables defined outside of the [[onEachFrame]] scope are not inherited:
+<sqf>
+_myVar = "bob";
+MyVar = "bill";
+onEachFrame { hintSilent str [_myVar, MyVar]; };
+// Result: [any, "bill"]
+</sqf>
+
+|x3= Only one [[onEachFrame]] loop can exist at any time:
+<sqf>
+onEachFrame { player sideChat "first"; };
+onEachFrame { player sideChat "second"; };	// replaces the first one
+onEachFrame {};								// reset to the initial state
+</sqf>
+
+|x4= Script suspension is not permitted within [[onEachFrame]] scope:
+<sqf>
+// will throw an error
+onEachFrame { sleep 1; };
+</sqf>
+
+|x5= <sqf>
+onEachFrame { if (diag_frameNo mod 60 isEqualTo 0) then { /* code */ } };	// executes every 60 frames (every second @ 60 FPS, every two seconds @ 30 FPS, etc)
+
+onEachFrame {																// this version is the closest to a precise 1 second tick
+	if (isNil "TAG_LastHint") then
+	{
+		TAG_LastHint = diag_tickTime;
+	}
+	else
+	{
+		if (diag_tickTime - TAG_LastHint >= 1) then // set the duration in seconds here
+		{
+			hint format ["a second has passed (%1s since game start)", diag_tickTime];
+			TAG_LastHint = diag_tickTime;
+		};
+	};
+};
+</sqf>
+
+|seealso= [[diag_frameNo]] [[diag_fps]]
+}}

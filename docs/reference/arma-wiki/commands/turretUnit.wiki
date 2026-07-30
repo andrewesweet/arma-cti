@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/turretUnit
+// revision: 377501 (2026-01-02T06:49:29Z)
+// export sha1: sthafdzjaloynl0pdb6nfttbmky2rqp
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Turrets
+
+|descr= Returns the unit in the vehicle turret. To find turret path of known unit, see [[unitTurret]].
+
+|s1= vehicle [[turretUnit]] turretPath
+
+|p1= vehicle: [[Object]]
+
+|p2= turretPath: [[Turret Path]] - since {{GVI|arma3|1.58|size= 0.75}} [-1] (driver) is supported.
+
+|r1= [[Object]]
+
+|x1= <sqf>_vehicle turretUnit _thisTurret;</sqf>
+
+|x2= <sqf>vehicle player turretUnit [0];</sqf>
+
+|seealso= [[unitTurret]] [[driver]] [[gunner]] [[commander]] [[effectiveCommander]] [[currentPilot]] [[moveInTurret]] [[assignAsTurret]] [[assignedVehicleRole]] [[lockedTurret]] [[isTurnedOut]]
+}}

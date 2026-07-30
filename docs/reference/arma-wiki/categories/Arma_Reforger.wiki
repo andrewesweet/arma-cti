@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger
+// revision: 376905 (2025-12-20T22:58:16Z)
+// export sha1: ccn7ytnsj08to0wumeai1ul8dkhq8uv
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|EAdate= 2022-05-17
+|releasedate-pc= 2023-11-16
+|releasedate-xbox= 2023-11-16
+|releasedate-playstation= 2024-12-12
+|image= armareforger-logo_black.png
+|size= 350
+|intro=
+Powered by the new [[Enfusion]] engine, {{armaR}} lets you fight for supremacy 
+over 51 km<sup>2</sup> of incredible island terrain in an authentic Cold War setting, or create 
+unique scenarios in real-time with the Game Master curation mode. Return to Everon, 
+the war-driven microstate from the hit game that started it all, {{arma0}}.
+
+{{armaR}} is the first step towards {{GameCategory|arma4|link= y}} and a versatile, creative, fully-moddable 
+platform for the future, offering a glimpse of things to come.
+
+|feature1= '''{{Link|Arma Reforger:Everon|Everon}}''' - Return to Everon, a 51 km<sup>2</sup> mid-Atlantic island in the Malden archipelago. <!--
+-->Revisit familiar locales from {{arma0}} and revel in the natural beauty of a massive open-world; <!--
+-->a stunning landscape of pine and broadleaf forests, flowing rivers, ponds, idyllic towns, and austere mountains, <!--
+-->surrounded by pebble beaches and rocky coastlines.
+
+|feature2= '''{{Link|Arma Reforger:Arland|Arland}}''' - A small overseas territory, Arland officially belongs to the microstate of Everon. Although remote and sparsely populated, this link in the Malden Islands chain is tempered by the presence of a major Soviet airbase — putting it at the forefront of Cold War tensions. Beyond the razor wire fences, close-knit communities can also be found. Arleville and Beauregard. Here, Czech-speaking locals carry on as they have for hundreds of years. Toiling the sea and working the land, attentive to the natural beauty that surrounds them.
+
+|feature3= '''{{Link|Arma Reforger:Kolguyev|Kolguyev}}''' - Kolguyev is a small landmass around 300 km north of the Malden archipelago, its dominant feature being a dormant volcanic mountain peak. A territory of the Soviet Union, Kolguyev has suffered decades of severe environmental degradation from mining operations and is now virtually deserted, its settlements long abandoned. All that remains is a strong Soviet military garrison due to the strategic value of the island on the geopolitical stage.
+
+|feature4= '''Conflict''' - Join players online and experience realistic Cold War combat as a US or Soviet Army soldier. <!--
+-->Capture strategic positions, dominate the battlefield, and work with others to secure objectives in a dynamic, unforgiving environment. <!--
+-->With a selection of period-authentic weapons and vehicles, recreated in meticulous detail, {{armaR}}'s multiplayer game mode returns you to war.
+
+|feature5= '''Combat Ops''' - Experience co-operative gameplay and dynamic objectives with Combat Ops; a new scenario focusing on small team tactics. Infiltrate Arland or Everon, strike hard, strike fast, and reach the extraction point.
+
+|feature6= '''Game Master''' - Control events, create unique missions, and guide players towards victory in Game Master - or submit yourself to the challenges devised by all-powerful creators and fight your way through a responsive andbox where anything can happen.
+
+|feature7= '''Multiplatform''' - Deploying on both Xbox and PC for the very first time in the {{arma}} series, {{armaR}}'s modded content is now available to all and can be downloaded by console owners from the Workshop, a content creation sharing repository, exclusive to the game.
+
+|feature8= '''Multiplayer''' - Curate events for friends behind the fog of war as Game Master in {{armaR}}'s real-time scenario editor or team up and go head-to-head with others across a sprawling island terrain in Conflict.
+
+|feature9= '''Workshop''' - Expand the game with original modded content or make and share your own! <!--
+-->The Workshop is {{Name|bi}}'s own integrated, repository service, meaning console players can now unleash the same creative possibilities as PC users.
+
+|feature10= '''Workbench''' - Thanks to the {{Link|Enfusion|Enfusion engine}}, you can mod {{armaR}} using the exact same tools used to make it. <!--
+-->Introduce new mechanics, assets, textures, and more. The only limit is your imagination. Reshape the game and share your own creative vision!
+
+|trailer= AIervYhiEZ8
+
+|gallery1= armareforger-screenshot_1.jpg
+|gallery2= armareforger-screenshot_2.jpg
+|gallery3= armareforger-screenshot_3.jpg
+|gallery4= armareforger-screenshot_4.jpg
+
+|start1= {{Link|Arma Reforger:Getting Started|Getting Started}}
+|start2= {{GameCategory|armaR|Modding|text= {{armaR}} Modding}}
+|start3= {{Link|https://reforger.armaplatform.com/|Official Website}} - {{Link|https://reforger.armaplatform.com/buygame|Buy}}
+|start4= {{Link|https://reforger.armaplatform.com/faq|FAQ}}
+
+|social1= {{Link|https://forums.bohemia.net/forums/forum/401-arma-reforger/|Main Forum}} - {{Link|https://forums.bohemia.net/forums/forum/411-arma-reforger-editing/|Editing Forum}}
+|social2= {{Link|https://www.youtube.com/ArmaPlatform|YouTube}}
+|social3= {{Link|https://twitter.com/ArmaPlatform|Twitter}}
+|social4= {{Link|https://discord.com/invite/arma|Discord}}
+|social5= {{Link|https://www.tiktok.com/@armaplatform|TikTok}}
+}}

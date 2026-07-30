@@ -1,0 +1,457 @@
+// source: https://community.bistudio.com/wiki/Mikero_Tools
+// revision: 378608 (2026-05-13T15:27:23Z)
+// export sha1: 2u8msulhjq090d9zstcwkdc44xqg4gh
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+=== Disclaimer ===
+
+If this product causes your computer to explode, your mother in law to drop down dead, your girlfriend to run away with your secretary... Sue me.
+
+=== Installation ===
+
+ Self Installers
+
+All tools come with a no-brainer auto install. The location of all products is hard wired to the same folder because no individual tool stands alone. They all require the same dos path environ string to find each other. Because individual tools are independently added to the toolset when you decide to, they can't be 'just anywhere'.
+
+=== Additional Requirements ===
+
+After a decade of use, dePbo dll has come to a crossroad, where, in order to continue it must split into component parts so that frequent upgrades to the dll (as bis move goalposts) don't impose penalties on the users by needing ever-increasingly large downloads to keep up.
+
+=== Additional support dlls ===
+
+To this end, 'oem dlls' are provided for 3rd party, open source, software that is not really part of dePbo proper but were merely containered within it. Formerly supplied internally, this was as convenience to users. Now, it has become a penalty due to the payload involved. The chances of these additional dlls being changed are very low. Hence the desirability of isolating them.
+
+ Currently, only one extra dll is required.
+
+1) All DePboTools rely on DePbo.dll which is packaged separately. You MUST download this dll, once, for any of the tools, including this one, to work.
+
+''It is rare to exceptional that your exe will change. Improvements to the dll happen often.''
+
+2) Depbo.dll relies deOgg.dll. You MUST, additionally, download this dlls, once.
+
+These support, or oem dlls are provided on the same site as depbo.dll
+
+3) All gui tools rely on above plus microsoft dll's which *might* not be on your system.
+
+=== Topology ===
+
+ 	MakePbo.exe,Dewss.exe etc
+
+ 	DePbo.dll
+
+ 	Support dlls
+
+ 	Microsoft mfc dlls
+
+=== Nitty gritty ===
+
+Start menu shortcuts begin at Mikero\DePboTools
+
+Physical programs and documentation begin in C:\Program Files(x86)\Mikero\DePboTools
+
+Environment path variable is set to the common Mikero\DePboTools\bin folder.
+
+Registry Settings being in HKLM\Software\Mikero\DePboTools (getting rather consistent, isn't it)
+
+The tool.exe is always located in the bin folder.
+
+Individual tools may, or may not have additional, less used, exe's or bat or configuration files files in their respective Mikero\DePboTools\docs\ folder.
+
+It is your responsibility to read thru the specific tool documentation (or examine it is docs folder) to discover the extra goodies (if any)
+
+=== Uninstaller ===
+
+No Individual tool will uninstall the complete suite. The last tool de-installed, will remove all Mikero\ folders, start menu shortcuts, registry settings and environ path.
+
+=== Dual Dos / Windows apps ===
+
+Many exes are dual apps. They either work in genuine dos prompt and batch files, or, as a standard windows gui.
+
+The exe decides which mode to work in based on (lack of) command line arguments.
+
+When provided a separate dos only exe is supplied in the package. It is always called <NameofExe>Dos.exe
+
+It serves no purpose for majority use and does not need installing. It is available to the cognoscenti who either
+
+* want to work in speed freak mode, sans windows
+
+* have 'issues' with batch processing and stderr >piping (among other inconsistencies)
+
+=== Windows mode ===
+
+Click on the exe via windows explorer. OR
+
+in a dos prompt NameOfExe // no arguments OR
+
+use the start menu
+
+=== Dos Mode ===
+
+Drop a file onto the exe via windows explorer OR in a dos prompt
+
+NameOfExe -some_options some\file(s)
+
+=== General dos syntax ===
+
+General command line syntax for all tools is
+
+ NameOfexe [-options...] \whatever\source\file[.ext] [destination]
+
+''In general'' -options are only for special case. Default behavior is the norm.
+
+''In general'' [.ext] is not required for the sourcefile. In general, the ext type is implicit.
+
+''In general'' destinations are optional. When not specified, output file(s) are to same folder.
+
+All dos tools handle destination PATHS versus destination FILES. Either, can be specified.
+
+
+Options are always case InSensItiVe
+
+Provision is made to distinguish std output to screen (which can be >piped) versus error information, also sent to screen, but via stderr. Error
+info is not normally, >piped
+
+
+Pressing the escape key normally causes any dos tool to exit
+
+All dos tools return 0 on success
+
+The -P option for all exes is reserved for bat file use: do not pause.
+
+
+Help screen
+
+For dos tools: Typing the command only (no parameters) will display a help page
+
+For dual dos/gui tools: Typing -syntax achieves same result
+
+=== Licence: Eula ===
+
+Source code when provided in this product is Free. You are free to use it for *any* purpose whatsoever.
+
+when provided, main.cpp is an example code of how *THIS* tool interfaces to DepPbo.dll
+
+IT SERVES NO OTHER PURPOSE.
+
+the dll is supplied with a .lib for those developers wishing to access the api via (say) visual basic.
+
+The lib, SERVES NO OTHER PURPOSE and is not necessary for a 'user' to install anywhere
+
+
+== Tool updates since free tools ==
+
+=== [[Arma2P]] ===
+
+=== [[Arma3P]] ===
+
+1.29
+*dta files
+**copies all dta bin files to p:\dta
+**converts all dta\bin files to rap if they are rap (future proofing bis)
+*now let's you choose which drive to extract to (except A:\,B:\,C:\ or D:\)
+**if the drive doesn't exist, it will let you create one, or simply re-assert the drive with a subst command
+
+1.28 removed deroad.exe to synchronize Tim will update to latest engine versions when Tim updates it.
+
+1.27
+*extracts marksman PBOS
+*no longer extracts any dubbing pbos
+
+=== [[DePbo]]64.dll ===
+
+<spoiler>
+5.50
+*makepbo
+**fixed stuff up where all pbo's were partially obfuscated.
+
+5.49
+
+*makepbo
+**changed xxxx.pbo.pbo message on completion of making one
+**new level of obfuscation to crash bankrev and stop the thieves
+*dep3d
+**savage value checking to ensure binarise built the p3d correctly
+
+5.48
+*support for typ70 p3d's
+*added //type (vbs or arma) to baked in rvmat extraction
+*now decodes type69 p3d's
+
+5.47 linux release
+
+5.46 interim dos release
+
+5.45
+*rapify:
+**unbinarisable sqx is listed as a warning in desc.ext
+**but produces an immediate error for a config.cpp
+*dewrp: fixed dewrp AGAIN!!!
+
+5.44	interim release
+*rapify:
+**corrected _EVAL to accept hard-wired array 'productVersion'
+**corrected #defines to also check that MACRO(var...) expansions also result in same output
+**a better display of the changed macro
+*makepbo:
+**config.bin:	rap_volatile_eval() now detected if 'productVersion' is used and a config.bin is being created for a pbo
+*wrps:
+**reworded missing land classes to confuse less
+**fixed error with no objects in a wrp
+*extractpbo:
+**config.cpp takes precedence over config.bin when in same pbo folder
+
+5.43
+*dewrp:
+**isolated some mem vars from direct acces to outside world
+**made chernarus+ convertible to standard type24
+*rapify:
+**allowed sqx bools to be integers for select [this,that] (sth>99)
+**deprecated the option to keep text (the origianl source b4 rap)
+**now allows mission.sqm's to remain unbinarised (but it will be reduced)
+
+*5.42
+*rapify: file checks no longer performed on fsm files
+*wrp:
+**missing land class is now checked only against arma3 type25 (or later) wrps
+**checked roadsize structure is size of that stated in wrp
+**now decodes dayz wrp files
+*internal:
+**bis/dos registry scans now unicode
+
+5.41:
+*p3d:
+**extract skeleton. fixed null bug
+**added dll version to prefix.txt output
+*rewrote depew
+5.40
+*crippled amalfi's unpbo for obfuscated mission.pbo's
+
+5.39
+*changed $prefix$.txt to state nameOf.pbo in title
+*modified calls for moveobject
+
+5.38
+*improved obfuscation to defeat amalfi
+*further cleanups and improvements to utf8 support
+
+5.37
+*Makepbo compression now ignores init*.sqs/sqf
+
+5.36
+*only released for killswitch to evaluate filenames
+**all are converted to utf8 internally. 'asciiz' api calls if used are assumed to be utf8
+**filenames are converted back to unicode 16LE only for windows system calls
+*filestringEX:
+**no longer throws an error if filename is empty when formatting folder and file
+*filetreeEX:
+**full utf8 support so that cyrillic filenames are interpreted correctly
+*pbo's
+**garanteed removal of pbo ebo xbo or ifa on any attmept to create a pbo before any further processing
+**this to ensure no stale copy of the pbo exists to confuse the user.
+*:rapify
+**no longer checks accuracy of file references in dubbing type pbos where a relative file directory is involved
+
+5.35
+*dep3d:
+**account for type70 compressed edges which are now longs, not shorts
+**changed api so that all relevent structures are passed as type70 longs
+**the dll converts back and forth internally as required
+
+5.34:
+*dep3d:
+**fixed erroneous statement string that type70's are type68's
+**this error only introduced at 5.33
+**degrades type 70's to type68
+*filedates:
+**checked the filedate is valid
+**added pbo entry name in error messages encountered while derapping
+
+5.33
+*p3d:
+**v70 accepted
+**baked rvmats
+***renderflags 'noreceiveshadow and nolodblend accepted
+
+5.31
+*DeP3d,depew,eliteness
+**Internal housekeeping of the api/sdk. depew, dep3d and eliteness require updating.
+
+5.31
+*wrp:
+**vbslite
+***ignored land class error if p3d has spaces in it is filename (ces 12.p3d)
+*makepbo:
+**enhanced obfuscation
+
+5.30
+*extractpbo
+**altered code to confuse other extractors
+*wrp:
+**checked that land class is same as modelname.p3d
+
+5.29 dep3d: now alters geolod properties
+5.28
+
+*rapify: detects missing commas in {array},{array}
+*dewrp: changed algorithms for read/write unbinarised {{ofp}} and arma wrp
+*internal use only:
+**filestringEx
+***added fs_RemoveFileName()
+***added more simpler to use io_dos commands
+
+5.27
+*rap:
+**corrected hunt for illegal trailing spaces in a file reference
+**stopped (some) crashes using makepbo, perhaps not all yet.
+**fixed #ifdef/ndef recircular problem
+**"cannot include file" now states which file
+**rebuild units[]= protected units no longer added
+**double semi colon detection. it is not illegal but bis binarise errors out with no msg
+**required addons= fixed erroneous config.bin 0 len file message
+**now responds and reports rapify errors
+**#if(n)def must have label (bis complains)
+*makepbo:wrp:
+**now provides a list of missing files, not just the 1st file
+**checks for land_xx for every 'house' p3d
+
+5.26
+*dep3d:
+**now checks proxy:\blah and proxy:blah as mutually eqivalent (even tho it shouldn't)
+
+5.25
+*rapifY:
+**responds to line continue character sequence (\) properly
+**removed string "true" and "false" from being converted to 1 and 0
+</spoiler>
+
+=== [[DeRap]] ===
+1.76 improved utf8 support
+
+=== '''DeRoad''' (Tim DIttmar) ===
+
+1.40 handles type 71 p3ds
+
+=== [[Eliteness]] ===
+<spoiler>
+3.45 incorporated improvements in new dll
+
+3.44 incorporated improvements in new dll
+
+3.43 incorporated improvements in new dll
+
+3.42
+*incorporated improvements in new dll
+*cleaned up p3d gui
+
+3.41
+*incorporated improvements in new dll
+*changed display analysis for roads and land classes to be clearer what the error is.
+*removed the 'keep text' option for binarised rap
+
+3.40
+*incorporated improvements in new dll
+*wrp:
+**fixed land_xx display for very large islands (Altis)
+*internal:
+**removed last of _tsystem() calls relying instead on the quoting mechanism of io_system() to ensure full windows compatible file accesses.
+
+3.39
+*made compatible to dll pew
+*removed depew dialog's 'memory' of position. Can become corrupted and no display shown
+
+3.38
+*removed dertm dialog's 'memory' of position. Can become corrupted and no display shown
+**this is prolly true of most other dialogs too. will be corrected when encountered.
+*recomplied elite, an unknown miscompile occured in last release.
+
+3.37 now reads bis binarise dep files
+
+3.36
+*corrected utf8 derapify display to utf8
+*improved utf8 a bit more
+*fixed mapinfo tree in binarised wrp
+
+3.35 incorporated improvements in new dll
+
+3.34 incorporated improvements in new dll, specifically, p3d type70 longs
+
+3.33 adjusted to decode v70 p3d's
+
+3.32 incorporated improvements in new dll for wrp
+
+3.31 incorporated improvements in new dll
+
+3.30
+*corrected quarternion display for land class models
+*fixed land class listing to now be sorted
+</spoiler>
+
+=== [[ExtractPbo]] ===
+
+2.15
+*fixes for vipermaul/ace/cba
+*fixes for gui version registry
+
+=== [[MakePbo]] ===
+
+1.92
+*added ifa to syntax error display.
+*corrected readme as !obfuscate, not &obfuscate
+*added -M don't binarise mission.sqm
+
+1.91
+*added documentation for obfuscate and rebuild required addons
+*changed -Z (compression) to allow only z=blah
+*fixed bug in ignore compression list where .txt was not found
+
+=== [[pboProject]] ===
+
+<spoiler>
+1.66
+*wrp builds only
+**checks p3d's in temp are, in fact, binarised
+**checks binarised p3d is a later filedate than the source
+1.65
+*added option to not binarise (or compress) mission.sqm BUT the resulting text file will be reduced to remove all comments and includes (if any)
+*cmdline option is +/-Q
+
+1.64
+*fixed error in creating a bisprivatekey file
+1.63:
+*fixed del pbo to fail if game is running
+*added delete all temp and delete all mods buttons
+*added ! to deprecate & for obfuscate in cmd line (quotes are not required for !, and ! is identical to makepbo -option
+*changed initial default startup engine from arrowhead to arma3
+*tested for a blank source folder for joblists. can only happen as a result ofg changing work drives
+*added personal copy of dsCreateKey.exe for those installs of arma2 which don't have it or can't be found
+*made sure, 'correct' of dsCreateKey version is used based on engine type (they are currently the same)
+
+1.62: fixed dos cmdline obfuscate
+
+1.61: improved rapify support
+
+1.60
+	*improved utf8 filename builds
+	*now stops if binarise crashes
+
+*wrp
+**setup->island builds
+**	now checks that all folders are on same drive
+**	prevents a drive only, being specified
+
+1.59
+*reworded to gui to "sign pbo(s)"
+*reworded rtm skeleton usage
+
+1.58
+*changed titlebar to nameof folder being crunched to assist with selecting one, of multiple instances of pboProject
+*forced extern references for where legacy versions *might* have it unset in registry
+</spoiler>
+
+=== [[Rapify]] ===
+no changes
+
+
+[[Category:Mikero Tools]]

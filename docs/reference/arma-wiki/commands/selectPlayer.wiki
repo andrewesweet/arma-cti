@@ -1,0 +1,98 @@
+// source: https://community.bistudio.com/wiki/selectPlayer
+// revision: 363391 (2024-03-29T17:43:01Z)
+// export sha1: haxwcft5eqtz9qtealn7b2wfsmw0r3d
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|gr2= Multiplayer
+
+|descr= Move player into given unit. Some usage advices:
+* Avoid using [[selectPlayer]] on editor-placed units in multiplayer, as it may, on occasion, lead to some undefined behaviour.
+* If you need to [[selectPlayer]] into another unit, consider [[createUnit|creating a unit]] dynamically.{{Feature|informative|Before {{arma3}} it was possible to [[selectPlayer]] another player-controlled unit, leading to control issues. }}
+{{Feature|warning|
+Creating and immediately selecting player into newly created unit could cause all sort of problems due to possible delay in unit initialisation.
+Give the unit some time to propagate properly on the network before using this command on it.
+}}
+
+|s1= [[selectPlayer]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>selectPlayer bob;</sqf>
+
+|seealso= [[selectNoPlayer]] [[remoteControl]] [[Team Switch]] [[switchCamera]] [[teamSwitch]] [[enableTeamSwitch]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150624233400
+|text= {{Feature|important|Most of the notes below do not apply to Arma 3 anymore. }}
+}}
+
+{{Note
+|user= SnowSky
+|timestamp= 20100302230900
+|text= '''This command has significant effects on [[Multiplayer Scripting#Locality|locality]]'''!<br>
+Notes on locality issues with selectPlayer in multiplayer environments:
+<br><br>
+1) If you switch to a unit that's not local, control over movement will not be given to you immediately. For example, if you switch to an AI unit whose leader is a player, you will not be able to control the movement of your new avatar, as its control remains with the leader unit. You will however be able to look around while the unit walks automatically.
+<br><br>
+2) The identity of units are not transferred properly: If your old unit dies, this will count for your stats. Your old unit might remain identifiable as you (if you aim at the unit you see your own name). Your new unit will keep it is name, face and voice (face can be set dynamically, but name, voice and glasses have to be defined before mission start in the description.ext). When chatting, not the name of your original identity, but the identity of the transferred to person will show.<br><br>
+Those 2 Points were for ArmA I, I am currently analyzing the behaviour in {{arma2}} with version 1.08 + OA 1.57<br>
+So with {{arma2}}, you still have to keep an eye on locality (otherwise the AI will controll the unit you are), but there are cool possibilities now: if you do a "selectPlayer unitVarName",the unit takes your identity (with name, voice, face and glasses) - and your identity is also visible on other clients!<br><br>
+But you have to remember that your old unit will stay with your Identity. Dies the old unit, the stats count it. An other thing you have to pay attention is the Death for your new unit - you have to register an EventHandler, otherwise you will stay in your dead unit, and also the MenuOption Respawn won't help you out! 3.Jan. 2011
+<br><br>
+3) If you do a selectPlayer call, join,joinSilent,joinAs,joinAsSilent wont work anymore correctly. Means: Your unit joins the other group AND your unit will be local to the other group. so at the moment you can use selectPlayer only as a single human player in a group. In the later day I will try what happens if both human players are units by selectPlayer, and both join the same group (till yet tried with one selectPlayer unit and one originUnit)
+14.May 2011
+<br><br>
+Tried to create ingame a group with a selectPlayer Unit (on both clients), and joint the new squad. The result was, the group was local to the client who created the group, so after that, all other units that join that Group are - as you may think already, local to that single client. 18.May 2011
+}}
+
+{{Note
+|user= Besselinksjm
+|timestamp= 20100617161900
+|text= 4) After switching to a unit that's not local, the unit will remain local to you after switching back. For example, if we have units A and B, and a client starts as unit A and unit B is AI under server control. If you switch to unit B, it will take some time, but eventually you can control the movement of unit B (see (1) above). Now if you switch back to unit A, unit B will remain [[Multiplayer Scripting#Locality|local]] to you, the player. Any server-side scripts which try to execute local arguments – such as [[doMove]] – will fail.
+}}
+
+{{Note
+|user= Kju
+|timestamp= 20100617172000
+|text= A working implementation can be found at {{Link|http://dev-heaven.net/projects/clanbase-aas/repository/revisions/master/entry/core/cb_aas_20_ChernarusTemplate.Utes/changePlayerModel.sqf|A&S ProMode dev-heaven repo}}, acc guest, pw guest or at {{Link|http://pastebin.jonasscholz.de/834|pastebin}}.<br>
+Be careful to learn all the pitfalls and things you need to take into consideration to have this working in MP.
+}}
+
+{{Note
+|user= EUTWtrnapster
+|timestamp= 20140309190600
+|text= {{arma3}} (v1.13): In MP the Identity and the name carries over to the new Unit but not in SP. Use [[setName]]+[[profileName]] to set the name in SP.
+|game= arma3
+|version= 1.13
+}}

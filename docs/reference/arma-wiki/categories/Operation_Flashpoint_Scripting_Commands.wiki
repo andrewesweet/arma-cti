@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Scripting_Commands
+// revision: 257296 (2021-05-05T07:39:58Z)
+// export sha1: 84oaan5ti6vs5vx7udzngftqkaz2ejg
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Table/RVScriptingCommands}}
+
+* Version 1.75 and greater are considered {{ofpr}}
+* Version 1.99 is the Arma - Cold War Assault update
+
+[[Category:Scripting Commands]]

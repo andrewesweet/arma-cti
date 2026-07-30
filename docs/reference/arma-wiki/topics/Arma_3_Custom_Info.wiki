@@ -1,0 +1,223 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Custom_Info
+// revision: 364315 (2024-05-06T09:38:45Z)
+// export sha1: iuq00nzu3z43p65gku5dcefp9waldd0
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+UI window elements that encompass various display modules and gadgets (Navigation, Camera feeds, Radar...)
+
+Forum topic: {{Link|https://forums.bistudio.com/topic/200468-jets-custom-info/|Main thread}}
+
+
+== User Interface ==
+
+[[File:Arma_3_Custom_Info_overview.jpeg|frameless|upright= 1.5]]
+
+=== Action keybinds (default) ===
+
+{| class="wikitable"
+| {{Controls|[}} || next module on left panel
+|-
+| {{Controls|]}} || next module on right panel
+|-
+| {{Controls|RCtrl|[}} || toggle submodes on current left panel module
+|-
+| {{Controls|RCtrl|]}} || toggle submodes on current right panel module
+|-
+| ''no default keybind'' || close left display
+|-
+| ''no default keybind'' || close right display
+|-
+| ''no default keybind'' || close left display
+|-
+| ''no default keybind'' || close right display
+|-
+|}
+
+
+=== Modules ===
+
+{| class="wikitable"
+! Module !! Description !! Sub-mode
+|-
+| '''NAV''' || Navigation - requires either a GPS item or GPS-equipped vehicle || rotation
+|-
+| '''SLA''' || Sling-load Assistant - only available in vehicles capable of slingloading || {{n/a}}
+|-
+| '''SENS''' || Sensors Display - tactical awareness display that combines information about tracked targets from all sensors and about threats ({{Link|Arma 3 Sensors#User Interface}}) || ranges
+|-
+| '''CAM Drone''' || Drone Feed - requires UAV terminal item || spectrum
+|-
+| '''CAM Driver''' || Driver Feed - usually available for commanders and gunners in tanks and for pilots (as a Targeting Pod or a Sling-load camera feed) || spectrum
+|-
+| '''CAM Gunner''' || Gunner Feed - usually available for pilots and drivers and commanders in tanks || spectrum
+|-
+| '''CAM Commander''' || Commander Feed - usually available for drivers and gunners in tanks || spectrum
+|-
+| '''CAM Missile''' || Missile Feed - available mostly on few attack aircrafts, feed is initiated after a missile with camera feed capability is fired || {{n/a}}
+|-
+| '''CREW''' || Crew Display - shows crew members' names, cargo occupancy, transport capacity, sling-loaded vehicle || {{n/a}}
+|}
+
+{{Feature|important|The CAM modules only work with PIP enabled!}}
+
+
+== Configuration ==
+
+The new Sensor system gets enabled by defining a VehicleSystemsDisplayManagerComponentLeft (left display) or VehicleSystemsDisplayManagerComponentRight (right display) class inside the vehicle's [[Arma 3: Components|Components]] class.
+<syntaxhighlight lang="cpp">
+class MyVehicle_F : MyBaseVehicle_F
+{
+	class Components : Components
+	{
+		class VehicleSystemsDisplayManagerComponentLeft : DefaultVehicleSystemsDisplayManagerLeft
+		{
+		};
+
+		class VehicleSystemsDisplayManagerComponentRight : DefaultVehicleSystemsDisplayManagerRight
+		{
+		};
+	};
+};
+</syntaxhighlight>
+
+For simplicity the class can inherit from one of the {{Link|#Automatic_usage_.26_backwards_compatibility|defaults}}.
+You can also inherit from one of the premade templates that are available in the configFile root.
+
+For tank roles - each template adds camera feeds from the other two positions
+<syntaxhighlight lang="cpp">
+VehicleSystemsTemplateLeftDriver
+VehicleSystemsTemplateRightDriver
+VehicleSystemsTemplateLeftCommander
+VehicleSystemsTemplateRightCommander
+VehicleSystemsTemplateLeftGunner
+VehicleSystemsTemplateRightGunner
+</syntaxhighlight>
+
+For (some) pilots and copilots - template adds a Sensors display and a Driver feed camera (e.g. [[A3_Targeting_config_reference#class_pilotCamera|pilotCamera]])
+<syntaxhighlight lang="cpp">
+VehicleSystemsTemplateLeftPilot
+VehicleSystemsTemplateRightPilot
+</syntaxhighlight>
+
+=== Automatic usage & backwards compatibility ===
+
+If the Vehicle doesn't have the VehicleSystemsDisplayManagerComponent defined one of the two default pairs is used.
+<syntaxhighlight lang="cpp">
+// core definitions, do not override
+DefaultVehicleSystemsDisplayManagerLeft
+DefaultVehicleSystemsDisplayManagerRight
+DefaultVehicleSystemsDisplayManagerLeftSensors
+DefaultVehicleSystemsDisplayManagerRightSensors
+</syntaxhighlight>
+The pair of defaults with Sensors suffix is used whenever the vehicle had [[A3_Targeting_config_reference#radarType|radarType]] defined as ''air radar'' or ''ground radar''.
+It adds Sensors display in addition to the normal default displays.
+
+=== Properties ===
+
+<syntaxhighlight lang="cpp">
+class VehicleSystemsDisplayManagerLeft
+{
+	componentType = "VehicleSystemsDisplayManager"; // mandatory
+	x = (safezoneX + 0.5 * (((safezoneW / safezoneH) min 1.2) / 40));
+	y = (safezoneY + safezoneH - 21 * ((((safezoneW / safezoneH) min 1.2) / 1.2) / 25));
+	left = 1;
+	defaultDisplay = "CrewDisplay"; // display to be selected when player changes vehicle and had "empty" previously selected
+
+	class Components
+	{
+		class MinimapDisplay			// GPS
+		{
+			componentType = "MinimapDisplayComponent";
+			resource = "RscCustomInfoMiniMap";
+		};
+
+		class SlingLoadDisplay			// Slingload Assistant
+		{
+			componentType = "SlingLoadDisplayComponent";
+			resource = "RscCustomInfoSlingLoad";
+		};
+
+		class SensorsDisplay			// Combined display showing sensors, detected and tracked targets, info about marked target and threats
+		{
+			componentType = "SensorsDisplayComponent";
+			range[] = {8000,4000,2000};	// accepts an integer or an array of available ranges (submode)
+			showTargetTypes = 1 + 2 + 4 + 8 + 16 + 32 + 64 + 128 + 256 + 512 + 1024;
+			// 1 - Sensor sectors, 2 - Threats, 4 - Marked tgt symbol, 8 - Own detection
+			// 16 - Remote detection, 32 - Active detection, 64 - Passive detection, 128 - Ground targets
+			// 256 - Air tgts, 512 - Men, 1024 - Special (laser, NV)
+			resource = "RscCustomInfoSensors";
+		};
+
+		class UAVFeedDisplay			// Drone camera feed
+		{
+			componentType = "UAVFeedDisplayComponent";
+			// resource = "RscCustomInfoAVCamera"; // hardcoded
+		};
+
+		class VehicleDriverDisplay		// Camera feed from driver's optics
+		{
+			componentType = "TransportFeedDisplayComponent";
+			source = "Driver";
+			// resource = "RscTransportCameraComponentDriver"; // hardcoded
+		};
+
+		class VehicleGunnerDisplay		// Camera feed from gunner's optics
+		{
+			componentType = "TransportFeedDisplayComponent";
+			source = "PrimaryGunner";
+			// resource = "RscTransportCameraComponentPrimaryGunner"; // hardcoded
+		};
+
+		class VehicleCommanderDisplay	// Camera feed from commander's optics
+		{
+			componentType = "TransportFeedDisplayComponent";
+			source = "Commander";
+			// resource = "RscTransportCameraComponentCommander"; // hardcoded
+		};
+
+		class MissileDisplay			// Camera feed from missile's warhead
+		{
+			componentType = "TransportFeedDisplayComponent";
+			source = "Missile";
+			// resource = "RscTransportCameraComponentMissile"; // hardcoded
+		};
+
+		class CrewDisplay				// List of all crew members, cargo and transported or slingloaded vehicle
+		{
+			componentType = "CrewDisplayComponent";
+			resource = "RscCustomInfoCrew";
+		};
+
+		class CustomDisplayXY			// Custom display using custom resource
+		{
+			componentType = "CustomDisplayComponent";
+			resource = "RscCustomInfoMyCustomRadModule";
+		};
+
+		class EmptyDisplay				// Empty display - hide panel
+		{
+			componentType = "EmptyDisplayComponent";
+		};
+	};
+};
+
+class VehicleSystemsDisplayManagerRight : VehicleSystemsDisplayManagerLeft
+{
+	x = ((10 * (((safezoneW / safezoneH) min 1.2) / 40)) + 0.5 * (((safezoneW / safezoneH) min 1.2) / 40)));
+	left = 0;
+	right = 1;
+	forcedDisplay = "SensorsDisplay";	// display to be selected when player enters the vehicle no matter what was selected before
+}
+</syntaxhighlight>
+
+
+== See Also ==
+
+* [[Arma 3: Sensors]]
+* [[Arma 3: Targeting]]
+* {{Link|https://forums.bistudio.com/topic/200468-jets-custom-info/|Custom Info thread}}
+
+
+{{GameCategory|arma3|Editing}}

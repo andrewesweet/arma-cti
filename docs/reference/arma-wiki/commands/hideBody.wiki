@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/hideBody
+// revision: 309957 (2022-05-05T12:17:01Z)
+// export sha1: tnhd5suh1fi2a3dt1icnnhc908s24pu
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Hides dead body of the given unit. After a short delay, the body slowly sinks into the ground. After awhile, when group of the unit becomes [[grpNull]], the body gets deleted and becomes [[objNull]]. If applied to alive unit, nothing happens until unit dies, then the unit's body gets hidden. If a dead unit is human player, the body is hidden but not deleted until player respawns.
+
+|s1= [[hideBody]] unit
+
+|p1= unit: [[Object]] - person
+
+|r1= [[Nothing]]
+
+|x1= <sqf>hideBody player1;</sqf>
+
+|seealso= [[deleteVehicle]] [[setDamage]] [[addToRemainsCollector]]
+}}

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/weaponsInfo
+// revision: 377065 (2026-01-01T09:09:48Z)
+// export sha1: 83sj68j5ui4bs88wq41jxaobsgdmoza
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= Weapons
+
+|descr= Returns entity's weapons information including weapon index and firemode.
+
+|s1= unit [[weaponsInfo]] [weaponOrMuzzle, onlyLoaded]
+
+|p1= unit: [[Object]] - person
+
+|p2= weaponOrMuzzle: [[String]] - name of the weapon or muzzle (returns whichever matches first) or "" to return all weapons
+
+|p3= onlyLoaded: [[Boolean]] - (Optional, default [[false]]) [[true]] to return loaded weapons only
+
+|r1= [[Array]] of [[Array]]s with [weaponIndex, isSelected, weaponName, muzzleName, firemode, magazineName, ammoCount, isPrimary] (or an empty []):
+* weaponIndex: [[Number]] - internal weapon index (changes frequently) used with "SwitchWeapon" and "UseWeapon" [[action]]s
+* isSelected: [[Boolean]] - [[true]] if this weapon is currently selected
+* weaponName: [[String]] - weapon name
+* muzzleName: [[String]] - muzzle name
+* firemode: [[String]] - firemode that is set for this 'weaponIndex'
+* magazineName: [[String]] - name of the loaded magazine or ""
+* ammoCount: [[Number]] - magazine ammo count or -1
+* isPrimary: [[Boolean]] - [[true]] if this muzzle is considered primary by the engine (Since Arma 3 2.14)
+
+|x1= Find weapon with FullAuto firemode and switch to it: <sqf>
+private _weapons = player weaponsInfo [currentMuzzle player, true];
+private _found = _weapons findIf { _x select 4 == "FullAuto" };
+if (_found > -1) then { action ["SwitchWeapon", player, player, _weapons select _found select 0] };
+</sqf>
+
+|seealso= [[weaponState]] [[weaponReloadingTime]] [[action]]
+}}

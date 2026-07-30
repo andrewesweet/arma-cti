@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Scripting_Commands:_Server_Execution
+// revision: 294037 (2021-11-05T21:14:36Z)
+// export sha1: 1yda5ai4ay94q8hbchn8w4vh1srx2za
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists [[:Category:Scripting Commands|Commands]] that need to be executed from the server {{Icon|serverExec|32}}.
+
+[[Category:Scripting Commands]]

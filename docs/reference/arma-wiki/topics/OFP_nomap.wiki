@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/OFP-nomap
+// revision: 258224 (2021-05-24T15:16:19Z)
+// export sha1: h5rucco5ps4iywjd7n1gdvhmesd5k7f
+// Vendored snapshot. Do not edit — re-export instead.
+
+The stability of the Operation Flashpoint with newer graphics cards can be significantly improved when using [[Operation Flashpoint: Startup Parameters|-nomap]] command line argument - it is very likely using this option would prevent the crash you may have just experienced.
+
+For other troubleshooting tips you can visit [[Operation Flashpoint: Troubleshooting]].

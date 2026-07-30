@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/items
+// revision: 377151 (2026-01-01T10:36:00Z)
+// export sha1: aec6lstxec8ishwje58x94pps4o8aju
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= global
+
+|gr1= Unit Inventory
+
+|descr= Returns an array of names of all unit's stored items, including [[weapons]] but excluding [[magazines]] (see [[itemsWithMagazines]]) and [[assignedItems]].
+
+|s1= [[items]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>_itemsPlayer = items player;</sqf>
+
+|x2= <sqf>player sideChat format ["%1", items player];</sqf>
+
+|seealso= [[itemsWithMagazines]] [[assignedItems]] [[primaryWeaponItems]] [[secondaryWeaponItems]] [[backpacks]]
+}}
+
+{{Note
+|user= comp_uter15776
+|timestamp= 20220119160104
+|text= When using '''items''' on a player; any equipped primary/secondary weapon/launchers, as well as certain throwables i.e. chemlights, smokes, grenades etc. are ''not'' returned.
+For weapons and launchers that aren't stored inside a uniform, backpack or vest use '''weaponsItems'''. For throwables use '''magazines'''.
+}}

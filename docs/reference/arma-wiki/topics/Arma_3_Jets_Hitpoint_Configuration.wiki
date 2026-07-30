@@ -1,0 +1,178 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Jets_Hitpoint_Configuration
+// revision: 351431 (2023-12-06T09:30:03Z)
+// export sha1: i1dqmsue2j8t013dxcjc65svwxd1zm9
+// categories: Category:Arma 3: Tutorials | Category:Arma 3: Vehicle Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+One of the features for the [[Arma 3 Jets|Jets DLC]] being created was overhaul of our own planes being released, including new hitpoints.
+Previous state was quite binary - you fly, or you die. However, this update bring more possibilities due to the engine support and i'll try to shed some light into it.
+This applies for the hitpoints in general, as there is no proper documentation explaining the parameters as far as I'm aware.
+
+There is already one [[Arma 3 Damage Description|existing guide]] explaining how the damage model works, and knowledge of this is useful for actual hitpoint configuration and setting the parameters.
+This guide is focused more on the creation and configuration of the hitzones, however it will scratch the surface of damage model as well.
+
+
+== Hitpoint Parameters ==
+
+The HitPoints class itself has several parameters, which will be explained in this guide. However there are also '''two important config parameters''', which heavily affect the HitPoints class.
+Both are in the root of the vehicle class (in other words, they are not part of a subclass such as HitPoints or AnimationSources).
+
+* '''Armor''' - base value of the vehicle armor, reduces the damage taken from the direct hit. Affects <u>armor</u> parameter in the HitPoints class
+* '''ArmorStructural''' - value affecting <u>passThrough</u> parameter in the HitPoints class (divides the extent of the damage transferred by passThrough). It also increases overall durability of the object (even if it has no hitpoints).
+** <u>Example:</u> if passThrough = 0.5 and ArmorStructural = 1, 0.5 is transferred to the total damage
+
+<syntaxhighlight lang="cpp">
+// config.cpp
+// ...
+class HitPoints : HitPoints
+{
+	class HitHull : HitHull			{ armor = 3;	explosionShielding = 5; name = "Hull_hit";		passThrough = 0.5; visual = ""; radius = 0.3;	minimalHit = 0.02; material = -1; };
+	class HitEngine : HitHull		{ armor = 1.5;	explosionShielding = 2;	name = "engine_1_hit";	passThrough = 0.5; visual = ""; radius = 0.55;	minimalHit = 0.1; };
+	class HitEngine2 : HitEngine	{ armor = 1.5;	explosionShielding = 2;	name = "engine_2_hit";	passThrough = 0.5; visual = ""; radius = 0.55;	minimalHit = 0.1; };
+	// ...
+};
+// ...
+</syntaxhighlight> 
+
+* '''name''' - name of the selection in the hitpoint LOD
+* '''visual''' - name of the selection in the visual LODs (to change to damage texture). Name of selection in visual need to be in <u>sections</u> in model.cfg
+* '''armor''' - <u>multiplier</u> of the ''base armor'' of the vehicle. 
+** <u>Example:</u> if vehicle has 80 armor and engine has 3, the part will have 240 armor in total
+* '''explosionShielding''' - ''multiplier'' of <u>incoming explosion damage</u>. Therefore, only values smaller than 1 can be actually called 'shielding', values bigger than 1 are increasing vulnerability towards explosive damage. 
+** <u>Example:</u> if there's incoming explosive damage of 10 and explosion shielding is 0.5, the part will take 5 damage. With incoming damage of 10 and explosionShielding = 3, the part will take 30 damage.
+* '''passThrough''' - parameter defining, how much of the hitpoint damage is transferred to total damage (because damaged glass and damaged engine have completely different severity). Minimum value is 0 (nothing goes to total), maximum value is 1 (everything goes to total). PassThrough is affected by <u>ArmorStructural</u> mentioned previously.
+* '''radius''' - radius of the sphere created around vertices in the selection at the hitpoint LOD. Spheres can be seen via [[Arma 3 Diagnostics Exe|hitpoints diagnostics]] in the game. Please note, that the size of the sphere also affects damage taken (the bigger the sphere, the less damage taken).
+* '''minimalHit''' - value defining minimal damage for the hitpoint. Smaller values are discarded. 
+** <u>Example:</u> If hitpoint has minimalHit = 0.1 and receives 3 hits from which each deals damage of 0.07, hitpoint won't receive any damage at all.
+* '''depends''' - [[Simple Expression|simple expressions]] for creating dependencies between hitpoints. Clearing 'depends' in case of inheritance cannot be an empty string (rpt warnings), but rather a "0" value. It can be used for more detailed damage model.
+** <u>Example 1:</u> HitHull dependant on total damage (therefore practically disabled as an individual hitpoint). This way the hitpoint would get damage only via passThrough. Might serve for better visualization of damage in UI. <syntaxhighlight lang="cpp">
+class HitHull : HitHull { armor = 999; visual = "zbytek"; depends = "Total"; radius = 0.01; };
+</syntaxhighlight>
+** <u>Example 2:</u> HitFuel damage dependant on damage from two other hitpoints. Can be used for more detailed damage model. For example, when particular jet has one fuel tank in a tank, and one fuel on each wing (but engine supports only HitFuel and hitFuel2). <syntaxhighlight lang="cpp">
+class HitFuel_Left : HitFuel	{ armor = 2.5; explosionShielding = 5; name = "HitFuel1"; passThrough = 0.2; visual = "Hit_Fuel2a";	radius = 0.2; minimalHit = 0.1; depends = "0"; };
+class HitFuel_Right : HitFuel	{ armor = 2.5; explosionShielding = 5; name = "HitFuel2"; passThrough = 0.2; visual = "Hit_Fuel2b";	radius = 0.2; minimalHit = 0.1; depends = "0"; };
+class HitFuel2 : HitFuel		{ armor = 999; explosionShielding = 0; name = "HitFuel2"; passThrough = 0.2; visual = "";			radius = 0.2; minimalHit = 0.1; depends = "(HitFuel_Left + HitFuel_Right) * 0.5"; };
+</syntaxhighlight>
+
+
+== List of Engine-Supported Hit Zones for Planes ==
+
+With the development of Jets DLC, the planes have got gotten much more intricate damage, divided to several categories in UI:
+* '''HULL'''
+* '''ENG'''
+* '''FUEL'''
+* '''CTRL'''
+* '''INST'''
+* '''GEAR'''
+
+The categories will be explained, together with the newly introduced hitpoints for Jets DLC and their gameplay functionality.
+
+=== HULL ===
+
+Unsurprisingly, contains one hitpoint category, which is already widely known:
+* '''HitHull'''
+There is not much to explain here, reflects the state of the hull.
+
+=== ENG ===
+
+Stands for engine, and there are two hitpoint categories supported by the engine.
+* '''HitEngine'''
+* '''HitEngine2'''
+Damaging the engine hitpoint reduces the jet's thrust, and therefore, overall performance. The categories above allow to distinguish the single- and twin-engined jets.
+The thrust reduction is modified accordingly depending on the amount of engines configured (destroying HitEngine will reduce the thrust only to half in case HitEngine2 exists).
+
+=== FUEL ===
+
+Fuel hitpoints, and as with the engine, there are two of them engine supported:
+* '''HitFuel'''
+* '''HitFuel2'''
+Damaging these hitpoints will cause fuel leaks - jet will be continuously losing the fuel.
+Similarily as with the engine hitpoints, it also depends on the amount of hitpoints configured (with destroyed HitFuel the jet will be losing fuel quickly only to the half of total amount, in case HitFuel2 exists). Fuel will be depleting toll reaching level of HitFuel damage. 
+* <u>Example:</u> If a single fuel tank is damaged at 0.9, fuel drop will stop at 0.1
+
+=== CTRL ===
+
+This category is for the control surfaces of the jets, and engine supports 6 hitpoints in total:
+* '''HitLAileron'''
+* '''HitRAileron'''
+* '''HitLCElevator''' - LC stands for "Left or Central" - if the plane has only singular control surface of this type
+* '''HitRElevator'''
+* '''HitLCRudder''' - LC stands for "Left or Central" - if the plane has only singular control surface of this type
+* '''HitRRudder'''
+Damaging these hitpoints will be affecting the flight model and hamper the jets ability to change direction. However, to also visually reflect this change, the current animation sources for the flight controls do not reflect any damage, therefore they'll have to be changed for the newly introduced ones:
+* '''aileronLeftDamaged''' - replaces 'aileron' animation source, disabled upon destruction of <u>HitLAileron</u>
+* '''aileronRightDamaged''' - replaces 'aileron' animation source, disabled upon destruction of <u>HitRAileron</u>
+* '''elevatorLeftCenterDamaged''' - replaces 'elevator' animation source, disabled upon destruction of <u>HitLCElevator</u>
+* '''elevatorRightDamaged''' - replaces 'elevator' animation source, disabled upon destruction of <u>HitRElevator</u>
+* '''rudderLeftCenterDamaged''' - replaces 'rudder' animation source, disabled upon destruction of <u>HitLCRudder</u>
+* '''rudderRightDamaged''' - replaces 'rudder' animation source, disabled upon destruction of <u>HitRRudder</u>
+* '''aileronTLeftDamaged''' - replaces 'aileronT' animation source, disabled upon destruction of <u>HitLAileron</u>
+* '''aileronBLeftDamaged''' - replaces 'aileronB' animation source, disabled upon destruction of <u>HitLAileron</u>
+* '''aileronTRightDamaged''' - replaces 'aileronT' animation source, disabled upon destruction of <u>HitRAileron</u>
+* '''aileronBRightDamaged''' - replaces 'aileronB' animation source, disabled upon destruction of <u>HitRAileron</u>
+
+''<u>Note:</u> aileronT and aileronB damage sources were used mainly on the air brakes on A-10 (Wipeout).
+As the air brakes are located its ailerons, damage versions have been created for better visual representation, however their functionality remains unaffected.''
+
+Above are listed all available / supported hitpoints and animation sources. However, not all of them need to be used for every plane - depends on the plane's composition.
+Not all planes have all of the control surfaces paired.
+The purpose of animation sources listed above is better visual representation - one the control surface is damaged, it gets stuck (won't move anymore), which adds to authenticity when the flight model gets affected by the new damage model.
+
+=== INST ===
+
+This category is reserved for electronic systems in the plane (MFDs, HMDs, HUDs). There is currently only one hitpoint category:
+* '''HitAvionics'''
+Damaging avionics will disable any HMD or HUD on the jet. However, to disable MFD as well, the animation needs to be manually configured via hide animations dependent on user defined source:
+<syntaxhighlight lang="cpp">
+// config.cpp
+class AnimationSources : AnimationSources { class HitAvionics { source = "Hit"; hitpoint = "HitAvionics"; raw = 1; }; };
+</syntaxhighlight>
+
+For the animation itself, there are several possible approaches:
+
+# Duplicating the selection for turned off displays (display_off), which is hidden at the start and unhidden at certain level of damage. The selection is duplicated, because the original one also uses hide animation on a different source. <syntaxhighlight lang="cpp">
+// model.cfg
+class Avionics_damage
+{
+	type = hide;
+	source = "HitAvionics";
+	selection = "Display_off_dmg";
+	minValue = 0;
+	maxValue = 1;
+	hideValue = 0;
+	unHideValue = 0.9;
+};
+</syntaxhighlight>
+# Create a selection for certain elements in MFDs (best solution might be to make it virtual parent bone) to simulate partial functionality and hide important data <syntaxhighlight lang="cpp">
+// model.cfg
+class MFD_Damage_Hide
+{
+	type = hide;
+	minValue = 0;
+	maxValue = 1;
+	hideValue = 0.5;
+	source = "HitAvionics";
+	selection = "MFD_Damage_Hide";
+};
+</syntaxhighlight>
+
+=== GEAR ===
+
+There have been many questions regarding this category, so hopefully this guide will clear it: '''there is no "HitGear" hitpoint'''.
+Gear is handled fully by the engine, based on [[Arma 3 Cars Config Guidelines#Wheel parameters|physX wheels]] configured on the plane.
+If the landing is too rough, they get destroyed. However, no hitpoint configuration is needed.
+
+
+== Recommendations for Hitpoints in p3d ==
+
+This guide has been explaining hitpoint parameters and how to do extended damage model for planes. However, there is small part which this guide didn't touch yet: '''the model'''.
+This part will attempt to give some recommendations and good practices when creating the hitpoint LOD for any vehicle.
+[[Arma 3: Damage Description|The previously mentioned community guide]] shows several ways to go it. It might be difficult to pick the right one, but the approach which has been established provides following advice:
+
+# '''Create hitpoints to be within the fire geometry''' - previous approach often used some vertices from the surface of visual LOD and spheres are created around that. Spheres are then quite exposed to any hit and even more so to the explosive damage. Direct hit needs to pass through FireGeometry and hitpoint sphere alike to deal damage, while explosive damage needs to reach only the sphere. Hitpoints withing FireGeometry will prove more durable and more accurate. This approach also consumes less vertices - instead of a ring around surface, there can be simply one vertex inside. Adjust the sphere size accordingly.
+# '''Don't use too many vertices''' - if the geometry is thick, is it not necessary to have 3x3x9 vertices of radius 0.2 for the engine, for example. 1x1x3 vertices of radius 0.5 will cover it just as well. Less vertices means more performance friendly. If the geometry is too thin (wings, control surfaces), there is also no sense to try and fit it within the geometry, and cover it with huge number small spheres. Such thin geometry is exposed either way so instead of covering it by 4x15 vertices with 0.05 radius, a row 1x5 with 0.2 radius will be enough.
+
+
+{{GameCategory|arma3|Tutorials}}
+{{GameCategory|arma3|Vehicle Configuration}}

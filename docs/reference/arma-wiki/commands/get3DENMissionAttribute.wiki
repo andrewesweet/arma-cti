@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/get3DENMissionAttribute
+// revision: 341146 (2023-05-13T22:12:47Z)
+// export sha1: ecs8m39jkmiwz65q4jj7ync4nung338
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Return value of [[Eden_Editor:_Scenario_Atttributes|scenario attribute]]. For a list of all available mission attributes see [[Eden_Editor:_Setting_Attributes#Scenario|Mission Attributes]].
+{{Feature|important|Attributes are available only within the Eden Editor workspace. You cannot access them in scenario preview or exported scenario!}}
+
+|s1= section [[get3DENMissionAttribute]] class
+
+|p1= section: [[String]] - attribute section. See [[Eden_Editor:_Setting_Attributes#Sections_.26_Properties|Sections & Properties]]
+|p2= class: [[String]] - attribute name
+|r1= [[Anything]]
+
+|x1= <sqf>systemChat str ("Multiplayer" get3DENMissionAttribute "respawn");</sqf>
+
+|seealso= 
+[[set3DENMissionAttributes]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2016-02-26 - 16:54 (UTC)</dd>
+<dt class="note">[[User:R3vo|R3vo]]</dt>
+<dd class="note">
+The class names of the vanilla sections are:
+{| class="wikitable"
+|-
+! Display Name !! Class Name (section)
+|-
+| Environment || Intel
+|-
+| Multiplayer || Multiplayer
+|-
+| Performance || GarbageCollection
+|-
+| Preferences|| Preferences
+|}
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2020-11-02 - 16:57 (UTC)</dd>
+<dt class="note">[[User:R3vo|R3vo]]</dt>
+<dd class="note">
+It seems that [[Eden_Editor:_Configuring_Attributes#Preferences|Preferences]] can be returned just fine during preview.
+</dd>
+
+</dl>

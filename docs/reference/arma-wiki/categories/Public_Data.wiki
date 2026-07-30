@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/Category:Public_Data
+// revision: 290650 (2021-07-20T00:53:30Z)
+// export sha1: 2yt6gybx5ypd1xjv1irusb7bde6456o
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Public_data_soldiers.png|center|500px]]
+== Introduction ==
+[[Bohemia Interactive]] has released sample files and data from their games for the community, to learn from examples, base their own creations on the existing content, and expand the Armaverse. These packs include configuration files, material files, 3D models, textures, animations as well as complete game data in the form of PBOs. The public data is released under Bohemia Interactive's content licenses, established to support the creative community evolving around its titles, and to set clear rules for the use of both Bohemia Interactive's and user-made content.
+
+Note that previous releases of sample model packages are replaced by the new ones, with new licenses applied to the content.
+
+== Data Packages ==
+* '''[[Arma 1 Sample Models]]''' - The package of sample models from [[Armed_Assault|Arma 1]] (Armed Assault) re-released under new license.
+* '''[[Arma 2 Sample Models]]''' - The pack of sample models and animations from [[:Category:Arma 2|{{arma2}}]] and its expansions.
+* '''[[Arma Licensed Data Pack]]''' - Binarized data from the Arma series (from CWC to A2:CO) in PBO files. The purpose of this package is to clearly identify which game data is licensed for public use and modification, and what are the related conditions and requirements.
+* '''[[Sahrani Community Package]]''' - Source data of the Sahrani terrain from [[Armed_Assault|Arma 1]].
+* '''[[Take On Helicopters Data Pack]]''' - Binarized data from the [[Take On Helicopters]] series in PBO files. The purpose of this package is to clearly identify which game data is licensed for public use and modification, and what are the related conditions and requirements. Please note that TKOH data are licensed for creating derivatives for both the [[Take On Helicopters]] and Arma games.
+
+Data packages are available to download via FTP or Torrent.
+
+== [[Licenses]] ==
+The licenses cover the use of Arma data in community modifications and the modification of DAYZ Mod. All parts of publicly released data are released under one of the following licenses:
+
+* [https://www.bohemia.net/community/licenses/arma-and-dayz-public-license-share-alike-adpl-sa Arma and Dayz Public License Share Alike (ADPL-SA)]
+* [https://www.bohemia.net/community/licenses/dayz-public-license-dpl Dayz Public License (DPL)]
+* [http://www.bistudio.com/community/licenses/arma-public-license Arma Public License (APL)]
+* [http://www.bistudio.com/community/licenses/arma-public-license-share-alike Arma Public License Share Alike (APL-SA)]
+* [http://www.bistudio.com/community/licenses/dayz-mod-license-share-alike DAYZ Mod License Share Alike (DML-SA)]
+* [http://www.bistudio.com/community/licenses/take-on-license-share-alike Take On Public License Share Alike (TOPL-SA)]
+
+== See also ==
+[https://www.bohemia.net/community/game-content-usage-rules Game content usage rules]
+
+== Addendum ==
+The vehicles, weapons, characters and similar items are usually released under '''APL'''. Terrains, terrain objects, playable content and voiceovers are usually released under '''APL-SA''' or '''TOPL-SA''', as it is in Bohemia Interactive's interest to keep further modifications of this data free to adapt. This is only general information; to check which license applies to particular Bohemia Interactive data, check the content of the package and the license and readme file attached. '''DML-SA''' covers further modifications of DAYZ Mod for Arma 2.
+
+[[Category:Bohemia Interactive]]

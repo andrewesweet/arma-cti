@@ -1,0 +1,80 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_unpackStaticWeapon
+// revision: 352038 (2024-02-01T23:24:28Z)
+// export sha1: rivhdt6kmi1fpkumrrs4wr98rnv6560
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Weapons | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Weapons
+
+|descr= This function will move given support team to the given weapon position.
+The weapon crew will unpack carried weapon and start watching given target position.
+Requires three personnel in the team: Team Leader, Gunner and Asst. Gunner.
+This function is MP compatible.<br>
+When the weapon is unpacked, the [[Arma 3: Scripted Event Handlers#Events|"StaticWeaponUnpacked"]] scripted EH is called.
+
+{{Feature|informative|
+If a unit flees, all bets are off and the function will exit leaving units on their own.<br><!--
+-->To guarantee weapon disassembly, make sure the group has maximum courage: <sqf inline>_group allowFleeing 0;</sqf>.
+}}
+
+|s1= [group, weaponPos, targetPos, leaderPos] call [[BIS_fnc_unpackStaticWeapon]]
+
+|p1= group: [[Group]] or [[Object]] - the support team group or a unit from this group
+
+|p2= weaponPos: [[Array]], [[String]] or [[Object]] - weapon placement position, object position or marker
+
+|p3= targetPos: [[Array]], [[String]] or [[Object]] - target position, object position to watch or marker
+
+|p4= leaderPos:  [[Array]], [[String]] or [[Object]] - (Optional) position, object or marker group leader should move to
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[leader1, "weapon_mrk", "target_mrk"] call BIS_fnc_unpackStaticWeapon;</sqf>
+
+|x2= <sqf>
+group1 allowFleeing 0;
+[group1, "weapon_mrk", tank1, "leader_mrk"] call BIS_fnc_unpackStaticWeapon;
+</sqf>
+
+|seealso= [[BIS_fnc_packStaticWeapon]] [[BIS_fnc_addScriptedEventHandler]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20170106231000
+|text= The following script will create a group consisting of a Team Leader, Gunner and Asst. Gunner and give the group 2 random MOVE waypoints. After the group reached the 1st waypoint, waypoint statement will execute [[BIS_fnc_unpackStaticWeapon]] and the group will stop and unpack static weapon, while leader is given random position to go to. After 7 seconds the [[BIS_fnc_packStaticWeapon]] is executed and the group packs and heads to 2nd waypoint.
+<sqf>
+private _group = createGroup west;
+private _pos = player getRelPos [20, 0];
+private _randomDir = random 360;
+private _wp1 = _group addWaypoint [_pos getPos [20, _randomDir], 10];
+_wp1 setWaypointType "MOVE";
+_wp1 setWaypointStatements ["true", "
+	group this allowFleeing 0;
+	[group this, 'StaticWeaponUnpacked', {
+		_this spawn
+		{
+			sleep 7;
+			[_this select 0] call BIS_fnc_packStaticWeapon;
+		};
+	}] call BIS_fnc_addScriptedEventHandler;
+	[
+		this, 
+		this, 
+		this getPos [1000, random 360], 
+		this getPos [10, 0]
+	] call BIS_fnc_unpackStaticWeapon;
+"];
+private _wp2 = _group addWaypoint [_pos getPos [20, _randomDir - 180], 10];
+_wp2 setWaypointType "MOVE";
+private _leader = _group createUnit ["B_Soldier_TL_F", _pos, [], 0, "NONE"];
+private _gunner = _group createUnit ["B_Support_GMG_F", _pos, [], 0, "NONE"];
+private _assistant = _group createUnit ["B_Support_AMG_F", _pos, [], 0, "NONE"];
+units _group doFollow _leader;
+</sqf>
+}}

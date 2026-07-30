@@ -1,0 +1,92 @@
+// source: https://community.bistudio.com/wiki/Bohemia_Interactive
+// revision: 341527 (2023-06-07T09:23:35Z)
+// export sha1: 74e0d2zyvpnl3e3fp4np1w3wovbromi
+// categories: Category:Bohemia Interactive
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+{| class="wikitable sortable float-right"
+! Game
+! Platform
+! Release date
+|-
+| {{GameCategory|ofp|link= y}} / {{GameCategory|ofp|link= y|text={{arma0}}}}
+| PC
+| 2001
+|-
+| [[{{ofpr}}]]
+| PC
+| 2002
+|-
+| {{GameCategory|ofpe|link= y}}
+| Xbox
+| 2005
+|-
+| {{GameCategory|arma1|link= y}}
+| PC
+| 2006
+|-
+| {{GameCategory|arma2|link= y}}
+| PC
+| 2009
+|-
+| {{GameCategory|arma2oa|link= y}}
+| PC
+| 2010
+|-
+| {{GameCategory|tkoh|link= y}}
+| PC
+| 2011
+|-
+| {{GameCategory|arma3|link= y}}
+| PC
+| 2013
+|-
+| {{GameCategory|tkom|link= y}}
+| PC
+| 2017
+|-
+| {{GameCategory|ylands|link= y}}
+| PC
+| 2017
+|-
+| {{GameCategory|vigor|link= y}}
+| Xbox, Switch, PlayStation
+| 2019
+|-
+| {{GameCategory|armaR|link= y}}
+| PC, Xbox
+| 2022
+|-
+| {{GameCategory|silica|link= y}}
+| PC
+| 2023
+|-
+| {{GameCategory|arma4|link= y}}
+| TBA
+| TBA
+|}
+Established in 1999 in Prague, Czech Republic, {{Name|bi}} is an independent game development studio that focuses on developing original state of the art computer entertainment and simulation software including the research of proprietary advanced real time 3D graphics, artificial intelligence and physical simulation technologies for real-time interactive environments. The research and development team of {{Name|bi}} is located at studios in Czech Republic, Netherlands, Thailand and Australia.
+
+In 2001, {{Name|bi}} finished the development of '''[[{{ofp}}]]'''. The debut game by {{Name|bi}}, published by Codemasters, became the No. 1 bestselling PC game around the world with over '''1.2 million copies''' sold since its release, and has won many international accolades including '''Game Of The Year''' and '''Best Action Game''' rewards.
+{{Name|bi}} won the Best PC Game Developer Of The Year 2001 award at London’s ECTS exhibition and Rookie Studio of the Year award at GDC 2002.
+
+In December 2001, {{Name|bi}}'s newly formed [[Bohemia Interactive Simulations|Australian studio]] started development of the special military training simulation program '''Virtual Battlespace 1''' in cooperation with U.S. based Coalescent Technologies. VBS1 is already being used as a training tool by the U.S. Marine Corps., U.S. National Guard, Australian Defense Forces and other military organizations. Another military program based on {{ofp}}  is DARWARS Ambush! and it was created by BBN.
+
+'''[[{{ofpr}}]]''' was released in 2002 to expand the game and {{Name|bi}} kept releasing official upgrades to {{ofp}} until 2005 - and renamed it '''{{arma0}}''' ten years after release, in 2011, with the 1.99 patch.
+
+{{Clear}}
+== {{Name|bi}}'s Games ==
+
+* [[:Category:Projects|{{Name|bi}} projects]]
+
+
+== See Also ==
+
+* {{Link|https://www.bohemia.net/|Official website}}
+* {{Link|https://www.bohemia.net/company/about|About {{Name|bi}}}}
+* {{Link|https://www.bohemia.net/blog|Developer's Blog}}
+* {{Link|https://en.wikipedia.org/wiki/Bohemia_Interactive|{{Name|bi}} on Wikipedia}}
+
+
+[[Category:Bohemia Interactive]]

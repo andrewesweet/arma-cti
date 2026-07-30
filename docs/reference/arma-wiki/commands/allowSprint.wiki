@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/allowSprint
+// revision: 341801 (2023-06-24T08:22:32Z)
+// export sha1: 0y3ubvrm6ith7kqevphm7q2jlqvr6cx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|eff= local
+
+|arg= local
+
+|gr1= Stamina System
+
+|descr= Force player to run/jog if set to false.
+
+|s1= unit [[allowSprint]]  state
+
+|p1= unit: [[Object]]
+
+|p2= state: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player allowSprint false;</sqf>
+
+|seealso= [[Arma 3: Stamina]] [[isSprintAllowed]]
+}}

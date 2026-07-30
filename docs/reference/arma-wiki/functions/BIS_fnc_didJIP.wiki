@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_didJIP
+// revision: 336277 (2022-12-21T11:09:46Z)
+// export sha1: 8kotqcprkp7c1c2l9rozrfz0jq8o2fb
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Multiplayer | Category:Functions | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Multiplayer
+
+|descr= Return whether or not the local player joined the game while it was already in progress. {{Feature|important|{{GVI|arma3|1.50|size= 0.75}} Use [[didJIP]] instead.}}
+
+|s1= [] call [[BIS_fnc_didJIP]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if ([] call BIS_fnc_didJIP) then { forceRespawn player };</sqf>
+
+|seealso= [[remoteExec]] [[remoteExecCall]] [[didJIP]] [[didJIPOwner]] [[exportJIPMessages]]
+}}

@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_key_getLeaveTangentWeight
+// revision: 278981 (2021-06-13T21:47:18Z)
+// export sha1: fyv82hoi368fcfnx2obxfolfe5yk24a
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Key | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Key
+|descr= <pre>/*
+	Author: Nelson Duarte <@Nelson_G_Duarte>
+
+	Description:
+	Returns the key leave tangent weight
+
+	Parameter(s):
+	_this select 0: Object - The key
+
+	Returns:
+	Float - The key leave tangent weight
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_key_getLeaveTangentWeight]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

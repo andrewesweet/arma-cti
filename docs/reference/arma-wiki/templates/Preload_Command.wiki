@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/Template:Preload/Command
+// revision: 373683 (2025-06-12T18:59:30Z)
+// export sha1: g6hbu5nva1141ukyhab6zdn80rai2ai
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|branch= dev
+
+|arg= <!-- local or global -->
+
+|eff= <!-- local or global -->
+
+|serverExec= <!-- server or empty -->
+
+|gr1= Command Group
+
+|descr= Description
+
+|mp= MP behaviour
+
+|pr= Known problems
+
+|s1= [[{{subst:PAGENAMEE}}]]
+
+|p1= argumentName: [[Type]] - (Optional, default [[defaultValue]]) description
+
+|p2= target: [[Object]] - (Optional, default [[objNull]]) the command's target
+
+|p3= <!-- ↓ to delete if unused ↓ -->
+
+|p4= 
+
+|p5= 
+
+|r1= [[Type]] - description
+
+|s2= 
+
+|p21= 
+
+|p22= 
+
+|p23= 
+
+|p24= 
+
+|p25= 
+
+|r2= 
+
+|x1= <sqf></sqf>
+
+|x2= <sqf></sqf>
+
+|x3= <sqf></sqf>
+
+|x4= <sqf></sqf>
+
+|x5= <sqf></sqf>
+
+|seealso= [[seeAlso1]] [[seeAlso2]]
+}}</includeonly><noinclude>Preload command template page.
+
+== See Also ==
+* {{Template|RV}}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

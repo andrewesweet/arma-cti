@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Functions:_Global_Effect
+// revision: 294034 (2021-11-05T21:12:20Z)
+// export sha1: alxd80jbgvr91efowsbc7rrmycz74cd
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists [[:Category:Functions|Functions]] that have a global effect {{Icon|globaleffect|32}}.
+
+[[Category:Functions by Effect]]

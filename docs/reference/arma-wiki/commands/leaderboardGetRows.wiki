@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/leaderboardGetRows
+// revision: 377273 (2026-01-02T06:36:42Z)
+// export sha1: rg9zsldw02dmvs4ha0uuitos4cx14s8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Leaderboards | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Leaderboards
+
+|descr= Returns values for the given leaderboard; this can be called after the one of the row request function has been called and successfully finished!
+
+|s1= [[leaderboardGetRows]] boardName
+
+|p1= boardName: [[String]]
+
+|r1= [[Array]] format: <nowiki>[[player1Name, score, rank], [player2Name, score, rank], [player3Name, score, rank] ...]</nowiki>
+
+|x1= <sqf>leaderboardGetRows "TT01";</sqf>
+
+|seealso= [[leaderboardDeInit]] [[leaderboardInit]] [[leaderboardRequestRowsFriends]] [[leaderboardRequestRowsGlobal]] [[leaderboardRequestRowsGlobalAroundUser]] [[leaderboardsRequestUploadScore]] [[leaderboardsRequestUploadScoreKeepBest]] [[leaderboardState]]
+}}

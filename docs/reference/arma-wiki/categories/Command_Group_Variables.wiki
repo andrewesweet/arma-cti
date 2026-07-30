@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Variables
+// revision: 163391 (2020-09-27T09:25:02Z)
+// export sha1: o5xb2j00zf2oleu3sdowrd3zstlbbom
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands to handle variables. For example comparing two variables or retrieving all variables from a namespace.
+
+[[Category:Scripting Commands by Functionality]]

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/setCompassOscillation
+// revision: 351911 (2024-01-25T09:37:29Z)
+// export sha1: qk5e3ir08m0uc15mtaijjgcd8i6c3nh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+
+|gr1= Interaction
+
+|descr= This command sets random heading on the player's compass (both in map and in 3D view) with given frequency, which is also randomised.
+
+|s1= [[setCompassOscillation]] [angle, frequencyMin, frequencyMax]
+
+|p1= angle: [[Number]] - heading deviation angle in [[rad]]ians; the random angle will be picked up from {{hl|[-angle...+angle]}} range
+
+|p2= frequencyMin: [[Number]] - lower bound of heading change in seconds
+
+|p3= frequencyMax: [[Number]] - higher bound of heading change in seconds
+
+|r1= [[Nothing]]
+
+|x1= Set compass to oscillate every second within -90/+90 degrees:
+<sqf>setCompassOscillation [rad 90, 1, 1];</sqf>
+
+|x2= Change heading every 60 to 90 seconds:
+<sqf>setCompassOscillation [rad 180, 60, 90];</sqf>
+
+|x3= Make compass go crazy:
+<sqf>setCompassOscillation [rad 360, 0.1, 0.2];</sqf>
+
+|x4= Reset to default behaviour:
+<sqf>setCompassOscillation [-1, 0, 0];</sqf>
+
+|seealso= [[visibleCompass]] [[shownCompass]] [[shownCuratorCompass]] [[showCompass]] [[showCuratorCompass]] [[setCompassDeclination]]
+}}

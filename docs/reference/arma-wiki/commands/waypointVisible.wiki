@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/waypointVisible
+// revision: 377744 (2026-01-03T00:57:55Z)
+// export sha1: q0g0ejy4p7gwae7jaz57dqu4ic4bc7z
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Waypoints
+
+|descr= A getter for [[setWaypointVisible]] command.
+
+{{Feature|warning|Returns '''0''' ([[Number]]) instead of [[Boolean]]for an invalid waypoint.}}
+
+|s1= [[waypointVisible]] waypoint
+
+|p1= waypoint: [[Waypoint]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_visible = waypointVisible [groupOne, 1];</sqf>
+
+|x2= <sqf>_visible = waypointVisible [group player, currentWaypoint group player];</sqf>
+
+|seealso= [[waypoints]] [[setWaypointVisible]]
+}}

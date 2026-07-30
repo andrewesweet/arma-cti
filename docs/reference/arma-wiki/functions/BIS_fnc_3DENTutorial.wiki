@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENTutorial
+// revision: 348963 (2023-11-08T14:45:40Z)
+// export sha1: 7qw61v13q80qud8wkofmtma8s8scs30
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr=Show tutorial in [[:Category:Eden Editor|Eden Editor]].
+
+|s1= [path, index, oneStep, display] call [[BIS_fnc_3DENTutorial]]
+
+|p1= path: [[Array]] - path in format [<categoryClass>,<tutorialClass>], classes are from '''Cfg3DEN >> Tutorials'''
+
+|p2= index: [[Number]] - (Optional, default 0) index of step at which tutorial starts
+
+|p3= oneStep: [[Boolean]] - (Optional, default [[false]]) true to show only one step, without ability to go forward or backward
+
+|p4= display: [[Display]] - (Optional, default Eden display) display used
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[["Editing", "Connecting"], 0, false] call BIS_fnc_3DENTutorial;</sqf>
+
+|seealso= [[:Category:Eden Editor|Eden Editor]] [[Eden Editor: Configuring Tutorials]]
+}}

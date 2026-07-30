@@ -1,0 +1,83 @@
+// source: https://community.bistudio.com/wiki/doStop
+// revision: 336220 (2022-12-14T20:43:09Z)
+// export sha1: 8qdtjxhhq6i94ccmak7apdn3i1lallc
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Unit Control
+
+|descr= Order the given unit(s) to stop (without radio messages). The units stopped in this way will leave the groups formation. It will prevent them from moving around with their group (or formation leader), while still being able to turn around and even move to a new position if they see fit. <br><br>The units will still respond to orders from their group leader (like engage, rearm, board a vehicle), but all of their actions will be separate from the group formation. To resume group default behaviour, use [[doFollow]] command. For example: <sqf inline>units _group doFollow leader _group;</sqf>
+
+|s1= [[doStop]] unit(s)
+
+|p1= unit(s): [[Object]] or [[Array]] of [[Object]]s
+
+|r1= [[Nothing]]
+
+|x1= <sqf>doStop _soldier1;</sqf>
+
+|x2= <sqf>doStop [_soldier1, _soldier2];</sqf>
+
+|x3= <sqf>doStop (units player);</sqf>
+
+|seealso= [[commandStop]] [[stop]] [[stopped]] [[doMove]] [[doFollow]]
+}}
+
+{{Note
+|user= Hardrock
+|timestamp= 20060803143200
+|text= ''Notes from before the conversion:''
+
+This command will make the unit stop where he is until the unit's group engages the enemy. At that time, the unit will move and fight the enemy. One good use for this is to place a bunch of units in the same group around a campfire or in some other place "for looks", and make them sit down or have their weapon on their back. When the enemy is spotted, they will get up and attack. Note that you cannot do something like place somebody behind sandbags and keep him there during a fight with this command. For that you will need [[disableAI]] "move".
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20090221001300
+|text= In '''ArmA 1.14''', this command will not stop a unit that has been given a move order by selecting the unit, then clicking on the in game map (or ground).
+}}
+
+{{Note
+|user= Katulobotomia
+|timestamp= 20130926123000
+|text= doStop'ed units WILL return to formation if their leader's behaviour isn't set to "COMBAT". The squad leader will also order everyone to return to formation if there are no enemies nearby in a set period of time, overwriting the doStop command. doStop can be best used to simply stop the unit from doing whatever he is currently doing without radio messages.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20161223212200
+|text= When a unit reaches position given with [[doMove]], [[unitReady]] becomes [[true]]. If [[doStop]] command is not executed, unit will start wondering on its own soon after, especially if unit is under fire. [[doStop]] will keep unit at the given position, but watch out for [[unitReady]] as it will become [[false]] since unit is holding position indefinitely.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20161227003000
+|text= Although it is possible to resume group default behaviour by joining units into own group like this {{hl|units _group joinSilent _group}} there is a risk that the leader will change. Instead use [[doFollow]] command as explained in the description.
+}}

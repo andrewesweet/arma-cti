@@ -1,0 +1,1520 @@
+// source: https://community.bistudio.com/wiki/CSLA_Iron_Curtain_Gear_Items
+// revision: 367273 (2024-08-08T20:35:24Z)
+// export sha1: q4gxk2a3yy12r9uv6atc1mv0ud9hnr5
+// categories: Category:CSLA: Iron Curtain
+// Vendored snapshot. Do not edit — re-export instead.
+
+This page contains the list of gear and other items included in CSLA Iron Curtain.
+{{TOC|side}}
+
+== CSLA Gear & Items ==
+
+=== Uniforms ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+|-
+| [[File:CSLA_uni60wld.png|150px|&nbsp;]]
+| <span id="CSLA_uni60wld">'''CSLA_uni60wld'''</span>
+| ''Combat uniform vz. 60''
+| ''Raindrop pattern combat uniform''
+
+|-
+| [[File:CSLA_uniSrv.png|150px|&nbsp;]]
+| <span id="CSLA_uniSrv">'''CSLA_uniSrv'''</span>
+| ''Work uniform vz. 60''
+| ''Uniform worn by service crews''
+
+|-
+| [[File:CSLA_uniPlt.png|150px|&nbsp;]]
+| <span id="CSLA_uniPlt">'''CSLA_uniPlt'''</span>
+| ''Pilot coveralls [ČSLA]''
+| ''Pilot coveralls''
+
+|-
+| [[File:CSLA_uniGhillie.png|150px|&nbsp;]]
+| <span id="CSLA_uniGhillie">'''CSLA_uniGhillie'''</span>
+| ''Ghillie suit [ČSLA]''
+| ''Ghillie suit''
+
+|-
+| [[File:CSLA_uniPoliceman.png|150px|&nbsp;]]
+| <span id="CSLA_uniPoliceman">'''CSLA_uniPoliceman'''</span>
+| ''Policeman uniform''
+| ''Policeman uniform''
+
+|-
+|
+| <span id="CSLA_uni60lrr">'''CSLA_uni60lrr'''</span>
+| ''Combat uniform vz. 60 (Para)''
+| ''Raindrop pattern combat uniform worn by CSLA paratroopers''
+|}
+
+=== Headgear ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+
+|-
+| [[File:CSLA_helmet53.png|150px|&nbsp;]]
+| <span id="CSLA_helmet53">'''CSLA_helmet53'''</span>
+| ''Helmet vz. 53''
+| ''Base metal helmet used by CSLA''
+
+|-
+| [[File:CSLA_helmet53d.png|150px|&nbsp;]]
+| <span id="CSLA_helmet53d">'''CSLA_helmet53d'''</span>
+| ''Helmet vz. 53 (Oaks)''
+| ''CSLA helmet with Oaks camo pattern cover''
+
+|-
+| [[File:CSLA_helmet53m.png|150px|&nbsp;]]
+| <span id="CSLA_helmet53m">'''CSLA_helmet53m'''</span>
+| ''Helmet vz. 53 (Lizard)''
+| ''CSLA helmet with Lizard camo pattern cover''
+
+|-
+| [[File:CSLA_helmet53j.png|150px|&nbsp;]]
+| <span id="CSLA_helmet53j">'''CSLA_helmet53j'''</span>
+| ''Helmet vz. 53 (Needles)''
+| ''CSLA helmet with Needle/Raindrop camo pattern cover''
+
+|-
+| [[File:CSLA_helmet53G.png|150px|&nbsp;]]
+| <span id="CSLA_helmet53G">'''CSLA_helmet53G'''</span>
+| ''Helmet vz. 53 with goggles''
+| ''Base CSLA helmet with goggles taken of''
+
+|-
+| [[File:CSLA_helmet53G_on.png|150px|&nbsp;]]
+| <span id="CSLA_helmet53G_on">'''CSLA_helmet53G_on'''</span>
+| ''Helmet vz. 53 with goggles (on)''
+| ''Base CSLA helmet with goggles put on''
+
+|-
+| [[File:CSLA_helmetT28.png|150px|&nbsp;]]
+| <span id="CSLA_helmetT28">'''CSLA_helmetT28'''</span>
+| ''Helmet Crewman vz.28''
+| ''Crew Helmet''
+
+|-
+| [[File:CSLA_helmetT28G.png|150px|&nbsp;]]
+| <span id="CSLA_helmetT28G">'''CSLA_helmetT28G'''</span>
+| ''Helmet Crewman vz.28 with goggles''
+| ''Crew Helmet with goggles taken of''
+
+|-
+| [[File:CSLA_helmetT28G_on.png|150px|&nbsp;]]
+| <span id="CSLA_helmetT28G_on">'''CSLA_helmetT28G_on'''</span>
+| ''Helmet Crewman vz.28 with goggles (on)''
+| ''Crew Helmet with goggles put on''
+
+|-
+| [[File:CSLA_helmetPOP6.png|150px|&nbsp;]]
+| <span id="CSLA_helmetPOP6">'''CSLA_helmetPOP6'''</span>
+| ''Helmet Heli POP-6 ''
+| ''Pilot Helmet''
+
+|-
+| [[File:CSLA_helmetPara.png|150px|&nbsp;]]
+| <span id="CSLA_helmetPara">'''CSLA_helmetPara'''</span>
+| ''Helmet Para''
+| ''Helmet Para''
+
+|-
+| [[File:CSLA_helmetZSh5c.png|150px|&nbsp;]]
+| <span id="CSLA_helmetZSh5c">'''CSLA_helmetZSh5c'''</span>
+| ''Helmet Flight Zsh-5 (closed)''
+| ''Aircraft Pilot Helmet with mask on''
+
+|-
+| [[File:CSLA_helmetZSh5o.png|150px|&nbsp;]]
+| <span id="CSLA_helmetZSh5o">'''CSLA_helmetZSh5o'''</span>
+| ''Helmet Flight Zsh-5 (open)''
+| ''Aircraft Pilot Helmet with mask off''
+
+|-
+| [[File:CSLA_cap.png|150px|&nbsp;]]
+| <span id="CSLA_cap">'''CSLA_cap'''</span>
+| ''Cap vz. 60 Needles''
+| ''Cap vz. 60 Needles''
+
+|-
+| [[File:CSLA_beretR.png|150px|&nbsp;]]
+| <span id="CSLA_beretR">'''CSLA_beretR'''</span>
+| ''Beret vz. 60 Red''
+| ''Beret vz. 60 Red''
+
+|-
+| [[File:CSLA_beretM.png|150px|&nbsp;]]
+| <span id="CSLA_beretM">'''CSLA_beretM'''</span>
+| ''Beret vz. 60 Masking''
+| ''Beret vz. 60 with Needle/Raidrop camo pattern''
+
+|-
+| [[File:CSLA_policeCap.png|150px|&nbsp;]]
+| <span id="CSLA_policeCap">'''CSLA_policeCap'''</span>
+| ''Police Cap''
+| ''Police Cap''
+
+|-
+| [[File:CSLA_capMlok.png|150px|&nbsp;]]
+| <span id="CSLA_capMlok">'''CSLA_capMlok'''</span>
+| ''Cap vz. 60 MLOK''
+| ''Cap vz. 60 with MLOK camo pattern''
+|}
+
+=== Vest & Load Bearing Equipment ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+<!-- ! Preview -->
+! Class
+! Name
+! Inventory description
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60harness.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60harness">'''CSLA_gr60harness'''</span>
+| ''Harness vz. 60''
+| ''Base Harness vz. 60 (Stripped)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60emp.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60emp">'''CSLA_gr60emp'''</span>
+| ''Harness vz. 60 Belt''
+| ''Harness vz. 60 Belt Only''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60base.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60base">'''CSLA_gr60base'''</span>
+| ''Harness vz. 60 Base Gear''
+| ''Harness vz. 60 Base Gear''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60rfl.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60rfl">'''CSLA_gr60rfl'''</span>
+| ''Harness vz. 60 Rifleman''
+| ''Harness vz. 60 Rifleman''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60sgt.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60sgt">'''CSLA_gr60sgt'''</span>
+| ''Harness vz. 60 Sergeant''
+| ''Harness vz. 60 Sergeant''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60ofc1.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60ofc1">'''CSLA_gr60ofc1'''</span>
+| ''Harness vz. 60 Officer Combat''
+| ''Harness vz. 60 Officer Combat''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60ofc2.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60ofc2">'''CSLA_gr60ofc2'''</span>
+| ''Harness vz. 60 Officer Combat HQ''
+| ''Harness''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60ofc3.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60ofc3">'''CSLA_gr60ofc3'''</span>
+| ''Harness vz. 60 Officer''
+| ''Harness vz. 60 Officer''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60ofc4.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60ofc4">'''CSLA_gr60ofc4'''</span>
+| ''Harness vz. 60 Officer HQ''
+| ''Harness vz. 60 Officer HQ''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60UK59.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60UK59">'''CSLA_gr60UK59'''</span>
+| ''Harness vz. 60 UK-59 Gunner''
+| ''Harness vz. 60 UK-59 Gunner''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60OP63.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60OP63">'''CSLA_gr60OP63'''</span>
+| ''Harness vz. 60 OP-63 Sniper''
+| ''Harness vz. 60 OP-63 Sniper''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60RPG7.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60RPG7">'''CSLA_gr60RPG7'''</span>
+| ''Harness vz. 60 RPG-7 AT Gunner (mot. rif.)''
+| ''Harness vz. 60 RPG-7 Gunner (motorized riflemen)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60RPG7r.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60RPG7r">'''CSLA_gr60RPG7r'''</span>
+| ''Harness vz. 60 RPG-7 AT Gunner (riflemen)''
+| ''Harness vz. 60 RPG-7 Gunner (riflemen)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60lnrG.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60lnrG">'''CSLA_gr60lnrG'''</span>
+| ''Harness vz. 60 AT Gunner''
+| ''Harness vz. 60 AT Gunner''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60brr.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60brr">'''CSLA_gr60brr'''</span>
+| ''Harness vz. 60 (with pouch)''
+| ''Harness vz. 60 with a satchel carried on the side''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60drv.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60drv">'''CSLA_gr60drv'''</span>
+| ''Harness vz. 60 Driver''
+| ''Harness vz. 60 Driver''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60crw.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60crw">'''CSLA_gr60crw'''</span>
+| ''Harness vz. 60 IFV Crewman''
+| ''Harness vz. 60 IFV Crewman''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60medic.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60medic">'''CSLA_gr60medic'''</span>
+| ''Harness vz. 60 Medic''
+| ''Harness vz. 60 Medic''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60svc.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60svc">'''CSLA_gr60svc'''</span>
+| ''Harness vz. 60 Mechanic''
+| ''Harness vz. 60 Mechanic''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60tankPi82.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60tankPi82">'''CSLA_gr60tankPi82'''</span>
+| ''Harness vz. 60 Tank Crew (Pi-52)''
+| ''Harness vz. 60 Tank Crew (Pi-52)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60tankSa61.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60tankSa61">'''CSLA_gr60tankSa61'''</span>
+| ''Harness vz. 60 Tank Crew (Sa-61)''
+| ''Harness vz. 60 Tank Crew (Sa-61)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr60bnt.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr60bnt">'''CSLA_gr60bnt'''</span>
+| ''Harness vz. 60 Belt with Bayonet''
+| ''Harness vz. 60 Belt, Bayonet Only''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85harness.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85harness">'''CSLA_gr85harness'''</span>
+| ''Harness vz. 85''
+| ''Base Harness vz. 85 (Stripped)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85ptBase.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85ptBase">'''CSLA_gr85ptBase'''</span>
+| ''Harness vz. 85 (Rifleman)''
+| ''Harness vz. 85 (Rifleman)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85ptOP63.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85ptOP63">'''CSLA_gr85ptOP63'''</span>
+| ''Harness vz. 85 (OP-63)''
+| ''Harness vz. 85 (OP-63)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85ptMg.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85ptMg">'''CSLA_gr85ptMg'''</span>
+| ''Harness vz. 85 (UK-59)''
+| ''Harness vz. 85 (UK-59)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85ptMdc.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85ptMdc">'''CSLA_gr85ptMdc'''</span>
+| ''Harness vz. 85 (Medic)''
+| ''Harness vz. 85 (Medic)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85ptCrw.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85ptCrw">'''CSLA_gr85ptCrw'''</span>
+| ''Harness vz. 85 (Crewman)''
+| ''Harness vz. 85 (Crewman)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85ptSgt.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85ptSgt">'''CSLA_gr85ptSgt'''</span>
+| ''Harness vz. 85 (Sergeant)''
+| ''Harness vz. 85 (Sergeant)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85ptOfc.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85ptOfc">'''CSLA_gr85ptOfc'''</span>
+| ''Harness vz. 85 (Officer)''
+| ''Harness vz. 85 (Officer)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85ptOfcUa.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85ptOfcUa">'''CSLA_gr85ptOfcUa'''</span>
+| ''Harness vz. 85 (Officer, unarmed)''
+| ''Harness vz. 85 (Officer, unarmed)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85lrrUTON.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85lrrUTON">'''CSLA_gr85lrrUTON'''</span>
+| ''Harness vz. 85 (UTON)''
+| ''Harness vz. 85 with attack knife used by LRR''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85lrrSa61.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85lrrSa61">'''CSLA_gr85lrrSa61'''</span>
+| ''Harness vz. 85 (Sa-61)''
+| ''Harness vz. 85 used by LRR (Sa-61)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85lrrBino.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85lrrBino">'''CSLA_gr85lrrBino'''</span>
+| ''Harness vz. 85 (Sa-61, Sa-58, bino)''
+| ''Harness vz. 85 used by LRR (Sa-61, Sa-58, bino)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85lrrBase.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85lrrBase">'''CSLA_gr85lrrBase'''</span>
+| ''Harness vz. 85 (Sa-61, Sa-58)''
+| ''Harness vz. 85 used by LRR (Sa-61, Sa-58)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_gr85lrrOP63.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_gr85lrrOP63">'''CSLA_gr85lrrOP63'''</span>
+| ''Harness vz. 85 (Sa-61, OP-63)''
+| ''Harness vz. 85 used by LRR (Sa-61, OP-63)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons CSLA_grUah61.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_grUah61">'''CSLA_grUah61'''</span>
+| ''Underarm Holster (Sa-61)''
+| ''Underarm Holster (Sa-61)''
+|}
+
+=== Backpacks ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Classes
+! Name
+! Description
+
+|-
+| [[File:CSLA_bpKnapsack.png|150px|&nbsp;]]
+| CSLA_bpKnapsack
+| ''Carry frame ''
+| ''Carry frame used for ammo/heavy object transportation - Empty''
+
+|-
+| [[File:CSLA_bp60.png|150px|&nbsp;]]
+| class CSLA_bp60
+| ''Pouch vz.60 ''
+| ''Small pouch/backpack used by CSLA infantry - Empty''
+
+|-
+| [[File:CSLA_bpRPG7.png|150px|&nbsp;]]
+| CSLA_bpRPG7
+| ''RPG-7 bag ''
+| ''Large bag to carry RPG7 AT launcher & ammo''
+
+|-
+| [[File:CSLA_bpBxM52.png|150px|&nbsp;]]
+| CSLA_bpBxM52
+| ''M52 mortar ammo ''
+| ''Carry frame with a box of M52 mortar ammo''
+
+|-
+| [[File:CSLA_bpBxM52.png|150px|&nbsp;]]
+| CSLA_bpBxT21
+| ''T21 Recoilles gun ammo ''
+| ''Carry frame with a box of T21 recoilles ammo''
+
+|-
+| [[File:CSLA_bp2xCan.png|150px|&nbsp;]]
+| CSLA_bp2xCan
+| ''Vehicle fuel ''
+| ''Carry frame with a two fuel cans''
+
+|-
+| [[File:CSLA_bp61.png|150px|&nbsp;]]
+| CSLA_bp61
+| ''Paratrooper's pouch vz.61 ''
+| ''Small pouch/backpack vz.61 used by CSLA paratroopers''
+
+|-
+| [[File:CSLA_bp85.png|150px|&nbsp;]]
+| CSLA_bp85
+| ''Paratrooper's pouch vz.85''
+| ''Small pouch/backpack vz.85 used by CSLA paratroopers''
+
+|-
+| [[File:CSLA_bp85RF10.png|150px|&nbsp;]]
+| CSLA_bp85RF10
+| ''Paratrooper's pouch vz.85 (RF10 Radio)''
+| ''Small pouch/backpack vz.85 with RF10 Radio used by CSLA paratroopers''
+
+|-
+| [[File:CSLA_bp85Lrr.png|150px|&nbsp;]]
+| CSLA_bp85Lrr
+| ''vz.85 pouches''
+| ''Pouchech/backpacks vz.85 used by CSLA LRR''
+
+|-
+| [[File:CSLA_bp85R129.png|150px|&nbsp;]]
+| CSLA_bp85R129
+CSLA_bpWpR129
+| ''R129 radio''
+| ''R129 radio backpack used by CSLA''
+
+|-
+| [[File:csla_rf10i.png|150px|&nbsp;]]
+| CSLA_bpWpRF10
+| ''RF10 radio''
+| ''RF10 radio backpack used by CSLA''
+
+|-
+| [[File:CSLA_bpCorcJacket.png|150px|&nbsp;]]
+| CSLA_bpCorcJacket
+| ''Cork jacket''
+| ''Cork jacket used by CSLA when crossing bodies of water''
+
+|-
+|
+| CSLA_Parachute
+| ''CSLA parachute''
+| ''CSLA parachute''
+|}
+
+=== Items ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+|-
+| [[File:csla_d7.png|150px|&nbsp;]]
+| <span id="CSLA_bino">'''CSLA_bino'''</span>
+| ''D-7x50''
+| ''Binoculars  Magnification: 7''
+
+|-
+| [[File:csla_pnv.png|150px|&nbsp;]]
+| <span id="CSLA_nokto">'''CSLA_nokto'''</span>
+| ''PNV-57H''
+| ''NV Goggles''
+
+|-
+| [[File:csla_ob80.png|150px|&nbsp;]]
+| <span id="CSLA_Ob80">'''CSLA_Ob80'''</span>
+| ''Ob-80''
+| ''Use to treat wounds''
+
+|-
+| [[File:csla_z80.png|150px|&nbsp;]]
+| <span id="CSLA_MediKit_Z80">'''CSLA_MediKit_Z80'''</span>
+| ''Medikit Z-80''
+| ''Medikit. Use to treat wounds''
+
+|-
+| [[File:csla_komze.png|150px|&nbsp;]]
+| <span id="CSLA_toolkit_KOMZE">'''CSLA_toolkit_KOMZE'''</span>
+| ''KOMŽE Engineer Toolkit''
+| ''Toolkit''
+
+|-
+| [[File:csla_toolkit.png|150px|&nbsp;]]
+| <span id="CSLA_toolkit">'''CSLA_toolkit'''</span>
+| ''Toolkit [ČSLA]''
+| ''Toolkit''
+
+|-
+| [[File:csla_watch.png|150px|&nbsp;]]
+| <span id="CSLA_Prim_enl">'''CSLA_Prim_enl'''</span>
+| ''Watch (Enlisted) [ČSLA]''
+| ''Watch''
+|}
+
+=== Weapon accessories ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+|-
+| [[File:csla_sa61tlm.png|150px|&nbsp;]]
+| <span id="CSLA_Sa61tlm">'''CSLA_Sa61tlm'''</span>
+| ''Silencer (Sa-61)''
+| ''Silencer<br/>Used on Sa-61''
+
+|-
+| [[File:csla_meopta.png|150px|&nbsp;]]
+| <span id="CSLA_ZD4x8">'''CSLA_ZD4x8'''</span>
+| ''ZD 4x8° (Sa-58)''
+| ''Riflescope  Magnification: 4  Used on Sa-58''
+
+|-
+|
+| <span id="CSLA_UK59_ZD4x8">'''CSLA_UK59_ZD4x8'''</span>
+| ''ZD 4x8° (UK-59)''
+| ''Riflescope  Magnification: 4  Used on UK-59''
+
+|-
+| [[File:csla_nspu.png|150px|&nbsp;]]
+| <span id="CSLA_NSPU">'''CSLA_NSPU'''</span>
+| ''NSPU (Sa-58)''
+| ''Night-vision Riflescope  Used on Sa-58''
+
+|-
+|
+| <span id="CSLA_NSPU_OP63">'''CSLA_NSPU_OP63'''</span>
+| ''NSPU (OP-63)''
+| ''Night-vision Riflescope  Used on OP-63''
+
+|-
+| [[File:csla_sa58bnt.png|150px|&nbsp;]]
+| <span id="CSLA_Sa58bnt">'''CSLA_Sa58bnt'''</span>
+| ''Bayonet (Sa-58)''
+| ''Bayonet  Used on Sa-58''
+
+|-
+| [[File:csla_sa58bpd.png|150px|&nbsp;]]
+| <span id="CSLA_Sa58bpd">'''CSLA_Sa58bpd'''</span>
+| ''Bipod (Sa-58)''
+| ''Bipod  Used on Sa-58''
+
+|-
+| [[File:csla_pso1.png|150px|&nbsp;]]
+| <span id="CSLA_PSO1_OP63">'''CSLA_PSO1_OP63'''</span>
+| ''PSO-1''
+| ''Riflescope  Magnification: 4  Used on OP-63''
+
+|-
+| [[File:csla_pgo7.png|150px|&nbsp;]]
+| <span id="CSLA_PGO7">'''CSLA_PGO7'''</span>
+| ''PGO-7''
+| ''Scope  Used on RPG-7''
+|}
+
+=== Miscellaneous and mission items ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+
+|-
+| [[File:csla_rf10i.png|150px|&nbsp;]]
+| <span id="CSLA_RF10_item">'''CSLA_RF10_item'''</span>
+| ''RF-10''
+| ''RF-10''
+
+|-
+| [[File:csla_antenai.png|150px|&nbsp;]]
+| <span id="CSLA_R129_antenna_item">'''CSLA_R129_antenna_item'''</span>
+| ''R-129 Antenna''
+| ''R-129 Antenna''
+
+|-
+| [[File:csla_batteryi.png|150px|&nbsp;]]
+| <span id="CSLA_R129_battery_Item">'''CSLA_R129_battery_Item'''</span>
+| ''R-129 Battery''
+| ''R-129 Battery''
+
+|-
+| [[File:csla_r129i.png|150px|&nbsp;]]
+| <span id="CSLA_R129_item">'''CSLA_R129_item'''</span>
+| ''R-129''
+| ''R-129''
+
+|-
+| [[File:csla_documents.png|150px|&nbsp;]]
+| <span id="CSLA_Documents_item">'''CSLA_Documents_item'''</span>
+| ''File (Documents)''
+|
+|}
+
+== US Gear & Items ==
+
+=== Uniforms ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+
+|-
+| [[File:US85_uniBDU.png|150px|&nbsp;]]
+| <span id="US85_uniBDU">'''US85_uniBDU'''</span>
+| ''Woodland uniform''
+| ''M81 woodland BDU''
+|-
+| [[File:US85_uniKHK.png|150px|&nbsp;]]
+| <span id="US85_uniKHK">'''US85_uniKHK'''</span>
+| ''Khaki uniform''
+| ''Generic Khaki uniform''
+|-
+|
+| <span id="US85_uniPt">'''US85_uniPt'''</span>
+| ''Woodland uniform (Paratroopers)''
+| ''M81 woodland BDU used by paratroopers/rangers''
+|-
+|
+| <span id="US85_uniSF">'''US85_uniSF'''</span>
+| ''Woodland uniform (SF)''
+| ''M81 woodland BDU used by SF with gloves''
+
+|-
+| [[File:US85_uniCrew.png|150px|&nbsp;]]
+| <span id="US85_uniCrew">'''US85_uniCrew'''</span>
+| ''Crew uniform''
+| ''US crew covearlls''
+|-
+| [[File:US85_uniPlt.png|150px|&nbsp;]]
+| <span id="US85_uniPlt">'''US85_uniPlt'''</span>
+| ''Pilot coveralls [US85]''
+| ''US pilot coveralls''
+
+|-
+| [[File:US85_uniGhillie.png|150px|&nbsp;]]
+| <span id="US85_uniGhillie">'''US85_uniGhillie'''</span>
+| ''Ghillie suit [US85]''
+| ''US Ghillie suit''
+
+|}
+
+=== Headgear ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+
+|-
+| [[File:CSLA_glsPlscSpring.png|150px|&nbsp;]]
+| <span id="CSLA_glsPlscSpring">'''CSLA_glsPlscSpring'''</span>
+| ''GI glasses''
+| ''US BCGs''
+
+|-
+| [[File:US85_helmetPASGT.png|150px|&nbsp;]]
+| <span id="US85_helmetPASGT">'''US85_helmetPASGT'''</span>
+| ''Helmet PASGT''
+| ''PASGT Ballistic Helmet''
+
+|-
+| [[File:US85_helmetPASGTr.png|150px|&nbsp;]]
+| <span id="US85_helmetPASGTr">'''US85_helmetPASGTr'''</span>
+| ''Helmet PASGT (Ragtop)''
+| ''PASGT Ballistic Helmet with ragtop''
+
+|-
+| [[File:US85_helmetM1g.png|150px|&nbsp;]]
+| <span id="US85_helmetM1g">'''US85_helmetM1g'''</span>
+| ''Helmet M1 Green''
+| ''M1 steel helmet''
+
+|-
+| [[File:US85_helmetM1c.png|150px|&nbsp;]]
+| <span id="US85_helmetM1c">'''US85_helmetM1c'''</span>
+| ''Helmet M1 Camo''
+| ''M1 steel helmet with woodland cover''
+
+|-
+| [[File:US85_helmetDH132.png|150px|&nbsp;]]
+| <span id="US85_helmetDH132">'''US85_helmetDH132'''</span>
+| ''Helmet DH-132''
+| ''Crew Helmet DH-132''
+
+|-
+| [[File:US85_helmetDH132G.png|150px|&nbsp;]]
+| <span id="US85_helmetDH132G">'''US85_helmetDH132G'''</span>
+| ''Helmet DH-132 with Goggles''
+| ''Crew Helmet DH-132 with Goggles with goggles taken of''
+
+|-
+| [[File:US85_helmetDH132G_on.png|150px|&nbsp;]]
+| <span id="US85_helmetDH132G_on">'''US85_helmetDH132G_on'''</span>
+| ''Helmet DH-132 with Goggles (on)''
+| ''Crew Helmet DH-132 with Goggles with goggles put on''
+
+|-
+| [[File:US85_helmetPlt.png|150px|&nbsp;]]
+| <span id="US85_helmetPlt">'''US85_helmetPlt'''</span>
+| ''Helmet SPH-4 (open)''
+| ''Helicopter crew Helmet SPH-4, visor glass raised''
+
+|-
+| [[File:US85_helmetPltC.png|150px|&nbsp;]]
+| <span id="US85_helmetPltC">'''US85_helmetPltC'''</span>
+| ''Helmet SPH-4 (close)''
+| ''Helicopter crew Helmet SPH-4, visor glass closed''
+
+|-
+| [[File:US85_helmetSFL.png|150px|&nbsp;]]
+| <span id="US85_helmetSFL">'''US85_helmetSFL'''</span>
+| ''Helmet SF Light''
+| ''ProTec like helmet used by SF''
+
+|-
+| [[File:US85_helmetSFLG.png|150px|&nbsp;]]
+| <span id="US85_helmetSFLG">'''US85_helmetSFLG'''</span>
+| ''Helmet SF Light with Goggles''
+| ''ProTec like helmet used by SF with goggles taken of''
+
+|-
+| [[File:US85_helmetSFLG_on.png|150px|&nbsp;]]
+| <span id="US85_helmetSFLG_on">'''US85_helmetSFLG_on'''</span>
+| ''Helmet SF Light with Goggles (on)''
+| ''ProTec like helmet used by SF with goggles put on''
+
+|-
+| [[File:US85_beanie.png|150px|&nbsp;]]
+| <span id="US85_beanie">'''US85_beanie'''</span>
+| ''Beanie''
+| ''Black Beanie''
+
+|-
+| [[File:US85_hat.png|150px|&nbsp;]]
+| <span id="US85_hat">'''US85_hat'''</span>
+| ''Hat''
+| ''Boonie hat''
+
+|-
+| [[File:US85_marineCap.png|150px|&nbsp;]]
+| <span id="US85_marineCap">'''US85_marineCap'''</span>
+| ''Cap (Marine)''
+| ''Cap (Marine)''
+
+|-
+| [[File:US85_ptCap.png|150px|&nbsp;]]
+| <span id="US85_ptCap">'''US85_ptCap'''</span>
+| ''Cap (Airborne)''
+| ''Cap (Airborne)''
+|-
+|
+| <span id="US85_patrolCap">'''US85_patrolCap'''</span>
+| ''Cap (Patrol)''
+| ''Cap (Patrol)''
+|}
+
+=== Vest & Load Bearing Equipment ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+<!-- ! Preview -->
+! Class
+! Name
+! Inventory description
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grYHarness.jpg|150px|&nbsp;]] -->
+| <span id="US85_grYHarness">'''US85_grYHarness'''</span>
+| ''Y Harness''
+| ''Base Carrying Harness (stripped)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grY_M16.jpg|150px|&nbsp;]] -->
+| <span id="US85_grY_M16">'''US85_grY_M16'''</span>
+| ''Y Harness (M16)''
+| ''Y Harness (M16)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grY_crg.jpg|150px|&nbsp;]] -->
+| <span id="US85_grY_crg">'''US85_grY_crg'''</span>
+| ''Y Harness (cargo)''
+| ''Y Harness (cargo)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grY_M24.jpg|150px|&nbsp;]] -->
+| <span id="US85_grY_M24">'''US85_grY_M24'''</span>
+| ''Y Harness (M21)''
+| ''Y Harness (M21)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grY_M9.jpg|150px|&nbsp;]] -->
+| <span id="US85_grY_M9">'''US85_grY_M9'''</span>
+| ''Y Harness (M9)''
+| ''Y Harness (M9)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grY_MG.jpg|150px|&nbsp;]] -->
+| <span id="US85_grY_MG">'''US85_grY_MG'''</span>
+| ''Y Harness (MG)''
+| ''Y Harness (MG)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grY_MPV.jpg|150px|&nbsp;]] -->
+| <span id="US85_grY_MPV">'''US85_grY_MPV'''</span>
+| ''Y Harness (MPV)''
+| ''Y Harness (MPV)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grY_snp.jpg|150px|&nbsp;]] -->
+| <span id="US85_grY_snp">'''US85_grY_snp'''</span>
+| ''Y Harness (Snp)''
+| ''Y Harness (Snp)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grVest.jpg|150px|&nbsp;]] -->
+| <span id="US85_grVest">'''US85_grVest'''</span>
+| ''Vest''
+| ''Base PASGT Vest + Harness''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grV_ofc.jpg|150px|&nbsp;]] -->
+| <span id="US85_grV_ofc">'''US85_grV_ofc'''</span>
+| ''Vest (Officer)''
+| ''PASGT Vest + Harness (Officer)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grV_M16.jpg|150px|&nbsp;]] -->
+| <span id="US85_grV_M16">'''US85_grV_M16'''</span>
+| ''Vest (M16)''
+| ''PASGT Vest + Harness (M16)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grVm_M16GL.jpg|150px|&nbsp;]] -->
+| <span id="US85_grVm_M16GL">'''US85_grVm_M16GL'''</span>
+| ''Vest (M16 + M203) (Marine)''
+| ''PASGT Vest + Harness (M16 + M203) (Marine)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grV_M16GL.jpg|150px|&nbsp;]] -->
+| <span id="US85_grV_M16GL">'''US85_grV_M16GL'''</span>
+| ''Vest (M16 + M203) (Airborne)''
+| ''PASGT Vest + Harness (M16 + M203) (Airborne)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grV_M24.jpg|150px|&nbsp;]] -->
+| <span id="US85_grV_M24">'''US85_grV_M24'''</span>
+| ''Vest (M21)''
+| ''PASGT Vest + Harness (M21)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grV_M9.jpg|150px|&nbsp;]] -->
+| <span id="US85_grV_M9">'''US85_grV_M9'''</span>
+| ''Vest (M9)''
+| ''PASGT Vest + Harness (M9)''
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grV_MG.jpg|150px|&nbsp;]] -->
+| <span id="US85_grV_MG">'''US85_grV_MG'''</span>
+| ''Vest (MG)''
+| ''PASGT Vest + Harness (MG)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grV_MPV.jpg|150px|&nbsp;]] -->
+| <span id="US85_grV_MPV">'''US85_grV_MPV'''</span>
+| ''Vest (MPV)''
+| ''PASGT Vest + Harness (MPV)''
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grSF_M16.jpg|150px|&nbsp;]] -->
+| <span id="US85_grSF_M16">'''US85_grSF_M16'''</span>
+| ''SF Vest (M16)''
+| ''SF Vest + TLBV (M16)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grSF_M16GL.jpg|150px|&nbsp;]] -->
+| <span id="US85_grSF_M16GL">'''US85_grSF_M16GL'''</span>
+| ''SF Vest (M16 + M203)''
+| ''SF Vest + TLBV (M16 + M203)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grSF_M24.jpg|150px|&nbsp;]] -->
+| <span id="US85_grSF_M24">'''US85_grSF_M24'''</span>
+| ''SF Vest (M21)''
+| ''SF Vest + TLBV (M21)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grSF_M9.jpg|150px|&nbsp;]] -->
+| <span id="US85_grSF_M9">'''US85_grSF_M9'''</span>
+| ''SF Vest (M9)''
+| ''SF Vest + TLBV (M9)''
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grSF_MG.jpg|150px|&nbsp;]] -->
+| <span id="US85_grSF_MG">'''US85_grSF_MG'''</span>
+| ''SF Vest (MG)''
+| ''SF Vest + TLBV (MG)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grSF_MPV.jpg|150px|&nbsp;]] -->
+| <span id="US85_grSF_MPV">'''US85_grSF_MPV'''</span>
+| ''SF Vest (MPV)''
+| ''SF Vest + TLBV (MPV)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons US85_grSF_TLBV.jpg|150px|&nbsp;]] -->
+| <span id="US85_grSF_TLBV">'''US85_grSF_TLBV'''</span>
+| ''SF Vest (TLBV)''
+| ''Base SF Vest + TLBV''
+|}
+
+=== Backpacks ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Classes
+! Name
+! Description
+
+|-
+| [[File:US85_bpAlice.png|150px|&nbsp;]]
+| US85_bpAlice
+| ''ALICE backpack - Empty''
+| ''ALICE backpack - Empty''
+
+|-
+| [[File:US85_bpSf.png|150px|&nbsp;]]
+| US85_bpSf
+| ''SF backpack''
+| ''Backpack used by US SF together with the TLBV''
+
+|-
+| [[File:US85_bpMedi.png|150px|&nbsp;]]
+| US85_bpMedi
+| ''Medical backpack''
+| ''US M5 medical backpack''
+
+|-
+| [[File:US85_bpPRC77.png|150px|&nbsp;]]
+| US85_bpPRC77
+| ''PRC77 radio backpack''
+| ''PRC77 radio backpack''
+
+|-
+|
+| US85_Parachute
+| ''US Parachute''
+| ''US Parachute''
+|}
+
+=== Items ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+|-
+| [[File:US85_FAK.png|150px|&nbsp;]]
+| <span id="US85_FAK">'''US85_FAK'''</span>
+| ''First Aid Kit [US85]''
+| ''Use to treat heavy wounds''
+
+|-
+| [[File:US85_MediKit.png|150px|&nbsp;]]
+| <span id="US85_MediKit">'''US85_MediKit'''</span>
+| ''Medikit [US85]''
+| '' Medikit''
+
+|-
+| <!-- [[File:US85_toolkit_S.png|150px|&nbsp;]] -->
+| <span id="US85_toolkit_S">'''US85_toolkit_S'''</span>
+| ''Toolkit Small [US85]''
+| '' Toolkit''
+
+|-
+| [[File:US85_toolkit_B.png|150px|&nbsp;]]
+| <span id="US85_toolkit_B">'''US85_toolkit_B'''</span>
+| ''Toolkit Big [US85]''
+| '' Toolkit''
+
+|-
+| [[File:US85_watch.png|150px|&nbsp;]]
+| <span id="US85_watch">'''US85_watch'''</span>
+| ''Watch [US85]''
+| ''Watch''
+
+|-
+| [[File:US85_ANPVS5_Goggles.png|150px|&nbsp;]]
+| <span id="US85_ANPVS5_Goggles">'''US85_ANPVS5_Goggles'''</span>
+| ''AN/PVS-5 NVG''
+| '' Night Vision Goggles''
+
+|-
+| [[File:US85_bino.png|150px|&nbsp;]]
+| <span id="US85_binos">'''US85_bino'''</span>
+| ''M19''
+| ''M19 Binoculars''
+
+|}
+
+=== Weapon accessories ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+
+|-
+| [[File:US85_M9tlm.png|150px|&nbsp;]]
+| <span id="US85_M9tlm">'''US85_M9tlm'''</span>
+| ''Silencer (M9)''
+| '' Silencer<br/>Used on M9''
+
+|-
+| [[File:US85_M16bntM9.png|150px|&nbsp;]]
+| <span id="US85_M16bntM9">'''US85_M16bntM9'''</span>
+| ''M9 Bayonet (M16)''
+| '' Bayonet<br/>Used on M16''
+
+|-
+| [[File:US85_M16bntM7.png|150px|&nbsp;]]
+| <span id="US85_M16bntM7">'''US85_M16bntM7'''</span>
+| ''M7 Bayonet (M16)''
+| '' Bayonet<br/>Used on M16''
+
+|-
+| [[File:US85_M16fl.png|150px|&nbsp;]]
+| <span id="US85_M16fl">'''US85_M16fl'''</span>
+| ''Flashlight (M16)''
+| '' Flashlight<br/>Used on M16''
+
+|-
+| [[File:US85_M16tlm.png|150px|&nbsp;]]
+| <span id="US85_M16tlm">'''US85_M16tlm'''</span>
+| ''Silencer (M16)''
+| '' Silencer<br/>Used on M16''
+
+|-
+|
+| <span id="US85_scM21">'''US85_scM21'''</span>
+| ''Scope (M21)''
+| '' Riflescope<br/>Magnification: 7x20<br/>Used on M21''
+
+|-
+|
+| <span id="US85_M21tlm">'''US85_M21tlm'''</span>
+| ''Silencer (M21)''
+| ''Silencer<br/>Used on M21''
+
+|-
+| [[File:US85_scFAL.png|150px|&nbsp;]]
+| <span id="US85_scFAL">'''US85_scFAL'''</span>
+| ''Scope (FAL)''
+| ''Riflescope<br/>Magnification: 7<br/>Used on FAL''
+
+|-
+| [[File:US85_sc4x20_M16.png|150px|&nbsp;]]
+| <span id="US85_sc4x20_M16">'''US85_sc4x20_M16'''</span>
+| ''4x20 Scope (M16)''
+| '' Riflescope<br/>Magnification: 4<br/>Used on M16''
+
+|-
+|
+| <span id="US85_sc4x20M249">'''US85_sc4x20M249'''</span>
+| ''4x20 Scope (M249)''
+| ''4x20 Scope (M249)''
+
+|-
+| [[File:US85_sc2000_M16.png|150px|&nbsp;]]
+| <span id="US85_sc2000_M16">'''US85_sc2000_M16'''</span>
+| ''Reflector Sight (M16)''
+| '' Reflector Sight<br/>Used on M16''
+|-
+|
+| <span id="US85_sc2000M249">'''US85_sc2000M249'''</span>
+| ''Reflector Sight (M249)''
+| ''Reflector Sight (M249)''
+
+|-
+| [[File:US85_ANPVS4_M16.png|150px|&nbsp;]]
+| <span id="US85_ANPVS4_M16">'''US85_ANPVS4_M16'''</span>
+| ''AN/PVS-4 (M16)''
+| '' Night Vision Riflescope<br/>Magnification: 2.66<br/>Used on M16''
+
+|-
+|
+| <span id="US85_ANPVS4_FAL">'''US85_ANPVS4_FAL'''</span>
+| ''AN/PVS-4 (FAL)''
+| ''Night Vision Riflescope<br/>Magnification: 2.66<br/>Used on FAL''
+
+|-
+|
+| <span id="US85_ANPVS4_M60">'''US85_ANPVS4_M60'''</span>
+| ''AN/PVS-4 (M60)''
+| ''Night Vision Riflescope<br/>Magnification: 2.66<br/>Used on M60''
+
+|-
+|
+| <span id="US85_ANPVS4_M21">'''US85_ANPVS4_M21'''</span>
+| ''AN/PVS-4 (M21)''
+| ''Night Vision Riflescope<br/>Magnification: 2.66<br/>Used on M21''
+
+|}
+
+=== Miscellaneous and mission items ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+
+|-
+| [[File:US85_bpPRC77.png|150px|&nbsp;]]
+| <span id="US85_PRC77_item">'''US85_PRC77_item'''</span>
+| ''PRC-77 radio''
+| ''PRC-77 radio''
+
+|}
+
+== FIA Gear & Items ==
+
+=== Uniforms ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+|-
+| [[File:FIA_uniwld.png|150px|&nbsp;]]
+| <span id="FIA_uniwld">'''FIA_uniwld'''</span>
+| ''Woodland uniform FIA''
+| ''MLOK top, khaki trousers, jungle boots''
+
+|-
+| <!-- [[File:FIA_uniwld1.png|150px|&nbsp;]] -->
+| <span id="FIA_uniwld1">'''FIA_uniwld1'''</span>
+| ''Woodland uniform FIA 1''
+| ''Flecktarn top, dark green trousers, vz.60 boots''
+
+|-
+| <!-- [[File:FIA_uniwld2.png|150px|&nbsp;]] -->
+| <span id="FIA_uniwld2">'''FIA_uniwld2'''</span>
+| ''Woodland uniform FIA 2''
+| ''Camo top, vz.60 trousers, vz.60 boots''
+
+|-
+| <!-- [[File:FIA_uniwld3.png|150px|&nbsp;]] -->
+| <span id="FIA_uniwld3">'''FIA_uniwld3'''</span>
+| ''Woodland uniform FIA 3''
+| ''Alpenflage top, lizard camo trousers, jungle boots''
+
+|-
+| <!-- [[File:FIA_uniwld4.png|150px|&nbsp;]] -->
+| <span id="FIA_uniwld4">'''FIA_uniwld4'''</span>
+| ''Woodland uniform FIA 4''
+| ''Oak camo top, dark green trousers, vz.60 boots''
+
+|-
+| <!-- [[File:FIA_uniwld5.png|150px|&nbsp;]] -->
+| <span id="FIA_uniwld5">'''FIA_uniwld5'''</span>
+| ''Woodland uniform FIA 5''
+| ''Vz.60 top, M81 trousers, jungle boots''
+
+|-
+| <!-- [[File:FIA_uniwld6.png|150px|&nbsp;]] -->
+| <span id="FIA_uniwld6">'''FIA_uniwld6'''</span>
+| ''Woodland uniform FIA 6''
+| ''M81 para top, vz.60 trousers, vz.60 boots''
+
+|-
+| <!-- [[File:FIA_uniwld7.png|150px|&nbsp;]] -->
+| <span id="FIA_uniwld7">'''FIA_uniwld7'''</span>
+| ''Woodland uniform FIA 7''
+| ''M81 SF top (gloves), khaki trousers, jungle boots''
+
+|-
+| <!-- [[File:FIA_uniWld8.png|150px|&nbsp;]] -->
+| <span id="FIA_uniWld8">'''FIA_uniWld8'''</span>
+| ''Woodland uniform FIA 8''
+| ''Black tshirt, khaki trousers, jungle boots''
+
+|-
+| <!-- [[File:FIA_uniwld9.png|150px|&nbsp;]] -->
+| <span id="FIA_uniwld9">'''FIA_uniwld9'''</span>
+| ''Woodland uniform FIA 9''
+| ''Lizard camo top, khaki trousers, jungle boots''
+
+|-
+| <!-- [[File:FIA_uniwld10.png|150px|&nbsp;]] -->
+| <span id="FIA_uniwld10">'''FIA_uniwld10'''</span>
+| ''Woodland uniform FIA 10''
+| ''Dark green top, MLOK trousers, vz.60 boots''
+
+|}
+
+=== Vests & Load Bearing Equipment ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+<!-- ! Preview -->
+! Class
+! Name
+! Inventory description
+
+|-
+<!-- | [[File:Arma3 CfgWeapons FIA_grY_MG.jpg|150px|&nbsp;]] -->
+| <span id="FIA_grY_MG">'''FIA_grY_MG'''</span>
+| ''Y Harness (MG) [FIA]''
+| ''Y Harness (MG, Uk59)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons FIA_grY_MPV.jpg|150px|&nbsp;]] -->
+| <span id="FIA_grY_MPV">'''FIA_grY_MPV'''</span>
+| ''Y Harness (MPV) [FIA]''
+| ''Y Harness (MPV)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons FIA_gr60_Sa58.jpg|150px|&nbsp;]] -->
+| <span id="FIA_gr60_Sa58">'''FIA_gr60_Sa58'''</span>
+| ''Harness vz. 60 Rifleman [FIA]''
+| ''Harness vz. 60 Rifleman''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons FIA_gr85_Sa58.jpg|150px|&nbsp;]] -->
+| <span id="FIA_gr85_Sa58">'''FIA_gr85_Sa58'''</span>
+| ''Harness vz. 85 (Commander) [FIA]''
+| ''Harness vz. 85 (Commander)''
+
+|-
+<!-- | [[File:Arma3 CfgWeapons FIA_gr85_Sa61.jpg|150px|&nbsp;]] -->
+| <span id="FIA_gr85_Sa61">'''FIA_gr85_Sa61'''</span>
+| ''Harness vz. 85 Belt (Sa-61) [FIA]''
+| ''Harness vz. 85 Belt (Sa-61)''
+
+|}
+
+=== Backpacks ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Classes
+! Name
+! Description
+
+|-
+| [[File:CSLA_FIA_backpack.png|150px|&nbsp;]]
+| FIA_backpack
+| ''Backpack - Empty''
+| ''Standard FIA backpack - Empty''
+
+|-
+| [[File:CSLA_bpRPG7.png|150px|&nbsp;]]
+| FIA_bpRPG7
+| ''RPG-7 bag''
+| ''RPG-7 bag used by FIA''
+
+|-
+|
+| FIA_Parachute
+| ''FIA Parachute''
+| ''FIA Parachute''
+|}
+
+== CIV Gear & Items ==
+
+=== Clothing ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+|-
+| [[File:FIA_uniCitizen.png|150px|&nbsp;]]
+| <span id="FIA_uniCitizen">'''FIA_uniCitizen'''</span>
+| ''City clothes (ver. 1)''
+| ''Dark brown jacket, black pants''
+
+|-
+| [[File:FIA_uniCitizen2.png|150px|&nbsp;]]
+| <span id="FIA_uniCitizen2">'''FIA_uniCitizen2'''</span>
+| ''City clothes (ver. 2)''
+| ''Light brown jacket, grey pants''
+
+|-
+| [[File:FIA_uniCitizen3.png|150px|&nbsp;]]
+| <span id="FIA_uniCitizen3">'''FIA_uniCitizen3'''</span>
+| ''City clothes (ver. 3)''
+| ''Light brown jacket, dark pants''
+
+|-
+| [[File:FIA_uniCitizen4.png|150px|&nbsp;]]
+| <span id="FIA_uniCitizen4">'''FIA_uniCitizen4'''</span>
+| ''City clothes (ver. 4)''
+| ''Dark jacket, blue pants''
+
+|-
+| [[File:FIA_uniDoctor.png|150px|&nbsp;]]
+| <span id="FIA_uniDoctor">'''FIA_uniDoctor'''</span>
+| ''Medical coat''
+| ''Medical coat''
+
+|-
+| [[File:FIA_uniForeman.png|150px|&nbsp;]]
+| <span id="FIA_uniForeman">'''FIA_uniForeman'''</span>
+| ''Working coat (ver. 1)''
+| ''Working coat (dark blue)''
+
+|-
+| [[File:FIA_uniForeman2.png|150px|&nbsp;]]
+| <span id="FIA_uniForeman2">'''FIA_uniForeman2'''</span>
+| ''Working coat (ver. 2)''
+| ''Working coat (light blue)''
+
+|-
+| [[File:FIA_uniFunctionary.png|150px|&nbsp;]]
+| <span id="FIA_uniFunctionary">'''FIA_uniFunctionary'''</span>
+| ''Men's Suit''
+| ''Black, red tie''
+
+|-
+| [[File:FIA_uniFunctionary2.png|150px|&nbsp;]]
+| <span id="FIA_uniFunctionary2">'''FIA_uniFunctionary2'''</span>
+| ''Men's Suit (ver. 2)''
+| ''Brown, blue tie''
+
+|-
+| [[File:FIA_uniVillager.png|150px|&nbsp;]]
+| <span id="FIA_uniVillager">'''FIA_uniVillager'''</span>
+| ''Rural clothes (ver. 1)''
+| ''Light blue & white shirt, light blue jeans''
+
+|-
+| [[File:FIA_uniVillager2.png|150px|&nbsp;]]
+| <span id="FIA_uniVillager2">'''FIA_uniVillager2'''</span>
+| ''Rural clothes (ver. 2)''
+| ''Yellow shirt, blue jeans''
+
+|-
+| [[File:FIA_uniVillager3.png|150px|&nbsp;]]
+| <span id="FIA_uniVillager3">'''FIA_uniVillager3'''</span>
+| ''Rural clothes (ver. 3)''
+| ''Green & brown shirt, brown pants''
+
+|-
+| [[File:FIA_uniVillager4.png|150px|&nbsp;]]
+| <span id="FIA_uniVillager4">'''FIA_uniVillager4'''</span>
+| ''Rural clothes (ver. 4)''
+| ''Light blue shirt, light brown pants''
+
+|-
+| [[File:FIA_uniWoodlander.png|150px|&nbsp;]]
+| <span id="FIA_uniWoodlander">'''FIA_uniWoodlander'''</span>
+| ''Forester clothes (ver. 1)''
+| ''Dark brown jacket, blue pants''
+
+|-
+| [[File:FIA_uniWoodlander2.png|150px|&nbsp;]]
+| <span id="FIA_uniWoodlander2">'''FIA_uniWoodlander2'''</span>
+| ''Forester clothes (ver. 2)''
+| ''Green jacket, tan pants''
+
+|-
+| [[File:FIA_uniWoodlander3.png|150px|&nbsp;]]
+| <span id="FIA_uniWoodlander3">'''FIA_uniWoodlander3'''</span>
+| ''Forester clothes (ver. 3)''
+| ''Light brown jacket, camouflaged pants''
+
+|-
+| [[File:FIA_uniWoodlander4.png|150px|&nbsp;]]
+| <span id="FIA_uniWoodlander4">'''FIA_uniWoodlander4'''</span>
+| ''Forester clothes (ver. 4)''
+| ''Dark jacket, green pants''
+
+|-
+| [[File:FIA_uniWorker.png|150px|&nbsp;]]
+| <span id="FIA_uniWorker">'''FIA_uniWorker'''</span>
+| ''Worker clothes''
+| ''Light brown vest, red & brown shirt, blue pants''
+
+|-
+| [[File:FIA_uniWorker2.png|150px|&nbsp;]]
+| <span id="FIA_uniWorker2">'''FIA_uniWorker2'''</span>
+| ''Worker clothes (ver. 2)''
+| ''Green vest, brown shirt, light blue pants''
+
+|-
+| [[File:FIA_uniWorker3.png|150px|&nbsp;]]
+| <span id="FIA_uniWorker3">'''FIA_uniWorker3'''</span>
+| ''Worker clothes (ver. 3)''
+| ''Blue vest, blue shirt, light brown pants''
+
+|-
+| [[File:FIA_uniWorker4.png|150px|&nbsp;]]
+| <span id="FIA_uniWorker4">'''FIA_uniWorker4'''</span>
+| ''Worker clothes (ver. 4)''
+| ''Checkered brown & green vest, blue shirt, brown pants''
+
+|}
+
+=== Headgear ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+! Preview
+! Class
+! Name
+! Inventory description
+|-
+| [[File:FIA_Hairs_Brown.png|150px|&nbsp;]]
+| <span id="FIA_Hairs_Brown">'''FIA_Hairs_Brown'''</span>
+| ''Brown hair''
+| ''Brown hair''
+
+|-
+| [[File:FIA_Hairs_Silver.png|150px|&nbsp;]]
+| <span id="FIA_Hairs_Silver">'''FIA_Hairs_Silver'''</span>
+| ''Silver hair''
+| ''Silver hair''
+
+|-
+| [[File:FIA_Budajka.png|150px|&nbsp;]]
+| <span id="FIA_Budajka">'''FIA_Budajka'''</span>
+| ''Wool Cap (Green)''
+| ''Wool Cap (Green)''
+
+|-
+|
+| <span id="CSLA_BudajkaGy">'''CSLA_BudajkaGy'''</span>
+| ''Wool Cap (Gray)''
+| ''Wool Cap (Gray)''
+
+|-
+|
+| <span id="CSLA_BudajkaBk">'''CSLA_BudajkaBk'''</span>
+| ''Wool Cap (Black)''
+| ''Wool Cap (Black)''
+
+|-
+| [[File:FIA_Radiovka.png|150px|&nbsp;]]
+| <span id="FIA_Radiovka">'''FIA_Radiovka'''</span>
+| ''Flat Cap (Green)''
+| ''Flat Cap (Green)''
+
+|-
+|
+| <span id="CSLA_RadiovkaGy">'''CSLA_RadiovkaGy'''</span>
+| ''Flat Cap (Gray)''
+| ''Flat Cap (Gray)''
+
+|-
+|
+| <span id="CSLA_RadiovkaBk">'''CSLA_RadiovkaBk'''</span>
+| ''Flat Cap (Black)''
+| ''Flat Cap (Black)''
+
+|-
+| [[File:FIA_Usanka.png|150px|&nbsp;]]
+| <span id="FIA_Usanka">'''FIA_Usanka'''</span>
+| ''Fur ear-flap cap''
+| ''Fur ear-flap cap''
+|}
+
+
+[[Category:CSLA: Iron Curtain]]

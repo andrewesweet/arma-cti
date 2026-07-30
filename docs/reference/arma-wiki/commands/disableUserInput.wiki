@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/disableUserInput
+// revision: 373274 (2025-04-13T14:35:36Z)
+// export sha1: 86uejuf6tuoh894cg9f9kcj16snjxan
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Interaction
+
+|eff= local
+
+|descr= Disables or enables the keyboard and mouse input. Usually used during cutscenes.{{Feature|warning|Be careful and responsible with the usage of this command. Once the user input is disabled, the only option left is to restart the game. Make sure you provide scripted mechanics to resolve this, should you need to disable user input for any reason.}}
+
+|s1= [[disableUserInput]] state
+
+|p1= state: [[Boolean]] - [[true]] to disable, [[false]] to enable
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+disableUserInput true;
+// cutscene
+disableUserInput false;
+</sqf>
+
+|x2= Reset user input if a key was pressed:
+<sqf>
+disableUserInput true;	// here e.g W was pressed
+sleep 2;				// the user releases keys
+disableUserInput false;	// the game considers W is still pressed as it did not listen to a "KeyUp" event
+
+disableUserInput true;
+disableUserInput false;	// this resets released keys making the issue invisible
+
+// this workaround does not fix the mouse input that may get stuck on [[disableUserInput]] call
+</sqf>
+
+|seealso= [[userInputDisabled]] [[enableSimulation]] [[enableSimulationGlobal]]
+}}

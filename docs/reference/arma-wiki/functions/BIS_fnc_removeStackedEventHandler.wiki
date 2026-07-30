@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_removeStackedEventHandler
+// revision: 327366 (2022-07-12T22:11:56Z)
+// export sha1: l8do0lgsdy4oaktf6ybgtcrgmwuuogq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Event Handlers | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Event Handlers
+
+|descr= Removes a stacked event handler with specified custom id.
+
+|s1= [id, event] call [[BIS_fnc_removeStackedEventHandler]]
+
+|p1= key: [[String]] - custom id, a unique identifier, also returned by [[BIS_fnc_addStackedEventHandler]]
+
+|p2= event: [[String]] - event handler name, see [[BIS_fnc_addStackedEventHandler]] fr supported event handlers
+
+|r1= [[Boolean]] - [[true]] on success, [[false]] on failure
+
+|x1= <sqf>["someId", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;</sqf>
+
+|seealso= [[BIS_fnc_addStackedEventHandler]]
+}}

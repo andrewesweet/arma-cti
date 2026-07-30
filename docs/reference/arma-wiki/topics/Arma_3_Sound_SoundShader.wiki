@@ -1,0 +1,89 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_SoundShader
+// revision: 364233 (2024-05-06T09:38:15Z)
+// export sha1: jncza52w61zi7nd698fxf1hwsxz4s64
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|Sound}}
+== SoundShader ==
+
+SoundShader is the lowest level of sound configuration. It contains the definition of sound files and basic set of parameters.
+
+All SoundShaders have to be defined in the base class '''CfgSoundShaders'''.
+
+{{Feature | informative | For single SoundShader (SoundSet respectively), use sound files with the same sampling rate.}}
+
+{| class="wikitable"
+
+|-
+! Parameter
+! Unit/values
+! Default
+! Description
+
+|-
+
+! ''samples''
+| { ["path/sound",p], ... }
+| none
+|
+* array containing sound file name with paths and probability values (p), wav, wss, ogg are accepted file types, 16bit/44.1KHz wav converted to wss should always work fine
+* probability values are normalized to 1, in every case there is one sample selected
+* no immediate repeat (engine never selects the same sample twice in a row)
+
+|-
+! ''volume''
+| float (0..n) or [dBFS]
+| 1 (= db0)
+|
+* base volume value
+* use format db''x'' for decibels in dBFS (e.g. db-6 for -6 dBFS)
+* use float number to specify amplitude value directly
+
+|-
+! ''frequency''
+| (0.5..2)
+| 1
+|
+* base pitch value, 1 = no change
+* if shader is used in submix (more than one SoundShader in SoundSet), this parameter is currently ignored
+
+|-
+! ''range''
+| (0..n) [m]
+| 0
+|
+* radius of sphere (with center on sound source position) where sound is playing
+
+|-
+! ''rangeCurve''
+| {{d0, v0}, {d1, v1}, ... } or Class name
+| none
+|
+* array of points & corresponding amplitude multipliers or class name defined in [[Arma 3: Sound: Sound Curves|cfgSoundCurves]]
+* if shader is not used in submix (meaning it is the only one SoundShader in SoundSet), this parameter is currently ignored
+
+|-
+! ''limitation''
+| bool
+| false
+| 
+* adds SoundShader to the group of SoundShaders, where number of simultaneously playing SoundShaders will be limited (within single SoundSet)
+
+|}
+
+<syntaxhighlight lang="cpp">class CfgSoundShaders
+{
+	class ACPC2_closeShot_SoundShader
+	{
+		samples[] = 
+		{
+			{ "A3\Sounds_F\arsenal\weapons\Pistols\Acpc2\ACPC2_closeShot_01", 1 },
+			{ "A3\Sounds_F\arsenal\weapons\Pistols\Acpc2\ACPC2_closeShot_02", 1 },
+			{ "A3\Sounds_F\arsenal\weapons\Pistols\Acpc2\ACPC2_closeShot_03", 2 } // example: sample has a higher chance of being picked
+		};
+		volume = db3; // additional gain, +3dB
+		range = 50;
+		rangeCurve = closeShotCurve; //classname of a curve, defined in cfgSoundCurves
+};
+</syntaxhighlight>

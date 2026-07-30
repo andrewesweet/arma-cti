@@ -1,0 +1,89 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Diagnostics_Exe
+// revision: 364405 (2024-05-13T17:34:32Z)
+// export sha1: 3ylctkpiajnzoecyadtscn45jtnb2n3
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= [[:Category: Arma 3: Official Tools|Arma 3 Official Tools]]
+
+|DOWNLOAD= Part of Arma 3 Development branch on Steam. If you are using DEV branch, arma3diag_x64.exe should be in the Arma 3 main directory already.
+
+|DESCRIPTION= This special executable aims to help community creators in tweaking their addons. It contains various diagnostic tools that display the current game state in various conditions. See also: [[Performance Profiling]]. Extra commands available can be found here: [[:Category:Arma 3: Scripting Commands: Diagnostic Branch|Arma 3: Scripting Commands: Diagnostic Branch]].<br>
+
+{{Feature|informative|Some commands might also be available with [[Performance Profiling]].}}
+
+|NOTES= This exe has multiplayer disabled on purpose. There is no way to use this executable in multiplayer as this functionality has been removed completely. 
+
+|COMMAND= arma3diag_x64.exe
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO=
+}}
+
+=== Additional information ===
+
+==== How to use it ====
+
+Simply run the exe as you would use the standard arma3.exe. For example to perform diag on a PBO, add it as a launch parameter (-mod=@YOURMOD)
+
+Once the game is loaded, go into the editor and select 'Virtual Reality'.
+
+There are several diagnostics to be toggled by either using the '''diag_toggle''' command or setting '''diag_enable''' to true, e.g.:
+
+<sqf>
+diag_toggle "Animation";
+
+"Animation" diag_enable true;
+"All" diag_enable true;
+"All" diag_enable false;
+</sqf>
+
+List of available diagnostics:
+
+*<big>'''AI'''</big>
+** '''AIAiming''' - shows vectors (lines) of AI aiming at known target
+** '''AIBrain''' - general information about AI brain, combat mode and fsm state
+** '''AIDynamicError''' - shows value of dynamically calculated AI aiming error
+** '''AISkill''' - shows value of skill, plus global coefficients, as set by difficulty mode
+** '''AISuppression''' - shows value of suppression
+** '''AIDriving''' - Shows various information about AI driving and path in real time. '''(only works when the leader of the convoy is AI. player has to be passenger)'''
+* <big>'''[[Arma 3: Dynamic Simulation|Dynamic Simulation]]'''</big>
+** '''DynSimEntities''' - Displays the map overlay with yellow coloured activation boxes around each dynamically simulated (empty) object.
+** '''DynSimGrid''' - Displays the map overlay with the most detailed Dynamic Simulation grid.
+** '''DynSimGroups''' - Displays the map overlay with side coloured activation boxes around each dynamically simulated group.
+* <big>'''Animations'''</big>
+** '''Animation''' - displays current animation state, actions being used and target animation states depending on the actions
+** '''AnimSrcTarget''' - displays all animation sources and their values for the model under the cursor
+** '''AnimSrcUnit''' - displays all animation sources and their values for the player's vehicle (or his gun in case of a soldier)
+* <big>'''Physx'''</big>
+** '''EPEVehicle''' - displays gearbox, friction, thrust, brake and various parameters of a PhysX vehicle
+** '''EPEForce''' - displays PhysX forces applied on the vehicle
+** '''Force''' - displays some other forces with their names
+** '''Suspension''' - displays status of suspension for each wheel of a PhysX vehicle
+* <big>'''Misc'''</big>
+** '''HitPoints''' - displays status of hit points of the player's vehicle and vehicle under the cursor
+** '''Mines''' - displays nearby mines, their properties and radius
+*** The small circle is {{Color|green|green}} if the mine is armed, {{Color|red|red}} if the mine is not armed
+*** The {{Color|violet|violet}} circle is the radius at which more expensive calculations start
+** '''Particles''' - displays what particles are used in scene and their count
+** '''ParticleNames''' - attaches a name to each particle effect used so that it may be identified
+** '''Shots''' - visualizes projectiles and their paths, hits and ricochets, guidance, seek radius and laser and artillery targets; shows details about hit contacts, penetration, projectile speed, guidance and missile phases
+** '''SurfaceUnder''' - displays the per-foot surface information on which a unit is standing
+** '''CursorTargetObject''' - Shows name of cursor object and it is distance to the player. Max distance in 50 meters
+
+
+There is an additional diagnostic command used to adjust (by merging) configs on-the-fly without the need of restarting the game (Warning: there are some minor issues like CTD while exiting the game):
+<sqf>diag_mergeConfigFile ["PathToConfigOnDrive"];</sqf>
+It merges config file from "PathToConfigOnDrive" (which must be absolute path to the config including the drive - e.g. O:\Arma3\A3\Stuff_F\config.cpp)
+
+It is possible to '''update rvmats and textures on-the-fly''' while using "local data" - unpacked data in the same structure as the game sees them. You simply need to adjust rvmats or textures and it should affect the game as soon as you task back into it. There may be some visual artifacts; it is always worth to give it one more go with packed data.
+
+
+{{GameCategory|arma3|Official Tools}}

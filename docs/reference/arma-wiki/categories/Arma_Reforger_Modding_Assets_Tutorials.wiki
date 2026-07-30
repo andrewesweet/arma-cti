@@ -1,0 +1,22 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_Reforger/Modding/Assets/Tutorials
+// revision: 371159 (2025-02-28T17:20:42Z)
+// export sha1: glhay2h4gom2dyv9b32q2rtnxlqfq2j
+// Vendored snapshot. Do not edit — re-export instead.
+
+Basics of data manipulation
+
+* [[Arma_Reforger:Prefabs_Basics|Prefabs Basics]]
+* [[Arma_Reforger:Data_Modding_Basics|Data Modding Basics]]
+
+
+If you're new to '''Enfusion''' '''Modding''', below you'll find a short list of tutorials, '''ordered by difficulty''', that should get you started '''modding and creating new assets''' in '''Reforger''':
+
+* [[Arma_Reforger:Weapon_Modding|Weapon Modding]] - Introductory tutorial for '''beginners''', showing basics of creating modded weapon with custom textures, sounds and behavior
+* [[Arma_Reforger:Car_Modding|Car Modding]] - This tutorial expands the knowledge gathered in [[Arma_Reforger:Weapon_Modding|Weapon Modding]] tutorial by  providing some information about modifying of existing vehicles, changing wheeled simulation parameters or adding turrets.
+* [[Arma_Reforger:Faction_Creation|Faction Creation]] - '''Intermediate''' difficulty tutorial explaining character gear retexture, creating new character prefabs with custom gear, integrating such factions into Game Master and Conflict game modes and more
+* [[Arma_Reforger:Prop_Creation|Prop Creation]] - '''Intermediate''' difficulty tutorial  explaining importing of new asset - prop - into the game, creating colliders for it, creating custom actions, procedural animations and Game Master integration
+* [[Arma_Reforger:Weapon_Creation|Weapon Creation]] - '''Advanced''' tutorial explaining importing of new asset - weapon - into the game, creating weapon, magazine and ammo prefabs, Game Master integration and creating new animations
+* [[Arma Reforger:Character Gear Creation|Character Gear Creation]] - '''Advanced''' tutorials explaining importing of new character equipment (rigging/skeleton creation), creating colliders for it and configuring protection of the equipment
+* [[Arma_Reforger:Car_Creation|Car Creation]] - '''Advanced''' tutorial explaining importing of new asset - car - into the game, creating new car prefab, tweaking vehicle simulation parameters, Game Master integration
+
+{{GameCategory|armaR|Modding|Assets}}

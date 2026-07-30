@@ -1,0 +1,124 @@
+// source: https://community.bistudio.com/wiki/Contact_Reports
+// revision: 226392 (2021-01-31T17:58:30Z)
+// export sha1: m5x02uvgt7hyv15ip9rjwa39zwmqycr
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+This is a suggested method of reporting contacts in MP over VOIP or a coms package such as Mumble or TeamSpeak, it is not a bible.
+
+== Introduction ==
+A contact report entails "A Triple D": 
+* Alert 
+* Direction 
+* Distance 
+* Description
+
+=== Alert ===
+The alert or warning, which can be up to two words, the first and most important of which is '''Contact!'''  or '''Enemy!''' or '''Friendly''' or '''Unknown!''' or perhaps '''Target!''' or '''Reference''' 
+It may then have modifiers such as, Audio, Flash (gun flash), Smoke, Dust (indicating vehicle movement), Enemy, Friendly, Possible, Tracks (with cardinal compass direction, eg running NNW,SSE), Trees down etc.
+
+'''Examples:'''
+
+''"Contact,Smoke; half right; near; MG "''
+
+''"Unknown, Audio only; Front; 800m ish, tracked vehicle"''
+
+''"Target; 275 Degrees; Elevation 0; 1500m; Tank!"''
+
+''"Reference; White Barn; 270 Degrees; left of barn, fence; left end of Fence, Tank!"''
+
+''"Civilan; at Cross roads; Front; 500m, On Motorbike, Possible Dicker"''
+
+=== Direction ===
+After warning your comrades you need to tell them which way to face. If you get wounded or slotted after this they at least know where to look. NB Remember directions are 3 dimensional so elevation may need to be included!
+
+==== Look Where I am pointing! ====
+Since Operation Arrowhead we now have infra red laser pointers on some infantry weapons, and IR strobes that can be thrown at targets or placed at friendly positions. If you are using NV goggles these are easily visible. Also in old fashioned ArmA you can say look where my rifle is pointing after waving it up and down in the air to attract fellow players attention or simply watch my tracer and fire on the target.
+
+==== Laser designator for guided weapons ====
+ArmA Also includes a laser designator for dropping bombs on or firing missiles at lazed target
+ 
+==== Frame of Reference ====
+If I call out a contact direction from London for a contact in Ireland and you are in New York and I say "Contact West" and you look west you are looking in the wrong direction. Contact reports should be given by relative direction based on a frame of reference. Either compass from your position, or that of a reference objects.
+
+===== Line of March =====
+Line of march (LOM) is always your first point of reference. A groups, line of march in cardinal compass form or better in degrees or mils should always be given by team leader every time there is a major direction change. That is your first and primary reference. Ideally all waypoints and lines of march are given both at the briefing before the mission and repeated in small briefings at waypoints, rally points, LZs etc. Adding a compass baring to a WP marker on map is also useful.
+
+'''Example'''
+''"Contact, Half Right, Audio only, Shots Fired"''
+
+"Half Right" means 45 Degrees ish right from the LOM.
+
+===== Designated Reference =====
+Designate a reference by stating "REFERENCE!" followed by giving a compass or cardinal direction and/or a description of the reference object such as "220 Degrees, Brown wooden barn" Any object can be designated to act as frame of reference, preferably reference objects should be predesignated at the initial briefing or waypoint briefing, but they can also be used to pinpoint distant contacts. When a player designates a target in this manner players receiving the contact should say "SEEN!" if they can see the object visually in first/third/command view or "NOT SEEN!" if after a few seconds they cannot see the designated target or reference object. Otherwise the object should be referred to via the map and marker with the statement "Marked On Map!" and the marker description eg. "As EI x 4" (4 enemy infantry) and the player receiving the contact information should say, "Acknowledged!" or "Understood!" or "Got that!" etc. Markers that are not seen need also to be pointed out with "THAT Marker NOT seen!" You can additionally refer to the map and place you compass on a marker position to get a bearing from it. Then use distance reference methods listed below for directions and distance relative to it.
+
+====== Geographic ======
+Any geographic point; objects such as a lone tree, sign post or power pylon, building by general type eg. church, farmhouse, office block etc, areas such as: lake, forest, town, village, or hill top, usually designated by height; can be used as a Geographic reference. You can also refer to the map and place you compass on its position to get a bearing from it.
+
+====== People, Vehicles and Groups ======
+Any person eg. player or external group member, friend or foe, dead or alive, can be designated as an external frame of reference. Once again you can refer to the map and place your compass on its position to get a bearing from it.
+
+====== Marker Reference ======
+The ArmA map can be marked; the Dot is probably the most useful marker. Where assaulting a town it is useful to number each building in a quadrant with a dot marker, so that contacts can be reported quickly and so that clearing the buildings is organised, after each is cleared its dot is removed. 
+
+When assaulting a particular structure; aspect faces given as colour based on commander's perspective can be useful:
+* Green For Front
+* Yellow For Back
+* Red for right
+* Black for left
+By doing this if one squad is assaulting from the front and others from a flank or guarding the rear. It reduces the risk of people assuming their direction of facing is the front.  
+
+Mission Phases are also best designated by colour.
+
+Any one of these map markers can be used as reference point.
+
+Coloured Markers, using the dot marker, arranged in sectors by street block, with a digit or letter placed on each building makes identifying particular buildings in a town easy. Keep the numbers small say 1 to 5. Changing colour with each city block. Eg referring to building Black 2 distinguishes the sector of the city to 4 or 5 buildings grouped together under the same colour and specifically identifies building 2.
+
+==== Direction Reporting methods ====
+Range to the target and threat are the key factors in choosing how to report a contact. 
+
+===== Less than 150 m Range: =====
+You should use 90 Degree Arcs from line of march, it takes too long to look at the compass: and estimating the distance does not need much exactitude, you just need to say whether it is close or near.
+Examples: Contact Left, Contact, Right, Contact Front, Contact Rear. 
+Add Close, for less than 50 m 
+Add Near for 50 m to 100 m
+
+===== 150 m to 300 m Range =====
+Clock position from line of march and range to contact, it takes too long to look at the compass, but you need more accuracy of direction than a 90 Degree Arc.
+
+===== 300 m to 500 m Range, plus all air contacts =====
+Compass bearing, accuracy of direction is paramount at longer ranges you need reduce the area people are searching so they can get on the target as fast as possible.
+
+===== 500m plus =====
+At 500 m plus compass bearing is often not sufficient so reference to external objects becomes necessary.
+
+==== Elevation ====
+Elevation is relative to your reference point, usually your self, and can be positive for above you and negative for below you. Elevation can be estimated by experience and referring to the height of map and clutter features, each single story of flat roofed building is about 15 feet or 3m in height.
+
+'''Example''':
+
+''Contact; 220 degrees, elevation Minus 300m, Distance 1200m, opposite side of the valley, left of the large rock outcrop, right of the lone pine tree; Infantry Squad''
+
+''Contact; Half Left, Third Floor; 50m; Large Window, Rifle Muzle.''
+
+=== Distance ===
+As well simply giving distance to a contact, distance affects the brevity and type of direction information you give. A closer contact needs reporting quicker and because it covers a greater arc of view does not need so much precision in its direction. Bigger threats need brevity. To judge distance at lower difficulty, the space bar and mouse hover over target can be used. The map can also be used to give distance. The grid squares zoomed out are 1000m Zoomed in they are 100m. Several weapons such as sniper rifles, AFV guns and AT launchers have sights designed so they can be used to estimate range. There are also a laser designators for both infantry and vehicles that have a ranging system.
+
+=== Description ===
+This tells you what the contact is: Armor, Infantry, Vehicle, Bunker, Aircraft, Entrenchment etc. 
+
+Size and threat: So weapon of the unit and their numbers is important: Soldier, RPG, MG, sniper; Fire Team, Squad, Platoon, Company.  
+
+What the enemy is doing eg. Moving left to right, right to left, advancing, retreating. 
+
+State of awareness of the enemy is useful: Aware, Unaware, Cautious, At Ease, Firing on... etc. 
+
+What you are doing about the contact eg. I am: Observing, supressing etc.
+
+Example ''"Infantry squad times 6 with RPGs and Rifles, moving left to right, unaware, am observing."''
+
+=== Use the Map! ===
+In ArmA, if you have the interactive map, use it! Mark your contact on the map use the dot, it is the smallest marker, then add an initials and number based description; so the T for tank, I for infantry, V for vehicle and a number for the number of units:
+e.g. "I-8" would mean an infantry contact of 8 soldiers.
+
+[[Category:Battle Tactics]]

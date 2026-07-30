@@ -1,0 +1,659 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Particle_Effects:_Config_Parameters
+// revision: 376917 (2025-12-28T02:08:46Z)
+// export sha1: blubbqn241jrm0ni0mpsopdjoo5wtvw
+// categories: Category:Particle System
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The list of config parameters used for calling of particle effects. For more information, see [[Arma 3: Particle Effects]].
+
+
+== Parameters ==
+
+=== - (Hit) ===
+
+* Description: Effect for hit of specified material. Whatever name of parameter is working. Name of parametr must be used in [[RVMAT_basics#Physical_properties|bisurf's]] parameter ''impact''.
+* Path: configFile >> CfgAmmo >> <font color="grey">''Ammo_class''</font> >> HitEffects
+* Type of emitter: constant emitter
+* Variables:
+** intensity - depends on damage done (projectile hit, speed), intensity from effect config and some randomly generated value
+** interval - depends on damage done (projectile hit, speed), interval from effect config and some randomly generated value
+** fireIntensity - depends on damage done (projectile hit, speed), on intensity from effect config
+** fireInterval - depends on damage done (projectile hit, speed), on interval from effect config
+** lifeTime - depends on damage done (projectile hit, speed), on lifeTime from effect config
+** surfNormalX - normal to the surface of the object as vector in world coord
+** surfNormalY - normal to the surface of the object as vector in world coord
+** surfNormalZ - normal to the surface of the object as vector in world coord
+** inSpeed - speed of projectile before hit of the object
+** inDirX - direction of projectile before hit of the object as vector
+** inDirY - direction of projectile before hit of the object as vector
+** inDirZ - direction of projectile before hit of the object as vector
+** outSpeed - speed of projectile after hit of the object
+** outDirX - direction of projectile after hit of the object as vector
+** outDirY - direction of projectile after hit of the object as vector
+** outDirZ - direction of projectile after hit of the object as vector
+** explosionDirX - used for directional explosions
+** explosionDirY - used for directional explosions
+** explosionDirZ - used for directional explosions
+** hit - hit parameter which is defined in given ammo type
+** damage - damage caused by hit
+** dustness - dustness of material
+** randomValue - random value
+** distToWater - vertical distance to sea level
+
+=== breathingBubblesEffect ===
+
+* Description: Bubble effect for units who are able to breath underwater.
+* Path: configFile >> CfgVehicles >> <font color="grey">''Unit_class''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** positionX - position of the memorypoint defined in breathingBubblesPoint as vector
+** positionY - position of the memorypoint defined in breathingBubblesPoint as vector
+** positionZ - position of the memorypoint defined in breathingBubblesPoint as vector
+** speedX - direction to the memorypoint defined in breathingBubblesDir as vector
+** speedY - direction to the memorypoint defined in breathingBubblesDir as vector
+** speedZ - direction to the memorypoint defined in breathingBubblesDir as vector
+** speedSize - speed of unit's movement
+* Related parameters:
+** breathingBubblesInterval - how often unit creates the bubbles (number - seconds)
+** breathingBubblesPoint - position stored in position variables (string - memorypoint)
+** breathingBubblesDir - direction stored in speed variables (string - memorypoint)
+
+=== rightDustEffect / leftDustEffect ===
+
+* Description: Old dust vehicle effect (it is used only if new one is not defined).
+* Path: configFile >> CfgVehicles >> <font color="grey">''Vehicle_class''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** density - speed, dustness of surface
+** dustColor - dustness of surface
+** positionX - position of the effect as vector
+** positionY - position of the effect as vector
+** positionZ - position of the effect as vector
+** speedX - speed of the vehicle as vector in world coord
+** speedY - speed of the vehicle as vector in world coord
+** speedZ - speed of the vehicle as vector in world coord
+** localSpeedX - speed of the vehicle as vector in vehicle coord
+** localSpeedY - speed of the vehicle as vector in vehicle coord
+** localSpeedZ - speed of the vehicle as vector in vehicle coord
+** humidity - humidity of the air
+** dustness - dustness of surface
+** speedSize - speed of vehicle
+** acceleration - acceleration of vehicle
+** turn - turning of vehicle (from -1 to 1, 0 is no turning)
+** distToWater - vertical distance to sea level
+
+=== rightDustEffects / leftDustEffects ===
+
+* Description: New dust vehicle effect. Different effect can be defined for each surface type. These parameters are not strings as usual, they are arrays.
+* Path: configFile >> CfgVehicles >> <font color="grey">''Vehicle_class''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** density - speed, dustness of surface
+** dustColor - dustness of surface
+** positionX - position of the effect as vector
+** positionY - position of the effect as vector
+** positionZ - position of the effect as vector
+** speedX - speed of the vehicle as vector in world coord
+** speedY - speed of the vehicle as vector in world coord
+** speedZ - speed of the vehicle as vector in world coord
+** localSpeedX - speed of the vehicle as vector in vehicle coord
+** localSpeedY - speed of the vehicle as vector in vehicle coord
+** localSpeedZ - speed of the vehicle as vector in vehicle coord
+** humidity - humidity of the air
+** dustness - dustness of surface
+** speedSize - speed of vehicle
+** acceleration - acceleration of vehicle
+** turn - turning of vehicle (from -1 to 1, 0 is no turning)
+** distToWater - vertical distance to sea level
+
+
+''Example'':
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class car
+	{
+		rightDustEffects[] =
+		{
+			{"GdtStratisConcrete", "RDustEffects"},
+			{"GdtStratisConcrete", "RDirtEffects"},
+			{"GdtStratisBeach", "RDustEffects"},
+			{"GdtStratisBeach", "RStonesEffects"},
+		};
+		leftDustEffects[] =
+		{
+			{"GdtStratisConcrete", "RDustEffects"},
+			{"GdtStratisConcrete", "RDirtEffects"},
+			{"GdtStratisBeach", "RDustEffects"},
+			{"GdtStratisBeach", "RStonesEffects"},
+		};
+	};
+};
+</syntaxhighlight>
+
+=== damageEffect ===
+
+* Description: Effect when vehicle is damaged, it is allways simulated (even if vehicle is not damaged).
+* Path: configFile >> CfgVehicles >> <font color="grey">''Vehicle_class''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** damage - total damage of the vehicle
+** engineOn - 1 if engine is on, 0 if not
+** engineDamage
+** speedX - speed of the vehicle as vector in world coord
+** speedY - speed of the vehicle as vector in world coord
+** speedZ - speed of the vehicle as vector in world coord
+** speed - speed of the vehicle in world coord
+** distToWater - distance to water surface under the vehicle
+** randomValue - random value generated for every emitor (generated when vehicle is created, after that is constant)
+
+=== dustEffect ===
+
+* Description: Dust effect under flying helicopter or airplane (only when airplane is hovering). Simulated only the ground is under vehicle.
+* Path: configFile >> CfgVehicles >> <font color="grey">''Helicopter_class''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** speed - speed of vehicle
+** density - depends on thrust, distance to surface
+** positionX - position of the effect as vector
+** positionY - position of the effect as vector
+** positionZ - position of the effect as vector
+** speedX - speed of the vehicle as vector
+** speedY - speed of the vehicle as vector
+** speedZ - speed of the vehicle as vector
+** landContact - 1 if vehicle has land contact, 0 if not
+
+=== waterEffect ===
+
+* Description: Water effect under flying helicopter or airplane (only when airplane is hovering). Simulated only the water is under vehicle.
+* Path: configFile >> CfgVehicles >> <font color="grey">''Helicopter_class''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** speed - speed of vehicle
+** density - depends on thrust, distance to surface
+** positionX - position of the effect as vector
+** positionY - position of the effect as vector
+** positionZ - position of the effect as vector
+** speedX - speed of the vehicle as vector
+** speedY - speed of the vehicle as vector
+** speedZ - speed of the vehicle as vector
+** landContact - 1 if vehicle has land contact, 0 if not
+
+=== impactEffectsSea ===
+
+* Description: Effect triggered when a collision of the object with the sea surface is detected.
+* Path: configFile >> CfgVehicles >> <font color="grey">''Vehicle_class''</font>
+* Type of emitter: constant emitter
+* Variables:
+** speed - speed of the object
+** density - radius of bounding sphere of the object
+** positionX - position of the effect as vector
+** positionY - position of the effect as vector
+** positionZ - position of the effect as vector
+** speedX - speed of the object as vector
+** speedY - speed of the object as vector
+** speedZ - speed of the object as vector
+** landContact - 1 if object has land contact, 0 if not
+
+=== collisionEffect ===
+
+* Description: Effect triggered when a collision of the object and another object is detected.
+* Path: configFile >> CfgVehicles >> <font color="grey">''Vehicle_class''</font>
+* Type of emitter: constant emitter
+* Variables:
+** positionX - position where the collision is detected as vector
+** positionY - position where the collision is detected as vector
+** positionZ - position where the collision is detected as vector
+** speedX - speed of the vehicle as vector in world coord
+** speedY - speed of the vehicle as vector in world coord
+** speedZ - speed of the vehicle as vector in world coord
+** localSpeedX - speed of the vehicle as vector in vehicle coord
+** localSpeedY - speed of the vehicle as vector in vehicle coord
+** localSpeedZ - speed of the vehicle as vector in vehicle coord
+** forceSize - force size of collision computed by PhysX
+
+=== explosionEffect ===
+
+* Description: Explosion of the vehicle when the damage reaches 1. Parameter is reference to AmmoType used to calculate damage to objects around when vehicle explodes (if it have a fuel and can explode), default "FuelExplosion".
+* Path: configFile >> CfgVehicles >> <font color="grey">''Vehicle_class''</font>
+* Type of emitter: constant emitter
+
+=== leftFastWaterEffect / rightFastWaterEffect ===
+
+* Description: Effect when vehicle floats on water. Effects are simulated when vehicle speed is more then "waterFastEffectSpeed" (vehicle parameter).
+* Path: configFile >> CfgVehicles >> <font color="grey">''Boat_class''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** density - depends on thrust and speed
+** size - for some vehicles it is constant, for some (boats) it depends on speed
+** positionX - position of the memorypoint defined in memotyPointsLeftWaterEffect/memotyPointsRightWaterEffect as vector
+** positionY - position of the memorypoint defined in memotyPointsLeftWaterEffect/memotyPointsRightWaterEffect as vector
+** positionZ - position of the memorypoint defined in memotyPointsLeftWaterEffect/memotyPointsRightWaterEffect as vector
+** speedX - speed of the vehicle as vector
+** speedY - speed of the vehicle as vector
+** speedZ - speed of the vehicle as vector
+** speedSize - size of the speed vector
+** turn - position of the wheel (-1, 1), for boat it is allways 0
+** thrust - current thrust of the vehicle
+* Related parameters:
+** waterFastEffectSpeed - effects are simulated when the vehicle speed is more then this value (number)
+** memotyPointsLeftWaterEffect/memotyPointsRightWaterEffect - position stored in position variables (string - memorypoint)
+
+=== leftWaterEffect / rightWaterEffect ===
+
+* Description: Effect when vehicle floats on water. Effects are simulated when vehicle speed is less then "waterFastEffectSpeed" (vehicle parameter).
+* Path: configFile >> CfgVehicles >> <font color="grey">''Boat_class''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** density - depends on thrust and speed
+** size - for some vehicles it is constant, for some (boats) it depends on speed
+** positionX - position of the memorypoint defined in memotyPointsLeftWaterEffect/memotyPointsRightWaterEffect as vector
+** positionY - position of the memorypoint defined in memotyPointsLeftWaterEffect/memotyPointsRightWaterEffect as vector
+** positionZ - position of the memorypoint defined in memotyPointsLeftWaterEffect/memotyPointsRightWaterEffect as vector
+** speedX - speed of the vehicle as vector
+** speedY - speed of the vehicle as vector
+** speedZ - speed of the vehicle as vector
+** speedSize - size of the speed vector
+** turn - position of the wheel (-1, 1), for boat it is allways 0
+** thrust - current thrust of the vehicle
+* Related parameters:
+** waterFastEffectSpeed - effects are simulated when the vehicle speed is less then this value (number)
+** memotyPointsLeftWaterEffect/memotyPointsRightWaterEffect - position stored in position variables (string - memorypoint)
+
+=== leftEngineEffect / rightEngineEffect ===
+
+* Description: Effect when vehicle floats on water. Effects are simulated when vehicle speed is more then "engineEffectSpeed" (vehicle parameter).
+* Path: configFile >> CfgVehicles >> <font color="grey">''Boat_class''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** density - depends on thrust and speed
+** size - for some vehicles it is constant, for some (boats) it depends on speed
+** positionX - position of the memorypoint defined in memotyPointsLeftWaterEffect/memotyPointsRightWaterEffect as vector
+** positionY - position of the memorypoint defined in memotyPointsLeftWaterEffect/memotyPointsRightWaterEffect as vector
+** positionZ - position of the memorypoint defined in memotyPointsLeftWaterEffect/memotyPointsRightWaterEffect as vector
+** speedX - speed of the vehicle as vector
+** speedY - speed of the vehicle as vector
+** speedZ - speed of the vehicle as vector
+** speedSize - size of the speed vector
+** turn - position of the wheel (-1, 1), for boat it is allways 0
+** thrust - current thrust of the vehicle
+* Related parameters:
+** engineEffectSpeed - effects are simulated when the vehicle speed is more then this value (number)
+** memotyPointsLeftEngineEffect/memotyPointsRightEngineEffect - position stored in position variables (string - memorypoint)
+
+=== impactEffectsBlood ===
+
+* Description: Blood effect, only for Person object (and if blood is enabled).
+* Path: configFile >> CfgVehicles >> <font color="grey">''Unit_class''</font>
+* Type of emitter: constant emitter
+* Variables:
+** intensity - depends on damage done (projectile hit, speed), intensity from effect config and some randomly generated value
+** interval - depends on damage done (projectile hit, speed), interval from effect config and some randomly generated value
+** fireIntensity - depends on damage done (projectile hit, speed), on intensity from effect config
+** fireInterval - depends on damage done (projectile hit, speed), on interval from effect config
+** lifeTime - depends on damage done (projectile hit, speed), on lifeTime from effect config
+** surfNormalX - normal to the surface of the object as vector in world coord
+** surfNormalY - normal to the surface of the object as vector in world coord
+** surfNormalZ - normal to the surface of the object as vector in world coord
+** inSpeed - speed of projectile before hit of the object
+** inDirX - direction of projectile before hit of the object as vector
+** inDirY - direction of projectile before hit of the object as vector
+** inDirZ - direction of projectile before hit of the object as vector
+** outSpeed - speed of projectile after hit of the object
+** outDirX - direction of projectile after hit of the object as vector
+** outDirY - direction of projectile after hit of the object as vector
+** outDirZ - direction of projectile after hit of the object as vector
+** explosionDirX - used for directional explosions
+** explosionDirY - used for directional explosions
+** explosionDirZ - used for directional explosions
+** hit - hit parameter which is defined in given ammo type
+** damage - damage caused by hit
+** dustness - dustness of material
+** randomValue - random value
+** distToWater - vertical distance to sea level
+
+=== impactEffectsNoBlood ===
+
+* Description: Blood effect, only for Person object (and if blood is disabled).
+* Path: configFile >> CfgVehicles >> <font color="grey">''Unit_class''</font>
+* Type of emitter: constant emitter
+* Variables:
+** intensity - depends on damage done (projectile hit, speed), intensity from effect config and some randomly generated value
+** interval - depends on damage done (projectile hit, speed), interval from effect config and some randomly generated value
+** fireIntensity - depends on damage done (projectile hit, speed), on intensity from effect config
+** fireInterval - depends on damage done (projectile hit, speed), on interval from effect config
+** lifeTime - depends on damage done (projectile hit, speed), on lifeTime from effect config
+** surfNormalX - normal to the surface of the object as vector in world coord
+** surfNormalY - normal to the surface of the object as vector in world coord
+** surfNormalZ - normal to the surface of the object as vector in world coord
+** inSpeed - speed of projectile before hit of the object
+** inDirX - direction of projectile before hit of the object as vector
+** inDirY - direction of projectile before hit of the object as vector
+** inDirZ - direction of projectile before hit of the object as vector
+** outSpeed - speed of projectile after hit of the object
+** outDirX - direction of projectile after hit of the object as vector
+** outDirY - direction of projectile after hit of the object as vector
+** outDirZ - direction of projectile after hit of the object as vector
+** explosionDirX - used for directional explosions
+** explosionDirY - used for directional explosions
+** explosionDirZ - used for directional explosions
+** hit - hit parameter which is defined in given ammo type
+** damage - damage caused by hit
+** dustness - dustness of material
+** randomValue - random value
+** distToWater - vertical distance to sea level
+
+=== mineJumpEffects ===
+
+* Description: Effect when the jumping mine jumps.
+* Path: configFile >> CfgAmmo >> <font color="grey">''Explosive_class''</font>
+* Type of emitter: constant emitter
+* Variables:
+** speed - indirectHit of the mine
+** positionX - distance from the original position (from where the mine is jumping) as vector
+** positionY - distance from the original position (from where the mine is jumping) as vector
+** positionZ - distance from the original position (from where the mine is jumping) as vector
+
+=== craterEffects ===
+
+* Description: Crater part of explosion of given ammo, it is a parameter of the ammoType of the projectile that creates the crater. This is used for craters above the water.
+* Path: configFile >> CfgAmmo >> <font color="grey">''Explosive_class''</font>
+* Type of emitter: constant emitter
+* Variables:
+** intensity - depends on damage done (projectile hit, speed), intensity from effect config and some randomly generated value
+** interval - depends on damage done (projectile hit, speed), interval from effect config and some randomly generated value
+** fireIntensity - depends on damage done (projectile hit, speed), on intensity from effect config
+** fireInterval - depends on damage done (projectile hit, speed), on interval from effect config
+** lifeTime - depends on damage done (projectile hit, speed), on lifeTime from effect config
+** surfNormalX - normal to the surface of the object as vector in world coord
+** surfNormalY - normal to the surface of the object as vector in world coord
+** surfNormalZ - normal to the surface of the object as vector in world coord
+** inSpeed - speed of projectile before hit of the object
+** inDirX - direction of projectile before hit of the object as vector
+** inDirY - direction of projectile before hit of the object as vector
+** inDirZ - direction of projectile before hit of the object as vector
+** outSpeed - speed of projectile after hit of the object
+** outDirX - direction of projectile after hit of the object as vector
+** outDirY - direction of projectile after hit of the object as vector
+** outDirZ - direction of projectile after hit of the object as vector
+** explosionDirX - used for directional explosions
+** explosionDirY - used for directional explosions
+** explosionDirZ - used for directional explosions
+** hit - hit parameter which is defined in given ammo type
+** damage - damage caused by hit
+** dustness - dustness of material
+** randomValue - random value
+** distToWater - vertical distance to sea level
+
+=== craterWaterEffects ===
+
+* Description: Same as „createrEffects“ this is used for craters under water.
+* Path: configFile >> CfgAmmo >> <font color="grey">''Explosive_class''</font>
+* Type of emitter: constant emitter
+* Variables:
+** intensity - depends on damage done (projectile hit, speed), intensity from effect config and some randomly generated value
+** interval - depends on damage done (projectile hit, speed), interval from effect config and some randomly generated value
+** fireIntensity - depends on damage done (projectile hit, speed), on intensity from effect config
+** fireInterval - depends on damage done (projectile hit, speed), on interval from effect config
+** lifeTime - depends on damage done (projectile hit, speed), on lifeTime from effect config
+** surfNormalX - normal to the surface of the object as vector in world coord
+** surfNormalY - normal to the surface of the object as vector in world coord
+** surfNormalZ - normal to the surface of the object as vector in world coord
+** inSpeed - speed of projectile before hit of the object
+** inDirX - direction of projectile before hit of the object as vector
+** inDirY - direction of projectile before hit of the object as vector
+** inDirZ - direction of projectile before hit of the object as vector
+** outSpeed - speed of projectile after hit of the object
+** outDirX - direction of projectile after hit of the object as vector
+** outDirY - direction of projectile after hit of the object as vector
+** outDirZ - direction of projectile after hit of the object as vector
+** explosionDirX - used for directional explosions
+** explosionDirY - used for directional explosions
+** explosionDirZ - used for directional explosions
+** hit - hit parameter which is defined in given ammo type
+** damage - damage caused by hit
+** dustness - dustness of material
+** randomValue - random value
+** distToWater - vertical distance to sea level
+
+=== effectFlare ===
+
+* Description: Effect of the Flare projectile.
+* Path: configFile >> CfgAmmo >> <font color="grey">''Ammo_class''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** colorR - color defined by parameter "smokeColor" in AmmoType
+** colorG - color defined by parameter "smokeColor" in AmmoType
+** colorB - color defined by parameter "smokeColor" in AmmoType
+** colorA - color defined by parameter "smokeColor" in AmmoType
+
+=== effectFly ===
+
+* Description: Trail effect for flying ammo.
+* Path: configFile >> CfgAmmo >> <font color="grey">''Ammo_class''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** hit - hit from AmmoType
+** speedX - speed of projectile as vector
+** speedY - speed of projectile as vector
+** speedZ - speed of projectile as vector
+** speedSize - size of the speed vector
+** flyTime - how long the projectile is flying (time since the shot)
+** distToSurface - distance to surface (under the bullet)
+
+=== effectsMissile ===
+
+* Description: Trail effect for flying missile.
+* Path: configFile >> CfgAmmo >> <font color="grey">''Missile_class''</font>
+* Type of emitter: constant emitter
+* Variables:
+** intensity - intensity from effect config
+** interval - interval from effect config
+** fireIntensity - intensity from effect config
+** fireInterval -  interval from effect config
+** lifeTime - lifeTime from effect config and thrustTime from AmmoType
+
+=== effectsMissileInit ===
+
+* Description: Init effect for missile (before the engine of the missile is started).
+* Path: configFile >> CfgAmmo >> <font color="grey">''Missile_class''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** speed - speed of the missile in world coord
+** density - value that goes from 1.0 to 0.0 according to time (0.0 when time from shot is equal to "initTime" ammoType atribute)
+** speedX - full vector of the speed in world coord
+** speedY - full vector of the speed in world coord
+** speedZ - full vector of the speed in world coord
+** parentSpeedX - speed of parent unit/vehicle that fired the missile as vector
+** parentSpeedY - speed of parent unit/vehicle that fired the missile as vector
+** parentSpeedZ - speed of parent unit/vehicle that fired the missile as vector
+** landContact - 1 if has land contact, 0 otherwise
+
+=== effectsSmoke ===
+
+* Description: Effect for smoke grenades and countermeasures. Parameters depends on if the projectile is grenade or countermeasure.
+* Path: configFile >> CfgAmmo >> <font color="grey">''Ammo_class''</font>
+* Type of emitter: real-time emitter
+* Variables for smoke grenades:
+** colorR - color defined by parameter "smokeColor" in AmmoType
+** colorG - color defined by parameter "smokeColor" in AmmoType
+** colorB - color defined by parameter "smokeColor" in AmmoType
+** colorA - color defined by parameter "smokeColor" in AmmoType
+* Variables for smoke countermeasure:
+** time - time since the coutnermeasure has been created
+
+=== explosionEffects ===
+
+* Description: Effect when explosion should happen (ex. Missile hit).
+* Path: configFile >> CfgAmmo >> <font color="grey">''Ammo_class''</font>
+* Type of emitter: constant emitter
+* Variables:
+** intensity - depends on damage done (projectile hit, speed), intensity from effect config and some randomly generated value
+** interval - depends on damage done (projectile hit, speed), interval from effect config and some randomly generated value
+** fireIntensity - depends on damage done (projectile hit, speed), on intensity from effect config
+** fireInterval - depends on damage done (projectile hit, speed), on interval from effect config
+** lifeTime - depends on damage done (projectile hit, speed), on lifeTime from effect config
+** surfNormalX - normal to the surface of the object as vector in world coord
+** surfNormalY - normal to the surface of the object as vector in world coord
+** surfNormalZ - normal to the surface of the object as vector in world coord
+** inSpeed - speed of projectile before hit of the object
+** inDirX - direction of projectile before hit of the object as vector
+** inDirY - direction of projectile before hit of the object as vector
+** inDirZ - direction of projectile before hit of the object as vector
+** outSpeed - speed of projectile after hit of the object
+** outDirX - direction of projectile after hit of the object as vector
+** outDirY - direction of projectile after hit of the object as vector
+** outDirZ - direction of projectile after hit of the object as vector
+** explosionDirX - used for directional explosions
+** explosionDirY - used for directional explosions
+** explosionDirZ - used for directional explosions
+** hit - hit parameter which is defined in given ammo type
+** damage - damage caused by hit
+** dustness - dustness of material
+** randomValue - random value
+** distToWater - vertical distance to sea level
+
+=== effectName (GunParticles) ===
+
+* Description: Weapon muzzle effect.
+* Path: configFile >> CfgWeapons >> <font color="grey">''Weapon_class''</font> >> GunParticles >> <font color="grey">''Random_class_name''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** positionX - position of the memorypoint defined in parameter positionName as vector
+** positionY - position of the memorypoint defined in parameter positionName as vector
+** positionZ - position of the memorypoint defined in parameter positionName as vector
+** directionX - direction to the memorypoint defined in parameter directionName as vector in world coord
+** directionY - direction to the memorypoint defined in parameter directionName as vector in world coord
+** directionZ - direction to the memorypoint defined in parameter directionName as vector in world coord
+** directionLocalX - direction to the memorypoint defined in parameter directionName as vector in weapon coord
+** directionLocalY - direction to the memorypoint defined in parameter directionName as vector in weapon coord
+** directionLocalZ - direction to the memorypoint defined in parameter directionName as vector in weapon coord
+** vehicleSpeedX - weapon movement as vector in world coord
+** vehicleSpeedY - weapon movement as vector in world coord
+** vehicleSpeedZ - weapon movement as vector in world coord
+** vehicleSpeedSize - speed of weapon movement
+** vehicleSpeedLocalX - weapon movement as vector in weapon coord
+** vehicleSpeedLocalY - weapon movement as vector in weapon coord
+** vehicleSpeedLocalZ - weapon movement as vector in weapon coord
+** vehicleSpeedLocalSize - speed of weapon movement
+** isWaterSurface - 1 if the surface under weapon is land, -1 for water
+** distToSurface - vertical distance between muzzle and surface
+** dustness - dustness of surface
+** humidity - humidity of the air (depends on rain)
+* Related parameters:
+** directionName - direction stored in direction variables (string - memorypoint)
+** positionName - position stored in position variables (string - memorypoint)
+
+
+''Example:''
+<syntaxhighlight lang="cpp">
+class CfgWeapons
+{
+	class LMG_Minigun
+	{
+		class gunParticles
+		{
+			class effect1
+			{
+				positionName	= "machinegun_eject_pos";
+				directionName	= "machinegun_eject_dir";
+				effectName		= "MachineGunCartridge1";
+			};
+
+			class effect2
+			{
+				positionName	= "machinegun_end";
+				directionName	= "machinegun_beg";
+				effectName		= "MachineGun1";
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+=== effect (Exhausts) ===
+
+* Description: Vehicle's exhaust effects.
+* Path: configFile >> CfgVehicles >> <font color="grey">''Vehicle_class''</font> >> Exhausts >> <font color="grey">''Random_class_name''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** intensity
+** damage - damage of vehicle
+** positionX - position of the memorypoint defined in parameter position as vector
+** positionY - position of the memorypoint defined in parameter position as vector
+** positionZ - position of the memorypoint defined in parameter position as vector
+** speedX - speed of the vehicle as vector
+** speedY - speed of the vehicle as vector
+** speedZ - speed of the vehicle as vector
+** vehicleSpeedSize - speed of vehicle as scalar
+** engineOn - starting (temperature) of engine
+** distToWater - vertical distance between position memorypoint and sea level
+** randomValue - generated when the vehicle is created
+* Related parameters:
+** direction - direction stored in position variables (string - memorypoint)
+** position - position stored in position variables (string - memorypoint)
+
+
+''Example:''
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class Ifrit_Base
+	{
+		class Exhausts
+		{
+			class Exhaust1
+			{
+				position	= "exhaust_pos";
+				direction	= "exhaust_dir";
+				effect		= "ExhaustEffectHTruck";
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+=== effectName (WingVortices) ===
+
+* Description: Wingtip vortices and similar effects on planes.
+* Path: configFile >> CfgVehicles >> <font color="grey">''Vehicle_class''</font> >> WingVortices >> <font color="grey">''Random_class_name''</font>
+* Type of emitter: real-time emitter
+* Variables:
+** positionX - position of the memorypoint defined in parameter position as vector
+** positionY - position of the memorypoint defined in parameter position as vector
+** positionZ - position of the memorypoint defined in parameter position as vector
+** speedX - speed of the vehicle as vector
+** speedY - speed of the vehicle as vector
+** speedZ - speed of the vehicle as vector
+** speed - speed of vehicle as scalar
+** accelX - acceleration of the vehicle as vector
+** accelY - acceleration of the vehicle as vector
+** accelZ - acceleration of the vehicle as vector
+** accel - acceleration of vehicle as scalar
+** altitude - altitude of the vehicle in meters
+** humidity - humidity of air
+* Related parameters:
+** position - position stored in position variables (string - memorypoint)
+
+
+''Example:''
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class Plane_Fighter_03_base_F
+	{
+		class WingVortices
+		{
+			class WingTipLeft
+			{
+				position	= "body_vapour_L_E";
+				effectName	= "WingVortices";
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+[[Category: Particle System]]

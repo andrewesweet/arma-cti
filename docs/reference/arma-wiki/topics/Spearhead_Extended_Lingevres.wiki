@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/Spearhead_Extended_Lingevres
+// revision: 376019 (2025-07-21T15:57:42Z)
+// export sha1: km7g0gyl0aqno62vwriqevznnct3j84
+// categories: Category:SPEX - Spearhead Extended
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+[[File:spex_lingevres_picturemap_ca.jpg|400px|right|Satellite Image|thumb]]
+
+This British sector terrain, designed in 1:1 scale, captures the rugged terrain and strategic significance of this fierce battleground in the Normandy breakthrough. Key locations, including the war-torn village of Lingevres, the surrounding bocage, fortified German positions, and the distinctive orchard fields, are brought to life in stunning detail.
+
+Be ready to navigate dense hedgerows, maneuver through the intricate network of orchard fields, and engage in intense close-quarters combat within the village. The abundance of micro vegetation adds depth to the battlefield, providing natural concealment and tactical opportunities.
+
+= Statistics =
+
+{| class="wikitable"
+|-
+| Size || 4 km x 4 km
+|-
+| Area || 16 km<sup>2</sup>
+|-
+| Coordinates || 49°10'33.0" North<br/>
+0°40'24.4" West
+|-
+| Object Count ||
+{{Columns|1|
+* '''TOTAL:''' 155912
+* BUILDING: 231
+* BUNKER: 29
+* BUSH: 63032
+* CHURCH: 2
+* FENCE: 11920
+* FORTRESS: 34
+* FOUNTAIN: 79
+* HIDE: 22012
+* HOUSE: 923
+* ROAD: 662
+* ROCK: 3
+* TRACK: 1367
+* TREE: 52963
+* WALL: 2652
+* WATERTOWER: 3
+}}
+|}
+
+= High Resolution Map =
+
+A high resolution .svg can be downloaded {{Link/External|link=https://drive.google.com/drive/folders/19pnqIXrccqvsDbbo12YoWTfM1IMBStik?usp=sharing|text=here}}
+
+[[Category: SPEX - Spearhead Extended]]

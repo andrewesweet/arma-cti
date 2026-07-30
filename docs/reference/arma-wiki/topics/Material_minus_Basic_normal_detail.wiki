@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/Material_-_Basic_normal_detail
+// revision: 292375 (2021-08-07T23:54:44Z)
+// export sha1: 1vtprrzgiyj4cn3cxdm4yz2ce72enci
+// Vendored snapshot. Do not edit — re-export instead.
+
+=== Material with Normal map detail texture, speculars only per vertex ===
+
+Combines possibilities of NormalMap and DetailTexture. Yet per pixel specularity isn't possible.
+
+ SpecularPower = '''10''';
+ ''/*value 0 causes errors in illumination accuracy because there is no special nonspecular variant of this shader,
+ ''which would be used when specularPower = 0. Incorrectly is used angle^0 which is always 1 so that we have constant specular gain
+ ''Easily fixable by setting values specular to 0 and specularPower to reasonable value around 10 which would disable specularity.*/
+ 
+ PixelShaderID="NormalMapDiffuse";
+ VertexShaderID="NormalMapDiffuse";
+ class Stage1
+ {
+  texture="ofp2\Vehicles\Land\Wheeled\LandRover\LR_op_1\Data\lr_op_hullb_NS.paa"; ''// path to normal map texture. NS maps with alphou can't be used here.''
+  uvSource="tex";
+  class uvTransform
+  {
+   aside[]={1,0,0};
+   up[]={0,1,0};
+   dir[]={0,0,1};
+   pos[]={0,0,0};
+  };
+ };
+ class Stage2
+ {
+  texture="ofp2\vehicles\land\wheeled\landrover\lr_op_1\data\skrabance3_detail.paa";  ''// path to detail texture''
+  uvSource="tex";
+ 
+  class uvTransform
+  {
+   aside[]={12,0,0}; ''// multiplication and offset UV coordinate (transformation matrix)''
+   up[]={0,12,0};
+   dir[]={0,0,12};
+   pos[]={0,0,0};
+  };
+ };

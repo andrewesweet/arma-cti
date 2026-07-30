@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskCurrent
+// revision: 352232 (2024-02-01T23:26:09Z)
+// export sha1: 8asr29d6b3mizqzv7k7e0yfdcohomhl
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|arg= global
+|eff= global
+
+|descr= Returns unit's current task. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= unit call [[BIS_fnc_taskCurrent]]
+
+|p1= unit: [[Object]] - unit to be checked
+
+|r1= [[String]] - task ID
+
+|x1= <sqf>private _currentTask = player call BIS_fnc_taskCurrent;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

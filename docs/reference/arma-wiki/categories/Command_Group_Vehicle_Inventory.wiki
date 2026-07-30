@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Vehicle_Inventory
+// revision: 160291 (2020-09-24T11:50:48Z)
+// export sha1: i0lyfg3kzx66v3ks69jgl36yv4jkfo7
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to manipulate a vehicle's (or ammo box) inventory. Not to be confused with [[:Category:Command Group: Vehicle Loadouts|Command Group: Vehicle Loadouts]]. For commands related to a unit's inventory see [[:Category:Command Group: Unit Inventory|Command Group: Unit Inventory]].
+
+Also contains commands related to service vehicles e.g., [[getFuelCargo]].
+
+[[Category:Scripting Commands by Functionality]]

@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/BTS_Guidelines
+// revision: 226018 (2021-01-31T17:32:39Z)
+// export sha1: f113odluw7qsdzy5wr1az7h5dgqegx5
+// categories: Category:BTS
+// Vendored snapshot. Do not edit — re-export instead.
+
+==Resolving Things==
+
+# Change to '''Resolved''' right to  ''Change Status To:''-Button
+# press ''Change Status To:''
+# Resolve page will open
+# change Resolution to '''fixed'''/'''no change required'''
+# change '''Fixed in Version'''  ('''ONLY''' when resolution is '''fixed''')
+# leave a note
+# press ''Resolve Issue''
+
+;Note: Normally the REPORTER should change the Status to '''Closed''' afterwards, when he tested the resolution.
+
+== Duplicate Handling ==
+
+# Change to '''RESOLVED''' in the dropdown right to  ''Change Status To:''-Button
+# press ''Change Status To:''
+# Resolve page will open
+# change Resolution to '''duplicate'''
+# insert the '''id''' of the duplicate entry ('''note''': this entry will not be altered)
+# Check ''Close immediately:''-checkbox, when the status should be changed to '''CLOSED''' afterwards (for an alternative way, see note)
+# leave a note, why this is a duplicate
+# press ''Resolve Issue''
+
+;Note:Instead of '''RESOLVED''' it is possible to take '''CLOSED''' in the dropdown, when the bug status was'''NEW'''.
+:The ''duplicate ID''-field (''5.'') is '''not shown''', if you take '''CLOSED''' (Limitation of Mantis).
+:Therefore you should add the relationship before closing.
+
+== Relationships ==
+{| class="wikitable"
+|'''mantis_var''' || '''english'''||'''german'''
+|-
+| duplicate_of || duplicate of || Duplikat von
+|-
+| has_duplicate || has duplicate || hat Duplikat
+|-
+| related_to || related to || verwandt mit
+|- 
+| dependant_on || parent of || abhängig von
+|-
+| blocks || child of || blockiert
+|}
+[[Category:BTS]]

@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/disableBrakes
+// revision: 373894 (2025-06-26T11:02:28Z)
+// export sha1: s4qye6bstnwpah5kwh1kn93244qk0hk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|arg= local
+
+|eff= global
+
+|gr1= PhysX
+
+|descr= Disables autobrake, which is engaged when vehicle is stationary and stops wheels from rotating freely when vehicle is pushed.
+
+|s1= transport [[disableBrakes]] disable
+
+|p1= transport: [[Object]] - PhysX car or tank
+
+|p2= disable: [[Boolean]] - [[true]] to disable autobrake. The autobrake is re-enabled if the driver uses brakes
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myCar disableBrakes true;</sqf>
+
+|seealso= [[brakesDisabled]] [[awake]] [[isAwake]] [[addTorque]] [[addForce]] [[vectorModelToWorld]] [[vectorModelToWorldVisual]] [[selectionPosition]] [[setVelocityTransformation]] [[setVelocityModelSpace]]
+}}

@@ -1,0 +1,106 @@
+// source: https://community.bistudio.com/wiki/a_!=_b
+// revision: 376993 (2026-01-01T08:00:36Z)
+// export sha1: o5hoq0qge8mkxkjtvs7dsr2vhzenkjx
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Command Group: Variables | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|sortKey= #
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Variables
+|gr2= Math
+
+|descr= Returns whether one value is '''not''' equal to another. String comparison is case-'''in'''sensitive (e.g <sqf inline>"STRINGtext" != "stringTEXT" // returns false - strings are equivalent</sqf>).
+{{Feature|important|''a'' and ''b'' types '''must''' match: comparing e.g [[String]] with [[Number]] is invalid.}}
+
+|s1= a [[a != b|!=]] b
+
+|p1= a:
+<table class="wikitable">
+<tr>
+<th>Introduced in</th>
+<th>Possible Type</th>
+</tr>
+<tr>
+<td rowspan="5">{{GVI|ofp|1.00}}</td>
+<td>Number</td>
+</tr>
+<tr><td>Side</td></tr>
+<tr><td>String</td></tr>
+<tr><td>Object</td></tr>
+<tr><td>Group</td></tr>
+<tr>
+<td rowspan="4">{{GVI|arma1|1.00}}</td>
+<td>Structured Text</td>
+</tr>
+<tr><td>Config</td></tr>
+<tr><td>Display</td></tr>
+<tr><td>Control</td></tr>
+<tr>
+<td rowspan="1">{{GVI|arma1|1.08}}</td>
+<td>Location</td>
+</tr>
+<tr>
+<td rowspan="3">{{GVI|arma3|2.00}}</td>
+<td>Diary Record</td>
+</tr>
+<tr><td>Namespace</td></tr>
+<tr><td>Boolean</td></tr>
+</table>
+
+
+|p2= b: identical to ''a''<nowiki/>'s type
+
+|r1= [[Boolean]] - [[true]] if ''a'' is different from ''b'', [[false]] otherwise
+
+|x1= <sqf>
+if (_counter != 4) then
+{
+	hint "The counter is not equal to the number 4";
+};
+</sqf>
+
+|x2= <sqf>
+if (vehicle player != player) then
+{
+	hint "you are in a vehicle";
+}
+else
+{
+	hint "you are on foot";
+};
+</sqf>
+
+|x3= <sqf>
+if (fuel truck1 != 1) then
+{
+	hint "Truck1 has less than a full tank of fuel.";
+};
+</sqf>
+
+|x4= <sqf>if (alive _unit1 != alive _unit2) then { hint "One of the units is dead while another is alive" };</sqf>
+
+|seealso= [[==]] [[Operators]]
+}}

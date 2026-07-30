@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/ctrlSetFontPB
+// revision: 323083 (2022-06-28T21:43:13Z)
+// export sha1: fisrqs4x1suknojya392a6k91d2qozm
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - HTML | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - HTML
+
+|descr= Sets P bold font of given HTML control.
+
+|s1= controlName [[ctrlSetFontPB]] fontName
+
+|p1= controlName: [[Control]]
+
+|p2= fontName: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetFontPB "TahomaB";</sqf>
+
+|seealso= [[ctrlSetFontP]]
+}}

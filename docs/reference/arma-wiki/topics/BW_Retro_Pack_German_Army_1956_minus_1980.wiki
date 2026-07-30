@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/BW_Retro_Pack_(German_Army_1956_-_1980)
+// revision: 339429 (2023-04-28T14:08:48Z)
+// export sha1: 74crgrppxwmuwrpc6wz893fkykq4zc7
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Infobox/Mod
+|picture = 
+|leader = [[User:Marseille77|Marseille77]]
+|2D = [[User:Marseille77|Marseille77]]
+|3D = [[User:Marseille77|Marseille77]]<br>[[User:Vilas|Vilas]]<br>{{Link|http://www.bb-mapping-designs.de|cubus}}
+|script = 
+|code = 
+|island = 
+|missions = 
+|other = 
+|betatest = 
+|external = 
+|released = Yes
+|releasedate = 2015
+|version = 
+|ingame =Ford G398 SAM GermA Mod.jpeg
+|description= Ford G398 SAM (1957 - 1975)
+|web = {{Link|link= https://forums.bohemia.net/forums/topic/125307-german-assault-addons-army/|text= BI Forum thread}}
+|link = {{Link|link= http://www.armaholic.com/page.php?id=15850|text= Download}}
+}}
+
+The German Army Retro Addon is an addon that shows material of the early Bundeswehr from the beginning in 1956 to the first modernisation by Helmut-Schmidt-Era til 1980.
+
+== Backround ==
+After Germany has lost the Second World War, the country was divided in three parts (West, East and polish controlled german territory). In the West the Allies built up a democratic state (FRG) and in the East the Soviets an communism counterpart (GDR). Konrad Adenauer, the first chancellor of West Germany (since 1949) was very afraid about the uparmed military police units in East Germany. He wants already a part of NATO with an own army. Many Germans were against it because of the bad experiences in the last war. In 1955 West Germany enters the NATO and founded the new West German Army who was officially known as Bundeswehr (Federal Defence). In 1956 the first units was introduced with American, British and a little bit Wehrmacht items. One year later the first conscription recruits were called in. The Bundeswehr was founded on experiences of World War generals like Manstein or Speidel. Two special officers of this era was the father of the actual German Federal Minister of the Interior Thomas de Maizière, Ulrich de Maizière and the WWII fighter ace Erich Hartmann. In the end of the 1960's the in Germany began a new era. Willy Brandt and Helmut Schmidt modernized the country and his army with new weapon systems from the own industry. 
+
+== Requirements ==
+This is a standalone addon. ARMA 2: Combined Operations (ARMA 2 + Operation Arrowhead) v1.62 is required to use the Modification.
+
+== Content ==
+=== Early era (1956 - 1968) ===
+<gallery>
+GermA Retro BW Munga.jpg|DKW Munga
+germa borgward early.jpg|Borgward B2000 O/A
+germa bw retro khd.jpg|KHD (Magirus) Jupiter 6x6 Truck
+germa bw retro 05.jpg|Ford G398 SAM Truck
+cwr2 de MAN 630.jpg|MAN 630L Truck
+</gallery>
+
+*Faun L912/21 Trucks
+*Faun L 908 (fuel trucks)
+*Spz Hispano-Suiza 30
+*Spz Hotchkiss-Brandt 11-2
+*KPz M48A2
+*Fiat/Aeritalia G.91 
+
+=== Late era (1969 - 1980) ===
+*VW 181 ('The Thing')
+*SpPz Luchs
+
+=== Soldier suits ===
+<gallery>
+arma2OA 2015-02-27 11-15-11-52.jpg|Leibermuster (presentation 1955)
+germa bw retro overview.jpg|Splinter Camo (1955 - 1960)
+germa bw retro 03.jpg|First Moleskin edition (1965 - 1970)
+</gallery>
+*Field Crab (1960 - 1965)
+
+== Credits ==
+* '''Marseille77''': Project Lead, Models, Textures
+* '''Cubus''': Vehicle Models
+* '''Vilas''': Models

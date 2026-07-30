@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/ctrlModelVectorSide
+// revision: 377877 (2026-01-04T13:26:46Z)
+// export sha1: j0pova8fxf98wrtpmvmqa3ro9466cuq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Object | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= GUI Control - Object
+
+|descr= Get the provided control model's [[vectorSide]] in 3D-[[Arma: GUI Configuration|Dialogs]].
+
+|s1= [[ctrlModelVectorSide]] control
+
+|p1= control : [[Control]] - 3D control
+
+|r1= [[Vector3D]] - [[vectorSide]] of the model or empty array if ''control'' is null
+
+|x1= <sqf>private _vectorSide = ctrlModelVectorSide _control3D;</sqf>
+
+|seealso= [[ctrlModelDirAndUp]] [[ctrlCreate]] [[ctrlDelete]] [[ctrlSetModelDirAndUp]] [[ctrlModel]] [[ctrlSetModel]] [[ctrlSetModelScale]] [[ctrlModelScale]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlClassName]] [[displayCtrl]]
+}}

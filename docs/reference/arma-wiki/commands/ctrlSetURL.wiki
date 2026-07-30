@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/ctrlSetURL
+// revision: 325207 (2022-07-03T07:02:32Z)
+// export sha1: jvf8n1skkacrsb0yo3vctmvf1j1q38i
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= GUI Control
+
+|descr= Sets URL property of the given control subject to {{hl|allowedHTMLLoadURIs[]}} whitelisting in [[CfgCommands]] config. Supported controls are:
+* {{hl|CT_BUTTON}}
+* {{hl|CT_SHORTCUTBUTTON}} 
+* {{hl|CT_ACTIVETEXT}}
+
+|s1= control [[ctrlSetURL]] URL
+
+|p1= control: [[Control]]
+|p2= URL: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetURL "http://arma3.com/";</sqf>
+
+|seealso= [[ctrlURL]] [[menuSetURL]]
+}}

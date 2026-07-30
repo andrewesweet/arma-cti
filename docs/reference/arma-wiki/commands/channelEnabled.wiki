@@ -1,0 +1,82 @@
+// source: https://community.bistudio.com/wiki/channelEnabled
+// revision: 378505 (2026-05-03T16:53:27Z)
+// export sha1: 95xkfeuhcq6n14x21y2x1fjadjycj5o
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Radio and Chat
+
+|descr= Returns [[Array]] of [[Boolean]]s in format [enabledChat, enabledVoN] for the given channel.
+For more information about enabling/disabling of chat channels see [[enableChannel]].
+
+{{{!}} class="wikitable align-center"
+! colspan="16" {{!}} [[Channel IDs|Channel ID]] number correspondence
+{{!}}-
+{{!}} colspan="6" {{!}} Default Channels
+{{!}} colspan="10" {{!}} Custom Channels
+{{!}}- style="font-size: .9em"
+{{!}} Global
+{{!}} Side
+{{!}} Command
+{{!}} Group
+{{!}} Vehicle
+{{!}} Direct
+{{!}} CC&nbsp;1
+{{!}} CC&nbsp;2
+{{!}} CC&nbsp;3
+{{!}} CC&nbsp;4
+{{!}} CC&nbsp;5
+{{!}} CC&nbsp;6
+{{!}} CC&nbsp;7
+{{!}} CC&nbsp;8
+{{!}} CC&nbsp;9
+{{!}} CC&nbsp;10
+{{!}}-
+{{!}} 0
+{{!}} 1
+{{!}} 2
+{{!}} 3
+{{!}} 4
+{{!}} 5
+{{!}} 6
+{{!}} 7
+{{!}} 8
+{{!}} 9
+{{!}} 10
+{{!}} 11
+{{!}} 12
+{{!}} 13
+{{!}} 14
+{{!}} 15
+{{!}}}
+
+|s1= [[channelEnabled]] channelID
+
+|p1= channelID: [[Number]] - [[Channel IDs|Channel ID]] (see description)
+
+|r1= [[Array]] with [chat, VoN, mapMarkers, mapDrawing]
+* chat: [[Boolean]] - is use of the text chat enabled
+* VoN: [[Boolean]] - is use of the voice chat enabled
+* {{GVI|arma3|2.20|size= 0.75}} mapMarkers: [[Boolean]] - can map markers be created
+* {{GVI|arma3|2.20|size= 0.75}} mapDrawing: [[Boolean]] - can players draw on the map
+
+|x1= <sqf>_isGlobalChatEnabled = (channelEnabled 0) select 0; // check if user can use text on global channel</sqf>
+
+|x2= <sqf>_isGlobalVoiceEnabled = (channelEnabled 0) select 1; // check if user can use the VoN on global channel</sqf>
+
+|x3= <sqf>
+// sets all variables
+(channelEnabled 0) params [
+	"_isGlobalChatEnabled",
+	"_isGlobalVoiceEnabled",
+	"_areMarkersEnabled",
+	"_isMapDrawingEnabled"
+];</sqf>
+
+|seealso= [[currentChannel]] [[setCurrentChannel]] [[getPlayerChannel]] [[enableChannel]] [[radioChannelCreate]]
+}}

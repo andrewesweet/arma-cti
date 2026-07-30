@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/enableUAVWaypoints
+// revision: 369357 (2024-09-03T18:43:05Z)
+// export sha1: jmgkzwu6em9jabwovrjvm9lminp6vh7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Remote Control | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 1.40 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.40
+
+|gr1= Waypoints
+
+|gr2= Remote Control
+
+|descr= Enables/disables the option for player to set waypoints for UAV in AV terminal.
+
+|s1= uav [[enableUAVWaypoints]] enable
+
+|p1= uav: [[Object]]
+
+|p2= enable: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_uav enableUAVWaypoints false;
+hint str waypointsEnabledUAV _uav; // returns false
+</sqf>
+
+|seealso= [[waypointsEnabledUAV]] [[enableUAVConnectability]] [[disableUAVConnectability]] [[isUAVConnected]] [[isUAVConnectable]] [[allUnitsUAV]] [[getConnectedUAV]] [[connectTerminalToUAV]]
+}}

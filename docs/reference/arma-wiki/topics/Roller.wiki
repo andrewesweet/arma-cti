@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/Roller
+// revision: 339622 (2023-04-28T14:11:55Z)
+// export sha1: obtegcwlo2v3tz1q1cxh4jitqvp9gbg
+// categories: Category:Community Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+By the [[#Roller Dev Team|Roller Dev Team]]
+== Project Summary ==
+
+Roller is a community made software developed by Spooner to convert and process {{ofp}} and {{arma1}} island files.
+
+Its primary purpose is to convert {{ofp}} islands to {{arma1}} for the ACE Island Pack, but it can also do some processing that could be useful to people making new {{arma1}} islands.
+
+{{Link|link= http://dev-heaven.net/news/show/1|text= Roller}} has been released!
+
+
+== Project links ==
+
+* {{Link|http://rm.6thsense.eu/projects/show/roller|Roller project page}}
+
+* [http://rm.6thsense.eu/projects/roller/issues?query_id=3 Known problems]
+* [http://rm.6thsense.eu/projects/roller/issues?query_id=4 Open feature requests]
+* {{Link|http://rm.6thsense.eu/projects/roller/issues/new|Report a problem or feature request}}
+
+* {{Link|http://rm.6thsense.eu/projects/roller/boards/show/2|Roller feedback forum}}
+* {{Link|http://rm.6thsense.eu/projects/roller/boards/show/3|Roller support forum}}
+
+* {{Link|http://rm.6thsense.eu/projects/list_files/roller|Roller download area}}
+
+
+== Roller Dev Team ==
+
+* Project manager: kyu
+* Ruby developer: Spooner
+* Configuration: the-f
+* Testing: kyu, the-f and looz
+* Roller image: Pufu
+
+
+[[Category:Community Tools]]

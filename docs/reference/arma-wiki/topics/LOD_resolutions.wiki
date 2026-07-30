@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/LOD_resolutions
+// revision: 378059 (2026-02-04T21:05:46Z)
+// export sha1: cxsk0nyaxxx7dfr3m2qhid280eqdycb
+// Vendored snapshot. Do not edit — re-export instead.
+
+In {{arma3}} the following numbers are used to identify LODs by resolution:
+
+{{Feature|informative|See [[allLODs]], [[selectionPosition]], [[selectionNames]] commands.}}
+
+{| class="wikitable - sortable"
+! LOD !! Value
+|-
+| Geometry || 1 * 1e13
+|-
+| Geometry Simple || 2 * 1e13
+|-
+| Geometry Phys Old || 3 * 1e13
+|-
+| Geometry Phys || 4 * 1e13
+|-
+| Memory || 1 * 1e15
+|-
+| Land Contact || 2 * 1e15
+|-
+| Road Way || 3 * 1e15
+|-
+| Paths || 4 * 1e15
+|-
+| Hit Points || 5 * 1e15
+|-
+| View Geometry || 6 * 1e15
+|-
+| Fire Geometry || 7 * 1e15
+|-
+| View Cargo Geometry || 8 * 1e15
+|-
+| View Cargo Geometry Max || 8.99 * 1e15
+|-
+| View Pilot Geometry || 13 * 1e15
+|-
+| View Gunner Geometry || 15 * 1e15
+|-
+| Fire Gunner Geometry || 16 * 1e15
+|-
+| Sub Parts || 17 * 1e15
+|-
+| Shadow Volume Cargo || 18 * 1e15
+|-
+| Shadow Volume Cargo Max || 18.99 * 1e15
+|-
+| Shadow Volume Pilot || 19 * 1e15
+|-
+| Shadow Volume Gunner || 20 * 1e15
+|-
+| Wreck || 21 * 1e15
+|-
+| View Gunner || 1000
+|-
+| View Pilot || 1100
+|-
+| View Cargo || 1200
+|-
+| View Cargo Max || 1299
+|-
+| Shadow Volume || 10000
+|-
+| Shadow Volume Max || 10999
+|-
+| Shadow Buffer || 11000
+|-
+| Shadow Buffer Max || 11999
+|}

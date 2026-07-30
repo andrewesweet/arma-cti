@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/MHQ
+// revision: 226352 (2021-01-31T17:56:50Z)
+// export sha1: mv7dvkmvq1u0mlua90c21rm1qb2ybx0
+// categories: Category:Multiplayer Hints and Tips
+// Vendored snapshot. Do not edit — re-export instead.
+
+===Strategic asset===
+The Mobile Head Quarters (MHQ) is not an assault vehicle, it is not a transport vehicle, it is more often than not a mobile respawn point, it is also a spot you can rearm at and in some cases such as in Capture The Island (CTI) game forms; like Warfare and Super Powers, it is the vehicle that creates your bases and the whole point of the game. The MHQ then is a strategic level asset that should be hidden and placed next to a Flag Zone you are assaulting or within a Zone you are defending. It should always be placed in a concealed location, better yet in a covered spot.
+
+==== Camouflaging the MHQ ====
+First things first: '''TURN THE ENGINE OFF!''' when you are static; to turn off your infra red signature. In Urban Areas the MHQ can be hidden inside barns or in walled compounds ideally next to a wall. Between two houses is another good spot. In forests additionally knock down a few trees; the best ones are the big bushy ones; the pines with branches to the ground or the big deciduous trees with plenty of leaves and then hide the MHQ inside the leaf clutter.
+
+==== MHQ Etiquette ====
+In the field DO NOT get into any vehicle some one else is using without their permission this applies doubly for the MHQ. It will be there for a reason. Getting into the vehicle in the driver slot or gunner slot often turns on the engine thus turning it red on enemy radar. Driving it into battle screws up the carefully thought strategic reason for placing it there and risks its destruction. Do not fire the MHQ's gun. Do not test fire weapons next to the MHQ. Each will give away the position of the MHQ. If assaulting from an MHQ, take steps to ensure your route from the MHQ is not compromised thus leading the enemy back to your MHQ. Defend the MHQ and let it know of near by enemy. If you are part of the security force for an MHQ use silenced weapons and let the MHQ know if it is under threat.
+
+==== MHQ means MOBILE Head Quarters ====
+The clue is in the name '''Do not Cripple the MHQ!''' Some people cripple their MHQ when it is in a hidden assault spot to prevent numpties assaulting the flag zone with it. This reduces mobility so it is not a good solution. The very best solution is for the Battle Commander (BC) to sit in the drivers slot of the MHQ and take charge of the strategic battle from it. In Berzerk a good BC drives the MHQ from assault location to assault location, calling players to spawn in to it; and using it to support attacks, bolster the defense of a contested and spawn locked location by spawning in reserves, and to interdict primary access routes with AT and AA teams spawning in to it. The person in charge of the MHQ should call the shots. <br>
+
+==== It is not big guns that win the war ====
+To defend the MHQ, you do not need great weapons, a silenced pistol and maybe a silenced assault rifle at most. The vast majority of armies only give their officers a pistol they do that for a reason. Your chief weapon is the troops around you and a clean pair of heals. In games where weapons are restricted like Berzerk it is important that big weapons are not wasted on someone who sits all day in a vehicle but there is a more important reason; it is the reason why officer in real armies have a pistol, having a big weapon tempts you to get in the fight. The job of the officer is to direct the fight, their chief weapons are the troops under them, the map and its markers, and their brain. Firing a gun, hiding from the enemy and moving around all detract from that; as they use up brain power and take the commanders eye off the map. When your MHQ is spotted it is time to show the enemy that clean pair of heals, pop smoke and hit the accelerator.
+
+=== MHQ Down! ===
+Disaster! If it is your MHQ. Triumph! If it is the enemies. In several mission types the MHQ is the whole point of the battle. In other games the MHQ once destroyed respawns at the sides Base respawn, that slows them down a lot and is thus an ideal time for a counter attack. When you spot an enemy MHQ let your side know straight away. Mark it on the map in Blue/Side channel. Coincidentally a good strategy is to fake a mark for your MHQ to fool your enemy and draw them into a trap. The solution to this is to have an agreed ID code for a spotted enemy MHQ that can be agreed at the time over side chat.
+
+[[Category:Multiplayer Hints and Tips]]

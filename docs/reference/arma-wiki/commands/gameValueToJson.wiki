@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/gameValueToJson
+// revision: 351579 (2023-12-07T17:38:47Z)
+// export sha1: aifr7d32lproh875xoiir27308t0pqo
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|gr1= Argo
+
+|descr= Generate a JSON string from the provided array values.
+
+|s1= [[gameValueToJson]] data
+
+|p1= data: [[Array]] of [[Array]]s format [<nowiki/>[key, value], [key, value], ...]
+
+|r1= [[String]] - a JSON string or an empty string if ''data'' is not an array
+
+|x1= <sqf>_json = gameValueToJson [["ID", 42], ["Message", "Hello there!"], ["HasHighGround", true]];</sqf>
+result:
+<syntaxhighlight lang="json">
+{
+	"ID": 42,
+	"Message": "Hello there!",
+	"HasHighGround": true
+}
+</syntaxhighlight>
+
+|seealso= [[jsonToGameValue]] [[toString]] [[str]] [[parseSimpleArray]]
+}}

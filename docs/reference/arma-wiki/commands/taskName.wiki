@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/taskName
+// revision: 310323 (2022-05-05T16:32:29Z)
+// export sha1: 0i1l1u0x57u1d0on62mbclqrkkwqu6f
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|descr= Returns the name of the given task.
+
+|gr1= Briefing
+
+|s1= [[taskName]] task
+
+|p1= task: [[Task]]
+
+|r1= [[String]] - task name
+
+|x1= <sqf>private _taskName = taskName _mytask;</sqf>
+
+|seealso= [[taskType]] [[createSimpleTask]]
+}}

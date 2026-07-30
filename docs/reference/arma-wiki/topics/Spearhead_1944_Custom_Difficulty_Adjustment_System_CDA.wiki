@@ -1,0 +1,136 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Custom_Difficulty_Adjustment_System_(CDA)
+// revision: 351764 (2024-01-05T12:09:17Z)
+// export sha1: aehz7ad2kxvx31v51loe4g2u0iltud5
+// categories: Category:Spearhead 1944 | Category:WIP
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|WIP}}
+=== Overview ===
+To make Arma 3 more playable and enjoyable with and against AI, the Custom Difficulty Adjustment system allows various aspects of AI behavior, damage taken/dealt, skill, and much more to be adjusted automatically.
+
+;Features
+* Vehicle target radar and compass
+* Reduced/simplefied damage in cadet mode for tanks
+* [[Spearhead 1944 Nametags|Nametags]]
+* Extended unit map markers
+* SPE_CDA_Difficulty_Adjustment_IssueRadios
+* Auto assignemt of ''ItemRadio''
+* Automatic adding of Medikits and Toolkits
+* Adjusting of skill and unit traits
+* Updating waypoints if player is group leader
+* Adjusting stamina, aim- and recoil coefficients
+* and much more...
+
+=== Usage ===
+The system is enabled by default for all scenarios and can be deactivated through scripting. See [[Spearhead 1944 Custom Difficulty Adjustment System (CDA)#Mission maker setup and use|Mission maker setup and use]].
+
+=== Detailed information ===
+The adjustments are based on the currently active difficulty level from Arma 3 itself. If the Custom difficulty level is used, the settings for Recruit difficulty are applied as the baseline.
+
+When exposed as mission parameter for a mission, it's possible to allow an admin in multiplayer mode to change the Custom to CDA level mapping for the session.
+
+The basic design is:
+
+*1. Recruit: For new Arma players. More of a movie experience on rails presenting only a very limited challenge. The focus is on the player (or friendly AI) easily eliminating enemies while completing the mission tasks.
+
+*2. Regular: For average Arma players or with only limited SP/AI play or unit commanding experience. Still has various helpers, yet this is no longer child's play.
+
+*3. Veteran: For experienced Arma veterans. Almost no helpers, mostly the raw Arma 3 system - quite a challenge!
+
+*4. Hardcore: A new setting with zero helpers, minimal interface, and super AI for the maximum challenge. Recommended to use only after having completed a mission in Veteran.
+=== Configuration ===
+Mission parameters may allow customization of certain elements of the system for the given play-session in multiplayer.
+=== Mission maker setup and use ===
+The function '''SPE_MISSIONUTILITYFUNCTIONS_fnc_DifficultyInitialization''' is used to initialize the system. It is called through '''preInit'''.
+
+==== Disabling the System ====
+In order to disable the system put the following code into [[Event Scripts#Init.sqf|Init.sqf]]
+
+<sqf inline>SPE_ForceDeactivateDifficultyAdjustmentSystem = true;</sqf>
+
+==== Variables ====
+<sqf>
+SPE_CDA_3DTargetVisualizationAsInfantry
+SPE_CDA_3DTargetVisualizationInVehicles
+SPE_CDA_AdditionalAmmoModifier
+SPE_CDA_AggressiveBehaviourEnemySide
+SPE_CDA_AggressiveBehaviourPlayerGroup
+SPE_CDA_AggressiveBehaviourPlayerSide
+SPE_CDA_AudibleCoefEnemySide
+SPE_CDA_AudibleCoefPlayerGroup
+SPE_CDA_AudibleCoefPlayerSide
+SPE_CDA_AutoHealGroup
+SPE_CDA_AutoHealPlayer
+SPE_CDA_AutoRepairVehicleGroup
+SPE_CDA_AutoRepairVehiclePlayer
+SPE_CDA_AutoReviveGroup
+SPE_CDA_CamouflageCoefEnemySide
+SPE_CDA_CamouflageCoefPlayerGroup
+SPE_CDA_CamouflageCoefPlayerSide
+SPE_CDA_CivilianHasPlayers
+SPE_CDA_CurrentDifficulty
+SPE_CDA_DamagetakenmodifierEnemySide
+SPE_CDA_DamagetakenmodifierPlayerGroup
+SPE_CDA_DamagetakenmodifierPlayerSide
+SPE_CDA_Difficulty_Adjustment_ExtendedUnitMapMarkers
+SPE_CDA_Difficulty_Adjustment_IssueRadios
+SPE_CDA_Difficulty_Adjustment_Nametags
+SPE_CDA_Difficultyunitmonitoringactive
+SPE_CDA_DisableAIAimingerrorPlayerGroup
+SPE_CDA_DisableAISuppressionPlayerGroup
+SPE_CDA_DisableFriendlyFire
+SPE_CDA_DisableSaving
+SPE_CDA_DisableStaminaSystemPlayer
+SPE_CDA_DisableTargetRadar
+SPE_CDA_DisableTaskVisibility
+SPE_CDA_EasthasPlayers
+SPE_CDA_EnableDamage_Multiplier
+SPE_CDA_EnabledynamicSimulation
+SPE_CDA_EngineerGroup
+SPE_CDA_EngineerPlayer
+SPE_CDA_ExplosiveSpecialistGroup
+SPE_CDA_ExplosiveSpecialistPlayer
+SPE_CDA_Hitpoints
+SPE_CDA_InvincibleSpecialCharacter
+SPE_CDA_IsCutscene
+SPE_CDA_IsTankMission
+SPE_CDA_IsTutorialMission
+SPE_CDA_ManualRepairVehiclePlayer
+SPE_CDA_MedicGroup
+SPE_CDA_MedicPlayer
+SPE_CDA_MuteRadioEnemySide
+SPE_CDA_MuteRadioPlayerGroup
+SPE_CDA_MuteRadioPlayerSide
+SPE_CDA_PlayerAimingCoefficient
+SPE_CDA_PlayerGroupInvincible
+SPE_CDA_PlayerInvincible
+SPE_CDA_PlayerItemGPS
+SPE_CDA_PlayerItemMap
+SPE_CDA_PlayerItemRadio
+SPE_CDA_PlayerRecoilCoefficient
+SPE_CDA_ResistancehasPlayers
+SPE_CDA_ReviveGroup
+SPE_CDA_ReviveHeavyCaliber
+SPE_CDA_RevivePlayer
+SPE_CDA_ReviveSpecialCharacter
+SPE_CDA_SkillModifierGlobalEnemySide
+SPE_CDA_SkillModifierGlobalPlayerGroup
+SPE_CDA_SkillModifierGlobalPlayerSide
+SPE_CDA_SkipUpdateAggressiveBehaviour
+SPE_CDA_SkipUpdateMuteRadio
+SPE_CDA_SmootherAnimationsFasterMovement
+SPE_CDA_TankDisableonlyGroup
+SPE_CDA_TankDisableonlyPlayer
+SPE_CDA_TargetRadarActive
+SPE_CDA_TargetRadarAsInfantry
+SPE_CDA_TargetRadarInvehicles
+SPE_CDA_UpdateAggressiveBehaviour
+SPE_CDA_UpdateMuteRadio
+SPE_CDA_UpdateSmootherAnimations
+SPE_CDA_WeaponReloadingTimeEnemySide
+SPE_CDA_WeaponReloadingTimePlayerGroup
+SPE_CDA_WeaponReloadingTimePlayerSide
+SPE_CDA_WestHasPlayers
+</sqf>
+
+[[Category: Spearhead 1944]]

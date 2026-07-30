@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/isRealTime
+// revision: 323018 (2022-06-28T21:43:07Z)
+// export sha1: fntqjf270ncbg6jo203dg6ekoo4k00t
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Game 2 Editor | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Game 2 Editor
+
+|descr= Returns true if the mission editor is operating in real time mode. 
+{{Feature|informative|Some Old Editor Command}}
+
+|s1= [[isRealTime]] map
+
+|p1= map: [[Control]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_isRealTime = isRealTime _map;</sqf>
+
+|seealso= -
+}}

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_reviveIsValidSecure
+// revision: 349307 (2023-11-08T14:52:21Z)
+// export sha1: m5gafin5yvesk69zxue2a1yrh5likqa
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Revive | Category:Functions | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.42
+
+|gr1= Revive
+
+|descr= Check if player can perform secure action on given unit.
+
+|s1= [unit] call [[BIS_fnc_reviveIsValidSecure]]
+
+|p1= unit: [[Object]] - unit to be checked
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[BIS_player] call BIS_fnc_reviveIsValidSecure;</sqf>
+
+|seealso= [[Arma 3: Revive]] [[BIS_fnc_reenableRevive]] [[BIS_fnc_reviveAllowed]] [[BIS_fnc_reviveBleedOut]] [[BIS_fnc_reviveDamageReset]] [[BIS_fnc_reviveDebug]] [[BIS_fnc_reviveEhDammaged]] [[BIS_fnc_reviveEhHandleDamage]] [[BIS_fnc_reviveEhHandleHeal]] [[BIS_fnc_reviveEhKilled]] [[BIS_fnc_reviveEhRespawn]] [[BIS_fnc_reviveEnabled]] [[BIS_fnc_reviveGet3dIcons]] [[BIS_fnc_reviveGetActionIcon]] [[BIS_fnc_reviveIconControl]] [[BIS_fnc_reviveInit]] [[BIS_fnc_reviveIsValid]] [[BIS_fnc_reviveOnBeingRevived]] [[BIS_fnc_reviveOnForcingRespawn]] [[BIS_fnc_reviveOnState]] [[BIS_fnc_reviveOnStateJIP]] [[BIS_fnc_reviveSecureUnit]]
+}}

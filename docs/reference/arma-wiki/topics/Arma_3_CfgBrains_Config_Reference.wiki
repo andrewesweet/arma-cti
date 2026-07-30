@@ -1,0 +1,102 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgBrains_Config_Reference
+// revision: 373215 (2025-04-12T22:20:53Z)
+// export sha1: juwe9w4b8h6hdv0r5qh1kjitnlqsj4r
+// categories: Category:AI | Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Introduction ==
+
+CfgBrains allows to tweak some global AI behavior. Exposed and working are countermeasure reaction, suppression reaction and targeting capabilities.
+
+
+== Default exposed setup ==
+
+<syntaxhighlight lang="cpp">
+class CfgBrains
+{
+	class DefaultSoldierBrain
+	{
+		class Components
+		{
+			class AIBrainAimingErrorComponent
+			{
+			};
+			class AIBrainCountermeasuresComponent
+			{
+				minReactionTime = 0.1;
+				maxReactionTime = 3;
+				randomReactionTimePercent = 0.3;
+				CMOnTargettedProbability = 0.5;
+			};
+			class AIBrainSuppressionComponent
+			{
+			};
+			class AIBrainTargetSelectorComponent // seems not implemented in 1.82
+			{
+			};
+		};
+	};
+	class DefaultCivilianBrain
+	{
+		class Components
+		{
+		};
+	};
+	class DefaultAnimalBrain
+	{
+		class Components
+		{
+		};
+	};
+};
+</syntaxhighlight>
+
+== Available parameters ==
+
+<syntaxhighlight lang="cpp">
+class AIBrainCountermeasuresComponent
+{
+	useSmokeGrenadeDelay = 20;
+	CMCheckDelay = 0.8;
+	suppressionThreshold = 0.8;
+	nonLeaderSmokeProbability = 0.1;
+	CMOnTargettedProbability =0.1;
+	suppressionTimerMax = 2;
+	minimalThrowDistance = 900;
+	minReactionTime = 0.1;
+	maxReactionTime = 3;
+	randomReactionTimePercent = 0.2;
+};
+class AIBrainSuppressionComponent
+{
+	maxSuppression = 1;
+	worstDecreaseTime = 10;// in seconds for 0 skill
+	bestDecreaseTime = 1;// in seconds for 1 skill
+	SuppressionRange = 20;
+	CauseFireWeight = 0.5;
+	CauseHitWeight = 0.5;
+	CauseExplosionWeight = 0.5;
+	CauseBulletCloseWeight = 0.5;
+	SuppressionThreshold = 0.7;
+};
+class AIBrainAimingErrorComponent
+{
+	maxAngularError = 0.1309;// half of the error cone in radians
+	maxAngularErrorTurrets = 0.0872;// half of the error cone in radians, used for turrets
+	worstDecreaseTime = 2;// how long (in seconds) it should take 0 skilled soldier to stabilize the aim completely
+	bestDecreaseTime = 0.2;// how long (in seconds) it should take 1 skilled soldier to stabilize the aim completely
+	lostTargetTimeMin = 0.5;// how soon after loosing sight of target, error starts to raise
+	lostTargetTimeMax = 3;// how long error is raising after loosing sight of target
+	shootingInfluence = 0.4;// importance of shooting in algorithm, multiplier
+	movingInfluence = 1;// importance of moving in algorithm, multiplier
+	turningInfluence = 1;// importance of turning in algorithm, multiplier
+	damageCoef = 10;// importance of damage of entity, multiplier
+	fatigueCoef = 10;// importance of fatigue of entity, multiplier
+	suppressionCoef = 0.5;// importance of suppression value, multiplier
+	lostTargetCoef = 3;// importance of loosing target event, multiplier
+};
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Reference Lists}}
+[[Category:AI|CfgBrains]]

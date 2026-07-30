@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/typeOf
+// revision: 378246 (2026-03-21T09:42:52Z)
+// export sha1: 73vt6356avguh4ak06fbh5gsiwpfkeh
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.90 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.90
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns the class name of given target.
+
+|s1= [[typeOf]] target
+
+|p1= target: [[Object]], since {{GVI|arma3|2.22}} [[Control]], [[Display]]
+
+|r1= [[String]] - config class name, or empty string if ''target'' does not have a class
+
+|x1= <sqf>if (typeOf vehicle player == "B_Heli_Light_01_armed_F") then { hint "Player is in a AH-9 Pawnee"; };</sqf>
+
+|x2= <sqf>
+// Since 2.22
+typeOf (findDisplay 313); // "Display3DEN"
+</sqf>
+
+|seealso= [[countType]] [[isKindOf]] [[configOf]] [[ctrlClassName]]
+}}
+
+{{Note
+|user= Hardrock
+|timestamp= 20060804120300
+|text= Try using this on an object pre-placed in the mission editor such as a house:
+<sqf>hint typeOf _object; // Shows the class name (XXX)</sqf>
+Now place an object in the editor, save the map, and open up the [[Mission.sqm]]. Find the line: vehicle = "XXX", and replace XXX with the name of the object that you found above.
+Save it, and load the map. This method is no longer available since {{arma1}}.
+|game= ofp
+|version= 1.90
+}}

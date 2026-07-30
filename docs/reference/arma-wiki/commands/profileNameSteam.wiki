@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/profileNameSteam
+// revision: 310745 (2022-05-07T20:21:28Z)
+// export sha1: hi0jhqpzau85skleeo4zh7r2hc20r6n
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 1.46 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.46
+
+|gr1= System
+
+|descr= Returns name of the current Steam profile. For currently chosen user profile name see [[profileName]]
+
+|s1= '''profileNameSteam'''
+
+|r1= [[String]]
+
+|x1= <sqf>_mySteamProfileName = profileNameSteam;</sqf>
+
+|seealso= [[profileName]] [[getPlayerUID]] [[name]]
+}}

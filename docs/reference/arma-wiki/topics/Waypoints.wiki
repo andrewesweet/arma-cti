@@ -1,0 +1,254 @@
+// source: https://community.bistudio.com/wiki/Waypoints
+// revision: 353565 (2024-03-19T12:01:44Z)
+// export sha1: a7vptkpoisxs4q0qujp43bvz2cqswms
+// categories: Category:2D Editor | Category:Scripting Topics | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[Waypoints]] are a group's successive destination/task indicator. They are represented as an [[Array]] in [[Waypoint]] format [group, index].
+
+Since '''{{GameCategory|arma2|link= y}}''' waypoints for '''players''' were mostly replaced by [[Task]]s; since '''{{GameCategory|arma3|link=y}}''' the [[Arma 3: Task Framework|Task Framework]] allows for an easy usage of them.
+
+
+== Usage ==
+
+=== Condition ===
+
+The '''Condition''' is [[Code]] that determines whether the waypoint is completed.<br>
+Its value is evaluated '''[[Multiplayer Scripting#Locality|locally]]''' and [[Scheduler#Unscheduled Environment|unscheduled]] on the [[groupOwner|group owner]]'s machine and must return a [[Boolean]].
+* [[Magic Variables#this_2|this]] refers to the group leader
+* [[thisList]] refers to the group's units
+
+=== OnActivation ===
+
+The '''OnActivation''' is [[Code]] that is executed on '''Condition'''<nowiki/>'s completion. Same as {{Link|#Condition}}:
+* [[Magic Variables#this_2|this]] refers to the group leader
+* [[thisList]] refers to the group's units
+
+{{Feature | important | While '''Condition''' code is evaluated on the [[groupOwner|group owner]]'s machine, '''OnActivation''' code is executed '''[[Multiplayer Scripting#Locality|globally]]''', a.k.a on every client!}}
+
+= Waypoint Types =
+A [[Eden Editor: Waypoint|waypoint's]] type will define what the group is to do when the [[Eden Editor: Waypoint|waypoint]] becomes active. In {{GameCategory|arma3|link=y}}, waypoints are categorized into [[Waypoint_types#Default|default]] waypoints, most of which have existed since the start of the franchise, and [[Waypoints#Advanced_Waypoints|Advanced Waypoints]], which are new for {{GameCategory|arma3|link=y}}. 
+[[File:A3 placed waypoints.jpg|Waypoints|left|400px]]<br><br><br><br><br><br><br><br><br><br>
+
+
+== Default ==
+
+=== Cycle ===
+
+This waypoint type will change the group's active waypoint to the nearest waypoint other than the group's previous waypoint. Note that the automatically created first waypoint (the leader's initial position as seen in the map editor) is considered as a Move type waypoint and can be used by the '''cycle waypoint'''. A cycle type waypoint can be used to make the group move in an infinite loop, a great and easy way to create a patrol. Either a ''switch'' trigger or script can be used to "break" a group out of a cycle loop.
+
+Placing a single CYCLE waypoint will do nothing, at least one MOVE waypoint has to be placed to start with. The CYCLE waypoint can be placed anywhere on the map, the unit will ignore its position. When the unit reaches the MOVE waypoint preceding the CYCLE waypoint. it will return back to its starting position then repeat the cycle endlessly. If additional waypoints are added after CYCLE waypoint, they are ignored. In short, the CYCLE waypoint is just an instruction to the unit to go back to the starting position.
+
+=== Destroy ===
+
+This waypoint type works best when it is attached to an object. The group will attempt to destroy whatever object the waypoint is placed upon, irrespective of the target object's [[side]]. If the group is unable to destroy the attached object they will move within range of being able to identify the object, then wait until it is destroyed (even if the target is not destroyable!). If the waypoint is placed spatially, the waypoint's behaviour is less predictable. If the waypoint is far away from any mission editor placed objects, the waypoint will generally be instantly considered complete without the group moving towards the waypoint's location. If there is any object near the spatial waypoint, the group may treat that object as a normal destroy target. However, sometimes the group may start to attack the object, then instantly move to the next waypoint without destroying anything. The exact object the group will attack is not easily predicted, and if the group itself is near the spatial Destroy waypoint when it becomes active, the group may even choose to attack, but not necessarily destroy, one of its own members.
+
+=== Dismissed ===
+
+This waypoint type can be used to simulate casual off-duty behaviour. The group will move to the waypoint, and then be dismissed. The group will automatically split itself into small teams of one to four units, who will move to random locations, sit down, etc. Given enough time, some of the group may wander kilometers from the waypoint. Note that the dismissed waypoint does not inherently alter behaviour mode, nor make units disembark, land aircraft, or turn vehicle engines off. A dismissed waypoint is complete if the group comes into contact with any enemy units. 
+* See also: [[expectedDestination]].
+
+=== Drop Cargo ===
+
+In {{GameCategory|arma3|link=y}}, this waypoint lets AI helicopters drop off vehicles that their helicopter has already sling loaded. The behaviour seems to be very inconsistent, and the AI pilots seem almost completely incapable of picking up the cargo or dropping it off (They have a tendency to circle around a few times before dropping the object they are carrying).
+
+{{Feature|arma3|Only in {{GameCategory|arma3|link=y}}}}
+
+=== Follow ===
+
+{{Wiki|stub}}
+* See also: [[doFollow]], [[commandFollow]].
+
+=== Get In ===
+
+The exact effect this waypoint type has depends on whether it is placed in empty space, attached to a vehicle or a non-vehicle object. There are many possible combinations of circumstances, each with slightly different effects. 
+* ''Spatial''
+** If the waypoint is spatial, any walking units in the group will board free space in any vehicles with that the group possesses. Note that this happens as the waypoint becomes active, rather than when it is reached. The group will not travel to the actual ''Get In'' waypoint's position, but carry out the boarding action and then continue on to the next waypoint. 
+** If a spatial ''Get In'' waypoint is [[Mission_Editor#Synchronization|synchronized]] with a waypoint of another friendly group with unused vehicle spaces, but the original group has adequate transport, it will mount its own vehicles. 
+** If the spatial ''Get In'' waypoint is synchronized with a waypoint of another friendly group with unused vehicle spaces, the group will mount any available vehicle spaces of its own before boarding the other group's transport.  
+** If the spatial ''Get In'' waypoint is synchronized with a waypoint of another friendly group with some unused vehicle spaces but not enough to allow the entire group to board, the leader will order as many units as possible to board the other group's vehicles. 
+** If the spatial ''Get In'' waypoint is synchronized with a waypoint of another friendly group with no free vehicle spaces, the group will move to the ''Get In'' waypoint's position, then move on to the next waypoint.
+* ''Vehicle''
+** If the waypoint is placed on an empty vehicle, as many of the group as possible will board it. If the waypoint is placed upon an empty vehicle and the group already has enough vehicle spaces to fit the entire group, the group leader only will board and drive the new vehicle, while any foot units will board the group's original vehicle(s). 
+** If the ''Get In'' waypoint is placed upon a vehicle driven by a friendly unit that has room enough to hold the entire group, the group will abandon any vehicles it has and board the new vehicle. 
+** If the waypoint is placed upon a vehicle driven by a friendly unit that is not capable of carrying the entire group and the group has no vehicles of its own, the leader will order as many of his troops as possible to board the vehicle. 
+** If the waypoint is placed upon a vehicle driven by a friendly unit that is not capable of carrying the entire group, and the group already has vehicles capable of carrying the entire group, as many units as possible will board the waypoint vehicle and the remainder board the original transport. 
+** If the waypoint is placed upon a vehicle driven by a friendly unit that is not capable of carrying the entire group and the group has some vehicles but all vehicles will still not enough to fit the entire group, the leader will order as many troops as possible into both the group's vehicles and the waypoint vehicle. 
+** Finally, if the waypoint is attached to a non-vehicle class of object, the group will move to that object before boarding any available vehicle space it already has.
+
+=== Get In Nearest ===
+
+The group will only move to the waypoint if there are any empty vehicles, or vehicles on the group's side with empty seat spaces, that are within about 50m of the waypoint's location. Note the appraisal of a vehicle's side and number of available seats seems to be made before the mission initializes! If there is an empty vehicle in the mission editor within about 50m of the waypoint, the group think that the vehicle will still be available even if it has been completely occupied by enemy forces! Once at the waypoint, the group will fill any available seats in the nearest vehicle (and only this vehicle). If there is no suitable vehicle near the waypoint, the waypoint will complete almost immediately after becoming active, and the group will continue on to their next waypoint. On a dedicated server, an AI unit will only get in vehicles that are empty.
+
+=== Get Out ===
+
+The group will move to the waypoint, and then disembark from any vehicles its members are in. Helicopters will land on the closest helipad within 500 metres of the waypoint. If any group members other than the leader are in a vehicle of another group, that vehicle will stop to let them out. If the leader is riding in another group's vehicle, the ''Get Out'' waypoint will not be considered reached until the leader arrives at it under his own control (i.e., never). In this case, a ''Transport Unload'' waypoint should be used. If the ''Get Out'' waypoint is placed on an object, the group will move to the location of that object at the instant the Get Out waypoint becomes its current waypoint, then disembark as normal.
+
+=== Guard ===
+
+This waypoint works in conjunction with the 'Guarded by' trigger type, see that topic above for more details. The group will move to the waypoint's location, and then wait for a point to require guarding. A guard point or object is only considered guarded if a group has been set to guard it through a ''Guard'' waypoint (any other friendly forces in the area are not considered). If there are several guard triggers, the group will move to the first placed (highest priority), unguarded trigger (or its linked object). Once at a guard point, the group will continue to check if any higher priority guard point requires guarding, or for any enemies to engage. A group can be made to stop guarding using the [[setCurrentWaypoint]] command or a ''Switch'' trigger. Besides guarding areas marked by "Guarded by" triggers, guarding groups are also ordered to destroy any enemy units that are known to any group of the same side. See the ''Guarded by <side>'' trigger description for more details. 
+* See also: [[Waypoint:Guard]], [[createGuardedPoint]].
+
+==== Basic use ====
+Place down one or more ''Guarded By'' triggers in, for instance, choke points or bases. Then place down one or several groups with a single ''Guard'' waypoint. The units will unerringly move to the ''Guarded By'' triggers, positioning themselves exactly on top of them. They will act according to their normal [[Combat Modes|rules of engagement]]. When a group either starts fleeing or is destroyed, any other groups standing by with a ''Guard'' waypoint will move in to take their place. So you can for instance have a single ''Guarded By'' trigger in a base, with three or four groups standing by in the forest some distance off; as soon as the group guarding the base gets killed or chased off, ONE of the other groups will start to move in; once that one is destroyed or chased off, another group will start moving etc. thus creating a natural and dynamic system of "counter attack" without the need for extensive scripting.
+
+==== Advanced use ====
+When placing down the 'Guarded By' triggers, it is very important to keep track of the order they are placed. The first trigger created is the most important, the second the second most important etc. If you delete the first one, the second one will become #1 and so forth. So if you're using many, keep track of which you put down first (give them names, for instance). Guard groups move in the following pattern:
+
+* No triggers - all Guard groups stay at their Guard waypoint.
+* 1 trigger - the Guard group closest to the trigger secures it, the rest stay at their Guard waypoints and wait until the group at the trigger is either killed or considered fleeing, at which point the closest group sets off to guard. The fleeing Guard group generally flees to his original Guard waypoint, where it will stand by until a trigger is free again.
+* 2 or more triggers - the Guard groups closest to each trigger move in to secure it. If the Guard at Trigger #1 is fleeing or destroyed, whichever group is closest will move in to take its place including the guard on Trigger #2 (in which case, another group will move in if available to fill his slot). Basically, the guards will try to have a group hovering over every trigger at all times, starting from the first one placed and ending with the last.
+
+==== Movement ====
+A note on the movement. If I remember correctly, the internal communication between Guard groups isn't always the best. Often they set out on a mad race to see who reaches the trigger first, and then when whomever was fastest is within a set distance, they're declared "winners", and everyone else lumbers back to their Guard waypoints. This is also true when one group starts to flee ; often the flight distances are not very long (depending on the allowFleeing setting and skill of the soldiers, I believe?), but by the time the original guard group has turned around, another group might already be closing in, starting another little "race". Also, as mentioned : the Guard waypoint isn't all that useful at defending more than one objective, since they WILL leave other bases/important locations with a Guarded By trigger empty if the first trigger is freed. 
+
+Note that ''Guarded By'' can be used in attack as well; just place a number of triggers (keeping track of which order they're set in) inside enemy territory, and they'll "attack" there if they have their Guard waypoints. For instance if you make a front line, put the main 'Guarded by' trigger at the Player's position (the position most likely to hold) and two other to the north and south, and then make three or more Guard groups; they will each attack their "own" trigger, but if the main group is defeated, they will divert their attack to trigger #1. Now make the northern and southern fortifications weak, and suddenly you might find yourself flanked.
+
+=== Hold ===
+
+This waypoint type will cause the group to stay at this position indefinitely. Only a ''Switch'' type trigger or script command will move the group from the waypoint. While waiting, any unknown targets are checked (group moves in the direction of the target) and any recognized enemies are engaged.
+
+=== Join ===
+
+When this waypoint type is attached to a unit, the group will move to the position of that unit, then join and follow that unit's group, irrespective of side or ranks. Note that the attached unit may have moved on, but the Join waypoint remains at the unit's location when the waypoint became active. When the Join waypoint is spatial, the group will treat it as a ''Move'' type waypoint. If the ''Join'' waypoint is [[Mission_Editor#Synchronization|synchronized]] with another group's waypoint, when both groups are at their waypoint positions, the group that is "synchronized from" will join the group that is "synchronized to", irrespective of which group has the join waypoint itself. When synchronizing, click and hold on the waypoint of the group that is to join the other, then drag to the other group's waypoint. Note only two groups can join at a single Join waypoint.
+
+=== Join & Lead ===
+
+This type is exactly the same as the ''Join'' waypoint type, except the group that leads the merged group will be opposite in each situation.
+
+{{ArgTitle|3|Lift Cargo|{{GVI|arma3|1.34}}}}
+
+In {{GameCategory|arma3|link=y}}, this waypoint lets AI helicopters pick up vehicles that their helicopter is capable of lifting.
+
+=== Load ===
+
+The group will move to the waypoint (spatial or object), then any soldiers on foot will board any vehicles the group possesses. They will get into the vehicles as cargo where possible, then as the crew of the vehicle.
+
+=== Loiter ===
+
+Introduced in {{GameCategory|arma3|link=y}}, makes group loiter around a position. If the group is on foot or inside a ground vehicle, then group will just stand around and the LOITER waypoint will act as a MOVE waypoint.
+If group is inside an aircraft, the aircraft will orbit the waypoint's position with given height and loiter radius. 
+{{Feature|important|If another waypoint was added soon after the LOITER waypoint, the LOITER waypoint will act as a MOVE waypoint}}
+* See also: [[waypointLoiterRadius]], [[waypointLoiterType]], [[setWaypointLoiterRadius]], [[setWaypointLoiterType]].
+
+=== Move ===
+
+The group will move to this point or object. The move waypoint is considered complete when the leader gets close to the waypoint, the required distance being between 1 and 500 meters depending on the leader's vehicle type (if any) and whether a player is controlling the leader. The movement mode and method will depend on the group's behaviour settings, with movement rarely being made in a straight line between waypoints. AI leaders will generally pause to choose a path before they start moving. Groups will automatically board any transport vehicles they own if the next waypoint is far enough away. If the waypoint is too far away or a valid path cannot be found, the group may never reach the waypoint. If a ''Move'' waypoint is attached to a building object, the "Position In House" menu option will become available. 
+
+=== Scripted ===
+
+This waypoint type will execute the [[Script File]] that is in the “Script” box on the bottom of the waypoints screen. Enter the file path/name directly, without any [[execVM]] type command or quotation marks, followed by a single argument or multiple arguments within an array. As of Arma 3 1.82, the number of custom arguments is not limited by the function. The file name and argument must be separated by a space. For example:
+
+ myScript.sqf
+ myScript.sqf 123
+ myScript.sqf [123, 456]
+
+The group will not move to the waypoint location. The group will wait until the external script exits before moving on to the next waypoint. An argument array is passed to the script in the form of:<br>
+{{hl|[<group leader>, <waypoint position array>, <object waypoint is attached to>, <user array element 1>, <user array element 2>, etc.]}}.<br> 
+Note the '''On Activation''' script code block can be used to execute any script at any waypoint, making this waypoint type somewhat redundant. 
+* See also: [[Waypoint_types#Advanced_Waypoints|Advanced Waypoints]]. 
+
+=== Seek & Destroy ===
+
+It does not matter if this waypoint type is placed spatially or on an object. If attached to an object, the waypoint will remain fixed at the objects initial position as displayed in the mission editor (even if that object actually starts the mission in the cargo of another vehicle or has its position changed by its initialization string). Behaviour is the same for both situations - the group will move to the waypoint, then the leader will move about to search the immediate area with his group trying to keep up. The exact size of the area searched is limited to the leader's expected travel time. A leader on foot will rarely search more than 50m from the waypoint, while a leader in a helicopter will search up to 300m from the waypoint. The search will attempt to visually check all locations within the search range, so a search inside a city will take far longer than a search in an empty field. Unfortunately, the Seek & Destroy waypoint does not appear to make the group deliberately search inside buildings although their pathfinding may lead them to enter some. Whether or not the group finds any enemy units appears to have no impact on the search duration or range.
+
+To make AI hunt down a known target, you need to [[setCombatMode]] to "RED". The Seek & Destroy waypoint only makes the AI search the vicinity of the waypoint itself, not affect their behavior on their way to the waypoint.
+
+=== Sentry ===
+
+The group will move to the waypoint and hold position until the group [[knowsAbout|knows]] enough about an enemy unit to identify which side that belongs to, and that they are capable of attacking. At that point, the group will proceed to their next waypoint. They will normally also attack the spotted enemy on the way.
+
+=== Support ===
+
+A group with a current waypoint of this type will move to the waypoint's position, then wait until it can provide support for another group that requests relevant support using ''"Call Support"'' command menu. At this time, the waiting group will proceed to the location where support was called for, disembark from any vehicles is possesses and wait for the supported group to declare ''"Support Done"'' before continuing to wait to respond to any further calls for support from their new location. Only groups with a medic, ambulance, fuel, ammo or repair vehicles can respond to support requests. In the case of multiple support groups, the first placed available group will always respond first, irrespective of distance. While this is a powerful waypoint type it requires diligence on the part of any human leaders, as they must announce "Support Done" to allow the AI support group to continue being able to provide support. AI leaders also tend to request that every single appropriate support group attends them. AI will not take a support group's vulnerability into consideration when requesting support.
+ 
+As of {{GVI|arma3|1.36}} this waypoint type seems to be semi-functional. If you request support through the status menu (5 key by default) for a "medic", AI groups assigned this waypoint will move to your location. However once there it would seem there is no way to announce "Support Done". The game also replies to your request for support with "Negative" in the system chat if that type of support is not available (e.g. supply or fuel truck).
+
+=== Talk ===
+
+Is used in combination with the ''Effects'' button at the bottom of the Waypoints menu. The group's leader will speak the given ''Voice'' phrase, complete with lip movements. The group does not move to the waypoint's location, instead skipping immediately to the next waypoint.
+
+=== Transport Unload ===
+
+The group will move to the waypoint (spatial or object), where any units from other groups who are in cargo spaces of the original group's vehicles will disembark.
+
+{{Feature|important|
+* The (other) AI group moved in cargo through e.g the [[moveInCargo]] command also requires [[addVehicle]] usage for it to disembark
+* On a '''dedicated server''':
+** this waypoint does not work if the commander of the group being transported in the back of the vehicle is human; only AI is supported
+** when using this with AI-controlled Helicopters, this command only works if there is an AI team commander present in the cargo of the vehicle; if there are only human players, the helicopter will not land and only hover too high in the air to safely disembark. This can be circumvented if the group leader gives subordinates the order to disembark {{Controls|~}} {{Controls|4}} {{Controls|1}}.
+}}
+
+=== Unload ===
+
+The group will move to the waypoint (spatial or object), then any of its units that are in cargo space of any vehicle will disembark. Units in crew positions will not disembark. One note, on a dedicated server when using this with AI controlled Helicopters. This command only works if there is an AI team commander present in the cargo of the vehicle. If there are only human players, the helicopter will not land. It will hover too high in the air to safely disembark.
+
+Specifically for landing an AI helicopter on the ground and unloading AI passengers, the waypoint destination for Transport Unload must be a helipad object and be assigned to the pilots, and the separate group as passengers must have the Get Out waypoint at the same location. Both the Transport Unload waypoint and Get Out waypoint have to be synchronized with each other. Note: createVehicleCrew breaks this functionality.
+
+=== Vehicle Get In ===
+
+This waypoint must be placed on top of a vehicle which can load other vehicles. The vehicle owning the waypoint will move near the loading vehicle and gets moved into it.
+* See also: [[Arma 3: Vehicle in Vehicle Transport]]
+
+=== Vehicle Get Out ===
+
+{{Wiki|stub}}
+
+=== Vehicle Unload ===
+
+Air vehicle will try to land as close as possible at the waypoint location and unload all vehicles in its cargo. 
+* See also [[Arma 3: Vehicle in Vehicle Transport]]
+
+=== AND ===
+
+Only available for groups on the Game Logic side. This waypoint will not complete until all waypoints it is synchronized with have been completed.
+{{Feature|important|Not available in [[:Category:Eden Editor|Eden Editor]]}}
+
+=== OR === 
+
+Only available for groups on the Game Logic side. This waypoint will complete when any one of the waypoints it may be synchronized with has been completed.
+{{Feature|important|Not available in [[:Category:Eden Editor|Eden Editor]]}}
+
+
+== Advanced Waypoints ==
+
+Advanced Waypoints can be considered a [[Waypoint_types#Scripted|Scripted]] waypoint with the Script field pre-filled with the path to the appropriate script file. 
+
+[[File:A3 scripted waypoint.jpg|400px|right]]
+
+=== Clear Mines ===
+
+Utilizes [[BIS_fnc_wpDemine]]. When added to an infantry squad, they will move to the marker and search for mines in a search area with center being the waypoint position and a radius of [[waypointCompletionRadius]], which has a default of 50m. Upon detecting a mine, a properly trained and equipped squad member will approach it in the prone position, deactivate it, and then proceed to search for more mines. The waypoint is completed when no mines are detected in the search area. If the assigned squad is inside a vehicle, they may "search" by driving the area in the vehicle, and may not disembark the vehicle unless prompted to do so. 
+
+The first custom argument determines whether or not the squad will demine all mines, ignoring whether or not the squad knows about the mines. Default is true. 
+
+=== Fire Mission ===
+
+Utilizes [[BIS_fnc_wpArtillery]]. When added to an artillery crew, the gunner will fire at the waypoint if it is in range. If the waypoint is not in range, the squad will move to the next waypoint. The target/attached object is only used as a location, and its life status has no effect on this waypoint. By default, the gunner will fire as fast as possible until he is out of ammo or reaches 100 rounds fired, at which point the squad will move to the next waypoint. 
+
+The first custom argument determines the total number of rounds to be fired (allowing magazine reloads). Default is 100. 
+
+The second custom argument determines the classname of magazine to be loaded. The classname must be provided as a string, and the magazine must be in the inventory of the artillery equipment. 
+
+Example (in the Script field):
+ A3\functions_f\waypoints\fn_wpArtillery.sqf [4, "8Rnd_82mm_Mo_shells"]
+
+With or without a subsequent waypoint, the squad appears to continue to repeat the Fire Mission until they are out of ammo. This waypoint, or the squad's ammo, may have to be modified/deleted via script in order for the squad to cease fire. 
+
+=== Land ===
+
+Utilizes [[BIS_fnc_wpLand]]. When added to a helicopter or VTOL crew, they will land at a clear landing zone near the position of the waypoint, prioritizing existing helipads. The VTOL will only attempt a vertical landing. Upon landing, the engines will remain on. When added to a fixed-wing crew, they will land at the nearest runway and taxi quickly until they are in position to take off. For all aircraft, if the landing gear is destroyed, the crew will not attempt to land and will instead move on to the next waypoint or circle the Land waypoint.
+
+
+= See Also =
+
+* [[Waypoint|Data Type Waypoint]]
+* [[:Category:Command_Group:_Waypoints|Command Group: Waypoints]]
+* [[:Category:Function Group: Waypoints|Function Group: Waypoints]]
+* [[2D Editor: Waypoints]]
+* [[Eden Editor: Waypoint]]
+
+
+[[Category: Scripting Topics]]
+[[Category: 2D Editor]]

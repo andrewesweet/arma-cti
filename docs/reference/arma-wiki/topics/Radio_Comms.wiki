@@ -1,0 +1,144 @@
+// source: https://community.bistudio.com/wiki/Radio_Comms
+// revision: 227145 (2021-01-31T18:55:12Z)
+// export sha1: 3yk1lfqrl08sz5gugk6t877yxi1m1ox
+// categories: Category:Multiplayer Hints and Tips
+// Vendored snapshot. Do not edit — re-export instead.
+
+Communications is the key to good team play. Good comms whether it is over VON or TeamSpeak, Mumble or some other comms package is a great tool in promoting team player.
+
+== Protocol ==
+In any radio network there is a need for a protocol to sending a message over the net so as to reduce the chance that the message is garbled. Not all messages require the same structure. Most communications are not priority calls or may be garbled by not using a formal process and require a full formal message as part of the Standard Operating Procedure (SOP)
+
+=== Priority ===
+High Priority messages such as contact reports may only need the contact report itself.
+* Contact reports are the highest priority message
+* Command net has priority over local net. 
+
+=== Format ===
+This is a simple standard format you could follow:
+* To
+* From 
+* Subject
+That first part of the message is delivered as a single line. (see Example 1) The sender then awaits acknowledgment from the receiver before continuing. The rest of the message content:
+
+* To
+* From 
+* Message Content
+* End
+Protocol is that the first message is a simple To From Subject short message.
+
+==== To ====
+Who is the message for?
+* A specific person
+* A specific group
+* A general group
+* Everyone
+The answer to that question can also dictate what channel to send the message on.
+
+==== From ====
+ID your self! Otherwise your message means little and the message can become garbled. A contact report from some one in a fire team on the far right of the platoon where they say "Contact Left" could mean anywhere from the center of the right flank squad to the far left of the platoon. Without a frame of reference such as the Fire Team ID the message could have the whole platoon looking in completely the wrong direction.
+
+==== Subject ====
+What kind of message is it? The subject can be anything but most fall under these headings: 
+
+* CONTACT WAIT OUT!
+* NEED...
+* X is Down
+* Message
+* Interrogatory
+* Send
+* Sitrep Please
+* Sitrep Follows
+* Repeat Last
+
+=== Message content ===
+The content of the message is defined by its subject:
+
+==== CONTACT WAIT OUT ====
+A Contact Report is a priority message. Contact reports are dealt with in detail here: [[Contact Reports]] but the simple "CONTACT WAIT OUT" call prefixed by your ID lets everyone know who can see the contact and so localise it and means other units know to beware and so those in command can begin to plan. It also informs all other units to clear comms.
+
+==== NEED... ====
+A NEED is a priority message call for immediate support.
+* NEED CAS 
+* NEED Medic
+* NEED Ammo
+* NEED AT
+* NEED Anti Air
+* NEED Artillery
+* NEED Fuel
+* NEED Repair
+* NEED Covering Fire
+* NEED Suppression
+* NEED Reinforcements
+* NEED To withdraw
+
+All NEED messages are geographical in nature and require either markers to be placed on map or be referenced to some preplanned point or reference a geographical point in some fashion.
+
+==== X is Down ====
+This is priority message to alert the person who is next in the chain of command to take over that group and to inform everyone else so they know that is the case.
+
+==== Message ====
+Most messages are just that, information being passed and are used to deliver and discuss general information; if so let the person listening know it is a standard message, by putting message in the subject. 
+
+==== Interrogatory ====
+A message requesting information.
+
+==== Send ====
+The statments "Send" or "Over" act as a signal that one party of the conversation has finnished what they were saying and as request from that party of the conversation to the other party to send their next part of the conversation.
+
+==== Sitrep Please ====
+This is a specific SOP interrogatory request for a situation report. A general Sitrep Request from HQ is SOP at a Rally Point(RP) or Form Up Point (FUP). Each group should then reply in alpha numeric order eg Alpha, Bravo, Charlie etc.
+
+==== Sitrep Follows ====
+A sitrep reply to a sitrep request or volunteering of information or part of SOP say at a Rally Point(RP) 
+A standard Sitrep should return
+* Number of units alive in the group
+* Location
+* Ammo Status, could just be answered with "ammo fine"
+* A low level support request eg medic or fuel these are lower priority requests distinct from NEED message.
+ 
+==== Repeat Last ====
+A simple request to repeat the last message because it was not understood, or message was garbled by others on that or another channel, or for clarity, or to verify intention of a message that seems odd.
+
+===End ===
+Every message should have an ending though some endings imply the conversation is to continue:
+* Over (denotes "over to you" signaling the other participant in the conversation that they have priority on the net)  
+* Send Over(requesting rest of a conversation)
+* Wait OUT (Person at the other end of the conversation has a higher priority situation they need to deal with but know you are waiting)
+* Oscar Mike (Unit On the Move)
+* Roger Wilco (Message Received and Understood and unit can and will comply)
+* Negative (Message Received and Understood but unit can not or will not comply)
+* Roger OVER and OUT (Message Received and Understood communication ended)
+
+
+== Examples ==
+=== Example 1 ===
+A typical standard conversation would run something like the following:<br>
+''<Alpha Speaking >'' '''HQ this is ALPHA message over'''<br>
+Alpha and HQ Local net chat should stop to allow Command net communications<br>
+When HQ is ready to receive the message he would reply with<br>
+''<HQ Speaking>'' '''Alpha this is HQ send over'''<br>
+And then the conversation would start flowing<br>
+''<Alpha Speaking >'' '''HQ this is ALPHA we have arrived at the OP, awaiting further orders o'''ver<br>
+''<HQ Speaking>'' '''Alpha .. HQ, roger that wait OUT'''<br>
+
+=== Example 2 ===
+A typical Sitrep conversation would run something like the following<br>
+''< HQ Speaking >'' '''HQ to all Call Signs SITREP over'''<br>
+Each group would then reply (In order Alpha, Bravo, Charlie etc etc) <br>
+''< Alpha Speaking >'' '''HQ this is ALPHA . 4 men At FUP ….. OUT.''' <br>
+''< Bravo Speaking >'' '''HQ this is BRAVO . 6 men, 2km South East of FUP, ETA 10 minutes ….. OUT.''' <br>
+''< Charlie Speaking >'' '''HQ this is Charlie 3 men, I am at grid 457382 5km east of Badango … OUT'''<br>
+''< HQ Speaking >'' '''Roger that, HQ … OUT'''<br>
+
+=== Example 3 ===
+Contact Reports are the Highest Priority messages and are used to inform everyone immediately that a group has come into contact with the enemy. As soon as a group comes into contact with the enemy, he needs to broadcast the following “1 liner” over TeamSpeak ……<br>
+''<Alpha Speaking >'' '''ALPHA CONTACT…… wait OUT''' <br>
+All other conversation should cease immediately and the net be cleared of all communications giving the unit in contact complete priority over the command net. The unit in contact team leader then needs to assess the situation and report back with a more detailed description of the enemy contact. HQ would also be taking a look at any support assets that may be available and getting ready to dispatch them.<br>
+''<Alpha Speaking >'' '''ALPHA 12 man dismounted infantry squad and a BMP 300m North East of our present location
+We are taking accurate and sustained fire, are pinned down, need support ASAP over.''' <br>
+''<HQ Speaking>'' '''Roger that Alpha, CAS Dispatched, artillery available Charlie is 2 clicks out to your South
+East, ETA 5 minutes over.''' <br>
+And then the conversation would continue until Alpha was out of danger. <br>
+
+[[Category:Multiplayer Hints and Tips]]

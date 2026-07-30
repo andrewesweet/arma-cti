@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/removeOwnedMine
+// revision: 347976 (2023-11-08T09:47:29Z)
+// export sha1: r98mldtv6xdjgskukwflhs0b4ak9ih7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mines | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Mines
+
+|descr= Removes ownership over a remotely detonatable mine from the unit.
+
+|s1= unit [[removeOwnedMine]] mine
+
+|p1= unit: [[Object]]
+
+|p2= mine: [[Object]] - the mine object
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeOwnedMine SuperMine;</sqf>
+
+|seealso= [[allMines]] [[createMine]] [[detectedMines]] [[mineActive]] [[getAllOwnedMines]] [[addOwnedMine]] [[removeAllOwnedMines]]
+}}

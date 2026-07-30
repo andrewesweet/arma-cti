@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Elite:_Editing
+// revision: 363718 (2024-04-16T18:49:38Z)
+// export sha1: m7a7b69ubejw9l00x3aqvz6mst09vtz
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{ofpe}} has a built-in mission editor much like the original {{ofp}} PC version. You can build decent, relatively complex missions using only the in-game editor and the mission templates provided.
+The editor does have limitations when compared to the {{ofp}} PC version.
+
+{| class="valign-top" style="max-width: 100em"
+| style="margin-right: 1em; width: 50%" |
+=== Editing Limitations ===
+
+The follow items are not supported by the in-game editor:
+
+* Triggers
+* Synchronizing triggers/waypoints
+* Scripts
+* Customized user text, addons, or sounds
+
+Recently {{ofp}} fans have imported missions created in the PC version to {{ofpe}}.
+These missions are generally tweaked using the editor in the PC version and then can be hashed together to work on the Xbox version.
+While this makes it a lot easier to construct the mission and add user text and scripts there are still some limitations. Most of these limitations concern the multiplayer missions.
+|
+=== {{ofp}} Conversion Limitations ===
+
+* Sounds are not supported (MP only)
+* {{hl|.jpg}} file type is not supported - only {{hl|.paa}} and {{hl|.pac}} image file types are supported
+* Briefing files, scripts, and files residing on the host will not be transferred to clients. (think server-side scripting)
+* Fonts are limited and have changed to support TV format.
+* Building names have changed. 
+* There is a problem with cutscenes created with triggers in that the trigger now has x,y,z coordinates and z seems to be set to 0 (height), thus most cutscenes are viewed from ground level.
+|}
+
+
+{{GameCategory|ofpe}}

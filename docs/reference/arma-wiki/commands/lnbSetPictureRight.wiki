@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/lnbSetPictureRight
+// revision: 353377 (2024-03-15T17:11:58Z)
+// export sha1: buktuerv10aq62bqv84bqo3p90mdp6f
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI Control - ListNBox
+
+|descr= Sets the cell's right-picture. The picture is set to the end of the '''row''', the ''column'' parameter does not matter.
+{{Feature|informative|The picture is searched in the mission, directory, the campaign directory's dtaExt subdirectory, and the data bank (or directory).}}
+
+|s1= [[lnbSetPictureRight]] [idc, [row, column], path]
+
+|p1= idc: [[Number]]
+
+|p2= row: [[Number]] - 0-based index (first row is 0, second is 1, etc)
+
+|p3= column: [[Number]] - 0-based index (first column is 0, second is 1, etc)
+
+|p4= path: [[String]] - the picture's file path
+
+|r1= [[Nothing]]
+
+|s2= ctrl [[lnbSetPictureRight]] [<nowiki/>[row, column], path]
+
+|p21= ctrl: [[Control]]
+
+|p22= row: [[Number]] - 0-based index (first row is 0, second is 1, etc)
+
+|p23= column: [[Number]] - 0-based index (first column is 0, second is 1, etc)
+
+|p24= path: [[String]] - the picture's file path
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lnbSetPictureRight [1, [0, 0], "Picture.paa"];</sqf>
+
+|x2= <sqf>_ctrl lnbSetPictureRight [[0, 0], "\A3\Ui_f\data\GUI\Cfg\Ranks\lieutenant_gs.paa"];</sqf>
+
+|seealso= [[lnbPictureRight]]
+}}

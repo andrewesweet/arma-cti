@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_initModules
+// revision: 330067 (2022-08-15T16:36:45Z)
+// export sha1: ljxtwusc41kwvoj6bkw6l4yagz382pr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Systems | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Systems
+
+|descr= Wait until all modules using the [[Modules|Arma 3: Module Framework]] are initialised.
+
+|s1= [modules] call [[BIS_fnc_initModules]]
+
+|p1= modules: [[Array]] of [[Object]]s - modules to be activated
+
+|r1= [[Boolean]] - always returns [[true]]
+
+|x1= <sqf>[module_1,module_2] call BIS_fnc_initModules;</sqf>
+
+|seealso= [[Modules]]
+}}

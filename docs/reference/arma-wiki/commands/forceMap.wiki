@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/forceMap
+// revision: 363365 (2024-03-27T23:45:43Z)
+// export sha1: d1fc548j88jr0vjbqhybtxq38moycuv
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Command Group: Map | Category:Introduced with Operation Flashpoint version 1.27 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.27
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|eff= local
+
+|gr1= Map
+
+|gr2= Interaction
+
+|descr= Opens non-interactive main map in background that overrides user screen. To force open interactive map use [[openMap]] command.
+{{Feature|warning|
+When the map is forced open with this command, the user is still able to fire but cannot see the world, just the map.
+The map cannot be closed manually and the user can get stuck requiring a game restart. Make sure you provide scripted mechanics to de-force the map at a later stage.
+}}
+
+|s1= [[forceMap]] show
+
+|p1= show: [[Boolean]] - [[true]] to force, [[false]] to go back to normal map behaviour
+
+|r1= [[Nothing]]
+
+|x1= <sqf>forceMap true;</sqf>
+
+|seealso= [[forcedMap]] [[showMap]] [[shownMap]] [[openMap]] [[visibleMap]]
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20070202052800
+|text= In '''OFP v1.96''', the mapAnim series of commands, together with [[forceMap]] can only be used in the intro and mission, as it is not possible to access the map from the outro.
+''(not checked, sourced from an old copy of the OFPEC comref)''
+}}
+
+{{Note
+|user= Manny
+|timestamp= 20070505154300
+|text= Manually opening the map afterwards won't close the map.
+Actually it will open the "real" map on top of the forced map, and closing the (top) map with the {{Controls|M}} key again will still show the forcefully opened map.
+|game= arma1
+|version= 1.05
+}}

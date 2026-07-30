@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/groupId
+// revision: 337336 (2023-01-18T11:45:01Z)
+// export sha1: kvul4nol5bh1xas8q4cz4i951mi8apq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Groups
+
+|arg= global
+
+|descr= Returns a group's name or a unit's group ID number.
+
+|s1= [[groupId]] group
+
+|p1= group: [[Group]]
+
+|r1= [[String]] - the group's name (e.g "Alpha Red")
+
+|s2= [[groupId]] unit
+
+|s2since= arma3 2.12
+
+|p21= unit: [[Object]] - a group's unit
+
+|r2= [[Number]] - the unit's group ID (e.g "'''2''', taking command")
+
+|x1= <sqf>_name = groupId group player;			// e.g "B Alpha 1-1"</sqf>
+
+|x2= <sqf>private _unitGroupId = groupId player;	// e.g 3 (number, not a string)</sqf>
+
+|seealso= [[setGroupId]] [[setGroupIdGlobal]] [[group]]
+}}

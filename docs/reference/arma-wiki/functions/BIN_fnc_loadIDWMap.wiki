@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_loadIDWMap
+// revision: 309593 (2022-05-05T12:07:27Z)
+// export sha1: i17o4feh90gte44zmvs9x5at9jmdakp
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: IDWMap | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= IDWMap
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Loads IDWMap data from global variable 'BIN_fnc_IDWMap_saveData' into extension
+
+	Parameter(s):
+		NONE
+
+	Returns:
+		BOOL - true on success
+		
+	Example:
+		call BIN_fnc_loadIDWMap
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_loadIDWMap]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_loadIDWMap;</sqf> -->
+
+|seealso=
+}}

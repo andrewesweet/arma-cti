@@ -1,0 +1,604 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Shooting_Targets
+// revision: 352061 (2024-02-01T23:24:36Z)
+// export sha1: 7x3few2lqt0nf4lcsmwkqk4rh70rimu
+// categories: Category:Arma 3: Editing | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[File:TargetBootcampHumanSimple F.jpg|right|270px]]
+{{arma3}} comes with a variety of shooting targets. Most of these targets come with a somewhat hidden functionality which is explained on this page.
+
+
+== Changing pop-up-behaviour ==
+
+The pop-up-behaviour can be changed by setting the variable</tt>noPop</tt> in [[missionNamespace]].
+<sqf>
+missionNamespace setVariable ["noPop", true];	// will prevent the targets from popping up again once they were hit
+missionNamespace setVariable ["noPop", false];	// targets will pop up normally again after they were hit
+</sqf>
+
+
+== Animating the targets ==
+
+All of the above listed targets have an animation source called {{hl|terc}}. This can be used to change the angle of the target.
+Let's say we have a pop up target place in the editor with the name {{hl|popUpTarget}}:
+<sqf>
+popUpTarget animateSource ["terc", 0.5];	// target will have an angle of 45°
+popUpTarget animateSource ["terc", 1];		// target will have an angle of 180°
+popUpTarget animateSource ["terc", 0];		// target will have an angle of 90° e.g. the target will stand up straight
+</sqf>
+
+{{Feature|informative|'''Random Fact:''' "terc" is Czech and means Object.}}
+
+
+== Example mission with "noPop" and "terc" ==
+
+# Open a new mission in [[:Category:Eden Editor|Eden Editor]] and save it.
+# Place three pop-up targets. Make sure they are compatible. See {{Link|Arma 3: Shooting Targets#Targets}}.
+# Name the pop-up targets {{hl|target_0}}, {{hl|target_1}}, {{hl|target_2}}.
+# Place any object you would like to use to control the targets' states and name it {{hl|flag_control_targets}}.
+# Navigate to ''Menu Strip'' → ''Scenario'' → ''Open Scenario Folder''.
+# In that folder create a file called {{hl|initPlayerLocal.sqf}}. See [[Event Scripts]] for more information.
+# Paste the following code into that file and save it. <sqf>
+// Three local actions are added to the object flag_control_targets. These actions are available for every player
+// Rset the animation state of all three targets
+flag_control_targets addAction ["Reset Targets", { [target_0, target_1, target_2] apply { _x animateSource ["terc", 0] } }];
+</sqf><sqf>
+// Disable the pop-up functionality by setting "noPop" to true globally
+flag_control_targets addAction ["Disable pop-up", { missionNamespace setVariable ["noPop", true, true] }];
+</sqf><sqf>
+// Enable the pop-up functionality by setting "noPop" to false globally. The targets will not automatically reset. Use the Reset Targets action
+flag_control_targets addAction ["Enable pop-up", { missionNamespace setVariable ["noPop", false, true] }];
+</sqf>
+# Preview the mission and play around with the targets.
+
+
+== Moving targets on rails ==
+
+There is no official way of doing this. Just download some script ¯\_(ツ)_/¯
+{{Wiki|Stub}}
+
+
+== See also ==
+
+=== Interesting Scripts ===
+
+The following scripts are used to animate the targets. Some of them only create a simply destruction effect, others are more sophisticated.
+To see their content, combine [[loadFile]] with the path.
+* {{hl|a3\structures_f_mark\items\sport\scripts\balloon_01_air_f_hitpart.sqf}}
+* {{hl|a3\structures_f_mark\items\sport\scripts\balloon_01_water_f_hitpart.sqf}}
+* {{hl|a3\structures_f_epa\items\vessels\scripts\eaudecombat_01_f_hitpart.sqf}}
+* {{hl|a3\props_f_orange\humanitarian\supplies\scripts\fruit_hitpart.sqf}}
+* {{hl|a3\structures_f\training\data\scripts\land_target_oval_f_hitpart.sqf}}
+* {{hl|a3\structures_f\training\data\scripts\metal_pole_skeet_f_hitpart.sqf}}
+* {{hl|a3\structures_f\training\data\scripts\skeet_clay_f_hitpart.sqf}}
+* {{hl|a3\structures_f_mark\training\scripts\target_dueling_01_f_hitpart.sqf}}
+* {{hl|a3\structures_f_mark\training\scripts\target_swivel_01_f_hitpart.sqf}}
+* {{hl|a3\structures_f\training\data\scripts\targetp_inf_f_hitpart.sqf}}
+
+=== Targets ===
+
+The following targets all possess some sort of animation source. One can use [[animateSource]] to manipulate and customize them.
+{| class="wikitable"
+
+|-
+! Display Name !! Class !! Animation Sources
+|-
+| Pop-Up Target 1 || {{hl|TargetP_Inf_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 1 (Zones) || {{hl|TargetP_Inf_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 1 (Accuracy) || {{hl|TargetP_Inf_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 1 (Side) || {{hl|Target_PopUp_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 1 (Side - Zones) || {{hl|Target_PopUp_Moving_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 1 (Side - Accuracy) || {{hl|Target_PopUp_Moving_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 1 (Front) || {{hl|Target_PopUp_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 1 (Front - Zones) || {{hl|Target_PopUp_Moving_90deg_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 1 (Front - Accuracy) || {{hl|Target_PopUp_Moving_90deg_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 2 || {{hl|TargetP_Inf2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 2 (Zones) || {{hl|TargetP_Inf2_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 2 (Accuracy) || {{hl|TargetP_Inf2_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 2 (Side) || {{hl|Target_PopUp2_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 2 (Side - Zones) || {{hl|Target_PopUp2_Moving_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 2 (Side - Accuracy) || {{hl|Target_PopUp2_Moving_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 2 (Front) || {{hl|Target_PopUp2_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 2 (Front - Zones) || {{hl|Target_PopUp2_Moving_90deg_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 2 (Front - Accuracy) || {{hl|Target_PopUp2_Moving_90deg_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 3 || {{hl|TargetP_Inf3_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 3 (Zones) || {{hl|TargetP_Inf3_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 3 (Accuracy) || {{hl|TargetP_Inf3_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 3 (Side) || {{hl|Target_PopUp3_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 3 (Side - Zones) || {{hl|Target_PopUp3_Moving_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 3 (Side - Accuracy) || {{hl|Target_PopUp3_Moving_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 3 (Front) || {{hl|Target_PopUp3_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 3 (Front - Zones) || {{hl|Target_PopUp3_Moving_90deg_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 3 (Front - Accuracy) || {{hl|Target_PopUp3_Moving_90deg_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Zombie 1 || {{hl|TargetP_Zom_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Zombie 1 (Zones) || {{hl|TargetP_Zom_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Zombie 1 (Side) || {{hl|Zombie_PopUp_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Zombie 1 (Side - Zones) || {{hl|Zombie_PopUp_Moving_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Zombie 1 (Front) || {{hl|Zombie_PopUp_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Zombie 1 (Front - Zones) || {{hl|Zombie_PopUp_Moving_90deg_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Hostage 1 || {{hl|TargetP_Civ_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Hostage 1 (Side) || {{hl|Hostage_PopUp_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Hostage 1 (Front) || {{hl|Hostage_PopUp_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Hostage 2 || {{hl|TargetP_Civ2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Hostage 2 (Side) || {{hl|Hostage_PopUp2_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Hostage 2 (Front) || {{hl|Hostage_PopUp2_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Hostage 3 || {{hl|TargetP_Civ3_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Hostage 3 (Side) || {{hl|Hostage_PopUp3_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Hostage 3 (Front) || {{hl|Hostage_PopUp3_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Target - Oval (Ground) || {{hl|Land_Target_Oval_F}} ||
+{{hl|Ground_holder_hide}}<br>
+{{hl|Pole_Left_Hide}}<br>
+{{hl|Pole_Right_Hide}}<br>
+{{hl|Pole_Top_Hide}}<br>
+{{hl|Pole_Bottom_Hide}}<br>
+{{hl|Left_Rotate}}<br>
+{{hl|Right_Rotate}}<br>
+{{hl|Top_Rotate}}<br>
+{{hl|Bottom_Rotate}}<br>
+{{hl|Pole_Rotate}}<br>
+{{hl|Target_Left_Rotate}}<br>
+{{hl|Target_Right_Rotate}}<br>
+{{hl|Target_Top_Rotate}}<br>
+{{hl|Target_Bottom_Rotate}}<br>
+{{hl|Target_Pole_Rotate}}<br>
+
+|-
+| Target - Oval (Wall, Left) || {{hl|Land_Target_Oval_Wall_Left_F}} ||
+{{hl|Ground_holder_hide}}<br>
+{{hl|Pole_Bottom_Hide}}<br>
+{{hl|Pole_Left_Hide}}<br>
+
+|-
+| Target - Oval (Wall, Right) || {{hl|Land_Target_Oval_Wall_Right_F}} ||
+{{hl|Ground_holder_hide}}<br>
+{{hl|Pole_Bottom_Hide}}<br>
+{{hl|Pole_Right_Hide}}<br>
+
+|-
+| Target - Oval (Wall, Top) || {{hl|Land_Target_Oval_Wall_Top_F}} ||
+{{hl|Ground_holder_hide}}<br>
+{{hl|Pole_Bottom_Hide}}<br>
+{{hl|Pole_Top_Hide}}<br>
+
+|-
+| Target - Oval (Wall, Bottom) || {{hl|Land_Target_Oval_Wall_Bottom_F}} ||
+{{hl|Ground_holder_hide}}<br>
+
+|-
+| Steel Plate || {{hl|Steel_Plate_F}} ||
+{{hl|Stand_Hide}}<br>
+
+|-
+| Steel Plate (Stand) || {{hl|Steel_Plate_Stand_F}} ||
+{{hl|Stand_Hide}}<br>
+
+|-
+| Steel Plate (Large) || {{hl|Steel_Plate_L_F}} ||
+{{hl|Stand_Hide}}<br>
+
+|-
+| Steel Plate (Large - Stand) || {{hl|Steel_Plate_L_Stand_F}} ||
+{{hl|Stand_Hide}}<br>
+
+|-
+| Steel Plate (Small) || {{hl|Steel_Plate_S_F}} ||
+{{hl|Stand_Hide}}<br>
+
+|-
+| Steel Plate (Small - Stand) || {{hl|Steel_Plate_S_Stand_F}} ||
+{{hl|Stand_Hide}}<br>
+
+|-
+| Metal Pole || {{hl|Metal_Pole_F}} ||
+{{hl|Platform_Hide}}<br>
+{{hl|Skeet_Hide}}<br>
+
+|-
+| Metal Pole (Platform) || {{hl|Metal_Pole_Platform_F}} ||
+{{hl|Platform_Hide}}<br>
+
+|-
+| Metal Pole (Skeet) || {{hl|Metal_Pole_Skeet_F}} ||
+{{hl|Skeet_Hide}}<br>
+
+|-
+| Target Human Simple || {{hl|TargetBootcampHumanSimple_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Target Human || {{hl|TargetBootcampHuman_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target (Disassembled, Base) || {{hl|Land_Target_PopUp_01_mechanism_F}} ||
+{{hl|Target_source}}<br>
+
+|-
+| Pop-Up Target 4 || {{hl|TargetP_Inf4_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 4 (Zones) || {{hl|TargetP_Inf4_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 4 (Accuracy) || {{hl|TargetP_Inf4_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 4 (Side) || {{hl|Target_PopUp4_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 4 (Side - Zones) || {{hl|Target_PopUp4_Moving_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 4 (Side - Accuracy) || {{hl|Target_PopUp4_Moving_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 4 (Front) || {{hl|Target_PopUp4_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 4 (Front - Zones) || {{hl|Target_PopUp4_Moving_90deg_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 4 (Front - Accuracy) || {{hl|Target_PopUp4_Moving_90deg_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 5 || {{hl|TargetP_HVT1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 5 (Side) || {{hl|Target_PopUp_HVT1_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 5 (Front) || {{hl|Target_PopUp_HVT1_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 6 || {{hl|TargetP_HVT2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 6 (Side) || {{hl|Target_PopUp_HVT2_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 6 (Front) || {{hl|Target_PopUp_HVT2_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 7 || {{hl|TargetP_Inf7_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 7 (Zones) || {{hl|TargetP_Inf7_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 7 (Accuracy) || {{hl|TargetP_Inf7_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 7 (Side) || {{hl|Target_PopUp7_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 7 (Side - Zones) || {{hl|Target_PopUp7_Moving_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 7 (Side - Accuracy) || {{hl|Target_PopUp7_Moving_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 7 (Front) || {{hl|Target_PopUp7_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 7 (Front - Zones) || {{hl|Target_PopUp7_Moving_90deg_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 7 (Front - Accuracy) || {{hl|Target_PopUp7_Moving_90deg_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 8 || {{hl|TargetP_Inf8_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 8 (Zones) || {{hl|TargetP_Inf8_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 8 (Accuracy) || {{hl|TargetP_Inf8_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 8 (Side) || {{hl|Target_PopUp8_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 8 (Side - Zones) || {{hl|Target_PopUp8_Moving_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 8 (Side - Accuracy) || {{hl|Target_PopUp8_Moving_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 8 (Front) || {{hl|Target_PopUp8_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 8 (Front - Zones) || {{hl|Target_PopUp8_Moving_90deg_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 8 (Front - Accuracy) || {{hl|Target_PopUp8_Moving_90deg_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 9 || {{hl|TargetP_Inf9_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 9 (Zones) || {{hl|TargetP_Inf9_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Target 9 (Accuracy) || {{hl|TargetP_Inf9_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 9 (Side) || {{hl|Target_PopUp9_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 9 (Side - Zones) || {{hl|Target_PopUp9_Moving_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 9 (Side - Accuracy) || {{hl|Target_PopUp9_Moving_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 9 (Front) || {{hl|Target_PopUp9_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 9 (Front - Zones) || {{hl|Target_PopUp9_Moving_90deg_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Target 9 (Front - Accuracy) || {{hl|Target_PopUp9_Moving_90deg_Acc2_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Alien 1 || {{hl|TargetP_Alien1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Pop-Up Alien 1 (Zones) || {{hl|TargetP_Alien1_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Alien 1 (Side) || {{hl|Target_PopUp_Alien1_Moving_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Alien 1 (Side - Zones) || {{hl|Target_PopUp_Alien1_Moving_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Alien 1 (Front) || {{hl|Target_PopUp_Alien1_Moving_90deg_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Moving Alien 1 (Front - Zones) || {{hl|Target_PopUp_Alien1_Moving_90deg_Acc1_F}} ||
+{{hl|Terc}}<br>
+
+|-
+| Dueling Target || {{hl|Land_Target_Dueling_01_F}} ||
+{{hl|Plate_1_source}}<br>
+{{hl|Plate_2_source}}<br>
+{{hl|Plate_3_source}}<br>
+{{hl|Plate_4_source}}<br>
+{{hl|Plate_5_source}}<br>
+{{hl|Plate_6_source}}<br>
+
+|-
+| Swivel Target || {{hl|Land_Target_Swivel_01_F}} ||
+{{hl|Screws_source}}<br>
+{{hl|Popup_source}}<br>
+{{hl|Stand_source}}<br>
+{{hl|Swivel_1rpm_source}}<br>
+{{hl|Swivel_2rpm_source}}<br>
+{{hl|Swivel_3rpm_source}}<br>
+{{hl|Swivel_4rpm_source}}<br>
+{{hl|Swivel_5rpm_source}}<br>
+{{hl|Swivel_6rpm_source}}<br>
+{{hl|Swivel_10rpm_source}}<br>
+{{hl|Swivel_12rpm_source}}<br>
+{{hl|Swivel_15rpm_source}}<br>
+
+|-
+| Swivel Target (Ground) || {{hl|Target_Swivel_01_ground_F}} ||
+{{hl|Screws_source}}<br>
+
+|-
+| Swivel Target (Left) || {{hl|Target_Swivel_01_left_F}} ||
+{{hl|Stand_source}}<br>
+{{hl|Swivel_1rpm_source}}<br>
+{{hl|Swivel_2rpm_source}}<br>
+{{hl|Swivel_3rpm_source}}<br>
+{{hl|Swivel_4rpm_source}}<br>
+{{hl|Swivel_5rpm_source}}<br>
+{{hl|Swivel_6rpm_source}}<br>
+{{hl|Swivel_10rpm_source}}<br>
+{{hl|Swivel_12rpm_source}}<br>
+{{hl|Swivel_15rpm_source}}<br>
+
+|-
+| Swivel Target (Right) || {{hl|Target_Swivel_01_right_F}} ||
+{{hl|Stand_source}}<br>
+{{hl|Swivel_1rpm_source}}<br>
+{{hl|Swivel_2rpm_source}}<br>
+{{hl|Swivel_3rpm_source}}<br>
+{{hl|Swivel_4rpm_source}}<br>
+{{hl|Swivel_5rpm_source}}<br>
+{{hl|Swivel_6rpm_source}}<br>
+{{hl|Swivel_10rpm_source}}<br>
+{{hl|Swivel_12rpm_source}}<br>
+{{hl|Swivel_15rpm_source}}<br>
+
+|-
+| VR Tank Target || {{hl|Land_VR_Target_MBT_01_cannon_F}} ||
+{{hl|Turret_source}}<br>
+{{hl|Gun_source}}<br>
+
+|-
+| VR Wheeled APC Target || {{hl|Land_VR_Target_APC_Wheeled_01_F}} ||
+{{hl|Turret_source}}<br>
+{{hl|Gun_source}}<br>
+
+|}
+
+{{Wiki|extractionScript}}
+
+
+{{GameCategory|arma3|Editing}}

@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_handDrawEllipse
+// revision: 309651 (2022-05-05T12:07:59Z)
+// export sha1: 3piue025685388m6y0vegubblcebvhk
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diary | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Diary 
+
+|descr= <pre>/*
+
+	Description:
+		Show hand-drawn ellipse in the map
+
+	Parameter(s):
+		0: STRING - Unique ID of the ellipse. When such ellipse already exists, it will override it.
+		1: ARRAY - center position
+		2: NUMBER - semi-major axis
+		3: NUMBER - semi-minor axis
+		4: NUMBER - angle
+		5: ARRAY - color in [r,g,b,a] format
+		6: STRING - fill texture
+		   BOOL - true for default pen-blue color, false for the same, but faded
+
+		Optional:
+		7: NUMBER - radius coef
+		8: NUMBER - length coef
+		9: NUMBER or ARRAY: thickness
+		10: ARRAY - radius curve
+		11: BOOL - true if clockwise
+		12: NUMBER - starting angle
+		13: ARRAY - random thickness offset in format [min,mid,max]
+		14: NUMBER - number od drawing steps
+
+	Returns:
+		NOTHING
+
+	Examples:
+		//--- Show an ellipse on player's position
+		["test1",position player,300,400,15] call BIN_fnc_handDrawEllipse;
+
+		//--- Show the same ellipse, but faded
+		["test1",position player,300,400,15,nil,false] call BIN_fnc_handDrawEllipse;
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_handDrawEllipse]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_handDrawEllipse;</sqf> -->
+
+|seealso=
+}}

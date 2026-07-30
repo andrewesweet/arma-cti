@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getUserMFDText
+// revision: 309231 (2022-05-04T10:19:29Z)
+// export sha1: 05l0xh2is4qyotxbmkksalvgj3t2fre
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= GUI Control
+
+|descr= Returns array of user text variables used in MFD.
+
+|s1= [[getUserMFDText]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>getUserMFDText _vehicle;</sqf>
+
+|seealso= [[setUserMFDText]] [[setUserMFDValue]] [[getUserMFDValue]]
+}}

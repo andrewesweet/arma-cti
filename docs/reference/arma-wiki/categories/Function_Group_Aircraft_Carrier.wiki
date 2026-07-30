@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Aircraft_Carrier
+// revision: 165181 (2020-10-09T14:40:15Z)
+// export sha1: ct616hk7zw9walhy5j2m5kyfl462e8f
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Function Group: Object Manipulation]]

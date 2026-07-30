@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/lineBreak
+// revision: 321099 (2022-05-13T13:56:57Z)
+// export sha1: fd1o81qfuy2xglo0rx1bwqmr144vl7v
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Command Group: Structured Text | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Strings
+
+|gr2= Structured Text
+
+|descr= Creates a structured text containing a line break.
+
+|s1= [[lineBreak]]
+
+|r1= [[Structured Text]]
+
+|x1= <sqf>hint composeText ["First line", lineBreak, "Second line"];</sqf>
+
+|x2= <sqf>hint str (composeText [lineBreak] == parseText "<br/>"); // true</sqf>
+
+|seealso= [[composeText]] [[parseText]] [[Structured Text]] [[text]] [[image]] [[endl]]
+}}

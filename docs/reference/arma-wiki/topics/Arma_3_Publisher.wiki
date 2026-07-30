@@ -1,0 +1,200 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Publisher
+// revision: 363309 (2024-03-26T11:43:30Z)
+// export sha1: qc4vxwn7wjvoo5xtnpfziafcv0ye338
+// categories: Category:Arma 3: Official Tools Manual | Category:Introduced with Arma 3 version 1.24
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+<div class="float-right">[[File:Arma3PublisherIcon.png|128px]]</div>
+{{GVI|arma3|1.24}}
+
+The purpose of this tools is to publish and manage items in the [[Addons#Steam_Workshop|Steam Workshop]]. It allows you to upload your mods and change the information that is displayed on their Steam Workshop page.
+Published mods (and other items) can be then subscribed by other players and loaded to the game by [[Arma 3: Launcher]].
+
+The official Publisher was launched July 14, 2014 with the Bootcamp update 1.24. http://arma3.com/news/bohemia-interactive-deploys-arma-3-bootcamp-update.
+
+
+== Publishing User Content (Mods and Campaigns) ==
+
+To publish the content to Steam Workshop, you have to have the mod prepared and tested. Start with clicking a button "SELECT MOD FOLDER" and selecting the folder that contains your mod.
+
+Then you should name select the name for it (it should be unique and descriptive for users to identify it easily) and select it is type:
+* Mod: a game modification, an addon or a new terrain;
+* Campaign: a series of connected missions;
+* Scenario: simple mission are published directly from [[Eden_Editor:_Publishing|Eden Editor]] and can't be published by Publisher.
+
+Based on the selected item type, you can choose from the multiple tags that are used on {{Link|link= http://steamcommunity.com/app/107410/workshop/|Steam|text= Workshop}} to filter the items.
+We recommend to use the tags that the best describes your item. Using misleading tags or all tags will result in Workshop moderators changing them or removal of the entire item from Steam Workshop.
+
+If you're updating the existing item, you should fill the change notes to let your users know what's new.
+
+Before the mods is published or updated on Workshop, the structure check is done to ensure that the mod can be loaded by the game.<br>
+Following requirements must be met in order to publish the mod:
+* {{hl|addons}} folder needs to be directly in the root (top level) to be loaded in the game;
+* {{hl|addons}} folder has to contain the PBO files;
+* all signatures need to be in the same folder as their respective PBOs.
+
+Publishing a mod with PBO files outside of {{hl|addons}} folder (such as an presence of {{hl|Optional}} folder) will produce a warning, because swapping of files in mods acquired through Steam client is not recommended. <ref>Steam is managing the downloaded files and keeps them synchronized with data uploaded to Workshop. If the users move the files, Steam will revert these changes with next update making the behavior of the mod unpredictable. Also historically this kind of manipulation has broken the Steam and forced re-download of the entire mod.</ref>
+
+
+== User Interface ==
+
+[[File:Arma3Publisher.PNG|500px]]
+
+=== Published items list ===
+
+Displays your new and published items.
+* '''Unpublished item:''' Select this item when you want to publish a new item in the Workshop.
+* '''List of published items:''' lists all your existing items. Publishing with a selected item on this list will overwrite all data and meta-data on Steam with your local copy. Scenarios published from the game's editor are also listed.
+* '''Search field:''' allows full-text search in the list
+* '''Web:''' opens the workshop page of the selected published item. Not available for the ''unpublished item''.
+* '''Delete:''' removes the item from the workshop. Use carefully, does not have undo.
+
+=== Item Metadata ===
+
+*'''Mod content:''' Drag and drop a file or a folder onto the box. Remove added items by clicking X.
+** Included folders automatically include any files or sub-folders
+** Items can contain multiple files and folders
+** Item size is not limited
+** Buttons:
+***'''Add file''', '''Add folder''': opens windows dialog to select files or folder
+***'''Clear all''' - removes all included files and folders from the mod content box
+** Behavior
+*** A file or a folder can be included only once (based on its path)
+*** Files of the same name but different size can be included even in the same directory, they will be enumerated (myMod.pbo; myMod.pbo > myMod.pbo; myMod1.pbo)
+*** Tooltip shows the full path and size
+*** Including only one folder will not promote it as root, the input field is the root and will be published as @name
+** Signatures
+*** signatures are required for multiplayer with mods and can be generated in Addon builder [Addon Builder]
+*** with a multiple files philosophy, signatures can now be included in the workshop items
+*** they should to be in the same folder as the respective PBO
+*** Publisher options now allows auto-including signatures
+
+* '''Author: ''' Reads the author specified in the PBO or from Steam
+* '''Name: ''' Name of the Workshop item.
+* '''Size: ''' Size of the item on Steam or a size of the file to be uploaded (yellow color).
+** Displays file and folder count for an item to be published.
+* '''Published: ''' For existing items only, the original published date.
+* '''Last Update: ''' For existing items only, the last update time.
+* '''Visibility: ''' There are three options to choose from:
+** Public - visible to anyone, anyone can subscribe to your item
+** Friends - visible only to your Steam friends
+** Private - (Default), visible only to you
+
+=== Description ===
+
+Text field for your description of the published item. Limit: 8000 bytes (~ 8000 characters)
+{{Feature|informative|
+If your mod requires other content to run properly (dependency), it is a good practice to list all the required content here including a links how to get it and a proper load order, if necessary.
+: ''In addition, required items present in the workshop can be defined from the page of your item (Add/Remove Required Items).''
+}}
+
+=== Tags ===
+
+Steam tags used for categorizing content. Good tags improve content discovery.
+
+{{Feature|informative|It is better to tag your content sparsely (with tags from the same category) and use your tag to cover the most prominent qualities or elements. More tags {{=}} more confusion for the subscribers.}}
+
+By Steam category:
+'''Data Type'''  - specifies data type.
+* Mod - for single or multiple PBOs. Needs to be loaded on the game start. Content with tag ''Mod'' is displayed in [[A3 Launcher|Arma 3 Launcher]].
+* Server - special server type addon.
+{{Feature|informative|Mod and Scenario tags are mutually exclusive.}}
+
+'''Mod Type''' - specifies mod type based on it is content
+* Animation - modifies animations in game
+* Boat - modifies boats in game
+* Campaign - several (connected) missions
+* Character - modifies characters in game
+* Equipment - modifies equipment in game
+* Helicopter - modifies helicopters in game
+* Mechanics - modifies game mechanics, user interface or other similar elements in game (scripts)
+* Plane - modifies planes in game
+* Sound - modifies sounds or music in game
+* Structure - modifies structures (buildings, props) in game
+* Terrain - modifies terrains in game
+* Tracked - modifies tracked vehicles in game
+* Weapon - modifies weapons in game
+* Wheeled - modifies wheeled vehicles in games
+
+'''DLC'''
+* KartsDLC - mod recommends owning [[Arma 3 Karts|Karts DLC]]
+* HelicopterDLC - mod recommends owning [[Arma 3 Helicopters|Helicopter DLC]]
+* MarksmenDLC - mod recommends owning [[Arma 3 Marksmen|Marksmen DLC]]
+
+'''Meta'''
+* Dependency - mod requires other user mods
+* Collection - mod created as a part of larger, but not inter-dependent, collection or theme
+
+'''Review'''
+These tags are added automatically by Publisher when respective conditions are met. They cannot be removed by the user. Their purpose is to make administering workshop easier.
+* ''Tag Review'' - added when the item has over 7 tags. The aim here is to reduce the number of tags per item to improve discoverability.
+* ''Content Review'' - added when the item contains a file type that could contain malicious content. Included extensions are .exe, .dll, .cmd, .com, .bat, .py, .ps, .jar, .lib, .src.
+
+=== Change notes ===
+
+Text field, limited to 8000 bytes (~ 8000 characters). Only relevant when updating an existing item with a PBO.
+{{Feature|informative|When updating an item, provide information what changed so that users feel informed.}}
+
+=== Image ===
+
+Previews an included image to be visible on Steam Workshop.
+* '''Predefined''': provides a selection of existing images covering main tags.
+* '''Browse:''' opens file open dialog. Allowed file types are .jpg, .jpeg, .png, .gif, .bmp. Image is downscaled to 0,95 MB to meet the Steam limit.
+
+=== SteamWorks licence ===
+
+Checkbox - Before publishing, each author must explicitly agree with {{Link|link= http://steamcommunity.com/sharedfiles/workshoplegalagreement|text= SteamWorks license}}. The whole text of the license is available online.
+When agreement was not confirmed, Publisher provides an error dialog on Publish attempt.
+
+=== Publish ===
+
+Click this button to publish or update your item with the provided files and/or information.
+{{Feature|informative|
+Publishing handles all the data to the Steam Client and displays the progress window.
+You can track the progress bar, but be aware that there are several steps like compressing and extracting that are handled by the Steam back-end and not communicated over the API - this means the publishing can take longer even on a solid connection.
+}}
+
+[[File:Arma3PublisherOptions.PNG|300px|right]]
+=== Options ===
+
+* Temp folder path: define a temporary folder where mods with multiple files are copied and prepared before their publishing. Provide an absolute path or use [...]  to open the Open folder dialog. Contents of the folder is deleted after a successful publishing.
+** Use default: default temporary folder is ''user documments dir\AppData\Local\Temp e.g. c:\Users\cooper\AppData\Local\Temp\''
+** When adding files, a new folder is created in ''Temp'' with the '''Name''' of the mod (example: ''...\Temp\MyFirstMod'' ). When such folder already exists, the new folder cannot be created and publishing fails with error. Please, remove such folder manually before retrying.{{Feature|informative|Copying large or multiple files between drives can take longer.}}
+* Auto-include signatures
+** When a PBO is being added to the mod content, Publisher searches the source folder for a relevant signature (''<pbofilename>.<string>.bisign'') and adds it to the mod content. If more then 1 signature files match the condition, all of them are included.
+** When a PBO is being removed from the mod content, Publisher automatically removes the matching signature, if present.
+** Default: '''on'''
+* Open workshop page after publishing
+** When publishing is successful, Publisher automatically opens the published item's workshop page. Usable for visual checks and subscribes.
+** Default: '''on'''
+* Use Steam Client instead of web browser
+** When opening workshop pages using the Web button or automatically after publishing, opens the webpage in Steam Client instead of the default web browser
+** Default: '''on''' (Steam Client)
+
+==== Other buttons ====
+* {{Link|http://www.bistudio.com/|Bohemia Interactive}} - opens company page in external web browser
+* {{Link|http://steamcommunity.com/workshop/browse/?appid{{=}}107410|Workshop}} - open {{arma3}} workshop page in external browser
+* {{Link|http://support.bistudio.com/arma-3|Support}} - open {{Name|bi}} support page in external browser
+* {{Link|http://feedback.arma3.com|Feedback}} - opens feedback tracker, {{arma3}}'s community feedback and issue tracking service in external web browser
+
+
+== Boring technical stuff ==
+
+<span style="color:gray">''To be processed later''<span>
+* '''Publishing process''' - Be aware that publishing larger mods can take up a while. Here is what has to happen:
+** Publisher sends the path to all files and folders in the temp [link] folder to Steam Client
+** Steam Client archives the files locally into one archive
+** Steam Client uploads to SteamWorks database
+** Workshop stores the data and sends Publishing successful callback
+** Publisher receives the callback and lists the file as published
+
+
+== Logs ==
+
+Publisher logs can be found in ''steamapps\common\Arma 3 Tools\Logs''<br>
+When something goes wrong (in several attempts, because Steam can have a bad moment sometimes :) ), please, create an issue on the {{Link|http://feedback.arma3.com feedback|tracker}} in ''Tools'' category and include these logs.
+
+
+{{GameCategory|arma3|Official Tools Manual}}
+[[Category:Introduced with Arma 3 version 1.24]]

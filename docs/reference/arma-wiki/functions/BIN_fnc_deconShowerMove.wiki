@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_deconShowerMove
+// revision: 309614 (2022-05-05T12:07:43Z)
+// export sha1: 1dnpnriw7bju8u9qd66228z0222a449
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Decon Shower | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Decon Shower 
+
+|descr= <pre>/*
+	BIN_fnc_deconShowerMove
+*/</pre>
+{{Wiki|placeholder}} 
+
+|s1= <!-- [] call [[BIN_fnc_deconShowerMove]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_deconShowerMove;</sqf> -->
+
+|seealso=
+}}

@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/removeUniform
+// revision: 310201 (2022-05-05T13:10:40Z)
+// export sha1: l1q9nuxbjb34j8s4tbopha1aglcrhrw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Containers
+
+|gr2= Unit Inventory
+
+|descr= Removes uniform from unit.
+
+|s1= [[removeUniform]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>removeUniform player;</sqf>
+
+|seealso= [[addUniform]] [[forceAddUniform]] [[isUniformAllowed]] [[uniform]] [[removeVest]] [[removeBackpack]]
+}}

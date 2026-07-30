@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_getPlayersGroup
+// revision: 348720 (2023-11-08T14:31:29Z)
+// export sha1: 68oj9w12na2aomud9r6ptdagdnrtknj
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Functions | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Campaign
+
+|arg= local
+
+|descr= Returns group that players belong to in coop campaign scenario.
+
+|s1=
+
+|r1= [[Group]] - group the player belongs to
+
+|x1= <sqf>private _group = call BIS_fnc_EXP_camp_getPlayersGroup;</sqf>
+
+|seealso= [[group]]
+}}

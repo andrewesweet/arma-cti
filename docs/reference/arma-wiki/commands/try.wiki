@@ -1,0 +1,92 @@
+// source: https://community.bistudio.com/wiki/try
+// revision: 369368 (2024-09-03T18:43:09Z)
+// export sha1: cgowfy0k6qjb3vsbfmoq5sdfira0wbd
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Program Flow
+
+|descr= Defines a try-catch structure. This sets up an [[Exception handling|exception handling]] block. Any thrown exception in a try block is caught in a [[catch]] block. The structured exception block has the following form:
+<sqf>
+try
+{ /* block that can throw exception */ }
+catch
+{ /* block that processes the exception. Exception is described in the _exception variable */ };
+</sqf>
+
+|s1= [[try]] code
+
+|p1= code: [[Code]]
+
+|r1= [[Exception handling|Exception Type]]
+
+|s2= args [[try]] code
+
+|s2since= arma3 1.54
+
+|p21= args: [[Anything]] - passed arguments, will be put in ''_this'' variable inside the "code"
+
+|p22= code: [[Code]]
+
+|r2= [[Exception handling|Exception Type]]
+
+|x1= <sqf>try { throw "invalid argument" } catch { hint str _exception };</sqf>
+
+|x2= <sqf>123 try { if (_this != 123) throw "invalid argument" } catch { hint str _exception };</sqf>
+
+|x3= <sqf>
+try {
+	if (a > b) throw "Error: some error"; // OK
+	// the command argument is static
+} catch {
+	hint str _exception;
+};
+
+try {
+	_someFunc = {
+		// ...
+	};
+	if (a > b) throw (call _someFunc); // NOT OK
+	// the command argument is dynamic
+	// _someFunc is called first to get the value regardless of (a > b) outcome
+} catch {
+	hint str _exception;
+};
+
+try {
+	_someFunc = {
+		// ...
+	};
+	if (a > b) then {throw (call _someFunc)}; // OK
+	// the command argument is dynamic
+	// _someFunc is only called when (a > b) is true
+} catch {
+	hint str _exception;
+};
+</sqf>
+
+|seealso= [[Exception handling]] [[throw]] [[catch]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150609205200
+|text= Do not expect this behave like Javascript try catch and ignore all errors. But it does have one useful behaviour. Normally when a runtime error occurs in SQF (unlike when there is compile error) it continues to execute till the end. But if the script is placed in [[try]] {} scope and [[throw]] is used upon error, the script immediately terminates, exits the [[try]] {} scope and enters [[catch]] {} scope. This way it is possible to process possible exceptions in civilised manner.
+}}

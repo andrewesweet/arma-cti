@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getAnimSpeedCoef
+// revision: 321925 (2022-05-22T12:45:16Z)
+// export sha1: m7grh8w85fiu03iswx5c5nabddi0xu0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|gr1= Animations
+
+|gr2= Stamina System
+
+|descr= Get coefficient for animation speed.
+
+|s1= [[getAnimSpeedCoef]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>if (getAnimSpeedCoef player > 1) then { hint "Speedy Gonzales!" };</sqf>
+
+|seealso= [[Arma 3: Stamina]] [[setAnimSpeedCoef]]
+}}

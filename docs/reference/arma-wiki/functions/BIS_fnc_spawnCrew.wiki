@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_spawnCrew
+// revision: 348006 (2023-11-08T11:22:26Z)
+// export sha1: g1y4ip9xmna6iwq3y8v6wx7yk3es07c
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Function to fill all crew positions in a vehicle, including turrets.
+In dummy mode no objects are created and the returned array contains only ones; this mode can be used to count the actual crew of an existing vehicle or vehicle type (see also [[crew]], [[fullCrew]]).
+
+|s1= [vehicle, group, dummyMode, dummyType, crewType]] call [[BIS_fnc_spawnCrew]]
+
+|p1= vehicle: [[Object]] - vehicle
+
+|p2= group: [[Group]] - crew's group
+
+|p3= dummyMode: [[Boolean]] - (Optional, default [[false]]) [[true]] to enable dummy mode
+
+|p4= dummyType: [[String]] - (Optional, default "") dummy type
+
+|p5= crewType: [[String]] - (Optional, default "") crew type
+
+|r1= [[Array]] or [[Number]] - created crew objects or crew count
+
+|x1= <sqf>[BIS_vehicle, group player] call BIS_fnc_spawnCrew;</sqf>
+
+|seealso= [[crew]] [[fullCrew]]
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20150224215200
+|text= This makes FFV units but no cargo crew.
+}}

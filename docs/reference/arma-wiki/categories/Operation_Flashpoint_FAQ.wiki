@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_FAQ
+// revision: 339991 (2023-04-28T16:27:16Z)
+// export sha1: q9kj5velo140kzdpcht05wl3i62cpk3
+// Vendored snapshot. Do not edit — re-export instead.
+
+
+This FAQ has originally been created and maintained over the years by '''[http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?s{{=}}b40e1e7f7d39512e56f660bc72a9d960;act=Profile;CODE=03;MID=116-1010155008 TheAvonLady]''', and is now being transferred and updated for permanent hosting on this Wiki.
+
+{{GameCategory|ofp}}

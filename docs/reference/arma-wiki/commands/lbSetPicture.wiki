@@ -1,0 +1,81 @@
+// source: https://community.bistudio.com/wiki/lbSetPicture
+// revision: 364161 (2024-05-05T10:46:40Z)
+// export sha1: 0kamh4lj51j7w97oi3tbrkxw4yt4opm
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control - ListBox
+
+|descr= Sets the left picture in the row with given index of [[CT_LISTBOX]] or [[CT_COMBO]]. The picture is searched for in the mission directory, the dtaExt subdirectory of the campaign directory and the dtaExt directory and the data bank (or directory).<br>
+{{Feature|arma3|In {{arma3}} it might be necessary to set the color of the picture as well with [[lbSetPictureColor]] as default color <sqf inline>[0,0,0,0]</sqf> makes the picture invisible.}}
+
+|s1= [[lbSetPicture]] [idc, index, path]
+
+|p1= idc: [[Number]] - control IDC
+
+|p2= index: [[Number]]
+
+|p3= path: [[String]] - path to the picture
+
+|r1= [[Nothing]]
+
+|s2= control [[lbSetPicture]] [index, path]
+
+|p21= control: [[Control]]
+
+|p22= index: [[Number]]
+
+|p23= path: [[String]] - path to the picture
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lbSetPicture [101, 0, "iskoda.paa"];</sqf>
+
+|x2= <sqf>_control lbSetPicture [0, "iskoda.paa"];</sqf>
+
+|x3= {{Feature|informative|
+Adding pictures to lists is very slow. In order to prevent a list filling's possible slowdown, add the pictures in the '''scheduled''' environment using [[spawn]].<br>
+One drawback of that method is that sorting the entries is not easily possible.
+}}
+<sqf>
+private _path = _ctrlTV tvAdd [[], "Some Entry"];
+[_ctrlTV, _path] spawn {
+	(_this select 0) tvSetPictureRight [[_this select 1], "someImage.paa"];
+};
+</sqf>
+
+|seealso= [[lbPicture]] [[lbSetPictureColor]] [[lbSetPictureRight]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140910163100
+|text= More information on the [[CT_LISTBOX]] command family can be found [[CT_LISTBOX#Scripting_Example|here]].
+}}

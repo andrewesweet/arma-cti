@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/onBriefingPlan
+// revision: 340972 (2023-05-13T22:02:54Z)
+// export sha1: nzmuos0j80hnyehy5pchslpqdw1moiw
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Command Group: Event Handlers | Category:Command Group: Sounds | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Event Handlers
+
+|gr2= Sounds
+
+|gr3= Briefing
+
+|descr= Select a sound declared in the [[Description.ext#Sound|Description.ext]] of the mission to be played the first time the [[Briefing.html#Plan|Plan tab]] is selected in the [[Briefing.html|briefing]].
+
+|s1= [[onBriefingPlan]]  soundName
+
+|p1= soundName: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>onBriefingPlan "PlanVoiceOver";</sqf>
+
+|seealso= [[Description.ext#Sounds|CfgSounds]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2007-01-20</dd>
+<dt class="note">[[User:bdfy|bdfy]]</dt>
+<dd class="note">In {{GVI|ofp|1.96}} only sound files defined in the mission description can be played in this way.
+</dl>

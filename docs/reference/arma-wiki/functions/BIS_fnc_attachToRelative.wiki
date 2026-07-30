@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_attachToRelative
+// revision: 378576 (2026-05-10T12:49:53Z)
+// export sha1: iite2ao74g39z02sp7us4ceg64sisvl
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.64
+
+|gr1= Object Manipulation
+
+|arg= local
+
+|eff= global
+
+|descr= Attaches an object to another, preserving their relative position and orientation.
+
+|s1= [attachedObject, destinationObject, visual] call [[BIS_fnc_attachToRelative]]
+
+|p1= attachedObject: [[Object]]
+
+|p2= destinationObject: [[Object]]
+
+|p3= visual: [[Boolean]] (Optional, default [[true]]) if [[true]] render scope is used else simulation scope. See [[Simulation vs Render Time Scope]] for more information
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player, car] call BIS_fnc_attachToRelative;</sqf>
+
+|seealso= [[BIS_fnc_weaponDirectionRelative]] [[BIS_fnc_vectorDirAndUpRelative]] [[attachTo]]
+}}

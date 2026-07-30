@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/showCinemaBorder
+// revision: 310208 (2022-05-05T13:10:42Z)
+// export sha1: pmw17ngoxxsn847rlhxhynlnmyaxrl1
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Camera Control
+
+|descr= Forces drawing of cinema borders when using custom camera [[camCreate]]. This is normally used in cutscenes to indicate player has no control.
+
+|s1= [[showCinemaBorder]] show
+
+|p1= show: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>showCinemaBorder false;</sqf>
+
+|seealso= [[showHUD]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 13 October 2007 - 15:20 (CEST)</dd>
+<dt class="note">[[User:Crowe|Crowe]]</dt>
+<dd class="note">This command does only work when Mission is started. Use [[waitUntil]] {[[time]] > 0}; to be sure it works.
+
+</dl>

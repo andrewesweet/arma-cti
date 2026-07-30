@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_blackIn
+// revision: 327342 (2022-07-12T22:11:55Z)
+// export sha1: 08ga1dare6aaixrxx90s3h203mdoj3n
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Unregister a black screen. When none other black screen is registered, fade it out.
+
+|s1= [id, smoothing, fadeSpeed] call [[BIS_fnc_blackIn]]
+
+|p1= id: [[String]] - black screen id used for registration (case sensitive)
+
+|p2= smoothing: [[Boolean]] - (Optional, default [[true]]) smooth transition - [[false]] for an immediate blackout
+
+|p3= fadeSpeed: [[Number]] - (Optional, default 2) transition duration (if ''smoothing'' is [[true]])
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["TAG_aVeryUniqueID", false, 5] call BIS_fnc_blackIn;</sqf>
+
+|seealso= [[BIS_fnc_blackOut]]
+}}

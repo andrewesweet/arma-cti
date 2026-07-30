@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/ctrlFontHeight
+// revision: 309906 (2022-05-05T12:16:53Z)
+// export sha1: cdwb8io3scm3bplzaboz063s17mzums
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= GUI Control
+
+|descr= Returns control's font size, usually {{hl|sizeEx}} value (see [[ctrlSetFontHeight]]).
+
+|s1= [[ctrlFontHeight]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Number]]
+
+|x1= <sqf>ctrlFontHeight _control;</sqf>
+
+|seealso= [[ctrlTextHeight]] [[ctrlTextWidth]] [[ctrlSetFontHeight]]
+}}

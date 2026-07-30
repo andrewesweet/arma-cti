@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/camPreload
+// revision: 369112 (2024-09-03T10:28:47Z)
+// export sha1: bnjgpmgopfgy8hdlsuia8cxm12iwk70
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Camera Control
+
+|descr= Preloads the scene for the prepared camera with given timeout after which preloading is aborted. Max timeout is 30 seconds. Timeout of 0 means max timeout of 30 seconds as well. {{Feature|informative|This command will read prepared params set with [[camPrepareFOV]], [[camPreparePos]] and [[camPrepareTarget]], so no [[camCommitPrepared]] is necessary. If [[camPrepareFOV]] is not set, the default value is 1. If [[camPrepareTarget]] (for direction) and [[camPreparePos]] (for position) are not set, current [[direction]] and [[position]] of the camera are used. The prepared camera preload will preload main camera as well. [[cameraEffect]] is not necessary}}
+
+|s1= camera [[camPreload]] timeout
+
+|p1= camera: [[Object]]
+
+|p2= timeout: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_camera camPreload 5;</sqf>
+|x2= Preload camera around player to avoid stuttering on optics zooming:
+<sqf>
+0 spawn 
+{
+	_cam = "camera" camCreate (player selectionPosition "camera");
+	for "_i" from 0 to 359 do
+	{
+		_cam setDir _i;
+		_cam camPrepareFov 0.25;
+		_cam camPreload 0;
+		waitUntil { camPreloaded _cam };
+	};
+	camDestroy _cam;
+};
+</sqf>
+
+|seealso= [[camPreloaded]] [[preloadCamera]]
+}}

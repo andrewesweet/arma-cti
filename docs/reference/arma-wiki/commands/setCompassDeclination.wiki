@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/setCompassDeclination
+// revision: 377875 (2026-01-04T13:22:06Z)
+// export sha1: rhxd6bagomkgcelwxof7maxk17jd8it
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|eff= local
+
+|gr1= Interaction
+
+|descr= Sets the {{Link|https://en.wikipedia.org/wiki/Magnetic_declination|declination angle}} of player's compass, which is the difference between magnetic north and true north.
+
+|s1= [[setCompassDeclination]] angleRad
+
+|p1= angleRad: [[Number]] - Declination angle in radians. Use 0 to reset it to default.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setCompassDeclination rad 10; // declination angle is 10 degrees</sqf>
+
+|seealso= [[setCompassOscillation]]
+}}

@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_P3D_Encryption
+// revision: 369655 (2024-10-01T09:22:53Z)
+// export sha1: 037zavmw4p3vcpv0ea5dd4a8e3ifopx
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|2.18}}
+
+{{Feature|informative|
+Due to security reasons, P3D Encryption is currently not documented. Information will be shared with select mod creators via the {{Link|https://discord.gg/arma|Arma Discord Server}}.
+}}

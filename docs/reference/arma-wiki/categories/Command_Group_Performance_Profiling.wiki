@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Performance_Profiling
+// revision: 249824 (2021-02-25T12:48:22Z)
+// export sha1: mlfdbgvbuzeecflwxw7id4d9co1pq09
+// Vendored snapshot. Do not edit — re-export instead.
+
+See also [[Arma 3: Diagnostics Exe]] and [[Performance Profiling]].

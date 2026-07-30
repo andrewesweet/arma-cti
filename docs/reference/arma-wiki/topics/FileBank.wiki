@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/FileBank
+// revision: 336598 (2023-01-04T15:23:17Z)
+// export sha1: l3niy1qrsph5w62vw76xdlfa0djzk1j
+// categories: Category:ArmA: Armed Assault: Official Tools | Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR=
+[[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY=
+[[:Category:ArmA: Armed Assault|{{arma1}}]], 
+
+[[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD={{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION=
+FileBank is a data packer for packing data into PBO format.
+
+|NOTES=
+
+|COMMAND=
+    FileBank {options} source [source]
+
+source may be directory name or log file name (.log)
+
+|OPTIONS=
+File with list of masks of files and directories to leave a packing into PBO.
+*-exclude filename
+to be set for files in pbo file
+*-property prefix=path 
+*-property name=value
+
+
+|LICENSING=
+[[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO=
+
+}}
+
+{{GameCategory|arma1|Official Tools}}
+{{GameCategory|arma3|Official Tools}}

@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_initSliderValue
+// revision: 352075 (2024-02-01T23:24:42Z)
+// export sha1: 1n1ufwnj5lg5h2t9qh261dgwwrdgnu1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Eden Editor
+
+|descr= Initialises a slider attribute control within the [[:Category:Eden Editor|Eden Editor]]. Can also be used outside of [[:Category:Eden Editor|Eden Editor]]. {{Feature|informative| The slider and the edit control have to share the same controls group!}}
+
+|s1= [ctrlSlider, ctrlEdit, unit, default] call [[BIS_fnc_initSliderValue]]
+
+|p1= ctrlSlider: [[Control]] - slider control, usually the first control within the controls group
+|p2= ctrlEdit: [[Control]] - edit Box, usually the second control within the controls group
+|p3= unit: [[String]] - measurement unit added behind the number within the edit box ("%" by default)
+|p4= default: [[Number]] - when present, only the value is set, functionality is not initialized
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_this controlsGroupCtrl 100, _this controlsGroupCtrl 101, "m", 50] call BIS_fnc_initSliderValue;</sqf>
+
+|x2= <sqf>// Execute in Eden Editor to preview the functionality
+if !(is3DEN) exitWith {};
+
+private _display = findDisplay 313;
+private _GRID_H = pixelGrid * pixelH * 0.5;
+private _GRID_W = pixelGrid * pixelW * 0.5;
+
+// Function only works if slider and edit control share the same group
+private _ctrlGroup = _display ctrlCreate ["ctrlControlsGroupNoScrollbars", -100];
+_ctrlGroup ctrlSetPosition [0, 0, 101 * _GRID_W, 5 * _GRID_H];
+
+// Setup the slider
+private _ctrlSlider = _display ctrlCreate ["ctrlXSliderH", -101, _ctrlGroup];
+_ctrlSlider ctrlSetPosition [0, 0, 50 * _GRID_W, 5 * _GRID_H];
+_ctrlSlider sliderSetRange [100, 2000];
+
+// Setup the edit control
+private _ctrlEdit = _display ctrlCreate ["ctrlEdit", -102, _ctrlGroup];
+_ctrlEdit ctrlSetPosition [51 * _GRID_W, 0, 25 * _GRID_W, 5 * _GRID_H];
+
+_ctrlSlider ctrlCommit 0;
+_ctrlEdit ctrlCommit 0;
+_ctrlGroup ctrlCommit 0;
+
+// Set default value
+[_ctrlSlider, _ctrlEdit, "m", 200] call BIS_fnc_initSliderValue;
+
+// Added eventhandlers to controls
+[_ctrlSlider, _ctrlEdit, "m"] call BIS_fnc_initSliderValue;</sqf>
+
+|seealso= [[Eden Editor: Configuring Attributes]]
+}}

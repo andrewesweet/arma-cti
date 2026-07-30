@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/enableAIFeature
+// revision: 369972 (2024-10-22T12:51:41Z)
+// export sha1: 6v2h4noczrk6udxxc9k42uw5uaxlhm9
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Introduced with Arma 2 version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.05
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= AI Behaviour
+
+|descr= Enables/disables given AI feature. 
+
+|s1= feature [[enableAIFeature]]  enable
+
+|p1= feature: [[String]] - can be:
+* {{hl|"AwareFormationSoft"}}
+* {{hl|"CombatFormationSoft"}} 
+
+|p2= enable: [[Boolean]] - [[true]] to enable, [[false]] to disable
+
+|r1= [[Nothing]]
+
+|s2= unit [[enableAIFeature]] [feature, enable]
+
+|s2since= arma3 1.96
+
+|p21= unit: [[Object]] - unit to test AI feature for
+
+|p22= feature: [[String]] - see [[disableAI]] / [[enableAI]] for possible values
+
+|p23= enable: [[Boolean]] - [[true]] to enable, [[false]] to disable
+
+|r2= [[Nothing]]
+
+|x1= <sqf>"AwareFormationSoft" enableAIFeature true;</sqf>
+
+|x2= <sqf>bob enableAIFeature ["AUTOTARGET", false];</sqf>
+
+|seealso= [[checkAIFeature]] [[enableAI]] [[disableAI]] [[getUnitState]] [[disableRemoteSensors]] [[vehicleMoveInfo]]
+}}

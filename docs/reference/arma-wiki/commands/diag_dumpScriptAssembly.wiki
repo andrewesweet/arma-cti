@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/diag_dumpScriptAssembly
+// revision: 310216 (2022-05-05T13:10:44Z)
+// export sha1: h0ten6w2tthmt242datmzo2m4o0ef8v
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+
+|branch= diag
+
+|version1= 1.00
+
+|descr= Dump script assembly.
+
+|gr1= Diagnostic
+
+|s1= [[diag_dumpScriptAssembly]]  code
+
+|p1= code: [[Code]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>diag_dumpScriptAssembly BIS_fnc_taskCreate;</sqf>
+
+|seealso= [[Arma 3: Diagnostics Exe]]
+}}

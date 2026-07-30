@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/drawEllipse
+// revision: 377551 (2026-01-02T06:54:48Z)
+// export sha1: o88hmhmbomijl2ld5mutk29f0szlc3o
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - Map
+
+|descr= [[File:drawEllipse.jpg|250px|right]] Draws an ellipse on the map. Just like with marker or trigger area, negative ''a'' and ''b'' will result in hexagon.
+
+|s1= map [[drawEllipse]] [centre, a, b, angle, color, fill, alignWithMap]
+
+|p1= map: [[Control]]
+
+|p2= centre: [[Object]] or [[Position#Introduction|Position2D]], [[Position#Introduction|Position3D]] - ellipse's centre
+
+|p3= a: [[Number]] - horizontal (x) radius
+
+|p4= b: [[Number]] - vertical (y) radius
+
+|p5= angle: [[Number]] - angle of rotation in degrees
+
+|p6= color: [[Color|Color (RGBA)]] - line color
+
+|p7= fill: [[String]] - fill texture file or [[Procedural Textures]]. Note that the file texture will not rotate with rectangle, use [[drawIcon]] for that. If fill texture is not empty, set line color to white [1,1,1,1]
+
+|p8= alignWithMap: [[Boolean]] - (Optional, default [[true]]) - when [[false]] the shape will not follow map rotation.
+|p8since= Arma3 2.18
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+findDisplay 12 displayCtrl 51 ctrlAddEventHandler ["Draw", 
+{
+	_this select 0 drawEllipse [
+		player, 10, 10, 0, [1, 0, 0, 1], ""
+	];
+	_this select 0 drawEllipse [
+		player, -10, -10, 0, [1, 1, 1, 1], "#(rgb,8,8,3)color(1,0.6,0,1)"
+	];
+	_this select 0 drawEllipse [
+		player, -10, -10, 90, [0, 0, 1, 1], ""
+	];
+}];
+</sqf>
+
+|seealso= [[drawArrow]] [[drawIcon]] [[drawLine]] [[drawRectangle]] [[drawPolygon]] [[drawTriangle]] [[drawXPolygon]]
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20150707212800
+|text= Be careful when using this command. Unlike map markers, the draw commands can decrease your framerate.
+}}

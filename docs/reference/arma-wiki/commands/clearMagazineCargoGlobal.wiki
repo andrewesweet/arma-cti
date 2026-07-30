@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/clearMagazineCargoGlobal
+// revision: 309919 (2022-05-05T12:16:57Z)
+// export sha1: 8c8im6liwgqevbo0zry63ynhtjdaie1
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Containers
+
+|descr= Removes all magazines from the vehicle cargo space. MP synchronized.
+
+|s1= [[clearMagazineCargoGlobal]]  object
+
+|p1= object: [[Object]] - vehicle or ammo box
+
+|r1= [[Nothing]]
+
+|x1= <sqf>clearMagazineCargoGlobal jeepOne;</sqf>
+
+|seealso= [[clearMagazineCargo]] [[addMagazineCargoGlobal]] [[clearWeaponCargo]] [[clearWeaponCargoGlobal]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearItemCargo]] [[clearItemCargoGlobal]]
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:DayZ:_Tutorials
+// revision: 201196 (2021-01-17T15:04:45Z)
+// export sha1: 2tm5iw7crrq56c5jkd0amqyj7dh7n8m
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|dayz|Editing}}

@@ -1,0 +1,15 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Elite
+// revision: 341713 (2023-06-20T06:47:16Z)
+// export sha1: 8zv0eg32fur6o6srcy4ffxgubxwreah
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image = OFPElite Cover.jpg
+|releasedate = 2005-10-28
+|intro = '''{{ofpe}}''' was released on [http://www.xbox.com Xbox] in late 2005. A successor to the PC version, {{ofpe}} retains all the depth and immense content of the original game and includes both the original [[:Category:Operation Flashpoint|Cold War Crisis]] campaign along with the [[Operation Flashpoint: Resistance|Resistance]] campaign for single player action.<br />
+Multiplayer modes "Xbox Live" and "System Link" include over 50 multiplayer missions.
+
+|gallery1 = OFP editor advanced.jpg
+|gallery2 = ofp 1.jpg
+|gallery3 = ofp 2.jpg
+}}

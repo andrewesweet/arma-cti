@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/getAimDirectionAndUp
+// revision: 378285 (2026-03-31T10:14:52Z)
+// export sha1: lol83hh5azfdou77aj8chh2n64g1gtm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Render Time Scope | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|arg= global
+
+|gr1= Object Manipulation
+|gr2= Render Time Scope
+
+|descr= Returns the aim direction and up vectors of a soldier in model space. It returns where the weapon aim is wanted from the [[eyePos]], not the actual weapon direction. For actual weapon direction, see [[weaponDirection]].
+
+|s1= [[getAimDirectionAndUp]] [soldier, isRenderScope]
+
+|p1= soldier: [[Object]] - The soldier entity. The soldier must either be on foot or in a turret.
+
+|p2= isRenderScope: [[Boolean]] - (Optional, default false) Whether to use render scope to get the vector. (render scope is smoother for visualizing the vector in 3D)
+
+|r1= [[Array]] - in format [directionForward, directionUp] in soldier's model space
+
+|x1= <sqf>onEachFrame
+{
+    getAimDirectionAndUp [player] params ["_dir", "_up"];
+    private _dirWS = player vectorModelToWorld _dir;
+    private _upWS = player vectorModelToWorld _up;
+    private _eyePos = eyePos player;
+    drawLine3D [ASLtoAGL _eyePos, ASLtoAGL (_eyePos vectorAdd _dirWS), [1,0,0,1]];
+}
+</sqf>
+
+|seealso= [[weaponDirection]] [[eyeDirection]] [[positionCameraToWorld]] [[eyePos]]
+}}

@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/getRespawnVehicleInfo
+// revision: 377795 (2026-01-03T03:52:04Z)
+// export sha1: als31kvvdc06emuder10u723z8q0yax
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|arg= global
+
+|gr1= Multiplayer
+
+|descr= Returns various properties for the respawning vehicle (see [[Vehicle Respawn]]). All properties are synched over the network and should be the same on every client including [[JIP]].
+
+|s1= [[getRespawnVehicleInfo]] vehicle
+
+|p1= vehicle: [[Object]] - transport
+
+|r1= [[Array]] with [respawnDelay, respawnCount, deleteOldWreck, respawnOnServer, respawnFlying, respawnUnit, respawnMode, respawnSide, useRespawnMarkerDir, canRespawn, isRespawning, respawnMarkerName, respawnTimeRemaining, missionRespawnDelay, missionRespawnMode]
+* respawnDelay: [[Number]] - how long the vehicle will be in respawn queue after death. -1 - 'missionRespawnDelay' value is used.
+* respawnCount: [[Number]] - how many times left for the vehicle to respawn. -1 - indefinite, 0 - no more respawns
+* deleteOldWreck: [[Boolean]] - if [[true]] then the old wreck will be deleted when vehicle respawns.
+* respawnOnServer: [[Boolean]] - if [[true]] the wreck will be transfered to the server and vehicle will respawn on server.
+* respawnFlying: [[Boolean]] - if [[true]] vehicle will not be forced to the ground and if can fly and has pilot will be spawned flying.
+* respawnUnit: [[Object]] - pilot/driver unit that will be placed into the new vehicle.
+* respawnMode: [[Number]] - individual respawn mode for this vehicle. Any mode other than 2,3 or -1 means disabled respawn. -1 - use 'missionRespawnMode'
+* respawnSide: [[Side]] - what side markers to use for respawn. For example if 'respawnSide' set to [[east]] the markers with names 'respawn_vehicle_eastXXX' and 'respawn_eastXXX' will be used. 
+* useRespawnMarkerDir: [[Boolean]] - align respawned vehicle with respawn marker direction or with wreck direction if no marker found or "INSTANT" mode is used. Otherwise, direction is random.
+* canRespawn: [[Boolean]] - [[true]] if vehicle is respawnable (all conditions for respawn are ok)
+* isRespawning: [[Boolean]] - [[true]] if vehicle is currently in the respawn queue awaiting respawn.
+* respawnMarkerName: [[String]] - Chosen vehicle respawn marker, when vehicle respawns it will use the marker params. The respawn marker is processed instantly uppon vehicle's death.
+* respawnTimeRemaining: [[Number]] - how long left before the respawn. -1 after vehicle has respawned or has respawn disabled.
+* missionRespawnDelay: [[Number]] - global mission vehicle respawn delay. script command > mission param > 3DEN param
+* missionRespawnMode: [[Number]] - global mission vehicle respawn mode. script command > mission param > 3DEN param
+
+|s2= vehicle [[getRespawnVehicleInfo]] index
+
+|p21= vehicle: [[Object]] - transport
+
+|p22= index: [[Number]] - property index (see main syntax, for example 10 for isRespawning)
+
+|r2= [[Anything]] - depends on the requested property, or [[Nothing]]
+
+|x1= <sqf>private _vehInfo = getRespawnVehicleInfo veh1;</sqf>
+
+|x2= <sqf>private _isRespawning = veh1 getRespawnVehicleInfo 10;</sqf>
+
+|seealso= [[Vehicle Respawn]] [[respawnVehicle]], [[playerRespawnTime]], [[getEntityInfo]]
+}}

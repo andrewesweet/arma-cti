@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Arrays
+// revision: 159286 (2020-09-20T08:13:11Z)
+// export sha1: tijz6wh50lm0q922axejssq6r0a9ker
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to manipulate arrays.
+
+[[Category:Scripting Commands by Functionality]]

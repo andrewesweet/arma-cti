@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_radialRedOut
+// revision: 309775 (2022-05-05T12:09:49Z)
+// export sha1: ch9rcj7etna6vmfeia4kez5pjzuer52
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Feedback | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Feedback
+
+|descr= Removes red radial postprocess (fire damage) created by [[BIS_fnc_radialRed]].
+
+|s1= call [[BIS_fnc_radialRedOut]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_radialRedOut;</sqf>
+
+|seealso= [[BIS_fnc_radialRed]]
+}}

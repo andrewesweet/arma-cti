@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_bitflagsToArray
+// revision: 328601 (2022-07-13T17:02:31Z)
+// export sha1: 3su8a5a69ltnbaugjrxvjpn7s1fhjem
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Bitwise | Category:Functions | Category:Introduced with Arma 3 version 1.66 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.66
+
+|gr1= Bitwise
+
+|descr= Returns array with all bit flags which are set in the given flagset<br><br>
+'''Limitations''':<br>
+Due to various limitations of the Real Virtuality engine this function is 
+intended to work with unsigned 24 bit integers only. This means that the 
+supported range is 2^0...2^24 (1...16777216)
+
+|s1= flagset call [[BIS_fnc_bitflagsToArray]]
+
+|p1= flagset: [[Number]] - decimal or hexadecimal unsigned 24 bit integer
+
+|r1= [[Array]] - array of set bit flags
+
+|x1=<sqf>15 call BIS_fnc_bitflagsToArray; // [1,2,4,8]
+2342 call BIS_fnc_bitflagsToArray; // [2,4,32,256,2048]
+[2 + 4 + 8] call BIS_fnc_bitflagsToArray; // [2,4,8]
+[2 + 2 + 2 + 4 + 8 + 8 + 8] call BIS_fnc_bitflagsToArray; // [2,32]</sqf>
+
+|seealso=     [[BIS_fnc_bitflagsFlip]] [[BIS_fnc_bitflagsSet]] [[BIS_fnc_bitflagsCheck]] [[BIS_fnc_bitflagsUnset]]
+}}

@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/setVelocity
+// revision: 378408 (2026-04-04T08:14:56Z)
+// export sha1: clk1h86xmks318dom9kurrxilzj53m2
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.80 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.80
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Sets [[velocity]] vector of an object in m/s.
+
+{{Feature|important|Since {{GVI|arma3|2.06|size= 0.75}} each velocity component is limited to the range +-5000 m/s.}}
+
+|s1= object [[setVelocity]] vector
+
+|p1= object: [[Object]]
+
+|p2= vector: [[Vector3D]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_truck1 setVelocity [20, 0, 0];</sqf>
+
+|x2= Advanced method used for relative acceleration:
+<sqf>
+_vel = velocity _vehicle;
+_dir = getDir _vehicle;
+_additionalSpeed = 10; // in m/s
+_vehicle setVelocity [
+	(_vel select 0) + (sin _dir * _additionalSpeed), 
+	(_vel select 1) + (cos _dir * _additionalSpeed), 
+	(_vel select 2) // horizontal only
+];
+</sqf>
+
+|seealso= [[velocity]] [[velocityModelSpace]] [[setVelocityModelSpace]] [[setVelocityTransformation]] [[speed]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140620165000
+|text= {{GVI|arma3|1.22}} [[setVelocity]] will be affected by [[setDir]] and [[setVectorDirAndUp]], so use it after them.
+}}

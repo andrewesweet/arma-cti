@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/ctrlDelete
+// revision: 337526 (2023-02-05T19:30:47Z)
+// export sha1: tne248z2abn9ljzmptmxfrkcvsbpc82
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.26 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.26
+
+|gr1= GUI Control
+
+|descr= Deletes given control. The control has to be created either by script with [[ctrlCreate]] or to have {{hl|deletable}} property in config set to 1. Use [[ctrlShow]] [[false]] and [[ctrlEnable]] [[false]] to disable controls that cannot be deleted. Returns [[Boolean]] indicating  whether the deletion was successful.
+{{Feature|warning|Using [[ctrlDelete]] in a [[User_Interface_Event_Handlers|UI eventhandler]] called by the to be deleted control will crash the game! This also happens when a controls group is deleted that contains the "calling" control.}}
+
+|s1= [[ctrlDelete]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>ctrlDelete ((findDisplay 20000) displayCtrl 20001);</sqf>
+
+|seealso= [[ctrlCreate]] [[ctrlModel]] [[ctrlSetModel]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlClassName]] [[displayCtrl]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlModelDirAndUp]] [[ctrlSetModelDirAndUp]]
+}}

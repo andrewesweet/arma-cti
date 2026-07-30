@@ -1,0 +1,220 @@
+// source: https://community.bistudio.com/wiki/OAC:DownloadAndPlay
+// revision: 349970 (2023-11-20T22:11:30Z)
+// export sha1: kmnr7ty41jnc9bqmfubub26ba0zdtvv
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Banner biki.jpg]]
+
+=# I. Download and play=
+
+The OAC files are available via '''Yoma Addon Sync 2009''' (YAS).
+
+Please always refer to the [[OAC:FAQ|FAQ]] first in case of questions and unclear parts.
+
+== HTTP Download ==
+
+You can browse the {{Link|http://oac.quest-link.net/yas/oac/|OAC}} or {{Link|http://oac.quest-link.net/yas/aceip/|ACEIP}} YAS repository via browser<br>
+via these links and download files by hand as well.
+
+
+== Step by step download and install guide ==
+
+'''Here is a step by step guide.'''
+
+Please head over to the {{Link|link= http://dev-heaven.net/projects/oac/boards|text= OAC forum}} if questions remain after the guide.
+
+
+=== Install Yoma Addon Sync ===
+
+First please download and install the {{Link|link= http://dev-heaven.net/projects/list_files/yoma-addonsync2009|text= latest version of YAS}}.<br>
+
+Launch Yoma Addon Snyc 2009 once the installation is complete.
+
+
+=== Configure ArmA settings ===
+
+Next you should check '''Settings''' to verify if it found your ArmA directory.<br>
+Normally this works automatically.
+
+<br clear="all" />
+[[File:Oac_yas_1_configure_arma_location.png|thumb|600px|left|Configure the arma location]]
+<br clear="all" />
+
+=== Add the OAC YAS server ===
+
+Once you have downloaded and installed YAS, add a '''new server''' with following data:
+
+* Server name: '''OAC YAS Server'''
+* Auto config URL: '''http://oac.quest-link.net/yas/oac/oac.7z'''
+* (Optional) Hompage: '''http://oac.armaholic.eu'''
+
+'''As alternative''' head to the {{Link|link= http://dev-heaven.net/projects/list_files/oac|text= OAC filebase}}, download the .yas files and add<br>
+the server profiles by opening the .yas files with the Yoma Addon Sync 2009 app.
+
+<br clear="all" />
+[[File:Oac_yas_2_add_new_server.png|thumb|600px|left|Click add 'new server' button.]]
+<br clear="all" />
+
+<br clear="all" />
+[[File:Oac_yas_3_configure_server.png|thumb|600px|left|Configure the OAC YAS server settings]]
+<br clear="all" />
+
+=== Brief OAC YAS server file overview ===
+
+There are quite a few different items available:
+
+* Missions (SP and MP)
+* Campaigns
+* Additional files (OFP music, face replacements)
+* CWR compatibility addons
+* P85 replacement addons
+* Many community replacement addons
+
+Just to give you a rough idea for the start.
+
+
+=== Download the desired files ===
+
+Lets start getting the files now.
+
+# Next switch to '''Download addons''' tab.
+# Click on '''Check for addons'''. It will look what files are available on the YAS server <br>and already checks, if you have the files already in your arma folder.
+# Once the check is done, select all the files you want to download.<br> By default all files are selected, apart from these you already have (in the correct version).<br>In the center left part you can filter the folders, in the center<br>you can de-/select individual files.<br>In the top right you see the overall download size in KB/MB.
+# Once you are happy with your selection, hit the "Download addons" button and<br> wait for the download to finish. Yoma Addon Snyc will automatically download<br> all files from the server to your ArmA folder and create the mod folders.
+# You can select download a few files at first, and select more in the second go<br>to download more items of interest.
+
+{{Feature|important|Do NOT forgot to load the modfolders.<br>Use your favorite launcher application or create links yourself.<br>Read next what you need to use as modfolder paths.}}
+
+<br clear="all" />
+[[File:Oac_yas_4_select_download_tab.png|thumb|600px|left|Select the download tab]]
+<br clear="all" />
+
+<br clear="all" />
+[[File:Oac_yas_5_select_files_and_download.png|thumb|600px|left|Select the desired files and hit download]]
+<br clear="all" />
+
+
+=== Detailed OAC YAS server file overview ===
+
+{{Feature|important|Note that OAC uses subfolders for modfolders.<br>Make sure to add the whole modfolder path after the mod parameter.}}
+
+Required packages to run OAC:
+
+* x\oac\oac_core
+
+Required if no other islands are used:
+
+* userconfig
+* x\aceip<br>(@aceip is the old path)
+
+ACEIP files can be downloaded [[ACE:IslandPack#Download|here]].
+
+Optional OAC addons:
+
+* campaigns
+* missions\OAC
+* mpmissions
+* x\oac\oac_optional_additions
+* x\oac\oac_optional_cwc_res_music
+
+=== Modfolder loading order ===
+
+==== Beta Patches ====
+
+beta always first - always.
+
+<pre>-mod=beta;...</pre>
+
+==== Queens Gambit ====
+
+DBE1 always first (exception beta). QG is '''not required''' for OAC.
+
+<pre>-mod=DBE1;...</pre>
+
+==== OAC ====
+
+OAC always last:
+
+<pre>-mod=...;x\oac\oac_core;</pre>
+
+==== Islands ====
+
+* ACE Island Pack
+
+x\aceip just before OAC ones:
+
+<pre>-mod=...;x\aceip;x\oac\oac_core;</pre>
+
+* Other community CWC island conversions
+** CWR Malden requires [[Cold_War_Rearmed:_Demo|CWR]].
+** CWR Winter Kolgujev requires [[Cold_War_Rearmed:_Addons|CWR Adddons]] and x\oac\oac_replacements_cwr.
+** SgtAce Everon runs out of the box.
+
+<pre>-mod=...;cwr;x\oac\oac_replacements_cwr;x\oac\oac_core;</pre>
+
+==== Optional files ====
+
+The optional OAC modfolders in this order
+
+<pre>-mod=...;x\oac\oac_optional_cwc_res_music;x\oac\oac_optional_additions;x\oac\oac_replacements_units;x\aceip;x\oac\oac_core;</pre>
+
+* oac_optional_cwc_res_music
+* oac_optional_additions
+* oac_replacements_units
+
+==== CWR ====
+
+CWR and oac_replacements_cwr in this order and before any other modfolders
+
+<pre>-mod=DBE1;CWR;x\oac\oac_replacements_cwr;x\oac\oac_replacements_islands;...;x\oac\oac_core;</pre>
+
+== Update OAC ==
+
+Just run YAS again, connect to the OAC YAS server and download all newer/updated files.<br>
+The application will sort the rest for you automatically.
+
+== Replacement addons ==
+
+Note that you need to download the base addons yourself for the optional unit and vehicle replacements.
+
+More information about [[OAC:ReplacementAddons|optional unit and vehicle replacements]].
+
+
+
+== Replacement islands ==
+
+[[CWR]] and CWR addons offer a beautiful Malden and Winter Kolgujev. You are very <br>
+much recommended to use them. For Everon you have to use {{Link|link= http://forums.bistudio.com/showpost.php?p=1274180|text= SAP Everon}} - must have!
+
+== Play OAC with CWR ==
+
+We are happy to announce that you can now combine OAC with [[CWR]].
+
+
+=== Instructions ===
+
+# Download [[Cold_War_Rearmed:_Demo#DOWNLOAD_MIRRORS|CWR]] and install.
+# Download [[Cold_War_Rearmed:_Addons#DOWNLOAD_MIRRORS|CWR Addons]] and install.
+# Move '''CWR_Ed_T80.pbo''' of CWR to a new folder called '''#backup'''.
+# Load '''OAC''' along with '''x\oac\oac_replacements_cwr''' and '''CWR'''.
+
+
+=== Important notes ===
+
+Load the '''CWR''' and '''x\oac\oac_replacements_cwr''' folders first, like:
+
+Required modfolders:
+
+ -mod=CWR;x\oac\oac_replacements_cwr;x\aceip;x\oac\oac_core;
+
+{{Feature|important|You may not load aceip and CWR at the same time!<br>
+Either use ACEIP or SAP Everon plus CWR demo.}}
+
+
+With all OAC replacements and additional OAC modfolders:
+
+ -mod=CWR;x\oac\oac_replacements_cwr;x\oac\oac_optional_cwc_res_music;x\oac\oac_optional_additions;x\oac\oac_replacements_islands;x\aceip;x\oac\oac_replacements_units;x\oac\oac_core;@
+
+= Back to OAC Home =
+
+[[OAC:Project#Subpage_link_overview|The seven roads to OAC - subpage link overview]]

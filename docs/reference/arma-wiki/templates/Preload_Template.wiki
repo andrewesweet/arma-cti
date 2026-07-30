@@ -1,0 +1,18 @@
+// source: https://community.bistudio.com/wiki/Template:Preload/Template
+// revision: 194813 (2021-01-15T00:46:56Z)
+// export sha1: 9m45y2nwz6clugxi3tmijqnn2ybsjee
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><include<includeonly/>only>TEMPLATE CODE LOCATION</include<includeonly/>only><no<includeonly/>include>{{Doc/Template
+|descr= Template description
+|param1= parameter1
+|descr1= this is the first parameter
+|param2= parameter2
+|descr2= (Optional) this is the second parameter
+|example1= <nowiki>{{TemplateName}}</nowiki>
+|result1= {{TemplateName}}
+|example2= <nowiki>{{TemplateName|Hello there!}}</nowiki>
+|result2= {{TemplateName|Hello there!}}
+}}</no<includeonly/>include></includeonly><noinclude>{{Doc/Template
+|descr= Preload template used to create templates.
+}}</noinclude>

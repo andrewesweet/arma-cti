@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/removeMusicEventHandler
+// revision: 369308 (2024-09-03T18:42:54Z)
+// export sha1: qe0a40yiuje1x16pmodzmghec43ksef
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Event Handlers
+
+|gr2= Sounds
+
+|descr= Removes specified music track event handler. See {{Link|Arma 3: Event Handlers#Music Event Handlers}}.
+
+|s1= [[removeMusicEventHandler]] [type, id]
+
+|p1= type: [[String]] - "MusicStart" or "MusicStop"
+
+|p2= id: [[Number]] - event handler id
+
+|r1= [[Nothing]]
+
+|x1= <sqf>removeMusicEventHandler ["MusicStart", 12];</sqf>
+
+|x2= <sqf>removeMusicEventHandler ["MusicStop", 12];</sqf>
+
+|x3= <sqf>
+private _stopMusicEH = addMusicEventHandler ["MusicStop", {}];
+// ...
+removeMusicEventHandler ["MusicStop", _stopMusicEH];
+</sqf>
+
+|seealso= [[addMusicEventHandler]] {{Link|Arma 3: Event Handlers#Music Event Handlers}} [[setMusicEventHandler]] [[removeAllMusicEventHandlers]] [[playMusic]]
+}}

@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/setPilotLight
+// revision: 369321 (2024-09-03T18:42:57Z)
+// export sha1: 81dw5dtl4slay6xev6n7jsblz2r6sf0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= Lights
+
+|arg= local
+
+|eff= global
+
+|descr= Switches headlights of a vehicle on/off. Note that the vehicle has to be [[Multiplayer Scripting#Locality|local]], for global variant use [[Arma 3: Actions]] "[[Arma_3_Actions#LightOn|LightOn]]"/"[[Arma_3_Actions#LightOff|LightOff]]"
+
+|s1= vehicle [[setPilotLight]] set
+
+|p1= vehicle: [[Object]]
+
+|p2= set: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>car setPilotLight true;</sqf>
+
+|seealso= [[isLightOn]] [[isCollisionLightOn]] [[setCollisionLight]] [[isIRLaserOn]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2018-09-28 - 04:03 (UTC)</dd>
+<dt class="note">[[User:HazJ|HazJ]]</dt>
+<dd class="note">
+This command will not work when using [[enableSimulation]] FALSE before this command is executed. However collision lights still do using [[setCollisionLight]].
+<sqf>
+// Workaround - Put in object init field
+this setPilotLight true;
+this setCollisionLight true;
+[this] spawn {
+	sleep 0.001;
+	(_this select 0) enableSimulation false;
+};
+</sqf>
+</dd>
+
+</dl>

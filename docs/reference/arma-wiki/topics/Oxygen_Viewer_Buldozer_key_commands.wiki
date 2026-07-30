@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/Oxygen_Viewer:_Buldozer_key_commands
+// revision: 349717 (2023-11-20T22:09:52Z)
+// export sha1: iq6y03t2cqauk0blx4v417tmdpo2dw5
+// categories: Category:Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+==Editing terrain and objects in Buldozer==
+Start Buldozer: '''Project''' menu > '''Connect to Buldozer''' command ('''CTRL+F7''') or click red exclamation button in the toolbar.
+When Buldozer is started for the first time or you change any textures (regenerating satellite segments, altering objects textures), it will converting all PNGs or TGAs to PAA format, which may take a while. If application  does not respond, do not try to terminate it, let it finish its job.
+
+[[File:Terrain_editing.jpg|thumb|right|200px|Editing terrain in Buldozer]]
+
+'''Buldozer controls:'''
+* You can navigate in the map using mouse.
+* Camera rotation is controlled by numpad ("'''2'''", "'''4'''", "'''6'''", "'''8'''").
+* Zoom of camera relative to cursor is handled by "'''+'''" (zoom in) and "'''-'''" (zoom out) keys.
+* Default distance of camera from cursor is restored by "'''5'''" key .
+* LMB selects object (if you select objects in Visitor, they are selected in Buldozer as well).
+* Objects are rotated by holding RMB and dragging mouse sideways. Origin of rotation is defined by the position of box cursor.
+* The '''Q''' key is raining objects (LMB must be hold down whilst
+* The '''Z''' (US layout) respective the '''Y''' Key (European layout) are lowering objects whist LMB is hold down
+* '''LShift''' key accelerates camera rotation and cursor movement.
+* Use '''H''' to turn on/off arrow marking closest terrain vertex.
+* Use '''N''' to turn on/off FLIR Filter.
+* '''U'''''/'''''J''' rises/lowers vertex by 1 meter.
+* '''I'''/'''K''' rises/lowers vertex by 5 meters.
+
+{{Feature|important| TIP: If you don't see editing cursor (white box) and arrow indicating selected objects, set Buldozer to use content of unpacked UI.pbo by stating it in text file loaded when Buldozer starts. Description can be found in [[Visitor 3 Manual]] page.}}
+
+[[Category:Official Tools]]

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Functions:_Local_Effect
+// revision: 294035 (2021-11-05T21:12:43Z)
+// export sha1: pa2ace4oqe9ferf7jaijicrvee5y1gm
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists [[:Category:Functions|Functions]] that have a local effect {{Icon|localeffect|32}}.
+
+[[Category:Functions by Effect]]

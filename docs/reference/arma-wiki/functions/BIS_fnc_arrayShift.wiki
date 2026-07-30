@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_arrayShift
+// revision: 329366 (2022-07-27T12:29:43Z)
+// export sha1: 1qhj7k7ut6loyr5m5w36ojhzxdbied5
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Arrays
+
+|descr= This function removes the first (leftmost) element of an array and returns it.<br>
+The array is passed by reference so changes inside the function will be reflected outside of it.
+
+{{Feature|arma3|In {{arma3}}, use <sqf inline>array deleteAt 0</sqf>.}}
+
+|s1= [array] call [[BIS_fnc_arrayShift]]
+
+|p1= array: [[Array]] - '''NOTE:''' given array must be within an array (e.g <sqf inline>[[10, 20, 30]] call BIS_fnc_arrayShift</sqf>)
+
+|r1= [[Anything]] - the removed element
+
+|x1= <sqf>
+private _myArray = ["2", "report", "status"];
+_removedElement = [_myArray] call BIS_fnc_arrayShift;	// array is -within an array-
+_removedElement == "2";									// true
+_myArray isEqualTo ["report", "status"];				// true
+</sqf>
+
+|seealso= [[deleteAt]] [[pushBack]]
+}}

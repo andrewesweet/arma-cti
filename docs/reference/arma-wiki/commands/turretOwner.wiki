@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/turretOwner
+// revision: 377490 (2026-01-02T06:49:12Z)
+// export sha1: tvp3ewg4hitm9vs0769bo9jqva2ks14
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 1.38 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.38
+
+|arg= global
+
+|serverExec= server
+
+|gr1= Turrets
+
+|descr= Returns id of the turret's [[owner]]. Returns 0 on non-server and SP.
+
+|mp= A vehicle turret will change locality when player gunner gets in it, just like vehicle changes locality when player driver gets in it. Many commands for turrets work only where turret is [[Multiplayer Scripting#Locality|local]]. When gunner leaves turret it is supposed to change locality to the locality of the vehicle. A vehicle can have one [[owner]] while turrets have different [[owner]]s.
+
+|s1= vehicle [[turretOwner]] turretPath
+
+|p1= vehicle: [[Object]]
+
+|p2= turretPath: [[Turret Path]] - since {{GVI|arma3|2.08|size= 0.75}} [-1] (driver) is supported
+
+|r1= [[Number]] - [[owner]] id
+
+|x1= <sqf>_ownerId = vehicle player turretOwner [0];</sqf>
+
+|seealso= [[owner]] [[setOwner]] [[turretLocal]] [[setVehicleAmmo]] [[setVehicleAmmoDef]] [[removeWeaponTurret]] [[addWeaponTurret]] [[addMagazineTurret]] [[magazinesTurret]] [[removeMagazinesTurret]] [[removeMagazineTurret]] [[weaponsTurret]] [[currentMagazineDetailTurret]] [[currentMagazineTurret]] [[currentWeaponTurret]] [[selectWeaponTurret]]
+}}

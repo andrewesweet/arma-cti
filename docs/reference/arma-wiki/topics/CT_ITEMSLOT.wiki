@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/CT_ITEMSLOT
+// revision: 170164 (2020-11-29T14:32:32Z)
+// export sha1: liymiekf8yxluns0kiz9nepqizigcjh
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_ITEMSLOT
+|value = 103
+|description = Unknown control type.
+|gallery=
+|commands =
+|events =
+}}
+
+<!-- {{CT|abc start}}
+
+{{CT|abc end}} -->
+
+{{CT|examples}}
+None

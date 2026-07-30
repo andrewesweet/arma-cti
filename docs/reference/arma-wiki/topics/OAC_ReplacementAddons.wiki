@@ -1,0 +1,549 @@
+// source: https://community.bistudio.com/wiki/OAC:ReplacementAddons
+// revision: 349963 (2023-11-20T22:11:27Z)
+// export sha1: e9lfxhsd64sq59i0qs2e4mw1vuqo7df
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Banner biki.jpg]]
+
+by the [[OAC:Project#OAC_Project_Team|OAC Project Team]]
+
+
+
+== Project info ==
+
+Welcome to the OAC replacement addon page.<br>
+
+This page is part of the [[OAC:Project|OAC project]].
+
+To further enhance the experience the OAC releases replacement addons from time to time. <br>
+This page is meant to give an overview about the available replacements.<br>
+
+''Definition''
+
+A replacement addon is using some 3rd party addon to replace the look of a different unit. <br>
+At times the sound and gameplay related aspects are replaced as well.<br>
+
+== Installation ==
+
+=== Preface ===
+
+NEVER ever put addons (pbo files) in the ArmA\addons folder!
+
+You can only have one replacement addon active for a specific unit at a time.<br>
+In other words a T72 tank can only have one model at a time. Sounds logical.
+
+You can understand what unit is replaced by looking at the naming of the pbo.
+
+ OAC_R_'''AH64'''_MAP_Air
+
+OAC is the addon tag. The R tag stands for replacement file. '''AH64 means the unit.'''<br>
+So the part after OAC describes the unit.<br>
+The rest is the addon (pbo name) the replacement is based on.
+
+=== Instructions ===
+
+1. You need to download both the replacement addon(s) and the OAC replacement addon(s)<br>
+via the OAC YomaTools server.<br>
+Refer to the [[OAC:DownloadAndPlay|Download and play]] guide on the OAC project BIKI page.<br>
+
+2. To be able to get the replacement addon working you need to download the<br>
+required addon the replacement is based on.<br>
+You find a list of the available replacement addons and their required addons
+below.
+
+3. Move the desired replacement addon from #notInUse to one level higher.
+
+ .\ArmA\addons\x\oac_replacements\addons\#notInUse\OAC_R_AH64_MAP_Air.pbo
+
+to
+
+ .\ArmA\addons\x\oac_replacements\addons\OAC_R_AH64_MAP_Air.pbo
+
+4. Once you have downloaded the required addon(s), put the PBO(s) in the 
+ .\ArmA\addons\x\oac_replacements\addons
+folder and load the modfolder as well.
+
+=== HTTP download ===
+
+You can download the replacement addons via HTTP as well.<br>
+
+HTTP URL:
+
+ http://oac.quest-link.net/yas/oac/x/oac/oac_replacements_units/addons/%23notInUse/
+
+P85 replacements - HTTP URL:
+
+ http://oac.quest-link.net/yas/oac/x/oac/oac_replacements_p85/addons/%23notInUse/
+
+=== Replacements without OAC ===
+
+Most replacement addons are based standard arma classes and can be used for<br>
+regular arma missions as well.
+
+Download the replacements via the HTTP download from above, get the <br>
+{{Link|link= http://dev-heaven.net/projects/list_files/oac|text= ofp_compatibility_addon.7z}} and the needed base addons in addition to each replacement<br>
+and load them via modfolders.
+
+
+For people with basic config or logic understanding, the replacements made<br>
+for OFP classes are very simple to update to similar arma classes, <br>
+like AH64 to AH1W.<br>
+Most times its only removing one level of inheritance or renaming the classes basically.
+
+== OAC replacement addon list ==
+
+=== OAC C RES use Russian Weapons ===
+
+by zGuba<br>
+No download needed.
+
+=== OAC R A10 EVEN A10 ===
+
+by EvEnLeaSe44<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1298|text= Download EVEN A10 from Armaholic.com}}
+
+[[File:OAC_R_A10_EVEN_A10.jpg|right]]
+
+=== OAC R A10 RKSL A10 ===
+
+by RKSL-Rock<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3157|text= Download RKSL A10 from Armaholic.com}}
+
+=== OAC R A10 RKTA F16 ===
+
+by zGuba, Footmunch, Alexduke, eddyD, Southy<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3537|text= Download RKTA F16 from Armaholic.com}}
+
+=== OAC R AH1W PIR Veh ===
+
+by piranha-dl<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1349|text= Download PIR Veh from Armaholic.com}}
+
+=== OAC R AH64 HWM Air ===
+
+by Hellenic Warfare Mod<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4990|text= Download HWM Air from Armaholic.com}}
+
+=== OAC R AH64 MAP Air ===
+
+by Marco-Polo-IV<br>
+{{Link|link= http://www.armaholic.com/page.php?id=903|text= Download MAP Air from Armaholic.com}}
+
+=== OAC R BMP1 SA BMD Pack 1 ===
+
+by Construction bureau "Object915"<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4915|text= Download SA BMD Pack 1 from Armaholic.com}}
+
+=== OAC R BMP2 RHS Vehicles ===
+
+by Shadow NX & Plasman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2052|text= Download RHS Vehicles from Armaholic.com}}
+
+=== OAC R BMP2 SOV Vehicles ===
+
+by Kenbow<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1729|text= Download SOV Vehicles from Armaholic.com}}
+
+=== OAC R BMP2Ambul RHS Vehicles ===
+
+by Shadow NX & Plasman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2052|text= Download RHS Vehicles from Armaholic.com}}
+
+=== OAC R Bradley SMURFC M2A2 ===
+
+by modEmMaik<br>
+{{Link|http://rapidshare.com/files/218134940/smurfc_m2a2_m6_pre.rar.html|Download SMURFC M2A2 from rapidshare.com}}
+
+=== OAC R BRDM2 ATGM RHS Vehicles ===
+
+by Shadow NX & Plasman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2052|text= Download ATGM RHS Vehicles from Armaholic.com}}
+
+=== OAC R BRDM2 RHS Vehicles ===
+
+by Shadow NX & Plasman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2052|text= Download RHS Vehicles from Armaholic.com}}
+
+=== OAC R Camel GNT PiperWII ===
+
+by Gnat<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2138|text= Download GNT PiperWII from Armaholic.com}}
+
+=== OAC R Car Sedan Azlkgr ===
+
+by Termit and Alex j.<br>
+{{Link|link= http://www.armaholic.com/page.php?id=5638|text= Download Azlkgr from Armaholic.com}}
+
+=== OAC R CH47D GLT Chinook ===
+
+by GLT<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3978|text= Download GLT Chinook from Armaholic.com}}
+
+=== OAC R CH47D PRACS CH47 ===
+
+by Project RACS Team<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4231|text= Download PRACS CH47 from Armaholic.com}}
+
+=== OAC R CH47D RAF Chin47 ===
+
+by Smiley Nick, Afrographx & Peloton<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3228|text= Download RAF Chin47 from Armaholic.com}}
+
+=== OAC R HMMWV BLND HMMWV v11 ===
+
+by Blondak<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3923|text= Download BLND HMMWV v11 from Armaholic.com}}
+
+=== OAC R HMMWV50 BLND HMMWV v11 ===
+
+by Blondak<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3923|text= Download BLND HMMWV v11 from Armaholic.com}}
+
+=== OAC R HMMWVTOW BLND HMMWV v11 ===
+
+by Blondak<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3923|text= Download BLND HMMWV v11 from Armaholic.com}}
+
+=== OAC R Inf Civ BB Civilians ===
+
+by Schnapsdrosel<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4180|text= Download BB Civilians from Armaholic.com}}
+
+=== OAC R Inf East 76 VDV ===
+
+by Lodu, TR7 and Datakill<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4887|text= Download 76 VDV from Armaholic.com}}
+
+=== OAC R Inf East LLW East Res ===
+
+by Sander van Dorst<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2364|text= Download LLW East Res from Armaholic.com}}
+
+=== OAC R Inf East RHS Cwarmar ===
+
+by Shadow NX, Cameron McDonald, Plasman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2053|text= Download RHS Cwarmar from Armaholic.com}}
+
+=== OAC R Inf East RHS Marines ===
+
+by Skaven, Shadow NX, Cameron McDonald<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1712|text= Download RHS Marines from Armaholic.com}}
+
+=== OAC R Inf East RHS VDVPara ===
+
+by Skaven, Shadow NX, Cameron McDonald<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1712|text= Download RHS VDVPara from Armaholic.com}}
+
+=== OAC R inf East SoldierESaboteur 45 VDV 76 VDV ===
+
+by Lodu, TR7 and Datakill<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4887|text= Download 45 VDV 76 VDV from Armaholic.com}}
+
+=== OAC R Inf Res DBE1 Mercenary ===
+
+by zGuba<br>
+Queen's Gambit Addon
+
+=== OAC R Inf Res REL Ubsla ===
+
+by Rellikki<br>
+{{Link|link= http://www.armaholic.com/page.php?id=704|text= Download REL Ubsla from Armaholic.com}}
+
+=== OAC R Inf Res RLK Guer ===
+
+by Rellikki<br>
+{{Link|link= http://www.armaholic.com/page.php?id=762|text= Download RLK Guer from Armaholic.com}}
+
+=== OAC R Inf Res Vilas Gue ===
+
+by Vilas<br>
+{{Link|link= http://www.armaholic.com/page.php?id=752|text= Download Vilas Gue from Armaholic.com}}
+
+=== OAC R Inf West BDU JOH ArmySF ===
+
+by Jonny<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3498|text= Download JOH ArmySF from Armaholic.com}}
+
+=== OAC R Inf West BWC 32BTN ===
+
+by Bushwars Mod<br>
+{{Link|link= http://www.armaholic.com/page.php?id=5562|text= Download BWC 32BTN from Armaholic.com}}
+
+=== OAC R Inf West Greek ETA Units HWM Units ===
+
+by Hellenic Warfare Mod<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1876|text= Download Greek ETA Units HWM Units from Armaholic.com}}
+
+=== OAC R Inf West Greek Green Berets HWM Units ===
+
+by Hellenic Warfare Mod<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1876|text= Download Greek Green Berets HWM Units from Armaholic.com}}
+
+=== OAC R Inf West Greek Regular Army HWM Units ===
+
+by Hellenic Warfare Mod<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1876|text= Download Greek Regular Army HWM Units from Armaholic.com}}
+
+=== OAC R Inf West Greek ZMAK Units HWM Units ===
+
+by Hellenic Warfare Mod<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1876|text= Download Greek ZMAK Units HWM Units from Armaholic.com}}
+
+=== OAC R Inf West SKA Rac Mercs ===
+
+by Skaven<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1404|text= Download SKA Rac Mercs from Armaholic.com}}
+
+=== OAC R Inf West SoldierWSaboteur ACU JOH ArmySF ===
+
+by Jonny<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3498|text= Download JOH ArmySF from Armaholic.com}}
+
+=== OAC R Inf West SoldierWSaboteur BDU JOH ArmySF ===
+
+by Jonny<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3498|text= Download JOH ArmySF from Armaholic.com}}
+
+=== OAC R Inf West SoldierWSaboteur DCU JOH ArmySF ===
+
+by Jonny<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3498|text= Download JOH ArmySF from Armaholic.com}}
+
+=== OAC R Inf West SoldierWSaboteur SKA Rac Mercs ===
+
+by Skaven<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1404|text= Download SKA Rac Mercs from Armaholic.com}}
+
+=== OAC R JeepMG HWM Vehicles ===
+
+by Hellenic Warfare Mod<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1876|text= Download HWM Vehicles from Armaholic.com}}
+
+=== OAC R JeepPolice Peugeot 307 ===
+
+by General NS<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2741|text= Download Peugeot 307 from Armaholic.com}}
+
+=== OAC R KA50 ERICM KA52 ===
+
+by EricM<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3857|text= Download ERICM KA52 from Armaholic.com}}
+
+=== OAC R M113 HWM Vehicles ===
+
+by Hellenic Warfare Mod<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1876|text= Download HWM Vehicles from Armaholic.com}}
+
+=== OAC R M1Abrams CH M1a1ha ===
+
+by Mateck<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3141|text= Download CH M1a1ha from Armaholic.com}}
+
+=== OAC R M1ABRAMS HWM Vehicles ===
+
+by Hellenic Warfare Mod<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1876|text= Download HWM Vehicles from Armaholic.com}}
+
+=== OAC R M1Abrams PIR Veh ===
+
+by piranha-dl<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1349|text= Download PIR Veh from Armaholic.com}}
+
+=== OAC R M60 BDS M60A3 ===
+
+by Rygugu<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3081|text= Download BDS M60A3 from Armaholic.com}}
+
+=== OAC R MI24 ERICM Hind ===
+
+by EricM & RKSL Studios<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3390|text= Download ERICM Hind from Armaholic.com}}
+
+=== OAC R OH58 HWM Air ===
+
+by Hellenic Warfare Mod<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4990|text= Download HWM Air from Armaholic.com}}
+
+=== OAC R OH58 OH58 ===
+
+by Southy<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4818|text= Download OH58 from Armaholic.com}}
+
+=== OAC R OH58 SAP Air ===
+
+by Sgt.Ace<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4008|text= Download SAP Air from Armaholic.com}}
+
+=== OAC R SCUD GIG SCUD ===
+
+by Gigan<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1459|text= Download GIG SCUD from Armaholic.com}}
+
+=== OAC R Stryker ICV M2 PIR Veh ===
+
+by piranha-dl<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1349|text= Download ICV M2 PIR Veh from Armaholic.com}}
+
+=== OAC R Stryker ICV MK19 PIR Veh ===
+
+by piranha-dl<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1349|text= Download ICV MK19 PIR Veh from Armaholic.com}}
+
+=== OAC R Stryker TOW PIR Veh ===
+
+by piranha-dl<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1349|text= Download TOW PIR Veh from Armaholic.com}}
+
+=== OAC R SU25 GT SU25 ===
+
+by Southy & zGuba<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3650|text= Download GT SU25 from Armaholic.com}}
+
+=== OAC R SU25 RKTSU27 ===
+
+by Southy<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4038|text= Download RKTSU27 from Armaholic.com}}
+
+=== OAC R SU25 RKTSU33 ===
+
+by Gnat<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3721|text= Download RKTSU33 from Armaholic.com}}
+
+=== OAC R SU25 VIT MIG29 ===
+
+by Southy<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4144|text= Download VIT MIG29 from Armaholic.com}}
+
+=== OAC R T55G BDS T55 ===
+
+by rygugu<br>
+{{Link|link= http://www.armaholic.com/page.php?id=5379|text= Download BDS T55 from Armaholic.com}}
+
+=== OAC R T55G RHS T64 ===
+
+by Kenji<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2259|text= Download RHS T64 from Armaholic.com}}
+
+=== OAC R T72 CH T72 ===
+
+by Mateck<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4393|text= Download CH T72 from Armaholic.com}}
+
+=== OAC R T72 RHS Vehicles ===
+
+by Shadow NX & Plasman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2052|text= Download RHS Vehicles from Armaholic.com}}
+
+=== OAC R T72 SOV Vehicles ===
+
+by Kenbow<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1729|text= Download SOV Vehicles from Armaholic.com}}
+
+=== OAC R T80 Ike T90 ===
+
+by Ike<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3673|text= Download Ike T90 from Armaholic.com}}
+
+=== OAC R T80 SMURFC Oplot ===
+
+by modEmMaik<br>
+{{Link|http://armed-assault.de/news/oplot-t-84-beta-released.html|Download SMURFC Oplot from armed-assault.de}}
+
+=== OAC R UH60 eddydSki ===
+
+by eddyD<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1861|text= Download eddydSki from Armaholic.com}}
+
+=== OAC R UH60 GLT UH60 ===
+
+by GTL Myke<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3800|text= Download GLT UH60 from Armaholic.com}}
+
+=== OAC R UH60MG eddydSki ===
+
+by eddyD<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1861|text= Download eddydSki from Armaholic.com}}
+
+=== OAC R UH60MG RED Blackhawks ===
+
+by Red<br>
+{{Link|link= http://www.armaholic.com/page.php?id=3810|text= Download RED Blackhawks from Armaholic.com}}
+
+=== OAC R Ural RHS Vehicles ===
+
+by Shadow NX & Plasman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2052|text= Download RHS Vehicles from Armaholic.com}}
+
+=== OAC R UralOpen RHS Vehicles ===
+
+by Shadow NX & Plasman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2052|text= Download RHS Vehicles from Armaholic.com}}
+
+=== OAC R UralReammo RHS Vehicles ===
+
+by Shadow NX & Plasman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2052|text= Download RHS Vehicles from Armaholic.com}}
+
+=== OAC R UralRefuel RHS Vehicles ===
+
+by Shadow NX & Plasman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2052|text= Download RHS Vehicles from Armaholic.com}}
+
+=== OAC R UralRepair RHS Vehicles ===
+
+by Shadow NX & Plasman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2052|text= Download RHS Vehicles from Armaholic.com}}
+
+=== OAC R Wep East BWC Weapons ===
+
+by Bush War MOD<br>
+{{Link|link= http://www.armaholic.com/page.php?id=4926|text= Download BWC Weapons from Armaholic.com}}
+
+=== OAC R Wep East RH AKS ===
+
+by RobertHammer<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2862|text= Download RH AKS from Armaholic.com}}
+
+=== OAC R Wep East RHS Weap ===
+
+by Skaven, Shadow NX, Cameron McDonald<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1712|text= Download RHS Weap from Armaholic.com}}
+
+=== OAC R Wep West AMP DesWps ===
+
+by AimPoint<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2127|text= Download AMP DesWps from Armaholic.com}}
+
+=== OAC R Wep West HWM Weapons ===
+
+by Hellenic Warfare Mod<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1876|text= Download HWM Weapons from Armaholic.com}}
+
+=== OAC R Wep West M16A2 WIP M4A1 ===
+
+by Wipman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2526|text= Download M16A2 WIP M4A1 from Armaholic.com}}
+
+=== OAC R Wep West M4A1 WIP M4A1 ===
+
+by Wipman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2526|text= Download M4A1 WIP M4A1 from Armaholic.com}}
+
+=== OAC R WGL M6A1 SMURFC M2A2 ===
+
+by modEmMaik<br>
+{{Link|http://rapidshare.com/files/218134940/smurfc_m2a2_m6_pre.rar.html|Download M6A1 SMURFC M2A2 from rapidshare.com}}
+
+=== OAC R ZSU RHS Vehicles ===
+
+by Shadow NX & Plasman<br>
+{{Link|link= http://www.armaholic.com/page.php?id=2052|text= Download RHS Vehicles from Armaholic.com}}
+
+=== OAC RS Wep East RHS Weap ===
+
+by Skaven, Shadow NX, Cameron McDonald<br>
+{{Link|link= http://www.armaholic.com/page.php?id=1712|text= Download RHS Weap from Armaholic.com}}
+
+== Project links ==
+
+[[OAC:Project|BIKI OAC Project page]]

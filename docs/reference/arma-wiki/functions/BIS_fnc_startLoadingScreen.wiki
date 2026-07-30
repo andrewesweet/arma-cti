@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_startLoadingScreen
+// revision: 369455 (2024-09-06T08:44:52Z)
+// export sha1: jzqx5wxwd2rqj7ennvcn0folt32ofid
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Systems | Category:Functions | Category:Introduced with Arma 3 version 0.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.58
+
+|gr1= Systems
+
+|descr= Register a loading screen. Start the loading when it is the first one registered.
+
+{{Feature|arma3|The loading screen can be force-ended with the {{Link|Arma 3: Cheats#ENDLOAD|ENDLOAD cheat code}}.}}
+
+|s1= [screenId, layout] call [[BIS_fnc_startLoadingScreen]]
+
+|p1= screenId: [[String]] - screen ID, will be used in [[BIS_fnc_endLoadingScreen]]
+
+|p2= layout: [[String]] - loading text. ''has no effect in {{arma3}}''
+
+|r1= [[Boolean]] - true when registered
+
+|x1= <sqf>["myLoadingScreen", "Loading… wait for my splendid™ mission!"] call BIS_fnc_startLoadingScreen;
+uiSleep 3;
+"myLoadingScreen" call BIS_fnc_endLoadingScreen;</sqf>
+
+|seealso= [[BIS_fnc_endLoadingScreen]] [[startLoadingScreen]] [[endLoadingScreen]]
+}}

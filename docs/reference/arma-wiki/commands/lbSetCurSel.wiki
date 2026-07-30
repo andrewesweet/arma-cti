@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/lbSetCurSel
+// revision: 376677 (2025-11-04T00:29:50Z)
+// export sha1: ff5xlnt786d5z244nq047b4ci7xtlvz
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= GUI Control - ListBox
+
+|descr= Selects the item with the given index in the listbox, listnbox, combobox, xcombobox, xlistbox<br>
+{{Feature|important|'''The following only applies to the {{Link|#Syntax 2|Alternative Syntax}} when used with [[CT_LISTBOX]] and [[CT_LISTNBOX]].'''<br>
+To deselect all entries, use -1: <sqf inline>_ctrl lbSetCurSel -1;</sqf> For listbox of style LB_MULTI use [[lbSetSelected]] instead.<br>
+[[CT_COMBO]] does not allow deselecting entries, it will instead select the first one as it is not a combobox usual behaviour.
+If you really need to deselect a combobox, see {{Link|#Notes|DreadedEntity's note}}. For the ComboBox you might as well want to explicitly select index 0 to avoid showing ghost row.
+}}
+
+|s1= [[lbSetCurSel]] [idc, index]
+
+|p1= idc: [[Number]] - control's IDC
+
+|p2= index: [[Number]]
+
+|r1= [[Nothing]]
+
+|s2= control [[lbSetCurSel]] index
+
+|p21= control: [[Control]]
+
+|p22= index: [[Number]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lbSetCurSel [101, 0];</sqf>
+
+|x2= <sqf>_control lbSetCurSel 0;</sqf>
+
+|seealso= [[lbCurSel]]
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20141129234000
+|text= '''Prior to ArmA 1.90''' lbSetCurSel -1 had no effect while the listbox was populated. You needed to use [[lbClear]] first, then lbSetCurSel -1, then re-populate the listbox.
+}}
+
+{{Note
+|user= Longbow
+|timestamp= 20150301183700
+|text= Keep in mind that running this command will fire the 'onLBSelChanged' event handler.
+}}

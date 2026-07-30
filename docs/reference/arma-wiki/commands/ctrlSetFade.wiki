@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/ctrlSetFade
+// revision: 369232 (2024-09-03T10:35:00Z)
+// export sha1: et78vh3lhjln2c7bffqk2bs6hclw4nx
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= Sets wanted transparency for control animation. Requires [[ctrlCommit]] to commit changes. To hide or show a control instantly, use [[ctrlShow]].
+{{Feature|informative|
+If there are multiple (interactable) controls on top of each other but the top-most control is faded using <sqf inline>ctrlSetFade 1</sqf>,
+this control will interfere with other controls that were defined earlier and in the exact same position.
+To counter that, the faded control '''must''' be disabled with [[ctrlEnable]].
+}}
+
+|pr= Despite having <syntaxhighlight lang="cpp" inline>fade = 1;</syntaxhighlight> in a control's config, [[ctrlFade]] will still report a fade of 0 - resulting in <sqf inline>ctrlSetFade 0</sqf> doing nothing.<br>
+To counter that, first use <sqf inline>ctrlSetFade 1</sqf>, then <sqf inline>ctrlCommit 0</sqf> to apply it, and only then [[ctrlSetFade]] can be used as usual.
+
+|s1= controlName [[ctrlSetFade]] fade
+
+|p1= controlName: [[Control]]
+
+|p2= fade: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_control ctrlSetFade 1;
+_control ctrlCommit 5;
+</sqf>
+
+|seealso= [[ctrlFade]] [[cutFadeOut]] [[ctrlCommit]]
+}}
+
+{{Note
+|user= Nelis75733126
+|timestamp= 20240416211007
+|text=in {{arma3}} 2.17, when <sqf inline>ctrlSetFade</sqf> is used on a CtrlToolbox or RscToolbox, it only has effect on the text of it.
+}}

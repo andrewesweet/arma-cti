@@ -1,0 +1,426 @@
+// source: https://community.bistudio.com/wiki/Template:Controls/Control
+// revision: 378684 (2026-05-24T19:34:40Z)
+// export sha1: qodb583eu08uamzgcsgcqsj9buy7tc3
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+| {{#switch:{{lc:{{{1}}}}}
+
+| mouse= {{Icon|mouse}}
+| lmb
+| mousel= {{Icon|mouseL}}
+| lmb2
+| mousel2= {{Icon|mouseL2}}
+| mmb
+| mousem= {{Icon|mouseM}}
+| rmb
+| mouser= {{Icon|mouseR}}
+| msw
+| mousesw= {{Icon|mouseSW}}
+| mswu
+| mouseswu= {{Icon|mouseSWU}}
+| mswd
+| mouseswd= {{Icon|mouseSWD}}
+
+| xbox= {{#switch:{{lc:{{{2}}}}}
+	|up= <span class="control-gamepad">↟</span>
+	|down= <span class="control-gamepad">↡</span>
+	|left= <span class="control-gamepad">↞</span>
+	|right= <span class="control-gamepad">↠</span>
+
+	|joymove= <span class="control-gamepad">⇳</span>
+	|joyup= <span class="control-gamepad">⇈</span>
+	|joyupright= <span class="control-gamepad">⇗</span>
+	|joyright= <span class="control-gamepad">⇉</span>
+	|joydownright= <span class="control-gamepad">⇘</span>
+	|joydown= <span class="control-gamepad">⇊</span>
+	|joydownleft= <span class="control-gamepad">⇙</span>
+	|joyleft= <span class="control-gamepad">⇇</span>
+	|joyupleft= <span class="control-gamepad">⇖</span>
+	|joyupdown= <span class="control-gamepad">⇕</span>
+	|joyleftright= <span class="control-gamepad">⇔</span>
+
+	|ljoymove= <span class="control-gamepad">⇱</span>
+	|ljoyup= <span class="control-gamepad">↾</span>
+	|ljoyright= <span class="control-gamepad">⇀</span>
+	|ljoydown= <span class="control-gamepad">⇂</span>
+	|ljoyleft= <span class="control-gamepad">↼</span>
+	|ljoyupdown= <span class="control-gamepad">⇅</span>
+	|ljoyleftright= <span class="control-gamepad">⇄</span>
+
+	|rjoymove= <span class="control-gamepad">⇲</span>
+	|rjoyup= <span class="control-gamepad">↿</span>
+	|rjoyright= <span class="control-gamepad">⇁</span>
+	|rjoydown= <span class="control-gamepad">⇃</span>
+	|rjoyleft= <span class="control-gamepad">↽</span>
+	|rjoyupdown= <span class="control-gamepad">⇵</span>
+	|rjoyleftright= <span class="control-gamepad">⇆</span>
+
+	|a= <span class="control-gamepad xbox-green">⇓</span>
+	|b= <span class="control-gamepad xbox-red">⇒</span>
+	|x= <span class="control-gamepad xbox-blue">⇐</span>
+	|y= <span class="control-gamepad xbox-yellow">⇑</span>
+
+	|lb= <span class="control-gamepad">↘</span>
+	|lt= <span class="control-gamepad">↖</span>
+	|lsb= <span class="control-gamepad">↺</span>
+	|rb= <span class="control-gamepad">↙</span>
+	|rt= <span class="control-gamepad">↗</span>
+	|rsb= <span class="control-gamepad">↻</span>
+	|back
+	|share= <span class="control-gamepad">⇺</span>
+	|start= <span class="control-gamepad">⇻</span>
+	|#default= -wrong Xbox key defined-{{TemplateCase||[[Category:Controls template usage error]]}}
+}}
+| playstation= {{#switch:{{lc:{{{2}}}}}
+	|up= <span class="control-gamepad">↟</span>
+	|down= <span class="control-gamepad">↡</span>
+	|left= <span class="control-gamepad">↞</span>
+	|right= <span class="control-gamepad">↠</span>
+
+	|joymove= <span class="control-gamepad">⇳</span>
+	|joyup= <span class="control-gamepad">⇈</span>
+	|joyupright= <span class="control-gamepad">⇗</span>
+	|joyright= <span class="control-gamepad">⇉</span>
+	|joydownright= <span class="control-gamepad">⇘</span>
+	|joydown= <span class="control-gamepad">⇊</span>
+	|joydownleft= <span class="control-gamepad">⇙</span>
+	|joyleft= <span class="control-gamepad">⇇</span>
+	|joyupleft= <span class="control-gamepad">⇖</span>
+	|joyupdown= <span class="control-gamepad">⇕</span>
+	|joyleftright= <span class="control-gamepad">⇔</span>
+
+	|ljoymove= <span class="control-gamepad">⇱</span>
+	|ljoyup= <span class="control-gamepad">↾</span>
+	|ljoyright= <span class="control-gamepad">⇀</span>
+	|ljoydown= <span class="control-gamepad">⇂</span>
+	|ljoyleft= <span class="control-gamepad">↼</span>
+	|ljoyupdown= <span class="control-gamepad">⇅</span>
+	|ljoyleftright= <span class="control-gamepad">⇄</span>
+
+	|rjoymove= <span class="control-gamepad">⇲</span>
+	|rjoyup= <span class="control-gamepad">↿</span>
+	|rjoyright= <span class="control-gamepad">⇁</span>
+	|rjoydown= <span class="control-gamepad">⇃</span>
+	|rjoyleft= <span class="control-gamepad">↽</span>
+	|rjoyupdown= <span class="control-gamepad">⇵</span>
+	|rjoyleftright= <span class="control-gamepad">⇆</span>
+
+	|a
+	|cross= <span class="control-gamepad playstation-blue">⇣</span>
+	|b
+	|circle= <span class="control-gamepad playstation-red">⇢</span>
+	|x
+	|square= <span class="control-gamepad playstation-pink">⇠</span>
+	|y
+	|triangle= <span class="control-gamepad playstation-green">⇡</span>
+	|lb
+	|l1= <span class="control-gamepad">↰</span>
+	|lt
+	|l2= <span class="control-gamepad">↲</span>
+	|lsb
+	|l3= <span class="control-gamepad">↺</span>
+	|rb
+	|r1= <span class="control-gamepad">↱</span>
+	|rt
+	|r2= <span class="control-gamepad">↳</span>
+	|rsb
+	|r3= <span class="control-gamepad">↻</span>
+	|back
+	|select= <span class="control-gamepad">⇷</span>
+	|options= <span class="control-gamepad">⇨</span>
+	|touchpad= <span class="control-gamepad">⇧</span>
+	|start= <span class="control-gamepad">⇸</span>
+	|share= <span class="control-gamepad">⇦</span>
+	|#default= -wrong PlayStation key defined-{{TemplateCase||[[Category:Controls template usage error]]}}
+}}
+
+| padup
+| paddown
+| padleft
+| padright
+| padjoymove
+| padjoyup
+| padjoyupright
+| padjoyright
+| padjoydownright
+| padjoydown
+| padjoydownleft
+| padjoyleft
+| padjoyupleft
+| padjoyupdown
+| padjoyleftright
+| padljoymove
+| padljoyup
+| padljoyright
+| padljoydown
+| padljoyleft
+| padljoyupdown
+| padljoyleftright
+| padrjoymove
+| padrjoyup
+| padrjoyright
+| padrjoydown
+| padrjoyleft
+| padrjoyupdown
+| padrjoyleftright
+| pada
+| padb
+| padx
+| pady
+| padlb
+| padlt
+| padlsb
+| padrb
+| padrt
+| padrsb
+| padback
+| padstart= <span class="control-gamepad">{{#switch:{{lc:{{{1}}}}}
+	|padup= ↟
+	|paddown= ↡
+	|padleft= ↞
+	|padright= ↠
+
+	|padjoymove = ⇳
+	|padjoyup = ⇈
+	|padjoyupright = ⇗
+	|padjoyright = ⇉
+	|padjoydownright = ⇘
+	|padjoydown = ⇊
+	|padjoydownleft = ⇙
+	|padjoyleft = ⇇
+	|padjoyupleft = ⇖
+	|padjoyupdown = ⇕
+	|padjoyleftright = ⇔
+
+	|padljoymove = ⇱
+	|padljoyup = ↾
+	|padljoyright = ⇀
+	|padljoydown = ⇂
+	|padljoyleft = ↼
+	|padljoyupdown = ⇅
+	|padljoyleftright = ⇄
+
+	|padrjoymove = ⇲
+	|padrjoyup = ↿
+	|padrjoyright = ⇁
+	|padrjoydown = ⇃
+	|padrjoyleft = ↽
+	|padrjoyupdown = ⇵
+	|padrjoyleftright = ⇆
+
+	|pada= ↧
+	|padb= ↦
+	|padx= ↤
+	|pady= ↥
+	|padlb= ↜
+	|padlt= ↚
+	|padlsb= ↺
+	|padrb= ↝
+	|padrt= ↛
+	|padrsb= ↻
+	|padback= ⇺
+	|padstart= ⇻
+	|#default= {{uc:{{#sub:{{{1}}}|3}}}}
+}}</span>
+
+| #default= <kbd>{{#switch:{{lc:{{{1}}}}}
+	|escape= Esc
+	|enter
+	|return= Return &crarr;
+	|delete= Del
+	|backspace= &#10229; Backspace
+	|up= &uarr;
+	|down= &darr;
+	|left= &larr;
+	|right= &rarr;
+	|pageup= &#8607; PgUp
+	|pagedown= &#8609; PgDown
+	|ctrl
+	|control
+	|lctrl= Ctrl
+	|rctrl
+	|rcontrol= RCtrl
+	|alt
+	|lalt= Alt
+	|ralt= AltGr
+	|shift
+	|lshift= &#8679; Shift
+	|rshift= RShift &#8679;
+	|caps
+	|capslock
+	|caps lock= &#x21EA; Caps Lock <!-- ideally use caps lock -->
+	|tab
+	|tabulation= &#8633; Tab
+	|win
+	|lwin
+	|windows= &#8862; Win
+	|rwin
+	|rwindows= RWin &#8862;
+	|num0= NUM 0
+	|num1= NUM 1
+	|num2= NUM 2
+	|num3= NUM 3
+	|num4= NUM 4
+	|num5= NUM 5
+	|num6= NUM 6
+	|num7= NUM 7
+	|num8= NUM 8
+	|num9= NUM 9
+	|num/= NUM /
+	|num*= NUM *
+	|num-= NUM -
+	|num+= NUM +
+	|num.= NUM .
+	|numenter= NUM Enter &crarr;
+	|#default= {{ucfirst:{{{1}}}}}
+}}</kbd>
+}}
+|-no key defined-{{TemplateCase||[[Category:Controls template usage error]]}}
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Displays a keyboard key or a mouse icon — used by {{Template|Controls}}. It also adds the page to the [[:Category:Controls template usage error|Controls template usage error]] category on usage error.
+{{Feature|informative|
+Gamepad icons use '''PromptFont''', a very nice font made under the {{Link|https://scripts.sil.org/cms/scripts/page.php?id{{=}}OFL|SIL Open Font Licence}}.<br>
+Find it at {{Link|https://shinmera.github.io/promptfont/}}.
+}}
+
+|param1= control
+|descr1= can be one of:
+** mouse icon (case-insensitive):
+*** mouse
+*** mouseL or LMB
+*** mouseL2 or LMB2
+*** mouseR or RMB
+*** mouseM or MMB
+*** mouseSW or MSW
+*** mouseSWU or MSWU
+*** mouseSWD or MSWD
+** generic pad buttons:
+*** padUp / padDown / padLeft / padRight
+*** padJoyUp / padJoyUpRight / padJoyRight / padJoyDownRight / padJoyDown / padJoyDownLeft / padJoyLeft / padJoyUpLeft
+*** padLjoyUp / padLjoyUpRight / padLjoyRight / padLjoyDownRight / padLjoyDown / padLjoyDownLeft / padLjoyLeft / padLjoyUpLeft
+*** padRjoyUp / padRjoyUpRight / padRjoyRight / padRjoyDownRight / padRjoyDown / padRjoyDownLeft / padRjoyLeft / padRjoyUpLeft
+*** padA / padB / padX / padY
+*** padLB / padLT / padLSB
+*** padRB / padRT / padRSB
+*** padBack / padStart
+** Xbox- && PlayStation-specific:
+*** joyUp / joyUpRight / joyRight / joyDownRight / joyDown / joyDownLeft / joyLeft / joyUpLeft
+*** LjoyUp / LjoyUpRight / LjoyRight / LjoyDownRight / LjoyDown / LjoyDownLeft / LjoyLeft / LjoyUpLeft
+*** RjoyUp / RjoyUpRight / RjoyRight / RjoyDownRight / RjoyDown / RjoyDownLeft / RjoyLeft / RjoyUpLeft
+** Xbox-specific with {{hl|Xbox}} as first parameter:
+*** A / B / X / Y
+*** LB / LT / LSB
+*** RB / RT / RSB
+*** Back / Start
+** PlayStation-specific with {{hl|PlayStation}} as first parameter:
+*** Cross / Circle / Square / Triangle (also supports A / B / X / Y)
+*** L1 / L2 / L3 (also supports LB / LT / LSB)
+*** R1 / R2 / R3 (also supports RB / RT / RSB)
+*** Select / Start (also supports Back)
+*** Options / Touchpad / Share
+** pre-formatted key:
+*** escape / return / enter / delete / backspace
+*** up / down / left / right
+*** pageUp / pageDown
+*** ctrl / control / LCtrl
+*** RCtrl / RControl
+*** RAlt
+*** shift / LShift
+*** RShift
+*** caps lock / capslock / caps
+*** tab / tabulation
+*** LWin / Windows
+*** RWin / RWindows
+*** num0..9 / num/ / num* / num- / num+ / num. / numEnter
+** anything else for a keyboard key - the first letter will be capitalised (e.g {{hl|abcdEf}} will become {{hl|AbcdEf}})
+
+|example1= <nowiki>{{Controls/Control}}</nowiki>
+|result1= {{Controls/Control}}
+
+|example2= <nowiki>{{Controls/Control|ctrl}}</nowiki>
+|result2= {{Controls/Control|ctrl}}
+
+|example3= <nowiki>{{Controls/Control|Ctrl}}</nowiki>
+|result3= {{Controls/Control|Ctrl}}
+
+|example4= <nowiki>{{Controls/Control|a}}</nowiki><br><nowiki>{{Controls/Control|abc}}</nowiki><br><nowiki>{{Controls/Control|abC}}</nowiki><br><nowiki>{{Controls/Control|ABC}}</nowiki>
+|result4= {{Controls/Control|a}}<br>{{Controls/Control|abc}}<br>{{Controls/Control|abC}}<br>{{Controls/Control|ABC}}
+
+|example5= <nowiki>{{Controls/Control|mouse}}{{Controls/Control|LMB}}{{Controls/Control|LMB2}}{{Controls/Control|MMB}}{{Controls/Control|MSW}}{{Controls/Control|MSWU}}{{Controls/Control|MSWD}}{{Controls/Control|RMB}}</nowiki>
+|result5= {{Controls/Control|mouse}}{{Controls/Control|LMB}}{{Controls/Control|LMB2}}{{Controls/Control|MMB}}{{Controls/Control|MSW}}{{Controls/Control|MSWU}}{{Controls/Control|MSWD}}{{Controls/Control|RMB}}
+
+|example6= <nowiki>{{Controls/Control|escape}}{{Controls/Control|return}}{{Controls/Control|enter}}{{Controls/Control|delete}}{{Controls/Control|backspace}}{{Controls/Control|up}}{{Controls/Control|down}}{{Controls/Control|left}}{{Controls/Control|right}}{{Controls/Control|pageup}}{{Controls/Control|pagedown}}</nowiki>
+|result6= {{Controls/Control|escape}}{{Controls/Control|return}}{{Controls/Control|enter}}{{Controls/Control|delete}}{{Controls/Control|backspace}}{{Controls/Control|up}}{{Controls/Control|down}}{{Controls/Control|left}}{{Controls/Control|right}}{{Controls/Control|pageup}}{{Controls/Control|pagedown}}
+
+|example7= <nowiki>{{Controls/Control|control}}{{Controls/Control|lctrl}}{{Controls/Control|rctrl}}{{Controls/Control|rcontrol}}{{Controls/Control|ralt}}{{Controls/Control|shift}}{{Controls/Control|rshift}}{{Controls/Control|caps lock}}{{Controls/Control|tabulation}}{{Controls/Control|lwin}}{{Controls/Control|windows}}{{Controls/Control|rwin}}{{Controls/Control|rwindows}}</nowiki>
+|result7= {{Controls/Control|control}}{{Controls/Control|lctrl}}{{Controls/Control|rctrl}}{{Controls/Control|rcontrol}}{{Controls/Control|ralt}}{{Controls/Control|shift}}{{Controls/Control|rshift}}{{Controls/Control|caps lock}}{{Controls/Control|tabulation}}{{Controls/Control|lwin}}{{Controls/Control|windows}}{{Controls/Control|rwin}}{{Controls/Control|rwindows}}
+
+|example8= <nowiki/>
+<nowiki>{{Controls/Control|num/}}{{Controls/Control|num*}}{{Controls/Control|num-}}{{Controls/Control|num+}}</nowiki><br>
+<nowiki>{{Controls/Control|num7}}{{Controls/Control|num8}}{{Controls/Control|num9}}</nowiki><br>
+<nowiki>{{Controls/Control|num4}}{{Controls/Control|num5}}{{Controls/Control|num6}}</nowiki><br>
+<nowiki>{{Controls/Control|num1}}{{Controls/Control|num2}}{{Controls/Control|num3}}</nowiki><br>
+<nowiki>{{Controls/Control|num0}}{{Controls/Control|num.}}{{Controls/Control|numenter}}</nowiki>
+|result8= <nowiki/>
+{{Controls/Control|num/}}{{Controls/Control|num*}}{{Controls/Control|num-}}{{Controls/Control|num+}}<br>
+{{Controls/Control|num7}}{{Controls/Control|num8}}{{Controls/Control|num9}}<br>
+{{Controls/Control|num4}}{{Controls/Control|num5}}{{Controls/Control|num6}}<br>
+{{Controls/Control|num1}}{{Controls/Control|num2}}{{Controls/Control|num3}}<br>
+{{Controls/Control|num0}}{{Controls/Control|num.}}{{Controls/Control|numenter}}
+
+|example9= <nowiki/>
+<nowiki>{{Controls/Control|padUp}}{{Controls/Control|padDown}}{{Controls/Control|padLeft}}{{Controls/Control|padRight}}
+{{Controls/Control|padA}}{{Controls/Control|padB}}{{Controls/Control|padX}}{{Controls/Control|padY}}
+{{Controls/Control|padLB}}{{Controls/Control|padLT}}{{Controls/Control|padLSB}}{{Controls/Control|padRB}}{{Controls/Control|padRT}}{{Controls/Control|padRSB}}
+{{Controls/Control|padBack}}{{Controls/Control|padStart}}</nowiki><br>
+
+<nowiki>{{Controls/Control|padjoymove}}{{Controls/Control|padjoyupdown}}{{Controls/Control|padjoyleftright}}
+{{Controls/Control|padjoyup}}{{Controls/Control|padjoyupright}}{{Controls/Control|padjoyright}}{{Controls/Control|padjoydownright}}{{Controls/Control|padjoydown}}
+{{Controls/Control|padjoydownleft}}{{Controls/Control|padjoyleft}}{{Controls/Control|padjoyupleft}}
+
+{{Controls/Control|padljoymove}}{{Controls/Control|padljoyupdown}}{{Controls/Control|padljoyleftright}}
+{{Controls/Control|padljoyup}}{{Controls/Control|padljoyright}}{{Controls/Control|padljoydown}}{{Controls/Control|padljoyleft}}
+
+{{Controls/Control|padrjoymove}}{{Controls/Control|padrjoyupdown}}{{Controls/Control|padrjoyleftright}}
+{{Controls/Control|padrjoyup}}{{Controls/Control|padrjoyright}}{{Controls/Control|padrjoydown}}{{Controls/Control|padrjoyleft}}</nowiki>
+|result9= <nowiki/>
+{{Controls/Control|padUp}}{{Controls/Control|padDown}}{{Controls/Control|padLeft}}{{Controls/Control|padRight}}
+{{Controls/Control|padA}}{{Controls/Control|padB}}{{Controls/Control|padX}}{{Controls/Control|padY}}
+{{Controls/Control|padLB}}{{Controls/Control|padLT}}{{Controls/Control|padLSB}}{{Controls/Control|padRB}}{{Controls/Control|padRT}}{{Controls/Control|padRSB}}
+{{Controls/Control|padBack}}{{Controls/Control|padStart}}<br>
+
+{{Controls/Control|padjoymove}}{{Controls/Control|padjoyupdown}}{{Controls/Control|padjoyleftright}}
+{{Controls/Control|padjoyup}}{{Controls/Control|padjoyupright}}{{Controls/Control|padjoyright}}{{Controls/Control|padjoydownright}}{{Controls/Control|padjoydown}}
+{{Controls/Control|padjoydownleft}}{{Controls/Control|padjoyleft}}{{Controls/Control|padjoyupleft}}
+
+{{Controls/Control|padljoymove}}{{Controls/Control|padljoyupdown}}{{Controls/Control|padljoyleftright}}
+{{Controls/Control|padljoyup}}{{Controls/Control|padljoyright}}{{Controls/Control|padljoydown}}{{Controls/Control|padljoyleft}}
+
+{{Controls/Control|padrjoymove}}{{Controls/Control|padrjoyupdown}}{{Controls/Control|padrjoyleftright}}
+{{Controls/Control|padrjoyup}}{{Controls/Control|padrjoyright}}{{Controls/Control|padrjoydown}}{{Controls/Control|padrjoyleft}}
+
+|example10= <nowiki/>
+<nowiki>{{Controls/Control|xbox|up}}{{Controls/Control|xbox|down}}{{Controls/Control|xbox|left}}{{Controls/Control|xbox|right}}
+{{Controls/Control|xbox|A}}{{Controls/Control|xbox|B}}{{Controls/Control|xbox|X}}{{Controls/Control|xbox|Y}}
+{{Controls/Control|xbox|LB}}{{Controls/Control|xbox|LT}}{{Controls/Control|xbox|LSB}}{{Controls/Control|xbox|RB}}{{Controls/Control|xbox|RT}}{{Controls/Control|xbox|RSB}}
+{{Controls/Control|xbox|Back}}{{Controls/Control|xbox|Start}}</nowiki>
+<hr>
+<nowiki>{{Controls/Control|playstation|up}}{{Controls/Control|playstation|down}}{{Controls/Control|playstation|left}}{{Controls/Control|playstation|right}}
+{{Controls/Control|playstation|A}}{{Controls/Control|playstation|B}}{{Controls/Control|playstation|X}}{{Controls/Control|playstation|Y}}
+{{Controls/Control|playstation|LB}}{{Controls/Control|playstation|LT}}{{Controls/Control|playstation|LSB}}{{Controls/Control|playstation|RB}}{{Controls/Control|playstation|RT}}{{Controls/Control|playstation|RSB}}
+{{Controls/Control|playstation|Back}}{{Controls/Control|playstation|Start}}</nowiki><br>
+<nowiki>{{Controls/Control|playstation|Options}}{{Controls/Control|playstation|Touchpad}}{{Controls/Control|playstation|Share}}</nowiki>
+|result10= <nowiki/>
+{{Controls/Control|xbox|up}}{{Controls/Control|xbox|down}}{{Controls/Control|xbox|left}}{{Controls/Control|xbox|right}}
+{{Controls/Control|xbox|A}}{{Controls/Control|xbox|B}}{{Controls/Control|xbox|X}}{{Controls/Control|xbox|Y}}
+{{Controls/Control|xbox|LB}}{{Controls/Control|xbox|LT}}{{Controls/Control|xbox|LSB}}{{Controls/Control|xbox|RB}}{{Controls/Control|xbox|RT}}{{Controls/Control|xbox|RSB}}
+{{Controls/Control|xbox|Back}}{{Controls/Control|xbox|Start}}
+<hr>
+{{Controls/Control|playstation|up}}{{Controls/Control|playstation|down}}{{Controls/Control|playstation|left}}{{Controls/Control|playstation|right}}
+{{Controls/Control|playstation|A}}{{Controls/Control|playstation|B}}{{Controls/Control|playstation|X}}{{Controls/Control|playstation|Y}}
+{{Controls/Control|playstation|LB}}{{Controls/Control|playstation|LT}}{{Controls/Control|playstation|LSB}}{{Controls/Control|playstation|RB}}{{Controls/Control|playstation|RT}}{{Controls/Control|playstation|RSB}}
+{{Controls/Control|playstation|Back}}{{Controls/Control|playstation|Start}}<br>
+{{Controls/Control|playstation|Options}}{{Controls/Control|playstation|Touchpad}}{{Controls/Control|playstation|Share}}
+
+}}</noinclude>

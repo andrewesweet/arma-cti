@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_areEqualNotNil
+// revision: 327972 (2022-07-13T14:31:18Z)
+// export sha1: f94ehtle9dzbqzg386o7qr2ai2jvlaf
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Variables | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Variables
+
+|descr= Compares all elements of passed array between each other and returns true is all are defined and identical.<br>
+Very fast, different from [[BIS_fnc_areEqual]] in that [[nil]] values will not be considered equal to each other.
+
+|s1= [anything1, anything2, …] call [[BIS_fnc_areEqualNotNil]]
+
+|p1= anythings: [[Anything]] - [[nil]] values won't be considered equal
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+[[1, 2, [3, [4, 5]]],	[1, 2, [3, [4, 5]]]]	call BIS_fnc_areEqualNotNil; // true
+[[1, 2, [3, [4, nil]]],	[1, 2, [3, [4, nil]]]]	call BIS_fnc_areEqualNotNil; // false
+</sqf>
+
+|x2= <sqf>[nil, nil] call BIS_fnc_areEqualNotNil; // false</sqf>
+
+|seealso= [[isEqualTo]] [[BIS_fnc_areEqual]]
+}}

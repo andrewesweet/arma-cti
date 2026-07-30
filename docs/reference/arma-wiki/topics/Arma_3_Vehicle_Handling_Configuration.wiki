@@ -1,0 +1,729 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Vehicle_Handling_Configuration
+// revision: 376731 (2025-11-15T04:52:37Z)
+// export sha1: j4g8pdpu9jfmyk7i9m0qalhjvdstbme
+// categories: Category:ArmA: Armed Assault: Modelling | Category:Arma 3: Vehicle Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Common ==
+=== General parameters ===
+==== simulation ====
+Defines simulation type of the vehicle. PhysX simulation ends with letter "x". Can be:
+* '''carx''' &nbsp;&nbsp;for [[#CarX specifics|PhysX cars]]
+* '''tankx''' for [[#TankX specifics|PhysX tanks]]
+* '''shipx''' for [[#ShipX specifics|PhysX boats]]
+
+==== thrustDelay ====
+'''thrustDelay''' is time in second in which thrust (as an input value) goes from 0 to 1 when standing still (doesn't affect driving car during change of gears).
+0.5 is the minimum value. You may want to tweak this to higher values if wheels slide during initial acceleration.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 0.5''
+<syntaxhighlight lang="cpp">thrustDelay = 0.5;</syntaxhighlight>
+
+==== accelAidForceCoef ====
+'''accelAidForceCoef''' is an artificial aid force applied to a vehicle when accelerating. Goes from x1 when standing still to x0 at a speed defined in [[#accelAidForceSpd|accelAidForceSpd]]. Ideally a vehicle should be configured with this property set to zero and it should only be used for final fine-tuning.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 5.0''
+<syntaxhighlight lang="cpp">accelAidForceCoef = 3.0;</syntaxhighlight>
+
+==== accelAidForceSpd ====
+This is a minimum speed in '''m/s''' when [[#accelAidForceCoef|accelAidForceCoef]] becomes zero and is no longer applied.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 5.0''
+<syntaxhighlight lang="cpp">accelAidForceSpd = 5.0;</syntaxhighlight>
+
+==== accelAidForceYOffset ====
+This is a vertical offset from the vehicle's center of mass where the [[#accelAidForceCoef|accelAidForceCoef]] will be applied. Used to accent the vehicle's weight shifting during an acceleration.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 0.0''
+<syntaxhighlight lang="cpp">accelAidForceCoef = -1.0;</syntaxhighlight>
+
+==== maxSpeed ====
+Defines the maximum driving speed of the vehicle when driving by "Car Fast Forward" action. Set in '''km/h'''. Works as a limiter - the vehicle's thrust will get cut around this speed. 
+* ''<Type>: float''
+* ''<Range>: >= 0''
+<syntaxhighlight lang="cpp">maxSpeed = 100;</syntaxhighlight>
+
+==== slowSpeedForwardCoef ====
+==== normalSpeedForwardCoef ====
+Coefficients of [[#maxSpeed|maxSpeed]] that are used to limit the actual maximum speed depending on which - "Car Forward", "Car Slow Forward" or "Car Fast Forward" - action is used. "Car Fast Forward" uses directly the maxSpeed value. 
+* '''slowSpeedForwardCoef''' is set to 0.3 by default
+* '''normalSpeedForwardCoef''' is set to 0.85 by default
+* default speed coefficient for fast movement is 1 meaning that full throttle is applied and maximal speed is maxSpeed of the vehicle (it is going to apply less throttle upon reaching the limit)
+<syntaxhighlight lang="cpp">slowSpeedForwardCoef = __EVAL(30/100);
+normalSpeedForwardCoef = __EVAL(50/100);</syntaxhighlight>
+
+==== waterLeakiness ====
+Should be the amount of water in liters that goes into selected object per second.
+This is set to zero by engine for all vehicles with simulation of a ship or having {{hl|canFloat {{=}} 1;}} (until they are toppled or destroyed, then config value takes precedence).
+{{hl|WaterLeakiness {{=}} 10;}} seems to be a good value to start with for all kinds of vehicles no matter the size.
+* ''<Type>: float'' (or ''sink'')
+* ''<Range>: >= 0''
+<syntaxhighlight lang="cpp">waterLeakiness = 10;</syntaxhighlight>
+
+=== Engine parameters ===
+==== enginePower ====
+Power of the engine '''in kW'''.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: (required)''
+<syntaxhighlight lang="cpp">enginePower = 600;</syntaxhighlight>
+
+==== maxOmega ====
+This is the maximum rotational speed of the engine expressed in '''radians per second'''. It could be calculated from maximum engine RPM like this:
+ maxOmega = (maxRpm * 2 * Pi) / 60
+* ''<Type>: float''
+* ''<Range>: > 0''
+* ''<Default>: 600 which is cca 6000 rounds per minute.''
+<syntaxhighlight lang="cpp">maxOmega = __EVAL((6000 * 2 * PI) / 60);</syntaxhighlight>
+
+==== minOmega ====
+This is the idle (minimum) rotational speed of the engine expressed in '''radians per second'''.
+* ''<Type>: float''
+* ''<Range>: > 0''
+* ''<Default>: 0''
+<syntaxhighlight lang="cpp">minOmega = __EVAL((800 * 2 * PI) / 60);</syntaxhighlight>
+
+==== idleRpm ====
+'''idleRpm''' sets the idle RPM solely for the sound engine. Expressed in '''revolutions per minute'''.
+
+==== redRpm ====
+'''redRpm''' sets the maximum RPM solely for the sound engine. Expressed in '''revolutions per minute'''.
+
+==== peakTorque ====
+This is the maximum torque that is ever available from the engine. This is expressed in '''Newton metres'''.
+A starting value might be around 600.
+* ''<Type>: float''
+* ''<Range>: > 0''
+* ''<Default>: value calculated from enginePower according to http://en.wikipedia.org/wiki/Horsepower#Relationship_with_torque''
+<syntaxhighlight lang="cpp">peakTorque = 600;</syntaxhighlight>
+
+==== torqueCurve ====
+This is a graph of peak torque versus engine rotational speed.
+Cars typically have a range of engine speeds that produce good drive torques, and other ranges of engine speed that produce poor torques.
+A skilled driver will make good use of the gears to ensure that the car remains in the "good" range where the engine is most responsive.
+Tuning this graph can have profound effects on gameplay.
+
+The x-axis of the curve is the normalised engine speed; that is, the engine speed divided by the maximum engine speed. The y-axis of the curve is a multiplier in range (0,1) that is used to scale the peak torque. The samples do not have to be equally spaced apart. You can distribute the points between both 0% rpm and 100% rpm points as you wish.
+* ''<Type>: Array[i][2] where i = number of samples, ''maximum 8''''
+* ''<Default>: { { 0.0, 0.8 }, { 0.33, 1.0 }, { 1.0, 0.8 } }''
+<syntaxhighlight lang="cpp">torqueCurve[] = { { 0.0, 0.8 }, { 0.33, 1.0 }, { 1.0, 0.8 } };
+</syntaxhighlight>
+'''NOTE:''' you can also use math in this definition, here is the same example from above using this technique:
+<syntaxhighlight lang="cpp">torqueCurve[] = { { __EVAL(0/2400), __EVAL(80/100) }, { __EVAL(792/2400), __EVAL(100/100) }, { __EVAL(2400/2400), __EVAL(80/100) } };
+</syntaxhighlight>
+
+==== engineMOI ====
+This the moment of inertia of the engine around the axis of rotation. Larger values make it harder to accelerate the engine, while lower values make it easier to accelerate the engine. A starting value of 1.0 is a good choice. Tweak together with engine damping rates.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 1.0''
+<syntaxhighlight lang="cpp">engineMOI = 1.0;</syntaxhighlight>
+
+==== dampingRateFullThrottle ====
+==== dampingRateZeroThrottleClutchEngaged ====
+==== dampingRateZeroThrottleClutchDisengaged ====
+These three values are used to compute the damping rate that is applied to the engine.
+If the clutch is engaged then the damping rate is an interpolation between '''dampingRateFullThrottle''' and '''dampingRateZeroThrottleClutchEngaged''', where the interpolation is governed by the acceleration control value generated by the gamepad or keyboard.
+At full throttle '''dampingRateFullThrottle''' is applied, while dampingRateZeroThrottleClutchEngaged is applied at zero throttle.
+In neutral gear, the damping rate is an interpolation between dampingRateFullThrottle and dampingRateZeroThrottleClutchDisengaged.
+
+The three values allow a range of effects to be generated: good acceleration that isn't hampered by strong damping forces,
+tunable damping forces when temporarily in neutral gear during a gear change,
+and strong damping forces that will bring the vehicle quickly to rest when it is no longer being driven by the player.
+
+Typical values in range (0.25,3). The simulation can become unstable with damping rates of 0.	
+* ''<Type>: float''
+* ''<Range>: > 0''
+* ''<Default>: 0.08, 2.0, 0.35''
+<syntaxhighlight lang="cpp">dampingRateFullThrottle = 0.08;
+dampingRateZeroThrottleClutchEngaged = 2.0;
+dampingRateZeroThrottleClutchDisengaged = 0.35;</syntaxhighlight>
+
+
+=== Transmission parameters ===
+==== clutchStrength ====
+This describes how strongly the clutch couples the engine to the wheels and how quickly differences in speed are eliminated by distributing torque to the engine and wheels.
+
+Weaker values will result in more clutch slip, especially after changing gear or stamping on the accelerator.
+Stronger values will result in a reduced clutch slip, and more engine torque delivered to the wheels.
+
+This value is to be edited only for very fine tweaking of the vehicle.
+Some clutch slip can be attributed to the numerical issues in the simulation at large timesteps, while some is a natural consequence of driving the car in an overly aggressive manner.
+A value of 10 is a good starting point.
+* '' <Type>: float''
+* ''<Range>: >= 0''
+* '' <Default>: 10.0''
+<syntaxhighlight lang="cpp">clutchStrength = 10.0;</syntaxhighlight>
+
+==== latency ====
+This is the minimum time (in '''seconds''') that must pass between each gear change that is initiated by the autobox.
+This should be set to value higher than [[#switchTime|switchTime]].
+Setting this time too low makes some issues with changing gears - the car then slows down a lot.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 2.0''
+<syntaxhighlight lang="cpp">latency = 1.0;</syntaxhighlight>
+
+==== switchTime ====
+The switch time describes how long it takes (in seconds) for a gear change to be completed.
+It is impossible to change gear immediately in a real car.
+Manual gears, for example, require neutral to be engaged for a short time before engaging the desired target gear.
+While the gear change is being completed the car will be in neutral.
+A good trick might be to penalise players that use an automatic gear box by increasing the gear switch time.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 0.01''
+<syntaxhighlight lang="cpp">switchTime = 0.5;</syntaxhighlight>
+
+==== changeGearType ====
+Defines which changeGear condition type is used for the automatic gearbox. If set to "rpmratio" the gears will be switched based on RPM ratio max/min pairs defined in [[#changeGearOmegaRatios|changeGearOmegaRatios]]. If set to "effective" the gears will be switched based on engine torque ratios defined in [[#changeGearMinEffectivity|changeGearMinEffectivity]].
+* ''<Type>: string''
+* ''<Range>: ["rpmatio","effective"]''
+* ''<Default>: effective''
+<syntaxhighlight lang="cpp">changeGearType = "rpmratio";</syntaxhighlight>
+
+==== changeGearMinEffectivity ====
+Value of minimal gear effectivity to hold current gear. If there is better gear and effectivity is below this value then change gear. Used when [[#changeGearMinEffectivity|changeGearType]] is set to "effective". 
+* ''<Type>: Array[i] where i = number of gears''
+* ''<Range>: 0..1''
+* ''<Default>: 0.95 for every value''
+<syntaxhighlight lang="cpp">changeGearMinEffectivity[] = { 0.95, 0.15, 0.95, 0.95, 0.95, 0.95, 0.95 };
+</syntaxhighlight>
+
+==== changeGearOmegaRatios ====
+Pairs of maximum and minimum engine RPM to hold the current gear. Used when [[#changeGearMinEffectivity|changeGearType]] is set to "rpmratio". 
+* ''<Type>: Array[i] where i = number of gears * 2''
+* ''<Range>: 0..1''
+<syntaxhighlight lang="cpp">changeGearOmegaRatios[] = {             
+    __EVAL(6000/6000)    , __EVAL(1000/6000),   // R1
+    __EVAL(1000/6000)    , 0,                   // N
+    __EVAL(5800/6000)    , __EVAL(1000/6000),   // D1
+    __EVAL(5500/6000)    , __EVAL(3000/6000),   // D2
+    __EVAL(5300/6000)    , __EVAL(2800/6000),   // D3
+    __EVAL(5300/6000)    , __EVAL(2500/6000),   // D4
+    __EVAL(5300/6000)    , __EVAL(2500/6000)    // D5
+};
+</syntaxhighlight>
+
+==== class complexGearbox ====
+* All PhysX 3 vehicles use complex gearbox to give some data to PhysX gearbox
+* Complex gearbox settings is inside '''class complexGearbox''' which is a subclass of vehicle class
+* '''GearboxRatios[]''' is an array of gear names and gear ratios starting with reverse gear (with negative ratios), neutral gear (which should have zero ratio) and forward ratio (eg: ''{"R1",-3.231,"N",0,"D1",2.462,"D2",1.870,"D3",1.241,"D4",0.970,"D5",0.711};''). Gear names are not used in retail version, they are just for '''epevehicle''' diagnostics. '''Important''': There can only be one reverse Gear (which must have negative value) and one Neutral gear (which must have 0 as ratio). All forward gears must have a value greater than zero and they must be ordered from high ratio to low
+* '''TransmissionRatios[]''' is an array of remaining drivetrain ratios in the same format as gearboxRatios. Most of cars have only one final drive, some heavy trucks may have a double reduction gear . The final ratio is then gearboxRatio * TransmissionRatio, that means transmissionRatios shouldn't be multiplicates of each other and gearbox ratios to prevent the same final ratio for two different gears.
+* '''gearBoxMode''' is set to full-auto by engine. The full-auto mode can skip gears to get the best possible gear for each condition.
+* '''moveOffGear''' defines what gear an automatic or semi-automatic gearbox will move off from stationary in. 1 by default.
+* '''driveString''', '''neutralString''' and '''reverseString''' define displayed strings for driving forward, neutral and backward.
+<syntaxhighlight lang="cpp">complexGearbox
+{
+	GearboxRatios[] = {
+		"R1",	-3.231,
+		"N",	 0,
+		"D1",	 2.462,
+		"D2",	 1.870,
+		"D3",	 1.241,
+		"D4",	 0.970,
+		"D5",	 0.711
+	};
+
+	// Optional: defines transmission ratios (for example, High and Low range as commonly found in offroad vehicles)
+	TransmissionRatios[] = { "High",4.111 };
+
+	// defines what gear an automatic or semi-automatic gearbox will move off from stationary in. 1 by default.
+	moveOffGear = 1;
+
+	driveString				= "D";	// string to display in the HUD for forward gears.
+	neutralString			= "N";	// string to display in the HUD for neutral gear.
+	reverseString			= "R";	// string to display in the HUD for reverse gears.
+};
+</syntaxhighlight>
+
+
+=== Differential parameters ===
+==== differentialType ====
+A number of differential types are supported: 4-wheel drive with open differential, 4-wheel drive with limited slip, front-wheel drive with open differential, front-wheel drive with limited slip, rear-wheel drive with open differential, rear-wheel drive with limited slip.
+* ''<Type>: string; accepable values: "all_open", "all_limited", "front_open", "front_limited", "rear_open", "rear_limited"''
+* ''<Default>: "all_limited"''
+<syntaxhighlight lang="cpp">differentialType = "all_limited";</syntaxhighlight>
+
+==== frontRearSplit ====
+If a 4-wheel drive differential is chosen (open or limited slip) this option allows the drive torque to be split unevenly between the front and rear wheels.
+Choosing a value of 0.5 delivers an equal split of the torque between the front and rear wheels; that is, the total torque delivered to the front wheels is equal to the total torque delivered to the rear wheels. Choosing a value greater than 0.5 delivers more torque to the front wheels while choosing a value less than 0.5 delivers more torque to the rear wheels.
+This value is ignored for front-wheel drive and rear-wheel drive differentials.
+* ''<Type>: float''
+* ''<Range>: 0..1''
+* ''<Default>: 0.5''
+<syntaxhighlight lang="cpp">frontRearSplit = 0.5;</syntaxhighlight>
+
+==== frontBias ====
+Limited slip differentials work by only allowing a certain difference in wheel rotation speed to accumulate.
+This prevents the situation where one wheel is slipping but ends up taking all the available power.
+Further, by allowing a small difference in wheel rotation speed to accumulate it is possible for the vehicle to easily corner by permitting the outside wheel to rotate quicker than the inside wheel.
+
+This parameter describes the maximum difference in wheel rotation speed that is allowed to accumulate.
+The front bias is the maximum of the two front-wheel rotation speeds divided by the minimum of the two front-wheel rotation speeds.
+When this ratio exceeds the value of the front bias the differential diverts torque from the faster wheel to the slower wheel in an attempt to preserve the maximum allowed wheel rotation speed ratio.
+
+This value is ignored except for front-wheel drive or four-wheel drive with limited slip.
+
+A good starting value is around 1.3.
+* ''<Type>: float''
+* ''<Range>: >= 1.0''
+* ''<Default>: 1.3''
+<syntaxhighlight lang="cpp">frontBias = 1.3;</syntaxhighlight>
+
+==== rearBias ====
+This is similar to frontBias except that it refers to the rear wheels.
+
+This value is ignored except for rear-wheel drive or four-wheel drive with limited slip.
+
+A good starting value is around 1.3.
+* ''<Type>: float''
+* ''<Range>: >= 1.0''
+* ''<Default>: 1.3''
+<syntaxhighlight lang="cpp">rearBias = 1.3;</syntaxhighlight>
+
+==== centreBias ====
+This value is similar to the frontBias and rearBias, except that it refers to the sum of the front wheel rotation speeds and the sum of the rear wheel rotation speeds.
+
+This value is ignored except for four-wheel drive with limited slip.
+
+A good starting value is around 1.3.
+* ''<Type>: float''
+* ''<Range>: >= 1.0''
+* ''<Default>: 1.3''
+<syntaxhighlight lang="cpp">centreBias = 1.3;</syntaxhighlight>
+
+
+=== Wheel parameters ===
+==== boneName ====
+Name of the bone, used for wheel and suspension animations.
+The standard bone structure would be as such:  damperbone → steeringbone → rotatingbone (example: wheel_1_1_damper → wheel_1_1_steering → wheel_1_1).
+As boneName you would set the rotatingbone (e.g. wheel_1_1).
+In the visual LODs this "rotatingbone" is generally the selection of the tire.
+* ''<Type>: string''
+* ''<Default>: ""''
+<syntaxhighlight lang="cpp">boneName = "wheel_1_1";</syntaxhighlight>
+
+==== steering ====
+If true, wheel is steerable, false - wheel is fixed.
+* ''<Type>: bool''
+* ''<Default>: (required)''
+<syntaxhighlight lang="cpp">steering = true;</syntaxhighlight>
+
+==== side ====
+Defines if wheel is on vehicle left or right side
+* ''<Type>: string''
+* ''<Default>: "right"''
+<syntaxhighlight lang="cpp">side = "left";</syntaxhighlight>
+
+==== center ====
+Center of the wheel (axis)
+* ''<Type>: memory point''
+* ''<Default>: (required)''
+<syntaxhighlight lang="cpp">center   = "wheel_1_1_axis";</syntaxhighlight>
+
+==== boundary ====
+Point on the outside rim of the tire, used to calculate radius of the wheel (distance between center and boundary).
+* ''<Type>: memory point''
+* ''<Default>: (required)''
+<syntaxhighlight lang="cpp">boundary = "wheel_1_1_bound";</syntaxhighlight>
+
+==== width ====
+This is the full width of the wheel in metres. It affects wheels collision detection
+* ''<Type>: float''
+* ''<Range>: > 0''
+* ''<Default>: 0.3 * (radius of the wheel)''
+<syntaxhighlight lang="cpp">width = 0.2;</syntaxhighlight>
+
+==== mass ====
+This is the combined mass of the wheel and the tire in kg. Typically, a wheel has mass between 20Kg and 80Kg but can be lower and higher depending on the vehicle.
+* ''<Type>: float''
+* ''<Range>: > 0''
+* ''<Default>: 10.0''
+<syntaxhighlight lang="cpp">mass = 150;</syntaxhighlight>
+
+==== MOI ====
+This is the component of the wheel's Moment of Inertia (M.o.I) about the rolling axis.
+Larger values make it harder for the wheel to rotate about this axis, while easier values make it easier for the wheel to rotate about the rolling axis.
+Another way of expressing this is that a high MOI will result in less wheel spin when stamping on the accelerator because it is harder to make the wheel spin.
+Conversely, lower values of MOI will result in more wheel spin when stamping on the accelerator.
+If the wheel is approximately cylindrical then a simple formula can be used to compute MOI:
+ MOI = 0.5 * Mass * Radius * Radius
+
+There is no reason, however, to rely on equations to compute this value.
+A good strategy for tuning this number might to be start with the equation above and then make small tweaks to the value until the handling is as desired.
+* ''<Type>: float''
+* ''<Range>: > 0''
+* ''<Default>: 0.5 * WheelMass * WheelRadius * WheelRadius''
+<syntaxhighlight lang="cpp">MOI = 40;</syntaxhighlight>
+
+==== dampingRate ====
+==== dampingRateDamaged ====
+==== dampingRateDestroyed ====
+These values describe how quickly a freely spinning wheel will come to rest.
+The damping rate describes the rate at which a freely spinning wheel loses rotational speed.
+Here, a freely spinning wheel is one that experiences no forces except for the damping forces arising from the wheel's internal bearings.
+Higher damping rates result in the wheel coming to rest in shorter times, while lower damping rates result in the wheel maintaining speed for longer.
+Values in range (0.25, 2) seem like sensible values. Experimentation is always a good idea, even outside this range.
+Always exercise some caution with very small damping rates. In particular, '''a damping rate of exactly 0 should be avoided'''.
+* ''<Type>: float''
+* ''<Range>: > 0''
+* ''<Default>: 0.1''
+<syntaxhighlight lang="cpp">dampingRate = 0.1;
+dampingRateDamaged = 1.0;
+dampingRateDestroyed = 1000.0;</syntaxhighlight>
+
+==== maxBrakeTorque ====
+This is the value of the torque applied to the wheel when the brakes are maximally applied.
+Higher torques will lock the wheel quicker when braking, while lower torques will take longer to lock the wheel.
+This value is strongly related to the wheel [[#MOI|MOI]] because the MOI determines how quickly the wheel will react to applied torques.
+
+A value of around 1500 is a good starting point for a vanilla wheel but a google search will reveal typical braking torques.
+One difficulty is that these are often expressed by manufacturers as braking horsepower or in "pounds inches".
+The values required here are in ''Newton metres''.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 2500''
+<syntaxhighlight lang="cpp">maxBrakeTorque = 7500;</syntaxhighlight>
+
+==== maxHandBrakeTorque ====
+This is the same as the max brake torque except for the handbrake rather than the brake.
+Typically, for a 4-wheeled car, the handbrake is stronger than the brake and is only applied to the rear wheels.
+A value of 4000 for the rear wheels is a good starting point, while a value of 0 is necessary for the front wheels to make sure they do not react to the handbrake.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 2 * maxBrakeTorque''
+<syntaxhighlight lang="cpp">maxHandBrakeTorque = 0;</syntaxhighlight>
+
+==== tireForceAppPointOffset ====
+This is almost the same as the [[#suspForceAppPointOffset|suspension force app point]] except for the lateral and longitudinal forces that develop on the tire.
+
+A good starting point is to duplicate the suspension force application point.
+Only for really detailed editing is it advised to start tweaking the tire force app offset independently of the suspension force app offset.
+* ''<Type>: memory point''
+* ''<Default>: suspForceAppPointOffset''
+<syntaxhighlight lang="cpp">tireForceAppPointOffset = "wheel_1_1_axis";</syntaxhighlight>
+
+
+=== Suspension parameters ===
+==== dampersBumpCoef ====
+Defines how much dampers react to random little bumps on surface.
+This only has a visual effect and doesn't influence driving simulation. It is only taken into account when calculating damper animation.
+* ''Type: float''
+* ''<Range>: >= 0''
+* ''Default: 0.0''
+<syntaxhighlight lang="cpp">dampersBumpCoef = 0.3;</syntaxhighlight>
+
+==== maxCompression ====
+==== maxDroop ====
+These values describe the maximum compression and elongation in metres that the spring can support.
+The total travel distance along the spring direction that is allowed is the sum of '''maxCompression''' and '''maxDroop'''.
+
+A simple way to illustrate the maximum droop and compression values is to consider a car that is suspended in mid-air so that none of the wheels are touching the ground.
+The wheels will naturally fall downwards from their rest position until the maximum droop is reached.
+The spring cannot be elongated beyond this point. Now consider that the wheel is pushed upwards, first to its rest position, then further pushed until the spring can no longer be compressed.
+The displacement from the rest position is the maximum compression of the spring.
+
+It is important to choose the maximum compression value so that the wheel is never placed where the visual mesh of the wheel intersects the visual meshes of the car chassis.
+Ideally, these values will be exported from the 3D modeller.
+* ''<Type>: float''
+* ''<Range>: >= 0''. Important: If one of the values is zero, the other must be greater than zero
+* ''<Default>: 0.15''
+<syntaxhighlight lang="cpp">maxCompression = 0.15;
+maxDroop = 0.15;</syntaxhighlight>
+
+==== sprungMass ====
+This is the mass in kg that is supported by the suspension spring.
+
+A vehicle with rigid body centre of mass at the centre of the four wheels would typically be equally supported by each of the suspension springs;
+that is, each suspension spring supports 1/4 of the total vehicle mass.
+If the centre of mass was moved forward then it would be expected that the front wheels would need to support more mass than the rear wheels.
+Conversely, a centre of mass nearer the rear wheels ought to result in the rear suspension springs supporting more mass than at the front.
+All the mass of the vehicle must be "carried" by the sprung mass values, means: The sum of sprungMass values for all Wheels must be equal to the vehicle's weight.
+* ''<Type>: float''
+* ''<Range>: > 0''
+* ''<Default>: vehicleMass / numberOfWheels''
+<syntaxhighlight lang="cpp">sprungMass = 2066;</syntaxhighlight>
+
+==== springStrength ====
+This is the strength of the suspension spring in Newtons per metre.
+The spring strength has a profound influence on handling by modulating the time it takes for the vehicle to respond to bumps in the road and on the amount of load experienced by the tire.
+
+Key to the understanding the effect of spring strength is the concept of a spring's natural frequency.
+Consider a simple spring system, such as a pendulum swinging back and forth.
+The number of trips per second that the pendulum makes from full left to full right and then back again is called the natural frequency of the pendulum.
+A more powerful pendulum spring will result in the pendulum swinging faster, thereby increasing the natural frequency.
+Conversely, increasing the pendulum mass will result in a slower oscillation, thereby reducing the natural frequency.
+
+In the context of a suspension spring supporting a fixed portion of vehicle mass, the strength of the spring will affect the natural frequency;
+that is the rate at which the spring can respond to changes in load distribution. Consider a car taking a corner.
+As the car corners, it leans into the turn, putting more weight on the suspensions on the outside of the turn.
+The speed at which the spring reacts by applying forces to redistribute the load is controlled by the natural frequency.
+Very high natural frequencies, such as those on a racing car, will naturally produce twitchy handling because the load on the tires, and therefore the forces they can generate, is varying very rapidly.
+Very low natural frequencies, on the other hand, will result in the car taking a long time to straighten up even after the turn is complete.
+This will produce sluggish and unresponsive handling.
+
+Another effect of strength and natural frequency is the response of a car to a bump in the road.
+High natural frequencies can result in the car responding very strongly and quickly to the bump, with the wheel possibly even leaving the road for a short while.
+This not only creates a bumpy ride but also periods of time when the tire is generating no forces.
+Weaker springs will result in a smoother trip over the bump, with weaker but more constant tire forces.
+A balance must be found to tune the car for the expected types of turn and terrain.
+
+The natural frequency of the spring presents a challenge for computer simulation.
+A smooth and stable simulation requires that the spring is updated at a frequency much greater than the spring's natural frequency.
+An alternative way of expressing this is to consider the period of the spring relative to the timestep of the simulation.
+The period of the spring is the time the spring takes to complete a single oscillation and is mathematically equal to the reciprocal of the natural frequency.
+In order to achieve a stable simulation, the spring must be sampled at several points during each oscillation.
+A natural consequence of this observation is that the simulation timestep must be significantly smaller than the period of the spring.
+To discuss this further it is helpful to introduce a ratio that describes the number of simulation updates that will occur during each spring oscillation.
+This ratio is simply the spring period divided by the timestep:
+ alpha = sqrt([[#sprungMass|sprungMass]] / '''springStrength''') / timestep
+
+where {{hl|sqrt([[#sprungMass|sprungMass]] / '''springStrength''')}} is the period of the spring.
+An alpha value of 1.0 means that the chosen timestep and spring properties only allow a single sample of the spring during each oscillation.
+As described above, this is almost guaranteed to produce unstable behavior.
+In fact, the argument presented so far suggests '''a value of alpha significantly greater than 1.0 is essential to produce a smooth simulation'''.
+The exact value of alpha at which stability emerges is very difficult to predict and depends on many other parameters.
+As a guide, however, it is recommended that the timestep and spring properties are chosen so that they produce an alpha value greater than 5.0; that is, a minimum of five simulation updates per spring cycle.
+
+When tuning a suspension spring it can be very useful to use manufacturer data to discover typical values used across a range of vehicle types.
+This data is not always readily available.
+An alternative strategy would be to think in terms of the natural frequency of the spring by imagining how quickly the car would oscillate up and down if it was dropped onto the ground from a height of, say, 0.5m.
+The springs of a typical family car have natural frequency somewhere between 5 and 10; that is, such a car would make 5-10 oscillations per second if gently dropped to the ground.
+If the mass supported by the spring is already known then the spring strength can be calculated from the following equation:
+ springStrength = naturalFrequency * naturalFrequency * sprungMass
+* ''<Type>: float''
+* ''<Range>: > 0''
+* ''<Default>: sprungMass * 5.0 * 5.0''
+<syntaxhighlight lang="cpp">springStrength = 51653;</syntaxhighlight>
+
+==== springDamperRate ====
+This describes the rate at which the spring dissipates the energy stored in the spring.
+
+Key to the understanding of damper rate are the concepts of under-damping, over-damping, and critical damping.
+An over-damped pendulum displaced from rest is unable to make a single back-and-forth trip before it dissipates all its energy,
+while an under-damped pendulum would be able to make at least a single back-and-forth trip.
+A critically damped pendulum makes exactly a single back-and-forth trip before expending all its energy.
+
+For vehicle suspension springs, it is typically important to make sure that the spring has a damper rate that produces over-damping but not by too much.
+When cornering, for example, it is important that the spring doesn't over-respond by shifting the weight from the left suspension to the right suspension then back again.
+If this happened the tire load, and the forces generated, would be extremely variable, resulting in twitchy and uncontrollable handling.
+A very heavily over-damped spring, on the other hand, will feel sluggish and unresponsive.
+The concept of critical damping can be used to help tune the damping rate of the spring.
+It is helpful to introduce a value known as the damping ratio, which helps to mathematically describe the under-damping, critical damping and over-damping regimes:
+ dampingRatio = springDamperRate / (2 * sqrt(springStrength * sprungMass))
+
+A dampingRatio with value greater than 1.0 produces over-damping, a value of exactly 1.0 generates critical damping, and a value less than 1.0 is under-damped.
+It can be useful to first think about whether the spring will be under-damped or over-damped, then think about how far it will be from critical damping.
+This process allows a number to be subjectively applied to the damping ratio.
+From here the damping rate can be directly computed by rearranging the equation above:
+ springDamperRate = dampingRatio * 2 * sqrt(springStrength * sprungMass)
+
+A typical family car is probably slightly over-damped, having dampingRatio with value perhaps just over 1.0.
+A guideline would be that values very far from critical damping are likely to be unrealistic and will either produce sluggish or twitchy handling.
+It is difficult to put an exact figure on this but somewhere between 0.8 and 1.2 seems like a good starting point for the damping ratio.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 0.4 * 2 * sqrt([[#springStrength|springStrength]] * [[#sprungMass|sprungMass]])''
+<syntaxhighlight lang="cpp">springDamperRate = 8264;</syntaxhighlight>
+
+==== suspTravelDirection ====
+This is the direction of the suspension in the downward direction in the rest configuration of the vehicle.
+A vector that points straight downwards is a good starting point.
+* ''<Type>: Array[3]''
+* ''<Default>: { 0, -1, 0 }''
+<syntaxhighlight lang="cpp">suspTravelDirection[] = { 0, -1, 0 };
+</syntaxhighlight>
+
+==== suspForceAppPointOffset ====
+This is the application point of the suspension force.
+
+In a real vehicle, the suspension forces are mediated through the suspension strut.
+These are often incredibly complex mechanical systems that are computationally expensive to simulate.
+As a consequence, instead of modeling the details of the suspension strut, it makes sense to assume that the suspension strut has an effective point at which it applies the force to the rigid body.
+Choosing that point, however, needs careful consideration.
+At the same time, it opens up all sorts of tweaking possibilities, freed from the constraints of the real world.
+
+Deciding on the suspension force application point requires some thought.
+The suspension is very close to the wheel so the wheel center is a good starting point.
+Consider a line through the wheel center and along the suspension travel direction.
+Somewhere along this line seems like an even better idea for the application point, albeit not completely scientific.
+For a standard 4-wheeled car it makes sense that the application point is somewhere above the wheel center but below the centre of mass of the rigid body.
+It is probably above the wheel centre because the suspension is mostly above this point.
+It can be assumed that it is somewhere below the rigid body centre of mass because otherwise, vehicles would lean out of the turn rather than into the turn.
+This narrows down the application point to really quite a small section of a known line.
+
+When editing the suspension force application point, it is important to bear in mind that lowering the app point too far will result in cars leaning more into the turn.
+This can have a negative effect on handling because the inner wheel can take so much load that the response saturates, while the outer wheel ends up with reduced load and reduced turning force, the result being poor cornering.
+Conversely, setting the app point too high will result in cornering that looks unnatural. The aim is to achieve a good balance.
+* ''<Type>: memory point''
+* ''<Default>: center''
+<syntaxhighlight lang="cpp">suspForceAppPointOffset = "wheel_1_1_axis";</syntaxhighlight>
+
+
+=== Tire parameters ===
+==== longitudinalStiffnessPerUnitGravity ====
+The longitudinal tire force is approximately the product of the longitudinal stiffness per unit longitudinal slip (in radians) per unit gravity and the longitudinal slip and the magnitude of gravitational acceleration.
+
+Increasing this value will result in the tire attempting to generate more longitudinal force when the tire is slipping.
+Typically, increasing longitudinal stiffness will help the car accelerate and brake.
+The total tire force available is limited by the load on the tire so be aware that increases in this value might have no effect or even come at the expense of reduced lateral force.
+* ''<Type>: float''
+* ''<Default>: 10000''
+<syntaxhighlight lang="cpp">longitudinalStiffnessPerUnitGravity = 5000;</syntaxhighlight>
+
+==== latStiffX ====
+==== latStiffY ====
+These values together describe the lateral stiffness per unit lateral slip (in radians) of the tire.
+The lateral stiffness of a tire has a role similar to the longitudinal stiffness, except that it governs the development of lateral tire forces, and is a function of tire load.
+Typically, increasing lateral stiffness will help the car turn more quickly.
+The total tire force available is limited by the load on the tire so be aware that increases in this value might have no effect or even come at the expense of reduced longitudinal force.
+
+The combination of the two values latStiffX and latStiffY describe a graph of lateral stiffness as a function of normalized tire load.
+
+Typical for car tires is a graph that has linear response close to zero load but saturates at greater loads.
+This means that at low tire loads the lateral stiffness has a linear response to load; that is, more load results in more stiffness.
+At higher tire loads the tire has a saturated response and is in a regime where applying more load will not result in more tire stiffness.
+In this latter regime, it would be expected that the tire would start slipping.
+
+The '''latStiffX''' parameter describes the normalized tire load above which the tire has a saturated response to tire load.
+The normalized tire load is simply the tire load divided by the load experienced when the vehicle is perfectly at rest.
+A value of 2 for latStiffX means that when the tire has a load more than twice its rest load it can deliver no more lateral stiffness no matter how much extra load is applied to the tire.
+The '''latStiffY''' parameter describes the maximum stiffness per unit of lateral slip (in radians) per unit rest load.
+The maximum stiffness is delivered when the tire is in the saturated load regime, governed in turn by latStiffX.
+
+A good starting value for latStiffX is somewhere between 2 and 3.<br>
+A good starting value for latStiffY is around 18 or so.
+* ''<Type>: float''
+* ''<Default>: 25, 180''
+<syntaxhighlight lang="cpp">latStiffX = 2.0;
+latStiffY = __EVAL(0.3125 * (180.0 / Pi));</syntaxhighlight>
+
+==== frictionVsSlipGraph ====
+These six values describe a graph of friction as a function of longitudinal slip.
+Vehicle tires have a complicated response to longitudinal slip and this graph attempts to quickly describe this relationship.
+
+Typically, tires have a linear response at small slips.
+This means that when the tire is only slightly slipping it is able to generate a response force that grows as the slip increases.
+At greater values of slip, the force can actually start to decrease from the peak value that occurs at the optimum slip.
+Beyond the optimum slip, the tire eventually stops behaving less and less efficiently and hits a plateau of inefficiency.
+
+The first two values describe the friction at zero tire slip:
+ frictionVsSlipGraph[0][0] = 0
+ frictionVsSlipGraph[0][1] = friction at zero slip.
+
+The next two values describe the optimum slip and the friction at the optimum slip:
+ frictionVsSlipGraph[1][0] = optimum slip
+ frictionVsSlipGraph[1][1] = friction at optimum slip.
+
+The last two values describe the slip at which the plateau of inefficiency begins and the value of the friction available at the plateau of inefficiency:
+ frictionVsSlipGraph[2][0] = slip at the start of the plateau of inefficiency
+ frictionVsSlipGraph[2][1] = the friction available at the plateau of inefficiency.
+
+The friction values described here are used to scale the friction of the ground surface.
+This means they should be in range (0,1) but this is not a strict requirement.
+Typically, the friction from the graph would be close to 1.0 in order to provide a small correction to the ground surface friction.
+
+A good starting point for this is a flat graph of friction vs slip with these values:
+ frictionVsSlipGraph[0][0] = 0.0
+ frictionVsSlipGraph[0][1] = 1.0
+ frictionVsSlipGraph[1][0] = 0.5
+ frictionVsSlipGraph[1][1] = 1.0
+ frictionVsSlipGraph[2][0] = 1.0
+ frictionVsSlipGraph[2][1] = 1.0
+giving this array as a result:
+<syntaxhighlight lang="cpp">frictionVsSlipGraph[] = { { 0.0, 1.0 }, { 0.5, 1.0 }, { 1.0, 1.0 } };
+</syntaxhighlight>
+
+* ''<Type>: Array[3][2]''
+* ''<Default>: { { 0.0, 1.0 }, { 0.5, 1.0 }, { 1.0, 1.0 } }''
+<syntaxhighlight lang="cpp">frictionVsSlipGraph[] = { { 0.0, 0.4 }, { 0.5, 1.0 }, { 0.75, 0.60 } };
+</syntaxhighlight>
+
+== CarX specifics ==
+* Anti-roll bars is the system in a vehicle that should prevent it to do a barrel-roll during sharper turns. Using ARB enables us to make the center of mass realistically high and cause cars to roll down the steep slopes if placed sideways to the slope. It works the same way as the real ones - system computes the difference of applied weight to wheels in pair and tries to compensate difference by applying opposite forces.
+* '''antiRollbarForceCoef''' is a coefficient of applied force, could be taken as the strength of the system. Setting this value to zero disables ARB (and all next values), which is good for civilian vehicles, higher values reduce not only the risk of rolling but effects of suspension.
+* '''antiRollbarForceLimit''' is the highest strength of ARB applied to the vehicle. We may want to roll the car at certain situations (full van taking a sharp handbrake turn at high speed), tunning without diag mode is almost impossible because we are not able to imagine forces needed (values are rather low, 2 should be high enough for most of the vehicles)
+* '''antiRollbarSpeedMin''' and '''antiRollbarSpeedMax''' are limits of applied force coefficient. The coefficient is 0 at speeds lower than antiRollbarSpeedMin, interpolates to antiRollbarForceCoef at antiRollbarSpeedMax and is set to antiRollbarForceCoef for any higher speeds. This allows cars to drive on steep slopes using their radial speed, falling off the hill once they stop and rolling over at too high speeds (where coefficient doesn't grow and force is limited by the limit).
+==== brakeIdleSpeed ====
+'''brakeIdleSpeed''' is speed in '''m/s''' under which the brakes are automatically applied to the vehicle.
+This speed should be reasonably low, higher value would mean strange breaking of slow cars, too low value would cause inability to stop the car.
+* ''<Type>: float''
+* ''<Range>: > 0''
+<syntaxhighlight lang="cpp">brakeIdleSpeed = 0.2;</syntaxhighlight>
+
+==== antiRollbarForceCoef ====
+'''antiRollbarForceCoef''' is a coefficient of applied force, could be taken as strength of the system.
+Setting this value to zero disables ARB (and all next values), which is good for civilian vehicles.
+Higher values reduce not only the risk of rolling but effects of suspension.
+
+==== antiRollbarForceLimit ====
+'''antiRollbarForceLimit''' is the highest strength of ARB applied to vehicle.
+We may want to roll the car at certain situations (full van taking a sharp handbrake turn at high speed), tuning without diag mode is almost impossible because we are not able to imagine forces needed (values are rather low, 2 should be high enough for most of the vehicles)
+
+==== antiRollbarSpeedMin ====
+==== antiRollbarSpeedMax ====
+'''antiRollbarSpeedMin''' and '''antiRollbarSpeedMax''' are limits of applied force coefficient.
+Coefficient is 0 at speeds lower than '''antiRollbarSpeedMin''', interpolates to [[#antiRollbarForceCoef|antiRollbarForceCoef]] at [[#antiRollbarSpeedMax|antiRollbarSpeedMax]] and is set to [[#antiRollbarForceCoef|antiRollbarForceCoef]] for any higher speeds.
+This allows cars to drive on steep slopes using their radial speed, falling off the hill once they stop and rolling over at too high speeds (where coefficient doesn't grow and force is limited by the limit).
+
+==== terrainCoef ====
+Sets the importance of [[CfgSurfaces_Config_Reference#surfaceFriction|surfaceFriction]] on limiting the vehicle maximum speed on various surfaces. The bigger the value to slower the vehicle will be able to go over rough surfaces.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 1.0''
+<syntaxhighlight lang="cpp">terrainCoef = 2.0;</syntaxhighlight>
+
+==== turnCoef ====
+Defines the maximum steering angle of a car.
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 2.0''
+<syntaxhighlight lang="cpp">turnCoef = 3.0;</syntaxhighlight>
+
+
+== TankX specifics ==
+Main differences from [[#CarX specifics|CarX]]:
+* More wheels to be set up
+* Few additional params used
+* Less complicated Center of Mass tweaking
+* Vehicle config parameter: '''[[#tankTurnForce|tankTurnForce]]'''
+* Importance of wheel config parameters: '''[[#MOI|MOI]]''', '''[[#dampingRate|dampingRate]]''', '''[[#dampingRateInAir|dampingRateInAir]]'''
+* {{hl|'''[[#boneName|boneName]]''' {{=}} "<string>"}} in Wheel classes needs to be the damper bone in model.cfg (instead of the visual wheel bone for CarX)
+==== tankTurnForce ====
+Initial force applied to turning in [0, tankTurnForceAngMinSpd] angular speed range to help the tank overcome friction when turning.
+* ''<Type>: float''
+* ''<Default>: (required)''
+<syntaxhighlight lang="cpp">tankTurnForce = 0.66e6; // start from 11x vehicle mass in kg and tweak until fine</syntaxhighlight>
+
+==== tankTurnForceAngMinSpd ====
+Angular speed (in '''rad/s''') where [[#tankTurnForce|tankTurnForce]] starts fading to 0 @ [[#tankTurnForceAngSpd|tankTurnForceAngSpd]]
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 0.0''
+<syntaxhighlight lang="cpp">tankTurnForceAngMinSpd = 3.0;</syntaxhighlight>
+
+==== tankTurnForceAngSpd ====
+An angular speed (in '''rad/s''') where [[#tankTurnForce|tankTurnForce]] becomes 0
+* ''<Type>: float''
+* ''<Range>: >= 0''
+* ''<Default>: 4.0''
+<syntaxhighlight lang="cpp">tankTurnForceAngSpd = 3.0;</syntaxhighlight>
+
+
+== ShipX specifics ==
+''TODO - see [[Arma 3: Ships Config Guidelines]]''
+
+
+== See also ==
+* [[Arma 3: Cars Config Guidelines]]
+* [[Arma 3: Tanks Config Guidelines]]
+* [[Arma 3: Ships Config Guidelines]]
+* [[CfgVehicles Config Reference]]
+
+{{GameCategory|arma3|Vehicle Configuration}}
+{{GameCategory|arma1|Modelling}}

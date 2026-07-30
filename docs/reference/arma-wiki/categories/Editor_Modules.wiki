@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Editor_Modules
+// revision: 229626 (2021-02-01T13:32:30Z)
+// export sha1: aqpejjw4u1snyv9dn01wpmj5rofjul0
+// Vendored snapshot. Do not edit — re-export instead.
+
+This page lists various games' editor modules. See [[Modules]] for more information on how to use them.
+
+[[Category:Mission Editing]]

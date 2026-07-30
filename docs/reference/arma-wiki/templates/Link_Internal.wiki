@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/Template:Link/Internal
+// revision: 369839 (2024-10-16T13:44:44Z)
+// export sha1: c3ttwol2iyjfd1clykxblu8qui9zv7k
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if: {{{link|}}}
+| {{#ifeq: {{#pos:{{Trim|{{{link}}}}}|Category:}}<!-- with or without colon -->
+	|
+	| {{#ifeq: {{#pos:{{Trim|{{{link}}}}}|#}}
+		|
+			| {{#ifeq: {{NAMESPACENUMBER}} | {{NAMESPACENUMBER:{{{link}}}}}
+				| [[{{{link}}}{{#if:{{{text|}}}|{{!}}{{{text}}}|{{#ifeq: {{NAMESPACENUMBER}} | {{NAMESPACENUMBER:{{{link}}}}} | {{!}}<!-- no space here or the link's text will start with it! -->{{PAGENAME:{{{link}}}}}}}}}]]
+				| [[{{{link}}}{{#if:{{{text|}}}|{{!}}{{{text}}}}}]]
+			}}
+			| {{Link/Hash|{{{link}}}|{{{text|}}}}}
+		}}
+	| {{#ifeq: {{#pos:{{{link}}}|Category:}} | 0 | [[:{{{link}}} | {{#if:{{{text|}}}|{{{text}}}|{{PAGENAME:{{{link}}}}} Category}}]] | [[{{{link}}} | {{#if:{{{text|}}}|{{{text}}}|{{PAGENAME:{{{link}}}}} Category}}]]}}
+	}}
+| -no link provided-{{TemplateCase||[[Category:Link template usage error]]}}
+}}</includeonly><noinclude>
+{{Doc/Template
+|descr= This template creates an internal link (within the BIKI). It uses {{Template|Link/Hash}}.<br>
+If ''text'' is not provided:
+* if ''link''<nowiki/>'s namespace is identical to the current page, only the page name is used as text
+* otherwise, the full namespace:pagename is used
+
+|param1= link
+|descr1= the internal link
+
+|param2= text
+|descr2= (Optional) the text to display
+
+|example1= <nowiki>{{Link/Internal}}</nowiki>
+|result1= {{Link/Internal}}
+
+|example2= <nowiki>{{Link/Internal|link= setDir}}</nowiki>
+|result2= {{Link/Internal|link= setDir}}
+
+|example3= <nowiki>{{Link/Internal|text= setDir's page}}</nowiki>
+|result3= {{Link/Internal|text= setDir's page}}
+
+|example4= <nowiki>{{Link/Internal|link= setDir|text= setDir's page}}</nowiki>
+|result4= {{Link/Internal|link= setDir|text= setDir's page}}
+
+|example5= <nowiki>{{Link/Internal|link= setDir#Example 1}}</nowiki>
+|result5= {{Link/Internal|link= setDir#Example 1}}
+
+|example6= <nowiki/>
+<nowiki>* {{Link/Internal|link= :Category:Scripting Commands}}</nowiki><br>
+<nowiki>* {{Link/Internal|link= Category:Scripting Commands}}</nowiki><br>
+<nowiki>* {{Link/Internal|link= :Category:Scripting Commands|text= All Commands}}</nowiki><br>
+<nowiki>* {{Link/Internal|link= Category:Scripting Commands|text= All Commands}}</nowiki><br>
+<nowiki>* {{Link/Internal|link= Category:Arma 3: Scripting Commands}}</nowiki><br>
+<nowiki>* {{Link/Internal|link= Category:Arma 3: Scripting Commands |text=}}</nowiki><br>
+<nowiki>* {{Link/Internal|link= :Category:Arma 3: Scripting Commands |text=}}</nowiki><br>
+<nowiki>* {{Link/Internal|link= Category:Arma 3: Scripting Commands |text= A3's commands}}</nowiki>
+|result6= <nowiki/>
+* {{Link/Internal|link= :Category:Scripting Commands}}
+* {{Link/Internal|link= Category:Scripting Commands}}
+* {{Link/Internal|link= :Category:Scripting Commands|text= All Commands}}
+* {{Link/Internal|link= Category:Scripting Commands|text= All Commands}}
+* {{Link/Internal|link= Category:Arma 3: Scripting Commands}}
+* {{Link/Internal|link= Category:Arma 3: Scripting Commands |text= }}
+* {{Link/Internal|link= Category:Arma 3: Scripting Commands |text= A3's commands}}
+* {{Link/Internal|link= :Category:Arma 3: Scripting Commands |text= A3's commands}}
+
+|example7= <nowiki>* {{Link/Internal|link= DayZ:Diag Menu}}</nowiki><br><nowiki>* {{Link/Internal|link= Template:Link}}</nowiki><br><nowiki>* {{Link/Internal|link= Template:Link#Usage}}</nowiki>
+|result7= <nowiki/>
+* {{Link/Internal|link= DayZ:Diag Menu}}
+* {{Link/Internal|link= Template:Link}}
+* {{Link/Internal|link= Template:Link#Usage}}
+}}</noinclude>

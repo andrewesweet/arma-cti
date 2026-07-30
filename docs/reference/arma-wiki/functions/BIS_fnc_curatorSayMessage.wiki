@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_curatorSayMessage
+// revision: 349430 (2023-11-08T16:27:36Z)
+// export sha1: 6xydf5srp7dxgqfpu5vjk52o7sspf5j
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Plays some radio message from CfgRadio locally.
+
+|s1= [speaker, sentence] call [[BIS_fnc_curatorSayMessage]]
+
+|p1= target: [[Object]] - curator entity
+|p2= sentence: [[String]] - sentence from CfgRadio
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player, "mp_groundsupport_01_casrequested_BHQ_0"] call BIS_fnc_curatorSayMessage;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[globalRadio]]
+}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:CfgVehicles
+// revision: 182453 (2021-01-04T10:12:39Z)
+// export sha1: 0axgfqodkaurhyq6u2xdgqqrnqecaze
+// Vendored snapshot. Do not edit — re-export instead.
+
+Were you looking for the [[CfgVehicles Config Reference]]?
+
+[[Category:Reference Lists]]

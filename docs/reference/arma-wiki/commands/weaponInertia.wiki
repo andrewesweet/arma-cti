@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/weaponInertia
+// revision: 378476 (2026-04-24T11:32:50Z)
+// export sha1: i4oy9z8onhiujap84zrj625nlh2hcwm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.48
+
+|gr1= Weapons
+
+|descr= Returns current rate of how much the weapon view is distorted because of quick aiming.
+
+|s1= [[weaponInertia]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] with [x, y]
+* x: Number - Amount of x-axis sway
+* y: Number - Amount of y-axis sway
+
+|x1= <sqf>_inertia = weaponInertia player; //[-0.0126307,0.038023]</sqf>
+
+|seealso= [[getWeaponSway]]
+}}

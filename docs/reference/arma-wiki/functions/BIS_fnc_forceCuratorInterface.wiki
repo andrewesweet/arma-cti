@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_forceCuratorInterface
+// revision: 349418 (2023-11-08T16:27:32Z)
+// export sha1: e0a6kn1qg4v6t8b99hmkwigigunlv5u
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Force curator interface, so user cannot exit it by pressing Zeus key.
+
+|s1= [mode, waitUntil] call [[BIS_fnc_forceCuratorInterface]]
+
+|p1= mode: [[Boolean]] - [[true]] to force
+|p2= waitUntil: [[Boolean]] - (Optional, default [[false]]) - [[true]] to keep trying until the interface is actually opened
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[true, true] call BIS_fnc_forceCuratorInterface;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

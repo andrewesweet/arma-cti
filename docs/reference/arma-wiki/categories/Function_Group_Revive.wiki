@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Revive
+// revision: 254104 (2021-04-07T18:32:24Z)
+// export sha1: 36jznn0g2exqv0qcfzqs7fa52h6gw4k
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions used by the [[Arma 3: Revive]] system.
+
+
+[[Category:Functions by Functionality]]

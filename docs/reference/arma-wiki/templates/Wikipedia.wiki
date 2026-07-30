@@ -1,0 +1,15 @@
+// source: https://community.bistudio.com/wiki/Template:Wikipedia
+// revision: 338217 (2023-02-24T00:20:54Z)
+// export sha1: 9g1bomzofgibr2mm0p2zhimf295uttd
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+| <span class="wikipedia" title="Go to the '{{#replace:{{{1}}}|_|&nbsp;}}' Wikipedia article{{#if:{{{3|}}}|<nowiki/> ({{uc:{{{3}}}}})}}">[https://{{#if:{{{3|}}}|{{lc:{{{3}}}}}|en}}.wikipedia.org/wiki/{{#replace:{{{1}}}| |_}} {{#if:{{{2|}}}|<nowiki/>{{{2}}}|{{{1}}}}}{{#if:{{{3|}}}|{{#ifeq:{{lc:{{{3|}}}}}|en||&nbsp;<span style="font-size: 0.66em">'''({{uc:{{{3}}}}})'''</span>}}}}]</span>
+| -Wikipedia article not defined-
+}}</includeonly><noinclude>
+Creates a {{Link|https://en.wikipedia.org/wiki/Wikipedia|Wikipedia}} link.
+
+{{Feature|warning|This template has been integrated into {{Template|Link/External}}; it is kept only for historical purpose (history browsing).}}
+
+[[Category:Historical Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

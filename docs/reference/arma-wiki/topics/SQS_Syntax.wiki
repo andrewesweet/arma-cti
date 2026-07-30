@@ -1,0 +1,106 @@
+// source: https://community.bistudio.com/wiki/SQS_Syntax
+// revision: 330355 (2022-09-02T20:27:41Z)
+// export sha1: qr1kbar8xkhoit81dp43q8ayumyrpzf
+// categories: Category:Syntax
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side|1|}}
+[[SQS Syntax]] (where SQS stands for Status Quo Script) was the main [[Syntax|syntax]] in [[:Category:Operation Flashpoint|{{ofp}}]] and is still available (although considered obsolete) in later titles. It can only be used for [[Script File|scripts]], but not for [[Function|functions]], in the [[Mission Editor]] or in addon config files. The newer script syntax is [[SQF Syntax]].
+
+
+== Rules ==
+
+Binding rules:
+
+* [[Statement|Statements]] are separated by '''line breaks''', '''semicolons''' (;) and '''commas''' (,) - this means that a statement ''can not'' span over multiple lines (e.g a [[switch]] usage must be all inlined).
+* A [[Code|code block]] (defined by curled braces <sqs inline>{ }</sqs>) is considered a single statement, thus may not span over multiple lines either.
+
+=== Example ===
+
+ STATEMENT 1
+ STATEMENT 2; STATEMENT 3, STATEMENT 4
+ 
+ BLOCK { STATEMENT 5; STATEMENT 6 }
+
+
+== Comments ==
+
+A line beginning with a '''semicolon''' ({{hl|;}}) is considered a comment and ignored by the game engine.
+
+=== Example ===
+
+<sqs>; this is my comment</sqs>
+
+
+== Language Constructs ==
+
+The control structures listed in the article [[Control Structures]] may also be used in SQS syntax. Note that they must be written '''within a single line''' due to the above rules.
+
+; Example
+<sqs>if (_value == 1) then { hint "Value is 1" } else { hint "Value is not 1" }</sqs>
+
+There exist also special structures limited to SQS syntax, listed below.
+
+=== Tilde ===
+
+The tilde ({{hl|~}}) symbol tells the script to wait X amount of seconds (see [[sleep]] in SQF):
+
+<sqs>
+hint "3..."
+~1
+hint "2..."
+~1
+hint "1..."
+~1
+hint "GO!"
+</sqs>
+
+=== Label ===
+
+Labels may be defined in the code by beginning a line with {{hl|#}}, followed by the label's name (without spaces).
+The [[goto]] command can then be used at any point of the [[Script File|script]] to jump to this label (and potentially create a loop).
+
+<sqs>
+#Label1
+
+~1
+hint format ["a second has passed. time: %1", round time]
+
+goto "Label1"
+</sqs>
+
+=== Conditional ===
+
+A [[Boolean]] condition can be used in order to run code that is executed ''only'' when said condition is {{hl|[[true]]}}. Note that there is no such equivalent for "[[else]]".
+A conditional line must start with {{hl|?}}, followed by the condition and {{hl|:}}, followed by one or more commands. Multiple commands  are separated by commas (,) or semicolons (;).
+The conditional statement, like other statements, ends with the end of the line.
+
+<sqs>? alive target : hint "target is alive, let's destroy it"; target setDammage 1</sqs>
+
+=== @ ===
+
+Much like the [[waitUntil]] statement in [[SQF Syntax]], @ will evaluate a certain condition, and the script will pause until @ returns [[true]].
+
+<sqs>@not alive target</sqs>
+
+
+== Notes ==
+
+Due to the line-based nature of [[SQS Syntax|SQS scripts]], it is not possible to create multiline string constants in them.
+To overcome this limitation multiline text can be stored in a separate text file and loaded using [[loadFile]] or [[preprocessFile]] (the second uses C-like preprocessor with // or /* */ comments and #define macros).
+
+
+== Limitations ==
+
+In {{GameCategory|ofp|link= y}}, if a single line of a sqs file is longer than 4096 characters, the game will return an error and will not execute the line.
+
+
+== See also ==
+
+* [[SQF Syntax]]
+* [[Script File]]
+* [[Statement]]
+* [[Block]]
+
+
+[[Category: Syntax]]

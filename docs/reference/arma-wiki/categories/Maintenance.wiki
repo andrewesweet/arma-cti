@@ -1,0 +1,113 @@
+// source: https://community.bistudio.com/wiki/Category:Maintenance
+// revision: 363998 (2024-04-30T09:31:47Z)
+// export sha1: tl9jtqsyug0sw5j2uf613zslsxwilkx
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__ __NOEDITSECTION__
+<div class="float-right">
+{{Feature|informative|2=
+* <span class="plainlinks">{{Link|link= https://community.bistudio.com/wikidata/api.php?action=query&meta=siteinfo&siprop=statistics&format=rawfm|text= Wiki statistics}}</span>
+}}
+{| class="wikitable align-center-col-1 align-center-col-2"
+! colspan="3" | Categories that should be empty
+|-
+! Prio
+! Count
+! Category
+|-
+| 1
+| {{n/a}}
+| [[Special:BrokenRedirects|Broken redirects]]
+|-
+| 2
+| {{PAGESINCATEGORY:WIP}}
+| [[:Category:WIP|WIP]]
+|-
+| 3
+| {{PAGESINCATEGORY:To-do}}
+| [[:Category:To-do|To-do]]
+|-
+| 4
+| {{PAGESINCATEGORY:Stubs}}
+| [[:Category:Stubs|Stubs]]
+|-
+| 5
+| {{PAGESINCATEGORY:Clarification needed}}
+| [[:Category:Clarification needed|Clarification needed]]
+|-
+| 6
+| {{PAGESINCATEGORY:Merge Requests}}
+| [[:Category:Merge Requests|Merge Requests]]
+|-
+| 7
+| {{PAGESINCATEGORY:Pages with broken file links}}
+| [[:Category:Pages with broken file links|Pages with broken file links]]
+|-
+| 8
+| {{PAGESINCATEGORY:Pages with wrong Enfusion classes}}
+| [[:Category:Pages with wrong Enfusion classes|Pages with wrong Enfusion classes]]
+|-
+| 9
+| {{#expr: 
+	{{PAGESINCATEGORY:Maintenance/RV/Game1 needed|pages|R}} +
+	{{PAGESINCATEGORY:Maintenance/RV/Version1 needed|pages|R}} +
+	{{PAGESINCATEGORY:Maintenance/RV/Description needed|pages|R}} +
+	{{PAGESINCATEGORY:Maintenance/RV/Syntax needed|pages|R}} +
+	{{PAGESINCATEGORY:Maintenance/RV/Return value needed|pages|R}} +
+	{{PAGESINCATEGORY:Maintenance/RV/Example needed|pages|R}} +
+	{{PAGESINCATEGORY:Maintenance/RV/See also needed|pages|R}} +
+	{{PAGESINCATEGORY:Maintenance/RV/Nameless parameter usage|pages|R}}
+}}
+| [[:Category:Maintenance/RV|RV missing info pages]]
+* {{PAGESINCATEGORY:Maintenance/RV/Game1 needed|pages}}&times; [[:Category:Maintenance/RV/Game1 needed|Game1 needed]]
+* {{PAGESINCATEGORY:Maintenance/RV/Version1 needed|pages}}&times; [[:Category:Maintenance/RV/Version1 needed|Version1 needed]]
+* {{PAGESINCATEGORY:Maintenance/RV/Description needed|pages}}&times; [[:Category:Maintenance/RV/Description needed|Description needed]]
+* {{PAGESINCATEGORY:Maintenance/RV/Syntax needed|pages}}&times; [[:Category:Maintenance/RV/Syntax needed|Syntax needed]]
+* {{PAGESINCATEGORY:Maintenance/RV/Example needed|pages}}&times; [[:Category:Maintenance/RV/Return value needed|Return value needed]]
+* {{PAGESINCATEGORY:Maintenance/RV/Example needed|pages}}&times; [[:Category:Maintenance/RV/Example needed|Example needed]]
+* {{PAGESINCATEGORY:Maintenance/RV/See also needed|pages}}&times; [[:Category:Maintenance/RV/See also needed|See also needed]]
+* {{PAGESINCATEGORY:Maintenance/RV/Nameless parameter usage|pages}}&times; [[:Category:Maintenance/RV/Nameless parameter usage|Nameless parameter usage]]
+|-
+| 99
+| {{#expr: {{PAGESINCATEGORY:Uncategorised Commands|pages|R}} + {{PAGESINCATEGORY:Uncategorised Functions|pages|R}}}}
+| less urgent:
+* {{PAGESINCATEGORY:Uncategorised Commands|pages}}&times; [[:Category:Command Group: Uncategorised|Uncategorised Commands]]
+* {{PAGESINCATEGORY:Uncategorised Functions|pages}}&times; [[:Category:Function Group: Uncategorised|Uncategorised Functions]]
+* ''[[Special:DoubleRedirects|Double redirects]]'' (solved by the wiki now)
+|}
+</div>
+
+This page contains a list of things which need to be done. Also check out the categories in this page.
+
+{| class="valign-top" style="min-width: 60%; max-width: 75%"
+|
+=== Help Others ===
+
+* Deal with [[:Category:To-do|To-do]] articles
+* Process [[:Category:WIP|WIP]] (be sure not to interfere with another author!)
+* Clarify information in [[:Category:Clarification needed|Clarification needed pages]]
+* Check [[Special:WantedPages|Wanted Pages]]
+
+=== Expand Content ===
+
+* [[:Category:Stubs|Stubs pages]] or remove the {{hl|<nowiki>{{Stub}}</nowiki>}} marker
+* [[:Category:Maintenance/RV|RV missing info pages]] (see side table)
+|
+=== General Maintenance ===
+
+* Fix [[:Category:Pages with wrong Enfusion classes|Pages with wrong Enfusion classes]] ({{Name|enfusion}} titles)
+* Add command group categories to [[:Category:Command Group: Uncategorised|Uncategorised Commands]]
+* Add function group categories to [[:Category:Function Group: Uncategorised|Uncategorised Functions]]
+* Fix or remove dead image links in [[:Category:Pages with broken file links|Broken Links pages]]
+* Merge pages in [[:Category:Merge Requests|Merge Requests]]
+* Check the [[:Category:To-do|To-do]] category for pages that are on the to-do list
+* See if anything needs attention in the [[Special:TrackingCategories|Tracking Categories]].
+* Resolve [[Special:DoubleRedirects|double]] and [[Special:BrokenRedirects|broken]] redirects
+
+<!--
+* Finally, don't forget to blame [[User:Lou_Montana|Lou Montana]] for any inaccuracies ;)<br> muh!
+-->
+|}
+
+
+[[Category:Community Wiki]]

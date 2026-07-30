@@ -1,0 +1,105 @@
+// source: https://community.bistudio.com/wiki/Magic_Variables
+// revision: 378809 (2026-06-30T19:25:43Z)
+// export sha1: pbv1lcsplnduzof1x9dqro1r83t15h2
+// categories: Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+__NOEDITSECTION__
+Magic variables are engine-maintained [[Variables|variables]] that serve a specific purpose within a given scope and are often used by the engine to provide data to a [[Script File|script]] or [[Code|code]] fragment.<br>
+They are usually no longer present after leaving the scope (e.g. after code execution or after a [[forEach]]-statement).
+
+=== _this ===
+
+Used to make the arguments of a script call ([[call]], [[exec]], [[execVM]], [[spawn]]) visible and accessible to the script. Also used by [[:Category:Event Handlers|Event Handlers]] to provide parameters.
+
+=== _x ===
+
+Represents the current element during iteration with [[apply]], [[count]], [[configClasses]], [[configProperties]], [[findIf]], [[forEach]] and [[select]].
+
+{{ArgTitle|3|_y|{{GVI|arma3|2.02}}}}
+
+Iterating over a [[HashMap]] with [[forEach]] will return the key as [[#x|_x]] and the value as [[#y|_y]].
+
+{{ArgTitle|3|_exception|{{GVI|arma1|1.00}}}}
+
+[[Exception handling]] using a [[try]]-[[catch]]-statement declares this variable which contains details about the [[throw|thrown]] exception in the [[try]]-block.
+
+{{ArgTitle|3|_fnc_scriptName|{{GVI|arma3|1.00}}}}
+
+{{Feature|informative|Not engine-maintained, but added by {{hl|functions_f/initFunctions.sqf}} – see [[scriptName]].}}
+Within a [[:Category:Functions|Function]], the {{hl|TAG_fnc_functionName}} function name (e.g. {{hl|"myTag_fnc_myFunction"}}).
+
+{{ArgTitle|3|_fnc_scriptNameParent|{{GVI|arma3|1.00}}}}
+
+{{Feature|informative|Not engine-maintained, but added by {{hl|functions_f/initFunctions.sqf}} – see [[scriptName]].}}
+Within a [[:Category:Functions|Function]], the name of the function that called the current function (same as [[#fnc_scriptName|_fnc_scriptName]] if the function was not called by another function).
+
+{{ArgTitle|3|_forEachIndex|{{GVI|arma2oa|1.55}}}}
+
+Represents the (zero-based) index of a [[forEach]]- / [[forEachReversed]]-loop.
+
+{{ArgTitle|3|_self|{{GVI|arma3|2.14}}}}
+
+Available in HashMapObject methods. Contains the HashMapObject instance that the method was invoked on (see [[createHashMapObject]]).
+
+{{ArgTitle|3|_thisArgs|{{GVI|arma3|2.04}}}}
+
+Additional Event Handler arguments available with [[addMissionEventHandler]].
+
+{{ArgTitle|3|_thisEvent|{{GVI|arma3|2.06}}}}
+
+The name of the Event added with [[addEventHandler]], [[addMPEventHandler]], [[addMissionEventHandler]],[[addUserActionEventHandler]], [[ctrlAddEventHandler]] and [[displayAddEventHandler]], as well as for config types EHs.
+
+{{ArgTitle|3|_thisEventHandler|{{GVI|arma3|1.64}}}}
+
+The index for Event Handlers added with [[addEventHandler]], [[addMPEventHandler]], [[addMissionEventHandler]], [[addUserActionEventHandler]], [[ctrlAddEventHandler]] and [[displayAddEventHandler]].
+
+{{ArgTitle|3|_thisFSM|{{GVI|arma3|1.54}}}}
+
+The [[FSM]] ID for FSMs executed with [[execFSM]].
+
+{{ArgTitle|3|_thisScript|{{GVI|arma3|1.54}}}}
+
+The [[Script Handle]] of a script started with [[execVM]], [[call]] or [[spawn]].
+
+{{ArgTitle|3|_thisScriptedEventHandler|{{GVI|arma3|1.68}}}}
+
+The index for Scripted Event Handlers added with [[BIS_fnc_addScriptedEventHandler]].
+
+=== _time ===
+
+{{Feature|warning|[[SQS Syntax|SQS]] only.}}
+The time elapsed since the script started running.
+
+=== this ===
+
+* '''Addon Config Files''' (e.g. UserActions, onInit, etc.)''':''' The object to which the entry belongs.
+* '''Dialogs:''' The player unit that activated control (e.g. via mouseEnter). [[false]] if non-activated.
+* '''Object Init Fields:''' The object to which the init field belongs.
+* '''Triggers:'''
+** ''Condition'': The [[Boolean]] return value of the [[Trigger]]'s condition (e.g. "East Not Present").
+** ''On Activation'' and ''On Deactivation'': Seems to always return [[false]].
+* '''Waypoints:'''
+** ''Condition'', ''On Activation'' and ''On Deactivation'': The group leader that completed the waypoint (or the driver, if the waypoint is assigned to a vehicle).
+
+=== thisList ===
+
+* '''Triggers:'''
+** Accessible in the ''Condition'', ''On Activation'' and ''On Deactivation'' code.
+** Defines an array of objects that have been detected by the trigger (same as what is returned by the [[list]] command).
+** Seems to be undefined in the ''On Deactivation'' expression and should not be used. It will either be an empty array, or possibly the contents of a different trigger.
+* '''Waypoints:'''
+** Accessible within the ''Condition'' or ''On Activation'' code.
+** Defines an array containing all group members that completed the waypoint.
+
+=== thisTrigger ===
+
+Refers to the [[Triggers|trigger]] object itself - accessible within the ''Condition'', ''On Activation'' and ''On Deactivation'' code.
+
+{{ArgTitle|3|thisActivator|{{GVI|arma3|2.22}}}}
+
+Refers to an [[Object]], which activated this trigger. Default: the trigger [[Object]] itself.
+
+
+[[Category: Scripting Topics]]

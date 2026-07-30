@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Startup_Parameters
+// revision: 341582 (2023-06-09T16:21:41Z)
+// export sha1: dc9mb6qf63ypl1dl48dshy7u83usfe0
+// categories: Category:Startup Parameters
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+These parameters can be configured by creating a new shortcut on your desktop and then adding the appropriate option in the target line.
+
+For Steam version:
+# Choose the game shortcut in Library
+# Right click on the game
+# Select properties
+# Hit "Set launch options"
+'''Example''':
+{{hl|C:\Program Files (x86)/Bohemia Interactive/Carrier Command Gaea Mission/carrier.exe" -nosplash}}
+
+Notice that the parameters are not inside the quotes, only the path is<ref>http://forums.bistudio.com/showthread.php?84780-nosplash</ref>.
+
+
+== Available Parameters ==
+
+There has been no official disclosure of available startup parameters for Carrier Command: Gaea Mission, apart from a post by a developer who confirmed <ref>http://forums.bistudio.com/showthread.php?140967-TOOL-CarrierTools-(modding-tool-inside)&p=2234275&viewfull=1#post2234275</ref> the existence of -nosplash option
+
+{| class="wikitable"
+! Name !! Description
+|-
+| -nosplash || Allows you to bypass the splash screens on startup of Carrier Command: Gaea Mission.
+|}
+
+
+[[Category:Startup Parameters]]

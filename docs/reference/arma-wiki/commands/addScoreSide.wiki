@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/addScoreSide
+// revision: 318736 (2022-05-13T09:21:24Z)
+// export sha1: nh12vvjvgnbxrxnh4t20xmhat85qx2i
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Command Group: Sides | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+
+|arg= global
+
+|eff= global
+
+|serverExec= server
+
+|gr1= Sides
+
+|gr2= Multiplayer
+
+|descr= Adds side score. This is shown in the MP score tab as the total score. '''MP only'''.
+
+|s1= side [[addScoreSide]] value
+
+|p1= side: [[Side]]
+
+|p2= value: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>west addScoreSide 10;</sqf>
+
+|seealso= [[score]] [[addScore]] [[scoreSide]] [[getPlayerScores]]
+}}

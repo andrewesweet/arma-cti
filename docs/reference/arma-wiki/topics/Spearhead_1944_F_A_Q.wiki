@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_F.A.Q.
+// revision: 367236 (2024-08-08T15:57:31Z)
+// export sha1: iasdfk1f3g8i4m22mv06hdn2jvs77kv
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+<div style="width:1024px; margin: 0 auto 0 auto;">
+= Will there be updates? =
+
+In the future, Heavy Ordnance Works plans to develop new assets & content, as well as improving / bug fixing existing content. However, please be aware that we are not allowed to discuss, neither confirm nor deny, if X and Y will be in future updates. 
+For the full list assets & content within Spearhead 1944, refer to our store page: {{Link/External|link= https://store.steampowered.com/app/1175380/Arma_3_Creator_DLC_Spearhead_1944/|text=Spearhead 1944}}
+
+= What are the reasons behind the censorship and incorrect use of symbols (e.g the red cross)? =
+
+The usage of the red cross & associated emblems is governed by the Geneva conventions of 1949 and their additional protocols, along with the national legislation of the concerned state.
+In regards to symbols such as the Swastika, processes have to happen in certain countries regarding its usage, despite the “lift” of restrictions / ban. In the context of Spearhead 1944 & the sandbox environment of Arma 3, this further complicates the situation.
+
+= Why are the Axis & Allies as BLUFOR and Independent factions? =
+
+The earliest iterations of WW2 content in the Arma universe featured the Axis forces as BLUFOR, with the Soviet forces OPFOR, followed by the Allies / Commonwealth forces as Independent. 
+Spearhead 1944 continues to maintain the long standing compatibility between the WW2 modding community by having our factions under their respective sides.
+
+= Are there templates for retexturing? =
+
+The texture templates for infantry uniforms and gear (no vehicles at this stage) can be found for download on [[Spearhead_1944_Retexturing|Spearhead 1944 Retexturing]].
+
+= Can the campaign be played alone? =
+
+You are able to play the CDLC campaign by yourself if you wish. This can be hosted from your own machine, however we strongly recommend playing the Campaign on a dedicated server either through the official servers, or through a locally hosted dedicated server.
+
+All player slots can be left to be used by AI to support the player(s) in their advance and to help complete mission objectives. Alongside there are various systems in place to help make the campaign playable with only a couple of friends or even by yourself. Systems like Revive, Self-Revive, AI Revive, Respawn, AI Tweaks, Custom Difficulty Adjustment, Indirect Fire Support and Retreat-Flee-Surrendering.
+
+= How do I play the campaign with my friends? =
+
+If you would like to play the campaign with your friends, you can locally host with port forwarding or UPNP disabled. However, we strongly recommend playing the Campaign on a dedicated server either through the official servers, or through a locally hosted dedicated server.
+
+= Can I still use assets from this CDLC without owning it? =
+
+Spearhead 1944 has a [https://steamcommunity.com/sharedfiles/filedetails/?id=2991828484 Compatibility Data] mod that allows you to preview all assets in Arsenal. In addition you preview the terrain in Eden in camera mode. Finally you can combine it with other mods to be able to play on another terrain and alongside or against SPE assets. Only if you want to pick up weapons, gear or get into the driver/gunner/commander position of SPE vehicles, you will get the usual DLC notification and are unable to use these assets yourself.
+
+To be able to access the CDLC's terrain, campaign and missions you need to become an owner of the CDLC.
+
+= I have found a bug, where can I report it? =
+
+On our discord underneath the “feedback & bugs” section, you can create a post under the bug-reporting thread. Please note, it is important for you to follow the post guidelines in this thread.
+
+= Where should I post feedback and suggestions =
+
+On our discord underneath the “feedback & bugs” section, you can create a post under the feedback thread.
+
+= How much does it cost? =
+
+$17.99 USD (€17.99EUR / £14.99 GBP)
+
+= How much space does this CDLC take up on my drive? =
+
+Around 29GB​​​​​
+
+= Where can I find community made mods and scenarios for this CDLC? =
+
+Community made mods & scenarios can be located on the {{Link/External|link= https://steamcommunity.com/workshop/browse/?appid=107410&requiredtags%5B0%5D=Spearhead+1944&actualsort=trend&browsesort=trend&p=1&days=-1 |text=Steam Workshop}}. Select the Spearhead 1944 tag under the DLC section. Alternatively, content creators may of posted their missions & mods on our discord in the #community-mods / #community-missions channels.
+
+= Can I use the default main and multiplayer menu? =
+
+If you prefer the standard menu, you can switch it back by clicking on “Customize” on the main menu and selecting either main or multiplayer Menu. Please note, switching the Main Menu will require a game restart to become active.
+</div>
+
+[[Category: Spearhead 1944]]

@@ -1,0 +1,79 @@
+// source: https://community.bistudio.com/wiki/nearEntities
+// revision: 377403 (2026-01-02T06:44:59Z)
+// export sha1: ei7b5rcjw764ssxemwiuh3kz08op40k
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= global
+
+|gr1= Object Detection
+
+|descr= [[File:sphere_radius.jpg|right|200px]]
+Finds entities inside a sphere with the given radius. If the alternative syntax is used, only entities of given types or subtypes are listed.
+Entities returned are not sorted by distance.
+
+The main syntax does not return dead entities or entities inside vehicles. If you need to return those, use the {{Link|#Syntax 3|alternative syntax}} (with ''includeCrew'' set to [[true]]) or the [[entities]] command.
+
+{{Feature|informative|This command is [[Code Optimisation#nearEntities and nearestObjects|much faster]] than [[nearestObjects]] for on-foot soldier and vehicle detection.}}
+
+|s1= position [[nearEntities]] radius
+
+|p1= position: [[Object]] or [[Position#PositionAGL|PositionAGL]] or [[Position#Introduction|Position2D]] - search centre
+
+|p2= radius: [[Number]] - radius of the sphere
+
+|r1= [[Array]] of [[Object]]s - not sorted
+
+|s2= position [[nearEntities]] [type, radius]
+
+|p21= position: [[Object]] or [[Position#PositionAGL|PositionAGL]] or [[Position#Introduction|Position2D]] - search centre
+
+|p22= type: [[String]] or [[Array]] of [[String]]s - type(s) to search for. See [[isKindOf]]
+
+|p23= radius: [[Number]] - radius of the sphere
+
+|r2= [[Array]] of [[Object]]s - not sorted
+
+|s3= area [[nearEntities]] [types, matchExactType, aliveOnly, includeCrew]
+|s3since= arma3 2.18
+
+|p41= area: [[String]], [[Object]] or [[Array]]:
+* [[String]] - marker name
+* [[Object]] - trigger
+* [[Array]] - format [center, a, b, angle, isRectangular, c] or {{GVI|arma3|2.22|size= 0.75}} [center, a, b, angle, isRectangular, c, usePosWorld] (see [[inArea]])
+
+|p42= types: [[Array]] of [[String]]s - type(s) to search for or [] empty array to return every type
+
+|p43= matchExactType: [[Boolean]] - (Optional, default [[false]]) [[true]] for an exact type match, [[false]] for an [[isKindOf]] match
+
+|p44= aliveOnly: [[Boolean]] - (Optional, default [[true]]) [[true]] to ignore dead entities, [[false]] to include them
+
+|p45= includeCrew: [[Boolean]] - (Optional, default [[false]]) [[true]] to include crew of vehicles in search
+
+|r3= [[Array]] of [[Object]]s - not sorted
+
+|x1= <sqf>
+_list = player nearEntities 20;
+_list = ASLToAGL getPosASL player nearEntities 50;
+_list = player nearEntities ["Man", 1000];
+_list = ASLToAGL getPosASL player nearEntities ["LaserTarget", 3000];
+_list = player nearEntities [["Car", "Motorcycle", "Tank"], 50];
+_list = ASLToAGL getPosASL player nearEntities [["Man", "Air", "Car", "Motorcycle", "Tank"], 200];
+</sqf>
+
+|seealso= [[entities]] [[findNearestEnemy]] [[nearestBuilding]] [[nearestObject]] [[nearestObjects]] [[nearObjects]] [[nearestLocation]] [[nearTargets]] [[nearSupplies]] [[nearestLocationWithDubbing]] [[nearObjectsReady]] [[nearRoads]] [[nearestMines]]
+}}

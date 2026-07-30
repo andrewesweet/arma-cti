@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/setVehicleArmor
+// revision: 369388 (2024-09-03T18:43:16Z)
+// export sha1: hir30fvmbp7rr8fw7k8aio1q33k6i3t
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Sets the armor (or health for men) state of the vehicle (a value from 0 to 1). 
+
+Works like [[setDamage]], but the other way around: 1 is full health - see {{Link|#Example 2}}.
+
+|s1= vehicleName [[setVehicleArmor]] value
+
+|p1= vehicleName: [[Object]]
+
+|p2= value: [[Number]] - in range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setVehicleArmor 0.5;</sqf>
+
+|x2= <sqf>
+player setVehicleArmor 1;
+// is the same as
+player setDamage 0;
+
+player setVehicleArmor 0;
+// is the same as
+player setDamage 0.97;
+</sqf>
+
+|seealso= [[setDamage]]
+}}

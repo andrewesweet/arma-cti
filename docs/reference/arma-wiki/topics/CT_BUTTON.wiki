@@ -1,0 +1,388 @@
+// source: https://community.bistudio.com/wiki/CT_BUTTON
+// revision: 376760 (2025-11-16T15:50:10Z)
+// export sha1: rintgkmds6t3i4pjci8okudqy8ymv0u
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_BUTTON
+|value = 1
+|description = Buttons are one way to add interactivity to your dialogs. If you need a button that has more options for customization then use [[CT_SHORTCUTBUTTON]].
+{{Feature|informative|If you want to add an image to the button check out [[CT_SHORTCUTBUTTON]] or [[CT_ACTIVETEXT#RscActivePicture|RscActivePicture]] instead.}}
+
+=== Button States ===
+The same button four times in different states:<br>
+[[File:Dialog controls button.jpg]]
+
+{{{!}} class="wikitable"
+{{!}}-
+! State !! Description
+{{!}}-
+{{!}} '''Enabled''' {{!}}{{!}} The button has not been [[ctrlEnable{{!}}disabled]], it currently doesn't have any mouse or keyboard related focus.
+{{!}}-
+{{!}} '''Disabled'''{{!}}{{!}} The button has been explicitly disabled. It will not be clickable.
+{{!}}-
+{{!}} '''Enabled''' + '''Focused'''{{!}}{{!}} As enabled; additionally it will have a small border of the color defined in the ''colorFocused'' property. This occurs when the button currently has focus (ie. is the default button or has been selected via the ''Tab'' key).
+{{!}}-
+{{!}} '''Enabled''' + '''Active'''{{!}}{{!}} As enabled; additionally it will have a different background as specified in the ''colorBackgroundActive'' background. This occurs when the mouse is currently hovering over an unfocused button.
+{{!}}-
+{{!}} '''Enabled''' + '''Active''' + '''Focused'''{{!}}{{!}} The combined result of the above two states. The mouse is currently hovering over the button in question and it has input focus.
+{{!}}}
+
+=== Reserved IDCs ===
+* IDC = 1 for (contextually) OK or CONTINUE
+* IDC = 2 for (contextually) CANCEL, ESCAPE or ABORT
+
+{{Feature|important|If you use these idc values, no action, script or event handler will operate on them.}}
+
+|commands =
+|events =
+* [[User Interface Event Handlers#Button_Events|Events: Buttons]]
+}}
+
+{{CT|abc start}}
+=== A ===
+{{CT|attribute
+|name=action
+|type1=String
+|value1="BIS_SyndikatAgent setVariable ['State', 1];"
+|description=Script command(s) to execute when button is pressed. Must use double quotes; single quotes or curly brackets will not work.
+The variable "_this" was available until {{GVI|arma3|2.18}} and contained an empty string. From {{GVI|arma3|2.18}}, it is not available anymore.
+{{Feature|important|
+* Unlike User Interface Event Handlers no "_this" information about the current control is passed.
+* It is recommended to use [[User Interface Event Handlers#onButtonClick|onButtonClick]] instead.
+}}
+}}
+
+{{CT|attribute
+|name=autocomplete
+|type1=Number
+|value1=0
+|description=Should not apply to this control, rather it is used on [[CT_EDIT]].
+}}
+
+=== B ===
+{{CT|attribute
+|name=borderSize
+|type1=Number
+|value1=0
+|description=If > 0 then a background (in the color defined in 'colorBorder') is drawn behind the button. It extends to the left by the distance defined here, its height is slightly less than that of the button, and it is vertically centered. The width extends to the right, to where the drop shadow starts. Stays static when button is pressed.
+}}
+
+=== C ===
+{{CT|attribute
+|name=canModify
+|type1=Number
+|value1=1
+|description=Should not apply.
+}}
+
+{{CT|attribute
+|name=color
+|type1=Array
+|value1={0,0,0,0}
+|description=
+}}
+
+{{CT|attribute
+|name=colorActive
+|type1=Array
+|value1={0,0,0,0}
+|description=
+}}
+
+{{CT|attribute
+|name=colorBackgroundActive
+|type1=Array
+|value1={"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.77])","(profilenamespace getvariable ['GUI_BCG_RGB_G',0.51])","(profilenamespace getvariable ['GUI_BCG_RGB_B',0.08])",1}
+|description=Background color if "active" (i.e. mouse pointer is over it).
+}}
+
+{{CT|attribute
+|name=colorBackgroundDisabled
+|type1=Array
+|value1={0,0,0,0.5}
+|description=Background color if control is disabled.
+}}
+
+{{CT|attribute
+|name=colorBorder
+|type1=Array
+|value1={0,0,0,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorFocused
+|type1=Array
+|value1={0,0,0,1}
+|description=Alternating background color. While the control has focus (but without the mouse pointer being over it) the background will cycle between 'colorFocused' and 'colorBackground' or, if defined, 'colorFocused2'. If both are the same, then the color will be steady.
+}}
+
+{{CT|attribute
+|name=colorFocused2
+|type1=Array
+|value1={1,1,1,0.1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSelection
+|type1=Array
+|value1={0.47,0.49,0.47,0.93}
+|description=Should not apply.
+}}
+
+{{CT|attribute
+|name=colorShadow
+|type1=Array
+|value1={0,0,0,0}
+|description=Color of drop shadow behind button (not visible if button disabled or foreground color) has an alpha of 1.
+}}
+
+=== I ===
+{{CT|attribute
+|name=idcx
+|type1=Number
+|value1=912
+|description=Used in the Arsenal display for some reason.
+}}
+
+=== K ===
+{{CT|attribute
+|name=KeyHints
+|type1=Class
+|value1=class KeyHints
+{
+	class A
+	{
+		key = "0x00050000 + 0";
+		hint = "KEY_XBOX_A";
+	};
+};
+|description=
+}}
+
+=== O ===
+{{CT|attribute
+|name=offsetPressedX
+|type1=Number
+|value1=0
+|type2=String
+|value2="pixelW"
+|description=The button's text & background will move by this distance horizontally when pressed. Distance is in [[Arma_3_GUI_Coordinates|UI Coordinates]].
+(If a shadow is defined, it will stay in place.)
+}}
+
+{{CT|attribute
+|name=offsetPressedY
+|type1=Number
+|value1=0
+|type2=String
+|value2="pixelH"
+|description=The button's text & background will move by this distance vertically when pressed. Distance is in [[Arma_3_GUI_Coordinates|UI Coordinates]].
+(If a shadow is defined, it will stay in place.)
+}}
+
+{{CT|attribute
+|name=offsetX
+|type1=Number
+|value1=0
+|description=Horizontal offset of drop shadow.
+If 0, then shadow will be placed directly behind button.
+}}
+
+{{CT|attribute
+|name=offsetY
+|type1=Number
+|value1=0
+|description=Vertical offset of drop shadow.
+If 0, then shadow will be placed directly behind button.
+}}
+
+=== P ===
+{{CT|attribute
+|name=period
+|type1=Number
+|value1=0
+|description=Defines how fast the button is oscillating between the colorActive and colorBackground while it is active.
+}}
+
+{{CT|attribute
+|name=periodFocus
+|type1=Number
+|value1=2
+|description=
+}}
+
+{{CT|attribute
+|name=periodOver
+|type1=Number
+|value1=0
+|description=
+}}
+
+=== S ===
+{{CT|attribute
+|name=shortcuts
+|type1=Array
+|value1={"512 + 0x20"}
+|description=Key shortcuts. Often overwritten/ignored by engine.
+}}
+
+{{CT|attribute
+|name=soundClick
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1}
+|description= Sound array played when the button is clicked and released. 
+* file path
+* volume
+* pitch
+}}
+
+{{CT|attribute
+|name=soundEnter
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1}
+|description=Sound array played when the mouse enters the button's area.
+}}
+
+{{CT|attribute
+|name=soundEscape
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1}
+|description=
+}}
+
+{{CT|attribute
+|name=soundPush
+|type1=Array
+|value1={"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1}
+|description=Sound array played when the button is pushed down.
+}}
+
+<!-- === T ===
+{{CT|attribute
+|name=textImport
+|type1=String
+|value1="Import"
+|description=
+}}
+
+{{CT|attribute
+|name=textLoad
+|type1=String
+|value1="Open"
+|description=
+}}
+
+{{CT|attribute
+|name=textMerge
+|type1=String
+|value1="Merge"
+|description=
+}}
+
+{{CT|attribute
+|name=textSave
+|type1=String
+|value1="Save"
+|description=
+}}
+
+{{CT|attribute
+|name=textSearch
+|type1=String
+|value1="\a3\Ui_f\data\GUI\RscCommon\RscButtonSearch\search_end_ca.paa"
+|description=
+}} -->
+
+=== U ===
+{{CT|attribute
+|name=url
+|type1=String
+|value1=""
+|description=URL which will be opened with default web browser. If tooltip is empty, URL will also be set as that. URL must contain {{hl|http(s)://}}.
+{{Feature|informative|See {{Link|Description.ext#CfgCommands}} to allow URLs.}}
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+
+=== RscButton ===
+<syntaxhighlight lang="cpp">
+class RscButton
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_BUTTON;
+	text = "";
+	colorText[] = {1,1,1,1};
+	colorDisabled[] = {1,1,1,0.25};
+	colorBackground[] = {0,0,0,0.5};
+	colorBackgroundDisabled[] = {0,0,0,0.5};
+	colorBackgroundActive[] = {0,0,0,1};
+	colorFocused[] = {0,0,0,1};
+	colorShadow[] = {0,0,0,0};
+	colorBorder[] = {0,0,0,1};
+	soundEnter[] =
+	{
+		"\A3\ui_f\data\sound\RscButton\soundEnter",
+		0.09,
+		1
+	};
+	soundPush[] =
+	{
+		"\A3\ui_f\data\sound\RscButton\soundPush",
+		0.09,
+		1
+	};
+	soundClick[] =
+	{
+		"\A3\ui_f\data\sound\RscButton\soundClick",
+		0.09,
+		1
+	};
+	soundEscape[] =
+	{
+		"\A3\ui_f\data\sound\RscButton\soundEscape",
+		0.09,
+		1
+	};
+	idc = -1;
+	style = ST_CENTER;
+	x = 0;
+	y = 0;
+	w = 0.095589;
+	h = 0.039216;
+	shadow = 2;
+	font = "RobotoCondensed";
+	sizeEx = GUI_TEXT_SIZE_MEDIUM;
+	url = "";
+	offsetX = 0;
+	offsetY = 0;
+	offsetPressedX = 0;
+	offsetPressedY = 0;
+	borderSize = 0;
+};
+</syntaxhighlight>
+
+=== RscButtonTextOnly ===
+Nothing but text. No background, no oscillating color.
+<syntaxhighlight lang="cpp">
+class RscButtonTextOnly : RscButton
+{
+	SizeEx = GUI_TEXT_SIZE_SMALL;
+	colorBackground[] = { 1, 1, 1, 0 };
+	colorBackgroundActive[] = { 1, 1, 1, 0 };
+	colorBackgroundDisabled[] = { 1, 1, 1, 0 };
+	colorFocused[] = { 1, 1, 1, 0 };
+	colorShadow[] = { 1, 1, 1, 0 };
+	borderSize = 0;
+};
+</syntaxhighlight>

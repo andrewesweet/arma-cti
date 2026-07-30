@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/getOpticsMode
+// revision: 348464 (2023-11-08T13:00:19Z)
+// export sha1: e9yb603r3fvvfwniq7g6f38mnbcnjm4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= Object Manipulation
+
+|descr= Returns the class name of the current optic mode of the current weapon.
+
+|s1= unit [[getOpticsMode]] slot
+
+|p1= unit: [[Object]]
+
+|p2= slot: [[Number]] - can be one of:
+* 0 - [[currentWeapon|Current weapon]]
+* 1 - [[primaryWeapon|Primary weapon]]
+* 2 - [[secondaryWeapon|Secondary weapon]]
+* 3 - [[handgunWeapon|Handgun]]
+
+|r1= [[String]] - class name of the current optic mode of the current weapon
+
+|x1= <sqf>
+player getOpticsMode 0; // get current weapon's optic mode
+player getOpticsMode 1; // get primary weapon's optic mode
+player getOpticsMode 2; // get launcher's optic mode
+player getOpticsMode 3; // get handgun's optic mode
+</sqf>
+
+|seealso= [[setOpticsMode]]
+}}

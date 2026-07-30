@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Strategic
+// revision: 164023 (2020-09-30T10:36:24Z)
+// export sha1: 2cz1nba27rmaj0wdgrqznqssup3eysr
+// Vendored snapshot. Do not edit — re-export instead.
+
+
+[[Category:Functions by Functionality]]

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Pages_with_syntax_highlighting_errors
+// revision: 325328 (2022-07-12T13:29:17Z)
+// export sha1: 4q8f0h9gin8p7jxxu5iu94ik5rtutr0
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists pages with wrong <syntaxhighlight lang="html" inline><syntaxhighlight lang="invalid"></syntaxhighlight> attribute.
+
+[[Category:Template usage error]]

@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/CfgMarkers
+// revision: 258402 (2021-05-27T21:29:52Z)
+// export sha1: rm1qsf93yj4m6bvnrhatzrwf5kyy0rx
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+* [[ArmA: Armed Assault: CfgMarkers]]
+* [[Arma 2: CfgMarkers]]
+* [[Arma 3: CfgMarkers]]

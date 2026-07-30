@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/2D_Editor:_Groups
+// revision: 353482 (2024-03-19T12:00:38Z)
+// export sha1: p7h73x32ugpo53cvjvot4vg4kstz9u5
+// categories: Category:2D Editor
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: 2D Editor]]
+[[File:icon map group.jpg|thumb|Units linked together, forming a&nbsp;group]]
+Group editing mode can be used in several ways. The primary use is to join previously placed individual entities together into groups. Joining individual units together into groups can greatly improve their combat abilities. A group will move together, share information about enemy units and can bring greater firepower to bear on a target. Each individual unit on the map that has no visible group links is actually in a group of its own. When a unit is created near another unit of the same side, it will automatically be placed in the other unit's group. To join a unit into an existing group, simply left click and hold on the unit, then drag a line to any unit of the group you wish to add it too. Release the button to join the unit into that group. Group links are displayed by light blue line drawn from the leader to each other unit in the group. Removing a unit from a group is done by left clicking and holding on the unit and dragging the group link line into empty space, then releasing. The highest ranking unit in a group will generally be the leader. While it is possible to create extremely large groups in ArmA, huge formations of AI units create path finding issues and can be very hard to manage for a human leader.
+
+Individual objects may also be grouped to [[Mission_Editor#Triggers|Triggers]] (to link a specific object to the trigger) and [[#Markers Mode (F6)|Markers]] (allowing an object to start at a random but specific location), see those sections for further details. 
+
+The final function of Group Mode is to place an entire group in one step. These groups have been pre-defined within game's main config file (''class CfgGroups''). Any units placed in this manner may be individually manipulated as normal. To place a group, simply double click on an empty map location. The Group Menu will open.
+
+== Menu ==
+<gallery>
+File:OFP_editor_group.jpg|[[Arma: Cold War Assault]]
+File:ArmA_editor_group.jpg|[[:Category:ArmA: Armed Assault|{{arma1}}]]
+File:Arma2 editor group.jpg|[[Arma 2]]
+File:tkoh editor groups.jpg|[[Take On Helicopters]]
+File:Arma3 editor group.jpg|{{GameCategory|arma3|link= y}}
+</gallery>
+
+=== Side ===
+Choose the side of the group you wish to place.
+
+=== Type ===
+Choose the type of group to be placed. Mechanized infantry are listed under ''Infantry'', not ''Armor''.
+
+=== Name ===
+Defines the specific group to be placed. Armor platoons and Air Squadrons consist of 4 vehicles, infantry squads consist of up to 9 men. Motorized squads and mechanized squads will begin with only the crew in their vehicle.
+
+=== Azimut / Direction / Azimuth ===
+Defines which direction the group will be facing. You can drag the pointer around the circle, or type in the desired facing into the box. Note that the group formation will be built around the leader, using his location and facing.

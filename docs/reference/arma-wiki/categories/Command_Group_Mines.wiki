@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Mines
+// revision: 157638 (2020-09-16T08:01:56Z)
+// export sha1: 4995e2gii4f1v5v98hnq3xfyy3qr552
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands by Functionality]]

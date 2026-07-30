@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Bitwise
+// revision: 165185 (2020-10-09T14:43:24Z)
+// export sha1: rw80pbxcsszwow5hegg8kugepn9qeh2
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Function Group: Arrays]]

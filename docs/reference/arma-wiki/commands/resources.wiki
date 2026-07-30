@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/resources
+// revision: 319310 (2022-05-13T09:23:51Z)
+// export sha1: sldr4y9gzhq68nq55lgj3n2x7rvl6ea
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Teams | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Teams
+
+|descr= Returns the resources of a team member. Results are local to the PC on which command was executed.
+
+|s1= [[resources]] member
+
+|p1= member: [[Team Member]]
+
+|r1= [[Array]]
+
+|x1= <sqf>resources teamMember _unit;</sqf>
+
+|seealso= [[addResources]] [[deleteResources]]
+}}

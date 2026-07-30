@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/setTrafficDistance
+// revision: 341171 (2023-05-13T22:13:32Z)
+// export sha1: h8bnlf1371i7oyq8k23r1r869zb6v2w
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Take On Helicopters version 1.01 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.01
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Environment
+
+|descr= Set maximum ambient traffic draw distance (in 2D). {{Feature|arma3|This command does nothing in {{arma3}}.}}
+
+|s1= [[setTrafficDistance]] distance
+
+|p1= distance: [[Number]] - draw distance (in meter)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setTrafficDistance 1000;</sqf>
+
+|seealso= [[enableTraffic]] [[setTrafficDensity]] [[setTrafficGap]] [[setTrafficSpeed]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2011-12-02 - 10:58</dd>
+<dt class="note">[[User:Master85|Master85]]</dt>
+<dd class="note">The distance is not to the drawn traffic itself but to the road section - i.e. the ambient traffic on a long road section which is only partially within the drawing distance is drawn entirely.</dd>
+
+</dl>

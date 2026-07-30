@@ -1,0 +1,85 @@
+// source: https://community.bistudio.com/wiki/allObjects
+// revision: 377077 (2026-01-01T09:39:24Z)
+// export sha1: kjncp73qyiswg2sgodqnx2s7e07ze8v
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= Object Detection
+
+|descr= Returns array of requested objects as fast as the engine allows it. The objects can be requested by object type and simulation kind.
+{{Feature|informative|This command does not return terrain placed objects (except for terrain objects with lights, such as lamp posts, etc. which can be found in the slow entities collection). To get all terrain objects, use [[nearestTerrainObjects]] instead.}} 
+
+|s1= objectType [[allObjects]] objectCollection
+
+|p1= objectType: [[Number]] - type can be a combination of types according to bit flag operation (see [[getObjectType]]):
+* -1 - {{GVI|arma3|2.12|size= 0.75}} All types incl. nulls (nulls exist with 'objectCollection' 7 and 8)
+* 1 - Primary - normal object placed in Terrain Builder, part of landscape
+* 2 - Network - road placed in Terrain Builder, part of landscape
+* 4 - Temporary - temporary object (like vehicle tracks)
+* 8 - TypeVehicle - entity added by game
+* 16 - TypeTempVehicle - temporary entity
+* 32 - LandDecal - land decal
+For example if required objects are both TerrainBuilder-placed ('''1''') and dynamically placed ('''8''') the combination type will be  8&nbsp;+&nbsp;1&nbsp;=&nbsp;'''9'''
+{{Feature|informative|Use '''63''' (1&nbsp;+&nbsp;2&nbsp;+&nbsp;4&nbsp;+&nbsp;8&nbsp;+&nbsp;16&nbsp;+&nbsp;32) to return objects of all types (excl. nulls).}}
+
+|p2= objectCollection: [[Number]] - supported values:
+* 0 - Slow (and very slow) entities: some houses, rubbles, street lamps, churches, etc
+* 1 - Normal entities: vehicles etc
+* 2 - Fast entities: shots and other high precision entities
+* 3 - Cloudlets: smokes, dust, etc
+* 4 - Out vehicles: objects that are not listed anywhere else, holders, etc
+* 5 - Animals: animals, birds, insects, etc
+* 6 - Mines: mines
+* 7 - {{GVI|arma3|2.12|size= 0.75}} Sensor map: ordered triggers. When trigger is created it is added to this collection in the order of creation. When deleted it becomes null. Use 'objectType' -1 to include nulls
+* 8 - {{GVI|arma3|2.12|size= 0.75}} Vehicle map: ordered vehicles. When vehicle is created it is added to this collection in the order of creation. When deleted it becomes null. Use 'objectType' -1 to include nulls
+* 9 - {{GVI|arma3|2.18|size= 0.75}} Vehicles and [[crew]]: normal entities as in 1 as well as crew if an entity is a vehcile with crew.
+* 10 - {{GVI|arma3|2.22|size= 0.75}} Windlets: all objects of the type '#windlet'.
+* 11 - {{GVI|arma3|2.22|size= 0.75}} Active windlets: all objects of the type '#windlet' which are enabled.
+
+|r1= [[Array]] of [[Object]]s
+
+|s2= objectType [[allObjects]] objectCollection
+|s2since= arma3 2.12
+|p21= objectType: [[String]] - type of the objects (will exact match return of [[typeOf]])
+|p22= objectCollection: [[Number]] - see main syntax above
+
+|r2= [[Array]] of [[Object]]s
+
+|x1= <sqf>private _visitorBuildings = 1 allObjects 0;</sqf>
+
+|x2= <sqf>private _userPlacedBuildings = 8 allObjects 0;</sqf>
+
+|x3= <sqf>
+onEachFrame
+{
+	hintSilent str
+	[
+		count (63 allObjects 0),
+		count (63 allObjects 1),
+		count (63 allObjects 2),
+		count (63 allObjects 3),
+		count (63 allObjects 4),
+		count (63 allObjects 5),
+		count (63 allObjects 6)
+	];
+};
+</sqf>
+
+|x4= <sqf>
+private _allGroundWeaponHolders = "GroundWeaponHolder" allObjects 0;
+private _allSimulatedWeaponHolders = "WeaponHolderSimulated" allObjects 1;
+</sqf>
+
+|seealso= [[getObjectFOV]] [[cursorObject]] [[cursorTarget]] [[createSimpleObject]] [[allMissionObjects]] [[setObjectViewDistance]] [[getObjectViewDistance]] [[objectParent]] [[object]] [[getObjectType]] [[allPlayers]] [[allGroups]] [[allDead]] [[playableUnits]] [[switchableUnits]] [[units]] [[vehicles]] [[allUnitsUAV]] [[allCurators]] [[playersNumber]]
+}}
+
+{{Note
+|user= PierreMGI
+|timestamp= 20221130173209
+|text= This command (<sqf inline>63 allObjects 0</sqf>) will return lamps or poles but not houses. Use [[nearestTerrainObjects]] instead.
+}}

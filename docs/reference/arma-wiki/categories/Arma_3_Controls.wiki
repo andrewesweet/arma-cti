@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Controls
+// revision: 281783 (2021-06-16T15:07:30Z)
+// export sha1: kwssndawtbqs8tri8mnr8wrffe9cpba
+// Vendored snapshot. Do not edit — re-export instead.
+
+All pages related to controls and user interaction.
+
+{{GameCategory|arma3}}
+{{GameCategory|arma3|Editing}}

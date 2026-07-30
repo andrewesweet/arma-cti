@@ -1,0 +1,78 @@
+// source: https://community.bistudio.com/wiki/playMove
+// revision: 373663 (2025-06-01T19:28:50Z)
+// export sha1: 929zvjrwa2qjy7bsn1zbu7tkhmmcp99
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Animations
+
+|descr= When used on a person, smooth transition to given move will be done.<br>
+The difference between [[playMove]] and [[playMoveNow]] is that [[playMove]] adds another move to the move queue, while [[playMoveNow]] replaces the whole move queue with new move (see {{Link|#Example 2}}).
+{{Feature|informative|see [[:Category:Moves]] for respective games animations.}}
+{{Feature|important|A transition is only possible if the current and provided animation nodes are connected to each other in config (via connectTo/From and interpolateTo/From). The connection can be indirect (using intermediate animations) }}
+
+|s1= unitName [[playMove]] moveName
+
+|p1= unitName: [[Object]]
+
+|p2= moveName: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>soldierOne playMove "Stand";</sqf>
+
+|x2= <sqf>
+player switchMove "AmovPercMstpSrasWrflDnon";
+0 spawn 
+{
+	sleep 0.5;
+	player playMove "AmovPpneMstpSrasWrflDnon";		// player goes prone
+	player playMove "amovPknlMstpSrasWrflDnon";		// player gets up on one knee
+};
+</sqf>
+
+|x3= <sqf>
+player switchMove "AmovPercMstpSrasWrflDnon";
+0 spawn
+{
+	sleep 0.5;
+	player playMove "AmovPpneMstpSrasWrflDnon";		// player never goes prone
+	player playMoveNow "AmovPknlMstpSrasWrflDnon";	// player goes down on one knee straight away
+};
+</sqf>
+
+|seealso= [[playMoveNow]] [[switchMove]] [[playAction]] [[playActionNow]]
+}}
+
+{{Note
+|user= Macguba
+|timestamp= 20060416023900
+|text= For an immediate transition use [[switchMove]]. This command must be executed after mission start. If you place it into init.sqs / init.sqf or in the Init field of some unit, it will not work. Just add a little delay (~0.001) and then place the command.
+}}

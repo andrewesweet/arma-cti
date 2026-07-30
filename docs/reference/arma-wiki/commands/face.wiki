@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/face
+// revision: 364911 (2024-06-30T09:08:15Z)
+// export sha1: 0svnjtgvt9ikwpofc37l6ao6nxmih7s
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Identity | Category:Introduced with Arma 3 version 1.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.02
+
+|gr1= Unit Identity
+
+|descr= Returns the face class of a person as it is written in 'CfgFaces'.
+
+|s1= [[face]] person
+
+|p1= person: [[Object]]
+|r1= [[String]]
+
+|x1= <sqf>face player;</sqf>
+
+|seealso= [[setFace]] [[setIdentity]] [[setSpeaker]] [[hasCustomFace]]
+}}

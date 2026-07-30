@@ -1,0 +1,1616 @@
+// source: https://community.bistudio.com/wiki/CfgNonAIVehicles_Config_Reference
+// revision: 373241 (2025-04-12T22:20:50Z)
+// export sha1: stf3o8kv18nbuxgxzo3tm5giq45ufmk
+// categories: Category:ArmA: Armed Assault: Addon Configuration | Category:Arma 3: Vehicle Configuration | Category:Operation Flashpoint: Editing | Category:Operation Flashpoint: Modelling | Category:Operation Flashpoint: Reference Lists | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|stub}}
+{{Feature|informative|For the basics, see also [[CfgVehicles_Config_Reference#Introduction|CfgVehicles Config Reference]].}}
+
+
+== References ==
+
+Weapon magazines:
+* {{Link|Arma 3: Magazine Proxies#CfgNonAIVehicles}}
+
+Missiles on planes:
+* {{Link|Arma 3: Vehicle Loadouts#CfgNonAIVehicles: simulation: pylonpod}}
+* {{Link|https://forums.bohemia.net/forums/topic/208673-how-to-make-missile-proxys-disappear-when-fired-from-an-aircraft/|https://forums.bohemia.net/forums/topic/208673-how-to-make-missile-proxys-disappear-when-fired-from-an-aircraft/}}
+* {{Link|https://forums.bohemia.net/forums/topic/144184-proxy-problem/|https://forums.bohemia.net/forums/topic/144184-proxy-problem/}}
+* {{Link|https://forums.bohemia.net/forums/topic/67825-cfgnonaivehicles/|https://forums.bohemia.net/forums/topic/67825-cfgnonaivehicles/}}
+* {{Link|https://forums.bohemia.net/forums/topic/19973-problem-with-missile-proxies/|https://forums.bohemia.net/forums/topic/19973-problem-with-missile-proxies/}}
+* {{Link|https://forums.bohemia.net/forums/topic/86983-missile-proxy-not-visible-ingame/|https://forums.bohemia.net/forums/topic/86983-missile-proxy-not-visible-ingame/}}
+
+Missiles on non planes:
+* {{Link|https://forums.bohemia.net/forums/topic/199973-solved-cannot-get-a-proxy-missile-working/|https://forums.bohemia.net/forums/topic/199973-solved-cannot-get-a-proxy-missile-working/}}
+* {{Link|https://forums.bohemia.net/forums/topic/174197-turrets-proxy/|https://forums.bohemia.net/forums/topic/174197-turrets-proxy/}}
+
+Ammoboxes and fuel cans on vehicles:
+* {{Link|https://forums.bohemia.net/forums/topic/43708-nonai-vehicles/|https://forums.bohemia.net/forums/topic/43708-nonai-vehicles/}}
+* {{Link|https://forums.bohemia.net/forums/topic/38589-custom-ammobox-proxies/|https://forums.bohemia.net/forums/topic/38589-custom-ammobox-proxies/}}
+
+NVGs:
+* {{Link|https://forums.bohemia.net/forums/topic/106778-how-to-make-new-nvg/|https://forums.bohemia.net/forums/topic/106778-how-to-make-new-nvg/}}
+* {{Link|https://forums.bohemia.net/forums/topic/116645-proxy-question/|https://forums.bohemia.net/forums/topic/116645-proxy-question/}}
+
+Street lights and bridges:
+* {{Link|https://forums.bohemia.net/forums/topic/93959-adding-proxysproxy-config/|https://forums.bohemia.net/forums/topic/93959-adding-proxysproxy-config/}}
+* {{Link|https://forums.bohemia.net/forums/topic/24583-street-lights/|https://forums.bohemia.net/forums/topic/24583-street-lights/}} (pre {{arma3}})
+
+Animals:
+* {{Link|https://forums.bohemia.net/forums/topic/31703-reskinning-a-seagull/|https://forums.bohemia.net/forums/topic/31703-reskinning-a-seagull/}}
+
+Triggers:
+* [[createTrigger]]
+* [[create3DENEntity]]
+* {{Link|http://killzonekid.com/arma-scripting-tutorials-triggers/|http://killzonekid.com/arma-scripting-tutorials-triggers/}}
+* {{Link|https://forums.bohemia.net/forums/topic/185635-how-to-determine-object-type-from-object-name/|https://forums.bohemia.net/forums/topic/185635-how-to-determine-object-type-from-object-name/}}
+
+== Simulations ==
+
+=== Detector ===
+
+<syntaxhighlight lang="cpp">
+	class EmptyDetector
+	{
+		scope = 2;
+		simulation = "Detector";
+		model = "";
+		selectionFabric = "latka";
+		icon = "\a3\Ui_f\data\IGUI\Cfg\IslandMap\iconSensor_ca.paa";
+		displayName = "Trigger";
+		class AttributeValues
+		{
+			size2[] = {0,0};
+			size3[] = {0,0,-1};
+		};
+	};
+	class EmptyDetectorArea10x10 : EmptyDetector
+	{
+		displayName = "Trigger (10x10x10 m)";
+		class AttributeValues
+		{
+			size2[] = {5,5};
+			size3[] = {5,5,5};
+			IsRectangle = 1;
+		};
+	};
+</syntaxhighlight>
+
+=== Flag ===
+
+<syntaxhighlight lang="cpp">
+	class Editor_Proxy_Composition
+	{
+		scope = 1;
+		model = "\A3\editor_f\data\composition_proxy\composition_proxy";
+		displayName = "Editor proxy - Object composition";
+		autocenter = 0;
+		reversed = 0;
+		animated = 0;
+		simulation = "Flag";
+		selectionFabric = "";
+	};
+</syntaxhighlight>
+
+=== SeaGull ===
+
+<syntaxhighlight lang="cpp">
+	class Bird
+	{
+		scope = 0;
+		model = "";
+		animated = 0;
+		simulation = "SeaGull";
+		reversed = 0;
+		minHeight = 5;
+		avgHeight = 10;
+		maxHeight = 50;
+		minSpeed = -0.5;
+		maxSpeed = 20;
+		acceleration = 7;
+		turning = 1;
+		straightDistance = 50;
+		flySound[] = {"",0.0316228,1,1};
+		singSound[] = {"",0.0316228,1,1};
+		canBeShot = 1;
+		airFriction2[] = {25,12,2.5};
+		airFriction1[] = {1500,700,100};
+		airFriction0[] = {40,20,60};
+	};
+	class SeaGull : Bird
+	{
+		scope = 2;
+		reversed = 0;
+		htMin = 60;
+		htMax = 1800;
+		afMax = 30;
+		mfMax = 0;
+		mFact = 1;
+		tBody = 37;
+		model = "\A3\Animals_F\Seagull\Seagull.p3d";
+		singSound[] = {"A3\Sounds_F\environment\animals\birds\seagul1",0.891251,1,200};
+		moves = "CfgMovesBird";
+		canBeShot = 0;
+	};
+	class Kestrel_Random_F : Bird
+	{
+		model = "\A3\Animals_F\kestrel\kestrel_F.p3d";
+		singSound[] = {"A3\sounds_f\dummysound",0.00177828,1,1};
+		moves = "CfgMovesBird";
+		minHeight = 60;
+		avgHeight = 70;
+		maxHeight = 80;
+	};
+
+	class Insect : Bird
+	{
+		animated = 0;
+		minHeight = -0.1;
+		avgHeight = 1.2;
+		maxHeight = 2;
+		minSpeed = -0.1;
+		maxSpeed = 5;
+		acceleration = 25;
+		straightDistance = 2;
+		turning = 2;
+		flySound[] = {"",0.0316228,1,1};
+		singSound[] = {"",0.0316228,1,1};
+		canBeShot = 0;
+		airFriction2[] = {125,12,2.5};
+		airFriction1[] = {7500,700,100};
+		airFriction0[] = {200,20,60};
+	};
+	class DragonFly : Insect
+	{
+		model = "\A3\Animals_f\dragonfly.p3d";
+		flySound[] = {"\A3\sounds_f\dummysound",0.000562341,1,1};
+		fsm[] = {"Dragonfly"};
+		straightDistance = 10;
+		maxSpeed = 5;
+	};
+	class FireFly : Insect
+	{
+		model = "\A3\Animals_f\firefly.p3d";
+		flySound[] = {"\A3\sounds_f\dummysound",0.000562341,1,1};
+		fsm[] = {"Butterfly"};
+		minHeight = -0.1;
+		avgHeight = 0.3;
+		maxHeight = 1.5;
+		minSpeed = -0.1;
+		maxSpeed = 1;
+		acceleration = 5;
+		straightDistance = 10;
+	};
+	class ButterFly_random : Insect
+	{
+		model = "\A3\animals_f\butterfly.p3d";
+		fsm[] = {"Butterfly"};
+		moves = "CfgMovesButterfly";
+		minHeight = -0.1;
+		avgHeight = 0.3;
+		maxHeight = 1.5;
+		minSpeed = -0.1;
+		maxSpeed = 1;
+		acceleration = 5;
+		straightDistance = 2;
+		turning = 5;
+		reversed = 0;
+		autocenter = 0;
+		class EventHandlers
+		{
+			init = "(_this select 0) call BIS_fnc_animalRandomization;";
+		};
+	};
+	class HoneyBee : Insect
+	{
+		flySound[] = {"\A3\sounds_f\dummysound",0.001,1,1};
+		model = "\A3\animals_f\honeybee.p3d";
+		minSpeed = -0.1;
+		maxSpeed = 0.2;
+		minHeight = -0.1;
+		avgHeight = 0.2;
+		maxHeight = 1;
+		fsm[] = {"HoneyBee"};
+		reversed = 0;
+		straightDistance = 0.5;
+	};
+</syntaxhighlight>
+
+=== ProxyWeapon ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyWeapon
+	{
+		autocenter = 0;
+		scope = 2;
+		reversed = 0;
+		animated = 0;
+		shadow = 1;
+		model = "";
+		simulation = "ProxyWeapon";
+	};
+</syntaxhighlight>
+
+=== Magazine ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyMagazineSlot : ProxyWeapon
+	{
+		model = "";
+		simulation = "Magazine";
+	};
+</syntaxhighlight>
+
+=== ProxyRadio ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyRadio_proxy : ProxyWeapon
+	{
+		simulation = "Proxyradio";
+	};
+</syntaxhighlight>
+
+=== ProxyHeadgear ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyHeadGear_proxy : ProxyWeapon
+	{
+		simulation = "Proxyheadgear";
+	};
+</syntaxhighlight>
+
+=== Maverickweapon ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyBomb_01_F : ProxyWeapon
+	{
+		model = "\A3\Weapons_F\Ammo\Bomb_01_F";
+		simulation = "Maverickweapon";
+	};
+
+	class ProxyMissile_AT_03_F : ProxyWeapon
+	{
+		model = "\A3\Weapons_F\Ammo\Missile_AT_03_F";
+		simulation = "Maverickweapon";
+	};
+
+	class ProxyRocket_03_AP_F : ProxyWeapon
+	{
+		model = "\A3\Weapons_F_EPC\Ammo\Rocket_03_AP_F.p3d";
+		simulation = "Maverickweapon";
+	};
+</syntaxhighlight>
+
+=== Pylonpod ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyPylonPod_3x_Missile_AGM_02_F : ProxyWeapon
+	{
+		model = "\A3\Weapons_F\DynamicLoadout\PylonPod_1x_Missile_AGM_02_F.p3d";
+		simulation = "Pylonpod";
+	};
+</syntaxhighlight>
+
+=== ProxySecWeapon ===
+
+<syntaxhighlight lang="cpp">
+	class ProxySecWeapon
+	{
+		autocenter = 0;
+		scope = 2;
+		scopeCurator = 2;
+		animated = 0;
+		shadow = 1;
+		model = "";
+		simulation = "ProxySecWeapon";
+	};
+
+	class ProxyLauncher
+	{
+		autocenter = 0;
+		scope = 2;
+		animated = 0;
+		shadow = 1;
+		model = "";
+		simulation = "ProxySecWeapon";
+	};
+</syntaxhighlight>
+
+=== ProxyInventoryOld ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyPistol
+	{
+		autocenter = 0;
+		scope = 2;
+		animated = 0;
+		model = "";
+		shadow = 1;
+		simulation = "ProxyInventoryOld";
+		inventoryType = "Handgun";
+	};
+
+	class ProxyPistol_holstered
+	{
+		autocenter = 0;
+		scope = 1;
+		reversed = 1;
+		animated = 1;
+		model = "\A3\Characters_F\Proxies\pistol_holstered";
+		shadow = 1;
+		simulation = "ProxyInventoryOld";
+		inventoryType = "PistolHolstered";
+	};
+	class ProxyRightHand
+	{
+		autocenter = 0;
+		scope = 2;
+		animated = 0;
+		model = "";
+		shadow = 1;
+		simulation = "ProxyInventoryOld";
+		inventoryType = "RightHand";
+	};
+
+	class ProxyLeftHand
+	{
+		autocenter = 0;
+		scope = 2;
+		animated = 0;
+		model = "";
+		shadow = 1;
+		simulation = "ProxyInventoryOld";
+		inventoryType = "LeftHand";
+	};
+	class ProxyDalekohled_Proxy : ProxyLeftHand
+	{
+	};
+	class ProxyBinoculars : ProxyLeftHand
+	{
+	};
+
+	class ProxyEquipment
+	{
+		autocenter = 0;
+		scope = 2;
+		reversed = 1;
+		animated = 1;
+		model = "\A3\characters_f\ProxyModels\equipmentVest";
+		shadow = 1;
+		simulation = "ProxyInventoryOld";
+		inventoryType = "Vest";
+	};
+
+	class ProxyHeadgear
+	{
+		autocenter = 0;
+		scope = 2;
+		reversed = 1;
+		animated = 1;
+		model = "";
+		shadow = 1;
+		simulation = "ProxyInventoryOld";
+		inventoryType = "Headgear";
+	};
+
+	class ProxyHMD
+	{
+		autocenter = 0;
+		scope = 2;
+		reversed = 1;
+		animated = 1;
+		model = "";
+		shadow = 1;
+		simulation = "ProxyInventoryOld";
+		inventoryType = "HMD";
+	};
+
+	class ProxyGoggles
+	{
+		autocenter = 0;
+		scope = 2;
+		animated = 0;
+		model = "";
+		shadow = 1;
+		simulation = "ProxyInventoryOld";
+		inventoryType = "Goggles";
+	};
+	class ProxyGlasses : ProxyGoggles
+	{
+		model = "\A3\Characters_F\Proxies\glasses";
+	};
+	class ProxyNVG_Proxy : ProxyGoggles
+	{
+		model = "\A3\Weapons_f\binocular\NVG_Proxy";
+	};
+	class ProxyNVG : ProxyGoggles
+	{
+		model = "\A3\Weapons_f\binocular\NVG_Proxy";
+	};
+	class ProxyNVG_Head : ProxyGoggles
+	{
+		model = "\A3\Weapons_f\binocular\NVG_Head";
+	};
+	class ProxyNVG_Head_Big : ProxyGoggles
+	{
+		model = "\A3\Weapons_f\binocular\NVG_Head_Big";
+	};
+	class ProxyNVG_Head_R : ProxyGoggles
+	{
+		model = "\A3\Weapons_f\binocular\NVG_Head_R";
+	};
+	class ProxyNVG_Head_C : ProxyGoggles
+	{
+		model = "\A3\Weapons_f\binocular\NVG_Head_C";
+	};
+	class ProxyNVG_Head_S : ProxyGoggles
+	{
+		model = "\A3\Weapons_f\binocular\NVG_Head_S";
+	};
+
+	class ProxyEarPhones
+	{
+		autocenter = 0;
+		scope = 2;
+		animated = 0;
+		model = "";
+		shadow = 1;
+		simulation = "ProxyInventoryOld";
+		inventoryType = "EarPhones";
+	};
+
+	class Proxyus_bag
+	{
+		reversed = 1;
+		autocenter = 0;
+		scope = 2;
+		animated = 0;
+		model = "";
+		shadow = 1;
+		simulation = "ProxyInventoryOld";
+		inventoryType = "Backpack";
+	};
+	class ProxyBackpack : Proxyus_bag
+	{
+		autocenter = 0;
+		scope = 2;
+		reversed = 1;
+		animated = 1;
+		model = "\A3\Characters_F\Proxies\backpack";
+	};
+</syntaxhighlight>
+
+=== AlwaysHide ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyHide
+	{
+		autocenter = 0;
+		scope = 2;
+		animated = 0;
+		model = "";
+		simulation = "AlwaysHide";
+	};
+</syntaxhighlight>
+
+=== AlwaysShow ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyWreck
+	{
+		autocenter = 0;
+		scope = 0;
+		animated = 0;
+		model = "";
+		simulation = "AlwaysShow";
+	};
+
+	class ProxyAmmoInTruck
+	{
+		autocenter = 0;
+		scope = 2;
+		reversed = 0;
+		animated = 0;
+		shadow = 1;
+		model = "";
+		simulation = "AlwaysShow";
+	};
+
+	class Proxy_hrusen2
+	{
+		model = "\ca\plants\hrusen2.p3d";
+		autocenter = 0;
+		scope = 2;
+		animated = 1;
+		reversed = 0;
+		simulation = "AlwaysShow";
+	};
+</syntaxhighlight>
+
+=== ProxyRetex ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyRetex
+	{
+		autocenter = 0;
+		scope = 0;
+		animated = 0;
+		model = "";
+		simulation = "Proxyretex";
+		hiddenSelections[] = {};
+	};
+	class proxyAPC_Tracked_02_cannon_wreck_F : ProxyRetex
+	{
+		model = "\A3\Armor_F_Beta\APC_Tracked_02\APC_Tracked_02_cannon_wreck_F.p3d";
+		hiddenSelections[] = {"Camo1","Camo2","Camo3"};
+	};
+</syntaxhighlight>
+
+=== ProxyCrew ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyCrew
+	{
+		autocenter = 0;
+		scope = 1;
+		model = "";
+		shadow = 1;
+		simulation = "Proxycrew";
+		crewPosition = "CPDriver";
+	};
+
+	class ProxyCommander : ProxyCrew
+	{
+		crewPosition = "CPCommander";
+	};
+	class ProxyCommanderOut : ProxyCommander
+	{
+	};
+	class ProxyBasicSittingCommander : ProxyCommander
+	{
+	};
+	class ProxyBasicStandingCommander : ProxyCommander
+	{
+	};
+
+	class ProxyDriver : ProxyCrew
+	{
+		crewPosition = "CPDriver";
+	};
+	class ProxyDriverOut : ProxyDriver
+	{
+	};
+	class ProxyBasicSittingDriver : ProxyDriver
+	{
+	};
+	class ProxyBasicStandingDriver : ProxyDriver
+	{
+	};
+	class ProxyBasicMotoDriver : ProxyDriver
+	{
+	};
+	class ProxyPilot : ProxyDriver
+	{
+	};
+	class ProxyParasutista : ProxyDriver
+	{
+	};
+
+	class ProxyGunner : ProxyCrew
+	{
+		crewPosition = "CPGunner";
+	};
+	class ProxyGunnerOut : ProxyGunner
+	{
+	};
+	class ProxyBasicSittingGunner : ProxyGunner
+	{
+	};
+	class ProxyBasicStandingGunner : ProxyGunner
+	{
+	};
+	class ProxyGunner01 : ProxyGunner
+	{
+	};
+	class ProxyGunner02 : ProxyGunner
+	{
+	};
+
+	class ProxyCargo : ProxyCrew
+	{
+		crewPosition = "CPCargo";
+	};
+	class ProxyCargoStanding : ProxyCargo
+	{
+	};
+	class ProxyBasicSittingCargo : ProxyCargo
+	{
+	};
+	class ProxyBasicStandingCargo : ProxyCargo
+	{
+	};
+	class ProxyCargo01 : ProxyCargo
+	{
+	};
+	class ProxyCargo02 : ProxyCargo
+	{
+	};
+	class ProxyCargo03 : ProxyCargo
+	{
+	};
+	class ProxyCargo04 : ProxyCargo
+	{
+	};
+</syntaxhighlight>
+
+=== Flag ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyFlag
+	{
+		autocenter = 0;
+		scope = 2;
+		reversed = 0;
+		shadow = 1;
+		simulation = "Flag";
+		model = "\A3\Characters_F\Proxies\flag";
+		selectionFabric = "cloth";
+	};
+	class ProxyFlag_soldier : ProxyFlag
+	{
+		model = "\A3\characters_f\flag_soldier";
+	};
+	class ProxyPlane_Flag_F : ProxyFlag
+	{
+		model = "\A3\Air_F\Data\Plane_Flag_F";
+		selectionFabric = "cloth";
+	};
+	class ProxyPlane_Flag_big_F : ProxyFlag
+	{
+		model = "\A3\Air_F\Data\Plane_Flag_big_F";
+		selectionFabric = "cloth";
+	};
+
+	class ProxyFlag_F
+	{
+		scope = 1;
+		model = "\a3\Structures_F\Mil\Flags\Flag_F.p3d";
+		autocenter = 0;
+		reversed = 0;
+		selectionFabric = "latka";
+		simulation = "Flag";
+	};
+	class ProxyFlag_Asym_F : ProxyFlag_F
+	{
+		model = "\a3\Structures_F\Mil\Flags\Flag_Asym_F.p3d";
+	};
+
+	class ProxyShipFlag_F
+	{
+		scope = 1;
+		model = "\A3\Boat_F_Destroyer\Destroyer_01\ShipFlag_F.p3d";
+		autocenter = 0;
+		reversed = 0;
+		selectionFabric = "latka";
+		simulation = "Flag";
+	};
+
+	class ProxyFlagChecked_proxy_F
+	{
+		scope = 1;
+		model = "\A3\Signs_F\SignSpecial\FlagChecked_proxy_F.p3d";
+		autocenter = 0;
+		reversed = 0;
+		selectionFabric = "latka";
+		simulation = "Flag";
+	};
+</syntaxhighlight>
+
+=== RandomShape ===
+
+<syntaxhighlight lang="cpp">
+	class RandomShape
+	{
+		models[] = {};
+		autocenter = 0;
+		scope = 2;
+		reversed = 0;
+		shadow = 1;
+		model = "";
+		simulation = "RandomShape";
+	};
+</syntaxhighlight>
+
+=== Road ===
+
+<syntaxhighlight lang="cpp">
+	class Bridge_base_F
+	{
+		class Destruction
+		{
+			animations[] = {};
+		};
+		scope = 0;
+		scopeCurator = 0;
+		displayName = "Bridge";
+		model = "\A3\Weapons_F\empty.p3d";
+		destrType = "DestructNo";
+		simulation = "Road";
+		armor = 500;
+		cost = 30000;
+	};
+	class Land_Bridge_01_F : Bridge_base_F
+	{
+		scope = 1;
+		model = "\A3\Structures_F\Bridges\Bridge_01_F.p3d";
+	};
+	class Land_Pier_doubleside_F : Bridge_base_F
+	{
+		scope = 2;
+		scopeCurator = 2;
+		displayName = "Pier (Concrete)";
+		model = "\A3\Structures_F\Naval\Piers\Pier_doubleside_F.p3d";
+		editorSubcategory = "EdSubcat_Seaports";
+		icon = "iconObject_3x1";
+	};
+	class Land_Bridge_stone_asf2_25
+	{
+		model = "\Ca\roads2\bridge\Bridge_stone_asf2_25.p3d";
+		simulation = "Road";
+		armor = 50;
+		class Destruction
+		{
+			animations[] = {{"ca\roads2\bridge\data\anim\bridge_stone_asf2.rtm",0.2,3}};
+		};
+	};
+
+	class Land_most_stred30
+	{
+		model = "\ca\Roads\most_stred30.p3d";
+		simulation = "Road";
+		armor = 50;
+		destrType = "destructBuilding";
+		class Destruction
+		{
+			animations[] = {{"ca\Roads_rtm2\Rtm\most_pad_01.rtm",0.2,17},{"ca\Roads_rtm2\Rtm\most_pad_02.rtm",0.2,17},{"ca\Roads_rtm2\Rtm\most_pad_03.rtm",0.2,17},{"ca\Roads_rtm2\Rtm\most_pad_04.rtm",0.2,17},{"ca\Roads_rtm2\Rtm\most_pad_05.rtm",0.2,17}};
+		};
+	};
+</syntaxhighlight>
+
+=== House ===
+
+<syntaxhighlight lang="cpp">
+	class Proxy_Radio2
+	{
+		simulation = "House";
+		model = "\ca\misc\Radio2.p3d";
+		autocenter = 0;
+		scope = 2;
+		scopeCurator = 2;
+		animated = 0;
+		reversed = 0;
+	};
+</syntaxhighlight>
+
+=== EditCursor ===
+
+<syntaxhighlight lang="cpp">
+	class EditCursor
+	{
+		model = "\core\cursor\cursor.p3d";
+		simulation = "EditCursor";
+	};
+</syntaxhighlight>
+
+=== ObjView ===
+
+<syntaxhighlight lang="cpp">
+	class ObjView
+	{
+		scope = 2;
+		model = "";
+		simulation = "ObjView";
+	};
+</syntaxhighlight>
+
+=== Temp ===
+<syntaxhighlight lang="cpp">
+	class Temp
+	{
+		scope = 2;
+		model = "";
+		simulation = "Temp";
+	};
+</syntaxhighlight>
+
+=== RopeSegment ===
+
+<syntaxhighlight lang="cpp">
+	class RopeSegment
+	{
+		access = 0;
+		scope = 2;
+		displayName = "";
+		simulation = "RopeSegment";
+		autocenter = 0;
+		animated = 0;
+		model = "\A3\Data_f\proxies\Rope\rope.p3d";
+	};
+</syntaxhighlight>
+
+=== Camera ===
+
+<syntaxhighlight lang="cpp">
+	class Camera
+	{
+		scope = 2;
+		model = "";
+		simulation = "Camera";
+		crossHairs = "\A3\ui_f\data\igui\cfg\nonaivehicles\camera_ca.paa";
+	};
+</syntaxhighlight>
+
+=== CamConstruct ===
+
+<syntaxhighlight lang="cpp">
+	class CamConstruct
+	{
+		scope = 2;
+		model = "";
+		simulation = "CamConstruct";
+		radius = 125;
+		maxHAL = 30;
+		crossHairs = "#(argb,8,8,3)color(1,1,1,1)";
+	};
+</syntaxhighlight>
+
+=== CamCurator ===
+
+<syntaxhighlight lang="cpp">
+	class CamCurator
+	{
+		scope = 2;
+		model = "";
+		simulation = "CamCurator";
+		radius = 125;
+		maxHAL = 30;
+		crossHairs = "#(argb,8,8,3)color(1,1,1,1)";
+	};
+</syntaxhighlight>
+
+=== ProxySubpart ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyBysta
+	{
+		autocenter = 0;
+		scope = 2;
+		reversed = 1;
+		animated = 1;
+		model = "";
+		simulation = "ProxySubpart";
+	};
+</syntaxhighlight>
+
+=== Windsock ===
+
+<syntaxhighlight lang="cpp">
+	class ProxyWindsock_01_F
+	{
+		scope = 1;
+		model = "\A3\Structures_F_Heli\Ind\Airport\Windsock_01_F.p3d";
+		autocenter = 0;
+		reversed = 0;
+		selectionFabric = "latka";
+		simulation = "Windsock";
+		cloth = "Windsock";
+	};
+</syntaxhighlight>
+
+=== StreetLamp ===
+
+<syntaxhighlight lang="cpp">
+	class StreetLamp
+	{
+		model = "";
+		destrType = "DestructTree";
+		simulation = "StreetLamp";
+		animated = 0;
+		colorDiffuse[] = {0.9,0.8,0.6};
+		colorAmbient[] = {0.1,0.1,0.1};
+		brightness = 0.2;
+		class HitPoints
+		{
+			class HitBulb
+			{
+				armor = 1;
+				material = 60;
+				name = "lampa";
+				passThrough = 1;
+				explosionShielding = 1;
+			};
+		};
+		armorStructural = 1;
+		class Reflectors
+		{
+			class LampLight
+			{
+				color[] = {0.9,0.8,0.6,1};
+				ambient[] = {0.1,0.1,0.1,1};
+				position = "Light";
+				direction = "";
+				hitpoint = "lampa";
+				selection = "";
+				size = 0.5;
+				brightness = 0.2;
+			};
+			class Light_1
+			{
+				color[] = {1100,700,500};
+				ambient[] = {11,7,5};
+				intensity = 5;
+				size = 1;
+				innerAngle = 80;
+				outerAngle = 130;
+				coneFadeCoef = 3;
+				position = "Light_1_pos";
+				direction = "Light_1_dir";
+				hitpoint = "Light_1_hitpoint";
+				selection = "Light_1_hide";
+				useFlare = 1;
+				flareSize = 0.9;
+				flareMaxDistance = 100;
+				class Attenuation
+				{
+					start = 0;
+					constant = 0;
+					linear = 0;
+					quadratic = 0.8;
+					hardLimitStart = 30;
+					hardLimitEnd = 40;
+				};
+			};
+		};
+		aggregateReflectors[] = {{"Light_1"}};
+		armorLights = 1;
+	};
+</syntaxhighlight>
+
+== Alphabetical Order ==
+
+=== A ===
+
+==== acceleration ====
+
+[[TokenNameValueTypes#Floats|Float]]: in m/s^2
+
+See also [[CfgVehicles_Config_Reference#acceleration]]
+
+<syntaxhighlight lang="cpp">
+acceleration = 5;
+acceleration = 7;
+acceleration = 25;
+</syntaxhighlight>
+
+==== access ====
+
+[[TokenNameValueTypes#Integers|Integer]]:
+
+See also [[CfgVehicles_Config_Reference#access]]
+
+<syntaxhighlight lang="cpp">
+access = 0;
+</syntaxhighlight>
+
+==== aggregateReflectors ====
+
+[[TokenNameValueTypes|Array]]:
+
+<syntaxhighlight lang="cpp">
+aggregateReflectors[] = {{"Light_1"}};
+</syntaxhighlight>
+
+==== airFriction... ====
+
+[[TokenNameValueTypes|Array]]:
+
+See also [[CfgVehicles_Config_Reference#airFriction]]
+
+<syntaxhighlight lang="cpp">
+airFriction0[] = {200,20,60};
+airFriction0[] = {40,20,60};
+
+airFriction1[] = {1500,700,100};
+airFriction1[] = {7500,700,100};
+
+airFriction2[] = {125,12,2.5};
+airFriction2[] = {25,12,2.5};
+</syntaxhighlight>
+
+==== animated ====
+
+[[TokenNameValueTypes#Boolean|Boolean]]:
+
+// insects have no animation, only birds
+
+See also [[CfgVehicles_Config_Reference#animated]]
+
+<syntaxhighlight lang="cpp">
+animated = 0;
+animated = 1;
+</syntaxhighlight>
+
+==== armor ====
+
+[[TokenNameValueTypes#Floats|Float]]:
+
+See also [[CfgVehicles_Config_Reference#armor (integer)]]
+
+<syntaxhighlight lang="cpp">
+armor = 50;
+armor = 500;
+</syntaxhighlight>
+
+==== armorLights ====
+
+[[TokenNameValueTypes#Floats|Float]]:
+
+See also [[CfgVehicles_Config_Reference#armor...]]
+
+<syntaxhighlight lang="cpp">
+armorLights = 1;
+</syntaxhighlight>
+
+==== armorStructural ====
+
+[[TokenNameValueTypes#Floats|Float]]:
+
+See also [[CfgVehicles_Config_Reference#armor...]]
+
+<syntaxhighlight lang="cpp">
+armorStructural = 1;
+</syntaxhighlight>
+
+==== autoCenter ====
+
+[[TokenNameValueTypes#Boolean|Boolean]]:
+
+See also [[CfgVehicles_Config_Reference#autocenter]]
+
+<syntaxhighlight lang="cpp">
+autoCenter = 0;
+</syntaxhighlight>
+
+==== avgHeight ====
+
+[[TokenNameValueTypes#Floats|Float]]:
+
+See also [[CfgVehicles_Config_Reference#...Height]]
+
+<syntaxhighlight lang="cpp">
+avgHeight = 0.2;
+avgHeight = 0.3;
+avgHeight = 1.2;
+avgHeight = 10;
+avgHeight = 70;
+</syntaxhighlight>
+
+=== B ===
+
+==== brightness ====
+
+[[TokenNameValueTypes#Floats|Float]]: 
+
+1 == light is full at 50 m
+
+See also [[CfgVehicles_Config_Reference#brightness]]
+
+<syntaxhighlight lang="cpp">
+brightness = 0.2;
+</syntaxhighlight>
+
+=== C ===
+
+==== canBeShot ====
+
+[[TokenNameValueTypes#Boolean|Boolean]]:
+
+See also [[CfgVehicles_Config_Reference#canBeShot]]
+
+<syntaxhighlight lang="cpp">
+canBeShot = 0;
+canBeShot = 1;
+</syntaxhighlight>
+
+==== classes Embedded ====
+
+see [[#Embedded ClassNames]]
+
+==== cloth ====
+
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+cloth = "Windsock";
+</syntaxhighlight>
+
+==== colorAmbient ====
+
+[[TokenNameValueTypes|Array]]:
+
+See also [[CfgVehicles_Config_Reference#ambient]]
+
+<syntaxhighlight lang="cpp">
+colorAmbient[] = {0.1,0.1,0.1};
+</syntaxhighlight>
+
+==== colorDiffuse ====
+
+[[TokenNameValueTypes|Array]]:
+
+<syntaxhighlight lang="cpp">
+colorDiffuse[] = {0.9,0.8,0.6};
+</syntaxhighlight>
+
+==== cost ====
+
+[[TokenNameValueTypes#Floats|Float]]:
+
+See also [[CfgVehicles_Config_Reference#cost]]
+
+<syntaxhighlight lang="cpp">
+cost = 30000;
+</syntaxhighlight>
+
+==== crewPosition ====
+
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+crewPosition = "CPCargo";
+crewPosition = "CPCommander";
+crewPosition = "CPDriver";
+crewPosition = "CPGunner";
+</syntaxhighlight>
+
+==== crossHairs ====
+
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+crossHairs = "#(argb,8,8,3)color(1,1,1,1)";
+crossHairs = "\A3\ui_f\data\igui\cfg\nonaivehicles\camera_ca.paa";
+</syntaxhighlight>
+
+=== D ===
+
+==== destrType ====
+
+[[TokenNameValueTypes#Strings|String]]:
+
+See also [[CfgVehicles_Config_Reference#destrType]]
+
+<syntaxhighlight lang="cpp">
+destrType = "destructBuilding";
+destrType = "DestructNo";
+destrType = "DestructTree";
+</syntaxhighlight>
+
+==== displayName ====
+
+[[TokenNameValueTypes#Strings|String]]:
+
+See also [[CfgVehicles_Config_Reference#displayName]]
+
+<syntaxhighlight lang="cpp">
+displayName = "Text";
+</syntaxhighlight>
+
+=== E ===
+
+==== editorSubcategory ====
+
+[[TokenNameValueTypes#Strings|String]]:
+
+See also [[CfgVehicles_Config_Reference#editorSubcategory]]
+
+<syntaxhighlight lang="cpp">
+editorSubcategory = "EdSubcat_Seaports";
+</syntaxhighlight>
+
+==== Embedded ClassNames ====
+
+
+
+===== AttributeValues class =====
+
+<syntaxhighlight lang="cpp">
+class AttributeValues
+{
+	size2[] = {5,5};
+	size3[] = {5,5,5};
+	IsRectangle = 1;
+};
+</syntaxhighlight>
+
+===== Destruction class =====
+
+<syntaxhighlight lang="cpp">
+class Destruction
+{
+	animations[] = {{"ca\Roads_rtm2\Rtm\most_pad_01.rtm",0.2,17},{"ca\Roads_rtm2\Rtm\most_pad_02.rtm",0.2,17},...};
+};
+</syntaxhighlight>
+
+===== EventHandlers class =====
+
+See also [[CfgVehicles_Config_Reference#EventHandlers... Class]]
+
+<syntaxhighlight lang="cpp">
+class EventHandlers
+{
+	init = "(_this select 0) call BIS_fnc_animalRandomization;";
+};
+</syntaxhighlight>
+
+===== HitPoints class =====
+
+<syntaxhighlight lang="cpp">
+class HitPoints
+{
+	class HitBulb
+	{
+		armor = 1;
+		material = 60;
+		name = "lampa";
+		passThrough = 1;
+		explosionShielding = 1;
+	};
+};
+</syntaxhighlight>
+
+===== Reflectors class =====
+
+See also [[CfgVehicles_Config_Reference#Reflectors Class]]
+
+<syntaxhighlight lang="cpp">
+class Reflectors
+{
+	class LampLight
+	{
+		color[] = {0.9,0.8,0.6,1};
+		ambient[] = {0.1,0.1,0.1,1};
+		position = "Light";
+		direction = "";
+		hitpoint = "lampa";
+		selection = "";
+		size = 0.5;
+		brightness = 0.2;
+	};
+	class Light_1
+	{
+		color[] = {1100,700,500};
+		ambient[] = {11,7,5};
+		intensity = 5;
+		size = 1;
+		innerAngle = 80;
+		outerAngle = 130;
+		coneFadeCoef = 3;
+		position = "Light_1_pos";
+		direction = "Light_1_dir";
+		hitpoint = "Light_1_hitpoint";
+		selection = "Light_1_hide";
+		useFlare = 1;
+		flareSize = 0.9;
+		flareMaxDistance = 100;
+		class Attenuation
+		{
+			start = 0;
+			constant = 0;
+			linear = 0;
+			quadratic = 0.8;
+			hardLimitStart = 30;
+			hardLimitEnd = 40;
+		};
+	};
+};
+</syntaxhighlight>
+
+=== F ===
+
+==== flySound ====
+
+[[TokenNameValueTypes|Array]]:
+
+See also [[CfgVehicles_Config_Reference#Sounds Various]]
+
+<syntaxhighlight lang="cpp">
+flySound[] = {"\A3\sounds_f\dummysound",0.001,1,1};
+</syntaxhighlight>
+
+==== fsm ====
+
+[[TokenNameValueTypes|Array]]:
+
+<syntaxhighlight lang="cpp">
+fsm[] = {"Butterfly"};
+fsm[] = {"Dragonfly"};
+fsm[] = {"HoneyBee"};
+</syntaxhighlight>
+
+=== H ===
+
+==== hiddenSelections ====
+
+[[TokenNameValueTypes|Array]]:
+
+See also [[CfgVehicles_Config_Reference#hiddenSelections]]
+
+<syntaxhighlight lang="cpp">
+hiddenSelections[] = {"Camo1","Camo2","Camo3"};
+</syntaxhighlight>
+
+=== I ===
+
+==== icon ====
+
+[[TokenNameValueTypes#Strings|String]]:
+
+See also [[CfgVehicles_Config_Reference#icon]]
+
+<syntaxhighlight lang="cpp">
+icon = "\a3\Ui_f\data\IGUI\Cfg\IslandMap\iconSensor_ca.paa";
+icon = "iconObject_3x1";
+</syntaxhighlight>
+
+==== inventoryType ====
+
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+inventoryType = "Backpack";
+inventoryType = "EarPhones";
+inventoryType = "Goggles";
+inventoryType = "Handgun";
+inventoryType = "Headgear";
+inventoryType = "HMD";
+inventoryType = "LeftHand";
+inventoryType = "PistolHolstered";
+inventoryType = "RightHand";
+inventoryType = "Vest";
+</syntaxhighlight>
+
+=== M ===
+
+==== maxHAL ====
+
+[[TokenNameValueTypes#Floats|Float]]: camera max. height above land
+
+<syntaxhighlight lang="cpp">
+maxHAL = 30;
+</syntaxhighlight>
+
+==== maxHeight ====
+
+[[TokenNameValueTypes#Floats|Float]]:
+
+See also [[CfgVehicles_Config_Reference#...Height]]
+
+<syntaxhighlight lang="cpp">
+maxHeight = 1.5;
+maxHeight = 1;
+maxHeight = 2;
+maxHeight = 50;
+maxHeight = 80;
+</syntaxhighlight>
+
+==== maxSpeed ====
+
+[[TokenNameValueTypes#Floats|Float]]: in m/s
+
+See also [[CfgVehicles_Config_Reference#...Speed]]
+
+<syntaxhighlight lang="cpp">
+maxSpeed = 0.2;
+maxSpeed = 1;
+maxSpeed = 5;
+maxSpeed = 20;
+</syntaxhighlight>
+
+==== minHeight ====
+
+[[TokenNameValueTypes#Floats|Float]]:
+
+See also [[CfgVehicles_Config_Reference#...Height]]
+
+<syntaxhighlight lang="cpp">
+minHeight = -0.1;// allow landing
+minHeight = 5;
+minHeight = 60;
+</syntaxhighlight>
+
+==== minSpeed ====
+
+[[TokenNameValueTypes#Floats|Float]]: in m/s
+
+See also [[CfgVehicles_Config_Reference#...Speed]]
+
+<syntaxhighlight lang="cpp">
+minSpeed = -0.1;
+minSpeed = -0.5;
+</syntaxhighlight>
+
+==== model ====
+
+[[TokenNameValueTypes#Strings|String]]:
+
+See also [[CfgVehicles_Config_Reference#model]]
+
+<syntaxhighlight lang="cpp">
+model = "\A3\Weapons_F\empty.p3d";
+</syntaxhighlight>
+
+==== models ====
+
+[[TokenNameValueTypes|Array]]:
+
+<syntaxhighlight lang="cpp">
+models[] = {};
+</syntaxhighlight>
+
+==== moves ====
+
+[[TokenNameValueTypes#Strings|String]]:
+
+See also [[CfgVehicles_Config_Reference#moves]]
+
+<syntaxhighlight lang="cpp">
+moves = "CfgMovesBird";
+moves = "CfgMovesButterfly";
+</syntaxhighlight>
+
+=== R ===
+
+==== radius ====
+
+[[TokenNameValueTypes#Floats|Float]]: camera construction radius
+
+<syntaxhighlight lang="cpp">
+radius = 125;
+</syntaxhighlight>
+
+==== reversed ====
+
+[[TokenNameValueTypes#Boolean|Boolean]]:
+
+See also [[CfgVehicles_Config_Reference#reversed]]
+
+<syntaxhighlight lang="cpp">
+reversed = 0;
+reversed = 1;
+</syntaxhighlight>
+
+=== S ===
+
+==== scope ====
+
+[[TokenNameValueTypes#Integers|Integer]]:
+
+See also [[CfgVehicles_Config_Reference#scope]]
+
+<syntaxhighlight lang="cpp">
+scope = 0;
+scope = 1;
+scope = 2;
+</syntaxhighlight>
+
+==== scopeCurator ====
+
+[[TokenNameValueTypes#Integers|Integer]]:
+
+<syntaxhighlight lang="cpp">
+scopeCurator = 0;
+scopeCurator = 2;
+</syntaxhighlight>
+
+==== selectionFabric ====
+
+[[TokenNameValueTypes#Strings|String]]:
+
+See also [[CfgVehicles_Config_Reference#selection...]]
+
+<syntaxhighlight lang="cpp">
+selectionFabric = "";
+selectionFabric = "cloth";
+selectionFabric = "latka";
+</syntaxhighlight>
+
+==== shadow ====
+
+[[TokenNameValueTypes#Boolean|Boolean]]:
+
+<syntaxhighlight lang="cpp">
+shadow = 1;
+</syntaxhighlight>
+
+==== simulation ====
+
+[[TokenNameValueTypes#Strings|String]]:
+
+See also [[CfgVehicles_Config_Reference#simulation]]
+
+<syntaxhighlight lang="cpp">
+simulation = "AlwaysHide";
+simulation = "AlwaysShow";
+simulation = "CamConstruct";
+simulation = "CamCurator";
+simulation = "Camera";
+simulation = "Detector";
+simulation = "EditCursor";
+simulation = "Flag";
+simulation = "House";
+simulation = "Magazine";
+simulation = "Maverickweapon";
+simulation = "ObjView";
+simulation = "ProxyCrew";
+simulation = "ProxyHeadgear";
+simulation = "ProxyInventoryOld";
+simulation = "ProxyRadio";
+simulation = "ProxyRetex";
+simulation = "ProxySecWeapon";
+simulation = "ProxySubpart";
+simulation = "ProxyWeapon";
+simulation = "Pylonpod";
+simulation = "RandomShape";
+simulation = "Road";
+simulation = "RopeSegment";
+simulation = "SeaGull";
+simulation = "StreetLamp";
+simulation = "Temp";
+simulation = "Windsock";
+</syntaxhighlight>
+
+==== singSound ====
+
+[[TokenNameValueTypes|Array]]:
+
+See also [[CfgVehicles_Config_Reference#Sounds Various]]
+
+<syntaxhighlight lang="cpp">
+singSound[] = {"A3\Sounds_F\environment\animals\birds\seagul1",0.891251,1,200};
+</syntaxhighlight>
+
+==== straightDistance ====
+
+[[TokenNameValueTypes#Floats|Float]]:
+
+See also [[CfgVehicles_Config_Reference#straightDistance]]
+
+<syntaxhighlight lang="cpp">
+straightDistance = 0.5;
+straightDistance = 2;
+straightDistance = 10;
+straightDistance = 50;
+</syntaxhighlight>
+
+=== T ===
+
+==== turning ====
+
+[[TokenNameValueTypes#Floats|Float]]: angular acceleration - relative (the higher, the more maneuvrable)
+
+See also [[CfgVehicles_Config_Reference#turning]]
+
+<syntaxhighlight lang="cpp">
+turning = 1;
+turning = 2;
+turning = 5;
+</syntaxhighlight>
+
+
+{{GameCategory|ofp|Modelling}}
+{{GameCategory|ofp|Editing}}
+{{GameCategory|arma1|Addon Configuration}}
+{{GameCategory|ofp|Reference Lists}}
+{{GameCategory|arma3|Vehicle Configuration}}

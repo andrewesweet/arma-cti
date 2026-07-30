@@ -1,0 +1,678 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Multi-Function_Display_(MFD)_config_reference
+// revision: 373235 (2025-04-12T22:20:55Z)
+// export sha1: 93h6qj48c9mmb36z8ar5tvfb4yn6cos
+// categories: Category:Arma 3: Editing | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+'''M'''ulti-'''F'''unction '''D'''isplay (MFD) is implementation of '''HUD''' (Head-Up Displays) in Arma 3.
+Display can be fixed on helmet (move with player head) or cockpit (static position).
+{{Wiki|stub}}
+
+= Technical Basics =
+
+HUDs are defined in the '''MFD''' class of the source vehicle.
+The properties of each HUD are separated by a root class (conventionnally named '''AirplaneHUD''' in base content), although each new instance will render a new HUD and overlap with the previous.
+This makes it easier to configure HUDs by modular config (for example, navigation, targeting, etc...).
+All HUDs are defined through 3 base elements:
+* '''Bones''': invisible elements used to transform/rotate other, similar to anchors/origins. Defined in the Bones class of any HUD.
+* '''Drawn elements''': used to draw graphic elements. Defined in the Draw class of any HUD.
+* '''Sources''': if an element displays complex variables or any bone needs to be in specific positions, it uses a source data. Defined in each instance of bone and draw classes when needed.
+
+Example:
+
+<spoiler text='Show "class MFD"'>
+<syntaxhighlight lang="cpp">
+class MFD
+{
+	class AirplaneHUD
+	{
+		globalProperty = ...; // global HUD properties
+		// bones definitions
+		class Bones
+		{
+			class BoneInstance
+			{
+				type = ...;			// type of bone
+				source = ...;		// source for bone transformation
+				properties = ...;	// other bone properties
+			};
+		};
+		// HUD-Elements definitions
+		class Draw
+		{
+			class HUDElemetInstance
+			{
+				type = ...;			// type of HUD-Element
+				source = ...;		// source for display value
+				properties = ...;	// other HUD-Elements properties
+			};
+		};
+	};
+};
+</syntaxhighlight>
+</spoiler>
+
+Since ARMA 3 version 1.69 it is also possible to define a MFD class in CfgMagazine. This allows for the creation of dynamic MFD screens with info on the screen corresponding to current loadout applied through dynamic loadout system. See [[#PylonIcon|PylonIcon]] for more details.
+
+= Global HUD Properties =
+
+These are defined in each AirplaneHUD instance and affect every sub-sequent element. Some properties can be overwritten in each child element if needed (e.g color) :
+* '''color''' : [r,g,b,a] - color of all elements.
+* '''topLeft''' : "string" - memory point defining the top left position of the HUD and uses it as the absolute origin (0,0,0). Not used if <syntaxhighlight lang="cpp" inline>helmetMountedDisplay = true</syntaxhighlight>.
+* '''topRight''' : "string" - memory point defining the top right position of the HUD and uses it as the far right limit (1,0,0). Not used if <syntaxhighlight lang="cpp" inline>helmetMountedDisplay = true</syntaxhighlight>.
+* '''bottomLeft''' : "string" - memory point defining the bottom left position of the HUD and uses it as the bottom limit (0,1,0). Not used if <syntaxhighlight lang="cpp" inline>helmetMountedDisplay = true</syntaxhighlight>.
+* '''borderLeft''' : float - adjust position inside of memory points LOD. Not used if <syntaxhighlight lang="cpp" inline>helmetMountedDisplay = true</syntaxhighlight>.
+* '''borderRight''' : float - adjust position inside of memory points LOD. Not used if <syntaxhighlight lang="cpp" inline>helmetMountedDisplay = true</syntaxhighlight>.
+* '''borderTop''' : float - adjust position inside of memory points LOD. Not used if <syntaxhighlight lang="cpp" inline>helmetMountedDisplay = true</syntaxhighlight>.
+* '''borderBottom''' : float - adjust position inside of memory points LOD. Not used if <syntaxhighlight lang="cpp" inline>helmetMountedDisplay = true</syntaxhighlight>.
+* '''fontHelicopterHUD''' : "string" - font used for this HUD instance.
+* '''helmetMountedDisplay''' : true/false - Defines if the HUD is attached to a fixed point of the aircraft or moves with the head of the pilot.
+* '''helmetPosition ''' : float - ([x, y, z]): position of HUD - for helmet mounted only
+* '''helmetRight ''' : float - ([x, y, z]): right vector of HUD - for helmet mounted only
+* '''helmetDown ''' : float - ([x, y, z]): down vector of HUD - for helmet mounted only
+* '''font''': "string" font type used for drawing HUD elements
+* '''turret''': array[] - define from which turret should animation sources like i.e. impactPoint should get data from. {-2} - default, legacy behaviour, {-1} - remote controlled weapons (means, that it shows driver impact point by default, but changes to remote controlled turret once used) , {} - same as -2, {0} - turret path
+* '''material''': allows adjustments to ambient, diffues & emmisive values just like RVMAT
+
+Example:
+<syntaxhighlight lang="cpp">
+class material
+{
+	ambient[]	= { 10, 10, 10, 1 };
+	diffuse[]	= { 10, 10, 10, 1 };
+	emissive[]	= { 40, 20, 20, 1 };
+};
+</syntaxhighlight>
+
+
+= Bones =
+
+A bone defines the position of a graphic element's points. The modification applied by a bone can be changed by a source.
+Bones have no hierarchy, hierarchical geometry is available by using a [[#Transformation Chain|Transformation Chain]].
+A bone's type is defined by the type property in bone class (e.g.: <syntaxhighlight lang="cpp" inline>type = fixed;</syntaxhighlight>).
+
+{{Feature|GVI|arma3|2.20|
+Note, Rotational and Linear both inherit from the same base, which adds min/max/sourceScale/sourceIndex.
+Btw sourceIndex is missing on linear/rotational, user sources (and others using index) can be set there too.
+Also 'sourceOffset' is not documented here, its also in that baseclass, look at code below for what it does.
+And also 'refreshRate' can be present in that base class too, also not documented here.
+Also refresh rate can be good for performance, because it will not re-calculate the source value if the refresh rate timer hasn't finished yet
+
+2.20 new entry in that base (so both rot and linear) is `sourceModulo`
+
+The code for the result MFD value is
+<syntaxhighlight lang="cpp">
+float finalResult = (sourceValue * sourceScale + sourceOffset);
+if (sourceModulo != 0) finalResult = fmod(finalResult, sourceModulo); // This line is new in 2.20
+if (finalResult < min) finalResult = 0;
+if (finalResult > max) finalResult = 1;
+finalResult = (finalResult - min) * (1 / (max - min));
+</syntaxhighlight>
+
+Default values in that base for the config values
+<syntaxhighlight lang="cpp">
+sourceScale=1.0
+sourceOffset=0.0
+refreshRate=0.0
+sourceIndex=-1
+sourceModulo=0.0
+</syntaxhighlight>
+
+
+
+
+}} 
+
+== Fixed ==
+
+Fixed represents a fixed position on HUD plane. It can be use for static HUD-Elements (e.g.: aiming cross). Properties:
+* '''pos''' ([x, y]): position of center (left top corner is [0,0], right bottom corner is [1, 1])
+
+== Linear ==
+
+Linear represents a linear transformation depend on [[#Float|float source]] value. It can be used for some linear indicator (e.g.: fuel bar). Properties:
+* '''source''' (string): name of [[#Float|float source]] value.
+* '''min''' (float): minimal valid source value. Lower source value will be forced to minimal
+* '''max''' (float): maximal valid source value. Higher source value will be forced to maximal
+* '''sourceScale''' (float): multiplier of source value. It is optional, default is 1
+* '''minPos''' ([x, y]): position for maximal source value (minPos matches max source value - for historical reasons)
+* '''maxPos''' ([x, y]): position for minimal source value (maxPos matches min source value - for historical reasons)
+
+== Rotational ==
+
+Rotational represents a rotational transformation depend on [[#Float|float source]] value. It can be used for some rotational indicator (e.g.: analog speedometer). Properties:
+* '''source''' (string): name of [[#Float|float source]] value.
+* '''min''' (float): minimal valid source value. Lower source value will be forced to minimal
+* '''max''' (float): maximal valid source value. Higher source value will be forced to maximal
+* '''sourceScale''' (float): multiplier of source value. It is optional, default is 1
+* '''center''' ([x, y]): position of center of rotation
+* '''minAngle''' (float): angle (in degrees) for minimal source value
+* '''maxAngle''' (float): angle (in degrees) for maximal source value
+* '''aspectRatio''' (float): rotation aspect ratio. It is optional, default is 1
+
+== Horizon ==
+Horizon represents a transformation for a horizon indicator. Properties:
+* '''angle''' (float): elevation angle of horizon line (degrees)
+* '''pos0''' ([x, y]): scene to HUD plane transformation. For more details, see [[#Scene To HUD Transformation|here]].
+* '''pos10''' ([x, y]): scene to HUD plane transformation. For more details, see [[#Scene To HUD Transformation|here]].
+
+== HorizonToView ==
+HorizonToView (for HMD only) represents a transformation for a horizon indicator. Properties:
+* '''angle''' (float): elevation angle of horizon line (degrees)
+* '''pos0''' ([x, y]): scene to HUD plane transformation. For more details, see [[#Scene To HUD Transformation|here]].
+* '''pos10''' ([x, y]): scene to HUD plane transformation. For more details, see [[#Scene To HUD Transformation|here]].
+
+== Vector ==
+Vector represents a transformation from scene position (depend on source type) to HUD plane. Properties:
+* '''source''' (string): name of [[#3D Vector|3D Vector source]] source value.
+* '''pos0''' ([x, y]): scene to HUD plane transformation. For more details, see [[#Scene To HUD Transformation|here]].
+* '''pos10''' ([x, y]): scene to HUD plane transformation. For more details, see [[#Scene To HUD Transformation|here]].
+
+== ILS ==
+ILS represents transformation for ILS (Instrument landing system). Properties:
+* '''pos0''' ([x, y]): scene to HUD plane transformation. For more details, see [[#Scene To HUD Transformation|here]].
+* '''pos3''' ([x, y]): scene to HUD plane transformation. For more details, see [[#Scene To HUD Transformation|here]].
+
+== Limit ==
+Limit saturates preview vector transformation by box. Properties:
+* '''limits''' ([x0, y0, x1, y1]): bounding box in HUD coordinates 0 -1.
+
+= HUD Elements =
+
+A HUD Element represents one graphic entity. It defines what and how will be drawn.
+A HUD Element's type is defined by type property in HUD Element class (e.g.: type = line;).
+
+== Line ==
+Lines (or multi-lines - line with more segments) are defined by an array of points.
+
+* '''points''' (array): An array of points. For more details on how to define a point, see [[#Point Definition|here]].
+* '''width''' (float): width of line segments.
+* '''lineType ''' (float): Set type of line - supported values: 
+** 0 - full line
+** 1 - dotted line
+** 2 - dashed line
+** 3 - dot-dashed line.
+
+One points array can define one or more lines. Lines must be split by a separator. A separator is an empty array {}. See example below.
+
+<syntaxhighlight lang="cpp">
+points[] = {
+	// one-segment line
+	{ bone, { 0, 0 }, 1 },
+	{ bone, { 1, 1 }, 1 },
+	{}, // line separator
+	// rectangle: 4-segments multi-line
+	{ bone, { 0, 0 }, 1 },
+	{ bone, { 1, 0 }, 1 },
+	{ bone, { 1, 1 }, 1 },
+	{ bone, { 0, 1 }, 1 },
+	{ bone, { 0, 0 }, 1 }
+};
+</syntaxhighlight>
+
+== Text ==
+Draws the value defined as the source in text. Properties:
+* '''align''' (string): text alignment. Valid options: left, right, center.
+* '''scale''' (float): font size
+* '''source''' (string): name of string source value. See [[#String|String sources]] for more details
+* '''sourceScale''' (float): multiplier of source value. For non static source only
+* '''sourceLength''': format source value: number of characters to draw , rest is filled with "0"
+* '''sourceIndex''': used with weapon & ammo sources. i.e. <syntaxhighlight lang="cpp" inline>sourceindex = 0;</syntaxhighlight> with <syntaxhighlight lang="cpp" inline>source = "weapon";</syntaxhighlight> to get name of first weapon from vehicles <syntaxhighlight lang="cpp" inline>weapons[]</syntaxhighlight> array in config. It also works with ammo.
+* '''sourcePrecision''': format source value: number of characters afters decimal dot.
+* '''refreshRate''': refresh rate of source ranging from 0 to 1 seconds. Can be used to simulate old MFDs with low FPS
+* '''text''' (string): static text to draw. For <syntaxhighlight lang="cpp" inline>static</syntaxhighlight> source, or the format specification for the <syntaxhighlight lang="cpp" inline>time</syntaxhighlight> source.
+* '''pos''' ([[#Point Definition|point]]): position of text. It is the same as one point in line definition.
+* '''right''' ([[#Point Definition|point]]): right direction of text. It is the same as one point in line definition.
+* '''down''' ([[#Point Definition|point]]): down direction of text. It is the same as one point in line definition.
+
+== Polygon ==
+Draws a polygon. Accepts 3 or 4 points only. Properties:
+* '''texture''' (string): if present, it will draw selected texture on created polygon.
+* '''points''' (array) one or more groups of 3 to 4 [[#Point Definition|points]] for drawing.
+
+{{Feature|warning|The drawing of pictures is quite heavy for the game engine. It is recommended to keep the number of textures to around 10-15. <!--
+-->Above that value expect a performance impact.}}
+<syntaxhighlight lang="cpp">
+class PolygonTest
+{
+	color[] = { 0.082, 0.408, 0.039 }; // use to define color
+	class Polygon
+	{
+		type	= "polygon";
+		texture = "a3\Data_f\Images\Mod_Base_logo_ca.paa"; // only alpha channel will be used for drawing
+		points[] =
+		{
+			// space where texture should be drawn
+			{
+				{ { 0, 0.1 }, 1 },
+				{ { 1, 0.1 }, 1 },
+				{ { 1, 1 }, 1 },
+				{ { 0, 1 }, 1 }
+			}
+		};
+	};
+};
+</syntaxhighlight>
+
+== PylonIcon ==
+Draws the MFD definition of a pylon , defined in that pylon's contents' mfdElements definition. Properties:
+* '''pos''' (array): position of pylon icon. It is the same as one point in line definition. For more details, see [[#Point Definition|here]].
+* '''pylon''' (float): index of pylon (start from 1)
+* '''name ''' (string): class name in cfgMagazines/mfdElements
+
+<spoiler text='Show "class CfgMagazines"'>
+<syntaxhighlight lang="cpp">
+class CfgMagazines
+{
+	//... some config ...//
+
+	// magazines definition
+	class magazine_Missile_AGM_KH25_x1 : VehicleMagazine
+	{
+		//... some config ...//
+
+		// mfdElements - class where
+		class mfdElements
+		{		
+			class Plane_Fighter_02 // unique name that you can later reference in plane MFD
+			{
+				class Bones {};	// bones are supported
+				class Draw
+				{
+					class BackgroundGroup
+					{
+						color[] = { 0.0, 0.0, 0.0 };
+						// black background
+						class Background
+						{
+							type = polygon;
+							points[] =
+							{
+								{
+									{ { __EVAL(-0.015 + 0.15), __EVAL(-0.10 + 0.075) }, 1 },
+									{ { __EVAL(+0.015 + 0.15), __EVAL(-0.10 + 0.075) }, 1 },
+									{ { __EVAL(+0.015 + 0.15), __EVAL(+0.10 + 0.075) }, 1 },
+									{ { __EVAL(-0.015 + 0.15), __EVAL(+0.10 + 0.075) }, 1 }
+								};
+							};
+						};
+					};
+					class Default
+					{
+						condition	= "PylonAmmoRelative>0+PylonSelected";
+						color[]		= {0.94,0.83,0};
+						alpha		= 0.22;
+						class Shape
+						{
+							type		= line;
+							width		= 4.0;
+							points[]	=
+							{
+								// some shape
+							};
+						};
+						HUD_TEXT_STATIC(0.00 + 0.15, 0.00 + 0.01, 0.020, 0.025, center, "I", PylonText1)
+						HUD_TEXT_STATIC(0.00 + 0.15, 0.02 + 0.01, 0.020, 0.025, center, "R", PylonText2)
+					};
+					class Selected : Default
+					{
+						condition	= "(PylonSelected + PylonAmmoRelative) / 2";
+						alpha		= 1;
+						color[]		= { 0, 0.12, 0 };
+
+						class Shape : Shape {};
+						class PylonText1 : PylonText1 {};
+						class PylonText2 : PylonText2 {};
+					};
+					class Empty : Selected
+					{
+						condition	= "PylonAmmoRelative <= 0";
+						color[]		= { 1.0, 0.0, 0.0, 1.0 };
+						class Shape : Shape {};
+						class PylonText1 : PylonText1 {};
+						class PylonText2 : PylonText2 {};
+					};
+				};
+			};
+			class Plane_Fighter_03 // unique name that you can later reference in plane MFD
+			{
+				//... some config ...//
+			};
+			// etc.
+		};
+	};
+};
+</syntaxhighlight>
+</spoiler>
+
+<spoiler text='Show "class CfgVehicles"'>
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class Plane_Fighter_02_base_F
+	{
+		// ...
+		class MFD
+		{
+			class AirplaneMFD
+			{
+				globalProperty = ...; // global HUD properties
+
+				// bones definitions
+				class Bones
+				{
+					class Center
+					{
+						type	= fixed;
+						pos[]	= {0.52, 0.29};
+					};
+				};
+				class Draw
+				{
+					//...
+					//...
+
+					condition = on;
+					class Pylon1
+					{
+						type	= "pylonicon";
+						pos[]	= { Center, { __EVAL(+0.4), 0.00 }, 1 };
+						pylon	= 1;
+						name	= "Plane_Fighter_02";	// if mfdElements exist with "Plane_Fighter_02" class,
+														// in config of magazine that is mounted on 1st pylonmagazine mounted on 1st pylon,
+														// then draw MFD which is defined here
+					};
+					class Pylon2 : Pylon1
+					{
+						pos[]	= { Center, { __EVAL(-0.4), 0.00 }, 1 };
+						pylon	= 2;
+					};
+					class Pylon3 : Pylon1
+					{
+						pos[]	= { Center, { __EVAL(+0.35), 0.47 }, 1 };
+						pylon	= 3;
+					};
+					class Pylon4 : Pylon1
+					{
+						pos[]	= { Center, { __EVAL(-0.35), 0.47}, 1 };
+						pylon	= 4;
+					};
+					class Pylon5 : Pylon1
+					{
+						pos[]	= { Center, { __EVAL(+0.18), 0.47 }, 1 };
+						pylon	= 5;
+					};
+					class Pylon6 : Pylon1
+					{
+						pos[]	= { Center, { __EVAL(-0.18), 0.47 }, 1 };
+						pylon	= 6;
+					};
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+</spoiler>
+
+== Scale ==
+Draws a horizontal or vertical bar indicator. A scale HUD-Element can't use bones for transformation. Properties:
+* '''align''' (string): text alignment. Valid options: left, right, center.
+* '''scale''' (float): font size
+* '''source''' (string): name of float source value. See sources for more details
+* '''NeverEatSeaWeed''' (integer): 1 - will show "N,E,S,W", 2 - will show "N,NE,E,SE,S,SW,W,NW" in the heading scale
+* '''sourceScale''' (float): multiplier of source value
+* '''horizontal''' (bool): true for horizontal bar, false for vertical bar
+* '''pos''' ([x, y]): position of text item related to top position. It is for text range definition, final position of text will be move to related line.
+* '''right''' ([x, y]): right direction of text item related to top position.
+* '''down''' ([x, y]): down direction of text item related to top position.
+* '''step''' (float): amount of source between two lines.
+* '''stepSize''' (float): length between two lines.
+* '''lineXleft''' (float): left/top position of one normal line in vertical/horizontal bar
+* '''lineYright''' (float): right/bottom position of one normal line in vertical/horizontal bar
+* '''lineXleftMajor''' (float): left/top position of one major line in vertical/horizontal bar
+* '''lineYrightMajor''' (float): right/bottom position of one major line in vertical/horizontal bar
+* '''top''' (float): top position of bar indicator (left for horizontal indicator)
+* '''bottom''' (float): bottom position of bar indicator (right for horizontal indicator)
+* '''center''' (float): center position of bar indicator
+* '''majorLineEach''' (int): granularity of major lines
+* '''numberEach''' (int): granularity of lines with text value
+* '''min''' (float): min valid value, lower values will be ignored. min value is already affected by sourceScale
+* '''max''' (float): max valid value, higher values will be ignored. max value is already affected by sourceScale
+
+== Radar == 
+Draws geometry around entities. Properties:
+* '''pos0''' ([x, y]): scene to HUD plane transformation. For more details, see [[#Scene To HUD Transformation|here]].
+* '''pos10''' ([x, y]): scene to HUD plane transformation. For more details, see [[#Scene To HUD Transformation|here]].
+* '''points''' (array): defines graphics which will be rendered around each entity. For more details, see [[#Point definition|here]].
+
+== RadarToView == 
+Uses the same parameters as '''Radar''', but for a HMD. 
+
+== Turret ==
+It is uused on a Blackfoot's gunner aim box. Properties:
+* '''pos0''' ([x, y]): scene to HUD plane transformation, in spherical this is offset
+* '''pos10''' ([x, y]): scene to HUD plane transformation, in spherical pos10 is a scale
+* '''projection''' (float): defines projection type. Default value is 1. Use 0 for spherical projection.
+
+== TurretToView ==
+Uses the same parameters as '''Turret''', but for a HMD. Properties:
+
+== Group == 
+Allows for the creation of a HUD-Elements hierarchy. It can change attributes for its child elements. Group elements don't have graphics. Properties:
+* '''color''' ([r, g, b, a]): color of HUD-Elements graphics. Since A3 1.73+ it is possible to use simple expression with day time, "nvg" or "userXX" values
+* '''alpha''' (int: 0-255): alpha of HUD-Elements graphics. Since A3 1.73+ it is possible to use simple expression with day time, "nvg" or "userXX" values
+* '''clipTL''' ([x, y]): top left corner of clipping area (range is [0, 0] - [1, 1])
+* '''clipBR''' ([x, y]): bottom right corner of clipping area (range is [0, 0] - [1, 1])
+* '''clipTLParallax''' ([x, y]): top left corner of clipping area (range is [0, 0] - [1, 1]) - parallaxed
+* '''clipBRParallax''' ([x, y]): bottom right corner of clipping area (range is [0, 0] - [1, 1]) - parallaxed
+* '''blinkingPattern''' ([intervals]): define blinking pattern for group HUD elements. combination with condition is possible.
+** '''blinkingStartsOn''' (bool): define blinking state at the start.
+* '''condition''' (string): condition for enable/disable child elements. Since 1.69 it is also possible to use float sources (like "speed", "rpm", etc.) as a condition, mathematical operators and even [[Simple Expression|simple expressions]]. Available conditions:
+** '''on''': engine is on
+** '''ils''': ILS system is activated
+** '''mgun''': machine gun is selected
+** '''missile''': missile is activated
+** '''aamissile''': air lock air missile
+** '''atmissile''': air lock ground missile
+** '''rocket''': rocket is selected
+** '''bomb''': bomb is selected
+** '''flaps''': flaps out (for airplanes only)
+** '''lights''': landing lights are on
+** '''collisionlights''': anti-collision lights are on
+** '''stall''': plane stalling (for airplanes only)
+** '''simulArma''': standard helicopter simulation (for helicopters only)
+** '''simulRTD''': advanced helicopter simulation - RTD (for helicopters only)
+** '''incomingmissile''': you are locked by incoming missile
+** '''missilelocking''': locking of your missile is in progress
+** '''missilelocked''': missile is locked
+** '''wpvalid''': unfinished waypoint[s]
+** '''laseron''': laser designator is activated
+** '''activeSensorsOn''': radar is activated
+** '''weaponX''': returns true if X entry from vehicle weapons[] array is selected
+** '''pilotcameralock''': returns targeting pod lock mode - 0 disabled, 1 locked to terrain, 2 locked to objects
+** '''autohover''': returns 1 when auto hover in helicopter is engaged
+** '''user0 ''': (up to user50): custom condition which can be changed by scripting command [[setUserMFDValue]] ({{GVI|arma3|2.20|size= 0.75}} vehicles can be configured to support more than 50 user sources with "mfdMaxUserValues = 50;" entry in CfgVehicles config class. As of 2.20 the limit is 256. It is recommended to configure this also for vehicles that use fewer MFD sources, it improves performance to only set as many as are being used.)
+** '''pylonSelected''': returns 1 if pylon is selected. add number at the end when using outside of magazine mfd (i.e. pylonSelected1)
+** '''pylonEmpty''': returns 1 if there is nothing mounted on designated pylon
+** '''pylonMagazineEmpty:''': returns 1 if magazine is empty on designated pylon
+** '''vtolMode:''': returns vectoring angle (goes from 0 - horizontal, to 1 - vertical mode)
+** '''nvg:''': night vision goggles are used
+
+
+= Sources =
+A source represents a value which can modify position of some types of bones (e.g.: angle of analog speedometer pointer) or value of some HUD elements (e.g.: altitude as text, heading bar direction, etc.). Currently there are 3 types of sources: [[#Float|'''Float''']], [[#3D Vector|'''3D Vector''']] and [[#String|'''String''']].
+
+Source types are defined by the '''source''' property in a bone or HUD Element class (e.g.: <syntaxhighlight lang="cpp" inline>source = speed;</syntaxhighlight>) and some may take in additional parameters as other attributes.
+
+== Float ==
+Float sources represent a numeric value. They are is used by [[#Linear|'''Linear''']] and [[#Rotational|'''Rotational''']] bones and [[#Scale|'''Scale''']] HUD-Elements. 
+
+Available values:
+* '''altitudeAGL''': altitude above ground level (m)
+* '''altitudeASL''': Altitude above sea level (m)
+* '''coordinateX''': X coordinate of plane position in the world (m)
+* '''coordinateY''': Y coordinate of plane position in the world (m)
+* '''speed''': speed of airplane (m/s)
+* '''rpm''': revolutions per minute of engine
+* '''vspeed''': vertical speed (m/s)
+* '''fuel''': fuel state (0-1)
+* '''targetDist''': distance to target (m)
+* '''impactDistance''': distance to impact point (m)
+* '''heading''': heading of airplane (degrees)
+* '''cameraDir''': direction of head (degrees)
+* '''horizonBank''': horizon bank of airplane (radians)
+* '''horizonDive''': horizon dive of airplane (radians)
+* '''windage''': direction of wind (degrees)
+* '''throttle''': analogue throttle value (0-1)
+* '''rtdCollective''': collective state (0-1) - value is valid for helicopters with advanced RTD simulation only
+* '''rtdRotorTorque''': rotor torque state (0-1) - value is valid for helicopters with advanced RTD simulation only
+* '''rtdGForce''': actual G-Force value - value is valid for helicopters with advanced RTD simulation only
+* '''rtdRpm1''': scaled revolutions per minute of engine #1 - value is valid for helicopters with advanced RTD simulation only
+* '''rtdRpm2''': scaled revolutions per minute of engine #2 - value is valid for helicopters with advanced RTD simulation only
+* '''rtdRpm3''': scaled revolutions per minute of engine #3 - value is valid for helicopters with advanced RTD simulation only
+* '''ClockHour''': time of day on scale (0-1) consistent with clockHour animation source (that means 12 hours cycle)
+* '''ClockMinute''': time of hour on scale (0-1) consistent with clockMinute animation source
+* '''ClockSecond''': time of minute on scale (0-1) consistent with clockSecond animation source (ClockSecond "ticks" in 1 second intervals, there are no sub-1-second values)
+* '''WPDist''': distance to current waypoint/steerpoint
+* '''WPIndex''': index of next waypoint
+* '''MissileFlightTime''': expected time to impact target
+* '''AoA''': plane Angle of Attack
+* '''gmeter, gmeterX, gmeterY, gmeterZ''': G-forces
+* '''gmeterGrav, gmeterXGrav, gmeterYGrav, gmeterZGrav''': G-forces + gravitational force
+* '''cmAmmo''': count of current countermeasures
+* '''cmWeapon''': names of current countermeasures
+* '''vtolvectoring''': current vectoring angle (goes from 0 to 1)
+* '''pylonAmmo''': current amount of ammo on pylon. when using outside of magazine mfd (aka mfdElements) add number at the end (i.e. pylonAmmo1) if you want to use it as a condition or use sourceIndex
+* '''pylonAmmoRelative''': current amount of ammo on pylon in 0-1 scale. when using outside of magazine mfd (aka mfdElements) add number at the end (i.e. pylonAmmoRelative1) if you want to use it as a condition or use sourceIndex
+* '''cameraHeadingDiff''': ​angle between camera and default look direction (from -180 to 180)
+* '''cameraHeadingDiffX''': angle between camera and default look direction (from -180 to 180 - only in X axis)
+* '''cameraHeadingDiffY''': angle between camera and default look direction (from -180 to 180 - only in Y axis)
+* '''targetHeight''': height (ASL) of currently selected target
+* '''weaponHeading''': heading of turret in degrees (goes from 0 to 360)
+* '''laserDist''': distance to target read from laser range finder
+* '''turretworld''': direction of turret in [x,y] format - x is equal to body parameter in turret config while y is equivalent of gun property. Example usage: source = "[y]turretworld";
+* '''user''': custom value which can be changed by scripting command [[setUserMFDValue]]. Index is set using sourceIndex, and can be any index from 0 to 49. ({{GVI|arma3|2.20|size= 0.75}} vehicles can be configured to support more than 50 user sources with "mfdMaxUserValues = 50;" entry in CfgVehicles config class. As of 2.20 the limit is 256. It is recommended to configure this also for vehicles that use fewer MFD sources, it improves performance to only set as many as are being used.)
+* '''engineTemp''':  Temperature state of the vehicle engine {{GVI|arma3|2.14|size= 0.75}}
+* '''wheelsTemp''': Temperature state of the vehicle wheels {{GVI|arma3|2.14|size= 0.75}}
+* '''turretGunTemp ''': Temperature state of the vehicle turret {{GVI|arma3|2.14|size= 0.75}}
+* '''ClockSecondSmooth''': Like ClockSecond, but not rounded to full seconds {{GVI|arma3|2.20|size= 0.75}}
+* '''SidePanelRadarRange''': {{GVI|arma3|2.20|size= 0.75}} Radar range in meters, of the left/right HUD panel display in sensor mode. The greater of the two ranges. sourceIndex can be set to select which radar. sourceIndex==-1 (max of both), sourceIndex==0 (only left panel), sourceIndex==1 (only right panel)
+
+== 3D Vector ==
+These sources represent a 3D vector value. It is used by [[#Vector|'''Vector''']] bone only.
+* '''velocity''': velocity of airplane
+* '''velocityToView''': velocity of airplane transformed to current view (for HMD) - don't combine with forward transformation!
+* '''target''': locked target position
+* '''targetToView''': locked target position transformed to current view (for HMD) - don't combine with forward transformation!
+* '''weapon''': primary gun direction
+* '''weaponToView''': primary gun direction transformed to current view (for HMD) - don't combine with forward transformation!
+* '''forward''': forward direction of airplane
+* '''impactpoint''': position of CCIP (constantly computed impact point)
+* '''impactpointtoview''': CCIP for HMD
+* '''impactpointweaponRelative''': Impact point calculated at the distance to currently selected target. If there is no target then it is working like regular CCIP. Requires target lead (BCTargetLead aka 4) in ballisticsComputer bitflags list
+* '''impactpointtoviewweaponRelative''': Impact point calculated at the distance to currently selected target. If there is no target then it is working like regular CCIP. Requires target lead (BCTargetLead aka 4) in ballisticsComputer bitflags list. HMD Variant
+* '''wppoint''': position of next waypoint
+* '''wppointtoview''': position of next waypoint (for HMD)
+* '''pilotcamera''': Targeting Pod aim direction
+* '''pilotcameratoview''': Targeting Pod aim direction - HMD variant
+* '''LarTop''': missileLockMaxDistance rounded up to 1000,2000,5000,10000,15000, etc.
+* '''LarAmmoMax''': missile lock maximal distance - reading missileLockMaxDistance from cfgAmmo
+* '''LarAmmoMin''': missile lock minimal distance - reading missileLockMinDistance from cfgAmmo
+* '''LarTargetDist''': relative distance to target
+* '''LarTargetSpeed''': relative speed to target
+* '''airportCorner1, airportCorner2, airportCorner3, airportCorner4''': airport corners
+* '''airportCorner1ToView, airportCorner2ToView, airportCorner3ToView, airportCorner4ToView''': airport corners (for HMD)
+
+== String ==
+These sources represent numeric values (extended float values) that are converted into a string. It is used by  [[#Text|'''Text''']] HUD Element only.
+* '''altitudeAGL''': altitude above ground level (m)
+* '''altitudeASL''': Altitude above sea level (m)
+* '''coordinateX''': X coordinate of plane position in the world (m)
+* '''coordinateY''': Y coordinate of plane position in the world (m)
+* '''speed''': speed of airplane (m/s)
+* '''rpm''': revolutions per minute of engine
+* '''vspeed''': vertical speed (m/s)
+* '''fuel''': fuel state (0-1)
+* '''targetDist''': distance to target (m)
+* '''heading''': heading of airplane (degrees)
+* '''horizonBank''': horizon bank of airplane (radians)
+* '''horizonDive''': horizon dive of airplane (radians)
+* '''windage''': direction of wind (degrees)
+* '''rtdCollective''': collective state (0-1) - value is valid for helicopters with advanced RTD simulation only
+* '''rtdRotorTorque''': rotor torque state (0-1) - value is valid for helicopters with advanced RTD simulation only
+* '''rtdGForce''': actual G-Force value - value is valid for helicopters with advanced RTD simulation only
+* '''rtdRpm1''': scaled revolutions per minute of engine #1 - value is valid for helicopters with advanced RTD simulation only
+* '''rtdRpm2''': scaled revolutions per minute of engine #2 - value is valid for helicopters with advanced RTD simulation only
+* '''rtdRpm3''': scaled revolutions per minute of engine #3 - value is valid for helicopters with advanced RTD simulation only
+* '''weapon''': weapon name
+* '''ammo''': amount of ammunition and magazine
+* '''static''': static text defined in config by text property
+* '''time''': time in c++ format, example use: <syntaxhighlight lang="cpp" inline>source = time; text = "%X";</syntaxhighlight> - see http://www.cplusplus.com/reference/ctime/strftime/
+* '''pylonMagazineName''': pylon magazine name, use together with sourceIndex if you are using it outside of mfdElements
+* '''pylonMagazineNameShort''': pylon short magazine name, use together with sourceIndex if you are using it outside of mfdElements
+* '''visionMode''': current optics vision mode
+* '''flirMode''': current optics FLIR mode
+* '''ammoFormat''': reading ammo from displayNameMFDFormat cfgMagazines property "displayNameMFDFormat"
+* '''userText''': custom text which can be changed by scripting command [[SetUserMFDText]]. Available indexes from 0 to 49, use sourceIndex to pick correct value. Example : source = "userText";sourceIndex = 1; ({{GVI|arma3|2.20|size= 0.75}} vehicles can be configured to support more than 50 user sources with "mfdMaxUserValues = 50;" entry in CfgVehicles config class. As of 2.20 the limit is 256. It is recommended to configure this also for vehicles that use fewer MFD sources, it improves performance to only set as many as are being used.)
+
+= Scene To HUD Transformation =
+
+Transformation of 3D vector from scene to 2D vector on HUD plane is implemented by two 2D vectors:
+* '''pos0''': 2D position on HUD plane of ray defined by source (center)
+* '''pos10''': 2D position on HUD plane of ray, which have angle to previous ray 10 degrees in axes X and Y
+* '''pos3''': the same as pos10, but angle is 3 degrees only. It is used in ILS.
+
+[[File:MFD_pos0_pos10.jpeg|400px]]
+
+Example:
+<syntaxhighlight lang="cpp">
+class Velocity
+{
+	type	= vector;
+	source	= velocity;
+	pos0[]	= { 0.5, 0.5 }; // center of HUD for source vector
+	pos10[]	= { 0.2, 0.2 }; // 20% offset for 10 degrees vector
+};
+</syntaxhighlight>
+
+
+= Point Definition =
+
+Each point can be transformed by more bones (bones chain). A point is defined as a chain of Triplets. A triplet defines one transformation step for a point:
+
+Triplet components:
+* '''bone name''' (string): name of bone for a point transformation.
+* '''offset''' ([x, y]): offset applied to transformation.
+* '''weight''' (float): weight to multiply transformation.
+
+To construct a valid triplet, there must at least one of the bone names or triplets, and the weight definition. If unnecessary, either the bone name or the offset can be omitted - just not both.
+
+Example triplets:
+<syntaxhighlight lang="cpp">
+points[] =
+{
+	{ boneName, { offsetX, offsetY }, weight }, // full definition
+	{ { offsetX, offsetY }, weight }, // without bone
+	{ boneName, weight }, // without offset
+	{ boneName, { [boneName transform only coordinates in this group], 0, 0 }, weight }, // the same as previous one
+	{ 1 } // ERROR: weight only
+};
+</syntaxhighlight>
+
+== Transformation Chain ==
+Each point can be transformed by 1 or more triplet. A transformation chain is defined as an array of triplets. The transformation order is from left to right.
+
+Example (without offsets to simplify):
+<syntaxhighlight lang="cpp">
+points[] =
+{
+	{ bone, 1 }, // 1 transformation
+	{ bone1, 1, bone2, 1 }, // 2 transformations
+	{ bone1, 1, bone2, 1, bone3, 1 } // 3 transformations
+	// etc...
+};
+</syntaxhighlight>
+
+{{GameCategory|arma3|Editing}}

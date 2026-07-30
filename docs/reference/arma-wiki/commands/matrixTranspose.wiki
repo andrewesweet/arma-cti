@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/matrixTranspose
+// revision: 364808 (2024-06-15T13:13:33Z)
+// export sha1: hd2hylvblqa10fx93waqif726s6g59b
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Command Group: Math - Vectors | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.92
+
+|gr1= Math
+|gr2= Math - Vectors
+
+|descr= [[File:matrixTranspose.jpg|thumb|Matrix transposition]]
+Returns {{Link|https://en.wikipedia.org/wiki/Transpose|transposed}} version of the given matrix.
+The matrix is an [[Array]] of rows.
+Each row is an [[Array]] of corresponding column values for the row. The minimum number of rows is 1.
+
+|s1= [[matrixTranspose]] matrix
+
+|p1= matrix: [[Array]] of [[Array]] of [[Number]]s - given matrix
+
+|r1= [[Array]] of [[Array]] of [[Number]]s - transposed matrix
+
+|x1= <sqf>
+matrixTranspose 
+[
+	[1,2,3], 
+	[3,1,2], 
+	[2,3,1]
+];
+/* returns 
+[
+	[1,3,2], 
+	[2,1,3], 
+	[3,2,1]
+] */
+</sqf>
+
+|x2= <sqf>
+matrixTranspose 
+[
+	[1,2,3]
+];
+/* returns 
+[
+	[1],
+	[2],
+	[3]
+] */
+</sqf>
+
+|x3= <sqf>
+matrixTranspose 
+[
+	[1],
+	[2],
+	[3]
+];
+/* returns 
+[
+	[1,2,3]
+] */
+</sqf>
+
+|seealso= [[matrixMultiply]] [[vectorAdd]] [[vectorMagnitude]] [[vectorNormalized]] [[vectorMultiply]] [[vectorDotProduct]] [[vectorCrossProduct]] [[vectorDistance]] [[vectorLinearConversion]] [[vectorCos]] [[vectorFromTo]] [[vectorModelToWorld]] [[vectorWorldToModel]]
+}}

@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/Village_Pump_(all)
+// revision: 296073 (2021-11-17T14:41:07Z)
+// export sha1: 52azjj3wafwer8d6x08dynp7h13to3e
+// categories: Category:Village Pump
+// Vendored snapshot. Do not edit — re-export instead.
+
+<!--
+******************************************************************************************
+
+This is an composite page dynamically created from the content of other pages.
+Please do not post to or edit this page directly!
+
+To post a new comment, go to the main Village Pump page, and choose the best section there.
+
+******************************************************************************************
+-->
+
+{{:Village Pump}}
+
+
+= Policy =
+{{:Village_Pump_(policy)}}
+
+= Proposals =
+{{:Village_Pump_(proposals)}}
+
+= Things to do =
+{{:Village_Pump_(todo)}}
+
+= Assistance =
+{{:Village_Pump_(assistance)}}
+
+= Technical =
+{{:Village_Pump_(technical)}}
+
+= Miscellaneous =
+{{:Village_Pump_(miscellaneous)}}

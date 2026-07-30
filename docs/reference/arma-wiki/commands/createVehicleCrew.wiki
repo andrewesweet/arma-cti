@@ -1,0 +1,108 @@
+// source: https://community.bistudio.com/wiki/createVehicleCrew
+// revision: 369241 (2024-09-03T10:35:01Z)
+// export sha1: l8oxrie4fz0j7z1szi9qsamjxuna46a
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.76
+
+|arg= global
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Creates vehicle crew corresponding to the provided vehicle's [[faction]]. If the vehicle is already occupied, the command will only create missing crew in the existing vehicle's group.<br>
+To find out which crew will be created, use [[BIS_fnc_vehicleCrewTurrets]].
+
+{{{!}} class="wikitable valign-top"
+{{!}}+ This command:
+! Does
+! Does not
+{{!}}-
+{{!}}
+* {{GVI|arma3|1.26|size= 0.75}} create a group if one is needed (otherwise uses <sqf inline>group _vehicle</sqf>)
+* create a driver if the vehicle needs one (<syntaxhighlight lang="cpp" inline>hasDriver = 1;</syntaxhighlight> in config)
+* create [[allTurrets|all non-FFV turrets]] gunners (if the turret needs one - config {<syntaxhighlight lang="cpp" inline>hasGunner</syntaxhighlight> without <syntaxhighlight lang="cpp" inline>dontCreateAI</syntaxhighlight>)
+* create crew with '''[[rank]]s''' - with the driver as {{hl|"LIEUTENANT"}} and all turret units as {{hl|"SERGEANT"}}, unlike a crewed vehicle placed in [[:Category:Eden Editor|Eden Editor]] where all units are {{hl|"PRIVATE"}}.
+{{!}}
+* [[addVehicle|add vehicle]] to the group, unlike a crewed vehicle placed in [[:Category:Eden Editor|Eden Editor]]. See [[BIS_fnc_spawnVehicle]] to spawn a crew-full vehicle with group addition
+* create cargo units.
+{{!}}}
+
+|mp= This command seems to be {{Icon|localArgument|32}} with UAVs.
+
+|s1= [[createVehicleCrew]] vehicle
+
+|p1= vehicle: [[Object]] - vehicle to populate with crew
+
+|r1= [[Group]] - the group of the created crew (since {{GVI|arma3|1.94}}; before that returned [[Nothing]])
+
+|s2= group [[createVehicleCrew]] vehicle
+|s2since= arma3 2.14
+
+|p21= group: [[Group]] - group to put crew in
+
+|p22= vehicle: [[Object]] - vehicle to populate with crew
+
+|r2= [[Group]] - the group of the created crew or [[grpNull]]
+
+|s3= side [[createVehicleCrew]] vehicle
+|s3since= arma3 2.14
+
+|p41= side: [[Side]] - side to create crew on
+
+|p42= vehicle: [[Object]] - vehicle to populate with crew
+
+|r3= [[Group]] - the group of the created crew or [[grpNull]]
+
+|x1= <sqf>
+_veh = createVehicle ["B_MRAP_01_F", getMarkerPos "createVeh", [], 0, "NONE"];
+createVehicleCrew _veh;
+</sqf>
+
+|x2= <sqf>
+_veh = createVehicle ["O_MRAP_02_hmg_F", position player, [], 0, "NONE"];
+createVehicleCrew _veh;
+{
+	diag_log [_x, faction _x, side _x, side group _x];
+} forEach crew _veh;
+
+// [O Alpha 1-1:1,"OPF_F",EAST,EAST]
+// [O Alpha 1-1:2,"OPF_F",EAST,EAST]
+</sqf>
+
+|seealso= [[deleteVehicleCrew]] [[moveInDriver]] [[moveInGunner]] [[moveInCommander]] [[moveInTurret]] [[moveInCargo]] [[BIS_fnc_spawnVehicle]]
+}}
+
+{{Note
+|user= SilentSpike
+|timestamp= 20140820140100
+|text= As of {{arma3}} v1.26 the command will work on non-empty vehicles. If any of the crew defined in config are missing they will be added.
+|game= arma3
+|version= 1.26
+}}
+
+{{Note
+|user= DrPastah
+|timestamp= 20151222141900
+|text= [[createVehicleCrew]] does not work with Transport Unload waypoints for helicopters. You need to spawn the pilots separately and then get them into the helicopter in order to get Transport Unload waypoints to work.
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20170602032600
+|text= The particular seats to which units are added depend on the {{hl|dontCreateAI}} property, the {{hl|hasDriver}} property of the base class, and the {{hl|hasGunner}} propery of turret classes.<br>
+For instance, the following snippet calculates how many seats will be occupied by the created crew:
+<sqf>
+private _vehCfg = configFile >> "CfgVehicles" >> typeOf _vehicle;
+private _crewCount = {
+	round getNumber (_x >> "dontCreateAI") < 1 && 
+	((_x == _vehCfg && { round getNumber (_x >> "hasDriver") > 0 }) ||
+	(_x != _vehCfg && { round getNumber (_x >> "hasGunner") > 0 }))
+} count ([_vehicle, configNull] call BIS_fnc_getTurrets);
+</sqf>
+Also, I've written a function to create a UAV crew for a specific side: https://gist.github.com/AgentRev/cb25d30e464f2239b6cee51fa0110c78
+}}

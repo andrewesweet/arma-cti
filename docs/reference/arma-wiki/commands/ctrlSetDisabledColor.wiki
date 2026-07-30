@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/ctrlSetDisabledColor
+// revision: 347537 (2023-09-28T08:53:50Z)
+// export sha1: t8wa7cdykawujfk0ezhmn99lobl3n21
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI Control
+
+|descr= Sets the colorDisabled attribute of a control.
+
+|s1= [[ctrlSetDisabledColor]] [idc, color]
+
+|p1= idc: [[Number]]
+
+|p2= color: [[Color|Color (RGBA)]]
+
+|r1= [[Nothing]]
+
+|s2= ctrl [[ctrlSetDisabledColor]] color
+
+|p21= ctrl: [[Control]]
+
+|p22= color: [[Color|Color (RGBA)]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetDisabledColor [0.5, 0.5, 0.5, 0.5];</sqf>
+
+|seealso= [[ctrlSetActiveColor]] [[ctrlSetBackgroundColor]] [[ctrlTextColor]]
+}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/removeDiarySubject
+// revision: 309156 (2022-05-03T14:17:34Z)
+// export sha1: dv40r2pgvycybm2qibftnd4ra01zvyo
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.96
+
+|eff= local
+
+|gr1= Briefing
+
+|descr= Removes a page and all its subjects from the [[Diary]].
+
+|s1= player [[removeDiarySubject]] diaryPage
+
+|p1=player: [[Object]]
+
+|p2=diaryPage: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeDiarySubject "myPage";</sqf>
+
+|seealso= [[createDiarySubject]] [[diarySubjectExists]] [[selectDiarySubject]] [[removeDiaryRecord]] [[allDiarySubjects]]
+}}

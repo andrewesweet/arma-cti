@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Walkthrough/Frontier
+// revision: 296059 (2021-11-17T14:40:51Z)
+// export sha1: eeqjf6ri9vcg8s4ekq1yorfqdn1bhxg
+// categories: Category:Carrier Command: Gaea Mission: Walkthrough
+// Vendored snapshot. Do not edit — re-export instead.
+
+=Tutorial=
+*The player is made familiar with radars
+*Walrus armor
+= Objectives =
+#FRONTIER FACILITIES
+#*We still barely have any equipment. If we take Frontier, perhaps it would change the situation.
+#DESTROY THE RADAR INSTALLATION (optional)
+#*Destroy the enemy radar system, doing so will prevent enemy units from receiving advanced warning of our unit movements.
+#RETRIEVE THE ARMOR
+#*Locate and retrieve the Medium Armor upgrade for the Walrus. According to data in the Command Center's database, it was developed at the island's Unit Production Facilities.
+#TAKE THE COMMAND CENTER
+#*Reprogram the Command Center to take control of the island.
+#REPAIR THE COMMAND CENTER
+#*Find a way to rebuild or repair the Command Center. There must be a backup plan in the event of its destruction.
+
+
+{{GameCategory|carriercommand|Walkthrough}}

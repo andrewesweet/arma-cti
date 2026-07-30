@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera_setHUDEnabled
+// revision: 349223 (2023-11-08T14:50:50Z)
+// export sha1: cb2z5yi90y7aaa4z117w1b7xsuo0sml
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Camera | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Camera
+
+|descr= Enables or disables camera HUD.
+
+|s1= [camera, state] call [[BIS_fnc_camera_setHUDEnabled]]
+
+|p1= camera: [[Object]] - the camera
+
+|p2= state: [[Boolean]] - (Optional, default [[false]]) [[true]] to enable HUD, [[false]] to disable
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[BIS_camera,true] call BIS_fnc_camera_setHUDEnabled;</sqf>
+
+|seealso= [[BIS_fnc_camera_getHUDEnabled]]
+}}

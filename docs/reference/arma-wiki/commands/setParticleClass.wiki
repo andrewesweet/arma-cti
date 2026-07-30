@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/setParticleClass
+// revision: 369209 (2024-09-03T10:34:52Z)
+// export sha1: 6m1vbgi1z5an9j174abo8lxo2clz1lu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Particles | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Particles
+
+|descr= Sets particle source parameters using existing particle config from {{hl|CfgCloudlets}} class. Use [[setParticleParams]] subsequently if you need to overwrite some values.
+{{Feature | important | If {{hl|CfgCloudlets}} class contains [[Simple_Expression | simple expressions]], they will not be evaluated by this command, which might make the whole class unusable in script.}}
+
+|s1= source [[setParticleClass]] className
+
+|p1= source: [[Object]] - particle source
+
+|p2= className: [[String]] - CfgCloudlets class
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_source01 = "#particlesource" createVehicleLocal _pos01;
+_source01 setParticleClass "ObjectDestructionFire1Smallx";
+_source01 attachTo [_object,[0,0,0]];
+</sqf>
+
+|seealso= [[Arma 3: Particle Effects]] [[ParticleArray]] [[setParticleParams]] [[setParticleRandom]] [[setParticleCircle]] [[setParticleFire]] [[setDropInterval]] [[drop]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-06-28 - 21:17 (UTC)</dd>
+<dt class="note">[[User:Waffle SS.|Waffle SS.]]</dt>
+<dd class="note">
+This can be very useful for getting features that can't normally be added with commands, such as AI view blocking and particles that can only be above/underwater.
+</dd>
+
+</dl>

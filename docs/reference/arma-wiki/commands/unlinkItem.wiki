@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/unlinkItem
+// revision: 378286 (2026-03-31T13:01:41Z)
+// export sha1: hrkw5cfeyitstt3d3ml2patyjntkvgu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|arg= global
+
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Unassign and delete existing item from its assigned slot. Nothing happens if the item does not exist or is not assigned. See also [[unassignItem]].
+
+|s1= unit [[unlinkItem]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+bluforUnit unlinkItem "NVGoggles";
+opforUnit unlinkItem "NVGoggles_OPFOR";
+indepUnit unlinkItem "NVGoggles_INDEP";
+
+// or
+{ _x unlinkItem hmd _x } forEach [bluforUnit, opforUnit, indepUnit];
+</sqf>
+
+|seealso= [[linkItem]] [[addItem]] [[assignItem]] [[removeItem]] [[unassignItem]] [[assignedItems]] [[removeAllAssignedItems]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20181015144600
+|text= With this command you can also unlink [[vest]], [[uniform]] and [[headgear]].
+}}

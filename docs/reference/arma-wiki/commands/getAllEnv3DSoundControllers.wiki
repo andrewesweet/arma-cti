@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/getAllEnv3DSoundControllers
+// revision: 377625 (2026-01-02T08:52:04Z)
+// export sha1: lbunbma0xv6mkjy7o7dhcl9t05do1ct
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|gr1= Sounds
+
+|descr= Returns an array containing the names and values of environmental 3D sound controllers, variables that can be used in simple expressions when configuring sounds.
+{{Feature|important|
+* Controller names are case sensitive
+* Wind param difference:
+** {{hl|wind}} is for '''3D''' controller
+** {{hl|wind'''y'''}} is for '''2D''' controller ([[getAllEnvSoundControllers]])
+}}
+
+|s1= [[getAllEnv3DSoundControllers]] object
+
+|p1= object: [[Object]] - environmental sound source like a tree or a house, see [[allEnv3DSoundSources]]
+
+|r1= [[Array]] with [<nowiki/>["controllerA", valueA], ["controllerB", valueB], ...], controllers being, in order:
+{{Columns|3|
+* {{hl|"rain"}}
+* {{hl|"night"}}
+* {{hl|"wind"}}
+* {{hl|"daytime"}}
+* {{hl|"distance"}}
+* {{hl|"shooting"}}
+* {{hl|"meadows"}}
+* {{hl|"trees"}}
+* {{hl|"houses"}}
+* {{hl|"forest"}}
+* {{hl|"sea"}}
+* {{hl|"altitudeSea"}}
+* {{hl|"altitudeGround"}}
+* {{hl|"rainDrops"}}
+* {{hl|"yearTime"}}
+* {{hl|"ambientTemp"}}
+* {{hl|"snow"}}
+}}
+
+|x1= <sqf>
+getAllEnv3DSoundControllers _thatTreeOverThere;
+/*
+	returns e.g
+	[
+		["rain",0],
+		["night",0],
+		["wind",0.161588],
+		...
+	]
+*/
+</sqf>
+
+|seealso= [[getAllEnvSoundControllers]] [[getEnv3DSoundController]] [[allEnv3DSoundSources]] [[selectBestPlaces]] [[getSoundController]] [[getSoundControllerResult]] [[getEnvSoundController]] [[getAllSoundControllers]] [[getCustomSoundController]] [[setCustomSoundController]] [[getCustomSoundControllerCount]] [[Arma 3: Sound]]
+}}

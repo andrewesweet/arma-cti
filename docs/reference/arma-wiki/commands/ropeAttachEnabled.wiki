@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/ropeAttachEnabled
+// revision: 309984 (2022-05-05T12:17:03Z)
+// export sha1: 081p91nl8cof2u80pgae82gd3nv0bgj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Ropes and Sling Loading
+
+|descr= Returns [[true]] if entity can be attached to a rope end.
+
+|s1= [[ropeAttachEnabled]] entity
+
+|p1= entity: [[Object]] - entity to check 
+
+|r1= [[Boolean]] - [[true]] if allowed
+
+|x1= <sqf>ropeAttachEnabled veh1;</sqf>
+
+|seealso= [[ropes]] [[canSlingLoad]] [[enableRopeAttach]] [[getSlingLoad]] [[ropeAttachedObjects]] [[ropeAttachTo]] [[ropeDestroy]] [[ropeLength]] [[ropeUnwound]] [[ropeAttachedTo]] [[ropeCreate]] [[ropeDetach]] [[ropeCut]] [[ropeEndPosition]] [[ropeUnwind]] [[setSlingLoad]] [[slingLoadAssistantShown]]
+}}

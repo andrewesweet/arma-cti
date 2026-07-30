@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/Game_Editor_(Workbench)_Options
+// revision: 156814 (2020-09-07T16:02:52Z)
+// export sha1: 1ot4bha7hi6rzm8mbz452av1cddyywh
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Workbench Options =
+There are two main bookmarks: 
+
+== Common Options ==
+[[File:CommonOptions.jpg|thumb]]
+Here you can change the default paths for all editors included in WB. But it is recomended to not to use it ( this option will be removed in near future). Also you can switch here if WB will show you distance in units or meters (units are basic engine distance unit '''1m = 32 units''' ) 
+
+   
+
+   
+
+   
+
+ 
+
+== GameEditor Options ==
+[[File:GameEditorOptions.jpg|thumb]]
+As the game editor is the main editor for editing game levels, here is the option to load it on WB starup. Also you can change how the main views in Content Window will be shown. 
+
+=== Main views ===
+* Front View 
+* Top View 
+* Right View 
+* Perspective 
+
+The first three views are good for putting entities on exact position. Perspective view is great for global view and terrain editing. The views can be change also in GameEditor.

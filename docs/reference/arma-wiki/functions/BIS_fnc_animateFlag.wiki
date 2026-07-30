@@ -1,0 +1,87 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_animateFlag
+// revision: 364735 (2024-05-30T21:39:57Z)
+// export sha1: 3i9c0bray7x8r1jtqp65dux80dey9j1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Object Manipulation
+
+|arg= global
+
+|eff= global
+
+|descr= Smoothly animates given flag from current position on the flag pole to the given position. When flag animation is done, the {{Link|Arma 3: Scripted Event Handlers|scripted event handler}} {{Link|Arma 3: Scripted Event Handlers#BIS_fnc_animateFlag|"FlagAnimationDone"}} is called.
+
+|mp= The effect is global, MP compatible and its effect is persistent.
+
+|s1= [flag, phase, instant] call [[BIS_fnc_animateFlag]]
+
+|p1= flag: [[Object]] - [[flag]] object of the type "FlagCarrier"
+
+|p2= phase: [[Number]] - desired animation phase 0..1 (0 - bottom of the flag pole, 1 - top of the flag pole)
+
+|p3= instant (Optional, default [[false]]): 
+* [[Boolean]] - when [[true]], animation is instant ("FlagAnimationDone" EH is not called in this case)
+* [[Number]] - animation duration multiplier
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[flag1, 0] call BIS_fnc_animateFlag;</sqf>
+
+|x2= <sqf>
+// Adding the "FlagAnimationDone" EH
+private _eh = [<yourflag>, "FlagAnimationDone", { /* your code */ }] call BIS_fnc_addScriptedEventHandler;
+</sqf>
+
+|seealso= [[flag]] [[flagOwner]] [[setFlagOwner]] [[setFlagSide]] [[setFlagTexture]] [[flagSide]] [[flagTexture]] [[setFlagAnimationPhase]] [[flagAnimationPhase]] [[Arma 3: Flag Textures]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20161212200200
+|text= Flag Demo (https://www.youtube.com/watch?v=sJtQfRML0cc)
+<sqf>
+fnc_addFlagAction =
+{
+	_this addAction
+	[
+		"Pull The Cord",
+		{
+			player playAction "PutDown";
+			sleep 0.5;
+			[_this select 0, flagAnimationPhase (_this select 0) + 0.2, 0.2] call BIS_fnc_animateFlag;
+			_this select 0 removeAction (_this select 2);
+		},
+		"",
+		10,
+		true,
+		true,
+		"",
+		"_this distance2D _target < 2"
+	];
+};
+
+private _flag = createVehicle ["Flag_BI_F", player getRelPos [10, 0], [], 0, "CAN_COLLIDE"];
+[_flag, 0, true] call BIS_fnc_animateFlag;
+_flag call fnc_addFlagAction;
+
+[
+	_flag,
+	"FlagAnimationDone",
+	{
+		if (_this select 1 > 0.9) exitWith
+		{
+			[_this select 0, "FlagAnimationDone"] call BIS_fnc_removeAllScriptedEventHandlers;
+			removeAllActions (_this select 0);
+		};
+		_this select 0 call fnc_addFlagAction;
+	}
+]
+call BIS_fnc_addScriptedEventHandler;
+</sqf>
+}}

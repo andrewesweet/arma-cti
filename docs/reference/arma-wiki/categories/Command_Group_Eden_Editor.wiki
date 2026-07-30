@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Eden_Editor
+// revision: 342086 (2023-07-09T12:24:19Z)
+// export sha1: 84rmtz1us43ufd73djv8erdo0u39td9
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands related to [[:Category:Eden Editor|Eden Editor]].
+[[Category:Scripting Commands by Functionality|{{uc:{{PAGENAME}}}}]]
+[[Category:Eden_Editor:_Modding|{{uc:{{PAGENAME}}}}]]

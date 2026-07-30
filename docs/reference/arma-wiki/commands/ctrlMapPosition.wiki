@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/ctrlMapPosition
+// revision: 377802 (2026-01-03T04:03:42Z)
+// export sha1: 78fqpjk2kdabgf3tvndf5w71phpet68
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|gr1= GUI Control - Map
+
+|descr= A getter for [[ctrlMapSetPosition]]. Returns map position in format [x, y, w, h]. If map is inside a Controls Group, the x and y position is relative to the Controls Group top left corner.
+
+|s1= [[ctrlMapPosition]] map
+
+|p1= map: [[Control]] - [[CT_MAP|Map control]]
+
+|r1= [[Array]] with [x, y, w, h]
+* x: [[Number]] - position in x
+* y: [[Number]] - position in y
+* w: [[Number]] - width of the map control
+* h: [[Number]] - height of the map control
+
+|x1= <sqf>ctrlMapPosition _map;</sqf>
+
+|seealso= [[ctrlMapSetPosition]] [[ctrlCreate]]
+}}

@@ -1,0 +1,156 @@
+// source: https://community.bistudio.com/wiki/switch
+// revision: 352209 (2024-02-01T23:26:04Z)
+// export sha1: 3dig5gpm7id8fjgk1t1tbfsdxdvjxeg
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Program Flow
+
+|descr= Checks if the given parameter matches any [[case]]. If so, the code block of that case will be executed. After that the switch ends so no further cases will be checked.<br>
+If a case has no code block the code of the next case will automatically be executed, making it possible to formulate a logical "or" for cases which would otherwise contain the exact same code (see {{Link|#Example 2}}).<br>
+The [[default]] block will be executed '''only''' if no case matches, no matter its position inside the code block. It is not a [[case]], and will '''never''' be entered by fallthrough.
+
+{{Feature|informative|
+* [[String]] comparison is case-sensitive. Use [[toUpper]], [[toLower]], [[toLowerANSI]] or [[toUpperANSI]] to force all [[String|strings]] to the same case.
+* if no [[default]] block is provided and no [[case]] is matched, the switch block returns the default value [[true]], otherwise it returns what the valid case block returns.
+}}
+
+|s1= [[switch]] value
+
+|p1= value: [[Anything]]
+
+|r1= [[Switch Type]]
+
+|x1= <sqf>
+switch (floor random 5) do
+{
+	case 1: { hint "one"; };
+	case 2: { hint "two"; };
+	default { hint "zero, three or four" };
+};
+</sqf>
+
+|x2= <!-- this example is referenced in Description -->
+<sqf>
+switch (_condition) do
+{
+	case "string1";
+	case "string2": { hint "string1 or string2" };
+	case "string3";
+	case "string4": { hint "string3 or string4" };
+	case "string5"; // will never enter default's code
+	default { hint "default" };
+};
+</sqf>
+
+|x3= <sqf>
+private _color = switch (side player) do
+{
+	case west: { "ColorGreen" };
+	case east: { "ColorRed" };
+};
+</sqf>
+
+|x4= <sqf>
+private _fn_moveForward =	{ /*...code...*/ };
+private _fn_moveBackward =	{ /*...code...*/ };
+private _fn_invalidKey =	{ /*...code...*/ };
+
+switch true do
+{
+	case (_dikCode in actionKeys "MoveForward"):	_fn_moveForward;
+	case (_dikCode in actionKeys "MoveBackward"):	_fn_moveBackward;
+	default _fn_invalidKey;
+};
+</sqf>
+
+|x5= <sqf>
+switch _var do
+{
+	case "0";
+	default { hint str ["default", _var] };
+	case "3": { hint str ["3", _var] };
+	case "1";
+	case "4";
+	case "2": { hint str ["2", _var] };
+};
+
+_var = "0"; // -> ["3", "0"]
+_var = "1"; // -> ["2", "1"]
+_var = "2"; // -> ["2", "2"]
+_var = "3"; // -> ["3", "3"]
+_var = "4"; // -> ["2", "4"]
+_var = "5"; // -> ["default", "5"]
+</sqf>
+
+|seealso= [[Control Structures]] [[a:b]] [[case]] [[default]]
+}}
+
+{{Note
+|user= ColonelSandersLite
+|timestamp= 20070807074900
+|text= Be careful of the parentheses around the variable you're switching on.
+If you accidentally use braces instead (e.g: <sqf inline>switch { _myVar } do { /*... */ }</sqf>), it won't error, but will always return default.
+{{Feature|informative|This is due to <sqf inline>{ _myvar }</sqf> being [[Code]].}}
+}}
+
+{{Note
+|user= Iva
+|timestamp= 20091006144300
+|text= It's possible to use [[Boolean]] value as a switch and [[Code]] as case. One thing to take special care in such case is that code must be in parentheses. Example:
+<sqf>
+switch (true) do
+{
+	case (_boolVar): { someCode };
+	case (unit1 distance unit2 > 5): { someCode };
+};
+</sqf>
+}}
+
+{{Note
+|user= Freddo3000
+|timestamp= 20201101100500
+|text= You are able to call code within the switch statements, such as:
+
+<sqf>
+private _myFunc = {
+	systemChat "0";
+	case 1: { systemChat "1" };
+	systemChat "2";
+};
+
+private _myParameter = 1;
+
+switch (_myParameter) do
+{
+	_myParameter call _myFunc;
+	case 1: { systemChat "4" };
+	systemChat "3";
+	default { systemChat "-1"; };
+};
+</sqf>
+
+However the order in which it is executed is difficult to make sense of, see the code comment.
+
+This is used by [[BIS_fnc_missionConversations]] and [[BIS_fnc_missionTasks]]
+}}

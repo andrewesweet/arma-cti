@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_destroyer01HandleDamage
+// revision: 273884 (2021-06-13T01:12:52Z)
+// export sha1: fqv02zzzro0nz2kjvpic9gh56nvy5i1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Destroyer | Category:Functions | Category:Introduced with Arma 3 version 1.84 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.84
+
+|gr1= Destroyer
+
+|descr= <pre>/*
+	Author: Bravo Zero One development
+	- John_Spartan
+
+	Description:
+	- This is a damage visual FX simulation function designed to animate ships bridge windows when shot.
+	  Due to engine limitation (damage simulation is disabled for indestructible objects e.g. ships components) this workaround is applied.
+
+	Execution:
+	- Call from EH on the ship's model part with windows.
+
+		Example:
+		class Eventhandlers
+		{
+			HitPart = "_this call BIS_fnc_Destroyer01HandleDamage;";
+		};
+
+	Requirements:
+	- Compatible object (e.g. ship component) must have a set of selections that are setup and named by convention.
+	  Selections must be defined as hidden selections in order for setObjectTexture to work.
+
+	Parameter(s):
+		_this select 0: mode (Scalar)
+		0: event Handler Array as documented here - https://community.bistudio.com/wiki/Arma_3:_Event_Handlers#HitPart
+
+	Returns: nothing
+	Result: Destroyer (ship) window textures are swapped for damaged ones. Simple swap.
+
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_destroyer01HandleDamage]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

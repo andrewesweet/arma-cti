@@ -1,0 +1,116 @@
+// source: https://community.bistudio.com/wiki/2D_Editor:_Units
+// revision: 353522 (2024-03-19T12:01:21Z)
+// export sha1: gzc7jleciqdonk79rqmjatz9jntgun3
+// categories: Category:2D Editor
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Unit mode is used to add individual units, vehicles and objects on the map. To do so, double click on the empty space where you would like to add a unit. This will open the ''Unit Dialogue''. You can also open the unit menu of an existing unit while in any editing mode other than waypoints by double clicking on the unit. Note that if there is no player unit on the map, the unit dialogue will only allow valid player units may be placed. 
+
+== Menu  ==
+
+<gallery>
+File:OFP_editor_units.jpg|[[Arma: Cold War Assault]]
+File:ArmA_editor_unit.jpg|[[:Category:ArmA: Armed Assault|{{Name|arma1|short}}]]
+File:Arma2 editor unit.jpg|{{GameCategory|arma2|link= y}}
+File:tkoh editor units.jpg|[[Take On Helicopters]]
+File:Arma3 editor unit.jpg|{{GameCategory|arma3|link= y}}
+</gallery>
+
+=== Side ===
+
+There are four [[Side|sides]] to which units can be assigned to: ''BLUFOR'', ''OPFOR'', ''Independent'' and ''Civilian''. ''BLUFOR'' and ''OPFOR'' will always start the mission as enemies. The ''Independent'' side's relations with the first two sides can be set on a mission by mission basis using the [[Mission_Editor#Intel|Intel Dialogue]]. The ''Civilian'' side will also inherit the friends and enemies of the ''Independent'' side. The difference is that the ''Civilian'' side are considered to be friends by all sides (killing civilians is bad!). 
+
+Once a player unit is on the map, ''Game Logic'' and ''Empty'' sides become available. The ''Game Logic'' side is used for abstract [[Game_Logic|game logic]] objects, which among other uses can be used to create script like effects from within the mission editor. The ''Empty'' side includes empty versions of every side's vehicles, and map objects such ammo crates, sound sources, tents, flagpoles and fences. The side of an entity changes the available options is many other dialogues. It is not possible to change the side of an object once it has been placed. Player friendly units are represented by green icons, enemy units by red, ''Civilian'' and ''Game Logic'' units by blue, and ''Empty'' side objects by dark yellow.
+
+=== Faction  ===
+
+Each of the playable sides (except Ambient Life) allows placement of units from several different factions. The faction an object belongs to limits the available units in the Unit selection box, generally to units belonging to specific nations. 
+
+=== Class ===
+
+This is the general type of entity you wish to place. The purpose of this class is to reduce the many hundreds of available entities into more easily searched groups. It is not related to any game [[Model_Config|config]] classes.
+
+=== Control ===
+
+[[File:icon map unit.jpg|thumb|Player unit / playable unit / non-playable unit]]
+Defines who controls the entity. This option is not available for ''Game Logic'' or ''Empty'' side objects. All non-player controlled units will be controlled by AI. If the selected object is a vehicles, extra options will become available.
+* '''Non playable''' - Self explanatory.
+* '''Player (as ''vehicle position'')''' - This unit will be controlled in single player mode. There can only be one ''Player'' controlled unit on the map. The player's unit is marked by a red circular icon.
+* '''Playable (as ''vehicle position(s)'')''' - Is used to define units that may be player controlled in multiplayer mode, and are available via ''[[Team_Switch|Team Switch]]'' in single player mode. Playable units are marked by a magenta circular icon. 
+
+=== Info Age ===
+
+Defines how long it has been since some unit belonging to the same side as player has seen this target. By default enemy units are not known unless somebody sees them (unknown). This way you can reveal some enemy unit to the center of the player. The impact of this value on AI behaviour is minimal, it influences mostly path-finding (AI groups try to avoid known enemies), to some extent it changes how fast will AI recognize the unit once they see it, and it may also cause AI center to send units which are available as guards (are ready at a guard waypoint).
+
+=== Vehicle Lock ===
+
+This option is only functional if the selected object is a vehicle. It defines whether any player controlled unit or members of a group lead by a player can board the vehicle or not. Default is unlocked. Note that an AI leader will not understand that a player unit can not enter a locked vehicle, and script commands will not respect this setting. 
+
+=== Rank ===
+
+This defines the rank of the unit. The highest ranking unit in a group will normally be the group leader. Rank also has some affect on gameplay, such as highly ranked units being less likely to flee and more intimidating to enemy forces.
+
+=== Unit ===
+
+This is the specific type of entity you want to place or edit. The options available in this list box depend on the chosen ''Class''.
+
+=== Special ===
+
+Defines special placement options for the starting position for the unit at the very beginning of a mission. If the unit is part of a group, default AI behaviour will make it try to return to formation as soon as the mission begins. 
+* '''None''' - If you wish the unit to begin the mission out of formation, choose 'None' from this list. It will start the mission at it is location in the mission editor.
+* '''In Cargo''' - If the unit's group possess a vehicle with empty cargo spaces, choosing "In Cargo" will place the unit in one of those cargo spaces. If no cargo seats are available, it will start at it is location in the mission editor as it would if it is special setting was ''None''.
+* '''Flying''' - Aircraft units will begin the mission in the air, and in formation around the group leader irrespective of the unit's map position. If the unit can not fly, it will begin the mission as it would if it were ''In Formation''. 
+* '''In Formation''' - The unit will begin in formation around the group leader, irrespective of the unit's position in the mission editor.
+
+=== Name ===
+
+The name of a unit can be used to refer to the object in script code. Like all variable names, the name must not contain any spaces or reserved characters. You should try to make it something meaningful and avoid conflicts. Note that if a variable exists with an identical name, no warning will be given and the name will refer to the variable first, rather than the named unit. If you copy and paste a named entity, the duplicate will be automatically have an underscore and number appended to it is name to avoid conflicts.
+
+=== Skill ===
+
+Highly skilled units can see farther, shoot more accurately and be generally more devious. At lowest skill units will be less observant, poor marksmen and generally stupid. Moving the slider to the right gives the unit a higher skill. [[skill|Skill]] values set by the slider range between 0.2 and 1.
+
+=== Initialization ===
+
+Any [[Scripting|script]] code placed in this box will be executed as the mission begins. Script code is extremely powerful and useful - it allows you to create many effects and change aspects of the mission that would not be possible using only the graphical interface of the mission editor. For example, to make a soldier begin the mission unarmed, add "[[removeAllWeapons]] [[Magic Variables#this_2|this]]" (without the quotation marks) to it is initialization string. Any [[Expression|expressions]] in the initialization field must return [[Nothing|nothing]], or an error message will prevent the unit dialogue from closing.
+In MP every init field is always run on every computer on every initialization - including JIP.
+
+=== Description ===
+
+This text will appear next to the unit in the multiplayer unit selection screen.
+
+=== Health/Armour ===
+
+Defines how [[damage|damaged]] the object is at the beginning of the mission. Moving the slider to the left makes it more damaged, up to a maximum of 0.97. Note that fully damaged units will begin the mission alive, then be instantaneously damaged. This means fully damaged soldiers will display a death animation, and vehicles will generally explode within 10 seconds of the mission starting.
+
+=== Fuel ===
+
+Defines how much [[fuel]] the object has, moving the slide left results in less fuel. This only has an effect on vehicles. Note that this setting does not change the amount of fuel cargo a refueling truck or petrol station holds. Use [[setFuelCargo]] for that purpose.
+
+=== Ammunition ===
+
+Defines how much ammunition the unit has at the start of the mission. Moving the slider left removes whole magazines for most units and removes individual rounds for single magazine weapons (such as the main tank cannon and aircraft missiles). This setting does not change the amount of ammunition cargo carried by a vehicle or ammunition crate.
+
+=== Azimut / Direction / Azimuth ===
+
+Defines which direction the unit will be facing. You can drag the pointer around the circle, or enter the desired bearing into the text box. If the unit is set to start ''In Formation'', the unit will use the group leader's facing.
+
+=== Probability of Presence ===
+
+Defines how likely it is that the entity will exist each time the mission is played. This can be used to add a bit of randomness to missions. Moving the slider all the way to the right means the object will always be there, all the way to the left means the unit will never appear. Note the ''Condition of Presence'' must also return true if the entity is to appear in the mission. 
+
+=== Condition of Presence ===
+
+This is a script code condition which must return true in order for the object to appear in the mission. By default this reads "true" which means the object will appear as defined by it is ''Probability of Presence''. For an example, if you wanted a unit to appear only if the mission is being played in Veteran mode, place "![[cadetMode]]" (without quotation marks) in it is Condition of Presence box. A unit with a Condition of Presence that returns false will not exist in the mission, irrespective of its ''Probability of Presence''.
+
+=== Placement Radius ===
+
+Changes the object's starting position to a random point within a circle of this radius, in metres. This can be used to add some randomness to your mission. For grouped units, the placement radius is only used by the group leader, and group members with a [[#Special|''Special'']] setting of ''None'' (or ''In Cargo'' for a group without suitable vehicle).
+
+{{ArgTitle|3|Show Info|{{GVI|tkoh|1.00}}}}
+
+Displays description of currently selected entity, including map icon, command bar picture and [[Content Authorship|author]].
+
+
+[[Category: 2D Editor]]

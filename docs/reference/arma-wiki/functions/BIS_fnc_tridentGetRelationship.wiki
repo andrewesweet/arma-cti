@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_tridentGetRelationship
+// revision: 349070 (2023-11-08T14:47:22Z)
+// export sha1: 96e996cprwj78lh8zzb3g9tgnko25fd
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sides
+
+|descr= Gets the relationship of competing Trident sides. The value slowly decreases towards 0.
+
+|s1= [sideA, sideB] call [[BIS_fnc_tridentGetRelationship]]
+
+|p1= sideA: [[Side]]
+
+|p2= sideB: [[Side]]
+
+|r1= [[Number]] - relationship value
+
+|x1= <sqf>[west, east] call BIS_fnc_tridentGetRelationship;</sqf>
+
+|seealso= [[BIS_fnc_tridentSetRelationship]] [[BIS_fnc_tridentHandleDamage]] [[BIS_fnc_tridentExecute]]
+}}

@@ -1,0 +1,234 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Trees
+// revision: 336204 (2022-12-14T14:12:44Z)
+// export sha1: 4nontus8cw67ixbksdiaqma2b9ifufy
+// categories: Category:Arma 3: Editing | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Part of '''[[Arma 3: Vegetation P3D]]''' about Tree '''materials'''.
+
+
+== Crown material ==
+
+It is strongly advised to edit materials in text editor (Notepad++ or other text editors), this way you have much bigger control
+
+=== Textures for crown ===
+
+{|
+|
+* _CA - diffuse in RGB and opacity mask in Alpha channel
+* _NOHQ - is classic DirectX (-Y) normal map
+* _MCA (RGB - macro map; Alpha - ambient occlusion (light map) - if alpha channel is not present, ambient occlusion is simply not used. Mapped through 2.nd UV set
+* Macro map adds additional coloring to the diffuse of the model. It makes effect both on the sun and in shadows
+* Light map or Ambient occlusion is causing to make the lighting darker in ambient (in shadows)
+* we often put AO to macro map (RGB channels), so the darkening is visible also on the sun and we leave the Alpha channel white or we don't have it at all)
+* best way to create light map is to paint it in 3dsMax with volumetric brush in Viewport Canavas
+| [[File:Arma 3 Trees crown.png|400px|frameless|right]]
+|}
+
+{|
+| style="vertical-align: top" | [[File:Arma_3_Trees_CA.png|300px|thumb|frame|_CA]]
+| style="vertical-align: top" | [[File:Arma_3_Trees_NOHQ.png|300px|thumb|frame|_NOHQ]]
+| style="vertical-align: top" | [[File:Arma_3_Trees_MCA.png|300px|thumb|frame|_MCA (RGB channel), mapped with 2nd. UV set (uvSource="tex1")]]
+|}
+
+=== Example material for a tree crown ===
+
+* always use PixelShaderID="TreeAdv";
+* For material without face fading you need to set VertexShaderID = "TreeAdvnofade".
+* For material with face fading you need to set VertexShaderID = "TreeAdv".
+* For material for last LOD (cross billboards) where all vertex normals are facing directly into the camera, use VertexShaderID = "TreeAdvModNormals".
+
+''texture = "#(argb,8,8,3)color(0.5,0.5,0.5,1,MCA) - this si procedural texture, where you can set RGBA values in range from 0-1 (in this case 0.5,0.5,0.5,1) and type of texture (in this case MCA)''
+<syntaxhighlight lang="cpp">
+ambient[] =
+{
+	0.02,	// crown bleed MUL factor
+	0.52,	// crown bleed ADD factor
+	0.5,	// per-pixel bleed level
+	0.05	// per-pixel bleed level
+};
+diffuse[] =
+{
+	1.5,	// Diffuse + ambient R
+	1.5,	// Diffuse + ambient G
+	1.5,	// Diffuse + ambient B
+	0.5		// Transparency MUL factor (2x) - the higher the values, the fuller/thicker the crown looks into the distance. Also influence fading of the faces.
+};
+forcedDiffuse[] =
+{
+	0.5,	// per-pixel translucency MUL
+	0.7,	// per-pixel translucency ADD
+	0.7,	// crown attenuation MUL
+	1.0	// crown attenuation ADD
+};
+emmisive[] =
+{
+	1.2,	// translucency modulation color (for sky) R
+	1.2,	// translucency modulation color (for sky) G
+	1.0,	// translucency modulation color (for sky) B
+	0.5		// translucency color MUL factor for main light (x2)
+};
+specular[] =
+{
+	0.10,	// specular color/value for main light R
+	0.15,	// specular color/value for main light R
+	0.09,	// specular color/value for main light R
+	1.01	// specular color/value MUL factor for ambient
+};
+specularPower	= 30; // SpecularPower, defines size of the hotspot.
+PixelShaderID	= "TreeAdv";
+VertexShaderID	= "TreeAdv";
+class Stage1
+{
+	// texture	= "#(argb,8,8,3)color(0.5,0.5,1.0,1,NOHQ)";
+	texture		= "A3\Plants_F\_PolyPlane\data\polyplane_FicusCarica_L2_nohq.tga";
+	uvSource	= "tex";
+	class uvTransform
+	{
+		aside[]	= {1,0,0};
+		up[]	= {0,1,0};
+		dir[]	= {0,0,0};
+		pos[]	= {0,0,0};
+	};
+};
+class Stage2
+{
+	// texture	= "#(argb,8,8,3)color(0.5,0.5,0.5,1.0,MCA)";
+	texture		= "A3\Plants_F\Tree\data\t_FicusB2s_F_LOD1_Crown_mca.tga";
+	uvSource	= "tex1";
+	class uvTransform
+	{
+		aside[]	= {1,0,0};
+		up[]	= {0,1,0};
+		dir[]	= {0,0,0};
+		pos[]	= {0,0,0};
+	};
+};
+</syntaxhighlight>
+
+[[File:Arma 3 Trees crown selfshad.jpeg|frame|Picture of parameters setup for values (0.3, 0.7) and (0.1, 0.6)]]
+=== Parameters crown bleed MUL and ADD ===
+
+The effect simulates self-shadowing of the tree crown. Is important when shadow buffer shadows stops to draw. For values 0.0, 0.6 the effect is none (white color)
+<br clear="all">
+
+=== Parameters per-pixel bleed LEVEL and SHIFT ===
+
+[[File:Arma_3_Trees_crown_soft.jpeg|frame|Picture of parameters setup for values (0.0, 0.0) and (0.15, 0.15)]]
+Parameters are causing softening of the main light – shadows are softer. Effect is none for values (0.0, 0.0).
+<br clear="all">
+
+[[File:Arma_3_Trees_crown_translucency.jpeg|frame|right|Picture of the influence on the main light for parameters values (0.5, 0.5) a (0.45, 0.35)]]
+=== Parameters per-pixel transucency MUL a ADD ===
+
+Translucency effect of the material by face normals.
+<br clear="all">
+
+[[File:Arma_3_Trees_crown_AO.jpeg|frame|right|Picture of parameters setup for values (0.3, 0.4) a (1.0, 0.5)]]
+=== Parameters crown attenuation MUL a ADD ===
+
+Parameters for tuning of the ambient occlusion map (alpha cahnnel in MCA texture). Values (0.1, 0.5) means ambient occlusion with no tuning.
+<br clear="all">
+
+[[File:Arma_3_Trees_crown_specular.jpeg|frame|right|Specular from the main light and hemispheric light (sky) (specular color MUL factor for ambient 5x in the right picture)]]
+=== Specular parameters of the material ===
+
+Specular strength from the main light is defined by specular color (RGB values) and sharpness of the hot-spot "specularPower".
+Specular strength for ambient (faces is shadow) is defined by specular color (RGB) multiplied by value in parameter "specular color MUL factor for ambient".
+Both specular effects are influenced by fresnel function, which is hard-coded for this material and can't be changed (compromise between performance and visuals).
+<br clear="all">
+
+
+== Material for the last LOD (cross billboards) ==
+
+* be sure to use VertexShaderID="TreeAdvModNormals"
+* _CO texture contain soft fake shadowing from the ground simply painted in Photoshop
+* _NOHQ normal map should look like this. Mainly it should has the overall spherical shape of the crown.
+* the model of the last LODs are simple billboards. Result is nicely shaded last LODs without any sharp faces standing out
+
+{|
+|-
+| [[File:Arma_3_Trees_lastLOD_CO.png|300px|thumb|frame|_CO texture]]
+| [[File:Arma_3_Trees_lastLOD_NOHQ.png|300px|thumb|frame|_NOHQ texture]]
+| [[File:Arma_3_Trees_lastLOD_model.png|300px|thumb|frame|model of the last LOD]]
+|-
+| rowspan="1" | [[File:Arma_3_Trees_lastLOD_matsetup.png|300px|thumb|frame|material setup]]
+| colspan="2" | [[File:Arma_3_Trees_result_visuals.png|frame|result visuals]]
+|}
+
+
+== Material for the trunk (and modeled branches) ==
+
+=== Textures ===
+
+* _CS diffuse texture must be used where RGB is diffuse and in Alpha channel is specular texture.
+* _NOHQ is classic DirectX (-Y) normal map
+* _MCA (RGB - macro map; Alpha - ambient occlusion) - if alpha channel is not present, ambient occlusion is simply not used.
+* we often put AO to macro map (RGB channels), so the darkening is visible also on the sun and we leave the Alpha channel white or we don't have it at all).
+
+{|
+| [[File:Arma_3_Trees_trunk_CS_RGB.png|300px|thumb|frame|_CS texture, RGB]]
+| [[File:Arma_3_Trees_trunk_CS.png|300px|thumb|frame|_CS texture, Alpha channel]]
+| [[File:Arma_3_Trees_trunk_MCA.png|300px|thumb|frame|_MCA (RGB channel), mapped with 2nd. UV set (uvSource="tex1")]]
+|}
+
+=== Example of material for trunk ===
+
+* always use PixelShaderID = "TreeAdvTrunk";
+* use VertexShaderID = "TreeAdvTrunk";
+
+<syntaxhighlight lang="cpp">
+//--- is ignored -----------------
+ambient[]		= {1,1,1,1};
+forcedDiffuse[]	= {1,1,1,1};
+emmisive[]		= {1,1,1,1};
+//---------------------------------
+
+diffuse[] =
+{
+	0.8,	// Diffuse + ambient R
+	0.8,	// Diffuse + ambient G
+	0.8,	// Diffuse + ambient B
+	1.00	// Transparency MUL factor (2x)
+};
+specular[] =
+{
+	0.7,
+	0.7,
+	0.7,
+	1.0
+};
+specularPower	= 20;
+PixelShaderID	= "TreeAdvTrunk";
+VertexShaderID	= "TreeAdvTrunk";
+class Stage1
+{
+	texture		= "A3\Plants_F\_Bark\bark_FicusCarica_L1_nohq.tga";
+	uvSource	= "tex"; // defines used UV set, tex= first UV set, tex1= second UV set
+	class uvTransform
+	{
+		aside[]	= {1.0,0,0};
+		up[]	= {0,1.0,0};
+		dir[]	= {0,0,0};
+		pos[]	= {0,0,0};
+	};
+};
+class Stage2
+{
+	// texture	= "#(argb,8,8,3)color(0.5,0.5,0.5,1,MCA)";
+	texture		= "A3\Plants_F\Tree\data\t_FicusB2s_F_LOD1_Trunk_mca.tga";
+	uvSource	= "tex1";
+	class uvTransform
+	{
+		aside[]	= {1,0,0};
+		up[]	= {0,1,0};
+		dir[]	= {0,0,0};
+		pos[]	= {0,0,0};
+	};
+};
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Editing}}
+{{GameCategory|arma3|Tutorials}}

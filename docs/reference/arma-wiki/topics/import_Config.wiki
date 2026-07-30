@@ -1,0 +1,120 @@
+// source: https://community.bistudio.com/wiki/import_(Config)
+// revision: 352475 (2024-02-11T23:38:07Z)
+// export sha1: 0phe9hjkp7tdcpubhlo2mr59dd4r0d3
+// categories: Category:Introduced with Arma 3 version 2.02 | Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GVI|arma3|2.02}}
+The {{hl|import}} keyword '''can only be used''' in [[Description.ext|mission config]], pretty much like {{hl|class}} keyword, in order to import a class from main config into mission config.
+Useful for UI creation as UI controls have a lot of properties which are already defined in main config, so if only some tweaks are required, it could be easily done after importing the class.
+
+The keyword tells parser to copy given class during parsing of the mission config so the imported class will be placed where the keyword {{hl|import}} was placed.
+For example if one needs to inherit from {{hl|RscText}}, the {{hl|import RscText;}} should precede the inheritance:
+
+<syntaxhighlight lang="cpp">
+import RscText;
+class MyText : RscText
+{
+	// ...
+};
+</syntaxhighlight>
+
+The {{hl|import}} keyword tells the engine to look for the base class in main config, which means classes in base directory. However, it is also possible to look in other dirs using {{hl|from}} keyword.
+
+
+== Modifiers ==
+
+=== from ===
+
+The {{hl|from}} keyword is used to indicate specific config path from where the class should be imported. For example, one can do things like this, not that one will even need this particular usage:
+
+<syntaxhighlight lang="cpp">
+import Default from CfgTasks;
+class CfgTasks
+{
+	class MyAwesomeTask : Default
+	{
+		name = "My Awesome Task";
+	};
+};
+</syntaxhighlight>
+
+{{ArgTitle|3|as|{{GVI|arma3|2.14}}}}
+
+The {{hl|as}} keyword is used to import a class from main config as another name, for example:
+
+<syntaxhighlight lang="cpp">
+import CfgRemoteExec as CfgRemoteExecMod;
+
+class CfgRemoteExec : CfgRemoteExecMod
+{
+	class Server : Server
+	{
+		class Functions : Functions
+		{
+			jip = 0;
+			class BIS_fnc_effectKilledSecondaries
+			{
+				allowedTargets = 0;
+				jip = 0;
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== Properties Override ==
+
+The properties override is done in the same way it is done for modding.
+
+<syntaxhighlight lang="cpp">
+import RscText;
+class MyText : RscText
+{
+	style = 2;
+};
+</syntaxhighlight>
+
+When the property is inside another class, this is how it can be done:
+
+<syntaxhighlight lang="cpp">
+import RscStructuredText;
+class MyText : RscStructuredText
+{
+	class Attributes : Attributes
+	{
+		align = "right";
+	};
+};
+</syntaxhighlight>
+
+Here is example of overriding the color of vignette:
+
+<syntaxhighlight lang="cpp">
+import RscDisplayEmpty;
+class MyRscDisplayEmpty : RscDisplayEmpty
+{
+	class controls : controls
+	{
+		class CA_Vignette : CA_Vignette
+		{
+			colorText[] = { 1, 0, 0, 1 };
+		};
+	};
+};
+</syntaxhighlight>
+
+And the result, after executing <sqf inline>findDisplay 46 createDisplay "MyRscDisplayEmpty";</sqf> in debug console:
+
+[[File:vignette_modified.jpg|600px]]
+
+
+== Check Imported Classes ==
+
+In debug console type {{hl|[[Arma 3: Utilities#Print Config|utils 2]]}}, {{hl|LOCAL EXEC}}, and select mission config from drop down menu. The mission config will be displayed including imported classes
+
+
+[[Category:Scripting Topics]]
+[[Category:Introduced with Arma 3 version 2.02]]

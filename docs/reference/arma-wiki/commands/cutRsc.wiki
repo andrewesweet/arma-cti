@@ -1,0 +1,157 @@
+// source: https://community.bistudio.com/wiki/cutRsc
+// revision: 378028 (2026-01-24T02:09:18Z)
+// export sha1: j6g11y37oehqkabwn0fol264bfhr9gs
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|eff= local
+
+|gr1= GUI Control
+
+|descr= Display a resource defined in RscTitles of the mission's [[Description.ext]], the campaign's description.ext or the global config.
+{{Feature|arma3|For greater efficiency and ease of modability, it is recommended to use named layers available with [[String]] and {{Link|#Syntax 2}}.}}
+{{Feature|important|To avoid conflicts with existing layers it is recommended to register a layer with [[BIS_fnc_rscLayer]] and to start the name with a TAG:
+<sqf>
+("TAG_myLayer" call BIS_fnc_rscLayer) cutRsc ["myRsc", "PLAIN"];
+"TAG_myLayer" cutRsc ["myRsc", "PLAIN"];</sqf>
+}}
+
+|s1= [[cutRsc]] [class, effect, speed, showInMap, drawOverHUD]
+
+|p1= class: [[String]] - the class name of the resource. ("Default" will remove the current resource.)
+
+|p2= effect: [[String]] - one of "PLAIN", "PLAIN DOWN", "BLACK", "BLACK FADED", "BLACK OUT", "BLACK IN", "WHITE OUT" and "WHITE IN". See [[Title Effect Type]]s for more information about these values.
+
+|p3= speed: [[Number]] - (Optional, default -1) time in seconds to fade in resource.
+
+|p4= showInMap: [[Boolean]] - (Optional, default [[true]]) [[false]] to hide the text when the map is opened.
+
+|p5= drawOverHUD: [[Boolean]] - (Optional, default [[true]]) [[false]] to show the resource under in-game HUD (for example, a binocular effect)
+|p5since= arma3 2.16
+
+|r1= [[Nothing]]
+
+|s2= layer [[cutRsc]] [class, effect, speed, showInMap, drawOverHUD]
+
+|p21= layer: [[Number]] or [[String]]
+* [[Number]] - layer number on which the effect is shown, where 0 is the back most. Layer number is rounded to the nearest integer and also cannot be negative. Layer 99.5 will be treated as layer 100
+* [[String]] - {{GVI|arma3|1.58|size= 0.75}} layer name on which the effect is shown. Layer names are '''CaSe SeNsItIvE'''.
+
+|p22= class: [[String]] - the class name of the resource. ("Default" will remove the current resource.)
+
+|p23= effect: [[String]] - one of "PLAIN", "PLAIN DOWN", "BLACK", "BLACK FADED", "BLACK OUT", "BLACK IN", "WHITE OUT" and "WHITE IN". See [[Title Effect Type]]s for more information about these values.
+
+|p24= speed: [[Number]] - (Optional, default -1) time in seconds to fade in resource.
+
+|p25= showInMap: [[Boolean]] - (Optional, default [[true]]) [[false]] to hide the text when the map is opened.
+
+|p26= drawOverHUD: [[Boolean]] - (Optional, default [[true]]) [[false]] to show the resource under in-game HUD (for example, a binocular effect)
+|p26since= arma3 2.16
+
+|r2= [[Nothing]]
+
+|x1= <sqf>
+cutRsc ["binocular", "PLAIN"];
+cutRsc ["binocular", "PLAIN", 2];
+cutRsc ["binocular", "PLAIN", 2, false];
+</sqf>
+
+|x2= <sqf>2 cutRsc ["binocular", "PLAIN", 2];</sqf>
+
+|x3= <sqf>"layer1" cutRsc ["binocular", "PLAIN", 2];</sqf>
+
+|x4= <sqf>
+// create IGUI display
+// such display can be closed with closeDisplay command or by overwriting the same cut layer with another output.
+// note that "Unload" EH for some reason does not work with such display.
+"someLayer" cutRsc ["RscTitleDisplayEmpty", "PLAIN"];
+private _display = uiNamespace getVariable "RscTitleDisplayEmpty";
+</sqf>
+
+|seealso= [[allCutLayers]] [[titleRsc]] [[cutText]] [[cutObj]] [[cutFadeOut]] [[setTitleEffect]] [[allActiveTitleEffects]] [[activeTitleEffectParams]] 
+}}
+
+{{Note
+|user= Dr_Eyeball
+|timestamp= 20080630084400
+|text= Using [[cutRsc]] (instead of [[titleRsc]]) for a HUD has the benefits of:
+* having the HUD automatically hide itself when you access the map and redisplay itself after closing the map.
+* using the 'Direct communication' chat channel messages will not interfere with the HUD by hiding it.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20131017163000
+|text= Regarding removing current resource with [[cutRsc]] ["Default", "PLAIN"]. If it does't work and it gives you error message that "Default" is not found, add it by yourself to RscTitles in [[Description.ext|description.ext]] so it looks like this:
+<syntaxhighlight lang="cpp">
+class RscTitles
+{
+	class Default 
+	{
+		idd = -1;
+		fadein = 0;
+		fadeout = 0;
+		duration = 0;
+	};
+};
+</syntaxhighlight>
+
+Alternatively, you can use cutText, yes [[cutText]] command to cancel your resources. As Karel Moricky explains: "All 'cut' commands are in the same layer, the same as all 'title' commands are in another one." So to remove cutRsc resource execute cutText on the same layer:
+
+<sqf>
+cutRsc ["myRsc", "PLAIN"];	// show
+cutText ["", "PLAIN"];		// remove
+</sqf>
+
+<sqf>
+10 cutRsc ["myRsc", "PLAIN"];	// show
+10 cutText ["", "PLAIN"];		// remove
+</sqf>
+
+Also if you use layers would be a good idea to register them with [[BIS_fnc_rscLayer]] to avoid possible clashes with other layers:
+<sqf>
+("myLayerName" call BIS_fnc_rscLayer) cutRsc ["myRsc", "PLAIN"];	// show
+("myLayerName" call BIS_fnc_rscLayer) cutText ["", "PLAIN"];		// remove
+</sqf>
+
+You can also immediately remove resource with [[cutFadeOut]] command:<sqf>123 cutFadeOut 0;</sqf>
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20230413081935
+|text= Layer display time seems to be display's "duration" parameter divided by "speed" provided into this command, which also acts as effect time. So to make sure your display doesn't close after a bit, have your ""duration"" at a very high number like <sqf inline>duration = 1e11;</sqf>
+}}
+
+{{Note
+|user= Rpg12
+|timestamp= 20250901212741
+|text= The note by Killzone_kid is no longer valid due to an arma 3 update, ensure you do this instead:
+<sqf>
+"exampleLayer" cutRsc ["RCSDefinedLayer", "PLAIN"];
+</sqf>
+The RCSDefinedLayer is something you define in either config.cpp or description.ext
+}}

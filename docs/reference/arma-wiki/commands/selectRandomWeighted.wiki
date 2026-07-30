@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/selectRandomWeighted
+// revision: 377677 (2026-01-02T09:02:40Z)
+// export sha1: 9h84274okqe8pxfxcfi54p09sf5ky9y
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Arrays
+
+|descr= Returns a random element from the given array according to assigned weights. Engine solution to [[BIS_fnc_selectRandomWeighted]]. A few notes:
+* Negative weights are not supported
+* If an item's weight is 0, the item is ignored
+* The weights don't have to total to 1 
+* If numbers of items and weights do not match, the shortest array is used
+* A single array Syntax is slightly faster than Alt Syntax
+
+|s1= [[selectRandomWeighted]] valuesAndWeights
+
+|p1= valuesAndWeights: [[Array]] with [valueN, weightN]
+* valueN: [[Anything]] - weighted value
+* weightN: [[Number]] - values relative weight
+
+|r1= [[Anything]] - random weighted value or [[Nothing]] if array is empty or all weights are 0
+
+|s2= values [[selectRandomWeighted]] weights
+
+|p21= values: [[Array]] of [[Anything]]
+
+|p22= weights: [[Array]] of [[Number]]s
+
+|r2= [[Anything]] - random weighted value or [[Nothing]] if any of arrays is empty or all weights are 0
+
+|x1= <sqf>private _randomWeightedElement = selectRandomWeighted [1,0.1,2,0.2,3,1.3,4,2.4,5,7.5];</sqf>
+
+|x2= <sqf>private _randomWeightedElement = [1,2,3,4,5] selectRandomWeighted [0.1,0.2,1.3,2.4,7.5];</sqf>
+
+|seealso= [[random]] [[select]] [[selectRandom]] [[selectMin]] [[selectMax]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20170626191700
+|text= A 100000 runs of the following code:
+<sqf>
+_values = [0,1,2,3,4,5,6,7,8,9];
+_weights = [0.109,0.65,0.01,1.01,1.24,0,1.59,0.09,1.15,0.55];
+_result = _values selectRandomWeighted _weights;
+</sqf>
+Gave this result:
+<pre>
+0 - 0
+0.01 - 144
+0.09 - 1409
+0.109 - 1633
+0.55 - 8673
+0.65 - 10127
+1.01 - 15668
+1.15 - 18059
+1.24 - 19518
+1.59 - 24769
+</pre>
+}}

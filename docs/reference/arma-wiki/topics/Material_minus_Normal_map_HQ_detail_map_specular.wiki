@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/Material_-_Normal_map_HQ_detail_map_specular
+// revision: 227526 (2021-01-31T19:30:56Z)
+// export sha1: 2n8m7p1kti4bx9xnuc8ior8e3uqvibq
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Material with high quality Normal map, specular and detail map, per pixel specularity'''
+
+ specular[] = {0.5,0.5,0.5,0};
+ specularPower = 10;
+ PixelShaderID = "NormalMapDetailSpecularMap";
+ VertexShaderID = "NormalMap";
+ class Stage1
+ {
+   texture="temp\NormalMap\normmap_NOHQ.tga";
+   uvSource="tex";
+ };
+ class Stage2
+ {
+   texture="temp\NormalMap\detmap_detail.paa";
+   uvSource="tex";
+   class uvTransform
+   {
+     aside[] = {3,0,0};
+     up[]    = {0,6,0};
+     dir[]   = {0,0,8};
+     pos[]   = {0,0,0};
+   };
+ };
+ class Stage3
+ {
+   texture="temp\NormalMap\specmap_SM.tga";
+   uvSource="tex";
+ };

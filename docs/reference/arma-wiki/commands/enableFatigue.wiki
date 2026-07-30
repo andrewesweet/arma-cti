@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/enableFatigue
+// revision: 341014 (2023-05-13T22:06:23Z)
+// export sha1: o8okg1ntsywj3i7oezdrneb34ef98ba
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+|arg= local
+|eff= global
+
+|gr1= Stamina System
+
+|descr= Enables/Disables the person's fatigue.
+
+|s1= unit [[enableFatigue]] enable
+
+|p1= unit: [[Object]]
+
+|p2= enable: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player enableFatigue false;</sqf>
+|x2= <sqf>{ _x enableFatigue false; } forEach (units group player);</sqf>
+
+|seealso= [[getFatigue]] [[setFatigue]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-03-24 - 16:30 (UTC)</dd>
+<dt class="note">[[User:Harmdhast|Harmdhast]]</dt>
+<dd class="note">
+When the player dies enableFatigue is set to true after the respawn
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2016-01-27 - 19:17 (UTC)</dd>
+<dt class="note">[[User:Pierre MGI|Pierre MGI]]</dt>
+<dd class="note">
+To precise the note of Harmdhast, this command is not persistent (after respawn). So, in MP, you'll have to enableFatigue false, also in onPlayerRespawn.sqf or through the MP eventHandler  MPRespawn.
+</dd>
+
+</dl>

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/customWaypointPosition
+// revision: 377508 (2026-01-02T06:50:11Z)
+// export sha1: n3zfnsywkf8fuwrq36smtynzhirgz3w
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.92
+
+|gr1= Waypoints
+
+|descr= Returns player's custom waypoint ({{Controls|LShift|LMB}}) position.
+
+|s1= [[customWaypointPosition]]
+
+|r1= [[Position]] as [x,y,0], or empty array [] if the waypoint does not exist
+
+|x1= <sqf>
+if (customWaypointPosition isNotEqualTo []) then
+{
+	hint format ["You are %1m away from your custom waypoint.", round (player distance customWaypointPosition)];
+};
+</sqf>
+
+|seealso= [[allMapMarkers]]
+}}

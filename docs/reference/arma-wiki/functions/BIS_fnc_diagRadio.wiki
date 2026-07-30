@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagRadio
+// revision: 327609 (2022-07-13T09:50:31Z)
+// export sha1: 6u14gsxn5ltakqkywscmkac1amp35mc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Function Group: Radio | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Radio
+
+|gr2= Diagnostic
+
+|descr= Tracks played radio sentences.
+
+|s1=  call [[BIS_fnc_diagRadio]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>call BIS_fnc_diagRadio;</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic|Diag functions]]
+}}

@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/connectTerminalToUAV
+// revision: 363209 (2024-03-25T20:30:02Z)
+// export sha1: aow9aoej7mnvnmhmrtckjtdu3xo772n
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.76
+
+|arg= global
+
+|eff= global
+
+|gr1= Remote Control
+
+|descr= Connect person with UAV terminal to UAV unit. UAV Terminal item needs to be assigned to GPS slot. In MP the connection is handled [[local]]ly, therefore it is possible for multiple MP clients to connect to the same UAV. However, each UAV can only have one connection to a terminal per MP client, so if UAV is already connected to another terminal on the same MP client, this new connection will fail.
+
+|s1= person [[connectTerminalToUAV]] uav
+
+|p1= person: [[Object]]
+
+|p2= uav: [[Object]]
+
+|r1= [[Boolean]] - [[true]] on success
+
+|x1= <sqf>bool = player connectTerminalToUAV uav1;</sqf>
+
+|x2= <sqf>player connectTerminalToUAV objNull; //disconnect</sqf>
+
+|seealso= [[allUnitsUAV]] [[getConnectedUAV]] [[isUAVConnected]] [[UAVControl]] [[showUAVFeed]] [[shownUAVFeed]]
+}}

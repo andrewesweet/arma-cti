@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/createLocation
+// revision: 322768 (2022-06-23T13:56:55Z)
+// export sha1: 6ru73lrvbq1ds8d6a8kp1592ftfkqp9
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|eff=local
+
+|gr1= Locations
+
+|descr= Creates a location of the specified class and dimensions at the specified position.
+Classes are defined in {{hl|CfgLocationTypes}}; for possible location types see [[Location#Location Types|Location Types]].<br>
+The alternative syntax allows to convert a non-editable (built-in) terrain location into an editable one, with the following restrictions:
+* it cannot be deleted (but can be [[setType]] to "Invisible" to hide it)
+* it cannot be moved
+
+|s1= [[createLocation]] [className, position, sizeX, sizeY]
+
+|p1= className: [[String]]
+
+|p2= position: [[Position#Introduction|Position2D]], [[Position#Introduction|Position3D]] or [[Object]]
+
+|p3= sizeX: [[Number]] - in meters
+
+|p4= sizeY: [[Number]] - in meters
+
+|r1= [[Location]]
+
+|s2= [[createLocation]] [location]
+
+|s2since= arma3 2.10
+
+|p21= location: [[Location]] - a terrain's location. If a scripted location is provided, it is simply returned
+
+|r2= [[Location]] - a script-editable location
+
+|x1= <sqf>_location = createLocation ["NameVillage", [4035,2151,10], 100, 100];</sqf>
+
+|x2= <sqf>
+_location = createLocation ["NameVillage", [4035,2151,10], 30, 30];
+_location setText "Player town";
+</sqf>
+
+|x3= <sqf>
+private _terrainLocation = nearestLocation [player, "nameCity"];	// assuming it returns a built-in location
+_terrainLocation setType "Invisible";								// does not do anything
+private _editableLocation = createLocation [_terrainLocation];		// does the conversion
+_editableLocation setType "Invisible";								// hides the location
+</sqf>
+
+|seealso= [[setText]] [[nearestLocation]] [[nearestLocations]] [[locationPosition]] [[nearestLocationWithDubbing]] [[setRectangular]] [[rectangular]] [[size]]
+}}

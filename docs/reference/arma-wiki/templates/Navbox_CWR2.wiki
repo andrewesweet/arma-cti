@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/Template:Navbox/CWR2
+// revision: 245095 (2021-02-08T09:21:35Z)
+// export sha1: dvwmbs75avu922ter67actpdj80wk6q
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Navbox
+
+| title = [[Cold War Rearmed 2|Addons for CWR2]]
+
+| title1 = NATO
+| content1 =
+[[File:cwr2 usmc logo.png|80px|link=CWR2 - United States Marines Corps]] 
+[[File:cwr2 green berets logo.png|80px|link=CWR2 - Green Berets]] 
+[[File:cwr2 uk logo.png|100px|link=CWR2 - British Armed Forces]] 
+[[File:cwr2 bw logo.png|100px|link=CWR2 - West German Army]] 
+[[File:cwr2 nl logo.png|100px|link=CWR2 - Dutch Armed Forces]]
+[[File:cwr2 dk logo.png|100px|link=CWR2 - Royal Danish Army]]
+[[File:cwr2 nor logo.png|100px|link=CWR2 - Royal Norwegian Army]]
+[[File:cwr2 ita logo.png|80px|link=CWR2 - Italian Armed Forces]]
+
+| title2 = Warsaw Pact
+| content2 =
+[[File:cwr2 vmf logo.png|100px|link=CWR2 - Soviet Naval Forces]]
+[[File:cwr2 vdv logo.png|100px|link=CWR2 - Soviet Airborne Infantry]]
+[[File:cwr2 nva logo.png|80px|link=CWR2 - National Peoples Army]]
+
+| title3 = Neutral
+| content3 =
+[[File:cwr2 bh logo.png|80px|link=CWR2 - Austrian Armed Forces]]
+[[File:cwr2 edf logo.png|70px|link=CWR2 - Everon Defence Forces]]
+[[File:cwr2 kdf logo.png|70px|link=CWR2 - Kolgujev Defence Forces]]
+[[File:cwr2 mdf logo.png|70px|link=CWR2 - Malden Defence Forces]]
+[[File:cwr2 ndf logo.png|70px|link=CWR2 - Nogova Defence Forces]]
+[[File:cwr2 sara logo.png|70px|link=CWR2 - Sahrani]]
+
+| title4 = Other
+| content4 = [[CWR2 - Women|Female Rebels]]
+}}<noinclude>[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

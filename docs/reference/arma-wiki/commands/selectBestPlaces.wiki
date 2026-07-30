@@ -1,0 +1,112 @@
+// source: https://community.bistudio.com/wiki/selectBestPlaces
+// revision: 377620 (2026-01-02T08:51:55Z)
+// export sha1: mnsrq1xn6je2bicju8hptsx0lcy4plm
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Mission Information
+
+|descr= Find the places with the maximum value of ''expression'' in the given area. Places can be on water. Results are sorted by value. Search pattern is randomised every command execution.
+
+|s1= [[selectBestPlaces]] [position, radius, expression, precision, sourcesCount]
+
+|p1= position: [[Object]], [[Position#Introduction|Position3D]] or [[Position#Introduction|Position2D]]
+
+|p2= radius: [[Number]]
+
+|p3= expression: [[String]] - arithmetic expression. [[Simple_Expression|Simple expression]] var names containing values from 0 to 1 depending on location (see also [[Ambient Parameters]]):
+{{Columns|5|
+* forest
+* trees
+* meadow
+* hills
+* houses
+* sea
+* coast
+* night
+* rain
+* windy
+* deadBody
+* waterDepth
+* camDepth
+}}
+
+|p4= precision: [[Number]]
+
+|p5= sourcesCount: [[Number]] - max results to return. The maximum possible is the number of random samples, which is '''n = (2 * radius / precision)^2'''
+
+|r1= [[Array]] with [<nowiki/>[position: [[Position#Introduction|Position2D]], expressionResult: [[Number]]], ...]
+
+|x1= <sqf>myPlaces = selectBestPlaces [position player, 50, "meadow + 2*hills", 1, 5];</sqf>
+
+|seealso= [[getEnvSoundController]] [[getAllEnvSoundControllers]] [[findEmptyPosition]] [[isFlatEmpty]] [[Ambient Parameters]]
+}}
+
+{{Note
+|user= Rübe
+|timestamp= 20100717183900
+|text= see http://forums.bistudio.com/showthread.php?t=93897 for some more information (though neither official, nor complete).
+The most important information is the list of useable keywords for the expression which is: '''forest, trees, meadow, hills, houses, sea, night, rain, windy''' and '''deadBody'''.
+The keyword will be replaced by the actual value at the given sample position and thus the expression gets evaluated.
+For example the following expression (which returns high values in forest) ''"forest + trees - meadow - houses - (10 * sea)"'' might be transformed to ''0 + 0.1 - 0.7 - 0 - (10 * 0)'' which is - with it is result of -0.6 - not in the forest, though there are some tree(s) around. You get the idea.<br>
+Also note that you may aswell check such an expression value at a single position by passing a low radius and a sourceCount of 1, which is often just as useful as retrieving multiple (and already sorted) positions.<br>
+Also do not underestimate the keywords ''night'', ''rain'' or ''windy'', for if you couple them with the other keywords, you can easily get a highly dynamic system at a very low cost.
+(this, btw., is how animals "choose" where and when to spawn)
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140403161000
+|text= In {{arma3}} ver 1.14 Two new expressions are available: '''waterDepth'''(0-1) and '''camDepth'''(0-1), along with three simple operators: '''interpolate''', '''randomGen''' and '''factor''' that can be used together with expressions. E.g.
+<sqf>
+p = selectBestPlaces [
+	position player,
+	500,
+	"(2 * (waterDepth interpolate [1,16,0,1]) * ((0.1+houses factor [0.1,0.8]) * (randomGen 1 + houses)))",
+	1,
+	1
+];
+</sqf>
+'''A'''lgorithm randomGen:
+<code style="display: block">randomGen A(number): randomly generate a float number from 0 - A</code>
+'''A'''lgorithm factor:
+<code style="display: block">A(number) factor [p,q] = 
+p< A <q: [(A -p)/(q-p)]
+</code>
+'''A'''lgorithm interpolate:
+<code style="display: block">A(number) interpolate [p,q,r,s] = 
+A <=p:r
+A >=q:s
+p< A <q: [(A -p)/(q-p)]*(s-r) +r
+</code>
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150615132700
+|text= ''precision'' seems to have range 0 - 100. At very low values the command is extremely slow. 100 makes it quite fast. It looks like ''precision'' is some kind of grid search size.
+Large chunks make the search faster but less accurate. <br><br>
+Resulting array is [] if ''sourcesCount'' is 0 or '' expression'' is "". In all other cases it seems that result is array of arrays of the set max count.
+The sole indication of successful search is ''expressionResult'' value when it is > 0.
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20170604205100
+|text= Results are sorted by value, that is, the result of the expression.
+They are sorted in descending order, so in the case of waterdepth, the deepest water will be found at the locations at the start of the returned array and the shallowest water will be found at the locations at the end.
+}}

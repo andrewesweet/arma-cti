@@ -1,0 +1,567 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Animated_Opening
+// revision: 352994 (2024-03-08T20:28:10Z)
+// export sha1: dfineq2lxl0v48oum7fs7xywtxnwwc9
+// categories: Category:Arma Scripting Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The [[Arma 3: Animated Opening|Animated Opening]] framework allows you to easily create campaign openings by animating pictures using a timeline.
+
+
+== Features ==
+
+* Easy to setup
+* Timeline based
+* Can be easily synced to music or dialogues using the timeline
+* Skippable
+
+
+== Functionality ==
+
+The framework provides the designer with simple ways to manage picture and texts and to quickly animate them efficiently.
+The framework also lets you organize pictures and text in layers so that you can easily manage which pictures stay on top on which stay on the bottom.
+It provides several ways to animate pictures: scaling, moving, rotating, blinking/pulsing and fading.
+
+= Systems =
+
+=== BIS_fnc_AnimatedOpening ===
+
+* Enhanced version of the BIS_fnc_eventTimeline function
+* Sets up the opening
+** Initializes the animatedScreen function
+** Creates the initial black out
+** starts the event timeline by calling BIS_fnc_eventTimeline function
+** holdKey setup (for skipping the opening)
+
+==== Parameters ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| timeline
+| 2D ARRAY: see BIS_fnc_eventTimeline
+|-
+| pointer
+| NUMBER: see BIS_fnc_eventTimeline
+|-
+| music
+| (opt) - STRING: see BIS_fnc_eventTimeline
+|}
+
+=== BIS_fnc_eventTimeline ===
+
+* Essential system of the Animated Briefings, but the function can be used for different purposes
+* It executes the code fragments at given time (keyframes)
+* It can play the events from start or from a defined position (index)
+* It can be interrupted from outside
+* user defined code can be executed onInterrupt or onFinished
+
+==== Parameters ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| timeline
+| 2D ARRAY: array with keyframes and code to be activated at a certain time
+|-
+| pointer
+| NUMBER: where to start playing (index)
+|-
+| music
+| (OPTIONAL) - STRING: music to be played which will provide the sync time for the timeline
+|-
+| codeInterrupt
+| (OPTIONAL) - CODE: code to be executed if the timeline is interrupted (missionNamespace setVariable ["BIS_fnc_eventTimeline_play", FALSE])
+|-
+| codeStop
+| (OPTIONAL) - CODE or ARRAY: code or array of codes to be executed once the timeline is finshed. The codes are CALLed one after the other.
+|}
+
+=== BIS_fnc_animatedScreen ===
+
+* Handles pictures, texts, layers, animations
+* Provides ways to create, destroy, reset all layers
+* Can animate pictures and texts in several ways (scaling, moving, rotating, etc...)
+* Operates in different ways depending on which parameters are passed
+
+'''NOTE:''' The suggested picture size is 2048x2048. This is to make sure it fits and looks sharp on different aspect ratios and resolutions.
+
+==== Init mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_INIT"''
+| Mode used for initializing the framework
+|-
+| layers
+|
+(opt) NUMBER or ARRAY:
+* if Number: number of picture layers which will be created
+* if Array:
+** Select 0: NUMBER of picture layers
+** Select 1: NUMBER of text layers
+** Select 2: NUMBER of overlay layers
+|-
+| overscale
+| NUMBER: layer scale
+|-
+| contentRatio
+| NUMBER: layer ratio
+|}
+
+==== Reset mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_RESET"''
+| Mode used for clearing all the initialized layers (all pictures and texts are removed but layers will still exist)
+|-
+| flags
+|
+ARRAY: array of 3 BOOL values for picture layers, text layers and overlay layers. If true, deletes the controls in these layers.
+* Select 0: reset Picture layers
+* Select 1: reset Text layers
+* Select 2: reset Overlay layers
+|}
+
+
+==== Layer Create mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_LAYER_CREATE"''
+| Mode used for creating layers containing pictures
+|-
+| layer
+| NUMBER: ID of the layer
+|-
+| texture
+| STRING: Path to the picture to be displayed
+|-
+| posCenter
+| (opt) ARRAY: Center position of the picture in x,y coordinates
+|-
+| alpha
+| (opt) NUMBER: Alpha of the picture (1 = fully visible)
+|-
+| scale
+| (opt) NUMBER: Scale of the picture (1 = original size)
+|}
+
+
+==== Layer Animate mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_LAYER_ANIMATE"''
+| Mode used for animating layers containing pictures
+|-
+| layer
+| NUMBER: ID of the layer
+|-
+| duration
+| (opt) NUMBER: Duration of the animation
+|-
+| posCenterEnd
+| (opt) ARRAY: Final position of the picture's center in x,y coordinates
+|-
+| scaleEnd
+| (opt) NUMBER: Final scale amount of the picture
+|-
+| posCenterStart
+| (opt) ARRAY: Initial position of the picture's center in x,y coordinates
+|-
+| scaleStart
+| (opt) NUMBER: Initial scale amount of the picture
+|}
+
+
+==== Layer Rotate mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_LAYER_ROTATE"''
+| Mode used for rotating layers
+|-
+| layer
+| NUMBER: ID of the layer
+|-
+| duration
+| NUMBER: Duration of the animation
+|-
+| angleDelta
+| NUMBER: Desired amount of rotation
+|-
+| angleStart
+| (opt) NUMBER: Initial rotation amount
+|}
+
+
+==== Layer Fade mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_LAYER_FADE"''
+| Mode used for layers
+|-
+| layer
+| NUMBER: ID of the layer
+|-
+| duration
+| NUMBER: Duration of the animation
+|-
+| alphaEnd
+| (opt) NUMBER: Final alpha of the layer
+|-
+| alphaStart
+| (opt) NUMBER: Initial alpha of the layer
+|}
+
+
+==== Layer Pulse mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_LAYER_PULSE"''
+| Mode used for fading from and to different alpha values in a cyclic manner
+|-
+| layer
+| NUMBER: ID of the layer
+|-
+| duration
+| NUMBER: Duration of the animation
+|-
+| alpha1
+| (opt) NUMBER: First alpha value
+|-
+| alpha2
+| (opt) NUMBER: Second alpha value
+|-
+| cycles
+| (opt) NUMBER: Number of cycles/times the animation will happen (a full cycle consists of the layer fading to alpha1 and then to alpha2)
+|}
+
+
+==== Text Create mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_TEXT_CREATE"''
+| Mode used for creating layers containing text
+|-
+| layer
+| NUMBER: ID of the layer
+|-
+| text
+| (opt) STRING: Text content
+|-
+| position
+| (opt) ARRAY: Text position in x,y coordinates
+|-
+| align
+| (opt) NUMBER: Text alignment. Options are: ALIGN_TOPLEFT, ALIGN_BOTTOMLEFT, ALIGN_LEFT, ALIGN_TOP, ALIGN_CENTER, ALIGN_BOTTOM, ALIGN_TOPRIGHT, ALIGN_RIGHT, ALIGN_BOTTOMRIGHT
+|-
+| color
+| (opt) ARRAY: Color of the text in r,g,b,a format
+|-
+| alpha
+| (opt) NUMBER: Alpha of the text
+|-
+| tagSize
+| (opt) NUMBER: Size of the text
+|-
+| tagShadow
+| (opt) NUMBER: Shadow style
+|-
+| tagFont
+| (opt) STRING: Text font
+|}
+
+
+==== Text Animate mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_TEXT_ANIMATE"''
+| Mode used for animating layers containing text
+|-
+| layer
+| NUMBER: ID of the layer
+|-
+| duration
+| (opt) NUMBER: Duration of the animation
+|-
+| posEnd
+| (opt) ARRAY: Final position of the text in x,y coordinates
+|-
+| scaleEnd
+| (opt) NUMBER: Final text scale
+|-
+| alphaEnd
+| (opt) NUMBER: Final text alpha
+|-
+| posStart
+| (opt) ARRAY: Initial position of the text in x,y coordinates
+|-
+| scaleStart
+| (opt) NUMBER: Initial text scale
+|-
+| alphaStart
+| (opt) NUMBER: Initial text alpha
+|}
+
+
+==== Create Overlay mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_OVERLAY_CREATE"''
+| Mode used for creating layers for overlays
+|-
+| layer
+| NUMBER: ID of the layer
+|-
+| text
+| (opt) STRING: Text content
+|-
+| position
+| (opt) ARRAY: Position in x,y coordinates
+|-
+| align
+| (opt) NUMBER: Text alignment. Options are: ALIGN_TOPLEFT, ALIGN_BOTTOMLEFT, ALIGN_LEFT, ALIGN_TOP, ALIGN_CENTER, ALIGN_BOTTOM, ALIGN_TOPRIGHT, ALIGN_RIGHT, ALIGN_BOTTOMRIGHT
+|-
+| color
+| (opt) ARRAY: Color of the text in r,g,b,a format
+|-
+| alpha
+| (opt) NUMBER: Alpha of the text
+|-
+| tagSize
+| (opt) NUMBER: Size of the text
+|-
+| tagShadow
+| (opt) NUMBER: Shadow style
+|-
+| tagFont
+| (opt) STRING: Text font
+|}
+
+
+==== Create Skybox mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_SKYBOX_CREATE"''
+| Mode used for looping a skybox-like texture (texture continuously translates horizontally)
+|-
+| layer
+| NUMBER: ID of the layer
+|-
+| texture
+| STRING: Path to the picture to be displayed
+|-
+| alpha
+| (opt) NUMBER: Alpha of the picture (1 = fully visible)
+|-
+| duration
+| (opt) NUMBER: Duration of the animation
+|}
+
+{{Feature | important | The suggested picture size for skybox textures is 4096x4096.
+This is because the texture is usually scaled to make sure that all the screen space is covered during the translating animation.}}
+
+
+==== Destroy mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_DESTROY"''
+| Mode used for terminating animations and destroying all layers
+|}
+
+
+==== BlackOut mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_BLACKOUT"''
+| Mode used for fading out the screen to black
+|-
+| duration
+| (opt) NUMBER: Duration of the fade out time
+|-
+| wait
+| (opt) BOOL: If true, script sleeps until the fading is complete
+|}
+
+
+==== BlackIn mode ====
+{| class="wikitable"
+|-
+! Parameter
+! Description
+|-
+| mode = ''"MODE_BLACKIN"''
+| Mode used for fading in the screen from black
+|-
+| duration
+| (opt) NUMBER: Duration of the fade in time
+|-
+| wait
+| (opt) BOOL: If true, script sleeps until the fading is complete
+|}
+
+== Setup and Usage ==
+
+=== Setup ===
+
+A Timeline needs to be prepared before calling the Animated Opening function.
+
+'''Timeline'''
+
+* A timeline is a multi-dimensional array in which each element consists of a time (represented by a number) and an event (a piece of code).
+* The timeline starts counting from 0 when it is created.
+* When the time specified in a timeline's element has elapsed, its relative event is spawned.
+* The timeline stops once it reaches the last element. The last element's code can also be empty if you're just using the element as an ending point.
+* The timeline can be kept in a separate file and included using #include "timelineFile.sqf"; within the file calling the animated opening.
+<sqf>
+private _timeline =
+[
+	[
+		0,
+		{
+			[MODE_RESET, [true, true]]	call BIS_fnc_animatedScreen;
+			[MODE_BLACKIN, 0, false]	call BIS_fnc_animatedScreen;
+		}
+	],
+	[
+		1.5,
+		{
+			[MODE_BLACKOUT, 3, false] call BIS_fnc_animatedScreen;
+		}
+	],
+	[
+		8.2,
+		{
+			[MODE_RESET, [true, true]]	call BIS_fnc_animatedScreen;
+			[MODE_BLACKOUT, 0.01, true]	call BIS_fnc_animatedScreen;
+
+			[MODE_LAYER_CREATE,	C03_SLIDE1_ID_DUST,		C03_SLIDE1_IMG_DUST,		nil,			nil,	1.3] call BIS_fnc_animatedScreen;
+			[MODE_LAYER_CREATE,	C03_SLIDE1_ID_OBSTACLE,	C03_SLIDE1_IMG_OBSTACLE,	[0.46, 0.45],	nil,	1.2] call BIS_fnc_animatedScreen;
+		}
+	],
+	[12, {}]
+];
+</sqf>
+
+
+The Animated Opening can be started by calling the function BIS_fnc_AnimatedOpening. Once called, the opening will start right away.
+
+<sqf>
+// Timeline of events
+private _timeline =
+[
+	[0.0, { hint "Start of the Timeline" }],
+	[1.0, { hint "Event 1" }],
+	[3.0, { hint "End of the timeline" }]
+];
+
+
+// Start the Animated Opening at index 0
+// also start the "LeadTrack03_F_Tacops" audio track and sync the timeline to it
+[_timeline, 0, "LeadTrack03_F_Tacops"] spawn BIS_fnc_animatedOpening;
+
+
+// Wait until timeline is over
+waitUntil { !(missionNamespace getVariable "BIS_fnc_eventTimeline_playing"); };
+
+
+// End Intro and start mission
+endMission "END1";
+</sqf>
+
+
+{{Feature|informative|
+* The opening can be started from a different keyframe (by passing the pointer/index), which is helpful in the development/testing phase.
+* The opening can be interrupted by using the following line of code: <sqf inline>missionNamespace setVariable ["BIS_fnc_eventTimeline_play", false]</sqf>
+}}
+
+
+=== Usage ===
+
+The initialization and destruction of the framework is handled by the BIS_fnc_AnimatedOpening and you will not need to deal with that.
+
+The function initializes the following layers:
+
+* 15 Picture layers
+* 5 Text layers
+* 1 Overlay layer (used by the holdKey function to display the "Press SPACE to skip" text
+
+To create and display a new picture, use the MODE_LAYER_CREATE code. You can then use then MODE_LAYER_ANIMATE mode to scale and translate it.
+<sqf>
+[MODE_LAYER_CREATE, C03_SLIDE1_ID_OBSTACLE, C03_SLIDE1_IMG_OBSTACLE, [0.46,0.45], nil, 1.2] call BIS_fnc_animatedScreen;
+[MODE_LAYER_ANIMATE, [C03_SLIDE1_ID_OBSTACLE], 8, [0.50,0.46], 1.4] call BIS_fnc_animatedScreen;
+</sqf>
+similarly, other modes can be used to rotate or fade the image.
+
+{{Feature|important|The suggested picture size is 2048x2048 and 4096x4096 for skybox textures. This is to make sure it fits and looks sharp on different aspect ratios and resolutions. }}
+
+
+The workflow for texts is very similar but the modes to use are different.
+<sqf>
+[MODE_TEXT_CREATE, _layer, _text, _pos, _align, COLOR_TEXT_DYNAMIC_FOREGROUND, 0, SIZE_TEXT_DYNAMIC, 0, FONT_TEXT_DYNAMIC] call BIS_fnc_animatedScreen;
+[MODE_TEXT_ANIMATE, _layer, TIME_TEXT_DYNAMIC_A, nil, 0.9, 0.4, nil, 0.7, 0] call BIS_fnc_animatedScreen;
+</sqf>
+
+To delete displayed pictures and text, use the MODE_RESET mode.
+
+<sqf>
+// [true, true]: the first true reset the picture layers, the second one the text layers
+[MODE_RESET, [true, true]] call BIS_fnc_animatedScreen;
+</sqf>
+
+
+Black In and Black Out modes can be used to fade to or from black.
+<sqf>
+[40.0, { [MODE_BLACKOUT, 2, false] call BIS_fnc_animatedScreen; }],
+[42.0, { [MODE_BLACKIN, 0, false] call BIS_fnc_animatedScreen; }]
+</sqf>
+
+
+To create an animated skybox-like background use MODE_SKYBOX_CREATE which adds and animates the texture.
+<sqf>[MODE_SKYBOX_CREATE, C03_SLIDE2_ID_CLOUDS, C03_SLIDE2_IMG_CLOUDS,nil, 45] call BIS_fnc_animatedScreen;</sqf>
+
+=== Synchronizing music to timeline events ===
+
+See the [[Arma 3 Animated Briefing#Synchronizing a timeline to dialogues|Animated Briefing]] page for more information about the suggested workflow.
+
+
+[[Category:Arma Scripting Tutorials]]

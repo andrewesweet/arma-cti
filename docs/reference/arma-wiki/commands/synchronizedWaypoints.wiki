@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/synchronizedWaypoints
+// revision: 377125 (2026-01-01T10:21:46Z)
+// export sha1: hdzmsc15seisdr1vp3q7twyz1fr0m26
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Waypoints
+
+|gr2= Triggers
+
+|descr= Returns the list of waypoints synchronized with a given trigger or waypoint.
+
+|s1= [[synchronizedWaypoints]] obj
+
+|p1= obj: [[Object]] or [[Waypoint]]
+
+|r1= [[Array]] of [[Waypoint]]s
+
+|x1= <sqf>synchronizedWaypoints _someTrigger;</sqf>
+
+|seealso= [[synchronizeWaypoint]] 
+}}

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_dbClassReturn
+// revision: 327488 (2022-07-12T22:21:03Z)
+// export sha1: 0bc7kdk12fskjucqz40509tr8aravo6
+// categories: Category:Arma 3: Functions | Category:Function Group: Database | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Database
+
+|descr= Returns content of given class.
+
+|s1= [database, path] call [[BIS_fnc_dbClassReturn]]
+
+|p1= database - [[Array]]: database array
+
+|p2= path - [[Array]]: path to the class which content should be returned
+
+|r1= [[Array]] - class content
+
+|x1= <sqf>[["#MILLER", ["&KILLS", 1000], "#TERRA", ["&WEAPON", "MX 6.5mm"]], ["miller"]] call BIS_fnc_dbClassReturn; // ["&KILLS", 1000]</sqf>
+
+|seealso= [[:Category:Function Group: Database|Database functions]] [[BIS_fnc_dbClassCheck]] [[BIS_fnc_dbClassId]] [[BIS_fnc_dbClassIndex]] [[BIS_fnc_dbClassList]] [[BIS_fnc_dbClassRemove]] [[BIS_fnc_dbClassSet]] [[BIS_fnc_dbConfigPath]] [[BIS_fnc_dbImportConfig]] [[BIS_fnc_dbImportXML]] [[BIS_fnc_dbisClass]] [[BIS_fnc_dbisValue]] [[BIS_fnc_dbPrint]][[BIS_fnc_dbSymbolClass]] [[BIS_fnc_dbSymbolValue]] [[BIS_fnc_dbValueCheck]] [[BIS_fnc_dbValueId]] [[BIS_fnc_dbValueIndex]] [[BIS_fnc_dbValueList]] [[BIS_fnc_dbValueRemove]] [[BIS_fnc_dbValueReturn]] [[BIS_fnc_dbValueSet]]
+}}

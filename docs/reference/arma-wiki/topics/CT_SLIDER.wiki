@@ -1,0 +1,116 @@
+// source: https://community.bistudio.com/wiki/CT_SLIDER
+// revision: 349721 (2023-11-20T22:09:51Z)
+// export sha1: dp3tnyfjdtnb2y0gandwcr88y92m0q7
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_SLIDER
+|value = 3
+|description = {{Feature|important|This slider is deprecated. You might want to use [[CT_XSLIDER]].}}
+A slider can be used to make the user select a value in a predefined range.<br>
+[[File:Arma RscSlider.jpg]]
+|commands =
+* [[sliderPosition]]
+* [[sliderRange]]
+* [[sliderSetPosition]]
+* [[sliderSetRange]]
+* [[sliderSetSpeed]]
+* [[sliderSpeed]]
+* [[BIS_fnc_initSliderValue]]
+|events =
+* [[User_Interface_Event_Handlers#onSliderPosChanged|onSliderPosChanged]]
+}}
+
+{{CT|abc start}}
+=== C ===
+{{CT|attribute
+|name=color
+|type1=Array
+|value1={1,1,1,0.8}
+|description=Color of the slider.
+}}
+
+{{CT|attribute
+|name=colorActive
+|type1=Array
+|value1={1,1,1,1}
+|description=Color when the slider is focused.
+}}
+
+=== S ===
+{{CT|attribute
+|name=sliderPosition
+|type1=Number
+|value1=42
+|description=Inital value the slider is set to when loaded.
+}}
+
+{{CT|attribute
+|name=sliderRange
+|type1=Array
+|value1={0,100}
+|description=Slider range in format {min,max}.
+}}
+
+{{CT|attribute
+|name=sliderStep
+|type1=Number
+|value1=1
+|description=Size of the steps when slider is dragged, eg if sliderStep is 1 only integers are possible for the slider value.
+}}
+
+=== T ===
+{{CT|attribute
+|name=Title
+|type1=Class
+|value1=class Title
+{
+	idc = -1;
+	colorBase[] = {1,1,1,1};
+	colorActive[] = {1,0.5,0,1};
+};
+|description=
+}}
+
+=== V ===
+{{CT|attribute
+|name=Value
+|type1=Class
+|value1=class Value
+{
+	idc = 1200;
+	format = "%.f";
+	type = "SPTPlain";
+	colorBase[] = {1,1,1,1};
+	colorActive[] = {1,0.5,0,1};
+};
+|description=
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscExample ===
+<syntaxhighlight lang="cpp">
+class RscSlider
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_SLIDER;
+	style = SL_HORZ;
+	color[] = {1,1,1,0.8};
+	colorActive[] = {1,1,1,1};
+	shadow = 0;
+	x = 0;
+	y = 0;
+	w = 0.3;
+	h = 0.025;
+};
+</syntaxhighlight>
+
+[[Category: Control Types]]

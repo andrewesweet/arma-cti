@@ -1,0 +1,100 @@
+// source: https://community.bistudio.com/wiki/unitReady
+// revision: 378263 (2026-03-26T16:51:08Z)
+// export sha1: 2ypslov4lugy9pkzlhf30c9b32v0rrf
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Unit Control
+
+|descr= Check if the unit is ready. Unit is busy when it is given some command like [[move]], until the command is finished.
+
+|s1= [[unitReady]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _isReady = unitReady _soldierOne;</sqf>
+
+|x2= <sqf>
+if (not unitReady _soldierOne) then
+{
+	_soldierOne groupChat "Wait one, sarge!";
+};
+</sqf>
+
+|seealso= [[move]]
+}}
+
+{{Note
+|user= Rübe
+|timestamp= 20100826035500
+|text= Keep in mind that
+* dead units are [[unitReady]]
+* it takes a while until it get's known to group members that a unit is not [[alive]] anymore, which leads to
+* the current [[leader]] of a group might be actually dead (until another group member takes command).
+Why this is important? I'll give you an example: if you're using [[unitReady]] as a condition inside one of your fsm to advance whatever the fsm/group is doing, you really might wanna check that this unit is actually still alive. Otherwise you might end up with really fast and nasty loops in your FSM, eventually accompanied by a stream of radio commands that will last until finally a living leader is in command again.. and that could take a while... nasty, I tell you :)
+}}
+
+{{Note
+|user= Rübe
+|timestamp= 20110117202700
+|text= Regarding vehicles, there is only one single unit (from the vehicle crew) whose unitReady-status is affected by giving that vehicle (or that unit) commands.
+While it is the driver unit for a truck, it is the gunner unit for a mg-jeep or the commander for a tank. Generally it is always the unit "in control" of the vehicle.
+(because it is only that unit, that is seen as "full unit" to the "outside world". Only he can be adressed with commands.)<br>
+
+In consequence you can't just send vehicles around and check if they've arrived with something like:
+<sqf>waitUntil { unitReady driver _vehicle }; // don't do this!</sqf>
+
+Because it is ''not guaranteed that the driver is in command of the vehicle'' and only that unit will have its unitReady status affected.<br>
+So in conclusion, '''if you need to check if a vehicle is ready''', try something like this:
+<sqf>
+_vehicleReady = {
+	private ["_veh", "_ready"];
+	_veh = _this;
+	_ready = true;
+	{
+		if (not isNull _x) then
+		{
+			_ready = _ready && (unitReady _x);
+		};
+	} forEach [
+		commander _veh,
+		gunner _veh,
+		driver _veh
+	];
+	_ready
+};
+</sqf>
+}}
+
+{{Note
+|user= Kastenbier
+|timestamp= 20151121224000
+|text= To check readiness of a vehicle, don't check its crew, driver, gunner, commander, etc., but the vehicle itself, e.g.:
+<sqf>unitReady _yourVehicle;</sqf>
+Only tested 11/21/2015 by me with A2 1.63.131129 and A3 1.52.132676 but possibly true since 1964. :P
+}}

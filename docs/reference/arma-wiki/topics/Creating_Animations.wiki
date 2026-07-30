@@ -1,0 +1,21 @@
+// source: https://community.bistudio.com/wiki/Creating_Animations
+// revision: 46201 (2009-03-17T17:22:33Z)
+// export sha1: o8jf4ckd4ok96sqap9p8aem35brdi7z
+// Vendored snapshot. Do not edit — re-export instead.
+
+There are three animation types in Arma/Ofp
+
+*[[Island Anims - Care and feeding | Island Animations]]
+:used as background mission play to front screen of arma/ofp
+*[[Animations|Vehicle Animations]]
+:used to open doors, climb ladders etc
+*[[Mission Animations]] 
+: as declared by '''switchMove''' and '''PlayMove''' commands in missions.
+
+see
+
+[[Rtm (Animation) File Format]]
+
+[[:Armed_Assault:_Moves_List|List of moves in Armed Assault]]
+
+[[:Operation_Flashpoint:_Moves_List|List of moves in Operation Flashpoint: Resistance]]

@@ -1,0 +1,153 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskCreate
+// revision: 369829 (2024-10-15T15:21:45Z)
+// export sha1: t8jw5pk20r6gm44b935b6fvcchaxtda
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|arg= global
+|eff= global
+
+|descr= Create a task.
+
+|s1= [owner, taskID, description, destination, state, priority, showNotification, type, visibleIn3D] call [[BIS_fnc_taskCreate]]
+
+|p1= '''owner''': Task owner(s)
+* [[Boolean]] - true to set task of all playable units
+* [[Object]] - set task of a specific object
+* [[Group]] - set tasks of all objects in the group
+* [[Side]] - set tasks of all objects of the given side
+* [[Array]] - collection of above types
+
+|p2= '''taskID''':
+* [[String]] - Task ID
+* [[Array]] - In the format of [task ID, parent task ID]
+
+|p3= '''description''':
+* [[Array]] - Task description in the format ["description", "title", "marker"] - "marker" is depreciated, functionally does nothing
+** Description and Title can also be a [[format]] array [ "Text", var1, var2, ... ] where Text will be localized and then formatted per client, see {{Link|#Example 4}}
+* [[String]] - [[Description.ext#CfgTaskDescriptions|CfgTaskDescriptions]] class name, if empty string is used then [[Description.ext#CfgTaskDescriptions|CfgTaskDescriptions]] is searched for a class matching the tasks TaskID
+
+|p4= '''destination''' (Optional): Task destination
+* [[Object]] - Use [[objNull]] to set no position
+* [[Array]] - can be one of:
+** format [[Position]]
+** [target, precision] (as used by [[setSimpleTaskTarget]])
+*** target: [[Object]]
+*** precision: [[Boolean]] - [[false]] to use ''owner''<nowiki/>'s knowledge of ''target'', [[true]] to force display even if ''target'' is unknown to ''owner''
+
+|p5= '''state''': (Optional, default "CREATED") task state. Can be:
+* [[String]] - can be one of following:
+** "CREATED"
+** "ASSIGNED"
+** "AUTOASSIGNED" ("ASSIGNED" when no task is assigned yet, otherwise "CREATED")
+** "SUCCEEDED"
+** "FAILED"
+** "CANCELED"
+* [[Boolean]] - [[true]] to set the task as current
+* [[Number]]
+** 0 or less for [[false]]
+** > 0 as [[true]]
+
+|p6= '''priority''': [[Number]] - (Optional) priority. When the current task is completed, the system selects the one with the largest priority >= 0. To avoid auto assignment of that task, give it a priority of -1.
+
+|p7= '''showNotification''': [[Boolean]] - (Optional, default [[true]]) true to show notification, false to disable it
+
+|p8= '''type''': [[String]] - (Optional, default "") {{Link|Arma 3: Task Framework#Task Icons|vanilla}} or {{Link|Description.ext#CfgTaskTypes|custom}} task type; if not defined, empty (no) type is used
+
+|p9= '''visibleIn3D''': [[Boolean]] - (Optional, default [[false]]) true to make task always visible in 3D
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[civilian, "task1", ["Do this and you get a cookie", "Earn Cookie", "cookiemarker"], [0,0,0], "ASSIGNED", 2, true] call BIS_fnc_taskCreate;</sqf>
+
+|x2= <sqf>
+[west, "parentTask", ["This is the parent task.", "Parent task", "cookiemarker2"], objNull, 1, 3, true] call BIS_fnc_taskCreate;
+[west, ["subTask", "parentTask"], ["This is the subTask.", "subTask", "cookiemarker2"], objNull, 1, 3, true] call BIS_fnc_taskCreate;
+</sqf>
+
+|x3= in [[Description.ext]]
+<syntaxhighlight lang="cpp">
+class CfgTaskTypes
+{
+	class my_CfgTaskType
+	{
+		displayname = "Tank";
+		icon = "Tank_MCO.paa";
+		icon3D = "Tank_MCO.paa";
+	};
+};
+</syntaxhighlight>
+SQF:
+<sqf>[east, ["taskType_"], ["Setting taskType", "The simple way", "marker2"], objNull, 1, 3, true, "my_CfgTaskType"] call BIS_fnc_taskCreate; // task with a custom icon</sqf>
+
+|x4= in [[Stringtable.xml]]
+<syntaxhighlight lang="xml">
+<Key ID="STR_CITY_TASK">
+	<English>Clear %1 of enemies</English>
+	<!-- more languages -->
+</Key>
+</syntaxhighlight>
+
+SQF:
+<sqf>
+[
+	_side,
+	_taskID,
+	[
+		// format array, string to be localised, parameters for format %1, %2 ...
+		[ "STR_CITY_TASK", _cityName ],
+		[ "STR_CITY_TASK", _cityName ],
+		""
+	]
+] call BIS_fnc_taskCreate;</sqf>
+
+|seealso= [[Arma 3: Task Framework]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20180202131500
+|text= You can define a [[Description.ext#CfgTaskDescriptions|CfgTaskDescriptions]] part in [[Description.ext|description.ext]], such as:
+<syntaxhighlight lang="cpp">
+class CfgTaskDescriptions
+{
+	class myTask
+	{
+		title = "$STR_MyTaskTitle";
+		description = "$STR_MyTaskDescription";
+	};
+};
+</syntaxhighlight>
+This should allow tasks to be localised for every player in MP '''if created locally'''.
+You can use "myTask" as ''description'' (3<sup>rd</sup>) parameter.
+{{Feature|important|For a proper localisation everywhere, see [[User:Hypoxic125|Hypoxic125]]'s note below.}}
+}}
+
+{{Note
+|user= Hypoxic125
+|timestamp= 20221113041319
+|text= Example of Correct Localization Setup Using CfgTaskDescriptions
+<syntaxhighlight lang="cpp">
+class CfgTaskDescriptions
+{
+	class hyp_infiltrate
+	{
+		title = "STR_HYP_TASKS_INFILTRATE_TITLE";
+		description = "STR_HYP_TASKS_INFILTRATE_DESCRIPTION";
+		// requires stringtable key - NOT localized string
+		// note the lack of "$" before the stringtable key - if "$" is included, languages will be incorrect
+	};
+};
+</syntaxhighlight>
+<sqf>
+// Server Execution
+[east, "infiltrate", "hyp_infiltrate", objNull, "ASSIGNED", -1, true, "MOVE", false] call BIS_fnc_taskCreate;
+</sqf>
+}}

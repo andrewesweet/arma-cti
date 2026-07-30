@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_OM_Module_initSmallValueSilder
+// revision: 349121 (2023-11-08T14:49:39Z)
+// export sha1: d6w9opupk8skmgpqncxuehsnmy38ego
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Old Man | Category:Functions | Category:Introduced with Arma 3 version 1.98 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.98
+
+|gr1= Old Man
+
+|descr= Initialize slider with edit box showing its value supporting small decimal numbers.
+
+|s1= [ctrlSlider, ctrlEdit, unit, defaultValue] call [[BIS_fnc_OM_Module_initSmallValueSilder]]
+
+|p1= ctrlSlider: [[Control]] - slider Control
+
+|p2= ctrlEdit: [[Control]] - edit Control
+
+|p3= unit: [[String]] - (Optional, default "%") measurement unit added behind the number
+
+|p4= defaultValue: [[Number]] - (Optional, default nil) when present, only the value is set, functionality is not initialized
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[_ctrlSlider,_ctrlEdit,"m",500] call BIS_fnc_OM_Module_initSmallValueSilder;//Set default value only.</sqf>
+
+|x2= <sqf>[_ctrlSlider,_ctrlEdit,"m"] call BIS_fnc_OM_Module_initSmallValueSilder;//Initialize functionality.</sqf>
+
+|seealso= [[BIS_fnc_initSliderValue]]
+}}

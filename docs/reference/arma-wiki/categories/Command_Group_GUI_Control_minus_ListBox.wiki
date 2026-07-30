@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_GUI_Control_-_ListBox
+// revision: 255294 (2021-04-12T17:04:03Z)
+// export sha1: b3fhlp7p21ep24wp77sszz2usj3b0bd
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands to manipulate [[DialogControls-ListBoxes|Listbox / CT_LISTBOX]] and [[CT_COMBO]] controls.
+
+[[Category:Command Group: GUI Control]]

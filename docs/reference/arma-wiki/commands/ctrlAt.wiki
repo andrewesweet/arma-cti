@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/ctrlAt
+// revision: 338355 (2023-03-01T00:25:09Z)
+// export sha1: oa7j3be5h2zjfkvb63f5qb1r8wkpq0p
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|gr1= GUI Control
+
+|descr= Returns the control at the specified coordinates.
+
+|s1= display [[ctrlAt]] [x, y]
+
+|p1= display: [[Display]] - the display to check
+
+|p2= x: [[Number]] - position (0 = left, 1 = right)
+
+|p3= y: [[Number]] - position (0 = top, 1 = bottom)
+
+|r1= [[Control]] - the control at the specified coordinates, [[controlNull]] if none
+
+|x1= <sqf>private _ctrl = _myDisplay ctrlAt [0.5, 0.5];</sqf>
+
+|seealso= [[ctrlCreate]] [[ctrlSetPosition]] [[ctrlCommit]]
+}}

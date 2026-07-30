@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_initVehicleCrew
+// revision: 349419 (2023-11-08T16:27:32Z)
+// export sha1: j2mzp82hkex20b0bkpuod5uvemnx4t5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Vehicles
+
+|descr= Moves units into vehicle seats. When units don't exist, it will create them in a group of vehicle's side.
+
+|s1= [object, params, deleteCrew, anySeat, agents] call [[BIS_fnc_initVehicleCrew]]
+
+|p1= object: [[Object]]
+
+|p2= params: [[Array]] - in format:
+*0: crewType: [[Object]] or [[String]] - unit or unit type (will be created)
+*1: role: [[String]] - Can be:
+**"driver"
+**"turret"
+**"cargo"
+*2: index: [[Number]] or [[Array]] - Cargo index or turret path
+
+|p3= deleteCrew: [[Boolean]] - (Optional, default [[false]]) [[true]] to delete existing crew
+
+|p4= anySeat: [[Boolean]] - (Optional, default [[false]]) when desired seats are occuppied, move crew in the vehicle to any other available seat
+
+|p5= agents: [[Boolean]] - (Optional, default [[false]]) create crew as [[agents]]
+
+|r1= [[Array]] - created units
+
+|x1= <sqf>[someVehicle, [player, "driver", 0], true, true] call BIS_fnc_initVehicleCrew;</sqf>
+
+|seealso= [[createVehicle]] [[crew]] [[driver]]
+}}

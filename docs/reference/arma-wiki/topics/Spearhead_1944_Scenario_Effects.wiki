@@ -1,0 +1,212 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Scenario_Effects
+// revision: 347183 (2023-09-03T11:46:20Z)
+// export sha1: plzl9ujq4xc4eiyj53zld1q49ri3ore
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The effect objects added by [[Spearhead 1944]] allow scenario creators to add special effects, such as fire, sounds, smoke and light effects, to there scenarios without the need of scripting.
+
+= Ambient Light Effects =
+== Light 100 m Illumination ==
+Creates a light source with a slightly concentrated light source.
+
+[[File: land_spe_fx_light_100.png|500px]]
+
+== Light 300 m Illumination ==
+Creates a light source, illumination is uniform within 300 m, useful when you want to have visibility during night time.
+
+[[File: land_spe_fx_light_300.png|500px]]
+
+== Artillery Ground Lights ==
+Simulates light casted by distant explosions. Can be used either to create the atmosphere of a battle or as a way to illuminate the area around the player from time to time.
+
+[[File: land_spe_fx_artillery_ground_lights.png|500px]]
+
+== Artillery Sky Lights ==
+Simulates the light of explosions reflected by clouds or particles in the air.
+
+[[File: land_spe_fx_artillery_sky_lights.png|500px]]
+
+= Ambient Misc Effects =
+== Ground Fog linked to player ==
+Creates fog out of particles around the player, in principle to be used in conjunction with vanilla fog for a more dramatic effect.
+
+[[File: land_spe_fx_player_fog.png|500px]]
+
+== Low Fog ==
+Creates rectangular patches of fog, to be placed over puddles, lakes, river beds etc. It can be rotated to fit the area better.
+
+[[File: land_spe_fx_low_fog.png|500px]]
+
+== Night Clouds linked to Player ==
+Simulates night clouds during night time made out of particles. Useful when you want to benefit from the lighting of a full moon without using vanilla overcast and still have clouds.
+
+[[File: land_spe_fx_night_clouds.png|500px]]
+
+= Ambient Sound Effects =
+== Big Fire Burning Sound ==
+Creates a sound source of a burning place.
+
+== Binaural Battle Sounds ==
+Plays sounds of distant explosions and shots straight into the headset using binaural sounds. Useful when you want to create a battle environment.
+
+= Fire Effects =
+== Big Fire ==
+Creates a relatively big fire, with its own light source and sound. Does damage to players and AI.
+
+[[File: land_spe_fx_big_fire.png|500px]]
+
+== Fire Burst ==
+Creates a fire, with its own light source and sound. Does not do damage and its direction can be tweaked by rotating the object.
+
+[[File: land_spe_fx_fire_burst.png|500px]]
+
+== Line of Fire ==
+Generates a 1 meter line of fire effect. Does not have its own light or sound source, does not do damage. Its direction can be tweaked by rotating the object.
+
+[[File: land_spe_fx_line_of_fire.png|500px]]
+
+== Roof Fire ==
+Creates fire effect which sticks to the highest point in the vicinity either is a roof or floor. Does not have its own light source, though it has a sound and it does not do damage.
+
+[[File: land_spe_fx_roof_fire.png|500px]]
+
+== Small Area Fire ==
+Creates a fire effect covering a small area on ground, it has no light source of its own and does not do damage.
+
+[[File: land_spe_fx_area_fire.png|500px]]
+<!--
+== Small Area Fire TEST ==
+Creates the same effect as Small area fire from above, however its behavior was altered so the effect is active only if the player is in range of 55 meters in order to save performance when many effects are active at the same time.
+This effect is subject of change, the activation distance can be tweaked based on performance and the mission editor should consider the visibility so the effect does not go on and off for no apparent reason.
+-->
+== Small Flame ==
+Creates a fire effect in a column. Does not have its own light source, it has a burning sound and does not do damage.
+
+[[File: land_spe_fx_small_flame_01.png|500px]]
+
+== Small East-West Flame ==
+Creates a 1 meter line of fire on the east-west axis, it has a sound, the orientation of the effect/object is not tweakable as for the line of fire effect from above.
+
+[[File: land_spe_fx_east_west_flames.png|500px]]
+
+== Small North-South Flame ==
+Same effect as above only that is generated on north-south axis.
+
+== Smog Big ==
+Creates a plume of smoke above an area.
+
+[[File: land_spe_fx_smog_big.png|500px]]
+
+== Smog Night ==
+Creates a smoke effect which is visible during night time and simulates distant fires or smoking area. Does not have a light or sound source.
+
+[[File: land_spe_fx_smog_night.png|500px]]
+
+== Smoke Medium ==
+Creates a smoke effect, when you want to make a fire more “smoky”, it has no sound or a light source of its own.
+
+[[File: land_spe_fx_smoke_medium.png|500px]]
+
+== Wreck Fire ==
+Creates the wreck on fire effect, uses less particles than vanilla one, it has some randomization built in so the same effect may differ in appearance when used more times. It does damage to units and it has a light and sound source.
+
+[[File: land_spe_fx_wreck_fire.png|500px]]
+
+= Technical Description =
+All visual special effects are executed on the client side of our game hosting system. Currently we don’t have SFX executed on the server. They are not synchronized across clients per se but they behave like they are (with some delays which should not impact gameplay). If it is needed we can have scripts executed on the server and synchronized.
+
+Visual appearance of the special effects in [[Eden Editor]] will be different most of the time from what you see in the mission. That is why you should inspect them while running the mission to see the final outcome. In [[Eden Editor]], for example, you might notice lights flickering when placing objects that have a light source. Also, some sounds might be muted, with the exception of the SFX objects which are sounds only.
+
+SFX objects are dependent on player distance to those objects, so make sure your character is close enough to see the SFX in action. The “activation” distance may differ in the future but for now, most object’s triggering distance is set to style="text-align:right;" | 500 m meters.
+
+There are a series of objects that will not be executed in [[Eden Editor]] because they are not dependent on distance to the player or position on the map, and this will save performance. Also these objects can be placed anywhere on the map. You only need to place one to get the desired effect. Any additional object of those types will be auto-deleted.
+
+So far in this list of objects we have:
+
+*night_clouds
+*fog_around_player
+*artillery_sky_lights
+*artillery_ground_lights
+*binaural_battle_sounds
+
+{{Feature|informative|
+*All objects can be created using [[createVehicle]] command and deleted using [[deleteVehicle]].
+*All objects are available for [[Arma 3: Curator|Zeus]].}}
+
+Some effects depend visually on the direction of the object set in [[Eden Editor]], e.g. fire burst. Some effects are calibrated for usage during night time, usually the name of the object will provide a hint, e.g. Smog Night. Not all fire SFX have a light source or a burning sound. For saving performance you can use only one light source and/or one sound source in case you have a group of fire effects in a relatively small area.
+(Sound source can be found in assets under SPE effects in [[Eden Editor]] as objects)
+
+== Related Functions ==
+The following functions handle the SFX objects.
+{|
+|-
+| SPE_fnc_initObjectFX || {{hl|\WW2\SPE_Core_f\FX_ParticleEffects_f\FX_System\fn_initObjectFX.sqf}}
+|-
+| SPE_fnc_isObjectFXActiv || {{hl|\WW2\SPE_Core_f\FX_ParticleEffects_f\FX_System\fn_isObjectFXActiv.sqf}}
+|-
+| SPE_fnc_ObjectFXHandler || {{hl|\WW2\SPE_Core_f\FX_ParticleEffects_f\FX_System\fn_ObjectFXHandler.sqf}}
+|-
+| SPE_fnc_setObjectFX || {{hl|\WW2\SPE_Core_f\FX_ParticleEffects_f\FX_System\fn_setObjectFX.sqf}}
+|}
+
+= SFX Entities in [[Eden Editor]] =
+{| class="wikitable sortable"
+|-
+! Display Name !! Class Name !! Activation Distance !! Multiple allowed !! style="text-align:center" | Direction has Effect
+|-
+| Small Column Flame || {{hl|Land_SPE_FX_small_flame_01}} || style="text-align:right;" | 200 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Small East-West flame || {{hl|Land_SPE_FX_East_West_Flames}} || style="text-align:right;" | 200 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Small North-South flame || {{hl|Land_SPE_FX_North_South_Flames}} || style="text-align:right;" | 200 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Small Area Fire || {{hl|Land_SPE_FX_Area_Fire}} || style="text-align:right;" | 200 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Roof Fire || {{hl|Land_SPE_FX_Roof_Fire}} || style="text-align:right;" | 200 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Smoke Medium || {{hl|Land_SPE_FX_Smoke_Medium}} || style="text-align:right;" | 500 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Fire Burst || {{hl|Land_SPE_FX_Fire_Burst}} || style="text-align:right;" | 200 m  || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Checked}}
+|-
+| Smog Big || {{hl|Land_SPE_FX_Smog_Big}} || style="text-align:right;" | 2000 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Smog Night || {{hl|Land_SPE_FX_Smog_Night}} || style="text-align:right;" | 2000 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Big Fire || {{hl|Land_SPE_FX_Big_Fire}} || style="text-align:right;" | 500 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Small Flame || {{hl|Land_SPE_FX_small_flame_02}} || style="text-align:right;" | 200 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Light 100 m Illumination || {{hl|Land_SPE_FX_light_100}} || style="text-align:right;" | 500 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Light 300 m Illumination || {{hl|Land_SPE_FX_light_300}} || style="text-align:right;" | 500 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Big Fire Burning Sound || {{hl|Land_SPE_FX_burning_sound_big}} || style="text-align:right;" | 200 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Night Clouds linked to Player || {{hl|Land_SPE_FX_night_clouds}} || style="text-align:right;" | 20000 m || style="text-align:center;" | {{Icon|Unchecked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Artillery Sky Lights || {{hl|Land_SPE_FX_artillery_sky_lights}} || style="text-align:right;" | 20000 m || style="text-align:center;" | {{Icon|Unchecked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Artillery Ground Lights || {{hl|Land_SPE_FX_artillery_ground_lights}} || style="text-align:right;" | 550 m || style="text-align:center;" | {{Icon|Unchecked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Binaural Battle Sounds || {{hl|Land_SPE_FX_binaural_battle_sounds}}|| style="text-align:right;" | 20000 m || style="text-align:center;" | {{Icon|Unchecked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Low Fog || {{hl|Land_SPE_FX_low_fog}} || style="text-align:right;" | 2000 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Checked}}
+|-
+| Ground Fog linked to Player || {{hl|Land_SPE_FX_player_fog}} || style="text-align:right;" | 20000 m || style="text-align:center;" | {{Icon|Unchecked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|-
+| Line of Fire || {{hl|Land_SPE_FX_line_of_fire}} || style="text-align:right;" | 1000 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Checked}}
+|-
+| Wreck Fire || {{hl|Land_SPE_FX_wreck_fire}} || style="text-align:right;" | 200 m || style="text-align:center;" | {{Icon|Checked}} || style="text-align:center;" | {{Icon|Unchecked}}
+|}
+
+= [[Eden Editor]] Attributes =
+The following attribute can be used to turn off all effects without the need to remove carefully placed objects from the scenario.
+
+[[Eden Editor]] >> {{hl|Attributes}} >> {{hl|General...}} >> {{hl|[SPE] Effects}} >> {{hl|Enable Objects Effects}}
+
+In order to only turn off a specific effect use the attribute found in the object specific attributes.
+
+
+[[Category: Spearhead 1944]]

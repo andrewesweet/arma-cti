@@ -1,0 +1,114 @@
+// source: https://community.bistudio.com/wiki/OAC:HowToImproveTheCompatibilityAddon
+// revision: 349868 (2023-11-20T22:10:46Z)
+// export sha1: af5sy35tgfqnw7yjkvu4q2z53txexjo
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Banner biki.jpg]]
+
+=# VII. How to improve OAC=
+
+Project OAC uses {{Link|https://en.wikipedia.org/wiki/Git_%28software%29|Git}} as source control (SC) system for the development.
+
+You can:
+
+* download the complete source with Git and play-test unreleased missions and campaigns
+* improve the existing missions and campaigns
+* add new class mappings to the OFP compatibility addon
+
+and upload your changes again for everyone to use and improve.
+
+The repository contains all campaigns and missions in development and released, <br>
+all their voice files, the OFP music files, replacement addons for community addons,<br>
+[[CWR]] and Project 85. The size is 1 GB and growing.
+
+
+== Git: Source control system ==
+
+1) Install git and check out the repository:
+* {{Link|link= http://dev-heaven.net/wiki/heaven/Git|text= Git}}
+* {{Link|link= http://dev-heaven.net/wiki/heaven/Git_Gui_Guide|text= Git Gui Guide}}
+* {{Link|link= http://dev-heaven.net/wiki/20/GitExtensions_QuickStart|text= GitExtensions QuickStart}}
+
+IMPORTANT: Download OAC directly into this folder:
+ .\arma\x\oac
+
+2) Pull (download) and push (upload) are explained in the guide above.
+
+If you have any questions, please use the new {{Link|link= http://dev-heaven.net/projects/oac/boards|text= OAC forum}}.
+
+
+=== Making campaigns and missions folder available to arma ===
+
+'''IMPORTANT OAC campaigns or missions (only MP mission are an exception) note.'''
+
+By default these are in ''.\arma\x\oac\*''. This way they are not loaded.
+
+Two options:
+
+* NOT RECOMMENDED:
+
+Copy stuff to ''.\arma\campaigns'', ''.\arma\missions'', ''.\arma\mpmissions''.
+
+* Use junctions:
+
+# Install {{Link|http://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html|Link Shell Extension}}
+# RMB click on a folder, for example ''.\arma\x\oac\campaigns\bi\1985''.
+# Select "pick link source".
+# Goto ''.\arma\campaigns''.
+# RMB click on empty area in explorer inside that said folder.
+# Select "drop as - junction".
+
+The result is that the OS will create a link in this folder to the<br>
+source location. In other words on the hard disk level it does some<br>
+rewiring to make the 1985 folder also found in the dropped location.
+
+More simply said 1985 is also found in ''.\arma\campaigns'' and if any of<br>
+those two instances gets updated, so will the other.
+
+=== Get latest files from the repository ===
+
+In the local repository (.\arma\x\oac) you find a file called '''git_pull.bat'''.<br>
+Execute it to update the repository to the latest version.
+
+'''Do not forget to build the updates non mission PBOs.'''
+
+Use the {{Link|link= http://dev-heaven.net/repositories/show/oac|text= OAC repository browser}} and the {{Link|link= http://dev-heaven.net/repositories/revisions/oac|text= OAC revisions details}} to get an idea<br>
+what folders have been updated and need to built to PBO after an update.
+
+== Repository access ==
+
+Repository URL:
+ git@git.dev-heaven.net:oac.git
+
+=== Anon read access ===
+
+Just git clone the above URL.
+
+ git clone git://git.dev-heaven.net/oac.git
+
+=== Write access ===
+
+Send {{Link|link= http://dev-heaven.net/account/show/4|text= kju}} your ssh key. Check the {{Link|link= http://dev-heaven.net/wiki/heaven/SSH-Keyset|text= ssh guide}} how to create one for you.
+
+== Coding standards ==
+
+* Get a proper text editor like {{Link|http://notepad-plus.sourceforge.net/uk/site.htm|notepad++}} or {{Link|http://www.editpadpro.com|editpadpro}}.
+* Do not mess up the code:
+** Preceding tabs - NO spaces! - before the code.
+** Correct number of preceding tabs.
+** NO tabs or spaces at the end of the line.
+** Spaces around an equal sign are standard.
+** One space after a colon, not before it.
+** Do not forget a semicolon to end definitions.
+** Use quotes for strings.
+** Correct placement of brackets.
+* Use comments where they are meaningful.
+* Use empty lines to separate code.
+* Order lists alphabetically - use editor functions!
+* Create a file header for addons according to the standard.
+* Name addons according to the standard.
+
+
+= Back to OAC Home =
+
+[[OAC:Project#Subpage_link_overview|The seven roads to OAC - subpage link overview]]

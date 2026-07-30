@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/deleteCollection
+// revision: 353153 (2024-03-12T12:48:32Z)
+// export sha1: ld4em709emaosxmqc5aia5n01jn1o5a
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Delete a collection. As example, used with a soldier, it'll hide the ingame model.
+
+''When targetting Arma 2 1.06 or newer, use [[hideObject]] instead. This function is a relic from dynamic building destruction development. It is left only for compatibility with scripts created before Arma 2 1.06, and its functionality may be changed or removed in the future.''
+
+|s1= [[deleteCollection]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>deleteCollection unitName;</sqf>
+
+|seealso= [[hideObject]] [[hideObjectGlobal]] [[isObjectHidden]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-08-20 - 21:23 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+In Arma 3 [[deleteCollection]] is alias for [[hideObject]]
+</dd>
+
+</dl>

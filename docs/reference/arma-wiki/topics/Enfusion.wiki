@@ -1,0 +1,98 @@
+// source: https://community.bistudio.com/wiki/Enfusion
+// revision: 373047 (2025-03-21T15:11:24Z)
+// export sha1: kg8rji0cmnt5rv5zp4pz2616gtq2uwa
+// categories: Category:Projects
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:enfusion symbol.png|right|400px]]
+[[Enfusion]] is an engine currently (2023) in development by [[Bohemia Interactive]] in order to replace [[Real Virtuality]] as their common base for future games.
+As of 2019, Bohemia Interactive assigned most of its development teams to this project<ref name="devblog">{{Link|link= https://www.bohemia.net/blog/bohemia-in-2019|text= "Bohemia in 2019"}}, Korneel van 't Land on the Developer's Blog on {{Link|https://www.bohemia.net/|bohemia.net}}, December 18, 2019 (accessed on April 23rd, 2020).</ref>.
+This engine is already in use on {{GameCategory|dayz|link= y}} as of 0.63, which was released in 2018<ref>{{Link|https://www.kitguru.net/gaming/matthew-wilson/dayzs-long-awaited-engine-upgrade-is-finally-coming-in-the-next-update/|"DayZ's long awaited engine upgrade is finally coming in the next update"}}, Matthew Wilson on ''kitguru.net'', April 9, 2018 (accessed on April 23rd, 2020).</ref>.
+However, it only makes use of Enfusion's rendering, animation<ref name="devblog"/> and scripting<ref>{{Link|https://www.bohemia.net/blog/Introducing-Enfusion-Engine|"Introducing Enfusion Engine: The Modern Heart of Our Future Games"}}, Bohemia Interactive on the Developer's Blog on ''bohemia.net'', December 15, 2021 (accessed on December 17th, 2021).</ref> systems.
+
+Enfusion is announced to allow far more flexibility and scalability than [[Real Virtuality]], specifically through modding with the availability of extensive development tools and ability for modders to create their own plugins for Enfusion<ref name="devblog"/>. Furthermore, Enfusion would also allow modders to interact with the games' core features and mechanics.
+
+On 2021-12-16, {{Name|bi}} revealed an {{Link|#Videos|Enfusion trailer}} along its new website: {{Link|https://enfusionengine.com/|https://enfusionengine.com/}}.
+
+
+{{TOC|||3}}
+
+
+== Features ==
+
+* {{Link|#Enforce Script}}
+* Open source 3D software tools support<ref name="devblog"/>
+* Compatibility with multiple gaming platforms<ref name="devblog"/>
+* DirectX 12 support <ref name="directX12">{{Link|https://www.bohemia.net/blog/Introducing-Enfusion-Engine|DirectX 12 support}}</ref>
+* Full set of developer tools (Workbench modules) <ref name="devTools">{{Link|https://www.bohemia.net/blog/Introducing-Enfusion-Engine|Full set of developer tools (Workbench modules)}}</ref>
+* Improved utilisation of modern processors and graphics cards <ref name="utilisation">{{Link|https://www.bohemia.net/blog/Introducing-Enfusion-Engine|Improved utilisation of modern processors and graphics cards}}</ref>
+
+=== Enforce Script ===
+
+'''Enforce Script''' is the language used by [[Enfusion]].
+
+{{Feature|informative|Note that this is '''Enforce''' Script and not ''Enfusion'' Script.}}
+
+==== Usage ====
+The Enforce Script language is used by the following games:
+{{Columns|2|
+* {{GameCategory|arma4|link= y}} (announced 2027)
+* {{GameCategory|armaR|link= y}} (2023)
+* {{GameCategory|dayz|link= y}} (2018)
+* {{GameCategory|tkom|link= y}} (2014)
+* {{GameCategory|carriercommand|link= y}} (2012)
+* {{Link|https://en.wikipedia.org/wiki/Alpha Prime}} (2007)
+* {{Link|https://en.wikipedia.org/wiki/Shade:_Wrath_of_Angels}} (2004)
+* {{Link|https://www.gamesthatwerent.com/2022/05/enforce/|Enforce}} (1998)
+}}
+
+==== Documentation ====
+* {{dayz}}: {{Link|DayZ:Enforce Script Syntax}}
+* {{armaR}}: {{GameCategory|armaR|Modding|Scripting|text= Scripting}}
+<!--
+* {{arma4}}: {{GameCategory|arma4|Modding|Scripting|text= Scripting}}
+-->
+
+
+== Images ==
+
+=== Puzzles ===
+
+The below images were taken on January 22<sup>nd</sup> 2021 and released as puzzle pieces among <!-- link -->various <!-- link -->official <!-- link -->communications.
+Reddit user {{Link|https://www.reddit.com/user/Kadava/|Kadava}} (amongst {{Link|https://www.reddit.com/r/arma/comments/mi16ed/enfusion_puzzle_with_the_new_image_from_the_april/|others}}) collected them and assembled them on Reddit over time<ref>2021-02-10 {{Link|https://www.reddit.com/r/arma/comments/lgqx57/enfusion_engine_first_look_puzzle_update_piecing/|Enfusion engine first look "Puzzle" update. Piecing together all that we have}}</ref><ref>2021-02-27 {{Link|https://www.reddit.com/r/arma/comments/ltrhun/update_on_the_enfusion_engine_sneak_peek_puzzle/|UPDATE on the enfusion engine sneak peek puzzle... If you find any more puzzle pieces please send them in! very appreciative!}}</ref>.
+
+<gallery class="center" widths="200">
+File:enfusion_puzzle-result-1.png|thumb|First puzzle
+File:enfusion_puzzle-result-2.png|thumb|Second puzzle
+File:enfusion_puzzle-result-3.png|thumb|Third puzzle
+File:enfusion_puzzle-result-4.png|thumb|Fourth puzzle
+File:enfusion_puzzle-result-5.png|thumb|Fifth puzzle
+File:enfusion_puzzle-result-6.png|thumb|Sixth puzzle
+</gallery>
+
+=== Enfusion Engine Website ===
+
+From {{Link|https://enfusionengine.com/|https://enfusionengine.com/}}
+<gallery mode="slideshow" style="margin: auto; width: 75%">
+File:enfusion_website-wip-5.png
+File:enfusion_website-wip-6.png
+File:enfusion_website-wip-8.png
+File:enfusion_website-wip-7.png
+File:enfusion_website-wip-10.png
+File:enfusion_website-wip-11.png
+</gallery>
+
+
+== Videos ==
+
+{{Youtube|6oeDRd_TQcQ|Enfusion Engine - Powering the future of Bohemia's games|center|450}}
+
+
+== Games ==
+
+* {{GameCategory|dayz|link= y}}
+* {{GameCategory|armaR|link= y}}
+* {{GameCategory|arma4|link= y}}
+
+
+[[Category:Projects]]

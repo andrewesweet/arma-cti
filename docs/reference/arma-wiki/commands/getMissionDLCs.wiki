@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/getMissionDLCs
+// revision: 329346 (2022-07-27T10:53:06Z)
+// export sha1: lto0m99gff729k912xz83x9kbnpyvuy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: DLC | Category:Command Group: Mission Information | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Mission Information
+
+|gr2= DLC
+
+|descr= Returns list of DLCs that are used in the mission.
+{{Feature|important|The list is created from units listed in [[Mission.sqm|mission.sqm]] and does '''not''' detect units later created by scripts.}}
+
+|s1= [[getMissionDLCs]]
+
+|r1= [[Array]] - list of DLCs detected for the mission
+
+|x1= <sqf>_usedDLCs = getMissionDLCs; // returns e.g ["Orange","Enoch","Expansion","Heli","Contact","Mark","Argo","Jets"]</sqf>
+
+|seealso= [[getDLCs]] [[getObjectDLC]] [[getPersonUsedDLCs]] [[getDLCAssetsUsageByName]] [[getDLCAssetsUsage]] [[getAssetDLCInfo]]
+}}

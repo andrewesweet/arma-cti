@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgBreathing
+// revision: 373254 (2025-04-12T22:28:09Z)
+// export sha1: 4chie66cms08wks4wyaovh8m1a37xfa
+// categories: Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Introduction ==
+See [[CfgVehicles Config Reference|CfgVehicles Config Reference Introduction]]
+
+== Alphabetical Order ==
+=== C ===
+==== coefSpeed ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+coefSpeed = 10;
+</syntaxhighlight>
+
+=== I ===
+==== inhaleDuration ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+inhaleDuration = 1.5;
+</syntaxhighlight>
+
+=== M ===
+==== maxHoldTime ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+maxHoldTime = 8;
+</syntaxhighlight>
+
+=== O ===
+==== outOfBreathCoef ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+outOfBreathCoef = 5;
+</syntaxhighlight>
+
+
+
+{{GameCategory|arma3|Reference Lists}}

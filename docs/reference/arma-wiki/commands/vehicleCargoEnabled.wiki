@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/vehicleCargoEnabled
+// revision: 349518 (2023-11-08T17:15:53Z)
+// export sha1: hs4sr2vhzou9z45ltat59nu0ocnkn7d
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle in Vehicle Transport | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Vehicle in Vehicle Transport
+
+|descr= Check if the vehicle has enabled transporting other vehicles or not.
+
+|s1= [[vehicleCargoEnabled]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Boolean]] - returns true if the vehicle has enabled transporting other vehicles, and false if the vehicle has not enabled transporting other vehicles
+
+|x1= Blackfish (Vehicle Transport) with given variable name blackfish
+<sqf>_canTransportVehicles = vehicleCargoEnabled blackfish; //returns true</sqf>
+
+|seealso= [[Arma 3: Vehicle in Vehicle Transport| Vehicle in Vehicle Transport]] [[canVehicleCargo]] [[setVehicleCargo]] [[enableVehicleCargo]] [[getVehicleCargo]] [[isVehicleCargo]]
+}}

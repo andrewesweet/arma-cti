@@ -1,0 +1,90 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_Sound_Curves
+// revision: 339200 (2023-04-27T16:20:25Z)
+// export sha1: eufia8unr5q7p1wm56if0ooy8bqkvay
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+
+== Sound Curves ==
+
+Sound curve is a simple set of points on 2D graph, which define the relationship between two variables (usually distance and volume).
+
+All sound curves have to be configured in the base class '''CfgSoundCurves''' (or directly in curve parameter)
+
+{{Feature|informative|
+* In array of points <syntaxhighlight lang="cpp" inline>{ x, value }</syntaxhighlight>, x values must be ascending.
+* x values are rescaled to range, which means:<br>using 0..1 values represent relative definition, while using meters represents absolute definition, but be sure that the highest x value is the same as range and the lowest x value is 0
+}}
+
+{{Feature|important|Some sound sources (from like {{hl|CfgAmmo}}, e.g a mortar shell) beyond [[viewDistance|terrain view distance]] are not played.}}
+
+<syntaxhighlight lang="cpp">
+class CfgSoundCurves
+{
+	class InverseSquare1Curve
+	{
+		points[] =
+		{
+			{ 0.0, 0.9751 },
+			{ 0.1, 0.6332 },
+			{ 0.2, 0.4307 },
+			{ 0.3, 0.3009 },
+			{ 0.4, 0.2128 },
+			{ 0.5, 0.1503 },
+			{ 0.6, 0.1043 },
+			{ 0.7, 0.0695 },
+			{ 0.8, 0.0426 },
+			{ 0.9, 0.0213 },
+			{ 1.0, 0.0041 }
+		};
+	};
+};
+</syntaxhighlight>
+
+'''Example of configuration using curve class'''
+<syntaxhighlight lang="cpp">
+class CfgSoundSets
+{
+	// volumeCurve parameter using curve class
+	class Rifle_Shot1_SoundSet
+	{
+		soundShaders[] =
+		{
+			"MX_closeShot_SoundShader"
+		};
+		volumeCurve = InverseSquare1Curve;
+	};
+};
+</syntaxhighlight>
+
+'''Example of configuration using direct curve definition'''
+<syntaxhighlight lang="cpp">
+class CfgSoundSets
+{
+	//volumeCurve direct definition
+	class Rifle_Shot1_SoundSet
+	{
+		soundShaders[] =
+		{
+			"MX_closeShot_SoundShader"
+		};
+		volumeCurve[] =
+		{
+			{ 0.0, 0.9751 },
+			{ 0.1, 0.6332 },
+			{ 0.2, 0.4307 },
+			{ 0.3, 0.3009 },
+			{ 0.4, 0.2128 },
+			{ 0.5, 0.1503 },
+			{ 0.6, 0.1043 },
+			{ 0.7, 0.0695 },
+			{ 0.8, 0.0426 },
+			{ 0.9, 0.0213 },
+			{ 1.0, 0.0041 }
+		};
+	};
+};
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Sound}}

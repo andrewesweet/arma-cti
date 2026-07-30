@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/setGroupIconsSelectable
+// revision: 349137 (2023-11-08T14:49:45Z)
+// export sha1: k2l4v8hoxz49cflgvme4oeqdkbu4nx0
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: High Command | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= High Command
+
+|descr= Sets if group icons raise [[onGroupIconClick]], [[onGroupIconOverEnter]] and [[onGroupIconOverLeave]] events.
+
+|s1= [[setGroupIconsSelectable]] selectable
+
+|p1= selectable: [[Boolean]] - setting to [[true]] makes the icon selectable
+
+|r1= [[Nothing]] ([[objNull]] prior to {{arma3}} v1.92)
+
+|x1= <sqf>setGroupIconsSelectable true;</sqf>
+
+|seealso= [[groupIconSelectable]]
+}}

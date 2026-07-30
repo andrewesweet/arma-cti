@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Walkthrough/Arachnid
+// revision: 295971 (2021-11-17T14:37:56Z)
+// export sha1: pupigbkrp5jchehtodp1be61doeiylt
+// categories: Category:Carrier Command: Gaea Mission: Walkthrough
+// Vendored snapshot. Do not edit — re-export instead.
+
+This is the second island visited in the Tutorial campaign
+
+The player is to get a second Walrus here and familiarize themselves with commanding multiple units
+
+= Tutorial =
+*Commanding multiple units
+*[[Carrier Command: Gaea Mission: Replenishers|Replenishers]]
+
+= Objectives =
+#GAIN CONTROL OVER ARACHNID
+#*Arachnid will likely have parts we can use to repair our Carrier with. We need to reach it, and gain control over it.
+#HACK THE COMMAND CENTER
+#*To gain control of Arachnid, we need to reprogram (hack) the Command Center.
+#SEARCH FOR POSSIBLE LOCK MECHANISM
+#*Investigate a possible remote lock mechanism in the north-west sector.
+#HACK THE FACTORY
+#*The Factory on Arachnid houses an undeployed Walrus. If we hack the Factory, then we can add the Walrus to our arsenal.
+#DEACTIVATE THE LOCK MECHANISM
+#*The lock mechanism consists of two controllers. These must be activated within a very short interval of each other to successfully deactivate the lock.
+
+
+{{GameCategory|carriercommand|Walkthrough}}

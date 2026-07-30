@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/stopEngineRTD
+// revision: 281862 (2021-06-16T21:15:36Z)
+// export sha1: 33nta3nrz12nccyp7w79av60m9ugb5o
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: RTD | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 1.34
+
+|gr1= RTD
+
+|descr= Instant engines stop. 
+{{Feature|afm}}
+
+|s1= [[stopEngineRTD]] heli
+
+|p1= heli: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= [[stopEngineRTD]] myHeli
+
+|seealso= [[enginesIsOnRTD]]
+}}

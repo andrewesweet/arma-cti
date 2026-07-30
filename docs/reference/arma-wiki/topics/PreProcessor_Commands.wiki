@@ -1,0 +1,742 @@
+// source: https://community.bistudio.com/wiki/PreProcessor_Commands
+// revision: 378698 (2026-05-28T13:33:42Z)
+// export sha1: b8y1wvlby5xwzijpzwhf4qg2ywoposz
+// categories: Category:Scripting Topics | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side|0.9}}
+The PreProcessor and the Config Parser allow to use macros in configs.
+The purpose of macros is to re-use the same definition in scripts and configs multiple times.
+It also gives a centralised place to correct errors in this definition.
+Know that edge cases may arise - see the collection of test-cases linked at the end of this page.
+{{Feature|arma3|In {{arma3}}, preprocessor commands are '''case-sensitive!'''}}
+
+
+== Parsing ==
+
+See {{Link|#Config Parser}} below:
+* '''[[Config.cpp]]''' - parsed when PBO is binarised.
+** [[localize]] cannot be used in macros, as it would hardcode string of current language instead of creating reference.
+* '''[[Description.ext]]''' - parsed when mission is loaded or previewed in missions list.
+* '''[[SQF Syntax|SQF]] script''' - parsed when [[preprocessFile]], [[preprocessFileLineNumbers]], [[compileScript]] or [[execVM]] is used.
+
+
+== Macros ==
+
+=== Strings ===
+
+In both Configs and SQF scripts, there are two ways to define strings: either using single quotes ({{hl|'text'}}) or double quotes ({{hl|"text"}}).
+While they are both identical, they are '''treated differently''' by the preprocessor.
+The '''single quote''' string contents are '''parsed''' by the preprocessor, while the '''double quote''' ones are '''ignored'''.
+<sqf>
+#define ARG world
+
+systemChat 'hello ARG'; // prints: hello world (i.e. ARG was replaced by the preprocessor with world)
+systemChat "hello ARG"; // prints: hello ARG
+</sqf>
+
+{{Feature|warning|
+While it is possible in config to define a string without quotes (the preprocessor will act as if the value were wrapped with single quotes), this practice is heavily discouraged.
+<syntaxhighlight lang="cpp">
+title = "$STR_TranslationKey";	// good
+title = $STR_TranslationKey;	// tolerated but incorrect
+</syntaxhighlight>
+}}
+
+=== Comments ===
+
+A comment is a line within code that is not actually processed by the game engine. They are used to make code more readable or to add notes for future reference.
+The preprocessor removes all comments from the file before it is processed. Therefore, comments are never actually "seen" by the game engine.
+{{Feature|warning|
+Sometimes a problematic string can fail to purge these comment outs during preprocessing!
+<sqf>
+private _a = '"';
+// this is just a comment, but failed to remove upon the preprocess so will return an error. Caused by that string
+</sqf>
+}}
+<syntaxhighlight lang="cpp">
+// this is a single-line comment
+
+/*
+	this is a
+	multi-line
+	comment
+*/
+
+myValue = something; // only this part of the line is commented out
+
+myArray = { "apple"/*, "banana"*/, "pear" }; // a portion in the middle of this line is commented out
+</syntaxhighlight>
+
+=== #define ===
+
+Using the {{hl|#define}} instruction, it is possible to define a keyword and assign a definition to it.
+The keyword may contain any letter, digit or underscore in arbitrary order, as long as it does not start with a digit (RegEx: {{hl|[a-zA-Z_][0-9a-zA-Z_]*}}).
+As an example:
+<syntaxhighlight lang="cpp">
+#define true 1
+</syntaxhighlight>
+
+The above means that whenever ''true'' is used in a config, the parser will replace this with the value ''1''.
+
+The define-statement does swallow all spaces in between the macro-keyword and any non-space-character in the body (Note that tabs are not spaces! They don't get removed)
+<syntaxhighlight lang="cpp">
+#define MACRO test
+MACRO // preprocesses to test (without any spaces)
+
+#define MACRO	test // There's a tab between MACRO and test
+MACRO // preprocesses to "	test" (without quotes - they are only used to show that the tab character didn't get removed)
+</syntaxhighlight>
+
+The space between the macro-keyword and the body is also fully optional (though very useful to tell the preprocessor where the macro name ends and where the body begins):
+<syntaxhighlight lang="cpp">
+#define MACRO#test
+MACRO // preprocesses to "test"
+</syntaxhighlight>
+
+==== Arguments ====
+Arguments can be added to more complex macros, by including them between brackets after the keyword. For the name of the arguments the same rule as for the macro-keyword (see above) apply.
+<syntaxhighlight lang="cpp">
+#define CAR(NAME) displayName = NAME;
+</syntaxhighlight>
+
+If ''CAR("Mini")'' is used, it will be replaced with ''displayName = "Mini";''. Multiple arguments can also be used:
+<syntaxhighlight lang="cpp">
+#define BLASTOFF(UNIT,RATE) UNIT setVelocity [0,0,RATE];
+</syntaxhighlight>
+
+Macro arguments may be composed of any characters, as long as they do not contain a comma (because commas are used as argument-delimiters).
+If quotes are being used, they have to be balanced.
+The same applies to single-quotes; this is because String detection is working in macro arguments - therefore commas can even get passed in as a macro argument as long as they are part of a String (This only works with Strings wrapped in double-quotes though).
+Note however that although the macro gets resolved properly, the comma gets removed from the String (probably a bug).
+<syntaxhighlight lang="cpp">
+#define MACRO(arg) arg
+MACRO("Some, content") // preprocesses to "Some content" (note the missing comma)
+</syntaxhighlight>
+
+Quote escaping is also not supported in this context (neither with double- nor with single-quotes)
+<syntaxhighlight lang="cpp">
+#define MACRO(arg) arg
+MACRO("Some ""content""") // preprocesses to "Some ""content"""
+</syntaxhighlight>
+
+Passing arrays with more than one element {{hl|[el1,el2,...]}} as arguments into macros as well as any argument containing commas (e.g {{hl|"some, sentence"}}) will need a small workaround:
+<syntaxhighlight lang="cpp">
+#define HINTARG(ARG) hint ("Passed argument: " + str ARG)
+</syntaxhighlight>
+
+Incorrect usage:
+<syntaxhighlight lang="cpp">
+HINTARG([1,2,3,4,5,6,7,8,9,0]); // ERROR, won't even compile
+</syntaxhighlight>
+
+Correct usage:
+<syntaxhighlight lang="cpp">
+#define array1 [1,2,3,4,5,6,7,8,9,0]
+HINTARG(array1); // SUCCESS
+</syntaxhighlight>
+
+The argument replacement is performed before the expansion of the macro body. That means one doesn't have to worry about name-conflicts between argument-names of the current macro and already defined macros:
+<syntaxhighlight lang="cpp">
+#define ONE foo
+#define TWO(ONE) ONE
+TWO(bar) // will preprocess to bar
+</syntaxhighlight>
+
+==== Replacing parts of words ====
+By default, only whole words can be replaced by arguments. If only a part of the word should be replaced, use the {{hl|##}} instruction.
+This is necessary when either the start or the end of the argument connects to another character that is not a {{hl|;}} (semi-colon) or {{hl|&nbsp;}} (space).
+<syntaxhighlight lang="cpp">
+class NAME##_Button_Slider: RscText \
+{ \
+	model = \OFP2\Structures\Various\##FOLDER##\##FOLDER; \
+</syntaxhighlight>
+
+It is also possible to use the single ''#'' to convert an argument to a string.
+<syntaxhighlight lang="cpp">
+statement = (this animate [#SEL, 0]); \
+</syntaxhighlight>
+
+==== Multi-line ====
+For longer definitions, one can stretch the macro across multiple lines. To create a multi-line definition, each line except the last one should end with a ''\'' character:
+<syntaxhighlight lang="cpp">
+#define DRAWBUTTON(NAME)\
+	__EXEC(idcNav = idcNav + 4) \
+	// ...
+</syntaxhighlight>
+
+{{Feature|informative|The backslash must be the last character in a line when defining a multi-line macro. Any character (including spaces) after the backslash will cause issues.}}
+
+{{ArgTitle|4|Variadic Arguments|{{GVI|arma3|2.24}}}}
+
+Reference https://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
+
+Variadic arguments allows to provide a variable number of arguments to a macro, instead of a fixed number.<br>
+And there are several "functions" to work with these variable-length argument lists.<br>
+<br>
+A basic variadic macro looks like this
+<syntaxhighlight lang="cpp">
+#define MACRO(...) __VA_ARGS__
+</syntaxhighlight>
+
+There are a few special keywords and "functions" that are only valid when used inside a variadic macro
+* __VA_ARGS__
+* __VA_OPT__(X)
+* __VA_OPT_INV__(X)
+* __VA_APPLY__(FUNC(,SEP))
+* __VA_SELECT__(index)
+<br>
+
+===== __VA_ARGS__ =====
+is a special keyword that will be replaced by all the macro arguments, separated by ",". For example:
+<syntaxhighlight lang="cpp">
+#define MACRO(...) __VA_ARGS__
+
+MACRO() // "", Zero is also a valid number of arguments
+MACRO(a,b,c) // "a,b,c", the arguments are "a", "b" and "c"
+MACRO({str [1,2,3]}) // "{str [1,2,3]}", the arguments are "{str [1", "2" and "3]}"
+</syntaxhighlight>
+
+This simple variant can replace helper macros like CBA mod's ARR_1, ARR_2, ARR_3, with just one ARR(...) macro.<br>
+It can also be used to wrap code blocks, which was difficult to do without it because they can contain commas and its not easy to tell the number of commas, like in the example above.<br>
+<br>
+===== __VA_OPT__(x) and __VA_OPT_INV__(x) =====
+are simple functions to handle the special case of there being zero variadic arguments.
+'''__VA_OPT__(x)''' is only active if arguments are present. And the INV variant is only active if no arguments are present
+For example:
+<syntaxhighlight lang="cpp">
+#define HAS_ARGS __VA_OPT__(Yes I have Arguments!)__VA_OPT_INV__(Nothing!)
+
+HAS_ARGS() // "Nothing!"
+HAS_ARGS(a) // "Yes I have Arguments!"
+HAS_ARGS(a,b,c) // "Yes I have Arguments!", no matter how many arguments, if there is at least one, the optional data is inserted
+</syntaxhighlight>
+<br>
+This is useful when the arguments are forwarded to something like:
+<syntaxhighlight lang="cpp">
+#define LOG(message, ...) diag_log __VA_OPT__([) message __VA_OPT__(,) __VA_ARGS__ __VA_OPT__(])
+
+LOG("My Message") // 'diag_log  "My Message"   '
+LOG("My Message",1,2,3) // 'diag_log [ "My Message" , 1,2,3 ]  '
+</syntaxhighlight>
+
+===== __VA_APPLY__(FUNC, SEPARATOR) =====
+is similar to [[apply]] in that it applies a function(macro) on every argument. The second "SEPARATOR" argument is optional, it can be used to replace the usual "," separator with something different.<br>
+<br>
+The macro passed to apply must have 0, 1 or 2 arguments.<br>
+If 0 arguments, every value will be replaced by the macro contents, for example:
+<syntaxhighlight lang="cpp">
+#define FUNC A
+#define TRANSFORM(...) __VA_APPLY__(FUNC)
+TRANSFORM(1,2,3) // 'A,A,A'
+</syntaxhighlight>
+<br>
+If 1 argument, it will be the value of the argument, for example:
+<syntaxhighlight lang="cpp">
+#define QUOTE(x) #x
+#define TRANSFORM(...) __VA_APPLY__(QUOTE)
+TRANSFORM(1,2,3) // '"1","2","3"'
+</syntaxhighlight>
+<br>
+If 2, the second argument MUST be named '''__VA_INDEX__''', it will be filled with the index of the argument, for example:
+<syntaxhighlight lang="cpp">
+#define FUNC(x, __VA_INDEX__) __VA_INDEX__: #x
+#define TRANSFORM(...) __VA_APPLY__(FUNC)
+TRANSFORM(1,2,3) // '0: "1",1: "2",2: "3"'
+</syntaxhighlight>
+<br>
+By default, just like '''__VA_ARGS__''' when the values are written to the output, they will be separated by ",".<br>
+This can be changed by providing a separator argument, for example:
+For example:
+<syntaxhighlight lang="cpp">
+#define VERBATIM(x) x
+#define SEPARATOR_NONE
+#define TRANSFORM_CONCAT(...) __VA_APPLY__(QUOTE, SEPARATOR_NONE)
+TRANSFORM_CONCAT(1,2,3) // '123'
+
+#define GET_VARIABLE(x) private _##x = player getVariable #x
+#define SEPARATOR_SEMI ;
+#define GET_VARIABLES(...) __VA_APPLY__(GET_VARIABLE, SEPARATOR_SEMI)
+
+GET_VARIABLES() // ''
+GET_VARIABLES(MyFnc) // 'private _MyFnc = player getVariable "MyFnc"'
+GET_VARIABLES(MyFnc,MyOtherFnc) // 'private _MyFnc = player getVariable "MyFnc";private _MyOtherFnc = player getVariable "MyOtherFnc"'
+</syntaxhighlight>
+
+The results of '''__VA_APPLY__''' can also be passed to another variadic macro, for example:
+<syntaxhighlight lang="cpp">
+#define QUOTE(x) #x
+#define WRITE_LOG(...) diag_log [__VA_ARGS__]
+#define MAKE_ARRAY(...) [__VA_ARGS__]
+
+#define DO_THINGS(...) WRITE_LOG(__VA_APPLY__(QUOTE)); _array = MAKE_ARRAY(__VA_ARGS__);
+
+DO_THINGS(a,b,c) // diag_log ["a","b","c"]; _array = [a,b,c];
+</syntaxhighlight>
+<br>
+
+===== __VA_SELECT__(index) =====
+will select the specified element out of the '''__VA_ARGS__''' list. index must be a number.
+For example:
+
+<syntaxhighlight lang="cpp">
+#define SELECT_ARG(index, ...) __VA_SELECT__(index)
+#define FORMAT_ARG(index) SELECT_ARG(index, "A=%2", "B=%3", "C=%4", "D=%5", "E=%6", "F=%7")
+#define FORMAT_GET_ARGSTR(arg, __VA_INDEX__) FORMAT_ARG(__VA_INDEX__)
+#define FORMAT(MESSAGE, ...) format [[__VA_OPT_INV__('%1') __VA_OPT__('%1:',) __VA_APPLY__(FORMAT_GET_ARGSTR)] joinString ' ', MESSAGE __VA_OPT__(,) __VA_ARGS__]
+
+FORMAT("Message") // `format [['%1'  ] joinString ' ', "Message"  ]`
+FORMAT("Message", value1, value2) // `format [[ '%1:',  "A=%2", "B=%3"] joinString ' ', "Message" ,  value1, value2]` which ends up as `format ["%1: A=%2 B=%3", "Message", value1, value2]`
+</syntaxhighlight>
+
+
+
+=== #undef ===
+
+Undefine (delete) a macro previously set by the use of #define.
+<syntaxhighlight lang="cpp">
+#undef NAME
+</syntaxhighlight>
+
+=== #if ===
+
+'''Description:''' Checks condition and processes content if condition returns 1. Skips content if it returns 0
+<syntaxhighlight lang="cpp">
+#if __GAME_VER_MAJ__ != 2
+// Do something...
+#endif
+</syntaxhighlight>
+
+==== Comparison Operators ====
+The following operations are supported:
+* <
+* >
+* <=
+* >=
+* ==
+* !=
+'''Example:'''
+<syntaxhighlight lang="cpp">
+#if __GAME_VER_MAJ__ != 2
+// Do something...
+#endif
+</syntaxhighlight>
+
+=== #ifdef ===
+
+A simple if-then construction to check whether a certain set of definitions has already been made:
+<syntaxhighlight lang="cpp">
+#ifdef NAME
+	// config that will be used if NAME is defined
+#endif
+</syntaxhighlight>
+
+IFDEFs ''cannot'' be nested. The preprocessor will generate errors for all inner definitions if the outer definition doesn't exist.
+
+=== #ifndef ===
+
+Same as #ifdef, but checks for absence of definition instead.
+<syntaxhighlight lang="cpp">
+#ifndef NAME
+	// config that will be used if NAME is -not- defined
+#endif
+</syntaxhighlight>
+
+=== #else ===
+
+Provides alternative code to {{hl|#if}}, {{hl|#ifdef}}, {{hl|#ifndef}} checks.
+<syntaxhighlight lang="cpp">
+#ifndef NAME
+	// config that will be used if NAME is -not- defined
+#else
+	// config that will be used if NAME -is- defined
+#endif
+</syntaxhighlight>
+
+=== #endif ===
+
+This ends a conditional block as shown in the descriptions of #ifdef and #ifndef above.
+
+=== #include ===
+
+Copies the code from a target file and pastes it where #include directive is.
+<syntaxhighlight lang="cpp">
+#include "file.hpp"
+#include <file.txt> // Brackets are equivalent to quotation marks and may be used in their place.
+</syntaxhighlight>
+
+Source directory is:
+* For any file without starting the include path with \ - the file's current directory
+* When starting with \ - the internal filesystem root (see [[Arma_3:_Creating_an_Addon#Addon_Prefix|Addon Prefix]]) or the Game's working directory (only with [[Arma 3: Startup Parameters|-filePatching]] enabled)
+
+A path beginning can be defined as follow:
+* drive (only with [[Arma 3: Startup Parameters|-filePatching]] enabled): <syntaxhighlight lang="cpp">#include "D:\file.txt"</syntaxhighlight>
+* PBO with [[PBOPREFIX]]: <syntaxhighlight lang="cpp"> #include "\myMod\myAddon\file.txt"</syntaxhighlight>
+* PBO (keep in mind that in this case, if the PBO's file name will be changed, all '#include' referencing it will need to be updated):<!--
+--><syntaxhighlight lang="cpp">#include"\myMod\myAddon\file.txt" // Arma 3\@myMod\addons\myAddon.pbo\file.txt;</syntaxhighlight>
+
+To move to parent directory use '..' (two dots) (Supported since {{GVI|arma3|1.50}}):
+<syntaxhighlight lang="cpp">
+#include "..\file.sqf"
+</syntaxhighlight>
+
+Preprocessor does not support the use of macros for pre-defined file names.
+<syntaxhighlight lang="cpp">
+#define path "codestrip.txt"
+#include path // this will cause an error
+</syntaxhighlight>
+
+=== # ===
+
+'#' (single hash) operator wraps the text with quotation marks.
+<syntaxhighlight lang="cpp">
+#define STRINGIFY(s) #s
+#define FOO 123
+test1 = STRINGIFY(123); //test1 = "123";
+test2 = STRINGIFY(FOO); //test2 = "123";
+</syntaxhighlight>
+
+This operator does only work on keywords following the rules for macro-names (see {{hl|#define}}-section).
+If one wants to stringify anything else (like e.g. a number), one has to use a stringify-macro that takes an argument and stringifies that (as in the example above).
+<syntaxhighlight lang="cpp">
+#define MACRO Test #123
+MACRO // preprocesses to Test 123 - note that there are not any quotes inserted
+</syntaxhighlight>
+
+=== ## ===
+
+'##' (double hash) operator concatenates what's before the ## with what's after it.
+<syntaxhighlight lang="cpp">
+#define GLUE(g1,g2) g1##g2
+#define FOO 123
+#define BAR 456
+test1 = GLUE(123,456); //test1 = 123456;
+test2 = GLUE(FOO,BAR); //test2 = 123456;
+</syntaxhighlight>
+
+=== __LINE__ ===
+
+This keyword gets replaced with the line number in the file where it is found. For example, if {{hl|__LINE__}} is found on the 10th line of a file, the word {{hl|__LINE__}} will be replaced with the number 10.
+
+=== __FILE__ ===
+
+This keyword gets replaced with the CURRENT file being processed.
+e.g
+ "userconfig\file1.sqf"
+
+{{ArgTitle|3|__FILE_NAME__|{{GVI|arma3|2.18}}}}
+
+This keyword gets replaced with the '''name''' of the current file being processed.
+e.g
+ "file1.sqf"
+
+{{ArgTitle|3|__FILE_SHORT__|{{GVI|arma3|2.18}}}}
+
+This keyword gets replaced with the '''name''' of the current file being processed, without extension.
+e.g
+ "file1"
+
+{{ArgTitle|3|__has_include|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Checks if given file exists. Returns 1 if it does, 0 if it does not exist.
+{{Feature|important|
+* The file path must start with the backslash {{hl|\}} otherwise it would fail silently (returns {{hl|0}} so does nothing unless you put something in {{hl|#else}})!
+* If you wanted to make an addon that can change its config dynamically depending on mods that loaded along, '''do not''' binarize the ''config.cpp''!
+}}
+{{Feature|informative|
+To validate that the file exists in your game, you can use [[fileExists]] command to check.
+<sqf>
+fileExists "\a3\data_f\config.bin"; // returns true
+fileExists "\z\ace\addons\main\script_component.hpp"; // returns true if ACE is loaded, false otherwise
+</sqf>
+}}
+<syntaxhighlight lang="cpp">
+#if __has_include("\z\ace\addons\main\script_component.hpp")
+// file exists! Do something with it
+#else
+// file does not exist
+#endif
+</syntaxhighlight>
+
+{{ArgTitle|3|__DATE_ARR__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Is replaced for current date in format [[Array|array]].
+<syntaxhighlight lang="cpp">
+__DATE_ARR__ // 2020,10,28,15,17,42
+</syntaxhighlight>
+
+{{ArgTitle|3|__DATE_STR__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Is replaced for current date in format [[String|string]].
+<syntaxhighlight lang="cpp">
+__DATE_STR__ // "2020/10/28, 15:17:42"
+</syntaxhighlight>
+
+{{ArgTitle|3|__DATE_STR_ISO8601__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Is replaced for current date in format [[String|string]]. The date is presented in ISO8601 standard.
+<syntaxhighlight lang="cpp">
+__DATE_STR_ISO8601__ // "2020-10-28T14:17:42Z"
+</syntaxhighlight>
+
+{{ArgTitle|3|__TIME__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Is replaced for current time.
+<syntaxhighlight lang="cpp">
+__TIME__ // 15:17:42
+</syntaxhighlight>
+
+{{ArgTitle|3|__TIME_UTC__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Is replaced for UTC time.
+<syntaxhighlight lang="cpp">
+__TIME_UTC__ // 14:17:42
+</syntaxhighlight>
+
+{{ArgTitle|3|__DAY__|{{GVI|arma3|2.16}}}}
+
+'''Description:''' Is replaced for UTC day.
+<syntaxhighlight lang="cpp">
+__DAY__ // 20
+</syntaxhighlight>
+
+{{ArgTitle|3|__MONTH__|{{GVI|arma3|2.16}}}}
+
+'''Description:''' Is replaced for UTC month.
+<syntaxhighlight lang="cpp">
+__MONTH__ // 11
+</syntaxhighlight>
+
+{{ArgTitle|3|__YEAR__|{{GVI|arma3|2.16}}}}
+
+'''Description:''' Is replaced for UTC year.
+<syntaxhighlight lang="cpp">
+__YEAR__ // 2023
+</syntaxhighlight>
+
+{{ArgTitle|3|__COUNTER__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Counts 1 up everytime it is defined.
+<syntaxhighlight lang="cpp">
+__COUNTER__ // 0
+__COUNTER__ // 1
+__COUNTER__ // 2
+__COUNTER__ // 3
+__COUNTER_RESET__
+__COUNTER__ // 0
+__COUNTER__ // 1
+__COUNTER__ // 2
+</syntaxhighlight>
+
+{{ArgTitle|3|__TIMESTAMP_UTC__|{{GVI|arma3|2.06}}}}
+
+'''Description:''' Is replaced to the current timestamp in UNIX timestamp.
+<syntaxhighlight lang="cpp">
+__TIMESTAMP_UTC__ // 1622639059
+</syntaxhighlight>
+
+{{ArgTitle|3|__COUNTER_RESET__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Resets counter. See example above.
+
+{{ArgTitle|3|__RAND_INT{{hl|N}}__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Gets replaced by a random {{hl|N}} bit integer. {{hl|N}} can be 8, 16, 32 or 64, e.g:
+<syntaxhighlight lang="cpp">
+__RAND_INT8__
+__RAND_INT16__
+__RAND_INT32__
+__RAND_INT64__
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+__RAND_INT8__ // e.g -102
+</syntaxhighlight>
+
+{{ArgTitle|3|__RAND_UINT{{hl|N}}__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Gets replaced by a random ''unsigned'' {{hl|N}} bit integer. {{hl|N}} can be 8, 16, 32 or 64, e.g:
+<syntaxhighlight lang="cpp">
+__RAND_UINT8__
+__RAND_UINT16__
+__RAND_UINT32__
+__RAND_UINT64__
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+__RAND_UINT8__ // 108
+</syntaxhighlight>
+
+{{ArgTitle|3|__GAME_VER__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Gets replaced by the game version.
+<syntaxhighlight lang="cpp">
+__GAME_VER__ // 02.00.146790
+</syntaxhighlight>
+
+{{ArgTitle|3|__GAME_VER_MAJ__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Gets replaced by the ''major'' game version.
+<syntaxhighlight lang="cpp">
+__GAME_VER_MAJ__ // 02
+</syntaxhighlight>
+
+{{ArgTitle|3|__GAME_VER_MIN__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Gets replaced by the ''minor'' game version.
+<syntaxhighlight lang="cpp">
+__GAME_VER_MIN__ // 00
+</syntaxhighlight>
+
+{{ArgTitle|3|__GAME_BUILD__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' Gets replaced by the build number.
+<syntaxhighlight lang="cpp">
+__GAME_BUILD__ // 146790
+</syntaxhighlight>
+
+{{ArgTitle|3|__A3_DIAG__|{{GVI|arma3|2.12}}}}
+
+'''Description:''' Gets replaced by 1 on diag, undefined otherwise.
+<syntaxhighlight lang="cpp">
+__A3_DIAG__// 1
+</syntaxhighlight>
+
+{{ArgTitle|3|__ARMA__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' {{Wiki|stub}}
+<syntaxhighlight lang="cpp">
+__ARMA__ // 1
+</syntaxhighlight>
+
+{{ArgTitle|3|__ARMA3__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' {{Wiki|stub}}
+<syntaxhighlight lang="cpp">
+__ARMA3__ // 1
+</syntaxhighlight>
+
+{{ArgTitle|3|__A3_DEBUG__|{{GVI|arma3|2.02}}}}
+
+'''Description:''' This macro is only set when the [[Arma 3: Startup Parameters|-debug parameter]] was provided. It can be used to switch mods or scripts to debug mode dynamically.
+<syntaxhighlight lang="cpp">
+__A3_DEBUG__ // 1 (if -debug was enabled)
+</syntaxhighlight>
+
+{{ArgTitle|3|__A3_EXPERIMENTAL__|{{GVI|arma3|2.15}}}}
+
+'''Description:''' This macro is only set in experimental game builds ([[Arma_3:_Steam_Branches|Development branch]] or [[Arma_3:_Steam_Branches|Profiling branch]])
+<syntaxhighlight lang="cpp">
+__A3_EXPERIMENTAL__ // 1 (if on dev or profiling branch)
+</syntaxhighlight>
+can be combined with game build to check for bugfixes added to profiling branch (in case a stable branch hotfix is released with a higher buildnumber but that doesn't include the fix)
+<syntaxhighlight lang="cpp">
+#if __GAME_VER_MIN__ >= 16 //#TODO remove this workaround when 2.16 is released
+#define BUG_FIXED
+#endif
+
+#if __GAME_BUILD__ > 151035 // Builds newer than this
+#if __A3_EXPERIMENTAL__ // But on experimental only
+#define BUG_FIXED
+#endif
+#endif
+
+#ifdef BUG_FIXED
+use the thing
+#else
+don't use the thing and have some workaround
+#endif
+</syntaxhighlight>
+
+{{ArgTitle|3|__A3_PROFILING__|{{GVI|arma3|2.15}}}}
+
+'''Description:''' This macro is only set when Profiling commands are available ([[Arma_3:_Steam_Branches|Development branch]] diag binary or in [[Arma_3:_Steam_Branches|Profiling branch]] profiling binary)
+<syntaxhighlight lang="cpp">
+#if __A3_PROFILING__
+diag_captureFrame 1;
+#endif
+</syntaxhighlight>
+
+== Config Parser ==
+
+{{Feature|important|
+* {{hl|__EXEC}} and {{hl|__EVAL}} '''cannot''' be used in preprocessor {{Link|#Macros}}, e.g '''{{Link|##if}}'''!
+}}
+{{Feature|informative|
+* {{hl|__EXEC}} and {{hl|__EVAL}} can be used in configs (such as [[config.cpp]], [[Description.ext]], [[Rvmat File Format|RVMat]] etc) but are not suitable for [[SQF Syntax|SQF]] or [[SQS Syntax|SQS]] scripts.
+* As they use [[parsingNamespace]], both global and local variables set in {{hl|__EXEC}} are available in {{hl|__EVAL}}.
+* [[parsingNamespace]] can then be accessed through scripting; see the {{Link|#EXEC|__EXEC}} example below.
+}}
+
+=== __EXEC ===
+
+This '''Config Parser''' macro allows to assign values to internal variables or just execute arbitrary code.
+The code inside {{hl|__EXEC}} macros runs in [[parsingNamespace]] and variables defined in it will also be created in [[parsingNamespace]]. The variables can then be used to create more complex macros:
+
+<syntaxhighlight lang="cpp">
+__EXEC(cat = 5 + 1;)
+__EXEC(lev = cat - 2;)
+</syntaxhighlight>
+<sqf>
+_cat = parsingNamespace getVariable "cat"; // 6
+_lev = parsingNamespace getVariable "lev"; // 4
+</sqf>
+
+{{Feature|warning|
+{{hl|__EXEC}} does not like round brackets {{hl|()}} inside expressions. If grouping is needed, perhaps values could be calculated inside the brackets separately and assigned to local variables:
+<syntaxhighlight lang="cpp">__EXEC(a = (1+2);) // ERROR</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+__EXEC(_expr = 1+2;)
+__EXEC(a = _expr;) // OK
+</syntaxhighlight>
+}}
+
+=== __EVAL ===
+
+With this '''Config Parser''' macro expressions can be evaluated, including previously assigned internal variables. Unlike {{hl|__EXEC}}, {{hl|__EVAL}} supports multiple parentheses:
+
+<syntaxhighlight lang="cpp">
+w = __EVAL(safeZoneW - (5 * ((1 / (getResolution select 2)) * 1.25 * 4)));
+</syntaxhighlight>
+
+* {{hl|__EVAL}} macros '''must''' be assigned to a config property and the expression '''must''' be terminated with {{hl|;}}.
+* {{hl|__EVAL}} can only return [[Number]] or [[String]]. Any other type is represented as [[String]], even [[Boolean]] type (which would result in either {{hl|"true"}} or {{hl|"false"}}).
+
+{{Feature|informative|
+if code is needed in the expression, use [[compile]] [[String]] instead. Like so:
+<syntaxhighlight lang="cpp">result = __EVAL(call compile "123");</syntaxhighlight>
+that is because {{hl|__EVAL}} is incapable of dealing with curly brackets {{hl|{}}}
+
+}}
+
+== Errors ==
+
+=== Error 2 ===
+
+; Problem: Preprocessor failed error 2.
+
+; How to fix: Add quotation marks in the title, or the file path. (''e.g.'' {{hl|#include "soGood.sqf"}}).
+
+=== Error 6 ===
+
+; Problem: Preprocessor failed on file X - error 6.
+
+; Known reasons:
+: "The problem is using {{hl|#ifdef #ifdef #endif #endif}}, a.k.a nested {{hl|#ifdef}}. This doesn't work in Arma. It's only possible to use {{hl|#ifdef}} and {{hl|#endif}} once and not nested."
+: {{hl|#endif}} without preceding {{hl|#ifdef}} or {{hl|#ifndef}}
+
+=== Error 7 ===
+
+; Problem: Preprocessor failed on file X - error 7.
+
+; Known reasons: The preprocessor encountered an unknown directive. Read, as a typo most has likely found a way into the file (something like {{hl|#in''lc''ude}} or {{hl|#defi''en''}}).<!--
+--> Double-check all preprocessor directives in that file.
+
+
+== External links ==
+
+* {{Link|https://ofp-faguss.com/files/ofp_preprocessor_explained.pdf|{{ofp}} - Preprocessor Guide (Wayback Machine)}}
+* {{Link|https://github.com/Krzmbrzl/ArmaPreprocessorTestCases|Collection of preprocessor test-cases}}
+
+
+[[Category:Scripting Topics]]

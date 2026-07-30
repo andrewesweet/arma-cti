@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_GUI_Control_-_Map
+// revision: 163019 (2020-09-26T15:51:12Z)
+// export sha1: 4vfkelqf1wl3kp4jxts3puzyeoxifci
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands to manipulate [[DialogControls-Map|Map / CT_MAP, CT_MAP_MAIN]] controls.
+
+[[Category:Command Group: GUI Control]]

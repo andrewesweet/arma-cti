@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_vehicleRoles
+// revision: 330776 (2022-11-01T15:58:26Z)
+// export sha1: 1xvphm77i44slgm1ub72pa48hvk9aly
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+|game1= arma3
+|version1= 1.00
+
+|gr1= Vehicles
+
+|descr= Returns vehicle roles.
+
+|s1= vehicle call [[BIS_fnc_vehicleRoles]]
+
+|p1= [[Object]] or [[String]] - vehicle itself or a classname
+
+|r1= [[Array]] - to format [<nowiki/>[role, path], [role, path], …] like this:
+<sqf>[
+	["Driver",[]],
+	["Turret",[0]],
+	["Turret",[0,0]],
+	["Cargo",[0]],
+	["Cargo",[1]],
+	// ...
+]</sqf>
+
+|x1= <sqf>cursorObject call BIS_fnc_vehicleRoles;</sqf>
+
+|x2= <sqf>"B_MBT_01_cannon_F" call BIS_fnc_vehicleRoles;</sqf>
+
+|seealso= [[BIS_fnc_moveIn]] [[assignedVehicleRole]] [[weaponsTurret]]
+}}

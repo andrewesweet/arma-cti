@@ -1,0 +1,81 @@
+// source: https://community.bistudio.com/wiki/localize
+// revision: 340342 (2023-04-30T12:39:28Z)
+// export sha1: 2643ug3kn07m6vdikxysi5tq8ric124
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Localization | Category:Command Group: Strings | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Strings
+
+|gr2= Localization
+
+|descr= Used to internationalise text messages. The provided translation key is looked up in [[Stringtable.xml]] (or [[Stringtable.csv]]).
+
+|s1= [[localize]] stringName
+
+|p1= stringName: [[String]] - string which leads to localisation. Casing does not matter. {{GVI|arma3|2.04|size= 0.75}} A string starting with "$" is supported
+
+|r1= [[String]] - text found in corresponding entry in stringtable file. If the key could not be found an empty string {{hl|""}} is returned and an entry is added to .rpt file, for example {{hl|String STR_DN_SNAKE not found}}
+
+|x1= <sqf>
+hint localize "STR_West";				// returns "BLUFOR"
+hint localize "STR_WEST";				// returns "BLUFOR"
+hint localize "STR_weSt";				// returns "BLUFOR"
+hint localize "STR_NonExistentString";	// returns "" and logs "String STR_NonExistentString not found"
+</sqf>
+
+|x2= <sqf>hint format ["Go %1", localize "STR_Q_NORTH"]; // returns "Go North"</sqf>
+
+|x3= <sqf>
+hint format 
+[
+	localize "STR_ACTION_DROP_WEAPON",	// "STR_ACTION_DROP_WEAPON" contains "Drop %1"
+	localize "STR_SN_RIFLE"				// "STR_SN_RIFLE" contains "Rifle"
+]; // returns "Drop Rifle"
+</sqf>
+
+|x4= <sqf>localize "$STR_USRACT_ADJUST"; // returns "Adjust" since Arma 3 v2.04</sqf>
+
+|seealso= [[isLocalized]] [[diag_localized]] [[getTextRaw]] [[BIS_fnc_localize]] [[WFSideText]] [[parseText]] [[Stringtable.csv]] [[Stringtable.xml]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20140912115500
+|text= The command [[localize]] will strip all HTML tags from your [[Stringtable.xml]] entries, however there is a way to trick it by substituting tags with HTML code instead:
+<syntaxhighlight lang="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<Key ID="STR_TEST_KK">
+	<Original><![CDATA[<t color='#ff0000'>This doesn't work</t>]]></Original>
+</Key>
+<Key ID="STR_TEST_KK2">
+	<Original>&lt;t color='#ff0000'&gt;This works&lt;/t&gt;</Original>
+</Key>
+</syntaxhighlight>
+<sqf>
+hint parseText localize "str_test_kk";	// no change of colour
+hint parseText localize "str_test_kk2";	// hint content is in red
+</sqf>
+}}

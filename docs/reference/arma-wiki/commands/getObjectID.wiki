@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getObjectID
+// revision: 365078 (2024-07-19T18:20:06Z)
+// export sha1: tlqx8mly1slj66uta40tchef075elvm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Map | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= Map
+
+|descr= Returns Visitor ID of the given object. Visitor IDs of static map objects can change if map is in development and updated with new static objects.
+
+|s1= [[getObjectID]] object
+
+|p1= object: [[Object]]
+
+|r1= [[String]] - Visitor ID
+
+|x1= <sqf>getObjectID _tree;</sqf>
+
+|seealso= [[allUsers]] [[getUserInfo]] [[createMarker]] [[createMarkerLocal]] [[getPlayerID]] [[nearestObject]]
+}}

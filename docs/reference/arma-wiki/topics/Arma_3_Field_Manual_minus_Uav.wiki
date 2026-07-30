@@ -1,0 +1,76 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Uav
+// revision: 349852 (2023-11-20T22:10:42Z)
+// export sha1: 3puy6ht4q9hec2un1kdekc5xcd9zg0j
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== UAV ==
+=== UAV Basics ===
+UAVs (Unmanned Autonomous Vehicle) are remotely controlled vehicles which operate without a human crew onboard. They can be used for many applications where it may be inconvenient, dangerous, or impossible to have a human operator present. Each one of them has its own internal computing unit and is able to make certain decisions by itself (transport from one place to another, enemy/friendly recognition, etc.).
+
+
+=== UAV Types ===
+There are three basic types of UAVs.<br><br>The middle sized ground UAV '''UGV Stomper''' can be used mainly as reconnaissance or fire support. Thanks to its transport ability, this UAV can help units to move away from a dangerous place.<br><br>The main purpose of a small quadrotor '''AR-2 Darter''' is reconnaissance. It doesn't have any weapons but its small size and excellent maneuverability are big advantages if an enemy is around.<br><br>Bigger fixed-wing '''MQ4A Greyhawk''' can carry a number of missiles and is used as an attack unit. The big advantage of this UAV in comparison with common planes is the ability to land in almost any spot without trees or bigger rocks.
+
+
+=== UAV Connection ===
+To take control over a friendly autonomous vehicle, you must have a UAV Terminal item assigned in the GPS slot in your inventory. Connection to a UAV can be created in the UAV Terminal.<br>
+* Open the action menu via '''[Mouse wheel down]''', select '''Open UAV Terminal'''.<br>
+* '''[Sec. Mouse Btn.]''' on the controlled UAV.<br>
+* Select '''Connect terminal to UAV'''.<br>
+There can be only one UAV connected to your terminal at any time.
+
+
+=== UAV Terminal ===
+A UAV Terminal is available only if you have item '''UAV Terminal''' in your inventory. To open a UAV Terminal select '''Open UAV Terminal''' in the action menu.<br><br>The UAV Terminal is a powerful tool where you can:<br>
+* See all friendly UAVs nearby.<br>
+* Create a connection between your terminal and non-controlled UAVs: use '''[Sec. Mouse Btn.]''' on UAV.<br>
+* See basic information about the connected UAV.<br>
+* See camera output from the connected UAV.<br>
+* Set tasks/waypoints for the connected UAV: '''[Left Ctrl+Prim. Mouse Btn.]''' in map.<br>
+* Set waypoint parameters for the UAV: '''[Sec. Mouse Btn.]''' on waypoint.
+
+
+=== UAV in a Backpack ===
+Big UAVs are too heavy for carrying, but small ones like '''AR-2 Darter''' can be disassembled into a backpack.<br>
+* Open the action menu with '''[Mouse wheel down]''' or '''[Mouse wheel up]'''.<br>
+* Select '''Disassemble'''.<br>Backpack with a UAV has no capacity to carry anything else.<br><br>You need to be wearing a UAV backpack for assembling a UAV from a backpack. To do so, just select '''Assemble''' in action menu.
+
+
+=== Driving – Ground ===
+In ground vehicles<br>
+* '''[W]''' and '''[S]''' are used for acceleration.<br>
+* '''[A]''' and '''[D]''' are used for steering.<br>
+* You can also use '''[W+Left Ctrl]''' or '''[W+Left Shift]''' for a steady slow speed or fast forward acceleration.
+
+''Third person view and free look might be particularly useful when driving.<br>
+* Switch to the third person camera with '''[Enter [NUM]]'''.<br>
+* Or use free look with '''[Left Alt]'''.''
+
+
+=== Piloting – Quadrotor ===
+* Start the engine by pressing '''[Left Shift]'''.<br>
+* Hold '''[Left Shift]''' to increase throttle and gain altitude.<br>
+* Hold '''[Z]''' to decrease throttle and lose altitude.<br>
+* Maneuver the UAV sideways with '''[A]''' and '''[D]'''.<br>
+* Pull the nose down '''[W]''' to gain speed and up '''[S]''' to lose it.<br>
+* Use '''[Q]''' and '''[E]''' to rotate left/right.<br>
+* Use the '''mouse''' to control the UAV smoothly.
+
+
+=== Piloting – Fixed-wing ===
+* Control the nose of the aircraft with '''[S]''' for up and '''[W]''' for down.<br>
+* Hold '''[Left Shift]''' to increase throttle, hold '''[Z]''' to decrease throttle.<br>
+* Bank left/right with '''[A]'''/'''[D]'''.<br>
+* Use the rudder '''[Q]''' and '''[E]''' to steer left/right.
+
+''Specific actions accessible from the action menu are available when in aircraft. Use the action menu to control flaps, landing gear or fire control.''
+
+
+=== Targets ===
+Guided missiles are only useful when a target is locked. Press '''[R]''' to lock the target. Normal targets have a square sign [[File:a3_fm_known_target.png|24px]], the locked target has an additional diamond mark [[File:a3_fm_lock_target.png|24px]]. To switch to the next target, press '''[R]''' again.
+
+''Guided missiles are best fired from a distance. Flying over the target is not necessary.''
+
+
+{{GameCategory|arma3|Field Manual}}

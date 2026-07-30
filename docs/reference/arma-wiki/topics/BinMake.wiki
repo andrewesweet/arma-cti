@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/BinMake
+// revision: 336643 (2023-01-04T15:23:36Z)
+// export sha1: 30ulmuzo3dq9zepay4ssaijllgcz6fs
+// categories: Category:ArmA: Armed Assault: Official Tools | Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= 
+[[:Category:ArmA: Armed Assault|{{arma1}}]]
+
+[[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD= 
+Included in [[BI Tools]], 
+
+{{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= 
+BinMake is a tools to be used in data packing process to dispatch conversion of various file types to corresponding conversion tools. Currently its most common usage is from [[Binarize]] or [[Buldozer]],  it is used to control coversion of texture and material files by [[Pal2PacE]] or [[CfgConvert]].
+
+
+|COMMAND=
+    BinMake.exe source_file_path destination_file_path
+
+|OPTIONS=
+BinMake called with 2 arguments finds a right conversion tool and uses it. <br>
+
+List of tools and file extensions to convert is in binMakeRules.txt. Such list can be generated or refreshed by running BinMakeRules.exe (no arguments) from the root directory of the tools.
+
+|EXAMPLE=
+BinMake.exe P:\addon\icon.tga P:\addon\icon.paa <br>
+
+BinMake.exe P:\addon\config.cpp P:\addon\config.bin
+
+|LICENSING= 
+[[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO=
+
+}}
+
+{{GameCategory|arma1|Official Tools}}
+{{GameCategory|arma3|Official Tools}}

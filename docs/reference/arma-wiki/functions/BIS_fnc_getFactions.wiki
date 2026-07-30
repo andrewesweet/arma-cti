@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getFactions
+// revision: 327746 (2022-07-13T11:00:20Z)
+// export sha1: glpwvyn5squ4bcqm5mryin93ikphrs5
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Sides
+
+|descr= Gets list and sides of current factions.
+
+|s1= [parameter] call [[BIS_fnc_getFactions]]
+
+|p1= parameter:
+* [[Nothing]] or empty [[Array]] - returns all factions
+* [[Object]] - returns index of the object side
+* [[Array]] - [[side]] of the first element is returned, others are ignored
+
+|r1=
+* [[Array]] of [[String]]s
+* [[Array]] of [[Side]]s
+* [[Number]] - an index
+
+|x1= <sqf>call BIS_fnc_getFactions; // returns all factions</sqf>
+
+|x2= <sqf>[] call BIS_fnc_getFactions; // same as Example 1</sqf>
+
+|x3= <sqf>[player] call BIS_fnc_getFactions; // returns index of player's faction</sqf>
+
+|x4= <sqf>["BLU_F"] call BIS_fnc_getFactions; // returns index of given faction</sqf>
+
+|x5= <sqf>[[]] call BIS_fnc_getFactions; // will return all faction sides</sqf>
+
+|x6= <sqf>[[player]] call BIS_fnc_getFactions; // will return player's side</sqf>
+
+|seealso= [[faction]] [[side]]
+}}

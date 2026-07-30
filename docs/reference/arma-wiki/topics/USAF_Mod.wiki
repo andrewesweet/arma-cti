@@ -1,0 +1,229 @@
+// source: https://community.bistudio.com/wiki/USAF_Mod
+// revision: 286315 (2021-06-22T12:08:23Z)
+// export sha1: iz7xetzg2zwhgtljl9e6dsj58tswtcf
+// categories: Category:Arma 3: Community Mod Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|Community_Mod_Pages}}
+
+== Development Team ==
+'''SGT Fuller''' - Project Lead
+
+'''Peral''' - 2IC
+
+'''Randomslap''' - Modeling & configs
+
+'''Lala14''' - scripting
+
+'''Shockley''' - Textures & configs
+
+== Description ==
+The United States Air Force (USAF) is the aerial warfare service branch of the United States Armed Forces and one of the seven American uniformed services. Our goal is to represent the USAF branch into Arma 3 to the best of our abilities within the constraints of the engine capabilities.
+
+== Changelog ==
+
+ '''v0.4''''
+
+ - Entire Mod Overhaul
+ - Removed Plans for F-15
+ - Removed Plans for B52
+ - Discarded Jones Orbit Script
+ - Added LDL AC130 Orbit Script (Heavily modified by Lala)
+ - Fixed AC-130 Turn Radius
+ - Fixed AC-130 Damage Model
+ - Fixed AC-130 Texture Errors
+ - Balanced AC-130 Weapons Systems
+ - Added Extra Zoom Layer to TV Operator
+ - Added New Screens for Gunners
+ - Two Versions of AC-130. Spooky and Legacy
+ - Revised optics in all turrets.
+ - Ground stabilized turrets.
+ - Added SABOT and WP rounds for the M102. (100 HE, 45 SABOT, 15 WP)
+ - 105mm magazines are only 1 round, so a reload is required for each Kaboom.
+ - Added SABOT rounds for L/60 cannon. (200 HE, 200 SABOT)
+ - Modified the magazines for the 40mm (200 rnds each).
+ - A10C Cleared to Deploy to AOR
+ -  A10C GPS/INS Added
+ - A10C Service Menu Added
+ - A10C Service menu Skins, Menu, and Credits Disabled for now
+ - B1B Service Menu uploaded
+ - B1B Service Menu Skins, Credits, Menu Disabled for now
+ - B1B Doors now open when bombs selected
+ - B1B GPS/INS Added
+ - B1B Laser Guided Bombs and JSOW Missile Added
+ - B1B Speed Stabilized
+ - B1B Turning Radius Tweaked
+ - B2 Cleared to Deploy to AOR
+ - B2 Turning Radius Adjusted
+ - B2 Nuclear Bomb adjusted and balanced
+ - B2 GPS/INS Added
+ - B2 Service menu added
+ - B2 Service menu Skins, Credits, Menu Disabled for now
+ - C5 Damage Model Tweaked to avoid wheels not being able to go up when taking off
+ - C5 Loading Script Discarded
+ - C5 New loading script designed by Lala uploaded with 100% efficiency
+ - C17 Cleared to depart to AOR
+ - C17 Loading Script Discarded 
+ - C17 New loading Script designed by Lala uploaded with 100% efficiency
+ - C130J New loading Script designed by Lala Uploaded with 100% efficency
+ - CV-22 hover mode adjusted to move better
+ - CV-22 Service menu added
+ - Flir Screens added to CV-22
+ - FFV added to last two seats in CV-22
+ - AGM/ACE Ropes compatible with CV-22
+ - E3 AWACS Cleared to depart to AOR
+ - F16C Fighting Falcon Cleared to Depart to AOR
+ - F16C Service menu added
+ - F16C GPS/INS added
+ - F/A-22 Cleared to Depart to AOR
+ - F/A-22 Service menu added
+ - F/A-22 GPS/INS added
+ - F35A JSF cleared to Depart to AOR
+ - F35A Service menu added
+ - F35A GPS/INS added
+ - HH60G FFV added
+ - HH60G AGM/ACE ropes added
+ - HH60G BI sling load possible for light vehicles and crates
+ - HH60G Medical Version added with Stretchers for medevac found under supports
+ - MC-130J turning radius tweaked
+ - MC-130J GPS/INS added for MOAB
+ - KC-135 Boom Operator Position removed for now
+ - Added Missilebox for different weapons, crates etc
+ - MQ-9 Extra Zoom added 
+ - MQ-9 Can now control laser and rockets from Turret view
+ - RQ-4A Extra zoom added
+ - Security Forces now have default Arma 3 weapons. EricJ weapons (Optional)
+ - Department of the Air Force units added
+ - Security Forces Impala and Security Forces flight line trucks added (OK ITS NOT A IMPALA LOL)
+ - New Vest and helmet added for pilots
+ - Various tweaks
+ - Stabilization fixes
+ - Texture fixes
+
+
+ '''v0.3'''
+
+ -CV-22 Osprey Added
+ -RQ-4A Global Hawk Added
+ -MQ-9 Reaper Added
+ -HH-60G Pavehawk Added
+ -USAF Special Operations added
+ -AC-130U Gun animations added
+ -USAF Weapons Pack Added
+ -AC-130U Script warping fixed
+ -KC135 Not rolling down runway due to BI update Fixed
+ -MC-130 Refueling Script Camera Shacking fixed
+ -Minor Adjustments made to previous aircraft
+ -BI Key changed
+ -Pilot Helmet and Vest UI pics updated
+ -Credits Updated
+
+ '''v0.2.2 Hotfix 2'''
+
+ - FIXED: AC-130U RSC Issue Resolved
+ - FIXED: MC-130J Aerial refuel script fixed
+ - FIXED: C5 Galaxy Sound lowered
+ - FIXED: AC-130U Sound lowered again
+ - FIXED: AC-130U Howtizer damage upgraded again
+ - FIXED: C5 Galaxy far left engine issue fixed
+ - FIXED: C5 Galaxy Landing Gear issue fixed
+ - UPDATED: AC-130U Orbit Script is now fully functional with zero errors
+ - FIXED: C130 series no longer fly like bricks instead has same manuverability as the AC-130
+ - ADDED: Dedicated Server Key added
+ - UPDATED: KC135 Flaps and landing gear upgraded
+ - FIXED: AC-130U Orbit Script Speed Increased
+
+ '''V0.2.1 Hotfix'''
+
+ - ADDED: Berets added back in for Security Forces members
+ - FIXED: Fixed B1 menu flickering
+ - FIXED: MC-130J Texture issue fixed
+ - FIXED: AC-130U Howtizer zeroing has been fixed
+ - FIXED: AC-130U TV moniter zeroing has been adjusted
+ - FIXED: AC-130U Weapons damage increased
+ - FIXED: AC-130U Vehicle_W_MG.paa and any RSC issue resolved
+ - FIXED: C130 Series White square issue resolved
+ - FIXED: AC-130U sounds lowered
+
+ '''v0.2'''
+
+ - FIXED: KC-135's turn radius and take off speed have been fixed
+ - FIXED: KC-135's Gear issues have been fixed
+ - REMOVED: The current AC-130 has been decommissioned and a newer version will be released with V 0.2 with the texture errors fixed
+ - FIXED: AC-130's weapon damage has been increased
+ - FIXED: AC-130's gear issues have been fixed.
+ - FIXED: B-1's Turning radius has been fixed
+ - FIXED: C-5 Galaxy turning radius has been fixed and markings on the Tail wing have been turned to proper direction
+ - FIXED: AC-130s Recoil not working for the L60 has been fixed.
+ - FIXED: USAF_SFS issues with pilots have been resolved. 
+ - UPDATED: Textures have been updated on AC-130
+ - FIXED: B-1 Bombers speed has been increased to reflect real life. Afterburners are being fixed
+ - ADDED: KC-135 Aircraft upgrade and now equipped with hoses. Refueling Script upgraded by dezkit.. the aircraft now searches for the memory 
+   point and will connect at the exact spot. The aircraft will now deny you if you don't have the points needed. It will also only give 
+   you the appropriate refueling action Ex. Flying the F18 and you approach the KC135 and request refueling it will release a hose for 
+   you and will not lower the boom. If two F18's approach the KC135 it will release two hoses and not the boom. If the F16 approaches the 
+   KC135 it will lower the boom and will not release the hose.
+ - ADDED: KC-135 Boom Operator added(Its just a view more for ambience)(WIP)
+ - ADDED: AC-130 TV Operator Added
+ - UPDATED: B-1 Bomb doors open as soon as you select bombs
+ - UPDATED: C5 Textures upgraded
+ - UPDATED: USAF mod pack reorginized by dezkit
+ - ADDED: User lisence and bikeys added
+ - ADDED: Classnames added
+ - UPDATED: KC-130 redesignated as MC-130J Commando II
+ - UPDATEDL Textures redone
+ - UPDATED: USAF Pilots authorized by Nato to carry Firearms and IR Grenades.
+ - UPDATED: Security Forces Enlisted and Officers trained to use Nato Weapons.
+
+ '''v0.1'''
+
+ - Initial alpha Release
+
+== Aircraft ==
+<gallery mode="nolines" widths=220px caption="Click images or titles for larger format">
+arma3_USAF_AC_130.jpg|link=USAF_Mod/Aircraft|[[USAF_Mod/Aircraft#AC-130USpookyII|AC-130USpookyII]]
+arma3_USAF_B1B.jpg|link=USAF_Mod/Aircraft|[[USAF_Mod/Aircraft#B-1BLancer|B-1BLancer]]
+arma3_USAF_C5.jpg|link=USAF_Mod/Aircraft|[[USAF_Mod/Aircraft#C-5Galaxy|C-5Galaxy]]
+arma3_USAF_C17.jpg|link=USAF_Mod/Aircraft|[[USAF_Mod/Aircraft#C-17AGlobemasterIII|C-17AGlobemasterIII]]
+arma3_USAF_c130j.jpg|link=USAF_Mod/Aircraft|[[USAF_Mod/Aircraft#C-130JSuperHercules|C-130JSuperHercules]]
+arma3_USAF_CV22.jpg|link=USAF_Mod/Aircraft|[[USAF_Mod/Aircraft#CV-22BOsprey|CV-22BOsprey]]
+arma3_USAF_MC130J.jpg|link=USAF_Mod/Aircraft|[[USAF_Mod/Aircraft#MC-130JCommandoII|MC-130JCommandoII]]
+arma3_USAF_E3.jpg|link=USAF_Mod/Aircraft|[[USAF_Mod/Aircraft#E-3Sentry|E-3Sentry]]
+arma3_USAF_KC135.jpg|link=USAF_Mod/Aircraft|[[USAF_Mod/Aircraft#KC-135Stratotanker|KC-135Stratotanker]]
+arma3_USAF_MQ9.jpg|link=USAF_Mod/Aircraft|[[USAF_Mod/Aircraft#MQ-9Reaper|MQ-9Reaper]]
+arma3_USAF_RQ4A.jpg|link=USAF_Mod/Aircraft|[[USAF_Mod/Aircraft#RQ-4AGlobalHawk|RQ-4AGlobalHawk]]
+</gallery>
+
+'''Also:'''
+
+A-10 Thunderbolt II
+
+B-52 Stratofortress
+
+B-2A Spirit
+
+F-15C Eagle
+
+F-16 Fighting Falcon
+
+F-22 Raptor
+
+F-35 Lightning II
+
+MQ-1 Predator
+
+HH-60 Pave Hawk
+
+T-6A Texan II
+
+== Units ==
+[[USAF_Mod/AFSOC|'''AFSOC''']]
+
+<gallery mode="nolines" widths=220px caption="Click images or titles for larger format">
+a3_usaf_mod_cct_units.jpg|link=USAF_Mod/AFSOC|[[USAF_Mod/AFSOC#Combat Control Teams (CCT)|Combat Control Teams (CCT)]]
+a3_usaf_mod_cro_units.jpg|link=USAF_Mod/AFSOC|[[USAF_Mod/AFSOC#Combat Rescue Officer (CRO)|Combat Rescue Officer (CRO)]]
+a3_usaf_mod_sto_units.jpg|link=USAF_Mod/AFSOC|[[USAF_Mod/AFSOC#Special Tactics Officer (STO)|Special Tactics Officer (STO)]]
+a3_usaf_mod_pj_units.jpg|link=USAF_Mod/AFSOC|[[USAF_Mod/AFSOC#Pararescue (PJ)|Pararescue (PJ)]]
+a3_usaf_mod_sowt_units.jpg|link=USAF_Mod/AFSOC|[[USAF_Mod/AFSOC#Special Operations Weather Technician (SOWT)|Special Operations Weather Technician (SOWT)]]
+a3_usaf_mod_jtac_units.jpg|link=USAF_Mod/AFSOC|[[USAF_Mod/AFSOC#TACP / Joint Terminal Attack Controller (JTAC)|Joint Terminal Attack Controller (TACP/JTAC)]]
+</gallery>

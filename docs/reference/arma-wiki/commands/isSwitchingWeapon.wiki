@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/isSwitchingWeapon
+// revision: 376101 (2025-08-20T14:10:18Z)
+// export sha1: nmiuw3esmogeahm4wlu1ij50mezygbz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 2.20 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.20
+
+|arg= global
+
+|gr1= Unit Inventory
+
+|descr= Returns wether or not the unit is in the process of switching weapon.
+
+|s1= [[isSwitchingWeapon]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Boolean]] - [[true]] if the unit is switching weapon.
+
+|x1= <sqf>isSwitchingWeapon player;</sqf>
+
+|seealso= [[primaryWeaponMagazine]] [[primaryWeaponItems]] [[addPrimaryWeaponItem]] [[removePrimaryWeaponItem]] [[removeAllPrimaryWeaponItems]] [[secondaryWeapon]] [[handgunWeapon]] [[currentWeapon]] [[weapons]] [[primaryWeapon]] [[setUnitLoadout]]
+}}
+
+{{Note
+|user= OverlordZorn
+|timestamp= 20250820141018
+|text= as of 2.20, this does not return true when the unit is prone
+}}

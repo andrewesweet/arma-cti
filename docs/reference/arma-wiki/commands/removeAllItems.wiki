@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/removeAllItems
+// revision: 378786 (2026-06-05T12:18:57Z)
+// export sha1: tdi25b8hdw3pl99g3ix6pafdhk7tjx1
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Removes all special items from the unit.
+
+|s1= [[removeAllItems]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>removeAllItems unitName;</sqf>
+
+|seealso= [[removeAllWeapons]] [[removeMagazines]]
+}}
+
+{{Note
+|user= DarkDruid
+|timestamp= 20130618153500
+|text= Arma 3, version 0.70 - removes only items listed by command [[items]].
+}}

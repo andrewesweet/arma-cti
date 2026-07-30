@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/openGPS
+// revision: 310316 (2022-05-05T16:28:36Z)
+// export sha1: f4dksx9yqz728v5p3vkygueqy2qfq36
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|gr1= Interaction
+
+|descr= Opens or closes minimap if player has {{hl|"ItemGPS"}} linked in inventory and {{hl|"MinimapDisplayComponent"}} is not disabled with [[enableInfoPanelComponent]]. Returns [[true]] on success. If more than one minimap is open (see [[infoPanels]], [[infoPanel]]) each call to the command will close only 1 minimap. Visibility of minimap can be checked with [[visibleGPS]] command.
+
+|s1= [[openGPS]] open
+
+|p1= open: [[Boolean]] - [[true]] to open, [[false]] to close
+
+|r1= [[Boolean]] - [[true]] on success
+
+|x1= <sqf>
+player linkItem "ItemGPS";
+private _success = openGPS true;
+</sqf>
+
+|x2= To close all opened minimaps:
+<sqf>
+while { openGPS false } do { };
+// or
+while { visibleGPS } do { openGPS false };
+</sqf>
+
+|seealso= [[showGPS]] [[shownGPS]] [[visibleGPS]]
+}}

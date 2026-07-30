@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/safeZoneY
+// revision: 350006 (2023-11-20T22:11:49Z)
+// export sha1: 6z2dq5tbnjae5x8yx8fjp1bynvbgspy
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= GUI Control - Positioning
+
+|descr= [[File:safezone.jpg|right|600px]] Returns the Y of the top border of the screen, which is also a distance in screen measurement units from top left corner of the default viewport (0,0) of the screen to the top border of the screen.
+Since it is going in opposite way of the Y axis, <u>the value is negative</u>. The measurement units depend on the current screen resolution [[getResolution]]. See also [[SafeZone]].
+
+|s1= [[safeZoneY]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_screenTopBorderY = safeZoneY; // returns a float value < 0</sqf>
+
+|x2= Create control 50% wide, 30% tall, centered on screen:
+<sqf>
+private _ctrl = findDisplay 46 createDisplay "RscDisplayEmpty" ctrlCreate ["RscText", -1];
+_ctrl ctrlSetBackgroundColor [1,0,0,0.5];
+private _ctrlWidth = 0.5 * safeZoneW; // 50% of screen width
+private _ctrlHeight = 0.3 * safeZoneH; // 30% of screen height
+_ctrl ctrlSetPositionW _ctrlWidth;
+_ctrl ctrlSetPositionH _ctrlHeight;
+_ctrl ctrlSetPositionX ((safeZoneW - _ctrlWidth) / 2 + safeZoneX); // center it horizontally
+_ctrl ctrlSetPositionY ((safeZoneH - _ctrlHeight) / 2 + safeZoneY); // center it vertically
+_ctrl ctrlCommit 0;
+</sqf>
+
+|seealso= [[SafeZone]] [[safeZoneX]] [[safeZoneW]] [[safeZoneH]] [[safeZoneXAbs]] [[safeZoneWAbs]]
+}}

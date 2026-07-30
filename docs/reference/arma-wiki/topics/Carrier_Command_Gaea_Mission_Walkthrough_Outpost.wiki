@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Walkthrough/Outpost
+// revision: 341574 (2023-06-09T16:03:35Z)
+// export sha1: q90tdn7ieocch364h5espws2voqgp1y
+// categories: Category:Carrier Command: Gaea Mission: Walkthrough
+// Vendored snapshot. Do not edit — re-export instead.
+
+Our heroes visit a well defended island Outpost, equipped with strong AA turrets and also with a firewall defense that makes it impossible to hack the Command center.
+
+
+== Tutorial ==
+* The player is made familiar with the Firewall defense
+
+
+== Objectives ==
+
+# CONQUER THE OUTPOST
+#* Conquer the island using your tactical and military skills.
+# TAKE THE COMMAND CENTER
+#* Hack the Command Center, which is protected externally by surrounding Firewalls.
+# LOCATE THE FIREWALLS
+#* Explore the island and find out where the Firewalls are located.
+# OPEN THE GATE
+#* Open the gate to gain access to the base with the Firewall.
+# HACK THE NORTH FIREWALL
+#* Disable the north Firewall preventing us from re-programming the Command Center.
+# HACK THE SOUTH FIREWALL
+#* Disable the south Firewall preventing us from re-programming the Command Center.
+
+
+== Hints ==
+
+'''Exploring the island''' in objective '''(#3)''' is best done with a Manta. It is better to fly it manually and keep low to better avoid enemy fire.
+
+'''The controllers''' to open the gate in Objective '''(#4)''' are located on backsides of the buildings with tall antennas. The marker in the map does only show an approximate location, so it is necessary to find it first. <ref>http://forums.bistudio.com/showthread.php?140810-Help-with-Outpost-mission-SPOILERS</ref>
+
+'''The Command center''', objective '''(#2)''', is on the southwest of the island. It is important not to confuse it with Headquarters, which is a building on the southeast. The Headquarters cannot be interacted with in this mission. <ref>http://forums.bistudio.com/showthread.php?140732-Campaign-mission-help-request-Outpost-*spoiler*</ref>
+
+
+{{GameCategory|carriercommand|Walkthrough}}

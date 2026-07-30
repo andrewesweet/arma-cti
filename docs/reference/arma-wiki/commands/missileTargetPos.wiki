@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/missileTargetPos
+// revision: 377453 (2026-01-02T06:47:13Z)
+// export sha1: 607zjn2zelevr6z6wlu9yq2qp70770z
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.92
+
+|gr1= Weapons
+
+|descr= Returns a guided missile's target position.
+
+|s1= [[missileTargetPos]] munition
+
+|p1= munition: [[Object]]
+
+|r1= [[Position#PositionASL|PositionASL]]
+
+|x1= <sqf>private _targetDistance = vehicle player distance missileTargetPos missile1;</sqf>
+
+|seealso= [[missileTarget]] [[setMissileTargetPos]] [[setMissileTarget]] [[missileState]]
+}}

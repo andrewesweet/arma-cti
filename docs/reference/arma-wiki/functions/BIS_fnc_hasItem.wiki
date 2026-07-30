@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_hasItem
+// revision: 328409 (2022-07-13T16:00:50Z)
+// export sha1: f0kl5rs2z16wdpkjh4ort44c1d8awx2
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Inventory
+
+|descr= Returns [[true]] if object contains given item in inventory / cargo storage.
+{{Feature | important | This function performs a deep search of inventory / cargo storage, thus is not suitable for per-frame execution.}}
+
+|s1= [object, item, searchCrew] call [[BIS_fnc_hasItem]]
+
+|p1= object: [[Object]] or [[Group]] - unit, vehicle, container or group of units (since v1.95)
+
+|p2= item: [[String]] - item to find
+
+|p3= searchCrew: [[Boolean]] - (Optional, default [[false]]) [[true]] to search vehicle crew as well if object is a vehicle
+
+|r1= [[Boolean]] - [[true]] if has item
+
+|x1= <sqf>[player, "ItemMap"] call BIS_fnc_hasItem;</sqf>
+
+|x2= <sqf>[tank, "FirstAidKit", true] call BIS_fnc_hasItem;</sqf>
+
+|seealso=
+}}

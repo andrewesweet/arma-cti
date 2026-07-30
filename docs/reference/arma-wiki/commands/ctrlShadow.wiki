@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/ctrlShadow
+// revision: 330174 (2022-08-23T12:24:04Z)
+// export sha1: 53j2f3r9eeg5z7rp6wslldfmh0v5nyx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= GUI Control
+
+|descr= Returns 'shadow' property of the control (see [[ctrlSetShadow]]).
+
+|s1= [[ctrlShadow]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_shadow = ctrlShadow _control;</sqf>
+
+|seealso= [[ctrlSetShadow]] [[ctrlCreate]]
+}}

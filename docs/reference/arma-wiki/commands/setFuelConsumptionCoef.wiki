@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/setFuelConsumptionCoef
+// revision: 377716 (2026-01-02T09:11:12Z)
+// export sha1: o9xi7z3tba2o7vrxnznmankyojkeb9e
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.16
+
+|arg= local
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Sets the fuel consumption coefficient, which is a multiplier of the [[CfgVehicles_Config_Reference#fuelConsumptionRate|fuel consumption rate]] in config. It doesn't affect fuel leakage or refueling.
+
+|s1= vehicle [[setFuelConsumptionCoef]] coef
+
+|p1= vehicle : [[Object]]
+
+|p2= coef: [[Number]] in range 0..1000 - Values larger than 1 increase fuel consumption, and values between 0 and 1 decrease fuel consumption. 0 disables fuel consumption
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myTank setFuelConsumptionCoef 10; // consume 10x more fuel than default</sqf>
+
+|seealso= [[getFuelConsumptionCoef]]
+}}

@@ -1,0 +1,112 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Mortain
+// revision: 376090 (2025-08-09T20:40:49Z)
+// export sha1: 8j6sah3nrxmcdotumf2ojbqzwgo11a5
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+[[File:spe_mortain_picturemap_ca.jpg|400px|right|Satellite Image|thumb]]
+
+{{Link|https://en.wikipedia.org/wiki/Mortain|Mortain}} is an {{GameCategory|arma3|link= y}} terrain, released on the 6th August 2024 as a part of the [[Spearhead 1944]] CDLC.
+
+This new unique terrain is a detailed representation of the actual terrain in Mortain at 1:1 scale where {{Link|https://en.wikipedia.org/wiki/Operation_L%C3%BCttich|Operation Lüttich}} took place.
+
+This new terrain features a highly detailed representation of the Mortain area, recreated at a 1:1 scale. The Mortain terrain includes many iconic landmarks that saw fighting during Operation Lüttich. These landmarks include the ''town of Mortain'' itself, the ''Mortain Church'', ''Hill 317'', ''314'', and ''285'', the ''Abbaye Blanche'', ''Cambremont mine'', ''Romagny'', and ''St. Barthélemy''.
+
+The terrain is filled with well-hidden fighting positions, dugouts, well-fortified checkpoints, and hilltops featuring intricate defensive networks.
+Scenic rivers, orchards, dangerous sunken roads, isolated farmsteads, detailed ditches, and idyllic villages can be found all across the terrain, accompanied by highly detailed custom period and area-specific buildings, created to bring an immersive recreation of the whole area and even specific landmarks.
+
+'''In comparison to the [[Spearhead 1944 Normandy|Normandy]] terrain, this terrain brings longer sightlines, bigger fields, sparser hedgerows, and greater changes in elevation. You’ll be fighting on a battlefield perfect for intense combined-arms warfare.'''
+
+
+== Random Facts ==
+
+* Intricate fortifications and trenches can be found at the three tallest hilltops surrounding Mortain.
+* Mortain is known for its delicious 'Fromage de Mortain' cheese, a soft cheese made from cow's milk and a favorite among cheese enthusiasts.
+* The combined length of rivers and streams across Mortain totals just over 10 kilometers.
+* The Abbaye Blanche was founded in the 12th century, specifically in 1132, by Robert of Arbrissel, a notable figure in medieval France known for his role in the founding of several religious communities and monasteries.
+* There are six waterways across Mortain, though some are only streams, and others have branches that merge further downstream.
+* The German plan, known as Operation Lüttich, aimed to launch a counterattack and cut off the Allied forces advancing in Normandy by capturing Mortain and continuing to Avranches.
+* Over 10 fortified farmsteads are found throughout the Mortain terrain.
+* Interesting portraits of local saints can be found inside the Collégiale Saint Evroult, also known as the Church of Mortain.
+* The coordinates for the Mortain terrain are 48° 38' 56.8" N, 0° 56' 18.1" W
+* The Church of Mortain was founded in 1082 by Robert the Count of Mortain, half-brother of William the Conqueror, who was Duke of Normandy and King of England.
+* A total of 37 bridges across Mortain allow the crossing of its rivers and streams safely.
+* In 1204, the Church of Mortain was partially destroyed by a fire during the conquest of Normandy by Philippe Auguste. It was rebuilt in 1216 when the county of Mortain was transferred to Philippe Hurepel, the king's son.
+* An estimated 690 local cows have been caught in the crossfire during the fighting across Mortain.
+* The Mortain cemetery holds the graves of eighteen Belgian soldiers who died during the First World War.
+* Only 26 scarecrows remain to guard Mortain's crop fields.
+* The Cambremont mine, present on the terrain, sheltered French civilians during the Battle of Mortain.
+
+
+== Statistics ==
+
+{| class="wikitable"
+|-
+! Size
+| 8 km x 8 km
+|-
+! Area
+| 64 km<sup>2</sup>
+|-
+! Coordinates
+| 48°38′55″ North<br>0°56′23″ West
+|-
+! Object Count
+| 
+{{Columns|1|
+* '''TOTAL:''' 729215
+* BUILDING: 759
+* BUNKER: 597
+* BUSH: 192944
+* CHURCH: 7
+* CROSS: 3
+* FENCE: 66361
+* FORTRESS: 35
+* FOUNTAIN: 320
+* HIDE: 140143
+* HOUSE: 3120
+* MAIN ROAD: 551
+* RAILWAY: 733
+* ROAD: 4276
+* ROCK: 1896
+* SMALL TREE: 19
+* TRACK: 11268
+* TRAIL: 996
+* TREE: 291745
+* VIEW-TOWER: 65
+* WALL: 13364
+* WATERTOWER: 13
+}}
+|}
+
+
+== Gallery ==
+
+<gallery mode="slideshow" showthumbnails>
+spe_mortain_preview_0.jpg
+spe_mortain_preview_1.jpg
+spe_mortain_preview_2.jpg
+spe_mortain_preview_3.jpg
+spe_mortain_preview_4.jpg
+spe_mortain_preview_5.jpg
+spe_mortain_preview_6.jpg
+spe_mortain_preview_7.jpg
+spe_mortain_preview_8.jpg
+spe_mortain_preview_9.jpg
+spe_mortain_preview_10.jpg
+</gallery>
+
+
+== High Resolution Map ==
+
+A high resolution .svg can be downloaded {{Link/External|link=https://drive.google.com/drive/folders/19pnqIXrccqvsDbbo12YoWTfM1IMBStik?usp=sharing|text=here}}
+
+
+== Substitute Files ==
+
+See [[Spearhead 1944 Substitute Files]] page.
+
+
+[[Category: Spearhead 1944]]

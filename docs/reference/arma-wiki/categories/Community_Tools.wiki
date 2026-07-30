@@ -1,0 +1,451 @@
+// source: https://community.bistudio.com/wiki/Category:Community_Tools
+// revision: 376715 (2025-11-12T11:11:01Z)
+// export sha1: rw85y4bjnnw34tonwokc3ce7nidl8c4
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|UnsupportedTool}}
+=== BIKI Search ===
+
+It is possible to define the Community wiki as a custom search engine using the {{hl|1= https://community.bistudio.com/wiki?search=%s}} URL - below are tutorials for various browsers:
+{{Columns|5|
+* {{Link|https://support.mozilla.org/kb/add-or-remove-search-engine-firefox|Firefox}}
+* {{Link|https://support.google.com/chrome/answer/95426|Chrome}}
+* {{Link|https://support.microsoft.com/en-us/microsoft-edge/change-your-default-search-engine-in-microsoft-edge-cccaf51c-a4df-a43e-8036-d4d2c527a791|Edge}}
+* {{Link|https://support.brave.com/hc/articles/360017479752-How-do-I-set-my-default-search-engine|Brave}}
+* {{Link|https://help.opera.com/en/latest/search/|Opera}}
+}}
+
+{{Clear}}
+=== Addon Creation ===
+
+{| class="wikitable sortable align-center"
+|-
+! Tool Name
+! Author
+! Last Updated
+! {{GVI|ofp|1.00}}
+! {{GVI|arma1|1.00}}
+! <span style="white-space: nowrap">{{GVI|arma2|1.00}}{{GVI|arma2oa|1.50}}</span>
+! {{GVI|arma3|1.00}}
+! {{GVI|TKOH|1.00}}
+! Category
+! Description
+! Link
+|-
+| HEMTT
+| BrettMayson
+| 2025
+| {{Icon|unchecked}} || {{Icon|unchecked}} || {{Icon|unchecked}} || {{Icon|checked}} || {{Icon|unchecked}}
+| PBO
+| Build system for {{arma3}} addons
+| {{Link|https://github.com/BrettMayson/HEMTT|GitHub}}
+|-
+| [[Mikero Tools]]
+| {{User|Mikero}}
+| 2019
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}}
+| PBO
+| General purpose pbo and rapify gui + other bits, all engines
+| {{Link|https://mikero.bytex.digital/Downloads|Download}}<br>[[Mikero Tools|Wiki page]]
+|-
+| Armake
+| {{Link|https://forums.bohemia.net/profile/802007-koffeinflummi/|KoffeinFlummi}}
+| 2019 (v2)<br>2018 (v1)
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}}
+| PBO
+| {{Link|https://forums.bohemia.net/forums/topic/190572-armake/|Forum post}}
+| {{Link|https://github.com/KoffeinFlummi/armake2|Download&nbsp;(v2)}}<br>[https://github.com/KoffeinFlummi/armake/releases Download&nbsp;(v1)]
+|-
+| Unpbo
+| {{User|Feersum}}
+| 2006
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|unchecked}} || {{Icon|unchecked}}
+| PBO
+| Tool for fast extraction of single or multiple files from large {{Name|arma1|short}} and {{Name|ofpe|short}} PBOs
+| {{Link|link= http://www.armaholic.com/page.php?id=417|text= Download}}
+|-
+| PBO Decryptor 1.5
+| Amalfi
+| 2007
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|unchecked}} || {{Icon|unchecked}}
+| PBO
+| PBO utility for decrypting some PBO files
+| {{Link|https://www.ofpec.com/editors-depot/index.php?action{{=}}details&id{{=}}154&page{{=}}0|Download}}
+|-
+| MakePBO
+| Amalfi
+| 2007
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|unchecked}} || {{Icon|unchecked}}
+| PBO
+| A PBO utility
+| {{Link|https://www.ofpec.com/editors-depot/index.php?action{{=}}details&id{{=}}152&game{{=}}ArmA|Download}}
+|-
+| cpbo
+| {{User|Kegetys}}
+| -
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|unchecked}} || {{Icon|unchecked}} || {{Icon|unchecked}}
+| PBO
+| A PBO utility
+| {{Link|link= http://www.armaholic.com/page.php?id=411|text= Download}}
+|-
+| Arma PBO View
+| {{User|Voyager}}
+| -
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|unchecked}} || {{Icon|unchecked}} || {{Icon|unchecked}}
+| PBO
+| pack, unpack, view PBOs
+| {{Link|link= http://www.armaholic.com/page.php?id=1434|text= Download}}
+|-
+| [[ODOL Explorer]]
+| {{User|Dschulle}}/{{User|Snake Man}}
+| -
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}}
+| Model
+| View ODOL models and convert them to MLOD
+| [[ODOL Explorer|Wiki page]]
+|-
+| {{arma2}} Modding ToolBox for 3dsmax
+| {{Link|https://forums.bohemia.net/profile/750951-soul_assassin/|soul_assassin}}
+| -
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|unchecked}} || {{Icon|unchecked}}
+| Model
+|  A big collection of tools to prepare the models in 3dsmax and export to O2. Includes a p3d exporter
+| {{Link|https://forums.bohemia.net/forums/topic/80130-arma2-modding-toolbox-for-3ds-max-v11/|Download}}
+|-
+| [[GateBuilder|BX GateBuilder]]
+| {{User|Bxbx}}
+| -
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}}
+| Model
+| OFP MLOD model editor
+| [[GateBuilder|Wiki page]]
+|-
+| 3dsmax RTM utility
+| SandroDeParma
+| -
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|unchecked}} || {{Icon|unchecked}} || {{Icon|unchecked}}
+| Animation
+| .RTM file support for {{Link|https://www.autodesk.com/products/3ds-max/overview|3dsmax}}
+| {{Link|http://sandro-de-parma.narod.ru/OFP/|Download}}
+|-
+| Animation kit for Maya
+| {{User|TeaCup}}
+| -
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|unchecked}} || {{Icon|unchecked}} || {{Icon|unchecked}}
+| Animation
+| .RTM file support for {{Link|https://www.autodesk.com/products/maya/overview|Maya}}
+| {{Link|link= http://www.armaholic.com/page.php?id=4117|text= Download}}
+|-
+| [[WrpTool|WrpTool]]
+| {{User|Snake Man}}
+| -
+| {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}}
+| Terrain
+| Island Maker
+| [[WrpTool|Wiki page]]
+|-
+| [[MaskMapper]]
+| {{Link|https://forums.bohemia.net/profile/750951-soul_assassin/|soul_assassin}}/{{User|Rocket}}
+| -
+| {{Icon|unchecked}} || {{Icon|unchecked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|unchecked}}
+| Terrain
+| [[Visitor 3]] helper. Primary use is random vegetation placement
+| [[MaskMapper|Wiki page]]
+|}
+<!--
+|-
+| Tool Name || Author || Last Updated || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Icon|checked}} || {{Link|link|Download}} || Description || Category
+-->
+
+=== Config ===
+
+{| class="wikitable sortable"
+! Tool Name
+! Author
+! Category
+! Description
+! Link
+|-
+| Object Browser
+| {{User|Kronzky}}
+| Browser
+| Display all '''{{arma1}}''' objects in [[ArmA: CfgVehicles|cfgVehicles]], as well as all visible [[ArmA: Weapons|weapons]], via a hierarchical in-game browser
+| {{Link|http://www.kronzky.info/objectbrowser/index.htm|Download}}
+|-
+|  ConfigExplorer 2.00 beta
+| {{User|HeliJunkie}}
+| Browser
+| '''{{arma2}}''' config browser
+| {{Link|link= http://www.armaholic.com/page.php?id=11827|text= Download}}
+|}
+
+=== Code Editing ===
+
+{{Feature|informative|See {{Link|Visual Studio Code SQF Extensions}}.}}
+
+{| class="wikitable sortable"
+! Tool Name
+! Author
+! Category
+! Description
+! Link
+|-
+| Vim plugin
+| {{User|Worldeater}}, {{Link|https://forums.bohemia.net/profile/802007-koffeinflummi/|KoffeinFlummi}}, {{User|7erra}}
+| Text editor plugin - {{Link|https://github.com/vim/vim|Vim}}
+| Syntax highlighting for Vim.
+| {{Link|link=https://github.com/7erra/vim-sqf|text=Download}}
+|-
+| Arma IntelliJ plugin
+| {{Link|https://forums.bohemia.net/profile/1110763-k-town/|K-Town}}
+| IDE plugin - {{Link|https://www.jetbrains.com/idea/download/|IntelliJ}}
+| {{Link|https://forums.bohemia.net/forums/topic/190427-arma-intellij-plugin-smart-editing-for-header-and-sqf-files/|Forum post}}
+| {{Link|https://github.com/kayler-renslow/arma-intellij-plugin/releases|Download}}
+|-
+| [[JEdit Syntax Highlighting]]
+| {{User|TomNedry}}
+| IDE plugin - {{Link|http://www.jedit.org/|jEdit}}
+|
+| [[ArmA:_JEdit_Syntax-Highlighting|Download]]
+|-
+| SQF Language
+| {{Link|https://forums.bohemia.net/profile/804281-armitxes/|Armitxes}}
+| IDE plugin - {{Link|https://code.visualstudio.com/|Visual Studio Code}}
+| {{Link|https://forums.bohemia.net/forums/topic/182917-vs-code-~-sqf-visual-studio-code-sqf-language/|Forum post}}
+| {{Link|https://marketplace.visualstudio.com/items?itemName{{=}}Armitxes.sqf|Download}}
+|-
+| Arma Dev
+| ole1986
+| IDE plugin - {{Link|https://code.visualstudio.com/|Visual Studio Code}}
+|
+| {{Link|https://marketplace.visualstudio.com/items?itemName{{=}}ole1986.arma-dev|Download}}
+|-
+| SQFLint<br>SQFLint Fork
+| {{Link|https://forums.bohemia.net/profile/757308-skacekachna/|SkaceKachna}}<br>[https://forums.bohemia.net/profile/1083150-senfo/ senfo]
+| IDE plugin - {{Link|https://code.visualstudio.com/|Visual Studio Code}}
+| {{Link|https://forums.bohemia.net/forums/topic/194417-sqflint-syntax-error-checker-cli/|Forum post (CLI)}} - {{Link|https://forums.bohemia.net/forums/topic/198658-sqflint-for-visual-studio-code/|Forum post (VS extension)}}
+| {{Link|https://marketplace.visualstudio.com/items?itemName{{=}}skacekachna.sqflint|Download}}<br>[https://marketplace.visualstudio.com/items?itemName{{=}}senfo.sqflint Download]
+|-
+| SQDev
+| {{Link|https://forums.bohemia.net/profile/1044335-krzmbrzl/|krzmbrzl}}
+| IDE plugin - {{Link|https://www.eclipse.org/downloads/|Eclipse}}
+| Provides code validation (linting) while you are typing it. {{Link|https://forums.bohemia.net/forums/topic/202181-sqdev-sqf-developing-in-eclipse/|Forum post}}
+| {{Link|https://github.com/Krzmbrzl/SQDev|Download}}
+|-
+| UltraEdit Syntax Highlighter
+| {{User|Kronzky}}
+| IDE plugin - {{Link|http://www.ultraedit.com/|UltraEdit}}
+|
+| {{Link|http://www.kronzky.info/ultraedit/index.htm|Download}}
+|-
+| [[Poseidon Tools]]
+| {{User|Tom_48_97}}
+| IDE
+| Complete script tool suite for Bohemia Interactive's game engine used in {{GameCategory|arma2|link= y}} and {{GameCategory|arma3|link= y}}
+| {{Link|https://forums.bistudio.com/topic/155514-poseidon-advanced-text-editor-for-scripts-configs/|Download}}
+|-
+| Arma Edit
+| Chris Henderson
+| IDE
+| Text-editor providing briefing/overview/crate/[[missionConfigFile]] wizards and more
+| {{Link|link= http://www.armaholic.com/page.php?id=1455|text= Download}}
+|-
+| Squint
+| {{User|Sbsmac}}
+| IDE
+| Provides a fully-featured code editor which allows for syntax highlighting, displaying of errors and code correction. {{Link|https://forums.bohemia.net/forums/topic/101921-squint-the-sqf-editor-and-error-checker/|Forum post}}
+| {{Link|https://sites.google.com/site/macsarmatools/squint|Download}}
+|-
+| N++ Command Lookup
+| GenCoder8
+| IDE
+| colspan="2" | Notepad++ users can put this to {{hl|shortcuts.xml}} for quick command lookups: {{Link|https://discord.com/channels/105462288051380224/105465701543723008/1345716166722588693|Discord post}}
+<spoiler text="Show code">
+<div style="font-size: .85em">
+<syntaxhighlight lang="xml">
+<Command name="Look up command" Ctrl="no" Alt="no" Shift="no" Key="">https://community.bistudio.com/wiki?search=$(CURRENT_WORD)</Command>
+</syntaxhighlight>
+</div>
+</spoiler>
+|}
+
+=== Debug Console/System ===
+
+{| class="wikitable sortable"
+! Game
+! Tool Name
+! Author
+! Category
+! Description
+! Link
+|-
+| {{GVI|arma3|1.00}}
+| Advanced Developer Tools
+| {{Link|https://forums.bohemia.net/profile/1132163-leopard20/|Leopard20}}
+| Debug Console, Config Viewer, Function Viewer, etc.
+| Debug console with extended execution options, syntax highlighting, config viewer with tree view and "data viewer", etc.
+| {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}2369477168|Download}}
+|-
+| {{GVI|arma3|1.00}}
+| DevCon
+| {{User|Kju}}
+| Debug Console
+| {{Link|https://forums.bohemia.net/forums/topic/140287-devcon-the-developer-console/|Forum post}}
+| {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}281032552|Download}}
+|-
+| {{GVI|arma3|1.00}}
+| 7erra's Editing Extensions
+| {{User|7erra}}
+| Debug Console, Config Viewer, misc.
+| More escape menu options, new config viewer, extended functionalities via Python
+| {{Link|https://forums.bohemia.net/forums/topic/217263-7erras-editing-extensions/|Download}}
+|-
+| {{GVI|arma2|1.00}}
+| DevCon
+| {{User|Kju}}
+| Debug Console
+|
+| {{Link|http://forums.bistudio.com/showthread.php?t{{=}}126249|Download}}
+|-
+| {{GVI|arma2|1.00}}
+| TroopMon v3
+| {{Link|https://forums.bohemia.net/profile/761667-charon-productions/|Charon Productions}}
+| Debug System
+| Debugging system containing information relevant to mission-makers (especially about AI)
+| {{Link|link= http://www.armaholic.com/page.php?id=19898|text= Download}}
+|-
+| {{GVI|arma2|1.00}}
+| Debug Console for Arma 2
+| {{User|Str}}
+| Debug Console
+|
+| {{Link|http://temp.moricky.com/arma2/stra_debug2.rar|Download}}
+|-
+| {{GVI|arma1|1.00}}
+| TroopMon v0.8b
+| {{Link|https://forums.bohemia.net/profile/761667-charon-productions/|Charon Productions}}
+| Debug System
+| Complex debugging system providing lots of information for mission-makers, especially about AI.
+| {{Link|link= http://www.armaholic.com/page.php?id=727|text= Download}}
+|-
+| {{GVI|arma1|1.00}}
+| Debug Console for ArmA
+| {{User|Str}}
+| Debug Console
+| available in all singleplayer missions, intros and outros. Easy and simple to use (Escape-Enter execute)
+| {{Link|link= http://www.armaholic.com/page.php?id=549|text= Download}}
+|-
+| {{GVI|arma1|1.00}}
+| Animation Viewer
+| {{User|Kronzky}}
+| Animation Viewer
+|
+| {{Link|http://kronzky.info/animationviewer/index.htm|Download}}
+|}
+<!--
+| {{GVI|arma1|1.00}}
+| {{User|Vektorboson}}
+|
+| Debug console
+|
+| <s>[http://home.arcor.de/vektorboson/res/console_3.7z '''''DEAD LINK''''']</s>
+|-
+| {{GVI|arma2|1.00}}
+| Chain of Command
+| Binary gamefile viewer
+| Tool
+| Allows to check variables and script states in save files
+| <s>{{Link|link= http://ofp.gamepark.cz/index.php?showthis=6989&newlang=eng|text= '''''DEAD LINK'''''}}</s>
+-->
+
+=== SQF and Debug Tools ===
+
+{| class="wikitable sortable"
+! Tool Name
+! Author
+! Category
+! Description
+! Link
+|-
+| [[SQF-VM]]
+| {{User|X39}}
+| Emulator
+| {{Link|https://forums.bohemia.net/forums/topic/210118-sqf-vm-an-sqf-emulator/|Forum post}}
+| {{Link|https://github.com/SQFvm/vm|Download}}
+|-
+| SQF Debugger
+| billw2011
+| IDE plugin - {{Link|https://code.visualstudio.com/|Visual Studio Code}}
+|
+| {{Link|https://marketplace.visualstudio.com/items?itemName{{=}}billw2011.sqf-debugger|Download}}
+|-
+| [[ArmaScriptProfiler|Arma Script Profiler]]
+| {{User|Dedmen}}
+| Profiler
+| Can be used to profile scripts and engine. {{Link|https://forums.bohemia.net/forums/topic/211626-arma-script-profiler/|Forum post}}
+| {{Link|https://github.com/dedmen/ArmaScriptProfiler/|Download}}
+|-
+| Arma Debug Engine
+| {{User|Dedmen}}
+| Debugger
+| {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}1585582292|Workshop link}}
+| {{Link|https://github.com/dedmen/ArmaDebugEngine/|Download}}
+|-
+| Arma Script Compiler
+| {{User|Dedmen}}
+| Bytecode Compiler
+| Can compile .sqf scripts into [[SQF_Bytecode|.sqfc (bytecode)]] files
+| {{Link|https://github.com/dedmen/ArmaScriptCompiler/|Download}}
+|}
+
+=== Localisation Tools ===
+
+{| class="wikitable sortable"
+! Tool Name
+! Author
+! Category
+! Description
+! Link
+|-
+| StringForge
+| {{Link|https://forums.bohemia.net/profile/750951-soul_assassin/|soul_assassin}}
+| Stringtable.xml
+|
+| {{Link|https://github.com/ajvorobiev/StringForge/releases|Download}}
+|-
+| Tabler
+| {{Link|https://forums.bohemia.net/profile/792478-bux578/|bux}}
+| Stringtable.xml
+|
+| {{Link|https://github.com/bux/tabler/releases|Download}}
+|-
+| SQDev
+| {{Link|https://forums.bohemia.net/profile/1044335-krzmbrzl/|krzmbrzl}}
+| Stringtable.xml
+|
+| {{Link|https://forums.bohemia.net/forums/topic/202181-sqdev-sqf-developing-in-eclipse/|Download}}
+|-
+| de_stringtabler
+| {{User|Dedmen}}
+| Stringtable.xml
+|
+| {{Link|https://github.com/dedmen/de_stringtabler/releases|Download}}
+|}
+
+=== PAA Tools ===
+
+{| class="wikitable sortable"
+! Tool Name
+! Author
+! Category
+! Link
+|-
+| GRADPAA
+| {{Link|https://gruppe-adler.de|Gruppe Adler}}
+| Online PAA Converter
+| {{Link|link= https://paa.gruppe-adler.de|text= paa.gruppe-adler.de}}
+|}
+
+
+[[Category:Tools]]

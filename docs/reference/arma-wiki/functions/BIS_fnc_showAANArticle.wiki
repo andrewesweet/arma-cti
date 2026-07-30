@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_showAANArticle
+// revision: 349535 (2023-11-08T17:16:42Z)
+// export sha1: ciqig5hpkjai7a9r83lejrylim7zju1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Function Group: Interaction | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= GUI
+
+|gr2= Interaction
+
+|descr= Show an AAN article.
+
+|s1= [arrayOfArrays, display, fade] call [[BIS_fnc_showAANArticle]]
+
+|p1= arrayOfArrays: [[Array|array]] of [[Array|arrays]]; each subarray defines part of an article, can be:
+* Article title: ["title", <text:string>]
+* Article author and date: ["meta", [<author:string>, <date:array Y,M,D,H,M>, <timezoneName:string>]]
+* Paragraph: ["text",<text:string>]
+* Bold paragraph: ["textbold",<text:string>]
+* Locked paragraph: ["textlocked",[<text:string>,<prompt:string>]] - ''Locked paragraph with subscriber prompt. There should be no paragraph after it.''
+* Image with description: ["image", [<path:string>, <description:string>, <source:string>]] - ''The image should have 2:1 ratio.''
+* Link to another "fake" article displayed on left: ["box",[<path:string>, <description:string>]] - ''The image should have 2:1 ratio.''
+* Author's bio: ["author",[<path:string>, <description:string>]] - ''The image should have 1:1 ratio.''
+* Draft notification: ["draft",[<text:string>, <color:arrayRGB>]] - ''Text and color are optional, default notification will be shown when they're undefined.''
+
+|p2= display: [[Display]] - a display to make the AAN article a child of it
+
+|p3= fade: [[Boolean]] - (Optional, default false) true to fade from black
+
+|r1= [[Display]] - the AAN article display
+
+|x1= [[File:a3 orange aan.jpg|thumb|480px|Result]]
+<sqf>
+[
+	[
+		["title","My Title"], 
+		["meta",["Katherine Bishop",[2035,2,24,11,38],"CET"]], 
+		["textbold","This is a bold text"], 
+		["image",["\a3\Missions_F_Orange\Data\Img\orange_overview_ca.paa","Some image description"]], 
+		["box",["\a3\Missions_F_Orange\Data\Img\Faction_IDAP_overview_CA.paa","You won't believe how playing Showcase Laws of War can change your life!"]], 
+		["text","Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi tincidunt pretium ultricies. Etiam ac ornare est, quis posuere nisl. Mauris facilisis lectus eu turpis maximus consequat. Donec ut metus nec risus tristique mattis. Ut posuere rutrum tellus, ut molestie orci mattis id. Cras ultrices euismod diam, in venenatis nunc commodo eget. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi congue dolor rutrum lectus euismod, ac faucibus magna molestie. Aliquam in libero sit amet eros sagittis tristique. Nam pellentesque dignissim aliquam."], 
+		["textlocked",["Sed non est risus. Nulla condimentum at leo sed bibendum. Phasellus laoreet sit amet leo tincidunt consequat. Curabitur nec hendrerit purus. Nam massa nisi, mattis in aliquet consectetur, ornare eget nibh. Nunc dignissim, nibh sit amet ultrices tincidunt, mi nulla fermentum quam, non condimentum dolor eros vulputate massa.","SUBSCRIBE PLZ"]], 
+		["author",["\a3\Missions_F_Orange\Data\Img\avatar_journalist_ca.paa","Katherine Bishop is a journalist"]] 
+	]
+] call BIS_fnc_showAANArticle;
+</sqf>
+
+|seealso= [[BIS_fnc_AAN]]
+}}
+
+{{Note
+|user= Freddo3000
+|timestamp= 20210612234200
+|text= Can be added to [[Diary Record|diary records]] using an {{hl|&lt;expression&gt;}} tag, with a clickable link leading to the article.
+<sqf>
+TAG_fnc_myArticle = {
+	[
+		[
+			["title", "My Article"],
+			["text", "Flavour text"]
+		]
+	] call BIS_fnc_showAANArticle
+};
+
+player createDiaryRecord ["diary", ["articles", "<execute expression='[] call TAG_fnc_myArticle'>My Article 1</execute>"]];
+</sqf>
+}}

@@ -1,0 +1,154 @@
+// source: https://community.bistudio.com/wiki/Reaction_Forces
+// revision: 370273 (2024-11-19T18:09:18Z)
+// export sha1: dk519ybfdeyd2a5kdztmu3bl0joetw0
+// categories: Category:Arma 3: CDLCs | Category:Reaction Forces
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+{{Navbox/CDLCs}}
+
+{{Infobox/Game
+|title= Reaction Forces
+|image= [[File:arma3-cdlc-reaction forces store header.jpg|300px|link= https://store.steampowered.com/app/2647760/Arma_3_Creator_DLC_Reaction_Forces/]]<br/>[[File:a3 gm arma3-com steampageimg 600x100 3c.png|link=http://www.arma3.com/dlc/creator|300px]]
+|releaseDate= 2024-03-26
+|storePage= {{Link|https://store.steampowered.com/app/2647760/Arma_3_Creator_DLC_Reaction_Forces/|Steam}}
+|developer= [[File:rotators-collective-black-background-512x512.png|48px]] Rotators Collective
+|website= {{Link|https://reactionforces.rotators.net/|https://reactionforces.rotators.net/}}
+|discord= {{Link|https://discord.gg/3GVUagyjkx|https://discord.gg/3GVUagyjkx}}
+|facebook= {{Link|https://www.facebook.com/RotatorsCollective|https://www.facebook.com/RotatorsCollective}}
+|twitter= {{Link|https://twitter.com/TheRotators|https://twitter.com/TheRotators}}
+}}
+
+Fight fires from above in the Cougar medium utility helicopter or swerve from the beaten track in the MOOSE pickup truck to take on tier-1 operations with new weapons and equipment, from pistols and rifles to remote-controlled mortars and micro-drones.
+
+Reaction Forces Creator DLC is the ultimate response to any situation on the battlefield.
+
+
+== Features ==
+
+Key features of the Reaction Forces Creator DLC include:
+
+=== Cougar Helicopter ===
+
+The Cougar is a four-blade, twin-engine, medium-sized, utility helicopter that has seen extensive military and civilian use over the years.
+In its civilian role, it is primarily used for transportation and offshore support, as well as public service missions, such as search and rescue.
+Some variants even come equipped with an emergency flotation device, which mitigates the risks of ditching at sea.
+
+For military use, the Cougar comes with variable pylon mounts for external weaponry. Some variants are fitted with a 20 mm chin-gun, vastly increasing its striking power and versatility as a gunship.
+
+Take advantage of extensive customization options featuring different loadouts and skins, which allow you to outfit the helicopter for every imaginable mission.
+
+=== MOOSE Pickup ===
+
+The MOOSE pickup is a light-duty vehicle with a wide range of configurations, serving military and civilian sectors worldwide.
+It is often used as a means of short-range transportation, or simply as a dependable weapons platform for special forces and non-state actors.
+
+With a plethora of visual customization options and multiple different modules, tailor your MOOSE to stand out amidst the chaos of battle.
+
+=== Commando & 120 mm Twin Mortar ===
+
+The Commando mortar is a lightweight one-man mortar that can be easily assembled in the field.
+The 120 mm Twin Mortar is a container-sized emplacement that can launch HE, smoke, or laser-guided rounds accurately at incredible distances across the battlefield.
+
+=== RC-40 mini-UAV ===
+
+Keep an eye and an ear to the skies - although if you hear one of these drones, it is probably too late!
+This incredibly compact UAV can be equipped with explosive or smoke charges, which can be detonated remotely or via impact with a target. A scout variant can laser designate targets while maintaining a low profile.
+
+=== Two Handguns, Two Rifles, and Four Aircraft Weapon Pods ===
+
+* '''Mk26 L5''' - An American-made, semi-automatic pistol chambered in .50AE popularized through 80s action movies - and yes, a gold plated version is available!
+* '''G19''' - Often used by military and police, a full-automatic capable pistol, designed and produced in Austria.
+* '''HADES H6''' - Manufactured in Germany, the H6 is a modern, ultra-lightweight and easy-to-handle 5.56 mm bolt rifle.
+* '''Veles''' - Russian-developed dedicated CQB bullpup rifle with a high stopping power.
+
+Additionally, this CDLC features new suppressors, optics, and special 5.56 mm armor-piercing ammunition are available for extra firepower!
+
+There is also a lethal selection of heavy-duty weapons for aircraft mounts, capable of turning an innocuous transport helicopter into a devastatingly effective gunship:
+
+* 12.7 mm autocannon weapon pod
+* 20 mm cannon weapon pod
+* DAR/DAGR x19 missile pod
+* Tratnyr HE/AP x16 missile pod
+
+=== Equipment ===
+
+* Leather Jacket outfit
+* Shape Breaker helmet variants for AAF, CSAT, and NATO
+* Heavy Combat Helmet
+* New sleek and lightweight Heli Pilot Helmet and Coveralls
+* Wildland Firefighter Fatigues
+* Full Brim Hard Hat to offer maximum protection in exposed environments
+* Duffle Bag - spacious and with iconic Armaverse branding!
+* TNVG-B night-vision goggles with color-enhanced thermal imaging and a special filter for low-light conditions
+* Carrier Lite Rig and Tactical Vest Rig variants
+* Colored steerable parachutes and backpacks for civilians and parachute display teams
+
+=== Open-World Campaign Scenario: "Air Control" ===
+
+Take part in a combined arms offensive! Prioritize your tasks, transport special forces, and fly logistics as a helicopter pilot, influencing battles below from above in this vast, multi-hour 12-player open-world campaign scenario.
+
+=== Singleplayer Scenarios: Training Day and FireSeason ===
+
+Familiarize yourself with the Cougar helicopter, learn how to use a helicopter bucket, and take part in water bombing drills on Malden. Once trained, you can go on duty and help protect the island during the current fire season.
+
+=== COOP and Singleplayer Scenario: "QRF" ===
+
+Respond to an emergency call and protect the HVT until reinforcements arrive! As a Quick Reaction Force (QRF), defend against waves of enemies and fight for your life against overwhelming odds in this new co-op game mode.
+Conserve your ammo and pick your targets carefully while working closely with a team of up to six people.
+
+=== Multiplayer Mode: "Cashpoint" ===
+
+A series of cashpoint robberies are happening all across Malden and Tanoa — will you stop the criminals responsible, or are you one of them? This is a Team Deathmatch scenario for up to 12 players in two uneven teams.
+
+=== Additional Content ===
+
+Rounding out the Reaction Forces package, comes a set of additional items including new static props, as well as over 1 hour of newly composed ambient music tracks.
+
+Included with the download is a specifically curated soundtrack in high-quality digital format.
+The soundtrack includes 11 tracks with a total duration of 38 minutes, curated from the Reaction Forces ingame ambient music for the best possible listening experience outside of the game.
+
+
+== Videos ==
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center">
+{{Youtube|w-wdd9leam4|Launch Trailer|center|500}}
+</div>
+
+
+== Gallery ==
+
+<gallery mode="slideshow" showThumbnails>
+File:rf screenshot 01.jpg
+File:rf screenshot 02.jpg
+File:rf screenshot 03.jpg
+File:rf screenshot 04.jpg
+File:rf screenshot 05.jpg
+File:rf screenshot 06.jpg
+File:rf screenshot 07.jpg
+File:rf screenshot 08.jpg
+File:rf screenshot 09.jpg
+File:rf screenshot 10.jpg
+File:rf screenshot 11.jpg
+</gallery>
+
+
+== About the Developers ==
+
+'''The Arma 3 Creator DLC: Reaction Forces''' is published by {{Name|bi}} and developed by the Rotators Collective studio - a small group of like-minded developers loosely assembled from all around Europe with over 10 years of experience in making mods for a wide variety of games, including the top-rated {{arma3}} mini-campaigns {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}835526985|Callsign Minotaur}} and {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}1731998436|Dunes}}, as well as their previous project, the highly-praised {{Link|Western Sahara}} Creator DLC.
+
+
+== Compatibility Data for Non-Owners ==
+
+People who do not own the Reaction Forces DLC are able to download and install the DLC's optional data via the {{arma3}} Steam Workshop {{Link|https://steamcommunity.com/sharedfiles/filedetails/?id{{=}}3150497912|here}}.
+Subscribing to this Workshop item makes it possible for potential buyers to try out many of the DLC's assets prior to purchasing. It also enables non-owners to join multiplayer servers that make use of DLC content.
+Be aware that access to the <!--DLC's terrain and--> campaign remains exclusive to owners of the DLC. Restrictions to the use of non-owned content also apply.
+
+Please note that access to premium content is restricted for non-owners in a similar way to our official default DLC. The missions are inaccessible. Premium weapons cannot be picked up. Premium vehicles can be primarily used as a passenger.
+For a detailed overview of premium DLC content restrictions, please refer to this {{Link|https://www.bohemia.net/blog/roadmap-14-15-dlc-strategy-blog|blogpost}}.
+
+Buying the DLC will remove these restrictions, enabling owners to access all the content.
+
+
+[[Category:Reaction Forces]]
+{{GameCategory|arma3|CDLCs}}

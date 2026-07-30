@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/vehicleChat
+// revision: 376772 (2025-11-17T00:04:46Z)
+// export sha1: 6pcofnz87ta9c9bnqw16klaiemv4ys3
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Operation Flashpoint version 1.34 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.34
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Radio and Chat
+
+|descr= Types text to the vehicle radio channel. The text will be visible only on the PC where command was executed. If you need the message to show on all computers, you have to execute it globally, see [[remoteExec]]. Use [[clearRadio]] to clear chat history
+
+{{Feature|informative|
+* Object parameter must be a vehicle, not a player
+* If you are in a crew seat (i.e. driver, gunner or commander), then it will include that role in the chat name output (Eg: Driver (you_name): "Message")}}
+
+|s1= vehicle [[vehicleChat]] chatText
+
+|p1= vehicle: [[Object]] - vehicle unit is in
+
+|p2= chatText: [[String]] - message to transmit
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player vehicleChat "Show this text";</sqf>
+
+|x2= [[File:xChat.jpg|right]]
+<sqf>
+driver vehicle player sideChat "sideChat";
+driver vehicle player globalChat "globalChat";
+driver vehicle player groupChat "groupChat";
+vehicle player vehicleChat "vehicleChat";
+driver vehicle player commandChat "commandChat";
+driver vehicle player customChat [1, "customChat"];
+systemChat "systemChat";
+</sqf>
+
+|seealso= [[globalChat]] [[groupChat]] [[sideChat]] [[commandChat]] [[customChat]] [[systemChat]] [[vehicleRadio]]
+}}

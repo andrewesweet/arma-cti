@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/removeAllMissionEventHandlers
+// revision: 319390 (2022-05-13T09:23:59Z)
+// export sha1: mj85b71v5aa2ci3gq39hj1h9dtp54cv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+
+|gr1= Event Handlers
+
+|descr= Removes all mission event handlers of the given type which were added by [[addMissionEventHandler]].
+
+{{Feature | important | Prior to {{GVI|arma3|2.08}} this command would also reset the Event Handler creation index to 0.}}
+
+|s1= [[removeAllMissionEventHandlers]] type
+
+|p1= type: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>removeAllMissionEventHandlers "Loaded";</sqf>
+
+|seealso= [[removeMissionEventHandler]] [[addMissionEventHandler]]
+}}

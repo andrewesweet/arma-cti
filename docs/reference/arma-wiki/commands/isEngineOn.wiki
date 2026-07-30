@@ -1,0 +1,78 @@
+// source: https://community.bistudio.com/wiki/isEngineOn
+// revision: 370470 (2024-12-16T18:09:58Z)
+// export sha1: 2ycknvt8k6hq6jk3dpfxhhmtr81o5ym
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.90 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.90
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns [[true]] if engine is on, [[false]] if it is off.
+
+|s1= [[isEngineOn]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_carEngineIsOn = isEngineOn _carOne;</sqf>
+
+|seealso= [[engineOn]] [[setCollisionLight]] [[isLightOn]] [[isCollisionLightOn]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-03-20 - 14:32 (UTC)</dd>
+<dt class="note">[[User:RKillah|RKillah]]</dt>
+<dd class="note">[[isEngineOn]] returns [[true]] for static objects without an engine
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2015-04-06 - 08:24 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+Bind Engine action to User Action 1
+<sqf>
+this addAction ["", 
+{
+	_this select 1 action 
+	[
+		["EngineOn", "EngineOff"] select isEngineOn (_this select 0), 
+		_this select 0
+	];
+}, "", -10, false, true, "User1", "_this == driver _target"];
+</sqf>
+</dd>
+
+</dl>
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20220828050658
+|text= If you're a client (not server) and check remote vehicle that is far away from the camera, you'll get an outdated engine state until the vehicle and client camera position are close to each other. Distance seems to be around 6km and doesn't depend on video settings.
+}}

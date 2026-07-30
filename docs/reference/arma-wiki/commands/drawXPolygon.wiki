@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/drawXPolygon
+// revision: 377556 (2026-01-02T06:54:57Z)
+// export sha1: 1c4z9sevfce9coictfj9ny2cbojow23
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Arma 3 version 2.20 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.20
+
+|gr1= GUI Control - Map
+
+|descr= Draws an N sided polygon on the map.
+
+|s1= map [[drawXPolygon]] [n, centre, a, b, angle, color, fill, alignWithMap]
+
+|p1= map: [[Control]]
+
+|p2= n: [[Number]] - number of sides 3..720
+
+|p3= centre: [[Object]] or [[Position#Introduction|Position2D]], [[Position#Introduction|Position3D]] - ellipse's centre
+
+|p4= a: [[Number]] - horizontal (x) radius
+
+|p5= b: [[Number]] - vertical (y) radius
+
+|p6= angle: [[Number]] - angle of rotation in degrees
+
+|p7= color: [[Color|Color (RGBA)]] - line color
+
+|p8= fill: [[String]] - fill texture file or [[Procedural Textures]]. Note that the file texture will not rotate with polygon, use [[drawIcon]] for that. If fill texture is not empty, set line color to white [1,1,1,1]
+
+|p9= alignWithMap: [[Boolean]] - (Optional, default [[true]]) - when [[false]] the shape will not follow map rotation.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+findDisplay 12 displayCtrl 51 ctrlAddEventHandler ["Draw", 
+{
+	_this select 0 drawXPolygon [
+		5, player, 50, 10, 0, [1, 0, 0, 1], ""
+	];
+	_this select 0 drawXPolygon [
+		3, player, 10, 50, 0, [1, 1, 1, 1], "#(rgb,8,8,3)color(1,0.6,0,1)"
+	];
+	_this select 0 drawXPolygon [
+		12, player, 10, 10, 90, [0, 0, 1, 1], ""
+	];
+}];
+</sqf>
+
+|seealso= [[drawArrow]] [[drawIcon]] [[drawLine]] [[drawRectangle]] [[drawPolygon]] [[drawTriangle]] [[drawEllipse]]
+}}

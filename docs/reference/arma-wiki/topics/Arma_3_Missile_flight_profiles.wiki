@@ -1,0 +1,182 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Missile_flight_profiles
+// revision: 364292 (2024-05-06T09:38:36Z)
+// export sha1: dt77skf96eggqig1fn7ocwj523e338a
+// categories: Category:Arma 3: Weapon & Magazine Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Since Arma 1.82 it is possible for precision guided munitions to utilize different flight profiles or acquire targets after being launched. You can do that by adding an [[A3_Targeting_config_reference#flightProfiles|flightProfiles]] array to the ammo config and creating classes for specific profiles. Each profile has different properties which should be specified in order to avoid the usage of default values, which are usually just fallback values.
+
+The flight profile also needs to be specified as a weapon's [[CfgWeapons_Config_Reference#Modes|fire mode]] - paired by using the same name in both ammo and weapon configuration. Otherwise the weapon won't be able to utilize the munition's flight profile mode. 
+
+
+== Flight phases ==
+FSM-like system is used to control different phases of missiles and the transitions between them
+
+* '''Initial''' - phase when the missile is ignoring its target (position) - if it has any - and focuses on specified flight path (specified by the flight profile + its properties)
+* '''Seeking''' - phase when the missile will start to seek a target - either the one originally specified or new one in the case of auto-seek missiles (phase, when the missile is trying to roughly aim at the target and then checks locking prerequisites)
+* '''Locked''' - the missile fulfils all the needed prerequisites for being locked and is heading toward it’s target (position); if - at some point in time - missile stops fulfilling the lock conditions, the status of the missile is changed to Lost
+* '''Lost''' - missile has not fulfilled some condition for being locked and is completely lost - flies straight forward
+
+
+== Profiles ==
+=== Direct ===
+This is the default mode. It is automatically added when the ammo config does not specify any flight profile. It is also added if the weapon [[CfgWeapons_Config_Reference#Modes|fire modes]] contain more fire modes (usable by the player) than those that are linked to specific missile flight profiles.
+* Initial phase - only sets point to follow in case the manual control is enabled
+* Seeking phase - depending on the fulfillment of lock conditions changes the status of the missile to either Locked or Lost
+* Lost - manually-controlled missiles can become locked again, if they start to fulfil the lock prerequisites
+
+There are no special properties.
+=== TopDown ===
+Flight profile that imitates {{Link|https://en.wikipedia.org/wiki/Top_attack|top attack}}. The missile initially gains desired flight level and keeps it till it’s close enough to the target, then performs a dive and strikes the target from the top
+* Initial phase - consists of the ascension part and the flight in the specified flight-level part
+* Seeking phase - triggered by reaching the descendDistance (in relation to the target). The missile then starts turning towards the original target and keeps checking lock prerequisites (which would result in entering the Locked phase)
+** If the manual-control is enabled, missile will remember the point where the parent was aiming at the moment of fire and consider that position its target; after reaching the Seeking phase, the missile will start to act like a directly-fired manually-controlled one and will follow the parent’s aimpoint
+* Lost - manually-controlled missiles can become locked again, if they start to fulfil the lock prerequisites (only past the Initial phase of course)
+==== minDistance ====
+Minimal distance from the target to perform top-down attack; if the target is closer, Direct flight mode is chosen instead 
+<syntaxhighlight lang="cpp">
+minDistance = 180.0;
+</syntaxhighlight>
+==== ascendHeight ====
+Desired flight level used to approach the target
+<syntaxhighlight lang="cpp">
+ascendHeight = 150; // missile won't try to reach this altitude once it passes the descendDistance
+</syntaxhighlight>
+==== ascendAngle ====
+Angle used to gain the desired flight level
+<syntaxhighlight lang="cpp">
+ascendAngle = 30.0; // missile won't keep climbing once it passes the descendDistance
+</syntaxhighlight>
+==== descendDistance ====
+When reached, the missile will enter last phase of the flight - attack from the top
+<syntaxhighlight lang="cpp">
+descendDistance = 180; // have some headroom for the missile turning down, the missiles won't be able to do much more than 45° descend angle
+</syntaxhighlight>
+=== LoalDistance ===
+Lock-on After Launch mode, where a munition (missile) fired without a lock will start autonomously looking for available targets once it reaches a defined distance from parent object. It is intended to use this mode together with the [[A3_Targeting_config_reference#autoSeekTarget|auto seek]] ability, otherwise the missile gets lost after reaching the desired distance from parent and just flies straight forward. With the [[A3_Targeting_config_reference#autoSeekTarget|autoSeekTarget]] enabled the missile will search for a target in its (configured) [[A3 Targeting config reference#missileLockCone|lock cone]] area.
+* Initial phase - consists of simple flight forward; this phase is left when the missile reaches the specified distance from parent
+* Seeking phase - consists of checks of lock prerequisites (in the case of enabled auto-seek)
+==== lockSeekDistanceFromParent ====
+The desired distance from parent when the missile should start to seek a target
+<syntaxhighlight lang="cpp">
+lockSeekDistanceFromParent = 500;
+</syntaxhighlight>
+=== LoalAltitude ===
+Lock-on After Launch mode, where a munition (bomb) fired without a lock will start autonomously looking for available targets once it reaches a defined altitude. This flight mode is designed mainly for bombs. It is intended to use this mode together with the [[A3_Targeting_config_reference#autoSeekTarget|auto seek]] ability, otherwise the bomb gets lost after reaching the desired altitude and simply drops to the ground.
+
+The bomb searches for a target in [[A3_Targeting_config_reference#lockSeekRadius|lockSeekRadius]] around the initially computed impact point (CCIP)
+
+* Initial phase - consists of simple fall; this phase is left when the munition reaches the specified altitude (again, it is not the above-sea-level one)
+* Seeking phase - consists of checks of lock prerequisites (in the case of enabled auto-seek) around the original impact point
+==== lockSeekAltitude ====
+The desired altitude upon which the bomb starts to seek a target
+<syntaxhighlight lang="cpp">
+lockSeekAltitude = 300;
+</syntaxhighlight>
+=== Overfly ===
+Flight profile that imitates an overfly {{Link|https://en.wikipedia.org/wiki/Top_attack|top attack}} mode. Intended to be used together with [[Arma_3_Weapon_Config_Guidelines#Ammo_changes_on_fly_and_on_hit|submunition]] (an explosive formed projectile) that is created after reaching specified point above the target and strikes the target from the top.
+
+* Initial phase - consists of flight straight to the specified point above (potentially below, if the elevation is negative) the target
+
+Because this flight profile is so far intended only for missiles with submunition, no other phases are interesting in this case and the submunition should be created after reaching the point above the target)
+==== overflyElevation ====
+Elevation above the target when the missile is actually heading
+<syntaxhighlight lang="cpp">
+overflyElevation = 2.5; // use with same or bigger triggerDistance of the submunition
+</syntaxhighlight>
+=== Cruise ===
+Flight mode that in a simple manner imitates the behaviour of a {{Link|https://en.wikipedia.org/wiki/TERCOM|terrain following}} missile. The missile uses sea-skimming/terrain-hugging in specified altitude while approaching the target.
+
+* Initial phase is defined by the flight towards target in the specified flight-level; the missile is performing sea-skimming/terrain-hugging while approaching the target
+* When the specified distance to target is reached, the missile starts to check target visibility (against the terrain only); if the target is visible, the missile enters Seeking phase
+* If the lock prerequisites are met, the missile enters Locked phase
+==== preferredFlightAltitude ====
+Altitude above terrain/sea that the missile is trying to keep during the flight; this is not actually altitude above sea-level, this is just the vertical distance from ground/sea
+<syntaxhighlight lang="cpp">
+preferredFlightAltitude = 50;
+</syntaxhighlight>
+==== lockDistanceToTarget ====
+Distance to the target that triggers target visibility checks (only against terrain, objects are ignored)
+<syntaxhighlight lang="cpp">
+lockDistanceToTarget = 500;
+</syntaxhighlight>
+
+== Diagnostics ==
+Ref [[Arma_3_Diagnostics_Exe]]
+* Use the '''Shots''' diagnostic
+* Black box displays text info about 
+** missile flight profile
+** current missile [[Arma_3_Missile_flight_profiles#Flight_phases|phase]]
+** missile height above the terrain
+** angle to the target and the distance to the target when the missile is past the initial state and its target (position) is valid
+* During the Initial phase, the direction missile is following is displayed as blue arrow with the origin in the center of the missile
+
+== Example Configuration ==
+=== cfgWeapons.hpp ===
+<syntaxhighlight lang="cpp">
+class my_launcher : MissileLauncher
+{
+  modes[] = { "Direct", "TopDown" };
+  class Direct : Mode_SemiAuto
+  {
+    …
+    textureType = "direct";
+    displayName = "Direct";
+    ...
+  };
+  class TopDown : Direct
+  {
+    textureType = "topdown";
+    displayName = "Top-down";
+  };
+};
+</syntaxhighlight>
+
+=== cfgAmmo.hpp ===
+<syntaxhighlight lang="cpp">
+class my_missile : MissileBase
+{
+  ...
+  lockSeekRadius = 100;
+  flightProfiles[] = { "Direct", "TopDown", "LoalDistance", "LoalAltitude", "Overfly", "Cruise" };
+  class Direct
+  {
+  };
+  class TopDown : Direct
+  {
+    ascendHeight = 150.0;
+    descendDistance = 200.0;
+    minDistance = 150.0;
+    ascendAngle = 70.0;
+  };
+  class LoalDistance : Direct
+  {
+    lockSeekDistanceFromParent = 300.0;
+  };
+  class LoalAltitude : Direct
+  {
+    lockSeekAltitude = 100.0;
+  };
+  class Overfly : Direct
+  {
+    overflyElevation = 4.0;
+  };
+  class Cruise : Direct
+  {
+    preferredFlightAltitude = 50.0;
+  };
+};
+</syntaxhighlight>
+In this case, the launcher is capable of using Direct and TopDown flight profiles and the missile is capable of all the flight profiles. Thus - in the game - the player/AI will only be capable of switching between Direct and TopDown flight profile. If there will be another flight profile declared in the launcher - let’s call it XY - it would not be available to player/AI, because the ammunition does not support it.
+
+
+= Related =
+* [[A3_Targeting_config_reference]]
+* [[CfgAmmo_Config_Reference|CfgAmmo]]
+* [[CfgVehicles_Config_Reference|CfgVehicles]]
+* {{Link|link= https://forums.bohemia.net/forums/topic/213601-tanks-missile-flight-profiles-and-weapon-improvements/|text= Missile flight profiles thread}}
+* [[Arma 3: Targeting]]
+
+
+{{GameCategory|arma3|Weapon & Magazine Configuration}}

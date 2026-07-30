@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sideName
+// revision: 341639 (2023-06-12T19:02:55Z)
+// export sha1: qls5w2cwm3or7bbzbz6dkt3hlgwgz17
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sides
+
+|descr= Returns localized side name.
+{{Columns|2|
+* 0 / [[opfor]] ([[east]]) {{=}} "OPFOR"
+* 1 / [[blufor]] ([[west]]) {{=}} "BLUFOR"
+* 2 / [[independent]] ([[resistance]]) {{=}} "Independent"
+* 3 / [[civilian]] {{=}} "Civilian"
+* 4 / [[sideUnknown]] {{=}} "Unknown"
+* 5 / [[sideEnemy]] {{=}} "Enemy"
+* 6 / [[sideFriendly]] {{=}} "Friendly"
+* 7 / [[sideLogic]] {{=}} "Game Logic"
+* 8 / [[sideEmpty]] {{=}} "Empty"
+* 9 / [[sideAmbientLife]] {{=}} "Ambient life"
+}}
+
+|s1= [input] call [[BIS_fnc_sideName]]
+
+|p1= input: [[Side]] or [[Number]] - either side or side ID
+
+|r1= [[String]]
+
+|x1= <sqf>[2] call BIS_fnc_sideName;</sqf>
+
+|x2= <sqf>[independent] call BIS_fnc_sideName;</sqf>
+
+|seealso= [[side]] [[countSide]] {{Link|CfgVehicles Config Reference#side}} [[Side]] [[playerSide]] [[Side Relations]]
+}}

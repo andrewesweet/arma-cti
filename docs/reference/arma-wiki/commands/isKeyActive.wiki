@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/isKeyActive
+// revision: 319058 (2022-05-13T09:23:07Z)
+// export sha1: 83wcjecapyl1hjgxrgxuny0ekhzzo1d
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Mission Information
+
+|descr= Checks whether the given key is active in the current user profile.
+
+See keys, keysLimit and doneKeys in the [[Description.ext#keys|description.ext]] file of the missions.
+
+|s1= [[isKeyActive]] keyName
+
+|p1= keyName: [[String]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_active = isKeyActive "Mission04Key";</sqf>
+
+|seealso= [[activateKey]] [[deActivateKey]]
+}}

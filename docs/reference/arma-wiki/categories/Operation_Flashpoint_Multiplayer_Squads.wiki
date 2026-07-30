@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Multiplayer_Squads
+// revision: 244901 (2021-02-07T23:16:11Z)
+// export sha1: jctkkt5wr741kohk7c9mc44ai9brmtw
+// Vendored snapshot. Do not edit — re-export instead.
+
+If you are creating a Biki page for your squad, consider using '''[[:Template:Infobox/Squad|squad infobox template]]'''.
+
+{{GameCategory|ofp|Community}}

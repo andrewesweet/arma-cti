@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Scripting_Commands:_Local_Effect
+// revision: 294040 (2021-11-05T21:16:13Z)
+// export sha1: 5oufbclv3bpt5sm5bzx567ut4jfbi3k
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists [[:Category:Scripting Commands|Commands]] that have a local effect {{Icon|localeffect|32}}.
+
+[[Category:Scripting Commands by Effect]]

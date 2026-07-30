@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/serverCommandExecutable
+// revision: 369186 (2024-09-03T10:34:46Z)
+// export sha1: hgjcrtva75tbwrc4agmjlufttk5i2s8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Multiplayer
+
+|descr= Returns [[true]] if the [[serverCommand]] can be performed on the machine and in this exact environment, otherwise [[false]]. serverCommand can be executed only from [[User Interface Event Handlers]], and this command also checks if that's the case.
+
+|s1= [[serverCommandExecutable]] command
+
+|p1= command: [[String]] - see [[Multiplayer_Server_Commands#Commands|Multiplayer Server Commands]] for all available commands
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_canKick = serverCommandAvailable "#kick";</sqf>
+
+|x2= Add button to the main map to lock server, which could only be activated by admin:
+<sqf>
+with uiNamespace do {
+	ctrl = findDisplay 12 ctrlCreate ["RscButton", -1];
+	ctrl ctrlSetPosition [0, 0, 0.5, 0.1];
+	ctrl ctrlCommit 0;
+	ctrl ctrlSetText "LOCK SERVER";
+	ctrl ctrlAddEventHandler ["ButtonDown",
+	{	
+		if (serverCommandExecutable "#lock") then {
+			serverCommand "#lock";
+		} else {
+			hint "You need to be logged in as admin to do this";
+		};
+	}];
+};
+</sqf>
+
+|seealso= [[serverCommand]] [[serverCommandAvailable]] [[Multiplayer Server Commands]]
+}}

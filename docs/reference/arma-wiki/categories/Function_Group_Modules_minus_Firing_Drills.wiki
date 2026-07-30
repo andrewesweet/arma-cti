@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Modules_-_Firing_Drills
+// revision: 166165 (2020-10-10T14:53:31Z)
+// export sha1: 77eaw03yzbhtirth28h9v42zynxgz29
+// Vendored snapshot. Do not edit — re-export instead.
+
+Module functions related to Firing Drills.
+
+[[Category:Function Group: Modules]]

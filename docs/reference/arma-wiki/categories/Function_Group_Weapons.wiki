@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Weapons
+// revision: 167859 (2020-10-12T14:47:10Z)
+// export sha1: 78mmhxnyda8sm1ry2vvju1vpf1hmeol
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Functions by Functionality]]

@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/ctValue
+// revision: 310913 (2022-05-07T20:33:32Z)
+// export sha1: mziyue1lewubvasnqtffycku1hsf2bc
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= GUI Control - Controls Table
+
+|descr= Returns metadata (number) associated with a particular row of RscControlsTable.
+
+|s1= control [[ctValue]] index
+
+|p1= control: [[Control]]
+|p2= index: [[Number]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_number = _control ctValue 0;</sqf>
+
+|seealso= [[ctAddRow]] [[ctAddHeader]] [[ctClear]] [[ctCurSel]] [[ctSetCurSel]] [[ctRowControls]] [[ctHeaderControls]] [[ctRowCount]] [[ctHeaderCount]] [[ctSetValue]] [[ctSetData]] [[ctData]] [[ctFindRowHeader]] [[ctFindHeaderRows]] [[ctRemoveRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}

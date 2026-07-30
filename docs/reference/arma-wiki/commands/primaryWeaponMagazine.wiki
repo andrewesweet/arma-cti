@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/primaryWeaponMagazine
+// revision: 377142 (2026-01-01T10:31:18Z)
+// export sha1: 81vou9iok5t42jnpckbr9tvcr984ccu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.70
+
+|gr1= Unit Inventory
+
+|descr= Collects all loaded [[magazines]] from all [[primaryWeapon]] muzzles and returns them in [[Array]], otherwise it returns []. This command is used for infantry weapons only.
+
+|s1= [[primaryWeaponMagazine]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>hint str primaryWeaponMagazine player; //["30Rnd_65x39_caseless_mag"]</sqf>
+
+|x2= <sqf>
+_array = primaryWeaponMagazine player;
+if (count _array > 0) then {
+	hint ("Primary weapon is loaded with " + (_array select 0) + "!");
+} else {
+	if (primaryWeapon player != "") then {
+		hint "Primary weapon is not loaded!";
+	} else {
+		hint "Player doesn't have a primary weapon!";
+	};
+};
+</sqf>
+
+|seealso= [[primaryWeapon]] [[primaryWeaponItems]] [[addPrimaryWeaponItem]] [[removePrimaryWeaponItem]] [[removeAllPrimaryWeaponItems]] [[handgunMagazine]] [[secondaryWeaponMagazine]] [[binocularMagazine]]
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20140608215200
+|text= This function returns an array like ["type of magazine loaded in primary weapon", "type of grenade loaded in launcher if exist"] <br>
+For example ["30Rnd_556x45_Stanag", "1Rnd_HE_Grenade_shell"], with no consideration about amount of these ammo.<br>
+However, be careful if you intend to use it in expression like : (magazines _unit) - (primaryWeaponMagazine _unit), i.e. magazines "minus" this array,<br>
+The result will inventory all magazines (with grenades, chemlights...) except ALL magazines (and grenades eventually) belonging to the TYPE of the loaded one! i.e. you suppress ALL "30Rnd_556x45_Stanag" but the "30Rnd_556x45_Stanag_Tracer_Green" are still remaining.<br>
+If you kill the unit, the same expression will return a consistent inventory as primary weapon "disappears" and primaryWeaponMagazine is empty. "30Rnd_556x45_Stanag" are back!
+}}

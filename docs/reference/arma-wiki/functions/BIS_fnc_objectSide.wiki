@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_objectSide
+// revision: 341640 (2023-06-12T19:02:56Z)
+// export sha1: oovdjh2swp99k5s4tdoay2berl497y6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sides
+
+|descr= Returns object side as defined in config (i.e. not affected by dynamic changing like rating)
+
+|s1= [target, boolean] call [[BIS_fnc_objectSide]]
+
+|p1= target: [[Object]] - the object to be tested
+
+|p2= boolean: [[Boolean]] (optional) - false (default) to return actual object side, true to return the default config value
+
+|r1= [[Side]]
+
+|s2= target call [[BIS_fnc_objectSide]]
+
+|p21= target: [[Object]] - the object to be tested. This syntax is equal to calling the method with [[false]] as a second parameter.
+
+|r2= [[Side]]
+
+|x1= <sqf>private _realVehicleSide = [vehicle player, true] call BIS_fnc_objectSide;</sqf>
+
+|x2= <sqf>
+private _unknownSide = [objNull, false] call BIS_fnc_objectSide; // will return sideUnknown
+private _eastSide    = [objNull, true]  call BIS_fnc_objectSide; // will return east
+</sqf>
+
+|x3= <sqf>
+// same results
+_result1 = myVehicle call BIS_fnc_objectSide;
+_result2 = [myVehicle] call BIS_fnc_objectSide;
+_result3 = [myVehicle, false] call BIS_fnc_objectSide;
+</sqf>
+
+|seealso= [[side]] [[CfgVehicles_Config_Reference#side|CfgVehicles config side value]] [[Side]] [[playerSide]] [[west]] [[east]] [[resistance]] [[civilian]] [[sideLogic]] [[sideFriendly]] [[sideEnemy]] [[sideUnknown]] [[sideEmpty]] [[sideAmbientLife]] [[Side Relations]] [[BIS_fnc_sideID]]
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20200401172500
+|text= When using this to get the side of vehicle drivers, be aware that when the boolean parameter is true, empty vehicles will return their driver as east.
+The same vehicle, when the boolean parameter is false, will return "UNKNOWN"
+}}

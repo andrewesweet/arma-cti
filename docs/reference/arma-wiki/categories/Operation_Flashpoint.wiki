@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint
+// revision: 378848 (2026-07-18T14:54:56Z)
+// export sha1: rx6f0u60eoj15nojd8rj29pf0isixzv
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= OFP CWC Fcover.jpg
+|releasedate = 2001-06-22
+|latestversion= {{Link|Arma: Cold War Assault Remastered}}
+|intro= The world famous {{ofp}} ({{Name|ofp|short}}) series of games began with {{Name|ofp|com}} in 2001, produced by {{Name|bi}} and published by Codemasters.
+Codemasters then produced and published an add-on campaign for the original title called Red Hammer.
+Then in 2002, {{Name|bi|short}} produced another version of the game (as an expansion pack) called {{GameCategory|ofpr|link= y}}.
+Later, a "Game of the Year" (GOTY) edition was published by Codemasters, which included the two {{Name|bi|short}} works, plus Codemasters' Red Hammer campaign.
+[[File:Logo_A0.png|250px|right]]
+{{Feature|informative|{{ofp}} was later renamed to {{arma0}}. See [[Operation Flashpoint: The Name Game]] for more details. However, most, if not all pages on this wiki will not use the new name.}}
+=== Story & Content ===
+The story is set in 1985 on a group of three islands - Kolgujev, Malden and Everon.
+The Soviet Union is in turmoil after Mikhail Gorbachev is designated General Secretary of the Communist Party.
+Not everyone is willing to accept his leadership, including General Ivan Vasilii Guba, leader of a well-equipped army based on Kolgujev.
+Guba attacks nearby Everon, an independant republic, sparking an international flashpoint. The NATO base on Malden is alerted and the plot progresses from there.
+
+The player begins in the role of Private David Armstrong, fresh from training on Malden and under the supervision of his commanding officer Sergeant Arnold Berghoff.
+As the missions progress, depending on the player's performance, Armstrong is promoted and can command a squad of his own.
+
+There are other characters which the player controls at various points through the story:
+* Robert Hammer, a novice tank driver
+* Sam Nichols, a helicopter pilot
+* James Gastovski, a retired special forces operative who is persuaded to join the conflict and settle an old score...
+
+Cold War Crisis includes 41 missions contained in a file called {{hl|1985.pbo}} within the {{hl|OperationFlashpoint\Campaigns}} directory.
+
+|feature1= '''Stealth, tactics or all-out assault''' - deliver liberation in Campaign, Single Mission or Multiplay modes
+|feature2= '''Take command of a squad''' - or just cover yor own back. Stay alive and be victorious
+|feature3= '''Over 30 vehicles to drive or fly''' - from AH1 Cobra Helicopter to M1A1 Abrams tank, each visually accurate to its original spec
+|feature4= '''Create your own strategic challenges''' - for solo and multiplay with the easy-to-use Mission Editor - limited only by your imagination
+|feature5= '''Create your own addons''' - create your own content such as, weapons, vehicles and missions
+|gallery1= OFP editor advanced.jpg
+|gallery2= ofp 1.jpg
+|gallery3= ofp 2.jpg
+|trailer= a75eG8HG5Fk
+|dlcs=
+* {{GameCategory|ofpr|link= y}}
+* [[Operation Flashpoint: Red Hammer]]
+}}

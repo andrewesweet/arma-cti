@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/diag_remainsCollector
+// revision: 377638 (2026-01-02T08:52:35Z)
+// export sha1: c6rs0w6l1k48p02o6rp5qwg124nlknr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Object Manipulation
+
+|descr= Returns current settings for the remains collector and the list of monitored units if any.
+
+|s1= [[diag_remainsCollector]] option
+
+|p1= option: [[Number]] - can be one of:
+* -1: {{GVI|arma3|2.20}} log remains collector entities into a file in the [[arma.RPT|RPT]] directory - see also the {{Link|Arma 3: Cheats#REMAINS|REMAINS}} cheat and the {{hl|{{Link|Multiplayer Server Commands#Performance Profiling|#logremains}}}} {{Link|Multiplayer Server Commands|server command}}.{{Feature|important|Only available in {{Link|Arma 3: Diagnostics Exe|Diagnostic}}/{{Link|Performance Profiling|Profiling}} branch.}}
+* 0: corpses - returns [disposalPeriod, managerMode, removeLimit, removeMinTime, removeMaxTime, minPlayerDistance, unit1, unit2...]
+* 1: wrecks - returns [disposalPeriod, managerMode, removeLimit, removeMinTime, removeMaxTime, minPlayerDistance, unit1, unit2...]
+* 2: weaponholders - returns [disposalPeriod, managerMode, removeLimit, removeMinTime, removeMaxTime, minPlayerDistance, unit1, unit2...]
+* 3: {{GVI|arma3|2.20}} overrideTimes - returns [overrideTimeCorpses, overrideTimeWrecks, overrideTimeWeaponholders]
+
+|r1= [[Array]] with [disposalPeriod, managerMode, removeLimit, removeMinTime, removeMaxTime, minPlayerDistance, unit1, unit2...] or [overrideTimeCorpses, overrideTimeWrecks, overrideTimeWeaponholders]
+
+|x1= <sqf>hintSilent str diag_remainsCollector 0;</sqf>
+
+|seealso= [[addToRemainsCollector]] [[removeFromRemainsCollector]] [[isInRemainsCollector]]
+}}

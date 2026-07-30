@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Spearhead_1944_Scenario_Guide_Images
+// revision: 371174 (2025-03-02T13:08:09Z)
+// export sha1: lxfqke2070lrtqjvs69gy8h0va05dlm
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Spearhead 1944 Images]]

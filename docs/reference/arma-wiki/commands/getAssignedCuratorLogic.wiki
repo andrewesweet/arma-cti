@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/getAssignedCuratorLogic
+// revision: 340929 (2023-05-13T21:59:54Z)
+// export sha1: 2312o5t30it0llwjbe8ce3jlsind31r
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|arg= global
+
+|gr1= Curator
+
+|descr= Returns curator logic to which given player has access.
+
+|s1= [[getAssignedCuratorLogic]] player
+
+|p1= player: [[Object]]
+
+|r1= [[Object]]
+
+|x1= <sqf>(getAssignedCuratorLogic player) removeCuratorEditableObjects [allDead, true];</sqf>
+
+|seealso= [[allCurators]] [[getAssignedCuratorUnit]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-08-17 - 17:04 (UTC)</dd>
+<dt class="note">[[User:SilentSpike|SilentSpike]]</dt>
+<dd class="note">
+This command will return [[objNull]] if used immediately after the curator logic is assigned to the unit in question (this includes at mission time 0). To avoid problems use the following beforehand:
+<sqf>waitUntil {!isNull (getAssignedCuratorLogic unit)};</sqf>
+</dd>
+
+</dl>

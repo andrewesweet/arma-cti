@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/addBackpackGlobal
+// revision: 369079 (2024-09-02T20:35:57Z)
+// export sha1: 54fur7ylp68vh0nmlil7xz2w29vbda9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|arg= global
+
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Adds a backpack to a unit - global variant of [[addBackpack]].
+{{Feature|warning|
+The backpack added with this command will be created on the PC [[Multiplayer Scripting#Locality|local]] to the unit you are adding it to, even if executed on the server.
+Because of this, if non-local unit is the target and one tries to immediately access added backpack, the backpack returned will be [[objNull|null]].
+When adding backpack dynamically to a remote unit, [[waitUntil|wait until]] the backpack is added (See {{Link|#Example 2}}).
+}}
+
+|s1= unit [[addBackpackGlobal]] backpack
+
+|p1= unit: [[Object]] - soldier
+
+|p2= backpack: [[String]] - backpack class name
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player addBackpackGlobal "B_AssaultPack_khk";</sqf>
+
+|x2= <sqf>
+_unit spawn 
+{
+	if (not isNull backpackContainer _this) then
+	{
+		removeBackpackGlobal _this;
+		waitUntil { sleep 0.01; isNull backpackContainer _this };
+	};
+
+	_this addBackpackGlobal "B_AssaultPack_khk";
+	waitUntil { sleep 0.01; not isNull backpackContainer _this };
+	backpackContainer _this addMagazineCargoGlobal ["30Rnd_556x45_Stanag", 5];
+};
+</sqf>
+
+|seealso= [[addBackpack]] [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]]
+}}

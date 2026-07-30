@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/setCuratorSelected
+// revision: 378373 (2026-04-03T16:53:54Z)
+// export sha1: skka6k1zk4iaqp2489c02aqn93v3gtk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|gr1= Curator
+
+|descr= Clear and set the curator selected items. Leave the items array empty to clear curator selection.
+
+|s1= [[setCuratorSelected]] items
+
+|p1= items: [[Array]] of [[Object]]s, [[Group]]s, [[Waypoint]]s, or [[String]]s - flat array of items to set; strings are marker names
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setCuratorSelected [unit1, group1, [group1, waypointIndex], markerName1];</sqf>
+
+|x2= <sqf>setCuratorSelected [vehicle1, unit1, unit2, unit3, unit4, group1];</sqf>
+
+|seealso= [[curatorMouseOver]] [[curatorSelected]] [[addCuratorSelected]] [[curatorEditableObjects]] [[Arma 3: Curator]]
+}}

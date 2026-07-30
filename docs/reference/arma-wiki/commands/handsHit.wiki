@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/handsHit
+// revision: 329502 (2022-07-29T13:32:42Z)
+// export sha1: qh9a9gwvlwvs5895q0kr5903hth4iy3
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Checks if a soldier's hands are hit, which results in inaccurate aiming.
+
+|s1= [[handsHit]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[Number]] - if the hands are not damaged, the returned value is 0. If the hands are hit or the unit is dead, the returned value is 1.
+
+|x1= <sqs>? (handsHit player == 1) : player globalChat "Ouch! Don't shoot at my hands dammit!"</sqs>
+
+|seealso= [[damage]]
+}}

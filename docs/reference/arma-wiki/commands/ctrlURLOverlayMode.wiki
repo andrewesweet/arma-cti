@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/ctrlURLOverlayMode
+// revision: 330165 (2022-08-23T12:23:58Z)
+// export sha1: 53n4psxz07qr2i9jfkq87ae1bpsuy8s
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= GUI Control
+
+|descr= Returns the URL overlay mode 0, 1, 2 (see [[ctrlSetURLOverlayMode]]) or -1 if something went wrong.
+
+|s1= [[ctrlURLOverlayMode]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_mode = ctrlURLOverlayMode _control; // e.g. 0</sqf>
+
+|seealso= [[ctrlSetURLOverlayMode]] [[ctrlURL]] [[isSteamOverlayEnabled]]
+}}

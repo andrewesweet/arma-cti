@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera_init
+// revision: 349235 (2023-11-08T14:50:55Z)
+// export sha1: lr3aqmlr69g42yw0t9k3tejppcraxq3
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Camera | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Camera
+
+|descr= Initialises a camera.
+
+|s1= [camera] call [[BIS_fnc_camera_init]]
+
+|p1= camera: [[Object]] - the camera
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[BIS_camera] call BIS_fnc_camera_init;</sqf>
+
+|seealso= [[BIS_fnc_camera_deleted]]
+}}

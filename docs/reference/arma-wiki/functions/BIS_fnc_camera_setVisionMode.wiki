@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera_setVisionMode
+// revision: 349280 (2023-11-08T14:51:14Z)
+// export sha1: k9eewlm7pvxyo0a80x4m0hm3z534la2
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Camera | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Camera
+
+|descr= Sets camera vision mode.
+
+|s1= [camera, mode] call [[BIS_fnc_camera_setVisionMode]]
+
+|p1= camera: [[Object]] - the camera
+
+|p2= mode: [[Number]] - (Optional, default 0)
+*0 - no vision mode
+*1 - Night vision
+*2 - Ti
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[BIS_camera,1] call BIS_fnc_camera_setVisionMode;</sqf>
+
+|seealso= [[BIS_fnc_camera_getVisionMode]]
+}}

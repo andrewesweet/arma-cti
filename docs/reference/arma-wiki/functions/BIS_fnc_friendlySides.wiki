@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_friendlySides
+// revision: 341628 (2023-06-12T19:02:54Z)
+// export sha1: 4166r6kqjc149iqebdrfj8k2lbrsfsg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sides
+
+|descr= Returns sides allied to the given side / object.
+
+|s1= toCheck call [[BIS_fnc_friendlySides]]
+
+|p1= toCheck - [[Side]] or [[Object]]: Side or object whose friendly sides should be returned
+
+|r1= [[Array]] of [[Side]]s
+
+|x1= <sqf>player call BIS_fnc_friendlySides; // -can- return [FRIENDLY,WEST,GUER,CIV]</sqf>
+
+|seealso= [[CfgVehicles_Config_Reference#side|CfgVehicles config side value]] [[Side]] [[playerSide]] [[west]] [[east]] [[resistance]] [[civilian]] [[sideLogic]] [[sideFriendly]] [[sideEnemy]] [[sideUnknown]] [[sideEmpty]] [[sideAmbientLife]] [[Side Relations]] [[BIS_fnc_sideID]] [[BIS_fnc_objectSide]]
+}}

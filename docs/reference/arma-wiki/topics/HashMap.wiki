@@ -1,0 +1,329 @@
+// source: https://community.bistudio.com/wiki/HashMap
+// revision: 339000 (2023-04-24T16:22:14Z)
+// export sha1: rtucl75c1n2ijvivzd69zaushr622ta
+// categories: Category:Data Types | Category:Introduced with Arma 3 version 2.02
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GVI|arma3|2.02}}
+
+
+A '''HashMap''' is a specialized data structure that contains key-value pairs.<br>
+HashMaps provide (near) constant-time lookup for keys, making them highly efficient at finding the value associated with a specific key - even if there is a very large amount of keys.<br>
+See {{Link|https://en.wikipedia.org/wiki/Hash_table|Wikipedia}} to learn more about the underlying technology.
+
+While HashMaps and [[Array]]s share many traits (and [[SQF Syntax|SQF]] command names), there are important differences and HashMaps must not be considered as some sort of new or improved replacement for the Array.
+
+
+== HashMap Basics ==
+
+This section introduces the HashMap and its features and is intended to help create a basic understanding of what HashMaps are and what they can be used for.
+
+=== Comparison with Arrays ===
+
+The HashMap and the [[Array]] are both data structures that are used to store multiple elements. Arrays are simple and only store single elements, one after the other, while HashMaps store key-value pairs, where each key uniquely identifies a single value.
+
+Unlike Arrays, HashMaps have no order, i.e. there is no such thing as a first, second, third or last element in a HashMap. As such, the [[a_hash_b|#]] and [[select]] commands can not be used with HashMaps. This also means that the order in which the [[forEach]]-loop processes a HashMap's key-value pairs is not deterministic.
+
+Iterating over all elements in a HashMap is less efficient than doing the same in an Array.
+
+=== Constant-time Key Lookup ===
+
+HashMaps are specifically designed for (near) constant-time lookup of keys.
+
+Consider the following example to understand what that means: Let's say we have an Array that looks like this:
+<sqf>private _playerDataArray = [["Player_A_UID", "Data A-1", "Data A-2" /*, ... */], ["Player_B_UID", "Data B-1", "Data B-2" /*, ... */], ["Player_C_UID", "Data C-1", "Data C-2" /*, ... */] /*, ... */];</sqf>
+We want to find a specific [[getPlayerUID|UID]] so that we can retrieve the corresponding data. We can easily achieve that using the [[findIf]] command:
+<sqf>
+_index = _playerDataArray findIf {_x # 0 isEqualTo "Wanted_UID"};
+_data = _playerDataArray # _index;
+</sqf>
+But what [[findIf]] actually does for us is something like this:
+<sqf>
+{
+	if (_x # 0 isEqualTo "Wanted_UID") then
+	{
+		breakWith _forEachIndex;
+	};
+} forEach _playerDataArray;
+</sqf>
+Now consider how many [[isEqualTo]] comparisons this [[forEach]]-loop has to perform: If the element identified by "Wanted_UID" is stored at or near the end of <sqf inline>_playerDataArray</sqf>, then our code has to go through (almost) the entire Array to find it - and the same is the case if the element we are looking for does not exist in our Array.
+
+Every single one of these comparisons takes some time - not much, but it will add up eventually. This is no problem as long as our Array is relatively small, but it becomes a serious issue when the Array starts growing: If there are 10,000 elements in the Array that means up to 10,000 comparisons might be necessary just to find a single element, if there are 100,000 elements that means up to 100,000 comparisons and so on - the amount of steps and time needed to find an element grows linearly with the Array size.<br>
+
+And this is where HashMaps come in. Simply put: When a key-value pair is inserted into a HashMap, a hash function is applied to the key to determine the position at which the key-value pair is going to be stored. Then, when we want to retrieve the value associated with a specific key, the same hash function ({{arma3}} uses {{Link|https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function|FNV-1a 64-bit}}) is applied to that key and the resulting position tells the HashMap exactly where to find the key-value pair that we are looking for.
+<sqf>private _data = _playerDataHashMap get "Wanted_UID";</sqf>
+Since the process to find a given key-value pair is always the same (apply hash function, look at the resulting position, return the value that is stored there), it also always takes (more or less) the same amount of time - regardless of the size of the HashMap.
+
+That is what constant-time lookup for keys means. And it comes with very useful benefits: The procedures to search for, retrieve, modify or remove a specific element can all be completed in constant time; whether the HashMap contains 10, 10,000 or 1,000,000 elements does not matter.
+
+
+== Working with HashMaps ==
+
+=== Supported Key Types ===
+
+Because of the requirement for the keys to be hashable (and constant), not all [[:Category: Data Types| Data Types]] can be used as keys.
+
+Supported types are limited to:
+{{Columns|3|
+* [[Array]]
+* [[Boolean]]
+* [[Code]]
+* [[Config]]
+* [[Namespace]]
+* [[NaN]] <!-- TODO: What's up with this? -->
+* [[Number]]
+* [[Side]]
+* [[String]]
+}}
+
+{{Feature|important|
+* For some unsupported key types, such as [[Object]]s, a workaround can be used. See [[#Unsupported_Key_Types|Unsupported Key Types]].
+* [[Array]] keys can only contain supported types.
+* [[Array]] keys are deep-copied on insertion and cannot be modified when retrieved via [[keys]] or inside [[forEach]].
+* The virtual type [[HashMapKey]] is a combination of all the supported types.}}
+
+=== Creating a HashMap ===
+
+<sqf>
+// example of an empty HashMap:
+private _myMap = createHashMap;
+count _myMap; // returns 0
+
+// example of a prefilled HashMap:
+private _myFilledMap = createHashMapFromArray [["a",1], ["b",2], ["c", 3]];
+count _myFilledMap; // returns 3
+</sqf>
+
+=== Setting an element ===
+
+<sqf>
+private _myMap = createHashMap;
+_myMap set [1, "hello there"]; // _myMap is [[1, "hello there"]]
+</sqf>
+
+Inserting an element with a key that already exists inside the HashMap will overwrite the existing key.
+<sqf>
+private _myMap = createHashMapFromArray [["a",1], ["b",2]];
+private _overwritten = _myMap set ["a", 1337]; // _myMap is now [["a",1337], ["b",2]] and _overwritten is true
+</sqf>
+
+=== Getting an element ===
+
+Values are retrieved by their key:
+<sqf>
+private _myMap = createHashMapFromArray [["a",1], ["b",2]];
+_myMap get "a"; // returns 1
+_myMap get "z"; // returns Nothing
+_myMap getOrDefault ["z", "NotFound"]; // returns "NotFound"
+// alternatively
+_myMap getOrDefaultCall ["z", { systemChat "key 'z' does not exist, creating it"; "26"; }, true];
+</sqf>
+
+=== Removing an element ===
+
+Elements can be removed (deleted) from the HashMap using [[deleteAt]] with the element's key:
+<sqf>
+private _myMap = createHashMapFromArray [["a",1], ["b",2]];
+_myMap deleteAt "b"; // _myMap is "a",1
+</sqf>
+
+=== Checking if an element exists ===
+
+It is possible to check if a key is present in the HashMap using the [[in]] command:
+<sqf>
+private _myMap = createHashMapFromArray [["a",1], ["b",2]];
+"a" in _myMap; // returns true
+"z" in _myMap; // returns false
+</sqf>
+
+=== Counting elements ===
+
+The [[count]] command can be used to return the number of key-value pairs stored in the HashMap:
+<sqf>
+private _myMap = createHashMapFromArray [["a",1], ["b",2]];
+count _myMap ; // returns 2
+</sqf>
+
+=== Retrieving keys ===
+
+Retrieving an [[Array]] of all keys in the HashMap using the [[keys]] command:
+<sqf>
+private _myMap = createHashMapFromArray [["a",1], ["b",2]];
+keys _myMap; // returns ["a", "b"]
+</sqf>
+
+=== HashMap variables ===
+
+A HashMap variable is a reference to the HashMap (see {{Link|https://en.wikipedia.org/wiki/Reference_(computer_science)|Wikipedia}}); this means that if the HashMap is edited, all scripts and functions using this HashMap will see the changes.
+<sqf>
+private _myMap = createHashMapFromArray [["a",1], ["b",2], ["c",3]];
+private _myNewMap = _myMap;
+_myMap set ["z", 4];
+_myNewMap get "z"; // returns 4
+</sqf>
+
+A HashMap set through [[setVariable]] does not need to be assigned again:
+<sqf>
+player setVariable ["myMap", createHashMapFromArray [["a",1], ["b",2], ["c",3]]];
+private _myMap = player getVariable "myMap";
+_myMap set ["z", 4];
+player getVariable "myMap"; // returns [["a",1], ["b",2], ["c",3], ["z",4]]
+</sqf>
+
+=== Copying a HashMap ===
+
+<sqf>
+private _myMap = createHashMapFromArray [["a",1], ["b",2]];
+private _myNewMap = _myMap;
+_myMap set ["a", 1337];
+_myNewMap get "a"; // returns 1337
+</sqf>
+
+In order to avoid this behaviour, '''copy''' the HashMap with [[+|+ (plus)]]:
+<sqf>
+private _myMap = createHashMapFromArray [["a",1], ["b",2]];
+private _myNewMap = +_myMap;
+_myMap set ["a", 1337];
+_myNewMap get "a"; // still 1
+</sqf>
+
+[[Array]]s stored as key or value in the HashMap will also be deep-copied.
+
+
+== Advanced Usage ==
+
+=== Iterating through a HashMap ===
+
+In general, HashMaps have to be considered unordered. While iterating through them is possible with [[forEach]], it is less efficient than looping through [[Array]]s.
+<sqf>
+private _myMap = createHashMapFromArray [["a", 1], ["b", 2]];
+{ systemChat str [_x, _y] } forEach _myMap;
+</sqf>
+
+When iterating through a HashMap with [[forEach]], {{hl|[[Magic Variables#x|_x]]}} contains the key of the current element and {{hl|[[_y]]}} contains the corresponding value.
+
+=== Merging two HashMaps ===
+
+Two HashMaps can be merged together using [[merge]].
+<sqf>_hashMap1 merge _hashMap2;</sqf>
+
+=== Unsupported Key Types ===
+
+For some unsupported data types, such as [[Object]]s, the following workaround can be used, as long as they're supported by the [[hashValue]] command:
+<sqf>
+TAG_fnc_set = {
+	params ["_hashmap", "_key", "_value"];
+	isNil {
+		private _hash = hashValue _key;
+		private _keyVals = _hashmap getOrDefault [_hash, [[],[]], true]; // uses an array to resolve any potential hash collision
+		
+		private _keyIndex = _keyVals#0 find _key;
+		if (_keyIndex < 0) then {
+			_keyVals#0 pushBack _key;
+			_keyVals#1 pushBack _value;
+		} else {
+			_keyVals#1 set [_keyIndex, _value];
+		};
+	};
+};
+TAG_fnc_get = {
+	params ["_hashmap", "_key", "_defaultValue"];
+	private "_return";
+	isNil { // force unscheduled check
+		private _hash = hashValue _key;
+		private _keyVals = _hashmap getOrDefault [_hash, [[],[]]];
+		_return = _keyVals#1 param [_keyVals#0 find _key, _defaultValue];
+	};
+	_return;
+};
+TAG_fnc_remove = {
+	params ["_hashmap", "_key"];
+	isNil { // force unscheduled check
+		private _hash = hashValue _key;
+		private _keyVals = _hashmap getOrDefault [_hash, [[],[]]];
+		private _keyIndex = _keyVals#0 find _key;
+		if (_keyIndex >= 0) then {
+			_keyVals#0 deleteAt _keyIndex;
+			_keyVals#1 deleteAt _keyIndex;
+		};
+	};
+};
+
+// Example: Add the player object to hashmap (assuming player is not null)
+private _tempHashmap = createHashMap;
+[_tempHashmap, player, 1] call TAG_fnc_set; // add the player object as key, and 1 as its value
+private _value1 = [_tempHashmap, player, 2] call TAG_fnc_get; // will return 1
+private _value2 = [_tempHashmap, objNull, 2] call TAG_fnc_get; // will return 2, the default value
+</sqf>
+
+The above example can be extended to add support for iterations, etc. as well.
+
+=== Automagic assignation ===
+
+Keys can be prefixed by an underscore so that the HashMap can be converted to private variables on-the-fly using [[params]]. This can be useful if a HashMap is kept alive for a long time and its values need to be accessed often, or to further simplify passing data between computers. Here's an example with a simple vehicle respawn system:
+
+<sqf>
+private _vehicleHashMaps = nearestObjects [player, ["LandVehicle"], 50] apply
+{
+	createHashMapFromArray
+	[
+		["_vehicle", _x],
+		["_class", typeOf _x],
+		["_startPos", getPosATL _x],
+		["_respawnTimeout", 10*60],
+		["_lastSeenAlive", diag_tickTime]
+	]
+};
+
+_vehicleHashMaps spawn
+{
+	while {true} do
+	{
+		{
+			_settings = _x;
+			(values _settings) params (keys _settings); // automagic assignation of each value to a private variable of its key name
+
+			if (alive _vehicle) then
+			{
+				_settings set ["_lastSeenAlive", diag_tickTime];
+			}
+			else
+			{
+				if (diag_tickTime - _lastSeenAlive >= _respawnTimeout) then
+				{
+					deleteVehicle _vehicle;
+					_vehicle = createVehicle [_class, _startPos, [], 0, "NONE"];
+					_settings set ["_vehicle", _vehicle];
+					_settings set ["_lastSeenAlive", diag_tickTime];
+				};
+			};
+
+			sleep 1;
+		} forEach _this;
+
+		sleep 60;
+	};
+};
+</sqf>
+
+== Common Errors ==
+
+=== Scalar Key Precision ===
+
+[[Number]]s in {{arma3}} are floating point numbers, and because there are gaps between floating point numbers, rounding is necessary - see also {{Link|https://en.wikipedia.org/wiki/Single-precision_floating-point_format|Wikipedia}}. For example, 87654316, 87654317, 87654318, 87654319, 87654320, 87654321, 87654322, 87654323 and 87654324 will all be rounded to and treated as the same value by the game engine (because the actual value of each of these numbers can not be represented as an {{arma3}} floating point number). Similar problems occur with fractional numbers:
+<sqf>
+// this will return false:
+(0.3 + 0.4 == 0.7)
+</sqf>
+
+This means that using very large numbers or fractional numbers as HashMap keys has to be done cautiously to avoid accidentally overwriting existing keys.
+
+
+== See Also ==
+
+* [[:Category:Command Group: HashMap|All HashMap commands]] 
+
+
+[[Category:Data Types]]
+[[Category:Introduced with Arma 3 version 2.02]]

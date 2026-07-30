@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getObjectViewDistance
+// revision: 310797 (2022-05-07T20:21:54Z)
+// export sha1: cn32tosn9dw4nbu93i45jh731c5644c
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Command Group: System | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.48
+
+|gr1= System
+
+|gr2= Environment
+
+|descr= Gets the values of rendering distances of objects and shadows.
+
+|s1= '''getObjectViewDistance'''
+
+|r1= [[Array]] - in format [objectDistance, shadowDistance]
+
+|x1= <sqf>_arr = getObjectViewDistance;</sqf>
+
+|seealso= [[setObjectViewDistance]] [[setViewDistance]] [[viewDistance]] [[setDetailMapBlendPars]] [[setTerrainGrid]]
+}}

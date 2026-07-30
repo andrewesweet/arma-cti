@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/getCompatiblePylonMagazines
+// revision: 310717 (2022-05-07T19:43:40Z)
+// export sha1: aa3mns1b3isldod3x2ry1mux77nz3ex
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Loadouts | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= Vehicle Loadouts
+
+|descr= Get array of compatible pylon magazines
+
+|s1= vehicle [[getCompatiblePylonMagazines]] pylon
+
+|p1= vehicle: [[Object]] or [[String]] - aircraft object or config class
+
+|p2= pylon: [[Number]] or [[String]]
+* If [[String]] - pylon class name from {{hl|TransportPylonsComponent &gt;&gt; pylons}} class 
+* If [[Number]] - pylon ID
+* If an invalid pylon ID or class name is provided, such as 0 or "", all compatible magazines from all pylons are returned.
+
+|r1= [[Array]] of [[String]]s, or [[Array]] of [[Array]] of [[String]]s
+
+|x1= <sqf>
+// returns array of arrays containing all compatible magazines
+vehicle player getCompatiblePylonMagazines 0;
+</sqf>
+
+|x2= <sqf>
+// returns array of compatible magazines for the 3rd pylon if it exists; otherwise returns array of arrays (see above)
+jet1 getCompatiblePylonMagazines 3;
+</sqf>
+
+|x3= <sqf>
+// returns array of compatible magazines for "pylon1" class, defined in
+// configFile >> "CfgVehicles" >> "B_Plane_CAS_01_dynamicLoadout_F" >> "Components" >> "TransportPylonsComponent" >> "Pylons"
+"B_Plane_CAS_01_dynamicLoadout_F" getCompatiblePylonMagazines "pylon1";
+</sqf>
+
+|seealso= [[Arma 3: Vehicle Loadouts]] [[getPylonMagazines]] [[setAmmoOnPylon]] [[ammoOnPylon]] [[animatePylon]] [[animateBay]] [[setPylonsPriority]] [[setPylonLoadout]]
+}}

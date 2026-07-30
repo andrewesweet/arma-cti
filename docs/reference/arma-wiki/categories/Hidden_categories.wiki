@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Hidden_categories
+// revision: 137648 (2019-09-19T20:13:04Z)
+// export sha1: 5ynd21pxmuee1zmo8hf204qg8pdoa16
+// Vendored snapshot. Do not edit — re-export instead.
+
+See mediawiki's [http://www.mediawiki.org/wiki/Help:Categories#Hidden_categories Hidden Categories article].<br>
+Go to [[Special:Preferences#mw-prefsection-rendering|Appearance]] In [[Special:Preferences|Preferences]] to show/hide hidden categories.
+
+
+[[Category:Maintenance]]

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getVirtualMagazineCargo
+// revision: 348659 (2023-11-08T13:48:27Z)
+// export sha1: fr9ov7d6160d94gxsexwcyya316yrk5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Functions | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= Inventory
+
+|descr=Get virtual magazines from an object (e.g., ammo box). Virtual items can be selected in the [[Arsenal]].
+
+|s1= object call [[BIS_fnc_getVirtualMagazineCargo]]
+
+|p1=object: [[Object]]
+
+|r1= [[Array]] of [[String]]s - all virtual magazines
+
+|x1= <sqf>BIS_ammoBox call BIS_fnc_getVirtualMagazineCargo;</sqf>
+
+|seealso= [[Arsenal]] [[BIS_fnc_addVirtualBackpackCargo]] [[BIS_fnc_addVirtualItemCargo]] [[BIS_fnc_addVirtualMagazineCargo]] [[BIS_fnc_addVirtualWeaponCargo]] [[BIS_fnc_arsenal]] [[BIS_fnc_getVirtualBackpackCargo]] [[BIS_fnc_getVirtualItemCargo]] [[BIS_fnc_getVirtualWeaponCargo]] [[BIS_fnc_removeVirtualBackpackCargo]] [[BIS_fnc_removeVirtualItemCargo]] [[BIS_fnc_removeVirtualMagazineCargo]] [[BIS_fnc_removeVirtualWeaponCargo]]
+}}

@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/fadeEnvironment
+// revision: 338929 (2023-04-17T15:30:39Z)
+// export sha1: swvyjaeka16p24x858lx7eozc7ggc8q
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|eff= local
+
+|gr1= Sounds
+
+|descr= Changes the master environment volume smoothly within the given time and is different from [[enableEnvironment]] global mute option. The default volume is 1.<br>
+Influenced sounds, among others, are:
+{{Columns|2|
+* forest sounds (birds, crickets, ...)
+* waves
+* wind
+* rain
+* object sounds (air conditioners, ...)
+* {{GVI|arma3|2.06|size= 0.75}} thunder
+}}
+
+|s1= time [[fadeEnvironment]] volume
+
+|p1= time: [[Number]] - fade interval in seconds
+
+|p2= volume: [[Number]] - speech volume in range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>5 fadeEnvironment 0.1;</sqf>
+
+|seealso= [[environmentVolume]] [[fadeSpeech]] [[fadeRadio]] [[fadeSound]] [[fadeMusic]] [[soundVolume]] [[musicVolume]] [[radioVolume]] [[speechVolume]] [[enableEnvironment]] [[environmentEnabled]]
+}}

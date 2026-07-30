@@ -1,0 +1,3511 @@
+// source: https://community.bistudio.com/wiki/CfgVehicles_Config_Reference
+// revision: 378791 (2026-06-14T23:14:28Z)
+// export sha1: 6bh6lxfm4svwtv9a7bqts6padxjj87p
+// categories: Category:ArmA: Armed Assault: Addon Configuration | Category:Arma 3: Vehicle Configuration | Category:Operation Flashpoint: Editing | Category:Operation Flashpoint: Modelling | Category:Operation Flashpoint: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Introduction ==
+
+<big>TokenName Config.cpp Reference</big>
+
+Simply put, Token Name & Value pairs are as follows
+
+<syntaxhighlight lang="cpp">
+SomeName = SomeValue;
+</syntaxhighlight>
+
+Token Names are used extensively throughout {{ofp}} 'text' files.
+
+An example is, when creating a model using class statements inside a [[Config.cpp]], to access it later, via the mission editor
+
+<syntaxhighlight lang="cpp">
+scope = 2;
+</syntaxhighlight>
+
+This article details the token-names specifically available within the '''[[Models & Classnames: CfgVehicles - Vehicles|CfgVehicles]]''' class of a [[Config.cpp]]. The primary focus of this document is the TokenNames used for various aspects of controlling models within '''Addons'''.
+
+Unlike a command reference, where one meaning fits all, Token names are '''not''' verbs. The meaning of the name, it is effect, can be different, depending on context. You are advised therefore, that these names, as listed, apply ''only'' to the CfgVehicles class. They may, or may not, have identical meanings (if found), in other classes.
+
+This article lists token names, their value ranges, and their type.
+
+=== TokenTypes ===
+
+{| class="wikitable"
+|-
+! Token Type !! Description !! Example
+|-
+| [[TokenNameValueTypes#Integers|Integer]]|| A signed value that will be held in 4 bytes.|| 	<syntaxhighlight lang="cpp">token = 1;</syntaxhighlight>
+|-
+| [[TokenNameValueTypes#Boolean|Boolean]]|| An [[TokenNameValueTypes#Integers|Integer]] value of 0 or 1. This is a 'convenience type' in humanly readable text. The engine stores it as an integer.<br>For Elite only: '''All strings must be enclosed in quotes'''. || <syntaxhighlight lang="cpp">token = true;</syntaxhighlight>
+|-
+| [[TokenNameValueTypes#Strings|String]]|| Any string value || <syntaxhighlight lang="cpp">token = "SomeString";</syntaxhighlight>
+|-
+| [[TokenNameValueTypes#Arrays|Array]]|| An array || <syntaxhighlight lang="cpp">token[] = { ... };</syntaxhighlight>
+|-
+| Float Array || An array of floats || <syntaxhighlight lang="cpp">token[] = { 0.5, 0.3, 0.05 };</syntaxhighlight>
+|-
+| String Array|| An array of strings|| <syntaxhighlight lang="cpp">token[] = { "String1", "String2" };</syntaxhighlight>
+|-
+| Integer Array|| An array of integers|| <syntaxhighlight lang="cpp">token[] = { 0, 1, 2 };</syntaxhighlight>
+|-
+| Complex Array || A mixture of multiple types, including embedded arrays. || <syntaxhighlight lang="cpp">token[] = { "String", 1, 0.5, true };</syntaxhighlight>
+|-
+| Variable Array || The number of elements for '''this''' array in '''this''' class model can have a varying number of elements (depending on context)||
+|-
+|}
+
+=== Filenames and Paths ===
+
+Filenames are case '''in'''sensitive.
+
+==== Pbo File conventions ====
+The root path of the filename is (generally) the name of the pbo
+
+<syntaxhighlight lang="cpp">
+model= "\anypbofile\anywhere\....";
+</syntaxhighlight>
+
+note the pbo extension is inferred
+
+'''anywhere''' is an (optional) (series of) folder(s) INSIDE the pbo.
+
+Depending on the file referred to, eg a p3d file for a model, the extension (in this case .p3d) is not required.
+
+==== p3d files ====
+<syntaxhighlight lang="cpp">
+model = "\anypbofilename\anyp3d(.p3d)";
+</syntaxhighlight>
+
+==== paa/pac ====
+Wherever these file types are indicated, the default extension is paa
+
+<syntaxhighlight lang="cpp">
+icon = "\somepbo\anyicon(.paa)";
+</syntaxhighlight>
+
+==== jpeg ====
+jpeg pictures are usable anywhere a pac (or pac) file is indicated. It is never default.
+
+<u>Exception</u>: Operation Flashpoint: Elite specifically, cannot handle jpg.
+
+<syntaxhighlight lang="cpp">
+picture = "\AnyPbo\AnyPicture.jpg";
+</syntaxhighlight>
+
+==== Sound files ====
+wss is the default extension if not declared.
+
+<syntaxhighlight lang="cpp">
+sound = "\AnyPbo\AnySoundFolder\AnySound(.wss)";
+</syntaxhighlight>
+
+Otherwise use Ogg Vorbis format (extension .ogg).
+
+=== Vehicle vs 'Vehicle' ===
+
+In this document. a vehicle, is a true vehicle of some kind. Be it a tank, or a car.
+
+A 'vehicle' on the other hand covers cfgVehicles as defined in a config.cpp which would include '''men''' or '''buildings''', since {{ofp}} considers them ''all'' to be 'vehicles'
+
+=== Config.bin vs Config.cpp ===
+
+<u>By convention only</u>, [[Config.cpp|config.'''cpp''']] is the humanly readable text equivalent of [[Config.bin|config.'''bin''']].
+
+The engine will accept either or '''both'''.
+
+When both are encountered, it is the <u>text</u> file that is predominant (the raPified file is ignored). (Which is the text file, and which is the 'binary' is moot, see below).
+
+While unusual to have both, it is common for an addon, eg a pbo, to have '''both''' inside where the config.cpp is a 'work in progress' that might later be 'binarised' to raP, and the cpp removed.
+
+=== raP files ===
+
+So-called 'binarised' or 'binary' files are encoded in [[raP File Format - Elite | raP file format]]. They are not in the conventional sense a "binary"&mdash;machine readable code or data&mdash;but rather a more convenient encoded form of the text file (from the engine's perspective). They represent the stripping out of comments and extraneous crud, with bells on. For example, save files are raP encoded, just like config.bin is.
+
+By convention only, a config.cpp is a text file. The engine does not actually care; if it encounters a config.cpp with a raP signature, it is treated as per a config.bin.
+
+The engine unconditionally converts text files to raP encoding before it uses it further. This (obviously) slows game or mission loading and (less obviously) is a source of 'undocumented features'. Prior to finishing your addon, it is a Good Idea&trade; to 'binarise' the config into raP encoding and rename the cpp file to .txt for documentation purposes.
+
+
+== Alphabetical Order ==
+
+=== A ===
+
+==== ...Action ====
+[[TokenNameValueTypes#Strings|String]] : defaults ManActCargo
+
+<syntaxhighlight lang="cpp">
+commanderAction =	"ManActM60CommanderOut";
+driverAction =		"ManActShipDriver";
+gunnerAction =		"ManActJeepGunner";
+commanderInAction =	"ManActTestDriver";
+driverInAction =	"ManActM113Driver";
+gunnerInAction =	"ManActM1A1Gunner";
+getInAction =		ManActGetInTank;	// default
+getOutAction =		ManActGetOutTank;	// default
+</syntaxhighlight>
+
+===== cargoAction =====
+Variable String [[TokenNameValueTypes#Arrays|Array]]: default {ManActCargo}
+
+<syntaxhighlight lang="cpp">
+cargoAction[] = { "ManActM113Medic", "ManActM113Medic", "ManActM113Injured" };
+</syntaxhighlight>
+
+'''Note''' that unlike driverAction and gunnerAction this is an array. (for multiple positions)
+
+The number of elements in this array correspond to the [[#transportSoldier]] value declared for this class.
+
+see [[#cargoIsCoDriver]]
+
+==== ...AngleX/Y ====
+[[TokenNameValueTypes#Floats|Float]] Degrees
+
+<syntaxhighlight lang="cpp">
+initAngleX = 0;
+minAngleX = -30;
+maxAngleX = 30;
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+initAngleY = 0;
+minAngleY = -100;
+maxAngleY = 100;
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+initFov = 0.700000;
+minFov = 0.420000;
+maxFov = 0.850000;
+</syntaxhighlight>
+
+used by car.ViewPilot class
+
+==== angle ====
+[[TokenNameValueTypes#Floats|Float]]: Degrees
+
+<syntaxhighlight lang="cpp">
+angle = -240;
+</syntaxhighlight>
+
+see [[#Indicator... Class]] Or [[#Hatch... Class]]
+
+==== access ====
+[[TokenNameValueTypes#Integers|Integer]]: Determines the manipulability of the class.
+
+<syntaxhighlight lang="cpp">
+access = 1;
+</syntaxhighlight>
+
+0 ReadAndWrite additional values can be added
+1 ReadAndCreate only adding new class members is allowed
+2 ReadOnly no modifications enabled
+3 ReadOnlyVerified no modifications enabled, CRC test applied
+
+All ''BIS'' classes are '''ReadOnlyVerified''' and can only be inherited into a new class
+
+==== accuracy ====
+[[TokenNameValueTypes#Floats|Float]]: Default value = 0.02.
+
+Determines how easy an object is to identify. Smaller values are easier to detect.
+
+Typically, buildings are 0.2, vehicles, 0.5
+
+'''A value of 1000 causes the underlying class to be identified instead'''. Eg bushy trees, pink trees and yellow trees, can all be 'identified' as "trees". The description "bushy trees" is then used solely when Editing. See [[#VehicleClass]]
+
+<syntaxhighlight lang="cpp">
+accuracy = 0.2;			// buildings
+accuracy = 0.5;			// small vehicles
+accuracy = 0.9;			// truck
+accuracy = 3.500000;	// sniper
+accuracy = 1.500000;	// lawsoldier
+accuracy = 1000;		// soldier - identify (most) soldiers as 'man'
+</syntaxhighlight>
+
+Relationship to [[#camouflage]]:
+
+'''accuracy''' defines how hard it is for the AI to recognise the correct class of a unit. But even if it can't recognise the correct class it can still recognise it as an enemy and engage it.
+
+'''camouflage''' defines how hard it is for the AI to ''see'' that the unit is there.
+
+<u>Related TokenNames</u>
+[[#scope]], [[#accuracy]], [[#displayName]], [[#vehicleClass]], [[#nameSound]], [[#camouflage]]
+
+==== acceleration ====
+[[TokenNameValueTypes#Floats|Float]]: metres per second
+
+<syntaxhighlight lang="cpp">
+acceleration = 7;
+</syntaxhighlight>
+
+==== airFriction ====
+[[TokenNameValueTypes#Arrays|Array]]: 3 separate tokens, airFriction0[], airFriction1[], airFriction2[] that define the X Y and Z component respectively.
+
+<syntaxhighlight lang="cpp">
+airFriction2[] = { 25, 12, 2.500000 };
+</syntaxhighlight>
+
+==== airFrictionCoefs... ====
+[[TokenNameValueTypes#Arrays|Array]]: tokens for defining the friction behaviour of planes, introduced with Arma 3 Jets DLC. They define the airfriction for planes with simulation = "PlaneX". Untested if applicable to other objects as well. The values in each array define the X, Y and Z coefficients respectively. The friction force in a certain axis is calculated ingame by F_friction = v * abs( v ) * airFrictionCoefs2+ v * airFrictionCoefs1+ (sign of v) * airFrictionCoefs0; where "v" is the speed of the plane in that particular axis.
+
+<syntaxhighlight lang="cpp">
+airFrictionCoefs2[] = { 0.00100, 0.00050, 0.00006};
+airFrictionCoefs1[] = { 0.100, 0.050, 0.006 };
+airFrictionCoefs0[] = { 0.0, 0.0, 0.0 };
+</syntaxhighlight>
+
+==== ambient ====
+Float [[TokenNameValueTypes#Arrays|Array]]:
+
+<syntaxhighlight lang="cpp">
+ambient[] = { 0.07, 0.07, 0.07, 1.0 };
+</syntaxhighlight>
+
+See [[#Reflectors Class]], [[#Light Class]], [[#CargoLight Class]]
+
+==== animated ====
+[[TokenNameValueTypes#Boolean|Boolean]] : Default Value true
+
+Used by class models that inherit an animated 'vehicle' to turn those aspects of the vehicle off.
+
+<syntaxhighlight lang="cpp">
+animated = false;
+</syntaxhighlight>
+
+model is animated, or not.
+
+when set true, the animation class, if any, happens, otherwise it doesn't
+
+see animations class
+
+==== animPeriod ====
+[[TokenNameValueTypes#Floats|Float]]: Seconds.
+
+This TokenName is generally used inside AnimationSources class (ArmA only). It's use in OFP:R is as follows
+
+<syntaxhighlight lang="cpp">
+animPeriod = 1.33; // a fountain
+</syntaxhighlight>
+
+==== animation... ====
+[[TokenNameValueTypes#Strings|String]]: These animation strings point to rtm files to create the movement.
+
+<syntaxhighlight lang="cpp">
+animationFlag = "\AnyAddon\AnyRTM(.rtm)";	// to wiggle flag in wind
+animationOpen = "\AnyAddon\AnyRTM(.rtm)";	// to open or close doors (eg)
+animationDrop = "\AnyAddon\AnyRTM(.rtm)";
+</syntaxhighlight>
+
+==== animationList[] ====
+[[TokenNameValueTypes#Arrays|Array]] format [<nowiki/>[[TokenNameValueTypes#Strings|String]], [[TokenNameValueTypes#Floats|Float]]<nowiki/>]
+
+(possibly introduced in {{GVI|arma3|1.24|size= 0.75}} when other randomisation features were added)
+
+Array of animation sources to randomize the vehicle with similar to facewear/headgear randomization for characters (See {{Link|Arma 3: Characters And Gear Encoding Guide#FIA headgear and facewear randomization}}; format is:
+
+<syntaxhighlight lang="cpp">
+animationList[] = { "animation1", weight1, "animation2", weight2, etc. };
+</syntaxhighlight>
+
+Animations must be classes from the vehicle's AnimationSources. If all the weights are the same value, it functions as straight equal randomisation.
+
+Example:
+<syntaxhighlight lang="cpp">
+class MyAPC : B_APC_Wheeled_01_cannon_F
+{
+	animationList[] = {
+		"showBags", 0,
+		"showCamonetHull", 0.5,
+		"showCamonetCannon", 0.75,
+		"showCamonetTurret", 1,
+		"showSLATHull", 1,
+		"showSLATTurret", 1
+	};
+};
+</syntaxhighlight>
+
+==== animationSource... ====
+[[TokenNameValueTypes#Strings|String]]
+
+<syntaxhighlight lang="cpp">
+animationSourceBody = "Turret_2";
+animationSourceGun = "Gun_2";
+animationSourceHatch = "hatchCommander";
+animationSourceElevation = ""; // new in Arma 3
+animationSourceCamElevation =""; // new in Arma 3
+</syntaxhighlight>
+
+==== armor (integer) ====
+[[TokenNameValueTypes#Floats|Float]]: A strength value of the object, how much external damage can be taken before 'destruction'. It is calculated together with object volume size! (bounding sphere calculated in geometry) Below are general ranges to give some idea.
+
+<syntaxhighlight lang="cpp">
+approx strength = (0.27/tgtRadius)^2 / armorInConfig
+
+armor = 3;			// man
+armor = 10;			// motorcycle
+armor = 20;			// a small car
+armor = 15..60;		// aircraft
+armor = 150;		// buildings
+armor = 150..300;	// bmp
+armor = 400...900;	// tank
+armor = 300;		// boat
+armor = 10000;		// ship
+</syntaxhighlight>
+
+If unspecified (or not inherited) the default value is 30
+
+* 1 bullet will kill armor <= 20
+* 2 bullets <= 40
+* 3 bullets 50
+
+==== armor (float) ====
+[[TokenNameValueTypes#Floats|Float]]: The floating version of armor type is only used in Hit... classes, eg HitTurret HitBody
+
+<syntaxhighlight lang="cpp">
+armor = 1.4;	// a bee
+armor = 0.8;	// a turret
+</syntaxhighlight>
+
+<u>Related TokenNames</u>: [[#armor (float)]], [[#material]], [[#name]], [[#passThrough]]
+
+==== armor... ====
+[[TokenNameValueTypes#Floats|Float]]:
+
+<syntaxhighlight lang="cpp">
+// for vehicles general
+armorStructural= 1;	// ranges between 1 and 4.0, default 1
+armorFuel = 1.4;	// default
+armorGlass = 0.5;	// default
+armorLights = 0.4;	// default 0.4 in all models.
+armorWheels = 0.05;	// default
+// for tanks
+armorHull = 1;
+armorTurret = 0.8;
+armorGun = 0.6;
+armorEngine = 0.8;
+armorTracks = 0.6;
+// for men
+armorHead = 0.7;
+armorHands = 0.5;
+armorLegs = 0.5;
+// helicopters
+armorHull = 0.5;
+armorEngine = 0.6;
+armorAvionics = 1.4;
+armorVRotor = 0.5;
+armorHRotor = 0.7;
+armorMissiles = 1.6;
+armorGlass = 0.5;
+</syntaxhighlight>
+
+==== assembleInfo ====
+Used for both vehicles that can be diassembled and backpacks that are assembled into vehicles (static guns, drones, etc.)
+
+Class values for backpacks, primary part:
+<syntaxhighlight lang="cpp">
+class assembleInfo
+{
+	assembleTo = "I_G_HMG_02_high_F";	// Backpack assembles into this vehicle
+	primary = 1;						// This backpack is main part, when assembly is done, its "assembleTo" class will be used for created vehicle
+	base[] = { "B_HMG_02_support_high_F", "O_HMG_02_support_high_F" , "I_HMG_02_support_high_F" }; // And requires these entities as second part (tripod), can be any number of classnames
+	displayName = "Static MG";			// String that will be shown in "Assemble X" mouse wheel menu action
+	dissasembleTo[] = {};				// Backpacks are not disassembled futher, but empty array is required here anyways
+};
+</syntaxhighlight>
+
+Second part (tripod) only needs <syntaxhighlight lang="cpp" inline>primary = 0;</syntaxhighlight>:
+<syntaxhighlight lang="cpp">
+class assembleInfo
+{
+	assembleTo = "";
+	primary = 0;
+	base = "";
+	displayName = "";
+	dissasembleTo[] = {};
+};
+</syntaxhighlight>
+
+If no second part is needed for assembly, primary backpack's "base" have to be empty string: <syntaxhighlight lang="cpp" inline>base = "";</syntaxhighlight>
+
+Vehicles disassembly info:
+<syntaxhighlight lang="cpp">
+class assembleInfo
+{
+	assembleTo = "";
+	primary = 0;
+	base = "";
+	displayName = "";
+	dissasembleTo[] = { "B_HMG_02_high_weapon_F", "B_HMG_02_support_high_F" }; // Vehicle will be disassembled into these backpacks. Max 2 allowed.
+};
+</syntaxhighlight>
+Note the typo in "dissasembleTo" property, engine expects it like this. Empty values have to be provided to avoid missing config values errors.
+
+Note: Vehicle keeps track which second part (tripod) was used when it was assembled and its used again when you disassemble it back.
+
+==== attendant ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false
+
+Used for 'vehicles' to repair other 'vehicles'. Thus a hospital has an attendant that can repair soldiers. Adds the action "Heal at XXX"
+
+<syntaxhighlight lang="cpp">
+attendant = true;
+</syntaxhighlight>
+
+<u>Related TokenNames</u>: [[#hiddenSelections]]
+
+==== audible ====
+[[TokenNameValueTypes#Floats|Float]]: Default Value 1
+
+<syntaxhighlight lang="cpp">
+audible = .05;	// man
+audible = 3;	// motorcycle
+audible = 6;	// tank/ship
+</syntaxhighlight>
+
+How loud you are. The bigger value, the better the unit is heard.
+
+see [[#camouflage]]
+
+==== autocenter ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default true
+
+<syntaxhighlight lang="cpp">
+autocenter = false;	// man
+</syntaxhighlight>
+
+==== axis ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+axis = "osa_poklop_driver";
+</syntaxhighlight>
+
+see [[#Indicator... Class]] Or [[#Hatch... Class]], [[#hour|IndicatorWatch Class]]
+
+=== B ===
+
+==== body ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+body = "mainTurret";
+</syntaxhighlight>
+
+see [[#Turret Class]]
+
+==== brakeDistance ====
+[[TokenNameValueTypes#Floats|Float]]: default 5 meters per sec
+
+<syntaxhighlight lang="cpp">
+brakeDistance = 1;	// man
+brakeDistance = 14;	// tank
+brakeDistance = 500;// plane
+brakeDistance = 50;	// boat
+</syntaxhighlight>
+
+==== bounding ====
+[[TokenNameValueTypes#Strings|String]]: Memorypoint which extends vehicle bounding box depending on position of this point. Defined for base class of Tanks. Default memorypoint is the tip of the tank's barrel (usti hlavne) - this means that when tank is pointing to the left, its bounding box is extended. You can observe bounding box extending in i.e. Zeus.
+<syntaxhighlight lang="cpp">
+bounding = "usti hlavne";
+</syntaxhighlight>
+
+==== brightness ====
+[[TokenNameValueTypes#Floats|Float]]:
+
+<syntaxhighlight lang="cpp">
+brightness = 1.0;
+</syntaxhighlight>
+
+See [[#Reflectors Class]], [[#Light Class]], [[#CargoLight Class]]
+
+=== C ===
+
+==== ...CanSee ====
+[[TokenNameValueTypes#Integers|Integer]]
+
+Used to describe which sensory inputs are available to which crew members.
+
+{| class="wikitable"
+! Numeric value !! CanSee.. define !! Description
+|-
+| 1 || Radar || Enables top left radar (OA) for a vehicle (top centre in arma and OFP).
+|-
+| 2 || Eye || Effect unknown - maybe affects AI capabilities?
+|-
+| 4 || Optics || Effect unknown - maybe affects AI capabilities?
+|-
+| 8 || Ear || Effect unknown - maybe affects AI capabilities?
+|-
+| 16 || Compass || Enables top centre compass bar and digital compass in A2/OA.
+|-
+| 32 || Peripheral || Enables small colored blobs at the edge of the screen that indicate nearby units.
+|}
+
+Multiple values can be added (or binary ored, giving the same result) together.
+
+<syntaxhighlight lang="cpp">
+commanderCanSee = 31;		// default
+gunnerCanSee = 4 + 8 + 16;	// default
+driverCanSee = 2 + 8 + 16;	// default
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+#define CanSeeRadar			1
+#define CanSeeEye			2
+#define CanSeeOptics		4
+#define CanSeeEar			8
+#define CanSeeCompass		16
+#define CanSeeAll			31
+#define CanSeePeripheral	32
+#define CanSeeRadarC		CanSeeRadar + CanSeeCompass
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+commanderCanSee = CanSeeAll;
+gunnerCanSee = CanSeeOptics + CanSeeEar + CanSeeCompass;
+driverCanSee = CanSeeEye + CanSeeEar + CanSeeCompass;
+</syntaxhighlight>
+
+==== ...CargoAngleY ====
+[[TokenNameValueTypes#Floats|Float]] Degrees
+
+Found within vehicle classes.
+
+Orientation of the man sitting in the cargo space.
+
+<syntaxhighlight lang="cpp">
+initCargoAngleY = 185;	// Truck5t
+initCargoAngleY = 90;	// M113
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+initCargoAngleY = 10;	// UH60
+minCargoAngleY = -60;
+maxCargoAngleY = 120;
+</syntaxhighlight>
+
+==== camouflage ====
+[[TokenNameValueTypes#Floats|Float]]: Default Value = 2.
+
+how difficult to spot. bigger = easier
+
+<syntaxhighlight lang="cpp">
+camouflage = 0.6;	// snipers
+camouflage = 1;		// man
+camouflage = 4;		// trucks
+camouflage = 8;		// tanks
+</syntaxhighlight>
+
+Relationship to [[#accuracy]]:
+
+'''camouflage''' defines how hard it is for the AI to ''see'' that the unit is there. The AI will not spot an enemy that has a camouflage setting of 0 (maybe this needs some more testing) even if it stands directly in front of it ''as long as the enemy doesn't fire''.
+
+'''accuracy''' defines how hard it is for the AI to recognise the correct class of a unit. But even if it can't recognise the correct class it can still recognise it as an enemy and engage it.
+
+<u>Related TokenNames</u>
+[[#scope]], [[#accuracy]], [[#displayName]], [[#vehicleClass]], [[#nameSound]], [[#camouflage]]
+
+==== can... ====
+===== canBeShot =====
+[[TokenNameValueTypes#Boolean|Boolean]]: Declares whether bullets have any effect
+
+<syntaxhighlight lang="cpp">
+canBeShot = true;
+</syntaxhighlight>
+
+===== canDeactivateMines =====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false
+
+part of the man class.
+
+<syntaxhighlight lang="cpp">
+canDeactivateMines= true;	// SoldierEngineer
+</syntaxhighlight>
+
+===== canFloat =====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default value: false
+
+Used to allow vehicles (such as BMP) not to sink !
+
+<syntaxhighlight lang="cpp">
+canFloat = true;
+</syntaxhighlight>
+
+===== canHideBodies =====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false
+
+part of the man class.
+
+<syntaxhighlight lang="cpp">
+canHideBodies = true;	// SoldierWSaboteur
+</syntaxhighlight>
+
+==== cargoIsCoDriver ====
+Variable [[TokenNameValueTypes#Boolean|Boolean]] [[TokenNameValueTypes#Arrays|Array]] : Default {false};
+
+This token declares which (if any) cargo positions are 'in the front' (Ie front windscreen)
+
+<syntaxhighlight lang="cpp">
+cargoIsCoDriver[] = { true, true, false };	// 1st two passenger positions for a 5T truck
+</syntaxhighlight>
+
+The number of elements in '''this''' array correspond to the [[#transportSoldier]] value declared for '''this''' class model.
+
+{{ArgTitle|4|cargoReversedGetOut|{{GVI|arma3|2.04}}}}
+[[TokenNameValueTypes#Arrays|Array]]
+'''Description:''' Settings this to 0 will force the unit to face the vehicle when getting out of a vehicle. 1 is the default behaviour where the facing direction is opposit of the get in direction.
+
+<syntaxhighlight lang="cpp">
+cargoReversedGetOut[] = { 0 };
+</syntaxhighlight>
+
+==== cast...Shadow ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false
+
+<syntaxhighlight lang="cpp">
+castCargoShadow = false;
+castCommanderShadow = false;
+castDriverShadow = false;
+castGunnerShadow = true;
+</syntaxhighlight>
+
+Normally used to shadow 'soldiers' standing up in vehicle objects, such as the MG Jeep and Machine Guns.
+
+==== Classes Embedded ====
+see [[#Embedded ClassNames]]
+
+==== cloud... ====
+Various([[TokenNameValueTypes|Strings]], [[TokenNameValueTypes|Floats]], [[TokenNameValueTypes|Arrays]])
+
+<syntaxhighlight lang="cpp">
+cloudletDuration = 0.9;
+cloudletAnimPeriod = 1.0;
+cloudletSize = 0.1;
+cloudletAlpha = 0.8;
+cloudletGrowUp = 0.4;
+cloudletFadeIn = 0.0;
+cloudletFadeOut = 5.0;
+cloudletAccY = -0.1;
+cloudletMinYSpeed = 0.3;
+cloudletMaxYSpeed = 1.5;
+cloudletShape = "\ca\data\cl_basic";
+cloudletColor[] = { 1, 1, 1, 0 };
+</syntaxhighlight>
+
+See [[#Smoke Class]]
+
+==== cobraLight ====
+[[TokenNameValueTypes#Strings|String]] : Used as a core model for all other 'air' craft.
+
+<syntaxhighlight lang="cpp">
+cobraLight = "AnyAddon\AnyP3d(.p3d)";
+</syntaxhighlight>
+
+==== coefInside... ====
+[[TokenNameValueTypes#Floats|Float]]:
+
+<syntaxhighlight lang="cpp">
+coefInside = 2;			// cost for movement inside buildings
+coefInsideHeur = 4.3;	// estimation of cost based on in/out points
+coefSpeedInside = 2; // we must go slowly inside houses
+</syntaxhighlight>
+
+Used by the static class for non moving objects such as buildings
+
+<syntaxhighlight lang="cpp">
+coefInside = 1;	// forest
+coefInsideHeur = 0.25;
+</syntaxhighlight>
+
+==== collisionLight ====
+Float [[TokenNameValueTypes#Boolean|Boolean]]: Default: false.
+
+Default state of collision lights
+
+<syntaxhighlight lang="cpp">
+collisionLight = true; // spawn vehicle with collision lights on
+</syntaxhighlight>
+
+==== color ====
+Float [[TokenNameValueTypes#Arrays|Array]]: of floats.
+
+<syntaxhighlight lang="cpp">
+color[] = { 0.8, 0.8, 1.0, 1.0 };
+</syntaxhighlight>
+
+This is a fixed four dimension array consisting of the color values for a RGBA model.
+
+See [[#Reflectors Class]], [[#Light Class]], [[#CargoLight Class]], [[#Smoke Class]]
+
+==== commanding ====
+[[TokenNameValueTypes#Integers|Integer]]: part of Turret class
+
+<syntaxhighlight lang="cpp">
+commanding = -1;
+</syntaxhighlight>
+
+==== cost ====
+[[TokenNameValueTypes#Floats|Float]]: Default Value 50.0000
+
+This value reflects the attractiveness of the target to the enemy AI. When ''all other considerations are equal''.
+A soldier eg is not interested in Air, despite it is highly attractive cost values.
+On the other hand, he is interested in a medic, since a medic (in normal configs) has a (while small) a higher cost, than others in the group, including the officer.
+
+<syntaxhighlight lang="cpp">
+cost = 10000000;	// an air vehicle is typically this value
+cost = 8;			// a medic;
+cost = 1;			// a grunt
+cost = 4;			// an officer
+cost = 0;			// most buildings;
+</syntaxhighlight>
+
+<u>Related TokenNames</u>: [[#type (threat)|type]], [[#cost]], [[#threat]]
+
+==== count ====
+[[TokenNameValueTypes|String or Integer]]: (math formula).
+
+<syntaxhighlight lang="cpp">
+weapon = "M60";
+count = "30 * 1"; // or 'count = 30 * 1;'
+</syntaxhighlight>
+
+this token is always associated in a weapon or magazine couplet, inside a TransportWeapons, or
+TransportMagazines class.
+
+The value is mostly represented as a string as above (a math formula), or it can be (unusually)
+
+<syntaxhighlight lang="cpp">
+count = 2;
+</syntaxhighlight>
+
+See [[TokenNameValueTypes|At the End of the Day]] in the TokenNameValueTypes page for an explanation how this duality is possible.
+
+==== crew ====
+[[TokenNameValueTypes#Strings|String]]: Default Civilian
+
+Reflects whether vehicle is manned, and what with.
+
+<syntaxhighlight lang="cpp">
+crew = <ClassName>
+crew = "SoldierWPilot";
+</syntaxhighlight>
+
+'SoldierWPilot' is a class declared in same file.
+
+==== crewCrashProtection ====
+[[TokenNameValueTypes#Floats|Float]]
+
+Multiplier of damage to crew of the vehicle. Lower number means better protection.
+
+<syntaxhighlight lang="cpp">
+crewCrashProtection = 0.05;
+</syntaxhighlight>
+
+=== D ===
+
+==== {{sic|dammage|damage}}... ====
+Variable String [[TokenNameValueTypes#Arrays|Array]]:
+
+<syntaxhighlight lang="cpp">
+dammageHalf[] = { "\AnyAddon\AnyPAA.paa", "\AnyAddon\AnyOtherPAA.paa", ... };
+dammageFull[] = { "\AnyAddon\AnyPAA.paa", "\AnyAddon\AnyOtherPAA.paa", ... };
+</syntaxhighlight>
+
+When 'vehicle' is considered at least half way to destruction, the series of pictures is applied to the model.
+
+{{ArgTitle|5|damageResistance|{{GVI|arma1|1.00}}}}
+Only for AI, to know when to shoot and when not.
+
+<syntaxhighlight lang="cpp">
+damageResistance = 0.004;
+</syntaxhighlight>
+
+It can be calculated from vehicle armor and hit value of weapon that should be able to harm the vehicle. tgtRadius is radius of virtual bounding sphere calculated in vehicle geometry. [[CfgVehicles_Config_Reference#armor_.28integer.29]]
+
+<syntaxhighlight lang="cpp">
+damageResistance = (HIT*HIT)/Armor*((0.27/tgtRadius)*(0.27/tgtRadius))
+</syntaxhighlight>
+
+==== driveThroughEnabled ====
+Determines if AI can decide to go through the object. This parameter skips regular mass checking if object can smashed through
+
+<syntaxhighlight lang="cpp">
+driveThroughEnabled			= 1; // test parameter for AI knowing they can drive through the object
+</syntaxhighlight>
+
+==== damper... ====
+[[TokenNameValueTypes#Floats|Float]]:
+
+<syntaxhighlight lang="cpp">
+damperSize = 0.1;	// default
+damperForce = 3;	// default
+</syntaxhighlight>
+
+==== deltaT ====
+[[TokenNameValueTypes#Floats|Float]]
+
+<syntaxhighlight lang="cpp">
+deltaT = -500;
+</syntaxhighlight>
+
+See [[#Smoke Class]]
+
+==== density ====
+[[TokenNameValueTypes#Floats|Float]]
+
+<syntaxhighlight lang="cpp">
+density = 0.5;
+</syntaxhighlight>
+
+See [[#Smoke Class]]
+
+==== destrType ====
+[[TokenNameValueTypes#Strings|String]]: Default Value = "DestructDefault"
+
+Used for animation, sound, and final 'look' of vehicle. Since {{GVI|arma3|2.22}} Powerline colums and radio tower get new type of destruction "DestructColumn". The tall column leans 22.5 degrees, away from the source that caused damage (for example satchel charge). The lean direction is synced for JIP, the anchor supports and powerlines destruction is scripted and JIP synced as well.
+
+<syntaxhighlight lang="cpp">
+destrType = "DestructNo";		// nothing happens
+destrType = "DestructBuilding";	// smoke. explosion
+destrType = "DestructEngine";	// smoke only
+destrType = "DestructTree";		// smoke, crushing, falls over
+destrType = "DestructTent";		// smoke, crushing, flattens
+destrType = "DestructMan";
+destrType = "DestructDefault";	// = building
+destrType = "DestructWreck";
+destrType = "DestructColumn"; // Power line columns, radio tower
+</syntaxhighlight>
+
+Tent and Tree are no longer identifiable when destroyed if not class 'things'
+
+==== disableDriverAttenuation ====
+[[TokenNameValueTypes#Boolean|Number]]: Default 0;
+
+Disables attenuation for the driver.
+
+<syntaxhighlight lang="cpp">
+disableDriverAttenuation = 1;
+</syntaxhighlight>
+
+==== disappearAtContact ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false;
+
+<syntaxhighlight lang="cpp">
+disappearAtContact = true;	// FxCartridge
+</syntaxhighlight>
+
+==== direction ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+direction = "konec L svetla";
+</syntaxhighlight>
+
+see [[#Reflectors Class]]
+
+==== displayName ====
+[[TokenNameValueTypes#Strings|String]]: Default value = "Unknown" or "Vehicle"
+
+Selects object uniquely in the Mission Editor, and separately, is used to identify object in game according to [[#accuracy]]. For instance when pointing your men to an object while in a mission, it is this ''displayName'' that is used.
+
+It is good practice to use a [[stringtable.csv]] that should accompany your addon so that
+# All names and labels are in one place instead of hunting for them.
+# For language differences
+
+<syntaxhighlight lang="cpp">
+displayName = "$STR_DN_AH1Z";
+</syntaxhighlight>
+
+Note, that will careful crafting of classes, different colored 'rocks' can all be called the same displayName (rock) in the mission itself. See [[#scope]] and [[#accuracy]] for details.
+
+See [[#nameSound]] for definition of what is actually 'said'
+
+<u>Related TokenNames</u>
+[[#scope]], [[#accuracy]], [[#displayName]], [[#vehicleClass]], [[#nameSound]], [[#camouflage]]
+
+===== displayNameShort =====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+displayNameShort = "$STR_DN_UH60";
+</syntaxhighlight>
+
+==== driverIsCommander ====
+[[TokenNameValueTypes#Boolean|Boolean]] : Default false. When not set, the turret [[CfgVehicles_Config_Reference#commanding|commanding]] values are used to determine who is the commander. ({{Link|link= https://dev-heaven.net/issues/27614#note-10|text= source}})
+
+<syntaxhighlight lang="cpp">
+driverIsCommander = true;
+</syntaxhighlight>
+
+For boat, MG Jeep and helicopters
+
+see [[#has...]]
+
+==== driverForceOptics ====
+[[TokenNameValueTypes#Boolean|Boolean]]
+'''Description:''' Determines if the driver can freely look around inside the vehicle or if he is locked to looking forward through the hatch/optics.
+
+<syntaxhighlight lang="cpp">
+driverForceOptics = true;
+</syntaxhighlight>
+
+{{ArgTitle|4|driverReversedGetOut|{{GVI|arma3|2.04}}}}
+[[TokenNameValueTypes#Integers|Integer]]
+
+'''Description:''' setting this to 0 will force the unit to face the vehicle when getting out of a vehicle. 1 is the default behaviour where the facing direction is opposit of the get in direction.
+
+<syntaxhighlight lang="cpp">
+driverReversedGetOut = 0;
+</syntaxhighlight>
+
+==== ...DustEffect ====
+[[TokenNameValueTypes#Strings|String]]
+
+Defines the effect that will be spawned at the position of the LandContact points.
+
+<syntaxhighlight lang="cpp">
+leftDustEffect = "vbs2_fx_lowTrackDustEffects";
+rightDustEffect = "vbs2_fx_lowTrackDustEffects";
+</syntaxhighlight>
+
+see [[#...WaterEffect]]
+
+=== E ===
+
+==== editorCategory ====
+[[:Category:Eden Editor|Eden Editor]] main category. See [[Eden Editor: Object Categorization]] for more details.
+
+<syntaxhighlight lang="cpp">
+editorCategory = "EdCat_Structures";
+</syntaxhighlight>
+
+==== editorPreview ====
+[[:Category:Eden Editor|Eden Editor]] preview picture. See [[Eden_Editor:_Configuring_Asset_Previews|Configuring Asset Previews]] for more details.
+
+<syntaxhighlight lang="cpp">
+editorPreview = "\A3\EditorPreviews_F\Data\myObject.jpg";
+</syntaxhighlight>
+
+==== editorSubcategory ====
+[[:Category:Eden Editor|Eden Editor]] sub-category. See [[Eden Editor: Object Categorization]] for more details.
+
+<syntaxhighlight lang="cpp">
+editorSubcategory = "EdSubcat_Drones";
+</syntaxhighlight>
+
+==== enableGPS ====
+[[TokenNameValueTypes#Boolean|Boolean]]: If enabled vehicle will allow crew to use Minimap even if they do not posses GPS terminal.
+
+<syntaxhighlight lang="cpp">
+enableGPS = 1;
+</syntaxhighlight>
+
+==== ...Elev ====
+[[TokenNameValueTypes#Integers|Integer]]: Degrees
+
+'''Description:''' How far the mounted weapon and viewpoint (through optics only) can be lowered or raised, and how much the initial elevation is. Values of max and min = 90 effectively allows a weapon to be lowered into the ground/straight into the air.
+
+<syntaxhighlight lang="cpp">
+initElev = -80;
+minElev = -60;
+maxElev = 10;
+</syntaxhighlight>
+
+part of any [[#Turret Class]] (tanks eg)
+
+==== ejectDamageLimit ====
+[[TokenNameValueTypes#Floats|Float]]: If the damage value of the vehicle is higher than the ejectDamageLimit, AI will disembark the vehicle.
+
+<syntaxhighlight lang="cpp">
+ejectDamageLimit = 0.75;
+</syntaxhighlight>
+
+==== ejectDead... ====
+[[TokenNameValueTypes#Boolean|Boolean]] : Default false
+
+<syntaxhighlight lang="cpp">
+ejectDeadGunner = false;
+ejectDeadCargo = false;
+ejectDeadDriver = false;
+ejectDeadCommander = false;
+</syntaxhighlight>
+
+Causes that unit to 'unmount' the vehicle. Such as an MG nest, or motorcycle.
+
+==== ejectSpeed ====
+[[TokenNameValueTypes#Arrays|Array]]: Speed vector of ejection seat. Therefore only applies to planes.
+
+<syntaxhighlight lang="cpp">
+ejectSpeed[] = { 0, 0, 0 };	// cannot eject in a Cessna
+</syntaxhighlight>
+
+==== Embedded ClassNames ====
+Some Token Names are encountered only within an embedded classname, rather than the main 'vehicle' body.
+
+An embedded classname conveniently adds a unique feature to the 'vehicle'. Such as smoke, such as, a turret for a tank.
+
+Embedded class names are used extensively in animated buildings for the quite logical reason that identical Token Names for door1 cannot be the same as Door2.
+
+Below is a list of embedded classnames that (in most cases) use a TokenName uniquely. It is not found elsewhere and is better served describing that Token Name in the context it is found in, ie, an embedded class.
+
+===== Hatch... Class =====
+<syntaxhighlight lang="cpp">
+class HatchDriver
+{
+	selection = "poklop_driver";
+	axis = "osa_poklop_driver";
+	angle = -100;
+};
+</syntaxhighlight>
+
+===== Indicator... Class =====
+<syntaxhighlight lang="cpp">
+class IndicatorSpeed
+{
+	selection = "ukaz_rychlo";
+	axis = "osa_rychlo";
+	angle = -240;
+	min = 0;
+	max = 60 / 3.6;
+};
+</syntaxhighlight>
+
+===== Light Class =====
+<syntaxhighlight lang="cpp">
+class Light
+{
+	ambient[] = { 0.3, 0.15, 0.0, 1.0 };
+	brightness = 0.08;
+	color[] = { 1.0, 0.5, 0.0, 1.0 };
+	position = "ohniste";
+	shape = "koulesvetlo";
+	size = 0.3;
+};
+</syntaxhighlight>
+
+===== CargoLight Class =====
+<syntaxhighlight lang="cpp">
+class CargoLight
+{
+	ambient[] = { 0.6, 0, 0.15, 1 };
+	brightness = 0.007;
+	color[] = { 0, 0, 0, 0 };
+};
+</syntaxhighlight>
+
+===== Reflectors Class =====
+<syntaxhighlight lang="cpp">
+class Reflectors : LandVehicle	// old
+{
+	ambient[] = { 0.1, 0.1, 0.1, 1.0 };
+	brightness = 0.25;
+	color[] = { 0.9, 0.8, 0.8, 1.0 };
+	position = "L svetlo";
+	size = 0.5;
+	direction = "konec L svetla";
+	hitpoint = "L svetlo";
+	selection = "L svetlo";
+};
+
+class Reflectors				// new
+{
+	class Light_1
+	{
+		ambient[] = { 10, 10, 11 };
+		color[] = { 1000, 1000, 1100 };
+		size = 1;
+		dayLight = 1;
+		useFlare = 1;
+		intensity = 1;
+		coneFadeCoef = 2;
+		innerAngle = 89;
+		outerAngle = 90;
+		position = "light_start_memoryPoint";
+		direction = "light_end_memoryPoint";
+		hitpoint = "";
+		selection = "";
+
+		class Attenuation // see https://community.bistudio.com/wiki/setLightAttenuation
+		{
+			start = 0;
+			constant = 0;
+			linear = 0;
+			quadratic = 0;
+			hardLimitStart = 9;
+			hardLimitEnd = 10;
+		};
+	};
+};
+
+// Arma 3 example value
+class Reflectors
+{
+	class Left // main landing light
+	{
+		position = "L svetlo";
+		direction = "konec L svetla";
+		hitpoint = "L svetlo";
+		selection = "L svetlo";
+		color[] = { 7000, 7500, 10000 }; // R, G, B
+		ambient[] = { 70, 75, 100 }; // R, G, B
+		intensity = 50;
+		size = 1;
+		innerAngle = 15;
+		outerAngle = 65;
+		coneFadeCoef = 10;
+		useFlare = 1;
+		flareSize = 10;
+		flareMaxDistance = 250;
+		dayLight = 0;
+		class Attenuation
+		{
+			start = 0;
+			constant = 0;
+			linear = 1;
+			quadratic = 1;
+			hardLimitStart = 100;
+			hardLimitEnd = 200;
+		};
+	};
+	class LG : Left // left door gunner searchlight
+	{
+		position = "LG svetlo";
+		direction = "konec LG svetla";
+		hitpoint = "LG svetlo";
+		selection = "LG svetlo";
+	};
+	class Right : Left // right door gunner searchlight
+	{
+		position = "P svetlo";
+		direction = "konec P svetla";
+		hitpoint = "P svetlo";
+		selection = "P svetlo";
+	};
+};
+
+// example red cabin light in helicopter
+
+class Cabin
+{
+	position = "cabin_light";
+	direction = "cabin_light_dir";
+	hitpoint = "cabin_light";
+	selection = "cabin_light";
+	color[] = { 1000, 0, 0 };
+	ambient[] = { 100, 0, 0 };
+	intensity = 5;
+	size = 1;
+	innerAngle = 15;
+	outerAngle = 150;
+	coneFadeCoef = 1;
+	useFlare = 1;
+	flareSize = 0.1;
+	flareMaxDistance = 1;
+	dayLight = 0;
+
+	class Attenuation
+	{
+		start = 0;
+		constant = 0;
+		linear = 1;
+		quadratic = 1;
+		hardLimitStart = 1;
+		hardLimitEnd = 2;
+	};
+};
+</syntaxhighlight>
+
+Notes for {{arma3}}:
+
+Add a light to an object in class cfgvehicles.<br>
+Each reflector requires a selection in relevant model vis LODs (e.g. "L svetlo") for the flare effect. <br>
+Requires two memory points in memory LOD - light spawn position and direction e.g. position "L svetlo" and direction "konec L svetla". <br>
+
+The memory point you assign to position parameter is where the light source itself will be.<br>
+The one you put to direction is the way your light will shine.<br>
+The cone itself is set using innerAngle, outerAngle and coneFadeCoef.<br>
+innerAngle sets the cone in which the light has it is full intensity.<br>
+outerAngle sets the cone outside of which the light has zero intensity.<br>
+coneFadeCoef is a coefficient that describes attenuation of the light between innerAngle and outerAngle. 1 equals linear attenuation, higher or lower value changes it, meaning how sharp/blurred will the edge of the lightcone as a whole be.<br>
+Note that both the angles represent full angle of the cone, not just "angular offset" from direction of the light. If you set it to 90 degrees, it means the cone is 45 degrees to the "left" and 45 to the "right" of the direction specified by your memory points.<br>
+As a spot light, reflectors are not made for cones above 180 degrees.<br>
+Some time ago BIS made changes to the lighting system to allow for higher light variety during night time. One of the effects it had on configs of lights was that you need to set higher intensity than before the change to get the same results.<br>
+color[] and ambient[] seem to have changed from RGB from 0-1 to way higher values - see example.<br>
+
+See [[setLightAttenuation]] notes for explanation of attenuation values.<br>
+See also {{Link|Arma 3 Cars Config Guidelines#Reflectors}}<br>
+aggregateReflectors are described here {{Link|https://manuals.bisimulations.com/vbs3/3-6/devref/Content/Config_Manual/CfgVehicles/A_cpp/cpp_aggregateReflectors.htm|link}}<br>
+
+===== Smoke Class =====
+<syntaxhighlight lang="cpp">
+class Smoke
+{
+	density = 0.5;
+	deltaT = -500;
+	in = 0.0;
+	out = 0.0;
+	initT = 1000;
+	initYSpeed = 1.7;
+	interval = 0.01;
+	size = 0.1;
+	timeToLive = 100000002004087730000.0;
+
+	cloudletDuration = 0.9;
+	cloudletAnimPeriod = 1.0;
+	cloudletSize = 0.1;
+	cloudletAlpha = 0.8;
+	cloudletGrowUp = 0.4;
+	cloudletFadeIn = 0.0;
+	cloudletFadeOut = 5.0;
+	cloudletAccY = -0.1;
+	cloudletMinYSpeed = 0.3;
+	cloudletMaxYSpeed = 1.5;
+	cloudletShape = "cl_basic";
+	cloudletColor[] = { 1, 1, 1, 0 };
+
+	class Table
+	{
+		class T1
+		{
+			maxT = 0;
+			color[] = { 0.8, 0.8, 0.8, 1 };
+		};
+		class T2
+		{
+			maxT = 900;
+			color[] = { 0.3, 0.3, 0.3, 1 };
+		};
+		class T3
+		{
+			maxT = 1000;
+			color[] = { 1, 0.5, 0, 0.5 };
+		};
+	};
+};
+</syntaxhighlight>
+
+==== Turret Class ====
+(Tanks eg)
+
+<syntaxhighlight lang="cpp">
+class TurretBase
+{
+	body = "OtocVez";
+	gun = "OtocHlaven";
+	gunAxis = "OsaHlavne";
+	gunBeg = "usti hlavne";
+	gunEnd = "konec hlavne";
+	minElev = -4;
+	maxElev = 20;
+	minTurn = -360;
+	maxTurn = 360;
+	soundServo[] = { "Vehicles\gun_elevate", 0.031623, 1.0 };
+	turretAxis = "OsaVeze";
+};
+</syntaxhighlight>
+
+For details see [[Turret Config Reference]]
+
+==== Embedded TokenNames ====
+see [[#Embedded ClassNames]]
+
+==== enableSweep ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default true. Used by Helicopter class
+
+<syntaxhighlight lang="cpp">
+enableSweep = false;	// UH60MG
+</syntaxhighlight>
+
+Is sweeping over the target a valid technique for given helicopter?
+
+==== envelope ====
+[[TokenNameValueTypes#Floats|Float]] [[TokenNameValueTypes#Arrays|Array]]
+
+<syntaxhighlight lang="cpp">
+// lift (G) based on speed
+envelope[] = {
+	// speed relative to max. speed -> lift
+	// 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4	// rel. speed
+	0.0, 0.2, 0.9, 2.1, 2.5, 3.3, 3.5, 3.2, 2.5, 2.0, 1.5, 1.0, 0.9, 0.7, 0.5	// lift
+};
+</syntaxhighlight>
+
+Info by {{Link|link= http://forums.bistudio.com/showpost.php?p=2037721&postcount=9|text= RKSL-Rock}}:
+
+The top speed is set via the mass. So you will need MLODs to alter it. So it is the same issue as the original OP.
+
+The config maxspeed value is only really used by the AI and the engine as a base variable in some calculations.
+
+You can change the acceleration though by using the envelope command.
+This will change the vertical speed relative to the maxspeed in the config in steps of 10% of the stated max speed.
+
+This is the envelope from the RKSL Lynx AH7:
+
+<syntaxhighlight lang="cpp">
+envelope[] = { 1.7, 2.50, 3.50, 4.50, 5.50, 5.50, 5.15, 5.15, 5.15, 5.15, 4.15, 3.15, 2.15, 2.15, 1.15 };
+</syntaxhighlight>
+
+There are normally 15 values representing the vertical lift in m/s at 10% steps from 0 to 140% of the max speed.
+
+So, if the max speed is 500 and the first value is always 0:
+
+2nd value = 50kph and 2.5 m/s vertical speed
+3rd value = 100kph and 3.5 m/s vertical speed
+...
+11th value = 500kph and 4.15 m/s vertical speed
+...
+15th value = 700kph and 1.15 m/s vertical speed.
+
+You wont affect the top speed but it will make it easier to handle.
+
+==== EventHandlers... Class ====
+Pre-defined object [[Event Handlers]]. Property with class matches the handler name.
+<syntaxhighlight lang="cpp">
+class EventHandlers
+{
+	init = "myAddon_object = _this select 0;";
+};
+</syntaxhighlight>
+
+{{GVI|arma3|1.54}}
+Arma 3 introduced '''extended event handlers'''. It's possible to define event handlers within unique sub-classes, which prevents compatibility issues when multiple addons wants to set the same handler type to single vehicle class.
+<syntaxhighlight lang="cpp">
+class EventHandlers
+{
+	class MyAddon
+	{
+		init = "myAddon_object = _this select 0;";
+	};
+	class YourAddon
+	{
+		init = "yourAddon_object = _this select 0;";
+	};
+};
+</syntaxhighlight>
+
+==== extCameraPosition[] ====
+
+float [[TokenNameValueTypes#Arrays|Array]]: { X, Z, Y }; Default { 0, 2, -20 };
+
+External (third-person) camera offset relative to the vehicle's {{hl|aimpoint}} memory point, around which the camera orbits.
+
+<syntaxhighlight lang="cpp">
+extCameraPosition[] = { 0, 5, -30 };				// plane
+extCameraPosition[] = { 0, 1, -10 };				// cars
+extCameraPosition[] = { 0, 1.500000, -9 };			// tanks
+extCameraPosition[] = { 0, 0.300000, -3.500000 };	// man
+</syntaxhighlight>
+
+==== extCameraParams[] ====
+float [[TokenNameValueTypes#Arrays|Array]]: Default { 0.5, 10, 50, 0.5, 1, 10, 30, 0, 1 };
+
+Smoothing of external camera movement
+
+extCameraParams[] = { multFactor, speedMin, speedMax, factorSpeeedMin, factorSpeeedMax, heightMin, heightMax, factorHeightMin, factorHeightMax };
+
+factor = multFactor * interpolate(speed, speedMin, speedMax, factorSpeeedMin, factorSpeeedMax) * interpolate(heightAGL, heightMin, heightMax, factorHeightMin, factorHeightMax)
+
+
+factor == 0 -> camera follow horizon
+
+factor == 1 - > camera follow vehicle heading
+
+factor (0, 1) interpolation between horizon and vehicle heading
+
+<syntaxhighlight lang="cpp">
+extCameraParams[] = { 0.5, 10, 50, 0.5, 1, 10, 30, 0, 1 }; // helicopters & UAV
+</syntaxhighlight>
+
+to force the old external camera behavior
+<syntaxhighlight lang="cpp">
+extCameraParams[] = { -1 }
+</syntaxhighlight>
+
+=== F ===
+
+==== featureType ====
+[[TokenNameValueTypes#Integers|Integer]]: Default 0. 1 means the object is always visible within object view distance, 2 means always visible within terrain view distance. Same as [[setFeatureType]].
+
+<syntaxhighlight lang="cpp">
+featureType = 2;
+</syntaxhighlight>
+
+==== minFireTime ====
+[[TokenNameValueTypes#Integers|Integer]]: Default 20 seconds
+
+<syntaxhighlight lang="cpp">
+minFireTime = 20;
+</syntaxhighlight>
+
+Minimal time spent firing on single target.
+
+==== fired ====
+[[TokenNameValueTypes#Strings|String]]: [[:Category:Event Handlers|Event Handlers]]
+
+<syntaxhighlight lang="cpp">
+fired = "_this exec ""\AnyAddon\AnySQS.sqs""";	// note the ""
+</syntaxhighlight>
+
+==== flapsFrictionCoef ====
+[[TokenNameValueTypes#Floats|Float]]: Default 0.5
+
+<syntaxhighlight lang="cpp">
+flapsFrictionCoef = 2;	// can be integer too.
+</syntaxhighlight>
+
+==== forceHide... ====
+[[TokenNameValueTypes#Boolean|Boolean]] : Default false
+
+<syntaxhighlight lang="cpp">
+forceHideDriver = true;	// shilka
+forceHideGunner = true;	// tank
+forceHideCommander = true;
+</syntaxhighlight>
+
+Disables the turnout option for that particular crew member
+
+==== forceSupply ====
+[[TokenNameValueTypes#Boolean|Boolean]] : Default
+
+<syntaxhighlight lang="cpp">
+forceSupply = true;
+</syntaxhighlight>
+
+Found only in Weapon holders. Is used to make the weaponholder disappear when empty.
+
+==== formation... ====
+[[TokenNameValueTypes#Integers|Integer]]:
+
+<syntaxhighlight lang="cpp">
+formationX = 10;	// default meters
+formationZ = 20;	// default meters
+formationTime = 10;	// default seconds
+</syntaxhighlight>
+
+One or both X Z values are used to keep objects separated (in meters) depending on
+wedge, echelon, V, single line, formations.
+
+==== fov ====
+[[TokenNameValueTypes#Floats|Float]]
+
+<syntaxhighlight lang="cpp">
+fov = 0.85;	// Cessna
+fov = 0.85;	// man
+fov = 1.0;	// truck
+</syntaxhighlight>
+
+==== ...Fov ====
+[[TokenNameValueTypes#Floats|Float]]
+
+<syntaxhighlight lang="cpp">
+minFov = 0.420000;	// man
+maxFov = 0.850000;
+minFov = 0.600000;	// truck
+maxFov = 1.400000;
+</syntaxhighlight>
+
+also used by [[#...AngleX/Y|ViewPilot Classes]]
+
+==== fuelCapacity ====
+[[TokenNameValueTypes#Floats|Float]]: Default Value 0. Has nothing to do with liters.
+
+Arma 3: for a vehicle using tankX simulation consumption seems to be exclusively determined by engine rpm. With a 700 idle-rpm and 3000 max-rpm engine - a fuelCapacity of 1 will give you 640 seconds operation time at idle rpm, and 300 seconds of operation at maximum rpm. If the idle rpm was 200, you would get 865 seconds of operation, the max rpm time would not change. The amount of thrust from controllerinput is completely irrelevant.
+
+A2 examples:
+<syntaxhighlight lang="cpp">
+fuelCapacity = 50;	// motorcycle
+fuelCapacity = 100;	// car
+fuelCapacity = 700;	// tank
+fuelCapacity = 1000;// air
+</syntaxhighlight>
+
+The required fuelCapacity value to achieve a specific operation TIME (in seconds) at a specific engine RPM (revolution per minute) can be estimated with:
+<syntaxhighlight lang="cpp">
+fuelCapacity = (8E-7 * RPM + 0.001) * TIME
+</syntaxhighlight>
+
+==== fuelConsumptionRate ====
+[[TokenNameValueTypes#Integers|Integer]]: Default Value 0.01. Has no units. Works only on helicopters.
+
+
+=== G ===
+
+==== _generalMacro ====
+[[TokenNameValueTypes#Strings|String]]: in Arma 3. Has no purpose whatsoever. It is generated automatically by BI developer tools for debugging. {{Feature|Quote|Some config properties are generated automatically (e.g., "nameSound", which sets how to unit appears in radio protocol, is computed based on unit's role and equipment, so coders won't need to set it manually). _generalMacro property is added to all objects which underwent this process to help with debugging.|Karel Mořický|https://forums.bohemia.net/forums/topic/179378-what-does-_generalmacro-do/}}
+
+==== getIn....ActionNamedSel ====
+[[TokenNameValueTypes#Strings|String]]: Named selection for get in actions working in same principle as actionNamedSel in UserActions. Available variants:
+<syntaxhighlight lang="cpp">
+getInDriverActionNamedSel
+getInGunnerActionNamedSel
+getInCommanderActionNamedSel
+getInCargoActionNamedSel
+getInTurretActionNamedSel
+getInUnitActionNamedSel
+</syntaxhighlight>
+
+==== ...Gun... ====
+[[TokenNameValueTypes#Integers|Integer]]:degrees
+
+<syntaxhighlight lang="cpp">
+minGunElev = -60;
+maxGunElev = 60;
+minGunTurn = -5;
+maxGunTurn = 5;
+minGunTurnAI = -30;
+maxGunTurnAI = 30;
+</syntaxhighlight>
+
+==== ...GunnerMayFire ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false
+
+<syntaxhighlight lang="cpp">
+outGunnerMayFire = true;	// m113
+inGunnerMayFire = false;
+</syntaxhighlight>
+
+==== ...GunClouds Class ====
+This is a reference to the external WeaponCloudsGun classes
+
+most models simply inherit the defaults
+
+<syntaxhighlight lang="cpp">
+class GunClouds : WeaponCloudsGun {};
+class MGunClouds : WeaponCloudsMGun {};
+</syntaxhighlight>
+
+here is an example of over-rides for class man
+
+<syntaxhighlight lang="cpp">
+class GunClouds : WeaponCloudsGun
+{
+	cloudletGrowUp = 0.200000;
+	cloudletFadeIn = 0;
+	cloudletFadeOut = 0.400000;
+	cloudletDuration = 0.200000;
+	cloudletAlpha = 1;
+	cloudletAccY = 2;
+	cloudletMinYSpeed = -10;
+	cloudletMaxYSpeed = 10;
+	interval = 0.020000;
+	size = 0.300000;
+	sourceSize = 0.015000;
+};
+</syntaxhighlight>
+
+==== ...GunFire Class ====
+This is a reference to the external WeaponFireGun classes
+
+most models simply inherit the defaults
+
+<syntaxhighlight lang="cpp">
+class GunFire : WeaponFireGun {};
+class MGunFire : WeaponFireMGun {};
+</syntaxhighlight>
+
+==== gearbox[] ====
+[[TokenNameValueTypes#Arrays|Array]]
+
+'''Description:''' Changes acceleration and max speed values of certain Vehicles. If changed, impact to the acceleration is minor (if notable at all!) to catastrophic (worsened acceleration/maxspeed). Best to leave as-is.
+
+<syntaxhighlight lang="cpp">
+gearbox[] = { -18, 0, 110, 16.15, 14.44, 13.33 };
+</syntaxhighlight>
+
+==== gearRetracting ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default true
+
+<syntaxhighlight lang="cpp">
+gearRetracting = false;	// Cessna
+</syntaxhighlight>
+
+more correctly viewed as HasRetractingGear.
+
+==== gestures ====
+[[TokenNameValueTypes#Strings|String]]:
+
+Same as moves but refers to a gestures class
+<syntaxhighlight lang="cpp">
+gestures = "CfgGesturesMale";
+</syntaxhighlight>
+
+==== gun ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+gun = "OtocHlaven";
+</syntaxhighlight>
+
+see [[#Turret Class]]
+
+==== gunAimDown ====
+[[TokenNameValueTypes#Floats|Float]]
+
+'''Description:''' Aircraft only. How far a hardpoint-mounted gun "aims down"; high values allow for strafing runs without the need to nose-dive down too much, but also shift the targeting reticle in the aircraft's HUD; if too high, targeting reticle is only visible in 3rd Person (if available).
+
+<syntaxhighlight lang="cpp">
+gunAimDown = 0.07;
+</syntaxhighlight>
+
+==== gunAxis ====
+
+==== gunBeg ====
+
+==== gunEnd ====
+see [[#Turret Class]]
+
+==== gunnerHasFlares ====
+[[TokenNameValueTypes#Boolean|Boolean]]
+
+<syntaxhighlight lang="cpp">
+gunnerHasFlares = false;
+</syntaxhighlight>
+
+==== gunnerName ====
+[[TokenNameValueTypes#Strings|String]]
+
+<syntaxhighlight lang="cpp">
+gunnerName = "$STR_POSITION_CREWCHIEF";
+</syntaxhighlight>
+
+==== gunnerOutOptics... ====
+[[TokenNameValueTypes#Strings|String]]
+
+<syntaxhighlight lang="cpp">
+gunnerOutOpticsModel = "";
+</syntaxhighlight>
+
+[[TokenNameValueTypes#Arrays|Array]]
+
+<syntaxhighlight lang="cpp">
+gunnerOutOpticsColor[] = { 0, 0, 0, 1 };
+</syntaxhighlight>
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+
+<syntaxhighlight lang="cpp">
+gunnerOutForceOptics = false;
+</syntaxhighlight>
+
+[[TokenNameValueTypes#Boolean|Boolean]]
+
+<syntaxhighlight lang="cpp">
+gunnerOutOpticsShowCursor = false;
+</syntaxhighlight>
+
+==== gunnerType ====
+[[TokenNameValueTypes#Strings|String]]
+
+Part of [[#Turret class]].
+
+Defines the character class that inhabits this turret by default, replaces the pilot which would usually be in this turret. Used primarily to add helicopter crewmen to helicopter turrets.
+<syntaxhighlight lang="cpp">
+class MyHelicopter : B_Heli_Transport_01_F
+{
+	class Turrets : Turrets
+	{
+		class MyTurret : MainTurret
+		{
+			gunnerType = "B_RangeMaster_F";
+		};
+	};
+};
+</syntaxhighlight>
+Because turrets are sub-members of the Turrets class of the base vehicle, all the classes must be fully exposed to their source (Helicopter class) to be inherited from, otherwise all turrets must be overwritten.
+
+=== H ===
+
+==== HeadAimDown ====
+[[TokenNameValueTypes#Floats|Float]]: Default: 0.
+
+How much to tilt the driver's head forward in degrees.
+
+<syntaxhighlight lang="cpp">
+HeadAimDown = 10;	// tilt driver's head forward 10 degrees.
+</syntaxhighlight>
+
+==== ...Height ====
+[[TokenNameValueTypes#Integers|Integer]]:
+
+<syntaxhighlight lang="cpp">
+minHeight = 5;	// Min height in metres above sea-level.
+maxHeight = 50;	// Max height above sea level.
+avgHeight = 10;
+</syntaxhighlight>
+
+==== has... ====
+[[TokenNameValueTypes#Boolean|Boolean]]:
+
+<syntaxhighlight lang="cpp">
+hasDriver = true;		// default
+hasGunner = false;		// default
+hasCommander = true;	// default
+</syntaxhighlight>
+
+Depending on vehicle model.
+
+Controls the "get in" commands.
+
+
+
+Since 1.82 there is alternative syntax available for hasDriver property
+<syntaxhighlight lang="cpp">
+hasDriver = -1;	// t80auto
+</syntaxhighlight>
+This will disable driver seat and add control ability to commander (turret with highest commanding value aka seat with highest effectiveCommander value)
+
+see [[#driverIsCommander]]
+
+==== ...HeadTurnAI ====
+[[TokenNameValueTypes#Integers|Integer]] Degrees
+
+<syntaxhighlight lang="cpp">
+minHeadTurnAI = -70;	// man class
+maxHeadTurnAI = 70;
+</syntaxhighlight>
+
+==== hiddenSelections ====
+[[TokenNameValueTypes#Strings|String]] [[TokenNameValueTypes#Arrays|Array]]: Default none.
+
+Here you can define selections on the model, which are not shown at mission startup. This is useful for creating variations of one model, where the different selections are left out with hiddenSelections. (ex: Soldiers have the hidden selection "medic", as they should not have a red cross at their body):
+
+Aside from this, the hidden selections are used for runtime texture assignment. Every element in the hidden selection-array corresponds to an index, with the first element being 0. Only 10 elements are allowed in the array and are numbered 0-9.
+
+<syntaxhighlight lang="cpp">
+hiddenSelections[] = { "pruh" }; // bmp/tank
+</syntaxhighlight>
+
+Try <sqf inline>this setObjectTexture [0, "\data\duha.pac"];</sqf> in the initline of a BMP and you'll see which parts are meant by the selection "pruh".
+
+Don't forget to add the model and the selections in the [[CfgModels]], as the hidden selections won't work otherwise (at least not after [[Binarize|binarizing]]).
+
+==== hide... ====
+[[TokenNameValueTypes#Boolean|Boolean]]
+
+<syntaxhighlight lang="cpp">
+hideProxyInCombat		= false;	// default (true for tanks); if true, disables turn-in option for all crew
+hideUnitInfo			= false;	// default see [[#unitInfoType]]
+hideWeaponsCargo		= false;	// default
+hideWeaponsCommander	= true;		// default
+hideWeaponsDriver		= true;		// default
+hideWeaponsGunner		= true;		// default
+</syntaxhighlight>
+
+==== hitpoint ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+hitpoint = "L svetlo";
+</syntaxhighlight>
+
+See [[#Reflectors Class]]
+
+==== hitSound... ====
+<syntaxhighlight lang="cpp">
+hitSound1[] = { "voices\Hit11", 0.056234, 1 };
+...
+hitSound20[] = { "voices\Hit30", 0.056234, 1 };
+...
+hitSounds[] = { "hitSound1", 0.05, "hitSound2", 0.05, ...
+</syntaxhighlight>
+
+hitSounds is used by the engine to reference user generated hitSound...s
+
+there is no limit to the number of user-generated sounds.
+
+==== hour ====
+part of the IndicatorWatch class
+
+<syntaxhighlight lang="cpp">
+class IndicatorWatch
+{
+	hour = "hodinova";
+	minute = "minutova";
+	axis = "osa_time";
+	reversed = 0;
+};
+</syntaxhighlight>
+
+==== hullExplosionDelay ====
+[[TokenNameValueTypes#Arrays|Array]]: Time ranage when catastrophic explosion (when HitHull > 0.9 & hullDamageCauseExplosion is set to 1) happens. First number is minimum time in seconds & 2nd - maximum
+
+<syntaxhighlight lang="cpp">
+hullExplosionDelay[] = { 10, 20 };
+</syntaxhighlight>
+
+==== hullDamageCauseExplosion ====
+[[TokenNameValueTypes#Integers|Integer]]: Determines if vehicle explodes after HitHull is above 0.9
+
+<syntaxhighlight lang="cpp">
+hullDamageCauseExplosion = 1; // vehicle will explode if HitHull is above 0.9
+</syntaxhighlight>
+
+=== I ===
+
+==== icon ====
+[[TokenNameValueTypes#Strings|String]]: Default Value = "unknown_object.paa"
+
+This value us used by the map editor to show the building or vehicle when editing. It is not normally visible during game play. (but can be)
+
+The icon can be any jpg, paa, or pac file. paa is default. Note that Elite cannot handle jpegs.
+
+<syntaxhighlight lang="cpp">
+icon = "\AnyAddon\AnyPAA(.paa)";
+</syntaxhighlight>
+
+<u>Related TokenName</u>(s): [[#mapSize]]
+
+==== in/out ====
+[[TokenNameValueTypes#Floats|Float]]: These TokenNames are used inside the [[#Smoke Class]]
+
+<syntaxhighlight lang="cpp">
+in = 0.0;
+out = 0.0;
+</syntaxhighlight>
+
+==== init ====
+[[TokenNameValueTypes#Strings|String]]: [[:Category:Event Handlers|Event Handlers]]
+The Event Handler receives an array '''_this''' (the exact content of which still has to be documented), of which the first element contains the vehicle (e.g. _this select 0).
+
+<syntaxhighlight lang="cpp">
+init = "[(_this select 0)] exec ""\AnyAddon\AnySqs.sqs""";
+</syntaxhighlight>
+
+==== initT ====
+[[TokenNameValueTypes#Integers|Integer]]: This TokenName is used inside the [[#Smoke Class]]
+
+<syntaxhighlight lang="cpp">
+initT = 1000;
+</syntaxhighlight>
+
+==== initYSpeed ====
+[[TokenNameValueTypes#Floats|Float]]: This TokenName is used inside the [[#Smoke Class]]
+
+<syntaxhighlight lang="cpp">
+initYSpeed = 1.7;
+</syntaxhighlight>
+
+==== insideSoundCoef ====
+[[TokenNameValueTypes#Floats|Float]]: default 0.5
+
+<syntaxhighlight lang="cpp">
+insideSoundCoef = 0.05;	// air vehicles are 2%
+</syntaxhighlight>
+
+==== interval ====
+[[TokenNameValueTypes#Floats|Float]]: This TokenName is used inside the [[#Smoke Class]]
+
+<syntaxhighlight lang="cpp">
+interval = 0.01;
+</syntaxhighlight>
+
+==== irScanGround ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default true.
+
+Probaly used to stop ai looking down
+
+<syntaxhighlight lang="cpp">
+irScanGround = false;	// tanks
+</syntaxhighlight>
+
+==== irScanRange... ====
+[[TokenNameValueTypes#Integers|Integer]]: Default 0
+
+<syntaxhighlight lang="cpp">
+irScanRange = 4000;		// outdated (since Resistance)
+irScanRangeMin = 500;	// tanks general
+irScanRangeMax = 4000;
+irScanRangeMin = 2000;	// air
+irScanRangeMax = 10000;
+irScanRangeMin = 4000;	// a vulcan
+irScanRangeMax = 10000;
+</syntaxhighlight>
+
+==== irScanToEyeFactor ====
+[[TokenNameValueTypes#Integers|Integer]]: Default 1
+
+<syntaxhighlight lang="cpp">
+irScanToEyeFactor = 2;	// air
+irScanToEyeFactor = 5;	// shilka
+</syntaxhighlight>
+
+==== irTarget ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default true.
+
+Used for (some) buildings so that they don't show up on tank radar. Save for very limited exceptions, this token should be enabled for all vehicle units.
+
+Disabling it will make the vehicle NOT to be engaged by infantry anti-tank gunners nor vehicle weapons. It will only be engaged by small arms, and only if its armor value is low enough for AI infantry to think it can damage it by shooting at it.
+
+<syntaxhighlight lang="cpp">
+irTarget = false;	// man
+</syntaxhighlight>
+
+==== isBicycle ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false.
+
+this value inside the motorcycle class is used to turn it on when inheriting to a real bicycle
+
+==== isMan ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default true.
+
+<syntaxhighlight lang="cpp">
+isMan = 1;
+</syntaxhighlight>
+
+Defined within the man class
+
+=== K ===
+
+==== killed ====
+[[TokenNameValueTypes#Strings|String]]: [[:Category:Event Handlers|Event Handlers]]
+
+<syntaxhighlight lang="cpp">
+killed = "[(_this select 0), 1, 1, 0, 0] exec ""\AnyAddon\AnySQS.sqs""";	// note the ""
+</syntaxhighlight>
+
+=== L ===
+
+==== ladders ====
+Embedded [[TokenNameValueTypes#Arrays|Array]]: The ladders array is used to declare one or more ladder pairs inside the model.
+
+<syntaxhighlight lang="cpp">
+ladders[] = { {"start", "end" } };							// a building with one ladder
+ladders[] = { {"start1", "end1" }, {"start2", "end2" } };	// two ladder building
+// ...etc
+</syntaxhighlight>
+
+Note that unfortunately, the 'start' and 'end' labels are arbitrary for ''each'' model. You cannot have a generic ladder building as such.
+
+Since 1.79.143080 it is possible to define radius of action & component in geometry LOD. Action will be visible then when player is looking at selected component
+
+<syntaxhighlight lang="cpp">
+// { Starting point (memory LOD), Ending point (memory LOD), radius (in meters), Named Selection (geometry LOD) }
+ladders[] = { { "Ladder_1_start", "Ladder_1_end", 2.5, "Ladder_1_action" }, { "Ladder_2_start", "Ladder_2_end", 2.5, "Ladder_2_action" }, { "Ladder_3_start", "Ladder_3_end", 2.5, "Ladder_3_action" } };
+</syntaxhighlight>
+
+==== laser... ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false
+
+Determines if a vehicle has laser capability.
+
+<syntaxhighlight lang="cpp">
+laserScanner = true;
+laserTarget = true;	// used as a generic class of All {} to default things true
+</syntaxhighlight>
+
+==== landingAoa ====
+MathFormula [[TokenNameValueTypes#Strings|String]] Default 10*3.1415/180
+
+Landing Angle of Approach. Used by plane class
+
+<syntaxhighlight lang="cpp">
+landingAoa = 7*3.1415/180;	// Cessna
+</syntaxhighlight>
+
+==== landingSpeed ====
+[[TokenNameValueTypes#Integers|Integer]]: Default 0 Kph.
+
+<syntaxhighlight lang="cpp">
+landingSpeed = 75;	// plane vehicles
+</syntaxhighlight>
+
+==== library ====
+[[TokenNameValueTypes#Strings|String]]: This TokenName is associated with the library class of a vehicle (if any). It is used to give a 'memo' style full screen info on the given object. Example of use:
+
+<syntaxhighlight lang="cpp">
+class Library
+{
+	libTextDesc = "$STR_LIB_AH1Z";
+};
+</syntaxhighlight>
+
+==== LODDriverTurnedIn ====
+[[TokenNameValueTypes#Integers|Integer]] Defines the LOD that is to be used when the Driver is turned in. Value = -1 seems to default to the standard LOD (for Turret's that is Gunnerview).
+
+<syntaxhighlight lang="cpp">
+LODDriverTurnedIn = -1
+</syntaxhighlight>
+Value:
+* -1 = Default LOD
+* 1 = first resolution LOD
+* 1000 = Gunnerview
+* 1100 = Pilotview
+* 1200 = Cargoview.
+
+==== LODDriverTurnedOut ====
+[[TokenNameValueTypes#Integers|Integer]] Defines the LOD that is to be used when the Driveris turned out. The same rules as with LODDriverTurnedIn apply.
+
+<syntaxhighlight lang="cpp">
+LODDriverTurnedOut = -1
+</syntaxhighlight>
+
+=== M ===
+
+==== magazine ====
+[[TokenNameValueTypes#Arrays|Array]]: used in TransportMagazines class this specifies the type of ammo in the magazine and the amount.
+
+<syntaxhighlight lang="cpp">
+{
+	magazine = "30Rnd_556x45_Stanag";
+	count = "30*1";
+}
+</syntaxhighlight>
+
+Each of these couplets are contained within a 'weapon' classname within the magazine''S'' class itself. Example
+
+<syntaxhighlight lang="cpp">
+class TransportMagazines
+{
+	class _xx_M16
+	{
+		magazine = "M16";
+		count = 30 * 1;
+	};
+	class _xx_M60
+	{
+		// ...
+	};
+	class _xx_PK
+	{
+		// ...
+	};
+	// ...
+};
+</syntaxhighlight>
+
+==== magazines ====
+Variable string [[TokenNameValueTypes#Arrays|Array]]: default {}
+
+see [[#weapons]] for proper description
+
+==== mapSize ====
+[[TokenNameValueTypes#Floats|Float]]: Default Value = 10 (meters).
+
+Used for the map editor to show the [[#icon|icon]] associated with this model class.
+
+There is no x y component to this, the measurement units are meters.
+
+To create a circular, rectangular or other 'non square' image, you need to make a pac file for the icon with, a transparent layer.
+
+<syntaxhighlight lang="cpp">
+mapSize = 0.7;	// small object such as a tree
+mapSize = 4;	// a smallish building
+</syntaxhighlight>
+
+The Mission Editor map is not very good in this regard (as noted above). However, the main problem is the base classes of the engine. The mapSize= for most objects, ''particularly'' buildings, is a one shoe fits all. A forest, eg, is the same mapSize= as a tree !!!
+
+Later Oem addons, *generally* are better and more specific in this regard, making position and fitting a little easier.
+
+==== marker ====
+[[TokenNameValueTypes#Strings|String]] : used as a core for all other air craft when looking on map.
+
+<syntaxhighlight lang="cpp">
+marker = "\AnyAddon\AnyP3d.(p3d")";
+</syntaxhighlight>
+
+==== material ====
+[[TokenNameValueTypes#Integers|Integer]]:
+
+Used in Hit... classes, eg HitTurret HitBody
+
+<syntaxhighlight lang="cpp">
+material = 50;
+</syntaxhighlight>
+
+<u>Related TokenNames</u>: [[#armor (float)]], [[#material]], [[#name]], [[#passThrough]]
+
+==== maximumLoad ====
+The maximumLoad value defines the number of units of cargo storage.
+
+<syntaxhighlight lang="cpp">
+maximumLoad = 2000;
+</syntaxhighlight>
+
+An item's storage value (the amount of space it takes up) is defined by it is mass value. For example:
+<syntaxhighlight lang="cpp">
+// CfgMagazines >> "Titan_AT"
+mass = 100;
+</syntaxhighlight>
+
+The following parameter are used by just Eden:
+<syntaxhighlight lang="cpp">
+transportMaxMagazines
+transportMaxWeapons
+transportMaxBackpacks
+</syntaxhighlight>
+
+==== maxT ====
+[[TokenNameValueTypes#Integers|Integer]]: This TokenName is used inside the [[#Smoke Class]]
+
+<syntaxhighlight lang="cpp">
+maxT = 0;
+</syntaxhighlight>
+
+==== min/max ====
+[[TokenNameValueTypes#Strings|String]] Degrees Math Formula
+
+<syntaxhighlight lang="cpp">
+min = 0;
+max = 60 / 3.6;
+</syntaxhighlight>
+
+Note for readability, these values are ''normally'' expressed as strings which the engine itself will convert.
+
+see [[#selection|Indicator Class]]
+
+==== memoryPointExhaust... ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+memoryPointExhaust = "exhaust_start";
+memoryPointExhaustDir = "exhaust_end";
+</syntaxhighlight>
+
+==== memoryPointGun ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+memoryPointGun = "machinegun";
+</syntaxhighlight>
+
+==== memoryPointGunnerOptics ====
+[[TokenNameValueTypes#Strings|String]]
+
+<syntaxhighlight lang="cpp">
+memoryPointGunnerOptics = "gunnerview";
+</syntaxhighlight>
+
+==== memoryPointGunnerOutOptics ====
+[[TokenNameValueTypes#Strings|String]]
+
+<syntaxhighlight lang="cpp">
+memoryPointGunnerOutOptics = "commander_weapon_view";
+</syntaxhighlight>
+
+==== memoryPoint...Missile ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+memoryPointLMissile = "Missile_1";
+memoryPointRMissile = "Missile_2";
+</syntaxhighlight>
+
+==== memoryPoint...Rocket ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+memoryPointLRocket = "Rocket_1";
+memoryPointRRocket = "Rocket_2";
+</syntaxhighlight>
+
+==== memoryPointsGetIn... ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+memoryPointsGetInCargo = "pos_cargo";
+memoryPointsGetInCoDriver = "pos_codriver";
+memoryPointsGetInCommander = "pos_commander";
+memoryPointsGetInDriver = "pos_driver";
+memoryPointsGetInGunner = "pos gunner";
+</syntaxhighlight>
+
+===== memoryPointsGetIn...Dir =====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+memoryPointsGetInCargoDir = "pos_cargo_dir";
+memoryPointsGetInCoDriverDir = "pos_codriver_dir";
+memoryPointsGetInCommanderDir = "pos_commander_dir";
+memoryPointsGetInDriverDir = "pos_driver_dir";
+memoryPointsGetInGunnerDir = "pos gunner dir";
+</syntaxhighlight>
+
+==== memoryPointSupply ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+memoryPointSupply = "supply";
+</syntaxhighlight>
+
+==== memoryPointTrack... ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+memoryPointTrackFLL = "tyreTrack_1_1l";
+memoryPointTrackFLR = "tyreTrack_1_1r";
+memoryPointTrackBLL = "tyreTrack_1_2l";
+memoryPointTrackBLR = "tyreTrack_1_2r";
+memoryPointTrackFRL = "tyreTrack_2_1l";
+memoryPointTrackFRR = "tyreTrack_2_1r";
+memoryPointTrackBRL = "tyreTrack_2_2l";
+memoryPointTrackBRR = "tyreTrack_2_2r";
+</syntaxhighlight>
+
+==== microMimics ====
+[[TokenNameValueTypes#Strings|String]]: Man class
+
+This token refers to the class within the external cfgMimics class
+
+<syntaxhighlight lang="cpp">
+microMimics = "Micro";
+</syntaxhighlight>
+
+==== minute ====
+part of the IndicatorWatch class
+
+see [[#hour]]
+
+==== model ====
+[[TokenNameValueTypes#Strings|String]]: Default Value= "empty.p3d"
+
+Location in the addon where the p3d model resides.
+
+<syntaxhighlight lang="cpp">
+model = "\AddonName\anyp3d(.p3d)";
+</syntaxhighlight>
+
+Where a class is not a visible 'object', such as a BaseClass. You can specify
+
+<syntaxhighlight lang="cpp">
+model = "";
+</syntaxhighlight>
+
+this cuts down on load and access.
+
+<u>Related TokenName</u>: [[#simulation]], [[#reversed]]
+
+==== moves ====
+[[TokenNameValueTypes#Strings|String]]: Default = "NoDefaultMoves"
+
+applies to the man class and refers to a cfgMoves class
+
+<syntaxhighlight lang="cpp">
+moves = "CfgMovesMC";	// civilian, in fact, there isn't another
+</syntaxhighlight>
+
+=== N ===
+
+==== ...NightLights... ====
+[[TokenNameValueTypes#Floats|Float]]:
+
+<syntaxhighlight lang="cpp">
+spotableNightLightsOff = 0.05;	// default
+spotableNightLightsOn = 4;		// default
+visibleNightLightsOff = 0.1;	// default
+visibleNightLightsOn = 0.2;		// default
+</syntaxhighlight>
+
+==== name ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+name = "motor";
+</syntaxhighlight>
+
+Used in Hit... classes, eg HitTurret HitBody
+
+<u>Related TokenNames</u>: [[#armor (float)]], [[#material]], [[#name]], [[#passThrough]]
+
+==== nameSound ====
+[[TokenNameValueTypes#Strings|String]]: Default value: "Target"
+
+Namesound is used by the AI audio to indicate verbally where to go, what 'vehicle' to attack. Thus the audio speech "move to 'rock' 3 o'clock' is derived from the ''nameSound''.
+
+<syntaxhighlight lang="cpp">
+nameSound = "rock";
+</syntaxhighlight>
+
+Many different nameSounds can be selected. Here are just a few.
+
+<syntaxhighlight lang="cpp">
+nameSound = "crew";
+nameSound = "target";
+nameSound = "tank";
+nameSound = "house";
+</syntaxhighlight>
+
+The actual descriptive text accompanying the 'sound' can be different see [[#displayName]]
+
+Typically, a collection of buildings (eg) will be configured as follows
+
+<syntaxhighlight lang="cpp">
+class GenBuilding : NonStrategic
+{
+	scope = private; // internal use only
+	VehicleClass = "Some Editor Group Name";
+	nameSound = "house";
+};
+class YellowBuilding : GenBuilding
+{
+	scope = public;
+	name = "YellowBuilding";
+	model = "Some yellow building.p3d";
+};
+</syntaxhighlight>
+
+<u>Related TokenNames</u>
+[[#scope]], [[#accuracy]], [[#displayName]], [[#vehicleClass]], [[#nameSound]], [[#camouflage]]
+
+==== noseDownCoef ====
+[[TokenNameValueTypes#Floats|Float]]: Default 1.0 used by Plane class
+
+<syntaxhighlight lang="cpp">
+noseDownCoef = 0.025;	// Cessna
+</syntaxhighlight>
+
+How much the nose drops when banking.
+
+''Note: Not used in ArmA any more''
+
+==== nightVision ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false
+
+<syntaxhighlight lang="cpp">
+nightVision = true;
+</syntaxhighlight>
+
+present in lawsoldier, sniper, saboteur, tank, and air crew
+
+''Note: obsolete, not used, NVG item is used instead''
+
+=== O ===
+
+==== ...OpticsColor ====
+Float [[TokenNameValueTypes#Arrays|Array]] : Default {0, 0, 0, 1};
+
+<syntaxhighlight lang="cpp">
+driverOpticsColor[] = { 0, 0, 0, 1 };
+gunnerOpticsColor[] = { 0.910000, 0.230000, 0.230000, 1 };
+commanderOpticsColor[] = { 0.910000, 0.230000, 0.230000, 1 };
+</syntaxhighlight>
+
+==== ...OpticsModel ====
+[[TokenNameValueTypes#Strings|String]]: Default ""
+
+<syntaxhighlight lang="cpp">
+commanderOpticsModel= "\AnyPbo\AnyP3d(.p3d)";
+driverOpticsModel = "\AnyPbo\AnyP3d(.p3d)";
+gunnerOpticsModel= "\AnyPbo\AnyP3d(.p3d)";
+</syntaxhighlight>
+
+==== gunnerOpticsShowCursor ====
+[[TokenNameValueTypes#Boolean|Boolean]]
+
+<syntaxhighlight lang="cpp">
+gunnerOpticsShowCursor = true;
+</syntaxhighlight>
+
+=== P ===
+
+==== passThrough ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default true
+
+If true, destroying this part of the vehicle will destroy the whole vehicle. If false, damage will only affect this part of the vehicle.
+
+This value is only taken into account in Arma 2. It was ignored by the game engine in previous games (that includes OFP).
+
+<syntaxhighlight lang="cpp">
+passThrough = 1;
+</syntaxhighlight>
+
+Used in Hit... classes, eg HitTurret HitBody
+
+<u>Related TokenNames</u>: [[#armor (float)]], [[#material]], [[#name]], [[#passThrough]]
+
+==== picture ====
+[[TokenNameValueTypes#Strings|String]]: Default: iaston.paa
+
+I think this is for briefing Information icon click
+
+<syntaxhighlight lang="cpp">
+picture = "\AnyAddon\AnyPAA(.paa)";
+</syntaxhighlight>
+
+"Picture" is used in config.cpp to display the 128 x 64
+graphic file of the unit in the HUD and the bottom
+of the screen while in game. A .pac file can be used
+also. If using a .pac make your alpha channel pink -
+RGB 255, 0, 255. Pink is invisible in .pac file.
+
+==== pilotLight ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default: false
+
+Default state of headlights on vehicle.
+
+<syntaxhighlight lang="cpp">
+pilotLight = true; // spawn vehicle with headlights on
+</syntaxhighlight>
+
+==== position ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+position = "ohniste";
+position = "L svetlo";
+</syntaxhighlight>
+
+See [[#Reflectors Class]], [[#Light Class]]
+
+==== precision ====
+<syntaxhighlight lang="cpp">
+precision = 1;		// man
+precision = 200;	// air
+precision = 50;		// boat
+</syntaxhighlight>
+
+==== ...preciseGetInOut ====
+[[TokenNameValueTypes#Integers|Integer]]: Defines location of getin point. 0 = use memoryPointGetIn , 1 = use model center as get in point, 2 = use proxy of crew position as get in point. Default is 0.
+<syntaxhighlight lang="cpp">
+preciseGetInOut = 0;		// for vehicle crew
+cargoPreciseGetInOut = 0;	// for passengers
+</syntaxhighlight>
+
+==== preferRoads ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default false
+
+<syntaxhighlight lang="cpp">
+preferRoads = true;	// all vehicles
+</syntaxhighlight>
+
+==== primary ====
+[[TokenNameValueTypes#Boolean|Boolean]]: For models that can have, (but don't necessarily do have) multiple internal objects of the same type (turrets eg). One of them, is declared the main, or primary turret. There may indeed be only one 'turret'. (Note: this entry has been replaced by the '''primary..'''. entries. Please use those for your turret definitions to ensure maximal compatibility.)
+
+<syntaxhighlight lang="cpp">
+primary = true;
+</syntaxhighlight>
+
+==== primary... ====
+[[TokenNameValueTypes#Boolean|Boolean]] A vehicle can have multiple turrets, but one of them normally is the primary gunner turret and one the primary vehicle commander turret (this can be the same turret or two different turrets, but you cannot have several primary gunner or commander turrets). Please use these entries instead of the more general '''primary''' entry.
+
+<syntaxhighlight lang="cpp">
+primaryGunner = false;
+primaryObserver = true;	// Commander
+</syntaxhighlight>
+
+==== proxyIndex ====
+[[TokenNameValueTypes#Integers|Integer]]
+
+<syntaxhighlight lang="cpp">
+proxyIndex = 2;
+</syntaxhighlight>
+
+==== proxyType ====
+[[TokenNameValueTypes#Strings|String]]
+
+<syntaxhighlight lang="cpp">
+proxyType = "CPCommander";
+</syntaxhighlight>
+
+=== R ===
+
+==== ...Radius ====
+[[TokenNameValueTypes#Floats|Float]]:
+
+Represents a circular area (radius in meters from '''centre''' of object for action to take place
+
+<syntaxhighlight lang="cpp">
+getInRadius = 2.5;	// default
+getInRadius = 3.5;	// tank
+getInRadius = 10;	// ship
+
+supplyRadius = 2.5;	// for fuel dumps ammo trucks etc
+</syntaxhighlight>
+
+==== ...RotorSpeed ====
+[[TokenNameValueTypes#Floats|Float]]: Helicopters
+
+<syntaxhighlight lang="cpp">
+mainRotorSpeed = 1.0;	// default
+backRotorSpeed = 1.5;	// default
+
+mainRotorSpeed = 1.0;	// ch47d
+backRotorSpeed = -1.0;
+</syntaxhighlight>
+
+==== ...RotorDive ====
+[[TokenNameValueTypes#Floats|Float]]: Helicopters, Default 0.0
+
+<syntaxhighlight lang="cpp">
+minMainRotorDive = -9;	// CH47D
+maxMainRotorDive = 15;
+neutralMainRotorDive = -5;
+minBackRotorDive = -15;
+maxBackRotorDive = 9;
+neutralBackRotorDive = -5;
+</syntaxhighlight>
+
+==== ReloadAnimations Class ====
+General useage in Helicopters, this class is 'looked for' by the engine. Various models, but normally only one, are specified as follows
+
+<syntaxhighlight lang="cpp">
+class ReloadAnimations
+{
+	class SomeThingA
+	{
+		// ...
+	};
+	// ...
+	class SomeThingZ
+	{
+		// ...
+	};
+};
+</syntaxhighlight>
+
+here is an example for an Mi24 helicopter
+
+<syntaxhighlight lang="cpp">
+class MachineGun30E
+{
+	weapon = "MachineGun30E";
+	angle0 = 0;
+	angle1 = -2 * 3.141592654;
+	multiplier = 500;
+	type = "rotation";
+	animPeriod = 0.500000;
+	selection = "gatling";
+	begin = "usti hlavne";
+	end = "konec hlavne";
+};
+</syntaxhighlight>
+
+==== rotL/R ====
+defined within a tank.Wheels class to describe the series of small wheels on each side
+
+<syntaxhighlight lang="cpp">
+rotR[] = { kolL1, kolL2, kolL3, kolL4, kolL5, kolL6, kolL7, kolL8 };
+rotL[] = { kolP1, kolP2, kolP3, kolP4, kolP5, kolP6, kolP7, kolP8 };
+upDownL[] = { koloP1, podkoloP1, koloP2, podkoloP2, koloP3, podkoloP3, koloP4, podkoloP4, koloP5, podkoloP5, koloP6, podkoloP6, koloP7, podkoloP7, koloP8, podkoloP8 };
+upDownR[] = { koloL1, podkoloL1, koloL2, podkoloL2, koloL3, podkoloL3, koloL4, podkoloL4, koloL5, podkoloL5, koloL6, podkoloL6, koloL7, podkoloL7, koloL8, podkoloL8 };
+</syntaxhighlight>
+
+==== reversed ====
+[[TokenNameValueTypes#Boolean|Boolean]]: Default true
+
+Normally, models ARE reversed with respect to how they present on the screen after editing with tools like oxygen (eg) This overrides the default. See [[#model]]
+
+<syntaxhighlight lang="cpp">
+reversed = false;	// class thing
+</syntaxhighlight>
+
+==== rotor... ====
+[[TokenNameValueTypes#Strings|String]]: Helicopters
+
+<syntaxhighlight lang="cpp">
+rotorBig = "vrtule_velka";	// cobra
+rotorBigBlend = "vrtule_velka_bl";
+rotorSmall = "vrtule_mala";
+rotorSmallBlend = "vrtule_mala_bl";
+</syntaxhighlight>
+
+=== S ===
+
+==== ...Sensitivity ====
+[[TokenNameValueTypes#Floats|Float]]: Default 1.0 Used by Plane Class
+
+<syntaxhighlight lang="cpp">
+aileronSensitivity = 0.33;		// Cessna
+elevatorSensitivity = 0.1;		// Cessna
+wheelSteeringSensitivity = 1.0;	// default
+</syntaxhighlight>
+
+==== ...Simul/Plan ====
+[[TokenNameValueTypes#Floats|Float]]: in meters
+
+<syntaxhighlight lang="cpp">
+steerAheadSimul = 0.5;	// default
+steerAheadPlan = 0.35;	// default
+steerAheadSimul = 0.2;	// man
+steerAheadPlan = 0.2;
+
+predictTurnSimul = 1.2;	// default
+predictTurnPlan = 1.2;	// default
+predictTurnSimul = 3;	// ship
+predictTurnPlan = 3;
+</syntaxhighlight>
+
+==== scope ====
+[[TokenNameValueTypes#Integers|Integer]]: Default value is 0 (private).
+
+<syntaxhighlight lang="cpp">
+scope = 2;
+</syntaxhighlight>
+
+Scope is used to limit access to the class in the Mission Editor (such as [[:Category:Eden Editor|Eden Editor]]) and scripts. The value can be one of '''0''' (private), '''1''' (protected/hidden), and '''2''' (public).
+
+[[PreProcessor_Commands#.23define|Defines]] normally exist at the top of a well written config.cpp to make meanings clearer.
+
+<syntaxhighlight lang="cpp">
+#define private 0
+#define protected 1
+#define public 2
+</syntaxhighlight>
+
+The meaning of each is as follows
+
+'''private:'''
+
+No object can be created using this class, neither in Mission Editor nor via scripts. This property marks the class as a "base" class, which other classes inherit from.
+
+private is a common method of grouping base characteristics together and inheriting all those common characteristics into a class that can be viewed or accessed.
+
+'''public:'''
+
+Public classes are usable in scripting commands (such as [[createVehicle]]) and can be shown in the Mission Editor.
+
+'''protected:'''
+
+Identical to public, except the class will not be listed in the Mission Editor. A very common form of use for this is
+
+<syntaxhighlight lang="cpp">
+class Vegetables
+{
+	scope = protected;
+	VehicleClass = "Fruit and Onions";	// a generic group in mission editor
+	displayName = "Generic Vegetable";
+	namesound = "whatever";
+	icon = "vegetableIcon.paa";
+	// put any other common characteristics in here
+};
+class GreenOnions : Vegetables
+{
+	scope = public;
+	displayName = "Green Onion";
+}
+class PurpleOnion : Vegetables
+{
+	....
+}
+</syntaxhighlight>
+
+The effect here is to reduce (considerably) not only the amount of typing, but memory storage too.
+
+<u>It is only the public classes that are listed in the Mission Editor.</u>
+
+So in above example while each one of these has a separate ''displayName='', they are ALL 'grouped' in the Editor's "Fruit and Onions", and '''all''' of them will be referred to ''in the mission'' as "Generic Vegetable". If you follow along, you should fully expect to see another protected class called "Generic Fruit"
+
+In the above example, it is just as useful to declare the base class '''private''. But, see below, and see [[#accuracy]]
+
+Protected classes are CamCreatable in the mission.sqm.
+
+Protected classes are immensely useful to 'hide' obsolete models that are still required to maintain compatibility with older missions. Ie older missions will still be playable, but newly created ones will only 'get at' the newer improvements specified in a public class. This
+
+<syntaxhighlight lang="cpp">
+class OriginalThing
+{
+	scope = protected;
+	// ...
+	// lots of original things
+	// ...
+};
+class ImprovedThing : OriginalThing // inherits it all
+{
+	scope = public;
+	// ...
+	// lots of new improved things
+	// ...
+};
+</syntaxhighlight>
+
+<u>Related TokenNames</u>
+[[#scope]], [[#accuracy]], [[#displayName]], [[#vehicleClass]], [[#nameSound]], [[#camouflage]]
+
+==== secondaryExplosion ====
+[[TokenNameValueTypes#Integers|Integer]]: Default disabled (-1)
+
+<syntaxhighlight lang="cpp">
+secondaryExplosion = -1;
+</syntaxhighlight>
+
+==== sensitivity ====
+[[TokenNameValueTypes#Floats|Float]]: Default 1.0
+
+<syntaxhighlight lang="cpp">
+sensitivity = 0.6;	// cars
+sensitivity = 2;	// sniper
+</syntaxhighlight>
+
+The higher the sensitivity value for an unit, the better it can see.
+
+The effect is not linear, but logarithmic. So for an unit with value 1 vs one with value 3 it must be 1.7 times closer (square root of 3). This example does not take into account other factors like zoom, binocular use, optics, camouflage and accuracy (knowsAbout value needed to detect the type and side).
+
+1 equals roughly to 100 meters, 2.5 to 210m, 3 to 250m.
+
+OA 1.62 state:
+
+<syntaxhighlight lang="cpp">
+class All
+	sensitivity = 2.5;
+	sensitivityEar = 0.0075;
+class AllVehicles : All
+class Land : AllVehicles
+class LandVehicle : Land
+class Car : LandVehicle
+	sensitivity = 3;
+class Motorcycle : LandVehicle
+	sensitivity = 3;
+class Bicycle : Motorcycle
+class Tank : LandVehicle
+	sensitivityEar = "0.0075 /3";
+class APC : Tank
+class Man : Land
+	sensitivity = 3;
+	sensitivityEar = 0.5;
+class Animal : Man
+class Air : AllVehicles
+class Helicopter : Air
+class Plane : Air
+class Ship : AllVehicles
+class AH6X_EP1 : AH6_Base_EP1
+	sensitivity = 2;
+class Ka137_Base_PMC : Helicopter
+	sensitivity = 2;
+</syntaxhighlight>
+
+==== sensitivityEar ====
+[[TokenNameValueTypes#Floats|Float]]: Default 0.0075
+
+Sets how well can the given unit hear others.
+The bigger the value, the better the hearing.
+
+<syntaxhighlight lang="cpp">
+sensitivityEar = 0.13;	// man
+</syntaxhighlight>
+
+==== selection ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+selection = "L svetlo";
+</syntaxhighlight>
+
+See [[#Reflectors Class]], [[#ReloadAnimations Class]] (Arma Only), [[#Hatch... Class]], [[#Indicator Class]]
+
+==== selection... ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+selectionBackLights = "light_back";
+selectionBrakeLights = "light_brake";
+selectionFireAnim = "muzzleflash";
+selectionHRotorStill= "mainRotorStatic";
+selectionHRotorMove = "mainRotorBlurred";
+selectionVRotorStill = "tailRotorStatic";
+selectionVRotorMove = "tailRotorBlurred";
+selectionFabric = "latka";
+</syntaxhighlight>
+
+The selections
+<syntaxhighlight lang="cpp">
+selectionLeftOffset = "PasOffsetL";
+selectionRightOffset = "PasOffsetP";
+</syntaxhighlight>
+are used to animate tank track textures. You must have the appropriate [[Named Selection|Named Selections]] in the model and the selection must have an rvmat in order to work.
+
+==== shape ====
+[[TokenNameValueTypes#Floats|Float]]: This TokenName is used inside the [[#Light Class]]
+
+<syntaxhighlight lang="cpp">
+shape = "koulesvetlo";
+</syntaxhighlight>
+
+See [[#Light Class]], [[#Reflectors Class]]
+
+==== showgunneroptics ====
+[[TokenNameValueTypes#Boolean|Boolean]]:
+
+<syntaxhighlight lang="cpp">
+showgunneroptics = 0;
+</syntaxhighlight>
+
+==== showWeaponCargo ====
+[[TokenNameValueTypes#Boolean|Boolean]]:Default ?
+
+<syntaxhighlight lang="cpp">
+showWeaponCargo = true;
+</syntaxhighlight>
+
+Found inside weapon holders (ammo boxes)<br>
+OFP: If it is set to true player won't be able to put weapons/magazines to container.
+
+==== sound ====
+[[TokenNameValueTypes#Strings|String]]:
+Used by animated objects (campfire eg) to give sound effect. Or, simply by ambients(wolves)
+
+<syntaxhighlight lang="cpp">
+sound = "Fire";
+sound = "Fountain";
+sound = "OwlSfx";
+</syntaxhighlight>
+
+==== SoundEnvironExt Class ====
+class SoundEnvironExt
+
+This is a <u>Class</u> used within the man class. Some/ None, or all sections of it can (of course) be overridden by inheritance.
+
+The external class '''CfgManActions''' accesses the '''SoundEnvironExt''' class defined (or inherited) for any 'man' (soldier eg).
+
+External class '''CfgManActions''' contains many clauses
+
+<syntaxhighlight lang="cpp">
+soundOverride = "fallbody";	// e.g
+</syntaxhighlight>
+
+for instances of when it wants sounds for that 'action' to take place.
+
+thus, you can define none some or all arrays (within class with your SoundEnvironExt{}) for the following
+
+<syntaxhighlight lang="cpp">
+normalExt[] =
+normal[] =
+road[] =
+rock[] =
+water[] =
+gravel[] =
+sand[] =
+drygrass[] =
+grass[] =
+forest[] =
+mud[] =
+wood[] =
+metal[] =
+snow[] =
+hallway[] =
+fallbody[] =
+laydown[] =
+standup[] =
+crawl[] =
+</syntaxhighlight>
+
+Example
+
+<syntaxhighlight lang="cpp">
+snow[] = {
+	{ "People\snow_L", 0.000032, 1 },
+	{ "People\snow_R", 0.000032, 1 }
+};
+</syntaxhighlight>
+
+snow is a Variable length Sound [[TokenNameValueTypes#Arrays|Array]]
+
+see [[#Sounds Various|sounds[]]]
+
+==== Sounds Various ====
+Complex [[TokenNameValueTypes#Arrays|Array]]:
+
+All the following use
+
+<syntaxhighlight lang="cpp">
+nameOfSound[] = { "\AddonName\AnySound(.wss)", 0.000000, 1, 1 };
+</syntaxhighlight>
+
+* 1st parameter: Sound file (path). *.wss is default, *.ogg can be specified.
+* 2nd parameter: Change of volume compared to the strongest sound that is audible at the camera's (player's) position. It means that the strongest sound is played on 100% and this sound is played weaker (calculated from dB value, distance, occlude, ...). If this sound is alone in sound scene then it is played on 100% every time.
+* 3rd parameter: Speed of playing, 1 = normal speed/time of playing, 2 = 2 times slower, with half lower pitch.
+
+===== ...Sound =====
+<syntaxhighlight lang="cpp">
+flySound[] = { "\AddonName\AnySound.wss", 0.000000, 1, 1 };
+singSound[] = { "\AddonName\SoundFile.ogg", 0.031623, 1, 1 };
+scudSound[] = { "weapons\rocketflying", 316.227783, 0.200000 };
+scudSoundElevate[] = { "vehicles\gun_elevate", 0.010000, 1 };
+</syntaxhighlight>
+
+===== sound... =====
+<syntaxhighlight lang="cpp">
+soundCrash[] = { "\AnyAddon\AnySound(.wss)", 0.010000, 1 };
+soundSetSonicBoom[] = { "Plane_Fighter_SonicBoom_SoundSet" }; // Sonic Boom for jet fighters at supersonic speeds; defined in cfgSoundSets
+</syntaxhighlight>
+
+default values
+
+<syntaxhighlight lang="cpp">
+soundCrash[] = { "Vehicles\crash", 0.316228, 1 };
+soundDammage[] = { "", 1, 1 };
+soundEngine[] = { "", 1, 1 };
+soundEnviron[] = { "", 1, 1 };
+soundLandCrash[] = { "Explosions\intoground", 0.316228, 1 };
+soundWaterCrash[] = { "Explosions\intowater", 0.316228, 1 };
+soundGetIn[] = { "Vehicles\get_in", 0.000316, 1 };
+soundGetOut[] = { "Vehicles\get_out", 0.000316, 1 };
+soundServo[] = { "Vehicles\gun_elevate", 0.010000, 0.500000 };
+soundGear[] = { "\AnyAddon\AnySound(.wss)", 0.316228, 1 };			// no default
+additionalSound[] = { "\AnyAddon\AnySound(.wss)", 0.000000, 1 };	// man only
+</syntaxhighlight>
+
+===== sound[] =====
+used by animations
+
+<syntaxhighlight lang="cpp">
+sound[] = { "\anyPbo\AnySound(.wss)", 10.000000, 1 };
+</syntaxhighlight>
+
+==== side ====
+[[TokenNameValueTypes#Integers|Integer]]: Default Value: NEUTRAL.
+
+The side, when declared, sets the 'vehicle' to east, west, resistance, civilian. The effect differs according to the 'vehicle' itself. Eg soldiers, versus hospitals or repair trucks that can only be used by same side, if specifically sided.
+
+Well written missions (and configs) use defines at top of file to make this more legible.
+
+<syntaxhighlight lang="cpp">
+#define NO_SIDE -1
+#define EAST 0			// (Russian)
+#define WEST 1			// (NATO)
+#define RESISTANCE 2	// Guerilla
+#define CIVILIAN 3
+#define NEUTRAL 4
+#define ENEMY 5
+#define FRIENDLY 6
+#define LOGIC 7
+
+side = EAST;
+</syntaxhighlight>
+
+NEUTRAL is the general case for all objects.
+
+NO_SIDE is used for ambient seagulls and wolves (see [[#sound]]). It differs from NEUTRAL in that the engine spends no time looking for interraction with other objects.
+
+==== simulation ====
+[[TokenNameValueTypes#Strings|String]]: Default value: invisible.
+
+The engine behaviour with this [[#model]].
+
+<syntaxhighlight lang="cpp">
+simulation = "SeaGull";
+simulation = "thing";
+simulation = "fire";
+simulation = "flag";
+simulation = "house";
+// simulation = airplane, helicopter, tank
+</syntaxhighlight>
+
+<u>Related TokenName</u>: [[#model]]
+
+==== size ====
+[[TokenNameValueTypes#Floats|Float]]: This TokenName is used inside the Smoke class and Reflector class
+
+<syntaxhighlight lang="cpp">
+size = 0.1;
+</syntaxhighlight>
+
+part of [[#direction|Reflectors class]]
+
+==== source ====
+[[TokenNameValueTypes#Strings|String]]: found in animationSources
+
+<syntaxhighlight lang="cpp">
+source = "reload";
+source = "time";
+</syntaxhighlight>
+
+==== sourceAddress ====
+[[TokenNameValueTypes#Strings|String]]: found in animationSources
+
+<syntaxhighlight lang="cpp">
+sourceAddress = "loop";
+</syntaxhighlight>
+
+==== sourceSize ====
+[[TokenNameValueTypes#Floats|Float]]: This TokenName is used inside the [[#Light Class]]
+
+<syntaxhighlight lang="cpp">
+sourceSize = 0.015;
+</syntaxhighlight>
+
+==== ...Speed ====
+[[TokenNameValueTypes#Floats|Float]]: In Kph.
+
+Setting maxSpeed for infantry units too low might cause problems when working with waypoints (units won't be able to fully complete them or won't move towards them).
+
+<syntaxhighlight lang="cpp">
+minSpeed = -0.5;	// range 0->1
+maxSpeed = 80;		// default
+maxSpeed = 30;		// tractor
+maxSpeed = 60;		// boat
+</syntaxhighlight>
+
+==== scud... ====
+[[TokenNameValueTypes#Strings|String]]: Default ""
+
+<syntaxhighlight lang="cpp">
+scudLaunch = "scudlunch.rtm";
+scudStart = "scudstart.rtm";
+scudModel = "scud_strela_proxy";
+scudModelFire = "scud_strela_ohen";
+</syntaxhighlight>
+
+==== straightDistance ====
+[[TokenNameValueTypes#Integers|Integer]]:
+
+<syntaxhighlight lang="cpp">
+straightDistance = 50;
+</syntaxhighlight>
+
+==== submerged.. ====
+[[TokenNameValueTypes#Floats|Float]]: default 0.0
+
+Almost all 'objects' are '''not''' submerged. This parameter is used to hide objects such as effects
+
+<syntaxhighlight lang="cpp">
+submerged = -0.5;		// thing effect
+submergeSpeed = 0.25;	// positive value makes it go deeper (sound goes quieter)
+</syntaxhighlight>
+
+=== T ===
+
+==== ...Turn ====
+[[TokenNameValueTypes#Integers|Integer]] Degrees
+
+<syntaxhighlight lang="cpp">
+initTurn = 90;
+minTurn = -70;
+maxTurn = 70;
+</syntaxhighlight>
+
+part of any Turret class (tanks eg)
+
+see[[#gun]]
+
+==== TokenNames Embedded ====
+see [[#Embedded ClassNames]]
+
+===== turning =====
+[[TokenNameValueTypes#Boolean|Boolean]]:
+
+<syntaxhighlight lang="cpp">
+turning = 1;
+</syntaxhighlight>
+
+===== turnCoef =====
+[[TokenNameValueTypes#Floats|Float]]: Default 2.0
+
+<syntaxhighlight lang="cpp">
+turnCoef = 6.0;	// truck
+turnCoef = 9.0;	// tractor
+</syntaxhighlight>
+
+==== terrainCoef ====
+[[TokenNameValueTypes#Floats|Float]]: Default 3.0
+
+* Pre A3: multiplier to torque and speed (pForce)
+* A3: multiplier to maxSpeedCoef (1 - maxSpeedCoef) [cfgSurfaces parameter] for speedCoef
+
+<syntaxhighlight lang="cpp">
+Pre A3::
+		terrainCoef = 6.0;	// skoda
+---
+A3:
+	class Car_F : Car
+		terrainCoef = 2;
+
+	class MRAP_03_base_F : Car_F
+		terrainCoef = 1;
+	class UGV_01_base_F : Car_F
+		terrainCoef = 1.2;
+	class Quadbike_01_base_F : Car_F
+		terrainCoef = 1.4;
+	class MRAP_01_base_F : Car_F
+		terrainCoef = 1.5;
+	class MRAP_02_base_F : Car_F
+		terrainCoef = 1.5;
+	class SUV_01_base_F : Car_F
+		terrainCoef = 2.5;
+	class Hatchback_01_base_F : Car_F
+		terrainCoef = 4.5;
+	class Kart_01_Base_F : Car_F
+		terrainCoef = 5;
+
+
+	class Truck_F : Car_F
+		terrainCoef = 2.5;
+
+	class Truck_03_base_F : Truck_F
+		terrainCoef = 1.8;
+	class Truck_02_base_F : Truck_F
+		terrainCoef = 2;
+	class Van_02_base_F : Truck_F
+		terrainCoef = 3;
+
+
+	class Wheeled_APC_F : Car_F
+		terrainCoef = 1.5;
+</syntaxhighlight>
+
+==== textureList[] ====
+Complex (string, float) [[TokenNameValueTypes#Arrays|Array]]
+
+Introduced with {{GVI|arma3|1.24}}, the Bootcamp Update, along with a lot of other randomization features.
+
+Array of texture sources to randomize the vehicle with similar to facewear/headgear randomization for characters (See [[Arma 3: Characters And Gear Encoding Guide#FIA headgear and facewear randomization]]); format is:
+<syntaxhighlight lang="cpp">
+textureList[] = { "texture1", weight1, "texture2", weight2, etc. };
+</syntaxhighlight>
+Textures must be classes from the vehicle's TextureSources. If all the weights are the same value, it functions as straight equal randomization.
+
+Example:
+<syntaxhighlight lang="cpp">
+class MyPlane : C_Plane_Civil_01_F
+{
+	textureList[] = { "Racer_1", 0.5, "Racer_2", 1 };
+};
+</syntaxhighlight>
+
+==== threat ====
+float [[TokenNameValueTypes#Arrays|Array]]: Default Value {0.700000, 0.500000, 0.300000};
+
+How threatening you are to unit [[#type (threat)|types]] {Soft, Armor, Air}, respectively.
+
+The ai for this model selects targets of opportunity, based on these values.
+
+<syntaxhighlight lang="cpp">
+threat[] = { 1, 0.0500000, 0.050000 };			// soldier
+threat[] = { 1, 0.900000, 0.100000 };			// law soldier
+threat[] = { 0.900000, 0.700000, 0.300000 };	// bmp
+</syntaxhighlight>
+
+<u>Related TokenNames</u>: [[#type (threat)|type]], [[#cost]], [[#threat]]
+
+==== timeToLive ====
+[[TokenNameValueTypes#Floats|Float]]: Default 10 000 000 000.0; // seconds?
+
+<syntaxhighlight lang="cpp">
+timeToLive = 20;	// thing effects (bullets)
+timeToLive = 100000002004087730000.0;	// campfire
+</syntaxhighlight>
+
+See [[#Smoke Class]]
+
+==== transport... ====
+
+===== transportAmmo =====
+[[TokenNameValueTypes#Integers|Integer]]: Used by supply 'vehicles' to determine total amount available for entire mission. Once depleted...
+
+A 'vehicle' in this case can be a genuine repair truck, or, a building.
+
+<syntaxhighlight lang="cpp">
+transportAmmo = 300000;			// reammo truck
+transportAmmo = 10000000;		// bigship
+
+transportFuel = 3000;			// refueltruck
+transportRepair = 200000000;	// repairtruck
+</syntaxhighlight>
+
+===== transportMax... =====
+These parameters appear not to be used in Arma 3 and are only included for backwards compatibility. See [[#maximumLoad|maximumLoad]] to define a vehicle's storage capacity.
+
+<syntaxhighlight lang="cpp">
+transportMaxMagazines = 50;		// car
+transportMaxWeapons = 10;
+transportMaxMagazines = 5;		// motorcycle
+transportMaxWeapons = 0;
+transportMaxMagazines = 50;		// tank
+transportMaxWeapons = 10;
+transportMaxMagazines = 20;		// air
+transportMaxWeapons = 3;
+transportMaxMagazines = 100;	// boat
+transportMaxWeapons = 20;
+transportMaxMagazines = 500;	// ship
+transportMaxWeapons = 200;
+transportMaxMagazines = 200;	// truck
+transportMaxWeapons = 50;
+transportMaxMagazines = 100;	// apc
+transportMaxWeapons = 20;
+transportMaxMagazines = 200;	// helicopter
+transportMaxWeapons = 50;
+transportMaxWeapons = 500;		// ammo boxes
+transportMaxMagazines = 2000;
+</syntaxhighlight>
+
+Values vary depending on exact type of 'boat' eg.
+
+These TokenNames ate used to indicate how many units of each type an object can hold. Most objects can't hold anything.
+
+===== transportSoldier =====
+[[TokenNameValueTypes#Integers|Integer]]: Default Value= 0.
+
+Number of 'passengers' this vehicle can carry. The value does '''not''' include the driver, '''nor''' any vehicle positions such as gunner (if any) or commander(if any). See the JeepMg below for a 3 person vehicle which can only transport ONE soldier.
+
+<syntaxhighlight lang="cpp">
+transportSoldier = 3;		// jeep/car
+transportSoldier = 50;		// large ship
+transportSoldier = 6to10;	// SmallShip
+transportSoldier = 3;		// a10
+transportSoldier = 8to12;	// helicopters
+transportSoldier = 2or3;	// ambulance
+transportSoldier = 8;		// apc/bmp
+transportSoldier = 12;		// truck
+transportSoldier = 1;		// jeepmg
+transportSoldier = 1or2;	// repair type truck
+</syntaxhighlight>
+
+to make the game 'interesting', similar vehicles on different sides, can carry non equivalent numbers.
+
+==== transportVehiclesCount ====
+[[TokenNameValueTypes#Integers|Integer]] : default 0
+
+<syntaxhighlight lang="cpp">
+transportVehiclesCount = 15; // a Carrier (big ship)
+</syntaxhighlight>
+
+==== TransportMagazines Class ====
+
+==== transportVehiclesMass ====
+[[TokenNameValueTypes#Integers|Integer]]: Default 0
+
+<syntaxhighlight lang="cpp">
+transportVehiclesMass = 0;	// not used by any model
+</syntaxhighlight>
+
+==== TransportWeapons Class ====
+
+==== tracksSpeed ====
+[[TokenNameValueTypes#Integers|Integer]]: Default 1
+
+Speed of tracks UV animation. Use negative number to move tracks in opossite direction
+
+<syntaxhighlight lang="cpp">
+tracksSpeed = 1.4;
+</syntaxhighlight>
+
+==== TransportWeapons Class ====
+
+==== turretAxis ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+turretAxis = "OsaVeze";
+</syntaxhighlight>
+
+see [[#Turret Class]]
+
+==== type (threat) ====
+[[TokenNameValueTypes#Integers|Integer]]: Default Value: Armored
+
+This indicates the threat type of the 'vehicle'.
+
+In well written configs, the 3 possible values are declared as defines at top of file for legibility
+
+<syntaxhighlight lang="cpp">
+#define VSoft 0
+#define VArmor 1
+#define VAir 2
+
+type = VAir;
+</syntaxhighlight>
+
+Vehicles (and buildings) are armoured, humans are 'soft' and aircraft (obviously) are air
+
+<u>Related TokenNames</u>: [[#type (threat)|type]], [[#cost]], [[#threat]]
+
+==== type (animation) ====
+'''old''' [[TokenNameValueTypes|Unknown]]: Default Value: rotation
+
+This appears in the ReloadAnimations class
+
+<syntaxhighlight lang="cpp">
+type = "rotation";
+</syntaxhighlight>
+
+==== typicalCargo ====
+Variable String [[TokenNameValueTypes#Arrays|Array]]:Array of units classes which are assumed to be onboard of vehicle. Used by AI to determine potential threat of vehicle in case they are not able to see units inside vehicle.
+
+This array can have zero or more strings.
+
+<syntaxhighlight lang="cpp">
+typicalCargo[] = { "Soldier", "Soldier", "SoldierLAW", "SoldierLAW" };
+</syntaxhighlight>
+
+Note that these are ''ClassNames'' of soldiers.
+
+=== U ===
+
+==== ...UsesPilotView ====
+[[TokenNameValueTypes#Boolean|Boolean]]: : Default false
+
+<syntaxhighlight lang="cpp">
+gunnerUsesPilotView = false;	// some choppers (mi17)
+commanderUsesPilotView = true;
+</syntaxhighlight>
+
+
+==== uavHacker ====
+[[TokenNameValueTypes#Boolean|Boolean]]<br>
+Allows unit to hack UAVs. Used on UAV operators in vanilla (Arma 3)
+<syntaxhighlight lang="cpp">
+uavHacker = 1;
+</syntaxhighlight>
+
+==== unitInfoType ====
+[[TokenNameValueTypes#Strings|String]]
+
+<syntaxhighlight lang="cpp">
+unitInfoType = "UnitInfoSoldier";
+</syntaxhighlight>
+
+Certain 'vehicles' hide this information.
+
+see [[#hide...|#hideUnitInfo]]
+
+==== unloadInCombat ====
+[[TokenNameValueTypes#Boolean|Boolean]]: default true
+
+<syntaxhighlight lang="cpp">
+unloadInCombat = false;
+</syntaxhighlight>
+
+All true vehicles will cause ai to disembark when in combat.
+
+==== upDownL/R ====
+wheels class
+see [[#rotL/R]]
+
+=== V ===
+
+==== vehicleClass ====
+[[TokenNameValueTypes#Strings|String]]: Default Value= "Objects"
+
+Used for Mission Editor basic category selection
+
+<syntaxhighlight lang="cpp">
+vehicleClass = "Air";
+vehicleClass = "Support";
+vehicleClass = "My Great Addon";
+</syntaxhighlight>
+
+<u>Related TokenNames</u>
+[[#scope]], [[#accuracy]], [[#displayName]], [[#vehicleClass]], [[#nameSound]], [[#camouflage]]
+
+==== vehicleClass[] ====
+String [[TokenNameValueTypes#Arrays|Array]]:
+
+<syntaxhighlight lang="cpp">
+vehicleClass[] = { "Men", "Car", "Armored", "Air", "Support", "Camera", "Objects", "Ammo", "Sounds", "Mines" };
+</syntaxhighlight>
+
+==== view...Shadow ====
+[[TokenNameValueTypes#Boolean|Boolean]]:
+
+<syntaxhighlight lang="cpp">
+viewCargoShadow = true;
+viewGunnerShadow = true;
+</syntaxhighlight>
+
+==== viewDriverInExternal ====
+[[TokenNameValueTypes#Boolean|Boolean]]: default false
+
+<syntaxhighlight lang="cpp">
+viewDriverInExternal = true;	// Show the driver in third person view
+</syntaxhighlight>
+
+==== viewGunnerInExternal ====
+[[TokenNameValueTypes#Boolean|Boolean]]: default false
+
+<syntaxhighlight lang="cpp">
+viewGunnerInExternal = true;	// for some turrets and M113
+</syntaxhighlight>
+
+=== W ===
+
+==== ...WaterEffect ====
+[[TokenNameValueTypes#Strings|String]]
+
+Defines the effect that will be spawned at the position of the LandContact points when vehicle is in/on the water.
+
+<syntaxhighlight lang="cpp">
+leftWaterEffect = "vbs2_fx_lowWaterEffects";
+rightWaterEffect = "vbs2_fx_lowWaterEffects";
+</syntaxhighlight>
+
+see [[#...DustEffect]]
+
+==== weapon ====
+[[TokenNameValueTypes#Strings|String]]:
+
+<syntaxhighlight lang="cpp">
+weapon = "M197";
+</syntaxhighlight>
+
+Selects a weapon from the CfgWeapons class
+
+==== weapons ====
+Variable String [[TokenNameValueTypes#Arrays|Array]]: default {};
+
+Weapons and Magazines contain individual description of what a 'vehicle' IS carrying.
+
+<syntaxhighlight lang="cpp">
+weapons[] = { "FFARLauncher", "TwinM134" };	// aircraft
+weapons[] = { "CarHorn" };	// truck
+
+weapons[] = { "M21", "LAWLauncher", "Throw", "Put" };	// soldier
+magazines[] = { "M21", "M21", "M21", "M21", "HandGrenade", "HandGrenade", "LAWLauncher" };
+</syntaxhighlight>
+
+The amount of weapons (and magazines) that can be carried by the 'man' is determined by [[#weaponSlots]]
+
+The names M21, Carhorn etc are external references to the cfgWeapons / cfgMagazines classes
+
+==== weaponsGroup ====
+[[TokenNameValueTypes#Integers|Integer]]:
+
+The weapons grouping for a vehicle, determined by enumerated weapon category definitions.
+
+<syntaxhighlight lang="cpp">
+weaponsGroup1 = WEAPONGROUP_CANNONS + WEAPONGROUP_MGUNS;								// Adds Cannons and Machine Guns to Weapons Group 1
+weaponsGroup2 = WEAPONGROUP_ROCKETS;													// Adds Rockets to Weapons Group 2
+weaponsGroup3 = WEAPONGROUP_AAMISSILES + WEAPONGROUP_ATMISSILES + WEAPONGROUP_MISSILES; // Adds All Missile types to Weapons Group 3
+weaponsGroup4 = WEAPONGROUP_BOMBS + WEAPONGROUP_SPECIAL;								// Adds Bombs and Laser Designators to Weapons Group 4
+</syntaxhighlight>
+
+<syntaxhighlight lang="cpp">
+#define WEAPONGROUP_CANNONS		1	// Cannons
+#define WEAPONGROUP_MGUNS		2	// Machine Guns
+#define WEAPONGROUP_ROCKETS		4	// Rockets
+#define WEAPONGROUP_AAMISSILES	8	// Anti-Air Missiles
+#define WEAPONGROUP_ATMISSILES	16	// Anti-Tank Missiles
+#define WEAPONGROUP_MISSILES	32	// All / Other Missiles
+#define WEAPONGROUP_BOMBS		64	// Bombs
+#define WEAPONGROUP_SPECIAL		128	// Laser Designator + Misc
+</syntaxhighlight>
+
+==== weaponSlots ====
+[[TokenNameValueTypes#Integers|Integer]]:
+
+Weaponslots apply to man class (soldier, civilian, etc)
+
+It indicates the 'gear' capacity.
+
+<syntaxhighlight lang="cpp">
+weaponSlots = 1 + 4 + 12 * 256 + 2 * 4096 + 2 + 8 * 16;	// all soldiers/civilians
+weaponSlots = 1 + 4 + 8 * 256 + 2 * 4096 + 2 + 4 * 16;	// medics
+
+// 1 = primary weapon
+// 2 = handgun slot
+// 4 = secondary weapon (launcher)
+// 16 = handgun magazines (8x)(or grenades for M203/GP-25)
+// 256 = magazine slots (12x / 8x for medics)
+// 4096 = goggle slot (2x)
+// 131072 = ?
+</syntaxhighlight>
+
+==== wheelCircumference ====
+[[TokenNameValueTypes#Floats|Float]] Default 2.513 meters
+
+<syntaxhighlight lang="cpp">
+wheelCircumference = 8;	// tractor
+</syntaxhighlight>
+
+==== wounds ====
+string [[TokenNameValueTypes#Arrays|Array]]:
+
+<syntaxhighlight lang="cpp">
+wounds[] = { "xicht_a.paa", "xicht_a_zranen", ... };
+</syntaxhighlight>
+
+this token is used in the man class to show a series of pac/paa files depending on damaged state of the body.
+
+
+
+{{GameCategory|ofp|Modelling}}
+{{GameCategory|ofp|Editing}}
+{{GameCategory|arma1|Addon Configuration}}
+{{GameCategory|ofp|Reference Lists}}
+{{GameCategory|arma3|Vehicle Configuration}}

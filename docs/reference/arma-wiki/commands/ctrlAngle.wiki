@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/ctrlAngle
+// revision: 378507 (2026-05-03T17:04:17Z)
+// export sha1: p9bnyq0bsk8fgqrtssaubr9pfmg4dee
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Arma 3 version 1.52 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.52
+
+|gr1= GUI Control - Positioning
+
+|descr= Gets rotation info of a control set as {{hl|ST_PICTURE}}. Supported control types:
+* [[CT_STATIC]]
+* {{GVI|arma3|2.10|size= 0.75}} [[CT_ACTIVETEXT]]
+
+|s1= [[ctrlAngle]] control
+
+|p1= control: [[Control]]  - picture control
+
+|r1= [[Array]] with [angle, centerX, centerY]
+* angle: [[Number]]
+* centerX: [[Number]]
+* centerY: [[Number]]
+
+|x1= <sqf>ctrlAngle _control;</sqf>
+
+|seealso= [[ctrlSetAngle]]
+}}

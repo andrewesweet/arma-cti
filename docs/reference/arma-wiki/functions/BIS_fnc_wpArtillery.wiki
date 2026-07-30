@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_wpArtillery
+// revision: 328431 (2022-07-13T16:00:51Z)
+// export sha1: gym3nrm4suahuo519s1txjga1iew3is
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Waypoints | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Waypoints
+
+|descr= Let group members fire artillery barrage on waypoint position. Units must have magazine type.
+
+|s1= [group, position, target, firedRounds, type] call [[BIS_fnc_wpArtillery]]
+
+|p1= group: [[Group]]
+
+|p2= position: [[Array]] format [[Position]]
+
+|p3= target: [[Object]] - (Optional, default [[objNull]]) '''''unused parameter'''''
+
+|p4= firedRounds: [[Number]] - (Optional, default 100) number of fired rounds
+
+|p5= type: [[String]] - (Optional, default "") magazine type to be used. If empty, first found magazine will be used
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>[group player, getMarkerPos "artilleryStrike", objNull, 30, "8Rnd_82mm_Mo_shells"] call BIS_fnc_wpArtillery;</sqf>
+
+|seealso= [[doArtilleryFire]] [[inRangeOfArtillery]]
+}}

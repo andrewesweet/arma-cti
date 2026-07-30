@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/When_an_error_makes_no_sense
+// revision: 376119 (2025-08-31T21:26:20Z)
+// export sha1: brrc59fal2wv05fm8h9qgnprly8q6bk
+// categories: Category:Common Scripting Errors
+// Vendored snapshot. Do not edit — re-export instead.
+
+Sometimes, the displayed error will not appear to be correct. The error parser will point you to a line of code which is correct, yet it will tell you that some strange error exists at that point.
+
+In this case, the problem usually lies '''beneath''' that point in the code.
+Usually the source of the error is actually a '''missing parenthesis, bracket, curly brace, etc.'''
+Usually the error message says that it encountered a string where it expected code.
+
+
+'''Compatibility:'''
+
+This only applies to [[SQF Syntax]] scripts, not [[SQS Syntax|SQS]] scripts.
+
+
+'''Example:'''
+
+<sqf>
+for "_i" from 0 to 1 do
+{
+	_str = format ["mystring", _i;
+};
+</sqf>
+
+In this example, the error will be shown to originate just to the left of the word "do".
+However, the error is actually caused by a line in the code beneath the do statement
+(such an error would be difficult to spot if it were many more lines down in the code).
+
+
+[[Category:Common Scripting Errors]]

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Timeline_Item_ARMA3
+// revision: 378657 (2026-05-18T16:31:29Z)
+// export sha1: lfh0povtxgfsytwkq7awnb4nykdgf6z
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>[[File:Logo_A3.png|50px|link=Category:Arma_3]]</includeonly><noinclude>[[Category:Historical Templates]]</noinclude>

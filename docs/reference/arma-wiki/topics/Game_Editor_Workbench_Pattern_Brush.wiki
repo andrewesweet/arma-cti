@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/Game_Editor_(Workbench)_Pattern_Brush
+// revision: 349930 (2023-11-20T22:11:13Z)
+// export sha1: 4yrk6qf0qxt1u0zpzk6srfu1to3yggn
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Pattern Brush =
+[[File:Pattern_CurrentTool.jpg|thumb]]
+<br>
+[[File:Tool_Pattern.jpg]] Pattern brush is tool for inserting a lot of entites quickly on terrain, best example is forest. When the tool is active on terrain it is displayed as yellow circle on terrain. In this circle the entities from selected pattern will be inserted on terrain. Brush size can be changed with ctrl and mouse wheel. 
+
+=== Paint Mode ===
+==== Overwrite ====
+In this mode the tool will delete already placed pattern on the terrain with the new (selected ) pattern. 
+
+==== Addition ====
+Will just add/remove (with alt key holded) entities from selected pattern onto the terrain. 
+
+==== Substract ====
+Works only if the brush is used with the same pattern!! With this mode the brush will delete only entities which layers are checked. 
+
+=== Layers ===
+Only entities from the checked layers will be placed on the terrain. The list of layers can not be modified by users. 
+
+=== Paterns ===
+List of already defined patterns stored in WorldsPat folder. Here you can select which pattern will be used ( and placed ) on terrain. 
+
+==== Example ====
+On picture underneath you can see the yellow circle (how the tools look on terrain ) and what can be done by one click (LMB).
+<br>
+[[File:Pattern_Empty.jpg | 400px ]] [[File:Pattern_Full.jpg | 400px ]]
+
+== Create And Edit New Pattern ==
+You can create your own pattern by "File -> New -> Entity pattern" (map type). Don't forget to set proper name. The new pattern is physically created in Folder WorldsPat. The entities into the pattern can be inserted only from Entity Template Manager!  If is some pattern is already used on some terrain and than is edited. The changes will not take effect on the terrain edited with that brush before! 
+<br>
+<br>
+* Ground Texture [[File:Pattern_GroundTexture.jpg]] 
+Selecting a proper ground texture can helps realization how the pattern will look on the terrain and not only grey desk. 
+<br>
+<br>
+* Size of Pattern 
+The size of pattern is not fully variable, but there is enough possibilities.
+<br>
+[[File:Pattern_GroundSize.jpg]] 
+<br>
+<br>
+* Example of "Icelands_forest_coniferous_low_main" pattern. 
+[[File:Pattern_ContentWindow.jpg]]

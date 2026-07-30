@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Triggers
+// revision: 156162 (2020-08-11T07:34:57Z)
+// export sha1: chvtm2wz80epwxr0ouc5v35vyycj4u4
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands by Functionality]]
+Set, define and use [[Triggers]] and Event Handlers.

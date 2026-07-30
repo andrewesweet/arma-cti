@@ -1,0 +1,718 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Eden_Editor_Event_Handlers
+// revision: 376091 (2025-08-15T03:30:27Z)
+// export sha1: 9bbb1hrkbrmmrjhudobksx0b0i8imat
+// categories: Category:Eden Editor: Modding | Category:Event Handlers | Category:To-do
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOEDITSECTION__
+{{TOC|side}}
+== Editor Event Handlers ==
+
+[[:Category:Eden Editor|Eden Editor]] Event Handlers are added to the editor instance and will remain active for the duration of a session.
+Launching a preview will keep the event handlers, but closing the editor will erase all of them and you will have to add them again on the next Eden instance.
+
+=== Related commands ===
+
+* [[add3DENEventHandler]]
+* [[remove3DENEventHandler]]
+
+=== Event Scripts ===
+
+* See [[Event Scripts#init3DEN.sqf|init3DEN.sqf]]
+
+=== Config ===
+
+Alternatively, you can define event handlers directly in the config.
+Use your custom section ('''{{Color|#00F|mySection}}''' in the example) to prevent overriding handlers from other sources.
+Handlers defined here will automatically be added when Eden Editor is opened.
+<syntaxhighlight lang="cpp">
+class Cfg3DEN
+{
+	class EventHandlers
+	{
+		class mySection
+		{
+			onUndo = "hint 'Undo';";
+			// <handlerName> = <handlerExpression>
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Events ===
+The following [[Magic Variables]] are available inside the event's code:
+* Event Handler parameters are accessible via <sqf inline>_this</sqf> (only if event has parameters)
+* The Event Handler type is available as <sqf inline>_thisEvent</sqf>
+* The Event Handler index is available as <sqf inline>_thisEventHandler</sqf>
+
+{{Feature|informative|
+* Most handlers do not receive any arguments; this is intended, as in most cases required data can be obtained using either [[get3DENActionState]] or specialised 'get*' [[:Category:Command Group: Eden Editor|Eden Editor commands]].
+* Note that unlike [[Arma 3: Event Handlers|object's]] or [[Arma 3: Mission Event Handlers|mission's]] event handlers, the '''On''' prefix is present in both config and command event name.
+}}
+
+==== Init ====
+Is executed when [[Eden Editor]] display was created. Only happens when Eden Editor is opened for the first time during game session, only available through config modding.
+<syntaxhighlight lang="cpp">
+init = " params ['_display3DEN']; systemChat 'First Eden launch this session'; ";
+</syntaxhighlight>
+
+* display3DEN: [[Display]]
+
+{{ArgTitle|4|OnBeforeMissionPreview|{{GVI|arma3|2.18}}}}
+Runs before the scenario preview is started. If an event handler of this type returns [[true]], the mission preview will not be initialised.
+<sqf>
+add3DENEventHandler ["OnBeforeMissionPreview", {
+	params ["_isPreviewMultiplayer"];
+}];
+</sqf>
+
+==== OnConnectingStart ====
+When [[Eden Editor: Connecting|Connecting]] operation is initiated.
+<sqf>
+add3DENEventHandler ["OnConnectingStart", {
+	params ["_class", "_from"];
+}];
+</sqf>
+
+* class: [[Config]] - connection config class
+* from: [[Array of Eden Entities]]
+
+
+==== OnConnectingEnd ====
+When [[Eden Editor: Connecting|Connecting]] operation is terminated, no matter if it was confirmed or canceled.
+<sqf>
+add3DENEventHandler ["OnConnectingEnd", {
+	params ["_class", "_from", "_to"];
+}];
+</sqf>
+
+* class: Config - connection config class
+* from: Array of 3DEN entities
+* to: [[Eden Entity]] (when connecting was successful) or [[nil]] (when connecting was terminated)
+
+
+==== OnCopy ====
+Fires when entities are copied.<br>
+Also fires when entities are cut, but unlike {{Link|#OnCut}}, {{Link|#OnCopy}} fires before the entities are deleted, meaning the entities are still accessible with [[get3DENSelected]].
+<sqf>
+add3DENEventHandler ["OnCopy", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnCut ====
+Fires when entities are cut (after the entities have been deleted).
+<sqf>
+add3DENEventHandler ["OnCut", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnDeleteUnits ====
+When entities are deleted.
+<sqf>
+add3DENEventHandler ["OnDeleteUnits", {
+	// no arguments
+}];
+</sqf>
+
+
+{{ArgTitle|4|OnEditableEntityAdded|{{GVI|arma3|2.18}}}}
+When an entity gets added to the scenario. When compositions are added, the event triggers for every entity in the composition.
+<sqf>
+add3DENEventHandler ["OnEditableEntityAdded", {
+	params ["_entity"];
+}];
+</sqf>
+
+entity - [[Eden Entity]]
+
+{{ArgTitle|4|OnEditableEntityRemoved|{{GVI|arma3|2.18}}}}
+When an entity gets removed from the scenario.
+<sqf>
+add3DENEventHandler ["OnEditableEntityRemoved", {
+	params ["_entity"];
+}];
+</sqf>
+
+entity - [[Eden Entity]]
+
+{{ArgTitle|4|OnEntityAttributeChanged|{{GVI|arma3|2.18}}}}
+When an entity's attribute got changed. Fires for each changed attribute separately.
+<sqf>
+add3DENEventHandler ["OnEntityAttributeChanged", {
+	params ["_entity", "_property"];
+}];
+</sqf>
+* entity: [[Eden Entity]]
+* property: [[String]] - property name of the attribute that was changed
+
+{{ArgTitle|4|OnEntityDragged|{{GVI|arma3|2.18}}}}
+When an entity gets dragged. Fires continiously until the left mouse button is released.
+<sqf>
+add3DENEventHandler ["OnEntityDragged", {
+	params ["_entity"];
+}];
+</sqf>
+
+entity - [[Eden Entity]]
+
+==== OnEntityMenu ====
+When [[Eden Editor: Entity Context Menu|Entity Context Menu]] is opened.
+<sqf>
+add3DENEventHandler ["OnEntityMenu", {
+	params ["_position", "_entity", "_listPath"];
+}];
+</sqf>
+
+* position: [[Array]] - [[Position]] where user clicked to open the menu.
+** Entity position when clicked on an entity.
+** Empty array when clicked on something that doesn't have position (i.e. abstract folder in Edit list like BLUFOR, Trigger, etc.)
+* entity: [[Eden Entity]]
+** Nil when clicked on empty space
+* listPath: [[Array]] - UI tree path when clicked on entity in the entity list.
+** Nil when clicked in the scene (we cannot use empty array, because that's a path to root item)
+
+
+{{ArgTitle|4|OnEntityParentChanged|{{GVI|arma3|2.18}}}}
+Fires when the parent of an entity changes. For example, creating waypoints, moving entities into layers or out of layers.
+It seems that this EH always fires twice. First event returns [[objNull]] for _newParentEntityID.
+<sqf>
+add3DENEventHandler ["OnEntityParentChanged", {
+	params ["_affectedEntity", "_newParentEntityID"]
+}];
+</sqf>
+
+* affectedEntity: [[Array]], [[Object]], [[String]], [[Number]]
+** [[Array]] - waypoint
+** [[Object]] - trigger, unit, vehicle, logic
+** [[String]] - marker
+** [[Number]] - layer
+* newParentEntityID: [[Number]] or [[objNull]]
+** [[Number]]- the new parent entity
+** [[objNull]] - If new parent entity is a system layer.
+
+==== OnGridChange ====
+When grid changes, either using [[Eden Editor: Toolbar|Toolbar]] option, ot by scripting command [[set3DENGrid]].
+<sqf>
+add3DENEventHandler ["OnGridChange", {
+	params ["_gridType", "_gridValue"];
+}];
+</sqf>
+
+* gridType: [[String]] - can be "translation", "rotation" or "scaling"
+* gridValue: [[Number]]
+
+
+==== OnHistoryChange ====
+When history changes.
+<sqf>
+add3DENEventHandler ["OnHistoryChange", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnMapClosed ====
+When map is closed.
+<sqf>
+add3DENEventHandler ["OnMapClosed", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnMapOpened ====
+When map is opened.
+<sqf>
+add3DENEventHandler ["OnMapOpened", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnMessage ====
+Handler used for showing on-screen notifications, triggered by various range of events.
+Message IDs:
+* 0 - Mission saved
+* 1 - Mission autosaved
+* 2 - Trying to move a character into full vehicle
+* 3 - Moved character into enemy vehicle
+* 4 - Trying to run mission without any player
+* 5 - Mission exported to SP
+* 6 - Mission exported to MP
+* 7 - Attempting to delete a default layer
+<sqf>
+add3DENEventHandler ["OnMessage", {
+	params ["_messageID"];
+}];
+</sqf>
+
+* messageID: [[Number]]
+
+
+{{ArgTitle|4|OnMissionAttributeChanged|{{GVI|arma3|2.18}}}}
+When a mission attribute or the preferences are changed.
+<sqf>
+add3DENEventHandler ["OnMissionAttributeChanged", {
+	params ["_section", "_property"];
+}];
+</sqf>
+
+* section - [[String]] - section name, see [[Eden_Editor:_Setting_Attributes#Sections_.26_Properties|sections]]
+* property - [[String]] - property name of the attribute, see [[Eden_Editor:_Setting_Attributes#Sections_.26_Properties|properties]]
+
+
+==== OnMissionAutosave ====
+When scenario is autosaved.
+<sqf>
+add3DENEventHandler ["OnMissionAutosave", {
+	// no arguments
+}];
+</sqf>
+
+==== OnMissionExportSP ====
+When a scenario is exported to singleplayer.
+<sqf>
+add3DENEventHandler ["OnMissionExportSP", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnMissionExportMP ====
+When a scenario is exported to multiplayer.
+<sqf>
+add3DENEventHandler ["OnMissionExportMP", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnMissionListChange ====
+When the current list of missions in the open/save mission dialog changes, i.e when first opened or a different folder is selected.
+<sqf>
+add3DENEventHandler ["OnMissionListChange", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnMissionLoad ====
+When scenario is loaded.
+
+If a missing config is preventing the scenario from being loaded, this event handler will only be executed after pressing the "Force Load" button.
+<sqf>
+add3DENEventHandler ["OnMissionLoad", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnMissionNew ====
+When new scenario is started. Executed also when Eden is opened with an empty scenario.
+<sqf>
+add3DENEventHandler ["OnMissionNew", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnMissionPreview ====
+When scenario preview is started. Executed when the scenario is already loaded, so entities in it can be accessed.
+<sqf>
+add3DENEventHandler ["OnMissionPreview", {
+	params ["_objects", "_groups", "_waypoints", "_markers"];
+}];
+</sqf>
+
+* objects: Array
+* groups: Array
+* waypoints: Array
+* markers: Array
+Each array is in format:
+ [entity1, id1, entity2, id2, ..., entityN, idN]
+* entity: [[Object]], [[Group]], [[Array]] or [[String]]
+* ID: [[Number]]
+
+
+==== OnMissionPreviewEnd ====
+When preview ends and user returns back to Eden Editor.
+{{Feature|important|In order to manipulate entities during this event the code needs to be run [[spawn|scheduled]] with some [[sleep|delay]]!}}
+<sqf>
+add3DENEventHandler ["OnMissionPreviewEnd", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnMissionSave ====
+When scenario is saved.
+<sqf>
+add3DENEventHandler ["OnMissionSave", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnMissionSaveAs ====
+When ''Save As'' action is triggered (i.e. Save window is opened, but the mission is not necessarily saved yet).
+<sqf>
+add3DENEventHandler ["OnMissionSaveAs", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnModeChange ====
+When editing mode is changed (i.e. from Objects to Triggers).
+<sqf>
+add3DENEventHandler ["OnModeChange", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnMoveGridDecrease ====
+
+{{Wiki|TODO}}
+<sqf>
+add3DENEventHandler ["OnMoveGridDecrease", {
+	// params ["?"];
+}];
+</sqf>
+
+
+==== OnMoveGridIncrease ====
+
+{{Wiki|TODO}}
+<sqf>
+add3DENEventHandler ["OnMoveGridIncrease", {
+	// params ["?"];
+}];
+</sqf>
+
+
+==== OnMoveGridToggle ====
+When '''translation''' grid is toggled on or off.
+<sqf>
+add3DENEventHandler ["OnMoveGridToggle", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnPaste ====
+When entities are pasted.
+<sqf>
+add3DENEventHandler ["OnPaste", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnPasteUnitOrig ====
+When entities are pasted on their original positions.
+<sqf>
+add3DENEventHandler ["OnPasteUnitOrig", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnRedo ====
+When undo operation is redone.
+<sqf>
+add3DENEventHandler ["OnRedo", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnRotateGridDecrease ====
+{{Wiki|TODO}}
+<sqf>
+add3DENEventHandler ["OnRotateGridDecrease", {
+	// params ["?"];
+}];
+</sqf>
+
+
+==== OnRotateGridIncrease ====
+{{Wiki|TODO}}
+<sqf>
+add3DENEventHandler ["OnRotateGridIncrease", {
+	// params ["?"];
+}];
+</sqf>
+
+
+==== OnRotateGridToggle ====
+When '''rotation''' grid is toggled on or off.
+<sqf>
+add3DENEventHandler ["OnRotateGridToggle", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnScaleGridToggle ====
+When '''area scaling''' grid is toggled on or off.
+<sqf>
+add3DENEventHandler ["OnScaleGridToggle", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnSearchCreate ====
+When "SearchCreate" action is triggered (e.g. when pressing Ctrl+Shift+F).
+<sqf>
+add3DENEventHandler ["OnSearchCreate", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnSearchEdit ====
+When "SearchEdit" action is triggered (e.g. when pressing Ctrl+F).
+<sqf>
+add3DENEventHandler ["OnSearchEdit", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnSelectionChange ====
+When entity selection changes. Use [[get3DENSelected]] to return currently selected entities.
+<sqf>
+add3DENEventHandler ["OnSelectionChange", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnServerToggle ====
+When server is created or destroyed from the preview.
+<sqf>
+add3DENEventHandler ["OnServerToggle", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnSubmodeChange ====
+When submode (e.g. BLUFOR or OFPOR for Objects, or Modules for Systems) changes.
+<sqf>
+add3DENEventHandler ["OnSubmodeChange", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnSurfaceSnapToggle ====
+When surface snap settings are changed.
+<sqf>
+add3DENEventHandler ["OnSurfaceSnapToggle", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnTerrainNew ====
+When new terrain is loaded. Executed also when Eden is opened.
+<sqf>
+add3DENEventHandler ["OnTerrainNew", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnToggleMapIDs ====
+When map IDs are toggled with <sqf inline>do3DENAction "ToggleMapIDs"</sqf>. Only triggers if map is open.
+<sqf>
+add3DENEventHandler ["OnToggleMapIDs", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnToggleMapTextures ====
+When map textures are toggled on or off.
+<sqf>
+add3DENEventHandler ["OnToggleMapTextures", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnTogglePlaceEmptyVehicle ====
+When the ''Place vehicles with crew'' is toggled on/off in Objects mode.
+<sqf>
+add3DENEventHandler ["OnTogglePlaceEmptyVehicle", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnUndo ====
+When an operation is undone.
+<sqf>
+add3DENEventHandler ["OnUndo", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnVerticalToggle ====
+When vertical mode settings are changed.
+<sqf>
+add3DENEventHandler ["OnVerticalToggle", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnWidgetArea ====
+When [[Eden Editor: Transformation Widget|area widget]] is selected.
+<sqf>
+add3DENEventHandler ["OnWidgetArea", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnWidgetNone ====
+When no [[Eden Editor: Transformation Widget|widget]] is selected.
+<sqf>
+add3DENEventHandler ["OnWidgetNone", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnWidgetRotation ====
+When [[Eden Editor: Transformation Widget|rotation widget]] is selected.
+<sqf>
+add3DENEventHandler ["OnWidgetRotation", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnWidgetScale ====
+When [[Eden Editor: Transformation Widget|scaling widget]] is selected.
+<sqf>
+add3DENEventHandler ["OnWidgetScale", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnWidgetToggle ====
+When [[Eden Editor: Transformation Widget|widget]] is toggled (i.e. browsing through all widget types)
+<sqf>
+add3DENEventHandler ["OnWidgetToggle", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnWidgetTranslation ====
+When [[Eden Editor: Transformation Widget|translation widget]] is selected.
+<sqf>
+add3DENEventHandler ["OnWidgetTranslation", {
+	// no arguments
+}];
+</sqf>
+
+
+==== OnWorkspacePartSwitch ====
+When [[Eden Editor: Scenario Phases|scenario phase]] is selected.
+<sqf>
+add3DENEventHandler ["OnWorkspacePartSwitch", {
+	// no arguments
+}];
+</sqf>
+
+
+== Object Event Handlers ==
+
+Editor specific event handlers can be also added directly to [[Eden Editor: Object|objects]], using [[addEventHandler]] command.<br>
+{{Feature|important|These handlers exist only for the duration of active workspace.
+Running a preview or loading the same scenario again will erase all object event handlers, because objects themselves are despawned from the world and then created again.}}
+
+=== Related commands ===
+
+* [[addEventHandler]]
+* [[removeEventHandler]]
+
+=== Events ===
+
+{{Feature|informative|Most handlers do not receive any arguments.
+This is intended, because in most cases, required data can be obtained using either [[get3DENActionState]] or specialised 'get' commands.}}
+{{Feature|important|None of the following event handlers work for triggers.}}
+
+==== AttributesChanged3DEN ====
+Fires when object's attributes are changed. Can happen when:
+* Changing the attributes by dragging, rotating or using one of the widgets
+* Changing and saving the attributes from within the attributes window
+* When attributes get changed using scripting commands such as [[set3DENAttributes]] or [[set3DENAttribute]]
+Unlike ''Dragged3DEN'' this event handler will not fire continuously but only when the attributes were changed '''and''' saved
+<sqf>
+edenObject addEventHandler ["AttributesChanged3DEN", {
+	params ["_object"];
+}];
+</sqf>
+
+* object: [[Object]] - affected object
+
+
+==== ConnectionChanged3DEN ====
+When a [[Eden Editor: Connecting|connection]] is added or removed from an object.
+<sqf>
+edenObject addEventHandler ["ConnectionChanged3DEN", {
+	params ["_object"];
+}];
+</sqf>
+
+* object: [[Object]] - affected object
+
+
+==== RegisteredToWorld3DEN ====
+When object is re-added to the scenario after undoing a delete operation.
+<sqf>
+edenObject addEventHandler ["RegisteredToWorld3DEN", {
+	params ["_object"];
+}];
+</sqf>
+
+* object: [[Object]] - affected object
+
+
+==== UnregisteredFromWorld3DEN ====
+When object is removed from the scenario. That happens when you delete it, but also when you undo [[Eden Editor: Entity Placing|placement]] operation.
+<sqf>
+edenObject addEventHandler ["UnregisteredFromWorld3DEN", {
+	params ["_object"];
+}];
+</sqf>
+
+* object: [[Object]] - affected object
+
+
+==== Dragged3DEN ====
+When object is '''dragged''' and/or '''rotated'''. Also triggers when widgets are used to manipulate position and orientation. Does not trigger when the object's size is changed.
+<sqf>
+edenObject addEventHandler ["Dragged3DEN", {
+	params ["_object"];
+}];
+</sqf>
+
+* object: [[Object]] - affected object
+
+
+[[Category: Eden Editor: Modding|Event Handlers]]
+[[Category: Event Handlers|Eden Editor]]

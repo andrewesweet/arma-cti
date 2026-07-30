@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Briefing
+// revision: 377940 (2026-01-11T17:22:47Z)
+// export sha1: s84dfb2mk49bmix79h5nte7pgj621bf
+// categories: Category:Briefing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side|1|3}}
+[[File:A3_CreateTaskModule_Attributes.jpg|right|400px|thumb|The create task module has many options to customize tasks]]
+
+Although a briefing is fully optional, it is the first thing a player sees when playing your mission and there is no second chance for a first impression. 
+There is no *default* briefing in {{arma3}}, but usually a briefing consists of:
+* '''Mission'''
+** What is the mission about, tasks and goals.
+* '''Situation'''
+** Some background story, why does the mission happen, what's the big picture?
+* '''Execution'''
+** Steps the player is supposed to do chronologically sorted.
+* '''Signal'''
+** Call signs of the HQ and groups.
+
+{{Feature|informative|Make sure that your briefing and task texts are free from spelling errors. If in doubt, let someone else proofread them!}}
+
+
+== How to create a briefing and tasks ==
+
+In {{arma3}} briefings can be created either by using editor modules like the '''Create Diary Module''' or [[:Category:Command Group: Briefing|scripting commands]].
+Furthermore, to create tasks, one can either use the '''Create Task Module''' or [[:Category:Command Group: Briefing|scripting commands]] and [[:Category:Function Group: Tasks|functions]].
+
+To find more information about how to create tasks see {{Link|Arma 3: Task Framework#Task Overhaul}} or [[Arma 3: Task Framework Tutorial]].
+
+=== Formatting tags for tasks and briefings ===
+
+There are many formatting tags that can be incorporated in the strings for tasks and notes:
+
+* To add a link to a marker: <syntaxhighlight lang="html" inline><marker name='obj1'>Link to Marker</marker></syntaxhighlight>
+* To show an image: <syntaxhighlight lang="html" inline><img image='somePic.jpg'/></syntaxhighlight>
+** Manipulate the image width and height like so: <syntaxhighlight lang="html" inline><img image='somePic.jpg' width='200' height='200'/></syntaxhighlight>
+* Coloured text: <syntaxhighlight lang="html" inline><font color='#A52A2A'>Some text</font></syntaxhighlight>
+* Line break can be added with: <syntaxhighlight lang="html" inline><br/></syntaxhighlight>
+
+==== Example ====
+[[File:A3 Briefing Formatting Example.jpg|150px|thumb|right]]
+<syntaxhighlight lang="html">
+<img image='\A3\weapons_F\Rifles\Khaybar\Data\UI\gear_Khaybar_GL_X_CA.paa' width='300' height='200'/>
+<br/>
+<font color='#A52A2A'>Some text</font>
+<execute expression='systemChat str [0,0,0];'>Some expression</execute>
+</font>
+</syntaxhighlight>
+
+
+== See also ==
+
+* [[Tasks]]
+* [[:Category:Command Group: Briefing|Briefing Commands]]
+* [[:Category:Function Group: Tasks|Briefing Functions]]
+* [[Structured Text]]
+
+
+[[Category:Briefing]]

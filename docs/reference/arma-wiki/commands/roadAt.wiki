@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/roadAt
+// revision: 377838 (2026-01-03T04:32:28Z)
+// export sha1: hqrmfffdqez3zzwsxhjz74ug7gsxl1s
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Roads and Airports | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+|arg= global
+
+|gr1= Roads and Airports
+
+|descr= Returns a road segment containing given position, [[objNull]] otherwise. Same as [[isOnRoad]] only returns the actual road object instead of boolean.
+
+|s1= [[roadAt]] position
+
+|p1= position: [[Object]] or [[Position#PositionAGL|PositionAGL]] (especially on bridges) or {{GVI|arma3|2.00|size= 0.75}} [[Position#Introduction|Position2D]] - array, in which case Z will be automatically deduced as the height of the road surface
+
+|r1= [[Object]] - road segment or [[objNull]]
+
+|x1= <sqf>_road = roadAt ASLToAGL getPosASL player;</sqf>
+
+|x2= <sqf>_isOnRoad = !isNull roadAt player;</sqf>
+
+|x3= For detecting bridges, for example:
+<sqf>getModelInfo (roadAt ASLToAGL getPosASL player); // ["bridgesea_01_f.p3d", "a3\structures_f_exp\infrastructure\bridges\bridgesea_01_f.p3d", true]</sqf>
+
+|seealso= [[nearRoads]] [[roadsConnectedTo]] [[isOnRoad]] [[surfaceIsWater]] [[getRoadInfo]] [[nearestTerrainObjects]]
+}}
+
+{{Note
+|user= OOKexOo
+|timestamp= 20161230214000
+|text= This command does not necessarily return the segment which center is the closest to the given position.<br>
+In order to get such segment use [[nearRoads]].
+<sqf>_closest_road = (_pos nearRoads 0.1) select 0;</sqf>
+}}

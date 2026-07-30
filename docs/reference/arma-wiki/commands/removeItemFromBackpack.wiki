@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/removeItemFromBackpack
+// revision: 319517 (2022-05-13T09:24:13Z)
+// export sha1: 139kb88sb20usyfrl5zg9nq88gmkuel
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|gr1= Containers
+
+|arg= global
+|eff= global
+
+|descr= Removes item from soldier's backpack.
+
+|s1= unit [[removeItemFromBackpack]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeItemFromBackpack "itemGPS";</sqf>
+
+|seealso= [[removeItemFromUniform]] [[removeItemFromVest]] [[removeItemFromPrimaryWeapon]] [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[everyBackpack]]
+}}

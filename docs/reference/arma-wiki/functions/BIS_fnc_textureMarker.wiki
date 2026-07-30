@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_textureMarker
+// revision: 327439 (2022-07-12T22:12:09Z)
+// export sha1: cvbuihd32bwhuzcdvqrx9h9nd5o1r9w
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Map and Markers
+
+|descr= Checks whether texture is defined in CfgMarkers and if so, returns the marker texture.
+
+|s1= [wantedMarker] call [[BIS_fnc_textureMarker]]
+
+|p1= wantedMarker: [[String]] - marker type
+
+|r1= [[String]] - icon texture path, or ''wantedMarker'' if not found
+
+|x1= <sqf>private _notWhiteFlag = ["flag_France"] call BIS_fnc_textureMarker;</sqf>
+
+|seealso= [[BIS_fnc_textureVehicleIcon]]
+}}

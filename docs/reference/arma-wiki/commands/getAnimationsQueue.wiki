@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/getAnimationsQueue
+// revision: 378279 (2026-03-31T10:03:56Z)
+// export sha1: 3gtbtih93re0343s5j6os7lk4luy7k9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns the primary and secondary animations queue of the entity. The primary queue contains the full motion path from current animation ([[animationState]]) to a target animation, while the secondary queue contains animations that are queued to be played after the target animation in primaryQueue is reached, e.g. due to using [[playMove]] or [[playAction]].
+
+|s1= [[getAnimationsQueue]] entity
+
+|p1= entity: [[Object]] - Man or animal object.
+
+|r1= [[Array]] - in format [primaryQueue, secondaryQueue] where each queue is an [[Array]] of [[String]]s, the animation state names (all lower case).
+
+|x1= <sqf>getAnimationsQueue player params ["_primaryQueue", "_secondaryQueue"];
+if (_secondaryQueue isNotEqualTo []) then { 
+    private _targetAnim = _primaryQueue param [count _primaryQueue - 1, animationState player];
+    private _nextAnim = _secondaryQueue#0;
+    systemChat format ["Will play '%1' after completing '%2'", _nextAnim, _targetAnim]; 
+};
+</sqf>
+
+|x2= <sqf>player playMove _myMove; // push an animation state to the secondary queue
+player playAction "WalkF"; // an action that gets mapped to an animation state and pushed to queue
+getAnimationsQueue player params ["_primaryQueue", "_secondaryQueue"];
+// _secondaryQueue will contain _myMove and the animation that the "WalkF" action maps to
+</sqf>
+
+|seealso= [[animationState]] [[getUnitMovesInfo]]
+}}

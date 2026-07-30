@@ -1,0 +1,153 @@
+// source: https://community.bistudio.com/wiki/Code_Positivity
+// revision: 376868 (2025-12-09T16:34:16Z)
+// export sha1: 00iz3ay9vo300rl2nbrj0y3sh0ecsnp
+// categories: Category:Arma Scripting Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This page provides some insights into what it means to try and write code in a positive way, with the least negation as possible.
+
+
+== Overview ==
+
+Code negation is (usually) using [[not]] (in [[SQF Syntax|SQF]]/[[SQS Syntax|SQS]]) or {{hl|!}} (in both [[SQF Syntax|SQF]]/[[SQS Syntax|SQS]] and [[DayZ:Enforce Script Syntax|Enforce]] {{GameCategory|armaR|Modding|Scripting|Guidelines|text= Script}}); all in all, it is about searching for the opposite of what one wants. Examples:
+{| class="wikitable valign-top" style="width: 100%"
+! style="width: 50%" | SQF
+! style="width: 50%" | Enforce Script
+|-
+|
+<sqf>
+if (not alive player) then
+{
+	hint "you are dead";
+}
+else
+{
+	hint "you are alive";
+};
+</sqf>
+|
+<enforce>
+if (value < minValue)
+{
+	Print("Value is invalid");
+}
+else
+{
+	Print("Value is valid");
+}
+</enforce>
+|}
+
+Research<ref>{{Link|https://www.researchgate.net/publication/10733819_Effects_of_Negation_and_Situational_Presence_on_the_Accessibility_of_Text_Information}}</ref>
+has<ref>{{Link|https://www.researchgate.net/publication/221438570_Some_Issues_on_Detecting_Negation_from_Text}}</ref>
+shown<ref>{{Link|https://medium.com/@Cuadraman/why-to-stop-writting-negavite-code-af5ffb17195}}</ref>
+that '''negation''' in general (not just in code but also in reading, teaching etc) makes processing sentences more difficult for the human brain, making its message less impactful
+(although not in all cases<ref>{{Link|https://www.psychologicalscience.org/news/releases/true-or-false-how-our-brain-processes-negative-statements.html}}</ref>).
+
+
+== Examples ==
+
+{| class="wikitable valign-top" style="width: 100%"
+! style="width: 50%" | {{Color|darkgreen|Do}}
+! style="width: 50%" | {{Color|darkred|Don't}}
+|-
+| <sqf>
+// this is called {{Link|https://dev.to/arikaturika/one-concept-a-day-early-return-pattern-in-javascript-3pol|Early Return}} / {{Link|https://szymonkrajewski.pl/why-should-you-return-early/|Bouncer}} pattern
+if (isNull _control1) exitWith {};
+if (isNull _control2) exitWith {};
+if (isNull _control3) exitWith {};
+
+// do something
+</sqf>
+| <sqf>
+if (not isNull _control1) then
+{
+	if (not isNull _control2) then
+	{
+		if (not isNull _control3) then
+		{
+			// finally do something
+
+			// <- this is called Hadouken code style as per
+			// the {{Link|https://www.reddit.com/r/ProgrammerHumor/comments/27yykv/indent_hadouken/|shape}} drawn by the brackets
+		};
+	};
+};
+</sqf>
+|-
+| <enforce>
+// whenever possible without rewriting everything
+// or doubling the methods, of course
+if (unit.IsAlive() && unit.IsInjured())
+	DoHealThing();
+</enforce>
+<enforce>
+// alternatively
+if (unit.IsDead())
+	DoDeathThing();
+else if (unit.IsPerfectHealth())
+	DoPerfectThing();
+else // injured
+	DoHealThing();
+</enforce>
+| <enforce>
+// sometimes, only negative methods are available
+if (!unit.IsPerfectHealth() && !unit.IsDead())
+	DoHealThing();
+</enforce>
+|}
+
+
+== Counter Examples ==
+
+As most if not all rules of development, this rule is a rule of thumb that is '''not''' to be enforced at all cost. 
+
+{| class="wikitable valign-top" style="width: 100%"
+! style="width: 50%" | {{Color|darkred|Don't}}
+! style="width: 50%" | {{Color|darkgreen|Do}}
+<!-- See what I did here? -->
+|-
+| <sqf>
+if (isNull _control) then
+{
+}
+else
+{
+	systemChat "the control exists";
+};
+
+// or, even more convoluted and less performance-friendly
+if (str _control find "NULL" == -1) then
+{
+	systemChat "the control exists";
+};
+</sqf>
+| <sqf>
+if (not isNull _control) then // neater
+{
+	systemChat "the control exists";
+};
+</sqf>
+|-
+| <enforce>
+if (m_aElements.Count() > 0)
+	Print("There are elements!");
+// note that in some cases, storing the count in a variable
+// saves further calculations in below code
+</enforce>
+| <enforce>
+if (!m_aElements.IsEmpty())
+	Print("There are elements!");
+</enforce>
+|}
+
+
+== See Also ==
+
+* [[Code Optimisation]]
+* [[Mission Optimisation]]
+* [[Multiplayer Scripting]]
+
+
+[[Category:Arma Scripting Tutorials]]

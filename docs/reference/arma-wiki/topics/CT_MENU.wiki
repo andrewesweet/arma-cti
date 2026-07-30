@@ -1,0 +1,219 @@
+// source: https://community.bistudio.com/wiki/CT_MENU
+// revision: 342185 (2023-07-09T12:27:00Z)
+// export sha1: 6gfsjnl3du089xwq3qjn3ape0zoiiya
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_MENU
+|value = 46
+|description = [[:Category:Eden Editor|Eden Editor]] context menu which is opened with right click. Same problems as [[CT_CONTEXT_MENU]]. When created as part of class controls it is visible and functional until clicked on/clicked on another part of the display and thereupon deleted. When listed as an independed class similar to controls and controlsBackground, like in 3den, it is not created at all. Also, the menu commands ([[menuAdd]], [[menuSize]], etc) don't seem to work on it.
+|gallery=File:a3 ct menu.jpg{{!}}[[:Category:Eden Editor|Eden Editor]] right click menu
+|commands =
+* [[:Category:Command_Group:_GUI_Control_-_Menu|Commands: Menu]]
+|events =
+}}
+
+{{CT|abc start}}
+=== A ===
+{{CT|attribute
+|name=arrow
+|type1=String
+|value1=""
+|description=Path to .paa file or procedural texture.
+}}
+=== I ===
+{{CT|attribute
+|name=itemSpacingH
+|type1=Number
+|value1=0
+|description=
+}}
+
+{{CT|attribute
+|name=itemSpacingW
+|type1=Number
+|value1=0
+|description=
+}}
+
+{{CT|attribute
+|name=Items
+|type1=Class
+|value1=class Items
+{
+	items[]=
+	{
+		"entry1",
+		"entry2"
+	};
+	class Separator
+	{
+		value=0;
+	};
+	class entry1
+	{
+		text = "My first entry";
+		action = "systemchat ""Selected first entry."";";
+		conditionShow="hoverObject";
+	};
+	class entry2
+	{
+		text = "My second entry";
+		action = "systemchat ""Selected second entry."";";
+		conditionShow="1";
+	};
+	class Default
+	{
+		text="";
+		data="Empty";
+		enable=0;
+	};
+};
+|description=First entry is an {{hl|items[]}} array listing all entry classes. Afterwards come the entry classes themselves. There has to be a Default class. See [[Eden_Editor:_Entity_Context_Menu|Eden Editor: Entity Context Menu]] for more information.
+
+{{{!}} class="wikitable"
+! colspan="3" {{!}} Properties
+{{!}}-
+! Name
+! Type
+! Remark
+{{!}}-
+{{!}} Entry
+{{!}} class
+{{!}} Name can be anything
+{{!}}}<br clear="all">
+
+'''Custom Items Class'''
+{{{!}}class="wikitable" border="1" align="left" cellpadding="3" cellspacing="0" {{!}}
+! colspan="3" {{!}} Properties
+{{!}}-
+! Name
+! Type
+! Remark
+{{!}}-
+{{!}} text
+{{!}} string
+{{!}} 
+{{!}}-
+{{!}} action
+{{!}} string
+{{!}} Has to contain valid sqf command(s)
+{{!}}-
+{{!}} conditionShow
+{{!}} string
+{{!}} [[Simple Expression]]. Refer to [[Eden_Editor:_Entity_Context_Menu{{!}}Eden Editor: Entity Context Menu]]
+{{!}}}{{Clear}}
+}}
+
+=== P ===
+{{CT|attribute
+|name=pictureCheckboxEnabled
+|type1=String
+|value1=""
+|description=Path to .paa file or procedural texture.
+}}
+
+{{CT|attribute
+|name=pictureCheckboxDisabled
+|type1=String
+|value1=""
+|description=Path to .paa file or procedural texture.
+}}
+
+
+{{CT|attribute
+|name=pictureRadioEnabled
+|type1=String
+|value1=""
+|description=Path to .paa file or procedural texture.
+}}
+
+{{CT|attribute
+|name=pictureRadioDisabled
+|type1=String
+|value1=""
+|description=Path to .paa file or procedural texture.
+}}
+
+=== R ===
+{{CT|attribute
+|name=rowHeight
+|type1=Number
+|value1=0.025
+|description=
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+
+None
+
+== Other Examples ==
+<syntaxhighlight lang="cpp">
+class ContextMenu
+{
+	idc=1100;
+	type=CT_MENU;
+	shadow=1;
+	sizeEx="4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.5";
+	font="RobotoCondensedLight";
+	colorBorder[]={0,0,0,0};
+	colorBackground[]={0.1,0.1,0.1,1};
+	colorText[]={1,1,1,1};
+	colorSelect[]={0,0,0,1};
+	colorSelectBackground[]=
+	{
+		"(profilenamespace getvariable ['GUI_BCG_RGB_R',0.77])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_G',0.51])",
+		"(profilenamespace getvariable ['GUI_BCG_RGB_B',0.08])",
+		1
+	};
+	colorDisabled[]={1,1,1,0.25};
+	colorPicture[]={1,1,1,1};
+	colorPictureSelect[]={0,0,0,1};
+	colorPictureDisabled[]={1,1,1,0.5};
+	arrow="\a3\3DEN\Data\Controls\ctrlMenu\arrow_ca.paa";
+	rowHeight=0;
+	itemSpacingW=0.0099999998;
+	itemSpacingH=0.0099999998;
+	pictureCheckboxEnabled="\a3\3DEN\Data\Controls\CtrlMenu\pictureCheckboxEnabled_ca.paa";
+	pictureCheckboxDisabled="#(argb,8,8,3)color(0,0,0,0)";
+	pictureRadioEnabled="\a3\3DEN\Data\Controls\CtrlMenu\pictureRadioEnabled_ca.paa";
+	pictureRadioDisabled="#(argb,8,8,3)color(0,0,0,0)";
+	class Items
+	{
+		items[]=
+		{
+			"entry1",
+			"entry2"
+		};
+		class Separator
+		{
+			value=0;
+		};
+		class entry1
+		{
+			text = "My first entry";
+			action = "systemchat ""Selected first entry."";";
+			conditionShow="hoverObject";
+		};
+		class entry2
+		{
+			text = "My second entry";
+			action = "systemchat ""Selected second entry."";";
+			conditionShow="1";
+		};
+		class Default
+		{
+			text="";
+			data="Empty";
+			enable=0;
+		};
+	};
+};
+</syntaxhighlight>

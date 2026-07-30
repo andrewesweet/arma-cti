@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagKnownTargets
+// revision: 347981 (2023-11-08T09:53:29Z)
+// export sha1: 1t27fh8u675hzpkl0u95ivthsoff0cd
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Visualize and profile which units one specific unit knows about and how much. Calling function again stops diagnostics.
+
+|s1= [target, radius] call [[BIS_fnc_diagKnownTargets]]
+
+|p1= target: [[Object]] - (Optional, default [[player]]) profiled unit
+
+|p2= radius: [[Number]] - (Optional, default 3000) radius of the scanned area
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[leader player, 500] call BIS_fnc_diagKnownTargets;</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic|Diag functions]]
+}}

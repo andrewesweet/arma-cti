@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/addCamShake
+// revision: 369087 (2024-09-02T20:37:47Z)
+// export sha1: 9lvlna1jaccrupfqu8rb5b817sn3l2i
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Camera Control
+
+|eff= local
+
+|descr= Creates the camera shaking effect, like when you are near an explosion
+
+|s1= [[addCamShake]] [power, duration, frequency]
+
+|p1= power: [[Number]] - strength of shake (camera movement), practical range is 0 to 20
+
+|p2= duration: [[Number]] - duration in seconds divided by 2
+
+|p3= frequency: [[Number]] - frequency of shake, practical range is 0 to 100
+
+|r1= [[Nothing]]
+
+|x1= <sqf>addCamShake [10, 2, 25]; // Shakes the camera for 1 second</sqf>
+
+|x2= <sqf>
+enableCamShake true;
+addCamShake [5, 5, 25];
+</sqf>
+
+|seealso= [[enableCamShake]] [[setCamShakeDefParams]] [[setCamShakeParams]] [[resetCamShake]]
+}}

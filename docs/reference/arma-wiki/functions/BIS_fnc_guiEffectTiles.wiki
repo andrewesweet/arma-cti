@@ -1,0 +1,526 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_guiEffectTiles
+// revision: 349401 (2023-11-08T16:27:25Z)
+// export sha1: rkd753vwwk61ga5hdj34luz0a3tm63w
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Used in dialogs to animate background UAV tiles. See notes for a full working example.
+
+|s1= [display] call [[BIS_fnc_guiEffectTiles]]
+
+|p1= display: [[Display]] - display to be animated
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[findDisplay 49] call BIS_fnc_guiEffectTiles // display 49 - pause menu</sqf>
+
+|seealso= [[createDialog]] [[findDisplay]] [[User Interface Event Handlers]]
+}}
+
+{{Note
+|user= BrotherhoodOfHam
+|timestamp= 20140930173600
+|text= This function is only used for dialogs which have background UAV tiles (See the in game pause menu for example), since this is only really found in official dialogs documentation on this function doesn't really exist.<br>
+To set up your own dialog for use with this function it is actually fairly simple. Use the below example as a framework:
+
+<spoiler text="Click to view code">
+<syntaxhighlight lang="cpp">
+// base classes
+class RscControlsGroup
+{
+	class VScrollbar
+	{
+		color[] = { 1, 1, 1, 1 };
+		width = 0.021;
+		autoScrollEnabled = 1;
+
+		colorActive[] = { 1, 1, 1, 1 };
+		colorDisabled[] = { 1, 1, 1, 0.3 };
+		thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+		arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+		arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+		border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+	};
+
+	class HScrollbar : VScrollbar
+	{
+		color[] = { 1, 1, 1, 1 };
+		height = 0.028;
+	};
+
+	class Controls {};
+
+	type = 15;
+	idc = -1;
+	x = 0;
+	y = 0;
+	w = 1;
+	h = 1;
+	shadow = 0;
+	style = 16;
+};
+
+class RscControlsGroupNoScrollbars : RscControlsGroup
+{
+	class VScrollbar : VScrollbar
+	{
+		width = 0;
+	};
+
+	class HScrollbar : HScrollbar
+	{
+		height = 0;
+	};
+};
+
+class RscFrame
+{
+	type = 0;
+	idc = -1;
+	style = 64;
+	shadow = 2;
+	colorBackground[] = { 0, 0, 0, 0 };
+	colorText[] = {1,1,1,1};
+	font = "PuristaMedium";
+	sizeEx = 0.02;
+	text = "";
+};
+
+class rscText
+{
+	access = 0;
+	type = 0;
+	idc = -1;
+	colorBackground[] = { 0, 0, 0, 0 };
+	colorText[] = { 1, 1, 1, 1 };
+	text = "";
+	fixedWidth = 0;
+	x = 0;
+	y = 0;
+	h = 0.037;
+	w = 0.3;
+	style = 0;
+	shadow = 1;
+	colorShadow[] = { 0, 0, 0, 0.5 };
+	font = "PuristaMedium";
+	SizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)";
+	linespacing = 1;
+	tooltipColorText[] = { 1, 1, 1, 1 };
+	tooltipColorBox[] = { 1, 1, 1, 1 };
+	tooltipColorShade[] = { 0, 0, 0, 0.65 };
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// actual dialog
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class rscTileExample
+{
+	idd = 2345;
+	onLoad = "[_this select 0] call BIS_fnc_guiEffectTiles";
+	onUnload = "";
+
+	class ControlsBackground
+	{
+		class TileGroup : RscControlsGroupNoScrollbars
+		{
+			idc = 115099;
+			x = "safezoneX";
+			y = "safezoneY";
+			w = "safezoneW";
+			h = "safezoneH";
+			disableCustomColors = 1;
+
+			class Controls
+			{
+				class TileFrame : RscFrame
+				{
+					idc = 114999;
+					x = 0;
+					y = 0;
+					w = "safezoneW";
+					h = "safezoneH";
+					colortext[] = { 0, 0, 0, 1 };
+				};
+
+				class Tile_0_0 : RscText
+				{
+					idc = 115000;
+					x = "(0 * 1/6) * safezoneW";
+					y = "(0 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_0_1 : RscText
+				{
+					idc = 115001;
+					x = "(0 * 1/6) * safezoneW";
+					y = "(1 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_0_2 : RscText
+				{
+					idc = 115002;
+					x = "(0 * 1/6) * safezoneW";
+					y = "(2 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_0_3 : RscText
+				{
+					idc = 115003;
+					x = "(0 * 1/6) * safezoneW";
+					y = "(3 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_0_4 : RscText
+				{
+					idc = 115004;
+					x = "(0 * 1/6) * safezoneW";
+					y = "(4 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_0_5 : RscText
+				{
+					idc = 115005;
+					x = "(0 * 1/6) * safezoneW";
+					y = "(5 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_1_0 : RscText
+				{
+					idc = 115010;
+					x = "(1 * 1/6) * safezoneW";
+					y = "(0 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_1_1 : RscText
+				{
+					idc = 115011;
+					x = "(1 * 1/6) * safezoneW";
+					y = "(1 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_1_2 : RscText
+				{
+					idc = 115012;
+					x = "(1 * 1/6) * safezoneW";
+					y = "(2 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_1_3 : RscText
+				{
+					idc = 115013;
+					x = "(1 * 1/6) * safezoneW";
+					y = "(3 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_1_4 : RscText
+				{
+					idc = 115014;
+					x = "(1 * 1/6) * safezoneW";
+					y = "(4 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_1_5 : RscText
+				{
+					idc = 115015;
+					x = "(1 * 1/6) * safezoneW";
+					y = "(5 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_2_0 : RscText
+				{
+					idc = 115020;
+					x = "(2 * 1/6) * safezoneW";
+					y = "(0 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_2_1 : RscText
+				{
+					idc = 115021;
+					x = "(2 * 1/6) * safezoneW";
+					y = "(1 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_2_2 : RscText
+				{
+					idc = 115022;
+					x = "(2 * 1/6) * safezoneW";
+					y = "(2 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_2_3 : RscText
+				{
+					idc = 115023;
+					x = "(2 * 1/6) * safezoneW";
+					y = "(3 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_2_4 : RscText
+				{
+					idc = 115024;
+					x = "(2 * 1/6) * safezoneW";
+					y = "(4 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_2_5 : RscText
+				{
+					idc = 115025;
+					x = "(2 * 1/6) * safezoneW";
+					y = "(5 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_3_0 : RscText
+				{
+					idc = 115030;
+					x = "(3 * 1/6) * safezoneW";
+					y = "(0 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_3_1 : RscText
+				{
+					idc = 115031;
+					x = "(3 * 1/6) * safezoneW";
+					y = "(1 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_3_2 : RscText
+				{
+					idc = 115032;
+					x = "(3 * 1/6) * safezoneW";
+					y = "(2 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_3_3 : RscText
+				{
+					idc = 115033;
+					x = "(3 * 1/6) * safezoneW";
+					y = "(3 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_3_4 : RscText
+				{
+					idc = 115034;
+					x = "(3 * 1/6) * safezoneW";
+					y = "(4 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_3_5 : RscText
+				{
+					idc = 115035;
+					x = "(3 * 1/6) * safezoneW";
+					y = "(5 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_4_0 : RscText
+				{
+					idc = 115040;
+					x = "(4 * 1/6) * safezoneW";
+					y = "(0 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_4_1 : RscText
+				{
+					idc = 115041;
+					x = "(4 * 1/6) * safezoneW";
+					y = "(1 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_4_2 : RscText
+				{
+					idc = 115042;
+					x = "(4 * 1/6) * safezoneW";
+					y = "(2 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_4_3 : RscText
+				{
+					idc = 115043;
+					x = "(4 * 1/6) * safezoneW";
+					y = "(3 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_4_4 : RscText
+				{
+					idc = 115044;
+					x = "(4 * 1/6) * safezoneW";
+					y = "(4 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_4_5 : RscText
+				{
+					idc = 115045;
+					x = "(4 * 1/6) * safezoneW";
+					y = "(5 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_5_0 : RscText
+				{
+					idc = 115050;
+					x = "(5 * 1/6) * safezoneW";
+					y = "(0 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_5_1 : RscText
+				{
+					idc = 115051;
+					x = "(5 * 1/6) * safezoneW";
+					y = "(1 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_5_2 : RscText
+				{
+					idc = 115052;
+					x = "(5 * 1/6) * safezoneW";
+					y = "(2 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_5_3 : RscText
+				{
+					idc = 115053;
+					x = "(5 * 1/6) * safezoneW";
+					y = "(3 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_5_4 : RscText
+				{
+					idc = 115054;
+					x = "(5 * 1/6) * safezoneW";
+					y = "(4 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+
+				class Tile_5_5 : RscText
+				{
+					idc = 115055;
+					x = "(5 * 1/6) * safezoneW";
+					y = "(5 * 1/6) * safezoneH";
+					w = "1/6 * safezoneW";
+					h = "1/6 * safezoneH";
+					colorBackground[] = { 0, 0, 0, 0.1 };
+				};
+			};
+		};
+	};
+
+	class controls
+	{
+		// populate with whatever other controls you are using in the actual dialog.
+	};
+};
+</syntaxhighlight>
+</spoiler>
+<br>
+You would then execute the dialog the normal way:
+<sqf>createDialog "rscTileExample";</sqf>
+}}

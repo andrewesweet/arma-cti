@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/setTriggerType
+// revision: 323090 (2022-06-28T21:43:14Z)
+// export sha1: 1vjz2kuvqdkfh3ye9vdtxa6y4drhmfa
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Triggers
+
+|descr= Sets the type of action processed by the trigger after activation (no action, a waypoints switch or an end of mission):
+
+* {{hl|"NONE"}}
+* {{hl|"EAST G"}} - Guarded by OPFOR - (It is better to use [[createGuardedPoint]] instead)
+* {{hl|"WEST G"}} - Guarded by BLUFOR - (It is better to use [[createGuardedPoint]] instead)
+* {{hl|"GUER G"}} - Guarded by Independent - (It is better to use [[createGuardedPoint]] instead)
+* {{hl|"SWITCH"}} - Switch waypoints/break loop (see [[ArmA:_Mission_Editor#Triggers_Mode_.28F3.29|Triggers]])
+* {{hl|"END1"}} - End #1
+* {{hl|"END2"}} - End #2
+* {{hl|"END3"}} - End #3
+* {{hl|"END4"}} - End #4
+* {{hl|"END5"}} - End #5
+* {{hl|"END6"}} - End #6
+* {{hl|"LOOSE"}} - (Meant to say LOSE but is misspelt in the game engine).
+* {{hl|"WIN"}} - (Not in editor. Valid enum name but when set, defaults to {{hl|"END1"}})
+
+|s1= trigger [[setTriggerType]] action
+
+|p1= trigger: [[Object]]
+
+|p2= action: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_trigger setTriggerType "END1";</sqf>
+
+|seealso= [[triggerType]] [[createTrigger]] [[setTriggerActivation]] [[setTriggerArea]] [[setTriggerStatements]] [[setTriggerText]] [[setTriggerTimeout]] [[createGuardedPoint]] [[triggerInterval]] [[setTriggerInterval]] [[enableSimulation]] [[simulationEnabled]]
+}}

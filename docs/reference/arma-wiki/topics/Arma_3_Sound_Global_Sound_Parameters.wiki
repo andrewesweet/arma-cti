@@ -1,0 +1,83 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Sound:_Global_Sound_Parameters
+// revision: 376712 (2025-11-10T18:39:25Z)
+// export sha1: pgh8ga5ge7zzrrqwqpfpldpsn3k268k
+// categories: Category:Arma 3: Sound
+// Vendored snapshot. Do not edit — re-export instead.
+
+Definition of default sound properties, which are applied on every sound if not overridden by custom definition within [[Arma 3: Sound: SoundSet|SoundSet]].
+
+Configured in the base class '''CfgSoundGlobals'''.
+
+{| class="wikitable sortable"
+
+! Parameter
+! class="unsortable" | Unit/Values
+! class="unsortable" | Default
+! class="unsortable" | Description
+
+|-
+| {{hl|defaultDistanceFilter}}
+| class name
+| {{n/a}}
+| global [[Arma 3: Sound: Filters|Distance filter]], used on every sound unless specified differently in the soundSet (meaning vehicles which do not yet have soundSet configuration always are filtered by the defaultDistanceFilter)
+
+|-
+| {{hl|defaultSound3DProcessingType}}
+| class name
+| {{n/a}}
+| global [[Arma 3: Sound: Processing Types|Sound Processing Type]]
+
+|-
+| {{hl|defaultVolumeCurve}}
+| class name
+| {{n/a}}
+| global amplitude [[Arma 3: Sound: Sound Curves|attenuation curve]]
+
+|-
+| {{hl|defaultWeaponVolumeCurve}}
+| class name
+| {{n/a}}
+| global amplitude [[Arma 3: Sound: Sound Curves|attenuation curve]] for weapons shooting
+
+|-
+| {{hl|defaultLFEVolumeCurve}}
+| class name
+| {{n/a}}
+| global LFE (subwoofer) amplitude [[Arma 3: Sound: Sound Curves|attenuation curve]]
+
+|-
+| {{hl|OldConfigurationVolumeFactor}}
+| float (0..n) or [dBFS]
+| db0
+| volume attenuation of sounds which are configured using the old way (not [[Arma 3: Sound: SoundSet|SoundSets]])
+
+|-
+| {{hl|defaultSpatialityRange}}
+| [m]
+| 0
+| {{Link|https://msdn.microsoft.com/en-us/library/windows/desktop/microsoft.directx_sdk.x3daudio.x3daudio_emitter(v{{=}}vs.85).aspx|innerRadius}} value - distance, where signal starts bleeding into "opposite" channels
+
+|-
+| {{hl|defaultSpatialityRangeAngle}}
+| [radians] (0..pi/4)
+| 0.785 (pi/4)
+| {{Link|https://msdn.microsoft.com/en-us/library/windows/desktop/microsoft.directx_sdk.x3daudio.x3daudio_emitter(v{{=}}vs.85).aspx|innerRadiusAngle}}
+
+|}
+
+<syntaxhighlight lang="cpp">
+class CfgSoundGlobals
+{
+	defaultDistanceFilter = "defaultDistanceFreqAttenuationFilter";
+	defaultVolumeCurve = "defaultAmpAttenuationCurve";
+	defaultWeaponVolumeCurve = "defaultWeaponAmpAttenuationCurve";
+	defaultLFEVolumeCurve = "defaultLFECurve";
+	defaultSound3DProcessingType = "default3DProcessingType";
+	defaultSpatialityRange = 0.005;
+	defaultSpatialityRangeAngle = 0.785; // pi/4
+	OldConfigurationVolumeFactor = db-4;
+};
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Sound}}

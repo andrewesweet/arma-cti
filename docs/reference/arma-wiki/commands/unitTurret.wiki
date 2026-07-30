@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/unitTurret
+// revision: 377504 (2026-01-02T06:49:34Z)
+// export sha1: kbtvkz4o3ceic58qa8qb59aw2gs5rj4
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Turrets
+
+|descr= Returns the turret path the given vehicle's gunner is in.
+To get the turret's unit see [[turretUnit]].
+
+|s1= vehicle [[unitTurret]] gunner
+
+|p1= vehicle: [[Object]]
+
+|p2= gunner: [[Object]]
+
+|r1= [[Turret Path]]
+- {{hl|[-1]}} is returned if the [[gunner]] is also the [[driver]].
+When no units are in any of vehicle's turret, empty array {{hl|[]}} is returned.
+
+|x1= <sqf>_vehicle unitTurret _gunner;</sqf>
+
+|x2= <sqf>vehicle player unitTurret player;</sqf>
+
+|seealso= [[turretUnit]] [[driver]] [[gunner]] [[commander]] [[effectiveCommander]] [[currentPilot]] [[moveInTurret]] [[assignAsTurret]] [[assignedVehicleRole]] [[lockedTurret]] [[isTurnedOut]]
+}}

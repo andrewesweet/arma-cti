@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera_setFOV
+// revision: 349262 (2023-11-08T14:51:06Z)
+// export sha1: 6efs62x2azzu7zf6lpp3xi31cddtbkr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Camera | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Camera
+
+|descr= Sets the FOV of given camera.
+
+|s1= [camera, FOV] call [[BIS_fnc_camera_setFOV]]
+
+|p1= camera: [[Object]] - the camera
+
+|p2= FOV: [[Number]] - (Optional, default 0,75) wanted FOV
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[BIS_camera,0.5] call BIS_fnc_camera_setFOV;</sqf>
+
+|seealso= [[BIS_fnc_camera_getFOV]]
+}}

@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Briefing
+// revision: 229616 (2021-02-01T13:20:34Z)
+// export sha1: alb903cklqn35lfg2xpcu2daqa4d6ao
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists the different briefing types according to games.
+
+{{ofp}} and {{arma1}} should use [[Briefing.html]], where {{arma2}} and {{arma3}} have their own page.
+
+
+[[Category:Mission Editing]]

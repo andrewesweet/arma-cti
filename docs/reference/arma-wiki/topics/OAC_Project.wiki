@@ -1,0 +1,261 @@
+// source: https://community.bistudio.com/wiki/OAC:Project
+// revision: 349702 (2023-11-20T22:09:45Z)
+// export sha1: s5vkj0twjmnaj8lxo6pqmmbosgfit2g
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Banner biki.jpg]]
+
+by the [[OAC:Project#OAC_Project_Team|OAC Project Team]]
+
+
+
+== Project info ==
+Welcome to the OAC project - namely OFP ArmA Conversion.<br>
+<br>
+
+== Purpose of the OAC project ==
+
+* '''Playable content'''. Now. Much. Enjoyable. Good quality.
+* In the form of: Get any '''OFP missions or campaigns playable in ArmA''' with little or no<br>modification of the mission file.
+* '''Possibility to use community made addons alongside''' to improve the visual aspects,<br>sounds or gameplay.
+* '''Easy access''' to the content.
+* '''Automated''' update and delivery system.
+* '''Open system''', focus on '''compatibility''' with community addons and MODs.
+* '''Open source project''' - every can contribute very easily.
+
+
+== NOT the purpose ==
+
+* Make custom models, textures, sounds.
+* Convert (OFP) models to ArmA.
+* Change the gameplay itself.
+
+
+== Cooperation ==
+
+=== CWR MOD ===
+
+The goal from [[CWR]] is to recreate the whole OFP CWC experience, based on OFP elite XBOX version.<br>
+
+Project OAC is '''fully compatible''' to CWR and OAC makes it possible to run
+any OFP mission with CWR.<br>So OAC can act as an supplement to CWR.<br>
+Project OAC uses plain ArmA as a base for models, sounds and graphics.<br>
+
+CWR and OAC are '''sharing their development progress''' on the CWC and RES campaign.<br>
+In addition to that both '''work closely together on the config part''' to ensure full compatibility.<br>
+
+Up until today the major difference between both is that OAC is aiming for '''open development''', '''easy'''<br>
+'''contribution''' and '''iterative development''' with '''as many releases as possible''' whereas CWR relies on '''few'''<br>'''releases''' to ensure '''top quality''' from the start.
+
+
+== Open source project ==
+
+The basic idea is that everything is '''easily accessible for anyone'''.
+
+In extension to that anyone interested can '''contribute in different ways''' to the project.
+
+For example by
+* improving this wiki page
+* reporting bugs on the missions or the addons
+* try new missions and see if they mission file needs to be updated
+* convert missions themselves and add them to the public hub 
+* improve the compatibility addon yourself by adding new class mappings of yet missing<br>OFP addons or MODs.<br>
+
+To support this process the project heavily relies on '''tools that support collaboration'''.<br>
+
+The '''wiki''', '''git''', '''automated build scripts''' and '''Yoma Addon Sync''' for project and mission delivery.<br>
+
+Only a '''very loose organization''' will '''keep the project on track''' and ensure the<br>
+'''quality''' and '''success''' of the project.<br>
+
+
+'''So overall it will be an easy access and easy to contribute focus to deliver<br>
+content as easily and as much as possible!'''<br>
+
+
+== Support OAC ==
+
+OAC is an open project that invites you and anybody to contribute.
+Here is a brief overview of possible ways:
+
+* Promotion screenshots.
+* Promotion trailers.
+* Campaign testing.
+* Mission makers polishing conversions.
+* Improve the compatibility addon.
+* Convert campaign and missions.
+
+See the contact area, if you need advice.
+
+
+== How does it work ==
+
+{{Feature|important|''Technical details - skip if not interested.''}}
+
+You '''cannot run OFP missions or campaigns out of the box in ArmA''' for a few technical reasons.<br>
+Actually it is quite simple to solve these.
+
+Foremost it is about the missing units (classes).<br>
+The other problem is that the script syntax change a bit from OFP to ArmA<br>
+(strict string-code requirement).
+
+
+'''The solution.'''
+
+For the first problem only a '''simple compatibility addon''' is needed the maps the missing classes<br>
+to existing ArmA classes.<br>
+With a few simple config tricks it also auto embeds models missing in plain ArmA like the<br>
+Bradley if the community addon is loaded alongside.<br>
+
+For the CWC and Res campaign and mission a '''few additional content addons''' come<br>
+along that contain the music, speech files and similar content.<br>
+
+Now this approach is not limited to BI content, yet the starting version also<br>
+allows to load WGL5 missions or campaign conversions and it is easily expandable<br>
+to virtually any other OFP addon or MOD.<br>
+
+
+'''Most missions''' that do not involve much scripting '''can already be loaded with only the<br>
+compatibility addon'''.<br>
+
+For missions that do not work out of the box there is an '''almost completely<br>
+automated process to convert any mission to ArmA scripting standards''' in a few seconds.<br>
+The process already works very well, yet it is easily expandable if necessary.<br>
+
+Last very rare and 'complicated' problems can easily be fixed by hand by any 
+fair scripter.<br>
+
+== The seven roads to OAC ==
+
+Please always refer to the [[OAC:FAQ|FAQ]] first in case of questions and unclear parts.
+
+
+=== # I. Consumer ===
+
+Not meant in a negative way. Simply plays the missions and campaigns provided.<br>
+Silent epicure.<br>
+
+[[OAC:DownloadAndPlay|Details: Download and play]].
+
+
+=== # II. Promoter ===
+
+Tells his mates or other people about the project. Given he likes it of course. :)
+
+[[OAC:PromoteOACandTellUsAboutIt|Details: Promote OAC and tell us about it]].
+
+=== # III. Feedback ===
+
+Shares his opinion about the project.<br>
+Makes suggestions how to improve any aspect of the project.<br>
+Suggests missions or campaigns for conversion.<br>
+Suggests OFP addons or MODs to be included in the compatibility addon.<br>
+
+[[OAC:WhereToPostFeedback|Details: Where to post feedback]].
+
+
+=== # IV. Bugreporting ===
+
+Reports bugs in converted missions or campaigns or bugs in the compatibility<br>
+addon itself at the bugtracker in a decent way (steps to reproduce, arma.rpt<br>
+error, screenshots/videos of the problem).<br>
+
+[[OAC:WhereToPostBugs|Details: Where to post bugs]].
+
+
+=== # V. Contributer ===
+
+Helps to improve the wiki page.<br>
+Makes screenshots or videos to promote the project.<br>
+Helps maintaining the infrastructure of the project (source repository, build process, YAS server, issuetracker).<br>
+Supports the project with infrastructure.<br>
+
+[[OAC:HowToContribute|Details: How to contribute]].
+
+=== # VI. Missions converter ===
+
+Either you help to improve already converted missions or campaigns by fixing bugs<br>
+or improving the gameplay by altering the mission file itself to a limited degree.<br>
+Or you convert new missions or campaigns yourself and add them to the public sharing system.<br>
+
+[[OAC:HowToConvertMissionsAndShare|Details: How to convert missions and share]].
+
+
+=== # VII. Core developer ===
+
+You are already into config editing or want to learn something about it.<br>
+If so, this one is for you.<br>
+You can either improve the existing compatibility addon by improving the class<br>
+mapping in different ways or add new mappings for yet missing OFP addons or MODs.<br>
+
+
+[[OAC:HowToImproveTheCompatibilityAddon|Details: How to improve the compatibility addon]].
+
+
+=== Subpage link overview ===
+
+* [[OAC:DownloadAndPlay|I. Download and play]]
+** [[OAC:DownloadAndPlay#Update_OAC|Update OAC]]
+** [[OAC:DownloadAndPlay#Replacement_addons|Replacement addons]]
+** [[OAC:DownloadAndPlay#Play_OAC_with_CWR|Play OAC with CWR]]
+* [[OAC:TellsUsAboutPromotions|II. Tell us about promotions]]
+* [[OAC:WhereToPostFeedback|III. Where to post feedback]]
+* [[OAC:WhereToPostBugs|IV. Where to post bugs]]
+* [[OAC:HowToContribute|V. How to contribute]]
+* [[OAC:HowToConvertMissionsAndShare|VI. How to convert missions and share]]
+* [[OAC:HowToImproveTheCompatibilityAddon|VII. How to improve the compatibility]]
+
+== Our earnest thanks ==
+
+to our hosts:
+
+* {{Link|http://oac.armaholic.eu/page|Page}} hosted by {{Link|link= http://www.armaholic.com/|text= armaholic}}: made by '''Raptor'''.
+* {{Link|link= http://dev-heaven.net/projects/oac/boards|text= Forum}} hosted by {{Link|http://dev-heaven.net|dev-heaven.net}}.
+* {{Link|link= http://dev-heaven.net/repositories/show/oac|text= Source repository}} hosted by {{Link|http://dev-heaven.net|dev-heaven.net}}.
+* {{Link|link= http://dev-heaven.net/projects/oac/issues|text= Issue tracker}} {{Link|http://www.redmine.org/|Redmine}} hosted by {{Link|http://dev-heaven.net|dev-heaven.net}}.
+* {{Link|link= http://dev-heaven.net/projects/show/yoma-addonsync2009|text= Yoma Addon Sync 2009}} hosted by {{Link|http://www.quest-link.net|quest-link.net}}.
+
+to individuals
+
+* '''{{Link|link= http://www.armaholic.com/plug.php?e=team|text= armaholic team}}''' for hosting our page and projects!
+* '''{{Link|http://dev-heaven.net|Sickboy}}''' for hosting OAC @ dev-heaven.net!
+* '''{{Link|http://www.quest-link.net/|MadDogX}}''' for hosting the OAC YAS server!
+* '''{{Link|http://www.yomatools.be/index.php?option{{=}}com_contact&Itemid=3|Yoma}}''' for ongoing development and support of {{Link|link= http://dev-heaven.net/projects/show/yoma-addonsync2009|text= Yoma Addon Sync}}!
+* '''Raptor''' for designing the excellent OAC project page, OAC banner and setting up the OAC forum!
+* '''The-f''' for the ACEIP island conversion!
+* '''stun''' for play testing the CWC campaign and many fixing issues in the process!
+* '''Mopar''' for campaign testing, his campaign & mission conversions!
+* '''luemmel''' for campaign testing, promotion and his mission conversions!
+* '''Snake Man''' for his campaign & mission conversions!
+* '''SLAYER RF''' for his p85 replacement configs!
+
+
+== Project team ==
+
+Add yourself if you want to contribute.
+
+* Members:
+** kju (project manager)
+** luemmel (campaign testing and promotion)
+** Mopar (campaign testing, campaign & mission conversion) 
+** Raptor (page designer)
+** Snake Man (campaign & mission conversion)
+** stun (campaign testing and polishing)
+** the-f (island conversion)
+** Yoma (Yoma Addon Sync developer)
+
+* Contact:
+** Mail: [mailto:kju@dev-heaven.net kju@dev-heaven.net]
+** Account @ dev-heaven.net: {{Link|link= http://dev-heaven.net/account/show/4|text= kju}}
+** {{Link|link= http://dev-heaven.net/projects/show/oac|text= project page}}
+
+
+== Project links ==
+
+* {{Link|http://oac.armaholic.eu|Project page}}
+* {{Link|link= http://dev-heaven.net/projects/oac/boards|text= Forum}}
+* {{Link|link= http://dev-heaven.net/projects/oac/issues|text= Bugtracker}}
+* {{Link|link= http://dev-heaven.net/projects/activity/oac|text= Activity view}}
+* {{Link|link= http://dev-heaven.net/projects/roadmap/oac|text= Project roadmap}}
+* {{Link|link= http://dev-heaven.net/projects/oac/news|text= News}}
+* {{Link|link= http://forums.bistudio.com/showthread.php?t=68736|text= BI forum thread}}

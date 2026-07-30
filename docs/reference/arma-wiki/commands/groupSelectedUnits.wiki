@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/groupSelectedUnits
+// revision: 377896 (2026-01-05T17:44:14Z)
+// export sha1: 95vwnzxa79ktoi4gro1ew3ik06zsfuy
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Interaction
+
+|descr= Returns selected units in source group for normal commanding mode (individual units). For the High Command equivalent, see [[hcSelected]].
+
+|s1= [[groupSelectedUnits]] unit
+
+|p1= unit: [[Object]]
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>_selectedUnits = groupSelectedUnits player;</sqf>
+
+|seealso= [[groupSelectUnit]]
+}}

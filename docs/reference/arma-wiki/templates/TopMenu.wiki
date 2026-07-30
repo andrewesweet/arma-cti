@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/Template:TopMenu
+// revision: 372970 (2025-03-02T18:20:48Z)
+// export sha1: fu2xmtbeqqzmjtwoxwqheoxoivscy5m
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div class="topmenu">{{{1|-}}}</div></includeonly><noinclude>
+Shows a horizontal menu (designed for only a few entries).
+
+{{Feature | important | Links should be all on the same line to avoid unwanted {{hl|&lt;p&gt;}} tags leading to smaller anchor links mid-menu.}}
+
+== Usage ==
+{{<nowiki/>TopMenu|'''''links'''''}}
+* links: Wiki links (internal or external)
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{TopMenu}}</nowiki>
+| {{TopMenu}}
+|-
+| <nowiki>{{TopMenu|[https://google.com Google][[:Category:Arma 3|{{arma3}}]][[Arma 3: Getting Started]]}}</nowiki>
+| {{TopMenu|[https://google.com Google][[:Category:Arma 3|{{arma3}}]][[Arma 3: Getting Started]]}}
+|-
+| <nowiki>{{ TopMenu | [https://google.com Google] [[:Category:Arma 3|{{arma3}}]] [[Arma 3: Getting Started]] }}</nowiki>
+| {{ TopMenu | [https://google.com Google] [[:Category:Arma 3|{{arma3}}]] [[Arma 3: Getting Started]] }}
+|-
+| style="white-space: pre" | <nowiki>
+{{TopMenu|
+[https://google.com Google]
+[[:Category:Arma 3|{{arma3}}]]
+[[Arma 3: Getting Started]]
+}}
+</nowiki>
+|
+{{TopMenu|
+[https://google.com Google]
+[[:Category:Arma 3|{{arma3}}]]
+[[Arma 3: Getting Started]]
+}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]<noinclude>

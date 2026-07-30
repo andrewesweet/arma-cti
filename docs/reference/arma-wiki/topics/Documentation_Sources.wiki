@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/Documentation_Sources
+// revision: 339885 (2023-04-28T16:20:27Z)
+// export sha1: oebo60z6id7oxfkggrvir8cuia67kfk
+// categories: Category:ArmA: Armed Assault: Addon Configuration | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|Tutorials}}
+= Documentation Sources for Arma 3 Modding =
+As you've probably noticed, there is no comprehensive resource for Arma 3 modding. Finding reliable information requires a lot of Google-searching, reading forum threads, backtracking through potentially obsolete tutorials from previous versions of Arma, etc. It is very frustrating. In an attempt to ease your path to finding reliable information, here is a list of links to some key resources on the web. This list currently includes (semi-)official documentation-type resources rather than links to forum threads and the like. You'll have to do those searches on your own  and hope for the best.
+
+== Vehicle Configs ==
+{{GameCategory|arma1|Addon_Configuration}} BI config links root page
+
+[[CfgModels|Model Config fundamentals]]
+
+[[CfgVehicles_Config_Reference|Main Vehicle config reference]] (BI)
+
+[[Turret_Config_Reference|Turret Config Reference]]
+
+[[Arma_3_Cars_Config_Guidelines|A3 CarX Config Guidelines]]
+
+[[Arma_3_Tanks_Config_Guidelines|A3 TankX Config Guidelines]]
+
+[[ArmA:_Howto_Model_Config|Howto Model Config]] (some modest skeleton reference)
+
+[[Detection|AI Dectection config properties]]
+
+[[ArmA:_How_to_animate_a_model|How to Animate a Model]] (vehicle parts animation)
+
+== Weapon Configs & Damage Modeling ==
+[[CfgAmmo_Config_Reference|CfgAmmo Config Reference]] (BI)
+
+[[Damage|Damage]] (newer damage properties from the Biki)
+
+[[Bullet_penetrability|Bullet Penetrability]]
+
+[[Weapons_settings|Weapons Settings]] (more weapon-related properties)
+
+[[CfgWeapons_Config_Reference|CfgWeapons Config Reference]] (dated but possibly useful)
+
+== More Information ==
+[https://www.youtube.com/playlist?list{{=}}PLD7hd9B3fKvyW8G3U7SynEP7nhpHTvFLr Great intro-to-modding YouTube series by CUP member Nonov]

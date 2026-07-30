@@ -1,0 +1,82 @@
+// source: https://community.bistudio.com/wiki/goto
+// revision: 364521 (2024-05-16T20:46:23Z)
+// export sha1: j4l04s7sj18qbq0dj0cow5mmgebzo1i
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Program Flow
+
+|descr= Break script flow and go to given label (defined by '''#''' - '''NOT''' to be confused with [[SQF Syntax|SQF]]'s [[a_hash_b|hash sign]]!)
+{{Feature|warning|This command only works in [[SQS Syntax]].}}
+{{Feature|informative|Note that labels are not case sensitive and are searched for from the top of the script, so multiple occurrences of a label will only result in the topmost one ever being found.}}
+
+|s1= [[goto]] label
+
+|p1= label: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqs>
+goto "myLabel"
+player setDamage 1
+
+#myLabel
+hint "you successfully avoided death!"
+</sqs>
+
+|seealso= [[Control_Structures#SQS_syntax_.28deprecated.29|SQS Control Structures]] [[SQS to SQF conversion]]
+}}
+
+{{Note
+|user= Hardrock
+|timestamp= 20060804105200
+|text= ''Notes from before the conversion:''
+
+* This function works only inside of [[SQS Syntax|SQS script]].
+* The search for labels always begins at the top of the script so that if there are multiple occurrences of a label the first occurrence will always be the one found.
+* Because of the searching order, it is faster to place loops which are executed often at the top of a script.
+* Labels are not case sensitive.
+* Loops which look something like the example below should be avoided as many of them could cause the mission to slow down:
+<sqs>
+#wait
+if (condition) then { goto "wait" }
+</sqs>
+
+It is better to use the '''@''' command to wait for a condition to be true, or put a small delay into the wait loop.
+
+Example:
+* While it is not required to include a delay in a loop, such a loop without a delay can cause the script to slow the game down, as the loop will be executed many times before the game engine interrupts the script.
+* Unless you really want the loop to execute multiple times during a frame, you should include a small delay.
+* You would need to have many scripts running for this to be a significant issue.
+* Deciding whether to use a script with a loop or a trigger or even a '''@''' statement to detect a condition is a complicated matter and should be subject to experimentation.
+}}
+
+{{Note
+|user= UNN
+|timestamp= 20060804121700
+|text= A goto command called within a [[forEach]] loop will only execute a single jump to [[goto]], once the [[forEach]] loop has finished:
+<sqs>{ goto "wait" } forEach [0, 1, 2, 3, 4]</sqs>
+}}

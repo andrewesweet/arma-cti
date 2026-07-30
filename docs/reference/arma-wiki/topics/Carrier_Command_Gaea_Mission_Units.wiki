@@ -1,0 +1,92 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Units
+// revision: 341584 (2023-06-09T16:26:43Z)
+// export sha1: 7a8vkakvxf73j00uis0eyikdzav99ia
+// categories: Category:Carrier Command: Gaea Mission
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Carrier ==
+
+A C-class survey ship, originally designed for supporting operations on terraformed planets, subsequently modified for marine and island combat.
+
+It serves as a mobile headquartes for a fleet of four walruses and four mantas.
+
+With an assortment of mountable weapons of its own a carrier is a true floating fortress and a highly dangerous enemy.
+
+
+== Walrus ==
+
+The W.A.L.R.U.S. (Water and Land Roving Utility Shuttle) is a six-wheeled amphibious unit that can be configured to suit a variety of purposes.
+In the Carrier Command Gaea Mission Campaign the Walrus is the most important unit aside from Carrier itself.
+
+=== Upgrades ===
+
+* see the {{Link|Carrier Command: Gaea Mission: List of weapons#Walrus|List of weapons - Walrus}}
+* see the {{Link|Carrier Command: Gaea Mission: List of supports#Walrus|List of supports - Walrus}}
+<!--* see the {{Link|Carrier Command: Gaea Mission: List of armors#Walrus|List of armors - Walrus}}-->
+
+It can mount a variety of weapons, making it an universal combat vehicle. Hacking and regeneration capsules can be also eqipped, so it is the vehicle of choice for taking or rebuilding a Command center on an island.
+It can also transport solders when necessary.
+
+When upgraded, it can with virtually any terrain and to complete the mission.
+
+The AI of a walrus is poor at navigating in a rough terrain and in . Sometimes it may get stuck on a boulder
+
+
+== Manta ==
+
+The MANTA (Multi-role Aircraft for Nautical Tactical Assault) is an aerial survey craft which has been adapted with weapon capabilities to fight in battle. <ref>http://www.carriercommand.com/game/units/manta/</ref>
+
+=== Upgrades ===
+
+* see the {{Link|Carrier Command: Gaea Mission: List of weapons#Manta|List of weapons - Manta}}
+* see the {{Link|Carrier Command: Gaea Mission: List of supports#Manta|List of supports - Manta}}
+<!--* see the {{Link|Carrier Command: Gaea Mission: List of armors#Manta|List of armors - Manta}}-->
+
+Weapons range from a humble double machinegun to a . Manta can be also equipped with rockets, strong bombs or a flares.
+
+
+== Drone ==
+
+=== Defense Drone ===
+
+Defense drones are deployed by Carrier to protect it from enemy walruses that would infiltrate the vicinity of the ship.
+These drones are loaded with explosives and when they crash into an enemy walrus and autodestruct, the explossion will often take the enemy unit with it or at least damage it severely
+
+=== Exploration Drone ===
+
+Carrier may operate only one exploration drone at a time. This small hard to spot flying vehicle is equipped with sensitive sensors that can detect enemy activity and stay hidden.
+It can also operate beyond the telemetry range of other Carrier vehicles
+
+
+== Droid ==
+
+A humanoid robot equpped for combat<!-- and -->.
+
+Droids can be equipped with different armor or gun.
+
+Droids cannot swim.
+
+Droid rifleman
+
+equipped with a machine gun.
+1000 rounds.
+
+lasergunner
+
+Solder
+
+Solders are usually equipped with a MKII autoregenerating armor. They can be armed with a machinegun or a laser rifle. Neither droids or solders (with the heavy armor) can swim.
+
+rifleman
+equipped with a machine gun.
+
+300 rounds
+Mk II autoregerating shield
+
+lasergunner
+
+equipped with a laser gun
+
+
+{{GameCategory|carriercommand}}

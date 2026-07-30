@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/getLoginStatus
+// revision: 351572 (2023-12-07T17:00:51Z)
+// export sha1: e7e8m4hwc9q8kfqmkl0ej68edgtbib5
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|gr1= Argo
+
+|descr= Get the client's current Cloud service login status.
+
+|s1= [[getLoginStatus]]
+
+|r1= [[Number]] - can be one of:
+* &nbsp;0: Not logged in
+* &nbsp;1: Logged in with a {{Name|bi}} account
+* &nbsp;2: Logged in as guest
+* -1: Internal error
+
+|x1= <sqf>
+switch (getLoginStatus) do
+{
+	case 0:		{ hint "Not logged" };
+	case 1:		{ hint "You are BI-approved, gooooood" };
+	case 2:		{ hint "Logged in as a Guest? 2, target that man!" };
+	case -1:	{ hint "Something went wrong" };
+};
+</sqf>
+
+|seealso= [[getClientState]] [[getClientStateNumber]]
+}}

@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_singleMissionKeys
+// revision: 348810 (2023-11-08T14:38:17Z)
+// export sha1: 4akboe6yo5epcd05zpx6jdi3epnuuhr
+// categories: Category:Arma 3: Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Missions
+
+|descr= Activate mission related keys.
+
+|s1= call [[BIS_fnc_singleMissionKeys]]
+
+|r1= [[Array]] - list of activated keys
+
+|x1= <sqf>private _activatedKeys = call BIS_fnc_singleMissionKeys;</sqf>
+
+|seealso= [[missionName]] [[briefingName]]
+}}

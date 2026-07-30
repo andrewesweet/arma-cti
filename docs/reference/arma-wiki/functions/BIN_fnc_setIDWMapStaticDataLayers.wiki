@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_setIDWMapStaticDataLayers
+// revision: 281171 (2021-06-14T09:05:28Z)
+// export sha1: 0cth9zqcavimdbhsup8vuq77fa0c10k
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: IDWMap | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= IDWMap
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Sets static data for extension use from argument or config "CfgIDWMap"
+
+	Parameter(s):
+		ARRAY (optional) - static data in format:
+		[
+			[[x,y,strengh],[x,y,strengh],...], // data layer 0
+			[[x,y,strengh],[x,y,strengh],...], // data layer 1
+			...
+			[[x,y,strengh],[x,y,strengh],...] // data layer N
+		]
+
+	Returns:
+		BOOL - true on success
+		
+	Example:
+		call BIN_fnc_setIDWMapStaticDataLayers
+*/</pre>
+
+{{Wiki|placeholder}}
+{{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_setIDWMapStaticDataLayers]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

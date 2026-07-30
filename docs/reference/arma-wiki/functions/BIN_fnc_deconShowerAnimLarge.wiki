@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_deconShowerAnimLarge
+// revision: 309586 (2022-05-05T12:07:25Z)
+// export sha1: nthdxaxx5145bg2ovbdm4h5g0x7rb5k
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Decon Shower | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Decon Shower 
+
+|descr= <pre>/*
+	BIN_fnc_deconShowerAnimLarge
+*/</pre>
+{{Wiki|placeholder}} 
+
+|s1= <!-- [] call [[BIN_fnc_deconShowerAnimLarge]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_deconShowerAnimLarge;</sqf> -->
+
+|seealso=
+}}

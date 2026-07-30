@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/loadBackpack
+// revision: 321277 (2022-05-13T19:08:07Z)
+// export sha1: 82wnyohvce4ynubxxbgfztra0xctkow
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Containers
+
+|descr= Returns current percentage of mass from items stored in a backpack relative to the maximum capacity of the backpack.<br>
+It is equivalent to this formula:
+<sqf>_loadBackpack = massOfAllItemsInBackpack / getContainerMaxLoad backpack player;</sqf>
+
+|s1= [[loadBackpack]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _myVariable = loadBackpack myUnit;</sqf>
+
+|seealso= [[load]] [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[removeBackpack]] [[clearBackpackCargo]] [[clearAllItemsFromBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]] [[loadUniform]] [[loadVest]] [[getMass]] [[weightRTD]] [[getContainerMaxLoad]]
+}}

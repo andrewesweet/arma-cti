@@ -1,0 +1,510 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Difficulty_Settings
+// revision: 368958 (2024-08-21T08:08:16Z)
+// export sha1: 6vkhg2dsirwekdx23isx3y3kcms5z8z
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The {{GVI|arma3|1.58}} update brought a lot of changes to the difficulty system. A list of the most significant ones can be found at the [[#Difficulty Overhaul|bottom of the page]].<br>
+There is a {{Link|https://forums.bistudio.com/topic/188661-difficulty-overhaul/|related forum thread}} where the changes can be discussed.
+[[File:20170725165627 1.jpg|450px|center]]
+
+
+== Difficulty Menu ==
+
+=== Presets ===
+
+One of the main changes that came with 1.58 is, that the difficulty levels were transformed to true presets. Each preset has exactly defined value for each difficulty option.
+If any of the options doesn't match the preset, it is changed to Custom. The following table shows comparison of the presets. Options that have ''fade out'' set can be faded in via the {{Controls|J}} key.
+
+{| class="wikitable align-center-col-3 align-center-col-4 align-center-col-5"
+! Config Parameter
+! Name in Game
+! Recruit
+! Regular
+! Veteran
+! Possible Values
+! Note
+|-
+! colspan="7" | Simulation
+|-
+| {{hl|reducedDamage}}
+| Reduced Damage
+| 1
+| 0
+| 0
+| 0 = disabled, 1 = enabled
+| Decreases damage dealt to the player and members of his group.
+|-
+! colspan="7" | Situational Awareness
+|-
+| {{hl|squadRadar}}
+| -
+| -
+| -
+| -
+| -
+| Shows a squad radar. '''Not implemented!'''
+|-
+| {{hl|groupIndicators}}
+| Group Indicators
+| 2
+| 1
+| 0
+| 0 = never, 1 = limited distance, 2 = always
+| Shows indication icons on units in player's group.
+|-
+| {{hl|friendlyTags}}
+| Friendly Name Tags
+| 2
+| 1
+| 0
+| 0 = never, 1 = limited distance, 2 = always
+| Friendly unit identification. Works only when the player aims at a unit.
+|-
+| {{hl|enemyTags}}
+| Enemy Name Tags
+| 0
+| 0
+| 0
+| 0 = never, 1 = limited distance, 2 = always
+| Enemy unit identification. Works only when the player aims at a unit.
+|-
+| {{hl|detectedMines}}
+| Detected Mines
+| 2
+| 1
+| 0
+| 0 = never, 1 = limited distance, 2 = always
+| Shows icons indicating exact positions of mines which are 200 m or closer.
+|-
+| {{hl|commands}}
+| Commands
+| 2
+| 1
+| 1
+| 0 = never, 1 = fade out, 2 = always
+| Displays command icons like target markers, get in command and others.
+|-
+| {{hl|waypoints}}
+| Waypoints
+| 2
+| 2
+| 1
+| 0 = never, 1 = fade out, 2 = always
+| Manages visibility of waypoint markers.
+|-
+! colspan="7" | Personal Awareness
+|-
+| {{hl|weaponInfo}}
+| Weapon Info
+| 2
+| 2
+| 1
+| 0 = never, 1 = fade out, 2 = always
+| Shows Weapon Info box contains round and magazine count, firing mode, etc..
+|-
+| {{hl|stanceIndicator}}
+| Stance Indicator
+| 2
+| 2
+| 1
+| 0 = never, 1 = fade out, 2 = always
+| Displays stance indication contains actual stance, weapon resting and deployment.
+|-
+| {{hl|staminaBar}}
+| Stamina Bar
+| 1
+| 1
+| 0
+| 0 = disabled, 1 = enabled
+| Manages visibility of stamina indicator. Fades in when stamina changes.
+|-
+| {{hl|weaponCrosshair}}
+| Crosshair
+| 1
+| 1
+| 0
+| 0 = disabled, 1 = enabled
+| Shows weapon crosshair both in 1st and 3rd person view.
+|-
+| {{hl|visionAid}}
+| Vision Aid
+| 1
+| 0
+| 0
+| 0 = disabled, 1 = enabled
+| Helps to detect units in visual range and identify friend from foe.
+|-
+! colspan="7" | View
+|-
+| {{hl|thirdPersonView}}
+| 3rd Person View
+| 1
+| 1
+| 0
+| 0 = disabled, 1 = enabled, 2 = vehicles only
+| Enables camera switching to 3rd person view.<br>{{GVI|arma3|2.00}} Vehicle only is now available
+|-
+| {{hl|cameraShake}}
+| Camera Shake
+| 1
+| 1
+| 1
+| 0 = disabled, 1 = enabled
+| Shakes camera if player is near explosion, passing vehicle or if player's vehicle is under G-load.
+|-
+! colspan="7" | Multiplayer
+|-
+| {{hl|scoreTable}}
+| Score Table
+| 1
+| 1
+| 1
+| 0 = disabled, 1 = enabled
+| Displays table with kills, deaths and overall score in multiplayer.
+|-
+| {{hl|deathMessages}}
+| Killed By
+| 1
+| 1
+| 1
+| 0 = disabled, 1 = enabled
+| Shows in chat window who killed the player.
+|-
+| {{hl|vonID}}
+| VON ID
+| 1
+| 1
+| 1
+| 0 = disabled, 1 = enabled
+| Indicates who is speaking through VON communication.
+|-
+! colspan="7" | Map Content
+|-
+| {{hl|mapContent}}
+| -
+| -
+| -
+| -
+| 0 = disabled, 1 = enabled
+| {{GVI|arma3|1.68}} This property was replaced by {{hl|mapContent*}} but still works. If it is set, all other {{hl|mapContent*}} properties are overwritten. '''Not available via menu'''.
+|-
+| {{hl|mapContentFriendly}}
+| Friendly
+| 1
+| 1
+| 0
+| 0 = disabled, 1 = enabled
+| {{GVI|arma3|1.68}} Shows friendly units on the map.
+|-
+| {{hl|mapContentEnemy}}
+| Enemy
+| 1
+| 1
+| 0
+| 0 = disabled, 1 = enabled
+| {{GVI|arma3|1.68}} Shows enemy units on the map.
+|-
+| {{hl|mapContentMines}}
+| Mines
+| 1
+| 1
+| 0
+| 0 = disabled, 1 = enabled
+| {{GVI|arma3|1.68}} Shows detected mines on the map.
+|-
+| {{hl|tacticalPing}}
+| Tactical Ping
+| 1
+| 1
+| 0
+| 0 = disabled, 1 = in 3D scene, 2 = on map, 3 = both
+| Allows players to highlight a position via a ''Tactical Ping''.
+|-
+! colspan="7" | Misc.
+|-
+| {{hl|autoReport}}
+| Automatic Reporting
+| 1
+| 1
+| 0
+| 0 = disabled, 1 = enabled
+| Former '''autoSpot''' Enables/disables automatic reporting of spotted enemies '''by players only'''. To stop AI from talking with script, use <sqf inline>unit setSpeaker "NoVoice";</sqf>
+|-
+| {{hl|multipleSaves}}
+| Multiple Saves
+| 1
+| 1
+| 0
+| 0 = disabled, 1 = enabled
+| Allows player to create multiple saves in a mission.
+|}
+
+=== Configuration ===
+
+Please note that the following information '''applies to the config in game's data''' (namely data_f.pbo) '''not to the profile'''. For profile related information please refer to [[server.armaprofile#Arma 3|this page]].
+Since {{arma3}} 1.58 the game's config uses {{hl|CfgDifficultyPresets}} class. The former {{hl|CfgDifficulties}} is now obsolete and was left in the config only not to break scripts that might have used it.
+
+<spoiler text="Show CfgDifficultyPresets">
+<syntaxhighlight lang="cpp">
+class CfgDifficultyPresets
+{
+	defaultPreset = Regular;
+
+	// Parameters that affect difficulty and which are shared among presets
+	myArmorCoef = 1.5;
+	groupArmorCoef = 1.5;
+
+	// Parameters that affect the Limited distance choice for Group Indicators, Friendly Name Tags, Enemy Name Tags and Detected Mines.
+	// They determine on which distance the indicators are fully visible and how many more meters it takes until the indicator fades-out completely.
+	fadeDistanceStart = 40.0;
+	fadeDistanceSpan = 10.0;
+
+	recoilCoef = 1;
+	visionAidCoef = 0.8;
+	divingLimitMultiplier = 1.0;		// Multiplier to limit capacity of lungs for soldiers.
+
+	animSpeedCoef = 0;
+	cancelThreshold = 0;				// Threshold used for interrupting action.
+	showCadetHints = 1;					// (0 = disabled, 1 = enabled; see `cadetMode` command)
+	showCadetWP = 1;					// (0 = disabled, 1 = enabled)
+
+	class Recruit
+	{
+		displayName = "$STR_Difficulty0";	// Name of the difficulty preset.
+		optionDescription = "";			// Description
+		optionPicture = "";				// Picture
+		levelAI = "AILevelLow";			// Level of AI skill
+
+		class Options
+		{
+			// Simulation
+			reducedDamage = 1;		// Reduced damage (0 = disabled, 1 = enabled)
+
+			// Situational awareness
+			groupIndicators = 2;	// Group indicators		(0 = never, 1 = limited distance, 2 = always)
+			friendlyTags = 2;		// Friendly name tags	(0 = never, 1 = limited distance, 2 = always)
+			enemyTags = 0;			// Enemy name tags		(0 = never, 1 = limited distance, 2 = always)
+			detectedMines = 2;		// Detected mines		(0 = never, 1 = limited distance, 2 = always)
+			commands = 2;			// Commands				(0 = never, 1 = fade out, 2 = always)
+			waypoints = 2;			// Waypoints			(0 = never, 1 = fade out, 2 = always)
+			tacticalPing = 3;		// Tactical Ping		(0 = disabled, 1 = in 3D scene, 2 = on map, 3 = both)
+
+			// Personal awareness
+			weaponInfo = 2;			// Weapon info			(0 = never, 1 = fade out, 2 = always)
+			stanceIndicator = 2;	// Stance indicator		(0 = never, 1 = fade out, 2 = always)
+			staminaBar = 1;			// Stamina bar			(0 = disabled, 1 = enabled)
+			weaponCrosshair = 1;	// Weapon crosshair		(0 = disabled, 1 = enabled)
+			visionAid = 1;			// Vision aid			(0 = disabled, 1 = enabled)
+
+			// View
+			thirdPersonView = 1;	// 3rd person view		(0 = disabled, 1 = enabled, 2 = enabled for vehicles only (Since  Arma 3 v1.99))
+			cameraShake = 1;		// Camera shake			(0 = disabled, 1 = enabled)
+
+			// Multiplayer
+			scoreTable = 1;			// Score table			(0 = disabled, 1 = enabled)
+			deathMessages = 1;		// Killed by			(0 = disabled, 1 = enabled)
+			vonID = 1;				// VON ID				(0 = disabled, 1 = enabled)
+
+			// Misc
+			mapContent = 1;			// Extended map content	(0 = disabled, 1 = enabled)
+			autoReport = 1;			// Automatic reporting	(0 = disabled, 1 = enabled)
+			multipleSaves = 1;		// Multiple saves		(0 = disabled, 1 = enabled)
+		};
+	};
+
+	class Regular
+	{
+		displayName = "$STR_Difficulty1";	// Name of the difficulty preset.
+		optionDescription = "";			// Description
+		optionPicture = "\A3\Ui_f\data\Logos\arma3_white_ca.paa"; // Picture
+		levelAI = "AILevelMedium";		// Level of AI skill
+
+		class Options
+		{
+			// Simulation
+			reducedDamage = 0;		// Reduced damage		(0 = disabled, 1 = enabled)
+
+			// Situational awareness
+			groupIndicators = 1;	// Group indicators		(0 = never, 1 = limited distance, 2 = always)
+			friendlyTags = 1;		// Friendly name tags	(0 = never, 1 = limited distance, 2 = always)
+			enemyTags = 0;			// Enemy name tags		(0 = never, 1 = limited distance, 2 = always)
+			detectedMines = 1;		// Detected mines		(0 = never, 1 = limited distance, 2 = always)
+			commands = 1;			// Commands				(0 = never, 1 = fade out, 2 = always)
+			waypoints = 2;			// Waypoints			(0 = never, 1 = fade out, 2 = always)
+			tacticalPing = 3;		// Tactical Ping		(0 = disabled, 1 = in 3D scene, 2 = on map, 3 = both)
+
+			// Personal awareness
+			weaponInfo = 2;			// Weapon info			(0 = never, 1 = fade out, 2 = always)
+			stanceIndicator = 2;	// Stance indicator		(0 = never, 1 = fade out, 2 = always)
+			staminaBar = 1;			// Stamina bar			(0 = disabled, 1 = enabled)
+			weaponCrosshair = 1;	// Weapon crosshair		(0 = disabled, 1 = enabled)
+			visionAid = 0;			// Vision aid			(0 = disabled, 1 = enabled)
+
+			// View
+			thirdPersonView = 1;	// 3rd person view		(0 = disabled, 1 = enabled, 2 = enabled for vehicles only (Since  Arma 3 v1.99))
+			cameraShake = 1;		// Camera shake			(0 = disabled, 1 = enabled)
+
+			// Multiplayer
+			scoreTable = 1;			// Score table			(0 = disabled, 1 = enabled)
+			deathMessages = 1;		// Killed by			(0 = disabled, 1 = enabled)
+			vonID = 1;				// VON ID				(0 = disabled, 1 = enabled)
+
+			// Misc
+			// mapContent = 1;		// Extended map content	(0 = disabled, 1 = enabled)	// before Arma 3 v1.68
+			mapContentFriendly = 1;	// Map friendlies		(0 = disabled, 1 = enabled) // since  Arma 3 v1.68
+			mapContentEnemy = 1;	// Map Enemies			(0 = disabled, 1 = enabled) // since  Arma 3 v1.68
+			mapContentMines = 1;	// Map Mines			(0 = disabled, 1 = enabled) // since  Arma 3 v1.68
+			autoReport = 1;			// Automatic reporting	(0 = disabled, 1 = enabled)
+			multipleSaves = 1;		// Multiple saves		(0 = disabled, 1 = enabled)
+		};
+	};
+
+	class Veteran
+	{
+		displayName = "$STR_Difficulty2";	// Name of the difficulty preset.
+		optionDescription = "";			// Description
+		optionPicture = "\A3\Ui_f\data\Logos\arma3_white_ca.paa"; // Picture
+		levelAI = "AILevelHigh";		// Level of AI skill
+
+		class Options
+		{
+			// Simulation
+			reducedDamage = 0;		// Reduced damage		(0 = disabled, 1 = enabled)
+
+			// Situational awareness
+			groupIndicators = 0;	// Group indicators		(0 = never, 1 = limited distance, 2 = always)
+			friendlyTags = 0;		// Friendly name tags	(0 = never, 1 = limited distance, 2 = always)
+			enemyTags = 0;			// Enemy name tags		(0 = never, 1 = limited distance, 2 = always)
+			detectedMines = 0;		// Detected mines		(0 = never, 1 = limited distance, 2 = always)
+			commands = 1;			// Commands				(0 = never, 1 = fade out, 2 = always)
+			waypoints = 1;			// Waypoints			(0 = never, 1 = fade out, 2 = always)
+			tacticalPing = 0;		// Tactical Ping		(0 = disabled, 1 = in 3D scene, 2 = on map, 3 = both)
+
+			// Personal awareness
+			weaponInfo = 1;			// Weapon info			(0 = never, 1 = fade out, 2 = always)
+			stanceIndicator = 1;	// Stance indicator		(0 = never, 1 = fade out, 2 = always)
+			staminaBar = 0;			// Stamina bar			(0 = disabled, 1 = enabled)
+			weaponCrosshair = 0;	// Weapon crosshair		(0 = disabled, 1 = enabled)
+			visionAid = 0;			// Vision aid			(0 = disabled, 1 = enabled)
+
+			// View
+			thirdPersonView = 0;	// 3rd person view		(0 = disabled, 1 = enabled, 2 = enabled for vehicles only (Since  Arma 3 v1.99))
+			cameraShake = 1;		// Camera shake			(0 = disabled, 1 = enabled)
+
+			// Multiplayer
+			scoreTable = 1;			// Score table			(0 = disabled, 1 = enabled)
+			deathMessages = 1;		// Killed by			(0 = disabled, 1 = enabled)
+			vonID = 1;				// VON ID				(0 = disabled, 1 = enabled)
+
+			// Misc
+			mapContent = 0;			// Extended map content (0 = disabled, 1 = enabled) // before Arma 3 v1.68
+			mapContentFriendly = 0;	// Map friendlies		(0 = disabled, 1 = enabled) // since  Arma 3 v1.68
+			mapContentEnemy = 0;	// Map Enemies			(0 = disabled, 1 = enabled) // since  Arma 3 v1.68
+			mapContentMines = 0;	// Map Mines			(0 = disabled, 1 = enabled) // since  Arma 3 v1.68
+			autoReport = 0;			// Automatic reporting	(0 = disabled, 1 = enabled)
+			multipleSaves = 0;		// Multiple saves		(0 = disabled, 1 = enabled)
+		};
+	};
+
+	class Custom
+	{
+		displayName = "$STR_Difficulty_Custom";		// Name of the difficulty preset.
+		optionDescription = "";						// Description
+		optionPicture = "\A3\Ui_f\data\Logos\arma3_white_ca.paa"; // Picture
+		levelAI = "AILevelMedium";					// Level of AI skill
+
+		// All options of the Custom preset are set by the engine. The values in config
+		class Options
+		{
+			// Simulation
+			reducedDamage = 0;		// Reduced damage		(0 = disabled, 1 = enabled)
+
+			// Situational awareness
+			groupIndicators = 0;	// Group indicators		(0 = never, 1 = limited distance, 2 = always)
+			friendlyTags = 0;		// Friendly name tags	(0 = never, 1 = limited distance, 2 = always)
+			enemyTags = 0;			// Enemy name tags		(0 = never, 1 = limited distance, 2 = always)
+			detectedMines = 0;		// Detected mines		(0 = never, 1 = limited distance, 2 = always)
+			commands = 0;			// Commands				(0 = never, 1 = fade out, 2 = always)
+			waypoints = 0;			// Waypoints			(0 = never, 1 = fade out, 2 = always)
+			tacticalPing = 0;		// Tactical Ping		(0 = disabled, 1 = in 3D scene, 2 = on map, 3 = both)
+
+			// Personal awareness
+			weaponInfo = 1;			// Weapon info			(0 = never, 1 = fade out, 2 = always)
+			stanceIndicator = 0;	// Stance indicator		(0 = never, 1 = fade out, 2 = always)
+			staminaBar = 0;			// Stamina bar			(0 = disabled, 1 = enabled)
+			weaponCrosshair = 0;	// Weapon crosshair		(0 = disabled, 1 = enabled)
+			visionAid = 0;			// Vision aid			(0 = disabled, 1 = enabled)
+
+			// View
+			thirdPersonView = 0;	// 3rd person view		(0 = disabled, 1 = enabled, 2 = enabled for vehicles only (Since  Arma 3 v1.99))
+			cameraShake = 0;		// Camera shake			(0 = disabled, 1 = enabled)
+
+			// Multiplayer
+			scoreTable = 0;			// Score table			(0 = disabled, 1 = enabled)
+			deathMessages = 0;		// Killed by			(0 = disabled, 1 = enabled)
+			vonID = 0;				// VON ID				(0 = disabled, 1 = enabled)
+
+			// Misc
+			mapContent = 0;			// Extended map content (0 = disabled, 1 = enabled) // before Arma 3 v1.68
+			mapContentFriendly = 0;	// Map friendlies		(0 = disabled, 1 = enabled) // since  Arma 3 v1.68
+			mapContentEnemy = 0;	// Map Enemies			(0 = disabled, 1 = enabled) // since  Arma 3 v1.68
+			mapContentMines = 0;	// Map Mines			(0 = disabled, 1 = enabled) // since  Arma 3 v1.68
+			autoReport = 0;			// Automatic reporting	(0 = disabled, 1 = enabled)
+			multipleSaves = 0;		// Multiple saves		(0 = disabled, 1 = enabled)
+		};
+	};
+};
+</syntaxhighlight>
+{{Wiki|extractionScript}}
+</spoiler>
+
+
+== Difficulty Overhaul ==
+
+=== Phase 1 ===
+
+* Class '''CfgDifficulties''' will be left in config for backwards compatibility. Game will use the {{hl|CfgDifficultyPresets}} class from now on. Because of this and change of particular flags, it is recommended for both client and server to use the new exe, so the difficulty in MP works flawlessly (if the versions won't match, MP will work, but certain flags may not be enforced on clients).
+* Transform difficulty levels to presets (i. e. unlike the current state, each preset will have exactly defined values, if they don't match, preset will be changed to Custom).
+* Reduce number of presets to '''three plus Custom''' to simplify choosing of difficulty. ''Recruit'' and ''Regular'' will be mostly identical to what they were, ''Veteran'' will use the values of former Elite.
+* '''Vision Aid''' flag will be added. It shows "bubbles" which help to spot units. Before it was available only in config and enabled on ''Recruit'' difficulty.
+* '''Unlimited Saves''' flag will be set to Enabled on ''Regular'' difficulty.
+* '''VON ID''' will be set to Enabled on all difficulties, since by default we want to know who's speaking.
+* '''Clock Indicator''' flag will be removed. Clock Indicator was switched off long time ago, only the flag remained in code.
+* '''Game Options''' button and difficulty indicator in '''MP Create Game''' dialogue. The button will allow users to set difficulty flags without shutting down the server.
+
+=== Phase 2 ===
+
+* Difficulty options will be divided to groups and some of them renamed for better comprehensibility.
+* '''Extended HUD Info''' will be split to:
+** '''Weapon Info''' (weapon, magazine and round count in the top right corner of the screen).
+** '''Commands''' (command and informational icons displayed in the 3D space - heal, get in, injured in etc.).
+* Instead of separate options for displaying UI elements permanently, ComboBoxes with multiple values (Show, Hide, Fade out or Limited distance) will be introduced. Work on them is currently in progress and will be finished in Phase 3.
+* Indicator of required position in formation will become part of Group Indicators.
+* AI sliders will be visible on all of the AI Level presets.
+* UI helpers in the 3D space that fade out (commands, waypoints) will be able to be brought back by the J key, the same way as the [[Arma 3: Task Framework#Task Overhaul|new tasks]] do.
+* '''Auto Guide AT''' will be removed, since it has no impact on ammunition guidance. Moreover it influences target marker (square) and lock indicator (diamond) of various weapons, which should be part of the weapon itself not difficulty. From now on, the target marker and lock indicator will be dependent purely on [[CfgWeapons Config Reference#canLock.3D2|canLock]] parameter of the weapon in a following way:
+** canLock == 0 - indicator is hidden
+** canLock == 1 - indicator is hidden (left only for backwards compatibility)
+** canLock == 2 - indicator is shown
+* Parameters in class '''Flags''' in '''CfgDifficultyPresets''' will be changed (names, their count, some of them will have int value instead of bool) according to the needs of the new system. Class '''Flags''' will be renamed to class '''Options''' to reflect the new state.
+* Script command '''[[difficultyEnabled]]''' connected to the former difficulty system will become obsolete and will always return false.
+* New script command '''[[difficultyOption]]''' will be added instead.
+
+=== Phase 3 ===
+
+* Added explanatory images and descriptions of the difficulty options.
+* Added '''Hide''' option to Weapon Info.
+* Added '''Limited distance''' option to Friendly and Enemy Name Tags, Detected Mines and Group Indicators.
+* Added new server config parameter [[Arma 3: Server Config File#Arma_3_-_Forced_difficulty|forcedDifficulty]]. More details could be found in {{Link|link= https://forums.bistudio.com/topic/188661-difficulty-overhaul/page-9#entry3020303|text= this post}}.
+* Tweaked UI in MP Create Game display to indicate more clearly which difficulty is selected, including indication of the forced difficulty.
+* Fixed unintentional disabling of the Difficulty tab in Game Options display when mission is not running.
+
+
+== Related Commands ==
+
+* [[:Category:Command Group: Difficulty|Command Group: Difficulty]]
+
+
+{{GameCategory|arma3|Editing}}

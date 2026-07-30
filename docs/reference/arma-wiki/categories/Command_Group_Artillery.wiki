@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Artillery
+// revision: 308310 (2022-02-15T19:48:34Z)
+// export sha1: 6vxtxqupw8ngwr708cnpynrm3u3wbav
+// Vendored snapshot. Do not edit — re-export instead.
+
+All commands related to artilleries.
+
+[[Category:Scripting Commands by Functionality]]

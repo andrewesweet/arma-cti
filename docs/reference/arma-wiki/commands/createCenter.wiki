@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/createCenter
+// revision: 353367 (2024-03-15T17:11:57Z)
+// export sha1: tjmmzi8wlt5rm0rbeylcf2t8wusx6v9
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sides | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|eff= global
+
+|gr1= Sides
+
+|descr= Instanciate a [[Side]] center. A [[Side]] center is required to be able to [[createGroup|create groups]] of this side.<br>
+Centers can only be created for [[east]], [[west]], [[resistance]], [[civilian]] and [[sideLogic]] [[Side|sides]].<br>
+Created sides must have their "side-friendship" defined with [[setFriend]].
+
+{{Feature|informative|In {{arma1}} and {{arma2}}, only [[Mission.sqm]]'s units side centers are created; e.g if no [[resistance]] unit has been placed in the editor you must use [[createCenter]] before being able to create a [[resistance]] group.}}
+
+{{Feature | arma3 | In Arma 3, centers for all sides are all created by the engine.}}
+
+|s1= [[createCenter]] side
+
+|p1= side: [[Side]]
+
+|r1= [[Side]]
+
+|x1= <sqf>createCenter east;</sqf>
+
+|seealso= [[deleteCenter]] [[createUnit]] [[createGroup]] [[createVehicle]] [[side]] [[Side]]
+}}

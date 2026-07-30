@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/isStreamFriendlyUIEnabled
+// revision: 310270 (2022-05-05T13:11:20Z)
+// export sha1: mlup6ttrq6masy9y80gtnfoymqbm5hq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 0.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.70
+
+|gr1= System
+
+|descr= Returns the status of STREAM FRIENDLY UI setting in UI (OPTIONS >> GAME >> GENERAL >> STREAM FRIENDLY UI).
+
+|s1= '''isStreamFriendlyUIEnabled'''
+
+|r1= [[Boolean]]
+
+|x1= <sqf>hint str isStreamFriendlyUIEnabled;</sqf>
+
+|seealso= [[isInstructorFigureEnabled]] [[isTutHintsEnabled]]
+}}

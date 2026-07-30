@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/detectedMines
+// revision: 377169 (2026-01-01T10:45:10Z)
+// export sha1: eiqent57ctl42rnmx9s54ntr5ocpjcl
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mines | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= Mines
+
+|descr=Returns an array of all mines detected by a given side
+
+|s1= [[detectedMines]] side
+
+|p1= side: [[side]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>detectedMines west;</sqf>
+
+|x2= <sqf>detectedMines side player;</sqf>
+
+|seealso= [[allMines]] [[mineDetectedBy]] [[createMine]] [[mineActive]] [[revealMine]]
+}}

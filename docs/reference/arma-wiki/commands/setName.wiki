@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/setName
+// revision: 370891 (2025-02-21T10:44:05Z)
+// export sha1: m7lq52p6ilsj7a9sbiq3unxkykejzl7
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Command Group: Unit Identity | Category:Introduced with Armed Assault version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.08
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Unit Identity
+
+|gr2= Locations
+
+|descr= Sets the name of a location or a person (person only in single player).
+
+|s1= thing [[setName]] name
+
+|p1= thing: [[Location]] or {{GVI|arma3|1.02|size= 0.75}} [[Object]]
+
+|p2= name: [[String]]
+
+|r1= [[Nothing]]
+
+|s2= unit [[setName]] [name, firstName, lastName]
+
+|s2since= arma3 1.02
+
+|p21= unit: [[Object]]
+
+|p22= name: [[String]]
+
+|p23= firstName: [[String]]
+
+|p24= lastName: [[String]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>myLocation setName "My Location Name";</sqf>
+
+|x2= <sqf>player setName "New Name";</sqf>
+
+|x3= <sqf>player setName ["Ben Kerry","Ben","Kerry"];</sqf>
+
+|seealso= [[name]] [[nameSound]] [[setNameSound]] [[setIdentity]]
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20140818221500
+|text= Only last name will appear in command bar i.e. <sqf inline>this setName _myNameArray</sqf> will display <sqf inline>_myNameArray select 2</sqf>.
+If [[setName]] is used with a string e.g <sqf inline>this setName "blah"</sqf>, nothing occurs in the command bar and the default randomized name is displayed.<br><br>
+Dealing with the units' names in a script, _x (in a <sqf inline>forEach units _group</sqf>, for example) will return the "object" as {{hl|B ALFA 4-1:2}} or the name written in ai unit name field in editor (if exists).
+This context is rather a "variable name" for each object (ai) than an "identity name" as given via the [[setName]] command.
+}}

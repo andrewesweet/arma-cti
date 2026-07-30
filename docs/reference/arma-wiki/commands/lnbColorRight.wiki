@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/lnbColorRight
+// revision: 377818 (2026-01-03T04:15:56Z)
+// export sha1: 3hey7qyi5twg93616ikj9p8j7osteet
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI Control - ListNBox
+
+|descr= Returns the right color of given row.
+
+|s1= [[lnbColorRight]] [idc, [row, column]]
+
+|p1= idc: [[Number]]
+
+|p2= row: [[Number]] - index of the row
+
+|p3= column: [[Number]] - index of the column
+
+|r1= [[Color|Color (RGBA)]]
+
+|s2= ctrl [[lnbColorRight]] [row, column]
+
+|p21= ctrl: [[Control]]
+
+|p22= row: [[Number]] - index of the row
+
+|p23= column: [[Number]] - index of the column
+
+|r2= [[Color|Color (RGBA)]]
+
+|x1= <sqf>private _result = _control lnbColorRight [0, 0];</sqf>
+
+|seealso= [[lnbSetColor]] [[lnbSetColorRight]] [[lnbColor]]
+}}

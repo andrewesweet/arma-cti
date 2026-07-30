@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Tac-Ops_Mission_Pack
+// revision: 339324 (2023-04-28T14:08:18Z)
+// export sha1: 012aab1gm1yjyddxig3k5ca0ra5iq4x
+// categories: Category:Arma 3: DLCs & Expansions | Category:Introduced with Arma 3 version 1.78
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= arma3_tacops_logo.png
+|game= arma3
+|version= 1.78
+|releasedate= 30th November 2017
+|intro= '''Arma 3 Tac-Ops Mission Pack''' is a paid mission pack that was released on 30th November 2017.
+|premfeature1= '''3 Singleplayer Operations''' – Designed for the experienced Arma player, this Mission Pack features three challenging military operations (spread across seven missions):
+|premfeature2= '''Beyond Hope''' - Nine years prior to the "East Wind" conflict, civil war rages through the Republic of [[Altis]] and [[Stratis]]
+|premfeature3= '''Stepping Stone''' - NATO reinforcements responding to the "East Wind" crisis must first secure the strategic island of [[Malden 2035|Malden]]
+|premfeature4= '''Steel Pegasus''' - During the invasion of [[Altis]], NATO forces stage a daring air assault to open a second front
+|premfeature5= '''Authentic Warfare''' – Experience what true military combat is like with missions that favor intelligence, caution, and patience above all else. Fight alongside multiple armed forces, and lead your unit to victory, alive
+|premfeature6= '''Evolving Battlefield''' – Discover how your conduct and decisions on the battlefield can affect the operation by completing, failing, or ignoring (optional) objectives
+|premfeature7= '''Replayability''' – Replay a selection of missions from a different unit’s perspective to gain a greater understanding of the operation. Try out various tactics and figure out how to achieve your objectives in different ways
+|premfeature8= '''After Action Report (AAR) Videos''' – Develop your understanding of military tactics and combat with practical mission-specific insights from one of our military consultants
+|freefeature1= '''Soundtrack''' – Listen to newly composed music tracks
+|freefeature2= '''Steam Achievements''' - Unlock additional Steam Achievements
+|freefeature3= '''Scripted Systems''' - Take advantage of new scripted systems to help create advanced custom Arma 3 scenarios
+|gallery1 = a3 tacOps 1.jpg
+|gallery2 = a3 tacOps 2.jpg
+|gallery3 = a3 tacOps 3.jpg
+|gallery4 = a3 tacOps 4.jpg
+|trailer= HAC5peaIX1g
+|start1 = {{Link|https://arma3.com/dlc/tacops|Official Site}}
+|start2 = {{Link|link= http://store.steampowered.com/app/744950/Arma_3_TacOps_Mission_Pack/|text= Tac-Ops Mission Pack on Steam}}
+|isDLC = y
+}}
+
+{{GameCategory|arma3|DLCs & Expansions}}

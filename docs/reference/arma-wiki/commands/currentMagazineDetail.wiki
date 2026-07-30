@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/currentMagazineDetail
+// revision: 369313 (2024-09-03T18:42:56Z)
+// export sha1: 568mlepuoiydjqw9e1wo3njaxsw58y6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Unit Inventory
+
+|gr2= Vehicle Inventory
+
+|descr= Returns description of vehicle's currently loaded magazine, its ammo count (current/default) and its id.
+
+|s1= [[currentMagazineDetail]] object
+
+|p1= object: [[Object]] - unit or vehicle
+
+|r1= [[String]]
+
+|x1= <sqf>_currentMagazineDetail = currentMagazineDetail player; // "6.5mm 30Rnd STANAG Mag(30/30)[id:0]"</sqf>
+
+|x2= <sqf>_currentMagazineDetail = currentMagazineDetail Mi_48; // "30mm HE Shells(250/250)[id:21]</sqf>
+
+|x3= <sqf>
+_cmd = currentMagazineDetail player; // "9mm 16Rnd Mag(13/16)[id/cr:10000011/0]"
+_cmd splitString "([ ]/:)"; // ["9mm","16Rnd","Mag","13","16","id","cr","10000011","0"]
+</sqf>
+
+|seealso= [[magazinesDetail]] [[currentMagazine]]
+}}

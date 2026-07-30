@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/OAC:PromoteOACandTellUsAboutIt
+// revision: 350027 (2023-11-20T22:11:59Z)
+// export sha1: ki61rpa4khychzrlgbggg5f8hmhkvo0
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:Banner biki.jpg]]
+
+=# II. Promote OAC and tell us about it=
+
+The best idea is to point your friends and other community members to the {{Link|OAC:Project|OAC BIKI page}}.<br>
+Good supplements are the {{Link|link= http://oac.armaholic.eu|text= OAC page}} and the {{Link|link= http://forums.bistudio.com/showthread.php?t=68736|text= OAC thread}} in the BI forum.
+
+Please always add these three sources to threads and news posts.
+
+'''A request to news writers''':<br>
+Please add news about OAC at your page to his section for us to know so that<br>
+we can help with questions and gather feedback from the comments.
+
+'''Thank you!'''
+
+
+== Videos ==
+
+* {{Link|http://www.vimeo.com/4225001|OAC teaser}} on Vimeo by '''luemmel'''.
+* {{Link|http://www.vimeo.com/4226080|OAC promo}} on Vimeo by '''luemmel'''.
+
+
+== Screenshots ==
+
+* {{Link|http://www.flickr.com/photos/oacmod/sets/72157617040803904/|Cold War Crisis gallery and slideshow}} on Flickr by '''luemmel'''.
+
+
+== News and Threads ==
+
+* {{Link|http://armed-assault.de|http://armed-assault.de}}
+** {{Link|http://armed-assault.de/news/oac-ofp-arma-conversion-demo.html|OAC demo news}}<br>
+** {{Link|http://hx3.de/mod-addon-ecke-108/oac-release-15064/|OAC forum thread}}<br>
+** {{Link|http://armed-assault.de/news/armed-assault-praesentiert-oac.html|OAC special and interview}}<br>
+** {{Link|http://armed-assault.de/news/oac-ofp-arma-conversion.html|OAC release}}<br>
+
+* {{Link|http://www.armedassault.info|http://www.armedassault.info}}
+** [http://www.armedassault.info/index.php?cat{{=}}news&id{{=}}1097 OAC demo news]<br>
+** [http://www.armedassault.info/index.php?cat{{=}}news&id{{=}}2326 OAC Release - Full version]<br>
+
+* {{Link|http://www.armaholic.com|http://www.armaholic.com}}
+** {{Link|link= http://www.armaholic.com/page.php?id=3559|text= OAC demo news}}<br>
+** {{Link|link= http://www.armaholic.com/page.php?id=5386|text= OAC Mod full version released}}<br>
+
+= Back to OAC Home =
+
+[[OAC:Project#Subpage_link_overview|The seven roads to OAC - subpage link overview]]

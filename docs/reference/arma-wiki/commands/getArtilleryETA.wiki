@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/getArtilleryETA
+// revision: 377528 (2026-01-02T06:52:51Z)
+// export sha1: 32ob0wiugqowucaze6fer8gcqlatawz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Artillery | Category:Introduced with Arma 3 version 0.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.56
+
+|arg= global
+
+|gr1= Artillery
+
+|descr= Returns ETA to the target in seconds for given artillery unit based on target position and used magazine, -1 if target can't be hit.
+
+|s1= unit [[getArtilleryETA]] [targetPosition, magazineType]
+
+|p1= unit: [[Object]] - artillery unit
+
+|p2= targetPosition: [[Position#PositionAGLS|PositionAGLS]] - position of the target
+
+|p3= magazineType: [[String]] - type of magazine used
+
+|r1= [[Number]]
+
+|x1= <sqf>_mortar getArtilleryETA [getPos _target, getArtilleryAmmo [_mortar] select 0];</sqf>
+
+|x2= <sqf>_mortar getArtilleryETA [position _target, currentMagazine _mortar];</sqf>
+
+|seealso= [[getArtilleryAmmo]] [[commandArtilleryFire]] [[doArtilleryFire]] [[enableEngineArtillery]] [[getArtilleryComputerSettings]] [[shownArtilleryComputer]] [[inRangeOfArtillery]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20130826010000
+|text= To avoid wrong ETA readings, position of the target should only be obtained via [[position]] or [[getPos]]
+}}

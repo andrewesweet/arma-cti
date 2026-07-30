@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/addWeaponCargoGlobal
+// revision: 376384 (2025-10-09T02:14:17Z)
+// export sha1: 6bh5nni4jtuxf7uktgs342kj2m4dq4l
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Containers
+
+|arg= global
+
+|eff= global
+
+|descr= Add weapons to the cargo space of vehicles, which can be taken out by infantry units. 
+
+|s1= vehicleName [[addWeaponCargoGlobal]] [weaponName, count]
+
+|p1= vehicleName: [[Object]] - vehicle to which add the weapons
+
+|p2= weaponName: [[String]] - weapon name. See the topic [[:Category:Weapons]] for reference about possible values
+
+|p3= count: [[Number]] - number of weapons to add. {{GVI|arma3|2.14|size= 0.75}} negative count will remove weapons.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_truck addWeaponCargoGlobal ["M16", 5];</sqf>
+
+|seealso= [[addMagazineCargo]] [[clearMagazineCargo]] [[clearWeaponCargo]] [[addMagazineCargoGlobal]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[addItemCargo]] [[addItemCargoGlobal]] [[addWeaponWithAttachmentsCargoGlobal]]
+}}

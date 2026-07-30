@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/addItemToBackpack
+// revision: 318688 (2022-05-13T09:21:19Z)
+// export sha1: ozx96acbr5wpoxknx2us8mfle3buxm1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|gr1= Containers
+
+|arg= global
+
+|eff= global
+
+|descr= Create new item and store it to soldier's backpack. The item can also be a weapon or a magazine.
+
+|s1= unit [[addItemToBackpack]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player addItemToBackpack "arifle_MXM_Hamr_pointer_F";</sqf>
+
+|x2= <sqf>player addItemToBackpack "itemGPS";</sqf>
+
+|seealso= [[addItemToUniform]] [[addItemToVest]] [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]]
+}}

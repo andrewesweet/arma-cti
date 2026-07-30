@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/setMissionOptions
+// revision: 373073 (2025-03-25T13:36:39Z)
+// export sha1: 00ti4r3z2z74rgekceutegrxtg62egh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|eff= local
+
+|gr1= System
+
+|descr= Sets various mission options. The options are automatically reset between missions and are saved/restored with the save system.<br>
+Available Options:
+
+* IgnoreNoDamage: [[Boolean]] - (default [[false]]) [[true]] to filter out no change in damage from {{Link|Arma 3: Event Handlers#HandleDamage|HandleDamage}} calls
+* IgnoreFakeHeadHit: [[Boolean]] - (default [[false]]) [[true]] to filter out FakeHeadHit context from {{Link|Arma 3: Event Handlers#HandleDamage|HandleDamage}} calls
+* IgnoreUpsideDownDamage: [[Boolean]] - (default [[false]]) [[true]] to ignore some minor upside down damage accumulation for a helicopter
+* {{GVI|arma3|2.20|size= 0.75}} SnakesCanOpenDoors: [[Boolean]] - (default [[false]]) [[true]] to revert to legacy behaviour when snakes would open doors when entering houses
+* {{GVI|arma3|2.20|size= 0.75}} AIThinkOnlyLocal: [[Boolean]] - (default [[false]]) [[true]] to disable processing targetting data for remote AI units, [[knowsAbout]], [[targets]] and similar commands will cease to work on remote units. For a gain in client performance because they no longer have to calculate all AI units.
+
+Providing a empty HashMap will reset all options to defaults.
+
+|s1= [[setMissionOptions]] options
+
+|p1= options: [[HashMap]] - a HashMap containing all the options to be changed
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setMissionOptions createHashMapFromArray [["IgnoreNoDamage", true], ["IgnoreFakeHeadHit", true], ["IgnoreUpsideDownDamage", true]];</sqf>
+
+|x2= <sqf>setMissionOptions createHashMap; // reset options to default</sqf>
+
+|seealso= [[getMissionOptions]] [[getResolution]] [[getAudioOptionVolumes]] [[getSubtitleOptions]]
+}}

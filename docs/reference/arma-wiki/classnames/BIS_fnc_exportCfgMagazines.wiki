@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_exportCfgMagazines
+// revision: 353281 (2024-03-15T16:45:33Z)
+// export sha1: f8xtjyonh34dp9cs06cxjuc285tzvhk
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|exec= spawn
+
+|descr= Export list of magazines for {{GameCategory|arma3|Reference Lists|text= {{arma3}} Assets}}.
+
+|s1= [classes] spawn [[BIS_fnc_exportCfgMagazines]]
+
+|p1= classes: [[Array]] of [[String]]s - (Optional, default <sqf inline>[]</sqf>) list of [[CfgPatches]] classes
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[] spawn BIS_fnc_exportCfgMagazines; // exports [[Arma 3: CfgMagazines]]</sqf>
+
+|x2= <sqf>[["class1", "class2"]] spawn BIS_fnc_exportCfgMagazines;</sqf>
+
+|seealso= [[BIS_fnc_exportCfgWeapons]]
+}}

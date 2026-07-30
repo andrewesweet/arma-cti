@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_curatorRespawn
+// revision: 309421 (2022-05-05T12:04:37Z)
+// export sha1: 4zvf41a04ytj6d7m71t57qoh4d7mplm
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Restore unit for curators after respawn.
+When curator owner, it will transfer ownership to the new unit.
+When editable by curator, it will remove the dead unit and register the new one.
+
+|s1= [newUnit,oldUnit] call [[BIS_fnc_curatorRespawn]]
+
+|p1= newUnit: [[Object]] - new unit
+
+|p2= oldUnit [[Object]] - old, dead unit
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[BIS_newUnit,BIS_oldUnit] call BIS_fnc_curatorRespawn;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

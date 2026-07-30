@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/doFSM
+// revision: 377167 (2026-01-01T10:44:05Z)
+// export sha1: bzz5nyl0m55i44w7zxcj96xk2yjgtxy
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Unit Control
+
+|descr= Orders a unit to process command defined by [[FSM]] file (silently). 
+
+Unlike with execFSM where ''_this'' is passed to the FSM, the following parameters are passed when using doFSM/commandFSM:
+
+: _leader: leader of subgroup with this command 
+: _destination: command destination/position
+: _target: command target 
+: _units: list of all persons in subgroup 
+
+|s1= unit [[doFSM]] [fsmName, position, target]
+
+|p1= unit: [[Object]] or [[Array]] of [[Object]]s
+
+|p3= fsmName: [[String]]
+
+|p4= position: [[Position]]
+
+|p5= target: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_soldierOne doFSM ["move.fsm", position player, player];</sqf>
+
+|x2= <sqf>units player doFSM ["move.fsm", position player, player];</sqf>
+
+|seealso= [[FSM]] [[FSM_Editor_Manual]] [[commandFSM]] [[completedFSM]] [[execFSM]] [[getFSMVariable]] [[setFSMVariable]] [[unitReady]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2010-08-04 - 16:09</dd>
+<dt class="note">[[User:Rübe|Rübe]]</dt>
+<dd class="note">Do not ''doStop'' a unit in a FSM called with ''doFSM'' or ''commandFSM''. Doing so nevertheless will halt your FSM, since no links are followed anymore (doing so in an end state should be fine though). Also this may crash your game in certain mysterious circumstances.<br><br>
+You may design your FSM so that they may be called with doFSM/commandFSM and execFSM likewise by checking if ''_units'' or ''_this'' is nil and then init the variables accordingly. Just remember that you should use the low level ''moveTo'' (together with ''moveToCompleted'', ''moveToFailed'') if do-/commandFSM'd, and ''doMove'' or ''commandMove'' (together with ''unitReady'') if execFSM'd. A ''moveTo'' in an FSM started with ''execFSM'' won't do anything, likewise ''doMove'' in a FSM started with ''doFSM'' or ''commandFSM'' wont work either. Think about it for a minute and you will see why. (hint: a unit running a FSM called with ''doFSM'' or ''commandFSM'' will _never_ return true for ''(unitReady _unit)'')<br><br>
+Anyway, if you want to be able to call your FSM either way, a "ready" condition might look light this: ''(moveToCompleted _unit) || (moveToFailed _unit) || (unitReady _unit)'', assuming you have a ''moveTo'' or a ''doMove'' (depending on how the fsm is called) in the prior state.
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-02-14 - 13:36 (UTC)</dd>
+<dt class="note">[[User:Katulobotomia|Katulobotomia]]</dt>
+<dd class="note">
+Adding to Rübe's note, doFSM can be checked if it has finished by ''unitReady'' as of 2015 and it will return ''true'' when your FSM has completed.
+</dd>
+
+</dl>

@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/selectMin
+// revision: 377100 (2026-01-01T09:58:18Z)
+// export sha1: 1zztpfwc001sllcaahj6skmexkryv2w
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Introduced with Arma 3 version 1.66 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.66
+
+|gr1= Arrays
+
+|descr=Returns the array element with [[min]]imum numerical value. Engine solution to [[BIS_fnc_lowestNum]] and [[BIS_fnc_findExtreme]]. Therefore it is expected that supplied array consists of [[Number]]s only.  [[Boolean]]s however are also supported and will be evaluated as [[Number]]s: [[true]] - 1, [[false]] - 0. [[nil]] value treated as 0. 
+{{Feature|warning|Other non [[Number]] elements (not recommended) will be evaluated as 0 and '''Bad conversion: scalar''' message will be logged into .[[rpt]].}}
+
+|s1= [[selectMin]] array
+
+|p1= array: [[Array]] of [[Number]]s
+
+|r1= [[Number]] - element with [[min]]imum numerical value
+
+|x1= <sqf>_min = selectMin [1,2,3,4,5]; //1</sqf>
+|x2= <sqf>
+// Same as, for example: 
+_min = _a min _b min _c min _d;
+// Only faster:
+_min = selectMin [_a,_b,_c,_d];
+</sqf>
+
+|seealso= [[selectMax]] [[min]] [[max]] [[selectRandom]] [[select]] [[selectRandomWeighted]]
+}}

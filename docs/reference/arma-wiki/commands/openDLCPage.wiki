@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/openDLCPage
+// revision: 286224 (2021-06-21T20:52:06Z)
+// export sha1: lus31p9ytmhx6i0ossk16h8heoz1nny
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: DLC | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= DLC
+
+|descr= Opens a Steam page of the app with given appId. Only works for known appId (game + linked DLCs)
+
+|s1= [[openDLCPage]] dlcID
+
+|p1= dlcID: [[Number]]
+
+|r1= [[Boolean]] - result
+
+|x1= [[openDLCPage]] 288520
+
+|seealso= [[isDLCAvailable]]
+}}

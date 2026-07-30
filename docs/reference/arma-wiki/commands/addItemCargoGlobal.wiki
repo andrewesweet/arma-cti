@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/addItemCargoGlobal
+// revision: 376380 (2025-10-09T02:13:10Z)
+// export sha1: 3c562t7bf3ue9qw702zdos1deaficc6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Vehicle Inventory
+
+|descr= Global variant of [[addItemCargo]].
+
+|s1= box [[addItemCargoGlobal]] [item, count]
+
+|p1= box: [[Object]]
+
+|p2= item: [[String]]
+
+|p3= count: [[Number]] - number of items to add. {{GVI|arma3|2.14|size= 0.75}} negative count will remove items.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>supplyBox addItemCargoGlobal ["optic_Arco", 10];</sqf>
+
+|seealso= [[addItemCargo]] [[clearItemCargoGlobal]] [[addMagazineCargo]] [[addMagazineCargoGlobal]] [[addWeaponCargo]] [[addWeaponCargoGlobal]] [[addBackpackCargo]] [[addBackpackCargoGlobal]]
+}}

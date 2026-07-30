@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/trim
+// revision: 377062 (2026-01-01T09:06:47Z)
+// export sha1: 1js0zmatrjnmcpaywmrw4lflntd38jy
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Strings
+
+|descr= Trims a [[String|string]].
+
+|s1= [[trim]] stringValue
+
+|p1= stringValue: [[String]] - string to be trimmed. spaces, tabs and line returns are removed from both ends of ''stringValue''.
+
+|r1= [[String]] - trimmed string
+
+|s2= string [[trim]] [chars, where]
+
+|p21= string: [[String]] - string to be trimmed
+
+|p22= chars: [[String]] - list of characters to be trimmed
+
+|p23= where: [[Number]] one of:
+* 0 - trim at the beginning (left) and the end (right)
+* 1 - trim at the beginning (left)
+* 2 - trim at the end (right)
+
+|r2= [[String]] - trimmed string
+
+|x1= <sqf>trim "		hello, how are you?  "; // returns "hello, how are you?"</sqf>
+
+|x2= <sqf>"hewosentence!123" trim ["3e1o2hw", 0]; // returns "sentence!"</sqf>
+
+|seealso= [[select]]
+}}

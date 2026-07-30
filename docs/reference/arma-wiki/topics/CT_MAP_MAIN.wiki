@@ -1,0 +1,2135 @@
+// source: https://community.bistudio.com/wiki/CT_MAP_MAIN
+// revision: 351494 (2023-12-06T09:58:16Z)
+// export sha1: ivj63qety6s4mwdp6ba4wjxtcs5cf5x
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_MAP_MAIN
+|value = 101
+|description = A control that gives access to the map including markers. The ingame map that is opened with {{Controls|M}} uses this control type. [[CT_MAP_MAIN]] controls cannot be placed inside a [[CT_CONTROLS_GROUP]], because they are handled differently inside the engine due to their complexity. For more information see: {{Link|link= https://forums.bohemia.net/forums/topic/191876-map-control-not-positioned-correctly-using-ctrlcreate/?tab=comments#comment-3049009|text= BI Forums}}.
+|gallery=
+|commands =
+* [[:Category:Command_Group:_GUI_Control_-_Map|Commands: Map]]
+|events =
+* [[User_Interface_Event_Handlers#onDraw|onDraw]]
+}}
+
+{{CT|abc start}}
+=== A ===
+{{CT|attribute
+|name=ActiveMarker
+|type1=Class
+|value1=class ActiveMarker
+{
+	color[] = {0.3,0.1,0.9,1};
+	size = 50;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=alphaFadeEndScale
+|type1=Number
+|value1=2
+|description=
+}}
+
+{{CT|attribute
+|name=alphaFadeStartScale
+|type1=Number
+|value1=10
+|description=
+}}
+
+{{CT|attribute
+|name=altitudeMapColorHigh
+|type1=Array
+|value1={1,0,0,0.15}
+|description=
+}}
+
+{{CT|attribute
+|name=altitudeMapColorLow
+|type1=Array
+|value1={0,1,0,0.15}
+|description=
+}}
+
+{{CT|attribute
+|name=altitudeMapColorMid
+|type1=Array
+|value1={1,1,0,0.15}
+|description=
+}}
+
+{{CT|attribute
+|name=altitudeMapRange
+|type1=Number
+|value1=100
+|description=
+}}
+
+=== B ===
+{{CT|attribute
+|name=Bunker
+|type1=Class
+|value1=class Bunker
+{
+	color[] = {0,0,0,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\bunker_ca.paa";
+	size = 14;
+	importance = "1.5 * 14 * 0.05";
+	coefMin = 0.25;
+	coefMax = 4;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=Bush
+|type1=Class
+|value1=class Bush
+{
+	color[] = {0.45,0.64,0.33,0.4};
+	icon = "\A3\ui_f\data\map\mapcontrol\bush_ca.paa";
+	size = "14/2";
+	importance = "0.2 * 14 * 0.05 * 0.05";
+	coefMin = 0.25;
+	coefMax = 4;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=BusStop
+|type1=Class
+|value1=class BusStop
+{
+	color[] = {1,1,1,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\busstop_CA.paa";
+	size = 24;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+};
+|description=
+}}
+
+=== C ===
+{{CT|attribute
+|name=Chapel
+|type1=Class
+|value1=class Chapel
+{
+	color[] = {0,0,0,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\Chapel_CA.paa";
+	size = 24;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=church
+|type1=Class
+|value1=class church
+{
+	color[] = {"(profilenamespace getvariable ['IGUI_TEXT_RGB_R',0])","(profilenamespace getvariable ['IGUI_TEXT_RGB_G',1])","(profilenamespace getvariable ['IGUI_TEXT_RGB_B',1])",1};
+	icon = "\A3\ui_f\data\map\mapcontrol\church_CA.paa";
+	size = 24;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=colorCountlines
+|type1=Array
+|value1={0.572,0.354,0.188,0.25}
+|description=
+}}
+
+{{CT|attribute
+|name=colorCountlinesWater
+|type1=Array
+|value1={0.491,0.577,0.702,0.3}
+|description=
+}}
+
+{{CT|attribute
+|name=colorForest
+|type1=Array
+|value1={"(profilenamespace getvariable ['IGUI_BCG_RGB_R',0])","(profilenamespace getvariable ['IGUI_BCG_RGB_G',1])","(profilenamespace getvariable ['IGUI_BCG_RGB_B',1])",0.7}
+|description=
+}}
+
+{{CT|attribute
+|name=colorForestBorder
+|type1=Array
+|value1={"(profilenamespace getvariable ['IGUI_BCG_RGB_R',0])","(profilenamespace getvariable ['IGUI_BCG_RGB_G',1])","(profilenamespace getvariable ['IGUI_BCG_RGB_B',1])",0.5}
+|description=
+}}
+
+{{CT|attribute
+|name=colorForestTextured
+|type1=Array
+|value1={0.624,0.78,0.388,0.25}
+|description=
+}}
+
+{{CT|attribute
+|name=colorGrid
+|type1=Array
+|value1={0.1,0.1,0.1,0.6}
+|description=
+}}
+
+{{CT|attribute
+|name=colorGridMap
+|type1=Array
+|value1={0.1,0.1,0.1,0.6}
+|description=
+}}
+
+{{CT|attribute
+|name=colorInactive
+|type1=Array
+|value1={1,1,1,0.5}
+|description=
+}}
+
+{{CT|attribute
+|name=colorLevels
+|type1=Array
+|value1={0,0,0,0}
+|description=
+}}
+
+{{CT|attribute
+|name=colorMainCountlines
+|type1=Array
+|value1={0.572,0.354,0.188,0.5}
+|description=
+}}
+
+{{CT|attribute
+|name=colorMainCountlinesWater
+|type1=Array
+|value1={0.491,0.577,0.702,0.6}
+|description=
+}}
+
+{{CT|attribute
+|name=colorMainRoads
+|type1=Array
+|value1={0.9,0.5,0.3,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorMainRoadsFill
+|type1=Array
+|value1={1,0.6,0.4,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorNames
+|type1=Array
+|value1={0.1,0.1,0.1,0.9}
+|description=
+}}
+
+{{CT|attribute
+|name=colorOutside
+|type1=Array
+|value1={0,0,0,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorPowerLines
+|type1=Array
+|value1={0.1,0.1,0.1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorRailWay
+|type1=Array
+|value1={0.8,0.2,0,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorRoads
+|type1=Array
+|value1={0.7,0.7,0.7,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorRoadsFill
+|type1=Array
+|value1={1,1,1,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorRocks
+|type1=Array
+|value1={0,0,0,0.3}
+|description=
+}}
+
+{{CT|attribute
+|name=colorRocksBorder
+|type1=Array
+|value1={0,0,0,0}
+|description=
+}}
+
+{{CT|attribute
+|name=colorSea
+|type1=Array
+|value1={0.467,0.631,0.851,0.5}
+|description=
+}}
+
+{{CT|attribute
+|name=colorTracks
+|type1=Array
+|value1={0.84,0.76,0.65,0.15}
+|description=
+}}
+
+{{CT|attribute
+|name=colorTracksFill
+|type1=Array
+|value1={0.84,0.76,0.65,1}
+|description=
+}}
+
+{{CT|attribute
+|name=colorTrails
+|type1=Array
+|value1={0.84,0.76,0.65,0.15}
+|description=
+}}
+
+{{CT|attribute
+|name=colorTrailsFill
+|type1=Array
+|value1={0.84,0.76,0.65,0.65}
+|description=
+}}
+
+{{CT|attribute
+|name=Command
+|type1=Class
+|value1=class Command
+{
+	icon = "#(argb,8,8,3)color(0,0,0,0)";
+	color[] = {0,0,0,0};
+	size = 0;
+	importance = 1;
+	coefMin = 1;
+	coefMax = 1;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=compassPos
+|type1=Array
+|value1={-0.04,0}
+|description=
+}}
+
+{{CT|attribute
+|name=compassSize
+|type1=Array
+|value1={0.08,0.08}
+|description=
+}}
+
+{{CT|attribute
+|name=Cross
+|type1=Class
+|value1=class Cross
+{
+	icon = "#(argb,8,8,3)color(0,0,0,0)";
+	color[] = {0,0,0,0};
+	size = 0;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=CustomMark
+|type1=Class
+|value1=class CustomMark
+{
+	color[] = {1,1,1,1};
+	icon = "\a3\ui_f\data\map\mapcontrol\custommark_ca.paa";
+	size = 18;
+	importance = 1;
+	coefMin = 1;
+	coefMax = 1;
+};
+|description=
+}}
+
+=== D ===
+{{CT|attribute
+|name=drawObjects
+|type1=Number
+|value1=0
+|description=
+}}
+
+{{CT|attribute
+|name=drawShaded
+|type1=Number
+|value1=0.1
+|description=
+}}
+
+=== F ===
+{{CT|attribute
+|name=fontGrid
+|type1=String
+|value1="TahomaB"
+|description=
+}}
+
+{{CT|attribute
+|name=fontInfo
+|type1=String
+|value1="RobotoCondensed"
+|description=
+}}
+
+{{CT|attribute
+|name=fontLabel
+|type1=String
+|value1="RobotoCondensed"
+|description=
+}}
+
+{{CT|attribute
+|name=fontLevel
+|type1=String
+|value1="TahomaB"
+|description=
+}}
+
+{{CT|attribute
+|name=fontNames
+|type1=String
+|value1="RobotoCondensed"
+|description=
+}}
+
+{{CT|attribute
+|name=fontUnits
+|type1=String
+|value1="TahomaB"
+|description=
+}}
+
+{{CT|attribute
+|name=Fortress
+|type1=Class
+|value1=class Fortress
+{
+	color[] = {0,0,0,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\bunker_ca.paa";
+	size = 16;
+	importance = "2 * 16 * 0.05";
+	coefMin = 0.25;
+	coefMax = 4;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=Fountain
+|type1=Class
+|value1=class Fountain
+{
+	color[] = {0,0,0,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\fountain_ca.paa";
+	size = 11;
+	importance = "1 * 12 * 0.05";
+	coefMin = 0.25;
+	coefMax = 4;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=Fuelstation
+|type1=Class
+|value1=class Fuelstation
+{
+	color[] = {1,1,1,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\fuelstation_CA.paa";
+	size = 24;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+};
+|description=
+}}
+
+=== H ===
+{{CT|attribute
+|name=hCollapsed
+|type1=String
+|value1="safezoneH - 2 * ((((safezoneW / safezoneH) min 1.2) / 1.2) / 25)"
+|description=
+}}
+
+{{CT|attribute
+|name=Hospital
+|type1=Class
+|value1=class Hospital
+{
+	color[] = {1,1,1,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\hospital_CA.paa";
+	size = 24;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+};
+|description=
+}}
+
+=== I ===
+{{CT|attribute
+|name=iconCamera
+|type1=String
+|value1="\A3\ui_f\data\GUI\Rsc\RscDisplayMissionEditor\iconCamera_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=iconCameraColor
+|type1=Array
+|value1={0.8,0.6,0.05,0.8}
+|description=
+}}
+
+{{CT|attribute
+|name=iconCameraSize
+|type1=Number
+|value1=24
+|description=
+}}
+
+{{CT|attribute
+|name=idcMarkerColor
+|type1=Number
+|value1=1090
+|description=
+}}
+
+{{CT|attribute
+|name=idcMarkerIcon
+|type1=Number
+|value1=1091
+|description=
+}}
+
+=== L ===
+{{CT|attribute
+|name=Legend
+|type1=Class
+|value1=class Legend
+{
+	colorBackground[] = {1,1,1,0.5};
+	color[] = {0,0,0,1};
+	x = "SafeZoneX + (((safezoneW / safezoneH) min 1.2) / 40)";
+	y = "SafeZoneY + safezoneH - 4.5 * ((((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
+	w = "10 * (((safezoneW / safezoneH) min 1.2) / 40)";
+	h = "3.5 * ((((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
+	font = "RobotoCondensed";
+	sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8)";
+};
+|description=
+}}
+
+{{CT|attribute
+|name=Lighthouse
+|type1=Class
+|value1=class Lighthouse
+{
+	color[] = {1,1,1,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\lighthouse_CA.paa";
+	size = 24;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=LineMarker
+|type1=Class
+|value1=class LineMarker
+{
+	textureComboBoxColor = "#(argb,8,8,3)color(1,1,1,1)";
+	lineWidthThin = 0.008;
+	lineWidthThick = 0.014;
+	lineDistanceMin = 3e-005;
+	lineLengthMin = 5;
+};
+|description=
+}}
+
+=== M ===
+{{CT|attribute
+|name=maxSatelliteAlpha
+|type1=Number
+|value1=0.85
+|type2=String
+|value2="uinamespace getvariable ['RscDisplayStrategicMap_maxSatelliteAlpha',1]"
+|description=
+}}
+
+{{CT|attribute
+|name=moveOnEdges
+|type1=Number
+|value1=1
+|description=
+}}
+
+=== N ===
+{{CT|attribute
+|name=NAME
+|type1=Class
+|value1=class NAME
+{
+	icon = "";
+	color[] = {0,0,0,0};
+	size = 0;
+	importance = 0;
+	coefMin = 0;
+	coefMax = 0;
+};
+|description=
+}}
+
+=== P ===
+{{CT|attribute
+|name=power
+|type1=Class
+|value1=class power
+{
+	icon = "#(argb,8,8,3)color(0,0,0,0)";
+	color[] = {0,0,0,0};
+	size = 0;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=powersolar
+|type1=Class
+|value1=class powersolar
+{
+	icon = "\A3\ui_f\data\map\mapcontrol\powersolar_CA.paa";
+	size = 24;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+	color[] = {1,1,1,1};
+};
+|description=
+}}
+
+{{CT|attribute
+|name=powerwave
+|type1=Class
+|value1=class powerwave
+{
+	icon = "#(argb,8,8,3)color(0,0,0,0)";
+	color[] = {0,0,0,0};
+	size = 0;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=powerwind
+|type1=Class
+|value1=class powerwind
+{
+	icon = "\A3\ui_f\data\map\mapcontrol\powerwind_CA.paa";
+	size = 24;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+	color[] = {1,1,1,1};
+};
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareCLn
+|type1=Number
+|value1=10
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareCost
+|type1=Number
+|value1=10
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareExp
+|type1=Number
+|value1=10
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareFor
+|type1=Number
+|value1=9
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareForEdge
+|type1=Number
+|value1=9
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareForLod1
+|type1=Number
+|value1=4
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareForLod2
+|type1=Number
+|value1=1
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareMainRoad
+|type1=Number
+|value1=6
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareMainRoadSimple
+|type1=Number
+|value1=0.01
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareObj
+|type1=Number
+|value1=9
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareObjLod1
+|type1=Number
+|value1=2
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareRoad
+|type1=Number
+|value1=6
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareRoadSimple
+|type1=Number
+|value1=1
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareSea
+|type1=Number
+|value1=5
+|description=
+}}
+
+{{CT|attribute
+|name=ptsPerSquareTxt
+|type1=Number
+|value1=20
+|description=
+}}
+
+=== Q ===
+{{CT|attribute
+|name=Quay
+|type1=Class
+|value1=class Quay
+{
+	color[] = {1,1,1,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\quay_CA.paa";
+	size = 24;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+};
+|description=
+}}
+
+=== R ===
+{{CT|attribute
+|name=Rock
+|type1=Class
+|value1=class Rock
+{
+	color[] = {0.1,0.1,0.1,0.8};
+	icon = "\A3\ui_f\data\map\mapcontrol\rock_ca.paa";
+	size = 12;
+	importance = "0.5 * 12 * 0.05";
+	coefMin = 0.25;
+	coefMax = 4;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=Ruin
+|type1=Class
+|value1=class Ruin
+{
+	color[] = {0,0,0,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\ruin_ca.paa";
+	size = 16;
+	importance = "1.2 * 16 * 0.05";
+	coefMin = 1;
+	coefMax = 4;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=runwayFont
+|type1=String
+|value1="LCD14"
+|description=
+}}
+
+=== S ===
+{{CT|attribute
+|name=scaleDefault
+|type1=Number
+|value1=0.16
+|type2=String
+|value2="uinamespace getvariable ['RscDisplayStrategicMap_scaleDefault',0.3]"
+|description=
+}}
+
+{{CT|attribute
+|name=scaleMax
+|type1=Number
+|value1=1
+|type2=String
+|value2="uinamespace getvariable ['RscDisplayStrategicMap_scaleMax',0.3]"
+|description=
+}}
+
+{{CT|attribute
+|name=scaleMin
+|type1=Number
+|value1=0.001
+|type2=String
+|value2="uinamespace getvariable ['RscDisplayORBAT_scaleMin',0.005]"
+|description=
+}}
+
+{{CT|attribute
+|name=shadedSea
+|type1=Number
+|value1=0.3
+|description=
+}}
+
+{{CT|attribute
+|name=Shipwreck
+|type1=Class
+|value1=class Shipwreck
+{
+	coefMax = 1;
+	coefMin = 4;
+	color[] = {0,0,0,1};
+	icon = "#(argb,8,8,3)color(0,0,0,1)";
+	importance = 1;
+	size = 2;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=showCountourInterval
+|type1=Number
+|value1=1
+|description=
+}}
+
+{{CT|attribute
+|name=showMarkers
+|type1=Number
+|value1=1
+|type2=String
+|value2="true"
+|description=
+}}
+
+{{CT|attribute
+|name=sizeExGrid
+|type1=Number
+|value1=0.02
+|type2=String
+|value2="((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.5"
+|description=
+}}
+
+{{CT|attribute
+|name=sizeExInfo
+|type1=String
+|value1="((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.5"
+|type2=Number
+|value2=0.05
+|description=
+}}
+
+{{CT|attribute
+|name=sizeExLabel
+|type1=String
+|value1="(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8)"
+|type2=Number
+|value2=0.05
+|description=
+}}
+
+{{CT|attribute
+|name=sizeExLevel
+|type1=Number
+|value1=0.02
+|type2=String
+|value2="((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.5"
+|description=
+}}
+
+{{CT|attribute
+|name=sizeExNames
+|type1=String
+|value1="(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8) * 2"
+|type2=Number
+|value2=0.05
+|description=
+}}
+
+{{CT|attribute
+|name=sizeExUnits
+|type1=String
+|value1="(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8)"
+|type2=Number
+|value2=0.05
+|description=
+}}
+
+{{CT|attribute
+|name=SmallTree
+|type1=Class
+|value1=class SmallTree
+{
+	icon = "#(argb,8,8,3)color(0,0,0,0)";
+	color[] = {0,0,0,0};
+	size = 0;
+	importance = "0.6 * 12 * 0.05";
+	coefMin = 0.25;
+	coefMax = 4;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=speedCoefSpeed0
+|type1=Number
+|value1=500
+|description=
+}}
+
+{{CT|attribute
+|name=speedCoefSpeedMax
+|type1=Number
+|value1=30
+|description=
+}}
+
+{{CT|attribute
+|name=Stack
+|type1=Class
+|value1=class Stack
+{
+	color[] = {0,0,0,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\stack_ca.paa";
+	size = 16;
+	importance = "2 * 16 * 0.05";
+	coefMin = 0.4;
+	coefMax = 2;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=stickX
+|type1=Array
+|value1={0.2,["Gamma",1,1.5]}
+|description=
+}}
+
+{{CT|attribute
+|name=stickY
+|type1=Array
+|value1={0.2,["Gamma",1,1.5]}
+|description=
+}}
+
+=== T ===
+{{CT|attribute
+|name=Task
+|type1=Class
+|value1=class Task
+{
+	taskNone = "#(argb,8,8,3)color(0,0,0,0)";
+	taskCreated = "#(argb,8,8,3)color(0,0,0,1)";
+	taskAssigned = "#(argb,8,8,3)color(1,1,1,1)";
+	taskSucceeded = "#(argb,8,8,3)color(0,1,0,1)";
+	taskFailed = "#(argb,8,8,3)color(1,0,0,1)";
+	taskCanceled = "#(argb,8,8,3)color(1,0.5,0,1)";
+	colorCreated[] = {1,1,1,1};
+	colorCanceled[] = {0.7,0.7,0.7,1};
+	colorDone[] = {0.7,1,0.3,1};
+	colorFailed[] = {1,0.3,0.2,1};
+	color[] = {"(profilenamespace getvariable ['IGUI_TEXT_RGB_R',0])","(profilenamespace getvariable ['IGUI_TEXT_RGB_G',1])","(profilenamespace getvariable ['IGUI_TEXT_RGB_B',1])","(profilenamespace getvariable ['IGUI_TEXT_RGB_A',0.8])"};
+	icon = "\A3\ui_f\data\map\mapcontrol\taskIcon_CA.paa";
+	iconCreated = "\A3\ui_f\data\map\mapcontrol\taskIconCreated_CA.paa";
+	iconCanceled = "\A3\ui_f\data\map\mapcontrol\taskIconCanceled_CA.paa";
+	iconDone = "\A3\ui_f\data\map\mapcontrol\taskIconDone_CA.paa";
+	iconFailed = "\A3\ui_f\data\map\mapcontrol\taskIconFailed_CA.paa";
+	size = 27;
+	importance = 1;
+	coefMin = 1;
+	coefMax = 1;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=textureComboBoxColor
+|type1=String
+|value1="#(argb,8,8,3)color(1,1,1,1)"
+|description=
+}}
+
+{{CT|attribute
+|name=textureCompass
+|type1=String
+|value1="\A3\Ui_f\data\IGUI\RscCustomInfo\north_ca.paa"
+|description=
+}}
+
+{{CT|attribute
+|name=Tourism
+|type1=Class
+|value1=class Tourism
+{
+	icon = "#(argb,8,8,3)color(0,0,0,0)";
+	color[] = {0,0,0,0};
+	size = 0;
+	importance = "1 * 16 * 0.05";
+	coefMin = 0.7;
+	coefMax = 4;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=Transmitter
+|type1=Class
+|value1=class Transmitter
+{
+	color[] = {1,1,1,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\transmitter_CA.paa";
+	size = 24;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=Tree
+|type1=Class
+|value1=class Tree
+{
+	color[] = {0.45,0.64,0.33,0.4};
+	icon = "\A3\ui_f\data\map\mapcontrol\bush_ca.paa";
+	size = 12;
+	importance = "0.9 * 16 * 0.05";
+	coefMin = 0.25;
+	coefMax = 4;
+};
+|description=
+}}
+
+=== V ===
+{{CT|attribute
+|name=ViewTower
+|type1=Class
+|value1=class ViewTower
+{
+	color[] = {0,0,0,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\viewtower_ca.paa";
+	size = 16;
+	importance = "2.5 * 16 * 0.05";
+	coefMin = 0.5;
+	coefMax = 4;
+};
+|description=
+}}
+
+=== W ===
+{{CT|attribute
+|name=Watertower
+|type1=Class
+|value1=class Watertower
+{
+	color[] = {1,1,1,1};
+	icon = "\A3\ui_f\data\map\mapcontrol\watertower_CA.paa";
+	size = 24;
+	importance = 1;
+	coefMin = 0.85;
+	coefMax = 1;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=Waypoint
+|type1=Class
+|value1=class Waypoint
+{
+	color[] = {1,1,1,1};
+	importance = 1;
+	coefMin = 1;
+	coefMax = 1;
+	icon = "\a3\ui_f\data\map\mapcontrol\waypoint_ca.paa";
+	size = 18;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=WaypointCompleted
+|type1=Class
+|value1=class WaypointCompleted
+{
+	color[] = {1,1,1,1};
+	importance = 1;
+	coefMin = 1;
+	coefMax = 1;
+	icon = "\a3\ui_f\data\map\mapcontrol\waypointcompleted_ca.paa";
+	size = 18;
+};
+|description=
+}}
+
+{{CT|attribute
+|name=widthPowerLines
+|type1=Number
+|value1=6
+|description=
+}}
+
+{{CT|attribute
+|name=widthRailWay
+|type1=Number
+|value1=4
+|description=
+}}
+
+=== Y ===
+{{CT|attribute
+|name=yCollapsed
+|type1=String
+|value1="1 * ((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) + (safezoneY)"
+|description=
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscMapControl ===
+<syntaxhighlight lang="cpp">
+class RscMapControl
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_MAP_MAIN;
+	idc = 51;
+	style = ST_MULTI + ST_TITLE_BAR;
+	colorBackground[] = {0.969,0.957,0.949,1};
+	colorOutside[] = {0,0,0,1};
+	colorText[] = {0,0,0,1};
+	font = "TahomaB";
+	sizeEx = 0.04;
+	colorSea[] = {0.467,0.631,0.851,0.5};
+	colorForest[] = {0.624,0.78,0.388,0.5};
+	colorRocks[] = {0,0,0,0.3};
+	colorCountlines[] = {0.572,0.354,0.188,0.25};
+	colorMainCountlines[] = {0.572,0.354,0.188,0.5};
+	colorCountlinesWater[] = {0.491,0.577,0.702,0.3};
+	colorMainCountlinesWater[] = {0.491,0.577,0.702,0.6};
+	colorForestBorder[] = {0,0,0,0};
+	colorRocksBorder[] = {0,0,0,0};
+	colorPowerLines[] = {0.1,0.1,0.1,1};
+	colorRailWay[] = {0.8,0.2,0,1};
+	colorNames[] = {0.1,0.1,0.1,0.9};
+	colorInactive[] = {1,1,1,0.5};
+	colorLevels[] = {0.286,0.177,0.094,0.5};
+	colorTracks[] = {0.84,0.76,0.65,0.15};
+	colorRoads[] = {0.7,0.7,0.7,1};
+	colorMainRoads[] = {0.9,0.5,0.3,1};
+	colorTracksFill[] = {0.84,0.76,0.65,1};
+	colorRoadsFill[] = {1,1,1,1};
+	colorMainRoadsFill[] = {1,0.6,0.4,1};
+	colorGrid[] = {0.1,0.1,0.1,0.6};
+	colorGridMap[] = {0.1,0.1,0.1,0.6};
+	stickX[] = {0.2,["Gamma",1,1.5]};
+	stickY[] = {0.2,["Gamma",1,1.5]};
+	class Legend
+	{
+		colorBackground[] = {1,1,1,0.5};
+		color[] = {0,0,0,1};
+		x = SafeZoneX + GUI_GRID_W;
+		y = SafeZoneY + safezoneH - 4.5 * GUI_GRID_H;
+		w = 10 * GUI_GRID_W;
+		h = 3.5 * GUI_GRID_H;
+		font = "RobotoCondensed";
+		sizeEx = GUI_TEXT_SIZE_SMALL;
+	};
+	class ActiveMarker
+	{
+		color[] = {0.3,0.1,0.9,1};
+		size = 50;
+	};
+	class Command
+	{
+		color[] = {1,1,1,1};
+		icon = "\a3\ui_f\data\map\mapcontrol\waypoint_ca.paa";
+		size = 18;
+		importance = 1;
+		coefMin = 1;
+		coefMax = 1;
+	};
+	class Task
+	{
+		taskNone = "#(argb,8,8,3)color(0,0,0,0)";
+		taskCreated = "#(argb,8,8,3)color(0,0,0,1)";
+		taskAssigned = "#(argb,8,8,3)color(1,1,1,1)";
+		taskSucceeded = "#(argb,8,8,3)color(0,1,0,1)";
+		taskFailed = "#(argb,8,8,3)color(1,0,0,1)";
+		taskCanceled = "#(argb,8,8,3)color(1,0.5,0,1)";
+		colorCreated[] = {1,1,1,1};
+		colorCanceled[] = {0.7,0.7,0.7,1};
+		colorDone[] = {0.7,1,0.3,1};
+		colorFailed[] = {1,0.3,0.2,1};
+		color[] =
+		{
+			"(profilenamespace getvariable ['IGUI_TEXT_RGB_R',0])",
+			"(profilenamespace getvariable ['IGUI_TEXT_RGB_G',1])",
+			"(profilenamespace getvariable ['IGUI_TEXT_RGB_B',1])",
+			"(profilenamespace getvariable ['IGUI_TEXT_RGB_A',0.8])"
+		};
+		icon = "\A3\ui_f\data\map\mapcontrol\taskIcon_CA.paa";
+		iconCreated = "\A3\ui_f\data\map\mapcontrol\taskIconCreated_CA.paa";
+		iconCanceled = "\A3\ui_f\data\map\mapcontrol\taskIconCanceled_CA.paa";
+		iconDone = "\A3\ui_f\data\map\mapcontrol\taskIconDone_CA.paa";
+		iconFailed = "\A3\ui_f\data\map\mapcontrol\taskIconFailed_CA.paa";
+		size = 27;
+		importance = 1;
+		coefMin = 1;
+		coefMax = 1;
+	};
+	class CustomMark
+	{
+		color[] = {1,1,1,1};
+		icon = "\a3\ui_f\data\map\mapcontrol\custommark_ca.paa";
+		size = 18;
+		importance = 1;
+		coefMin = 1;
+		coefMax = 1;
+	};
+	class Tree
+	{
+		color[] = {0.45,0.64,0.33,0.4};
+		icon = "\A3\ui_f\data\map\mapcontrol\bush_ca.paa";
+		size = 12;
+		importance = "0.9 * 16 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4;
+	};
+	class SmallTree
+	{
+		color[] = {0.45,0.64,0.33,0.4};
+		icon = "\A3\ui_f\data\map\mapcontrol\bush_ca.paa";
+		size = 12;
+		importance = "0.6 * 12 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4;
+	};
+	class Bush
+	{
+		color[] = {0.45,0.64,0.33,0.4};
+		icon = "\A3\ui_f\data\map\mapcontrol\bush_ca.paa";
+		size = "14/2";
+		importance = "0.2 * 14 * 0.05 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4;
+	};
+	class Church
+	{
+		color[] = {1,1,1,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\church_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+	};
+	class Chapel
+	{
+		color[] = {0,0,0,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\Chapel_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+	};
+	class Cross
+	{
+		color[] = {0,0,0,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\Cross_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+	};
+	class Rock
+	{
+		color[] = {0.1,0.1,0.1,0.8};
+		icon = "\A3\ui_f\data\map\mapcontrol\rock_ca.paa";
+		size = 12;
+		importance = "0.5 * 12 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4;
+	};
+	class Bunker
+	{
+		color[] = {0,0,0,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\bunker_ca.paa";
+		size = 14;
+		importance = "1.5 * 14 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4;
+	};
+	class Fortress
+	{
+		color[] = {0,0,0,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\bunker_ca.paa";
+		size = 16;
+		importance = "2 * 16 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4;
+	};
+	class Fountain
+	{
+		color[] = {0,0,0,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\fountain_ca.paa";
+		size = 11;
+		importance = "1 * 12 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4;
+	};
+	class ViewTower
+	{
+		color[] = {0,0,0,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\viewtower_ca.paa";
+		size = 16;
+		importance = "2.5 * 16 * 0.05";
+		coefMin = 0.5;
+		coefMax = 4;
+	};
+	class Lighthouse
+	{
+		color[] = {1,1,1,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\lighthouse_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+	};
+	class Quay
+	{
+		color[] = {1,1,1,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\quay_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+	};
+	class Fuelstation
+	{
+		color[] = {1,1,1,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\fuelstation_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+	};
+	class Hospital
+	{
+		color[] = {1,1,1,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\hospital_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+	};
+	class BusStop
+	{
+		color[] = {1,1,1,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\busstop_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+	};
+	class LineMarker
+	{
+		textureComboBoxColor = "#(argb,8,8,3)color(1,1,1,1)";
+		lineWidthThin = 0.008;
+		lineWidthThick = 0.014;
+		lineDistanceMin = 3e-005;
+		lineLengthMin = 5;
+	};
+	class Transmitter
+	{
+		color[] = {1,1,1,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\transmitter_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+	};
+	class Stack
+	{
+		color[] = {0,0,0,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\stack_ca.paa";
+		size = 16;
+		importance = "2 * 16 * 0.05";
+		coefMin = 0.4;
+		coefMax = 2;
+	};
+	class Ruin
+	{
+		color[] = {0,0,0,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\ruin_ca.paa";
+		size = 16;
+		importance = "1.2 * 16 * 0.05";
+		coefMin = 1;
+		coefMax = 4;
+	};
+	class Tourism
+	{
+		color[] = {0,0,0,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\tourism_ca.paa";
+		size = 16;
+		importance = "1 * 16 * 0.05";
+		coefMin = 0.7;
+		coefMax = 4;
+	};
+	class Watertower
+	{
+		color[] = {1,1,1,1};
+		icon = "\A3\ui_f\data\map\mapcontrol\watertower_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+	};
+	class Waypoint
+	{
+		color[] = {1,1,1,1};
+		importance = 1;
+		coefMin = 1;
+		coefMax = 1;
+		icon = "\a3\ui_f\data\map\mapcontrol\waypoint_ca.paa";
+		size = 18;
+	};
+	class WaypointCompleted
+	{
+		color[] = {1,1,1,1};
+		importance = 1;
+		coefMin = 1;
+		coefMax = 1;
+		icon = "\a3\ui_f\data\map\mapcontrol\waypointcompleted_ca.paa";
+		size = 18;
+	};
+	moveOnEdges = 1;
+	x = "SafeZoneXAbs";
+	y = SafeZoneY + 1.5 * GUI_GRID_H;
+	w = "SafeZoneWAbs";
+	h = SafeZoneH - 1.5 * GUI_GRID_H;
+	shadow = 0;
+	ptsPerSquareSea = 5;
+	ptsPerSquareTxt = 20;
+	ptsPerSquareCLn = 10;
+	ptsPerSquareExp = 10;
+	ptsPerSquareCost = 10;
+	ptsPerSquareFor = 9;
+	ptsPerSquareForEdge = 9;
+	ptsPerSquareRoad = 6;
+	ptsPerSquareObj = 9;
+	showCountourInterval = 0;
+	scaleMin = 0.001;
+	scaleMax = 1;
+	scaleDefault = 0.16;
+	maxSatelliteAlpha = 0.85;
+	alphaFadeStartScale = 2;
+	alphaFadeEndScale = 2;
+	colorTrails[] = {0.84,0.76,0.65,0.15};
+	colorTrailsFill[] = {0.84,0.76,0.65,0.65};
+	widthRailWay = 4;
+	fontLabel = "RobotoCondensed";
+	sizeExLabel = GUI_TEXT_SIZE_SMALL;
+	fontGrid = "TahomaB";
+	sizeExGrid = 0.02;
+	fontUnits = "TahomaB";
+	sizeExUnits = GUI_TEXT_SIZE_SMALL;
+	fontNames = "RobotoCondensed";
+	sizeExNames = GUI_TEXT_SIZE_SMALL * 2;
+	fontInfo = "RobotoCondensed";
+	sizeExInfo = GUI_TEXT_SIZE_SMALL;
+	fontLevel = "TahomaB";
+	sizeExLevel = 0.02;
+	text = "#(argb,8,8,3)color(1,1,1,1)";
+	idcMarkerColor = -1;
+	idcMarkerIcon = -1;
+	textureComboBoxColor = "#(argb,8,8,3)color(1,1,1,1)";
+	showMarkers = 1;
+	class power
+	{
+		icon = "\A3\ui_f\data\map\mapcontrol\power_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+		color[] = {1,1,1,1};
+	};
+	class powersolar
+	{
+		icon = "\A3\ui_f\data\map\mapcontrol\powersolar_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+		color[] = {1,1,1,1};
+	};
+	class powerwave
+	{
+		icon = "\A3\ui_f\data\map\mapcontrol\powerwave_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+		color[] = {1,1,1,1};
+	};
+	class powerwind
+	{
+		icon = "\A3\ui_f\data\map\mapcontrol\powerwind_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+		color[] = {1,1,1,1};
+	};
+	class Shipwreck
+	{
+		icon = "\A3\ui_f\data\map\mapcontrol\Shipwreck_CA.paa";
+		size = 24;
+		importance = 1;
+		coefMin = 0.85;
+		coefMax = 1;
+		color[] = {0,0,0,1};
+	};
+};
+</syntaxhighlight>
+
+=== RscMapControlEmpty ===
+<syntaxhighlight lang="cpp">
+class RscMapControlEmpty : RscMapControl
+{
+	type = CT_MAP_MAIN;
+	ptsPerSquareSea = 1000;
+	ptsPerSquareTxt = 1000;
+	ptsPerSquareCLn = 1000;
+	ptsPerSquareExp = 1000;
+	ptsPerSquareCost = 1000;
+	ptsPerSquareFor = 1000;
+	ptsPerSquareForEdge = 1000;
+	ptsPerSquareRoad = 1000;
+	ptsPerSquareObj = 1000;
+	alphaFadeStartScale = 0;
+	alphaFadeEndScale = 0;
+	colorBackground[] = {1,1,1,1};
+	colorOutside[] = {1,1,1,1};
+	colorSea[] = {0,0,0,0};
+	colorForest[] = {0,0,0,0};
+	colorForestBorder[] = {0,0,0,0};
+	colorRocks[] = {0,0,0,0};
+	colorRocksBorder[] = {0,0,0,0};
+	colorLevels[] = {0,0,0,0};
+	colorMainCountlines[] = {0,0,0,0};
+	colorCountlines[] = {0,0,0,0};
+	colorMainCountlinesWater[] = {0,0,0,0};
+	colorCountlinesWater[] = {0,0,0,0};
+	colorPowerLines[] = {0,0,0,0};
+	colorRailWay[] = {0,0,0,0};
+	colorNames[] = {0,0,0,0};
+	colorInactive[] = {0,0,0,0};
+	colorGrid[] = {0,0,0,0};
+	colorGridMap[] = {0,0,0,0};
+	class Task : Task
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		iconCreated = "#(argb,8,8,3)color(0,0,0,0)";
+		iconCanceled = "#(argb,8,8,3)color(0,0,0,0)";
+		iconDone = "#(argb,8,8,3)color(0,0,0,0)";
+		iconFailed = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		colorCreated[] = {0,0,0,0};
+		colorCanceled[] = {0,0,0,0};
+		colorDone[] = {0,0,0,0};
+		colorFailed[] = {0,0,0,0};
+		size = 0;
+	};
+	class Waypoint : Waypoint
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class WaypointCompleted : WaypointCompleted
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class CustomMark : CustomMark
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class Command : Command
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class Bush : Bush
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class Rock : Rock
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class SmallTree : SmallTree
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class Tree : Tree
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class busstop : BusStop
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class fuelstation : Fuelstation
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class hospital : Hospital
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class church : Church
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class lighthouse : Lighthouse
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class power : power
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class powersolar : powersolar
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class powerwave : powerwave
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class powerwind : powerwind
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class quay : Quay
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class shipwreck : Shipwreck
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class transmitter : Transmitter
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class watertower : Watertower
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class Bunker : Bunker
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class Cross : Cross
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class Fortress : Fortress
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class Fountain : Fountain
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class Chapel : Chapel
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class Ruin : Ruin
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class Stack : Stack
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class Tourism : Tourism
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+	class ViewTower : ViewTower
+	{
+		icon = "#(argb,8,8,3)color(0,0,0,0)";
+		color[] = {0,0,0,0};
+		size = 0;
+	};
+};
+</syntaxhighlight>
+
+== Other Examples ==
+<syntaxhighlight lang="cpp">
+#define CT_MAP_MAIN 101
+#define ST_PICTURE 48
+
+class RscMapControl
+{
+	access = 0;
+	idc = -1;
+	type = CT_MAP_MAIN;
+	style = ST_PICTURE;
+
+	x = 0.10;
+	y = 0.10;
+	w = 0.80;
+	h = 0.60;
+
+	colorBackground[] = { 1.00, 1.00, 1.00, 1.00 };
+	colorText[] = { 0.00, 0.00, 0.00, 1.00 };
+	colorSea[] = { 0.56, 0.80, 0.98, 0.50 };
+	colorForest[] = { 0.60, 0.80, 0.20, 0.50 };
+	colorRocks[] = { 0.50, 0.50, 0.50, 0.50 };
+	colorCountlines[] = { 0.65, 0.45, 0.27, 0.50 };
+	colorMainCountlines[] = { 0.65, 0.45, 0.27, 1.00 };
+	colorCountlinesWater[] = { 0.00, 0.53, 1.00, 0.50 };
+	colorMainCountlinesWater[] = { 0.00, 0.53, 1.00, 1.00 };
+	colorForestBorder[] = { 0.40, 0.80, 0.00, 1.00 };
+	colorRocksBorder[] = { 0.50, 0.50, 0.50, 1.00 };
+	colorPowerLines[] = { 0.00, 0.00, 0.00, 1.00 };
+	colorNames[] = { 0.00, 0.00, 0.00, 1.00 };
+	colorInactive[] = { 1.00, 1.00, 1.00, 0.50 };
+	colorLevels[] = { 0.00, 0.00, 0.00, 1.00 };
+
+	font = "TahomaB";
+	sizeEx = 0.040000;
+
+	fontLabel = "TahomaB";
+	sizeExLabel = 0.02;
+	fontGrid = "TahomaB";
+	sizeExGrid = 0.02;
+	fontUnits = "TahomaB";
+	sizeExUnits = 0.02;
+	fontNames = "TahomaB";
+	sizeExNames = 0.02;
+	fontInfo = "TahomaB";
+	sizeExInfo = 0.02;
+	fontLevel = "TahomaB";
+	sizeExLevel = 0.02;
+
+	ptsPerSquareSea = 6;
+	ptsPerSquareTxt = 8;
+	ptsPerSquareCLn = 8;
+	ptsPerSquareExp = 8;
+	ptsPerSquareCost = 8;
+	ptsPerSquareFor = "4.0f";
+	ptsPerSquareForEdge = "10.0f";
+	ptsPerSquareRoad = 2;
+	ptsPerSquareObj = 10;
+
+	text = "\ca\ui\data\map_background2_co.paa";
+	showCountourInterval = 2;
+	scaleDefault = 0.1;
+	onMouseButtonClick = "";
+	onMouseButtonDblClick = "";
+
+	class ActiveMarker
+	{
+		color[] = { 0.30, 0.10, 0.90, 1.00 };
+		size = 50;
+	};
+	class Bunker
+	{
+		icon = "\ca\ui\data\map_bunker_ca.paa";
+		color[] = { 0.00, 0.35, 0.70, 1.00 };
+		size = 14;
+		importance = "1.5 * 14 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4.00;
+	};
+	class Bush
+	{
+		icon = "\ca\ui\data\map_bush_ca.paa";
+		color[] = { 0.55, 0.64, 0.43, 1.00 };
+		size = 14;
+		importance = "0.2 * 14 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4.00;
+	};
+	class BusStop
+	{
+		icon = "\ca\ui\data\map_busstop_ca.paa";
+		color[] = { 0.00, 0.00, 1.00, 1.00 };
+		size = 10;
+		importance = "1 * 10 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4.00;
+	};
+	class Command
+	{
+		icon = "#(argb,8,8,3)color(1,1,1,1)";
+		color[] = { 0.00, 0.00, 0.00, 1.00 };
+		size = 18;
+		importance = 1.00;
+		coefMin = 1.00;
+		coefMax = 1.00;
+	};
+	class Cross
+	{
+		icon = "\ca\ui\data\map_cross_ca.paa";
+		color[] = { 0.00, 0.35, 0.70, 1.00 };
+		size = 16;
+		importance = "0.7 * 16 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4.00;
+	};
+	class Fortress
+	{
+		icon = "\ca\ui\data\map_bunker_ca.paa";
+		color[] = { 0.00, 0.35, 0.70, 1.00 };
+		size = 16;
+		importance = "2 * 16 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4.00;
+	};
+	class Fuelstation
+	{
+		icon = "\ca\ui\data\map_fuelstation_ca.paa";
+		color[] = { 1.00, 0.35, 0.35, 1.00 };
+		size = 16;
+		importance = "2 * 16 * 0.05";
+		coefMin = 0.75;
+		coefMax = 4.00;
+	};
+	class Fountain
+	{
+		icon = "\ca\ui\data\map_fountain_ca.paa";
+		color[] = { 0.00, 0.35, 0.70, 1.00 };
+		size = 12;
+		importance = "1 * 12 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4.00;
+	};
+	class Hospital
+	{
+		icon = "\ca\ui\data\map_hospital_ca.paa";
+		color[] = { 0.78, 0.00, 0.05, 1.00 };
+		size = 16;
+		importance = "2 * 16 * 0.05";
+		coefMin = 0.50;
+		coefMax = 4;
+	};
+	class Chapel
+	{
+		icon = "\ca\ui\data\map_chapel_ca.paa";
+		color[] = { 0.00, 0.35, 0.70, 1.00 };
+		size = 16;
+		importance = "1 * 16 * 0.05";
+		coefMin = 0.90;
+		coefMax = 4.00;
+	};
+	class Church
+	{
+		icon = "\ca\ui\data\map_church_ca.paa";
+		color[] = { 0.00, 0.35, 0.70, 1.00 };
+		size = 16;
+		importance = "2 * 16 * 0.05";
+		coefMin = 0.90;
+		coefMax = 4.00;
+	};
+	class Lighthouse
+	{
+		icon = "\ca\ui\data\map_lighthouse_ca.paa";
+		color[] = { 0.78, 0.00, 0.05, 1.00 };
+		size = 20;
+		importance = "3 * 16 * 0.05";
+		coefMin = 0.90;
+		coefMax = 4.00;
+	};
+	class Quay
+	{
+		icon = "\ca\ui\data\map_quay_ca.paa";
+		color[] = { 0.00, 0.35, 0.70, 1.00 };
+		size = 16;
+		importance = "2 * 16 * 0.05";
+		coefMin = 0.50;
+		coefMax = 4.00;
+	};
+	class Rock
+	{
+		icon = "\ca\ui\data\map_rock_ca.paa";
+		color[] = { 0.35, 0.35, 0.35, 1.00 };
+		size = 12;
+		importance = "0.5 * 12 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4.00;
+	};
+	class Ruin
+	{
+		icon = "\ca\ui\data\map_ruin_ca.paa";
+		color[] = { 0.78, 0.00, 0.05, 1.00 };
+		size = 16;
+		importance = "1.2 * 16 * 0.05";
+		coefMin = 1.00;
+		coefMax = 4.00;
+	};
+	class Stack
+	{
+		icon = "\ca\ui\data\map_stack_ca.paa";
+		color[] = { 0.00, 0.35, 0.70, 1.00 };
+		size = 20;
+		importance = "2 * 16 * 0.05";
+		coefMin = 0.90;
+		coefMax = 4.00;
+	};
+	class Tree
+	{
+		icon = "\ca\ui\data\map_tree_ca.paa";
+		color[] = { 0.55, 0.64, 0.43, 1.00 };
+		size = 12;
+		importance = "0.9 * 16 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4.00;
+	};
+	class SmallTree
+	{
+		icon = "\ca\ui\data\map_smalltree_ca.paa";
+		color[] = { 0.55, 0.64, 0.43, 1.00 };
+		size = 12;
+		importance = "0.6 * 12 * 0.05";
+		coefMin = 0.25;
+		coefMax = 4.00;
+	};
+	class Tourism
+	{
+		icon = "\ca\ui\data\map_tourism_ca.paa";
+		color[] = { 0.78, 0.00, 0.05, 1.00 };
+		size = 16;
+		importance = "1 * 16 * 0.05";
+		coefMin = 0.70;
+		coefMax = 4.00;
+	};
+	class Transmitter
+	{
+		icon = "\ca\ui\data\map_transmitter_ca.paa";
+		color[] = { 0.00, 0.35, 0.70, 1.00 };
+		size = 20;
+		importance = "2 * 16 * 0.05";
+		coefMin = 0.90;
+		coefMax = 4.00;
+	};
+	class ViewTower
+	{
+		icon = "\ca\ui\data\map_viewtower_ca.paa";
+		color[] = { 0.00, 0.35, 0.70, 1.00 };
+		size = 16;
+		importance = "2.5 * 16 * 0.05";
+		coefMin = 0.50;
+		coefMax = 4.00;
+	};
+	class Watertower
+	{
+		icon = "\ca\ui\data\map_watertower_ca.paa";
+		color[] = { 0.00, 0.35, 0.70, 1.00 };
+		size = 32;
+		importance = "1.2 * 16 * 0.05";
+		coefMin = 0.90;
+		coefMax = 4.00;
+	};
+	class Waypoint
+	{
+		icon = "\ca\ui\data\map_waypoint_ca.paa";
+		color[] = { 0.00, 0.00, 0.00, 1.00 };
+		size = 24;
+		importance = 1.00;
+		coefMin = 1.00;
+		coefMax = 1.00;
+	};
+	class WaypointCompleted
+	{
+		icon = "\ca\ui\data\map_waypoint_completed_ca.paa";
+		color[] = { 0.00, 0.00, 0.00, 1.00 };
+		size = 24;
+		importance = 1.00;
+		coefMin = 1.00;
+		coefMax = 1.00;
+	};
+};
+</syntaxhighlight>

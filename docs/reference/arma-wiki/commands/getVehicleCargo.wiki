@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/getVehicleCargo
+// revision: 330010 (2022-08-14T12:55:01Z)
+// export sha1: sl9obztabboowecb3xndje7jcm3rvec
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle in Vehicle Transport | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|arg= global
+
+|eff= global
+
+|gr1= Vehicle in Vehicle Transport
+
+|descr= Get a list of vehicles loaded as cargo inside this vehicle. The returned array is in the order the cargo vehicles were added to containing vehicle.
+
+|s1= [[getVehicleCargo]] storingVehicle
+
+|p1= storingVehicle: [[Object]]
+
+|r1= [[Array]] - vehicles loaded in storingVehicle, in order of their loading
+
+|x1= <sqf>_vehicleCargo = getVehicleCargo blackfish; // returns [] if empty</sqf>
+
+|x2= <sqf>_vehicleCargo = getVehicleCargo blackfish; // returns [quad_3, quad_1, quad_2] as they were loaded in this order</sqf>
+
+|seealso= [[Arma 3: Vehicle in Vehicle Transport|Vehicle in Vehicle Transport]] [[canVehicleCargo]] [[setVehicleCargo]] [[enableVehicleCargo]] [[isVehicleCargo]] [[vehicleCargoEnabled]]
+}}

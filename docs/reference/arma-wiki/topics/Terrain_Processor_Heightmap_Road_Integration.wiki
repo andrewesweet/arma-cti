@@ -1,0 +1,22 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Heightmap:_Road_Integration
+// revision: 349761 (2023-11-20T22:10:05Z)
+// export sha1: b55kvox9uraluaowsqeiw5j7pihqww4
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Heightmap]]
+{{TerrainProcessorManual|Heightmap: Road Integration|BITasksPlugin.dll|Polyline, PolylineM, PolylineZ|Yes
+|DESCRIPTION=Algorithm that modifies the heightmap data under the roads. It makes smooth and flat roads.
+
+[[File:TerrainProcessor_road1.png|500px]]
+
+[[File:TerrainProcessor_road2.png|500px]]
+|TASKPARAMETERS=* '''Road width''' - Road width in meters.
+* '''Terrain affected range''' - Distance from road center line to smooth terrain in meters.
+* '''Road maximal slope''' - Maximal road slope in degrees.
+* '''Side maximal slope'''  - Maximal road side slope in degrees.
+|OBJECTPROTOTYPEPARAMETERS=
+|USAGE=Use wherever the terrain needs to be flattened under the roads. Extremely useful for adding roads to DEMs from public sources.
+|ALGORITHM=
+|SAMPLE=
+}}

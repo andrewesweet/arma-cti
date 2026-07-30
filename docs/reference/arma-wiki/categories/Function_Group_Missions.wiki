@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Missions
+// revision: 163970 (2020-09-30T10:25:28Z)
+// export sha1: 78mmhxnyda8sm1ry2vvju1vpf1hmeol
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Functions by Functionality]]

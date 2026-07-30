@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_3DENToolbar
+// revision: 349085 (2023-11-08T14:47:24Z)
+// export sha1: a2gac29plub8gdl8h3mg3gqkvedasji
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Eden Editor | Category:Functions | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Eden Editor
+
+|descr= Interacts with the [[:Category:Eden Editor|Eden Editor]] toolbar
+
+|s1= [mode] call [[BIS_fnc_3DENToolbar]]
+
+|p1= mode: [[String]] - can be:<br>
+{{Columns|3|
+*"init"
+*"VerticalToggle"
+*"SurfaceSnapToggle"
+*"MoveGridToggle"
+*"RotateGridToggle"
+*"ScaleGridToggle"
+*"WidgetToggle"
+*"ToggleMap"
+*"ToggleVision"
+*"ToggleFlashlight"
+*"MissionSection"
+}}
+
+|r1= [[Boolean]] - returns [[true]] if it was added successfully
+
+|x1= <sqf>"ToggleFlashlight" call BIS_fnc_3DENToolbar;</sqf>
+
+|seealso= [[BIS_fnc_3DENCamera]] [[BIS_fnc_3DENGrid]] [[BIS_fnc_3DENFlashlight]]
+}}

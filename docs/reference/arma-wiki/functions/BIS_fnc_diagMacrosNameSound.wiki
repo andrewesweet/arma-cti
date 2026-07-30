@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagMacrosNameSound
+// revision: 309426 (2022-05-05T12:04:38Z)
+// export sha1: 92rok0m83dwh6jp3ciuajkch49rpq16
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Detects vehicle types and prints their radio protocol definitions to clipboard.
+
+|s1= call [[BIS_fnc_diagMacrosNameSound]]
+
+|r1= [[String]]
+
+|x1= <sqf>call BIS_fnc_diagMacrosNameSound;</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic|Diag functions]]
+}}

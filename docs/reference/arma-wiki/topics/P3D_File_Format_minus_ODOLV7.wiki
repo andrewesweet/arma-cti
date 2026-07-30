@@ -1,0 +1,166 @@
+// source: https://community.bistudio.com/wiki/P3D_File_Format_-_ODOLV7
+// revision: 373442 (2025-05-08T11:27:12Z)
+// export sha1: hn9sfjcva89m8qd146peli7ujbph0d6
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|UnsupportedDoc}}
+{{TOC|side}}
+= General =
+
+
+== Legend ==
+
+see [[Generic FileFormat Data Types]]
+
+
+== CompressedStructures ==
+
+(potentially) compressed arrays are endemic to most blocks contained in a p3d.
+
+<syntaxhighlight lang="cpp">
+CompressedStruct
+{
+	ulong	Count;
+	<type>	Array[Count];
+};
+</syntaxhighlight>
+
+if Count * sizeof(<type>) exceeds 1023 bytes the array is compressed. The '''resulting''' array will be expanded using lzh compression exactly as found in pbo's (for instance)
+
+After decompression, the Count remains the same because it is a count of the arraytype.
+
+For uncompressed arrays (byte count < 1024) the Count and data are treated 'as is'.
+
+
+Thus for various Array <types>
+* ulong Array:    > 255  // 1024 /   sizeof(ulong)
+* float thing[2]: > 127  // 1024 / 2*sizeof(float)
+* SomeStructure:  >      // count * sizeof (SomeStructure) > 1023
+
+
+Note that potentially compressed arrays in these structures only have an known output length. the decompressor therefore must work on infinite input length.
+
+
+= Odol7Stuct =
+
+See [[P3D Model Info]].
+<syntaxhighlight lang="cpp">
+ODOLV7
+{
+	StandardP3DHeader	Header;
+	LodStruct			Lods[Header.LodCount];
+	ModelInfo			ModelInfo;
+};
+</syntaxhighlight>
+
+
+== StandardP3DHeader ==
+
+<syntaxhighlight lang="cpp">
+StandardP3DHeader
+{
+	char	Signature[4];	//"ODOL" (vs MLOD eg)
+	ulong	Version;		// 7
+	ulong	LodCount;		// at least one
+}
+</syntaxhighlight>
+
+
+== LodStruct ==
+
+See:
+* {{Link|#VertexTable}}
+* {{Link|#Textures}}
+* [[P3D Lod Edges]]
+* [[P3D Lod Faces]]
+* [[P3D Lod Sections]]
+* [[P3D Named Selections]]
+* {{Link|#NamedProperty}}
+* [[P3D Lod Frames]]
+* [[P3D Lod Proxies]]
+
+
+<syntaxhighlight lang="cpp">
+LodStruct
+{
+	VertexTable		VertexTable;
+	float			UnknownFloat1;
+	float			UnknownFloat2;
+	XYZTriplet		MinPos;
+	XYZTriplet		MaxPos;
+	XYZTriplet		AutoCenterPos;
+	float			UnknownFloat3;
+	Textures		Textures;
+	LodEdges		LodEdges;
+	ulong			NoOfFaces;
+	ulong			OffsetToLodSections;
+	LodFace			LodFaces[NoOfFaces]; // ie polygons
+	ulong			nSections;
+	LODSection		LODSections[nSections];
+	ulong			nNamedSelections;
+	NamedSelection	NamedSelections[nNamedSelections];
+	ulong			nTokens;
+	NamedProperty	NamedProperties[nTokens];
+	ulong			nFrames;
+	Frame			Frames[nFrames];
+	ulong			IconColor;
+	ulong			SelectedColor;
+	ulong			Unknown;
+	ulong			nProxies;
+	LodProxy		LodProxies[nProxies];
+};
+</syntaxhighlight>
+
+=== VertexTable ===
+
+See [[P3D Point and Face Flags]].
+<syntaxhighlight lang="cpp">
+	struct
+	{ 
+	ulong		Count;
+	ulong		PointFlags[Count];	// compressed
+	ulong		Count;
+	UVPair		UV1[Count];			// compressed 
+	ulong		Count;
+	XYZTriplet	Points[Count];		// UNcompressed
+	ulong		Count;
+	XYZTriplet	Normals[Count];		// UNcompressed
+	}
+</syntaxhighlight>
+
+*Count is the same value for all four tables.
+
+=== Textures ===
+
+<syntaxhighlight lang="cpp">
+struct
+{
+ulong	Count;
+asciiz	Textures[...]; // "data/1.paa\0data/2.paa\0"...
+}
+</syntaxhighlight>
+
+Count corresponds to the number of concatenated strings. It is required, since, architecturally at least, one of more of the asciiz strings could be null.
+
+=== NamedProperty ===
+
+<syntaxhighlight lang="cpp">
+struct
+{
+	Asciiz Property; // e.g "noshadow" = "1"
+	Asciiz Value;
+}
+</syntaxhighlight>
+
+
+= Related Page(s) =
+
+== LZ in ODOL ==
+
+see [[Compressed LZSS File Format]]
+
+[[BIS File Formats#3D Model File Formats|Model File Formats]]
+
+
+[[Category:Real Virtuality File Formats]]

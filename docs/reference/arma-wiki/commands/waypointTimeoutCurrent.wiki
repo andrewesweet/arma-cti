@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/waypointTimeoutCurrent
+// revision: 319799 (2022-05-13T09:25:29Z)
+// export sha1: 2zua1abxp6bffe8vp9y4dhr6hnwnfhr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 1.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.08
+
+|gr1= Waypoints
+
+|descr= Gets the current timeout for [[currentWaypoint]] of a [[group]] or -1 if countdown is not in progress.
+
+|s1= [[waypointTimeoutCurrent]] group
+
+|p1= group: [[Group]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_timeout = waypointTimeoutCurrent group player;</sqf>
+
+|seealso= [[waypoints]] [[deleteWaypoint]] [[copyWaypoints]] [[setCurrentWaypoint]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointDescription]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointType]] [[setWaypointVisible]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[setWaypointLoiterRadius]] [[waypointLoiterRadius]] [[addWaypoint]] [[setWaypointLoiterType]] [[setWaypointTimeout]]
+}}

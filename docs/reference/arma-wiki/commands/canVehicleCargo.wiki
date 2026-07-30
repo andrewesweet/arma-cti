@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/canVehicleCargo
+// revision: 336373 (2022-12-30T13:44:50Z)
+// export sha1: 7x4qi6twqip3l6iv10hrshssk3gl8bn
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle in Vehicle Transport | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Vehicle in Vehicle Transport
+
+|descr= Returns bool array if it is possible to load cargo inside vehicle and if possible to load cargo into empty vehicle
+
+|s1= vehicle [[canVehicleCargo]] cargo
+
+|p1= vehicle: [[Object]] - vehicle carrying cargo
+
+|p2= cargo: [[Object]] - cargo to put in vehicle
+
+|r1= [[Array]] of [[Boolean]]s - [willFitIntoCurrentVehicle, willFitIntoEmptyVehicle]
+
+|x1= Blackfish with no vehicle cargo loaded
+<sqf>private _result = blackfish canVehicleCargo offroad; // [true, true]</sqf>
+
+|x2= Blackfish with one vehicle cargo called offroad already loaded
+<sqf>private _result = blackfish canVehicleCargo offroad; // [false, false]</sqf>
+Even if the Blackfish were empty, the offroad could not be loaded because it is already in a cargo space
+
+|x3= Blackfish with one vehicle cargo called offroad already loaded
+<sqf>private _result = blackfish canVehicleCargo offroad2; // [false, true]</sqf>
+offroad2 can't be loaded because there isn't enough space in the Blackfish, but if there were space offroad2 could be loaded into the Blackfish
+
+|seealso=  [[setVehicleCargo]] [[enableVehicleCargo]] [[getVehicleCargo]] [[isVehicleCargo]] [[vehicleCargoEnabled]] [[canSlingLoad]] [[Arma 3: Vehicle in Vehicle Transport|Vehicle in Vehicle Transport]]
+}}

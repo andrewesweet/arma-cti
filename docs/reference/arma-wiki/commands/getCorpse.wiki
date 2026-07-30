@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/getCorpse
+// revision: 352960 (2024-03-07T14:49:08Z)
+// export sha1: a6q20m7pnscmk8kec8r2ygpp3s10dgn
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|gr1= Unit Inventory
+
+|gr2= Object Manipulation
+|descr= Returns the corpse associated with given weaponholder. When unit is killed and had a weapon, the weapon is placed inside "WeaponHolderSimulated" and dropped together with the unit. This command returns the dead body associated with this weaponholder.
+
+
+|s1= [[getCorpse]] weaponholder
+
+|p1= weaponholder: [[Object]] - weaponholder dropped by the dead unit
+
+|r1= [[Object]] - dead unit
+
+
+|x1= <sqf>systemChat str getCorpse cursorObject;</sqf>
+
+
+|seealso= [[getCorpseWeaponholders]] [[nearSupplies]] [[allDeadMen]]
+}}

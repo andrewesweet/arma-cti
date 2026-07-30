@@ -1,0 +1,17 @@
+// source: https://community.bistudio.com/wiki/BIN_File_Formats
+// revision: 373407 (2025-05-08T11:27:11Z)
+// export sha1: dl7ox9ybyar5uxx9k6xtffxtsccbooc
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|UnsupportedDoc}}
+
+FileExtension .bin is a generic identifier that indicates the contents are raPified (binarised)
+
+*[[texHeaders.bin File Format]]
+*[[Product.cpp/bin File Format]]
+*[[Config.cpp/bin File Format]]
+*[[Mod.cpp/bin File Format]]
+See also [[CPP File Format]]
+
+[[Category:Real Virtuality File Formats]]

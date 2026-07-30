@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera_setCam
+// revision: 349229 (2023-11-08T14:50:53Z)
+// export sha1: l7hddvzw40r5me3jd48j638xd9i8ni9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Camera | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Camera
+
+|descr= Sets camera instance of camera object.
+
+|s1= [camera, cameraInstance] call [[BIS_fnc_camera_setCam]]
+
+|p1= camera: [[Object]] - the camera
+
+|p2= cameraInstance: [[Object]] - camera instance
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[BIS_camera,BIS_camera_instance] call BIS_fnc_camera_setCam;</sqf>
+
+|seealso= [[BIS_fnc_camera_getCam]]
+}}

@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setIdentity
+// revision: 373727 (2025-06-23T13:18:19Z)
+// export sha1: 5bakk4njxx8bbusxy7e7sjwvcv4dilw
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|arg= global
+|eff= global
+
+|descr= Sets the unit's identity.
+{{Feature|informative|
+* When executed on server, the identity will be [[Multiplayer Scripting#Join In Progress|JIP]] compatible.
+* Before {{GVI|arma3|1.92}}, this function was {{Icon|serverExec|32}}.
+}}
+
+|s1= [object, face, speaker, pitch, callsign, name, glasses] call [[BIS_fnc_setIdentity]]
+
+|p1= object: [[Object]]
+
+|p2= face: [[String]] - (Optional, default "") face from {{Link|Arma 3: CfgIdentities#Faces|CfgFaces}}
+
+|p3= speaker: [[String]] - (Optional, default "") speaker from {{Link|Arma 3: CfgIdentities#Speakers|CfgVoice}}
+
+|p4= pitch: [[String]] - (Optional, default -1) speaker pitch (1 is normal pitch, 2 = chipmunk, 0.5 = Darth Vader, etc)
+
+|p5= callsign: [[String]] - (Optional, default "") callsign
+
+|p6= name: [[String]] - (Optional, default "") unit name
+|p6since= arma3 1.92
+
+|p7= glasses: [[String]] - (Optional, default [[nil]]) glasses from {{Link|Arma 3: CfgGlasses|CfgGlasses}} - use "" to remove glasses
+|p7since= arma3 1.92
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[player, "Kerry", "Male01ENGB", 1.05, "Big Daddy"] call BIS_fnc_setIdentity;</sqf>
+
+|x2= <sqf>[bob, nil, nil, 1.6, nil, "Miki Maus", "G_Shades_Black"] call BIS_fnc_setIdentity;</sqf>
+
+|seealso=  [[BIS_fnc_setUnitInsignia]] [[setFace]] [[setIdentity]] [[setSpeaker]] [[face]]
+}}

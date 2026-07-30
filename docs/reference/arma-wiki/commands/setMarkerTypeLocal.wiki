@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/setMarkerTypeLocal
+// revision: 349126 (2023-11-08T14:49:40Z)
+// export sha1: 6etgo1ag7i5sknrm4l8n2pdqcaadvyb
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Armed Assault version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.04
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Markers
+
+|eff= local
+
+|descr= Sets marker type locally. Marker type is a class name in [[CfgMarkers]].
+
+|s1= markerName [[setMarkerTypeLocal]] type
+
+|p1= markerName: [[String]]
+
+|p2= type: [[String]] - see [[CfgMarkers]].
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"MarkerOne" setMarkerTypeLocal "Warning";</sqf>
+
+|seealso= [[CfgMarkers]] [[setMarkerAlpha]] [[setMarkerAlphaLocal]] [[setMarkerBrush]] [[setMarkerBrushLocal]] [[setMarkerColor]] [[setMarkerColorLocal]] [[setMarkerDir]] [[setMarkerDirLocal]] [[setMarkerPos]] [[setMarkerPosLocal]] [[setMarkerShape]] [[setMarkerShapeLocal]] [[setMarkerSize]] [[setMarkerSizeLocal]] [[setMarkerText]] [[setMarkerTextLocal]] [[setMarkerType]] [[markerType]]
+}}

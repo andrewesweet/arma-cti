@@ -1,0 +1,20 @@
+// source: https://community.bistudio.com/wiki/HDR_Lighting
+// revision: 364386 (2024-05-13T08:26:54Z)
+// export sha1: 5bpwfqh5611ri99vqkjsolo807xz625
+// categories: Category:ArmA: Armed Assault | Category:Arma 2 | Category:Arma 3
+// Vendored snapshot. Do not edit — re-export instead.
+
+High Dynamic Range Lighting ('''HDR Lighting''') refers to all of the lighting values which are rendered in {{arma1}} can consist of real world ranges.
+This means that the [[Real Virtuality]] engine since {{GameCategory|arma1|link=y}} is handling lighting conditions which are several orders of magnitude different.
+For the player it means that when entering dark areas from light it takes some time to adjust the eyes so it’s not only a visual effect but also influences the way that the game is played.
+
+
+== See Also ==
+
+* {{Link|Real Virtuality}}
+* {{Link|https://en.wikipedia.org/wiki/High_dynamic_range_rendering|Wikipedia Article on HDR Lighting}}
+
+
+{{GameCategory|arma1}}
+{{GameCategory|arma2}}
+{{GameCategory|arma3}}

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/secondaryWeaponItems
+// revision: 320949 (2022-05-13T10:04:45Z)
+// export sha1: ot3i9vxg0hcjco5cf9g6r7pybt70q51
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Unit Inventory
+
+|descr= Returns array with all items assigned to the [[secondaryWeapon]] except magazines. Use [[secondaryWeaponMagazine]] command for the latter. This command is used for infantry weapons only.
+
+|s1= [[secondaryWeaponItems]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] -  [silencer, laserpointer/flashlight, optics, bipod]
+
+|x1= <sqf>secondaryWeaponItems player; //["","","",""]</sqf>
+
+|seealso= [[addSecondaryWeaponItem]] [[weaponAccessories]] [[weaponAccessoriesCargo]] [[handgunItems]] [[primaryWeaponItems]] [[binocularItems]] [[weaponsItems]] [[weaponsItemsCargo]]
+}}

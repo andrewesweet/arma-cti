@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/enableStamina
+// revision: 321174 (2022-05-13T15:15:54Z)
+// export sha1: sgcv2n62ml3ujxg0z6j9wn7jpkirgu3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|eff= global
+
+|arg= local
+
+|gr1= Stamina System
+
+|descr= Enable/disable stamina system
+
+|s1= unit [[enableStamina]] enabled
+
+|p1= unit: [[Object]]
+
+|p2= enabled: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player enableStamina true;</sqf>
+
+|seealso= [[Arma 3: Stamina]]
+}}

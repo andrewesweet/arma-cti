@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/uniformMagazines
+// revision: 321373 (2022-05-14T10:55:55Z)
+// export sha1: q9seknpah4qknbt620680yyhf701nz1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Containers
+
+|gr2= Unit Inventory
+
+|descr= Get array with all magazines from uniform of the given unit.
+
+|s1= [[uniformMagazines]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[String]]
+
+|x1= <sqf>
+uniformMagazines player;
+// returns e.g
+/*
+[
+	"6.5mm 30Rnd STANAG Mag(30/30)[id/cr:1/0](3x)"
+]
+*/
+</sqf>
+
+|seealso= [[vestMagazines]] [[backpackMagazines]] [[soldierMagazines]]
+}}

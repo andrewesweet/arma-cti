@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_findOverwatch
+// revision: 327931 (2022-07-13T12:32:03Z)
+// export sha1: impq7zgippncy2h8czqfl2fhho0g44e
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Positions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Positions
+
+|descr= Selects a position that provides overwatch onto another position.
+
+|s1= [target, maxDistance, minDistance, minHeightAbove, searchCentre] call [[BIS_fnc_findOverwatch]]
+
+|p1= target: [[Position#Introduction|Position3D]] - '''not''' an object
+
+|p2= maxDistance: [[Number]] - (Optional, default 500) maximum distance from target in meters
+
+|p3= minDistance: [[Number]] - (Optional, default 100) minimum distance from target in meters
+
+|p4= minHeightAbove: [[Number]] - (Optional, default 50) minimum height in relation to target in meters
+
+|p5= searchCentre: [[Position#Introduction|Position3D]] - (Optional, default ''target'') position to start looking from, if different from target pos
+
+|r1= [[Position]] - ''target'' position if no result were found
+
+|x1= <sqf>[getPosATL enemyTank, 300, 75, 20, getPosATL player] call BIS_fnc_findOverwatch;</sqf>
+
+|seealso= [[BIS_fnc_findSafePos]]
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20181019214000
+|text= Note that this function returns a 2D position, that is, an array containing an x and a y value, but no z (no altitude).
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20200415135300
+|text= Further note that when this function fails to find an overwatch position and returns the ''target'', the x and y components will be exactly the same, but the z might not be.
+}}

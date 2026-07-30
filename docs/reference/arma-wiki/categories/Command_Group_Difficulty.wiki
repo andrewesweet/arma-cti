@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Difficulty
+// revision: 159752 (2020-09-21T22:58:55Z)
+// export sha1: optcl2ok0cdnua5ezi31j2vn3xc6pjb
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands to change the difficulty of the game.
+
+[[Category:Scripting Commands by Functionality]]

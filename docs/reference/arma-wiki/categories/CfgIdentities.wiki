@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:CfgIdentities
+// revision: 66518 (2011-11-03T10:28:17Z)
+// export sha1: f6fiox71ov5nlhngr8jnb45xda462c2
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Reference Lists]]

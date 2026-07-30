@@ -1,0 +1,776 @@
+// source: https://community.bistudio.com/wiki/Take_On_Helicopters:_CfgIdentities
+// revision: 242210 (2021-02-06T21:15:45Z)
+// export sha1: 38dsh7vzyy9l4x4cobi3pjf0ieg7qc2
+// categories: Category:CfgIdentities | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|horizontal|||y}}
+=== Faces ===
+
+{| class="wikitable sortable mw-collapsible"
+! Class
+! Name
+! Preview
+<!-- EXPORT START ----------------------------------------------------------->
+
+|-
+|
+==== BrotherFace_H ====
+| Brother
+| [[File:Face_TKOH_BrotherFace_H.jpg|100px]]
+
+|-
+|
+==== PlayerFace_H ====
+| Player
+| [[File:Face_TKOH_PlayerFace_H.jpg|100px]]
+
+|-
+|
+==== CopilotFace_H ====
+| Copilot
+| [[File:Face_TKOH_CopilotFace_H.jpg|100px]]
+
+|-
+|
+==== InstructorFace_H ====
+| Instructor
+| [[File:Face_TKOH_InstructorFace_H.jpg|100px]]
+
+|-
+|
+==== CEOFace_H ====
+| CEO
+| [[File:Face_TKOH_CEOFace_H.jpg|100px]]
+
+|-
+|
+==== MechanicFace_H ====
+| Mechanic
+| [[File:Face_TKOH_MechanicFace_H.jpg|100px]]
+
+|-
+|
+==== AfricanFace_H ====
+| African
+| [[File:Face_TKOH_AfricanFace_H.jpg|100px]]
+
+|-
+|
+==== BossFace_H ====
+| Boss
+| [[File:Face_TKOH_BossFace_H.jpg|100px]]
+
+|-
+|
+==== PMCFace_H ====
+| PMC
+| [[File:Face_TKOH_PMCFace_H.jpg|100px]]
+
+|-
+|
+==== Face02 ====
+| Sebastian K.
+| [[File:Face_A2_Face02.jpg|100px]]
+
+|-
+|
+==== Face03 ====
+| Markus K.
+| [[File:Face_A2_Face03.jpg|100px]]
+
+|-
+|
+==== Face05 ====
+| Peter V.
+| [[File:Face_A2_Face05.jpg|100px]]
+
+|-
+|
+==== Face07 ====
+| Lukas S.
+| [[File:Face_A2_Face07.jpg|100px]]
+
+|-
+|
+==== Face08 ====
+| Eduardo S.
+| [[File:Face_A2_Face08.jpg|100px]]
+
+|-
+|
+==== Face09 ====
+| Stanley D.
+| [[File:Face_A2_Face09.jpg|100px]]
+
+|-
+|
+==== Face10 ====
+| Paul G.
+| [[File:Face_A2_Face10.jpg|100px]]
+
+|-
+|
+==== Face11 ====
+| Vaclav M.
+| [[File:Face_A2_Face11.jpg|100px]]
+
+|-
+|
+==== Face12 ====
+| Ivan B.
+| [[File:Face_A2_Face12.jpg|100px]]
+
+|-
+|
+==== Face13 ====
+| Mario K.
+| [[File:Face_A2_Face13.jpg|100px]]
+
+|-
+|
+==== Face14 ====
+| Chad H.
+| [[File:Face_A2_Face14.jpg|100px]]
+
+|-
+|
+==== Face15 ====
+| Andrew S.
+| [[File:Face_A2_Face15.jpg|100px]]
+
+|-
+|
+==== Face16 ====
+| Stephen D.
+| [[File:Face_A2_Face16.jpg|100px]]
+
+|-
+|
+==== Face17 ====
+| Enrico T.
+| [[File:Face_A2_Face17.jpg|100px]]
+
+|-
+|
+==== Face18 ====
+| Jacob S.
+| [[File:Face_A2_Face18.jpg|100px]]
+
+|-
+|
+==== Face19 ====
+| Vladimir N.
+| [[File:Face_A2_Face19.jpg|100px]]
+
+|-
+|
+==== Face20 ====
+| Jan H.
+| [[File:Face_A2_Face20.jpg|100px]]
+
+|-
+|
+==== Face21 ====
+| Jan P.
+| [[File:Face_A2_Face21.jpg|100px]]
+
+|-
+|
+==== Face22 ====
+| Steve K.
+| [[File:Face_A2_Face22.jpg|100px]]
+
+|-
+|
+==== Face23 ====
+| Mark S.
+| [[File:Face_A2_Face23.jpg|100px]]
+
+|-
+|
+==== Face24 ====
+| Andrey B.
+| [[File:Face_A2_Face24.jpg|100px]]
+
+|-
+|
+==== Face25 ====
+| George M.
+| [[File:Face_A2_Face25.jpg|100px]]
+
+|-
+|
+==== Face26 ====
+| Mike F.
+| [[File:Face_A2_Face26.jpg|100px]]
+
+|-
+|
+==== Face27 ====
+| Geofrey M.
+| [[File:Face_A2_Face27.jpg|100px]]
+
+|-
+|
+==== Face28 ====
+| Chuck W.
+| [[File:Face_A2_Face28.jpg|100px]]
+
+|-
+|
+==== Face29 ====
+| Fredy B.
+| [[File:Face_A2_Face29.jpg|100px]]
+
+|-
+|
+==== Face30 ====
+| Thomas L.
+| [[File:Face_A2_Face30.jpg|100px]]
+
+|-
+|
+==== Face31 ====
+| Paul H.
+| [[File:Face_A2_Face31.jpg|100px]]
+
+|-
+|
+==== Face32 ====
+| Pete G.
+| [[File:Face_A2_Face32.jpg|100px]]
+
+|-
+|
+==== Face33 ====
+| Bruce V.
+| [[File:Face_A2_Face33.jpg|100px]]
+
+|-
+|
+==== Face34 ====
+| Joe K.
+| [[File:Face_A2_Face34.jpg|100px]]
+
+|-
+|
+==== Face35 ====
+| John K.
+| [[File:Face_A2_Face35.jpg|100px]]
+
+|-
+|
+==== Face36 ====
+| Bill G.
+| [[File:Face_A2_Face36.jpg|100px]]
+
+
+|-
+|
+==== Face37 ====
+| Ken G.
+| [[File:Face_A2_Face37.jpg|100px]]
+
+|-
+|
+==== Face38 ====
+| Chris L.
+| [[File:Face_A2_Face38.jpg|100px]]
+
+|-
+|
+==== Face39 ====
+| Bobby B.
+| [[File:Face_A2_Face39.jpg|100px]]
+
+|-
+|
+==== Face40 ====
+| Dave A.
+| [[File:Face_A2_Face40.jpg|100px]]
+
+|-
+|
+==== Face41 ====
+| Boris A.
+| [[File:Face_A2_Face41.jpg|100px]]
+
+|-
+|
+==== Face42 ====
+| Victor K.
+| [[File:Face_A2_Face42.jpg|100px]]
+
+|-
+|
+==== Face43 ====
+| Francesco P.
+| [[File:Face_A2_Face43.jpg|100px]]
+
+|-
+|
+==== Face44 ====
+| Joachim S.
+| [[File:Face_A2_Face44.jpg|100px]]
+
+|-
+|
+==== Face45 ====
+| Charles D.
+| [[File:Face_A2_Face45.jpg|100px]]
+
+
+|-
+|
+==== Face47 ====
+| Adam C.
+| [[File:Face_A2_Face47.jpg|100px]]
+
+|-
+|
+==== Face48 ====
+| Igor M.
+| [[File:Face_A2_Face48.jpg|100px]]
+
+|-
+|
+==== Face49 ====
+| Dymitryi M.
+| [[File:Face_A2_Face49.jpg|100px]]
+
+|-
+|
+==== Face50 ====
+| Kamil V.
+| [[File:Face_A2_Face50.jpg|100px]]
+
+
+|-
+|
+==== Face51 ====
+| Face51
+| [[File:Face_A2_Face51.jpg|100px]]
+
+|-
+|
+==== Face52 ====
+| Earl L.
+| [[File:Face_A2_Face52.jpg|100px]]
+
+|-
+|
+==== Face53 ====
+| Face53
+| [[File:Face_A2_Face53.jpg|100px]]
+
+|-
+|
+==== Face54 ====
+| Peter P.
+| [[File:Face_A2_Face54.jpg|100px]]
+
+
+|-
+|
+==== Face55 ====
+| Daniel D.
+| [[File:Face_A2_Face55.jpg|100px]]
+
+|-
+|
+==== Face56 ====
+| Jiri P.
+| [[File:Face_A2_Face56.jpg|100px]]
+
+|-
+|
+==== Face57 ====
+| Face57
+| [[File:Face_A2_Face57.jpg|100px]]
+
+|-
+|
+==== Face58 ====
+| Face58
+| [[File:Face_A2_Face58.jpg|100px]]
+
+|-
+|
+==== Face59 ====
+| Face59
+| [[File:Face_A2_Face59.jpg|100px]]
+
+|-
+|
+==== Face60 ====
+| Face60
+| [[File:Face_A2_Face60.jpg|100px]]
+
+|-
+|
+==== Face60_Hair ====
+| Face60 Hair
+| [[File:Face_A2_Face60_Hair.jpg|100px]]
+
+|-
+|
+==== Face61 ====
+| Face61
+| [[File:Face_A2_Face61.jpg|100px]]
+
+
+|-
+|
+==== Face62 ====
+| Andrew G.
+| [[File:Face_A2_Face62.jpg|100px]]
+
+|-
+|
+==== Face61_Hair ====
+| Face61 Hair
+| [[File:Face_A2_Face61_Hair.jpg|100px]]
+
+|-
+|
+==== Face63 ====
+| Face63
+| [[File:Face_A2_Face63.jpg|100px]]
+
+|-
+|
+==== Face64 ====
+| Face64
+| [[File:Face_A2_Face64.jpg|100px]]
+
+|-
+|
+==== Face65 ====
+| Face65
+| [[File:Face_A2_Face65.jpg|100px]]
+
+|-
+|
+==== Face66 ====
+| Face66
+| [[File:Face_A2_Face66.jpg|100px]]
+
+|-
+|
+==== Face67 ====
+| Face67
+| [[File:Face_A2_Face67.jpg|100px]]
+
+|-
+|
+==== Face68 ====
+| Face68
+| [[File:Face_A2_Face68.jpg|100px]]
+
+|-
+|
+==== Face69 ====
+| Face69
+| [[File:Face_A2_Face69.jpg|100px]]
+
+|-
+|
+==== Face70 ====
+| Face70
+| [[File:Face_A2_Face70.jpg|100px]]
+
+|-
+|
+==== Face71 ====
+| Face71
+| [[File:Face_A2_Face71.jpg|100px]]
+
+|-
+|
+==== Face72 ====
+| Face72
+| [[File:Face_A2_Face72.jpg|100px]]
+
+|-
+|
+==== Face73 ====
+| Face73
+| [[File:Face_A2_Face73.jpg|100px]]
+
+|-
+|
+==== Face74 ====
+| Face74
+| [[File:Face_A2_Face74.jpg|100px]]
+
+|-
+|
+==== Face75 ====
+| Face75
+| [[File:Face_A2_Face75.jpg|100px]]
+
+|-
+|
+==== Face76 ====
+| Face76
+| [[File:Face_A2_Face76.jpg|100px]]
+
+|-
+|
+==== Face77 ====
+| Paul S.
+| [[File:Face_A2_Face77.jpg|100px]]
+
+|-
+|
+==== Face78 ====
+| Joe M.
+| [[File:Face_A2_Face78.jpg|100px]]
+
+|-
+|
+==== Face79 ====
+| Garry L.
+| [[File:Face_A2_Face79.jpg|100px]]
+
+|-
+|
+==== Face80 ====
+| Ray C.
+| [[File:Face_A2_Face80.jpg|100px]]
+
+|-
+|
+==== Face81 ====
+| Donny D.
+| [[File:Face_A2_Face81.jpg|100px]]
+
+|-
+|
+==== Face82 ====
+| Mike N.
+| [[File:Face_A2_Face82.jpg|100px]]
+
+|-
+|
+==== Face83 ====
+| Steve J.
+| [[File:Face_A2_Face83.jpg|100px]]
+
+|-
+|
+==== Face84 ====
+| Larry F.
+| [[File:Face_A2_Face84.jpg|100px]]
+
+|-
+|
+==== Face85 ====
+| Martin V.
+| [[File:Face_A2_Face85.jpg|100px]]
+
+|-
+|
+==== Face86 ====
+| Ben T.
+| [[File:Face_A2_Face86.jpg|100px]]
+
+|-
+|
+==== Face87 ====
+| Korneel L.
+| [[File:Face_A2_Face87.jpg|100px]]
+
+|-
+|
+==== Face88 ====
+| Pete M.
+| [[File:Face_A2_Face88.jpg|100px]]
+
+|-
+|
+==== Face89 ====
+| Vilem B.
+| [[File:Face_A2_Face89.jpg|100px]]
+
+|-
+|
+==== Face90 ====
+| Miro H.
+| [[File:Face_A2_Face90.jpg|100px]]
+
+|-
+|
+==== Face91 ====
+| Bobby P.
+| [[File:Face_A2_Face91.jpg|100px]]
+
+|-
+|
+==== Face92 ====
+| Morten G.
+| [[File:Face_A2_Face92.jpg|100px]]
+
+|-
+|
+==== Face93 ====
+| Petr R.
+| [[File:Face_A2_Face93.jpg|100px]]
+
+|-
+|
+==== Face94 ====
+| Jiri O.
+| [[File:Face_A2_Face94.jpg|100px]]
+
+|-
+|
+==== Face95 ====
+| Marian M.
+| [[File:Face_A2_Face95.jpg|100px]]
+
+|-
+|
+==== Face96 ====
+| Martin P.
+| [[File:Face_A2_Face96.jpg|100px]]
+
+|-
+|
+==== Face97 ====
+| Joris L.
+| [[File:Face_A2_Face97.jpg|100px]]
+
+|-
+|
+==== Face98 ====
+| Karel M.
+| [[File:Face_A2_Face98.jpg|100px]]
+
+|-
+|
+==== Face99 ====
+| Jakub H.
+| [[File:Face_A2_Face99.jpg|100px]]
+
+|-
+|
+==== Face100 ====
+| Vojtech H.
+| [[File:Face_A2_Face100.jpg|100px]]
+
+|-
+|
+==== Face101 ====
+| Frantisek N.
+| [[File:Face_A2_Face101.jpg|100px]]
+
+|-
+|
+==== Face102 ====
+| Xaver Y.
+| [[File:Face_A2_Face102.jpg|100px]]
+
+|-
+|
+==== Face103 ====
+| Lukas H.
+| [[File:Face_A2_Face103.jpg|100px]]
+
+|-
+|
+==== Face104 ====
+| Pavel D.
+| [[File:Face_A2_Face104.jpg|100px]]
+
+|-
+|
+==== Face105 ====
+| Franck P.
+| [[File:Face_A2_Face105.jpg|100px]]
+
+|-
+|
+==== Face106 ====
+| Sascha H.
+| [[File:Face_A2_Face106.jpg|100px]]
+
+|-
+|
+==== Face107 ====
+| Ondra M.
+| [[File:Face_A2_Face107.jpg|100px]]
+
+|-
+|
+==== Face108 ====
+| Ch. Yun-Fat
+| [[File:Face_A2_Face108_PMC.jpg|100px]]
+
+|-
+|
+==== Face109 ====
+| N. Narita
+| [[File:Face_A2_Face109_PMC.jpg|100px]]
+
+|-
+|
+==== Face111 ====
+| P. Mei
+| [[File:Face_A2_Face111_PMC.jpg|100px]]
+
+|-
+|
+==== Face114 ====
+| E. Honda
+| [[File:Face_A2_Face114_PMC.jpg|100px]]
+
+|-
+|
+==== Face116 ====
+| H. Kojima
+| [[File:Face_A2_Face116_PMC.jpg|100px]]
+
+|-
+|
+==== Face117 ====
+| T. Tanaka
+| [[File:Face_A2_Face117_PMC.jpg|100px]]
+
+|-
+|
+==== Face123 ====
+| J. Li
+| [[File:Face_A2_Face123_PMC.jpg|100px]]
+
+|-
+|
+==== Face124 ====
+| D. Wong
+| [[File:Face_A2_Face124_PMC.jpg|100px]]
+
+<!-- EXPORT END ----------------------------------------------------------->
+|}
+
+=== Glasses ===
+{| class="wikitable sortable mw-collapsible"
+|-
+! Class
+! Name
+! Preview
+<!-- EXPORT START ----------------------------------------------------------->
+|-
+|
+==== Sunglasses_H ====
+| Aviator sunglasses
+| [[File:glasses_A2_Sunglasses.jpg|100px]]
+
+<!-- EXPORT END ----------------------------------------------------------->
+|}
+
+=== Voices ===
+
+{{Wiki|stub}}
+
+[[Category:CfgIdentities]]

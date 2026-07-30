@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_typeText
+// revision: 329328 (2022-07-27T10:15:19Z)
+// export sha1: fz71x777rwbdfqk7uilao2lv6h1kbou
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|eff= local
+
+|gr1= GUI
+
+|descr= Types a structured text on the screen, letter by letter, cursor blinking.<br>
+[[File:BIS_fnc_typeText.gif|left|400px]]
+
+|s1= [stringLines, posX, posY, rootFormat] spawn [[BIS_fnc_typeText]]
+
+|p1= stringLines:
+* [[Array]] of [[String]]s - array containing lines of text with same structured text formatting.
+* [[Array]] of [[Array]]s format [text, format, blinkCount]:
+** text: [[String]] - (Optional, default "")
+** format: [[String]] - (Optional, default "<t align = 'center' shadow = '1' size = '0.7'>%1</t>&lt;br/&gt;")
+** blinkCount: [[Number]] - (Optional, default 5) number of cursor blinks after text typing
+
+|p2= posX: [[Number]] - (Optional, default 0)
+
+|p3= posY: [[Number]] - (Optional, default 0)
+
+|p4= rootFormat: [[String]] - (Optional, default "<t>%1</t>") the parent format
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+[
+	[
+		["CAMP ROGAIN,", "<t align = 'center' shadow = '1' size = '0.7' font='PuristaBold'>%1</t>"],
+		["RESUPPLY POINT", "<t align = 'center' shadow = '1' size = '0.7'>%1</t><br/>"],
+		["10 MINUTES LATER ...", "<t align = 'center' shadow = '1' size = '1.0'>%1</t>", 15]
+	]
+] spawn BIS_fnc_typeText;
+</sqf>
+
+|x2= <sqf>[
+	[
+		["Hello there...", nil, 30]
+	],
+	0, safeZoneY + safeZoneH / 2
+] spawn BIS_fnc_typeText;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_dynamicText]] [[BIS_fnc_infoText]] [[BIS_fnc_textTiles]] [[BIS_fnc_typeText2]]
+}}

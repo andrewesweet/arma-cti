@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/sort
+// revision: 377104 (2026-01-01T10:00:38Z)
+// export sha1: 8ovel1n4mpcvhkwz3xu8n9vz4b5h4ii
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Introduced with Arma 3 version 1.44 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.44
+
+|gr1= Arrays
+
+|descr= Attempts to sort given array either in ascending ([[true]]) or descending ([[false]]) order. {{Feature|important|This will '''modify''' the original array!}}
+
+|s1= array [[sort]] order
+
+|p1= array: [[Array]] of [[Anything]] - array to be sorted, can also be a nested array.<br><br>
+All array elements should be one of the following types:
+* [[String]] - Array of strings {{hl|["a","b","c"...]}}
+* [[Number]] - Array of numbers {{hl|[1,2,3...]}}
+* [[Array]] - Array of subarrays {{hl|[<nowiki/>["a",1,2],["b",3,4],["c",5,6]...]}}. Subarrays should be of the same structure. Subarray elements other than [[String]] or [[Number]] will be ignored during sorting.
+Mixed arrays {{hl|["a",1,[true], ...]}} are not supported and results are undefined.<br><br>
+
+|p2= order: [[Boolean]] - sorting order. 
+* [[true]]: ascending
+* [[false]]: descending
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_arr = [5.21725,1.30859,4,5.03028,1];
+_arr sort true;
+hint str _arr; //[1,1.30859,4,5.03028,5.21725]
+</sqf>
+
+|x2= <sqf>
+_dev = ["ja","pa","pa","tram","tara"];
+_dev sort false;
+hint str _dev; //["tram","tara","pa","pa","ja"]
+</sqf>
+
+|x3= <sqf>
+#define ASC true
+#define DESC false
+_scores = [[123,"bob",15],[123,"bill",20],[200,"dave",21],[200,"steve",11]];
+_scores sort DESC;
+hint str _scores; //[[200,"steve",11],[200,"dave",21],[123,"bob",15],[123,"bill",20]]
+</sqf>
+
+|x4= Sort buildings by distance and return position of the most distant building:
+<sqf>
+_buildings = player nearObjects ["Land_Cargo_Patrol_V1_F", 500];
+_buildings = _buildings apply { [_x distance player, _x] };
+_buildings sort false;
+hint format [
+	"Most distant building is at %1, distance %2 m", 
+	getPos (_buildings select 0 select 1),
+	round (_buildings select 0 select 0)
+];
+</sqf>
+
+|seealso= [[lbSortBy]] [[lnbSortBy]] [[BIS_fnc_sortAlphabetically]] [[BIS_fnc_sortBy]] [[BIS_fnc_sortNum]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150416181400
+|text= The algorithm for sorting subarrays: compare 1st element, if equal compare 2nd, if equal compare 3rd...etc.
+}}

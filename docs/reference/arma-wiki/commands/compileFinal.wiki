@@ -1,0 +1,97 @@
+// source: https://community.bistudio.com/wiki/compileFinal
+// revision: 376834 (2025-11-24T14:08:25Z)
+// export sha1: 6rs1qdjnu4qvly6v6y48euzr39cxomo
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Introduced with Arma 3 version 0.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.56
+
+|gr1= Strings
+
+|descr= Compiles an expression / takes an existing [[HashMap]] and makes it final, preventing it from being modified or overwritten (by [[=]] assignation, [[publicVariable]], [[set]] or any other command).
+{{Feature|informative|This feature is only available in the retail version of {{arma3}}.}}
+
+|s1= [[compileFinal]] expression
+
+|p1= expression: [[String]], {{GVI|arma3|2.14|size= 0.75}} [[Code]] or [[HashMap]]
+
+|r1= [[Code]] or [[HashMap]]
+
+|x1= <sqf>
+_myCode = compileFinal "a = a + 1";
+call _myCode;
+ 
+// repeated compile won't have any effect
+_myCode = compileFinal "a = a + 2";
+</sqf>
+
+|x2= <sqf>
+// duplicate code will be final as well
+_myDuplicateCode = _myCode;
+
+// an alternative is to copy str'd code (since Arma 3 v2.02)
+private _myNonFinalCopy = compile toString _myCode;
+</sqf>
+
+|x3= <sqf>
+// since {{arma3}} v2.14
+private _readonlyCode = compileFinal { systemChat "Hello World!"; };
+private _readonlyHashMap = compileFinal _myHashMap;
+</sqf>
+
+|seealso= [[compile]] [[compileScript]] [[isFinal]] [[call]] [[spawn]]
+}}
+
+{{Note
+|user= AgentRev01
+|timestamp= 20130815003500
+|text= When broadcasting a compileFinal'ed variable using [[publicVariable]] or its variants, the variable also becomes final on the other client(s) and/or the server.
+Also, compileFinal does not prevent [[Event_handlers|event handlers]] from being removed or overwritten.
+}}
+
+{{Note
+|user= Nelis75733126
+|timestamp= 20170527115800
+|text= in {{arma3}} v1.70.141838, [[compileFinal]] also works for [[profileNamespace]] and [[uiNamespace]]. But be careful with that.
+}}
+
+{{Note
+|user= Hypoxic125
+|timestamp= 20240622234127
+|text= Making a base class read only using HashMapObjects
+
+<sqf>
+Class_Dog = compileFinal createHashMapObject [
+    // Properties
+    ["#type", "Dog"],
+    ["owner", objNull],
+    ["legs", 4],
+    ["health", 100],
+    ["vehicleclass", "Dog_Base_F"],
+    ["vehicle", objNull],
+
+	// Constructor
+    ["#create", {
+        params [["_owner", objNull], ["_vehicle", objNull]];
+
+        if ([_owner, _vehicle] findIf {isNull _x} != -1) exitWith {};
+
+        _self set ["owner", _owner];
+        _self set ["vehicle", _vehicle]
+    }]
+];
+
+NewDog = createHashMapObject [
+    [["#base", Class_Dog]],
+    [player_1, createVehicle [Class_Dog get "vehicleclass", [0,0,0], 0, [], "NONE"]]
+];
+
+NewDog set ["owner", player_2];
+NewDog get "owner";                 // returns player_2
+
+Class_Dog set ["owner", player_1];  // Error: Read Only
+</sqf>
+}}

@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Prof-Branch_Change_Logs
+// revision: 378006 (2026-01-21T14:52:44Z)
+// export sha1: oi3q1cu2fye8lq9z1a9ndcspp3fyo02
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|Change logs for {{Link|https://dev.arma3.com/profiling-branch|Prof-Branch}} have historically been posted to the {{Link|https://forums.bohemia.net/forums/topic/160288-arma-3-stable-server-218-profiling-performance-binary-feedback/|Bohemia Interactive forums}}, but those have been offline or in read-only mode since 2025. Therefore, any logs since then will be shared here. The {{Link|https://discord.com/invite/arma|Arma Discord}} is another channel to learn about changes and to discuss them (''#perf_prof_branch'').}}
+
+{{GameCategory|arma3|Change Logs}}

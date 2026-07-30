@@ -1,0 +1,125 @@
+// source: https://community.bistudio.com/wiki/Arma_2:_Task_Tutorial
+// revision: 353552 (2024-03-19T12:01:38Z)
+// export sha1: n8syb41hu88wpdp6shezjv9r3pc5ck8
+// categories: Category:Arma Scripting Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Basics ==
+
+Tasks were introduced in {{GameCategory|arma2|link= y}} and improved in [[Arma 3: Task Framework|Arma 3]]. They replaced the [[Briefing.html|old objective system]] used in [[:Category:ArmA: Armed Assault|{{arma1}}]] and [[:Category:Operation Flashpoint|{{ofp}}]].
+
+
+{{Feature | arma3 | For '''{{arma3}}'''<nowiki/>'s Task Tutorial, see [[Arma 3: Task Framework Tutorial]].}}
+
+
+As opposed to the previous system:
+* Tasks can be created at any time from anywhere (trigger, script, etc). They do not need to be created in an external file.
+* Tasks are created "on the fly" as they are required and not "hidden/shown" anymore.
+
+=== States ===
+
+Task states are in [[String]] format.
+
+{| class="wikitable"
+! Value
+! Description
+! Display
+|-
+| "Assigned"
+| ''grey'' - The task is the current one
+| rowspan="6" | [[File:Taskstates.png|Task States]]
+|-
+| "Canceled"
+| ''grey diagonal line'' - The task has been cancelled
+|-
+| "Created"
+| ''black empty'' - The task exists, is available but isn't the current one
+|-
+| "Failed"
+| ''red crossed'' - The task was failed
+|-
+| "Succeeded"
+| ''green'' - The task was succeeded
+|-
+| "None"
+| ''?''
+|}
+
+
+== Good To Know ==
+
+Tasks are unit-specific. They are created to a ''unit'' and not to a ''client'' (computer).
+For example if you create a task for the [[player]] unit then [[teamSwitch]] to another unit, this new unit won't have any task.
+If you switch back to the original unit, it will have this created task.
+
+{{Feature | important | Task creation is '''local''' and should be executed on every client that needs it, such as every client that ''could'' access the unit.}}
+
+The value returned by [[createSimpleTask]] is a unique handle to the unit's task, returns a handle (variable which refers to the created task). Each task has a unique handle. Even using same line of code on different client will result in a different handle for the "same" task.
+
+
+== How to use a task ==
+
+=== Create a task ===
+
+<sqf>private _myTask = player createSimpleTask ["taskName1"];</sqf>
+
+=== Set a task's description ===
+
+<sqf>
+private _title = "Get the documents";
+private _description = "Enter the house to find the documents. Hurry, as the enemy is on its way.";
+private _waypoint = "House";
+
+_myTask setSimpleTaskDescription [_description, _title, _waypoint];
+</sqf>
+
+=== Assign a task ===
+
+<sqf>
+_myTask setTaskState "Assigned";
+player setCurrentTask _myTask;
+</sqf>
+
+=== Set a task's destination ===
+
+<sqf>
+_myTask setSimpleTaskDestination getPosATL objDocuments;	// a position
+// or
+_myTask setSimpleTaskTarget [objDocuments, true];			// an object - Arma 2 OA v 1.55
+</sqf>
+
+=== Set a task's state ===
+
+<sqf>_myTask setTaskState "Succeeded";</sqf>
+
+=== Delete a task ===
+
+<sqf>player removeSimpleTask _myTask;</sqf>
+
+
+== How to read a task's information ==
+
+=== Get a task's state ===
+
+<sqf>taskState _myTask;</sqf>
+
+=== Get a task's description ===
+
+<sqf>taskDescription _myTask;</sqf>
+
+=== Get a task's destination ===
+
+<sqf>taskDestination _myTask;</sqf>
+
+
+== See also ==
+
+* [[Arma 3: Task Framework]]
+* [[Arma 3: Task Framework Tutorial]]
+* [[:Category:Function_Group:_Tasks|Tasks Functions]]
+* [[:Category:Command Group: Briefing|Briefing Commands]]
+* [[briefing]]
+
+
+[[Category:Arma Scripting Tutorials]]

@@ -1,0 +1,539 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_GUI_Coordinates
+// revision: 376721 (2025-11-12T12:42:04Z)
+// export sha1: 3c3wld0fn39qvthk7jhyxn8kkyh9u61
+// categories: Category:GUI Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Example ==
+{{GVI|arma3|1.66}}
+You can check some of the grid systems on an interactive test menu ingame:
+* Open [[:Category:Eden Editor|Eden Editor]]
+* Open debug console (Tools > Debug Console)
+* Execute this code while in Editor Edit mode: <sqf>
+findDisplay 313 createDisplay "RscTestGrids";
+</sqf>
+Or
+* Execute this code while in Editor Preview mode: <sqf>
+createDialog "RscTestGrids";
+</sqf>
+This will create a menu where you can see how all grid systems react to specific resolutions, aspect ratios and interface sizes.
+: [[File:a3_GUI_grids.png|320px]]
+
+* Hovering over each grid will show a detailed description in tooltip.
+* Data for each grid shows the current size and max number of grids horizontally and vertically. Useful for making sure your menu proportions will work in all combinations.
+* Click COPY TO CLIPBOARD button to copy a code with an example that can be used directly in [[Config.cpp]] or [[Description.ext]].
+
+== Grids ==
+
+=== Choosing a grid ===
+You have the choice between the following grids:
+
+* Absolute
+* SafeZone
+* GUI_GRID
+* PixelGrid
+
+The following table contains some scenarios and which grid to choose accordingly.
+{| class="wikitable"
+!Scenario
+!Grid
+|-
+|Creating a UI with the same style as all ingame dialogs in Arma 3
+| rowspan="2" |GUI_GRID
+|-
+|Extending an Arma 3 UI
+|-
+|Creating/Extending a UI for [[:Category:Eden Editor|Eden]]
+| rowspan="2" |PixelGrid
+|-
+|Creating a new and completely custom UI
+|-
+|Working with relative positions (e.g. 50% of the screen)
+|SafeZone
+|}
+
+=== Absolute ===
+
+{{GVI|ofp|1.00}}
+The absolute grid refers to a 4:3 screen with UI size "Very Large". It is the oldest of the three grids (absolute, safeZone and pixelGrid). Because of this it is never advisable to use it. Config example:
+<syntaxhighlight lang="cpp">
+class TextAbsolute : RscText
+{
+	text = "Absolute grid";
+	x = 0;
+	y = 0.5;
+	w = 0.15;
+	h = 0.028;
+};
+</syntaxhighlight>
+
+=== SafeZone ===
+<!-- TODO?: new safezone picture with safeZoneWAbs and safeZoneHAbs -->
+{{GVI|arma2|1.00}}
+[[File:UI 12-3.jpg|thumb|safeZone values and their position on a triple screen setup.|500px]]
+To keep the dialog on screen the safeZone values were introduced. For more information see the [[SafeZone]] dedicated page. Here is a quick overview over the six commands:
+{| class="wikitable" style="min-width: 20em"
+|-
+! Command !! Explanation
+|-
+| [[safeZoneX]] || The left edge of the screen on SINGLE monitor settings.
+|-
+| [[safeZoneXAbs]] || The left edge of the screen on MULTIPLE monitors (Triple Head, three screens).
+|-
+| [[safeZoneY]] || The top edge of the screen.
+|-
+| [[safeZoneW]] || The width of the screen in a SINGLE monitor setup (or the center one in case of triple head).
+|-
+| [[safeZoneWAbs]] || The width of a triple head setup. In case of a single monitor this is equal to safeZoneW.
+|-
+| [[safeZoneH]] || The height of the screen
+|}
+
+<syntaxhighlight lang="cpp">
+//--- Text box which covers the top right quarter of the (center) screen
+class TextboxTopRightQuarter : RscText
+{
+	x = safezoneX + 0.5 * safeZoneW;
+	y = safezoneY;
+	w = 0.5 * safezoneW;
+	h = 0.5 * safezoneH;
+};
+//--- Textbox which covers the entire screen on a triple head setup
+class TextboxFullTripleScreen : RscText
+{
+	x = safeZoneXAbs;
+	y = safeZoneY;
+	w = safeZoneWAbs;
+	h = safeZoneH;
+};
+</syntaxhighlight>
+
+=== GUI_GRID ===
+
+{{GVI|arma3|0.50}}
+[[File:GUI GRID defines.png|thumb|GUI_GRIDs on "Very Large", "Normal" and "Very Small" (from top to bottom) on a 1920x1080 (16:9) screen. Not shown here are the pictures for the UI sizes "Small" and "Large".|500px]]
+The GUI_GRID is based on the safeZone grid and is used by the majority of the game's dialogs. The additional functionality is the possibility to stay on screen even with different user settings such as aspect ratio or UI scale. It also helps to keep a uniform style between dialogs. If you are using the base classes starting with "Rsc" then it is advisable to use this grid as some attributes (eg. fonts) will only scale correctly with this grid. The defines for use in configs and scripts can be accessed by adding this line to your config:
+<syntaxhighlight lang="cpp">#include "\a3\ui_f\hpp\definecommongrids.inc"</syntaxhighlight>
+The following table will list the most commonly used grids which are defined in said file. To use them add the appropiate suffix _X, _Y, _W or _H to the variable name, eg GUI_GRID includes GUI_GRID_X, GUI_GRID_Y, GUI_GRID_W and GUI_GRID_H. The second and third column refer to where the dialog will originate from on other UI sizes.
+
+{| class="wikitable"
+|-
+! #define !! Horizontal !! Vertical !! Notes
+|-
+| GUI_GRID || Left || Bottom || Example: Escape menu (RscDisplayInterrupt)
+|-
+| GUI_GRID_CENTER || Center || Middle || Example: RscDisplayTeamSwitch
+|-
+| GUI_GRID_TOPCENTER || Center || Top || 
+|-
+| GUI_GRID_BOTTOMCENTER || Center || Bottom || Example: Revive UI
+|-
+| GUI_GRID_CENTER_BOTTOM || Center || Bottom || Same as GUI_GRID_BOTTOMCENTER
+|-
+| GUI_GRID_TOPLEFT || Left || Top || Diary (the top left part of the map)
+|}
+
+Additionally you can add the following macros to cover the remaining positions (left center, entire right side):<syntaxhighlight lang="cpp">
+#define GUI_GRID_CENTERLEFT_X GUI_GRID_X
+#define GUI_GRID_CENTERLEFT_Y GUI_GRID_CENTER_Y
+#define GUI_GRID_CENTERLEFT_W GUI_GRID_W
+#define GUI_GRID_CENTERLEFT_H GUI_GRID_H
+
+#define GUI_GRID_TOPRIGHT_X (safeZoneX + safeZoneW - GUI_GRID_WAbs)
+#define GUI_GRID_TOPRIGHT_Y (safeZoneY)
+#define GUI_GRID_TOPRIGHT_W GUI_GRID_W
+#define GUI_GRID_TOPRIGHT_H GUI_GRID_H
+
+#define GUI_GRID_CENTERRIGHT_X GUI_GRID_TOPRIGHT_X
+#define GUI_GRID_CENTERRIGHT_Y GUI_GRID_CENTER_Y
+#define GUI_GRID_CENTERRIGHT_W GUI_GRID_W
+#define GUI_GRID_CENTERRIGHT_H GUI_GRID_H
+
+#define GUI_GRID_BOTTOMRIGHT_X GUI_GRID_TOPRIGHT_X
+#define GUI_GRID_BOTTOMRIGHT_Y GUI_GRID_Y
+#define GUI_GRID_BOTTOMRIGHT_W GUI_GRID_W
+#define GUI_GRID_BOTTOMRIGHT_H GUI_GRID_H
+</syntaxhighlight>The GUI_GRID divides the screen into 40 parts on the horizontal axis and into 25 vertically. Therefore no content should have negative x or y values nor should it exceed a width of 40 or a height of 25. Using a height of 25 or width of 40 is not the same as using screen height or width because the GUI_GRID will get smaller with smaller UI sizes as it should be. Examples:
+<syntaxhighlight lang="cpp">
+//--- Okay, will use entire available space:
+x = GUI_GRID_CENTER_X + 0 * GUI_GRID_CENTER_W;
+y = GUI_GRID_CENTER_Y + 0 * GUI_GRID_CENTER_H;
+w = 40 * GUI_GRID_CENTER_W;
+h = 25 * GUI_GRID_CENTER_H;
+</syntaxhighlight>
+<syntaxhighlight lang="cpp">
+//--- NOT okay:
+x = GUI_GRID_CENTER_X - 1 * GUI_GRID_CENTER_W;
+y = GUI_GRID_CENTER_Y - 1 * GUI_GRID_CENTER_H;
+w = 50 * GUI_GRID_CENTER_W;
+h = 30 * GUI_GRID_CENTER_H;
+</syntaxhighlight>
+The second example will dissapear on certain settings on the left and top edge as well as exceed the screen's width and height.
+
+Here is a copy paste example:
+<syntaxhighlight lang="cpp">
+#include "\a3\ui_f\hpp\definecommongrids.inc"
+#define GUI_TEXT_SIZE_SMALL 	(GUI_GRID_H * 0.8)
+#define GUI_TEXT_SIZE_MEDIUM 	(GUI_GRID_H * 1)
+#define GUI_TEXT_SIZE_LARGE 	(GUI_GRID_H * 1.2)
+class RscStructuredText
+{
+	deletable = 0;
+	fade = 0;
+	access = 0;
+	type = CT_STRUCTURED_TEXT;
+	idc = -1;
+	style = ST_LEFT;
+	colorText[] = {1,1,1,1};
+	class Attributes
+	{
+		font = "RobotoCondensed";
+		color = "#ffffff";
+		colorLink = "#D09B43";
+		align = "left";
+		shadow = 1;
+	};
+	x = 0;
+	y = 0;
+	h = 0;
+	w = 0;
+	text = "";
+	size = GUI_TEXT_SIZE_MEDIUM;
+	shadow = 1;
+};
+class MyDialog
+{
+	idd = -1;
+	class controls
+	{
+		class TextGUIGRID : RscStructuredText
+		{
+			text = "Text on the left bottom";
+			x = GUI_GRID_X + 0 * GUI_GRID_W;
+			y = GUI_GRID_Y + 24 * GUI_GRID_H;
+			w = 40 * GUI_GRID_W;
+			h = 1 * GUI_GRID_H;
+		};
+		class TextGUIGRIDCENTER : RscStructuredText
+		{
+			text = "<t align='center'>Text in the middle</t>";
+			x = GUI_GRID_CENTER_X + 0 * GUI_GRID_CENTER_W;
+			y = GUI_GRID_CENTER_Y + 12.5 * GUI_GRID_CENTER_H;
+			w = 40 * GUI_GRID_CENTER_W;
+			h = 1 * GUI_GRID_CENTER_H;
+		};
+		class TextGUIGRIDTOPCENTER : RscStructuredText
+		{
+			text = "<t align='center'>Text in the top center</t>";
+			x = GUI_GRID_TOPCENTER_X + 0 * GUI_GRID_TOPCENTER_W;
+			y = GUI_GRID_TOPCENTER_Y + 0 * GUI_GRID_TOPCENTER_H;
+			w = 40 * GUI_GRID_TOPCENTER_W;
+			h = 1 * GUI_GRID_TOPCENTER_H;
+		};
+		class TextGUIGRIDBOTTOMCENTER : RscStructuredText
+		{
+			text = "<t align='center'>Text bottom center</t>";
+			x = GUI_GRID_BOTTOMCENTER_X + 0 * GUI_GRID_BOTTOMCENTER_W;
+			y = GUI_GRID_BOTTOMCENTER_Y + 24 * GUI_GRID_BOTTOMCENTER_H;
+			w = 40 * GUI_GRID_BOTTOMCENTER_W;
+			h = 1 * GUI_GRID_BOTTOMCENTER_H;
+		};
+		class TextGUIGRIDTOPLEFT : TextGUIGRID
+		{
+			text = "Text on the left top";
+			x = GUI_GRID_TOPLEFT_X + 0 * GUI_GRID_TOPLEFT_W;
+			y = GUI_GRID_TOPLEFT_Y + 0 * GUI_GRID_TOPLEFT_H;
+			// w and h are inherited from TextGUIGRID 
+			// GUI_GRID_name_W and GUI_GRID_name_H are the same for every define
+		};
+	};
+};
+</syntaxhighlight>
+
+=== [[Pixel Grid System|Pixel Grid]] ===
+{{GVI|arma3|1.60}} {{GVI|arma3|1.62}}
+The pixel grid system was introduced to resolve issues with UI elements which appeared not as they should be because of the fact that the computer can't draw in between pixels. For a more in depth explanation of the grid go to the [[Pixel Grid System|dedicated BIKI page]]. The base controls from which to inherit from usually start with ctrl, eg. ctrlPicture, ctrlStrucuturedText, etc.. Mixing controls with different grids on the same dialog might lead to undesired visuals.
+
+==== Commands ====
+{| class="wikitable"
+|-
+! Command !! Explanation
+|-
+| [[pixelW]] || Width of one pixel. On displays with too fine resolution (e.g., 4K), it can get too small for practical use.
+|-
+| [[pixelH]] || Height of one pixel. On displays with too fine resolution (e.g., 4K), it can get too small for practical use.
+|-
+| [[pixelGrid]] || Multiplier based on resolution, interface size and some config values. It can be divided by up to 4 and still be a whole number. Due to this rounding, some interface sizes may use the same value.
+|-
+| [[pixelGridBase]] || Multiplier only based on the screen resolution.
+|-
+| [[pixelGridNoUIScale]] || Similar to pixelGrid, but affected only by resolution, not interface size. Usually used to keep some important elements, e.g., spotlight buttons in the main menu.
+|}
+
+==== Includes ====
+<syntaxhighlight lang="cpp">#include "\a3\3DEN\UI\macros.inc"
+#include "\a3\3DEN\UI\macroexecs.inc"</syntaxhighlight>
+{| class="wikitable"
+|-
+! #define !! Explanation
+|-
+| GRID_W || Width of one grid
+|-
+| GRID_H || Height of one grid
+|-
+| CENTER_X || Vertical screen center
+|-
+| CENTER_Y || Horizontal screen center
+|}
+
+==== Examples ====
+<syntaxhighlight lang="cpp">
+#include "\a3\3DEN\UI\macros.inc"
+#include "\a3\3DEN\UI\macroexecs.inc"
+class ctrlDefaultText : ctrlDefault
+{
+	sizeEx = "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.5";
+	font = "RobotoCondensedLight";
+	shadow = 1;
+};
+class ctrlStructuredText : ctrlDefaultText
+{
+	type = CT_STRUCTURED_TEXT;
+	colorBackground[] = {0,0,0,0};
+	size = "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.5";
+	text = "";
+	class Attributes
+	{
+		align = "left";
+		color = "#ffffff";
+		colorLink = "";
+		size = 1;
+		font = "RobotoCondensedLight";
+	};
+	onCanDestroy = "";
+	onDestroy = "";
+};
+class MyPixelGridDialog
+{
+	idd = -1;
+	class controls
+	{
+		class TextLeftTop : ctrlStructuredText
+		{
+			text = "Left top";
+			x = safeZoneX + 0 * GRID_W;
+			y = safeZoneY + 0 * GRID_H;
+			w = 50 * GRID_W;
+			h = 5 * GRID_H;
+			colorBackground[] = {1,0,0,1};
+		};
+		class TextCenterMiddle : TextLeftTop
+		{
+			text = "Center middle";
+			x = CENTER_X - 25 * GRID_W;
+			y = CENTER_Y - 2.5 * GRID_H;
+		};
+		class TextRightBottom : TextLeftTop
+		{
+			text = "Left bottom";
+			x = safeZoneX + safeZoneW - 50 * GRID_W;
+			y = safeZoneY + safeZoneH - 5 * GRID_H;
+		};
+	};
+};
+</syntaxhighlight>
+
+== Controls Groups ==
+The calculation of the x and y coordinates of a control within a [[CT_CONTROLS_GROUP]] are relative to the controlsGroup's position, so a position of {{hl|[0,0]}} would be in the top left corner of the controlsGroup. Negative values will make content inaccessible. Controls which lie outside of the controls groups area or exceed its width or height will add scrollbars to the controls group. Here is an example which positions a control inside of a controls group so that it covers the top left quarter of the screen while the controls group theoretically covers the entire screen:
+<syntaxhighlight lang="cpp">
+import RscControlsGroup;
+import RscText;
+class RscTestDialog
+{
+	idd = -1;
+	class Controls
+	{
+		class Group : RscControlsGroup
+		{
+			idc = -1;
+			x = safeZoneX;
+			y = safeZoneY;
+			w = safeZoneW;
+			h = safeZoneH;
+			class Controls
+			{
+				class Text : RscText
+				{
+					idc = -1;
+					colorBackground[] = {1,0,0,0.2};
+					x = 0;
+					y = 0;
+					w = 0.5 * safeZoneW;
+					h = 0.5 * safeZoneH;
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+== Using the grids in the GUI Editor ==
+
+The currently used grid in the GUI editor is the GUI_GRID but only in name. It actually uses the absolute grid:
+{| class="wikitable"
+|-
+! GUI Editor || {{arma3}} default || Explanation || For actual GUI_GRID
+|-
+| X: || 0 || Horizontal origin || <sqf inline>(safeZoneX)</sqf>
+|-
+| Y: || 0 || Vertical origin || <sqf inline>(safeZoneY + safeZoneH - (((safeZoneW / safeZoneH) min 1.2) / 1.2))</sqf>
+|-
+| Area W: || 1 || Total width of the grid || <sqf inline>((safeZoneW / safeZoneH) min 1.2)</sqf>
+|-
+| Area H: || 1 || Total height of the grid || <sqf inline>(((safeZoneW / safeZoneH) min 1.2) / 1.2)</sqf>
+|-
+| Segment W: || 0.025 || Width of one grid || <sqf inline>(((safeZoneW / safeZoneH) min 1.2) / 40)</sqf>
+|-
+| Segment H: || 0.04 || Height of one grid || <sqf inline>((((safeZoneW / safeZoneH) min 1.2) / 1.2) / 25)</sqf>
+|-
+| Variable: || GUI_GRID || Variable when grid is exported || GUI_GRID
+|}
+To fix this you can press {{Controls|Ctrl|G}} to define your own grid. Be aware that it is not saved when closing the GUI editor. This is what it should be like:<br>
+[[File:guieditorgrid.png|900px]]
+
+To use other grids you have to replace all macros. For GUI_GRID this would mean:
+<syntaxhighlight lang="cpp">
+//--- New grid for new A3 displays
+#define GUI_GRID_WAbs		((safezoneW / safezoneH) min 1.2)
+#define GUI_GRID_HAbs		(GUI_GRID_WAbs / 1.2) //--- Replace GUI_GRID_WAbs
+#define GUI_GRID_W			(GUI_GRID_WAbs / 40) //--- Replace GUI_GRID_WAbs
+#define GUI_GRID_H			(GUI_GRID_HAbs / 25) //--- Replace GUI_GRID_HAbs 
+#define GUI_GRID_X			(safezoneX)
+#define GUI_GRID_Y			(safezoneY + safezoneH - GUI_GRID_HAbs) //--- Replace GUI_GRID_HAbs
+</syntaxhighlight>
+Will become:
+<syntaxhighlight lang="cpp">
+//--- New grid for new A3 displays
+#define GUI_GRID_WAbs		((safezoneW / safezoneH) min 1.2)
+#define GUI_GRID_HAbs		(((safezoneW / safezoneH) min 1.2)/ 1.2)
+#define GUI_GRID_W			(((safezoneW / safezoneH) min 1.2)/ 40)
+#define GUI_GRID_H			((((safezoneW / safezoneH) min 1.2)/ 1.2)/ 25)
+#define GUI_GRID_X			(safezoneX)
+#define GUI_GRID_Y			(safezoneY + safezoneH - (((safezoneW / safezoneH) min 1.2)/ 1.2))
+</syntaxhighlight>
+
+
+== The size/sizeEx attribute ==
+
+{{Feature|informative|'''sizeEx''' and '''size''' both have the same functionality. Some controls use the '''size''' property, others '''sizeEx'''.}}
+Some controls make use of the {{hl|size}} or {{hl|sizeEx}} attribute. These attributes set the fontsize of the control. They expect a number in the format of UI coordinates, therefore you should use the same coordinates as the one you used for the {{hl|h}} attribute, e.g:
+<syntaxhighlight lang="cpp">
+class TextControl : RscText
+{
+	text = "Large text";
+	x = GUI_GRID_CENTER_X + 1 * GUI_GRID_CENTER_W;
+	y = GUI_GRID_CENTER_Y + 0 * GUI_GRID_CENTER_H;
+	w = 23 * GUI_GRID_CENTER_W;
+	h = 2 * GUI_GRID_CENTER_H;
+	sizeEx = 2 * GUI_GRID_CENTER_H;
+};
+</syntaxhighlight>
+
+You can also use the following defines for GUI_GRIDs:
+<syntaxhighlight lang="cpp">#define GUI_TEXT_SIZE_SMALL (GUI_GRID_H * 0.8)
+#define GUI_TEXT_SIZE_MEDIUM (GUI_GRID_H * 1)
+#define GUI_TEXT_SIZE_LARGE (GUI_GRID_H * 1.2)
+</syntaxhighlight>
+
+
+And for the pixelGrid:
+<syntaxhighlight lang="cpp">
+class TextControl : ctrlStructuredText
+{
+	text = "Large text";
+	x = CENTER_X - 20 * GRID_W;
+	y = CENTER_Y - 5 * GRID_H;
+	w = 40 * GRID_W;
+	h = 10 * GRID_H;
+	size = 10 * GRID_H;
+};
+</syntaxhighlight>
+
+With the defines from {{hl|macroexecs.inc}} and {{hl|macros.inc}}:
+<syntaxhighlight lang="cpp">
+class TextControl : RscText
+{
+	text = "Large text";
+	x = CENTER_X - 20 * GRID_W;
+	y = CENTER_Y - 5 * GRID_H;
+	w = 40 * GRID_W;
+	h = 10 * GRID_H;
+	sizeEx = SIZEEX_PURISTA(SIZE_M); // A macro used to easily set the font size according to some predefined size values and a coefficient. The macro gets the size nearest to the one which was inputted.
+};
+</syntaxhighlight>
+
+List of available pixelGrid font sizes:
+{| class="wikitable"
+|-
+! colspan="2"| sizeEx ||rowspan="7" style="background-color:#ffffff;"  | ||colspan="2"| size
+|-
+! #define !! Value || #define || Value
+|-
+| SIZEEX_XS || 3.0 || SIZE_XS || 3.5
+|-
+| SIZEEX_S || 4.0 || SIZE_S || 4
+|-
+| SIZEEX_M || 4.5 || SIZE_M || 5
+|-
+| SIZEEX_L || 5.0 || SIZE_L || 5
+|-
+| SIZEEX_XL || 6.0 || SIZE_XL || 6
+|}
+
+== Converting to relative position or pixel position ==
+Since the GUI coordinates are only usable in the game, here are some ways to convert a given screen position to either relative position or pixel position:<br>
+A given screen coordinate on the x axis is given by the equation:
+<sqf>x = safeZoneX + A * safeZoneW</sqf>
+Where {{hl|x}} is the coordinate from Arma and {{hl|A}} is the relative position of that coordinate. When we solve for A we get:
+<sqf>A = (x - safeZoneX) / safeZoneW</sqf>
+We can do the same with the Y coordinate:
+<sqf>
+y = safeZoneY + B * safeZoneH
+B = (y - safeZoneY) / safeZoneH
+</sqf>
+If we want to have the pixel position we can simply use [[pixelW]] and [[pixelH]] instead of [[safeZoneW]] and [[safeZoneH]]:
+<sqf>
+x = safeZoneX + C * pixelW
+C = (x - safeZoneX) / pixelW
+
+y = safeZoneY + D * pixelH
+D = (y - safeZoneY) / pixelH
+</sqf>
+
+Here is an implementation of this calculation in sqf which you can execute in [[:Category:Eden Editor|Eden]]:
+<sqf>
+findDisplay 313 displayRemoveEventHandler ["MouseMoving", missionNamespace getVariable ["EHID", -1]];
+EHID = findDisplay 313 displayAddEventHandler ["MouseMoving", {
+	params ["_display", "_xPos", "_yPos"];
+	toFixed 5;
+	_mp = getMousePosition;
+	_mp params ["_xp", "_yp"];
+	_mpRel = [
+		(_xp - safeZoneX) / safeZoneW,
+		(_yp - safeZoneY) / safeZoneH
+	];
+
+	_mpPixel = [
+		(_xp - safeZoneX) / pixelW,
+		(_yp - safeZoneY) / pixelH
+	] apply { round _x };
+	
+	systemChat format ["Absolute: %1 | Relative: %2 | Pixel: %3", _mp, _mpRel, _mpPixel];
+}];
+</sqf>
+
+An application of this method can be found in this {{Link|link= https://forums.bohemia.net/forums/topic/233823-how-to-recognize-coordinates-of-4-corners-of-screenshot/|text= BI Forum thread}}.
+
+
+[[Category:GUI Topics||GUI Coordinates]]

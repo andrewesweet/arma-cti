@@ -1,0 +1,108 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Code_Snippets
+// revision: 363629 (2024-04-08T21:56:08Z)
+// export sha1: ss1ue73mxu2pisp9oc8g7fycn9rn77k
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Determine positions of craters on terrain ==
+
+The craters that are part of the terrain, are not objects.
+
+[[File:Normandy-Crater.jpg|thumb]]
+
+They usually have crater decals in them but the once present on the terrain do not link to the config versions which makes detecting them is harder.
+
+In order to detect craters within 10 meters around the player, use the following code:
+<sqf>
+(nearestObjects [player, [], 10]) select
+{
+	((getModelInfo _x) # 0) in ["spe_crater_decal_large.p3d","spe_crater_decal_small.p3d"]
+};
+</sqf>
+
+
+== Enable revive system on AI joining the player group ==
+
+Certain scripts/missions/mods allow the player to recruit AI to his group or add reinforcements to the player group.
+
+{{Feature|important|The enhanced revive module needs to be put into the mission (or the scripted setup used).}}
+
+<sqf>
+// initPlayerLocal.sqf/init.sqf with if (hasInterface) then	{ ... };
+
+(group player) addEventHandler ["UnitJoined",
+{
+	params ["_group", "_newUnit"];
+
+	[_newUnit] call SPE_MissionUtilityFunctions_fnc_ReviveToksaInit;
+	[_newUnit] call SPE_MissionUtilityFunctions_fnc_ReviveToksaActionsInit;
+}];
+</sqf>
+
+
+== Highlight Rivers in [[:Category:Eden Editor|Eden Editor]] ==
+
+<sqf>
+if is3DEN then
+{
+	collect3DENHistory
+	{
+		private _layerID = -1 add3DENLayer "River Objects";
+		private _riverObjects = nearestTerrainObjects [[0.5 * worldSize, 0.5 * worldSize, 0], ["RIVER"], sqrt 2 / 2 * worldSize];
+
+		_riverObjects apply
+		{
+			(create3DENEntity ["Comment", "", getPosATL _x]) set3DENLayer _layerID;
+		};
+	};
+};
+</sqf>
+
+
+== Highlight Bridges in [[:Category:Eden Editor|Eden Editor]] ==
+
+<sqf>
+if is3DEN then
+{
+	collect3DENHistory
+	{
+		private _layerID = -1 add3DENLayer "Bridge Objects";
+		private _bridges = nearestTerrainObjects [[0.5 * worldSize, 0.5 * worldSize, 0], ["ROAD", "MAIN ROAD", "TRACK"], sqrt 2 / 2 * worldSize];
+
+		_bridges apply
+		{
+			if ("bridge" in toLower (str _x)) then
+			{
+				private _entity = create3DENEntity ["Comment", "", getPosATL _x];
+				_entity set3DENAttribute ["Description", str _x];
+				_entity set3DENLayer _layerID;
+			};
+		};
+	};
+};
+</sqf>
+
+
+== Highlight Strongpoints in [[:Category:Eden Editor|Eden Editor]] ==
+
+<sqf>
+if is3DEN then
+{
+	collect3DENHistory
+	{
+		private _layerID = -1 add3DENLayer "Strongpoints";
+		private _strongpoints = nearestLocations [[0.5 * worldSize, 0.5 * worldSize, 0], ["StrongpointArea"], sqrt 2 / 2 * worldSize];
+
+		_strongpoints apply
+		{
+			private _pos = locationPosition _x;
+			_pos set [2, 0];
+			private _entity = create3DENEntity ["Comment", "", _pos];
+			_entity set3DENLayer _layerID;
+		};
+	};
+};
+</sqf>
+
+
+[[Category: Spearhead 1944]]

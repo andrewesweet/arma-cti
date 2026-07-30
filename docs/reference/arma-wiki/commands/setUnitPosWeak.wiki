@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/setUnitPosWeak
+// revision: 369195 (2024-09-03T10:34:47Z)
+// export sha1: 20f7t42knjujp8mek67pokhgqy4n8pu
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Armed Assault version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.04
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|eff= global
+
+|arg= local
+
+|gr1= Unit Control
+
+|descr= Set unit position rules. This command is the lowest level of priority for setting unit position and to be used in scripted	
+FSM's. Priorities are:
+# Unit pos commanded (from the commanding menu, higher priority).
+# Unit pos scripted (from [[setUnitPos]] scripting command, medium priority).
+# Unit pos FSM / '''setUnitPosWeak''' (used in the formation FSM, lowest priority).
+
+|s1= unit [[setUnitPosWeak]] mode
+
+|p1= unit: [[Object]]
+
+|p2= mode: [[String]] - can be:
+* "DOWN" - Unit goes prone and stays prone.
+* "UP" - Unit stands and stays standing.
+* "MIDDLE" - Kneel Position. {{GVI|arma1|1.04}} - Unit will not kneel if it is unarmed
+* "AUTO" - Unit chooses mode according to circumstances.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_soldier disableAI "FSM";
+_soldier setUnitPosWeak "DOWN";
+</sqf>
+
+|seealso= [[FSM]] [[doFSM]] [[setUnitPos]] [[unitPos]]
+}}

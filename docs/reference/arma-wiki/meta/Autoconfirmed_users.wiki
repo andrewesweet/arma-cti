@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Bohemia_Interactive_Community:Autoconfirmed_users
+// revision: 363652 (2024-04-12T08:11:23Z)
+// export sha1: phoiac9h4m842xq45sp7s6u21eteeq1
+// Vendored snapshot. Do not edit — re-export instead.
+
+

@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Invaders
+// revision: 347368 (2023-09-14T10:36:54Z)
+// export sha1: s3iyr2omj9wqvtfu1c65o3bxu2xi86q
+// categories: Category:Arma 3
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:arma3_main-menu-invaders.jpg|thumb|right|The first level of Invaders]]
+'''Invaders''' is a minigame in the {{arma3}} main menu. By default, it is only available during {{Link|https://store.steampowered.com/app/107410/Arma_3/|{{arma3}} Steam sales}}. Completing the minigame unlocks the ''Arma Invaders'' achievement and turns the {{arma3}} logo in the main menu golden.
+
+Invaders first appeared during the {{Link|https://store.steampowered.com/news/group/32984825/view/3400798954869678243|Bohemia Interactive Publisher Sale 2022}} ({{GVI|arma3|2.10}}).
+
+A New Game+ mode and player vehicle swap to the T-100X railgun tank were added in {{GVI|arma3|2.14}}.
+
+
+==Controls ==
+
+{| class="wikitable align-center-col-2"
+!Action!!Default Keybinding!!Controls Option
+|-
+|Move left||{{Controls|A}}||''Infantry Movement'' > ''Strafe Left''
+|-
+|Move right||{{Controls|D}}||''Infantry Movement'' > ''Strafe Right''
+|-
+|Shoot||{{Controls|Space}}||''Common'' > ''Use Default Action''
+|}
+
+
+== Known Issues ==
+
+*Invaders does not start if {{arma3}} is launched with mods that modify the main menu (unless they were whitelisted: ACE).
+*Sometimes pressing {{Controls|Space}} opens the Steam overlay; close the Steam overlay and click on a non-interactive part of the main menu.<br><!-- -->This might be related to {{Controls|Alt|Tab}} usage, with {{Controls|Tab}} moving the focus and {{Controls|Space}} clicking the selected button.
+
+
+==Advanced ==
+
+The Invaders minigame can be opted out of (or back in) by executing the following code (for example with the [[Arma 3: Debug Console|Debug Console]] in the [[:Category:Eden Editor|Eden Editor]]):
+{| class="wikitable"
+!Opt out of Invaders
+!Opt in to Invaders
+|-
+|<sqf>
+profileNamespace setVariable ["BIN_ArmaInvadersOff", true];
+saveProfileNamespace;
+</sqf>
+|<sqf>
+profileNamespace setVariable ["BIN_ArmaInvadersOff", nil];
+saveProfileNamespace;
+</sqf>
+|}
+
+The following code can be used to activate and play Invaders regardless of ongoing {{arma3}} sales:
+{| class="wikitable valign-bottom"
+!Override default behaviour
+!Restore default behaviour
+|-
+|<sqf>
+/*
+	Possible values:
+		0: deactivate Invaders
+		1: set a 'lite' sale promotion mode
+		2: activate Invaders
+*/
+profileNamespace setVariable ["BIN_ArmaInvadersOfflineBypass", 2];
+saveProfileNamespace;
+</sqf>
+|<sqf>
+profileNamespace setVariable ["BIN_ArmaInvadersOfflineBypass", nil];
+saveProfileNamespace;
+</sqf>
+|}
+
+{{GameCategory|arma3}}

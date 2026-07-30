@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/removeItemFromUniform
+// revision: 376273 (2025-09-23T06:13:21Z)
+// export sha1: gzig5aj5hnwt0br39urb7bjokrk6brw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 3 version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.04
+
+|arg= global
+|eff= global
+
+|gr1= Containers
+
+|descr= Removes item from soldier's uniform. Can be used with magazines and weapons too.
+
+|s1= unit [[removeItemFromUniform]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeItemFromUniform "FirstAidKit";</sqf>
+
+|seealso= [[addItemToUniform]] [[removeItemFromVest]] [[removeItemFromBackpack]] [[removeItemFromPrimaryWeapon]]
+}}

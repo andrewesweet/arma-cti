@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/grpNull
+// revision: 321055 (2022-05-13T12:17:13Z)
+// export sha1: gwbw7zrpyx8xjaku7nqd6zt7qixqqti
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Groups
+
+|descr= A non-existing [[Group]]. To compare non-existent groups use [[isNull]] or [[isEqualTo]]:
+<sqf>
+grpNull == grpNull;			// false
+isNull grpNull;				// true
+grpNull isEqualTo grpNull;	// true
+</sqf>
+
+|s1= [[grpNull]]
+
+|r1= [[Group]]
+
+|x1= <sqf>!isNull grpNull; // false</sqf>
+
+|x2= <sqf>str grpNull; // <NULL-group></sqf>
+
+|seealso= [[controlNull]] [[displayNull]] [[locationNull]] [[objNull]] [[taskNull]] [[teamMemberNull]] [[scriptNull]] [[configNull]] [[typeName]] [[isNull]]
+}}

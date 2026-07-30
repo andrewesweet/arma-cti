@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/currentWeapon
+// revision: 378862 (2026-07-22T17:08:42Z)
+// export sha1: hztamxuwf72mj31b4bxyv2rwibmdllh
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Command Group: Weapons | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Weapons
+
+|gr2= Unit Inventory
+
+|descr= Return the name of the currently selected weapon (on the primary turret for vehicles).
+
+|s1= [[currentWeapon]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[String]]
+
+|x1= <sqf>_weaponClass = currentWeapon (vehicle player);//Example: "M16A2GL"</sqf>
+|x2= <sqf>_weaponClass = currentWeapon player;</sqf>
+
+|seealso= [[currentMagazine]] [[currentMuzzle]] [[currentThrowable]] [[currentVisionMode]] [[currentWeaponMode]] [[currentZeroing]] [[magazinesTurret]] [[weaponsTurret]] [[currentWeaponTurret]] [[weaponState]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2009-07-15 - 04:00 (CEST)</dd>
+<dt class="note">[[User:Lou Montana|Lou Montana]]</dt>
+<dd class="note">You have to make a little delay (sleep 0.001; (not less)) to use this command, else you will be returned an empty string.
+<dd class="notedate">Posted on 2009-07-15 - 04:00 (CEST)</dd>
+<dt class="note">[[User:Lou Montana|Lou Montana]]</dt>
+<dd class="note">It seems it is not working in 1.02 for other unit than player.
+<dt><dt>
+<dd class="notedate">Posted on 2010-05-04</dd>
+<dt class="note">[[User:Terox|Terox]]</dt>
+<dd class="note">This works for vehicles providing there is a gunner
+</dl>

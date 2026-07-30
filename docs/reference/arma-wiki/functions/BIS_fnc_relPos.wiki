@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_relPos
+// revision: 327958 (2022-07-13T13:07:01Z)
+// export sha1: ea18fv5c9l76cz3xyjbrqbhrmzbjo9b
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Geometry | Category:Function Group: Positions | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Positions
+
+|gr2= Geometry
+
+|descr= Returns a position that is a specified distance and compass direction from the passed position or object.
+{{Feature|arma3|In {{arma3}} use [[getPos]]' [[getPos#Syntax 3|alternative syntax]] instead.}}
+
+|s1= [origin, distance, direction] call [[BIS_fnc_relPos]]
+
+|p1= origin: [[Object]] or [[Position]] - object or position which should be used as initial point.
+
+|p2= distance: [[Number]] - distance from initial point
+
+|p3= direction: [[Number]] - direction from the intial position
+
+|r1= [[Position]]
+
+|x1= <sqf>[[0,0,0], 1000, 50] call BIS_fnc_relPos; // [766.044,642.788,0]</sqf>
+
+|seealso= [[getPos]]
+}}
+
+{{Note
+|user= Lawman Actual
+|timestamp= 20160107192600
+|text= The function appears to work in two dimensions, and as such can be used to find the position of a target relative to the player if bearing and distance are known.
+
+However, if there is a significant change in elevation between yourself and the target, the distance registered on a rangefinder (which is measuring in a 3-dimensional straight line) will always be larger than the two-dimensional value required for [[BIS_fnc_relPos]] and as such air-strikes and ordnance called in using such a function can miss by several hundred metres in extreme cases.
+
+Currently searching for a method which incorporates the azimuth of the rangefinder in calculation.
+}}

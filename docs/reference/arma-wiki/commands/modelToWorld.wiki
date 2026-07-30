@@ -1,0 +1,88 @@
+// source: https://community.bistudio.com/wiki/modelToWorld
+// revision: 377424 (2026-01-02T06:45:36Z)
+// export sha1: k97viyvqra73e4f5ro1wej742ivt866
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|gr1= Positions
+
+|descr= Translates relative position from object model space to world space in [[Position#PositionAGL|PositionAGL]] format.<br>
+This command will take into account [[vectorUp]] of the object when calculating relative coordinates.
+For the [[Position#PositionASL|PositionASL]] version of this command, see [[modelToWorldWorld]].
+
+{{Feature|important|For [[setObjectScale|scaled objects]], the relative position will first be [[vectorMultiply|multiplied]] by the object scale.<br>
+For example, if the object scale is 2, <sqf inline>_obj modelToWorld [0,1,0]</sqf> will be offset '''2 meters''' from the model center (<sqf inline>[0,0,0]</sqf>).}}
+
+|s1= model [[modelToWorld]] position
+
+|p1= model: [[Object]]
+
+|p2= position: [[Position#PositionRelative|PositionRelative]] - [x,y,z] offset relative to the model centre
+
+|r1= [[Position#PositionAGL|PositionAGL]] - translated world position
+
+|x1= <sqf>_aboveAndBehindPlayer = player modelToWorld [0,-1,3];</sqf>
+
+|seealso= [[vectorModelToWorld]] [[modelToWorldVisual]] [[worldToModel]] [[modelToWorldWorld]] [[modelToWorldVisualWorld]] [[selectionPosition]]
+}}
+
+{{Note
+|user= Dr_Eyeball
+|timestamp= 20070218015500
+|text= The ''worldPos'' parameter appears to be a relative offset to the position of ''object'', so it can often simply be [0,0,0].<BR>
+'''Example:''' to position an object ''_obj'' relative to the position of another object ''_relObj'' with on offset of ''_offset'', try:
+<sqf>
+_offset = [_x,_y,_z];
+_worldPos = _relObj modelToWorld _offset;
+_obj setPos _worldPos;
+</sqf>
+}}
+
+{{Note
+|user= ManDay
+|timestamp= 20070724174500
+|text= The object model space has got its Z-Axis along the object's [[vectorUp]],
+its Y-Axis along the object's [[vectorDir]],
+while its X-Axis goes along {{Link|https://en.wikipedia.org/wiki/Cross_product|vectorDir x VectorUp}} (meaning as the X-Axis in a {{Link|https://en.wikipedia.org/wiki/Cartesian_coordinate_system#In_three_dimensions|right-handed cartesian coordiante system}}).
+}}
+
+{{Note
+|user= Dr_Eyeball
+|timestamp= 20080508080500
+|text= If your object requires a new direction, ensure you call [[setDir]] ''prior'' to [[setPosATL]] when using [[modelToWorld]].
+Calling setDir afterwards will skew its position otherwise.
+<sqf>
+_ladder setDir _angle;
+_ladder setPosATL (_building modelToWorld [_x, _y, _z]);
+</sqf>
+}}
+
+{{Note
+|user= Hduregger
+|timestamp= 20110206204100
+|text= The z height returned changes dynamically with the height of waves beneath the object, if the object is located over sea.
+The z height returned by [[getPosATL]] and [[getPosASL]] does not change like this.
+This was tested by continuously retrieving the position of a static object, like the cross in the empty/corpses category, placed over sea or land.
+[[modelToWorld]] behaves similar to [[getPos]] but it does not give the same result, therefore
+<sqf>_obj modelToWorld [0.0, 0.0, 0.0]</sqf>
+is '''not''' the same as <sqf>getPos _obj;</sqf>.
+}}

@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/missionStart
+// revision: 329154 (2022-07-25T12:25:22Z)
+// export sha1: 0drytadu4pic2xg3n01m0s0vziag2jk
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Introduced with Operation Flashpoint version 1.80 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.80
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Mission Information
+
+|descr= Returns date and time when mission started. Because this command returns the time of the actual start of the mission, it might not be available in ''pre-init'' or ''init'', but is guaranteed to be available in ''post-init'' when <sqf inline>time > 0</sqf>.
+
+|mp= Command only has the desired return value in multiplayer.
+
+|s1= [[missionStart]]
+
+|r1= [[Array]] format {{hl|[year, month, day, hour, minute, second]}} in multiplayer, which differs from [[date]] format only by seconds. In SP returns {{hl|[0,0,0,0,0,0]}}
+
+|x1= <sqf>setDate (missionStart select [0,5]);</sqf>
+
+|x2= Set real date:
+<sqf>
+//postInit = 1;
+if (isServer) then
+{
+	waitUntil { time > 0 };
+	setDate (missionStart select [0, 5]);
+};
+</sqf>
+
+|seealso= [[date]] [[time]] [[dayTime]] [[serverTime]] [[setDate]] [[systemTime]] [[systemTimeUTC]]
+}}

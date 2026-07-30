@@ -1,0 +1,352 @@
+// source: https://community.bistudio.com/wiki/Campaign_Description.ext
+// revision: 341610 (2023-06-10T15:13:46Z)
+// export sha1: mh1blwruen1b1zins8hisevasyim59u
+// categories: Category:Mission Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A campaign's '''Description.ext''' is the entry point to load a campaign's information; the campaign title, author and overview picture, the missions tree, everything displayed from the Campaigns screen is defined in it.
+
+It must be well written to ensure a good campaign experience, as the flow of missions is defined in this file (a.k.a which mission should be played on which ending).
+This config file can be accessed through [[campaignConfigFile]].
+
+A campaign file (''myCampaign.pbo'') should not depend on any external resources to work but eventual mods!
+
+{{Feature|important|A wrongly formatted campaign's Description.ext can crash your game!}}
+
+{{Feature|informative|
+* This page is about a campaign's Description.ext. For the mission version, please go to [[Description.ext]].
+* For a tutorial on how to create a multiplayer campaign, see [[Arma 3: Multiplayer Campaign Creation]].
+}}
+
+
+== Campaign Directory Structure ==
+
+A campaign structure is the following:
+ myCampaignDirectory
+ myCampaignDirectory\'''description.ext'''
+ myCampaignDirectory\mission'''s'''
+ myCampaignDirectory\mission'''s'''\mission01.VR
+ myCampaignDirectory\mission'''s'''\mission02.VR
+ ...
+
+Other files may appear at the root of myCampaignDirectory for sharing resources between missions, or storing the campaign overview image for example.
+No files should appear in myCampaignDirectory\mission'''s''', only mission directories. Mission names do not matter nor impact the missions flow.
+''Zmission.VR'' will not load after ''Amission.VR'' for example. The order is, again, defined in the '''description.ext''' file.
+
+{{Feature|informative|You may have to manually create the '''''arma3rootDir''\Campaigns''' directory.}}
+
+
+== Missions Flow ==
+
+Missions flow structure is defined as follows:
+* The parent class is Campaign, nothing else.
+* Campaign is filled with chapters
+* Chapters are filled with missions and defined endings
+* Missions are filled with endings.
+
+{{Feature|important|Campaign class cannot contain mission classes directly!}}
+
+* A campaign contains one to many chapters, and '''must''' define a parameter named '''firstBattle''' pointing to its first chapter.
+* A chapter contains one to many missions, and '''must''' define a parameter named '''firstMission''' pointing to its first mission.
+* A mission must define its endings. A mission with an empty defined ending will follow its chapter ending.
+
+=== Campaign ===
+
+This is the main class for missions flow definition. It is defined as follows:
+<syntaxhighlight lang="cpp">
+class Campaign // this is a reference class, the name cannot be customised
+{
+	firstBattle	= Chapter1;						// which chapter should be loaded first. MUST be declared!
+
+	name			= "my great campaign";		// before Arma 3
+	briefingName	= "my Arma 3 campaign";		// since Arma 3 - if undefined, an error popup will appear
+	author			= "Username";				// since Arma 3 - if undefined, "by unknown community author" will replace author's name
+	overviewPicture	= "overview.paa";
+	overviewText	= "$STR_A3_StageAOverview";
+	disableMP		= 1;						// since Arma 2 - if set to 1, forces the campaign as SinglePlayer
+	enableHub		= 1;						// TBD - has to do with coming back to a "base"
+	// ...
+};
+</syntaxhighlight>
+
+=== Chapters ===
+
+A chapter is defined inside [[#Campaign|Campaign]] block.
+Multiple chapters can exist inside Campaign block. A chapter is defined as follows:
+<syntaxhighlight lang="cpp">
+class Chapter1 // name can be customised here - it will be used as reference, in Campaign's {{hl|firstBattle}} for example
+{
+	firstMission	= Mission1;				// which mission should be loaded first. MUST be declared!
+	name			= "My first chapter";	// chapter name. Has no in-game impact
+	cutscene		= Chapter1Cutscene.VR;	// in the *missions* sub-directory. A cutscene is of course optional but the parameter MUST be declared (cutscene = ;)
+	end1			= ;
+	// ...
+};
+</syntaxhighlight>
+
+There can be multiple chapters in a campaign, but this is optional. Campaign missions can very well be contained within a single chapter.
+Chapters are used for campaign organisation as well as adding some transition cutscenes.
+
+=== Missions ===
+
+A mission is defined inside [[#Chapters|a chapter]] and must target one of the '''missions''' sub-directories.
+Multiple missions can be inside a chapter. A mission is defined as follows:
+<syntaxhighlight lang="cpp">
+class myMission1 // name can be customised too
+{
+	end1 = myMission2; // next mission's classname
+	end2 = myMission3a;
+	end3 = myMission3b;
+	end4 = myMission2;
+	end5 = ;
+	end6 = ;
+	lost = myMission1;
+
+	template = myMissionDirectory.VR; // the mission directory itself, placed in the /missions/ sub-directory
+};
+</syntaxhighlight>
+
+{{Feature|informative|Mission directories that are not declared anywhere in description.ext (such as mission or cutscene) are simply ignored.}}
+
+{{ArgTitle|4|cutscene|{{GVI|ofp|1.00}}}}
+Define a cutscene mission directory that will be played before the mission. The cutscene won't appear in missions list in the campaign screen.
+
+{{ArgTitle|4|end1-6, lost|{{GVI|ofp|1.00}}}}
+These ''end%'' and ''lost'' parameters are used to define which mission is next. An empty ending (<syntaxhighlight lang="cpp" inline>end1 = ;</syntaxhighlight>) will end the current chapter.
+{{Feature|arma3|
+''end1-6'' and ''lost'' are '''optional''' in {{arma3}}.
+Since custom ending names can be used in {{arma3}} now (<sqf inline>"myCustomEnd" call BIS_fnc_endMission;</sqf> for example)
+you can use your own custom name here (e.g <syntaxhighlight lang="cpp" inline>myCustomEnd = nextMission;</syntaxhighlight>).
+}}
+
+{{ArgTitle|4|endDefault|{{GVI|arma3|1.00}}}}
+Fallback value in case an undefined ending is used, avoiding the game to crash.
+<syntaxhighlight lang="cpp">
+endDefault = ; // valid
+</syntaxhighlight>
+
+{{ArgTitle|4|repeat|{{GVI|arma3|1.00}}}}
+''Allow mission to repeat?''
+<syntaxhighlight lang="cpp">
+repeat = 1; // 0: disabled - 1: enabled. Default: 0
+</syntaxhighlight>
+
+{{ArgTitle|4|isHub|{{GVI|arma3|1.00}}}}
+Define a mission to be hub. May have to do with '''CfgHubs'''.
+<syntaxhighlight lang="cpp">
+isHub = 1; // 0: disabled - 1: enabled. Default: 0
+</syntaxhighlight>
+
+
+== Description.fsm ==
+
+Since {{arma3}}, an [[FSM]] (compiled with "campaignFSMA3.cfg" FSM config) can be included in a chapter (here named "Missions"):
+<spoiler text="Show Example">
+<syntaxhighlight lang="cpp">
+// East Wind's Description.ext
+
+weaponPool = 1;
+
+class Campaign
+{
+	name = "$STR_A3_CampaignName";
+	firstBattle = Missions;
+	disableMP = 1;
+	enableHub = 1;
+
+	briefingName = "$STR_A3_CampaignName";
+	author = "$STR_A3_Bohemia_Interactive";
+	overviewPicture = "a3\Missions_F_EPA\data\img\Campaign_overview_CA.paa";
+	overviewText = "$STR_A3_StageAOverview";
+
+	class MissionDefault
+	{
+		lives = -1;
+
+		lost = ;
+		end1 = ;
+		end2 = ;
+		end3 = ;
+		end4 = ;
+		end5 = ;
+		end6 = ;
+	};
+
+	class Missions
+	{
+		name = "The Beginning";
+		cutscene = ;
+		firstMission = A_in;
+		end1 = ;
+		end2 = ;
+		end3 = ;
+		end4 = ;
+		end5 = ;
+		end6 = ;
+		lost = ;
+
+		/*#define _DISABLE_DESCRIPTION	1*/
+
+		#define _CAMPAIGN 1
+
+		#include "description.fsm" // here is the FSM
+	};
+};
+</syntaxhighlight>
+</spoiler>
+{{Feature|informative|
+FSM information found in description.fsm:
+'''PROJECT SPLENDID'''<br>
+'''CAMPAIGN FSM'''
+* State names are mission classes
+* Condition names can be anything (even empty)
+* Condition "conditions" field can contain code which has to return true in order to make the mission available.<br><!--
+-->Other missions' classes can be used as variables.<br><!--
+-->Empty field returns true by default
+}}
+
+The FSM entry point (titled "A_in1") contains the following data:
+<syntaxhighlight lang="cpp">
+endDefault = A_in2;
+noWeaponPool = 1;
+isIntro = 1;
+</syntaxhighlight>
+
+These are usual config entries that could be found in a normal config. Other possible values found:
+<syntaxhighlight lang="cpp">
+isHub = 1;
+isHubMission = 1;
+isOutro = 1;
+isSkirmish = 1;
+repeat = 1;
+</syntaxhighlight>
+
+
+== Root Parameters ==
+
+{{Feature|important|Additional root parameters must be placed '''outside''' the [[#Campaign|Campaign class]] to be effective!}}
+
+{{ArgTitle|4|directory|{{GVI|arma3|1.00}}}}
+Define the campaign directory, used when campaign is part of an addon.
+<syntaxhighlight lang="cpp">
+directory = "A3\Missions_F_EPA\Campaign";
+</syntaxhighlight>
+
+{{ArgTitle|4|filterGroup|{{GVI|arma3|1.00}}}}
+''Usage unknown.''
+<syntaxhighlight lang="cpp">
+filterGroup = 3;
+</syntaxhighlight>
+
+{{ArgTitle|4|weaponPool|{{GVI|ofpr|1.75}}}}
+A campaign automatically enables [[:Category:Command Group: Weapon Pool|weapon pool]].
+This parameter allows equipment transferred from one campaign mission to the next to be available during the briefing in the gear menu.
+<syntaxhighlight lang="cpp">
+weaponPool = 1; // 0: disabled - 1: enabled. Default: 0
+</syntaxhighlight>
+
+
+== Full Example ==
+
+<spoiler text="See full example">
+<syntaxhighlight lang="cpp">
+/*
+	"MissionDefault", "NoEndings" etc. are arbitrary class names. MissionDefault is Bohemia standard name for missions parent class.
+	Left to itself, simply inheriting the mission default means you will exit the game at the end of mission/chapter (and will be done on last(s) mission(s).
+
+	An end that is used but not defined (e.g "end6") WILL crash the game.
+*/
+class NoEndings
+{
+	// Arma 3
+	endDefault = ;
+
+	// pre-Arma 3
+	end1 = ;
+	end2 = ;
+	end3 = ;
+	end4 = ;
+	end5 = ;
+	end6 = ;
+	lost = ;
+};
+
+class MissionDefault : NoEndings
+{
+	lives		= -1;	// this sets your "lives" to none - old OFP setting where you would lose a "life" every time you retried the mission, never used
+	noAward		=  1;	// TBD
+	cutscene	= ;		// mandatory definition
+};
+
+// additional parameters go here
+weaponPool		= 1;
+
+class Campaign
+{
+	name			= "My Great Campaign";	// before Arma 3
+	briefingName	= "My Great Campaign";	// since Arma 3
+	author			= "John Doe";
+	overviewText	= "You are a soldier on an island. Try killing the enemies and not dying to survive.";
+
+	firstBattle	= Chapter1;
+	disableMP	= 0; // this campaign is multiplayer-compatible
+
+	class Chapter1 : NoEndings
+	{
+		firstMission = Chapter1_Mission1;
+		end1 = Chapter2; // other endings are defined by inheritance from NoEndings
+
+		class Chapter1_Mission1 : MissionDefault
+		{
+			end1 = Chapter1_Mission2;	// other endings are defined by inheritance from MissionDefault, inheriting from NoEndings
+			end2 = ;					// end2 will end Chapter 1, therefore going to Chapter 2
+			template = C1M1.VR;
+		};
+
+		class Chapter1_Mission2 : MissionDefault
+		{
+			end1 = ; // not defining the ending will use the Chapter ending corresponding to end1: Chapter2 here
+			template = C1M2.VR;
+		};
+	};
+
+	class Chapter2 : NoEndings
+	{
+		firstMission = Chapter2_Mission1;
+		end1 = LastChapter;
+
+		// this mission is named Chapter2_Mission1 for clarity purpose,
+		// but both Chapter1_Mission1 and Chapter2_Mission1 could have been named Mission1 as game engine respects Chapter hierarchy.
+		// do not, however, name two missions the same -in the same chapter-
+		class Chapter2_Mission1 : MissionDefault
+		{
+			end1 = ; // not defining the ending will use the Chapter ending corresponding to end1: LastChapter here
+			template = C2M1.VR;
+		};
+	};
+
+	class LastChapter : NoEndings
+	{
+		firstMission = Chapter3_Mission1;
+		// no endings provided: because of NoEndings inheritance this is the same as writing 'endDefault = ;'
+		class Chapter3_Mission1
+		{
+			// not defining the ending will use the Chapter ending corresponding to end1: NOTHING here, closing the campaign
+			template = C3M1.VR;
+		};
+	};
+};
+</syntaxhighlight>
+</spoiler>
+
+
+== Recommendations ==
+
+If you do not know for sure what you are doing, follow these advices:
+* try and make all the missions work stand-alone, then place them all in the '''Missions''' directory
+* do not force yourself to use many chapters. Chapters are useful to organise a lot of missions, but if your campaign does not have many, do not oversplit it.
+* you can test your campaign structure by allowing file patching (in [[Arma 3: Launcher|{{arma3}} launcher]], or ''arma3.exe -filePatching'') and placing your campaign in the ''campaign'''s''''' directory.
+
+
+[[Category:Mission Editing]]

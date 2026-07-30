@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_executeStackedEventHandler
+// revision: 347967 (2023-11-08T08:54:25Z)
+// export sha1: lxlzvu4mzs0vd3y1h0dj10eqhgf8fj6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Event Handlers | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Event Handlers
+
+|descr= This function executes the stacked items.
+{{Feature|important|This function should not be called independently.}}
+
+|s1= [eventHandlerType] call [[BIS_fnc_executeStackedEventHandler]]
+
+|p1= eventHandlerType: [[String]] - the onXXX event handler
+
+|r1= [[Boolean]] - always [[true]]
+
+|x1= <sqf>["onEachFrame"] call BIS_fnc_executeStackedEventHandler;</sqf>
+
+|seealso= [[BIS_fnc_addStackedEventHandler]] [[BIS_fnc_removeStackedEventHandler]]
+}}

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/ctrlSetPositionX
+// revision: 309181 (2022-05-03T18:04:56Z)
+// export sha1: dfojhv7c8es7cvkjelibrwt48fd5571
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.92
+
+|gr1= GUI Control - Positioning
+
+|descr= Sets horizontal position (x) of the 2D control. [[ctrlCommit]] is required to complete the operation.
+
+|s1= control [[ctrlSetPositionX]] x
+
+|p1= control: [[Control]] - 2D control
+
+|p2= x: [[Number]] - horizontal position of the control
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_ctrl ctrlSetPositionX 0.5;
+_ctrl ctrlCommit 1;
+</sqf>
+
+|seealso= [[ctrlSetPosition]] [[ctrlSetPositionY]] [[ctrlSetPositionW]] [[ctrlSetPositionH]]
+}}

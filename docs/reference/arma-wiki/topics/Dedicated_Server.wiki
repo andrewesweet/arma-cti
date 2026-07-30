@@ -1,0 +1,17 @@
+// source: https://community.bistudio.com/wiki/Dedicated_Server
+// revision: 369842 (2024-10-16T13:51:56Z)
+// export sha1: 5zn8j2x40mytkrqyawvtmboi5i60vfn
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+
+{{Feature|ofp|For {{ofp}} see {{Link|Operation Flashpoint: Dedicated Server}}.}}
+{{Feature|arma1|For {{arma1}} see {{Link|ArmA: Armed Assault: Dedicated Server}}.}}
+{{Feature|arma2|For {{arma2}} see {{Link|Arma 2: Dedicated Server}}.}}
+{{Feature|arma3|For {{arma3}} see {{Link|Arma 3: Dedicated Server}}.}}
+{{Feature|armaR|For {{armaR}} see {{Link|Arma Reforger:Server Hosting#Dedicated Server}}.}}
+
+
+{{Feature|dayz|For {{dayz}} see {{Link|Category:DayZ: Server|DayZ Server}}.}}

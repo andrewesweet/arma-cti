@@ -1,0 +1,105 @@
+// source: https://community.bistudio.com/wiki/isNull
+// revision: 370892 (2025-02-21T10:44:05Z)
+// export sha1: ln4wfmzj43crmb9dwwh126fsgwvf2ve
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= global
+
+|gr1= Variables
+
+|descr= Checks whether the tested item is null.<br>
+Which null type the item has to be equal to depends on the type of game entity tested:
+
+{{{!}} class="wikitable" style="text-align: center"
+! [[:Category:Data Types|Type]]
+{{!}} [[Object]]
+{{!}} [[Group]]
+{{!}} [[Control]]
+{{!}} [[Display]]
+{{!}} [[Location]]
+{{!}} [[Task]]
+{{!}} [[Script Handle|Script]]
+{{!}} [[Config]]
+{{!}} [[Diary Record]]
+{{!}} [[Team Member]]
+{{!}}-
+! Null value
+{{!}} [[objNull]]
+{{!}} [[grpNull]]
+{{!}} [[controlNull]]
+{{!}} [[displayNull]]
+{{!}} [[locationNull]]
+{{!}} [[taskNull]]
+{{!}} [[scriptNull]]
+{{!}} [[configNull]]
+{{!}} [[diaryRecordNull]]
+{{!}} [[teamMemberNull]]
+{{!}}- style="font-size: .85em"
+! Since
+{{!}} colspan="2" {{!}} {{GVI|ofp|1.00}}
+{{!}} colspan="2" {{!}} {{GVI|arma1|1.00}}
+{{!}} colspan="2" {{!}} {{GVI|arma2|1.00}}
+{{!}} {{GVI|arma3|1.30}}
+{{!}} {{GVI|arma3|1.54}}
+{{!}} {{GVI|arma3|2.00}}
+{{!}} {{GVI|arma3|2.10}}
+{{!}}}
+
+{{Feature|important|2= A test via [[a == b|==]] does '''not''' work because a null value is not equal to anything, not even itself ([[configNull]] being the exception).
+See also [[isEqualTo]].}}
+
+|s1= [[isNull]] entity
+
+|p1= entity: [[Object]], [[Control]], [[Display]], [[Group]], [[Location]], [[Task]], [[Script Handle]], [[Config]] or [[Diary Record]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+if (isNil "obj") exitWith { hint "obj variable is undefined" };
+
+if (isNull obj) then
+{
+	hint "obj variable is defined but is null";
+}
+else
+{
+	hint "obj variable is defined and is not null";
+};
+</sqf>
+
+|x2= [[Diary Record]] support before {{GVI|arma3|2.00}}:
+<sqf>
+private _nullRecord = objNull createDiaryRecord []; // wrong parameters = failure to create a record = null value
+private _createdRecord = player createDiaryRecord ["Diary", ["title", "description"]];
+if (_createdRecord isEqualTo _nullRecord) then { hint "Failed" };
+</sqf>
+
+[[Team Member]] support before {{GVI|arma3|2.10}}:
+<sqf>private _isNull = _teamMember isEqualTo teamMemberNull;</sqf>
+
+|seealso= [[controlNull]] [[displayNull]] [[grpNull]] [[locationNull]] [[objNull]] [[taskNull]] [[teamMemberNull]] [[scriptNull]] [[configNull]] [[typeName]]
+}}

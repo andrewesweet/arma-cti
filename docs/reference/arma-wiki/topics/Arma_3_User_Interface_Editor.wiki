@@ -1,0 +1,394 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_User_Interface_Editor
+// revision: 352129 (2024-02-01T23:25:08Z)
+// export sha1: b5sdm4ii1mcdfdsopo91rjwxuqgr82t
+// categories: Category:GUI Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The User Interface editor can be launched from the [[Arma 3: Debug Console|Debug Console]] -> "GUI Editor" button.
+
+
+== Tutorial ==
+
+The following tutorial gives an introduction to the GUI Editor in Arma. The content of the [[GUI Tutorial]] is assumed to be known.
+
+=== Access ===
+
+The GUI Editor can be opened via the debug console in the escape menu. The button "GUI Editor" opens the user interface. If you don't see the debug console make sure that you have [[Arma_3:_Debug_Console#Access|access]] to it.
+
+=== The Grid ===
+
+The position of your UI is determined by [[Arma_3:_GUI_Coordinates|screen coordinates]]. The default grid that is selected in the GUI Editor does not work. Therefore we will have to replace it. Open the grid settings with {{Controls|Ctrl|G}}. You should see a UI where you can edit the values for X, Y, Area W, etc.. Enter the values according to the following table:
+{{Feature|informative|When using these values the UI will be fixed to the center of the screen. If you want to have your UI appear somewhere else you need to know [[Arma_3:_GUI_Coordinates#Using_the_grids_in_the_GUI_Editor|which values to use instead]].<br>
+The GUI Editor also does not support mixed position macros (at least not with horrendous effort). In this case you will need to understand screen coordinates and edit them in your config by hand.}}
+
+{| class="wikitable"
+|-
+| X || <sqf>(safeZoneX + (safeZoneW - ((safeZoneW / safeZoneH) min 1.2)) / 2)</sqf>
+|-
+| Y || <sqf>(safeZoneY + (safeZoneH - (((safeZoneW / safeZoneH) min 1.2) / 1.2)) / 2)</sqf>
+|-
+| Area W || <sqf>((safeZoneW / safeZoneH) min 1.2)</sqf>
+|-
+| Area H || <sqf>(((safeZoneW / safeZoneH) min 1.2) / 1.2)</sqf>
+|-
+| Segment W || <sqf>(((safeZoneW / safeZoneH) min 1.2) / 40)</sqf>
+|-
+| Segment H || <sqf>((((safeZoneW / safeZoneH) min 1.2) / 1.2) / 25)</sqf>
+|-
+| Variable || <sqf>GUI_GRID_CENTER</sqf>
+|}
+
+{{Feature|important|These settings are not permanent! If you close the GUI Editor you will have to enter them again.}}
+
+=== Handling Controls ===
+
+You can create a control by right clicking on free space. A list of available control types will appear.
+{| class="wikitable"
+|-
+! Name !! Explanation
+|-
+| <Comment> || This is not a control. Probably meant for documentation?
+|-
+| IGUIBack || Deprecated.
+|-
+| [[CT_BUTTON|RscButton]] || Can be clicked on. Functionality is added via [[User_Interface_Event_Handlers|UIEH]].
+|-
+| [[CT_SHORTCUTBUTTON|RscButtonMenu]] || {{arma3}}'s default menu button. Used in menus like the escape menu. Is more customizable than RscButton.
+|-
+| RscButtonMenuCancel || Closes the UI with [[User_Interface_Event_Handlers#onUnload|exit code 2]].
+|-
+| RscButtonMenuOK || Closes the UI with [[User_Interface_Event_Handlers#onUnload|exit code 1]].
+|-
+| [[CT_CHECKBOX|RscCheckbox]] || Control with two possible states: checked and unchecked.
+|-
+| [[CT_COMBO|RscCombo]] || Dropdown menu.
+|-
+| [[CT_CONTROLS_GROUP|RscControlsGroup]] || Container for other controls to group them together.
+|-
+| [[CT_EDIT|RscEdit]] || User editable text field.
+|-
+| RscFrame || Decorative frame.
+|-
+| [[CT_LISTBOX|RscListbox]] || A list of texts and/or optionally pictures.
+|-
+| [[CT_STATIC|RscPicture]] || Can display an image.
+|-
+| RscShortcutButton || Deprecated.
+|-
+| RscShortcutButtonMain || Deprecated.
+|-
+| [[CT_SLIDER|RscSlider]] || A slider that can be dragged left to right. A more modern version is the [[CT_XSLIDER]].
+|-
+| [[CT_STRUCTURED_TEXT|RscStructuredText]] || Supports [[Structured Text|structured text]] formatting.
+|-
+| [[CT_STATIC|RscText]] || Very simple control. Can be used for backgrounds and text labels.
+|-
+| RscTextCheckbox || Similar to RscCheckbox has two states but displays two different texts instead.
+|}
+
+Selecting one and confirming with OK will add this control to the screen. Some controls might appear with no background visible (RscText, RscControlsGroup). In this case you can hold enter to highlight all controls. To edit the control afterwards, right click on it to open a window where you can set the following attributes:
+
+{| class="wikitable"
+|-
+! Attribute !! Explanation
+|-
+| Class || The class name of the control which will be used in the export later on.
+|-
+| Text || The text that is visible on supported controls.
+|-
+| Position || An [[Array|array]] of numbers or strings in the format {{hl|[x, y, w, h]}}.
+|-
+| Text color || The color of the text. <syntaxhighlight lang="cpp" inline>colorText[]</syntaxhighlight> in the config. Format {{hl|[Red, Green, Blue, Alpha (Transparency)]}}.
+|-
+| Background color || The color of the background. Same format as Text Color.
+|-
+| Active color || The color of the control when it is focused. Applicable to all interactable controls such as buttons.
+|-
+| Tooltip || Text that is displayed in a small box at the cursor position when hovering over the control.
+|-
+| Text size || The font size in screen coordinates. See [[Arma_3:_GUI_Coordinates#The_size.2FsizeEx_attribute|the size/sizeEx attribute]].
+|-
+| Position type || One of absolute, safeZone, GUI_GRID (or whatever you set as your variable name) or a controls group. Used to switch to this grid for this control. Using "ControlGroup: 1234" means relative to the control group as a child control.
+|}
+
+You can move controls around by holding left mouse button and moving your mouse. Resizing is possible by holding ALT and dragging a corner of the control to the desired size.
+
+=== Saving ===
+{{Feature|important|Your progress can only be copied to the clipboard and is therefore not permanent until you save it to a file yourself!}}
+Press {{Controls|Ctrl|S}} to open the Save dialog. Give your dialog a title. You have the option to export the dialog with different formats. The formats "GUI Editor" and "Config (controls as class)" are the most important ones.
+
+==== GUI Editor ====
+This format can be imported to the GUI Editor from the clipboard if you want to change the GUI at a later point. To import, copy the content between the comments (/* and */) to the cliboard and press {{Controls|Ctrl|O}} while in the GUI Editor.
+
+===== Indent =====
+Indent means how many tabs to put before each line. Usually the controls of a dialog have and indent of 2 and RscTitle dialogs need an indent of 3. Not very important though.
+
+===== IDC =====
+The idc of the control can be given as a number or as a macro. In the latter case it is also necessary to use the "Config macro" output.
+
+===== Text =====
+Plain means literally just the text. Localized can be used for translating the controls' texts with a [[stringtable]].
+
+===== Example Output =====
+<pre>/* #Wygopu
+$[
+	1.063,
+	["RscDisplayTestDialog",[["(safeZoneX + (safeZoneW - ((safeZoneW / safeZoneH) min 1.2))/2)","(safeZoneY + (safeZoneH - (((safeZoneW / safeZoneH) min 1.2) / 1.2))/2)","((safeZoneW / safeZoneH) min 1.2)","(((safeZoneW / safeZoneH) min 1.2) / 1.2)"],"(((safeZoneW / safeZoneH) min 1.2) / 40)","((((safeZoneW / safeZoneH) min 1.2) / 1.2) / 25)","GUI_GRID_CENTER"],0,0,0],
+	[1000,"",[2,"",["4 * GUI_GRID_CENTER_W + GUI_GRID_CENTER_X","4 * GUI_GRID_CENTER_H + GUI_GRID_CENTER_Y","31 * GUI_GRID_CENTER_W","18 * GUI_GRID_CENTER_H"],[-1,-1,-1,-1],[0,0,0,0.8],[-1,-1,-1,-1],"","-1"],[]],
+	[1001,"",[2,"Test Dialog",["4 * GUI_GRID_CENTER_W + GUI_GRID_CENTER_X","2.5 * GUI_GRID_CENTER_H + GUI_GRID_CENTER_Y","31 * GUI_GRID_CENTER_W","1 * GUI_GRID_CENTER_H"],[-1,-1,-1,-1],[0,1,0,0.8],[-1,-1,-1,-1],"","-1"],[]],
+	[1100,"",[2,"Informative text...",["4.5 * GUI_GRID_CENTER_W + GUI_GRID_CENTER_X","4.5 * GUI_GRID_CENTER_H + GUI_GRID_CENTER_Y","30 * GUI_GRID_CENTER_W","17 * GUI_GRID_CENTER_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],"","-1"],[]],
+	[2600,"",[2,"",["4 * GUI_GRID_CENTER_W + GUI_GRID_CENTER_X","22.5 * GUI_GRID_CENTER_H + GUI_GRID_CENTER_Y","8.5 * GUI_GRID_CENTER_W","1 * GUI_GRID_CENTER_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],"","-1"],[]],
+	[2700,"",[2,"",["26.5 * GUI_GRID_CENTER_W + GUI_GRID_CENTER_X","22.5 * GUI_GRID_CENTER_H + GUI_GRID_CENTER_Y","8.5 * GUI_GRID_CENTER_W","1 * GUI_GRID_CENTER_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],"","-1"],[]]
+]
+*/</pre>
+
+==== Config (controls as class) ====
+This format is used in your display's controls class. It has to be pasted between the brackets of the controls class:
+<syntaxhighlight lang="cpp">
+class RscDisplayTestDialog
+{
+	idd = -1;
+	class Controls
+	{
+		/* CLASS OUTPUT GOES HERE */
+	};
+};
+</syntaxhighlight>
+
+===== Example Output =====
+<syntaxhighlight lang="cpp">
+////////////////////////////////////////////////////////
+// GUI EDITOR OUTPUT START (by Terra, v1.063, #Lupile)
+////////////////////////////////////////////////////////
+
+class RscText_1000 : RscText
+{
+	idc = 1000;
+	x = 4 * GUI_GRID_CENTER_W + GUI_GRID_CENTER_X;
+	y = 4 * GUI_GRID_CENTER_H + GUI_GRID_CENTER_Y;
+	w = 31 * GUI_GRID_CENTER_W;
+	h = 18 * GUI_GRID_CENTER_H;
+	colorBackground[] = {0,0,0,0.8};
+};
+class RscText_1001 : RscText
+{
+	idc = 1001;
+	text = "Test Dialog"; //--- ToDo: Localize;
+	x = 4 * GUI_GRID_CENTER_W + GUI_GRID_CENTER_X;
+	y = 2.5 * GUI_GRID_CENTER_H + GUI_GRID_CENTER_Y;
+	w = 31 * GUI_GRID_CENTER_W;
+	h = 1 * GUI_GRID_CENTER_H;
+	colorBackground[] = {0,1,0,0.8};
+};
+class RscStructuredText_1100 : RscStructuredText
+{
+	idc = 1100;
+	text = "Informative text..."; //--- ToDo: Localize;
+	x = 4.5 * GUI_GRID_CENTER_W + GUI_GRID_CENTER_X;
+	y = 4.5 * GUI_GRID_CENTER_H + GUI_GRID_CENTER_Y;
+	w = 30 * GUI_GRID_CENTER_W;
+	h = 17 * GUI_GRID_CENTER_H;
+};
+class RscButtonMenuOK_2600 : RscButtonMenuOK
+{
+	x = 4 * GUI_GRID_CENTER_W + GUI_GRID_CENTER_X;
+	y = 22.5 * GUI_GRID_CENTER_H + GUI_GRID_CENTER_Y;
+	w = 8.5 * GUI_GRID_CENTER_W;
+	h = 1 * GUI_GRID_CENTER_H;
+};
+class RscButtonMenuCancel_2700 : RscButtonMenuCancel
+{
+	x = 26.5 * GUI_GRID_CENTER_W + GUI_GRID_CENTER_X;
+	y = 22.5 * GUI_GRID_CENTER_H + GUI_GRID_CENTER_Y;
+	w = 8.5 * GUI_GRID_CENTER_W;
+	h = 1 * GUI_GRID_CENTER_H;
+};
+////////////////////////////////////////////////////////
+// GUI EDITOR OUTPUT END
+////////////////////////////////////////////////////////
+</syntaxhighlight>
+
+==== Config (controls as array) ====
+Another format with which you can leave out the <syntaxhighlight lang="cpp" inline>class Controls { /* ... */ }</syntaxhighlight> class. It is barely used and it is recommended to stick to the class format.
+
+==== Grid Macros ====
+This will export the values that you set with the {{Controls|Ctrl|G}} dialog as macros. Paste them into the config before you use them the first time.
+
+==== Parent Classes ====
+This export will declare the base classes that are available in the GUI Editor from which you can inherit. It is probably a better option to use [[BIS_fnc_exportGUIBaseClasses]] instead.
+
+==== Stringtable ====
+Output to be used in the stringtable. Not really necessary and probably better to do it by hand.
+
+===== Example output =====
+ //--- RscDisplayTestDialog
+ language,	original
+ RscDisplayTestDialog_RscText_1001,	"Test Dialog"
+ RscDisplayTestDialog_RscStructuredText_1100,	"STR_INFO"
+
+
+== Controls ==
+
+=== LMB ===
+
+* '''Click and hold over GUI element''' - Move element
+* {{Controls|Ctrl}} - Disable aligning to grid
+* {{Controls|Alt}} - Modify size
+
+=== RMB ===
+
+* '''Click on GUI element''' - Modify element parameters
+* {{Controls|Ctrl}} '''+ Click on GUI element''' - Modify custom element parameters (changes won't be visible)
+* '''Click on free space''' - Add a new element
+
+=== Key Shortcuts ===
+
+{{Columns|2|
+* {{Controls|H}} / {{Controls|F1}} - Help
+* {{Controls|G}} - Show/hide grid
+* {{Controls|Ctrl|G}} - Modify grid parameters
+* {{Controls|Alt|G}} - Create grid on element under cursor
+* {{Controls|Shift|G}} - Toggle between Absolute and Safezone grid
+* {{Controls|Ctrl|N}} - Add a new element
+* {{Controls|Delete}} - Delete a current element
+* {{Controls|Ctrl|C}} - Copy a current element
+* {{Controls|Ctrl|X}} - Cut a current element
+* {{Controls|Ctrl|V}} - Paste a copied element
+* {{Controls|Ctrl|Z}} - Undo
+* {{Controls|Ctrl|Shift|Z}} - Redo
+* {{Controls|Ctrl|L}} - Display list of all elements, change order and lock/unlock
+* {{Controls|Ctrl|S}} - Export to GUI editor format
+* {{Controls|Ctrl|Alt|S}} - Export to GUI editor format with linebreaks
+* {{Controls|Ctrl|Shift|S}} - Export to a config format
+* {{Controls|Ctrl|Shift|S|(1-9)}} - Export to a config format (''class controls'' variant) with given number of tabs (1-9)
+* {{Controls|Ctrl|Alt|Shift|S|(1-9)}} - Export to a config format (''controls[]{{=}}'' variant) with given number of tabs (1-9)
+* {{Controls|Ctrl|O}} - Import from GUI editor format
+* {{Controls|Ctrl|I}} - Import from config
+* {{Controls|Ctrl|P}} - Export parent classes
+* {{Controls|Ctrl|Shift|P}} - Export grid macros
+* {{Controls|Space}} - Highlights all elements (including invisible ones)
+}}
+
+=== Position Types ===
+
+Following variants determine in what format the element position will be saved
+* '''Absolute''' - Absolute position, remains same no matter what UI size or aspect ratio is.
+* '''Safezone''' - GUI elements stretches based both on UI width and height. Result may differ on different aspect ratios.
+* '''Grid''' - Coordinates are multipliers of grid size
+* '''Control Group''' - Elements are aligned to given RscControlGroup and share their position type
+{{Feature|warning|The current GUI_GRID setting does not work. A fix can be found [[Arma_3:_GUI_Coordinates#Using_the_grids_in_the_GUI_Editor|here]].}}
+
+
+== Export ==
+
+=== Editor Format ===
+
+{{Controls|Ctrl|S}}
+
+Starts with dollar symbol ($). When you copy this format to clipboard, it can be loaded in editor using {{Controls|Ctrl|O}}
+
+ $[1.043,[["safeZoneX","safeZoneY","safeZoneW","safeZoneH"],"safeZoneW / 32","safeZoneH / 20","GUI_GRID"],[1000,"",[2,"Hello World!",["1 * GUI_GRID_W + GUI_GRID_X","1 * GUI_GRID_H + GUI_GRID_Y","30 * GUI_GRID_W","1 * GUI_GRID_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],[]],[1500,"MyListbox",[2,"",["1.5 * GUI_GRID_W + GUI_GRID_X","2.5 * GUI_GRID_H + GUI_GRID_Y","9 * GUI_GRID_W","15 * GUI_GRID_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],["idc = CUSTOM_IDC;"]],[1700,"",[2,"$STR_DISP_CANCEL",["1 * GUI_GRID_W + GUI_GRID_X","18 * GUI_GRID_H + GUI_GRID_Y","10 * GUI_GRID_W","1 * GUI_GRID_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],[]],[2300,"Group",[2,"",["11.5 * GUI_GRID_W + GUI_GRID_X","2.5 * GUI_GRID_H + GUI_GRID_Y","19 * GUI_GRID_W","15 * GUI_GRID_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],[]],[-1001,"GroupText",[2300,"",["0 * GUI_GRID_W","0 * GUI_GRID_H","19 * GUI_GRID_W","15 * GUI_GRID_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],[]]]
+
+=== Editor Format (multi-line) ===
+
+{{Controls|Ctrl|Alt|S}}
+
+ /*
+ $[
+ 	1.043,
+ 	[["safeZoneX","safeZoneY","safeZoneW","safeZoneH"],"safeZoneW / 32","safeZoneH / 20","GUI_GRID"],
+ 	[1000,"",[2,"Hello World!",["1 * GUI_GRID_W + GUI_GRID_X","1 * GUI_GRID_H + GUI_GRID_Y","30 * GUI_GRID_W","1 * GUI_GRID_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],[]],
+ 	[1500,"MyListbox",[2,"",["1.5 * GUI_GRID_W + GUI_GRID_X","2.5 * GUI_GRID_H + GUI_GRID_Y","9 * GUI_GRID_W","15 * GUI_GRID_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],["idc = CUSTOM_IDC;"]],
+ 	[1700,"",[2,"$STR_DISP_CANCEL",["1 * GUI_GRID_W + GUI_GRID_X","18 * GUI_GRID_H + GUI_GRID_Y","10 * GUI_GRID_W","1 * GUI_GRID_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],[]],
+ 	[2300,"Group",[2,"",["11.5 * GUI_GRID_W + GUI_GRID_X","2.5 * GUI_GRID_H + GUI_GRID_Y","19 * GUI_GRID_W","15 * GUI_GRID_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],[]],
+ 	[-1001,"GroupText",[2300,"",["0 * GUI_GRID_W","0 * GUI_GRID_H","19 * GUI_GRID_W","15 * GUI_GRID_H"],[-1,-1,-1,-1],[-1,-1,-1,-1],[-1,-1,-1,-1],""],[]]
+ ]
+ */
+
+=== Config Format ===
+
+Ready to be included into config or description file.<br>
+{{Controls|Ctrl|Shift|S}}
+<syntaxhighlight lang="cpp">
+//--- Header contains player's profile name and editor version
+////////////////////////////////////////////////////////
+// GUI EDITOR OUTPUT START (by Karel, v1.043)
+////////////////////////////////////////////////////////
+
+class RscText_1000 : RscText
+{
+    idc = 1000;
+    text = "Hello World!"; //--- ToDo: Localize; Plain text is automatically marked to be localized
+    x = 1 * GUI_GRID_W + GUI_GRID_X;
+    y = 1 * GUI_GRID_H + GUI_GRID_Y;
+    w = 30 * GUI_GRID_W;
+    h = 1 * GUI_GRID_H;
+};
+class MyListbox : RscListbox
+{
+    idc = CUSTOM_IDC; //--- Custom params are listed first and are divided by one empty line from generated params
+
+    x = 1.5 * GUI_GRID_W + GUI_GRID_X;
+    y = 2.5 * GUI_GRID_H + GUI_GRID_Y;
+    w = 9 * GUI_GRID_W;
+    h = 15 * GUI_GRID_H;
+};
+class RscShortcutButton_1700 : RscShortcutButton
+{
+    idc = 1700;
+    text = "$STR_DISP_CANCEL";
+    x = 1 * GUI_GRID_W + GUI_GRID_X;
+    y = 18 * GUI_GRID_H + GUI_GRID_Y;
+    w = 10 * GUI_GRID_W;
+    h = 1 * GUI_GRID_H;
+};
+class Group : RscControlsGroup
+{
+    idc = 2300;
+    x = 11.5 * GUI_GRID_W + GUI_GRID_X;
+    y = 2.5 * GUI_GRID_H + GUI_GRID_Y;
+    w = 19 * GUI_GRID_W;
+    h = 15 * GUI_GRID_H;
+    class controls
+    {
+        class GroupText : RscText
+        {
+            idc = 1001;
+            x = 0 * GUI_GRID_W;
+            y = 0 * GUI_GRID_H;
+            w = 19 * GUI_GRID_W;
+            h = 15 * GUI_GRID_H;
+        };
+    };
+};
+////////////////////////////////////////////////////////
+// GUI EDITOR OUTPUT END
+////////////////////////////////////////////////////////
+</syntaxhighlight>
+
+
+== Import ==
+
+{{Controls|Ctrl|I}}
+* Sometimes one has to do more changes, even after the user interface was considered done.
+
+'''Example'''
+
+[[File:Arma3_UI_Editor_Import_Config.jpg|250px]]
+[[File:Arm3_UI_Editor_Import_Config_Result.jpg|250px]]
+
+
+== Known Issues ==
+
+* When changing element from any position type to controls group type, its position is not updated correctly.
+** Changed element usually changes it is position. Dragging and dropping it should fix it.
+** If you cannot se the element (it's position is now outside of screen), press {{Controls|Ctrl|L}} to open list of elements, edit the changed element and modify X and Y coordinates to 0.
+* Game sometimes freezes when you're working on layout with controls groups and open ({{Controls|Ctrl|O}}) another one with different control groups. Press {{Controls|Ctrl|N}} to clear current layout first or close and open whole editor.
+* Listboxes (in "Add Element" and "Element's List' menus) are somehow not clickable in the bottom part. To select items in this area, click anywhere on top and move down using direction keys or Page Up/Down.
+* Script error when using the undo functionality
+* Each type of control can only be created 99 times
+* When importing GUIs from config, the default GUI_GRID is used
+
+
+[[Category:GUI Topics||User Interface Editor]]

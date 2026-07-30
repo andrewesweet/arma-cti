@@ -1,0 +1,125 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Dev-Branch_Change_Log_v2.19
+// revision: 378269 (2026-03-27T09:43:50Z)
+// export sha1: 8um0maughifqn0epxpxv32wgpbuvlbc
+// categories: Category:Arma 3: Dev-Branch Change Logs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+{{Feature|informative|Changes prior to March 2025 can be found on the {{Link|https://forums.bohemia.net/forums/topic/140837-development-branch-changelog/|Bohemia Interactive forums}}.}}
+
+= 07-05-2025 =
+''EXE rev. 152859 (game)''<br />
+''EXE rev. 152859 (Launcher)''<br />
+''Size: ~77 MB''
+
+'''DATA'''
+* Fixed: Tail wheel missing from Camo2 hidden selection on UH-80 in first LOD
+* Fixed: [[format]] related error in the "Remnants of War" campaign
+* Added: New illumination flares to faction ammo boxes (several more factions to be done)
+
+'''ENGINE'''
+* Fixed: Animation skipping / freezing on long animations
+* Tweaked: Improved game start speed
+* Added: UVScale XY to Fisheye post processing effect - {{Link|https://feedback.bistudio.com/T163827|FT-T163827}}
+
+= 30-04-2025 =
+''EXE rev. 152843 (game)''<br />
+''EXE rev. 152843 (Launcher)'' <br />
+''Size: ~103 MB''
+
+'''DATA'''
+* Fixed: AI jet pilots will now properly eject from their plane when it is damaged more then its ''ejectDamageLimit''
+* Fixed: One pop-up target in CoF: Red 2 was behaving incorrectly
+* Fixed missing windows fire geometry on armed variants of Ifrit - {{Link|https://feedback.bistudio.com/T190093|FT-T190093}}
+* Stub-wing variants with pylon configurations for AH-99 and UH-80 helicopters
+* Illumination flares (effects, attenuation, intensity, drag, Zeus modules, mortar variant)
+
+'''ENGINE'''
+* Tweaked: Improved efficiency of listbox sorting - {{Link|https://feedback.bistudio.com/T184005|FT-T184005}}
+* Added: Listbox sorting is now multithreaded - {{Link|https://feedback.bistudio.com/T184005|FT-T184005}}
+* Added: [[Arma_3:_Event_Handlers#PylonChanged|"PylonChanged"]] entity Event Handler - {{Link|https://feedback.bistudio.com/T190875|FT-T190875}}
+* Added: Post-processing effects ''Sharpness'', ''DepthOfField'', ''Fisheye'' - {{Link|https://feedback.bistudio.com/T163827|FT-T163827}}
+* Fixed: Flares did not apply the ''Attenuation'' config to their light emitter
+* Tweaked: Improved netcode performance
+* Added: Netcode fast retransmit on packet loss
+
+= 09-04-2025 =
+''EXE rev. 152791 (game)''<br />
+''EXE rev. 152791 (Launcher)''<br />
+''Size: ~76 MB''
+
+'''DATA'''
+* Fixed: SAAMI weapon referencing incorrect sounds - {{Link|https://feedback.bistudio.com/T185821|FT-T185821}}
+* Fixed: Script format error in Field Manual - {{Link|https://feedback.bistudio.com/T182822|FT-T182822}}
+* Fixed: Launchers were not always selected properly in Arsenal
+* Tweaked: Eye position when aiming down the sights on M320 & GM6, so the camera is no longer clipping with the rifle's mesh when recoil kicks in
+
+'''ENGINE'''
+* Added: CfgAmmo ''explodeParentWhenTriggered'' to complement ''deleteParentWhenTriggered'' - {{Link|https://feedback.bistudio.com/T190390|FT-T190390}}
+* Added: Mission [[Arma_3:_Mission_Event_Handlers#MarkerDeleted|"MarkerDeleted"]] Event Handler now returns deleter person - {{Link|https://feedback.bistudio.com/T178348|FT-T178348}}
+* Tweaked: Handling of Eden Editor mouse placement (objects can be now placed on top of other objects, on side of other objects and upside down) (Experimental flag removed)
+* Added: [[removeAllMagazines]] and [[removeAllMagazinesTurret]] script commands - {{Link|https://feedback.bistudio.com/T177284|FT-T177284}}
+* Added: [[Arma_3:_Multi-Function_Display_(MFD)_config_reference#Sources|MFD Sources]] ''WPDir''/''WPDirRel''
+* Added: [[addMagazinesTurret]] script command - {{Link|https://feedback.bistudio.com/T174007|FT-T174007}}
+* Fixed: Forced game crash when addon requires addon that was skipped due to ''skipWhenMissingDependencies'' - {{Link|https://feedback.bistudio.com/T172179|FT-T172179}}
+* Fixed: Showcase FFV helicopter would fail to land
+* Added: Some of [[Arma_3:_Basic_Server_Config_File|basic.cfg]] network parameters can now be provided as strings
+* Changed: Networking bandwidth estimation behavior of [[Arma_3:_Basic_Server_Config_File|Min/MaxBandwidth]] (Experimental builds only)
+* Added: [[Arma_3:_Multi-Function_Display_(MFD)_config_reference#Sources|MFD Source]] ''WPTime''
+* Added: [[connectToServer]] command and Server Browser Direct-Connect now supports resolving SRV records - {{Link|https://feedback.bistudio.com/T127943|FT-T127943}}
+* Added: Scanning for objects in trigger areas is now multithreaded (Experimental flag removed)
+* Added: Script commands [[allMissionObjects]], [[nearestObjects]], [[nearObjects]], [[nearSupplies]], [[nearRoads]] are now internally multithreaded (Experimental flag removed)
+* Changed: AI computation is now done in parallel to d3dPresent (Experimental flag removed)
+* Added: AI Sensor updating is now multithreaded (Experimental flag removed)
+* Added: AI Target list updating/scanning is now multithreaded (Experimental flag removed)
+* Added: PhysX Vehicle suspension update is now multithreaded (Experimental flag removed)
+* Added: PhysX Simulation is now multithreaded
+* Fixed: URL encoding for HTTP mission file downloads
+* Added: HTTP header support for HTTP mission file downloads
+* Fixed: [[getShotInfo]] did not return ''timeToExplosion'' for mines - {{Link|https://feedback.bistudio.com/T190684|FT-T190684}}
+* Added: [[getAllPylonsInfo]] now also returns the position of each pylon - {{Link|https://feedback.bistudio.com/T190789|FT-T190789}}
+* Fixed: Zeus did not store allowed addons in savegame (resulting in loss of access to modded units after loading a savegame) - {{Link|https://feedback.bistudio.com/T190333|FT-T190333}}
+
+= 26-03-2025 =
+''EXE rev. 152752 (game)''<br />
+''EXE rev. 152752 (Launcher)''<br />
+''Size: ~77 MB''
+
+'''DATA'''
+* Added: [[Arma 3: Steam Game Recording|Steam Game Recording]] integration for [[Arma 3: Time Trials|Time Trials]]
+* Added: Steam Game Recording integration for [[Arma 3: Invaders|Arma Invaders]]
+* Added: Steam Game Recording integration for [[Arma 3: Firing Drills|Firing Drills]]
+* Fixed: Steam Game Recording Challenge Hit event was not respecting optional ''hitConditions'' for targets
+* Tweaked: Steam Game Recording Challenge Bonus / Penalty events now mention the type as well
+
+'''ENGINE'''
+* Changed: Missile ''fuseDistance'' is now ignored for projectiles spawned by script - {{Link|https://feedback.bistudio.com/T189277|FT-T189277}}
+* Tweaked: AI no longer calculates light influence on targets during daytime
+* Added: ''AIThinkOnlyLocal'' option to [[setMissionOptions]]
+
+= 19-03-2025 =
+''EXE rev. 152743 (game)''<br />
+''EXE rev. 152743 (Launcher)''<br />
+''Size: ~81 MB''
+
+'''DATA'''
+* Tweaked: Pause menu Steam branch indicator was not positioned correctly when running an unmodded game
+* Fixed: A Logic was created on the wrong side in a scripted function - {{Link|https://feedback.bistudio.com/T177680|FT-T177680}}
+
+'''ENGINE'''
+* Added: Mission file downloading over HTTP
+* Fixed: Functions Viewer did not populate list of functions when opening
+* Added: Animal config property ''canFitUnderADoor'' when true will stop given animal from opening a door when entering into a house
+* Fixed: Incorrect laser marker positioning on and around water - {{Link|https://feedback.bistudio.com/T188547|FT-T188547}}
+* Fixed: Laser target marker would get stuck on objects - {{Link|https://feedback.bistudio.com/T71322|FT-T71322}}
+* Fixed: [[currentZeroing]] did not respect laser range zeroing - {{Link|https://feedback.bistudio.com/T189309|FT-T189309}}
+* Fixed: Missiles did not consider their ''fuseDistance'' setting - {{Link|https://feedback.bistudio.com/T189277|FT-T189277}}
+* Added: Initial integration of Steam Game Recording with custom game events
+* Fixed: Crash when using [[loadConfig]] with binarized configs - {{Link|https://feedback.bistudio.com/T188760|FT-T188760}}
+* Added: Option to [[removeWeapon]]/[[removeWeaponGlobal]] to abort a new weapon autoselect after primary weapon removal
+* Added: Option to [[addWeapon]]/[[addWeaponGlobal]] to abort a new weapon autoselect if no weapon was selected
+* Fixed: Crash if OGG sound file is played more than 255 times at once
+* Fixed: [[Arma_3:_Event_Handlers#Fired|"Fired"]] Event Handler in multiplayer could receive wrong projectile for global projectiles - {{Link|https://feedback.bistudio.com/T190141|FT-T190141}}
+
+{{GameCategory|arma3|Dev-Branch Change Logs}}

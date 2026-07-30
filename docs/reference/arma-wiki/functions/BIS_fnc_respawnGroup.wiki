@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_respawnGroup
+// revision: 328614 (2022-07-13T17:04:09Z)
+// export sha1: 1cmr8zo5qeitsec4ojk6p55qtu43pc5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Camera script used by the "group respawn" template - when the player dies and gets transferred to the new group member.
+
+|s1= [oldUnit, newUnit] call [[BIS_fnc_respawnGroup]]
+
+|p1= oldUnit: [[Object]]
+
+|p2= newUnit: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+// in onPlayerRespawn.sqf
+params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];
+[_oldUnit, _newUnit] spawn BIS_fnc_respawnGroup;
+</sqf>
+
+|exec= spawn
+
+|seealso=     [[BIS_fnc_respawnMenuInventory]] [[BIS_fnc_respawnMenuPosition]] [[BIS_fnc_respawnMenuSpectator]] [[BIS_fnc_respawnSeagull]] [[BIS_fnc_respawnSide]] [[BIS_fnc_respawnSpectator]] [[BIS_fnc_respawnWave]]
+}}

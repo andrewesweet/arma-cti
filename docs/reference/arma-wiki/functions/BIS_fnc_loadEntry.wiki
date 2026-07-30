@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_loadEntry
+// revision: 349424 (2023-11-08T16:27:33Z)
+// export sha1: 6rxtifcccme5cgcvzactp4fymzev9cl
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Configs | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Configs
+
+|descr= Searches for config entry in mission, campaign and then in global config file.
+
+|s1= [path,defaultConfig] call [[BIS_fnc_loadEntry]]
+
+|p1= path: [[Array]] of [[String]]s - path
+
+|p2= defaultConfig: [[Config]] - default path used in case when the original one is not found
+
+|r1= [[Array]], [[Number]] or [[String]]
+
+|x1= <sqf>[["CfgWeapons","hgun_Rook40_snds_F","bullet3"], configfile >> "CfgWeapons" >> "hgun_Rook40_snds_F" >> "baseWeapon"] call BIS_fnc_loadEntry;</sqf>
+
+|seealso= [[BIS_fnc_loadClass]] [[configFile]]
+}}

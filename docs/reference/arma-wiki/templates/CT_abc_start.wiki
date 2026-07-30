@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Template:CT/abc_start
+// revision: 373269 (2025-04-13T14:16:21Z)
+// export sha1: sblpgnj3um61g3c4xhqwi282k154hz0
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly></includeonly><noinclude>{{Doc/Template
+|descr= Marks the beginning of the alphabetically sorted attributes of a Control Type page.
+|example1= <nowiki>{{CT/abc start}}</nowiki>
+|result1= Special formatting for config pages is applied.
+|historical= y
+}}</noinclude>

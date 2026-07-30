@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/get3DENAttributes
+// revision: 370464 (2024-12-15T11:56:46Z)
+// export sha1: 6jyo5pv3wm2d7n4c488cc243424x3md
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Eden Editor
+
+|descr= Retrieve all attributes and their values of the specified (optional) category.
+
+|s1= entity [[get3DENAttributes]] category
+
+|p1= entity: [[Object]]
+
+|p2= category: [[String]] ("" to get all attributes, [[typeOf]] to get Object Specific attributes)
+
+|r1= [[Array]]
+
+|x1=
+
+|seealso= [[set3DENAttributes]] [[set3DENAttribute]] [[get3DENMissionAttributes]]
+}}

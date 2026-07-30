@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/shownRadio
+// revision: 353339 (2024-03-15T17:11:51Z)
+// export sha1: mqi4t8zfy51v2te8cx8ju5dmny6gmxi
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Command Group: Radio and Chat | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Interaction
+
+|gr2= Radio and Chat
+
+|descr= Check if player has Radio enabled.
+{{Feature|informative|This command exists in Arma 3 but doesn't do much}}
+
+|s1= '''shownRadio'''
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (shownRadio) then {hint "You have Radio enabled."};</sqf>
+
+|seealso= [[showRadio]] [[shownMap]] [[shownGPS]] [[shownWatch]] [[shownCompass]] [[shownUAVFeed]]
+}}

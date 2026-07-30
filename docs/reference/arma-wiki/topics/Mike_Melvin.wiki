@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Mike_Melvin
+// revision: 376311 (2025-10-06T17:14:15Z)
+// export sha1: i78slskcexmcmwvwvvn68srljhq79ee
+// Vendored snapshot. Do not edit — re-export instead.
+
+The inventor of [[Capture The Island|CTI]].

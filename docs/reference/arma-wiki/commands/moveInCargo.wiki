@@ -1,0 +1,97 @@
+// source: https://community.bistudio.com/wiki/moveInCargo
+// revision: 351994 (2024-02-01T23:23:57Z)
+// export sha1: 0h7cvx7dgxly4ghkaxken1uzh9mzx35
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Control
+
+|descr= Moves a unit into a vehicle cargo position (immediately and without animation).
+{{Feature|informative|See [[AI Group Vehicle Management]] for more information.}}
+{{Feature|important|If the unit is already in a vehicle, nothing will happen. You should use [[moveOut]] to move the unit out of his vehicle before trying to move him into a new (or same) vehicle.}}
+|mp= {{Feature|informative|The command should execute where the '''unit''' (not '''vehicle''') is local.}}
+
+|s1= unit [[moveInCargo]] vehicle
+
+|p1= unit: [[Object]]
+
+|p2= vehicle: [[Object]]
+
+|r1= [[Nothing]]
+
+|s2= unit [[moveInCargo]] [vehicle, cargoIndex, canReassign]
+
+|p21= unit: [[Object]]
+
+|p22= vehicle: [[Object]]
+
+|p23= cargoIndex: [[Number]]
+
+|p24= canReassign: [[Boolean]] - (Optional, default [[true]]) try to move ''unit'' into the first free ''vehicle'' cargo seat if ''cargoIndex'' is already occupied
+|p24since= arma3 2.08
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_soldierOne moveInCargo _jeepOne;</sqf>
+
+|x2= <sqf>_soldierOne moveInCargo [_jeepOne, 1];</sqf>
+
+|seealso= [[moveInAny]] [[moveInCommander]] [[moveInDriver]] [[moveInGunner]] [[moveInTurret]] [[assignAsCargo]] [[assignAsCommander]] [[assignAsDriver]] [[assignAsGunner]] [[getCargoIndex]]
+}}
+
+{{Note
+|user= Hardrock
+|timestamp= 20060804144200
+|text= ''Notes from before the conversion''<br>
+If you place a soldier in a vehicle with the moveInCargo command, he wont "know" he's in the vehicle, and thus he won't disembark properly when the vehicle reaches a Transport Unload waypoint.
+Therefore you have to use the [[assignAsCargo]] command, in order for the AI to catch on. Something like this:
+<sqf>_soldier moveInCargo helo1; _soldier assignAsCargo helo1;</sqf>
+}}
+
+{{Note
+|user= Ceeeb
+|timestamp= 20070202070000
+|text= In '''OFP v1.96''', the moveIn commands will not trigger an associated getIn [[Operation_Flashpoint:_EventHandlers_List|event]]. To ensure the getIn event is fired, use the "getIn Cargo" [[Operation_Flashpoint:_Actions_List|action]] command.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20140318190800
+|text=  In {{arma3}} when using the alternative syntax of [[moveInCargo]], it is necessary to call [[assignAsCargoIndex]] because it is not called automatically.
+<sqf>
+unit1 moveInCargo [heli, 3];
+unit1 assignAsCargoIndex [heli, 3];
+</sqf>
+Alternatively avoid this broken syntax all together and use:
+<sqf>
+unit1 assignAsCargoIndex [heli, 3];
+unit1 moveInCargo heli;
+</sqf>
+}}

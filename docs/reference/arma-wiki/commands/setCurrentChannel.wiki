@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/setCurrentChannel
+// revision: 376800 (2025-11-20T17:47:43Z)
+// export sha1: 1diu1czvdz2nstlk7znvjppsxo0guq0
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.42
+
+|eff= local
+
+|gr1= Radio and Chat
+
+|descr= Sets given channel as current chat channel. Scripted way of selecting desired channel on the UI.
+The given channel may be disabled (see [[enableChannel]]), this is why this command returns boolean, [[true]] on success or [[false]] on failure. 
+{{{!}} class="wikitable align-center"
+! colspan="13" {{!}} [[Channel IDs|channel ID]] number correspondence
+{{!}}-
+{{!}} {{n/a}}
+{{!}} Global
+{{!}} Side
+{{!}} Command
+{{!}} Group
+{{!}} Vehicle
+{{!}} Direct
+{{!}} Custom1
+{{!}} rowspan="2" {{!}} ..
+{{!}} Custom10
+{{!}} {{GVI|arma3|2.22|size= 0.75}} Custom11
+{{!}} rowspan="2" {{!}} ..
+{{!}} Custom50
+{{!}}-
+{{!}} -1
+{{!}} 0
+{{!}} 1
+{{!}} 2
+{{!}} 3
+{{!}} 4
+{{!}} 5
+{{!}} 6
+{{!}} 15
+{{!}} 26
+{{!}} 65
+{{!}}}
+
+|s1= [[setCurrentChannel]] channelID
+
+|p1= channelID: [[Number]] - [[Channel IDs|channel ID]]
+
+|r1= [[Boolean]] - [[true]] on success
+
+|x1= <sqf>_isDirectSelected = setCurrentChannel 5; // sets Direct channel as current active</sqf>
+
+|seealso= [[getPlayerChannel]] [[currentChannel]] [[enableChannel]] [[channelEnabled]] [[radioChannelCreate]]
+}}

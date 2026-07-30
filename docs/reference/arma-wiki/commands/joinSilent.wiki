@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/joinSilent
+// revision: 377895 (2026-01-05T17:43:24Z)
+// export sha1: 8vehvullaypfetnzv1pkpaum3lzaqgy
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Armed Assault version 1.06 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.06
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Groups
+
+|arg= global
+
+|eff= global
+
+|descr= Join all units in the array to given group silently (without radio message). To have a group member leave a group, join him with the [[grpNull]] group (e.g. {{hl|[guy1] [[joinSilent]] [[grpNull]]}}), but '''beware''', as brand new group is created for the leaving unit and this could result in the number of groups in a mission growing out of control.
+
+|s1= unitArray [[joinSilent]] group
+
+|p1= unitArray: [[Array]] of [[Object]]s - units to join group
+
+|p2= group: [[Object]] or [[Group]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_unitOne, _unitTwo] joinSilent (group player);</sqf>
+|x2= <sqf>[_unitOne, _unitTwo] joinSilent player;</sqf>
+
+|seealso= [[join]] [[joinAs]] [[joinAsSilent]] [[group]] [[leader]] [[doFollow]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-08-04 - 23:22 (UTC)</dd>
+<dt class="note">[[User:ThorViking|ThorViking]]</dt>
+<dd class="note">
+If all units of a group are joined to another group then the first group will be NULL-group afterward.
+</dd>
+
+</dl>
+
+{{Note
+|user= Leopard20
+|timestamp= 20220217122229
+|text= If the group is the same as the current group, the command will act similar to {{hl|Return To Formation}} command. It is more strong than [[doFollow]] ([[doFollow]] doesn't work with player-issued commands, i.e via the commanding menu keys):
+<sqf>[_unit] joinSilent group _unit; // return to formation</sqf>
+Note that the group must have '''at least 2 units''', and not all units should be joined at once, otherwise the group will temporarily become empty and all its waypoints '''will be lost'''!
+}}

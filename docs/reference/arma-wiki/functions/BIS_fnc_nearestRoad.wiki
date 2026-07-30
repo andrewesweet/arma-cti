@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_nearestRoad
+// revision: 378228 (2026-03-17T23:25:48Z)
+// export sha1: dp3kqtym4a51fobnuvhbzywi208sicr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Positions | Category:Functions | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.76
+
+|gr1= Positions
+
+|descr= Find the nearest road segment to certain position, within given radius.
+
+|s1= [centre, radius, blacklist] call [[BIS_fnc_nearestRoad]]
+
+|p1= centre: [[Position]]
+
+|p2= radius: [[Number]] - (Optional, default 50) search radius from ''centre''
+
+|p3= blacklist: [[Array]] - (Optional, default <sqf inline>[]</sqf>) blacklisted road objects
+
+|r1= [[Object]] - nearest road object, [[objNull]] if not found
+
+|x1= <sqf>private _nearestRoad = [getPosATL player, 500] call BIS_fnc_nearestRoad;</sqf>
+
+|x2= <sqf>private _nearestRoad = [getPosATL vehicle player, 50, getPosATL vehicle player nearRoads 20] call BIS_fnc_nearestRoad;</sqf>
+
+|seealso= [[nearRoads]] [[isOnRoad]] [[roadAt]] [[roadsConnectedTo]]
+}}

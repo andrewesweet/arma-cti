@@ -1,0 +1,1258 @@
+// source: https://community.bistudio.com/wiki/Modules
+// revision: 376217 (2025-09-18T02:22:59Z)
+// export sha1: a549gk7ykqvv9tspz7vzew0bu59xdtg
+// categories: Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Take On Helicopters: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This page can be considered a hub when it comes to [[Modules]].
+Here you will find everything you need to know when it comes to creating modules, available modules in {{arma3}} and existing module documentation.
+
+
+== General Information ==
+
+* Modules are executed before initServer.sqf, initPlayerLocal.sqf and initPlayerServer.sqf (See [[Initialisation Order]])
+* Modules are very easy to set up, even for unexperienced users
+* They can easily be used to create mission templates
+
+
+== Create a Module by Script ==
+
+A module can be created using [[createUnit]] (do '''not''' use [[createVehicle]] or [[createAgent]]). Same as normal units, a [[Group]] must be created first.<br>
+Since {{GVI|arma3|1.86}} the variable [[BIS_fnc_initModules]]_disableAutoActivation must be set to [[false]] in its init to allow its init code to run.
+
+'''Example:'''
+<sqf>
+private _moduleGroup = createGroup sideLogic;
+"ModuleSmokeWhite_F" createUnit [
+	getPosATL player,
+	_moduleGroup,
+	"this setVariable ['BIS_fnc_initModules_disableAutoActivation', false, true];"
+];
+</sqf>
+
+
+== Creating a Module ==
+
+{{arma3}} introduces a module framework which aims to simplify the configuration of modules and the way their functions are executed (Globally,[[Multiplayer Scripting#Join In Progress|JIP]])
+
+=== Create a Module Addon ===
+
+* Make a folder named ''{{Color|purple|TAG}}_addonName'' a create a ''config.cpp'' file in it.
+* Inside, declare a CfgPatches class with your addon and its modules (in the ''units'' array). Without this, the game would not recognise the addon.
+* Make sure the addon and all objects start with your tag, e.g. {{Color|purple|TAG_}}.
+'''Example'''
+ class CfgPatches
+ {
+ 	class {{Color|purple|TAG}}_addonName
+ 	{
+ 		units[] = { "{{Color|purple|TAG}}_{{Color|green|Module}}{{Color|orangered|Nuke}}" };
+ 		requiredVersion = 1.0;
+ 		requiredAddons[] = { "A3_Modules_F" };
+ 	};
+ };
+
+=== Module Category ===
+
+* Modules are placed into basic categories which makes finding a desired module easier.
+You can use on of the existing categories ''(See table to the right)'' or create your own category (see example below).
+
+{| class="wikitable float-right" style="max-width: 50%"
+! class
+! displayName
+|-
+| ''Effects''
+| Effects
+|-
+| ''Events''
+| Events
+|-
+| ''Modes''
+| Gameplay Modes
+|-
+| ''GroupModifiers''
+| Group Modifiers
+|-
+| ''Intel''
+| Intel
+|-
+| ''NO_CATEGORY''
+| Misc
+|-
+| ''Multiplayer''
+| Multiplayer
+|-
+| ''ObjectModifiers''
+| Object Modifiers
+|-
+| ''Sites''
+| Sites
+|-
+| ''StrategicMap''
+| Strategic
+|-
+| ''Supports''
+| Supports
+|}
+'''Example'''
+ class CfgFactionClasses
+ {
+ 	class NO_CATEGORY;
+ 	class {{Color|purple|TAG}}_{{Color|teal|explosions}}: NO_CATEGORY
+ 	{
+ 		displayName = "Explosions";
+ 	};
+ };
+
+=== Creating the Module Config ===
+
+* All in-game objects (soldiers, vehicles, buildings, logics, modules, ...) are defined in ''CfgVehicles'' class.
+* '''All modules must inherit from Module_F''' parent class, either directly or through some additional sub-parent.
+* Modules functions are by default '''not''' executed when in [[:Category:Eden Editor|Eden Editor]] workspace. It can be enabled using '''is3DEN''' property, but that will also change format of function params.
+
+'''Example:'''
+<spoiler>
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class Logic;
+	class Module_F : Logic
+	{
+		class AttributesBase
+		{
+			class Default;
+			class Edit;					// Default edit box (i.e. text input field)
+			class Combo;				// Default combo box (i.e. drop-down menu)
+			class Checkbox;				// Default checkbox (returned value is Boolean)
+			class CheckboxNumber;		// Default checkbox (returned value is Number)
+			class ModuleDescription;	// Module description
+			class Units;				// Selection of units on which the module is applied
+		};
+
+		// Description base classes (for more information see below):
+		class ModuleDescription
+		{
+			class AnyBrain;
+		};
+	};
+
+	class TAG_Module_Nuke : Module_F
+	{
+		// Standard object definitions:
+		scope = 2;										// Editor visibility; 2 will show it in the menu, 1 will hide it.
+		scopeCurator = 2;								// Zeus visibility
+		displayName = "Nuclear Explosion";				// Name displayed in the menu
+		icon = "\TAG_addonName\data\icon_Nuke_ca.paa";	// Map icon. Delete this entry to use the default icon.
+		category = "Effects";
+
+		function = "TAG_fnc_moduleNuke";	// Name of function triggered once conditions are met
+		functionPriority = 1;				// Execution priority, modules with lower number are executed first. 0 is used when the attribute is undefined
+		isGlobal = 1;						// 0 for server only execution, 1 for global execution, 2 for persistent global execution
+		isTriggerActivated = 1;				// 1 for module waiting until all synced triggers are activated
+		isDisposable = 1;					// 1 if modules is to be disabled once it is activated (i.e. repeated trigger activation will not work)
+		is3DEN = 1;							// 1 to run init function in Eden Editor as well
+		curatorCanAttach = 1;				// 1 to allow Zeus to attach the module to an entity
+		curatorInfoType = "RscDisplayAttributeModuleNuke"; // Menu displayed when the module is placed or double-clicked on by Zeus
+
+		// 3DEN Attributes Menu Options
+		canSetArea = 1;						// Allows for setting the area values in the Attributes menu in 3DEN
+		canSetAreaShape = 1;				// Allows for setting "Rectangle" or "Ellipse" in Attributes menu in 3DEN
+		canSetAreaHeight = 1;				// Allows for setting height or Z value in Attributes menu in 3DEN
+		class AttributeValues
+		{
+			// This section allows you to set the default values for the attributes menu in 3DEN
+			size3[] = { 100, 100, -1 };		// 3D size (x-axis radius, y-axis radius, z-axis radius)
+			isRectangle = 0;				// Sets if the default shape should be a rectangle or ellipse
+		};
+
+		// Module attributes (uses https://community.bistudio.com/wiki/Eden_Editor:_Configuring_Attributes#Entity_Specific):
+		class Attributes : AttributesBase
+		{
+			// Arguments shared by specific module type (have to be mentioned in order to be present):
+			class Units : Units
+			{
+				property = "TAG_Module_Nuke_Units";
+			};
+
+			// Module-specific arguments:
+			class Yield : Combo
+			{
+				property = "TAG_Module_Nuke_Yield";				// Unique property (use "<tag>_<moduleClass>_<attributeClass>" format to ensure that the name is unique)
+				displayName = "Nuclear weapon yield";			// Argument label
+				tooltip = "How strong will the explosion be";	// Tooltip description
+				typeName = "NUMBER";							// Value type, can be "NUMBER", "STRING" or "BOOL"
+				defaultValue = "50";							// Default attribute value. Warning: this is an expression, and its returned value will be used (50 in this case).
+
+				// Listbox items
+				class Values
+				{
+					class 50Mt	{ name = "50 megatons";	value = 50; };
+					class 100Mt	{ name = "100 megatons"; value = 100; };
+				};
+			};
+
+			class Name : Edit
+			{
+				displayName = "Name";
+				tooltip = "Name of the nuclear device";
+				property = "TAG_Module_Nuke_Name";
+				// Default text for the input box:
+				defaultValue = """Tsar Bomba"""; // Because this is an expression, one must have a string within a string to return a string
+			};
+
+			class ModuleDescription : ModuleDescription {}; // Module description should be shown last
+		};
+
+		// Module description (must inherit from base class, otherwise pre-defined entities won't be available)
+		class ModuleDescription : ModuleDescription
+		{
+			description = "Short module description";	// Short description, will be formatted as structured text
+			sync[] = { "LocationArea_F" };				// Array of synced entities (can contain base classes)
+
+			class LocationArea_F
+			{
+				description[] = { // Multi-line descriptions are supported
+					"First line",
+					"Second line"
+				};
+				position = 1;	// Position is taken into effect
+				direction = 1;	// Direction is taken into effect
+				optional = 1;	// Synced entity is optional
+				duplicate = 1;	// Multiple entities of this type can be synced
+				synced[] = { "BluforUnit", "AnyBrain" };	// Pre-defined entities like "AnyBrain" can be used (see the table below)
+			};
+
+			class BluforUnit
+			{
+				description = "Short description";
+				displayName = "Any BLUFOR unit";	// Custom name
+				icon = "iconMan";					// Custom icon (can be file path or CfgVehicleIcons entry)
+				side = 1;							// Custom side (determines icon color)
+			};
+		};
+	};
+};
+</syntaxhighlight>
+</spoiler>
+
+[[File:A3 modules info.jpg|230px|thumb|[[2D Editor]]: The description is available after clicking on "Show Info" button when editing the module]]
+[[File:A3 3den ModuleDescription.jpg|thumb|230px|[[:Category:Eden Editor|Eden Editor]]: The description is available after opening the modules' attributes window]]
+
+Pre-defined sync preview entities can be:
+{| class="wikitable"
+! Class
+! Descripton
+|-
+| ''Anything''
+| Any object - persons, vehicles, static objects, etc.
+|-
+| ''AnyPerson''
+| Any person. Not vehicles or static objects.
+|-
+| ''AnyVehicle''
+| Any vehicle. No persons or static objects.
+|-
+| ''GroupModifiers''
+| Group Modifiers
+|-
+| ''AnyStaticObject''
+| Any static object. Not persons or vehicles.
+|-
+| ''AnyBrain''
+| Any AI or player. Not empty objects
+|-
+| ''AnyAI''
+| Any AI unit. Not players or empty objects
+|-
+| ''AnyPlayer''
+| Any player. Not AI units or empty objects
+|-
+| ''EmptyDetector''
+| Any trigger
+|}
+
+=== Configuring the Module Function ===
+
+* Place '' class CfgFunctions'' to ''config.cpp''. See [[Arma 3: Functions Library]] for more info about functions configuration.
+'''Example'''<br>
+<spoiler>
+ class CfgFunctions
+ {
+ 	class {{Color|indigo|TAG}}
+ 	{
+ 		class {{Color|teal|Effects}}
+ 		{
+ 			file = "\{{Color|indigo|TAG}}_addonName\functions";
+ 			class {{Color|green|module}}{{Color|orangered|Nuke}} {};
+ 		};
+ 	};
+ };
+</spoiler>
+
+=== Writing the Module Function ===
+
+* Create the ''functions'' folder within the addon folder and place *.sqf or *.fsm files there.
+* Example: ''\{{Color|indigo|TAG}}_addonName\functions\fn_{{Color|green|module}}{{Color|orangered|Nuke}}.sqf''
+* Input parameters differ based on value of ''is3DEN'' property.
+
+'''Default Example''' (is3DEN = 0)<br>
+<spoiler>
+<sqf>
+params [
+	["_logic", objNull, [objNull]],		// Argument 0 is module logic
+	["_units", [], [[]]],				// Argument 1 is a list of affected units (affected by value selected in the 'class Units' argument))
+	["_activated", true, [true]]		// True when the module was activated, false when it is deactivated (i.e., synced triggers are no longer active)
+];
+
+// Module specific behavior. Function can extract arguments from logic and use them.
+if (_activated) then
+{
+	// Attribute values are saved in module's object space under their class names
+	private _bombYield = _logic getVariable ["Yield", -1]; // (as per the previous example, but you can define your own)
+	hint format ["Bomb yield is: %1", _bombYield]; // will display the bomb yield, once the game is started
+};
+// Module function is executed by spawn command, so returned value is not necessary, but it is good practice.
+true;
+</sqf>
+</spoiler>
+
+'''Example Eden Editor''' (is3DEN = 1)<br>
+<spoiler>
+When '''is3DEN = 1''' is set in module config, different, more detailed params are passed to the function.
+<sqf>
+params [
+	["_mode", "", [""]],
+	["_input", [], [[]]]
+];
+
+switch _mode do
+{
+	// Default object init
+	case "init":
+	{
+		_input params [
+			["_logic", objNull, [objNull]],		// Module logic
+			["_isActivated", true, [true]],		// True when the module was activated, false when it is deactivated
+			["_isCuratorPlaced", false, [true]]	// True if the module was placed by Zeus
+		];
+		// ... code here...
+	};
+	// When some attributes were changed (including position and rotation)
+	// Fires when module is initially placed in 3DEN
+	case "attributesChanged3DEN": {
+		_input params [
+			["_logic", objNull, [objNull]]
+		];
+		// ... code here...
+	};
+	// When added to the world (e.g., after undoing and redoing creation)
+	case "registeredToWorld3DEN": {
+		_input params [
+			["_logic", objNull, [objNull]]
+		];
+		// ... code here...
+	};
+	// When removed from the world (i.e., by deletion or undoing creation)
+	case "unregisteredFromWorld3DEN": {
+		_input params [
+			["_logic", objNull, [objNull]]
+		];
+		// ... code here...
+	};
+	// When connection to object changes (i.e., new one is added or existing one removed)
+	case "connectionChanged3DEN": {
+		_input params [
+			["_logic", objNull, [objNull]]
+		];
+		// ... code here...
+	};
+	// When object is being dragged
+	case "dragged3DEN": {
+		_input params [
+			["_logic", objNull, [objNull]]
+		];
+		// ...code here...
+	};
+};
+true;
+</sqf>
+</spoiler>
+
+{{Feature|Important|Zeus place-able modules are local to the client that placed the module.}}
+
+== Module Properties ==
+
+{{Feature|arma3|If you use the [[:Category:Eden Editor|Eden Editor]] please visit [[Eden Editor: System]].}}
+{| class="wikitable"
+! Property Name
+! Description
+|-
+| ''Name''
+| The name of a module can be used to refer to the object in script code. Like all variable names, the name must not contain any spaces or reserved characters. You should try to make it something meaningful and avoid conflicts. Note that if a variable exists with an identical name, no warning will be given and the name will refer to the variable first, rather than the named unit. If you copy and paste a named entity, the duplicate will be automatically have an underscore and number appended to it is name to avoid conflicts.
+|-
+| ''Initialization''
+| Any [[Scripting|script]] code placed in this box will be executed as the mission begins. Script code is extremely powerful and useful - it allows you to create many effects and change aspects of the mission that would not be possible using only the graphical interface of the mission editor. For example, to make a soldier begin the mission unarmed, add "[[removeAllWeapons]] [[Magic Variables#this_2|this]]" (without the quotation marks) to it is initialization string. Any [[Expression|expressions]] in the initialization field must return [[Nothing|nothing]], or an error message will prevent the unit dialogue from closing.
+|-
+| ''Description''
+| The description property is not used by modules. However, it is used by some functions and it changes the tooltip in [[:Category:Eden Editor|Eden Editor]] when hovering over the module icon.
+|-
+| ''Probability of Presence''
+| Defines how likely it is that the entity will exist each time the mission is played. This can be used to add a bit of randomness to missions. Moving the slider all the way to the right means the object will always be there, all the way to the left means the unit will never appear. Note the ''Condition of Presence'' must also return true if the entity is to appear in the mission.
+
+|-
+| ''Condition of Presence''
+| This is a script code condition which must return true in order for the object to appear in the mission. By default this reads "true" which means the object will appear as defined by it is ''Probability of Presence''. For an example, if you wanted a unit to appear only if the mission is being played in Veteran mode, place "![[cadetMode]]" (without quotation marks) in it is Condition of Presence box. A unit with a Condition of Presence that returns false will not exist in the mission, irrespective of its ''Probability of Presence''.
+|-
+| ''Placement Radius''
+| Changes the object's starting position to a random point within a circle of this radius, in metres. This can be used to add some randomness to your mission. For grouped units, the placement radius is only used by the group leader, and group members with a special setting of ''None'' (or ''In Cargo'' for a group without suitable vehicle).
+|}
+
+
+== Module Documentation ==
+
+Here you can find links to modules which are documented on this wiki.
+
+=== {{arma2}} ===
+
+* [[Simple Support Module]]
+* [[Ambient Animals]]
+* [[Environment - Colors]]
+* [[:Category:Arma 2: Editor Modules|Arma 2: Editor Modules]]
+
+=== {{arma3}} ===
+
+Last updated: {{GVI|arma3|2.10}}
+{| class="wikitable"
+! Module Name !! Category !! Addon !! Function !! Description
+|-
+| Hide Terrain Objects
+| Environment
+| Arma 3
+| [[BIS_fnc_moduleHideTerrainObjects]]
+|
+|-
+| Edit Terrain Object
+| Environment
+| Arma 3
+| [[BIS_fnc_moduleEditTerrainObject]]
+|
+|-
+| Timeline
+| Keyframe Animation
+| Arma 3
+|
+|
+|-
+| Rich Curve
+| Keyframe Animation
+| Arma 3
+|
+|
+|-
+| Rich Curve Key
+| Keyframe Animation
+| Arma 3
+|
+|
+|-
+| Rich Curve Key Control Point
+| Keyframe Animation
+| Arma 3
+|
+|
+|-
+| Camera
+| Keyframe Animation
+| Arma 3
+|
+|
+|-
+| Smoke Grenade
+| Effects
+| Arma 3
+| [[BIS_fnc_moduleGrenade]]
+| Create a smoke shell.
+|-
+| Chem light
+| Effects
+| Arma 3
+| [[BIS_fnc_moduleGrenade]]
+| Create a chem light.
+|-
+| Tracers
+| Effects
+| Arma 3
+| [[BIS_fnc_moduleTracers]]
+| Shoot tracers upwards to create an illusion of battle.
+|-
+| Plankton
+| Effects
+| Arma 3
+| [[BIS_fnc_moduleEffectsEmitterCreator]]
+| Plankton module creates an underwater plankton effect around player.
+|-
+| Bubbles
+| Effects
+| Arma 3
+| [[BIS_fnc_moduleEffectsEmitterCreator]]
+| Creates underwater bubbles on position of the module. Unless you set the position of the module manually (via script commands), bubbles will be created at the bottom.
+|-
+| Cartridges
+| Effects
+| Arma 3
+| [[BIS_fnc_moduleEffectsEmitterCreator]]
+| Creates empty cartridges on the position of the module.
+|-
+| Smoke
+| Effects
+| Arma 3
+| [[BIS_fnc_moduleEffectsEmitterCreator]]
+| Creates smoke on a position of the module.
+|-
+| Fire
+| Effects
+| Arma 3
+| [[BIS_fnc_moduleEffectsEmitterCreator]]
+| Creates fire on a position of the module.
+|-
+| Date
+| Events
+| Arma 3
+| [[BIS_fnc_moduleDate]]
+| Set mission date.
+|-
+| Weather
+| Environment
+| Arma 3
+| [[BIS_fnc_moduleWeather]]
+| Set mission weather. Certain changes can take some time to appear.
+|-
+| Save Game
+| Events
+| Arma 3
+| [[BIS_fnc_moduleSaveGame]]
+| Set the mission progress. Will replace the previous automatic save. User save won't be affected.
+|-
+| Radio Chat
+| Events
+| Arma 3
+| [[BIS_fnc_moduleChat]]
+| Show a chat message.
+|-
+| Volume
+| Events
+| Arma 3
+| [[BIS_fnc_moduleVolume]]
+| Set mission sound/music volume. Changes won't affect user options.
+|-
+| Generic radio message
+| Events
+| Arma 3
+| [[BIS_fnc_moduleGenericRadio]]
+| Show a chat message.
+|-
+| Set Callsign
+| Group Modifiers
+| Arma 3
+| [[BIS_fnc_moduleGroupID]]
+| Assign group callsign. Each group has to have a unique callsign - assigning an existing one will remove it from the group which used it previously.
+|-
+| Combat Get In
+| Group Modifiers
+| Arma 3
+| [[BIS_fnc_moduleCombatGetIn]]
+|
+|-
+| High Command - Commander
+| Others
+| Arma 3
+|
+| Set person as a high commander, giving him an ability to control whole groups.
+|-
+| Skip time
+| Environment
+| Arma 3
+| [[BIS_fnc_moduleSkiptime]]
+| Skip mission time.
+|-
+| Create Task
+| Intel
+| Arma 3
+| [[BIS_fnc_moduleTaskCreate]]
+| Add a task to synced objects or to larger pool of units.
+|-
+| Set Task Description
+| Intel
+| Arma 3
+| [[BIS_fnc_moduleTaskSetDescription]]
+| Set task description.
+|-
+| Set Task Destination
+| Intel
+| Arma 3
+| [[BIS_fnc_moduleTaskSetDestination]]
+| Set task destination.
+|-
+| Set Task State
+| Intel
+| Arma 3
+| [[BIS_fnc_moduleTaskSetState]]
+| Set task state.
+|-
+| Create Diary Record
+| Intel
+| Arma 3
+| [[BIS_fnc_moduleCreateDiaryRecord]]
+| Create a diary record for synced objects or for larger a pool of units.
+|-
+| Headquarters Entity
+| Intel
+| Arma 3
+| [[BIS_fnc_moduleHQ]]
+| Virtual headquarters unit which can be used for playing radio messages.
+|-
+| Military Symbols
+| Others
+| Arma 3
+|
+|
+|-
+| Zone Restriction
+| Others
+| Arma 3
+| [[BIS_fnc_moduleZoneRestriction]]
+| Set punishment for leaving the Area of Operation.
+|-
+| Trident
+| Others
+| Arma 3
+| [[BIS_fnc_moduleTrident]]
+| Set diplomacy options. When involved sides start killing each other, they won't be punished by a negative rating. Once too many kills are reached, the sides will turn hostile.
+|-
+| Unlock Object
+| Others
+| Arma 3
+| [[BIS_fnc_moduleUnlockObject]]
+| Unlock addons of synced objects for the curator. E.g., when synced to a BLUFOR soldier, all BLUFOR soldiers will be unlocked, because they belong to the same addon.
+|-
+| Unlock Area
+| Others
+| Arma 3
+| [[BIS_fnc_moduleUnlockArea]]
+| Unlock area for curator unit spawning.
+|-
+| Friendly Fire
+| Others
+| Arma 3
+| [[BIS_fnc_moduleFriendlyFire]]
+| Set punishment for killing friendly units.
+|-
+| Sector
+| Multiplayer
+| Arma 3
+| [[BIS_fnc_moduleSector]]
+|
+|-
+| Respawn Position
+| Multiplayer
+| Arma 3
+| [[BIS_fnc_moduleRespawnPosition]]
+| Add a respawn position.
+|-
+| Vehicle Respawn
+| Multiplayer
+| Arma 3
+| [[BIS_fnc_moduleRespawnVehicle]]
+| Set vehicle respawn parameters.
+|-
+| Show / Hide
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_moduleShowHide]]
+| Show/hide synced objects. They will become invisible and their simulation will be disabled.
+|-
+| Set Position / Rotation
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_modulePositioning]]
+| Set position and rotation of synced objects.
+|-
+| Set Skill
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_moduleSkill]]
+| Set AI skill of synced objects. Has no effect on players.
+|-
+| Set Character Damage
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_moduleHealth]]
+| Set damage of synced persons.
+|-
+| Set Vehicle Damage
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_moduleDamage]]
+| Set damage of synced vehicles.
+|-
+| Set Vehicle Fuel
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_moduleFuel]]
+| Set fuel of synced vehicles.
+|-
+| Set Ammo
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_moduleAmmo]]
+| Set total ammo of synced objects. Affects only ammo of their weapons, not ammo carried in cargo space (e.g., ammo boxes).
+|-
+| Set Mode
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_moduleMode]]
+| Set behavior pattern of synced objects.
+|-
+| Set Rank
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_moduleRank]]
+| Set military rank of synced objects.
+|-
+| Set AI Mode
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_moduleAI]]
+| Enable/disable AI modes.
+|-
+| Add Rating / Score
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_moduleRating]]
+| Add rating to synced objects. Rating is automatically awarded for killed enemies and players can see it in the debriefing screen. Shooting friendlies will lead to a negative rating and turning hostile to your own units.
+|-
+| Open / Close Doors
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_moduleDoorOpen]]
+| Open/close door of synced objects.
+|-
+| Simulation Manager
+| Object Modifiers
+| Arma 3
+| [[BIS_fnc_moduleSimulationManager]]
+| Keep all AI units disabled until someone from the player's group gets near.
+|-
+| Open Strategic Map
+| Strategic
+| Arma 3
+| [[BIS_fnc_moduleStrategicMapOpen]]
+| Open a strategic map.
+|-
+| Support Requester
+| Supports
+| Arma 3
+| [[BIS_fnc_moduleSupportsInitRequester]]
+| Supports framework. A support requester unit has to be synchronized with the Requester module. The Requester module has to be synchronized with Provider module(s). A Provider module has to be synchronized with a support provider unit(s), unless a Virtual Provider module is used.
+|-
+| Firing Drill
+| Firing Drills
+| Arma 3
+| [[BIS_fnc_moduleFiringDrill]]
+|
+|-
+| Posters
+| Others
+| Arma 3
+| [[BIS_fnc_modulePoster]]
+| Creates posters and leafets on walls of buildings. Those buildings are made indestructible.
+|-
+| Animals
+| Others
+| Arma 3 Zeus
+| [[BIS_fnc_moduleAnimals]]
+| Creates a group of animals and handles their basic behavior. Deleting the module will delete the animals as well.
+|-
+| Close Air Support (CAS)
+| Effects
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCAS]]
+| Send an air strike on the module position. It will take a few seconds before the plane arrives at the module's position. Unless it is destroyed, it will be deleted after flying away.
+|-
+| Game Master
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCurator]]
+| Zeus logic which provides access to the 3D real-time editor.
+|-
+| Manage Addons
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorAddAddons]]
+| Manage addons (i.e. object packs) available to Zeus.
+|-
+| Manage Resources
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorAddPoints]]
+| Add or subtract resources available to Zeus. They are required for placing or editing objects.
+|-
+| Add Editing Area
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorAddEditingArea]]
+| Add an area inside of which Zeus is allowed to place or edit objects.
+|-
+| Restrict Editing Around Players
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorAddEditingAreaPlayers]]
+|
+|-
+| Set Editing Area Type
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorSetEditingAreaType]]
+| Set whether editing in all editing areas is allowed or restricted.
+|-
+| Add Camera Area
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorAddCameraArea]]
+| Add an area inside of which Zeus can move with the camera.
+|-
+| Set Camera Position
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorSetCamera]]
+| Move the Zeus camera to the module position.
+|-
+| Add Editable Objects
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorAddEditableObjects]]
+| Add objects which Zeus can edit.
+|-
+| Set Editing Costs
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorSetCoefs]]
+| Set coefficients for operations Zeus can perform. The object cost is multiplied by these. Use a large negative value (e.g. -1e10) to disable the operation.
+|-
+| Set Costs (Default)
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorSetCostsDefault]]
+|
+|-
+| Set Costs (Side)
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorSetCostsSide]]
+| Simplified definition of object costs. Can be combined with other "Set Costs" modules (e.g., cost of a BLUFOR soldier can be defined by "Set Costs - Sides" and "Set Costs - Soldiers & Vehicles" module. All matching values are multiplied together).
+|-
+| Set Costs - Soldiers & Vehicles
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorSetCostsVehicleClass]]
+| Simplified definition of object costs. Can be combined with other "Set Costs" modules (e.g., cost of a BLUFOR soldier can be defined by "Set Costs - Sides" and "Set Costs - Soldiers & Vehicles" module. All matching values are multiplied together).
+|-
+| Add Icon
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorAddIcon]]
+| Show icon visible only to a specific Zeus.
+|-
+| Set Attributes - Objects
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCuratorSetAttributes]]
+| Set which attributes are available for objects. The attribute window is accessed when Zeus double-clicks LMB on an object.
+|-
+| Post-Process
+| Environment
+| Arma 3 Zeus
+| [[BIS_fnc_modulePostprocess]]
+| Set a scene Post-Processing effect (e.g. color correction or film grain)
+|-
+| IR Grenade
+| Effects
+| Arma 3 Zeus
+| [[BIS_fnc_moduleGrenade]]
+|
+|-
+| Time Acceleration
+| Environment
+| Arma 3 Zeus
+| [[BIS_fnc_moduleTimeMultiplier]]
+|
+|-
+| Flare
+| Effects
+| Arma 3 Zeus
+| [[BIS_fnc_moduleProjectile]]
+| Creates a signal flare on the module position (visible only at night).
+|-
+| End Scenario
+| Scenario Flow
+| Arma 3 Zeus
+| [[BIS_fnc_moduleEndMission]]
+| End the scenario for all players.
+|-
+| Scenario Name
+| Scenario Flow
+| Arma 3 Zeus
+| [[BIS_fnc_moduleMissionName]]
+| Set the scenario name. It's shown to every player upon joining and after each respawn.
+|-
+| Zeus Lightning Bolt
+| Zeus
+| Arma 3 Zeus
+| [[BIS_fnc_moduleLightning]]
+| Creates a lightning strike powerful enough to destroy an object where it impacts.
+|-
+| Cover Map
+| Others
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCoverMap]]
+| Highlight an Area of Operations in the map by enclosing it and covering the unused part.
+|-
+| Create Radio Channel
+| Others
+| Arma 3 Zeus
+| [[BIS_fnc_moduleRadioChannelCreate]]
+| Creates a custom radio channel for the given sides / Zeus players.
+|-
+| Zone Protection
+| Scenario Flow
+| Arma 3 Zeus
+| [[BIS_fnc_moduleZoneProtection]]
+| Prevents players from entering the given area.
+|-
+| Countdown
+| Scenario Flow
+| Arma 3 Zeus
+| [[BIS_fnc_moduleCountdown]]
+|
+|-
+| Respawn Tickets
+| Scenario Flow
+| Arma 3 Zeus
+| [[BIS_fnc_moduleRespawnTickets]]
+| Set the number of respawn tickets available to each side.
+|-
+| Bleed Tickets
+| Scenario Flow
+| Arma 3 Zeus
+| [[BIS_fnc_moduleBleedTickets]]
+| Allow ticket bleeding when one side is holding the majority of sectors.
+|-
+| Ordnance
+| Effects
+| Arma 3 Zeus
+| [[BIS_fnc_moduleProjectile]]
+| Create an artillery shell on the module position. It will take a few seconds until it hits the ground.
+|-
+| Time Trial
+| Time Trials
+| Arma 3 Karts
+| [[BIS_fnc_moduleTimeTrial]]
+|
+|-
+| Spawn AI
+| Others
+| Arma 3 Helicopters
+| [[BIS_fnc_moduleSpawnAI]]
+|
+|-
+| Spawn AI: Spawnpoint
+| Others
+| Arma 3 Helicopters
+| [[BIS_fnc_moduleSpawnAIPoint]]
+|
+|-
+| Spawn AI: Sector Tactic
+| Others
+| Arma 3 Helicopters
+| [[BIS_fnc_moduleSpawnAISectorTactic]]
+|
+|-
+| Spawn AI: Options
+| Others
+| Arma 3 Helicopters
+| [[BIS_fnc_moduleSpawnAIOptions]]
+|
+|-
+| Sling Load
+| Others
+| Arma 3 Helicopters
+| [[BIS_fnc_moduleSlingload]]
+|
+|-
+| EndGame Objectives Instance
+| Objectives
+| Arma 3 Marksmen
+| [[BIS_fnc_moduleHvtObjectives]]
+|
+|-
+| End Game Simple Objective
+| Objectives
+| Arma 3 Marksmen
+| [[BIS_fnc_moduleHvtObjectives]]
+|
+|-
+| End Game Start Game Objective
+| Objectives
+| Arma 3 Marksmen
+| [[BIS_fnc_moduleHvtObjectives]]
+|
+|-
+| End Game - End Game Objective
+| Objectives
+| Arma 3 Marksmen
+| [[BIS_fnc_moduleHvtObjectives]]
+|
+|-
+| Combat Patrol Init
+| Combat Patrol
+| Arma 3 Malden
+| [[BIS_fnc_CPInit]]
+| Initializes the Combat Patrol mode upon scenario start.
+|-
+| Combat Patrol Location Add
+| Combat Patrol
+| Arma 3 Malden
+|
+| Adds a new selectable location to the map.
+|-
+| Combat Patrol Location Remove
+| Combat Patrol
+| Arma 3 Malden
+|
+| Removes the nearest location in a 1000m radius from the map selection.
+|-
+| Combat Patrol Location Reposition
+| Combat Patrol
+| Arma 3 Malden
+|
+| Moves the nearest location in a 1000m radius to this module's position.
+|-
+| Combat Patrol Azimuth Blacklist
+| Combat Patrol
+| Arma 3 Malden
+|
+| Blacklists the nearest location's in a 1000m radius azimuth range so it can't be used for the starting / ending position or reinforcements spawning point.
+|-
+| Civilian Presence
+| Ambient
+| Arma 3 Tac-Ops
+| [[BIS_fnc_moduleCivilianPresence]]
+|
+|-
+| Civilian Presence Spawnpoint
+| Ambient
+| Arma 3 Tac-Ops
+| [[BIS_fnc_moduleCivilianPresenceUnit]]
+|
+|-
+| Civilian Presence Position
+| Ambient
+| Arma 3 Tac-Ops
+| [[BIS_fnc_moduleCivilianPresenceSafeSpot]]
+|
+|-
+| Vanguard: Starting Area
+| Gameplay Modes
+| Arma 3 Tanks
+| [[BIS_fnc_moduleVanguardFob]]
+|
+|-
+| Vanguard: Score Persistence
+| Gameplay Modes
+| Arma 3 Tanks
+| [[BIS_fnc_moduleVanguardScorePersistence]]
+|
+|-
+| Vanguard: Objective Area
+| Gameplay Modes
+| Arma 3 Tanks
+| [[BIS_fnc_moduleVanguardObjective]]
+|
+|-
+| Old Man Sector
+| Old Man
+| Arma 3 Apex
+|
+| Module for configuring sectors. All vehicles and groups placed inside will be persistently spawned. Sectors must not overlap! This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Patrol Area
+| Old Man
+| Arma 3 Apex
+|
+| Module for randomly spawning groups in an area. Groups that have some unit synchronized are used as a template; units will randomly spawn in positions inside the patrol area. If you synchronize multiple groups, a random group will be selected. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Restricted Area
+| Old Man
+| Arma 3 Apex
+|
+| Sets up restricted areas which will raise player's threat level if seen within it. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Relationship
+| Old Man
+| Arma 3 Apex
+|
+| Set up the relationship with a given side. Do not set up for player's own side. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man QRF
+| Others
+| Arma 3 Apex
+|
+| QRF Module. Synchronized units will be spawned on QRF activation. Only one instance of the module is allowed. It cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Smart Markers
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_moduleSmartMarkers]]
+| Managing smart marker enhancements, interactive smart marker compositions, and LODing of the information. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Insurgent Agent
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_moduleSyndikatAgent]]
+| Module manages insurgent resources. It generates attack events. It cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Insurgent Team
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_moduleSyndikatTeam]]
+| Manages size of insurgent teams and income. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Insurgent Camp Position
+| Old Man
+| Arma 3 Apex
+|
+| Defines the placement of a camp. Synchronize the position with a unit, which will serve as a template for the unit actually spawned in the camp. Behavior and waypoints will be inherited, as well as code from any synchronized init. script module. It cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Economy
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_moduleEconomy]]
+| Manage player income and starting money. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Oldman Action Queue
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_moduleActionQueue]]
+| Action Queue can be used for the sequential execution of actions (scripts, dialogues) in a non-specified time.
+|-
+| Old Man Radio
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_moduleRadio]]
+| Sets parameters for radio stations and what content will be aired. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Reputation
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_moduleReputation]]
+| Reputation calculated in conjunction with the Relationship module. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Awareness
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_moduleAwareness]]
+| Player's awareness regarding his relationship to the enemy via ambient radio chatter. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Protected Vehicle
+| Old Man
+| Arma 3 Apex
+|
+| Vehicle that will be marked as stolen by a given side. It will elicit an appropriate response if taken. Note that all CSAT, NATO, and Gendarmerie vehicles are registered by default. This module must be synchronized to a vehicle. It cannot be used without first adding the Old Man Init. Module.
+|-
+| Old Man Init. Script
+| Old Man
+| Arma 3 Apex
+|
+| Init. script applied to any unit synchronized with a module. Do not use system: Init. field. Instead, use the field in the lower part of the module. Script will be called every time a unit in the sector is created.
+|-
+| Old Man Init.
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_init]]
+| Integral module for Old Man, enabling all functionality. If you create a new mission, do not forget the common description.ext to enable the rest of the functions.<br/>It is possible to include other missions directly into this mission. You must have them all in one folder, with the path mapped in this module. Furthermore, in each mission folder, you must have the missionName.sqf file included. For the name of the included mission, use the mission name, without the accompanying terrain suffix.
+|-
+| Old Man Night
+| Old Man
+| Arma 3 Apex
+|
+| Synchronize units you want to spawn to the closest sector. According to the module settings, synchronized units will remain at night. Use this module for each sector that should be different from a sector in the daytime. It cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Intel
+| Old Man
+| Arma 3 Apex
+|
+| Module for creating collectible intel. It adds a new diary record and can reveal sector markers. It cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Tracked Device
+| Old Man
+| Arma 3 Apex
+|
+| Synchronize this module with any object that should be audible on the player's phone's geo-finder. The module itself will only prime the object. It will be despawned after. Do not use on vehicles or units inside a sector which can be despawned. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Drop-off Point
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_moduleDepot]]
+| Player is able to unload/sell equipment inside of the sector area. Synchronize a container so it can be used to store items from inventory. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Rest Point
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_moduleRestPoint]]
+| Player is able to rest at synchronized object(s). This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Mosquitoes
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_Epicentrum]]
+| Creates an area infested with mosquitoes. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Market
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_moduleMarket]]
+| Player is able to shop at a synchronized container when talking to a synchronized shopkeeper. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Random Conversations
+| Old Man
+| Arma 3 Apex
+|
+| Synchronize one or two units to talk to each other or to the player. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Fast Travel
+| Old Man
+| Arma 3 Apex
+| [[BIS_fnc_OM_moduleFastTravel]]
+| Module for handling player Fast Travel. This module cannot be used without first adding the Old Man Init. module.
+|-
+| Old Man Fast Travel Position
+| Old Man
+| Arma 3 Apex
+|
+| Defines the position where the player should be transported to after Fast Travel. This module cannot be used without first adding the Old Man Init. module.
+|-
+|}
+Total number of modules: 154
+
+{{Wiki|extractionScript}}
+
+=== {{tkoh}} ===
+
+* [[Ambient Boats]]
+* [[Ambient Helicopters]]
+* [[:Category:Take On Helicopters: Editor Modules|Take On Helicopters: Editor Modules]]
+
+
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+[[Category:Take On Helicopters: Editing]]

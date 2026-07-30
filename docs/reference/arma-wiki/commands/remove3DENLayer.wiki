@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/remove3DENLayer
+// revision: 351677 (2023-12-20T10:39:52Z)
+// export sha1: kf1g310kz2o41h8digrlp8r3lppqt81
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Remove [[:Category:Eden Editor|Eden Editor]] editing layer.
+{{Feature|informative|[[delete3DENEntities]] seems to be more reliable.}}
+
+|s1= [[remove3DENLayer]] layerID
+
+|p1= layerID : [[Number]] - layer ID as returned by [[add3DENLayer]] command
+|r1= [[Boolean]] - [[true]] if the layer was removed successfully (i.e., correct layer ID was used)
+
+|x1= <sqf>
+private _myLayer = -1 add3DENLayer "Enemy Base";
+remove3DENLayer _myLayer;
+</sqf>
+
+|seealso= [[add3DENLayer]] [[set3DENLayer]] [[get3DENLayerEntities]]
+}}

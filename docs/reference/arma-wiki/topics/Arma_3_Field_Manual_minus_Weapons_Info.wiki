@@ -1,0 +1,116 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Weapons_Info
+// revision: 255781 (2021-04-24T18:48:36Z)
+// export sha1: 033gqxs4jyqgahmg20figrcazxog6t0
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Weapons Info ==
+=== Mk6 Mortar ===
+A classic 82mm caliber mortar, equipped with a ballistic computer and easy to handle. It weighs only 21kg and can fire various kinds of ammo: from HE (high explosive) to smokes, flares in support of infantry.
+
+
+=== MX 6.5 mm ===
+The MX is a 6.5mm assault rifle used as a standard-issue weapon for the BLUFOR army. It is lightweight, reliable, easily serviceable and compatible with a large number of accessories. Several variants of the MX rifle exist: MX 3GL is equipped with a 3GL grenade launcher. MXM is a designated marksman rifle for engaging targets from a larger distance compared to assault rifles. MX SW is a light support weapon providing light machinegun support. And finally MXC is a carbine version with shorter barrel, better suited for close quarters combat.
+
+
+=== Katiba 6.5 mm ===
+The Katiba is a 6.5mm assault rifle of an Eastern origin. Developed in cooperation with China, it features a (lightweight) bullpup design, reliability and low recoil. The Katiba is a standard issue weapon for OPFOR armies. Three versions of Katiba exist: standard, a shorter carbine and a GL version equipped with an underslung grenade launcher.
+
+
+=== TRG-21 5.56 mm ===
+The TRG-21 is a bullpup assault rifle used by the FIA. It features an ergonomical design that supports accurate fire in harsh conditions. TRG-21 is lightweight, ambidextrous, easily serviceable and compatible with a large number of accessories. TRG-21 EGLM is mounted with an enhanced grenade launching module. A carbine variant is labeled TRG-20. Compared to TRG-21, it features a short barrel better suited for close quarters combat situations.
+
+
+=== SDAR 5.56 mm ===
+Special Dual-medium Assault Rifle is a bullpup rifle specially designed to allow shooting both on land and under water. It uses special supercavitating 5.56x45 mm ammunition that is efficient when used under water. But still, when under water, its range drops rapidly from 35 meters in 10m depth to 13 meters in 40m depth.
+
+
+=== Zafir 7.62 mm ===
+The Zafir 7.62 mm is a light machine gun mass-produced by China. It is said to be based on a copied Israeli design, which spawned a lengthy legal conflict that still remains unresolved. The Zafir is a gas-powered automatic firearm, that uses easily replaceable ammo boxes carrying up to 150 rounds. 7.62mm caliber ammunition gives the Zafir an advantage over BLUFOR MX-SW weapons when compared in power and range, but the weapon itself is heavier and less maneuverable.
+
+
+=== Rahim 7.62 mm ===
+The Rahim 7.62 mm is a bullpup rifle serving as a designated marksman weapon for the OPFOR. It's based on the older Russian rifle with upgraded modern features such as firing mechanism, trigger and rail. The bullpup design allows the rifle to be more compact and maneuverable without shortening the barrel.
+
+
+=== Mk18 ABR 7.62 mm ===
+The Mk18 Advanced Battle Rifle is a more compact and lightweight evolution of the Mk14 Battle Rifle. The ABR is an ergonomical and rifle that can be accessorized and was designed for high accuracy. It's chambered for a 7.62x51 mm cartridge and is typically used in ranges from 600 - 800 m.
+
+
+=== PCML ===
+The PCML (Person-Carried Missile Launcher) is a portable, short range, fire-and-forget anti-tank guided missile system. The PCML is a soft-launch system, allowing it to be used from within an enclosed room.
+
+
+=== RPG-42 Alamut ===
+The RPG-42 Alamut is a lightweight, reloadable and recoilless anti-tank weapon fired from the shoulder. It's based on modern Russian rocket launchers and produced in the Middle East. The RPG-42 Rocket is best used against light-armored vehicles and defenses, though when used against a tank, it could damage its tracks.
+
+
+=== GM6 Lynx 12.7 mm ===
+The Gepard GM6 Lynx is a semi-automatic anti-materiel rifle using Russian 12.7x108mm ammo. Its purpose is to stop or disable targets such as light armored vehicles, armored rifle troops, light shelters and helicopters from 600–800 m range. Due to its weight and portability, it is good for parachute, airmobile and territorial troops. The barrel recoil technology brings the recoil of the GM6 below the recoil of other rifles in the same category. The weapon is highly accurate and effective up to a range of 1500 m.
+
+
+=== M320 LRR .408 ===
+M320 Long Range Rifle is a .408 caliber sniper rifle developed in The United States. The M320 LRR is a bolt-action rifle valued for its accuracy up to 2000 m.
+
+
+=== Rangefinder ===
+A rangefinder is a basic tool for spotting distances and targets. It has several active parts: one being the rangefinder itself on the right side where you can see the distance to the target. AZT displays the azimuth and the mode switches between the visible spectrum and night vision.
+
+
+=== P07 9 mm ===
+The P07 is a semi-automatic pistol with an iron and reinforced polymer mix frame. Following the success of Glock, polymer based pistols became known as perfect handguns for both military use and self-defense and are available in various calibers. P07 allows easy mounting of suppressors.
+
+
+=== Rook-40 9 mm ===
+Rook-40 is a double action, short recoil operated, locked breech pistol. Its steel construction makes it a bit retro, but compared to contemporary lightweight polymer pistols, it feels sturdier. It fires 9x21 mm ammunition and comes with tritium-filled night sights.
+
+
+=== Mk20 5.56 mm ===
+The Mk20 is a gas-operated rotating bolt, selective-fire weapon, which was designed as a highly moddable weapon. Its design and front ejection system allows true ambidextrous use. Two other variants of Mk20 exist. The Mk20C comes with a shorter barrel suitable for close combat and the Mk20 ELGM comes with an enhanced grenade launching module.
+
+
+=== Titan MPRL Compact ===
+The Titan Multi-Purpose Rocket Launcher is a shoulder system for launching guided rockets. This compact version trades increased portability for less powerful rockets and cannot launch anti-air missiles. It's adapted to be launched from closed quarters, has several modes of guidance and thanks to an advanced jet engine, is capable of hitting even fast moving targets at short distances.
+
+
+=== Titan MPRL Launcher ===
+The Titan Multi-Purpose Rocket Launcher is a shoulder system for launching guided rockets against both aerial and ground targets. It's adapted to be launched from closed quarters, has several modes of guidance and thanks to an advanced jet engine, is capable of hitting even fast moving targets at short distances.
+
+
+=== Vermin SMG .45 ACP ===
+The Vermin SMG utilizes a downward pointed recoil force together with an inline design, moving barrel to line with the shooters shoulder and hand to reduce the amount of recoil as well as muzzle climb. This greatly enhances the weapon's accuracy.
+
+
+=== Sting 9 mm ===
+The Sting is a 9x21 mm submachine gun. The weapon is designed to be used by security forces, vehicle crews and special forces. Due to its small size, accuracy, ambidextrous use and rate of fire, it became a popular SMG around the world.
+
+
+=== ACP-C2 .45 ===
+The ACP-C2 is a custom version of the classic C-1911. A single-action self-loading pistol design remained and new materials allowed even better speed, precision and increased durability. The ACP-C2 is equipped with self-illuminating sights that provide a tactical advantage in low light conditions.
+
+
+=== Mk200 6.5 mm ===
+The Mk200 is a gas-operated light machine gun based on the Belgian LMG with ergonomical grips, reinforced lock and quick barrel removal system. It fires 6.5x39mm (caseless) ammunition fed from a belt with a rate of 800 rounds per minute. The Mk200 provides the squad with the accurate and sustained fire-power required to suppress and destroy enemy targets.
+
+
+=== 4-five .45 ===
+The 4-five is a polymer-based semi-automatic pistol named for using .45 ammunition. The reliability and accuracy are the most appraised features of this weapon. This weapon is favored by firing drills competitors because of an eleven rounds magazine and available collimator sight.
+
+
+=== Zubr .45 ===
+The Zubr .45 ACP is a revolver handgun with a distinctive design. The muzzle position is aligned with the bottom chamber. Compared to normal topmost revolvers, this change reduces the muzzle flip after shooting by directing the recoil more into the shooter's wrist.
+
+
+=== Mk30 HMG .50 ===
+The Mk30 HMG is a static machine gun used by infantry and support. Several projects were launched to replace the Browning M2, but each resulted in them being shelved for various reasons. The Mk30 made it through. Compared to the M2, it is lighter and more portable with better accuracy, utilizing new materials, electronic targeting help and a new tripod, trading portability for rate of fire. Based on the previous concept of the XM307/XM312, the Mk30 is chambered for .50 BMG cartridges with a rate of fire of 350 rpm and effective range up to 2000 meters. An automatic or remote controlled Mk30 mounted on vehicle turrets is labeled as Mk30A.
+
+
+=== Mk32 GMG 20 mm ===
+The Mk32 GMG is a static grenade launcher. It's based on the Mk30 HMG, using the same electronic targeting and tripod, but fires 20mm grenades instead of .50 BMG. An automatic or remote controlled Mk32 mounted on vehicle turrets is labeled as Mk32A.
+
+
+=== PDW2000 9 mm ===
+The PDW2000 is a widespread submachine gun favored for its size and low recoil. The weapon has a conventional submachine gun layout with the magazine housed in the pistol grip and mirrored controls to achieve a truly ambidextrous use. Its low weight and small profile can be compared with some larger pistols. Two rails for mounting sights and tactical accessories underline the weapon's utility.
+
+
+{{GameCategory|arma3|Field Manual}}

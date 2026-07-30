@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/diag_dumpTerrainSynth
+// revision: 310309 (2022-05-05T16:20:41Z)
+// export sha1: mu2r3pwsjlst2zpogzth7bfvovmttsp
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|descr= Returns [[Arma 3: CfgWorlds Config Reference#class OutsideTerrain|OutsideTerrain]]'s current world's values.
+
+|gr1= Diagnostic
+
+|s1= [[diag_dumpTerrainSynth]]
+
+|r1= [[Array]] of [[Number]], [[Array]] of [[Number]]s: [analysisLength, [min1, max1], [min2, max2], ..., [min512, max512]]. There are 512 min/max pairs.
+* analysisLength: [[Number]] - altitude analysis distance from terrain's border towards its centre
+* min1..512: [[Number]] - minimum altitude
+* max1..512: [[Number]] - maximum altitude
+
+|x1= <sqf>private _terrainSynth = diag_dumpTerrainSynth;</sqf>
+
+|seealso= [[diag_exportConfig]] [[diag_exportTerrainSVG]]
+}}

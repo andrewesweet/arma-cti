@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_selectRespawnTemplate
+// revision: 336927 (2023-01-04T16:44:02Z)
+// export sha1: 2uu2xmnq40mymj7przifit1z58pojul
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Respawn
+
+|descr= Select respawn template from CfgRespawnTemplates and execute its script / function. Internal use.
+
+|s1= [mode, arguments] call [[BIS_fnc_selectRespawnTemplate]]
+
+|p1= mode: [[String]] - '''case-sensitive''', can be one of:
+{{Columns|2|
+* "playerKilledScript"
+* "playerRespawnScript"
+* "playerRespawnSeagullScript"
+* "playerResurrectScript"
+* "playerRespawnOtherUnitScript"
+* "initRespawn"
+* "initRespawnStart"
+* "initRespawnEnd"
+}}
+
+|p2= arguments: [[Array]]
+
+|r1= [[Array]] of [[Script Handle]]s
+
+|x1= <sqf>["playerKilledScript", []] call BIS_fnc_selectRespawnTemplate;</sqf>
+
+|seealso= {{Link|Description.ext#respawn}}
+}}

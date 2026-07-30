@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/setPitch
+// revision: 319600 (2022-05-13T09:24:33Z)
+// export sha1: qdi9eud87ixlv90hnmbkddo7ggi1j86
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Command Group: Unit Identity | Category:Introduced with Arma 3 version 1.02 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.02
+|arg= global
+
+|eff= local
+
+|gr1= Unit Identity
+
+|gr2= Sounds
+
+|descr= Sets the pitch of a persons voice.
+
+|s1= person [[setPitch]] pitch
+
+|p1= person: [[Object]]
+|p2= pitch: [[Number]]
+|r1= [[Nothing]]
+
+|x1= <sqf>unit1 setPitch 0.5;</sqf>
+
+|seealso= [[pitch]] [[setIdentity]]
+}}

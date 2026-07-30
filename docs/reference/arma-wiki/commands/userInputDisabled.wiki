@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/userInputDisabled
+// revision: 373273 (2025-04-13T14:32:18Z)
+// export sha1: dmzc7jancola8ysw1xtwqh7ax0m6ge1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 1.60 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.60
+
+|gr1= Interaction
+
+|descr= Returns whether or not user input is disabled.
+{{Feature|important|The disabled input system internally ''counts'' how many times <sqf inline>disableUserInput true</sqf> has been called - see {{Link|#Example 2}}.}}
+
+|s1= [[userInputDisabled]]
+
+|r1= [[Boolean]]
+
+|x1= Toggles user input<sqf>disableUserInput !userInputDisabled;</sqf>
+
+|x2= <sqf>
+disableUserInput true;
+disableUserInput true;
+disableUserInput true;
+
+diag_log str userInputDisabled; // true
+
+disableUserInput false;
+diag_log str userInputDisabled; // true
+
+disableUserInput false;
+diag_log str userInputDisabled; // true
+
+disableUserInput false;
+diag_log str userInputDisabled; // false - control is regained only here
+</sqf>
+
+|seealso= [[disableUserInput]]
+}}

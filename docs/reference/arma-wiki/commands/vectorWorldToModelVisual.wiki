@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/vectorWorldToModelVisual
+// revision: 377893 (2026-01-05T17:39:06Z)
+// export sha1: 70bt4y9nkz8xznki4nhgldqk62b1qth
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Command Group: Render Time Scope | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= Math - Vectors
+|gr2= Render Time Scope
+
+|descr= Converts vector direction from world to model space in [[Simulation vs Render Time Scope|render time scope]].
+{{Feature|important|For [[setObjectScale|scaled objects]], the resulting vector's [[vectorMagnitude|magnitude]] will be [[vectorMultiply|divided]] by the object scale.}}
+
+|s1= object [[vectorWorldToModelVisual]] worldDir
+
+|p1= object: [[Object]]
+
+|p2= worldDir: [[Vector3D]] - vector direction in world space in format [x,y,z]
+
+|r1= [[Vector3D]] - vector direction in model space in format [x,y,z]
+
+|x1= Convert world space vector [0,-10,4] to model space of object _airplane:
+<sqf>private _vector = _airplane vectorWorldToModelVisual [0,-10,4];</sqf>
+
+|seealso= [[addForce]] [[worldToModelVisual]] [[addTorque]] [[vectorModelToWorld]] [[vectorModelToWorldVisual]] [[vectorWorldToModel]]
+}}

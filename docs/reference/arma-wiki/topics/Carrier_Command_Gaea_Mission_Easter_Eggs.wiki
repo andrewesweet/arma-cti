@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Easter_Eggs
+// revision: 341579 (2023-06-09T16:19:29Z)
+// export sha1: 2zugi15a1al7b4z39k9eco9rz3ucor2
+// categories: Category:Easter Eggs
+// Vendored snapshot. Do not edit — re-export instead.
+
+=FIDOJ EMOCN Y=
+The light at the top of the Carrier's control tower blinks in morse code, spelling the message in the title. <ref>http://forums.bistudio.com/showthread.php?141799-control-tower-blinking-light-is-morse-code</ref> The message in Czech is FIDO JE MOCNY, which in English means '''Fido is mighty'''. Fido being a nickname of the engine's lead programmer Filip Doksanský. <ref>http://forums.bistudio.com/showthread.php?141799-control-tower-blinking-light-is-morse-code&p=2249131&viewfull=1#post2249131</ref>
+
+
+[[Category:Easter Eggs]]

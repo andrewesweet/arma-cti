@@ -1,0 +1,85 @@
+// source: https://community.bistudio.com/wiki/setParticleRandom
+// revision: 378785 (2026-06-05T12:18:37Z)
+// export sha1: mc0i625twscdk515gcbeqqf1jg8lnln
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Particles | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Particles
+
+|descr= Sets randomization of particle source parameters. Correspondence between CfgCloudlets class param names and command array of params:
+<sqf>
+particleSource setParticleRandom
+[
+	lifeTimeVar,
+	positionVar,
+	moveVelocityVar,
+	rotationVelocityVar,
+	sizeVar,
+	colorVar,
+	randomDirectionPeriodVar,
+	randomDirectionIntensityVar,
+	angleVar,
+	bounceOnSurfaceVar
+];
+</sqf>
+
+|s1= particleSource [[setParticleRandom]] [lifeTime, position, moveVelocity, rotationVelocity, size, color, directionPeriod, directionIntensity, angle, bounceOnSurface]
+
+|p1= particleSource: [[Object]]
+
+|p2= lifeTime: [[Number]]
+
+|p3= position: [[Array]] of [[Number]] - in format [randomX, randomY, randomZ]
+
+|p4= moveVelocity: [[Array]] of [[Number]] - in format [randomX, randomY, randomZ]
+
+|p5= rotationVelocity: [[Number]]
+
+|p6= size: [[Number]]
+
+|p7= color: [[Color|Color (RGBA)]]
+
+|p8= directionPeriod: [[Number]]
+
+|p9= directionIntensity: [[Number]]
+
+|p10= angle: [[Number]] - (Optional)
+
+|p11= bounceOnSurface: [[Number]] - (Optional)
+|p11since= arma3 0.74
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_particleSource setParticleRandom [0, [0.1, 0.1, 0.1], [0, 0, 0.5], 0, 0.1, [0, 0, 0, 0], 0, 0, 45, 0];</sqf>
+
+|seealso= [[ParticleArray]] [[setParticleCircle]] [[setParticleParams]] [[ParticleTemplates]] [[setParticleClass]] [[particlesQuality]] [[setParticleFire]]
+}}
+
+{{Note
+|user= DarkDruid
+|timestamp= 20130703153500
+|text= Support of parameter <i>bounceOnSurface</i> ([[Number]] - 0-1) is in the game since Arma 3 version 0.74. It's variability in speed's loosing in collision with ground. Requires collisions with ground enabled by script command [[setParticleParams]].
+}}

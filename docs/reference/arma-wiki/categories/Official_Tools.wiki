@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/Category:Official_Tools
+// revision: 243102 (2021-02-06T23:29:51Z)
+// export sha1: 6pg6mgvvj3yxq0bbznk50zx2rakfus2
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category contains '''official tools''' created by [[Bohemia Interactive]]. These tools are provided to the community under the terms that allows free use of the tools for any '''non-commercial''' purposes. You must agree to the terms of [[End User License Agreement for BI's Tools]] before using '''any''' of the tools.
+
+{{Feature | Warning | You are '''not''' allowed to use these tools for any commercial purpose (including but not limited to using it for military training) '''without express permission''' of [[Bohemia Interactive]].}}
+
+
+{{Feature | Informative | The community has created some decent tools that have extended features not found in the [[Bohemia Interactive|BI]] tools. See [[:Category:Community Tools|Community Tools]] for more information.}}
+
+[[Category:Tools]]

@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/tvCurSel
+// revision: 378354 (2026-04-02T16:36:18Z)
+// export sha1: coninw5speyyxl4x2xzfgjhjib3bf04
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|arg= local
+
+|eff= local
+
+|descr= Returns path to currently selected item. IDC means id of parent Tree View.
+
+|s1= [[tvCurSel]] idc
+
+|p1= idc: [[Number]]
+
+|r1= [[Tree View Path]] - selected item
+
+|s2= [[tvCurSel]] control
+
+|p21= control: [[Control]]
+
+|r2= [[Tree View Path]] - selected item
+
+|x1= <sqf>tvCurSel 101;</sqf>
+
+|x2= <sqf>tvCurSel _ctrl;</sqf>
+
+|seealso= [[tvAdd]] [[tvClear]] [[tvCollapse]] [[tvCount]] [[tvData]] [[tvDelete]] [[tvExpand]] [[tvPicture]] [[tvSetCurSel]] [[tvSetData]] [[tvSetPicture]] [[tvSetValue]] [[tvSort]] [[tvSortByValue]] [[tvText]] [[tvValue]]
+}}

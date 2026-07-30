@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_helicopterSeat
+// revision: 323864 (2022-07-01T11:53:44Z)
+// export sha1: c6giq6dkcpzwrn43f915d8pex1vs95g
+// categories: Category:Arma 3: Functions | Category:Function Group: Helicopters | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Helicopters
+
+|descr=Check if unit sits on right or left seat.
+
+|s1= unit call [[BIS_fnc_helicopterSeat]]
+
+|p1= unit: [[Object]] - unit which should be checked.
+
+|r1= [[Number]]:
+* -1: Not in a vehicle
+* &nbsp;0: left seat
+* &nbsp;1: right seat
+
+|x1= <sqf>player call BIS_fnc_helicopterSeat;</sqf>
+
+|seealso= [[moveInDriver]] [[crew]] [[BIS_fnc_helicopterSeatMove]]
+}}

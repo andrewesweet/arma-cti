@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_neutralizeUnit
+// revision: 352080 (2024-02-01T23:24:44Z)
+// export sha1: ikbcba57984b94lu35vglhk849j6t94
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Neutralize an object by intrinsic means:
+* soldiers are blown up by mine
+*  vehicles are shelled by artillery
+*  air units are hit by AA missile
+*  underwater units are simply killed.
+
+{{Feature|informative|[[allowDamage]] will '''not''' prevent the unit getting killed.}}
+
+|s1= object call [[BIS_fnc_neutralizeUnit]]
+
+|p1= object: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>cursorTarget call BIS_fnc_neutralizeUnit;</sqf>
+
+|seealso= [[setDamage]] [[allowDamage]]
+}}

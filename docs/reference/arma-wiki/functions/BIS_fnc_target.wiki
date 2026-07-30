@@ -1,0 +1,206 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_target
+// revision: 337301 (2023-01-13T10:27:53Z)
+// export sha1: guabjuv0gbt9q9ezgn4huy794f5lx13
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Interaction | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Interaction
+
+|descr= [[File:A3 BIS_fnc_target.jpg|300px|thumb|right|Target Board display]]
+Handles the shooting targets in the Bootcamp DLC, statistics, animation, etc. (targets such as {{hl|TargetBootcampHuman_f}})
+
+{{{!}} class="wikitable mw-collapsible mw-collapsed" style="min-width: 50em"
+{{!}}+ Action/Parameter Table
+! Action ([[String]])
+! Parameters ([[Array]]) arguments
+{{!}}-
+{{!}} '''initialize'''<br>Initializes the target and sets it to the "up" position 
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+
+{{!}}-
+{{!}} '''terminate'''<br>Doesn't do anything {{!}}{{!}} {{n/a}}
+
+{{!}}-
+{{!}} '''animate'''<br>Animate the object to the given position ("up" or "down")
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* position: [[String]] - "up" or "down" (default)
+
+{{!}}-
+{{!}} '''getAnimationPhase'''<br><br>'''Return Value:''' [[Number]] - 0 (up) or 1 (down) depending on current state
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+
+{{!}}-
+{{!}} '''getAnimationPhaseString'''<br><br>'''Return Value:''' [[String]] - "up" or "down" depending on current state
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+
+{{!}}-
+{{!}}'''getAnimatedSelection'''<br><br>'''Return Value:''' [[String]] - the name of the "animatedSelection" from object config
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+
+{{!}}-
+{{!}} '''hit'''<br>Handles the hit event to animate the target down and up again
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* unit: [[Object]] - Unit which shot the target
+* damage: [[Number]] - Amount of damage done to the target
+
+{{!}}-
+{{!}} '''hitPart'''<br>Handles the hit event and stores the data
+{{!}}
+* partsList: [[Array]] - Contains list of all parts which got hit (see [[Arma 3: Event Handlers#HitPart|HitPart EH]] format) to format [target, shooter]:
+** target: [[Object]] - Target object of type 'TargetBootcamp_base_F'
+** shooter: [[Object]] - Unit which shot the target
+
+{{!}}-
+{{!}} '''getShooterDataIndex'''<br><br>'''Return Value:''' [[Number]] - index from Shooter Data for specific unit
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* uid: [[String]] - Player UID of unit who shot the target
+
+{{!}}-
+{{!}} '''getShooterData'''<br><br>'''Return Value:''' [[Array]] - all data from Shooter Data for specific unit<br>
+Format: {{hl|<nowiki>[["uid", ""], ["name", ""], ["shots", [[["time", 0], ["distance", 0], ["weapon", ""], ["direct", 0]]]]]</nowiki>}}
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* uid: [[String]] - Player UID of unit who shot the target
+
+{{!}}-
+{{!}} '''setShooterData'''<br>Set Shooter Data for specific unit
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* uid: [[String]] - Player UID of unit who shot the target
+* data: [[Array]] - Shooter Data
+
+{{!}}-
+{{!}} '''getShotsData'''<br><br>'''Return Value:''' [[Array]] - Shots Data for specific unit
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* uid: [[String]] - Player UID of unit who shot the target
+
+{{!}}-
+{{!}} '''getShotsDataFromTargets'''<br><br>'''Return Value:''' [[Number]] - total amount of shots hit
+{{!}}
+* targets: [[Array]] of [[Object]] - List of target objects of type "TargetBootcamp_base_F"
+* uid: [[String]] - Player UID of unit who shot the target
+
+{{!}}-
+{{!}} '''getShotsDataWithFilter'''<br><br>'''Return Value:''' [[Array]] - Shot Data after custom filter
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* uid: [[String]] - Player UID of unit who shot the target
+* filter: [[String]] - One of "time", "distance", "weapon" or "direct"
+* code: [[Code]] - Custom code to validate the shot. _this is the value of filtered data
+
+{{!}}-
+{{!}} '''setShotsData'''<br>Set Shots Data for specific unit
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* uid: [[String]] - Player UID of unit who shot the target
+* data: [[Array]] - Shots Data
+
+{{!}}-
+{{!}} '''getShootersData'''<br><br>'''Return Value:''' [[Array]] - full Shooters Data
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+
+{{!}}-
+{{!}} '''setShootersData'''<br>Set full Shooters Data
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* data: [[Array]] - Shooter Data
+
+{{!}}-
+{{!}} '''resetShootersData'''<br>Remove all data from Shooters Data array
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+
+{{!}}-
+{{!}} '''getShooterTemplate'''<br><br>'''Return Value:''' [[Array]] - template for Shooter Data
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* uid: [[String]] - Player UID of unit who shot the target
+
+{{!}}-
+{{!}} '''getShotTemplate'''<br><br>'''Return Value:''' [[Array]] - template for Shot Data (see [[Arma 3: Event Handlers#HitPart|HitPart EH]] format)
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* shooter: [[Object]] - Unit who shot the target
+* projectile: [[Object]] - ("_bullet" not used)
+* position: [[Array]] format [[Position]] - ("_position" not used)
+* velocity: [[Array]] - ("_velocity" not used)
+* selection: [[Array]] - ("_selection" not used)
+* ammo: [[Array]] - ("_ammo" not used)
+* vector: [[Array]] - ("_direction" not used)
+* radius: [[Array]] - ("_radius" not used)
+* surfaceType: [[String]] - ("_surface" not used)
+* isDirect: [[Boolean]] - [[true]] if object was directly hit, [[false]] if it was hit by indirect/splash damage.
+
+{{!}}-
+{{!}} '''getShooterByUid'''<br><br>'''Return Value:''' [[Object]] - corresponding shooter unit
+{{!}}
+* uid: [[String]] - Player UID of unit who shot the target
+
+{{!}}-
+{{!}} '''uiOpen'''<br>Opens the Target Board display
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+
+{{!}}-
+{{!}} '''uiOpenToAll'''<br>Opens the Target Board display for all connected players
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+
+{{!}}-
+{{!}} '''uiOnLoad'''<br>Triggered when display is opened (internal)
+{{!}}
+* display: [[Display]]
+
+{{!}}-
+{{!}} '''uiFillTable'''<br>Triggered when display is opened, fills UI with Shooters Data (internal)
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* control: [[Control]] - "_listBox"
+
+{{!}}-
+{{!}} '''uiFillTableRow'''<br>Triggered when display is opened, fills UI with Shooter Data (internal)
+{{!}}
+* target: [[Object]] - Target object of type "TargetBootcamp_base_F"
+* control: [[Control]] - "_listBox"
+* data: [[Array]] - Shooter Data
+{{!}}}
+
+|s1= [action, parameters] call [[BIS_fnc_target]]
+
+|p1= action: [[String]]
+
+|p2= parameters: [[Array]]
+
+|r1= See [[#Description|above table]]
+
+|x1= <sqf>
+// open the Score Board
+["uiOpen", [myTarget]] call BIS_fnc_target;
+</sqf>
+
+|x2= <sqf>
+// open the Score Board for all players in MP
+["uiOpenToAll", [myTarget]] call BIS_fnc_target;
+</sqf>
+
+|x3= <sqf>
+// clear all data from Score Board
+["resetShootersData", [myTarget]] call BIS_fnc_target;
+</sqf>
+
+|seealso= [[doTarget]]
+}}

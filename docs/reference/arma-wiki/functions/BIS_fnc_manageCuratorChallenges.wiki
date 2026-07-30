@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_manageCuratorChallenges
+// revision: 349528 (2023-11-08T17:16:25Z)
+// export sha1: 6ehtfyvi41vuopdskbr2piqdqztglvx
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: CuratorChallenges | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= CuratorChallenges
+
+|descr= Handle repeated curator challenges.
+	When rewards defined in the argument are exceeded, refilling points bar fill be offered instead.
+
+|s1= [curator,challenges,numChallenges,rewards,defaultRewards]] call [[BIS_fnc_manageCuratorChallenges]]
+
+|p1=curator [[Object]] - curator
+
+|p2=challenges [[Array]] - (Optional, default all challenges) list of supported challenges from CfgCuratorChallenges
+
+|p3=challenges [[Number]] - (Optional, default 3) number of added challenges
+
+|p4=rewards [[Array]] of [[Array|arrays]] - (Optional, default <sqf inline>[]</sqf>) rewards and their descriptions in format:
+*0: [[Code]] - Code executed
+*1: [[String]] - Description
+
+|p5=defaultRewards [[Array]] of [[Array|arrays]] - (Optional, default <sqf inline>[]</sqf>) default reward, used when previous rewards are exausted  in format:
+*0: [[Code]] - Code executed
+*1: [[String]] - Description
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[BIS_curator, nil, 1, [[{ hint "Message" }, "Description"]]] call BIS_fnc_manageCuratorChallenges;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[BIS_fnc_formatCuratorChallengeObjects]] [[BIS_fnc_finishCuratorChallenge]] [[BIS_fnc_addCuratorChallenge]]
+}}

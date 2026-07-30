@@ -1,0 +1,21 @@
+// source: https://community.bistudio.com/wiki/Anything
+// revision: 330444 (2022-09-15T21:31:40Z)
+// export sha1: 69oyz7utw8mnyqxeekrn1yf6cvkjgy3
+// categories: Category:Magic Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+A variable of type '''Anything''' may be of any [[:Category: Data Types|data types]] '''or''' [[Nothing]].
+
+{{Feature|warning|
+Even though some commands list data type '''Anything''' as possible value, passing [[nil]] ([[Nothing]]) to a command might cause it not to work:
+<sqf>str nil; // while the documentation for str states it takes Anything, nil / Nothing will cause it to not execute.</sqf>
+}}
+
+== See Also ==
+
+* [[nil]]
+* [[isNil]]
+* [[Nothing]]
+
+
+[[Category: Magic Types]]

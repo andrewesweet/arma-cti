@@ -1,0 +1,266 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Arsenal
+// revision: 370888 (2025-02-21T10:44:04Z)
+// export sha1: q638c6ob2re4n2uw5qhleod30pzkfee
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[File:a3 arsenal.png|center|400px]]
+
+
+Arsenal is, essentially, a character, equipment and weapon viewer which has been added to {{GameCategory|arma3|link= y}} in the Bootcamp update.
+This tool offers an overview of the available content, and enables customized loadouts to be exported to script, which can be used in the editor, other game modes, such as [[Arma 3 Zeus|Zeus]], and by community scenarios/mods.
+
+You can access it from the main menu by clicking on '''LEARN > VIRTUAL ARSENAL'''.
+
+
+== Using ==
+
+=== Export ===
+
+==== Export to SQF ====
+Clicking on EXPORT button or pressing {{Controls|Ctrl|C}} will copy the current loadout to clipboard in [[SQF Syntax|SQF]] format. You can paste it to soldier's init field or use it in a script.
+
+You can take the same code and import it via {{Controls|Ctrl|V}} back to Arsenal. Use this to share loadouts with other players.
+
+'''Example:'''
+<spoiler>
+<sqf>
+comment "Exported from Arsenal by DavidArmstrong85";
+
+comment "Remove existing items";
+removeAllWeapons this;
+removeAllItems this;
+removeAllAssignedItems this;
+removeUniform this;
+removeVest this;
+removeBackpack this;
+removeHeadgear this;
+removeGoggles this;
+
+comment "Add containers";
+this forceAddUniform "U_I_CombatUniform";
+for "_i" from 1 to 4 do {this addItemToUniform "30Rnd_556x45_Stanag";};
+this addItemToUniform "16Rnd_9x21_Mag";
+this addVest "V_PlateCarrierIA2_dgtl";
+for "_i" from 1 to 4 do {this addItemToVest "FirstAidKit";};
+for "_i" from 1 to 6 do {this addItemToVest "HandGrenade";};
+for "_i" from 1 to 3 do {this addItemToVest "16Rnd_9x21_Mag";};
+this addBackpack "B_TacticalPack_oli";
+for "_i" from 1 to 2 do {this addItemToBackpack "SatchelCharge_Remote_Mag";};
+for "_i" from 1 to 4 do {this addItemToBackpack "DemoCharge_Remote_Mag";};
+this addHeadgear "H_Cap_headphones";
+this addGoggles "G_Bandanna_oli";
+
+comment "Add weapons";
+this addWeapon "arifle_Mk20C_F";
+this addPrimaryWeaponItem "muzzle_snds_M";
+this addPrimaryWeaponItem "acc_flashlight";
+this addPrimaryWeaponItem "optic_MRCO";
+this addWeapon "hgun_P07_F";
+
+comment "Add items";
+this linkItem "ItemMap";
+this linkItem "ItemCompass";
+this linkItem "ItemWatch";
+this linkItem "ItemRadio";
+this linkItem "ItemGPS";
+
+comment "Set identity";
+this setFace "GreekHead_A3_03";
+this setSpeaker "Male03GRE";
+[this, "TFAegis"] call BIS_fnc_setUnitInsignia;
+</sqf>
+</spoiler>
+
+==== Export to CPP ====
+Pressing {{Controls|Ctrl|Shift|C}} will export the loadout in '''config format''', which can then be used in [[Arma 3: Respawn|CfgRespawnInventory]].
+'''Example:'''
+<syntaxhighlight lang="cpp">
+// Exported from Arsenal by R3vo
+uniform = "U_B_CombatUniform_mcam_tshirt";
+backpack = "B_AssaultPack_rgr_Medic";
+weapons[] = { "arifle_MX_F", "hgun_P07_F", "Throw", "Put" };
+magazines[] = { "30Rnd_65x39_caseless_mag", "30Rnd_65x39_caseless_mag", "Chemlight_green", "30Rnd_65x39_caseless_mag",
+"30Rnd_65x39_caseless_mag", "30Rnd_65x39_caseless_mag", "16Rnd_9x21_Mag", "16Rnd_9x21_Mag", "SmokeShell",
+"SmokeShellGreen", "SmokeShellBlue", "SmokeShellOrange", "Chemlight_green" };
+items[] = { "FirstAidKit", "Medikit", "FirstAidKit", "FirstAidKit", "FirstAidKit", "FirstAidKit", "FirstAidKit", "FirstAidKit", "FirstAidKit", "FirstAidKit", "FirstAidKit", "FirstAidKit" };
+linkedItems[] = { "V_PlateCarrierSpec_rgr", "H_HelmetB_light_desert", "G_Combat", "ItemMap", "ItemCompass", "ItemWatch", "ItemRadio", "NVGoggles" };
+</syntaxhighlight>
+
+=== Zeus Ammo Box ===
+
+[[File:a3 ammobox infinite.jpg|200px|right]]
+As Zeus, you can create virtual ammo box where players can endlessly resupply. Instead going through the classic inventory screen, they'll be able to access Arsenal and select any item you'll give them.
+# Play a scenario as Zeus
+# Place an ammo box (''Units > Empty > Other > Ammo > [anything from the list]'')
+# Select an item you want to make available in the Arsenal
+# Decrease number of items to 0. Button on the left should change from '-' to '&infin;'
+# Click on the button once more. Number of items should now be infinite
+# After confirming, players will be able to access Arsenal through a new action attached to the box.
+
+=== Zeus Unit Arsenal ===
+
+[[File:a3 arsenal module.png|200px|right]]
+Zeus can use '''Arsenal''' module to quickly customize gear of any AI soldier. It doesn't work on players, dead units or vehicles.
+# Play a scenario as Zeus
+# Find a unit you want to customize
+# Select ''Modules > Zeus > Arsenal''
+# Place the module on top of the unit
+# Arsenal interface will be opened. You can either set specific items, or you can load previously saved loadout.
+
+=== Zeus Respawn Loadouts ===
+
+[[File:a3 arsenal loadout save.png|200px|right]]
+[[File:a3 arsenal loadout load.png|200px|right]]
+Saved loadout can be given to players as respawn loadouts by Zeus. Works only in scenarios with [[Arma 3: Respawn#Respawn Templates|MenuInventory]] respawn template enabled.
+# Save your loadout
+# Play a scenario as Zeus
+# Place ''Modules > Respawn > Loadouts''
+# Select side tab
+# Expand ''Arsenal'' category
+# Select the saved loadout.
+# After confirming, players of the given side will be able to respawn with your loadout.
+
+=== Shortcuts ===
+
+{| class="wikitable"
+! Shortcut					!! Description
+|-
+| {{Controls|Ctrl|C}}		|| Exports current loadout in script format
+|-
+| {{Controls|Ctrl|Shift|C}}	|| Copies current loadout in config format to the clipboard, can be used for CfgRespawnInventory
+|-
+| {{Controls|Ctrl|V}}		|| Applies loadout from clipboard to currently viewed unit
+|-
+| {{Controls|Ctrl|O}}		|| Opens the Load interface
+|-
+| {{Controls|Ctrl|S}}		|| Opens the Save interface
+|-
+| {{Controls|Backspace}}	|| Hide UI
+|-
+| {{Controls|Enter}}		|| Start preview
+|-
+| {{Controls|Ctrl|R}}		|| Randomise loadout
+|-
+| {{Controls|N}}			|| Toggle view mode (normal/night vision/thermals)
+|-
+| {{Controls|Esc}}			|| Leave Arsenal
+|}
+
+
+== Modding ==
+
+=== Blacklisting Items ===
+
+You can prevent players from loading saved loadouts that contain unwanted items by blacklisting. This is possible by defining the {{Link|Description.ext#arsenalRestrictedItems|arsenalRestrictedItems}} property in [[Description.ext]].
+
+<syntaxhighlight lang="cpp" inline>arsenalRestrictedItems[] = { /* unwanted classes */ };</syntaxhighlight>
+
+=== Access ===
+
+You can use Arsenal in a scenario you're designing simply by calling the following [[Functions|function]]:
+<sqf>[] spawn BIS_fnc_arsenal;</sqf>
+
+This version has several limitations as opposed to the Virtual one:
+* Voice, Face and Insignia are not available (to avoid clashing with profile)
+* Not all assets are automatically present, designer has to whitelist allowed classes. By default, only player's current equipment is available.
+
+To open Arsenal with full options, execute:
+<sqf>["Open", true] spawn BIS_fnc_arsenal;</sqf>
+
+=== Virtual Ammo Box ===
+
+You can also use Arsenal as virtual inventory, allowing players to get unlimited number of items of given types from an ammo box. Action to access the Arsenal will be added automatically on all clients, you don't need to use [[addAction]] to enable it.
+
+'''Syntax''' (shared by all mentioned functions):
+<sqf>["AmmoboxInit", ammoBox] spawn BIS_fnc_arsenal;</sqf>
+or
+<sqf>["AmmoboxInit", [ammoBox, allowAll, condition]] spawn BIS_fnc_arsenal;</sqf>
+
+* ammoBox: [[Object]] - ammo box on which the action will be added
+* allowAll: [[Boolean]] - (Optional) true to add all available weapons, magazines, items and backpacks in the box
+* condition: [[Code]] - (Optional, default <sqf inline>{ true }</sqf>) condition for showing the Arsenal action
+** Passed arguments are the same as in [[addAction]] condition, i.e., ''_target'' - the box, ''_this'' - caller
+'''Returned value:'''
+[[Nothing]]
+
+'''Example''' (paste it into init field of a box)
+<sqf>["AmmoboxInit", [this, true]] spawn BIS_fnc_arsenal;</sqf>
+
+To set which specific items should be available, use functions mentioned below.
+{{Feature|informative|You can preview all functions in in-game Functions viewer (while in editor, press Functions button or {{Controls|Ctrl|F}})}}
+
+==== Add ====
+Functions:
+* [[BIS_fnc_addVirtualBackpackCargo]]
+* [[BIS_fnc_addVirtualItemCargo]]
+* [[BIS_fnc_addVirtualMagazineCargo]]
+* [[BIS_fnc_addVirtualWeaponCargo]]
+
+'''Syntax''' (shared by all mentioned functions):
+<sqf>[target, classes, isGlobal, doAddAction] call BIS_fnc_addVirtualWeaponCargo;</sqf>
+* target: [[Object]] or [[Namespace]] - ammo box to which classes will be added. When [[missionNamespace]] is used, they will be available across all boxes.
+* classes: [[Boolean]] or [[Array]] of [[String]]s - whitelisted classes. Alternatiovely, use [[true]] to whitelist everything of the given type
+* isGlobal: [[Boolean]] - (Optional, default [[false]]) [[true]] to add classes globally
+* doAddAction: [[Boolean]] - (Optional, default [[true]]) [[true]] to add "Arsenal" action which players can access the Arsenal
+
+'''Returned value:'''
+[[Array]] of Arrays: All virtual items within the target's space in format [<items>, <weapons>, <magazines>, <backpacks>]
+
+'''Example:'''
+<sqf>[myBox, ["arifle_MX_F", "arifle_MX_SW_F", "arifle_MXC_F"], true] call BIS_fnc_addVirtualWeaponCargo;</sqf>
+
+To add everything, use:
+<sqf>
+[myBox, true, true] call BIS_fnc_addVirtualWeaponCargo;
+// or the equivalent:
+[myBox, ["%ALL"], true] call BIS_fnc_addVirtualWeaponCargo; // note that %ALL is ALL CAPITAL LETTERS
+</sqf>
+
+==== Remove ====
+Functions:
+* [[BIS_fnc_removeVirtualBackpackCargo]]
+* [[BIS_fnc_removeVirtualItemCargo]]
+* [[BIS_fnc_removeVirtualMagazineCargo]]
+* [[BIS_fnc_removeVirtualWeaponCargo]]
+{{Feature|informative|Only specifically whitelisted cargo can be removed via these commands e.g creating an arsenal container with a whitelist of true (<allowAll>) and then trying to remove "arifle_MX_ACO_pointer_F" will not work.}}
+
+'''Syntax''' (shared by all mentioned functions):
+<sqf>[target, classes, isGlobal] call BIS_fnc_removeVirtualWeaponCargo;</sqf>
+* target: [[Object]] or [[Namespace]] - ammo box from which classes will be removed.
+* classes: [[Array]] of [[String]]ss - removed classes
+* isGlobal: [[Boolean]] - (Optional, default [[false]]) [[true]] to remove classes globally
+
+'''Returned value:'''
+[[Array]] of Arrays: All virtual items within the target's space in format [<items>, <weapons>, <magazines>, <backpacks>]
+
+'''Example:'''
+<sqf>[myBox, ["arifle_MXC_F"], true] call BIS_fnc_removeVirtualWeaponCargo;</sqf>
+
+If an arsenal container has been created by using true as the whitelist (<allowAll>) then a string of "%ALL" (ALL CAPITAL LETTERS) will be inserted into the category array. To remove this kind of whitelist instead use..
+<sqf>
+[myBox, true, true] call BIS_fnc_removeVirtualWeaponCargo;
+// or the equivalent:
+[myBox, ["%ALL"], true] call BIS_fnc_removeVirtualWeaponCargo; // note that %ALL is ALL CAPITAL LETTERS
+</sqf>
+
+==== Get ====
+Functions:
+* [[BIS_fnc_getVirtualBackpackCargo]]
+* [[BIS_fnc_getVirtualItemCargo]]
+* [[BIS_fnc_getVirtualMagazineCargo]]
+* [[BIS_fnc_getVirtualWeaponCargo]]
+
+'''Syntax''' (shared by all mentioned functions):
+<sqf>[target] call BIS_fnc_getVirtualWeaponCargo;</sqf>
+*target: [[Object]] or [[Namespace]]
+
+'''Returned value:'''
+[[Array]] of Arrays: All virtual items within the target's space in format [<items>, <weapons>, <magazines>, <backpacks>]
+
+'''Example:'''
+<sqf>myBox call BIS_fnc_getVirtualWeaponCargo;</sqf>
+
+
+{{GameCategory|arma3|Editing}}

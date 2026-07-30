@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_removeIndex
+// revision: 323162 (2022-07-01T10:34:55Z)
+// export sha1: 7nn2tal0rjk96mhjvf8czzk5no9u4ah
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Arrays
+
+|descr= Takes an array, and returns a new array with the specified index(es) removed.
+This takes the array passed in the first parameter, and returns an array that has the index number in the second parameter removed.
+If a third parameter is passed, then a range of indexes will be removed.
+Alternatively, an array of indices to remove can be passed in the second parameter.
+
+{{Feature|arma3|Use [[deleteAt]] or [[deleteRange]] instead.}}
+
+|s1= [array, startIndex, endIndex] call [[BIS_fnc_removeIndex]]
+
+|p1= array: [[Array]]
+
+|p2= startIndex: [[Number]] - start index to be removed, if {{Link|#Parameter 3}} is not provided, only this index is removed
+
+|p3= endIndex: [[Number]] - (Optional, default [[Nothing]]) -  end index, if provided the indexs from startIndex to endIndex will be removed
+
+|r1= [[Array]] - new array with new values
+
+|s2= [array, indices] call [[BIS_fnc_removeIndex]]
+
+|p21= array: [[Array]]
+
+|p22= indices: [[Array]] of [[Number]]s - indices to be removed
+
+|r2= [[Array]] - new array with new values
+
+|x1= <sqf>
+private _array = [0,1,2,3,4];
+[array, 0] call BIS_fnc_removeIndex; // returns [1,2,3,4]
+</sqf>
+
+|x2= <sqf>
+private _array = [0,1,2,3,4];
+[_array, 0, 4] call BIS_fnc_removeIndex; // returns []
+</sqf>
+
+|x3= <sqf>
+private _array = [0,1,2,3,4];
+[_array, [0,4]] call BIS_fnc_removeIndex; // returns [1,2,3]
+</sqf>
+
+|seealso= [[deleteAt]] [[deleteRange]]
+}}

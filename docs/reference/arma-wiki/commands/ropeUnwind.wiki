@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/ropeUnwind
+// revision: 363666 (2024-04-14T18:49:41Z)
+// export sha1: lz5o9hdw9sas88lxnvila1qh90o5agp
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|arg= local
+|eff= global
+
+|gr1= Ropes and Sling Loading
+
+|descr= Increases or decreases the rope length by the given amount. Use relative parameter for changing rope length +/- from current length.
+{{Feature|informative|Rope length can be in range 0.5..100 metres.}}
+
+|s1= [[ropeUnwind]] [rope, speed, length, relative]
+
+|p1= rope: [[Object]] - rope object
+
+|p2= speed: [[Number]] - animation speed in m/s with which to lengthen or shorten the rope, in range 0.01..20
+
+|p3= length: [[Number]] - the amount of length change in meters, in range: 0.1..100
+
+|p4= relative: [[Boolean]] - (Optional) [[true]] will add or subtract given length from current rope length, [[false]] will resize the rope to the given length
+
+|r1= [[Nothing]]
+
+|x1= <sqf>ropeUnwind [ropes heli1 select 0, 3, 10]; // set rope length to 10m at 3m/s</sqf>
+
+|x2= <sqf>ropeUnwind [ropes heli1 select 0, 3, -5, true]; // decrease rope length by 5m at 3m/s</sqf>
+
+|seealso= [[ropes]] [[canSlingLoad]] [[enableRopeAttach]] [[getSlingLoad]] [[ropeAttachedObjects]] [[ropeAttachTo]] [[ropeDestroy]] [[ropeLength]] [[ropeUnwound]] [[ropeAttachedTo]] [[ropeCreate]] [[ropeDetach]] [[ropeAttachEnabled]] [[ropeCut]] [[ropeEndPosition]] [[setSlingLoad]] [[slingLoadAssistantShown]]
+}}
+
+{{Note
+|user= Tajin
+|timestamp= 20141108152800
+|text= Unwinding speed is not linear but instead automatically accelerates at the beginning and slows down at the end.<br>
+The speed also only seems to have no effect when pulling the rope in. (unless the end of the rope is not attached to anything)<br>
+High unwinding speeds (over ~250) can cause your cargo to get stuck in midair.
+}}

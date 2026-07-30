@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isPosBlacklisted
+// revision: 327916 (2022-07-13T12:08:28Z)
+// export sha1: d7nzamgaw904dwivte5logrnm14fd5g
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Positions | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Positions
+
+|descr= Function checks a blacklist and sees if the given position is in it or not.
+
+|s1= [position, blacklistArea] call [[BIS_fnc_isPosBlacklisted]]
+
+|p1= position: [[Array]] format [[Position]]
+
+|p2= blacklistArea:
+* [[Array]] of [[Position]]s - array to format [topLeft, bottomRight]
+* [[Object]] - a trigger. Check the trigger area (see [[inArea]] or [[BIS_fnc_inTrigger]])
+
+|r1= [[Boolean]] - is the position blacklisted or not
+
+|x1= <sqf>[[50,50], [[0,0], [100,100]]] call BIS_fnc_isPosBlacklisted;</sqf>
+
+|x2= <sqf>[getPosATL player, myTrigger] call BIS_fnc_isPosBlacklisted;</sqf>
+
+|seealso= [[BIS_fnc_inTrigger]] [[inArea]] [[distance2D]]
+}}

@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/moveTo
+// revision: 377530 (2026-01-02T06:53:13Z)
+// export sha1: lxx3uo9cnlqweaxu1bvjuwd3cstp7ru
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Unit Control
+
+|descr= Low level command to person to move to given position. It is good to check first if AI pilot unit state is COMPLETED [[moveToCompleted]] first as this command will set unit into WAIT state waiting for instruction, but only if the unit has COMPLETED.
+
+|s1= unit [[moveTo]] position
+
+|p1= unit: [[Object]]
+
+|p2= position: [[Position#PositionATL|PositionATL]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_myAgent moveTo getPosATL player;</sqf>
+
+|seealso= [[doMove]] [[commandMove]] [[setDestination]] [[move]] [[moveToCompleted]] [[moveToFailed]] [[addWaypoint]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2010-08-14 - 05:44</dd>
+<dt class="note">[[User:Rübe|Rübe]]</dt>
+<dd class="note">
+moveTo is a low-level command used in [[FSM]] called with doFSM or commandFSM. See [[doFSM]] for more information about this. Use [[doMove]] everywhere else - even in FSM executed with execFSM.
+</dd>
+
+</dl>

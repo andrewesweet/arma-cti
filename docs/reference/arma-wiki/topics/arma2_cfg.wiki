@@ -1,0 +1,211 @@
+// source: https://community.bistudio.com/wiki/arma2.cfg
+// revision: 363609 (2024-04-08T09:56:58Z)
+// export sha1: l6tyy1uhu555m60q1ap3mpnrnyzc3v6
+// categories: Category:Startup Parameters
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Introduction ==
+
+The '''arma.cfg''' or '''arma2.cfg''' or '''arma2oa.cfg''' or '''takeonh.cfg''' are configuration files containing detailed information about YOUR game setup.<br>
+Information such as language, LOD detail, resolution are stored in these files.<br>
+The config files are written after the game was run for first time and the system settings are detected. Changes made via the in-game UI options are saved when the game is closed.<br>
+The files itself are just as editable in a text file. The content format is
+ variable = value;
+
+{{Feature|warning|Unless you know what you are doing, use the '''in-game UI options''' to configure the game instead of editing this file.}}
+
+
+== Location ==
+
+* '''{{arma1}}''':The arma.cfg file is located in {{hl|%userprofile%\Documents\ARMA\arma.cfg}}
+* '''{{arma2}}''': The arma2.cfg file is located in {{hl|%userprofile%\Documents\ARMA 2\arma2.cfg}}
+* '''{{arma2oa}}''': The arma2oa.cfg file is located in {{hl|%userprofile%\Documents\Arma 2 Expansion\arma2oa.cfg}}
+* '''{{tkoh}}''': The takeonh.cfg file is located in {{hl|%userprofile%\Documents\Take On Helicopters\takeonh.cfg}}
+
+=== Custom Name and Location ===
+
+You can change the naming with the [[:Category: Startup Parameters]] '''-cfg=<string>'''.
+ -cfg=myGameSettings.cfg
+
+The file will be then located in your game directory instead.
+ C:\arma2\myGameSettings.cfg
+
+
+== Example ==
+
+=== Generic config ===
+
+{| class="wikitable" width="70%"
+| language="English"; || language selector
+|-
+| adapter=-1; || determines the video adapter (and display connected to it) to use. Useful for systems with multiple displays. -1 is default adapter, 0 is first, 1 is 2nd etc.
+|-
+| 3D_Performance=93750; || written by engine each start, changing it manually has no effect!
+|-
+| Resolution_Bpp=32; || bit per pixel depth of output
+|-
+| Resolution_W=1920; || interface resolution width in fullscreen
+|-
+| Resolution_H=1200; || interface resolution height in fullscreen
+|-
+| refresh=60; || monitor refresh rate in fullscreen
+|-
+| Render_W=2400; || 3D rendered resolution width in fullscreen
+|-
+| Render_H=1500; || 3D rendered resolution width in fullscreen
+|-
+| FSAA=0; || full screen antialiasing level
+|-
+| postFX=0; || post processing level
+|-
+| GPU_MaxFramesAhead=1000; || setting not available in UI, supported values 1 to 1000 (0==driver), May lower 'Mouse lag' by GPU render-ahead buffer
+|-
+| GPU_DetectedFramesAhead=3; || written by engine each start, changing it manually has no effect!
+|-
+| HDRPrecision=8; || setting not available in UI (ARMA2, OA has it since 1.57), supported values are 8(default), 16 and 32. Defines bit depth precision for HDR.
+|-
+| lastDeviceId=""; || written by engine each start, changing it manually has no effect!, might be blank
+|-
+| localVRAM=1063723008; || written by engine each start, changing it manually has no effect!
+|-
+| nonlocalVRAM=1878616064; || written by engine each start, changing it manually has no effect!
+|-
+| winX=470; || position of window in X axis
+|-
+| winY=64; || position of window in Y axis
+|-
+| winW=1440; || interface resolution width in window
+|-
+| winH=900; || interface resolution height in window
+|-
+| winDefW=1440; || 3D rendered resolution width in window
+|-
+| winDefH=900; || 3D rendered resolution height in window
+|-
+| Windowed=0; || written by engine each exit, depend on state in last run (1=windowed or 0=fullscreen)
+|-
+| Vsync=1; || Option to disable V-sync(Vertical synchronization, 1=enabled(default) or 0=disabled)
+|-
+| AToC=7; || setting not available in UI, Level of Alpha To Coverage Anti-Aliasing<ref name="AToC" /> (7=all enabled(default) or 0=disabled (normal AA prior AToC))
+ 0 - disabled
+ 1 - AToC on grass
+ 2 - AToC on new OA trees (takistan, zargabad, proving ground, shapur)
+ 4 - AToC on old A2 trees (utes, chernarus)
+ // combined 
+ 3 - AToC on grass & OA trees 
+ 5 - AToC on A2 trees + grass
+ 6 - AToC on A2 + OA trees
+ 7 - AToC enabled on grass, A2 & OA trees (default)
+''More {{Link|link= http://forums.bistudio.com/showpost.php?p=1998153&postcount=42|text= detailed description}} by a community member.''<br>
+''NOTE:''' AToC is inactive if Anti-Aliasing is disabled in advanced video options!'''
+|-
+| class sockets{ maxPacketSize = 1400; }; || setting not available in UI Changing this value changes size of packet from default 1400 bytes to value chosen. <br>
+This '''can be set for both''' client-to-server AND server-to-client(s) independently''! ''see server([[basic.cfg#Networking_Tuning_Options]])''.<br>
+{{Feature|important|Only use in the case your router or ISP enforces lower packet size and you have connectivity issues with game.}}
+|}
+
+=== {{arma2oa}} ===
+
+{| class="wikitable" width="70%"
+| PPAA=0; || setting not (yet) available in UI. Default is Disabled. Enables Anti-Aliasing technique via post processing: <ref name="PPAA" />
+ 0 - Disabled
+ 1 - FXAA <ref name="FXAA" />
+ 2 - FXAA + sharp filter <ref name="FXAAsharp" /> (hard-coded strength of sharpen is now 0.15)
+ 3 - SMAA <ref name="SMAA" />
+{{Feature|informative|
+* PPAA can be enabled even if Post-Processing was disabled in advanced video options!<br>
+* This setting was introduced in 1.61 beta 89223.}}
+|-
+| PPAA_Level=0; || setting not (yet) available in UI. Default is Disabled. Values determine for each respective PPAA type used:
+ 0 - SMAA_PRESET_LOW or FXAA_QUALITY_PRESET_12 
+ 1 - SMAA_PRESET_MEDIUM or FXAA_QUALITY_PRESET_22
+ 2 - SMAA_PRESET_HIGH or FXAA_QUALITY_PRESET_26
+ 3 - SMAA_PRESET_ULTRA or FXAA_QUALITY_PRESET_39
+{{Feature|informative|This setting was introduced in 1.61 beta 89223}}
+|-
+| FXAA=0; || setting not (yet) available in UI. Default is Disabled. enables Anti-Aliasing technique via post processing
+ 0 - Disabled
+ 1 - FXAA_QUALITY_PRESET_10
+ 2 - FXAA_QUALITY_PRESET_11
+ 3 - FXAA_QUALITY_PRESET_12 
+ 4 - FXAA_QUALITY_PRESET_13
+ 5 - FXAA_QUALITY_PRESET_14 
+ 6 - FXAA_QUALITY_PRESET_15
+ 7 - FXAA_QUALITY_PRESET_20 
+ 8 - FXAA_QUALITY_PRESET_21
+ 9 - FXAA_QUALITY_PRESET_22 
+ 10 - FXAA_QUALITY_PRESET_23
+ 11 - FXAA_QUALITY_PRESET_24
+ 12 - FXAA_QUALITY_PRESET_25
+ 13 - FXAA_QUALITY_PRESET_26
+ 14 - FXAA_QUALITY_PRESET_27
+ 15 - FXAA_QUALITY_PRESET_28
+ 16 - FXAA_QUALITY_PRESET_29
+ 17 - FXAA_QUALITY_PRESET_39
+''Complexity of quality settings are based on default FXAA settings (revision 3.11)''<br>
+''10 to 15 - default medium dither (10=fastest, 15=highest quality)''<br>
+''20 to 29 - less dither, more expensive (20=fastest, 29=highest quality)''<br>
+''39 - no dither, very expensive''<br>
+''NOTE: '''FXAA can be enabled even if Post-Processing was disabled in advanced video options!'''<br>
+{{Feature|important|This setting was '''removed''' in A2OA 1.61 beta as deprecated.}}
+|-
+| FXAASharp=0; || Default is disabled (0), quality levels range from 1 to 6, where 6 is the sharpest filter
+{{Feature|informative|FXAAsharpen is inactive while NightVision and Thermal Imaging are used.}}
+{{Feature|important|This setting was '''removed''' in A2OA 1.61 beta as deprecated.}}
+|}
+
+=== Take On Helicopters ===
+
+{| class="wikitable"
+| SWLayersCount=64; ||
+|-
+| PiPEnabled=0; || Setting to enable/disable Picture in Picture
+|}
+
+
+== Languages ==
+
+Simply alter
+ Language="English";
+
+to whatever language you may wish to have.
+
+
+== Joysticks ==
+
+You can setup sensitivity in the file by:
+
+<syntaxhighlight lang="cpp">
+joystickSensitivity[] = {
+	0.500000, 0.500000, 0.500000,	0.500000, 0.500000, 0.500000,	1.000000, 1.000000,
+	0.500000, 0.500000, 0.500000,	0.500000, 0.500000, 0.500000,	1.000000, 1.000000
+};
+</syntaxhighlight>
+
+Number are sensitivity for each of the folowing inputs:
+ AXIS_X AXIS_Y AXIS_Z	ROT_X ROT_Y ROT_Z	SLIDER_1 SLIDER_2
+
+First eight values are for positive part of axis, last eight for the negative one:
+ AXIS_X_POS AXIS_Y_POS AXIS_Z_POS ROT_X_POS ROT_Y_POS ROT_Z_POS SLIDER_1_POS SLIDER_2_POS
+ AXIS_X_NEG AXIS_Y_NEG AXIS_Z_NEG ROT_X_NEG ROT_Y_NEG ROT_Z_NEG SLIDER_1_NEG SLIDER_2_NEG
+
+Value is transformed as:
+ value = pow(raw_value, 1 / sensitivity).
+
+
+== See Also ==
+
+See [[server.armaprofile|username.arma2profile]] for information about personalized user settings.
+
+
+<references>
+<ref name="AToC">Read {{Link|https://en.wikipedia.org/wiki/Alpha_to_coverage|Wikipedia article}} and {{Link|http://aras-p.info/texts/D3D9GPUHacks.html#ref1|GPU features list}} for more details</ref>
+<ref name="FXAA">Read {{Link|http://timothylottes.blogspot.com/2011/03/nvidia-fxaa.html|Author's blog about FXAA}}, Complexity of quality settings are based on default FXAA settings (revision 3.11)</ref>
+<ref name="SMAA">Read {{Link|http://www.iryoku.com/smaa/|Author's website about SMAA}}, Complexity of quality settings are based on default SMAA settings (revision 2.7)</ref>
+<ref name="FXAAsharp">Sharpen Filter for FXAA mode of PPAA was hard-coded with intensity of 0.15 when enabled</ref>
+<ref name="PPAA">Post-Process Anti-Aliasing is new method of full-screen AA pass</ref>
+</references>
+
+
+[[Category: Startup Parameters]]

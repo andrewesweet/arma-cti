@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/textLogFormat
+// revision: 363577 (2024-04-07T14:40:20Z)
+// export sha1: rmmej9z929oq9ri71saozalo2vor11l
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Introduced with Arma 2 version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.05
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Broken Commands
+
+|descr= Debugging output.
+{{Feature|warning|This command is non-functional in the retail version}}
+
+|s1= [[textLogFormat]] [format, arg1, arg2, argN]
+
+|p1= format: [[String]]
+
+|p2= arg1: [[Anything]]
+
+|p3= arg2: [[Anything]]
+
+|p4= argN: [[Anything]]
+
+|r1= [[Nothing]]
+
+|x1= -
+
+|seealso= [[diag_log]] [[BIS_fnc_log]] [[BIS_fnc_logFormat]]
+}}

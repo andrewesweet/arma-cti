@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Locations
+// revision: 139096 (2019-12-03T21:51:11Z)
+// export sha1: bse8vpvt0lkhxtlrw1dtc8x10jq7tbt
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands by Functionality]]
+Set, define and use [[Location|locations]].

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/shownGPS
+// revision: 363942 (2024-04-26T21:33:55Z)
+// export sha1: szbtnkiua9nh3yj0rblkazgdoy4a3mm
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Interaction
+
+|descr= Checks if client has GPS receiver enabled in [[Description.ext|description.ext]] (''showGPS'' param) or force enabled with [[showGPS]] command.
+
+|s1= [[shownGPS]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>if (shownGPS) then { hint "You have the GPS receiver enabled" };</sqf>
+
+|seealso= [[showGPS]] [[visibleGPS]] [[openGPS]] [[shownWatch]] [[shownCompass]] [[shownHUD]]
+}}

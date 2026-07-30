@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/waterDamaged
+// revision: 347219 (2023-09-05T16:49:02Z)
+// export sha1: 35w5fo9s85kpicehr8s6h2dk5ifh1yo
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Checks if the engine was water damaged. When a vehicle is [[Arma_3:_Mission_Event_Handlers#Drowned | Drowned]], the engine gets water damaged and might need full repair either with [[setDamage]] or [[setHitPointDamage]] to be able to start.
+
+|s1= [[waterDamaged]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Boolean]] - [[true]] if the engine was water damaged
+
+
+|x1= <sqf>waterDamaged tank1;</sqf>
+
+|seealso= [[setDamage]] [[damage]] [[alive]]
+}}

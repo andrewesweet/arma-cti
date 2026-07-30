@@ -1,0 +1,22 @@
+// source: https://community.bistudio.com/wiki/Dslyecxi's_Tactical_Guides
+// revision: 340053 (2023-04-28T16:27:20Z)
+// export sha1: dl40wkdi1cr3dhkokldn8r4hd9pbw9o
+// categories: Category:Hints & Tips
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{User|Dslyecxi}} / [[Shack Tactical]]
+
+{{Feature|quote|Dslyecxi's guide is an unbelievably complex, detailed and informative resource, showing many ways how to be more efficient in combat in [[{{arma2}}|ARMA II]] and hopefully also get more enjoyment from the game. The previous guide was already unique, and it is breathtaking to see it this much improved right on time for the international release of [[{{arma2}}|ARMA II]].''
+
+''This guide is simply one of a kind and I strongly recommend it to everyone who will be sent to [[Chernarus]]!|[[User:Maruk|Marek Španěl]], CEO of [[Bohemia Interactive]]|https://ttp2.dslyecxi.com/}}
+
+== {{arma}} Tactics, Technics and Procedures Guides (TTP) ==
+* {{arma2}}: https://ttp2.dslyecxi.com/
+* {{arma3}}: https://ttp3.dslyecxi.com/
+
+== Videos==
+* [https://www.youtube.com/playlist?list{{=}}PLQEd6zRLOafWtrQ4EAYKl6z23hvCLYgW6 YouTube - {{arma3}} Guide]
+* [https://www.youtube.com/playlist?list{{=}}PLQEd6zRLOafU3aek--f71a-GQwByv6_bP YouTube - TTP Videos for {{arma3}}]
+* [https://www.youtube.com/watch?v{{=}}Kjwz5qRDhV4&list{{=}}PLQEd6zRLOafVn1SweJmdr-3ICqI885awY YouTube - Art of Flight]
+
+[[Category:Hints & Tips]]

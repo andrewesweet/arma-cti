@@ -1,0 +1,61 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Gaea_Mission:_Walkthrough/Lean_Mean_Green_Machine
+// revision: 341586 (2023-06-09T16:30:36Z)
+// export sha1: 0qay30baruql46uz4nyhfssvfrq8bd6
+// categories: Category:Carrier Command: Gaea Mission: Walkthrough
+// Vendored snapshot. Do not edit — re-export instead.
+
+The Laser Mk.2 is the strongest weapon in Chapter II of the Campaign. The blueprint is obtained by collecting three research files on islands in three different climatic zones.
+
+== Gaining the Files ==
+
+In an early mission of the Tutorial Campaign, the player is informed about the objective from ingame dialogue. Okoro:
+ Sir, we have recovered entries regarding a special Walrus laser.
+ From what I gather of the data, a prototype should be available
+ and is in the testing stage. It appears that we are dealing with
+ a powerful weapon. Unfortunately, we cannot construct the weapon
+ from the data we have currently available.
+
+To obtain a research file, player needs to find rusty structures with satellite dishes and interact with them.
+
+Player Ads reported <ref>http://forums.bistudio.com/showthread.php?141425-Walrus-V2-Blueprints-issue&p=2238752&viewfull=1#post2238752</ref> three such structures on the BI forum.
+
+'''Endymion'''. Just to the right of the lone Walrus parking outside of the base with the Command Center. Found that one but there is no action icon. No red panel to press either. Nothing.<br>
+'''Granite'''. Found one next to a lake on the north a bit. This one had a red panel, activated it but nothing happened. now not red or activatable.<br>
+'''Endymon'''. Found a right b*stard of a one to get to in the mountains to the left of the command center. Had to keep turbo-ing up almost impassable terrain but got there in the end.
+
+Player Alexandryos reported <ref>http://forums.bistudio.com/showthread.php?142257-SPOILER-ALERT-Green-Mean-Walrus-Laser-and-its-archives-locations&p=2248650&viewfull=1#post2248650</ref> these 7 rusty structures
+
+'''Evergreen''': east side of the island, east side of the lake. (temperate)<br>
+'''Beacon''': north west side of the island in the north west little island. (temperate)<br>
+'''Bacchus''': south east of the island, in the south east "tentacle", south of the lake in the hills. (temperate)<br>
+'''Taksaven''': west part of the island, west of the command center, the best way to reach it is by the repair station nearby, you must watchout or you will fell down the hill into the shore, a manta with hook do the trick with ease. (mountain)<br>
+'''Granite''': North side of the island, near south side of the small circular lake. (mountain)<br>
+'''Wattland''': east part of the island, in the eastern island, near the production structures by south east part of the the eastern island. (artic)<br>
+'''Isolus''': south part of the island, south of the lake, in the base of a hill, west from some structures. (artic)
+
+and player DeadeyeJones reports of two more <ref>http://forums.bistudio.com/showthread.php?142257-SPOILER-ALERT-Green-Mean-Walrus-Laser-and-its-archives-locations&p=2257787&viewfull=1#post2257787</ref>.
+
+'''Endymion''': East of the Command Centre and just north of the Walrus Garage. The button is on the left hand side facing the entrance.<br>
+'''Lingard''': North of the Refinery is a Re-aming Point. It is just West of that re-arming point in the trees. (artic)
+
+Some of these structures cointained the archives for the laser, other contained some randon gear in my campaign run. If you interact of every one for sure you will have the walrus laser mk2
+
+
+== Achievement ==
+
+For completing the research files, besides gaining the ability to manufacture the laser, an achievement called Lean Mean Green Machine is awarded.
+
+
+== Objectives ==
+
+# WALRUS LASER MK II PROTOTYPE
+#* We found information indicating that the APA is testing a new laser designed for Walruses. Testing was performed in various locations under different climatic conditions (Temperate, Mountainous, Arctic). If we manage to get a hold of their testing records, perhaps we may be able to build such a weapon.
+## LASER PROTOTYPE: TEST LOG - TEMPERATE
+##* Tests performed under these conditions were unsuccessful. Although the clamp holds strong, the weapon overheats significantly, eventually bursting and eliminating the carrier vehicle. Tests must be re-attempted in a colder environment. Nonetheless, the clamp design is solid and will appear in all subsequent models.
+## LASER PROTOTYPE: TEST LOG - MOUNTAINS
+##* Tests performed in these conditions were partially successful. Overheating was no longer such a critical problem, however the thin air and strong winds revealed certain defects in the directed beams. In certain circumstances the beams diverged, damaging the carrier vehicle. Technicians were able to uncover the cause and subsequent prototypes no longer have this issue.
+## LASER PROTOTYPE: TEST LOG - ARCTIC
+##* The freezing conditions provided valuable insight into the overheating issue. Technicians were able to isolate the problem and create a workaround involving pressurization of the weapon coolant. This resulted in an efficient cooling system which functioned within nominal levels under conditions previously considered incompatible. Tests were therefore successful.
+
+
+{{GameCategory|carriercommand|Walkthrough}}

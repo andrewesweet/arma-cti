@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/then
+// revision: 351752 (2024-01-03T10:15:29Z)
+// export sha1: t3orf5d9zhk54ffka1rnjnla25uety4
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Operation Flashpoint version 1.85 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.85
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Program Flow
+
+|descr= Links an [[If Type]] with [[Code]] to be executed if said [[If Type]]'s condition is [[true]]; otherwise, "[[else]]" code is executed if provided.<br>
+The alternative syntax allows to set "[[then]]" code and "[[else]]" code in one array.
+{{Feature|informative|Variables declared inside ''thenCode'' are private to that code block - see {{Link|Variables#Local Variables Scope}}.}}
+
+|s1= ifType [[then]] thenCode
+
+|p1= ifType: [[If Type]]
+
+|p2= thenCode: [[Code]] or [[Array]] of [[Code]]:
+* [[Code]] - code block to execute if ''ifType''<nowiki/>'s condition is [[true]]
+* [[Array]] of [[Code]] - array of two [[Code]] elements in format [thenCode, elseCode]; see {{Link|#Example 3}}
+
+|r1= [[Anything]] - result of the executed code
+
+|x1= <sqf>if (a > b) then { hint "a is greater than b!"; };</sqf>
+
+|x2= <sqf>
+private _c = 0;
+if (_a > _b) then
+{
+	_c = 1;
+}
+else
+{
+	_c = 2;
+};
+</sqf>
+
+|x3= <sqf>if (alive player) then [{ hint "player is alive"; }, { hint "player is dead"; }];</sqf>
+
+|x4= <sqf>private _value = if (alive player) then { 1 } else { 0 };</sqf>
+
+|seealso= [[Control Structures]] [[if]] [[else]]
+}}

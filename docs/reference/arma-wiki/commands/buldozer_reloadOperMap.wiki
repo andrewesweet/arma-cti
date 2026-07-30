@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/buldozer_reloadOperMap
+// revision: 318695 (2022-05-13T09:21:20Z)
+// export sha1: 3s2cuuebw6y0yti0q3zao6e2fp4c6jc
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= System
+
+|descr= Reload oper map visible in costMap diag tool. Working only in [[Oxygen Viewer|buldozer]].
+
+|s1= [[buldozer_reloadOperMap]] 
+
+|r1= [[Nothing]]
+
+|x1= <sqf>buldozer_reloadOperMap;</sqf>
+
+|seealso= [[buldozer_loadNewRoads]]
+}}

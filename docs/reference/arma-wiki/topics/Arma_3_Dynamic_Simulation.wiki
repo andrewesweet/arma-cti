@@ -1,0 +1,231 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Dynamic_Simulation
+// revision: 373712 (2025-06-21T11:19:43Z)
+// export sha1: 895202kb7npak6kjdn7f1cbj8vxp02q
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Overview ==
+
+''Dynamic Simulation'' is a feature that extends the possibilities to define and control object simulation. Its goal is to allow mission designers to increase the number of objects and AI units that can be present in the mission without destroying game performance. This is achieved by selectively simulating only what is needed.
+
+Features
+* Affects both SP and MP scenarios.
+* Can be selectively applied to entities and groups.
+* Easy to setup.
+* Silent background operation; no lag spikes or FPS drops.
+Limitations
+* No line of sight detection; designer needs to make sure player cannot see transition between enabled/disabled states.
+* No support for moving entities; entities will stop moving when disabled.
+* No backward compatibility with other older systems like the scripted ''Sites'' or ''FPS Manager''.
+
+{{Feature|important|''Dynamic Simulation'' uses the [[enableSimulation|default simulation system]] and therefore, will overwrite the ''Enable Simulation'' attribute in Eden Editor.}}
+
+== Setup ==
+
+''Dynamic Simulation'' is active by default, but it affects only objects that are flagged to use ''Dynamic Simulation'', which are none, by default. Flagging such object for ''Dynamic Simulation'' can be done either manually by ticking a checkbox in object or group attributes directly in EDEN editor or by script during the mission runtime.
+
+The ''Dynamic Simulation'' system settings are divided into 2 areas - global 'system' settings that define the rules and behaviour of the system - mainly the activation distances for different types of entities - and local object / group settings that tell the system if the object / group should use the ''Dynamic Simulation'' or not.
+
+=== Global system settings ===
+The global ''Dynamic Simulation'' system settings are located in ''EDEN >> Attributes >> Performance >> Dynamic Simulation'' section.
+
+[[File:A3_dynSim_globalSystemSettings.jpg|500px]]
+
+{| class="wikitable"
+! colspan="2" |Settings description
+|-style="vertical-align:top;"
+|Enable Dynamic Simulation
+|Global system toggle (default: checked). When unchecked ''Dynamic Simulation'' will shut down. Good for testing.
+|-style="vertical-align:top;background:#f0f0f0"
+|''Activation Distance''
+|''Different distance values for given entity types. Distance is approximate, slider snaps to multiples of 50m. Default values set for infantry mission where players do not have large magnitude scopes or binoculars at their disposal. If such devices are available, try multiply the ranges for Characters and Manned Vehicles by 2x-3x.''
+|-style="vertical-align:top;"
+|Characters
+|Infantry units (default: 500m). Set to a reasonable distance, player should not see disabled infantry units.
+|-style="vertical-align:top;"
+|Manned Vehicles
+|Vehicles with crew (default: 350m). Set to a reasonable distance, player should not see disabled vehicles.
+|-style="vertical-align:top;"
+|Props
+|Static objects (50m); anything from a small tin can to a building.
+|-style="vertical-align:top;"
+|Empty Vehicles
+|All vehicles without crew (250m). Separated from ''Props'' as ''Empty Vehicles'' have often more complex damage states and selective destruction. Their activation distance should be larger than the one used for ''Props''.
+|-style="vertical-align:top;background:#f0f0f0"
+|''Activation Distance Modifiers''
+|Modifiers to above mentioned ''Activation Distances''.
+|-style="vertical-align:top;"
+|Is Moving
+|Multiplies the entity activation distance by set value if the entity is moving (default: 2x).
+|-style="vertical-align:top;"
+|Limit by View Distance
+|Limits all activation distances to player's object view distance (default: true). Dynamically simulated entities beyond the object view distance will be disabled.
+|}
+
+=== Object settings ===
+''Dynamic Simulation'' system will not affect an object unless it is flagged to be dynamically simulated; see object ''Attributes'' menu >> ''Object: Special States'' section.
+
+[[File:A3_dynSim_objectSettings.jpg|500px]]
+
+{| class="wikitable"
+! colspan="2" |Settings description
+|-style="vertical-align:top;"
+|Enable Dynamic Simulation
+|Flags the object for ''Dynamic Simulation'' (default: unchecked). When unchecked ''Dynamic Simulation'' will not affect the object. If checked object will be enabled only if there is a player in the activation distance.
+|}
+
+=== Group settings ===
+'''<nowiki>'</nowiki>Dynamic Simulation<nowiki>'</nowiki>''' handles units as whole groups, group can have either ''Dynamic Simulation'' enabled or disabled, no partial state where some units have it enabled, some don't, is allowed. Because of that ''Dynamic Simulation'' settings for units are located in group ''Attributes'' menu >> ''Composition: State'' section.
+{{Feature|important|If dynamic simulation is enabled for the group, dynamic simulation for single entities of the group will be ignored. Group setting has higher priority!}}
+
+[[File:A3_dynSim_groupSettings.jpg|500px]]
+
+=== Advanced settings - wake-up ability ===
+There is also an advanced setting that controls if unit can activate (wake-up) dynamically disabled entities. The option is located in unit's ''Attributes'' menu >> ''Object: Special States'' section.
+
+[[File:A3_dynSim_advancedSettingsWakeupAbility.jpg|500px]]
+
+{| class="wikitable"
+! colspan="2" |Settings description
+|-style="vertical-align:top;"
+|Wake-Up Dynamic Simulation
+|Controls if the unit can activate dynamically disabled units (default: checked). When unchecked dynamically simulated entities will completely ignore presence of the unit and will remain disabled even if unit is in their activation distance. If checked on player, player will wake-up any entity if in it is activation distance. If checked on non-player unit, the unit will wake-up enemy units (on foot and in vehicles).
+{{Feature|informative|Only player units can wake-up all entities. Non-player units can wake-up only enemy units.}}
+{{Feature|important|To get the most out of the system, make sure that only relevant entities such as playable entities can wake up dynamically simulated entities.}}
+|}
+
+=== Eden visualization ===
+
+To allow fast checking of the simulation states a brand new simulation underlay texture was added to every object icon. Color specify the simulation state - dynamic is blue, disabled is red. Enabled simulation is not currently visualized as it is a default state.
+
+[[File:A3_dynSim_edenVisualization.jpg|500px]]
+
+
+== Usage ==
+
+Because system freezes entities beyond some artificially set threshold distance, user needs to make sure those distances are set properly for the specific scenario and the freezing and unfreezing is hidden to player. This creates some limitations on the mission design and dictates where and how the ''Dynamic Simulation'' can be facilitated.
+
+In general the less player can see the better. If player cannot see much, the activation distanced can be shorter and more entities will become disabled. Try to design the scenarios with this in mind. If player gets a helicopter, binoculars or large magnitude weapon optics you won't be able to set some strict activation distances and the system will loose a lot of its potential. As a result you won't be able to put that many assets into the scenario.
+
+In opposite, if the scenario is located in an environment with dense foliage and/or there are low visibility conditions and/or player doesn't have any large magnitude optics you will be able to drastically increase the object and group count in the mission and the environment will look and feel more rich and detailed.
+
+=== General tips ===
+
+* Try going as low as possible with the activation distance.
+* Try to avoid using optics and flying vehicle.
+* If player have access to optics, make sure the view distance is lower than the largest activation distance.
+* Infantry in the open is a problem. If it is disabled, player will see them from a distance frozen, not playing any ambient animations. Try to avoid it, especially if player has optics.
+* Vehicles in the open are fine. If you set Is Moving to some higher values, like x2 or even x3 you can quite seriously lower the activation distance for vehicles, to lets say 512m. If they are static they will look fine, player won't see the activation transition. When they will move, the activation distance will be with x3 multiplier 1536m.
+* ''Dynamic Simulation'' on flying vehicles is a problem, especially with high view distance.
+* Don't forget, not all objects and units need to have ''Dynamic Simulation''. If you would need to set the activation distance for some category too high because of few objects / groups, it might be better to do not use ''Dynamic Simulation'' for those cases.
+* Ambient units, like an airplane flying high in careless mode just for the effect, can find a great use of the ''Wake-Up Dynamic Simulation'' attribute. Turn it off and disabled units won't be re-activated by those ambient units.
+
+=== Advanced approach ===
+
+The ''Dynamic Simulation'' system can be used with different degree of success depending on mission specifics. Some missions, like free-roam or survival missions where player doesn't have access to flying vehicles and optics, can massively profit from the system, just with properly set activation distances. In other scenarios, you might find usage of the system rather limited due to situations where the simple distance based activation logic doesn't suffice - like player or dynamically simulated group moves form heavily forested area into the open. In such cases consider using triggers. The triggers can work for player as well as for the dynamically simulated groups and they can either add/remove groups to/from ''Dynamic Simulation'' system or adjust activation distances. Check the script commands section for more info.
+
+
+== Behaviour ==
+
+The core logic behind ''Dynamic Simulation'' is that object or group is simulated only when there is something that can wake it up in its ''Activation Distance'' (see the ''Global Settings''). Player units have ability to wake up anything that has dynamic simulation, while non-player units can wake up only enemy units.
+
+To achieve fast proximity evaluation simple distance cross-checking between huge number of entities could not be used and more complex solution had to be used - a specific multi-grid based system. The grid needs some maintenance and it has some measurement error (equal to the size of the smallest cell) but it allows for super fast checking for presence of ANY unit (with capability to wake up).
+
+=== Grid architecture and maintenance ===
+
+There are multiple grid levels. First grid divides the map into 2x2 cells. Second splits the map into 4x4 cells. Third 8x8 cell, then 16x16, then 32x32, you get it. This way whole set of grids is created, with the most detailed grid having a cell size 32m big.
+
+When simulation is started and every time activation evaluation is done for all subjects all grids are updated - information about side and player presence is recorded to each grid cell.
+
+[[File:A3_dynSim_grid.jpg|500px]]
+
+=== Proximity evaluation ===
+
+Proximity evaluation is done for each dynamically simulated group and object. If there is a grid cell in the activation distance with record or presence of unit that can activate given dynamically simulated group or object then the group or object gets activated, otherwise it is disabled.
+{{Feature|important|If a single unit of a group is in activation distance of a unit that can wake up dynamically simulated units its entire group gets activated. This is why sometimes far away units might be active if group members are spread far apart.}}
+
+[[File:A3_dynSim_proxyEval.jpg|500px]]
+
+== Ingame diagnostics ==
+
+As the part of the Dynamic Simulation system trhee new diagnostic modes were added to the debug console. All three diagnostic modes overlay map with an extra information. The modes can all be active at the same time, if needed.
+{{Feature|important|These diagnostic modes are only available with [[Arma 3: Diagnostics Exe]]!}}
+
+=== DynSimEntities ===
+
+<sqf>diag_toggle "DynSimEntities";</sqf>
+Displays the map overlay with yellow coloured activation boxes around each dynamically simulated (empty) object. Disabled objects use low opacity activation box visualization without border, so they are very subtle. Enabled objects use much higher opacity box with border around it.
+
+The activation box is a square with center on the object and side equal 2x the activation distance for ''Props'' or ''Empty Vehicles'', depending on the object type.
+
+If there is a grid cell tagged for player presence inside the object's activation box (even partially) the object will get enabled and the activation box visualization will change from low contrast square without border to high contrast square with border.
+
+=== DynSimGroups ===
+
+<sqf>diag_toggle "DynSimGroups";</sqf>
+Displays the map overlay with side coloured activation boxes around each dynamically simulated group. Disabled groups use low opacity activation box visualization without border, while enabled groups use much higher opacity box with border around it.
+
+The activation box for groups is created by calculating the smallest rectangle that covers all members of the group. The rectangle is then enlarged by the activation distance for ''Characters'' or ''Manned Vehicles'', depending on the group composition. If the group composition is mixed the higher activation distance is used for the group.
+
+If there is a grid cell tagged for enemy or player presence inside the group's activation box (even partially) the group will get enabled and the activation box visualization will change from low contrast square without border to high contrast square with border.
+
+=== DynSimGrid ===
+
+<sqf>diag_toggle "DynSimGrid";</sqf>
+Displays the map overlay with the most detailed ''Dynamic Simulation'' grid. The individual grid cells are coloured by the side colour of units that are present there. In case there are multiple different sides present in the same cell, the resulting colour is the summation of all present side colours; e.g. green (Independent) + red (OPFOR) colours the cell to yellow.
+
+
+== Ingame profiling ==
+
+In addition to in-game diagnostics user can also profile the system performance and effectiveness during the runtime by using the new [[diag_dynamicSimulationStart]] and [[diag_dynamicSimulationEnd]] commands.
+
+When the diagnostic is triggered system starts to periodically gather data about each dynamically simulated entity, recording for how long it is enabled. When the profiling is stopped, system exports those data (together with some extra info like entity type and position) into a text file located in Arma3 root folder.
+
+Because the data in the logfile are structured into a table, sorted from the longest to the shortest enabled object or group, user can easily identify the problematic objects and entities (e.g. that are enabled for too long).
+
+
+== Script commands ==
+
+The predefined behavior of ''Dynamic Simulation'' can be controlled and dynamically adjusted during the mission runtime by various script commands. It can be especially useful in cases where mission transits from one stage into another and/or the environment and conditions rapidly changes and as the result the startup settings from EDEN suddenly do not suffice.
+
+{{Feature|important|All commands should only be executed on the server!}}
+
+Usage details:
+* Each client have it is own dynamic simulation manager, all script commands do affect the local simulation manager. (While this is true, according to dedmen, these local systems are disabled internally and only the manager on the server is being used)
+* Effect of the manager - the entity simulation change - is global.
+* To achieve best results it is suggested to manage dynamic simulation on one place - ideally on server.
+* Units from groups flagged in EDEN for Dynamic Simulation are automatically managed by server. Same is true for objects (non-AI entities).
+
+[[enableDynamicSimulationSystem]] '''bool'''
+* Toggles the Dynamic Simulation system.
+
+[[dynamicSimulationSystemEnabled]]
+* Returns true if the Dynamic Simulation system is active, otherwise returns false.
+
+'''object/group''' [[enableDynamicSimulation]] '''bool'''
+* Adds/Removes object or group to/from Dynamic Simulation system.
+
+[[dynamicSimulationEnabled]] '''object/group'''
+* Returns true if group or object has Dynamic Simulation, otherwise returns false.
+
+'''activationCategory''' [[setDynamicSimulationDistance]] '''distance'''
+* Sets activation distance for given activation category. The recognized activation categories are "Group", "Vehicle", "EmptyVehicle" and "Prop".
+
+[[dynamicSimulationDistance]] '''activationCategory'''
+* Returns what activation distance is set for given activation category. The recognized activation categories are "Group", "Vehicle", "EmptyVehicle" and "Prop".
+
+'''activationMultiplier''' [[setDynamicSimulationDistanceCoef]] '''multiplier'''
+* Sets the specific activation distance multiplier value. Currently the only recognized activation multiplier is "IsMoving".
+
+[[dynamicSimulationDistanceCoef]] '''activationMultiplier'''
+* Returns value of the given activation distance multiplier. Currently the only recognized activation multiplier is "IsMoving".
+
+'''unit''' [[triggerDynamicSimulation]] '''bool'''
+* Controls ability of given unit to activate dynamically disabled entities. If false, dynamically disabled entities won't be activated by units presence.
+
+[[canTriggerDynamicSimulation]] '''unit'''
+* Returns true if given unit can activate dynamically disabled entities, otherwise return false.
+
+
+{{GameCategory|arma3|Editing}}

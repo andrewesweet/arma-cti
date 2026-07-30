@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/setTriggerStatements
+// revision: 378812 (2026-06-30T19:31:33Z)
+// export sha1: jcoliz8gsprzzte3rqcshfeyu5vlt70
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Triggers
+
+|descr= Defines trigger condition, activation and deactivation statements. Trigger condition has to return [[Boolean]]. [[true]] will activate the trigger, [[false]] will deactivate it (only if activation is set to repeat). [[thisList]] returns the same result as [[list]] command, which includes all entities in the trigger area that are capable of activating the trigger. Dead entities are excluded as well as crew in vehicles, vehicles themselves are included.
+
+|s1= trigger [[setTriggerStatements]] [condition, activation, deactivation]
+
+|p1= trigger: [[Object]] - trigger object
+
+|p2= condition: [[String]] - code containing trigger condition. Special variables available here:
+* [[Magic Variables#this_2|this]] ([[Boolean]]) - detection event
+* [[thisTrigger]] ([[Object]]) - trigger instance
+* [[thisList]] ([[Array]]) - array of all detected entities
+
+|p3= activation: [[String]] - code that is executed when the trigger is activated. Special variables available here:
+* [[thisTrigger]] ([[Object]]) - trigger instance
+* [[thisList]] ([[Array]]) - array of all detected entities
+* [[thisActivator]] ([[Object]]) {{GVI|arma3|2.22}} -  what or who activated the trigger, default: [[thisTrigger]]
+
+|p4= deactivation: [[String]] - code that is executed when the trigger is deactivated. Special variable available here:
+* [[thisTrigger]] ([[Object]]) - trigger instance
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_trg setTriggerStatements ["this", "hint 'trigger on'", "hint 'trigger off'"];</sqf>
+|x2= Since Arma 3 v2.22:<sqf>_trg setTriggerStatements ["this", "hint ('Activated by ' + str thisActivator)", ""];</sqf>
+
+|seealso= [[triggerStatements]] [[createTrigger]] [[setTriggerActivation]] [[setTriggerArea]] [[setTriggerText]] [[setTriggerTimeout]] [[setTriggerType]] [[Magic Variables#this_2|this]] [[thisList]] [[thisTrigger]] [[triggerInterval]] [[setTriggerInterval]] [[enableSimulation]] [[simulationEnabled]]
+}}
+
+{{Note
+|user= Scifer
+|timestamp= 20110314205200
+|text= An array with three arguments is mandatory for this function.
+}}
+
+{{Note
+|user= Heeeere's Johnny!
+|timestamp= 20140916174100
+|text= Magic variable ''thisList'' does not contain dead units.
+}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/getAmmoCargo
+// revision: 370851 (2025-02-18T00:20:05Z)
+// export sha1: k8giyib9u2oba4zloi8kznjgi8e8sxa
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 0.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.56
+
+|arg= global
+
+|gr1= Vehicle Inventory
+
+|descr= Returns the amount (1 is full) of ammo resources in the cargo space of a rearm vehicle.
+
+|s1= [[getAmmoCargo]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Number]] - ammo cargo value between 0 (empty, [[alive|destroyed]] or [[isNull|null]] [[Object]]) and 1 (full), -1 if ammo cargo is not supported<br>
+before {{GVI|arma3|1.96|size= 0.75}} -[[finite|inf]] was be returned if ''vehicle'' did not support ammo cargo<br>
+before {{GVI|arma3|1.94|size= 0.75}} [[Nothing]] was be returned if ''vehicle'' was not [[alive]]
+
+|x1= <sqf>value = getAmmoCargo myVehicleName;</sqf>
+
+|seealso= [[setAmmoCargo]] [[getFuelCargo]] [[getRepairCargo]]
+}}

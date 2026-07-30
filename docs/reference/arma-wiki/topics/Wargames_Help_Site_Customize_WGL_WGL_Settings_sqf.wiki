@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/Wargames:Help_Site:Customize_WGL:WGL_Settings_sqf
+// revision: 363621 (2024-04-08T16:00:37Z)
+// export sha1: lddzanxwref8xcd7h85aua350i2v0n5
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Basic Overview and Idea ==
+
+'''wgl_settings.sqf''' is a user-editable preferences file. For performance reasons, especially in multiplayer conditions, some extra visual effects are disabled by default.
+People with fast computers may want to enable these things to add to the experience of OFP with WGL.
+
+Currently, one can enable or disable these things:
+
+* Extra infantry weapons smoke puffs (false)
+* Infantry weapons bullet impact effects (false)
+* Use of (bn880's) tracers (true)
+* Smoke, explosion and fire effects for destroyed vehicles (true)
+
+
+== HowTo ==
+
+In the folder @wgl5, you'll see a file named '''wgl_settings.sqf'''. You can open that with any text editor such as Notepad. You should only change lines
+that have '''["name", true/false]''' in them. After you're done, save the file again and play OFP again.
+
+The changes will take effect when you start the next mission. (That means you don't have to restart OFP but can keep playing instead)
+
+
+== Examples ==
+
+* To enable rifle smoke, change ["rifleFX", *false*] to ["rifleFX", *true*]
+* To disable the tracers, change ["tracers", *true*] to ["tracers", *false*]
+
+== Unmodified File ==
+
+Here's the original contents of '''wgl_settings.sqf''':
+
+<sqf>
+/*
+==================
+ WGL Settings.sqf
+==================
+
+This file is used to set user preferences for certain WGL features.
+
+You can edit this file in your favorite text editor (eg Notepad)
+*/
+[
+	// Category: Preferences
+	[
+		"Prefs",
+
+		// Create extra rifle and machine gun smoke puffs when firing
+		// Default: false
+		["rifleFX", false],
+
+		// Track infantry weapons bullets to create bullet impact effects
+		// Default: false
+		["mgFX", false],
+
+		// Create smoke, explosion and fire effects for destroyed vehicles
+		// Default: true
+		["exploFX", true],
+
+		// Enable bn880's tracer effects
+		// Default: true
+		["tracers", true]
+	]
+];
+</sqf>

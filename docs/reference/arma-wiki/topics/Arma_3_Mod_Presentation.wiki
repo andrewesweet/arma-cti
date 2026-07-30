@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Mod_Presentation
+// revision: 352437 (2024-02-10T13:31:46Z)
+// export sha1: 979r4khd5tqbapa0ic6x1q0g9cem5y1
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|informative|There are similarities to presenting a (Creator) DLC and a mod. Although not all DLC techniques apply to mods, find details and configuration samples [[Arma_3_DLC_Content_Licensing|here]].}}
+{{Feature|informative|For more details about CfgMods and mod.cpp see [[Mod.cpp/bin File Format]].}}
+{|
+| style="vertical-align: top" | A mod is generally a batch of files that constitute a consistent list of additions, but not limited to. A mod can have its very own presentation as shown.
+| [[File:modPresentationMainMenu.jpg|300px]]
+|-
+| style="vertical-align: top" | Your mod is also present in the Expansions menu with a larger picture and a long description of its content or context, it is up to you. This also include a link to your website.
+| [[File:modPresentationExpansionsMenu.jpg|300px]]
+|-
+| colspan="2" | 
+|-
+| style="vertical-align: top" | '''Last but not least, you have the possibility to display an icon next to the content your mod adds or alters in [[:Category:Eden Editor|Eden Editor]] interface.'''
+In this screen, the kart object has the [[Arma 3 Karts|Karts DLC]] icon of the to which it belongs to.
+| [[File:modPresentationeditorList.jpg|300px]]
+|-
+| style="vertical-align: top" | In this screen though, a map has the DLC logo, but this time, [[Altis]] also has it because the mod uses or alters it.
+| [[File:modPresentationMaps.jpg|300px]]
+|}
+
+''A sample may be added in [[:Category:Arma_3:_Official_Tools|Arma 3 Tools]], meanwhile, you can access the sources {{Link|http://tom4897.info/?attachment_id{{=}}2876|here}}, a demo {{Link|http://tom4897.info/?attachment_id{{=}}2875|here}}, and more information on DLC presentation [[Arma_3_DLC_Content_Licensing|here]].''
+
+
+== How to ==
+
+=== file Mod.cpp ===
+
+This is the definition file, it must be place in the root folder of your mod (''Arma 3\Splendid Mod\mod.cpp'') and can contain:
+<syntaxhighlight lang="cpp">
+name			= "mod_";					// Name of your mod
+author			= "author_mod";				// Affects Arma 3 Launcher, when the mod are loaded as local
+logo			= "files\ic.paa";			// Logo displayed in the main menu
+logoOver		= "files\ic_active.paa";	// When the mouse is over, in the main menu
+tooltip			= "mod_";
+tooltipOwned	= "credit_mod";				// Tool tip displayed when the mouse is left over, in the main menu
+picture			= "files\overview.paa";		// Picture displayed from the expansions menu. Optimal size is 2048x1024
+actionName		= "GitHub";
+action			= "https://github.com/my-mod-page";			// Website URL, that can be accessed from the expansions menu
+overview		= "This awesome mod does this and that.";	// Supports structured text
+hideName		= 0;						// Hide the extension name
+hidePicture		= 0;						// Hide the extension menu
+dlcColor[]		= { 0.23, 0.39, 0.30, 1 };	// Color used for DLC stripes and backgrounds (RGBA)
+logoSmall		= "files\ic_small.paa";		// Display in creative lists, next to the entities added by the mod
+</syntaxhighlight>
+
+=== Images ===
+
+The images defined in the mod.cpp can be stored either individually in the mod directory or in a packed PBO.
+
+In the case of non-packed data, to keep your structure clear, you could keep your images in ''Arma 3\Splendid Mod\Data\'' folder. Your mod.cpp has to be edited accordingly - for example, the logo path will be defined as ''Data\logo.paa''. The same applies for every external reference (in this case, image only).
+
+If you opt for a packed data, you will have to put your images in a PBO and point the image path like in any other addon (the example of mod.cpp is based on packed file (PBO) which has for prefix "Samples_F").
+
+==== Recommended sizes ====
+{| class = "wikitable" 
+! Type !! A !! x !! B
+|-
+| '''Logo'''		|| 128 || x || 128
+|-
+| '''LogoOver'''	|| 128 || x || 128
+|-
+| '''LogoSmall'''	|| 64 || x || 64
+|-
+| '''Picture'''	|| 2048 || x || 1024
+|}

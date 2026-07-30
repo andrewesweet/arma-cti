@@ -1,0 +1,183 @@
+// source: https://community.bistudio.com/wiki/TexView_2_Manual
+// revision: 364102 (2024-05-04T21:54:10Z)
+// export sha1: ongk2oev05unhab3v1s12nefthm12v0
+// categories: Category:ArmA: Armed Assault: Addon Editing | Category:ArmA: Armed Assault: Official Tools | Category:Arma 2: Official Tools | Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[TexView 2]] is a texture viewer and conversion tool supporting Real Virtuality Engine's internal texture formats.
+TexView 2 is provided free of charge for any non-commercial use without any support from {{Name|bi}}. Use it at your own risk.
+Refer to the end user license agreement as displayed during the setup process of this application for more details.
+
+=== Supported Formats ===
+
+{| class="wikitable valign-top"
+! style="width: 50%" | Input
+! style="width: 50%" | Output
+|-
+|
+* JPG
+* TGA (24 bit / 32 bit with alpha channel)
+* PNG (with or without alpha channel)
+* PAA
+* PAC
+
+{{Feature|important|
+All input textures '''must''' have a power of two-based resolution like 2^x / 2^y (e.g. 16 / 16, 32 / 32, 64 / 64, 256 /256).
+The largest texture size commonly supported by graphics cards and BI's game engines is 2048x2048,
+in {{arma3}} 4096x4096 textures are supported (and are in TexView 2).
+}}
+|
+* PAA/PAC (file format is used depending on file name as defined in textureconvert.cfg file)
+* TGA (32 bit with alpha channel)
+* PNG (with alpha channel)
+|}
+
+=== How to use it ===
+
+You can open any supported image using menu File / Open or drag and drop the image file icon into the main window of Texview (tip: you may assign PAA file extensions to TexView 2application using Windows desktop).
+
+You can save the file into the format you need. The output file format (PAC, PAA or TGA) will be choosen depending on the extension you write in "Save As..." dialog to the filename line.
+Bit depth and optional alpha channel will be selected automatically depending on the file name as defined in textureconvert.cfg file, default is:
+
+* _CO - color (diffuse map)
+* _CA - color alpha (diffuse map with alpha)
+* _NO - normal map
+* _NS - normal map specular (with alpha)
+* _NON - normal map with noise in alpha channel ( noise is used for vegetation lods blending)
+* _NOF - normal map faded (mipmaps fade the texture in distance, usefull for terrain)
+* _NOHQ - normal map high quality
+* _NOVHQ - normal map high quality
+* _DT - detail texture, average color should be 0.5, texture has got fad out filter in mipmaps
+* _CDT - colored detail texture, average color should be 0.5 in all R G B channels, texture has got fad out filter in mipmaps
+* _SKY - sky texture
+* _MC - macro texture
+* _AS - ambient shadow texture
+* _SM - specular map HQ normálové mapy (HQ Normal Maps)
+* _SMDI - optimised specular mapa for better bitdepth HQ_normálové_mapy_
+* _LCO - land color map, texture used for satelite and mask textures on the terrain
+* _MCO - multiply color map, texture used to multiply with color map (as cdt) without fade out filter, average color should be 0.5 in all R G B channels 
+
+The texture name should be simple ascii, containing only letters, digits and underscore (no letters with diacritics). Only one dot is allowed leading the extension.
+
+Example of texture name: M151A1_fuelTank01_CO.tga
+
+The source texture file format is PNG (preferred) or TGA (no compression, only 24b or 32b). 
+
+Please be aware that bit depth of the exported texture may be lower than bit depth of your source image and compression causing some visual artifacts can be applied.
+During the export all mipmap levels of the texture will be created automatically. Alternatively, you can also move the texture by holding the middle mouse button.
+
+Reference: [[Arma: Texture Naming Rules]].
+
+=== Available Functions ===
+
+==== File ====
+===== Open =====
+{{Controls|Ctrl|O}}
+
+open an image file
+
+===== Save =====
+{{Controls|Ctrl|S}}
+
+Saves the file in the support file format (paa is default for any unsupported extension)
+
+===== Refresh =====
+{{Controls|F5}}
+
+Reloads the file
+
+===== Save as... =====
+Export the image file to desired format (default is paa but you can manually change the extension to tga or png)
+
+===== Source control =====
+Allows to bind data to a scc compliant source control system
+
+===== Generate =====
+Allows simple procedural texture generation based on formulas, example of a circle texture: 
+ a = abs u < sqrt(1 - v * v);
+ r = a;
+ g = a;
+ b = a;
+
+===== Previous File / Next File =====
+{{Controls|PageUp}} (previous file) / {{Controls|PageDown}} (next file)
+
+Browses the current directory for other bitmaps
+
+==== Edit > Filter ====
+Filter process executed for each pixel of the texture. You can load some of pre-made useful filters stored in Filters subfolder of main Tex View 2 working directory.
+
+==== MipMap ====
+
+===== Prev =====
+{{Controls|Up}}
+
+Display the previous mipmap level
+
+===== Next =====
+{{Controls|Down}}
+
+Display the next mipmap level
+
+===== Preview mipmaps =====
+Generate mipmaps
+
+===== Preview mipmap =====
+Specific types: preview various specific supported mipmap types
+
+==== View ====
+
+===== Status Bar =====
+Display resolution of the currently displayed mipmap and maximum resolution of the texture and status of Tex View 2
+
+===== Info bar =====
+Display max, avg and under cursor color in RGBA
+
+===== View bar =====
+Allows you to select, preview and compare various types of textures (note that texture type to be stored is determined by filename only and this is only for preview purposes)
+
+===== Zoom In / Zoom Out =====
+{{Controls|Num+}} / {{Controls|Num-}}
+
+Zoom the texture in and out (you can also use mouse wheel to zoom in and out)
+
+===== RGB =====
+Show RGB values on a 0..1 scale (not 0..255)
+
+==== Mouse controls ====
+Hold {{{{Controls|RMB}} and drag the texture by mouse if it cannot fit on screen, use mouse wheel to zoom in and out.
+
+=== Command Line Conversion ===
+
+For command line and batch conversions use [[Pal2PacE]].exe. 
+
+'''Arguments Usage''':
+ pal2pace [saveoptions] <source> [<destination>]
+ pal2pac -combine [saveoptions] [options] <source1> <source2> <source3> <source4> <destination>
+
+'''SaveOptions''':
+<pre>        -size=<n>
+
+Options (obsolete, no longer useful for {{arma1}}):
+        -xborder=<bordersize> (0<bordersize<0.5, default 0.125)
+        -yborder=<bordersize>
+        -mask=<maskname>
+        -water=<watername>
+
+Example of how to generate new [[paa]] files from TGA sources: 
+ Pal2PacE x:\Test\*.tga
+</pre>
+
+
+== See Also ==
+
+* [[TexView 2]]
+* [[PAA File Format]]
+* [[Arma: Texture Naming Rules]]
+
+
+{{GameCategory|arma1|Addon Editing}}
+{{GameCategory|arma1|Official Tools}}
+{{GameCategory|arma2|Official Tools}}
+{{GameCategory|arma3|Official Tools}}

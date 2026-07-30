@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_getIDWMapStaticDataLayers
+// revision: 309489 (2022-05-05T12:06:20Z)
+// export sha1: mdhpvdtfshcrsy75xunbxfc8vt706zn
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: IDWMap | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= IDWMap
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Gets static data from extension
+
+	Parameter(s):
+		NONE
+
+	Returns:
+		ARRAY in format:
+		[
+			[[x,y,strengh],[x,y,strengh],...], // data layer 0
+			[[x,y,strengh],[x,y,strengh],...], // data layer 1
+			...
+			[[x,y,strengh],[x,y,strengh],...] // data layer N
+		]
+		or 
+		[] - on error
+
+		
+	Example:
+		call BIN_fnc_getIDWMapStaticDataLayers
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_getIDWMapStaticDataLayers]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_getIDWMapStaticDataLayers;</sqf> -->
+
+|seealso=
+}}

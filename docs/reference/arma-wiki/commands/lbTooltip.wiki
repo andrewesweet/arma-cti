@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/lbTooltip
+// revision: 309997 (2022-05-05T12:20:38Z)
+// export sha1: 4hd0yc4ax4rczdh1vy5fo8j7o79zn3g
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= GUI Control
+
+|descr= Returns tooltip for ListBox, ComboBox and Toolbox
+
+|s1= [[lbTooltip]] [idc, index]
+
+|p1= idc: [[Number]]
+
+|p2= index: [[Number]]
+
+|r1= [[String]]
+
+|s2= control [[lbTooltip]] index
+
+|p21= control: [[Control]]
+
+|p22= index: [[Number]]
+
+|r2= [[String]]
+
+|x1= <sqf>lbTooltip [1, 1];</sqf>
+
+|seealso= [[lbSetTooltip]] [[ctrlTooltip]] 
+}}

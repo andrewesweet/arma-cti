@@ -1,0 +1,370 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Curator
+// revision: 369849 (2024-10-16T13:52:02Z)
+// export sha1: duss2iaeyn34gbobkywkbmqqdwvwrwy
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side|1|2}}
+[[File:arma3 curator eye.png|center|128px]]
+'''Curator''' is a technical name for [[Arma 3 Zeus]] game master system. Every involved scripting command, event handler or class name contains the name.
+The reason for it is to have a generic name which can be passed from project to project without any associations.
+
+== Setup ==
+[[File:a3 iconCurator ca.png|right]]
+The central piece of every curator is Game Master module, otherwise referred to as Curator Logic. It stores every setting, like editing areas, available objects or their costs.
+
+You can find the module in '''Systems (F5) > Zeus > Game Master'''
+
+In module arguments, can set the curator unit (either specific unit, player with given UID or server admin) and that's all you need to add game master to your mission.
+Without any further settings, all objects will be available for free and whole map will be editable.
+
+There can be multiple modules present in a mission, each with its own settings. As a result, you can have for example two competing curators, or a group of allied curators, each with different abilities.
+
+In every examples on this page, we'll call the module ''myCurator''.
+
+{{Feature|informative|
+* Detailed module descriptions are available in the game after clicking on SHOW INFO button while editing a module.
+* Function descriptions can be accessed in game using [[Arma 3: Functions Library#Finding_a_Function|Functions Viewer]].
+* All curator related scripting commands can be found in the [[:Category:Command_Group:_Curator|Curator]] command group.
+}}
+
+
+== Costs ==
+
+Mission designer can assign cost to every object curator can interact with. The cost is applied when performing actions like placing, editing or deleting.
+It affects curator's resources - '''points''' - which are in range from 0 (no points) to 1 (full points; can't be larger than this value).
+The cost can be both negative and positive, so some actions can actually add points (e.g., deleting).
+Points can be adjusted by [[addCuratorPoints]] and returned using [[curatorPoints]], or you can use ''Manage Resources'' module.
+
+[[File:arma3 curator points.jpg|800px|thumb|center|Points visualized in the curator interface]]
+{{Clear}}
+
+Costs for each entity type are calculated differently:
+* Object costs are defined in the event handler.
+* Modules are perceived as normal objects and are also defined in the handler.
+* Waypoint costs are set by [[setCuratorWaypointCost]] command.
+* Markers are always free.
+
+=== Assigning ===
+
+==== Manual ====
+You can assign individual cost for every object in the game using [[Arma_3:_Event_Handlers#CuratorObjectRegistered|CuratorObjectRegistered]] event handler.
+It's executed when player enters curator interface, so individual values cannot be changed on the fly.
+However, you can still tweak costs using [[#Action Coefficients|action coefficients]] and available objects by [[#Unlocking Addons|unlocking addons]].
+
+<sqf>myCurator addEventHandler ["CuratorObjectRegistered", { /* code here, see below */ }];</sqf>
+
+Arguments passed into the handler are:
+* curator: [[Object]]
+* input: [[Array]] of [[String]]s - all CfgVehicles classes
+
+Expected returned value is an [[Array]] of Arrays of the <u>same size</u> as the input array, with each item belonging to a class with the same array index. Missing or incorrect values will be replaced by default ''[true,0,0]''.
+* Input: <code style="display: block">[string1, string2, string3, ... classN]</code>
+* Output: <code style="display: block">[array1, array2, array3, ... arrayN]</code>
+'''Example''':
+* Input (3 classes): <sqf inline>["B_Soldier_F", "B_MRAP_01_F", "ModuleLightning_F"]</sqf>
+* Output (3 arrays with settings): <sqf inline>[[true, 0.1], [true, 0.5, 0.6], [false, 0, 0]]</sqf>
+
+
+Every item in the array is in the following format:
+ [show, cost, (costWithCrew)]
+* show: [[Boolean]] - true to let the object appear in the CREATE list, false to hide it (costs will still be accepted if an object of the type is already present in the mission and made editable)
+* cost: [[Number]] - cost of the object
+* costWithCrew (Optional): [[Number]] - cost of the object with crew in it (affects only vehicles). When undefined, normal cost is used.
+
+'''Example of the whole event handler:'''
+<sqf>
+myCurator addEventHandler [
+	"CuratorObjectRegistered",
+	{
+		_classes = _this select 1;
+		_costs = [];
+		{
+			_cost = if (_x isKindOf "Man") then {[true,0.1]} else { [false, 0] }; // show only objects of type "Man", hide everything else
+			_costs pushBack _cost;
+		} forEach _classes; // go through all classes and assign cost for each of them
+		_costs
+	}
+];
+</sqf>
+
+
+Alternatively, you can set cost of specific objects by [[BIS_fnc_curatorObjectRegistered]], with crew costs calculated automatically based on vehicle cost + cost of all crew members.
+* When the function is executed multiple times, results are combined together.
+** Example:
+*** '''Show''' value of an object has to be true in all instances (e.g., one false will hide the object)
+*** '''Cost''' values are multiplied together (e.g., one 0 will set the cost to 0)
+
+
+==== Using Cost Tables ====
+[[File:arma3 curator table.jpg|thumb|Cost table preview]]
+There's a scripted function which will export all objects from specified addons into spreadsheet format, where you can define individual costs and see additional data, like how many objects can be build at one or how long will it take to "recharge" points until the object is available. The table also automatically calculates costs of vehicles with crew and of whole groups. As such, it is invaluable tool for balancing curator missions.
+
+Steps how to create the table:
+# Call [[BIS_fnc_exportCuratorCostTable]] to generate the table based on given addons into clipboard<br>'''Example:''' <sqf inline>["A3_Characters_F_BLUFOR", "A3_Soft_F_MRAP_01"], "ods"] spawn BIS_fnc_exportCuratorCostTable;</sqf>
+# Run OpenOffice Calc (or Microsoft Excel; use "xls" as a second param when calling the functions, as both programs are using different formula formatting)
+# Paste the generated text into the spreadsheet
+
+
+Now when the table is generated, you can assign specific costs to each objects and watch how it affects vehicles and groups involving the object./
+* Class names in the second column leads to [[Arma 3 Assets]] page with further details, like weapons or magazines the object can carry.
+* Display names in the third column are links directly to object preview images.
+
+
+When finished, export the result into the game by following these steps:
+# Scroll down to "Export" field
+# Copy all cells between ''// Generated by BIS_fnc_exportCuratorCostTable'' and the document end.<br>'''Example:'''<sqf>
+// Generated by BIS_fnc_exportCuratorCostTable
+// [["A3_Characters_F_BLUFOR","A3_Soft_F_MRAP_01"],"ods"] call BIS_fnc_exportCuratorCostTable;
+_BLUFOR_A3_Characters_F_BLUFOR = ['B_Soldier_GL_F',1,'B_soldier_AR_F',1,'B_Soldier_TL_F',1,'B_soldier_LAT_F',1,,0];
+_BLUFOR_A3_Soft_F_MRAP_01 = ['B_MRAP_01_F',3,,0];
+_BLUFOR = _BLUFOR_A3_Characters_F_BLUFOR + _BLUFOR_A3_Soft_F_MRAP_01 + [];
+</sqf>
+# Import the result in the game again using [[BIS_fnc_curatorObjectRegisteredTable]]<br>'''Example:'''<sqf>[myCurator,_BLUFOR] call BIS_fnc_curatorObjectRegisteredTable;</sqf>
+
+=== Action Coefficients ===
+
+Once you assigned cost to every object, you can now use it for every action curator can perform.
+
+<sqf>myCurator setCuratorCoef ["place", -0.2];</sqf>
+
+If some object, for example BLUFOR soldier "B_Soldier_F" from the previous example, will have assigned cost {{Color|green|0.1}}, cost for placing will be:
+
+:<big>''{{Color|green|0.1}} * {{Color|darkorange|-0.2}} = -0.02''</big>
+
+If curator have full points (value is 1), it means he can build 50 BLUFOR soldiers (''-1 * -0.02 = 50''). While individual object costs cannot be changed on the fly, coefficient can be easily used to tweak all costs.
+
+Available actions are:
+* "place"
+* "edit"
+* "delete"
+* "destroy"
+* "group"
+* "synchronize"
+
+Additionally, while action can be disabled by assigning large negative coefficient, e.g., -10000. Trying to perform the action will then result in onscreen warning for curator.
+
+Coefficients can be also assigned in ''Set Editing Costs'' module.
+
+
+== Unlocking Addons ==
+
+You can set which objects will be available curator by toggling specific addons. This can be done on the fly, and it is primary way how to unlock content for curator during a mission.
+
+See [[Arma 3: CfgPatches CfgVehicles|{{arma3}} assets]] to check which objects belongs to which addon, or use [[unitAddons]] to get addons of specific object class.
+
+{{Feature|informative|
+Only activated addons can be added (i.e., addons preloaded by the mission).
+All official addons are activated by default, but unofficial ones are activated only when an object contained in such addon is present in the mission.
+If that's not the case, you can use [[activateAddons]] or [[BIS_fnc_activateAddons]] to activate them. This is however possible only at the mission start - on the fly activation is not possible.
+}}
+
+Initial addons can be adjusted in ''Game Master'' module attributes, with available values being:
+* '''All official addons''' - default state, includes all activeted addons
+* '''Addons present in the mission''' - only addons of objects present in the mission upon mission start. E.g., if you inserted only BLUFOR soldiers and MRAPs in the mission, addons will be [<nowiki/>[[Arma_3_CfgPatches_CfgVehicles#A3_Characters_F_BLUFOR|"A3_Characters_F_BLUFOR"]],[[Arma_3_CfgPatches_CfgVehicles#A3_Soft_F_MRAP_01|"A3_Soft_F_MRAP_01"]]]
+* '''None''' - no addons are enabled by the module, mission designer has to add them manually.
+
+During the missions, use ''Manage Addons'' module or scripting commands to toggle addons:
+* [[addCuratorAddons]]
+* [[removeCuratorAddons]]
+* [[removeAllCuratorAddons]]
+* [[curatorAddons]]
+
+'''Example:'''
+<sqf>
+myCurator addCuratorAddons ["A3_Armor_F_AMV", "A3_Armor_F_Panther"];
+myCurator removeCuratorAddons ["A3_Soft_F_MRAP_01"];
+</sqf>
+
+=== Community Addons ===
+
+Curator system relies on correct configuration of object. When you unlock an addon, it will in turn enable all objects defined in ''units'' array of ''CfgPatches''.
+If the addon author didn't do this, his objects won't be available.
+<syntaxhighlight lang="cpp">
+class CfgPatches
+{
+	class TAG_MyAddon
+	{
+		units[] = { "TAG_MyObject1", "TAG_MyObject2" }; // here
+		weapons[] = {};
+		requiredVersion = 1;
+		requiredAddons[] = {};
+	};
+};
+</syntaxhighlight>
+
+
+== Editable Objects ==
+
+By default, every object placed by curator is immediately made editable. Any other object can be added by ''Add Editable Objects'' module or using
+scripting commands:
+* [[addCuratorEditableObjects]]
+* [[removeCuratorEditableObjects]]
+* [[curatorEditableObjects]]
+
+Editable players are marked by a red color in the EDIT list and by red circle displayed over their icon. They cannot be moved, rotated, deleted or destroyed, but grouping, syncing and setting attributes works.
+Editable players can also ping their curator by pressing Zeus key ({{Controls|Y}} by default), which results in their name and icon flashing for a short moment.
+Curator can press {{Controls|Space}} to quickly move the camera to their location.
+
+
+== Editing Areas ==
+
+[[File:arma3 dlc zeus screenshot 1.jpg|thumb|Blue editing area border visible in the background]]
+Editing area is a zone in which curator can modify entities. It's used to limit curator into specific area, or restrict him from other (e.g., around players).
+
+It can be set using ''Add Editing Area'' and ''Restrict Editing Around Players'' modules or by following scripting commands:
+* [[addCuratorEditingArea]]
+* [[removeCuratorEditingArea]]
+* [[removeAllCuratorEditingAreas]]
+* [[curatorEditingArea]]
+* [[setCuratorEditingAreaType]]
+* [[allowCuratorLogicIgnoreAreas]]
+
+Areas can be circle only, and can be composed together to build much larger area. Mission designer can set whether editing is allowed only inside them, or only outside them.
+For performance reasons, it is not possible to define it per individual area.
+
+For curator, the area is visualized by blue (during day) and green (during night) "walls" in the scene and by black icons in the map. Players can't see it.
+
+
+''Table showing which actions are permitted '''outside''' of the editing area for each entity type:''
+{| class="wikitable align-center"
+!
+! Place
+! Edit
+! Delete
+! Destroy
+! Group
+! Synchronize
+|-
+! Objects
+| Restricted
+| Restricted
+| Restricted
+| Allowed
+| Allowed
+| Allowed
+
+|-
+! Modules
+| colspan="3" | Based on [[allowCuratorLogicIgnoreAreas]]
+| {{n/a}}
+| {{n/a}}
+| Allowed
+
+|-
+! Markers
+| Allowed
+| Allowed
+| Allowed
+| {{n/a}}
+| {{n/a}}
+| {{n/a}}
+
+|-
+! Waypoints
+| Allowed
+| Allowed
+| Allowed
+| {{n/a}}
+| {{n/a}}
+| {{n/a}}
+
+|}
+
+
+== Camera ==
+
+=== Camera Area ===
+
+Camera area defines where can curator move with the camera. It's not visualized in any way, but reaching the border will result in camera "sliding" along it, so it can be felt.
+As with editing areas, camera ones can also be grouped into larger chunks, and designer can set whether they camera can operate only inside or only outside of them.
+Additionally, it is possible to set maximal camera altitude.
+
+Use ''Add Camera Area'' or following scripting commands to set the area:
+* [[addCuratorCameraArea]]
+* [[removeCuratorCameraArea]]
+* [[removeAllCuratorCameraAreas]]
+* [[curatorCameraArea]]
+* [[setCuratorCameraAreaCeiling]]
+
+=== Camera Position ===
+
+You can teleport curator camera to specific position using ''Set Camera Positon''.
+The module can be also use to set default camera position after opening curator interface, when ''Use as default'' module attribute is set to ''Enabled''.
+
+In scripts, you can move [[curatorCamera]] around like any other object. However, most {{Link|Category:Command Group: Camera Control|camera commands}} won't work on it.
+The camera is local to the curator owner, so any changes to it has to be executed locally as well.
+
+'''Example:'''
+<sqf>
+curatorCamera setPos [position player select 0, position player select 1, 30];
+curatorCamera setVectorDirAndUp [[0, 1, -0.5], [0, 0, 1]];
+</sqf>
+
+You can also call [[BIS_fnc_setCuratorCamera]], which will also let you to transition the camera into desired position smoothly.
+
+
+== Attributes ==
+
+[[File:arma3_dlc_zeus_screenshot_2.jpg|thumb|Attribute window of Custom Objective module]]
+Attributes are specific settings available after double-clicking on an entity.
+
+You can set which attributes will be available for entities by ''Set Attributes'' modules or using [[BIS_fnc_setCuratorAttributes]]. By default, all attributes are shown. Modules are using custom attributes.
+
+Available attributes for each entity type are:
+* '''Object / Player'''
+** Skill
+** UnitPos
+** Rank
+** Damage
+** Fuel
+** Lock
+** RespawnVehicle
+** RespawnPosition
+** Exec ''(visible only when [[Arma 3: Debug Console|debug console]] is available)''
+* '''Group'''
+** GroupID
+** Behaviour
+** Formation
+** UnitPos
+* '''Marker'''
+** Text
+** Color
+* '''Waypoint'''
+** Behaviour
+** Formation
+
+
+== Icons ==
+
+Mission designer can show an icon visible only in curator interface
+* Use ''Add Icon'' module or [[BIS_fnc_addCuratorIcon]] and [[BIS_fnc_removeCuratorIcon]] to manage custom icons. Icon definition is the same as is used by [[drawIcon3D]] command
+* [[BIS_fnc_drawCuratorDeaths]] will show a skull icon on position where given unit died (useful for tracking where players are dying in PvP matches)
+* [[BIS_fnc_drawCuratorLocations]] shows names of nearby settlements, which can help with navigation on large terrains.
+* [[BIS_fnc_drawCuratorRespawnMarkers]] shows an icon on [[Arma_3_Respawn#Respawn_Types|respawn markers]]
+
+
+== Compositions ==
+
+Since {{arma3}} v2.06 is it possible to place custom compositions created in [[:Category:Eden Editor|Eden Editor]] in [[Arma 3 Zeus|Zeus]].
+In order to enable [[Arma 3 Zeus|Zeus]] to spawn custom compositions ''zeusCompositionScriptLevel'' needs to be defined in {{Link|Description.ext#zeusCompositionScriptLevel}} '''or''' [[Arma 3: Server Config File]].
+
+=== Notes ===
+
+* [[Arma 3: Simple Objects]] are not supported. They will be placed as normal entities
+* Compositions that use non-whitelisted/non-loaded mods are not shown in the compositions list
+* Some objects cannot be edited after spawning (USS Liberty/Freedom ships), as they only create a dummy object, that then spawns the ship parts afterward
+* Mines are not "supported". You can place them but not edit/remove them after placing
+
+=== Shortcuts ===
+
+* Press {{Controls|Ctrl}} to make the composition follow the terrain
+* Press {{Controls|Alt}} to place the composition at its original location where it was created in [[:Category:Eden Editor|Eden Editor]]
+
+
+== Misc ==
+
+* {{Link|http://temp.moricky.com/zeusLogo.psd|Zeus logo PSD source file}}
+
+
+{{GameCategory|arma3|Editing}}

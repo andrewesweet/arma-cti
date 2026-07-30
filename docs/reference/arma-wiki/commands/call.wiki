@@ -1,0 +1,115 @@
+// source: https://community.bistudio.com/wiki/call
+// revision: 373729 (2025-06-23T13:37:41Z)
+// export sha1: cmwyux8u1h3o8e1ecue2lqcc7heeg0y
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Operation Flashpoint version 1.85 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.85
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Program Flow
+
+|descr= Adds given set of compiled instructions to the current stack and waits for it to finish and return, provides an option to pass arguments to the executed [[Code]].
+See [[Scheduler]] to learn more about how the code is executed and behaves.
+
+|s1= [[call]] code
+
+|p1= code: [[Code]] - [[compile]]d instructions
+{{Feature|ofp|{{ofp}} takes [[String]].}}
+{{Feature|informative|This way of calling has access to its parent scope's <sqf inline>_this</sqf>, as all it does is creating a scope.}}
+
+|r1= [[Anything]] - the last value given in the function is returned - see the topic [[Function#Return_Values|Function]] for more information
+
+|s2= args [[call]] code
+
+|p21= args: [[Anything]] - arguments that are passed to the function in the <sqf inline>_this</sqf> variable.
+
+|p22= code: [[Code]] - [[compile]]d instructions
+{{Feature|ofp|{{ofp}} takes [[String]].}}
+
+|r2= [[Anything]] - the last value given in the function is returned. See the topic [[Function#Return_Values|Function]] for more information.
+
+|s3= hashMapObj [[call]] [methodName, arguments]
+
+|s3since= arma3 2.14
+
+|p41= hashMapObj: [[HashMap]] - the HashMap (not necessarily created through [[createHashMapObject]]) to call the method on
+
+|p42= methodName: [[String]] - the name of the method to call (the method must be defined in ''hashMapObj''; see [[createHashMapObject]])
+
+|p43= arguments: [[Anything]] - (Optional, default parent scope's {{hl|_this}}) arguments passed to the method in the <sqf inline>_this</sqf> variable
+
+|r3= [[Anything]] - the value returned by the ''methodName'' method
+
+|x1= <sqf>call { hint str 123; };</sqf>
+
+|x2= <sqf>123 call { hint str _this; };</sqf>
+
+|x3= <sqf>
+_sum = [1, 2] call { (_this select 0) + (_this select 1); };
+hint str _sum; // displays 3
+</sqf>
+
+|x4= <sqf>123 call compile "hint str _this;";</sqf>
+
+|x5= <sqf>_result = 123 call compile preprocessFileLineNumbers "myFile.sqf";</sqf>
+
+|x6= <sqf>
+private _hashMapObj = createHashMapObject [[
+	["MyMethod", { systemChat ("MyMethod arguments: " + str _this); }]
+]];
+
+_hashMapObj call ["MyMethod", ["Hello there", player, 123]]; // hints 'MyMethod arguments: ["Hello there", player, 123]'
+</sqf>
+
+|seealso= [[spawn]] [[execVM]] [[canSuspend]] [[compile]] [[compileScript]] [[preprocessFile]] [[remoteExec]] [[remoteExecCall]]
+}}
+
+{{Note
+|user= Leopard20
+|timestamp= 20211105105249
+|text= Contrary to a widespread misconception in the community, [[call]] doesn't necessarily execute the code in the [[Scheduler#Unscheduled_Environment|Unscheduled Environment]]. [[call|Call]] simply means: "execute the code here", just like how you execute a code using [[then]] (<sqf inline>if (true) then _code</sqf>) or [[do]]. Therefore it does not change the environment:
+{{{!}} class="wikitable"
+{{!}}-
+! ''[[call]]'' executed in environment: !! Resulting environment of the code:
+{{!}}-
+{{!}} Scheduled {{!}}{{!}} Scheduled
+{{!}}-
+{{!}} Unscheduled {{!}}{{!}} Unscheduled
+{{!}}}
+This means that doing something like this (which is misused very often):
+<sqf>
+private _handle = _params spawn MY_fnc_Function;
+waitUntil { scriptDone _handle };
+</sqf>
+
+is not needed, because a lot of performance would be wasted compared to simply doing this:
+<sqf>_params call MY_fnc_Function;</sqf>
+
+which does the exact same thing as the previous code, except no new ''"scheduler thread"'' is created and the function executes seamlessly, plus the added performance benefit as mentioned before.<br>
+If it is necessary to execute a code in the [[Scheduler#Unscheduled_Environment|Unscheduled Environment]], one can use [[isNil]] instead:
+<sqf>isNil {_params call MY_fnc_Function}; // MY_fnc_Function is always executed unscheduled, regardless of the current environment</sqf>
+
+or if there are no parameters, one can simply do this:
+<sqf>isNil MY_fnc_Function</sqf>
+}}

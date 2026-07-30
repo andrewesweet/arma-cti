@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/getPosWorld
+// revision: 377455 (2026-01-02T06:47:19Z)
+// export sha1: 8aazqgriqty7vav8xnh4i7bur6s9irw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|arg= global
+
+|gr1= Positions
+
+|descr= Returns the provided object's model centre position ([0,0,0]) in [[Position#PositionASL|PositionASL]], rather than the transformed [[boundingCenter]] or [[Oxygen_2_-_Manual#LandContact|LandContact]] vertices.
+
+|s1= [[getPosWorld]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Position#PositionASL|PositionASL]] - '''the model's centre'''
+
+|x1= <sqf>_obj setPosWorld getPosWorld _obj;</sqf>
+
+|x2= <sqf>ATLToASL (_groundObj modelToWorld [0,0,0]) isEqualTo getPosWorld _groundObj; // true</sqf>
+
+|x3= Wave height under a boat:
+<sqf>private _h = ((boat modelToWorld [0,0,0]) vectorDiff getPosWorld boat) select 2;</sqf>
+
+|seealso= [[getPosWorldVisual]] [[setPosWorld]] [[position]] [[getPosATL]] [[getPosASL]] [[getPosASLW]] [[visiblePosition]] [[visiblePositionASL]] [[getMarkerPos]] [[modelToWorld]]
+}}

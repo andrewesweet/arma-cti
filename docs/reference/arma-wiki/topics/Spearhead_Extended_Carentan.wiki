@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/Spearhead_Extended_Carentan
+// revision: 376018 (2025-07-21T15:56:58Z)
+// export sha1: bl6ibqtmyre9rmij0f65l6mg28rzmx3
+// categories: Category:SPEX - Spearhead Extended
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+[[File:spex_carentan_picturemap_ca.jpg|400px|right|Satellite Image|thumb]]
+
+This new terrain offers a highly detailed, 1:1 recreation of the Carentan area, bringing to life key locations that witnessed intense fighting during World War II. Iconic landmarks like the town of Carentan, Purple Heart Lane, Dead Man’s Corner, Saint-Côme-du-Mont, Hill 30, and the Barquette Lock have all been carefully crafted for realism.
+
+The Carentan terrain is filled with strategic fighting positions and fortified checkpoints. Winding rivers, challenging sunken fields, secluded farmsteads, lush orchards, and traditional villages span the landscape, accompanied by meticulously designed, period-specific buildings. Together, they deliver an immersive recreation of the Carentan region, down to its distinct landmarks.
+
+= Statistics =
+
+{| class="wikitable"
+|-
+| Size || 7.68 km x 7.68 km
+|-
+| Area || 58.98 km<sup>2</sup>
+|-
+| Coordinates || 49°18'33.5" North<br/>
+1°14'11.7" West
+|-
+| Object Count ||
+{{Columns|1|
+* '''TOTAL:''' 411734
+* BUILDING: 513
+* BUNKER: 1303
+* BUSH: 152147
+* CHURCH: 7
+* CROSS: 6
+* FENCE: 52048
+* FORTRESS: 59
+* FOUNTAIN: 30
+* HIDE: 77912
+* HOUSE: 2811
+* MAIN ROAD: 880
+* RAILWAY: 390
+* ROAD: 171
+* ROCK: 273
+* TRACK: 6563
+* TREE: 102365
+* VIEW-TOWER: 85
+* WALL: 14170
+* WATERTOWER: 1
+}}
+|}
+
+= High Resolution Map =
+
+A high resolution .svg can be downloaded {{Link/External|link=https://drive.google.com/drive/folders/19pnqIXrccqvsDbbo12YoWTfM1IMBStik?usp=sharing|text=here}}
+
+[[Category: SPEX - Spearhead Extended]]

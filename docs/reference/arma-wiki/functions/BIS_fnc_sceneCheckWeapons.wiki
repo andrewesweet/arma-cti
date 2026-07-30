@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sceneCheckWeapons
+// revision: 347989 (2023-11-08T10:17:48Z)
+// export sha1: emym3gbh50tzxmj8ntqmkuconu5iavv
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Scenes | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Scenes
+
+|descr= Checks if participants have not missing weapon or have not it selected before scene<br>Function works as a toggle:
+* 1st run of script: running in SETUP mode - sets correct weapons for scene
+* 2nd run of script: running in RESTORE mode - restore origin weapons(delete weapons after scene if character hadn't any)
+
+|s1= [participants] call [[BIS_fnc_sceneCheckWeapons]]
+
+|p1= participants: [[Array]] of [[Array]]s - (Optional, default <sqf inline>[[BIS_Cooper, "primary"],[BIS_Ohara, "primary"],[BIS_Rodriguez, "primary"],[BIS_Sykes, "primary"],[BIS_Miles, "primary"]]</sqf>) an array of arrays in format:<br>
+0: [[Object]] - Unit to check<br>
+1: [[String]] - Weapon type (primary, pistol)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+[
+	[BIS_Cooper, "primary"],
+	[BIS_Ohara, "primary"],
+	[BIS_Rodriguez, "primary"],
+	[BIS_Sykes, "primary"],
+	[BIS_Miles, "primary"]
+] call BIS_fnc_sceneCheckWeapons;
+</sqf>
+
+|seealso= [[BIS_fnc_sceneSetObjects]] [[BIS_fnc_objectsGrabber]] [[BIS_fnc_objectsMapper]]
+}}

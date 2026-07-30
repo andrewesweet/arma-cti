@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/visiblePositionASL
+// revision: 377444 (2026-01-02T06:46:56Z)
+// export sha1: a3i92pkz931z17y8qntzg7vbosyzefa
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Command Group: Render Time Scope | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Positions
+|gr2= Render Time Scope
+
+|descr= Returns an object's rendered [[Position#PositionASL|ASL position]] (z value above sea level) in render time scope.
+
+|s1= [[visiblePositionASL]] object
+
+|p1= object: [[Object]] - name of the object
+
+|r1= [[Position#PositionASL|PositionASL]]
+
+|x1= <sqf>_playerRenderedPosASL = visiblePositionASL player;</sqf>
+
+|seealso= [[getPosVisual]] [[getPosASLVisual]] [[getPosATLVisual]] [[getPosWorldVisual]] [[visiblePosition]] [[position]] [[getPos]] [[getPosATL]] [[getPosASL]] [[getPosASLW]]
+}}

@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/progressLoadingScreen
+// revision: 376972 (2026-01-01T06:03:03Z)
+// export sha1: 5gxjqd65z1yv7qh1xptmo1ss4hy24e7
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|eff= local
+
+|gr1= System
+
+|descr= If loading screen is shown, sets progress bar to the given value (interval is from 0 to 1]).
+{{Feature|arma3|The loading screen can be force-ended with the {{Link|Arma 3: Cheats#ENDLOAD|ENDLOAD cheat code}}.}}
+
+|s1= [[progressLoadingScreen]] progress
+
+|p1= progress: [[Number]] in range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+startLoadingScreen ["Loading My Mission"];
+// 
+// batch of code
+// 
+progressLoadingScreen 0.25;
+// 
+// batch of code
+// 
+progressLoadingScreen 0.50;
+// 
+// batch of code
+// 
+progressLoadingScreen 0.95;
+// 
+// batch of code
+// 
+endLoadingScreen;
+</sqf>
+
+|seealso= [[startLoadingScreen]] [[endLoadingScreen]] [[BIS_fnc_progressLoadingScreen]]
+}}

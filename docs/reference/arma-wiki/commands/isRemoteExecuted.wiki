@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/isRemoteExecuted
+// revision: 365039 (2024-07-14T13:22:37Z)
+// export sha1: 6ixwsgbzi8dblg4cp5tys8ihftistde
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Remote Execution | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 1.66 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.66
+
+|gr1= Multiplayer
+
+|descr= Returns [[true]] if the code context is being remote executed by [[remoteExec]] or [[remoteExecCall]]. In SP always returns [[false]]. See also [[isRemoteExecutedJIP]]:
+:{{{!}} class="wikitable align-center align-left-col-1 align-center-row-1"
+! rowspan="2" {{!}} command
+! rowspan="2" {{!}} Single Player
+! colspan="2" {{!}} Multiplayer
+{{!}}-
+! Direct remoteExec
+! JIP remoteExec
+{{!}}-
+{{!}} [[isRemoteExecuted]]
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|checked}}
+{{!}} {{Icon|checked}}
+{{!}}-
+{{!}} [[isRemoteExecutedJIP]]
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|unchecked}}
+{{!}} {{Icon|checked}}
+{{!}}}
+
+|s1= [[isRemoteExecuted]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _remoteExecuted = isRemoteExecuted;</sqf>
+
+|seealso= [[isRemoteExecutedJIP]] [[remoteExec]] [[remoteExecCall]] [[canSuspend]] [[remoteExecutedOwner]] [[isUIContext]] [[isGamePaused]] [[isGameFocused]] [[remoteExecutedJIPID]]
+}}
+
+
+{{GameCategory|arma3|Remote Execution}}
+
+{{Note
+|user= Demellion
+|timestamp= 20170911111600
+|text= When [[remoteExec]]/[[remoteExecCall]] is called from a headless client to client, this will always return as false.<br> 
+This effect also occurs with [[remoteExecutedOwner]] - it will return always return 0 from a headless client.
+}}

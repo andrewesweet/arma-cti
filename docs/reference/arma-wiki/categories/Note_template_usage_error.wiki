@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Note_template_usage_error
+// revision: 353732 (2024-03-22T10:26:15Z)
+// export sha1: b2q4v0nbo1soc0fp0epkjbv59nb2vwv
+// Vendored snapshot. Do not edit — re-export instead.
+
+__HIDDENCAT__
+[[Category:Template usage error]]

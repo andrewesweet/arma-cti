@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/Template:codecomment
+// revision: 323137 (2022-06-30T15:43:43Z)
+// export sha1: 1c0wnr91jthajqtyqmrb7it5x7ez7s1
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><span class="code-comment">{{{1|-no comment defined-{{TemplateCase||[[Category:codecomment template usage error]]}}}}}</span></includeonly><noinclude>{{Doc/Template
+|descr= Displays a colour-coded code comment. See {{Template|cc}} for single-line comments. It also adds the page to the [[:Category:codecomment template usage error|codecomment template usage error]] category on usage error.
+
+|example1= <nowiki>{{codecomment}}</nowiki>
+|result1= {{codecomment}}
+
+|example2= <nowiki>{{codecomment|example comment}}</nowiki>
+|result2= {{codecomment|example comment}}
+
+|example3= <div style="white-space: pre"><nowiki>{{codecomment|/*
+	example comment
+<nowiki/>*/}}</nowiki></div>
+|result3= <div style="white-space: pre">
+{{codecomment|/*
+	example comment
+<nowiki/>*/}}
+</div>
+}}</noinclude>

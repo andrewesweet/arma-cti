@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/assignedItems
+// revision: 378170 (2026-03-03T07:06:02Z)
+// export sha1: ciqgmhwa120ge80yksrn8ee6pbntlsa
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Unit Inventory
+
+|descr= Get array with assigned items. The resulting [[Array]] order is not guaranteed.
+To check availability of a particular slot item use [[getSlotItemName]].
+To return stored items see [[items]] and [[itemsWithMagazines]]. 
+
+|s1= [[assignedItems]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[String]]s
+
+|s2= [[assignedItems]] [unit, allItems, includeBinocs]
+|s2since= arma3 2.14
+
+|p21= unit: [[Object]] - soldier
+
+|p22= allItems: [[Boolean]] - [[true]] to include all slot items, [[false]] exclude goggles and headgear
+
+|p23= includeBinocs: [[Boolean]] - [[true]] to include binoculars (which is a weapon), [[false]] to exclude it
+
+|r2= [[Array]] of [[String]]s
+
+|x1= <sqf>hint str assignedItems player;</sqf>
+
+|seealso= [[getSlotItemName]] [[assignItem]] [[unassignItem]] [[linkItem]] [[unlinkItem]] [[addItem]] [[removeItem]] [[removeAllAssignedItems]] [[items]] [[itemsWithMagazines]] [[backpacks]]
+}}
+
+{{Note
+|user= Druid
+|timestamp= 20130618142600
+|text= Arma 3, version 0.70 - headgear and goggles are not present in returned array now.
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20130822175200
+|text= For head gear use [[headgear]], [[addHeadgear]] and [[removeHeadgear]]. For goggles use [[goggles]], [[addGoggles]] and [[removeGoggles]]
+}}

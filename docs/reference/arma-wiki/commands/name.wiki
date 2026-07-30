@@ -1,0 +1,102 @@
+// source: https://community.bistudio.com/wiki/name
+// revision: 373980 (2025-07-10T15:43:22Z)
+// export sha1: k58l2hppim8vidc2fybubg17qyxjyjv
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Command Group: Unit Identity | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Unit Identity
+
+|gr2= Locations
+
+|descr= When argument is [[Object]], the command returns the name given to a unit using the [[setIdentity]] instruction or selected randomly by the game engine if [[setIdentity]] has not been used on the unit.
+If used on vehicle, name of first crew member (in order commander, driver, gunner). If used on an object, "Error: No unit" is being returned.
+
+|mp=  [[name]] returns [[profileName]], eventually suffixed by the server in the event of identical names, e.g {{hl|username}}/{{hl|username (2)}}.
+
+|pr= {{Feature|important|If the provided unit is dead and has been removed from its group, its identity has then been purged to save memory and using [[name]] on it will result in a logged error.}}
+
+|s1= [[name]] object
+
+|p1= object: [[Object]]
+
+|r1= [[String]]
+
+|s2= [[name]] location
+
+|s2since= arma1 1.08
+
+|p21= location: [[Location]]
+
+|r2= [[String]] - the location's ''name''. To get its textual value, use [[text]] (see {{Link|#Example 3}})
+
+|s3= [[name]] namespace
+|s3since= arma3 2.18
+
+|p41= namespace: [[Namespace]]
+
+|r3= [[String]] - namespace's ''name''. Possible values: 
+
+* "mission" - for [[missionNamespace]]
+* "profile" - for [[profileNamespace]]
+* "ui" - for [[uiNamespace]]
+* "parsing" - for [[parsingNamespace]]
+* "local" - for [[localNamespace]]
+* "missionprofile" - for [[missionProfileNamespace]]
+* "server" - for [[serverNamespace]]
+* "" - for some unnamed namespaces like temporary or server config for example.
+* "null" - null namespace (this should never happen)
+
+|s4= [[name]] scriptHandle
+|s4since= arma3 2.22
+|p61= scriptHandle: [[Script Handle]]
+|r4= [[String]] - The name given to the script via [[scriptName]] or the name passed to [[spawn]] when creating a [[Script_Handle#Promise_Handles|"Empty Handle"]]
+
+
+|x1= <sqf>_name = name player;</sqf>
+
+|x2= <sqf>_locationName = name myLocation;</sqf>
+
+|x3= <sqf>
+name nearestLocation [position player, "Hill"]; // ""
+text nearestLocation [position player, "Hill"]; // "Lesnoy Khrebet"
+</sqf>
+
+|x4= <sqf>_currentNamespace = name currentNamespace;</sqf>
+
+|seealso= [[profileName]] [[setName]] [[setIdentity]] [[nameSound]] [[setNameSound]] [[createLocation]] [[deleteLocation]] [[locationPosition]] [[nearestLocation]] [[nearestLocations]] [[nearestLocationWithDubbing]]
+}}
+
+{{Note
+|user= Kju
+|timestamp= 20170130194200
+|text= [[Location]] variant appears to be only for the 3d editor.
+}}
+
+{{Note
+|user= Alef
+|timestamp= 20090414014100
+|text= Will return {{hl|Error: No vehicle}} for [[Multiplayer Scripting#Join In Progress|JIP]] players in [[init.sqf]], if no [[sleep]] were performed.
+}}

@@ -1,0 +1,94 @@
+// source: https://community.bistudio.com/wiki/TexConvert.cfg
+// revision: 157093 (2020-09-08T08:21:46Z)
+// export sha1: pvl9ifekyeo0xkcx6qwydn6zyd7o680
+// Vendored snapshot. Do not edit — re-export instead.
+
+TexConvert.cfg is a configuration file for TexView/ImageToPAA which defines parameters to be used for packing PAA files.
+
+== Config values ==
+
+
+==== name ====
+<syntaxhighlight lang="cpp">name = "*_co.*";</syntaxhighlight>
+This is a wildcard pattern which matches the input filename, it is used to detect which config class should be used.
+
+==== format ====
+<syntaxhighlight lang="cpp">format = "DXT5";</syntaxhighlight>
+This is the target format of the output PAA file.
+Possible values are:
+* Default //auto detect
+* ARGB1555
+* ARGB4444
+* ARGB8888
+* AI88
+* DXT1
+* DXT2
+* DXT3
+* DXT4
+* DXT5
+* P8
+
+==== limitSize ====
+<syntaxhighlight lang="cpp">limitSize = 4096; // Default: 4096</syntaxhighlight>
+This sets the maximum width/height for the resulting texture. Default value is 4096. Setting it to higher allows TexConvert to create up to 32k resolution paa files (Which Arma can't load).
+
+==== enableDXT ====
+<syntaxhighlight lang="cpp">enableDXT = 1; // Default: 1</syntaxhighlight>
+Sets whether DXT compression is used. Not sure what the difference between that, and format DXT is.
+
+==== dynRange ====
+<syntaxhighlight lang="cpp">dynRange = 1; // Default: 1</syntaxhighlight>
+Enabled dynamic range "compression"
+
+==== mipmapFilter ====
+<syntaxhighlight lang="cpp">mipmapFilter = "Default"; // Default: "Default"</syntaxhighlight>
+Sets the filter to be used for down-sizing image into lower mip levels.
+
+* Default,                
+* FadeOut //all components get closer to 0.5/128 the lower the mip level gets                
+* NormalizeNormalMap
+* NormalizeNormalMapFade //Fades to surface normal with distance, like FadeOut
+* NormalizeNormalMapAlpha //Same as NormalizeNormalMap
+* AlphaNoise //Replaces alpha channel with perlin noise and flattens the histogram
+* NormalizeNormalMapNoise //NormalizeNormalMap + AlphaNoise
+* AddAlphaNoise //Adds alpha noise. res = (source + perlin) * 0.5 * (source > 0 ? 1.0 : 0.0)
+
+==== errorMetrics ====
+<syntaxhighlight lang="cpp">errorMetrics= "Eye"; // Default: "Eye"</syntaxhighlight>
+Configures color error coefficients for DXT compression
+* Eye
+* Distance //intended for XYZ normal map
+* DistanceXY //intended for XY normal map
+
+==== channelSwizzleA ====
+<syntaxhighlight lang="cpp">channelSwizzleA = "A"; // Default: "A"</syntaxhighlight>
+Defines which input channel, becomes output alpha channel.
+Expression "1-A" can be used to store inverted channel.
+
+==== channelSwizzleR ====
+<syntaxhighlight lang="cpp">channelSwizzleR = "R"; // Default: "R"</syntaxhighlight>
+Defines which input channel, becomes output red channel.
+Expression "1-BR" can be used to store inverted channel.
+
+==== channelSwizzleG ====
+<syntaxhighlight lang="cpp">channelSwizzleG = "G"; // Default: "G"</syntaxhighlight>
+Defines which input channel, becomes output green channel.
+Expression "1-G" can be used to store inverted channel.
+
+==== channelSwizzleB ====
+<syntaxhighlight lang="cpp">channelSwizzleB = "B"; // Default: "B"</syntaxhighlight>
+Defines which input channel, becomes output blue channel.
+Expression "1-B" can be used to store inverted channel.
+
+==== virtualSwizzle ====
+<syntaxhighlight lang="cpp">virtualSwizzle = 1; // Default: 1</syntaxhighlight>
+Store information about what swizzling was done inside the result paa as a tag.
+
+==== autoreduce ====
+<syntaxhighlight lang="cpp">autoreduce = 0; // Default: 0</syntaxhighlight>
+Check if texture is uniform color, and if so automatically only output a 4x4, single-mip paa.
+
+==== dithering ====
+<syntaxhighlight lang="cpp">dithering = 0; // Default: 0</syntaxhighlight>
+Enables Dithering: https://opengameart.org/content/chapter-7-textures-and-dithering
+Using Floyd Steinberg dithering.

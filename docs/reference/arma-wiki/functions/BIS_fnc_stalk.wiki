@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_stalk
+// revision: 327438 (2022-07-12T22:12:09Z)
+// export sha1: 4o5n5nvaplsahtc7160un0mxjvucri8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Combat | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|gr2= Combat
+
+|descr= Continuously set WP of one group to a different group to hunt it. It does not change the group's behaviour.<br>
+Script terminates if one of the groups is eliminated or if the optional condition is activated.
+
+|s1= [stalker, stalked, refresh, radius, endCondition, endDestination] spawn [[BIS_fnc_stalk]]
+
+|p1= stalker: [[Group]] - the group that will move towards the other
+
+|p2= stalked: [[Group]] - the group that will be followed
+
+|p3= refresh: [[Number]] - (Optional, default 10, minimum 5) time between waypoint updates
+
+|p4= radius: [[Number]] - (Optional, default 0, minimum 0) waypoint "precision"
+
+|p5= endCondition: [[Code]] - (Optional, default {[[false]]}) condition that if true stops ''stalker'' to follow ''stalked''
+
+|p6= endDestination: [[String]] or [[Position]] or [[Object]] or [[Number]] - (Optional, default 0) destination ''stalker'' will go after ''endCondition'' is met (or ''stalked'' is killed)
+* [[String]] - destination marker name
+* [[Position]] - destination
+* [[Object]] - destination
+* [[Number]]
+** 0: return to original group waypoints
+** 1: search around their current stalking position, in a 50m radius
+** 2: return to the original position before stalking
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>private _stalking = [BIS_grpStalkers, BIS_grpPlayer] spawn BIS_fnc_stalk;</sqf>
+
+|x2= <sqf>private _stalking = [grp1, group player, nil, nil, { player distance BIS_Heli < 100 }, "BIS_mrkRetreatMarker"] spawn BIS_fnc_stalk;</sqf>
+
+|x3= <sqf>private _stalking = [BIS_grpStalkers, BIS_grpPlayer, 20, 10, { BIS_Return }, 1] spawn BIS_fnc_stalk;</sqf>
+
+|x4= <sqf>private _stalking = [BIS_grpStalkers, BIS_grpPlayer, 5, 0, { dayTime > 20 }, [3600,600,0]] spawn BIS_fnc_stalk;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_spawnGroup]]
+}}

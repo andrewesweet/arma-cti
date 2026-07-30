@@ -1,0 +1,124 @@
+// source: https://community.bistudio.com/wiki/faction
+// revision: 370764 (2025-02-10T08:05:51Z)
+// export sha1: q3yxoy25cqvi7dccgaxtib995om3o2p
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Sides | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|gr2= Sides
+
+|descr= Gets unit faction. Factions were introduced in {{arma2}} and are defined under ''CfgFactionClasses''.
+
+{{{!}} class="wikitable align-center-col-1 valign-top-col-2 valign-top-col-3 valign-top-col-4" style{{=}}"font-size: 0.9em; white-space: nowrap"
+! Side
+! {{GVI|arma2|1.00}}
+! {{GVI|arma2oa|1.50}}
+! {{GVI|arma3|1.96}}
+
+{{!}}-
+{{!}} [[west]]/[[blufor]]
+
+{{!}} <!-- Arma 2 -->
+* {{hl|USMC}}
+* {{hl|CDF}}
+
+{{!}} <!-- Arma 2 OA -->
+* {{hl|BIS_US}}
+* {{hl|BIS_CZ}}
+* {{hl|BIS_GER}}
+* {{hl|BIS_BAF}} (BAF DLC)
+
+{{!}} <!-- Arma 3 -->
+* {{hl|BLU_F}} (NATO)
+* {{hl|BLU_G_F}} (FIA)
+* {{hl|BLU_T_F}} (Pacific NATO, Apex Expansion)
+* {{hl|BLU_CTRG_F}} (Pacific CTRG, Apex Expansion)
+* {{hl|BLU_GEN_F}} (Gendarmerie, Apex Expansion)
+* {{hl|BLU_W_F}} (Woodland NATO, Contact Expansion)
+
+{{!}}-
+{{!}} [[east]]/[[opfor]]
+
+{{!}} <!-- Arma 2 -->
+* {{hl|INS}} (ChDKZ)
+* {{hl|RU}} (Russia)
+
+{{!}} <!-- Arma 2 OA -->
+* {{hl|BIS_TK}} (Takistan army)
+* {{hl|BIS_TK_INS}} (TK insurgents)
+
+{{!}} <!-- Arma 3 -->
+* {{hl|OPF_F}} (Iranian CSAT)
+* {{hl|OPF_G_F}} (FIA)
+* {{hl|OPF_T_F}} (Chinese CSAT, Apex Expansion)
+* {{hl|OPF_R_F}} (Spetznatz, Contact Expansion)
+
+{{!}}-
+{{!}} [[resistance]]/<br>[[independent]]
+
+{{!}} <!-- Arma 2 -->
+* {{hl|GUE}} (Guerilla)
+
+{{!}} <!-- Arma 2 OA -->
+* {{hl|BIS_TK_GUE}}
+* {{hl|BIS_UN}} (United Nations)
+* {{hl|PMC_BAF}} (PMC DLC)
+
+{{!}} <!-- Arma 3 -->
+* {{hl|IND_F}} (AAF)
+* {{hl|IND_G_F}} (FIA)
+* {{hl|IND_C_F}} (Syndikat, Apex Expansion)
+* {{hl|IND_E_F}} (LDF, Contact Expansion)
+* {{hl|IND_L_F}} (Looters, Contact Expansion)
+
+{{!}}-
+{{!}} [[civilian]]
+
+{{!}} <!-- Arma 2 -->
+* {{hl|CIV}}
+* {{hl|CIV_RU}}
+
+{{!}} <!-- Arma 2 OA -->
+* {{hl|BIS_TK_CIV}}
+* {{hl|BIS_CIV_special}}
+
+{{!}} <!-- Arma 3 -->
+* {{hl|CIV_F}}
+* {{hl|CIV_IDAP_F}} (Laws of War DLC)
+{{!}}}
+
+{{Feature|informative|If a unit's faction is not defined in its config, an empty string is returned.}}
+
+|s1= [[faction]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[String]]
+
+|x1= <sqf>private _playerFaction = faction player;</sqf>
+
+|seealso= [[side]] [[Side]]
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20100319165600
+|text= Faction behaves slightly differently to [[side]]. Side can refer to the pilot or commander of a vehicle, but faction never changes. It always returns the 'country of manufacture'.
+}}

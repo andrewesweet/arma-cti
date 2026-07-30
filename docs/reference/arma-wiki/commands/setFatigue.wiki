@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/setFatigue
+// revision: 310086 (2022-05-05T12:25:11Z)
+// export sha1: 7iu95tf3lg8kala2yzkcazvbywluzyq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Stamina System
+
+|descr= Sets the person's fatigue, from 0 to 1.
+
+|s1= unit [[setFatigue]] value
+
+|p1= unit: [[Object]]
+
+|p2= value: [[Number]] - in 0..1 ''available'' fatigue range: 0 is fully energised, 1 is fully exhausted
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setFatigue 1;</sqf>
+
+|seealso= [[Arma 3: Stamina]] [[getFatigue]] [[enableFatigue]] [[setStamina]] [[getStamina]] [[enableStamina]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 05 April, 2014</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+[[setFatigue]] will affect fatigue of a local unit only. If you execute it on remote unit, the [[getFatigue]] value will only change locally with no effect on remote unit. Scripted [[setFatigue]] changes don't broadcast at all. In short, use [[setFatigue]] on local units only.
+</dd>
+
+</dl>

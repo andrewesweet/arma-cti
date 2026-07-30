@@ -1,0 +1,105 @@
+// source: https://community.bistudio.com/wiki/calculatePath
+// revision: 376951 (2026-01-01T04:02:40Z)
+// export sha1: 0uhaij7d8m9hlg2qbo47tnws6uy7sh1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Object Manipulation
+
+|descr= Spawns an agent that will execute an AI path calculation and fire the {{hl|"PathCalculated"}} [[Arma 3: Event Handlers#PathCalculated | event handler]].
+The vehicle type to simulate could be one of the following presets:
+{{Columns|2|
+* {{hl|"man"}}: C_man_1
+* {{hl|"car"}}: C_Offroad_01_F
+* {{hl|"tank"}}: B_MBT_01_cannon_F
+* {{hl|"wheeled_APC"}}: B_APC_Tracked_01_rcws_F
+* {{hl|"boat"}}: C_Rubberboat
+* {{hl|"plane"}}: B_Plane_CAS_01_dynamicLoadout_F
+* {{hl|"helicopter"}}: B_Heli_Light_01_F
+}}
+
+If the given vehicle type is not one of the above presets, the exact given type is used.
+{{Feature|important|
+In order to guarantee that the event handler is added to the result of this command before the path is calculated, use [[isNil]] to run the code in an [[Scheduler#Unscheduled Environment|Unscheduled Environment]]:
+<sqf>isNil { calculatePath ["man", "safe", _startPos, _endPos] addEventHandler ["PathCalculated", { hint str _this }] };</sqf>
+}}
+
+{{Feature|informative|
+If an exact path is desired, it is recommended to avoid this command and simply use the [[Arma_3:_Event_Handlers#PathCalculated|PathCalculated]] event handler.
+Paths to long distances are typically calculated in segments. This command only gives the first calculated segment.
+}}
+
+|pr= For some unknown reason, the "PathCalculated" Event Handler is fired twice, first with the calculated path and second with an array consisting of 2 elements, which are identical and are equal to the end point.
+See '''{{Link|#Examples|Example 3 &amp; 4}}''' for a workaround.
+
+|s1= [[calculatePath]] [type, behaviour, from, to]
+
+|p1= type: [[String]] - vehicle type to simulate (see description)
+
+|p2= behaviour: [[String]] - AI [[behaviour]], one of "CARELESS", "SAFE", "AWARE", "COMBAT" or "STEALTH"
+
+|p3= from: [[Array]] - start position in format [x,y,z]
+
+|p4= to: [[Array]] - end position in format [x,y,z]
+
+|r1= [[Object]] - the agent to [[addEventHandler|add]] the [[Arma 3: Event Handlers#PathCalculated|{{hl|"PathCalculated"}} Event Handler]] to.
+
+|x1= <sqf>calculatePath ["car", "safe", [2150.67,5778.19,0], [2184.11,5802.28,0]];</sqf>
+
+|x2= Draws the path from South West to North East of Agia Marina:
+<sqf>
+(calculatePath ["man", "safe", [2832.9,5927.79,0], [3107.46,6036.61,0]]) addEventHandler ["PathCalculated", {
+	{
+		private _marker = createMarker ["marker" + str _forEachIndex, _x];
+		_marker setMarkerType "mil_dot";
+		_marker setMarkerText str _forEachIndex;
+	} forEach (_this select 1);
+}];
+</sqf>
+
+|x3= Alternative usage of [[calculatePath]] functionality that is free of the double execution bug (and calculatePath command):
+<sqf>
+private _agent = createAgent [typeOf player, position player, [], 0, "NONE"];
+_agent addEventHandler ["PathCalculated",
+{ 
+	{ 
+		private _marker = createMarker ["marker" + str _forEachIndex, _x];
+		_marker setMarkerType "mil_dot";
+		_marker setMarkerText str _forEachIndex;
+	} 
+	forEach (_this select 1);
+}];
+_agent setDestination [player getRelPos [500, 0], "LEADER PLANNED", true];
+</sqf>
+
+|x4= Same as above but for a vehicle:
+<sqf>
+private _agent = createAgent [typeOf player, position player, [], 0, "NONE"];
+private _car = "B_Quadbike_01_F" createVehicle position player;
+_agent moveInDriver _car;
+_agent addEventHandler ["PathCalculated",
+{ 
+	{ 
+		private _marker = createMarker ["marker" + str _forEachIndex, _x];
+		_marker setMarkerType "mil_dot";
+		_marker setMarkerText str _forEachIndex;
+	} 
+	forEach (_this select 1);
+}];
+_agent setDestination [player getRelPos [500, 0], "LEADER PLANNED", true];
+</sqf>
+
+|seealso= [[setDriveOnPath]] [[setDestination]]
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20190606102800
+|text= When using this command to get the predicted path of vehicles driving and having them stay on roads (not go cross country) is important,
+the best vehicle to use is "wheeled_APC" and careless [[behaviour]].
+}}

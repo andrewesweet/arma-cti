@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/setHumidity
+// revision: 309121 (2022-05-03T10:45:24Z)
+// export sha1: oqsakpm17nqrvlrt7s8yehr9lh9qss1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+|gr1= Environment
+
+|eff= local
+
+|descr= Sets surface humidity. Affects how footsteps sound (dry / wet). [[humidity]] is increasing when raining and decreasing when not raining. Exception is if the rain is set with 'snow' flag, then [[humidity]] is not updated.
+
+|s1= [[setHumidity]] humidity
+
+|p1= humidity: [[Number]] - surface humidity in the range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setHumidity 1;</sqf>
+
+|seealso= [[humidity]] [[setRain]]
+}}

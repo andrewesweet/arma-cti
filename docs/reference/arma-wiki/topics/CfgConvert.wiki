@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/CfgConvert
+// revision: 349473 (2023-11-08T16:49:19Z)
+// export sha1: 22nfv58pv2on45z07y8z1ds2gn3ov2a
+// categories: Category:ArmA: Armed Assault: Official Tools | Category:Arma 2: Official Tools | Category:Arma 3: Official Tools | Category:DayZ: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= [[:Category:ArmA: Armed Assault|{{arma1}}]], [[:Category: Arma 2| Arma 2]], [[:Category: Arma 3|Arma 3]], [[:Category: DayZ|DayZ]]
+
+|DOWNLOAD= Part of {{Link|link= http://store.steampowered.com/app/233800/|text= Arma 3}} and {{Link|link= https://store.steampowered.com/app/830640/DayZ_Tools/|text= DayZ}} Tools packages on Steam
+
+|DESCRIPTION= CfgConvert is a command line tool for converting configs between text and binary representation.<br>
+If you use the interface (cfgConvertGUI), based on the input file, it detects if it needs to `binarize` or `unbinarize`.
+
+|COMMAND=
+cfgConvert.exe <nowiki>[-bin | -txt | -xml | -q | -test] {[-dst <destination>] <source>}</nowiki><br>
+cfgConvertGUI.exe
+
+|OPTIONS= <nowiki/>
+* '''-bin''' - converts input to binarised config
+* '''-txt''' - converts input to unbinarised config
+* '''-xml''' - converts input to XML format
+* '''-q''' - quiet mode, does not display errors
+* '''-test''' - test mode, only loads the file and shows potential errors without writing anything
+* '''-dst''' - defines the output destination
+* '''-pcpp''' - outputs a preprocessed version of the input file
+
+|EXAMPLE=
+<code style="display: block">{{cc|CPP to Bin}}
+cfgConvert.exe {{Color|darkorange|-bin}} {{Color|green|-dst}} p:\addon\config.bin {{Color|purple|p:\addon\config.cpp}}
+
+{{cc|Bin to CPP}}
+cfgConvert.exe {{Color|darkorange|-txt}} {{Color|green|-dst}} p:\addon\config.cpp {{Color|purple|p:\addon\config.bin}}
+
+{{cc|Binarized SQM to unbinarized SQM}}
+cfgConvert.exe {{Color|darkorange|-txt}} {{Color|green|-dst}} p:\Arma3\missions\myMission\mission_dest.sqm {{Color|purple|p:\Arma3\missions\myMission\mission_source.sqm}}
+</code>
+
+|NOTES=
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= {{Link|https://github.com/irvnriir/ArmaEssentials|BinToCppAll.bat}} for converting all files in a folder and subfolders.
+
+}}
+
+{{GameCategory|arma1|Official Tools}}
+{{GameCategory|arma2|Official Tools}}
+{{GameCategory|arma3|Official Tools}}
+{{GameCategory|dayz|Official Tools}}

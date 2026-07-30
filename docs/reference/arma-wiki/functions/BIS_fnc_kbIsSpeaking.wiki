@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_kbIsSpeaking
+// revision: 323974 (2022-07-01T11:58:30Z)
+// export sha1: 1rkue1030mjkdyr2a855j6ha4n9mn5u
+// categories: Category:Arma 3: Functions | Category:Function Group: Conversations | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Conversations
+
+|descr= Check if speaker is locked for different conversation.
+
+|s1= unit call [[BIS_fnc_kbIsSpeaking]]
+
+|p1= unit: [[Object]] - the speaker
+
+|r1= [[Boolean]]
+
+|x1= <sqf>player call BIS_fnc_kbIsSpeaking;</sqf>
+
+|seealso= [[Conversations]] [[BIS_fnc_kbTell]] [[kbWasSaid]]
+}}

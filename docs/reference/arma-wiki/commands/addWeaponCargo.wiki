@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/addWeaponCargo
+// revision: 376383 (2025-10-09T02:14:03Z)
+// export sha1: dvvy7lcwmroya68l0ez331fab5ix7iu
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Containers
+
+|arg= global
+
+|eff= local
+
+|descr= Add weapons to the cargo space of vehicles, which can be taken out by infantry units. Ignores available cargo space.
+{{Feature|arma3|In {{arma3}}, arguments for this command must be local ({{Icon|localArgument|32}}). For global variant see [[addWeaponCargoGlobal]].}}
+
+|s1= vehicleName [[addWeaponCargo]] [weaponName, count]
+
+|p1= vehicleName: [[Object]] - vehicle to which add the weapons
+
+|p2= weaponName: [[String]] - weapon name. See [[:Category:Weapons]] for reference about possible values
+
+|p3= count: [[Number]] - number of weapons to add. {{GVI|arma3|2.14|size= 0.75}} negative count will remove weapons.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_truck addWeaponCargo ["M16", 5];</sqf>
+
+|seealso= [[addWeaponCargoGlobal]] [[addMagazineCargo]] [[addMagazineCargoGlobal]] [[clearMagazineCargo]] [[clearWeaponCargo]] [[getWeaponCargo]] [[addItemCargo]] [[addItemCargoGlobal]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[addWeaponWithAttachmentsCargo]]
+}}
+
+{{Note
+|user= Galzohar
+|timestamp= 20100710110200
+|text= When players add/remove gear directly via the gear menu that gear is synchronized across the network. Since this command is local only, using it during a mission can cause all sorts of weird issues. To get proper synchronization use this command in the object's init line or in a script called from its init line with a '''call compile preprocessFile''' command (and ''not'' '''execVM''').
+}}

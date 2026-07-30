@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/elevatePeriscope
+// revision: 377904 (2026-01-05T18:01:10Z)
+// export sha1: gg7rtogiin6kzy4ipcidyv26y5zktvv
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Object Manipulation
+
+|gr2= Animations
+
+|descr= Elevates periscope of a vehicle. Vehicles in Arma 3 which are compatible with this tech are Strider, remote laser designators, the robot arm on Eddie, etc.
+Please note that SDV submarine has a different periscope, which is just an animated selection and could be raised and lowered with [[animate]] command.
+{{Feature|informative|
+* a user can immediately override any elevation in progress by using assigned keyboard keys. To block user input see the ''blockUserInput'' parameter.
+* a [[Arma 3: Event Handlers#PeriscopeElevationChanged|PeriscopeElevationChanged]] entity event handler is also provided.
+}}
+
+|s1= vehicle [[elevatePeriscope]] [turret, elevation, speed, blockUserInput]
+
+|p1= vehicle: [[Object]] - vehicle with periscope tech
+
+|p2= turret: [[Turret Path]] - turret on which periscope is located
+
+|p3= elevation: [[Number]] - elevation range 0..1
+
+|p4= speed: [[Number]] or [[Boolean]] - (Optional, default -1) config anim speed multiplier, 2 - twice as fast, 0.5 - twice as slow, etc. -1 - default config speed. If [[true]] is used as param, the change in elevation is almost instant
+
+|p5= blockUserInput: [[Boolean]] - (Optional, default [[false]]) [[true]] to disable user ability to control periscope with keyboard. The change is persistent unless set to [[false]] again
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_eddie elevatePeriscope [[0], 0.75, 0.1];</sqf>
+
+|seealso= [[periscopeElevation]] [[animate]] [[Arma 3: Event Handlers#PeriscopeElevationChanged|PeriscopeElevationChanged Event Handler]]
+}}

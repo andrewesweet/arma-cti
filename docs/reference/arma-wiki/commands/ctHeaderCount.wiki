@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/ctHeaderCount
+// revision: 309979 (2022-05-05T12:17:02Z)
+// export sha1: 197dm9oqvzk1k5u2az27c6csoslvrjx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Controls Table | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+|arg= local
+|eff= local
+
+|gr1= GUI Control - Controls Table
+
+|descr= Returns number of headers (rows not included) in the RscControlsTable.
+
+|s1= [[ctHeaderCount]] ctrl
+
+|p1= ctrl: [[Control]]
+
+|r1= [[Number]]
+
+|x1= <sqf>ctHeaderCount _control;</sqf>
+
+|seealso= [[ctAddHeader]] [[ctAddRow]] [[ctClear]] [[ctCurSel]] [[ctSetCurSel]] [[ctRowControls]] [[ctHeaderControls]] [[ctRowCount]] [[ctSetValue]] [[ctValue]] [[ctSetData]] [[ctData]] [[ctFindRowHeader]] [[ctFindHeaderRows]] [[ctRemoveRows]] [[ctRemoveHeaders]] [[ctSetRowTemplate]] [[ctSetHeaderTemplate]]
+}}

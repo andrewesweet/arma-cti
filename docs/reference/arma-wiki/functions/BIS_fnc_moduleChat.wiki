@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleChat
+// revision: 328357 (2022-07-13T16:00:47Z)
+// export sha1: of6yy5gvv1hvucx782434lw633f7m5b
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|eff= local
+
+|descr= Make a list of units use any *chat command ([[groupChat]], [[vehicleChat]], [[sideChat]], [[commandChat]], [[globalChat]]).
+
+|s1= [logic, units, isActivated] call [[BIS_fnc_moduleChat]]
+
+|p1= logic: [[Object]] the logic. Possible [[setVariable]] parameters:
+* "Text": [[String]] - the text to be sent
+* "Channel": [[String]] - (Optional, default "0") a number '''as a string''':
+** "0": [[groupChat]]
+** "1": [[vehicleChat]]
+** "2": [[sideChat]]
+** "3": [[commandChat]]
+** "4": [[globalChat]]
+
+|p2= units: [[Array]] of [[Object]]s - list of chatting units
+
+|p3= isActivated: [[Boolean]] - (Optional, default [[true]]) if [[true]], the module is activated and chat is send. [[false]] disables the module
+
+|r1= [[Boolean]] - [[true]] when done, even if ''isActivated'' equals [[false]]
+
+|x1= <sqf>myLogic setVariable ["Channel", "2"];
+myLogic setVariable ["Text", "Hello everyone, this is side chat!"];
+[myLogic, [player], true] call BIS_fnc_moduleChat;</sqf>
+
+|seealso= [[groupChat]] [[vehicleChat]] [[sideChat]] [[commandChat]] [[globalChat]] [[systemChat]]
+}}

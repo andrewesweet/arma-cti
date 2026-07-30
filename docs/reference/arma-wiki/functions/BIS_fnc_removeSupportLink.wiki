@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_removeSupportLink
+// revision: 349028 (2023-11-08T14:47:10Z)
+// export sha1: mmmeojzzdj1ulaacimheksfqup2g9fl
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Supports | Category:Functions | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.76
+
+|gr1= Supports
+
+|descr= Removes support types during a mission.
+
+|s1= [requester, provider] call [[BIS_fnc_removeSupportLink]]
+
+|p1= requester: [[Object]] - requester module
+
+|p2= provider: [[Object]] - provider module
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[requesterMod, providerMod] call BIS_fnc_removeSupportLink;</sqf>
+
+|seealso= [[BIS_fnc_addSupportLink]]
+}}

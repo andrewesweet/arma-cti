@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_radioSetTrack
+// revision: 309831 (2022-05-05T12:09:52Z)
+// export sha1: 2e1wc9m3p7aav9iypxyj94xr9750ahv
+// categories: Category:Arma 3: Functions | Category:Function Group: Radio | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Radio
+
+|descr= <pre>/*
+
+	Description:
+	Set a specific or random music track.
+
+	Parameter(s):
+	_this select 0: track (String)
+	_this select 1: override (Bool)
+	_this select 2: Bool (first track? -> start randomly within the track)
+
+	Returns:
+	Array (duration (s): Scalar, start time (s): Scalar)
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_radioSetTrack]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_radioSetTrack;</sqf> -->
+
+|seealso=
+}}

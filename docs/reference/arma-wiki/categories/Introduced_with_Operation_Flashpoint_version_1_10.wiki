@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Operation_Flashpoint_version_1.10
+// revision: 107879 (2018-06-01T09:38:46Z)
+// export sha1: r8cu8nx1ik3zuign2aml97j3uw4e98d
+// Vendored snapshot. Do not edit — re-export instead.
+
+Features introduced with Operation Flashpoint version 1.10 may be recognised by the appearance of this icon: {{GVI|ofp|1.10}}
+
+[[Category:Introduced with Operation Flashpoint|1.10]]

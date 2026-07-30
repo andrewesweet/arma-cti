@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_droneModuleDestruction
+// revision: 309478 (2022-05-05T12:06:14Z)
+// export sha1: e5yuis7uu0u6a8rt0n007ok7tvcu4gv
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Contact | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Contact 
+
+|descr= <pre>/*
+	BIN_fnc_droneModuleDestruction
+	Alien Module destruction
+*/</pre>
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_droneModuleDestruction]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_droneModuleDestruction;</sqf> -->
+
+|seealso=
+}}

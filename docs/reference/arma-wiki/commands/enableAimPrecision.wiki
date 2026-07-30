@@ -1,0 +1,22 @@
+// source: https://community.bistudio.com/wiki/enableAimPrecision
+// revision: 351309 (2023-11-27T04:50:52Z)
+// export sha1: r0sjles3l91ztmt9uogcb9l3txav8he
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+|game1= arma3
+|version1= 1.62
+|arg=
+|gr1= Stamina System
+
+|descr= Set whether animation's aim precision affects weapon sway.
+|s1= unit [[enableAimPrecision]] enable
+
+|p1= unit: [[Object]]
+|p2= enable: [[Boolean]] - [[true]] enable, [[false]], disabled
+|r1= [[Nothing]]
+
+|x1= <sqf>player enableAimPrecision false;</sqf>
+|seealso= [[Arma 3: Stamina]]
+}}

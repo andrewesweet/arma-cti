@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/CT_VEHICLETOGGLES
+// revision: 170203 (2020-12-01T09:51:01Z)
+// export sha1: hwca62x27rvbhloatw8baalmmjeqf2x
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_VEHICLETOGGLES
+|value =  18
+|description = Unknown control type.
+|gallery=
+|commands =
+|events =
+}}
+
+<!-- {{CT|abc start}}
+
+{{CT|abc end}} -->
+
+{{CT|examples}}
+
+None

@@ -1,0 +1,21 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_BoatRack01ActionCondition
+// revision: 261288 (2021-06-09T19:00:39Z)
+// export sha1: p58l18pe6nl33cky3eoqnrli4deaucj
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Boat Recovery | Category:Functions | Category:Introduced with Arma 3 version 1.84 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.84
+
+|gr1= Boat Recovery
+
+|descr= 
+
+|s1= [[BIS_fnc_BoatRack01ActionCondition]]
+
+|r1= 
+
+|seealso= 
+}}

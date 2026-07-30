@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/getWeaponCargo
+// revision: 319293 (2022-05-13T09:23:30Z)
+// export sha1: itua81malz2n8lw5n74vo8z956gknm6
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 2: Operation Arrowhead version 1.54 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.54
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|gr1= Vehicle Inventory
+
+|gr2= Containers
+
+|descr= Returns all weapons types and count from the cargo space
+
+|s1= [[getWeaponCargo]] object
+
+|p1= object: [[Object]] - object to check
+
+|r1= [[Array]] - format [all_types_array, all_counts_array]. Eg: [["a", "b"], [3, 2]]
+
+|x1= <sqf>_content = getWeaponCargo carName;</sqf>
+|x2= <sqf>_content = getWeaponCargo ammoBoxName;</sqf>
+
+|seealso= [[weaponCargo]] [[addWeaponCargo]] [[addWeaponCargoGlobal]] [[clearWeaponCargo]] [[clearWeaponCargoGlobal]]
+}}

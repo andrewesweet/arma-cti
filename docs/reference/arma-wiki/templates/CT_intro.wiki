@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/Template:CT/intro
+// revision: 373262 (2025-04-12T22:29:17Z)
+// export sha1: jfomf8dmun46enylw9ckksh55cv7wmm
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{TemplateCase||{{DISPLAYTITLE:{{{macro}}}}}}}
+{{Navbox/CT}}
+== Introduction ==
+{{{description}}}
+{{#if: {{{gallery|}}}|
+{{#tag:gallery|{{{gallery}}}|mode="slideshow"|heights=240px|widths=240px}}
+}}
+
+=== Related commands & functions ===
+* [[:Category:Command_Group:_GUI_Control|Commands: General]]
+* [[:Category:Command_Group:_GUI_Control_-_Event_Handlers|Commands: UI Eventhandlers]]<!--
+-->{{#if: {{{commands|}}} | 
+{{{commands}}}
+}}
+
+=== Related User Interface Eventhandlers ===
+* [[User_Interface_Event_Handlers#Generic_Events|Events: General]]<!--
+-->{{#if: {{{events|}}} | 
+{{{events}}}
+}}
+
+== Alphabetical Order ==
+{{Feature|informative|TokenNames common to most controls, such as x, y, w, h, text, idc... can be found [[Arma:_GUI_Configuration#Common_Properties|'''here''']].}}
+{{Feature|warning|Not all of the listed attributes might have an effect nor might the list be complete. All attributes were gathered with [https://github.com/7erra/BIKI.VR/blob/master/fnc/generateCTPage.sqf this] config crawler.}}
+{{#tag:syntaxhighlight|#define {{{macro}}} {{{value}}}|lang=cpp}}
+</includeonly><noinclude>
+== Usage ==
+<pre>
+{{CT/intro
+|macro = CT_TREE
+|value = 1234
+|description = Informative text about this control type.
+|gallery = File:CT COMBO.jpg {{!}}Example image 1.
+File:BIS fnc 3DENDiagFonts example.jpg{{!}}Image 2.
+|commands = * command group CT
+|events = 
+* event1
+* event2
+}}
+</pre>
+
+== Result ==
+{{CT/intro
+|macro = CT_TREE
+|value = 1234
+|description = Informative text about this control type.
+|gallery = File:CT COMBO.jpg {{!}}Example image 1.
+File:BIS fnc 3DENDiagFonts example.jpg{{!}}Image 2.
+|commands = * command group CT
+|events = 
+* event1
+* event2
+}}
+</noinclude>

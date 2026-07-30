@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Explosives_Info
+// revision: 255841 (2021-04-24T18:49:37Z)
+// export sha1: 2dlalccql3a9uc0m1ix13amjdxu89h0
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Explosives Info ==
+=== AT Mine ===
+The design of anti-tank mines has not changed much during the last 50 years. An AT mine is the strongest ground mine manufactured today. They are triggered only by vehicles.
+
+
+=== APERS Mine ===
+A classic pressure-activated anti-personnel mine is still widely used despite being prohibited by international conventions. When dug-in, they are very hard to detect without the help of a mine detector.
+
+
+=== APERS Bounding Mine ===
+The anti-personnel bounding mine is best suitable for open areas. It is usually burried just below the surface of the ground. When triggered, a charge launches the body of the mine one meter into the air. The explosion covers a close area with fragments, killing the whole group.
+
+
+=== M6 SLAM Mine ===
+The M6 SLAM mine is a next generation Selectable Lightweight Attack Munition. They are very effective against light armored vehicles, penetrating 40mm armor from up to eight meters. Unlike dug-in mines, SLAM is placed on the ground and is easier to spot.
+
+
+=== Claymore Charge ===
+A Claymore fragmentation charge is one of the deadliest anti-personnel charges available. On a timed or remote-triggered detonation, the Claymore sends deadly steel balls in a frontal direction. Effective kill radius is up to 50 meters. Unlike dug-in mines the Claymore is placed on the ground and is easier to spot.
+
+
+=== Explosive Charge ===
+An explosive charge is placeable on the ground. It could be set to detonate either by the built-in timer or a remote detonator.
+
+
+=== Explosive Satchel ===
+An explosive satchel is a charge placeable on the ground. It can be set to detonate either by using the built-in timer or a remote detonator. They are stronger than an explosive charge, capable of destroying whole buildings, but easier to spot.
+
+
+=== Naval Mine (Moored) ===
+Moored naval mine is the most used naval mine. Deployed by ships and airplanes, it carries a large load of explosives and a variety of sensors to punish every ship or submarine that sails too close.
+
+
+=== Naval Mine (Bottom) ===
+Naval mines sitting on the bottom of the sea are used at depths of up to 200 meters. Deployed by ships and airplanes, a single mine carries a large load of explosives and a variety of sensors to punish every ship that sails too close.
+
+
+=== PDM-7 ===
+The PDM-7 is an amphibious mine used in shallow waters against light assault boats and amphibious vehicles. A fuse placed on the base serves to discourage handling of the armed mine.
+
+
+{{GameCategory|arma3|Field Manual}}

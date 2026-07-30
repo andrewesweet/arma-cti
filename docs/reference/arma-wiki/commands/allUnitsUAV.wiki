@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/allUnitsUAV
+// revision: 364114 (2024-05-04T22:05:25Z)
+// export sha1: 5zlc31svz7szlwvxwyuue28df8055wn
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 0.76 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.76
+
+|gr1= Remote Control
+
+|gr2= Object Detection
+
+|descr= Return a list of all UAV vehicles.
+
+|s1= [[allUnitsUAV]]
+
+|r1= [[Array]] of [[Object]]s - array of UAV vehicles
+
+|x1= <sqf>hint format ["Number of UAV(s) on the map: %1", count allUnitsUAV];</sqf>
+
+|x2= <sqf>{ _x setDamage 1 } forEach allUnitsUAV;</sqf>
+
+|seealso= [[unitIsUAV]] [[allCurators]] [[allGroups]] [[allDead]] [[playableUnits]] [[switchableUnits]] [[vehicles]] [[allDeadMen]] [[agents]] [[showUAVFeed]] [[shownUAVFeed]] [[getConnectedUAV]] [[UAVControl]] [[connectTerminalToUAV]] [[isUAVConnected]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2014-10-10 - 01:23 (UTC)</dd>
+<dt class="note">[[User:AgentRev|AgentRev]]</dt>
+<dd class="note">
+This command returns a list of all unmanned '''vehicles''', not the UAV AI units inside them, as the name might otherwise suggest.
+</dd>
+
+</dl>

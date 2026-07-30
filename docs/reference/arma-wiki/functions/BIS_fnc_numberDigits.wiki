@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_numberDigits
+// revision: 348873 (2023-11-08T14:39:45Z)
+// export sha1: 2dbyai28qj8embqov1zinaw3qodyxg2
+// categories: Category:Arma 3: Functions | Category:Function Group: Arrays | Category:Function Group: Strings | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Arrays
+
+|gr2= Strings
+
+|descr= Break number into array of digits.
+
+|s1= number call [[BIS_fnc_numberDigits]]
+
+|p1= number: [[Number]] - number that should be broken down. A float will be '''truncated''', not rounded
+
+|r1= [[Array]] of [[Number]]s - array of ''number'' digits
+
+|x1= <sqf>12345678 call BIS_fnc_numberDigits; // returns [1,2,3,4,5,6,7,8]</sqf>
+
+|x2= <sqf>123.9999 call BIS_fnc_numberDigits; // returns [1,2,3]</sqf>
+
+|seealso= [[BIS_fnc_numberText]] [[BIS_fnc_cutDecimals]]
+}}
+|
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2018-03-20 - 21:25 (UTC)</dd>
+<dt class="note">[[User:vabene1111|vabene1111]]</dt>
+<dd class="note">
+Use this function with caution: Numbers with more than 8 digits will return wrong results
+<sqf>[11111111]      call BIS_fnc_numberDigits; // returns [1,1,1,1,1,1,1,1]
+[111111111]     call BIS_fnc_numberDigits; // returns [1,1,1,1,1,1,1,1,2]
+[1111111111111] call BIS_fnc_numberDigits; // returns [1,1,1,1,1,1,1,1,0,6,5,6,0]</sqf>
+
+</dl>

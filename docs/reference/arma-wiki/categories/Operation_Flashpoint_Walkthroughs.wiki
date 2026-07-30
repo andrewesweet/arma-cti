@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Walkthroughs
+// revision: 183894 (2021-01-05T22:17:44Z)
+// export sha1: 96mskr4pxl7bkkvn27x7henjau4rr4j
+// Vendored snapshot. Do not edit — re-export instead.
+
+The following articles take you through the various missions within the original Flashpoint campaigns. ''These are spoiler documents''.
+
+{{GameCategory|ofp}}

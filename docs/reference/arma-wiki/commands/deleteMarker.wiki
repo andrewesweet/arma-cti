@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/deleteMarker
+// revision: 338571 (2023-03-20T14:56:08Z)
+// export sha1: 2jgj7aab30pyo3i39gvorjwnwk9np0s
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|eff= global
+
+|gr1= Markers
+
+|descr= Destroys the given marker.
+
+|s1= [[deleteMarker]] name
+
+|p1= name: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>deleteMarker "Marker1";</sqf>
+
+|seealso= [[createMarker]] [[deleteMarkerLocal]]
+}}

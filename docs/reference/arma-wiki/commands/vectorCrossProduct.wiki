@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/vectorCrossProduct
+// revision: 378395 (2026-04-04T07:56:27Z)
+// export sha1: 5gugrsxf2hug5cytn9ufovasnk9khg7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Vectors | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr2= Math - Vectors
+
+|descr= Cross product of two 3D vectors. 
+<br>In layman's terms, if you have a polygon (surface) defined by 3 points, you can find a normal to it (just like terrain [[surfaceNormal]]). To invert direction of the normal, swap arguments around.
+
+|s1= vector1 [[vectorCrossProduct]] vector2
+
+|p1= vector1:  [[Vector3D]] or [[Vector2D]] - since Arma 3 v2.00, z coordinate is defaulted to 0 if not provided
+
+|p2= vector2:  [[Vector3D]] or [[Vector2D]] - since Arma 3 v2.00, z coordinate is defaulted to 0 if not provided
+
+|r1= [[Array]] -  vector [x, y, z]
+<br><br>
+[[File:crossProduct.jpg|300px]]
+
+|x1= <sqf>_vector = [1,1,1] vectorCrossProduct [2,2,2];</sqf>
+
+|x2= <sqf>_vectorUp = [0,1,0] vectorCrossProduct [-1,0,0]; //[0,-0,1]</sqf>
+
+|x3= <sqf>_vectorSide = (vectorDir player) vectorCrossProduct (vectorUp player);</sqf>
+
+|seealso= [[vectorAdd]] [[vectorDiff]] [[vectorDotProduct]] [[vectorCos]] [[vectorMagnitude]] [[vectorMagnitudeSqr]] [[vectorMultiply]] [[vectorDistance]] [[vectorDistanceSqr]] [[vectorDir]] [[vectorUp]] [[setVectorDir]] [[setVectorUp]] [[setVectorDirAndUp]] [[vectorNormalized]] [[vectorFromTo]] [[matrixMultiply]] [[matrixTranspose]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140628091200
+|text= {{GVI|arma3|1.22}}Algorithm:
+<sqf>
+Vector1 = [x1,y1,z1]; Vector2 = [x2,y2,z2];
+Result = [(y1 * z2) - (z1 * y2),(z1 * x2) - (x1 * z2),(x1 * y2) - (y1 * x2)];
+</sqf>
+It is recommended to use [[vectorCrossProduct]] instead of [[BIS_fnc_crossProduct]].
+}}

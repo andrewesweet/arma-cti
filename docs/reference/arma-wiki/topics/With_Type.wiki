@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/With_Type
+// revision: 245278 (2021-02-10T14:23:37Z)
+// export sha1: e6z2rd3fs89p0z4tcfgvvwgpvaf1pc8
+// categories: Category:Syntactical Helper Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Description:'''
+
+A helper type created by the operator [[with]] and used in [[do]] constructs.
+
+[[Category:Syntactical Helper Types]]

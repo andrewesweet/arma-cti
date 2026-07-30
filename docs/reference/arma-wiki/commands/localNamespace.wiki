@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/localNamespace
+// revision: 309258 (2022-05-04T11:01:29Z)
+// export sha1: r6gbls8xg3fzbn1ykf471qer8569v14
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Command Group: Namespaces | Category:Command Group: Variables | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Namespaces
+
+|gr2= Variables
+
+|gr3= Multiplayer
+
+|descr= Returns local [[Namespace]] attached to the mission.
+Has the same lifetime as [[missionNamespace]] but variables '''cannot be broadcasted''' out of or into this namespace in multiplayer and will not be serialized when game is saved. UI variables can be safely stored in this namespace.
+Use [[allVariables]] command to save the variables elsewhere if required.
+
+|s1= [[localNamespace]]
+
+|r1= [[Namespace]]
+
+|x1= <sqf>localNamespace setVariable ["abc", 123];</sqf>
+
+|x2= <sqf>with localNamespace do { hint str abc };</sqf>
+
+|seealso= [[missionNamespace]] [[uiNamespace]] [[parsingNamespace]] [[profileNamespace]] [[currentNamespace]] [[allVariables]]
+}}

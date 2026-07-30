@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Community_Base_Addons
+// revision: 339370 (2023-04-28T14:08:35Z)
+// export sha1: 93kj26duz2e37jiooojl7llenk7ofpu
+// Vendored snapshot. Do not edit — re-export instead.
+
+Community Base Addons - a toolkit for add-on and module makers. See the {{Link|https://github.com/CBATeam/CBA_A3/releases|CBA GitHub}} and its {{Link|https://github.com/CBATeam/CBA_A3/wiki|wiki}} for further details and documentation.
+
+* {{Link|link= https://steamcommunity.com/workshop/filedetails/?id=450814997|text= {{arma3}} version}}
+* {{Link|link= http://www.armaholic.com/page.php?id=6231|text= {{arma2}} version}}

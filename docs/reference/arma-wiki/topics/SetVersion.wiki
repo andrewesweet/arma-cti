@@ -1,0 +1,73 @@
+// source: https://community.bistudio.com/wiki/SetVersion
+// revision: 85301 (2014-10-12T23:27:42Z)
+// export sha1: d56bqqngxr4oi5v8xb1zfdea8e81y7w
+// categories: Category:Mikero Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+         
+SetVersion version 2.xx by Mikero.<br> <br>
+see readme general<br>
+see fixes
+
+ 
+----
+ 
+<br>
+SerVersion changes the RequiredVersion= of any config.cpp/bin within an 
+addon.pbo<br> <br> <br>
+It is specifically targetted at (but not limited to) making Arma ONE addons 
+compatible with Arma TWO.<br> <br> <br>
+For the most part this will work, because. for the most part, the engine 
+'understands' the alternate p3d compressions (lzss) inside arma1. And / Or, the 
+p3d models and classes are largely in the same /ca/folder/ network.<br> <br>
+As an aside, but, for the removal of some half dozen objects in the arma2 addons, 
+sara, and most missions would have been compatible with a2. There is no readily 
+available upgrade path, rendering all previous efforts and mission creation, 
+redundant. So much for a retaining a loyal customer base. <br> <br>
+Secondly, why on earth each revision of the engine from cwc through to arma2 has 
+revision values LESS than previous engines defies all explanation.<br> <br>
+------<br>
+Useage<br> <br>
+SetVersion [-options] 1.03(eg) SomePbo[.pbo] [AnotherPbo[.pbo]]<br> <br>
+options<br> <br>
+-x Exclude config.cpp(s) from revision. only revise bin<br>
+-p dont pause
+
+ 
+<br>
+note that SetVersion is recursive. It will change ALL config.cpp/bins's 
+encountered in the pbo<br> <br> <br>
+Return Values<br>
+--------------<br> <br>
+for Dos usage it is useful to 'know' (via ERRORLEVEL) what operation was 
+performed<br> <br>
+0 VERSION_CHANGED: a change took place<br>
+1 VERSION_SAME: the RequiredVersion(s) are identical to what was wanted no 
+change to pbo<br>
+2 VERSION_NONE: no config(s) (or no RequiredVersion= in those configs) found. no 
+change to pbo<br>
+3 VERSION_ERROR: file could not be processed in some way<br> <br> <br> <br> <br>
+***************<br>
+CAVEAT EMPTOR and ROE (rules of engagement)<br>
+***************<br> <br>
+Config.cpp<br> <br>
+Config.cpp is normally a text file. It can, alternatively be encountered in a 
+binarised form, and to all intents is a config.bin<br> <br> <br>
+When config.cpp IS a text file, SetVersion attempts to convert it 'on the fly' 
+to a binarised form<br> <br>
+This conversion will fail if paths are incorrect for #include statements (eg). 
+Generally, any binarisation of a config requires that you set up a P: drive<br> <br>
+You also may not wish to do this for several reasons. You can use the -x option 
+to prevent setversion changing config.cpp's<br> <br> <br>
+HOWEVER<br>
+if allowed, and IF encountered, and IF successful, the original 'file' is 
+renamed to config.cpp.txt, and a new text file replaces it. THIS, NEW text file<br>
+will be stripped of all comments and #includes (because they are unecessary at 
+this point)<br> <br> <br> <br>
+Note finally, that this is a kludge. Redundant hpp files and included cpp text 
+files will remain in the pbo, where, normally, these too would be removed during 
+the rapification process.<br> <br>
+
+
+
+[[Category:Mikero Tools]]

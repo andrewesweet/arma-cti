@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/vestItems
+// revision: 377108 (2026-01-01T10:05:52Z)
+// export sha1: 9b3446so64urujzydolov9jxkcc9tcf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Unit Inventory
+
+|descr= Get array with all items (of any kind, even weapons) from vest.
+
+|s1= [[vestItems]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[String]]s - Class names of items
+
+|x1= <sqf>
+vestItems player;
+// returns e.g
+/*
+[
+	"30Rnd_65x39_caseless_mag",
+	"30Rnd_65x39_caseless_mag",
+	"16Rnd_9x21_Mag",
+	"16Rnd_9x21_Mag",
+	"HandGrenade",
+	"HandGrenade",
+	"SmokeShell",
+	"SmokeShellGreen",
+	"Chemlight_green",
+	"Chemlight_green"
+]
+*/
+</sqf>
+
+|seealso= [[uniformItems]] [[backpackItems]]
+}}

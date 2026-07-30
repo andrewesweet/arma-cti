@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/lnbSetText
+// revision: 321488 (2022-05-16T14:15:09Z)
+// export sha1: hdpduvcx92gwuvvqgvng55y5yf7323n
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control - ListNBox
+
+|descr= Sets the text in the item with the given position of the 2D listbox.
+
+|s1= [[lnbSetText]] [idc, [row, column], data]
+
+|p1= idc: [[Number]]
+
+|p2= row: [[Number]]
+
+|p3= column: [[Number]]
+
+|p4= data: [[String]]
+
+|r1= [[Nothing]]
+
+|s2= ctrl [[lnbSetText]] [<nowiki/>[row, column], data]
+
+|p21= ctrl: [[Control]]
+
+|p22= row: [[Number]]
+
+|p23= column: [[Number]]
+
+|p24= data: [[String]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>lnbSetText [101, [0,1], "#1"];</sqf>
+
+|x2= <sqf>_ctrl lnbSetText [[0,1], "#1"];</sqf>
+
+|seealso= [[lnbAddArray]] [[lnbAddColumn]] [[lnbAddRow]] [[lnbClear]] [[lnbColor]] [[lnbCurSelRow]] [[lnbData]] [[lnbDeleteColumn]] [[lnbDeleteRow]] [[lnbGetColumnsPosition]] [[lnbPicture]] [[lnbSetColor]] [[lnbSetColumnsPos]] [[lnbSetCurSelRow]] [[lnbSetData]] [[lnbSetPicture]] [[lnbSetValue]] [[lnbSize]] [[lnbText]] [[lnbValue]]
+}}

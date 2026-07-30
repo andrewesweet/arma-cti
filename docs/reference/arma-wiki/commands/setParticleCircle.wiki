@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/setParticleCircle
+// revision: 378393 (2026-04-04T07:54:48Z)
+// export sha1: 7wx2ab3xg22nbcy5vmrhdu8eynoj4s9
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Particles | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Particles
+
+|descr= Updates particle source, creates particles in circle with given radius. Velocity is transformed and added to total velocity. The random particle positioning is calculated in relation to the nearest surface. Since Arma 3 2.22, this could be overridden (will also override onSurface = true).
+
+|s1= particleSource [[setParticleCircle]] [circleRadius, circleVelocity, ignoreSurfaces]
+
+|p1= particleSource: [[Object]]
+
+|p2= circleRadius: [[Number]] - the radius (x,y plain) in which particles are generated 
+
+|p3= circleVelocity: [[Vector3D]] - direction and speed of particles movement
+
+|p4= ignoreSurfaces: [[Boolean]] - (Optional) [[true]] to calculate particle position relative to the source position. Default: [[false]]
+|p4since= arma3 2.22
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_myParticleSource setParticleCircle [3, [0,0,5]];</sqf>
+|x2= <sqf>_myParticleSource setParticleCircle [3, [0,0,5], true];</sqf>
+
+|seealso= [[setParticleParams]] [[setParticleRandom]] [[ParticleTemplates]] [[setParticleClass]] [[particlesQuality]] [[setParticleFire]]
+}}

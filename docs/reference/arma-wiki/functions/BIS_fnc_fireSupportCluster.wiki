@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_fireSupportCluster
+// revision: 348400 (2023-11-08T13:00:03Z)
+// export sha1: fo9jlm5xhclpva2eeblz9p5ne3b9j7w
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Supports | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Supports
+
+|descr= Virtual fire support - cluster shell.
+
+|s1= [position,ammo,radius,rounds,delay,conditionEnd,safezone,altitude,velocity,sounds] spawn [[BIS_fnc_fireSupportCluster]]
+
+|p1= position: [[Position]], [[Object]] or [[String]] - can be position, an object, or a marker
+
+|p2= ammo: [[String]] - (Optional, default "G_40mm_HEDP") ammunition class, [[nil]] or empty string to use 40mm HEDP shells
+
+|p3= radius: [[Number]] - (Optional, default 100) radius of the area in metres
+
+|p4= rounds: [[Array]] - (Optional, default [1,20]) number of rounds to be fired, can be:
+* 0: Number of shells
+* 1: Number of submunition
+
+|p5= delay: [[Array]] or [[Number]] - (Optional, default 10) delay between rounds in seconds, can be [[Number]] for precise delay or [[Array]] to set min and max delay
+
+|p6= conditionEnd: [[Code]] - (Optional, default {}) condition to end fire support
+
+|p7= safeZone: [[Number]] - (Optional, default 0) safezone radius in metres
+
+|p8= altitude: [[Number]] - (Optional, default 100) altitude in metres where the submunition will be spawned
+
+|p9= velocity: [[Number]] - (Optional, default 100) descending velocity, in m/s
+
+|p10= sounds: [[Array]] - (Optional, default [""]) strings of sounds to be played on the incoming submunition
+
+|r1= [[Boolean]]
+
+|exec= spawn
+
+|x1= <sqf>[BIS_Player, "G_40mm_HEDP", 100, [4,10], 10] spawn BIS_fnc_fireSupportCluster;</sqf>
+
+|x2= <sqf>[BIS_Victim,"G_40mm_HEDP", 100, [5,25], 10, { dayTime > 20 }, 75, 500, 150, ["shell1", "shell2"]] spawn BIS_fnc_fireSupportCluster;</sqf>
+
+|x3= <sqf>["BIS_mrkTargetArea", "", 100, [4,10], 10, { BIS_Player distance BIS_EscapeZone < 100 }] spawn BIS_fnc_fireSupportCluster;</sqf>
+
+|seealso= [[BIS_fnc_fireSupport]] [[BIS_fnc_fireSupportVirtual]]
+}}

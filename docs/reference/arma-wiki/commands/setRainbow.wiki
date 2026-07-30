@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/setRainbow
+// revision: 370469 (2024-12-16T18:09:58Z)
+// export sha1: johv72nnhuoe705gor5pn2s89lqn4n2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|eff= local
+
+|gr1= Environment
+
+|descr= Changes the rainbow value smoothly during the given time (in seconds). A time of zero means there will be an immediate change.
+
+|s1= time [[setRainbow]] value
+
+|p1= time: [[Number]]
+
+|p2= value: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>360 setRainbow 1;</sqf>
+
+|seealso= [[rainbow]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-04-24 - 00:32 (UTC)</dd>
+<dt class="note">[[User:Benargee|Benargee]]</dt>
+<dd class="note">It should be known that this command does not create a rainbow in all conditions. As in real life, the rainbow can only appear after rainfall and opposite of the sun when it is low on the horizon.
+</dd>
+
+</dl>
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20220701072442
+|text= This command seems to be completely local, no synchronization with other clients, no JIP, nothing, you have to do it all yourself.
+}}

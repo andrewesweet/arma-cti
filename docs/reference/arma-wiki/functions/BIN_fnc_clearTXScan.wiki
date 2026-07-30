@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_clearTXScan
+// revision: 309584 (2022-05-05T12:07:20Z)
+// export sha1: nhwkkt490yub89rvdz45n1r241jyh8g
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: TXScan | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= TXScan 
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Clears TXScan drawing
+
+	Parameter(s):
+		0: STRING - scan name, "" - all scans
+
+	Returns:
+		BOOL - false if error occured
+		
+	Example:
+		"MyScan" call BIN_fnc_clearTXScan
+		"" call BIN_fnc_clearTXScan - all scans
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_clearTXScan]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_clearTXScan;</sqf> -->
+
+|seealso=
+}}

@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_position
+// revision: 352042 (2024-02-01T23:24:29Z)
+// export sha1: crr2a8ywj7c85sa0gvii17kz1jflzd9
+// categories: Category:Arma 3: Functions | Category:Function Group: Positions | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Positions
+
+|descr= Returns [[Position#PositionAGL|PositionAGL]], unless passed argument is [[Array]], then the same array is returned. When position is [[Object]] and alternative position is stored in {{hl|"BIS_fnc_position_forced"}} variable on this object, the stored position is used rather than actual object position. This function is a pretty safe way to get the position of an entity.
+
+|s1= argument call [[BIS_fnc_position]]
+
+|p1= argument - could be one of:
+* [[Array]] - Position in format {{hl|[x, y]}} or {{hl|[x, y ,z]}}
+* [[Object]] - Object
+* [[Group]] - Group, group leader position is used
+* [[Location]] - Location
+* [[String]] - Marker or variable name containing object
+{{Feature|informative|To get the position of an [[Eden Entity]] use <sqf inline>_entity get3DENAttribute "Position" select 0;</sqf>.}}
+
+|r1= [[Array]] - position in format {{hl|[x, y]}} or {{hl|[x, y ,z]}}
+
+|x1= <sqf>private _pos = player call BIS_fnc_position;</sqf>
+
+|seealso= [[Position]]
+}}

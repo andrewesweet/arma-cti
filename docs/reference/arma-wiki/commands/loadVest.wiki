@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/loadVest
+// revision: 323062 (2022-06-28T21:43:11Z)
+// export sha1: o5ibzjfddzw0hhpm5498h7av1vc3f0i
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Unit Inventory
+
+|descr= Returns current percentage of mass from items stored in a vest relative to the maximum capacity of the vest. <br>
+It is equivalent to this formula:
+<sqf>_loadVest = massOfAllItemsInVest / getContainerMaxLoad vest player;</sqf>
+
+|s1= [[loadVest]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_weight = loadVest player;</sqf>
+
+|seealso= [[load]] [[loadAbs]] [[loadBackpack]] [[loadUniform]] [[getMass]] [[weightRTD]] [[getContainerMaxLoad]]
+}}

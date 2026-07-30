@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/getMissionLayerEntities
+// revision: 377616 (2026-01-02T08:51:45Z)
+// export sha1: esx9co7b0upw40ji0x6u8n7q5lnp95j
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Command Group: Mission Information | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|serverExec= server
+
+|gr1= Eden Editor
+
+|gr2= Mission Information
+
+|descr= Returns all entities within the specific [[Eden Editor: Layer|Eden Editor layer]] and its sub-layers.
+To be used when the scenario is running, not in the editor workspace.
+Useful to disable/enable whole parts of the scenario if layers are used during mission design.
+{{Feature|informative|Default layers are not returned.}}
+
+|s1= [[getMissionLayerEntities]] layerName
+
+|p1= layerName: can be one of:
+* [[String]] - case-insensitive; layer name in the editor. If multiple layers with the same name are present in the scenario, the first found one is used
+* [[Number]] - layer ID in the editor
+
+|r1= [[Array]] with [objects, markers, {{GVI|arma3|2.14|size= 0.75}} groups] (or empty array if the layer does not exist)
+
+|x1= <sqf>private _base = getMissionLayerEntities "Base";</sqf>
+
+|x2= delete all objects within that layer after the player is over 800m away from _someObject:
+<sqf>
+waitUntil { sleep 1; (player distance _someObject) > 800 };
+private _simpleObjects = (getMissionLayerEntities "Simple Objects") select 0;
+{
+	deleteVehicle _x;
+} forEach _simpleObjects;
+</sqf>
+
+|x3= <sqf>private _layer1337Entities = getMissionLayerEntities 1337;</sqf>
+
+|x4= <sqf>getMissionLayerEntities 42 params [["_objects", []], ["_markers", []], ["_groups", []]];</sqf>
+
+|seealso= [[get3DENLayerEntities]]
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20161026152700
+|text= After an [[object]] was deleted from a layer, [[getMissionLayerEntities]] will return {{hl|&lt;NULL-object&gt;}} for the deleted [[object]].
+}}

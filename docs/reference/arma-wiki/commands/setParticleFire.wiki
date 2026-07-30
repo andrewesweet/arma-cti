@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/setParticleFire
+// revision: 330030 (2022-08-15T14:55:31Z)
+// export sha1: fgc9vpxt09epqnmx4ntwix4izr1178c
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Particles | Category:Introduced with Arma 3 version 1.08 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.08
+
+|arg= global
+|eff= local
+
+|gr1= Particles
+
+|descr= Set fire parameters to particle effect.
+
+Note: You need to create emitter at first. Basic parameters of particle effect must be defined too. You can use script commands [[setParticleClass]] or [[setParticleParams]] to do so (see example). Correspondence between CfgCloudlets class param names and command array of params:
+<sqf>
+particleSource setParticleFire
+[
+	coreIntensity,
+	coreDistance,
+	damageTime
+];
+</sqf>
+
+|s1= source [[setParticleFire]] [coreIntensity, coreDistance, damageTime]
+
+|p1= source: [[Object]]
+
+|p2= coreIntensity: [[Number]] - damage in the center of fire
+
+|p3= coreDistance: [[Number]] - how far can unit get damage
+
+|p4= damageTime: [[Number]] - how often is unit getting damage
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_emitter = "#particlesource" createVehicleLocal (getPos player);
+_emitter setParticleClass "MediumSmoke";
+_emitter setParticleFire [0.3,1.0,0.1];
+</sqf>
+
+|seealso= [[Arma 3: Particle Effects]] [[ParticleArray]] [[setParticleParams]] [[setParticleRandom]] [[setParticleCircle]] [[setDropInterval]] [[drop]] [[setParticleClass]]
+}}
+
+{{Note
+|user= AgentRev
+|timestamp= 20180409204400
+|text= Using this command on a dedicated server or headless client seems to have no effect on [[Multiplayer Scripting#Locality|local]] AI units, they will walk thru the fire unscathed.
+}}

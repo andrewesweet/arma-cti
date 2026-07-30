@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ambientFlyby
+// revision: 364496 (2024-05-16T20:42:01Z)
+// export sha1: 7xniibqhx5fnz2cpdug5pdm03jz6cef
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Ambient | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Ambient
+
+|descr= Spawns an air unit that moves from point A to point B, never engaging nor being engaged. It is set as captive and will despawn once it reaches its destination.
+{{Feature|informative|Created vehicle is [[setCaptive|set captive]], making its side [[civilian]].}}
+
+|s1= [startPos, endPos, altitude, speedMode, classname, side] call [[BIS_fnc_ambientFlyby]]
+
+|p1= startPos: [[Position]] - start position of the air unit. The Z value does not matter and is replaced by ''altitude''
+
+|p2= endPos: [[Array]] format [[Position#PositionAGL|PositionAGL]] - end position where the air unit moves to and despawns (through [[addWaypoint]])
+
+|p3= altitude: [[Number]] - (Optional, default 100) height at which air unit will spawn and fly above ground level
+
+|p4= speedMode: [[String]] - (Optional, default "NORMAL") [[speedMode|speed mode]] at which air unit travels. Possible values are "LIMITED", "NORMAL" and "FULL"
+
+|p5= classname: [[String]] - (Optional, default "B_Heli_Light_01_F") vehicle classname defined in [[CfgVehicles]]
+
+|p6= side: [[Side]] - (Optional, default [[west]]) side to which the vehicle belongs
+
+|r1= [[Boolean]] - [[true]] if function executed successfully.
+
+|x1= <sqf>
+// spawns a Littlebird that flies from position 200,200,50 to 250,250,75 at altitude 100 and normal speed
+[[200,200,50], [250,250,75]] call BIS_fnc_ambientFlyby;
+</sqf>
+
+|x2= <sqf>[getPosATL player, getPosATL opforUnit, 400, "FULL", "B_Heli_Light_01_Armed_F", west] call BIS_fnc_ambientFlyby;</sqf>
+
+|seealso= [[createVehicle]] [[BIS_fnc_spawnVehicle]]
+}}

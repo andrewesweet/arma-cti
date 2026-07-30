@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Diary
+// revision: 166539 (2020-10-11T15:15:22Z)
+// export sha1: 7ohq4c6ka6clze7qfhvzyupxgiph7l0
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions related the diary system in the [[Arma 3 Contact]] campaign.
+
+[[Category:Function Group: Contact]]

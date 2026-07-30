@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_RC-Branch_Change_Logs
+// revision: 378007 (2026-01-21T14:52:46Z)
+// export sha1: mlx73nn7a6xz7bgbzpybbblribzfj0h
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|informative|Change logs for {{Link|https://dev.arma3.com/rc-branch|RC-Branch}} have historically been posted to the {{Link|https://forums.bohemia.net/forums/topic/183855-release-candidate-branch-announcements/|Bohemia Interactive forums}}, but those have been offline or in read-only mode since 2025. Therefore, any logs since then will be shared here. The {{Link|https://discord.com/invite/arma|Arma Discord}} is another channel to learn about changes and to discuss them (''#dev_rc_branch'').}}
+
+{{GameCategory|arma3|Change Logs}}

@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_drawMinefields
+// revision: 309394 (2022-05-05T12:04:35Z)
+// export sha1: 3yx2shj0xmw4vy90xgpa614h316821m
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Map and Markers
+
+|descr= Draw minefields on the map. Dynamically calculated from all mines positions. Distinguishes AP and AT minefields.
+
+|s1= call [[BIS_fnc_drawMinefields]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_drawMinefields;</sqf>
+
+|seealso= [[allMines]]
+}}

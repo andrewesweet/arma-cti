@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_boundingCircle
+// revision: 327119 (2022-07-12T21:44:51Z)
+// export sha1: rwedi0mdnqyixgpfxu02vujqj81eefd
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns size of bounding circle (calculated from X and Y coordinates). This is actually the 2D horizontal diagonal length of the [[boundingBox]].
+
+|s1= object call [[BIS_fnc_boundingCircle]]
+
+|p1= object: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>vehicle player call BIS_fnc_boundingCircle;</sqf>
+
+|seealso= [[boundingBox]] [[boundingBoxReal]]
+}}

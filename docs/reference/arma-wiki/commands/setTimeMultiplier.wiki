@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/setTimeMultiplier
+// revision: 378416 (2026-04-04T08:44:07Z)
+// export sha1: iunw542n6szt41yrifufxunu2kux2e6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Command Group: Mission Information | Category:Command Group: Time | Category:Introduced with Arma 3 version 1.26 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.26
+
+|eff= global
+
+|gr1= Time
+
+|gr2= Mission Information
+
+|gr3= Environment
+
+|serverExec= server
+
+|descr= Sets a time multiplier for in-game time. The command range is capped at 0.1 - 120 to avoid performance problems.
+
+|s1= [[setTimeMultiplier]] value
+
+|p1= value: [[Number]] in range 0.1 .. 120
+
+|r1= [[Nothing]]
+
+|x1= <sqf>setTimeMultiplier 60;</sqf>
+
+|x2= <sqf>setTimeMultiplier 0.5;</sqf>
+
+|seealso= [[timeMultiplier]] [[skipTime]] [[setAccTime]] [[accTime]] [[time]] [[serverTime]] [[date]] [[dayTime]]
+}}
+
+{{Note
+|user= Hypoxic125
+|timestamp= 20230214170734
+|text= '''timeMultiplier = 24 / IRL Hours per Game Day'''
+<br><br>
+Desired: 4 IRL Hours for Full In-Game Day
+<br>
+timeMultiplier = 24 / 4
+<br>
+timeMultiplier = 6
+}}

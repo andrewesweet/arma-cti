@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_spawn
+// revision: 327596 (2022-07-13T09:48:17Z)
+// export sha1: rlg7vpmlf7bj4c8o6pr595dmigj12xo
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Program Flow | Category:Functions | Category:Introduced with Arma 3 version 0.56 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 0.56
+
+|gr1= Program Flow
+
+|descr= Execute given code with or without parameter.
+{{Feature|arma3|Since {{GVI|arma3|1.50}}, use [[remoteExec]]/[[remoteExecCall]] instead.}}
+
+|s1= [params, code] spawn [[BIS_fnc_spawn]]
+
+|p1= params: [[Anything]] - function arguments
+
+|p2= code: [[Code]] - function code
+
+|r1= [[Nothing]]
+
+|exec= spawn
+
+|s2= code spawn [[BIS_fnc_spawn]]
+
+|p21= code: [[Code]]
+
+|r2= [[Nothing]]
+
+|x1= Show a message for the current player:
+<sqf>[["Hello"],  { hint (_this select 0) }] spawn BIS_fnc_spawn;</sqf>
+
+|x2= Show a message to all connected players:
+<sqf>
+[[["Hello"], { hint (_this select 0) }], "BIS_fnc_spawn", true, false, false] call BIS_fnc_MP; // obsolete, use remoteExec
+
+["Hello", { hint (_this select 0) }] remoteExec ["BIS_fnc_spawn"];	// since the introduction of remoteExec
+["Hello", { hint (_this select 0) }] remoteExec ["spawn"];			// BIS_fnc_spawn is obsolete
+["Hello"] remoteExec ["hint"];										// best solution here
+</sqf>
+
+|x3= <sqf>{ hint "Hello" } spawn BIS_fnc_spawn;</sqf>
+
+|seealso= [[remoteExec]] [[remoteExecCall]] [[BIS_fnc_execFSM]] [[BIS_fnc_execRemote]] [[BIS_fnc_execVM]] [[BIS_fnc_call]]
+}}

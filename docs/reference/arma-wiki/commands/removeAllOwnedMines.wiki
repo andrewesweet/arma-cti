@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/removeAllOwnedMines
+// revision: 310204 (2022-05-05T13:10:41Z)
+// export sha1: b1robmu09y4y9lsx1v7jj7iu4hvj0bu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mines | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Mines
+
+|descr= Removes ownership of all owned mines/explosive devices of the given unit
+
+|s1= [[removeAllOwnedMines]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>removeAllOwnedMines player;</sqf>
+
+|seealso= [[allMines]] [[createMine]] [[detectedMines]] [[mineActive]] [[removeOwnedMine]] [[addOwnedMine]]
+}}

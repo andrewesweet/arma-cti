@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/configSourceAddonList
+// revision: 318786 (2022-05-13T09:21:30Z)
+// export sha1: s1mbw3wdjy9vgn5isge1uabt9vejre1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Command Group: Mods and Addons | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Mods and Addons
+|gr2= Config
+
+|descr= Returns an array of addons ([[CfgPatches]]) in which the given config class is defined.
+
+|s1= [[configSourceAddonList]] config
+
+|p1= config: [[Config]]
+
+|r1= [[Array]] of [[String]]s
+
+|x1= <sqf>_addons = configSourceAddonList (configFile >> "CfgVehicles" >> "Man"); // returns ["A3_Data_F", "A3_Characters_F", "A3_Data_F_Curator", "A3_Air_F_Heli"]</sqf>
+
+|seealso= [[configFile]] [[configSourceMod]] [[configSourceModList]]
+}}

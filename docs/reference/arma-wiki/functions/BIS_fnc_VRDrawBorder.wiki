@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_VRDrawBorder
+// revision: 348816 (2023-11-08T14:38:18Z)
+// export sha1: bcrvhopgosib9lfctthp42t65okbf0w
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: VR | Category:Functions | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= VR
+
+|descr= Visualizes area border (used primarily for VR missions).
+
+|s1= [center, radius] call [[BIS_fnc_VRDrawBorder]]
+
+|p1= center: [[Position]] - center position
+
+|p2= radius: [[Number]] - radius
+
+|r1= [[Array]] - list of created objects for easy deletion
+
+|x1= <sqf>[[0,0,0], 200] call BIS_fnc_VRDrawBorder;</sqf>
+
+|seealso= [[Arma 3: Virtual Reality Custom Courses|Arma 3 VR Custom Courses]] [[:Category:Function Group: VR|VR functions]]
+}}

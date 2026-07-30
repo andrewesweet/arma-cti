@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/ctrlIDC
+// revision: 364443 (2024-05-16T09:58:13Z)
+// export sha1: kbbj6ibv9ktgn8mlfqe6om75k7dz7np
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= GUI Control
+
+|descr= Returns control IDC.
+
+|s1= [[ctrlIDC]]  control
+
+|p1= control: [[Control]]
+
+|r1= [[Number]]
+
+|x1= <sqf>ctrlIDC _ctrl;</sqf>
+|x2= <sqf>ctrlIDC controlNull; // returns -1</sqf>
+
+|seealso= [[allControls]] [[allDisplays]] [[controlsGroupCtrl]] [[ctrlDelete]] [[ctrlModel]] [[ctrlSetModel]] [[ctrlPosition]] [[ctrlSetPosition]] [[ctrlClassName]] [[ctrlModelScale]] [[ctrlSetModelScale]] [[ctrlModelDirAndUp]] [[ctrlSetModelDirAndUp]] [[displayParent]]
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/getWeaponSway
+// revision: 376211 (2025-09-15T15:00:52Z)
+// export sha1: r10ec0wi5okenvm6j1v5p3dys8pdh8x
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Stamina System
+
+|gr2= Weapons
+
+|descr= Returns current size of weapon sway of a given unit, in [[rad|radians]]. This command may still return a value greater 0 even if sway was effectively set to 0 with <sqf inline>player setCustomAimCoef 0;</sqf>.
+
+|s1= [[getWeaponSway]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Number]] - weapon sway
+
+|x1= <sqf>_sway = getWeaponSway player;</sqf>
+
+|seealso= [[weaponInertia]] [[getCustomAimCoef]]
+}}

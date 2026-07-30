@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/clearItemCargoGlobal
+// revision: 309899 (2022-05-05T12:16:44Z)
+// export sha1: i09ze2hnhwm5m57psu17kd526rnz0jx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Containers
+
+|arg= global
+
+|eff= global
+
+|descr= Removes all items from ammo box (or any general weapon holder container). It also removes vests and uniforms.
+
+|s1= [[clearItemCargoGlobal]] box
+
+|p1= box: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>clearItemCargoGlobal _ammoBox;</sqf>
+
+|seealso= [[clearItemCargo]] [[addItemCargoGlobal]] [[clearMagazineCargo]] [[clearMagazineCargoGlobal]] [[clearWeaponCargo]] [[clearWeaponCargoGlobal]] [[clearBackpackCargo]] [[clearBackpackCargoGlobal]]
+}}

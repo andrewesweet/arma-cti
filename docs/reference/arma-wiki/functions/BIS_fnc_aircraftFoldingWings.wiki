@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_aircraftFoldingWings
+// revision: 351488 (2023-12-06T09:58:25Z)
+// export sha1: tpbni1q1vi381tdxytzgouo08jr1ec2
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Aircraft Functionality | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.70
+
+|arg= local
+|eff= global
+
+|gr1= Aircraft Functionality
+
+|descr= Handles foldable wings of aircrafts. Is supposed to be used from within class Eventhandlers of the vehicle. See [[Arma 3: Aircraft Systems]] for information about needed config changes.
+<syntaxhighlight lang="cpp">
+class Eventhandlers : Eventhandlers
+{
+	engine = "_this call BIS_fnc_aircraftFoldingWings";
+	gear = "_this call BIS_fnc_aircraftFoldingWings";
+};
+</syntaxhighlight>
+
+|s1= [aircraft, animationState] call [[BIS_fnc_aircraftFoldingWings]]
+
+|p1= aircraft: [[Object]]
+
+|p2= animationState: [[Boolean]] - (optional, default [[false]]) if [[false]], the function will just terminate
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_aircraft, 1] call BIS_fnc_aircraftFoldingWings;</sqf>
+
+|seealso= -
+}}

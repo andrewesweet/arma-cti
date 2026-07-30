@@ -1,0 +1,386 @@
+// source: https://community.bistudio.com/wiki/Planned_Extensions
+// revision: 351530 (2023-12-06T15:01:41Z)
+// export sha1: m3xx6edim9577bsqpxz4g9oub0w6fn6
+// categories: Category:Maintenance
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|obsolete}}
+
+== AntiSpam & Maintenance ==
+
+==== Done ====
+''These extensions are now installed as seen [[Special:Version|here]].''
+<del>
+* https://www.mediawiki.org/wiki/Extension:Admin_Links <i>adds usable page for wiki admins into special</i>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:AntiBot
+<code style="display: block">BB2 works, yet needs to be verified if properly</code>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Bad_Behavior <i>seems simple yet complicated - need further analysis, seems quite recommended</i>
+download http://bad-behavior.ioerror.us/download/ install http://bad-behavior.ioerror.us/documentation/mediawiki/
+<code style="display: block">BB2ext works, yet needs to be verified if properly</code>
+* 💀 '''dead site''' http://www.umasswiki.com/wiki/UMassWiki:Bad_Behavior_2_Extended <i>adds Bad Behaviour page into special pages for users with block rights
+<b>BB2extended FAILs to work for some reason,i suspect wrong command or DB used "wfFetchRow($result, DB_SLAVE)" <br>
+new workaround: http://blog.ideaday.de/max/2011/07/mediawiki-1-17-and-bad-behaviour/ (incomplete: covers only one function)<br>
+old workaround: (needs DatabaseFunctions.php from 1.16.5 mediaWiki and applies mainly to BB2Extended) http://smithsrus.com/getting-the-bad-behavior-extension-to-work-with-mediawiki-1-17/ </b></i>
+note: Bad Behaviour 2 exists also for vBulletin 3 and 4 (as officially supported module) and for Wordpress<br>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:BrokenLinks <i><b>manual edit needed (DONE) adds http://community.bistudio.com/wiki/Special:BrokenLinks </b>, similar to external tool http://en.wikipedia.org/wiki/User:Dispenser/Link_checker</i>
+* https://www.mediawiki.org/wiki/Extension:CategoryWatch
+* https://www.mediawiki.org/wiki/Extension:CleanChanges <i>easier to read recent changes, example: http://translatewiki.net/wiki/Special:RecentChanges</i>
+* 📦 '''comes with MediaWiki 1.18+''' https://www.mediawiki.org/wiki/Extension:ConfirmEdit
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:ExpandTemplates
+* https://www.mediawiki.org/wiki/Extension:ListTransclusions
+* ⚠ '''privacy risk''' https://www.mediawiki.org/wiki/Extension:LookupUser
+* 📦 '''comes with MediaWiki 1.18+''' https://www.mediawiki.org/wiki/Extension:Nuke
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Recent_Changes_Cleanup
+* https://www.mediawiki.org/wiki/Extension:RegexFunctions
+* 📦 '''comes with MediaWiki 1.31+''' https://www.mediawiki.org/wiki/Extension:Replace_Text <i>very useful adds http://community.bistudio.com/wiki/Special:ReplaceText page for mass editing)</i>
+* 📦 '''will be merged in 1.40''' https://www.mediawiki.org/wiki/Extension:Renameuser
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:SimpleAntiSpam
+* 📦 '''comes with MediaWiki 1.21+''' https://www.mediawiki.org/wiki/Extension:SpamBlacklist <i>can be set to use black/whitelist from other sources, e.g. mediaWiki https://www.mediawiki.org/wiki/Extension:SpamBlacklist#Examples , http://meta.wikimedia.org/wiki/Spam_blacklist</i>
+* 📦 '''comes with MediaWiki 1.21+''' https://www.mediawiki.org/wiki/Extension:TitleBlacklist <i>can be set to use black/whitelist from other sources, e.g. mediaWiki https://www.mediawiki.org/wiki/Extension:Title_Blacklist#Multiple_blacklist_sources , http://en.wikipedia.org/wiki/MediaWiki:Titleblacklist</i>
+* https://www.mediawiki.org/wiki/Extension:User_Merge_and_Delete
+* https://www.mediawiki.org/wiki/Extension:WatchSubpages
+</del>
+
+==== Disabled ====
+* <del>https://www.mediawiki.org/wiki/Extension:MassEditRegex <b><i>Disabled due to exhausting all available memory</i></b></del>
+<i>the MassEditRegex only seems to be able to handle round about 30 pages at once. is it possible to apply more memory to PHP as this could be the problem here: https://www.mediawiki.org/wiki/Extension:MassEditRegex#Bugs_.2F_Known_Issues <br>
+replaced with Replace_Text extension
+</i>
+
+=== Simple install ===
+
+* https://www.mediawiki.org/wiki/Extension:Newest_Pages
+* 📦 '''comes with MediaWiki 1.21+''' https://www.mediawiki.org/wiki/Extension:SpecialInterwiki
+<i>empty for now</i>
+
+=== Complex install ===
+
+* 📦 '''comes with MediaWiki 1.38+''' https://www.mediawiki.org/wiki/Extension:AbuseFilter <i>Needs AntiSpoof extension + additional filters http://en.wikipedia.org/wiki/Special:AbuseFilter</i>
+* https://www.mediawiki.org/wiki/Extension:AntiSpoof <i>additional sets https://www.mediawiki.org/wiki/Extension:AntiSpoof/Equivalence_sets </i>
+* https://www.mediawiki.org/wiki/Extension:CheckUser <b><i>quite important to be able check details about user including IPs etc.</i></b>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:EditWarning <i>or https://www.mediawiki.org/wiki/Extension:AjaxShowEditors</i>
+* ✖ '''not recommended''' https://www.mediawiki.org/wiki/Extension:FlaggedRevs
+* https://www.mediawiki.org/wiki/Extension:GlobalUserrights <i>global groups management</i>
+* https://www.mediawiki.org/wiki/Extension:SpamRegex
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Tasks
+* https://www.mediawiki.org/wiki/Extension:WhosOnline
+
+=== Beta versions ===
+
+<i>quite useful ones yet still beta state</i>
+<code style="display: block">Check_Spambots works, yet needs to be verified if properly</code>
+* 🔒 '''archived''' <del>https://www.mediawiki.org/wiki/Extension:Check_Spambots <i><b>NEEDED!</b>,for starter lets use these lists for blocking 1,2,3,4,5,6,11 (1(API obtained),2,6 still needs API/registration)</i></del>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Configure <i>configuration/maintenance</i>
+* ✅ '''stable''' https://www.mediawiki.org/wiki/Extension:ContactPage
+* 🔓 '''unmaintained''' https://www.mediawiki.org/wiki/Extension:Contributors
+* ✅ '''stable''' https://www.mediawiki.org/wiki/Extension:CreateRedirect
+* ✅ '''stable''' https://www.mediawiki.org/wiki/Extension:DeleteBatch
+* 🅱 '''beta''' https://www.mediawiki.org/wiki/Extension:GlobalBlocking
+* 🔓 '''unmaintained''' https://www.mediawiki.org/wiki/Extension:Maintenance <i>configuration/maintenance</i>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:RegexParserFunctions
+* 🔓 '''unmaintained''' https://www.mediawiki.org/wiki/Extension:ReplaceSet
+* 🔓 '''unmaintained''' https://www.mediawiki.org/wiki/Extension:UserLoginLog
+
+* 🔒 '''archived''' <del>https://www.mediawiki.org/wiki/Extension:Lockout <i>logs out banned user by terminating his sessions</i></del> Note: In MediaWiki 1.16 and later, <b>use $wgBlockDisablesLogin instead</b>.
+* 🔒 '''archived''' <del>https://www.mediawiki.org/wiki/Extension:FileCheck <i>prevents duplicate uploads, since 1.13 part of mediaWiki core</i></del>
+
+=== Special Install ===
+
+* https://www.mediawiki.org/wiki/Extension:ConfirmAccount <i>only in case of overhelming spam, ensures someone must confirm new accounts</i>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Recent_Activity_Notify <i>email notification about recent events, usable if things go out of hand often</i>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:SimpleSecurity <i>there may be specific security issues and implications with this extension, <b>too risky atm.</b></i>
+* https://www.mediawiki.org/wiki/Extension:TorBlock <i>in case http://en.wikipedia.org/wiki/Tor_(anonymity_network) is abused for account creation this will help against</i>
+* https://www.mediawiki.org/wiki/Extension:TrustedXFF <i>the list from mediaWiki is not available, otherwise would be useful against not trusted http://en.wikipedia.org/wiki/X-Forwarded-For </i>
+* 🔓 '''unmaintained and obsolete''' https://www.mediawiki.org/wiki/Extension:UploadBlacklist <i>in case someone starts spamming BIKI with uploads or malicious uploads this could be used to create SHA1 blacklist</i>
+
+
+== Account creation ==
+
+=== Done ===
+
+* <del>https://www.mediawiki.org/wiki/Extension:NewSignupPage <i>improves sign-up page</i><!--
+--><i>as mentioned here https://www.mediawiki.org/wiki/Extension:NewSignupPage#Interface_messages there 4 msg are neded to be added, as explained here https://www.mediawiki.org/wiki/Localisation#Adding_new_messages</i>
+* <del>https://www.mediawiki.org/wiki/Extension:Minimum_Name_Length <i>three characters as minimum </i></del>
+* 💀 '''dead link''' <del>http://code.google.com/intl/cs-CZ/apis/recaptcha/docs/mediawiki.html <i>reCaptcha for mediaWiki</i></del>
+
+=== Simple install ===
+
+<i>empty for now</i>
+
+=== Complex install ===
+
+<i>special purpose</i>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Facebook
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:OpenID
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:VBulletin/Users_Integration <i>comes handy when we will link together BIForum accounts with BIKI accounts</i>
+
+=== Beta versions ===
+
+<i>quite useful ones yet still beta state</i>
+* https://www.mediawiki.org/wiki/Extension:EmailCapture
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:SecurePasswords
+
+=== Special Install ===
+
+<i>helps in case of overhelming spam, throttles amount of users per period etc.
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:UserThrottle
+</i>
+
+
+== Parser Hooks ==
+
+=== Done ===
+
+<del>
+* https://www.mediawiki.org/wiki/Extension:CategoryTests
+* 📦 '''comes with MediaWiki 1.31+''' https://www.mediawiki.org/wiki/Extension:CategoryTree <i>uses AJAX</i>
+* 📦 '''comes with MediaWiki 1.21+''' https://www.mediawiki.org/wiki/Extension:Cite
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:CreateBox
+* https://www.mediawiki.org/wiki/Extension:DPLforum
+* https://www.mediawiki.org/wiki/Extension:DynamicPageList_(Wikimedia)
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:EmailAddressImage <i>turns email addresses into image to protect from email harvesting</i>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:IconLink
+* 📦 '''comes with MediaWiki 1.21+''' https://www.mediawiki.org/wiki/Extension:ImageMap
+* 📦 '''comes with MediaWiki 1.21+''' https://www.mediawiki.org/wiki/Extension:InputBox
+* 🔓 '''unmaintained and [[Extension:BIKI Helper|replaced]]''' https://www.mediawiki.org/wiki/Extension:JSpoiler
+* https://www.mediawiki.org/wiki/Extension:Labeled_Section_Transclusion
+* 📦 '''comes with MediaWiki 1.18+''' https://www.mediawiki.org/wiki/Extension:ParserFunctions <i>$wgPFEnableStringFunctions is set to TRUE to provide functionality of https://www.mediawiki.org/wiki/Extension:StringFunctions</i>
+* 📦 '''comes with MediaWiki 1.21+''' https://www.mediawiki.org/wiki/Extension:Poem
+* 📦 '''comes with MediaWiki 1.21+''' https://www.mediawiki.org/wiki/Extension:SyntaxHighlight_GeSHi <i>highlighting is must addition improving BIKI</i>
+</del>
+
+=== Simple install ===
+
+<i>empty for now</i>
+
+=== Complex install ===
+
+* 📦 '''comes with MediaWiki 1.38+''' https://www.mediawiki.org/wiki/Extension:Math <i>quite useful</i>
+* https://www.mediawiki.org/wiki/Extension:EasyTimeline <i>ultra-complex install https://www.mediawiki.org/wiki/Extension:EasyTimeline/installation</i>
+
+=== Beta versions ===
+
+* ✅ '''stable''' https://www.mediawiki.org/wiki/Extension:RSS <i>too experimental, lets wait for more stable update</i>
+* 🔓 '''unmaintained''' https://www.mediawiki.org/wiki/Extension:SimpleFeed
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:ToggleDisplay
+* 📦 '''comes with MediaWiki 1.18+''' https://www.mediawiki.org/wiki/Extension:WikiEditor
+
+
+== Media Handlers ==
+
+=== Done ===
+
+<del>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:VideoFlash
+</del>
+
+=== Simple install ===
+
+<i>empty for now</i>
+
+=== Complex install ===
+
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:OggHandler
+* https://www.mediawiki.org/wiki/Extension:PdfHandler <i>allows viewing PDF as pictures</i>
+
+=== Beta versions ===
+
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:FlashMP3
+
+
+== Search ==
+
+=== Done ===
+
+* 🔒 '''archived''' <del>https://www.mediawiki.org/wiki/Extension:BypassSearch</del> <b><i>NOT working properly - DISABLED</i></b>
+* 🔒 '''archived''' <del>https://www.mediawiki.org/wiki/Extension:GoToCategory</del>
+* 🔒 '''archived''' <del>https://www.mediawiki.org/wiki/Extension:Multi-Category_Search</del>
+
+=== Simple install ===
+
+<i>empty for now</i>
+
+=== Simple install but more nice-to-have ===
+
+=== Complex install ===
+
+* https://www.mediawiki.org/wiki/Extension:TitleKey
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:MWSearch <i>needs https://www.mediawiki.org/wiki/Extension:Lucene-search,<b>Lucene-search daemon needs to be running on host</b></i>
+
+=== Beta versions ===
+
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:QuickLink
+* 🔓 '''unmaintained''' https://www.mediawiki.org/wiki/Extension:SphinxSearch <i>needs linux install of http://sphinxsearch.com/docs/current.html#installing</i>
+
+=== Special install ===
+
+* https://www.mediawiki.org/wiki/Extension:Google_Analytics_Integration
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Google_Custom_Search_Engine
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:UniversalSuggester
+* 🔒 '''archived''' <del>https://www.mediawiki.org/wiki/Extension:GoogleSearch <i>not working</i></del>
+
+
+== Language & Translation ==
+
+=== Simple install ===
+
+* https://www.mediawiki.org/wiki/Extension:CLDR
+* https://www.mediawiki.org/wiki/Extension:I18nTags
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:LocalisationUpdate <i>extension can update the localizations for MediaWiki messages at any time, without needing to upgrade the MediaWiki software</i>
+
+=== Beta versions ===
+
+* 🅱 '''beta''' https://www.mediawiki.org/wiki/Extension:LanguageSelector
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Multilang
+
+=== Complex install ===
+
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:AutoLanguage <i>needs https://www.mediawiki.org/wiki/Extension:StubManager</i>
+* 🔓 '''unmaintained''' https://www.mediawiki.org/wiki/Extension:MultiLanguageManager
+* https://www.mediawiki.org/wiki/Extension:Translate <i>more http://translatewiki.net/wiki/Translating:Installation</i>
+
+
+== Other ==
+
+=== Done ===
+
+* 🔒 '''archived''' <del>https://www.mediawiki.org/wiki/Extension:Assert_Edit</del>
+* <del>https://www.mediawiki.org/wiki/Extension:CharInsert</del>
+* 🔒 '''archived''' <del>https://www.mediawiki.org/wiki/Extension:BreadCrumbs</del>
+* <del>https://www.mediawiki.org/wiki/Extension:UploadWizard</del>
+
+=== Simple install ===
+
+* https://www.mediawiki.org/wiki/Extension:Collection <i>for printing and export</i>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:PageAttachment
+* https://www.mediawiki.org/wiki/Extension:Validator
+* https://www.mediawiki.org/wiki/Extension:VariablesExtension
+
+=== Simple install but more nice-to-have ===
+
+* https://www.mediawiki.org/wiki/Extension:WebChat
+
+=== Complex install ===
+
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:ApiExplorer
+* https://www.mediawiki.org/wiki/Extension:SoftwareVersion <i>needs to be edited from shoutWiki to mediaWiki</i>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:MultiUpload <i>usable next to already installed UploadWizard for non-media files</i>
+
+=== Beta versions ===
+
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Pdf_Export_Dompdf
+* https://www.mediawiki.org/wiki/Extension:BreadCrumbs2 <i>either different or expanding version of the v1 one</i>
+* 🅱 '''beta''' https://www.mediawiki.org/wiki/Extension:OpenGraphMeta
+
+
+== Nice To Have ==
+
+* https://www.mediawiki.org/wiki/Extension:ProtectSite
+* https://www.mediawiki.org/wiki/Extension:DismissableSiteNotice
+* https://www.mediawiki.org/wiki/Extension:NewUserMessage
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:CategorySuggest
+* https://www.mediawiki.org/wiki/Extension:ImportFreeImages
+* https://www.mediawiki.org/wiki/Extension:RandomSelection
+* https://www.mediawiki.org/wiki/Extension:RandomImage
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:RandomText
+* 📦 '''comes with MediaWiki 1.18+''' https://www.mediawiki.org/wiki/Extension:Gadgets
+* https://www.mediawiki.org/wiki/Extension:Description2
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Asksql
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:FCKeditor_%28by_FCKeditor_and_Wikia%29 <i>quite powerful editor but still beta</i>
+* 🔓 '''unmaintained''' https://www.mediawiki.org/wiki/Extension:Checkpoint
+* 🔓 '''unmaintained''' https://www.mediawiki.org/wiki/Extension:TopTenPages
+* https://www.mediawiki.org/wiki/Extension:PageNotice
+
+=== Semantics related ===
+
+* https://www.mediawiki.org/wiki/Extension:Semantic_Forms <i>complex https://www.mediawiki.org/wiki/Extension:Semantic_Forms/Download_and_installation</i>
+<i>read https://www.mediawiki.org/wiki/Extension:Semantic_MediaWiki</i>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Semantic_Forms_Inputs
+* ❔ https://semantic-mediawiki.org/wiki/Help:Result_formats
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:FrequentPatternTagCloud
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:MetavidWiki
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Halo_Extension
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Semantic_Bundle <i>quite rich package of extensions for semantic</i>
+
+
+== Sources ==
+
+=== Unformatted ===
+
+From http://blog.fedecarg.com/2008/03/08/20-mediawiki-extensions-you-should-be-using:
+* <del>SimpleFeed<i>listed above as beta</i></del>
+* <del>VideoFlashi</del>
+* <del>Tasks<i>listed above as complex, TBD</i></del>
+* <del>ContactPage<i>listed above as beta</i></del>
+* <del>RenameUser</del>
+* <del>CheckUser<i>listed above as complex, TBD</i></del>
+
+From http://arnomane.wordpress.com/2007/06/27/mediawiki-tricks-2-essential-extensions:
+* <del>Newuserlog<i>already part of core mediaWiki</i></del>
+* <del>Renameuser</del>
+* <del>ConfirmEdit</del>
+* <del>ParserFunctions</del>
+
+From http://serverfault.com/questions/120589/useful-extensions-for-mediawiki:
+* <del>PDF export<i>listed above as beta</i></del>
+* <del>syntax highlight</del>
+* <del>Simple security<i>listed above as special, too risky</i></del>
+* <del>BreadCrumbs</del>
+
+Maybe some from wikipedia: http://en.wikipedia.org/wiki/Special:Version
+
+Very popular wiki pages like:
+* League of Legends wikia: http://leagueoflegends.wikia.com/wiki/Special:Version
+* StarTrek Online wiki: http://www.stowiki.org/Special:Version
+* Memory Alpha: http://en.memory-alpha.org/wiki/Special:Version
+* Memory Beta: http://memory-beta.wikia.com/wiki/Special:Version
+* Babylon 5 wiki: http://babylon5.wikia.com/wiki/Special:Version
+* http://translatewiki.net/wiki/Special:Version
+* http://en.wikinews.org/wiki/Special:Version
+* http://www.cityliferpg.com/cliki/index.php?title=Special%3AVersion
+* http://userbase.kde.org/Special:Version
+*
+
+Additional anti-spam sources: http://www.umasswiki.com/wiki/UMassWiki:Blocking_Spam_In_Mediawiki
+
+from #mediaWiki irc channel
+* https://www.mediawiki.org/wiki/Possible_tarballs
+* http://lists.wikimedia.org/pipermail/mediawiki-l/2011-August/037869.html
+* http://lists.wikimedia.org/pipermail/mediawiki-l/2011-August/037870.html
+* https://www.noisebridge.net/wiki/Secretaribot
+
+
+== Design ==
+
+=== Done ===
+
+<del>
+* http://en.wikipedia.org/w/index.php?title=MediaWiki:Common.js&action=edit Re-added [[MediaWiki:Common.js|Common.js]] from MediaWiki to e.g. support http://en.wikipedia.org/wiki/Help:Collapsing
+* http://en.wikipedia.org/w/index.php?title=MediaWiki:Common.css&action=edit Expanded our [[MediaWiki:Common.css|Common.css]] with MediaWiki styles
+</del>
+
+=== Simple Install ===
+
+* https://openwetware.org/wiki/User:Austin_J._Che/Extensions/Recentchangesfilter <i>helps create custom filters/urls for overhelming recent changes, still actual</i>
+
+=== Beta versions ===
+
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Back-and-Forth
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:WebFonts
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Vector
+
+
+== Statistics ==
+
+=== Simple Install ===
+
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:APC <i>Needs {{Link|http://www.php.net/apc|PHP's APC extension}} and {{Link|http://www.php.net/manual/en/book.image.php|GD extension}} for graphs. example http://translatewiki.net/wiki/Special:APC</i>
+* 🔒 '''archived''' https://www.mediawiki.org/wiki/Extension:Usage_Statistics
+
+=== Complex Install ===
+
+* https://www.mediawiki.org/wiki/Extension:UserOptionStats <i>needs http://phplot.sourceforge.net</i>
+
+
+[[Category:Maintenance]]

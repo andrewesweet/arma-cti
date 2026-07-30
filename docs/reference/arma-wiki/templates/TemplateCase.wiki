@@ -1,0 +1,14 @@
+// source: https://community.bistudio.com/wiki/Template:TemplateCase
+// revision: 295906 (2021-11-16T09:33:33Z)
+// export sha1: arjgvhmu7el0immcey7ff9pj3l2yae0
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#ifeq:{{uc:{{NAMESPACE}}}}|TEMPLATE|{{{1|}}}|{{{2|}}}}}</includeonly><noinclude>{{Doc/Template
+|descr= Adds content depending on the calling page's template.
+|param1= ifTemplate
+|descr1= content if the page is in the {{hl|Template:}} namespace
+|param2= ifNotTemplate
+|descr2= content if the page is not in the {{hl|Template:}} namespace
+|example1= <nowiki>{{TemplateCase|this is a template|this is -not- a template}}</nowiki>
+|result1= {{TemplateCase|this is a template|this is -not- a template}}
+}}</noinclude>

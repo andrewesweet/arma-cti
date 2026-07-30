@@ -1,0 +1,91 @@
+// source: https://community.bistudio.com/wiki/Arma_2_Weapon_to_Arma_3
+// revision: 336606 (2023-01-04T15:23:21Z)
+// export sha1: r00okv8dhwnxkmnp1jkpb6maeuz0brm
+// categories: Category:Arma 3: Weapon & Magazine Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|quote|This is a quick overview on porting Arma 2 weapons to Arma 3. The information is based on {{Link|link= http://forums.bistudio.com/showthread.php?147718-Bringing-A2-weapon-addons-to-A3&p=2316053&viewfull=1#post2316053|text= granQ's information}} as well as what I found out myself.|{{User|Alwarren}}}}
+
+==== Requirements ====
+* [[BI Tools 2.5|Oxygen Personal Edition]]
+
+
+== Porting Weapons to {{arma3}} ==
+
+=== Proxies ===
+
+Load the weapon into Oxygen2 or whatever modelling tool you use. Remove all attachments to the weapon that are either scopes, lasers, flashlights, or silencers. Front grips and grenade launchers are not included in the customization features of {{arma3}} and can therefore be kept.
+
+Remove all proxies from the weapon. Then, create a new proxy for
+* The muzzle flash (as an example, {{hl|\a3\data_f\proxies\muzzle_flash\muzzle_flash_rifle_mk20}} is the muzzle flash used by the MX). Make sure this is part of the "zasleh" named selection.
+* The muzzle attachment. Proxy should point to {{hl|\a3\data_f\proxies\weapon_slots\muzzle.001}} and be placed roughly at the ring where the sliencer would screw onto the normal muzzle.
+* The side rail attachment. Proxy should point to {{hl|\a3\data_f\proxies\weapon_slots\side.001}}. This is somewhat tricky to place, it should be above the right side rail and out a bit to the right. NOTE: If you are putting the side attachment on the right side, you have to rotate the proxy upside down.
+* The top rail attachment. Proxy should point to {{hl|\a3\data_f\proxies\weapon_slots\top.001}}. This is placed directly in the center of the top rail, somewhere towards the back of the rail.
+
+=== Flip-up iron sights ===
+
+Add the vertices of the sights parts that should flip up/down to named selections. In my case I used "front sight" and "back sight". Define rotation axis for them in the memory lod. Although not mandatory, I modelled the sights flat (i.e. flipped down) and rotate them around 270 degrees into an upward position when no optics is mounted.
+In your model.cfg, define rotation animations for the sights based on the hasOptics source, for example:
+<syntaxhighlight lang="cpp">
+class backsight_flip
+{
+	type = "rotationZ";
+	source = "hasOptics";
+	memory = 1;
+	selection = "back sight";
+	animPeriod = 0;
+	axis = "backsight axis";
+	minValue = 0.0;
+	maxValue = 0.3;
+	minPhase = 0.0;
+	maxPhase = 0.3;
+	angle0 = 4.712389;
+	angle1 = 0.0;
+};
+</syntaxhighlight>
+Do something similar for the front sight.
+
+=== Muzzle Flash ===
+
+In order to hide the muzzle flash when the a suppressor is mounted, define a "hide" animation for the muzzle flash:
+<syntaxhighlight lang="cpp">
+class muzzleflash_hide
+{
+	type = "hide";
+	source = "hasSuppressor";
+	selection = "zasleh";
+	minValue = 0.0;
+	maxvalue = 0.25;
+	hideValue = 0.01;
+};
+</syntaxhighlight>
+I am not entirely sure this is needed, but I had the proxy triangle show up occasionally if I didn't do this.
+
+=== Inventory Icons ===
+
+The inventory icon for the weapon is actually eight icons. The following naming scheme is assumed (actually only the last _xx_ca.paa is implied):
+* gear_'''&lt;wpnName&gt;'''_x_ca.paa
+* gear_'''&lt;wpnName&gt;'''_m_ca.paa
+* gear_'''&lt;wpnName&gt;'''_ms_ca.paa
+* gear_'''&lt;wpnName&gt;'''_mst_ca.paa
+* gear_'''&lt;wpnName&gt;'''_mt_ca.paa
+* gear_'''&lt;wpnName&gt;'''_s_ca.paa
+* gear_'''&lt;wpnName&gt;'''_st_ca.paa
+* gear_'''&lt;wpnName&gt;'''_t_ca.paa
+
+Replace &lt;wpnName&gt; with a generic name (example: acr_wdl). The meaning of the names are:
+* x - no attachment
+* m - muzzle (silencer) attachment
+* s - side rail attachment
+* t - top rail attachment.
+
+So, if you attach a silencer and scope to a weapon, the inventory screen will show gear_acr_wdl_mt_ca.paa as the icon. The default weapon icons show a stylized scope, laser or silencer on the weapon. Since in theory any attachment can be mounted, it is a good idea to stay with the scheme.
+
+
+== Config Files ==
+
+''to be written''
+
+
+{{GameCategory|arma3|Weapon & Magazine Configuration}}

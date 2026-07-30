@@ -1,0 +1,189 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Civilian_Presence
+// revision: 363377 (2024-03-29T08:30:44Z)
+// export sha1: mnnhjyota2wjwld8qgz4evfoykvsem2
+// categories: Category:Arma 3: Editor Modules | Category:Introduced with Arma 3 version 1.78
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GVI|arma3|1.78}} Civilian Presence (CP) is a supplementary system introduced with the [[Arma 3 Tac-Ops Mission Pack]]. Its goal is it to enrich combat experience in urban areas without hindering overall game performance.
+
+It was designed and scripted with performance in mind, and because of that, the behavior of civilian units created by CP is simple:
+
+* If there is no danger, the civilians walk randomly between user predefined waypoints.
+* In case of near danger, civilians run away, trying to avoid danger sources on the way.
+* In case of low / distant danger, civilians try to hide in user predefined cover points.
+
+
+== General notes about CP ==
+
+* Works in both singleplayer {{GVI|arma3|1.78|size= 0.75}} and multiplayer {{GVI|arma3|1.82|size= 0.75}} environments.
+* Is built on top of the (engine controlled) danger event system - has low performance profile, but AI ability to recognize imminent danger is sometimes bit delayed.
+* Is area based - there can be multiple instances of CP system running on the map.
+* Can be controlled by triggers - each instance of CP can be turned ON /OFF on demand.
+* Can be greatly customized through module attributes and module setup / placement.
+* Automatically avoids spawning and despawning of units in player's vicinity, especially if the position is in direct line of sight.
+* Type of civilian units spawned is automatically determined according to terrain used.
+
+The CP system consists of three types of modules, described in the following sections.
+
+== Civilian Presence Module ==
+
+This is the core module that provides global definition of system behavior in a given area.<br>
+[[File:module.jpeg|520px|Settings for the 'Civilian Presence' module]]
+
+=== Module settings ===
+
+Each of the module settings has its own brief in-game description in the tooltip.
+; Code On Unit Created / Deleted	
+: These two attributes allow for the definition of custom code that gets called when unit is spawned / despawned by the CP system.
+
+: '''Example:'''
+: Apply random loadouts from the {{Link|link= https://steamcommunity.com/sharedfiles/filedetails/?id=497661914|text= CUP Units}} mod to civilians:
+: <sqf>_this setUnitLoadout selectRandom [
+	"CUP_C_TK_Man_05_Waist",
+	"CUP_C_TK_Man_06_Waist",
+	"CUP_C_TK_Man_01_Coat",
+	"CUP_C_TK_Man_08_Waist",
+	"CUP_C_TK_Man_03_Coat",
+	"CUP_C_TK_Man_01_Jack",
+	"CUP_C_TK_Man_06_Jack",
+	"CUP_C_TK_Man_03_Jack"
+];
+</sqf>
+
+: Apply random identity:
+: <sqf>[_this, selectRandom ["TO_C03_Pilot", "TO_C03_Medic", "TO_C03_Collins", "RC_B_HQ"]] remoteExec ["setIdentity", 0, _this];</sqf>
+
+; Civilian Count
+: Defines how many civilian units should be created and handled by the CP in the area. If there are more units, the extra units get continuously despawned until the unit count reaches the value and vice versa.
+; Use Panic Action
+: Allows for use of panic action on the handled civilian units. Because panic state animations do not always working well, this is an optional setting. Try what works best for your scenario and use case.
+; Use Agents
+: Controls if agents (units with limited simulation) should be used instead of standard units. Agents are less performance demanding, but not all of the unit related script commands works with them. If you experience such issues, turn this option OFF.
+; Debug
+: Turn on visual in-game debug. If this option is ON, you will see overlay debug indicators on CP units and waypoints / cover points while running the scenario. The overlay contains information about each unit position, destination and threat level (how afraid unit currently is) and each waypoint placement and it is capacity.
+; Unit Types
+: This parameter controls what kind of units are created on map. By default, module will try to automatically pick terrain appropriate civilians. It is also possible to override that automatic selection and pick unit types manually.
+
+=== Module setup ===
+
+* Place one Civilian Presence module per area.
+* Resize the module to cover the whole area you want to populate / handle by the CP system.
+* If you want to turn ON & OFF the system in the area, synchronize the module with a trigger (ideally with Repeatable flag checked).
+** When trigger is activated, the CP gets activated and will start to populate area with civilian units.
+** When trigger is deactivated, the CP will start to shutdown, continuously removing handled civilians. When last civilian gets removed, the whole CP for the area gets deactivated.
+
+
+=== Expanding module ===
+
+Module can be expanded via mods which can add different unit types or define their default type of 
+
+==== Adding support for new terrains ====
+Community made maps can define what kind of units are spawned by Civilian Presence Module by default. To do so, a new array has to be added to UnitTypes. Name of that parameter should match terrain class name from CfgWorlds.
+
+Below is example code adding Livonian units to Chernarus:
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class Module_F;
+	class ModuleCivilianPresence_F : Module_F
+	{
+		class UnitTypes
+		{
+			chernarus[] = {"C_Man_1_enoch_F", "C_Man_2_enoch_F", "C_Man_3_enoch_F", "C_Man_4_enoch_F", "C_Man_5_enoch_F", "C_Man_6_enoch_F", "C_Farmer_01_enoch_F"};
+		};
+	};
+};
+</syntaxhighlight>	
+
+==== Adding new unit types ====
+Adding new units to Civilian Presence Module requires creating new class in CfgVehicles which have custom fsmDanger. Module expects CivilianPresence_ prefix on those classes.
+
+The macro below can be used to quickly create those new classes:
+<syntaxhighlight lang="cpp">
+class CfgVehicles 
+{
+	// special agent variants used by the Civilian Presence system
+	#define CREATE_AGENT(type)\
+	class CivilianPresence_##type##:type\
+	{\
+		scope = 1;\
+		scopeCurator = 0;\
+		fsmDanger = "A3\Modules_F_Tacops\Ambient\CivilianPresence\FSM\danger.fsm";\
+		fsmFormation = "";\
+	};
+	CREATE_AGENT(C_Man_1_enoch_F);
+	CREATE_AGENT(C_Man_2_enoch_F);
+	CREATE_AGENT(C_Man_3_enoch_F);
+	CREATE_AGENT(C_Man_4_enoch_F);
+	CREATE_AGENT(C_Man_5_enoch_F);
+	CREATE_AGENT(C_Man_6_enoch_F);
+	CREATE_AGENT(C_Farmer_01_enoch_F);
+};
+</syntaxhighlight>
+
+Once those new classes are created, they can be added to CivilianPresence_Presets class located in core config:
+<syntaxhighlight lang="cpp">
+class CivilianPresence_Presets 
+{
+	class Civ_Livionian
+	{
+		name = "Men (Livionian)";
+		picture = "\a3\Data_f_enoch\flags\flag_Enoch_CO.paa";
+		value = "Civ_Livionian";
+		defaultValue = "Civ_Livionian";
+		class UnitTypes
+		{
+			bis_units[]	= { "C_Man_1_enoch_F", "C_Man_2_enoch_F", "C_Man_3_enoch_F", "C_Man_4_enoch_F", "C_Man_5_enoch_F", "C_Man_6_enoch_F", "C_Farmer_01_enoch_F" };
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== Civilian Presence Spawnpoint Module ==
+
+This module determines the positions where civilian units can spawn. Each time CP system is activated, one civilian unit is automatically create on each of the Civilian Presence Spawnpoint module in the area.
+
+=== Module settings ===
+
+None.
+
+=== Module setup ===
+
+* Place as many of Civilian Presence Spawnpoint modules in the area (defined by Civilian Presence module), but at least one.
+* Try to place modules on spots that are obscured by nearby objects so they are not visible from afar. If there is line of sight on any player on a spawnpoint, such spawnpoint is blocked and no unit is be able to spawn on it.
+* Civilian Presence Spawnpoint module can be in building.
+
+
+== Civilian Presence Position Module ==
+
+Module provides a waypoint / cover point for CP units. Its settings and especially placement is crucial for CP system to achieve a good effect.<br>
+[[File:Civilian_Presence_Position_module.jpeg|520px|Settings for 'Civilian Presence Position' module]]
+
+=== Module settings ===
+
+Each of the module settings has its own brief in-game description in the tooltip.
+; Type	
+: Controls type of the position module.
+:* Cover - position will be used only if unit feels endangered and the threat is low, usually far away. Unit will move there and stay there until either the danger is gone, when it will safely walk away or, if the danger gets close, then it will flee.
+:* Waypoint - position will be used only if a unit feels safe. Unit will walk there and after a while will randomly pick another waypoint and move there.
+:* Cover & Waypoint - position is a combination of both above mentioned position types. Such position will be used
+; Capacity	
+: Maximum number of civilian units that can fit in. If the max. capacity is reached, remaining civilians will pick another position.
+; Use Closest Building
+: Setting controls if civilian units should use the module position or rather the position of a nearby building instead. If you want a building to serve as the position, use this option. The maximum distance for the building to get paired with the module is 50 m.
+; Is Terminal
+: Controls if a unit should be despawned when the position is reached. Use this option if you want to achieve an effect, where units will be fleeing from the area. Standard despawning rules apply (distance & line of sight).
+
+=== Module setup ===
+
+* Place any number of Civilian Presence Position modules in the area (defined by Civilian Presence module), but at least two.
+* Make sure there is enough of Civilian Presence Position modules that can serve as Waypoint and Cover, so units can properly move during both danger and safe times.
+* Because the threat level and AI behavior is dependent of distance to danger sources (usually enemies, gunfire sounds, etc.) and the time elapsed from when the danger was registered (enemy was seen, gunfire was heard, etc.), it is crucial the Civilian Presence Position modules are properly placed.
+* In situations where there is an insufficient number of cover points, especially in the outer parts of the area, AI might run away from danger, then calm down and move back searching for cover point. Then, on the way back, it gets too close to the danger it will start to flee again. This is obviously not ideal situation, so pay attention to proper placement of the cover point and use Debug mode to see where unit is heading and how terrified is.
+* It is strongly suggested to make the outer modules Terminal, to prevent the above mentioned bouncing effect.
+
+
+{{GameCategory|arma3|Editor Modules}}
+[[Category:Introduced with {{arma3}} version 1.78]]

@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/setDynamicSimulationDistance
+// revision: 363576 (2024-04-07T11:30:33Z)
+// export sha1: 04x7b6qpj12tzk33jms19s80zk3855q
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Dynamic Simulation | Category:Introduced with Arma 3 version 1.68 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.68
+
+|gr1= Dynamic Simulation
+
+|descr= Sets activation distance of [[Arma 3: Dynamic Simulation]] for given category.
+
+|s1= category [[setDynamicSimulationDistance]] distance
+
+|p1= category: [[String]] - can be one of:
+* {{hl|"Group"}} - infantry units. Set to a reasonable distance, player should not see disabled infantry units. Default value 500m
+* {{hl|"Vehicle"}} - vehicles with crew. Set to a reasonable distance, player should not see disabled vehicles. Default value 350m
+* {{hl|"EmptyVehicle"}} - all vehicles without crew. Separated from Props as Empty Vehicles have often more complex damage states and selective destruction. Their activation distance should be larger than the one used for Props. Default value 250m
+* {{hl|"Prop"}} - static objects. Anything from a small tin can to a building. Default value 50m
+
+|p2= distance: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"Group" setDynamicSimulationDistance 1000;</sqf>
+
+|seealso= [[Arma 3: Dynamic Simulation]] [[dynamicSimulationDistance]] [[setDynamicSimulationDistanceCoef]] [[dynamicSimulationDistanceCoef]] 
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 201703191952
+|text= Desired distances for "Group" and "Vehicle" must be based on [[viewDistance]] and [[fog]] to exclude any rendering problems with frequently moving objects. Example:
+<sqf>"Group" setDynamicSimulationDistance ((viewDistance * 0.8) - (viewDistance * fog)); // 80% of maximum rendering and fog distance</sqf>
+
+But that might impair objects simulation if you are using long-scope optics, so there's an even better solution using [[cameraView]] with it:
+<sqf>
+0 spawn {
+	while { true } do
+	{
+		if (cameraView isEqualTo "GUNNER") then
+		{
+			"Group" setDynamicSimulationDistance (viewDistance - (viewDistance * fog));
+			// Scoped
+		}
+		else
+		{
+			"Group" setDynamicSimulationDistance ((viewDistance * 0.8) - (viewDistance * fog));
+			// Not scoped
+		};
+
+		uiSleep 0.25;
+	};
+};
+</sqf>
+}}

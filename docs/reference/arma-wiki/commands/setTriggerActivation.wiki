@@ -1,0 +1,106 @@
+// source: https://community.bistudio.com/wiki/setTriggerActivation
+// revision: 378817 (2026-07-01T00:11:02Z)
+// export sha1: frbnf5avmsojaj3wv07c230ri1ise12
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Triggers | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+|eff= local
+
+|gr1= Triggers
+
+|descr= Defines the trigger activation type.
+
+See [[ArmA:_Mission_Editor#Triggers_Mode_.28F3.29|ArmA:Mission Editor - Triggers]] for a thorough overview of triggers and its fields for activation, effects, etc.
+
+|s1= trigger [[setTriggerActivation]] [by, type, repeating, persistent]
+
+|p1= trigger: [[Object]] - trigger object
+
+|p2= by: [[String]] - who activates trigger. Can be {{hl|"NONE"}}, or:
+{{{!}} class="wikitable valign-top"
+! Side
+! Radio
+! Object
+! Status
+{{!}}-
+{{!}}
+{{Columns|2|
+* {{hl|"EAST"}}
+* {{hl|"WEST"}}
+* {{hl|"GUER"}}
+* {{hl|"CIV"}}
+* {{hl|"LOGIC"}}
+* {{hl|"ANY"}}
+* {{GVI|arma3|1.68|size= 0.75}} {{hl|"ANYPLAYER"}}
+}}
+{{!}}
+{{Columns|3|
+* {{hl|"ALPHA"}}
+* {{hl|"BRAVO"}}
+* {{hl|"CHARLIE"}}
+* {{hl|"DELTA"}}
+* {{hl|"ECHO"}}
+* {{hl|"FOXTROT"}}
+* {{hl|"GOLF"}}
+* {{hl|"HOTEL"}}
+* {{hl|"INDIA"}}
+* {{hl|"JULIET"}}
+}}
+{{!}}
+{{Columns|3|
+* {{hl|"STATIC"}}
+* {{hl|"VEHICLE"}}
+* {{hl|"GROUP"}}
+* {{hl|"LEADER"}}
+* {{hl|"MEMBER"}}
+}}
+{{!}}
+* {{hl|"WEST SEIZED"}}
+* {{hl|"EAST SEIZED"}}
+* {{hl|"GUER SEIZED"}}
+{{!}}}
+
+|p3= type: [[String]] - how trigger is it activated. Can be:
+{{{!}} class="wikitable valign-top"
+! Presence
+! Detection
+{{!}}-
+{{!}}
+* {{hl|"PRESENT"}}
+* {{hl|"NOT PRESENT"}}
+{{!}}
+* {{hl|"WEST D"}}
+* {{hl|"EAST D"}}
+* {{hl|"GUER D"}}
+* {{hl|"CIV D"}}
+{{!}}}
+
+|p4= repeating: [[Boolean]] - activation can happen repeatedly
+
+|p5=persistent (Optional): [[Boolean]] - when [[false]] stops persistent condition execution and vehicle list building on non-repeating trigger; is ignored in radio and repeating triggers. Default: [[true]]
+|p5since= arma3 2.24
+|r1= [[Nothing]]
+
+|x1= <sqf>_trigger setTriggerActivation ["WEST", "EAST D", true];</sqf>
+|mp= Activation changes are local.
+
+|seealso= [[triggerActivation]] [[triggerActivated]] [[createTrigger]] [[setTriggerArea]] [[setTriggerStatements]] [[setTriggerText]] [[setTriggerTimeout]] [[setTriggerType]] [[triggerAttachVehicle]] [[triggerAttachObject]] [[triggerInterval]] [[setTriggerInterval]] [[enableSimulation]] [[simulationEnabled]]
+}}

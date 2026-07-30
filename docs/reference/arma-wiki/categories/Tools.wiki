@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Tools
+// revision: 243215 (2021-02-06T23:34:14Z)
+// export sha1: afe2n6an08c9reyokg1gb3l50mojkpd
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Official tools''' were created by [[Bohemia Interactive]]. These tools are provided to the community under the terms that allows free use of the tools for any '''non-commercial''' purposes. You must agree to the terms of [[End User License Agreement for BI's Tools]] before using '''any''' of the tools.
+
+{{Feature | Warning | You are '''not''' allowed to use these tools for any commercial purpose (including but not limited to using it for military training) '''without express permission''' of [[Bohemia Interactive]].}}
+
+[[Category:Bohemia Interactive]]

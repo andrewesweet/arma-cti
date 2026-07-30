@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/getStamina
+// revision: 363462 (2024-03-31T00:52:30Z)
+// export sha1: 8sbvyjbxtz0aly794aj55eskj5d9d4j
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Stamina System | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|gr1= Stamina System
+
+|descr= Get current stamina (~ seconds until depletion)
+
+|s1= [[getStamina]] unit
+
+|p1= unit: [[Object]]
+|r1= [[Number]]
+
+|x1= <sqf>getStamina player;</sqf>
+
+|seealso= [[Arma 3: Stamina]] [[setStamina]] [[setFatigue]] [[getFatigue]]
+}}
+
+{{Note
+|user= Hypoxic125
+|timestamp= 20240331005230
+|text= A naked player unit has 60 seconds of stamina.
+}}

@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_markerCreate
+// revision: 309833 (2022-05-05T12:09:52Z)
+// export sha1: 7xikebmfr3uvkqb0v6hl3a9zg2ihj5z
+// categories: Category:Arma 3: Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Map and Markers
+
+|descr= <pre>/*
+
+	Description:
+	Creates marker with given params.
+	Reads config to recognize settings - use for quick debugging only.
+
+	Parameter(s):
+	_this: ARRAY of values:
+		STRING - one of type, color, brush or shape. If no corresponding class is found, value is used as marker text
+		ARRAY
+			[STRING(,ANY,ANY,...)] - marker name with optional arguments
+			[NUMBER] - marker size [a,a]
+			[NUMBER,NUMBER] - marker size [x,y]
+			[NUMBER,NUMBER,NUMBER] - marker position [x,y,z]
+		OBJECT - object's position
+		NUMBER - marker dir
+		BOOL - marker locality (true if global)
+
+	Returns:
+	STRING - created marker
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_markerCreate]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_markerCreate;</sqf> -->
+
+|seealso=
+}}

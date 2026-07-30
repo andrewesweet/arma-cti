@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Containers
+// revision: 341564 (2023-06-09T13:40:27Z)
+// export sha1: 0n5dqqdj7quwtl085zptoprnw9pqsck
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands that are used to manipulate containers.
+
+* [[:Category:Command_Group: Unit Inventory|Unit Inventory]]
+* [[:Category:Command_Group: Vehicle Inventory|Vehicle Inventory]]
+
+[[Category:Scripting Commands by Functionality]]

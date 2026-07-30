@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/toLower
+// revision: 308975 (2022-04-21T14:51:35Z)
+// export sha1: e9ilp30gqv2g26huark9cphclmfsx2g
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings | Category:Introduced with Armed Assault version 1.09 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.09
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Strings
+
+|descr= Converts the supplied Unicode string to all lowercase characters. If the string doesn't have characters with [[toArray|codes]] > 255, use [[toLowerANSI]].
+
+|s1= [[toLower]] string
+
+|p1= string: [[String]]
+
+|r1= [[String]]
+
+|x1= <sqf>hint toLower "AaBb1"; // returns "aabb1"</sqf>
+
+|seealso= [[toString]] [[toArray]] [[toUpper]] [[toFixed]] [[toLowerANSI]] [[toUpperANSI]]
+}}

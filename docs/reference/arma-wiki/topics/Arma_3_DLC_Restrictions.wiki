@@ -1,0 +1,8676 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_DLC_Restrictions
+// revision: 376056 (2025-07-23T13:47:40Z)
+// export sha1: p1dv4mkkfuej7ldwz7llzsm3tdcepmj
+// categories: Category:Arma 3: DLCs & Expansions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Most [[:Category:Arma 3 DLCs &amp; Expansions|Arma 3 DLCs &amp; Expansions]] come with restrictions regarding the usage of their premium assets (e.g. vehicles and weapons).
+This technology is referred to as [[Arma 3: DLC Content Licensing|Content Licensing]].
+Some DLC assets are ''not'' covered by this limitation and are added to the base game / platform for free (e.g. decorative props).
+
+{{Feature|informative|
+* All (premium) DLC assets can be tested without any kind of limitation or ads in the [[Arma 3: Arsenal|Arsenal]].
+* As the in-game ads will tell, press {{Controls|LShift|P}} in order to open the DLC Content Browser menu.
+* See the {{Link|https://www.bohemia.net/blog/roadmap-14-15-dlc-strategy-blog|Roadmap 2014/15 - Arma 3 DLC Strategy}} blog post for further information.
+}}
+
+{{Feature|informative|
+{{Icon|arma3spex|25}} For the restrictions of the [[Spearhead 1944]] CDLC and its companion modification [[:Category: SPEX - Spearhead Extended|SPEX - Spearhead Extended]] visit [[Spearhead Extended Asset Restrictions]].
+}}
+
+
+== Different Restrictions ==
+
+The following restrictions only apply to '''[[#Per Item DLC Restrictions|DLC assets]]''' that have '''DLC Restrictions''' applied to them.
+A more technical description of said restrictions and how to configure Content Licensing for DLC can be viewed on the [[Arma 3: DLC Content Licensing]] page.
+<!--
+{{Feature|informative|
+Take a look at the {{Link|https://partner.steamgames.com/doc/store/application/dlc#7|Steam Downloadable Content (DLC) Test chapter}}
+to temporarily disable DLC ownership and test user-created content that contains DLC assets.
+}}
+-->
+
+=== Weapon Restrictions ===
+
+* Cannot be picked up from a box, a corpse, or anywhere else.
+* If added by script or already provided, the DLC ads overlay will appear more and more frequently.
+
+=== Vehicle Restrictions ===
+
+* Cannot get in the Driver, Commander and Gunner positions. Passenger seats including FFV seats are still open to non-owners.
+** Even though Passenger seats are open to everyone, ads will still appear for non-owners.
+* If put in Driver, Commander and Gunner seats by script/already there as mission starts, the DLC ads overlay will appear more and more frequently.
+
+=== Gear Restrictions ===
+
+* Cannot be picked up from a box, a corpse, or anywhere else.
+* If added by script or already provided, the DLC ads overlay will appear more and more frequently.
+
+=== Drone Restrictions ===
+
+Cannot be connected to via the UAV Terminal.
+
+=== Terrain Restrictions ===
+
+The terrain simply cannot be accessed (even in [[:Category:Eden Editor|Eden Editor]]).
+
+=== Mission Restrictions ===
+
+If the mission is DLC-restricted, the mission cannot be started (such as some official Showcases and Challenges).
+* In [[Eden Editor: Scenario Attributes|Eden Editor]], restrictions are set via '''Attributes > General > Overview > DLC''' and '''Require DLC''' if necessary.
+
+=== Props Restrictions ===
+
+There's nothing unless the DLC is an optional DLC. Every prop that included in the vanilla game is free to use, without any kind of restrictions.
+
+
+== Per Item DLC Restrictions ==
+
+Since a displayed DLC icon doesn't mean the item is restricted (premium), the following tables help finding out which items and equipment mission makers can use.
+
+{{Feature|informative|
+* These tables are valid as of {{arma3}} '''v2.10'''.
+* '''[[#Personal Equipment|Personal Equipment]]''' list icons are based on [[Arsenal]].
+* '''[[#Vehicles|Vehicles]]''' list icons are based on [[Eden Editor: Asset Browser| Eden Editor's Asset Browser]].
+}}
+<!--Don't forget to replace ﾂ! (No more thanks to forceUnicode!)-->
+
+=== Personal Equipment ===
+
+<spoiler text="Show Personal Equipment table">
+{| class="wikitable sortable"
+|-
+! Type
+! classname
+! displayName
+! Icon
+! Restricted?
+|-
+| Watch
+| ItemWatch
+| Watch
+|
+| No
+|-
+| Compass
+| ItemCompass
+| Compass
+|
+| No
+|-
+| Terminal
+| ItemGPS
+| GPS
+|
+| No
+|-
+| Communication
+| ItemRadio
+| Radio
+|
+| No
+|-
+| Map
+| ItemMap
+| Map
+|
+| No
+|-
+| Item
+| MineDetector
+| Mine Detector
+|
+| No
+|-
+| Binocular
+| Binocular
+| Binoculars
+|
+| No
+|-
+| Binocular
+| Rangefinder
+| Rangefinder
+|
+| No
+|-
+| NVGs
+| NVGoggles
+| NV Goggles (Brown)
+|
+| No
+|-
+| NVGs
+| NVGoggles_OPFOR
+| NV Goggles (Black)
+|
+| No
+|-
+| NVGs
+| NVGoggles_INDEP
+| NV Goggles (Green)
+|
+| No
+|-
+| Binocular
+| Laserdesignator
+| Laser Designator (Sand)
+|
+| No
+|-
+| Binocular
+| Laserdesignator_02
+| Laser Designator (Hex)
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Binocular
+| Laserdesignator_03
+| Laser Designator (Olive)
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Item
+| FirstAidKit
+| First Aid Kit
+|
+| No
+|-
+| Item
+| Medikit
+| Medikit
+|
+| No
+|-
+| Item
+| ToolKit
+| Toolkit
+|
+| No
+|-
+| Launcher
+| launch_NLAW_F
+| PCML
+|
+| No
+|-
+| Launcher
+| launch_RPG32_F
+| RPG-42 Alamut
+|
+| No
+|-
+| Launcher
+| launch_B_Titan_F
+| Titan MPRL (Sand)
+|
+| No
+|-
+| Launcher
+| launch_I_Titan_F
+| Titan MPRL (Digital)
+|
+| No
+|-
+| Launcher
+| launch_O_Titan_F
+| Titan MPRL (Hex)
+|
+| No
+|-
+| Launcher
+| launch_B_Titan_short_F
+| Titan MPRL Compact (Sand)
+|
+| No
+|-
+| Launcher
+| launch_I_Titan_short_F
+| Titan MPRL Compact (Olive)
+|
+| No
+|-
+| Launcher
+| launch_O_Titan_short_F
+| Titan MPRL Compact (Coyote)
+|
+| No
+|-
+| Rifle
+| srifle_DMR_01_F
+| Rahim 7.62 mm
+|
+| No
+|-
+| Rifle
+| srifle_EBR_F
+| Mk18 ABR 7.62 mm
+|
+| No
+|-
+| Rifle
+| srifle_GM6_F
+| GM6 Lynx 12.7 mm
+|
+| No
+|-
+| Rifle
+| srifle_GM6_camo_F
+| GM6 Lynx 12.7 mm (Camo)
+|
+| No
+|-
+| Rifle
+| srifle_LRR_F
+| M320 LRR .408
+|
+| No
+|-
+| Rifle
+| srifle_LRR_camo_F
+| M320 LRR .408 (Camo)
+|
+| No
+|-
+| Rifle
+| LMG_Mk200_F
+| Mk200 6.5 mm
+|
+| No
+|-
+| Rifle
+| LMG_Zafir_F
+| Zafir 7.62 mm
+|
+| No
+|-
+| Pistol
+| hgun_ACPC2_F
+| ACP-C2 .45 ACP
+|
+| No
+|-
+| Pistol
+| hgun_P07_F
+| P07 9 mm
+|
+| No
+|-
+| Pistol
+| hgun_Pistol_heavy_01_F
+| 4-five .45 ACP
+|
+| No
+|-
+| Pistol
+| hgun_Pistol_heavy_02_F
+| Zubr .45 ACP
+|
+| No
+|-
+| Pistol
+| hgun_Rook40_F
+| Rook-40 9 mm
+|
+| No
+|-
+| Rifle
+| arifle_Katiba_F
+| Katiba 6.5 mm
+|
+| No
+|-
+| Rifle
+| arifle_Katiba_C_F
+| Katiba Carbine 6.5 mm
+|
+| No
+|-
+| Rifle
+| arifle_Katiba_GL_F
+| Katiba GL 6.5 mm
+|
+| No
+|-
+| Rifle
+| arifle_Mk20_F
+| Mk20 5.56 mm (Camo)
+|
+| No
+|-
+| Rifle
+| arifle_Mk20_plain_F
+| Mk20 5.56 mm
+|
+| No
+|-
+| Rifle
+| arifle_Mk20C_F
+| Mk20C 5.56 mm (Camo)
+|
+| No
+|-
+| Rifle
+| arifle_Mk20C_plain_F
+| Mk20C 5.56 mm
+|
+| No
+|-
+| Rifle
+| arifle_Mk20_GL_F
+| Mk20 EGLM 5.56 mm (Camo)
+|
+| No
+|-
+| Rifle
+| arifle_Mk20_GL_plain_F
+| Mk20 EGLM 5.56 mm
+|
+| No
+|-
+| Rifle
+| arifle_MXC_F
+| MXC 6.5 mm
+|
+| No
+|-
+| Rifle
+| arifle_MX_F
+| MX 6.5 mm
+|
+| No
+|-
+| Rifle
+| arifle_MX_GL_F
+| MX 3GL 6.5 mm
+|
+| No
+|-
+| Rifle
+| arifle_MX_SW_F
+| MX SW 6.5 mm
+|
+| No
+|-
+| Rifle
+| arifle_MXM_F
+| MXM 6.5 mm
+|
+| No
+|-
+| Rifle
+| arifle_MXC_Black_F
+| MXC 6.5 mm (Black)
+|
+| No
+|-
+| Rifle
+| arifle_MX_Black_F
+| MX 6.5 mm (Black)
+|
+| No
+|-
+| Rifle
+| arifle_MX_GL_Black_F
+| MX 3GL 6.5 mm (Black)
+|
+| No
+|-
+| Rifle
+| arifle_MX_SW_Black_F
+| MX SW 6.5 mm (Black)
+|
+| No
+|-
+| Rifle
+| arifle_MXM_Black_F
+| MXM 6.5 mm (Black)
+|
+| No
+|-
+| Rifle
+| arifle_SDAR_F
+| SDAR 5.56 mm
+|
+| No
+|-
+| Rifle
+| arifle_TRG21_F
+| TRG-21 5.56 mm
+|
+| No
+|-
+| Rifle
+| arifle_TRG20_F
+| TRG-20 5.56 mm
+|
+| No
+|-
+| Rifle
+| arifle_TRG21_GL_F
+| TRG-21 EGLM 5.56 mm
+|
+| No
+|-
+| Rifle
+| hgun_PDW2000_F
+| PDW2000 9 mm
+|
+| No
+|-
+| Rifle
+| SMG_01_F
+| Vermin SMG .45 ACP
+|
+| No
+|-
+| Rifle
+| SMG_02_F
+| Sting 9 mm
+|
+| No
+|-
+| Uniform
+| U_B_CombatUniform_mcam
+| Combat Fatigues (MTP)
+|
+| No
+|-
+| Uniform
+| U_B_CombatUniform_mcam_tshirt
+| Combat Fatigues (MTP) (Tee)
+|
+| No
+|-
+| Uniform
+| U_B_CombatUniform_mcam_vest
+| Recon Fatigues (MTP)
+|
+| No
+|-
+| Uniform
+| U_B_GhillieSuit
+| Ghillie Suit [NATO]
+|
+| No
+|-
+| Uniform
+| U_B_HeliPilotCoveralls
+| Heli Pilot Coveralls [NATO]
+|
+| No
+|-
+| Uniform
+| U_B_Wetsuit
+| Wetsuit [NATO]
+|
+| No
+|-
+| Uniform
+| U_O_CombatUniform_ocamo
+| Fatigues (Hex) [CSAT]
+|
+| No
+|-
+| Uniform
+| U_O_GhillieSuit
+| Ghillie Suit [CSAT]
+|
+| No
+|-
+| Uniform
+| U_O_PilotCoveralls
+| Pilot Coveralls [CSAT]
+|
+| No
+|-
+| Uniform
+| U_O_Wetsuit
+| Wetsuit [CSAT]
+|
+| No
+|-
+| Uniform
+| U_C_Poloshirt_blue
+| Commoner Clothes (Blue)
+|
+| No
+|-
+| Uniform
+| U_C_Poloshirt_burgundy
+| Commoner Clothes (Burgundy)
+|
+| No
+|-
+| Uniform
+| U_C_Poloshirt_stripped
+| Commoner Clothes (Striped)
+|
+| No
+|-
+| Uniform
+| U_C_Poloshirt_tricolour
+| Commoner Clothes (Tricolor)
+|
+| No
+|-
+| Uniform
+| U_C_Poloshirt_salmon
+| Commoner Clothes (Salmon)
+|
+| No
+|-
+| Uniform
+| U_C_Poloshirt_redwhite
+| Commoner Clothes (Red-White)
+|
+| No
+|-
+| Uniform
+| U_Rangemaster
+| Rangemaster Suit
+|
+| No
+|-
+| Uniform
+| U_OrestesBody
+| Jacket and Shorts
+|
+| No
+|-
+| Uniform
+| U_B_CombatUniform_mcam_worn
+| Worn Combat Fatigues (MTP)
+|
+| No
+|-
+| Uniform
+| U_B_PilotCoveralls
+| Pilot Coveralls [NATO]
+|
+| No
+|-
+| Uniform
+| U_O_CombatUniform_oucamo
+| Fatigues (Urban) [CSAT]
+|
+| No
+|-
+| Uniform
+| U_O_SpecopsUniform_ocamo
+| Recon Fatigues (Hex)
+|
+| No
+|-
+| Uniform
+| U_O_OfficerUniform_ocamo
+| Officer Fatigues (Hex)
+|
+| No
+|-
+| Uniform
+| U_I_CombatUniform
+| Combat Fatigues [AAF]
+|
+| No
+|-
+| Uniform
+| U_I_CombatUniform_shortsleeve
+| Combat Fatigues [AAF] (Rolled-up)
+|
+| No
+|-
+| Uniform
+| U_I_pilotCoveralls
+| Pilot Coveralls [AAF]
+|
+| No
+|-
+| Uniform
+| U_I_HeliPilotCoveralls
+| Heli Pilot Coveralls [AAF]
+|
+| No
+|-
+| Uniform
+| U_I_GhillieSuit
+| Ghillie Suit [AAF]
+|
+| No
+|-
+| Uniform
+| U_I_OfficerUniform
+| Combat Fatigues [AAF] (Officer)
+|
+| No
+|-
+| Uniform
+| U_I_Wetsuit
+| Wetsuit [AAF]
+|
+| No
+|-
+| Uniform
+| U_Competitor
+| Competitor Suit
+|
+| No
+|-
+| Uniform
+| U_BG_Guerilla1_1
+| Guerilla Garment
+|
+| No
+|-
+| Uniform
+| U_BG_Guerilla2_1
+| Guerilla Outfit (Plain, Dark)
+|
+| No
+|-
+| Uniform
+| U_BG_Guerilla2_2
+| Guerilla Outfit (Pattern)
+|
+| No
+|-
+| Uniform
+| U_BG_Guerilla2_3
+| Guerilla Outfit (Plain, Light)
+|
+| No
+|-
+| Uniform
+| U_BG_Guerilla3_1
+| Guerilla Smocks
+|
+| No
+|-
+| Uniform
+| U_BG_leader
+| Guerilla Uniform
+|
+| No
+|-
+| Uniform
+| U_C_Poor_1
+| Worn Clothes
+|
+| No
+|-
+| Uniform
+| U_C_WorkerCoveralls
+| Worker Coveralls
+|
+| No
+|-
+| Uniform
+| U_C_HunterBody_grn
+| Hunting Clothes
+|
+| No
+|-
+| Uniform
+| U_B_CTRG_1
+| CTRG Combat Uniform
+|
+| No
+|-
+| Uniform
+| U_B_CTRG_2
+| CTRG Combat Uniform (Tee)
+|
+| No
+|-
+| Uniform
+| U_B_CTRG_3
+| CTRG Combat Uniform (Rolled-up)
+|
+| No
+|-
+| Uniform
+| U_B_survival_uniform
+| Survival Fatigues
+|
+| No
+|-
+| Uniform
+| U_I_G_Story_Protagonist_F
+| Worn Combat Fatigues (Kerry)
+|
+| No
+|-
+| Uniform
+| U_I_G_resistanceLeader_F
+| Combat Fatigues (Stavrou)
+|
+| No
+|-
+| Uniform
+| U_C_Journalist
+| Journalist Clothes
+|
+| No
+|-
+| Uniform
+| U_C_Scientist
+| Scientist Clothes
+|
+| No
+|-
+| Uniform
+| U_B_Protagonist_VR
+| VR Suit [NATO]
+|
+| No
+|-
+| Uniform
+| U_O_Protagonist_VR
+| VR Suit [CSAT]
+|
+| No
+|-
+| Uniform
+| U_I_Protagonist_VR
+| VR Suit [AAF]
+|
+| No
+|-
+| Uniform
+| U_C_Protagonist_VR
+| VR Suit [Civilians]
+|
+| No
+|-
+| Uniform
+| U_BG_Guerrilla_6_1
+| Guerilla Apparel
+|
+| No
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Driver_1
+| Driver Coverall (Fuel)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Driver_2
+| Driver Coverall (Bluking)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Driver_3
+| Driver Coverall (Redstone)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Driver_4
+| Driver Coverall (Vrana)
+|
+| Karts
+|-
+| Uniform
+| U_Marshal
+| Marshal Clothes
+|
+| No
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Driver_1_black
+| Driver Coverall (Black)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Driver_1_blue
+| Driver Coverall (Blue)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Driver_1_green
+| Driver Coverall (Green)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Driver_1_red
+| Driver Coverall (Red)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Driver_1_white
+| Driver Coverall (White)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Driver_1_yellow
+| Driver Coverall (Yellow)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Driver_1_orange
+| Driver Coverall (Orange)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_FullGhillie_lsh
+| Full Ghillie (Lush) [NATO]
+|
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_FullGhillie_sard
+| Full Ghillie (Semi-Arid) [NATO]
+|
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_FullGhillie_ard
+| Full Ghillie (Arid) [NATO]
+|
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_O_FullGhillie_lsh
+| Full Ghillie (Lush) [CSAT]
+|
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_O_FullGhillie_sard
+| Full Ghillie (Semi-Arid) [CSAT]
+|
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_O_FullGhillie_ard
+| Full Ghillie (Arid) [CSAT]
+|
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_FullGhillie_lsh
+| Full Ghillie (Lush) [AAF]
+|
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_FullGhillie_sard
+| Full Ghillie (Semi-Arid) [AAF]
+|
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_FullGhillie_ard
+| Full Ghillie (Arid) [AAF]
+|
+| Marksmen
+|-
+| Vest
+| V_Rangemaster_belt
+| Rangemaster Belt
+|
+| No
+|-
+| Vest
+| V_BandollierB_khk
+| Slash Bandolier (Khaki)
+|
+| No
+|-
+| Vest
+| V_BandollierB_cbr
+| Slash Bandolier (Coyote)
+|
+| No
+|-
+| Vest
+| V_BandollierB_rgr
+| Slash Bandolier (Green)
+|
+| No
+|-
+| Vest
+| V_BandollierB_blk
+| Slash Bandolier (Black)
+|
+| No
+|-
+| Vest
+| V_BandollierB_oli
+| Slash Bandolier (Olive)
+|
+| No
+|-
+| Vest
+| V_PlateCarrier1_rgr
+| Carrier Lite (Green)
+|
+| No
+|-
+| Vest
+| V_PlateCarrier2_rgr
+| Carrier Rig (Green)
+|
+| No
+|-
+| Vest
+| V_PlateCarrier2_blk
+| Carrier Rig (Black)
+|
+| No
+|-
+| Vest
+| V_PlateCarrierGL_rgr
+| Carrier GL Rig (Green)
+|
+| No
+|-
+| Vest
+| V_PlateCarrierGL_blk
+| Carrier GL Rig (Black)
+|
+| No
+|-
+| Vest
+| V_PlateCarrierGL_mtp
+| Carrier GL Rig (MTP)
+|
+| No
+|-
+| Vest
+| V_PlateCarrier1_blk
+| Carrier Lite (Black)
+|
+| No
+|-
+| Vest
+| V_PlateCarrierSpec_rgr
+| Carrier Special Rig (Green)
+|
+| No
+|-
+| Vest
+| V_PlateCarrierSpec_blk
+| Carrier Special Rig (Black)
+|
+| No
+|-
+| Vest
+| V_PlateCarrierSpec_mtp
+| Carrier Special Rig (MTP)
+|
+| No
+|-
+| Vest
+| V_Chestrig_khk
+| Chest Rig (Khaki)
+|
+| No
+|-
+| Vest
+| V_Chestrig_rgr
+| Chest Rig (Green)
+|
+| No
+|-
+| Vest
+| V_Chestrig_blk
+| Chest Rig (Black)
+|
+| No
+|-
+| Vest
+| V_Chestrig_oli
+| Chest Rig (Olive)
+|
+| No
+|-
+| Vest
+| V_TacVest_khk
+| Tactical Vest (Khaki)
+|
+| No
+|-
+| Vest
+| V_TacVest_brn
+| Tactical Vest (Brown)
+|
+| No
+|-
+| Vest
+| V_TacVest_oli
+| Tactical Vest (Olive)
+|
+| No
+|-
+| Vest
+| V_TacVest_blk
+| Tactical Vest (Black)
+|
+| No
+|-
+| Vest
+| V_TacVest_camo
+| Tactical Vest (Camo)
+|
+| No
+|-
+| Vest
+| V_TacVest_blk_POLICE
+| Tactical Vest (Police)
+|
+| No
+|-
+| Vest
+| V_TacVestIR_blk
+| Raven Vest
+|
+| No
+|-
+| Vest
+| V_HarnessO_brn
+| LBV Harness
+|
+| No
+|-
+| Vest
+| V_HarnessOGL_brn
+| LBV Grenadier Harness
+|
+| No
+|-
+| Vest
+| V_HarnessO_gry
+| LBV Harness (Grey)
+|
+| No
+|-
+| Vest
+| V_HarnessOGL_gry
+| LBV Grenadier Harness (Grey)
+|
+| No
+|-
+| Vest
+| V_PlateCarrierIA1_dgtl
+| GA Carrier Lite (Digital)
+|
+| No
+|-
+| Vest
+| V_PlateCarrierIA2_dgtl
+| GA Carrier Rig (Digital)
+|
+| No
+|-
+| Vest
+| V_PlateCarrierIAGL_dgtl
+| GA Carrier GL Rig (Digital)
+|
+| No
+|-
+| Vest
+| V_PlateCarrierIAGL_oli
+| GA Carrier GL Rig (Olive)
+|
+| No
+|-
+| Vest
+| V_RebreatherB
+| Rebreather [NATO]
+|
+| No
+|-
+| Vest
+| V_RebreatherIR
+| Rebreather [CSAT]
+|
+| No
+|-
+| Vest
+| V_RebreatherIA
+| Rebreather [AAF]
+|
+| No
+|-
+| Vest
+| V_PlateCarrier_Kerry
+| US Plate Carrier Rig (Kerry)
+|
+| No
+|-
+| Vest
+| V_PlateCarrierL_CTRG
+| CTRG Plate Carrier Rig Mk.1 (Light)
+|
+| No
+|-
+| Vest
+| V_PlateCarrierH_CTRG
+| CTRG Plate Carrier Rig Mk.2 (Heavy)
+|
+| No
+|-
+| Vest
+| V_I_G_resistanceLeader_F
+| Tactical Vest (Stavrou)
+|
+| No
+|-
+| Vest
+| V_Press_F
+| Vest (Press)
+|
+| No
+|-
+| Headgear
+| H_HelmetB
+| Combat Helmet
+|
+| No
+|-
+| Headgear
+| H_HelmetB_camo
+| Combat Helmet (Camo)
+|
+| No
+|-
+| Headgear
+| H_HelmetB_light
+| Light Combat Helmet
+|
+| No
+|-
+| Headgear
+| H_Booniehat_khk
+| Booniehat (Khaki)
+|
+| No
+|-
+| Headgear
+| H_Booniehat_oli
+| Booniehat (Olive)
+|
+| No
+|-
+| Headgear
+| H_Booniehat_mcamo
+| Booniehat (MTP)
+|
+| No
+|-
+| Headgear
+| H_Booniehat_tan
+| Booniehat (Sand)
+|
+| No
+|-
+| Headgear
+| H_Booniehat_dgtl
+| Booniehat [AAF]
+|
+| No
+|-
+| Headgear
+| H_Booniehat_khk_hs
+| Booniehat (Headset)
+|
+| No
+|-
+| Headgear
+| H_HelmetSpecB
+| Enhanced Combat Helmet
+|
+| No
+|-
+| Headgear
+| H_HelmetSpecB_paint1
+| Enhanced Combat Helmet (Grass)
+|
+| No
+|-
+| Headgear
+| H_HelmetSpecB_paint2
+| Enhanced Combat Helmet (Desert)
+|
+| No
+|-
+| Headgear
+| H_HelmetSpecB_blk
+| Enhanced Combat Helmet (Black)
+|
+| No
+|-
+| Headgear
+| H_HelmetSpecB_snakeskin
+| Enhanced Combat Helmet (Snakeskin)
+|
+| No
+|-
+| Headgear
+| H_HelmetSpecB_sand
+| Enhanced Combat Helmet (Sand)
+|
+| No
+|-
+| Headgear
+| H_HelmetIA
+| Modular Helmet
+|
+| No
+|-
+| Headgear
+| H_HelmetB_grass
+| Combat Helmet (Grass)
+|
+| No
+|-
+| Headgear
+| H_HelmetB_snakeskin
+| Combat Helmet (Snakeskin)
+|
+| No
+|-
+| Headgear
+| H_HelmetB_desert
+| Combat Helmet (Desert)
+|
+| No
+|-
+| Headgear
+| H_HelmetB_black
+| Combat Helmet (Black)
+|
+| No
+|-
+| Headgear
+| H_HelmetB_sand
+| Combat Helmet (Sand)
+|
+| No
+|-
+| Headgear
+| H_Cap_red
+| Cap (Red)
+|
+| No
+|-
+| Headgear
+| H_Cap_blu
+| Cap (Blue)
+|
+| No
+|-
+| Headgear
+| H_Cap_oli
+| Cap (Olive)
+|
+| No
+|-
+| Headgear
+| H_Cap_headphones
+| Rangemaster Cap
+|
+| No
+|-
+| Headgear
+| H_Cap_tan
+| Cap (Tan)
+|
+| No
+|-
+| Headgear
+| H_Cap_blk
+| Cap (Black)
+|
+| No
+|-
+| Headgear
+| H_Cap_blk_CMMG
+| Cap (CMMG)
+|
+| No
+|-
+| Headgear
+| H_Cap_brn_SPECOPS
+| Cap [OPFOR]
+|
+| No
+|-
+| Headgear
+| H_Cap_tan_specops_US
+| Cap (US MTP)
+|
+| No
+|-
+| Headgear
+| H_Cap_khaki_specops_UK
+| Cap (UK)
+|
+| No
+|-
+| Headgear
+| H_Cap_grn
+| Cap (Green)
+|
+| No
+|-
+| Headgear
+| H_Cap_grn_BI
+| Cap (BI)
+|
+| No
+|-
+| Headgear
+| H_Cap_blk_Raven
+| Cap [AAF]
+|
+| No
+|-
+| Headgear
+| H_Cap_blk_ION
+| Cap (ION)
+|
+| No
+|-
+| Headgear
+| H_Cap_oli_hs
+| Cap (Olive, Headset)
+|
+| No
+|-
+| Headgear
+| H_Cap_press
+| Cap (Press)
+|
+| No
+|-
+| Headgear
+| H_Cap_usblack
+| Cap (US Black)
+|
+| No
+|-
+| Headgear
+| H_Cap_surfer
+| Cap (Surfer)
+|
+| No
+|-
+| Headgear
+| H_Cap_police
+| Cap (Police)
+|
+| No
+|-
+| Headgear
+| H_HelmetCrew_B
+| Crew Helmet [NATO]
+|
+| No
+|-
+| Headgear
+| H_HelmetCrew_O
+| Crew Helmet [CSAT]
+|
+| No
+|-
+| Headgear
+| H_HelmetCrew_I
+| Crew Helmet [AAF]
+|
+| No
+|-
+| Headgear
+| H_PilotHelmetFighter_B
+| Pilot Helmet [NATO]
+|
+| No
+|-
+| Headgear
+| H_PilotHelmetFighter_O
+| Pilot Helmet [CSAT]
+|
+| No
+|-
+| Headgear
+| H_PilotHelmetFighter_I
+| Pilot Helmet [AAF]
+|
+| No
+|-
+| Headgear
+| H_PilotHelmetHeli_B
+| Heli Pilot Helmet [NATO]
+|
+| No
+|-
+| Headgear
+| H_PilotHelmetHeli_O
+| Heli Pilot Helmet [CSAT]
+|
+| No
+|-
+| Headgear
+| H_PilotHelmetHeli_I
+| Heli Pilot Helmet [AAF]
+|
+| No
+|-
+| Headgear
+| H_CrewHelmetHeli_B
+| Heli Crew Helmet [NATO]
+|
+| No
+|-
+| Headgear
+| H_CrewHelmetHeli_O
+| Heli Crew Helmet [CSAT]
+|
+| No
+|-
+| Headgear
+| H_CrewHelmetHeli_I
+| Heli Crew Helmet [AAF]
+|
+| No
+|-
+| Headgear
+| H_HelmetO_ocamo
+| Protector Helmet (Hex)
+|
+| No
+|-
+| Headgear
+| H_HelmetLeaderO_ocamo
+| Defender Helmet (Hex)
+|
+| No
+|-
+| Headgear
+| H_MilCap_ocamo
+| Military Cap (Hex)
+|
+| No
+|-
+| Headgear
+| H_MilCap_mcamo
+| Military Cap (MTP)
+|
+| No
+|-
+| Headgear
+| H_MilCap_gry
+| Military Cap (Grey)
+|
+| No
+|-
+| Headgear
+| H_MilCap_dgtl
+| Military Cap [AAF]
+|
+| No
+|-
+| Headgear
+| H_MilCap_blue
+| Military Cap (Blue)
+|
+| No
+|-
+| Headgear
+| H_HelmetB_light_grass
+| Light Combat Helmet (Grass)
+|
+| No
+|-
+| Headgear
+| H_HelmetB_light_snakeskin
+| Light Combat Helmet (Snakeskin)
+|
+| No
+|-
+| Headgear
+| H_HelmetB_light_desert
+| Light Combat Helmet (Desert)
+|
+| No
+|-
+| Headgear
+| H_HelmetB_light_black
+| Light Combat Helmet (Black)
+|
+| No
+|-
+| Headgear
+| H_HelmetB_light_sand
+| Light Combat Helmet (Sand)
+|
+| No
+|-
+| Headgear
+| H_HelmetO_oucamo
+| Protector Helmet (Urban)
+|
+| No
+|-
+| Headgear
+| H_HelmetLeaderO_oucamo
+| Defender Helmet (Urban)
+|
+| No
+|-
+| Headgear
+| H_HelmetSpecO_ocamo
+| Assassin Helmet (Hex)
+|
+| No
+|-
+| Headgear
+| H_HelmetSpecO_blk
+| Assassin Helmet (Black)
+|
+| No
+|-
+| Headgear
+| H_Bandanna_surfer
+| Bandana (Surfer)
+|
+| No
+|-
+| Headgear
+| H_Bandanna_khk
+| Bandana (Khaki)
+|
+| No
+|-
+| Headgear
+| H_Bandanna_khk_hs
+| Bandana (Headset)
+|
+| No
+|-
+| Headgear
+| H_Bandanna_cbr
+| Bandana (Coyote)
+|
+| No
+|-
+| Headgear
+| H_Bandanna_sgg
+| Bandana (Sage)
+|
+| No
+|-
+| Headgear
+| H_Bandanna_sand
+| Bandana (Sand)
+|
+| No
+|-
+| Headgear
+| H_Bandanna_surfer_blk
+| Bandana (Surfer, Black)
+|
+| No
+|-
+| Headgear
+| H_Bandanna_surfer_grn
+| Bandana (Surfer, Green)
+|
+| No
+|-
+| Headgear
+| H_Bandanna_gry
+| Bandana (Black)
+|
+| No
+|-
+| Headgear
+| H_Bandanna_blu
+| Bandana (Blue)
+|
+| No
+|-
+| Headgear
+| H_Bandanna_camo
+| Bandana (Woodland)
+|
+| No
+|-
+| Headgear
+| H_Bandanna_mcamo
+| Bandana (MTP)
+|
+| No
+|-
+| Headgear
+| H_Shemag_olive
+| Shemag (Olive)
+|
+| No
+|-
+| Headgear
+| H_Shemag_olive_hs
+| Shemag (Olive, Headset)
+|
+| No
+|-
+| Headgear
+| H_ShemagOpen_khk
+| Shemag (White)
+|
+| No
+|-
+| Headgear
+| H_ShemagOpen_tan
+| Shemag (Tan)
+|
+| No
+|-
+| Headgear
+| H_Beret_blk
+| Beret (Black)
+|
+| No
+|-
+| Headgear
+| H_Beret_02
+| Beret [NATO]
+|
+| No
+|-
+| Headgear
+| H_Beret_Colonel
+| Beret [NATO] (Colonel)
+|
+| No
+|-
+| Headgear
+| H_Watchcap_blk
+| Beanie
+|
+| No
+|-
+| Headgear
+| H_Watchcap_cbr
+| Beanie (Coyote)
+|
+| No
+|-
+| Headgear
+| H_Watchcap_khk
+| Beanie (Khaki)
+|
+| No
+|-
+| Headgear
+| H_Watchcap_camo
+| Beanie (Green)
+|
+| No
+|-
+| Headgear
+| H_StrawHat
+| Straw Hat
+|
+| No
+|-
+| Headgear
+| H_StrawHat_dark
+| Straw Hat (Dark)
+|
+| No
+|-
+| Headgear
+| H_Hat_blue
+| Hat (Blue)
+|
+| No
+|-
+| Headgear
+| H_Hat_brown
+| Hat (Brown)
+|
+| No
+|-
+| Headgear
+| H_Hat_camo
+| Hat (Camo)
+|
+| No
+|-
+| Headgear
+| H_Hat_grey
+| Hat (Grey)
+|
+| No
+|-
+| Headgear
+| H_Hat_checker
+| Hat (Checker)
+|
+| No
+|-
+| Headgear
+| H_Hat_tan
+| Hat (Tan)
+|
+| No
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_RacingHelmet_1_F
+| Racing Helmet (Fuel)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_RacingHelmet_2_F
+| Racing Helmet (Bluking)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_RacingHelmet_3_F
+| Racing Helmet (Redstone)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_RacingHelmet_4_F
+| Racing Helmet (Vrana)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_RacingHelmet_1_black_F
+| Racing Helmet (Black)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_RacingHelmet_1_blue_F
+| Racing Helmet (Blue)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_RacingHelmet_1_green_F
+| Racing Helmet (Green)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_RacingHelmet_1_red_F
+| Racing Helmet (Red)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_RacingHelmet_1_white_F
+| Racing Helmet (White)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_RacingHelmet_1_yellow_F
+| Racing Helmet (Yellow)
+|
+| Karts
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_RacingHelmet_1_orange_F
+| Racing Helmet (Orange)
+|
+| Karts
+|-
+| Headgear
+| H_Cap_marshal
+| Marshal Cap
+|
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_H
+| Sound Suppressor (6.5 mm)
+|
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_L
+| Sound Suppressor (9 mm)
+|
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_M
+| Sound Suppressor (5.56 mm)
+|
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_B
+| Sound Suppressor (7.62 mm)
+|
+| No
+|-
+| Sight
+| optic_Arco
+| ARCO
+|
+| No
+|-
+| Sight
+| optic_Hamr
+| RCO
+|
+| No
+|-
+| Sight
+| optic_Aco
+| ACO (Red)
+|
+| No
+|-
+| Sight
+| optic_ACO_grn
+| ACO (Green)
+|
+| No
+|-
+| Sight
+| optic_Aco_smg
+| ACO SMG (Red)
+|
+| No
+|-
+| Sight
+| optic_ACO_grn_smg
+| ACO SMG (Green)
+|
+| No
+|-
+| Sight
+| optic_Holosight
+| Mk17 Holosight
+|
+| No
+|-
+| Sight
+| optic_Holosight_smg
+| Mk17 Holosight SMG
+|
+| No
+|-
+| Sight
+| optic_SOS
+| MOS
+|
+| No
+|-
+| Rail Attachment
+| acc_flashlight
+| Flashlight
+|
+| No
+|-
+| Rail Attachment
+| acc_flashlight_smg_01
+| Flashlight
+|
+| No
+|-
+| Rail Attachment
+| acc_flashlight_pistol
+| Pistol Flashlight
+|
+| No
+|-
+| Rail Attachment
+| acc_pointer_IR
+| IR Laser Pointer
+|
+| No
+|-
+| Sight
+| optic_MRCO
+| MRCO
+|
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_acp
+| Sound Suppressor (.45 ACP)
+|
+| No
+|-
+| Sight
+| optic_NVS
+| NVS
+|
+| No
+|-
+| Sight
+| optic_Nightstalker
+| Nightstalker
+|
+| No
+|-
+| Sight
+| optic_tws
+| TWS
+|
+| No
+|-
+| Sight
+| optic_tws_mg
+| TWS MG
+|
+| No
+|-
+| Sight
+| optic_DMS
+| DMS
+|
+| No
+|-
+| Sight
+| optic_Yorris
+| Yorris J2
+|
+| No
+|-
+| Sight
+| optic_MRD
+| MRD
+|
+| No
+|-
+| Sight
+| optic_LRPS
+| LRPS
+|
+| No
+|-
+| Terminal
+| B_UavTerminal
+| UAV Terminal [NATO]
+|
+| No
+|-
+| Terminal
+| O_UavTerminal
+| UAV Terminal [CSAT]
+|
+| No
+|-
+| Terminal
+| I_UavTerminal
+| UAV Terminal [AAF]
+|
+| No
+|- style="background: #EDD; color: #333"
+| Pistol
+| hgun_Pistol_Signal_F
+| Starter Pistol
+| {{Icon|arma3karts|25}}
+| Karts
+|-
+| Muzzle Attachment
+| muzzle_snds_338_black
+| Sound Suppressor (.338, Black)
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_338_green
+| Sound Suppressor (.338, Green)
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_338_sand
+| Sound Suppressor (.338, Sand)
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_93mmg
+| Sound Suppressor (9.3mm, Black)
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_93mmg_tan
+| Sound Suppressor (9.3mm, Tan)
+| {{Icon|arma3marksmen|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_AMS
+| AMS (Black)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_AMS_khk
+| AMS (Khaki)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_AMS_snd
+| AMS (Sand)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_KHS_blk
+| Kahlia (Black)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_KHS_hex
+| Kahlia (Hex)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_KHS_old
+| Kahlia (Old)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_KHS_tan
+| Kahlia (Tan)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|-
+| Bipod
+| bipod_01_F_snd
+| Bipod (Sand) [NATO]
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Bipod
+| bipod_01_F_blk
+| Bipod (Black) [NATO]
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Bipod
+| bipod_01_F_mtp
+| Bipod (MTP) [NATO]
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Bipod
+| bipod_02_F_blk
+| Bipod (Black) [CSAT]
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Bipod
+| bipod_02_F_tan
+| Bipod (Tan) [CSAT]
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Bipod
+| bipod_02_F_hex
+| Bipod (Hex) [CSAT]
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Bipod
+| bipod_03_F_blk
+| Bipod (Black) [AAF]
+| {{Icon|arma3marksmen|25}}
+| No
+|-
+| Bipod
+| bipod_03_F_oli
+| Bipod (Olive) [AAF]
+| {{Icon|arma3marksmen|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_02_F
+| MAR-10 .338 (Black)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_02_camo_F
+| MAR-10 .338 (Camo)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_02_sniper_F
+| MAR-10 .338 (Sand)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_03_F
+| Mk-I EMR 7.62 mm (Black)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_03_khaki_F
+| Mk-I EMR 7.62 mm (Khaki)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_03_tan_F
+| Mk-I EMR 7.62 mm (Sand)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_03_multicam_F
+| Mk-I EMR 7.62 mm (Camo)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_03_woodland_F
+| Mk-I EMR 7.62 mm (Woodland)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_04_F
+| ASP-1 Kir 12.7 mm (Black)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_04_Tan_F
+| ASP-1 Kir 12.7 mm (Tan)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_05_blk_F
+| Cyrus 9.3 mm (Black)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_05_hex_F
+| Cyrus 9.3 mm (Hex)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_05_tan_f
+| Cyrus 9.3 mm (Tan)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_06_camo_F
+| Mk14 7.62 mm (Camo)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_06_olive_F
+| Mk14 7.62 mm (Olive)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| MMG_01_hex_F
+| Navid 9.3 mm (Hex)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| MMG_01_tan_F
+| Navid 9.3 mm (Tan)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| MMG_02_camo_F
+| SPMG .338 (MTP)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| MMG_02_black_F
+| SPMG .338 (Black)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Rifle
+| MMG_02_sand_F
+| SPMG .338 (Sand)
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|-
+| Muzzle Attachment
+| muzzle_snds_570
+| Sound Suppressor (5.7 mm)
+|
+| No
+|-
+| Rifle
+| SMG_03_TR_black
+| ADR-97 TR 5.7 mm (Black)
+|
+| No
+|-
+| Rifle
+| SMG_03_TR_camo
+| ADR-97 TR 5.7 mm (Camo)
+|
+| No
+|-
+| Rifle
+| SMG_03_TR_khaki
+| ADR-97 TR 5.7 mm (Khaki)
+|
+| No
+|-
+| Rifle
+| SMG_03_TR_hex
+| ADR-97 TR 5.7 mm (Hex)
+|
+| No
+|-
+| Rifle
+| SMG_03C_TR_black
+| ADR-97C TR 5.7 mm (Black)
+|
+| No
+|-
+| Rifle
+| SMG_03C_TR_camo
+| ADR-97C TR 5.7 mm (Camo)
+|
+| No
+|-
+| Rifle
+| SMG_03C_TR_khaki
+| ADR-97C TR 5.7 mm (Khaki)
+|
+| No
+|-
+| Rifle
+| SMG_03C_TR_hex
+| ADR-97C TR 5.7 mm (Hex)
+|
+| No
+|-
+| Rifle
+| SMG_03_black
+| ADR-97 5.7 mm (Black)
+|
+| No
+|-
+| Rifle
+| SMG_03_camo
+| ADR-97 5.7 mm (Camo)
+|
+| No
+|-
+| Rifle
+| SMG_03_khaki
+| ADR-97 5.7 mm (Khaki)
+|
+| No
+|-
+| Rifle
+| SMG_03_hex
+| ADR-97 5.7 mm (Hex)
+|
+| No
+|-
+| Rifle
+| SMG_03C_black
+| ADR-97C 5.7 mm (Black)
+|
+| No
+|-
+| Rifle
+| SMG_03C_camo
+| ADR-97C 5.7 mm (Camo)
+|
+| No
+|-
+| Rifle
+| SMG_03C_khaki
+| ADR-97C 5.7 mm (Khaki)
+|
+| No
+|-
+| Rifle
+| SMG_03C_hex
+| ADR-97C 5.7 mm (Hex)
+|
+| No
+|-
+| NVGs
+| O_NVGoggles_hex_F
+| Compact NVG (Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NVGs
+| O_NVGoggles_urb_F
+| Compact NVG (Urban)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NVGs
+| O_NVGoggles_ghex_F
+| Compact NVG (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NVGs
+| NVGoggles_tna_F
+| NV Goggles (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| NVGs
+| NVGogglesB_blk_F
+| ENVG-II (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| NVGs
+| NVGogglesB_grn_F
+| ENVG-II (Green)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| NVGs
+| NVGogglesB_gry_F
+| ENVG-II (Grey)
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| Binocular
+| Laserdesignator_01_khk_F
+| Laser Designator (Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Binocular
+| Laserdesignator_02_ghex_F
+| Laser Designator (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Rifle
+| arifle_MX_khk_F
+| MX 6.5 mm (Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Rifle
+| arifle_MX_GL_khk_F
+| MX 3GL 6.5 mm (Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Rifle
+| arifle_MX_SW_khk_F
+| MX SW 6.5 mm (Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Rifle
+| arifle_MXC_khk_F
+| MXC 6.5 mm (Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Rifle
+| arifle_MXM_khk_F
+| MXM 6.5 mm (Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Rifle
+| srifle_LRR_tna_F
+| M320 LRR .408 (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Rifle
+| srifle_GM6_ghex_F
+| GM6 Lynx 12.7 mm (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Pistol
+| hgun_P07_khk_F
+| P07 9 mm (Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Pistol
+| hgun_P07_blk_F
+| P07 9 mm (Black)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_H_khk_F
+| Sound Suppressor (6.5 mm, Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_H_snd_F
+| Sound Suppressor (6.5 mm, Sand)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_m_khk_F
+| Sound Suppressor (5.56 mm, Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_m_snd_F
+| Sound Suppressor (5.56 mm, Sand)
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Muzzle Attachment
+| muzzle_snds_58_blk_F
+| Stealth Sound Suppressor (5.8 mm, Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Muzzle Attachment
+| muzzle_snds_58_ghex_F
+| Stealth Sound Suppressor (5.8 mm, Green Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Muzzle Attachment
+| muzzle_snds_58_hex_F
+| Stealth Sound Suppressor (5.8 mm, Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| Muzzle Attachment
+| muzzle_snds_B_khk_F
+| Sound Suppressor (7.62 mm, Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_B_snd_F
+| Sound Suppressor (7.62 mm, Sand)
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Muzzle Attachment
+| muzzle_snds_65_TI_blk_F
+| Stealth Sound Suppressor (6.5 mm, Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Muzzle Attachment
+| muzzle_snds_65_TI_hex_F
+| Stealth Sound Suppressor (6.5 mm, Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Muzzle Attachment
+| muzzle_snds_65_TI_ghex_F
+| Stealth Sound Suppressor (6.5 mm, Green Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| Sight
+| optic_Arco_blk_F
+| ARCO (Black)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Sight
+| optic_Arco_ghex_F
+| ARCO (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Sight
+| optic_DMS_ghex_F
+| DMS (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Sight
+| optic_Hamr_khk_F
+| RCO (Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_ERCO_blk_F
+| ERCO (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_ERCO_khk_F
+| ERCO (Khaki)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_ERCO_snd_F
+| ERCO (Sand)
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| Sight
+| optic_SOS_khk_F
+| MOS (Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Sight
+| optic_LRPS_tna_F
+| LRPS (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Sight
+| optic_LRPS_ghex_F
+| LRPS (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Sight
+| optic_Holosight_blk_F
+| Mk17 Holosight (Black)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Sight
+| optic_Holosight_khk_F
+| Mk17 Holosight (Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Sight
+| optic_Holosight_smg_blk_F
+| Mk17 Holosight SMG (Black)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Sight
+| optic_Holosight_smg_khk_F
+| Mk17 Holosight SMG (Khaki)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Bipod
+| bipod_01_F_khk
+| Bipod (Khaki) [NATO]
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Launcher
+| launch_RPG32_ghex_F
+| RPG-42 Alamut (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Launcher
+| launch_RPG7_F
+| RPG-7
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| Launcher
+| launch_B_Titan_tna_F
+| Titan MPRL (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Launcher
+| launch_B_Titan_short_tna_F
+| Titan MPRL Compact (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Launcher
+| launch_O_Titan_ghex_F
+| Titan MPRL (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Launcher
+| launch_O_Titan_short_ghex_F
+| Titan MPRL Compact (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_07_blk_F
+| CMR-76 6.5 mm (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_07_hex_F
+| CMR-76 6.5 mm (Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_07_ghex_F
+| CMR-76 6.5 mm (Green Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| LMG_03_F
+| LIM-85 5.56 mm
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Pistol
+| hgun_Pistol_01_F
+| PM 9 mm
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_AK12_F
+| AK-12 7.62 mm
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_AK12_GL_F
+| AK-12 GL 7.62 mm
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_AKM_F
+| AKM 7.62 mm
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_AKS_F
+| AKS-74U 5.45 mm
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_ARX_blk_F
+| Type 115 6.5 mm (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_ARX_ghex_F
+| Type 115 6.5 mm (Green Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_ARX_hex_F
+| Type 115 6.5 mm (Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_CTAR_blk_F
+| CAR-95 5.8 mm (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_CTAR_hex_F
+| CAR-95 5.8 mm (Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_CTAR_ghex_F
+| CAR-95 5.8 mm (Green Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_CTAR_GL_blk_F
+| CAR-95 GL 5.8 mm (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_CTAR_GL_hex_F
+| CAR-95 GL 5.8 mm (Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_CTAR_GL_ghex_F
+| CAR-95 GL 5.8 mm (Green Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_CTARS_blk_F
+| CAR-95-1 5.8mm (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_CTARS_hex_F
+| CAR-95-1 5.8mm (Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_CTARS_ghex_F
+| CAR-95-1 5.8mm (Green Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_SPAR_01_blk_F
+| SPAR-16 5.56 mm (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_SPAR_01_khk_F
+| SPAR-16 5.56 mm (Khaki)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_SPAR_01_snd_F
+| SPAR-16 5.56 mm (Sand)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_SPAR_01_GL_blk_F
+| SPAR-16 GL 5.56 mm (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_SPAR_01_GL_khk_F
+| SPAR-16 GL 5.56 mm (Khaki)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_SPAR_01_GL_snd_F
+| SPAR-16 GL 5.56 mm (Sand)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_SPAR_02_blk_F
+| SPAR-16S 5.56 mm (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_SPAR_02_khk_F
+| SPAR-16S 5.56 mm (Khaki)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_SPAR_02_snd_F
+| SPAR-16S 5.56 mm (Sand)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_SPAR_03_blk_F
+| SPAR-17 7.62 mm (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_SPAR_03_khk_F
+| SPAR-17 7.62 mm (Khaki)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_SPAR_03_snd_F
+| SPAR-17 7.62 mm (Sand)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| SMG_05_F
+| Protector 9 mm
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| Uniform
+| U_B_T_Soldier_F
+| Combat Fatigues (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_B_T_Soldier_AR_F
+| Combat Fatigues (Tropic, Tee)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_B_T_Soldier_SL_F
+| Recon Fatigues (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_B_T_Sniper_F
+| Ghillie Suit (Tropic) [NATO]
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_T_FullGhillie_tna_F
+| Full Ghillie (Jungle) [NATO]
+| {{Icon|arma3apex|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_CTRG_Soldier_F
+| CTRG Stealth Uniform
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_CTRG_Soldier_2_F
+| CTRG Stealth Uniform (Tee)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_CTRG_Soldier_3_F
+| CTRG Stealth Uniform (Rolled-up)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_CTRG_Soldier_Arid_F
+| CTRG Stealth Uniform (Arid)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_CTRG_Soldier_2_Arid_F
+| CTRG Stealth Uniform (Tee, Arid)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_CTRG_Soldier_3_Arid_F
+| CTRG Stealth Uniform (Rolled-up, Arid)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_GEN_Soldier_F
+| Gendarmerie Uniform
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_GEN_Commander_F
+| Gendarmerie Commander Uniform
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| Uniform
+| U_O_T_Soldier_F
+| Fatigues (Green Hex) [CSAT]
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_O_T_Officer_F
+| Officer Fatigues (Green Hex) [CSAT]
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_O_T_Sniper_F
+| Ghillie Suit (Green Hex) [CSAT]
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_O_T_FullGhillie_tna_F
+| Full Ghillie (Jungle) [CSAT]
+| {{Icon|arma3apex|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_O_V_Soldier_Viper_F
+| Special Purpose Suit (Green Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_O_V_Soldier_Viper_hex_F
+| Special Purpose Suit (Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_C_Soldier_Para_1_F
+| Paramilitary Garb (Tee)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_C_Soldier_Para_2_F
+| Paramilitary Garb (Jacket)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_C_Soldier_Para_3_F
+| Paramilitary Garb (Shirt)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_C_Soldier_Para_4_F
+| Paramilitary Garb (Tank Top)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_C_Soldier_Para_5_F
+| Paramilitary Garb (Shorts)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_C_Soldier_Bandit_1_F
+| Bandit Clothes (Polo Shirt)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_C_Soldier_Bandit_2_F
+| Bandit Clothes (Skull)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_C_Soldier_Bandit_3_F
+| Bandit Clothes (Tee)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_C_Soldier_Bandit_4_F
+| Bandit Clothes (Checkered)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_C_Soldier_Bandit_5_F
+| Bandit Clothes (Tank Top)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_C_Soldier_Camo_F
+| Syndikat Uniform
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_man_sport_1_F
+| Sport Clothes (Beach)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_man_sport_2_F
+| Sport Clothes (Orange)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_man_sport_3_F
+| Sport Clothes (Blue)
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| Uniform
+| U_C_Man_casual_1_F
+| Casual Clothes (Navy)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_C_Man_casual_2_F
+| Casual Clothes (Blue)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_C_Man_casual_3_F
+| Casual Clothes (Green)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_C_Man_casual_4_F
+| Summer Clothes (Sky)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_C_Man_casual_5_F
+| Summer Clothes (Yellow)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_C_Man_casual_6_F
+| Summer Clothes (Red)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_B_CTRG_Soldier_urb_1_F
+| CTRG Urban Uniform
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_B_CTRG_Soldier_urb_2_F
+| CTRG Urban Uniform (Tee)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_B_CTRG_Soldier_urb_3_F
+| CTRG Urban Uniform (Rolled-up)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Headgear
+| H_Helmet_Skate
+| Skate Helmet
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HelmetB_TI_tna_F
+| Stealth Combat Helmet
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HelmetB_TI_arid_F
+| Stealth Combat Helmet (Arid)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HelmetO_ViperSP_hex_F
+| Special Purpose Helmet (Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HelmetO_ViperSP_ghex_F
+| Special Purpose Helmet (Green Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| Headgear
+| H_HelmetB_tna_F
+| Combat Helmet (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Headgear
+| H_HelmetB_Enh_tna_F
+| Enhanced Combat Helmet (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Headgear
+| H_HelmetB_Light_tna_F
+| Light Combat Helmet (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Headgear
+| H_HelmetSpecO_ghex_F
+| Assassin Helmet (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Headgear
+| H_HelmetLeaderO_ghex_F
+| Defender Helmet (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Headgear
+| H_HelmetO_ghex_F
+| Protector Helmet (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Headgear
+| H_HelmetCrew_O_ghex_F
+| Crew Helmet (Green Hex) [CSAT]
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Headgear
+| H_MilCap_tna_F
+| Military Cap (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Headgear
+| H_MilCap_ghex_F
+| Military Cap (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Headgear
+| H_Booniehat_tna_F
+| Booniehat (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Headgear
+| H_Beret_gen_F
+| Beret (Gendarmerie)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Headgear
+| H_MilCap_gen_F
+| Military Cap (Gendarmerie)
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Vest
+| V_TacChestrig_grn_F
+| Tactical Chest Rig (Green)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Vest
+| V_TacChestrig_oli_F
+| Tactical Chest Rig (Olive)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Vest
+| V_TacChestrig_cbr_F
+| Tactical Chest Rig (Coyote)
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| Vest
+| V_PlateCarrier1_tna_F
+| Carrier Lite (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Vest
+| V_PlateCarrier2_tna_F
+| Carrier Rig (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Vest
+| V_PlateCarrierSpec_tna_F
+| Carrier Special Rig (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Vest
+| V_PlateCarrierGL_tna_F
+| Carrier GL Rig (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Vest
+| V_HarnessO_ghex_F
+| LBV Harness (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Vest
+| V_HarnessOGL_ghex_F
+| LBV Grenadier Harness (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Vest
+| V_BandollierB_ghex_F
+| Slash Bandolier (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Vest
+| V_TacVest_gen_F
+| Gendarmerie Vest
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Vest
+| V_PlateCarrier1_rgr_noflag_F
+| Carrier Lite (Green, No Flag)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Vest
+| V_PlateCarrier2_rgr_noflag_F
+| Carrier Rig (Green, No Flag)
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Vest
+| V_DeckCrew_yellow_F
+| Deck Crew Vest (Yellow)
+| {{Icon|arma3jets|25}}
+| Jets
+|- style="background: #EDD; color: #333"
+| Vest
+| V_DeckCrew_blue_F
+| Deck Crew Vest (Blue)
+| {{Icon|arma3jets|25}}
+| Jets
+|- style="background: #EDD; color: #333"
+| Vest
+| V_DeckCrew_green_F
+| Deck Crew Vest (Green)
+| {{Icon|arma3jets|25}}
+| Jets
+|- style="background: #EDD; color: #333"
+| Vest
+| V_DeckCrew_red_F
+| Deck Crew Vest (Red)
+| {{Icon|arma3jets|25}}
+| Jets
+|- style="background: #EDD; color: #333"
+| Vest
+| V_DeckCrew_white_F
+| Deck Crew Vest (White)
+| {{Icon|arma3jets|25}}
+| Jets
+|- style="background: #EDD; color: #333"
+| Vest
+| V_DeckCrew_brown_F
+| Deck Crew Vest (Brown)
+| {{Icon|arma3jets|25}}
+| Jets
+|- style="background: #EDD; color: #333"
+| Vest
+| V_DeckCrew_violet_F
+| Deck Crew Vest (Violet)
+| {{Icon|arma3jets|25}}
+| Jets
+|-
+| Terminal
+| C_UavTerminal
+| UAV Terminal [Civilians]
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| Uniform
+| U_C_IDAP_Man_shorts_F
+| Aid Worker Clothes (Polo, Shorts) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| Uniform
+| U_C_IDAP_Man_casual_F
+| Aid Worker Clothes (Polo) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| Uniform
+| U_C_IDAP_Man_cargo_F
+| Aid Worker Clothes (Cargo) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| Uniform
+| U_C_IDAP_Man_Tee_F
+| Aid Worker Clothes (Tee) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| Uniform
+| U_C_IDAP_Man_Jeans_F
+| Aid Worker Clothes (Jeans) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| Uniform
+| U_C_IDAP_Man_TeeShorts_F
+| Aid Worker Clothes (Tee, Shorts) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Paramedic_01_F
+| Paramedic Outfit
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_Mechanic_01_F
+| Mechanic Clothes
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|-
+| Uniform
+| U_BG_Guerilla1_2_F
+| Guerilla Garment (Olive)
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| Uniform
+| U_C_ConstructionCoverall_Red_F
+| Construction Coverall (Red)
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| Uniform
+| U_C_ConstructionCoverall_Vrana_F
+| Construction Coverall (Vrana)
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| Uniform
+| U_C_ConstructionCoverall_Black_F
+| Construction Coverall (Black)
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| Uniform
+| U_C_ConstructionCoverall_Blue_F
+| Construction Coverall (Blue)
+| {{Icon|arma3lawsofwar|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Hat_Safari_sand_F
+| Safari Hat (Sand)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Hat_Safari_olive_F
+| Safari Hat (Olive)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_basic_yellow_F
+| Hard Hat (Yellow)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_basic_white_F
+| Hard Hat (White)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_basic_orange_F
+| Hard Hat (Orange)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_basic_red_F
+| Hard Hat (Red)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_basic_vrana_F
+| Hard Hat (Vrana)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_basic_black_F
+| Hard Hat (Black)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_earprot_yellow_F
+| Hard Hat (Yellow, Ear Protectors)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_earprot_white_F
+| Hard Hat (White, Ear Protectors)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_earprot_orange_F
+| Hard Hat (Orange, Ear Protectors)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_earprot_red_F
+| Hard Hat (Red, Ear Protectors)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_earprot_vrana_F
+| Hard Hat (Vrana, Ear Protectors)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_earprot_black_F
+| Hard Hat (Black, Ear Protectors)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_headset_yellow_F
+| Hard Hat (Yellow, Headset)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_headset_white_F
+| Hard Hat (White, Headset)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_headset_orange_F
+| Hard Hat (Orange, Headset)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_headset_red_F
+| Hard Hat (Red, Headset)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_headset_vrana_F
+| Hard Hat (Vrana, Headset)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Construction_headset_black_F
+| Hard Hat (Black, Headset)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_EarProtectors_yellow_F
+| Ear Protectors (Yellow)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_EarProtectors_white_F
+| Ear Protectors (White)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_EarProtectors_orange_F
+| Ear Protectors (Orange)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_EarProtectors_red_F
+| Ear Protectors (Red)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_EarProtectors_black_F
+| Ear Protectors (Black)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HeadSet_yellow_F
+| Headset (Yellow)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HeadSet_white_F
+| Headset (White)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HeadSet_orange_F
+| Headset (Orange)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HeadSet_red_F
+| Headset (Red)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HeadSet_black_F
+| Headset (Black)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_PASGT_basic_blue_press_F
+| Press Helmet
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_PASGT_basic_blue_F
+| Basic Helmet (Blue)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_PASGT_basic_white_F
+| Basic Helmet (White)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_PASGT_basic_olive_F
+| Basic Helmet (Olive)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_PASGT_basic_black_F
+| Basic Helmet (Black)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_PASGT_neckprot_blue_press_F
+| Press Helmet (Neck Protection)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HeadBandage_stained_F
+| Head Bandage (Moderate)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HeadBandage_clean_F
+| Head Bandage (Clean)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HeadBandage_bloody_F
+| Head Bandage (Severe)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|-
+| Headgear
+| H_Cap_White_IDAP_F
+| Cap (White) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| Headgear
+| H_Cap_Orange_IDAP_F
+| Cap (Orange) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| Headgear
+| H_Cap_Black_IDAP_F
+| Cap (Black) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_WirelessEarpiece_F
+| Wireless Earpiece
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_Plain_medical_F
+| Identification Vest [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_Plain_crystal_F
+| Identification Vest (Red Crystal)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_Pocketed_olive_F
+| Multi-Pocket Vest (Olive)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_Pocketed_coyote_F
+| Multi-Pocket Vest (Coyote)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_Pocketed_black_F
+| Multi-Pocket Vest (Black)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_Safety_yellow_F
+| Safety Vest (Yellow)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_Safety_orange_F
+| Safety Vest (Orange)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_Safety_blue_F
+| Safety Vest (Blue)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_LegStrapBag_black_F
+| Leg Strap Bag (Black)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_LegStrapBag_coyote_F
+| Leg Strap Bag (Coyote)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_LegStrapBag_olive_F
+| Leg Strap Bag (Olive)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_EOD_blue_F
+| EOD Vest (Blue)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_EOD_olive_F
+| EOD Vest (Olive)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_EOD_coyote_F
+| EOD Vest (Coyote)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Vest
+| V_EOD_IDAP_blue_F
+| EOD Vest (Blue) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|-
+| Uniform
+| U_O_officer_noInsignia_hex_F
+| Light Fatigues (Hex)
+| {{Icon|arma3tacops|25}}
+| No
+|-
+| Launcher
+| launch_MRAWS_olive_F
+| MAAWS Mk4 Mod 1 (Olive)
+| {{Icon|arma3tanks|25}}
+| No
+|-
+| Launcher
+| launch_MRAWS_olive_rail_F
+| MAAWS Mk4 Mod 0 (Olive)
+| {{Icon|arma3tanks|25}}
+| No
+|-
+| Launcher
+| launch_MRAWS_green_F
+| MAAWS Mk4 Mod 1 (Green)
+| {{Icon|arma3tanks|25}}
+| No
+|-
+| Launcher
+| launch_MRAWS_green_rail_F
+| MAAWS Mk4 Mod 0 (Green)
+| {{Icon|arma3tanks|25}}
+| No
+|-
+| Launcher
+| launch_MRAWS_sand_F
+| MAAWS Mk4 Mod 1 (Sand)
+| {{Icon|arma3tanks|25}}
+| No
+|-
+| Launcher
+| launch_MRAWS_sand_rail_F
+| MAAWS Mk4 Mod 0 (Sand)
+| {{Icon|arma3tanks|25}}
+| No
+|-
+| Launcher
+| launch_O_Vorona_brown_F
+| 9M135 Vorona (Brown)
+| {{Icon|arma3tanks|25}}
+| No
+|-
+| Launcher
+| launch_O_Vorona_green_F
+| 9M135 Vorona (Green)
+| {{Icon|arma3tanks|25}}
+| No
+|-
+| Headgear
+| H_Tank_black_F
+| Crew Helmet (Soft) [CSAT]
+| {{Icon|arma3tanks|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_Tank_green_F
+| Tanker Coveralls [AAF]
+| {{Icon|arma3tanks|25}}
+| Tanks
+|-
+| NVGs
+| O_NVGoggles_grn_F
+| Compact NVG (Green)
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_ico_01_f
+| Promet Modular Sight
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_ico_01_black_f
+| Promet Modular Sight (Black)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_ico_01_sand_f
+| Promet Modular Sight (Sand)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Sight
+| optic_ico_01_camo_f
+| Promet Modular Sight (Camo)
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Bipod
+| bipod_02_F_lush
+| Bipod (Lush) [Spetsnaz]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Bipod
+| bipod_02_F_arid
+| Bipod (Arid) [Spetsnaz]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_B_lush_F
+| Sound Suppressor (7.62 mm, Lush)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Muzzle Attachment
+| muzzle_snds_B_arid_F
+| Sound Suppressor (7.62 mm, Arid)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Sight
+| optic_Holosight_lush_F
+| Mk17 Holosight (Lush)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Sight
+| optic_Holosight_arid_F
+| Mk17 Holosight (Arid)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Sight
+| optic_Arco_lush_F
+| ARCO (Lush)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Sight
+| optic_Arco_arid_F
+| ARCO (Arid)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Sight
+| optic_Arco_AK_blk_F
+| ARCO AK (Black)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Sight
+| optic_Arco_AK_lush_F
+| ARCO AK (Lush)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Sight
+| optic_Arco_AK_arid_F
+| ARCO AK (Arid)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Sight
+| optic_DMS_weathered_F
+| DMS (Old)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Sight
+| optic_DMS_weathered_Kir_F
+| DMS Kir (Old)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Sight
+| optic_MRD_black
+| MRD (Black)
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Rail Attachment
+| acc_esd_01_flashlight
+| SD Flashlight
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Terminal
+| I_E_UavTerminal
+| UAV Terminal [LDF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Bipod
+| ChemicalDetector_01_olive_F
+| Chemical Detector (Cover, Olive)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Bipod
+| ChemicalDetector_01_black_F
+| Chemical Detector (Cover, Black)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Bipod
+| ChemicalDetector_01_tan_F
+| Chemical Detector (Cover, Tan)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Watch
+| ChemicalDetector_01_watch_F
+| Chemical Detector
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Launcher
+| launch_RPG32_green_F
+| RPG-42 (Green)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Launcher
+| launch_I_Titan_eaf_F
+| Titan MPRL (Geometric)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Launcher
+| launch_B_Titan_olive_F
+| Titan MPRL (Olive)
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Rifle
+| srifle_DMR_06_hunter_F
+| Mk14 7.62 mm (Classic)
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Rifle
+| LMG_Mk200_black_F
+| Mk200 6.5 mm (Black)
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Pistol
+| hgun_esd_01_F
+| Spectrum Device
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Muzzle Attachment
+| muzzle_antenna_01_f
+| SD Military Antenna (78-89 MHz)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Muzzle Attachment
+| muzzle_antenna_02_f
+| SD Experimental Antenna (390-500 MHz)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Muzzle Attachment
+| muzzle_antenna_03_f
+| SD Jammer Antenna (433 MHz)
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Pistol
+| hgun_Pistol_heavy_01_green_F
+| 4-five .45 ACP (Green)
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_AK12_lush_F
+| AK-12 7.62 mm (Lush)
+| {{Icon|arma3contact|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_AK12_arid_F
+| AK-12 7.62 mm (Arid)
+| {{Icon|arma3contact|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_AK12_GL_lush_F
+| AK-12 GL 7.62 mm (Lush)
+| {{Icon|arma3contact|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_AK12_GL_arid_F
+| AK-12 GL 7.62 mm (Arid)
+| {{Icon|arma3contact|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_RPK12_F
+| RPK-12 7.62 mm
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_RPK12_lush_F
+| RPK-12 7.62 mm (Lush)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_RPK12_arid_F
+| RPK-12 7.62 mm (Arid)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_AK12U_F
+| AKU-12 7.62 mm
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_AK12U_lush_F
+| AKU-12 7.62 mm (Lush)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_AK12U_arid_F
+| AKU-12 7.62 mm (Arid)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_F
+| Promet 6.5 mm
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_Mark_F
+| Promet MR 6.5 mm
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_GL_F
+| Promet GL 6.5 mm
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_UBS_F
+| Promet SG 6.5 mm
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_black_F
+| Promet 6.5 mm (Black)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_Mark_black_F
+| Promet MR 6.5 mm (Black)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_GL_black_F
+| Promet GL 6.5 mm (Black)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_UBS_black_F
+| Promet SG 6.5 mm (Black)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_sand_F
+| Promet 6.5 mm (Sand)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_Mark_sand_F
+| Promet MR 6.5 mm (Sand)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_GL_sand_F
+| Promet GL 6.5 mm (Sand)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_UBS_sand_F
+| Promet SG 6.5 mm (Sand)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_camo_F
+| Promet 6.5 mm (Camo)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_Mark_camo_F
+| Promet MR 6.5 mm (Camo)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_GL_camo_F
+| Promet GL 6.5 mm (Camo)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| arifle_MSBS65_UBS_camo_F
+| Promet SG 6.5 mm (Camo)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| sgun_HunterShotgun_01_F
+| Kozlice 12G
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Rifle
+| sgun_HunterShotgun_01_sawedoff_F
+| Kozlice 12G (Sawed-Off)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_E_Uniform_01_F
+| Combat Fatigues [LDF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_E_Uniform_01_tanktop_F
+| Combat Fatigues (Tank Top) [LDF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_E_Uniform_01_shortsleeve_F
+| Combat Fatigues (Rolled-up) [LDF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_E_Uniform_01_officer_F
+| Combat Fatigues (Officer) [LDF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_E_Uniform_01_coveralls_F
+| Heli Pilot Coveralls [LDF]
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Uniform
+| U_I_E_Uniform_01_sweater_F
+| Combat Fatigues (Sweater) [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_O_R_Gorka_01_F
+| Granit-B Suit
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_O_R_Gorka_01_brown_F
+| Granit-B Suit (Weathered)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_O_R_Gorka_01_camo_F
+| Granit-T Suit
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_O_R_Gorka_01_black_F
+| Tracksuit (Black)
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Uniform
+| U_B_CombatUniform_vest_mcam_wdl_f
+| Recon Fatigues (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Uniform
+| U_B_CombatUniform_mcam_wdl_f
+| Combat Fatigues (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Uniform
+| U_B_CombatUniform_tshirt_mcam_wdL_f
+| Combat Fatigues (Woodland, Tee)
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_CBRN_Suit_01_MTP_F
+| CBRN Suit (MTP) [NATO]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_CBRN_Suit_01_Tropic_F
+| CBRN Suit (Tropic) [NATO]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_CBRN_Suit_01_Wdl_F
+| CBRN Suit (Woodland) [NATO]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_CBRN_Suit_01_AAF_F
+| CBRN Suit [AAF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_E_CBRN_Suit_01_EAF_F
+| CBRN Suit [LDF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_CBRN_Suit_01_Blue_F
+| CBRN Suit (Blue)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_CBRN_Suit_01_White_F
+| CBRN Suit (White)
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Uniform
+| U_C_Uniform_Farmer_01_F
+| Farmer Outfit
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Uniform
+| U_C_E_LooterJacket_01_F
+| Looter Clothes (Leather Jacket)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Uniform
+| U_C_Uniform_Scientist_01_F
+| Scientist Outfit (Formal, White)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Uniform
+| U_C_Uniform_Scientist_01_formal_F
+| Scientist Outfit (Formal, Blue)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Uniform
+| U_C_Uniform_Scientist_02_F
+| Scientist Outfit (Informal, Black)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Uniform
+| U_C_Uniform_Scientist_02_formal_F
+| Scientist Outfit (Informal, Red)
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_L_Uniform_01_camo_F
+| Deserter Clothes (Jacket)
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Uniform
+| U_I_L_Uniform_01_deserter_F
+| Deserter Clothes (T-Shirt)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Uniform
+| U_I_L_Uniform_01_tshirt_skull_F
+| Looter Clothes (T-Shirt, Skull)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Uniform
+| U_I_L_Uniform_01_tshirt_black_F
+| Looter Clothes (T-Shirt, Black)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Uniform
+| U_I_L_Uniform_01_tshirt_sport_F
+| Looter Clothes (T-Shirt, Sport)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Uniform
+| U_I_L_Uniform_01_tshirt_olive_F
+| Looter Clothes (T-Shirt, Olive)
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HelmetHBK_F
+| Advanced Modular Helmet (Olive)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HelmetHBK_headset_F
+| Advanced Modular Helmet
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HelmetHBK_ear_F
+| Advanced Modular Helmet (Ear Protectors)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HelmetHBK_chops_F
+| Advanced Modular Helmet (Chops)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HelmetAggressor_F
+| Avenger Helmet
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HelmetAggressor_cover_F
+| Avenger Helmet (Cover B)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_HelmetAggressor_cover_taiga_F
+| Avenger Helmet (Cover T)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Beret_EAF_01_F
+| Beret [LDF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_Hat_Tinfoil_F
+| Tin Foil Hat
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Headgear
+| H_Booniehat_mgrn
+| Booniehat (Green)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_Booniehat_taiga
+| Booniehat (Taiga)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_Booniehat_eaf
+| Booniehat [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_Booniehat_wdl
+| Booniehat (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_MilCap_grn
+| Military Cap (Green)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_MilCap_taiga
+| Military Cap (Taiga)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_MilCap_wdl
+| Military Cap (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_MilCap_eaf
+| Military Cap [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_HelmetB_plain_wdl
+| Combat Helmet (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_HelmetB_light_wdl
+| Light Combat Helmet (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_HelmetSpecB_wdl
+| Enhanced Combat Helmet (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_HelmetCrew_I_E
+| Crew Helmet [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_Tank_eaf_F
+| Crew Helmet (Soft) [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_PilotHelmetFighter_I_E
+| Pilot Helmet [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_PilotHelmetHeli_I_E
+| Heli Pilot Helmet [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_CrewHelmetHeli_I_E
+| Heli Crew Helmet [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Vest
+| V_CarrierRigKBT_01_EAF_F
+| Modular Carrier Vest (Geometric)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Vest
+| V_CarrierRigKBT_01_light_EAF_F
+| Modular Carrier Lite (Geometric)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Vest
+| V_CarrierRigKBT_01_heavy_EAF_F
+| Modular Carrier GL Rig (Geometric)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Vest
+| V_CarrierRigKBT_01_Olive_F
+| Modular Carrier Vest (Olive)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Vest
+| V_CarrierRigKBT_01_light_Olive_F
+| Modular Carrier Lite (Olive)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Vest
+| V_CarrierRigKBT_01_heavy_Olive_F
+| Modular Carrier GL Rig (Olive)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Vest
+| V_SmershVest_01_F
+| Kipchak Vest
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Vest
+| V_SmershVest_01_radio_F
+| Kipchak Vest (Tactical Radio)
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Vest
+| V_PlateCarrier1_wdl
+| Carrier Lite (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Vest
+| V_PlateCarrier2_wdl
+| Carrier Rig (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Vest
+| V_PlateCarrierGL_wdl
+| Carrier GL Rig (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Vest
+| V_PlateCarrierSpec_wdl
+| Carrier Special Rig (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Headgear
+| H_Beret_CSAT_01_F
+| Beret (Red) [CSAT]
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Uniform
+| U_C_ArtTShirt_01_v1_F
+| Casual Clothes (Art of War)
+| {{Icon|arma3artofwar|25}}
+| No
+|-
+| Uniform
+| U_C_ArtTShirt_01_v2_F
+| Casual Clothes (Drones)
+| {{Icon|arma3artofwar|25}}
+| No
+|-
+| Uniform
+| U_C_ArtTShirt_01_v3_F
+| Casual Clothes (Waltham Robotics)
+| {{Icon|arma3artofwar|25}}
+| No
+|-
+| Uniform
+| U_C_ArtTShirt_01_v4_F
+| Casual Clothes (Exhibition)
+| {{Icon|arma3artofwar|25}}
+| No
+|-
+| Uniform
+| U_C_ArtTShirt_01_v5_F
+| Casual Clothes (Robogeddon)
+| {{Icon|arma3artofwar|25}}
+| No
+|-
+| Uniform
+| U_C_ArtTShirt_01_v6_F
+| Casual Clothes (Abstract)
+| {{Icon|arma3artofwar|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_FormalSuit_01_black_F
+| Formal Suit (Black)
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_FormalSuit_01_gray_F
+| Formal Suit (Gray)
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_FormalSuit_01_blue_F
+| Formal Suit (Blue)
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_FormalSuit_01_khaki_F
+| Formal Suit (Khaki)
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_FormalSuit_01_tshirt_black_F
+| Formal Suit (T-Shirt, Black)
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_C_FormalSuit_01_tshirt_gray_F
+| Formal Suit (T-Shirt, Gray)
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_ParadeUniform_01_US_F
+| Parade Uniform [US]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_B_ParadeUniform_01_US_decorated_F
+| Parade Uniform (Decorated) [US]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_O_ParadeUniform_01_CSAT_F
+| Parade Uniform [CSAT]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_O_ParadeUniform_01_CSAT_decorated_F
+| Parade Uniform (Decorated) [CSAT]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_ParadeUniform_01_AAF_F
+| Parade Uniform [AAF]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_ParadeUniform_01_AAF_decorated_F
+| Parade Uniform (Decorated) [AAF]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_E_ParadeUniform_01_LDF_F
+| Parade Uniform [LDF]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Uniform
+| U_I_E_ParadeUniform_01_LDF_decorated_F
+| Parade Uniform (Decorated) [LDF]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_ParadeDressCap_01_US_F
+| Parade Cap [US]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_ParadeDressCap_01_CSAT_F
+| Parade Cap [CSAT]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_ParadeDressCap_01_AAF_F
+| Parade Cap [AAF]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Headgear
+| H_ParadeDressCap_01_LDF_F
+| Parade Cap [LDF]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|-
+| Facewear
+| None
+| None
+|
+| No
+|-
+| Facewear
+| G_Spectacles
+| Spectacle Glasses
+|
+| No
+|-
+| Facewear
+| G_Spectacles_Tinted
+| Tinted Spectacles
+|
+| No
+|-
+| Facewear
+| G_Combat
+| Combat Goggles
+|
+| No
+|-
+| Facewear
+| G_Lowprofile
+| Low Profile Goggles
+|
+| No
+|-
+| Facewear
+| G_Shades_Black
+| Shades (Black)
+|
+| No
+|-
+| Facewear
+| G_Shades_Green
+| Shades (Green)
+|
+| No
+|-
+| Facewear
+| G_Shades_Red
+| Shades (Red)
+|
+| No
+|-
+| Facewear
+| G_Squares
+| Square Spectacles
+|
+| No
+|-
+| Facewear
+| G_Squares_Tinted
+| Square Shades
+|
+| No
+|-
+| Facewear
+| G_Sport_BlackWhite
+| Sport Shades (Shadow)
+|
+| No
+|-
+| Facewear
+| G_Sport_Blackyellow
+| Sport Shades (Poison)
+|
+| No
+|-
+| Facewear
+| G_Sport_Greenblack
+| Sport Shades (Yetti)
+|
+| No
+|-
+| Facewear
+| G_Sport_Checkered
+| Sport Shades (Style)
+|
+| No
+|-
+| Facewear
+| G_Sport_Red
+| Sport Shades (Fire)
+|
+| No
+|-
+| Facewear
+| G_Tactical_Black
+| Tactical Shades
+|
+| No
+|-
+| Facewear
+| G_Aviator
+| Aviator Glasses
+|
+| No
+|-
+| Facewear
+| G_Lady_Blue
+| Ladies Shades
+|
+| No
+|-
+| Facewear
+| G_Diving
+| Diving Goggles
+|
+| No
+|-
+| Facewear
+| G_B_Diving
+| Diving Goggles [NATO]
+|
+| No
+|-
+| Facewear
+| G_O_Diving
+| Diving Goggles [CSAT]
+|
+| No
+|-
+| Facewear
+| G_I_Diving
+| Diving Goggles [AAF]
+|
+| No
+|-
+| Facewear
+| G_Goggles_VR
+| VR Goggles
+|
+| No
+|-
+| Facewear
+| G_Balaclava_blk
+| Balaclava (Black)
+|
+| No
+|-
+| Facewear
+| G_Balaclava_oli
+| Balaclava (Olive)
+|
+| No
+|-
+| Facewear
+| G_Balaclava_combat
+| Balaclava (Combat Goggles)
+|
+| No
+|-
+| Facewear
+| G_Balaclava_lowprofile
+| Balaclava (Low Profile Goggles)
+|
+| No
+|-
+| Facewear
+| G_Bandanna_blk
+| Bandana (Black)
+|
+| No
+|-
+| Facewear
+| G_Bandanna_oli
+| Bandana (Olive)
+|
+| No
+|-
+| Facewear
+| G_Bandanna_khk
+| Bandana (Khaki)
+|
+| No
+|-
+| Facewear
+| G_Bandanna_tan
+| Bandana (Tan)
+|
+| No
+|-
+| Facewear
+| G_Bandanna_beast
+| Bandana (Beast)
+|
+| No
+|-
+| Facewear
+| G_Bandanna_shades
+| Bandana (Shades)
+|
+| No
+|-
+| Facewear
+| G_Bandanna_sport
+| Bandana (Sport)
+|
+| No
+|-
+| Facewear
+| G_Bandanna_aviator
+| Bandana (Aviator)
+|
+| No
+|-
+| Facewear
+| G_Shades_Blue
+| Shades (Blue)
+|
+| No
+|-
+| Facewear
+| G_Sport_Blackred
+| Sport Shades (Vulcan)
+|
+| No
+|-
+| Facewear
+| G_Tactical_Clear
+| Tactical Glasses
+|
+| No
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_Balaclava_TI_blk_F
+| Stealth Balaclava (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_Balaclava_TI_tna_F
+| Stealth Balaclava (Green)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_Balaclava_TI_G_blk_F
+| Stealth Balaclava (Black, Goggles)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_Balaclava_TI_G_tna_F
+| Stealth Balaclava (Green, Goggles)
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| Facewear
+| G_Combat_Goggles_tna_F
+| Combat Goggles (Green)
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_Respirator_white_F
+| Respirator (White)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_Respirator_yellow_F
+| Respirator (Yellow)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_Respirator_blue_F
+| Respirator (Blue)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_EyeProtectors_F
+| Safety Goggles
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_EyeProtectors_Earpiece_F
+| Safety Goggles (Earpiece)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_WirelessEarpiece_F
+| Wireless Earpiece
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_AirPurifyingRespirator_01_F
+| APR [NATO]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_AirPurifyingRespirator_02_black_F
+| APR (Black) [CSAT]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_AirPurifyingRespirator_02_olive_F
+| APR (Olive) [CSAT]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_AirPurifyingRespirator_02_sand_F
+| APR (Sand) [CSAT]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_RegulatorMask_F
+| Regulator Facepiece
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_Blindfold_01_white_F
+| Blindfold (White)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Facewear
+| G_Blindfold_01_black_F
+| Blindfold (Black)
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Backpack
+| B_AssaultPack_khk
+| Assault Pack (Khaki)
+|
+| No
+|-
+| Backpack
+| B_AssaultPack_dgtl
+| Assault Pack (Digital)
+|
+| No
+|-
+| Backpack
+| B_AssaultPack_rgr
+| Assault Pack (Green)
+|
+| No
+|-
+| Backpack
+| B_AssaultPack_sgg
+| Assault Pack (Sage)
+|
+| No
+|-
+| Backpack
+| B_AssaultPack_blk
+| Assault Pack (Black)
+|
+| No
+|-
+| Backpack
+| B_AssaultPack_cbr
+| Assault Pack (Coyote)
+|
+| No
+|-
+| Backpack
+| B_AssaultPack_mcamo
+| Assault Pack (MTP)
+|
+| No
+|-
+| Backpack
+| B_AssaultPack_ocamo
+| Assault Pack (Hex)
+|
+| No
+|-
+| Backpack
+| B_Kitbag_rgr
+| Kitbag (Green)
+|
+| No
+|-
+| Backpack
+| B_Kitbag_mcamo
+| Kitbag (MTP)
+|
+| No
+|-
+| Backpack
+| B_Kitbag_sgg
+| Kitbag (Sage)
+|
+| No
+|-
+| Backpack
+| B_Kitbag_cbr
+| Kitbag (Coyote)
+|
+| No
+|-
+| Backpack
+| B_Kitbag_tan
+| Kitbag (Tan)
+|
+| No
+|-
+| Backpack
+| B_TacticalPack_rgr
+| Tactical Backpack (Green)
+|
+| No
+|-
+| Backpack
+| B_TacticalPack_mcamo
+| Tactical Backpack (MTP)
+|
+| No
+|-
+| Backpack
+| B_TacticalPack_ocamo
+| Tactical Backpack (Hex)
+|
+| No
+|-
+| Backpack
+| B_TacticalPack_blk
+| Tactical Backpack (Black)
+|
+| No
+|-
+| Backpack
+| B_TacticalPack_oli
+| Tactical Backpack (Olive)
+|
+| No
+|-
+| Backpack
+| B_FieldPack_khk
+| Field Pack (Khaki)
+|
+| No
+|-
+| Backpack
+| B_FieldPack_ocamo
+| Field Pack (Hex)
+|
+| No
+|-
+| Backpack
+| B_FieldPack_oucamo
+| Field Pack (Urban)
+|
+| No
+|-
+| Backpack
+| B_FieldPack_cbr
+| Field Pack (Coyote)
+|
+| No
+|-
+| Backpack
+| B_FieldPack_blk
+| Field Pack (Black)
+|
+| No
+|-
+| Backpack
+| B_Carryall_ocamo
+| Carryall Backpack (Hex)
+|
+| No
+|-
+| Backpack
+| B_Carryall_oucamo
+| Carryall Backpack (Urban)
+|
+| No
+|-
+| Backpack
+| B_Carryall_mcamo
+| Carryall Backpack (MTP)
+|
+| No
+|-
+| Backpack
+| B_Carryall_khk
+| Carryall Backpack (Khaki)
+|
+| No
+|-
+| Backpack
+| B_Carryall_cbr
+| Carryall Backpack (Coyote)
+|
+| No
+|-
+| Backpack
+| B_Parachute
+| Steerable Parachute
+|
+| No
+|-
+| Backpack
+| B_FieldPack_oli
+| Field Pack (Olive)
+|
+| No
+|-
+| Backpack
+| B_Carryall_oli
+| Carryall Backpack (Olive)
+|
+| No
+|-
+| Backpack
+| B_AssaultPack_Kerry
+| US Assault Pack (Kerry)
+|
+| No
+|-
+| Backpack
+| B_HMG_01_support_F
+| Folded Tripod [NATO]
+|
+| No
+|-
+| Backpack
+| O_HMG_01_support_F
+| Folded Tripod [CSAT]
+|
+| No
+|-
+| Backpack
+| I_HMG_01_support_F
+| Folded Tripod [AAF]
+|
+| No
+|-
+| Backpack
+| B_HMG_01_support_high_F
+| Folded Tripod (Raised) [NATO]
+|
+| No
+|-
+| Backpack
+| O_HMG_01_support_high_F
+| Folded Tripod (Raised) [CSAT]
+|
+| No
+|-
+| Backpack
+| I_HMG_01_support_high_F
+| Folded Tripod (Raised) [AAF]
+|
+| No
+|-
+| Backpack
+| B_HMG_01_weapon_F
+| Dismantled Mk30 HMG [NATO]
+|
+| No
+|-
+| Backpack
+| O_HMG_01_weapon_F
+| Dismantled Mk30 HMG [CSAT]
+|
+| No
+|-
+| Backpack
+| I_HMG_01_weapon_F
+| Dismantled Mk30 HMG [AAF]
+|
+| No
+|-
+| Backpack
+| B_HMG_01_A_weapon_F
+| Dismantled Autonomous MG [NATO]
+|
+| No
+|-
+| Backpack
+| O_HMG_01_A_weapon_F
+| Dismantled Autonomous MG [CSAT]
+|
+| No
+|-
+| Backpack
+| I_HMG_01_A_weapon_F
+| Dismantled Autonomous MG [AAF]
+|
+| No
+|-
+| Backpack
+| B_GMG_01_weapon_F
+| Dismantled Mk32 GMG [NATO]
+|
+| No
+|-
+| Backpack
+| O_GMG_01_weapon_F
+| Dismantled Mk32 GMG [CSAT]
+|
+| No
+|-
+| Backpack
+| I_GMG_01_weapon_F
+| Dismantled Mk32 GMG [AAF]
+|
+| No
+|-
+| Backpack
+| B_GMG_01_A_weapon_F
+| Dismantled Autonomous GMG [NATO]
+|
+| No
+|-
+| Backpack
+| O_GMG_01_A_weapon_F
+| Dismantled Autonomous GMG [CSAT]
+|
+| No
+|-
+| Backpack
+| I_GMG_01_A_weapon_F
+| Dismantled Autonomous GMG [AAF]
+|
+| No
+|-
+| Backpack
+| B_HMG_01_high_weapon_F
+| Dismantled Mk30 HMG (Raised) [NATO]
+|
+| No
+|-
+| Backpack
+| O_HMG_01_high_weapon_F
+| Dismantled Mk30 HMG (Raised) [CSAT]
+|
+| No
+|-
+| Backpack
+| I_HMG_01_high_weapon_F
+| Dismantled Mk30 HMG (Raised) [AAF]
+|
+| No
+|-
+| Backpack
+| B_GMG_01_high_weapon_F
+| Dismantled Mk32 GMG (Raised) [NATO]
+|
+| No
+|-
+| Backpack
+| O_GMG_01_high_weapon_F
+| Dismantled Mk32 GMG (Raised) [CSAT]
+|
+| No
+|-
+| Backpack
+| I_GMG_01_high_weapon_F
+| Dismantled Mk32 GMG (Raised) [AAF]
+|
+| No
+|-
+| Backpack
+| I_HMG_02_support_F
+| Folded Tripod M2 HMG .50 [AAF]
+|
+| No
+|-
+| Backpack
+| I_E_HMG_02_support_F
+| Folded Tripod M2 HMG .50 [LDF]
+|
+| No
+|-
+| Backpack
+| I_C_HMG_02_support_F
+| Folded Tripod M2 HMG .50 [FIA]
+|
+| No
+|-
+| Backpack
+| I_G_HMG_02_support_F
+| Folded Tripod M2 HMG .50 [Syndikat]
+|
+| No
+|-
+| Backpack
+| I_HMG_02_support_high_F
+| Folded Tripod M2 HMG .50 (Raised) [AAF]
+|
+| No
+|-
+| Backpack
+| I_E_HMG_02_support_high_F
+| Folded Tripod M2 HMG .50 (Raised) [LDF]
+|
+| No
+|-
+| Backpack
+| I_C_HMG_02_support_high_F
+| Folded Tripod M2 HMG .50 (Raised) [Syndikat]
+|
+| No
+|-
+| Backpack
+| I_G_HMG_02_support_high_F
+| Folded Tripod M2 HMG .50 (Raised) [FIA]
+|
+| No
+|-
+| Backpack
+| I_HMG_02_weapon_F
+| Dismantled M2 HMG .50 [AAF]
+|
+| No
+|-
+| Backpack
+| I_E_HMG_02_weapon_F
+| Dismantled M2 HMG .50 [LDF]
+|
+| No
+|-
+| Backpack
+| I_C_HMG_02_weapon_F
+| Dismantled M2 HMG .50 [Syndikat]
+|
+| No
+|-
+| Backpack
+| I_G_HMG_02_weapon_F
+| Dismantled M2 HMG .50 [FIA]
+|
+| No
+|-
+| Backpack
+| I_HMG_02_high_weapon_F
+| Dismantled M2 HMG .50 (Raised) [AAF]
+|
+| No
+|-
+| Backpack
+| I_E_HMG_02_high_weapon_F
+| Dismantled M2 HMG .50 (Raised) [LDF]
+|
+| No
+|-
+| Backpack
+| I_C_HMG_02_high_weapon_F
+| Dismantled M2 HMG .50 (Raised) [Syndikat]
+|
+| No
+|-
+| Backpack
+| I_G_HMG_02_high_weapon_F
+| Dismantled M2 HMG .50 (Raised) [FIA]
+|
+| No
+|-
+| Backpack
+| B_Mortar_01_support_F
+| Folded Mk6 Mortar Bipod [NATO]
+|
+| No
+|-
+| Backpack
+| O_Mortar_01_support_F
+| Folded Mk6 Mortar Bipod [CSAT]
+|
+| No
+|-
+| Backpack
+| I_Mortar_01_support_F
+| Folded Mk6 Mortar Bipod [AAF]
+|
+| No
+|-
+| Backpack
+| B_Mortar_01_weapon_F
+| Folded Mk6 Mortar Tube [NATO]
+|
+| No
+|-
+| Backpack
+| O_Mortar_01_weapon_F
+| Folded Mk6 Mortar Tube [CSAT]
+|
+| No
+|-
+| Backpack
+| I_Mortar_01_weapon_F
+| Folded Mk6 Mortar Tube [AAF]
+|
+| No
+|-
+| Backpack
+| B_AA_01_weapon_F
+| Static Titan Launcher (AA) [NATO]
+|
+| No
+|-
+| Backpack
+| O_AA_01_weapon_F
+| Static Titan Launcher (AA) [CSAT]
+|
+| No
+|-
+| Backpack
+| I_AA_01_weapon_F
+| Static Titan Launcher (AA) [AAF]
+|
+| No
+|-
+| Backpack
+| B_AT_01_weapon_F
+| Static Titan Launcher (AT) [NATO]
+|
+| No
+|-
+| Backpack
+| O_AT_01_weapon_F
+| Static Titan Launcher (AT) [CSAT]
+|
+| No
+|-
+| Backpack
+| I_AT_01_weapon_F
+| Static Titan Launcher (AT) [AAF]
+|
+| No
+|-
+| Backpack
+| B_UAV_01_backpack_F
+| UAV Bag (AR-2) [NATO]
+|
+| No
+|-
+| Backpack
+| O_UAV_01_backpack_F
+| UAV Bag (AR-2) [CSAT]
+|
+| No
+|-
+| Backpack
+| I_UAV_01_backpack_F
+| UAV Bag (AR-2) [AAF]
+|
+| No
+|-
+| Backpack
+| B_Respawn_TentDome_F
+| Camp (Dome Tent)
+| {{Icon|arma3zeus|25}}
+| No
+|-
+| Backpack
+| B_Respawn_TentA_F
+| Camp (Ridge Tent)
+| {{Icon|arma3zeus|25}}
+| No
+|-
+| Backpack
+| B_Respawn_Sleeping_bag_F
+| Camp (Green Sleeping Bag)
+| {{Icon|arma3zeus|25}}
+| No
+|-
+| Backpack
+| B_Respawn_Sleeping_bag_blue_F
+| Camp (Blue Sleeping Bag)
+| {{Icon|arma3zeus|25}}
+| No
+|-
+| Backpack
+| B_Respawn_Sleeping_bag_brown_F
+| Camp (Brown Sleeping Bag)
+| {{Icon|arma3zeus|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_Static_Designator_01_weapon_F
+| Remote Designator Bag [NATO]
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Backpack
+| O_Static_Designator_02_weapon_F
+| Remote Designator Bag [CSAT]
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|-
+| Backpack
+| B_Bergen_mcamo_F
+| Bergen Backpack (MTP)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Backpack
+| B_Bergen_dgtl_F
+| Bergen Backpack (Digital)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Backpack
+| B_Bergen_hex_F
+| Bergen Backpack (Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Backpack
+| B_Bergen_tna_F
+| Bergen Backpack (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Backpack
+| B_AssaultPack_tna_F
+| Assault Pack (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Backpack
+| B_Carryall_ghex_F
+| Carryall Backpack (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Backpack
+| B_FieldPack_ghex_F
+| Field Pack (Green Hex)
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_ViperHarness_blk_F
+| Viper Harness (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_ViperHarness_ghex_F
+| Viper Harness (Green Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_ViperHarness_hex_F
+| Viper Harness (Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_ViperHarness_khk_F
+| Viper Harness (Khaki)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_ViperHarness_oli_F
+| Viper Harness (Olive)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_ViperLightHarness_blk_F
+| Viper Light Harness (Black)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_ViperLightHarness_ghex_F
+| Viper Light Harness (Green Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_ViperLightHarness_hex_F
+| Viper Light Harness (Hex)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_ViperLightHarness_khk_F
+| Viper Light Harness (Khaki)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_ViperLightHarness_oli_F
+| Viper Light Harness (Olive)
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| Backpack
+| B_Patrol_Respawn_bag_F
+| Camp (Dome Tent, Combat Patrol)
+| {{Icon|arma3malden|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_Messenger_Coyote_F
+| Messenger Bag (Coyote)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_Messenger_Olive_F
+| Messenger Bag (Olive)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_Messenger_Black_F
+| Messenger Bag (Black)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_Messenger_Gray_F
+| Messenger Bag (Gray)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_Messenger_IDAP_F
+| Messenger Bag [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|-
+| Backpack
+| C_IDAP_UAV_01_backpack_F
+| UAV Bag [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_UAV_06_backpack_F
+| UAV Bag (AL-6) [NATO]
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| O_UAV_06_backpack_F
+| UAV Bag (AL-6) [CSAT]
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| I_UAV_06_backpack_F
+| UAV Bag (AL-6) [AAF]
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| C_IDAP_UAV_06_backpack_F
+| UAV Bag (Utility) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| C_UAV_06_backpack_F
+| UAV Bag (Utility)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| C_IDAP_UAV_06_antimine_backpack_F
+| UAV Bag (Demining) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_UAV_06_medical_backpack_F
+| UAV Bag (AL-6, Medical) [NATO]
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| O_UAV_06_medical_backpack_F
+| UAV Bag (AL-6, Medical) [CSAT]
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| I_UAV_06_medical_backpack_F
+| UAV Bag (AL-6, Medical) [AAF]
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| C_IDAP_UAV_06_medical_backpack_F
+| UAV Bag (AL-6, Medical) [IDAP]
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| C_UAV_06_medical_backpack_F
+| UAV Bag (Utility, Medical)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_LegStrapBag_black_F
+| Leg Strap Bag (Black)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_LegStrapBag_coyote_F
+| Leg Strap Bag (Coyote)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_LegStrapBag_olive_F
+| Leg Strap Bag (Olive)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_W_Static_Designator_01_weapon_F
+| Remote Designator Bag [NATO]
+| {{Icon|arma3contact|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_CombinationUnitRespirator_01_F
+| Combination Unit Respirator
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_SCBA_01_F
+| Self-Contained Breathing Apparatus
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_UGV_02_Science_backpack_F
+| UGV Bag (ED-1E) [NATO]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_UGV_02_Demining_backpack_F
+| UGV Bag (ED-1D) [NATO]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| O_UGV_02_Science_backpack_F
+| UGV Bag (ED-1E) [CSAT]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| O_UGV_02_Demining_backpack_F
+| UGV Bag (ED-1D) [CSAT]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| I_UGV_02_Science_backpack_F
+| UGV Bag (ED-1E) [AAF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| I_E_UGV_02_Science_backpack_F
+| UGV Bag (ED-1E) [LDF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| I_UGV_02_Demining_backpack_F
+| UGV Bag (ED-1D) [AAF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| I_E_UGV_02_Demining_backpack_F
+| UGV Bag (ED-1D) [LDF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| C_IDAP_UGV_02_Demining_backpack_F
+| UGV Bag (Demining) [IDAP]
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Backpack
+| I_E_UAV_01_backpack_F
+| UAV Bag (AR-2) [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Backpack
+| I_E_UAV_06_backpack_F
+| UAV Bag (AL-6) [LDF]
+| {{Icon|arma3contact|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| I_E_UAV_06_medical_backpack_F
+| UAV Bag (AL-6, Medical) [LDF]
+| {{Icon|arma3contact|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_RadioBag_01_wdl_F
+| Radio Pack (Woodland) [NATO]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_RadioBag_01_mtp_F
+| Radio Pack (MTP) [NATO]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_RadioBag_01_tropic_F
+| Radio Pack (Tropic) [NATO]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_RadioBag_01_black_F
+| Radio Pack (Black)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_RadioBag_01_hex_F
+| Radio Pack (Hex) [CSAT]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_RadioBag_01_oucamo_F
+| Radio Pack (Urban) [CSAT]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_RadioBag_01_ghex_F
+| Radio Pack (Green Hex) [CSAT]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_RadioBag_01_digi_F
+| Radio Pack (Digital) [AAF]
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_RadioBag_01_eaf_F
+| Radio Pack (Geometric) [LDF]
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| Backpack
+| B_Carryall_green_F
+| Carryall Backpack (Green)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| B_Carryall_taiga_F
+| Carryall Backpack (Taiga)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| B_Carryall_wdl_F
+| Carryall Backpack (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| B_Carryall_eaf_F
+| Carryall Backpack (Geometric)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| B_FieldPack_green_F
+| Field Pack (Green)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| B_FieldPack_taiga_F
+| Field Pack (Taiga)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| B_AssaultPack_wdl_F
+| Assault Pack (Woodland)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| B_AssaultPack_eaf_F
+| Assault Pack (Geometric)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| I_E_HMG_01_support_F
+| Folded Tripod [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| I_E_HMG_01_support_high_F
+| Folded Tripod (Raised) [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| I_E_Mortar_01_support_F
+| Folded Mk6 Mortar Bipod [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| I_E_GMG_01_Weapon_F
+| Dismantled Mk32 GMG [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| I_E_GMG_01_A_Weapon_F
+| Dismantled Autonomous GMG [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| I_E_GMG_01_high_Weapon_F
+| Dismantled Mk32 GMG (Raised) [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| I_E_HMG_01_Weapon_F
+| Dismantled Mk30 HMG [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| I_E_HMG_01_high_Weapon_F
+| Dismantled Mk30 HMG (Raised) [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| I_E_HMG_01_A_Weapon_F
+| Dismantled Autonomous MG [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| I_E_Mortar_01_Weapon_F
+| Folded Mk6 Mortar Tube [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| I_E_AT_01_weapon_F
+| Static Titan Launcher (AT) [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| Backpack
+| I_E_AA_01_weapon_F
+| Static Titan Launcher (AA) [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_CivilianBackpack_01_Sport_Blue_F
+| Sports Backpack (Blue)
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_CivilianBackpack_01_Sport_Red_F
+| Sports Backpack (Red)
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_CivilianBackpack_01_Sport_Green_F
+| Sports Backpack (Green)
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_CivilianBackpack_01_Everyday_Black_F
+| Everyday Backpack (Black)
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_CivilianBackpack_01_Everyday_Vrana_F
+| Everyday Backpack (Vrana)
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_CivilianBackpack_01_Everyday_Astra_F
+| Everyday Backpack (Astra)
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|- style="background: #EDD; color: #333"
+| Backpack
+| B_CivilianBackpack_01_Everyday_IDAP_F
+| Everyday Backpack [IDAP]
+| {{Icon|arma3artofwar|25}}
+| Art of War
+|}
+</spoiler>
+
+=== Vehicles ===
+
+<spoiler text="Show Vehicles table">
+{| class="wikitable sortable"
+|-
+! Faction
+! classname
+! displayName
+! Icon
+! Restricted?
+|-
+| NATO
+| B_HMG_01_F
+| Mk30 HMG .50
+|
+| No
+|-
+| CSAT
+| O_HMG_01_F
+| Mk30 HMG .50
+|
+| No
+|-
+| AAF
+| I_HMG_01_F
+| Mk30 HMG .50
+|
+| No
+|-
+| NATO
+| B_HMG_01_high_F
+| Mk30 HMG .50 (Raised)
+|
+| No
+|-
+| CSAT
+| O_HMG_01_high_F
+| Mk30 HMG .50 (Raised)
+|
+| No
+|-
+| AAF
+| I_HMG_01_high_F
+| Mk30 HMG .50 (Raised)
+|
+| No
+|-
+| NATO
+| B_HMG_01_A_F
+| Mk30A HMG .50
+|
+| No
+|-
+| CSAT
+| O_HMG_01_A_F
+| Mk30A HMG .50
+|
+| No
+|-
+| AAF
+| I_HMG_01_A_F
+| Mk30A HMG .50
+|
+| No
+|-
+| NATO
+| B_GMG_01_F
+| Mk32 GMG 20 mm
+|
+| No
+|-
+| CSAT
+| O_GMG_01_F
+| Mk32 GMG 20 mm
+|
+| No
+|-
+| AAF
+| I_GMG_01_F
+| Mk32 GMG 20 mm
+|
+| No
+|-
+| NATO
+| B_GMG_01_high_F
+| Mk32 GMG 20 mm (Raised)
+|
+| No
+|-
+| CSAT
+| O_GMG_01_high_F
+| Mk32 GMG 20 mm (Raised)
+|
+| No
+|-
+| AAF
+| I_GMG_01_high_F
+| Mk32 GMG 20 mm (Raised)
+|
+| No
+|-
+| NATO
+| B_GMG_01_A_F
+| Mk32A GMG 20 mm
+|
+| No
+|-
+| CSAT
+| O_GMG_01_A_F
+| Mk32A GMG 20 mm
+|
+| No
+|-
+| AAF
+| I_GMG_01_A_F
+| Mk32A GMG 20 mm
+|
+| No
+|-
+| AAF
+| I_HMG_02_F
+| M2 HMG .50
+|
+| No
+|-
+| LDF
+| I_E_HMG_02_F
+| M2 HMG .50
+|
+| No
+|-
+| FIA
+| I_G_HMG_02_F
+| M2 HMG .50
+|
+| No
+|-
+| FIA
+| B_G_HMG_02_F
+| M2 HMG .50
+|
+| No
+|-
+| FIA
+| O_G_HMG_02_F
+| M2 HMG .50
+|
+| No
+|-
+| Syndikat
+| I_C_HMG_02_F
+| M2 HMG .50
+|
+| No
+|-
+| AAF
+| I_HMG_02_high_F
+| M2 HMG .50 (Raised)
+|
+| No
+|-
+| LDF
+| I_E_HMG_02_high_F
+| M2 HMG .50 (Raised)
+|
+| No
+|-
+| FIA
+| I_G_HMG_02_high_F
+| M2 HMG .50 (Raised)
+|
+| No
+|-
+| FIA
+| B_G_HMG_02_high_F
+| M2 HMG .50 (Raised)
+|
+| No
+|-
+| FIA
+| O_G_HMG_02_high_F
+| M2 HMG .50 (Raised)
+|
+| No
+|-
+| Syndikat
+| I_C_HMG_02_high_F
+| M2 HMG .50 (Raised)
+|
+| No
+|-
+| NATO
+| B_Mortar_01_F
+| Mk6 Mortar
+|
+| No
+|-
+| CSAT
+| O_Mortar_01_F
+| Mk6 Mortar
+|
+| No
+|-
+| AAF
+| I_Mortar_01_F
+| Mk6 Mortar
+|
+| No
+|-
+| FIA
+| I_G_Mortar_01_F
+| Mk6 Mortar
+|
+| No
+|-
+| FIA
+| B_G_Mortar_01_F
+| Mk6 Mortar
+|
+| No
+|-
+| FIA
+| O_G_Mortar_01_F
+| Mk6 Mortar
+|
+| No
+|-
+| NATO
+| B_Heli_Light_01_F
+| MH-9 Hummingbird
+|
+| No
+|-
+| NATO
+| B_Heli_Light_01_dynamicLoadout_F
+| AH-9 Pawnee
+|
+| No
+|-
+| Civilians
+| C_Heli_Light_01_civil_F
+| M-900
+|
+| No
+|-
+| CSAT
+| O_Heli_Light_02_dynamicLoadout_F
+| PO-30 Orca
+|
+| No
+|-
+| CSAT
+| O_Heli_Light_02_unarmed_F
+| PO-30 Orca (Unarmed)
+|
+| No
+|-
+| NATO
+| B_Heli_Attack_01_dynamicLoadout_F
+| AH-99 Blackfoot
+|
+| No
+|-
+| CSAT
+| O_Heli_Attack_02_dynamicLoadout_F
+| Mi-48 Kajman
+|
+| No
+|-
+| NATO
+| B_Heli_Transport_01_F
+| UH-80 Ghost Hawk
+|
+| No
+|-
+| AAF
+| I_Heli_Transport_02_F
+| CH-49 Mohawk
+|
+| No
+|-
+| AAF
+| I_Plane_Fighter_03_dynamicLoadout_F
+| A-143 Buzzard (CAS)
+|
+| No
+|-
+| NATO
+| B_APC_Tracked_01_rcws_F
+| IFV-6c Panther
+|
+| No
+|-
+| NATO
+| B_APC_Tracked_01_CRV_F
+| CRV-6e Bobcat
+|
+| No
+|-
+| NATO
+| B_APC_Tracked_01_AA_F
+| IFV-6a Cheetah
+|
+| No
+|-
+| CSAT
+| O_APC_Tracked_02_cannon_F
+| BTR-K Kamysh
+|
+| No
+|-
+| CSAT
+| O_APC_Tracked_02_AA_F
+| ZSU-39 Tigris
+|
+| No
+|-
+| NATO
+| B_MBT_01_cannon_F
+| M2A1 Slammer
+|
+| No
+|-
+| NATO
+| B_MBT_01_arty_F
+| M4 Scorcher
+|
+| No
+|-
+| NATO
+| B_MBT_01_mlrs_F
+| M5 Sandstorm MLRS
+|
+| No
+|-
+| CSAT
+| O_MBT_02_cannon_F
+| T-100 Varsuk
+|
+| No
+|-
+| CSAT
+| O_MBT_02_arty_F
+| 2S9 Sochor
+|
+| No
+|-
+| NATO
+| B_Boat_Armed_01_minigun_F
+| Speedboat Minigun
+|
+| No
+|-
+| CSAT
+| O_Boat_Armed_01_hmg_F
+| Speedboat HMG
+|
+| No
+|-
+| NATO
+| B_Boat_Transport_01_F
+| Assault Boat
+|
+| No
+|-
+| CSAT
+| O_Boat_Transport_01_F
+| Assault Boat
+|
+| No
+|-
+| NATO
+| B_Lifeboat
+| Rescue Boat
+|
+| No
+|-
+| CSAT
+| O_Lifeboat
+| Rescue Boat
+|
+| No
+|-
+| Civilians
+| C_Rubberboat
+| Rescue Boat
+|
+| No
+|-
+| AAF
+| I_Boat_Armed_01_minigun_F
+| Speedboat Minigun
+|
+| No
+|-
+| AAF
+| I_Boat_Transport_01_F
+| Assault Boat
+|
+| No
+|-
+| NATO
+| B_SDV_01_F
+| SDV
+|
+| No
+|-
+| CSAT
+| O_SDV_01_F
+| SDV
+|
+| No
+|-
+| AAF
+| I_SDV_01_F
+| SDV
+|
+| No
+|-
+| Civilians
+| C_Boat_Civil_01_F
+| Motorboat
+|
+| No
+|-
+| Civilians
+| C_Boat_Civil_01_rescue_F
+| Motorboat (Rescue)
+|
+| No
+|-
+| Civilians
+| C_Boat_Civil_01_police_F
+| Motorboat (Police)
+|
+| No
+|-
+| FIA
+| I_G_Boat_Transport_01_F
+| Assault Boat
+|
+| No
+|-
+| FIA
+| B_G_Boat_Transport_01_F
+| Assault Boat
+|
+| No
+|-
+| FIA
+| O_G_Boat_Transport_01_F
+| Assault Boat
+|
+| No
+|-
+| NATO
+| B_MRAP_01_F
+| Hunter
+|
+| No
+|-
+| NATO
+| B_MRAP_01_gmg_F
+| Hunter GMG
+|
+| No
+|-
+| NATO
+| B_MRAP_01_hmg_F
+| Hunter HMG
+|
+| No
+|-
+| CSAT
+| O_MRAP_02_F
+| Ifrit
+|
+| No
+|-
+| CSAT
+| O_MRAP_02_hmg_F
+| Ifrit HMG
+|
+| No
+|-
+| CSAT
+| O_MRAP_02_gmg_F
+| Ifrit GMG
+|
+| No
+|-
+| Civilians
+| C_Offroad_01_F
+| Offroad
+|
+| No
+|-
+| Civilians
+| C_Offroad_01_repair_F
+| Offroad (Services)
+|
+| No
+|-
+| FIA
+| B_G_Offroad_01_repair_F
+| Offroad (Repair)
+|
+| No
+|-
+| FIA
+| O_G_Offroad_01_repair_F
+| Offroad (Repair)
+|
+| No
+|-
+| FIA
+| I_G_Offroad_01_repair_F
+| Offroad (Repair)
+|
+| No
+|-
+| FIA
+| I_G_Offroad_01_F
+| Offroad
+| {{Icon|arma3contact|25}}
+| No
+|-
+| FIA
+| I_G_Offroad_01_AT_F
+| Offroad (AT)
+|
+| No
+|-
+| FIA
+| I_G_Offroad_01_armed_F
+| Offroad (HMG)
+|
+| No
+|-
+| FIA
+| B_G_Offroad_01_F
+| Offroad
+|
+| No
+|-
+| FIA
+| O_G_Offroad_01_F
+| Offroad
+|
+| No
+|-
+| FIA
+| B_G_Offroad_01_armed_F
+| Offroad (HMG)
+|
+| No
+|-
+| FIA
+| O_G_Offroad_01_armed_F
+| Offroad (HMG)
+|
+| No
+|-
+| FIA
+| B_G_Offroad_01_AT_F
+| Offroad (AT)
+|
+| No
+|-
+| FIA
+| O_G_Offroad_01_AT_F
+| Offroad (AT)
+|
+| No
+|-
+| Civilians
+| C_Quadbike_01_F
+| Quad Bike
+|
+| No
+|-
+| NATO
+| B_Quadbike_01_F
+| Quad Bike
+|
+| No
+|-
+| CSAT
+| O_Quadbike_01_F
+| Quad Bike
+|
+| No
+|-
+| AAF
+| I_Quadbike_01_F
+| Quad Bike
+|
+| No
+|-
+| FIA
+| I_G_Quadbike_01_F
+| Quad Bike
+|
+| No
+|-
+| FIA
+| B_G_Quadbike_01_F
+| Quad Bike
+|
+| No
+|-
+| FIA
+| O_G_Quadbike_01_F
+| Quad Bike
+|
+| No
+|-
+| AAF
+| I_MRAP_03_F
+| Strider
+|
+| No
+|-
+| AAF
+| I_MRAP_03_hmg_F
+| Strider HMG
+|
+| No
+|-
+| AAF
+| I_MRAP_03_gmg_F
+| Strider GMG
+|
+| No
+|-
+| NATO
+| B_Truck_01_transport_F
+| HEMTT Transport
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO
+| B_Truck_01_covered_F
+| HEMTT Transport (Covered)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT
+| O_Truck_02_covered_F
+| Zamak Transport (Covered)
+|
+| No
+|-
+| CSAT
+| O_Truck_02_transport_F
+| Zamak Transport
+|
+| No
+|-
+| AAF
+| I_Truck_02_covered_F
+| Zamak Transport (Covered)
+|
+| No
+|-
+| AAF
+| I_Truck_02_transport_F
+| Zamak Transport
+|
+| No
+|-
+| Civilians
+| C_Truck_02_covered_F
+| Zamak Transport (Covered)
+|
+| No
+|-
+| Civilians
+| C_Truck_02_transport_F
+| Zamak Transport
+|
+| No
+|-
+| Civilians
+| C_Hatchback_01_F
+| Hatchback
+|
+| No
+|-
+| Civilians
+| C_Hatchback_01_sport_F
+| Hatchback (Sport)
+|
+| No
+|-
+| Civilians
+| C_SUV_01_F
+| SUV
+|
+| No
+|-
+| NATO
+| B_Truck_01_mover_F
+| HEMTT
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO
+| B_Truck_01_box_F
+| HEMTT Box
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO
+| B_Truck_01_Repair_F
+| HEMTT Repair
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO
+| B_Truck_01_ammo_F
+| HEMTT Ammo
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO
+| B_Truck_01_fuel_F
+| HEMTT Fuel
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO
+| B_Truck_01_medical_F
+| HEMTT Medical
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT
+| O_Truck_02_box_F
+| Zamak Repair
+|
+| No
+|-
+| CSAT
+| O_Truck_02_medical_F
+| Zamak Medical
+|
+| No
+|-
+| CSAT
+| O_Truck_02_Ammo_F
+| Zamak Ammo
+|
+| No
+|-
+| CSAT
+| O_Truck_02_fuel_F
+| Zamak Fuel
+|
+| No
+|-
+| AAF
+| I_Truck_02_ammo_F
+| Zamak Ammo
+|
+| No
+|-
+| AAF
+| I_Truck_02_box_F
+| Zamak Repair
+|
+| No
+|-
+| AAF
+| I_Truck_02_medical_F
+| Zamak Medical
+|
+| No
+|-
+| AAF
+| I_Truck_02_fuel_F
+| Zamak Fuel
+|
+| No
+|-
+| AAF
+| I_Truck_02_MRL_F
+| Zamak MRL
+|
+| No
+|-
+| Civilians
+| C_Truck_02_fuel_F
+| Zamak Fuel
+|
+| No
+|-
+| Civilians
+| C_Truck_02_box_F
+| Zamak Repair
+|
+| No
+|-
+| Civilians
+| C_Van_01_transport_F
+| Truck
+|
+| No
+|-
+| FIA
+| I_G_Van_01_transport_F
+| Truck
+|
+| No
+|-
+| Civilians
+| C_Van_01_box_F
+| Truck Boxer
+|
+| No
+|-
+| Civilians
+| C_Van_01_fuel_F
+| Fuel Truck
+|
+| No
+|-
+| FIA
+| I_G_Van_01_fuel_F
+| Fuel Truck
+|
+| No
+|-
+| FIA
+| B_G_Van_01_transport_F
+| Truck
+|
+| No
+|-
+| FIA
+| O_G_Van_01_transport_F
+| Truck
+|
+| No
+|-
+| FIA
+| B_G_Van_01_fuel_F
+| Fuel Truck
+|
+| No
+|-
+| FIA
+| O_G_Van_01_fuel_F
+| Fuel Truck
+|
+| No
+|-
+| NATO
+| B_static_AA_F
+| Static Titan Launcher (AA) [NATO]
+|
+| No
+|-
+| CSAT
+| O_static_AA_F
+| Static Titan Launcher (AA) [CSAT]
+|
+| No
+|-
+| AAF
+| I_static_AA_F
+| Static Titan Launcher (AA) [AAF]
+|
+| No
+|-
+| NATO
+| B_static_AT_F
+| Static Titan Launcher (AT) [NATO]
+|
+| No
+|-
+| CSAT
+| O_static_AT_F
+| Static Titan Launcher (AT) [CSAT]
+|
+| No
+|-
+| AAF
+| I_static_AT_F
+| Static Titan Launcher (AT) [AAF]
+|
+| No
+|-
+| AAF
+| I_Heli_light_03_dynamicLoadout_F
+| WY-55 Hellcat
+|
+| No
+|-
+| AAF
+| I_Heli_light_03_unarmed_F
+| WY-55 Hellcat (Unarmed)
+|
+| No
+|-
+| NATO
+| B_Plane_CAS_01_dynamicLoadout_F
+| A-164 Wipeout (CAS)
+|
+| No
+|-
+| CSAT
+| O_Plane_CAS_02_dynamicLoadout_F
+| To-199 Neophron (CAS)
+|
+| No
+|-
+| NATO
+| B_APC_Wheeled_01_cannon_F
+| AMV-7 Marshall
+|
+| No
+|-
+| CSAT
+| O_APC_Wheeled_02_rcws_v2_F
+| MSE-3 Marid
+|
+| No
+|-
+| AAF
+| I_APC_tracked_03_cannon_F
+| FV-720 Mora
+|
+| No
+|-
+| AAF
+| I_MBT_03_cannon_F
+| MBT-52 Kuma
+|
+| No
+|-
+| NATO
+| B_MBT_01_TUSK_F
+| M2A4 Slammer UP
+|
+| No
+|-
+| AAF
+| I_APC_Wheeled_03_cannon_F
+| AFV-4 Gorgon
+|
+| No
+|-
+| NATO
+| B_UAV_01_F
+| AR-2 Darter
+|
+| No
+|-
+| CSAT
+| O_UAV_01_F
+| Tayran AR-2
+|
+| No
+|-
+| AAF
+| I_UAV_01_F
+| AR-2 Darter
+|
+| No
+|-
+| NATO
+| B_UAV_02_dynamicLoadout_F
+| MQ-4A Greyhawk
+|
+| No
+|-
+| CSAT
+| O_UAV_02_dynamicLoadout_F
+| K40 Ababil-3
+|
+| No
+|-
+| AAF
+| I_UAV_02_dynamicLoadout_F
+| K40 Ababil-3
+|
+| No
+|-
+| NATO
+| B_UGV_01_F
+| UGV Stomper
+|
+| No
+|-
+| CSAT
+| O_UGV_01_F
+| UGV Saif
+|
+| No
+|-
+| AAF
+| I_UGV_01_F
+| UGV Stomper
+|
+| No
+|-
+| NATO
+| B_UGV_01_rcws_F
+| UGV Stomper RCWS
+|
+| No
+|-
+| CSAT
+| O_UGV_01_rcws_F
+| UGV Saif RCWS
+|
+| No
+|-
+| AAF
+| I_UGV_01_rcws_F
+| UGV Stomper RCWS
+|
+| No
+|-
+| CSAT
+| O_Truck_03_transport_F
+| Tempest Transport
+|
+| No
+|-
+| CSAT
+| O_Truck_03_covered_F
+| Tempest Transport (Covered)
+|
+| No
+|-
+| CSAT
+| O_Truck_03_repair_F
+| Tempest Repair
+|
+| No
+|-
+| CSAT
+| O_Truck_03_ammo_F
+| Tempest Ammo
+|
+| No
+|-
+| CSAT
+| O_Truck_03_fuel_F
+| Tempest Fuel
+|
+| No
+|-
+| CSAT
+| O_Truck_03_medical_F
+| Tempest Medical
+|
+| No
+|-
+| CSAT
+| O_Truck_03_device_F
+| Tempest (Device)
+|
+| No
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Kart_01_F
+| Kart
+| {{Icon|arma3karts|25}}
+| Karts
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Kart_01_Fuel_F
+| Kart (Fuel)
+| {{Icon|arma3karts|25}}
+| Karts
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Kart_01_Blu_F
+| Kart (Bluking)
+| {{Icon|arma3karts|25}}
+| Karts
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Kart_01_Red_F
+| Kart (Redstone)
+| {{Icon|arma3karts|25}}
+| Karts
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Kart_01_Vrana_F
+| Kart (Vrana)
+| {{Icon|arma3karts|25}}
+| Karts
+|- style="background: #EDD; color: #333"
+| NATO
+| B_Heli_Transport_03_F
+| CH-67 Huron
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| NATO
+| B_Heli_Transport_03_unarmed_F
+| CH-67 Huron (Unarmed)
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_Heli_Transport_04_F
+| Mi-290 Taru
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_Heli_Transport_04_ammo_F
+| Mi-290 Taru (Ammo)
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_Heli_Transport_04_bench_F
+| Mi-290 Taru (Bench)
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_Heli_Transport_04_box_F
+| Mi-290 Taru (Cargo)
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_Heli_Transport_04_covered_F
+| Mi-290 Taru (Transport)
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_Heli_Transport_04_fuel_F
+| Mi-290 Taru (Fuel)
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_Heli_Transport_04_medevac_F
+| Mi-290 Taru (Medical)
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_Heli_Transport_04_repair_F
+| Mi-290 Taru (Repair)
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| CSAT
+| Land_Pod_Heli_Transport_04_bench_F
+| Taru Bench Pod
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| CSAT
+| Land_Pod_Heli_Transport_04_covered_F
+| Taru Transport Pod
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| CSAT
+| Land_Pod_Heli_Transport_04_medevac_F
+| Taru Medical Pod
+| {{Icon|arma3helicopters|25}}
+| Helicopters
+|- style="background: #EDD; color: #333"
+| NATO
+| B_Static_Designator_01_F
+| Remote Designator [NATO]
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_Static_Designator_02_F
+| Remote Designator [CSAT]
+| {{Icon|arma3marksmen|25}}
+| Marksmen
+|- style="background: #EDD; color: #333"
+| NATO (Pacific)
+| B_T_LSV_01_armed_F
+| Prowler (HMG)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| NATO (Pacific)
+| B_T_LSV_01_AT_F
+| Prowler (AT)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| NATO (Pacific)
+| B_T_LSV_01_unarmed_F
+| Prowler (Unarmed)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| NATO
+| B_LSV_01_armed_F
+| Prowler (HMG)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| NATO
+| B_LSV_01_AT_F
+| Prowler (AT)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| NATO
+| B_LSV_01_unarmed_F
+| Prowler (Unarmed)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| CTRG
+| B_CTRG_LSV_01_light_F
+| Prowler (Light)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| CSAT (Pacific)
+| O_T_LSV_02_armed_F
+| Qilin (Minigun)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| CSAT (Pacific)
+| O_T_LSV_02_unarmed_F
+| Qilin (Unarmed)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| CSAT (Pacific)
+| O_T_LSV_02_AT_F
+| Qilin (AT)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_LSV_02_armed_F
+| Qilin (Minigun)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_LSV_02_unarmed_F
+| Qilin (Unarmed)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_LSV_02_AT_F
+| Qilin (AT)
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| NATO (Pacific)
+| B_T_MRAP_01_F
+| Hunter
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_MRAP_01_gmg_F
+| Hunter GMG
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_MRAP_01_hmg_F
+| Hunter HMG
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_MRAP_02_ghex_F
+| Ifrit
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_MRAP_02_hmg_ghex_F
+| Ifrit HMG
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_MRAP_02_gmg_ghex_F
+| Ifrit GMG
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Gendarmerie
+| B_GEN_Offroad_01_gen_F
+| Offroad
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Offroad_02_unarmed_F
+| MB 4WD
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Syndikat
+| I_C_Offroad_02_unarmed_F
+| MB 4WD
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Syndikat
+| I_C_Offroad_02_LMG_F
+| MB 4WD (LMG)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Syndikat
+| I_C_Offroad_02_AT_F
+| MB 4WD (AT)
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| CSAT (Pacific)
+| O_T_Quadbike_01_ghex_F
+| Quad Bike
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Quadbike_01_F
+| Quad Bike
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Truck_01_transport_F
+| HEMTT Transport
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Truck_01_covered_F
+| HEMTT Transport (Covered)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Truck_01_mover_F
+| HEMTT
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Truck_01_box_F
+| HEMTT Box
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Truck_01_Repair_F
+| HEMTT Repair
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Truck_01_ammo_F
+| HEMTT Ammo
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Truck_01_fuel_F
+| HEMTT Fuel
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Truck_01_medical_F
+| HEMTT Medical
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_02_F
+| Zamak Transport (Covered)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_02_transport_F
+| Zamak Transport
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_02_fuel_F
+| Zamak Fuel
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_02_Ammo_F
+| Zamak Ammo
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_02_Box_F
+| Zamak Repair
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_02_Medical_F
+| Zamak Medical
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_03_transport_ghex_F
+| Tempest Transport
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_03_covered_ghex_F
+| Tempest Transport (Covered)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_03_repair_ghex_F
+| Tempest Repair
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_03_ammo_ghex_F
+| Tempest Ammo
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_03_fuel_ghex_F
+| Tempest Fuel
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_03_medical_ghex_F
+| Tempest Medical
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Truck_03_device_ghex_F
+| Tempest (Device)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_UGV_01_ghex_F
+| UGV Saif
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_UGV_01_rcws_ghex_F
+| UGV Saif RCWS
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_UGV_01_olive_F
+| UGV Stomper
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_UGV_01_rcws_olive_F
+| UGV Stomper RCWS
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Syndikat
+| I_C_Van_01_transport_F
+| Truck
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Static_AA_F
+| Static Titan Launcher (AA) [NATO]
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Static_AT_F
+| Static Titan Launcher (AT) [NATO]
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_GMG_01_F
+| Mk32 GMG 20 mm
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_HMG_01_F
+| Mk30 HMG .50
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Mortar_01_F
+| Mk6 Mortar
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Syndikat
+| I_C_Heli_Light_01_civil_F
+| M-900
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CTRG
+| B_CTRG_Heli_Transport_01_sand_F
+| UH-80 Ghost Hawk (Sand)
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CTRG
+| B_CTRG_Heli_Transport_01_tropic_F
+| UH-80 Ghost Hawk (Tropic)
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Plane_Civil_01_F
+| Caesar BTT
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Plane_Civil_01_racing_F
+| Caesar BTT (Racing)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Syndikat
+| I_C_Plane_Civil_01_F
+| Caesar BTT
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| NATO (Pacific)
+| B_T_UAV_03_dynamicLoadout_F
+| MQ-12 Falcon
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| CSAT (Pacific)
+| O_T_UAV_04_CAS_F
+| KH-3A Fenghuang
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| NATO (Pacific)
+| B_T_VTOL_01_infantry_F
+| V-44 X Blackfish (Infantry Transport)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| NATO (Pacific)
+| B_T_VTOL_01_vehicle_F
+| V-44 X Blackfish (Vehicle Transport)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| NATO (Pacific)
+| B_T_VTOL_01_armed_F
+| V-44 X Blackfish (Armed)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| CSAT (Pacific)
+| O_T_VTOL_02_infantry_dynamicLoadout_F
+| Y-32 Xi'an (Infantry Transport)
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| CSAT (Pacific)
+| O_T_VTOL_02_vehicle_dynamicLoadout_F
+| Y-32 Xi'an (Vehicle Transport)
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| NATO (Pacific)
+| B_T_APC_Tracked_01_AA_F
+| IFV-6a Cheetah
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_APC_Tracked_01_CRV_F
+| CRV-6e Bobcat
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_APC_Tracked_01_rcws_F
+| IFV-6c Panther
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_APC_Tracked_02_cannon_ghex_F
+| BTR-K Kamysh
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_APC_Tracked_02_AA_ghex_F
+| ZSU-39 Tigris
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_APC_Wheeled_01_cannon_F
+| AMV-7 Marshall
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_APC_Wheeled_02_rcws_v2_ghex_F
+| MSE-3 Marid
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_MBT_01_arty_F
+| M4 Scorcher
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_MBT_01_mlrs_F
+| M5 Sandstorm MLRS
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_MBT_01_cannon_F
+| M2A1 Slammer
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_MBT_01_TUSK_F
+| M2A4 Slammer UP
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_MBT_02_cannon_ghex_F
+| T-100 Varsuk
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_MBT_02_arty_ghex_F
+| 2S9 Sochor
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Boat_Armed_01_minigun_F
+| Speedboat Minigun
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Boat_Armed_01_hmg_F
+| Speedboat HMG
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Boat_Transport_01_F
+| Assault Boat
+| {{Icon|arma3apex|25}}
+| No
+|-
+| Syndikat
+| I_C_Boat_Transport_01_F
+| Assault Boat
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Boat_Transport_01_F
+| Assault Boat
+| {{Icon|arma3apex|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Lifeboat
+| Rescue Boat
+| {{Icon|arma3apex|25}}
+| No
+|-
+| CSAT (Pacific)
+| O_T_Lifeboat
+| Rescue Boat
+| {{Icon|arma3apex|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Syndikat
+| I_C_Boat_Transport_02_F
+| RHIB
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Boat_Transport_02_F
+| RHIB
+| {{Icon|arma3apex|25}}
+| Apex
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Scooter_Transport_01_F
+| Water Scooter
+| {{Icon|arma3apex|25}}
+| Apex
+|-
+| NATO
+| B_AAA_System_01_F
+| Praetorian 1C
+| {{Icon|arma3jets|25}}
+| No
+|-
+| NATO
+| B_SAM_System_01_F
+| Mk49 Spartan
+| {{Icon|arma3jets|25}}
+| No
+|-
+| NATO
+| B_SAM_System_02_F
+| Mk21 Centurion
+| {{Icon|arma3jets|25}}
+| No
+|- style="background: #EDD; color: #333"
+| NATO
+| B_Plane_Fighter_01_F
+| F/A-181 Black Wasp II
+| {{Icon|arma3jets|25}}
+| Jets
+|- style="background: #EDD; color: #333"
+| NATO
+| B_Plane_Fighter_01_Stealth_F
+| F/A-181 Black Wasp II (Stealth)
+| {{Icon|arma3jets|25}}
+| Jets
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_Plane_Fighter_02_F
+| To-201 Shikra
+| {{Icon|arma3jets|25}}
+| Jets
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_Plane_Fighter_02_Stealth_F
+| To-201 Shikra (Stealth)
+| {{Icon|arma3jets|25}}
+| Jets
+|- style="background: #EDD; color: #333"
+| AAF
+| I_Plane_Fighter_04_F
+| A-149 Gryphon
+| {{Icon|arma3jets|25}}
+| Jets
+|- style="background: #EDD; color: #333"
+| NATO
+| B_UAV_05_F
+| UCAV Sentinel
+| {{Icon|arma3jets|25}}
+| Jets
+|-
+| IDAP
+| C_IDAP_Offroad_01_F
+| Offroad
+| {{Icon|arma3lawsofwar|25}}
+| No
+|- style="background: #EDD; color: #333"
+| IDAP
+| C_IDAP_Offroad_02_unarmed_F
+| MB 4WD
+| {{Icon|arma3lawsofwar|25}}
+| Apex
+|-
+| IDAP
+| C_IDAP_Truck_02_F
+| Zamak Transport (Covered)
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| IDAP
+| C_IDAP_Truck_02_transport_F
+| Zamak Transport
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| IDAP
+| C_IDAP_Truck_02_water_F
+| Zamak Water
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| IDAP
+| C_IDAP_UGV_01_F
+| UGV
+| {{Icon|arma3lawsofwar|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Van_02_transport_F
+| Van Transport
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| IDAP
+| C_IDAP_Van_02_transport_F
+| Van Transport
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| FIA
+| I_G_Van_02_transport_F
+| Van Transport
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| FIA
+| B_G_Van_02_transport_F
+| Van Transport
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Gendarmerie
+| B_GEN_Van_02_transport_F
+| Van Transport
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| FIA
+| O_G_Van_02_transport_F
+| Van Transport
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Syndikat
+| I_C_Van_02_transport_F
+| Van Transport
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Van_02_vehicle_F
+| Van (Cargo)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| IDAP
+| C_IDAP_Van_02_vehicle_F
+| Van (Cargo)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| FIA
+| I_G_Van_02_vehicle_F
+| Van (Cargo)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| FIA
+| B_G_Van_02_vehicle_F
+| Van (Cargo)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Gendarmerie
+| B_GEN_Van_02_vehicle_F
+| Van (Cargo)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| FIA
+| O_G_Van_02_vehicle_F
+| Van (Cargo)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Syndikat
+| I_C_Van_02_vehicle_F
+| Van (Cargo)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Van_02_medevac_F
+| Van (Ambulance)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| IDAP
+| C_IDAP_Van_02_medevac_F
+| Van (Ambulance)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Van_02_service_F
+| Van (Services)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|-
+| IDAP
+| C_IDAP_Heli_Transport_02_F
+| EH302
+| {{Icon|arma3lawsofwar|25}}
+| No
+|-
+| IDAP
+| C_IDAP_UAV_01_F
+| Drone
+| {{Icon|arma3lawsofwar|25}}
+| No
+|- style="background: #EDD; color: #333"
+| NATO
+| B_UAV_06_F
+| AL-6 Pelican
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_UAV_06_F
+| Jinaah AL-6
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| AAF
+| I_UAV_06_F
+| AL-6 Pelican
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| IDAP
+| C_IDAP_UAV_06_F
+| Utility Drone
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_UAV_06_F
+| Utility Drone
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| IDAP
+| C_IDAP_UAV_06_antimine_F
+| Demining Drone
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| NATO
+| B_UAV_06_medical_F
+| AL-6 Pelican (Medical)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_UAV_06_medical_F
+| Jinaah AL-6 (Medical)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| AAF
+| I_UAV_06_medical_F
+| AL-6 Pelican (Medical)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| IDAP
+| C_IDAP_UAV_06_medical_F
+| Utility Drone (Medical)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_UAV_06_medical_F
+| Utility Drone (Medical)
+| {{Icon|arma3lawsofwar|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| NATO
+| B_AFV_Wheeled_01_cannon_F
+| Rhino MGS
+| {{Icon|arma3tanks|25}}
+| Tanks
+|- style="background: #EDD; color: #333"
+| NATO (Pacific)
+| B_T_AFV_Wheeled_01_cannon_F
+| Rhino MGS
+| {{Icon|arma3tanks|25}}
+| Tanks
+|- style="background: #EDD; color: #333"
+| NATO
+| B_AFV_Wheeled_01_up_cannon_F
+| Rhino MGS UP
+| {{Icon|arma3tanks|25}}
+| Tanks
+|- style="background: #EDD; color: #333"
+| NATO (Pacific)
+| B_T_AFV_Wheeled_01_up_cannon_F
+| Rhino MGS UP
+| {{Icon|arma3tanks|25}}
+| Tanks
+|- style="background: #EDD; color: #333"
+| AAF
+| I_LT_01_AT_F
+| AWC 301 Nyx (AT)
+| {{Icon|arma3tanks|25}}
+| Tanks
+|- style="background: #EDD; color: #333"
+| AAF
+| I_LT_01_scout_F
+| AWC 303 Nyx (Recon)
+| {{Icon|arma3tanks|25}}
+| Tanks
+|- style="background: #EDD; color: #333"
+| AAF
+| I_LT_01_AA_F
+| AWC 302 Nyx (AA)
+| {{Icon|arma3tanks|25}}
+| Tanks
+|- style="background: #EDD; color: #333"
+| AAF
+| I_LT_01_cannon_F
+| AWC 304 Nyx (Autocannon)
+| {{Icon|arma3tanks|25}}
+| Tanks
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_MBT_04_cannon_F
+| T-140 Angara
+| {{Icon|arma3tanks|25}}
+| Tanks
+|- style="background: #EDD; color: #333"
+| CSAT (Pacific)
+| O_T_MBT_04_cannon_F
+| T-140 Angara
+| {{Icon|arma3tanks|25}}
+| Tanks
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_MBT_04_command_F
+| T-140K Angara
+| {{Icon|arma3tanks|25}}
+| Tanks
+|- style="background: #EDD; color: #333"
+| CSAT (Pacific)
+| O_T_MBT_04_command_F
+| T-140K Angara
+| {{Icon|arma3tanks|25}}
+| Tanks
+|-
+| NATO
+| B_Ship_Gun_01_F
+| Mk45 Hammer
+| {{Icon|arma3jets|25}}
+| No
+|-
+| NATO
+| B_Ship_MRLS_01_F
+| Mk41 VLS
+| {{Icon|arma3jets|25}}
+| No
+|-
+| NATO
+| B_Radar_System_01_F
+| AN/MPQ-105 Radar
+| {{Icon|arma3jets|25}}
+| No
+|-
+| CSAT
+| O_Radar_System_02_F
+| R-750 Cronus Radar
+| {{Icon|arma3jets|25}}
+| No
+|-
+| NATO
+| B_SAM_System_03_F
+| MIM-145 Defender
+| {{Icon|arma3jets|25}}
+| No
+|-
+| CSAT
+| O_SAM_System_04_F
+| S-750 Rhea
+| {{Icon|arma3jets|25}}
+| No
+|-
+| LDF
+| I_E_Offroad_01_F
+| Offroad
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| LDF
+| I_E_Offroad_01_covered_F
+| Offroad (Covered)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| LDF
+| I_E_Offroad_01_comms_F
+| Offroad (Comms)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Gendarmerie
+| B_GEN_Offroad_01_covered_F
+| Offroad (Covered)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Gendarmerie
+| B_GEN_Offroad_01_comms_F
+| Offroad (Comms)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Offroad_01_covered_F
+| Offroad (Covered)
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Offroad_01_comms_F
+| Offroad (Comms)
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| LDF
+| I_E_Quadbike_01_F
+| Quad Bike
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| Civilians
+| C_Tractor_01_F
+| Tractor
+| {{Icon|arma3contact|25}}
+| Contact
+|-
+| NATO
+| B_Truck_01_flatbed_F
+| HEMTT Flatbed
+| {{Icon|arma3contact|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Truck_01_flatbed_F
+| HEMTT Flatbed
+| {{Icon|arma3contact|25}}
+| No
+|-
+| NATO
+| B_Truck_01_cargo_F
+| HEMTT Cargo
+| {{Icon|arma3contact|25}}
+| No
+|-
+| NATO (Pacific)
+| B_T_Truck_01_cargo_F
+| HEMTT Cargo
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_Truck_02_F
+| Zamak Transport (Covered)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_Truck_02_transport_F
+| Zamak Transport
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_Truck_02_fuel_F
+| Zamak Fuel
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_Truck_02_Ammo_F
+| Zamak Ammo
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_Truck_02_Box_F
+| Zamak Repair
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_Truck_02_Medical_F
+| Zamak Medical
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_Truck_02_MRL_F
+| Zamak MRL
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_UGV_01_F
+| UGV Stomper
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_UGV_01_rcws_F
+| UGV Stomper RCWS
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| NATO
+| B_UGV_02_Science_F
+| ED-1E Roller
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| NATO
+| B_UGV_02_Demining_F
+| ED-1D Pelter
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_UGV_02_Science_F
+| Sayyah ED-1E
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| CSAT
+| O_UGV_02_Demining_F
+| Akinaka ED-1D
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| AAF
+| I_UGV_02_Science_F
+| ED-1E Roller
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| LDF
+| I_E_UGV_02_Science_F
+| ED-1E Roller
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| AAF
+| I_UGV_02_Demining_F
+| ED-1D Pelter
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| LDF
+| I_E_UGV_02_Demining_F
+| ED-1D Pelter
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| IDAP
+| C_IDAP_UGV_02_Demining_F
+| Demining UGV
+| {{Icon|arma3contact|25}}
+| Contact
+|- style="background: #EDD; color: #333"
+| LDF
+| I_E_Van_02_vehicle_F
+| Van (Cargo)
+| {{Icon|arma3contact|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| LDF
+| I_E_Van_02_transport_F
+| Van Transport
+| {{Icon|arma3contact|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| LDF
+| I_E_Van_02_transport_MP_F
+| Van Transport (MP)
+| {{Icon|arma3contact|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| LDF
+| I_E_Van_02_medevac_F
+| Van (Ambulance)
+| {{Icon|arma3contact|25}}
+| Laws of War
+|-
+| LDF
+| I_E_Static_AA_F
+| Static Titan Launcher (AA) [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_Static_AT_F
+| Static Titan Launcher (AT) [LDF]
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| NATO (Woodland)
+| B_W_Static_Designator_01_F
+| Remote Designator [NATO]
+| {{Icon|arma3contact|25}}
+| Marksmen
+|-
+| LDF
+| I_E_GMG_01_F
+| Mk32 GMG 20 mm
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_GMG_01_high_F
+| Mk32 GMG 20 mm (Raised)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_GMG_01_A_F
+| Mk32A GMG 20 mm
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_HMG_01_F
+| Mk30 HMG .50
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_HMG_01_high_F
+| Mk30 HMG .50 (Raised)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_HMG_01_A_F
+| Mk30A HMG .50
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_Mortar_01_F
+| Mk6 Mortar
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_Radar_System_01_F
+| AN/MPQ-105 Radar
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_SAM_System_03_F
+| MIM-145 Defender
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_Heli_light_03_dynamicLoadout_F
+| WY-55 Czapla
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_Heli_light_03_unarmed_F
+| WY-55 Czapla (Unarmed)
+| {{Icon|arma3contact|25}}
+| No
+|-
+| LDF
+| I_E_UAV_01_F
+| AR-2 Darter
+| {{Icon|arma3contact|25}}
+| No
+|- style="background: #EDD; color: #333"
+| LDF
+| I_E_UAV_06_F
+| AL-6 Pelican
+| {{Icon|arma3contact|25}}
+| Laws of War
+|- style="background: #EDD; color: #333"
+| LDF
+| I_E_UAV_06_medical_F
+| AL-6 Pelican (Medical)
+| {{Icon|arma3contact|25}}
+| Laws of War
+|-
+| LDF
+| I_E_APC_tracked_03_cannon_F
+| FV-720 Odyniec
+| {{Icon|arma3contact|25}}
+| No
+|}
+</spoiler>
+
+{{Wiki|extractionScript}}
+
+
+{{GameCategory|arma3|DLCs & Expansions}}

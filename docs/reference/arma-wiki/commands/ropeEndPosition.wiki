@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/ropeEndPosition
+// revision: 377646 (2026-01-02T09:01:47Z)
+// export sha1: 4dw7nbujg7vyg0ubntrm0gsc1ahrbej
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Ropes and Sling Loading | Category:Introduced with Arma 3 version 1.34 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.34
+
+|gr1= Ropes and Sling Loading
+
+|descr= Returns start and end positions for the given [[ropeCreate | rope]]. If command fails, empty array {{hl|[]}} is returned.
+
+|s1= [[ropeEndPosition]] rope
+
+|p1= rope: [[Object]] - rope object
+
+|r1= [[Array]] with [startPos, endPos]
+* startPos: [[Position#PositionAGL|PositionAGL]]
+* endPos: [[Position#PositionAGL|PositionAGL]]
+
+|x1= <sqf>
+_ends = ropeEndPosition (ropes heli1 select 0);
+_start = _ends select 0;
+_end = _ends select 1;
+</sqf>
+
+|seealso= [[ropes]] [[canSlingLoad]] [[enableRopeAttach]] [[getSlingLoad]] [[ropeAttachedObjects]] [[ropeAttachTo]] [[ropeDestroy]] [[ropeLength]] [[ropeUnwound]] [[ropeAttachedTo]] [[ropeCreate]] [[ropeDetach]] [[ropeAttachEnabled]] [[ropeCut]] [[ropeUnwind]] [[setSlingLoad]] [[slingLoadAssistantShown]]
+}}

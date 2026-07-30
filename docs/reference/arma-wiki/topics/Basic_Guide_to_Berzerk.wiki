@@ -1,0 +1,144 @@
+// source: https://community.bistudio.com/wiki/Basic_Guide_to_Berzerk!
+// revision: 363432 (2024-03-29T21:59:10Z)
+// export sha1: evcpdmulswn0p2cthotk2uaf52e39wp
+// categories: Category:Multiplayer Hints and Tips
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Berzerk! is a user made game form, often found on public servers. It is the closest {{arma2}} game form to Battle Field.
+Battles tend to last one hour and are fought over geographic zones such as towns or radio towers or airfields or other strategic objectives
+
+=== Mission Author ===
+
+Berzerk is by Zaphod
+
+=== Game play type ===
+
+Hold
+
+=== Objective ===
+
+Berzerk is a fairly a simple Hold type game where your team gain points for holding a flag zone. You hold a zone by being the controlling team in it.
+So the more combat power you have in a zone is important. Where the combat power of either side is not enough the site is contested.
+There is the rub though if all your combat power is at a zone you loose mobility and the enemy know exactly where to fire. So a side must juggle how many troops to put in each zone.
+
+=== Start up ===
+
+When you first enter the game you have a dialogue to chose weapons your basic load out, this stays the same until you change it. Some weapons such as sniper rifles, AT and AA launchers are limited.
+So you cannot always get them. This is signified by a red circle bar. You cannot even spawn if you have an AT or AA launcher that has reached its limit in the inventory.
+This can happen if some one respawns just before you and grabs the weapon. So in this case you have to change your inventory.
+
+==== Base Respawn ====
+First spawn into the game can only be at base. Your base is the only protected respawn.
+Your sides base has the basic vehicles: two tanks one light one heavy, an Infantry Fighting Vehicle (IFV), two helicopters, one attack helicopter and one transport helicopter and of course the [[MHQ]].
+At the base from the command tent you can also individually spawn a light vehicle such as a motor cycle, or grenade launching jeep, or a Truck.
+So that if all the base spawn vehicles are in use you have a method of getting back into battle. 
+
+==== Map and GPS ====
+The map shows which zones your side controls; as well as your position and that of friendlies and perhaps depending on difficulty known enemy positions.
+Zones you control are coloured to your side. Red Zones are OPFOR controlled. Blue Zones are BLUEFOR controlled. Green Zones are neutral. Yellow Zones are contested.
+To control a zone you need to have majority combat power in the darker inner zone near the flag. The map also shows small yellow squares in the flag zones which are the positions of ammo boxes and red ones which are aid stations.
+Units on your side are marked with a small square. White arrow is you, Green squares are players on your side, Red squares are medics on your side.
+These squares have the name of the player next to them, this along with the 3D view diamond on members of your group make it easy to find others. There is also a GPS you can bring up with local map info when in 3D view.
+
+==== Corpsman! ====
+Medics on your side are signified on the map with a red square. Medics gain 3 points by helping wounded, so they like to help. In first person view if you are wounded, medics and their name pop up over them so you can find them.
+
+=== Capture Zones and Advanced Respawn ===
+
+As your side gains control of forward respawn points you can respawn at those advanced respawn but beware you are spawning into a battle.
+The actual spot you respawn at is random over a large area of the capture zone so getting killed as you spawn is rare, but can happen.
+In Berzerk any capture zone controlled by your team can be used as advanced spawn, but beware advanced repawn locations have no spawn protection, so you are often spawning directly into a firefight.
+Contested spawns where there is no overall majority of combat power cannot be respawned into. Another Respawn option is the MHQ.
+The secret with the MHQ is to place in or near a spawn your side are contesting to reduce travel time; but it needs to be hidden so that the enemy does not destroy it.
+
+=== Vehicles ===
+
+We already mentioned the base vehicles.
+Other vehicles only spawn at forward bases, these MAY be locked so that only the side who's vehicles they are can use them so IF the advanced vehicles of the opposition are locked, you should destroy them; as once you control the zone your sides vehicles will replace them.
+If they are not locked you can use them as a Trojan horse to enter an enemy spawn, but beware you need to tell your own side as a blue on blue is a potential result, also kills from an enemy vehicle count negative!
+Should not be so dishonourable!
+
+If any vehicle is destroyed, MHQ included, it respawns at its original spawn point after a short period.
+
+==== Time to Spawn ====
+Vehicles at capture zones or your teams base; spawn at specific spots marked on map. If a vehicle has spawned it has a green marker.
+If it is about to respawn it has has an orange marker and a countdown timer next to it. Once it reaches zero it changes to green and the vehicle has respawned.
+Unoccupied Enemy vehicles at your capture zone are marked red.
+ 
+==== The enemy within ====
+'''ALWAYS DESTROY!''' locked enemy vehicles at your capture zone.
+Any enemy assets at your capture zone that are locked cannot used, so are no use to you and more importantly they are blocking the spawn of your vehicles in their place.
+Your vehicles will not respawn until you destroy any enemy equivalent that occupies the vehicle spawn spot of your capture zone.
+Shots to the tire taking it back to the hub are sufficient for wheeled vehicles, a rocket for tanks and the like.
+The worst case scenario for leaving an enemy vehicle at a spawn in your zone is that a covert soldier gets in it and then rapes your zone with it; the surprise is total. '''YOU HAVE BEEN WARNED!'''
+
+==== Leave it and lose it ====
+A vehicle left alone in the field will after a time disappear and respawn at its original spawn spot.
+The time to a vehicle disappearing is listed on its square map icon. So do not abandon a vehicle for long if you want to reuse it.
+
+==== Vehicle Etiquette ====
+In the field DO NOT get into a vehicle some one else is using without their permission! It will be there for a reason.
+They may be over-watching their team. Getting into the vehicle in the driver slot or gunner slot often turns on the engine thus turning it red on enemy radar.
+Driving it into battle screws up their carefully thought strategic reason for placing it there.
+
+==== MHQ ====
+'''DO NOT PUT THE MHQ IN DANGER!''' The MHQ is not an assault vehicle, it is not a transport vehicle, it is a mobile respawn point.
+The MHQ is a strategic level asset that should be hidden and placed next to a Flag Zone you are assaulting or within a Zone you are defending.
+It should always be placed in a concealed location better yet in a covered spot.
+Some people cripple their MHQ when it is in a hidden assault spot, to prevent numpties assaulting the flag zone with it.
+This reduces MHQ mobility and turns it from a mobile strategic asset to static one; so it is not a good solution.
+An abandoned MHQ will remain in the field for about 15 minutes, you can reset this timer by driving it for a few seconds. The MHQ once destroyed respawns at the Base respawn.
+
+Additional information on the MHQ is available in this link: [[MHQ]]
+
+=== Team-play ===
+
+Berzerk is about team-play. You can actually create and join a squad in game, then use green group channel to mark map and control the squad over VON.
+A good mix is two AT, an AA, a sniper on a motorbike (pedal bikes would be better) and an AFV. 
+
+==== Here is a basic example plan for such a team. ====
+
+===== Phase 1 - Movement to the FUP =====
+The team plan their route to an FUP from which to assault the objective. The route makes maximum use of cover and concealment. The sniper scouts, snipes and spots targets for the AFV.
+The AT and AA act as infantry screen for the AFV and along with the AFV cover the Sniper. AFV driver skips to commander slot regularly to check the radar. Spacing is not less than 50m in open ground; 25m in towns.
+Action on hard contact is pop vehicle smoke and drive through or reverse to ~300m, on soft contact is halt, engines off, AFV driver to commander seat checks radar, assess, plan and execute.
+The AT guys dismount and move to the flanks. AA mans the grenade launcher unless threat is a helicopter, in which case AT team man jeep.
+
+===== Phase 2 - Once in position at the FUP =====
+AT team and the sniper secure the FUP and patrol for enemy AT. All vehicles turn off engine so they become grey. AFV driver moves to the command slot, checks the radar for both red and grey targets in the immediate area.
+A plan is made to neutralise them. AA scans and listens for helicopter threat. All team members check the map for friendlies and decide no fire and watch zones.
+
+===== Phase 3 - Prep firing the objective =====
+The AFV is base of fire along with the AA manning the grenade launcher. The AT team are the Assault team.
+Sniper is assault over-watch and spotter. Assault team moves out 200m to a flank and marks its proposed route into the objective.
+AFV switches to HE and along with the Grenade launcher plaster the objective and disguised in this the route of the assault team.
+Between shots AFV checks the command radar and the AA and Sniper spot and listen for threats.
+
+===== Phase 4 - Assaulting the objective =====
+At an appropriate point the assault team shouts "Going In" at this point all fires along the assault line are lifted and fire is concentrated on the objective.
+As the Assault team moves sniper scans spots and covers them. Once close to the objective assault team shouts "We are in!" base of fire lifts fire and switches to MG and distant cover fire.
+Once at the objective the assault team secure and mark a zone for the AFV clearing and marking or defusing any command line explosives or mines.
+AFV checks radar then rushes to secure zone covered by the grenade launcher and sniper. Once in position in town AFV covers move first of the Grenade launcher then the sniper.
+
+===== Phase 5 - Securing the objective =====
+AFV concentrates on using MG weapons to support AT team as they hunt enemy armor. Grenade launcher maintains AA over-watch and prep fires assault team routes sniper moves to an over-watch and spotting position.
+Once the objective is secured the team reorgs and plants mine fields and command line explosives. AFV moves out of town or somewhere in cover to a hull down position with engine off.
+Grenade launcher moves to a covered position and or switches to AA role near to the ammo box. AT team patrol the objective clearing enemy and spotting for threats. Everyone stays in cover.
+
+===== More than a 5 man team =====
+It is possible to play in this way with more than 5 players per team. Teams of 5,4,4 work very well.
+The 5 man is command and gun group element of a 3 man AFV plus a 2 man Grenade jeep weapons are a mix of AA and guided AT, the two 4 man teams are the security and assault element.
+Each four man team work as two x two man buddy teams. Either in Grenade jeeps or on cycles with a mix of AT, MG and Sniper weapons.
+
+=== Scoring in Berzerk! ===
+
+Berzerk DAO were beta testing a ranking scorboard Berzerk for Zaphod but this has sadly been cancelled there is probably an opportunity for another hosting site as Berzerk is very popular!
+
+In Berzerk it is not the body count that is important. To win a war you have to hold the ground. If your side can take all the punishment you can beat a stronger side, you just have to be tough enough and brave enough.
+
+If your side looses all the advanced respawn points and is loosing badly it gets additional weapons at the base respawn like advanced helicopters.
+In all honesty this is like the Nazis and their V weapons, you can have all the advanced weapons in the world but if the other side is holding the ground then they are winning.
+
+
+[[Category:Multiplayer Hints and Tips]]

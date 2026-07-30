@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_feedbackInit
+// revision: 327500 (2022-07-12T22:24:51Z)
+// export sha1: 0bl4kgqhuem90k41l4h9f31af9nqmu8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Feedback | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Feedback
+
+|descr= Init function for feedback system. Declaration of variables, eventhandlers, etc. for in-game effects. Engine use only.
+
+|s1= call [[BIS_fnc_feedbackInit]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_feedbackInit;</sqf>
+
+|seealso= [[Post Process Effects]]
+}}

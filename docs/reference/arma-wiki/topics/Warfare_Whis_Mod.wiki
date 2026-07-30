@@ -1,0 +1,165 @@
+// source: https://community.bistudio.com/wiki/Warfare_Whis_Mod
+// revision: 292436 (2021-08-07T23:55:56Z)
+// export sha1: caoo0caf6kydb9noaqx9d7v0pulrpyn
+// Vendored snapshot. Do not edit — re-export instead.
+
+Modification to Warfare mission contributed by [[User:Whisper|Whisper]].
+
+The goal of the mod is to change Ka-50 Vikhr missile behavior and give it more realistic capabilities.
+
+== Vanilla 1.14 Ka-50 issues ==
+The Vikhr in ArmA v1.14 has been given Air to air capability to reflect its real life counterpart capabilities. But many real life aspects of the missile are absent in ArmA, making the Vikhr way too effective.
+<br>Several points are wrong in 1.14 :
+* The ArmA Vikhr is overly agile, capable of doing a 180° turn and hit a target behind the shooter
+* The engagement procedure is overly simplified in ArmA, there is no limit in how to fire the Vikhr.
+* The missile will hit its target almost every time, whatever target's distance, speed and aspect. The real Vikhr is certainly not that accurate.
+
+== Solution's design ==
+The basic idea in this corrective script is to destroy the missile if it goes out of parameters, to correct a bit the 3 points listed above.<br>
+As there is no way to signal to AI that the firing parameters are changed, this solution will only fix player controlled aircrafts.<br>
+As Warfare is mainly giving control of aircrafts to players instead of AI, the solution can suit Warfare.<br>
+The script in itself is rather simple
+=== Scripting ===
+==== Principle ====
+* Missile launch is detected using a incomingMissile eventHAndler.
+* In the first phase of missile flight, the script checks if the launching aircraft keeps its nose in the direction of the target. If not, the missile is destroyed. It prevents missile chasing targets way out of its flight path. This phase is active up to 500m of the target
+* In the last phase (last 300m), the target's speed, attitude, combined with the range of the shot, are used to calculate a chance of hitting, and a random number is used to determine if the missile should be artificially destroyed or not.
+
+==== Code ====
+'''missileLaunch.sqf'''
+ private["_tgt", "_ammoType", "_shooter", "_maxRange", "_maxSpeed", "_launchRange", "_missileDestroyed", "_ammo", "_a", "_v", "_p", "_dice"];
+ _tgt = _this select 0;
+ _ammoType = _this select 1;
+ _shooter = _this select 2;
+ 
+ _maxRange = 5000;
+ _maxSpeed = 100;
+ 
+ _launchRange = _shooter distance _tgt;
+ 
+ _missileDestroyed = false;
+ 
+ if !(_ammoType == "M_VIKHR_AT") exitWith {true};
+ 
+ _ammo = position _shooter nearestObject _ammoType;
+ 
+ if (isNull _ammo) exitWith {player sideChat "no missile found"};
+ if !(local _ammo) exitWith {true};
+ waitUntil {(_ammo distance _shooter) > 50};
+ 
+ while {(_tgt distance _ammo) > 500} do {
+        _a = [_shooter, _tgt] call getAngle;
+        if ((abs _a) > 20) exitWith {_missileDestroyed = true; _tmp = "FxExploGround1" createVehicleLocal (position _ammo);};
+        sleep 0.2;
+ };
+ if _missileDestroyed exitWith {true};
+ 
+ waitUntil {(_ammo distance _tgt) < 300};
+ _pK = 100;
+ _pK = _pK * (_maxRange - _launchRange) / _maxRange;
+ 
+ _v = velocity _tgt;
+ _p = position _tgt;
+ _Xv = _v select 0;
+ _Yv = _v select 1;
+ 
+ _Xs = (_p select 0) + _Xv;
+ _Ys = (_p select 1) + _Yv;
+ 
+ _pRef = _shooter worldToModel _p;
+ _psRef = _shooter worldToModel [_Xs, _Ys, _p select 2];
+ _XvRef = (_psRef select 0) - (_pRef select 0);
+ 
+ _perSpeed = abs _XvRef;
+ _pK = _pK * (0 max (_maxSpeed - _perSpeed)) / _maxSpeed;
+ 
+ _dice = random 100;
+ 
+ if (_dice < _pK) exitWith {true};
+ 
+ 
+ waitUntil {(_ammo distance _tgt) < 200};
+ _tmp = "FxExploGround1" createVehicleLocal (position _ammo);
+
+
+The script uses the getAngle function that is as follows : <br>
+'''getAngle.sqf'''
+ _origin = _this select 0;
+  
+ _tgt = _this select 1;
+ 
+ _tgtCoord = _origin worldToModel position _tgt;
+ 
+ _norm = sqrt ( ((_tgtCoord select 0 ) ^ 2) + ((_tgtCoord select 1 ) ^ 2) );
+ 
+ _Xnorm = (_tgtCoord select 0) / _norm;
+ 
+ _angle = asin _Xnorm;
+ 
+ 
+ _angle;
+
+=== MP considerations ===
+incomingMissile EH is global. In case of createVehicle, the EH must be attached on each client PC and on the server to be able to be triggered everywhere.<br><br>
+The missile destruction system is to create a fxExploGround1 object at the missile position. To avoid lag issues where the missile will have move before the fxExploGround1 object is created, the actual destruction must take place on the PC where the missile is local.
+
+== Integration into Warfare ==
+In Warfare, you can attach eventHandlers to created units using the Common\Common_InitUnit.sqf script.<br>
+This script will be used to attach an incomingMissile eventHandler the created aircrafts.<br>
+The '''''missileLaunch.sqf''''' script will be placed in '''''\Common'''''.<br>
+It is using the '''''getAngle.sqf''''' function which will be located in '''''Common\functions''''' folder.<br>
+To declare the getAngle function, we will be preprocessing getAngle.sqf in Common\Init\Init_Common.sqf
+=== Addition to Common\Init\Init_Common.sqf ===
+ getAngle = Compile PreprocessFile "Common\Functions\getAngle.sqf";
+=== Change in Common\Functions\Common_InitUnit.sqf ===
+This portion of code :
+ 	if (_unitType In (lightUnits + heavyUnits + aircraftUnits + wingedAircraftUnits)) then
+ 	{
+ 		_unit SetVehicleInit "this ExecVM ""Common\Init\Init_Vehicle.sqf""";
+ 		ProcessInitCommands;
+ 
+ 		if (time > 15) then
+ 		{
+ 			if (Call Compile Format["!IsNil ""%1VehiclesCreated""",Str _side]) then
+ 			{
+ 				Call Compile Format["%1VehiclesCreated = %1VehiclesCreated + 1;PublicVariable ""%1VehiclesCreated""",Str _side];
+ 			};
+ 		};
+ 
+ 		if (ABANDONEDVEHICLETIME > 0) then
+ 		{
+ 			_unit AddEventHandler ["GetOut",{_this Spawn UpdateEmptyVehicle}];
+ 		};
+ 	};
+
+Must be replaced by this :
+ 	if (_unitType In (lightUnits + heavyUnits + aircraftUnits + wingedAircraftUnits)) then
+ 	{
+ 		if (_unitType In (aircraftUnits + wingedAircraftUnits)) then
+ 		{
+ 			_unit SetVehicleInit "this ExecVM ""Common\Init\Init_Vehicle.sqf""; this addEventHandler [""incomingMissile"", {_this execVM ""Common\missileLaunch.sqf""}]";
+ 		} 
+ 		else
+ 		{
+ 			_unit SetVehicleInit "this ExecVM ""Common\Init\Init_Vehicle.sqf""";
+ 		};
+ 
+ 		ProcessInitCommands;
+ 
+ 		if (time > 15) then
+ 		{
+ 			if (Call Compile Format["!IsNil ""%1VehiclesCreated""",Str _side]) then
+ 			{
+ 				Call Compile Format["%1VehiclesCreated = %1VehiclesCreated + 1;PublicVariable ""%1VehiclesCreated""",Str _side];
+ 			};
+ 		};
+ 
+ 		if (ABANDONEDVEHICLETIME > 0) then
+ 		{
+ 			_unit AddEventHandler ["GetOut",{_this Spawn UpdateEmptyVehicle}];
+ 		};
+ 	};
+<br>
+== To Do ==
+* Adding a RWR on target aircrafts
+* Implement the "aiming on target while firing" function against ground targets, and for Hellfire missile too.

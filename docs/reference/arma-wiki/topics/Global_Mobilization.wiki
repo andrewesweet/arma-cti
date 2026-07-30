@@ -1,0 +1,199 @@
+// source: https://community.bistudio.com/wiki/Global_Mobilization
+// revision: 370280 (2024-11-19T18:25:37Z)
+// export sha1: 68e4k32aig02t3chbj83h7cqsaofqlf
+// categories: Category:Arma 3: CDLCs | Category:Global Mobilization
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Navbox/CDLCs}}
+
+{{Infobox/Game
+|title= Global Mobilization
+|image= [[File:gm_cwg_steam_store_header.jpg|300px|link=https://store.steampowered.com/app/1042220/Arma_3_Creator_DLC_Global_Mobilization__Cold_War_Germany/]]<br/>[[File:a3 gm arma3-com steampageimg 600x100 3c.png|link=http://www.arma3.com/dlc/creator|300px]]
+|releaseDate= 29 April 2019
+|storePage= {{Link|link= https://store.steampowered.com/app/1042220/Arma_3_Creator_DLC_Global_Mobilization__Cold_War_Germany/|text= Steam}}
+|developer= Vertexmacht
+|website= {{Link|http://global-mobilization.com/|http://global-mobilization.com/}}
+|discord= {{Link|https://discord.gg/XbhfF37|https://discord.gg/XbhfF37}}
+|twitter= {{Link|https://twitter.com/globmob_arma3|https://twitter.com/globmob_arma3}}
+}}
+
+{{Feature|informative|Find documentation regarding content and modifications of GM here: [[:Category:Global Mobilization|Global Mobilization]].}}
+
+Global Mobilization - Cold War Germany is the first Creator DLC to be released for {{arma3}}.
+{{TOC||0.9}}
+
+
+== Features ==
+
+=== Weferlingen Terrain ===
+
+''detailed article: [[Global Mobilization Weferlingen]]''
+
+Located in the northern plains of Germany, Weferlingen offers the largest {{arma}} terrain released so far: 419 square kilometers of usable area.
+It is modeled after a real-world location in 1983, and uses entirely new assets – providing you with a unique experience that gives {{arma3}} an entirely fresh look and feel. Explore nearly 50 fully destructible settlements in both West and East Germany, prepare your ambushes from scattered wooded areas, or have tanks battle each other at great distances on farmland – with each presenting its own major challenges.
+
+=== Vehicles &amp; Vehicle Variants ===
+
+Pitting the Federal Republic of Germany (West Germany) and Denmark against the German Democratic Republic (East Germany) and Poland, you will encounter 51 new vehicle assets on the battlefield:
+
+==== West Germany/Denmark ====
+{{Columns|2|
+* BrPz1 "Biber" Bridgelayer/Combat Support Vehicle
+* M109G Self-Propelled Howitzer
+* SF2 LARS 2 Multiple Launch Rocket System
+* CH-53G and CH-53GS Transport Helicopter
+* VBH-1 and VBH-1A1 Light Utility Helicopter
+* PAH-1 and PAH-1A1 Anti Tank Helicopter
+* DO-28D2 STOL airplanes
+* KPz 1A1, KPz 1A1A1, KPz 1A3 and KPz 1A5 Main Battle Tanks
+* M113A1G series of tracked Armoured Personnel Carriers in various roles
+* M113A1DK series of tracked Armoured Personnel Carriers in various roles
+* M113A2DK M/92 Fire Support Vehicle
+* SPz 1, SPz 1A1, SPz 1A2 Infantry Fighting Vehicle
+* SpPz 2A1 and SpPz 2A2 Wheeled Recon Tank
+* TPz 1 series of wheeled Armoured Personnel Carriers in various roles
+* FlakPz 1A1 Self Propelled Anti Aircraft platform
+* BPz 2A0 recovery tank
+* 0.5t Truck as transporter and fast attack vehicle armed with a machinegun or anti-tank guided missile
+* 2t Truck in transport, medical and supply variants
+* 5t Truck in transport and support roles
+* 10t Truck heavy transporter
+* K125 Motorcycle
+}}
+
+==== East Germany/Poland ====
+{{Columns|2|
+* 2S1 Self-Propelled Howitzer
+* BM-21 Grad Multiple Launch Rocket System
+* 2P16 Short-Range Ballistic Missile
+* Mi-2P, Mi-2T, Mi-2SR, Mi-2R and Mi-2Ch Utility Helicopters
+* Mi-2 Platan (Helicopter Mine Layer)
+* Mi-2US, Mi-2URP, Mi-2URS, Mi-2UPR-G and Mi-2URN Attack Helicopters
+* L-410T and L-410S STOL airplanes
+* T-55, T-55A and T-55AM2 Main Battle Tanks
+* BMP-1 SP2 tracked Armoured Personnel Carrier
+* PT-76B Light Tank
+* SPW-60 series of wheeled Armoured Personnel Carriers in various roles
+* SPW-40P2 scout vehicle and command post variant
+* SKOT-2A/OT64A Armoured Personnel Carrier
+* ZSU-23-4V1 Self Propelled Anti Aircraft platform
+* UAZ 469 light transport and armed variant with SPG-9 Anti Tank or DShKM Heavy Machine Gun
+* Truck 5 series in transport, tractor and supply variants
+* Truck 5 Mp series in three support roles
+}}
+
+==== Civilian ====
+* P601, a car produced in East Germany (also available as police patrol)
+* Typ 1200, a car produced in West Germany (also available as police patrol)
+* 2t Fire Engine
+* Bicycle
+
+=== Weapons ===
+
+Carry 39 timeless classic weapons (including weapon variants) into battle:
+
+==== West Germany/Denmark ====
+{{Columns|2|
+* G3 Battle Rifle and variants
+* G36A1 and G36E Assault Rifle
+* C7 and M16A2 Assault Rifle and variants
+* MG3 Machine Gun
+* SG5 Submachine Gun and silenced variants
+* MP2A1 Submachine Gun
+* PzF3 Anti Tank Rocket Launcher
+* M72A3 Anti Tank Rocket Launcher
+* PzF 44 Anti Tank Rocket Launcher
+* PzF 84 Heavy Anti Tank Rocket Launcher
+* FIM 43 Surface to Air Missile Launcher
+* Anti Tank Guided Missile Launcher
+* Granatpistole 40mm Grenade launcher
+* P1 Handgun
+* P2A1 Flare Gun}}
+
+==== East Germany/Poland ====
+{{Columns|2|
+* KM-72 (East German-made AK-47) Assault Rifle and variants
+* AK-74 Assault Rifle and variants
+* RPK Light Machine Gun
+* RPK-74 Light Machine Gun
+* PKM Machine Gun
+* PM-63 Submachine Gun
+* SVD Designated Marksman Rifle
+* RPG-7 Anti Tank Rocket Launcher
+* Pallad 40mm Grenade launcher (Handheld and Underslung on AKM)
+* 9K32M Strela-2 Surface to Air Missile Launcher
+* Fagot Anti Tank Guided Missile Launcher
+* PM Handgun
+* LP-1 Flare Gun
+}}
+
+All of the relevant optics and binoculars are also included.
+
+=== More Infantry Clothing &amp; Gear ===
+
+Global Mobilization: Cold War Germany introduces various new character assets:
+
+==== West Germany ====
+* Summer, Autumn, and Winter Field Suits
+* Tank Crew Overall
+* Bundesgrenzschutz Field Suit
+* Police Officer Uniform
+* Police Patrol Uniform
+* Firefighter and Postman Suit
+* Standard Issue Compass
+
+==== East Germany ====
+* Summer and Winter Field Service Suits
+* Tank Suit
+* Officer Dress Uniform
+* Police Officer Uniform
+* Standard Issue Compass
+
+==== Poland ====
+* Summer, Autumn and Winter Battle Suits
+* Vests, Backpacks, Hats and Helmets
+
+==== Denmark ====
+* Summer and Winter Combat Suits
+* Vests, Backpacks, Hats and Helmets
+
+''The uniforms come with all of the helmets, hats, vests, and backpacks that are needed to equip the faction's soldiers for all situations. To make the experience of Cold War Germany even more immersive, the DLC also includes 8 voices for the new German radio protocol.''
+
+=== 10-Mission Singleplayer Campaign "State Scarlet" ===
+
+Witness a fierce battle over the inner German border from two different perspectives:
+Pvt. Klemmer, a draftee in West German military, and Sgt. Brandt, the leader of his Leopard 1 tank platoon. Developed by people with real-world military experience, "State Scarlet" is designed to quench your thirst for Cold War military action with authentic combat operations, which sometimes overlap to show how the battle develops.
+
+This singleplayer campaign is fully voiced in German (with optional English subtitles).
+
+=== 18 Multiplayer Scenarios ===
+
+To ignite the Cold War right away, you and your friends can choose from 14 co-operative scenarios and 4 adversarial game modes.
+This includes a not-so-classic deathmatch mode called "Fashion Police", in which teams can quickly change based on the clothing you wear.
+
+A full list of available Multi Player missions with their configuration names can be found here:
+{{Link|Global Mobilization Multiplayer Missions}}
+
+
+== About the Developers ==
+
+'''The Arma 3 Creator DLC: Global Mobilization - Cold War Germany''' was created by Vertexmacht – a tight-knit team of developers who have poured thousands of hours into what can only be described as a true labor of love.
+Drawing from their experience as developers in the game industry, respected members of the {{arma}} modding community since 2001, and veterans of military service, this project has been tailored specifically to the strengths of {{arma3}} and the needs of its awesome community.
+
+
+== Compatibility Data for Non-Owners ==
+
+Creator DLC Compatibility Data for Non-Owners
+
+Compatibility data for non-owners has been released. This allows users who have not purchased Arma 3 Creator DLC: Global Mobilization - Cold War Germany to play multiplayer on servers featuring GM assets.
+Non-owners can also preview premium assets in Virtual Arsenal. You can download the data from the Steam Workshop {{Link|link= https://steamcommunity.com/sharedfiles/filedetails/?id=1776428269|text= here}}.
+
+Please note that access to premium content is restricted for non-owners in a similar way to our official default DLC. The "State Scarlet" campaign and the Weferlingen terrain are inaccessible.
+Premium weapons such as the G3 battle rifle cannot be picked up. Premium vehicles can be primarily used as a passenger.
+For a detailed overview of premium DLC content restrictions, please refer to this {{Link|https://www.bohemia.net/blog/roadmap-14-15-dlc-strategy-blog|blogpost}}.
+
+Buying the DLC will remove these restrictions, enabling owners to access all the content.
+
+
+[[Category:Global Mobilization]]
+{{GameCategory|arma3|CDLCs}}

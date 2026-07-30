@@ -1,0 +1,442 @@
+// source: https://community.bistudio.com/wiki/Particles_Tutorial
+// revision: 369856 (2024-10-16T13:52:06Z)
+// export sha1: rful4bprls10m7muiatwgve3f7fi6i1
+// categories: Category:Arma Scripting Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A '''{{Link|https://en.wikipedia.org/wiki/Particle_system|particle}}''' is a (to some extent, non-physical) 2D plane that always faces the camera, or (more rarely) a 3D model.
+It can be used to simulate ambient effects, such as dust, fire, water splash, wood splinters and even rock debris.
+
+A '''particle source''' is a non-physical object that creates particles at a certain rate and position/velocity.
+
+A particle (as well as a particle source) is '''[[Multiplayer Scripting#Locality|local]]''' to the computer where the script has been called; one player could see smoke while another could see through without any issue.
+
+{{Feature|informative|Particles exist since {{GameCategory|ofp|link= y}}, but the first related command ([[drop]]) was only introduced in {{GameCategory|ofpr|link= y}}.<br>
+Particle source notions and commands were introduced in {{GameCategory|arma1|link= y}}, some commands were later added in {{GameCategory|arma3|link= y}} (e.g [[setParticleFire]], [[setParticleClass]]).}}
+
+
+== How To ==
+
+=== Create a Particle Source ===
+
+<sqf>private _particleSource = "#particlesource" createVehicleLocal ASLToAGL getPosASL player;</sqf>
+
+{{Feature|informative|A particle source is '''[[Multiplayer Scripting#Locality|local]]''' (and all the particle commands take a local argument too), hence [[createVehicleLocal]] usage.}}
+
+{{ArgTitle|3|Set Source Class|{{GVI|arma3|0.50}}}}
+
+<sqf>_particleSource setParticleClass "ObjectDestructionFire1Smallx"; // defined in configFile >> "CfgCloudlets"</sqf>
+
+{{Feature|informative|Particle source class must be defined in game [[configFile|config]] and '''cannot''' be declared in [[missionConfigFile]] or [[campaignConfigFile]]. See [[Arma 3: Particle Effects]] for more information.}}
+
+=== Set Source Parameters ===
+
+See [[ParticleArray]] for details on the array format.
+<sqf>
+_particleSource setParticleParams
+[
+	["\A3\data_f\ParticleEffects\Universal\Universal", 16, 12, 0, 8],
+	"", "Billboard", 1, 3,						// animationName, type, timerPeriod, lifeTime
+	[0,1.5,0],									// position relative to referenceObject
+	[0,0,0],									// velocity
+	0, 0.005, 0.003925, 0.1, [0.25, 0.75],		// rotation, weight, volume, rubbing, size
+	[[1,0,0,0.5], [0,1,0,1], [0,0,01,0.25]],	// colors
+	[1],										// animationPhase
+	0, 0,										// randomDirectionPeriod, randomDirectionIntensity
+	"", "",										// onTimer, beforeDestroy
+	player,										// referenceObject
+	0, false,									// angle, bounces
+	-1, [],										// bounceOnSurface, emissiveColor
+	[0,1,0]										// vectorDir - CANNOT be [0,0,0]
+];
+</sqf>
+
+=== Set Source Drop Interval ===
+
+<sqf>_particleSource setDropInterval 0.0625; // duration between drops</sqf>
+
+=== Set Source Drop Circle ===
+
+<sqf>_particleSource setParticleCircle [3, [0,1,0]]; // [circle radius, velocity]</sqf>
+
+=== Set Source Random Values ===
+
+<sqf>
+/*
+	lifeTime,
+	position,
+	moveVelocity,
+	rotationVelocity,
+	size,
+	color,
+	directionPeriod,
+	directionIntensity,
+	angle,
+	bounceOnSurface
+*/
+_particleSource setParticleRandom [0, [0.1, 0.1, 0.1], [0, 0, 0.5], 0, 0.1, [0, 0, 0, 0], 0, 0];
+</sqf>
+
+{{ArgTitle|3|Set Source Fire Properties|{{GVI|arma3|1.08}}}}
+
+<sqf>_particleSource setParticleFire [0.1, 0.5, 2]; // [coreIntensity, coreDistance, damageTime]</sqf>
+
+=== Delete Source ===
+
+<sqf>deleteVehicle _particleSource; // as simple as that</sqf>
+
+=== Use the [[drop]] Command ===
+
+The [[drop]] command only drops one particle. If multiple ones are needed, a loop ([[for]], [[while]]) must be used.
+
+See [[ParticleArray]] for details on the array format.
+<sqf>
+drop [
+	["\A3\data_f\ParticleEffects\Universal\Universal", 16, 12, 0, 8],
+	"", "Billboard", 1, 3,						// animationName, type, timerPeriod, lifeTime
+	[0,1.5,0],									// position relative to referenceObject
+	[0,0,0],									// velocity
+	0, 0.005, 0.003925, 0.1, [0.25, 0.75],		// rotation, weight, volume, rubbing, size
+	[[1,0,0,0.5], [0,1,0,1], [0,0,01,0.25]],	// colors
+	[1],										// animationPhase
+	0, 0,										// randomDirectionPeriod, randomDirectionIntensity
+	"", "",										// onTimer, beforeDestroy
+	player										// referenceObject
+];
+</sqf>
+
+
+== Design Workflow ==
+
+In order to determine ''one'' particle behaviour, a simple [[drop]] usage in the [[Arma 3: Debug Console|Debug Console]] can do;
+but seeing the complete end result can be another task at hand.
+
+=== Using a Script ===
+
+One way to design your effect is to have an [[SQF Syntax|SQF]] file, named e.g "particles.sqf", filled with your code:
+<sqf>
+{ deleteVehicle _x } forEach allMissionObjects "#particlesource";
+
+private _posATL = player modelToWorld [0,10,0];
+
+ps1 = "#particlesource" createVehicleLocal _posATL;
+ps1 setParticleParams [/* ... */];
+ps1 setDropInterval 0.2;
+
+ps2 = "#particlesource" createVehicleLocal _posATL;
+ps2 setParticleParams [/* ... */];
+ps2 setDropInterval 0.2;
+</sqf>
+
+and run with
+<sqf>execVM "particles.sqf";</sqf>
+
+This format deletes all previous effects and still allows you to use the [[Arma 3: Debug Console|Debug Console]] in order to adjust particle source settings thanks to the usage of global variables (here, {{hl|ps1}} and {{hl|ps2}}).
+
+=== Using a Mod ===
+
+'''Emitter 3Ditor''' (a real-time WYSIWYG particle source editor) adds and uses particle and light emitters in your scenarios '''without any scripting nor mod dependency'''.<br>
+{{Link|link= https://steamcommunity.com/sharedfiles/filedetails/?id=1613905318|text= Steam page}} -  {{Link|link= https://forums.bohemia.net/forums/topic/221163-emitter-3ditor/|text= Forums post}}
+
+
+== Examples ==
+
+{{Feature|informative|The following examples are for {{arma2}} and later titles. For {{arma1}} examples, see [[ParticleTemplates]].}}
+{{Feature|important|
+For games other than {{arma3}}:
+* remove [[private]] usage
+* replace {{hl|\A3\Data_F\}} with:
+: {{{!}}
+{{!}} {{GVI|arma2|1.00}} {{!}}{{!}} {{hl|\Ca\Data\}}
+{{!}}-
+{{!}} {{GVI|arma2oa|1.50}} {{!}}{{!}} {{hl|\Ca\Ca_e\Data\}}
+{{!}}-
+{{!}} {{GVI|tkoh|1.00}} {{!}}{{!}} {{hl|\hsim\Data_h\Data\}}
+{{!}}}
+}}
+
+=== Burning Vehicle Fire Look-Alike ===
+
+[[File:PE_BurningVehicleLookAlike.jpg|thumb|left|100px|Burning vehicle fire look-alike]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+// Fire
+private _ps0 = "#particlesource" createVehicleLocal _posATL;
+_ps0 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 10, 32], "", "Billboard",
+	0, 1, [0, 0, 0.25], [0, 0, 0.5], 1, 1, 0.9, 0.3, [1.5],
+	[[1,1,1, 0.0], [1,1,1, 0.3], [1,1,1, 0.0]],
+	[0.75], 0, 0, "", "", _ps0, rad -45];
+_ps0 setParticleRandom [0.2, [1, 1, 0], [0.5, 0.5, 0], 0, 0.5, [0, 0, 0, 0], 0, 0];
+_ps0 setDropInterval 0.03;
+
+// Smoke part 1
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 7, 1], "", "Billboard",
+	1, 10, [0, 0, 0.5], [0, 0, 2.9], 1, 1.275, 1, 0.066, [4, 5, 10, 10],
+	[[0.3, 0.3, 0.3, 0.33], [0.4, 0.4, 0.4, 0.33], [0.2, 0.2, 0, 0]],
+	[0, 1], 1, 0, "", "", _ps1];
+_ps1 setParticleRandom [0, [0, 0, 0], [0.33, 0.33, 0], 0, 0.25, [0.05, 0.05, 0.05, 0.05], 0, 0];
+_ps1 setDropInterval 0.5;
+
+// Smoke part 2
+private _ps2 = "#particlesource" createVehicleLocal _posATL;
+_ps2 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 9, 1], "", "Billboard",
+	1, 15, [0, 0, 0.5], [0, 0, 2.9], 1, 1.275, 1, 0.066, [4, 5, 10, 10],
+	[[0.1, 0.1, 0.1, 0.75], [0.4, 0.4, 0.4, 0.5], [1, 1, 1, 0.2]],
+	[0], 1, 0, "", "", _ps2];
+_ps2 setParticleRandom [0, [0, 0, 0], [0.5, 0.5, 0], 0, 0.25, [0.05, 0.05, 0.05, 0.05], 0, 0];
+_ps2 setDropInterval 0.25;
+</sqf>
+
+=== Fire ===
+
+[[File:PE_fire.jpg|thumb|left|100px|Fire]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+// Fire
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 10, 32], "", "Billboard",
+	1, 1, [0, 0, 0], [0, 0, 0.5], 0, 1, 1, 3, [0.5,1.5],
+	[[1,1,1,0.4], [1,1,1,0.2], [1,1,1,0]],
+	[0.25,1], 1, 1, "", "", _ps1];
+_ps1 setParticleRandom [0.2, [0.5, 0.5, 0.25], [0.125, 0.125, 0.125], 0.2, 0.2, [0, 0, 0, 0], 0, 0];
+_ps1 setDropInterval 0.05;
+
+// Smoke
+private _ps2 = "#particlesource" createVehicleLocal _posATL;
+_ps2 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 7, 1, 1], "", "Billboard",
+	1, 5, [0, 0, 1], [0, 0, 1.5], 0, 1, 1, 0.5, [1.75,2,3,4.5], // timerPeriod → size
+	[[1,1,1,0], [1,1,1,0.5], [1,1,1,0.4], [1,1,1,0.2], [1,1,1,0]],
+	[0.5,0.5], 0, 0, "", "", _ps2];
+_ps2 setParticleRandom [0.5, [1, 1, 0.4], [0, 0, 0.5], 0, 0.125, [0, 0, 0, 0], rad 30, 0];
+_ps2 setDropInterval 0.1;
+</sqf>
+
+=== Floating Orb ===
+
+[[File:PE_FloatingOrb.jpg|thumb|left|100px|Floating Orb]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 12, 16, 0], "", "Billboard",
+	1, 3.0141, [0, 0, 2], [0, 0, 0], 1, 1.275, 1, 0, [4],
+	[[1, 1, 1, 1]],
+	[1000], 1, 0, "", "", _ps1];
+_ps1 setDropInterval 3;
+</sqf>
+
+=== Heavy Oily Smoke (Small) ===
+
+[[File:PE_HeavyOilySmokeSmall.jpg|thumb|left|100px|Heavy Oily Smoke (Small)]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 7, 16, 1], "", "Billboard",
+	1, 8, [0, 0, 0], [0, 0, 1.5], 0, 10, 7.9, 0.066, [1, 3, 6],
+	[[0, 0, 0, 0], [0.05, 0.05, 0.05, 1], [0.05, 0.05, 0.05, 1], [0.05, 0.05, 0.05, 1], [0.1, 0.1, 0.1, 0.5], [0.125, 0.125, 0.125, 0]],
+	[0.25], 1, 0, "", "", _ps1];
+_ps1 setParticleRandom [0, [0.25, 0.25, 0], [0.2, 0.2, 0], 0, 0.25, [0, 0, 0, 0.1], 0, 0];
+_ps1 setDropInterval 0.05;
+</sqf>
+
+{{Clear}}
+=== Heavy Oily Smoke (Medium) ===
+
+[[File:PE_HeavyOilySmokeMedium.jpg|thumb|left|100px|Heavy Oily Smoke (Medium)]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 7, 16, 1], "", "Billboard",
+	1, 8, [0, 0, 0], [0, 0, 2.5], 0, 10, 7.9, 0.066, [2, 6, 12],
+	[[0, 0, 0, 0], [0.05, 0.05, 0.05, 1], [0.05, 0.05, 0.05, 1], [0.05, 0.05, 0.05, 1], [0.1, 0.1, 0.1, 0.5], [0.125, 0.125, 0.125, 0]],
+	[0.25], 1, 0, "", "", _ps1];
+_ps1 setParticleRandom [0, [0.25, 0.25, 0], [0.2, 0.2, 0], 0, 0.25, [0, 0, 0, 0.1], 0, 0];
+_ps1 setDropInterval 0.1;
+</sqf>
+
+{{Clear}}
+=== Heavy Oily Smoke (Large) ===
+
+[[File:PE_HeavyOilySmokeLarge.jpg|thumb|left|100px|Heavy Oily Smoke (Large)]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 7, 16, 1], "", "Billboard",
+	1, 8, [0, 0, 0], [0, 0, 2.5], 0, 10, 7.9, 0.066, [4, 12, 20],
+	[[0, 0, 0, 0], [0.05, 0.05, 0.05, 1], [0.05, 0.05, 0.05, 1], [0.05, 0.05, 0.05, 1], [0.1, 0.1, 0.1, 0.5], [0.125, 0.125, 0.125, 0]],
+	[0.25], 1, 0, "", "", _ps1];
+_ps1 setParticleRandom [0, [0.25, 0.25, 0], [0.2, 0.2, 0], 0, 0.25, [0, 0, 0, 0.1], 0, 0];
+_ps1 setDropInterval 0.2;
+</sqf>
+
+{{Clear}}
+=== Light Wood Smoke (Small) ===
+
+[[File:PE_LightWoodSmokeSmall.jpg|thumb|left|100px|Light Wood Smoke (Small)]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 9, 16, 0], "", "Billboard",
+	1, 8, [0, 0, 0], [0, 0, 1.5], 0, 10, 7.9, 0.066, [1, 3, 6],
+	[[0.5, 0.5, 0.5, 0], [0.5, 0.5, 0.5, 0.15], [0.5, 0.5, 0.5, 0.15], [0.5, 0.5, 0.5, 0.1], [0.75, 0.75, 0.75, 0.075], [1, 1, 1, 0]],
+	[0.25], 1, 0, "", "", _ps1];
+_ps1 setParticleRandom [0, [0.25, 0.25, 0], [0.2, 0.2, 0], 0, 0.25, [0, 0, 0, 0.1], 0, 0];
+_ps1 setDropInterval 0.05;
+</sqf>
+
+{{Clear}}
+=== Light Wood Smoke (Medium) ===
+
+[[File:PE_LightWoodSmokeMedium.jpg|thumb|left|100px|Light Wood Smoke (Medium)]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 9, 16, 0], "", "Billboard",
+	1, 8, [0, 0, 0], [0, 0, 1.5], 0, 10, 7.9, 0.066, [2, 6, 12],
+	[[0.5, 0.5, 0.5, 0], [0.5, 0.5, 0.5, 0.3], [0.5, 0.5, 0.5, 0.2], [0.5, 0.5, 0.5, 0.1], [0.75, 0.75, 0.75, 0.075], [1, 1, 1, 0]],
+	[0.25], 1, 0, "", "", _ps1];
+_ps1 setParticleRandom [0, [0.25, 0.25, 0], [0.2, 0.2, 0], 0, 0.25, [0, 0, 0, 0.1], 0, 0];
+_ps1 setDropInterval 0.1;
+</sqf>
+
+{{Clear}}
+=== Light Wood Smoke (Large) ===
+
+[[File:PE_LightWoodSmokeLarge.jpg|thumb|left|100px|Light Wood Smoke (Large)]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 9, 16, 0], "", "Billboard",
+	1, 8, [0, 0, 0], [0, 0, 4.5], 0, 10, 7.9, 0.5, [4, 12, 20],
+	[[0.5, 0.5, 0.5, 0], [0.5, 0.5, 0.5, 0.5], [0.66, 0.66, 0.66, 0.33], [0.75, 0.75, 0.75, 0.25], [1, 1, 1, 0]],
+	[0.25], 1, 0, "", "", _ps1];
+_ps1 setParticleRandom [0, [0.5, 0.5, 0], [0.2, 0.2, 0], 0, 0.25, [0, 0, 0, 0.1], 0, 0];
+_ps1 setDropInterval 0.2;
+</sqf>
+
+{{Clear}}
+=== Mixed Smoke (Small) ===
+
+[[File:PE_MixedSmokeSmall.jpg|thumb|left|100px|Mixed Smoke (Small)]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 7, 16, 1], "", "Billboard",
+	1, 8, [0, 0, 0], [0, 0, 1.5], 0, 10, 7.9, 0.066, [1, 3, 6],
+	[[0.2, 0.2, 0.2, 0], [0.2, 0.2, 0.2, 0.45], [0.2, 0.2, 0.2, 0.45], [0.35, 0.35, 0.35, 0.225], [0.5, 0.5, 0.5, 0]],
+	[0.25], 1, 0, "", "", _ps1];
+_ps1 setParticleRandom [0, [0.25, 0.25, 0], [0.2, 0.2, 0], 0, 0.25, [0, 0, 0, 0.1], 0, 0];
+_ps1 setDropInterval 0.1;
+
+private _ps2 = "#particlesource" createVehicleLocal _posATL;
+_ps2 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 9, 16, 0], "", "Billboard",
+	1, 8, [0, 0, 0], [0, 0, 1.5], 0, 10, 7.9, 0.066, [1, 3, 6],
+	[[0.33, 0.33, 0.33, 0], [0.33, 0.33, 0.33, 0.8], [0.33, 0.33, 0.33, 0.8], [0.66, 0.66, 0.66, 0.4], [1, 1, 1, 0]],
+	[0.25], 1, 0, "", "", _ps2];
+_ps2 setParticleRandom [0, [0.25, 0.25, 0], [0.2, 0.2, 0], 0, 0.25, [0, 0, 0, 0.1], 0, 0];
+_ps2 setDropInterval 0.1;
+</sqf>
+
+{{Clear}}
+=== Mixed Smoke (Medium) ===
+
+[[File:PE_MixedSmokeMedium.jpg|thumb|left|100px|Mixed Smoke (Medium)]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 7, 16, 1], "", "Billboard",
+	1, 8, [0, 0, 0], [0, 0, 2.5], 0, 10, 7.9, 0.066, [2, 6, 12],
+	[[0.2, 0.2, 0.2, 0], [0.2, 0.2, 0.2, 0.3], [0.2, 0.2, 0.2, 0.3], [0.35, 0.35, 0.35, 0.2], [0.5, 0.5, 0.5, 0]],
+	[0.25], 1, 0, "", "", _ps1];
+_ps1 setParticleRandom [0, [0.25, 0.25, 0], [0.2, 0.2, 0], 0, 0.25, [0, 0, 0, 0.1], 0, 0];
+_ps1 setDropInterval 0.2;
+
+private _ps2 = "#particlesource" createVehicleLocal _posATL;
+_ps2 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 9, 16, 0], "", "Billboard",
+	1, 8, [0, 0, 0], [0, 0, 2.5], 0, 10, 7.9, 0.066, [2, 6, 12],
+	[[0.33, 0.33, 0.33, 0], [0.33, 0.33, 0.33, 0.8], [0.33, 0.33, 0.33, 0.8], [0.66, 0.66, 0.66, 0.4], [1, 1, 1, 0]],
+	[0.25], 1, 0, "", "", _ps2];
+_ps2 setParticleRandom [0, [0.25, 0.25, 0], [0.2, 0.2, 0], 0, 0.25, [0, 0, 0, 0.1], 0, 0];
+_ps2 setDropInterval 0.2;
+</sqf>
+
+{{Clear}}
+=== Mixed Smoke (Large) ===
+
+[[File:PE_MixedSmokeLarge.jpg|thumb|left|100px|Mixed Smoke (Large)]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 7, 16, 1], "", "Billboard",
+	1, 8, [0, 0, 0], [0, 0, 4.5], 0, 10, 7.9, 0.5, [4, 12, 20],
+	[[0.2, 0.2, 0.2, 0], [0.2, 0.2, 0.2, 0.3], [0.2, 0.2, 0.2, 0.3], [0.35, 0.35, 0.35, 0.2], [0.5, 0.5, 0.5, 0]],
+	[0.25], 1, 0, "", "", _ps1];
+_ps1 setParticleRandom [0, [0.4, 0.4, 0], [0.4, 0.4, 0], 0, 0.25, [0, 0, 0, 0.1], 0, 0];
+_ps1 setDropInterval 0.2;
+
+private _ps2 = "#particlesource" createVehicleLocal _posATL;
+_ps2 setParticleParams [
+	["\A3\Data_F\ParticleEffects\Universal\Universal", 16, 9, 16, 0], "", "Billboard",
+	1, 8, [0, 0, 0], [0, 0, 4.5], 0, 10, 7.9, 0.5, [4, 12, 20],
+	[[0.33, 0.33, 0.33, 0], [0.33, 0.33, 0.33, 0.8], [0.33, 0.33, 0.33, 0.8], [0.66, 0.66, 0.66, 0.4], [1, 1, 1, 0]],
+	[0.25], 1, 0, "", "", _ps2];
+_ps2 setParticleRandom [0, [0.4, 0.4, 0], [0.4, 0.4, 0], 0, 0.25, [0, 0, 0, 0.1], 0, 0];
+_ps2 setDropInterval 0.2;
+</sqf>
+
+{{Clear}}
+=== Rock Shower ===
+
+[[File:PE_RockShower.jpg|thumb|left|100px|Rock Shower]]
+<sqf>
+private _posATL = player modelToWorld [0,10,0];
+
+private _ps1 = "#particlesource" createVehicleLocal _posATL;
+_ps1 setParticleParams [
+	"\A3\Data_F\ParticleEffects\Pstone\Pstone", "", "SpaceObject",
+	1, 10, [0, 0, 30], [0, 0, -2], 1, 10, 1, 0.2, [2, 2],
+	[[1, 1, 1 ,1]],
+	[0, 1], 1, 0, "", "", _ps1];
+_ps1 setParticleRandom [0, [10, 10, 0], [0.25, 0.25, 0], 0, 1.5, [0, 0, 0, 0], 0, 0];
+_ps1 setDropInterval 0.04;
+</sqf>
+
+
+{{Clear}}
+== See Also ==
+
+* {{Link|Category:Particle System|Particle System category}}
+* [[ParticleArray]] - particle array format
+
+
+[[Category:Arma Scripting Tutorials]]

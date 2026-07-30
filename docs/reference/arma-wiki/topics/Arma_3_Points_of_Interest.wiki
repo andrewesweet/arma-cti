@@ -1,0 +1,83 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Points_of_Interest
+// revision: 364485 (2024-05-16T20:41:57Z)
+// export sha1: g8zzcn4tbt1mzwjqz5vdf15svz1n9s5
+// categories: Category:Arma 3 | Category:Points of Interest | Category:Stubs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|stub}}{{TOC|side}}
+{{Feature|informative|See also [[Arma 3: Easter Eggs]].}}
+== Altis ==
+
+=== Atlantis ===
+
+{{Feature|quote|There is a myth that remnants of an ancient civilization lies underwater near the coast of Altis|{{arma3}} loading screen}}
+"Atlantis" can be found at '''150068''' ({{Link|https://www.youtube.com/watch?v{{=}}SUM-N_p3kbc&t{{=}}1m14s|source}})
+
+=== Stonehenge ===
+
+[[Altis]] also has its (nicer) Stonehenge with a decorative skull on the top, located in the North-East corner of '''144061''' at Cape Makrinos.
+<!--
+=== Sunken boats and ships ===
+
+There is a sunken ship at '''021214''' (by -100m)
+
+another broken in half in the South-East corner of '''030135'''
+
+Half sunken ship at '''023114''' South of Savri
+
+Broken ship at '''074092''' (by -92m)
+-->
+
+=== Rocky hideout ===
+
+A hidden hideout (and what is supposedly its owner's skeleton) can be found at '''080094''' ({{Link|https://www.youtube.com/watch?v{{=}}SUM-N_p3kbc&t{{=}}2m13s|source}})
+<!--
+=== Spooky Scary Skeletons ===
+Can be found at location x, y and z
+-->
+
+=== TRPASLIK ===
+
+'''TRPASLIK''' is written with rocks on the bottom of the sea at '''229061''' ({{Link|https://www.youtube.com/watch?v{{=}}SUM-N_p3kbc&t{{=}}25s|source}})
+{{Link|link= https://forums.bohemia.net/profile/826110-trpaslik/|text= Trpaslik}} is Altis' Environment Designer ({{Link|https://arma3.com/news/report-in-radim-vitek-petr-sedlacek-environment|REPORT IN}}).
+
+
+== Stratis ==
+
+=== Pirate hideout ===
+
+{{Feature|quote|According to legend, there is a hidden cave somewhere on the coast of Stratis, rumored to contain treasures hidden by the Arabian pirates.|{{arma3}} loading screen}}
+The mentioned '''Pirate Cave''' is located at '''042073''' ([https://www.youtube.com/watch?v{{=}}a03c1WLZVu8&t{{=}}27s how-to video])
+
+=== V-22 Osprey wreck ===
+
+The '''V-22 Osprey''' wreck found South of [[Stratis]] airport (coordinates '''014047''') is a nod to {{arma2}}'s vehicle ({{Link|https://www.youtube.com/watch?v{{=}}a03c1WLZVu8&t{{=}}2m01s|video}})
+
+
+== Malden 2035 ==
+
+=== Stonehenge ===
+
+[[Operation Flashpoint: Easter Eggs#Mysterious_Stonehenge|Same as in {{ofp}}]], [[Malden 2035]] has its own {{Link|https://en.wikipedia.org/wiki/Stonehenge}}, located in the North-West corner of '''058101''' coordinates.
+
+[[File:Arma_3_Bushlurker_tribute_statue.jpg|thumb|Dedicated to Paul “Bushlurker” Pelosi (1960-2017)]]
+=== The Bushlurker Monument ===
+
+{{Feature|quote|In the beginning, there was no clutter... Only bushes...}}
+At '''027074''' lays a monument in tribute to {{Link|link= https://forums.bohemia.net/forums/topic/201520-paul-%E2%80%9Cbushlurker%E2%80%9D-pelosi-1960-2017-rest-in-peace/|text= Paul “Bushlurker” Pelosi (1960-2017)}} who has worked on many community terrains, including Malden for [[Cold War Rearmed 2|CWR2]]. He passed away some months before Malden 2035's release.
+
+{{Link|link= https://steamcommunity.com/sharedfiles/filedetails/?id=843661230|text= The statue}} itself was made by {{Link|link= https://forums.bohemia.net/profile/796144-kiory/|text= Kiory}} and announced on the {{Link|link= https://forums.bohemia.net/forums/topic/201637-the-bushlurker-monument/|text= forums}}, and was later {{Link|https://twitter.com/projectargogame/status/867036354617761797|implemented officially}}.
+
+
+== See also ==
+
+* {{Link|https://www.youtube.com/channel/UCSOXEwkmxFmBszimTAZwkbg|RedEye Mouse YouTube channel}} - source of most of this page's Easter Eggs
+** [https://www.youtube.com/watch?v{{=}}SUM-N_p3kbc Altis video]
+** [https://www.youtube.com/watch?v{{=}}a03c1WLZVu8 Stratis &amp; Malden video]
+** [https://www.youtube.com/watch?v{{=}}ZRXMDmLQ68Y Tanoa video]
+** [https://www.youtube.com/watch?v{{=}}55wz_LHH5CQ Livonia video]
+** [https://www.youtube.com/watch?v{{=}}O7Lj9ID5G-Y Contact Easter Egg]
+
+
+{{GameCategory|arma3}}
+[[Category:Points of Interest]]

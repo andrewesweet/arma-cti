@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/displayParent
+// revision: 318897 (2022-05-13T09:22:00Z)
+// export sha1: 67v547l6qf38tduhw6ll15ez40lyl27
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= GUI Control
+
+|descr= Returns parent display of the given display.
+
+|s1= [[displayParent]] display
+
+|p1= display: [[Display]]
+
+|r1= [[Display]]
+
+|x1= <sqf>_display = displayParent findDisplay 49; // Display #46</sqf>
+
+|seealso= [[displayChild]] [[findDisplay]] [[displayCtrl]] [[createDisplay]] [[createDialog]] [[dialog]] [[displayNull]] [[ctrlCreate]] [[controlNull]] [[ctrlParent]] [[ctrlParentControlsGroup]] [[focusedCtrl]]
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskTypeIcon
+// revision: 352033 (2024-02-01T23:24:28Z)
+// export sha1: mtqw78jk2mga8dtxh7tczldzu0rpdtw
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Tasks
+
+|descr= Returns path to the icon texture associated with given task type. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= [type, default] call [[BIS_fnc_taskTypeIcon]]
+
+|p1= type: [[String]] - task type
+
+|p2= default: [[Config]] - config path to get default path from, if '''type''' does not exist
+
+|r1= [[String]] - path to the task type texture.
+
+|x1= <sqf>["attack",configFile >> "CfgTaskTypes" >> "Run" >> "icon"] call BIS_fnc_taskTypeIcon;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

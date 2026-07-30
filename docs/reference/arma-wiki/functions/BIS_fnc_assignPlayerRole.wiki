@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_assignPlayerRole
+// revision: 326919 (2022-07-12T21:44:38Z)
+// export sha1: 1sv8nhs35gf4o8ido2ns6raivvi6685
+// categories: Category:Arma 3: Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Object Manipulation
+
+|eff= local
+
+|descr= Ensures the player can only get in the specific vehicle role.
+
+|s1= [vehicle, role, path] call [[BIS_fnc_assignPlayerRole]]
+
+|p1= vehicle: [[Object]] - targeted vehicle
+
+|p2= role: [[String]] - can be one of:
+* "driver"
+* "gunner"
+* "commander"
+* "cargo"
+* "turret"
+
+|p3= path: [[Array]] or [[Number]]s - the turret path
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>[myVehicle, "turret", [0, 1]] call BIS_fnc_assignPlayerRole;</sqf>
+
+|seealso= [[assignAsDriver]] [[assignAsGunner]] [[assignAsCommander]] [[assignAsCargo]] [[assignAsTurret]]
+}}

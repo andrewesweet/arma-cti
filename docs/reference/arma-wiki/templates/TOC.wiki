@@ -1,0 +1,134 @@
+// source: https://community.bistudio.com/wiki/Template:TOC
+// revision: 373177 (2025-04-09T14:27:43Z)
+// export sha1: gf4a2iy0bz6l4f096dqc7oi3skzozlv
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div class="{{#if:{{{3|}}}|toclimit-{{{3|}}}}} {{#if:{{{4|}}}|toc-nonum}}" {{#if:{{{2|}}}|style="font-size: {{{2}}}em"}}>{{#switch:{{lc:{{{1|}}}}}
+|abc=
+	__NOTOC__
+	<div class="toc-abc">[[#A|A]][[#B|B]][[#C|C]][[#D|D]][[#E|E]][[#F|F]][[#G|G]][[#H|H]][[#I|I]][[#J|J]][[#K|K]][[#L|L]][[#M|M]][[#N|N]][[#O|O]][[#P|P]][[#Q|Q]][[#R|R]][[#S|S]][[#T|T]][[#U|U]][[#V|V]][[#W|W]][[#X|X]][[#Y|Y]][[#Z|Z]][[##|#]]</div>
+|horizontal=
+	<div class="toc-horizontal">__TOC__</div>
+|none=
+	__NOTOC__
+|side=
+	<div class="toc-side">__TOC__</div>
+|subtoc=
+	{{#if:{{{content|}}}
+	|
+		<div class="toc" style="font-size: .9em">
+		{{#if:{{{title|a}}}|<div class="toctitle">'''{{{title|Contents}}}'''</div>}}
+{{{content}}}
+		</div>
+	|
+		{{TemplateCase||[[Category:TOC template usage error]]}}
+	}}
+|#default=
+	__TOC__
+}}</div></includeonly><noinclude>
+{{Feature |important|Only '''one''' TOC (Table of Contents) is possible per page, with the exception of ''abc'' and ''subtoc''.}}
+
+== Usage ==
+{{<nowiki/>TOC|'''''mode'''''|'''''size'''''|'''''limit'''''|'''''nonum'''''|'''''title='''''|'''''content='''''}}
+* mode: (Optional, default: "normal"; case-insensitive) one of:
+** abc - a horizontal A..Z TOC (more of an ''index'')
+** ''horizontal'' - a horizontal TOC, where full titles are kept
+** ''normal'' - the normal TOC - can be placed at the wanted position with this
+** none - no TOC on the page (similar to {{hl|<nowiki>__NOTOC__</nowiki>}})
+** ''side'' - sets the TOC to the right
+** subtoc - creates a TOC-like box. Additional parameters:
+*** title: (Optional, default empty) subTOC title
+*** content: subTOC content, usually a list of {{Template|Link}} internal links in format:<syntaxhighlight lang="handlebars">
+* 1 {{Link|#Title 1}}
+* 2 {{Link|#Title 2}}
+* 3 {{Link|#Title 3}}
+</syntaxhighlight>
+* size: (Optional, default 1) size in em (e.g {{hl|.9}} for 90%)
+* limit: (Optional, default empty) sub-level limit (e.g {{hl|2}})
+* nonum: (Optional, default empty) {{hl|y}} to hide numbers
+
+{{Feature|important|{{hl|horizontal}}, {{hl|normal}} and {{hl|side}} values do not work anymore using the Vector 2022 skin.}}
+
+{| style="width: 100%"
+|+ Examples
+|- style="background-color: #EEE"
+! Code
+! Result
+|-
+| <pre>{{TOC}}</pre>
+| style="padding-left: 2.5em" |
+{{TOC}}
+|-
+| <pre>{{TOC|abc}}</pre>
+| {{TOC|abc}}
+|-
+| <pre>{{TOC|subtoc
+|content=
+* 1 {{Link|#Title 1}}
+* 2 {{Link|#Title 2}}
+* 3 {{Link|#Title 3}}
+}}</pre>
+| style="padding-left: 2.5em" |
+{{TOC|subtoc
+|content=
+* 1 {{Link|#Title 1}}
+* 2 {{Link|#Title 2}}
+* 3 {{Link|#Title 3}}
+}}
+|-
+| <pre>{{TOC|subtoc
+|title= The sub-TOC title
+|content=
+* 1 {{Link|#Title 1}}
+* 2 {{Link|#Title 2}}
+* 3 {{Link|#Title 3}}
+}}</pre>
+| style="padding-left: 2.5em" |
+{{TOC|subtoc
+|title= The sub-TOC title
+|content=
+* 1 {{Link|#Title 1}}
+* 2 {{Link|#Title 2}}
+* 3 {{Link|#Title 3}}
+}}
+|-
+| <pre>{{TOC|subtoc
+|title=
+|content=
+* 1 {{Link|#Title 1}}
+* 2 {{Link|#Title 2}}
+* 3 {{Link|#Title 3}}
+}}</pre>
+| style="padding-left: 2.5em" |
+{{TOC|subtoc
+|title=
+|content=
+* 1 {{Link|#Title 1}}
+* 2 {{Link|#Title 2}}
+* 3 {{Link|#Title 3}}
+}}
+|}
+<!--
+{| class="wikitable" style="width: 100%"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{TOC}}</nowiki>
+| {{TOC}}
+|-
+| <nowiki>{{TOC|test}}</nowiki>
+| {{TOC|test}}
+|-
+| <nowiki>{{TOC|abc}}</nowiki>
+| {{TOC|abc}}
+|-
+| <nowiki>{{TOC|horizontal}}</nowiki>
+| {{TOC|horizontal}}
+|-
+| <nowiki>{{TOC|side}}</nowiki>
+| {{TOC|side}}
+|}
+-->
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

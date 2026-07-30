@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/diag_localized
+// revision: 377085 (2026-01-01T09:43:24Z)
+// export sha1: 65sf91yungoxnt0bsrxj2yczusoq0tx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Localization | Category:Command Group: Strings | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|gr1= Strings
+
+|gr2= Localization
+
+|descr= Returns array with all [[localize]]d keys from the given [[Stringtable.xml | stringtable]] or the array of all stringtables names if empty string {{hl|""}} is given. Common stringtables are: {{hl|"Global"}}, {{hl|"Mission"}}, {{hl|"Campaign"}}.
+
+|s1= [[diag_localized]] stringtable
+
+|p1= stringtable: [[String]] - stringtable name or ""
+
+|r1= [[Array]] [[String]]s - see description
+
+|x1= <sqf>
+private _randomKey = selectRandom diag_localized "Global";
+hint format ["Key: %1\nValue: %2", _randomKey, localize _randomKey];
+</sqf>
+
+|x2= <sqf>private _allTables = diag_localized "";</sqf>
+
+|x3= <sqf>diag_localized "Global" select 0; // "$STR_A3_SHOWCASE_SLINGLOADING_15_AMMODROPPED_PIL_0"</sqf>
+
+|seealso= [[localize]] [[isLocalized]] [[getTextRaw]] [[Stringtable.csv]] [[Stringtable.xml]] [[BIS_fnc_localize]]
+}}

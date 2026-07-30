@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_scriptedWaypointType
+// revision: 349365 (2023-11-08T15:35:11Z)
+// export sha1: 9fo0qrxxk9jlxjbq4rl6ps4bs4v0klp
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Waypoints | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Waypoints
+
+|descr= Return CfgWaypoints type of scripted waypoint.
+	Returns empty string/config when waypoint is not scripted
+	Returns "Custom"/CfgWaypoints root when waypoint is using custom script.
+
+|s1= [waypoint,type] call [[BIS_fnc_scriptedWaypointType]]
+
+|p1=waypoint: [[Array]] - waypoint in question
+
+|p2=type: [[String]] or [[Config]] - (Optional, default [[configFile]]) type of returned value, can by any string and any config
+
+|r1= [[String]] or [[Config]] - string in format ("category/class") or config in format (CfgWaypoints path)
+
+|x1= <sqf>[BIS_scripted_WP_01,"returnString"] call BIS_fnc_scriptedWaypointType;</sqf>
+
+|seealso= [[Waypoints]] [[Custom Waypoints]]
+}}

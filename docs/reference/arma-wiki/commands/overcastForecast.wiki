@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/overcastForecast
+// revision: 310793 (2022-05-07T20:21:53Z)
+// export sha1: nbxd4lv19rnw066jr5dea7lkpo3061n
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Environment
+
+|descr= Return the overcast forecast.
+
+|s1= '''overcastForecast'''
+
+|r1= [[Number]]
+
+|x1= <sqf>_forecast = overcastForecast;</sqf>
+
+|seealso= [[overcast]] [[rain]] [[fog]]
+}}

@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/terrainIntersectASL
+// revision: 377458 (2026-01-02T06:47:25Z)
+// export sha1: r7g4cynnrn7cjce9xplsp6dgz7jscbe
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math - Geometry | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Math - Geometry
+
+|descr= Checks for intersection of terrain between two ASL positions. Returns [[true]] if intersects with terrain.
+For AGL variant, see [[terrainIntersect]].
+
+|s1= [[terrainIntersectASL]] [start, end]
+
+|p1= start: [[Position#PositionASL|PositionASL]] - start position
+
+|p2= end: [[Position#PositionASL|PositionASL]] - end position
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_intersects = terrainIntersectASL [getPosASL player, getPosASL chopper];</sqf>
+
+|x2= <sqf>_intersects = terrainIntersectASL [eyePos player, eyePos enemy1];</sqf>
+
+|seealso= [[terrainIntersectAtASL]] [[lineIntersectsSurfaces]] [[intersect]] [[lineIntersects]] [[lineIntersectsWith]] [[terrainIntersect]] [[lineIntersectsObjs]] [[checkVisibility]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20120531104000
+|text= Please note the difference:
+* terrainIntersect
+* terrainIntersectASL
+* lineIntersect'''''s'''''
+* lineIntersect'''''s'''''With
+* lineIntersect'''''s'''''Objs
+* intersect
+}}
+
+{{Note
+|user= Rocket
+|timestamp= 20120601155500
+|text= This command is CPU intensive on the engine, be careful with its use.
+}}
+
+{{Note
+|user= bloodwyn1756
+|timestamp= 20190302202900
+|text= If one of the two positions is below sea level, the command always returns true.
+}}

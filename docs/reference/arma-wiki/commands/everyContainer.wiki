@@ -1,0 +1,51 @@
+// source: https://community.bistudio.com/wiki/everyContainer
+// revision: 378321 (2026-04-02T16:20:45Z)
+// export sha1: f8w0rv6izofeogb32j2yr0aoiiaxwrc
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 1.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.22
+
+|gr1= Vehicle Inventory
+
+|descr= Returns array of all containers (uniforms, vests, backpacks) stored in given crate or vehicle. Used for accessing containers content stored in ammo box or ground holder.
+
+|s1= [[everyContainer]] object
+
+|p1= object: [[Object]] - vehicle or ammo box
+
+|r1= [[Array]] of [[Array]]s with [class, container]
+* class: [[String]] - class name of the container
+* container: [[Object]] - container object
+
+|x1= <sqf>
+everyContainer cursorTarget;
+/*
+	returns e.g
+	[
+		["V_PlateCarrier1_rgr",2bc06b00# 163955: dummyweapon.p3d],
+		["U_B_CombatUniform_mcam",2bc07900# 163954: dummyweapon.p3d]
+	]
+*/
+</sqf>
+
+|seealso= [[everyBackpack]] [[uniformContainer]] [[vestContainer]] [[backpackContainer]]
+}}
+
+{{Note
+|user= Yuval
+|timestamp= 20170720120700
+|text= The returned array is in the following format:
+<sqf>
+[
+	[containerClassname1, containerObject1],
+	[containerClassname2, containerObject2],
+	// ...
+	[containerClassnameN, containerObjectN]
+]
+</sqf>
+Please do note that [[typeOf]] containerObjectN '''does not''' return containerClassnameN but rather the containerClass configured in config (usually "supplyN")
+}}

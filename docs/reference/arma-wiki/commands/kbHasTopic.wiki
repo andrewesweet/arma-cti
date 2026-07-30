@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/kbHasTopic
+// revision: 319151 (2022-05-13T09:23:15Z)
+// export sha1: 69qqhhtv3q1a4279xgbu1njm5gx55ch
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Conversations | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Conversations
+
+|arg= local
+
+|descr= Check if conversation topic was registered to given person. See [[Conversations]] for more details.
+
+|s1= person [[kbHasTopic]] topicName
+
+|p1= person: [[Object]]
+
+|p2= topicName: [[String]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_obiHasTopic = player kbHasTopic "helloThereGeneralK";</sqf>
+
+|x2= <sqf>if (player kbHasTopic "dontShoot") then { player kbRemoveTopic "dontShoot"; };</sqf>
+
+|seealso= [[Conversations]] [[kbAddTopic]] [[kbTell]] [[kbReact]] [[kbRemoveTopic]] [[kbAddDatabase]] [[kbAddDatabaseTargets]] [[FSM]] [[FSM Editor]]
+}}

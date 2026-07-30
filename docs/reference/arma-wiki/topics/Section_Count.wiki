@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/Section_Count
+// revision: 341389 (2023-05-25T14:02:20Z)
+// export sha1: nmzcd0vzqy3yi967s5a6cvtjqbzy187
+// Vendored snapshot. Do not edit — re-export instead.
+
+=Definition=
+A section is essentially a combination of material and texture, which contains one specific shader, with it is specific settings and maps.
+
+
+''Example:''
+''The model is a cube. If you apply a texturefile A.paa to all faces, your model will have one section.  
+''If you apply a material A.rvmat to all faces, you still only have one section. If you apply a texturefile B.paa and/or a material B.rvmat to the face on top of the cube, your model will have 2 sections. If you now apply just texturefile B.paa to the face on the bottom (means the rvmat is still A.rvmat), you will have 3 sections. What matters is not just the file name, but also the path, because the binarization process won't check the content of those paths for similarity.
+
+
+Ingame, in the entire scene that your GPU renders and that is displayed on your monitor, every model requires it is own sections, normally. This also applies to proxy models. In some situations the game engine can do instancing, that means it recognizes, that two objects are identical and in close proximity and will combine them into one draw call. Exact details when instancing happens is unknown, but generally objects in close proximity with same lighting condition are likely to be instanced and combined to a draw call.
+
+''Example:''
+''You have a chair with 2 sections and a house with 10 sections. You chose to make the chair as a separate .p3d to be able to easily use it multiple times inside a house model .''
+'' You place 4 chairs inside the house via proxies. Ingame, the scene of the house with the chairs will end up as 10+4*2= 18 sections if no instancing takes effect and 10+2= 12 sections if instancing works to full effect.  If you would not make the chair separate and instead put it directly into the house.p3d multiple times, the scene would have 10+2=12 sections under any condition - no matter the amount of chairs you put in there. However, the model file will be slightly larger.'
+
+It is unknown if instancing of the same objects works for identical proxies under different models. Example:  When you have two different houses (A and B), that both use the same chair as proxy.
+
+Sometimes copying and pasting from one p3d to another via Objectbuilder/Oxygen 2 can result in increased section count display even if the texture and rvmat match. Save the model and reopen it to see if it was a display bug. If that doesn't work, cut and paste all faces with the same texture and material of the affected LOD to a new LOD. Do that for each texture/material combination. Finally, delete the old LOD (or cut&paste it all back to the original LOD). If that still doesn't work, double check if the texture/material paths and also the z-bias setting is identical.
+
+Unfortunately Arma doesn't aggregate non-instanced objects automatically like some other engines do. Example: A settlement with houses, where many houses use a constellation of a table, a chair and a desk lamp frequently. In this case it is better to create such model groups yourself, where the meshes of the table, chair and lamp are merged into one p3d (no proxies) and the textures also merged into one. It is no longer as flexible, but from rendering performance it is better.
+
+= Impact of Sections =
+The amount of sections a model has is a big factor in how much CPU resources it takes to render it.
+
+For every section you have in your model, the GPU needs a separate instruction, also called "draw-call".  A draw-call, in lay mans terms, is an Instruction the CPU sends to the GPU to render something with a specific setting. 
+Each section requires a separate draw-call. That means, the CPU needs to send more instructions if your model has more sections. During that time the GPU has to wait. What is worse is, that one section requires not just one, but multiple draw-calls, because things such as lighting or shadow also require separate draw-calls per section. So the entire section might be multiplied by 3-6 or more in the end, depending on how complex the scene and lighting is.
+
+Modern GPU's can draw high amount's of polygons per draw call (actual numbers for current hardware are hard to come by), so if they constantly need to wait on the CPU, they can't bring their full power to bear. When there is a lot of other CPU intensive stuff going on (lots of AI, complex user-made scripts/missions, etc), the GPU gets even less instructions. Since instanced objects can "aggregated" into one drawcall, it is not a waste to create efficient low detail LOD's - as it means even more objects can be merged together. This is especially noteworthy for clutter objects (stones and vegetation), as it means more of them can be merged together into one draw-call.
+
+To highlight the impact of section count, a quote from modeller "P1nGa" about a test he did with a Performance Testscript created by JonBons on reddit:
+'' you can find some surprising results, like my Minimi Mk3 has almost 5k more verts, than the most common used M249 at the moment, but in almost all of the tests i get 5-10fps better,  essentially because the other one has like 13 sections, and mine as 4 ''. 
+That is 5-10 fps for just one weapon.
+
+= Take-Away =
+* Pay attention that you don't have excessive amounts of sections in your model. A hand weapon should not have more than 3 sections (not counting proxies for muzzleflash and attachements) for example, unless there is a very good reason not to.  
+* Especially try to reduce the section count for low-res LOD as far as possible. If you have many sections in low-res LOD think about aggregating the textures (combining them) into one lower res texture for exclusive use for the lower LODs.
+* Consider if it is worth using a proxy or not. If they use the same texture as the base object and are small it often isn't. Example: Tracked vehicle. It makes little sense to proxy the wheels, it would just increase section count by one and the wheels do not take much space in the UV sheet of the tank hull.
+*For Buildings or Objects with low specularity, it is best to use [[Multimaterial | Multimaterials]]. They make it possible to have just 1 section while using multiple textures. A Tutorial on how to use them can be found [[ Mondkalb's MultiMaterial Tutorial | here]]. Multimaterials do not allow fresnel reflections like the super shader does, which is why they generally are not used for vehicles and weapons.
+*If you have multiple smaller textures for a model (lower than 2048 resolution ) you should think at least about combining them to 2048 x 2048 or 2048 x 1024 textures (and adjust the UV's of your model accordingly). You can leave a part of the texture black if you dont need it, as this will take only very little space when compressed. Since TacOps Update it is also feasible to use 4096px textures without worrying about bad mipmap behaviour (which was the case before that), allowing even further reduction of the section count.
+* Remember that 1 section more or less on a single model (building or vehicle) won't ruin the performance. But like with polycount - all things add up. Many player use multiple mods. And if everyone does a sloppy job on optimizing section count it can have a very large impact. Another case are total conversions and large mod packages - if you encounter performance problems after you are finished with everything, trying to go back and fix it is a lot more time consuming and boring than paying attention to the issue during the creation process of every model.

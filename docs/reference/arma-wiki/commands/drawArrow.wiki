@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/drawArrow
+// revision: 377545 (2026-01-02T06:54:38Z)
+// export sha1: 6m8bck0uwlchh2eznpv5qmjqhy52cl4
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Map | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control - Map
+
+|descr= Draws a single line arrow on the map.
+As this command needs to be called every frame, it is preferable using the [[User Interface Event Handlers#onDraw|onDraw]] UI Event Handler.
+To draw a color filled arrow of custom shape see [[BIS_fnc_drawArrow]].
+
+|s1= map [[drawArrow]] [from, to, color]
+
+|p1= map: [[Control]]
+
+|p2= from: [[Object]] or [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - arrow start position
+
+|p3= to: [[Object]] or [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - arrow end position
+
+|p4= color: [[Array]] - arrow color in format [r,g,b,a]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+findDisplay 12 displayCtrl 51 ctrlAddEventHandler ["Draw", 
+{
+	_this select 0 drawArrow [
+		player,
+		player getRelPos [100, 0],
+		[1,0,0,1]
+	];
+}];
+</sqf>
+
+|seealso= [[drawEllipse]] [[drawIcon]] [[drawLine]] [[drawRectangle]] [[drawPolygon]] [[drawTriangle]] [[drawXPolygon]] [[BIS_fnc_drawArrow]]
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20150707212800
+|text= Be careful when using this command. Unlike map markers, the draw commands can decrease your framerate.
+}}

@@ -1,0 +1,57 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_param
+// revision: 349153 (2023-11-08T14:49:49Z)
+// export sha1: jzfxi903g8au2cjq6wotlpzwddijpdt
+// categories: Category:Arma 3: Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Arrays
+
+|descr= Load a script parameter. See [[Arma 3: Functions Library#Loading Parameters|Arma 3: Functions Library]] for detailed description.
+
+{{Feature|Arma3|Use [[param]] or [[params]] commands instead.}}
+
+|s1= [input, index, defaultValue, dataTypes, requiredCount] call [[BIS_fnc_param]]
+
+|p1= input: [[Array]] - list of params
+
+|p2= index: [[Number]] - selected index
+
+|p3= defaultValue: [[Anything]] - (Optional, default [[Nothing]]) default param (used when param is missing or of wrong type).<br>You can overload default value by declaring variable ''BIS_fnc_<functionName>_<index>'' in [[Namespace]] where BIS_fnc_param is called from.<br>[[BIS_fnc_paramIn]] is a variant of the function with overloading disabled.
+
+|p4= dataTypes: [[Array]] - (Optional, default [[Anything]]) list of allowed type examples (e.g. ["",[],0,[[objNull]]<nowiki>]</nowiki>)
+
+|p5= requiredCount: [[Number]] or [[Array]] - (Optional) if value is Array, checks if it has required number of elements
+
+|r1= [[Anything]]
+
+|x1= <sqf>_target = [_this, 0, objNull, [objNull,[]], [2,3]] call BIS_fnc_param;</sqf>
+* if (_this select 0) is not defined, default objnull is used.
+* if (_this select 0) is defined, but is neither of type [[Object]] nor [[Array]], error message is logged and default [[objNull]] is used.
+* if (_this select 0) and is [[Array]], but it is count is neither 2 nor 3, error message is logged and default [[objNull]] is used.
+
+|x2= <sqf>_answer = [_this, 1, 42] call BIS_fnc_param;</sqf>
+* if (_this select 1) is not defined, default 42 is used.
+* no limit for data types or number of elements exists.
+
+|seealso= [[BIS_fnc_paramIn]] [[param]] [[params]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140906215500
+|text= {{GVI|arma3|1.28}} Use [[BIS_fnc_paramIn]] to load private path from parent parameters (loaded by [[BIS_fnc_param]])
+<sqf>
+private ["_parent", "_child0", "_child1"];
+_parent = [_this, 0, [], [[]]] call BIS_fnc_param;
+_child0 = [_parent, 0, missionNamespace, [missionNamespace, grpNull, objNull]] call BIS_fnc_paramIn;
+_child1 = [_parent, 1, "", [""]] call BIS_fnc_paramIn;
+</sqf>
+}}

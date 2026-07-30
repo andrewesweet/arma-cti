@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/setWaypointLoiterRadius
+// revision: 319763 (2022-05-13T09:24:51Z)
+// export sha1: c3j40f0e87najrb3yq6r3ucx597s7n9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Waypoints
+
+|descr= Assignes loiter radius to waypoint
+
+|s1= waypoint [[setWaypointLoiterRadius]] radius
+
+|p1= waypoint: [[Waypoint]]
+|p2= radius: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[_grp, 2] setWaypointLoiterRadius 200;</sqf>
+
+|seealso= [[waypoints]] [[deleteWaypoint]] [[copyWaypoints]] [[setCurrentWaypoint]] [[setWaypointBehaviour]] [[setWaypointCombatMode]] [[setWaypointCompletionRadius]] [[setWaypointDescription]] [[setWaypointFormation]] [[setWaypointHousePosition]] [[setWaypointPosition]] [[setWaypointScript]] [[setWaypointSpeed]] [[setWaypointStatements]] [[setWaypointTimeout]] [[setWaypointType]] [[setWaypointVisible]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[waypointLoiterRadius]] [[addWaypoint]] [[setWaypointLoiterType]] [[currentWaypoint]] [[waypointSpeed]] [[setWPPos]]
+}}

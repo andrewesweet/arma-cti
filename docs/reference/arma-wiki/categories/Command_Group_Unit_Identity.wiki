@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Unit_Identity
+// revision: 160764 (2020-09-24T14:26:08Z)
+// export sha1: bnheoqnedn65htev56gzp72mkvcirwn
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands used to change a unit's identity such as rank, voice and name.
+
+[[Category:Scripting Commands by Functionality]]

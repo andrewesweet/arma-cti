@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/units
+// revision: 340313 (2023-04-29T17:06:31Z)
+// export sha1: rrt38qfc2xbd8i99z6gf0x4df3huq1v
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Command Group: Object Detection | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Groups
+
+|gr2= Object Detection
+
+|descr= Returns an array with all the units in the group or unit's group, or all units belonging to a certain side.
+
+|s1= [[units]] type
+
+|p1= type: [[Group]], [[Object]] or {{GVI|arma3|2.02|size= 0.75}} [[Side]]
+
+|r1= [[Array]] of [[Object]]s - if ''type'' is a destroyed object, an empty array is returned
+
+|x1= <sqf>_myUnitCount = count units player;</sqf>
+
+|x2= <sqf>_isInMyGroup = _soldier1 in units player;</sqf>
+
+|x3= <sqf>private _unitsEast = units opfor;</sqf>
+
+|x4= <sqf>
+// both methods are the same, the latter is preferred for performance reason
+units group player;		// [B Alpha 1-1:1 (R3vo), B Alpha 1-1:2, B Alpha 1-1:3, B Alpha 1-1:4, B Alpha 1-1:5, B Alpha 1-1:6, B Alpha 1-1:7, B Alpha 1-1:8]
+units player;			// [B Alpha 1-1:1 (R3vo), B Alpha 1-1:2, B Alpha 1-1:3, B Alpha 1-1:4, B Alpha 1-1:5, B Alpha 1-1:6, B Alpha 1-1:7, B Alpha 1-1:8]
+</sqf>
+
+|seealso= [[group]] [[allGroups]] [[groups]] [[allUnits]] [[playableUnits]] [[switchableUnits]] [[vehicles]]
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20090925010300
+|text= The returned array on MP clients is not updated when team members die (only when they are deleted). (''Tested on VBS2'')
+}}
+
+{{Note
+|user= Ilias38rus
+|timestamp= 20200703033600
+|text= Seems to always return a list with the same order as the leader's squad menu.
+}}

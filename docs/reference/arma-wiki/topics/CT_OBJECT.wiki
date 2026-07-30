@@ -1,0 +1,398 @@
+// source: https://community.bistudio.com/wiki/CT_OBJECT
+// revision: 373015 (2025-03-18T09:44:42Z)
+// export sha1: q0zs58ue05syfz0akj2ttqj3lee0ye9
+// categories: Category:Control Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Control Types]]
+
+{{CT|intro
+
+|macro = CT_OBJECT
+|value = 80
+|description = With this control type it is possible to integrate 3D objects into a dialog. For some more information you may want to look at this blog post by [[User:Killzone_Kid]]: http://killzonekid.com/arma-scripting-tutorials-gui-part-6/.
+{{Feature|important|The y and z values for the [[vectorDir]] ([[#direction|direction]] array) and [[vectorUp]] ([[#up|up]]) are switched. <br><br>The control position can be defined with either 'position' property, which is an array or separate 'x', 'y' and 'z' properties, which are floats. If both are used, the former overrides the latter.}}
+|gallery=File:Arma3 player profile.jpg{{!}}The head in the shown dialog is an object, though it is unknown how to set the actual face texture or additional objects.
+|commands =
+* [[:Category:Command_Group:_GUI_Control_-_Object|Commands: Object]]
+|events =
+* [[User_Interface_Event_Handlers#onObjectMoved|onObjectMoved]]
+}}
+
+{{CT|abc start}}
+=== B ===
+{{CT|attribute
+|name=boneHead
+|type1=String
+|value1="head"
+|description=
+}}
+
+{{CT|attribute
+|name=boneLEye
+|type1=String
+|value1="l_eye"
+|description=
+}}
+
+{{CT|attribute
+|name=boneLEyelidDown
+|type1=String
+|value1="eye_lwl"
+|description=
+}}
+
+{{CT|attribute
+|name=boneLEyelidUp
+|type1=String
+|value1="eye_upl"
+|description=
+}}
+
+{{CT|attribute
+|name=boneLPupil
+|type1=String
+|value1="l_pupila"
+|description=
+}}
+
+{{CT|attribute
+|name=boneREye
+|type1=String
+|value1="r_eye"
+|description=
+}}
+
+{{CT|attribute
+|name=boneREyelidDown
+|type1=String
+|value1="eye_lwr"
+|description=
+}}
+
+{{CT|attribute
+|name=boneREyelidUp
+|type1=String
+|value1="eye_upr"
+|description=
+}}
+
+{{CT|attribute
+|name=boneRPupil
+|type1=String
+|value1="r_pupila"
+|description=
+}}
+
+=== D ===
+{{CT|attribute
+|name=direction
+|type1=Array
+|value1={1,0,0}
+|description=Equivalent of [[vectorDir]] with switched y and z values.
+}}
+
+=== E ===
+{{CT|attribute
+|name=enableZoom
+|type1=Number
+|value1=1
+|description=Toggle the ability to double click on the object to zoom in or out.
+}}
+
+=== F ===
+{{CT|attribute
+|name=faceType
+|type1=String
+|value1="Man_A3"
+|description=
+}}
+
+=== I ===
+{{CT|attribute
+|name=inBack
+|type1=Number
+|value1=0
+|type2=String
+|value2="False"
+|description=Determines which set of coordinates to use.
+}}
+
+=== M ===
+{{CT|attribute
+|name=model
+|type1=String
+|value1="\A3\ui_f\objects\face_preview"
+|description=Path to the to be used p3d file.
+}}
+
+{{CT|attribute
+|name=modelWoman
+|type1=String
+|value1="\A3\ui_f\objects\face_preview"
+|description=
+}}
+
+{{CT|attribute
+|name=minGlobalLightIntensity
+|type1=Number
+|value1=0.25
+|description=
+}}
+
+
+=== P ===
+{{CT|attribute
+|name=position
+|type1=Array
+|value1={0,0,0.053}
+|description=Position of the object relative to [[Arma_3_GUI_Coordinates|[0,0]]] on the screen.
+}}
+
+=== S ===
+{{CT|attribute
+|name=scale
+|type1=Number
+|value1=0.35
+|description=Changes the size of the object.
+}}
+
+{{CT|attribute
+|name=selectionArrow
+|type1=String
+|value1=""
+|description=Compass object only.
+}}
+
+{{CT|attribute
+|name=selectionDate1
+|type1=String
+|value1=""
+|description=Watch object only.
+}}
+
+{{CT|attribute
+|name=selectionDate2
+|type1=String
+|value1=""
+|description=Watch object only.
+}}
+
+{{CT|attribute
+|name=selectionEyelid
+|type1=String
+|value1="eyelids"
+|description=
+}}
+
+{{CT|attribute
+|name=selectionGlasses
+|type1=String
+|value1="eyelids"
+|description=
+}}
+
+{{CT|attribute
+|name=selectionLBrow
+|type1=String
+|value1="lBrow"
+|description=
+}}
+
+{{CT|attribute
+|name=selectionLip
+|type1=String
+|value1="LLip"
+|description=
+}}
+
+{{CT|attribute
+|name=selectionLMouth
+|type1=String
+|value1="lMouth"
+|description=
+}}
+
+{{CT|attribute
+|name=selectionMBrow
+|type1=String
+|value1="mBrow"
+|description=
+}}
+
+{{CT|attribute
+|name=selectionMMouth
+|type1=String
+|value1="mMouth"
+|description=
+}}
+
+{{CT|attribute
+|name=selectionPersonality
+|type1=String
+|value1="personality"
+|description=
+}}
+
+{{CT|attribute
+|name=selectionRBrow
+|type1=String
+|value1="rBrow"
+|description=
+}}
+
+{{CT|attribute
+|name=selectionRMouth
+|type1=String
+|value1="rMouth"
+|description=
+}}
+
+=== U ===
+{{CT|attribute
+|name=up
+|type1=Array
+|value1={0,1,0}
+|description=Equivalent to [[vectorUp]] command where y and z values are swapped.
+}}
+
+{{CT|attribute
+|name=useGlobalLight
+|type1=Number
+|value1=0
+|description=Enables Global Illumination on the Object.
+}}
+
+
+=== W ===
+{{CT|attribute
+|name=waitForLoad
+|type1=Number
+|value1=0
+|description=
+}}
+
+=== X ===
+{{CT|attribute
+|name=xBack
+|type1=Number
+|value1=0.6
+|description=x [[Arma_3_GUI_Coordinates|coordinate]] of the object with <syntaxhighlight lang="cpp" inline>inBack = 1</syntaxhighlight>.
+}}
+
+=== Y ===
+{{CT|attribute
+|name=yBack
+|type1=Number
+|value1=0.5
+|description=< [[Arma_3_GUI_Coordinates|coordinate]] of the object with <syntaxhighlight lang="cpp" inline>inBack = 1</syntaxhighlight>.
+}}
+
+=== Z ===
+{{CT|attribute
+|name=z
+|type1=Number
+|value1=0.2
+|description=z [[Arma_3_GUI_Coordinates|coordinate]] of the object with <syntaxhighlight lang="cpp" inline>inBack = 0</syntaxhighlight>.
+}}
+
+{{CT|attribute
+|name=zBack
+|type1=Number
+|value1=0.1
+|description=z [[Arma_3_GUI_Coordinates|coordinate]] of the object with <syntaxhighlight lang="cpp" inline>inBack = 1</syntaxhighlight>.
+}}
+
+{{CT|attribute
+|name=zoomDuration
+|type1=Number
+|value1=1
+|description=How long the zooming animation takes.
+}}
+
+{{CT|abc end}}
+
+{{CT|examples}}
+=== RscObject ===
+<syntaxhighlight lang="cpp">
+class RscObject
+{
+	access = 0;
+	type = CT_OBJECT;
+	scale = 1;
+	direction[] = {0,0,1};
+	up[] = {0,1,0};
+	shadow = 0;
+};
+</syntaxhighlight>
+
+== Other examples ==
+<syntaxhighlight lang="cpp">
+class MyWatch
+{
+	idd = -1;
+	class objects
+	{
+		class Watch /* : RscObject */
+		{
+			access = 0;
+			shadow = 0;
+			idc = 101;
+			type = 80;
+			model = "\core\watch\watch.p3d";
+			selectionDate1 = "date1";
+			selectionDate2 = "date2";
+			selectionDay = "day";
+			x = 0.7;
+			xBack = 0.7;
+			y = 0.12;
+			yBack = 0.12;
+			z = 0.22;
+			zBack = 0.22;
+			inBack = 0;
+			enableZoom = 0;
+			direction[] = { 0, 0, 1 };
+			up[] = { 0, 1, 0 };
+			zoomDuration = 1;
+			scale = 0.7;
+			waitForLoad = 0;
+			class Animations
+			{
+				class WatchHour
+				{
+					type = "rotation";
+					source = "clockHour";
+					selection = "hodinova";
+					axis = "osa";
+					memory = 1;
+					animPeriod = 0;
+					angle0 = 0;
+					angle1 = "rad 360";
+				};
+				class WatchMinute
+				{
+					type = "rotation";
+					source = "clockMinute";
+					selection = "minutova";
+					axis = "osa";
+					memory = 1;
+					animPeriod = 0;
+					angle0 = 0;
+					angle1 = "rad 360";
+				};
+				class WatchSecond
+				{
+					type = "rotation";
+					source = "clockSecond";
+					selection = "vterinova";
+					axis = "osa";
+					memory = 1;
+					animPeriod = 0;
+					angle0 = 0;
+					angle1 = "rad 360";
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>

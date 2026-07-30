@@ -1,0 +1,210 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CBRN
+// revision: 369523 (2024-09-13T16:18:06Z)
+// export sha1: 6zpbtpib2fog190dp8pq41mmrrjtnjq
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 1.94
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{GVI|arma3|1.94}}
+
+There are no engine nor scripted features to simulate Chemical Biological Radiological Nuclear (CBRN) threats, contamination, or decontamination in {{GameCategory|arma3|link= y}}.
+However, the [[Arma 3 Contact]] expansion has added a range of gear and props to utilize in custom content as desired. This page documents a few scripted methods to set them up.
+
+
+== Hoses and Filters ==
+
+There are several pieces of CBRN gear (especially Facewear and Backpacks) that require scripting to visually combine correctly.
+These samples only set the initial state; they will not deal with inventory changes during gameplay.
+At the moment there is no vanilla module to handle this automatically. However, there's quick function to set the hoses and filters to an unit.
+
+<sqf>[unit] call BIN_fnc_CBRNHoseInit;</sqf>
+
+=== Combination Unit Respirator ===
+
+<sqf>
+// visibility of the common hose segment
+(backpackContainer this) setObjectTexture [1, "a3\supplies_f_enoch\bags\data\b_cur_01_co.paa"];		// show hose segment
+(backpackContainer this) setObjectTexture [1, ""];													// hide hose segment
+
+// visibility of a hose segment intended for the NATO APR (recommended combination)
+(backpackContainer this) setObjectTexture [2, "a3\supplies_f_enoch\bags\data\b_cur_01_co.paa"];		// show
+(backpackContainer this) setObjectTexture [2, ""];													// hide
+this linkItem "G_AirPurifyingRespirator_01_nofilter_F"; // replacing a NATO APR with filter for a version without filter
+
+// visibility of a hose segment intended for the Regulator Facepiece
+(backpackContainer this) setObjectTexture [3, "a3\supplies_f_enoch\bags\data\b_cur_01_co.paa"];		// show
+(backpackContainer this) setObjectTexture [3, ""];													// hide
+
+// showing an insignia on the CUR
+(backpackContainer this) setObjectTexture [4, "\A3\ui_f\data\logos\bi_white_ca.paa"];	 // replace the texture by any insignia texture path
+</sqf>
+
+=== Self-Contained Breathing Apparatus ===
+
+<sqf>
+// visibility of a hose segment intended for the Regulator Facepiece (recommended combination)
+(backpackContainer this) setObjectTexture [2, "a3\supplies_f_enoch\bags\data\b_scba_01_co.paa"];	// show hose segment
+(backpackContainer this) setObjectTexture [2, ""];													// hide hose segment
+
+// visibility of a hose segment intended for the NATO APR
+(backpackContainer this) setObjectTexture [1, "a3\supplies_f_enoch\bags\data\b_scba_01_co.paa"];	// show
+(backpackContainer this) setObjectTexture [1, ""];													// hide
+</sqf>
+
+=== Common Combinations ===
+
+{| class="wikitable"
+! Item(s)
+! Preview
+! Classes
+! Sample Code
+|-
+|
+* Combination Unit Respirator
+* APR [NATO]
+|
+<gallery>
+File:Contact CUR NATO APR.jpg|CUR with NATO APR attached
+</gallery>
+|
+ B_CombinationUnitRespirator_01_F
+ G_AirPurifyingRespirator_01_F
+|
+<sqf>
+(backpackContainer this) setObjectTexture [1, "a3\supplies_f_enoch\bags\data\b_cur_01_co.paa"];
+(backpackContainer this) setObjectTexture [2, "a3\supplies_f_enoch\bags\data\b_cur_01_co.paa"];
+this linkItem "G_AirPurifyingRespirator_01_nofilter_F";
+</sqf>
+|-
+|
+* Self-Contained Breathing Apparatus
+* Regulator Facepiece
+|
+<gallery>
+File:Contact SCBA Regulator Facepiece.jpg|SCBA with Regulator Facepiece attached
+</gallery>
+|
+ B_SCBA_01_F
+ G_RegulatorMask_F
+| <sqf>(backpackContainer this) setObjectTexture [2, "a3\supplies_f_enoch\bags\data\b_scba_01_co.paa"];</sqf>
+|}
+Other combinations are possible, but not all of them would be ideal in the real world:
+
+* CUR + Regulator Facepiece should work (though only the SCBA part contained within, not the PAPR).
+* SCBA + NATO APR should work, but is not intended.
+* NATO / CSAT APRs can of course be worn without any Backpack (filters attached).
+* The Regular Facepiece should not be worn without Backpack.
+* The CSAT APR does not need and was not designed to connect to the SCBA / CUR (As CSAT Combat Fatigue has already built-in "air-conditioning" units, and wearing both of Fatigue and APR is canonically CBRN-protected {{Link|https://forums.bohemia.net/forums/topic/223445-contact-expansion-asset-feedback/?tab{{=}}comments#comment-3358042|Source}}).
+
+
+== Facewear Overlays ==
+
+There are simply 2D IGUI overlays available for the various relevant Facewear items. You can show these by script:
+<sqf>
+"YourLayerName" cutRsc ["RscCBRN_APR", "PLAIN", -1, false];		// overlay on
+"YourLayerName" cutText ["", "PLAIN"];							// overlay off
+</sqf>
+{| class="wikitable"
+! Item(s)
+! Preview
+! Class(es)
+! Overlay Class
+|-
+|
+* APR [NATO]
+|
+<gallery>
+File:Contact NATO APR Black.jpg|APR [NATO]
+</gallery>
+|
+ G_AirPurifyingRespirator_01_F
+ G_AirPurifyingRespirator_01_nofilter_F (protected scope)
+|
+ "RscCBRN_APR"
+|-
+|
+* APR (Black) [CSAT]
+* APR (Olive) [CSAT]
+* APR (Sand) [CSAT]
+|
+<gallery>
+File:Contact CSAT APR Black.jpg|APR (Black) [CSAT]
+File:Contact CSAT APR Olive.jpg|APR (Olive) [CSAT]
+File:Contact CSAT APR Sand.jpg|APR (Sand) [CSAT]
+</gallery>
+|
+ G_AirPurifyingRespirator_02_black_F
+ G_AirPurifyingRespirator_02_olive_F
+ G_AirPurifyingRespirator_02_sand_F
+|
+ "RscCBRN_APR_02"
+|-
+|
+* Regulator Facepiece
+|
+<gallery>
+File:Contact Regulator Facepiece.jpg|Regulator Facepiece
+</gallery>
+|
+ G_RegulatorMask_F
+|
+ "RscCBRN_Regulator"
+|-
+|
+ Blindfold (Black)
+ Blindfold (White)
+|
+<gallery>
+File:Contact Blindfold Black.jpg|Blindfold (Black)
+File:Contact Blindfold White.jpg|Blindfold (White)
+</gallery>
+|
+ G_Blindfold_01_black_F
+ G_Blindfold_01_white_F
+|
+ "RscBlindfold"
+|}
+
+
+== Chemical Detector ==
+
+While ultimately not used in the Contact campaign, there is a Chemical Detector variant (uncovered - {{hl|ChemicalDetector_01_watch_F}}) that can occupy the watch inventory slot, and use scripted hooks to display a threat value and time.
+When in the player's watch slot, the "Show watch" key ({{Controls|O}} by default) can be used to show or toggle it on-screen.
+<gallery>
+File:Contact Chemical Detector.jpg|Chemical Detector
+File:Contact Chemical Detector IGUI.jpg|Chemical Detector IGUI
+</gallery>
+
+<sqf>
+"YourLayerName" cutRsc ["RscWeaponChemicalDetector", "PLAIN", 1, false];	// IGUI display on
+"YourLayerName" cutText ["", "PLAIN"];										// IGUI display off
+
+// fetching useful UI controls
+private _ui = uiNamespace getVariable "RscWeaponChemicalDetector";
+private _obj = _ui displayCtrl 101;
+
+_obj ctrlAnimateModel ["Threat_Level_Source", 0.5, true];					// display a threat level (value between 0.00 and 9.99)
+_obj ctrlShow false;														// hide the detector when desired
+</sqf>
+
+
+== Decon Showers ==
+
+The regular and large Decon Showers have 3DEN attributes to control their initial state:
+
+* ''Turn on sprinklers'': starting the VFX / SFX from the scenario start
+* ''Disable user action'': removing the player ability to toggle the sprinklers during gameplay
+
+Alternatively there are the following scripts:
+<sqf>
+[this, 1.5, 9] spawn BIN_fnc_deconShowerAnim;								// start the regular Decon Shower (use these values)
+[this, 5.4, 4, 2, true] spawn BIN_fnc_deconShowerAnimLarge;					// start the large Decon Shower (use these values)
+[this] call BIN_fnc_deconShowerAnimStop;									// stop either type of Decon Shower
+
+this setVariable ["BIN_deconshower_disableAction", true];					// disables the user actions on either type of Decon Shower
+private _state = _deconShower animationSourcePhase "valve_source";			// detecting whether either type of Decon Shower is on / off (1 / 0)
+</sqf>
+
+
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 1.94]]

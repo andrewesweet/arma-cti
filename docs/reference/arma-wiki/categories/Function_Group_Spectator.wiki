@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Spectator
+// revision: 164033 (2020-09-30T10:39:33Z)
+// export sha1: h02b5xn5zk5ywb09frzs0x6pfrf1fmh
+// Vendored snapshot. Do not edit — re-export instead.
+
+An overview of functions used by the [[EG Spectator Mode]].
+
+[[Category:Functions by Functionality]]

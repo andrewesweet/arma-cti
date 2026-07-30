@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/lnbText
+// revision: 330121 (2022-08-21T19:54:50Z)
+// export sha1: ak8tmmylw5ky1vgf1r7l2jiu4drk6wp
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control - ListNBox
+
+|descr= Returns the shown text in the item with the given position of the given 2D listbox.
+
+|s1= control [[lnbText]] [row, column]
+
+|p1= control: [[Control]]
+
+|p2= row: [[Number]]
+
+|p3= column: [[Number]]
+
+|r1= [[String]]
+
+|x1= <sqf>_text = _ctrl lnbText [0,0];</sqf>
+
+|seealso= [[lnbAddArray]] [[lnbAddColumn]] [[lnbAddRow]] [[lnbClear]] [[lnbColor]] [[lnbCurSelRow]] [[lnbData]] [[lnbDeleteColumn]] [[lnbDeleteRow]] [[lnbGetColumnsPosition]] [[lnbPicture]] [[lnbSetColor]] [[lnbSetColumnsPos]] [[lnbSetCurSelRow]] [[lnbSetData]] [[lnbSetPicture]] [[lnbSetText]] [[lnbSetValue]] [[lnbSize]] [[lnbValue]]
+}}

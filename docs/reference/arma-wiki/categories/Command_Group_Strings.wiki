@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Strings
+// revision: 159163 (2020-09-19T08:10:53Z)
+// export sha1: 6woky2wjs623kmfg82f0isy6je7oawl
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands which are used to work with strings.
+
+[[Category:Scripting Commands by Functionality]]

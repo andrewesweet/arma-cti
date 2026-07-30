@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/parentAttached
+// revision: 373968 (2025-07-08T11:10:06Z)
+// export sha1: 7ubcersedi40dbp6hlbbta8ainhvaze
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Development Branch | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+|branch= dev
+|arg=local
+
+|gr1= PhysX
+
+|descr= Get the parent of a [[attachChild]] attached child.
+
+|s1= [[parentAttached]] child
+
+|p1= child: [[Object]] -  Must be a Transport vehicle like Car/Tank (Maybe helicopter/airplane works?).
+
+|r1= [[Object]]
+
+|seealso= [[attachChild]] [[childAttached]]
+}}

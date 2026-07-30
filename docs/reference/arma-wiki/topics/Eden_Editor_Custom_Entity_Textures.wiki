@@ -1,0 +1,2393 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Custom_Entity_Textures
+// revision: 363151 (2024-03-24T16:00:10Z)
+// export sha1: iwyjikf9s43vevlyalajm58v99jc58f
+// categories: Category:Eden Editor: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+The following list shows all entities that allow for changing their textures through the [[Eden Editor]] custom textures attribute either by providing the path to a texture or by using a [[Procedural Textures]].
+Some more information can be found on [[Arma 3: Art of War Artwork Textures]].
+
+{| class="wikitable"
+|-
+! No. !! Display Name !! Class Name !! Preview !! Textures
+|-
+|1 || Area Marker || AreaMarker_01_F || [[File: arma3-areamarker_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_decade\objectives\data\confrontationarea_01_area_f_ca.paa || 1024x256
+|}
+
+|-
+|2 || Banner (AAF) || Banner_01_AAF_F || [[File: arma3-banner_01_aaf_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Data_f\Flags\flag_aaf_CO.paa || 512x256
+|}
+
+|-
+|3 || Banner (CSAT) || Banner_01_CSAT_F || [[File: arma3-banner_01_csat_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Data_f\Flags\flag_csat_CO.paa || 512x256
+|}
+
+|-
+|4 || Banner (LDF) || Banner_01_EAF_F || [[File: arma3-banner_01_eaf_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Data_F_Enoch\Flags\flag_EAF_CO.paa || 512x256
+|}
+
+|-
+|5 || Banner || Banner_01_F || [[File: arma3-banner_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\data_f\flags\flag_white_co.paa || 512x256
+|}
+
+|-
+|6 || Banner (FIA) || Banner_01_FIA_F || [[File: arma3-banner_01_fia_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Data_f\Flags\flag_fia_CO.paa || 512x256
+|}
+
+|-
+|7 || Banner (IDAP) || Banner_01_IDAP_F || [[File: arma3-banner_01_idap_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Data_F_Orange\Flags\flag_IDAP_CO.paa || 512x256
+|}
+
+|-
+|8 || Banner (NATO) || Banner_01_NATO_F || [[File: arma3-banner_01_nato_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Data_f\Flags\flag_nato_CO.paa || 512x256
+|}
+
+|-
+|9 || Blood Pool (Large, New) || BloodPool_01_Large_New_F || [[File: arma3-bloodpool_01_large_new_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodPool_Large_Fresh_CA.paa || 1024x1024
+|}
+
+|-
+|10 || Blood Pool (Large, Old) || BloodPool_01_Large_Old_F || [[File: arma3-bloodpool_01_large_old_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodPool_Large_Old_CA.paa || 1024x1024
+|}
+
+|-
+|11 || Blood Pool (Medium, New) || BloodPool_01_Medium_New_F || [[File: arma3-bloodpool_01_medium_new_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodPool_Medium_Fresh_CA.paa || 512x512
+|}
+
+|-
+|12 || Blood Pool (Medium, Old) || BloodPool_01_Medium_Old_F || [[File: arma3-bloodpool_01_medium_old_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodPool_Medium_Old_CA.paa || 512x512
+|}
+
+|-
+|13 || Blood Splatter (Large, New) || BloodSplatter_01_Large_New_F || [[File: arma3-bloodsplatter_01_large_new_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodSplatter_Large_Fresh_CA.paa || 1024x1024
+|}
+
+|-
+|14 || Blood Splatter (Large, Old) || BloodSplatter_01_Large_Old_F || [[File: arma3-bloodsplatter_01_large_old_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodSplatter_Large_Old_CA.paa || 1024x1024
+|}
+
+|-
+|15 || Blood Splatter (Medium, New) || BloodSplatter_01_Medium_New_F || [[File: arma3-bloodsplatter_01_medium_new_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodSplatter_Medium_Fresh_CA.paa || 512x512
+|}
+
+|-
+|16 || Blood Splatter (Medium, Old) || BloodSplatter_01_Medium_Old_F || [[File: arma3-bloodsplatter_01_medium_old_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodSplatter_Medium_Old_CA.paa || 512x512
+|}
+
+|-
+|17 || Blood Splatter (Small, New) || BloodSplatter_01_Small_New_F || [[File: arma3-bloodsplatter_01_small_new_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodSplatter_Small_Fresh_CA.paa || 256x256
+|}
+
+|-
+|18 || Blood Splatter (Small, Old) || BloodSplatter_01_Small_Old_F || [[File: arma3-bloodsplatter_01_small_old_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodSplatter_Small_Old_CA.paa || 256x256
+|}
+
+|-
+|19 || Blood Spray (New) || BloodSpray_01_New_F || [[File: arma3-bloodspray_01_new_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodSpray_Fresh_CA.paa || 512x512
+|}
+
+|-
+|20 || Blood Spray (Old) || BloodSpray_01_Old_F || [[File: arma3-bloodspray_01_old_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodSpray_Old_CA.paa || 512x512
+|}
+
+|-
+|21 || Blood Trail (New) || BloodTrail_01_New_F || [[File: arma3-bloodtrail_01_new_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodTrail_Fresh_CA.paa || 256x1024
+|}
+
+|-
+|22 || Blood Trail (Old) || BloodTrail_01_Old_F || [[File: arma3-bloodtrail_01_old_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Humanitarian\Garbage\data\BloodTrail_Old_CA.paa || 256x1024
+|}
+
+|-
+|23 || Canvas (Medium) || Canvas_01_F || [[File: arma3-canvas_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\canvas_rectangle_large_image_f_co.paa || 2048x1024
+|}
+
+|-
+|24 || Canvas (Medium, Landscape) || Canvas_01_Landscape_F || [[File: arma3-canvas_01_landscape_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\canvas_rectangle_large_image_f_co.paa || 2048x1024
+|}
+
+|-
+|25 || Canvas (Large) || Canvas_01_Large_F || [[File: arma3-canvas_01_large_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\canvas_rectangle_large_image_f_co.paa || 2048x1024
+|}
+
+|-
+|26 || Canvas (Small) || Canvas_01_Small_F || [[File: arma3-canvas_01_small_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\canvas_rectangle_large_image_f_co.paa || 2048x1024
+|}
+
+|-
+|27 || Canvas (Medium, Square) || Canvas_01_Square_F || [[File: arma3-canvas_01_square_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\canvas_rectangle_large_image_f_co.paa || 2048x1024
+|}
+
+|-
+|28 || Aftershave (Boxed) || EauDeCombat_01_box_F || [[File: arma3-eaudecombat_01_box_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_EPA\Items\Vessels\data\eaudecombat_01_box_co.paa || 1024x1024
+|}
+
+|-
+|29 || Flag (Marker) || FlagMarker_01_F || [[File: arma3-flagmarker_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.93,0.43,0.22,1.0,CO) || N/A
+|}
+
+|-
+|30 || Folded Flag (Altis) || FoldedFlag_01_Altis_F || [[File: arma3-foldedflag_01_altis_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Items\Decorative\Data\FoldedFlag_01_Altis_CO.paa || 1024x1024
+|}
+
+|-
+|31 || Folded Flag (Livonia) || FoldedFlag_01_Livonia_F || [[File: arma3-foldedflag_01_livonia_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Items\Decorative\Data\FoldedFlag_01_Livonia_CO.paa || 1024x1024
+|}
+
+|-
+|32 || Folded Flag (Horizon Islands) || FoldedFlag_01_Tanoa_F || [[File: arma3-foldedflag_01_tanoa_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Items\Decorative\Data\FoldedFlag_01_Tanoa_CO.paa || 1024x1024
+|}
+
+|-
+|33 || Folded Flag (UK) || FoldedFlag_01_UK_F || [[File: arma3-foldedflag_01_uk_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Items\Decorative\Data\FoldedFlag_01_UK_CO.paa || 1024x1024
+|}
+
+|-
+|34 || Folded Flag (US) || FoldedFlag_01_US_F || [[File: arma3-foldedflag_01_us_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Items\Decorative\Data\FoldedFlag_01_US_CO.paa || 1024x1024
+|}
+
+|-
+|35 || Diorama Base (Dirt) || GalleryDioramaBase_01_Dirt_F || [[File: arma3-gallerydioramabase_01_dirt_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Civilian\Gallery\data\Base_Dirt_co.paa || 2048x2048
+|}
+
+|-
+|36 || Diorama Base (Grass) || GalleryDioramaBase_01_Grass_F || [[File: arma3-gallerydioramabase_01_grass_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Civilian\Gallery\data\base_grass_co.paa || 2048x2048
+|}
+
+|-
+|37 || Diorama Base (Sand) || GalleryDioramaBase_01_Sand_F || [[File: arma3-gallerydioramabase_01_sand_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Civilian\Gallery\data\base_Sand_co.paa || 2048x2048
+|}
+
+|-
+|38 || Diorama Unit (Astra) || GalleryDioramaUnit_01_Astra_F || [[File: arma3-gallerydioramaunit_01_astra_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Civilian\Gallery\data\screen_co.paa || 1024x1024
+|-
+| Texture #1 || #(argb,8,8,3)color(0.4665,0.5215,0.8905,1.0,co) || N/A
+|-
+| Texture #2 || a3\Props_F_AoW\Civilian\Gallery\data\Diorama_Base_Unit_02_Astra_co.paa || 2048x2048
+|-
+| Texture #3 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_01_co.paa || 2048x2048
+|-
+| Texture #4 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_03_co.paa || 2048x2048
+|}
+
+|-
+|39 || Diorama Unit (Blank) || GalleryDioramaUnit_01_F || [[File: arma3-gallerydioramaunit_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Civilian\Gallery\data\screen_co.paa || 1024x1024
+|-
+| Texture #1 || #(argb,8,8,3)color(0.4665,0.5215,0.8905,1.0,co) || N/A
+|-
+| Texture #2 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_02_co.paa || 2048x2048
+|-
+| Texture #3 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_01_co.paa || 2048x2048
+|-
+| Texture #4 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_03_co.paa || 2048x2048
+|}
+
+|-
+|40 || Diorama Unit (IDAP) || GalleryDioramaUnit_01_IDAP_F || [[File: arma3-gallerydioramaunit_01_idap_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Civilian\Gallery\data\screen_co.paa || 1024x1024
+|-
+| Texture #1 || #(argb,8,8,3)color(0.4665,0.5215,0.8905,1.0,co) || N/A
+|-
+| Texture #2 || a3\Props_F_AoW\Civilian\Gallery\data\Diorama_Base_Unit_02_IDAP_co.paa || 2048x2048
+|-
+| Texture #3 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_01_co.paa || 2048x2048
+|-
+| Texture #4 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_03_co.paa || 2048x2048
+|}
+
+|-
+|41 || Diorama Unit (Macrotech) || GalleryDioramaUnit_01_Macrotech_F || [[File: arma3-gallerydioramaunit_01_macrotech_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Civilian\Gallery\data\screen_co.paa || 1024x1024
+|-
+| Texture #1 || #(argb,8,8,3)color(0.4665,0.5215,0.8905,1.0,co) || N/A
+|-
+| Texture #2 || a3\Props_F_AoW\Civilian\Gallery\data\Diorama_Base_Unit_02_Macrotech_co.paa || 2048x2048
+|-
+| Texture #3 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_01_co.paa || 2048x2048
+|-
+| Texture #4 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_03_co.paa || 2048x2048
+|}
+
+|-
+|42 || Diorama Unit (Opsis) || GalleryDioramaUnit_01_opsis_F || [[File: arma3-gallerydioramaunit_01_opsis_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Civilian\Gallery\data\screen_co.paa || 1024x1024
+|-
+| Texture #1 || #(argb,8,8,3)color(0.4665,0.5215,0.8905,1.0,co) || N/A
+|-
+| Texture #2 || a3\Props_F_AoW\Civilian\Gallery\data\Diorama_Base_Unit_02_Opsis_co.paa || 2048x2048
+|-
+| Texture #3 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_01_co.paa || 2048x2048
+|-
+| Texture #4 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_03_co.paa || 2048x2048
+|}
+
+|-
+|43 || Diorama Unit (Redstone) || GalleryDioramaUnit_01_Redstone_F || [[File: arma3-gallerydioramaunit_01_redstone_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Civilian\Gallery\data\screen_co.paa || 1024x1024
+|-
+| Texture #1 || #(argb,8,8,3)color(0.4665,0.5215,0.8905,1.0,co) || N/A
+|-
+| Texture #2 || a3\Props_F_AoW\Civilian\Gallery\data\Diorama_Base_Unit_02_Redstone_co.paa || 2048x2048
+|-
+| Texture #3 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_01_co.paa || 2048x2048
+|-
+| Texture #4 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_03_co.paa || 2048x2048
+|}
+
+|-
+|44 || Diorama Unit (Vrana) || GalleryDioramaUnit_01_Vrana_F || [[File: arma3-gallerydioramaunit_01_vrana_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_AoW\Civilian\Gallery\data\screen_co.paa || 1024x1024
+|-
+| Texture #1 || #(argb,8,8,3)color(0.4665,0.5215,0.8905,1.0,co) || N/A
+|-
+| Texture #2 || a3\Props_F_AoW\Civilian\Gallery\data\Diorama_Base_Unit_02_Vrana_co.paa || 2048x2048
+|-
+| Texture #3 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_01_co.paa || 2048x2048
+|-
+| Texture #4 || a3\Props_F_AoW\Civilian\Gallery\data\diorama_base_unit_03_co.paa || 2048x2048
+|}
+
+|-
+|45 || Gallery Frame (Large, Portrait) || GalleryFrame_01_large_portrait_F || [[File: arma3-galleryframe_01_large_portrait_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\galleryframe_01_large_portrait_picture_f_co.paa || 1024x1024
+|-
+| Texture #1 || a3\props_f_aow\civilian\gallery\data\galleryframe_01_large_portrait_f_co.paa || 2048x1024
+|-
+| Texture #2 || a3\props_f_aow\civilian\gallery\data\galleryframe_01_large_portrait_f_co.paa || 2048x1024
+|}
+
+|-
+|46 || Gallery Frame (Large, v1) || GalleryFrame_01_large_v1_F || [[File: arma3-galleryframe_01_large_v1_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\galleryframe_01_picture_co.paa || 1024x1024
+|-
+| Texture #1 || a3\props_f_aow\civilian\gallery\data\galleryframe_01_large_f_co.paa || 2048x1024
+|-
+| Texture #2 || a3\props_f_aow\civilian\gallery\data\galleryframe_01_large_f_co.paa || 2048x1024
+|}
+
+|-
+|47 || Gallery Frame (Large, v2) || GalleryFrame_01_large_v2_F || [[File: arma3-galleryframe_01_large_v2_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\galleryframe_02_picture_co.paa || 1024x1024
+|-
+| Texture #1 || a3\props_f_aow\civilian\gallery\data\galleryframe_02_large_f_co.paa || 2048x1024
+|-
+| Texture #2 || a3\props_f_aow\civilian\gallery\data\galleryframe_02_large_f_co.paa || 2048x1024
+|}
+
+|-
+|48 || Gallery Frame (Large, v3) || GalleryFrame_01_large_v3_F || [[File: arma3-galleryframe_01_large_v3_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\galleryframe_03_picture_co.paa || 1024x1024
+|-
+| Texture #1 || a3\props_f_aow\civilian\gallery\data\galleryframe_03_large_f_co.paa || 2048x1024
+|-
+| Texture #2 || a3\props_f_aow\civilian\gallery\data\galleryframe_03_large_f_co.paa || 2048x1024
+|}
+
+|-
+|49 || Gallery Frame (Medium) || GalleryFrame_02_F || [[File: arma3-galleryframe_02_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\galleryFrame_02_rectangle_picture_alt_co.paa || 2048x1024
+|-
+| Texture #1 || a3\props_f_aow\civilian\gallery\data\galleryframe_02_large_rectangle_f_co.paa || 2048x2048
+|-
+| Texture #2 || a3\props_f_aow\civilian\gallery\data\galleryframe_02_large_rectangle_f_co.paa || 2048x2048
+|}
+
+|-
+|50 || Gallery Frame (Large, Rectangle) || GalleryFrame_02_large_rectangle_F || [[File: arma3-galleryframe_02_large_rectangle_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\galleryframe_02_rectangle_picture_co.paa || 2048x1024
+|-
+| Texture #1 || a3\props_f_aow\civilian\gallery\data\galleryframe_02_large_rectangle_f_co.paa || 2048x2048
+|-
+| Texture #2 || a3\props_f_aow\civilian\gallery\data\galleryframe_02_large_rectangle_f_co.paa || 2048x2048
+|}
+
+|-
+|51 || Gallery Frame (Medium, Square) || GalleryFrame_02_square_F || [[File: arma3-galleryframe_02_square_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\galleryframe_02_square_picture_co.paa || 2048x2048
+|-
+| Texture #1 || a3\props_f_aow\civilian\gallery\data\galleryframe_02_square_f_co.paa || 2048x2048
+|-
+| Texture #2 || a3\props_f_aow\civilian\gallery\data\galleryframe_02_square_f_co.paa || 2048x2048
+|}
+
+|-
+|52 || Gallery Label || GalleryLabel_01_F || [[File: arma3-gallerylabel_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\civilian\gallery\data\gallery_label_01_f_co.paa || 1024x1024
+|}
+
+|-
+|53 || Photo || Intel_Photos_F || [[File: arma3-intel_photos_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \a3\structures_f\items\documents\data\photos_camo_co.paa || 512x256
+|}
+
+|-
+|54 || Balloon (Air) || Land_Balloon_01_air_F || [[File: arma3-land_balloon_01_air_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.941,0.510,0.192,1,co) || N/A
+|}
+
+|-
+|55 || Balloon (Water) || Land_Balloon_01_water_F || [[File: arma3-land_balloon_01_water_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.941,0.510,0.192,1,co) || N/A
+|}
+
+|-
+|56 || Billboard 1 (Blank) || Land_Billboard_F || [[File: arma3-land_billboard_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F\Civ\InfoBoards\Data\Billboard_metal_CO.paa || 256x256
+|}
+
+|-
+|57 || Briefing Room Desk || Land_BriefingRoomDesk_01_F || [[File: arma3-land_briefingroomdesk_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Boat_F_Destroyer\Destroyer_01\Data\Destroyer_01_Screen_01_co.paa || 2048x2048
+|}
+
+|-
+|58 || Briefing Room Screen || Land_BriefingRoomScreen_01_F || [[File: arma3-land_briefingroomscreen_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Boat_F_Destroyer\Destroyer_01\Data\Destroyer_01_Screen_01_co.paa || 2048x2048
+|}
+
+|-
+|59 || File (Documents) || Land_File1_F || [[File: arma3-land_file1_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.835294,0,0,0.0,ca) || N/A
+|}
+
+|-
+|60 || File (Research) || Land_File2_F || [[File: arma3-land_file2_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.835294,0,0,0.0,ca) || N/A
+|}
+
+|-
+|61 || File (Top Secret) || Land_File_research_F || [[File: arma3-land_file_research_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F_EPC\Items\Documents\Data\Files_secret_CA.paa || 512x256
+|}
+
+|-
+|62 || Flat TV || Land_FlatTV_01_F || [[File: arma3-land_flattv_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,0,0,co) || N/A
+|}
+
+|-
+|63 || Infostand (1 leg) || Land_InfoStand_V1_F || [[File: arma3-land_infostand_v1_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 ||  || N/A
+|-
+| Texture #1 || A3\Structures_F\Civ\InfoBoards\Data\InfoStands_CA.paa || 256x256
+|}
+
+|-
+|64 || Infostand (2 legs) || Land_InfoStand_V2_F || [[File: arma3-land_infostand_v2_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 ||  || N/A
+|-
+| Texture #1 || A3\Structures_F\Civ\InfoBoards\Data\InfoStands_CA.paa || 256x256
+|}
+
+|-
+|65 || Old Laptop (Closed) || Land_Laptop_02_F || [[File: arma3-land_laptop_02_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Props_F_Argo\Items\Electronics\data\laptop_02_screen_co.paa || 1024x512
+|}
+
+|-
+|66 || Old Laptop (Open) || Land_Laptop_02_unfolded_F || [[File: arma3-land_laptop_02_unfolded_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Props_F_Argo\Items\Electronics\data\laptop_02_screen_co.paa || 1024x512
+|}
+
+|-
+|67 || Laptop (Device readings) || Land_Laptop_device_F || [[File: arma3-land_laptop_device_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F_EPC\Items\Electronics\Data\Electronics_screens_laptop_device_CO.paa || 1024x512
+|}
+
+|-
+|68 || Laptop (Open, Intel v1) || Land_Laptop_Intel_01_F || [[File: arma3-land_laptop_intel_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Missions_F_Oldman\Data\img\Screens\CSATNtb_co.paa || 1024x512
+|}
+
+|-
+|69 || Laptop (Open, Intel v2) || Land_Laptop_Intel_02_F || [[File: arma3-land_laptop_intel_02_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Missions_F_Oldman\Data\img\Screens\CSATNtb_co.paa || 1024x512
+|}
+
+|-
+|70 || Laptop (Open, Intel v3) || Land_Laptop_Intel_Oldman_F || [[File: arma3-land_laptop_intel_oldman_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Missions_F_Oldman\Data\img\Screens\CSATNtb_co.paa || 1024x512
+|}
+
+|-
+|71 || Laptop (Open) || Land_Laptop_unfolded_F || [[File: arma3-land_laptop_unfolded_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F\Items\Electronics\Data\Electronics_screens_laptop_CO.paa || 1024x512
+|}
+
+|-
+|72 || Sleeved Map (Altis) || Land_Map_unfolded_Altis_F || [[File: arma3-land_map_unfolded_altis_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Props_F_Argo\Items\Documents\Data\Map_unfolded_altis_CO.paa || 512x512
+|}
+
+|-
+|73 || Sleeved Map (Livonia) || Land_Map_unfolded_Enoch_F || [[File: arma3-land_map_unfolded_enoch_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Props_F_Enoch\Items\Documents\Data\Map_unfolded_Enoch_CO.paa || 512x512
+|}
+
+|-
+|74 || Sleeved map (Stratis) || Land_Map_unfolded_F || [[File: arma3-land_map_unfolded_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F\Items\Documents\Data\map_stratis_CO.paa || 512x512
+|}
+
+|-
+|75 || Sleeved Map (Malden) || Land_Map_unfolded_Malden_F || [[File: arma3-land_map_unfolded_malden_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Props_F_Argo\Items\Documents\Data\Map_unfolded_malden_CO.paa || 512x512
+|}
+
+|-
+|76 || Sleeved Map (Tanoa) || Land_Map_unfolded_Tanoa_F || [[File: arma3-land_map_unfolded_tanoa_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Props_F_Argo\Items\Documents\Data\Map_unfolded_tanoa_CO.paa || 512x512
+|}
+
+|-
+|77 || Whiteboard (Map of Altis, Wall) || Land_MapBoard_01_Wall_Altis_F || [[File: arma3-land_mapboard_01_wall_altis_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F\Civ\InfoBoards\Data\MapBoard_Altis_CO.paa || 2048x2048
+|}
+
+|-
+|78 || Whiteboard (Map of Livonia, Wall) || Land_MapBoard_01_Wall_Enoch_F || [[File: arma3-land_mapboard_01_wall_enoch_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \a3\Props_F_Enoch\Civilian\InfoBoards\data\MapBoard_Enoch_CO.paa || 2048x2048
+|}
+
+|-
+|79 || Whiteboard (Empty, Wall) || Land_MapBoard_01_Wall_F || [[File: arma3-land_mapboard_01_wall_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\structures_f\civ\infoboards\data\mapboard_default_co.paa || 2048x2048
+|}
+
+|-
+|80 || Whiteboard (Map of Malden, Wall) || Land_MapBoard_01_Wall_Malden_F || [[File: arma3-land_mapboard_01_wall_malden_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Props_F_Argo\Civilian\InfoBoards\Data\MapBoard_Malden_CO.paa || 2048x2048
+|}
+
+|-
+|81 || Whiteboard (Map of Stratis, Wall) || Land_MapBoard_01_Wall_Stratis_F || [[File: arma3-land_mapboard_01_wall_stratis_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F\Civ\InfoBoards\Data\MapBoard_Stratis_CO.paa || 2048x2048
+|}
+
+|-
+|82 || Whiteboard (Map of Tanoa, Wall) || Land_MapBoard_01_Wall_Tanoa_F || [[File: arma3-land_mapboard_01_wall_tanoa_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Props_F_Argo\Civilian\InfoBoards\Data\MapBoard_Tanoa_CO.paa || 2048x2048
+|}
+
+|-
+|83 || Whiteboard (Map of Livonia) || Land_MapBoard_Enoch_F || [[File: arma3-land_mapboard_enoch_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \a3\Props_F_Enoch\Civilian\InfoBoards\data\MapBoard_Enoch_CO.paa || 2048x2048
+|}
+
+|-
+|84 || Whiteboard (Empty) || Land_MapBoard_F || [[File: arma3-land_mapboard_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F\Civ\InfoBoards\Data\MapBoard_Default_CO.paa || 2048x2048
+|}
+
+|-
+|85 || Mobile Phone (Old) || Land_MobilePhone_old_F || [[File: arma3-land_mobilephone_old_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F\Items\Electronics\Data\Electronics_screens_mobilePhone_old_CO.paa || 256x256
+|}
+
+|-
+|86 || Mobile Phone (New) || Land_MobilePhone_smart_F || [[File: arma3-land_mobilephone_smart_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F\Items\Electronics\Data\Electronics_screens_mobilePhone_smart_CO.paa || 256x512
+|}
+
+|-
+|87 || Notepad || Land_Notepad_F || [[File: arma3-land_notepad_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.835294,0,0,0.0,ca) || N/A
+|}
+
+|-
+|88 || Noticeboard || Land_Noticeboard_F || [[File: arma3-land_noticeboard_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F\Civ\InfoBoards\Data\Noticeboard_CA.paa || 256x256
+|}
+
+|-
+|89 || PC Set (Screen) || Land_PCSet_01_screen_F || [[File: arma3-land_pcset_01_screen_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,0,0,co) || N/A
+|}
+
+|-
+|90 || PC Set (Screen, Intel v1) || Land_PCSet_Intel_01_F || [[File: arma3-land_pcset_intel_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Missions_F_Oldman\Data\img\Screens\CSATNtbDesktop_co.paa || 1024x1024
+|}
+
+|-
+|91 || PC Set (Screen, Intel v2) || Land_PCSet_Intel_02_F || [[File: arma3-land_pcset_intel_02_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Missions_F_Oldman\Data\img\Screens\CSATNtbDesktop_co.paa || 1024x1024
+|}
+
+|-
+|92 || Photoframe (broken) || Land_Photoframe_01_broken_F || [[File: arma3-land_photoframe_01_broken_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Items\Decorative\Data\photos_camo_co.paa || 512x512
+|-
+| Texture #1 || a3\props_f_orange\items\decorative\data\photoframe_01_f_co.paa || 1024x1024
+|}
+
+|-
+|93 || Photoframe || Land_Photoframe_01_F || [[File: arma3-land_photoframe_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Items\Decorative\Data\photos_camo_co.paa || 512x512
+|-
+| Texture #1 || a3\props_f_orange\items\decorative\data\photoframe_01_f_co.paa || 1024x1024
+|}
+
+|-
+|94 || Photo Frame (Portrait) || Land_Photoframe_02_F || [[File: arma3-land_photoframe_02_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\items\decorative\data\photoframe_02_us_co.paa || 1024x1024
+|-
+| Texture #1 || a3\props_f_aow\items\decorative\data\photoframe_02_f_co.paa || 1024x1024
+|}
+
+|-
+|95 || Photo Frame (Portrait, Standing) || Land_Photoframe_02_standing_F || [[File: arma3-land_photoframe_02_standing_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_aow\items\decorative\data\photoframe_02_aaf_co.paa || 1024x1024
+|-
+| Texture #1 || a3\props_f_aow\items\decorative\data\photoframe_02_f_co.paa || 1024x1024
+|}
+
+|-
+|96 || Photos 1 || Land_Photos_V1_F || [[File: arma3-land_photos_v1_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \a3\structures_f\items\documents\data\photos_camo_co.paa || 512x256
+|}
+
+|-
+|97 || Photos 2 || Land_Photos_V2_F || [[File: arma3-land_photos_v2_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \a3\structures_f\items\documents\data\photos_camo_co.paa || 512x256
+|}
+
+|-
+|98 || Photos 3 || Land_Photos_V3_F || [[File: arma3-land_photos_v3_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \a3\structures_f\items\documents\data\photos_camo_co.paa || 512x256
+|}
+
+|-
+|99 || Photos 4 || Land_Photos_V4_F || [[File: arma3-land_photos_v4_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \a3\structures_f\items\documents\data\photos_camo_co.paa || 512x256
+|}
+
+|-
+|100 || Photos 5 || Land_Photos_V5_F || [[File: arma3-land_photos_v5_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \a3\structures_f\items\documents\data\photos_camo_co.paa || 512x256
+|}
+
+|-
+|101 || Photos 6 || Land_Photos_V6_F || [[File: arma3-land_photos_v6_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \a3\structures_f\items\documents\data\photos_camo_co.paa || 512x256
+|}
+
+|-
+|102 || Sign (Mines) || Land_Sign_Mines_F || [[File: arma3-land_sign_mines_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\signs_f\signm\data\signm_mines_co.paa || 256x256
+|}
+
+|-
+|103 || Sign (Mines Danger, International) || Land_Sign_MinesDanger_English_F || [[File: arma3-land_sign_minesdanger_english_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_Orange\Signs\Mines\Data\SignMinesDanger_English_CO.paa || 1024x512
+|}
+
+|-
+|104 || Sign (Mines Danger, Altis) || Land_Sign_MinesDanger_Greek_F || [[File: arma3-land_sign_minesdanger_greek_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_Orange\Signs\Mines\Data\SignMinesDanger_Greek_CO.paa || 1024x512
+|}
+
+|-
+|105 || Sign (Mines, Tall, International) || Land_Sign_MinesTall_English_F || [[File: arma3-land_sign_minestall_english_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_Orange\Signs\Mines\Data\SignMines_English_CO.paa || 256x256
+|}
+
+|-
+|106 || Sign (Mines, Tall) || Land_Sign_MinesTall_F || [[File: arma3-land_sign_minestall_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\signs_f\signm\data\signm_mines_co.paa || 256x256
+|}
+
+|-
+|107 || Sign (Mines, Tall, Altis) || Land_Sign_MinesTall_Greek_F || [[File: arma3-land_sign_minestall_greek_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_Orange\Signs\Mines\Data\SignMines_Greek_CO.paa || 256x256
+|}
+
+|-
+|108 || Sign (Military Area, Small, Greek & English) || Land_Sign_WarningMilAreaSmall_F || [[File: arma3-land_sign_warningmilareasmall_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\signs_f\signm\data\SignM_NoEntry_CO.paa || 512x256
+|}
+
+|-
+|109 || Sign (Military Area, Greek & English) || Land_Sign_WarningMilitaryArea_F || [[File: arma3-land_sign_warningmilitaryarea_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\signs_f\signm\data\signm_warningmilitaryarea_co.paa || 1024x512
+|}
+
+|-
+|110 || Sign (Military Vehicles, Greek & English) || Land_Sign_WarningMilitaryVehicles_F || [[File: arma3-land_sign_warningmilitaryvehicles_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\signs_f\signm\data\SignM_WarningMilitaryVehicles_CO.paa || 512x256
+|}
+
+|-
+|111 || Sign (No Weapons, International) || Land_Sign_WarningNoWeapon_F || [[File: arma3-land_sign_warningnoweapon_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_Orange\Signs\Mines\Data\SignM_WarningNoWeapon_CO.paa || 1024x512
+|}
+
+|-
+|112 || Sign (No Weapons, Altis) || Land_Sign_WarningNoWeaponAltis_F || [[File: arma3-land_sign_warningnoweaponaltis_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_Orange\Signs\Mines\Data\SignM_WarningNoWeaponAltis_CO.paa || 1024x512
+|}
+
+|-
+|113 || Sign (No Weapons, Tanoa) || Land_Sign_WarningNoWeaponTanoa_F || [[File: arma3-land_sign_warningnoweapontanoa_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_Orange\Signs\Mines\Data\SignM_WarningNoWeaponTanoa_CO.paa || 1024x512
+|}
+
+|-
+|114 || Sign (Risk Area) || Land_Sign_WarningUnexplodedAmmo_F || [[File: arma3-land_sign_warningunexplodedammo_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\signs_f\signm\data\SignM_WarningUnexplodedAmmo_CO.paa || 512x1024
+|}
+
+|-
+|115 || Tablet || Land_Tablet_01_F || [[File: arma3-land_tablet_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F_Heli\Items\Electronics\Data\Tablet_Screen_CO.paa || 2048x2048
+|}
+
+|-
+|116 || Rugged Tablet (Black) || Land_Tablet_02_black_F || [[File: arma3-land_tablet_02_black_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F_Heli\Items\Electronics\Data\Tablet_Screen_CO.paa || 2048x2048
+|-
+| Texture #1 || a3\Props_F_Enoch\Military\Camps\data\RuggedTablet_black_CO.paa || 1024x1024
+|}
+
+|-
+|117 || Rugged Tablet || Land_Tablet_02_F || [[File: arma3-land_tablet_02_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F_Heli\Items\Electronics\Data\Tablet_Screen_CO.paa || 2048x2048
+|-
+| Texture #1 || a3\props_f_exp_a\military\equipment\data\ruggedtablet_co.paa || 1024x1024
+|}
+
+|-
+|118 || Rugged Tablet (Sand) || Land_Tablet_02_sand_F || [[File: arma3-land_tablet_02_sand_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F_Heli\Items\Electronics\Data\Tablet_Screen_CO.paa || 2048x2048
+|-
+| Texture #1 || a3\Props_F_Enoch\Military\Camps\data\RuggedTablet_Sand_CO.paa || 1024x1024
+|}
+
+|-
+|119 || Target - Oval (Ground) || Land_Target_Oval_F || [[File: arma3-land_target_oval_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,0,0,CA) || N/A
+|}
+
+|-
+|120 || Target - Oval (Wall, Bottom) || Land_Target_Oval_Wall_Bottom_F || [[File: arma3-land_target_oval_wall_bottom_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,0,0,CA) || N/A
+|}
+
+|-
+|121 || Target - Oval (Wall, Left) || Land_Target_Oval_Wall_Left_F || [[File: arma3-land_target_oval_wall_left_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,0,0,CA) || N/A
+|}
+
+|-
+|122 || Target - Oval (Wall, Right) || Land_Target_Oval_Wall_Right_F || [[File: arma3-land_target_oval_wall_right_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,0,0,CA) || N/A
+|}
+
+|-
+|123 || Target - Oval (Wall, Top) || Land_Target_Oval_Wall_Top_F || [[File: arma3-land_target_oval_wall_top_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,0,0,CA) || N/A
+|}
+
+|-
+|124 || Rugged Dual Screen (Black, Horizontal) || Land_TripodScreen_01_dual_v1_black_F || [[File: arma3-land_tripodscreen_01_dual_v1_black_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 ||  || N/A
+|-
+| Texture #1 ||  || N/A
+|-
+| Texture #2 || a3\Props_F_Enoch\Military\Camps\data\TripodScreen_01_black_CO.paa || 2048x2048
+|}
+
+|-
+|125 || Rugged Dual Screen (Horizontal) || Land_TripodScreen_01_dual_v1_F || [[File: arma3-land_tripodscreen_01_dual_v1_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #2 || a3\props_f_exp\military\camps\data\tripodscreen_01_co.paa || 2048x2048
+|}
+
+|-
+|126 || Rugged Dual Screen (Sand, Horizontal) || Land_TripodScreen_01_dual_v1_sand_F || [[File: arma3-land_tripodscreen_01_dual_v1_sand_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 ||  || N/A
+|-
+| Texture #1 ||  || N/A
+|-
+| Texture #2 || a3\Props_F_Enoch\Military\Camps\data\TripodScreen_01_sand_CO.paa || 2048x2048
+|}
+
+|-
+|127 || Rugged Dual Screen (Black, Vertical) || Land_TripodScreen_01_dual_v2_black_F || [[File: arma3-land_tripodscreen_01_dual_v2_black_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 ||  || N/A
+|-
+| Texture #1 ||  || N/A
+|-
+| Texture #2 || a3\Props_F_Enoch\Military\Camps\data\TripodScreen_01_black_CO.paa || 2048x2048
+|}
+
+|-
+|128 || Rugged Dual Screen (Vertical) || Land_TripodScreen_01_dual_v2_F || [[File: arma3-land_tripodscreen_01_dual_v2_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #2 || a3\props_f_exp\military\camps\data\tripodscreen_01_co.paa || 2048x2048
+|}
+
+|-
+|129 || Rugged Dual Screen (Sand, Vertical) || Land_TripodScreen_01_dual_v2_sand_F || [[File: arma3-land_tripodscreen_01_dual_v2_sand_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 ||  || N/A
+|-
+| Texture #1 ||  || N/A
+|-
+| Texture #2 || a3\Props_F_Enoch\Military\Camps\data\TripodScreen_01_sand_CO.paa || 2048x2048
+|}
+
+|-
+|130 || Rugged Large Screen (Black) || Land_TripodScreen_01_large_black_F || [[File: arma3-land_tripodscreen_01_large_black_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 ||  || N/A
+|-
+| Texture #1 ||  || N/A
+|-
+| Texture #2 ||  || N/A
+|-
+| Texture #3 ||  || N/A
+|-
+| Texture #4 ||  || N/A
+|-
+| Texture #5 ||  || N/A
+|-
+| Texture #6 ||  || N/A
+|-
+| Texture #7 ||  || N/A
+|-
+| Texture #8 ||  || N/A
+|-
+| Texture #9 ||  || N/A
+|-
+| Texture #10 || a3\Props_F_Enoch\Military\Camps\data\TripodScreen_01_black_CO.paa || 2048x2048
+|}
+
+|-
+|131 || Rugged Large Screen || Land_TripodScreen_01_large_F || [[File: arma3-land_tripodscreen_01_large_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #2 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #3 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #4 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #5 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #6 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #7 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #8 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #9 || #(argb,8,8,3)color(0,0,0,0.0,co) || N/A
+|-
+| Texture #10 || a3\props_f_exp\military\camps\data\tripodscreen_01_co.paa || 2048x2048
+|}
+
+|-
+|132 || Rugged Large Screen (Sand) || Land_TripodScreen_01_large_sand_F || [[File: arma3-land_tripodscreen_01_large_sand_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 ||  || N/A
+|-
+| Texture #1 ||  || N/A
+|-
+| Texture #2 ||  || N/A
+|-
+| Texture #3 ||  || N/A
+|-
+| Texture #4 ||  || N/A
+|-
+| Texture #5 ||  || N/A
+|-
+| Texture #6 ||  || N/A
+|-
+| Texture #7 ||  || N/A
+|-
+| Texture #8 ||  || N/A
+|-
+| Texture #9 ||  || N/A
+|-
+| Texture #10 || a3\Props_F_Enoch\Military\Camps\data\TripodScreen_01_sand_CO.paa || 2048x2048
+|}
+
+|-
+|133 || VR Obstacle (20x10x8) || Land_VR_Block_01_F || [[File: arma3-land_vr_block_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.75,0.75,0.75,1.0,CO) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(1.0,1.0,1.0,1.0,CO) || N/A
+|}
+
+|-
+|134 || VR Obstacle (12x12x4) || Land_VR_Block_02_F || [[File: arma3-land_vr_block_02_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.75,0.75,0.75,1.0,CO) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(1.0,1.0,1.0,1.0,CO) || N/A
+|}
+
+|-
+|135 || VR Obstacle (12x7.5x6) || Land_VR_Block_03_F || [[File: arma3-land_vr_block_03_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.75,0.75,0.75,1.0,CO) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(1.0,1.0,1.0,1.0,CO) || N/A
+|}
+
+|-
+|136 || VR Obstacle (10.5x10.5x9) || Land_VR_Block_04_F || [[File: arma3-land_vr_block_04_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.75,0.75,0.75,1.0,CO) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(1.0,1.0,1.0,1.0,CO) || N/A
+|}
+
+|-
+|137 || VR Obstacle (10x5x4) || Land_VR_Block_05_F || [[File: arma3-land_vr_block_05_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.75,0.75,0.75,1.0,CO) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(1.0,1.0,1.0,1.0,CO) || N/A
+|}
+
+|-
+|138 || VR Cover Object (Kneel) || Land_VR_CoverObject_01_kneel_F || [[File: arma3-land_vr_coverobject_01_kneel_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.75,0.75,0.75,1.0,CO) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(1.0,1.0,1.0,1.0,CO) || N/A
+|}
+
+|-
+|139 || VR Cover Object (High kneel) || Land_VR_CoverObject_01_kneelHigh_F || [[File: arma3-land_vr_coverobject_01_kneelhigh_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.75,0.75,0.75,1.0,CO) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(1.0,1.0,1.0,1.0,CO) || N/A
+|}
+
+|-
+|140 || VR Cover Object (Low kneel) || Land_VR_CoverObject_01_kneelLow_F || [[File: arma3-land_vr_coverobject_01_kneellow_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.75,0.75,0.75,1.0,CO) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(1.0,1.0,1.0,1.0,CO) || N/A
+|}
+
+|-
+|141 || VR Cover Object (Stand) || Land_VR_CoverObject_01_stand_F || [[File: arma3-land_vr_coverobject_01_stand_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.75,0.75,0.75,1.0,CO) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(1.0,1.0,1.0,1.0,CO) || N/A
+|}
+
+|-
+|142 || VR Cover Object (High stand) || Land_VR_CoverObject_01_standHigh_F || [[File: arma3-land_vr_coverobject_01_standhigh_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.75,0.75,0.75,1.0,CO) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(1.0,1.0,1.0,1.0,CO) || N/A
+|}
+
+|-
+|143 || VR Slope (10x5x4) || Land_VR_Slope_01_F || [[File: arma3-land_vr_slope_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.75,0.75,0.75,1.0,CO) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(1.0,1.0,1.0,1.0,CO) || N/A
+|}
+
+|-
+|144 || Wallet || Land_Wallet_01_F || [[File: arma3-land_wallet_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Props_F_Orange\Items\Documents\Data\Wallet_picture_CO.paa || 1024x1024
+|}
+
+|-
+|145 || Wall Sign (Chalkboard) || Land_WallSign_01_chalkboard_F || [[File: arma3-land_wallsign_01_chalkboard_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_Orange\Signs\Special\Data\WallSign_01_F_chalkboard_CO.paa || 1024x1024
+|-
+| Texture #1 || a3\Structures_F_Orange\Signs\Special\Data\WallSign_01_F_chalkboard_CO.paa || 1024x1024
+|}
+
+|-
+|146 || Wall Sign || Land_WallSign_01_F || [[File: arma3-land_wallsign_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_Orange\Signs\Special\Data\WallSign_01_F_wood_CO.paa || 1024x1024
+|-
+| Texture #1 || a3\Structures_F_Orange\Signs\Special\Data\WallSign_01_F_wood_CO.paa || 1024x1024
+|}
+
+|-
+|147 || Leaflet || Leaflet_05_F || [[File: arma3-leaflet_05_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\weapons_f_orange\ammo\data\leaflet_default_co.paa || 32x32
+|}
+
+|-
+|148 || Leaflet (New) || Leaflet_05_New_F || [[File: arma3-leaflet_05_new_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\weapons_f_orange\ammo\data\leaflet_default_co.paa || 32x32
+|}
+
+|-
+|149 || Leaflet (Old) || Leaflet_05_Old_F || [[File: arma3-leaflet_05_old_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\weapons_f_orange\ammo\data\leaflet_default_co.paa || 32x32
+|}
+
+|-
+|150 || Leaflet (Stack) || Leaflet_05_Stack_F || [[File: arma3-leaflet_05_stack_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\weapons_f_orange\ammo\data\leaflet_default_co.paa || 32x32
+|}
+
+|-
+|151 || Whiteboard (Map of Altis) || MapBoard_altis_F || [[File: arma3-mapboard_altis_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F\Civ\InfoBoards\Data\MapBoard_Altis_CO.paa || 2048x2048
+|}
+
+|-
+|152 || Whiteboard (Map of Malden) || MapBoard_Malden_F || [[File: arma3-mapboard_malden_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Props_F_Argo\Civilian\InfoBoards\Data\MapBoard_Malden_CO.paa || 2048x2048
+|}
+
+|-
+|153 || Whiteboard (Seismic map) || MapBoard_seismic_F || [[File: arma3-mapboard_seismic_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F_EPC\Civ\InfoBoards\Data\MapBoard_Seismic_CO.paa || 2048x2048
+|}
+
+|-
+|154 || Whiteboard (Map of Stratis) || MapBoard_stratis_F || [[File: arma3-mapboard_stratis_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F\Civ\InfoBoards\Data\MapBoard_Stratis_CO.paa || 2048x2048
+|}
+
+|-
+|155 || Whiteboard (Map of Tanoa) || MapBoard_Tanoa_F || [[File: arma3-mapboard_tanoa_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Props_F_Argo\Civilian\InfoBoards\Data\MapBoard_Tanoa_CO.paa || 2048x2048
+|}
+
+|-
+|156 || Rugged Communications Terminal || RuggedTerminal_01_communications_F || [[File: arma3-ruggedterminal_01_communications_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_decade\objectives\data\computerscreen_flame_ca.paa || 1024x1024
+|-
+| Texture #1 || #(argb,8,8,3)color(1,0.5,0.25,0.99,CA) || N/A
+|-
+| Texture #2 || a3\props_f_decade\objectives\data\linkterminal_box_01_co.paa || 2048x2048
+|-
+| Texture #3 || a3\props_f_decade\objectives\data\linkterminal_box_02_co.paa || 2048x2048
+|-
+| Texture #4 || a3\props_f_decade\objectives\data\linkterminal_01_ntb_ant_co.paa || 2048x2048
+|-
+| Texture #5 || a3\props_f_decade\objectives\data\linknode_01_main_f_acessories_co.paa || 2048x2048
+|}
+
+|-
+|157 || Rugged Communications Hub || RuggedTerminal_01_communications_hub_F || [[File: arma3-ruggedterminal_01_communications_hub_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_decade\objectives\data\computerscreen_flame_ca.paa || 1024x1024
+|-
+| Texture #1 || #(argb,8,8,3)color(1,0.5,0.25,0.99,CA) || N/A
+|-
+| Texture #2 || a3\props_f_decade\objectives\data\linkterminal_box_01_co.paa || 2048x2048
+|-
+| Texture #3 || a3\props_f_decade\objectives\data\linkterminal_box_02_co.paa || 2048x2048
+|-
+| Texture #4 || a3\props_f_decade\objectives\data\linkterminal_01_ntb_ant_co.paa || 2048x2048
+|-
+| Texture #5 || a3\props_f_decade\objectives\data\linknode_01_main_f_acessories_co.paa || 2048x2048
+|}
+
+|-
+|158 || Rugged Terminal || RuggedTerminal_01_F || [[File: arma3-ruggedterminal_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_decade\objectives\data\computerscreen_flame_ca.paa || 1024x1024
+|-
+| Texture #1 || #(argb,8,8,3)color(1,0.5,0.25,0.99,CA) || N/A
+|-
+| Texture #2 || #(argb,8,8,3)color(1,1,1,0.99,CA) || N/A
+|-
+| Texture #3 || a3\props_f_decade\objectives\data\linkterminal_box_01_co.paa || 2048x2048
+|-
+| Texture #4 || a3\props_f_decade\objectives\data\linkterminal_box_03_co.paa || 2048x2048
+|-
+| Texture #5 || a3\props_f_decade\objectives\data\linkterminal_01_ntb_ant_co.paa || 2048x2048
+|-
+| Texture #6 || a3\props_f_decade\objectives\data\linknode_01_main_f_acessories_co.paa || 2048x2048
+|-
+| Texture #7 || a3\props_f_decade\objectives\data\raidterminal_generator_co.paa || 2048x2048
+|}
+
+|-
+|159 || Rugged Communications Terminal (Large) || RuggedTerminal_02_communications_F || [[File: arma3-ruggedterminal_02_communications_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\props_f_decade\objectives\data\computerscreen_flame_ca.paa || 1024x1024
+|-
+| Texture #1 || #(argb,8,8,3)color(1,0.5,0.25,0.99,CA) || N/A
+|-
+| Texture #2 || a3\props_f_decade\objectives\data\linkterminal_box_01_co.paa || 2048x2048
+|-
+| Texture #3 || a3\props_f_decade\objectives\data\linkterminal_box_02_co.paa || 2048x2048
+|-
+| Texture #4 || a3\props_f_decade\objectives\data\linkterminal_01_ntb_ant_co.paa || 2048x2048
+|-
+| Texture #5 || a3\props_f_decade\objectives\data\linknode_01_main_f_acessories_co.paa || 2048x2048
+|}
+
+|-
+|160 || Arrow (Blue) || Sign_Arrow_Blue_F || [[File: arma3-sign_arrow_blue_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,1,0.75,ca) || N/A
+|}
+
+|-
+|161 || Arrow (Cyan) || Sign_Arrow_Cyan_F || [[File: arma3-sign_arrow_cyan_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,1,1,0.75,ca) || N/A
+|}
+
+|-
+|162 || Arrow (Direction, Blue) || Sign_Arrow_Direction_Blue_F || [[File: arma3-sign_arrow_direction_blue_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,1,0.75,ca) || N/A
+|}
+
+|-
+|163 || Arrow (Direction, Cyan) || Sign_Arrow_Direction_Cyan_F || [[File: arma3-sign_arrow_direction_cyan_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,1,1,0.75,ca) || N/A
+|}
+
+|-
+|164 || Arrow (Direction, Red) || Sign_Arrow_Direction_F || [[File: arma3-sign_arrow_direction_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0,0,0.75,ca) || N/A
+|}
+
+|-
+|165 || Arrow (Direction, Green) || Sign_Arrow_Direction_Green_F || [[File: arma3-sign_arrow_direction_green_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,1,0,0.75,ca) || N/A
+|}
+
+|-
+|166 || Arrow (Direction, Pink) || Sign_Arrow_Direction_Pink_F || [[File: arma3-sign_arrow_direction_pink_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0,1,0.75,ca) || N/A
+|}
+
+|-
+|167 || Arrow (Direction, Yellow) || Sign_Arrow_Direction_Yellow_F || [[File: arma3-sign_arrow_direction_yellow_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,1,0,0.75,ca) || N/A
+|}
+
+|-
+|168 || Arrow (Red) || Sign_Arrow_F || [[File: arma3-sign_arrow_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0,0,0.75,ca) || N/A
+|}
+
+|-
+|169 || Arrow (Green) || Sign_Arrow_Green_F || [[File: arma3-sign_arrow_green_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,1,0,0.75,ca) || N/A
+|}
+
+|-
+|170 || Arrow (Large, Blue) || Sign_Arrow_Large_Blue_F || [[File: arma3-sign_arrow_large_blue_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,1,0.75,ca) || N/A
+|}
+
+|-
+|171 || Arrow (Large, Cyan) || Sign_Arrow_Large_Cyan_F || [[File: arma3-sign_arrow_large_cyan_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,1,1,0.75,ca) || N/A
+|}
+
+|-
+|172 || Arrow (Large, Red) || Sign_Arrow_Large_F || [[File: arma3-sign_arrow_large_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0,0,0.75,ca) || N/A
+|}
+
+|-
+|173 || Arrow (Large, Green) || Sign_Arrow_Large_Green_F || [[File: arma3-sign_arrow_large_green_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,1,0,0.75,ca) || N/A
+|}
+
+|-
+|174 || Arrow (Large, Pink) || Sign_Arrow_Large_Pink_F || [[File: arma3-sign_arrow_large_pink_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0,1,0.75,ca) || N/A
+|}
+
+|-
+|175 || Arrow (Large, Yellow) || Sign_Arrow_Large_Yellow_F || [[File: arma3-sign_arrow_large_yellow_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,1,0,0.75,ca) || N/A
+|}
+
+|-
+|176 || Arrow (Pink) || Sign_Arrow_Pink_F || [[File: arma3-sign_arrow_pink_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0,1,0.75,ca) || N/A
+|}
+
+|-
+|177 || Arrow (Yellow) || Sign_Arrow_Yellow_F || [[File: arma3-sign_arrow_yellow_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,1,0,0.75,ca) || N/A
+|}
+
+|-
+|178 || Circle || Sign_Circle_F || [[File: arma3-sign_circle_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0.6,0.1,0.1,ca) || N/A
+|}
+
+|-
+|179 || Pointer (Blue) || Sign_Pointer_Blue_F || [[File: arma3-sign_pointer_blue_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,1,0.75,ca) || N/A
+|}
+
+|-
+|180 || Pointer (Cyan) || Sign_Pointer_Cyan_F || [[File: arma3-sign_pointer_cyan_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,1,1,0.75,ca) || N/A
+|}
+
+|-
+|181 || Pointer (Red) || Sign_Pointer_F || [[File: arma3-sign_pointer_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0,0,0.75,ca) || N/A
+|}
+
+|-
+|182 || Pointer (Green) || Sign_Pointer_Green_F || [[File: arma3-sign_pointer_green_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,1,0,0.75,ca) || N/A
+|}
+
+|-
+|183 || Pointer (Pink) || Sign_Pointer_Pink_F || [[File: arma3-sign_pointer_pink_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0,1,0.75,ca) || N/A
+|}
+
+|-
+|184 || Pointer (Yellow) || Sign_Pointer_Yellow_F || [[File: arma3-sign_pointer_yellow_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,1,0,0.75,ca) || N/A
+|}
+
+|-
+|185 || Sphere (100cm) || Sign_Sphere100cm_F || [[File: arma3-sign_sphere100cm_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0.6,0.1,1.0,ca) || N/A
+|}
+
+|-
+|186 || Sphere (Geometry, 100cm) || Sign_Sphere100cm_Geometry_F || [[File: arma3-sign_sphere100cm_geometry_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.898039,0.403922,0.133333,1.000000,ca) || N/A
+|}
+
+|-
+|187 || Sphere (10cm) || Sign_Sphere10cm_F || [[File: arma3-sign_sphere10cm_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0.6,0.1,1.0,ca) || N/A
+|}
+
+|-
+|188 || Sphere (Geometry, 10cm) || Sign_Sphere10cm_Geometry_F || [[File: arma3-sign_sphere10cm_geometry_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.898039,0.403922,0.133333,1.000000,ca) || N/A
+|}
+
+|-
+|189 || Sphere (200cm) || Sign_Sphere200cm_F || [[File: arma3-sign_sphere200cm_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0.6,0.1,1.0,ca) || N/A
+|}
+
+|-
+|190 || Sphere (Geometry, 200cm) || Sign_Sphere200cm_Geometry_F || [[File: arma3-sign_sphere200cm_geometry_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.898039,0.403922,0.133333,1.000000,ca) || N/A
+|}
+
+|-
+|191 || Sphere (25cm) || Sign_Sphere25cm_F || [[File: arma3-sign_sphere25cm_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,0.6,0.1,1.0,ca) || N/A
+|}
+
+|-
+|192 || Sphere (Geometry, 25cm) || Sign_Sphere25cm_Geometry_F || [[File: arma3-sign_sphere25cm_geometry_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.898039,0.403922,0.133333,1.000000,ca) || N/A
+|}
+
+|-
+|193 || Sign (IDAP) || SignAd_Sponsor_01_IDAP_F || [[File: arma3-signad_sponsor_01_idap_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_Orange\Signs\Special\Data\ad_IDAP_sponsor_ca.paa || 1024x512
+|}
+
+|-
+|194 || Sign (ARMEX) || SignAd_Sponsor_ARMEX_F || [[File: arma3-signad_sponsor_armex_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Signs_F\Signs_Ad\Data\ad_armex_ca.paa || 1024x512
+|}
+
+|-
+|195 || Sign (Blueking) || SignAd_Sponsor_Blueking_F || [[File: arma3-signad_sponsor_blueking_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_bluking_CA.paa || 1024x512
+|}
+
+|-
+|196 || Sign (Burstkoke) || SignAd_Sponsor_Burstkoke_F || [[File: arma3-signad_sponsor_burstkoke_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_koke_CA.paa || 1024x512
+|}
+
+|-
+|197 || Sign (Sponsor) || SignAd_Sponsor_F || [[File: arma3-signad_sponsor_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|}
+
+|-
+|198 || Sign (Fuel, green) || SignAd_Sponsor_Fuel_green_F || [[File: arma3-signad_sponsor_fuel_green_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_fuel2_CA.paa || 1024x512
+|}
+
+|-
+|199 || Sign (Fuel, white) || SignAd_Sponsor_Fuel_white_F || [[File: arma3-signad_sponsor_fuel_white_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_fuel1_CA.paa || 1024x512
+|}
+
+|-
+|200 || Sign (IDAP) || SignAd_Sponsor_IDAP_F || [[File: arma3-signad_sponsor_idap_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_Orange\Signs\Special\Data\ad_IDAP_ca.paa || 1024x512
+|}
+
+|-
+|201 || Sign (ION) || SignAd_Sponsor_ION_F || [[File: arma3-signad_sponsor_ion_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Signs_F\Signs_Ad\Data\ad_ion_ca.paa || 1024x512
+|}
+
+|-
+|202 || Sign (Larkin) || SignAd_Sponsor_Larkin_F || [[File: arma3-signad_sponsor_larkin_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Signs_F\Signs_Ad\Data\ad_larkin_ca.paa || 1024x512
+|}
+
+|-
+|203 || Sign (Quontrol) || SignAd_Sponsor_Quontrol_F || [[File: arma3-signad_sponsor_quontrol_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Signs_F\Signs_Ad\Data\ad_quontrol_ca.paa || 1024x512
+|}
+
+|-
+|204 || Sign (Redburger) || SignAd_Sponsor_Redburger_F || [[File: arma3-signad_sponsor_redburger_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_redburger_CA.paa || 1024x512
+|}
+
+|-
+|205 || Sign (Redstone) || SignAd_Sponsor_Redstone_F || [[File: arma3-signad_sponsor_redstone_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_redstone_CA.paa || 1024x512
+|}
+
+|-
+|206 || Sign (Suatmm) || SignAd_Sponsor_Suatmm_F || [[File: arma3-signad_sponsor_suatmm_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_suatmm_CA.paa || 1024x512
+|}
+
+|-
+|207 || Sign (Vrana) || SignAd_Sponsor_Vrana_F || [[File: arma3-signad_sponsor_vrana_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Signs_F\Signs_Ad\Data\ad_vrana_ca.paa || 1024x512
+|}
+
+|-
+|208 || Sign (IDAP - Small) || SignAd_SponsorS_01_IDAP_F || [[File: arma3-signad_sponsors_01_idap_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || a3\Structures_F_Orange\Signs\Special\Data\ad_IDAP_sponsor_ca.paa || 1024x512
+|}
+
+|-
+|209 || Sign (ARMEX - Small) || SignAd_SponsorS_ARMEX_F || [[File: arma3-signad_sponsors_armex_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Signs_F\Signs_Ad\Data\ad_armex_ca.paa || 1024x512
+|}
+
+|-
+|210 || Sign (Blueking - Small) || SignAd_SponsorS_Blueking_F || [[File: arma3-signad_sponsors_blueking_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_bluking_CA.paa || 1024x512
+|}
+
+|-
+|211 || Sign (Burstkoke - Small) || SignAd_SponsorS_Burstkoke_F || [[File: arma3-signad_sponsors_burstkoke_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_koke_CA.paa || 1024x512
+|}
+
+|-
+|212 || Sign (Sponsor - Small) || SignAd_SponsorS_F || [[File: arma3-signad_sponsors_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|}
+
+|-
+|213 || Sign (Fuel, green - Small) || SignAd_SponsorS_Fuel_green_F || [[File: arma3-signad_sponsors_fuel_green_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_fuel2_CA.paa || 1024x512
+|}
+
+|-
+|214 || Sign (Fuel, white - Small) || SignAd_SponsorS_Fuel_white_F || [[File: arma3-signad_sponsors_fuel_white_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_fuel1_CA.paa || 1024x512
+|}
+
+|-
+|215 || Sign (ION - Small) || SignAd_SponsorS_ION_F || [[File: arma3-signad_sponsors_ion_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Signs_F\Signs_Ad\Data\ad_ion_ca.paa || 1024x512
+|}
+
+|-
+|216 || Sign (Larkin - Small) || SignAd_SponsorS_Larkin_F || [[File: arma3-signad_sponsors_larkin_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Signs_F\Signs_Ad\Data\ad_larkin_ca.paa || 1024x512
+|}
+
+|-
+|217 || Sign (Quontrol - Small) || SignAd_SponsorS_Quontrol_F || [[File: arma3-signad_sponsors_quontrol_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Signs_F\Signs_Ad\Data\ad_quontrol_ca.paa || 1024x512
+|}
+
+|-
+|218 || Sign (Redburger - Small) || SignAd_SponsorS_Redburger_F || [[File: arma3-signad_sponsors_redburger_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_redburger_CA.paa || 1024x512
+|}
+
+|-
+|219 || Sign (Redstone - Small) || SignAd_SponsorS_Redstone_F || [[File: arma3-signad_sponsors_redstone_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_redstone_CA.paa || 1024x512
+|}
+
+|-
+|220 || Sign (Suatmm - Small) || SignAd_SponsorS_Suatmm_F || [[File: arma3-signad_sponsors_suatmm_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Structures_F_Kart\Signs\Companies\Data\Ad_suatmm_CA.paa || 1024x512
+|}
+
+|-
+|221 || Sign (Vrana - Small) || SignAd_SponsorS_Vrana_F || [[File: arma3-signad_sponsors_vrana_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || A3\Signs_F\Signs_Ad\Data\ad_vrana_ca.paa || 1024x512
+|}
+
+|-
+|222 || User Texture (10m) || UserTexture10m_F || [[File: arma3-usertexture10m_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|}
+
+|-
+|223 || User Texture (1m) || UserTexture1m_F || [[File: arma3-usertexture1m_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|}
+
+|-
+|224 || User Texture (1x2m) || UserTexture_1x2_F || [[File: arma3-usertexture_1x2_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0,0,0,0,ca) || N/A
+|}
+
+|-
+|225 || VR Area (Circle, 4m, Grey) || VR_Area_01_circle_4_grey_F || [[File: arma3-vr_area_01_circle_4_grey_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.45,0.45,0.45,1,co) || N/A
+|}
+
+|-
+|226 || VR Area (Circle, 4m, Yellow) || VR_Area_01_circle_4_yellow_F || [[File: arma3-vr_area_01_circle_4_yellow_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.581,0.441,0.293,1,co) || N/A
+|}
+
+|-
+|227 || VR Area (Square, 1x1, Grey) || VR_Area_01_square_1x1_grey_F || [[File: arma3-vr_area_01_square_1x1_grey_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.45,0.45,0.45,1,co) || N/A
+|}
+
+|-
+|228 || VR Area (Square, 1x1, Yellow) || VR_Area_01_square_1x1_yellow_F || [[File: arma3-vr_area_01_square_1x1_yellow_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.581,0.441,0.293,1,co) || N/A
+|}
+
+|-
+|229 || VR Area (Square, 2x2, Grey) || VR_Area_01_square_2x2_grey_F || [[File: arma3-vr_area_01_square_2x2_grey_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.45,0.45,0.45,1,co) || N/A
+|}
+
+|-
+|230 || VR Area (Square, 2x2, Yellow) || VR_Area_01_square_2x2_yellow_F || [[File: arma3-vr_area_01_square_2x2_yellow_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.581,0.441,0.293,1,co) || N/A
+|}
+
+|-
+|231 || VR Area (Square, 4x4, Grey) || VR_Area_01_square_4x4_grey_F || [[File: arma3-vr_area_01_square_4x4_grey_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.45,0.45,0.45,1,co) || N/A
+|}
+
+|-
+|232 || VR Area (Square, 4x4, Yellow) || VR_Area_01_square_4x4_yellow_F || [[File: arma3-vr_area_01_square_4x4_yellow_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.581,0.441,0.293,1,co) || N/A
+|}
+
+|-
+|233 || VR Wall || VR_Billboard_01_F || [[File: arma3-vr_billboard_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,1,1,0.2,ca) || N/A
+|}
+
+|-
+|234 || VR Ground Icon || VR_GroundIcon_01_F || [[File: arma3-vr_groundicon_01_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || \A3\Structures_F_Bootcamp\VR\Helpers\Data\VR_GroundIcon_01_default_CA.paa || 1024x1024
+|}
+
+|-
+|235 || VR Sector (60deg, 50m, Grey) || VR_Sector_01_60deg_50_grey_F || [[File: arma3-vr_sector_01_60deg_50_grey_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(1,1,1,0.01,ca) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(1,1,1,0.1,ca) || N/A
+|}
+
+|-
+|236 || VR Sector (60deg, 50m, Red) || VR_Sector_01_60deg_50_red_F || [[File: arma3-vr_sector_01_60deg_50_red_f.jpg|100px]] || 
+{| class="wikitable"
+|-
+! Attribute !! Default Texture !! Default Texture Size
+|-
+| Texture #0 || #(argb,8,8,3)color(0.433,0.107,0.088,0.1,ca) || N/A
+|-
+| Texture #1 || #(argb,8,8,3)color(0.433,0.107,0.088,0.7,ca) || N/A
+|}
+|}
+
+	
+[[Category:Eden Editor: Editing|Entity Attributes]]

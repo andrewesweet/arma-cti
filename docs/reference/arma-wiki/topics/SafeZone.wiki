@@ -1,0 +1,101 @@
+// source: https://community.bistudio.com/wiki/SafeZone
+// revision: 353567 (2024-03-19T12:01:44Z)
+// export sha1: kc21ray5koag7ftmz20jcni83epebfz
+// categories: Category:GUI Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:UI Size.jpg|thumb|200px|Safezone and Absolute proportions (16:10 / Normal)]]
+In [[Arma: Cold War Assault]], user interface [[Display]]s were drawn always in 4:3 aspect ratio. Since then, many other aspect ratios became common and interface has to be compatible with them. Currently, interface is base on following variables:
+
+* '''Aspect Ratio''' - change screen width to fit user's monitor
+* '''Interface Size''' - resize size of interface [[Control]]s, like menus, hints, cursors, etc. Introduced in {{GameCategory|arma2|link= y}}.
+
+
+== Coordinate Systems ==
+
+Games now contains following two coordinate systems, both of them starting in their top left corner and going bottom right (see picture on right).
+* '''Absolute''' ''(red frame)'' - based on CWA system. Its always 4:3 and changes together with Interface Size.
+** As absolute area is always centered, [0.5,0.5] is always center a of screen.
+* '''Safezone''' ''(black frame)'' - actual monitor size. Uses following commands:
+** [[safeZoneX]], [[safeZoneY]], [[safeZoneW]] and [[safeZoneH]], with additional [[safeZoneXAbs]] and [[safeZoneWAbs]] to work with multi-screen size.
+** In case game is running only on one monitor, safeZoneXAbs equals to safezoneX and safezoneWAbs is same as safezoneW.
+** Safezones serves only as references to absolute positions. Result of safezoneX can for example be -0.452381, which means it is left from absolute area.
+
+
+== Sample configs ==
+
+Control with following size will cover whole screen (middle screen in case of TripleHead):
+<syntaxhighlight lang="cpp">
+x = safeZoneX;
+y = safeZoneY;
+w = safeZoneW;
+h = safeZoneH;
+</syntaxhighlight>
+
+Following proportions will cover all screens in TripleHead:
+<syntaxhighlight lang="cpp">
+x = safeZoneXAbs;
+y = safeZoneY;
+w = safeZoneWAbs;
+h = safeZoneH;
+</syntaxhighlight>
+
+Creates centered control with 80% width and height:
+<syntaxhighlight lang="cpp">
+x = safeZoneX + 0.1 * safeZoneW;
+y = safeZoneY + 0.1 * safeZoneH;
+w = safeZoneW * 0.8;
+h = safeZoneH * 0.8;
+</syntaxhighlight>
+
+Creates control with absolute width and height, moved 10% from top left screen corner:
+<syntaxhighlight lang="cpp">
+x = safeZoneX + 0.1 * safeZoneW;
+y = safeZoneY + 0.1 * safeZoneH;
+w = 0.2;
+h = 0.3;
+</syntaxhighlight>
+
+Creates the same as above, but aligned to bottom right corner:
+<syntaxhighlight lang="cpp">
+x = safeZoneX + safeZoneW - 0.2;
+y = safeZoneY + safeZoneH - 0.3;
+w = 0.2;
+h = 0.3;
+</syntaxhighlight>
+
+Creates a control that spans the horizontal and is centered on the vertical according to the control's aspect ratio (useful for fullscreen images that shouldn't be stretched but letterboxed). '''{{Color|red|2}}''' is the aspect ratio:
+ x = safeZoneX;
+ y = safeZoneY + ((safeZoneH - (safeZoneW / '''{{Color|red|2}}''' * (4/3))) / 2);
+ w = safeZoneW;
+ h = safeZoneH / '''{{Color|red|2}}''' * (4/3);
+
+
+== User Interface Editor ==
+
+[[User Interface Editor]] helps with display creation, enabling designer to place controls in simple WYSIWYG editor and export it afterwards to config format.
+
+
+== Image gallery ==
+
+=== Aspect Ratio and Interface Size combinations ===
+
+<gallery>
+File:UI all.jpg|All aspect ratios / All UI sizes
+File:UI 16-10 Normal.jpg|16:10 / Normal
+File:UI 16-9 VerySmall.jpg|16:9 / Very Small
+File:UI 4-3 VeryLarge.jpg|4:3 / Very Large ([[:Category:{{Name|ofp|cat}}|{{Name|arma0|short}}]]'s&nbsp;default)
+File:UI 12-3.jpg|12:3 (TripleHead)
+</gallery>
+
+=== Video Options ===
+
+<gallery>
+File:UI options size Arma2.jpg|{{arma2}} - Interface Size
+File:UI options aspect Arma2.jpg|{{arma2}} - Aspect Ratio
+File:UI options size TakeOn.jpg|{{tkoh}} - Interface Size
+File:UI options aspect TakeOn.jpg|{{tkoh}} - Aspect Ratio
+</gallery>
+
+
+[[Category:GUI Topics|GUI Topics]]

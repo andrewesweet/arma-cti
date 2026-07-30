@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/Identifier
+// revision: 377927 (2026-01-11T16:19:20Z)
+// export sha1: cq3w5izak783pzcch3mo6mhyo98esvy
+// categories: Category:Syntax
+// Vendored snapshot. Do not edit — re-export instead.
+
+__NOTOC__
+An [[Identifier]] is the name given to a [[Variables|variable]] that the scripter can choose: It is the name that ''identifies'' the variable.
+
+
+== Rules ==
+
+{| class="wikitable float-right"
+|+ Regex: {{hl|[a-zA-Z_][a-zA-Z0-9_]*}}
+! Valid
+! Invalid
+|-
+|
+* variable1
+* _my_local_variable
+* _1variable
+* _player
+|
+* {{Color|red|1}}variable
+* _my{{Color|red|#}}localVar
+* _guy1{{Color|red|&amp;}}2var
+* {{Color|red|player}} ([[player]])
+|}
+Binding rules for identifiers:
+* Identifiers may consist of any ASCII text characters (a-z, A-Z), numbers (0-9) and underscores (_).
+* Identifiers '''must not''' start with a number (e.g "9myVariable" is invalid).
+* Identifiers of [[Variables|local variables]] '''must''' start with an underscore.
+* Identifiers are '''case-insensitive'''.
+* Identifiers '''cannot be the same as reserved words''' (e.g [[:Category:Scripting Commands|commands]] and [[:Category:Functions|functions]]).
+
+
+== Recommendations ==
+
+It is recommended to write '''local variable identifiers''' in {{Link|https://en.wikipedia.org/wiki/Camel_case|camel case}} syntax. This makes identifiers more readable:
+<sqf>private _myVariableName = 5;</sqf>
+
+{{Feature|important|
+{{Link|https://en.wikipedia.org/wiki/Snake_case}} is sometimes encountered but is not recommended and should be avoided:
+<sqf>_my_variable_name = 5;</sqf>
+}}
+
+
+It is also recommended to prefix '''global variable identifiers''' with '''your''' [[Scripting Tags|tag]] in order to avoid any potential conflict between addons, scripts and missions:
+ {{cc|'''{{Color|purple|Tag}}'''_identifier}}
+ <span style="color: purple; font-weight: bold">UNIQUETAG</span>_player = [[player]];
+
+
+== See also ==
+
+* [[Variables]]
+
+
+[[Category: Syntax]]

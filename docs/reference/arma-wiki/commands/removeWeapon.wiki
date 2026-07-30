@@ -1,0 +1,76 @@
+// source: https://community.bistudio.com/wiki/removeWeapon
+// revision: 376459 (2025-10-14T22:27:24Z)
+// export sha1: lksk9be8p4j8dnazei90x534kvkwemf
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Command Group: Vehicle Inventory | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|eff= global
+
+|arg= local
+
+|gr1= Unit Inventory
+
+|gr2= Vehicle Inventory
+
+|descr= Remove weapon from a unit. The unit must be [[Multiplayer Scripting#Locality|local]] to the computer where command is executed.
+For a global version of this command, see [[removeWeaponGlobal]].
+
+{{Feature|informative|
+It is possible to create invalid combinations with this command (e.g attempting to remove a weapon that a unit does not possess).
+When doing so, application behaviour is undefined.
+}}
+
+|s1= unit [[removeWeapon]] weapon
+
+|p1= unit: [[Object]] - unit or vehicle
+
+|p2= weapon: [[String]] - weapon class name
+
+|r1= [[Nothing]]
+
+|s2= object [[removeWeapon]] [weapon, autoselect]
+|s2since= arma3 2.20
+
+|p21= object: [[Object]] - unit or vehicle
+
+|p22= weapon: [[String]] - weapon class name
+
+|p23= autoselect: [[String]] - (Optional, default [[true]]) [[false]] to abort weapon autoselection when removing primary weapon.
+
+|r2= [[Nothing]]
+
+|x1= <sqf>player removeWeapon "BAF_L85A2_RIS_SUSAT";</sqf>
+
+|x2= <sqf>An_2 removeWeapon "M240_veh";</sqf>
+
+|seealso= [[removeWeaponGlobal]] [[addWeapon]] [[removeAllWeapons]]
+}}
+
+{{Note
+|user= zGuba
+|timestamp= 20090527143000
+|text= CTD may occur in certain conditions: when shooter is AI and is currently shooting at target in some proximity (tested with M136 on ACE 1.08 and Compact Fix 1.14H+). Even "dropweapon" action may cause CTD with AI.
+}}

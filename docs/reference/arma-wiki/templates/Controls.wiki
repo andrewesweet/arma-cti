@@ -1,0 +1,73 @@
+// source: https://community.bistudio.com/wiki/Template:Controls
+// revision: 341718 (2023-06-20T06:47:21Z)
+// export sha1: ihk62rd8yrmper3ybzfsxbn2iv5azco
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#switch:{{lc:{{{1}}}}}
+|xbox= {{#if:{{{2|}}}
+	| {{Controls/Control|xbox|{{{2}}}}}{{#if:{{{3|}}}|&#32;+ {{Controls/Control|xbox|{{{3}}}}}{{#if:{{{4|}}}|&#32;+ {{Controls/Control|xbox|{{{4}}}}}{{#if:{{{5|}}}|&#32;+ {{Controls/Control|xbox|{{{5}}}}}}}}}}}
+	| -no Xbox controls defined-{{TemplateCase||[[Category:Controls template usage error]]}}
+}}
+|playstation
+|playstation= {{#if:{{{2|}}}
+	| {{Controls/Control|playstation|{{{2}}}}}{{#if:{{{3|}}}|&#32;+ {{Controls/Control|playstation|{{{3}}}}}{{#if:{{{4|}}}|&#32;+ {{Controls/Control|playstation|{{{4}}}}}{{#if:{{{5|}}}|&#32;+ {{Controls/Control|playstation|{{{5}}}}}}}}}}}
+	| -no Playstation controls defined-{{TemplateCase||[[Category:Controls template usage error]]}}
+}}
+|#default= {{#if:{{{1|}}}
+	| {{Controls/Control|{{{1}}}}}{{#if:{{{2|}}}|&#32;+ {{Controls/Control|{{{2}}}}}{{#if:{{{3|}}}|&#32;+ {{Controls/Control|{{{3}}}}}{{#if:{{{4|}}}|&#32;+ {{Controls/Control|{{{4}}}}}|}}|}}|}}
+	|-no controls defined-{{TemplateCase||[[Category:Controls template usage error]]}}
+}}
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Shows a key-styled keyboard shortcut and/or a mouse button. It also adds the page to the [[:Category:Controls template usage error|Controls template usage error]] category on usage error.
+* Mouse button can be (case-insensitive):
+** mouseL or LMB
+** mouseL2 or LMB2
+** mouseR or RMB
+** mouseM or MMB
+** mouseSW or MSW
+** mouseSWU or MSWU
+** mouseSWD or MSWD
+* Keyboard key can be anything - the first letter will be capitalised, see {{Template|Controls/Control}}.
+
+|param1= ctrl1
+|descr1= first control - if {{hl|xbox}} or {{hl|playstation}} (case-insensitive), all the following keys will be Xbox- or PlayStation-stylised (see {{Template|Controls/Control}})
+
+|param2= ctrl2
+|descr2= (Optional) second control
+
+|param3= ctrl3
+|descr3= (Optional) third control
+
+|param4= ctrl4
+|descr4= (Optional) fourth control
+
+|param5= ctrl5
+|descr5= (Optional) fourth console control
+
+|example1= <nowiki>{{Controls}}</nowiki>
+|result1= {{Controls}}
+
+|example2= <nowiki>{{Controls|Ctrl}}</nowiki>
+|result2= {{Controls|Ctrl}}
+
+|example3= <nowiki>{{Controls|Ctrl|LMB}}</nowiki>
+|result3= {{Controls|Ctrl|LMB}}
+
+|example4= <nowiki>{{Controls|Ctrl|Shift|T}}</nowiki>
+|result4= {{Controls|Ctrl|Shift|T}}
+
+|example5= <nowiki>{{Controls|Ctrl|Alt|Shift|T}}</nowiki>
+|result5= {{Controls|Ctrl|Alt|Shift|T}}
+
+|example6= <nowiki>{{Controls|Ctrl|Alt|Shift|T|U}}</nowiki>
+|result6= {{Controls|Ctrl|Alt|Shift|T|U}}
+
+|example7= <nowiki/>
+<nowiki>{{Controls|Xbox|A|LT|start}}</nowiki><br>
+<nowiki>{{Controls|playstation|cross|L1|start}}</nowiki><br>
+<nowiki>{{Controls|padA|padLT|padStart}}</nowiki>
+|result7= <nowiki/>
+{{Controls|Xbox|A|LT|start}}<br>
+{{Controls|playstation|cross|L1|start}}<br>
+{{Controls|padA|padLT|padStart}}
+}}</noinclude>

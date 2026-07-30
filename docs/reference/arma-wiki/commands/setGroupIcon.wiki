@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/setGroupIcon
+// revision: 376586 (2025-10-29T23:11:37Z)
+// export sha1: 1leq6kawwlwqmuycblc4cae1s4bfkxi
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: High Command | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= High Command
+
+|descr= Sets group icon properties. Since Arma 3 v2.22 the offset can be set separately for 2d and 3d.
+
+|s1= group [[setGroupIcon]] [id, icon, offset]
+
+|p1= group: [[Group]]
+
+|p2= id: [[Number]] - the icon ID returned by [[addGroupIcon]]
+
+|p3= icon: [[String]] - class name of desired icon from CfgGroupIcons
+
+|p4= offset: [[Array]] - (Optional, default [0,0]) X and Y offsets of the icon in form [offsetX, offsetY, (offsetX3d), (offsetY3d)]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+_target setGroupIcon [_icon, "hc_selectedEnemy"];
+_target setGroupIcon [_icon, "flag"];
+
+_group setGroupIcon [_icon, _iconsClass, _offset];
+</sqf>
+
+|seealso= [[addGroupIcon]] [[clearGroupIcons]] [[getGroupIcon]] [[getGroupIcons]] [[getGroupIconParams]] [[groupIconSelectable]] [[groupIconsVisible]] [[onGroupIconClick]] [[removeGroupIcon]] [[setGroupIconParams]] [[setGroupIconsSelectable]] [[setGroupIconsVisible]]
+}}

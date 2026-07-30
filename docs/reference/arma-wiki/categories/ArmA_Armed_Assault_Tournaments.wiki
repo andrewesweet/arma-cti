@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Tournaments
+// revision: 184338 (2021-01-06T09:19:04Z)
+// export sha1: bgopg2o5n82a1ro66ec66epae9eyphu
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1|Community}}

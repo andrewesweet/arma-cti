@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/menuSetValue
+// revision: 378339 (2026-04-02T16:31:15Z)
+// export sha1: 17ckkw0jc5qpq6zdtui5ceer78uoowg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= GUI Control - Menu
+
+|descr= Sets new value into menu entry on given path.
+
+|s1= [[menuSetValue]] [idc, path, value]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|p3= value: [[Number]]
+
+|r1= [[Nothing]]
+
+|s2= control [[menuSetValue]] [path, value]
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|p23= value: [[Number]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>findDisplay 313 displayCtrl 120 menuSetValue [[0, 1], 1337];</sqf>
+
+|seealso= [[menuValue]]
+}}

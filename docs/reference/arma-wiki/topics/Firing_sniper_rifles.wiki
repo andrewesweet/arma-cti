@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/Firing_sniper_rifles
+// revision: 336174 (2022-12-13T17:21:02Z)
+// export sha1: pwrbzeivo54coyyoovc6snmteqivfvv
+// Vendored snapshot. Do not edit — re-export instead.
+
+Unlike [[OFP]], Sniper rifles in ArmA don't seem to have range adjustments. Amunition in ArmA has set balistic trajectory, so learn on what distance are each weapons sights leveled.
+
+ '''[[ArmA: Weapons|Optics/Ironsights leveling]] on distance:''' 
+ 50m > MP5, pistols
+ 100m > AK74UN, M4/M16 with Aimpoint, ACOG sights or suppressor
+ 120m-400m > M4SPR
+ 150m > Grenadelauncher ironsights  (M4 with ACOG 200m)
+ 200m > SVD, KSVK, AK74PSO
+ 300m > AK74, AK74GL, AK74U, M16A2, M16GL, M16A4, M16A4GL, all G36, machineguns
+ 500m > M107
+
+
+To hit soldiers closer than their default weapon sightings, scopes have notches above the centre cross hair.
+
+For the M24, here are the distances i have observed:
+
+ 1 notch up:   Distance = 250 mtrs
+ middle:       Distance = 300 mtrs 
+ 1 notch down: Distance = 500 mtrs
+ 3 notch down: Distance = 650 mtrs
+ 5 notch down: Distance = 800 mtrs
+
+
+
+
+----
+M24
+
+
+In order to make the most effective use of the m24 you need a basic understanding of mil dot scopes, mils (the aim off dots on the reticle) can indicate a targets distance with a predetermined zoom, in Armed assault the zoom if fixed and so this makes life easier. With the m24 a typical soldier squeezes into 10 mils through the scope at 200m, from this every time you double the distance you halve the size the target fits into the reticule in mils, so at 400m they fit between five mil dots, and at 800m that number is 2.5, from this you can ascertain your distance from target. 
+
+At 200m you require no aim off to hit the target, from here i have rough aim offs for hitting your target when placing the appropriate mil dot on the target. for instance at 400m i found aiming one mil dot high provided ample compensation for the bullet trajectory, and at 600m 3 mils placed the round on target, at 800m 4 mil was required to hit the target. with a thousand meter target the parameters of the scope cannot aid your hitting of the target, from this you will need to use guess work and aim off in 'man sized target' heights from the bottom of the scope, i usually find this effective at obtaining a kill within three shots. With this method you can hit targets out to and beyond 1400m, though at this point the bullet often has insufficient energy to kill the target in the first hit. I hope this helps, i'll be adding my adjustments for the m107 soon
+
+sadly for reasons unknown the barrett would appear to be severely toned down, with it unable to hit a target 1000m with its available mils on the scope, this is dissapointing considering the Maximum Effective Range of the barrett is closer to 1800m and beyond that even. Hopefully this will be altered either in future versions (i hope) or addons

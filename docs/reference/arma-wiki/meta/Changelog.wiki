@@ -1,0 +1,9 @@
+// source: https://community.bistudio.com/wiki/Bohemia_Interactive_Community:Changelog
+// revision: 174278 (2020-12-28T14:06:07Z)
+// export sha1: mcmap5bxn51hs6lcur60dzakszg9rbn
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Update 2018/12/12 ==
+* Added: [[:Category:DayZ|DayZ]] Namespace
+* Added: [[Ylands]] Namespace
+[[Category:Community Wiki]]

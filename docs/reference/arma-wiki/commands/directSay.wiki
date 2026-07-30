@@ -1,0 +1,74 @@
+// source: https://community.bistudio.com/wiki/directSay
+// revision: 376774 (2025-11-17T00:05:11Z)
+// export sha1: qvmaxehjkpeas49ynwrm9n19oqsl74i
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Command Group: Sounds | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Radio and Chat
+
+|gr2= Sounds
+
+|descr= Sends given audio message to the direct channel. Command operates just like xxxxRadio commands, but the sound is played over direct channel and is independent of [[fadeSound]]. The message is defined in CfgRadio in the [[Description.ext|description.ext]] file or config radio protocol or a kbAddTopic. The transmission will play only on the PC where command was executed. If you need the transmission to play on all computers, you have to execute it globally (see [[remoteExec]]). Use [[clearRadio]] to clear chat history
+{{Feature|informative|When transmitting unit gets killed, transmission will be interrupted. However when receiving unit gets killed, the transmission continues to play.}}
+
+|s1= unit [[directSay]] radioName
+
+|p1= unit: [[Object]] - unit to transmit
+
+|p2= radioName: [[String]] - class name from CfgRadio
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player directSay configName selectRandom ("true" configClasses (configFile >> "CfgRadio"));</sqf>
+
+|x2= An equivalent of a '''''directChat''''' command:
+<sqf>
+[player, "Hello there", 30] call {
+	params ["_unit", "_text", "_distance"];
+	[_unit, _text] remoteExec ["globalChat", call BIS_fnc_listPlayers select { _x distance _unit < _distance }];
+};
+</sqf>
+
+A [[:Category:Functions Library|function]] can be made for [[localize|localisation]] purpose:
+<sqf>
+/* TAG_fnc_globalChat */
+params [
+	["_unit", objNull, [objNull]],
+	["_text", "", [""]]
+];
+
+_unit globalChat (_text call BIS_fnc_localize);
+</sqf>
+<sqf>
+// usage
+[player, "STR_HelloThere"] remoteExec ["TAG_fnc_globalChat", call BIS_fnc_listPlayers select { _x distance _unit < 30 }];
+</sqf>
+
+|seealso= [[sideRadio]] [[groupRadio]] [[customRadio]] [[vehicleRadio]] [[globalRadio]] [[commandRadio]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20161203213200
+|text= To transmit user custom sounds (see [[Multiplayer_Custom_Sounds_Tutorial]]), prefix the full filename including file extension with #.
+For example if there is a custom user sound file called {{hl|MySound.ogg}}, to play it on the radio use:
+<sqf>player directSay "#MySound.ogg";</sqf> 
+}}

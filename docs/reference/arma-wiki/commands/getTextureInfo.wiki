@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/getTextureInfo
+// revision: 378510 (2026-05-03T17:13:34Z)
+// export sha1: gp71haeyp62yfoh8mtwvqv56fo2064a
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|gr1= System
+
+|descr= Return texture information - resolution in pixels (mipmap level 0) and average colour. Multiply the pixel values by [[pixelW]] and [[pixelH]] to get screen coordinates.
+
+|s1= [[getTextureInfo]] texture
+
+|p1= texture: [[String]] - texture path (.paa, .jpg, .ogv)
+
+|r1= [[Array]] with [width, height, rgbaAverageColour]
+* width: [[Number]]
+* height: [[Number]]
+* {{GVI|arma3|2.08|size= 0.75}} rgbaAverageColour: [[Color|Color (RGBA)]]
+
+
+|s2= [[getTextureInfo]] [texture, sizeH]
+|s2since=arma3 2.22
+|p21= texture: [[String]] - texture path (.paa, .jpg, .ogv)
+|p22= sizeH: [[Number]] - texture height in screen size
+
+|r2= [[Array]] with [width, height]
+* width: [[Number]] - width of the texture in screen units
+* height: [[Number]] - height of the texture in screen units
+
+|x1= <sqf>getTextureInfo "a3\characters_f\blufor\data\clothing1_co.paa"; // [2048, 2048, [0.458824, 0.427451, 0.34902, 1]]</sqf>
+|x2= <sqf>getTextureInfo ["\A3\UI_f\Data\Logos\arma3_shadow_ca.paa", 0.1]; // [0.150111, 0.1]</sqf>
+
+|seealso= [[pixelW]] [[pixelH]] [[getModelInfo]] [[supportInfo]] [[getObjectType]] [[getObjectTextures]]
+}}

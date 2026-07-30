@@ -1,0 +1,102 @@
+// source: https://community.bistudio.com/wiki/Spearhead_1944_Normandy
+// revision: 376002 (2025-07-21T07:47:24Z)
+// export sha1: t5yxvp1nimyftkmhv0qthra0xbtx16h
+// categories: Category:Spearhead 1944
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+[[File:spe_normandy_picturemap_ca.jpg|400px|right|Satellite Image|thumb]]
+
+{{Link|https://en.wikipedia.org/wiki/Normandy|Normandy}} is an {{GameCategory|arma3|link= y}} terrain, released in 26 July 2023 as a part of the [[Spearhead 1944]] CDLC.
+
+This new unique terrain is a detailed representation of the actual terrain in Normandy at 1:2 scale where {{Link|https://en.wikipedia.org/wiki/Operation_Cobra|Operation Cobra}} took place.
+
+Normandy features numerous faithfully recreated real world locations that were involved in the {{Link|https://en.wikipedia.org/wiki/Operation_Overlord|Overlord campaign}}, covering from ''St Lo'' down to ''Roncey'' and ''Lengronne''.
+Complete with labyrinthine hedgerows and branching rivers, quiet farmsteads, dug in positions, ancient orchards and countryside towns lying in ruins, featuring new custom created era specific and highly detailed buildings, rivers, environmental foliage and fortifications bringing the World War II setting to life.
+
+'''Normandy promises intense close-quarter firefights and thrilling combined-arms gameplay that will keep you coming back for more.'''
+
+
+= Random Facts =
+
+* The hedgerow country of France doesn't have formal borders, but it basically stretches inland, encompassing most of the Cotentin Peninsula, and then moving inland toward Falaise, Argentan, and Alençon.
+* The total length of Bocage on Normandy equates to approximately 2,113,163 meters, or 5.27 % of the Earth's circumference.
+* There are nine rivers located across Normandy, many with smaller streams and tributaries that flow into them.
+* The combined length of rivers and streams in Normandy spans just over 72 kilometers.
+* There are over 40 fortified farmsteads found throughout the Normandy terrain.
+* The coordinates for the Normandy terrain are 49°02'32.1""N 1°10'46.7""W.
+* There are over 50 settlements on the Normandy map ranging from Cities down to small hamlets and villages.
+* A total of 98 bridges across Normandy allow the crossing of its rivers and streams safely.
+* A network of 331 navigational signs help motorists reach their destinations safely when traveling through Normandy.
+* A combined total of 3,530 traffic signs help keep the roads of Normandy safe for all motorists.
+* The agricultural fields across Normandy are valiantly guarded by 375 scarecrows.
+* There are a total of 6 chateaus scattered around the map.
+* Nine rivers are present around the map, the biggest of which is named La Vire and runs through Saint Lo.
+* Viking leader Rollo and the French king Charles the Simple signed the Treaty of Saint-Clair-sur-Epte, which granted Rollo control of the region and birthed the name Normandy after the Norse people that came to live there.
+* Normandy's biggest industry is agriculture, though much of it has been affected by the war.
+
+= Statistics =
+
+{| class="wikitable"
+|-
+| Size || 12.28 km x 12.28 km
+|-
+| Area || 150 km<sup>2</sup>
+|-
+| Coordinates || 49°02'32.1" North<br/>
+1°10'46.7" West
+|-
+| Object Count || 
+{{Columns|1|
+* '''TOTAL:''' 1535807
+* BUILDING: 2885
+* BUNKER: 1689
+* BUSH: 360918
+* CHURCH: 45
+* CROSS: 14
+* FENCE: 275651
+* FORTRESS: 196
+* FOUNTAIN: 1283
+* HIDE: 299301
+* HOUSE: 12615
+* MAIN ROAD: 1960
+* RAILWAY: 776
+* ROAD: 20215
+* ROCK: 827
+* RUIN: 1
+* SMALL TREE: 19
+* TRACK: 29812
+* TRAIL: 6365
+* TREE: 460152
+* VIEW-TOWER: 95
+* WALL: 60954
+* WATERTOWER: 34
+}}
+|}
+
+= Gallery =
+
+<gallery mode="slideshow" showthumbnails>
+spe_normandy_preview_6.jpg
+spe_normandy_preview_0.jpg
+spe_normandy_preview_1.jpg
+spe_normandy_preview_2.jpg
+spe_normandy_preview_3.jpg
+spe_normandy_preview_4.jpg
+spe_normandy_preview_5.jpg
+spe_normandy_preview_7.jpg
+spe_normandy_preview_8.jpg
+spe_normandy_preview_9.jpg
+spe_normandy_preview_10.jpg
+</gallery>
+
+= High Resolution Map =
+
+A high resolution .svg can be downloaded {{Link/External|link=https://drive.google.com/drive/folders/19pnqIXrccqvsDbbo12YoWTfM1IMBStik?usp=sharing|text=here}}
+
+= Substitute Files =
+
+See [[Spearhead 1944 Substitute Files]] page.
+
+[[Category: Spearhead 1944]]

@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/tvSetPicture
+// revision: 378315 (2026-04-02T16:16:24Z)
+// export sha1: 4udk4p6tqxt5gkejbirb6u0n7g2fz8b
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|descr= Sets picture to item selected by path. IDC means id of parent Tree View. Name is picture name. The picture is searched in the mission directory.
+{{Feature|informative|
+* Adding pictures to lists is very slow. In order to prevent the filling of the list to be slowed down, add the pictures in a '''scheduled''' environment - See {{Link|#Example 3}}.
+One drawback of this method is that sorting the entries is not easily possible.
+* If not all items have a picture but you still want them to be aligned at the front, use a [[Procedural Textures|Procedural Texture]] that is transparent {{hl|#(rgb,32,32,3)color(1,1,1,0)}}.
+}}
+
+|s1= [[tvSetPicture]] [idc, path, name]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|p3= name: [[String]]
+
+|r1= [[Nothing]]
+
+|s2= control [[tvSetPicture]] [path, name]
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|p23= name: [[String]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>tvSetPicture [101, [0], "picture"];</sqf>
+
+|x2= <sqf>_ctrl tvSetPicture [[0,0,0], getText (configFile >> "CfgWeapons" >> "optic_NVS" >> "picture")];</sqf>
+
+|x3= Adding images in a scheduled environment:
+<sqf>
+private _path = _ctrlTV tvAdd [[], "Some Entry"];
+[_ctrlTV, _path] spawn {
+	(_this select 0) tvSetPictureRight [[_this select 1], "someImage.paa"];
+};
+</sqf>
+
+|seealso= [[tvPicture]] [[tvSetPictureColor]] [[tvSetPictureRight]] [[tvSetPictureRightColor]]
+}}

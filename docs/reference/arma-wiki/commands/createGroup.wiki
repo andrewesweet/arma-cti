@@ -1,0 +1,110 @@
+// source: https://community.bistudio.com/wiki/createGroup
+// revision: 364085 (2024-05-03T19:33:29Z)
+// export sha1: 4ywzwclgbq4s5zhne2jgklhlhm8jbe7
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Groups | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Groups
+
+|eff= global
+
+|descr= Creates a new [[Group]] for the given [[Side]]. Using this command if the group limit is reached will return [[grpNull]]. The new [[Group]] exists globally, but it's locality is where this command was executed.
+{{{!}} class="wikitable" style="text-align: center"
+! Game
+{{!}} {{GVI|ofp|1.00}}
+{{!}} {{GVI|ofpe|1.00}}
+{{!}} {{GVI|arma1|1.00}}
+{{!}} {{GVI|arma2|1.00}}
+{{!}} {{GVI|arma2oa|1.50}}
+{{!}} {{GVI|tkoh|1.00}}
+{{!}} {{GVI|arma3|1.00}}
+{{!}} {{GVI|arma3|1.68}}
+{{!}}-
+! Group auto-deletion
+{{!}} colspan="6" {{!}} {{Icon|unchecked}}
+{{!}} colspan="2" {{!}} {{Icon|checked}}
+{{!}}-
+! Group limit per side
+{{!}} 63
+{{!}} colspan="6" {{!}} 144
+{{!}} 288
+{{!}}}
+
+{{Feature | important |
+* Groups can only be created for the [[west]]/[[blufor]], [[opfor]]/[[east]], [[independent]]/[[resistance]], [[civilian]] and [[sideLogic]] sides - any other side will return [[grpNull]]
+* Before {{arma3}}, a [[Side]] [[createCenter|center]] must exist before group creation (either by having editor-placed units or [[createCenter]] usage)
+}}
+
+{{Feature|arma3|
+* [[createCenter]] usage is not needed anymore as all centers are automatically created.
+* When the last unit leaves its group, the group usually gets immediately auto-deleted, regardless of its auto-deletion setting.
+}}
+
+|s1= [[createGroup]] side
+
+|p1= side: [[Side]]
+
+|r1= [[Group]] - [[grpNull]] if the group limit is reached
+
+|s2= [[createGroup]] [side, deleteWhenEmpty]
+
+|s2since= arma3 1.68
+
+|p21= side: [[Side]]
+
+|p22= deleteWhenEmpty: [[Boolean]] - [[true]] to [[deleteGroupWhenEmpty|delete the group when empty]].
+* If set to [[true]], forces a group to get deleted when empty - it does '''not''' prevent its deletion by other commands when set to [[false]].
+* Deletion may take up to a minute after the last unit is removed.
+
+|r2= [[Group]] - [[grpNull]] if the group limit is reached
+
+|x1= <sqf>private _group = createGroup east;</sqf>
+
+|x2= <sqf>private _group = createGroup [east, true];</sqf>
+
+|seealso= [[deleteGroup]] [[deleteGroupWhenEmpty]] [[isGroupDeletedWhenEmpty]] [[group]] [[setGroupId]] [[groupID]] [[units]] [[groupFromNetId]] [[netId]] [[leader]] [[selectLeader]] [[join]] [[createCenter]] [[createUnit]] [[createVehicle]] [[Side]]
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20110104101900
+|text= A group created with [[createGroup]] will get a waypoint at [0,0,0]. When you use [[createUnit]] to fill it with units, it will get an additional waypoint at the position the first unit is created. This new waypoint will also be set as [[currentWaypoint]]. However keep these two waypoints in mind when you do some scripting involving this groups' waypoints.
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20220504142023
+|text= New group is local to the machine that executed the command ('''A3 2.08.149102'''):
+<sqf>
+player addAction ["Group Test (Dedicated Server)", {
+	[[], {
+		_test = createGroup [west, true];
+		[str (local _test)] remoteExec ["hint", -2]; //tell all clients group locality; true
+		missionNamespace setVariable ["Group_Reference", _test, true]; //broadcast group reference to all players
+	}] remoteExec ["call", 2]; //create group on dedicated server only
+	sleep 1;
+	_newGroup = missionNamespace getVariable "Group_Reference"; //receive group reference from server
+	systemChat format ["Group local to player: %1", local _newGroup]; //false
+}];
+</sqf>
+}}

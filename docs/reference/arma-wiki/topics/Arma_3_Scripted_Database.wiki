@@ -1,0 +1,102 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Scripted_Database
+// revision: 376300 (2025-10-03T15:35:17Z)
+// export sha1: f9u2oera5t7lkl4ie51gjlp5x53d4fh
+// categories: Category:Arma Scripting Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|obsolete|For better peformance (faster access and write speeds) you can use [[HashMap]]s instead.|arma3|2.02|}}
+
+
+A [[Arma 3: Scripted Database|Scripted Database]] is a simple way to manage information with ingame functions from {{Name|bi}} and has been introduced in [[{{tkoh}}]].
+Instead of using file operations it is a semi persistent sqf database. This means that the database is only available during the mission and can be modified with ingame commands.
+The downside is that it will be wiped when the mission ends or the game/server crashes. To make the database persistent you can save it periodically to the [[profileNamespace]].
+
+
+== Functions ==
+
+A list of all functions which are used to operate the database can be found here: [[:Category:Function Group: Database|Database functions]]. 
+The functions in which you should be interested in are:
+* [[BIS_fnc_dbValueSet]]
+* [[BIS_fnc_dbValueReturn]]
+
+And to a certain extent:
+* [[BIS_fnc_dbClassList]]
+* [[BIS_fnc_dbClassRemove]]
+* [[BIS_fnc_dbClassReturn]]
+* [[BIS_fnc_dbClassSet]]
+* [[BIS_fnc_dbImportXML]]
+* [[BIS_fnc_dbValueList]]
+
+
+== Database Creation ==
+
+There are theoretically three options:
+
+=== Empty Array Declaration ===
+
+The most straightforward option. Simply add <sqf inline>TAG_database = [];</sqf> to any script where you want to declare the database, eg [[Event Scripts#initServer.sqf|initServer.sqf]].
+
+=== XML Import ===
+
+[[BIS_fnc_dbImportXML]] can convert the content of an xml file into an array which has the format of a Scripted Database. An xml file can be way easier to read than a nested array. Just keep in mind that you can't modify the xml file from within the game, meaning that once the mission restarts the default database from that file will be loaded and not the database which existed at the end of a mission.
+
+=== Config Import ===
+
+A config can either be [[Description.ext]] ([[missionConfigFile|mission config]]), the [[Campaign Description.ext]] ([[campaignConfigFile|campaign config]]) or an addon's [[Config.cpp/bin File Format|config.bin/.cpp]] ([[configFile|global config]]). The [[BIS_fnc_dbImportConfig]] function can import the config classes from the config but not the values. This makes this function a bit useless as the same can be achieved with the other options but even better. Writing to the config is also only possible from outside the game and not with commands.
+
+
+== Database Operation ==
+
+=== Classes And Values ===
+
+The Scripted Database consists of classes and values. Classes can be identified by the class symbol "#" while the symbol for values is "&". The sole purpose of [[BIS_fnc_dbSymbolClass]] and [[BIS_fnc_dbSymbolValue]] is to return this sign. While the class is followed by an array which contains values, the value is only followed by its content which can be any data type. After the values content might follow another value or the array for that class can end. Here is an example of what the database looks like:
+<sqf>["#PLAYERS", ["#1234", ["&NAME", "Bob", "&KILLS", 20, "&RANK", "Sergent"], ["#5678", ["&NAME", "Davis", "&KILLS", 0, "&RANK", "Private"]]]</sqf>
+Let's format that a bit differently:
+<sqf>
+[
+	"#PLAYERS", // The uppermost class containing information about the players
+	[
+		"#1234", // An imaginary user id to identify a player without doubt
+		[
+			// Following here are some stats that the player has
+			"&NAME", "Bob",
+			"&KILLS", 20,
+			"&RANK", "Sergeant"
+		],
+		"#5678",
+		[
+			"&NAME", "Davis",
+			"&KILLS", 0,
+			"&RANK", "Private"
+		],
+	]
+]
+</sqf>
+
+=== Values Access ===
+
+To get the content of a value you can use the [[BIS_fnc_dbValueReturn]] function. The first parameter is the database from which the value should be returned.
+The second one is the path where the value is located. If the function can not find the specified value you can set a default return value with the third parameter similar to [[getVariable]].
+The following code displays the rank the player currently has in the database and if no value exists it will mark the player's rank as "PRIVATE":
+<sqf>
+private _puid = getPlayerUID player;
+private _rank = [TAG_database, ["players", _puid, "rank"], "PRIVATE"] call BIS_fnc_dbValueReturn;
+hint _rank;
+</sqf>
+If you ever worked with configs then you might notice the similarity between the array and the config paths. This is how you access a config value:
+<sqf>getText (missionConfigFile >> "Players" >> getPlayerUID player >> "rank");</sqf>
+So while the config is not editable the database is, which leads us to...
+
+=== Values Editing ===
+
+Values can be edited with the function [[BIS_fnc_dbValueSet]]. Continuing with the example from above the player was just promoted and a new rank has to be set in the database (array {{hl|TAG_database}}):
+<sqf>
+private _newRank = rank player;
+private _puid = getPlayerUID player;
+[TAG_database, ["players", _puid, "rank"], _newRank] call BIS_fnc_dbValueSet;
+</sqf>
+The previous database array will be overwritten by the function, see the [[set]] command.
+
+
+[[Category:Arma Scripting Tutorials]]

@@ -1,0 +1,441 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Configuring_Attributes
+// revision: 378458 (2026-04-19T11:59:09Z)
+// export sha1: 74h8dwirpzerzvvmckozijqbpu67dsm
+// categories: Category:Eden Editor: Modding
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A scenario and each [[Eden Entity|entity]] in it are defined by their attributes.
+An attribute is a value customizable by the user, and it has some function tied to it. For example ''position'' object attribute tells engine where to create the object, and  ''respawn'' scenario attributes determines what rule set will be used when players respawn.
+
+Each attribute is configured in the global [[Config.cpp]]. Major engine-driven attributes are already present in the default Editor and can be modified to a degree.
+Modders can also add completely new attributes and decide how will they appear in the attribute window and what scripted functionality will they execute in the scenario.
+
+Attributes can be added for general [[:Category:Eden_Editor:_Asset_Types|entity type]] (e.g., shared by all objects) or for specific entity types (e.g., just for BLUFOR Rifleman).
+An entity type can also override default values of general attributes (e.g., story character can have customized ''name'' and ''rank'').
+
+{{Feature|important|Attributes are available only within the Eden Editor workspace. You cannot access them in scenario preview or exported scenario!<br>A scripted expression is used to apply their values in the scenario (see below).}}
+
+
+== Structure ==
+
+Attributes are configured and presented in the following structure:
+: '''Owner''' - defines what does the attribute set. Can be an entity, a scenario or editor preferences. In user interface, this is the whole attributes window.
+: └ '''Category''' - thematic category. Used only for sorting in the window, has no effect on the scenario.
+:: └ '''Attribute''' - setting itself, represented by tailored user interface.
+
+
+[[File:3den_editAttributes.jpg|640px]]
+
+
+== Configuration ==
+
+=== Entity ===
+
+==== General ====
+General attributes are available for all entity classes of given type. Optional conditions can be applied to show the attribute only for limited subset of entities. For example ''rank'' attribute is shared by every object, be it a character, a vehicle or a prop. But its condition makes sure only characters have it available.
+
+Attribute functionality is determined by its ''expression'' property. It is a code called at the scenario start, and it is purpose is to apply the attribute's value. <u>The expression is saved to the scenario file together with value, which makes it independent on the addon which introduced the attribute.</u> '''Only attributes with values different from the default are saved to the scenario file, which means only their expression will be called.'''
+{{Feature|informative|The attribute '''wikiType''' is only used to export default attributes to this wiki with [[BIS_fnc_3DENExportAttributes]]. '''You do not need to declare it.'''}}
+<syntaxhighlight lang="cpp">
+class Cfg3DEN
+{
+	// Configuration of all objects
+	class Object
+	{
+		// Categories collapsible in "Edit Attributes" window
+		class AttributeCategories
+		{
+			// Category class, can be anything
+			class MyCategory
+			{
+				displayName = "Object Init"; // Category name visible in Edit Attributes window
+				collapsed = 1; // When 1, the category is collapsed by default
+				class Attributes
+				{
+					// Attribute class, can be anything
+					class MyAttribute
+					{
+						//--- Mandatory properties
+						displayName = "My Attribute"; // Name assigned to UI control class Title
+						tooltip = "Configure all the things!"; // Tooltip assigned to UI control class Title
+						property = "MyAttributeUniqueID"; // Unique config property name saved in SQM
+						control = "Edit"; // UI control base class displayed in Edit Attributes window, points to Cfg3DEN >> Attributes
+
+						// Expression called when applying the attribute in Eden and at the scenario start
+						// The expression is called twice - first for data validation, and second for actual saving
+						// Entity is passed as _this, value is passed as _value
+						// %s is replaced by attribute config name
+						// In MP scenario, the expression is called only on server.
+						expression = "_this setVariable ['%s',_value];";
+
+						// Expression called when custom property is undefined yet (i.e., when setting the attribute for the first time)
+						// Entity (unit, group, marker, comment etc.) is passed as _this
+						// Returned value is the default value
+						// Used when no value is returned, or when it is of other type than NUMBER, STRING or ARRAY
+						// Custom attributes of logic entities (e.g., modules) are saved always, even when they have default value
+						defaultValue = "42";
+
+						//--- Optional properties
+						unique = 0; // When 1, only one entity of the type can have the value in the mission (used for example for variable names or player control)
+						validate = "number"; // Validate the value before saving. If the value is not of given type e.g. "number", the default value will be set. Can be "none", "expression", "condition", "number" or "variable"
+						condition = "object"; // Condition for attribute to appear (see the table below)
+						typeName = "NUMBER"; // Defines data type of saved value, can be STRING, NUMBER or BOOL. Used only when control is "Combo", "Edit" or their variants. This is a scripted feature and has no engine support. See code in (configFile >> "Cfg3DEN" >> "Attributes" >> "Combo" >> "attributeSave")
+					};
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+==== Complex Attribute Expressions vs. BIS_fnc_3DENExportSQF ====
+When the scenario creator uses the ''Export Mission to SQF'' functionality, the following happens with the expression code:
+* '''%1''' will be replaced with the content of '''_value''' - Use [[str]], [[a plus b]] or similar to format and join strings
+* '''_value''' will be replaced by its actual content - '''Do not''' do something like this: <sqf inline>params ["_group", "_value"];</sqf>
+Keep that in mind when creating an attribute because otherwise it '''will''' break it in combination with [[BIS_fnc_3DENExportSQF]]
+
+==== Entity Specific ====
+Some entities can also have attributes available only for them. This is most commonly used by [[Eden Editor: System|systems]] - for example Air Strike module can have attribute for picking attack type and plane used, both of which would be unusable by other modules.
+
+Entity specific attributes are configured directly in the entity class. For user, they are visible in single category which also shows entity name.
+* '''CfgVehicles''' - objects and systems
+* '''CfgNonAIVehicles''' - triggers
+* '''CfgWaypoints''' - waypoints
+* '''CfgMarkers''' - markers
+<syntaxhighlight lang="cpp">
+class CfgVehicles
+{
+	class B_Soldier_F;
+	class MyEntity : B_Soldier_F // Your entity class
+	{
+		class Attributes // Entity attributes have no categories, they are all defined directly in class Attributes
+		{
+			class MyEntityAttribute
+			{
+				// ... attribute properties, see entity attributes
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+=== Scenario ===
+
+Some attributes are available for the scenario as a whole. Instead of belonging to an entity, they are configured for a '''section'''. All attributes within a section are shown in one window, for example weather and time of the day settings are in Environment section, while scenario name or picture are in Scenario section.
+
+Scenario attributes work together with properties in [[Description.ext]]. An attribute "respawnDelay" can be configurable in Eden, but it can be also defined in the external file like this:
+<syntaxhighlight lang="cpp">respawn = 10;</syntaxhighlight>
+Values in external files have priority over the ones set in the Eden Editor.
+
+Configuration of scenario attributes is similar to general entity attributes. Sections are placed in pre-defined '''Mission''' class, and they contain attribute categories with attributes in them.
+<syntaxhighlight lang="cpp">
+class Cfg3DEN
+{
+	class Mission
+	{
+		class MySection // Custom section class, everything inside will be opened in one window
+		{
+			displayName = "My Attributes"; // Text visible in the window title as "Edit <displayName>"
+			display = "Display3DENEditAttributesPreview"; // Optional - display for attributes window. Must have the same structure and IDCs as the default Display3DENEditAttributes
+			class AttributeCategories
+			{
+				// The following structure is the same as the one used for entity attributes
+				class MyMissionCategory
+				{
+					class Attributes
+					{
+						class MyMissionAttribute
+						{
+							property = "MyMissionAttributeUniqueID";
+						};
+					};
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+Consider adding a link to this new section to the [[Eden Editor: Modding Menu Bar#Scenario Attributes|Menu Bar]].
+
+Special script commands can be used to manipulate scenario attributes:
+
+* Open window with attributes belonging to given section:
+:<sqf>edit3DENMissionAttributes "MySection";</sqf>
+* Set value of scenario attributes:
+:<sqf>set3DENMissionAttributes [["MySection", "MyMissionAttributeUniqueID", 42]];</sqf>
+* Get value of scenario attribute:
+:<sqf>_myAttributes = "MySection" get3DENMissionAttribute "MyMissionAttributeUniqueID";</sqf>
+* Access attribute value in the scenario itself. Compatible with Eden Editor attributes and with properties defined in external [[Description.ext]] file.
+:<sqf>getMissionConfigValue "MyMissionAttributeUniqueID";</sqf>
+
+=== Preferences ===
+
+There is a special scenario attribute section called '''Preferences'''. Any attribute configured in it will be saved in player's profile instead of inside mission file. This is used for global editor preferences, like camera speed or autosave settings.
+
+Values are saved to {{hl|<profileName>.3den.Arma3Profile}} file in your profile folder. As opposed to [[saveProfileNamespace|scripted variables]], they are saved unbinarized and can be edited manually.
+
+{{Feature|important|Keep in mind that all settings of a mod in {{hl|<profileName>.3den.Arma3Profile}} get wiped if the game was loaded without that mod.
+In order to prevent that, it is best to save the setting's value in a separate [[profileNamespace]] variable.
+<syntaxhighlight lang="cpp">
+class ShowCompositionPlacementNotification
+{
+	displayName = "Composition Placement Notification";
+	tooltip = "";
+	property = "ShowCompositionPlacementNotification";
+	control = "Checkbox";
+	expression = "profileNamespace setVariable ['ShowCompositionPlacementNotification', _value]";
+	defaultValue = "profileNamespace getVariable ['ShowCompositionPlacementNotification', true]";
+};
+</syntaxhighlight>}}
+
+* Expressions are automatically executed when:
+** Their value was changed and saved. E.g., pressing OK in the attribute window.
+** [[Arma_3:_Event_Handlers:_Eden_Editor#OnTerrainNew|onTerrainNew]]
+** [[Arma_3:_Event_Handlers:_Eden_Editor#OnMissionPreviewEnd|onMissionPreviewEnd]]
+
+{{Feature|important| They are not executed [[Arma_3:_Event_Handlers:_Eden_Editor#onMissionLoad|onMissionLoad]] or [[Arma_3:_Event_Handlers:_Eden_Editor#onMissionNew|onMissionNew]]! If the attribute needs to be executed on those events, the expression needs to be added to these event handlers.}}
+
+<syntaxhighlight lang="cpp">
+class Cfg3DEN
+{
+	class Mission
+	{
+		class Preferences // Anything in this section will be displayed in Editor Preferences
+		{
+			class AttributeCategories
+			{
+				// ... Attribute categories
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+== Presets ==
+
+Apart from being able to add their own attributes, entities can also overwrite default values of general attributes. This can be useful for customizing story character (a character can have pre-defined name, face and rank, but mission designer will be still able to change it).
+
+In the example below, we create a trigger with custom area size:
+<syntaxhighlight lang="cpp">
+class CfgNonAIVehicles
+{
+	class EmptyDetector;
+	class MyTrigger : EmptyDetector
+	{
+		class AttributeValues
+		{
+			sizeA = 1000; // Property name match the attribute name
+			sizeB = 1000;
+		};
+	};
+};
+</syntaxhighlight>
+
+
+== Properties ==
+
+=== Condition ===
+
+Conditions are written as [[Simple Expression|simple expressions]].
+Example:
+<syntaxhighlight lang="cpp">condition = "objectControllable + objectVehicle";</syntaxhighlight>
+All characters and vehicles will have this attribute.
+
+{{Feature|informative|To make an attribute available for all objects, use: '''condition {{=}} 1;'''.}}
+ 
+'''Supported conditions:'''
+{| class="wikitable sortable"
+! Condition
+! class="unsortable" | For Type
+! class="unsortable" | Description
+|-
+| <!-- Condition --> objectBrain
+| <!-- Type --> Object
+| <!-- Description -->Object with simulation "soldier" or "UAVpilot"
+|-
+| <!-- Condition --> objectControllable
+| <!-- Type --> Object
+| <!-- Description -->Object with simulation "soldier"
+|-
+| <!-- Condition --> objectAgent
+| <!-- Type --> Object
+| <!-- Description -->	Object with non-empty ''agentTasks[]'', i.e., animals
+|-
+| <!-- Condition --> objectVehicle
+| <!-- Type --> Object
+| <!-- Description -->Vehicle which can be boarded
+|-
+| <!-- Condition --> objectSimulated
+| <!-- Type --> Object
+| <!-- Description -->	Object which is simulated (e.g., falls down when in the air)
+|-
+| <!-- Condition --> objectDestructable
+| <!-- Type --> Object
+| <!-- Description -->Indestructible object, i.e., when ''destrType'' config property set not ''DestructNo''
+|-
+| <!-- Condition --> logicModule
+| <!-- Type --> Logic
+| <!-- Description -->Logic which is a module (''vehicleClass'' config property is ''"Modules"'')
+|-
+| <!-- Condition --> objectHasInventoryCargo
+| <!-- Type --> Object
+| <!-- Description -->All objects which have an openable inventory
+|-
+| <!-- Condition --> CommentCamera
+| <!-- Type --> Comment
+| <!-- Description -->Returns true if selected comment is the [[Eden Editor]] camera (3DENID: -999). Use this condition if you want to add an attribute only available to the camera and not all comments
+|-
+| <!-- Condition --> {{GVI|arma3|2.22}} Script
+| <!-- Type --> -
+| <!-- Description --> Contains sqf condition defined in {{hl|conditionScript}} property
+|}
+
+=== {{GVI|arma3|2.22}} ConditionScript ===
+Contains a sqf expression that serves as a more flexible condition. The result is available in the simple expression called {{hl|script}}. The following variables are available inside the expression:
+
+*_this: [[Eden Entity]]
+*_thisType: [[String]] - the type of the [[Eden Entity]]
+
+Example:
+<syntaxhighlight lang="cpp">
+class ENH_MarkerShape
+{
+    displayName = "$STR_ENH_MAIN_MARKER_SHAPE_DISPLAYNAME";
+    tooltip = "$STR_ENH_MAIN_MARKER_SHAPE_TOOLTIP";
+    property = "ENH_markerShape";
+    control = "ENH_MarkerShape";
+    expression = "if (_value != 'NONE' && isServer) then {_this setMarkerShape _value}";
+    defaultValue = "NONE";
+    typeName = "STRING";
+    validate = "STRING";
+    conditionScript = "_this get3DENAttribute 'MarkerType' select 0 > -1";
+    condition = "script";
+};
+</syntaxhighlight>
+
+In this example, the attribute will only show for markers of type area. This filtering was not possible prior to {{GVI|arma3|2.22}}.
+
+{{Feature|important|Hidden attribute are still saved to the mission.sqm and their value stay there. By setting {{hl|condition {{=}} "script"}} and {{hl|conditionScript {{=}} "false"}} one can effectively hide an attribute.}}
+
+=== Validation ===
+
+Text input fields allow user to type in any value. This is undesired for many attributes, for example entity rotation expects number, and using a string would break it. For these cases, it is possible to enable optional data validation.
+Validation type is set using {{hl|validate}} property in the attribute config:
+<syntaxhighlight lang="cpp">validate = "number";</syntaxhighlight>
+
+The following table lists all available options:
+{| class="wikitable sortable"
+! Validation
+! class="unsortable" | Usage
+! class="unsortable" | Condition
+|-
+| none
+| Default, without restrictions
+| N/A
+|-
+| variable
+| Variable names
+| Can contain only a-z, A-Z, 0-9 and _ characters.
+|-
+| expression
+| Code input. Offers autocomplete for known [[:Category:Scripting_Commands_Arma_3|scripting commands]].
+| Must be valid scripted expressions
+|-
+| condition
+| Code input, returned value is expected. Offers autocomplete for known [[:Category:Scripting_Commands_Arma_3|scripting commands]].
+| Must be valid scripted expressions
+|-
+| number
+| Numerical input.
+| Must be real number
+|}
+
+=== Control ===
+
+Entity attributes in Eden Editor are represented by specific UI controls. By default, the game offers a wide range of pre-define controls, and you also can create new ones tailored for specific attributes. For more information visit [[Eden Editor: Modding Attributes: Controls]].
+
+==== Configuration ====
+New UI controls can be added to introduce more advanced functionality. They are [[Control]]s, not [[Display]]s, and they are define in ''Cfg3DEN >> Attributes''. Using [[CT_CONTROLS_GROUP]] will allow you to create more complicated structures. Configuration is possible only in global [[Config.cpp]], not in [[Description.ext]].
+
+{{Feature|informative|See [[Eden Editor: User Interface]] for more details about GUI configuration.}}
+{{Feature|important|When creating new controls inside an attribute controls group it is recommended to avoid IDCs in range from 100 - 199 as some of them invoke engine functionality and prevent the custom controls from behaving as intended.}}
+<syntaxhighlight lang="cpp">
+// Include Eden Editor UI macros
+// For attributes, you'll be interested in these:
+// ATTRIBUTE_TITLE_W - title width
+// ATTRIBUTE_CONTENT_W - content width
+#include "\a3\3DEN\UI\macros.inc"
+
+// Inherit base classes
+class ctrlEdit;
+
+class Cfg3DEN
+{
+	class Attributes // Attribute UI controls are placed in this pre-defined class
+	{
+		// Base class templates
+		class Default; // Empty template with pre-defined width and single line height
+		class Title : Default
+		{
+			class Controls
+			{
+				class Title;
+			};
+		}; // Two-column template with title on the left and space for content on the right
+		class TitleWide : Default
+		{
+			class Controls
+			{
+				class Title;
+			};
+		}; // Template with full-width single line title and space for content below it
+
+		// Your attribute class
+		class MyAttributeControl : Title
+		{
+			// Expression called when the control is loaded, used to apply the value. It is not called when multiple entities are edited at once due to the fact that _value would not be available then.
+			// See the note below this config extract
+			// Passed params are: _this - controlsGroup, _value - saved value, _config - Path to attribute config e.g.:bin\config.bin/Cfg3DEN/Object/AttributeCategories/CATEGORY/Attributes/ATTRIBUTE
+			attributeLoad = "(_this controlsGroupCtrl 100) ctrlSetText _value";
+
+			// Expression called when attributes window is closed and changes confirmed. Used to save the value.
+			// Passed param: _this - control
+			attributeSave = "ctrlText (_this controlsGroupCtrl 100)";
+
+			// List of controls, structure is the same as with any other controls group
+			class Controls : Controls
+			{
+				class Title : Title{}; // Inherit existing title control. Text of any control with class Title will be changed to attribute displayName
+				class Value : ctrlEdit
+				{
+					idc = 100;
+					x = ATTRIBUTE_TITLE_W * GRID_W;
+					w = ATTRIBUTE_CONTENT_W * GRID_W;
+					h = SIZE_M * GRID_H;
+				};
+			};
+		};
+	};
+};
+</syntaxhighlight>
+
+{{Feature|important|When creating a custom attribute control it is important to also set up the controls via the [[User_Interface_Event_Handlers#onLoad|onLoad]] control event handler. That way they also get correctly setup (listboxes get filled etc.) when multiple entities are edited at once. This is caused by the fact that '''onAttributeLoad''' is not executed if multiple entities are selected! An example configuration can be found here: <sqf inline>configfile >> "Cfg3DEN" >> "Attributes" >> "Face" >> "Controls" >> "Value" >> "onload"</sqf>.}}
+
+== Scripting Commands ==
+
+{{Feature|informative|For a full list of Eden Editor commands, see [[:Category:Command Group: Eden Editor|Command Group: Eden Editor]].}}
+* [[edit3DENMissionAttributes]]
+* [[get3DENAttribute]]
+* [[get3DENMissionAttribute]]
+* [[set3DENAttribute]]
+* [[set3DENAttributes]]
+* [[set3DENMissionAttributes]]
+
+=== Initialisation Order ===
+
+* [[Initialisation Order]]
+
+
+[[Category:Eden Editor: Modding|Configuring Attributes]]

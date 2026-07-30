@@ -1,0 +1,79 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_VRTimer
+// revision: 376474 (2025-10-16T20:10:46Z)
+// export sha1: ptsbju55irf66eczr3dzqig5ggl8wfq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: VR | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= VR
+
+|eff= local
+
+|exec= spawn
+
+|descr= Timer for VR and time trials. The following [[missionNamespace]] variables can be used:
+* {{hl|BIS_stopTimer}}: set to [[true]] to stop the timer. Once stopped, the function must be executed again to restart the timer
+* {{hl|RscFiringDrillTime_current}}: fill with [[Structured Text]] to display text instead of timer (when timer is stopped)
+* {{hl|RscFiringDrillTime_done}}: set to [[true]] to close the display. '''''Stop the timer first'''''
+
+|s1= [colour] spawn [[BIS_fnc_VRTimer]]
+
+|p1= colour: [[String]] (Optional, default <sqf inline>(["IGUI", "WARNING_RGB"] call BIS_fnc_displayColorGet) call BIS_fnc_colorRGBtoHTML</sqf>) timer colour in HTML format (#{{Color|red|RR}}{{Color|green|GG}}{{Color|blue|BB}})
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[] spawn BIS_fnc_VRTimer;</sqf>
+
+|x2= <sqf>"#025D00" spawn BIS_fnc_VRTimer;</sqf>
+
+|x3= <sqf>["#025D00"] spawn BIS_fnc_VRTimer;</sqf>
+
+|seealso= [[BIS_fnc_displayColorGet]] [[BIS_fnc_colorRGBtoHTML]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20180604195000
+|text= Here is a countdown, inspired by this function:
+<sqf>
+LM_fnc_timeoutCountdown = {
+
+	params [
+		["_time", 30, [0]],
+		["_colour", "#FFFFFF", [""]]
+	];
+	private _timeout = time + _time;
+	RscFiringDrillTime_done = false;
+	1 cutRsc ["RscFiringDrillTime", "PLAIN"];
+	while { time < _timeout } do
+	{
+		private _remainingTime = _timeout - time;
+		private _timeFormat = [_remainingTime, "MM:SS.MS", true] call BIS_fnc_secondsToString;
+		private _text = format ["<t align='left' color='%1'><img image='%2' />%3:%4<t size='0.8'>.%5</t>",
+			_colour,
+			"A3\Modules_F_Beta\data\FiringDrills\timer_ca",
+			_timeFormat select 0,
+			_timeFormat select 1,
+			_timeFormat select 2
+		];
+		RscFiringDrillTime_current = parseText _text;
+		sleep 0.01;
+	};
+	private _timeFormat = [0, "MM:SS.MS", true] call BIS_fnc_secondsToString;
+	RscFiringDrillTime_current = parseText format ["<t align='left' color='%1'><img image='%2' />%3:%4<t size='0.8'>.%5</t>",
+		_colour,
+		"A3\Modules_F_Beta\data\FiringDrills\timer_ca",
+		_timeFormat select 0,
+		_timeFormat select 1,
+		_timeFormat select 2];
+	sleep 4;
+	RscFiringDrillTime_done = true;
+};
+</sqf>
+and to use it:
+<sqf>[10, "#FF5500"] spawn LM_fnc_timeoutCountdown;</sqf>
+}}

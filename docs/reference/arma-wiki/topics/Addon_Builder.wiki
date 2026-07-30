@@ -1,0 +1,80 @@
+// source: https://community.bistudio.com/wiki/Addon_Builder
+// revision: 341605 (2023-06-10T09:16:42Z)
+// export sha1: df3pm2wvzwldxzqowq4nf0ddsefh518
+// categories: Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY=[[:Category: Arma 3|Arma 3]]
+
+|DOWNLOAD= {{Link|link= http://store.steampowered.com/app/233800/|text= Part of Arma 3 Tools package on Steam}}
+
+|DESCRIPTION= Addon Builder is a packing tool created by Bohemia Interactive.
+
+The purpose of this tool is to convert all data into formats readable by the Real Virtuality engine and pack them into a single archive. The tool was formerly known as [[BinPBO]].
+
+|COMMAND=
+ AddonBuilder.exe
+ AddonBuilder.exe -help
+
+|OPTIONS= Addon Builder can used in console mode with the following parameters:
+* -packonly: only stores the folder to a PBO. Do NOT binarize files. I.e. binarization is default behavior
+* -clear: before binarizing, the content of subfolder for the current project is deleted.
+* -temp: path for the folder which stores binarized files, default destination is temp in Windows, if no value is present then the last folder is used, if you use the same folder, the next time you binarize the same addon it will take less time.
+* -prefix: relative path to files used in addon, if not present then this value is calculated automatically.
+* -project: path to folder where project starts from, if you are packing only the path of a project. It is recommended to use the same as the source path or to define it accordingly to the need. In case it is defined to P:, Binarize will process the entire P: drive which takes time.
+* -sign: *.biprivatekey file with signature, addons created with a signature can be added to secure servers.
+* -include: directly copy matched files to PBO. absolute path to file with wildcard patterns. separator is ';' and ','.
+* -binarize: path to binarize tool. default is used if not specified.
+* -cfgconvert: path to cfg convert tool. default is used if not specified.
+* -filebank: path to filebank tool. default is used if not specified.
+* -dssignfile: path to DssignFile tool. default is used if not specified.
+
+{{Feature|informative|Be aware that arguments are case sensitive. {{hl|-packonly}} will work, but {{hl|-packOnly}} will not.}}
+
+example: c:\addon d:\addon_build -clear -sign=c:\keys\bistudio.biprivatekey -project=c: -include=c:\include.txt -binarize=c:\mybinarize.exe
+|NOTES=
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= [[BinPBO]]
+
+}}
+
+=== Options ===
+
+==== Clear temp folder ====
+This checkbox in main screen of the interface allows user to pack clean data without any interference. Packing takes longer after cleaning temp folder, but data cannot be affected by previous versions. Use this regularly if you pack data referencing other addons to ensure everything is correctly referenced.
+
+==== Create signature ====
+Use this option to create digital signatures of the PBOs using digital key defined in options. Use [[DSCreateKey]] to create the key to work with.
+
+==== Binarize ====
+This option allows you to convert possible files in addon into format readable by RV Engine. Leave this checked most of the time unless you want to publish the MLODs for some reason for example.
+
+==== List of files to copy directly ====
+This is list of files (with possible use of wild-cards) to copy directly from source directory to the packed addon. Some files are added by default and the rest has to be mentioned in here.
+
+==== Addon prefix ====
+Use this option to set the path prefix to the structure of the addon.
+
+==== Path to signature file ====
+Use this path to a key if you want to sign your PBO with digital signature, leave it empty otherwise.
+
+==== Path to temporary folder ====
+The addon is going to be processed in temporary folder during its building, the folder is set to the Windows temporary folder by default. You may want to clean the folder by Clear temp folder option in main menu of the Addon Builder.
+
+==== Path to project folder ====
+Is the same as path to source directory by default, may be set to different values to enable linking from different addons. Note, in some case, it can be the parent of the project folder, e.g. P:\ for a mod located in P:\A3
+
+It is recommended to use the same as the source path or to define it accordingly to the need. In case it is defined to P:, Binarize will process the entire P: drive which takes time.
+
+==== Exclusion pattern file ====
+File which contains list of file pattern which shouldn't included in the resulting PBO. An examples of exclusion file can be found in the folder of [[FileBank]].
+
+
+{{GameCategory|arma3|Official Tools}}

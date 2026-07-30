@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/magazineCargo
+// revision: 348708 (2023-11-08T14:29:30Z)
+// export sha1: kiprpafxvrgpksxck96dvvsxwj57d59
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Command Group: Vehicle Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Vehicle Inventory
+
+|gr2= Containers
+
+|descr= Get array with magazines from ammo box (or any general weapon holder container).
+
+|s1= [[magazineCargo]] object
+
+|p1= object: [[Object]] - vehicle or ammo box
+
+|r1= [[Array]] - format: ["MagType1","MagType1","MagType2"...]
+
+|x1= <sqf>hint str magazineCargo uniformContainer cursorTarget;</sqf>
+
+|seealso= [[magazinesAmmoCargo]] [[getMagazineCargo]] [[addMagazineCargo]] [[addMagazineCargoGlobal]] [[clearMagazineCargo]] [[clearMagazineCargoGlobal]] [[weaponCargo]] [[itemCargo]]
+}}

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Malden
+// revision: 339525 (2023-04-28T14:09:13Z)
+// export sha1: 6bu1995pgmq2o36hedh6x9nz8cat11l
+// categories: Category:Arma 3: DLCs & Expansions | Category:Introduced with Arma 3 version 1.72
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image = A3_Malden_DLC.png
+|game= arma3
+|version= 1.72
+|releasedate= 20170622
+|intro = Arma 3 Malden is a free DLC. [[Malden 2035]] is a fresh take on the original Malden terrain featured in the very first Arma game. While Malden 2035 re-uses many vanilla Arma 3 structures, vegetation, and similar assets, it also includes additions such as colored buildings, vineyards, and barns. Malden 2035 was initially developed for Bohemia Interactive’s free tactical multiplayer shooter, Argo, and benefits greatly from Argo's infantry focus. A lot of effort was put into the gameplay flow of each location, and as such, this new version of Malden is ideal for Close Quarters Combat.
+
+|feature1= '''[[Malden 2035]]''' - Malden 2035 is a fresh take on the original Malden terrain featured in the very first Arma game. While Malden 2035 re-uses many vanilla Arma 3 structures, vegetation, and similar assets, it also includes additions such as colored buildings, vineyards, and barns. Malden 2035 was initially developed for Bohemia Interactive’s free tactical multiplayer shooter, Argo, and benefits greatly from Argo's infantry focus. A lot of effort was put into the gameplay flow of each location, and as such, this new version of Malden is ideal for Close Quarters Combat.
+|feature2= '''''Combat Patrol''''' - To (re)introduce Malden in a fun way, the Malden DLC comes with a completely new multiplayer mode, Combat Patrol. Combat Patrol is a quick and dynamic cooperative multiplayer mode in which you are a member of an infantry team with the possibility to select the Area of Operations. Each play-through will be different thanks to the mode's heavily randomized nature and behavior. If you want to experience authentic Arma gameplay, then Combat Patrol is a great starting point. The mode is available for all official Arma 3 terrains, including Malden 2035.
+|feature3= '''Escape from Malden/Tanoa''' - The tense multiplayer survival mode is now available on Malden and Tanoa* (Escape from Tanoa requires ownership of the Arma 3 Apex expansion).
+|feature4= '''New Buildings''' - The Malden terrain delivers new structures to Arma 3 content creators such as a barn and fittingly colored buildings.
+|feature5= '''Official Soundtrack''' - Listen to epic orchestral renditions of the classic Arma Cold War Assault and Arma 3 main theme songs (music is available only to owners of the Arma 3 Digital Deluxe Edition, Arma 3 Extended Edition, Arma 3 Apex Edition, Arma 3 Special Edition, and Arma 3 Supporter Edition).
+
+|gallery1= A3 Malden DLC 1.jpg
+|gallery2= A3 Malden DLC 2.jpg
+|gallery3= A3 Malden DLC 3.jpg
+|gallery4= A3 Malden DLC 4.jpg
+|trailer= JAPTmRECnNo
+|start1= {{Link|https://arma3.com/dlc/malden|Official Site}}
+|isDLC= y
+}}
+
+
+{{GameCategory|arma3|DLCs & Expansions}}

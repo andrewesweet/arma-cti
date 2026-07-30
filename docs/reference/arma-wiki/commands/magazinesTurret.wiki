@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/magazinesTurret
+// revision: 377498 (2026-01-02T06:49:25Z)
+// export sha1: oyx4ht6b2awkona0p3b2npdelrohj1o
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 2: Operation Arrowhead version 1.52 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.52
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= global
+
+|gr1= Turrets
+
+|descr= Returns all magazines of given turret. Use turret path [-1] for driver's turret. Alternatively, use [[magazinesAllTurrets]].
+{{Feature|informative|When main syntax is used, command excludes empty magazines for driver turret [-1] but returns empty magazines for all the other turrets.}}
+
+|s1= vehicle [[magazinesTurret]] turretPath
+
+|p1= vehicle: [[Object]]
+
+|p2= turretPath: [[Turret Path]]
+
+|r1= [[Array]] of [[String]]s
+
+|s2= vehicle [[magazinesTurret]] [turretPath, includeEmpty]
+
+|s2since= arma3 2.02
+
+|p21= vehicle: [[Object]]
+
+|p22= turretPath: [[Turret Path]]
+
+|p23= includeEmpty: [[Boolean]] - (Optional, default [[true]]) - [[true]] = include empty magazines (behaviour as the primary syntax, but consistent), [[false]] = exclude empty magazines
+
+|r2= [[Array]] of [[String]]s
+
+|x1= <sqf>_mags = vehicle player magazinesTurret [0, 0];</sqf>
+
+|x2= <sqf>_mags = _tank magazinesTurret [[0], false];</sqf>
+
+|seealso= [[magazinesAllTurrets]] [[addMagazineTurret]] [[removeMagazinesTurret]] [[removeMagazineTurret]] [[weaponsTurret]] [[loadMagazine]] [[magazines]] [[magazinesDetail]] [[magazinesAmmo]] [[magazinesAmmoFull]] [[addWeaponTurret]] [[removeWeaponTurret]] [[turretLocal]]
+}}

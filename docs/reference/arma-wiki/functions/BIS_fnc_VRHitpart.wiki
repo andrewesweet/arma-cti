@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_VRHitpart
+// revision: 348044 (2023-11-08T11:28:46Z)
+// export sha1: 5rp1b601vv245c4z96c3wyr3yuzkj0l
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: VR | Category:Functions | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= VR
+
+|descr= Initialize hit effects on VR targets.<br>
+	<br>grey - undamaged
+	<br>orange - damaged
+	<br>red - destroyed
+
+|s1= [object,time] call [[BIS_fnc_VRHitpart]]
+
+|p1= object: [[Object]] - VR Object
+|p2= time: [[Number]] - (Optional, default 30) delay before hit parts are returned back to default
+
+|r1= [[Nothing]]
+
+|x1= <sqf>private _delta = [someObject, 60] call BIS_fnc_VRHitpart;</sqf>
+
+|seealso= [[:Category:Function Group: VR|VR functions]]
+}}

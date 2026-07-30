@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_shutdown
+// revision: 309424 (2022-05-05T12:04:37Z)
+// export sha1: 2k783t8d9t2lgc95vzspwhkrr6blcde
+// categories: Category:Arma 3: Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Diagnostic
+
+|descr= Shut downs the game.
+{{Feature|arma3|this function will only close the game once back to the main menu.}}
+
+|s1= call [[BIS_fnc_shutdown]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>call BIS_fnc_shutdown;</sqf>
+
+|seealso=
+}}

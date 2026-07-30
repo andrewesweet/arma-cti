@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/getDescription
+// revision: 340864 (2023-05-12T17:13:00Z)
+// export sha1: bs896k96fqigsw8b6zwbb08alec8xsr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns the string representation of unit as an four slots array.
+
+|s1= [[getDescription]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[String]]s format {{hl|[unit'''Class''', uniform'''Name''', vest'''Name''', backpack'''Class''']}}
+
+|x1= <sqf>
+getDescription player; // UAV Operator
+// returns ["B_soldier_UAV_F", "Combat Fatigues (MTP)", "Carrier Special Rig (Green)", "B_UAV_01_backpack_F"]
+</sqf>
+
+|x2= <sqf>getDescription objNull; // returns ["ERROR", "ERROR", "ERROR", "ERROR"]</sqf>
+
+|seealso= [[roleDescription]] [[vehicleVarName]]
+}}
+
+{{Note
+|user= Druid
+|timestamp= 20130319155400
+|text= Return value fixed in revision 0.51.103185.
+}}

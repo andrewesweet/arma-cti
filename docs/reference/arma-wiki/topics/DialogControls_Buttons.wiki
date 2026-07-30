@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/DialogControls-Buttons
+// revision: 244189 (2021-02-07T13:38:09Z)
+// export sha1: 83imv7v4bme02zj8rnh3tq438xf0ug4
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+* [[CT_BUTTON]]
+* [[CT_SHORTCUTBUTTON]]
+* [[CT_ACTIVETEXT]]

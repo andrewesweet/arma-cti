@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Name_template_usage_error
+// revision: 283142 (2021-06-19T13:03:59Z)
+// export sha1: 4e5ti6szktf66itf0kvqv26yeww63qn
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Template usage error]]

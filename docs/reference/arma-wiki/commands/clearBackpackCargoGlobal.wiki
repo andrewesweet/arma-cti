@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/clearBackpackCargoGlobal
+// revision: 378439 (2026-04-12T19:56:27Z)
+// export sha1: lvpef6yc2ehtx0stcpsit353bj77jzq
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Containers | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Containers
+
+|arg= global
+
+|eff= global
+
+|descr= Removes all backpacks from the vehicle cargo space; MP-synchronised.
+
+|s1= [[clearBackpackCargoGlobal]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>clearBackpackCargoGlobal jeepOne;</sqf>
+
+|seealso= [[backpackContainer]] [[firstBackpack]] [[unitBackpack]] [[backpack]] [[backpackCargo]] [[getBackpackCargo]] [[backpackItems]] [[addBackpack]] [[addBackpackCargo]] [[addBackpackCargoGlobal]] [[removeBackpack]] [[clearBackpackCargo]] [[clearAllItemsFromBackpack]] [[loadBackpack]] [[backpackSpaceFor]] [[canAddItemToBackpack]] [[addItemToBackpack]] [[removeItemFromBackpack]] [[everyBackpack]] [[clearMagazineCargo]] [[clearMagazineCargoGlobal]] [[clearWeaponCargo]] [[clearWeaponCargoGlobal]] [[clearItemCargo]] [[clearItemCargoGlobal]]
+}}

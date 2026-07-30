@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/waypointLoiterRadius
+// revision: 377587 (2026-01-02T06:56:47Z)
+// export sha1: 312sekqes8cg46cua4q4nk3p4px7hmb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Waypoints
+
+|descr= Gets the waypoint's loiter radius.
+
+|s1= [[waypointLoiterRadius]] waypoint
+
+|p1= waypoint: [[Waypoint]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_radius = waypointLoiterRadius [groupOne, 1];</sqf>
+
+|seealso= [[waypoints]] [[deleteWaypoint]] [[setWaypointCompletionRadius]] [[setWaypointPosition]] [[setWaypointTimeout]] [[setWaypointLoiterRadius]] [[addWaypoint]] [[setWaypointLoiterType]] [[currentWaypoint]]
+}}

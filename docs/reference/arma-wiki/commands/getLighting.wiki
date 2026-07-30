@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/getLighting
+// revision: 377678 (2026-01-02T09:02:42Z)
+// export sha1: 0jgq61gdmse77gzllbieivx7yfbix0w
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Lights | Category:Introduced with Arma 3 version 2.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.00
+
+|gr1= Lights
+
+|descr= Gets general environment's light settings.
+
+|s1= [[getLighting]]
+
+|r1= [[Array]] with [ambientLightColor, ambientLightBrightness, lightDirection, starsVisibility]
+* ambientLightColor: [[Color|Color (RGB)]]
+* ambientLightBrightness: [[Number]]
+* lightDirection: [[Vector3D]]
+* starsVisibility: [[Number]]
+
+|x1= <sqf>getLighting; // returns [[0.646753,0.781818,1],28526.2,[-0.0167152,0.211598,-0.977214],0]</sqf>
+
+|x2= <sqf>getLighting params ["_ambientLightColour", "_ambientLightBrightness", "_lightDirection", "_starsVisibility"];</sqf>
+
+|seealso= [[getLightingAt]] [[moonPhase]] [[Light Source Tutorial]]
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20230918132029
+|text= Possible to check if a position is in a shadow.
+<sqf>[player,"VIEW"] checkVisibility [eyePos player,eyePos player vectorDiff ((getLighting#2) vectorMultiply 200)]</sqf>
+}}

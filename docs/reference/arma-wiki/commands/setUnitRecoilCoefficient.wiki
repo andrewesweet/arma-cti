@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/setUnitRecoilCoefficient
+// revision: 341018 (2023-05-13T22:06:26Z)
+// export sha1: pbwa2fxia6r7em2y0ucpobmfh1vdsa3
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Proportionaly increase/decrease unit's recoil. Drives muzzle up with every shot when supplied positive number and down when negative. 0 cancels recoil.
+
+|s1= unitName [[setUnitRecoilCoefficient]] coefficient
+
+|p1= unitName: [[Object]]
+|p2= coefficient: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setUnitRecoilCoefficient 10;</sqf>
+
+|seealso= [[unitRecoilCoefficient]]
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2015-03-28 - 11:50 (UTC)</dd>
+<dt class="note">[[User:Benargee|Benargee]]</dt>
+<dd class="note">
+Doesnt seem to work on AI or remote controlled units. Setting the value too high, positive or negative produces some interesting recoil animations.
+</dd>
+
+</dl>

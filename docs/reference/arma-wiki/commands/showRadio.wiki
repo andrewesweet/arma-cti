@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/showRadio
+// revision: 370852 (2025-02-18T00:23:17Z)
+// export sha1: iz7d9juu96l3pxwn9fgizc1kg6gh7ju
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Command Group: Radio and Chat | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Interaction
+
+|gr2= Radio and Chat
+
+|descr= Shows or hides the radio on the map screen, if enabled for the mission and you possess the item. (default [[true]]).
+{{Feature|arma3|This command does nothing in {{arma3}}.}}
+
+|s1= [[showRadio]] show
+
+|p1= show: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>showRadio false;</sqf>
+
+|seealso= [[shownRadio]] [[showCompass]] [[showGPS]] [[showWatch]] [[showPad]]
+}}
+
+{{Note
+|user= GeneralCarver
+|timestamp= 20090816210200
+|text= The radio is now an item in {{arma2}}.
+Class path is <sqf inline>"CfgWeapons" >> "ItemRadio"</sqf>.
+Use the [[addWeapon]] and [[removeWeapon]] commands to add/remove it from a unit's inventory. e.g:
+<sqf>player removeWeapon "ItemRadio";</sqf>
+}}

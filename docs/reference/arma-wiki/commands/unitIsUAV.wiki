@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/unitIsUAV
+// revision: 338990 (2023-04-23T07:34:22Z)
+// export sha1: ke1labvxooik7gzmcoukzz934p62o06
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|gr1= Remote Control
+
+|descr= Returns whether or not the given transport object is a drone (UAV, UGV), regardless of if it has a crew or if it is empty,
+corresponding to the <syntaxhighlight lang="cpp" inline>isUAV</syntaxhighlight> transport parameter.<br>
+{{GVI|arma3|2.14|size= 0.75}} The command can be used to check if the provided unit is a UAV unit.
+
+|s1= [[unitIsUAV]] object
+
+|p1= object: [[Object]] - vehicle or {{GVI|arma3|2.14|size= 0.75}} unit
+
+|r1= [[Boolean]] - [[true]] when UAV
+
+|x1= <sqf>
+unitIsUAV _myUAV;			// true (whether it has driver/gunner or not)
+unitIsUAV driver _myUAV;	// true (provided there is a driver)
+unitIsUAV gunner _myUAV;	// true (provided there is a gunner)
+</sqf>
+
+|seealso= [[allUnitsUAV]]
+}}

@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/resetCamShake
+// revision: 321939 (2022-05-22T12:55:05Z)
+// export sha1: emt0x5zt81dtong65z9ho5vbt2wuvqr
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Camera Control
+
+|eff= local
+
+|descr= Stops any ongoing camera shake effects. Does not prevent new effects from being created. To disallow new effects altogether, [[enableCamShake]] should be used.
+
+|s1= [[resetCamShake]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>resetCamShake;</sqf>
+
+|seealso= [[enableCamShake]] [[addCamShake]] [[setCamShakeDefParams]] [[setCamShakeParams]]
+}}

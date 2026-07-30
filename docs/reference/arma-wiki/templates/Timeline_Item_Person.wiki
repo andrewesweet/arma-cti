@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Timeline_Item_Person
+// revision: 378660 (2026-05-18T16:33:40Z)
+// export sha1: bklm30b3tm51vtswq937o0rx5z0sl1f
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div style="width:50px;text-align:center;">[[File:Icon_Person.png|25px]]</div></includeonly><noinclude>[[Category:Historical Templates]]</noinclude>

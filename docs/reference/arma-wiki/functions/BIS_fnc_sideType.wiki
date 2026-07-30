@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_sideType
+// revision: 348592 (2023-11-08T13:44:37Z)
+// export sha1: b9fr4ihca6w2gn88jsqc3lxg5jrig7p
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Sides
+
+|descr= Returns side type based on side ID. See [[BIS_fnc_sideID]] for more information.
+
+|s1= sideID call [[BIS_fnc_sideType]]
+
+|p1= sideID - [[Number]] - Side ID.
+
+|r1= [[Side]] - side based on side ID
+
+|x1= <sqf>0 call BIS_fnc_sideType; // returns EAST</sqf>
+
+|seealso= [[Side]] [[BIS_fnc_sideID]] [[side]] [[countSide]] [[CfgVehicles_Config_Reference#side|CfgVehicles config side value]] [[Side]] [[playerSide]] [[west]] [[east]] [[resistance]] [[civilian]] [[sideLogic]] [[sideFriendly]] [[sideEnemy]] [[sideUnknown]] [[sideEmpty]] [[sideAmbientLife]] [[Side Relations]]
+}}

@@ -1,0 +1,53 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_scaleAndTranslate
+// revision: 364739 (2024-06-04T21:40:23Z)
+// export sha1: lsaa6a0hd3ycy5mdyhi4rddwo5ermgp
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Systems | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Systems
+
+|descr= Translates, scales (with pivot) and fades a picture control over time.
+
+|s1= [picture, scaleFactor, pivot, translation, durationOrSpeed, isDuration, fade] call [[BIS_fnc_scaleAndTranslate]]
+
+|p1= picture: [[Control]] - picture that has to be modified
+
+|p2= scaleFactor: [[Number]] - (Optional, default 1) how much the picture has to be scaled (> 1 makes it bigger, 1 keeps it the same, < 1 makes it smaller)
+
+|p3= pivot: [[String]] - (Optional, default "center") select the pivot's position (i.e. center of the scaling process); can be one of:
+{{Columns|3|
+* "topLeft"
+* "topCenter"
+* "topRight"
+* "centerLeft"
+* "center"
+* "centerRight"
+* "bottomLeft"
+* "bottomCenter"
+* "bottomRight"
+}}
+
+|p4= translation: [[Array]] format [x, y] - (Optional, default [0, 0]) how much the picture has to be moved
+
+|p5= durationOrSpeed: [[Number]] - (Optional, default 2) either the duration of the animation(default) or the speed of the translation, depending on what the next parameter is set to
+
+|p6= isDuration: [[Boolean]] - (Optional, default [[true]]) if [[true]], ''durationOrSpeed'' is considered duration; if [[false]] it is considered speed
+
+|p7= fade: [[Number]] - (Optional, default 0) transparency of the image at the end of the animation (in range 0..1: 0 = visible, 1 = invisible)
+
+|r1= [[Number]] - duration of the animation; useful for determining how much sleep time is needed between animations
+
+|x1= <sqf>
+[_controlFront, 0.8, "topLeft"] call BIS_fnc_scaleAndTranslate;
+private _t = [_controlFront, 1, "bottomRight", [0.1, 0.1], 0.5, false] call BIS_fnc_scaleAndTranslate;
+sleep (_t * 2);
+[_controlFront, 0.8, "topRight", [0.5, 0.3]] call BIS_fnc_scaleAndTranslate;
+</sqf>
+
+|seealso= [[ctrlSetPosition]] [[ctrlSetFade]] [[ctrlCommit]]
+}}

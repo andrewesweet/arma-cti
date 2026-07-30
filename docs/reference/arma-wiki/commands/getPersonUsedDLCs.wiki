@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/getPersonUsedDLCs
+// revision: 352086 (2024-02-01T23:24:46Z)
+// export sha1: 5dkv8vzbj9va5awe2tymwc7fnnrlaf2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Command Group: DLC | Category:Introduced with Arma 3 version 1.36 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.36
+
+|arg= global
+
+|gr1= Broken Commands
+
+|gr2= DLC
+
+|descr= Returns a list of all DLCs objects the unit is currently using. For example if a unit is inside a vehicle from DLC, it will return the code of that DLC.
+
+|s1= [[getPersonUsedDLCs]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Array]] of [[Number]]s
+
+|x1= <sqf>_objects = getPersonUsedDLCs player;</sqf>
+
+|seealso= [[getDLCs]] [[getObjectDLC]] [[getMissionDLCs]] [[getDLCAssetsUsageByName]] [[getDLCAssetsUsage]] [[getAssetDLCInfo]]
+
+|pr= {{Feature|warning|This command does not work on a dedicated server.}}
+}}

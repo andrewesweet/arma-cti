@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/JEdit_Syntax_Highlighting
+// revision: 349741 (2023-11-20T22:10:00Z)
+// export sha1: 8zfnemifxzpy26yrpmhjy6l23bxp71h
+// categories: Category:Community Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR=
+[[User:TomNedry|TomNedry]]
+
+|VERSION=
+06jan2007
+
+|COMPATIBILITY=
+[[:Category:ArmA: Armed Assault|{{arma1}}]]
+
+|DOWNLOAD=
+{{Link|http://www.airpressuretendency.net/tools/arma_code_v_06jan07.zip|arma_code_v_06jan07.zip}}
+
+|DESCRIPTION=
+[[File:Jedit_arma_highlight.jpg|thumb]]
+jEdit is a powerful text-editor. See its {{Link|http://www.jedit.org|website}} for more information.
+
+
+The following information provides you with syntax-highlighting for ArmA's SQS (obsolete), [[SQF Syntax|SQF]] and SQM files.
+
+
+jEdit allows users to write and modify the XML files that define its syntax highlighting, so we're providing instructions to achieve this.
+
+First of all, download "{{Link|http://www.airpressuretendency.net/tools/arma_code_v_06jan07.zip|arma_code_v_06jan07.zip}}" and put it in jEdit's 'modes' directory. Now we need to tell jEdit about it. Open up the 'catalog' file in the 'modes' directory. Between any two <MODE> tags insert the following:
+
+
+
+<code xml><MODE NAME="armacode"		FILE="arma_code.xml"
+				FILE_NAME_GLOB="*.{sqs,sqf,sqm}" /></code>
+
+
+
+I put it after "applescript" to maintain alphabetical order.
+
+
+With all the files saved, jEdit should highlight ArmA-scripting functions. The appearance of the global syntax-highlighting can be changed under Utilities >> Global Options >> Syntax Highlighting.
+
+|NOTES=
+I'm pretty sure that i missed some functions ;-)
+
+
+|LICENSING=
+{{Link|http://creativecommons.org/licenses/by-nc-sa/2.5/|Creative Commons, Attribution-NonCommercial-ShareAlike 2.5}}
+|SEEALSO=
+Syntax-Highlighting for UltraEdit by {{Link|http://www.kegetys.net/arma/|Keijo Ruotsalainen}} (aka Kegetys) 
+
+[[:Category:Scripting Topics|Scripting Topics]].
+}}
+=== Notes ===
+[{{SERVER}}/wiki?title={{PAGENAMEE}}&action=edit&section=1 + Add Note]
+
+
+[[Category:Community Tools]]

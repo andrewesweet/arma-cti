@@ -1,0 +1,77 @@
+// source: https://community.bistudio.com/wiki/nearObjects
+// revision: 377428 (2026-01-02T06:45:43Z)
+// export sha1: g2pzncrlo6zweonhfzpyn9f0gl6m6nq
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Object Detection
+
+|descr= Find objects (Units, Vehicles, Dead, Map Objects) in a sphere with given radius. The first object in the returned array is ''not'' necessarily the closest one. If you need returned objects to be sorted by distance, use [[nearestObjects]]. If typeName is given, only objects of given type (or its subtype) are listed.
+
+|s1= position [[nearObjects]] radius
+
+|p1= position: [[Position]], [[Position#Introduction|Position2D]] or [[Object]]
+
+|p2= radius: [[Number]]
+
+|r1= [[Array]] of [[Object]]s
+
+|s2= position [[nearObjects]] [typeName, radius]
+
+|p21= position: [[Position#PositionAGL|PositionAGL]], [[Position#Introduction|Position2D]] or [[Object]]
+
+|p22= typeName: [[String]]
+
+|p23= radius: [[Number]]
+
+|r2= [[Array]] of [[Object]]s
+
+|x1= <sqf>_list = position player nearObjects 50;</sqf>
+
+|x2= <sqf>_list = [_xpos,_ypos] nearObjects ["House", 20];</sqf>
+
+|x3= <sqf>_list = player nearObjects 20;</sqf>
+
+|seealso= [[findNearestEnemy]] [[nearestBuilding]] [[nearestObject]] [[nearestObjects]] [[nearestLocation]] [[nearEntities]] [[nearTargets]] [[nearSupplies]] [[nearestLocationWithDubbing]] [[nearObjectsReady]] [[nearRoads]] [[nearestMines]]
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20070630082100
+|text= Units in vehicles are not detected via this command.
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20111215231700
+|text= In the second syntax, you can't omit the typeName parameter. It's required and you'll get an error if you don't supply it. Use "All" as an alternative to leaving it out. (CO 1.59)
+}}
+
+{{Note
+|user= Tankbuster
+|timestamp= 20130103195900
+|text= If you use the first syntax, it will return objects many more objects such as pollen, honeybees and crucially, triggers. Triggers will show in the returned array as "no shape" but you can use typeOf to get the classname, which will give "EmptyDetector". This will not return objects that don't have classnames such as plants, stones and some map objects like vehicle wrecks. nearestObjects will find objects without classnames.
+}}
+
+{{Note
+|user= Cheitan
+|timestamp= 20170808160800
+|text= The syntax 2 means that the command will include all types which inherit from the given type. As an example, when using "Helipad_Base_F", the command will detect all types of helipads (Land_HelipadSquare_F, Land_HelipadCircle_F, Land_HelipadEmpty_F, etc) in the given radius.
+}}

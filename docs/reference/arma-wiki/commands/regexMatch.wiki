@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/regexMatch
+// revision: 369126 (2024-09-03T10:34:33Z)
+// export sha1: 48213e3f044ttemnjwh9og1rwj8th77
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Strings - Regular Expression | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|descr= Returns whether the ''haystack'' matches the ''pattern''.
+
+|gr1= Strings - Regular Expression
+
+|s1= haystack [[regexMatch]] pattern
+
+|p1= haystack: [[String]]
+
+|p2= pattern: [[String]] - in format [[Arma 3: Regular Expressions|regex pattern]]
+
+|r1= [[Boolean]] - returns [[true]] if match was found, otherwise [[false]]
+
+|x1= <sqf>"I'm a coOkIe clicker" regexMatch ".*cookie.*"; // true</sqf>
+
+|x2= <sqf>"I'm a coOkIe clicker" regexMatch ".*cookie.*/"; // false, empty flags == case sensitive</sqf>
+
+|x3= <sqf>
+forceUnicode 1;
+"I'm a coÖkIe clicker" regexMatch ".*coökie.*";
+</sqf>
+
+|x4= <sqf>"Cookie clicker" regexMatch "cookie/i"; // false, pattern does not fully match the haystack</sqf>
+
+|seealso= [[regexFind]] [[regexReplace]]
+}}

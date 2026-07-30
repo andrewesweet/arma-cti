@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/createHashMap
+// revision: 308959 (2022-04-18T21:22:24Z)
+// export sha1: k40ec3ev52q5cvtxh8abtm6axukxc5w
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: HashMap | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= HashMap
+
+|descr= Creates a new empty [[HashMap]].
+
+|s1= [[createHashMap]]
+
+|r1= [[HashMap]]
+
+|x1= <sqf>private _myHashMap = createHashMap;</sqf>
+
+|seealso= [[createHashMapFromArray]]
+}}

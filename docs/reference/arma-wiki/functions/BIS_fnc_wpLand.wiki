@@ -1,0 +1,67 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_wpLand
+// revision: 328354 (2022-07-13T16:00:46Z)
+// export sha1: ctp6qt3xkutpcx6byhces1dzrxnsomn
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Waypoints | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TabView|selected= 2
+
+|title1= {{TabView/GameTitle|tkoh}}
+|content1=
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|gr1= Waypoints
+
+|descr= "LAND" [[Custom_Waypoints|custom waypoint]]. Land on specific spot.
+
+|s1= [[Custom Waypoints#Function|arguments]]: [dirParam, visualize]
+
+|p1= dirParam: [[Array]] - in format [dir, dirDiff]:
+* dir: [[Number]] - required landing direction in degrees
+* dirDiff: [[Number]] - direction tolerance (to both sides)
+
+|p2= visualize: [[Boolean]] - true to show hint (default: false)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[player, position dude, 10, [42, 20], true] spawn BIS_fnc_wpLand;</sqf>
+
+|exec= spawn
+
+|seealso= [[BIS_fnc_scriptedWaypointType]] [[BIS_fnc_wpTransport]]
+}}
+
+|title2= {{TabView/GameTitle|arma3}}
+|content2=
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Waypoints
+
+|descr= Let group members land at the waypoint position.
+
+|s1= [group, position, target] spawn [[BIS_fnc_wpLand]]
+
+|p1= group: [[Group]] - group which is supposed to land
+
+|p2= position: [[Position]] - waypoint position
+
+|p3= target: [[Object]] - object the waypoint is attached to
+
+|r1= [[Boolean]]
+
+|exec= spawn
+
+|x1= <sqf>[group player, [0,0,0], BIS_vehicle] spawn BIS_fnc_wpLand;</sqf>
+
+|seealso= [[BIS_fnc_scriptedWaypointType]] [[BIS_fnc_wpTransport]]
+}}
+
+}}

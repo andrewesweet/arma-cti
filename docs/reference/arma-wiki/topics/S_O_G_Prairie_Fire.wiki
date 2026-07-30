@@ -1,0 +1,76 @@
+// source: https://community.bistudio.com/wiki/S.O.G._Prairie_Fire
+// revision: 370281 (2024-11-19T18:27:46Z)
+// export sha1: 03ihnpod4xpm9p7izqgt07znfegwqrn
+// categories: Category:Arma 3: CDLCs
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Navbox/CDLCs}}
+
+{{Infobox/Game
+|title= S.O.G. Prairie Fire
+|image= [[File:arma3 cdlc sog prairiefire steam store header.jpg|300px|link=https://store.steampowered.com/app/1227700/Arma_3_Creator_DLC_SOG_Prairie_Fire]]<br/>[[File:a3 gm arma3-com steampageimg 600x100 3c.png|link=http://www.arma3.com/dlc/creator|300px]]
+|releaseDate= 6 May 2021
+|storePage= {{Link|link= https://store.steampowered.com/app/1227700/Arma_3_Creator_DLC_SOG_Prairie_Fire/ |text= Steam}}
+|developer= [[File:SGD logo.png|48px]] Savage Game Design
+|website= {{Link|https://www.sogpf.com/}}
+|wiki= {{Link|https://wiki.sogpf.com/}}
+|forums= {{Link|https://community.sogpf.com/}}
+|discord= {{Link|https://discord.gg/KwNmfjUK3a|https://discord.gg/KwNmfjUK3a}}
+}}
+
+== Welcome to the Jungle ==
+
+'''Arma 3 Creator DLC: S.O.G. Prairie Fire''' is the second [[:Category:Arma 3: CDLCs|Creator DLC]] for {{arma3}} and introduces you to the jungles of Cambodia, Laos and Vietnam.
+It was published by [[Bohemia Interactive]] on 6th May 2021.
+
+
+== Features ==
+
+* '''3 terrains''' - Deploy on:
+** '''Cam Lao Nam Terrain''' - Explore a unique 300 km<sup>2</sup> terrain representing the Vietnam War's entire Area of Operations, including the Ho Chi Minh Trail which ran from North Vietnam through neighbouring Laos and Cambodia to South Vietnam.
+** '''Khe Sanh''' - This 225 km<sup>2</sup> terrain takes place around Quang Tri Province, including some crucially contested locations of the Vietnam War.
+** '''The Bra''' - This 25 km<sup>2</sup> terrain enables players to design and run missions around an infamous section of the Ho Chi Minh trail in Laos, nicknamed "The Bra" by MACV SOG units, due to the road shape, viewed from the air.
+* '''10 Factions''' - All sides come equipped with their own uniforms and gear. Fight as:
+** United States Army (including the covert MACV-SOG Special Forces unit) and Marines
+** CIA "Air America"
+** ANZAC forces (Army, SAS, pilots):
+*** Australia
+*** New Zealand
+** Army of the Republic of Vietnam (ARVN) and Marines
+** People's Army of Vietnam (PAVN)
+** Viet Cong
+** Royal Laotian Army (RLA)
+** Pathet Lao Army (PL)
+** Republic of Korea Army (ROK) and Marines.
+* '''67 Weapons''' and variants - Engage the enemy with detailed recreations of pistols, revolvers, rifles, shotguns, grenade launchers, and a diverse range of weapon accessories. Your arsenal is reinforced by deadly grenades, traps, and other special items.
+* '''38 Vehicles & 41 Static Weapons (including variants)''' - Wage war in the jungles, mountains, cities, rivers, and islands of Vietnam with several variations of armed helicopters, gunboats, light tanks, cars, trucks, static weapons, one jet, five small boats, and two bicycles.
+* '''Multiplayer Co-op Campaign''' - Operate deep within enemy territory as a member of a clandestine MACV-SOG recon team in a fully voice-acted campaign that consists of 8 highly replayable co-op missions for up to 14 players.
+* '''17 Multiplayer Scenarios''' - Play new scenarios in Arma 3's official End Game, Warlords, Zeus, and Escape game modes. The "Ash & Trash" bonus mission tasks you with flying routine helicopter missions around the beautiful countryside and landmarks of Cam Lao Nam.
+* '''5 Singleplayer Scenarios''' - Become familiar with the weapons, vehicles, and equipment used during the Vietnam War in two new Showcase scenarios. Additionally, there is a mission for both MACV and PAVN that introduces you to jungle combat from either perspective. The "Ash & Trash" bonus mission can also be enjoyed in singleplayer.
+* '''Sounds & Effects''' - Experience 'Nam with immersive audio meticulously designed to reproduce the sound of jungle guerrilla warfare: wildlife calls, disturbed vegetation, quiet whispers of "Charlie", bullet cracks, explosions, and the loud cries of the wounded.
+* '''Music''' - Listen to an atmospheric soundtrack that consists of rock and blues (14 tracks), and a cinematic score composed with Vietnamese instruments (19 tracks). Players can tune into an in-game radio channel that also broadcasts original Armed Forces Vietnam news and adverts that ran at the time.
+* '''Additional Content''' - S.O.G. Prairie Fire is complemented by various modules and objects that are usable when the DLC is loaded. This includes custom systems for battlefield logistics, artillery and air support, melee combat, and more – as well as 100 food, drink, and medicine items and over 150 building structures and fortifications that can be used to support community-made content and game modes.
+
+
+== Gallery ==
+
+<gallery mode="slideshow" showthumbnails>
+File:vn screenshot01.jpg
+File:vn screenshot02.jpg
+File:vn screenshot03.jpg
+File:vn screenshot05.jpg
+File:vn screenshot06.jpg
+File:vn screenshot07.jpg
+File:vn screenshot08.jpg
+File:vn screenshot09.jpg
+File:vn screenshot10.jpg
+File:vn screenshot11.jpg
+File:vn screenshot12.jpg
+File:vn screenshot13.jpg
+File:vn screenshot14.jpg
+File:vn screenshot15.jpg
+File:vn screenshot16.jpg
+</gallery>
+
+
+{{GameCategory|arma3|CDLCs}}

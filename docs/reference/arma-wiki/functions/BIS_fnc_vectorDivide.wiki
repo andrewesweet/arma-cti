@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_vectorDivide
+// revision: 327960 (2022-07-13T13:35:15Z)
+// export sha1: 1da0zapkzrvskian4bgaceusb6o5t43
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vectors | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Vectors
+
+|descr= Divides vector by scalar, by dividing all vector elements.
+{{Feature|informative|
+[[vectorMultiply]] can be used instead as <sqf inline>vector vectorMultiply 1/scale</sqf>, but:
+* ''scale'' cannot be 0
+* in some rare cases, the result is not ''exactly'' the same as [[BIS_fnc_vectorDivide]] - this is due to [[Floating Point Number]] precision and rounding.
+}}
+
+|s1= [vector, divider] call [[BIS_fnc_vectorDivide]]
+
+|p1= vector: [[Array]] of [[Number]]s - (Optional, default [0,0,0]) can be any array of numbers
+
+|p2= divider: [[Number]] - (Optional, default 1)
+
+|r1= [[Array]] of [[Number]]s
+
+|x1= <sqf>[[123, 456, 789], 5] call BIS_fnc_vectorDivide;</sqf>
+
+|x2= <sqf>[[1, 2, 3, 4, 5, 6, 7, 8, 9], 5] call BIS_fnc_vectorDivide;</sqf>
+
+|seealso= [[vectorMultiply]] [[BIS_fnc_vectorMultiply]]
+}}

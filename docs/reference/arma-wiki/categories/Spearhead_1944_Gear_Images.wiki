@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Spearhead_1944_Gear_Images
+// revision: 371429 (2025-03-02T13:24:25Z)
+// export sha1: lxu3inue7gvm6mbb730hgza5skb6tda
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Spearhead 1944 Images]]

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_initVirtualUnit
+// revision: 348570 (2023-11-08T13:42:08Z)
+// export sha1: jvfzm5pdnozjmcb2upbylsox7z9gvj1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Initialize virtual unit. Disable it, turn the camera upwards and save its correct side.
+
+|s1= [object] call [[BIS_fnc_initVirtualUnit]]
+
+|p1= object: [[Object]] - object to be turned into virtual unit
+
+|r1= [[Boolean]]
+
+|x1= <sqf>someObject call BIS_fnc_initVirtualUnit;</sqf>
+
+|seealso= [[BIS_fnc_isUnitVirtual]]
+}}

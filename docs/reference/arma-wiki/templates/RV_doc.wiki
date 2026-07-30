@@ -1,0 +1,522 @@
+// source: https://community.bistudio.com/wiki/Template:RV/doc
+// revision: 378605 (2026-05-13T15:20:44Z)
+// export sha1: jp0lbsoajnx780pgo4ojd2bsgerfvh1
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side|1.1|2}}
+[[Real Virtuality]] [[:Category:Scripting Commands|Commands]]/[[:Category:Functions|Functions]] documentation template, used by [[Special:WhatLinksHere/Template:{{PAGENAMEE}}|these pages]].
+{{Feature | Warning | Do '''NOT''' edit this template before '''heavy''' testing, as '''it is widely used!'''  (on ''at least'' {{formatnum:{{#expr: {{formatnum:{{PAGESINCATEGORY:Scripting Commands|pages}}|R}} + {{formatnum:{{PAGESINCATEGORY:Functions|pages}}|R}} }} }} pages, including [[:Category:Scripting Commands|{{PAGESINCATEGORY:Scripting Commands|pages}} commands]] and [[:Category:Functions|{{PAGESINCATEGORY:Functions|pages}} functions]])}}
+
+== Usage ==
+{{<nowiki/>RV|'''type='''|''other parameters, see below''}}
+* '''meta information:'''
+** type: (named argument, case-insensitive) "command" or "function"
+** displayTitle: (Optional, default {{hl|{{<nowiki/>PAGENAMEE}}}} - encoded page name, i.e with underscores) use to force page's displayTitle (e.g {{hl|diag_log (Arma 2)}}) - automatically deals with {{hl|diag_}} and {{hl|buldozer_}} pages already
+** sortKey: (Optional, default commandName or functionName without BIS/BIN_fnc_ prefix) use to force category's sort key
+* '''primary parameters:'''
+** game1: short game name - same as [[Template:Name|Name]] template input format. Can be: {{Name|ofp|id}}, {{Name|ofpe|id}}, {{Name|arma1|id}}, {{Name|arma2|id}}, {{Name|arma2oa|id}}, {{Name|tkoh|id}}, {{Name|arma3|id}}
+** version1: (Optional, default empty - unknown) number in [[Template:GVI|GVI]] template format: '''<Major>.<Minor>'''. e.g 1.46, 1.75, 1.86 etc.
+** arg: (Optional, default empty) '''local''' or '''global''' - if provided, will display the {{Icon|localArgument|32}} or {{Icon|globalArgument|32}} icon depending on arguments' locality
+** eff: (Optional, default empty) '''local''' or '''global''' - if provided, will display the {{Icon|localEffect|32}} or {{Icon|globalEffect|32}} icon depending on effect's locality
+** serverExec: (Optional, default empty) if provided, will display the {{Icon|serverExec|32}} icon informing the command must be run on the server
+** descr: (Optional, default {{hl|[[:Category:Maintenance/RV/Description needed|Description needed]]}}) the command description
+** exec: (Optional, Function only, default {{hl|call}}) use {{hl|spawn}} for functions to be spawned
+** gr1..gr5: (Optional, default {{hl|[[:Category:Command Group: Uncategorised|Command Group: Uncategorised]]}}) [[:Category:Scripting Commands by Functionality|Command groups]]. '''Case sensitive'''
+** s1: (Optional, default {{hl|[[:Category:Maintenance/RV/Syntax needed|Syntax needed]]}}) command syntax with named parameters, without {{hl|&lt;sqf&gt;}} tags nor ending {{hl|;}} semicolon. e.g {{hl|unit1 '''setDammage''' 1}}
+** p1..p20: (Optional, default empty) command parameters with description
+** r1: (default {{hl|[[:Category:Maintenance/RV/Return value needed|Return value needed]]}}) syntax's return value
+** x1..x10: (default {{hl|[[:Category:Maintenance/RV/Example needed|Example needed]]}}) command examples (to be put between <nowiki><sqf></sqf></nowiki> tags where needed)
+** seealso: (default {{hl|[[:Category:Maintenance/RV/See also needed|See also needed]]}}) list of related links in wiki format, separated by comma or space. e.g <nowiki>[[setDir]] [[setPos]]</nowiki>
+* '''secondary parameters:'''
+** branch: (Optional, default empty) takes free string such as {{hl|development}} ({{hl|dev}}), {{hl|diagnostic}} ({{hl|diag}}) or {{hl|profiling}} ({{hl|prof}}). If provided, will mark the page as Development, Diagnostic or Profiling branch only
+** alias: (Optional, default empty) if provided, will show Alias link(s) under the description
+** mp: (Optional, default empty) if provided, will show a Multiplayer note under the description
+** pr: (Optional, default empty) if provided, will show a Problems note under the description
+** game2..7: (Optional, default empty) same as ''game1''
+** version2..7: (Optional, default empty) same as ''version1'', for the corresponding ''game#''
+** s2..s6: (Optional, default empty) Alternative syntaxes 1 to 5 (see ''s1'')
+** s2since..s6since: (Optional, default empty) game version that introduced the syntax; format {{hl|gameId gameVersion}}, e.g {{hl|arma3 1.50}}
+** p21..p120: (Optional, default empty) Alternative syntaxes' parameters ('''20''' each: p21..40, p41..60, p61..80, p81..100, p101..120)
+** p21since..p120since: (Optional, default empty) game version that introduced the parameter; format {{hl|gameId gameVersion}}, e.g {{hl|arma3 1.50}}
+** r2..r6: (Optional, default empty) Alternative syntaxes' return value (see ''r1'')
+
+== Possible Link Anchors ==
+
+* {{hl|#Multiplayer}} (when present)
+* {{hl|#Problems}} (when present)
+* {{hl|#Alias}} (when present)
+* {{hl|#Groups}}
+* {{hl|#Syntax_1}} (from '''1''' to '''6''')
+* {{hl|#Parameters_1}} (from '''1''' to '''6''')
+* {{hl|#Return_Value_1}} (from '''1''' to '''6''')
+* {{hl|#Example_1}} (from '''1''' to '''10''')
+* {{hl|#See_Also}}
+
+== Automatic Categories ==
+
+'''[[:Category:Maintenance/RV|Maintenance/RV]]'''&nbsp;:
+{{Columns|2|
+* [[:Category:Maintenance/RV/Game1 needed|Maintenance/RV/Game1 needed]]
+* [[:Category:Maintenance/RV/Version1 needed|Maintenance/RV/Version1 needed]]
+* [[:Category:Maintenance/RV/Description needed|Maintenance/RV/Description needed]]
+* [[:Category:Maintenance/RV/Syntax needed|Maintenance/RV/Syntax needed]]
+* [[:Category:Maintenance/RV/Return value needed|Maintenance/RV/Return value needed]]
+* [[:Category:Maintenance/RV/Example needed|Maintenance/RV/Example needed]]
+* [[:Category:Maintenance/RV/See also needed|Maintenance/RV/See also needed]]
+* [[:Category:Maintenance/RV/Nameless parameter usage|Maintenance/RV/Nameless parameter usage]]
+}}
+{| class="wikitable"
+! Command
+! Function
+|- style="vertical-align: top"
+|
+* {{hl|[[:Category:Scripting Commands]]}}
+* {{hl|Category:''game#'': Scripting Commands}} (e.g [[:Category:{{arma2}}: Scripting Commands|Category:'''{{arma2}}''': Scripting Commands]])
+* {{hl|Category:''game1'': Introduced in v''version'''1'''''}} (e.g [[:Category:Introduced with {{arma3}} version 1.00|Category:'''{{arma3}}''': Introduced in v'''1.00''']])
+* {{hl|''game'''1''''': New Scripting Commands}} category (e.g [[:Category:{{arma2}}: New Scripting Commands|Category:'''{{arma2}}''': New Scripting Commands]])
+* branches:
+** {{hl|[[:Category:Arma 3: Scripting Commands: Development Branch]]}} if ''branch'' is dev
+** {{hl|[[:Category:Arma 3: Scripting Commands: Diagnostic Branch]]}} if ''branch'' is diag
+** {{hl|[[:Category:Arma 3: Scripting Commands: Profiling Branch]]}} if ''branch'' is prof
+* effect locality:
+** {{hl|[[:Category:Scripting Commands: Local Effect]]}} if ''eff'' is local
+** {{hl|[[:Category:Scripting Commands: Global Effect]]}} if ''eff'' is global
+* {{hl|[[:Category:Scripting Commands: Server Execution]]}} if ''serverExec'' is defined
+|
+* {{hl|[[:Category:Functions]]}}
+* {{hl|Category:''game#'': Functions}} (e.g [[:Category:{{arma2}}: Functions|Category:'''{{arma2}}''': Functions]])
+* {{hl|Category:''game'''1''''': Introduced in v''version'''1'''''}} (e.g [[:Category:Introduced with {{arma3}} version 1.00|Category:'''{{arma3}}''': Introduced in v'''1.00''']])
+* {{hl|''game'''1''''': New Functions}} category (e.g [[:Category: {{arma2}}: New Functions|Category: '''{{arma2}}''': New Functions]])
+* branches:
+** {{hl|[[:Category:Arma 3: Functions: Development Branch]]}} if ''branch'' is dev
+** {{hl|[[:Category:Arma 3: Functions: Diagnostic Branch]]}} if ''branch'' is diag
+** {{hl|[[:Category:Arma 3: Functions: Profiling Branch]]}} if ''branch'' is prof
+* effect locality:
+** {{hl|[[:Category:Functions: Local Effect]]}} if ''eff'' is local
+** {{hl|[[:Category:Functions: Global Effect]]}} if ''eff'' is global
+* {{hl|[[:Category:Functions: Server Execution]]}} if ''serverExec'' is defined
+|}
+
+== Examples ==
+{|
+|- style="background-color: #EEE"
+! Code
+! Result
+|-
+| <nowiki>{{RV}}</nowiki>
+| {{RV}}<br><br><br>
+|-
+| <nowiki>{{RV|type=abc}}</nowiki>
+| {{RV|type=abc}}<br><br><br>
+|-
+| style="font-size: 0.9em; white-space: pre" | <pre><nowiki>{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|branch= development diagnostic profiling
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Sets object heading.
+Angles are measured in degrees clockwise from north,
+and regular range goes from 0 to 360 (0° {{=}} N, 90° {{=}} E, 180° {{=}} S, 270° {{=}} W).
+Negative angles represent a counter-clockwise angle.
+
+|alias= [[someCommand]]
+
+|pr= Command will not work with roman numbers e.g. VI.
+
+|mp= See notes below for more details on [[setDir]] behaviour.
+
+|s1= object [[setDir]] heading
+
+|p1= object: [[Object]]
+
+|p2= heading: [[Number]] (Optional, default {{hl|0}}) - direction
+|p2since= arma2 1.00
+
+|r1= [[Nothing]]
+
+|x1 = <sqf>unit1 setDir 45; // will set unit1 to face North-East</sqf>
+
+|x2 = <sqf>unit1 setDir -675; // will also set unit1 to face North-East (= 45-360-360)</sqf>
+
+|x3 = <sqf>
+unit1 setDir 30;
+unit1 setFormDir 30; // needed for AI to keep the given direction
+</sqf>
+
+|seealso= [[getDir]] [[direction]] [[setFormDir]] [[setVectorDir]] [[setVectorDirAndUp]]
+}}</nowiki></pre>
+| {{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|branch= development diagnostic profiling
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Sets object heading.
+Angles are measured in degrees clockwise from north,
+and regular range goes from 0 to 360 (0° {{=}} N, 90° {{=}} E, 180° {{=}} S, 270° {{=}} W).
+Negative angles represent a counter-clockwise angle.
+
+|alias= '''someCommand'''
+
+|pr= Command will not work with roman numbers e.g. VI.
+
+|mp= See notes below for more details on '''setDir''' behaviour.
+
+|s1= object '''setDir''' heading
+
+|p1= object: [[Object]]
+
+|p2= heading: [[Number]] (Optional, default {{hl|0}}) - direction
+|p2since= arma2 1.00
+
+|r1= [[Nothing]]
+
+|x1 = <sqf>unit1 setDir 45; // will set unit1 to face North-East</sqf>
+
+|x2 = <sqf>unit1 setDir -675; // will also set unit1 to face North-East (= 45-360-360)</sqf>
+
+|x3 = <sqf>
+unit1 setDir 30;
+unit1 setFormDir 30; // needed for AI to keep the given direction
+</sqf>
+
+|seealso= [[getDir]] [[direction]] [[setFormDir]] [[setVectorDir]] [[setVectorDirAndUp]]
+}}<br><br><br>
+|-
+| style="font-size: 0.9em; white-space: pre" | <pre><nowiki>{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= Diagnostic
+
+|descr= Shows Function Library viewer, which contains list of all available functions, both official and unofficial.
+
+|alias= someFunction
+
+<gallery>
+Image:Fnc_help.jpg|Arma 2
+File:Take On Helicopters Functions Viewer.jpg|Take On Helicopters
+</gallery>
+
+|s1= [parentDisplay] [[call]] [[BIS_fnc_help]]
+
+|p1= parentDisplay: [[Display]] - (Optional, default [[displayNull]])
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[] call BIS_fnc_help;</sqf>
+
+|seealso= [[Arma 2: Functions Library]]
+[[Arma 3: Functions Library]]
+[[Take On Helicopters: Functions Library]]
+}}</nowiki></pre>
+| {{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= Diagnostic
+
+|descr= Shows Function Library viewer, which contains list of all available functions, both official and unofficial.
+
+|alias= someFunction
+
+<gallery>
+Image:Fnc_help.jpg|Arma 2
+File:Take On Helicopters Functions Viewer.jpg|Take On Helicopters
+</gallery>
+
+|s1= [parentDisplay] [[call]] [[BIS_fnc_help]]
+
+|p1= parentDisplay: [[Display]] - (Optional, default [[displayNull]])
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[] call BIS_fnc_help;</sqf>
+
+|seealso= [[Arma 2: Functions Library]] [[Arma 3: Functions Library]] [[Take On Helicopters: Functions Library]]
+}}
+
+|}
+
+== Command Template ==
+<pre style="columns: 6">
+{{RV|type=command
+
+|game1=
+
+|version1=
+
+|game2=
+
+|version2=
+
+|game3=
+
+|version3=
+
+|game4=
+
+|version4=
+
+|game5=
+
+|version5=
+
+|game6=
+
+|version6=
+
+|game7=
+
+|version7=
+
+|arg=
+
+|eff=
+
+|serverExec=
+
+|gr1=
+
+|gr2=
+
+|gr3=
+
+|gr4=
+
+|gr5=
+
+|descr=
+
+|mp=
+
+|pr=
+
+|s1=
+
+|p1=
+
+|p2=
+
+|p3=
+
+|p4=
+
+|p5=
+
+|p6=
+
+|p7=
+
+|p8=
+
+|p9=
+
+|p10=
+
+|p11=
+
+|p12=
+
+|p13=
+
+|p14=
+
+|p15=
+
+|p16=
+
+|p17=
+
+|p18=
+
+|p19=
+
+|p20=
+
+|r1=
+
+|x1=
+
+|seealso=
+}}
+</pre>
+
+== Function Template ==
+<pre style="columns: 6">
+{{RV|type=function
+
+|game1=
+
+|version1=
+
+|game2=
+
+|version2=
+
+|game3=
+
+|version3=
+
+|game4=
+
+|version4=
+
+|game5=
+
+|version5=
+
+|game6=
+
+|version6=
+
+|game7=
+
+|version7=
+
+|arg=
+
+|eff=
+
+|serverExec=
+
+|gr1=
+
+|gr2=
+
+|gr3=
+
+|gr4=
+
+|gr5=
+
+|descr=
+
+|mp=
+
+|pr=
+
+|s1=
+
+|p1=
+
+|p2=
+
+|p3=
+
+|p4=
+
+|p5=
+
+|p6=
+
+|p7=
+
+|p8=
+
+|p9=
+
+|p10=
+
+|p11=
+
+|p12=
+
+|p13=
+
+|p14=
+
+|p15=
+
+|p16=
+
+|p17=
+
+|p18=
+
+|p19=
+
+|p20=
+
+|r1=
+
+|x1=
+
+|seealso=
+}}
+</pre>
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]

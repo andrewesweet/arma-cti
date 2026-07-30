@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_curatorObjectEdited
+// revision: 349402 (2023-11-08T16:27:25Z)
+// export sha1: 49hoyqmm4k94ldzjp1w6h52l9t3xneh
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Code executed when curator object is edited (i.e., moved or rotated). When a soldier or a vehicle is moved high above ground, create a parachute for them.
+
+|s1= [module, object] call [[BIS_fnc_curatorObjectEdited]]
+
+|p1= module: [[Object]] - [[Arma 3: Curator]] module
+
+|p2= object: [[Object]] - object which was edited
+
+|r1= [[Boolean]]
+
+|x1= <sqf>[module_curator, someObject] call BIS_fnc_curatorObjectEdited;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

@@ -1,0 +1,5793 @@
+// source: https://community.bistudio.com/wiki/CSLA_Iron_Curtain_Characters
+// revision: 367272 (2024-08-08T20:22:36Z)
+// export sha1: g6kt7i7ri1rc6pzth5i41hz7n2rrhvo
+// categories: Category:CSLA: Iron Curtain
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+This page contains information about CSLA Iron Curtain character classes.
+
+=== CSLA ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+<!-- ! Preview -->
+! Class
+! Name
+! Side
+! Faction
+! Weapons
+! Magazines
+! Items
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrSa58P.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrSa58P" >'''CSLA_mrSa58P'''</span>
+| ''Rifleman (Sa-58P)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrOfc.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrOfc" >'''CSLA_mrOfc'''</span>
+| ''Officer''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymZ|CSLA_dymZ]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60ofc1|CSLA_gr60ofc1]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_lptS|CSLA_lptS]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrOfcStb.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrOfcStb" >'''CSLA_mrOfcStb'''</span>
+| ''HQ Officer''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymZ|CSLA_dymZ]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60ofc2|CSLA_gr60ofc2]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_lptS|CSLA_lptS]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrSgt.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrSgt" >'''CSLA_mrSgt'''</span>
+| ''Sergeant''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60sgt|CSLA_gr60sgt]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrSa58V.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrSa58V" >'''CSLA_mrSa58V'''</span>
+| ''Rifleman (Sa-58V)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrVG70.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrVG70" >'''CSLA_mrVG70'''</span>
+| ''Grenadier (VG-70)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_VG70|CSLA_VG70]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:4x&nbsp;[[Arma 3 CfgMagazines#CSLA_26_5vz70|CSLA_26_5vz70]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrRPG75.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrRPG75" >'''CSLA_mrRPG75'''</span>
+| ''Rifleman (RPG-75)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_RPG75|CSLA_RPG75]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_RPG75_Mag|CSLA_RPG75_Mag]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60lnrG|CSLA_gr60lnrG]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrSa58Pp.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrSa58Pp" >'''CSLA_mrSa58Pp'''</span>
+| ''Marksman (Sa-58Pp)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58Pp|CSLA_Sa58Pp]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bpd|CSLA_Sa58bpd]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrOP63.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrOP63" >'''CSLA_mrOP63'''</span>
+| ''Sniper (OP-63)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_OP63|CSLA_OP63]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_OP63_10rnd_7_62Odst59|CSLA_OP63_10rnd_7_62Odst59]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60OP63|CSLA_gr60OP63]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrOP63Ghillie.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrOP63Ghillie" >'''CSLA_mrOP63Ghillie'''</span>
+| ''Sniper (OP-63, Ghillie)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_OP63|CSLA_OP63]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_OP63_10rnd_7_62Odst59|CSLA_OP63_10rnd_7_62Odst59]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uniGhillie|CSLA_uniGhillie]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrUK59.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrUK59" >'''CSLA_mrUK59'''</span>
+| ''Machine Gunner (UK-59)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_UK59L|CSLA_UK59L]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi52|CSLA_Pi52]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:4x&nbsp;[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62PZ59|CSLA_UK59_50rnd_7_62PZ59]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi52_8rnd_7_62Pi52|CSLA_Pi52_8rnd_7_62Pi52]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60UK59|CSLA_gr60UK59]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_UK59_ZD4x8|CSLA_UK59_ZD4x8]]
+
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrUK59a.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrUK59a" >'''CSLA_mrUK59a'''</span>
+| ''MG Firing Pos. Bearer  (UK-59T)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrUK59m.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrUK59m" >'''CSLA_mrUK59m'''</span>
+| ''Ammo Bearer (UK-59T)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrM52g.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrM52g" >'''CSLA_mrM52g'''</span>
+| ''Mortarman (M-52)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrM52a.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrM52a" >'''CSLA_mrM52a'''</span>
+| ''Mortarman Assistant (M-52)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrM52m.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrM52m" >'''CSLA_mrM52m'''</span>
+| ''Ammo Bearer (M-52)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrT21.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrT21" >'''CSLA_mrT21'''</span>
+| ''AT Specialist (T21)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_82JOFZ47|CSLA_82JOFZ47]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53G|CSLA_helmet53G]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60lnrG|CSLA_gr60lnrG]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrT21a.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrT21a" >'''CSLA_mrT21a'''</span>
+| ''AT Specialist Assistant (T21)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mr9P135M.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mr9P135M" >'''CSLA_mr9P135M'''</span>
+| ''AT Specialist (9K113)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mr9M113.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mr9M113" >'''CSLA_mr9M113'''</span>
+| ''Ammo Bearer (2Ă—9M113)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrRPG7.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrRPG7" >'''CSLA_mrRPG7'''</span>
+| ''AT Specialist (RPG-7)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_RPG7V|CSLA_RPG7V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60RPG7|CSLA_gr60RPG7]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrRPG7a.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrRPG7a" >'''CSLA_mrRPG7a'''</span>
+| ''AT Specialist Assistant (RPG-7)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mr9K32.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mr9K32" >'''CSLA_mr9K32'''</span>
+| ''AA Specialist (9K32 Strela 2)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_9K32|CSLA_9K32]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_9M32M|CSLA_9M32M]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53G|CSLA_helmet53G]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60lnrG|CSLA_gr60lnrG]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrRF10.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrRF10" >'''CSLA_mrRF10'''</span>
+| ''RTO''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrMedi.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrMedi" >'''CSLA_mrMedi'''</span>
+| ''Medic''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60medic|CSLA_gr60medic]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_MediKit_Z80|CSLA_MediKit_Z80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrCrw.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrCrw" >'''CSLA_mrCrw'''</span>
+| ''IFV Crewman''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetT28|CSLA_helmetT28]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60crw|CSLA_gr60crw]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_mrDrM.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_mrDrM" >'''CSLA_mrDrM'''</span>
+| ''IFV Driver-Mechanic''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetT28|CSLA_helmetT28]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60crw|CSLA_gr60crw]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_engLA.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_engLA" >'''CSLA_engLA'''</span>
+| ''Engineer (light gear)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60eng|CSLA_gr60eng]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#MineDetector|MineDetector]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_engSapper.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_engSapper" >'''CSLA_engSapper'''</span>
+| ''Engineer (IED)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60eng|CSLA_gr60eng]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#MineDetector|MineDetector]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_engMiner.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_engMiner" >'''CSLA_engMiner'''</span>
+| ''Engineer (mines)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60eng|CSLA_gr60eng]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#MineDetector|MineDetector]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_engCJt.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_engCJt" >'''CSLA_engCJt'''</span>
+| ''Machine Operator (life jacket)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60drv|CSLA_gr60drv]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ptBaseman.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ptBaseman" >'''CSLA_ptBaseman'''</span>
+| ''Paratrooper''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPara|CSLA_helmetPara]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptBase|CSLA_gr85ptBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ptOfc.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ptOfc" >'''CSLA_ptOfc'''</span>
+| ''Officer''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymZ|CSLA_dymZ]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPara|CSLA_helmetPara]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptOfc|CSLA_gr85ptOfc]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ptSgt.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ptSgt" >'''CSLA_ptSgt'''</span>
+| ''Sergeant''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_RPG75|CSLA_RPG75]]
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymZ|CSLA_dymZ]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_RPG75_Mag|CSLA_RPG75_Mag]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPara|CSLA_helmetPara]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptSgt|CSLA_gr85ptSgt]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ptVG70.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ptVG70" >'''CSLA_ptVG70'''</span>
+| ''Grenadier (VG-70)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_VG70|CSLA_VG70]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:4x&nbsp;[[Arma 3 CfgMagazines#CSLA_26_5vz70|CSLA_26_5vz70]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPara|CSLA_helmetPara]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptBase|CSLA_gr85ptBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ptRPG75.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ptRPG75" >'''CSLA_ptRPG75'''</span>
+| ''Rifleman (RPG-75)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_RPG75|CSLA_RPG75]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_RPG75_Mag|CSLA_RPG75_Mag]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPara|CSLA_helmetPara]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptBase|CSLA_gr85ptBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ptSa58Pp.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ptSa58Pp" >'''CSLA_ptSa58Pp'''</span>
+| ''Marksman (Sa-58Pp)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58Pp|CSLA_Sa58Pp]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bpd|CSLA_Sa58bpd]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPara|CSLA_helmetPara]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptBase|CSLA_gr85ptBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ptOP63.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ptOP63" >'''CSLA_ptOP63'''</span>
+| ''Sniper (OP-63)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_OP63|CSLA_OP63]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_OP63_10rnd_7_62Odst59|CSLA_OP63_10rnd_7_62Odst59]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPara|CSLA_helmetPara]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptOP63|CSLA_gr85ptOP63]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ptUK59.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ptUK59" >'''CSLA_ptUK59'''</span>
+| ''Machine Gunner (UK-59L)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_UK59L|CSLA_UK59L]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62PZ59|CSLA_UK59_50rnd_7_62PZ59]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPara|CSLA_helmetPara]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptMg|CSLA_gr85ptMg]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ptRF10.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ptRF10" >'''CSLA_ptRF10'''</span>
+| ''RTO''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPara|CSLA_helmetPara]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptBase|CSLA_gr85ptBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ptMedi.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ptMedi" >'''CSLA_ptMedi'''</span>
+| ''Medic''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPara|CSLA_helmetPara]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptMdc|CSLA_gr85ptMdc]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ptDrv.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ptDrv" >'''CSLA_ptDrv'''</span>
+| ''Driver-Mechanic''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPara|CSLA_helmetPara]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptBase|CSLA_gr85ptBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ptSpr.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ptSpr" >'''CSLA_ptSpr'''</span>
+| ''Engineer''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_TNT0100g|CSLA_TNT0100g]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPara|CSLA_helmetPara]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptBase|CSLA_gr85ptBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_lrrBaseman.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_lrrBaseman" >'''CSLA_lrrBaseman'''</span>
+| ''Scout''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_URG86u|CSLA_URG86u]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_beretM|CSLA_beretM]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85lrrBase|CSLA_gr85lrrBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_lptS|CSLA_lptS]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_lrrCmd.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_lrrCmd" >'''CSLA_lrrCmd'''</span>
+| ''Commander''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa61|CSLA_Sa61]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_RPG75|CSLA_RPG75]]
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_URG86u|CSLA_URG86u]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_RPG75_mag|CSLA_RPG75_mag]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_beretM|CSLA_beretM]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85lrrBino|CSLA_gr85lrrBino]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_lptS|CSLA_lptS]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa61tlm|CSLA_Sa61tlm]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_lrrSnp.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_lrrSnp" >'''CSLA_lrrSnp'''</span>
+| ''Sniper (OP-63)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_OP63|CSLA_OP63]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa61|CSLA_Sa61]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_OP63_10rnd_7_62Odst59|CSLA_OP63_10rnd_7_62Odst59]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_URG86u|CSLA_URG86u]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_beretM|CSLA_beretM]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85lrrOP63|CSLA_gr85lrrOP63]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_lptS|CSLA_lptS]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa61tlm|CSLA_Sa61tlm]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_lrrSnpG.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_lrrSnpG" >'''CSLA_lrrSnpG'''</span>
+| ''Sniper (OP-63, Ghillie)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_OP63|CSLA_OP63]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa61|CSLA_Sa61]]
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_OP63_10rnd_7_62Odst59|CSLA_OP63_10rnd_7_62Odst59]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_URG86u|CSLA_URG86u]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uniGhillie|CSLA_uniGhillie]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#ItemGPS|ItemGPS]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa61tlm|CSLA_Sa61tlm]]
+:[[Arma 3 CfgWeapons Items#CSLA_NSPU_OP63|CSLA_NSPU_OP63]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_lrrSptG.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_lrrSptG" >'''CSLA_lrrSptG'''</span>
+| ''Spotter (Sa-58Pp, Ghillie)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58Pp|CSLA_Sa58Pp]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa61|CSLA_Sa61]]
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_URG86u|CSLA_URG86u]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uniGhillie|CSLA_uniGhillie]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa61tlm|CSLA_Sa61tlm]]
+:[[Arma 3 CfgWeapons Items#CSLA_NSPU|CSLA_NSPU]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bpd|CSLA_Sa58bpd]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_lrrMedi.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_lrrMedi" >'''CSLA_lrrMedi'''</span>
+| ''Medic''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_URG86u|CSLA_URG86u]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_beretM|CSLA_beretM]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptMdc|CSLA_gr85ptMdc]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_lptS|CSLA_lptS]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_lrrSpr.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_lrrSpr" >'''CSLA_lrrSpr'''</span>
+| ''Engineer''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_RPG75|CSLA_RPG75]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_URG86u|CSLA_URG86u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_RPG75_mag|CSLA_RPG75_mag]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_beretM|CSLA_beretM]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85lrrBase|CSLA_gr85lrrBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_lptS|CSLA_lptS]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_lrrRTO.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_lrrRTO" >'''CSLA_lrrRTO'''</span>
+| ''RTO''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_URG86u|CSLA_URG86u]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_beretM|CSLA_beretM]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85lrrBase|CSLA_gr85lrrBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_lptS|CSLA_lptS]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_lrrDrM.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_lrrDrM" >'''CSLA_lrrDrM'''</span>
+| ''Driver-Mechanic''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_URG86u|CSLA_URG86u]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_beretM|CSLA_beretM]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85lrrBase|CSLA_gr85lrrBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_lptS|CSLA_lptS]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_rcnCrw.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_rcnCrw" >'''CSLA_rcnCrw'''</span>
+| ''IFV Crewman''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_URG86u|CSLA_URG86u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetT28|CSLA_helmetT28]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85lrrBase|CSLA_gr85lrrBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_rcnDrM.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_rcnDrM" >'''CSLA_rcnDrM'''</span>
+| ''IFV Driver-Mechanic''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_URG86u|CSLA_URG86u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetT28|CSLA_helmetT28]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85lrrBase|CSLA_gr85lrrBase]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_crw.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_crw" >'''CSLA_crw'''</span>
+| ''IFV Crewman''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53G|CSLA_helmet53G]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60drv|CSLA_gr60drv]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_drM.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_drM" >'''CSLA_drM'''</span>
+| ''Driver-Mechanic''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53G|CSLA_helmet53G]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60drv|CSLA_gr60drv]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_svc.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_svc" >'''CSLA_svc'''</span>
+| ''Mechanic''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetT28|CSLA_helmetT28]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60svc|CSLA_gr60svc]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_engCrw.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_engCrw" >'''CSLA_engCrw'''</span>
+| ''Machine Operator''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53G|CSLA_helmet53G]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60drv|CSLA_gr60drv]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_tnkEnl.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_tnkEnl" >'''CSLA_tnkEnl'''</span>
+| ''Tank Crew''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa61|CSLA_Sa61]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetT28|CSLA_helmetT28]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60tankSa61|CSLA_gr60tankSa61]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_tnkDrM.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_tnkDrM" >'''CSLA_tnkDrM'''</span>
+| ''Tank Driver-Mechanic''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa61|CSLA_Sa61]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetT28|CSLA_helmetT28]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60tankSa61|CSLA_gr60tankSa61]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_tnkOfc.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_tnkOfc" >'''CSLA_tnkOfc'''</span>
+| ''Tank Officer''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa61|CSLA_Sa61]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa61|CSLA_Sa61]]
+:[[Arma 3 CfgWeapons Items#CSLA_Bino|CSLA_Bino]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymZ|CSLA_dymZ]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetT28|CSLA_helmetT28]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60tankSa61|CSLA_gr60tankSa61]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetT28G|CSLA_helmetT28G]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_tnkCmd.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_tnkCmd" >'''CSLA_tnkCmd'''</span>
+| ''Tank Commander''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa61|CSLA_Sa61]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa61|CSLA_Sa61]]
+:[[Arma 3 CfgWeapons Items#CSLA_Bino|CSLA_Bino]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymZ|CSLA_dymZ]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetT28|CSLA_helmetT28]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60tankSa61|CSLA_gr60tankSa61]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetT28G|CSLA_helmetT28G]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_pltMi8.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_pltMi8" >'''CSLA_pltMi8'''</span>
+| ''Transport Pilot''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+
+| 
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymZ|CSLA_dymZ]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uniPlt|CSLA_uniPlt]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmetPOP6|CSLA_helmetPOP6]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_uaEnl.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_uaEnl" >'''CSLA_uaEnl'''</span>
+| ''Soldier''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_uaSvc.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_uaSvc" >'''CSLA_uaSvc'''</span>
+| ''Mechanic''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uniSrv|CSLA_uniSrv]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_uaSpv.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_uaSpv" >'''CSLA_uaSpv'''</span>
+| ''Supervisor''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60bnt|CSLA_gr60bnt]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_uaEnlCap.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_uaEnlCap" >'''CSLA_uaEnlCap'''</span>
+| ''Soldier (cap)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_cap|CSLA_cap]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60emp|CSLA_gr60emp]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_uaEnlHmt.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_uaEnlHmt" >'''CSLA_uaEnlHmt'''</span>
+| ''Soldier (helmet)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60base|CSLA_gr60base]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_uaOfcCap.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_uaOfcCap" >'''CSLA_uaOfcCap'''</span>
+| ''Officer''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymZ|CSLA_dymZ]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60ofc3|CSLA_gr60ofc3]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_cap|CSLA_cap]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_uaOfcCapStb.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_uaOfcCapStb" >'''CSLA_uaOfcCapStb'''</span>
+| ''HQ Officer''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymZ|CSLA_dymZ]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60ofc4|CSLA_gr60ofc4]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_cap|CSLA_cap]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_uaOfcPt.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_uaOfcPt" >'''CSLA_uaOfcPt'''</span>
+| ''Officer â€“ Paratrooper''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85ptOfcUa|CSLA_gr85ptOfcUa]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_beretR|CSLA_beretR]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_uaPlt.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_uaPlt" >'''CSLA_uaPlt'''</span>
+| ''Pilot''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uniPlt|CSLA_uniPlt]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_uaLrrSa61.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_uaLrrSa61" >'''CSLA_uaLrrSa61'''</span>
+| ''Scout (Sa-61)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa61|CSLA_Sa61]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_beretR|CSLA_beretR]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85lrrSa61|CSLA_gr85lrrSa61]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa61tlm|CSLA_Sa61tlm]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_uaLrrUTON.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_uaLrrUTON" >'''CSLA_uaLrrUTON'''</span>
+| ''Scout (UTON)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85lrrUTON|CSLA_gr85lrrUTON]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_beretR|CSLA_beretR]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_Policeman.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_Policeman" >'''CSLA_Policeman'''</span>
+| ''Policeman (Pi-82)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uniPoliceman|CSLA_uniPoliceman]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_PoliceCap|CSLA_PoliceCap]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_PolicemanSa61.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_PolicemanSa61" >'''CSLA_PolicemanSa61'''</span>
+| ''Policeman (Sa-61)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_rSa61|CSLA_rSa61]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uniPoliceman|CSLA_uniPoliceman]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_PoliceCap|CSLA_PoliceCap]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ECh1a.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ECh1a" >'''CSLA_ECh1a'''</span>
+| ''Michal Horňák (armed)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_RG4u|CSLA_RG4u]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53|CSLA_helmet53]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr60rfl|CSLA_gr60rfl]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ECh1u.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ECh1u" >'''CSLA_ECh1u'''</span>
+| ''Michal Horňák (unarmed)''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ECh2.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ECh2" >'''CSLA_ECh2'''</span>
+| ''Vlastimil Müller''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa61|CSLA_Sa61]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_RPG75|CSLA_RPG75]]
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+
+| 
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_dymB|CSLA_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_URG86u|CSLA_URG86u]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_RPG75_mag|CSLA_RPG75_mag]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60lrr|CSLA_uni60lrr]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_beretM|CSLA_beretM]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_gr85lrrBino|CSLA_gr85lrrBino]]
+:[[Arma 3 CfgWeapons Items#CSLA_nokto|CSLA_nokto]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_lptS|CSLA_lptS]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa61tlm|CSLA_Sa61tlm]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ECom.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ECom" >'''CSLA_ECom'''</span>
+| ''Vasil Krajčí­r''
+| style="background-color:#e1c2c2" | EAST
+| CSLA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uni60wld|CSLA_uni60wld]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|}
+
+=== US ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+<!-- ! Preview -->
+! Class
+! Name
+! Side
+! Faction
+! Weapons
+! Magazines
+! Items
+
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcM16.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcM16" >'''US85_mcM16'''</span>
+| ''Rifleman (M16)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_M16|US85_grY_M16]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcOfc.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcOfc" >'''US85_mcOfc'''</span>
+| ''Officer''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+:[[Arma 3 CfgWeapons Items#US85_bino|US85_bino]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymC|US85_dymC]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymZ|US85_dymZ]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_M16|US85_grY_M16]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcSgt.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcSgt" >'''US85_mcSgt'''</span>
+| ''Sergeant''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+:[[Arma 3 CfgWeapons Items#US85_bino|US85_bino]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymC|US85_dymC]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymZ|US85_dymZ]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_M16|US85_grY_M16]]
+:[[Arma 3 CfgWeapons Items#ItemGPS|ItemGPS]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcM16GL.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcM16GL" >'''US85_mcM16GL'''</span>
+| ''Grenadier (M16 + M203)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2GL|US85_M16A2GL]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:8x&nbsp;[[Arma 3 CfgMagazines#US85_M406|US85_M406]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grVm_M16GL|US85_grVm_M16GL]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcM21.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcM21" >'''US85_mcM21'''</span>
+| ''Marksman (M21)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M21|US85_M21]]
+:[[Arma 3: CfgWeapons Weapons#US85_M9|US85_M9]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_20Rnd_762x51|US85_20Rnd_762x51]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M9_15Rnd_9Luger|US85_M9_15Rnd_9Luger]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_M24|US85_grY_M24]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcM249.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcM249" >'''US85_mcM249'''</span>
+| ''Automatic Rifleman (M249)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M249|US85_M249]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_200Rnd_556x45|US85_200Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_MG|US85_grY_MG]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcM60.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcM60" >'''US85_mcM60'''</span>
+| ''Machine Gunner (M60)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M60|US85_M60]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_100Rnd_762x51|US85_100Rnd_762x51]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_MG|US85_grY_MG]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcM136.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcM136" >'''US85_mcM136'''</span>
+| ''Rifleman (M16, M136)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+:[[Arma 3: CfgWeapons Weapons#US85_M136|US85_M136]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_M136_Mag|US85_M136_Mag]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_lnrG|US85_grY_lnrG]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcSMAW.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcSMAW" >'''US85_mcSMAW'''</span>
+| ''AT Specialist (SMAW)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+:[[Arma 3: CfgWeapons Weapons#US85_SMAW|US85_SMAW]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_lnrG|US85_grY_lnrG]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcCG.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcCG" >'''US85_mcCG'''</span>
+| ''AT Specialist (MAAWS)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+:[[Arma 3: CfgWeapons Weapons#US85_MAAWS|US85_MAAWS]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_lnrG|US85_grY_lnrG]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcM47.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcM47" >'''US85_mcM47'''</span>
+| ''AT Specialist (M47)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+:[[Arma 3: CfgWeapons Weapons#US85_M47|US85_M47]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_lnrG|US85_grY_lnrG]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcFIM92.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcFIM92" >'''US85_mcFIM92'''</span>
+| ''AA Specialist''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+:[[Arma 3: CfgWeapons Weapons#US85_FIM92|US85_FIM92]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_FIM92_Mag|US85_FIM92_Mag]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_lnrG|US85_grY_lnrG]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcCprs.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcCprs" >'''US85_mcCprs'''</span>
+| ''Corpsman''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_crg|US85_grY_crg]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_MediKit|US85_MediKit]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_mcDrv.jpg|150px|&nbsp;]] -->
+| <span id="US85_mcDrv" >'''US85_mcDrv'''</span>
+| ''Driver''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+
+| 
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_M16|US85_grY_M16]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_crg|US85_grY_crg]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_toolkit_S|US85_toolkit_S]]
+
+ 
+
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_sfBaseman.jpg|150px|&nbsp;]] -->
+| <span id="US85_sfBaseman" >'''US85_sfBaseman'''</span>
+| ''SpecFor''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CAR|US85_M16A2CAR]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniSF|US85_uniSF]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetSFLG|US85_helmetSFLG]]
+:[[Arma 3 CfgWeapons Equipment#US85_grSF_M16|US85_grSF_M16]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_sfGL.jpg|150px|&nbsp;]] -->
+| <span id="US85_sfGL" >'''US85_sfGL'''</span>
+| ''Commander (M16 Car. + M203)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CARGL|US85_M16A2CARGL]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+:[[Arma 3 CfgWeapons Items#US85_bino|US85_bino]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:12x&nbsp;[[Arma 3 CfgMagazines#US85_M406|US85_M406]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymC|US85_dymC]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymZ|US85_dymZ]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniSF|US85_uniSF]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetSFLG|US85_helmetSFLG]]
+:[[Arma 3 CfgWeapons Equipment#US85_grSF_M16GL|US85_grSF_M16GL]]
+:[[Arma 3 CfgWeapons Items#ItemGPS|ItemGPS]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_sc2000_M16|US85_sc2000_M16]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_sfLAW.jpg|150px|&nbsp;]] -->
+| <span id="US85_sfLAW" >'''US85_sfLAW'''</span>
+| ''Rifleman (LAW)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CAR|US85_M16A2CAR]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+:[[Arma 3: CfgWeapons Weapons#US85_LAW72|US85_LAW72]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_LAW72_Mag|US85_LAW72_Mag]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniSF|US85_uniSF]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetSFLG|US85_helmetSFLG]]
+:[[Arma 3 CfgWeapons Equipment#US85_grSF_M16|US85_grSF_M16]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_M16fl|US85_M16fl]]
+:[[Arma 3 CfgWeapons Items#US85_sc2000_M16|US85_sc2000_M16]]
+:[[Arma 3 CfgWeapons Items#US85_M16tlm|US85_M16tlm]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_sfAR.jpg|150px|&nbsp;]] -->
+| <span id="US85_sfAR" >'''US85_sfAR'''</span>
+| ''Automatic Rifleman (M249)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M249|US85_M249]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_200Rnd_556x45|US85_200Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniSF|US85_uniSF]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetSFLG|US85_helmetSFLG]]
+:[[Arma 3 CfgWeapons Equipment#US85_grSF_MG|US85_grSF_MG]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_sc2000M249|US85_sc2000M249]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_sfDrv.jpg|150px|&nbsp;]] -->
+| <span id="US85_sfDrv" >'''US85_sfDrv'''</span>
+| ''Driver''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CAR|US85_M16A2CAR]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniSF|US85_uniSF]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetSFLG|US85_helmetSFLG]]
+:[[Arma 3 CfgWeapons Equipment#US85_grSF_M16|US85_grSF_M16]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_M16fl|US85_M16fl]]
+:[[Arma 3 CfgWeapons Items#US85_sc2000_M16|US85_sc2000_M16]]
+:[[Arma 3 CfgWeapons Items#US85_M16tlm|US85_M16tlm]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_sfSpr.jpg|150px|&nbsp;]] -->
+| <span id="US85_sfSpr" >'''US85_sfSpr'''</span>
+| ''Engineer''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CAR|US85_M16A2CAR]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniSF|US85_uniSF]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetSFLG|US85_helmetSFLG]]
+:[[Arma 3 CfgWeapons Equipment#US85_grSF_M16|US85_grSF_M16]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_M16fl|US85_M16fl]]
+:[[Arma 3 CfgWeapons Items#US85_sc2000_M16|US85_sc2000_M16]]
+:[[Arma 3 CfgWeapons Items#US85_M16tlm|US85_M16tlm]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_sfMdc.jpg|150px|&nbsp;]] -->
+| <span id="US85_sfMdc" >'''US85_sfMdc'''</span>
+| ''Medic''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CAR|US85_M16A2CAR]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniSF|US85_uniSF]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetSFLG|US85_helmetSFLG]]
+:[[Arma 3 CfgWeapons Equipment#US85_grSF_M16|US85_grSF_M16]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_M16fl|US85_M16fl]]
+:[[Arma 3 CfgWeapons Items#US85_sc2000_M16|US85_sc2000_M16]]
+:[[Arma 3 CfgWeapons Items#US85_M16tlm|US85_M16tlm]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_sfRTO.jpg|150px|&nbsp;]] -->
+| <span id="US85_sfRTO" >'''US85_sfRTO'''</span>
+| ''RTO''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CAR|US85_M16A2CAR]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniSF|US85_uniSF]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetSFLG|US85_helmetSFLG]]
+:[[Arma 3 CfgWeapons Equipment#US85_grSF_M16|US85_grSF_M16]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_M16fl|US85_M16fl]]
+:[[Arma 3 CfgWeapons Items#US85_sc2000_M16|US85_sc2000_M16]]
+:[[Arma 3 CfgWeapons Items#US85_M16tlm|US85_M16tlm]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_sfM21.jpg|150px|&nbsp;]] -->
+| <span id="US85_sfM21" >'''US85_sfM21'''</span>
+| ''Sniper''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M21|US85_M21]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+:[[Arma 3 CfgWeapons Items#US85_bino|US85_bino]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#US85_20Rnd_762x51|US85_20Rnd_762x51]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniSF|US85_uniSF]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetSFLG|US85_helmetSFLG]]
+:[[Arma 3 CfgWeapons Equipment#US85_grSF_M24|US85_grSF_M24]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_M21tlm|US85_M21tlm]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_sfM21G.jpg|150px|&nbsp;]] -->
+| <span id="US85_sfM21G" >'''US85_sfM21G'''</span>
+| ''Sniper (Ghillie)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M21|US85_M21]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+:[[Arma 3 CfgWeapons Items#US85_bino|US85_bino]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:6x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#US85_20Rnd_762x51|US85_20Rnd_762x51]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniGhillie|US85_uniGhillie]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemGPS|ItemGPS]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_M21tlm|US85_M21tlm]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_sfSptG.jpg|150px|&nbsp;]] -->
+| <span id="US85_sfSptG" >'''US85_sfSptG'''</span>
+| ''Spotter (Ghillie)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+:[[Arma 3 CfgWeapons Items#US85_bino|US85_bino]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniGhillie|US85_uniGhillie]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_M16fl|US85_M16fl]]
+:[[Arma 3 CfgWeapons Items#US85_sc4x20_M16|US85_sc4x20_M16]]
+:[[Arma 3 CfgWeapons Items#US85_M16tlm|US85_M16tlm]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_sfMPV.jpg|150px|&nbsp;]] -->
+| <span id="US85_sfMPV" >'''US85_sfMPV'''</span>
+| ''Saboteur''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_MPVSD|US85_MPVSD]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:4x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_MPV_30Rnd_9Luger|US85_MPV_30Rnd_9Luger]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniSF|US85_uniSF]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_beanie|US85_beanie]]
+:[[Arma 3 CfgWeapons Equipment#US85_grSF_MPV|US85_grSF_MPV]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_toolkit_S|US85_toolkit_S]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptBaseman.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptBaseman" >'''US85_ptBaseman'''</span>
+| ''Paratrooper''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_M16|US85_grV_M16]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptOfc.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptOfc" >'''US85_ptOfc'''</span>
+| ''Officer''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+:[[Arma 3 CfgWeapons Items#US85_bino|US85_bino]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_1911_7Rnd_045ACP|US85_1911_7Rnd_045ACP]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymC|US85_dymC]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymZ|US85_dymZ]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_ofc|US85_grV_ofc]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptSgt.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptSgt" >'''US85_ptSgt'''</span>
+| ''Sergeant''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+:[[Arma 3: CfgWeapons Weapons#US85_LAW72|US85_LAW72]]
+:[[Arma 3 CfgWeapons Items#US85_bino|US85_bino]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_LAW72_Mag|US85_LAW72_Mag]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymC|US85_dymC]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymZ|US85_dymZ]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_M16|US85_grV_M16]]
+:[[Arma 3 CfgWeapons Items#ItemGPS|ItemGPS]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptM16.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptM16" >'''US85_ptM16'''</span>
+| ''Marksman''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2o|US85_M16A2o]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_M16|US85_grV_M16]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptM16GL.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptM16GL" >'''US85_ptM16GL'''</span>
+| ''Grenadier (M16 + M203)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2GL|US85_M16A2GL]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:12x&nbsp;[[Arma 3 CfgMagazines#US85_M406|US85_M406]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_M16GL|US85_grV_M16GL]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptM136.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptM136" >'''US85_ptM136'''</span>
+| ''Rifleman (M16, M136)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+:[[Arma 3: CfgWeapons Weapons#US85_M136|US85_M136]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_M136_Mag|US85_M136_Mag]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_M16|US85_grV_M16]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptM21.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptM21" >'''US85_ptM21'''</span>
+| ''Sniper''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M21|US85_M21]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:5x&nbsp;[[Arma 3 CfgMagazines#US85_20Rnd_762x51|US85_20Rnd_762x51]]
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_1911_7Rnd_045ACP|US85_1911_7Rnd_045ACP]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_M24|US85_grV_M24]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptM249.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptM249" >'''US85_ptM249'''</span>
+| ''Automatic Rifleman (M249)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M249|US85_M249]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_200Rnd_556x45|US85_200Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_MG|US85_grV_MG]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptM60.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptM60" >'''US85_ptM60'''</span>
+| ''Machine Gunner (M60)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M60|US85_M60]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_100Rnd_762x51|US85_100Rnd_762x51]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_MG|US85_grV_MG]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptMdc.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptMdc" >'''US85_ptMdc'''</span>
+| ''Medic''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_M16|US85_grV_M16]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptDrv.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptDrv" >'''US85_ptDrv'''</span>
+| ''Driver''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_M16|US85_grV_M16]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptEng.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptEng" >'''US85_ptEng'''</span>
+| ''Engineer''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymZ|US85_dymZ]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymC|US85_dymC]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_M16|US85_grV_M16]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_ptRTO.jpg|150px|&nbsp;]] -->
+| <span id="US85_ptRTO" >'''US85_ptRTO'''</span>
+| ''RTO''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymZ|US85_dymZ]]
+:1x&nbsp;[[Arma 3 CfgMagazines#US85_dymC|US85_dymC]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPt|US85_uniPt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGTr|US85_helmetPASGTr]]
+:[[Arma 3 CfgWeapons Equipment#US85_grV_M16|US85_grV_M16]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_crw.jpg|150px|&nbsp;]] -->
+| <span id="US85_crw" >'''US85_crw'''</span>
+| ''Crewman''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CAR|US85_M16A2CAR]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniCrew|US85_uniCrew]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetDH132G|US85_helmetDH132G]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_crwDrv.jpg|150px|&nbsp;]] -->
+| <span id="US85_crwDrv" >'''US85_crwDrv'''</span>
+| ''Driver''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CAR|US85_M16A2CAR]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniCrew|US85_uniCrew]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetDH132G|US85_helmetDH132G]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_toolkit_S|US85_toolkit_S]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_crwCmd.jpg|150px|&nbsp;]] -->
+| <span id="US85_crwCmd" >'''US85_crwCmd'''</span>
+| ''Commander''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CAR|US85_M16A2CAR]]
+:[[Arma 3 CfgWeapons Items#US85_bino|US85_bino]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniCrew|US85_uniCrew]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetDH132G|US85_helmetDH132G]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_crwOfc.jpg|150px|&nbsp;]] -->
+| <span id="US85_crwOfc" >'''US85_crwOfc'''</span>
+| ''Officer''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CAR|US85_M16A2CAR]]
+:[[Arma 3 CfgWeapons Items#US85_bino|US85_bino]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniCrew|US85_uniCrew]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetDH132G|US85_helmetDH132G]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_svc.jpg|150px|&nbsp;]] -->
+| <span id="US85_svc" >'''US85_svc'''</span>
+| ''Mechanic''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CAR|US85_M16A2CAR]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniCrew|US85_uniCrew]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetDH132G|US85_helmetDH132G]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+:[[Arma 3 CfgWeapons Items#US85_toolkit_S|US85_toolkit_S]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_plt.jpg|150px|&nbsp;]] -->
+| <span id="US85_plt" >'''US85_plt'''</span>
+| ''Pilot''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_MPVN|US85_MPVN]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_MPV_30Rnd_9Luger|US85_MPV_30Rnd_9Luger]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPlt|US85_uniPlt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPlt|US85_helmetPlt]]
+:[[Arma 3 CfgWeapons Items#US85_ANPVS5_Goggles|US85_ANPVS5_Goggles]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_uaEnl.jpg|150px|&nbsp;]] -->
+| <span id="US85_uaEnl" >'''US85_uaEnl'''</span>
+| ''Soldier (USMC)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_uaEnlArmy.jpg|150px|&nbsp;]] -->
+| <span id="US85_uaEnlArmy" >'''US85_uaEnlArmy'''</span>
+| ''Soldier (Army)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_uaEnlHmt.jpg|150px|&nbsp;]] -->
+| <span id="US85_uaEnlHmt" >'''US85_uaEnlHmt'''</span>
+| ''Soldier (USMC, Helmet)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetPASGT|US85_helmetPASGT]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_uaEnlBeanie.jpg|150px|&nbsp;]] -->
+| <span id="US85_uaEnlBeanie" >'''US85_uaEnlBeanie'''</span>
+| ''Soldier (USMC, Beanie)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_beanie|US85_beanie]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_uaEnlCap.jpg|150px|&nbsp;]] -->
+| <span id="US85_uaEnlCap" >'''US85_uaEnlCap'''</span>
+| ''Soldier (USMC, Cap)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_marineCap|US85_marineCap]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_uaEnlCapArmy.jpg|150px|&nbsp;]] -->
+| <span id="US85_uaEnlCapArmy" >'''US85_uaEnlCapArmy'''</span>
+| ''Soldier (Army, Cap)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_patrolCap|US85_patrolCap]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_uaOfc.jpg|150px|&nbsp;]] -->
+| <span id="US85_uaOfc" >'''US85_uaOfc'''</span>
+| ''Officer (USMC)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M9|US85_M9]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M9_15Rnd_9Luger|US85_M9_15Rnd_9Luger]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_M9|US85_grY_M9]]
+:[[Arma 3 CfgWeapons Equipment#US85_marineCap|US85_marineCap]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_uaOfcArmy.jpg|150px|&nbsp;]] -->
+| <span id="US85_uaOfcArmy" >'''US85_uaOfcArmy'''</span>
+| ''Officer (Army)''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M9|US85_M9]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M9_15Rnd_9Luger|US85_M9_15Rnd_9Luger]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_M9|US85_grY_M9]]
+:[[Arma 3 CfgWeapons Equipment#US85_patrolCap|US85_patrolCap]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_uaCrw.jpg|150px|&nbsp;]] -->
+| <span id="US85_uaCrw" >'''US85_uaCrw'''</span>
+| ''Crewman''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniCrew|US85_uniCrew]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_uaPlt.jpg|150px|&nbsp;]] -->
+| <span id="US85_uaPlt" >'''US85_uaPlt'''</span>
+| ''Pilot''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniPlt|US85_uniPlt]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles US85_uaRTO.jpg|150px|&nbsp;]] -->
+| <span id="US85_uaRTO" >'''US85_uaRTO'''</span>
+| ''RTO''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniBDU|US85_uniBDU]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_grYHarness|US85_grYHarness]]
+:[[Arma 3 CfgWeapons Equipment#US85_marineCap|US85_marineCap]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+ 
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_WCh1.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_WCh1" >'''CSLA_WCh1'''</span>
+| ''Jim 'BJ' Borland''
+| style="background-color:#c2d4e7" | WEST
+| US85
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2CAR|US85_M16A2CAR]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#US85_7Rnd_45ACP|US85_7Rnd_45ACP]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_dymB|US85_dymB]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#US85_uniSF|US85_uniSF]]
+:[[Arma 3 CfgWeapons Items#US85_watch|US85_watch]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Equipment#US85_helmetSFLG|US85_helmetSFLG]]
+:[[Arma 3 CfgWeapons Equipment#US85_grSF_M16|US85_grSF_M16]]
+:[[Arma 3 CfgWeapons Items#US85_FAK|US85_FAK]]
+
+|}
+
+=== FIA ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+<!-- ! Preview -->
+! Class
+! Name
+! Side
+! Faction
+! Weapons
+! Magazines
+! Items
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_mcFAL.jpg|150px|&nbsp;]] -->
+| <span id="FIA_mcFAL" >'''FIA_mcFAL'''</span>
+| ''Rifleman (FAL)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_FAL|US85_FAL]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:6x&nbsp;[[Arma 3 CfgMagazines#US85_20Rnd_762x51|US85_20Rnd_762x51]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld3|FIA_uniwld3]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#FIA_grY_MPV|FIA_grY_MPV]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_khk|H_Bandanna_khk]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_mcM16.jpg|150px|&nbsp;]] -->
+| <span id="FIA_mcM16" >'''FIA_mcM16'''</span>
+| ''Rifleman (M16)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld2|FIA_uniwld2]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#FIA_grY_MPV|FIA_grY_MPV]]
+:[[Arma 3 CfgWeapons Equipment#US85_beanie|US85_beanie]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_mcSa58.jpg|150px|&nbsp;]] -->
+| <span id="FIA_mcSa58" >'''FIA_mcSa58'''</span>
+| ''Rifleman (Sa-58P)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58P|CSLA_Sa58P]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld3|FIA_uniwld3]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#FIA_gr60_Sa58|FIA_gr60_Sa58]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_khk|H_Booniehat_khk]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_mcSa58v.jpg|150px|&nbsp;]] -->
+| <span id="FIA_mcSa58v" >'''FIA_mcSa58v'''</span>
+| ''Rifleman (Sa-58V)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld10|FIA_uniwld10]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#FIA_gr85_Sa58|FIA_gr85_Sa58]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_oli|H_Cap_oli]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_mcUK59L.jpg|150px|&nbsp;]] -->
+| <span id="FIA_mcUK59L" >'''FIA_mcUK59L'''</span>
+| ''Machine Gunner (UK-59L)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_UK59L|CSLA_UK59L]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_UK59_50rnd_7_62PZ59|CSLA_UK59_50rnd_7_62PZ59]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld4|FIA_uniwld4]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#FIA_grY_MG|FIA_grY_MG]]
+:[[Arma 3 CfgWeapons Equipment#H_Booniehat_oli|H_Booniehat_oli]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_mcSa61.jpg|150px|&nbsp;]] -->
+| <span id="FIA_mcSa61" >'''FIA_mcSa61'''</span>
+| ''Rifleman (Sa-61)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_rSa61t|CSLA_rSa61t]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:6x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld7|FIA_uniwld7]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#FIA_gr85_Sa61|FIA_gr85_Sa61]]
+:[[Arma 3 CfgWeapons Equipment#US85_beanie|US85_beanie]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_mcRPG7.jpg|150px|&nbsp;]] -->
+| <span id="FIA_mcRPG7" >'''FIA_mcRPG7'''</span>
+| ''AT Specialist (RPG-7)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58v|CSLA_Sa58v]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_RPG7|CSLA_RPG7]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:6x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld5|FIA_uniwld5]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#FIA_gr60_Sa58|FIA_gr60_Sa58]]
+:[[Arma 3 CfgWeapons Equipment#US85_beanie|US85_beanie]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_mc9K32.jpg|150px|&nbsp;]] -->
+| <span id="FIA_mc9K32" >'''FIA_mc9K32'''</span>
+| ''AA Specialist (9K32 Strela 2)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58v|CSLA_Sa58v]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_9K32|CSLA_9K32]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:6x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62vz43|CSLA_Sa58_30rnd_7_62vz43]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_9M32M|CSLA_9M32M]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld6|FIA_uniwld6]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_helmet53G|CSLA_helmet53G]]
+:[[Arma 3 CfgWeapons Equipment#FIA_gr60_Sa58|FIA_gr60_Sa58]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_mcSvc.jpg|150px|&nbsp;]] -->
+| <span id="FIA_mcSvc" >'''FIA_mcSvc'''</span>
+| ''Mechanic''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld1|FIA_uniwld1]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_M16|US85_grY_M16]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_cap|CSLA_cap]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_mcLA.jpg|150px|&nbsp;]] -->
+| <span id="FIA_mcLA" >'''FIA_mcLA'''</span>
+| ''Engineer''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_M16A2|US85_M16A2]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:7x&nbsp;[[Arma 3 CfgMagazines#US85_30Rnd_556x45|US85_30Rnd_556x45]]
+:1x&nbsp;[[Arma 3 CfgMagazines#CSLA_IVZ|CSLA_IVZ]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld|FIA_uniwld]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_spc|US85_grY_spc]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_capMlok|CSLA_capMlok]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_mcSnp.jpg|150px|&nbsp;]] -->
+| <span id="FIA_mcSnp" >'''FIA_mcSnp'''</span>
+| ''Sniper (Hunt. Rifle)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_HuntingRifle|CSLA_HuntingRifle]]
+:[[Arma 3: CfgWeapons Weapons#US85_1911|US85_1911]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:6x&nbsp;[[Arma 3 CfgMagazines#CSLA_10Rnd_762hunt|CSLA_10Rnd_762hunt]]
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_1911_7Rnd_045ACP|US85_1911_7Rnd_045ACP]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld9|FIA_uniwld9]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#FIA_grY_MPV|FIA_grY_MPV]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_khk|H_Bandanna_khk]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_mrDrM.jpg|150px|&nbsp;]] -->
+| <span id="FIA_mrDrM" >'''FIA_mrDrM'''</span>
+| ''Driver-Mechanic''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#CSLA_Sa58V|CSLA_Sa58V]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:5x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa58_30rnd_7_62Sv43|CSLA_Sa58_30rnd_7_62Sv43]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld3|FIA_uniwld3]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#FIA_gr85_Sa58|FIA_gr85_Sa58]]
+:[[Arma 3 CfgWeapons Equipment#H_Cap_oli|H_Cap_oli]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+:[[Arma 3 CfgWeapons Items#CSLA_toolkit_KOMZE|CSLA_toolkit_KOMZE]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Citizen.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Citizen" >'''FIA_CIV_Citizen'''</span>
+| ''Burgher (ver. 1)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniCitizen|FIA_uniCitizen]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Citizen_V2.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Citizen_V2" >'''FIA_CIV_Citizen_V2'''</span>
+| ''Burgher (ver. 2)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniCitizen2|FIA_uniCitizen2]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Citizen_V3.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Citizen_V3" >'''FIA_CIV_Citizen_V3'''</span>
+| ''Burgher (ver. 3)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniCitizen3|FIA_uniCitizen3]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Citizen_V4.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Citizen_V4" >'''FIA_CIV_Citizen_V4'''</span>
+| ''Burgher (ver. 4)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniCitizen4|FIA_uniCitizen4]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Doctor.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Doctor" >'''FIA_CIV_Doctor'''</span>
+| ''Doctor''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniDoctor|FIA_uniDoctor]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Foreman.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Foreman" >'''FIA_CIV_Foreman'''</span>
+| ''Foreman (ver. 1)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniForeman|FIA_uniForeman]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Foreman_V2.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Foreman_V2" >'''FIA_CIV_Foreman_V2'''</span>
+| ''Foreman (ver. 2)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniForeman2|FIA_uniForeman2]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_Policeman.jpg|150px|&nbsp;]] -->
+| <span id="FIA_Policeman" >'''FIA_Policeman'''</span>
+| ''Policeman (Pi-82)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uniPoliceman|CSLA_uniPoliceman]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_PoliceCap|CSLA_PoliceCap]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_PolicemanSa61.jpg|150px|&nbsp;]] -->
+| <span id="FIA_PolicemanSa61" >'''FIA_PolicemanSa61'''</span>
+| ''Policeman (Sa-61)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_rSa61|CSLA_rSa61]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uniPoliceman|CSLA_uniPoliceman]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_PoliceCap|CSLA_PoliceCap]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Functionary.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Functionary" >'''FIA_CIV_Functionary'''</span>
+| ''Functionary (ver. 1)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniFunctionary|FIA_uniFunctionary]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Functionary_V2.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Functionary_V2" >'''FIA_CIV_Functionary_V2'''</span>
+| ''Functionary (ver. 2)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniFunctionary2|FIA_uniFunctionary2]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Villager.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Villager" >'''FIA_CIV_Villager'''</span>
+| ''Villager (ver. 1)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniVillager|FIA_uniVillager]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Villager_V2.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Villager_V2" >'''FIA_CIV_Villager_V2'''</span>
+| ''Villager (ver. 2)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniVillager2|FIA_uniVillager2]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Villager_V3.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Villager_V3" >'''FIA_CIV_Villager_V3'''</span>
+| ''Villager (ver. 3)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniVillager3|FIA_uniVillager3]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Villager_V4.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Villager_V4" >'''FIA_CIV_Villager_V4'''</span>
+| ''Villager (ver. 4)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniVillager4|FIA_uniVillager4]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Woodlander.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Woodlander" >'''FIA_CIV_Woodlander'''</span>
+| ''Forester (ver. 1)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWoodlander|FIA_uniWoodlander]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Woodlander_V2.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Woodlander_V2" >'''FIA_CIV_Woodlander_V2'''</span>
+| ''Forester (ver. 2)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWoodlander2|FIA_uniWoodlander2]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Woodlander_V3.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Woodlander_V3" >'''FIA_CIV_Woodlander_V3'''</span>
+| ''Forester (ver. 3)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWoodlander3|FIA_uniWoodlander3]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Woodlander_V4.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Woodlander_V4" >'''FIA_CIV_Woodlander_V4'''</span>
+| ''Forester (ver. 4)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWoodlander4|FIA_uniWoodlander4]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Worker.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Worker" >'''FIA_CIV_Worker'''</span>
+| ''Worker (ver. 1)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Worker_V2.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Worker_V2" >'''FIA_CIV_Worker_V2'''</span>
+| ''Worker (ver. 2)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWorker2|FIA_uniWorker2]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Worker_V3.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Worker_V3" >'''FIA_CIV_Worker_V3'''</span>
+| ''Worker (ver. 3)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWorker3|FIA_uniWorker3]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_CIV_Worker_V4.jpg|150px|&nbsp;]] -->
+| <span id="FIA_CIV_Worker_V4" >'''FIA_CIV_Worker_V4'''</span>
+| ''Worker (ver. 4)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWorker4|FIA_uniWorker4]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles FIA_uaEnl8.jpg|150px|&nbsp;]] -->
+| <span id="FIA_uaEnl8" >'''FIA_uaEnl8'''</span>
+| ''Man in T-shirt''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWld8|FIA_uniWld8]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_MCh1u.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_MCh1u" >'''CSLA_MCh1u'''</span>
+| ''Ví­tek Finke (unarmed)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWoodlander|FIA_uniWoodlander]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_MCh1a.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_MCh1a" >'''CSLA_MCh1a'''</span>
+| ''Vítek Finke (armed)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld|FIA_uniwld]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#FIA_grY_MPV|FIA_grY_MPV]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_MCh2u.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_MCh2u" >'''CSLA_MCh2u'''</span>
+| ''Antonín Anderle (unarmed)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniCitizen4|FIA_uniCitizen4]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_MCh2a.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_MCh2a" >'''CSLA_MCh2a'''</span>
+| ''Antonín Anderle (armed)''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld5|FIA_uniwld5]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_M16|US85_grY_M16]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_ECh1f.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_ECh1f" >'''CSLA_ECh1f'''</span>
+| ''Michal Horňák''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld6|FIA_uniwld6]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#US85_grY_M16|US85_grY_M16]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_FCh1.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_FCh1" >'''CSLA_FCh1'''</span>
+| ''Martin Valášek''
+| style="background-color:#c2e1c2" | GUER
+| FIA
+
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3: CfgWeapons Weapons#US85_FAL|US85_FAL]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#US85_M67|US85_M67]]
+:6x&nbsp;[[Arma 3 CfgMagazines#US85_20Rnd_762x51|US85_20Rnd_762x51]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniwld3|FIA_uniwld3]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemRadio|ItemRadio]]
+:[[Arma 3 CfgWeapons Equipment#FIA_grY_MPV|FIA_grY_MPV]]
+:[[Arma 3 CfgWeapons Equipment#H_Bandanna_khk|H_Bandanna_khk]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+
+|}
+
+=== Civilians ===
+
+{| class="wikitable sortable" style="font-size: 80%"
+<!-- ! Preview -->
+! Class
+! Name
+! Side
+! Faction
+! Weapons
+! Magazines
+! Items
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Citizen.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Citizen" >'''CSLA_CIV_Citizen'''</span>
+| ''Burgher (ver. 1)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniCitizen|FIA_uniCitizen]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Citizen_V2.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Citizen_V2" >'''CSLA_CIV_Citizen_V2'''</span>
+| ''Burgher (ver. 2)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniCitizen2|FIA_uniCitizen2]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Citizen_V3.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Citizen_V3" >'''CSLA_CIV_Citizen_V3'''</span>
+| ''Burgher (ver. 3)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniCitizen3|FIA_uniCitizen3]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Citizen_V4.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Citizen_V4" >'''CSLA_CIV_Citizen_V4'''</span>
+| ''Burgher (ver. 4)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniCitizen4|FIA_uniCitizen4]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Doctor.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Doctor" >'''CSLA_CIV_Doctor'''</span>
+| ''Doctor''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniDoctor|FIA_uniDoctor]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Foreman.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Foreman" >'''CSLA_CIV_Foreman'''</span>
+| ''Foreman (ver. 1)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniForeman|FIA_uniForeman]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Foreman_V2.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Foreman_V2" >'''CSLA_CIV_Foreman_V2'''</span>
+| ''Foreman (ver. 2)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniForeman2|FIA_uniForeman2]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Policeman.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Policeman" >'''CSLA_CIV_Policeman'''</span>
+| ''Policeman (Pi-82)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_Pi82|CSLA_Pi82]]
+
+| 
+:2x&nbsp;[[Arma 3 CfgMagazines#CSLA_Pi82_12rnd_9Pi82|CSLA_Pi82_12rnd_9Pi82]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uniPoliceman|CSLA_uniPoliceman]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_PoliceCap|CSLA_PoliceCap]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_PoliceManSa61.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_PoliceManSa61" >'''CSLA_CIV_PoliceManSa61'''</span>
+| ''Policeman (Sa-61)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+:[[Arma 3 CfgWeapons Items#CSLA_bino|CSLA_bino]]
+:[[Arma 3: CfgWeapons Weapons#CSLA_rSa61|CSLA_rSa61]]
+
+| 
+:3x&nbsp;[[Arma 3 CfgMagazines#CSLA_Sa61_20rnd_7_65Pi27|CSLA_Sa61_20rnd_7_65Pi27]]
+
+| 
+:[[Arma 3 CfgWeapons Equipment#CSLA_uniPoliceman|CSLA_uniPoliceman]]
+:[[Arma 3 CfgWeapons Items#CSLA_Sa58bnt|CSLA_Sa58bnt]]
+:[[Arma 3 CfgWeapons Items#itemMap|itemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#CSLA_RF12|CSLA_RF12]]
+:[[Arma 3 CfgWeapons Items#CSLA_Prim_enl|CSLA_Prim_enl]]
+:[[Arma 3 CfgWeapons Equipment#CSLA_PoliceCap|CSLA_PoliceCap]]
+:[[Arma 3 CfgWeapons Items#CSLA_Ob80|CSLA_Ob80]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Functionary.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Functionary" >'''CSLA_CIV_Functionary'''</span>
+| ''Functionary (ver. 1)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniFunctionary|FIA_uniFunctionary]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Functionary_V2.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Functionary_V2" >'''CSLA_CIV_Functionary_V2'''</span>
+| ''Functionary (ver. 2)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniFunctionary2|FIA_uniFunctionary2]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Villager.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Villager" >'''CSLA_CIV_Villager'''</span>
+| ''Villager (ver. 1)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniVillager|FIA_uniVillager]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Villager_V2.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Villager_V2" >'''CSLA_CIV_Villager_V2'''</span>
+| ''Villager (ver. 2)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniVillager2|FIA_uniVillager2]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Villager_V3.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Villager_V3" >'''CSLA_CIV_Villager_V3'''</span>
+| ''Villager (ver. 3)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniVillager3|FIA_uniVillager3]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Villager_V4.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Villager_V4" >'''CSLA_CIV_Villager_V4'''</span>
+| ''Villager (ver. 4)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniVillager4|FIA_uniVillager4]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Woodlander.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Woodlander" >'''CSLA_CIV_Woodlander'''</span>
+| ''Forester (ver. 1)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWoodlander|FIA_uniWoodlander]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Woodlander_V2.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Woodlander_V2" >'''CSLA_CIV_Woodlander_V2'''</span>
+| ''Forester (ver. 2)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWoodlander2|FIA_uniWoodlander2]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Woodlander_V3.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Woodlander_V3" >'''CSLA_CIV_Woodlander_V3'''</span>
+| ''Forester (ver. 3)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWoodlander3|FIA_uniWoodlander3]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Woodlander_V4.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Woodlander_V4" >'''CSLA_CIV_Woodlander_V4'''</span>
+| ''Forester (ver. 4)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWoodlander4|FIA_uniWoodlander4]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Worker.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Worker" >'''CSLA_CIV_Worker'''</span>
+| ''Worker (ver. 1)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Worker_V2.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Worker_V2" >'''CSLA_CIV_Worker_V2'''</span>
+| ''Worker (ver. 2)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWorker2|FIA_uniWorker2]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Worker_V3.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Worker_V3" >'''CSLA_CIV_Worker_V3'''</span>
+| ''Worker (ver. 3)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWorker3|FIA_uniWorker3]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+
+
+|-
+<!-- | [[File:Arma3 CfgVehicles CSLA_CIV_Worker_V4.jpg|150px|&nbsp;]] -->
+| <span id="CSLA_CIV_Worker_V4" >'''CSLA_CIV_Worker_V4'''</span>
+| ''Worker (ver. 4)''
+| style="background-color:#dac2e1" | CIV
+| CSLA_CIV
+| 
+:[[Arma 3: CfgWeapons Weapons#Throw|Throw]]
+:[[Arma 3: CfgWeapons Weapons#Put|Put]]
+
+
+| 
+
+| 
+:[[Arma 3 CfgWeapons Equipment#FIA_uniWorker4|FIA_uniWorker4]]
+:[[Arma 3 CfgWeapons Items#ItemMap|ItemMap]]
+:[[Arma 3 CfgWeapons Items#ItemCompass|ItemCompass]]
+:[[Arma 3 CfgWeapons Items#ItemWatch|ItemWatch]]
+|}
+
+[[Category:CSLA: Iron Curtain]]

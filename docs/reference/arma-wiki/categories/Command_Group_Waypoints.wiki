@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Waypoints
+// revision: 33364 (2007-04-27T02:15:49Z)
+// export sha1: qfaumu5dzojp7jen7yqw9u8p3o0k02b
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands to handle [[Waypoints]].
+
+[[Category:Scripting Commands by Functionality]]

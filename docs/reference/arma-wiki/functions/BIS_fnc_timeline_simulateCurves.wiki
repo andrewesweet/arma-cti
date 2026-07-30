@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_timeline_simulateCurves
+// revision: 275427 (2021-06-13T11:59:46Z)
+// export sha1: ng4y6z7pxruxick7q0bk3oaujvoggdu
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Timeline | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Timeline
+
+|descr= <pre>/*
+	Author: Nelson Duarte <@Nelson_G_Duarte>
+
+	Description:
+	Sets this timeline playback as reverse or not.
+
+	Parameter(s):
+	_this select 0: Object		- The timeline
+	_this select 1: Alpha		- Current timeline alpha
+	_this select 1: DeltaT		- Delta time
+
+	Returns:
+	Nothing
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_timeline_simulateCurves]]
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

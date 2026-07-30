@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_buildingPositions
+// revision: 309416 (2022-05-05T12:04:36Z)
+// export sha1: dcn12kzv8azw2knb140e38n93ex3kck
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Positions | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Positions
+
+|descr= Get all available positions within a building or structure.
+
+|s1= param call [[BIS_fnc_buildingPositions]]
+
+|p1= param: [[Object]]
+
+|p2= param: [[Number]]
+
+|r1= [[Array]]
+
+|x1= <sqf>[_building] call BIS_fnc_buildingPositions;</sqf>
+
+|x2= <sqf>[_building, _maxNumberOfPositions] call BIS_fnc_buildingPositions;</sqf>
+
+|seealso= [[buildingPos]] [[buildingExit]]
+}}

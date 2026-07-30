@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_WeatherManager
+// revision: 165524 (2020-10-09T23:42:26Z)
+// export sha1: s6xg8gapz3j517p3ncvky3d2j470ful
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Function Group: Old Man]]

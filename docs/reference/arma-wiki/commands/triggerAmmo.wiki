@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/triggerAmmo
+// revision: 377211 (2026-01-01T11:53:01Z)
+// export sha1: rw7ixafo6m0u3dhzdiyhjmei5nb81ku
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.92
+
+|arg= local
+
+|gr1= Object Manipulation
+
+|descr= Triggers a munition such as shells, bullets, missiles, rockets, mines and bombs (''shotSubmunition/shotShell/shotBullet/shotMissile/shotRocket'') as if it did hit.
+If ammo uses submunition, then creation of submunition will be triggered. Since Arma 3 v 2.22 it is possible to manipulate mine timer, cook grenades and alter missile trigger distance.
+
+|s1= [[triggerAmmo]] munition
+
+|p1= munition: [[Object]]
+
+|r1= [[Nothing]]
+
+|s2= [[triggerAmmo]] [munition, timeLeft, distanceLeft]
+|s2since= arma3 2.22
+|p21= munition: [[Object]] - ammo. If 'timeLeft' and 'distanceLeft' are not provided, the action is identical to the main syntax.
+|p22= timeLeft: [[Number]] - (Optional) 'timeToExplosion' (see [[getShotInfo]]). Can only be set to <= relevant config value. Default: -1 - ignore.
+|p23= distanceLeft: [[Number]] - (Optional) 'fuseDistanceLeft' (see [[getShotInfo]]). Can only be set to <= relevant config value. Default: -1 - ignore.
+
+|r2= [[Nothing]]
+
+|x1= <sqf>triggerAmmo bomb1;</sqf>
+|x2= <sqf>player addEventHandler ["FiredMan", {triggerAmmo [_this select 6, 1]}]; // explodes handgrenade or sets smoke on smokegrenade 1 sec after the throw.</sqf>
+
+|seealso= [[getShotParents]] [[Arma 3: Event Handlers#Fired|"Fired" Event Handler]]
+}}

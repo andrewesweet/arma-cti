@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/onPlayerConnected
+// revision: 369528 (2024-09-15T18:22:20Z)
+// export sha1: fvktx0rza6jdbxgs05tov6mep3jj9fs
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: Multiplayer | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Server Execution | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Multiplayer
+
+|gr2= Event Handlers
+
+|serverExec= server
+
+|descr= This command will execute the provided code on the server whenever a player connects to a multiplayer session.
+{{Feature | arma3 | Since {{arma3}} v1.58 a stackable MissionEventHandler is available and should be used: [[Arma 3: Mission Event Handlers#PlayerConnected|PlayerConnected]].<br>Before that, the functions [[BIS_fnc_addStackedEventHandler]] and [[BIS_fnc_removeStackedEventHandler]] should be used instead in order to keep compatibility between official and community content.}}
+
+|s1= [[onPlayerConnected]] code
+
+|p1= code: [[String]] or [[Code]] - has access to the following variables:
+* '''_id''': [[Number]] - is the unique DirectPlay ID. Quite useless as the number is too big for in-built string representation and gets rounded. It is also the same id used for user placed markers.
+* '''_uid''': [[String]] - is [[getPlayerUID]] of the joining player. In Arma 3 it is also the same as Steam ID.
+* '''_name''': [[String]] - is [[profileName]] of the joining player.
+* {{GVI|arma3|1.50}} '''_jip''': [[Boolean]] - is a flag that indicates whether or not the player joined after the mission has started ('''J'''oined '''I'''n '''P'''rogress). [[true]] when the player is [[Multiplayer Scripting#Join In Progress|JIP]], otherwise [[false]].
+* {{GVI|arma3|1.50}} '''_owner''': [[Number]] - is [[owner]] id of the joining player. Can be used for kick or ban purposes or just for [[publicVariableClient]].
+* {{GVI|arma3|1.96}} '''_idstr''': [[String]] - same as {{hl|_id}} but in string format, so could be exactly compared to [[allMapMarkers | user marker]] ids.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>onPlayerConnected "[_id, _name] execVM 'PlayerConnected.sqf';";</sqf>
+
+|x2= <sqf>onPlayerConnected { diag_log [_id, _uid, _name] };</sqf>
+
+|x3= From {{arma3}} v1.49:
+<sqf>
+onPlayerConnected {
+	somevar = random 123;
+	_owner publicVariableClient "somevar";
+	// this will define "somevar" to a random value on the joining machine
+};
+</sqf>
+
+|mp= {{Feature | important | A player with the '''_name''' {{hl|__SERVER__}} will also connect to a multiplayer game, executing ''code''.}}
+
+|seealso= [[onPlayerDisconnected]] [[didJIP]] [[didJIPOwner]]
+}}

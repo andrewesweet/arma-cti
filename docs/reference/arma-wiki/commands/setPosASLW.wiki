@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/setPosASLW
+// revision: 377592 (2026-01-02T06:59:02Z)
+// export sha1: 8392rhyyqtukzzalixss4bujbvr682o
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Positions
+
+|descr= Sets the object position above sea surface. The pos array uses the [[Position#PositionASLW|PositionASLW]] format.
+
+|s1= obj [[setPosASLW]] pos
+
+|p1= obj: [[Object]]
+
+|p2= pos: [[Position#PositionASLW|PositionASLW]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_diver setPosASLW [(position _diver) select 0, (position _diver) select 1, -10];</sqf>
+
+|seealso= [[getPosASLW]] [[setPosASL]] [[setPosATL]] [[setPos]] [[setPosWorld]]
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Area:_Random
+// revision: 201444 (2021-01-17T20:09:46Z)
+// export sha1: anfsguza4xio911qivrho5smf8ltdv0
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Area]]
+{{TerrainProcessorManual|Area: Random|BITasksPlugin.dll|Polygon, PolygonM, PolygonZ|No
+|DESCRIPTION=Random placement of multiple objects inside the polygons specified in the given shapefile. Very easy, random positions only two conditions - probability and minimal distance from another objects.
+|TASKPARAMETERS=* '''RANDOM SEED''' - number used to initialize pseudorandom number generator.
+* '''DENSHA''' - The density of the filling in number of objects for hectare. For example 100 objects for hectare means an average distance of about 10 meters between objects.
+|OBJECTPROTOTYPEPARAMETERS=* '''OBJECT''' - Object's prototype name
+* '''PROB''' - Object's probability
+* '''MINHEIGHT''' - Minimal size in %
+* '''MAXHEIGHT''' - Maximal size in %
+* '''MINDIST''' - Minimal distance in meters  
+|USAGE=This algorithm is very simple, it generates random positions in area with given density. You can use it for forests with clustering or stones in open terrain.
+|ALGORITHM=For each shape (areal) do : 
+# instances_count = HECTARES * DENSHA
+# For instances_count try to find position :
+## Random position in bounding box.
+## If position is inside shape, continue to c. else a.
+## Test with objects if minimal distance is ok then add new random prototype instance in output and a else a.
+
+If this loop a <-> c has no new output for last 100 attempts, area is full and iteration of this shape will end.
+|SAMPLE=
+}}

@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_richCurve_getCurvePoints
+// revision: 278967 (2021-06-13T21:47:07Z)
+// export sha1: kucn2d3eadniro2zctt0qk8au3q09ei
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: RichCurve | Category:Functions | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= RichCurve
+|descr= <pre>/*
+	Author: Nelson Duarte <@Nelson_G_Duarte>
+
+	Description:
+	Returns the computed curve points
+
+	Parameter(s):
+	_this select 0: Object 	- The curve
+
+	Returns:
+	Array - The curve points (array of 3D vectors)
+*/</pre>{{Wiki|placeholder}}<!-- Remove this after fill-in -->
+
+|s1= [] call [[BIS_fnc_richCurve_getCurvePoints]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

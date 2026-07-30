@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/Parameter
+// revision: 329120 (2022-07-22T15:40:29Z)
+// export sha1: ta92lr6vuag6gpw9a1teb9xap00ork3
+// categories: Category:Syntax
+// Vendored snapshot. Do not edit — re-export instead.
+
+A '''parameter''' is a value that ''was passed'' to the actual [[Script File|script]]. All parameters are accessible over the array {{hl|_this}}.
+
+
+'''Example:'''
+
+<sqf>[5, "text"] execVM "script.sqf"</sqf>
+
+
+script.sqf
+<sqf>params ["_number","_string"];</sqf>
+
+{{hl|_number}} and {{hl|_string}} are considered the parameters of the script, and are filled with the values that were provided in the array.  {{hl|_number}} now contains the value '''5''', while _string now contains the value '''string'''.
+
+== See also ==
+
+* [[params]]
+* [[param]]
+* [[select]]
+* [[Argument]]
+
+[[Category:Syntax]]

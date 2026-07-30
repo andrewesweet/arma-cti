@@ -1,0 +1,90 @@
+// source: https://community.bistudio.com/wiki/setWeaponReloadingTime
+// revision: 364086 (2024-05-03T19:33:29Z)
+// export sha1: qtifff0bpxcdvvwyjzkqdqime8nc6jf
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Weapons | Category:Introduced with Arma 2: Operation Arrowhead version 1.60 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.60
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= Weapons
+
+|descr= Sets reloading '''phase''' on the given weapon's current ammo round.
+{{Feature|important|This command does '''not''' change a weapon's (e.g soldier's rifle) ''magazine'' reloading time but changes '''the ammo reloading state''' before the next round is shot.}}
+
+|s1= vehicle [[setWeaponReloadingTime]] [gunner, muzzleName, reloadTime]
+
+|p1= vehicle: [[Object]]
+
+|p2= gunner: [[Object]] - alive and able gunner operating the targeted turret
+
+|p3= muzzleName: [[String]] - turret's muzzle
+
+|p4= reloadTime: [[Number]] - in range 0..1 where 0: reload complete, 1: reload started
+
+|r1= [[Boolean]] - [[true]] if given weapon is found
+
+|x1= <sqf>_success = _vehicle setWeaponReloadingTime [gunner vehicle player, currentMuzzle gunner vehicle player, 0.5];</sqf>
+
+|x2= Boost RPM:
+<sqf>
+unit addEventHandler ["Fired", {
+	_this # 0 setWeaponReloadingTime [_this # 0, _this # 2, 1/3];
+}];
+</sqf>
+
+|seealso= [[weaponReloadingTime]] [[weapons]] [[magazines]] [[selectWeapon]] [[loadMagazine]] [[weaponState]] [[reload]]
+}}
+
+{{Note
+|user= .kju
+|timestamp= 20120115
+|text= The description is confusing to me. What the command essential does is to set the reloading state/time of the given weapon. For example you can fire a missile, and make the weapon available to fire again instantly if you apply 0.
+Or you can delay or stop the reload event indefinitely. The 0-1 range is a percentage - the reload time is taken from the weapons's config value (either reloadTime or magazineReloadTime - not sure). The effect is one time only each - it does not modify the weapon's general reload time.<br><br>
+Works also for infantry weapons - probably useful weapons with longer reload time like sniper weapons or launchers:
+ player setWeaponReloadingTime [player,currentWeapon player,0];
+No idea what's point of the return value.
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20170514
+|text= Note that '''setWeaponReloadingTime''' is only having effect on a current weapon state (loaded projectile) so since the projectile is fired the next one will be reverted to a weapon config defaults. To keep the fire rate speed changed over time, use this code: 
+<sqf>
+player addEventHandler ["FiredMan", {
+	params ["", "_weapon", "_muzzle"];
+	private _type = _weapon call BIS_fnc_itemType;
+	private _time = -1;
+	switch (_type select 1) do {
+		case "SniperRifle" : {_time = 0.5};
+		case "AssaultRifle" : {};
+		case "Handgun" : {};
+		case "Rifle" : {};
+		case "SubmachineGun" : {};
+		case "MachineGun" : {};
+		case "Mortar" : {};
+		case "GrenadeLauncher" : {};
+		case "BombLauncher" : {};
+		case "MissileLauncher" : {};
+		case "RocketLauncher" : {};
+		case "Cannon" : {};
+		case "Throw" : {};
+	};
+	if (_time isEqualTo -1) exitWith {};
+	(vehicle player) setWeaponReloadingTime [(vehicle player), _muzzle, _time];
+}];
+</sqf>
+This [[Arma 3: Event Handlers|Event Handler]] makes the gun of specific type shoot at a desired rate on each weapon state (sniper rifle will shoot 50% faster in this example). For more information about weapon kinds are there, visit [[BIS_fnc_itemType]].
+}}

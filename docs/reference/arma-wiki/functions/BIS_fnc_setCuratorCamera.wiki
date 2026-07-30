@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setCuratorCamera
+// revision: 348106 (2023-11-08T11:31:58Z)
+// export sha1: ftzairogthgauargpv1eo44gbdnihrb
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Move curator camera to a position and direction. Finished when animation ends.
+
+|s1= [camPos, targetPos, time] spawn [[BIS_fnc_setCuratorCamera]]
+
+|p1= camPos: [[Position]] - (Optional, default [[getPosATL]] [[curatorCamera]]) position, for supported types see [[BIS_fnc_position]]
+
+|p2= targetPos: [[Array]] format [[Vector3D]], [[Position]] or [[Object]] - (Optional, default [[vectorDir]] [[curatorCamera]]) vector dir or target object/position
+
+|p3= time: [[Number]] or [[Boolean]] - (Optional, default 0) commit time or [[true]] to calculate time automatically
+
+|exec= spawn
+
+|r1= [[Boolean]] [[true]] when done
+
+|x1= <sqf>[nil, player, 5] spawn BIS_fnc_setCuratorCamera;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[curatorCamera]]
+}}

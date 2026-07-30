@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_WLArsenalFilter
+// revision: 281316 (2021-06-14T09:08:12Z)
+// export sha1: ry07ekkyyy3uheqqk59r7kzup7559y8
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Warlords | Category:Functions | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.96
+
+|gr1= Warlords
+
+|descr= ''N/A''
+
+|s1= [] call [[BIS_fnc_WLArsenalFilter]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:Timeline_Item_ARMA1
+// revision: 378651 (2026-05-18T16:03:22Z)
+// export sha1: 9bbpz5m51o0aafpkfwchgnrlcmv2j4d
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>[[Image:Logo_A1.png|50px|link=Category:ArmA:_Armed_Assault]]</includeonly><noinclude>[[Category:Historical Templates]]</noinclude>

@@ -1,0 +1,63 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_animatedBriefing
+// revision: 363759 (2024-04-17T21:17:53Z)
+// export sha1: q2fmalxs7s2rnvxbrlomgv978wtgd3n
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Briefing | Category:Function Group: Systems | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Systems
+
+|gr2= Briefing
+
+|eff= local
+
+|descr= Plays the Animated Briefings. Basically, it is a wrap function for the [[BIS_fnc_eventTimeline]] function.
+
+|s1= [timeline, indexEvent, music, markersHide, markersShow, endPosition] call [[BIS_fnc_animatedBriefing]]
+
+|p1= timeline: [[Array]] - array in format [time, code]: 
+* time: [[Number]] - time the code is executed
+* code: [[Code]] - code executed when ''time'' is reached
+
+|p2= indexEvent: [[Number]] - index of the event to play
+
+|p3= music: [[String]] - (Optional, default "") CfgMusic class
+
+|p4= markersHide: [[Array]] - (Optional, default {{hl|[]}}) array of markers which should be hidden when briefing starts
+
+|p5= markersShow: [[Array]] - (Optional, default {{hl|[]}}) array of markers which should be shown when the briefing is done
+
+|p6= endPosition: [[String]] - (Optional, default "") marker to focus when the briefing is done
+
+|p7= codeEnd: [[Code]] - (Optional, default {{hl|{}<nowiki/>}}) code executed when briefing is done
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+// timeline of events
+_timeline = [
+	[0.0, { hint "Start of the Timeline" }],
+	[1.0, { hint "Event 1" }],
+	[3.0, { hint "End of the timeline" }]
+];
+
+// get markers to be shown at end by using the layer's name
+private _showMarkers = (getMissionLayerEntities "showAtEnd") select 1;
+
+// start the Animated Briefing at index 0
+// hide all markers and show the markers from the "showAtEnd" layer after the briefing is done
+// zoom on marker_rect_1 at the end of the briefing
+[_timeline, 0, "", nil, allMapMarkers, _showMarkers, "marker_rect_1"] spawn BIS_fnc_animatedBriefing;
+
+// Wait until timeline is over
+waitUntil { !(missionNamespace getVariable "BIS_fnc_eventTimeline_playing"); };
+</sqf>
+
+|exec= spawn 
+
+|seealso= [[Arma 3: Animated Briefing]] [[BIS_fnc_eventTimeline]]
+}}

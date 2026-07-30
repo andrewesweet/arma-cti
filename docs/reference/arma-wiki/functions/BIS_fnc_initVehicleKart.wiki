@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_initVehicleKart
+// revision: 348244 (2023-11-08T11:40:32Z)
+// export sha1: fni5f1465vhayjw7fz3iuro6cydfn3e
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Vehicles | Category:Functions | Category:Introduced with Arma 3 version 1.20 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.20
+
+|gr1= Vehicles
+
+|descr= Customise given kart and its driver.
+
+|s1= [kart,number,livery,raceTeam] call [[BIS_fnc_initVehicleKart]]
+
+|p1=kart: [[Object]]
+
+|p2=number: [[Array]] - (Optional, default [-1,-1]) kart number from 00 to 99
+
+|p3=livery: [[Number]] - (Optional, default ''Random'') kart livery. A integer from 0 to 9
+
+|p4=raceTeam: [[Number]] - (Optional, default ''Matches the livery'') driver uniform
+
+|r1= [[Boolean]] - always [[true]]
+
+|x1= <sqf>[BIS_kart, [9,7], -1, -1] call BIS_fnc_initVehicleKart;</sqf>
+
+|seealso= [[BIS_fnc_initVehicle]] [[Arma 3 Karts]]
+}}

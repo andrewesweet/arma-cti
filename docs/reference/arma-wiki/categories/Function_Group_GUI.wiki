@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_GUI
+// revision: 186281 (2021-01-07T22:48:55Z)
+// export sha1: srjpzccw530037qaikmd08z2nmy226r
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Functions by Functionality]]
+
+[[Category:GUI Topics]]

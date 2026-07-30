@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/incapacitatedState
+// revision: 341186 (2023-05-13T22:13:49Z)
+// export sha1: gdtiu8ei5sdqn4g3z4wptwk28ib5pmf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Object Manipulation
+
+|descr= Returns the incapacitated sub-state of the given unit, when the [[lifeState]] of the unit is "INCAPACITATED". Could be one of:
+* "UNCONSCIOUS"
+* "MOVING"
+* "SHOOTING"
+
+|s1= [[incapacitatedState]] person
+
+|p1= person: [[Object]]
+
+|r1= [[String]] - incapacitated sub-state (see description) or empty string ""
+
+|x1= <sqf>_result = incapacitatedState player;</sqf>
+
+|seealso= [[setUnconscious]] [[lifeState]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2018-07-18 - 02:53 (UTC)</dd>
+<dt class="note">[[User:HazJ|HazJ]]</dt>
+<dd class="note">
+This command returns "SHOOTING" (intentional behaviour?) when checking a unit's state while they are unconscious. Tested with BIS revive. I recommend just using the lifeState command instead.
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2019-12-29 - 21:13 (UTC)</dd>
+<dt class="note">[[User:Tankbuster|Tankbuster]]</dt>
+<dd class="note">
+Returns 
+"UNCONSCIOUS" when awaiting revive.
+"" when alive or when awaiting respawn. This means that when a unit dies instantly, ie through drowning, this command will return empty string throughout. As Haz says above, it sometimes show "SHOOTING" when the player is unconscious for reasons that are not clear.
+
+</dd>
+
+</dl>

@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/reverse
+// revision: 377138 (2026-01-01T10:29:57Z)
+// export sha1: q1c95s7cxxflh8uyssz1adk06oerda6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= Arrays
+
+|descr= Reverses given array by reference (modifies the original array, just like [[resize]]). The alternative syntax can be used to reverse a ANSI [[String|string]]. If Unicode support is desired, see [[forceUnicode]].
+
+|s1= [[reverse]] array
+
+|p1= array: [[Array]] of [[Anything]]
+
+|r1= [[Nothing]]
+
+|s2= [[reverse]] string
+|s2since= arma3 2.02
+
+|p21= string: [[String]] - string to be reversed
+
+|r2= [[String]] - reversed string
+
+|x1= <sqf>
+_arr = [1,2,3];
+reverse _arr;
+hint str _arr; // [3,2,1]
+</sqf>
+
+|x2= <sqf>
+_wordArr = toArray "gateman";
+reverse _wordArr;
+hint toString _wordArr; // nametag
+</sqf>
+
+|x3= <sqf>reverse "treboR"; // Returns "Robert"</sqf>
+
+|seealso= [[set]] [[resize]] [[select]] [[in]] [[find]] [[toArray]] [[toString]] [[forEach]] [[count]] [[pushBack]] [[pushBackUnique]] [[apply]] [[append]] [[sort]] [[param]] [[params]] [[arrayIntersect]] [[splitString]] [[joinString]] [[forceUnicode]]
+}}

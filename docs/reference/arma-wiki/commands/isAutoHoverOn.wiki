@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/isAutoHoverOn
+// revision: 319208 (2022-05-13T09:23:22Z)
+// export sha1: 9moe5fwybz0zet1tpck2mfp7nbjrawk
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Return [[true]] if vehicle has enabled auto hover. (always returns false if the vehicle can't set auto hover)
+
+|s1= [[isAutoHoverOn]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_isOn = isAutoHoverOn vehicle player;</sqf>
+
+|seealso=
+}}

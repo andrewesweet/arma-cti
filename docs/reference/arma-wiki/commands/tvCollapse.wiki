@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/tvCollapse
+// revision: 377801 (2026-01-03T04:01:37Z)
+// export sha1: dmpbvwq423bpgdmc21twbcnp4xgg09k
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 0.74 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.74
+
+|gr1= GUI Control - Tree View
+
+|arg= local
+
+|eff= local
+
+|descr= Collapses tree item pointed to by the path. IDC means id of parent Tree View.
+
+|s1= [[tvCollapse]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]] - [] will collapse the whole tree and it will disappear
+
+|r1= [[Nothing]]
+
+|s2= control [[tvCollapse]] path
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]] - [] will collapse the whole tree and it will disappear
+
+|r2= [[Nothing]]
+
+|x1= <sqf>tvCollapse [101, [0]];</sqf>
+
+|x2= <sqf>_ctrl tvCollapse [0];</sqf>
+
+|seealso= [[tvCollapseAll]] [[tvAdd]] [[tvClear]] [[tvCount]] [[tvCurSel]] [[tvData]] [[tvDelete]] [[tvExpand]] [[tvPicture]] [[tvSetCurSel]] [[tvSetData]] [[tvSetPicture]] [[tvSetValue]] [[tvSort]] [[tvSortByValue]] [[tvText]] [[tvValue]]
+}}

@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/setMarkerSizeLocal
+// revision: 330367 (2022-09-04T20:18:20Z)
+// export sha1: m57gqqcl6s17sl5iry1i3qym6y2c7tj
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Armed Assault version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.04
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Markers
+
+|eff= local
+
+|descr= Set marker size.
+
+|s1= markerName [[setMarkerSizeLocal]] [axisA, axisB]
+
+|p1= markerName: [[String]]
+
+|p2= axisA: [[Number]] - 1/2 width of marker
+
+|p3= axisB: [[Number]] - 1/2 height of marker
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"MarkerOne" setMarkerSizeLocal [100, 200];</sqf>
+
+|seealso= [[setMarkerAlpha]] [[setMarkerAlphaLocal]] [[setMarkerBrush]] [[setMarkerBrushLocal]] [[setMarkerColor]] [[setMarkerColorLocal]] [[setMarkerDir]] [[setMarkerDirLocal]] [[setMarkerPos]] [[setMarkerPosLocal]] [[setMarkerShape]] [[setMarkerShapeLocal]] [[setMarkerSize]] [[setMarkerText]] [[setMarkerTextLocal]] [[setMarkerType]] [[setMarkerTypeLocal]]
+}}

@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/diag_captureFrameToFile
+// revision: 318853 (2022-05-13T09:21:56Z)
+// export sha1: oygbvwzq86r6d2l7c6evocme303mieq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Diagnostic Branch | Category:Arma 3: Scripting Commands: Profiling Branch | Category:Command Group: Diagnostic | Category:Command Group: Performance Profiling | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+
+|branch= diag prof
+
+|version1= 1.16
+
+|gr1= Diagnostic
+
+|gr2= Performance Profiling
+
+|descr= This command starts counting frames from the moment it is executed and when the count reaches the number passed as param, the current frame is captured and 
+written to a log file in the same directory as the [[Crash_Files|.rpt file]].<br>
+The full Path to the log file is logged to simultaneously.<br>
+The data in the log file can be copied and pasted into the [[diag_captureFrame]] UI dialog to get a visualisation later on.
+
+|s1= [[diag_captureFrameToFile]]  frame
+
+|p1= frame: [[Number]] - next n-th frame to be captured
+
+|r1= [[Nothing]]
+
+|x1= <sqf>diag_captureFrameToFile 1; //capture the first frame after command execution</sqf>
+
+|x2= <sqf>diag_captureFrameToFile 24; //capture 24th frame after command execution</sqf>
+
+|seealso= [[Performance Profiling]] [[diag_captureSlowFrame]] [[diag_logSlowFrame]] [[diag_captureFrame]] [[logEntities]] [[exportJIPMessages]]
+}}

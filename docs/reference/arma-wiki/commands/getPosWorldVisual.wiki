@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/getPosWorldVisual
+// revision: 377439 (2026-01-02T06:46:47Z)
+// export sha1: co88kjtkfo0hpuy61ifr395eaeo9c0p
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Render Time Scope | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.96
+
+|arg= global
+
+|gr1= Object Manipulation
+|gr2= Render Time Scope
+
+|descr= Returns the provided object's, model centre position in render version in format [[Position#PositionASL|PositionASL]], rather than transformed [[boundingCenter]] or [[Oxygen_2_-_Manual#LandContact|LandContact]] vertices.
+
+|s1= [[getPosWorldVisual]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Position#PositionASL|PositionASL]]  - '''the model centre'''<nowiki/>'s position (see [[getPosWorld]]) in render scope
+
+|x1= <sqf>_obj setPosWorld getPosWorldVisual _obj;</sqf>
+
+|x2= <sqf>_groundObj modelToWorldVisualWorld [0,0,0] isEqualTo getPosWorldVisual _groundObj; // true</sqf>
+
+|x3= <sqf>private _waveHeight = ((boat modelToWorldVisual [0,0,0]) vectorDiff getPosWorldVisual boat) select 2;</sqf>
+
+|seealso= [[getPosWorld]] [[setPosWorld]] [[visiblePosition]] [[getPosATLVisual]] [[getPosASLVisual]] [[visiblePositionASL]] [[modelToWorldVisual]] [[modelToWorldVisualWorld]]
+}}

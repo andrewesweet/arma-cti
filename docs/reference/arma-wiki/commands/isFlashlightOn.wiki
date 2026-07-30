@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/isFlashlightOn
+// revision: 319047 (2022-05-13T09:23:05Z)
+// export sha1: rdl1b95026d73j5zskk1psqj2wkkj1p
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Weapons | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Object Manipulation
+
+|gr2= Weapons
+
+|descr= Returns true if there is a linked and enabled flashlight on a given weapon.
+
+|s1= unit [[isFlashlightOn]]  weapon
+
+|p1= unit: [[Object]]
+
+|p2= weapon: [[String]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>player isFlashlightOn (currentWeapon player);</sqf>
+
+|seealso= [[enableGunLights]]
+}}

@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/sendUDPMessage
+// revision: 351538 (2023-12-06T23:45:43Z)
+// export sha1: 6gverwg8cdgrlmbtl146nysugoxrw11
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Multiplayer
+
+|descr= Send message to given address using UDP protocol. Returns false if the message has not been delivered 
+
+{{Feature|warning|Disabled in retail version (see the [[Talk:sendUDPMessage|talk page]] for more info).}}
+
+|s1= [[sendUDPMessage]] [ip, port, message]
+
+|p1= ip: [[String]]
+
+|p2= port: [[Number]]
+
+|p3= message: [[String]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_bool = sendUDPMessage ["192.168.0.1", 2302, "Here goes you message..."];</sqf>
+
+|seealso= [[sendAUMessage]]
+}}

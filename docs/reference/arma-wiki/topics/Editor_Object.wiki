@@ -1,0 +1,15 @@
+// source: https://community.bistudio.com/wiki/Editor_Object
+// revision: 295451 (2021-11-15T22:55:04Z)
+// export sha1: q0gsevtvb7658cij4gqknw5pdxi2qk0
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+=Editor Object Type=
+'''Description:'''<br>
+Editor objects are used in ''Offline Mission Editor'' (VBS2) and ''Real Time Editor'' for an abstract representation of what is on the map.
+
+An editor object is a [[String]] build this way: {{hl|"_type_x"}}, with type being the editor object's type, e.g. "unit", and x being the reference number. For example {{hl|"_unit_1"}}, {{hl|"_artillery_23"}}, {{hl|"_marker_4"}}.
+
+Introduced with Virtual Battlespace 2, does not refer to {{ofp}}, {{ofpr}} or {{arma1}}. 
+
+[[Category: Data Types]]

@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/getServerInfo
+// revision: 373696 (2025-06-17T13:55:14Z)
+// export sha1: 1pszena3bhwjuwnm5pwwuiojxldqvi6
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Introduced with Arma 3 version 2.20 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.20
+
+|serverExec= server
+
+|gr1= Multiplayer
+
+|descr= Get the current server instance's settings from {{Link|Arma 3: Server Config File|server config}}.
+{{Feature|informative|Player-hosted (non-dedicated) servers have fewer entries as they do not use a server config file.}}
+
+|s1= [[getServerInfo]]
+
+|r1= [[HashMap]]
+
+|x1= <sqf>
+private _serverInfo = getServerInfo;
+
+// example result:
+/*
+[
+	["admins", ["01234", "56789"]],
+	["autoSelectMission", false],
+	["battlEye", false],
+	["disconnectTimeout", 0],
+	["estimateTimeLeft", 15],
+	["forcedDifficulty", "Wolf"],
+	["hasPasswordAdmin", true],
+	["hostname", "Test Server"],
+	["isLocked", false],
+	["maxDesync", 90000],
+	["maxPacketLoss", 2000],
+	["maxPing", 8000],
+	["maxPlayers", 64],
+	["missionHeader", [["fileName", "DbgZeus4P.VR"], ["name", "DbgConsole4PZeus"], ["description", ""], ["fileSize", "7461"], ["steamId", "0"], ["fileCRC", "99816a4"]]],
+	["motd", []],
+	["overrideHazeQuality", 0],
+	["password", ""],
+	["persistent", true],
+	["randomMissionOrder", false],
+	["requiredBuild", 0],
+	["verifySignatures", 0],
+	["zeusCompositionScriptLevel", 2]
+]
+*/
+</sqf>
+
+|x2= <sqf>
+if (!isServer) exitWith {};
+
+if (getServerInfo get "password" != "") then
+{
+	["Welcome, I see you had the password ready!"] remoteExec ["hint"];
+};
+</sqf>
+
+|seealso= [[admin]] [[allUsers]] [[estimatedTimeLeft]]
+}}

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/2D_Editor:_Synchronization
+// revision: 369649 (2024-09-30T09:13:41Z)
+// export sha1: 550z6ergt5p0jwfnkbklequt4hbikq0
+// categories: Category:2D Editor
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:icon map synchro.jpg|thumb|Trigger synchronised to waypoint]]
+Synchronisation mode is used to make different groups carry out their [[Mission Editor: Waypoints|waypoint]] orders at the same time, and optionally only under specific circumstances.
+Synchronisation can seem a hard concept to understand at first, but it is a very powerful and easy to use tool.
+For example, synchronisation can be used to organise friendly forces to wait until everyone is in position before launching a mass attack, or wait in ambush until an enemy convoy is in the perfect location before opening fire.
+Synchronising links can be made between any of a group's waypoints and any number of other group's waypoints, and any number of [[Mission Editor: Triggers|triggers]].
+A synchronised waypoint will not complete until all waypoints it is linked with are ready to complete, and all synchronised triggers are activated.
+Synchronising links are displayed by a dark blue line connecting the entities.
+To create a synchronised link between a waypoint and another group's waypoint or a trigger, simply left click and hold on the waypoint, move the mouse to the desired waypoint/trigger then release.
+To remove synchronisation lines from a waypoint or trigger, left click on it, hold and drag a line into empty space. Note this will remove '''all''' synchronising lines from that entity, so be careful.
+
+When a group's current waypoint is synchronised, the HUD will display the waypoint type as "Wait", and the group will move to the waypoints position, even if the true waypoint type would not normally involve moving to the waypoint's position.
+Another important thing to know is that while a group's waypoint's ''Activation'' code block does not return true, but the waypoint is otherwise ready to activate that waypoint will be considered complete for the purposes of synchronisation!
+It is possible to link one waypoint with more than one waypoint of another single group.
+It is also possible to create synchronised links that can never be satisfied, in which case no warning will be given and groups will stuck waiting forever.
+
+Triggers do not wait for synchronised waypoints, only the waypoint needs to wait until the trigger is active.
+Lines of synchronisation generally do not have any polarity, so it does not matter which waypoint is clicked on and which is dragged to.
+There are some exceptions to this rule. With some waypoint types such as ''Get In'' and ''Join'', the synchronising link has greater significance than just timing in this case, it defines which group shall join and which shall be joined.
+See those waypoints types descriptions for details. Game Logic's ''OR'' type waypoint.
+
+
+[[Category: 2D Editor]]

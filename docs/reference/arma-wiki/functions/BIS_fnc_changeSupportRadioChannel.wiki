@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_changeSupportRadioChannel
+// revision: 272937 (2021-06-13T00:34:58Z)
+// export sha1: 2s3dtejoskwgjksh4vx2ywto0ugszkl
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Supports | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Supports
+
+|descr= <pre>/*
+
+	Description:
+	Changes the radio channel for Support module-related protocol.
+
+	Parameter(s):
+	_this select 0: SIDE - Affected side
+	_this select 1: ANY - Channel setting
+
+	Returns:
+	nothing
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_changeSupportRadioChannel]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

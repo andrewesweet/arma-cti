@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/removeDrawLinks
+// revision: 363290 (2024-03-26T10:51:58Z)
+// export sha1: o9v0djns89rg3j833jkiyz9fuzbpn7w
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Game 2 Editor | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Game 2 Editor
+
+|descr= Remove all drawn links for the given editor object for the given editor,object type. Pass an empty string as param type to remove all draw,links for an object.  
+{{Feature|informative|Some Old Editor Command}}
+
+|s1= map [[removeDrawLinks]] [from,param type]
+
+|p1= map: [[Control]]
+|p2= [from,param type]: [[Array]]
+|r1= [[Nothing]]
+
+|x1= -
+
+|seealso= -
+}}

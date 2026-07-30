@@ -1,0 +1,138 @@
+// source: https://community.bistudio.com/wiki/FSM
+// revision: 368869 (2024-08-12T13:07:49Z)
+// export sha1: ktz7suhviqq5hy0v612h353du88p1w6
+// categories: Category:File extensions | Category:Scripting Topics
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The FSM file is a new format  and has been introduced in {{arma1}}.
+'''FSM''' stands for '''F'''inite-'''S'''tate '''M'''achine and is the primary method of coordinating Artificial Intelligence within these products. 
+
+=== What is the purpose of a Finite State Machine? ===
+A {{Link|https://en.wikipedia.org/wiki/Finite-state|Finite-State Machine}} (as defined on Wikipedia) "is a model of behavior composed of states, transitions and actions".
+
+By allowing an object to change states, we can give the appearance of dynamics. By allowing an object to change states conditionally, we can give the appearance of not only dynamics, but also intelligence. 
+
+[[File:SimpleFSM.jpg]]
+
+As an object changes states, we perform actions which emit the desired behavior of that state. As in the above example, an object might start in State 1 and perform Action A. After the action is performed, the state machine looks at the next possible transitions and tries to find the transition in which a condition is satisfied. Perhaps in the above example, our object finds Condition Y is satisfied. In this case, the object would enter State 3 and perform Action C. In this crude example, the state machine would exit and our example would be complete. In more elaborate examples there might exist a transition which would take our object from State 3 to some other state such as back to State 1 - or even back to itself to perform the Action C again.
+
+== File Format ==
+
+Bohemia Interactive's FSM file format is similar in syntax to other "class" containing files such as the [[Description.ext]] file or the [[Config.cpp]] file.
+
+<syntaxhighlight lang="cpp">
+class FSM
+{
+	fsmName = "";
+	class States
+	{
+		class SampleState
+		{
+			name = "";
+			init = "";
+			class Links
+			{
+				class SampleLink
+				{
+					priority = 0.000000;
+					to = "";
+					condition = "";
+					action = "";
+				};
+			};
+		};
+	};
+	initState = "";
+	finalStates[] = {};
+};
+</syntaxhighlight>
+
+=== FSM Class ===
+
+The FSM class contains three properties and a collection of States.
+
+* '''fsmName''': This property takes a string argument and defines the name of the FSM.
+* '''initState''': This property takes a string argument and refers the engine to begin at a predefined state in the state collection.
+* '''finalStates''': This property takes an array of string arguments. Once the FSM reaches and of final states, it is flagged and finished.
+
+The scripted FSM structure normally consists of one '''init state''', one or more '''conditional links''', one or more '''normal states''' and one or more '''final states'''.
+Each state has {{hl|init}} and {{hl|precondition}} section, while each conditional link has {{hl|precondition}}, {{hl|condition}} and {{hl|action}} sections.
+The order of execution is:
+* State: {{hl|init}} → {{hl|precondition}}
+* Conditional link (condition is [[true]]): {{hl|precondition}} → {{hl|condition}} → {{hl|action}}
+* Conditional link (condition is [[false]]): {{hl|precondition}} → {{hl|condition}}
+Scripted FSMs are added into the scheduler just like [[exec]] scripts, [[execVM]] scripts and [[spawn]] scripts.<br>
+To see what FSMs are currently in the scheduler, use [[diag_activeMissionFSMs]] command.
+{{Feature|important|
+While the code placed into any of the sections of FSM cannot be suspended ([[canSuspend]] is false), the FSM itself is suspended every simulation between the state's {{hl|init}} and {{hl|precondition}} (exception is the '''init state''').
+The usual difference between the state's {{hl|init}} and {{hl|precondition}} is 1 frame but if the scheduler is busy it can take longer.
+This is the only place where scripted FSM is suspended/resumed.
+}}
+ 
+=== State Class ===
+
+The State Class is the definition of a single state and the actions it performs. This class contains two properties and a collection of Links.
+
+* '''name''': This property takes a string argument and defines the name of the state.
+* '''init''': This property takes a string argument and represents the code executed upon an objects entering of the state. The code follows standard coding guidelines for [[SQF Syntax]].
+
+=== Link Class ===
+
+The Link Class contains 4 properties.
+
+* '''priority''': This property is a floating point number which defines in what order the engine is to check conditions. A high value indicates higher priority. 
+ '''Example''': A link with the priority value of 1 exists along with another link which has a
+ priority of 0. Even though both might contain different conditions, both could have satisfied
+ conditions when the machine is looking for a state change (both conditions evaluate true). In
+ this case, the priority of 1 will become the transition chosen.
+
+* '''to''': This property takes a string argument and defines the destination of the Link. The string should match the string of the destination State's '''name''' definition.
+* '''condition''': This property takes a string argument and is a code statement which must evaluate to '''true''' or '''false'''
+ '''Example''':  (side player == West)
+* '''action''': This property also takes a string argument and defines code to execute during the transition (prior to state change). The code follows standard coding guidelines for [[SQF Syntax]].
+
+
+== Concepts and Examples ==
+
+=== Example ===
+[[File:ExampleFSMDiagram.jpg|400px]]
+
+
+In the above example, we can see a more complex definition of an FSM. The States represent what a unit might encounter during a fictional battle. We can see things like the Reload State and Fire Single Shot state which represent actions a unit will perform at least once. Once a state has executed once, there are Links (or transitions) which determine the next state to traverse to. In some cases, there are transitions which loop to the same state. These transitions explain behavior that is carried out repeatedly until another condition occurs.  None of the above Links themselves contain any actions (none were needed for this example), but they do display their conditions and priority.
+
+When we examine a state change from the state '''Target Acquired''' in the above example we get three optional transitions.
+* To Fire 3rd Burst
+* To Fire Single Shot
+* To Reload Magazine
+
+Each transition has a condition which is different from each other and a priority to sort the list when checking the conditions. If we take the highest priority transition (Weapon Out of Ammo), we find it this check only applies if the unit has fully run out of ammo in his weapon. If this evaluates true, the state changes to '''Reload'''. If the unit has ammo in his weapon, the engine then checks the next transition which is to see if the units magazine count is above 2 AND if they can enable bursts. This is a crude way of identifying that the unit might be more liberal with their shooting if they knew they had more magazines available. If this evaluates true, the '''Fire 3rd Bursts''' becomes how the unit engages. If that also evaluates false, then the default transition is that the unit '''Fires Single Shots'''. This would always evaluate true and cover any condition in which the unit cannot burst fire or is running low on ammo. It is also a safety in that if there are any other conditions we have not checked for, this is the transition to always follow.
+
+ The above example is very simple and is missing a lot of elements to make it a working FSM that
+ is both believable and efficient. I only use this example because it shows different approaches
+ one might commonly use in FSM design. - [[User:CrashDome|CrashDome]]
+
+
+== FSM types in Armed Assault ==
+
+There are two basic FSM types available in Armed Assault: Scripted and Native. In both FSM types it is possible to customize the FSM graph.
+The major difference is that while in the Scripted FSM each condition and action is given as a scripted command, in the Native FSM the conditions and actions are selected from a pre-defined set (they can also be given additional parameters, but it is not possible to create a new condition or action from scratch). Scripted FSM provide more customization possibilities, but also require more processing power.
+If the FSM is expected to be used by many entities at the same time, most often Native FSM should be used.
+
+
+== FSM roles in Armed Assault ==
+
+A unit can have several FSMs attached. See also [[Arma 2: Operation Arrowhead: AI FSM]].
+
+
+== External Resources ==
+
+* [[FSM Editor]]
+* [https://www.ofpec.com/editors-depot/index.php?action{{=}}details&id{{=}}459&game{{=}}ArmA Rune's FSM Tutorial] for ArmA, mirrored by {{Link|https://www.ofpec.com/|OFPEC}}
+* {{Link|http://imatix-legacy.github.io/libero/index.htm|Libero}} - a free, commercial grade FSM IDE by {{Link|https://en.wikipedia.org/wiki/Pieter Hintjens}} at {{Link|https://imatix-legacy.github.io/|iMatix}}
+* {{Link|https://en.wikipedia.org/wiki/Finite-state machine}}
+* {{Link|http://www.nist.gov/dads/HTML/finiteStateMachine.html|National Institute for Standards and Technology's Definition of Finite State Machine}}
+
+
+[[Category: File extensions]]
+[[Category: Scripting Topics]]

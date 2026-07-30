@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_mapSize
+// revision: 325104 (2022-07-01T12:24:54Z)
+// export sha1: e8zoa00firpjy62bqfobz1b5zw4ziz0
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Map and Markers
+
+|descr= Returns map size from config. Do not confuse with [[worldSize]]. The engine command calculates the map size and doesn't read it from config.
+
+|s1= terrainName call [[BIS_fnc_mapSize]]
+
+|p1= terrainName: [[String]] - (Optional, default [[worldName]]) world name
+
+|r1= [[Number]]
+
+|x1= <sqf>"Altis" call BIS_fnc_mapSize;</sqf>
+
+|x2= <sqf>worldName call BIS_fnc_mapSize;</sqf>
+
+|x3= <sqf>call BIS_fnc_mapSize;</sqf>
+
+|seealso= [[BIS_fnc_mapGridSize]] [[worldSize]] [[worldName]]
+}}

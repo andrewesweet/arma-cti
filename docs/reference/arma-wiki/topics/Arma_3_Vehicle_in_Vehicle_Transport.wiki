@@ -1,0 +1,116 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Vehicle_in_Vehicle_Transport
+// revision: 378127 (2026-02-21T14:38:45Z)
+// export sha1: 5s1dl5nlon89up4r0hb1z8b02t4dnem
+// categories: Category:Arma 3: Tutorials | Category:Arma 3: Vehicle Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[Arma 3: Vehicle in Vehicle Transport|Vehicle in Vehicle Transport]] functionality was added in Arma 3 Apex expansion.
+For proper function it needs suitable transport vehicle with cargo space defined in model and in config.
+Transported vehicles on the other hand needs no special treatment - important is only their size (estimated from bounding box) and weight.
+There are multiple config parameters for both transport and transported vehicles which can be used for further tweaking of functionality.
+
+
+== Scripting commands ==
+
+* [[:Category:Command Group: Vehicle in Vehicle Transport|Command Group: Vehicle in Vehicle Transport]]
+
+
+== Transport/transported Vehicles ==
+
+=== Transported Vehicles ===
+
+* only dimensions and weight of vehicle/object are important parameters
+* if size is not defined in config, bounding box is used 
+* mass of loaded vehicle(s) is added to transport vehicle
+* <syntaxhighlight lang="cpp" inline>canBeTransported = 0;</syntaxhighlight> disables possibility for this specific vehicle to be transported in other vehicles
+* there are also optional parameters for parachute
+* all these parameters are overriding transport vehicle config - if they are not present, default values are used (vehicle can be transported and parachute defined in transport vehicle is used) 
+
+'''Transported''' Vehicle config example:
+<syntaxhighlight lang="cpp">
+class VehicleTransport
+{
+	class Cargo
+	{
+		parachuteClass			= "B_Parachute_02_F";	// type of parachute used when dropped in air. When empty then parachute is not used.
+		parachuteHeightLimit	= 40;					// minimal height above terrain when parachute is used.
+		canBeTransported		= 1;					// 0 (false) / 1 (true)
+
+		dimensions[]			= { "BBox_1_1_pos", "BBox_1_2_pos" };	// memory point-based override of automatic bounding box
+		// or
+		// dimensions[]			= { { 0, 0, 0 }, { 3, 2, 1.5 } };		// alternatively, positions in model space (since 2.08)
+
+		rotation = -90;								// (optional) defines in which direction the vehicle gets rotated
+													// when it is loaded into ViV cargo and will only fit when rotated
+													// only -90 and 90 are supported. Since v2.08
+	};
+};
+</syntaxhighlight>
+
+[[File:cargoLimits.jpg|250px|thumb|Example of defined cargo space with two exits]]
+=== Transport Vehicles ===
+
+* functionallity is not restricted to vehicle type
+* name of memory points placed on model must be same as the ones used in config
+* cargo space can have multiple exit points 
+* loading area can be defined
+* parachute models must be defined for dropping cargo in air
+
+{{Clear}}
+Transport Vehicle config example:
+<syntaxhighlight lang="cpp">
+class VehicleTransport
+{
+	class Carrier
+	{
+		cargoBayDimensions[]		= { "VTV_limit_1", "VTV_limit_2" };	// memory points in model defining cargo space
+		// or
+		// cargoBayDimensions[]		= { { 0, 0, 0 }, { 10, 10, 10 } };	// alternatively, positions in model space (since 2.08)
+
+		disableHeightLimit			= 1;								// if set to 1 disable height limit of transported vehicles
+		maxLoadMass					= 200000;							// maximum cargo weight (in Kg) which the vehicle can transport
+		cargoAlignment[]			= { "front", "left" };				// array of 2 elements defining alignment of vehicles in cargo space.
+																		// possible values are left, right, center, front, back. Order is important.
+
+		cargoSpacing[]				= { 0, 0.15, 0 };					// offset from X,Y,Z axes (in metres)
+
+		exits[]						= { "VTV_exit_1", "VTV_exit_2" };	// memory points in model defining loading ramps, could have multiple
+		// or
+		// exits[]					= { { 5, 0, 0 }, { 5, 10, 0 } };	// alternatively, positions in model space (since 2.08)
+
+		unloadingInterval			= 2;								// time between unloading vehicles (in seconds)
+		loadingDistance				= 10;								// maximal distance for loading in exit point (in meters).
+		loadingAngle				= 60;								// maximal sector where cargo vehicle must be to for loading (in degrees).
+		parachuteClassDefault		= "B_Parachute_02_F";				// type of parachute used when dropped in air. Can be overridden by parachuteClass in Cargo.
+		parachuteHeightLimitDefault	= 50;								// minimal height above terrain when parachute is used. Can be overridden by parachuteHeightLimit in Cargo.
+
+		class CargoTypeWhitelist										// whitelist. If this is not empty, only listed vehicles (isKindOf)
+ 		{																// can load into (since 2.10)
+ 			Boat_F = 1;													// In this case the transporter only carry boats, not cars or tanks etc
+ 		};
+	};
+};
+</syntaxhighlight> 
+
+
+== Cargo Space Vehicle Sorting ==
+
+* vehicles in cargo space can be centred and aligned
+* handled via combined parameter "CargoAlignment" - it is an array of 2 elements
+* Values can be front, back, center, left, right. Order of them is important.
+
+'''Examples:'''
+
+* if first one is "front" then front part of transport will be filled first. If then second word is left, it will be filled from left side, but still front first.
+* VTOL example would be "center" and "front" so vehicles would be inserted in center line from front to back.
+* Ferry example would be "left" and "front" so vehicles should loaded form top left corner to back.
+
+<gallery widths="300px">
+File:arma3 ViV quad example.jpg|Example 1: Two vehicles, horizontally centered in cargo space|alt=alt language
+File:arma3 ViV ship example.jpg|Example 2: Multiple vehicles loaded, automatically sorted and aligned to top left corner of cargo space|alt=alt language
+</gallery>
+
+
+{{GameCategory|arma3|Tutorials}}
+{{GameCategory|arma3|Vehicle Configuration}}

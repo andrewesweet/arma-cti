@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/selectRandom
+// revision: 377101 (2026-01-01T09:58:32Z)
+// export sha1: l1tlshqh9415oll1zp3rcsqh0wh4knr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Arrays
+
+|descr=Returns a random element from the given array. Engine solution to [[BIS_fnc_selectRandom]]
+
+|s1= [[selectRandom]] array
+
+|p1= array: [[Array]] of [[Anything]]
+
+|r1= [[Anything]] - random selected value or [[Nothing]] if array is empty
+
+|x1= <sqf>_randomElement = selectRandom [1,2,3,4,5];</sqf>
+
+|seealso= [[selectRandomWeighted]] [[random]] [[select]] [[selectMin]] [[selectMax]]
+}}

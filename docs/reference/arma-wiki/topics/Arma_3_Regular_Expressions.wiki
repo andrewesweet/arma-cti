@@ -1,0 +1,90 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Regular_Expressions
+// revision: 378124 (2026-02-21T14:28:26Z)
+// export sha1: ih5dxa02lut9j0q9rpeacgg7446e4ij
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 2.06
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|2.06}}
+
+A '''Regular Expression''' (or regex/regexp) is an advanced text search format involving specific codes.
+{{Feature|informative|
+* For a detailed explanation of what a Regular Expression (Regex) is, please visit {{Link|https://en.wikipedia.org/wiki/Regular_expression|the Wikipedia page}} about it.
+* The following pages allow to test regular expressions:
+** {{Link|link= https://regexr.com/}}
+** {{Link|link= https://regex101.com/}}
+}}
+
+
+== Quick Guide ==
+
+* {{hl|a}} means "the a character"
+* {{hl|.}} means "any character"
+* {{hl|.?}} means "any character zero or one time"
+* {{hl|.+}} means "any character from one to infinity times"
+* {{hl|.*}} means "any character zero to infinity times"
+* {{hl|.{3,5}}} means "any (identical) character that is present three to five times"
+* {{hl|[a c]}} is a '''group''' and means "a character that is '''either''' a '''or''' c '''or''' space"
+* {{hl|[a-z]}} is a '''range''' and means "any character between a and z" ('''not''' between A and Z in the event of a case-sensitive search!)
+* {{hl|[a-zA-Z0-9]}} is a '''range''' and means "any character between a and z '''or''' A and Z '''or''' 0 and 9"
+* {{hl|[^a-z]}} is a '''negative range''' and means "any character '''not''' between a and z"
+* {{hl|Arma [0-9]}} means anything from "Arma 0" to "Arma 9" (going through 1, 2, 3, 4 etc)
+{{Feature|informative|To match a specific character that is used in regex syntax, escape it with {{hl|\}}, e.g {{hl|I\.\.\. don't know\?}}}}
+
+
+== Commands ==
+
+See [[:Category:Command Group: Strings - Regular Expression|Command Group: Strings - Regular Expression]].
+
+
+== Flags ==
+
+In order to adjust the behaviour of the regex commands, certain flags can be set when using them.
+Flags are specified at the end of the pattern and start with {{hl|/}}. Flags need to be lowercase.
+If there are any non-flag characters in the flags they will be ignored and considered part of the pattern itself.
+{{Feature|informative|
+If no flags are specified, the default flags are set to {{hl|g}} and {{hl|i}}.
+It is valid to specify {{hl|/}} to indicate no flags, first match only, case sensitive - see {{Link|#Examples}}.
+}}
+
+{| class="wikitable align-center-col-1"
+! Flag
+! Name
+! Description
+|-
+| g
+| Global
+| Only relevant for [[regexReplace]] and [[regexFind]].
+'''''Missing''''' the global flag sets {{hl|format_first_only}} flag {{Link|https://en.cppreference.com/w/cpp/regex/match_flag_type|(source)}} and:
+* '''only replaces the first occurrence''' with [[regexReplace]]
+* '''only returns the first element''' with [[regexFind]]
+|-
+| i
+| Case-insensitive
+| {{n/a}}
+|-
+| n
+| noSubs
+| {{Feature|Quote|When performing matches, all marked sub-expressions (expr) are treated as non-marking sub-expressions (?:expr).
+No matches are stored in the supplied std::regex_match structure and mark_count() is zero|c++ reference|https://en.cppreference.com/w/cpp/regex/syntax_option_type}}
+|-
+| o
+| Optimise
+| Optimise pattern, pattern creation is slower, but will execute more efficiently {{Link|https://en.cppreference.com/w/cpp/regex/syntax_option_type|(source)}}
+|}
+
+
+== Examples ==
+
+<sqf>"1, 42, and 10e10" regexFind ["[0-9]"]; // matches "1", "4", "2", "1", "0" "1" and "0"</sqf>
+<sqf>"1, 42, and 10e10" regexFind ["[0-9]+"]; // matches "1", "42", "10" and "10", avoiding commas and spaces</sqf>
+<sqf>
+"Hello there!" regexMatch "There";		// matches - default flags g and i are active
+"Hello there!" regexMatch "There/";		// no flags are set - as "There" is different from "there" and search is case-sensitive, so the match fails
+"Hello there!" regexMatch "There/i";	// matches - only the i flag is active
+</sqf>
+<sqf>"I like garlic, onions and cheese" regexFind ["([^ ]+)(?:,| and) "]; // matches "garlic" and "onions"</sqf>
+<sqf>"Existing Arma: Arma 0, ArmA, ArmA 1, Arma 1, Arma 2, Arma 3, Arma 4, Arma 5, Arma 2035" regexFind ["(Arma [0-3])[^0-9]/g"]; // matches "Arma 0", "Arma 1", "Arma 2", "Arma 3"</sqf>
+
+
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 2.06]]

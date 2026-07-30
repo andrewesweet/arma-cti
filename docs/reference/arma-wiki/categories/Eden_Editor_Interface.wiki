@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Eden_Editor:_Interface
+// revision: 92079 (2015-09-30T12:03:06Z)
+// export sha1: dh5tqpgrsbf45k6ib1ebyudc72nf7nr
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Eden Editor|Interface]]

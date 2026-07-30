@@ -1,0 +1,232 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Waypoint
+// revision: 296772 (2022-01-05T15:55:14Z)
+// export sha1: m7a2ebd88y82qgzczkzq0oknewll88s
+// categories: Category:Eden Editor: Asset Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+A waypoint defines the destination for a group. Waypoints are ordered sequentially, and only one can be active at any given time.
+
+== Waypoint Types ==
+Each waypoint has a specific type, which decides what the group has to do to complete the waypoint. A group led by an AI character will pursue the waypoint automatically, but the player is expected to issue necessary orders when in charge of the group.
+
+You can use any type of waypoint from the '''Waypoints''' list in the asset browser. Because waypoints are added to groups, the existing character, group or any of its waypoints has to be selected in order for new waypoint to be added.
+[[File:3den waypoint add.gif|center]]
+
+
+=== MOVE Waypoint Shortcut ===
+Alternatively, you can quickly add a MOVE waypoint by '''holding Shift''' and pressing the '''right mouse button'''.
+[[File:3den waypoint addQuick.gif|center]]
+
+== Attaching Waypoints ==
+A waypoint can also be attached to an object. Some waypoint types even require it, like DESTROY or GET IN.
+To attach a waypoint, drag it to an object. Similarly, you can detach it by dragging it away. Moving the object around will move all the attached waypoints as well.
+The attached waypoint is visualized by a different icon outline ([[File:3den waypoint outlineAttached.png.png]] instead of [[File:3den waypoint outline.png]]).
+[[File:3den_waypoint_attach.gif|center]]
+
+== Waypoint Completion ==
+The waypoint is completed when requirements set by its type are met, but additional conditions can be added. A scripted condition can be set in attributes, but you can also connect the waypoint to one or more [[Eden Editor: Trigger|triggers]] using '''Set Waypoint Activation''' [[Eden Editor: Connecting|connection]]. The waypoint will be completed only once all the connected triggers are active.
+[[File:3den waypoint trigger.gif|center]]
+
+
+Once a waypoint is completed, the group will move to the next one. If there is none, the group will remain where it is.
+You can find more about the waypoint in the tooltips of their attributes.
+
+== Attributes ==
+<onlyinclude>
+<!-- Exported from the game by BIS_fnc_3DENExportAttributes. Manual edits may be replaced by future exports. -->
+{| class="wikitable sortable"
+! colspan="3" | <big>Info</big>
+! colspan="2" | <big>[[Eden Editor: Setting Attributes|Development]]</big>
+|-
+! Name
+! Category
+! class="unsortable" | Description
+! Property
+! Type
+|-
+| '''Type'''
+| Type
+| Waypoint type defines what the group will do when the waypoint becomes active, and the condition when it becomes completed. Applies mainly to AI-led groups, as players will not be prompted to perform any specific actions, even though the waypoint completion condition is the same.
+Some waypoints have special attributes, which are only available the next time you access the attribute window.
+| <small>{{hl|itemClass}}</small>
+| [[String]]
+|-
+| '''Description'''
+| Init
+| Text visible for the player next to the waypoint icon in the scene.
+| <small>{{hl|description}}</small>
+| [[String]]
+|-
+| '''Order'''
+| Init
+| Order in which waypoints follow. When changing order, the waypoint will take position of the selected one, pushing all other further down.
+| <small>{{hl|order}}</small>
+| 
+|-
+| '''Identified'''
+| Init
+| System name of the waypoint, used for identification in scripts.
+| <small>{{hl|name}}</small>
+| [[String]]
+|-
+| '''Position'''
+| Transformation
+| World coordinates in meters. X goes from West to East, Y from South to North and Z is height above terrain.
+| <small>{{hl|position}}</small>
+| [[Position#Introduction|Position3D]]
+|-
+| '''Placement Radius'''
+| Transformation
+| Placement radius in meters. The entity will start at a random position within the radius.
+| <small>{{hl|placementRadius}}</small>
+| [[Number]]
+|-
+| '''Completion Radius'''
+| Transformation
+| Distance in meters in which a group member has to be in order for the waypoint to be considered completed.
+| <small>{{hl|completionRadius}}</small>
+| [[Number]]
+|-
+| '''Combat Mode'''
+| State
+| Controls how and when the group will choose to engage enemy targets.
+Available options:
+* '''Unchanged''' - No change compared to the previous state.
+* '''Forced Hold Fire''' - The group will never fire under any circumstances.
+* '''Do Not Fire Unless Fired Upon, Keep Formation''' - Group members will hold fire unless directly threatened.
+* '''Do Not Fire Unless Fired Upon''' - Group members will move into positions from which they can shoot at the enemy, but will hold fire unless directly threatened.
+* '''Open Fire, Keep Formation''' - Default combat mode. Group members will fire upon any target in range, while staying in formation. The group leader may order individual members to engage specific targets.
+* '''Open Fire''' - Group members will fire at any suitable target in range, leaving the formation to find a suitable shooting position.
+
+| <small>{{hl|combatMode}}</small>
+| [[String]]
+|-
+| '''Behavior'''
+| State
+| Behavior pattern of the group.
+Available options:
+* '''Unchanged''' - No change compared to the previous state.
+* '''Careless''' - The same as 'Safe', except that it will not be switched automatically after spotting a threat. Use with caution, player may perceive AIs in this behavior as defective.
+* '''Safe''' - Non-combat behavior. Characters have weapons lowered. Vehicles follow roads and use lights. They automatically switch to 'Aware' upon spotting a threat.
+* '''Aware''' - Default behavior. Characters are in ready position. Vehicles prefer roads, do not use lights and their passengers will disembark to counter threats.
+* '''Combat''' - Firefight behavior. Characters break formation and take cover. Vehicles ignore roads and do not use lights.
+* '''Stealth''' - Characters break formation and move cautiously, preferring cover and going prone. Vehicles prefer roads, but do not use lights.
+
+| <small>{{hl|behaviour}}</small>
+| [[String]]
+|-
+| '''Formation'''
+| State
+| Default group formation. Based on the combat mode, group members may ignore the formation in 'Combat' and 'Stealth' modes.
+Available options:
+* '''Unchanged'''
+* '''Wedge'''
+* '''Vee'''
+* '''Line'''
+* '''Column'''
+* '''File'''
+* '''Staggered Col.'''
+* '''Echelon L.'''
+* '''Echelon R.'''
+* '''Diamond'''
+
+| <small>{{hl|formation}}</small>
+| [[String]]
+|-
+| '''SpeedMode'''
+| State
+| Default travel speed of the group. In Combat and Stealth behavior modes, group members will try to prioritize this setting.
+Available options:
+* '''Unchanged'''
+* '''Limited'''
+* '''Normal'''
+* '''Full'''
+
+| <small>{{hl|speedMode}}</small>
+| [[String]]
+|-
+| '''Condition'''
+| Expression
+| Repeatedly calculated condition, must return boolean expression. When the waypoint type conditions are met and this expression returns true, the waypoint is completed.
+Passed variables are:
+* this - group leader
+* thisList - array with all group members
+| <small>{{hl|condition}}</small>
+| [[String]]
+|-
+| '''On Activation'''
+| Expression
+| Expression called when the waypoint is completed.
+Passed variables are:
+* this - group leader
+* thisList - array with all group members
+| <small>{{hl|onActivation}}</small>
+| [[String]]
+|-
+| '''Script'''
+| Expression
+| Script executed when 'SCRIPTED' waypoint type is selected. The waypoint will be completed once the script is finished.
+| <small>{{hl|script}}</small>
+| [[String]]
+|-
+| '''Map Visibility'''
+| Visibility
+| Make the waypoint visible for the player on the map.
+| <small>{{hl|show2D}}</small>
+| [[Boolean]]
+|-
+| '''Scene Visibility'''
+| Visibility
+| Make the waypoint visible for the player in the scene.
+| <small>{{hl|show3D}}</small>
+| [[Boolean]]
+|-
+| '''Timer Values'''
+| Timer
+| Time in seconds passed between when the waypoint would be considered complete and when it actually completes. Selected randomly in a range from Min to Max, gravitating towards Mid.
+| <small>{{hl|timeout}}</small>
+| [[Array]] in format [min, mid, max]
+|-
+| '''Effect Condition'''
+| Effects
+| Condition for effects to be played, must return boolean expression.
+| <small>{{hl|effectCondition}}</small>
+| [[String]]
+|-
+| '''Sound'''
+| Effects
+| Sound played upon activation.
+| <small>{{hl|sound}}</small>
+| [[String]]
+|-
+| '''Voice'''
+| Effects
+| Sound spoken by the first unit which activated the trigger.
+| <small>{{hl|voice}}</small>
+| [[String]]
+|-
+| '''Environment'''
+| Effects
+| Environment sounds played upon activation.
+| <small>{{hl|soundEnvironment}}</small>
+| [[String]]
+|-
+| '''Music'''
+| Effects
+| Music played upon activation. Replaces previously playing music track.
+| <small>{{hl|music}}</small>
+| [[String]]
+|-
+| '''UI Overlay'''
+| Effects
+| User interface overlay shown upon activation.
+| <small>{{hl|title}}</small>
+| [[String]]
+|}
+</onlyinclude>
+== See Also ==
+*[[Waypoints]]
+*[[Waypoint|Data Type Waypoint]]
+
+[[Category:Eden Editor: Asset Types|Waypoints]]

@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/hideActions
+// revision: 378626 (2026-05-15T07:56:27Z)
+// export sha1: 4kpkh4askklzrvdzss7fyys3qra2fkl
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Arma 3: Scripting Commands: Development Branch | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|branch= dev
+
+|gr1= Interaction
+
+|descr= {{Feature|important|This command is a work in progress and can evolve until release on stable branch.}}
+Hides/unhides user UI actions given by their enum number (see [[shownAction]]).
+
+{{Feature|informative|This command hides actions for the current player ([[focusOn]]), a respawned player will have all actions unhidden so it must be reapplied.}}
+
+|s1= [[hideActions]] [mode, actions]
+
+|p1= mode: [[Number]] or [[String]] or [[Boolean]] mode of operation, could be one of:
+* 0 or "UnhideSelected" or [[false]] - only given actions (if previously hidden) would be unhidden
+* 1 or "HideSelected" or [[true]] - only given actions would be hidden
+* 2 or "UnhideAllButSelected" - all hidden actions will be unhidden except for the given actions
+* 3 or "HideAllButSelected" - all actions will be hidden except for the given actions
+
+|p2= actions: [[Array]] of [[Number]]s (see [[shownAction]])
+
+|r1= [[Nothing]] 
+
+|x1= <sqf>hideActions [true, [1, 2]]; //hide GetInCommander and GetInDriver actions</sqf>
+|x2= <sqf>hideActions ["UnhideSelected", [1, 2]]; //unhide GetInCommander and GetInDriver actions</sqf>
+|x3= <sqf>hideActions [1, [91]]; //hide all user added actions</sqf>
+|x4= <sqf>hideActions ["HideAllButSelected", [91]]; //hide all engine actions leaving only user added</sqf>
+|x5= <sqf>hideActions [3, []]; //hide all actions</sqf>
+|x6= <sqf>hideActions ["UnhideAllButSelected", []]; //unhide all hidden actions</sqf>
+
+|seealso= [[hiddenActions]] [[shownAction]] [[visibleMap]] [[shownGPS]] [[shownWatch]] [[shownCompass]] [[shownUAVFeed]] [[shownHUD]] [[addAction]] [[action]]  [[isActionMenuVisible]] [[Arma_3:_Mission_Event_Handlers#ActionTargetChanged]]
+}}

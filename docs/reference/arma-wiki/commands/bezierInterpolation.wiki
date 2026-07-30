@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/bezierInterpolation
+// revision: 377844 (2026-01-03T04:36:03Z)
+// export sha1: 7zrosjtsk05xkwzjy4m14gjsdoa9xwa
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Math | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.92
+
+|gr1= Math
+
+|descr= Gets interpolated value based on {{Link|https://en.wikipedia.org/wiki/Bézier_curve|Bézier curve}} with given control points (progress value is 0...1 for a curve that starts at pos0 and finishes at posN) <br>
+[[File:bezierInterpolation2.jpg|400px]]
+
+|s1= progress [[bezierInterpolation]] positions
+
+|p1= progress: [[Number]] - interpolation value
+
+|p2= positions: [[Array]] of [[Position#Introduction|Position3D]]
+
+|r1= [[Position#Introduction|Position3D]] - based on progress value
+
+|x1= Quick demonstration that spawns some spheres around player object:
+<sqf>
+for "_i" from 0 to 1 step 0.05 do {
+	createVehicle ["Sign_Sphere10cm_F", (_i bezierInterpolation [
+		player modelToWorld [0,0,0],
+		player modelToWorld [0,2,2],
+		player modelToWorld [2,0,2],
+		player modelToWorld [0,0,4]
+	]), [], 0, "CAN_COLLIDE"];
+};
+</sqf>
+
+|x2= Create a map marker curve from 4 control points with overlap (progress is -0.5...1.5 instead of 0...1):
+<sqf>
+private _controlPoints = [[100,-90], [200,-30], [150,60], [100,90]] apply { player getRelPos _x };
+{
+	private _marker = createMarkerLocal [str _x, _x];
+	_marker setMarkerTypeLocal "mil_objective";
+	_marker setMarkerTextLocal ("P" + str _forEachIndex);
+}
+forEach _controlPoints;
+
+for "_i" from -0.5 to 1.5 step 0.01 do
+{
+	private _marker = createMarkerLocal [str _i, _i bezierInterpolation _controlPoints];
+	_marker setMarkerTypeLocal "mil_dot";
+};
+openMap true;
+</sqf>
+
+|seealso= [[linearConversion]] [[vectorLinearConversion]]
+}}

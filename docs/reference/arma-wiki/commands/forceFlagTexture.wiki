@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/forceFlagTexture
+// revision: 348626 (2023-11-08T13:46:04Z)
+// export sha1: 0l2hevqs0bxomeucc8hpqiqfhhqcgim
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Flags | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|eff= global
+
+|arg=global
+
+|gr1= Flags
+
+|descr= Forces a flag texture onto a flag carrier (unit, vehicle or flag pole).
+No flag holder is required. If {{hl|""}} is used as texture, the texture is removed.
+This will override regularly owned flags.
+This type of flag texture cannot be retrieved using [[flagTexture]], but [[getForcedFlagTexture]].
+
+{{Feature|important|Forced flag texture is an additional flag texture, which visually overrides original flag texture and therefore is very expensive to simulate, so use the functionality sparingly.}}
+
+|s1= object [[forceFlagTexture]] texture
+
+|p1= object: [[Object]] - vehicle, unit or flag pole
+
+|p2= texture: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player forceFlagTexture "\A3\Data_F\Flags\Flag_red_CO.paa";</sqf>
+
+|seealso= [[getForcedFlagTexture]] [[Arma 3: Flag Textures]]
+}}

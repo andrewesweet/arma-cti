@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/Config
+// revision: 26668 (2006-12-22T01:29:28Z)
+// export sha1: h53xtgdupwztzy8hemelw2lxwy5dmkr
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Description:'''
+Config file entry.
+
+Introduced with Armed Assault, does not refer to Cold War Crisis or Resistance.
+
+
+[[Category: Data Types]]

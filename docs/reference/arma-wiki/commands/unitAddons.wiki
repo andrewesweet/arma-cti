@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/unitAddons
+// revision: 378475 (2026-04-24T11:31:38Z)
+// export sha1: fpk39m2frydmgqlq8f5dctfua6omqz2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mods and Addons | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Mods and Addons
+
+|descr= Returns list with addons the unit belongs to.
+
+|s1= [[unitAddons]] className
+
+|p1= className: [[String]] - class name of a unit/vehicle or object
+
+|r1= [[Array]] of [[String]]s - addon names
+
+|x1= <sqf>hint str unitAddons typeOf player; // ["A3_Characters_F_BLUFOR"]</sqf>
+
+|seealso= [[activateAddons]]
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140331233800
+|text= <nowiki/>
+# From {{arma3}} 1.14 <sqf>hint str ([player] call BIS_fnc_unitAddon) // same as unitAddons (typeOf player)</sqf>
+# To return the addon that a weapon belongs to, use [[BIS_fnc_weaponAddon]] instead. E.g. <sqf>(primaryWeapon player call BIS_fnc_weaponAddon); // return: "A3_Weapons_F_Rifles_Khaybar"</sqf>
+}}

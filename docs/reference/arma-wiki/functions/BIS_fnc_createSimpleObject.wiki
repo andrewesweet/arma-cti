@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_createSimpleObject
+// revision: 352418 (2024-02-09T15:26:08Z)
+// export sha1: 2sdeqzd0tp5b1y33g2qzkg2friua9gq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Object Manipulation
+
+|descr= Creates non-simulated framerate and network performance friendly object - a [[Arma 3: Simple Objects|Simple Object]] - and applies different adjustments to fake non-existing physX and engine interactions. The adjustments need either to be stored in the object config or provided as the function input, otherwise they need to be done manually.<br>
+<br>
+Simple objects cannot be destroyed and do not interact with the environment. They are useful for creating low performance-demanding static compositions (walls, rocks, wrecks, …) and/or environments where shooting and collisions are not expected.
+
+|s1= [input, position, direction, followTerrain, forceSuperSimpleObject, local] call [[BIS_fnc_createSimpleObject]]
+
+|p1= input: [[String]] or [[Array]]:
+* [[String]]: classname of the object to be created. This is the preferred way if the asset config definition contains the adjustment data or the data are not needed (most objects do not need adjustments).
+* [[Array]]: adjustment data in format [class, model, reversed, verticalOffset, animationAdjustments, selectionsToHide]:
+** class: [[String]] - (Optional, default "") asset CfgVehicles config class ('''at least either ''model'' or ''class'' must be provided, ideally both''')
+** model: [[String]] - (Optional, default "") Path to the vehicle p3d model; needs to start without backslash and must end with the proper file extension ".p3d"
+** reversed: [[Number]] - (Optional, default 0) some objects, usually vehicles, are reversed in p3d; valid values are:
+*** 1: reverse
+*** 0: no change - any value other than 1 will result in no change
+** verticalOffset: [[Number]] - (Optional, default 0) fix for non-existant physX; usually needed only for vehicles
+** animationAdjustments: [[Array]] - (Optional, default <sqf inline>[]</sqf>) animation that need to be animated to given state, in format [animationName, animationState]:
+*** animationName: [[String]] - animation name
+*** animationState: [[Number]] - animation state
+** selectionsToHide: [[Array]] - (Optional, default <sqf inline>[]</sqf>) all listed selections will be hidden
+
+|p2= position: [[Array]] format [[Position#PositionASL|PositionASL]] - the object will be placed by the '''model centre'''<nowiki/>'s position (see [[getPosWorld]])
+
+|p3= direction: [[Number]] - (Optional, default 0)
+
+|p4= followTerrain: [[Boolean]] - (Optional, default [[true]]) [[true]] to follow terrain inclination, [[false]] to be horizontally aligned
+
+|p5= forceSuperSimpleObject: [[Boolean]] - (Optional, default [[false]]) [[true]] to create a '''Super Simple Object''' from p3d path (that '''must''' be provided)
+
+|p6= local: [[Boolean]] - (Optional, default [[false]]) [[true]] to create [[local]] instance of the object
+|p6since= arma3 2.08
+
+|r1= [[Object]] - the created Simple Object, [[objNull]] if creation failed
+
+|x1= <sqf>["B_Boat_Armed_01_minigun_F", getPosWorld player, getDir player] call BIS_fnc_createSimpleObject;</sqf>
+
+|x2= <sqf>["B_Boat_Armed_01_minigun_F", player modelToWorldWorld [0,5,0], getDir player + 90, false, false] call BIS_fnc_createSimpleObject;</sqf>
+
+|seealso= [[Arma 3: Simple Objects]] [[createSimpleObject]] [[BIS_fnc_adjustSimpleObject]] [[BIS_fnc_replaceWithSimpleObject]] [[BIS_fnc_simpleObjectData]] [[getPosWorld]] [[setPosWorld]]
+}}

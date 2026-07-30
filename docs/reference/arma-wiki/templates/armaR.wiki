@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Template:armaR
+// revision: 322491 (2022-06-13T10:47:43Z)
+// export sha1: h9260cva88nd3p4779gardo0c0nbipj
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Name|armaR}}</includeonly><noinclude>{{Doc/Template
+|descr= Returns {{hl|{{armaR}}}}.
+|example1= <nowiki>{{armaR}}</nowiki>
+|result1= {{armaR}}
+}}</noinclude>

@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_saveGame
+// revision: 349308 (2023-11-08T14:52:21Z)
+// export sha1: 87gurfoj92xeqmr4xbogzp6i95eqdf1
+// categories: Category:Arma 3: Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Missions
+
+|descr= Evaluates the current battlefield situation and saves the game when appropriate.
+
+|s1= [objects] call [[BIS_fnc_saveGame]]
+
+|p1= objects: [[Array]] - units to check
+
+|r1= [[Boolean]] - [[true]] if saved
+
+|x1= <sqf>[unit_1, unit_2] call BIS_fnc_saveGame;</sqf>
+
+|seealso= [[saveGame]] [[loadGame]]
+}}

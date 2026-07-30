@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/editorSetEventHandler
+// revision: 363579 (2024-04-07T14:46:04Z)
+// export sha1: jtybr7qgivrhtgu0m6833l85cawm8h4
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Command Group: Game 2 Editor | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Game 2 Editor
+
+|gr2= Event Handlers
+
+|descr= Sets given event handler of given editor.
+{{Feature|informative|Some Old Editor Command}}
+
+|s1= map [[editorSetEventHandler]] [handler name, function]
+
+|p1= map: [[Control]]
+|p2= handler name: [[String]]
+|p3= function: [[String]]
+|r1= [[Nothing]]
+
+|x1= <sqf>_map editorSetEventHandler ["SelectObject", ""];</sqf>
+
+|seealso= -
+}}

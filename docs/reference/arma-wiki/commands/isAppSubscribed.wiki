@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/isAppSubscribed
+// revision: 351577 (2023-12-07T17:31:35Z)
+// export sha1: jjnjm4u6fuj80lu0lwzpvkqs4duw3je
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|gr1= Argo
+
+|descr= Find if the provided appId's game/DLC is owned by the currently logged Steam account.
+
+|s1= [[isAppSubscribed]] appId
+
+|p1= appId: [[Number]] - {{Link|Steam}}'s appId
+
+|r1= [[Boolean]] - [[true]] if the current Steam account has said app, [[false]] otherwise
+
+|x1= <sqf>
+if (isAppSubscribed 107410) then { systemChat "You have Arma 3, my dude!"; };
+if (isAppSubscribed 571710) then { systemChat "You even own Laws of War, excellent!!"; };
+</sqf>
+
+|seealso= [[openSteamApp]]
+}}

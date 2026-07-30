@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Category:Points_of_Interest
+// revision: 242757 (2021-02-06T23:09:26Z)
+// export sha1: 9c2a43jkihjktaw2e5f263xukmp2bmx
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[:Category:Points of Interest|Points of Interest]] are about "funny sightings", (almost) hidden interesting places and (voluntary) weird object placement.
+
+The difference with [[:Category:Easter Eggs|Easter Eggs]] is discussed [[Talk:ArmA: Easter Eggs|here]].
+
+{{Feature | Informative | See also [[:Category:Easter Eggs|Easter Eggs]].}}

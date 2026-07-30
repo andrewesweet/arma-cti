@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_createTXScan
+// revision: 309609 (2022-05-05T12:07:40Z)
+// export sha1: s8ylm8zv0vu9sf8rfik71tbfe2qy186
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: TXScan | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= TXScan 
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Creates a scan with the name defined as class in CfgTXScans or from given params. 
+		If name doesn't exists in config and params are not provided, default scan is created which could be tweaked later
+
+	Parameter(s):
+		0: STRING - "" create every scan from config
+		or
+		0: STRING - scan name
+		1: ARRAY (Optional) - TX position
+		2: NUMBER (Optional) - scan angle
+		3: NUMBER (Optional) - scan precision
+		4: ARRAY (Optional) - scan polygon
+
+	Returns:
+		BOOL - false on error
+		
+	Examples:
+		"MyScan" call BIN_fnc_createTXScan
+		"" call BIN_fnc_createTXScan - creates every scan from config
+		["MyScan", [1,2,3], 20, 0.1] call BIN_fnc_createTXScan - creates every scan from config
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_createTXScan]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_createTXScan;</sqf> -->
+
+|seealso=
+}}

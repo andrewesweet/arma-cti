@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_isDateTimeNewer
+// revision: 323994 (2022-07-01T11:58:31Z)
+// export sha1: 34yzzzhh1y1mhxu09df0s6oly1z4mqh
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Environment | Category:Functions | Category:Introduced with Arma 3 version 1.86 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.86
+
+|gr1= Environment
+
+|descr= Returns true if the first passed datetime is newer than the second one.
+
+|s1= [date1, date2] call [[BIS_fnc_isDateTimeNewer]]
+
+|p1= date1: [[Array]] format [[Date]]
+
+|p2= date2: [[Array]] format [[Date]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _isNewer = [[2035,5,28,13,37], [2032,5,28,13,37]] call BIS_fnc_isDateTimeNewer;</sqf>
+
+|seealso= [[date]] [[BIS_fnc_compareDateTimes]] [[BIS_fnc_calculateDateTime]]
+}}

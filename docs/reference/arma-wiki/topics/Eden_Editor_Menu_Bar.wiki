@@ -1,0 +1,219 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Menu_Bar
+// revision: 370571 (2025-01-10T21:45:20Z)
+// export sha1: mz3v0ukqz02tkc3djyq8mrbpd7192y7
+// categories: Category:Eden Editor: Interface
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:3den_menubar.jpg|right]]
+The '''Menu Bar''' is displayed at the top of the Workspace. It contains almost all available actions and tools in the Eden Editor, sorted into logical categories.
+__TOC__
+<br style="clear:both;">
+
+== Scenario ==
+{| class="wikitable"
+! style="width:15em;" | Option
+! Description
+|-
+| '''New'''
+| Open a dialog to create a new scenario 
+|-
+| '''Open'''
+| Open a dialog to choose a scenario to open 
+|-
+| '''Save'''
+| Save the current scenario. If it has not been saved yet, open a dialog to save the scenario with specific name. 
+|-
+| '''Save As'''
+| Open a dialog to save the scenario with specific name. 
+|-
+| '''Publish to Steam Workshop'''
+| Open a dialog to publish the current scenario to Steam Workshop.
+|-
+| '''Export'''
+| Export the scenario to specific format.
+|-
+| '''Exit'''
+| Close the Eden Editor.
+|}
+
+== Edit ==
+{| class="wikitable"
+! style="width:15em;" | Option
+! Description
+|-
+| '''Undo'''
+| Undo the last operation. You can see the list of all operations in the editing history panel.
+|-
+| '''Redo'''
+| Redo previously undone operation. You can see the list of all operations in the [[Eden_Editor:_Editing_History|editing history]] panel.
+|-
+| '''Select All on Screen'''
+| Select all entities which have icon visible in the current view.
+|-
+| '''Transformation Widget'''
+| Toggle specific [[Eden_Editor:_Transformation_Widget|transformation widget]].
+|-
+| '''Grid'''
+| Toggle one of specific grid types:
+* Transformation
+* Rotation
+* Area Scaling
+|-
+| '''Vertical Mode'''
+| Toggle [[Eden_Editor:_Entity_Transforming|Vertical Mode]].
+|-
+| '''Toggle Surface Snapping'''
+| Toggle [[Eden_Editor:_Entity_Transforming|Surface Snapping]].
+|-
+| '''Toggle Waypoint Snapping'''
+| Toggle [[Eden_Editor:_Waypoint|waypoint snapping]].
+|-
+| '''Phase'''
+| Select [[Eden_Editor:_Scenario_Phases|scenario phase]].
+|-
+| '''Asset Type'''
+| Select [[Eden_Editor:_Asset_Browser|asset browser]] mode.
+|-
+|  '''Toggle Asset Sub-type'''
+| Select [[Eden_Editor:_Asset_Browser|asset browser]] submode.
+|}
+
+== View ==
+{| class="wikitable"
+! style="width:15em;" | Option
+! Description
+|-
+| '''Center on Random Position'''
+| Move view to random location in the world. Positions on land and not in a forest are preferred.
+|-
+| '''Center on Player'''
+| Move view to player's position.
+|-
+| '''Toggle Map'''
+| Show / hide the map.
+|-
+| '''Toggle Map Textures'''
+| Show / hide map background texture.
+|-
+| '''Vision Mode'''
+| Enables Night Vision and Thermal Vision modes in the editor scene
+|-
+| '''Toggle Flashlight'''
+| Toggle light which is snapped to the camera. Useful for editing night scenarios when you don't want to use night vision mode.
+|-
+| '''Toggle Location Labels (3D)'''
+| Toggle town labels in the scene. Map labels will remain unaffected.
+|-
+| '''Search'''
+| Commence search in of the the lists:
+* Search in Asset Browser
+* Search in Entity List
+|-
+| '''Interface'''
+| Show / hide specific interface element.
+* Entity List
+* Asset Browser
+* Controls Hint
+* Navigation Widget
+|}
+
+== Settings ==
+{| class="wikitable"
+! style="width:15em;" | Option
+! Description
+|-
+| '''Preferences'''
+| Open editor specific settings
+|-
+| '''Video Options'''
+| Open game video options.
+|-
+| '''Audio Options'''
+| Open game audio options.
+|-
+| '''Game Options'''
+| Open general game options.
+|-
+| '''Controls'''
+| Open controls settings.
+|}
+
+== Attributes==
+{| class="wikitable"
+! style="width:15em;" | Option
+! Description
+|-
+| '''General'''
+| Open general [[Eden_Editor:_Scenario_Attributes#General|scenario attributes]]
+|-
+| '''Environment'''
+| Open environment [[Eden_Editor:_Scenario_Attributes#Environment|scenario attributes]]
+|-
+| '''Multiplayer'''
+| Open multiplayer [[Eden_Editor:_Scenario_Attributes#Multiplayer|scenario attributes]]
+|-
+| '''Garbage Collection'''
+| Open garbage collection [[Eden_Editor:_Scenario_Attributes#Garbage_Collection|scenario attributes]]
+|}
+
+== Tools ==
+{| class="wikitable"
+! style="width:15em;" | Option
+! Description
+|-
+| '''Debug Console'''
+| Open [[Arma 3: Debug Console|debug console]].
+|-
+| '''Functions Viewer'''
+| Open the [[Arma 3: Functions Library#Finding_a_Function|functions viewer]].
+|-
+| '''Config Viewer'''
+| Open the config viewer.
+|}
+
+== Play ==
+{| class="wikitable"
+! style="width:15em;" | Option
+! Description
+|-
+| '''Play in Singleplayer (SP)'''
+| [[Eden_Editor:_Preview|Play the scenario]] in singleplayer. If a server is running in the background (as a result of starting the preview in multiplayer previously), you will be asked to shut it down.
+|-
+| '''Play in SP with Briefing'''
+| [[Eden_Editor:_Preview|Play the scenario]] in singleplayer, but show briefing at the start.
+|-
+| '''Play in SP at Camera Position'''
+| [[Eden_Editor:_Preview|Play the scenario]] in singleplayer, but teleport player to the current camera position. If the player is not in a flying vehicle (i.e., a plane or helicopter), the position on the ground below the camera will be picked instead. 
+|-
+| '''Play in Multiplayer'''
+| [[Eden_Editor:_Preview|Play the scenario]] in multiplayer. If no server is running yet, you will be asked to set up one.
+|}
+
+== Help ==
+{| class="wikitable"
+! style="width:15em;" | Option
+! Description
+|-
+| '''Documentation'''
+| A link to [[:Category:Eden Editor|Eden Editor]].
+|-
+| '''Scripting'''
+| A link to [[:Category:Scripting Commands Arma 3|Scripting Commands Arma 3]].
+|-
+| '''Community Wiki'''
+| A link to [[Main Page|the Wiki]].
+|-
+| '''Forums'''
+| A link to {{Link|https://forums.bistudio.com/forum/161-arma-3-editing|forums.bistudio.com/forum/161-arma-3-editing}}.
+|-
+| '''Feedback Tracker'''
+| A link to {{Link|https://feedback.arma3.com|feedback.arma3.com}}.
+|-
+| '''Dev Hub'''
+| A link to {{Link|https://dev.arma3.com|dev.arma3.com}}.
+|-
+| '''Tutorials'''
+| Open the list of in-game tutorials.
+|}
+
+[[Category:Eden Editor: Interface|Menu Bar]]

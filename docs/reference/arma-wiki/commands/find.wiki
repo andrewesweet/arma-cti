@@ -1,0 +1,132 @@
+// source: https://community.bistudio.com/wiki/find
+// revision: 376413 (2025-10-11T01:04:47Z)
+// export sha1: 43df1wek3cwe8s1xn02ott1am838n24
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: Strings | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= ofp
+|version2= 1.99
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Strings
+
+|gr2= Arrays
+
+|descr= Searches for an array element within an array or an ANSI string within an ANSI string.
+{{Feature|arma3|If Unicode support is desired, see [[forceUnicode]].}}
+{{Feature|important|Search is cASe-seNsItiVE!}}
+
+|s1= array [[find]] element
+
+|p1= array: [[Array]] - array to search in
+
+|p2= element: [[Anything]] - array element to find
+
+|r1= [[Number]] - zero-based position of the first array element that matches x, -1 if not found
+
+|s2= string [[find]] substring
+
+|s2since= arma3 1.28
+
+|p21= string: [[String]] - string to search in
+
+|p22= substring: [[String]] - substring to find
+
+|r2= [[Number]] - zero-based position of the first sequence of characters that matches substring, -1 if not found
+
+|s3= string [[find]] [substring, indexStart]
+
+|s3since= arma3 2.02
+
+|p41= string: [[String]] - string to search in
+
+|p42= substring: [[String]] - substring to find
+
+|p43= indexStart: [[Number]] - zero-based index which defines where find starts from
+
+|r3= [[Number]] - zero-based position of the first sequence of characters that matches substring, -1 if not found
+
+|x1= <sqf>["Apples", "Oranges", "Pears"] find "Oranges"; // returns 1</sqf>
+
+|x2= <sqf>[1, [2], [[3]]] find [[3]]; // returns 2 - does not work in OFP, returns -1</sqf>
+
+|x3= <sqf>if (magazines player find "Strela" != -1) then { hint "You've got Strela!"; };</sqf>
+
+|x4= <sqf>hint str ("japa is the man!" find "the man!"); // returns 8</sqf>
+
+|x5= <sqf>"abc" find ""; // returns 0</sqf>
+
+|x6= <sqf>
+"abcdefghijklmnopqrstuvxyz" find "z"; // returns 24
+"abcdefghijklmnopqrstuvxyz" find ["z", 20]; // returns 24, better performance
+</sqf>
+
+|x7= <sqf>
+"abcßdef" find "c"; // 2
+"abcßdef" find "ß"; // 3
+"abcßdef" find "d"; // 5 - before forceUnicode
+
+forceUnicode 0; // since {{arma3}} v2.02
+"abcßdef" find "d"; // 4
+</sqf>
+
+|seealso= [[in]] [[findIf]] [[forceUnicode]]
+}}
+
+{{Note
+|user= Heeeere's Johnny!
+|timestamp= 20150104093800
+|text= Using '''[[nil]]''' on either side of '''find''' will make the whole statement return [[Nothing]]:
+<sqf>
+_array = [1, 2, nil, 4, 5];
+_result = _array find nil;
+hintSilent str (isNil "_result"); // true
+ 
+_result = nil find 1;
+hintSilent str (isNil "_result"); // true
+</sqf>
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20200716073300
+|text= If you want to return all occurences of a given string in a string use the following code. Thanks to ''sharp.'' for providing the code.
+<sqf>
+private _fnc_findStringsInString =
+{
+	params ["_string", "_search"];
+	if (_string == "") exitWith { [] };
+	private _searchLength = count _search;
+	private _return = [];
+	private _i = 0;
+	private _index = 0;
+	while { _index = _string find _search; _index != -1 } do
+	{
+		_string = _string select [_index + _searchLength];
+		_i = _i + _index + _searchLength;
+		_return pushBack _i - _searchLength;
+	};
+	_return;
+};
+["Test,123,123,Test", "Test"] call _fnc_findStringsInString; // returns [0, 13]
+</sqf>
+}}

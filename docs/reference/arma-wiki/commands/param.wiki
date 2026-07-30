@@ -1,0 +1,91 @@
+// source: https://community.bistudio.com/wiki/param
+// revision: 369264 (2024-09-03T18:42:42Z)
+// export sha1: 5gj8xp0cg2c5om1yi7rcsv094djj5ub
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: Variables | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.48
+
+|gr1= Variables
+
+|gr2= Arrays
+
+|descr= Extracts a single value with given index from input argument, similar to [[BIS_fnc_param]].  When used without argument, as shown in main syntax, internal variable [[Magic Variables#this|_this]], which is usually available inside functions and event handlers, is used as argument. If input argument is not an array, it will be converted to 1 element array.
+<br><br>
+If extracted item of input with given index is undefined, of the wrong type or of the wrong length (if the item is an array), default value is used instead. Since Arma 3 v1.54, onscreen errors are displayed for when the input is of the wrong type or size.
+
+|s1= [[param]] [index, defaultValue, expectedDataTypes, expectedArrayCount]
+
+|p1= index: [[Number]] - index of required item in the input array.
+
+|p2= defaultValue: [[Anything]] - (Optional) a default value to return if input is undefined, of the wrong type or of the wrong length (if the item is an array).
+
+|p3= expectedDataTypes: [[Array]] of direct [[:Category: Data Types| Data Types]] - (Optional) checks if passed value is one of listed [[:Category: Data Types| Data Types]]. If not, default value is used instead. Empty array [] means every data type is accepted.
+
+|p4= expectedArrayCount: [[Number]] or [[Array]] - (Optional) a single size or array of sizes. If passed input value is an array, checks that it has a certain number of elements. If not, default value is used instead. Empty array [] means any size is accepted.
+
+|r1= [[Anything]] - extracted value on success or default value otherwise. [[Nothing]] if syntax error occurred.
+
+|s2= argument [[param]] [index, defaultValue, expectedDataTypes, expectedArrayCount]
+
+|p21= argument: [[Anything]] - a usual array of params is expected. If a non-array value is passed, it will be converted to 1 element array
+
+|p22= index: [[Number]] - index of required item in the input array.
+
+|p23= defaultValue: [[Anything]] - (Optional) a default value to return if input is undefined, of the wrong type or of the wrong length (if the item is an array).
+
+|p24= expectedDataTypes: [[Array]] of direct [[:Category: Data Types| Data Types]] - (Optional) checks if passed value is one of listed [[:Category: Data Types| Data Types]]. If not, default value is used instead. Empty array [] means every data type is accepted.
+
+|p25= expectedArrayCount: [[Number]] or [[Array]] - (Optional) a single size or array of sizes. If passed input value is an array, checks that it has a certain number of elements. If not, default value is used instead. Empty array [] means any size is accepted.
+
+|r2= [[Anything]] - extracted value on success or default value otherwise. [[Nothing]] if syntax error occurred.
+
+|x1= <sqf>
+[1, 2, 3] call 
+{
+	private _one = param [0, 1];
+	private _two = param [1, 2];
+	private _three = param [2, 3];
+	// ...
+};
+</sqf>
+
+|x2= <sqf>
+[123] call 
+{
+	private _val = param [0];
+};
+
+// Below would produce the same result as above
+123 call 
+{
+	private _val = param [0];
+};
+</sqf>
+
+|x3= <sqf>
+_z = position player param [2, 0];
+if (_z > 10) then 
+{
+	hint "YOU ARE FLYING!";
+};
+</sqf>
+
+|x4= <sqf>
+fnc = 
+{
+	private _pos = param [0, [0,0,0], [objNull, []], [2,3]];
+	private _rad = param [1, 0, [0]];
+	_pos nearObjects _rad;
+};
+
+[position player, 25] call fnc; // ok
+[player, 25] call fnc; // ok
+[25, player] call fnc; // default values are used
+</sqf>
+
+|seealso= [[params]] [[select]] [[set]] [[resize]] [[reverse]] [[in]] [[find]] [[findIf]] [[toArray]] [[toString]] [[forEach]] [[count]] [[deleteAt]] [[deleteRange]] [[append]] [[sort]] [[arrayIntersect]] [[splitString]] [[joinString]] [[isEqualTypeAll]] [[isEqualType]] [[isEqualTypeParams]] [[isEqualTypeArray]] [[isEqualTypeAny]] [[typeName]] [[BIS_fnc_param]]
+}}

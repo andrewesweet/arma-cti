@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/clearKillConfirmations
+// revision: 351569 (2023-12-07T16:41:31Z)
+// export sha1: mnlfg0yq0w9de8fy5u3kh0v1u20pjjk
+// categories: Category:Argo: New Scripting Commands | Category:Argo: Scripting Commands | Category:Command Group: Argo | Category:Introduced with Argo version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= argo
+|version1= 1.00
+
+|eff= local
+
+|gr1= Argo
+
+|descr= Clears the list of kill confirmations.
+
+|s1= [[clearKillConfirmations]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>clearKillConfirmations;</sqf>
+
+|seealso= [[clearRadio]]
+}}

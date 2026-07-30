@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setCuratorAttributes
+// revision: 309855 (2022-05-05T12:09:52Z)
+// export sha1: 8t2r2cb8chs0nih5lf34veuv7pkhalk
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= <pre>/*
+
+	Description:
+	Set which attributes are available for given entity  or entity type.
+
+	Parameter(s):
+		0: OBJECT - curator
+		1:
+			STRING - general setting for all entities of the given type, can be  "object", "player", "group', "waypoint" or "marker"
+			OBJECT - setting for specific object, overrides general settings
+			GROUP - setting for specific group, overrides general settings
+		2: ARRAY of STRINGs - attributes
+			object:
+				Skill
+				UnitPos
+				Rank
+				Damage
+				Fuel
+				Lock
+				RespawnVehicle
+				RespawnPosition
+				Exec
+			group:
+				GroupID
+				Behaviour
+				Formation
+			waypoint:
+				Behaviour
+				Formation
+			marker:
+				MarkerText
+				MarkerColor
+
+	Returns:
+	BOOL
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_setCuratorAttributes]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_setCuratorAttributes;</sqf> -->
+
+|seealso=
+}}

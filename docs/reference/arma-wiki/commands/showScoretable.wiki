@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/showScoretable
+// revision: 309918 (2022-05-05T12:16:57Z)
+// export sha1: n84jlijp7o4spzjvy2e3jk7wxjixnqo
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Arma 3 version 1.60 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.60
+
+|gr1= Interaction
+
+|descr= Forces the score table to be shown, hidden or reset to default functionality. Forcing score table will make it show even in SP. When score table is forced opened it cannot be  closed manually, when it is force closed, it cannot be opened manually.
+
+|s1= [[showScoretable]] force
+
+|p1= force: [[Number]] - 1 to force visible, 0 to force invisible, -1 default
+
+|r1= [[Nothing]]
+
+|x1= <sqf>showScoretable 1;</sqf>
+|seealso= [[shownScoretable]] [[visibleScoretable]]
+}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_toUpperDisplayTexts
+// revision: 348378 (2023-11-08T12:59:58Z)
+// export sha1: 9ay9o549ktsxmevxr8s42v9mmacygr6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|descr= Converts text of selected classes in one display to upper-case except classes with name '''PlayersName'''. Also searches inside [[CT_CONTROLS_GROUP]]s.
+
+|s1= [displayClass, controlClasses, blacklist] call [[BIS_fnc_toUpperDisplayTexts]]
+
+|r1= [[Nothing]]
+
+|p1= displayClass: [[String]] - class name of the display to manipulate
+
+|p2= controlClasses: [[Array]] of [[String]]s - class names of parents of controls you want to turn upper case (e. g. ["RscText", "RscTitle"])
+
+|p3= blacklist: [[Array]] of [[String]]s - (Optional: Default []) Class names of controls you don't want to turn upper case (e. g. ["CA_VehicleAuthor"])
+
+|x1= <sqf>["RscDisplayOptionsAudio", ["RscText"]] call BIS_fnc_toUpperDisplayTexts;</sqf>
+
+|seealso= [[BIS_fnc_displayName]]
+}}

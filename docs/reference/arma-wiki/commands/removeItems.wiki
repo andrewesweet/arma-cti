@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/removeItems
+// revision: 319499 (2022-05-13T09:24:12Z)
+// export sha1: 7r15jov38yxc0d20bz8izppoicr9c9b
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+|eff= global
+
+|gr1= Unit Inventory
+
+|descr= Removes all items with given class name from the inventory.
+
+|s1= unit [[removeItems]] item
+
+|p1= unit: [[Object]]
+
+|p2= item: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player removeItems "FirstAidKit";</sqf>
+
+|seealso= [[removeItem]] [[removeAllAssignedItems]] [[unassignItem]] [[assignItem]] [[assignedItems]] [[addItem]] [[linkItem]] [[unlinkItem]]
+}}

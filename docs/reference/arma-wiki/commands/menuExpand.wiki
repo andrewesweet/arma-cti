@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/menuExpand
+// revision: 378347 (2026-04-02T16:31:34Z)
+// export sha1: mm4ys55yjd844x6ru8m19ai6ckbv2k9
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Menu | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= GUI Control - Menu
+
+|descr= Expands given menu entry on given path and all its parents so entry is visible.
+
+|s1= [[menuExpand]] [idc, path]
+
+|p1= idc: [[Number]]
+
+|p2= path: [[Tree View Path]]
+
+|r1= [[Nothing]]
+
+|s2= control [[menuExpand]] path
+
+|p21= control: [[Control]]
+
+|p22= path: [[Tree View Path]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>findDisplay 313 displayCtrl 120 menuExpand [0, 1];</sqf>
+
+|seealso= [[menuCollapse]]
+}}

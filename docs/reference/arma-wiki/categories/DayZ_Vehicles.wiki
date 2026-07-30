@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:DayZ:_Vehicles
+// revision: 365075 (2024-07-17T08:57:02Z)
+// export sha1: 2tm5iw7crrq56c5jkd0amqyj7dh7n8m
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|dayz|Editing}}

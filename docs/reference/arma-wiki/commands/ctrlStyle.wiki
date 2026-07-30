@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/ctrlStyle
+// revision: 336960 (2023-01-04T16:44:17Z)
+// export sha1: kpbbn7lb8p60mrohipsn2wov9denguo
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|arg= local
+
+|gr1= GUI Control
+
+|descr= Returns the provided control's style. See {{Link|Arma: GUI Configuration#Control Styles}}.
+
+|s1= [[ctrlStyle]] control
+
+|p1= control: [[Control]]
+
+|r1= [[Number]] - see {{Link|Arma: GUI Configuration#Control Styles}}
+
+|x1= <sqf>
+private _ctrlStyle = ctrlStyle _myControl;
+
+private _bitFlags = _ctrlStyle call BIS_fnc_bitflagsToArray;
+if (2 in _bitFlags) then
+{
+	hint "This control has centered text!";
+};
+</sqf>
+
+|seealso= [[ctrlType]] [[BIS_fnc_bitflagsToArray]]
+}}

@@ -1,0 +1,101 @@
+// source: https://community.bistudio.com/wiki/goArmA
+// revision: 349821 (2023-11-20T22:10:26Z)
+// export sha1: ju5ucuievh9qgkfvnt09a63h8m9dir3
+// categories: Category:Community Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+==What is goArmA==
+
+[[File:goarma_banner.jpg]]
+
+
+'''"goArmA - launching all the gear"''',<br> 
+<br> 
+based on customisable startprofiles, is a one-click solution that fulfils almost every desire. A startprofile consists of six modules, which can be combined freely and customised apart as well. Use such profiles for your own, or share them with your clanmates!
+----
+== VERSION 1.0.42.0 HAS BEEN RELEASED ==
+
+1.0.42.0 (June 02, 2008)
+
+'''Known Issues''':
+
+    * Activation of all single player missions deletes user defined key mappings
+
+
+1.0.41.0 (April 12, 2007)
+
+'''Known Issues''':
+
+    * [fixed in 1.0.42] Problems with special characters in usernames.
+    * [fixed in 1.0.42] Some mods wont get selectable, as the directory structures differs from the standard.
+    * [fixed in 1.0.42] Changes within mod directories were not detected.
+    * [fixed in 1.0.42] Selected mods were not reset when loading a new profile
+    * [fixed in 1.0.42] goArma crashed on selecting a teamspeak server which doesn't have a "ServerWelcomeMessage" set
+    * [fixed in 1.0.42] Modfolders containing a "." were not listed correctly
+    * [fixed in 1.0.42] ArmA server query problems with newer server versions
+    * [fixed in 1.0.42] Mod selection is reset when changing the arma executable.
+    * [fixed in 1.0.42] Unable to start beta versions.
+    * [added to 1.0.42] New language: Chinese(simple)
+    * [added to 1.0.42] New feature: Plugin-Api ('''more intel soon''')
+
+== Features ==
+''This featurelist reflects version 1.0.40''<br>
+<br>
+[[File:goarma_launch.jpg|thumb|right|425px|Splashmode.]]
+[[File:goarma_edit.jpg|thumb|right|425px|Editmode.]]
+*ArmA-Settings...<br>
+::*select almost any known parameter the game can start with, or assign new ones<br>
+::*select, delete, add, or open custom-faces in external editors or rather programs<br>
+::*select, add, copy to clipboard, delete, or validate squad-xmls with your favourite browser<br>
+<br> 
+*Gameserver-Settings...<br>
+::*create, save, load settings from a generated serverlist<br>
+::*fully featured serverquery , disclosing many details<br>
+<br> 
+*Custom-Sound-Settings...<br>
+::*create, save and load sound profiles<br>
+::*validate the sounds with external amp or rather mediaplayer<br>
+<br> 
+*Mod-Settings...<br>
+::*show all mods available in the ArmA rootdirectory, that are marked with the well known mod-delimiter @<br>
+::*alter files or names by double clicking a single mod (opens explorer for further actions)<br>
+<br>
+*TeamSpeak-Settings...<br>
+::*create, save, or load profiles<br>
+::*copy serverdata (adresses, port and stuff) to clipboard<br>
+::*serverquery, disclosing many details<br>
+::*support for superadmins (send messages, kick or ban users)<br>
+<br>
+*TeamSpeakOverlay-Settings...<br>
+::*customise startparameters<br>
+::*show TSO username (further settings available in the global settings menu)<br>
+<br>
+*More Features...<br>
+::*VIeSTA support (not fully tested yet)<br>
+::*create your own goArmA skins (almost rudimental, as it is in alpha state)<br>
+::*install routine<br>
+::*multilingual support (currently DE and EN available)<br>
+::*goArmA updates at ease<br>
+::*logfilesystem for errorreports<br>
+::*readable xml structures to ensure exchange with other tools
+::*parameter support:<br>
+:::* nosplash (start goArmA in editmode)<br>
+:::* noculture (start goArmA in english)<br>
+:::* nostyle (support for windowed OS 2000)<br>
+:::* autoupdate (force autoupdate check on start)<br>
+
+
+----
+
+== Tutorial videos ==
+{{Link|http://www.goarma.com/tutorials/goArma_tut.wmv|16mb WMV9 medium quality}}<br>
+{{Link|http://www.youtube.com/watch?v{{=}}l9rbmOvwX2I|YouTube}}<br>
+
+
+---- 
+{{Link|http://www.goarma.com|Official '''goArma''' Homepage}}<br>
+[[File:goarma_mail.png]]<br>
+'''goArmA - Created By The Storied Veterans'''<br>
+[[Storied_Veterans|The Storied Veterans]]
+
+[[Category:Community Tools]]

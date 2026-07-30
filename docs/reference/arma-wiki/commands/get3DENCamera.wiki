@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/get3DENCamera
+// revision: 369318 (2024-09-03T18:42:56Z)
+// export sha1: oqqq8a4up34ipcloml02zfnhky1tt8j
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Returns the camera [[Object]] used by the [[:Category:Eden Editor|Eden Editor]].
+
+|s1= [[get3DENCamera]] 
+
+|r1= [[Object]] - [[:Category:Eden Editor|Eden Editor]] camera
+
+|x1= <sqf>
+// set exact yaw, pitch, and roll
+_y = 45; _p = -80; _r = 0;
+get3DENCamera setVectorDirAndUp [
+	[sin _y * cos _p,cos _y * cos _p,sin _p],
+	[[sin _r,-sin _p,cos _r * cos _p],-_y] call BIS_fnc_rotateVector2D
+];
+</sqf>
+
+|x2= <sqf>
+//Look at player
+_a = positionCameraToWorld [0,0,0] vectorFromTo (getPosATL player);
+_y = asin(_a select 0);
+_b = [_a,_y] call BIS_fnc_rotateVector2D;
+_z = _b select 2;
+_p = asin(_z / sqrt((_b select 1)^2 + _z^2));
+get3DENCamera setVectorDirAndUp [
+	_a,
+	[[0,-sin _p,cos _p],-_y] call BIS_fnc_rotateVector2D
+];
+</sqf>
+
+|seealso= [[move3DENCamera]] [[set3DENAttributes]]
+}}

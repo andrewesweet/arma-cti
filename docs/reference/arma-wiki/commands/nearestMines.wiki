@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/nearestMines
+// revision: 377408 (2026-01-02T06:45:08Z)
+// export sha1: rq7ojn9inym9zcksu4z9on1enyjmndk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= Object Detection
+
+|descr= Returns a list of nearest mines of the given types to the given position or object, within the specified distance.
+If more than one mine are found they will be ordered by proximity by default, the closest one will be first in the array. The sorting can be turned off.
+
+|s1= [[nearestMines]] [position, types, radius, sort, 2Dmode]
+
+|p1= position:  [[Object]] or [[Position#PositionAGL|PositionAGL]] or [[Position#Introduction|Position2D]] - search position centre
+
+|p2= types: [[Array]] - list of class name of the objects to search for (uses [[isKindOf]] comparison instead of direct class name == comparison). Use an empty array <sqf inline>[]</sqf> to search for all classes
+
+|p3= radius: [[Number]] - search range
+
+|p5= sort: [[Boolean]] - (Optional, default [[true]]) [[true]] to sort the results closest first, [[false]] to turn off sorting
+
+|p6= 2Dmode: [[Boolean]] - (Optional, default [[false]]) [[true]] for 2D distance, [[false]] for 3D distance comparison
+
+|r1= [[Array]] - found mines as array of [[Object]]s
+
+|x1= <sqf>nearestMines [player, ["MineBase"], 20];</sqf>
+
+|x2= <sqf>nearestMines [position player, ["DirectionalBombBase"], 500, true];</sqf>
+
+|x3= <sqf>nearestMines [[2716,2949,0], ["APERSTripMine_Wire_Ammo", "APERSMine_Range_Ammo"], 100, false, true];</sqf>
+
+|x4= Return every mine in 50 metres radius around player sorted by distance:
+<sqf>nearestMines [player, [], 50];</sqf>
+
+|seealso= [[nearestTerrainObjects]] [[findNearestEnemy]] [[nearestBuilding]] [[nearestObject]] [[nearObjects]] [[nearestLocation]] [[nearEntities]] [[nearTargets]] [[nearSupplies]] [[nearestLocationWithDubbing]] [[nearObjectsReady]] [[nearRoads]] [[nearestObjects]]
+}}

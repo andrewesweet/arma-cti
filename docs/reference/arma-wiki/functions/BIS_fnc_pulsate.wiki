@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_pulsate
+// revision: 349285 (2023-11-08T14:51:14Z)
+// export sha1: ruc2s7v48re4vou94wb6ik3jwb7bon1
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Math | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Math
+
+|descr= Pulsates a value from 0 to 1.
+
+|s1= [frequency] call [[BIS_fnc_pulsate]]
+
+|p1= frequency: [[Number]] - the frequency in Hz, 1 / _frequency = 0.1 second is the period
+
+|r1= [[Number]]
+
+|x1= <sqf>200 call BIS_fnc_pulsate; // 0.113001</sqf>
+
+|seealso=
+}}

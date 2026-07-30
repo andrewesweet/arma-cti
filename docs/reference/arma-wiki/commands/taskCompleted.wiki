@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/taskCompleted
+// revision: 376412 (2025-10-11T01:03:52Z)
+// export sha1: f84auma1nyvw5ehkin92x5e10x7u89u
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Briefing | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Briefing
+
+|descr= Return if task is completed. (state Succeeded, Failed or Canceled)
+
+|s1= [[taskCompleted]] task
+
+|p1= task: [[Task]]
+
+|r1= [[Boolean]] - [[true]] if task has been Succeeded, Failed or Canceled
+
+|x1= <sqf>
+_task = player createSimpleTask ["task_1"];
+_done = taskCompleted _task;
+</sqf>
+
+|seealso= [[BIS_fnc_deleteTask]] [[BIS_fnc_setTask]] [[BIS_fnc_setTaskLocal]] [[BIS_fnc_sharedObjectives]] [[BIS_fnc_taskAlwaysVisible]] [[BIS_fnc_taskCompleted]] [[BIS_fnc_taskCreate]] [[BIS_fnc_taskCurrent]] [[BIS_fnc_taskDescription]] [[BIS_fnc_taskDestination]] [[BIS_fnc_taskExists]] [[BIS_fnc_taskHint]] [[BIS_fnc_taskParent]] [[BIS_fnc_taskReal]] [[BIS_fnc_taskSetAlwaysVisible]] [[BIS_fnc_taskSetCurrent]] [[BIS_fnc_taskSetDescription]] [[BIS_fnc_taskSetDestination]] [[BIS_fnc_taskSetState]] [[BIS_fnc_taskSetType]] [[BIS_fnc_taskState]] [[BIS_fnc_tasksUnit]] [[BIS_fnc_taskType]] [[BIS_fnc_taskTypeIcon]] [[BIS_fnc_taskVar]] [[Arma 3: Task Framework]] {{Link|Arma 3: Task Framework#Task Overhaul}}
+}}

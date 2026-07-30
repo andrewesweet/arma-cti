@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/Carrier_Command:_Workbench
+// revision: 337351 (2023-01-18T16:58:57Z)
+// export sha1: 5v1odzf1vewym0gugexgnxn4m2x4ik0
+// categories: Category:Carrier Command: Gaea Mission: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+Tool of all tools for {{GameCategory|carriercommand|link= y}}.
+
+List of Main Editors included in Workbench:
+
+{|
+| style="min-width: 20em" | [[Game Editor (Workbench)]]
+| {{Controls|F11}}
+|-
+| Particle Editor
+| {{Controls|F4}}
+|-
+| Object Viewer
+| {{Controls|F8}}
+|-
+| Material Editor
+| {{Controls|F9}}
+|-
+| Image Set Editor
+| {{Controls|Shift|F1}}
+|-
+| GUI Layout Editor
+| {{Controls|Shift|F5}}
+|-
+| Sound Editor
+| {{Controls|Shift|F7}}
+|-
+| Resource Walker
+| {{Controls|F7}}
+|}
+
+
+{{GameCategory|carriercommand|Official Tools}}

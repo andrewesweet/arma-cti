@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/lnbAddArray
+// revision: 378641 (2026-05-16T15:03:10Z)
+// export sha1: nlnc9g8onc74oepu2ct7i22e23fqksb
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListNBox | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control - ListNBox
+
+|descr= Adds list of rows of strings.
+
+|s1= [[lnbAddArray]] [ctrl, arrayOfTextAndValues]
+
+|p1= ctrl: [[Number]], [[Control]] since {{GVI|arma3|2.22}}
+
+|p2= arrayOfTextAndValues: [[Array]] of [[Array]]s format <nowiki>[[text], [value], [data]]</nowiki>:
+* text: [[String]]
+* value: [[Number]]
+* data: [[String]]
+
+|r1= [[Number]] - index
+
+|x1= <sqf>
+lnbAddArray [
+	102,
+	[
+		[
+			["#1"],
+			[1],
+			["#1"]
+		],
+		[
+			["#2"],
+			[2],
+			["#2"]
+		]
+	]
+];
+</sqf>
+
+|seealso= [[lnbAddColumn]] [[lnbAddRow]] [[lnbClear]] [[lnbColor]] [[lnbCurSelRow]] [[lnbData]] [[lnbDeleteColumn]] [[lnbDeleteRow]] [[lnbGetColumnsPosition]] [[lnbPicture]] [[lnbSetColor]] [[lnbSetColumnsPos]] [[lnbSetCurSelRow]] [[lnbSetData]] [[lnbSetPicture]] [[lnbSetText]] [[lnbSetValue]] [[lnbSize]] [[lnbText]] [[lnbValue]]
+}}

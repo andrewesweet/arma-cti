@@ -1,0 +1,98 @@
+// source: https://community.bistudio.com/wiki/cutObj
+// revision: 348145 (2023-11-08T11:32:40Z)
+// export sha1: 30ne71rdgvne5pwq7749uzq5xr5y3wr
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= GUI Control
+
+|eff= local
+
+|descr= Displays an object defined in the global config in {{hl|CfgTitles}}.
+{{Feature|arma3|For greater efficiency and ease of modability, it is recommended to use named layers with {{Link|#Syntax 3}}.}}
+
+|s1= [[cutObj]] [class, type, speed, showInMap, drawOverHUD]
+
+|p1= class: [[String]] - the className of the object defined in {{hl|[[configFile]] >> "CfgTitles" >> class}}
+
+|p2= type: [[String]] - one of "PLAIN", "PLAIN DOWN", "BLACK", "BLACK FADED", "BLACK OUT", "BLACK IN", "WHITE OUT" and "WHITE IN". See [[Title Effect Type]]s for more information about these values
+
+|p3= speed: [[Number]] - (Optional, default -1) time in seconds to fade in resource
+
+|p4= showInMap: [[Boolean]] - (Optional, default [[true]]) [[false]] to hide the text when the map is opened
+
+|p5= drawOverHUD: [[Boolean]] - (Optional, default [[true]]) [[false]] to show the object under in-game HUD
+|p5since= arma3 2.16
+
+|r1= [[Nothing]]
+
+|s2= layer [[cutObj]] [class, type, speed, showInMap, drawOverHUD]
+
+|p21= layer: [[Number]] - layer number on which the effect is shown, where 0 is the back most. Layer number is rounded to the nearest integer and also cannot be negative. Layer 99.5 will be treated as layer 100
+
+|p22= class: [[String]] - the className of the object defined in {{hl|[[configFile]] >> "CfgTitles" >> class}}
+
+|p23= type: [[String]] - one of "PLAIN", "PLAIN DOWN", "BLACK", "BLACK FADED", "BLACK OUT", "BLACK IN", "WHITE OUT" and "WHITE IN". See [[Title Effect Type]]s for more information about these values.
+
+|p24= speed: [[Number]] - (Optional, default -1) time in seconds to fade in resource
+
+|p25= showInMap: [[Boolean]] - (Optional, default [[true]]) [[false]] to hide the text when the map is opened
+
+|p26= drawOverHUD: [[Boolean]] - (Optional, default [[true]]) [[false]] to show the object under in-game HUD
+|p26since= arma3 2.16
+
+|r2= [[Nothing]]
+
+|s3= layerName [[cutObj]] [class, type, speed, showInMap, drawOverHUD]
+
+|s3since= arma3 1.58
+
+|p41= layerName: [[String]] - layer name on which the effect is shown. Layer names are CaSe SeNsItIvE
+
+|p42= class: [[String]] - the className of the object defined in {{hl|[[configFile]] >> "CfgTitles" >> class}}
+
+|p43= type: [[String]] - one of "PLAIN", "PLAIN DOWN", "BLACK", "BLACK FADED", "BLACK OUT", "BLACK IN", "WHITE OUT" and "WHITE IN". See [[Title Effect Type]]s for more information about these values
+
+|p44= speed: [[Number]] - (Optional, default -1) time in seconds to fade in resource
+
+|p45= showInMap: [[Boolean]] - (Optional, default [[true]]) [[false]] to hide the text when the map is opened
+
+|p46= drawOverHUD: [[Boolean]] - (Optional, default [[true]]) [[false]] to show the object under in-game HUD
+|p46since= arma3 2.16
+
+|r3= [[Number]] - number of the allocated layer
+
+|x1= <sqf>
+cutObj ["TVSet", "PLAIN"];
+cutObj ["TVSet", "PLAIN", 2];
+</sqf>
+
+|x2= <sqf>2 cutObj ["Sphere", "PLAIN"];</sqf>
+
+|x3= <sqf>private _layer = "layer1" cutObj ["BISLogo", "PLAIN"];</sqf>
+
+|seealso= [[allCutLayers]] [[titleObj]] [[cutText]] [[cutRsc]] [[cutFadeOut]] [[allActiveTitleEffects]] [[activeTitleEffectParams]] 
+}}

@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Operation_Arrowhead:_Terrains
+// revision: 249479 (2021-02-24T09:20:34Z)
+// export sha1: 7nhh9dzgd36zlyk63ksq7i3x6e6p8au
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Arma: Terrains]]
+{{GameCategory|arma2oa}}

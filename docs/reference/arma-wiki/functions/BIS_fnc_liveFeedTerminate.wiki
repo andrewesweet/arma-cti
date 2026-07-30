@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_liveFeedTerminate
+// revision: 324318 (2022-07-01T12:00:44Z)
+// export sha1: 51s07jpucdlqujyzctr2cnb7z6fs2ty
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Live Feed | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Live Feed
+
+|descr= Terminate a live feed.
+
+|s1= call [[BIS_fnc_liveFeedTerminate]]
+
+|r1= [[Boolean]] - [[true]] if successful, [[false]] if not
+
+|x1= <sqf>call BIS_fnc_liveFeedTerminate;</sqf>
+
+|seealso= [[BIS_fnc_liveFeed]] [[BIS_fnc_liveFeedEffects]] [[BIS_fnc_liveFeedSetSource]] [[BIS_fnc_liveFeedSetTarget]]
+}}

@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_unitPlayFiring
+// revision: 336355 (2022-12-29T08:44:18Z)
+// export sha1: j4rycil8imxqna95wakr0y99n7mm4za
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Scenes | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Scenes
+
+|descr= Plays back input weapon fire data on input unit.
+
+|s1= [unit, data, stateIgnore] spawn [[BIS_fnc_unitPlayFiring]]
+
+|p1= unit: [[Object]] - unit to play weapon fire data on
+
+|p2= data: [[Array]] - firing data to use [[BIS_fnc_unitCaptureFiring]]
+
+|p3= stateIgnore: [[Boolean]] - (Optional, default [[false]]) whether to ignore if the Unit is dead and/or cannot move
+
+|r1= [[Script Handle]]
+
+|exec= spawn
+
+|x1= <sqf>
+private _capturedFireData = [[2.135, "GAU8", "<NULL-object>"]];
+[BIS_Vehicle, _capturedData, true] spawn BIS_fnc_unitPlayFiring;
+</sqf>
+
+|seealso= [[BIS_fnc_unitCaptureFiring]] [[BIS_fnc_unitCaptureSimple]] [[BIS_fnc_unitPlaySimple]] [[BIS_fnc_unitCapture]] [[BIS_fnc_unitPlay]]
+}}

@@ -1,0 +1,110 @@
+// source: https://community.bistudio.com/wiki/configClasses
+// revision: 378371 (2026-04-03T16:49:12Z)
+// export sha1: nxp1s7074klss21l68ffz09tbjbg8qs
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.24
+
+|gr1= Config
+
+|descr= Returns an array of config entries which meet criteria in condition code. Command iterates through all available config sub classes of the given config class. Current looked at config is stored in _x variable (similar to alternative [[count]] command implementation). Condition has to return [[true]] in order for the looked at config to be added to the resulting array. Slightly faster than [[configProperties]], but doesn't account for config properties or inherited entries.
+{{Feature|important| 
+* The condition code passed to [[configClasses]] should only be used for '''simple filter expressions''' and nothing more
+* Do not use {{hl|"[[isClass]] [[Magic Variables#x|_x]]"}} in the condition. The engine does this check already<br><br>
+* {{arma3}} v2.02 brought specific engine optimisations for the following conditions:
+** {{hl|"[[true]]"}} 
+** {{hl|"[[getNumber]] ([[Magic Variables#x|_x]] >> 'scope') > 0"}}}}
+
+|s1= condition [[configClasses]] config
+
+|p1= condition: [[String]]
+
+|p2= config: [[Config]]
+
+|r1= [[Array]] of [[Config]]s
+
+|s2= [[configClasses]] [config, depth, includeInherited, allSubclasses, classNames]
+|s2since= arma3 2.22
+
+|p21= config: [[Config]] - target config
+|p22= depth: [[Number]] - how many levels of subclasses to go deep
+|p23= includeInherited: [[Boolean]] - [[true]] to look through inherited classes
+|p24= allSubclasses: [[Boolean]] - [[true]] to return all subclasses, [[false]] - to return only the last tier.
+|p25= classNames: [[Boolean]] - (Optional, default: [[false]]) when [[true]] class names [[String]]s are returned, when [[false]] - [[Config]]s are returned.
+
+|r2= [[Array]] of [[Config]]s or [[String]]s, which represent class names. 
+
+|x1= collect all CfgVehicles configs:
+<sqf>_configs = "true" configClasses (configFile >> "CfgVehicles");</sqf>
+
+|x2= Return all classes that can transport 10 and more soldiers:
+<sqf>_transporters = "getNumber (_x >> 'transportSoldier') >= 10" configClasses (configFile >> "CfgVehicles");</sqf>
+
+|x3= Return all classes that inherit from 'RscText':
+<sqf>hint str ("inheritsFrom _x == (configFile >> 'RscText')" configClasses configFile);</sqf>
+
+|x4= Return children:
+<sqf>configClasses [configFile >> "CfgGroups", 0, true, true, true]
+//Returns ["West","East","Indep","Empty"]</sqf>
+
+
+|seealso= [[Config]] [[configFile]] [[missionConfigFile]] [[configProperties]] [[configHierarchy]] [[BIS_fnc_returnChildren]]
+}}
+
+{{Note
+|user= Iceman77
+|timestamp= 20141019122400
+|text= A fantastic way to filter stuff. eg:
+<sqf>
+// create an array of west vehicles and spawn then in front of the player in rows of 5
+
+private ["_cfgArray", "_xPos", "_yPos", "_veh"];
+
+_cfgArray = "( 
+	(getNumber (_x >> 'scope') >= 2) && 
+	{
+		getNumber (_x >> 'side') == 1 && 
+		{ getText (_x >> 'vehicleClass') in ['Armored', 'Car', 'Air'] }
+	}
+)" configClasses (configFile >> "CfgVehicles");
+
+_xPos = 0;
+_yPos = 0;
+
+{
+	_yPos = _yPos + 20;
+	_veh = createVehicle [(configName _x), player modelToWorld [_xPos, _yPos, 0], [], 0, "NONE"];
+	if (_yPos >= 100) then
+	{
+		_yPos = 0;
+		_xPos = _xPos + 20;
+	};
+} forEach _cfgArray;
+</sqf>
+}}
+
+{{Note
+|user= Benargee
+|timestamp= 20160528202800
+|text= [[configClasses]] does not account for inherited subclasses, use [[configProperties]] with [[isClass]] filter instead
+<sqf>configProperties [_config, "isClass _x", true];</sqf>
+}}
+
+{{Note
+|user= Nelis75733126
+|timestamp= 20170528091800
+|text= this will get a list of ALL locations on the currently loaded world
+<sqf>
+( "true" configClasses (configFile >> "CfgWorlds" >> worldName >> "names" ) ) apply {
+	// change each config entry into a location
+	nearestLocation [
+		getArray ( _x >> "position" ),
+		getText ( _x >> "type" )
+	]
+};
+</sqf>
+}}

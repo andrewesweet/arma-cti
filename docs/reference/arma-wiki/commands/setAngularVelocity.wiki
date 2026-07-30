@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/setAngularVelocity
+// revision: 377432 (2026-01-02T06:46:18Z)
+// export sha1: 1d3dugw8d64ty7sbuybqyq5csyiz1ua
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Sets the angular velocity of the object in world space as a 3D vector. The units are in Rad/s and rotations are clockwise.
+{{Feature|important|Angular velocity is limited to a range of +-1000 Rad/s.}}
+
+|s1= obj [[setAngularVelocity]] vector
+
+|p1= obj: [[Object]] 
+
+|p2= vector: [[Vector3D]] - angular velocity of the object in world space.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myHeli setAngularVelocity [0,0,1]; // will cause the helicopter to spin around a vertical line passing through its center</sqf>
+
+|seealso= [[setVelocity]] [[setAngularVelocityModelSpace]] [[angularVelocity]]
+}}

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_playerSideFaction
+// revision: 311124 (2022-05-10T14:43:05Z)
+// export sha1: cu5nhtzw2d6nuax5odxuwb4d0gysbx9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Sides | Category:Functions | Category:Introduced with Arma 3 version 1.06 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.06
+
+|gr1= Sides
+
+|descr= Return representative faction of the given side. Faction of the first detected player is used.
+
+|s1= side call [[BIS_fnc_playerSideFaction]]
+
+|p1=side: [[Side]]
+
+|r1= [[String]] - CfgFactionClasses class
+
+|x1= <sqf>west call BIS_fnc_playerSideFaction;</sqf>
+
+|seealso= [[side]]
+}}

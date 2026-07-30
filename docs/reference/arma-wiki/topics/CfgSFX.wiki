@@ -1,0 +1,111 @@
+// source: https://community.bistudio.com/wiki/CfgSFX
+// revision: 364030 (2024-04-30T10:56:17Z)
+// export sha1: bf39vsd1v040z83mx8v69gge4g3gagd
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+The '''CfgSFX''' class is used to configure repeating and random sound effects with range of parameters.
+Sounds from CfgSFX can be played either directly with [[setSoundEffect]] or indirectly with [[createSoundSource]].
+The config class can be used in [[Description.ext|mission config]], campaign config or main config. Sound is searched in mission config first, then in campaign config and then in main config.
+
+
+== Class Structure ==
+
+Each config consists of 2 main entries, the '''sounds[]''' param and '''empty[]''' param.
+<syntaxhighlight lang="cpp">
+class CfgSFX
+{
+	class Owl
+	{
+		sounds[] = { "sound0", "sound1", "sound2" };
+		sound0[] = { "A3\Sounds_F\environment\animals\birds\owl1", db-10, 1.0, 1000, 0.2, 0, 15, 30 };
+		sound1[] = { "A3\Sounds_F\environment\animals\birds\owl2", db-10, 1.0, 1000, 0.2, 0, 15, 30 };
+		sound2[] = { "A3\Sounds_F\environment\animals\birds\owl3", db-10, 1.0, 1000, 0.2, 0, 15, 30 };
+		empty[] = { "", 0, 0, 0, 0, 0, 0, 0 };
+	};
+};
+</syntaxhighlight>
+
+The required '''sounds[]''' array contains references to actual sound definitions, the naming of which is not important as long as they match both in the array and in entry.
+'''sounds[]''' can also be an empty array <syntaxhighlight lang="cpp" inline>sounds[] = {};</syntaxhighlight>. '''empty[]''' is required param and serves as fallback sound definition.
+
+
+== Sound Definition Format ==
+
+The sound definitions as well as '''empty[]''' param all have the following format:
+<syntaxhighlight lang="cpp" inline>{ soundPath, soundVolume, soundPitch, maxDistance, probability, minDelay, midDelay, maxDelay }</syntaxhighlight>
+* soundPath [[String]] - the path to the sound file. In mission config, this is relative to the mission folder 
+* soundVolume [[Number]] - the standard definition of sound volume
+* soundPitch [[Number]] - sound pitch, 1 - normal pitch
+* maxDistance [[Number]] - how far the sound is heard
+* probability [[Number]] - how often the sound is chosen randomly. Range (0..1)
+* minDelay, midDelay, maxDelay [[Number]]s - time to wait before playing next sound (or the same sound in the loop). The result is calculated according to Gaussian distribution, see [[random]] Alt Syntax
+
+Note that probability is ignored when defined in '''empty[]''' param.
+
+
+== How It Works ==
+
+The probability param is used as weight when calculating which sound to play randomly. The higher the value the more chance for the sound to be selected.
+If no sound is selected from '''sounds[]''', the sound defined in '''empty[]''' is played.
+Once the sound is selected, it is played and the next sound then queued to play after set delay is up. <pre>time to next sound = duration of current sound + random delay</pre>
+If delay is negative, the sound will not play until the end (depending on the value of negative delay) and next sound will start immediately after.
+It is possible to have just '''empty[]''' sound defined, in which case it will be repeated over and over with set delay.
+Delay only matters after 1st sound is played, when CfgSFX sound is started for the first time, there is no delay.
+
+
+== Multiplayer ==
+
+The next sound is chosen randomly on each computer, therefore in multiplayer each client may hear different sounds.
+
+
+== Engine Specific ==
+
+Objects of {{hl|Church}}  kind (<syntaxhighlight lang="cpp" inline>simulation = "church";</syntaxhighlight>) have church bells sounds that are directly called by the engine and therefore the config for those will be different than the rest of CfgSFX.
+There are only 2 entries for large bell and small bell:
+
+<syntaxhighlight lang="cpp">
+class CfgSFX
+{
+	class Church
+	{
+		largeBell[] = { "A3\Sounds_F\environment\structures\church\bell_big", 0.891251, 1, 250 };
+		smallBell[] = { "A3\Sounds_F\environment\structures\church\bell_small", 0.891251, 1, 250 };
+	};
+};
+</syntaxhighlight>
+
+Another engine class is Preview, used for playing samples when adjusting Audio Options sliders:
+
+<syntaxhighlight lang="cpp">
+class CfgSFX
+{
+	class Preview
+	{
+		effect[] = { "A3\Sounds_f\sfx\UI\volume_preview\sfx.wss", 1, 1 };
+		speech[] = { "A3\sounds_f\sfx\UI\volume_preview\radio.wss", 1, 1 };
+		music[] = { "A3\sounds_f\sfx\UI\volume_preview\music.wss", 1, 1 };
+	};
+};
+</syntaxhighlight>
+
+
+{{ArgTitle|2|Addon Sounds|{{GVI|arma3|1.70}}}}
+
+Since {{arma3}} v1.70 it is possible to reference addon sounds in mission config. Normally, when SFX config is defined in [[Description.ext|description.ext]], the sound is searched relative to mission folder.
+However, prefixing the file path with '''{{hl|@}}''' will instruct the engine to look for sound in main config.
+For example, if the following is used in mission config, '''sound0''' will not be found as it will be searched relative to mission folder and fail.
+'''sound1''' will be found, as it has special character '''@''', switching the search to the main config instead:
+
+<syntaxhighlight lang="cpp">
+class CfgSFX
+{
+	class MyOwlSound
+	{
+		sounds[] = { "sound0", "sound1" };
+		sound0[] = { "A3\Sounds_F\environment\animals\birds\owl1", db-10, 1.0, 1000, 0.2, 0, 15, 30 };	// not found
+		sound1[] = { "@A3\Sounds_F\environment\animals\birds\owl2", db-10, 1.0, 1000, 0.2, 0, 15, 30 };	// found
+		empty[] = { "", 0, 0, 0, 0, 0, 0, 0 };
+	};
+};
+</syntaxhighlight>

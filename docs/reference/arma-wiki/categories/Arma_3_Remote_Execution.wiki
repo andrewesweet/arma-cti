@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Remote_Execution
+// revision: 155704 (2020-07-26T17:11:27Z)
+// export sha1: 2ib30iz19xu8nfbnjw4efuzko4e252e
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3|Editing}}

@@ -1,0 +1,88 @@
+// source: https://community.bistudio.com/wiki/ACE:IslandPack:Texture_Settings_Gallery
+// revision: 226127 (2021-01-31T17:36:42Z)
+// export sha1: op7xqq01u9nk4k0qmaol6xn5cw6x1vw
+// Vendored snapshot. Do not edit — re-export instead.
+
+==ARMA_PISEK==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ARMA_PISEK.jpg
+
+== ARMA_PISEKPLAZ ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ARMA_PISEKPLAZ.jpg
+
+== ARMA_PISEKPOUST ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ARMA_PISEKPOUST.jpg
+
+== ARMA_POLE1 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ARMA_POLE1.jpg
+
+== ARMA_TRAVA ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ARMA_TRAVA.jpg
+
+== ARMA_TRAVAJIH ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ARMA_TRAVAJIH.jpg
+
+== DESERT01 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_DESERT01.jpg
+
+== DESERT04 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_DESERT04.jpg
+
+== GRASS02 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_GRASS02.jpg
+
+== GRASS03 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_GRASS03.jpg
+
+== GRASS05 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_GRASS05.jpg
+
+== SNOW01 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_SNOW01.jpg
+
+== STEPPE01 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_STEPPE01.jpg
+
+== STEPPE02 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_STEPPE02.jpg
+
+== STEPPE03 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_STEPPE03.jpg
+
+== STONE01 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_STONE01.jpg
+
+== STONE03 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_STONE03.jpg
+
+== WOOD01 ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_WOOD01.jpg
+
+== ACEIP_SAT_SNOW ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_ACEIP_SAT_SNOW.jpg
+
+== RG_SAT_TRAVA ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_RG_SAT_TRAVA.jpg
+
+== RG_NORDIC ==
+
+http://public.acemod.net/download/aceip/ACEIP_Texture_Settings_Gallery/ACEIP_Texture_Setting_RG_NORDIC.jpg

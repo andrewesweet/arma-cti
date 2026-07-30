@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/assignAsTurret
+// revision: 377474 (2026-01-02T06:48:45Z)
+// export sha1: cgzfe3kbbmg4yf0ktxpz4140ct4x08s
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Turrets
+
+|descr= Assigns the soldier to turret.
+{{Feature|informative|See [[AI Group Vehicle Management]] for more information.}}
+
+|s1= unit [[assignAsTurret]] [vehicle, turretPath]
+
+|p1= unit: [[Object]]
+
+|p2= vehicle: [[Object]]
+
+|p3= turretPath: [[Turret Path]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player assignAsTurret [BIS_vehicle, [0,1]];</sqf>
+
+|seealso= [[assignAsCargo]] [[assignAsDriver]] [[assignAsCommander]] [[assignAsGunner]] [[assignAsCargoIndex]] [[assignedVehicleRole]] [[unassignVehicle]] [[turretUnit]] [[moveInTurret]] [[fullCrew]]
+}}

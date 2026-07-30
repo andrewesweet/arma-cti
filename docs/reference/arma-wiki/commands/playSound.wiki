@@ -1,0 +1,127 @@
+// source: https://community.bistudio.com/wiki/playSound
+// revision: 349659 (2023-11-18T17:02:31Z)
+// export sha1: 2077j4xjv71bqv5c715a0rz5q9lqcwd
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|eff= local
+
+|gr1= Sounds
+
+|descr= Plays a sound from CfgSounds. Sound can be defined in [[missionConfigFile]], [[configFile]] or [[campaignConfigFile]].
+
+|s1= [[playSound]] soundName
+
+|p1= soundName: [[String]]
+
+|r1= [[Object]] - the speaker object ([[Nothing]] before {{GVI|arma3|2.00|size= 0.75}})
+
+|s2= [[playSound]] [soundName, isSpeech, offset]
+
+|p21= soundName: [[String]]
+
+|p22= isSpeech: [[Boolean]] or {{GVI|arma3|2.04|size= 0.75}} [[Number]] - (Optional, default [[false]])
+* 0/[[false]] = play as sound ([[fadeSound]] applies)
+* 1/[[true]] = play as speech ([[fadeSpeech]] applies), filters are not applied to it (i.e. house or vehicle interior one)
+* 2 = play as sound ([[fadeSound]] applies) without interior/vehicle muffling
+
+|p23= offset: [[Number]] - (Optional, default 0) offset in seconds. Same as [[playMusic]]
+|p23since= arma3 2.00
+
+|r2= [[Object]] - the speaker object ([[Nothing]] before {{GVI|arma3|2.00|size= 0.75}})
+
+|x1= <sqf>playSound "soundname";</sqf>
+
+|x2= Start a sound and then stop it after 1.2 second:
+<sqf>
+playSound "AlarmCar";
+0 spawn
+{
+	_sound = ASLToAGL [0,0,0] nearestObject "#soundonvehicle";
+	sleep 1.2;
+	deleteVehicle _sound;
+};
+
+// since {{arma3}} v2.00
+_source = playSound "AlarmCar";
+_source spawn
+{
+	sleep 1.2;
+	deleteVehicle _this;
+};
+</sqf>
+
+|x3= Start a sound and wait until it is finished:
+<sqf>
+playSound "Alarm";
+hint "Started!";
+0 spawn
+{
+	_sound = ASLToAGL [0,0,0] nearestObject "#soundonvehicle";
+	waitUntil {isNull _sound};
+	hint "Finished!";
+};
+
+// since {{arma3}} v2.00
+private _source = playSound "Alarm";
+_source spawn
+{
+	waitUntil { isNull _this };
+	hint "Finished!";
+};
+</sqf>
+
+|seealso= [[playSound3D]] [[sideRadio]] [[say]] [[playMusic]] [[say2D]] [[say3D]] [[createSoundSource]] [[playSoundUI]]
+}}
+
+{{Note
+|user= Hardrock
+|timestamp= 20060804105700
+|text= ''Notes from before the conversion:''
+
+For dialogue involving living units it is better to use [[say]],
+[[playSound]] will play a sound at the location of the player,
+[[say]] will play a sound at the location of the unit that is speaking, and it will only play that sound if the unit is alive.
+}}
+
+{{Note
+|user= PiZZADOX
+|timestamp= 20141228082200
+|text= As you may have noticed, the parameter for playsound/say3d that deals with the "volume" of the sound played has little to do with the effective loudness heard in game. What it is alters is the drop off for fading the sound at a distance. A higher decibel or integer value will increase the distance before any sort of fading will take place. The actual volume of the sound file played will factor in to this, as it does throughout the playing action.
+==== Amplifying the Sound ====
+Modifying the effective volume of sounds played by the engine is possible by "spamming" the sounds. By quickly playing the sounds overtop of one another, you can effectively amplify the volume
+<br>
+This example
+<sqf>
+playSound "soundname";
+playSound "soundname";
+</sqf>
+Will effectively amplify the sound by a sensed 2x. The volume of the sound file itself will still affect the sound volume as it appears as though the arma engine has no normalization for sound files added to it.
+
+{{Feature|informative|
+This technique may cause issues in sound quality in large multiplayer servers. I observed multiple instances when a triggered sound amplified with this method was out of sync with each other. Timing of the individual commands sent over the network is probably the issue. Recommend you compile your amplification code into a single finished function for better syncing for clients not activating the action/far away from the activation position.
+}}
+}}

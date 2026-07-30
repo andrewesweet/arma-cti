@@ -1,0 +1,173 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Animals:_Override_Default_Animal_Behaviour_Via_Script
+// revision: 370875 (2025-02-21T10:44:01Z)
+// export sha1: lbmvfykzd30pq8cvo2zhtwhbjd7vwxz
+// categories: Category:Arma 3: Editing | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Animals in {{arma3}} roam freely according to their [[FSM]]; they autonomously walk, stop, eat, flee etc.
+In order to control them fully you will need to override their default behaviour and manually guide them, all with a bit of scripting.
+
+
+== Animal Creation ==
+
+Animal classnames can be found on the [[Arma 3: CfgVehicles Animals]] page.
+
+=== createAgent Command ===
+
+Spawning animals via [[createAgent]] is the best way how to have control over them in your mission.<br>
+An '''agent''' is a "light AI" that doesn't have all the abilities/intelligence of a "normal" AI unit created via [[createUnit]];
+therefore, they '''cannot''' be controlled via commands such as [[doMove]] and [[doStop]]. However, low-level commands such as [[moveTo]] or [[setDestination]] will work.
+
+For a basic example see [[#Example script|Example script]].
+
+<div class="float-right">[[File:arma3 animals module in menu.png|thumb|175px|Animals Module location]]</div>
+=== Animals Module ===
+
+The Animals module can be found in [[:Category:Eden Editor|Eden Editor]] in the Modules page ({{Controls|F5}}), under the Sites category.
+
+Insert the module in editor, set the desired parameters and you have animals in your mission.<br>
+Spawned animals will be for mission decoration purpose instead of heavily-scripted behaviour.
+
+
+== Disable animal's scripted behaviour ==
+
+You can disable [[BIS_fnc_animalBehaviour|animal's scripted behaviour]] using the following:
+<sqf>_animal setVariable ["BIS_fnc_animalBehaviour_disable", true];</sqf>
+
+
+== Animations ==
+
+Animations can be played using [[playMove]], [[playMoveNow]] or [[switchMove]]. Their names are quite self-explanatory.
+{{Feature|important|Animals will remain in the same animation cycle until manually changed!}}
+
+=== Dog ===
+
+<sqf>
+_dog playMove "Dog_Stop";
+_dog playMove "Dog_Sit";
+_dog playMove "Dog_Walk";
+_dog playMove "Dog_Run";
+_dog playMove "Dog_Sprint";
+_dog playMove "Dog_Idle_Stop"; // wandering, default behaviour
+</sqf>
+<spoiler text="Show all dog animations">
+{{Columns|4|
+* "Dog_Idle_Stop"
+* "Dog_Idle_Walk"
+* "Dog_Die"
+* "Dog_Run"
+* "Dog_Sprint"
+* "Dog_Sit"
+* "Dog_Stop"
+* "Dog_Idle_01"
+* "Dog_Idle_02"
+* "Dog_Idle_03"
+* "Dog_Idle_04"
+* "Dog_Idle_05"
+* "Dog_Idle_06"
+* "Dog_Idle_07"
+* "Dog_Idle_08"
+* "Dog_Idle_09"
+* "Dog_Idle_10"
+* "Dog_Idle_Sit01"
+* "Dog_Idle_Sit02"
+* "Dog_Idle_Sit03"
+* "Dog_Idle_Sit04"
+* "Dog_Idle_Sit05"
+* "Dog_Idle_Sit06"
+* "Dog_Idle_Sit07"
+* "Dog_Idle_Sit08"
+* "Dog_Idle_Bark"
+* "Dog_Idle_Growl"
+* "Dog_Idle_Walk"
+* "Dog_Idle_Run"
+* "Dog_Idle_Sprint"
+* "Dog_TurnL"
+* "Dog_TurnR"
+}}
+</spoiler>
+
+=== Sheep ===
+
+<sqf>
+_sheep playMove "Sheep_Stop";
+_sheep playMove "Sheep_Walk";
+_sheep playMove "Sheep_Run";
+_sheep playMove "Sheep_Idle_Stop"; // wandering, default behaviour
+</sqf>
+
+=== Goat ===
+
+<sqf>
+_goat playMove "Goat_Stop";
+_goat playMove "Goat_Walk";
+_goat playMove "Goat_Run";
+_goat playMove "Goat_Idle_Stop"; // wandering, default behaviour
+</sqf>
+
+=== Rabbit ===
+
+<sqf>
+_rabbit playMove "Rabbit_Stop";
+_rabbit playMove "Rabbit_Hop";
+_rabbit playMove "Rabbit_Idle_Stop"; // wandering, default behaviour
+</sqf>
+
+=== Cockerel ===
+
+<sqf>
+_cock playMove "Cock_Stop";
+_cock playMove "Cock_Walk";
+_cock playMove "Cock_Run";
+_cock playMove "Cock_Idle_Stop"; // wandering, default behaviour
+</sqf>
+
+=== Hen ===
+
+<sqf>
+_hen playMove "Hen_Stop";
+_hen playMove "Hen_Walk";
+_hen playMove "Hen_Idle_Stop"; // wandering, default behaviour
+</sqf>
+
+=== Snake ===
+
+<sqf>
+_snake playMove "Snakes_Stop";
+_snake playMove "Snakes_Move";
+_snake playMove "Snakes_Idle_Stop"; // wandering, default behaviour
+</sqf>
+
+
+== Examples ==
+
+=== Script ===
+
+Simple example for a dog to follow the player:
+<sqf>
+// spawn dog
+_dog = createAgent ["Fin_random_F", getPosATL player, [], 5, "NONE"];
+
+// disable animal behaviour
+_dog setVariable ["BIS_fnc_animalBehaviour_disable", true];
+
+// following loop
+[_dog] spawn {
+	params ["_dog"];
+
+	// force dog to sprint
+	_dog playMove "Dog_Sprint";
+
+	while { sleep 3; alive _dog } do
+	{
+		_dog moveTo getPosATL player;
+	};
+};
+</sqf>
+
+See in action: {{Link|https://www.youtube.com/watch?v{{=}}0X8oumNj9kc|YouTube}}
+
+
+{{GameCategory|arma3|Editing}}
+{{GameCategory|arma3|Tutorials}}

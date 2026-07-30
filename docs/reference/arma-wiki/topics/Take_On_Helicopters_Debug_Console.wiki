@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/Take_On_Helicopters:_Debug_Console
+// revision: 337130 (2023-01-11T10:52:37Z)
+// export sha1: nepc4xcg8sng6tbm49hlr3k1317yefc
+// categories: Category:2D Editor
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: 2D Editor]]
+[[File:tkoh editor debug.jpg|thumb|300px|right|Debug Console]]
+
+=== Starting ===
+''Debug Console'' is started by pressing ''ESC'' and ''F1'' while previewing a mission.
+
+=== Watch ===
+Shows returned value of code written to one of four available fields. Refreshes it every 0.1 seconds, and will show scripting errors while you're writing the text.
+
+Results of all fields are stored in _debug1 to _debug4 variables to which you can refer from other fields
+* '''Field 1''':<code style="display: block">1 + 1</code>
+** Returns: 2
+* '''Field 2''':<code style="display: block">_debug1 * 2</code>
+** Returns: 4
+
+Content of all fields is stored into [[profileNamespace]] when console is closed and is restored again upon next start.
+
+=== Expression ===
+Six fields where you can write any code and execute it. Button uses [[execVM]].
+
+Alternatively, you can use keyboard shortcuts Ctrl1 to Ctrl+6 for each of the buttons.
+
+Same as Watch fields, Expressions are stored persistently.
+
+=== Custom scripts ===
+Executes ([[execVM]]) scripts on the given path.
+ \hsim\@debug\debug*.sqf
+<nowiki>*</nowiki> is replaced by number written on a button, e.g. 1 executes \hsim\@debug\debug1.sqf
+
+=== Camera ===
+Executes [[Camera.sqs]]
+
+=== Config ===
+Launch [[Mission_Editor#Config_Viewer|Config Viewer]]
+
+=== Functions ===
+Launch [[Mission_Editor#Functions|Functions Viewer]]
+
+=== Effects ===
+''TBA''

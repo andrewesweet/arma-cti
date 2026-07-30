@@ -1,0 +1,260 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_NameSound_Setup
+// revision: 337460 (2023-01-31T13:56:12Z)
+// export sha1: rn5oe6tfumql3vh1yt1em6qsx47y8a8
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+One can assign magazines, weapons or vehicles (units, vehicles, objects, etc) with nameSound a reference to the [[Arma_3_Radio_Protocol|radio protocol]].
+So when AI, or the player, tries to name an entity via radio chat it determines what sound file is to be played and what text to be shown.
+
+== Relevant Parameters ==
+
+* {{hl|nameSound}} in:
+** [[CfgMagazines_Config_Reference#nameSound.3D.22magazine.22|CfgMagazines]]
+** [[CfgWeapons_Config_Reference#nameSound.3D.22.22|CfgWeapons]]
+** [[CfgVehicles_Config_Reference#nameSound|CfgVehicles]]
+* {{hl|textSingular}}/{{hl|textPlural}} in:
+** [[Arma 3: Radio Protocol#Vehicle Words|CfgVehicles]]
+
+
+== Vanilla Setup ==
+
+=== CfgMagazines ===
+
+{{Columns|2|
+* nameSound {{=}} "";
+* nameSound {{=}} "cannon";
+* nameSound {{=}} "Chemlight";
+* nameSound {{=}} "handgrenade";
+* nameSound {{=}} "heat";
+* nameSound {{=}} "laserdesignator";
+* nameSound {{=}} "magazine";
+* nameSound {{=}} "mgun";
+* nameSound {{=}} "mine";
+* nameSound {{=}} "missiles";
+* nameSound {{=}} "rockets";
+* nameSound {{=}} "satchelcharge";
+* nameSound {{=}} "smokeshell";
+}}
+
+=== CfgWeapons ===
+
+{{Columns|2|
+* nameSound {{=}} "";
+* nameSound {{=}} "aalauncher";
+* nameSound {{=}} "atlauncher";
+* nameSound {{=}} "binoculars";
+* nameSound {{=}} "cannon";
+* nameSound {{=}} "CannonCore";
+* nameSound {{=}} "mgun";
+* nameSound {{=}} "MissileLauncher";
+* nameSound {{=}} "nvgoggles";
+* nameSound {{=}} "Pistol";
+* nameSound {{=}} "rifle";
+* nameSound {{=}} "rockets";
+* nameSound {{=}} "sidearm";
+}}
+
+=== CfgVehicles ===
+
+==== nameSound ====
+{{Columns|4|
+* nameSound {{=}} "Plane";
+* nameSound {{=}} "unknown";
+* nameSound {{=}} "veh_air_gunship_s";
+* nameSound {{=}} "veh_air_helicopter_s";
+* nameSound {{=}} "veh_air_parachute_s";
+* nameSound {{=}} "veh_air_plane_s";
+* nameSound {{=}} "veh_air_UAV_s";
+* nameSound {{=}} "veh_aircraft";
+* nameSound {{=}} "veh_animal";
+* nameSound {{=}} "veh_apc";
+* nameSound {{=}} "veh_car";
+* nameSound {{=}} "veh_helicopter_s";
+* nameSound {{=}} "veh_infantry_AT_s";
+* nameSound {{=}} "veh_infantry_civilian_s";
+* nameSound {{=}} "veh_infantry_diver_s";
+* nameSound {{=}} "veh_infantry_medic_s";
+* nameSound {{=}} "veh_infantry_MG_s";
+* nameSound {{=}} "veh_infantry_officer_s";
+* nameSound {{=}} "veh_infantry_pilot_s";
+* nameSound {{=}} "veh_infantry_s";
+* nameSound {{=}} "veh_infantry_SF_s";
+* nameSound {{=}} "veh_infantry_sniper_s";
+* nameSound {{=}} "veh_ship_attackBoat_s";
+* nameSound {{=}} "veh_ship_boat_s";
+* nameSound {{=}} "veh_ship_s";
+* nameSound {{=}} "veh_ship_submarine_s";
+* nameSound {{=}} "veh_static_AA_s";
+* nameSound {{=}} "veh_static_AT_s";
+* nameSound {{=}} "veh_static_GL_s";
+* nameSound {{=}} "veh_static_MG_s";
+* nameSound {{=}} "veh_static_mortar_s";
+* nameSound {{=}} "veh_static_s";
+* nameSound {{=}} "veh_truck";
+* nameSound {{=}} "veh_vehicle_APC_s";
+* nameSound {{=}} "veh_vehicle_armedcar_s";
+* nameSound {{=}} "veh_vehicle_armor_s";
+* nameSound {{=}} "veh_vehicle_car_s";
+* nameSound {{=}} "veh_vehicle_MRAP_s";
+* nameSound {{=}} "veh_vehicle_tank_s";
+* nameSound {{=}} "veh_vehicle_truck_s";
+* nameSound {{=}} "veh_vehicle_UGV_s";
+}}
+
+==== textSingular ====
+{{Columns|4|
+* textSingular {{=}} "alpha victor (MRAP)";
+* textSingular {{=}} "APC";
+* textSingular {{=}} "armor";
+* textSingular {{=}} "AT soldier";
+* textSingular {{=}} "attack boat";
+* textSingular {{=}} "boat";
+* textSingular {{=}} "car";
+* textSingular {{=}} "civilian";
+* textSingular {{=}} "diver";
+* textSingular {{=}} "fast mover";
+* textSingular {{=}} "gunship";
+* textSingular {{=}} "helicopter";
+* textSingular {{=}} "infantry";
+* textSingular {{=}} "machinegunner";
+* textSingular {{=}} "medic";
+* textSingular {{=}} "mortar";
+* textSingular {{=}} "MRAP";
+* textSingular {{=}} "officer";
+* textSingular {{=}} "parachute";
+* textSingular {{=}} "pilot";
+* textSingular {{=}} "SDV";
+* textSingular {{=}} "ship";
+* textSingular {{=}} "sniper";
+* textSingular {{=}} "specop";
+* textSingular {{=}} "static AA";
+* textSingular {{=}} "static AT";
+* textSingular {{=}} "static GL";
+* textSingular {{=}} "static MG";
+* textSingular {{=}} "static weapon";
+* textSingular {{=}} "tank";
+* textSingular {{=}} "truck";
+* textSingular {{=}} "UAV";
+* textSingular {{=}} "UGV";
+}}
+
+==== textPlural ====
+{{Columns|4|
+* textPlural {{=}} "alpha victors";
+* textPlural {{=}} "APCs";
+* textPlural {{=}} "AT soldiers";
+* textPlural {{=}} "attack boats";
+* textPlural {{=}} "boats";
+* textPlural {{=}} "cars";
+* textPlural {{=}} "civilians";
+* textPlural {{=}} "divers";
+* textPlural {{=}} "fast movers";
+* textPlural {{=}} "gunships";
+* textPlural {{=}} "helicopters";
+* textPlural {{=}} "infantry";
+* textPlural {{=}} "machinegunners";
+* textPlural {{=}} "medics";
+* textPlural {{=}} "mortars";
+* textPlural {{=}} "MRAPs";
+* textPlural {{=}} "officers";
+* textPlural {{=}} "parachutes";
+* textPlural {{=}} "pilots";
+* textPlural {{=}} "SDVs";
+* textPlural {{=}} "ships";
+* textPlural {{=}} "snipers";
+* textPlural {{=}} "specops";
+* textPlural {{=}} "static AAs";
+* textPlural {{=}} "static ATs";
+* textPlural {{=}} "static GLs";
+* textPlural {{=}} "static MGs";
+* textPlural {{=}} "static weapons";
+* textPlural {{=}} "tanks";
+* textPlural {{=}} "trucks";
+* textPlural {{=}} "UAVs";
+* textPlural {{=}} "UGVs";
+}}
+
+==== speechSingular ====
+{{Columns|4|
+* speechSingular[] {{=}} {"veh_air_gunship_s"};
+* speechSingular[] {{=}} {"veh_air_helicopter_s"};
+* speechSingular[] {{=}} {"veh_air_parachute_s"};
+* speechSingular[] {{=}} {"veh_air_plane_s"};
+* speechSingular[] {{=}} {"veh_air_UAV_s"};
+* speechSingular[] {{=}} {"veh_infantry_AT_s"};
+* speechSingular[] {{=}} {"veh_infantry_civilian_s"};
+* speechSingular[] {{=}} {"veh_infantry_diver_s"};
+* speechSingular[] {{=}} {"veh_infantry_medic_s"};
+* speechSingular[] {{=}} {"veh_infantry_MG_s"};
+* speechSingular[] {{=}} {"veh_infantry_officer_s"};
+* speechSingular[] {{=}} {"veh_infantry_pilot_s"};
+* speechSingular[] {{=}} {"veh_infantry_s"};
+* speechSingular[] {{=}} {"veh_infantry_SF_s"};
+* speechSingular[] {{=}} {"veh_infantry_sniper_s"};
+* speechSingular[] {{=}} {"veh_ship_attackBoat_s"};
+* speechSingular[] {{=}} {"veh_ship_boat_s"};
+* speechSingular[] {{=}} {"veh_ship_s"};
+* speechSingular[] {{=}} {"veh_ship_submarine_s"};
+* speechSingular[] {{=}} {"veh_static_AA_s"};
+* speechSingular[] {{=}} {"veh_static_AT_s"};
+* speechSingular[] {{=}} {"veh_static_GL_s"};
+* speechSingular[] {{=}} {"veh_static_MG_s"};
+* speechSingular[] {{=}} {"veh_static_mortar_s"};
+* speechSingular[] {{=}} {"veh_static_s"};
+* speechSingular[] {{=}} {"veh_vehicle_APC_s"};
+* speechSingular[] {{=}} {"veh_vehicle_armedcar_s"};
+* speechSingular[] {{=}} {"veh_vehicle_armor_s"};
+* speechSingular[] {{=}} {"veh_vehicle_car_s"};
+* speechSingular[] {{=}} {"veh_vehicle_MRAP_s"};
+* speechSingular[] {{=}} {"veh_vehicle_tank_s"};
+* speechSingular[] {{=}} {"veh_vehicle_truck_s"};
+* speechSingular[] {{=}} {"veh_vehicle_UGV_s"};
+}}
+
+==== speechPlural ====
+{{Columns|4|
+* speechPlural[] {{=}} {"veh_air_gunship_p"};
+* speechPlural[] {{=}} {"veh_air_helicopter_p"};
+* speechPlural[] {{=}} {"veh_air_parachute_p"};
+* speechPlural[] {{=}} {"veh_air_plane_p"};
+* speechPlural[] {{=}} {"veh_air_UAV_p"};
+* speechPlural[] {{=}} {"veh_infantry_AT_p"};
+* speechPlural[] {{=}} {"veh_infantry_civilian_p"};
+* speechPlural[] {{=}} {"veh_infantry_diver_p"};
+* speechPlural[] {{=}} {"veh_infantry_medic_p"};
+* speechPlural[] {{=}} {"veh_infantry_MG_p"};
+* speechPlural[] {{=}} {"veh_infantry_officer_p"};
+* speechPlural[] {{=}} {"veh_infantry_p"};
+* speechPlural[] {{=}} {"veh_infantry_pilot_p"};
+* speechPlural[] {{=}} {"veh_infantry_SF_p"};
+* speechPlural[] {{=}} {"veh_infantry_sniper_p"};
+* speechPlural[] {{=}} {"veh_ship_attackBoat_p"};
+* speechPlural[] {{=}} {"veh_ship_boat_p"};
+* speechPlural[] {{=}} {"veh_ship_p"};
+* speechPlural[] {{=}} {"veh_ship_submarine_p"};
+* speechPlural[] {{=}} {"veh_static_AA_p"};
+* speechPlural[] {{=}} {"veh_static_AT_p"};
+* speechPlural[] {{=}} {"veh_static_GL_p"};
+* speechPlural[] {{=}} {"veh_static_MG_p"};
+* speechPlural[] {{=}} {"veh_static_mortar_p"};
+* speechPlural[] {{=}} {"veh_static_p"};
+* speechPlural[] {{=}} {"veh_vehicle_APC_p"};
+* speechPlural[] {{=}} {"veh_vehicle_armedcar_p"};
+* speechPlural[] {{=}} {"veh_vehicle_armor_p"};
+* speechPlural[] {{=}} {"veh_vehicle_car_p"};
+* speechPlural[] {{=}} {"veh_vehicle_MRAP_p"};
+* speechPlural[] {{=}} {"veh_vehicle_tank_p"};
+* speechPlural[] {{=}} {"veh_vehicle_truck_p"};
+* speechPlural[] {{=}} {"veh_vehicle_UGV_p"};
+}}
+
+
+== See also ==
+
+* [[Arma 3: Radio Protocol]]
+* [[Arma 3: Sound: Filters#Special Filters|Radio Protocol Filters]]
+
+
+{{GameCategory|arma3|Editing}}

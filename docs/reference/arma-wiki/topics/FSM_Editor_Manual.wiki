@@ -1,0 +1,357 @@
+// source: https://community.bistudio.com/wiki/FSM_Editor_Manual
+// revision: 352252 (2024-02-03T20:43:04Z)
+// export sha1: ithdvlo12m28jbrqlk5l577i71ji9cr
+// categories: Category:ArmA: Armed Assault: Official Tools | Category:Arma 2: Official Tools | Category:Arma 3: Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+FSM stands for '''F'''inite '''S'''tate '''M'''achine.
+If this is the first thing you are reading about FSM, please read the [[FSM]] article first.
+
+
+== Terminology ==
+
+Inside this documentation, the following terms are used:
+
+* Compile config ... paramFile config used to control the compilation process.
+* Compilation result ... output of compilation using compile config. (FSMCompiler.exe fsminput.bifsm -o compilationResult.someExt)
+* Attribute ... named value editted in FSMEditor. Which Attributes can be used is specified in compile config class Attributes. Attributes are used from print command using %(attrName) notation. In compilation result attribute name corresponds to tag name.
+* Tag ... Tag is xml like comment used to mark parts of compilation result for possible decompilation. It's usually of form /*%FSM<tagName "possible value">*/ for opening tag, or /*%FSM</tagName">*/ for closing tag. Tags mostly correspond to some FSM properties or state/condition data values. (action, condition, stateinit,...)
+
+
+== Basic knowledge for designers ==
+
+There is an information about some warnings and errors every designer should know.
+
+# Save as
+#* when saving as, you should choose some other extension than *.bifsm to force saving through FSMCompiler (for instance when working with FSMScripted)
+# Getting the errors/warnings information
+#* if there are any errors, saving throu compilation will show them
+#* you can use the key F7 (compile) to show the compilation result window
+# Common Warnings and Errors
+#* Warning: State with duplicate name, changing to: xxxxxx_nn
+#** every FSM state should have different name. If not, the name will be slightly changed through compilation, which can be checked in the compilation result (fsm scripted for instance)
+#* Warning: Condition with duplicate name, changing to: xxxxxx_nn
+#** all conditions called from the same state should also have different name
+#* Warning: Condition has in degree greater than 1
+#** if the same condition is used for more states, the condition and action code will be compiled to more different places in the compilation result. But only one of them can be used during decompilation! So, one cannot freely change the compilation result in text editor (decompilation can indeterministically copy such changes to all places or ignore it at all).
+#* Error: Condition has out degree greater than 1
+#** impossible, as no one can say, what happens when the condition is true
+#* Error: There is an edge between two conditions
+#** you cannot concatenate conditions, you should combine their condition to one or insert dummy state in between
+# Using knees
+#* holding ctrl while creating new state/condition, there will be no state/condition, but special little black square item called knee. It's purpose is only to bring possibility for better drawing of FSM. Knees with multiple degrees can yield to warnings and errors as described above.
+#* on the picture, there is shown how the knees are eliminated during the compilation. Only the multiple lines are reduced to single one (which was not true before June, 1 2006).
+
+
+== States ==
+
+Every state can has two editable tabs:
+
+# Init code
+#* This code is processed when this state is reached.
+# Precondition
+#* This code is processed when conditions are to be tested inside this state, before testing the first condition. <!--
+-->(This code is processed every time, the condition starts to be tested, which contrasts to the Init code, which is tested only once the state is reached.)
+
+Conditions are tested in the decreasing order of their priority.
+This implies that True conditions should have zero priority in order not to shadow other conditions to be tested.
+
+
+== Conditions ==
+
+Conditions have three editable tabs and priority edit box:
+
+# Precondition
+#* This code is processed before the condition test.
+# Condition
+#* The condition.
+# Action
+#* This code is processed after the condition was true.
+#* Notice: without this feature one should create use condition linking to the state with Init code equal to Action code and one True condition linking to the next state.
+# Priority is used to define the order to process the conditions. Higher values first.
+
+In FSMScripted, multiline scripts can be used too. The last statement is relevant, as shown in the example:
+
+<sqf>
+_vehicle = vehicle _this;
+_commander = effectiveCommander _vehicle;
+isHidden _commander;
+</sqf>
+
+
+== FSM Compiler ==
+
+FSMCompilers compiles the FSM created (or edited) in FSMEditor into some other format, using compile config.
+
+*.bifsm ... format used by FSMEditor. No compilation needed.
+* *.* ... format after compilation. Can be decompiled only if compile config defines decompilation info, which make the compilation result possible to open by FSMEditor.
+
+At present, the following formats and compile configs are possible:
+
+
+== FSM Entity ==
+
+* compile config: entityFSM.cfg ... can be decompiled
+
+FSM using FSMEntity functions. This FSM is referred in config, loaded and processed during simulation. This FSM format is currently used for ambient behaviour (butterfly, honeybee, dragonfly).
+
+<syntaxhighlight lang="cpp">
+class CfgNonAIVehicles
+{
+	class DragonFly : Insect
+	{
+		model = "dragonfly.p3d";
+		flySound[] = { "animals\fly.wss", db-105, 1, 1 };
+		fsm[] = { "Dragonfly" };
+		straightDistance = 2;
+	};
+	// ...
+}
+</syntaxhighlight>
+
+
+== Thresholds ==
+
+Each state defines thresholds, which can be used to define which of multiple links from this state is selected. This is done like:
+
+<syntaxhighlight lang="cpp">
+thresholds[] = { { 1, 0, 1 } };
+</syntaxhighlight>
+
+This will store a random value with a minimal value of 0 (second element) and a maximum value of 1 (third element) and store it in slot 1 (first element). Every condition returns a value. This value is compared against the number a defined slot:
+
+<syntaxhighlight lang="cpp">
+threshold = 1;
+</syntaxhighlight>
+
+When the condition value is greater or equal than the value in the slot, this link is selected.
+
+When FSM starts, all threshold slots are initialized to 0.5. Slot value set by one state is then left at that value even for all states to come.
+
+
+== FSM Scripted ==
+
+* compile config: scriptedFSM.cfg ... can be decompiled
+
+FSM using scripted commands and condition. These FSM are not used yet, but were tested on simple FSM (teleport), trigered by radio alpha.
+
+New functions commandFSM and doFSM added:
+<sqf>
+_unit commandFSM ["FSM filename", destination, target];
+_unit doFSM ["FSM filename", destination, target];
+</sqf>
+
+in scripts in FSM, following parameters are defined:
+
+* _leader ... leader of subgroup with this command
+* _destination ... command destination
+* _target ... command target
+* _units ... list of all persons in subgroup
+
+to make this application useful, some functions for controlling units on low level needs to be added.
+
+
+== Global Switch FSM ==
+
+* compile config: globalSwitchFSM.cfg ... can be decompiled
+
+Compilation to the *.cpp code, using switch to navigate through FSM states. The compile uses many FSM attributes, to define function declaration, precondition codes etc. This FSM was first used in seagull.cpp to code autopilot functionality. So, opening seagull.cpp in FSMEditor.
+
+
+== Class Compile FSM ==
+
+* compile config: classFSMcompile.cfg ... can be decompiled
+
+Compilation to the *.cpp, using Fsm class architecture. It creates %(stateName) functions for state initialization and check%(stateName functions for checking conditions. No FSM created by FSMEditor has been compiled and used in engine, but some were coded manually before FSMEditor existence.
+
+
+== How does the FSMCompiler work ==
+
+We say, that FSMCompiler works as compiler, if it compiles FSM edited in FSMEditor into any other format. And we say, FSMCompiler works as decompiler, if it decompiles compilation result into FSM format, which can FSMEditor read.
+
+In order to make decompilation possible, compilation must write some decompile info into compilation result. Compiler writes this info using xml like tags enclosed, by default, by C/C++ program comments "/*...*/".
+
+The compilation result has the following structure:
+
+<syntaxhighlight lang="cpp">
+/*%FSM<COMPILE "compileConfigPath, fsmName">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"someStateName",0,250,-55.278748,-369.225311,34.721249,-319.225342,0.000000;}
+item1[] = {"someOtherStateName",4,218,-55.288883,-274.332214,34.711143,-224.332199,1.000000;}
+...
+link0[] = {0,1};
+link1[] = {0,3};
+...
+globals[] = {0.000000,1,0,1,65280,640,480,1,25,6316128,1,-147.218781,307.800598,236.949921,-392.713837,482,667,1};
+window[] = {0,-1,-1,-1,-1,894,66,837,87,1,500};
+*//*%FSM</HEAD>*/
+
+<compilation pass result is here>
+
+/*%FSM</COMPILE>*/
+</syntaxhighlight>
+
+The whole result is enclosed by COMPILE tag, with compileConfig and FSMName specified.
+In the HEAD tag, there are data to specify GUI representation of FSM, in order to display it is structure the same way, it was last edited and saved in FSMEditor.
+Each Compile tag uniquely determines the FSM compiled into some file, by its FSMName.
+File can contain more than one FSM, each enclosed by it is COMPILE tags with different FSMName. It works in such a way, that:
+
+* the output file is created if it doesn't exist yet
+* if the output file exists and it contains COMPILE tag with our FSMName, the whole section of our FSM is rewriten
+* if the output file exists but it doesn't contain COMPILE tag with our FSMName, the compilation result appends to the file.
+** it will be appended to the place marked by /*%FSM<APPEND/>*/ tag, or to the end of file otherwise.
+
+
+== Compile Configs ==
+
+Compile config is param file, which controls compilation process. It contains three main classes:
+
+* Attributes... It contains only one array value names containing names of attributes, which can be used in print commands, using %(attrName) notation. These names are also used as tag names in compilation result.
+* Compile ... Main class to control compilation process. It contains Pass subclasses and other commands.
+* Decompile ... This class only control prefixes and sufixes, which are written after (or before) each tag in compilation result.
+
+All classes or command names should contain some postfix to make their multiple usage possible.
+For instance, you can use multiple prints inside one class, using for something like print_1, print_2, etc.
+It is due to paramFile assumption of name uniqueness.
+
+=== Compile Config - Classes Structure ===
+
+The classes have the following structure:
+
+* class Compile ... one of three root classes
+** Can contain: class Pass
+* class Pass
+** the content of this class will be processed for the whole FSM
+** Can contain: State, FinalStates, print, noDecompile
+* class State
+** the content of this class will be processed for each FSM state
+** Can contain: Link, FinalStates, print, noDecompile
+* class Link
+** the content of this class will be processed for each FSM condition
+** Can contain: FinalStates, print, noDecompile
+* class FinalStates
+** the content of this class will be processed for each final state
+** Can contain: print
+* class Attributes
+** It is one of three root classes
+** contains array value names[].
+* class Decompile
+** It is one of three root classes
+** it defines prefixes and sufixes of tags for decompilation
+** Can contain:
+*** process = 1; ... 0 for not processing Decompile info
+*** FSMLeft = "/*"; ... what to write before tag
+*** FSMRight = "*/"; ... what to write after tag
+*** class FSMPrefix ... prefix of opening tags
+*** class FSMPrefix2 ... prefix of closing tags
+*** class FSMSufix ... sufix of opening tags
+*** class FSMSufix2 ... sufix of closing tags
+* class FSMPrefix,FSMPrefix2,FSMSufix,FSMSufix2
+** defines prefixes and sufixes for every tag
+** Can contain:
+*** default = ""; ... value for tags which are not specified
+*** tagName = "someText"; ... value for specific tag
+* entry print
+** it defines text to print into compilation result
+
+example: print_1 = "FSM contains %(numStates) states, from which %(numFinalStates) are final\n";
+
+*
+** Some specific FSM values can be printed using the following format: ***%modifier(varName)
+*** modifiers:
+**** %( ... text is not modified
+**** %quoted( ... quatation chars " are doubled
+**** %qt( ... enclose the text into quotes ""
+**** %qtquoted( ... combine qt and quoted together
+*** varNames:
+**** statename ... name of state which is currently processed
+**** linkname ... name of condition which is currently processed
+**** stateinit ... state initialization code
+**** statePrecondition ... precondition code before condition testing
+**** condition ... condition code
+**** action ... action code
+**** condPrecondition ... precondition code before testing this condition
+**** to ... target state to change if this condition is true
+**** priority ... priority
+**** initStatename ... name of starting state
+**** finalStatename ... name of final state currently processed (iterates inside class FinalStates)
+**** numStates ... total number of FSM states
+**** numConditions ... total number of condition within current state
+**** numFinalStates ... total number of final states
+**** fsmName ... name of FSM
+**** "anyAttributeName" ... any other attribute defined in FSMEditor
+*** some specific char can be printed using the following:
+**** %% ... the char %
+**** \\ ... the char \
+**** \n ... the newline char
+**** \t ... the tabulator char
+* entry indent
+** specifies the number of spaces to insert before each line of compilation result
+** value -1 for no "indenting"
+* entry rewritefile
+** value 0 ... output will be appended to the file
+** value 1 ... output will rewrite the file
+* entry ifstart
+** value -1 ... process only states, which are not starting
+** value 1 ... process only starting states
+** value 0 ... process both starting and not starting states
+* entry iffinal
+** value -1 ... process only states, which are not final
+** value 1 ... process only final states
+** value 0 ... process both final and not final states
+* entry iffirst
+** value -1 ... from now on, process only iff the state/finalState/link is not the first
+** value 1 ... from now on, process only iff the state/finalState/link IS the first one
+** value 0 ... do not check first/not first (default)
+** This is needed when printing some arrays and the first item should be printed different way
+
+<syntaxhighlight lang="cpp">
+print_3 = "_finalStateArray = [";
+class FinalStates
+{
+	iffirst_yes = 1;
+	print_1 = "%qt(finalStateName)";
+	iffirst_no = -1;
+	print_2 = ", %qt(finalStateName)"; // not first, so start with comma separator
+	iffirst_all = 0;
+}
+print_4 = "];\n";
+</syntaxhighlight>
+
+* entry clearNewLines
+** value 1 ... convert all values to one line
+** value 0 ... converting to one line off
+* entry noDecompile
+** value 1 ... printing decompile tags off
+** value 0 ... printing decompile tags on
+
+=== Printing decompile tags ===
+
+In order to allow decompiler to rebuild the FSM from compilation result, each state, condition or other values must be processed during compilation.
+If compilation uses many passes, than there is no need to use decompile tags printing in each pass.
+You can control the compile tags printing, using the following:
+
+* No decompile tags: noDecompile = 1;
+** No tags at all.
+* No decompile tags in print commands: hprint
+** Using hprint instead of print has the effect of switching noDecompile on, but only within the scope of this one print. <!--
+-->If the noDecompile is switched on yet, the hprint has no effect.
+* Print all tags: print
+** It prints all tags used inside print text. If the noDecompile is switched on yet, the print works like hprint.
+
+
+== Remarks ==
+
+# Scripted FSM does not allow values containing newline chars. <!--
+-->In order not to force user to write all values (in FSMEditor) into one line, there is modifier clearNewLines. It can be used inside Compile class.
+# If there is such need to enclose value into quotes, the modifier qt should be used.
+#* Wrong usage: print = "StateInfo(\"%(statename)\"";
+#* Correct: print = "StateInfo(%qt(statename)";
+# In order to access the FSM handle from inside the FSM, use _thisFSM.
+
+
+{{GameCategory|arma1|Official Tools}}
+{{GameCategory|arma2|Official Tools}}
+{{GameCategory|arma3|Official Tools}}

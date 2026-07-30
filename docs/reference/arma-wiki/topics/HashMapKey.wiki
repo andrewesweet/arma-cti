@@ -1,0 +1,21 @@
+// source: https://community.bistudio.com/wiki/HashMapKey
+// revision: 330441 (2022-09-15T21:04:29Z)
+// export sha1: 7bytx9igv3p4mdvj1f3zi61e5pue4nf
+// categories: Category:Magic Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+HashMapKey is a virtual compound type containing all the possible types that can be used as keys in a [[HashMap]].
+
+The types are:
+* [[Number]]
+* [[Boolean]]
+* [[String]]
+* [[Code]]
+* [[Side]]
+* [[Config]]
+* [[Namespace]]
+* [[NaN]]
+* [[Array]]
+
+
+[[Category: Magic Types]]

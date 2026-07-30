@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/setVehicleRadar
+// revision: 348315 (2023-11-08T12:59:38Z)
+// export sha1: jdiqp6b24ts062yz4ds9ugglpnxbkzd
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sensors | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Sensors
+
+|descr= Sets the AI rule of Radar usage (Emission Control). Automatic means Radar switched on only when in Combat. The command doesn't affect player-controlled vehicles.
+
+|s1= vehicle [[setVehicleRadar]] rule
+
+|p1= vehicle: [[Object]] - an AI-controlled vehicle
+
+|p2= rule: [[Number]] - can be one of the following:
+* 0 - automatic
+* 1 - forced on
+* 2 - forced off
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_vehicle setVehicleRadar 1;</sqf>
+
+|seealso= [[isVehicleRadarOn]] [[vehicleReportRemoteTargets]] [[setVehicleReportRemoteTargets]] [[vehicleReceiveRemoteTargets]] [[setVehicleReceiveRemoteTargets]] [[vehicleReportOwnPosition]] [[setVehicleReportOwnPosition]] [[reportRemoteTarget]] [[confirmSensorTarget]]
+}}

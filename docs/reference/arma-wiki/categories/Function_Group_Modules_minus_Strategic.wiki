@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Modules_-_Strategic
+// revision: 167896 (2020-10-12T17:01:02Z)
+// export sha1: qv6quz046uzktr9jupu1bhx5u72osy0
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Function Group: Modules]]

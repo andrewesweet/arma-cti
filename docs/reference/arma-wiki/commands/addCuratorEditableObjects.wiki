@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/addCuratorEditableObjects
+// revision: 377067 (2026-01-01T09:24:50Z)
+// export sha1: f619u0smg239h6pwk1nt9jeei0rjrkm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|serverExec= server
+
+|gr1= Curator
+
+|descr= Register objects which can be edited by a curator.
+
+|s1= curatorObj [[addCuratorEditableObjects]] [objects, addCrew]
+
+|p1= curatorObj: [[Object]] - curator module
+
+|p2= objects: [[Array]] of [[Object]]s
+ 
+|p3= addCrew: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>MyCuratorModule addCuratorEditableObjects [[MyCar], true];</sqf>
+
+|seealso= [[Arma 3: Curator]] [[allCurators]] [[removeCuratorEditableObjects]] [[curatorEditableObjects]]
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20200723102900
+|text= To continuously make all created objects editable for all Zeus use the following code:
+<sqf>
+if (isServer) then
+{
+	0 spawn
+	{
+		while { true } do
+		{
+			{
+				_x addCuratorEditableObjects
+				[
+					entities [[], ["Logic"], true /* include vehicle crew */, true /* exclude dead bodies */],
+					true
+				];
+			} count allCurators;
+			sleep 60; // change to whatever fits your needs
+		};
+	};
+};
+</sqf>
+}}
+
+{{Note
+|user= POLPOX
+|timestamp= 20250612110549
+|text= Modernized script of R3vo's concept for efficient solution.
+<sqf>if (isServer) then {
+	addMissionEventHandler ["EntityCreated",{
+		{ 
+			_x addCuratorEditableObjects [ 
+				[_this], true 
+			]; 
+		} forEach allCurators; 
+	}]; 
+};</sqf>
+}}

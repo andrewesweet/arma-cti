@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/vehicleReportRemoteTargets
+// revision: 311077 (2022-05-07T21:00:14Z)
+// export sha1: cenl4ngetqvqf85us3f1e1pyjfrvjhg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sensors | Category:Introduced with Arma 3 version 1.70 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.70
+
+|gr1= Sensors
+
+|descr= Gets whether the vehicle shares acquired targets via datalink with the [[Side]] center.
+
+|s1= [[vehicleReportRemoteTargets]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>vehicleReportRemoteTargets vehicle player;</sqf>
+
+|seealso= [[setVehicleRadar]] [[setVehicleReportRemoteTargets]] [[vehicleReceiveRemoteTargets]] [[setVehicleReceiveRemoteTargets]] [[vehicleReportOwnPosition]] [[setVehicleReportOwnPosition]] [[reportRemoteTarget]] [[confirmSensorTarget]]
+}}

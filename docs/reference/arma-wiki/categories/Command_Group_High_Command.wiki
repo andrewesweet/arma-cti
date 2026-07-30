@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_High_Command
+// revision: 157624 (2020-09-16T07:55:55Z)
+// export sha1: l5a84yd45jrzc4wkhoumug8bjh78bhl
+// Vendored snapshot. Do not edit — re-export instead.
+
+Commands which work with the high command feature.
+
+[[Category:Scripting Commands by Functionality]]

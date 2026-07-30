@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/Terrain_Processor:_Line:_Segments_Objects
+// revision: 201508 (2021-01-17T20:12:16Z)
+// export sha1: p4y7m4hdmfekrcxoi6mcfsnpsj1tkdo
+// categories: Category:Terrain Processor Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Terrain Processor Manual|Line]]
+{{TerrainProcessorManual|Line: Segments Objects|BITasksPlugin.dll|Polyline, PolylineM, PolylineZ|No
+|DESCRIPTION=Method puts objects on polylines nodes with rotation to next node.
+|TASKPARAMETERS=* '''Objects distance''' - Distance between objects.
+* '''Centerline offset''' - Offset from center line to objects line
+* '''Spline interpolation''' - Use Bezier spline instead of original polyline.
+|OBJECTPROTOTYPEPARAMETERS=* '''OBJECT''' - Object's prototype name
+* '''PROB''' - Object's probability
+* '''MINHEIGHT''' - Minimal size in %
+* '''MAXHEIGHT''' - Maximal size in %
+* '''ROTATION''' - Rotation offset in °
+|USAGE=You may create polylines of powerlines with node on each pole, and use this module to place the poles with correct rotation.
+|ALGORITHM= For each shape (linear) do :
+#For each node on polyline do:
+## Compute right forward rotation
+## Add object prototype
+|SAMPLE=
+}}

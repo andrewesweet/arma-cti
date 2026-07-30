@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/saveMissionProfileNamespace
+// revision: 353417 (2024-03-18T11:29:33Z)
+// export sha1: o6j6yjikoga4dc3zurxi572oqu5h8cs
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Namespaces | Category:Command Group: Variables | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+
+|eff= local
+
+|gr1= Namespaces
+
+|gr2= Variables
+
+|descr= [[missionProfileNamespace]] provides long-term storage solution for mission variables.
+When this namespace has variables set with [[setVariable]] and is saved, the variables are saved into {{hl|''[[missionName]]''.vars}} file into the current player's [[profileName]] folder.
+Next time when the same mission is loaded by the client with the same player profile, the saved variables can be read normally with [[getVariable]] command.
+This way each mission maker can create persistent data that is both mission and player profile specific. The file is only created when the save operation is invoked with this command.<br><br>
+It is also possible to share the same mission profile variables between several missions.
+To override the default behaviour, create a {{hl|missionGroup}} entry in [[Description.ext#missionGroup|Description.ext]], for example <syntaxhighlight lang="cpp" inline>missionGroup = "TAG_MyMissionCollectionName";</syntaxhighlight>.
+This will create {{hl|TAG_MyMissionCollectionName.vars}} file instead of the default-named one, which would be loaded into every mission with a matching {{hl|missionGroup}} entry.
+
+|s1= [[saveMissionProfileNamespace]]
+
+|r1= [[Boolean]] - [[true]] in case of success, [[false]] otherwise (e.g trying to save in [[:Category:Eden Editor|Eden Editor]] or trying to save into existing save file but the file wasn't loaded yet)
+
+|x1= <sqf>saveMissionProfileNamespace;</sqf>
+
+|seealso= [[missionProfileNamespace]] [[isMissionProfileNamespaceLoaded]] [[saveProfileNamespace]] [[save3DENPreferences]]
+}}

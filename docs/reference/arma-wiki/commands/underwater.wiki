@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/underwater
+// revision: 336959 (2023-01-04T16:44:17Z)
+// export sha1: p4ckodvdu406tsyvkg82fcukg5i7lcn
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns whether the object is fully underwater.
+{{Feature|informative|This command works well with Arma 3 mini-submarines, which was most likely the primary design goal.}}
+
+|s1= [[underwater]] object
+
+|p1= object: [[Object]] - mini-submarine
+
+|r1= [[Boolean]] - [[true]] if submerged
+
+|x1= <sqf>private _isUnderwater = underwater vehicle player;</sqf>
+
+|x2= <sqf>private _isHeadUnderwater = eyePos player select 2 < 0;</sqf>
+
+|seealso= [[isTouchingGround]] [[isAbleToBreathe]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20170202180800
+|text= This command is quite buggy with objects other than mini-subs. Code in {{Link|#Example 2}} is a good alternative.
+}}

@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/TexView
+// revision: 201666 (2021-01-17T20:18:39Z)
+// export sha1: k2g2ocsksetfu1k4t5s0iw02pbfn0mp
+// categories: Category:Official Tools
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Tool
+
+|AUTHOR= [[:Category:Projects|Bohemia Interactive]]
+
+|VERSION=
+
+|COMPATIBILITY= [[:Category: Operation Flashpoint|Operation Flashpoint]]
+
+|DOWNLOAD= http://www.flashpoint1985.com/docs/textview.html
+
+|DESCRIPTION= TexView is texture viewing and converting utility for [[OFP|Operation Flashpoint]].
+
+|NOTES=
+
+|LICENSING= [[End User License Agreement for BI's Tools|Bohemia Interactive End User License Agreement]]
+
+|SEEALSO= [[PAA File Format]]
+
+}}
+
+[[Category:Official Tools]]

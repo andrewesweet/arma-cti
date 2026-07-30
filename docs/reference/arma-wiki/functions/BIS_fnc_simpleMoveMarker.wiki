@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_simpleMoveMarker
+// revision: 376118 (2025-08-31T21:15:35Z)
+// export sha1: 6lqset0vb5f6krk9pf2vklxh41v7tbc
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Map and Markers | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.78 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.78
+
+|gr1= Map and Markers
+
+|arg= global
+
+|eff= global
+
+|descr= Move the provided marker to a new position. Simple version of [[BIS_fnc_moveMarker]].
+
+|s1= [marker, newPosition, duration] call [[BIS_fnc_simpleMoveMarker]]
+
+|p1= marker: [[String]] - marker to move
+
+|p2= newPosition: [[Array]] - new position, [[Position#Position2D|2D]] or 3D
+
+|p3= duration: [[Number]] - (Optional, default 5) how long it takes to move the marker in seconds
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["BIS_marker", [1111,2222, 0]] call BIS_fnc_moveMarker;</sqf>
+
+|x2= <sqf>["BIS_marker", getMarkerPos "BIS_marker2", 2] call BIS_fnc_simpleMoveMarker;</sqf>
+
+|seealso= [[BIS_fnc_cancelMarker]] [[BIS_fnc_blinkMarker]] [[BIS_fnc_getMarkers]] [[BIS_fnc_rotateMarker]] [[BIS_fnc_resizeMarker]] [[BIS_fnc_moveMarker]]
+}}

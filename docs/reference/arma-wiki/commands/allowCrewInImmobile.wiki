@@ -1,0 +1,66 @@
+// source: https://community.bistudio.com/wiki/allowCrewInImmobile
+// revision: 322540 (2022-06-15T14:00:23Z)
+// export sha1: ry1i32fbx2ud5cepomca3btbjyx39z6
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2: Operation Arrowhead version 1.60 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.60
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= If [[true]], units will remain in a vehicle with broken tracks/wheels; they will still eject if the vehicle is drowning, about to explode or upside down for a while.
+The {{Link|#Syntax 2|alternative syntax}} provides the ability to keep the crew in vehicle when it is upside down.
+
+|s1= vehicle [[allowCrewInImmobile]] allow
+
+|p1= vehicle: [[Object]]
+
+|p2= allow: [[Boolean]] 
+
+|r1= [[Nothing]]
+
+|s2= vehicle [[allowCrewInImmobile]] [brokenWheels, upsideDown]
+|s2since= arma3 2.10
+
+|p21= vehicle: [[Object]]
+
+|p22= brokenWheels: [[Boolean]] - do not auto eject when vehicle has broken wheels
+
+|p23= upsideDown: [[Boolean]] - do not auto eject when vehicle is upside down
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_vehicle allowCrewInImmobile true;</sqf>
+
+|seealso= [[isAllowedCrewInImmobile]] [[setUnloadInCombat]] [[canMove]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20150427195200
+|text= This will stop AI disembarking when immobile
+<sqf>
+KK_fnc_allowCrewInImmobile = {
+	_this allowCrewInImmobile true;
+	{
+		_x disableAI "FSM";
+		_x setBehaviour "CARELESS";
+	} forEach crew _this;
+};
+//example
+car call KK_fnc_allowCrewInImmobile;
+</sqf>
+}}

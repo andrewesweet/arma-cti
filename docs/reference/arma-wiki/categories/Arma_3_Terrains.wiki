@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Terrains
+// revision: 249477 (2021-02-24T09:18:00Z)
+// export sha1: 462j4leq4as1u0t5u5w81swoqwy2l74
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Arma: Terrains]]
+{{GameCategory|arma3}}

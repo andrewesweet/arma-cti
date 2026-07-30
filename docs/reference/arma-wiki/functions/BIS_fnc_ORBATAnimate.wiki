@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_ORBATAnimate
+// revision: 349429 (2023-11-08T16:27:36Z)
+// export sha1: 8qoks5xwqmy2d1lci747mqx0d97ux1d
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Strategic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Strategic
+
+|descr= Animates an ORBAT viewer.
+
+|s1= [target, zoom, duration] spawn [[BIS_fnc_ORBATAnimate]]
+
+|p1= target: [[Config]] or [[Array]] - path to group in CfgORBAT or offset position from structure center in format '''[X, Y]'''.
+* When empty, view is reset to original level where whole structure is visible
+|p2= zoom: [[Number]] - zoom in range from 0 (max. zoom) to 1 (min. zoom)
+|p3= duration: [[Number]] - commit time in seconds
+
+|r1= [[Boolean]] - [[true]] when animation is applied
+
+|x1= <sqf>[configFile >> "CfgORBAT" >> "BIS" >> "B_1_A_1", 0.5, 3] spawn BIS_fnc_ORBATAnimate;</sqf>
+
+|seealso= [[ORBAT Viewer]] [[BIS_fnc_ORBATAddGroupOverlay]] [[BIS_fnc_ORBATConfigPreview]] [[BIS_fnc_ORBATGetGroupParams]] [[BIS_fnc_ORBATOpen]] [[BIS_fnc_ORBATRemoveGroupOverlay]] [[BIS_fnc_ORBATSetGroupFade]] [[BIS_fnc_ORBATSetGroupParams]] [[BIS_fnc_ORBATTooltip]]
+}}

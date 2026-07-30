@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_showCuratorAttributes
+// revision: 309307 (2022-05-05T12:04:23Z)
+// export sha1: nhgwfpsjoritgn44kyadttjowzvhvrs
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Show attributes window of an entity. When no attributes are available, no window is opened.
+
+|s1= [target] call [[BIS_fnc_showCuratorAttributes]]
+
+|p1= target: [[Object]], [[Group]], [[Array]] (Waypoint) or [[String]] - entity whose attributes should be shown
+
+|r1= [[Boolean]] - [[true]] if windows was opened
+
+|x1= <sqf>[BIS_vehicle] call BIS_fnc_showCuratorAttributes;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

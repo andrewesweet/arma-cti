@@ -1,0 +1,148 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Commanding
+// revision: 349786 (2023-11-20T22:10:13Z)
+// export sha1: j8511ntgpd05iiazyyp1zjryjazbmxd
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Commanding ==
+=== Command Bar ===
+The command bar displays information about subordinate units. Each unit under your command shows: <br>
+* ID: 1, 2, 3 ...<br>
+* Rank ([[File:a3_fm_private.png|24px]] [[File:a3_fm_sergeant.png|24px]] [[File:a3_fm_corporal.png|24px]] [[File:a3_fm_major.png|24px]]...) <br>
+* Specialization ([[File:a3_fm_aa.png|24px]] [[File:a3_fm_at.png|24px]] [[File:a3_fm_gl.png|24px]] [[File:a3_fm_mg.png|24px]] [[File:a3_fm_scuba.png|24px]] [[File:a3_fm_srifle.png|24px]])<br>
+* Vehicle occupation<br>
+* Vehicle role ([[File:a3_fm_imageDriver.png|24px]] [[File:a3_fm_imageCargo.png|24px]] [[File:a3_fm_imageCommander.png|24px]] [[File:a3_fm_imageGunner.png|24px]])<br>
+* Health Condition: Wounded [[File:a3_fm_unitNameBackground_normal_wounded.png|24px]], No Ammo [[File:a3_fm_unitNameBackground_normal_noAmmo.png|24px]]<br>
+* [[Combat_Modes | Combat mode]]: Hold Fire [[File:a3_fm_unitCombatMode_red.png|24px]]<br>
+* Behavior: Stealth [[File:a3_fm_unitBehavior_stealth.png|24px]], Combat [[File:a3_fm_unitBehavior_combat.png|24px]]<br>
+* Current orders: 'Move'
+
+
+=== Complex Commands ===
+Assign complex commands from the command menu.<br>
+* Open the quick command menu '''[~]'''. This selects all your subordinate units.<br>
+* Press '''[Backspace]''' to open complex commands.<br>
+Alternatively access specific categories via predefined keys '''[0–9]:'''<br>
+1 – Move<br>
+2 – Target<br>
+3 – Engage<br>
+4 – Mount<br>
+5 – Status<br>
+6 – Action<br>
+7 – Combat mode<br>
+8 – Formation<br>
+9 – Team<br>
+0 – Reply<br>
+* '''[Backspace]''' returns to the root menu for selected units or closes the menu.
+
+
+=== Target Assignment ===
+As a team leader, you can assign targets to your teammates: <br>
+* Report a target for the whole team by pressing '''[T]'''.<br>
+You can also assign targets individually: <br>
+* Select a teammate '''[F2–F10]'''. <br>
+* Point at the target. <br>
+* Choose '''Attack'''.
+
+
+=== Side Markers ===
+Units are marked according to their side.<br>
+[[File:a3_fm_b_unknown_blue.png|24px]] – BLUFOR (Blue)<br>
+[[File:a3_fm_o_unknown_red.png|24px]] – OPFOR (Red)<br>
+[[File:a3_fm_n_unknown_green.png|24px]] – Independent (Green Army, Green Guerillas)<br>
+[[File:a3_fm_n_unknown_purple.png|24px]] – Neutral (Civilians)
+
+
+=== Quick Commands ===
+As a commander, you have access to quick commands via the quick command menu '''[~]'''. The menu is context sensitive – commands change according to objects you point at. Select some units with '''[F2-F10]''' and:<br>
+* Use '''[Space]''' on a position to issue a move command.<br>
+* Use '''[Space]''' on a target to issue an engage command.<br>
+* Use '''[Space]''' on a vehicle to order mount.<br>
+* To change the direction your units are facing, Use '''[Space]''' while holding '''[Left Alt]''' when pointing at a position.
+
+''When you open quick commands, the whole squad is selected by default.''
+
+
+=== Command Responses ===
+As a subordinate unit in need of a quick response, press '''[~]''' to open the quick command menu. Here you can select one of the responses to your incoming commands:<br>
+* Done<br>
+* Negative<br>
+* Ready to fire<br>
+* Cannot fire<br>
+* Repeat<br>
+* Copy<br>
+* One less<br>
+* Where are you?<br>
+* Support<br>
+* Custom – used for more complex conversations such as support requests<br>
+* Radio
+
+
+=== Selecting ===
+* Select your subordinates with '''[F2–F10] keys'''.<br>
+* Use '''[F11]''' and '''[F12]''' to scroll between command bar filled with more than 10 units.<br>
+* Select all subordinates with '''[~]'''.
+
+
+=== Teams ===
+Units can be organized into teams for a quick selection. This is useful when commanding a large number of units.<br>
+* Select units.<br>
+* Choose Assign '''[9]'''.<br>
+* Choose a team color from the menu.<br>
+Alternatively:<br>
+* Select units.<br>
+* Press '''[Left Ctrl] + [F1-F5]''' to create a team.<br>
+To select the entire team:<br>
+* Use '''[Left Shift] + [F1-F5]'''.
+
+''White team is used for any unassigned units.''
+
+
+=== Move! ===
+When in command, you can issue move orders to your subordinates. <br>
+To issue a single waypoint without entering the map:<br>
+* Select units with '''[F2–F10] keys'''.<br>
+* Select '''Move there'''.<br>
+* Confirm with '''[Space]'''.<br>
+Issue a waypoint [[File:a3_fm_waypoint.png|24px]] using the map: <br>
+* Open the map '''[M]'''.  <br>
+* Select units with '''[F2–F10] keys'''.<br>
+* Select '''Move there'''.<br>
+* Confirm with '''[Space]'''.
+
+''The '''Move there''' order is only available when a unit can reach the place.''
+
+
+=== Formations ===
+As you move, you can see that your subordinates are following you in a certain formation. Try changing the default '''Wedge''' formation to '''Line''' or '''Column'''.<br>
+* Select all your units with '''[Left Ctrl+~]'''.<br>
+* Press '''[8]''' and choose '''new formation'''.
+
+
+=== Vehicles ===
+Order your men to get in a certain vehicle:<br>
+* Select your units with '''[F2-F10]'''.<br>
+* Press '''[4]''' to bring up the list of nearby vehicles.<br>
+* Select a vehicle from the list.<br>
+According to the vehicle type, you have the option to choose between specific positions like driver, gunner or commander.
+
+
+=== Stances ===
+You can adjust the direction your units are facing.<br>
+* Select the desired unit with '''[F2-F10]'''.<br>
+* Press '''[3]''', '''[8]''' and choose the azimuth.<br>
+As standing units are easily seen and hit, you can order your men to kneel or go prone.<br>
+* Select your units with '''[F2-F10]'''.<br>
+* Press '''[7]''' and choose the appropriate position.<br>
+* To watch for incoming enemy units on the horizon, press '''[3]''', '''[7]''' to '''Scan horizon'''.
+
+
+=== Team Inventory ===
+When you're a team leader, you can access your teammate's inventories via the Journal.  <br>
+* Open the Map '''[M]'''. <br>
+* Click '''Units'''. <br>
+* Select a soldier with '''[F2–F10] keys'''. <br>
+* Click '''Inventory'''.
+
+
+{{GameCategory|arma3|Field Manual}}

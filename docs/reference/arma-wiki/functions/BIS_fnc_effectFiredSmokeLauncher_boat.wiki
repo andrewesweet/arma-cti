@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_effectFiredSmokeLauncher_boat
+// revision: 309870 (2022-05-05T12:09:53Z)
+// export sha1: 56pjxmn8wh92089m09iwscg1lfk52ht
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Effects | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Effects
+
+|descr= <pre>/*Arma 2 smokscreen, by Maddmatt
+Uses code from VBS2 Smoke launcher by Philipp Pilhofer (raedor) & Andrew Barron
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_effectFiredSmokeLauncher_boat]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_effectFiredSmokeLauncher_boat;</sqf> -->
+
+|seealso=
+}}

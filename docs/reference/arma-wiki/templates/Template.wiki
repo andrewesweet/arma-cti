@@ -1,0 +1,19 @@
+// source: https://community.bistudio.com/wiki/Template:Template
+// revision: 369835 (2024-10-16T10:44:06Z)
+// export sha1: 24yge6qnymhgdch47iw0l8104jeajuc
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{hl|{{[[Template:{{{1}}}|{{{1}}}]]}}}}</includeonly><noinclude>{{Doc/Template
+|descr= Used to create a formatted link to a template.
+
+|param1= name
+|descr1= target template's pagename
+
+|example1= <syntaxhighlight lang="html+handlebars">
+{{Template|RV}}
+{{Template|Link}}
+{{Template|Link/External}}
+</syntaxhighlight>
+|result1= {{Template|RV}}<br>{{Template|Link}}<br>{{Template|Link/External}}
+
+}}</noinclude>

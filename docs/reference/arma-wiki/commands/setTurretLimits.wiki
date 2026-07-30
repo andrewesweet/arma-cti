@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/setTurretLimits
+// revision: 378029 (2026-01-24T02:20:35Z)
+// export sha1: srykvywrjrqj5s32w6uq0a010d9otqq
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Turrets | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|arg= local
+
+|eff= global
+
+|descr= Sets the rotation and elevation limits for the given turret. The limits are relative to model orientation of the turret. For example to allow 360 degree turning it is enough to set turn limits to (-180, 180). The limits can only be set within the limits defined in config and cannot exceed them. To reset to config defaults pass the turret argument only (Example 2).
+
+|gr1= Turrets
+
+|s1= vehicle [[setTurretLimits]] [turret, minTurn, maxTurn, minElev, maxElev, soft]
+
+|p1= vehicle: [[Object]] - vehicle the turret belongs to
+
+|p2= turret: [[Turret Path]] - turret path
+|p3= minTurn: [[Number]] - from 0 to -angle in degrees (left)
+|p4= maxTurn: [[Number]] - from 0 to +angle in degrees (right)
+|p5= minElev: [[Number]] - from 0 to -angle in degrees (down)
+|p6= maxElev: [[Number]] - from 0 to +angle in degrees (up)
+|p7= soft: [[Boolean]] - (Optional) [[true]] to gradually move turret to the new limits (if turret is currenty oriented out of new limts). [[false]] to snap to the new limits. Default: [[false]]
+|p7since= arma3 2.22
+
+|r1= [[Nothing]]
+
+|s2= vehicle [[setTurretLimits]] [turret]
+
+|p21= turret: [[Turret Path]] - turret path (to reset)
+
+|r21= [[Nothing]]
+
+|x1= <sqf>m2 setTurretLimits [[0], -45, 45, -10, 10];</sqf>
+
+|x2= <sqf>m2 setTurretLimits [[0]]; //reset</sqf>
+
+|x3= <sqf>m2 setTurretLimits [[0], -45, 45, -10, 10, true];</sqf>
+
+|seealso= [[getTurretLimits]] [[setTurretOpticsMode]] [[turretLocal]] [[selectWeaponTurret]] [[lockCameraTo]]
+}}

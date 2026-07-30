@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/Village_Pump_(assistance)/archive
+// revision: 243884 (2021-02-07T01:08:09Z)
+// export sha1: q7movh895smhmtjcaqnqdfp4am9jbox
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature | important | This is an archive of past discussions; do '''not''' edit it.}}
+
+
+== Current events page needs updating ==
+
+[[Current events]] page (found also in main navigation bar) was last updated in December 2006. Either the page should be updated regularly or removed from biki. --[[User:Rok|Rok]] 13:32, 23 July 2009 (CEST)
+:Agreed: Please remove it or can we go ahead and empty it ourselves? Thanks. --[[User:Kju|Kju]] 11:44, 19 November 2010 (CET)
+
+
+== Can we edit the Main Page? ==
+
+In my view the [[Main Page]] could be significantly improved in various way.<br>
+For example to provide links to essential pages like startup parameters,<br>
+SQF command overview, setting up a server and several more.
+
+'''Can we go ahead and modify the main page ourselves?'''
+
+Thanks! --[[User:Kju|Kju]] 11:51, 19 November 2010 (CET)
+
+<noinclude>
+<!-- KEEP THIS AT THE BOTTOM OF THE PAGE -->
+{{villagepumpmenu}}
+</noinclude>

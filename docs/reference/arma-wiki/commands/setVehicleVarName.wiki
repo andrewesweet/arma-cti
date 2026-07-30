@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/setVehicleVarName
+// revision: 338577 (2023-03-20T15:21:44Z)
+// export sha1: 9hs4p6w3fwzc7lnpbgewumaxqqsbc5t
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Object Manipulation
+
+|descr= Sets string representation of an object to a custom string.<br>
+When a vehicle is created and named in the editor, the name becomes both the variable containing the vehicle object and the string representation of the vehicle object.
+In scripts an extra step is needed to achieve the same effect - see {{Link|#Example 1}}.
+
+{{Feature|arma3|This does not work with [[Arma 3: Simple Objects|Simple Objects]].}}
+
+|s1= object [[setVehicleVarName]] name
+
+|p1= object: [[Object]]
+
+|p2= name: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+private _playersCar = vehicle player;
+systemChat str _playersCar; // displays e.g "ce06b00# 164274: offroad_01_unarmed_f.p3d"
+
+_playersCar setVehicleVarName "MyOffroad";
+systemChat str _playersCar;	// displays "MyOffroad"
+
+isNil "MyOffroad";			// true - the MyOffroad variable is not set
+MyOffroad = _playersCar;	// now it is
+publicVariable "MyOffroad";	// broadcasts it over the network
+</sqf>
+
+|x2= <sqf>_offroad setVehicleVarName ""; // Reset string representation to the default value</sqf>
+
+|seealso= [[vehicleVarName]] [[BIS_fnc_objectVar]]
+}}

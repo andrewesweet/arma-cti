@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:ArmA:_Armed_Assault:_Modelling
+// revision: 184364 (2021-01-06T09:45:21Z)
+// export sha1: o6vkrkxznyuin49k4bbhuq6mdu35ase
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma1|Addon Editing}}

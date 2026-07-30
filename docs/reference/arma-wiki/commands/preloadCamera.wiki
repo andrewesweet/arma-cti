@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/preloadCamera
+// revision: 377505 (2026-01-02T06:50:05Z)
+// export sha1: j8deimuty7bmy0fchf5161v3ihl9kci
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Camera Control
+
+|descr= Preload all textures and models around given [[Position]] to avoid visual artifacts after camera is moved.
+
+Should be used before any abrupt camera change/cut.
+
+Returns true once all data is ready. See [[camPreload]] for alternative, more flexible camera preloading.
+
+|s1= [[preloadCamera]] position
+
+|p1= position: [[Position]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>waitUntil { preloadCamera markerPos "cam_location_2" };</sqf>
+
+|seealso= [[camPreload]] [[camPreloaded]]
+}}

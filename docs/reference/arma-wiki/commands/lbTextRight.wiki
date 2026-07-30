@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/lbTextRight
+// revision: 377807 (2026-01-03T04:08:07Z)
+// export sha1: 9c8vhafilrx85qnp9xlws6y5cc8pys5
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - ListBox | Category:Introduced with Operation Flashpoint version | Category:Maintenance/RV | Category:Maintenance/RV/Version1 needed | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1=
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= local
+
+|gr1= GUI Control - ListBox
+
+|descr= Returns the shown right text in the item with the given index of the listbox or combobox with id idc of the topmost user [[dialog]].
+
+|s1= [[lbTextRight]] [idc, index]
+
+|p1= idc: [[Number]]
+
+|p2= index: [[Number]]
+
+|r1= [[String]]
+
+|s2= control [[lbTextRight]] index
+
+|p21= control: [[Control]]
+
+|p22= index: [[Number]]
+
+|r2= [[String]]
+
+|x1= <sqf>_text = lbTextRight [101, 0];</sqf>
+
+|x2= <sqf>_text = _control lbTextRight 0;</sqf>
+
+|seealso= [[lbSetTextRight]] [[lbAdd]] [[lbClear]] [[lbColor]] [[lbCurSel]] [[lbData]] [[lbDelete]] [[lbIsSelected]] [[lbPicture]] [[lbSelection]] [[lbSetColor]] [[lbSetCurSel]] [[lbSetData]] [[lbSetPicture]] [[lbSetSelected]] [[lbSetTooltip]] [[lbSetValue]] [[lbSize]] [[lbSort]] [[lbSortByValue]] [[lbValue]]
+}}

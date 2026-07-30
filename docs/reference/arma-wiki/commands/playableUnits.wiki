@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/playableUnits
+// revision: 376985 (2026-01-01T07:13:32Z)
+// export sha1: 0o4cxz1sw0i9yf8objdo1wyuwwl6nq5
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Multiplayer | Category:Command Group: Object Detection | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Multiplayer
+
+|gr2= Object Detection
+
+|descr= Returns a list of playable units in a multiplayer game (occupied by both AI or players), created on the following sides [[east]]/[[opfor]], [[west]]/[[blufor]], [[resistance]]/[[independent]] and [[civilian]] only.
+Does not contain units of [[sideLogic]].
+{{Feature|informative|This command returns an empty array in Singleplayer; use [[switchableUnits]] instead.}}
+{{Feature|important|This command does not include dead players awaiting for respawn.}}
+
+|s1= [[playableUnits]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>{ _x groupChat "I'm a playable unit."; } forEach playableUnits;</sqf>
+
+|x2= <sqf>_playableInGroup = units group player arrayIntersect playableUnits;</sqf>
+
+|x3= <sqf>_nonPlayableInGroup = units group player - playableUnits;</sqf>
+
+|seealso= [[playableSlotsNumber]] [[allPlayers]] [[allCurators]] [[allGroups]] [[allDead]] [[switchableUnits]] [[vehicles]] [[allUnitsUAV]] [[allDeadMen]] [[isPlayer]] [[playersNumber]]
+}}
+
+{{Note
+|user= DreadedEntity
+|timestamp= 20141223231300
+|text= To get a list of all player-controlled units:
+<sqf>
+_allPlayers = [];
+{
+	if (isPlayer _x) then
+	{
+		_allPlayers pushBack _x;
+	};
+} forEach playableUnits;
+</sqf>
+}}
+
+{{Note
+|user= FR Starfox64
+|timestamp= 20150816100500
+|text= [[playableUnits]] will not return dead players, use [[allPlayers]] instead.
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20170214220500
+|text= Using the Editor (multiplayer attributes) for unchecking "enable AI", or disabling AI(s) in lobby, will make [[playableUnits]] as a public variable,  updated by each JIP on disabled slot.
+So, if all slots are disabled AI, playableUnits is same as allPlayers<br>
+Furthermore, in this case, non-played slot (playable and disabled AI) units simply don't exist!<br>
+i.e. If you name 8 playable units: u1..u8, then 2 players in game: u3 & u6<br>
+playableUnits will return [u3,u6], and true for  isNil "u1", isNil "u2"... until another player takes the slot.
+}}

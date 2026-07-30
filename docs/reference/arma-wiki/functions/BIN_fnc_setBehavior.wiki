@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_setBehavior
+// revision: 353787 (2024-03-23T16:21:26Z)
+// export sha1: piayberi1ao2pgmtma85vtojfdibuoa
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Behavior | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Behavior
+
+|descr= <pre>
+#define DEBUG
+#define HISTORY_CAPACITY	5
+#define TERMINATE_DEFAULT	1
+#define TERMINATE_INTERRUPT	2
+#define BEHAVIOR_PATH "a3\Functions_F_Contact\Behavior\Drone\"
+</pre>
+
+{{Wiki|placeholder}}
+{{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_setBehavior]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

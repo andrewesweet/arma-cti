@@ -1,0 +1,151 @@
+// source: https://community.bistudio.com/wiki/Script_Handle
+// revision: 373979 (2025-07-10T15:41:48Z)
+// export sha1: c6l2t1hsy4iqrd2x72mpl17ikzpbzar
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+A '''Script Handle''', used to identify scripts in script operations called using [[spawn]] or [[execVM]].
+Introduced with {{GameCategory|arma1|link=y}}, does not refer to {{GameCategory|ofp|link=y}} or {{GameCategory|ofpr|link=y}}.
+
+This handle's status can be checked with [[scriptDone]], it can be terminated with [[terminate]].
+{{Feature|arma3|In {{arma3}}:
+* the handle's status can also be checked with [[isNull]] (A completed script will become null)
+* the handle can be accessed from whithin itself using <sqf inline>_thisScript</sqf> (since {{GVI|arma3|1.54}})
+}}
+
+
+{{Feature|informative|For more information about scripts and scripting, see [[:Category:Scripting Topics|Scripting Topics]] and [[Introduction to Arma Scripting]].}}
+
+
+
+== Promise Handles ==
+
+Since {{GVI|arma3|2.22}} Script handles can be used as [https://en.wikipedia.org/wiki/Futures_and_promises promises].
+
+A Promise is either a Script Handle to a [[spawn]]'ed or [[execVM]]'ed script, or an "Empty Handle" that does not hold a backing script.
+The Handle can be used to wait for the a result to be available. In case of a "real" handle that means the scheduled script returning a value, or in the case of a "Empty Handle" by using [[terminate]] to set a result value.
+
+A Promise can have continuations added onto it with [[continueWith]], which is script code that will execute once the handle is completed.
+
+Handles can be used with [[waitUntil]], [[continueWith]], [[terminate]], [[scriptDone]], [[name]]
+
+
+
+=== Creating a Promise ===
+
+Every handle returned by [[spawn]] or [[execVM]] is a promise that gets resolved once the script exits.<br>
+It's also possible to create a "Empty Handle" which does not hold any scheduled script, and can also be used in unscheduled code.<br>
+A "Empty Handle" needs to be "completed" by calling [[terminate]] on it.
+
+<sqf>
+_emptyHandle = spawn "HandleName"; // Doesn't contain an actual script, it's only a holder for name and potentially a value
+_normalHandle = 0 spawn {scriptName "HandleName";} // Contains an actual scheduled script that will execute and return a value at the end
+</sqf>
+
+=== Using Promises ===
+
+Promises can be used to simplify asynchronous operations.
+For example, when calling a function that takes some time to complete, and then wanting to execute code after it has completed.
+
+To show it on an example, let's say we have a function that paradrops a vehicle.
+And we want to wait for the vehicle to touch the ground and then spawn a smoke grenade on it.
+
+Previously, that could be solved like so:
+<sqf>
+fnc_StartParadrop = {
+  params ["_object"];
+
+  private _parachute = createVehicle ["B_Parachute_02_F", [0, 0, 0], [], 0, "CAN_COLLIDE"];
+
+  // Put the parachute into the right position (setPos doesn't work on them)
+  _parachute attachTo [_object, [0, 0, 0]];
+  detach _parachute;
+
+  _object attachTo [_parachute, [0, 0, 0]];
+  // Now the object is hanging on parachute and gliding down
+  // But we want to wait for it to arrive at the bottom, the parachute will be deleted once it lands, so we can use that
+
+  // The parachute won't know about us, and we cannot get a value out of the eventhandler, so we will give the parachute a place to store the result
+  // Note this will not work across savegame save/load because the "result" reference will be lost.
+
+  _result = [];
+  _parachute setVariable ["result", _result];
+  _parachute addEventHandler ["Deleted", {
+    params ["_entity"];
+    (_entity getVariable "result") set [0, getPos _entity]; // Store the landing position of the parachute
+  }];
+
+  // _result will be set once the parachute landed. How we wait on the result now depends on whether this is a scheduled or unscheduled function
+  // In unscheduled code we cannot wait, we would need to get some callback function in our arguments to notify our caller that it can continue.
+  // For simplicity we show the scheduled variant here, the unscheduled would be more complex
+
+  // Keep looping, until someone (Hopefully the Deleted eventhandler) wrote a result into our array
+  waitUntil { _result isNotEqualTo []; };
+
+  _result select 0; // We return the result, our user must have call'ed us to wait for us to finish and get the result
+};
+
+// The fnc_StartParadrop will wait, so we have to spawn a new script to not hold up everything else
+0 spawn {
+  _dropPos = ParadropVehicle call fnc_StartParadrop; // This will wait until the vehicle has landed
+  "SmokeshellGreen" createVehicle _dropPos; // Spawn a smoke at the landing position
+};
+</sqf>
+
+Also note how the waitUntil always runs.
+Even if we as the caller do not care for the paradrop to finish, we wouldn't easily have the option to tell the script that, without adding another parameter to it.
+Also note that this function is not usable in unscheduled scripts, because it uses waitUntil to wait for the landing.
+
+With promises, it can be solved like this:
+<sqf>
+fnc_StartParadrop = {
+  params ["_object"];
+
+  private _parachute = createVehicle ["B_Parachute_02_F", [0, 0, 0], [], 0, "CAN_COLLIDE"];
+
+  // Put the parachute into the right position (setPos doesn't work on them)
+  _parachute attachTo [_object, [0, 0, 0]];
+  detach _parachute;
+
+  _object attachTo [_parachute, [0, 0, 0]];
+  // Now the object is hanging on parachute and gliding down
+  // But we want to wait for it to arrive at the bottom, the parachute will be deleted once it lands, so we can use that
+
+  // The parachute won't know about us, and we cannot get a value out of the eventhandler, so we will give the parachute a place to store the result
+  _paradropHandle = spawn "Paradrop"; // We create new Promise, that we will use to return the result
+
+  _parachute setVariable ["handle", _paradropHandle];
+  _parachute addEventHandler ["Deleted", {
+    params ["_entity"];
+    (_entity getVariable "handle") terminate (getPos _entity); // Complete the promise and pass the landing position as result
+  }];
+  _paradropHandle // We return the promise, the caller can decide if they want to use it or not
+};
+
+// Note we do not need to spawn another script because we are not waiting for anything, this can fully be handled in unscheduled code now
+
+_paradropHandle = ParadropVehicle call fnc_StartParadrop; // This will start the paradrop, and return a handle that we can use to wait for it to land
+_paradropHandle continueWith { "SmokeshellGreen" createVehicle _this; }; // We use a continuation, it will be triggered once terminate is called on the handle (Inside the "Deleted" eventhandler)
+</sqf>
+
+Note that the paradrop function can now also be used in scheduled scripts like so:
+<sqf>
+_paradropHandle = ParadropVehicle call fnc_StartParadrop; // This will start the paradrop, and return a handle that we can use to wait for it to land
+_dropPos = waitUntil _paradropHandle; // Wait for the promise to be completed and get its result
+"SmokeshellGreen" createVehicle _dropPos; // Spawn a smoke at the landing position
+</sqf>
+
+Or like so:
+<sqf>
+_paradropHandle = ParadropVehicle call fnc_StartParadrop; // This will start the paradrop, and return a handle that we can use to wait for it to land
+_dropPos = waitUntil [_paradropHandle, 60]; // Wait for the promise to be completed, but at most for 60 seconds, if it still has not landed yet, we will report it to the player
+
+if (isNil "_dropPos") then {
+  // The promise yielded no result. Either it was terminated without a result, or our timeout has elapsed
+  hint "The Paradrop has failed!";
+} else {
+  "SmokeshellGreen" createVehicle _dropPos; // Spawn a smoke at the landing position
+};
+</sqf>
+
+[[Category: Data Types]]

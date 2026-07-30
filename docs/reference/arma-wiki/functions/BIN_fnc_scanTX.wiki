@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_scanTX
+// revision: 281199 (2021-06-14T09:05:55Z)
+// export sha1: ezw8vwb8wfoo8y7o6gc8kbuu1aomlx9
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: TXScan | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= TXScan
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Intersects current scan polygon (or map square if no scan exists) with triangle originated from RX position
+		and returns the triangle
+
+	Parameter(s):
+		0: STRING - scan name
+		1: ARRAY (Optional) - RX position. Default: position player
+
+	Returns:
+		ARRAY - triangle used for intersection
+		
+	Example:
+		["MyScan", position player] call BIN_fnc_scanTX
+*/</pre>
+
+{{Wiki|placeholder}}
+{{Feature|arma3contact}}
+
+|s1= <!-- [] call [[BIN_fnc_scanTX]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

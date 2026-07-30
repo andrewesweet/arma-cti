@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_findAllNestedElements
+// revision: 327526 (2022-07-12T22:33:34Z)
+// export sha1: moejcv00vibcbqnhjzwrxw7a61g25rq
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Arrays | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Arrays
+
+|descr= Returns array of paths to all matching elements in deeply nested array, similar to [[BIS_fnc_findNestedElement]] but with all occurences.
+
+|s1= [array, query] call [[BIS_fnc_findAllNestedElements]]
+
+|p1= array: [[Array]] - array to explore
+
+|p2= query: [[Anything]] - wanted item
+
+|r1= [[Array]] of [[Array]] of [[Number]]s - path to the first occurence of ''query''
+
+|x1= <sqf>
+private _array = [[1, 2, 3], [[1, 2, 3], 1, 2, 3]];
+_result = [_array, 2] call BIS_fnc_findAllNestedElements; // returns [[0, 1], [1, 0, 1], [1, 2]]
+</sqf>
+
+|seealso= [[BIS_fnc_findNestedElement]] [[BIS_fnc_removeNestedElement]] [[BIS_fnc_returnNestedElement]] [[BIS_fnc_setNestedElement]]
+}}

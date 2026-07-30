@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/Template:Concat
+// revision: 321526 (2022-05-17T19:15:58Z)
+// export sha1: qsxd7xc2wrv1yxkmtn7pvlw5hdo1dpa
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if: {{{2|}}}
+	| {{{2}}}{{#if: {{{3|}}}
+		| {{{1|}}}{{{3}}}{{#if: {{{4|}}}
+			| {{{1|}}}{{{4}}}{{#if: {{{5|}}}
+				| {{{1|}}}{{{5}}}{{#if: {{{6|}}}
+					| {{{1|}}}{{{6}}}{{#if: {{{7|}}}
+						| {{{1|}}}{{{7}}}{{#if: {{{8|}}}
+							| {{{1|}}}{{{8}}}{{#if: {{{9|}}}
+								| {{{1|}}}{{{9}}}{{#if: {{{10|}}}
+									| {{{1|}}}{{{10}}}
+								}}
+							}}
+						}}
+					}}
+				}}
+			}}
+		}}
+	}}
+| -no text provided-
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Concatenates (joins) strings together.
+|param1= separator
+|descr1= string element to place between strings
+|param2= string#
+|descr2= other parameters are strings to be joined - max 10 elements
+|example1= <nowiki>{{Concat}}</nowiki>
+|example2= <nowiki>{{Concat|}}</nowiki>
+|example3= <nowiki>{{Concat||}}</nowiki>
+|example4= <nowiki>{{Concat|-}}</nowiki>
+|example5= <nowiki>{{Concat|-|A}}</nowiki>
+|example6= <nowiki>{{Concat||A|B|C}}</nowiki>
+|example7= <nowiki>{{Concat|-|A|B|C}}</nowiki>
+|result1= {{Concat}}
+|result2= {{Concat|}}
+|result3= {{Concat||}}
+|result4= {{Concat|-}}
+|result5= {{Concat|-|A}}
+|result6= {{Concat||A|B|C}}
+|result7= {{Concat|-|A|B|C}}
+}}</noinclude>

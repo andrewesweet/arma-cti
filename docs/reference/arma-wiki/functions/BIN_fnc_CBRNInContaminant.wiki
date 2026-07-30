@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_CBRNInContaminant
+// revision: 309463 (2022-05-05T12:06:09Z)
+// export sha1: 4u8z1fkkjud92gosaj2f4wjc112eeu6
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Broken Functions | Category:Function Group: Modules - CBRN | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Modules - CBRN 
+
+|gr2= Broken Functions 
+
+|descr= <pre>/*
+
+	Description:
+	Returns whether or not a character entity is within a CBRN contaminated area.
+	NOTE: Module / function set not robust nor completed - not recommended for usage at this stage!
+
+	Parameter(s):
+		0: OBJECT - character entity to test for
+
+	Returns:
+	BOOL
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_CBRNInContaminant]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_CBRNInContaminant;</sqf> -->
+
+|seealso=
+}}

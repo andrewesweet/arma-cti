@@ -1,0 +1,147 @@
+// source: https://community.bistudio.com/wiki/Operation_Flashpoint:_FAQ:_Campaigns:_Red_Hammer
+// revision: 339455 (2023-04-28T14:08:54Z)
+// export sha1: gofrt6xripj6vavfvkvzymk3rk6uvie
+// Vendored snapshot. Do not edit — re-export instead.
+
+==What is Red Hammer?==
+
+On November 29 2001, OFP Gold and the OFP Gold Upgrade went on sale. OFP Gold is OFP version 1.30, with one very important addition: "Red Hammer – The Soviet Campaign". In Red Hammer, you switch sides and play Dimitri Lukin of the Soviet Army. 
+
+OFP Gold and the OFP Gold Upgrade are available world-wide both through stores and software mail order firms. Besides the Red Hammer campaign, both also include a new 64-page Operation Flashpoint Prima Strategy Guide.
+
+OFP Gold and the OFP Gold Upgrade can be purchased through links on the FAQ's [[Operation_Flashpoint:_FAQ:_General#Where_can_I_buy_OFP.3F|OFP purchase page]].
+
+
+== Who produced the Red Hammer Campaign? ==
+
+Unlike OFP's original 1985 Cold War Campaign, which was developed by Bohemia Interactive, the Red Hammer Campaign was produced by Codemasters.
+
+
+== Red Hammer campaign missions crash to desktop upon completion! ==
+
+Several users have been reporting this problem within the first week of OFP Gold's release. See [[Operation_Flashpoint:_FAQ:_Campaigns:_1985_Cold_War_Crisis#Campaign missions crash to desktop upon completion!|this FAQ item]].
+
+If you are playing through the Red Hammer campaign using OFP: Resistance, you should be aware that upgrades to some A.I. routines are not compatible with the sixth Red Hammer mission, "Defend". This will cause Operation Flashpoint to crash to desktop (CTD) when starting this mission.
+
+To resolve this problem with the "Defend" mission, run Red Hammer with the old OFP version's program file, OperationFlashpoint.exe. Make sure you have the original OFP version CD - not the Resistance CD - in your CD-ROM drive. You should now be able to play and complete the Red Hammer's mission without problems.
+
+
+== My Red Hammer mission list is empty even though I finished several missions! ==
+
+This seems to be nothing more than an aesthetic bug.
+
+If you can see the entry for the last mission you played, click on it. Then click the up arrow on the mission list page, if visible, or your keyboard's up arrow key, until you eventually scroll up and see your list of completed missions.
+
+That didn't really hurt, did it?
+
+
+== I purchase the downloadable version of Red Hammer. How can I make a backup copy? ==
+
+Unlike the OFP Gold and Gold Upgrade CDs, the 35MB file that you downloaded to pay for and install the Red Hammer Campaign would require you to purchase it again every time you run it.
+
+That should hardly be necessary, however. Red Hammer consists of two essential files plus the Prima game guide PDF file. So all you need to back up is the following:
+
+ \OperationFlashpoint\OF_PRIMA_xxx.PDF
+ \OperationFlashpoint\Addons\Voicerh.PBO
+ \OperationFlashpoint\Campaigns\REDHAMMER.PBO
+
+Once that's backed up, you can safely delete the 35MB Red Hammer purchase and download file you originally downloaded from Codemasters.
+
+
+== How many campaign missions are there in Red Hammer? ==
+
+There are 27 missions and cut scenes in the Red Hammer Campaign. Here's a list of them all:
+
+#Red Dawn (cut scene)
+#Red Hammer
+#Occupation
+#Babysitting?
+#Promotion (cut scene)
+#Repulsion
+#Beachhead Assault
+#Under Fire
+#NewsFlash (cut scene)
+#Picking Up The Pieces
+#Tank Rescue
+#RearGuard
+#Task
+#Marooned
+#Grounded
+#Spetznatz Promotion (cut scene)
+#Assassination
+#Alamo
+#Under Orders
+#Dark Path
+#Illumination (cut scene)
+#Rage
+#Insurrection
+#Savior
+#Race Against Time
+#Hidden Agenda
+#Journeys End (cut scene)
+
+
+== Can I skip to the next campaign mission without completing the current one? ==
+
+While in the campaign mission, hold down your keyboard's left SHIFT key and then the numeric keypad's minus ("-") key, release them and type the word ENDMISSION. This will allow you to progress to the next campaign mission should you get stuck, begin to pull your hair out and want to move on.
+
+
+== How can I play any campaign mission in any order I want? ==
+There are two ways you can do this. The first method is to download the {{Link|http://kronzky.info/theofpfaq/downloads/OFP_REDHAMMER.SQC.ZIP|REDHAMMER.SQC file}} for the Red Hammer Campaign.
+
+The second method is to use a cheat leaked out by Codemasters. While playing any campaign mission, press your keyboard's left SHIFT key along with the minus sign key ("-") on your keyboard's numeric key pad, let go and just type the word "campaign" without the quotes (no text box will appear - that's OK) and press the ENTER key. The words "CAMPAIGN ACTIVATED" should now appear on the upper left screen corner. Escape from the mission and go back to the campaign book and you should see all the campaign missions listed and be able to select any of them to play.
+
+
+== Where can I find a walkthrough for Red Hammer? ==
+
+OFP player David Phelps has kindly pointed out to me that Unsub's Red Hammer Walkthrough is still available online {{Link|http://www.playground.ru/cheats/650/|here}}.
+
+If you need more, I suggest that you search through the [[Operation_Flashpoint:_FAQ:_General#Are_there_any_OFP_discussion_forums.3F|forums]].
+
+
+== Why is my MI-17 chopper always crashing In Red Hammer mission "Grounded"? ==
+
+A lot of people have reported that they cannot complete Red Hammer's "Grounded" mission since upgrading OFP past version 1.30. "Grounded" is the mission where you have to steal a fuel truck to refuel your MI-17 chopper, take off and pick up a squad and escape the island safely.
+
+If you're running OFP: Resistance version 1.85 or higher, try installing the [[#Red Hammer compatibility patch|Red Hammer compatibility patch]] to see if that resolves the problem.
+
+OFP player Random suggests that you try controlling the chopper even when the cut-scene is playing. Press and hold your keyboard's Q key to gain altitude and pull back on the mouse or joystick to lift the nose and slow down.
+
+OFP player Snajper used this method to resolve the problem. Fly the MI-17, at an altitude of about 80 to 120 meters and at a speed above 150, straight in the direction of the repair waypoint. Just before flying over the waypoint's village perimeter, select AUTO-HOVER from the action menu and don't touch anything. The following cutscene should start playing within a few seconds. After the cutscene finishes, you should be flying around, happy as a bird and in one piece, for a change.
+
+Some people just keep replaying the mission until it continues on to the next stage, which may happen even after the chopper crashes. I recommend that you save the mission during your approach to the repair area.
+
+I personally have managed to pass the stage of the mission by slowing the chopper down to a crawl and coming in at an altitude of 150 meters or so on approach to the repair truck vicinity.
+
+If these suggestions fails to help, you may need to resort to using the [[#Can I skip to the next campaign mission without completing the current one?|ENDMISSION cheat]] to skip "Grounded" altogether and move on to the next mission. However, some players report that the ENDMISSION cheat causes mission failure when used at certain points in the "Grounded" mission.
+
+Please remember that Red Hammer is a Codemasters product. BIS had nothing to do with Red Hammer's development. Requests for correcting this mission to function reasonably with the latest updated versions of OFP should be addressed to [mailto:custservice@codemasters.com?subject=Red_Hammer Codemasters customer service].
+
+
+== I seem to be getting nowhere in Red Hammer's Babysitting mission! ==
+
+Well, you've got to get that other truck moving in order for Angelina to hop aboard and for the both of you to make a dash for it. However, since OFP does not support hotwiring vehicles to get them started, you'll need to find the truck's key.
+
+I'll give you a hint: look in the houses at the entrance to the village where you're ambushed.
+
+
+== Red Hammer freezes after I complete the Under Fire mission! ==
+
+If you're playing Red Hammer with the Resistance edition of OFP (version 1.75), BIS' lead OFP programmer, Ondřej Španěl, confirmed that this bug is caused by OFP: Resistance's handling of Red Hammer's campaign. To resolve this problem, you should install the latest OFP: Resistance upgrade patch and then install the [[#Red Hammer compatibility patch|Red Hammer 1.85 compatibility patch]].
+
+== Will Codemasters ever fix the bugs in Red Hammer? ==
+
+They've started. CM has now made available a [[#Red Hammer compatibility patch|Red Hammer compatibility patch]].
+
+
+== Red Hammer compatibility patch ==
+
+On October 15, 2002, Codemasters release a patch to fix problems when playing the Red Hammer campaign (specifically mission 6, "Under Fire") for users who have installed OFP: Resistance and the 1.85 upgrade patch. A little more than a month later, an equivalent patch was released for OFP version 1.90. On March 28, 2003 a new version of the Red Hammer compatibility patch was released for version 1.91.
+
+Users who installed OFP from the OFP Resistance CD must install the Red Hammer compatibility patch appropriate to their installed OFP version. For example, if you upgraded from OFP version 1.75 to 1.91, you can only install the 1.91 edition of the Red Hammer compatibility patch.
+
+Users who installed OFP from the OFP GOTY edition CD, should ''not'' install any of the released Red Hammer compatibility patches. The corrections included in the Red Hammer compatibility patch were incorporated into the OFP GOTY edition at production time.
+
+Users who upgraded to OFP version 1.90 or 1.91 and nevertheless tried to install the newest Red Hammer compatibility patch when they had previously installed an earlier version of the patch, found that they could not install the newer Red Hammer compatibility patch. Worse, the patch's execution error resulted in the corruption of the Red Hammer's campaign's PBO file.
+
+To resolve this problem, simply restore the original copy of the REDHAMMER.PBO file you hopefully made a backup copy of. You will then be able to install the Red Hammer compatibility patch without a problem. Didn't make a backup copy of file REDHAMMER.PBO? Tsk, tsk! You better contact [mailto:custservice@codemasters.com Codemasters support] and see what they can do about it.

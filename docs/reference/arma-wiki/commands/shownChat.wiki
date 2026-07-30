@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/shownChat
+// revision: 310766 (2022-05-07T20:21:39Z)
+// export sha1: iumklo3rlrtun9to088rteecqze1xdj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Radio and Chat | Category:Introduced with Arma 3 version 1.36 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.36
+
+|gr1= Radio and Chat
+
+|descr= Returns [[true]] if chat window is enabled. Chat window can be disabled with [[showChat]] command.
+
+|s1= '''shownChat'''
+
+|r1= [[Boolean]]
+
+|x1= <sqf>_bool = shownChat;</sqf>
+
+|seealso= [[showChat]] [[showUAVFeed]] [[shownMap]] [[shownArtilleryComputer]] [[shownCuratorCompass]] [[slingLoadAssistantShown]] [[ctrlShown]] [[hcShownBar]] [[shownGPS]] [[shownCompass]] [[shownPad]] [[shownRadio]] [[shownWatch]]
+}}

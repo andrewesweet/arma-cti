@@ -1,0 +1,38 @@
+// source: https://community.bistudio.com/wiki/isAwake
+// revision: 373887 (2025-06-26T10:59:02Z)
+// export sha1: owfuxa54t58hvwn9qg1uxi7gxun2pt7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: PhysX | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|arg= global
+
+|gr1= PhysX
+
+|descr= Returns resting state of a PhysX (EPE) object. Some EPE objects are deliberately put to sleep by the engine to save resources.
+This command returns [[true]] when object is simulating and [[false]] when it is put to sleep. With units of type {{hl|Man}} the behaviour is slightly different.
+As units never get put to sleep, the command outputs ragdoll state of a unit instead. There are 6 states for the output of the command:
+* EPE object is simulating - [[true]]
+* EPE object is put to sleep - [[false]]
+* Unit is [[alive]], ragdoll is active - [[false]]
+* Unit is [[alive]], ragdoll is NOT active - [[true]]
+* {{GVI|arma3|2.10|size= 0.75}} Unit is NOT [[alive]], ragdoll is active - [[true]]
+* {{GVI|arma3|2.10|size= 0.75}} Unit is NOT [[alive]], ragdoll is NOT active - [[false]]
+
+|s1= [[isAwake]] object
+
+|p1= object: [[Object]] - PhysX object or unit
+
+|r1= [[Boolean]] - see description
+
+|x1= <sqf>private _isAwake = isAwake _object;</sqf>
+
+|x2= {{GVI|arma3|2.10|size= 0.75}} Here is a simple formula to return ragdoll state of a unit:
+<sqf>private _unitIsInRagdoll = alive _unit != isAwake _unit;</sqf>
+
+|seealso= [[awake]] [[addTorque]] [[addForce]] [[vectorModelToWorld]] [[vectorModelToWorldVisual]] [[selectionPosition]]
+}}

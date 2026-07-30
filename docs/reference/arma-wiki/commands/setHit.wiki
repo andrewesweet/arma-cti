@@ -1,0 +1,113 @@
+// source: https://community.bistudio.com/wiki/setHit
+// revision: 369851 (2024-10-16T13:52:03Z)
+// export sha1: gq2vjdkxe9c6pp0aemkajoyz05tj6ty
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr=
+{{{!}} class="wikitable float-right align-center-col-2"
+{{!}}+ 
+! {{Link|Category: Event Handlers|Event Handler}}
+! Triggered
+{{!}}-
+{{!}} {{hl|Hit}}
+{{!}} {{Icon|unchecked}}
+{{!}}-
+{{!}} {{hl|HandleDamage}}
+{{!}} {{Icon|unchecked}}
+{{!}}-
+{{!}} {{hl|Killed}}
+{{!}} {{Icon|checked}}
+{{!}}-
+{{!}} {{hl|MPKilled}}
+{{!}} {{Icon|checked}}
+{{!}}}
+
+Set damage on a part of an object.
+{{Feature|informative|Some part names are in Czech; see the [[ArmA: Armed Assault: Selection Translations|translation table]].}}
+
+|s1= object [[setHit]] [part, damage, useEffects, killer, instigator, breakRotor]
+
+|p1= object: [[Object]] - [[local]] object
+
+|p2= part: [[String]] - name of the part ([[Named_Selection|selection]] name)
+
+|p3= damage: [[Number]] - damage value ranging 0..1, 0 being fully functional, 1 being destroyed
+
+|p4= useEffects: [[Boolean]] - (Optional, default [[true]]) [[false]] to skip destruction effects
+|p4since= arma3 1.68
+
+|p5= killer: [[Object]] - (Optional, default [[objNull]]) the entity that caused the damage. If the damage leads to the death of the unit, the killer will be used as the object that caused the kill.
+* it can be used to show "killed by player" in debriefing statistics and kill messages in the chat (if death messages are enabled).
+* it will alter the killer's [[rating]] as if the killer directly killed the unit.
+* it will be listed as <sqf inline>_killer</sqf> parameter in the [[Arma 3: Event Handlers#Killed|Killed]] event handler.
+|p5since= arma3 2.08
+
+|p6= instigator: [[Object]] - (Optional, default [[objNull]]) the person that instigated the damage.
+* if a tank is a killer, the tank gunner that pulled the trigger is instigator
+* it will be listed as <sqf inline>_instigator</sqf> parameter in the [[Arma 3: Event Handlers#Killed|Killed]] event handler.
+|p6since= arma3 2.12
+
+|p7= breakRotor: [[Boolean]] - (Optional, default [[false]]) if the hitpoint is rotor on a helicopter, [[true]] will break the rotor as well as play corresponding sound if 'useEffects' is also [[true]].
+|p7since= arma3 2.18
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player setHit ["motor", 1];</sqf>
+
+|x2= <sqf>vehicle player setHit ["mala vrtule", 0.95];</sqf>
+
+|x3= <sqf>
+if (local _heli) then
+{
+	_heli setHit ["velka vrtule", 0];
+}
+else
+{
+	hint ("Vehicle " + str _heli + " must be local to this machine to do that!");
+};
+</sqf>
+
+|seealso= [[getHit]] [[getHitPointDamage]] [[setHitPointDamage]] [[damage]] [[setDamage]] [[setFuel]] [[setAmmo]] [[getHitIndex]] [[setHitIndex]] [[forceHitPointsDamageSync]]
+}}
+
+{{Note
+|user= Deadfast
+|timestamp= 20090824110900
+|text= Damaging specific parts of the vehicle will not update its overall [[damage]] value (as of v1.03):
+<sqf>
+player setHit ["hands", 0.9];
+hint str (damage player); // will return 0
+</sqf>
+|game= arma2
+}}
+
+{{Note
+|user= DenV
+|timestamp= 20110329142500
+|text= Direct use of the names of sections of the model is likely a bad practice, and will not work on some addons.
+So instead:
+<sqf>_MH60S setHit ["elektronika", _hit];</sqf>
+should be used:
+<sqf>_MH60S setHit [getText (configFile >> "cfgVehicles" >> "MH60S" >> "HitPoints" >> "HitAvionics" >> "name"), _hit];</sqf>
+}}

@@ -1,0 +1,90 @@
+// source: https://community.bistudio.com/wiki/createAgent
+// revision: 378352 (2026-04-02T16:33:41Z)
+// export sha1: 6xg0r22d9k5cv1zlvcf7ze8ev8abmm6
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Creates an agent of the given type. An agent does not have a group or leader or the standard soldier [[FSM]] associated with it - for instance, an enemy soldier spawned as an agent has limited AI and will do nothing when fired upon - which can be useful to limit the amount of AI processing being done in a mission with very large numbers of "AI". Animals are also commonly created as agents.
+{{Feature|informative|
+* Players assigned to an agent using [[selectPlayer]] will be able to control the agent, operate weapons and other actions, but will not be able to access their inventory using the gear screen.
+* To create objects of type {{hl|"Logic"}}, use [[createUnit]].
+}}
+
+|s1= [[createAgent]] [type, position, markers, placement, special]
+
+|p1= type: [[String]] - class from [[CfgVehicles]]
+
+|p2= position: [[Object]] or [[Position#PositionAGL|PositionAGL]] or [[Position#Introduction|Position2D]] - desired placement position
+
+|p4= markers: [[Array]] of [[String]]s - if the markers array contains any markers, the position is randomly picked from array of given markers plus desired placement position. If any of the markers were given z coordinate with setMarkerPos, the vehicle will also be created at given z coordinate.
+
+|p5= placement: [[Number]] - placement radius, the unit is randomly place in a circle with this radius
+
+|p6= special: [[String]] - one of:
+* {{hl|"NONE"}} - will look for a suitable empty position near given position (subject to other placement params) before creating the agent
+* {{hl|"CAN_COLLIDE"}} - creates the agent at given position (subject to other placement params), without checking if others objects can cross its 3D model
+
+|r1= [[Object]]
+
+|x1= <sqf>private _agent = createAgent ["B_Soldier_F", getPosATL player, [], 0, "NONE"];</sqf>
+
+|x2= <sqf>private _agent = createAgent ["Snake_random_F", ASLToAGL getPosASL player, [], 0, "CAN_COLLIDE"]; // Creates a snake at player's feet</sqf>
+
+|seealso= [[agent]] [[agents]] [[isAgent]] [[forEachMemberAgent]] [[execFSM]] [[BIS_fnc_execFSM]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20140929200300
+|text= In {{arma3}}, default FSM is calling [[BIS_fnc_animalBehaviour]] script upon agent creation, which takes on some animal behavioural logic. The problem here is that it is almost impossible to make animal do what is told. Until now. Since {{arma3}} v1.32 you can set ''BIS_fnc_animalBehaviour_disable'' variable on the agent at the moment of agent creation, to override the function.
+
+<sqf>
+tr = createTrigger ["EmptyDetector", player modelToWorld [0, 10, 0]];
+tr setTriggerArea [5, 5, 0, true];
+tr setTriggerActivation ["CIV", "PRESENT", true];
+rabbits = [];
+private "_r";
+for "_i" from 1 to 10 do {
+	_r = createAgent ["Rabbit_F", position tr, [], 0, "NONE"];
+	_r setVariable ["BIS_fnc_animalBehaviour_disable", true];
+	rabbits pushBack _r;
+};
+tr setTriggerStatements [
+	"if (rabbits isEqualTo thisList) exitWith {
+		_r = thisList select floor random count thisList;
+		_r moveTo (_r modelToWorld [2.5 - random 5, 2.5 - random 5, 0]);
+	};
+	_esc = rabbits - thisList;
+	doStop _esc;
+	{_x moveTo position thisTrigger} forEach _esc;
+	systemChat str [time, _esc];
+	false",
+	"",
+	""
+];
+</sqf> 
+}}
+
+{{Note
+|user= Waffle SS.
+|timestamp= 20150418071700
+|text= Agents seem to use the same collision model that the player uses, unlike normal AI. Normal AI don't collide with objects, but agents are physically stopped by obstacles the same way players are. This also probably means agents cost more resources than normal AI.
+}}

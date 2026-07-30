@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/uiTime
+// revision: 370498 (2024-12-26T17:46:41Z)
+// export sha1: c306qv7foul1op0rjojdp4hjrldnfwm
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Mission Information | Category:Command Group: Time | Category:Introduced with Arma 3 version 2.20 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.20
+
+|gr1= Time
+|gr2= Mission Information
+
+|descr= Returns UI time elapsed since mission started (in seconds). Unlike [[time]] the [[uiTime]] does not stop when game is [[isGamePaused | paused]].
+
+|s1= [[uiTime]]
+
+|r1= [[Number]]
+
+|x1= <sqf>
+private _future = uiTime + 30;
+waitUntil { uiTime >= _future };  // continue after 30 seconds
+</sqf>
+
+|seealso= [[uiSleep]] [[time]] [[date]] [[dayTime]] [[serverTime]] [[skipTime]] [[accTime]] [[dateToNumber]] [[timeMultiplier]] [[setTimeMultiplier]] [[missionStart]] [[diag_tickTime]] [[diag_deltaTime]] [[systemTime]] [[systemTimeUTC]] [[BIS_fnc_timeToString]]
+}}

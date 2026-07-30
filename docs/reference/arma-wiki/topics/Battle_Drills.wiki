@@ -1,0 +1,26 @@
+// source: https://community.bistudio.com/wiki/Battle_Drills
+// revision: 226057 (2021-01-31T17:34:21Z)
+// export sha1: 0wnlx6rqbppzi69w4xbu8dfnuf6r25p
+// categories: Category:Battle Tactics
+// Vendored snapshot. Do not edit — re-export instead.
+
+a '''Battle Drill''' is a collective action rapidly executed without applying a deliberate decision-making process. 
+
+== Basic Battle Drills include: ==
+* [[The Basic Drill]]
+* [[React to Contact]]
+* [[Break Contact]]
+* [[Contact Reports]]
+* [[Platoon/Squad Attack]]
+* [[Conduct an Ambush]]
+* React to Ambush
+* Knock Out Bunkers
+* Clearing a Building/Room
+* Clearing a Trench
+* Breeching a Minefeild/Wire Obstacle
+
+== Military Terms ==
+[[Crossing the T effect]]<br>
+[[Defilade]]
+
+[[Category:Battle Tactics]]

@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/ctrlEnabled
+// revision: 338573 (2023-03-20T14:59:19Z)
+// export sha1: f5ahfbosqrwy1xeoacgbcby6j0fyvgb
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|gr1= GUI Control
+
+|descr= Returns if a control on the currently active user dialog is enabled. Disabled controls cannot be focused. Read [[Arma: GUI Configuration]] for more information about user dialogs and controls.
+
+|s1= [[ctrlEnabled]] idc
+
+|p1= idc: [[Number]] - control's IDC
+
+|r1= [[Boolean]] - [[true]] if the control is enabled, [[false]] if not
+
+|s2= [[ctrlEnabled]] controlName
+
+|p21= controlName: [[Control]]
+
+|r2= [[Boolean]] - [[true]] if the control is enabled, [[false]] if not
+
+|x1= <sqf>
+if !(ctrlEnabled 100) then
+{
+	ctrlEnable [100, true];
+};
+</sqf>
+
+|x2= <sqf>_enabled = ctrlEnabled _control;</sqf>
+
+|seealso= [[ctrlEnable]]
+}}

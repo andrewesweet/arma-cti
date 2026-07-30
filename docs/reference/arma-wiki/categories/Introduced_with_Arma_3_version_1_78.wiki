@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Introduced_with_Arma_3_version_1.78
+// revision: 151594 (2020-04-12T23:29:37Z)
+// export sha1: bl1z1h3t0vda7q1xtv40iyav8xd0e5x
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|1.78}} {{PAGENAME}}
+[[Category:Introduced with Arma 3 |1.78]]

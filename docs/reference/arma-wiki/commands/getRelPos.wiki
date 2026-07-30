@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/getRelPos
+// revision: 377397 (2026-01-02T06:44:48Z)
+// export sha1: 5ymnd02kt4dargx0xdxc35ibmegpdha
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|arg= global
+
+|gr1= Positions
+
+|descr= Returns position that is given distance and relative direction away from original object. The alternative syntax available from Arma 3 v 2.14, returns the position offset of the attached object. If the animated memory point is used for attachment, the offset is calculated in [[Simulation_vs_Render_Time_Scope#Render_Time_Scope | render scope]].
+
+|s1= object [[getRelPos]] [distance, direction]
+
+|p1= object: [[Object]] - object
+
+|p3= distance: [[Number]] - distance from object
+
+|p4= direction: [[Number]] - direction relative to object's current direction
+
+|r1= [[Position#PositionAGL|PositionAGL]]
+
+|s2= obj1 [[getRelPos]] obj2
+|s2since= arma3 2.14
+
+|p21= obj1: [[Object]] - parent object
+
+|p22= obj2: [[Object]] - attached object
+
+|r2= [[Position#PositionRelative|PositionRelative]]
+
+|x1= Find position 100 metres away at player's 3 o'clock:
+<sqf>_relpos = player getRelPos [100, 90];</sqf>
+
+|seealso= [[getPos]] [[getPosASLVisual]] [[getPosATLVisual]] [[visiblePositionASL]] [[visiblePosition]] [[position]] [[getPosATL]] [[getPosASL]] [[getPosASLW]]
+}}
+
+{{Note
+|user= talkingtoaj
+|timestamp= 20160303155300
+|text= [[getPos]] vs [[getRelPos]]: [[getRelPos]] operates similarly to [[getPos]] except in [[getRelPos]] the direction is calculated 'relative' to the current object direction whereas [[getPos]]'s direction is from North. Thus while [[getPos]] can take a position array as it is starting point, [[getRelPos]] requires an object with its own azimut heading.
+}}

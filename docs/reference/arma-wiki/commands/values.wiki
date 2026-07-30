@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/values
+// revision: 376075 (2025-07-27T22:51:40Z)
+// export sha1: 6aq9sm4xwdyvhlfw4h4rcr5jxtmsswb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: HashMap | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|descr= Returns all values stored in the given [[HashMap]]. The order of the returned Array corresponds to the order of the Array returned by the [[keys]] command.
+
+|gr1= HashMap
+
+|s1= [[values]] hashmap
+
+|p1= hashmap: [[HashMap]]
+
+|r1= [[Array]] - all values stored in ''hashmap''
+
+|x1= <sqf>private _values = values _myHashMap;</sqf>
+
+|seealso= [[keys]] [[toArray]]
+}}

@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/getTerrainHeightASL
+// revision: 377799 (2026-01-03T03:59:49Z)
+// export sha1: 9jnoeb0m0ex0ej3kfiebbj57zf1c5r0
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Arma 2: Operation Arrowhead version 1.55 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.55
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Positions
+
+|descr= Returns the terrain height above the sea for the given position.
+
+|s1= [[getTerrainHeightASL]] position
+
+|p1= position: [[Position#Introduction|Position2D]] or [[Position#Introduction|Position3D]] - [[Position#Introduction|Position3D]] the Z value is ignored
+
+|r1= [[Number]]
+
+|x1= <sqf>_height = getTerrainHeightASL (getPosATL player);</sqf>
+
+|x2= <sqf>_height = getTerrainHeightASL [5213,3245];</sqf>
+
+|x3= <sqf>_seaDepth = abs (getTerrainHeightASL getPosATL player); // sea depth at player's position</sqf>
+
+|seealso= [[setPosASL]] [[getPosASL]] [[getPosATL]] [[ASLToATL]] [[ATLToASL]] [[getElevationOffset]]
+}}

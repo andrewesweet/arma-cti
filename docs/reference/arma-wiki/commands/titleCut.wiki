@@ -1,0 +1,48 @@
+// source: https://community.bistudio.com/wiki/titleCut
+// revision: 319886 (2022-05-13T09:25:39Z)
+// export sha1: m7cyovpo0u0eg0z7hpvfx00s9hdc3jn
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= GUI Control
+
+|descr= Displays text on screen.
+{{Feature|obsolete|[[cutText]] should be used instead.}}
+
+|s1= [[titleCut]] [text, type, speed]
+
+|p1= text: [[String]] - text to be displayed on screen
+
+|p2= type: [[String]] - can be one of [[Title Effect Type]]s
+
+|p3= speed: [[Number]] - (Optional, default 1)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>titleCut ["Hello, how are you?","Plain Down",3];</sqf>
+
+|seealso= [[cutText]]
+}}

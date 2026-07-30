@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/pixelGridNoUIScale
+// revision: 378048 (2026-01-29T12:07:20Z)
+// export sha1: 39wqxs1x44e9b8rx6suhq6jbqso8j1g
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= GUI Control - Positioning
+
+|descr= Returns grid size based on screen resolution and configs: <syntaxhighlight lang="cpp" inline>uiScaleFactor</syntaxhighlight>, <syntaxhighlight lang="cpp" inline>uiScaleMaxGrids</syntaxhighlight>.
+As mentioned in the name of this command, '''the user interface scale is ignored'''.
+
+|s1= [[pixelGridNoUIScale]]
+
+|r1= [[Number]] - grid size, see [[Arma 3: Pixel Grid System]]
+
+|x1= <sqf>private _gridHeightNoUIScale = pixelH * pixelGridNoUIScale;</sqf>
+
+|seealso= [[pixelGrid]] [[pixelGridBase]] [[pixelH]] [[pixelW]] [[Pixel Grid System]]
+}}

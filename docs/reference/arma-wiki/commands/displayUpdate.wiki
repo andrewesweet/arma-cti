@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/displayUpdate
+// revision: 338339 (2023-02-28T14:38:10Z)
+// export sha1: ahjlcftzztfyx8z2o22tqidcj1bvldr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|gr1= GUI Control
+
+|descr= Set the provided display to update its [[Procedural Textures#UI On Texture|UI On Texture]] render.
+
+|s1= [[displayUpdate]] display
+
+|p1= display: [[Display]] - the display to update
+
+|r1= [[Nothing]]
+
+|x1= <sqf>displayUpdate _myDisplay;</sqf>
+
+|seealso= [[displayUniqueName]] {{Link|Procedural Textures#UI On Texture}}
+}}

@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/Template:Color
+// revision: 347895 (2023-11-01T22:05:16Z)
+// export sha1: bobzp6zhsb7w84mggggbourh51vxf3w
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#if:{{{1|}}}
+| <span class="template-colour" style="color:{{{1}}}">{{{2|-No text defined!-{{TemplateCase||[[Category:Color template usage error]]}}}}}</span>
+| {{{2|}}} {{TemplateCase||[[Category:Color template usage error]]}}[[:Category:Color template usage error|(no colour defined!)]]
+}}</includeonly><noinclude>
+
+Helps colouring text.
+
+== Usage ==
+{{<nowiki/>Color|'''''colour'''''|'''''text'''''}}
+* colour (Optional) CSS text colour, can be one of:
+** HTML colour name - ''red'', ''darkgrey'', etc.
+** HTML colour format - '''#RGB''' or '''#RRGGBB'''
+** rgb format - '''rgb(255, 0, 0)'''
+** rgba format - '''rgba(255, 0, 0, 0.5)'''
+** hsl format - '''hsl(120, 100%, 50%)'''
+** hsla format - '''hsla(120, 60%, 70%, 0.3)'''
+* text: the text to be coloured
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{Color}}</nowiki>
+| {{Color}}
+|-
+| <nowiki>{{Color|red}}</nowiki>
+| {{Color|red}}
+|-
+| <nowiki>{{Color||Hello there!}}</nowiki>
+| {{Color||Hello there!}}
+|-
+| <nowiki>{{Color|#33C|Hello there!}}</nowiki>
+| {{Color|#33C|Hello there!}}
+|-
+| <nowiki>{{Color|#C33|General Kenobi!}}</nowiki>
+| {{Color|#C33|General Kenobi!}}
+|-
+| <nowiki>{{Color|darkorange|You are a '''bold''' one.}}</nowiki>
+| {{Color|darkorange|You are a '''bold''' one.}}
+|}
+
+[[Category: Templates]]
+</noinclude>

@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagKeyTest
+// revision: 348390 (2023-11-08T13:00:00Z)
+// export sha1: 1cjhpcouw1x0sbb0i940b3whgh6ktpr
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Returns all user actions according to mode.
+
+|s1= mode call [[BIS_fnc_diagKeyTest]]
+
+|p1=mode: [[Number]] - can be:<br>
+0 - Log all categories<br>
+1 - Log Uncategorized<br>
+2 - Log unassigned<br>
+3 - Log undefined<br>
+4 - Log localized names
+
+|r1= [[String]]
+
+|x1= <sqf>0 call BIS_fnc_diagKeyTest;</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic|Diagnostic Functions]]
+}}

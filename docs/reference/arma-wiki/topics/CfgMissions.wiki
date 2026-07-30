@@ -1,0 +1,463 @@
+// source: https://community.bistudio.com/wiki/CfgMissions
+// revision: 352247 (2024-02-03T18:42:32Z)
+// export sha1: 75rcx852mitrhwmc8mxk2cfmr0fqcj1
+// categories: Category:ArmA: Armed Assault: Editing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Take On Helicopters: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+[[CfgMissions]] contains list of all playable content available for players in ingame menus.
+It is core of missions exported in [[Mission Export#Addon Format|Addon Format]].
+
+
+== Classes ==
+
+{| class="wikitable sortable align-center-col-1"
+! Introduced in
+! Param name
+! class="unsortable" | Description
+
+|-
+| {{GVI|arma1|1.00}}
+|
+==== Campaigns ====
+| Regular campaigns. For information on how to configure the campaigns themselves, please see [[Campaign_Description.ext|the Campaign Description.ext page]].
+<syntaxhighlight lang="cpp">
+class Campaigns
+{
+	class Bootcamp
+	{
+		directory = "A3\Missions_F_Bootcamp\Campaign";
+		filterGroup = 3;	// Only bootcamp campaign will be listed in Campaign dialogue invoked by Bootcamp button.
+		// include the campaign description.ext to make its content re-usable outside of the campaign
+		#include "\A3\Missions_F_Bootcamp\Campaign\description.ext"
+	};
+};
+</syntaxhighlight>
+
+|-
+| {{GVI|arma3|1.00}}
+|
+==== Episodic Campaigns ====
+| {{arma3}} has introduced the ability to configure episodic campaigns, as seen with the official The East Wind campaign.<br>
+Upon expanding the main tree, you will see all available episodes which, when expanded as well, function as a regular campaign.<br>
+For information on how to configure the campaigns themselves, please see [[Campaign Description.ext]].
+<syntaxhighlight lang="cpp">
+class Campaigns
+{
+	class RootCampaign
+	{
+		// Each of these definitions are applied to the root campaign
+		briefingName = "$STR_A3_CampaignName";
+		overviewText = "$STR_A3_CampaignOverview";
+		author = "$STR_A3_Bohemia_Interactive";
+		overviewPicture = "a3\Missions_F_EPA\data\img\Campaign_overview_CA.paa";
+
+		// Classes of episodes included
+		campaigns[] = { "StageA", "StageB", "StageC" };
+
+		class StageA
+		{
+			directory = "A3\Missions_F_EPA\Campaign";
+			// include the campaign description.ext to make it is content re-usable outside of the campaign
+			#include "\A3\Missions_F_EPA\Campaign\description.ext"
+		};
+
+		class StageB
+		{
+			directory = "A3\Missions_F_EPA\CampaignDummy";
+		};
+
+		class StageC
+		{
+			directory = "A3\Missions_F_EPA\CampaignDummy2";
+		};
+	};
+};
+</syntaxhighlight>
+
+|-
+| {{GVI|arma1|1.00}}
+|
+==== Missions ====
+| Singleplayer missions. Menu name can vary in different projects:
+; {{GameCategory|arma0|link= y}}
+: Singleplayer
+; {{GameCategory|arma1|link= y}}
+: Missions
+; {{GameCategory|arma2|link= y}}
+: Scenarios
+; {{GameCategory|arma3|link= y}}
+: Scenarios
+; {{GameCategory|tkoh|link= y}}
+: Challenges
+
+<syntaxhighlight lang="cpp">
+class Missions
+{
+	class SP_WarWelcome
+	{
+		directory = "ca\missions\Scenarios\SP_WarWelcome.utes";
+	};
+};
+</syntaxhighlight>
+
+You can also group your missions into subfolders
+<syntaxhighlight lang="cpp">
+class Missions
+{
+	class PMC_Missions
+	{
+		//--- Subfolder name
+		displayName = "$STR_pmc_scenarios_name";
+
+		//--- Subfolder overview
+		overview = "ca\missions2_pmc\overview.html";
+
+		//--- List of missions
+		class SPP01_PMC
+		{
+			directory = "ca\missions2_pmc\scenarios\SPP03.ProvingGrounds_PMC";
+		};
+	};
+};
+</syntaxhighlight>
+
+|-
+| {{GVI|arma1|1.00}}
+|
+==== Tutorial ====
+| Tutorial scenarios. Structure same as [[#Missions|Missions]].
+
+|-
+| {{GVI|tkoh|1.00}}
+|
+==== TimeTrials ====
+| Time Trial scenarios. Structure same as [[#Missions|Missions]].
+
+|-
+| {{GVI|arma1|1.00}}
+|
+==== MPMissions ====
+| Multiplayer missions. Structure same as [[#Missions|Missions]].
+<syntaxhighlight lang="cpp">
+class CfgMissions
+{
+	class MPMissions
+	{
+		//--- ZEUS
+		class MP_ZGM_m14 // class name MUST match the name in the 'directory' path
+		{
+			briefingName = "$STR_A3_MasterTanoa_missionName";
+			directory = "A3\missions_f_exp\mpscenarios\mp_zgm_m14.Tanoa"; // <--- match
+		};
+	};
+};
+</syntaxhighlight>
+
+|-
+| {{GVI|arma1|1.00}}
+|
+==== Templates ====
+| Singleplayer templates. Accessible through ''<My Missions>'' in SP missions list.
+<syntaxhighlight lang="cpp">
+class Templates
+{
+	class ST_BasicEast
+	{
+		directory = "ca\missions\Templates\Basic.East";
+	};
+};
+</syntaxhighlight>
+
+|-
+| {{GVI|arma1|1.00}}
+|
+==== MPTemplates ====
+| Multiplayer templates. Accessible through ''&lt;My Missions&gt;'' in MP missions list.
+
+|-
+| {{GVI|arma1|1.00}}
+|
+==== Procedural ====
+| Procedural missions. Exclusive for [[Armory]].
+|}
+
+
+== Params ==
+
+Following params works for all mission/campaign classes placed in parent classes listed above.
+
+{| class="wikitable sortable align-center-col-1"
+! Introduced in
+! Param name
+! Type
+! class="unsortable" | Description
+! Compatibility
+
+|-
+| {{GVI|arma1|1.00}}
+|
+==== directory ====
+| [[String]]
+|
+* Missions - path to [[Mission Editor: External#Mission Folder|mission folder]] (where mission.sqm is placed)
+* Campaigns - path to folder where campaign description.ext is placed
+<syntaxhighlight lang="cpp">directory = "ca\missions\Scenarios\SP_WarWelcome.utes";</syntaxhighlight>
+| {{n/a}}
+
+|-
+| {{GVI|tkoh|1.00}}
+|
+==== briefingName ====
+| [[String]]
+| Mission name overriding name set in [[Mission Editor: Intel#Name|Intel menu]].
+| Not in Campaigns
+
+|-
+| {{GVI|tkoh|1.00}}
+|
+==== overviewText ====
+| [[String]]
+| Custom [[Content_Overview|overview description]]
+| Not in MPMissions and MPTemplates
+
+|-
+| {{GVI|tkoh|1.00}}
+|
+==== overviewPicture ====
+| [[String]]
+| Path to custom [[Content_Overview|overview picture]]
+| Not in MPMissions and MPTemplates
+
+|-
+| {{GVI|tkoh|1.00}}
+|
+==== author ====
+| [[String]]
+| [[Content Authorship]] signature
+| Not in MPMissions and MPTemplates
+|}
+You can also put any [[Description.ext]] param in mission class.
+
+
+== Examples ==
+
+{| class="wikitable mw-collapsible mw-collapsed" width="100%"
+! [[{{arma2oa}}]] Missions
+|-
+| ''For simplicity, every parent class contains only one mission example''
+|-
+|
+<syntaxhighlight lang="cpp">
+class CfgMissions
+{
+	class Missions
+	{
+		class SP_Benchmark // 03
+		{
+			directory = "ca\missions_e\scenarios\SPE1_Benchmark1.takistan";
+		};
+	};
+
+	class MPMissions
+	{
+		class MPE_HikeInTheHills
+		{
+			directory = "ca\missions_e\MPScenarios\MPE1_HikeInTheHills.Takistan";
+		};
+	};
+
+	class MPTemplates
+	{
+		class MTE_Deathmatch
+		{
+			directory = "ca\missions_e\MPTemplates\MPTE_Deathmatch";
+		}
+	};
+
+	class Templates
+	{
+		class ST_BasicEast
+		{
+			directory = "ca\missions_e\Templates\Basic.East";
+		};
+	};
+
+	class Campaigns
+	{
+		class Arrowhead
+		{
+			directory = "ca\missions_e\campaign";
+		};
+	};
+
+	class Tutorial
+	{
+		class TE01
+		{
+			directory = "ca\missions_e\Bootcamp\TE01_Basic_controls.Zargabad";
+		};
+	};
+
+	class Procedural
+	{
+		class Armory
+		{
+			onLoadMission = "$STR_LIB_ONLOAD";
+			debriefing = 0;
+			playerKilledScript = "\ca\missions\armory\data\scripts\respawn.sqf";
+			onPauseScript = "\ca\missions\armory\data\scripts\pauseOnload.sqf";
+			onCheat = "[_this] call LIB_onCheatFunction";
+		};
+	};
+};
+</syntaxhighlight>
+|}
+
+{| class="wikitable mw-collapsible mw-collapsed" width="100%"
+! [[Arma 2: Private Military Company]] Missions
+|-
+|
+<syntaxhighlight lang="cpp">
+class CfgMissions
+{
+	class Missions
+	{
+		class PMC_Missions
+		{
+			displayName = "$STR_pmc_scenarios_name";
+			overview = "ca\missions2_pmc\overview.html";
+
+			class SPP01_PMC
+			{
+				directory = "ca\missions2_pmc\scenarios\SPP03.ProvingGrounds_PMC";
+			};
+
+			class SPP02_PMC
+			{
+				directory = "ca\missions2_pmc\scenarios\SPP02.ProvingGrounds_PMC";
+			};
+
+			class SPP03_PMC
+			{
+				directory = "ca\missions2_pmc\scenarios\SPP01.Takistan";
+			};
+
+			class SPPXX_PMC
+			{
+				directory = "ca\missions2_pmc\scenarios\SPP00.Zargabad";
+			};
+		};
+	};
+
+	class Templates
+	{
+		class SupplyDrop
+		{
+			directory = "ca\missions2_PMC\Templates\SupplyDrop.West";
+		};
+	};
+};
+</syntaxhighlight>
+|}
+
+{| class="wikitable mw-collapsible mw-collapsed" width="100%"
+! {{GameCategory|arma3|link= y}} Missions
+|-
+|
+<syntaxhighlight lang="cpp">
+class CfgMissions
+{
+	// Campaigns
+	class Campaigns
+	{
+		class RootCampaign
+		{
+			// Each of these definitions are applied to the root campaign
+			briefingName = "$STR_A3_CampaignName";
+			overviewText = "$STR_A3_CampaignOverview";
+			author = "$STR_A3_Bohemia_Interactive";
+			overviewPicture = "a3\Missions_F_EPA\data\img\Campaign_overview_CA.paa";
+			// Classes of episodes included
+			campaigns[] = { "StageA", "StageB", "StageC" };
+
+			class StageA
+			{
+				directory = "A3\Missions_F_EPA\Campaign";
+				// include the campaign description.ext to make it is content re-usable outside of the campaign
+				#include "\A3\Missions_F_EPA\Campaign\description.ext"
+			};
+
+			class StageB
+			{
+				directory = "A3\Missions_F_EPA\CampaignDummy";
+			};
+
+			class StageC
+			{
+				directory = "A3\Missions_F_EPA\CampaignDummy2";
+			};
+		};
+	};
+
+	// Showcase missions
+	class Showcases
+	{
+		displayName = "$STR_A3_CFGMISSIONS_SHOWCASES0";
+		briefingName = "$STR_A3_CFGMISSIONS_SHOWCASES0";
+		author = "$STR_A3_Bohemia_Interactive";
+		overviewPicture = "a3\Missions_F_Beta\data\img\Campaign_overview_CA.paa";
+		overviewText = "$STR_A3_CFGMISSIONS_SHOWCASES0";
+
+		class Showcase_Combined_arms
+		{
+			briefingName = "$STR_A3_Showcase_Combined_Arms_Mission_Name";
+			directory = "a3\Missions_F_Beta\Showcases\Showcase_Combined_arms.Stratis";
+		};
+	};
+
+	// Multiplayer missions
+	class MPMissions
+	{
+		class MP_COOP_m01
+		{
+			briefingName = "$STR_A3_MP_COOP_m01_briefingName";
+			directory = "A3\missions_f\mpscenarios\MP_COOP_m01.Stratis";
+		};
+	};
+
+	// Challenges
+	class Challenges
+	{
+		briefingName = "$STR_A3_CHALLENGES_NAME";
+		overviewText = "$STR_A3_CHALLENGES_OVERVIEW";
+		overviewPicture = "\a3\Missions_F_Beta\data\img\Challenges_overview_CA.paa";
+		// Firing Drills
+		author = "$STR_A3_Bohemia_Interactive";
+
+		class Firing_Drills
+		{
+			briefingName = "$STR_A3_FIRING_DRILLS_NAME";
+			overviewText = "$STR_A3_FIRING_DRILLS_OVERVIEW";
+			overviewPicture = "\a3\Missions_F_Beta\data\img\FiringDrills_overview_CA.paa";
+			author = "$STR_A3_Bohemia_Interactive";
+
+			class SP_FD04 // Green
+			{
+				directory = "a3\Missions_F_Beta\Challenges\firing_drills\sp_fd04.stratis";
+				briefingName = "$STR_A3_FIRING_DRILLS_SP_FD04_NAME";
+				overviewText = "$STR_A3_FIRING_DRILLS_SP_FD04_OVERVIEW";
+				overviewPicture = "\a3\Missions_F_Beta\data\img\SP_FD04_overview_CA.paa";
+				author = "$STR_A3_Bohemia_Interactive";
+			};
+		};
+	};
+};
+</syntaxhighlight>
+|}
+
+
+{{GameCategory|arma1|Editing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+[[Category: Take On Helicopters: Editing]]

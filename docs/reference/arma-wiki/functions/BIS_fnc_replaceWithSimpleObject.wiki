@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_replaceWithSimpleObject
+// revision: 364329 (2024-05-06T09:38:48Z)
+// export sha1: s11h4bdqrgywy01v32yo1suqxszuxma
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Object Manipulation
+
+|descr= Replaces a normal object with a [[Arma 3: Simple Objects|Simple Object]].
+Object must not contain any crew and must be placed on the ground.
+{{Feature|informative|
+* Useful if you do not have access to simple object adjustment data - e.g. in case of unsupported/discontinued asset.
+* All official assets have the adjustment data defined in config.}}
+
+|pr= Use with caution as this technique is not very clean - it should not be used for many objects and definitely '''not''' in MP games.
+
+|s1= [object] call [[BIS_fnc_replaceWithSimpleObject]]
+
+|p1= object: [[Object]] - the object that will be replaced by a simple object
+
+|r1= [[Object]] - the created [[Arma 3: Simple Objects|Simple Object]]
+
+|x1= <sqf>[tank] call BIS_fnc_replaceWithSimpleObject;</sqf>
+
+|seealso= [[createSimpleObject]] [[BIS_fnc_adjustSimpleObject]] [[BIS_fnc_createSimpleObject]] [[BIS_fnc_simpleObjectData]]
+}}

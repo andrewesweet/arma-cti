@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setObjectShotParents
+// revision: 309709 (2022-05-05T12:09:46Z)
+// export sha1: 536wbsk8j0af4m14znuohfho13yn23f
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.76 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.76
+
+|gr1= Object Manipulation
+
+|descr= ''N/A''
+
+|s1= <!-- [] call [[BIS_fnc_setObjectShotParents]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_setObjectShotParents;</sqf> -->
+
+|seealso=
+}}

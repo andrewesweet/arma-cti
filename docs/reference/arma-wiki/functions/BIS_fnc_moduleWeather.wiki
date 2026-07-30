@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_moduleWeather
+// revision: 309885 (2022-05-05T12:09:54Z)
+// export sha1: d7u3w33yixpdc5xxfutl47yvaxhy70a
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Modules | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Modules
+
+|descr= <pre>/*
+
+	Description:
+	Set overcast and fog
+
+	Parameter(s):
+		0: STRING - mode, can be one of following
+
+			"enableDelay" - enable delayed activation (i.e., weather changes are not applied manually and have to be confirmed by mission)
+				1: BOOL - true to enbale, false to disable
+				Returns: Nothing
+		
+			"isDelayEnabled"
+				Returns: true if delayed activation is enabled, otherwise false
+
+			"commit" - apply weather changes
+	Returns:
+	Nothing
+*/</pre>
+
+{{Wiki|placeholder}}
+
+|s1= <!-- [] call [[BIS_fnc_moduleWeather]] -->
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIS_fnc_moduleWeather;</sqf> -->
+
+|seealso=
+}}

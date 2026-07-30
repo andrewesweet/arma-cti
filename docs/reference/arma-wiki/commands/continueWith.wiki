@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/continueWith
+// revision: 378202 (2026-03-12T15:42:26Z)
+// export sha1: mux7w7r0wkqnprau69cw94oshr8uq4x
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= Program Flow
+
+|descr= Skips the current loop iteration, continues with the next one and returns the given value.
+
+|s1= [[continueWith]] return
+
+|p1= return: [[Anything]] - value to be returned when iteration is skipped
+
+|r1= [[Anything]]
+
+|s2= scriptHandle [[continueWith]] code
+|s2since= arma3 2.22
+|p21= scriptHandle: [[Script Handle]]
+|p22= code: [[Code]] - Code to execute once the [[Script_Handle#Promise_Handles|Promise]] has completed. The code will be executed in [[Scheduler#Unscheduled_Environment|Unscheduled Environment]].
+|r2= [[Nothing]]
+
+|s3= scriptHandle [[continueWith]] [code, args]
+|s3since= arma3 2.22
+|p41= scriptHandle: [[Script Handle]]
+|p42= code: [[Code]] - Code to execute once the [[Script_Handle#Promise_Handles|Promise]] has completed. The code will be executed in [[Scheduler#Unscheduled_Environment|Unscheduled Environment]].
+|p43= args: [[Anything]] - Arguments passed into code in _thisArgs variable
+|r3= [[Nothing]]
+
+|x1= <sqf>
+// results in [2, "TEST", 4]
+private _result = [1, 2, 3] apply {
+	if (_x == 2) then {
+		continueWith "TEST";
+	} else {
+		_x + 1;
+	};
+};
+</sqf>
+
+|seealso= [[continue]] [[break]] [[breakWith]]
+}}

@@ -1,0 +1,74 @@
+// source: https://community.bistudio.com/wiki/Template:Preload/Function
+// revision: 373684 (2025-06-12T18:59:46Z)
+// export sha1: klgkscgczp1lhf3qyq8ce92eetllsgv
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{RV|type=function
+
+|game1= arma3
+|version1= 2.22
+
+|arg= local or global
+|eff= local or global
+
+|serverExec= server or empty
+
+|gr1= Function Group
+
+|serverExec= spawn or nothing (default call)
+
+|descr= DESCRIPTION
+
+|mp= MPBEHAVIOUR
+
+|s1= BIS_fnc_SYNTAX
+
+|p1= PARAMETER1
+
+|p2= PARAMETER2
+
+|p3= PARAMETER3
+
+|p4= PARAMETER4
+
+|p5= PARAMETER5
+
+|r1= RETURNVALUE
+
+
+
+|s2= ALT_SYNTAX
+
+|p21= ALT_PARAMETER1
+
+|p22= ALT_PARAMETER2
+
+|p23= ALT_PARAMETER3
+
+|p24= ALT_PARAMETER4
+
+|p25= ALT_PARAMETER5
+
+|r2= ALT_RETURNVALUE
+
+
+
+|x1= <sqf>EXAMPLE1</sqf>
+
+|x2= <sqf>EXAMPLE2</sqf>
+
+|x3= <sqf>EXAMPLE3</sqf>
+
+|x4= <sqf>EXAMPLE4</sqf>
+
+|x5= <sqf>EXAMPLE5</sqf>
+
+|seealso= SEEALSO
+}}</includeonly><noinclude>
+== Usage ==
+Used by the wiki preload system for functions.
+
+== See Also ==
+* {{Template|RV}}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

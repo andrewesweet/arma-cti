@@ -1,0 +1,13 @@
+// source: https://community.bistudio.com/wiki/Boolean
+// revision: 245309 (2021-02-10T16:02:46Z)
+// export sha1: hq71bww5iwafkcrizg7ojw8alkwe2bp
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Description:'''<br>
+A [[Boolean]] can either be [[true]] or [[false]].
+Note that Booleans are '''real''' types in the scripting language.
+
+In config.cpp (addons), a boolean is simply a poetic licence, a convenience, for a zero/non zero integer.
+
+[[Category: Data Types]]

@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/setMusicEffect
+// revision: 377584 (2026-01-02T06:56:42Z)
+// export sha1: mlpex1f08yfqw5enyaa58r6lwj4h9u5
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Command Group: Triggers | Category:Command Group: Waypoints | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Sounds
+
+|gr2= Triggers
+
+|gr3= Waypoints
+
+|descr= Defines a music track played on activation. If another track is playing already, this will stop it and start the new track.
+
+Track is a subclass name of CfgMusic. In addition, "$STOP$" (stops the current music track) or use <sqf inline>playMusic ""</sqf>.
+When used in a trigger, the track starts on activation but does not automatically stop on deactivation.
+
+|s1= trigger [[setMusicEffect]] track
+
+|p1= trigger: [[Object]]
+
+|p2= track: [[String]]
+
+|r1= [[Nothing]]
+
+|s2= waypoint [[setMusicEffect]] track
+
+|p21= waypoint: [[Waypoint]]
+
+|p22= track: [[String]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_trigger setMusicEffect "Track1";</sqf>
+
+|x2= <sqf>[_group1,1] setMusicEffect "$STOP$";</sqf>
+
+|seealso= [[createTrigger]] [[setSoundEffect]] [[setTitleEffect]]
+}}

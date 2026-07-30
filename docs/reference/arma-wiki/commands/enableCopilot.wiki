@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/enableCopilot
+// revision: 369225 (2024-09-03T10:34:55Z)
+// export sha1: k63vnqtdfrwedq0b7z6suavcds38ufa
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Take On Helicopters version 1.01 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.01
+
+|game2= arma3
+|version2= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Object Manipulation
+
+|descr= Enables copilot actions, toggles availability of the actions related to copilots, such as taking over controls, suspending controls, etc. This command triggers the {{hl|"ControlsShifted"}} event handler.
+
+|mp= Execute this command globally (e.g with [[remoteExec]]) to have it synced on all clients.
+
+|s1= vehicle [[enableCopilot]] enable
+
+|p1= vehicle: [[Object]] - vehicle on which to toggle copilot actions
+
+|p2= enable: [[Boolean]] - enable or disable
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+if (!isCopilotEnabled myHeli) then
+{
+	myHeli enableCopilot true;
+};
+</sqf>
+
+|seealso= [[isCopilotEnabled]] [[currentPilot]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2014-02-17</dd>
+<dt class="note">[[User:Strangepete|Strangepete]]</dt>
+<dd class="note">Only enables the user actions, not who is in control - pilot can lock or unlock co-pilot controls in multiplayer while still true.
+* Actions: [[Arma 3: Actions#LockVehicleControl|LockVehicleControl]], [[Arma 3: Actions#UnlockVehicleControl|UnlockVehicleControl]], [[Arma 3: Actions#SuspendVehicleControl|SuspendVehicleControl]] and [[Arma 3: Actions#TakeVehicleControl|TakeVehicleControl]]
+* You can use the [[Arma 3: Event Handlers#ControlsShifted|Arma 3 Event Handler - ControlsShifted]] to detect [[Arma 3: Actions#TakeVehicleControl|Take]] and [[Arma 3: Actions#SuspendVehicleControl|Release]] actions.</dd>
+
+</dl>

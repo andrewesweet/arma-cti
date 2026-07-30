@@ -1,0 +1,679 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Named_Properties
+// revision: 341662 (2023-06-15T10:31:34Z)
+// export sha1: 524fn5v8twr0vxrxe6qcle2tr3kmtjx
+// categories: Category:Arma 3: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Feature|informative|This page reflects the {{arma3}} v1.88 state.}}
+
+=== See Also ===
+
+* [[LOD]] - very important page to describe the different LOD types
+* [[Map Symbols]] - this appears to be an out of date Arma 1 reference doc but still has important info
+
+=== Named Properties ===
+
+Named Properties can be set in Object Builder. If you don't see this, you must first active the Named Properties window under -> Window -> Named Properties, or simply press {{Controls|Alt|P}}.
+
+Notes:
+* named properties have to be lowercase - however binarize will enforce that. third party tools can cause faulty case though.
+* In case Geometry LOD doesn't exist, all named properties usually defined in Geometry LOD, work also via fallback to the first LOD, which is usually a res LOD.
+* shadowlod, shadowvolumelod, shadowbufferlod , shadowbufferlodvis are valid in all LODS, even though it only makes sense in Resolution LODs. These define the preferred shadowX LOD that belongs to the Resolution LOD.
+
+==== animated ====
+
+TODO
+
+==== aicovers ====
+<!---
+Disables the object for AI cover search. Only relevant for terrain objects.
+
+Usage in LODs:
+* Geometry LOD
+
+Default value: 1
+
+Possible values:
+* 0
+* 1
+--->
+{| class="wikitable"
+|-
+! Property !! Description !! Usage in LODs !! Default Value !! Possible Values
+|-
+| aicovers || Disables the object for AI cover search. Only relevant for terrain objects. ||Geometry LOD || 1 ||0
+1
+|}
+
+==== armor ====
+
+It is a coefficient that controls overall structural integrity. The overall boundingbox factors into that.
+
+Usage in LODs:
+* Geometry LOD
+
+Default value: 200
+
+Possible values/Values found in BI A3 models: [1-15000]
+
+==== autocenter ====
+
+Some model classes are placed according to automatic object center (cars).
+
+This property sets that position to 0.0.0 from .p3d file will be used. It is often used for proxies.
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values:
+* 0
+* 1
+
+==== buoyancy ====
+
+DESC-TODO
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values:
+* 0
+* 1
+
+==== cratercolor ====
+Defines what bullet crater/decal will have. By default, objects with class '''treehard, treesoft, bushhard or bushsoft''' are using brownish craters
+
+example: cratercolor=deadff00 format: AARRGGBB
+
+==== canbeoccluded ====
+
+If it is set to 0, the model will be drawn even if it normally would be culled away by occlusion culling.
+ie. the view geometry is completely hidden behind another objects view geometry.
+
+// Enables conclusion via other objects. value 1 is default. value 0 could be used for large objects that also require a lot of resources to load.
+
+Usage LODs:
+* Geometry LOD
+* View Geometry LOD
+
+Default value: TODO
+
+Possible values:
+* 0
+* 1
+
+==== canocclude ====
+
+{| class="wikitable"
+|-
+! Property !! Description !! Usage in LODs !! Default Value !! Possible Values
+|-
+| canocclude || Objects hidden behind view geometry are normally not rendered by engine.
+Unfortunately, some objects like trees, have many "holes" in their body, so if object will not be rendered behind tree, it will disappear and it won't be visible.
+
+Using canocclude = 0 property will prevent this undesired effect from happening.
+
+// Switches off occlusions, used for objects which cannot act as occluders because their view geometry is not representative of their real shape, like foliage, or are too small to be noticeable occluders.
+| Geometry LOD View Geometry LOD || TODO || 0
+1
+|}
+
+==== class ====
+
+Derives how an object fits onto, or into, the terrain surface.
+
+class affects object behavior, simulation, destruction, and namesound. With extra considerations for class=house.
+
+Note: a '*' means that class might require a Land_xxx config class
+
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* breakablehouseanimated
+* bridge
+// There is no geometry lod. class= should be in 1st (and only) resolution LOD of the model.
+* building *
+* bushhard
+* bushsoft - for bushes that bend easy in slight wind
+* church - clock
+* clutter
+* forest ({{ofp}} only)
+* house *
+// Required for *any* animations to work including ladders, doors, and attendant= (cfgVehicles).
+// "house" also causes game map to show displayname. Note that this behavior is slightly different to an in-game model.
+// The wrp model does not respect the accuracy= setting of the config and will show the name through to actual game play.
+* housesimulated * lights at night *providing* a suitable Land_xxx ""cfgVehicles"" class has been provided.
+* land_decal
+* man
+* none
+* pond - source: https://twitter.com/BXBX_BI/status/972102443818512385
+* road
+// There is no geometry lod. class= should be in 1st (and only) resolution LOD of the model.
+* streetlamp * - pre A3 (?) lights at night *providing* a suitable Land_xxx cfg'''NonAI'''Vehicles class has been provided.
+* thing
+* thingx
+* tower (verify)
+* treehard
+* treesoft - for trees that sway longer in both direction
+* vehicle (verify)
+* wall (verify)
+
+Seems not:
+* bunker
+* bush
+* fence *
+* fuelstation
+* ruins
+
+==== damage/dammage ====
+
+Defines what happens to object after it is destroyed.
+
+Please note that armor value can be set via config.cpp.
+
+Killed eventhandler defined in config.cpp will also work for map embedded objects.
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* building - object will collapse (hidden underground) and get replaced by referenced ruin model
+* engine - object will explode upon destruction
+* no - no visual change will be made when object is destroyed
+* tent - object will collapse
+* tree - object will tilt
+* wall - object will fall over when destroyed
+* wreck - object will get replaced by referenced wreck model
+
+Faulty:
+* bunker
+* bush - object will crush
+* house
+* fence - object will fall over when destroyed
+
+==== destroysound ====
+
+DESC-TODO
+
+Usage LODs:
+* Geometry LOD
+
+Default value: undef
+
+Possible values/Values found in BI A3 models:
+* treebroadleaf
+* treepalm
+
+==== drawimportance ====
+
+Some objects are more important than others. For example undergrowth in jungle is really important only on near distances.
+
+This is a simple multiplier of estimated area of the object on the screen.
+When using small values, objects disappear sooner, because they are regarded smaller on the screen.
+This value affects only when object disappear, It does not affect LOD determination.
+
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models: 0.2
+[0.001f, 10000.0f]
+
+==== explosionshielding ====
+
+DESC-TODO
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models: [0.05 - 0.1 - 3 - 10 - 20 - 100 - 1000]
+
+==== forcenotalpha ====
+
+Some models with much alpha textures on their surfaces were considered as alpha objects and therefore were rendered in a special pass where it was not possible to cast shadows on them. There is a new named property (in geometry LOD) using which you can force the whole model not to be considered as alpha model and shadows will be cast on it therefore.
+
+Negative impacts of such solution:
+Various alpha sorting artifacts may appear on alpha blended parts of such models.
+It will depend on particular situations if the effects will be bearable or not.
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* 1
+
+==== frequent ====
+
+Marks objects that are placed in big amount using instancing.
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* 1
+
+==== keyframe ====
+
+Marked models that are animated by keyframes stored in .p3d.
+
+// boolean property. To indicate whether the LOD has a key frame animation. Also applies to geo and shadow of course as you could animate them.
+
+Usage LODs:
+* Resolution LODs
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* 1
+
+==== loddensitycoef ====
+
+Determines how fast LODs are being switched.
+0.1 means LODs will be switched very fast, 100 there will be barely no LOD switching.
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models: [0.45 - 0.5 - 0.75 - 1.25]
+[0.001f, 10000.0f]
+
+==== lodnoshadow ====
+
+This property will force the engine to skip given LODs with this property set to 1, while calculating model shadows.
+
+You can use it to force the shadow to be cast only by the selected LOD.
+Use it in any LOD with 300+ faces, as they will NOT cast shadow in game anyway (this will speed things up a bit).
+
+Usage LODs:
+* Resolution LODs -  is valid in all Resolution LODs up to resolution 900.
+
+Default value: TODO
+
+Possible values:
+* 0
+* 1
+
+Everything >0 means true. So technically the other values are valid, but they don't mean anything beyond 1.
+
+==== map ====
+
+It declares an appropriate icon to display on the in-game 2d map. Some will also show predefined text or displayName from config on mouseOver. Defines also the default namesound for some (word use in  radio protocol).
+Only relevant to objects (such as structures and vegetation) that are intended to be used/placed in a wrp.
+
+Usage LODs:
+* Geometry LOD
+
+Default value: ''undefined''
+
+Possible values/Values found in BI A3 models:
+
+drawn on map:
+* main road
+* road
+* track
+* trail (new/config only/binarize?)
+
+* building - predefined text. namesound obj_building. shows greyish rectangle
+* house - predefined text. namesound obj_house. shows black rectangle
+
+* fence - no mouseover text. no namesound. shows as colored line
+* wall - no mouseover text. no namesound. shows as colored line
+
+* bush - predefined text. namesound obj_bush
+* small tree - predefined text. namesound obj_tree. if more trees in "forest square" tha minTreesInForestSquare config value, than draw forest (continuous area) on the map
+* tree - predefined text. namesound obj_tree. if more trees in "forest square" tha minTreesInForestSquare config value, than draw forest (continuous area) on the map
+
+* FOREST BORDER (approach used in OFP) - predefined text. namesound obj_forest
+* FOREST SQUARE (approach used in OFP) - predefined text. namesound obj_forest. draw forest (continuous area) on the map
+* FOREST TRIANGLE (approach used in OFP) - predefined text. namesound obj_forest. draw forest (continuous area) on the map
+
+* rock - predefined text. namesound obj_rock
+
+displayName and namesound from config
+* bunker
+* fortress
+
+displayNameand namesound from config
+* fuelstation
+* hospital
+* lighthouse
+* quay
+* view-tower
+
+* ruin - No mouseover text. nothing to do with BI's inappropriately named ruins classes, which are rubble, not ruins. This shows a ruin icon. 
+
+predefined text:
+* busstop - namesound obj_building
+* church - namesound obj_church
+* chapel - namesound obj_church
+* cross - namesound obj_cross
+
+no mouseover text and no namesound:
+* fountain
+* power lines - shows as colored line
+* powersolar
+* powerwave
+* powerwind
+* railway - shows as colored line
+* shipwreck
+* stack
+* tourism
+* transmitter
+* watertower
+
+* hide - object will not be displayed on the map, equivalent of not declaring a map= at all. Typical for streetlamps.
+
+Generated by binarize:
+* FOREST 
+* FOREST_LOD1 - minRocksInRockSquare 
+* FOREST_LOD2 - minTreesInForestSquare
+* ROCKS
+* TOWN_LOD1 - minObjInTownSquare
+
+From the config.cpp/cfgWorlds
+
+==== mass ====
+
+DESC-TODO
+
+Usage LODs:
+* TODO
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* 0
+* 0.2
+* 0.5
+* 1
+* 5
+* 7
+* 100
+* 2007
+* 92079
+* 100000
+
+==== maxsegments ====
+
+TODO
+
+==== minsegments ====
+
+TODO
+
+==== notl ====
+
+TODO
+
+==== placement ====
+
+Assigns specific deformation according to the terrain shape map surface
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* slope - the model is SKEWed according to the terrain shape, vertical lines remain vertical. Better than vertex property “Keep height “ in many cases
+* slopez - variants where the transformation counts with landcontact defined points (1-3)
+* slopex - variants where the transformation counts with landcontact defined points (1-3)
+* slopelandcontact
+
+Unclear:
+* vertical - added for RADAR station (CHANGELOG 1.05 - 1.06)
+
+==== prefershadowvolume ====
+
+Choose which shadow casting technique will be used.
+
+Usage LODs:
+* Geometry LOD
+
+Default value: 1
+
+Possible values/Values found in BI A3 models:
+* 0 - Shadow Buffer
+* 1 - Shadow Volume
+
+==== reversed ====
+
+TODO
+
+==== sbsource ====
+
+Which LOD will be used for shadowbuffer casting.
+If it is not set and shadow=hybrid is present, resolution LODs are used.
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* explicit -  use special SB LODs <11000,11999> (Shadow Buffer?)
+* none - do not render anything
+* shadow
+* shadowvolume - use SV LOD
+* visual - use resolution LODs
+* visualex - use resolution LODs
+
+https://github.com/dedmen/armake/blob/66f5646f6ca756a436c474c9e395010c0a4e56e3/src/p3d.cpp#L2613
+
+==== shadow ====
+
+DESC-TODO
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* hybrid
+
+https://github.com/dedmen/armake/blob/66f5646f6ca756a436c474c9e395010c0a4e56e3/src/p3d.cpp#L2619
+
+Basically it is just either "hybrid" or whatever else or nothing.
+So technically everything is valid, things that are not "hybrid" just mean undefined.
+
+==== shadowlod ====
+
+DESC-TODO
+
+Usage LODs:
+* Resolution LODs
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* -1 (undefined)
+* 10
+* 100
+
+any 32bit signed integer. Negative values besides -1 are invalid though. -1 means undefined.
+They are the numbers of the shadow lod's as a integer. So it should have to match up with a existing shadow lod.
+
+==== shadowvolumelod ====
+
+DESC-TODO
+
+Usage LODs:
+* Resolution LODs
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* -1 (undefined)
+* 10
+
+any 32bit signed integer. Negative values besides -1 are invalid though. -1 means undefined.
+They are the numbers of the shadow lod's as a integer. So it should have to match up with a existing shadow lod.
+
+==== shadowbufferlod ====
+
+DESC-TODO
+
+Usage LODs:
+* Resolution LODs
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* -1 (undefined)
+* 1000
+* 1010
+* 1500
+
+any 32bit signed integer. Negative values besides -1 are invalid though. -1 means undefined.
+They are the numbers of the shadow lod's as a integer. So it should have to match up with a existing shadow lod.
+
+==== shadowbufferlodvis ====
+
+DESC-TODO
+
+Usage LODs:
+* TODO
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+
+any 32bit signed integer. Negative values besides -1 are invalid though. -1 means undefined.
+They are the numbers of the shadow lod's as a integer. So it should have to match up with a existing shadow lod.
+
+==== shadowoffset ====
+
+Offset used to prevent shadow rubber banding when rendering shadow buffers
+
+Usage LODs:
+* Geometry LOD
+
+Default value: If named property is not present, shadowOffset is calculated automatically depending on size of object. Value goes from 0.02 for 2.5m wide, to 0.1 for 10 meters objects
+
+Possible values/Values found in BI A3 models:
+* 0.001
+* 0.02
+
+==== .viewclass ====
+
+TODO
+
+==== viewdensitycoef ====
+
+AI - detection through semi transparent objects.
+
+Coef to hardcoded view density:
+* default: -2.302585093f
+* hardBush: -4.605170186f
+* ForestPlain: -0.024079456087f
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models: [0.1 - 10 - 10000]
+
+==== xcount ====
+
+Used by animated flags - obsolete (verify)
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* 6
+
+==== xsize ====
+
+Used by animated flags - obsolete (verify)
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* 0.6534
+* 0.99
+* 1.3167
+* 1.5
+
+==== xstep ====
+
+Values for movement settings, they are generated automatically when you optimize animation (exporting .rtm from ObjectBuilder).
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* -0.025455
+* -0.011045
+* -0.000267
+* -0.000161
+* -0.000002
+* -0.000000
+* 0
+* 0.000000
+* 0.000001
+* 0.000020
+* 0.000144
+* 0.001785
+* 0.008392
+* 0.112641
+
+==== ycount ====
+
+Used by animated flags - obsolete (verify)
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* 5
+
+==== ysize ====
+
+Used by animated flags - obsolete (verify)
+
+Usage LODs:
+* Geometry LOD
+
+Default value: TODO
+
+Possible values/Values found in BI A3 models:
+* 0.34848
+* 0.528
+* 0.70224
+* 0.8
+
+
+{{GameCategory|arma3|Editing}}

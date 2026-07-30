@@ -1,0 +1,85 @@
+// source: https://community.bistudio.com/wiki/Operation_Flashpoint:_Elite:_Hints_&_Tips
+// revision: 226406 (2021-01-31T17:58:55Z)
+// export sha1: t3hjs8xnuu1xpli25muvc1x9kfq883k
+// categories: Category:Hints & Tips
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Hints & Tips|ELITEHINTS&TIPS]]
+
+
+=== Introduction ===
+Hints and Tips pertaining to gameplay in '''Operation Flashpoint: Elite'''. Feel free to add any tips you might have to the appropriate section.
+
+=== Combat ===
+
+* You can hold your breath for a couple of seconds to stabilize your weapon aim in the game to aim more accurately. Slightly press the firing trigger before you fully press it to fire.
+
+* When you are tired, your aim is less stable and you run slower. Your aiming precision is also influenced by your health status and posture.
+
+* Ballistics and even bullet deflection (ricochets) for machine guns are accurately simulated in the game.
+
+* There are indicators at corners of the screen to give you realistic situational awareness (eye and ear based).
+
+* When you're hit and you don't immediately die (not that this is too likely on higher difficulty settings) the position of red spots on the screen can help you to identify the direction of incoming fire.
+
+* You can lean when you're not moving and you can look around during movement.
+
+* You can bounce the US grenades. The East grenades are like the PC version and explode on impact.
+
+
+
+=== Misc ===
+
+* If you see a distant explosion or shot, it takes a while until you hear it as well, as light travels faster than sound.
+
+
+
+=== Environmental ===
+
+* There are real star constellations and moon phases.
+
+* The sea has fully simulated tides. Wave size and pattern change according to weather conditions at sea.
+
+* Walking across the island on foot from one end to the other takes 45 minutes real time.
+
+* As time passes, weather and daytime changes influence scene lighting and shadowing as in the real world.
+
+* Church bells ring on each hour and if you listen carefully you can count number of chimes to find out the time.
+
+* Trees, bushes and grass not only sway in the wind but are also influenced by helicopters landing nearby.
+
+* There are flies, honey-bees, dragonflies, mosquitoes and butterflies flying around.
+
+* Seagulls fly mostly near the sea. You can spot a hawk, if you're lucky.
+
+* When you move from a brightly lit area into a dark area, you are unable to see well until your eyes have adjusted to the light.
+
+* There is wind (and sometimes even snow) on the hill tops.
+
+* It's possible to see a rainbow in the game, with the proper combination of rain and sun.
+
+* Nice looking vehicle wreckage in the custom missions can be created by placing a wrecked 4X4 object on the road and then placing a lit fire object on top of it. This creates a great smoldering wreck with smoke.
+
+
+
+=== Hi Tech ===
+
+* HDR (High Definition Range) rendering is implemented to allow good dynamic range of the image in various daytime conditions.
+
+* A system similar to HDR is also implemented for sound so you can hear low volume sounds in quiet areas and also large explosions during combat.
+
+* AI can do everything that you can do. AI can also be mixed in with humans when playing multiplayer (as bots and opponents).
+
+
+
+=== Technical Support ===
+
+* You can configure your Xbox to run at 60Hz for smoother gameplay on most modern PAL TVs
+
+* You can play the game in 480p mode for maximum quality on HDTV compliant televisions (NTSC US Xbox and proper cables and HDTV AV pack required)
+
+* You can switch to joystick and driving wheel in addition to the game pad at any time for a more simulator like experience.
+
+* You can connect a sound system and experience 3d Dolby® Digital sound (HDTV AV pack required).
+
+* Certain TVs have a feature which automatically averages sound volume and image brightness - for optimum gameplay it is best to turn it off.

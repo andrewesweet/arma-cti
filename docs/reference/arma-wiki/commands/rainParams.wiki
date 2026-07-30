@@ -1,0 +1,71 @@
+// source: https://community.bistudio.com/wiki/rainParams
+// revision: 377674 (2026-01-02T09:02:36Z)
+// export sha1: 1css1vhsv36d1pd3e1d0871p174vx38
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 2.08 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.08
+
+|gr1= Environment
+
+|descr= Returns currently set [[Arma_3:_CfgWorlds_Config_Reference#class_RainParticles | RainParticles]] params, custom or default.
+
+|mp= {{Feature|important|
+* Rain particle params are '''local'''
+* If used on a dedicated server, this command returns an empty array.
+}}
+
+|s1= [[rainParams]]
+
+|r1= [[Array]] with [rainDropTexture, texDropCount, minRainDensity, effectRadius, windCoef, dropSpeed, rndSpeed, rndDir, dropWidth, dropHeight, dropColor, lumSunFront, lumSunBack, refractCoef, refractSaturation, snow, dropColorStrong]
+{{Columns|4|
+* rainDropTexture: [[String]]
+* texDropCount: [[Number]]
+* minRainDensity: [[Number]]
+* effectRadius: [[Number]]
+* windCoef: [[Number]]
+* dropSpeed: [[Number]]
+* rndSpeed: [[Number]]
+* rndDir: [[Number]]
+* dropWidth: [[Number]]
+* dropHeight: [[Number]]
+* dropColor: [[Color|Color (RGBA)]]
+* lumSunFront: [[Number]]
+* lumSunBack: [[Number]]
+* refractCoef: [[Number]]
+* refractSaturation: [[Number]]
+* snow: [[Boolean]]
+* dropColorStrong: [[Boolean]]
+}}
+
+{{Feature|informative|See [[Arma 3: CfgWorlds Config Reference#class RainParticles|RainParticles]] for more information.}}
+
+|x1= <sqf>
+private _rainParams = rainParams;
+// or
+rainParams params [
+	"_rainDropTexture",
+	"_texDropCount",
+	"_minRainDensity",
+	"_effectRadius",
+	"_windCoef",
+	"_dropSpeed",
+	"_rndSpeed",
+	"_rndDir",
+	"_dropWidth",
+	"_dropHeight",
+	"_dropColor",
+	"_lumSunFront",
+	"_lumSunBack",
+	"_refractCoef",
+	"_refractSaturation",
+	"_snow",
+	"_dropColorStrong"
+];
+</sqf>
+
+|seealso= [[setRain]] [[fogParams]] [[overcast]] [[humidity]] [[wind]] [[forceWeatherChange]]
+}}

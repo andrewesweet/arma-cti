@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/If_Type
+// revision: 245280 (2021-02-10T14:24:06Z)
+// export sha1: m9ucow849nx8x37c7yyeqzsifmatzae
+// categories: Category:Syntactical Helper Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+'''Description:'''
+Helper type used in [[if]]...[[then]] construct.
+
+[[Category:Syntactical Helper Types]]

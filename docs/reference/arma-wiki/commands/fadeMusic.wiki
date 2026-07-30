@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/fadeMusic
+// revision: 376977 (2026-01-01T06:06:52Z)
+// export sha1: 4t50ifnvsg4cd69avup2k9uhddy9ogh
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|eff= local
+
+|gr1= Sounds
+
+|descr= Changes the current music volume to the given value smoothly within the given time. {{Feature|informative|The player's in-game setting is not changed by this command: {{hl|Final Volume {{=}} Client Setting * Scripted Volume}}.}}
+
+|s1= time [[fadeMusic]]  volume
+
+|p1= time: [[Number]] - fade interval in seconds
+
+|p2= volume: [[Number]] in range 0..5 - music volume
+
+|r1= [[Nothing]]
+
+|x1= <sqf>5 fadeMusic 0; // fade current music volume to 0 in 5 sec</sqf>
+
+|seealso= [[fadeSound]] [[fadeRadio]] [[fadeSpeech]] [[fadeEnvironment]] [[environmentVolume]] [[musicVolume]] [[soundVolume]] [[radioVolume]]
+}}

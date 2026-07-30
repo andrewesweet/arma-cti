@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_3:_Field_Manual
+// revision: 155807 (2020-07-26T22:04:33Z)
+// export sha1: g3m07j22lfjm0m37ug7lufrahfvzq9q
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma3}}
+[[Category:Hints & Tips]]

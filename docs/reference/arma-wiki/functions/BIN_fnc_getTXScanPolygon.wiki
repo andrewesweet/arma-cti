@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_getTXScanPolygon
+// revision: 309526 (2022-05-05T12:06:46Z)
+// export sha1: o0lijtozoqodwt1qv9lb4qd984lbi66
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: TXScan | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Description needed | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= TXScan 
+
+|descr= <pre>/*
+		Killzone_Kid
+
+	Description:
+		Returns current intersection polygon for given scan
+
+	Parameter(s):
+		0: STRING - TXScan name
+
+	Returns:
+		ARRAY - polygon points or [] on error
+		
+	Example:
+		"MyScan" call BIN_fnc_getTXScanPolygon
+*/</pre>
+
+{{Wiki|placeholder}} {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_getTXScanPolygon]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_getTXScanPolygon;</sqf> -->
+
+|seealso=
+}}

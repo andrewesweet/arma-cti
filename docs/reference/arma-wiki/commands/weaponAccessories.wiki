@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/weaponAccessories
+// revision: 353156 (2024-03-12T12:48:33Z)
+// export sha1: 70jiw7wo2xwsyhb24qx02bih80z1dxk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Unit Inventory
+
+|descr= Get array with all items linked to a given weapon.
+{{Feature | important | This command does not return loaded magazines, see [[weaponsItems]]}}
+
+|s1= unit [[weaponAccessories]] weapon
+
+|p1= unit: [[Object]]
+
+|p2= weapon: [[String]] - primary, secondary or handgun
+
+|r1= [[Array]] - [silencer, laserpointer/flashlight, optics, bipod]
+
+|x1= <sqf>player weaponAccessories primaryWeapon player; //["","acc_pointer_IR","optic_Aco",""]</sqf>
+
+|seealso= [[weaponAccessoriesCargo]] [[handgunItems]] [[primaryWeaponItems]] [[secondaryWeaponItems]] [[weaponsItems]] [[weaponsItemsCargo]]
+}}
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2014-10-26 - 08:48 (UTC)</dd>
+<dt class="note">[[User:Killzone_Kid|Killzone_Kid]]</dt>
+<dd class="note">
+To check if currently selected muzzle has a silencer:
+<sqf>hasSilencer = player weaponAccessories currentMuzzle player param [0, ""] != "";</sqf>
+</dd>
+
+<dt><dt>
+<dd class="notedate">Posted on 2015-03-16 - 12:03 (UTC)</dd>
+<dt class="note">[[User:Jezuro|Jezuro]]</dt>
+<dd class="note">
+Since revision 129742, this command also returns an attached bipod.
+</dd>
+
+</dl>

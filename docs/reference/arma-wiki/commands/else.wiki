@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/else
+// revision: 364827 (2024-06-16T09:33:24Z)
+// export sha1: 4nmau3t4hn0bcb8kgvycllboy3obz79
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Operation Flashpoint version 1.85 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.85
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Program Flow
+
+|descr= Executes [[else]] code when [[if]] condition returns [[false]].
+
+|s1= thenCode [[else]]  elseCode
+
+|p1= thenCode: [[Code]]
+
+|p2= elseCode: [[Code]]
+
+|r1= [[Array]] with [thenCode, elseCode]
+* thenCode: [[Code]]
+* elseCode: [[Code]]
+
+|x1= <sqf>if (a > b) then { c = 0 } else { c = 1 };</sqf>
+
+|x2= <sqf>
+if (a < b) then {
+	hint "B is greater than A";
+} else {
+	hint "A is greater than B";
+};
+</sqf>
+
+|seealso= [[Control Structures]] [[if]] [[then]]
+}}

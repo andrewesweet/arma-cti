@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_loadFunctions
+// revision: 352078 (2024-02-01T23:24:43Z)
+// export sha1: tf8b0n8aj11impyusdjk1izuql95xwv
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Compile scripts and save them into globally available functions. Defines [[_fnc_scriptName]] variable.
+
+|s1= [fileDirectory, prefix, nameVars, global] call [[BIS_fnc_loadFunctions]]
+
+|p1= fileDirectory: [[String]] - script path
+
+|p2= prefix: [[String]] - variable prefix {{Feature|informative|{{hl|"BIS_fnc_"}} prefix is reserved and cannot be used.}}
+
+|p3= nameVars: [[Array]] of [[String]]s '''or''' [[Array]] of [[Array]] - list of variables to be declared.
+* [[Array]] of [[String]]s to format [variable, variable, …] - final variable is {{hl|prefix + variable}}, loaded from {{hl|path + variable + ".sqf"}}
+* [[Array]] of [[Array]] to format [<nowiki/>[variable, fileName], [variable, fileName], …] - final variable is {{hl|prefix + variable}}, loaded from {{hl|path + fileName + ".sqf"}}
+
+|p4= global: [[Boolean]] - [[true]] for global persistent execution on all clients
+
+|r1= [[Boolean]] - [[true]] when done
+
+|x1= <sqf>["scripts\myDir\", "MY_fnc_", ["script1", "script2"], true] call BIS_fnc_loadFunctions;</sqf>
+
+|x2= <sqf>["scripts\myDir\", "MY_fnc_", [["script1", "script1file"], ["script2", "script2file"]], false] call BIS_fnc_loadFunctions;</sqf>
+
+|seealso= [[compile]] [[compileFinal]] [[preprocessFileLineNumbers]]
+}}

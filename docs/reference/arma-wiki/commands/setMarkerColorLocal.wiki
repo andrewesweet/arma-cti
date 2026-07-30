@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/setMarkerColorLocal
+// revision: 370056 (2024-10-29T12:43:04Z)
+// export sha1: r0tfzkbdbo6oj8lffg8u47k15axzp8j
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Markers | Category:Introduced with Armed Assault version 1.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.04
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Markers
+
+|arg= global
+
+|eff= local
+
+|descr= Set marker's colour. {{arma3}}'s marker colour names and their corresponding RGBA values can be found here: [[Arma 3: CfgMarkerColors]].
+
+|s1= markerName [[setMarkerColorLocal]] colour
+
+|p1= markerName: [[String]]
+
+|p2= colour: [[String]]
+* {{hl|{{Link|Arma 3: CfgMarkerColors|CfgMarkerColors}}}}'s class name
+* {{GVI|arma3|2.20|size= 0.75}} direct colour definition in one of the following formats (values in range 0..1):
+** "#(r,g,b)" (e.g {{hl|"#(1,0,1)"}}, {{hl|#FF00FF}} equivalent)
+** "#(r,g,b,a)" (e.g {{hl|"#(0.678,0.749,0.514,0.5)"}}, {{hl|#ADBF8380}} equivalent). Alpha 'a' in this format is independent of [[markerAlpha]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>"MarkerOne" setMarkerColorLocal "ColorBlack";</sqf>
+
+|x2= <sqf>"MarkerOne" setMarkerColorLocal "#(1,0,0,1)"; // red color (since {{arma3}} v2.20)</sqf>
+
+|seealso= [[markerColor]] [[getMarkerColor]] [[setMarkerAlpha]] [[setMarkerAlphaLocal]] [[setMarkerBrush]] [[setMarkerBrushLocal]] [[setMarkerColor]] [[setMarkerDir]] [[setMarkerDirLocal]] [[setMarkerPos]] [[setMarkerPosLocal]] [[setMarkerShape]] [[setMarkerShapeLocal]] [[setMarkerSize]] [[setMarkerSizeLocal]] [[setMarkerText]] [[setMarkerTextLocal]] [[setMarkerType]] [[setMarkerTypeLocal]]
+}}

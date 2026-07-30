@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/do3DENAction
+// revision: 378238 (2026-03-20T14:10:01Z)
+// export sha1: fwgobfdydhemhrutst29q564y4zegub
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Performs given [[Eden Editor: Actions|Eden Editor action]].
+{{Feature|warning|
+Prior to {{GVI|arma3|2.12|size= 0.75}} it was possible to use this command outside of [[:Category:Eden Editor|Eden Editor]].<br>
+For example <sqf inline>do3DENAction "MissionSave";</sqf> would wipe the [[mission.sqm]] without a way to restore it when executed accidentally during preview.
+}}
+
+|s1= [[do3DENAction]] action
+
+|p1= action: [[String]] - see [[Eden Editor: Actions]]
+
+|r1= [[Nothing]]
+
+|s2since= arma3 2.22
+
+|s2= [[do3DENAction]] [action, argument]
+
+|p21= action: [[String]] - see [[Eden Editor: Actions]]
+
+|p22= argument: [[Anything]] - depends on the used [[Eden Editor: Actions|action]]
+
+|r2= [[Nothing]]
+
+|x1= <sqf>do3DENAction "MissionSave";</sqf>
+
+|x2= <sqf>
+// Since 2.22
+private _par = createHashMap;
+_par set ["name", "testfile"];
+_par set ["folder", "subfolder"];
+_par set ["content", "R3voing"];
+
+do3DENAction ["CreateTextFile", _par];
+</sqf>
+
+|seealso= [[get3DENActionState]]
+}}

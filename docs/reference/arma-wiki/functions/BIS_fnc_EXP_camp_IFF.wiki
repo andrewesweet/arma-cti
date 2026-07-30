@@ -1,0 +1,41 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_EXP_camp_IFF
+// revision: 352439 (2024-02-10T14:09:11Z)
+// export sha1: 59bgd54z4v3gp2dfprddwjv15938l4k
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Campaign | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.62 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.62
+
+|gr1= Campaign
+
+|gr2= GUI
+
+|arg= local
+
+|eff= local
+
+|descr= Simple handling of the Support Team's scripted IFF.</br>
+
+[[File: BIS_fnc_EXP_camp_IFF.png|350px]]
+
+{{Feature|informative|See {{Link|#Example 2}} for icon and name options.}}
+
+|s1= [units] call [[BIS_fnc_EXP_camp_IFF]]
+
+|p1= units: [[Array]] - an array of units on which to apply IFF effect
+
+|r1= [[Boolean]] - [[true]] if successful, [[false]] if not
+
+|x1= <sqf>[units group player] call BIS_fnc_EXP_camp_IFF;</sqf>
+
+|x2= <sqf>
+individualUnit setVariable ["BIS_iconAlways", true];	// to always show the icon and name of a unit
+individualUnit setVariable ["BIS_iconShow", false];		// to hide the icon
+individualUnit setVariable ["BIS_iconName", false];		// to hide the name
+</sqf>
+
+|seealso=
+}}

@@ -1,0 +1,49 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_addWeapon
+// revision: 349361 (2023-11-08T15:35:10Z)
+// export sha1: 6hemkz6znj70pdrehb47wlzgnrg4qfg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Inventory | Category:Function Group: Weapons | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Inventory
+
+|gr2= Weapons
+
+|descr= Adds a weapon to the specified unit, with magazine classnames taken from the weapon's config (in [[:Category:Weapons|CfgWeapons]]).
+This function does not remove magazines nor weapons prior to adding the new weapon, so that still has to be done manually.
+
+|s1= [unit, weaponClassName, quantity, type] call [[BIS_fnc_addWeapon]]
+
+|p1= unit: [[Object]] - unit to add weapon to.
+
+|p2= weaponClassName: [[String]] - weapon Classname (found in [[:Category:Weapons|CfgWeapons]]).
+
+|p3= quantity: [[Number]] - amount of magazines.
+
+|p4= type: [[Number]] or [[String]] - (Optional, default 0)
+* [[Number]] - Index of magazine name that should be used - found in <syntaxhighlight lang="cpp" inline>magazines = {}</syntaxhighlight> array.
+* [[String]] - Magazine name to be used.
+
+|r1= [[String]] - primary'''(!)''' muzzle name of weapon.
+
+|x1= Add 6 dual-purpose magazines and the underwater gun to the player:
+<sqf>[player, "arifle_SDAR_F", 6] call BIS_fnc_addWeapon;</sqf>
+
+|x2= Adds 2 &times; 30 Rnd Stanag Tracer (Red) magazines to bluforUnit, with an Mk20_F:
+<sqf>[bluforUnit, "arifle_Mk20_F", 2, 1] call BIS_fnc_addWeapon;</sqf>
+
+|x3= Alternative syntax of second example, with magazine name written out:
+<sqf>[bluforUnit, "arifle_Mk20_F", 2, "30Rnd_556x45_Stanag_Tracer_red"] call BIS_fnc_addWeapon;</sqf>
+
+|seealso= [[addWeapon]] [[selectWeapon]]
+}}
+
+{{Note
+|user= Tryteyker-
+|timestamp= 20140929181300
+|text= This function only returns the primary muzzle name of a gun. For more info on how to select guns' secondary muzzle names (like an underhand grenade launcher), view the notes on [[selectWeapon]].
+}}

@@ -1,0 +1,95 @@
+// source: https://community.bistudio.com/wiki/ppEffectCreate
+// revision: 376949 (2025-12-31T23:30:11Z)
+// export sha1: lad60g7oysczglj3ahs87k5clfptnuw
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Camera Control
+
+|descr= Creates [[Post Process Effects]] specified by effect name and priority.<br>
+Supported effects:
+{{Columns|4|
+* [[Post Process Effects#RadialBlur|"RadialBlur"]]
+* [[Post Process Effects#ChromAberration|"ChromAberration"]]
+* [[Post Process Effects#WetDistortion|"WetDistortion"]]
+* [[Post Process Effects#ColorCorrections|"ColorCorrections"]]
+* [[Post Process Effects#DynamicBlur|"DynamicBlur"]]
+* [[Post Process Effects#FilmGrain|"FilmGrain"]]
+* [[Post Process Effects#ColorInversion|"ColorInversion"]]
+* [[Post Process Effects#SSAO|"SSAO"]]
+* [[Post Process Effects#Resolution|"Resolution"]]
+}}
+
+|s1= [[ppEffectCreate]] [name, priority]
+
+|p1= name: [[String]] - name of effect type
+
+|p2= priority: [[Number]] - unique priority, defines order of applying effect to the scene. If there is another effect using the same priority, creation will fail
+
+|r1= [[Number]] - handle or -1 if failed
+
+|s2= [[ppEffectCreate]] [<nowiki/>[name1, priority1], ...]
+
+|p21= nameN: [[String]] - name of effect type
+
+|p22= priorityN: [[Number]] - unique priority, defines order of applying effect to the scene. If there is another effect using the same priority, creation will fail
+
+|r2= [[Array]] of [[Number]]s or [[Nothing]] if failed
+
+|x1= <sqf>_ppGrain = ppEffectCreate ["filmGrain", 2005];</sqf>
+
+|x2= If an effect ID is already used, the effect is not created. Use the following:
+<sqf>
+private _name = "ChromAberration";
+private _priority = 200;
+private _handle = -1;
+while
+{
+	_handle = ppEffectCreate [_name, _priority];
+	_handle < 0;
+} do {
+	_priority = _priority + 1;
+};
+
+// _handle can be used here as usual
+</sqf>
+or
+<sqf>
+private _name = "ChromAberration";
+private _priority = 200;
+private _handle = -1;
+waitUntil { _handle = ppEffectCreate [_name, _priority]; _priority = _priority + 1; _handle > 0; };
+
+// _handle can be used here as usual
+</sqf>
+
+|seealso= [[Post Process Effects]] [[ppEffectForceInNVG]] [[ppEffectEnable]] [[ppEffectEnabled]] [[ppEffectDestroy]] [[ppEffectCommit]] [[ppEffectCommitted]] [[ppEffectAdjust]]
+}}
+
+{{Note
+|user= Lou Montana
+|timestamp= 20090629223300
+|text= For some examples, check {{Link|http://forums.bistudio.com/showthread.php?t{{=}}75528|this forums' topic}}.
+}}
+
+{{Note
+|user= Raymix (DayZ)
+|timestamp= 20150624040800
+|text= "wetDistortion" only works if handle is used.
+|game= arma3
+|version= 1.48
+}}

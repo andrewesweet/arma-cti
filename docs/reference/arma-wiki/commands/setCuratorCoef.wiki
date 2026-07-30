@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/setCuratorCoef
+// revision: 348442 (2023-11-08T13:00:15Z)
+// export sha1: gqmmtprfrx7ciq22nlu05s0t2e5omxt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|serverExec= server
+
+|gr1= Curator
+
+|descr= Sets coef for some action (coef have to be bigger than -1 000 000, anything lower is considered as disabled action).
+
+|s1= curatorObj [[setCuratorCoef]] [action, coef]
+
+|p1= curatorObj: [[Object]] - curator module
+
+|p2= action: [[String]] - can be one of:
+* "Place"
+* "Edit"
+* "Delete"
+* "Destroy"
+* "Group"
+* "Synchronize"
+
+|p3= coef: [[Number]] or [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>curatorModule setCuratorCoef ["Place", 1];</sqf>
+
+|x2= <sqf>curatorModule setCuratorCoef ["Delete", -1e10];</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

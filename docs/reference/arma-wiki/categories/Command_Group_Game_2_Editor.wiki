@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Command_Group:_Game_2_Editor
+// revision: 342094 (2023-07-09T12:24:20Z)
+// export sha1: dvxft6kd8tzsa7r1bnboxl53tm5gzmh
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Scripting Commands by Functionality]]
+
+Commands introduced for [[Game 2 Editor]]. They are not compatible with [[:Category:Eden Editor|Eden Editor]]!

@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_boundingBoxDimensions
+// revision: 348566 (2023-11-08T13:42:07Z)
+// export sha1: mr7i88c2m84qbk5azixc7t8f1u69zhb
+// categories: Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 2: Operation Arrowhead: New Functions | Category:Arma 3: Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 2: Operation Arrowhead version 1.50 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2oa
+|version1= 1.50
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Manipulation
+
+|descr=Returns the sizes of the three dimensions of an object's bounding box.
+
+|s1= object call [[BIS_fnc_boundingBoxDimensions]]
+
+|p1= object: [[Object]] - object which bounding box should be returned.
+
+|r1= [[Array]] - bounding box dimensions in [X, Y, Z]
+
+|x1= <sqf>player call BIS_fnc_boundingBoxDimensions;//Returns [1.6,2.2,2] for soldier</sqf>
+
+|seealso= [[boundingBox]] [[boundingCenter]] [[boundingBoxReal]] [[BIS_fnc_boundingBoxCorner]] [[BIS_fnc_boundingBoxMarker]]
+}}

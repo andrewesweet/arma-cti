@@ -1,0 +1,46 @@
+// source: https://community.bistudio.com/wiki/Arma_3_Laws_of_War
+// revision: 339496 (2023-04-28T14:09:05Z)
+// export sha1: ilwp3kyscmhce959bafalbjr1eykvwl
+// categories: Category:Arma 3: DLCs & Expansions | Category:Introduced with Arma 3 version 1.76
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameIntro
+|image= arma3_lawsofwar_logo.png
+|game= arma 3
+|version= 1.76
+|releasedate= 7th September 2017
+|intro= '''Arma 3 Laws of War''' is a paid DLC that was released on 7th September 2017.<br><br> Explore a different perspective on the battlefield with the addition of a humanitarian faction, van, drone, mini-campaign, and much more, in the Arma 3 Laws of War DLC.<br><br>
+'''Charity'''<br>
+Half of Bohemia Interactive's net revenue from direct sales (not as part of bundles) of the Arma 3 Laws of War DLC in 2017 was donated to the International Committee of the Red Cross (ICRC). The total amount raised and donated was $176,667. For more details, please read the announcement. We thank everyone for their contribution!
+|premfeature1= '''International Development & Aid Project''' - This new faction, IDAP, is a non-governmental organization which is specialized in rapidly responding to humanitarian disasters. The faction is composed of new IDAP-branded clothing and gear, including outfits for specialized roles such as Explosive Ordnance Disposal specialists, as well as many other tools, supplies, and other items.
+
+|premfeature2= '''"Remnants of War" mini-campaign''' - Take on the role of IDAP explosive specialist Nathan MacDade, who is tasked with identifying and deactivating mines after the war in the Republic of Altis & Stratis has ended. While you are being interviewed by an investigative journalist, you will uncover what happened in the town of Oreokastro, experiencing the events from the perspective of various sides, in recollections that span multiple periods of time.
+|premfeature3= '''Van''' - IDAP makes use of a new van, which comes in multiple variants, with over twenty custom liveries in total. Each variant caters to a specific purpose, such as cargo logistics or the transport of people. There is also an ambulance variant available.
+|premfeature4= '''Utility & Demining Drone''' - IDAP has a new drone at its disposal to be able to quickly move cargo or supplies to a specific location. A special variant of the drone is used as part of IDAP's demining operations.
+|premfeature5= '''APERS Mine Dispenser''' - The APERS Mine Dispenser is an effective but controversial area denial weapon system. It is typically only used in desperate situations and can have devastating effects even long after a conflict may have ended.
+|premfeature6= '''Vests, Bags, Headgear & Facewear''' - Various pieces of new gear are available to help you carry out your duties. This includes safety vests, messenger bags, hard hats, and press helmets, ear protectors, safety goggles, and much more.
+|premfeature7= The Laws of War DLC adds a variety of miscellaneous additional content, such as time trial challenges for the new van and drone, a paramedic outfit, and a training mine.
+
+|freefeature1= '''Cluster Strikes & UXO''' - Refined cluster strikes provide a highly destructive form of warfare, while the newly introduced simulation of Unexploded Ordnance means that some cluster bomblets might not explode upon impact.
+|freefeature2= '''Mines''' - Several improvements to the identifying and clearing of mines (and other explosives) make for a more manual process, with a greater emphasis on the Mine Detector tool.
+|freefeature3= '''Leaflets''' - You can now drop informational pamphlets from the sky using the new Utility Drone, which can then be picked up and read by people on the ground. You can also apply your own leaflet designs to your own custom scenarios.
+|freefeature4= '''LOAC''' - New additions to the Field Manual cover the Laws of Armed Conflict, while small tweaks to the Arma 3 sandbox also improve the in-game representation of LOAC.
+
+|supportfeature1= '''Supporting Content'''
+|supportfeature2= '''Showcase IDAP & Laws of War''' - Two new individual scenarios offer an introduction to the DLC's new faction and topic. In Showcase IDAP, you visit one of the organization's open days on Altis. while in Showcase Laws of War you take part in an IDAP training course.
+|supportfeature3= '''Additional IDAP Content''' - In support of their operations, IDAP has access to emergency and medical supplies, such as cardboard boxes, food sacks, water bottle packages, blankets, stretchers, IV bags, body bags, and more.
+|supportfeature4= '''Cluster Bombs''' - Deploy three new faction-specific cluster munitions from aircraft, but also deal with unexploded ordnance that may be left behind afterward.
+|supportfeature5= '''Decorative Objects''' - On top of IDAP-specific props, several new decorative objects are available, including shelter tents, separate floor canvases, new furniture, an air-conditioning unit, and plastic net fences.
+|supportfeature6= '''Steam Achievements''' - Unlock a set of extra Steam Achievements related to the new content.
+|supportfeature7= '''Official Soundtrack''' - Listen to new music tracks composed specifically for this DLC.
+|gallery1= A3 LawsOfWar 1.jpg
+|gallery2= A3 LawsOfWar 2.jpg
+|gallery3= A3 LawsOfWar 3.jpg
+|gallery4= A3 LawsOfWar 4.jpg
+|trailer= DwU0Hnch_28
+|start1= {{Link|https://arma3.com/dlc/lawsofwar|Official Site}}
+|start2= {{Link|link= https://store.steampowered.com/app/571710/Arma_3_Laws_of_War/|text= Laws of War DLC on Steam}}
+|isDLC= y
+}}
+
+{{GameCategory|arma3|DLCs & Expansions}}

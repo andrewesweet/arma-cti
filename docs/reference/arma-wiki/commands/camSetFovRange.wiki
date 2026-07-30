@@ -1,0 +1,55 @@
+// source: https://community.bistudio.com/wiki/camSetFovRange
+// revision: 369601 (2024-09-26T20:17:08Z)
+// export sha1: 903bgoh0yg3viyn3kuets8035hvasf4
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Broken Commands | Category:Command Group: Camera Control | Category:Introduced with Operation Flashpoint version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Local Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.00
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|gr1= Broken Commands
+|gr2= Camera Control
+
+|arg= local
+
+|eff= local
+
+|descr= Set the zoom level ('''F'''ield '''O'''f '''V'''iew) start and end values for automatical zooming. <!-- "automatical"? LoL ;-) -->
+<br>
+The default zoom level is ''{{hl|0.7}}'' where ''{{hl|0}}'' is the nearest and ''{{hl|1}}'' is the most far zoom value.
+ {{Feature|warning|This command is '''non-functional'''!}}
+
+|s1= camera [[camSetFovRange]] [minFovRange, maxFovRange]
+
+|p1= camera: [[Object]] - object of type "camera"
+
+|p2= minFovRange: [[Number]]
+
+|p3= maxFovRange: [[Number]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_cam camSetFovRange [0.1, 0.7];</sqf>
+
+|seealso= [[camSetFov]]
+}}

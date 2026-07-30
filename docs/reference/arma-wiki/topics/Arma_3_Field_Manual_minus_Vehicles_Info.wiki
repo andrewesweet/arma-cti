@@ -1,0 +1,172 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Field_Manual_-_Vehicles_Info
+// revision: 255764 (2021-04-24T18:48:18Z)
+// export sha1: h8tg5neo2xcv528tnqrkx41b9t1a70e
+// categories: Category:Arma 3: Field Manual
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Vehicles Info ==
+=== Speedboat ===
+This V shaped boat with two powerful jet impellers excels in speed and maneuverability. It is used by both BLUFOR and OPFOR as a coastline guard boat and for special operations. The speedboat has a front-facing, remote controlled GMG turret. The OPFOR version is commonly equipped with a HMG in the rear, while BLUFOR speedboats are armed with a minigun.
+
+
+=== Assault Boat ===
+An inflatable boat, often nicknamed 'Rubber Duck', is a lightweight boat constructed from tubes containing pressurized gas. Inflatables typically come in lengths between 2 to 7 meters. Due to their speed, weight and portability, inflatable boats are used in diverse roles such as lifeguard and rescue boats and even more often in the military as landing craft.
+
+
+=== Hunter ===
+The Hunter is a Mine-Resistant Ambush Protected (MRAP) vehicle manufactured by US arms factories to provide troops with enhanced protection. The armored hull can withstand light weapons and protects the crew against landmines and improvised explosive devices. Even though the heavy armor and powerful engine cause increased fuel consumption, it has been favored by frontline troops over the lighter vehicles for its easy maintenance and good protection level.<br>Armed version of the sturdy Hunter MRAP vehicle is fitted with a Remotely Controlled Weapons System turret. The turret is fitted with the universal 12.7mm heavy machinegun or the multi-role 40mm Grenade Machine Gun. The armed Hunters are used for troop transport in combat zones, as light reconnaissance vehicles or even in fire support role in COIN operations.
+
+
+=== Ifrit ===
+The Ifrit is a new Mine-Resistant Ambush Protected (MRAP) vehicle designed and manufactured in Russia. Its strengths lie in reliability in extreme weather conditions and crew protection, but its manufacturing costs are somewhat higher compared to other MRAPs. The Ifrit can be fitted with a RCWS turret and armed with a 12.7mm heavy machine gun or a 40mm grenade launcher.
+
+
+=== Quadbike ===
+A Quadbike is an all-terrain vehicle with low-pressure tires and handlebars for steering. The military uses quad bikes for reconnaissance and to access terrain difficult for heavier vehicles.
+
+
+=== MH-9 Hummingbird ===
+A light single-engine helicopter used in special operations by the US Army since the Vietnam War. It now exists in several variants used by both military and civilian transport. The AH-9 Pawnee variant is a light helicopter with the ability to carry anti-ground fixed forward-firing weapons such as unguided rockets and machine guns to provide direct air-support for the special operations forces. The MH-9 Hummingbird is mostly used as a special forces troop transport with two outboard benches. While the M-900 is used for civilian transport.
+
+
+=== PO-30 Orca ===
+The PO-30 Orca is a transport and utility helicopter primarily developed for the Russian Air Force. The helicopter was intended to replace the Mi-8 and can be used for reconnaissance, transporting a full squad with combat gear and special operations. Armed variants of the PO-30 carry a Gatling machine gun and DAGR guided rockets.
+
+
+=== SDV ===
+The SDV is a manned submersible vehicle used to transport teams of divers over long distances under water. Its construction is based on the SEALs Delivery Vehicle from the early 21st century, but the engine and maneuverability have been increased rapidly. Divers drive the SDV while exposed to the water and breathing from the vehicle's compressed air supply or using their own SCUBA gear. The SDV can take up to four passengers, but can be operated by just one person. It also contains a small compartment to store additional equipment.
+
+
+=== AMV-7 Marshall ===
+APC (Armored Personal Carrier) vehicles are used to deploy soldiers and to exfiltrate them away from a battlezone. The AMV-7 Marshall has a mounted 40mm CTWS cannon and a coaxial M2 machinegun. The vehicle is designed to sustain damage from mines and quickly get to a designated position even in rough terrain or over water.
+
+
+=== IFV-6c Panther ===
+While both IFV-6c Panther and IFV-6a Cheetah are based on the Israeli armored personal carrier chassis, they serve different roles in combat. The Panther is an APC that boasts strong armor to achieve maximal protection for the transported crew. The standard Panther is armed with an RCWS HMG, 40mm grenade machine gun and smoke flares and it can take up to 8 soldiers in its cargo area. The Cheetah is a dedicated AA vehicle. The cargo space is taken up by ammunition storage and the vehicle is armed with a 35mm autocannon and smoke flares. The CRV (Combat Recovery Vehicle) variant of the IFV-6 also exists and is used by BLUFOR, designation CRV-6e Bobcat.
+
+
+=== Strider ===
+The Strider is a medium all-terrain vehicle with amphibious capability and enhanced crew protection, designed for reconnaissance and troop transport roles. It has been adopted by most of the AAF as a replacement for the older medium troop transports in the past decade. The unarmed version is fitted with an observation periscope package with thermal imaging and a laser marker.<br>The armed version of the basic troop transporter is equipped with a Remotely Controlled Weapons System turret fitted with the universal 12.7mm heavy machinegun or the multi-role 40mm Grenade Machine Gun. Armed versions share the observation periscope used for reconnaissance missions.
+
+
+=== MSE-3 Marid ===
+The MSE-3 Marid is an amphibious 6-wheeled APC used by the OPFOR army. It's an agile and maneuverable vehicle with a low silhouette and compact size. Its reliability and maintenance costs match the western APCs. It's fitted as standard with an RCWS turret with 40mm GMG and 6.5mm LMG and is able to carry up to 8 soldiers in the cargo space.
+
+
+=== BTR-K Kamysh ===
+The infantry fighting vehicle BTR-K Kamysh and its anti-aircraft cousin ZSU-39 Tigris share the same vehicle platform. Developed by Russia with a pinch of undeniable inspiration from Israeli IFVs, they serve in the OPFOR army as a prime example of a leveling of the technology field with the West. The Kamysh is equipped with a CTWS turret fitted with a 30mm cannon, coaxial machinegun and 2 guided AT missiles, making the vehicle significant in the infantry support role. The Tigris is fitted with a 35mm autocannon and 4 Titan AA missiles.
+
+
+=== HEMTT Transport ===
+The Heavy Expanded Mobility Tactical Truck is an 8x8 diesel-powered off-road truck. It serves as a standard heavy transport vehicle for BLUFOR armies. There are several versions covering the basic transport functions: cargo, refuel, medical, repair, and ammo resupply.
+
+
+=== Zamak Transport ===
+The Zamak heavy truck is a 6x6 vehicle used for transport, repair and utility. Fitted with a powerful V8 engine, these trucks are reliable even in harsh conditions.
+
+
+=== UH-80 Ghost Hawk ===
+The UH-80 Ghost Hawk is a BLUFOR medium-lift utility helicopter with stealth design. The Ghost Hawk was developed for special operations with a focus on deployment and extraction of troops undetected by enemy radar. Some pilots say the stealth design hindered the versatility of the helicopter compared to its predecessor, the UH-60. Nevertheless, the Ghost Hawk is now used as a primary transport helicopter in the BLUFOR army.
+
+
+=== AH-99 Blackfoot ===
+A two-seat reconnaissance and target-designation helicopter used to seek targets for gunships. Even though the construction dates back some time and the program faced cancelation in the first years of the 21st century, the project was finished successfully and the Blackfoot became the first attack helicopter with stealth technology applied even to the main rotor. The Blackfoot is extremely fast, agile and hard to detect even by contemporary sensors, but it is slowly becoming outdated.
+
+
+=== Mi-48 Kajman ===
+A multi-purpose successor to the Mi-24, the Mi-48 Kajman (BLUFOR designation "Hornet") is a large gunship and attack helicopter with troop transport capacity for 8 passengers. The front part of the helicopter is based on the Mi-28 attack helicopter, but the hull is modified for passenger transport. The Kajman has a coaxial rotor providing increased stability.
+
+
+=== CH-49 Mohawk ===
+A successor to the wide-spread Merlin helicopter, the CH-49 Mohawk is a primary transport used by the AAF. It can carry up to 16 soldiers plus crew. Besides the transport version, many other versions of the Mohawk exist, serving as evac, anti-submarine warfare or armed air support. Upgrades from its predecessor consist of more powerful engines and construction changes fully utilizing modern materials.
+
+
+=== MBT-52 Kuma ===
+The MBT-52 Kuma is the main battle tank used by Altian Armed Forces. A batch of a few dozen tanks and spare turrets were bought underprice from a south-European country facing an economic collapse. Like similar MBTs of the era, the Kuma is armed with a 120mm cannon, a 7.62mm coaxial machinegun and a remotely controlled 12.7mm HMG. The level of protection for the crew is also remarkable, thanks to additional armor layers.
+
+
+=== FV-720 Mora ===
+The FV-720 Mora is an infantry fighting vehicle used by the AAF. They were bought by the AAF from British Armed Forces and reconditioned to serve two more decades. The Mora is armed with a 30mm cannon and a coaxial machinegun, providing not only a carrying capacity, but also reliable fire support.
+
+
+=== WY-55 Hellcat ===
+The WY-55 Hellcat is a multi-purpose military helicopter, most suited for anti-surface, battlefield utility with limited transport capability. It replaces its predecessor the Super Lynx, improving the maneuverability, durability and protection. The armed version is fitted with twin miniguns and unguided rockets.
+
+
+=== A-164 Wipeout (CAS) ===
+The A-164 Wipeout is a single-seat aircraft used for close air support and air interdiction. The life-cycle of its predecessor, the A-10, ended in 2030 and the need for replacement grew more important with the rising tension in the Pacific. A limited development budget did not allow for a fresh start, instead the concept of the A-10 was improved with better shape, engines and armaments.
+
+
+=== To-199 Neophron (CAS) ===
+The To-199 Neophron is a new addition to CSAT air forces. An agile single-seat aircraft is used for close air support but can also take down air threats. It cannot carry as much payload as NATO's A-164 and has to rearm more often, but it can take-off from even the roughest terrain, not being as dependent on air bases or aircraft carriers.
+
+
+=== Tempest Transport ===
+The Tempest is a 6x6 mine resistant standard transport truck for the CSAT army. Its primary role is to carry troops and cargo under armor. The modular design of the truck allows several transport versions: cargo, refuel, medical, repair and ammo resupply.
+
+
+=== M2A4 Slammer UP ===
+The M2A4 Slammer UP is the urban purpose variant of the M2A1 Slammer. Compared to the base version, it features heavier armor with reinforced rear of the tank and a remote-controlled turret. This weight increase had to be compensated somewhere - M2A4 is fitted with a less powerful 105mm cannon compared to the 120mm of the base Slammer.
+
+
+=== UGV Stomper ===
+The Stomper is a remote controlled unmanned ground combat vehicle designed for reconnaissance, surveillance and support. It's able to operate autonomously in large areas, while sending real-time data to the control center. Each wheel is powered by a separate electric engine, whose batteries are linked together to a diesel engine power unit. In tight situations, Stompers can be operated by a built-in manual control. An armed variant of the Stomper is fitted with a RCWS turret carrying 40mm cannon and 12.7mm HMG. An OPFOR variant, designated Saif and Saif RCWS, is a cheaper and less reliable copy from the Asian region.
+
+
+=== AR-2 Darter ===
+The Darter AR-2 is a miniature remote-controlled quadcopter perfect for reconnaissance and surveillance. Darters are agile, silent and hard to detect. The ability to hover in one place and use the camera to observe a location is invaluable in setting ambushes. An OPFOR arms manufacturer was able to reverse-engineer the Darter's construction and now produces a similar vehicle. The OPFOR quadcopter is labeled as the Tayran AR-2.
+
+
+=== MQ4A Greyhawk ===
+The MQ-4A Greyhawk is a combat ready unmanned aerial vehicle. It's based on a U.S. design proven by the MQ-9 with a turbo-propeller engine. It carries a modernized tracking and tracing equipment and improved camouflage. OPFOR engineers and manufacturers were able to perfect construction, but their engines are less fuel effective. The OPFOR drone is labeled K40 Ababil-3. Both sides arm the drone with air-to ground Scalpel missiles or laser guided bombs (CAS version).
+
+
+=== Motorboat ===
+A luxury motorboat is an engine powered boat used by the Police and Altis' richest. Its speed and maneuverability is almost on a par with military speedboat.
+
+
+=== Truck ===
+The civilian 4x4 truck is a highly customizable truck with off-road capabilities preferred by the civilian population. It builds on retro design, but utilizes a modern engine and electronics. Most common track setups are boxed, cistern and pick-up set.
+
+
+=== M2A1 Slammer ===
+A licensed copy of an Israeli tank built in Central Europe. This tank is built for versatile use on the battlefield and maximal crew protection, which gained significant appreciation from western Europe armies in the 21st century. The M2A1 is armed with 120mm cannon and a coaxial machinegun and can also be used as mobile artillery. This tank has proven itself in battle and thanks to heavy manufacture, it became the second most wide spread main battle tank of many countries in the world.
+
+
+=== AFV-4 Gorgon ===
+The AFV-4 Gorgon is an amphibious 8x8 all-wheel-drive armored person carrier vehicle, used to carry soldiers to the battlefield and provide fire support. Its remote controlled CTWS turret is usually mounted with a 30mm cannon, coaxial machinegun and 2 AT guided missiles. Crew consists of 11 soldiers including driver, gunner/commander.
+
+
+=== T-100 Varsuk ===
+A modernized version of the Russian T-95 MBT. The ongoing development of the new generation battle tank was restarted in 2016 thanks to revenues from the oil crisis. The new concept of battle tank is lower, lighter with increased maneuverability. The crew was moved from the turret to a more armored body of the tank resulting in increased survivability. The T-100 Varsuk comes with a standard 125mm cannon.
+
+
+=== M4 Scorcher ===
+Based on the licensed version of an Israeli tank chassis, The Scorcher M4 is a 155mm self-propelled artillery at the end of its lifetime cycle. It has modules allowing indirect fire, advanced artillery computer and is able to fire guided cannon ammunition. The rear of the tank was changed from a passenger transport space to ammunition storage.
+
+
+=== M5 Sandstorm MLRS ===
+The Swedish Multiple Launch Rocket System is a replacement of the original U.S. MLRS platform. Built in 2021, it utilizes smaller rockets equipped with modern engines, resulting in longer range and better accuracy. The launch pod is mounted on a Slammer chassis and loads 12 unguided rockets.
+
+
+=== 2S9 Sochor ===
+The 2S9 Sochor is a lightly armored self-propelled artillery piece used by the OPFOR army. It's based on the T-100 chassis and fires 155mm projectiles. The T-100 chassis interior had to be heavily modified to allow support for the 155mm cannon with auto-loader. The modification paid off and several Asian countries are now in the process of modernizing their heavy artillery division with the 2S9.
+
+
+=== Offroad ===
+The 4x4 pickup by Generic Motors is a perfect choice for farmers and hunters. The durable chassis and powerful engine has been designed to withstand anything from the cratered highways of Central Europe to the rugged terrain of the Mediterranean. The armed version is fitted with a .50 caliber heavy machine gun. It provides the combination of mobility and firepower to many paramilitary and guerilla forces in local conflicts around the globe.
+
+
+=== Hatchback ===
+A four-seat hatchback car mass-produced in the Far East to satisfy increasing demand for family cars. Economical operation, enhanced safety and a roomy trunk made these cars widely popular in the whole of Europe. Also comes in a sporty version.
+
+
+=== SUV ===
+A full-size luxury crossover SUV, not particularly suitable for off-road but with good on-road ability. Its powerful engine and 4x4 contribute to the enjoyable rides in higher speeds.
+
+
+=== A-143 Buzzard ===
+The A-143 Buzzard is a single seat light multi-purpose combat aircraft able to carry a wide range of equipment and weaponry. A-143 Buzzard has seven weapon hardpoints, three under each wing and one under the fuselage. Close air support armament consists of 20mm cannon, and two Mk2 unguided bombs, two GBU12 Laser guided bombs and Skalpel AG missiles.
+
+
+{{GameCategory|arma3|Field Manual}}

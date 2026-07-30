@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Module:_Animals
+// revision: 328782 (2022-07-15T15:02:43Z)
+// export sha1: alf07qmup4bo73f7cqlxdp8iowjn76p
+// categories: Category:Arma 3: Editor Modules
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:AnimalsModule.png|thumb]]
+Creates a group of animals and handles their basic behavior.  Deleting the module will delete animals as well.
+
+
+== Parameters ==
+
+=== Species ===
+
+Determines the animal spawned by the module.
+
+# Sheep
+# Goats
+# Poultry
+# Seagulls
+# Butterflies
+
+=== Count ===
+
+The number of animals spawned.  Caution: Too high of a number will overload the engine and possibly cause it to crash, or otherwise run very poorly.
+
+
+== Synching Diagram ==
+
+[[File:AnimalsModuleInfo1.png]] [[File:AnimalsModuleInfo2.png]]
+
+
+== Module Variables ==
+
+All variable associated with this module. found with [[allVariables]], accessed using 
+<sqf>_module getVariable "variableName";</sqf>
+
+# "BIS_fnc_moduleexecute_activate"
+#* [[Boolean]]
+# "BIS_fnc_moduleinit_iscuratorplaced"
+#* [[Boolean]]
+# "BIS_fnc_moduleinit_status"
+#* [[Boolean]]
+# "count"
+#* [[Number]]
+# "BIS_fnc_initmodules_activate"
+#* [[Boolean]]
+# "BIS_fnc_initmodules_priroty"<!-- Not my typo. Copied exactly as it is in game, do not change! -->
+#* [[Number]]
+# "type"
+#* [[String]] - Class name of chosen animal. Example: ''"Sheep_random_F"''
+# "animals"
+#* [[Array]] - Array of every animal ([[Object]]) Spawned by this module. Example: ''Agent 0x8a3282c0''
+
+
+{{GameCategory|arma3|Editor Modules}}

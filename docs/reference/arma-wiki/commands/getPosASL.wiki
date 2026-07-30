@@ -1,0 +1,60 @@
+// source: https://community.bistudio.com/wiki/getPosASL
+// revision: 377441 (2026-01-02T06:46:51Z)
+// export sha1: oo6dh4qnkvx7i4xf1mb6qbkujta97kf
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|game7= ofp
+|version7= 1.99
+
+|arg= global
+
+|gr1= Positions
+
+|descr= Returns the object position height above sea level.
+
+|s1= [[getPosASL]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Position#PositionASL|PositionASL]]
+
+|x1= <sqf>_aslPos = getPosASL player;</sqf>
+
+|x2= <sqf>hint format ["position above sea level: %1", (getPosASL player) select 2];</sqf>
+
+|seealso= [[getPosASLVisual]] [[setPosASL]] [[setPosASL2]] [[position]] [[getPos]] [[getPosATL]] [[getPosASLW]] [[visiblePosition]] [[visiblePositionASL]] [[getTerrainHeightASL]] [[setUnitFreefallHeight]]
+}}
+
+{{Note
+|user= Dr Eyeball
+|timestamp= 20070223073800
+|text= <sqf inline>getPosASL _obj select 2;</sqf> might sometimes return the vertical position above sea level, but over land for stacked objects, it returns the vertical position above the object beneath it or at least affected by this offset.
+The same problem exists for [[getPos]]. There was a {{Link|link= http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?s=e587356595b907e91f96b8817d7f8a26;act=ST;f=71;t=57918|text= discussion}} thread in the BIS forums which suggested the use of the command [[modelToWorld]] instead to get around this issue where an absolute vertical position is required. {{Name|arma1|short}} Ver '''1.02'''.
+}}
+
+{{Note
+|user= SilentKiller
+|timestamp= 20140327191900
+|text= According to [[Code_Optimisation#getPos.2A_and_setPos.2A|Code Optimisation]], this command is among the fastest (2x) and should be used (or [[getPosATL]] or, best performance-wise, [[getPosWorld]]) instead of [[getPos]]/[[position]].
+}}

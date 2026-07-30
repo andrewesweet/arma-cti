@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_EM_Interface
+// revision: 166706 (2020-10-11T16:18:10Z)
+// export sha1: qip8i578jp3yc5jqv5orilfvjxcb92b
+// Vendored snapshot. Do not edit — re-export instead.
+
+Functions related to electro magnetic system in [[Arma 3 Contact]].
+
+[[Category:Function Group: Contact]]

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/unitCombatMode
+// revision: 309924 (2022-05-05T12:16:58Z)
+// export sha1: 5b2azh4yy78mqy441snhunea6rie5o2
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= AI Behaviour
+
+|descr= Gets individual unit's [[Combat Modes|combat mode]]. For more information see [[setUnitCombatMode]].
+
+|s1= [[unitCombatMode]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[String]]
+
+|x1= <sqf>unitCombatMode _unit;</sqf>
+
+|seealso= [[setUnitCombatMode]] [[setCombatMode]] [[combatMode]]
+}}

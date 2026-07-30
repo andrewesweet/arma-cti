@@ -1,0 +1,108 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Remote_Execution
+// revision: 352065 (2024-02-01T23:24:38Z)
+// export sha1: jzizypyum9sda1ob8ngvf0pm11aqsq1
+// categories: Category:Arma 3: Remote Execution | Category:Introduced with Arma 3 version 1.50
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+
+Remote Execution is one of the cornerstones of [[Multiplayer_Scripting|Multiplayer Scripting]] in {{arma3}}. It is primarily needed to properly use commands that have ''local effect'' ({{Icon|localEffect|32}}) or only take ''local arguments'' ({{Icon|localArgument|32}}) in multiplayer.
+
+
+== Remote Execution Framework ==
+
+The Remote Execution Framework currently consists of five commands:
+* [[remoteExec]]
+* [[remoteExecCall]]
+* [[remoteExecutedOwner]]
+* [[isRemoteExecuted]]
+* [[isRemoteExecutedJIP]]
+Furthermore, the framework encompasses an optional config entry to manage security settings: [[Arma_3:_CfgRemoteExec|CfgRemoteExec]].
+
+{{Feature|informative|While primarily designed and used for multiplayer, [[remoteExec]] and [[remoteExecCall]] also work in singleplayer; the behaviour is the same as in multiplayer.}}
+
+
+== Use Case Example ==
+
+To understand why remote execution is needed and what it is used for, consider the following use case example: Let's say we want to use [[hint]] to display an announcement to all the players in our multiplayer mission at the same time.
+
+We already know how to use the [[hint]] command:
+<sqf>hint "You have 5 minutes left!"; // Normal use of hint.</sqf>
+The problem is that [[hint]] only has ''local effect''. This means that only the machine where [[hint]] is executed will display our "You have 5 minutes left!" message.
+But we do not want to display our message to just a single player, we want to display our message to every player.
+
+So in order to solve this problem, we need to make use of remote execution:
+<sqf>
+"You have 5 minutes left!" remoteExec ["hint"];		// remote execution of hint.
+"You have 5 minutes left!" remoteExec ["hint", 0];	// identical to the line above
+</sqf>
+Now all machines that are taking part in our multiplayer session will execute <sqf inline>hint "You have 5 minutes left!";</sqf>, which means that our message will be displayed to every player at the same time - and we have achieved our goal.
+
+{{Feature|informative|If it is available, information about the multiplayer behaviour of a function / command can be found at the top of the documentation page of that function / command. Look for these icons: {{Icon|localArgument|32}}, {{Icon|globalArgument|32}}, {{Icon|localEffect|32}}, {{Icon|globalEffect|32}} and {{Icon|serverExec|32}}. Hover above the icons to view a tooltip explaining what each icon means.}}
+
+
+== Environment ==
+
+{| class="wikitable" style="text-align: center"
+|+ [[Scheduler|Execution in Scheduled Environment]]
+!
+! [[:Category:Scripting Commands|Commands]]
+! [[:Category:Functions|Functions]]
+|-
+! [[remoteExec]]
+| {{Icon|unchecked|link= Scheduler#Unscheduled Environment}}
+| {{Icon|checked|link= Scheduler#Scheduled Environment}}
+|-
+! [[remoteExecCall]]
+| {{Icon|unchecked|link= Scheduler#Unscheduled Environment}}
+| {{Icon|unchecked|link= Scheduler#Unscheduled Environment}}
+|}
+
+
+== History ==
+
+Prior to {{GVI|arma3|1.50}} there was no engine based remote execution. The only officially supported way to execute code on a non-local machine was provided in the form of [[BIS_fnc_MP]]. This scripted framework suffered from several issues, mainly poor network traffic optimization and insufficient security control. The network traffic was optimized in {{GVI|arma3|1.46}}, but the security issues of the scripted framework could not be fixed properly.
+
+To fully address these issues, remote execution was implemented directly into the game engine, with {{GVI|arma3|1.50}} introducing two new script commands - [[remoteExec]] and [[remoteExecCall]] - as well as a new [[Arma_3:_CfgRemoteExec|CfgRemoteExec]], finally allowing for proper and secure remote execution from all machines.
+
+As of {{GVI|arma3|1.54}}, [[BIS_fnc_MP]] has been rewritten to internally use [[remoteExec]] and [[remoteExecCall]], retaining full backwards compatibility and enabling it to work with the updated [[Arma_3:_CfgRemoteExec|CfgRemoteExec]]. '''Despite this, [[BIS_fnc_MP]] is now deprecated and should no longer be used!'''
+
+
+== Advanced Techniques & Functionality Insight ==
+
+=== JIP Queue ===
+
+When a command or function is executed through [[remoteExec]] or [[remoteExecCall]], it can be flagged as persistent. If it is flagged, the statement is stored in the JIP queue on the server (under its unique JIP ID). When a player joins a multiplayer session that has already started (JIP stands for ''Join-In-Progress''), all entries stored in the JIP queue are executed on that player's machine.
+
+==== Overwriting JIP message in the queue ====
+Every JIP message is stored in the queue. If you need to overwrite the JIP message with another message, use the same JIP id for the new message. This way the new message will be stored in the queue under the provided id and will overwrite the previously stored message that used the same id.
+
+==== Deleting JIP message from the queue ====
+To remove a specific JIP message from the queue call the remoteExec with function/command name set to an empty string, the JIP id of the message you want to remove and no other params. 
+<sqf>remoteExec ["", "JIPid"];</sqf>
+
+=== Validity Verification ===
+
+The validity of a remote execution request is verified in two steps:
+# When the request is initiated (issued from a client machine)
+# Before the server broadcasts the request
+
+If the request is initialized directly from the server, step 1 is skipped (this also applies to hosted servers).
+
+A remote execution request has to meet the following criteria to be considered valid:
+# The input parameters must be defined properly
+# The function / command must exist on the machine
+# The function / command must be allowed by [[Arma_3:_CfgRemoteExec|CfgRemoteExec]]: Remote execution must either be fully allowed (<syntaxhighlight lang="cpp" inline>mode = 2</syntaxhighlight>) or the particular function / command must be whitelisted.
+# If JIP is used, JIP must be allowed by [[Arma_3:_CfgRemoteExec|CfgRemoteExec]] (<syntaxhighlight lang="cpp" inline>jip = 1</syntaxhighlight>)
+
+If any of these conditions is not met, the remote execution request is blocked.
+
+
+== See Also ==
+
+* [[Multiplayer Scripting]]
+* [[:Category:Command Group: Multiplayer|Multiplayer Scripting Commands]]
+
+
+{{GameCategory|arma3|Remote Execution}}
+[[Category:Introduced with Arma 3 version 1.50]]

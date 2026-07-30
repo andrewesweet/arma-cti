@@ -1,0 +1,1356 @@
+// source: https://community.bistudio.com/wiki/Global_Mobilization_Ammo
+// revision: 349612 (2023-11-15T15:30:00Z)
+// export sha1: 8zqp7n2tluttli987rd1dzgk8tujw0x
+// categories: Category:Global Mobilization
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable sortable"
+! Magazine Class Name
+! Ammo Class Name
+! Display Name
+! Count
+! Type
+! Penetration Power
+|-
+| gm_1Rnd_hot_heat_dm72
+| gm_missile_hot_heat_dm72
+| DM72
+| 1
+| HEAT
+| 800mm
+|-
+| gm_1Rnd_hot_heat_dm72_blk
+| gm_missile_hot_heat_dm72
+| DM72 (Black)
+| 1
+| HEAT
+| 800mm
+|-
+| gm_1Rnd_hot_heat_dm72_red
+| gm_missile_hot_heat_dm72
+| DM72 (Red)
+| 1
+| HEAT
+| 800mm
+|-
+| gm_1Rnd_hot_heat_dm72_yel
+| gm_missile_hot_heat_dm72
+| DM72 (Yellow)
+| 1
+| HEAT
+| 800mm
+|-
+| gm_1Rnd_hot_heat_dm102
+| gm_missile_hot_heat_dm102
+| DM102
+| 1
+| HEAT
+| 900mm
+|-
+| gm_1Rnd_hot_heat_dm102_blk
+| gm_missile_hot_heat_dm102
+| DM102 (Black)
+| 1
+| HEAT
+| 900mm
+|-
+| gm_1Rnd_hot_heat_dm102_red
+| gm_missile_hot_heat_dm102
+| DM102 (Red)
+| 1
+| HEAT
+| 900mm
+|-
+| gm_1Rnd_hot_heat_dm102_yel
+| gm_missile_hot_heat_dm102
+| DM102 (Yellow)
+| 1
+| HEAT
+| 900mm
+|-
+| gm_1Rnd_hot_heat_dm102_hornetarrow
+| gm_missile_hot_heat_dm102
+| DM102 (Arrow)
+| 1
+| HEAT
+| 900mm
+|-
+| gm_1Rnd_hot_heat_dm102_hornet
+| gm_missile_hot_heat_dm102
+| DM102 (Hornet)
+| 1
+| HEAT
+| 900mm
+|-
+| gm_1Rnd_milan_heat_dm82
+| gm_missile_milan_heat_dm82
+| LATGM HEAT DM82
+| 1
+| HEAT
+| 590mm
+|-
+| gm_1Rnd_milan_heat_dm92
+| gm_missile_milan_heat_dm92
+| LATGM HEAT DM92
+| 1
+| HEAT
+| 790mm
+|-
+| gm_100Rnd_127x99mm_B_M33
+| gm_bullet_127x99mm_B_M33
+| 12.7 mm 100Rnd B M33 Mag
+| 100
+| B
+| 30mm@500m
+|-
+| gm_100Rnd_127x99mm_B_T_M17
+| gm_bullet_127x99mm_B_T_M17
+| 12.7 mm 100Rnd B-T M17 Mag
+| 100
+| B-T
+| 30mm@500m
+|-
+| gm_50Rnd_127x108mm_AP_B32
+| gm_bullet_127x108mm_AP_B32
+| 12.7 mm 50Rnd AP B32 Mag
+| 50
+| AP
+| 20mm@500m
+|-
+| gm_50Rnd_127x108mm_API_T_BZT
+| gm_bullet_127x108mm_API_T_BZT
+| 12.7 mm 50Rnd API-T BZT Mag
+| 50
+| API-T
+| 15mm@500m
+|-
+| gm_50Rnd_145x114mm_AP_B32
+| gm_bullet_145x114mm_AP_B32
+| 14.5 mm 50Rnd AP-T B32
+| 50
+| AP
+| 45mm@1000m
+|-
+| gm_50Rnd_145x114mm_API_BS41
+| gm_bullet_145x114mm_API_BS41
+| 14.5 mm 50Rnd API BS41
+| 50
+| API
+| 52mm@1000m
+|-
+| gm_50Rnd_145x114mm_API_T_BZT
+| gm_bullet_145x114mm_API_T_BZT
+| 14.5 mm 50Rnd API-T BZT
+| 50
+| API-T
+| 40mm@1000m
+|-
+| gm_50Rnd_145x114mm_HEI_T_MDZ
+| gm_bullet_145x114mm_HEI_T_MDZ
+| 14.5 mm 50Rnd HEI-T MDZ
+| 50
+| HEI-T
+| 2mm@1000m
+|-
+| gm_425Rnd_20x139mm_he_t_dm51
+| gm_bullet_20x139mm_he_t_dm51
+| 20 mm 425Rnd HE-T DM51
+| 425
+| HE-T
+| 14mm@1000m
+|-
+| gm_425Rnd_20x139mm_hei_t_dm81
+| gm_bullet_20x139mm_hei_t_dm81
+| 20 mm 425Rnd HEI-T DM81
+| 425
+| HEI-T
+| 16mm@1000m
+|-
+| gm_425Rnd_20x139mm_hei_t_dm111
+| gm_bullet_20x139mm_hei_t_dm111
+| 20 mm 425Rnd HEI-T DM111
+| 425
+| HEI-T
+| 16mm@1000m
+|-
+| gm_75Rnd_20x139mm_ap_t_dm43
+| gm_bullet_20x139mm_ap_t_dm43
+| 20 mm 75Rnd AP-T FM43
+| 75
+| AP-T
+| 45mm@1000m
+|-
+| gm_75Rnd_20x139mm_apds_t_dm63
+| gm_bullet_20x139mm_apds_t_dm63
+| 20 mm 75Rnd APDS-T DM63
+| 75
+| APDS-T
+| 100mm@1000m
+|-
+| gm_150Rnd_23x115mm_hei_ofz
+| gm_bullet_23x115mm_hei_ofz
+| 23 mm 150Rnd HEI OFZ
+| 150
+| HEI
+| 14mm@1000m
+|-
+| gm_150Rnd_23x115mm_hei_t_ofzt
+| gm_bullet_23x115mm_hei_t_ofzt
+| 23 mm 150Rnd HEI-T OFZ
+| 150
+| HEI-T
+| 14mm@1000m
+|-
+| gm_150Rnd_23x115mm_api_t_bzt
+| gm_bullet_23x115mm_api_t_bzt
+| 23 mm 150Rnd API-T BZT
+| 150
+| API-T
+| 40mm@1000m
+|-
+| gm_2000Rnd_23x152mm_hei_ofz
+| gm_bullet_23x152mm_hei_ofz
+| 23 mm 2000Rnd HEI OFZ
+| 2000
+| HEI
+| 14mm@1000m
+|-
+| gm_2000Rnd_23x152mm_hei_t_ofzt
+| gm_bullet_23x152mm_hei_t_ofzt
+| 23 mm 2000Rnd HEI-T OFZT
+| 2000
+| HEI-T
+| 14mm@1000m
+|-
+| gm_2000Rnd_23x152mm_api_t_bzt
+| gm_bullet_23x152mm_api_t_bzt
+| 23 mm 2000Rnd API-T BZT
+| 2000
+| API-T
+| 40mm@1000m
+|-
+| gm_500Rnd_23x152mm_hei_ofz
+| gm_bullet_23x152mm_hei_ofz
+| 23 mm 500Rnd HEI OFZ
+| 500
+| HEI
+| 14mm@1000m
+|-
+| gm_500Rnd_23x152mm_hei_t_ofzt
+| gm_bullet_23x152mm_hei_t_ofzt
+| 23 mm 500Rnd HEI-T OFZT
+| 500
+| HEI-T
+| 14mm@1000m
+|-
+| gm_500Rnd_23x152mm_api_t_bzt
+| gm_bullet_23x152mm_api_t_bzt
+| 23 mm 500Rnd API-T BZT
+| 500
+| API-T
+| 40mm@1000m
+|-
+| gm_400Rnd_25x137mm_hei_t_M792
+| gm_bullet_25x137mm_hei_t_M792
+| 25 mm 400Rnd HEI-T M792
+| 400
+| HEI-T
+| 14mm@1000m
+|-
+| gm_400Rnd_25x137mm_apds_t_M791
+| gm_bullet_25x137mm_apds_t_M791
+| 25 mm 400Rnd APDS-T M791
+| 400
+| APDS-T
+| 60mm@1000m
+|-
+| gm_400Rnd_25x137mm_apfsds_t_M919
+| gm_bullet_25x137mm_apfsds_t_M919
+| 25 mm 400Rnd APFSDS-T M919
+| 400
+| APFSDS-T
+| 100mm@1000m
+|-
+| gm_640Rnd_35x228mm_hei_t_DM21
+| gm_bullet_35x228mm_hei_t_DM21
+| 35 mm 640Rnd HEI-T DM21
+| 640
+| HEI-T
+| 35mm@1000m
+|-
+| gm_40Rnd_35x228mm_hvapds_t_DM23
+| gm_bullet_35x228mm_hvapds_t_DM23
+| 35 mm 40Rnd HVAPDS-T DM23
+| 40
+| HVAPDS-T
+| 130mm@1000m
+|-
+| gm_640Rnd_35x228mm_fapds_t_DM33
+| gm_bullet_35x228mm_fapds_t_DM33
+| 35 mm 640Rnd FAPDS-T DM33
+| 640
+| FAPDS-T
+| 100mm@1000m
+|-
+| gm_1Rnd_73mm_he_og15v
+| gm_shell_73mm_he_og15v
+| 73mm 1Rnd HE OG-15V
+| 1
+| HE
+| 
+|-
+| gm_1Rnd_73mm_heat_pg15v
+| gm_shell_73mm_heat_pg15v
+| 73mm 1Rnd HEAT PG-15V
+| 1
+| HEAT
+| 300mm
+|-
+| gm_1Rnd_76x385mm_he_of350
+| gm_shell_76x385mm_he_of350
+| 76mm 1Rnd HE OF350
+| 1
+| HE
+| 19mm@500m
+|-
+| gm_1Rnd_76x385mm_HEAT_T_bk350m
+| gm_shell_76x385mm_HEAT_T_bk350m
+| 76mm 1Rnd HEAT-T BK350M
+| 1
+| HEAT-T
+| 280mm
+|-
+| gm_1Rnd_76x385mm_HVAP_T_br354p
+| gm_shell_76x385mm_HVAP_T_br354p
+| 76mm 1Rnd HVAP-T BR354P
+| 1
+| HVAP-T
+| 110mm@500m
+|-
+| gm_1Rnd_100x695mm_apfsds_t_bm8
+| gm_shell_100x695mm_apfsds_t_bm8
+| 100mm 1Rnd APFSDS-T BM-8
+| 1
+| APFSDS-T
+| 264mm@1000m
+|-
+| gm_1Rnd_100x695mm_apfsds_t_bm20
+| gm_shell_100x695mm_apfsds_t_bm20
+| 100mm 1Rnd APFSDS-T BM-20
+| 1
+| APFSDS-T
+| 390mm@1000m
+|-
+| gm_1Rnd_100x695mm_apfsds_t_bm25
+| gm_shell_100x695mm_apfsds_t_bm25
+| 100mm 1Rnd APFSDS-T BM-25
+| 1
+| APFSDS-T
+| 325mm@1000m
+|-
+| gm_1Rnd_100x695mm_he_of412
+| gm_shell_100x695mm_he_of412
+| 100mm 1Rnd HE OF-412
+| 1
+| HE
+| 19mm@1000m
+|-
+| gm_1Rnd_100x695mm_heat_t_bk5m
+| gm_shell_100x695mm_heat_t_bk5m
+| 100mm 1Rnd HEAT-T BK-5M
+| 1
+| HEAT-T
+| 400mm
+|-
+| gm_1Rnd_105x617mm_apds_t_dm13
+| gm_shell_105x617mm_apds_t_dm13
+| 105mm 1Rnd APDS-T DM13
+| 1
+| APDS-T
+| 250mm@1000m
+|-
+| gm_1Rnd_105x617mm_apfsds_t_dm23
+| gm_shell_105x617mm_apfsds_t_dm23
+| 105mm 1Rnd APFSDS-T DM23
+| 1
+| APFSDS-T
+| 390mm@1000m
+|-
+| gm_1Rnd_105x617mm_apfsds_t_dm33
+| gm_shell_105x617mm_apfsds_t_dm33
+| 105mm 1Rnd APFSDS-T DM33
+| 1
+| APFSDS-T
+| 420mm@1000m
+|-
+| gm_1Rnd_105x617mm_apfsds_t_dm63
+| gm_shell_105x617mm_apfsds_t_dm63
+| 105mm 1Rnd APFSDS-T DM63
+| 1
+| APFSDS-T
+| 530mm@1000m
+|-
+| gm_1Rnd_105x617mm_heat_mp_t_dm12
+| gm_shell_105x617mm_heat_mp_t_dm12
+| 105mm 1Rnd HEAT-T DM12
+| 1
+| HEAT-MP-T
+| 450mm
+|-
+| gm_30Rnd_105x617mm_apds_t_dm13
+| gm_shell_105x617mm_apds_t_dm13
+| 105mm 30Rnd APDS-T DM13
+| 30
+| APDS-T
+| 250mm@1000m
+|-
+| gm_30Rnd_105x617mm_apfsds_t_dm23
+| gm_shell_105x617mm_apfsds_t_dm23
+| 105mm 30Rnd APFSDS-T DM23
+| 30
+| APFSDS-T
+| 390mm@1000m
+|-
+| gm_30Rnd_105x617mm_apfsds_t_dm33
+| gm_shell_105x617mm_apfsds_t_dm33
+| 105mm 30Rnd APFSDS-T DM33
+| 30
+| APFSDS-T
+| 420mm@1000m
+|-
+| gm_30Rnd_105x617mm_apfsds_t_dm63
+| gm_shell_105x617mm_apfsds_t_dm63
+| 105mm 30Rnd APFSDS-T DM63
+| 30
+| APFSDS-T
+| 530mm@1000m
+|-
+| gm_30Rnd_105x617mm_heat_mp_t_dm12
+| gm_shell_105x617mm_heat_mp_t_dm12
+| 105mm 30Rnd HEAT-T DM12
+| 30
+| HEAT-MP-T
+| 450mm
+|-
+| gm_1Rnd_265mm_flare_single_wht_gc
+| 
+| 26.5 mm Flare (White)
+| 1
+| Flare (White)
+|-
+| gm_1Rnd_265mm_flare_single_grn_gc
+| 
+| 26.5 mm Flare (Green)
+| 1
+| Flare (Green)
+|-
+| gm_1Rnd_265mm_flare_single_red_gc
+| 
+| 26.5 mm Flare (Red)
+| 1
+| Flare (Red)
+|-
+| gm_1Rnd_265mm_flare_multi_red_gc
+| 
+| 26.5 mm Flare (Multi Red)
+| 1
+| Flare (Multi, Red)
+|-
+| gm_1Rnd_265mm_smoke_single_yel_gc
+| 
+| 26.5 mm Smoke (Yellow)
+| 1
+| Smoke (Yellow)
+|-
+| gm_1Rnd_265mm_smoke_single_blu_gc
+| 
+| 26.5 mm Smoke (Blue)
+| 1
+| Smoke (Blue)
+|-
+| gm_1Rnd_265mm_smoke_single_blk_gc
+| 
+| 26.5 mm Smoke (Black)
+| 1
+| Smoke (Black)
+|-
+| gm_1Rnd_265mm_flare_para_yel_DM16
+| 
+| 26.5 mm Flare DM16 (Yellow)
+| 1
+| Flare (Chute, Yellow)
+|-
+| gm_1Rnd_265mm_flare_single_wht_DM15
+| 
+| 26.5 mm Flare DM15 (White)
+| 1
+| Flare (White)
+|-
+| gm_1Rnd_265mm_flare_single_red_DM13
+| 
+| 26.5 mm Flare DM13 (Red)
+| 1
+| Flare (Red)
+|-
+| gm_1Rnd_265mm_flare_single_grn_DM11
+| 
+| 26.5 mm Flare DM11 (Green)
+| 1
+| Flare (Green)
+|-
+| gm_1Rnd_265mm_flare_single_yel_DM10
+| 
+| 26.5 mm Flare DM10 (Yellow)
+| 1
+| Flare (Yellow)
+|-
+| gm_1Rnd_265mm_flare_multi_wht_DM25
+| 
+| 26.5 mm Flare DM25 (Multi White)
+| 1
+| Flare (Multi, White)
+|-
+| gm_1Rnd_265mm_flare_multi_red_DM23
+| 
+| 26.5 mm Flare DM23 (Multi Red)
+| 1
+| Flare (Multi, Red)
+|-
+| gm_1Rnd_265mm_flare_multi_grn_DM21
+| 
+| 26.5 mm Flare DM21 (Multi Green)
+| 1
+| Flare (Multi, Green)
+|-
+| gm_1Rnd_265mm_flare_multi_yel_DM20
+| 
+| 26.5 mm Flare DM20 (Multi Yellow)
+| 1
+| Flare (Multi, Yellow)
+|-
+| gm_1Rnd_265mm_smoke_single_yel_DM19
+| 
+| 26.5 mm Smoke DM19 (Yellow)
+| 1
+| Smoke (Yellow)
+|-
+| gm_1Rnd_265mm_smoke_single_org_DM22
+| 
+| 26.5 mm Smoke DM22 (Orange)
+| 1
+| Smoke (Orange)
+|-
+| gm_1Rnd_265mm_smoke_single_vlt_DM24
+| 
+| 26.5 mm Smoke DM24 (Purple)
+| 1
+| Smoke (Violet)
+|-
+| gm_1Rnd_265mm_flare_multi_nbc_DM47
+| 
+| 26.5 mm Flare DM47 (NBC)
+| 1
+| Flare (NBC)
+|-
+| gm_1Rnd_bastion_heat_9M117
+| gm_missile_bastion_heat_9M117
+| Bastion HEAT 9M117
+| 1
+| HEAT
+| 550mm
+|-
+| gm_1Rnd_bastion_heat_9M117M
+| gm_missile_bastion_heat_9M117M
+| Bastion HEAT 9M117M
+| 1
+| HEAT
+| 600mm
+|-
+| gm_1Rnd_bastion_heat_9M117M1
+| gm_missile_bastion_heat_9M117M1
+| Bastion HEAT 9M117M1
+| 1
+| HEAT
+| 750mm
+|-
+| gm_1Rnd_2650mm_potato_dm11
+| 
+| 265mm 1Rnd POTATO DM11
+| 1
+| Po. Tato
+|-
+| gm_2Rnd_76mm_RP_dm35
+| 
+| 
+| 2
+| 
+|-
+| gm_2Rnd_81mm_RP_zd6
+| 
+| 
+| 2
+| 
+|-
+| gm_10Rnd_engine_smoke
+| 
+| 
+| 10
+| 
+|-
+| gm_1Rnd_84x245mm_heat_t_DM12_carlgustaf
+| gm_rocket_84x245mm_HEAT_T_DM12
+| 84 mm HEAT-T DM12
+| 1
+| HEAT-T
+| 350mm
+|-
+| gm_1Rnd_84x245mm_heat_t_DM12a1_carlgustaf
+| gm_rocket_84x245mm_HEAT_T_DM12A1
+| 84 mm HEAT-T DM12A1
+| 1
+| HEAT-T
+| 400mm
+|-
+| gm_1Rnd_84x245mm_heat_t_DM22_carlgustaf
+| gm_rocket_84x245mm_HEAT_T_DM22
+| 84 mm HEAT-T DM22
+| 1
+| HEAT-T
+| 450mm
+|-
+| gm_1Rnd_84x245mm_heat_t_DM32_carlgustaf
+| gm_rocket_84x245mm_HEAT_T_DM32
+| 84 mm HEAT-T DM32
+| 1
+| HEAT-T
+| 500mm
+|-
+| gm_1Rnd_84x245mm_ILLUM_DM16_carlgustaf
+| 
+| 84 mm Illum DM16
+| 1
+| ILLUM
+|-
+| gm_1Rnd_fagot_heat_9m111
+| gm_missile_fagot_heat_9m111
+| Fagot HEAT 9M111
+| 1
+| HEAT
+| 410mm
+|-
+| gm_1Rnd_70mm_he_m585_fim43
+| 
+| FIM-43 M585
+| 1
+| HE
+|-
+| gm_1Rnd_70mm_he_m585_fim43_dummy
+| 
+| FIM-43 M585
+| 1
+| HE
+|-
+| gm_1Rnd_maljutka_heat_9m14
+| gm_missile_maljutka_heat_9m14
+| Maljutka HEAT 9M14
+| 1
+| HEAT
+| 400mm
+|-
+| gm_1Rnd_maljutka_heat_9m14m
+| gm_missile_maljutka_heat_9m14m
+| Maljutka HEAT 9M14M
+| 1
+| HEAT
+| 430mm
+|-
+| gm_1Rnd_maljutka_heat_9m14_pylon
+| gm_missile_maljutka_heat_9m14
+| 9M14
+| 1
+| HEAT
+| 400mm
+|-
+| gm_1Rnd_maljutka_heat_9m14m_pylon
+| gm_missile_maljutka_heat_9m14m
+| 9M14M
+| 1
+| HEAT
+| 430mm
+|-
+| gm_16rnd_55mm_he_s5_mars2_grn
+| gm_rocket_55mm_HE_s5
+| S-5 (Green)
+| 16
+| HE
+|-
+| gm_16rnd_55mm_he_s5_mars2_bge
+| gm_rocket_55mm_HE_s5
+| S-5 (Beige)
+| 16
+| HE
+|-
+| gm_16rnd_55mm_he_s5_mars2_gry
+| gm_rocket_55mm_HE_s5
+| S-5 (Grey)
+| 16
+| HE
+|-
+| gm_16rnd_55mm_he_s5_mars2_blu
+| gm_rocket_55mm_HE_s5
+| S-5 (Blue)
+| 16
+| HE
+|-
+| gm_16rnd_55mm_he_s5_mars2_oli
+| gm_rocket_55mm_HE_s5
+| S-5 (Olive)
+| 16
+| HE
+|-
+| gm_16rnd_55mm_heat_s5k_mars2_grn
+| gm_rocket_55mm_heat_s5k
+| S-5K (Green)
+| 16
+| HEAT
+| 130mm
+|-
+| gm_16rnd_55mm_heat_s5k_mars2_bge
+| gm_rocket_55mm_heat_s5k
+| S-5K (Beige)
+| 16
+| HEAT
+| 130mm
+|-
+| gm_16rnd_55mm_heat_s5k_mars2_gry
+| gm_rocket_55mm_heat_s5k
+| S-5K (Grey)
+| 16
+| HEAT
+| 130mm
+|-
+| gm_16rnd_55mm_heat_s5k_mars2_blu
+| gm_rocket_55mm_heat_s5k
+| S-5K (Blue)
+| 16
+| HEAT
+| 130mm
+|-
+| gm_16rnd_55mm_heat_s5k_mars2_oli
+| gm_rocket_55mm_heat_s5k
+| S-5K (Olive)
+| 16
+| HEAT
+| 130mm
+|-
+| gm_16rnd_55mm_illum_s5O_mars2_grn
+| 
+| S-5-O (Green)
+| 16
+| ILLUM
+|-
+| gm_16rnd_55mm_illum_s5O_mars2_bge
+| 
+| S-5-O (Beige)
+| 16
+| ILLUM
+|-
+| gm_16rnd_55mm_illum_s5O_mars2_gry
+| 
+| S-5-O (Grey)
+| 16
+| ILLUM
+|-
+| gm_16rnd_55mm_illum_s5O_mars2_blu
+| 
+| S-5-O (Blue)
+| 16
+| ILLUM
+|-
+| gm_16rnd_55mm_illum_s5O_mars2_oli
+| 
+| S-5-O (Olive)
+| 16
+| ILLUM
+|-
+| gm_1Rnd_44x537mm_heat_dm32_pzf44_2
+| gm_rocket_44x537mm_HEAT_dm32
+| 44 mm HEAT DM32
+| 1
+| HEAT
+| 380mm
+|-
+| gm_1Rnd_40mm_heat_pg7v_rpg7
+| gm_rocket_40mm_HEAT_pg7v
+| 40 mm HEAT PG-7V
+| 1
+| HEAT
+| 320mm
+|-
+| gm_1Rnd_40mm_heat_pg7vl_rpg7
+| gm_rocket_40mm_HEAT_pg7vl
+| 40 mm HEAT PG-7VL
+| 1
+| HEAT
+| 500mm
+|-
+| gm_1Rnd_72mm_he_9m32m
+| 
+| Strela-2M 9M32M
+| 1
+| HE
+|-
+| gm_1Rnd_72mm_he_9m32m_dummy
+| 
+| Strela-2M 9M32M
+| 1
+| HE
+|-
+| gm_2rnd_72mm_he_9m32m_gad
+| 
+| 9M32M
+| 2
+| HE
+|-
+| gm_2rnd_72mm_he_9m32m_gad_mi2_left
+| 
+| 9M32M
+| 2
+| HE
+|-
+| gm_2rnd_72mm_he_9m32m_gad_mi2_right
+| 
+| 9M32M
+| 2
+| HE
+|-
+| gm_120Rnd_762x51mm_B_T_DM21_mg3_grn
+| 
+| 7.62 mm 120Rnd Ball-T DM21 Mag
+| 120
+| B-T
+|-
+| gm_120Rnd_762x51mm_B_T_DM21A1_mg3_grn
+| 
+| 7.62 mm 120Rnd Ball-T DM21A1 Mag
+| 120
+| B-T
+|-
+| gm_120Rnd_762x51mm_B_T_DM21A2_mg3_grn
+| 
+| 7.62 mm 120Rnd Ball-T DM21A2 Mag
+| 120
+| B-T
+|-
+| gm_240Rnd_762x51mm_B_T_DM21_mg3
+| 
+| 7.62 mm 240Rnd Ball-T DM21 Mag
+| 240
+| B-T
+|-
+| gm_250Rnd_762x51mm_B_T_DM21_mg3
+| 
+| 7.62 mm 250Rnd Ball-T DM21 Mag
+| 250
+| B-T
+|-
+| gm_500Rnd_762x51mm_B_T_DM21_mg3
+| 
+| 7.62 mm 500Rnd Ball-T DM21 Mag
+| 500
+| B-T
+|-
+| gm_1000Rnd_762x51mm_B_T_DM21_mg3
+| 
+| 7.62 mm 1000Rnd Ball-T DM21 Mag
+| 1000
+| B-T
+|-
+| gm_100Rnd_762x54mmR_B_T_7t2_pk_grn
+| 
+| 7.62 mmR 100Rnd Ball-T 7T2 Mag
+| 100
+| B-T
+|-
+| gm_100Rnd_762x54mmR_API_7bz3_pk_grn
+| 
+| 7.62 mmR 100Rnd API 7BZ3 Mag
+| 100
+| API
+|-
+| gm_1000Rnd_762x54mmR_B_T_7t2_pk
+| 
+| 7.62 mmR 1000Rnd Ball-T 7T2 Mag
+| 1000
+| B-T
+|-
+| gm_4000Rnd_762x54mmR_B_T_7t2_pk
+| 
+| 7.62 mmR 4000Rnd Ball-T 7T2 Mag
+| 4000
+| B-T
+|-
+| gm_1000Rnd_762x54mmR_API_7bz3_pk
+| 
+| 7.62 mmR 1000Rnd API 7BZ3 Mag
+| 1000
+| API
+|-
+| gm_100Rnd_762x54mm_B_T_t46_pk_grn
+| 
+| 7.62 mmR 100Rnd Ball-T T46 Mag
+| 100
+| B-T
+|-
+| gm_100Rnd_762x54mm_API_b32_pk_grn
+| 
+| 7.62 mmR 100Rnd API B32 Mag
+| 100
+| API
+|-
+| gm_1000Rnd_762x54mm_B_T_t46_pk
+| 
+| 7.62 mmR 1000Rnd Ball-T T46 Mag
+| 1000
+| B-T
+|-
+| gm_1000Rnd_762x54mm_API_b32_pk
+| 
+| 7.62 mmR 1000Rnd API B32 Mag
+| 1000
+| API
+|-
+| gm_200Rnd_762x54mmR_B_T_7t2_sgm
+| 
+| 7.62 mmR 200Rnd Ball-T 7T2 Mag
+| 200
+| B-T
+|-
+| gm_200Rnd_762x54mmR_API_7bz3_sgm
+| 
+| 7.62 mmR 200Rnd API 7BZ3 Mag
+| 200
+| API
+|-
+| gm_1000Rnd_762x54mmR_B_T_7t2_sgm
+| 
+| 7.62 mmR 1000Rnd Ball-T 7T2 Mag
+| 1000
+| B-T
+|-
+| gm_1000Rnd_762x54mmR_API_7bz3_sgm
+| 
+| 7.62 mmR 1000Rnd API 7BZ3 Mag
+| 1000
+| API
+|-
+| gm_32Rnd_9x19mm_B_DM51_mp2_blk
+| 
+| 9 mm 32Rnd Ball DM51 Mag
+| 32
+| B
+|-
+| gm_32Rnd_9x19mm_B_DM11_mp2_blk
+| 
+| 9 mm 32Rnd Ball DM11 Mag
+| 32
+| B
+|-
+| gm_30Rnd_9x19mm_B_DM51_mp5_blk
+| 
+| 9 mm 30Rnd Ball DM51 Mag
+| 30
+| B
+|-
+| gm_30Rnd_9x19mm_B_DM11_mp5_blk
+| 
+| 9 mm 30Rnd Ball DM11 Mag
+| 30
+| B
+|-
+| gm_30Rnd_9x19mm_B_DM51_mp5a3_blk
+| 
+| 9 mm 30Rnd Ball DM51 Mag
+| 30
+| B
+|-
+| gm_30Rnd_9x19mm_B_DM11_mp5a3_blk
+| 
+| 9 mm 30Rnd Ball DM11 Mag
+| 30
+| B
+|-
+| gm_15Rnd_9x18mm_B_pst_pm63_blk
+| 
+| 9 mm 15Rnd Ball PST Mag
+| 15
+| B
+|-
+| gm_25Rnd_9x18mm_B_pst_pm63_blk
+| 
+| 9 mm 25Rnd Ball PST Mag
+| 25
+| B
+|-
+| gm_8Rnd_9x19mm_B_DM11_p1_blk
+| 
+| 9 mm 8Rnd Ball DM11 Mag
+| 8
+| B
+|-
+| gm_8Rnd_9x19mm_B_DM51_p1_blk
+| 
+| 9 mm 8Rnd Ball DM51 Mag
+| 8
+| B
+|-
+| gm_8Rnd_9x18mm_B_pst_pm_blk
+| 
+| 9 mm 8Rnd Ball PST Mag
+| 8
+| B
+|-
+| gm_explosive_petn_charge_dummy
+| 
+| PETN Charge
+| 1
+| 
+|-
+| gm_30Rnd_762x39mm_B_57N231_ak47_blk
+| 
+| 7.62 mm 30Rnd Ball 57N231 Mag
+| 30
+| B
+|-
+| gm_30Rnd_762x39mm_B_T_57N231P_ak47_blk
+| 
+| 7.62 mm 30Rnd Ball-T 57N231P Mag
+| 30
+| B-T
+|-
+| gm_30Rnd_762x39mm_AP_7N23_ak47_blk
+| 
+| 7.62 mm 30Rnd AP 7N23 Mag
+| 30
+| AP
+|-
+| gm_30Rnd_762x39mm_B_M43_ak47_blk
+| 
+| 7.62 mm 30Rnd Ball M43 Mag
+| 30
+| B
+|-
+| gm_30Rnd_762x39mm_B_T_M43_ak47_blk
+| 
+| 7.62 mm 30Rnd Ball-T M43 Mag
+| 30
+| B-T
+|-
+| gm_75Rnd_762x39mm_B_57N231_ak47_blk
+| 
+| 7.62 mm 75Rnd Ball 57N231 Mag
+| 75
+| B
+|-
+| gm_75Rnd_762x39mm_B_T_57N231P_ak47_blk
+| 
+| 7.62 mm 75Rnd Ball-T 57N231P Mag
+| 75
+| B-T
+|-
+| gm_75Rnd_762x39mm_AP_7N23_ak47_blk
+| 
+| 7.62 mm 75Rnd AP 7N23 Mag
+| 75
+| AP
+|-
+| gm_75Rnd_762x39mm_B_M43_ak47_blk
+| 
+| 7.62 mm 75Rnd Ball M43 Mag
+| 75
+| B
+|-
+| gm_75Rnd_762x39mm_B_T_M43_ak47_blk
+| 
+| 7.62 mm 75Rnd Ball-T M43 Mag
+| 75
+| B-T
+|-
+| gm_30Rnd_545x39mm_B_7N6_ak74_prp
+| 
+| 5.45 mm 30Rnd Ball 7N6 Mag
+| 30
+| B
+|-
+| gm_30Rnd_545x39mm_B_T_7T3_ak74_prp
+| 
+| 5.45 mm 30Rnd Ball-T 7T3 Mag
+| 30
+| B-T
+|-
+| gm_30Rnd_545x39mm_B_7N6_ak74_org
+| 
+| 5.45 mm 30Rnd Ball 7N6 Mag
+| 30
+| B
+|-
+| gm_30Rnd_545x39mm_B_T_7T3_ak74_org
+| 
+| 5.45 mm 30Rnd Ball-T 7T3 Mag
+| 30
+| B-T
+|-
+| gm_45Rnd_545x39mm_B_7N6_ak74_prp
+| 
+| 5.45 mm 45Rnd Ball 7N6 Mag
+| 45
+| B
+|-
+| gm_45Rnd_545x39mm_B_T_7T3_ak74_prp
+| 
+| 5.45 mm 45Rnd Ball-T 7T3 Mag
+| 45
+| B-T
+|-
+| gm_45Rnd_545x39mm_B_7N6_ak74_org
+| 
+| 5.45 mm 45Rnd Ball 7N6 Mag
+| 45
+| B
+|-
+| gm_45Rnd_545x39mm_B_T_7T3_ak74_org
+| 
+| 5.45 mm 45Rnd Ball-T 7T3 Mag
+| 45
+| B-T
+|-
+| gm_20Rnd_762x51mm_B_T_DM21_g3_blk
+| 
+| 7.62 mm 20Rnd Ball-T DM21 Mag
+| 20
+| B-T
+|-
+| gm_20Rnd_762x51mm_B_T_DM21A1_g3_blk
+| 
+| 7.62 mm 20Rnd Ball-T DM21A1 Mag
+| 20
+| B-T
+|-
+| gm_20Rnd_762x51mm_B_T_DM21A2_g3_blk
+| 
+| 7.62 mm 20Rnd Ball-T DM21A2 Mag
+| 20
+| B-T
+|-
+| gm_20Rnd_762x51mm_B_DM111_g3_blk
+| 
+| 7.62 mm 20Rnd Ball DM111 Mag
+| 20
+| B
+|-
+| gm_20Rnd_762x51mm_B_DM41_g3_blk
+| 
+| 7.62 mm 20Rnd Ball DM41 Mag
+| 20
+| B
+|-
+| gm_20Rnd_762x51mm_AP_DM151_g3_blk
+| 
+| 7.62 mm 20Rnd AP DM151 Mag
+| 20
+| AP
+|-
+| gm_20Rnd_762x51mm_B_T_DM21_g3_des
+| 
+| 7.62 mm 20Rnd Ball-T DM21 Mag
+| 20
+| B-T
+|-
+| gm_20Rnd_762x51mm_B_T_DM21A1_g3_des
+| 
+| 7.62 mm 20Rnd Ball-T DM21A1 Mag
+| 20
+| B-T
+|-
+| gm_20Rnd_762x51mm_B_T_DM21A2_g3_des
+| 
+| 7.62 mm 20Rnd Ball-T DM21A2 Mag
+| 20
+| B-T
+|-
+| gm_20Rnd_762x51mm_B_DM111_g3_des
+| 
+| 7.62 mm 20Rnd Ball DM111 Mag
+| 20
+| B
+|-
+| gm_20Rnd_762x51mm_B_DM41_g3_des
+| 
+| 7.62 mm 20Rnd Ball DM41 Mag
+| 20
+| B
+|-
+| gm_20Rnd_762x51mm_AP_DM151_g3_des
+| 
+| 7.62 mm 20Rnd AP DM151 Mag
+| 20
+| AP
+|-
+| gm_30Rnd_556x45mm_B_M855_stanag_gry
+| 
+| 5.56 mm 30Rnd Ball M855 Mag
+| 30
+| B
+|-
+| gm_30Rnd_556x45mm_B_T_M856_stanag_gry
+| 
+| 5.56 mm 30Rnd Ball-T M856 Mag
+| 30
+| B-T
+|-
+| gm_20Rnd_556x45mm_B_M855_stanag_gry
+| 
+| 5.56 mm 20Rnd Ball M855 Mag
+| 20
+| B
+|-
+| gm_20Rnd_556x45mm_B_T_M856_stanag_gry
+| 
+| 5.56 mm 20Rnd Ball-T M856 Mag
+| 20
+| B-T
+|-
+| gm_10Rnd_762x54mmR_AP_7N1_svd_blk
+| 
+| 7.62 mmR 10Rnd AP 7N1 Mag
+| 10
+| AP
+|-
+| gm_10Rnd_762x54mmR_API_7bz3_svd_blk
+| 
+| 7.62 mmR 10Rnd API 7BZ3 Mag
+| 10
+| API
+|-
+| gm_10Rnd_762x54mmR_B_T_7t2_svd_blk
+| 
+| 7.62 mmR 10Rnd Ball-T 7T2 Mag
+| 10
+| B-T
+|-
+| gm_handgrenade_frag_dm51
+| 
+| Fragmentation Grenade DM51
+| 1
+| Frag Grenade
+|-
+| gm_handgrenade_frag_dm51a1
+| 
+| Fragmentation Grenade DM51A1
+| 1
+| Frag Grenade
+|-
+| gm_handgrenade_pracfrag_dm58
+| 
+| Practice Fragmentation Grenade DM58
+| 1
+| Practice Grenade
+|-
+| gm_handgrenade_conc_dm51
+| 
+| Concussion Grenade DM51
+| 1
+| Conc Grenade
+|-
+| gm_handgrenade_conc_dm51a1
+| 
+| Concussion Grenade DM51A1
+| 1
+| Conc Grenade
+|-
+| gm_handgrenade_pracconc_dm58
+| 
+| Practice Concussion Grenade DM58
+| 1
+| Practice Grenade
+|-
+| gm_handgrenade_frag_rgd5
+| 
+| Fragmentation Grenade RGD5
+| 1
+| Frag Grenade
+|-
+| gm_smokeshell_grn_dm21
+| 
+| Smoke Grenade DM21 (Green)
+| 1
+| Smoke (Green)
+|-
+| gm_smokeshell_red_dm23
+| 
+| Smoke Grenade DM23 (Red)
+| 1
+| Smoke (Red)
+|-
+| gm_smokeshell_yel_dm26
+| 
+| Smoke Grenade DM26 (Yellow)
+| 1
+| Smoke (Yellow)
+|-
+| gm_smokeshell_org_dm32
+| 
+| Smoke Grenade DM32 (Orange)
+| 1
+| Smoke (Orange)
+|-
+| gm_smokeshell_wht_dm25
+| 
+| Smoke Grenade DM25 (White)
+| 1
+| Smoke (White)
+|-
+| gm_smokeshell_grn_gc
+| 
+| Smoke Grenade (Green)
+| 1
+| Smoke (Green)
+|-
+| gm_smokeshell_blk_gc
+| 
+| Smoke Grenade (Black)
+| 1
+| Smoke (Black)
+|-
+| gm_smokeshell_red_gc
+| 
+| Smoke Grenade (Red)
+| 1
+| Smoke (Red)
+|-
+| gm_smokeshell_yel_gc
+| 
+| Smoke Grenade (Yellow)
+| 1
+| Smoke (Yellow)
+|-
+| gm_smokeshell_blu_gc
+| 
+| Smoke Grenade (Blue)
+| 1
+| Smoke (Blue)
+|-
+| gm_smokeshell_org_gc
+| 
+| Smoke Grenade (Orange)
+| 1
+| Smoke (Orange)
+|-
+| gm_smokeshell_wht_gc
+| 
+| Smoke Grenade (White)
+| 1
+| Smoke (White)
+|-
+
+[[Category:Global Mobilization]]

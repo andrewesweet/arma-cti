@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/enableUAVConnectability
+// revision: 349591 (2023-11-11T23:17:57Z)
+// export sha1: 6zlqhwaandmftc1qykee8do9wsnqnyb
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.24
+
+|eff= local
+
+|gr1= Remote Control
+
+|descr= Enables unit's AV terminal(s) connecting to UAV.
+
+|s1= object [[enableUAVConnectability]] [uav, checkAllItems]
+
+|p1= object: [[Object]]
+
+|p2= uav: [[Object]]
+
+|p3= checkAllItems: [[Boolean]] - true for enabling of all terminals in unit's inventory, false for enabling of terminal assigned to proper slot only.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>unit enableUAVConnectability [uav, true];</sqf>
+
+|seealso= [[disableUAVConnectability]] [[isUAVConnectable]]
+}}

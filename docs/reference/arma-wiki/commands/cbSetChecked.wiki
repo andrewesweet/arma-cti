@@ -1,0 +1,32 @@
+// source: https://community.bistudio.com/wiki/cbSetChecked
+// revision: 369236 (2024-09-03T10:35:01Z)
+// export sha1: tuz4srdlfqdlm0xljuzjo7co9ise1t5
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Arma 3 version 1.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.12
+
+|gr1= GUI Control
+
+|descr= Sets the current state of a [[CT_CHECKBOX]] control. Use {{hl|"CheckedChanged"}} control event handler with it.
+
+|s1= control [[cbSetChecked]] state
+
+|p1= control : [[Control]]
+
+|p2= state : [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_myCheckBox cbSetChecked true;</sqf>
+|x2= <sqf>
+_disp = findDisplay 46 createDisplay "RscDisplayEmpty";
+_chk = _disp ctrlCreate ["RscCheckBox", -1];
+_chk cbSetChecked true;
+</sqf>
+
+|seealso= [[cbChecked]] [[ctrlSetChecked]] [[ctrlChecked]]
+}}

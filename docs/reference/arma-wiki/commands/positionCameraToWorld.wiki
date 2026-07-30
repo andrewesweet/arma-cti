@@ -1,0 +1,69 @@
+// source: https://community.bistudio.com/wiki/positionCameraToWorld
+// revision: 378531 (2026-05-04T02:19:23Z)
+// export sha1: 1v5zhb4yzk8rxue7nc9r981v3p1bydo
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Command Group: Positions | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Camera Control
+
+|gr2= Positions
+
+|descr= [[File:PositionCameraToWorld.jpg|right|200px]]Get the world coordinate space ({{Link|Position#PositionAGL|AGL}}) from a camera-relative position.<br>
+
+
+|s1= [[positionCameraToWorld]] cameraPos
+
+|p1= cameraPos: [[Position#PositionRelative|PositionRelative]] - relative camera position, format '''[x, z, y]''' (X = left-right, Z = below-above, Y = back-front)
+{{Feature|important|This command has Y and Z axes swapped around, which is different from the usual model space coordinates format ({{Link|Position|[x, y, z]}}).}}
+
+|r1= [[Position#PositionAGL|PositionAGL]] - camera world position
+
+|x1= <sqf>_worldPos = positionCameraToWorld _cameraPos;</sqf>
+
+|x2= Example demonstrating reversed Y and Z:
+<sqf>
+player setDir 0; // assuming player is looking forward
+hint str [positionCameraToWorld [0,0,0], positionCameraToWorld [0,0,1]];
+/*
+[
+	[2481.35, 5671.21, 1.51395],
+	[2481.35, 5672.21, 1.46955]
+]
+*/
+</sqf>
+
+|x3= <sqf>_cameraAGLPosition = positionCameraToWorld [0,0,0];</sqf>
+
+|seealso= [[modelToWorld]] [[modelToWorldVisual]] [[getCameraViewDirection]] [[weaponDirection]] [[eyeDirection]] [[vectorDir]] [[vectorDirVisual]]
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20081017112500
+|text= By measuring the distance between the camera and the player one can determine whether 1st-person or 3rd-person view is being used:
+<sqf>if ((positionCameraToWorld [0,0,0] distance player)>2) then { hint "3rd person" } else { hint "1st person" };</sqf>
+}}
+
+{{Note
+|user= Worldeater
+|timestamp= 20101017224500
+|text= The camera coordinate system is different from the model coordinate system: when [[modelToWorld]] uses [x, y, z] then positionCameraToWorld uses [x, z, y]. So for a steady camera the following is true:
+<sqf>positionCameraToWorld [5,10,15] == _camera modelToWorld [5,15,10];</sqf>
+}}

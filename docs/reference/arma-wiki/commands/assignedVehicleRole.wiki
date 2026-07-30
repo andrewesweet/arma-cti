@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/assignedVehicleRole
+// revision: 338904 (2023-04-17T14:28:10Z)
+// export sha1: kvgsxnwtp8989liwf5eso00d0ycdekp
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Armed Assault version 1.05 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.05
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|gr1= Object Manipulation
+
+|descr= Returns the role a unit is assigned to within its assigned vehicle.
+{{Feature|informative|See [[AI Group Vehicle Management]] for more information.}}
+
+|mp= On a client the command will return empty arrays for every unit that is not local. On the server the command correctly returns the role, regardless of the units locality.
+
+|s1= [[assignedVehicleRole]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[Array]] - the array which is returned contains:<br>
+* [] - not assigned to any vehicle
+* ["driver"] - Assigned as driver
+* ["cargo"] or {{GVI|arma3|1.32|size= 0.75}} ["cargo", [turret path]] - assigned as cargo
+* ["turret", turretPath] - assigned to a turret (turretPath format [[Turret Path]])
+
+|x1= <sqf>_RoleArray = assignedVehicleRole player;</sqf>
+
+|x2= Get weapons available to player at player occupied turret:
+<sqf>_weaponsTurret = vehicle player weaponsTurret (assignedVehicleRole player select 1);</sqf>
+
+|seealso= [[addVehicle]] [[assignedVehicle]] [[unassignVehicle]] [[leaveVehicle]] [[assignAsCargo]] [[assignAsCommander]] [[assignAsDriver]] [[assignAsGunner]] [[assignAsTurret]] [[crew]] [[assignedVehicles]] [[assignedGroup]] [[fullCrew]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20130831161800
+|text= When player is in a group of AIs and is not the leader, [[assignedVehicleRole]] of the player could be unpredictable and absolutely not related to the position player occupies.
+In short, forget about this command for the player, it is unreliable and has been broken too many times in the past.
+}}

@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/saveJoysticks
+// revision: 319552 (2022-05-13T09:24:28Z)
+// export sha1: 7fojjkhcecy7ults3n76lwgwto7hr7s
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= System
+
+|descr= Saves joysticks key mappings into the joysticks.cfg file. Engine add these joysticks to the Joystick Scheme mapping dialog in options controls section.
+
+|s1= [[saveJoysticks]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>saveJoysticks;</sqf>
+
+|seealso= [[saveProfileNamespace]]
+}}

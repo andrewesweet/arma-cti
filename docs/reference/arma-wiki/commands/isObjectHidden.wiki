@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/isObjectHidden
+// revision: 319236 (2022-05-13T09:23:25Z)
+// export sha1: nb7j5na7mmbj4dovw3gzxfusjz20jtk
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.48 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.48
+
+|arg= global
+
+|eff= local
+
+|gr1= Object Manipulation
+
+|descr= Checks visibility of a given object on the local machine.
+
+|s1= [[isObjectHidden]] object
+
+|p1= object: [[Object]] - object to test
+|r1= [[Boolean]] - [[true]] if hidden, [[false]] if visible
+
+|x1= <sqf>_bobIsHidden = isObjectHidden bob;</sqf>
+
+|seealso= [[hideObject]] [[hideObjectGlobal]] [[deleteCollection]]
+}}

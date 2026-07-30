@@ -1,0 +1,65 @@
+// source: https://community.bistudio.com/wiki/setCombatBehaviour
+// revision: 321904 (2022-05-22T11:02:37Z)
+// export sha1: 1rey7w7id2ws5rly086r46sct9jizhr
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Command Group: Groups | Category:Introduced with Arma 3 version 2.04 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.04
+
+|arg= local
+
+|eff= global
+
+|gr1= AI Behaviour
+
+|gr2= Groups
+
+|descr= Sets an individual unit entity behaviour (main syntax) or a group entity behaviour (alternative syntax). The group in this case is a [[Group]] entity and not a simple collection of units. To retrieve unit or group behaviour see [[combatBehaviour]]. The behaviour is one of: 
+* "CARELESS"
+* "SAFE"
+* "AWARE"
+* "COMBAT"
+* "STEALTH"
+{{Feature|informative|See [[AI Behaviour]] for details of the effect of this command on AI units. Group behaviour usually is "CARELESS" or "SAFE"}}
+
+<spoiler text="Comparison of Behaviour commands">
+{| class="wikitable" style="text-align: center"
+! Command
+! Applies To
+|-
+| [[setBehaviour]]
+| '''Every unit''' in the group, but '''not the group''' itself
+|-
+| [[setBehaviourStrong]]
+| '''Every unit''' in the group, and the '''group''' itself
+|-
+| [[setCombatBehaviour]]
+| If argument is [[Object]], only that '''unit''', and if argument is [[Group]], the '''group''' itself (not its units)
+|}
+</spoiler>
+
+|s1= unit [[setCombatBehaviour]] behaviour
+
+|p1= unit: [[Object]] - AI unit
+
+|p2= behaviour: [[String]] - see description
+
+|r1= [[Nothing]]
+
+|s2= group [[setCombatBehaviour]] behaviour
+
+|p21= group: [[Group]] - AI group
+
+|p22= behaviour: [[String]] - see description
+
+|r2= [[Nothing]]
+
+|x1= <sqf>unit1 setCombatBehaviour "SAFE";</sqf>
+
+|x2= <sqf>group1 setCombatBehaviour "CARELESS";</sqf>
+
+|seealso= [[AIBehaviour]] [[combatBehaviour]] [[behaviour]] [[setBehaviour]] [[setBehaviourStrong]] [[setWaypointBehaviour]] [[combatMode]] [[setCombatMode]] [[skill]] [[setSkill]]
+}}

@@ -1,0 +1,457 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Visual_Upgrade
+// revision: 378123 (2026-02-21T14:24:19Z)
+// export sha1: tbmtzuwg1pq7mpmftlt1nhdktufde6v
+// categories: Category:Arma 3: Editing | Category:Introduced with Arma 3 version 1.60
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GVI|arma3|1.60}}
+
+We wanted to improve the visual results for our and your own maps. The change was more extensive than before and at first you might be confused as was changed.
+This document will explain what is different, why and how it works now.
+
+
+== What is different? ==
+
+The {{Link|https://dev.arma3.com/post/oprep-visual-upgrade|Visual Upgrade}} is a collection of small and big changes in the project files (configs, textures and materials), the most visible being the ToneMapping and lighting configuration.
+A secondary effect of this is that the ingame scenes are more sensitive to wrong settings of textures and materials.
+The main materials were synchronised to a value of 1.0 for diffuse and ambient.
+
+The main changes are:
+* '''Tone mapping''' (HDR)
+* '''Config of lights''' - polished for new Tone mapping, there was a disconnected value of the intensity of the sky to the fog intensity value as well
+* '''Haze setup''' - only a different setup (technology is the same)
+* '''Skybox setup''' - different texture for the default sky box (clear sky)
+* '''Clouds setup''' - only a different setup (technology is the same)
+* '''Ocean shader''' - a new shader for the ocean surface, new computing for underwater fog and underwater light (disconnected values of colors and intensity of water and underwater fog from lighting config)
+* '''Ground blending''' - a new technique for blending the SAT map with the details of the ground surfaces
+* '''Texture and material''' - corrected values of Diffuse and Ambient in the main materials
+
+
+== Tone Mapping ==
+
+The most important change was the different setup for the Tone Mapping in the scene.
+This tone Mapping enabled more details for the setting of the tone curve, and can help us achieve flexible control of the results.
+
+{| class="wikitable valign-top"
+! Vanilla
+! Visual Update
+|-
+| <syntaxhighlight lang="cpp">tonemapMethod = 2;</syntaxhighlight>
+| <syntaxhighlight lang="cpp">tonemapMethod = 1;</syntaxhighlight>
+|-
+| <syntaxhighlight lang="cpp">
+tonemapLinearWhiteReinhard = 2.5;
+</syntaxhighlight>
+| <syntaxhighlight lang="cpp">
+tonemapShoulderStrength = 0.22;
+tonemapLinearStrength = 0.12;
+tonemapLinearAngle = 0.1;
+tonemapToeStrength = 0.2;
+tonemapToeNumerator = 0.022;
+tonemapToeDenominator = 0.2;
+tonemapLinearWhite = 11.2;
+tonemapExposureBias = 1.0;
+</syntaxhighlight>
+|}
+
+
+== Lighting Setup ==
+
+We polished the config of lighting for the new tonemapping setup, for each frame of the day time by the sun angle and the overcast value. A new parameter '''skyColorInfluencesFogColor''' was added into the config. The false value disconnects the intensity and color of the fog from the sky values. This allows the usage of different values when needed.
+
+{| class="wikitable valign-top"
+! skyColorInfluencesFogColor
+! Result
+|-
+| true
+| When sky = 13 LV then gives this value to the Fog = 13 LV too
+|-
+| false
+| When Sky = 13 LV then doesn't give this value to the Fog = 0 LV you have to set a new value manually
+|}
+
+The colors and values for the day time were also changed.
+
+
+== Haze Setup ==
+
+By default, the haze is not connected to the sky intensity but this can be forced with the following config parameter.
+; config.cpp
+<syntaxhighlight lang="cpp">
+skyColorInfluencesFogColor = true;
+</syntaxhighlight>
+
+{| class="wikitable"
+! Param
+! Use Value
+! Description
+|-
+| hazeBaseHeight
+| 0
+| base height for the haze computation (in meters) 
+|-
+| hazeBaseBeta0
+| 0.00008
+| linear regression according to the base height
+|-
+| hazeDensityDecay
+| 0.00036
+| density decay based on height
+|}
+
+
+== Skybox Setup ==
+
+{| class="wikitable"
+| [[File:arma_3_vu_skybox_01.png|64px]]
+| New skybox texture - only the intensity is included, the color is defined in light config
+|}
+
+
+== Ocean Shader ==
+
+The new ocean shader has improved the real-time reflections on surface, bringing the water to the next level.
+
+{| class="wikitable"
+! colspan="3" | <syntaxhighlight lang="cpp">class WaterExPars</syntaxhighlight>
+|-
+! Param
+! Default Value
+! Description
+|-
+! colspan="3" | ''Base density and color for the water''
+|-
+| fogDensity
+| 0.04
+| base density for water fog (exp coef used for water fog computation) (_A3_MULTI_COMPONENT_FOG)
+|-
+| fogColor[]
+| { 0.003, 0.005, 0.01 }
+| color of the water fog when the camera is on or above the water surface
+|-
+| fogColorExtinctionSpeed[]
+| { 0.2, 0.1, 0.04 }
+| this influences how fast the water fog color darkens when the camera moves under the water (depends on camera position)
+|-
+| fogColorLightInfluence[]
+| { 0.6, 0.15, 0.5 }
+| defines how the light influences the fog color (r = ambient influence, g = diffuse (sun) influence, b = overall light influence)
+|-
+| fogGradientCoefs[]
+| { 0.4, 1.0, 1.5 }
+| coefficient for water fog gradient (MIN coef, MIDDLE coef, MAX coef)
+|-
+| ligtExtinctionSpeed[]
+| { 0.3, 0.1, 0.05 }
+| this influences the extinction of the ambient light, underwater (depends on the position of the shaded point)
+|-
+| diffuseLigtExtinctionSpeed[]
+| { 0.3, 0.1, 0.05 }
+| coefficients for diffuse light extinction
+|-
+! colspan="3" | ''Screen Space Reflections''
+|-
+| ssReflectionStrength
+| 0.85
+| [0, 1] (0 = no reflection, 1 = full reflections)
+|-
+| ssReflectionMaxJitter
+| 1.0
+| max. jitter used when sampling - this is used to randomise artifacts caused by sparse sampling [0,1]
+(0 = no jitter, 1 = max jitter)
+|-
+| ssReflectionRippleInfluence
+| 0.2
+| how much small ripples (from water normal map) influence the reflection[0,1] 
+(0 = no influence, 1 = max influence)
+|-
+| ssReflectionEdgeFadingCoef
+| 10.0
+| coefficient for fading of reflection near screen borders (larger number = faster fading)
+|-
+| ssReflectionDistFadingCoef
+| 4.0
+| coefficient for fading of reflection based on distance (larger number = faster fading)
+|-
+! colspan="3" | ''Refraction''
+|-
+| refractionMinCoef
+| 0.025
+| minimal coef for refraction (at the water surface)
+|-
+| refractionMaxCoef
+| 0.1
+| maximal coef for refraction (at refractionMaxDist)
+|-
+| refractionMaxDist
+| 20.0
+| distance (in meters) of the point from the water surface, where the refraction coefficient becomes refractionMaxCoef
+|-
+! colspan="3" | ''Shadows''
+|-
+| shadowIntensity
+| 0.5
+| intensity of the shadow on the water (1 = full shadow, 0 = no shadow)
+|-
+! colspan="3" | ''Specular setup''
+|-
+| specularMaxIntensity
+| 25.0
+| maxintensity of specular on the water
+|-
+| specularPowerOvercast0
+| 200.0
+| specular power for overcast 0
+|-
+| specularPowerOvercast1
+| 50.0
+| specular power for overcast 1
+|-
+| specularNormalModifyCoef
+| 1.0
+| how much we modify the normal for specular computation (0 = no modification, 1 = full modification)
+|-
+! colspan="3" | ''Foam params''
+|-
+| foamAroundObjectsIntensity
+| 1.0
+| intensity of foam around objects
+|-
+| foamAroundObjectsFadeCoef
+| 8.0
+| coef for fading of the foam (larger number = faster fade)
+|-
+| foamColorCoef
+| 2.0
+| coef for color of the foam
+|-
+| foamDeformationCoef
+| 0.02
+| coef for deformation of the foam texture based on normal of water
+|-
+| foamTextureCoef
+| 0.2
+| coef for mapping of foam texture based on world coordinates
+|-
+| foamTimeMoveSpeed
+| 0.2
+| movement speed of the foam based on time
+|-
+| foamTimeMoveAmount
+| 0.1
+| amount of movement of the foam based on time
+|-
+! colspan="3" | ''Shore params''
+|-
+| shoreDarkeningMaxCoef
+| 0.5
+| maximal darkening coef (1.0 = max darkening, 0.0 = no darkening)
+|-
+| shoreDarkeningOffset
+| 0.2
+| height offset above water level, where darkening is at its full power
+|-
+| shoreDarkeningGradient
+| 0.2
+| darkening gradient size
+|-
+| shoreWaveTimeScale
+| 0.8
+| speed of the waves (scaling of time)
+|-
+| shoreWaveShifDerivativeOffset
+| -0.8
+| offset used to delay when the thick edge of foam appears and dissolves based on the wave phase
+|-
+| shoreFoamIntensity
+| 0.5
+| overall shore foam intensity
+|-
+| shoreMaxWaveHeight
+| 0.15
+| max wave height on shore (in meters)
+|-
+| shoreWetLayerReflectionIntensity
+| 1.0
+| reflection intensity on the shore wet layer
+|}
+
+<syntaxhighlight lang="cpp">
+// params for underwater fog
+class Underwater
+{
+	/// fog color is changed based on the depth under the water surface
+	/// normal fog color  ->   water color      ->    deep water color
+	///     ^
+	/// noWaterFog        ->   fullWaterFog     ->    deepWaterFog
+	/// depth under the water, where the water color starts (can be negative = distance above water)
+	noWaterFog = -0.3;
+	/// depth under the water, where the water color is at full strength and deep water color starts
+	fullWaterFog = 0.1;
+	/// depth under the water, where the deep water color is at full strength
+	deepWaterFog = 10;
+	/// distance of the water fog (fog far)
+	waterFogDistance = 20;
+	/// distance of the water fog (fog near)
+	waterFogDistanceNear = 0;
+	/// color of the water fog at fullWaterFog depth
+	waterColor[] = { 0.02, 0.08, 0.12 };
+	/// color of the water fog at deepWaterFog depth
+	deepWaterColor[] = { 0.01, 0.06, 0.14 };
+	/// skyTopColor (zenith) at fullWaterFog depth (reflections on the water surface?)
+	surfaceColor[] = { 0.20, 0.30, 0.25 };
+	/// skyTopColor (zenith) at deepWaterFog depth (reflections on the water surface?)
+	deepSurfaceColor[] = { 0.10, 0.18, 0.22 };
+};
+
+class SeaWaterShaderPars
+{
+	// coefficient used to multiply the move value of refraction
+	refractionMoveCoef = 0.01;
+	// minimal water surface opacity, when we are looking from above the water surface down
+	minWaterOpacity = 0.65;
+	// coef used to multiply the square root of the distance of pixel from the water surface when computing the final opacity of the water surface
+	// waterOpacity = MinWaterOpacity + sqrt(distance)*WaterOpacityDistCoef;
+	waterOpacityDistCoef = 0.07;
+	// opacity of the water surface when we are under water
+	underwaterOpacity = 0.2;
+	// distance from object, where we begin to fade the water surface to full opacity
+	waterOpacityFadeStart = 100;
+	// length of water surface opacity fading
+	waterOpacityFadeLength = 20;
+};
+
+/// parameters for water in expansion
+class WaterExPars
+{
+	/// base density for the water fog (exp coef used for the water fog computation) (_A3_MULTI_COMPONENT_FOG)
+	fogDensity = 0.04;
+	/// color of the water fog when the camera is on or above water surface
+	fogColor[] = { 0.003, 0.005, 0.01 };
+	/// coefficients for the water fog color extinction based on the depth of the camera under water (coefs for RGB)
+	/// this influences how fast the water fog color darkens when camera moves under water (depends on the camera position)
+	fogColorExtinctionSpeed[] = { 0.2, 0.1, 0.04 };
+	/// defines how light influences fog color (r = ambient influence, g = diffuse (sun) influence, b = overall light influence)
+	fogColorLightInfluence[] = { 0.6, 0.15, 0.5 };
+	/// coefficient for water the fog gradient (MIN coef, MIDDLE coef, MAX coef)
+	fogGradientCoefs[] = { 0.4, 1.0, 1.5 };
+	/// coefficients for light extinction in water based on the point under water (coefs for RGB)
+	/// this influences the extinction of ambient light under water (depends on shaded point position)
+	ligtExtinctionSpeed[] = { 0.3, 0.1, 0.05 };
+	/// coefficients for diffuse light extinction
+	diffuseLigtExtinctionSpeed[] = { 0.3, 0.1, 0.05 };
+
+	/// screen space reflections - strength of reflections
+	/// [0,1] (0 = no reflections, 1 = full reflections)
+	ssReflectionStrength = 0.85;
+	/// screen space reflections - max. jitter used when sampling - this is used to randomise artifacts caused by sparse sampling
+	/// [0,1] (0 = no jitter, 1 = max jitter)
+	ssReflectionMaxJitter = 1.0;
+	/// screen space reflections - how much small ripples (from the water normal map) influence the reflection
+	/// [0,1] (0 = no influence, 1 = max influence)
+	ssReflectionRippleInfluence = 0.2;
+	/// screen space reflections - coefficient for fading of the reflection near screen borders (larger number = faster fading)
+	ssReflectionEdgeFadingCoef = 10.0;
+	/// screen space reflections - coefficient for fading of the reflection based on distance (larger number = faster fading)
+	ssReflectionDistFadingCoef = 4.0;
+
+	/// minimal coef for refraction (at the water surface)
+	refractionMinCoef = 0.025;
+	/// maximal coef for refraction (at refractionMaxDist)
+	refractionMaxCoef = 0.1;
+	/// distance (in meters) of the point from the water surface, where the refraction coefficient becomes refractionMaxCoef;
+	refractionMaxDist = 20.0;
+
+	/// intensity of shadow on the water (1 = full shadow, 0 = no shadow)
+	shadowIntensity = 0.5;
+
+	/// max intensity of specular on the water
+	specularMaxIntensity = 25.0;
+	/// specular power for overcast 0
+	specularPowerOvercast0 = 200.0;
+	/// specular power for overcast 1
+	specularPowerOvercast1 = 50.0;
+	/// how much we modify the normal for the specular computation (0 = no modification, 1 = full modification)
+	specularNormalModifyCoef = 1.0;
+
+	/// intensity of foam around objects
+	foamAroundObjectsIntensity = 1.0;
+	/// coef for fading of foam (larger number = faster fade)
+	foamAroundObjectsFadeCoef = 8.0;
+	/// coef for color of the foam
+	foamColorCoef = 2.0;
+	/// coef for deformation of foam texture based on normal water
+	foamDeformationCoef = 0.02;
+	/// coef for mapping of foam texture based on world coordinates
+	foamTextureCoef = 0.2;
+	/// speed of movement of foam based on time
+	foamTimeMoveSpeed = 0.2;
+	/// amount of movement of foam based on time
+	foamTimeMoveAmount = 0.1;
+
+	/// darkening of terrain near shore configuration
+	/// maximal darkening coef (1.0 = max darkening, 0.0 = no darkening)
+	shoreDarkeningMaxCoef = 0.5;
+	/// height offset above water level, where darkening is at its full power
+	shoreDarkeningOffset = 0.2;
+	/// darkening gradient size
+	shoreDarkeningGradient = 0.2;
+
+	// speed of the waves (scaling of time)
+	shoreWaveTimeScale = 0.8;
+	// offset used to delay when the thick edge of foam appears and dissolves based on the wave phase
+	shoreWaveShifDerivativeOffset = -0.8;
+	// overall shore foam intensity
+	shoreFoamIntensity = 0.5;
+	// max wave height on shore (in meters)
+	shoreMaxWaveHeight = 0.15;
+	// reflection intensity on the shore wet layer
+	shoreWetLayerReflectionIntensity = 1.0;
+};
+</syntaxhighlight>
+
+
+== Ground Blending ==
+
+You can change the behaviour of blending a satellite map to the detailed ground textures as well as the clutter models.
+{| class="wikitable"
+! Parameter
+! Used Value
+! Description
+|-
+! colspan="3" | ''Clutter model blending''
+|-
+| maxClutterColoringCoef
+| 1.35
+| Value must be >= 1. 1 means there is no coloration. 2 means the difference between the color of the clutter (colored) and the normal clutter can be up to 2x, etc.
+|-
+| interpolateClutterColoring
+| true
+| If we use the interpolation of clutter coloring coef based on the distance of clutter from the camera
+|-
+| clutterColoringFarCoef
+| 5.0
+| max coef for clutter coloring at a distance (must be >=1, large coef means we can colorise more)
+|-
+| clutterColoringFarStart
+| 20.0
+| distance (in m) when clutterColoringFarCoef when we start to interpolate to clutterColoringFarCoef
+|-
+| clutterColoringFarSpeed
+| 1.0
+| speed of far clutter coloration (1 = linear, 2 = quadratic, etc.)
+|-
+! colspan="3" | ''Ground blending''
+|-
+| terrainBlendMaxDarkenCoef
+| 0.85
+| maximal darkening coef for blending of satellite map and detail map on terrain (default = 0.0, no darkening = 1.0)
+|-
+| terrainBlendMaxBrightenCoef
+| 0.15
+| maximal brightening coef for blending of satellite map and detail map on terrain (default = 1.0, no brightening = 0.0)
+|}
+
+
+{{GameCategory|arma3|Editing}}
+[[Category:Introduced with Arma 3 version 1.60]]

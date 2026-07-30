@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_carrier01CatapultLockTo
+// revision: 273322 (2021-06-13T00:49:53Z)
+// export sha1: 837rpv6ckx7jwmj6hswqrjstxs92e6a
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Aircraft Carrier | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Aircraft Carrier
+
+|descr= ''N/A''
+
+|s1= <!-- [] call [[BIS_fnc_carrier01CatapultLockTo]] -->
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

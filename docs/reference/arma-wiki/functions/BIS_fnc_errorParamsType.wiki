@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_errorParamsType
+// revision: 348544 (2023-11-08T13:06:09Z)
+// export sha1: liby90mlce5ohxy4y8uxcb8rp71098d
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|eff= local
+
+|descr= Displays a parameter type error message (using [[BIS_fnc_error]]) explaining the problem.
+
+|s1= [value, method, expected] call [[BIS_fnc_errorParamsType]]
+
+|p1= '''value''': [[Anything]] - (Optional, default [[nil]]) value received.
+
+|p2= '''method''': [[String]] - (Optional, default "") validation method, can be one of:
+* "isEqualType"
+* "isEqualTypeArray"
+* "isEqualTypeAll"
+* "isEqualTypeAny"
+* "isEqualTypeParams"
+
+|p3= '''expected''' (Optional, default: [[nil]]): [[Anything]] - expected type.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+// show error and abort if input is not of type ARRAY:
+if !(_this isEqualType []) exitWith { [_this, "isEqualType", []] call BIS_fnc_errorParamsType; };
+</sqf>
+
+|x2= <sqf>
+// show error and abort if array input is not in format [SCALAR, STRING, BOOL]:
+if !(_this isEqualTypeArray [0, "", true]) exitWith { [_this, "isEqualTypeArray", [0, "", true]] call BIS_fnc_errorParamsType; };
+</sqf>
+
+|x3= <sqf>
+// show error and abort if array input is not in format [BOOL, BOOL, BOOL, ...]:
+if !(_this isEqualTypeAll true) exitWith { [_this, "isEqualTypeAll", true] call BIS_fnc_errorParamsType; };
+</sqf>
+
+|x4= <sqf>
+// show error and abort if input is neither ARRAY nor OBJECT:
+if !(_this isEqualTypeAny [[], objNull]) exitWith { [_this, "isEqualTypeAny", [[], objNull]] call BIS_fnc_errorParamsType; };
+</sqf>
+
+|x5= <sqf>
+// show error and abort if input is neither of type ARRAY nor array in format [SCALAR, ARRAY, <ANYTHING>, OBJECT]:
+if !(_this isEqualTypeParams [0, [], nil, objNull]) exitWith { [_this, "isEqualTypeParams", [0, [], nil, objNull]] call BIS_fnc_errorParamsType; };
+</sqf>
+
+|seealso= [[BIS_fnc_error]]
+}}

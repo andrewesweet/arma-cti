@@ -1,0 +1,80 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_AICarSteeringComponent
+// revision: 352456 (2024-02-11T14:31:40Z)
+// export sha1: hetayfzt3m4fk91s2sic9cyzyiw1q15
+// categories: Category:Arma 3: Vehicle Configuration
+// Vendored snapshot. Do not edit — re-export instead.
+
+=== Config ===
+
+<syntaxhighlight lang="cpp">
+class AICarSteeringComponent
+{
+	// controls working parameters of steering PID controller (Kp, Ki, Kd)
+	steeringPIDWeights[] = { 1.2, 0.1, 0.2 };
+	// controls working parameters of speed PID controller (Kp, Ki, Kd)
+	speedPIDWeights[] = { 0.7, 0.2, 0.0 };
+
+	// remapping of maxSpeed of vehicle, for fast vehicles we want to lower the used speed
+	doRemapSpeed = true;
+	remapSpeedRange[] = { 30.0, 70.0 };
+	remapSpeedScalar[] = { 1.0, 0.35 };
+
+	// prediction ahead is used for both steering and analysing of shape to modify the speed
+	doPredictForward = true;
+	predictForwardRange[] = { 1, 20 };
+	// steer ahead is a point to steer to, saturated down to given range, in meters
+	steerAheadSaturation[] = { 0.01, 0.4 };
+
+	// set method of predicting safe speed
+	 
+	speedPredictionMethod = 2;
+	// 0 - three angles method
+	// 1 - wheel direction method
+	// 2 - combined method
+	// three coef's to determine how much given angle should influence slowing down
+	wheelAngleCoef = 0.7;
+	forwardAngleCoef = 0.7;
+	steeringAngleCoef = 1.0;
+	differenceAngleCoef = 1.0;
+
+	// for how long we allow to be not moving, before we consider us stuck
+	stuckMaxTime = 3.0;
+				 
+	// overtaking is part of collision avoidance
+	allowOvertaking = true;
+	allowCollisionAvoidance = true;
+	// allow using movement vector as direction
+	allowDrifting = false;
+
+	// parameters of predictionMethod = 1
+	maxWheelAngleDiff = 0.2616;
+	minSpeedToKeep = 0.1;
+
+	// how strong AI will turn when commanded left/right
+	commandTurnFactor = 1.0;
+};
+</syntaxhighlight>
+
+=== Scripting commands ===
+
+[[useAISteeringComponent]] true/false
+
+* enable or disable new ai driving across all vehicles driven locally on the machine.
+
+
+vehicle [[forceFollowRoad]] true/false
+
+* forces AI driver to stick to immediate road, as long as the path is near the road
+
+
+vehicle [[setConvoySeparation]] 20
+
+* sets distance between following vehicles, should be set for all vehicles in convoy with the same value.
+
+
+vehicle [[setDriveOnPath]] [[1000,10,1000],[1100,10,1000]]
+
+* sets a custom path for a vehicle, behaves like Move command but with ability to send path through list of points. Accepts array of arrays (3 or 4 elements). Either (x,y,z) or (x,y,z,wantedSpeed)
+
+
+{{GameCategory|arma3|Vehicle Configuration}}

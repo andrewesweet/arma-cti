@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_encodeFlags8
+// revision: 373740 (2025-06-24T19:05:41Z)
+// export sha1: 40eg4vor5zn9fsn72p23o0ehazbnlxe
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Bitwise | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Bitwise
+
+|descr= Encodes array of unique 8-state flags (0,1,2,3,4,5,6,7) into a single number.
+
+|s1= flags call [[BIS_fnc_encodeFlags8]]
+
+|p1= flags: [[Array]] of [[Number]]s - collections of 8-state flags. Maximum number of flags is 12.
+
+|r1= [[Number]] - encoded flags
+
+|x1= <sqf>private _encodedFlags = [7, 2, 3, 0, 1] call BIS_fnc_encodeFlags8; // 4311</sqf>
+
+|seealso= [[BIS_fnc_decodeFlags8]]
+}}

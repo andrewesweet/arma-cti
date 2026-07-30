@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Function_Group:_Camera3DEN
+// revision: 342097 (2023-07-09T12:24:21Z)
+// export sha1: r6wbdrqw27uztfyzd0ul53oalwg7lzo
+// Vendored snapshot. Do not edit — re-export instead.
+
+Handles [[:Category:Eden Editor|Eden Editor]] camera when using [[Arma 3 Key Frame Animation]] system.
+
+[[Category:Function Group: KeyframeAnimation]]

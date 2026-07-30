@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/setCuratorEditingAreaType
+// revision: 348452 (2023-11-08T13:00:17Z)
+// export sha1: rixdy1w9btwj5ss9lavwan7bt3g022h
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Server Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.16
+
+|serverExec= server
+
+|gr1= Curator
+
+|descr= Set whether curator can edit in all editing areas (true) or outside of them (false).
+
+|s1= curatorObj [[setCuratorEditingAreaType]] bool
+
+|p1= curatorObj: [[Object]] - curator module.
+
+|p2= bool: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>curatorModule setCuratorEditingAreaType true;</sqf>
+
+|seealso= [[Arma 3: Curator]] [[addCuratorEditingArea]] [[removeCuratorEditingArea]] [[removeAllCuratorEditingAreas]] [[curatorEditingArea]]
+}}

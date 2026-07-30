@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/Template:Information
+// revision: 338116 (2023-02-23T23:33:52Z)
+// export sha1: pu7a081rxqqj5bgmon3elebskkvpi5l
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Navbox
+| title = File Information
+
+| title1 = Description
+| content1 = {{{description | {{Feature | important | Missing '''description'''}}}}}
+
+| title2 = Source
+| content2 = {{{source | {{Feature | important | Missing '''source''' - please edit this file description and {{Link|https://en.wikipedia.org/wiki/Wikipedia:Citing_sources#Multimedia|provide a source}}}} {{TemplateCase||[[Category:Files without source]]}}}}}
+
+| title3 = Date
+| content3 = {{{date | {{Feature | important | Missing '''date'''}}}}}
+
+| title4 = Author
+| content4 = {{{author | {{Feature | important | Missing '''author information'''}} {{TemplateCase||[[Category:Files without author]]}}}}}
+
+| title5 = Permission<br><small>([[Commons:Commons:Reusing content outside Wikimedia|Reusing this file]])</small>
+| content5 = {{{permission | See below.}}}
+}}</includeonly><noinclude>{{Doc/Template
+|descr= Shows {{hl|File}} information.
+|param1= description
+|descr1= file description
+|param2= date
+|descr2= format YYYY-MM-DD
+|param3= source
+|descr3= usually {{hl|Own work}}
+|param4= author
+|descr4= e.g {{hl|[<nowiki/>[User:Dwarden{{!}}Dwarden]]}}
+|param5= permission
+|descr5= e.g {{Template|License}}
+}}</noinclude>

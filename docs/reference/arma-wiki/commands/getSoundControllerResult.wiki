@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/getSoundControllerResult
+// revision: 323118 (2022-06-29T22:09:10Z)
+// export sha1: 1xwsu3knv65bgs2zt22demehs16kwev
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 1.64 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.64
+
+|gr1= Sounds
+
+|descr= Returns the calculated value of [[simple expression]] defined in config. Config could be any config entry, even [[missionConfigFile | mission config]] entry. It is more important that the vehicle is a transport and not any object. If the expression contains sound controllers, the controller values will be taken from the given vehicle.
+
+|s1= vehicle [[getSoundControllerResult]] config
+
+|p1= vehicle: [[Object]] - transport vehicle
+
+|p2= config: [[Config]] - path to config entry containing the expression
+
+|r1= [[Number]]
+
+|x1= <sqf>_result = (vehicle player) getSoundControllerResult (configFile >> "cfgVehicles" >> typeOf (vehicle player) >> "sounds" >> "idle_ext" >> "volume");</sqf>
+
+|x2= <sqf>
+// mission config entry to reverse rain strength:
+// myExpression = "rain factor [1,0]";
+_result = "PaperCar" createVehicleLocal position player getSoundControllerResult (missionConfigFile >> "myExpression");
+</sqf>
+
+|seealso= [[Arma 3: Sound]] [[getSoundController]] [[getEnvSoundController]] [[getAllEnvSoundControllers]] [[getAllSoundControllers]] [[getCustomSoundController]] [[setCustomSoundController]] [[getCustomSoundControllerCount]]
+}}

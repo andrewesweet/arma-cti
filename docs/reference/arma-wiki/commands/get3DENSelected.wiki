@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/get3DENSelected
+// revision: 377086 (2026-01-01T09:45:11Z)
+// export sha1: 6exg0wipd6muhekrj9quwjwf7udzk8k
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Returns an array of all selected [[Eden Entity|Eden Editor Entities]] of the given type.<br>
+If a wrong type is provided, {{hl|[[], [], [], [], [], []]}} is returned and an error message is shown.
+
+|s1= [[get3DENSelected]] type
+
+|p1= type: [[String]] - entity type, can be one of:
+{{Columns|2|
+* {{hl|"object"}}
+* {{hl|"group"}}
+* {{hl|"trigger"}}
+* {{hl|"logic"}}
+* {{hl|"waypoint"}}
+* {{hl|"marker"}}
+* {{hl|"layer"}}
+* {{hl|"comment"}}
+* {{hl|""}} - everything but "layer" and "comment"
+}}
+
+|r1= [[Array]] of [[Eden Entity]]
+
+|x1= <sqf>
+get3DENSelected "";
+
+/*
+[
+	[B Alpha 2-1:1],				// objects
+	[B Alpha 2-1],					// groups
+	[164494: <no shape>],			// triggers
+	[<No center> Charlie 1-2:4],	// logic
+	[<nowiki/>[B Alpha 2-1,0]],				// waypoints
+	["Hotel_Whiskey"]				// markers
+]
+*/
+</sqf>
+
+|x2= <sqf>get3DENSelected "object"; // [B Alpha 2-1:1]</sqf>
+
+|seealso= [[all3DENEntities]] [[get3DENMouseOver]] [[delete3DENEntities]]
+}}

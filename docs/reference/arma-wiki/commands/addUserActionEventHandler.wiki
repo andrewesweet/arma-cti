@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/addUserActionEventHandler
+// revision: 378187 (2026-03-10T13:05:46Z)
+// export sha1: 8qdyf8rw9ex2skv6aolavjl68g2a72l
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Event Handlers | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|eff= local
+
+|gr1= Event Handlers
+
+|descr= Adds a user action event handler to the current mission and returns its event handler index.
+
+
+|s1= [[addUserActionEventHandler]] [keyName, event, expression]
+
+|p1= keyName: [[String]] - action key name - see [[inputAction/actions]]
+
+|p2= event: [[String]] - event name - see [[Arma 3: Event Handlers#UserAction Event Handlers|UserAction Event Handlers]]. Can be one of:
+* {{hl|"Activate"}}
+* {{hl|"Deactivate"}}
+* {{hl|"Analog"}}
+
+|p3= expression: [[Code]] - expression that will be executed in [[missionNamespace]] when event handler fires.
+* {{hl|{{Link|Magic Variables#thisEventHandler|_thisEventHandler}}}} returns the event handler index
+* {{hl|{{Link|Magic Variables#thisEvent|_thisEvent}}}} returns the event type (the ''event'' parameter, either {{hl|"Activate"}}, {{hl|"Deactivate"}} or {{hl|"Analog"}})
+
+|r1= [[Number]] - the index of the currently added UserAction event handler is returned
+
+|x1= <sqf>private _ehId = addUserActionEventHandler ["ReloadMagazine", "Activate", { systemChat "reloading!"; }];</sqf>
+
+|seealso= [[removeUserActionEventHandler]] [[removeAllUserActionEventHandlers]] [[Arma 3: Event Handlers#UserAction Event Handlers|UserAction Event Handlers]]
+}}

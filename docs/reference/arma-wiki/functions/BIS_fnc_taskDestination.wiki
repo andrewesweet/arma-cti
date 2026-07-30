@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskDestination
+// revision: 352150 (2024-02-01T23:25:18Z)
+// export sha1: 87uyciyh8qp1lleq9d9b319u05yu9dh
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+
+|arg= global
+|eff= global
+
+|descr= Return a task's destination. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= taskName call [[BIS_fnc_taskDestination]]
+
+|p1= taskName: [[String]]
+
+|r1= [[Object]] or [[Array]] - either position in format [x,y,z], or [object,precision] as used by [[setSimpleTaskTarget]] command. Returns just [[objNull]] if task was not found
+
+|x1= <sqf>"BIS_task_01" call BIS_fnc_taskDestination;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

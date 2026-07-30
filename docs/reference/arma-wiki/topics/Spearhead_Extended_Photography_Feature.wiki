@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/Spearhead_Extended_Photography_Feature
+// revision: 376045 (2025-07-22T15:31:33Z)
+// export sha1: gwiksvuko0rao20014o3ma8zk5u7lc8
+// categories: Category:SPEX - Spearhead Extended
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[File:spex camera photographer.jpg|250px|thumb|right]]
+The Commonwealth update added a new feature that allows players to take photographs.
+
+== Usage ==
+[[File:spex camera seeker.jpg|250px|thumb|right|The view through the seeker]]
+1. Add the '''Model PH-324 Camera''' ({{hl|SPEX_K35_PH324}}) through the [[Arma 3 Arsenal]].
+
+2. Add at least one '''35mm 36Rnd Super-XX Film Roll''' ({{hl|SPEX_36rnd_Super_XX_Film}}) through the [[Arma 3 Arsenal]].
+
+3. In game, press {{Controls/Control|B}} to bring up the camera.
+
+4. Look through the seeker by pressing {{Controls/Control|RMB}} and press {{Controls/Control|LMB}} to take a photograph.
+
+{{Feature|informative|Color correction can be applied by pressing {{Controls/Control|Left CTRL}} + {{Controls/Control|RMB}}}}
+
+== Enable Screenshot Creation ==
+By default, the camera will not create an actual screenshot.
+To enable this, go to
+
+'''Pause Menu''' >> '''Addon Options''' >> '''Spearhead 1944''' >> '''Camera creates a screenshot'''
+
+and tick the box. Now, each time a photograph is taken with the camera, a screenshot is saved in {{hl|<ProfileFolder>/screenshots/SPEX_Film/}}
+
+== Event ==
+Every time a photograph is taken, the [[Arma_3:_Scripted_Event_Handlers|scripted event]] {{hl|SPEX_System_Infantry_Camera_Photograph_TakenEvent}} is triggered. Scenario creators or modders can subscribe to that event with
+
+<sqf>[
+    missionNamespace,
+    "SPEX_System_Infantry_Camera_Photograph_TakenEvent",
+    _code
+] call BIS_fnc_addScriptedEventHandler;</sqf>
+
+The following arguments are passed to the code.
+
+<sqf inline>params ["_player", "_photoGraphedObjects"]</sqf>
+* _player: [[Object]] - The unit who took a photograph
+* _photoGraphedObjects: [[Array]] of [[Object]]s - All objects in the view of the player when the photograph was taken
+
+[[Category: SPEX - Spearhead Extended]]

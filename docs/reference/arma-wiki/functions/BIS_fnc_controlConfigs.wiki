@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_controlConfigs
+// revision: 364047 (2024-04-30T11:36:54Z)
+// export sha1: 63of1vz2b3ngzmn34oe5o0beudratlb
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Configs | Category:Function Group: GUI | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|gr2= Configs
+
+|descr= Return config paths to all display controls.
+
+|s1= [display, path] call [[BIS_fnc_controlConfigs]]
+
+|p1= display: [[Display]]
+
+|p2= path: [[Config]] - root display config path
+
+|r1= [[Array]] in format [<nowiki/>[control1, configpath1], [control2, configpath2], ..., [controlN, configpathN]]
+
+|x1= <sqf>[findDisplay 313, configFile >> "Display3DEN"] call BIS_fnc_controlConfigs;</sqf>
+
+|seealso= [[findDisplay]]
+}}

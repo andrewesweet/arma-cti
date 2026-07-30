@@ -1,0 +1,98 @@
+// source: https://community.bistudio.com/wiki/setSkill
+// revision: 364244 (2024-05-06T09:38:17Z)
+// export sha1: p2syrcwetv6nwbo4nhjnac6xr19k22f
+// categories: Category:AI | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Introduced with Operation Flashpoint version 1.75 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Operation Flashpoint: New Scripting Commands | Category:Operation Flashpoint: Scripting Commands | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofp
+|version1= 1.75
+
+|game2= ofpe
+|version2= 1.00
+
+|game3= arma1
+|version3= 1.00
+
+|game4= arma2
+|version4= 1.00
+
+|game5= arma2oa
+|version5= 1.50
+
+|game6= tkoh
+|version6= 1.00
+
+|game7= arma3
+|version7= 0.50
+
+|arg= local
+
+|eff= global
+
+|gr1= AI Behaviour
+
+|descr= Sets the skill level of given unit. The value of a [[AI Sub-skills|sub-skill]] is interpolated into a range defined in [[CfgAISkill]].
+
+|s1= unit [[setSkill]] skill
+
+|p1= unit: [[Object]]
+
+|p2= skill: [[Number]] - general skill in range 0..1
+
+|r1= [[Nothing]]
+
+|s2= unit [[setSkill]] [skillName, value]
+
+|s2since= arma1 1.00
+
+|p21= unit: [[Object]]
+
+|p22= skillName: [[String]] - available sub-skills are:
+{{Columns|6|
+* {{hl|"general"}}
+* {{hl|"courage"}}
+* {{hl|"aimingAccuracy"}}
+* {{hl|"aimingShake"}}
+* {{hl|"aimingSpeed"}}
+* {{hl|"commanding"}}
+* {{hl|"endurance"}}
+* {{hl|"spotDistance"}}
+* {{hl|"spotTime"}}
+* {{hl|"reloadSpeed"}}
+}}
+
+|p23= value: [[Number]] - value in range 0..1
+
+|r2= [[Nothing]]
+
+|x1= <sqf>_hero setSkill 1;</sqf>
+
+|x2= <sqf>
+_finalBoss setSkill ["reloadSpeed", 0.8];
+_finalBoss setSkill ["aimingSpeed", 0.33];
+</sqf>
+
+|seealso= [[skill]] [[setUnitAbility]] [[Arma 3: AI Skill]] [[Combat Modes]] [[skillFinal]]
+}}
+
+{{Note
+|user= Hardrock
+|timestamp= 20060804120100
+|text= Approximate ranges are:
+* Novice < 0.25
+* Rookie >= 0.25 and <= 0.45
+* Recruit > 0.45 and <= 0.65
+* Veteran > 0.65 and <= 0.85
+* Expert > 0.85
+}}
+
+{{Note
+|user= Kronzky
+|timestamp= 20070630211600
+|text= If "SuperAI" is turned on in the Difficulty Menu, the skill level is always 1, no matter what was defined in the editor or via this command.
+}}
+
+
+[[Category:AI]]

@@ -1,0 +1,89 @@
+// source: https://community.bistudio.com/wiki/Template:Tool
+// revision: 238975 (2021-02-04T18:54:59Z)
+// export sha1: fl5s0c2v4l1i2h8j6euvbkcpz39ukpq
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>__NOTOC____NOEDITSECTION__<div class="_description tool">
+
+=== Basic information ===
+<dl>
+<dt>Author:<dd>{{#if:{{{AUTHOR|}}}|{{{AUTHOR|}}}|[[:Category:Projects|Bohemia Interactive]]}}
+{{#if:{{{VERSION|}}}|<dt>Version:<dd>{{{VERSION}}}|}}
+{{#if:{{{COMPATIBILITY|}}}|<dt>Compatibility:<dd>{{{COMPATIBILITY}}}|}}
+{{#if:{{{DOWNLOAD|}}}|<dt>Download:<dd>{{{DOWNLOAD}}}|}}
+</dl>
+
+=== Description ===
+<dl>
+<dt>Description:<dd>{{{DESCRIPTION|}}}
+{{#if:{{{NOTES|}}}|<dt>Notes:<dd>{{{NOTES}}}|}}
+</dl>
+{{#if:{{{INSTALL|}}} or {{{COMMAND|}}} or {{{OPTIONS|}}} or {{{EXAMPLE|}}}|
+
+=== Usage ===
+<dl>
+{{#if:{{{INSTALL|}}}|<dt>Installation:<dd>{{{INSTALL}}}|}}
+{{#if:{{{COMMAND|}}}|<dt>Line call:<dd>{{{COMMAND}}}|}}
+{{#if:{{{OPTIONS|}}}|<dt>Options:<dd>{{{OPTIONS}}}|}}
+{{#if:{{{EXAMPLE|}}}|<dt>Examples:<dd>{{{EXAMPLE}}}|}}
+</dl>
+|}}
+
+=== Licenses ===
+<dl>
+<dt>Licensing:<dd>{{{LICENSING|}}}
+{{#if:{{{SEEALSO|}}}|<dt>See also:<dd>{{{SEEALSO}}}|}}
+</dl>
+</includeonly><noinclude>
+Formats a Tool documentation page.
+
+== Usage ==
+
+{{<nowiki/>Tool|'''''arguments'''''}}
+* arguments: see below
+
+=== Template ===
+<pre>
+{{Tool
+
+|AUTHOR=
+
+|VERSION=
+
+|COMPATIBILITY=
+
+|DOWNLOAD=
+
+|DESCRIPTION=
+
+|NOTES=
+
+|INSTALL=
+
+|COMMAND=
+
+|OPTIONS=
+
+|EXAMPLE=
+
+|LICENSING=
+
+|SEEALSO=
+
+}}</pre>
+
+{|
+|+ Examples
+|- style="background-color: #EEE"
+! Code
+! style="min-width: 60em" | Result
+|-
+| <nowiki>{{Tool}}</nowiki>
+| {{Tool}}<br><br>
+|-
+| <nowiki>{{Tool|DESCRIPTION= this is a description.|LICENSING= None.}}</nowiki>
+| {{Tool|DESCRIPTION= this is a description.|LICENSING= None.}}<br><br>
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]
+</noinclude>

@@ -1,0 +1,23 @@
+// source: https://community.bistudio.com/wiki/rainbow
+// revision: 310802 (2022-05-07T20:21:58Z)
+// export sha1: ttgn48t0qivnsidd8js1offbtdjl2ed
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Environment
+
+|descr= Returns the current rainbow intensity.
+
+|s1= [[rainbow]]
+
+|r1= [[Number]]
+
+|x1= <sqf>private _intensity = rainbow;</sqf>
+
+|seealso= [[setRainbow]]
+}}

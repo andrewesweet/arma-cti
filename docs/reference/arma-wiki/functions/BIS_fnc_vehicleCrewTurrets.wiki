@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_vehicleCrewTurrets
+// revision: 378549 (2026-05-05T15:08:47Z)
+// export sha1: mvj7cuqxknrts372ywa2mdk9mnhsmva
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Object Manipulation | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= Object Manipulation
+
+|descr= Returns vehicle crew turrets, which will be filled with crew if [[createVehicleCrew]] command is executed on the vehicle. If vehicle class is passed as param, all vehicle crew turrets are returned.
+
+|s1= vehicle call [[BIS_fnc_vehicleCrewTurrets]]
+
+|p1= vehicle: [[Object]] or [[String]] - vehicle or vehicle type
+
+|r1= [[Array]] of [[Turret Path]]s
+
+|x1= <sqf>"B_APC_Wheeled_01_cannon_F" call BIS_fnc_vehicleCrewTurrets;</sqf>
+
+|x2= <sqf>car1 call BIS_fnc_vehicleCrewTurrets;</sqf>
+
+|seealso= [[createVehicleCrew]] [[BIS_fnc_allTurrets]] [[BIS_fnc_turretConfig]]
+}}

@@ -1,0 +1,44 @@
+// source: https://community.bistudio.com/wiki/allDeadMen
+// revision: 377006 (2026-01-01T08:16:24Z)
+// export sha1: 4gsjd67agpcazm2xx6y7a6n98eijv9q
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Detection | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Object Detection
+
+|descr= Return a list of dead units including agents. Dead unit might be inside vehicle.
+
+|s1= [[allDeadMen]]
+
+|r1= [[Array]] of [[Object]]s
+
+|x1= <sqf>{ deleteVehicle _x } forEach allDeadMen;</sqf>
+
+|seealso= [[allDead]] [[allUnits]] [[allGroups]] [[playableUnits]] [[switchableUnits]] [[units]] [[vehicles]] [[allCurators]] [[getCorpse]]
+}}
+
+{{Note
+|user= Pierre MGI
+|timestamp= 20151015040800
+|text= As dead men are civilian side, don't try to count them with <sqf inline>{ side _x isEqualTo east } count allDeadMen;</sqf> result will always be 0.<br>
+Use the configfile "side" instead:
+<sqf>
+0 spawn
+{
+	while { true } do
+	{
+		sleep 0.1;
+		_westScore =
+		{
+			getNumber (configFile >> "CfgVehicles" >> typeOf _x >> "side") == 0
+		} count allDeadMen;
+		hintSilent format ["East killed: %1", _westScore];
+	};
+};
+</sqf>
+}}

@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getRespawnInventories
+// revision: 328380 (2022-07-13T16:00:48Z)
+// export sha1: oqo8iwfifquuptf6jp867sgu6o3fdpb
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Respawn | Category:Functions | Category:Introduced with Arma 3 version 1.60 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.60
+
+|gr1= Respawn
+
+|descr= Return respawn inventories available for the given target.
+
+|s1= [target, showDisabled, returnAllInfo] call [[BIS_fnc_getRespawnInventories]]
+
+|p1= target: [[Namespace]], [[Side]], [[Group]] or [[Object]]
+
+|p2= showDisabled: [[Boolean]] - (Optional, default [[false]]) [[true]] to show even inventories disabled by curator
+
+|p3= returnAllInfo: [[Boolean]] - (Optional, default [[false]]) [[true]] to return namespace, inventory and role limits (used in the new respawn screen), [[false]] to return only inventories
+
+|r1= [[Array]] of [[String]]
+
+|x1= <sqf>private _respawnInfo = [player] call BIS_fnc_getRespawnInventories;</sqf>
+
+|x2= <sqf>private _respawnInfo = [west, true, false] call BIS_fnc_getRespawnInventories;</sqf>
+
+|seealso= [[Arma 3: Respawn]] [[BIS_fnc_addRespawnInventory]] [[BIS_fnc_removeRespawnInventory]] [[BIS_fnc_setRespawnInventory]] [[BIS_fnc_getRespawnMarkers]] [[BIS_fnc_getRespawnPositions]]
+}}

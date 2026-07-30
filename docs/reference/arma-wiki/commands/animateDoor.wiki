@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/animateDoor
+// revision: 347589 (2023-09-28T20:03:54Z)
+// export sha1: qdhms1ptnxw6j0kq0et3mac641vygea
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|eff= global
+|arg= global
+
+|gr1= Animations
+
+|descr= Animates a door on a vehicle. Animation is defined in config file in [[CfgVehicles]] -> [[Model_Config#AnimationSources| AnimationSources]]. Wanted animation phase is set with phase param. This command works only on animation sources with "door" controller. Door_L in the example below can be animated with [[animateDoor]] but not CargoRamp_Open: {{hl|heli [[animateDoor]] ["Door_L", 1];}}{{Feature | important | [[animateDoor]] {{hl|phase}} param will be rounded: anything >0.5 will be rounded to 1 and <{{=}}0.5 will be rounded to 0. Therefore it is not possible to open a door half way with this command}}  <br>
+<syntaxhighlight lang="cpp">
+class AnimationSources
+{
+	class CargoRamp_Open
+	{
+		source = "user";
+		animPeriod = 5;
+		initPhase = 0;
+	};
+	class Door_L
+	{
+		source = "door";
+		animPeriod = 1.6;
+	};
+};
+</syntaxhighlight>
+To animate doors or other sources that have "user" controller, use [[animate]] command, or even better, [[animateSource]] (recommended). Sources with "hit" controller can be animated with [[setHitPointDamage]] command applied to the name contained in hitpoint property. For availability of animation sources and their controller types see: [[Arma 3: createVehicle/vehicles]]
+
+|s1= object [[animateDoor]] [doorname, phase, instant]
+
+|p1= object: [[Object]]
+
+|p2= doorname: [[String]]
+
+|p3= phase: [[Number]]
+
+|p4= instant: [[Boolean]] - (Optional, default [[false]]) when [[true]] and phase is either 0 or 1, door will change phase instantaneously
+
+|r1= [[Nothing]]
+
+|x1= <sqf>Taru animateDoor ["Door_1_source", 1];</sqf>
+
+|x2= Open left front door on Ifrit instantly:
+<sqf>Ifrit animateDoor ["Door_LF", 1, true];</sqf>
+
+|seealso= [[doorPhase]] [[setFaceAnimation]] [[animate]] [[animationPhase]] [[animateSource]] [[animationSourcePhase]] [[animationNames]]
+}}

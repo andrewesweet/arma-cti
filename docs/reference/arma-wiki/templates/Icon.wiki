@@ -1,0 +1,105 @@
+// source: https://community.bistudio.com/wiki/Template:Icon
+// revision: 376053 (2025-07-23T10:53:45Z)
+// export sha1: 7yamf3ip08pn0uakrf7szkoe5cxem72
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{#switch: {{#replace:{{lc:{{{1|}}}}}|<nowiki> </nowiki>|_}}
+<!-- BOHEMIA INTERACTIVE -->
+	| bi | bohemiainteractive = [[File:bi symbol black.png|{{{2|48}}}px|link={{{link|{{Name|bi}}}}}]]
+	| bi_alt | bohemiainteractive_alt = [[File:bi symbol white.png|{{{2|48}}}px|link={{{link|{{Name|bi}}}}}]]
+<!-- OPERATION FLASHPOINT -->
+	| ofp | cwa | arma0 = [[File:Logo_A0.png|{{{2|48}}}px|link={{{link|Category:{{Name|ofp|cat}} {{!}} {{ofp}}}}}]]
+	| ofpr = [[File:ofpr version.gif|{{{2|48}}}px|link={{{link|{{Name|ofpr}}}}}]]
+	| ofpe = [[File:ofpe logo.png|{{{2|48}}}px|link={{{link|Category:{{Name|ofpe|cat}} {{!}} {{Name|ofpe}}}}}]]
+<!-- ARMED ASSAULT -->
+	| arma1 = [[File:Logo A1 black.png|{{{2|48}}}px|link={{{link|Category:{{Name|arma1|cat}} {{!}} {{arma1}}}}}]]
+	| arma1_alt = [[File:Logo_A1.png|{{{2|48}}}px|link={{{link|Category:{{Name|arma1|cat}} {{!}} {{arma1}}}}}]]
+<!-- ARMA2 & OA -->
+	| arma2 | a2 = [[File:Logo_A2.png|{{{2|48}}}px|link={{{link|Category:{{Name|arma2|cat}} {{!}} {{arma2}}}}}]]
+	| arma2oa | oa | arrowhead | operation_arrowhead = [[File:A2 OA Logo.png|{{{2|48}}}px|link={{{link|Category:{{Name|arma2oa|cat}} {{!}} {{arma2oa}}}}}]]
+	| arma2acr | acr = [[File:Logo_A2ACR.png|{{{2|48}}}px|link={{{link|Army of the Czech Republic {{!}} {{Name|arma2acr}}}}}]]
+	| arma2baf | baf = [[File:Logo_A2BAF.png|{{{2|48}}}px|link={{{link|Arma 2: British Armed Forces {{!}} {{Name|arma2baf}}}}}]]
+	| arma2pmc | pmc = [[File:Logo_A2PMC.png|{{{2|48}}}px|link={{{link|Arma 2: Private Military Company {{!}} {{Name|arma2pmc}}}}}]]
+<!-- ARMA3 - TODO: remove non-arma3prefixed shortcuts (and search & replace usages through the wiki) -->
+	| a3
+	| arma3 = [[File:Arma 3 logo black.png|{{{2|48}}}px|link={{{link|Category:{{Name|arma3|cat}} {{!}} {{arma3}}}}}]]
+	| arma3zeus | curator | zeus = [[File:arma3_curator_eye.png|{{{2|48}}}px|link={{{link|Arma 3 Zeus}}}]]
+	| arma3karts | kart | karts = [[File:karts_icon_ca.png|{{{2|48}}}px|link={{{link|Arma 3 Karts}}}]]
+	| arma3helicopters | heli | helicopter | helicopters = [[File:heli_icon_ca.png|{{{2|48}}}px|link={{{link|Arma 3 Helicopters}}}]]
+	| arma3marksmen | mark | marks | marksmen = [[File:mark_icon_ca.png|{{{2|48}}}px|link={{{link|Arma 3 Marksmen}}}]]
+	| arma3marksmen_alt | mark_alt = [[File:arma3 mark logoOver ca.png|{{{2|48}}}px|link={{{link|Arma 3 Marksmen}}}]]
+	| arma3eden = [[File:edenEditor logo.png|{{{2|48}}}px|link={{{link|Category:Eden Editor {{!}} Eden Editor}}}]]
+	| arma3apex | expansion | apex = [[File:apex_icon_ca.png|{{{2|48}}}px|link={{{link|Arma 3 Apex}}}]]
+	| arma3jets | jets = [[File:jets_icon_ca.png|{{{2|48}}}px|link={{{link|Arma 3 Jets}}}]]
+	| arma3malden | malden = [[File:malden_icon_ca.png|{{{2|48}}}px|link={{{link|Arma 3 Malden}}}]]
+	| arma3lawsofwar | arma3low | orange | low | laws_of_war = [[File:orange_icon_ca.png|{{{2|48}}}px|link={{{link|Arma 3 Laws of War}}}]]
+	| arma3tacops | tacop | tacops | tac-op | tac-ops = [[File:tacops_icon_ca.png|{{{2|48}}}px|link={{{link|Arma 3 Tac-Ops Mission Pack}}}]]
+	| arma3tanks | tank | tanks = [[File:tank_icon_ca.png|{{{2|48}}}px|link={{{link|Arma 3 Tanks}}}]]
+	| arma3contact | enoch | contact | arma3contact = [[File:enoch_icon_ca.png|{{{2|48}}}px|link={{{link|Arma 3 Contact}}}]]
+	| arma3artofwar | aow | artofwar = [[File:aow_icon_ca.png|{{{2|48}}}px|link={{{link|Arma 3 Art of War}}}]]
+	| oldman | arma3oldman = [[File:arma3apex oldman logo.png|{{{2|48}}}px|link={{{link|Arma 3 Apex: Old Man}}}]]
+	| oldman_alt | arma3oldman_alt = [[File:arma3apex oldman logo simplyfied white.png|{{{2|48}}}px|link={{{link|Arma 3 Apex: Old Man}}}]]
+<!-- ARMA3 - CDLCs) -->
+	| arma3spe | spe = [[File:arma3 spe logo ca.png|{{{2|48}}}px|link={{{link|Spearhead 1944}}}]]
+	| arma3spex| spex = [[File:arma3 spex logo ca.png|{{{2|48}}}px|link={{{link|SPEX - Spearhead Extended}}}]]
+<!-- ARGO -->
+	| argo = [[File:argo-logo.png|{{{2|48}}}px|link={{{link|Category:{{Name|argo|cat}} {{!}} {{Name|argo}}}}}]]
+<!-- ARMA REFORGER -->
+	| armar = [[File:armareforger-symbol_black.png|{{{2|48}}}px|link={{{link|Category:{{Name|armaR|cat}} {{!}} {{armaR}}}}}]]
+	| armar_alt = [[File:armareforger-symbol_white.png|{{{2|48}}}px|link={{{link|Category:{{Name|armaR|cat}} {{!}} {{armaR}}}}}]]
+<!-- ARMA 4 -->
+	| arma4 = [[File:arma4-symbol_black.png|{{{2|48}}}px|link={{{link|Category:{{Name|arma4|cat}} {{!}} {{arma4}}}}}]]
+	| arma4_alt = [[File:arma4-symbol_white.png|{{{2|48}}}px|link={{{link|Category:{{Name|arma4|cat}} {{!}} {{arma4}}}}}]]
+<!-- TAKE ON -->
+	| tkoh = [[File:tkoh_logo_small.png|{{{2|48}}}px|link={{{link|Category:{{Name|tkoh|cat}} {{!}} {{tkoh}}}}}]]
+	| tkoh_alt = [[File:Logo TakOH_full.png|{{{2|48}}}px|link={{{link|Category:{{Name|tkoh|cat}} {{!}} {{tkoh}}}}}]]
+	| tkom = [[File:tkom_logo_small_v2.png|{{{2|48}}}px|link={{{link|Category:{{Name|tkom|cat}} {{!}} {{tkom}}}}}]]
+	| tkom_alt = [[File:tkom_logo.png|{{{2|48}}}px|link={{{link|Category:{{Name|tkom|cat}} {{!}} {{tkom}}}}}]]
+<!-- OTHER GAMES -->
+	| cc | carriercommand | carrier_command = [[File:CC_Logo.png|{{{2|48}}}px|link={{{link|Category:{{Name|carriercommand|cat}} {{!}} Carrier Command: Gaea Mission}}}]]
+	| dayz = [[File:dayzlogoinv.png|{{{2|48}}}px|link={{{link|Category:{{Name|dayz|cat}} {{!}} {{dayz}}}}}]]
+	| dayz_alt = [[File:dayz_logo_white.png|{{{2|48}}}px|link={{{link|Category:{{Name|dayz|cat}} {{!}} {{dayz}}}}}]]
+	| silica= [[File:silica_logo_blue_800x200.png|{{{2|48}}}px|link={{{link|Category:{{Name|silica|cat}} {{!}} {{silica}}}}}]]
+	| vigor = [[File:vigor_logo.png|{{{2|48}}}px|link={{{link|Category:{{Name|vigor|cat}} {{!}} {{vigor}}}}}]]
+	| ylands = [[File:Ylands_3D_Logo.png|{{{2|48}}}px|link={{{link|Category:{{Name|ylands|cat}} {{!}} {{ylands}}}}}]]
+<!-- TIMELINE -->
+	| aan = [[File:Logo_TVAAN.png|{{{2|48}}}px|link={{{link|http://aan.moricky.com {{!}} AAN}}}]]
+	| person = [[File:Icon_Person.png|{{{2|48}}}px | Person]]
+	| real = [[File:Icon_History.png|{{{2|48}}}px | Historical event]]
+<!-- MULTIPLAYER DEFINITIONS -->
+	| globalargument = {{Icon2|global|argument|darkorange; background: linear-gradient(to top, #D00, #DD0); -webkit-background-clip: text; background-clip: text; color: transparent|link={{#if:{{{link|}}}|{{{link}}}|Multiplayer Scripting#Locality}}|size={{#expr:{{{2|48}}}/32}}}}
+	| localargument = {{Icon2|local|argument|blue; background: linear-gradient(to top, #00D, #0DD); -webkit-background-clip: text; background-clip: text; color: transparent|link={{#if:{{{link|}}}|{{{link}}}|Multiplayer Scripting#Locality}}|size={{#expr:{{{2|48}}}/32}}}}
+	| globaleffect = {{Icon2|global|effect|darkorange; background: linear-gradient(to top, #D00, #DD0); -webkit-background-clip: text; background-clip: text; color: transparent|link={{#if:{{{link|}}}|{{{link}}}|Multiplayer Scripting#Locality}}|size={{#expr:{{{2|48}}}/32}}}}
+	| localeffect = {{Icon2|local|effect|blue; background: linear-gradient(to top, #00D, #0DD); -webkit-background-clip: text; background-clip: text; color: transparent|link={{#if:{{{link|}}}|{{{link}}}|Multiplayer Scripting#Locality}}|size={{#expr:{{{2|48}}}/32}}}}
+	| serverexec = {{Icon2|server|execution|green; background: linear-gradient(to top, #080 25%, #8F8); -webkit-background-clip: text; background-clip: text; color: transparent|link={{#if:{{{link|}}}|{{{link}}}|Multiplayer_Scripting#Locality}}|size={{#expr:{{{2|48}}}/32}}}}
+<!-- OTHERS -->
+	| afm = [[File:BIS_Helicopter_DLC_Icon_v2.png|{{{2|48}}}px|link={{{link|Arma 3: Advanced Helicopter Flight Model {{!}} Advanced Helicopter Flight Model}}}]]
+<!-- CONTROLS -->
+	| mousel  = [[File:mouse-button-left.png|{{{2|32}}}px|link=|Left Mouse Button]]
+	| mousel2 = [[File:mouse-button-left-double.png|{{{2|32}}}px|link=|Double Left Mouse Button]]
+	| mousem  = [[File:mouse-button-middle.png|{{{2|32}}}px|link=|Middle Mouse Button]]
+	| mousesw = [[File:mouse-button-scrollwheel.png|{{{2|32}}}px|link=|Mouse Scrollwheel]]
+	| mouseswu = [[File:mouse-button-scrollwheel-up.png|{{{2|32}}}px|link=|Mouse Scrollwheel Up]]
+	| mouseswd = [[File:mouse-button-scrollwheel-down.png|{{{2|32}}}px|link=|Mouse Scrollwheel Down]]
+	| mouse
+	| mousen  = [[File:mouse-button-none.png|{{{2|32}}}px|link=|Mouse]]
+	| mouser  = [[File:mouse-button-right.png|{{{2|32}}}px|link=|Right Mouse Button]]
+	| gamepad
+	| controller = <span class="promptfont" style="font-size: {{#expr:{{{2|48}}}*.75}}px">␼</span>
+	| keyboard = <span class="promptfont" style="font-size: {{#expr:{{{2|48}}}*.75}}px">␽</span>
+	| kbm = <span class="promptfont" style="font-size: {{#expr:{{{2|48}}}*.75}}px">␿</span>
+<!-- WIKI -->
+	| disamb = [[File:Disambig.png|{{{2|24}}}px|link={{{link|}}}|Disambiguation]]
+	| unchecked = [[File:Ico_none.png|{{{2|24}}}px|link={{{link|}}}|Unchecked]]
+ 	| checked = [[File:Ico_ok.png|{{{2|24}}}px|link={{{link|}}}|Checked]]
+	| warning = [[File:Ico_warning.png|{{{2|24}}}px|link={{{link|}}}|Warning]]
+	| unknown = [[File:Ico_unknown.png|{{{2|24}}}px|link={{{link|}}}|Unknown]]
+<!-- MISC -->
+	| steam = [[File:Steam icon logo.png|{{{2|32}}}px|link=Steam]]
+	| xbox = <span class="promptfont" style="font-size: {{#expr:{{{2|48}}}*.75}}px"></span>
+	| playstation = <span class="promptfont" style="font-size: {{#expr:{{{2|48}}}*.75}}px"></span>
+	| switch = <span class="promptfont" style="font-size: {{#expr:{{{2|48}}}*.75}}px"></span>
+<!-- DEFAULT -->
+	| = -no [[Template:Icon|parameter]] defined!-{{TemplateCase||[[Category:Icon template usage error]]}}
+	| #default = -wrong [[Template:Icon|parameter]] ("{{{1}}}") defined!-{{TemplateCase||[[Category:Icon template usage error]]}}
+}}</includeonly><noinclude>{{Icon/doc}}</noinclude>

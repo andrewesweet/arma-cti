@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/worldToModelVisual
+// revision: 377846 (2026-01-03T04:37:17Z)
+// export sha1: c4u59rjgll0qv1f49s9wz6obl1gp2pg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Command Group: Render Time Scope | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= Positions
+|gr2= Render Time Scope
+
+|descr= Converts position from world space to object model space in [[Simulation vs Render Time Scope|render time scope]].
+{{Feature|important|For [[setObjectScale|scaled objects]], the relative position will be [[vectorMultiply|divided]] by the object scale.}}
+
+|s1= object [[worldToModelVisual]] worldPosition
+
+|p1= object: [[Object]]
+
+|p2= worldPosition: [[Position#PositionAGL|PositionAGL]] or [[Position#Introduction|Position2D]]
+
+|r1= [[Position#PositionRelative|PositionRelative]]
+
+|x1= <sqf>_relPos = myObject worldToModelVisual [0,0,0];</sqf>
+
+|x2= <sqf>_relPos = player worldToModelVisual position car;</sqf>
+
+|x3= <sqf>_relPos = car worldToModelVisual [12000, 5000];</sqf>
+
+|x4= <sqf>_relPos = unit worldToModelVisual position tank;</sqf>
+
+|seealso= [[worldToModel]] [[vectorWorldToModelVisual]] [[modelToWorldVisual]] [[modelToWorld]]
+}}

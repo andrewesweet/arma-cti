@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/animationState
+// revision: 378280 (2026-03-31T10:06:31Z)
+// export sha1: snjkwxwik5hbe8t17js0tjy8ax3lrr2
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|arg= global
+
+|gr1= Animations
+
+|descr= Returns the name of a unit's current primary animation. Seems to be forced to lower case in {{arma3}}.
+{{Feature|informative| Up until {{GVI|arma3|2.20}} this command only worked for a man unit, and other units such as animals couldn't use this command. As of {{GVI|arma3|2.22}} animals are supported as well. }}
+
+|s1= [[animationState]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[String]]
+
+|x1= <sqf>_state = animationState player;</sqf>
+
+|mp= When executed on a client, this command only returns accurate results when the target unit is within sight of the client. When executed on a dedicated server, the returned value is accurate.
+
+|seealso= [[gestureState]] [[switchMove]] [[playMove]] [[pose]] [[BIS_fnc_ambientAnimGetParams]] [[getUnitMovesInfo]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2019-08-13 - 07:44 (UTC)</dd>
+<dt class="note">[[User:POLPOX|POLPOX]]</dt>
+<dd class="note">
+In case you need to get the animation name including upper cases:
+<sqf>configName (configFile >> getText (configFile >> "CfgVehicles" >> typeOf _unit >> "moves") >> "States" >> (animationState _unit)) // e.g. "AmovPercMstpSrasWrflDnon"</sqf>
+Opposite to regular animationState return value:
+<sqf>animationState _unit // e.g. "amovpercmstpsraswrfldnon"</sqf>
+</dd>
+
+</dl>

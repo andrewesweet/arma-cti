@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/scopeName
+// revision: 363355 (2024-03-27T12:05:28Z)
+// export sha1: azhoerq1o9zi9dwbmnsdnz92geesih7
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Program Flow | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Program Flow
+
+|descr= Defines name of current scope. Name is visible in debugger, and name is also used as reference in some commands like [[breakOut]] and [[breakTo]].
+Scope name should be defined only once per scope. Trying to set a different name on the scope that has already defined scope name will result in error.
+
+|s1= [[scopeName]] name
+
+|p1= name: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>
+scopeName "main";
+while { sleep 0.1; true } do
+{
+	scopeName "loop1";
+
+	while { sleep 0.1; true } do
+	{
+		scopeName "loop2";
+
+		// ...
+	};
+};
+</sqf>
+
+|x2= <sqf>
+if (true) then
+{
+	scopeName "mainScope";
+	scopeName "main_scope"; // error
+};
+</sqf>
+
+|seealso= [[breakOut]] [[breakTo]]
+}}

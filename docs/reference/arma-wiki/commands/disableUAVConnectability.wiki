@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/disableUAVConnectability
+// revision: 349592 (2023-11-11T23:18:11Z)
+// export sha1: m5ur23snnbczjq09yc6a40qsun161h8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Remote Control | Category:Introduced with Arma 3 version 1.24 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.24
+
+|eff= local
+
+|gr1= Remote Control
+
+|descr= Disables unit's AV terminal(s) connecting to UAV.
+
+|s1= object [[disableUAVConnectability]] [uav, checkAllItems]
+
+|p1= object: [[Object]]
+
+|p2= uav: [[Object]]
+
+|p3= checkAllItems: [[Boolean]] - [[true]] to disable all terminals in unit's inventory, [[false]] to only disable the currently assigned terminal.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>myUnit disableUAVConnectability [myUav, true];</sqf>
+
+|seealso= [[isUAVConnectable]] [[enableUAVConnectability]]
+}}
+
+<dl class="command_description">
+
+<dt><dt>
+<dd class="notedate">Posted on 2018-09-15 - 20:13 (UTC)</dd>
+<dt class="note">[[User:PingWing|PingWing]]</dt>
+<dd class="note">
+This command has effect on a UAV terminal, not on whether a unit is able to connect to a UAV or not.<br>
+When a unit gets a new UAV terminal, the unit will be able to connect to the UAV again, unless this command is executed again.
+</dd>
+
+</dl>

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/clear3DENInventory
+// revision: 321908 (2022-05-22T12:24:36Z)
+// export sha1: epqyfx5vfo5rgglvzdgd340wpkdlv6g
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Deletes inventory from mission.sqm of given units. Effect is not immediately visible, only when previewing the inventory resets to default.
+
+|s1= [[clear3DENInventory]]  entities
+
+|p1= entities: [[Array]] of [[Eden Entity]] or [[Eden ID]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>clear3DENInventory get3DENSelected "Object";</sqf>
+
+|seealso= [[save3DENInventory]] [[get3DENEntityID]] [[collect3DENHistory]] [[get3DENSelected]]
+}}

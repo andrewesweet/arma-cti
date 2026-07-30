@@ -1,0 +1,74 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgLights
+// revision: 338449 (2023-03-08T10:14:29Z)
+// export sha1: ozjcqxb1w2dc1lju7wayegp1gz1wslr
+// categories: Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+Here is a template with some descriptions:
+
+<syntaxhighlight lang="cpp">
+class CfgLights
+{
+	color[] = {0,0,1,1};		// Array of RGBA
+	diffuse[] = {0,0,1,1};		// Array of RGBA. Purpose unknown
+	ambient[] = {0,0.25,1,0.5};	// Array of RGBA
+	intensity = 25;				// Finite number between 0 and 1e10
+	brightness = 0.1;			// Only used if intensity isn't set. Also deprecated. intensity = (brightness*50)^2
+	class Attenuation
+	{
+		start = 1;				// distance with 100% intensity, falloff starts here
+		constant = 1;			// constant attenuation coef
+		linear = 1;				// linear attenuation coef
+		quadratic = 1;			// quadratic attenuation coef
+		hardLimitStart = 1e20 * 0.7; // max distance hard limit start (start of fading of intensity to 0) in meter – default is (1e20 * 0.7)
+		hardLimitEnd = 1e20;	// max distance hard limit end (end of fading of intensity to 0) in meter – default is 1e20
+	};
+	dayLight = 1;			// boolean (0/1). Is light shown during daylight.
+	useFlare = 1;			// boolean (0/1). Is light having a flare effect
+	irLight = 0;			// boolean (0/1). Is light visible normally or only with NVGs
+	flareSize = 1;			// Default is 1
+	flareMaxDistance = 600;	// Default is 600
+	position[] = {0,0,1};	// Position. Purpose unkown. Maybe some offset from the source.
+	shape = "";				// String. Purpose unknown.
+}
+</syntaxhighlight>
+
+Commented parameters from engine source provided by reyhard
+<syntaxhighlight lang="cpp">
+/// distance with 100% intensity, falloff starts here
+float _startAttenuation;
+/// constant attenuation coef
+float _constantAttenuation;
+/// linear attenuation coef
+float _linearAttenuation;
+/// quadratic attenuation coef
+float _quadraticAttenuation;
+/// max distance hard limit start (start of fading of intensity to 0) in m
+float _hardLimitStart;
+/// max distance hard limit end (end of fading of intensity to 0) in m
+float _hardLimitEnd;
+ 
+/// outer angle in degrees
+float _outerAngle;
+/// inner angle in degrees
+float _innerAngle;
+/// fade coefficient between inner and outer angle (1.0f = linear)
+float _fadeCoef;
+
+bool _disabledInPIP;
+/// is light usable during day?
+bool _isDayLight;
+/// can we use flare for this light"
+bool _useFlare;
+/// flare relative size for this light
+float _flareSize;
+/// max distance, where flare is visible (in meters)
+float _flareMaxDistance;
+
+/// light priority (higher value = higher priority)
+/// lights with higher priority are selected first
+int _priority;
+</syntaxhighlight>
+
+
+{{GameCategory|arma3|Reference Lists}}

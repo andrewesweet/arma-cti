@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setMissionStatusSlot
+// revision: 349123 (2023-11-08T14:49:39Z)
+// export sha1: 8m6h6o0izutede2o2rsp2khwxjcchm5
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Missions | Category:Functions | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.32
+
+|gr1= Missions
+
+|descr= Set  a slot for mission status with sectors, respawn tickets, etc.
+
+|s1= [id, text, texture, color, fade, position, barHeight] call [[BIS_fnc_setMissionStatusSlot]]
+
+|p1= id: [[Number]]  - slot ID. Use -1 to assign it automatically
+|p2= text: [[String]] - text
+|p3= texture: [[String]] - icon path
+|p4= color: [[Array]] - color in RGBA format
+|p5= fade: [[Number]] - slot fade, 0 is fully visible, 0 hidden
+|p6= position: [[Array]] in Position format - position top which camera moves after clicking on the slot
+|p7= barHeight: [[Number]] - slot progress bar height in range <0;1>
+
+|r1= [[Number]] - slot ID
+
+|x1=
+
+|seealso= [[BIS_fnc_showMissionStatus]]
+}}

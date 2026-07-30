@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/Game_Editor_(Workbench)_Other_Terrain_Tools
+// revision: 377855 (2026-01-03T22:22:55Z)
+// export sha1: std7f2rqkhln16v2ieen0r2h1m8qtc3
+// Vendored snapshot. Do not edit — re-export instead.
+
+= Other Terrain Tools =
+We can separate these tools in these groups: 
+
+* Selecting terrain on which will be other tools ( fuctions ) applied. 
+* Testing tools 
+* Global operators for height map 
+* Save/load (from memory not HD) tool for height map 
+
+== Global Test Settings ==
+These are really just test settings and doesn't work properly, but you can find these in â€œdebug menuâ€ atm. 
+
+* Detail texture distance visibility. 
+* Global wind 
+* Global wind angle 
+
+== Global Heightmap Functions ==
+We can describe these function closer, but for better understanding is always good to try it and see it for yourself. 
+
+* Offset - will offset the terrain by the given value in Z axis. 
+
+* Noise - Random value ( from 0 to max value) is add/sub to every node of heightmap. 
+
+* Filter - will apply filter on terrain, steps is count ( 1-50 ) of filters application. 
+
+* Scale - Change scale of terrain is mainly used while importing heightmap from BMP file. The number is a multiplier. 
+
+* DiamondSquare generation 
+** Max starting value - max random generated height in terrain corners in the first pass of generation. Next pass takes the values of heights in the corners math the average value from them and this multiply this value by random value from the â€œHurst exponentâ€ 
+** Hurst exponent - by value closer to 0, the terrain becomes more broken. 
+** Seed - Random value generator from 0 to 100000 or use the â€œRâ€ button 
+
+* Heavy rain hydroerosion 
+** Simulation steps 
+** Rain Steps 
+** Water Height 
+** Evaporation 
+** Sedimentation 
+
+* Thermoerosion - Simulation when material from the higher heights will disintegrate and comes down. 
+** Simulation steps 
+** Minimum height - above this height material starts falling down 
+** Fallen Material - Amount of the fallen material 
+
+* Islandizer - make a island from terrain by very simple way. 
+** Size - border of influence (1 means that the center of the terrain will affected also) 
+** Height - max height 
+** Ground - borders will be moved under given value 
+** Type of pass 
+
+== Actual Heightmap State ==
+Saving/restoring heightmap to/from memory (saves will not be available after closing Workbench ).

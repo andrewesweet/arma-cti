@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_camera_getFocus
+// revision: 349239 (2023-11-08T14:50:57Z)
+// export sha1: radse02kfgqp20uky3rorb4tlnaszlk
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Camera | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Camera
+
+|descr= Returns camera focus.
+
+|s1= [camera] call [[BIS_fnc_camera_getFocus]]
+
+|p1= camera: [[Object]] - the camera
+
+|r1= [[Array]] - array with focus values in format [distance, blur]
+
+|x1= <sqf>[BIS_camera] call BIS_fnc_camera_getFocus;</sqf>
+
+|seealso= [[BIS_fnc_camera_setFocus]]
+}}

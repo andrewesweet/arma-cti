@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Arma_2:_Multiplayer
+// revision: 179148 (2020-12-31T05:53:07Z)
+// export sha1: loxzem4v9sf9f7utzh7omej5b0gqu15
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{GameCategory|arma2}}
+{{GameCategory|arma2oa}}

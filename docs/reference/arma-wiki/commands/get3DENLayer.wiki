@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/get3DENLayer
+// revision: 369778 (2024-10-08T15:09:00Z)
+// export sha1: tvs1szo442ieo1gkshxa83z37jwg8tz
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|gr1= Eden Editor
+
+|descr= Returns the provided entity's layer ID.
+
+|s1= [[get3DENLayer]] edenEntity
+
+|p1= edenEntity: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>hint format ["Entity %1 is in layer %2", typeOf _entity, get3DENLayer _entity];</sqf>
+
+|seealso= [[create3DENEntity]] [[getMissionLayerEntities]] [[set3DENLayer]]
+}}

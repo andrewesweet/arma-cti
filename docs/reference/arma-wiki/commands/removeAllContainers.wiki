@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/removeAllContainers
+// revision: 338829 (2023-04-10T10:24:35Z)
+// export sha1: coe4m0zehldpfkv9st1o8jw3hkdpgb3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Inventory | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= Unit Inventory
+
+|descr= Removes all containers (vest, uniform, backpack) from the provided unit.
+
+|s1= [[removeAllContainers]] unit
+
+|p1= unit: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>removeAllContainers player;</sqf>
+
+|seealso= [[removeAllAssignedItems]] [[removeGoggles]] [[removeHeadgear]] [[removeItem]] [[removeItems]] [[removeUniform]] [[removeVest]]
+}}

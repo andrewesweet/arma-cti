@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Reference_Lists
+// revision: 190757 (2021-01-11T15:13:23Z)
+// export sha1: j605z43cljlw4980eb7tqchn5ehhmsr
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category:Reference Lists|AZ]]

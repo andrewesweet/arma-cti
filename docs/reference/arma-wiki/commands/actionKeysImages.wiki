@@ -1,0 +1,52 @@
+// source: https://community.bistudio.com/wiki/actionKeysImages
+// revision: 369623 (2024-09-27T22:13:10Z)
+// export sha1: ruz6gyilxt8do8nh14o12e2fzsyynp0
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Interaction | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Interaction
+
+|descr= Returns a list of button images or names assigned to the given user action.
+A maximum of ''maxKeys'' keys is listed.
+You can find the action names in the ControllerSchemes config class or [[:Category:Key Actions|user action names]].
+
+|s1= [[actionKeysImages]] userAction
+
+|p1= userAction: [[String]]
+
+|r1= [[Structured Text]]
+
+|s2= [[actionKeysImages]] [userAction, maxKeys]
+
+|p21= userAction: [[String]]
+
+|p22= maxKeys: [[Number]]
+
+|r2= [[Structured Text]]
+
+|x1= <sqf>_text = actionKeysImages "ReloadMagazine";</sqf>
+
+|x2= <sqf>_reload = actionKeysImages ["ReloadMagazine", 1] // returns "R" (including the quotation marks!)</sqf>
+
+|seealso= [[actionKeys]] [[actionKeysNames]] [[actionKeysNamesArray]] [[actionName]] [[inputAction]]
+}}

@@ -1,0 +1,40 @@
+// source: https://community.bistudio.com/wiki/diag_codePerformance
+// revision: 377699 (2026-01-02T09:03:27Z)
+// export sha1: 5ftgg668lr5epgezkdm388uu0cn8ivf
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Diagnostic | Category:Command Group: Performance Profiling | Category:Introduced with Arma 3 version 1.58 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.58
+
+|gr1= Diagnostic
+
+|gr2= Performance Profiling
+
+|descr= Attempts to run given code with given arguments given number of cycles in unscheduled environment and returns average time it took to run the code as well as actual number of executions performed.
+The command will return as soon as possible if the tested code is slow and the duration of the command exceeds 1 second.
+Engine alternative to [[BIS_fnc_codePerformance]].
+
+|mp= For security purposes, this command will only run for 1 cycle in multiplayer, unless in-game [[Arma 3: Debug Console|debug console]] is available via [[Description.ext|description.ext]] option or [[:Category:Eden Editor|Eden]] attribute setting.
+
+|s1= [[diag_codePerformance]] [code, arguments, cycles]
+
+|p1= code: [[Code]] - code to compare performance
+
+|p2= arguments: [[Anything]] - (Optional, default [[nil]]) arguments to pass to the code in _this variable. Default: [[nil]]
+
+|p3= cycles: [[Number]] - (Optional, default 100000) wanted number of cycles to run the given code. > 1000 is recommended
+
+|p4= ignoreTimeLimit: [[Boolean]] - (Optional, default false) - ignore the 1 second timelimit, and always run the provided number of cycles (except in multiplayer)
+|p4since= arma3 2.14
+
+|r1= [[Array]] with [duration, cycles]
+* duration: [[Number]] - average duration of 1 execution in milliseconds
+* cycles: [[Number]] - actual number of cycles executed
+
+|x1= <sqf>private _result = diag_codePerformance [{ private _a = 123; }, 0, 10000];</sqf>
+
+|seealso= [[diag_log]] [[BIS_fnc_codePerformance]] [[Code Optimisation]]
+}}

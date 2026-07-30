@@ -1,0 +1,34 @@
+// source: https://community.bistudio.com/wiki/waypointCompletionRadius
+// revision: 377743 (2026-01-03T00:57:53Z)
+// export sha1: oblos92j16pwg8w1gvxjb39al1acrl7
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Waypoints | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Waypoints
+
+|descr= Gets the radius around the waypoint where the waypoint is completed.
+
+|s1= [[waypointCompletionRadius]] waypoint
+
+|p1= waypoint: [[Waypoint]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_radius = waypointCompletionRadius [groupOne, 1];</sqf>
+
+|seealso= [[waypoints]] [[setWaypointCompletionRadius]]
+}}

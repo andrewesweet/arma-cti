@@ -1,0 +1,6 @@
+// source: https://community.bistudio.com/wiki/Template:SpoilerWarning
+// revision: 378653 (2026-05-18T16:16:10Z)
+// export sha1: amplj4g1h0m5e0uazjqagfidhirkhy4
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{{Feature|spoiler}}</includeonly><noinclude>Displays a Spoiler Warning message. See [[Template:Feature|Feature spoiler]] template.[[Category:Historical Templates]]</noinclude>

@@ -1,0 +1,59 @@
+// source: https://community.bistudio.com/wiki/forEachReversed
+// revision: 353029 (2024-03-12T11:42:13Z)
+// export sha1: 62h3jtq35ultlvixzurkwvnokfmw2sp
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: Program Flow | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1=arma3
+|version1= 2.14
+
+|gr1=Program Flow
+|gr2=Arrays
+
+|descr= Executes the given command(s) on every item of an [[Array]] in reversed order, compared to [[forEach]].
+
+|s1= code [[forEachReversed]] array
+
+|p1= code: [[Code]] to execute on each array item - available variables:
+* {{hl|[[Magic Variables#x|_x]]}}: iterated item
+* {{hl|[[Magic Variables#forEachIndex|_forEachIndex]]}}: item's index
+
+|p2= array: [[Array]] - the array to iterate over
+
+|r1= [[Anything]] - will return the value of last executed statement
+
+|x1= This command lets you easily iterate through an array from last to first element without modifying the array itself with [[reverse]] or using [[for]] loop with negative [[step]].
+<sqf>
+// Will show numbers from 5 to 1 in the chat
+{ systemChat str _x } forEachReversed [1, 2, 3, 4, 5];
+</sqf>
+
+|x2= Can be useful to walk through array while also deleting items from it, which you couldn't do with [[forEach]] as easily:
+<sqf>
+private _array = [1, 1, 2, 2, 1, 1, 2, 2];
+{
+	if (_x == 2) then { _array deleteAt _forEachIndex };
+} forEachReversed _array;
+// _array will be [1,1,1,1] here
+</sqf>
+
+Will not work with [[forEach]] as you might expect it:
+<sqf>
+private _array = [1, 1, 2, 2, 1, 1, 2, 2];
+{
+	if (_x == 2) then { _array deleteAt _forEachIndex };
+} forEach _array;
+// _array will be [1, 1, 2, 1, 1, 2] here
+</sqf>
+
+|x3= Deleting items from array with more complex condition than just comparison.
+<sqf>
+{
+	if (!alive _x) then { _vehicles deleteAt _forEachIndex };
+} forEachReversed _vehicles;
+</sqf>
+
+|seealso= [[Control Structures]] [[forEach]] [[for]] [[apply]] [[while]] [[select]] [[findIf]] [[count]] [[deleteAt]] [[reverse]]
+}}

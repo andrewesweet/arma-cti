@@ -1,0 +1,47 @@
+// source: https://community.bistudio.com/wiki/customRadio
+// revision: 376763 (2025-11-16T23:13:01Z)
+// export sha1: 047p5f2ozsl8laqsjetz1q8n4ega3xx
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Custom Radio and Chat | Category:Command Group: Radio and Chat | Category:Command Group: Sounds | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|arg= global
+
+|eff= local
+
+|gr1= Radio and Chat
+
+|gr2= Sounds
+
+|gr3= Custom Radio and Chat
+
+|descr= Sends the message to the custom radio channel. The message is defined in the [[Description.ext|description.ext]] file or radio protocol.
+
+{{Feature|important|The unit must have an [[assignItem|assigned]] radio item to the radio inventory slot (such as '''''"ItemRadio"''''') to see or transmit the messages. A radio item must have the property <syntaxhighlight lang="cpp" inline>simulation = "ItemRadio";</syntaxhighlight> in its [[CfgWeapons_Config_Reference#simulation.3D.22Weapon.22|CfgWeapons config]].}}
+{{Feature|informative|When transmitting unit gets killed, transmission will be interrupted. However when receiving unit gets killed, the transmission continues to play.}}
+
+|s1= unit [[customRadio]] [customChannelID, message]
+
+|p1= unit: [[Object]] - sender
+
+|p2= customChannelID: [[Number]] - [[Channel IDs|custom channel ID]] returned by [[radioChannelCreate]] command
+
+|p3= message: [[String]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_soldierOne customRadio [1, "WordEnemy"];</sqf>
+
+|seealso= [[radioChannelCreate]] [[customChat]] [[sideRadio]] [[groupRadio]] [[vehicleRadio]] [[globalRadio]] [[directSay]]
+}}
+
+{{Note
+|user= Killzone_Kid
+|timestamp= 20161203213500
+|text= To transmit user custom sounds (see [[Multiplayer_Custom_Sounds_Tutorial]]), prefix the full filename including file extension with #. For example if there is a custom user sound file called {{hl|MySound.ogg}}, to play it on the radio use:
+<sqf>player customRadio [1, "#MySound.ogg"];</sqf> 
+}}

@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/curatorSelectionPreset
+// revision: 347229 (2023-09-05T17:11:28Z)
+// export sha1: 6qs3w04iencmgwi8867vy7dj7wohrbh
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Curator | Category:Introduced with Arma 3 version 2.14 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.14
+
+|gr1= Curator
+
+|descr= Returns list of all objects stored in the given selection preset.
+
+|s1= [[curatorSelectionPreset]] numkey
+
+|p1= numkey: [[Number]] - number key under which the selection preset is saved
+
+|r1= [[Array]] of [[Object]]s - objects saved in the selection preset
+
+|x1= <sqf>private _savedItems = curatorSelectionPreset 1;</sqf>
+
+|seealso= [[loadCuratorSelectionPreset]] [[setCuratorSelectionPreset]] [[curatorSelected]] [[setCuratorSelected]] [[addCuratorSelected]] [[Arma 3: Curator]]
+}}

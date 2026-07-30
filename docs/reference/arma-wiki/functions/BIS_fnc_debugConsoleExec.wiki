@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_debugConsoleExec
+// revision: 348453 (2023-11-08T13:00:17Z)
+// export sha1: kt1adi99nu5jhwxrfgrl4d3rf8rmprn
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Executes Debug Console code.
+
+|s1= [target, code] call [[BIS_fnc_debugConsoleExec]]
+
+|p1= target: [[Number]] - 
+*0 - local
+*1 - global
+*2 - server
+
+|p2= code: [[Code]] - code to be executed
+
+|r1= [[Nothing]]
+
+|x1= <sqf>[1,{hint "Hello Players!"}] call BIS_fnc_debugConsoleExec;</sqf>
+
+|seealso= [[Arma 3: Debug Console]] [[BIS_fnc_isDebugConsoleAllowed]]
+}}

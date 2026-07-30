@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/isAISteeringComponentEnabled
+// revision: 369774 (2024-10-08T15:08:59Z)
+// export sha1: 02usbr4200riinpdfzurbli4g651ppg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Introduced with Arma 3 version 2.18 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.18
+
+|arg= local
+
+|gr1= AI Behaviour
+
+|descr= Returns whether the [[useAISteeringComponent|AI steering component]] feature is enabled for the specified vehicle.
+
+|s1= [[isAISteeringComponentEnabled]] vehicle
+
+|p1= vehicle: [[Object]]
+
+|r1= [[Boolean]] - [[true]] if AI steering component is supported by the vehicle (i.e. defined in config) and enabled, [[false]] otherwise
+
+|x1= <sqf>isAISteeringComponentEnabled myTank;</sqf>
+
+|seealso= [[useAISteeringComponent]] [[isUsingAISteeringComponent]]
+}}

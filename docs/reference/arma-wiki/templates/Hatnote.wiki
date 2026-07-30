@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/Template:Hatnote
+// revision: 170432 (2020-12-10T13:23:15Z)
+// export sha1: s8k95on086shm3kcq2krfdkaswzaf3k
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly><div class="dablink">ⓘ ''{{{1|-no text defined-}}}''</div>
+----</includeonly><noinclude>
+== Usage ==
+{{<nowiki/>Hatnote|'''''message'''''}}
+* message: text to be displayed
+
+{| class="wikitable"
+|+ Examples
+! Code
+! Result
+|-
+| <nowiki>{{Hatnote}}</nowiki>
+| {{Hatnote}}
+|-
+| <nowiki>{{Hatnote|This page is about {{arma2}}. For similar functionality in {{arma3}}, see [[addAction]].}}</nowiki>
+| {{Hatnote|This page is about {{arma2}}. For similar functionality in {{arma3}}, see [[addAction]].}}
+|}
+
+[[Category:Templates|{{uc:{{PAGENAME}}}}]]</noinclude>

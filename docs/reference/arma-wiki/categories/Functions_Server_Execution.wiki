@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Functions:_Server_Execution
+// revision: 294038 (2021-11-05T21:15:12Z)
+// export sha1: qp3tkwavz8161hlxveyxq08obkpffu7
+// Vendored snapshot. Do not edit — re-export instead.
+
+This category lists [[:Category:Functions|Functions]] that need to be executed from the server {{Icon|serverExec|32}}.
+
+[[Category:Functions]]

@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/surfaceIsWater
+// revision: 377565 (2026-01-02T06:55:29Z)
+// export sha1: 0vb6pcf5jv4w6vv8oyelzz7f8792z1c
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Positions | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Positions
+
+|descr= Returns whether there is water at given position. In Arma 3, it also detects pond objects, but only if they are loaded in memory (normally only true if the objects are within the [[setObjectViewDistance|object view distance]])
+
+|s1= [[surfaceIsWater]] position
+
+|p1= position: [[Position#Introduction|Position2D]]  or [[Position#Introduction|Position3D]] - when using [[Position#Introduction|Position3D]] Z will be ignored
+
+|r1= [[Boolean]]
+
+|x1= <sqf>private _result = surfaceIsWater [1000, 3000];</sqf>
+
+|x2= <sqf>_isWater = surfaceIsWater position player;</sqf>
+
+|seealso= [[surfaceType]] [[surfaceNormal]] [[nearRoads]] [[roadsConnectedTo]] [[roadAt]] [[isOnRoad]]
+}}
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 4 May, 2012</dd>
+<dt class="note">[[User:Osmo|Osmo]]</dt>
+<dd class="note">
+Does not work with inland water. Works only with sea water.
+
+<dt></dt>
+<dd class="notedate">Posted on 2021-07-19 - 06:11 (UTC)</dd>
+<dt class="note">[[User:Leopard20|Leopard20]]</dt>
+<dd class="note">
+The above note is not true in Arma 3. The command '''does detect pond objects''' and will return true if there is a pond object at that position. However, the object must have been loaded in memory (normally only true if the object is within the object view distance)
+</dd>
+</dl>

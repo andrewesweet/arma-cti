@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getServerVariable
+// revision: 349343 (2023-11-08T14:53:30Z)
+// export sha1: 36ycb7w66hk2nscq49zoj46bh0ht6vy
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Variables | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Variables
+
+|descr= Fetch a variable saved on server.
+Used when you want to share variables only to specific clients to prevent large traffic.
+Must be run in [[Scheduler#Scheduled_Environment|scheduled environment]] because communication with server takes some time.
+
+|s1= [target, varName, default] call [[BIS_fnc_getServerVariable]]
+
+|p1= target: [[Namespace]], [[Object]] or [[Group]] - variable name space
+
+|p2= varName: [[String]] - variable name
+
+|p3= default: [[Anything]] - default value returned when variable is [[nil]]
+
+|r1= [[Anything]] - default value or saved variable
+
+|x1= <sqf>[missionNamespace, "BIS_someVar", "defaultValue"] call BIS_fnc_getServerVariable;</sqf>
+
+|seealso= [[getVariable]] [[setVariable]] [[allVariables]]
+}}

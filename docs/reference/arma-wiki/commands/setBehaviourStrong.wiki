@@ -1,0 +1,54 @@
+// source: https://community.bistudio.com/wiki/setBehaviourStrong
+// revision: 364285 (2024-05-06T09:38:35Z)
+// export sha1: k4g48d0sat06pyjndi4h7rxcbxcjq1y
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: AI Behaviour | Category:Command Group: Groups | Category:Introduced with Arma 3 version 1.92 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.92
+
+|arg= local
+
+|eff= global
+
+|gr1= Groups
+
+|gr2= AI Behaviour
+
+|descr= Sets individual unit behaviour on every unit in a group and additionally tries to force this behaviour to the unit's group. Alternatively see [[setCombatBehaviour]].
+{{Feature|informative|See [[AI Behaviour]] for details of the effect of this command on AI units.}}
+<spoiler text="Comparison of Behaviour commands">
+{| class="wikitable" style="text-align: center"
+! Command
+! Applies To
+|-
+| [[setBehaviour]]
+| '''Every unit''' in the group, but '''not the group''' itself
+|-
+| [[setBehaviourStrong]]
+| '''Every unit''' in the group, and the '''group''' itself
+|-
+| [[setCombatBehaviour]]
+| If argument is [[Object]], only that '''unit''', and if argument is [[Group]], the '''group''' itself (not its units)
+|}
+</spoiler>
+
+|s1= groupName [[setBehaviourStrong]] behaviour
+
+|p1= groupName: [[Group]] or [[Object]] - unit from the group
+
+|p2= behaviour: [[String]] - can be one of:
+* "CARELESS"
+* "SAFE"
+* "AWARE"
+* "COMBAT"
+* "STEALTH"
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_group1 setBehaviourStrong "SAFE";</sqf>
+
+|seealso= [[setCombatBehaviour]] [[combatBehaviour]] [[AIBehaviour]] [[behaviour]] [[setBehaviour]] [[setWaypointBehaviour]] [[combatMode]] [[setCombatMode]] [[skill]] [[setSkill]] [[Arma 3: AI Skill]]
+}}

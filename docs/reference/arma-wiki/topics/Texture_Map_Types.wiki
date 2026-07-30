@@ -1,0 +1,74 @@
+// source: https://community.bistudio.com/wiki/Texture_Map_Types
+// revision: 255533 (2021-04-17T08:36:57Z)
+// export sha1: lve3ki3ita56417zhizhp2lin29hgsy
+// categories: Category:ArmA: Armed Assault: Texturing | Category:Arma 2: Editing | Category:Arma 3: Editing | Category:Operation Flashpoint: Editing | Category:Take On Helicopters: Editing
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+=== ColorMap / diffuse ===
+*_CO 	- color (diffuse color)
+
+==== ColorMap Alpha ====
+*_CA 	- color alpha (diffuse color with alpha channel)
+
+==== Terrain Map ====
+* _LCO - texture to be used in maps for mask and distant satellite texture (layer color)
+
+==== Sky ====
+*_SKY   - sky texture
+
+=== NormalMaps ===
+
+Normal mapping is a technique used to fake the lighting of surface bumps and dents.  It is used to enhance the appearance of low polygon models.  The R,G,B values for each pixel in the map correspond to the X,Y,Z angle of a surface normal at that pixel.
+
+*_NO 	- normal map
+*_NS	- normal map specular (normal map with alpha channel)
+*_NOF	- normal map faded (fade away into distance similarly as detail map)
+*_NON   - normal map noise (with noise for vegetation polyplanes)
+*_NOHQ  - normal map high quality
+*_NOPX  - normal map w paralax
+*_NOVHQ - two-part DXT5 compression
+
+=== DetailMaps ===
+*_DT 	- detail texture (detail map), fading in mipmaps, average color should be 0.5
+*_CDT	- colored detail texture (colored detail map), fading in mipmaps, average color should be 0.5 in all components
+* _MCO - multiply color, texture should be color neutral, same as CDT with  difference of no fading in mipmaps
+* _DTSMDI - Map similar to SMDI map which preserves detail map inside R channel. [[Multimaterial#5-8_DTSMDI_mapa]]
+
+=== MacroTextures ===
+*_MC    
+
+Macro texture contains alternative data to basic texture.
+Representation of basic texture and macro texture for given place is selected by macrotexture alpha channel (1 means only macro texture , 0 means only basic texture). RGB is calculated as LERP with basic map. Detail map is applied on the end (last) thus overlay original and macro map.
+
+Calculation with macro map inside Multimaterial shader is different. With macromap we are trying to influence only average color in given place - overlaying of original layer will not happen.This technique is taken over from mixing with satellite mask which are conduct on terrain.. [[Multimaterial#9_MC_mapa]]
+
+In case of shader for trees RGB values are multiplying with basic colormap and alphachannel is used for lightmap (equivalent _AS)
+	
+=== LightMaps ===
+*_AS    - ambient shadow texture contains stored information "how much ambient light is in given place'. White color means full ambient lighting. 0 means none.In fact only channel which is taken advantage of is G - it is thus important that information is correctly in him. Rest of channels doesn't matter and anything can be placed there (may be same as in G).
+*_ADS   - similar map like previous with difference that channel B (blue) keeps information about diffusion shadow. That one will be used when normal shadows are not (either they off or too far). Green will have to be brighter to match the results AS would give you (~150%? ~40% gamma).
+* _ADSHQ - high quality version of ADS. Source textures (tga, png) are created in the same manner as standard ADS textures (G channel contains ambient occlusion, B channel contains diffuse shadow). Shaders can work with both _ADS and _ADSHQ. When texture is converted from .tga to .paa, green channel is automatically moved to alpha - this is correct behavior and you don't have to worry about it.
+*_PR    - texture contains in each of 4 channels one lightmap which corresponds to lighting from different angles. R from front in X axis, G from side 120 degrees, B from side 240 degrees, A from bottom in axis Y. It's used for optimized shader on treetops.
+
+=== SpecularMaps ===
+* _SM   - specular map, red channel is diffuse map, green channel is specular and blue channel is specular power multiplier (see more [[ HQ Normal Maps]] )
+* _SMDI - optimized specular map onto bit depth [[HQ_Normal_Maps#Optimized_specular_map_onto_bit_depth]] 
+* _DTSMDI - Map similar to SMDI map which preserves detail map inside R channel. [[Multimaterial#5-8_DTSMDI_mapa]] 
+
+=== mask ===
+*_mask - RGB mask for multimaterial shader
+
+TexView filter for _SM texture adjustment.
+
+=== Thermal Imaging map ===
+* _TI - new in Arrowhead, 4 channel texture for heat visualisation [[Thermal Imaging Maps]]
+
+
+[[Texture_Naming_Conventions]]
+
+{{GameCategory|ofp|Editing}}
+{{GameCategory|arma1|Texturing}}
+{{GameCategory|arma2|Editing}}
+{{GameCategory|arma3|Editing}}
+{{GameCategory|tkoh|Editing}}

@@ -1,0 +1,15 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgRemoteExecFunctions
+// revision: 376535 (2025-10-25T14:40:17Z)
+// export sha1: l5wqt0swfhqax5lzbfop0qq4vqyqx0e
+// categories: Category:Arma 3: Remote Execution
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|obsolete|
+{{hl|CfgRemoteExecFunctions}} is obsolete as originally used with [[BIS_fnc_MP]] which is obsolete and is now left for backward compatibility only.<br>
+Use [[remoteExec]] / [[remoteExecCall]] and [[Arma 3: CfgRemoteExec|CfgRemoteExec]] instead.
+|arma3
+|1.50
+}}
+
+
+{{GameCategory|arma3|Remote Execution}}

@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/unitRecoilCoefficient
+// revision: 364133 (2024-05-04T22:15:43Z)
+// export sha1: 0u33416zr57v1n5ah7nt76derhzxkv4
+// categories: Category:Arma 2: Operation Arrowhead: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2: Operation Arrowhead version 1.62 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2oa
+|version1= 1.62
+
+|game2= tkoh
+|version2= 1.00
+
+|game3= arma3
+|version3= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns recoil coefficient of a soldier.
+
+|s1= [[unitRecoilCoefficient]] soldier
+
+|p1= soldier: [[Object]]
+
+|r1= [[Number]]
+
+|x1= <sqf>_myRecoil = unitRecoilCoefficient player;</sqf>
+
+|seealso= [[setUnitRecoilCoefficient]]
+}}
+
+{{Note
+|user= AgentRev01
+|timestamp= 20130907205500
+|text= If the unit doesn't exist / is null, -1 is returned.
+}}

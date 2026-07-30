@@ -1,0 +1,149 @@
+// source: https://community.bistudio.com/wiki/Mission_Export
+// revision: 336552 (2023-01-04T15:22:50Z)
+// export sha1: lk8qa3i1u6f5uv4wutfcdf88zzp7s6z
+// categories: Category:2D Editor
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+Two export methods are available, both with certain pros and cons.
+
+
+== Mission Format ==
+
+Older export variant working since [[Arma: Cold War Assault]]. Mission [[PBO]] contains only mission folder itself and additional options are limited, e.g. you cannot have multiple missions in one file and in case you need mission specific addon, it has to be created separately.
+
+Multiplayer missions are sent by server to every connected user, occasionally leading to increased bandwidth. It's recommended not to use any large files (pictures, sounds, ...) to prevent it.
+
+File itself is always named in following format
+ {{Color|green|&lt;mission name&gt;}}.{{Color|green|&lt;world name&gt;}}.pbo
+Examples:
+ TopGun.abel.pbo
+ SpyGame.Chernarus.pbo
+ Domino.ProvingGrounds_PMC.pbo
+World name matches the class in ''CfgWorlds''.pbo
+
+=== Installation ===
+
+Put missions/campaigns in following folders or in folders of the same names in [[Arma: Mod Folders|mod subfolders]].
+
+==== Singleplayer Missions ====
+ {{Color|green|%ROOT%}}\Missions
+
+==== Multiplayer Missions ====
+ {{Color|green|%ROOT%}}\MPMissions
+
+==== Campaigns ====
+ {{Color|green|%ROOT%}}\Campaigns
+
+=== Export ===
+
+==== Ingame ====
+# When in mission editor, click on [[Mission_Editor#Save_As|Save]] button.
+# Select 'Export to single-missions' or 'Export to multiplayer missions', depending on type of your mission
+Mission [[PBO]] was created in Missions or MPMissions folder in the game's root.
+* You can publish the mission directly from Editor in [Arma 3] to {{Link|link= http://steamcommunity.com/workshop/browse?appid=107410|text= Steam Workshop}} . Click on the Steam icon and provide necessary data: name, description, tags and image. 
+
+==== External ====
+#Pack [[Mission_Editor:_External#Mission_Folder|mission folder]] using [[BinPBO]] or other preferred packing tool.
+
+
+{{ArgTitle|2|Addon Format||
+{{GVI|arma1|1.00}}
+{{GVI|arma2|1.00}}
+{{GVI|arma2oa|1.50}}
+{{GVI|arma3|0.50}}
+{{GVI|tkoh|1.00}}}}
+
+[[:Category:ArmA: Armed Assault|{{arma1}}]] introduced mission export based on addon structure, giving designers more control of PBO structure.
+Missions or campaigns can be grouped in single PBO (like official missions) or with other supporting addons like new objects or functions.
+
+Multiplayer missions has to be installed before the game is run. No file size limitations exists.
+
+=== Installation ===
+
+Put missions/campaigns in following folder or in folder of the same names in [[Arma: Mod Folders|mod subfolders]].
+ {{Color|green|%ROOT%}}\Addons
+
+=== Export ===
+
+[[File:BinPBO.jpg|thumb|BinPBO]]
+<ol>
+<li>Create folder with name of the addon (example: ''MyMission'')</li>
+<li>Copy [[Mission_Editor:_External#Mission_Folder|mission folder]] into the addon folder (example: ''MyMission\MissionFolder.World'')</li>
+<li>Create [[Config.cpp]] in addon folder with [[CfgPatches]] and [[CfgMissions]] classes (example: ''MyMission\config.cpp'')
+<syntaxhighlight lang="cpp">
+class CfgPatches
+{
+	class MyAddonClass
+	{
+		units[] = {};
+		weapons[] = {};
+		requiredVersion = 1.0;
+		requiredAddons[] = {};
+	};
+};
+class CfgMissions
+{
+	class Missions
+	{
+		class MyMissionClass
+		{
+			directory = "MyMission\MissionFolder.World";
+		};
+	};
+};
+</syntaxhighlight></li>
+<li>Pack addon folder using [[BinPBO]] or other preferred packing tool. It's recommended '''not''' to binarize it.</li>
+</ol>
+
+
+== Format Comparison ==
+
+{| class="wikitable" style="text-align: center"
+! style="min-width: 20em" | Feature
+! Mission Format
+! Addon Format
+
+|-
+| style="text-align: left" | Ingame Export
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+
+|-
+| style="text-align: left" | External Export
+| {{Icon|checked}}
+| {{Icon|checked}}
+
+|-
+| style="text-align: left" | Multiple missions in one file
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+
+|-
+| style="text-align: left" | Custom addon in mission file
+| {{Icon|unchecked}}
+|{{Icon|checked}}
+
+|-
+| style="text-align: left" | Localized mission name
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+
+|-
+| style="text-align: left" | Designer controlled subfolders
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+
+|-
+| style="text-align: left" | User controlled subfolders
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+
+|-
+| style="text-align: left" | Ingame download of MP mission
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|}
+
+
+[[Category: 2D Editor]]

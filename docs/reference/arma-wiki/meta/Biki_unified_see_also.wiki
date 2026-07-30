@@ -1,0 +1,421 @@
+// source: https://community.bistudio.com/wiki/Bohemia_Interactive_Community:Biki_unified_see_also
+// revision: 97272 (2016-09-01T20:15:06Z)
+// export sha1: 3weilkz12xjtnv7yot8ajfp3z2mci8m
+// Vendored snapshot. Do not edit — re-export instead.
+
+/*jslint white: true*/
+
+/*window.BIKI_UNIFIED_SEE_ALSO = {
+	Example: {
+		Commands: {
+			aCommandName: "Some text describing the command that will show as the link title",
+			anotherCommandName: 'Title text with "quotes" in it!',
+			theLastCommandName: "" // nothing to say
+		},
+		Functions: {
+			BIS_fnc_aFunctionName: "The title text"
+		},
+		Categories: {
+			Examples: "Title text",
+			"Arma 3: Colon separation": "How to annoy Karel Morický"
+		},
+		Articles: {
+			Settings: ""
+		},
+		External: {
+			"A forum link": "https://forum.example.org"
+		}
+	},
+	"Template:Biki_unified_see_also": {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			Templates: "All the categorized templates available on BIKI"
+		},
+		Articles: {},
+		External: {
+			"The Semantic Web": "https://en.wikipedia.org/wiki/Semantic_Web"
+		}
+	},
+
+	/* The real stuff starts here */
+
+	addAction: {
+		Commands: {
+			removeAction: 'Use to remove actions added by "addAction"',
+			removeAllActions: 'Use to remove ALL actions added by "addAction"',
+			setUserActionText: "",
+			inputAction: "",
+			action: ""
+		},
+		Functions: {},
+		Categories: {
+			"Command Group: Activators": "Set, define and use Triggers and Event Handlers",
+			"Command Group: Interaction": "On-screen messages, dialogs, menus",
+			"Command Group: Unit Control": "Controls the behaviour of your troops"
+		},
+		Articles: {},
+		External: {}
+	},
+	addWaypoint: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	createGuardedPoint: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	currentWaypoint: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	deleteWaypoint: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	doMove: {
+		Commands: {
+			commandMove: "",
+			setDestination: "",
+			moveTo: "",
+			move: ""
+		},
+		Functions: {},
+		Categories: {
+			"Command Group: Unit Control": "Controls the behaviour of your troops"
+		},
+		Articles: {},
+		External: {}
+	},
+	getWPPos: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	lockWP: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	move: {
+		Commands: {
+			doMove: ""
+		},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints",
+			"Command Group: Unit Control": "Controls the behaviour of your troops"
+		},
+		Articles: {},
+		External: {}
+	},
+	setCurrentWaypoint: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	setWaypointBehaviour: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	setWaypointCombatMode: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {
+			Waypoints: "",
+			"Mission Editor: Waypoints#Combat Mode": "",
+			"ArmA: AI Combat Modes": ""
+		},
+		External: {}
+	},
+	setWaypointCompletionRadius: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	setWaypointDescription: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	setWaypointFormation: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	setWaypointHousePosition: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	setWaypointPosition: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	setWaypointScript: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	setWaypointSpeed: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	setWaypointStatements: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	setWaypointTimeout: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	setWaypointType: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	setWPPos: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	showWaypoint: {
+		Commands: {
+			waypointShow: "Gets the waypoint show/hide status"
+		},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	synchronizeWaypoint: {
+		Commands: {
+			synchronizeTrigger: ""
+		},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	"synchronizeWaypoint_trigger": {
+		Commands: {
+			createTrigger: "",
+			synchronizeTrigger: ""
+		},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	waypointAttachedVehicle: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	waypointAttachObject: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	waypointAttachVehicle: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	waypointCompletionRadius: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	waypointName: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	waypointPosition: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	waypointShow: {
+		Commands: {
+			showWaypoint: "Sets the condition determining when the waypoint is shown"
+		},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	Waypoint: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {
+			Waypoints: ""
+		},
+		External: {}
+	},
+	waypoints: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {},
+		External: {}
+	},
+	Waypoints: {
+		Commands: {},
+		Functions: {},
+		Categories: {
+			"Command Group: Waypoints": "Commands to handle Waypoints"
+		},
+		Articles: {
+			Waypoint: "Waypoint format"
+		},
+		External: {}
+	},
+	"toString": {
+		Commands: {
+			set: "", 
+			resize: "", 
+			reverse: "", 
+			select: "", 
+			in: "", 
+			find: "", 
+			toArray: "", 
+			forEach: "", 
+			count: "", 
+			deleteAt: "", 
+			deleteRange: "",
+			append: "",
+			sort: ""  
+		},
+		Functions: {},
+		Categories: {},
+		Articles: {},
+		External: {"Unicode Character Table" : "http://www.utf8-chartable.de/"}
+	}
+};*/

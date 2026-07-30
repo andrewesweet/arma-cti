@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/gestureState
+// revision: 352842 (2024-02-26T11:36:18Z)
+// export sha1: oymfq2xdv78oscnmtkd9sqm24undaec
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Animations | Category:Introduced with Arma 3 version 2.06 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.06
+
+|arg= global
+
+|gr1= Animations
+
+|descr= Returns the name of a unit's current gesture. Seems to be forced to lower case in {{arma3}}.
+{{Feature|informative|This command is only for a man unit, other units such as animals cannot use this command.}}
+
+|mp= When executed on a client, this command only returns accurate results when the target unit is within sight of the client. When executed on a dedicated server, the returned value is accurate.
+
+|s1= [[gestureState]] unitName
+
+|p1= unitName: [[Object]]
+
+|r1= [[String]] - empty string if not available
+
+|x1= <sqf>private _state = gestureState player;</sqf>
+
+|seealso= [[switchAction]] [[playAction]] [[BIS_fnc_ambientAnimGetParams]] [[animationState]] [[getUnitMovesInfo]]
+}}

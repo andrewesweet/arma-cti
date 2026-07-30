@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/isEqualRef
+// revision: 338333 (2023-02-28T14:32:49Z)
+// export sha1: 9u1sxrxxgh9z8ecrqsohbirukojl4ej
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Variables | Category:Introduced with Arma 3 version 2.12 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.12
+
+|gr1= Variables
+
+|descr= Compares two values by reference, returns [[true]] if equal.
+
+|s1= val1 [[isEqualRef]] val2
+
+|p1= val1: [[Anything]]
+
+|p2= val2: [[Anything]]
+
+|r1= [[Boolean]] - [[true]] if the same ref
+
+|x1= <sqf>
+_arr1 = [1,[2,[3]]];
+_arr2 = _arr1;
+_arr1 isEqualTo _arr2;	// true
+_arr1 isEqualRef _arr2;	// true
+
+_arr2 = +_arr1;			// array copy
+_arr1 isEqualTo _arr2;	// true
+_arr1 isEqualRef _arr2;	// false
+</sqf>
+
+|seealso= [[isNotEqualRef]] [[isEqualTo]] [[Operators]]
+}}

@@ -1,0 +1,58 @@
+// source: https://community.bistudio.com/wiki/lookAt
+// revision: 369219 (2024-09-03T10:34:54Z)
+// export sha1: agl8lbokfzjkvg7mm2okifv1ogob62y
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Unit Control
+
+|descr= Control what the unit(s) is/are looking at (target or [[Position]]). If target is used, it will get revealed fully.
+
+|s1= unit(s) [[lookAt]] position
+
+|p1= unit(s): [[Object]] or [[Array]] of [[Object]]s
+|p2= position: [[Object]] or [[PositionAGL]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_someSoldier lookAt _otherSoldier;</sqf>
+
+|x2= <sqf>[_someSoldier, _otherSoldier] lookAt markerPos "markerOne";</sqf>
+
+|x3= <sqf>
+hint "R U N !";
+BFG = "B_AAA_System_01_F" createVehicle position player;
+createVehicleCrew BFG;
+t = time + 10;
+onEachFrame
+{
+	BFG lookAt (unitAimPosition player vectorAdd (velocity player vectorMultiply 0.2));
+	if (time > t && alive player) then
+	{
+		[BFG,"weapon_Cannon_Phalanx",[0]] call BIS_fnc_fire;
+	};
+};
+</sqf>
+
+|seealso= [[glanceAt]] [[commandWatch]] [[doWatch]] [[freeLook]]
+}}

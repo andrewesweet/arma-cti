@@ -1,0 +1,10 @@
+// source: https://community.bistudio.com/wiki/Village_Pump_(assistance)
+// revision: 141764 (2019-12-05T23:46:58Z)
+// export sha1: twg6v43k3za13948x04a423ygyzbid0
+// categories: Category:Village Pump
+// Vendored snapshot. Do not edit — re-export instead.
+
+<noinclude>''Need some help creation or filling up new sections? This is the place to look for volunteers for Wiki projects.''</noinclude>
+<noinclude>{{villagepumpmenu}}</noinclude>
+
+[[Category:Village Pump]]

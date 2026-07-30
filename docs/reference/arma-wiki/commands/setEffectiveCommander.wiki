@@ -1,0 +1,35 @@
+// source: https://community.bistudio.com/wiki/setEffectiveCommander
+// revision: 322840 (2022-06-26T21:14:08Z)
+// export sha1: rih286fz4s5js53iwa1gjwrhmavm5zu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Unit Control | Category:Introduced with Arma 3 version 1.96 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Local Effect
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.96
+
+|arg= global
+
+|eff= local
+
+|gr1= Unit Control
+
+|descr= Sets [[effectiveCommander]] of the given vehicle. Effective commander is the person who commands the vehicle, i.e. gives commands to the driver.
+Every time a person gets in or out of a vehicle, effective commander eligibility is recalculated by the engine based on the current [[crew]].
+Use this command to force desired effective commander. 
+
+|mp= In multiplayer, execute globally.
+
+|s1= vehicle [[setEffectiveCommander]] person
+
+|p1= vehicle: [[Object]]
+
+|p2= person: [[Object]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>vehicle player setEffectiveCommander player;</sqf>
+
+|seealso= [[effectiveCommander]] [[commander]] [[vehicleMoveInfo]]
+}}

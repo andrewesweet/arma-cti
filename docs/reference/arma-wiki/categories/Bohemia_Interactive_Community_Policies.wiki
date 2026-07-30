@@ -1,0 +1,8 @@
+// source: https://community.bistudio.com/wiki/Category:Bohemia_Interactive_Community:Policies
+// revision: 249839 (2021-02-25T13:39:55Z)
+// export sha1: 672d1tgc10sq0ozxfxhv9rdjsriltcj
+// Vendored snapshot. Do not edit — re-export instead.
+
+You have found the Bohemia Interaction wiki policies. These policies are here to help make this wiki a better place for all readers/editors. Please take the time to read these policies!
+
+[[Category:Community Wiki|POLICIES]]

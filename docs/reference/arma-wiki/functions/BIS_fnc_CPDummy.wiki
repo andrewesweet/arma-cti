@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_CPDummy
+// revision: 274126 (2021-06-13T01:17:00Z)
+// export sha1: 1wjh6e8ceo6dnk4hyqavwrtipyw0jf7
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: CombatPatrol | Category:Functions | Category:Introduced with Arma 3 version 1.72 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.72
+
+|gr1= CombatPatrol
+
+|descr= ''N/A''
+
+|s1= [] call [[BIS_fnc_CPDummy]]
+
+|p1= 
+
+|r1=
+
+|x1=
+
+|seealso=
+}}

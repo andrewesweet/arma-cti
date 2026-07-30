@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/Category:Operation_Flashpoint:_Terrain_Editing
+// revision: 227137 (2021-01-31T18:53:14Z)
+// export sha1: f5md694rnaaghympdwltb4pav8lya02
+// Vendored snapshot. Do not edit — re-export instead.
+
+Since the release of [[Visitor 2]], Terrain creating has become very popular among the community. Dozens of islands have been released since 2002 even a few pushing {{ofp}} to its limits with 512x512 sized Islands. 
+
+
+The new Terrain tool by Bohemia Interactive is simply named [[Visitor 3]] which can generate nice enviroments in combination with [[Linda]]. Not much is known about the new terrain tools at this point.
+
+
+==== Basic Information ====
+
+Before you start on an map you must know there are limits to Terrain editing;
+
+* Size should be kept below 512x512 due OFP being poor at handling such sizes, however for {{ofpe}} special terrain streaming has been developed to support better performance and larger Islands like Sahrani.
+
+* Max amount of ground textures is around 512.
+
+* Should you use textures higher than 512x512 than keep an eye on amount of transition as it can take a lot of space.
+
+* Islands/maps can't be 512x256 in size only same sizes as textures.
+
+* Islands/maps cannot have smaller cells than 50m although a workaround has been released but is unplayable really.
+
+* Maximum terrain height is around 1450m
+
+
+Basicly Terrain editing is quite easy in Visitor2 or WrpTool but takes a lot of time. You can choose between 2 tools to create an island, called: [[Visitor 2]] or [[WrpTool]].
+
+{{GameCategory|ofp|Editing}}

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/tvSortAll
+// revision: 377598 (2026-01-02T07:01:08Z)
+// export sha1: nd47vqij87jgifwlp8vy6o6qczvzxbw
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= GUI Control - Tree View
+
+|descr= Sorts all children, including trees deriving from given path. Text of [[CT_TREE|Tree View]] entries is used for sorting.
+
+|s1= control [[tvSortAll]] [path, reversed]
+
+|p1= control: [[Control]]
+
+|p2= path: [[Tree View Path]] - path to start sorting from
+
+|p3= reversed: [[Boolean]] - [[true]] to reverse sort it.
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_ctrl tvSortAll [[], false]; // sorts the complete Tree View</sqf>
+
+|seealso= [[tvSort]] [[tvSortByValue]] [[tvSortByValueAll]]
+}}

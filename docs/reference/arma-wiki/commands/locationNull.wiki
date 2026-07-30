@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/locationNull
+// revision: 321059 (2022-05-13T12:19:56Z)
+// export sha1: 02yjjsss8bre2kzy9xwv3iw45nf7zyr
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Locations | Category:Command Group: Variables | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Locations
+
+|gr2= Variables
+
+|descr= A non-existing [[Location]]. To compare non-existent locations use [[isNull]] or [[isEqualTo]]:
+<sqf>
+locationNull == locationNull;			// false
+isNull locationNull;					// true
+locationNull isEqualTo locationNull;	// true
+</sqf>
+
+|s1= [[locationNull]]
+
+|r1= [[Location]]
+
+|x1= <sqf>!isNull locationNull; // false</sqf>
+
+|x2= <sqf>str locationNull; // No location</sqf>
+
+|x3= <sqf>position locationNull; // [0,0,0]</sqf>
+
+|seealso= [[controlNull]] [[displayNull]] [[grpNull]] [[objNull]] [[taskNull]] [[teamMemberNull]] [[scriptNull]] [[configNull]] [[typeName]] [[isNull]]
+}}

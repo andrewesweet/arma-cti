@@ -1,0 +1,405 @@
+// source: https://community.bistudio.com/wiki/Quick_camo_selection_definition_guide
+// revision: 364105 (2024-05-04T21:56:34Z)
+// export sha1: cjd2udcjt19edtauzs4xwtot4bf2du6
+// categories: Category:ArmA: Armed Assault: Editing Tutorials | Category:Arma 2: Tutorials | Category:Arma 3: Tutorials
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+== Intention ==
+
+This guide describes a process to easily create camo selections for models to allow reskinning even for a large amount of assets.
+
+
+== Benefit ==
+
+# Instead of defining the camo selection on each RES LOD and the view LODs one by one, this approach just needs one definition and the O2script  does the rest.
+# With the help of tools, you can create easily a mapping for many assets and mass process all assets, thus reducing the effort considerably.
+
+
+== Scope ==
+
+# This is not a beginners guide. Please refer to related information section at the end to learn the basics.
+# This is not about creating textures.
+# This is not about explaining tools usage.
+# This is not explaining config basics.
+# This does not (yet) include the definition of selections for materials.
+
+
+== What are camo selections ==
+
+Camo selections are term to describe [[Named_Selection|named selections]] to be used to apply different textures to a model.
+This can be done by either means of {{Link|http://pmc.editing.wiki/doku.php?id{{=}}arma2:texturing:hiddenselectionstextures|config}} or [[setObjectTexture|scripting]].
+
+
+== How does the O2script work ==
+
+Note: technical detail to understand the process in detail.
+
+# The model needs to have the default textures assigned.
+# The script creates the camo selections based on the supplied texture - it looks for points/faces with the texture assigned.
+# It assigns to these points/faces the selection name provided.
+
+So in simple terms the script looks with the supplied texture in the model and assigns to their surface the camo selection with the desired name.
+
+
+== Process ==
+
+Brief summary:
+
+# Save the two bio.2s scripts on this page to your .\ObjectBuilder\O2Scripts folder.
+# Get the list all textures assigned to a model (for the main components).
+# Prepare batch file with selectionName to textureName mapping for the model.
+# Run the batch file.
+# Add the new selectionNames in the sections[] in cfgModels of the model.cfg.
+# Set the selectionName-textureName pair in hiddenSelections[] and hiddenSelectionsTextures[] in the config.cpp.
+# Binarize the models with the updated model.cfg.
+
+=== Get texture list ===
+
+Requirement:
+You need the paid subscriber versions of {{Link|link= https://forums.bistudio.com/topic/113852-mikeros-dos-tools/|text= mikero's tools}}. Namely '''dep3d'''.
+
+ DeP3d [-options..] AnyFolder | Anyfile[.p3d] | any list | "comma,separated,list"
+ Options
+ ...
+ -FL[nn] list files (see readme)
+
+Sample calls:
+
+ DeP3d.exe -P -FL p:\namespace\path\modelName.p3d
+ DeP3d.exe -P -FL p:\namespace\path\ >> TextureListForPath.txt
+
+Alternatives:
+* Get the textures assigned to the model via ObjectBuilder or some other tool.
+* Use a hex/text editor and search for paa.
+
+=== Update model ===
+
+Next create the mapping of selection name to texture name and execute the following O2script with the path to the p3d along with the mapping pair.
+
+{{Feature|warning|Only works on source models ([[BIS File Formats#MLOD File Formats|MLOD]] format).}}
+
+For convenience you can use this batch file and define multiple mappings for a model, and multiple models with their mapping to mass process multiple files in one go.
+
+CreateNamedSelectionFromMapping.bat
+
+ cd /D "c:\Steam\SteamApps\common\Arma 3 Tools\ObjectBuilder\"
+ 
+ O2Script.exe -a O2Scripts\NamedSelectionCreate.bio2s p:\namespace\path\modelName.p3d selectionName namespace\path\textureName.paa
+ 
+ exit
+
+NamedSelectionCreate.bio2s (create a text file, paste the following content, save as the said filename with bio2s as extension and move to the O2Scripts folder of ObjectBuilder)
+
+<spoiler text="Show Code">
+ #include "std\lodNames.inc"
+ 
+ _createNewSelection =
+ {
+ 	private ["_obj","_selName","_sel"];
+ 
+ 	_obj = _this select 0;
+ 	_selName = _this select 1;
+ 	_sel = _this select 2;
+ 
+ 	if (_obj checkSelectionName _selName) then
+ 	{
+ 		//new selection already exists
+ 		//ToDo: handle that if needed
+ 	}
+ 	else
+ 	{
+ 		_obj save _sel as _selName;
+ 	};
+ };
+ 
+ _getTexOrMatName =
+ {
+ 	private["_obj","_fi","_isMat"];
+ 	_obj = _this@0;
+ 	_fi = _this@1;
+ 	_isMat = _this@2;
+ 
+ 	if(_isMat)then
+ 	{
+ 		getMaterial (_obj face _x)
+ 	}
+ 	else
+ 	{
+ 		getTexture (_obj face _x)
+ 	}
+ };
+ 
+ _getProxyFaces =
+ {
+ 	private ["_obj","_faces","_face","_proxySel"];
+ 	_obj = _this;
+ 
+ 	_faces = [];
+ 	{
+ 		if (_x @ [0,6]=="proxy:") then
+ 		{
+ 			_proxySel = _obj loadSelection _x;
+ 			_face = (getSelectedFaces _proxySel) @ 0;
+ 			_faces set [count _faces,_face];
+ 		};
+ 	} forEach getSelections _obj;
+ 
+ 	_faces
+ };
+ 
+ _faceIndicesByTexture =
+ {
+ 	private["_obj","_texName","_texIsMat","_proxyFaces","_faceIndices"];
+ 	_obj = _this@0;
+ 	_texName = _this@1;
+ 	_texIsMat = _this@2;
+ 
+ 	_proxyFaces = _obj call _getProxyFaces;
+ 
+ 	_faceIndices = [];
+ 	_obj forEachFace [{[_obj,_x,_texIsMat] call _getTexOrMatName == _texName},
+ 	{
+ 		if(!(_x in _proxyFaces))then
+ 		{
+ 			_faceIndices set [count _faceIndices,_x];
+ 		};
+ 	}];
+ 
+ 	_faceIndices
+ };
+ 
+ _selectByFaceIndices =
+ {
+ 	private ["_obj","_faceIndices","_sel"];
+ 	_obj = _this@0;
+ 	_facesIndices = _this@1;
+ 
+ 	_sel = newSelection _obj;
+ 	_sel selectFaces _facesIndices;
+ 	selectPointsFromFaces _sel
+ };
+ 
+ _selectionByTexture =
+ {
+ 	private["_obj","_texName","_texIsMat","_faceIndices"];
+ 	_obj = _this@0;
+ 	_texName = _this@1;
+ 	_texIsMat = _this@2;
+ 
+ 	_faceIndices = [_obj,_texName,_texIsMat] call _faceIndicesByTexture;
+ 	[_obj,_faceIndices] call _selectByFaceIndices
+ };
+ 
+ _createNewSelectionByTexture =
+ {
+ 	private["_obj","_selName","_texName","_texIsMat","_sel"];
+ 
+ 	_obj = _this select 0;
+ 	_selName = _this select 1;
+ 	_texName = _this select 2;
+ 	_texIsMat = _this select 3;
+ 
+ 	_sel = [_obj,_texName,_texIsMat] call _selectionByTexture;
+ 	[_obj,_selName,_sel] call _createNewSelection;
+ };
+ 
+ _sourcePath = this@0;
+ _targetPath = _sourcePath;
+ 
+ if ((count this) == 2) then {_targetPath = this@1;};
+ 
+ _selectionName = this@1;
+ _textureName = this@2;
+ 
+ _p3d = newLODObject;
+ _p3d loadP3D _sourcePath;
+ 
+ _LODs = getObjects _p3d;
+ _resolutions = getResolutions _p3d;
+ 
+ console=openStandardIO;
+ console<<"_sourcePath: "<<_sourcePath<<eoln;
+ console<<"_selectionName: "<<_selectionName<<eoln;
+ console<<"_textureName: "<<_textureName<<eoln;
+ 
+ for "_i" from 0 to (count _p3d-1) do
+ {
+ 	_currentLOD = _LODs @ _i;
+ 	_currentResolution = _resolutions @ _i;
+ 
+ 	if (IS_LOD_RESOLUTION(_currentResolution)) then
+ 	{
+ 		[_currentLOD,_selectionName,_textureName,false] call _createNewSelectionByTexture;
+ 	};
+ };
+ 
+ save (_p3d as _targetPath);
+</spoiler>
+
+=== Model.cfg ===
+
+You need to add the new named selectionNames to the sections[] in cfgModels:
+
+<syntaxhighlight lang="cpp">
+class CfgModels
+{
+	class ParentClass;
+	class ModelName: ParentClass
+	{
+		sectionsInherit = "ParentClass";
+		sections[] = { "NewCamoSelection_1", "NewCamoSelection_2" };
+	};
+};
+</syntaxhighlight>
+
+See also: [[ArmA:_Howto_Model_Config#sections.5B.5D_.3D_.7B.7D.3B|ArmA: Howto Model Config - CfgModels explanations - sections]]
+
+=== Config ===
+
+Finally define the named selection to texture pair in the class of the weapon or unit/vehicle/object:
+
+<syntaxhighlight lang="cpp">
+class CfgWeapons // or CfgVehicles
+{
+	class ParentClass;
+	class YourTAG_ClassName : ParentClass
+	{
+		hiddenSelections[] = { "camo_1", "camo_2" };
+		hiddenSelectionsTextures[] = { "\namespace\path\textureName.paa", "\namespace\path\textureName.paa" };
+	};
+};
+</syntaxhighlight>
+
+See also: {{Link|CfgVehicles Config Reference#hiddenSelections}}
+
+{{Feature|warning|Define the '''correct loading order''' via ''requiredAddons'' in the ''cfgPatches'' header to make sure your definition overwrites potential other definitions.}}
+
+
+== Create named selections overview ==
+
+If a model already has named selections defined, you can use this batch script to list them/log them to file.
+
+{{Feature|warning|Only works on source models ([[BIS File Formats#MLOD File_Formats|MLOD]] format).}}
+
+ListNamedSelectionsMapping.bat
+
+ // Adjust path
+ cd /D "c:\Steam\SteamApps\common\Arma 3 Tools\ObjectBuilder\"
+ 
+ O2Script.exe -a O2Scripts\NamedSelectionsOverview.bio2s p:\namespace\path\modelName.p3d >> NamedSelectionsOverview.txt
+ 
+ exit
+
+Sample output:
+
+ _sourcePath: p:\namespace\path\modelName.p3d
+ _currentResolution: 1
+ _selectionName: name1
+ _textures: namespace\path\textureName4711.paa
+ _selectionName: name2
+ _textures: namespace\path\textureName4712.paa
+ ...
+
+NamedSelectionsOverview.bio2s (create a text file, paste the following content, save as the said filename with bio2s as extension and move to the O2Scripts folder of ObjectBuilder)
+
+<spoiler text="Show Code">
+ #include "std\lodNames.inc"
+ 
+ _createOverviewForCurrentLOD =
+ {
+ 	private["_object"];
+ 
+ 	_object = _this select 0;
+ 
+ 	{
+ 		private["_selectionName","_textures","_selection","_selectedFaces"];
+ 		_selectionName = _x;
+ 
+ 		_textures = [];
+ 		_selection = _object loadSelection _selectionName;
+ 		_selectedFaces = getSelectedFaces _selection;
+ 
+ 		{
+ 			private["_face","_texture"];
+ 			_face = _x;
+ 
+ 			_texture = getTexture (_object face _face);
+ 			if (!(_texture in _textures)) then
+ 			{
+ 
+ 				_textures set [count _textures,_texture];
+ 			};
+ 		} forEach _selectedFaces;
+ 
+ 		console<<"_selectionName: "<<_selectionName<<eoln;
+ 
+ 		{
+ 			private["_texture"];
+ 			_texture = _x;
+ 			if (_texture != "") then
+ 			{
+ 				console<<"_textures: "<<_texture<<eoln;
+ 			};
+ 		} forEach _textures;
+ 	} forEach (getSelections _object);
+ };
+ 
+ _sourcePath = this@0;
+ 
+ _p3d = newLODObject;
+ _p3d loadP3D _sourcePath;
+ 
+ _LODs = getObjects _p3d;
+ _resolutions = getResolutions _p3d;
+ 
+ console=openStandardIO;
+ 
+ for "_i" from 0 to ((count _p3d) - 1) do
+ {
+ 	_currentLOD = _LODs @ _i;
+ 	_currentResolution = _resolutions @ _i;
+ 
+ 	if (IS_LOD_RESOLUTION(_currentResolution)) then
+ 	{
+ 		console<<"_currentResolution: "<<str _currentResolution<<eoln;
+ 
+ 		[_currentLOD] call _createOverviewForCurrentLOD;
+ 	};
+ };
+</spoiler>
+
+
+== Credits ==
+
+* {{User|T_D}}
+* {{User|mikero}}
+
+
+== Related information ==
+
+=== Videos ===
+
+* {{Link|https://www.youtube.com/watch?v{{=}}F8a6qTURq2A|Retexture tutorial Part 1}}
+* {{Link|https://www.youtube.com/watch?v{{=}}9CYbP5PXBe4|Re-Texture Tutorial ♦ Part 1: Starting with the basics}}
+* {{Link|https://www.youtube.com/watch?v{{=}}qZoI7f0ApSI|Modding Tutorial 1 - Retexturing & Config}}
+* {{Link|https://www.youtube.com/watch?v{{=}}ldhhemPPFiA|How to make and import custom textures into Arma 3 via Editor}}
+
+=== Text ===
+
+* {{Link|https://forums.bistudio.com/topic/151777-tutorialsimple-re-texturing-guide-from-start-to-finish/|Simple Re-texturing Guide (From Start To Finish)}}
+* {{Link|http://www.battlegroup-xtra.eu/index.php/45-Arma-2-modding/3343-Mod-Restoring-ReTexturing.html|ReTexturing tutorial by -=XTRA=-Larsiano}}
+* {{Link|https://forums.bistudio.com/topic/90124-hidden-selections/|Quick and dirty tut on hidden selections}}
+* {{Link|http://fab.ofp.free.fr/Tutorials/Hidden_Selections.htm|How to create hidden selections in your models}}
+* {{Link|http://www.ofpec.com/addons_depot/index.php?action{{=}}details&id{{=}}25 Texturing How-To for {{arma1}} by Soul_Assassin}}
+* {{Link|Arma: Texture Naming Rules}}
+
+* {{Link|http://pmc.editing.wiki/doku.php?id{{=}}arma:texturing|PMC wiki: Texturing}}
+* {{Link|http://pmc.editing.wiki/doku.php?id{{=}}arma3:texturing:scarecrow398-retexturing-tools-basics-tutorial|PMC wiki: ReTexturing Tools Basics Tutorial by Scarecrow398}}
+* {{Link|http://pmc.editing.wiki/doku.php?id{{=}}arma3:config:stiltman-retexturing-tutorial|PMC wiki: Basic Retexturing Tutorial of Arma 3 Character by Stiltman}}
+* {{Link|http://pmc.editing.wiki/doku.php?id{{=}}arma2:texturing:hiddenselectionstextures|PMC wiki: hiddenSelectionsTextures}}
+
+
+{{GameCategory|arma1|Editing Tutorials}}
+{{GameCategory|arma2|Tutorials}}
+{{GameCategory|arma3|Tutorials}}

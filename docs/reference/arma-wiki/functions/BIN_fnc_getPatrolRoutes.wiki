@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/BIN_fnc_getPatrolRoutes
+// revision: 309698 (2022-05-05T12:08:50Z)
+// export sha1: m5v7sb9h2azcmqv1i9p8wy5a8v77k6w
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: AI Human | Category:Functions | Category:Introduced with Arma 3 version 1.94 | Category:Maintenance/RV | Category:Maintenance/RV/Example needed | Category:Maintenance/RV/Return value needed | Category:Maintenance/RV/See also needed | Category:Maintenance/RV/Syntax needed
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.94
+
+|gr1= AI Human 
+
+|descr= {{Feature|arma3contact}} 
+
+|s1= <!-- [] call [[BIN_fnc_getPatrolRoutes]] -->
+
+|p1=
+
+|r1=
+
+|x1= <!-- <sqf>[] call BIN_fnc_getPatrolRoutes;</sqf> -->
+
+|seealso=
+}}

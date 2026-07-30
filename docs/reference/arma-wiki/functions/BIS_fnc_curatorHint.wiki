@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_curatorHint
+// revision: 347964 (2023-11-08T08:50:05Z)
+// export sha1: kxxjvu3ujcdxcm21qumvxa4szhtwt4c
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Curator | Category:Functions | Category:Introduced with Arma 3 version 1.16 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.16
+
+|gr1= Curator
+
+|descr= Show hint in curator interface.
+
+|s1= [title, text, duration] call [[BIS_fnc_curatorHint]]
+
+|p1= title: [[String]]
+
+|p2= text: [[String]]
+
+|p3= duration: [[Number]] - (Optional, default 30) duration in seconds
+
+|r1= [[Control]] - UI control of the hint text
+
+|x1= <sqf>["Title", "Some text", 1337] call BIS_fnc_curatorHint;</sqf>
+
+|seealso= [[Arma 3: Curator]]
+}}

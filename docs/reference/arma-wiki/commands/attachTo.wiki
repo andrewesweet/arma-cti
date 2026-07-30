@@ -1,0 +1,186 @@
+// source: https://community.bistudio.com/wiki/attachTo
+// revision: 378853 (2026-07-20T13:40:14Z)
+// export sha1: eoriyar0nb25hebaw7c8b3bu02uie17
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Scripting Commands: Global Effect | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|arg= global
+
+|eff= global
+
+|gr1= Object Manipulation
+
+|descr= Attaches an object to another object.
+* The offset is applied to the object center unless a memory point is provided, in which case the offset will be applied to the memory point position.
+* If no offset is specified, the current offset between the two objects will be used.
+
+{{Feature|informative|
+* All direction commands, such as [[setDir]], [[setVectorDirAndUp]], etc. for an [[attachedObjects|attached object]] should be used '''relative''' to the reference object's direction (i.e. in model space), e.g <sqf inline>_attachedObj setDir 0</sqf> will make it face the same direction as the reference object, '''90''' face to the right, '''180''' face to the back, etc.
+* Attached triggers only follow the direction of the object to which they are attached, not pitch or roll.
+}}
+
+|mp= Use <sqf inline>_attachedObj setPosWorld getPosWorld _attachedObj</sqf> ''after'' [[setDir]] to synchronise direction properly over the network (see {{Link|setDir|setDir's page}} for its MP behaviour).
+
+|s1= object1 [[attachTo]] [object2, offset, memPoint, followBoneRotation]
+
+|p1= object1: [[Object]] - object to attach
+
+|p2= object2: [[Object]] or [[Group]] - object to attach to; if a group is provided, its [[leader]] is used
+
+|p3= offset: [[Position#PositionRelative|PositionRelative]] - (Optional) the position relative to ''object2''<nowiki/>'s position
+
+|p4= memPoint: [[String]] - (Optional) see {{Link|ArmA: Armed Assault: Selection Translations|Selection Translations}} for czech selections names
+
+|p5= followBoneRotation: [[Boolean]] - (Optional) follows the memory point's rotation (if attached to one)
+|p5since= arma3 2.02
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player attachTo [car, [0, 0, 1]];</sqf>
+
+|x2= <sqf>player attachTo [tank, [0, -1, 0], "Usti hlavne"];</sqf>
+
+|x3= Automatic offset:
+<sqf>ammoCrate attachTo [player];</sqf>
+
+|x4= To set orientation of attached object use [[setVectorDirAndUp]] command:<br>
+[[File:Sbomber.jpg|300x200px|right]]
+<sqf>
+_expl1 = "DemoCharge_Remote_Ammo" createVehicle position player;
+_expl1 attachTo [player, [-0.1, 0.1, 0.15], "Pelvis"];
+_expl1 setVectorDirAndUp [[0.5, 0.5, 0], [-0.5, 0.5, 0]];
+_expl2 = "DemoCharge_Remote_Ammo" createVehicle position player;
+_expl2 attachTo [player, [0, 0.15, 0.15], "Pelvis"];
+_expl2 setVectorDirAndUp [[1, 0, 0], [0, 1, 0]];
+_expl3 = "DemoCharge_Remote_Ammo" createVehicle position player;
+_expl3 attachTo [player, [0.1, 0.1, 0.15], "Pelvis"];
+_expl3 setVectorDirAndUp [[0.5, -0.5, 0], [0.5, 0.5, 0]];
+</sqf>
+
+|x5= [[File:arma3_attachTo-example-worker-drill-and-radio.png|300x200px|right]]
+<sqf>
+_drill attachTo [_worker, [0.0595885,-0.00950365,-0.13495], "RightForeArmRoll", true];
+_drill setVectorDirAndUp [[0.536966,-0.00438141,-0.843605],[0.345872,0.913231,0.215406]];
+_radio attachTo [_worker, [-0.100003,0.069064,0.153719], "Spine3", true];
+_radio setVectorDirAndUp [[-0.144569,-0.48725,0.861354],[0.039712,0.866938,0.497072]];
+</sqf>
+
+|seealso= [[attachedTo]] [[attachedObjects]] [[detach]] [[getRelPos]] [[attachObject]] [[attachedObject]] [[waypointAttachVehicle]] [[waypointAttachedVehicle]] [[lightAttachObject]] [[triggerAttachVehicle]] [[setVectorDir]] [[setVectorUp]] [[setVectorDirAndUp]] [[modelToWorld]] [[BIS_fnc_transformVectorDirAndUp]] [[BIS_fnc_attachToRelative]]
+}}
+
+{{Note
+|user= TeaCup
+|timestamp= 20110917192000
+|text= Some objects you cannot attach anything to. To be more precise, you can attach objects to them, but the behaviour is unexpected. For instance:
+<sqf>SuitcaseObject attachTo [FoldingTableObject, [0,0,0]];</sqf>
+You would expect the suitcase to jump to the pivot point of the table, and stick to it.<br>
+Instead, the suitcase will freeze in it is original position. Even if the table is moved, the suitcase will be unaffected: it will not follow the table, it will not even respond to actions it reacted to prior to being attached: pushing, being shot at, etc.. It's just an object frozen in space. In MP it is even weirder, the suitcase would turn invisible.<br>
+Dodgy objects when it comes to attaching things to them: most in Objects&nbsp;(small), Objects&nbsp;(signs), all of Objects&nbsp;(helpers) categories, etc.
+}}
+
+{{Note
+|user= Pixinger
+|timestamp= 20140328162200
+|text= If you attach an explosive charge to an object (e.g. ammobox), the charge will not detonate when you simply set the damage to 1. You must detach it before.
+<sqf>
+private _target = myAmmoBox;
+// create and attach charge
+private _charge = "DemoCharge_Remote_Ammo_Scripted" createVehicle position player;
+_charge attachTo [_target, [0, 0, 0.2]];
+_charge setVectorDirAndUp [[0.5,0.5,0], [-0.5,0.5,0]];
+// now detonate charge
+detach _charge; // Important!
+_charge setDamage 1;
+</sqf>
+}}
+
+{{Note
+|user= ffur2007slx2_5
+|timestamp= 20140601230000
+|text= [[attachTo]] overwrites [[setVectorDirAndUp]] if attached obj was changed to attach another one.
+<sqf>
+_obj attachTo [_logic,[0, 0, 0]];
+_obj setVectorDirAndUp [[0, 1, 0], [0, 0, -1]];
+_obj attachTo [_logic, [0, 0, 2]];		// vector no changes
+_obj attachTo [_anotherOne, [0, 0, 0]];	// vector changes to default
+</sqf>
+|game= arma3
+|version= 1.20
+}}
+
+{{Note
+|user= ondrejkuzel
+|timestamp= 20140925100000
+|text= Attaching an object does not update the accessibility of a place for the AI. The command '''should not''' be used for positioning large static objects - the AI will simply walk through such objects.
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20160901175400
+|text= Using [[attachTo]] with objects that have ragdoll physics (such as ammo boxes, containers, etc.) may cause unexpected behaviour.
+When you do so, if the attached object intersect origin object, origin object may gain some '''enormous collision properties''' even if the collision model for the attached object is not present localy to origin object, until detached.
+Vehicles may start flipping with no mass calculation (ie tank might fly), player object might gain infinite Z-vector velocity on any interaction with terrain relief and other objects.
+}}
+
+{{Note
+|user= R3vo
+|timestamp= 20190813125500
+|text= When attaching a unit which is playing an animation to a static object, the animation becomes laggy. Presumably because the update frequency of the static object is used.
+}}
+
+{{Note
+|user= Leopard20
+|timestamp= 20240510092248
+|text= To find all selection names of vehicle turrets for [[attachTo]], you can use this script:
+<sqf>
+params ["_veh"];
+private _turretSels = [];
+
+isNil { // make sure the code runs unscheduled
+	private _cfg = configOf _veh;
+	_veh = createSimpleObject [getModelInfo _veh # 1, [0,0,0]]; // create a simple object instead of the actual vehicle
+	deleteVehicle _veh; // mark it for deletion in the next frame
+
+	private _turrets = configProperties [_cfg >> "Turrets", "isClass _x", true];
+
+	private _getSelections = {_veh selectionNames "memory" apply {[_x, _veh selectionPosition [_x, "memory"], _veh selectionVectorDirAndUp [_x, "memory"]]}};
+	private _allSelections = call _getSelections;
+
+	{
+		private _gun = getText (_x >> "gun");
+		_veh animate [_gun, 0.4, true];
+		private _newSels = call _getSelections;
+		_turretSels append (_newSels - _allSelections);
+		_veh animate [_gun, 0, true];
+	} forEach _turrets;
+};
+
+_turretSels = _turretSels apply { _x # 0 };
+_turretSels arrayIntersect _turretSels
+</sqf>
+
+Just pass your vehicle to this code, for example, like this:
+<sqf>
+[myVehicle] call MY_fnc_getTurretSelections; // MY_fnc_getTurretSelections is the above function
+</sqf>
+
+If you simply need the end point of the gun(s), use this code instead:
+<sqf>
+params ["_veh"];
+configProperties [configOf _veh >> "Turrets", "isClass _x", true] apply { getText (_x >> "gunBeg") };
+</sqf>
+}}

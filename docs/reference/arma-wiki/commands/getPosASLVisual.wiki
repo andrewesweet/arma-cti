@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/getPosASLVisual
+// revision: 377445 (2026-01-02T06:46:58Z)
+// export sha1: hji10a64s82b4ukidh2svd3twaqe38t
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Command Group: Render Time Scope | Category:Introduced with Arma 3 version 1.32 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.32
+
+|arg= global
+
+|gr1= Object Manipulation
+|gr2= Render Time Scope
+
+|descr= Returns an object's rendered [[Position#PositionASL|ASL position]] (z value above sea level) in render time scope.
+
+|alias= [[visiblePositionASL]]
+
+|s1= [[getPosASLVisual]] object
+
+|p1= object: [[Object]] - name of the object
+
+|r1= [[Position#PositionASL|PositionASL]]
+
+|x1= <sqf>private _playerRenderedPosASL = getPosASLVisual player;</sqf>
+
+|seealso= [[getPosVisual]] [[getPosATLVisual]] [[getPosWorldVisual]] [[visiblePositionASL]] [[visiblePosition]] [[position]] [[getPos]] [[getPosATL]] [[getPosASL]] [[getPosASLW]]
+}}

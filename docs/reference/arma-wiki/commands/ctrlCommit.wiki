@@ -1,0 +1,72 @@
+// source: https://community.bistudio.com/wiki/ctrlCommit
+// revision: 369237 (2024-09-03T10:35:01Z)
+// export sha1: qkaylxaipvfx7wm0z6o2m80d8uoncle
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control | Category:Introduced with Armed Assault version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.00
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= GUI Control
+
+|descr= Commits control animation to last specified duration.
+{{Feature|important|The duration of the animation is not guaranteed to be exactly the same as the given time.}}
+
+|s1= control [[ctrlCommit]] time
+
+|p1= control: [[Control]] - control to animate
+
+|p2= time: [[Number]] - animation duration
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlCommit 2; // make animation last approx. 2 seconds</sqf>
+
+|seealso= [[ctrlCommitted]] [[ctrlSetPosition]] [[ctrlSetFade]]
+}}
+
+{{Note
+|user= Nelis75733126
+|timestamp= 20150411230600
+|text= '''2024-04-16 edit:''':
+<sqf inline>ctrlCommit</sqf> is required to apply the effect of, for example, ctrlSetFade.
+}}
+
+{{Note
+|user= Demellion
+|timestamp= 20170828113300
+|text= The resulting speed might not to be exactly what [[ctrlCommit]] commands it to be. It seems to be dependent on your current framerate. Example:
+<sqf>
+_ctrl ctrlSetFade 0.5;
+_ctrl ctrlCommit 1;
+</sqf>
+Will actually result in:
+{{{!}} class="wikitable"
+! FPS
+! Duration
+{{!}}-
+{{!}} 60+
+{{!}} ~1.0s
+{{!}}-
+{{!}} ~30
+{{!}} ~1.2s
+{{!}}-
+{{!}} 10-
+{{!}} ~5-10s
+{{!}}}
+This phenomenon probably occurs because of engine time simulation disruption caused by performance damage.
+}}

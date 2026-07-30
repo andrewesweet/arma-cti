@@ -1,0 +1,531 @@
+// source: https://community.bistudio.com/wiki/PAA_File_Format
+// revision: 373446 (2025-05-08T11:27:12Z)
+// export sha1: 1atprqezrgk7bg3ehff5iefoedef0bm
+// categories: Category:Real Virtuality File Formats
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Feature|UnsupportedDoc}}
+{{TOC|side}}
+
+Of the many image file formats out there, such as jpeg, or gif, Bohemia Interactive choose to use a specially developed file format (paa) as the base texture file for all engine types.
+
+The reason for this is the raw data within the file contain mipmaps which be passed directly to Microsoft's DirectX as a DXT1 picture (e.g) without further processing.
+
+All engines except Elite also support JPG files (but they have no transparency). Most of encoded mipmap formats in pax files do.
+
+=== PAC files ===
+
+{{hl|.pac}} files are (almost) synonomous with {{hl|.paa}}.
+In the origins of {{ofp}}, {{hl|.paa}} were meant to be two tone colors (black & white or grayscale) and {{hl|.pa'''c'''}} = colour.
+
+The distinction does not exist. All engines treat pac or paa equally. They are referred to as paX files in the rest of this document.
+
+Note however that {{arma2}}'s TGAviewer *cannot* read a palette index {{hl|.paa}} extension. only {{hl|.pac}} extensions (the contents can be identical).
+
+=== {{Name|ofp|short}} Demo Files ===
+
+The initial 'proof of concept' for {{ofp}} released in 1997, was a demonstration of an island with models and textures.
+
+These pax files can still be read by tgaviewer! (and pal2pace)
+
+The *only* difference between these, and subsequent pax files is that the index pallet appears at beginning of file. In other words
+
+* There is NO header type, Pallet index is assumed.
+* There are NO taggs.
+* Other than this, demo files are 100% identical to {{Name|ofp|short}}'s Pallet index including the use of run length compression.
+
+=== Main Format ===
+
+Overall structure of a pax file is
+
+<syntaxhighlight lang="cpp">
+struct overall
+{
+	ushort		TypeOfPaX;	// OPTIONAL
+	Tagg		Taggs[...];	// OPTIONAL
+	Palette		Palette[...];
+	MipMap		MipMaps[...];
+	ushort		Always0;
+};
+</syntaxhighlight>
+
+
+== TypeOfPaX (optional) ==
+
+With the sole exception of OFP index palettes and demo, all paX files begin with a 2 byte 'type' signature.
+OFP index palettes have ''no'' type, they begin with tagg structures immediately. demo files have neither, and begin with the index pallet.
+
+{| class="wikitable align-center"
+! rowspan="2" | PaX Type
+! colspan="6" | Game
+|-
+! {{Name|ofp|short}}<br>Demo
+! {{GVI|ofp|1.00}}
+! {{GVI|arma1|1.00}}
+! {{GVI|arma2|1.00}}
+! Oxygen&nbsp;2
+|-
+| 0xFF01 DXT1
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|-
+| 0xFF02 DXT2
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+|-
+| 0xFF03 DXT3
+| colspan="6" style="text-align: center" | {{Icon|unknown}}
+|-
+| 0xFF04 DXT4
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+|-
+| 0xFF05 DXT5
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|-
+| 0x4444 RGBA 4:4:4:4
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|-
+| 0x1555 RGBA 5:5:5:1
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|unchecked}}
+|-
+| 0x8888 RGBA 8:8:8:8
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+|-
+| 0x8080 GRAY w Alpha
+| {{Icon|unchecked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+| {{Icon|checked}}
+|}
+
+''''Index Pallets only occur in {{ofp}} and demo''' Later versions of TGAViewer still 'understand' them IF and only IF they have .pac extensions. Under this circumstance they are translated as ARGB8888 (and saved as such)
+
+Note that information on DXT formats can be found at {{Link|https://www.khronos.org/opengl/wiki/S3_Texture_Compression}}.
+
+
+== Taggs ==
+
+Taggs do not exist for demo pax files.
+
+<syntaxhighlight lang="cpp">
+Tagg
+{
+	char	signature[4];	// always "GGAT"
+	char	name[4];		// name of the tagg in reversed order (for example: "CGVA")
+	ulong	dataLen;
+	byte	data[dataLen];
+}
+</syntaxhighlight>
+
+Taggs are read until no "GGAT" signature is encountered. Palette structure follows.
+
+=== General ===
+
+Structurally, all TAGG's are optional and can occur multiple times. In practice:
+
+* At least one TAGG exists for ALL types, including index palettes.
+* Any TAGG if it occurs, only occurs, once.
+* TAGG order of presentation is
+
+ AVG		// always first
+ MAX		// always 2nd etc...
+ FLAG
+ SWIZ or PROC (not seen together)
+ OFFS	// always last
+
+* ALL TAGG's begin with an AVG with the sole exception of *some* GREY .paX's
+* MAX is almost follows an AVG
+* FLAG, PROC, and SWIZ are entirely optional. They may or may not occur.
+* PROC if present is only used in DXT1 types
+* OFP Palette Indexes ONLY have an AVG
+* OFFS is almost always present (if not, the engine builds it as required, when required, anyway)
+
+=== AVGCTAGG ===
+
+Average Colour
+
+* This tag contains average color of texture, probably used in rendering the 8:8 Grey & alpha textures.
+* Always present, and always first in list with the sole exception of *some* GRAY .paX's
+
+<syntaxhighlight lang="cpp">
+{
+	char  "GGATCGVA";
+	ulong len;	// 4 bytes
+	ulong RGBA;	// FF443D39
+}
+</syntaxhighlight>
+
+=== MAXCTAGG ===
+
+Generally always present. Always follows immediately after an AVG
+
+<syntaxhighlight lang="cpp">
+{
+	char	"GGATCXAM";
+	ulong	len;	// 4 bytes
+	ulong	data;	// FFFFFFFFF no other value seen so far
+}
+</syntaxhighlight>
+
+Contains color of brightest pixel in texture?
+
+=== FLAGTAGG ===
+
+Optional, but will always occur immediately after a MAXC when present
+
+<syntaxhighlight lang="cpp">
+{
+	char	"GGATGALF";
+	ulong	len;	// 4 bytes
+	ulong	range;	// 0 to 2
+}
+</syntaxhighlight>
+
+Marks if texture contains transparency. Value 1 means basic transparency, 2 means alpha channel is not interpolated.
+This flag should be always present in LOD textures with 1-bit alpha with value of 2 or there will be "ghost outlines" on LOD textures when viewed from distance.
+Note that this flag must be present in texture file when binarizing model, because Binarize stores information about how to render textures in actual P3D file.
+
+=== SWIZTAGG ===
+
+Optional
+
+<syntaxhighlight lang="cpp">
+{
+	char	"GGATZIWS";
+	ulong	len;	// 4 bytes
+	ulong	data;	// 0x05040203
+ }
+</syntaxhighlight>
+
+Swizzle is apparently used to modify texture components processing like swizzle modifiers in pixel shaders.
+For example {{Name|arma1|short}}'s sky texture has green channel stored in alpha channel and inversed to take advantage from feature that in DXT5 64 bits are used for alpha channel in each block and 64 bits for RBG, giving double the accuracy to green channel as opposed to storing texture just normally.
+
+Exact format of swizzle data is still unknown.
+swizzle data:
+
+<syntaxhighlight lang="cpp">
+char channelSwizzleA;
+char channelSwizzleR;
+char channelSwizzleG;
+char channelSwizzleB;
+</syntaxhighlight>
+
+format of swizzle char:
+
+ bits 7-4 = 0;
+ bit 3 - "1" flag. All channel data must be set to 0xff;
+ bit 2 - "negate flag". Channel data must be negated.
+ bit 1-0 - number of color channel:
+ 00 - Alpha channel
+ 01 - Red channel
+ 10 - Green channel
+ 11 - Blue channel
+
+for example (*_nohq.paa textures)
+
+swizzle data is:
+
+ 0x05 - Alpha, Negated, stored in Red;
+ 0x04 - Red, Negated, stored in Alpha;
+ 0x02 - Green, Stored as is;
+ 0x03 - Blue, Stored as is;
+
+=== PROCTAGG ===
+
+Only ever seen with some DXT1 types
+
+<syntaxhighlight lang="cpp">
+{
+	char	"GGATCORP";
+	ulong	len;	//  strlen(text)
+	char	text	// NOT ASCIIz
+}
+</syntaxhighlight>
+
+this is a non asciiz string (not zero terminated)
+
+Example:
+ x = (u + 1) * 0.5;
+ y = (v + 1) * 0.5;
+ 
+ if (y < 0.5) then
+ {
+ 	sharpOut = 20;
+ 	sharpIn = 60;
+ 
+ 	offset = x - 0.5;
+ 	if (offset < 0) then
+ 	{
+ 		edge = (1 + offset)^sharpOut;
+ 	}
+ 	else
+ 	{
+ 		edge = (1 - offset)^sharpIn;
+ 	};
+ 
+ 	res = edge * y * 2;
+ }
+ else
+ {
+ 	sharpOut = 20 - 40 * (y - 0.5);
+ 	sharpIn = 60 - 125 * (y - 0.5);
+ 
+ 	offset = x - 0.5;
+ 	if (offset < 0) then
+ 	{
+ 		edge = (1 + offset)^sharpOut;
+ 	}
+ 	else
+ 	{
+ 		edge = (1 - offset)^sharpIn;
+ 	};
+ 
+ 	res = edge;
+ 	sdCoef = y * 2 - 1;
+ 	shoreDisappear = 1 - sdCoef^2;
+ 	res = res * shoreDisappear;
+ };
+ 
+ a = 1;
+ r = res;
+ g = res;
+ b = res;
+
+=== OFFSTAGG ===
+
+Almost always present
+
+<syntaxhighlight lang="cpp">
+{
+	char  "GGATSFFO";
+	ulong len;			// 16 * sizeof(ulong)
+	ulong offsets[16];
+}
+</syntaxhighlight>
+
+Example:
+ = 6 entries. last 10 unused
+ 256 x 128	Size = 16384
+ 128 x 64	Size = 4096
+ 64 x 32	Size = 1024
+ 32 x 16	Size = 256
+ 16 x 8		Size = 64
+ 8 x 4		Size = 16
+
+MipMap data is presented in 'blocks'. One or more 'blocks' exist in a pax file.
+
+This tag declares where each of these blocks are in the file, relative to start of file.
+
+The location of each block is already known, relative to the size of the previous block (if any). So, although almost always present in pax files, it is use, is redundant.
+
+This tag always contains 16 ULONG offsets. Each one is a hard offset to actual mipmap data relative to start of file.
+
+Not all entries are used (obviously) since most pax files contain less than 16 mipmaps. Unused offsets contain the value 0x00000000.
+There are no known examples of splattered offset entries. All offsets after the first 0 entry are 0 as well.
+
+
+== Palette ==
+
+<syntaxhighlight lang="cpp">
+Palette
+{
+	ushort	nPaletteTriplets;					// always 0 except for index palette type
+	bytes	BGR_Palette[nPaletteTriplets][3];	// only exists if nPaletteTriplets > 0
+}
+</syntaxhighlight>
+
+palette triplets when they exist, consist of '''BGR''' values. Note the reversal from the expected order.
+
+
+== Mipmap ==
+
+Mipmaps are in contiguous blocks that extend to end of file.
+
+There is nothing strange about Mipmaps. Each mipmap is simply a rectangular texture (almost always square) and each one conforms to 2^n dimensions.
+
+Each mipmap defines increasingly poorer resolution. The highest (first) mimpap is THE texture, each successively smaller one is one quarter the size.
+It progresses in smallness down to a minimum of 2 x any other 2^n or, any other 2^n x 2. For a square texture, this is simply a 2 x 2 matrix.
+
+<syntaxhighlight lang="cpp">
+Mipmap
+{
+	ushort	width;		// width of this mipmap
+	ushort	height;		// height of this mipmap
+	if (INDEX PALLETE)
+	{
+		if (width == 0x4D2 && height == 0x223D) // special 1234 x 8765 signature
+		{
+			ushort	width;		// actual width
+			ushort	height;		// actual height
+			// use -signed- lzss compression for this block (introduced for for resistance pax files.
+		}
+		//  else use runlength Compression for this block // used by demo and cwc pax files
+	}
+
+	if (width && height)
+	{
+		byte	size[3];	// size of texture data in file. this is 24-bit unsigned integer.
+		byte	data[size];	// actual texture data compressed or otherwise
+	}
+};
+</syntaxhighlight>
+
+The last mipmap is a dummy consisting of zero width and height with NO FURTHER DATA
+
+The size triplet reflects the size of '''compressed''' data in the file '''not''' necessarily the actual size of the data.
+
+
+== Compression ==
+
+'''ALL''' non DXT signatures are unconditionally compressed using '''signed''' LZSS. Index Pallets use this too, OR, runlength encoding.
+
+There are two wrinkles to LZSS compression not encountered in other uses of the same algorithm (pbo, p3d, wrp eg).
+
+
+* The >1024 rule does not apply. ALL data is compressed. The end result is the smaller box sizes are most often larger on disk.
+* The checksum following the data (all data sizes are actually -4 their 'real' length) is SIGNED addititive. All other lzss checksums used elsewhere in bis are UNsigned additive.
+
+
+Example:
+ Type: RGBA 4:4:4:4 texture
+ AVGC: F5A9A9AB
+ 256 x  128 Real Size 65536. Size in file  11770
+ 128 x   64 Real Size 16384. Size in file   3521
+  64 x   32 Real Size  4096. Size in file   1148
+  32 x   16 Real Size  1024. Size in file    407
+  16 x    8 Real Size   256. Size in file    169
+   8 x    4 Real Size    64. Size in file     57
+   4 x    2 Real Size    16. Size in file     22 <<<<<
+
+the result of decompression of any type (lzo, lzss or runlength is '''encoded''' data. The encoding is, perhaps obviously,dependent on the paxType:
+
+
+'''encoded''' sizes are a further means of compression.
+* width x height  is the number of pixels to display. Since all output to a screen is ultimately expressed as RGBA 4 byte integers.
+* width x height x 4 is the size of the ultimate output IN BYTES.
+
+Not so the '''encoded''' array.
+* INDEX		width * height		// each byte is an index to a color table
+* DXT1		width * height / 2	// 1 nibble per pixel
+* DXT2		width * height		// not used
+* DXT3		width * height		// not used
+* DXT4		width * height		// not used
+* DXT5		width * height		// one byte per pixel
+
+* RGB4444	width * height * 2	// 4 nibbles per color
+* RGB5551	width * height * 2	// ditto
+* RGB565	width * height * 2	// ditto (not used)
+* GREY		width * height * 2	// one byte alpha, one byte 'grey'
+* RGB8888	width * height * 4	// straight rgba output (un-encoded)
+
+=== Before {{arma2}} ===
+
+DXT textures are stored "as is" in the file. Therefore the DXT data could be directly passed to the graphic hardware.
+For software decoding of DXT textures see {{Link|http://code.google.com/p/libsquish/|DXTn compress/decompress}}
+
+=== After {{arma2}} ===
+
+DXT formats are '''potentially''' compressed.
+
+(All other formats remain the same with unconditional '''lzss''' compression)
+
+{{arma2}} introduces '''LZO''' compression for DXT. The criteria for DXT-LZO compression is having the top bit of the width paramater set.
+
+Note that under this circumstance, the width bit must be masked before any size calculations
+
+This bit is set when size on disk for dxt formats != expected size . (See above table). It is either a 'safety bit' for the unusual circumstance of size being same, or, simply a flag to indicate lzo compression.
+
+Either way, there are (currently) no known instances of dxt compression where sizes are same, and quite obviously, all unequal sizes must, by defintion, be lzo compresssed.
+
+Note also, that this is, truly, conditional compression. Only larger dimensions (256x256) eg are treated in this manner. Lesser value mipmaps in the same pax file, remain un altered.
+
+=== Index Palette Compression ===
+
+If the file doesn't start with a known PaX type the data array of the mipmaps contain the indices to the color palette (which appears just before mipmaps and only for palette type).
+
+'''TWO''' (2) types of compression are in force determined by the special structure of index pallette mipmaps (see above)
+
+* Standard LZSS.
+
+if the signature for width and height IS 1234 x 8765 then standard lzss compression is used, using, the next four bytes as width and height.
+
+otherwise:
+
+A very basic "compression", which even can make the data slightly bigger, is used. The data is split into blocks of the following structure:
+<syntaxhighlight lang="cpp">
+struct block
+{
+	byte flag;
+	byte data[...];
+}
+</syntaxhighlight>
+
+The flag can be of two different types. If the most significant bit of flag is zero, it tells you how much bytes to read.
+If flag is 0x05 for example you have to read 6 bytes (always one more then the value of flag).
+
+If the most significant bit of flag is one it tells you how often the next byte is repeated.
+If flag is 0x82 for example the value after the flag byte is repeated 3 times (always one more than (flagvalue - 0x80)).
+
+Note that with this, special, compression, there is no checksum.
+
+Index palette Mipmaps can have mixtures of both types.
+
+
+== Addenda ==
+
+=== Decompression Code ===
+
+see [[Compressed LZSS File Format]]
+
+=== HexDump ===
+
+The 0x4747 format mentioned in this picture indicates index palette format, because 0x4747 is the "GG" of "GGAT" signature.
+
+[[File:Paacformat.gif]]
+
+=== Alpha channel interpolation ===
+
+These two images visualize difference between alpha channel interpolation (FLAGTAGG header tag value).
+
+==== FLAGTAGG = 1, interpolated alpha channel (default behaviour) ====
+[[File:paa_alpha_channel_default.jpg]]
+
+==== FLAGTAGG = 2, alpha channel interpolation disabled ====
+[[File:paa_alpha_channel_no_interpolation.jpg]]
+
+
+== Bibliography ==
+
+* Feersum's original posting on BI forums: {{Link|link= http://www.flashpoint1985.com/cgi-bin/ikonboard311/ikonboard.cgi?;act=ST;f=50;t=38131|text= paa/pac texture format documentation}}
+* MSDN documentation on DXT1 textures: {{Link|https://learn.microsoft.com/en-us/windows/win32/direct3d9/opaque-and-1-bit-alpha-textures|DirectX: Opaque and 1-Bit Alpha Textures}}
+* Squish Compression {{Link|https://www.sjbrown.co.uk/posts/dxt-compression-techniques/|DXT Compression Techniques}}
+
+
+[[Category:Real Virtuality File Formats]]

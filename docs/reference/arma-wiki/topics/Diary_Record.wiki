@@ -1,0 +1,11 @@
+// source: https://community.bistudio.com/wiki/Diary_Record
+// revision: 340880 (2023-05-13T21:43:01Z)
+// export sha1: ozrzim1lm8yt82bpeze7ojmngfshyab
+// categories: Category:Data Types
+// Vendored snapshot. Do not edit — re-export instead.
+
+; Description<nowiki>:</nowiki>
+: A [[Diary Record]] is created by [[createDiaryRecord]] - introduced in {{GameCategory|arma2|link= y}}.
+
+
+[[Category: Data Types]]

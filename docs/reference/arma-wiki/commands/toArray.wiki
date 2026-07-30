@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/toArray
+// revision: 377121 (2026-01-01T10:18:13Z)
+// export sha1: 3i043sa6y915wkue0vtnupo2qjsjqwl
+// categories: Category:ArmA: Armed Assault: New Scripting Commands | Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: HashMap | Category:Command Group: Strings | Category:Introduced with Armed Assault version 1.09 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma1
+|version1= 1.09
+
+|game2= arma2
+|version2= 1.00
+
+|game3= arma2oa
+|version3= 1.50
+
+|game4= tkoh
+|version4= 1.00
+
+|game5= arma3
+|version5= 0.50
+
+|gr1= Arrays
+|gr2= HashMap
+|gr3= Strings
+
+|descr= Converts the supplied [[String]] into an [[Array]] of [[Number]]s. The numbers in the created array are the decimal {{Link|https://en.wikipedia.org/wiki/Unicode|Unicode}} representations of characters.
+{{Feature|arma3|Since v2.04 this command can also handle [[HashMap]]s. See alternative syntax.}}
+
+|s1= [[toArray]] string
+
+|p1= string: [[String]]
+
+|r1= [[Array]] of [[Number]]s
+
+|s2= [[toArray]] hashMap
+
+|s2since= arma3 2.04
+
+|p21= hashMap: [[HashMap]]
+
+|r2= [[Array]] - array in format <nowiki>[</nowiki>[key, key, ...], [value, value, ...]]
+
+|s3= hashMap [[toArray]] splitArrays
+
+|s3since= arma3 2.04
+
+|p41= hashMap: [[HashMap]]
+
+|p42= splitArrays: [[Boolean]] - see return value
+
+|r3= [[Array]] - array in either one of the following formats:
+* splitArrays: [[true]] - {{hl|[<nowiki/>[key1, key2, ...], [value1, value2, ...]]}}
+* splitArrays: [[false]] - {{hl|[<nowiki/>[key1, value1], [key2, value2], ...]}} This is '''very inefficient''' since the engine has to create many small arrays
+
+|x1= <sqf>hint format ["%1", toArray "AaŒ"];// Returns "[65,97,338]"</sqf>
+
+|x2= <sqf>toArray _hashMap params ["_keys", "_values"];</sqf>
+
+|x3= <sqf>
+private _hashmap = ["cow", "cat", "chicken"] createHashMapFromArray [10000, 20000, 20000];
+_hashmap toArray true;	// returns [["cow", "cat", "chicken"], [10000, 20000, 20000]] - same as Syntax 2
+_hashmap toArray false;	// returns [["cow", 10000], ["cat", 20000], ["chicken", 20000]]
+</sqf>
+
+|seealso= [[set]] [[resize]] [[reverse]] [[select]] [[in]] [[find]] [[toString]] [[count]] [[deleteAt]] [[splitString]] [[joinString]] [[toUpperANSI]], {{Link|http://www.utf8-chartable.de/|Unicode Character Table}}
+}}

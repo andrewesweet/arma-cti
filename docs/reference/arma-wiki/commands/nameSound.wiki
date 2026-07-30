@@ -1,0 +1,24 @@
+// source: https://community.bistudio.com/wiki/nameSound
+// revision: 310222 (2022-05-05T13:10:49Z)
+// export sha1: d7s4s3ocb2d8uboi8ab6irac4jd7dqu
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.02
+
+|gr1= Object Manipulation
+
+|descr= Returns the nameSound of a person.
+
+|s1= [[nameSound]] person
+
+|p1= person: [[Object]]
+|r1= [[String]]
+
+|x1= <sqf>nameSound player;</sqf>
+
+|seealso= [[setNameSound]] [[name]] [[setName]]
+}}

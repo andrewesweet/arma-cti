@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/setTargetAge
+// revision: 363641 (2024-04-09T21:20:52Z)
+// export sha1: ci2p76qah4i5g1v5fsmhlogcvg4oq5b
+// categories: Category:ArmA: Armed Assault: Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Operation Flashpoint: Elite version 1.00 | Category:Maintenance/RV | Category:Operation Flashpoint: Elite: New Scripting Commands | Category:Operation Flashpoint: Elite: Scripting Commands | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= ofpe
+|version1= 1.00
+
+|game2= arma1
+|version2= 1.00
+
+|game3= arma2
+|version3= 1.00
+
+|game4= arma2oa
+|version4= 1.50
+
+|game5= tkoh
+|version5= 1.00
+
+|game6= arma3
+|version6= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Sets how the target is known to the other centers. They behave like the target was seen age seconds ago.
+
+|s1= object [[setTargetAge]] age
+
+|p1= object: [[Object]]
+
+|p2= age: [[String]] - can be:
+* "ACTUAL"
+* "5 MIN"
+* "10 MIN"
+* "15 MIN"
+* "30 MIN"
+* "60 MIN"
+* "120 MIN"
+* "UNKNOWN"
+
+|r1= [[Nothing]]
+
+|x1= <sqf>player setTargetAge "10 MIN";</sqf>
+
+|seealso= [[targets]] [[targetsQuery]] [[nearTargets]] [[targetsAggregate]] [[targetKnowledge]] [[knowsAbout]] [[reveal]] [[forgetTarget]] [[getHideFrom]]
+}}

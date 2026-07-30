@@ -1,0 +1,30 @@
+// source: https://community.bistudio.com/wiki/set3DENAttribute
+// revision: 348910 (2023-11-08T14:40:02Z)
+// export sha1: ixv8cce1ncm18zxr3jk92px0aztqgp7
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Eden Editor | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Eden Editor
+
+|descr= Sets one of entity [[Eden Editor: Entity Attributes|attributes]]. For the list of all attributes with their properties see [[Eden_Editor:_Setting_Attributes#Attributes|Setting Attributes]].
+{{Feature|important|Attributes are available only within the [[:Category:Eden Editor|Eden Editor]] workspace. You cannot access them in scenario preview or exported scenario!}}
+
+|s1= entity [[set3DENAttribute]] [class, value]
+
+|p1= entity: [[Eden Entity]] or [[Eden ID]]
+
+|p2= class: [[String]] - attribute name
+
+|p3= value: [[Anything]] - new attribute value
+
+|r1= [[Boolean]] - [[true]] If the value was set
+
+|x1= <sqf>player set3DENAttribute ["allowDamage", false]; // Mark player as invincible</sqf>
+
+|seealso= [[set3DENAttributes]] [[get3DENAttribute]]
+}}

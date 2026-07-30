@@ -1,0 +1,37 @@
+// source: https://community.bistudio.com/wiki/enableCaustics
+// revision: 341142 (2023-05-13T22:12:34Z)
+// export sha1: 297bg8klqc8icmzm605742edy79rpwj
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: System | Category:Introduced with Arma 3 version 0.50 | Category:Maintenance/RV | Category:Maintenance/RV/See also needed | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 0.50
+
+|gr1= System
+
+|descr= Enable/disable caustics drawing.
+
+|s1= [[enableCaustics]] bool
+
+|p1= bool: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>enableCaustics true;</sqf>
+
+|seealso=
+}}
+
+
+<dl class="command_description">
+
+<dt></dt>
+<dd class="notedate">Posted on 2017-10-23 - 16:22 (UTC)</dd>
+<dt class="note">[[User:Demellion|Demellion]]</dt>
+<dd class="note">
+Setting this to false will disable a light refraction on "liquid" objects like sea water. This has no effect on solid (static) objects. 
+</dd>
+
+</dl>

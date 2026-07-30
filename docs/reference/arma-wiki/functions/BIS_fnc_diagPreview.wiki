@@ -1,0 +1,33 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_diagPreview
+// revision: 347982 (2023-11-08T09:55:10Z)
+// export sha1: 3c3v1qmfd5xipsrk3id5t3r8z02aur0
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Diagnostic | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Diagnostic
+
+|descr= Previews selected classes from given container.
+
+|s1= [container, parentClass, distance, startPos] call [[BIS_fnc_diagPreview]]
+
+|p1= container: [[String]] - (Optional, default "CfgVehicles") class container. Can be:
+* "CfgVehicles"
+* "CfgWeapons"
+
+|p2= parentClass: [[String]] - (Optional, default [[typeOf]] [[player]]) parent class of the objects (e.g. "Car" or "Rifle")
+
+|p3= distance: [[Number]] - (Optional, default 10) distance between objects
+
+|p4= startPos: [[Position]] - (Optional, default <sqf inline>getPos player</sqf> or <sqf inline>screenToWorld]] [0.5,0.5]</sqf> in [[:Category:Eden Editor|Eden Editor]]) start position
+
+|r1= [[Array]] - list of created classes
+
+|x1= <sqf>["CfgVehicles", "Car", 15, [0,0,0]] call BIS_fnc_diagPreview;</sqf>
+
+|seealso= [[:Category:Function Group: Diagnostic|Diag functions]]
+}}

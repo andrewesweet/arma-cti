@@ -1,0 +1,27 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_taskCompleted
+// revision: 352054 (2024-02-01T23:24:34Z)
+// export sha1: 0282ukub6iacqoq34mxd85a2x3zt4jg
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Tasks | Category:Functions | Category:Functions: Global Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Tasks
+|arg= global
+|eff= global
+
+|descr= Checks if task is completed. {{Feature|informative| See [[Arma 3: Task Framework]] for more information.}}
+
+|s1= taskID call [[BIS_fnc_taskCompleted]]
+
+|p1= taskID: [[String]] - ID or name of the task
+
+|r1= [[Boolean]] - returns [[true]] if task state is either "SUCCEEDED", "FAILED" or "CANCELED". Returns [[false]] for all other states and if task does not exist
+
+|x1= <sqf>private _completed = "task_1" call BIS_fnc_taskCompleted;</sqf>
+
+|seealso=  [[Arma 3: Task Framework]]
+}}

@@ -1,0 +1,45 @@
+// source: https://community.bistudio.com/wiki/isEqualTypeAll
+// revision: 377824 (2026-01-03T04:23:49Z)
+// export sha1: 99s7rzu8low97ozkbemzemhiexr87i1
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: Variables | Category:Introduced with Arma 3 version 1.54 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.54
+
+|gr1= Variables
+
+|gr2= Arrays
+
+|descr= Compares types of all elements of an array to the type of a single value. Since Arma 3 v2.09.149634 no additional check is needed to make sure the first argument is an [[Array]].
+{{Feature|important|An empty array will return {{hl|[[false]]}} (see {{Link|#Example 2}}).}}
+
+|s1= arr [[isEqualTypeAll]] val
+
+|p1= arr: [[Anything]] - (was [[Array]] before {{GVI|arma3|2.10|size= 0.75}})
+
+|p2= val: [[Anything]]
+
+|r1= [[Boolean]]
+
+|x1= <sqf>
+_arr = [1,2,3,4,5,6,7,8,9,0];
+_arr isEqualTypeAll ""; // false
+_arr isEqualTypeAll 0;	// true
+</sqf>
+
+|x2= <sqf>
+[] isEqualTypeAll "";	// false
+[""] isEqualTypeAll "";	// true
+</sqf>
+
+|x3= <sqf>
+0 isEqualTypeAll "";	// false
+0 isEqualTypeAll 0;		// false
+[0] isEqualTypeAll 0;	// true
+</sqf>
+
+|seealso= [[isEqualTypeArray]] [[isEqualTypeAny]] [[isEqualType]] [[isEqualTypeParams]] [[param]] [[params]] [[isEqualTo]] [[typeName]]
+}}

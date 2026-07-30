@@ -1,0 +1,42 @@
+// source: https://community.bistudio.com/wiki/boundingCenter
+// revision: 377382 (2026-01-02T06:43:49Z)
+// export sha1: twcni36xkv0l95hdxtn38odfsadrx2k
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Object Manipulation
+
+|descr= Returns the position of the original (loaded) center of an object in model coordinates. Despite its name, it has nothing to do with [[boundingBox]] or [[boundingBoxReal]], it returns offset where {{hl|[0, 0, 0]}} was [[Object Builder]] / [[Oxygen 2]] when model was created.
+
+|s1= [[boundingCenter]] object
+
+|p1= object: [[Object]]
+
+|r1= [[Position#PositionRelative|PositionRelative]]
+
+|x1= <sqf>_center = boundingCenter TruckOne;</sqf>
+
+|seealso= [[boundingBox]] [[sizeOf]] [[boundingBoxReal]] [[getPosWorld]] [[setPosWorld]] [[aimPos]]
+}}
+
+{{Note
+|user= Sa-Matra
+|timestamp= 20230420063326
+|text= Some objects have [[boundingCenter]] in really weird positions. In general this command is borderline useless.<br>
+
+[[File:arma3_static-machinegun-bounding-center.png|200px]]
+}}

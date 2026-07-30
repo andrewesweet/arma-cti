@@ -1,0 +1,50 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_textTiles
+// revision: 349016 (2023-11-08T14:47:07Z)
+// export sha1: ttgclkkq0hxksugybizqrckp2gmxy8s
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: GUI | Category:Functions | Category:Functions: Local Effect | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= GUI
+
+|eff= local
+
+|descr= [[File:BIS_fnc_textTiles.gif|right|400px]]
+Shows an animated text with background tiles.
+
+|s1= [content, position, tileSize, duration, fadeInOutTime, tileTransparency] spawn [[BIS_fnc_textTiles]]
+
+|p1= content: [[String]] or [[Structured Text]]
+* [[String]] - path to texure
+* [[Structured Text]] - formatted text
+
+|p2= position: [[Boolean]] or [[Array]] (optional, default [0, 0, 1, 1])
+* [[Boolean]] - [[true]] to use ''mission area'' set in the layout options, [[false]] for full screen
+* [[Array]] - screen space coordinates in format [x, y, w, h]
+
+|p3= tileSize: [[Number]] or [[Array]] (optional, default 10 ([10,10])
+* [[Number]] - tile size in screen space coordinates. Tile will be square
+* [[Array]] - tile size in screen space coordinates in format [w, h]
+
+|p4= duration: [[Number]] - (optional, default 5) duration in seconds
+
+|p5= fadeInOutTime: [[Number]] or [[Array]] - (optional, default 0) duration of the fade effect in seconds
+* [[Array]] - format [fadeIn, fadeOut] 
+* [[Number]] - duration of the fadeIn/Out effect
+
+|p6= tileTransparency: [[Number]] - (optional, default 0.3) transparency or alpha value of the tiles. 0 means invisible and 1 fully visible
+
+|r1= [[Boolean]] - returns always [[true]]
+
+|exec= spawn
+
+|x1= <sqf>[parseText "<t font='PuristaBold' size='1.6'>MyMission</t><br />by Username", true, nil, 7, 0.7, 0] spawn BIS_fnc_textTiles;</sqf>
+
+|x2= <sqf>["path\to\image.paa"] spawn BIS_fnc_textTiles;</sqf>
+
+|seealso= [[BIS_fnc_dynamicText]] [[BIS_fnc_infoText]] [[BIS_fnc_typeText]] [[BIS_fnc_typeText2]] [[BIS_fnc_EXP_camp_SITREP]]
+}}

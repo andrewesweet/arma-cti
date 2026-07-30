@@ -1,0 +1,152 @@
+// source: https://community.bistudio.com/wiki/Extension:BIKI_Helper
+// revision: 373314 (2025-04-17T11:01:18Z)
+// export sha1: 0ni8jx29z12aebkj9j1lw4m72bormru
+// Vendored snapshot. Do not edit — re-export instead.
+
+{| class="wikitable" style="float: right; margin: 0 0 0.5em 1.5em"
+! colspan="2" style="padding: 1.5em" | BIKI Helper
+|-
+! Description
+| Provides useful tools here and there on the BIKI.
+|-
+! Author
+| {{User|Lou Montana}}
+|-
+! Project Start
+| 2022-07-12: Project start
+|-
+! Release Date
+|
+* 2022-07-12: 1.00, first upload
+* 2023-06-21: 1.05, add date functions
+* 2024-04-15: 1.10, add page title's namespace formatting
+* 2025-04-09: 1.15, add subtitle categories
+* 2025-04-15: 1.20, add header anchor link
+|-
+! Version
+| 1.20
+|}
+This extension provides useful tools here and there on the BIKI.
+
+
+{{Clear}}
+== Features ==
+
+{{TOC|subtoc|content=
+# {{Link|#Editor Toolbar Buttons}}
+# {{Link|#biki-date Function Syntax}}
+# {{Link|#Page Title Formatting}}
+# {{Link|#Subtitle Categories}}
+# {{Link|#Header Anchor Link}}
+}}
+
+=== Editor Toolbar Buttons ===
+
+[[File:wiki-biki_helper_added_editor_toolbar_buttons.jpg|thumb|New buttons available]]
+
+Added functionalities:
+* Highlight and BIKI Link buttons
+* Code tags ([[SQF Syntax]], [[SQS Syntax]], config (C++), Enforce Script (C#), JSON)
+* Infoboxes ({{Template|Feature}} informative/important/warning, {{Template|Wiki}} TODO/WIP)
+* Game icons ({{Template|GVI}} for most games)
+
+{{Clear}}
+=== biki-date Function Syntax ===
+
+{| class="wikitable float-right" style="font-size: .9em"
+| <syntaxhighlight lang="html+handlebars">
+{{#biki-date}}
+{{#biki-date:}}
+{{#biki-date:age_full_months}}
+{{#biki-date:age_full_months|2001-06-22}}
+</syntaxhighlight>
+|
+{{#biki-date}}<br>
+{{#biki-date:}}<br>
+{{#biki-date:age_full_months}}<br>
+{{#biki-date:age_full_months|2001-06-22}}<br>
+|-
+| <syntaxhighlight lang="html+handlebars">
+{{#biki-date:age_full_days|2001-06-22|2005-06-21}}
+{{#biki-date:age_full_days|2001-06-22|2005-06-22}}
+{{#biki-date:age_full_days|2001-06-22|2005-06-23}}
+</syntaxhighlight>
+|
+{{#biki-date:age_full_days|2001-06-22|2005-06-21}}<br>
+{{#biki-date:age_full_days|2001-06-22|2005-06-22}}<br>
+{{#biki-date:age_full_days|2001-06-22|2005-06-23}}<br>
+|-
+| <syntaxhighlight lang="html+handlebars">
+{{#biki-date:age_full_months|2001-06-22|2005-06-21}}
+{{#biki-date:age_full_months|2001-06-22|2005-06-22}}
+{{#biki-date:age_full_months|2001-06-22|2005-06-23}}
+</syntaxhighlight>
+|
+{{#biki-date:age_full_months|2001-06-22|2005-06-21}}<br>
+{{#biki-date:age_full_months|2001-06-22|2005-06-22}}<br>
+{{#biki-date:age_full_months|2001-06-22|2005-06-23}}<br>
+|-
+| <syntaxhighlight lang="html+handlebars">
+{{#biki-date:age_full_years|2001-06-22|2004-06-22}}
+{{#biki-date:age_full_years|2001-06-22|2005-06-21}}
+{{#biki-date:age_full_years|2001-06-22|2005-06-22}}
+{{#biki-date:age_full_years|2001-06-22|2005-06-23}}
+{{#biki-date:age_full_years|2001-06-22|2006-06-22}}
+</syntaxhighlight>
+|
+{{#biki-date:age_full_years|2001-06-22|2004-06-22}}<br>
+{{#biki-date:age_full_years|2001-06-22|2005-06-21}}<br>
+{{#biki-date:age_full_years|2001-06-22|2005-06-22}}<br>
+{{#biki-date:age_full_years|2001-06-22|2005-06-23}}<br>
+{{#biki-date:age_full_years|2001-06-22|2006-06-22}}<br>
+|-
+| <syntaxhighlight lang="html+handlebars">
+{{#biki-date:ymd|2001-06-22|2005-06-21}}
+{{#biki-date:ymd|2001-06-22|2005-06-22}}
+{{#biki-date:ymd|2001-06-22|2005-06-23}}
+{{#biki-date:his|2001-06-22 10:30:00|2001-06-23 11:45:17}}
+{{#biki-date:ymdhis|2001-06-22 10:30:00|2002-05-23 11:45:17}}
+</syntaxhighlight>
+|
+{{#biki-date:ymd|2001-06-22|2005-06-21}}<br>
+{{#biki-date:ymd|2001-06-22|2005-06-22}}<br>
+{{#biki-date:ymd|2001-06-22|2005-06-23}}<br>
+{{#biki-date:his|2001-06-22 10:30:00|2001-06-23 11:45:17}}<br>
+{{#biki-date:ymd|2001-06-22 10:30:00|2002-05-23 11:45:17}},<!-- I cheated for the formatting cause --><br>{{#biki-date:his|2001-06-22 10:30:00|2002-05-23 11:45:17}}<br>
+|}
+
+<syntaxhighlight lang="html+handlebars">{{#biki-date:format|date1|date2}}</syntaxhighlight>
+
+* format: can be one of
+** {{hl|age_full_days}}, {{hl|age_full_months}}, {{hl|age_full_years}}
+** {{hl|ymd}} (year month day), {{hl|his}} (hour minute second) or {{hl|ymdhis}}
+* date1: from what date to start - ideally format yyyy-mm-dd or yyyymmdd (hh:ii:ss or hhiiss)
+* date2: <!--(Optional, default now) --> up to what date to calculate - same as ''date1''
+
+{{Clear}}
+=== Page Title Formatting ===
+
+<div class="float-right">
+[[File:wiki-biki_helper_page-title-before.jpg|Before]]<br>
+[[File:wiki-biki_helper_page-title-after.jpg|After]]
+</div>
+
+Namespaced page's title formatting, available through the <syntaxhighlight lang="css" inline>#biki-title-namespace</syntaxhighlight> CSS classname.
+
+{{Clear}}
+=== Subtitle Categories ===
+
+Categories are reminded at the top of the page as subtitle. An exception is made for pages in the {{Link|:Category:Scripting Commands|Scripting Commands}} and {{Link|:Category:Functions|Functions}} categories.
+
+=== Header Anchor Link ===
+
+H1..H6 ''page content'' titles display a self-pointing link when hovered.
+
+
+== Installation ==
+
+* Unzip the directory to {{hl|wiki/extensions/BIKIHelper}}
+* Add <syntaxhighlight lang="php" inline>wfLoadExtension( 'BIKIHelper' );</syntaxhighlight> to {{hl|LocalSettings.php}}
+
+
+[[Category: MediaWiki Extension]]

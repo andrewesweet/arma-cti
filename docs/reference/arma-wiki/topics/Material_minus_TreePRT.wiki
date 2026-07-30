@@ -1,0 +1,43 @@
+// source: https://community.bistudio.com/wiki/Material_-_TreePRT
+// revision: 227513 (2021-01-31T19:30:22Z)
+// export sha1: mz6hm1rg0esrd38qkfkddfe90ho93hx
+// Vendored snapshot. Do not edit — re-export instead.
+
+Optimized shader utilizing pre-calculated illumination from 4 directions.
+
+=== Example ===
+
+ ambient[]={1.000000,1.000000,1.000000,1.000000};
+ diffuse[]={1.000000,1.000000,1.000000,1.000000};
+ forcedDiffuse[]={1.000000,1.000000,1.000000,1.000000};
+ emmisive[]={0.000000,0.000000,0.000000,1.000000};
+ specular[]={0.000000,0.000000,0.000000,1.000000};
+ specularPower=120.000000;
+ 
+ PixelShaderID="TreePRT";
+ VertexShaderID="TreePRT";
+ 
+ class Stage1
+ {
+  texture="CA\plants2\Tree\data\t_fagus2s_1_PR.tga";
+  uvSource="tex1";
+  class uvTransform
+  {
+   aside[]={1.000000,0.000000,0.000000};
+   up[]={0.000000,1.000000,0.000000};
+   dir[]={0.000000,0.000000,0.000000};
+   pos[]={0.000000,0.000000,0.000000};
+  };
+ };
+ class Stage2
+ {
+  texture=#(argb,8,8,3)color(1,1,1,1,MC);
+  uvSource="tex";
+  class uvTransform
+  {
+   aside[]={1.000000,0.000000,0.000000};
+   up[]={0.000000,1.000000,0.000000};
+   dir[]={0.000000,0.000000,0.000000};
+   pos[]={0.000000,0.000000,0.000000};
+  };
+ };

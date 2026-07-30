@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/setSuppression
+// revision: 376979 (2026-01-01T06:08:32Z)
+// export sha1: 3ofreu2bcty9w334333z2974j4kpcz3
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 1.42 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.42
+
+|arg= local
+
+|gr1= Object Manipulation
+
+|descr= Sets the given suppression value for the given unit.
+
+|s1= unit [[setSuppression]] value
+
+|p1= unit: [[Object]]
+
+|p2= value: [[Number]] in range 0..1
+
+|r1= [[Nothing]]
+
+|x1= <sqf>unit_1 setSuppression 1;</sqf>
+
+|seealso= [[getSuppression]] [[suppressFor]]
+}}

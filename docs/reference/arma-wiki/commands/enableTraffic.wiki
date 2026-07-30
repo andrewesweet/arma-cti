@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/enableTraffic
+// revision: 309946 (2022-05-05T12:17:00Z)
+// export sha1: h03vft70uee5130b4qxcwa0c9y6pwea
+// categories: Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Introduced with Take On Helicopters version 1.01 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: New Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= tkoh
+|version1= 1.01
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Environment
+
+|descr= Enable ambient traffic. {{Feature|arma3|This command does nothing in {{arma3}}.}}
+
+|s1= [[enableTraffic]] enable
+
+|p1= enable: [[Boolean]] - enable or disable
+
+|r1= [[Nothing]]
+
+|x1= <sqf>enableTraffic true;</sqf>
+
+|seealso= [[setTrafficDensity]] [[setTrafficDistance]] [[setTrafficGap]] [[setTrafficSpeed]]
+}}

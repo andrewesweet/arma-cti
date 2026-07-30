@@ -1,0 +1,70 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_CfgFatigue
+// revision: 373255 (2025-04-12T22:28:08Z)
+// export sha1: 7knlapvt2xcsyv931etb7sugqs8y3sl
+// categories: Category:Arma 3: Reference Lists
+// Vendored snapshot. Do not edit — re-export instead.
+
+== Introduction ==
+See [[CfgVehicles Config Reference|CfgVehicles Config Reference Introduction]]
+
+{{Feature|informative|This config class is no longer in use. It was replaced by [[Arma 3: CfgMovesFatigue]] after the introduction of the new Stamina System.}}
+
+== Alphabetical Order ==
+=== F ===
+==== FrequencyMax ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+FrequencyMax = 1;  //max frequency of breathing during fatigue
+</syntaxhighlight>
+
+==== FrequencyMin ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+FrequencyMin = 0.2; //min frequency of breathing during fatigue
+</syntaxhighlight>
+
+=== M ===
+==== MaxDuty ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+MaxDuty = 10;
+</syntaxhighlight>
+
+==== MinValue1 ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+MinValue1 = 0.2;  //1-param for mapping
+</syntaxhighlight>
+
+==== MinValue2 ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+MinValue2 = 0.8; //2-param for mapping
+</syntaxhighlight>
+
+=== N ===
+==== NormalRunSpeed ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+NormalRunSpeed = 7.2; //normal speed of run
+</syntaxhighlight>
+
+=== T ===
+==== TiredRunSpeedLimit ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+TiredRunSpeedLimit = 0.6; //tired speed of run limit
+</syntaxhighlight>
+
+==== TotalLoadCoef ====
+[[TokenNameValueTypes#Floats|Float]]
+<syntaxhighlight lang="cpp">
+TotalLoadCoef = 5; //coeficient for total load
+</syntaxhighlight>
+
+
+=== Location ===
+==== Arma 3 ====
+''%Arma 3 Root Folder%''/Dta/bin.pbo/bin/config.cpp (note that '''TotalLoadCoef''' is overwritten from another config elsewhere)
+
+{{GameCategory|arma3|Reference Lists}}

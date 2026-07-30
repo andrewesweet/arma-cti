@@ -1,0 +1,68 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_miscAnim
+// revision: 370878 (2025-02-21T10:44:03Z)
+// export sha1: i6txcos8yhaql5fgg8591oa8xzjt9lt
+// categories: Category:Arma 2: Functions | Category:Arma 2: New Functions | Category:Arma 2: Operation Arrowhead: Functions | Category:Arma 3: Functions | Category:Function Group: Scenes | Category:Functions | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Scenes
+
+|descr= Setting up the animations with correct positions for object - choose correct performance. For ex. fixingTowingTractor (read the description). {{Feature|warning|This function most likely doesn't work outside of {{arma2}} and {{arma2oa}}.}}
+
+|s1= [anim, person1, vehicle'', person2, isOnBoard, altitude, doMove''] call [[BIS_fnc_miscAnim]]
+
+|p1= anim: [[String]] - '''case-sensitive''', can be one of:
+* '''"BagFenceSittingOn1"''' - sitting on the bagfance - front
+* '''"fixingHumwee1"''' - fixing Hummwee - engine
+* '''"fixingTowingTractor"''' - fixing the right front wheel of towing tractor
+* '''"heliChecking1"''' - checking, assembling helicopter - thermal rocket silo - VENOM
+* '''"heliChecking2"''' - checking, assembling helicopter - ROTATEGUN
+* '''"heliCleaning1"''' - cleaning,checking, helicopter MH60 - cockpit outside
+* '''"heliNavi1"''' - navigating helicopter
+* '''"lyingAlongVehicle1"''' - lying near the vehicle - LEFT
+* '''"lyingAlongVehicle1b"''' - lying near the vehicle - RIGHT
+* '''"sittingOnTheChair1"''' - sitting on the foldChair (with geton from the RIGHT side)
+* '''"sittingOnTheChair1L"''' - sitting on the foldChair (with geton from the LEFT side)
+* '''"sittingOnTheChair2"''' - sitting-banded on the foldChair (with geton from the RIGHT side)
+* '''"sittingOnTheChair3a"''' - Sykes-like sitting
+* '''"sittingOnTheChair3b"''' - Rodriguez-like sitting
+* '''"tableSittingOn1"''' - sitting on the table - front
+* '''"tableSupportTalking1"''' - talking leaning on table - from front
+* '''"tableSupportTalking2"''' - talking leaning on table - from side
+* '''"twoTalking1"''' - pair talking in front of the vehicle 0 degrees
+* '''"twoTalking1a"''' - pair talking in front of the vehicle 0 degrees but pair is ROTATED
+* '''"twoTalking2"''' - pair talking in side of the vehicle 90 degrees
+* '''"twoTalking3"''' - pair talking in side of the vehicle 270 degrees
+
+|p2= person1: [[Object]] - first actor
+
+|p3= vehicle: [[String]] - reference object (chair, table, vehicle etc.). Only used for certain anims
+
+|p4= person2: [[Object]] - (Optional, default ''person1'') - second actor, if any
+
+|p5= isOnBoard: [[Boolean]] - (Optional, default [[false]]) is the unit on {{arma2}} LHD (15m height)
+
+|p6= altitude: [[Number]] - (Optional, default 0) custom altitude to use instead of 0 or 15m
+
+|p7= doMove: [[Anything]] - (Optional, default [[false]]) nil to [[setPos]] unit, any value to make it move via 
+[[doMove]] ([[true]] for readability)
+
+|r1= [[Nothing]]
+
+|x1= <sqf>["twoTalking1", unit1, myCar, unit2] call BIS_fnc_miscAnim;</sqf>
+
+|seealso= [[playMove]] [[switchMove]] [[playAction]]
+}}

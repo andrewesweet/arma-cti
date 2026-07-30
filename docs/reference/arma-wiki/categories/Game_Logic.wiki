@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Category:Game_Logic
+// revision: 296198 (2021-11-17T17:47:44Z)
+// export sha1: otyyk0mmd45cwjulvncnetyvpa9cuc7
+// Vendored snapshot. Do not edit — re-export instead.
+
+[[Category: Visual Scripting]]
+{{Navbox/Ylands}}

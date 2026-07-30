@@ -1,0 +1,56 @@
+// source: https://community.bistudio.com/wiki/ppEffectCommit
+// revision: 327517 (2022-07-12T22:25:19Z)
+// export sha1: lv5od2o590cou797mxsvkdf9qkrb9ar
+// categories: Category:Arma 2: New Scripting Commands | Category:Arma 2: Operation Arrowhead: Scripting Commands | Category:Arma 2: Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Camera Control | Category:Introduced with Arma 2 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands | Category:Take On Helicopters: Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma2
+|version1= 1.00
+
+|game2= arma2oa
+|version2= 1.50
+
+|game3= tkoh
+|version3= 1.00
+
+|game4= arma3
+|version4= 0.50
+
+|gr1= Camera Control
+
+|descr= Commit [[Post Process Effects|post process effect]] in given time.
+
+|s1= effect [[ppEffectCommit]] commit
+
+|p1= effect: [[String]] - name of the effect
+
+|p2= commit: [[Number]] - duration
+
+|r1= [[Nothing]]
+
+|s2= handle [[ppEffectCommit]] commit
+
+|p21= handle: [[Number]] - handle of the effect
+
+|p22= commit: [[Number]] - duration
+
+|r2= [[Nothing]]
+
+|s3= handles [[ppEffectCommit]] commit
+
+|p41= handles: [[Array]] of [[Number]]s - list of handles
+
+|p42= commit: [[Number]] - duration
+
+|r3= [[Nothing]]
+
+|x1= <sqf>"colorCorrection" ppEffectCommit 3;</sqf>
+
+|x2= <sqf>_hndl ppEffectCommit 3;</sqf>
+
+|x3= <sqf>[_hndl1, _hndl2] ppEffectCommit 3;</sqf>
+
+|seealso= [[Post Process Effects]] [[ppEffectForceInNVG]] [[ppEffectEnable]] [[ppEffectEnabled]] [[ppEffectDestroy]] [[ppEffectCreate]] [[ppEffectCommitted]] [[ppEffectAdjust]]
+}}

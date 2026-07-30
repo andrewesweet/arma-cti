@@ -1,0 +1,36 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_dbClassSet
+// revision: 349511 (2023-11-08T17:09:15Z)
+// export sha1: mmvjzwlfw3cgnr9bddak6cz3zzewz0p
+// categories: Category:Arma 3: Functions | Category:Function Group: Database | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= Database
+
+|descr= Add class to Scripted Database. The function modifies the passed array and returns a success flag.
+
+|s1= [database, path, (value)] call [[BIS_fnc_dbClassSet]]
+
+|p1= database: [[Array]] - database array
+
+|p2= path: [[Array]] - path to class
+
+|p3= value: [[Array]] - (Optional, default <sqf inline>[]</sqf>) the class' values
+
+|r1= [[Boolean]]: True if class was added
+
+|x1= <sqf>
+private _db = ["#MILLER", ["&KILLS", 1000], "#TERRA", ["&WEAPON", "MX 6.5mm"]];
+[_db, ["kavala"], ["&POPULATION", 42]] call BIS_fnc_dbClassSet;
+_db // ["#MILLER",["&KILLS",1000],"#TERRA",["&WEAPON","MX 6.5mm"],"#KAVALA",["&POPULATION",42]]
+</sqf>
+
+|seealso= [[:Category:Function Group: Database|Database functions]] [[BIS_fnc_dbClassCheck]] [[BIS_fnc_dbClassId]] [[BIS_fnc_dbClassIndex]] [[BIS_fnc_dbClassList]] [[BIS_fnc_dbClassRemove]] [[BIS_fnc_dbClassReturn]] [[BIS_fnc_dbConfigPath]] [[BIS_fnc_dbImportConfig]] [[BIS_fnc_dbImportXML]] [[BIS_fnc_dbisClass]] [[BIS_fnc_dbisValue]] [[BIS_fnc_dbPrint]][[BIS_fnc_dbSymbolClass]] [[BIS_fnc_dbSymbolValue]] [[BIS_fnc_dbValueCheck]] [[BIS_fnc_dbValueId]] [[BIS_fnc_dbValueIndex]] [[BIS_fnc_dbValueList]] [[BIS_fnc_dbValueRemove]] [[BIS_fnc_dbValueReturn]] [[BIS_fnc_dbValueSet]]
+}}

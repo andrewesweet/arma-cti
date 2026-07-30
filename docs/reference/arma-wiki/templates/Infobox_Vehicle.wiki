@@ -1,0 +1,64 @@
+// source: https://community.bistudio.com/wiki/Template:Infobox/Vehicle
+// revision: 363191 (2024-03-25T09:26:00Z)
+// export sha1: qywf4bnanxo8b5cons01lgg4v7jnsco
+// Vendored snapshot. Do not edit — re-export instead.
+
+<includeonly>{| class="wikitable float-right" style="font-size: 0.85em; width: 286px"
+|-
+! colspan="2" style="background-color: #6E8B3D; color: #FFF; padding: 0.5em; font-size: 120%;" | '''{{{Name|{{PAGENAME}}}}}'''
+|-
+{{#if: {{{image|}}}|
+{{!}} colspan="2" style="text-align: center; background-color: #FFF; padding: 0" {{!}} [[File:{{{image}}}|{{{size|286px}}}|frameless|center]]}}
+|-
+{{#if: {{{creator|}}}|
+! colspan="2" style="line-height:1.2em; padding: 0.5em; text-align:center" {{!}} {{{creator}}} }}
+|-
+{{#if: {{{crew|}}}|
+! Crew
+{{!}} {{{crew}}} }}
+|-
+{{#if: {{{armor|}}}|
+! Armor
+{{!}} {{{armor}}} }}
+|-
+{{#if: {{{speed|}}}|
+! Speed
+{{!}} {{{speed}}} }}
+|-
+{{#if: {{{weapons|}}}|
+! Weapons
+{{!}} {{{weapons}}} }}
+|-
+{{#if: {{{vehicleclasses|}}}|
+! Vehicle classes
+{{!}} {{{vehicleclasses}}} }}
+|}</includeonly><noinclude>
+== Usage ==
+{| style="width: 100%"
+|- style="background-color: #EEE"
+! Code
+! Result
+|-
+| <pre>{{Infobox/Vehicle
+|creator = BI Studios
+|image = Ofp m113.jpg
+|crew = 3 [[Crew|crew]] soldiers
+|armor = 150
+|speed = 60
+|weapons = Browning ({{ofp}})<br>M2 ({{arma1}})
+|vehicleclasses = armored ({{ofp}})<br>tracked ({{arma1}})
+}}</pre>
+| {{Infobox/Vehicle
+|creator = BI Studios
+|image = Ofp m113.jpg
+|crew = 3 [[Crew|crew]] soldiers
+|armor = 150
+|speed = 60
+|weapons = Browning ({{ofp}})<br>M2 ({{arma1}})
+|vehicleclasses = armored ({{ofp}})<br>tracked ({{arma1}})
+}}
+|}
+
+{{Feature|informative|Picture thumbnail width is '''230px'''. Image must be in form Imagename.jpg, without any tags.}}
+
+[[Category:Templates|{{PAGENAME}}]]</noinclude>

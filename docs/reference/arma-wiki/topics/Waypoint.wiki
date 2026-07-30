@@ -1,0 +1,31 @@
+// source: https://community.bistudio.com/wiki/Waypoint
+// revision: 170291 (2020-12-09T14:34:46Z)
+// export sha1: 1bt659yb6ytqv8ob29nc4dei975s0h7
+// categories: Category:Arrays
+// Vendored snapshot. Do not edit — re-export instead.
+
+; Format
+: [group, index]
+
+
+; Description
+: Group is of type [[Group]], index is of type [[Number]].<br>
+: Index is the waypoint # in line.<br>
+: Index 0 selects first waypoint which is always created on group starting position. 
+
+
+; Comments
+: Note that [groupName, 0] is automatically created at a unit's starting position.
+: Therefore:
+:* [groupName, 1] would be the first in-editor waypoint<br>
+:* [groupName, 2] would be the second, etc.
+
+
+== See Also ==
+
+* [[Waypoints]]
+* [[:Category:Command Group: Waypoints|Waypoints Commands]]
+* [[:Category:Function Group: Waypoints|Waypoints Functions]]
+
+
+[[Category: Arrays]]

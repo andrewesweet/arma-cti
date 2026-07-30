@@ -1,0 +1,28 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_getIDD
+// revision: 349463 (2023-11-08T16:49:17Z)
+// export sha1: t3w4jyx4bgyxonm1a6n8lozdxfz8whq
+// categories: Category:Arma 3: Functions | Category:Function Group: GUI | Category:Functions | Category:Introduced with Take On Helicopters version 1.00 | Category:Maintenance/RV | Category:Take On Helicopters: Functions | Category:Take On Helicopters: New Functions
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= tkoh
+|version1= 1.00
+
+|game2= arma3
+|version2= 0.50
+
+|gr1= GUI
+
+|descr= Returns IDD of given display.
+
+|s1= [config] call [[BIS_fnc_getIDD]]
+
+|p1= config: [[Config]] - config path to display
+
+|r1= [[Number]] - IDD
+
+|x1= <sqf>private _IDD = [configFile >> "display3DENPublishMissionSelectImage"] call BIS_fnc_getIDD;</sqf>
+
+|seealso= [[configFile]] [[findDisplay]] [[createDisplay]]
+}}

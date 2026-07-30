@@ -1,0 +1,100 @@
+// source: https://community.bistudio.com/wiki/Arma_3:_Error_Messages
+// revision: 340811 (2023-05-01T14:39:03Z)
+// export sha1: q47gfe1eu5bae8kvw08ramkdrqd4hu2
+// categories: Category:Arma 3: Editing | Category:Arma 3: Troubleshooting | Category:Scripting Topics | Category:To-do
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+{{Wiki|TODO|Sort out overlap between this page and the [[Crash Files]] page.}}
+
+{{Feature|important|See {{Link|https://dev.arma3.com/known-issues|Arma 3 Known Issues}}.}}
+
+=== Error types ===
+
+Errors can be Normal, or DebugOnly. If it is DebugOnly, the error will only show when Arma 3 is in [[Arma 3: Debug Mode|debug mode]].
+
+Errors can also occur with, or without context. This is additional information about where the error occurs to improve the experience of debugging. However, even if an error occurs, additional context for the error will only be shown if Arma 3 is in [[Arma 3: Debug Mode|debug mode]]
+
+=== Script errors ===
+
+{| class="wikitable"
+! Error
+! Type
+! Description
+! Example
+|-
+| rowspan="2" | Generic Error in Expression
+| rowspan="2" | Normal
+| The type of an argument to a command is incorrect.
+| <sqf>systemChat 10</sqf>
+|-
+| A command that can only be run in a [[Scheduler#Scheduled_Environment|scheduled environment]] was instead run in an [[Scheduler#Unscheduled_Environment|unscheduled environment]] ([[sleep]], [[spawn]])
+| <sqf>sleep 10</sqf>
+
+|-
+| rowspan="2" | Zero Divisor
+| rowspan="2" | Normal
+| A number was divided by 0
+| <sqf>10 / 0</sqf>
+|-
+| An array index was accessed that doesn't exist
+| <sqf>[1,2,3] select 20</sqf>
+
+|-
+| Attempt to override final function
+| Normal
+| A [[compileFinal]]ed function was attempted to be overwritten
+| <sqf>BIS_fnc_endMission = {systemChat "Trying to do bad things"}</sqf>
+
+|-
+| getVariable called on null object
+| rowspan="2" | DebugOnly
+| rowspan="2" | [[getVariable]] was called on a null namespace
+| <sqf>objNull getVariable "varname"</sqf>
+|-
+| getVariable called on null group
+| <sqf>grpNull getVariable "varname"</sqf>
+
+|-
+| Serialization of Control variables is not implemented
+| Normal
+|[[Control]] variables cannot be saved by the game when a mission is saved, as they are specific to the time it was loaded. This means that this error will occur if such an item is saved in [[missionNamespace]] or if any script using control variables didn't run the [[disableSerialization]] command first. <br/> To fix this you can store [[Control]] values in [[uiNamespace]] instead and make sure that any scripts handling these variables have [[disableSerialization]] set.
+| <sqf>cant_put_that_here = allControls (allDisplays # 0)</sqf>
+|}
+
+=== Stringtable errors ===
+
+{| class="wikitable"
+! Error
+! Type
+! Description
+! Example
+|-
+| Unsupported language English in stringtable
+| Normal
+| This happens if an entry was not found in the desired language e.g., English
+| {{n/a}}
+|}
+
+=== Config errors ===
+
+{| class="wikitable"
+! Error
+! Type
+! Description
+! Example
+|-
+| Cannot delete class xxxx, it is referenced somewhere (used as a base class probably)
+| Normal
+| This happens if you try and delete a config entry that is inherited by another class. For more info see [[Class_Inheritance#delete|delete]]
+| rowspan="2" {{n/a}}
+|-
+| Updating base class RscShortcutButton->RscButton...
+| Normal
+| Caused by inheriting from wrong config while modifiying an existing base class. Currently Arma 3 has a lot of these issues out of the box.
+|}
+
+
+{{GameCategory|arma3|Editing}}
+{{GameCategory|arma3|Troubleshooting}}
+[[Category:Scripting Topics]]

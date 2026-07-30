@@ -1,0 +1,7 @@
+// source: https://community.bistudio.com/wiki/Arma_2_OA:_CfgWeapons
+// revision: 175799 (2020-12-29T18:00:39Z)
+// export sha1: qizcgblrhbg675k3c5rha1i57e3qv1z
+// Vendored snapshot. Do not edit — re-export instead.
+
+* See [[Arma 2:OA and DLC Weapons]]
+* See [[Arma 2: Weapons]]

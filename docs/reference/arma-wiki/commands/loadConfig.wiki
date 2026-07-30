@@ -1,0 +1,101 @@
+// source: https://community.bistudio.com/wiki/loadConfig
+// revision: 341399 (2023-05-25T14:02:22Z)
+// export sha1: rs05ivt5fxrfoa05fc07v7hnhpt26v8
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Config | Category:Introduced with Arma 3 version 2.10 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.10
+
+|gr1= Config
+
+|descr= Loads the given file as a [[Config]], allowing easy processing of the config file contents using commands such as [[configClasses]], [[configProperties]], [[config greater greater name|>>]], etc. It can load [[Rvmat File Format|.rvmat]], .bisurf, [[CPP File Format|.cpp]], [[BIN File Formats|.bin]], [[Mission.sqm|.sqm]], and [[Description.ext|description.ext]] files (both binarized and unbinarized configs are supported).
+{{Feature|important|
+* Config loading can be very slow; the config should only be loaded once and cached, e.g in a [[HashMap]] of {{hl|File Path &rarr; Config}} pairs (see {{Link|#Example 3}}).
+* It is advised to store the generated config in a variable, otherwise it will get destroyed if it is not being referenced directly (see {{Link|#Example 2}}).
+}}
+
+|s1= [[loadConfig]] path
+
+|p1= path: [[String]] - path to the file, which should be in a valid config format.
+
+|r1= [[Config]] - loaded config. Returns [[configNull]] if the file doesn't exist.
+
+|x1= <sqf>
+private _cfg = loadConfig "a3\data_f\default_super.rvmat"; // note: very slow! ~0.1200 ms on tested system
+getText (_cfg >> "Stage2" >> "uvSource");
+</sqf>
+
+|x2= <sqf>
+// INCORRECT - the config is destroyed after the first operator >> accesses it
+getNumber (loadConfig "mission.sqm" >> "ScenarioData" >> "respawnDelay");
+
+// CORRECT - the config is destroyed only when the variable _cfg is destroyed
+_cfg = loadConfig "mission.sqm";
+getNumber (_cfg >> "ScenarioData" >> "respawnDelay");
+</sqf>
+
+|x3= <sqf>
+// using a hashmap to cache loaded configs, since loading configs is very slow and should be done once.
+private _fnc_loadConfig = {
+	params ["_path"];
+	// initialize cache if not initialized yet
+	if (isNil "TAG_configCache") then
+	{
+		TAG_configCache = createHashMap;
+	};
+	private _cfg = TAG_configCache getOrDefault [_path, configNull];
+	// if path doesn't exist in the cache or cfg is null, load the config
+	if (isNull _cfg) then
+	{
+		_cfg = loadConfig _path;
+		TAG_configCache set [_path, _cfg];
+	};
+	_cfg;
+};
+// the first call will be slow (~0.1200 ms), but subsequent calls are fast (~0.0050 ms)
+["a3\data_f\default_super.rvmat"] call _fnc_loadConfig;
+</sqf>
+
+|x4= <sqf>
+// converting a config into hashmap
+private _fnc_convertClass = {
+	params ["_cfgClass"];
+
+	private _result = createHashMap;
+	private _props = configProperties [_cfgClass, "true", true];
+	// note: Hashmaps are case-sensitive so configName cases have to be consistent (e.g. all lowercase)
+	{
+		if (isNumber _x)	then { _result set [toLowerANSI configName _x, getNumber _x];	continue; };
+		if (isText _x)		then { _result set [toLowerANSI configName _x, getText _x];		continue; };
+		if (isArray _x)		then { _result set [toLowerANSI configName _x, getArray _x];	continue; };
+	} forEach _props;
+
+	private _classes = "true" configClasses _cfgClass;
+	{
+		_result set [toLowerANSI configName _x, _x call _fnc_convertClass];
+	} forEach _classes;
+
+	_result;
+};
+
+private _cfg = loadConfig "mission.sqm";
+private _cfgMap = _cfg call _fnc_convertClass;
+
+// the following expression is similar to getNumber(_cfg >> "EditorData" >> "moveGridStep")
+// note that all strings are lowercase (which is how they were stored in hashmap)
+_cfgMap get "editordata" get "movegridstep";
+</sqf>
+
+|seealso= [[loadFile]] [[config greater greater name|>>]] [[configFile]] [[configClasses]] [[isText]] [[isNumber]] [[isArray]] [[isClass]] [[configName]] [[getText]] [[getNumber]] [[getArray]]
+}}
+
+{{Note
+|user= Dedmen
+|timestamp= 20220322091437
+|text= When trying to load a terrain surface name, like you get from Ammo Eventhandlers when you hit the terrain, you can simply use
+<sqf>private _config = configFile >> "CfgSurfaces" >> _surfaceName;</sqf>
+You can recognize surface names by them not having any \ path separators in them, they usually start with gdt, for example "gdtvrsurface01".
+}}

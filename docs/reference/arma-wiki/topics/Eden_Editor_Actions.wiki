@@ -1,0 +1,782 @@
+// source: https://community.bistudio.com/wiki/Eden_Editor:_Actions
+// revision: 378784 (2026-06-05T10:55:06Z)
+// export sha1: jeyfd9tbmw60inftt93vxtquzgicdl6
+// categories: Category:Eden Editor: Modding
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{TOC|side}}
+__NOEDITSECTION__
+Actions are engine operations used by [[Eden Editor: Menu Bar|Menu Bar]] and are available for scripting.
+
+Perform an action:
+<sqf>do3DENAction "actionName"</sqf>
+
+Get action state, can be 0 or 1. Available only for selected actions (see the '''State''' column below); when an action doesn't have any state, -1 is returned.
+<sqf>get3DENActionState "actionName"</sqf>
+
+Since {{GVI|arma3|2.22}} some actions can also have an argument. See syntax 2 of [[do3DENAction]].
+
+{| class="wikitable sortable align-center-col-3"
+! Action
+! class="unsortable" | Description
+! State
+! Argument
+|-
+|
+==== AddCustomConnection ====
+|
+No implemented. Can only happen through context menu.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== AddRandomStart====
+|
+Initializes the ''Set Random Start'' action. Same as if selecting the option in the context menu. At least one marker must be selected.
+|
+{{Icon|unchecked}}
+|
+|-
+| 
+==== AddUnitToSel ====
+|
+Add entity under cursor to selection, the same as when you press {{Controls|Ctrl|LMB}} on an entity
+|
+|
+|-
+|
+==== AddWaypoint ====
+|
+Add quick waypoint to currently selected entities / groups. The same as when you press {{Controls|Shift|RMB}}.
+|
+|
+|-
+|
+==== CenterCameraOnPlayer ====
+|
+Move camera to player's position.
+|
+|
+|-
+|
+==== ChangeSeat ====
+|
+No implemented. Can only happen through context menu.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== ClearSelections ====
+|
+Cancel the current selection.
+|
+|
+|-
+|
+==== CopyUnit ====
+|
+Copy all selected entities. The same as when you press {{Controls|Ctrl|C}}.
+|
+|
+|-
+|
+==== CreateAndChangeComment ====
+|
+Create a [[Eden_Editor:_Comment|comment]] under cursor and open its attributes window.
+|
+|
+|-
+|
+==== CreateComment ====
+|
+Create a [[Eden_Editor:_Comment|comment]] under cursor.
+|
+|
+|-
+|
+==== CreateCustomComposition ====
+|
+Create a [[Eden Editor: Custom Composition|composition]] from selected objects.
+|
+|
+|-
+|
+{{ArgTitle|4|CreateTextFile|{{GVI|arma3|2.22}}}}
+|
+Creates a text file in the scenario folder.
+|
+{{Icon|unchecked}}
+|
+[[HashMap]] with the following keys:
+* name: [[String]] - name of the file. Maximum length 64 characters. Can only contain {{hl|A-z0-9_-}} characters. Name is force-prefixed with {{hl|generated_}}
+* folder: [[String]] - (optional, default "") - name of the subfolder. Only one level is supported. Maximum allowed characters 16. Can only contain {{hl|A-z0-9_-}} characters
+* content: [[String]] - content of the file
+<sqf>
+private _par = createHashMap;
+_par set ["name", "testfile"];
+_par set ["folder", "subfolder"];
+_par set ["content", "R3voing"];
+
+do3DENAction ["CreateTextFile", _par];
+</sqf>
+|-
+|
+==== CutUnit ====
+|
+Cut all selected entities. The same as when you press {{Controls|Ctrl|X}}.
+|
+|
+|-
+|
+==== DeleteCustomComposition ====
+|
+Delete a [[Eden Editor: Custom Composition|composition]].
+|
+|
+|-
+|
+==== DeleteUnits ====
+|
+Delete all selected entities. The same as when you press {{Controls|Delete}}.
+|
+|
+|-
+|
+==== EditCustomComposition ====
+|
+Edit a [[Eden Editor: Custom Composition|composition]].
+|
+|
+|-
+|
+==== Exit3DEN ====
+|
+Exit the Eden Editor, with a prompt asking for confirmation being displayed first. The same as when you press {{Controls|Escape}}.
+|
+|
+|-
+|
+==== FolderMission ====
+|
+Opens the scenario folder if it exists.
+|
+|
+|-
+|
+==== ForceToFormation ====
+|
+Move all selected group members to their default formation positions.
+|
+|
+|-
+|
+==== GroupWith ====
+|
+Initializes the ''Group With'' action. Same as if selecting the option in the context menu. At least one group must be selected.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== LevelOutObjects ====
+|
+Orient all selected entities to sea normal.
+|
+|
+|-
+|
+==== LevelWithSurface ====
+|
+Orient all selected entities to terrain normal.
+|
+|
+|-
+|
+==== MissionExportMP ====
+|
+Export the scenario to multiplayer scenarios.
+|
+|
+|-
+|
+==== MissionExportSP ====
+|
+Export the scenario to scenario scenarios.
+|
+|
+|-
+|
+==== MissionLoad ====
+|
+Show "Open Scenario" window.
+|
+|
+|-
+|
+==== MissionMerge ====
+|
+Opens the merge UI.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== MissionNew ====
+|
+Show "New Scenario" window.
+|
+|
+|-
+|
+==== MissionPartIntro ====
+|
+Select ''Intro'' [[Eden Editor: Scenario Phases|phase]].
+| {{Icon|checked}}
+|
+|-
+|
+==== MissionPartMission ====
+|
+Select ''Scenario'' [[Eden Editor: Scenario Phases|phase]].
+| {{Icon|checked}}
+|
+|-
+|
+==== MissionPartOutroLoose ====
+|
+Select ''Outro - Lose'' [[Eden Editor: Scenario Phases|phase]].
+| {{Icon|checked}}
+|
+|-
+|
+==== MissionPartOutroWin ====
+|
+Select ''Outro - Win'' [[Eden Editor: Scenario Phases|phase]].
+| {{Icon|checked}}
+|
+|-
+|
+==== MissionPreview ====
+|
+Preview the scenario in singleplayer.
+|
+|
+|-
+|
+==== MissionPreviewBriefing ====
+|
+Preview the scenario in singleplayer with briefing.
+|
+|
+|-
+|
+==== MissionPreviewMP ====
+|
+Preview the scenario in multiplayer.
+|
+|
+|-
+|
+==== MissionSave ====
+|
+Save the scenario. If it has not been saved yet, open "Save Scenario" window.
+|
+|
+|-
+|
+==== MissionSaveAs ====
+|
+Open "Save Scenario" window.
+|
+|
+|-
+|
+==== MoveGridDecrease ====
+|
+Decreases the move grid by 0.25 m. If this grid doesn't exist a new entry is added to the drop down menu in the toolbar (3.75 m (Custom)).
+Also triggers {{hl|OnMoveGridDecrease}} event.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== MoveGridIncrease ====
+|
+Increases the move grid by 0.25 m. If this grid doesn't exist a new entry is added to the drop down menu in the toolbar (3.75 m (Custom)).
+Also triggers {{hl|OnMoveGridIncrease}} event.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== MoveGridToggle ====
+|
+Toggle translation grid.
+| {{Icon|checked}}
+|
+|-
+|
+==== OpenAttributes ====
+|
+Open [[Eden Editor: Entity Attributes|attributes]] of selected entities.
+|
+|
+|-
+|
+==== OpenIntelDisplay ====
+|
+Opens the Edit: Environment UI.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== OpenRequiredAddons ====
+|
+Opens the required addons UI.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== OpenSteamPublishDialog ====
+|
+Open Steam Publish Options window.
+|
+|
+|-
+|
+==== OptionsAudio ====
+|
+Open Audio Options window.
+|
+|
+|-
+|
+==== OptionsControls ====
+|
+Open Controls Options window.
+|
+|
+|-
+|
+==== OptionsGame ====
+|
+Open Game Options window.
+|
+|
+|-
+|
+==== OptionsVideo ====
+|
+Open Video Options window.
+|
+|
+|-
+|
+==== PasteUnit ====
+|
+Paste copied entities. The same as when you press {{Controls|Ctrl|V}}.
+|
+|
+|-
+|
+==== PasteUnitOrig ====
+|
+Paste copied entities on their original positions. The same as when you press {{Controls|Ctrl|Shift|V}}.
+{{Feature|important|Keep in mind that ''Surface Snapping'' and the selected ''Vertical Mode'' will influence the positioning when pasting!}}
+|
+|
+|-
+|
+==== PublishCustomComposition ====
+|
+Opens the Workshop Composition Management UI. At least one custom composition has to be selected in the asset browser (right panel).
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== Redo ====
+|
+Redo the undone operation.
+|
+|
+|-
+|
+==== RestoreEditTreeExpansion ====
+|
+Restores previous state of the nodes in the entity browser (left panel).
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== RotateGridDecrease ====
+|
+Decreases the rotation grid by 5°. If this grid doesn't exist a new entry is added to the drop down menu in the toolbar (15 ° (Custom)).
+Also triggers {{hl|OnRotateGridDecrease}} event.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== RotateGridIncrease ====
+|
+Decreases the rotation grid by 5°. If this grid doesn't exist a new entry is added to the drop down menu in the toolbar (15 ° (Custom)).
+Also triggers {{hl|OnRotateGridIncrease}} event.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== RotateGridToggle ====
+|
+Toggle rotation grid.
+| {{Icon|checked}}
+|
+|-
+|
+==== ScaleGridToggle ====
+|
+Toggle area scaling grid.
+| {{Icon|checked}}
+|
+|-
+|
+==== SearchCreate ====
+|
+Switch focus to [[Eden Editor: Asset Browser|asset browser]] search field.
+|
+|
+|-
+|
+==== SearchEdit ====
+|
+Switch focus to entity list search field.
+|
+|
+|-
+|
+==== SelectAllOnScreen ====
+|
+Select all entities currently visible on the screen.
+|
+|
+|-
+|
+==== SelectGroupMode ====
+|
+Select the ''Compositions'' mode. The same as when you press {{Controls|F2}}.
+| {{Icon|checked}}
+|
+|-
+|
+==== SelectLayerAllDescendants ====
+|
+Select all entities in selected layers and all sub-layers.
+|
+|
+|-
+|
+==== SelectLayerChildren ====
+|
+Select all entities directly in selected layers.
+|
+|
+|-
+|
+==== SelectMarkerMode ====
+|
+Select the ''Markers'' mode. The same as when you press {{Controls|F6}}.
+| {{Icon|checked}}
+|
+|-
+|
+==== SelectModuleMode ====
+|
+Select the ''Systems'' mode. The same as when you press {{Controls|F5}}.
+| {{Icon|checked}}
+|
+|-
+|
+==== SelectObjectMode ====
+|
+Select the ''Objects'' mode. The same as when you press {{Controls|F1}}.
+| {{Icon|checked}}
+|
+|-
+|
+==== SelectSubmode1 ====
+|
+Select the first sub-mode. Based on the selected mode; for example it is ''BLUFOR'' when ''Objects'' mode is selected.
+| {{Icon|checked}}
+|
+|-
+|
+==== SelectSubmode2 ====
+|
+Select the second submode. Based on the selected mode; for example it is ''OPFOR'' when ''Objects'' mode is selected.
+| {{Icon|checked}}
+|
+|-
+|
+==== SelectSubmode3 ====
+|
+Select the third sub-mode. Based on the selected mode; for example it is ''Independent'' when ''Objects'' mode is selected.
+| {{Icon|checked}}
+|
+|-
+|
+==== SelectSubmode4 ====
+|
+Select the fourth sub-mode. Based on the selected mode; for example it is ''Civilian'' when ''Objects'' mode is selected.
+| {{Icon|checked}}
+|
+|-
+|
+==== SelectSubmode5 ====
+|
+Select the fifth sub-mode. Based on the selected mode; for example it is ''Props'' when ''Objects'' mode is selected.
+| {{Icon|checked}}
+
+|
+|-
+|
+==== SelectSubmode6 ====
+|
+Select the sixth sub-mode. Based on the selected mode; for example it is ''Custom'' when ''Compositions'' mode is selected.
+| {{Icon|checked}}
+|
+|-
+|
+==== SelectTriggerMode ====
+|
+Select the ''Triggers'' mode. The same as when you press {{Controls|F3}}.
+| {{Icon|checked}}
+|
+|-
+|
+==== SelectUnit ====
+|
+Select the entity under cursor.
+|
+|
+|-
+|
+==== SelectWaypointMode ====
+|
+Select the ''Waypoints'' mode. The same as when you press {{Controls|F4}}.
+| {{Icon|checked}}
+|
+|-
+|
+==== SetFlyingHeight ====
+|
+Move selected entities to default flying height. Only available for flying objects, i.e., planes and helicopters.
+|
+|
+|-
+|
+==== SetTriggerOwner ====
+|
+Initializes the ''Set Trigger Owner'' action. Same as if selecting the option in the context menu. At least one trigger must be selected.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== SetWaypointActivation ====
+|
+Initializes the ''Set Waypoint Activation'' action. Same as if selecting the option in the context menu. At least one waypoint must be selected.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== SnapToSurface====
+|
+Snap selected entities to the ground.
+|
+|
+|-
+|
+==== SubmodeToggle ====
+|
+Toggle sub-mode (browse through all available ones).
+|
+|
+|-
+|
+==== SurfaceSnapDisable ====
+|
+Toggle surface snap off.
+|
+|
+|-
+|
+==== SurfaceSnapEnable ====
+|
+Toggle surface snap on.
+|
+|
+|-
+|
+==== SurfaceSnapToggle ====
+|
+Toggle surface snap on/off.
+| {{Icon|checked}}
+|
+|-
+|
+==== SyncWith ====
+|
+Initializes the ''Synch With'' action. Same as if selecting the option in the context menu. At least syncable entity must be selected.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== ToggleMap ====
+|
+Toggle map on/off.
+| {{Icon|checked}}
+|
+|-
+|
+==== ToggleMapIDs ====
+|
+Toggle map IDs on/off.
+| {{Icon|checked}}
+|
+|-
+|
+==== ToggleMapTextures ====
+|
+Toggle map textures on/off.
+| {{Icon|checked}}
+|
+|-
+|
+==== TogglePlaceEmptyVehicle ====
+|
+Toggle place empty vehicles on/off.
+| {{Icon|checked}}
+|
+|-
+|
+==== ToggleUnitSel ====
+|
+Toggle entity selection on/off.
+|
+|
+|-
+|
+==== ToggleVegetion====
+|
+Toggles vegetation on/off.
+|
+|
+|-
+|
+==== Undo ====
+|
+Undo the last operation.
+|
+|
+|-
+|
+==== Unknown ====
+|
+Engine placeholder. Not implemented.
+|
+{{Icon|unchecked}}
+|
+|-
+|
+==== VerticalASL ====
+|
+Set vertical mode to ASL (Above Sea Level).
+| {{Icon|checked}}
+|
+|-
+|
+==== VerticalATL ====
+|
+Set vertical mode to ATL (Above Terrain Level).
+| {{Icon|checked}}
+|
+|-
+|
+==== VerticalToggle ====
+|
+Toggle vertical mode.
+| {{Icon|checked}}
+|
+|-
+|
+==== WidgetArea ====
+|
+Toggle [[Eden_Editor:_Transformation_Widget|area widget]] on.
+| {{Icon|checked}}
+|
+|-
+|
+==== WidgetCoord ====
+|
+Toggle [[Eden_Editor:_Transformation_Widget|widget]] coordinate space between global and local.
+| {{Icon|checked}}
+|
+|-
+|
+==== WidgetNone ====
+|
+Toggle [[Eden_Editor:_Transformation_Widget|widget]] off.
+| {{Icon|checked}}
+|
+|-
+|
+==== WidgetRotation ====
+|
+Toggle [[Eden_Editor:_Transformation_Widget|rotation widget]] on.
+| {{Icon|checked}}
+|
+|-
+|
+==== WidgetScale ====
+|
+Toggle [[Eden_Editor:_Transformation_Widget|scaling widget]] on.
+| {{Icon|checked}}
+|
+|-
+|
+==== WidgetSpaceLocal ====
+|
+Set [[Eden_Editor:_Transformation_Widget|widget]] coordinate space to local.
+|
+|
+|-
+|
+==== WidgetSpaceWorld ====
+|
+Set [[Eden_Editor:_Transformation_Widget|widget]] coordinate space to global.
+|
+|
+|-
+|
+==== WidgetToggle ====
+|
+Toggle [[Eden_Editor:_Transformation_Widget|widget]] (browse through all available widget types).
+|
+|
+|-
+|
+==== WidgetTranslation ====
+|
+Toggle [[Eden_Editor:_Transformation_Widget|translation widget]] on.
+| {{Icon|checked}}
+|}
+
+[[Category: Eden Editor: Modding|Actions]]

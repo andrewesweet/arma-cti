@@ -1,0 +1,25 @@
+// source: https://community.bistudio.com/wiki/getShadowDistance
+// revision: 319175 (2022-05-13T09:23:19Z)
+// export sha1: 371crovv5313adqslegldynvp6qxamg
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Environment | Category:Command Group: System | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= System
+
+|gr2= Environment
+
+|descr= Gets the shadows rendering distance.
+
+|s1= '''getShadowDistance'''
+
+|r1= [[Number]]
+
+|x1= <sqf>_value = getShadowDistance;</sqf>
+
+|seealso= [[setShadowDistance]] [[isPipEnabled]]
+}}

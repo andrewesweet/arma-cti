@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/ctrlSetMousePosition
+// revision: 348960 (2023-11-08T14:45:40Z)
+// export sha1: ohummeqzxie0t0shf7u51v3l6d66oms
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Positioning | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= GUI Control - Positioning
+
+|descr= Similar to [[setMousePosition]] but relative to the given control.
+
+|s1= control [[ctrlSetMousePosition]] [x, y]
+
+|p1= control: [[Control]]
+
+|p2= x: [[Number]] - position in x
+
+|p3= y: [[Number]] - position in y
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control ctrlSetMousePosition [0.5, 0.5];</sqf>
+
+|seealso= [[ctrlMousePosition]] [[setMousePosition]] [[getMousePosition]] [[ctrlMapCursor]]
+}}

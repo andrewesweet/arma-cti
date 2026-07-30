@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/combatPace
+// revision: 378225 (2026-03-15T12:52:32Z)
+// export sha1: auijb7ouh0uc5e3iocrn0z80ae2707q
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Object Manipulation | Category:Introduced with Arma 3 version 2.22 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.22
+
+|arg= local
+
+|gr1= Object Manipulation
+
+|descr= Sets or gets the combat pace for the local player. If the right-hand array is empty, the command will simply return the current combat pace mode without making any changes to combat pace.
+
+|s1= soldier [[combatPace]] [enable, duration]
+
+|p1= soldier: [[Object]] - The local player unit.
+|p2= enable: [[Boolean]] - (Optional, no default) Whether to enable or disable combat pace. This param is optional, i.e. the right-hand array can be completely empty (see [[#Example 1]]).
+|p3= duration: [[Scalar]] - (Optional, default -1) Duration of combat pace in seconds (maximum 5 seconds). If duration < 0, combat pace will be toggled. If duration >= 0, short combat pace will be used. duration == 0 means use the default short combat pace duration in config, similar to when the player presses the fire button and weapon is raised. Note that the combat pace modes are mutually exclusive (enabling one disables the other)
+
+|r1= [[String]] - previous combat pace. Possible values: "None", "Timer", "Toggle"
+
+|x1= <sqf>private _isCombatPaceToggled = player combatPace [] == "Toggle"; // current combat pace is toggled</sqf>
+
+|x2= <sqf>private _isInCombatPace = player combatPace [] != "None"; // either using timer or toggled combat pace</sqf>
+
+|x3= <sqf>player combatPace [false]; // disables combat pace (both short and toggle)</sqf>
+
+|x4= <sqf>player combatPace [true]; // enables combat pace toggle and disables timer mode</sqf>
+
+|x5= <sqf>player combatPace [true, 1]; // disables combat pace toggle, enables timer mode for 1 second</sqf>
+
+|x6= <sqf>player combatPace [player combatPace [] != "Toggle"]; // toggle combat pace (enable<->disable)</sqf> 
+
+|seealso= [[forceWalk]] [[getSpeed]] [[isWalking]] [[isForcedWalk]]
+}}

@@ -1,0 +1,97 @@
+// source: https://community.bistudio.com/wiki/insert
+// revision: 377154 (2026-01-01T10:37:44Z)
+// export sha1: am4ks1c09osbc0j5m5jt1zkcv9jur5x
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Arrays | Category:Command Group: HashMap | Category:Command Group: Strings | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= HashMap
+
+|gr2= Arrays
+
+|gr3= Strings
+
+|descr= Inserts multiple values into [[Array]]/[[String]]/[[HashMap]].<br>
+The [[String]] variant also supports [[forceUnicode]]. In the event of a [[HashMap]], values, if they already exist, are replaced.
+
+|s1= array [[insert]] [index, valuesToInsert, onlyIfUnique] 
+
+|p1= array : [[Array]] of [[Anything]]
+
+|p2= index: [[Number]] - index at which the values will be inserted, -1 for append, {{GVI|arma3|2.14|size= 0.75}} -2 for inserting at the second-to-last position, -3 before that, etc.
+
+|p3= valuesToInsert: [[Array]] of [[Anything]] - values to insert at the specified index
+
+|p4= onlyIfUnique: [[Boolean]] - (Optional, default [[false]]) only insert if the value is unique in the array, like [[pushBackUnique]]
+
+|r1= [[Nothing]]
+
+|s2= string [[insert]] [index, substring]
+
+|p21= string : [[String]]
+
+|p22= index: [[Number]] - index at which the values will be inserted, -1 for append
+
+|p23= substring: [[String]] - string to insert
+
+|r2= [[String]] - the new string
+
+|s3= hashMap [[insert]] [<nowiki/>[key1, value1], [key2, value2], ...]
+
+|s3since= arma3 2.04
+
+|p41= hashMap: [[HashMap]]
+
+|p42= keyN: [[HashMapKey]]
+
+|p43= valueN: [[Anything]]
+
+|r3= [[Nothing]]
+
+|s4= hashMap [[insert]] [splitArray, [keysAndValues]]
+
+|s4since= arma3 2.04
+
+|p61= hashMap: [[HashMap]]
+
+|p62= splitArray: [[Boolean]] - determines ''keysAndValues'' format (see ''keysAndValues''<nowiki/>'s description)
+
+|p63= keysAndValues: [[Array]] - in format depending on ''splitArray''<nowiki/>'s value:
+* [[true]] - {{hl|[<nowiki/>[key1, key2, ...], [value1, value2, ...]]}}
+* [[false]] - {{hl|[<nowiki/>[key1, value1], [key2, value2], ...]}} (same as {{Link|#Syntax 3}}, see {{Link|#Example 3}} for the correct format)
+
+|r4= [[Nothing]]
+
+|x1= <sqf>
+"Test" insert [0, "Radio"];		// returns "RadioTest"
+"Test" insert [2, "Radio"];		// returns "TeRadiost"
+"Test" insert [-1, "Radio"];	// returns "TestRadio"
+</sqf>
+
+|x2= <sqf>
+private _array = ["a", "b", "c"];
+_array insert [0, ["w"]]; // _array is now ["w", "a", "b", "c"]
+
+private _array = ["a", "b", "c"];
+_array insert [-1, ["w"]]; // _array is now ["a", "b", "c", "w"]
+
+private _array = ["a", "b", "c"];
+_array insert [-2, ["w"]]; // _array is now ["a", "b", "w", "c"] // Arma 3 v2.14
+</sqf>
+
+|x3= <sqf>
+// Notice how the size of the right array changes depending on the format of keysAndValues format
+private _map = createHashMap;
+_map insert [false, ["one", 1]];
+
+private _map = createHashMap;
+_map insert [true, ["one"], [1]];
+</sqf>
+
+
+|seealso= [[HashMap]] [[pushBack]] [[pushBackUnique]] [[append]] [[+]] [[merge]]
+}}

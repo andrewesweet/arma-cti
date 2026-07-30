@@ -1,0 +1,39 @@
+// source: https://community.bistudio.com/wiki/BIS_fnc_setPPeffectTemplate
+// revision: 327498 (2022-07-12T22:24:27Z)
+// export sha1: om3p03exikdmyrybaqy9p4mzw3hfhz0
+// categories: Category:Arma 3: Functions | Category:Arma 3: New Functions | Category:Function Group: Systems | Category:Functions | Category:Introduced with Arma 3 version 1.00 | Category:Maintenance/RV
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=function
+
+|game1= arma3
+|version1= 1.00
+
+|gr1= Systems
+
+|descr= Apply post-process effects according to template from [[Description.ext#CfgPostprocessTemplates|CfgPostprocessTemplates]].
+
+|s1= [template, transition, global] call [[BIS_fnc_setPPeffectTemplate]]
+
+|p1= template: [[String]] - (Optional, default "Default") the template name. An invalid value will fall back to "Default".<br>
+Available game templates are:
+* "Default"
+* "BlackAndWhite"
+* "Mediterranean"
+* "EastWind"
+* "RealIsBrown"
+
+|p2= transition: [[Number]] - (Optional, default 0) time to apply the post-process
+
+|p3= global: [[Boolean]] - (Optional, default [[isMultiplayer]]) should the post-process be broadcast over the network
+
+|r1= [[Boolean]] - true when done
+
+|x1= <sqf>["Mediterranean", 3, false] call BIS_fnc_setPPeffectTemplate;</sqf>
+
+|x2= <sqf>"RealIsBrown" call BIS_fnc_setPPeffectTemplate;</sqf>
+
+|x3= <sqf>"MyPurplePP" call BIS_fnc_setPPeffectTemplate; // can use a template defined in Description.ext</sqf>
+
+|seealso= [[Post Process Effects]] [[ppEffectCreate]] [[ppEffectForceInNVG]] [[ppEffectEnable]] [[ppEffectEnabled]] [[ppEffectDestroy]] [[ppEffectCommit]] [[ppEffectCommitted]] [[ppEffectAdjust]]
+}}

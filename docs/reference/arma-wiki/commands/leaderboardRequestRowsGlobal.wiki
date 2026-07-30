@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/leaderboardRequestRowsGlobal
+// revision: 349053 (2023-11-08T14:47:19Z)
+// export sha1: pfntxbh0m0xgokudn1ci1y449jp60nt
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: Leaderboards | Category:Introduced with Arma 3 version 1.56 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 1.56
+
+|gr1= Leaderboards
+
+|descr= Requests given leaderboard to download values from global table.
+
+|s1= [[leaderboardRequestRowsGlobal]] [leaderboard, offset, rows]
+
+|p1= leaderboard: [[String]] - name of the leaderboard
+
+|p2= offset: [[Number]] - defines how many rows are skipped
+
+|p3= rows: [[Number]] - defines how many rows are requested
+
+|r1= [[Boolean]] - returns [[true]] if request has been started
+
+|x1= <sqf>_isGettingValues = leaderboardRequestRowsGlobal ["TT01", 0, 10];</sqf>
+
+|seealso= [[leaderboardGetRows]] [[leaderboardInit]] [[leaderboardRequestRowsFriends]] [[leaderboardRequestRowsGlobalAroundUser]] [[leaderboardsRequestUploadScore]] [[leaderboardsRequestUploadScoreKeepBest]] [[leaderboardState]]
+}}

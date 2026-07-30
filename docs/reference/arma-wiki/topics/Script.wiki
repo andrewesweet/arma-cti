@@ -1,0 +1,12 @@
+// source: https://community.bistudio.com/wiki/Script
+// revision: 293266 (2021-08-28T17:23:27Z)
+// export sha1: 5xn9gp8sxq3x1xmp5mtdzhnbfeakwne
+// categories: Category:Disambiguation Pages
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{Wiki|disamb}}
+
+This article has several meanings:
+
+* [[Script File]]
+* [[Script Handle]]

@@ -1,0 +1,29 @@
+// source: https://community.bistudio.com/wiki/tvSetSelected
+// revision: 378326 (2026-04-02T16:30:29Z)
+// export sha1: hzttlvwad1nl8wujy4wt4v3op7w0css
+// categories: Category:Arma 3: New Scripting Commands | Category:Arma 3: Scripting Commands | Category:Command Group: GUI Control - Tree View | Category:Introduced with Arma 3 version 2.02 | Category:Maintenance/RV | Category:Scripting Commands
+// Vendored snapshot. Do not edit — re-export instead.
+
+{{RV|type=command
+
+|game1= arma3
+|version1= 2.02
+
+|gr1= GUI Control - Tree View
+
+|descr= Sets the selection state of given treeview item in multi-select control.
+
+|s1= control [[tvSetSelected]] [path, selected]
+
+|p1= control: [[Control]]
+
+|p2= path: [[Tree View Path]]
+
+|p3= selected: [[Boolean]]
+
+|r1= [[Nothing]]
+
+|x1= <sqf>_control tvSetSelected [[0], true];</sqf>
+
+|seealso= [[tvSelection]] [[tvIsSelected]]
+}}
